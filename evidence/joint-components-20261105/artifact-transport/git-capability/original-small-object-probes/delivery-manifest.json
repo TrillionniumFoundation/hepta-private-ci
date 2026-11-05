@@ -1,0 +1,57 @@
+{
+  "schema": "git-transport-probe-small-artifact-delivery-v1",
+  "status": "VERIFIED_CLOUD_PACKAGE",
+  "archive": {
+    "path": "/workspace/scratch/93bfcfe29fc8/model_storage/git-transport-probe-571c/delivery/git-transport-probe-571c.tar.xz",
+    "bytes": 1207484,
+    "sha256": "438cef888b31e3db753d384a298117ba78fe9ae8fb534fc8901f6b9c18cb3a66"
+  },
+  "archive_member_manifest": {
+    "path": "/workspace/scratch/93bfcfe29fc8/model_storage/git-transport-probe-571c/delivery/package-members/MANIFEST.json",
+    "bytes": 2261,
+    "sha256": "3b8ea62b9b7691254f26f4aaf06b12c010bb99fac8b442b93fa52b5db0ae27d1"
+  },
+  "roundtrip_report": {
+    "path": "/workspace/scratch/93bfcfe29fc8/model_storage/git-transport-probe-571c/delivery/roundtrip-report.json",
+    "bytes": 7151,
+    "sha256": "ceb5af1b3c2439bc6cbb5b45fb99bd56d656269bac18e752fd95d592afc65355"
+  },
+  "verify_stdout": {
+    "path": "/workspace/scratch/93bfcfe29fc8/model_storage/git-transport-probe-571c/delivery/verify.stdout.log",
+    "bytes": 3343,
+    "sha256": "4439934a0b25827073a7778ccd1a3bdce6c8feec886ee147f435e707b8dd5f02"
+  },
+  "verify_stderr": {
+    "path": "/workspace/scratch/93bfcfe29fc8/model_storage/git-transport-probe-571c/delivery/verify.stderr.log",
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  "tar_member_count": 13,
+  "transport_chunks": [
+    {
+      "path": "/workspace/scratch/93bfcfe29fc8/model_storage/git-transport-probe-571c/delivery/transport-parts/git-transport-probe-571c.tar.xz.part-0000",
+      "offset": 0,
+      "bytes": 1000000,
+      "sha256": "10d8bf7051f614467b44c4d43858b7b909b9748ce3489a050ab6ff4fb1a3b328",
+      "git_blob_sha": "a22e893671e7fd81490fa474502c6fa007c08918"
+    },
+    {
+      "path": "/workspace/scratch/93bfcfe29fc8/model_storage/git-transport-probe-571c/delivery/transport-parts/git-transport-probe-571c.tar.xz.part-0001",
+      "offset": 1000000,
+      "bytes": 207484,
+      "sha256": "2e9895f108667af1e9b2fd1745a6ff5feef6b5835c07df1b0904fa99b7dde1b9",
+      "git_blob_sha": "acfc3ce79c7bea5bdb1f8abcc5936191ae12a488"
+    }
+  ],
+  "transport_chunk_target_bytes": 1000000,
+  "transport_chunk_scope": "Local transport preparation only; these newly made chunks have not been uploaded/read back from Git.",
+  "actual_git_probe_successes": {
+    "binary_bytes": 1044516,
+    "utf8_bytes": 2812928
+  },
+  "no_5_6_mib_text_test": true,
+  "raw_originals_deleted": false,
+  "git_writes": 0,
+  "desktop_requests": 0,
+  "push_authorization": false
+}

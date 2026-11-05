@@ -1,0 +1,35 @@
+{
+  "schema": "exact-github-rpc-reconstruction-v1",
+  "format": "Original JSON prefix + exact JSON string token + original suffix, including final newline",
+  "cases": [
+    {
+      "case": "binary-under-1mib-fetch-file-base64",
+      "input_member": "inputs/C4-native-receipts.readback.tar.xz",
+      "input_bytes": 1044516,
+      "input_sha256": "31d16e6527b22aea21bf71048d0aa80e22f8568da392b0235c7e4d1d75827fb4",
+      "prefix_member": "rpc-prefix-suffix/binary-under-1mib-fetch-file-base64.prefix.bin",
+      "suffix_member": "rpc-prefix-suffix/binary-under-1mib-fetch-file-base64.suffix.bin",
+      "original_rpc_name": "binary-under-1mib-fetch-file-base64.raw.json",
+      "original_rpc_bytes": 1439619,
+      "original_rpc_sha256": "e74620cccc0d585b6680288a057445a0fe77f487c98705a511a08f6e29b8cc1d",
+      "returned_content_characters": 1415900,
+      "transform": "base64-wrapped",
+      "wrap_columns": 60,
+      "newline": "\n",
+      "trailing_newline": true
+    },
+    {
+      "case": "largest-published-utf8-fetch-blob",
+      "input_member": "inputs/largest-published-utf8.readback.json",
+      "input_bytes": 2812928,
+      "input_sha256": "2296e1bf0d047ab36e979f6a299c588a0feefd3bc5cfd6f35de2ff326f71584c",
+      "prefix_member": "rpc-prefix-suffix/largest-published-utf8-fetch-blob.prefix.bin",
+      "suffix_member": "rpc-prefix-suffix/largest-published-utf8-fetch-blob.suffix.bin",
+      "original_rpc_name": "largest-published-utf8-fetch-blob.raw.json",
+      "original_rpc_bytes": 3044566,
+      "original_rpc_sha256": "f03d724655035fdfad43977c36842d99e074de9705197506a025253961c5db0d",
+      "returned_content_characters": 2812928,
+      "transform": "utf-8"
+    }
+  ]
+}

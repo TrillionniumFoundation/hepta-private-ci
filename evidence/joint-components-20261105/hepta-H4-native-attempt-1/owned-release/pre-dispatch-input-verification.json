@@ -1,0 +1,66 @@
+{
+  "confirmed_original_terminal": {
+    "at_unix_ms": 1793919910435,
+    "audit_recorded": true,
+    "automatic_retry": false,
+    "cancelled": false,
+    "exit_code": 0,
+    "job_id": "1a1ade2970f-fc05-5b5c",
+    "launch_nonce": "b996c9aa540c38efa76e05a8982d15fd",
+    "log_bytes": {
+      "stderr": {
+        "seen": 0,
+        "stored": 0
+      },
+      "stdout": {
+        "seen": 24664,
+        "stored": 24664
+      }
+    },
+    "log_errors": {
+      "stderr": null,
+      "stdout": null
+    },
+    "log_synced": {
+      "stderr": true,
+      "stdout": true
+    },
+    "log_truncated": {
+      "stderr": false,
+      "stdout": false
+    },
+    "output_complete": true,
+    "output_durable": true,
+    "state": "succeeded",
+    "terminal_publication_confirmed": true,
+    "terminal_publication_protocol": 1,
+    "timed_out": false
+  },
+  "frozen_request": {
+    "bytes": 6776,
+    "key": "93bfc-w1-h4-owned-unit-release-readonly-01",
+    "sha256": "c88392a19402a15152c93e69c6b251d4dba7c485a47c3c049907f78bcf4d5d2e"
+  },
+  "original_input_records": {
+    "launch.raw.json": {
+      "bytes": 4571,
+      "sha256": "05a4e711e072377d96db924865b0bcde6eaa1e8bed55066e67806900c539b91e",
+      "source_path": "/workspace/scratch/93bfcfe29fc8/model_storage/h4-capture-repair/native/joint-h4-native-attempt-1/launch.raw.json"
+    },
+    "status-1.raw.json": {
+      "bytes": 662,
+      "sha256": "b71b5af3ce9eea5ccd2336f9cfad9187a6807e2df6885f9faf6ca9fdfca33307",
+      "source_path": "/workspace/scratch/93bfcfe29fc8/model_storage/h4-capture-repair/native/joint-h4-native-attempt-1/status-1.raw.json"
+    },
+    "status-8.raw.json": {
+      "bytes": 956,
+      "sha256": "3a997e9375bdd6662c5d89ec6ec045b843b79e006faf07516fa17ef4c26380a7",
+      "source_path": "/workspace/scratch/93bfcfe29fc8/model_storage/h4-capture-repair/native/joint-h4-native-attempt-1/status-8.raw.json"
+    }
+  },
+  "probe_script": {
+    "bytes": 6229,
+    "sha256": "b786dd07e70f55acf3dcba1accdb2339a535a6df73dd30b382852712f664e54a"
+  },
+  "scope": "Read only exact owned unit/cgroups/two original process identities; no global process scan, kill, archive, build or bulk transfer."
+}

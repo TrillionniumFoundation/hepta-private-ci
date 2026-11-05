@@ -1,0 +1,56 @@
+{
+  "after": {
+    "commit": "6db78eca53a5acdda0d96873d3f4cd65863426f0",
+    "dirty": false,
+    "parents": [
+      "595475a615a03ca9f63c2c1f6e532bd362c20a74"
+    ],
+    "tree": "e91f5994017fc5d2cfe58d405a20ee6ad9376772"
+  },
+  "base_sha": "1556a4df6e279055fd8196f81a4ca2fe0f19384a",
+  "before": {
+    "commit": "6db78eca53a5acdda0d96873d3f4cd65863426f0",
+    "dirty": false,
+    "parents": [
+      "595475a615a03ca9f63c2c1f6e532bd362c20a74"
+    ],
+    "tree": "e91f5994017fc5d2cfe58d405a20ee6ad9376772"
+  },
+  "command": [
+    "just",
+    "test",
+    "--locked",
+    "-p",
+    "codex-hepta-agentd",
+    "--lib",
+    "-E",
+    "test(=automation_effect_host::identity_tests::host_provider_identity_legacy_http_queries_original_occurrence_and_retains_terminal_fact) | test(=automation_effect_host::identity_tests::host_provider_identity_terminal_execute_uses_store_owner_not_shared_subject) | test(=automation_effect_host::recovery_tests::host_provider_recovery_does_not_authorize_new_dispatch_with_an_expired_lease) | test(=automation_effect_host::recovery_tests::host_provider_recovery_observes_original_ack_after_lease_expiry_and_restart) | test(=automation_effect_host::tests::host_dispatches_exact_wire_payload_once) | test(=automation_effect_host::tests::host_provider_receipt_survives_unknown_and_rejects_operation_substitution)",
+    "--no-capture",
+    "--retries",
+    "0",
+    "--test-threads=1"
+  ],
+  "command_exit_code": 0,
+  "elapsed_seconds": 30.1582414599834,
+  "exit_code": 0,
+  "finished_at": "2026-11-05T22:52:47.370991+00:00",
+  "job": null,
+  "lane": "source-head",
+  "log_bytes": 29863,
+  "log_file": "original-six-effect-controls.json.08b25aafc73e41eda0b9252ec5f925ba.log",
+  "log_sha256": "8ae1d06f93c4954705d29e14cf4cea751b34de54dcfb8b60016d8eba306e5087",
+  "minimum_tests": 6,
+  "observed_failed_tests": 0,
+  "observed_passed_tests": 6,
+  "output_limit_exceeded": false,
+  "returncode": 0,
+  "run_attempt": null,
+  "run_id": null,
+  "schema_version": 1,
+  "source_sha": "6db78eca53a5acdda0d96873d3f4cd65863426f0",
+  "started_at": "2026-11-05T22:52:17.195484+00:00",
+  "status": "passed",
+  "tested_sha": "6db78eca53a5acdda0d96873d3f4cd65863426f0",
+  "timed_out": false,
+  "working_directory": "/home/qian-qi/work/hepta-pq-effect-v4-20261105-93bfcf/source-h3"
+}

@@ -1,0 +1,13 @@
+{
+  "schema": "existing-git-readability-not-authentication-proof-v1",
+  "original_probe_result_unchanged": "READ_ONLY_PROBE_PASSED",
+  "original_delivery_sha256": "6c0b08b82cc04cc82e7e3d820cd9b56c66273eb433a6db8aded922cfd4b5475c",
+  "actual_scope": "One exact ls-remote succeeded using the existing Git configuration. Neither successful authentication nor private visibility nor push permission was independently established by that command.",
+  "new_information": "The model agent reported get_repo visibility=public for the named repository. Root is independently checking this against the authorized destination scope.",
+  "anonymous_read_could_produce_same_result": true,
+  "private_destination_verified_by_this_agent": false,
+  "push_authorization_or_capability_awarded": false,
+  "transport_publication_performed": false,
+  "source_or_credentials_changed": false,
+  "archive_window_effect": "The authorized local H4 byte-preservation task is unaffected. No repository upload is implied or performed."
+}

@@ -1,0 +1,14 @@
+{
+  "code_changed": false,
+  "correction": "Publication of the archive, multiple parts and completion is not one cross-file atomic operation. If later publication, fsync or completion writing fails, some final-named archive/part files may remain. There is no success credit unless an authoritative successful export job and the hash-pinned COMPLETE_WITH_REFERENCED_PARENT marker exist, and the entire two-package byte closure verifies. Final filenames alone do not establish completion.",
+  "original_cloud_delivery_sha256": "758155471794e7a3757fcffcaf4c1204aab06bdef2056717ce5e87379715da3e",
+  "original_design_path": "/workspace/scratch/93bfcfe29fc8/w1/h4-content-reference-design/design.json",
+  "original_design_sha256": "2dda5331ddd89f70164686f6ed229afca6c4bfa4236b118740a6d529098a9565",
+  "remote_actions": 0,
+  "review_origin": "Independent PQ review of exact ce96 exporter and original multi-file publication protocol.",
+  "revised_statement": "Failure awards no successful completion; it may leave staging files and/or some final-named published files. All such bytes remain incomplete until the explicit consumer contract is satisfied.",
+  "schema": "H4-reference-publication-semantics-amendment-v1",
+  "supersedes_design_sentence": "failure leaves only owned staging artifacts and no successful completion",
+  "unchanged_tool_sha256": "ce96de09dc981311753d37312c1b254751cce3b40c4f950f603303a523508425",
+  "utility_reexecuted": false
+}

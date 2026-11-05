@@ -1,0 +1,1613 @@
+RUST_MIN_STACK=8388608 NEXTEST_PROFILE=local python3 ../scripts/run-nextest.py "$@"
+warning: in config file .config/nextest.toml, ignoring unknown configuration keys: 
+  - profile.hepta-public-initial-v2.inherits
+  - profile.local.inherits
+warning: ignoring --test-threads because --no-capture is specified
+warning: use of deprecated tuple variant `time::format_description::BorrowedFormatItem::Literal`: use `StringLiteral` instead; raw bytes are not recommended
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:196:67
+    |
+196 |     use time::format_description::BorrowedFormatItem::{Component, Literal, Optional};
+    |                                                                   ^^^^^^^
+    |
+    = note: `#[warn(deprecated)]` on by default
+
+warning: use of deprecated tuple variant `time::format_description::Component::Year`: use one of the various `Year*` components instead
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:199:52
+    |
+199 |     const YEAR: BorrowedFormatItem<'_> = Component(Year({
+    |                                                    ^^^^
+
+warning: use of deprecated struct `time::format_description::modifier::Year`: use one of the various `Year*` components instead
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:200:35
+    |
+200 |         let mut value = modifier::Year::default();
+    |                                   ^^^^
+
+warning: use of deprecated unit variant `time::format_description::modifier::YearRepr::Full`: used only in the deprecated `Year` component
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:202:42
+    |
+202 |         value.repr = modifier::YearRepr::Full;
+    |                                          ^^^^
+
+warning: use of deprecated tuple variant `time::format_description::Component::Month`: use `MonthShort`, `MonthLong`, or `MonthNumeric` instead
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:208:53
+    |
+208 |     const MONTH: BorrowedFormatItem<'_> = Component(Month({
+    |                                                     ^^^^^
+
+warning: use of deprecated struct `time::format_description::modifier::Month`: use `MonthShort`, `MonthLong`, or `MonthNumeric` instead
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:209:35
+    |
+209 |         let mut value = modifier::Month::default();
+    |                                   ^^^^^
+
+warning: use of deprecated unit variant `time::format_description::modifier::MonthRepr::Numerical`: used only in the deprecated `Month` component
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:211:43
+    |
+211 |         value.repr = modifier::MonthRepr::Numerical;
+    |                                           ^^^^^^^^^
+
+warning: use of deprecated tuple variant `time::format_description::Component::Hour`: use `Hour12` or `Hour24` instead
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:222:52
+    |
+222 |     const HOUR: BorrowedFormatItem<'_> = Component(Hour({
+    |                                                    ^^^^
+
+warning: use of deprecated struct `time::format_description::modifier::Hour`: use `Hour12` or `Hour24` instead
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:223:35
+    |
+223 |         let mut value = modifier::Hour::default();
+    |                                   ^^^^
+
+warning: use of deprecated tuple variant `time::format_description::BorrowedFormatItem::Literal`: use `StringLiteral` instead; raw bytes are not recommended
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:263:13
+    |
+263 |             Literal(b"-"),
+    |             ^^^^^^^
+
+warning: use of deprecated tuple variant `time::format_description::BorrowedFormatItem::Literal`: use `StringLiteral` instead; raw bytes are not recommended
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:265:13
+    |
+265 |             Literal(b"-"),
+    |             ^^^^^^^
+
+warning: use of deprecated tuple variant `time::format_description::BorrowedFormatItem::Literal`: use `StringLiteral` instead; raw bytes are not recommended
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:267:23
+    |
+267 |             Optional(&Literal(b" ")),
+    |                       ^^^^^^^
+
+warning: use of deprecated tuple variant `time::format_description::BorrowedFormatItem::Literal`: use `StringLiteral` instead; raw bytes are not recommended
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:268:23
+    |
+268 |             Optional(&Literal(b"T")),
+    |                       ^^^^^^^
+
+warning: use of deprecated tuple variant `time::format_description::BorrowedFormatItem::Literal`: use `StringLiteral` instead; raw bytes are not recommended
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:270:13
+    |
+270 |             Literal(b":"),
+    |             ^^^^^^^
+
+warning: use of deprecated tuple variant `time::format_description::BorrowedFormatItem::Literal`: use `StringLiteral` instead; raw bytes are not recommended
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:272:23
+    |
+272 |             Optional(&Literal(b":")),
+    |                       ^^^^^^^
+
+warning: use of deprecated tuple variant `time::format_description::BorrowedFormatItem::Literal`: use `StringLiteral` instead; raw bytes are not recommended
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:274:23
+    |
+274 |             Optional(&Literal(b".")),
+    |                       ^^^^^^^
+
+warning: use of deprecated tuple variant `time::format_description::BorrowedFormatItem::Literal`: use `StringLiteral` instead; raw bytes are not recommended
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:277:23
+    |
+277 |             Optional(&Literal(b":")),
+    |                       ^^^^^^^
+
+warning: use of deprecated tuple variant `time::format_description::BorrowedFormatItem::Literal`: use `StringLiteral` instead; raw bytes are not recommended
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:285:13
+    |
+285 |             Literal(b"-"),
+    |             ^^^^^^^
+
+warning: use of deprecated tuple variant `time::format_description::BorrowedFormatItem::Literal`: use `StringLiteral` instead; raw bytes are not recommended
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:287:13
+    |
+287 |             Literal(b"-"),
+    |             ^^^^^^^
+
+warning: use of deprecated tuple variant `time::format_description::BorrowedFormatItem::Literal`: use `StringLiteral` instead; raw bytes are not recommended
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:289:13
+    |
+289 |             Literal(b" "),
+    |             ^^^^^^^
+
+warning: use of deprecated tuple variant `time::format_description::BorrowedFormatItem::Literal`: use `StringLiteral` instead; raw bytes are not recommended
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:291:13
+    |
+291 |             Literal(b":"),
+    |             ^^^^^^^
+
+warning: use of deprecated tuple variant `time::format_description::BorrowedFormatItem::Literal`: use `StringLiteral` instead; raw bytes are not recommended
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:293:23
+    |
+293 |             Optional(&Literal(b":")),
+    |                       ^^^^^^^
+
+warning: use of deprecated tuple variant `time::format_description::BorrowedFormatItem::Literal`: use `StringLiteral` instead; raw bytes are not recommended
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:295:23
+    |
+295 |             Optional(&Literal(b".")),
+    |                       ^^^^^^^
+
+warning: use of deprecated tuple variant `time::format_description::BorrowedFormatItem::Literal`: use `StringLiteral` instead; raw bytes are not recommended
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:297:23
+    |
+297 |             Optional(&Literal(b"Z")),
+    |                       ^^^^^^^
+
+warning: use of deprecated tuple variant `time::format_description::BorrowedFormatItem::Literal`: use `StringLiteral` instead; raw bytes are not recommended
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:304:13
+    |
+304 |             Literal(b"-"),
+    |             ^^^^^^^
+
+warning: use of deprecated tuple variant `time::format_description::BorrowedFormatItem::Literal`: use `StringLiteral` instead; raw bytes are not recommended
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:306:13
+    |
+306 |             Literal(b"-"),
+    |             ^^^^^^^
+
+warning: use of deprecated tuple variant `time::format_description::BorrowedFormatItem::Literal`: use `StringLiteral` instead; raw bytes are not recommended
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:308:13
+    |
+308 |             Literal(b"T"),
+    |             ^^^^^^^
+
+warning: use of deprecated tuple variant `time::format_description::BorrowedFormatItem::Literal`: use `StringLiteral` instead; raw bytes are not recommended
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:310:13
+    |
+310 |             Literal(b":"),
+    |             ^^^^^^^
+
+warning: use of deprecated tuple variant `time::format_description::BorrowedFormatItem::Literal`: use `StringLiteral` instead; raw bytes are not recommended
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:312:23
+    |
+312 |             Optional(&Literal(b":")),
+    |                       ^^^^^^^
+
+warning: use of deprecated tuple variant `time::format_description::BorrowedFormatItem::Literal`: use `StringLiteral` instead; raw bytes are not recommended
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:314:23
+    |
+314 |             Optional(&Literal(b".")),
+    |                       ^^^^^^^
+
+warning: use of deprecated tuple variant `time::format_description::BorrowedFormatItem::Literal`: use `StringLiteral` instead; raw bytes are not recommended
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:316:23
+    |
+316 |             Optional(&Literal(b"Z")),
+    |                       ^^^^^^^
+
+warning: use of deprecated field `time::format_description::modifier::Year::padding`: use one of the various `Year*` components instead
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:201:9
+    |
+201 |         value.padding = modifier::Padding::Zero;
+    |         ^^^^^^^^^^^^^
+
+warning: use of deprecated field `time::format_description::modifier::Year::repr`: use one of the various `Year*` components instead
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:202:9
+    |
+202 |         value.repr = modifier::YearRepr::Full;
+    |         ^^^^^^^^^^
+
+warning: use of deprecated field `time::format_description::modifier::Year::iso_week_based`: use one of the various `Year*` components instead
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:203:9
+    |
+203 |         value.iso_week_based = false;
+    |         ^^^^^^^^^^^^^^^^^^^^
+
+warning: use of deprecated field `time::format_description::modifier::Year::sign_is_mandatory`: use one of the various `Year*` components instead
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:204:9
+    |
+204 |         value.sign_is_mandatory = false;
+    |         ^^^^^^^^^^^^^^^^^^^^^^^
+
+warning: use of deprecated field `time::format_description::modifier::Month::padding`: use `MonthShort`, `MonthLong`, or `MonthNumeric` instead
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:210:9
+    |
+210 |         value.padding = modifier::Padding::Zero;
+    |         ^^^^^^^^^^^^^
+
+warning: use of deprecated field `time::format_description::modifier::Month::repr`: use `MonthShort`, `MonthLong`, or `MonthNumeric` instead
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:211:9
+    |
+211 |         value.repr = modifier::MonthRepr::Numerical;
+    |         ^^^^^^^^^^
+
+warning: use of deprecated field `time::format_description::modifier::Month::case_sensitive`: use `MonthShort`, `MonthLong`, or `MonthNumeric` instead
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:212:9
+    |
+212 |         value.case_sensitive = true;
+    |         ^^^^^^^^^^^^^^^^^^^^
+
+warning: use of deprecated field `time::format_description::modifier::Hour::padding`: use `Hour12` or `Hour24` instead
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:224:9
+    |
+224 |         value.padding = modifier::Padding::Zero;
+    |         ^^^^^^^^^^^^^
+
+warning: use of deprecated field `time::format_description::modifier::Hour::is_12_hour_clock`: use `Hour12` or `Hour24` instead
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:225:9
+    |
+225 |         value.is_12_hour_clock = false;
+    |         ^^^^^^^^^^^^^^^^^^^^^^
+
+warning: `sqlx-sqlite` (lib) generated 40 warnings
+warning: `sqlx-sqlite` (lib) generated 40 warnings (40 duplicates)
+    Finished `test` profile [unoptimized] target(s) in 1.31s
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#proc-macro2@1.0.106` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#quote@1.0.45` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#serde@1.0.229` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#serde_core@1.0.229` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#libc@0.2.186` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#parking_lot_core@0.9.12` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#thiserror@2.0.21` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#portable-atomic@1.13.1` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#libc@0.2.186` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#generic-array@0.14.7` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#zmij@1.0.19` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#num-traits@0.2.19` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#getrandom@0.4.3` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#serde_json@1.0.151` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#icu_properties_data@2.2.0` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#icu_normalizer_data@2.2.0` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#crc32fast@1.5.0` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#ring@0.17.14` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#crossbeam-utils@0.8.21` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#zerocopy@0.8.37` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#getrandom@0.3.4` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#heapless@0.8.0` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#aws-lc-sys@0.45.0` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#aws-lc-rs@1.18.1` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#rustix@1.1.4` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#crossbeam-epoch@0.9.20` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#serde_core@1.0.229` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#ahash@0.8.12` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#mime_guess@2.0.5` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#serde_json@1.0.151` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#rustls@0.23.46` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#httparse@1.10.1` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#anyhow@1.0.103` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#openssl-sys@0.9.117` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#schemars@0.8.22` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#rayon-core@1.13.0` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#syn@1.0.109` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#ref-cast@1.0.25` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#typeid@1.0.3` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#heapless@0.7.17` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#openssl@0.10.81` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#allocative@0.3.6` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#erased-serde@0.4.10` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#blake3@1.8.7` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#logos-codegen@0.15.1` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#nix@0.28.0` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#rama-http-headers@0.3.0-alpha.4` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#native-tls@0.2.14` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#oid-registry@0.8.1` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#zstd-sys@2.1.2+zstd.1.5.7` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#starlark_map@0.14.2` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#cookie@0.18.1` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#num-traits@0.2.19` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#icu_locale_data@2.2.0` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#zstd-safe@8.2.0` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#crossbeam-utils@0.8.21` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#paste@1.0.15` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#memoffset@0.9.1` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#thiserror@2.0.21` which wasn't produced by cargo metadata
+warning: warning: saw package ID `path+file:///home/qian-qi/work/hepta-pq-effect-v4-20261105-93bfcf/source-h3/codex-rs/third_party/starlark-0.14.2#starlark@0.14.2` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#rustls@0.23.46` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#icu_decimal_data@2.2.0` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#libsqlite3-sys@0.38.2` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#rustversion@1.0.22` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#thiserror@1.0.69` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#curve25519-dalek@4.1.3` which wasn't produced by cargo metadata
+info: using target runner `/usr/bin/python3 /home/qian-qi/work/hepta-pq-effect-v4-20261105-93bfcf/tools/joint-h4-native-attempt-1/nextest_fd_runner.py` defined by environment variable `CARGO_TARGET_X86_64_UNKNOWN_LINUX_GNU_RUNNER`
+────────────
+ Nextest run ID 1ba0a545-882b-40f8-9079-ae1ef92371ff with nextest profile: local
+    Starting 161 tests across 1 binary (1 test skipped)
+       START             codex-hepta-evidence authbus_crypto_profile::tests::missing_profile_barrier_trigger_is_rejected_on_reopen
+
+running 1 test
+test authbus_crypto_profile::tests::missing_profile_barrier_trigger_is_rejected_on_reopen ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 161 filtered out; finished in 0.49s
+
+        PASS [   0.912s] codex-hepta-evidence authbus_crypto_profile::tests::missing_profile_barrier_trigger_is_rejected_on_reopen
+       START             codex-hepta-evidence authbus_crypto_profile::tests::pq_outbox_requires_explicit_profile_and_recovers_exact_signature_without_downgrade
+
+running 1 test
+test authbus_crypto_profile::tests::pq_outbox_requires_explicit_profile_and_recovers_exact_signature_without_downgrade ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 161 filtered out; finished in 0.94s
+
+        PASS [   1.399s] codex-hepta-evidence authbus_crypto_profile::tests::pq_outbox_requires_explicit_profile_and_recovers_exact_signature_without_downgrade
+       START             codex-hepta-evidence authbus_issuer_floor::tests::pq_owner_key_substitution_rotation_revocation_and_clock_rollback_are_fenced
+
+running 1 test
+test authbus_issuer_floor::tests::pq_owner_key_substitution_rotation_revocation_and_clock_rollback_are_fenced ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 161 filtered out; finished in 0.56s
+
+        PASS [   0.978s] codex-hepta-evidence authbus_issuer_floor::tests::pq_owner_key_substitution_rotation_revocation_and_clock_rollback_are_fenced
+       START             codex-hepta-evidence authbus_outbox::tests::current_issuer_scan_cannot_be_starved_by_older_epochs_or_other_issuers
+
+running 1 test
+test authbus_outbox::tests::current_issuer_scan_cannot_be_starved_by_older_epochs_or_other_issuers ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 161 filtered out; finished in 0.86s
+
+        PASS [   1.263s] codex-hepta-evidence authbus_outbox::tests::current_issuer_scan_cannot_be_starved_by_older_epochs_or_other_issuers
+       START             codex-hepta-evidence authbus_outbox_quarantine_tests::quarantine_rechecks_current_issuer_and_does_not_retire_other_messages
+
+running 1 test
+test authbus_outbox_quarantine_tests::quarantine_rechecks_current_issuer_and_does_not_retire_other_messages ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 161 filtered out; finished in 0.46s
+
+        PASS [   0.899s] codex-hepta-evidence authbus_outbox_quarantine_tests::quarantine_rechecks_current_issuer_and_does_not_retire_other_messages
+       START             codex-hepta-evidence authbus_outbox_quarantine_tests::quarantine_requires_current_fence_and_survives_reopen_without_acknowledgement
+
+running 1 test
+test authbus_outbox_quarantine_tests::quarantine_requires_current_fence_and_survives_reopen_without_acknowledgement ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 161 filtered out; finished in 0.57s
+
+        PASS [   0.976s] codex-hepta-evidence authbus_outbox_quarantine_tests::quarantine_requires_current_fence_and_survives_reopen_without_acknowledgement
+       START             codex-hepta-evidence authbus_outbox_quarantine_tests::recovered_claim_reports_attempt_and_fences_expired_quarantine_worker
+
+running 1 test
+test authbus_outbox_quarantine_tests::recovered_claim_reports_attempt_and_fences_expired_quarantine_worker ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 161 filtered out; finished in 0.62s
+
+        PASS [   1.027s] codex-hepta-evidence authbus_outbox_quarantine_tests::recovered_claim_reports_attempt_and_fences_expired_quarantine_worker
+       START             codex-hepta-evidence authbus_outbox_tests::actual_process_crash_after_send_before_ack_redelivers_same_id
+
+running 1 test
+
+running 1 test
+test authbus_outbox_tests::actual_process_crash_after_send_before_ack_redelivers_same_id ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 161 filtered out; finished in 0.60s
+
+        PASS [   1.005s] codex-hepta-evidence authbus_outbox_tests::actual_process_crash_after_send_before_ack_redelivers_same_id
+       START             codex-hepta-evidence authbus_outbox_tests::bounded_capacity_prunes_only_terminal_history_and_keeps_replay_consumed
+
+running 1 test
+test authbus_outbox_tests::bounded_capacity_prunes_only_terminal_history_and_keeps_replay_consumed ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 161 filtered out; finished in 0.76s
+
+        PASS [   1.174s] codex-hepta-evidence authbus_outbox_tests::bounded_capacity_prunes_only_terminal_history_and_keeps_replay_consumed
+       START             codex-hepta-evidence authbus_outbox_tests::delivery_attempt_budget_quarantines_without_resending_forever
+
+running 1 test
+test authbus_outbox_tests::delivery_attempt_budget_quarantines_without_resending_forever ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 161 filtered out; finished in 1.07s
+
+        PASS [   1.482s] codex-hepta-evidence authbus_outbox_tests::delivery_attempt_budget_quarantines_without_resending_forever
+       START             codex-hepta-evidence authbus_outbox_tests::enqueue_commit_response_loss_is_idempotent_across_reopen
+
+running 1 test
+test authbus_outbox_tests::enqueue_commit_response_loss_is_idempotent_across_reopen ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 161 filtered out; finished in 0.56s
+
+        PASS [   0.965s] codex-hepta-evidence authbus_outbox_tests::enqueue_commit_response_loss_is_idempotent_across_reopen
+       START             codex-hepta-evidence authbus_outbox_tests::expired_lease_cannot_renew_retry_or_ack_before_or_after_reclaim
+
+running 1 test
+test authbus_outbox_tests::expired_lease_cannot_renew_retry_or_ack_before_or_after_reclaim ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 161 filtered out; finished in 0.53s
+
+        PASS [   0.916s] codex-hepta-evidence authbus_outbox_tests::expired_lease_cannot_renew_retry_or_ack_before_or_after_reclaim
+       START             codex-hepta-evidence authbus_outbox_tests::expiry_and_current_revocation_are_terminal_and_never_acknowledged
+
+running 1 test
+test authbus_outbox_tests::expiry_and_current_revocation_are_terminal_and_never_acknowledged ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 161 filtered out; finished in 0.57s
+
+        PASS [   0.982s] codex-hepta-evidence authbus_outbox_tests::expiry_and_current_revocation_are_terminal_and_never_acknowledged
+       START             codex-hepta-evidence authbus_outbox_tests::failed_insert_rolls_back_replay_and_direct_admission_cannot_be_upgraded
+
+running 1 test
+test authbus_outbox_tests::failed_insert_rolls_back_replay_and_direct_admission_cannot_be_upgraded ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 161 filtered out; finished in 0.53s
+
+        PASS [   0.948s] codex-hepta-evidence authbus_outbox_tests::failed_insert_rolls_back_replay_and_direct_admission_cannot_be_upgraded
+       START             codex-hepta-evidence authbus_outbox_tests::missing_outbox_guard_is_rejected_on_reopen
+
+running 1 test
+test authbus_outbox_tests::missing_outbox_guard_is_rejected_on_reopen ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 161 filtered out; finished in 0.38s
+
+        PASS [   0.773s] codex-hepta-evidence authbus_outbox_tests::missing_outbox_guard_is_rejected_on_reopen
+       START             codex-hepta-evidence authbus_outbox_tests::one_issuer_cannot_exhaust_the_global_active_outbox_across_epochs
+
+running 1 test
+test authbus_outbox_tests::one_issuer_cannot_exhaust_the_global_active_outbox_across_epochs ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 161 filtered out; finished in 0.46s
+
+        PASS [   0.860s] codex-hepta-evidence authbus_outbox_tests::one_issuer_cannot_exhaust_the_global_active_outbox_across_epochs
+       START             codex-hepta-evidence authbus_outbox_tests::payload_route_and_retained_message_identity_cannot_be_substituted
+
+running 1 test
+test authbus_outbox_tests::payload_route_and_retained_message_identity_cannot_be_substituted ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 161 filtered out; finished in 0.46s
+
+        PASS [   0.854s] codex-hepta-evidence authbus_outbox_tests::payload_route_and_retained_message_identity_cannot_be_substituted
+       START             codex-hepta-evidence authbus_outbox_tests::two_handles_serialize_claim_and_every_new_fence_rejects_old_worker
+
+running 1 test
+test authbus_outbox_tests::two_handles_serialize_claim_and_every_new_fence_rejects_old_worker ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 161 filtered out; finished in 0.58s
+
+        PASS [   0.973s] codex-hepta-evidence authbus_outbox_tests::two_handles_serialize_claim_and_every_new_fence_rejects_old_worker
+       START             codex-hepta-evidence authbus_owner_policy::tests::existing_pq_checkpoint_cannot_bootstrap_a_missing_owner_policy
+
+running 1 test
+test authbus_owner_policy::tests::existing_pq_checkpoint_cannot_bootstrap_a_missing_owner_policy ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 161 filtered out; finished in 0.87s
+
+        PASS [   1.322s] codex-hepta-evidence authbus_owner_policy::tests::existing_pq_checkpoint_cannot_bootstrap_a_missing_owner_policy
+       START             codex-hepta-evidence authbus_owner_policy::tests::owner_policy_reopens_pending_checkpoint_and_cannot_bless_later_policy_drift
+
+running 1 test
+test authbus_owner_policy::tests::owner_policy_reopens_pending_checkpoint_and_cannot_bless_later_policy_drift ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 161 filtered out; finished in 0.76s
+
+        PASS [   1.169s] codex-hepta-evidence authbus_owner_policy::tests::owner_policy_reopens_pending_checkpoint_and_cannot_bless_later_policy_drift
+       START             codex-hepta-evidence authbus_recovery::pq_retirement_tests::pq_retirement_requires_the_exact_pinned_revoked_key_and_profile
+
+running 1 test
+test authbus_recovery::pq_retirement_tests::pq_retirement_requires_the_exact_pinned_revoked_key_and_profile ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 161 filtered out; finished in 1.23s
+
+        PASS [   1.637s] codex-hepta-evidence authbus_recovery::pq_retirement_tests::pq_retirement_requires_the_exact_pinned_revoked_key_and_profile
+       START             codex-hepta-evidence authbus_recovery::tests::altered_replay_checkpoint_schema_is_rejected_before_recovery
+
+running 1 test
+test authbus_recovery::tests::altered_replay_checkpoint_schema_is_rejected_before_recovery ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 161 filtered out; finished in 1.21s
+
+        PASS [   1.608s] codex-hepta-evidence authbus_recovery::tests::altered_replay_checkpoint_schema_is_rejected_before_recovery
+       START             codex-hepta-evidence authbus_recovery::tests::every_replay_mutation_requires_exact_external_checkpoint_ack
+
+running 1 test
+test authbus_recovery::tests::every_replay_mutation_requires_exact_external_checkpoint_ack ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 161 filtered out; finished in 0.44s
+
+        PASS [   0.872s] codex-hepta-evidence authbus_recovery::tests::every_replay_mutation_requires_exact_external_checkpoint_ack
+       START             codex-hepta-evidence authbus_recovery::tests::external_checkpoint_detects_real_old_database_restore
+
+running 1 test
+test authbus_recovery::tests::external_checkpoint_detects_real_old_database_restore ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 161 filtered out; finished in 0.66s
+
+        PASS [   1.118s] codex-hepta-evidence authbus_recovery::tests::external_checkpoint_detects_real_old_database_restore
+       START             codex-hepta-evidence authbus_recovery::tests::issuer_retirement_proof_prunes_replay_rows_but_tombstone_prevents_resurrection
+
+running 1 test
+test authbus_recovery::tests::issuer_retirement_proof_prunes_replay_rows_but_tombstone_prevents_resurrection ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 161 filtered out; finished in 0.62s
+
+        PASS [   1.026s] codex-hepta-evidence authbus_recovery::tests::issuer_retirement_proof_prunes_replay_rows_but_tombstone_prevents_resurrection
+       START             codex-hepta-evidence authbus_recovery::tests::unchanged_external_checkpoint_recomputes_clean_and_pending_replay_frontiers
+
+running 1 test
+test authbus_recovery::tests::unchanged_external_checkpoint_recomputes_clean_and_pending_replay_frontiers ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 161 filtered out; finished in 2.13s
+
+        PASS [   2.561s] codex-hepta-evidence authbus_recovery::tests::unchanged_external_checkpoint_recomputes_clean_and_pending_replay_frontiers
+       START             codex-hepta-evidence authbus_store::tests::capacity_failure_does_not_burn_a_new_replay_key
+
+running 1 test
+test authbus_store::tests::capacity_failure_does_not_burn_a_new_replay_key ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 161 filtered out; finished in 0.50s
+
+        PASS [   0.892s] codex-hepta-evidence authbus_store::tests::capacity_failure_does_not_burn_a_new_replay_key
+       START             codex-hepta-evidence authbus_store::tests::independent_database_handles_cannot_both_admit_one_sequence
+
+running 1 test
+test authbus_store::tests::independent_database_handles_cannot_both_admit_one_sequence ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 161 filtered out; finished in 0.46s
+
+        PASS [   0.909s] codex-hepta-evidence authbus_store::tests::independent_database_handles_cannot_both_admit_one_sequence
+       START             codex-hepta-evidence authbus_store::tests::rejected_authentication_does_not_consume_sequence
+
+running 1 test
+test authbus_store::tests::rejected_authentication_does_not_consume_sequence ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 161 filtered out; finished in 0.40s
+
+        PASS [   0.830s] codex-hepta-evidence authbus_store::tests::rejected_authentication_does_not_consume_sequence
+       START             codex-hepta-evidence authbus_store::tests::replay_fence_survives_reopen_and_preserves_full_unsigned_sequence
+
+running 1 test
+test authbus_store::tests::replay_fence_survives_reopen_and_preserves_full_unsigned_sequence ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 161 filtered out; finished in 0.52s
+
+        PASS [   0.913s] codex-hepta-evidence authbus_store::tests::replay_fence_survives_reopen_and_preserves_full_unsigned_sequence
+       START             codex-hepta-evidence historical::tests::impossible_family_state_pairs_are_rejected
+
+running 1 test
+test historical::tests::impossible_family_state_pairs_are_rejected ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 161 filtered out; finished in 0.00s
+
+        PASS [   0.417s] codex-hepta-evidence historical::tests::impossible_family_state_pairs_are_rejected
+       START             codex-hepta-evidence historical::tests::record_digest_has_fixed_family_oracles_and_binds_every_field
+
+running 1 test
+test historical::tests::record_digest_has_fixed_family_oracles_and_binds_every_field ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 161 filtered out; finished in 0.00s
+
+        PASS [   0.423s] codex-hepta-evidence historical::tests::record_digest_has_fixed_family_oracles_and_binds_every_field
+       START             codex-hepta-evidence historical::tests::selectors_are_strictly_family_typed
+
+running 1 test
+test historical::tests::selectors_are_strictly_family_typed ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 161 filtered out; finished in 0.00s
+
+        PASS [   0.400s] codex-hepta-evidence historical::tests::selectors_are_strictly_family_typed
+       START             codex-hepta-evidence historical_tests::historical_read_fails_closed_on_corrupt_authoritative_payload
+
+running 1 test
+test historical_tests::historical_read_fails_closed_on_corrupt_authoritative_payload ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 161 filtered out; finished in 0.40s
+
+        PASS [   0.792s] codex-hepta-evidence historical_tests::historical_read_fails_closed_on_corrupt_authoritative_payload
+       START             codex-hepta-evidence historical_tests::missing_exact_ids_return_none_without_cross_family_fallback
+
+running 1 test
+test historical_tests::missing_exact_ids_return_none_without_cross_family_fallback ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 161 filtered out; finished in 0.36s
+
+        PASS [   0.783s] codex-hepta-evidence historical_tests::missing_exact_ids_return_none_without_cross_family_fallback
+       START             codex-hepta-evidence historical_tests::provider_historical_read_fails_closed_on_corrupt_authoritative_payload
+
+running 1 test
+test historical_tests::provider_historical_read_fails_closed_on_corrupt_authoritative_payload ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 161 filtered out; finished in 0.39s
+
+        PASS [   0.805s] codex-hepta-evidence historical_tests::provider_historical_read_fails_closed_on_corrupt_authoritative_payload
+       START             codex-hepta-evidence historical_tests::supported_families_project_exact_pending_and_terminal_records
+
+running 1 test
+test historical_tests::supported_families_project_exact_pending_and_terminal_records ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 161 filtered out; finished in 0.45s
+
+        PASS [   0.878s] codex-hepta-evidence historical_tests::supported_families_project_exact_pending_and_terminal_records
+       START             codex-hepta-evidence provider_claim_tests::concurrent_enforced_claims_for_one_request_binding_have_one_owner
+
+running 1 test
+test provider_claim_tests::concurrent_enforced_claims_for_one_request_binding_have_one_owner ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 161 filtered out; finished in 0.42s
+
+        PASS [   0.824s] codex-hepta-evidence provider_claim_tests::concurrent_enforced_claims_for_one_request_binding_have_one_owner
+       START             codex-hepta-evidence provider_claim_tests::enforced_claim_blocks_transport_changes_until_not_dispatched_is_proven
+
+running 1 test
+test provider_claim_tests::enforced_claim_blocks_transport_changes_until_not_dispatched_is_proven ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 161 filtered out; finished in 0.39s
+
+        PASS [   0.819s] codex-hepta-evidence provider_claim_tests::enforced_claim_blocks_transport_changes_until_not_dispatched_is_proven
+       START             codex-hepta-evidence provider_effect_recovery_provenance_tests::exhausted_observation_clock_refuses_new_events_without_forgetting_exact_retries
+
+running 1 test
+test provider_effect_recovery_provenance_tests::exhausted_observation_clock_refuses_new_events_without_forgetting_exact_retries ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 161 filtered out; finished in 0.57s
+
+        PASS [   1.032s] codex-hepta-evidence provider_effect_recovery_provenance_tests::exhausted_observation_clock_refuses_new_events_without_forgetting_exact_retries
+       START             codex-hepta-evidence provider_effect_recovery_provenance_tests::recovery_provenance_preserves_dispatch_then_authoritative_status
+
+running 1 test
+test provider_effect_recovery_provenance_tests::recovery_provenance_preserves_dispatch_then_authoritative_status ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 161 filtered out; finished in 0.58s
+
+        PASS [   1.001s] codex-hepta-evidence provider_effect_recovery_provenance_tests::recovery_provenance_preserves_dispatch_then_authoritative_status
+       START             codex-hepta-evidence provider_effect_recovery_provenance_tests::recovery_provenance_rejects_late_dispatch_after_status_without_uncertainty
+
+running 1 test
+test provider_effect_recovery_provenance_tests::recovery_provenance_rejects_late_dispatch_after_status_without_uncertainty ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 161 filtered out; finished in 0.59s
+
+        PASS [   1.053s] codex-hepta-evidence provider_effect_recovery_provenance_tests::recovery_provenance_rejects_late_dispatch_after_status_without_uncertainty
+       START             codex-hepta-evidence provider_effect_recovery_provenance_tests::repeated_status_ack_persists_provenance_and_fences_late_dispatch_after_restart
+
+running 1 test
+test provider_effect_recovery_provenance_tests::repeated_status_ack_persists_provenance_and_fences_late_dispatch_after_restart ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 161 filtered out; finished in 0.51s
+
+        PASS [   0.919s] codex-hepta-evidence provider_effect_recovery_provenance_tests::repeated_status_ack_persists_provenance_and_fences_late_dispatch_after_restart
+       START             codex-hepta-evidence provider_effect_recovery_provenance_tests::repeated_unknown_and_status_observations_survive_recovery_without_erasing_quarantine
+
+running 1 test
+test provider_effect_recovery_provenance_tests::repeated_unknown_and_status_observations_survive_recovery_without_erasing_quarantine ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 161 filtered out; finished in 0.73s
+
+        PASS [   1.125s] codex-hepta-evidence provider_effect_recovery_provenance_tests::repeated_unknown_and_status_observations_survive_recovery_without_erasing_quarantine
+       START             codex-hepta-evidence provider_effect_recovery_provenance_tests::separate_store_writers_preserve_latest_observation_idempotency
+
+running 1 test
+test provider_effect_recovery_provenance_tests::separate_store_writers_preserve_latest_observation_idempotency ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 161 filtered out; finished in 0.48s
+
+        PASS [   0.876s] codex-hepta-evidence provider_effect_recovery_provenance_tests::separate_store_writers_preserve_latest_observation_idempotency
+       START             codex-hepta-evidence provider_effect_recovery_provenance_tests::terminal_status_reobservation_cannot_hide_an_intervening_imported_uncertainty
+
+running 1 test
+test provider_effect_recovery_provenance_tests::terminal_status_reobservation_cannot_hide_an_intervening_imported_uncertainty ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 161 filtered out; finished in 0.82s
+
+        PASS [   1.225s] codex-hepta-evidence provider_effect_recovery_provenance_tests::terminal_status_reobservation_cannot_hide_an_intervening_imported_uncertainty
+       START             codex-hepta-evidence provider_effect_tests::accepted_effect_stays_indeterminate_when_reconcile_reports_rejected
+
+running 1 test
+test provider_effect_tests::accepted_effect_stays_indeterminate_when_reconcile_reports_rejected ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 161 filtered out; finished in 0.42s
+
+        PASS [   0.821s] codex-hepta-evidence provider_effect_tests::accepted_effect_stays_indeterminate_when_reconcile_reports_rejected
+       START             codex-hepta-evidence provider_effect_tests::duplicate_dispatch_ack_after_quarantine_requires_status_lookup_source
+
+running 1 test
+test provider_effect_tests::duplicate_dispatch_ack_after_quarantine_requires_status_lookup_source ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 161 filtered out; finished in 0.53s
+
+        PASS [   0.978s] codex-hepta-evidence provider_effect_tests::duplicate_dispatch_ack_after_quarantine_requires_status_lookup_source
+       START             codex-hepta-evidence provider_effect_tests::durable_status_accepted_fences_late_dispatch_transition
+
+running 1 test
+test provider_effect_tests::durable_status_accepted_fences_late_dispatch_transition ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 161 filtered out; finished in 0.37s
+
+        PASS [   0.782s] codex-hepta-evidence provider_effect_tests::durable_status_accepted_fences_late_dispatch_transition
+       START             codex-hepta-evidence provider_effect_tests::durable_status_observation_binds_payload_and_persists_lookup_provenance
+
+running 1 test
+test provider_effect_tests::durable_status_observation_binds_payload_and_persists_lookup_provenance ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 161 filtered out; finished in 0.43s
+
+        PASS [   0.841s] codex-hepta-evidence provider_effect_tests::durable_status_observation_binds_payload_and_persists_lookup_provenance
+       START             codex-hepta-evidence provider_effect_tests::durable_status_observation_rejects_unknown_intent
+
+running 1 test
+test provider_effect_tests::durable_status_observation_rejects_unknown_intent ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 161 filtered out; finished in 0.33s
+
+        PASS [   0.753s] codex-hepta-evidence provider_effect_tests::durable_status_observation_rejects_unknown_intent
+       START             codex-hepta-evidence provider_effect_tests::effect_journal_quarantines_unknown_and_reconciles_after_restart
+
+running 1 test
+test provider_effect_tests::effect_journal_quarantines_unknown_and_reconciles_after_restart ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 161 filtered out; finished in 0.43s
+
+        PASS [   0.869s] codex-hepta-evidence provider_effect_tests::effect_journal_quarantines_unknown_and_reconciles_after_restart
+       START             codex-hepta-evidence provider_effect_tests::effect_tables_are_append_only
+
+running 1 test
+test provider_effect_tests::effect_tables_are_append_only ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 161 filtered out; finished in 0.36s
+
+        PASS [   0.753s] codex-hepta-evidence provider_effect_tests::effect_tables_are_append_only
+       START             codex-hepta-evidence provider_effect_tests::imported_pending_is_quarantined_before_dispatch_and_reconcile_only
+
+running 1 test
+test provider_effect_tests::imported_pending_is_quarantined_before_dispatch_and_reconcile_only ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 161 filtered out; finished in 0.42s
+
+        PASS [   0.847s] codex-hepta-evidence provider_effect_tests::imported_pending_is_quarantined_before_dispatch_and_reconcile_only
+       START             codex-hepta-evidence provider_effect_tests::late_dispatch_ack_after_quarantine_requires_status_lookup_source
+
+running 1 test
+test provider_effect_tests::late_dispatch_ack_after_quarantine_requires_status_lookup_source ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 161 filtered out; finished in 0.52s
+
+        PASS [   0.929s] codex-hepta-evidence provider_effect_tests::late_dispatch_ack_after_quarantine_requires_status_lookup_source
+       START             codex-hepta-evidence provider_effect_tests::operation_binding_reopen_rejects_substituted_status_after_uncertainty
+
+running 1 test
+test provider_effect_tests::operation_binding_reopen_rejects_substituted_status_after_uncertainty ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 161 filtered out; finished in 0.58s
+
+        PASS [   1.018s] codex-hepta-evidence provider_effect_tests::operation_binding_reopen_rejects_substituted_status_after_uncertainty
+       START             codex-hepta-evidence provider_effect_tests::operation_binding_unknown_rejects_substitution_without_redispatch
+
+running 1 test
+test provider_effect_tests::operation_binding_unknown_rejects_substitution_without_redispatch ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 161 filtered out; finished in 1.01s
+
+        PASS [   1.436s] codex-hepta-evidence provider_effect_tests::operation_binding_unknown_rejects_substitution_without_redispatch
+       START             codex-hepta-evidence provider_effect_tests::qualification_boundary_lock_serializes_lookup_against_dispatch
+
+running 1 test
+test provider_effect_tests::qualification_boundary_lock_serializes_lookup_against_dispatch ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 161 filtered out; finished in 0.39s
+
+        PASS [   0.783s] codex-hepta-evidence provider_effect_tests::qualification_boundary_lock_serializes_lookup_against_dispatch
+       START             codex-hepta-evidence provider_effect_tests::qualification_crash_after_send_reopen_reconciles_without_redispatch
+
+running 1 test
+test provider_effect_tests::qualification_crash_after_send_reopen_reconciles_without_redispatch ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 161 filtered out; finished in 0.44s
+
+        PASS [   0.842s] codex-hepta-evidence provider_effect_tests::qualification_crash_after_send_reopen_reconciles_without_redispatch
+       START             codex-hepta-evidence provider_effect_tests::qualification_dispatch_ack_is_persisted_with_source_and_reopens
+
+running 1 test
+test provider_effect_tests::qualification_dispatch_ack_is_persisted_with_source_and_reopens ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 161 filtered out; finished in 0.43s
+
+        PASS [   0.832s] codex-hepta-evidence provider_effect_tests::qualification_dispatch_ack_is_persisted_with_source_and_reopens
+       START             codex-hepta-evidence provider_effect_tests::qualification_dispatch_claim_has_one_concurrent_winner
+
+running 1 test
+test provider_effect_tests::qualification_dispatch_claim_has_one_concurrent_winner ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 161 filtered out; finished in 0.40s
+
+        PASS [   0.835s] codex-hepta-evidence provider_effect_tests::qualification_dispatch_claim_has_one_concurrent_winner
+       START             codex-hepta-evidence provider_effect_tests::qualification_dispatch_claim_survives_reopen_without_redispatch
+
+running 1 test
+test provider_effect_tests::qualification_dispatch_claim_survives_reopen_without_redispatch ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 161 filtered out; finished in 0.47s
+
+        PASS [   0.879s] codex-hepta-evidence provider_effect_tests::qualification_dispatch_claim_survives_reopen_without_redispatch
+       START             codex-hepta-evidence provider_effect_tests::qualification_dispatch_malformed_ack_quarantines_and_replay_does_not_send
+
+running 1 test
+test provider_effect_tests::qualification_dispatch_malformed_ack_quarantines_and_replay_does_not_send ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 161 filtered out; finished in 0.42s
+
+        PASS [   0.835s] codex-hepta-evidence provider_effect_tests::qualification_dispatch_malformed_ack_quarantines_and_replay_does_not_send
+       START             codex-hepta-evidence provider_effect_tests::qualification_dispatch_rejects_cross_key_ack_without_mutating_other_effect
+
+running 1 test
+test provider_effect_tests::qualification_dispatch_rejects_cross_key_ack_without_mutating_other_effect ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 161 filtered out; finished in 0.40s
+
+        PASS [   0.856s] codex-hepta-evidence provider_effect_tests::qualification_dispatch_rejects_cross_key_ack_without_mutating_other_effect
+       START             codex-hepta-evidence provider_effect_tests::qualification_dispatch_unsupported_capability_never_invokes_adapter
+
+running 1 test
+test provider_effect_tests::qualification_dispatch_unsupported_capability_never_invokes_adapter ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 161 filtered out; finished in 0.42s
+
+        PASS [   0.843s] codex-hepta-evidence provider_effect_tests::qualification_dispatch_unsupported_capability_never_invokes_adapter
+       START             codex-hepta-evidence provider_effect_tests::qualification_reconcile_malformed_ack_quarantines_and_blocks_dispatch
+
+running 1 test
+test provider_effect_tests::qualification_reconcile_malformed_ack_quarantines_and_blocks_dispatch ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 161 filtered out; finished in 0.39s
+
+        PASS [   0.785s] codex-hepta-evidence provider_effect_tests::qualification_reconcile_malformed_ack_quarantines_and_blocks_dispatch
+       START             codex-hepta-evidence provider_effect_tests::rejected_terminal_lookup_replay_is_idempotent_without_late_uncertainty
+
+running 1 test
+test provider_effect_tests::rejected_terminal_lookup_replay_is_idempotent_without_late_uncertainty ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 161 filtered out; finished in 0.37s
+
+        PASS [   0.817s] codex-hepta-evidence provider_effect_tests::rejected_terminal_lookup_replay_is_idempotent_without_late_uncertainty
+       START             codex-hepta-evidence provider_effect_tests::reopen_orders_ack_and_uncertainty_by_per_key_time_not_cross_table_seq
+
+running 1 test
+test provider_effect_tests::reopen_orders_ack_and_uncertainty_by_per_key_time_not_cross_table_seq ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 161 filtered out; finished in 0.49s
+
+        PASS [   0.908s] codex-hepta-evidence provider_effect_tests::reopen_orders_ack_and_uncertainty_by_per_key_time_not_cross_table_seq
+       START             codex-hepta-evidence provider_effect_tests::reopen_rejects_ack_uncertainty_timestamp_tie
+
+running 1 test
+test provider_effect_tests::reopen_rejects_ack_uncertainty_timestamp_tie ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 161 filtered out; finished in 0.45s
+
+        PASS [   0.852s] codex-hepta-evidence provider_effect_tests::reopen_rejects_ack_uncertainty_timestamp_tie
+       START             codex-hepta-evidence provider_effect_tests::reopen_rejects_illegal_ack_even_when_late_uncertainty_exists
+
+running 1 test
+test provider_effect_tests::reopen_rejects_illegal_ack_even_when_late_uncertainty_exists ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 161 filtered out; finished in 0.42s
+
+        PASS [   0.854s] codex-hepta-evidence provider_effect_tests::reopen_rejects_illegal_ack_even_when_late_uncertainty_exists
+       START             codex-hepta-evidence provider_effect_tests::reopen_rejects_late_uncertainty_after_terminal_ack
+
+running 1 test
+test provider_effect_tests::reopen_rejects_late_uncertainty_after_terminal_ack ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 161 filtered out; finished in 0.46s
+
+        PASS [   0.884s] codex-hepta-evidence provider_effect_tests::reopen_rejects_late_uncertainty_after_terminal_ack
+       START             codex-hepta-evidence provider_effect_tests::reopen_rejects_missing_provider_ack_source_provenance
+
+running 1 test
+test provider_effect_tests::reopen_rejects_missing_provider_ack_source_provenance ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 161 filtered out; finished in 0.44s
+
+        PASS [   0.879s] codex-hepta-evidence provider_effect_tests::reopen_rejects_missing_provider_ack_source_provenance
+       START             codex-hepta-evidence provider_effect_tests::reopen_rejects_provider_ack_source_check_drift_with_valid_rows
+
+running 1 test
+test provider_effect_tests::reopen_rejects_provider_ack_source_check_drift_with_valid_rows ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 161 filtered out; finished in 0.45s
+
+        PASS [   0.867s] codex-hepta-evidence provider_effect_tests::reopen_rejects_provider_ack_source_check_drift_with_valid_rows
+       START             codex-hepta-evidence provider_effect_tests::same_key_payload_conflict_and_ack_binding_fail_closed
+
+running 1 test
+test provider_effect_tests::same_key_payload_conflict_and_ack_binding_fail_closed ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 161 filtered out; finished in 0.41s
+
+        PASS [   0.802s] codex-hepta-evidence provider_effect_tests::same_key_payload_conflict_and_ack_binding_fail_closed
+       START             codex-hepta-evidence provider_effect_tests::terminal_effect_cannot_be_quarantined_or_replaced
+
+running 1 test
+test provider_effect_tests::terminal_effect_cannot_be_quarantined_or_replaced ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 161 filtered out; finished in 0.38s
+
+        PASS [   0.781s] codex-hepta-evidence provider_effect_tests::terminal_effect_cannot_be_quarantined_or_replaced
+       START             codex-hepta-evidence provider_effect_tests::terminal_lookup_replay_is_idempotent_without_late_uncertainty
+
+running 1 test
+test provider_effect_tests::terminal_lookup_replay_is_idempotent_without_late_uncertainty ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 161 filtered out; finished in 0.44s
+
+        PASS [   0.852s] codex-hepta-evidence provider_effect_tests::terminal_lookup_replay_is_idempotent_without_late_uncertainty
+       START             codex-hepta-evidence provider_effect_tests::unsupported_provider_capability_is_durable_indeterminate
+
+running 1 test
+test provider_effect_tests::unsupported_provider_capability_is_durable_indeterminate ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 161 filtered out; finished in 0.40s
+
+        PASS [   0.803s] codex-hepta-evidence provider_effect_tests::unsupported_provider_capability_is_durable_indeterminate
+       START             codex-hepta-evidence provider_tests::concurrent_provider_intent_replay_inserts_exactly_once
+
+running 1 test
+test provider_tests::concurrent_provider_intent_replay_inserts_exactly_once ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 161 filtered out; finished in 0.40s
+
+        PASS [   0.805s] codex-hepta-evidence provider_tests::concurrent_provider_intent_replay_inserts_exactly_once
+       START             codex-hepta-evidence provider_tests::concurrent_provider_terminal_conflict_preserves_one_terminal
+
+running 1 test
+test provider_tests::concurrent_provider_terminal_conflict_preserves_one_terminal ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 161 filtered out; finished in 0.41s
+
+        PASS [   0.864s] codex-hepta-evidence provider_tests::concurrent_provider_terminal_conflict_preserves_one_terminal
+       START             codex-hepta-evidence provider_tests::ephemeral_projection_round_trips_and_detects_projection_corruption
+
+running 1 test
+test provider_tests::ephemeral_projection_round_trips_and_detects_projection_corruption ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 161 filtered out; finished in 0.49s
+
+        PASS [   0.884s] codex-hepta-evidence provider_tests::ephemeral_projection_round_trips_and_detects_projection_corruption
+       START             codex-hepta-evidence provider_tests::migration_0006_backfills_ephemeral_projection_without_rewriting_evidence
+
+running 1 test
+test provider_tests::migration_0006_backfills_ephemeral_projection_without_rewriting_evidence ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 161 filtered out; finished in 0.74s
+
+        PASS [   1.247s] codex-hepta-evidence provider_tests::migration_0006_backfills_ephemeral_projection_without_rewriting_evidence
+       START             codex-hepta-evidence provider_tests::migration_0006_rejects_invalid_payload_shapes_and_rolls_back
+
+running 1 test
+test provider_tests::migration_0006_rejects_invalid_payload_shapes_and_rolls_back ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 161 filtered out; finished in 0.97s
+
+        PASS [   1.408s] codex-hepta-evidence provider_tests::migration_0006_rejects_invalid_payload_shapes_and_rolls_back
+       START             codex-hepta-evidence provider_tests::open_rejects_legacy_provider_rows_without_host_binding_digest
+
+running 1 test
+test provider_tests::open_rejects_legacy_provider_rows_without_host_binding_digest ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 161 filtered out; finished in 0.60s
+
+        PASS [   1.075s] codex-hepta-evidence provider_tests::open_rejects_legacy_provider_rows_without_host_binding_digest
+       START             codex-hepta-evidence provider_tests::open_rejects_missing_provider_schema_object
+
+running 1 test
+test provider_tests::open_rejects_missing_provider_schema_object ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 161 filtered out; finished in 0.32s
+
+        PASS [   0.734s] codex-hepta-evidence provider_tests::open_rejects_missing_provider_schema_object
+       START             codex-hepta-evidence provider_tests::provider_evidence_never_persists_prompt_token_header_or_output_plaintext
+
+running 1 test
+test provider_tests::provider_evidence_never_persists_prompt_token_header_or_output_plaintext ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 161 filtered out; finished in 0.49s
+
+        PASS [   0.898s] codex-hepta-evidence provider_tests::provider_evidence_never_persists_prompt_token_header_or_output_plaintext
+       START             codex-hepta-evidence provider_tests::provider_intent_rejects_orphaned_ephemeral_digests_before_insert
+
+running 1 test
+test provider_tests::provider_intent_rejects_orphaned_ephemeral_digests_before_insert ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 161 filtered out; finished in 0.35s
+
+        PASS [   0.769s] codex-hepta-evidence provider_tests::provider_intent_rejects_orphaned_ephemeral_digests_before_insert
+       START             codex-hepta-evidence provider_tests::provider_projection_and_digest_corruption_fail_closed
+
+running 1 test
+test provider_tests::provider_projection_and_digest_corruption_fail_closed ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 161 filtered out; finished in 0.69s
+
+        PASS [   1.097s] codex-hepta-evidence provider_tests::provider_projection_and_digest_corruption_fail_closed
+       START             codex-hepta-evidence provider_tests::provider_records_are_idempotent_pending_and_persistent
+
+running 1 test
+test provider_tests::provider_records_are_idempotent_pending_and_persistent ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 161 filtered out; finished in 0.56s
+
+        PASS [   0.996s] codex-hepta-evidence provider_tests::provider_records_are_idempotent_pending_and_persistent
+       START             codex-hepta-evidence provider_tests::provider_tables_are_immutable_and_foreign_key_bound
+
+running 1 test
+test provider_tests::provider_tables_are_immutable_and_foreign_key_bound ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 161 filtered out; finished in 0.54s
+
+        PASS [   1.271s] codex-hepta-evidence provider_tests::provider_tables_are_immutable_and_foreign_key_bound
+       START             codex-hepta-evidence provider_tests::provider_terminal_conflict_never_overwrites_original
+
+running 1 test
+test provider_tests::provider_terminal_conflict_never_overwrites_original ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 161 filtered out; finished in 0.47s
+
+        PASS [   1.157s] codex-hepta-evidence provider_tests::provider_terminal_conflict_never_overwrites_original
+       START             codex-hepta-evidence provider_tests::provider_terminal_requires_exact_durable_intent
+
+running 1 test
+test provider_tests::provider_terminal_requires_exact_durable_intent ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 161 filtered out; finished in 0.38s
+
+        PASS [   1.063s] codex-hepta-evidence provider_tests::provider_terminal_requires_exact_durable_intent
+       START             codex-hepta-evidence provider_tests::unary_completion_persists_without_synthetic_provider_fields
+
+running 1 test
+test provider_tests::unary_completion_persists_without_synthetic_provider_fields ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 161 filtered out; finished in 0.44s
+
+        PASS [   1.083s] codex-hepta-evidence provider_tests::unary_completion_persists_without_synthetic_provider_fields
+       START             codex-hepta-evidence qualification_tests::claim_query_rejects_more_than_512_references
+
+running 1 test
+        SLOW [> 30.000s] codex-hepta-evidence qualification_tests::claim_query_rejects_more_than_512_references
+test qualification_tests::claim_query_rejects_more_than_512_references ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 161 filtered out; finished in 54.79s
+
+        PASS [  55.565s] codex-hepta-evidence qualification_tests::claim_query_rejects_more_than_512_references
+       START             codex-hepta-evidence qualification_tests::concurrent_store_handles_serialize_conflicting_evidence_identity
+
+running 1 test
+test qualification_tests::concurrent_store_handles_serialize_conflicting_evidence_identity ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 161 filtered out; finished in 0.35s
+
+        PASS [   0.768s] codex-hepta-evidence qualification_tests::concurrent_store_handles_serialize_conflicting_evidence_identity
+       START             codex-hepta-evidence qualification_tests::correction_and_revocation_are_append_only_and_non_resurrecting
+
+running 1 test
+test qualification_tests::correction_and_revocation_are_append_only_and_non_resurrecting ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 161 filtered out; finished in 0.47s
+
+        PASS [   0.883s] codex-hepta-evidence qualification_tests::correction_and_revocation_are_append_only_and_non_resurrecting
+       START             codex-hepta-evidence qualification_tests::current_trust_rotation_or_revocation_invalidates_positive_verification
+
+running 1 test
+test qualification_tests::current_trust_rotation_or_revocation_invalidates_positive_verification ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 161 filtered out; finished in 0.37s
+
+        PASS [   0.745s] codex-hepta-evidence qualification_tests::current_trust_rotation_or_revocation_invalidates_positive_verification
+       START             codex-hepta-evidence qualification_tests::evid_01_distinct_authenticated_principals_satisfy_independence
+
+running 1 test
+test qualification_tests::evid_01_distinct_authenticated_principals_satisfy_independence ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 161 filtered out; finished in 0.41s
+
+        PASS [   0.820s] codex-hepta-evidence qualification_tests::evid_01_distinct_authenticated_principals_satisfy_independence
+       START             codex-hepta-evidence qualification_tests::evid_01_distinct_principals_sharing_one_signing_identity_are_not_independent
+
+running 1 test
+test qualification_tests::evid_01_distinct_principals_sharing_one_signing_identity_are_not_independent ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 161 filtered out; finished in 0.41s
+
+        PASS [   0.810s] codex-hepta-evidence qualification_tests::evid_01_distinct_principals_sharing_one_signing_identity_are_not_independent
+       START             codex-hepta-evidence qualification_tests::evid_01_one_principal_cannot_satisfy_generator_and_evaluator_independence
+
+running 1 test
+test qualification_tests::evid_01_one_principal_cannot_satisfy_generator_and_evaluator_independence ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 161 filtered out; finished in 0.41s
+
+        PASS [   0.792s] codex-hepta-evidence qualification_tests::evid_01_one_principal_cannot_satisfy_generator_and_evaluator_independence
+       START             codex-hepta-evidence qualification_tests::evid_02_wrong_tree_and_expired_candidate_are_unavailable
+
+running 1 test
+test qualification_tests::evid_02_wrong_tree_and_expired_candidate_are_unavailable ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 161 filtered out; finished in 0.36s
+
+        PASS [   0.764s] codex-hepta-evidence qualification_tests::evid_02_wrong_tree_and_expired_candidate_are_unavailable
+       START             codex-hepta-evidence qualification_tests::evid_03_broken_predecessor_fails_reopen
+
+running 1 test
+test qualification_tests::evid_03_broken_predecessor_fails_reopen ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 161 filtered out; finished in 0.48s
+
+        PASS [   0.868s] codex-hepta-evidence qualification_tests::evid_03_broken_predecessor_fails_reopen
+       START             codex-hepta-evidence qualification_tests::evid_03_corrupted_canonical_payload_fails_reopen
+
+running 1 test
+test qualification_tests::evid_03_corrupted_canonical_payload_fails_reopen ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 161 filtered out; finished in 0.47s
+
+        PASS [   0.884s] codex-hepta-evidence qualification_tests::evid_03_corrupted_canonical_payload_fails_reopen
+       START             codex-hepta-evidence qualification_tests::evid_04_fixture_cannot_satisfy_hardware_claim
+
+running 1 test
+test qualification_tests::evid_04_fixture_cannot_satisfy_hardware_claim ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 161 filtered out; finished in 0.38s
+
+        PASS [   0.796s] codex-hepta-evidence qualification_tests::evid_04_fixture_cannot_satisfy_hardware_claim
+       START             codex-hepta-evidence qualification_tests::exact_authenticated_retry_is_idempotent_but_payload_drift_conflicts
+
+running 1 test
+test qualification_tests::exact_authenticated_retry_is_idempotent_but_payload_drift_conflicts ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 161 filtered out; finished in 0.41s
+
+        PASS [   0.808s] codex-hepta-evidence qualification_tests::exact_authenticated_retry_is_idempotent_but_payload_drift_conflicts
+       START             codex-hepta-evidence qualification_tests::failed_evidence_insert_rolls_back_authbus_replay_advance
+
+running 1 test
+test qualification_tests::failed_evidence_insert_rolls_back_authbus_replay_advance ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 161 filtered out; finished in 0.43s
+
+        PASS [   0.810s] codex-hepta-evidence qualification_tests::failed_evidence_insert_rolls_back_authbus_replay_advance
+       START             codex-hepta-evidence qualification_tests::independent_decision_becomes_conflicting_when_candidate_evidence_set_changes
+
+running 1 test
+test qualification_tests::independent_decision_becomes_conflicting_when_candidate_evidence_set_changes ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 161 filtered out; finished in 0.49s
+
+        PASS [   0.859s] codex-hepta-evidence qualification_tests::independent_decision_becomes_conflicting_when_candidate_evidence_set_changes
+       START             codex-hepta-evidence qualification_tests::independent_decision_binds_candidate_principal_key_role_and_evidence_set
+
+running 1 test
+test qualification_tests::independent_decision_binds_candidate_principal_key_role_and_evidence_set ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 161 filtered out; finished in 0.41s
+
+        PASS [   0.818s] codex-hepta-evidence qualification_tests::independent_decision_binds_candidate_principal_key_role_and_evidence_set
+       START             codex-hepta-evidence qualification_tests::independent_decision_validity_outlives_short_ingress_auth_ttl
+
+running 1 test
+test qualification_tests::independent_decision_validity_outlives_short_ingress_auth_ttl ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 161 filtered out; finished in 0.41s
+
+        PASS [   0.830s] codex-hepta-evidence qualification_tests::independent_decision_validity_outlives_short_ingress_auth_ttl
+       START             codex-hepta-evidence qualification_tests::lineage_mutation_is_principal_scoped_with_security_revocation_exception
+
+running 1 test
+test qualification_tests::lineage_mutation_is_principal_scoped_with_security_revocation_exception ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 161 filtered out; finished in 0.50s
+
+        PASS [   0.906s] codex-hepta-evidence qualification_tests::lineage_mutation_is_principal_scoped_with_security_revocation_exception
+       START             codex-hepta-evidence qualification_tests::ordinary_append_rejects_historical_projection_drift_without_consuming_replay
+
+running 1 test
+test qualification_tests::ordinary_append_rejects_historical_projection_drift_without_consuming_replay ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 161 filtered out; finished in 0.49s
+
+        PASS [   0.879s] codex-hepta-evidence qualification_tests::ordinary_append_rejects_historical_projection_drift_without_consuming_replay
+       START             codex-hepta-evidence qualification_tests::predecessor_traversal_fails_closed_beyond_256_edges
+
+running 1 test
+test qualification_tests::predecessor_traversal_fails_closed_beyond_256_edges ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 161 filtered out; finished in 15.28s
+
+        PASS [  15.682s] codex-hepta-evidence qualification_tests::predecessor_traversal_fails_closed_beyond_256_edges
+       START             codex-hepta-evidence qualification_tests::replay_sequence_is_consumed_atomically_with_insert
+
+running 1 test
+test qualification_tests::replay_sequence_is_consumed_atomically_with_insert ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 161 filtered out; finished in 0.44s
+
+        PASS [   0.863s] codex-hepta-evidence qualification_tests::replay_sequence_is_consumed_atomically_with_insert
+       START             codex-hepta-evidence recovery_effect_frontier_tests::recovery_snapshot_commits_ack_provenance_and_cross_table_order
+
+running 1 test
+test recovery_effect_frontier_tests::recovery_snapshot_commits_ack_provenance_and_cross_table_order ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 161 filtered out; finished in 0.38s
+
+        PASS [   0.789s] codex-hepta-evidence recovery_effect_frontier_tests::recovery_snapshot_commits_ack_provenance_and_cross_table_order
+       START             codex-hepta-evidence recovery_effect_frontier_tests::recovery_snapshot_commits_effect_history_after_the_first_page
+
+running 1 test
+test recovery_effect_frontier_tests::recovery_snapshot_commits_effect_history_after_the_first_page ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 161 filtered out; finished in 1.99s
+
+        PASS [   2.399s] codex-hepta-evidence recovery_effect_frontier_tests::recovery_snapshot_commits_effect_history_after_the_first_page
+       START             codex-hepta-evidence recovery_effect_frontier_tests::recovery_snapshot_commits_intent_unknown_and_original_operation_receipt
+
+running 1 test
+test recovery_effect_frontier_tests::recovery_snapshot_commits_intent_unknown_and_original_operation_receipt ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 161 filtered out; finished in 0.34s
+
+        PASS [   0.752s] codex-hepta-evidence recovery_effect_frontier_tests::recovery_snapshot_commits_intent_unknown_and_original_operation_receipt
+       START             codex-hepta-evidence recovery_effect_frontier_tests::recovery_snapshot_distinguishes_a_valid_effect_only_database_rollback
+
+running 1 test
+test recovery_effect_frontier_tests::recovery_snapshot_distinguishes_a_valid_effect_only_database_rollback ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 161 filtered out; finished in 0.51s
+
+        PASS [   0.916s] codex-hepta-evidence recovery_effect_frontier_tests::recovery_snapshot_distinguishes_a_valid_effect_only_database_rollback
+       START             codex-hepta-evidence recovery_effect_frontier_tests::recovery_snapshot_refuses_canonical_ack_bound_to_a_different_payload
+
+running 1 test
+test recovery_effect_frontier_tests::recovery_snapshot_refuses_canonical_ack_bound_to_a_different_payload ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 161 filtered out; finished in 0.40s
+
+        PASS [   0.826s] codex-hepta-evidence recovery_effect_frontier_tests::recovery_snapshot_refuses_canonical_ack_bound_to_a_different_payload
+       START             codex-hepta-evidence recovery_effect_frontier_tests::recovery_snapshot_refuses_changed_json_with_retained_record_digests
+
+running 1 test
+test recovery_effect_frontier_tests::recovery_snapshot_refuses_changed_json_with_retained_record_digests ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 161 filtered out; finished in 0.52s
+
+        PASS [   0.909s] codex-hepta-evidence recovery_effect_frontier_tests::recovery_snapshot_refuses_changed_json_with_retained_record_digests
+       START             codex-hepta-evidence recovery_effect_frontier_tests::recovery_snapshot_refuses_effect_projection_drift_with_retained_payloads
+
+running 1 test
+test recovery_effect_frontier_tests::recovery_snapshot_refuses_effect_projection_drift_with_retained_payloads ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 161 filtered out; finished in 0.56s
+
+        PASS [   0.952s] codex-hepta-evidence recovery_effect_frontier_tests::recovery_snapshot_refuses_effect_projection_drift_with_retained_payloads
+       START             codex-hepta-evidence recovery_effect_frontier_tests::recovery_snapshot_refuses_orphan_effect_observations
+
+running 1 test
+test recovery_effect_frontier_tests::recovery_snapshot_refuses_orphan_effect_observations ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 161 filtered out; finished in 0.77s
+
+        PASS [   1.168s] codex-hepta-evidence recovery_effect_frontier_tests::recovery_snapshot_refuses_orphan_effect_observations
+       START             codex-hepta-evidence recovery_effect_frontier_tests::recovery_snapshot_refuses_repeated_effect_sequence_after_schema_drift
+
+running 1 test
+test recovery_effect_frontier_tests::recovery_snapshot_refuses_repeated_effect_sequence_after_schema_drift ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 161 filtered out; finished in 0.34s
+
+        PASS [   0.747s] codex-hepta-evidence recovery_effect_frontier_tests::recovery_snapshot_refuses_repeated_effect_sequence_after_schema_drift
+       START             codex-hepta-evidence recovery_effect_frontier_tests::recovery_snapshot_refuses_repeated_effect_sequence_at_page_boundary
+
+running 1 test
+test recovery_effect_frontier_tests::recovery_snapshot_refuses_repeated_effect_sequence_at_page_boundary ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 161 filtered out; finished in 4.07s
+
+        PASS [   4.471s] codex-hepta-evidence recovery_effect_frontier_tests::recovery_snapshot_refuses_repeated_effect_sequence_at_page_boundary
+       START             codex-hepta-evidence recovery_invocation_frontier_tests::recovery_snapshot_binds_invocation_sequence_and_recording_time
+
+running 1 test
+test recovery_invocation_frontier_tests::recovery_snapshot_binds_invocation_sequence_and_recording_time ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 161 filtered out; finished in 0.42s
+
+        PASS [   0.836s] codex-hepta-evidence recovery_invocation_frontier_tests::recovery_snapshot_binds_invocation_sequence_and_recording_time
+       START             codex-hepta-evidence recovery_invocation_frontier_tests::recovery_snapshot_commits_invocations_after_the_first_page
+
+running 1 test
+test recovery_invocation_frontier_tests::recovery_snapshot_commits_invocations_after_the_first_page ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 161 filtered out; finished in 2.90s
+
+        PASS [   3.321s] codex-hepta-evidence recovery_invocation_frontier_tests::recovery_snapshot_commits_invocations_after_the_first_page
+       START             codex-hepta-evidence recovery_invocation_frontier_tests::recovery_snapshot_commits_pending_invocations_and_terminal_states
+
+running 1 test
+test recovery_invocation_frontier_tests::recovery_snapshot_commits_pending_invocations_and_terminal_states ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 161 filtered out; finished in 0.63s
+
+        PASS [   1.042s] codex-hepta-evidence recovery_invocation_frontier_tests::recovery_snapshot_commits_pending_invocations_and_terminal_states
+       START             codex-hepta-evidence recovery_invocation_frontier_tests::recovery_snapshot_refuses_duplicate_terminal_hidden_at_page_boundary
+
+running 1 test
+test recovery_invocation_frontier_tests::recovery_snapshot_refuses_duplicate_terminal_hidden_at_page_boundary ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 161 filtered out; finished in 5.19s
+
+        PASS [   5.596s] codex-hepta-evidence recovery_invocation_frontier_tests::recovery_snapshot_refuses_duplicate_terminal_hidden_at_page_boundary
+       START             codex-hepta-evidence recovery_invocation_frontier_tests::recovery_snapshot_refuses_invocation_column_type_corruption_without_panicking
+
+running 1 test
+test recovery_invocation_frontier_tests::recovery_snapshot_refuses_invocation_column_type_corruption_without_panicking ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 161 filtered out; finished in 0.83s
+
+        PASS [   1.253s] codex-hepta-evidence recovery_invocation_frontier_tests::recovery_snapshot_refuses_invocation_column_type_corruption_without_panicking
+       START             codex-hepta-evidence recovery_invocation_frontier_tests::recovery_snapshot_requires_the_terminals_authoritative_intent
+
+running 1 test
+test recovery_invocation_frontier_tests::recovery_snapshot_requires_the_terminals_authoritative_intent ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 161 filtered out; finished in 0.39s
+
+        PASS [   0.793s] codex-hepta-evidence recovery_invocation_frontier_tests::recovery_snapshot_requires_the_terminals_authoritative_intent
+       START             codex-hepta-evidence recovery_invocation_frontier_tests::recovery_snapshot_revalidates_invocation_payloads_and_projected_columns
+
+running 1 test
+test recovery_invocation_frontier_tests::recovery_snapshot_revalidates_invocation_payloads_and_projected_columns ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 161 filtered out; finished in 0.54s
+
+        PASS [   0.929s] codex-hepta-evidence recovery_invocation_frontier_tests::recovery_snapshot_revalidates_invocation_payloads_and_projected_columns
+       START             codex-hepta-evidence recovery_invocation_schema_tests::recovery_invocation_schema_accepts_current_migration_keys
+
+running 1 test
+test recovery_invocation_schema_tests::recovery_invocation_schema_accepts_current_migration_keys ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 161 filtered out; finished in 0.34s
+
+        PASS [   0.733s] codex-hepta-evidence recovery_invocation_schema_tests::recovery_invocation_schema_accepts_current_migration_keys
+       START             codex-hepta-evidence recovery_invocation_schema_tests::recovery_invocation_schema_refuses_non_rowid_or_composite_sequences
+
+running 1 test
+test recovery_invocation_schema_tests::recovery_invocation_schema_refuses_non_rowid_or_composite_sequences ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 161 filtered out; finished in 0.02s
+
+        PASS [   0.404s] codex-hepta-evidence recovery_invocation_schema_tests::recovery_invocation_schema_refuses_non_rowid_or_composite_sequences
+       START             codex-hepta-evidence recovery_invocation_schema_tests::recovery_invocation_schema_requires_exact_unconditional_column_uniqueness
+
+running 1 test
+test recovery_invocation_schema_tests::recovery_invocation_schema_requires_exact_unconditional_column_uniqueness ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 161 filtered out; finished in 0.10s
+
+        PASS [   0.500s] codex-hepta-evidence recovery_invocation_schema_tests::recovery_invocation_schema_requires_exact_unconditional_column_uniqueness
+       START             codex-hepta-evidence store::provider_effect_observation_migration_tests::observation_migration_preserves_effect_rows_sequences_and_consumed_boundary
+
+running 1 test
+test store::provider_effect_observation_migration_tests::observation_migration_preserves_effect_rows_sequences_and_consumed_boundary ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 161 filtered out; finished in 0.53s
+
+        PASS [   0.927s] codex-hepta-evidence store::provider_effect_observation_migration_tests::observation_migration_preserves_effect_rows_sequences_and_consumed_boundary
+       START             codex-hepta-evidence store::provider_effect_observation_migration_tests::observation_schema_rejects_reintroduced_content_deduplication
+
+running 1 test
+test store::provider_effect_observation_migration_tests::observation_schema_rejects_reintroduced_content_deduplication ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 161 filtered out; finished in 0.84s
+
+        PASS [   1.266s] codex-hepta-evidence store::provider_effect_observation_migration_tests::observation_schema_rejects_reintroduced_content_deduplication
+       START             codex-hepta-evidence summary_tests::empty_summary_is_explicitly_zero_for_supported_families
+
+running 1 test
+test summary_tests::empty_summary_is_explicitly_zero_for_supported_families ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 161 filtered out; finished in 0.38s
+
+        PASS [   0.760s] codex-hepta-evidence summary_tests::empty_summary_is_explicitly_zero_for_supported_families
+       START             codex-hepta-evidence summary_tests::governance_summary_moves_from_pending_to_terminal
+
+running 1 test
+test summary_tests::governance_summary_moves_from_pending_to_terminal ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 161 filtered out; finished in 0.34s
+
+        PASS [   0.742s] codex-hepta-evidence summary_tests::governance_summary_moves_from_pending_to_terminal
+       START             codex-hepta-evidence summary_tests::provider_summary_distinguishes_pending_and_indeterminate_attempts
+
+running 1 test
+test summary_tests::provider_summary_distinguishes_pending_and_indeterminate_attempts ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 161 filtered out; finished in 0.32s
+
+        PASS [   0.734s] codex-hepta-evidence summary_tests::provider_summary_distinguishes_pending_and_indeterminate_attempts
+       START             codex-hepta-evidence summary_tests::summary_fails_closed_when_supported_schema_is_missing
+
+running 1 test
+test summary_tests::summary_fails_closed_when_supported_schema_is_missing ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 161 filtered out; finished in 0.33s
+
+        PASS [   0.745s] codex-hepta-evidence summary_tests::summary_fails_closed_when_supported_schema_is_missing
+       START             codex-hepta-evidence tests::append_is_idempotent_and_survives_reopen
+
+running 1 test
+test tests::append_is_idempotent_and_survives_reopen ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 161 filtered out; finished in 0.40s
+
+        PASS [   0.797s] codex-hepta-evidence tests::append_is_idempotent_and_survives_reopen
+       START             codex-hepta-evidence tests::composite_foreign_key_rejects_cross_action_receipt_projection
+
+running 1 test
+test tests::composite_foreign_key_rejects_cross_action_receipt_projection ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 161 filtered out; finished in 0.61s
+
+        PASS [   1.297s] codex-hepta-evidence tests::composite_foreign_key_rejects_cross_action_receipt_projection
+       START             codex-hepta-evidence tests::concurrent_conflict_preserves_exactly_one_valid_record
+
+running 1 test
+test tests::concurrent_conflict_preserves_exactly_one_valid_record ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 161 filtered out; finished in 0.39s
+
+        PASS [   1.239s] codex-hepta-evidence tests::concurrent_conflict_preserves_exactly_one_valid_record
+       START             codex-hepta-evidence tests::concurrent_exact_replay_produces_one_immutable_row
+
+running 1 test
+test tests::concurrent_exact_replay_produces_one_immutable_row ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 161 filtered out; finished in 0.44s
+
+        PASS [   0.853s] codex-hepta-evidence tests::concurrent_exact_replay_produces_one_immutable_row
+       START             codex-hepta-evidence tests::conflicting_identity_never_overwrites_evidence
+
+running 1 test
+test tests::conflicting_identity_never_overwrites_evidence ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 161 filtered out; finished in 0.36s
+
+        PASS [   0.761s] codex-hepta-evidence tests::conflicting_identity_never_overwrites_evidence
+       START             codex-hepta-evidence tests::corrupted_projection_schema_and_phase_are_classified_as_corrupt
+
+running 1 test
+test tests::corrupted_projection_schema_and_phase_are_classified_as_corrupt ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 161 filtered out; finished in 0.72s
+
+        PASS [   1.122s] codex-hepta-evidence tests::corrupted_projection_schema_and_phase_are_classified_as_corrupt
+       START             codex-hepta-evidence tests::corrupted_stored_digest_fails_closed
+
+running 1 test
+test tests::corrupted_stored_digest_fails_closed ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 161 filtered out; finished in 0.37s
+
+        PASS [   0.775s] codex-hepta-evidence tests::corrupted_stored_digest_fails_closed
+       START             codex-hepta-evidence tests::immutable_triggers_reject_updates_and_deletes_for_both_tables
+
+running 1 test
+test tests::immutable_triggers_reject_updates_and_deletes_for_both_tables ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 161 filtered out; finished in 0.34s
+
+        PASS [   0.744s] codex-hepta-evidence tests::immutable_triggers_reject_updates_and_deletes_for_both_tables
+       START             codex-hepta-evidence tests::lineage_two_preserves_reserved_migration_checksums
+
+running 1 test
+test tests::lineage_two_preserves_reserved_migration_checksums ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 161 filtered out; finished in 0.00s
+
+        PASS [   0.409s] codex-hepta-evidence tests::lineage_two_preserves_reserved_migration_checksums
+       START             codex-hepta-evidence tests::malformed_receipt_binding_is_rejected_before_insert
+
+running 1 test
+test tests::malformed_receipt_binding_is_rejected_before_insert ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 161 filtered out; finished in 0.35s
+
+        PASS [   0.753s] codex-hepta-evidence tests::malformed_receipt_binding_is_rejected_before_insert
+       START             codex-hepta-evidence tests::noncanonical_stored_json_fails_closed_even_with_matching_digest
+
+running 1 test
+test tests::noncanonical_stored_json_fails_closed_even_with_matching_digest ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 161 filtered out; finished in 0.36s
+
+        PASS [   0.781s] codex-hepta-evidence tests::noncanonical_stored_json_fails_closed_even_with_matching_digest
+       START             codex-hepta-evidence tests::open_classifies_migration_checksum_mismatch_as_corrupt
+
+running 1 test
+test tests::open_classifies_migration_checksum_mismatch_as_corrupt ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 161 filtered out; finished in 0.35s
+
+        PASS [   0.755s] codex-hepta-evidence tests::open_classifies_migration_checksum_mismatch_as_corrupt
+       START             codex-hepta-evidence tests::open_classifies_non_database_file_as_corrupt
+
+running 1 test
+test tests::open_classifies_non_database_file_as_corrupt ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 161 filtered out; finished in 0.00s
+
+        PASS [   0.499s] codex-hepta-evidence tests::open_classifies_non_database_file_as_corrupt
+       START             codex-hepta-evidence tests::open_does_not_touch_frozen_lineage_with_channel_0004
+
+running 1 test
+test tests::open_does_not_touch_frozen_lineage_with_channel_0004 ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 161 filtered out; finished in 0.38s
+
+        PASS [   0.806s] codex-hepta-evidence tests::open_does_not_touch_frozen_lineage_with_channel_0004
+       START             codex-hepta-evidence tests::open_existing_read_only_does_not_create_a_missing_store
+
+running 1 test
+test tests::open_existing_read_only_does_not_create_a_missing_store ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 161 filtered out; finished in 0.00s
+
+        PASS [   0.404s] codex-hepta-evidence tests::open_existing_read_only_does_not_create_a_missing_store
+       START             codex-hepta-evidence tests::open_existing_read_only_reads_a_complete_store_without_mutating_it
+
+running 1 test
+test tests::open_existing_read_only_reads_a_complete_store_without_mutating_it ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 161 filtered out; finished in 0.41s
+
+        PASS [   0.813s] codex-hepta-evidence tests::open_existing_read_only_reads_a_complete_store_without_mutating_it
+       START             codex-hepta-evidence tests::open_existing_read_only_rejects_a_partial_ledger_without_migrating_it
+
+running 1 test
+test tests::open_existing_read_only_rejects_a_partial_ledger_without_migrating_it ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 161 filtered out; finished in 0.37s
+
+        PASS [   0.780s] codex-hepta-evidence tests::open_existing_read_only_rejects_a_partial_ledger_without_migrating_it
+       START             codex-hepta-evidence tests::open_rejects_foreign_key_violation_even_when_quick_check_is_ok
+
+running 1 test
+test tests::open_rejects_foreign_key_violation_even_when_quick_check_is_ok ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 161 filtered out; finished in 0.41s
+
+        PASS [   0.821s] codex-hepta-evidence tests::open_rejects_foreign_key_violation_even_when_quick_check_is_ok
+       START             codex-hepta-evidence tests::open_rejects_missing_immutable_trigger_even_when_quick_check_is_ok
+
+running 1 test
+test tests::open_rejects_missing_immutable_trigger_even_when_quick_check_is_ok ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 161 filtered out; finished in 0.36s
+
+        PASS [   0.791s] codex-hepta-evidence tests::open_rejects_missing_immutable_trigger_even_when_quick_check_is_ok
+       START             codex-hepta-evidence tests::open_requires_reserved_lineage_immutable_triggers
+
+running 1 test
+test tests::open_requires_reserved_lineage_immutable_triggers ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 161 filtered out; finished in 0.76s
+
+        PASS [   1.148s] codex-hepta-evidence tests::open_requires_reserved_lineage_immutable_triggers
+       START             codex-hepta-evidence tests::receipt_read_rejects_decision_material_that_drifted_after_commit
+
+running 1 test
+test tests::receipt_read_rejects_decision_material_that_drifted_after_commit ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 161 filtered out; finished in 0.38s
+
+        PASS [   0.770s] codex-hepta-evidence tests::receipt_read_rejects_decision_material_that_drifted_after_commit
+       START             codex-hepta-evidence tests::receipt_requires_its_exact_decisions
+
+running 1 test
+test tests::receipt_requires_its_exact_decisions ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 161 filtered out; finished in 0.33s
+
+        PASS [   0.721s] codex-hepta-evidence tests::receipt_requires_its_exact_decisions
+       START             codex-hepta-evidence tests::swapped_phase_and_invalid_schema_are_rejected
+
+running 1 test
+test tests::swapped_phase_and_invalid_schema_are_rejected ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 161 filtered out; finished in 0.33s
+
+        PASS [   0.725s] codex-hepta-evidence tests::swapped_phase_and_invalid_schema_are_rejected
+────────────
+     Summary [ 228.028s] 161 tests run: 161 passed (1 slow), 1 skipped

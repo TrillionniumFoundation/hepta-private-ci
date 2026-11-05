@@ -1,0 +1,89 @@
+{
+  "schema": "root-H4-actual-archive-plan-review-v1",
+  "files": [
+    {
+      "path": "H4-frozen-archive-preparation-delivery.json",
+      "bytes": 5089,
+      "sha256": "fa4346d15cf8b2c551d5219d7f46d75b5484105b82e02eadc7c086f92e010878"
+    },
+    {
+      "path": "H4-plan-cloud-binding-verification.json",
+      "bytes": 2156,
+      "sha256": "250281e3ed5830dafcadc1ce2bc254245377919f993090a66ae04ee44885dfc9"
+    },
+    {
+      "path": "H4-reference-export-bootstrap.py",
+      "bytes": 257707,
+      "sha256": "5973ff2cd7ecc248b438cec4a66a91e318d013e0f52f7bdf0140159d36f2a0a2"
+    },
+    {
+      "path": "H4-reference-export-frozen-launch-request.json",
+      "bytes": 258170,
+      "sha256": "23aab51a4e4802c75d75712e955f3558d28b187e4243d4e68a88bf3e92a3b452"
+    },
+    {
+      "path": "H4-reference-export-plan.json",
+      "bytes": 1236214,
+      "sha256": "c917633ed8b22fa7a97455ea06c4a96fecc4a208375899bd3afededebf007619"
+    },
+    {
+      "path": "H4-reference-export-transport-manifest.json",
+      "bytes": 1668,
+      "sha256": "78fff1b9faf93f1c8fcd9659010ede4ef4ad13cadc8416cfcb4d72bff92ae2c2"
+    },
+    {
+      "path": "build_frozen_transport.py",
+      "bytes": 6764,
+      "sha256": "f20a3d45434bc453b557257a08472d31cede2a69db3781afc6b8223df52d9e2b"
+    },
+    {
+      "path": "freeze_actual_plan.py",
+      "bytes": 9094,
+      "sha256": "cb5bc48b950a8114f3c29de9933778100bc99df1fe99e945b20fa95610093146"
+    },
+    {
+      "path": "test_transport_payload.py",
+      "bytes": 1592,
+      "sha256": "f4c2693ae8ea82be8aa994eca802e436537d0c0ea2681127c070fd576deaabf2"
+    },
+    {
+      "path": "transport-utility-receipt.json",
+      "bytes": 1139,
+      "sha256": "688980ec37452dc3770e60f528c0be797007bfbcc670a8f93f8b37190679163e"
+    },
+    {
+      "path": "transport-utility.stderr",
+      "bytes": 543,
+      "sha256": "2aa500277b62b25fb55bdf05e0ca3a9697d97e9bdb04a195b66ba715f53852de"
+    },
+    {
+      "path": "transport-utility.stdout",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "transport_payload.py",
+      "bytes": 1205,
+      "sha256": "6160a7dc42e570ae51b49ae8c5f44fc59c4eba60b1333577a1c51c0ce4063b84"
+    }
+  ],
+  "actual_plan_sha256": "c917633ed8b22fa7a97455ea06c4a96fecc4a208375899bd3afededebf007619",
+  "actual_request_sha256": "23aab51a4e4802c75d75712e955f3558d28b187e4243d4e68a88bf3e92a3b452",
+  "exact_bootstrap_rebuilt_in_memory_from_reviewed_builder": true,
+  "bounded_transport_decoded_and_two_original_files_verified": true,
+  "exact_original_H4_inventory_bytes_preserved": true,
+  "individually_bound_original_observations": 597,
+  "retained_aliases": 32,
+  "selected_current_H4_paths": 11,
+  "other_aliases_not_rehashed": 21,
+  "actual_H4_binary_reads_still_required": true,
+  "actual_parent_archive_read_still_required": true,
+  "preserved_H4_native_outcome": "SUCCEEDED desktop only; H3 failure remains unchanged",
+  "native_budget_changed": false,
+  "postrun_budget_seconds": 900,
+  "new_remote_calls": 0,
+  "new_native_executions": 0,
+  "decision": "Exact inputs accepted; one launch still requires independent review and serialized resource window.",
+  "consumer_requirement": "Authoritative archive success plus exact child/parent completions, whole archives, all original parts and fully hashed member/logical view closure. No parent test credit transfer.",
+  "publication_semantics": "Cross-file publication is not atomic; uncompleted outputs are not accepted."
+}

@@ -1,0 +1,17 @@
+{
+  "schema": "lossless-github-base64-part-receipt-v1",
+  "original_bytes": 4194304,
+  "original_sha256": "53082f715a215a5de2231330c0f2cdd5d3d47178d129414915d06355da8291d3",
+  "transport_bytes": 5592408,
+  "transport_sha256": "476f7a207fa424bae5b4062a831df47b328e6c5716da464014d2a9a5f2104df8",
+  "transport_git_blob_sha": "7e8a862de72017e091ad4edd524e48e59f6194a6",
+  "rpc_bytes": 5592515,
+  "rpc_sha256": "83dd9c92111ee27f957dcb0c4c85b2a0dc3a0c52ea04903289586c79ffb45dfe",
+  "prefix_bytes": 88,
+  "prefix_sha256": "88a1a8387f3094d4b9e9aacd4ab06ad45c834952876ab4c6821d063854f32d55",
+  "suffix_bytes": 19,
+  "suffix_sha256": "5d274884394aa1e2cec06204c582a3f1ca4cd76080cc0bb2ea2bbceaf41cf066",
+  "reconstruction": "rpc-prefix.bin + canonical base64(actual-part.bin), without newline + rpc-suffix.bin",
+  "original_rpc_byte_equality_verified": true,
+  "scope": "Readback of an existing Git blob; no native/archive/source execution credit."
+}

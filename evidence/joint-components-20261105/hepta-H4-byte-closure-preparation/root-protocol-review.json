@@ -1,0 +1,76 @@
+{
+  "schema": "root-H4-reference-archive-protocol-review-v1",
+  "decision": "No concrete blocker in the reviewed draft; actual H4 inventory, owned release, exact plan/bundle/request and outer 900-second enforcement must still be reviewed before export.",
+  "code": {
+    "path": "w1/h4-content-reference-draft/archive_reference.py",
+    "bytes": 43223,
+    "sha256": "ce96de09dc981311753d37312c1b254751cce3b40c4f950f603303a523508425"
+  },
+  "draft_delivery": {
+    "manifest": {
+      "path": "w1/h4-content-reference-draft/cloud-delivery-manifest.json",
+      "bytes": 2635,
+      "sha256": "758155471794e7a3757fcffcaf4c1204aab06bdef2056717ce5e87379715da3e"
+    },
+    "files": 7,
+    "bytes": 66232
+  },
+  "independent_delivery": {
+    "manifest": {
+      "path": "pq_recovery/h4-content-reference-review/delivery-manifest.json",
+      "bytes": 3945,
+      "sha256": "26a28a9dcbe664a4706760d07ffece70be2f89e93dc6899fa3f1b223975b04e0"
+    },
+    "files": 19,
+    "bytes": 1132967
+  },
+  "original_IO_AST_equal": [
+    "require",
+    "digest",
+    "encoded",
+    "canonical_absolute",
+    "metadata",
+    "open_regular",
+    "actual_hash",
+    "actual_small",
+    "BoundedWriter",
+    "HashingReader",
+    "add_bytes",
+    "sync_directory",
+    "verify_archive",
+    "publish_without_overwrite"
+  ],
+  "original_utility_cases": 8,
+  "utility_rerun_by_root": false,
+  "checks": [
+    "Every chosen H4 retained regular single-link image is actually read and SHA checked in full twice, including references, with stable file metadata and no alternate-alias fallback.",
+    "Plan rows preserve exact original H4 inventory paths, aliases, observations, outcomes and source identity; original native acceptance remains an independent gate.",
+    "Only the literal H3 archive5365fcf9/indexb023aca6/completion93d7bf08 can be a parent; whole compressed bytes and all16 members are rehashed, with11 complete direct ELF rows.",
+    "No partial, transitive or unknown-parent view can satisfy a complete image. Every logical view is bound to fully hashed actual member bytes.",
+    "Consumer requires parent and child completions, whole archives, all original parts and member sets, original plan/code/inventory/release equality, and H4 logical views.",
+    "Fourteen IO helper ASTs remain identical to the reviewed H3 exporter; fresh output, no overwrite and file/directory fsync remain required.",
+    "Publication spans multiple files. A late failure may leave final-named archive/parts without valid completion; only authoritative success plus the hash-pinned marker and complete byte closure can be consumed."
+  ],
+  "bounds": {
+    "logical_H4_bytes_max": 4294967296,
+    "selected_images_max": 32,
+    "parent_count": 1,
+    "reference_depth": 1,
+    "part_bytes": 4194304,
+    "proposed_outer_seconds": 900,
+    "actual_request_pending": true
+  },
+  "publication_amendment": {
+    "path": "w1/h4-content-reference-draft/publication-semantics-amendment.json",
+    "bytes": 1446,
+    "sha256": "2b2b51ebbb870e295eeadcd0ade49a25036f4ba4f23baa3cc62e7cb74f611923"
+  },
+  "native_credit": false,
+  "H4_actual_image_reads_by_root": 0,
+  "remote_export_launched": false,
+  "limits": [
+    "Static protocol and synthetic small-byte controls are not actual H4 export or delivery.",
+    "The child is not standalone; H3 full transport/local verification remains required.",
+    "Original source-root/run and request binding must be checked against the actual H4 inventory before dispatch."
+  ]
+}

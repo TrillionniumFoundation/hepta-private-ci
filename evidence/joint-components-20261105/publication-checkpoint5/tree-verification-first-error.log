@@ -1,0 +1,1 @@
+Initial root reviewer decoder assumed every retained API response had a top-level structuredContent field; the prior checkpoint wrapped responses. Local check stopped with KeyError: 'structuredContent'. No commit or ref update had been made. The decoder is corrected below; tree/blob contents and acceptance rules are unchanged.

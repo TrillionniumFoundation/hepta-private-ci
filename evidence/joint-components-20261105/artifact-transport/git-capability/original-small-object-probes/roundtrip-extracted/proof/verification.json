@@ -1,0 +1,60 @@
+{
+  "schema": "git-existing-object-byte-transport-probe-v1",
+  "observed_at_utc": "2026-11-05T23:31:56.898676+00:00",
+  "read_only": true,
+  "desktop_requests": 0,
+  "created_git_objects": 0,
+  "ref_or_pr_mutations": 0,
+  "commit": "571c3da959bcbcca6639a5882d49aebadd00bff2",
+  "frozen_index_sha256": "d74fdd58408f29352d4be6c0d69ff35ddb0629a169b73f2aaaed61e34af0cb2c",
+  "results": [
+    {
+      "case": "binary-under-1mib-fetch-file-base64",
+      "actual_complete_readback": true,
+      "metadata_only": false,
+      "repository": "TrillionniumFoundation/hepta-private-ci",
+      "ref": "571c3da959bcbcca6639a5882d49aebadd00bff2",
+      "path": "evidence/joint-components-20261105/chain-native-C4/complete-raw/C4-native-receipts.tar.xz",
+      "blob_sha": "8620ae2ba83b9e5dd8e1b66f917a9fdbb51eeef9",
+      "interface": "github_fetch_file(encoding=base64)",
+      "returned_content_characters": 1415900,
+      "decoded_bytes": 1044516,
+      "sha256": "31d16e6527b22aea21bf71048d0aa80e22f8568da392b0235c7e4d1d75827fb4",
+      "computed_git_blob_sha": "8620ae2ba83b9e5dd8e1b66f917a9fdbb51eeef9",
+      "expected_size_sha_and_blob_all_match": true,
+      "rpc_file": "/workspace/scratch/93bfcfe29fc8/model_storage/git-transport-probe-571c/binary-under-1mib-fetch-file-base64.raw.json",
+      "rpc_bytes": 1439619,
+      "rpc_sha256": "e74620cccc0d585b6680288a057445a0fe77f487c98705a511a08f6e29b8cc1d",
+      "readback_file": "/workspace/scratch/93bfcfe29fc8/model_storage/git-transport-probe-571c/C4-native-receipts.readback.tar.xz"
+    },
+    {
+      "case": "largest-published-utf8-fetch-blob",
+      "actual_complete_readback": true,
+      "metadata_only": false,
+      "repository": "TrillionniumFoundation/hepta-private-ci",
+      "ref": null,
+      "path": "evidence/joint-components-20261105/chain-native-C4/independent-strategy-cost/independent-strategy-recomputation.json",
+      "blob_sha": "ba76b6bc96ca7d0c4b8db34741dc0b35353961c6",
+      "interface": "github_fetch_blob",
+      "returned_content_characters": 2812928,
+      "decoded_bytes": 2812928,
+      "sha256": "2296e1bf0d047ab36e979f6a299c588a0feefd3bc5cfd6f35de2ff326f71584c",
+      "computed_git_blob_sha": "ba76b6bc96ca7d0c4b8db34741dc0b35353961c6",
+      "expected_size_sha_and_blob_all_match": true,
+      "rpc_file": "/workspace/scratch/93bfcfe29fc8/model_storage/git-transport-probe-571c/largest-published-utf8-fetch-blob.raw.json",
+      "rpc_bytes": 3044566,
+      "rpc_sha256": "f03d724655035fdfad43977c36842d99e074de9705197506a025253961c5db0d",
+      "readback_file": "/workspace/scratch/93bfcfe29fc8/model_storage/git-transport-probe-571c/largest-published-utf8.readback.json"
+    }
+  ],
+  "tested_successes": {
+    "binary_fetch_file_base64_bytes": 1044516,
+    "utf8_fetch_blob_bytes": 2812928
+  },
+  "limitations": [
+    "No 5.6 MiB UTF-8 blob was tested.",
+    "These are two exact successful object readbacks, not an inferred maximum of every interface.",
+    "The prior raw-binary fetch_blob UTF-8 failure and 4 MiB fetch_file empty-content result are parent-reported observations, not rerun here."
+  ],
+  "operational_format_conclusion": "Existing binary archive files of 1044516 bytes were read completely through fetch_file with base64 at an exact commit. Existing UTF-8 content of 2812928 bytes was read completely through fetch_blob. Use a strict decoded size/SHA256/Git-blob check; an empty body fails. A 1000000-byte raw-binary chunk target has margin below the demonstrated successful size, but that exact chunk size was not a separate new probe."
+}

@@ -1,0 +1,41 @@
+{
+  "schema": "H4-actual-reference-archive-plan-independent-review-v1",
+  "status": "NO_CONCRETE_BLOCKER_FOUND_IN_EXACT_FROZEN_PLAN_AND_BOUNDED_TRANSPORT",
+  "source_commit": "6db78eca53a5acdda0d96873d3f4cd65863426f0",
+  "source_tree": "e91f5994017fc5d2cfe58d405a20ee6ad9376772",
+  "native_job_id": "1a1ade2970f-fc05-5b5c",
+  "plan_sha256": "c917633ed8b22fa7a97455ea06c4a96fecc4a208375899bd3afededebf007619",
+  "request_sha256": "23aab51a4e4802c75d75712e955f3558d28b187e4243d4e68a88bf3e92a3b452",
+  "decoder_sha256": "6160a7dc42e570ae51b49ae8c5f44fc59c4eba60b1333577a1c51c0ce4063b84",
+  "exporter_sha256": "ce96de09dc981311753d37312c1b254751cce3b40c4f950f603303a523508425",
+  "input_verification": {
+    "path": "pq_recovery/h4-actual-archive-plan-review/input-binding-verification.json",
+    "bytes": 7663,
+    "sha256": "7b476fdd1120c0139391f5710f3fde50e796b54a6c00993649dfdd7c1e479621"
+  },
+  "actual_input_binding_passed": true,
+  "existing_transport_utilities_passed": 3,
+  "independent_utility_reruns": 0,
+  "observations_preserved": 597,
+  "retained_aliases_preserved": 32,
+  "selected_actual_h4_images": 11,
+  "all_referenced_complete_images": true,
+  "total_logical_elf_bytes": 1674575368,
+  "postrun_budget_seconds": 900,
+  "publication_is_cross_file_atomic": false,
+  "actual_h4_elf_reads": 0,
+  "actual_parent_archive_reads": 0,
+  "remote_calls": 0,
+  "native_runs": 0,
+  "archive_dispatches": 0,
+  "archive_completion_or_consumer_credit": false,
+  "h1_bulk_remains_paused": true,
+  "requirements_still_pending": [
+    "authoritative exact archive job success",
+    "all eleven selected H4 files actually read fully twice with stable identity and bytes",
+    "entire pinned H3 parent and every member verified",
+    "hash-pinned COMPLETE_WITH_REFERENCED_PARENT completion",
+    "consumer verifies both whole archives, all original parts/members and all logical views"
+  ],
+  "scope": "Independent cloud read-only review of exact original records, frozen actual plan/request and bounded compressed transport. No execution authorization or joint release qualification."
+}

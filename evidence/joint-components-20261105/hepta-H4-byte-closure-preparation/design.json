@@ -1,0 +1,165 @@
+{
+  "bounds_and_publication": [
+    "New bounded post-terminal component only; no changes to any original native gate budget or source. The final budget is not fixed until actual H4 inventory and parent verification cost are reviewed.",
+    "Retain the existing hard explicit inventory cap of at most32 complete files and4GiB logical actual source bytes; allow exactly one non-recursive complete parent archive.",
+    "For child physical payload bytes, bound compressed output by actual new embedded ELF bytes plus64MiB metadata allowance; continue4MiB or smaller parts and full part/whole SHA coverage. A metadata-only child is permitted only when the entire required parent closure is present and verified.",
+    "Before final publication, verify all child embedded members, reconstruct and hash every child logical complete-image view through either embedded bytes or the exact complete parent member, and recheck selected H4 source identities.",
+    "Keep xz preset3 single process and the same regular-only, two source reads, no-overwrite publication, archive/part/member verification and data+directory fsync order as the already reviewed exporters.",
+    "Publication marker must say COMPLETE_WITH_REFERENCED_PARENT rather than imply the child archive is standalone. Require a successful authoritative archive job and explicit closure manifest; failure leaves only owned staging artifacts and no successful completion."
+  ],
+  "child_index_design": {
+    "complete_images": "one row per unique H4 complete image; every row retains H4 selected path, all aliases, original observations and two actual source read receipts",
+    "explicit_totals": [
+      "total actual H4 logical complete-image bytes",
+      "unique new physical ELF bytes embedded in the child archive",
+      "logical bytes referenced from H3",
+      "count of H4 source files actually read twice",
+      "all original alias count and count not reopened",
+      "partial artifact count and independent representation scope"
+    ],
+    "inventory_bytes_and_sha256": "mandatory exact raw H4 inventory embedded without rewriting observations",
+    "native_job_outcome": "exact H4 terminal, never replaced by archive outcome",
+    "new_payload_row": {
+      "bytes": "actual H4 full length",
+      "member": "H4/elf/<actual H4 SHA>.elf",
+      "representation": "embedded-complete-image",
+      "sha256": "actual H4 full SHA256"
+    },
+    "partial_artifacts": "Do not auto-generalize H2 prefix logic. If the actual H4 inventory contains partials, retain them as partial evidence and obtain a separate reviewed lossless representation. No partial can satisfy a complete reference or process binding.",
+    "reused_payload_row": {
+      "bytes": "actual H4 full length, equal to parent member length",
+      "h4_actual_reads": "first and independent second complete source read receipts",
+      "h4_native_observations": "this run's raw FD/live/process observations only",
+      "parent_archive_bytes": 283427280,
+      "parent_archive_sha256": "5365fcf900781044108e9642ae02a110e4ac8d031d9ee516c4f0b0e471e1e773",
+      "parent_index_sha256": "b023aca6ab2dccf4324dccab2e5319a00ef9b32773e0dc73127efc9af3caa002",
+      "parent_member": "literal complete member from the validated H3 index",
+      "representation": "referenced-complete-image",
+      "sha256": "actual H4 full SHA256, equal to parent member full SHA"
+    },
+    "source_identity": "actual H4 commit/tree/lock/environment/config observations",
+    "source_phase": "H4"
+  },
+  "current_bulk_state": "H1/H2/H3 remain PAUSED with no new remote reads. H4 owns the desktop native window.",
+  "current_unknowns": {
+    "decision_to_implement": false,
+    "h4_actual_byte_overlap": null,
+    "h4_actual_complete_images": null,
+    "h4_archive_budget": null,
+    "h4_inventory": null,
+    "h4_partial_artifacts": null
+  },
+  "decision_prerequisites": [
+    "H4 authoritative terminal and exact owned-unit/cgroup/descendant release.",
+    "Model agent freezes H4 inventory only from this run's actual FD/live/process capture records, including unmatched records and partial artifacts.",
+    "Root reviews whether complete H4 image hashes actually overlap the verified H3 parent inventory enough to justify the added dependency.",
+    "Root fixes source/inventory/plan/tool hashes, budget and an independent archive window before any remote execution."
+  ],
+  "final_consumer_requirements": [
+    "Receive and verify the entire original H3 archive and all its original part hashes/offsets, then decompress and hash its16 actual members and pinned index. Existing remote success or a downloaded index alone is insufficient.",
+    "Receive and verify the entire H4 child archive, its parts, embedded exact H4 inventory and actual read/capture receipts, child index and fixed parent dependency reference.",
+    "Check parent archive/index/member SHA and size at every reference. Reject unknown parents, transitive references, cycles, duplicate/ambiguous names, missing members, nonregular members, path traversal and partial-as-complete representations.",
+    "Reconstruct each logical H4 complete image by its representation and hash every byte; verify those full hashes and lengths against both this run's actual source reads and its original retained-image capture identity.",
+    "Independently validate H4 FD/case/PID/start-time attribution and original native outcome; matching ELF bytes never repairs an H4 missing process observation or imports H3 PASS credit.",
+    "Mark the complete H4 byte closure durable only after all referenced parent and child artifacts are available and verified at the final storage destination. A child metadata package alone is not binary persistence."
+  ],
+  "native_execution": false,
+  "no_remote_actions_in_this_design": true,
+  "parent_archive": {
+    "allowed_reference_depth": 1,
+    "archive_bytes": 283427280,
+    "archive_component_outcome": "SUCCEEDED",
+    "archive_path": "/home/qian-qi/work/hepta-h3-actual-elf-export-20261105-93bfc-01/H3-actual-retained-elfs.tar.xz",
+    "archive_sha256": "5365fcf900781044108e9642ae02a110e4ac8d031d9ee516c4f0b0e471e1e773",
+    "cloud_full_archive_download_verified": false,
+    "complete_images": [
+      {
+        "bytes": 504302232,
+        "member": "H3/elf/a8bb307bec662845bf2a22cfb756ceb4b3ad0595f5b0e290c8983326a4fb344b.elf",
+        "sha256": "a8bb307bec662845bf2a22cfb756ceb4b3ad0595f5b0e290c8983326a4fb344b"
+      },
+      {
+        "bytes": 120074176,
+        "member": "H3/elf/cb11dd0627f0b1da56d2a20fe65b30af615da15c77752e5df966167ccc6f2cdc.elf",
+        "sha256": "cb11dd0627f0b1da56d2a20fe65b30af615da15c77752e5df966167ccc6f2cdc"
+      },
+      {
+        "bytes": 53291680,
+        "member": "H3/elf/a948cdfa5aeafc03fcfc63459e581ca254129f4d878949236e0bf42df3fe725f.elf",
+        "sha256": "a948cdfa5aeafc03fcfc63459e581ca254129f4d878949236e0bf42df3fe725f"
+      },
+      {
+        "bytes": 96991536,
+        "member": "H3/elf/f79f693e93b01b910299828e1e7a4b465738392eb93e03a0507866b74721ce5d.elf",
+        "sha256": "f79f693e93b01b910299828e1e7a4b465738392eb93e03a0507866b74721ce5d"
+      },
+      {
+        "bytes": 97468280,
+        "member": "H3/elf/86b21c3bb3abf55d8f1e70493cfb2b3b77982bcc4133ba71fb550ba1dbb047db.elf",
+        "sha256": "86b21c3bb3abf55d8f1e70493cfb2b3b77982bcc4133ba71fb550ba1dbb047db"
+      },
+      {
+        "bytes": 52749328,
+        "member": "H3/elf/ac768b17ffd1b2f8217c46d6adddf13a085a2f0f32ed25a471e1c8bfd59def58.elf",
+        "sha256": "ac768b17ffd1b2f8217c46d6adddf13a085a2f0f32ed25a471e1c8bfd59def58"
+      },
+      {
+        "bytes": 99288224,
+        "member": "H3/elf/5e23924bee81a156601ba19d849f94a4196bd1ad1831bffc16934937d7c81a07.elf",
+        "sha256": "5e23924bee81a156601ba19d849f94a4196bd1ad1831bffc16934937d7c81a07"
+      },
+      {
+        "bytes": 78142616,
+        "member": "H3/elf/e1bf913938dd8459cb839b5b9cf6dd5a91d704c3b0240e29e3d4e5f7932549ba.elf",
+        "sha256": "e1bf913938dd8459cb839b5b9cf6dd5a91d704c3b0240e29e3d4e5f7932549ba"
+      },
+      {
+        "bytes": 70051840,
+        "member": "H3/elf/cac734666dbcc1f06e38d1200c550c5c99214336a02bb347f9f5e95dadc28ed0.elf",
+        "sha256": "cac734666dbcc1f06e38d1200c550c5c99214336a02bb347f9f5e95dadc28ed0"
+      },
+      {
+        "bytes": 14103072,
+        "member": "H3/elf/1383f1adbe7721e1ff362142f0ce35ef755bece0ae2a188cb28e375a2332b923.elf",
+        "sha256": "1383f1adbe7721e1ff362142f0ce35ef755bece0ae2a188cb28e375a2332b923"
+      },
+      {
+        "bytes": 488112384,
+        "member": "H3/elf/00a637f55c720b06a655b569930bddaef19fd791467bc4784fe0bfb9e0002a26.elf",
+        "sha256": "00a637f55c720b06a655b569930bddaef19fd791467bc4784fe0bfb9e0002a26"
+      }
+    ],
+    "completion_path_local": "/workspace/scratch/93bfcfe29fc8/w1/h3-elf-export/H3-export-completion.json",
+    "completion_sha256": "93d7bf08914054e4bcf05f17eea3cd5ef36fac9bbf0d1e601dda59084e758cd3",
+    "exporter_sha256": "9eb404993262589a948a19946819e890ff15875bef1133eab5fe9cee6bb14f53",
+    "index_bytes": 294654,
+    "index_path_local": "/workspace/scratch/93bfcfe29fc8/w1/h3-elf-export/H3-actual-export-index.json",
+    "index_sha256": "b023aca6ab2dccf4324dccab2e5319a00ef9b32773e0dc73127efc9af3caa002",
+    "logical_role": "Content-addressed byte source only; no H3 test/FD/owner/learning qualification credit transfers to H4.",
+    "original_native_outcome": "FAILED",
+    "phase": "H3",
+    "plan_sha256": "7c140e2a83e9df657aff17c66bb1f307bb6b8a22db6cbba04e38841d7b9ef7a0",
+    "remote_existing_archive_rehash_receipt": {
+      "all_16_members_actually_rehashed": true,
+      "path": "/workspace/scratch/93bfcfe29fc8/w1/h3-elf-export/H3-index-readback.json",
+      "sha256": "09dbb56cf9adaf36c61a7d02d3ba08fdeafecb3d75805c5ee90b482660bc0c4a"
+    }
+  },
+  "parent_binding_at_export": [
+    "Validate the exact successful H3 completion, plan/exporter hashes and previously rehashed actual index without accepting a same-named replacement.",
+    "Reopen and fully hash the pinned actual parent archive during the new component, and verify every referenced complete member against the pinned parent index before publishing a successful reference-based child. This is storage verification after native terminal, not new test execution.",
+    "Record the parent file identity used and recheck it before publication. If the parent disappears, changes or lacks any referenced member, reject completion; retaining a dangling metadata reference is not successful delivery."
+  ],
+  "proposed_actual_source_protocol": [
+    "Accept only exact H4 retained source paths enumerated by the new frozen inventory; never target glob, rebuild, infer missing captures, or substitute another alias after a selected path failure.",
+    "Preserve H4 original source commit/tree/lock/environment/config pins, actual native outcomes, every FD/live case/PID/start-tick observation, and all original retained aliases without importing H3 observation records.",
+    "For every selected H4 complete image, walk canonical paths without symlinks and read a regular single-link file with exact planned size. Actually hash every byte and verify ELF magic; record complete inode/device/size/mtime/ctime/mode identity.",
+    "Require the actual read SHA and byte count to equal that H4 image's own recorded retained-image identity before considering content reuse. Equal source commit, binary pathname, package or prior hash metadata alone never qualifies.",
+    "Perform a second independent full read of every selected H4 complete image, including referenced images, with the same identity and hash. Record that all unselected aliases remain metadata only.",
+    "Match only a complete parent H3 image row with the exact same full SHA256 and size. References may target only the literal H3/elf/<SHA>.elf member in the one pinned parent archive/index. No partial prefix or transitive reference can qualify as a complete image.",
+    "If an actual H4 SHA/size has no exact complete parent row, export the actual H4 retained bytes in the new child archive using the reviewed two-read, no-overwrite, member verification, part verification and fsync protocol. A missing selected source or parent-identity mismatch fails closed rather than silently invoking fallback/rebuild.",
+    "Never change original H4 runtime results because archival data match a parent. Preserve any absent capture or unmatched child/helper attribution as absent/unmatched."
+  ],
+  "schema": "H4-content-reference-archive-design-v1",
+  "status": "DESIGN_ONLY_NOT_IMPLEMENTED_OR_DISPATCHED"
+}

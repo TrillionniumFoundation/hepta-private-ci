@@ -1,0 +1,56 @@
+{
+  "after": {
+    "commit": "6db78eca53a5acdda0d96873d3f4cd65863426f0",
+    "dirty": false,
+    "parents": [
+      "595475a615a03ca9f63c2c1f6e532bd362c20a74"
+    ],
+    "tree": "e91f5994017fc5d2cfe58d405a20ee6ad9376772"
+  },
+  "base_sha": "1556a4df6e279055fd8196f81a4ca2fe0f19384a",
+  "before": {
+    "commit": "6db78eca53a5acdda0d96873d3f4cd65863426f0",
+    "dirty": false,
+    "parents": [
+      "595475a615a03ca9f63c2c1f6e532bd362c20a74"
+    ],
+    "tree": "e91f5994017fc5d2cfe58d405a20ee6ad9376772"
+  },
+  "command": [
+    "just",
+    "test",
+    "--locked",
+    "-p",
+    "codex-hepta-agentd",
+    "--lib",
+    "-E",
+    "test(=evidence_frontier::tests::recovery_frontier_refuses_valid_classical_v1_and_v2_signatures) | test(=evidence_frontier::tests::recovery_frontier_authenticates_both_effect_fields) | test(=evidence_frontier::tests::recovery_frontier_pq_survives_store_close_and_reopen) | test(=evidence_frontier::tests::recovery_frontier_read_only_preflight_never_binds_or_changes_the_image) | test(=evidence_frontier::tests::recovery_frontier_cannot_be_omitted_at_the_ordinary_agentd_run_entry) | test(=evidence_frontier::tests::recovery_frontier_rejects_wrong_domain_and_profile) | test(=evidence_frontier::tests::recovery_frontier_enforces_root_scope_epoch_revocation_and_generation_floor) | test(=evidence_frontier::tests::recovery_frontier_rejects_wrong_key_pin_and_noncanonical_signature) | test(=evidence_frontier::tests::recovery_frontier_root_rotation_retires_the_old_key) | test(=evidence_frontier::tests::recovery_frontier_refuses_valid_pq_v3_and_relabelled_v2_snapshots) | test(=evidence_frontier::tests::recovery_frontier_pq_rejects_invocation_only_database_rollbacks)",
+    "--no-capture",
+    "--retries",
+    "0",
+    "--test-threads=1"
+  ],
+  "command_exit_code": 0,
+  "elapsed_seconds": 46.36998524097726,
+  "exit_code": 0,
+  "finished_at": "2026-11-05T22:48:42.809504+00:00",
+  "job": null,
+  "lane": "source-head",
+  "log_bytes": 31881,
+  "log_file": "recovery-signed.json.c318463c5a8f48f3b4b9152f389b674d.log",
+  "log_sha256": "d1196480f27de5217aa015e262c830c8ec160c6230ff3bb2f18591b56cd42f45",
+  "minimum_tests": 11,
+  "observed_failed_tests": 0,
+  "observed_passed_tests": 11,
+  "output_limit_exceeded": false,
+  "returncode": 0,
+  "run_attempt": null,
+  "run_id": null,
+  "schema_version": 1,
+  "source_sha": "6db78eca53a5acdda0d96873d3f4cd65863426f0",
+  "started_at": "2026-11-05T22:47:56.434661+00:00",
+  "status": "passed",
+  "tested_sha": "6db78eca53a5acdda0d96873d3f4cd65863426f0",
+  "timed_out": false,
+  "working_directory": "/home/qian-qi/work/hepta-pq-effect-v4-20261105-93bfcf/source-h3"
+}

@@ -1,0 +1,122 @@
+{
+  "schema": "H4-content-reference-independent-review-v1",
+  "reviewed_at": "2026-11-05T23:01:32.468400+00:00",
+  "status": "DRAFT_NO_CONCRETE_FAIL_OPEN_BLOCKER_FOUND_WITH_PUBLICATION_SCOPE_CORRECTION",
+  "reviewed_code": {
+    "path": "w1/h4-content-reference-draft/archive_reference.py",
+    "bytes": 43223,
+    "sha256": "ce96de09dc981311753d37312c1b254751cce3b40c4f950f603303a523508425"
+  },
+  "reviewed_design": {
+    "path": "w1/h4-content-reference-design/design.json",
+    "bytes": 12536,
+    "sha256": "2dda5331ddd89f70164686f6ed229afca6c4bfa4236b118740a6d529098a9565"
+  },
+  "input_verification": {
+    "path": "pq_recovery/h4-content-reference-review/input-verification.json",
+    "bytes": 22471,
+    "sha256": "ab3df076e159455bd7a2de24ba2862385da574db90a6196d984ff27cecb2df39"
+  },
+  "full_review": {
+    "path": "pq_recovery/h4-content-reference-review/review.md",
+    "bytes": 7850,
+    "sha256": "17f48f0d1581af1ebd7f4f24e24d13c9b159b19cda3a31a5f0b68d2170999545"
+  },
+  "checks": [
+    {
+      "id": "h4-own-source-twice",
+      "lines": "archive_reference.py:332-405,444-523,551-559",
+      "result": "Exact H4 inventory/source/hash/size/observations preserved; selected read-only regular single-link files actually streamed/hash-checked in full on both independent opens, including reference rows; no fallback alias or use of parent bytes in place of H4 reads."
+    },
+    {
+      "id": "one-complete-parent",
+      "lines": "archive_reference.py:28-41,217-221,235-329",
+      "result": "One literal H3 completion/archive/index/source/plan/exporter identity; whole compressed hash and independent parsing hash; all 16 actual members; 11 directly embedded complete ELF rows; reject missing, unsafe, duplicate, nonregular, partial or transitive dependencies."
+    },
+    {
+      "id": "no-observation-credit-transfer",
+      "lines": "archive_reference.py:356-403,518-527,666-683",
+      "result": "H4 aliases/actual paths/original observations equal embedded original inventory; H4 outcome preserved; H3 failed native outcome is not replaced or reused; byte equality never substitutes case/process proof."
+    },
+    {
+      "id": "complete-consumer",
+      "lines": "archive_reference.py:408-440,604-706",
+      "result": "Both original completions, every original part and complete part concatenation, both whole archives, actual member inventories and every H4 logical image view required; child alone/missing parent/missing part cannot pass. Native qualification and gap repair explicitly false."
+    },
+    {
+      "id": "publication-and-fsync",
+      "lines": "archive_reference.py:77-122,204-214,444-602",
+      "result": "14 IO ASTs unchanged; source read-only, fresh output, bounded compressed write, exclusive temporary paths, full readback, no overwrite, file+directory fsync. Multi-file final publication is not atomic; require authoritative success and completion/closure, not final filename presence."
+    },
+    {
+      "id": "bounded-draft",
+      "lines": "archive_reference.py:21-26,332-336,709-734",
+      "result": "32 complete H4 rows/4GiB logical cap/one parent/4MiB parts/new bytes+64MiB compressed cap; 900-second plan value requires enforcement by future external request, no native budget change."
+    }
+  ],
+  "existing_utility_evidence": {
+    "verified_passed": 8,
+    "exit_code": 0,
+    "timed_out": false,
+    "wrapper_elapsed_seconds": 0.9167456569994101,
+    "unittest_reported_seconds": 0.369,
+    "names": [
+      "test_changed_or_missing_parent_rejects_before_any_child_publication",
+      "test_complete_reference_and_new_payload_require_both_actual_packages",
+      "test_consumer_refuses_missing_changed_parent_and_incomplete_parts",
+      "test_existing_child_output_is_not_overwritten",
+      "test_h4_observation_or_alias_substitution_is_rejected",
+      "test_partial_or_transitive_reference_cannot_become_complete",
+      "test_reference_source_changes_before_second_actual_read_fail_closed",
+      "test_referenced_h4_source_is_actually_hashed_not_assumed_from_parent"
+    ],
+    "rerun_by_reviewer": false,
+    "scope": "Synthetic small archives with test-only in-memory parent pins, no actual H3/H4 or native/capture qualification."
+  },
+  "publication_documentation_qualification": {
+    "severity": "NONBLOCKING_DOCUMENTATION_SCOPE",
+    "original_design_claim": "Failure leaves only owned staging artifacts",
+    "actual_code_order": "publish archive, then each part, then completion; later IO/fsync failure may leave final-named files without complete delivery",
+    "required_acceptance": "Authoritative successful export job + hash-pinned completion + verified complete dependency byte closure",
+    "owner_accepted_additive_amendment": {
+      "path": "w1/h4-content-reference-draft/publication-semantics-amendment.json",
+      "bytes": 1446,
+      "sha256": "2b2b51ebbb870e295eeadcd0ade49a25036f4ba4f23baa3cc62e7cb74f611923"
+    },
+    "owner_supplement": {
+      "path": "w1/h4-content-reference-draft/cloud-publication-supplement.json",
+      "bytes": 545,
+      "sha256": "b3e0d784f4beba0e56eb0fab843891c40b085e53e8b099d02dbb16bf492de708"
+    },
+    "code_change_requested": false
+  },
+  "blocking_findings": [],
+  "pending_actual_gates": [
+    "Authoritative H4 terminal and exact owned release",
+    "Actual H4 inventory from this run and independently verified FD/case/PID attribution",
+    "Exact selected paths/overlap/plan/source/tool hashes and reviewed outer 900-second storage request",
+    "Actual export and original complete-byte/member/part readback",
+    "Complete parent and child downloads plus final consumer byte-closure verification"
+  ],
+  "not_claimed": [
+    "Actual H4 overlap",
+    "Actual H4 inventory or plan/request exists",
+    "Actual archive export/consumption",
+    "Full remote H3 archive rehashed by this reviewer",
+    "Native qualification or H3-to-H4 credit transfer",
+    "Standalone child durability",
+    "Atomic multi-file publication"
+  ],
+  "reviewer_actions": {
+    "native": 0,
+    "desktop": 0,
+    "learning": 0,
+    "remote_bulk": 0,
+    "export_or_consume": 0,
+    "utility_reexecution": 0,
+    "production_source_edits": 0,
+    "h4_runtime_config_edits": 0,
+    "h1_bulk_paused": true,
+    "h1_in_flight": 0
+  }
+}
