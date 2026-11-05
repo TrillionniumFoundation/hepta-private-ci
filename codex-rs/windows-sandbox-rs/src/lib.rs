@@ -58,6 +58,10 @@ mod cap;
 mod deny_read_acl;
 #[cfg(target_os = "windows")]
 mod deny_read_state;
+#[cfg(all(test, target_os = "windows"))]
+#[path = "delete_permission_matrix_tests.rs"]
+mod delete_permission_matrix;
+
 #[cfg(target_os = "windows")]
 mod desktop;
 #[cfg(target_os = "windows")]
