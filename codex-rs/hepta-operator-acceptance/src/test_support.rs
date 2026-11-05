@@ -44,10 +44,40 @@ pub(crate) fn openssh_keygen() -> &'static Path {
     })
 }
 
-pub(crate) fn private_tempdir(label: &str) -> TempDir {
+#[cfg(not(windows))]
+pub(crate) type PrivateTempDir = TempDir;
+
+#[cfg(windows)]
+#[derive(Debug)]
+pub(crate) struct PrivateTempDir {
+    _temporary: TempDir,
+    path: PathBuf,
+}
+
+#[cfg(windows)]
+impl PrivateTempDir {
+    pub(crate) fn path(&self) -> &Path {
+        &self.path
+    }
+}
+
+pub(crate) fn private_tempdir(label: &str) -> PrivateTempDir {
     let temporary = tempfile::tempdir().unwrap_or_else(|error| panic!("{label}: {error}"));
     #[cfg(unix)]
     std::fs::set_permissions(temporary.path(), std::fs::Permissions::from_mode(0o700))
         .unwrap_or_else(|error| panic!("secure {label}: {error}"));
+    #[cfg(windows)]
+    {
+        let path = temporary.path().join("private");
+        drop(
+            codex_utils_path::create_private_state_directory(&path)
+                .unwrap_or_else(|error| panic!("secure {label}: {error}")),
+        );
+        PrivateTempDir {
+            _temporary: temporary,
+            path,
+        }
+    }
+    #[cfg(not(windows))]
     temporary
 }

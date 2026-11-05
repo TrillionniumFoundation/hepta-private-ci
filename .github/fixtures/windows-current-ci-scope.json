@@ -79,9 +79,13 @@
     {
       "id": "operator-native",
       "package": "codex-hepta-operator-acceptance",
-      "expectedTestCount": 29,
+      "expectedTestCount": 33,
       "requiredTests": [
         "ceremony::tests::v1_paths_are_exact_and_sidecar_is_a_strict_child",
+        "durable::windows::private_tests::foreign_acl_is_rejected_without_repair_or_partial_write",
+        "durable::windows::private_tests::private_sidecar_roundtrip_preserves_atomic_replace_and_refuses_duplicate",
+        "durable::windows::private_tests::retained_parent_refuses_replacement_and_missing_parent_is_not_created",
+        "durable::windows::private_tests::sidecar_lock_is_exclusive_until_its_original_guard_drops",
         "durable::windows::tests::hardlinked_artifacts_are_rejected_before_reading_or_hashing",
         "durable::windows::tests::hardlinks_added_after_open_are_rejected",
         "durable::windows::tests::path_replacement_after_open_is_rejected",
