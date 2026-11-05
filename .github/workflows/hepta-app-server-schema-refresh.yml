@@ -25,9 +25,8 @@ jobs:
   generate-and-verify:
     name: Generate schemas and run complete protocol tests
     if: >-
-      github.event.pull_request.number == 2885 &&
       github.event.pull_request.head.repo.full_name == github.repository &&
-      github.event.pull_request.head.ref == 'agents/a00-ui-main-20261019'
+      github.event.pull_request.head.ref == 'codex/process-indeterminate-schema-20261105-v1'
     runs-on: ubuntu-24.04
     timeout-minutes: 60
     env:
