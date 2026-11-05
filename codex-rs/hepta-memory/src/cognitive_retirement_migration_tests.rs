@@ -1,18 +1,20 @@
 //! Exercise the original non-empty journal's additive schema migration.
+use codex_state::SqliteConfig;
+use codex_utils_absolute_path::AbsolutePathBuf;
 use pretty_assertions::assert_eq;
-use sqlx::sqlite::SqliteConnectOptions;
-use sqlx::sqlite::SqlitePoolOptions;
+use tempfile::tempdir;
 
 #[tokio::test]
 async fn retirement_migration_keeps_original_rows_foreign_keys_and_immutability()
 -> Result<(), Box<dyn std::error::Error>> {
-    let pool = SqlitePoolOptions::new()
-        .max_connections(1)
-        .connect_with(
-            SqliteConnectOptions::new()
-                .in_memory(true)
-                .foreign_keys(true),
-        )
+    // Exercise the same FULL-durable, foreign-key-enforcing SQLite shim used by
+    // the production journal rather than bypassing the workspace connection policy.
+    // The private temporary file keeps this test isolated and is retained through close.
+    let temp = tempdir()?;
+    let sqlite_home = AbsolutePathBuf::try_from(std::fs::canonicalize(temp.path())?)?;
+    let database_path = temp.path().join("retirement_migration.sqlite");
+    let pool = SqliteConfig::from_sqlite_home(sqlite_home)
+        .open_durable_evidence_pool(&database_path)
         .await?;
     sqlx::raw_sql(include_str!("../migrations/0005_local_lease_outbox.sql"))
         .execute(&pool)
