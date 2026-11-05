@@ -474,3 +474,7 @@ impl ChildTerminator for GuardedTerminator {
         self.custody.invoke_terminator(|| self.inner.kill())
     }
 }
+
+#[cfg(all(test, unix))]
+#[path = "direct_custody_unix_tests.rs"]
+mod tests;

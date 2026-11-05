@@ -1,5 +1,13 @@
 use super::JobObject;
 use super::WinChild;
+use crate::ProcessCleanupCustody;
+use crate::ProcessCleanupObservation;
+use crate::direct_child::PortableChild;
+use crate::direct_custody::DirectCustody;
+use crate::direct_custody::DirectLaunch;
+use crate::direct_custody::DirectRegistry;
+use crate::direct_custody::DirectWait;
+use crate::direct_custody::ObservedExit;
 use filedescriptor::OwnedHandle;
 use portable_pty::Child as _;
 use pretty_assertions::assert_eq;
@@ -12,6 +20,9 @@ use std::process::Child;
 use std::process::Command;
 use std::process::Stdio;
 use std::sync::Arc;
+use std::sync::Mutex;
+use std::sync::atomic::AtomicBool;
+use std::sync::atomic::Ordering;
 use std::time::Duration;
 use std::time::Instant;
 use winapi::shared::minwindef::DWORD;
@@ -174,4 +185,171 @@ fn native_child_fixture() -> anyhow::Result<()> {
     std::io::stdin().read_exact(&mut release)?;
     assert_eq!(release, [1]);
     std::process::exit(exit_code);
+}
+
+struct DirectObservation {
+    owner: Arc<PortableChild>,
+    custody: Arc<DirectCustody>,
+    waiter: DirectWait,
+    exit_rx: tokio::sync::oneshot::Receiver<i32>,
+    exited: Arc<AtomicBool>,
+    code: Arc<Mutex<Option<i32>>>,
+}
+
+impl DirectObservation {
+    fn new(
+        launch: DirectLaunch,
+        original: &NativeChild,
+        access: DWORD,
+        options: DWORD,
+    ) -> anyhow::Result<Self> {
+        let handle = original.duplicate(access, options)?;
+        let owner = Arc::new(PortableChild::new(Box::new(WinChild::new(
+            handle,
+            Arc::new(JobObject::create()?),
+        ))));
+        launch.attach_owner(owner.clone())?;
+        let custody = launch.custody();
+        let (exit_tx, exit_rx) = tokio::sync::oneshot::channel();
+        let exited = Arc::new(AtomicBool::new(false));
+        let code = Arc::new(Mutex::new(None));
+        let waiter = DirectWait::new(launch, Arc::clone(&exited), Arc::clone(&code), exit_tx);
+        Ok(Self {
+            owner,
+            custody,
+            waiter,
+            exit_rx,
+            exited,
+            code,
+        })
+    }
+}
+
+#[tokio::test]
+async fn direct_wait_failure_keeps_unknown_and_fences_admission() -> anyhow::Result<()> {
+    let registry = Arc::new(DirectRegistry::default());
+    let mut launch = registry.reserve()?;
+    launch.begin_attempt();
+    let mut original = NativeChild::spawn(75)?;
+    let observation = DirectObservation::new(
+        launch,
+        &original,
+        PROCESS_QUERY_LIMITED_INFORMATION,
+        /*options*/ 0,
+    )?;
+    assert!(original.is_running()?);
+    let error = observation
+        .owner
+        .wait()
+        .expect_err("missing synchronize must fail the actual wait");
+    assert_eq!(error.raw_os_error(), Some(ERROR_ACCESS_DENIED as i32));
+    observation.waiter.finish(Err(error));
+    assert!(
+        tokio::time::timeout_at(original.deadline.into(), observation.exit_rx)
+            .await?
+            .is_err()
+    );
+    assert!(!observation.exited.load(Ordering::SeqCst));
+    assert_eq!(
+        *observation
+            .code
+            .lock()
+            .map_err(|_| io::Error::other("test exit lock poisoned"))?,
+        None
+    );
+    assert!(registry.reserve().is_err());
+    assert!(observation.custody.observe_cleanup().is_err());
+    assert!(original.is_running()?);
+    assert_eq!(original.release_and_observe()?, 75);
+    // The test's separate full-access handle cannot repair the retained rights.
+    assert!(observation.custody.observe_cleanup().is_err());
+    assert!(registry.reserve().is_err());
+    Ok(())
+}
+
+#[tokio::test]
+async fn direct_dropped_waiter_retains_same_child_for_late_cleanup() -> anyhow::Result<()> {
+    let registry = Arc::new(DirectRegistry::default());
+    let mut launch = registry.reserve()?;
+    launch.begin_attempt();
+    let mut original = NativeChild::spawn(76)?;
+    let observation =
+        DirectObservation::new(launch, &original, /*access*/ 0, DUPLICATE_SAME_ACCESS)?;
+    let waiter = observation.waiter;
+    let owner = observation.owner;
+    let unpolled = async move {
+        waiter.finish(owner.wait().map(ObservedExit::from_portable));
+    };
+    drop(unpolled);
+    assert!(
+        tokio::time::timeout_at(original.deadline.into(), observation.exit_rx)
+            .await?
+            .is_err()
+    );
+    assert!(!observation.exited.load(Ordering::SeqCst));
+    assert_eq!(
+        *observation
+            .code
+            .lock()
+            .map_err(|_| io::Error::other("test exit lock poisoned"))?,
+        None
+    );
+    assert!(registry.reserve().is_err());
+    assert_eq!(
+        observation.custody.observe_cleanup()?,
+        ProcessCleanupObservation::NoTerminalObservation
+    );
+    assert!(original.is_running()?);
+    assert_eq!(original.release_and_observe()?, 76);
+    assert_eq!(
+        observation.custody.observe_cleanup()?,
+        ProcessCleanupObservation::OwnerTerminated {
+            owner_exit_code: Some(76)
+        },
+    );
+    assert!(registry.reserve().is_ok());
+    // Cleanup evidence does not turn the failed original operation into success.
+    assert!(!observation.exited.load(Ordering::SeqCst));
+    assert_eq!(
+        *observation
+            .code
+            .lock()
+            .map_err(|_| io::Error::other("test exit lock poisoned"))?,
+        None
+    );
+    Ok(())
+}
+
+#[tokio::test]
+async fn direct_native_success_publishes_exit_before_releasing_observer() -> anyhow::Result<()> {
+    let registry = Arc::new(DirectRegistry::default());
+    let mut launch = registry.reserve()?;
+    launch.begin_attempt();
+    let mut original = NativeChild::spawn(77)?;
+    let observation =
+        DirectObservation::new(launch, &original, /*access*/ 0, DUPLICATE_SAME_ACCESS)?;
+    assert_eq!(original.release_and_observe()?, 77);
+    observation
+        .waiter
+        .finish(observation.owner.wait().map(ObservedExit::from_portable));
+    assert_eq!(
+        tokio::time::timeout_at(original.deadline.into(), observation.exit_rx).await??,
+        77
+    );
+    assert!(observation.exited.load(Ordering::SeqCst));
+    assert_eq!(
+        *observation
+            .code
+            .lock()
+            .map_err(|_| io::Error::other("test exit lock poisoned"))?,
+        Some(77)
+    );
+    assert_eq!(
+        observation.custody.observe_cleanup()?,
+        ProcessCleanupObservation::OwnerTerminated {
+            owner_exit_code: Some(77)
+        },
+    );
+    assert!(registry.reserve().is_ok());
+    Ok(())
 }

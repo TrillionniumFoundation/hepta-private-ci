@@ -276,6 +276,17 @@
         "win::observation_tests::query_failure_after_native_signal_is_not_pending",
         "win::observation_tests::signaled_process_can_have_exit_code_259"
       ]
+    },
+    {
+      "id": "direct-pty-original-custody",
+      "package": "codex-utils-pty",
+      "filter": "test(=win::observation_tests::direct_wait_failure_keeps_unknown_and_fences_admission) | test(=win::observation_tests::direct_dropped_waiter_retains_same_child_for_late_cleanup) | test(=win::observation_tests::direct_native_success_publishes_exit_before_releasing_observer)",
+      "expectedTestCount": 3,
+      "requiredTests": [
+        "win::observation_tests::direct_wait_failure_keeps_unknown_and_fences_admission",
+        "win::observation_tests::direct_dropped_waiter_retains_same_child_for_late_cleanup",
+        "win::observation_tests::direct_native_success_publishes_exit_before_releasing_observer"
+      ]
     }
   ]
 }
