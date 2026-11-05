@@ -1,0 +1,109 @@
+{
+  "status": "FROZEN FOR ROOT/PQ REVIEW; NOT LAUNCHED",
+  "source_commit": "6db78eca53a5acdda0d96873d3f4cd65863426f0",
+  "source_tree": "e91f5994017fc5d2cfe58d405a20ee6ad9376772",
+  "source_path": "/home/qian-qi/work/hepta-pq-effect-v4-20261105-93bfcf/source-h3",
+  "files": [
+    {
+      "path": "run_h4_native_pipeline.py",
+      "bytes": 34196,
+      "sha256": "5bd64b700c9974582e0b70c3a97117982b8d6f470f8d308b99accc42bba1714a"
+    },
+    {
+      "path": "test_elf_capture.py",
+      "bytes": 11001,
+      "sha256": "2cb676bff1657866dc39b3e35ff45644d1ce75981ec9ed3f8798509287ab5ebe"
+    },
+    {
+      "path": "test_executed_binary_capture.py",
+      "bytes": 4011,
+      "sha256": "debcc32b403d169a07cbdb4ae04319c9a12e674f0c3bfa412c809bb6ea78a838"
+    },
+    {
+      "path": "nextest_fd_runner.py",
+      "bytes": 9554,
+      "sha256": "9679cc6e11762c29b4c0ee92dd7715d3fce0555a6f8e0e10ed9d0b007951381a"
+    },
+    {
+      "path": "test_nextest_fd_runner.py",
+      "bytes": 5684,
+      "sha256": "29a77665a8e255dbd29286709ccab06a4e9f81bf76f6f89ed489613a68ede61a"
+    },
+    {
+      "path": "test_fd_gate_targets.py",
+      "bytes": 5708,
+      "sha256": "642ec3f16702f1f9c9bedd205e8a268841a07c19884d711041504b59c76cbb06"
+    },
+    {
+      "path": "fd_gate_evidence.py",
+      "bytes": 5420,
+      "sha256": "0fb050f795f982ad718938eba25c06d5e6831ce5c213a57dd166405039ba056d"
+    },
+    {
+      "path": "live_fd_correspondence.py",
+      "bytes": 7949,
+      "sha256": "fc8fc5cfc7c084a3a5884449cd683f94fbd6ee377455ba5a0df6033a6ceed0a4"
+    },
+    {
+      "path": "test_live_fd_correspondence.py",
+      "bytes": 8160,
+      "sha256": "0e308e80ea2b802f2711c9939b90e1d6989cd062f6170eddd4069db487e251b4"
+    },
+    {
+      "path": "h4-native-plan.json",
+      "bytes": 22298,
+      "sha256": "c596e0f5a74ee878a20b68d545cefa9aff1d38773f388eb1dae91080acf9b51e"
+    },
+    {
+      "path": "h4-selected-tests-guard.py",
+      "bytes": 8891,
+      "sha256": "e273e7f5c17704bfb699e90a5d15c8389d349c6c17e271ee26c031e6b3a65d48"
+    },
+    {
+      "path": "h4-extra-controls.json",
+      "bytes": 16587,
+      "sha256": "08d884ff93090767084059d1b40802fd3269c2b939b0f5534472c3ea663d908c"
+    },
+    {
+      "path": "bootstrap_h4_native.py",
+      "bytes": 2963,
+      "sha256": "68f6fdf61feb5a6619e2e94538ddcfba0d2c3c9789cc2b26277cc742328d5a38"
+    },
+    {
+      "path": "h4-native-bundle.json",
+      "bytes": 186314,
+      "sha256": "d14a478a6feb2c8ec201ca5dfcf4d2d7cde2a7ae99b70b3aea68c803002c6d93"
+    },
+    {
+      "path": "h4-budget-map.json",
+      "bytes": 25293,
+      "sha256": "6e07c95d36fbe9206f143b591a34807779674ebfa24d9fbaf494c1f70afa6bd3"
+    },
+    {
+      "path": "h4-exact-launch-plan.json",
+      "bytes": 5847,
+      "sha256": "64d60aaec961a132c72cec13954fa177edf49ea692278ddfcbc143ad1b33f3ae"
+    },
+    {
+      "path": "frozen-configuration-delta.patch",
+      "bytes": 39878,
+      "sha256": "92ef793a4968e93bd98ae856420b97116efc9e09dd9a434fcf86b91a5e2f148e"
+    }
+  ],
+  "request": {
+    "path": "joint-h4-native-attempt-1/launch-request.json",
+    "bytes": 189886,
+    "sha256": "561fa3256c5669f1277f25d977928df6266162c0bc2f8814e7d9a79768b9b128"
+  },
+  "original_steps_equal_to_h3": true,
+  "original_exact_cases": 74,
+  "full_evidence_original_active": 161,
+  "full_evidence_original_ignored": 1,
+  "outer_seconds": 5400,
+  "per_test_seconds": 60,
+  "retries": 0,
+  "repository_edits": false,
+  "fd_runner_and_primary_fd_verifier_unchanged": true,
+  "desktop_preflight_pending": true,
+  "scope": "No H1/H2/H3 result is requalified by this package; no PR or learning trial is created."
+}

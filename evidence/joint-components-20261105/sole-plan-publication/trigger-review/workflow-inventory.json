@@ -1,0 +1,709 @@
+[
+  {
+    "path": ".github/workflows/codeql-analysis-export.yml",
+    "git_blob": "6ff6dcc7adcb9005d1570e1dcf4064f2e1e05edc",
+    "bytes": 3293,
+    "sha256": "b49236cd3dc667ea70598a4410b283186265403b6daf303242cfc6bee1e13136",
+    "on": {
+      "pull_request": "",
+      "workflow_dispatch": {
+        "inputs": {
+          "pr_number": {
+            "description": "Same-repository open PR whose current source should be exported",
+            "required": "true",
+            "type": "string"
+          }
+        }
+      }
+    },
+    "jobs": [
+      {
+        "key": "export",
+        "if": "github.event_name == 'workflow_dispatch' || github.event.pull_request.head.repo.full_name == github.repository",
+        "runs-on": "ubuntu-24.04",
+        "uses": null,
+        "name": null,
+        "timeout-minutes": "30"
+      }
+    ]
+  },
+  {
+    "path": ".github/workflows/pon-baseline-diagnostic-readback.yml",
+    "git_blob": "c758f5d0e10be8972e9b9fcc250e07d3a852877d",
+    "bytes": 26186,
+    "sha256": "b4df34292121c03dad051571ad14d09f2e4e7ad6d2b54d45ca905d2c4a7c0bdf",
+    "on": {
+      "pull_request": {
+        "paths": [
+          ".github/workflows/pon-baseline-diagnostic-readback.yml",
+          "trillionnium/**"
+        ]
+      }
+    },
+    "jobs": [
+      {
+        "key": "retained-failure",
+        "if": null,
+        "runs-on": "ubuntu-24.04",
+        "uses": null,
+        "name": null,
+        "timeout-minutes": "5"
+      },
+      {
+        "key": "retained-throughput",
+        "if": "github.repository == 'TrillionniumFoundation/Trillionnium-Chain' && github.event_name == 'pull_request' && github.event.pull_request.number == 688",
+        "runs-on": "ubuntu-24.04",
+        "uses": null,
+        "name": "Retained complete-cost failure readback",
+        "timeout-minutes": "5"
+      },
+      {
+        "key": "native-boundary",
+        "if": null,
+        "runs-on": "${{ matrix.runner }}",
+        "uses": null,
+        "name": "native boundary (${{ matrix.runner }}, ${{ matrix.source }})",
+        "timeout-minutes": "25"
+      }
+    ]
+  },
+  {
+    "path": ".github/workflows/pon-branch-encoding-acceptance.yml",
+    "git_blob": "5253753f4745c1ed602a9d17d6037287c3f6cdd1",
+    "bytes": 14592,
+    "sha256": "3ce581d037bc24b34c97b2f43bd07bc6bfb366c2873e74e07985bafcc0ba5f75",
+    "on": {
+      "pull_request": {
+        "paths": [
+          "trillionnium/crates/trnm-protocol/src/pon_wire.rs",
+          "trillionnium/crates/trnm-pon-node/src/consensus.rs",
+          "trillionnium/crates/trnm-pon-node/src/ingress/public_v3/scalar_cpu.rs",
+          "trillionnium/crates/trnm-pon-node/src/account_archive_prototype.rs",
+          "trillionnium/crates/trnm-pon-node/src/account_archive_prototype/**",
+          "scripts/ci/check_native_constants_roster.py",
+          "scripts/ci/test_native_constants_roster.py",
+          ".github/workflows/pon-branch-encoding-acceptance.yml"
+        ]
+      }
+    },
+    "jobs": [
+      {
+        "key": "branch",
+        "if": null,
+        "runs-on": "${{ matrix.runner }}",
+        "uses": null,
+        "name": "branch encoding (${{ matrix.runner }}, ${{ matrix.source }})",
+        "timeout-minutes": "25"
+      }
+    ]
+  },
+  {
+    "path": ".github/workflows/pon-cloud-build-inputs.yml",
+    "git_blob": "36d0cdef797a21aca7e6884082ffb2a8d861b8a6",
+    "bytes": 3991,
+    "sha256": "71f7770ee8433aca8ac00f809a978d5813601e42ce128357377d9b58d6b9fc23",
+    "on": {
+      "pull_request": {
+        "paths": [
+          ".github/workflows/pon-cloud-build-inputs.yml",
+          "rust-toolchain.toml",
+          "trillionnium/Cargo.lock",
+          "trillionnium/**/Cargo.toml"
+        ]
+      },
+      "workflow_dispatch": ""
+    },
+    "jobs": [
+      {
+        "key": "build-inputs",
+        "if": null,
+        "runs-on": "ubuntu-24.04",
+        "uses": null,
+        "name": null,
+        "timeout-minutes": "30"
+      }
+    ]
+  },
+  {
+    "path": ".github/workflows/pon-fixed-host-root-f0.yml",
+    "git_blob": "733184b54aba30ab56c5a076bcfefdea31e1e2b1",
+    "bytes": 17173,
+    "sha256": "89e5058056006cee4d24dcfe1afa52e991bd40959bfa19463878b0a7ad168093",
+    "on": {
+      "pull_request": {
+        "paths": [
+          ".github/workflows/pon-fixed-host-root-f0.yml",
+          "scripts/run_fixed_host_root_f0.py",
+          "scripts/ci/run_fixed_root_phase_host.py",
+          "scripts/ci/fixed_root_f0_ownership.py",
+          "scripts/ci/fixed_root_f0_resources.py",
+          "scripts/ci/finalize_fixed_root_f0.py",
+          "scripts/ci/test_fixed_root_f0.py",
+          "scripts/ci/test_fixed_root_phase_host.py",
+          "scripts/ci/test_fixed_root_resources.py",
+          "scripts/ci/fixtures/fixed_root_f0_legacy_resource_counterexample.json",
+          "trillionnium/crates/trnm-pon-node/tests/public_v3_multiprocess.rs",
+          "trillionnium/crates/trnm-pon-node/tests/support/multiprocess_root_phase_host.rs",
+          "trillionnium/crates/trnm-pon-node/tests/support/multiprocess_root_phase_host_resources.rs",
+          "trillionnium/crates/trnm-pon-node/tests/support/multiprocess_phase_host.rs",
+          "docs/security/PUBLIC_V3_FIXED_HOST_ROOT_EXPERIMENT_R10.md"
+        ]
+      },
+      "workflow_dispatch": ""
+    },
+    "jobs": [
+      {
+        "key": "fixed-host-root-f0",
+        "if": "github.repository == 'TrillionniumFoundation/Trillionnium-Chain' && (github.event_name == 'workflow_dispatch' ||\n (github.event_name == 'pull_request' &&\n  github.event.pull_request.head.repo.full_name == github.repository &&\n  github.event.pull_request.head.repo.fork == false))",
+        "runs-on": "ubuntu-24.04",
+        "uses": null,
+        "name": "F0 (x64, head, one baseline and one ROOT phase)",
+        "timeout-minutes": "100"
+      }
+    ]
+  },
+  {
+    "path": ".github/workflows/pon-legacy-reorg-cost-20261104.yml",
+    "git_blob": "822a4ab34e0b88dd7fae0f136ef4a1368f8ccd49",
+    "bytes": 30361,
+    "sha256": "0bc8164028072eb1328965466de6a21302c228c40500f121282488e0b1ac588a",
+    "on": {
+      "push": {
+        "branches": [
+          "fix/chain-legacy-reorg-cost-20261104"
+        ]
+      }
+    },
+    "jobs": [
+      {
+        "key": "controls",
+        "if": null,
+        "runs-on": "ubuntu-24.04-arm",
+        "uses": null,
+        "name": "Legacy observation controls (ARM head)",
+        "timeout-minutes": "180"
+      },
+      {
+        "key": "native-priorities",
+        "if": "${{ needs.controls.result == 'success' }}",
+        "runs-on": "ubuntu-24.04-arm",
+        "uses": null,
+        "name": "native priorities (ubuntu-24.04-arm, head, history diagnostic)",
+        "timeout-minutes": "180"
+      }
+    ]
+  },
+  {
+    "path": ".github/workflows/pon-model-parent-acceptance.yml",
+    "git_blob": "9305c93f54dfee7d8ad6fd88df6df5e881ca7d0c",
+    "bytes": 3948,
+    "sha256": "a2fb71f718810d4365df5c877fd84432553d2788f50f32762a90a08c571f6fea",
+    "on": {
+      "pull_request": {
+        "paths": [
+          "formal/pon-nakamoto-v1/**",
+          ".github/workflows/pon-model-parent-acceptance.yml"
+        ]
+      }
+    },
+    "jobs": [
+      {
+        "key": "parent-evidence",
+        "if": null,
+        "runs-on": "${{ matrix.runner }}",
+        "uses": null,
+        "name": "parent evidence (${{ matrix.runner }}, ${{ matrix.source }})",
+        "timeout-minutes": "15"
+      }
+    ]
+  },
+  {
+    "path": ".github/workflows/pon-native-campaign-qualification.yml",
+    "git_blob": "6a89ba8237158615bfeb02afc23da0ac3a6a01f7",
+    "bytes": 22343,
+    "sha256": "1b1b2ab8331b8bb53874a6e9a4845facfa9d9717473a7c3732fb068a8d96b14a",
+    "on": {
+      "pull_request": {
+        "paths": [
+          "trillionnium/**",
+          "config/**",
+          ".cargo/**",
+          "rust-toolchain.toml",
+          "formal/pon-nakamoto-v1/bounded_process*.py",
+          "scripts/run_pon_w1_native_campaign.py",
+          "scripts/pon_public_v3_phase_read.py",
+          "scripts/pon_public_v3_policy_read.py",
+          "scripts/ci/test_pon_public_v3_policy_read.py",
+          "scripts/ci/test_pon_public_v3_phase_read.py",
+          "scripts/project-preflight.sh",
+          "scripts/ci/verify_ci_source.py",
+          "scripts/ci/run_native_phase_host.py",
+          "scripts/ci/test_native_phase_host.py",
+          "scripts/ci/public_host_ci_observation.py",
+          ".github/workflows/pon-native-campaign-qualification.yml"
+        ]
+      },
+      "workflow_dispatch": ""
+    },
+    "jobs": [
+      {
+        "key": "original-campaign",
+        "if": null,
+        "runs-on": "ubuntu-24.04",
+        "uses": null,
+        "name": "original native campaign (x64, head, release)",
+        "timeout-minutes": "80"
+      }
+    ]
+  },
+  {
+    "path": ".github/workflows/pon-original-large-state-cpu.yml",
+    "git_blob": "a1be1f095683f90ff6ee0c4d6d14bb7b95aaa364",
+    "bytes": 9649,
+    "sha256": "dd24e5da7d165420e00806721486c80291d290e43ff98e7f38748d08a446ca08",
+    "on": {
+      "pull_request": {}
+    },
+    "jobs": [
+      {
+        "key": "original-state-and-exit",
+        "if": null,
+        "runs-on": "${{ matrix.runner }}",
+        "uses": null,
+        "name": "original state and exit (${{ matrix.runner }}, ${{ matrix.source }})",
+        "timeout-minutes": "60"
+      }
+    ]
+  },
+  {
+    "path": ".github/workflows/pon-original-workspace-large-state-cpu.yml",
+    "git_blob": "548bc418038b5d3e5ad6e732c858108930a794eb",
+    "bytes": 29673,
+    "sha256": "28bdbe712b26e6e6f12ba67b5dc5d1fe43e5fbdf8a81b3d8a3d86c8a937642c9",
+    "on": {
+      "pull_request": {}
+    },
+    "jobs": [
+      {
+        "key": "original-workspace-state-and-exit",
+        "if": null,
+        "runs-on": "${{ matrix.runner }}",
+        "uses": null,
+        "name": "original workspace test CPU (${{ matrix.runner }}, ${{ matrix.source }})",
+        "timeout-minutes": "180"
+      }
+    ]
+  },
+  {
+    "path": ".github/workflows/pon-owned-process-cleanup.yml",
+    "git_blob": "3ed5bff6e3ec2a9451cd3834289a5d83b59eb4f5",
+    "bytes": 12058,
+    "sha256": "bdfd78e107273525aa743ffb998510c0602c28366f091bd66f07accb4b2682b5",
+    "on": {
+      "pull_request": {
+        "paths": [
+          "formal/pon-nakamoto-v1/**",
+          "scripts/**",
+          ".github/workflows/pon-owned-process-cleanup.yml"
+        ]
+      }
+    },
+    "jobs": [
+      {
+        "key": "aggregate-owner-controls",
+        "if": null,
+        "runs-on": "ubuntu-24.04",
+        "uses": null,
+        "name": null,
+        "timeout-minutes": "10"
+      },
+      {
+        "key": "cleanup",
+        "if": null,
+        "runs-on": "${{ matrix.runner }}",
+        "uses": null,
+        "name": null,
+        "timeout-minutes": "10"
+      }
+    ]
+  },
+  {
+    "path": ".github/workflows/pon-pq-system-continuation.yml",
+    "git_blob": "be04494621f237358f4b87418b9b5c93273c02a7",
+    "bytes": 12240,
+    "sha256": "bc083f658deb6c228723fb001b3ee2691b5ec2e6a186d8bef7343c5c61729bc2",
+    "on": {
+      "pull_request": {
+        "paths": [
+          "trillionnium/**",
+          "config/pon/pq-cross-branch-corpus-v1.json",
+          "config/pon/pq-system-required-tests-v1.json",
+          "scripts/ci/record_pq_native_command.py",
+          "scripts/ci/test_record_pq_native_command.py",
+          "scripts/ci/verify_ci_source.py",
+          "scripts/ci/check_required_native_test.py",
+          ".github/workflows/pon-pq-system-continuation.yml"
+        ]
+      }
+    },
+    "jobs": [
+      {
+        "key": "native",
+        "if": null,
+        "runs-on": "${{ matrix.runner }}",
+        "uses": null,
+        "name": "PQ network and witness (${{ matrix.runner }}, ${{ matrix.source }})",
+        "timeout-minutes": "90"
+      }
+    ]
+  },
+  {
+    "path": ".github/workflows/pon-priority-acceptance.yml",
+    "git_blob": "560efaa34806ca4687f8ffc8c540bc462536b458",
+    "bytes": 21445,
+    "sha256": "609e7a909977354c22d7503b4031225fb7b51cfb02b853fb9d147a355b9e3053",
+    "on": {
+      "pull_request": ""
+    },
+    "jobs": [
+      {
+        "key": "retained-pressure-failure",
+        "if": null,
+        "runs-on": "ubuntu-24.04",
+        "uses": null,
+        "name": null,
+        "timeout-minutes": "10"
+      },
+      {
+        "key": "native-priorities",
+        "if": null,
+        "runs-on": "${{ matrix.runner }}",
+        "uses": null,
+        "name": "native priorities (${{ matrix.runner }}, ${{ matrix.source }}, ${{ matrix.campaign }})",
+        "timeout-minutes": "180"
+      }
+    ]
+  },
+  {
+    "path": ".github/workflows/pon-recent-batch-acceptance.yml",
+    "git_blob": "1ab7f765866640b10e54005d18882d9064a2d20c",
+    "bytes": 35463,
+    "sha256": "11f97be18eba066fcf4a09205a0ea90ad5e9951cefd614c761c5052930481ec7",
+    "on": {
+      "pull_request": {
+        "paths": [
+          "trillionnium/crates/trnm-pon-node/src/store.rs",
+          "trillionnium/crates/trnm-pon-node/src/store/history_page.rs",
+          "trillionnium/crates/trnm-pon-node/src/store/history_page_inline_tests.rs",
+          "trillionnium/crates/trnm-pon-node/src/native_account_query_tests.rs",
+          "trillionnium/crates/trnm-pon-node/src/native_authenticated_tests.rs",
+          "trillionnium/crates/trnm-pon-node/src/store/native_authenticated.rs",
+          "trillionnium/crates/trnm-pon-node/src/store/native_authenticated/current_accounts_tests.rs",
+          "trillionnium/crates/trnm-pon-node/src/store/native_authenticated/history_arithmetic.rs",
+          "trillionnium/crates/trnm-pon-node/src/store/native_authenticated/history_arithmetic/tests.rs",
+          "trillionnium/crates/trnm-pon-node/src/store/native_authenticated/arithmetic_cache.rs",
+          "trillionnium/crates/trnm-pon-node/src/store/native_authenticated/arithmetic_cache/root_arithmetic.rs",
+          "trillionnium/crates/trnm-pon-node/src/store/native_authenticated/arithmetic_cache/root_arithmetic/tests.rs",
+          "trillionnium/crates/trnm-pon-node/src/account_archive_execution/state_witness.rs",
+          "trillionnium/crates/trnm-pon-node/tests/public_v3_multiprocess.rs",
+          "trillionnium/crates/trnm-pon-node/src/store/native_fixed_blob_tests.rs",
+          "trillionnium/crates/trnm-pon-node/tests/authenticated_storage_cli.rs",
+          "trillionnium/crates/trnm-pon-node/examples/continuous_pipeline.rs",
+          "trillionnium/crates/trnm-pon-node/tests/public_v3_service_campaign.rs",
+          "formal/pon-nakamoto-v1/work_query_bound.py",
+          "formal/pon-nakamoto-v1/test_work_query_bound.py",
+          "scripts/ci/read_native_cache_observation.py",
+          "scripts/ci/test_read_native_cache_observation.py",
+          ".github/workflows/pon-recent-batch-acceptance.yml"
+        ]
+      }
+    },
+    "jobs": [
+      {
+        "key": "recent",
+        "if": null,
+        "runs-on": "${{ matrix.runner }}",
+        "uses": null,
+        "name": "recent batch (${{ matrix.runner }}, ${{ matrix.source }})",
+        "timeout-minutes": "25"
+      }
+    ]
+  },
+  {
+    "path": ".github/workflows/pon-smollm-hosted-once.yml",
+    "git_blob": "15638b7be5eb2448f56a434fd99fe944febb71aa",
+    "bytes": 1988,
+    "sha256": "f9bd0275cfae5cd0e644b3a2142ba60b049f8da4ade1432c13f39890bb8215ff",
+    "on": {
+      "push": {
+        "branches": [
+          "fix/chain-model-owner-hosted-once-20261105"
+        ],
+        "paths": [
+          "config/pon/hosted-model-intents-v1/*.json"
+        ]
+      }
+    },
+    "jobs": [
+      {
+        "key": "original-public-pilot",
+        "if": "github.repository == 'TrillionniumFoundation/Trillionnium-Chain'",
+        "runs-on": "ubuntu-24.04",
+        "uses": null,
+        "name": null,
+        "timeout-minutes": "300"
+      }
+    ]
+  },
+  {
+    "path": ".github/workflows/pon-w1-transparent-profile.yml",
+    "git_blob": "343843d2f462bc44a6266e3384a0990e3607889e",
+    "bytes": 23862,
+    "sha256": "0dd9bcc90b1a6056e183ec417825f5451591c5a9aa6725b872543c4e369c9827",
+    "on": {
+      "pull_request": {
+        "paths": [
+          "formal/pon-nakamoto-v1/w1_hardened_verifier/**",
+          "formal/pon-nakamoto-v1/w1_v2_verifier/**",
+          "formal/pon-nakamoto-v1/w1_native_cost/**",
+          "formal/pon-nakamoto-v1/w1_zkvm/**",
+          "formal/pon-nakamoto-v1/experiments/w1_full_staged_run.py",
+          "formal/pon-nakamoto-v1/experiments/w1_stage_measure.py",
+          "formal/pon-nakamoto-v1/experiments/w1_local_payload.py",
+          "trillionnium/**",
+          "scripts/w1_transparent_compare.py",
+          "scripts/w1_profile_source_map.py",
+          "scripts/w1_security_budget.py",
+          "scripts/w1_v2_receipt_controls.py",
+          "scripts/ci/**",
+          "scripts/project-preflight.sh",
+          "evidence/pon-w1-complete-succinct-20261028/**",
+          "evidence/pon-w1-verifier-hardening-20261028/**",
+          "evidence/pon-w1-transparent-profile-20261104/**",
+          "evidence/pon-w1-statement-v2-20261105/**",
+          "evidence/pon-w1-qrom-budget-20261105/**",
+          "config/**",
+          ".cargo/**",
+          "rust-toolchain.toml",
+          "AGENTS.md",
+          "PROJECT_ID",
+          "PROJECT_BOUNDARY.json",
+          ".github/workflows/pon-w1-transparent-profile.yml"
+        ]
+      }
+    },
+    "jobs": [
+      {
+        "key": "transparent-profile",
+        "if": null,
+        "runs-on": "ubuntu-24.04",
+        "uses": null,
+        "name": "W1 transparent candidate (${{ matrix.source }}, x64)",
+        "timeout-minutes": "60"
+      }
+    ]
+  },
+  {
+    "path": ".github/workflows/pon-w1-work-security.yml",
+    "git_blob": "aa9d7597904d2d0bec32a502160c46ae255381be",
+    "bytes": 25524,
+    "sha256": "fa217ee369629c19431de4f5b9406d1b72f314cc4208864c428247d280d32633",
+    "on": {
+      "pull_request": {
+        "paths": [
+          "trillionnium/**",
+          "tests/fuzz/**",
+          "scripts/ci/**",
+          "scripts/pon_w1_*.py",
+          "formal/pon-nakamoto-v1/work_query_bound.py",
+          "formal/pon-nakamoto-v1/test_work_query_bound.py",
+          "config/**",
+          ".cargo/**",
+          "rust-toolchain.toml",
+          ".github/workflows/pon-w1-work-security.yml",
+          ".github/workflows/pon-recent-batch-acceptance.yml"
+        ]
+      }
+    },
+    "jobs": [
+      {
+        "key": "false-trace-reuse",
+        "if": null,
+        "runs-on": "${{ matrix.runner }}",
+        "uses": null,
+        "name": "W1 false trace reuse (${{ matrix.arch }}, ${{ matrix.source }})",
+        "timeout-minutes": "55"
+      },
+      {
+        "key": "legal-strategy",
+        "if": null,
+        "runs-on": "${{ matrix.runner }}",
+        "uses": null,
+        "name": "W1 complete legal strategies (${{ matrix.version }}, ${{ matrix.arch }}, ${{ matrix.source }})",
+        "timeout-minutes": "180"
+      },
+      {
+        "key": "legal-factorial",
+        "if": null,
+        "runs-on": "${{ matrix.runner }}",
+        "uses": null,
+        "name": "W1 factorial legal strategies v3 (${{ matrix.arch }}, ${{ matrix.source }})",
+        "timeout-minutes": "180"
+      },
+      {
+        "key": "fresh-challenge-service",
+        "if": null,
+        "runs-on": "ubuntu-24.04",
+        "uses": null,
+        "name": "W1 fresh challenge service (x64, ${{ matrix.source }})",
+        "timeout-minutes": "55"
+      }
+    ]
+  },
+  {
+    "path": ".github/workflows/release-finality-reference.yml",
+    "git_blob": "23746e01d1f4a35987f87e5491b247e931d59782",
+    "bytes": 7852,
+    "sha256": "a833e4554eb61c9c3de5704d1af87fbc467a81106da0c5ea76c0d8f013d2c0b8",
+    "on": {
+      "pull_request": {
+        "paths": [
+          "formal/release-finality-v2/**",
+          "config/finality-profile-v1.json",
+          "config/release-finality-v2.json",
+          "scripts/ci/test_finality_profile.py",
+          "scripts/ci/check_required_native_test.py",
+          "docs/protocol/release-finality-v2/**",
+          "trillionnium/crates/trnm-pon-node/**",
+          "trillionnium/crates/trnm-crypto-primitives/**",
+          "trillionnium/Cargo.toml",
+          "trillionnium/Cargo.lock",
+          ".github/workflows/release-finality-reference.yml"
+        ]
+      }
+    },
+    "jobs": [
+      {
+        "key": "reference",
+        "if": null,
+        "runs-on": "${{ matrix.runner }}",
+        "uses": null,
+        "name": null,
+        "timeout-minutes": "30"
+      }
+    ]
+  },
+  {
+    "path": ".github/workflows/trnm-required-baseline.yml",
+    "git_blob": "beff089827ed0c138edb8b653026a9be7cc1f4a6",
+    "bytes": 34136,
+    "sha256": "8df781f1d5416aaa1426864aac2bd9f196b87b1283d81f630928872d763c479a",
+    "on": {
+      "pull_request": "",
+      "push": {
+        "branches": [
+          "main"
+        ]
+      },
+      "workflow_dispatch": ""
+    },
+    "jobs": [
+      {
+        "key": "repository-truth",
+        "if": null,
+        "runs-on": "ubuntu-24.04",
+        "uses": null,
+        "name": "repository-truth",
+        "timeout-minutes": "45"
+      },
+      {
+        "key": "cross-arch-cost",
+        "if": null,
+        "runs-on": "${{ matrix.runner }}",
+        "uses": null,
+        "name": "cross-arch-cost (${{ matrix.arch }})",
+        "timeout-minutes": "155"
+      },
+      {
+        "key": "cross-arch-w1-reuse-v3",
+        "if": "github.event_name == 'pull_request'",
+        "runs-on": "${{ matrix.runner }}",
+        "uses": null,
+        "name": "W1 actual reuse V3 (${{ matrix.arch }}, ${{ matrix.source }})",
+        "timeout-minutes": "155"
+      },
+      {
+        "key": "cross-arch-cost-consistency",
+        "if": "always()",
+        "runs-on": "ubuntu-24.04",
+        "uses": null,
+        "name": "cross-arch-cost-consistency",
+        "timeout-minutes": "10"
+      },
+      {
+        "key": "protocol-contract",
+        "if": null,
+        "runs-on": "ubuntu-24.04",
+        "uses": null,
+        "name": "protocol-contract",
+        "timeout-minutes": "45"
+      },
+      {
+        "key": "fuzz-smoke",
+        "if": null,
+        "runs-on": "ubuntu-24.04",
+        "uses": null,
+        "name": "fuzz-smoke",
+        "timeout-minutes": "45"
+      },
+      {
+        "key": "rust-baseline-shards",
+        "if": null,
+        "runs-on": "ubuntu-24.04",
+        "uses": null,
+        "name": "rust-baseline shard (${{ matrix.shard }})",
+        "timeout-minutes": "180"
+      },
+      {
+        "key": "rust-baseline",
+        "if": "always()",
+        "runs-on": "ubuntu-24.04",
+        "uses": null,
+        "name": "rust-baseline",
+        "timeout-minutes": "180"
+      },
+      {
+        "key": "prospective-rust-shards",
+        "if": "github.event_name == 'pull_request'",
+        "runs-on": "ubuntu-24.04",
+        "uses": null,
+        "name": "prospective Rust shard (${{ matrix.shard }})",
+        "timeout-minutes": "180"
+      },
+      {
+        "key": "prospective-rust-baseline",
+        "if": "${{ always() && github.event_name == 'pull_request' }}",
+        "runs-on": "ubuntu-24.04",
+        "uses": null,
+        "name": "prospective-merge (rust-baseline)",
+        "timeout-minutes": "180"
+      },
+      {
+        "key": "external-evidence-contract",
+        "if": null,
+        "runs-on": "ubuntu-24.04",
+        "uses": null,
+        "name": "external-evidence-contract",
+        "timeout-minutes": "45"
+      },
+      {
+        "key": "prospective-merge",
+        "if": "github.event_name == 'pull_request'",
+        "runs-on": "ubuntu-24.04",
+        "uses": null,
+        "name": "prospective-merge (${{ matrix.lane }})",
+        "timeout-minutes": "${{ matrix.lane == 'rust-baseline' && 180 || 45 }}"
+      }
+    ]
+  }
+]

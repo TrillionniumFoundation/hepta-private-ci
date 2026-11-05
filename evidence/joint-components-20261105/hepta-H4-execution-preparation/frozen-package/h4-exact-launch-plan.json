@@ -1,0 +1,125 @@
+{
+  "schema": "hepta-joint-h4-exact-native-launch-plan-v1",
+  "source_commit": "6db78eca53a5acdda0d96873d3f4cd65863426f0",
+  "source_tree": "e91f5994017fc5d2cfe58d405a20ee6ad9376772",
+  "chain_commit": "8df4b21d893906570d48f5beafabb3b31e0aefbc",
+  "chain_tree": "6f5aaa2af0432e27e24b6bd2ad18013ab4423d14",
+  "source_path": "/home/qian-qi/work/hepta-pq-effect-v4-20261105-93bfcf/source-h3",
+  "expected_tracked_count": 11840,
+  "expected_tracked_bytes": 183410043,
+  "host": "desktop",
+  "executable": "/usr/bin/python3",
+  "cwd": "/home/qian-qi/work/hepta-pq-effect-v4-20261105-93bfcf",
+  "evidence_name": "joint-h4-native-attempt-1",
+  "idempotency_key": "ms-joint-h4-native-6db78-attempt1-93bfcf",
+  "outer_timeout_seconds": 5400,
+  "bootstrap": {
+    "path": "bootstrap_h4_native.py",
+    "bytes": 2963,
+    "sha256": "68f6fdf61feb5a6619e2e94538ddcfba0d2c3c9789cc2b26277cc742328d5a38"
+  },
+  "bundle": {
+    "path": "h4-native-bundle.json",
+    "bytes": 186314,
+    "sha256": "d14a478a6feb2c8ec201ca5dfcf4d2d7cde2a7ae99b70b3aea68c803002c6d93"
+  },
+  "budget_map": {
+    "path": "h4-budget-map.json",
+    "bytes": 25293,
+    "sha256": "6e07c95d36fbe9206f143b591a34807779674ebfa24d9fbaf494c1f70afa6bd3"
+  },
+  "files": [
+    {
+      "path": "run_h4_native_pipeline.py",
+      "bytes": 34196,
+      "sha256": "5bd64b700c9974582e0b70c3a97117982b8d6f470f8d308b99accc42bba1714a"
+    },
+    {
+      "path": "test_elf_capture.py",
+      "bytes": 11001,
+      "sha256": "2cb676bff1657866dc39b3e35ff45644d1ce75981ec9ed3f8798509287ab5ebe"
+    },
+    {
+      "path": "test_executed_binary_capture.py",
+      "bytes": 4011,
+      "sha256": "debcc32b403d169a07cbdb4ae04319c9a12e674f0c3bfa412c809bb6ea78a838"
+    },
+    {
+      "path": "nextest_fd_runner.py",
+      "bytes": 9554,
+      "sha256": "9679cc6e11762c29b4c0ee92dd7715d3fce0555a6f8e0e10ed9d0b007951381a"
+    },
+    {
+      "path": "test_nextest_fd_runner.py",
+      "bytes": 5684,
+      "sha256": "29a77665a8e255dbd29286709ccab06a4e9f81bf76f6f89ed489613a68ede61a"
+    },
+    {
+      "path": "test_fd_gate_targets.py",
+      "bytes": 5708,
+      "sha256": "642ec3f16702f1f9c9bedd205e8a268841a07c19884d711041504b59c76cbb06"
+    },
+    {
+      "path": "fd_gate_evidence.py",
+      "bytes": 5420,
+      "sha256": "0fb050f795f982ad718938eba25c06d5e6831ce5c213a57dd166405039ba056d"
+    },
+    {
+      "path": "live_fd_correspondence.py",
+      "bytes": 7949,
+      "sha256": "fc8fc5cfc7c084a3a5884449cd683f94fbd6ee377455ba5a0df6033a6ceed0a4"
+    },
+    {
+      "path": "test_live_fd_correspondence.py",
+      "bytes": 8160,
+      "sha256": "0e308e80ea2b802f2711c9939b90e1d6989cd062f6170eddd4069db487e251b4"
+    },
+    {
+      "path": "h4-native-plan.json",
+      "bytes": 22298,
+      "sha256": "c596e0f5a74ee878a20b68d545cefa9aff1d38773f388eb1dae91080acf9b51e"
+    },
+    {
+      "path": "h4-selected-tests-guard.py",
+      "bytes": 8891,
+      "sha256": "e273e7f5c17704bfb699e90a5d15c8389d349c6c17e271ee26c031e6b3a65d48"
+    },
+    {
+      "path": "h4-extra-controls.json",
+      "bytes": 16587,
+      "sha256": "08d884ff93090767084059d1b40802fd3269c2b939b0f5534472c3ea663d908c"
+    }
+  ],
+  "selected_exact_cases": 74,
+  "original_selected_71_retained": true,
+  "full_evidence_expected_passed": 161,
+  "full_evidence_expected_ignored": 1,
+  "single_multi_binary_gate": "neural-runtime-input",
+  "per_case_targets": {
+    "native_comparison_input_requires_v2_and_independently_pinned_snapshot": "neural_comparison_native",
+    "ordinary_native_composition_rejects_untrusted_qualification_before_inference_owners": "neural_cognitive_bootstrap"
+  },
+  "source_preparation_required": "evidence/h3-final-source/result.json",
+  "configuration_scope": "New frozen H4 external live-parent correspondence on the unchanged H3 repository source. Original FD runner, exact FD/outcome verifier, 74 cases, two-target restriction, ignored-case list and all original commands/budgets remain unchanged. Only the one observed FinalUse direct helper may receive auxiliary process attribution, with no additional test credit. H3 remains failed.",
+  "daemon_scope": "first live fd full hash/copy then independently checked second generation same-held-file-object reuse; same-image bytes retained once, not a second full hash or hostile privileged writer guarantee",
+  "no_global_kernel_changes": true,
+  "hosted_matrix_credit": false,
+  "raw_runtime_observation_scope": "tracked full guard plus separately retained ignored-path/bytecode before-after observations; not a per-import or dynamic closure proof",
+  "launch_after_exact_source_and_root_review_only": true,
+  "live_parent_correspondence": {
+    "allowed_gate": "final-use-profile-controls",
+    "allowed_target": "codex_hepta_contracts",
+    "allowed_case": "final_use::tests::killed_owner_releases_lock_but_keeps_claim",
+    "required_relation": "direct parent PID/start from equal complete before/after ancestor chains bound to the exact wrapper",
+    "required_images": "opened child and direct-parent FD metadata stable through retention; fixed argv and same file object/digest as unique actual outer FD",
+    "helper_test_outcome_credit": false,
+    "observation_scope": "two live samples around both actual FD opens; no claim parent remains alive through copy completion; no retrospective H3 attribution"
+  },
+  "repository_source_unchanged_from_h3": true,
+  "native_credit_before_this_attempt": false,
+  "cloud_utility_evidence": {
+    "new_correspondence_controls": "three synthetic controls passed in 0.003s; no desktop/Rust credit",
+    "proc_controls": "three interim cloud controls rejected by the unchanged PID-namespace guard; raw errors retained; strengthened final utility source not yet run",
+    "desktop_requirement": "all original utility controls plus three new correspondence controls execute before Cargo in this same 5400-second job"
+  }
+}

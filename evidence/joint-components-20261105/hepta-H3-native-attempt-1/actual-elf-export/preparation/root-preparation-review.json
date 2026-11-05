@@ -1,0 +1,90 @@
+{
+  "schema": "root-H3-actual-image-archive-preparation-review-v1",
+  "source": "6db78eca53a5acdda0d96873d3f4cd65863426f0",
+  "tree": "e91f5994017fc5d2cfe58d405a20ee6ad9376772",
+  "native_result": "FAILED; no result reclassification",
+  "source_inventory_sha256": "6a8ecb8b9160284baf91d13b61973e4ee3b64b5a740cde0908ccd7b4c03361b7",
+  "exporter_sha256": "9eb404993262589a948a19946819e890ff15875bef1133eab5fe9cee6bb14f53",
+  "plan_sha256": "7c140e2a83e9df657aff17c66bb1f307bb6b8a22db6cbba04e38841d7b9ef7a0",
+  "frozen_launch_request_sha256": "49eb026d9b5376dff8ef9cd596ed8fd243fb094050b84b47f0e6cabf13eb06e3",
+  "expected_key": "93bfc-hepta-h3-actual-retained-images-export-01",
+  "original_complete_only_IO_code_preserved": true,
+  "only_code_changes": "descriptive docstring and exact H3 phase assertion",
+  "all_11_images_30_aliases_279_observation_fields_equal_original_inventory": true,
+  "unique_complete_input_bytes": 1674575368,
+  "archive_max_bytes": 1741684232,
+  "archive_plus_parts_max_bytes": 3483368464,
+  "actual_compressed_bytes": "unknown until measured successful export",
+  "all_embedded_input_and_stdin_bytes_verified": true,
+  "owned_release_proof_sha256": "06661599f4cd936baa7493ac4f9a1df95def4a0dd391f638145b46f1c032458e",
+  "original_utility_controls_passed": 4,
+  "utility_scope": "Local small byte fixtures only, no native or actual image execution",
+  "postrun_archive_budget_seconds": 900,
+  "native_or_bulk_overlap_permitted": false,
+  "authoritative_success_and_complete_manifest_required": true,
+  "H3_unmatched_live_PID_not_reclassified": 1038111,
+  "daemon_second_capture": "same held file object; no second full hash/copy",
+  "files": [
+    {
+      "path": "H3-export-frozen-launch-request.json",
+      "bytes": 906134,
+      "sha256": "49eb026d9b5376dff8ef9cd596ed8fd243fb094050b84b47f0e6cabf13eb06e3"
+    },
+    {
+      "path": "test_export_utility.py",
+      "bytes": 7655,
+      "sha256": "ec087199ea262f952c4578446ac231c238b8248b222f0953997c99e11cd63ae9"
+    },
+    {
+      "path": "cloud-preparation-manifest.json",
+      "bytes": 2893,
+      "sha256": "c34006edbbddeb638e36b82e83bd8b1bf40ecc0b12e05953260467e4582631d4"
+    },
+    {
+      "path": "export_h3_retained_images.py",
+      "bytes": 18885,
+      "sha256": "9eb404993262589a948a19946819e890ff15875bef1133eab5fe9cee6bb14f53"
+    },
+    {
+      "path": "H3-export-bootstrap.py",
+      "bytes": 905736,
+      "sha256": "c5ff3d9ac3d89cdb07a3b276e467e29be58c0699759e524bd93caec345665c94"
+    },
+    {
+      "path": "utility-receipt.json",
+      "bytes": 1300,
+      "sha256": "5f9d8d1bc94a47ff62376168fcb0311c86d575ec5a44c9f6f4ab413259fb1f47"
+    },
+    {
+      "path": "cloud-delivery-manifest.json",
+      "bytes": 2995,
+      "sha256": "3e657386d544cea2bca651129c51262222a12f973d63377d72032e1559abcf78"
+    },
+    {
+      "path": "H3-exporter-vs-approved-H1.patch",
+      "bytes": 1006,
+      "sha256": "b10509da060e9e47e584df9b812da71df02b10bcc7bcb7d58001340ee98b466a"
+    },
+    {
+      "path": "H3-export-plan.json",
+      "bytes": 658893,
+      "sha256": "7c140e2a83e9df657aff17c66bb1f307bb6b8a22db6cbba04e38841d7b9ef7a0"
+    },
+    {
+      "path": "utility.stderr",
+      "bytes": 694,
+      "sha256": "32499e0a97fa5ca9d44e318d1375f2e2fb0db5dd64f23c2293e338e30cdc9bd4"
+    },
+    {
+      "path": "prepare_export_inputs.py",
+      "bytes": 11044,
+      "sha256": "5603c54efb53fbe7b871c8801ba744daeecbe46fc534a186ee21f5cb62086b4e"
+    },
+    {
+      "path": "utility.stdout",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  ],
+  "all_joint_gates": "HOLD"
+}

@@ -1,0 +1,9 @@
+Traceback (most recent call last):
+  File "/home/qian-qi/work/hepta-pq-effect-v4-20261105-93bfcf/tools/joint-h3-native-attempt-1/run_h3_native_pipeline.py", line 442, in <module>
+    main()
+  File "/home/qian-qi/work/hepta-pq-effect-v4-20261105-93bfcf/tools/joint-h3-native-attempt-1/run_h3_native_pipeline.py", line 412, in main
+    gate('final-use-profile-controls',['just','test','--locked','-p','codex-hepta-contracts','--lib','-E','test(final_use)',*flags],1,600,crate='codex_hepta_contracts',predicate={'kind':'contains','value':'final_use'})
+  File "/home/qian-qi/work/hepta-pq-effect-v4-20261105-93bfcf/tools/joint-h3-native-attempt-1/run_h3_native_pipeline.py", line 270, in gate
+    assert not artifacts['errors'] and artifacts['per_case_bijection_verified'] and len(artifacts['unique_actual_elf_sha256']) == expected_count and artifacts['runner_declared_binary_counts'] == [expected_count], name + ' lacks an exact per-case test-image binding'
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: final-use-profile-controls lacks an exact per-case test-image binding

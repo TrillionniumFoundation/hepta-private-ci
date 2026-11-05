@@ -1,0 +1,611 @@
+{
+  "schema": "h3-independent-process-and-finaluse-review-v1",
+  "method": "Independent local raw/receipt/source reads and deterministic reconciliation; no native rerun, production change, remote read, or qualification override.",
+  "source": {
+    "commit": "6db78eca53a5acdda0d96873d3f4cd65863426f0",
+    "tree": "e91f5994017fc5d2cfe58d405a20ee6ad9376772"
+  },
+  "overall": {
+    "status": "FAILED",
+    "scope": "one desktop source-head; no hosted matrix, independent custody, WAN, full-host restore, model inference, or learning qualification",
+    "original_error": "AssertionError('final-use-profile-controls lacks an exact per-case test-image binding')",
+    "elapsed_seconds": 1199.6768508160021,
+    "source_before_after_equal": true,
+    "configuration_unchanged": true,
+    "unexecuted_after_stop": [
+      "full-evidence-library (161 selected plus 1 ignored)",
+      "fix",
+      "fmt"
+    ]
+  },
+  "ordinary_process": {
+    "test_outcomes": [
+      [
+        "binary::held_daemon_image_reuse_refuses_wrong_changed_or_missing_files",
+        "ok"
+      ],
+      [
+        "pq_effect_survives_owned_agentd_kill_after_provider_fsync_without_resend",
+        "ok"
+      ]
+    ],
+    "wrapper_elapsed_seconds": 51.07525175099727,
+    "completed_sha256": "f70ff1df3fd8a4b38b9c984400c1fa5101a882cae38720638bed6ee77310c50f",
+    "daemon_verification_receipt_sha256": "08fe05cdd83b65df03e6cb0f3457359a1c9e2aea3d83a8e6eb50a4ba02882d76",
+    "first_process": {
+      "actual_executable": "/home/qian-qi/work/hepta-pq-effect-v4-20261105-93bfcf/target/debug/codex-hepta-agentd",
+      "bytes": 488112384,
+      "capture_method": "first-live-fd-hash-copy",
+      "cargo_resolved_binary": "/home/qian-qi/work/hepta-pq-effect-v4-20261105-93bfcf/target/debug/codex-hepta-agentd",
+      "device": 2050,
+      "full_hash_and_copy_this_capture": true,
+      "inode": 58259796,
+      "opened_fd_and_process_identity_verified": true,
+      "origin_capture_pid": 1032350,
+      "origin_capture_start_ticks": "99355292",
+      "owner_and_generation_verified": true,
+      "pid": 1032350,
+      "retained_copy": "/home/qian-qi/work/hepta-pq-effect-v4-20261105-93bfcf/evidence/joint-h3-native-attempt-1/effect-pq-product-process/1032265-1793915885381498081/agentd-1032350-99355292.elf",
+      "same_held_file_object_verified": false,
+      "scope": "owned live image with no concurrent build; file-object metadata stability is not a hostile privileged-writer guarantee",
+      "sha256": "00a637f55c720b06a655b569930bddaef19fd791467bc4784fe0bfb9e0002a26",
+      "source": {
+        "cargo_lock_sha256": "0f458d7746a0ca0b95bedc5404fd3347c1b0a7508f1c387f3b1f3f71ced08663",
+        "commit": "6db78eca53a5acdda0d96873d3f4cd65863426f0",
+        "environment": {
+          "CARGO_BUILD_JOBS": "2",
+          "CARGO_ENCODED_RUSTFLAGS": null,
+          "CARGO_INCREMENTAL": "0",
+          "CARGO_PROFILE_DEV_DEBUG": "0",
+          "CARGO_PROFILE_TEST_DEBUG": "0",
+          "RUSTC_WORKSPACE_WRAPPER": null,
+          "RUSTC_WRAPPER": null,
+          "RUSTFLAGS": null,
+          "RUSTUP_TOOLCHAIN": "1.96.0-x86_64-unknown-linux-gnu"
+        },
+        "qualification_binding": true,
+        "rustc": "rustc 1.96.0 (ac68faa20 2026-05-25)\nbinary: rustc\ncommit-hash: ac68faa20c58cbccd01ee7208bf3b6e93a7d7f96\ncommit-date: 2026-05-25\nhost: x86_64-unknown-linux-gnu\nrelease: 1.96.0\nLLVM version: 22.1.2\n",
+        "tree": "e91f5994017fc5d2cfe58d405a20ee6ad9376772"
+      },
+      "spawn_generation": 1,
+      "start_ticks": "99355292"
+    },
+    "second_process": {
+      "actual_executable": "/home/qian-qi/work/hepta-pq-effect-v4-20261105-93bfcf/target/debug/codex-hepta-agentd",
+      "bytes": 488112384,
+      "capture_method": "same-held-file-object-reuse",
+      "cargo_resolved_binary": "/home/qian-qi/work/hepta-pq-effect-v4-20261105-93bfcf/target/debug/codex-hepta-agentd",
+      "device": 2050,
+      "full_hash_and_copy_this_capture": false,
+      "inode": 58259796,
+      "opened_fd_and_process_identity_verified": true,
+      "origin_capture_pid": 1032350,
+      "origin_capture_start_ticks": "99355292",
+      "owner_and_generation_verified": true,
+      "pid": 1033361,
+      "retained_copy": "/home/qian-qi/work/hepta-pq-effect-v4-20261105-93bfcf/evidence/joint-h3-native-attempt-1/effect-pq-product-process/1032265-1793915885381498081/agentd-1032350-99355292.elf",
+      "same_held_file_object_verified": true,
+      "scope": "owned live image with no concurrent build; file-object metadata stability is not a hostile privileged-writer guarantee",
+      "sha256": "00a637f55c720b06a655b569930bddaef19fd791467bc4784fe0bfb9e0002a26",
+      "source": {
+        "cargo_lock_sha256": "0f458d7746a0ca0b95bedc5404fd3347c1b0a7508f1c387f3b1f3f71ced08663",
+        "commit": "6db78eca53a5acdda0d96873d3f4cd65863426f0",
+        "environment": {
+          "CARGO_BUILD_JOBS": "2",
+          "CARGO_ENCODED_RUSTFLAGS": null,
+          "CARGO_INCREMENTAL": "0",
+          "CARGO_PROFILE_DEV_DEBUG": "0",
+          "CARGO_PROFILE_TEST_DEBUG": "0",
+          "RUSTC_WORKSPACE_WRAPPER": null,
+          "RUSTC_WRAPPER": null,
+          "RUSTFLAGS": null,
+          "RUSTUP_TOOLCHAIN": "1.96.0-x86_64-unknown-linux-gnu"
+        },
+        "qualification_binding": true,
+        "rustc": "rustc 1.96.0 (ac68faa20 2026-05-25)\nbinary: rustc\ncommit-hash: ac68faa20c58cbccd01ee7208bf3b6e93a7d7f96\ncommit-date: 2026-05-25\nhost: x86_64-unknown-linux-gnu\nrelease: 1.96.0\nLLVM version: 22.1.2\n",
+        "tree": "e91f5994017fc5d2cfe58d405a20ee6ad9376772"
+      },
+      "spawn_generation": 5,
+      "start_ticks": "99358739"
+    },
+    "post_count": 1,
+    "physical_apply_count": 1,
+    "lookup_count": 2,
+    "used_nonces": 1,
+    "provider_ack_matches_original_key_payload_operation": true,
+    "terminal": {
+      "attempt": 1,
+      "event_seq": 3,
+      "observation": "succeeded",
+      "receipt_digest": "5840fdfd4aaa6930181a85ed61005620832f914c7fb0bb937fce87b386c37925",
+      "run_id": "controlled-process-effect-run",
+      "step_id": "effect"
+    },
+    "reached_assertions": [
+      "provider fsync completed and acknowledgement not delivered before the controlled kill",
+      "new daemon process and newer owner generation; same held actual file object",
+      "old client and old generation grant refused without a second POST",
+      "temporary lookup absence remains Indeterminate with no effect receipt",
+      "subsequent lookup recovers the original operation and durable succeeded terminal",
+      "third local read returns the same terminal without an additional provider lookup",
+      "POST 1, physical application 1, provider lookups 2, FinalUse nonce 1",
+      "original recovery frontier/trust bytes and claimed external frontier remain unchanged",
+      "store reopen confirms original operation digest and identical durable terminal receipt",
+      "second owned process cleanup and exact lease removal"
+    ],
+    "limits": [
+      "controlled local operator/provider fixtures and supervisor pre-fenced SIGKILL, not unannounced power loss",
+      "same-host process restart, not full-host database restore or independently administered frontier custody",
+      "opened held-file metadata stability, not a privileged-writer resistance proof",
+      "local review verifies receipt/proof/raw bytes; daemon ELF itself is retained remotely and has not been independently downloaded or rehashed by this review",
+      "no H1/H2 retrospective credit and no overall H3 PASS"
+    ]
+  },
+  "finaluse": {
+    "actual_raw_outcomes": [
+      [
+        "final_use::store::tests::incompatible_experimental_pq_store_is_rejected_without_resetting_claims",
+        "ok"
+      ],
+      [
+        "final_use::store::tests::legacy_journal_keeps_trust_binding_and_exact_head_checks",
+        "ok"
+      ],
+      [
+        "final_use::store::tests::legacy_single_key_and_key_ring_snapshots_preserve_nonce_claims",
+        "ok"
+      ],
+      [
+        "final_use::store::tests::legacy_zero_nonce_rejects_before_original_stage_or_committed_bytes_change",
+        "ok"
+      ],
+      [
+        "final_use::tests::async_effect_entry_is_denied_if_revoked_after_claim_before_entry",
+        "ok"
+      ],
+      [
+        "final_use::tests::async_effect_entry_rechecks_revocation_and_consumes_the_token",
+        "ok"
+      ],
+      [
+        "final_use::tests::async_final_use_fence_survives_pending_and_releases_on_cancellation",
+        "ok"
+      ],
+      [
+        "final_use::tests::authority_rejects_shared_state_directory_and_symlinked_files",
+        "ok"
+      ],
+      [
+        "final_use::tests::capacity_snapshot_tracks_claims_revocations_and_epoch_rollover",
+        "ok"
+      ],
+      [
+        "final_use::tests::changing_signed_data_or_substituting_a_key_does_not_authorize",
+        "ok"
+      ],
+      [
+        "final_use::tests::epoch_change_fences_outstanding_claims_and_old_grants",
+        "ok"
+      ],
+      [
+        "final_use::tests::expired_grant_is_denied_using_verifier_clock",
+        "ok"
+      ],
+      [
+        "final_use::tests::external_final_use_frontier_ahead_after_local_failure_fences_reopen",
+        "ok"
+      ],
+      [
+        "final_use::tests::external_final_use_frontier_detects_restored_claim_snapshot",
+        "ok"
+      ],
+      [
+        "final_use::tests::injected_clock_is_the_only_final_use_time_source",
+        "ok"
+      ],
+      [
+        "final_use::tests::issuer_key_ring_supports_overlap_and_epoch_retirement",
+        "ok"
+      ],
+      [
+        "final_use::tests::killed_owner_releases_lock_but_keeps_claim",
+        "ok"
+      ],
+      [
+        "final_use::tests::missing_or_truncated_claim_journal_fails_closed_on_restart",
+        "ok"
+      ],
+      [
+        "final_use::tests::pq::capacity_tests::pq_oversized_initial_head_fails_before_state_initialization",
+        "ok"
+      ],
+      [
+        "final_use::tests::pq::capacity_tests::pq_revocation_capacity_agrees_across_feed_owner_frontier_and_reopen",
+        "ok"
+      ],
+      [
+        "final_use::tests::pq::entry_tests::pq_final_use_all_entries_keep_explicit_revocation_precedence",
+        "ok"
+      ],
+      [
+        "final_use::tests::pq::entry_tests::pq_final_use_all_entries_require_the_exact_claimed_head",
+        "ok"
+      ],
+      [
+        "final_use::tests::pq::frontier_tests::pq_final_use_async_entry_observes_external_progress_after_future_creation",
+        "ok"
+      ],
+      [
+        "final_use::tests::pq::frontier_tests::pq_final_use_dispatch_rejects_external_nonce_progress_with_unchanged_head",
+        "ok"
+      ],
+      [
+        "final_use::tests::pq::frontier_tests::pq_final_use_external_unavailability_fences_consumer_without_refunding_claim",
+        "ok"
+      ],
+      [
+        "final_use::tests::pq::frontier_tests::pq_final_use_retained_owner_refuses_external_revocation_at_token_entry",
+        "ok"
+      ],
+      [
+        "final_use::tests::pq::pq_feed_confirmation_reauthenticates_without_advancing_or_unrevoking",
+        "ok"
+      ],
+      [
+        "final_use::tests::pq::pq_final_use_consumes_original_durable_nonce_and_reopen_cannot_replay",
+        "ok"
+      ],
+      [
+        "final_use::tests::pq::pq_final_use_external_frontier_refuses_local_snapshot_rollback",
+        "ok"
+      ],
+      [
+        "final_use::tests::pq::pq_final_use_independent_approval_revocation_and_ack_use_original_owners",
+        "ok"
+      ],
+      [
+        "final_use::tests::pq::pq_final_use_rejects_classic_wire_signatures_and_cross_profile_stores",
+        "ok"
+      ],
+      [
+        "final_use::tests::pq::pq_final_use_signature_mutation_and_key_pin_fail_before_nonce_write",
+        "ok"
+      ],
+      [
+        "final_use::tests::pq::recovery_tests::pq_final_use_rejections_preserve_later_service_and_recovery_preserves_spent_nonces",
+        "ok"
+      ],
+      [
+        "final_use::tests::replay_claims_use_fixed_width_journal_and_state_snapshot_stays_small",
+        "ok"
+      ],
+      [
+        "final_use::tests::replay_state_survives_owner_restart_and_prevents_concurrent_owners",
+        "ok"
+      ],
+      [
+        "final_use::tests::revocation_after_claim_prevents_delivery_and_cannot_be_rolled_back",
+        "ok"
+      ],
+      [
+        "final_use::tests::revocation_survives_restart_and_missing_state_is_not_reset",
+        "ok"
+      ],
+      [
+        "final_use::tests::signed_claim_is_single_use_and_delivers_under_same_owner",
+        "ok"
+      ],
+      [
+        "final_use::tests::startup_trusted_head_can_advance_but_cannot_rollback_persisted_revocations",
+        "ok"
+      ],
+      [
+        "final_use::tests::synchronous_final_use_rejects_a_concurrent_revocation_commit",
+        "ok"
+      ],
+      [
+        "final_use::tests::unrelated_frontier_advance_after_claim_requires_a_fresh_claim",
+        "ok"
+      ],
+      [
+        "final_use::tests::verified_use_witness_binds_the_actual_consumer_entry",
+        "ok"
+      ],
+      [
+        "final_use_control::tests::approval_key_ring_enforces_epoch_windows_and_reports_selected_key",
+        "ok"
+      ],
+      [
+        "final_use_control::tests::convergence_rejects_unknown_duplicate_stale_future_and_forged_inputs",
+        "ok"
+      ],
+      [
+        "final_use_control::tests::convergence_report_requires_every_enrolled_node_ack",
+        "ok"
+      ],
+      [
+        "final_use_control::tests::forged_revocation_feed_never_updates_authority",
+        "ok"
+      ],
+      [
+        "final_use_control::tests::independent_approval_binds_exact_grant_semantics",
+        "ok"
+      ],
+      [
+        "final_use_control::tests::revocation_ack_requires_receipt_for_the_exact_applied_update",
+        "ok"
+      ],
+      [
+        "final_use_control::tests::revocation_feed_freshness_fails_closed",
+        "ok"
+      ],
+      [
+        "final_use_control::tests::signed_revocation_feed_is_authenticated_and_monotonic",
+        "ok"
+      ]
+    ],
+    "wrapper_elapsed_seconds": 49.70959877199493,
+    "raw_50_ok_and_fd_50_exact_case_bijection": true,
+    "primary_fd_unique_images": [
+      "1383f1adbe7721e1ff362142f0ce35ef755bece0ae2a188cb28e375a2332b923"
+    ],
+    "poll_records": 50,
+    "matching_outer_records": 49,
+    "extra_poll_record": {
+      "source": {
+        "commit": "6db78eca53a5acdda0d96873d3f4cd65863426f0",
+        "tree": "e91f5994017fc5d2cfe58d405a20ee6ad9376772",
+        "lock_sha256": "0f458d7746a0ca0b95bedc5404fd3347c1b0a7508f1c387f3b1f3f71ced08663",
+        "environment_file": "native-environment.json",
+        "environment_sha256": "3ca2ffadd3c6439f1401f04929b5ee4e8747a813de6d2647f139f8efb3b311f6"
+      },
+      "actual_executable": "/home/qian-qi/work/hepta-pq-effect-v4-20261105-93bfcf/target/debug/deps/codex_hepta_contracts-fa3b553af0cee5ab",
+      "retained_copy": "/home/qian-qi/work/hepta-pq-effect-v4-20261105-93bfcf/evidence/joint-h3-native-attempt-1/executed-binaries-final-use-profile-controls/1383f1adbe7721e1ff362142f0ce35ef755bece0ae2a188cb28e375a2332b923.elf",
+      "sha256": "1383f1adbe7721e1ff362142f0ce35ef755bece0ae2a188cb28e375a2332b923",
+      "bytes": 14103072,
+      "device": 2050,
+      "inode": 58259858,
+      "pid": 1038111,
+      "start_ticks": "99368575",
+      "wrapper_pid": 1036137,
+      "wrapper_start_ticks": "99364994",
+      "wrapper_descendant_verified": true,
+      "post_open_task_and_exe_verified": true,
+      "observed_selected_tests": [
+        "final_use::tests::killed_owner_releases_lock_but_keeps_claim"
+      ],
+      "captured_unix": 1793916019.798545
+    },
+    "outer_fd_for_same_case": {
+      "schema": "hepta-nextest-fd-runner-v1",
+      "status": "pre_exec_fd_bound",
+      "source": {
+        "commit": "6db78eca53a5acdda0d96873d3f4cd65863426f0",
+        "tree": "e91f5994017fc5d2cfe58d405a20ee6ad9376772",
+        "lock_sha256": "0f458d7746a0ca0b95bedc5404fd3347c1b0a7508f1c387f3b1f3f71ced08663",
+        "environment_file": "native-environment.json",
+        "environment_sha256": "3ca2ffadd3c6439f1401f04929b5ee4e8747a813de6d2647f139f8efb3b311f6"
+      },
+      "gate": "final-use-profile-controls",
+      "capture_config_sha256": "051d452aa070a96b00338536a3c5533626d6324fb95ed57161b8c616e7a72202",
+      "runner_sha256": "9679cc6e11762c29b4c0ee92dd7715d3fce0555a6f8e0e10ed9d0b007951381a",
+      "actual_executable": "/home/qian-qi/work/hepta-pq-effect-v4-20261105-93bfcf/target/debug/deps/codex_hepta_contracts-fa3b553af0cee5ab",
+      "retained_copy": "/home/qian-qi/work/hepta-pq-effect-v4-20261105-93bfcf/evidence/joint-h3-native-attempt-1/fd-executed-binaries-final-use-profile-controls/1383f1adbe7721e1ff362142f0ce35ef755bece0ae2a188cb28e375a2332b923.elf",
+      "expected_binary_target": "codex_hepta_contracts",
+      "sha256": "1383f1adbe7721e1ff362142f0ce35ef755bece0ae2a188cb28e375a2332b923",
+      "bytes": 14103072,
+      "device": 2050,
+      "inode": 58259858,
+      "mtime_ns": 1793916015991088519,
+      "ctime_ns": 1793916015993088465,
+      "pid": 1038102,
+      "start_ticks": "99368558",
+      "coordinator": {
+        "pid": 989453,
+        "start_ticks": "99250221"
+      },
+      "coordinator_descendant_verified": true,
+      "pre_exec_fd_identity_verified": true,
+      "phase": "run",
+      "exact_test": "final_use::tests::killed_owner_releases_lock_but_keeps_claim",
+      "argv": [
+        "/home/qian-qi/work/hepta-pq-effect-v4-20261105-93bfcf/target/debug/deps/codex_hepta_contracts-fa3b553af0cee5ab",
+        "--exact",
+        "final_use::tests::killed_owner_releases_lock_but_keeps_claim",
+        "--nocapture"
+      ],
+      "observed_selected_tests": [
+        "final_use::tests::killed_owner_releases_lock_but_keeps_claim"
+      ],
+      "captured_unix": 1793916019.730341,
+      "scope": "opened image bound immediately before same-PID fd-exec; requires matching actual libtest outcome and absence of exec failure"
+    },
+    "fd_case_missed_by_poll": {
+      "schema": "hepta-nextest-fd-runner-v1",
+      "status": "pre_exec_fd_bound",
+      "source": {
+        "commit": "6db78eca53a5acdda0d96873d3f4cd65863426f0",
+        "tree": "e91f5994017fc5d2cfe58d405a20ee6ad9376772",
+        "lock_sha256": "0f458d7746a0ca0b95bedc5404fd3347c1b0a7508f1c387f3b1f3f71ced08663",
+        "environment_file": "native-environment.json",
+        "environment_sha256": "3ca2ffadd3c6439f1401f04929b5ee4e8747a813de6d2647f139f8efb3b311f6"
+      },
+      "gate": "final-use-profile-controls",
+      "capture_config_sha256": "051d452aa070a96b00338536a3c5533626d6324fb95ed57161b8c616e7a72202",
+      "runner_sha256": "9679cc6e11762c29b4c0ee92dd7715d3fce0555a6f8e0e10ed9d0b007951381a",
+      "actual_executable": "/home/qian-qi/work/hepta-pq-effect-v4-20261105-93bfcf/target/debug/deps/codex_hepta_contracts-fa3b553af0cee5ab",
+      "retained_copy": "/home/qian-qi/work/hepta-pq-effect-v4-20261105-93bfcf/evidence/joint-h3-native-attempt-1/fd-executed-binaries-final-use-profile-controls/1383f1adbe7721e1ff362142f0ce35ef755bece0ae2a188cb28e375a2332b923.elf",
+      "expected_binary_target": "codex_hepta_contracts",
+      "sha256": "1383f1adbe7721e1ff362142f0ce35ef755bece0ae2a188cb28e375a2332b923",
+      "bytes": 14103072,
+      "device": 2050,
+      "inode": 58259858,
+      "mtime_ns": 1793916015991088519,
+      "ctime_ns": 1793916015993088465,
+      "pid": 1038034,
+      "start_ticks": "99368370",
+      "coordinator": {
+        "pid": 989453,
+        "start_ticks": "99250221"
+      },
+      "coordinator_descendant_verified": true,
+      "pre_exec_fd_identity_verified": true,
+      "phase": "run",
+      "exact_test": "final_use::tests::authority_rejects_shared_state_directory_and_symlinked_files",
+      "argv": [
+        "/home/qian-qi/work/hepta-pq-effect-v4-20261105-93bfcf/target/debug/deps/codex_hepta_contracts-fa3b553af0cee5ab",
+        "--exact",
+        "final_use::tests::authority_rejects_shared_state_directory_and_symlinked_files",
+        "--nocapture"
+      ],
+      "observed_selected_tests": [
+        "final_use::tests::authority_rejects_shared_state_directory_and_symlinked_files"
+      ],
+      "captured_unix": 1793916017.8445847,
+      "scope": "opened image bound immediately before same-PID fd-exec; requires matching actual libtest outcome and absence of exec failure"
+    },
+    "self_spawn_source": {
+      "path": "pq_recovery/h3-process-and-finaluse-review/source/codex-rs/hepta-contracts/src/final_use_tests.rs",
+      "git_blob": "76ea4ef5aab6c25c806fcbfe6a0f24329b60dc69",
+      "lines": [
+        708,
+        752
+      ],
+      "mechanism": "The exact killed_owner test directly spawns current_exe with --exact, its own test name, --nocapture and CHILD_STATE; the child persists a claim then parks until the outer test kills it. Child output is suppressed."
+    },
+    "finding": "The coordinator requires every observed selected-image process to have its own fd-runner record; a direct self-spawn bypasses the nextest target runner. This is a concrete over-strict capture-composition assumption.",
+    "historical_attribution_limit": "The extra record is consistent with the self-spawn source, image and time, but old polling records omit full argv and contemporaneous immediate parent/ancestor identities. Its exact parent is not retrospectively proven; do not delete, relabel, or fill the missing short outer capture.",
+    "h3_original_gate_status_preserved": "FAILED"
+  },
+  "h4_minimal_acceptance_boundary": [
+    "Keep exact original outcome-to-fd-record bijection and unique identity checks unchanged; auxiliary children never count as tests or replace missing fd records.",
+    "Allow only the fixed FinalUse gate, contracts image, killed_owner exact name and exact expected argv for the known direct helper role.",
+    "Save full child argv and stable before/after child PID/start, opened executable identity and ancestry chain to the exact bound wrapper PID/start.",
+    "Require immediate parent PID/start to match the unique exact killed_owner outer fd record, plus contemporaneous stable parent argv and actual executable identity. Same wrapper ancestry, source, image or name alone is insufficient.",
+    "Reject ambiguous, wrong-parent, reparented, changed-exec, wrong-image/name/source or incomplete observed helper attribution. Parent disappearance cannot be repaired with a later process listing.",
+    "Record auxiliary attribution separately, preserving every original live observation and the original raw/FD record sets.",
+    "Use the same frozen source, original commands, 60-second per-test limits, wrapper budgets and 5400-second outer budget; external config revision and utility tests must be explicit.",
+    "H4 evidence can only qualify a new run; H3 missing parent evidence and failed overall status remain unchanged."
+  ],
+  "recommended_focused_controls": [
+    "Actual direct-child positive case tied to the intended outer PID/start/image/argv, using a controlled small executable rather than claiming a Rust gate pass.",
+    "Same wrapper/image/name but different immediate parent, stale parent start, or missing parent chain must not be accepted as the known helper.",
+    "Changed parent/child image or argv and ancestry instability must not pass; primary case-to-fd bijection must still fail on missing or duplicate records."
+  ],
+  "input_inventory": [
+    {
+      "path": "model_storage/h3-preparation/native/joint-h3-native-attempt-1/effect-pq-product.json",
+      "bytes": 1767,
+      "sha256": "8500fd059da11419c4e87046eb57551db842a94032b734b7cfb1e7e423378370",
+      "git_blob": "9133bfe87ef7af85c034a4ee1c3a93f6fd06fa15"
+    },
+    {
+      "path": "model_storage/h3-preparation/native/joint-h3-native-attempt-1/effect-pq-product.json.cc53b68ad9ad4f458fd7fc5370e1ff1b.log",
+      "bytes": 28273,
+      "sha256": "4c29af275be6630303d66599724f883f73f9e1b3171d04cd4c7485ef154dde87",
+      "git_blob": "f61268a5e4b6b32cb12449266bf5246ae231213f"
+    },
+    {
+      "path": "model_storage/h3-preparation/native/joint-h3-native-attempt-1/final-use-profile-controls.json",
+      "bytes": 1599,
+      "sha256": "b3715ffe5b221a42f766cec60fd6bb325a9f23dba1f97f76652a6c390dee2360",
+      "git_blob": "1f08da40af421c66518bedf16e9f9467cfb6cafc"
+    },
+    {
+      "path": "model_storage/h3-preparation/native/joint-h3-native-attempt-1/final-use-profile-controls.json.9a438c9b6d09432fad59fa5387d3e040.log",
+      "bytes": 28018,
+      "sha256": "5e9f024b087d98f23a6b717d617369cfcf7c3cde7afe385a6d78c393fc450387",
+      "git_blob": "fc2de7c6f6231b70026eaa0573988ac9c9de3bfe"
+    },
+    {
+      "path": "model_storage/h3-preparation/native/joint-h3-native-attempt-1/pipeline-status.json",
+      "bytes": 456677,
+      "sha256": "5595a6b6d2e2716bcc18386e4a39855822e02dacb0adde4a412167aa69f04e67",
+      "git_blob": "f92cb8024aafef2e280c5ae0e9d87dab7ecf70bc"
+    },
+    {
+      "path": "model_storage/h3-preparation/native/joint-h3-native-attempt-1/effect-pq-product.fd-executed-binaries.json",
+      "bytes": 6216,
+      "sha256": "61d7fc4fc5586f514b84df20da0217d8bae7404262e2ea34097e368b895c2406",
+      "git_blob": "29b5cf84370b40f21abaebc178fce713667a9343"
+    },
+    {
+      "path": "model_storage/h3-preparation/native/joint-h3-native-attempt-1/effect-pq-product-process/1032265-1793915885381498081/completed.json",
+      "bytes": 7032,
+      "sha256": "f70ff1df3fd8a4b38b9c984400c1fa5101a882cae38720638bed6ee77310c50f",
+      "git_blob": "7226f944d81c0f41d27146bd20936b8db40ceefb"
+    },
+    {
+      "path": "model_storage/h3-preparation/native/joint-h3-native-attempt-1/effect-pq-product-daemon-verification.json",
+      "bytes": 279,
+      "sha256": "08fe05cdd83b65df03e6cb0f3457359a1c9e2aea3d83a8e6eb50a4ba02882d76",
+      "git_blob": "56cacdbc8ec5bff451498d4821724d57015cc30a"
+    },
+    {
+      "path": "model_storage/h3-preparation/native/joint-h3-native-attempt-1/final-use-profile-controls.fd-executed-binaries.json",
+      "bytes": 125564,
+      "sha256": "7c9de5bc44ad89894322f84c3e0a4afa2fada4de60ec0142e4ec52d8f55c19d6",
+      "git_blob": "c36b0fb8740be2a5648ea1555eddb342490a1fbd"
+    },
+    {
+      "path": "model_storage/h3-preparation/native/joint-h3-native-attempt-1/final-use-profile-controls.live-polled-binaries.json",
+      "bytes": 71299,
+      "sha256": "685c07e12f13a047f4f211bf60e38e30784ef09e36a733dad340bdefd29c76e5",
+      "git_blob": "d9b54ad2d543e1a31573e4015b6ba242e12d0222"
+    },
+    {
+      "path": "model_storage/h3-preparation/native/joint-h3-native-attempt-1/final-use-profile-controls.fd-capture-config.json",
+      "bytes": 886,
+      "sha256": "051d452aa070a96b00338536a3c5533626d6324fb95ed57161b8c616e7a72202",
+      "git_blob": "d8eaa53621df64760f0e6a3366a9ea709e815649"
+    },
+    {
+      "path": "pq_recovery/h3-process-and-finaluse-review/source/codex-rs/hepta-contracts/src/final_use_tests.rs",
+      "bytes": 30497,
+      "sha256": "7beefbf2cd04a6981d2f6e12e4fb3436e115d6f824438c5931f3cc7c691f82b7",
+      "git_blob": "76ea4ef5aab6c25c806fcbfe6a0f24329b60dc69"
+    },
+    {
+      "path": "pq_recovery/h3-process-and-finaluse-review/final-use-tests-exact.raw.json",
+      "bytes": 31989,
+      "sha256": "2436036c929646285bc2e9f2685aae568392a06f319b59ac16506e4ef667036b",
+      "git_blob": "89aad32b45e566cb3ad147b72f7ccf08a24c100a"
+    },
+    {
+      "path": "model_storage/h3-preparation/formatted-candidate/codex-rs/hepta-agentd/tests/automation_effect_pq_product.rs",
+      "bytes": 17366,
+      "sha256": "9954baf1db179c35f070514ea897614ff2e54b7a8c8b1a05e24144a5cfb7994c",
+      "git_blob": "61a358a4d964c8c707e2532ef3ba7e898caba5e6"
+    },
+    {
+      "path": "model_storage/h3-preparation/formatted-candidate/codex-rs/hepta-agentd/tests/support/automation_effect_binary.rs",
+      "bytes": 12544,
+      "sha256": "dc9525efc447080f79e93ae3a7aa79e2c75feefbed80ea0aca2d09b747bda9ab",
+      "git_blob": "96bd664ba81f64b0e1b287933483dba420ed4213"
+    },
+    {
+      "path": "model_storage/h3-preparation/native/test_elf_capture.py",
+      "bytes": 6917,
+      "sha256": "64489779d88a399040e20f939fe878f8d20fa86a60b435a2d7896186dc64d87a",
+      "git_blob": "47ac9ec40e966e5c8eaf78b0a5db6d6e2feff601"
+    },
+    {
+      "path": "model_storage/h3-preparation/native/run_h3_native_pipeline.py",
+      "bytes": 33167,
+      "sha256": "9bd701390b835540c37fe4d6b41000fe7eff8204af114f2f8139023b1c7a9277",
+      "git_blob": "6dad6510eb80c3975d1218453813294f07b1922d"
+    },
+    {
+      "path": "model_storage/h3-preparation/native/fd_gate_evidence.py",
+      "bytes": 5420,
+      "sha256": "0fb050f795f982ad718938eba25c06d5e6831ce5c213a57dd166405039ba056d",
+      "git_blob": "abd2e80e438d31f8951cef1ad1a1ccef28fa6ffa"
+    },
+    {
+      "path": "model_storage/h3-preparation/native/nextest_fd_runner.py",
+      "bytes": 9554,
+      "sha256": "9679cc6e11762c29b4c0ee92dd7715d3fce0555a6f8e0e10ed9d0b007951381a",
+      "git_blob": "8bfd24fb544c13958124561dd136aff4f9385202"
+    }
+  ]
+}

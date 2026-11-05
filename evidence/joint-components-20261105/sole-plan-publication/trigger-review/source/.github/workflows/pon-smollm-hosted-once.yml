@@ -1,0 +1,52 @@
+name: PoN SmolLM cooperating campaign once
+on:
+  push:
+    branches:
+      - fix/chain-model-owner-hosted-once-20261105
+    paths:
+      - config/pon/hosted-model-intents-v1/*.json
+permissions:
+  contents: read
+concurrency:
+  group: model-owner-completion-20261104-once-v1
+  cancel-in-progress: false
+jobs:
+  original-public-pilot:
+    if: github.repository == 'TrillionniumFoundation/Trillionnium-Chain'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 300
+    env:
+      PYTHONDONTWRITEBYTECODE: '1'
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        id: checkout
+        with:
+          ref: ${{ github.event.after }}
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Validate published intent before setup or downloads
+        id: admission
+        run: python3 -I -S -B scripts/ci/llm_hosted_once.py validate
+      - uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405
+        id: python_setup
+        with:
+          python-version: '3.12.3'
+      - name: Execute the original registered pilot once
+        id: execution
+        run: python -I -S -B scripts/ci/llm_hosted_once.py execute
+      - name: Collect bounded observations without recovery or retry
+        if: always()
+        env:
+          HOSTED_CHECKOUT_OUTCOME: ${{ steps.checkout.outcome }}
+          HOSTED_ADMISSION_OUTCOME: ${{ steps.admission.outcome }}
+          HOSTED_PYTHON_SETUP_OUTCOME: ${{ steps.python_setup.outcome }}
+          HOSTED_EXECUTION_OUTCOME: ${{ steps.execution.outcome }}
+        run: python3 -I -S -B scripts/ci/llm_hosted_once.py collect
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: smollm-campaign-once-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/pon-smollm-hosted-once-v1/evidence/
+          if-no-files-found: error
+          retention-days: 30
+          include-hidden-files: false

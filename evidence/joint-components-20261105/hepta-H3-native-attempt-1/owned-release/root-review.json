@@ -1,0 +1,49 @@
+{
+  "schema": "root-H3-owned-release-review-v1",
+  "native_job": "1a1ada80dcc-fc05-5a8b",
+  "native_outcome": "FAILED exit1 at22:00:36.769Z; outer timeout false",
+  "probe_job": "1a1adc34767-fc05-5ac9",
+  "probe_terminal": {
+    "at_unix_ms": 1793916623738,
+    "audit_recorded": true,
+    "automatic_retry": false,
+    "cancelled": false,
+    "exit_code": 0,
+    "job_id": "1a1adc34767-fc05-5ac9",
+    "launch_nonce": "1d9a91028294afebfbf2777ac89f8a27",
+    "log_bytes": {
+      "stderr": {
+        "seen": 0,
+        "stored": 0
+      },
+      "stdout": {
+        "seen": 961,
+        "stored": 961
+      }
+    },
+    "log_errors": {
+      "stderr": null,
+      "stdout": null
+    },
+    "log_synced": {
+      "stderr": true,
+      "stdout": true
+    },
+    "log_truncated": {
+      "stderr": false,
+      "stdout": false
+    },
+    "output_complete": true,
+    "output_durable": true,
+    "state": "succeeded",
+    "terminal_publication_confirmed": true,
+    "terminal_publication_protocol": 1,
+    "timed_out": false
+  },
+  "proof_sha256": "06661599f4cd936baa7493ac4f9a1df95def4a0dd391f638145b46f1c032458e",
+  "exact_unit_cgroup_and_both_original_processes_absent": true,
+  "no_kill_or_mutation": true,
+  "all_11_original_delivery_hashes_verified": true,
+  "actual_RPC_proof_bytes_equal_local_file": true,
+  "native_result_not_changed_by_removed_unit_default_result": true
+}

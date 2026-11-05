@@ -1,0 +1,486 @@
+# Additional exact-source observation lane. The existing release and required runtime workflows remain unchanged.
+# Build the full original workspace graph; execute original CPU tests and selected semantic controls.
+# No profile, feature, CPU-budget, service-lifetime or cgroup policy override is introduced.
+name: PoN original workspace test-profile CPU acceptance
+'on':
+  pull_request: {}
+permissions:
+  contents: read
+concurrency:
+  group: pon-original-workspace-test-cpu-${{ github.ref }}
+  cancel-in-progress: false
+env:
+  CI: 'true'
+  CARGO_INCREMENTAL: '0'
+  CARGO_BUILD_JOBS: '2'
+  RUST_TEST_THREADS: '1'
+  PYTHONDONTWRITEBYTECODE: '1'
+jobs:
+  original-workspace-state-and-exit:
+    name: original workspace test CPU (${{ matrix.runner }}, ${{ matrix.source }})
+    runs-on: ${{ matrix.runner }}
+    timeout-minutes: 180
+    strategy:
+      fail-fast: false
+      matrix:
+        runner:
+        - ubuntu-24.04
+        - ubuntu-24.04-arm
+        source:
+        - head
+        - prospective-merge
+    env:
+      EXPECTED_HEAD: ${{ github.event.pull_request.head.sha }}
+      EXPECTED_BASE: ${{ github.event.pull_request.base.sha }}
+      EXPECTED_MERGE: ${{ github.sha }}
+      SOURCE_KIND: ${{ matrix.source }}
+    steps:
+    - name: Checkout the exact candidate or actual target merge
+      uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+      with:
+        ref: ${{ matrix.source == 'head' && github.event.pull_request.head.sha || github.sha }}
+        fetch-depth: 0
+        persist-credentials: false
+    - name: Verify unchanged source and original project boundary
+      id: source
+      shell: bash
+      run: |-
+        set -euo pipefail
+        export TRNM_CI_RECEIPT_DIR="$RUNNER_TEMP/original-workspace-test-cpu-observations"
+        mkdir -p "$TRNM_CI_RECEIPT_DIR"
+        printf 'TRNM_CI_RECEIPT_DIR=%s\n' "$TRNM_CI_RECEIPT_DIR" >> "$GITHUB_ENV"
+        printf 'CARGO_HOME=%s/cargo-original-workspace-test-cpu\n' "$RUNNER_TEMP" >> "$GITHUB_ENV"
+        printf 'CARGO_TARGET_DIR=%s/target-original-workspace-test-cpu\n' "$RUNNER_TEMP" >> "$GITHUB_ENV"
+        args=(--kind "$SOURCE_KIND" --expected-head "$EXPECTED_HEAD")
+        if [ "$SOURCE_KIND" = prospective-merge ]; then
+          args+=(--expected-base "$EXPECTED_BASE" --expected-merge "$EXPECTED_MERGE")
+        fi
+        python3 scripts/ci/verify_ci_source.py "${args[@]}" --output "$TRNM_CI_RECEIPT_DIR/source-before.json"
+        bash scripts/project-preflight.sh --audit
+    - name: Install the source-pinned native toolchain
+      id: toolchain
+      run: rustup toolchain install 1.95.0 --profile minimal --component rustfmt --component clippy
+    - name: Prepare the original pinned OpenSSL 3.5.9 PQ provider
+      id: pq_provider
+      shell: bash
+      run: bash scripts/ci/prepare_pq_provider.sh
+    - name: Build the original complete workspace in the unchanged test profile
+      id: build
+      shell: bash
+      run: |
+        set -euo pipefail
+        rustc +1.95.0 -Vv > "$TRNM_CI_RECEIPT_DIR/rustc.txt"
+        cargo +1.95.0 -V > "$TRNM_CI_RECEIPT_DIR/cargo.txt"
+        rustup which --toolchain 1.95.0 rustc > "$TRNM_CI_RECEIPT_DIR/rustc-path.txt"
+        uname -a > "$TRNM_CI_RECEIPT_DIR/host.txt"
+        df -h "$RUNNER_TEMP" > "$TRNM_CI_RECEIPT_DIR/build-space-before.txt"
+        set +e
+        python3 - > "$TRNM_CI_RECEIPT_DIR/build-input-check.stdout" 2> "$TRNM_CI_RECEIPT_DIR/build-input-check.stderr" <<'PYENV'
+        import json, os, tomllib
+        from pathlib import Path
+        root = Path(os.environ["TRNM_CI_RECEIPT_DIR"])
+        workspace = Path(os.environ["GITHUB_WORKSPACE"])
+        common_keys = ("CI", "CARGO_HOME", "CARGO_TARGET_DIR", "CARGO_BUILD_JOBS",
+                       "CARGO_INCREMENTAL", "RUST_TEST_THREADS")
+        overrides = ("RUSTFLAGS", "CARGO_ENCODED_RUSTFLAGS", "RUSTC_WRAPPER",
+                     "RUSTC_WORKSPACE_WRAPPER", "RUSTC", "RUSTC_BOOTSTRAP", "RUSTDOC",
+                     "RUSTDOCFLAGS", "CARGO_ENCODED_RUSTDOCFLAGS", "CARGO_BUILD_RUSTC",
+                     "CARGO_BUILD_RUSTDOC", "CARGO_BUILD_RUSTFLAGS", "CARGO_BUILD_TARGET",
+                     "CARGO_BUILD_RUSTC_WRAPPER", "CARGO_BUILD_RUSTC_WORKSPACE_WRAPPER")
+        provider_keys = ("OPENSSL_DIR", "OPENSSL_STATIC", "OPENSSL_CONF", "OPENSSL_MODULES",
+                         "TRNM_PQ_OPENSSL", "TRNM_PQ_OPENSSL_SHA256", "TRNM_PQ_OPENSSL_VERSION")
+        env = {key: os.environ.get(key) for key in common_keys + overrides + provider_keys}
+        env.update({key: value for key, value in os.environ.items()
+                    if key.startswith("CARGO_PROFILE_") or
+                    (key.startswith("CARGO_TARGET_") and
+                     key.endswith(("_RUSTFLAGS", "_LINKER", "_RUNNER")))})
+        command = ["cargo", "+1.95.0", "test", "--locked", "--manifest-path",
+                   "trillionnium/Cargo.toml", "--workspace", "--all-targets", "--all-features",
+                   "--no-run", "--message-format=json"]
+        manifest = tomllib.loads((workspace / "trillionnium/Cargo.toml").read_text())
+        test_packages = manifest["profile"]["test"]["package"]
+        (root / "build-command.json").write_text(json.dumps({
+            "argv": command, "environment": env,
+            "process_measurement_wrapper": ["/usr/bin/time", "-v"],
+            "rustc_selected_by_rustup": (root / "rustc-path.txt").read_text().strip(),
+            "test_profile_packages": {name: test_packages[name]
+                for name in ("trnm-pon-node", "trnm-mvcc-fee")},
+            "scope": "complete workspace test-profile build; only the named selectors run below"
+        }, indent=2) + "\n")
+        assert not any(env.get(key) for key in overrides), "unexpected compiler override"
+        assert not any(key.startswith("CARGO_PROFILE_") for key in env), "unexpected profile override"
+        assert not any(value for key, value in env.items() if key.startswith("CARGO_TARGET_")
+                       and key.endswith(("_RUSTFLAGS", "_LINKER", "_RUNNER"))), "unexpected target override"
+        for name, opt in (("trnm-pon-node", 3), ("trnm-mvcc-fee", 1)):
+            profile = test_packages[name]
+            assert profile["opt-level"] == opt
+            assert profile["debug-assertions"] is True and profile["overflow-checks"] is True
+        provider = json.loads((root / "pq-provider/provider.json").read_text())
+        assert provider["result"] == "PREPARED_AND_SMOKE_VERIFIED" and provider["exit_code"] == 0
+        assert env["OPENSSL_STATIC"] == "1" and env["TRNM_PQ_OPENSSL_VERSION"] == "3.5.9"
+        PYENV
+        input_reader=$?
+        set -e
+        printf '%s\n' "$input_reader" > "$TRNM_CI_RECEIPT_DIR/build-input-check.exit"
+        if [ "$input_reader" -ne 0 ]; then
+          exit "$input_reader"
+        fi
+        set +e
+        /usr/bin/time -v -o "$TRNM_CI_RECEIPT_DIR/build.resources.txt" cargo +1.95.0 test --locked --manifest-path trillionnium/Cargo.toml --workspace --all-targets --all-features --no-run --message-format=json > "$TRNM_CI_RECEIPT_DIR/build.jsonl" 2> "$TRNM_CI_RECEIPT_DIR/build.stderr"
+        build_exit=$?
+        printf '%s\n' "$build_exit" > "$TRNM_CI_RECEIPT_DIR/build.exit"
+        df -h "$RUNNER_TEMP" > "$TRNM_CI_RECEIPT_DIR/build-space-after.txt"
+        set -e
+        if [ "$build_exit" -ne 0 ]; then
+          exit "$build_exit"
+        fi
+        set +e
+        python3 - > "$TRNM_CI_RECEIPT_DIR/build-artifact-check.json" 2> "$TRNM_CI_RECEIPT_DIR/build-artifact-check.stderr" <<'PYART'
+        import hashlib, json, os
+        from pathlib import Path
+        root = Path(os.environ["TRNM_CI_RECEIPT_DIR"])
+        workspace = Path(os.environ["GITHUB_WORKSPACE"]).resolve()
+        rows = [json.loads(line) for line in (root / "build.jsonl").read_text().splitlines() if line.strip()]
+        finished = [row for row in rows if row.get("reason") == "build-finished"]
+        assert len(finished) == 1 and finished[0]["success"] is True
+        selected = {}
+        for crate, target, opt in (("trnm-pon-node", "trnm_pon_node", "3"),
+                                   ("trnm-mvcc-fee", "trnm_mvcc_fee", "1")):
+            artifacts = [row for row in rows if row.get("reason") == "compiler-artifact"
+                         and row.get("target", {}).get("name") == target
+                         and row.get("target", {}).get("kind") == ["lib"]]
+            assert artifacts, "missing library artifacts for " + crate
+            for artifact in artifacts:
+                assert Path(artifact["target"]["src_path"]).resolve() == workspace / "trillionnium/crates" / crate / "src/lib.rs"
+                profile = artifact["profile"]
+                assert profile["opt_level"] == opt, "wrong original test optimization for " + crate
+                assert profile["debug_assertions"] is True and profile["overflow_checks"] is True, "test checks disabled for " + crate
+                assert artifact["features"] == ["default", "pq-native-openssl"], "wrong complete-workspace features for " + crate
+            selected[crate] = artifacts
+        # Inspect M06's ordinary rlib used as a dependency, not just its separate test executable.
+        m06_dependencies = [row for row in selected["trnm-mvcc-fee"]
+                            if row["profile"]["test"] is False
+                            and any(Path(name).suffix == ".rlib" for name in row["filenames"])]
+        assert len(m06_dependencies) == 1, "expected one M06 dependency artifact"
+        node_tests = [row for row in selected["trnm-pon-node"]
+                      if row["profile"]["test"] is True and row.get("executable")]
+        assert len(node_tests) == 1, "expected one native Node library test executable"
+        artifact = node_tests[0]
+        binary = Path(artifact["executable"])
+        target = Path(os.environ["CARGO_TARGET_DIR"]).resolve()
+        assert binary.is_absolute() and binary.is_file() and not binary.is_symlink()
+        assert binary.resolve().parent == target / "debug/deps", "unexpected executable profile/target directory"
+        with binary.open("rb") as stream:
+            assert stream.read(4) == b"\x7fELF"
+            stream.seek(0)
+            digest = hashlib.file_digest(stream, "sha256").hexdigest()
+        (root / "binary.json").write_text(json.dumps({
+            "artifact": artifact, "sha256": digest,
+            "profile_evidence": selected,
+            "scope": "original test-profile CPU-policy selectors and native reactor-exit controls; not the complete runtime suite"
+        }, indent=2) + "\n")
+        (root / "binary.sha256").write_text(digest + "  " + str(binary) + "\n")
+        (root / "binary.txt").write_text(str(binary) + "\n")
+        m06_tests = [row for row in selected["trnm-mvcc-fee"]
+                     if row["profile"]["test"] is True and row.get("executable")]
+        assert len(m06_tests) == 1, "expected one M06 library test executable"
+        m06_artifact = m06_tests[0]
+        m06_binary = Path(m06_artifact["executable"])
+        assert m06_binary.is_absolute() and m06_binary.is_file() and not m06_binary.is_symlink()
+        assert m06_binary.resolve().parent == target / "debug/deps", "unexpected M06 executable profile/target directory"
+        assert m06_binary.resolve() != binary.resolve(), "Node and M06 test executables must be distinct"
+        with m06_binary.open("rb") as stream:
+            assert stream.read(4) == b"\x7fELF"
+            stream.seek(0)
+            m06_digest = hashlib.file_digest(stream, "sha256").hexdigest()
+        (root / "m06-binary.json").write_text(json.dumps({
+            "artifact": m06_artifact, "sha256": m06_digest,
+            "dependency_artifact": m06_dependencies[0],
+            "package_cwd": str(workspace / "trillionnium/crates/trnm-mvcc-fee"),
+            "scope": "selected M06 semantic controls from the same original complete workspace build; not the complete M06/runtime suite"
+        }, indent=2) + "\n")
+        (root / "m06-binary.sha256").write_text(m06_digest + "  " + str(m06_binary) + "\n")
+        (root / "m06-binary.txt").write_text(str(m06_binary) + "\n")
+        print(json.dumps({"result": "PASS", "scope": "build profiles, feature sets and ELF identity only",
+                          "node_opt_level": "3", "m06_opt_level": "1", "debug_assertions": True,
+                          "overflow_checks": True, "features": ["default", "pq-native-openssl"],
+                          "binary_sha256": digest, "m06_binary_sha256": m06_digest}, sort_keys=True))
+        PYART
+        artifact_reader=$?
+        set -e
+        printf '%s\n' "$artifact_reader" > "$TRNM_CI_RECEIPT_DIR/build-artifact-check.exit"
+        exit "$artifact_reader"
+    - name: Execute both original test-profile CPU selectors and reactor-exit controls
+      if: ${{ !cancelled() && steps.source.outcome == 'success' && steps.toolchain.outcome == 'success' && steps.pq_provider.outcome == 'success' && steps.build.outcome == 'success' }}
+      shell: bash
+      run: |-
+        set -euo pipefail
+        binary="$(cat "$TRNM_CI_RECEIPT_DIR/binary.txt")"
+        sha256sum "$binary" > "$TRNM_CI_RECEIPT_DIR/binary-before.sha256"
+        set +e
+        sha256sum -c "$TRNM_CI_RECEIPT_DIR/binary.sha256" > "$TRNM_CI_RECEIPT_DIR/binary-before.log" 2>&1
+        binary_check=$?
+        set -e
+        printf '%s\n' "$binary_check" > "$TRNM_CI_RECEIPT_DIR/binary-before.exit"
+        if [ "$binary_check" -ne 0 ]; then
+          exit "$binary_check"
+        fi
+        cd "$GITHUB_WORKSPACE/trillionnium/crates/trnm-pon-node"
+        pwd > "$TRNM_CI_RECEIPT_DIR/test-cwd.txt"
+        status=0
+        printf 'selector\tnative_exit\tlog_exit\treader_exit\n' > "$TRNM_CI_RECEIPT_DIR/test-exits.tsv"
+        for selector in \
+          store::detached_admission::tests::admitted_custom_genesis_over_eight_mib_keeps_original_held_schedule_and_cpu_owner \
+          store::detached_admission::tests::authenticated_large_parent_original_schedule_supplementary_denominator \
+          ingress::public_v2::tests::public_loop_exit_records_lifetime_before_internal_stop \
+          ingress::public_v2::tests::public_loop_exit_records_external_stop_after_signed_read; do
+          name="${selector##*::}"
+          log="$TRNM_CI_RECEIPT_DIR/$name.log"
+          set +e
+          /usr/bin/time -v -o "$TRNM_CI_RECEIPT_DIR/$name.resources.txt" "$binary" "$selector" --exact --nocapture --test-threads=1 2>&1 | tee "$log"
+          codes=("${PIPESTATUS[@]}")
+          python3 "$GITHUB_WORKSPACE/scripts/ci/check_required_native_test.py" "$log" --test "$selector" > "$TRNM_CI_RECEIPT_DIR/$name.execution.json" 2> "$TRNM_CI_RECEIPT_DIR/$name.execution.stderr"
+          reader=$?
+          set -e
+          printf '%s\t%s\t%s\t%s\n' "$selector" "${codes[0]}" "${codes[1]}" "$reader" >> "$TRNM_CI_RECEIPT_DIR/test-exits.tsv"
+          if [ "${codes[0]}" -ne 0 ] || [ "${codes[1]}" -ne 0 ] || [ "$reader" -ne 0 ]; then
+            status=1
+          fi
+        done
+        printf '%s\n' "$status" > "$TRNM_CI_RECEIPT_DIR/test-step.exit"
+        exit "$status"
+      id: native_tests
+    - name: Execute selected arithmetic canonical and reorg semantic controls
+      id: semantic_controls
+      if: ${{ !cancelled() && steps.build.outcome == 'success' }}
+      shell: bash
+      run: |
+        set -euo pipefail
+        controls="$TRNM_CI_RECEIPT_DIR/semantic-controls"
+        mkdir -p "$controls"
+        node_binary="$(cat "$TRNM_CI_RECEIPT_DIR/binary.txt")"
+        m06_binary="$(cat "$TRNM_CI_RECEIPT_DIR/m06-binary.txt")"
+        status=0
+        printf 'crate\treader_exit\n' > "$controls/elf-before-exits.tsv"
+        for crate in node m06; do
+          if [ "$crate" = node ]; then
+            binary="$node_binary"
+            receipt=binary
+          else
+            binary="$m06_binary"
+            receipt=m06-binary
+          fi
+          sha256sum "$binary" > "$controls/$crate-binary-before.sha256"
+          set +e
+          sha256sum -c "$TRNM_CI_RECEIPT_DIR/$receipt.sha256" > "$controls/$crate-binary-before.log" 2>&1
+          reader=$?
+          set -e
+          printf '%s\t%s\n' "$crate" "$reader" >> "$controls/elf-before-exits.tsv"
+          if [ "$reader" -ne 0 ]; then status=1; fi
+        done
+        if [ "$status" -ne 0 ]; then
+          printf '%s\n' "$status" > "$controls/semantic-step.exit"
+          exit "$status"
+        fi
+        printf 'crate\tnative_exit\tlog_exit\n' > "$controls/registry-exits.tsv"
+        for crate in m06 node; do
+          if [ "$crate" = m06 ]; then
+            binary="$m06_binary"
+            cd "$GITHUB_WORKSPACE/trillionnium/crates/trnm-mvcc-fee"
+          else
+            binary="$node_binary"
+            cd "$GITHUB_WORKSPACE/trillionnium/crates/trnm-pon-node"
+          fi
+          pwd > "$controls/$crate-cwd.txt"
+          set +e
+          "$binary" --list --format terse 2>&1 | tee "$controls/$crate-registry.log"
+          codes=("${PIPESTATUS[@]}")
+          set -e
+          printf '%s\t%s\t%s\n' "$crate" "${codes[0]}" "${codes[1]}" >> "$controls/registry-exits.tsv"
+          if [ "${codes[0]}" -ne 0 ] || [ "${codes[1]}" -ne 0 ]; then status=1; fi
+        done
+        set +e
+        python3 - > "$controls/registry-check.json" 2> "$controls/registry-check.stderr" <<'PYREGISTRY'
+        import json, os, re
+        from pathlib import Path
+        root = Path(os.environ["TRNM_CI_RECEIPT_DIR"]) / "semantic-controls"
+        registries = {}
+        for crate in ("m06", "node"):
+            names = []
+            for line in (root / f"{crate}-registry.log").read_text().splitlines():
+                match = re.fullmatch(r"([A-Za-z_][A-Za-z0-9_:]*): test", line)
+                if match:
+                    names.append(match[1])
+            assert names and len(names) == len(set(names)), "empty or duplicate libtest registry: " + crate
+            registries[crate] = set(names)
+        selected = []
+        groups = []
+        def prefix(crate, group, name, count):
+            names = sorted(test for test in registries[crate] if test.startswith(name))
+            assert len(names) == count, f"{group}: expected {count} actual registered controls, got {len(names)}"
+            groups.append({"crate": crate, "group": group, "prefix": name, "expected_count": count, "tests": names})
+            selected.extend((crate, group, test) for test in names)
+        def exact(crate, group, names):
+            assert names and len(names) == len(set(names))
+            assert all(test in registries[crate] for test in names), "missing exact control: " + group
+            groups.append({"crate": crate, "group": group, "expected_count": len(names), "tests": names})
+            selected.extend((crate, group, test) for test in names)
+        prefix("m06", "full-root-arithmetic", "pon_commitment::full_root_arithmetic_tests::", 5)
+        exact("m06", "unchanged-canonical-map", [
+            "pon_commitment::unchanged_snapshot_tests::unchanged_snapshot_shares_only_after_full_actual_bytes_match",
+            "pon_commitment::unchanged_snapshot_tests::unchanged_snapshot_retains_exact_capacity_charges_and_all_budget_boundaries",
+            "pon_commitment::unchanged_snapshot_tests::unchanged_snapshot_misleading_root_and_changed_bytes_take_original_repair_path",
+            "pon_commitment::unchanged_snapshot_tests::unchanged_snapshot_keeps_late_canonical_errors_before_wire_and_cache_limits",
+            "pon_commitment::unchanged_snapshot_tests::unchanged_candidate_early_miss_retains_complete_late_validation",
+            "pon_commitment::unchanged_snapshot_tests::unchanged_snapshot_empty_delta_still_checks_the_original_tree_root",
+        ])
+        exact("node", "account-root-digest", [
+            "account_archive_prototype::native_root_digest::tests::native_root_digest_matches_record_and_sparse_references_after_exact_input_changes",
+            "account_archive_prototype::native_root_digest::tests::native_root_digest_keeps_original_traversal_cancellation_and_collision_order",
+            "account_archive_prototype::native_root_digest::tests::native_root_digest_keeps_fork_shape_and_all_lift_input_relations",
+        ])
+        exact("node", "growth-return-observations", [
+            "store::growth::tests::scale_observation::native_growth_scale_retains_rejected_and_cancelled_admission_returns",
+            "store::growth::tests::scale_observation::native_growth_scale_retains_admission_when_activation_returns_error",
+        ])
+        exact("m06", "canonical-ascii", [
+            "pon_executor::root_arithmetic_tests::canonical_ascii_guard_matches_exhaustive_bytes_pairs_and_borrow_chains",
+            "pon_executor::root_arithmetic_tests::canonical_ascii_keeps_original_serde_bytes_and_vec_capacities",
+            "pon_executor::root_arithmetic_tests::canonical_ascii_into_keeps_reused_capacity_and_failed_input_untouched",
+            "pon_executor::root_arithmetic_tests::canonical_ascii_commitment_keeps_late_grammar_before_wire_and_cache_errors",
+            "pon_executor::root_arithmetic_tests::arithmetic_root_ascii_encoding_matches_independent_serde_reference",
+            "pon_executor::root_arithmetic_tests::arithmetic_root_preserves_complete_grammar_before_all_wire_limits",
+            "pon_commitment::bounded_encoding_tests::canonical_ascii_fast_encoding_keeps_direct_serde_budget_decisions_and_charges",
+        ])
+        prefix("node", "reorg-tail", "store::reorg_readback_tests::", 6)
+        exact("node", "direct-append-readback", [
+            "store::append_readback_tests::direct_append_keeps_complete_rows_events_state_and_cold_reopen",
+            "store::append_readback_tests::direct_append_cancellation_at_each_callback_leaves_no_partial_publication",
+        ])
+        exact("node", "current-sql-root", [
+            "store::detached_admission::tests::large_parent_root_arithmetic_keeps_current_sql_and_original_read_checkpoints",
+        ])
+        exact("node", "prepared-current-history", [
+            "store::historical_commitment_tests::legacy_prepared_history_reads_observe_current_rows_writes_and_rollback",
+            "store::historical_commitment_tests::legacy_prepared_history_reads_reprepare_after_schema_and_authorizer_changes",
+            "store::historical_commitment_tests::actual_foreign_snapshot_delta_and_root_damage_preserve_original_failures",
+        ])
+        prefix("node", "postwrite-readback", "store::native_authenticated::post_write_readback::tests::", 23)
+        assert len({(crate, test) for crate, group, test in selected}) == len(selected)
+        (root / "selected-tests.tsv").write_text("".join(f"{crate}\t{group}\t{test}\n" for crate, group, test in selected))
+        print(json.dumps({"result": "PASS", "scope": "exact libtest registry selection only; no execution verdict and not the complete runtime suite",
+                          "registry_counts": {crate: len(names) for crate, names in registries.items()},
+                          "selected_count": len(selected), "groups": groups}, indent=2))
+        PYREGISTRY
+        reader=$?
+        set -e
+        printf '%s\n' "$reader" > "$controls/registry-check.exit"
+        if [ "$reader" -ne 0 ]; then status=1; fi
+        if [ "$status" -ne 0 ]; then
+          printf '%s\n' "$status" > "$controls/semantic-step.exit"
+          exit "$status"
+        fi
+        printf 'crate\tgroup\tselector\tnative_exit\tlog_exit\treader_exit\n' > "$controls/test-exits.tsv"
+        expected_count="$(wc -l < "$controls/selected-tests.tsv")"
+        index=0
+        while IFS=$'\t' read -r crate group selector; do
+          if [ "$crate" = m06 ]; then
+            binary="$m06_binary"
+            cd "$GITHUB_WORKSPACE/trillionnium/crates/trnm-mvcc-fee"
+          elif [ "$crate" = node ]; then
+            binary="$node_binary"
+            cd "$GITHUB_WORKSPACE/trillionnium/crates/trnm-pon-node"
+          else
+            printf 'unknown selected crate: %s\n' "$crate" >&2
+            exit 1
+          fi
+          index=$((index + 1))
+          name="$(printf '%02d-%s-%s' "$index" "$crate" "${selector##*::}")"
+          log="$controls/$name.log"
+          pwd > "$controls/$name.cwd.txt"
+          set +e
+          /usr/bin/time -v -o "$controls/$name.resources.txt" "$binary" "$selector" --exact --nocapture --test-threads=1 < /dev/null 2>&1 | tee "$log"
+          codes=("${PIPESTATUS[@]}")
+          python3 "$GITHUB_WORKSPACE/scripts/ci/check_required_native_test.py" "$log" --test "$selector" > "$controls/$name.execution.json" 2> "$controls/$name.execution.stderr"
+          reader=$?
+          set -e
+          printf '%s\t%s\t%s\t%s\t%s\t%s\n' "$crate" "$group" "$selector" "${codes[0]}" "${codes[1]}" "$reader" >> "$controls/test-exits.tsv"
+          if [ "${codes[0]}" -ne 0 ] || [ "${codes[1]}" -ne 0 ] || [ "$reader" -ne 0 ]; then status=1; fi
+        done < "$controls/selected-tests.tsv"
+        if [ "$index" -eq 0 ] || [ "$index" -ne "$expected_count" ]; then status=1; fi
+        printf '%s\n' "$index" > "$controls/executed-selector-count.txt"
+        printf '%s\n' "$status" > "$controls/semantic-step.exit"
+        exit "$status"
+    - name: Observe fixed touched owners across actual account and history growth
+      id: growth_scale
+      if: ${{ !cancelled() && steps.build.outcome == 'success' }}
+      shell: bash
+      run: |
+        set -euo pipefail
+        # Reuse the exact complete-workspace artifact already validated above.
+        # The original CPU selectors remain required even when this observation passes.
+        binary="$(cat "$TRNM_CI_RECEIPT_DIR/binary.txt")"
+        sha256sum -c "$TRNM_CI_RECEIPT_DIR/binary.sha256"
+        python3 -m unittest discover -s "$GITHUB_WORKSPACE/scripts/ci" -p test_growth_scale_observation.py -v > "$TRNM_CI_RECEIPT_DIR/growth-scale.reader-controls.log" 2>&1
+        selector=store::growth::tests::scale_observation::native_growth_v2_fixed_owner_account_history_scale_observation
+        export TRNM_GROWTH_SCALE_OBSERVATION_DIR="$TRNM_CI_RECEIPT_DIR/growth-scale"
+        cd "$GITHUB_WORKSPACE/trillionnium/crates/trnm-pon-node"
+        set +e
+        /usr/bin/time -v -o "$TRNM_CI_RECEIPT_DIR/growth-scale.resources.txt" "$binary" "$selector" --exact --ignored --nocapture --test-threads=1 < /dev/null > "$TRNM_CI_RECEIPT_DIR/growth-scale.log" 2>&1
+        native_exit=$?
+        python3 "$GITHUB_WORKSPACE/scripts/ci/check_required_native_test.py" "$TRNM_CI_RECEIPT_DIR/growth-scale.log" --test "$selector" > "$TRNM_CI_RECEIPT_DIR/growth-scale.execution.json" 2> "$TRNM_CI_RECEIPT_DIR/growth-scale.execution.stderr"
+        execution_reader=$?
+        python3 "$GITHUB_WORKSPACE/scripts/ci/check_growth_scale_observation.py" "$TRNM_GROWTH_SCALE_OBSERVATION_DIR" > "$TRNM_CI_RECEIPT_DIR/growth-scale.readback.json" 2> "$TRNM_CI_RECEIPT_DIR/growth-scale.readback.stderr"
+        observation_reader=$?
+        sha256sum -c "$TRNM_CI_RECEIPT_DIR/binary.sha256" > "$TRNM_CI_RECEIPT_DIR/growth-scale.binary-after.log" 2>&1
+        binary_reader=$?
+        set -e
+        printf 'native_exit=%s\nexecution_reader=%s\nobservation_reader=%s\nbinary_reader=%s\n' "$native_exit" "$execution_reader" "$observation_reader" "$binary_reader" > "$TRNM_CI_RECEIPT_DIR/growth-scale.exits.txt"
+        # Emit the bounded reader result for direct readback; retain all raw files
+        # and the four original exit checks, including refused observations.
+        cat "$TRNM_CI_RECEIPT_DIR/growth-scale.readback.json"
+        test "$native_exit" -eq 0 && test "$execution_reader" -eq 0 && test "$observation_reader" -eq 0 && test "$binary_reader" -eq 0
+    - name: Recheck the same test ELF after success or failure
+      if: ${{ always() && steps.build.outcome == 'success' }}
+      shell: bash
+      run: |
+        set -euo pipefail
+        binary="$(cat "$TRNM_CI_RECEIPT_DIR/binary.txt")"
+        sha256sum "$binary" > "$TRNM_CI_RECEIPT_DIR/binary-after.sha256"
+        set +e
+        sha256sum -c "$TRNM_CI_RECEIPT_DIR/binary.sha256" > "$TRNM_CI_RECEIPT_DIR/binary-after.log" 2>&1
+        binary_check=$?
+        set -e
+        printf '%s\n' "$binary_check" > "$TRNM_CI_RECEIPT_DIR/binary-after.exit"
+        exit "$binary_check"
+    - name: Recheck the same M06 test ELF after success or failure
+      if: ${{ always() && steps.build.outcome == 'success' }}
+      shell: bash
+      run: |
+        set -euo pipefail
+        binary="$(cat "$TRNM_CI_RECEIPT_DIR/m06-binary.txt")"
+        sha256sum "$binary" > "$TRNM_CI_RECEIPT_DIR/m06-binary-after.sha256"
+        set +e
+        sha256sum -c "$TRNM_CI_RECEIPT_DIR/m06-binary.sha256" > "$TRNM_CI_RECEIPT_DIR/m06-binary-after.log" 2>&1
+        binary_check=$?
+        set -e
+        printf '%s\n' "$binary_check" > "$TRNM_CI_RECEIPT_DIR/m06-binary-after.exit"
+        exit "$binary_check"
+    - name: Reverify exact source after every outcome
+      if: always()
+      shell: bash
+      run: |-
+        set -euo pipefail
+        args=(--kind "$SOURCE_KIND" --expected-head "$EXPECTED_HEAD")
+        if [ "$SOURCE_KIND" = prospective-merge ]; then
+          args+=(--expected-base "$EXPECTED_BASE" --expected-merge "$EXPECTED_MERGE")
+        fi
+        python3 scripts/ci/verify_ci_source.py "${args[@]}" --output "$RUNNER_TEMP/original-workspace-test-cpu-observations/source-after.json"
+    - name: Retain actual successes and failures
+      if: always()
+      uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+      with:
+        name: original-workspace-test-cpu-${{ matrix.runner }}-${{ matrix.source }}-${{ github.event.pull_request.head.sha }}-${{ github.run_attempt }}
+        path: ${{ runner.temp }}/original-workspace-test-cpu-observations/
+        if-no-files-found: error
+        retention-days: 30

@@ -1,0 +1,622 @@
+name: trnm-required-baseline
+on:
+  pull_request:
+  push:
+    branches: [main]
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: portable-${{ github.workflow }}-${{ github.ref }}
+  # Preserve running head/merge evidence when a successor enters the queue.
+  cancel-in-progress: false
+env:
+  CI: "true"
+  CARGO_INCREMENTAL: "0"
+  CARGO_BUILD_JOBS: "2"
+  RUST_TEST_THREADS: "1"
+  CARGO_TERM_COLOR: never
+  PYTHONDONTWRITEBYTECODE: "1"
+  TRNM_EXPECTED_SOURCE_SHA: ${{ github.event_name == 'pull_request' && github.event.pull_request.head.sha || github.sha }}
+jobs:
+  repository-truth:
+    name: repository-truth
+    runs-on: ubuntu-24.04
+    timeout-minutes: 45
+    steps:
+      - name: Checkout exact candidate
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: ${{ env.TRNM_EXPECTED_SOURCE_SHA }}
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Verify immutable source identity
+        run: python3 scripts/ci/verify_ci_source.py --kind head --expected-head "$TRNM_EXPECTED_SOURCE_SHA" --output "$RUNNER_TEMP/ci-observations/source.json"
+      - name: Set isolated Cargo paths after runner allocation
+        shell: bash
+        run: |
+          set -euo pipefail
+          printf 'CARGO_HOME=%s/cargo-%s\n' "$RUNNER_TEMP" "$GITHUB_JOB" >> "$GITHUB_ENV"
+          printf 'CARGO_TARGET_DIR=%s/target-%s\n' "$RUNNER_TEMP" "$GITHUB_JOB" >> "$GITHUB_ENV"
+          printf 'TRNM_CI_RECEIPT_DIR=%s/ci-observations\n' "$RUNNER_TEMP" >> "$GITHUB_ENV"
+      - name: Check PQ provider CI wiring and failure controls
+        run: python3 scripts/ci/test_pq_provider_ci.py
+      - name: Check original public Host CI ownership and failure controls
+        run: python3 scripts/ci/test_from_zero_host_ci.py
+      - name: Run actual repository-truth checks
+        run: bash scripts/ci/ci_job.sh repository-truth
+      - name: Verify source remained unchanged
+        if: always()
+        run: python3 scripts/ci/verify_ci_source.py --kind head --expected-head "$TRNM_EXPECTED_SOURCE_SHA"
+      - name: Retain source and execution observations
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: head-${{ github.job }}-${{ env.TRNM_EXPECTED_SOURCE_SHA }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/ci-observations/
+          if-no-files-found: error
+          retention-days: 30
+  cross-arch-cost:
+    name: cross-arch-cost (${{ matrix.arch }})
+    runs-on: ${{ matrix.runner }}
+    timeout-minutes: 155
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - arch: x64
+            runner: ubuntu-24.04
+          - arch: arm64
+            runner: ubuntu-24.04-arm
+    env:
+      TRNM_COST_RUNNER_LABEL: ${{ matrix.runner }}
+    steps:
+      - name: Checkout exact candidate
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: ${{ env.TRNM_EXPECTED_SOURCE_SHA }}
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Verify immutable source identity
+        run: python3 scripts/ci/verify_ci_source.py --kind head --expected-head "$TRNM_EXPECTED_SOURCE_SHA" --output "$RUNNER_TEMP/ci-observations/source.json"
+      - name: Set isolated Cargo paths after runner allocation
+        shell: bash
+        run: |
+          set -euo pipefail
+          printf 'CARGO_HOME=%s/cargo-%s\n' "$RUNNER_TEMP" "$GITHUB_JOB" >> "$GITHUB_ENV"
+          printf 'CARGO_TARGET_DIR=%s/target-%s\n' "$RUNNER_TEMP" "$GITHUB_JOB" >> "$GITHUB_ENV"
+          printf 'TRNM_CI_RECEIPT_DIR=%s/ci-observations\n' "$RUNNER_TEMP" >> "$GITHUB_ENV"
+      - name: Install pinned native release compiler
+        run: rustup toolchain install 1.95.0 --profile minimal
+      - name: Install matching native formatter
+        run: rustup component add --toolchain 1.95.0 rustfmt
+      - name: Execute native release setup and repeated-search costs
+        run: env -u CARGO_INCREMENTAL python3 scripts/ci/run_cross_arch_cost.py --arch "${{ matrix.arch }}"
+      - name: Execute native zero-matrix locality costs
+        if: always()
+        run: env -u CARGO_INCREMENTAL python3 scripts/ci/run_cross_arch_cost.py --arch "${{ matrix.arch }}" --suite zero-locality --zero-version 2
+      - name: Execute native one-zero rank-one locality costs
+        if: always()
+        run: env -u CARGO_INCREMENTAL python3 scripts/ci/run_cross_arch_cost.py --arch "${{ matrix.arch }}" --suite one-zero-locality
+      - name: Execute native fixed maintenance producer and preparation costs
+        if: always()
+        run: env -u CARGO_INCREMENTAL python3 scripts/ci/run_cross_arch_cost.py --arch "${{ matrix.arch }}" --suite maintenance-paired
+      - name: Execute native legal and late-rejection verifier costs
+        if: always()
+        run: python3 scripts/pon_work_rejection_report.py --run --out "$TRNM_CI_RECEIPT_DIR/work-rejection"
+      - name: Execute exact native from-zero service controls
+        if: always()
+        run: python3 scripts/ci/run_from_zero_host.py -- python3 scripts/ci/run_from_zero_native.py --out "$TRNM_CI_RECEIPT_DIR/from-zero-native"
+      - name: Verify source remained unchanged
+        if: always()
+        run: python3 scripts/ci/verify_ci_source.py --kind head --expected-head "$TRNM_EXPECTED_SOURCE_SHA"
+      - name: Retain native cost successes and failures
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: cost-${{ matrix.arch }}-${{ env.TRNM_EXPECTED_SOURCE_SHA }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/ci-observations/
+          if-no-files-found: error
+          retention-days: 30
+  cross-arch-w1-reuse-v3:
+    name: W1 actual reuse V3 (${{ matrix.arch }}, ${{ matrix.source }})
+    if: github.event_name == 'pull_request'
+    runs-on: ${{ matrix.runner }}
+    timeout-minutes: 155
+    strategy:
+      fail-fast: false
+      matrix:
+        arch: [x64, arm64]
+        source: [head, prospective-merge]
+        include:
+          - arch: x64
+            runner: ubuntu-24.04
+          - arch: arm64
+            runner: ubuntu-24.04-arm
+    env:
+      TRNM_COST_RUNNER_LABEL: ${{ matrix.runner }}
+      TRNM_COST_SOURCE_KIND: ${{ matrix.source }}
+      TRNM_EXPECTED_SOURCE_SHA: ${{ matrix.source == 'head' && github.event.pull_request.head.sha || github.sha }}
+      TRNM_EXPECTED_CANDIDATE_SHA: ${{ github.event.pull_request.head.sha }}
+      TRNM_EXPECTED_BASE_SHA: ${{ github.event.pull_request.base.sha }}
+    steps:
+      - name: Checkout exact candidate
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: ${{ env.TRNM_EXPECTED_SOURCE_SHA }}
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Verify V3 exact source and ordered merge before execution
+        shell: bash
+        run: |
+          set -euo pipefail
+          args=(--kind "$TRNM_COST_SOURCE_KIND" --expected-head "$TRNM_EXPECTED_CANDIDATE_SHA")
+          if test "$TRNM_COST_SOURCE_KIND" = prospective-merge; then
+            args+=(--expected-base "$TRNM_EXPECTED_BASE_SHA" --expected-merge "$TRNM_EXPECTED_SOURCE_SHA")
+          fi
+          python3 scripts/ci/verify_ci_source.py "${args[@]}" --output "$RUNNER_TEMP/ci-observations/source-before.json"
+      - name: Check original repository boundary before native V3 build
+        run: bash scripts/project-preflight.sh --audit
+      - name: Set isolated Cargo paths after runner allocation
+        shell: bash
+        run: |
+          set -euo pipefail
+          printf 'CARGO_HOME=%s/cargo-%s\n' "$RUNNER_TEMP" "$GITHUB_JOB" >> "$GITHUB_ENV"
+          printf 'CARGO_TARGET_DIR=%s/target-%s\n' "$RUNNER_TEMP" "$GITHUB_JOB" >> "$GITHUB_ENV"
+          printf 'TRNM_CI_RECEIPT_DIR=%s/ci-observations\n' "$RUNNER_TEMP" >> "$GITHUB_ENV"
+      - name: Install pinned native release compiler
+        run: rustup toolchain install 1.95.0 --profile minimal
+      - name: Install matching native formatter
+        run: rustup component add --toolchain 1.95.0 rustfmt
+      - name: Execute the complete native W1 actual reuse V3 grid
+        run: env -u CARGO_INCREMENTAL python3 scripts/ci/run_w1_reused_cost_v3.py --arch "${{ matrix.arch }}"
+      - name: Verify V3 exact source and ordered merge after execution
+        if: always()
+        shell: bash
+        run: |
+          set -euo pipefail
+          args=(--kind "$TRNM_COST_SOURCE_KIND" --expected-head "$TRNM_EXPECTED_CANDIDATE_SHA")
+          if test "$TRNM_COST_SOURCE_KIND" = prospective-merge; then
+            args+=(--expected-base "$TRNM_EXPECTED_BASE_SHA" --expected-merge "$TRNM_EXPECTED_SOURCE_SHA")
+          fi
+          python3 scripts/ci/verify_ci_source.py "${args[@]}" --output "$RUNNER_TEMP/ci-observations/source-after.json"
+      - name: Retain V3 costs including all failed observations
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: w1-reuse-v3-${{ matrix.source }}-${{ matrix.arch }}-${{ env.TRNM_EXPECTED_SOURCE_SHA }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/ci-observations/
+          if-no-files-found: error
+          retention-days: 30
+  cross-arch-cost-consistency:
+    name: cross-arch-cost-consistency
+    needs: cross-arch-cost
+    if: always()
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - name: Checkout exact candidate
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: ${{ env.TRNM_EXPECTED_SOURCE_SHA }}
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Verify immutable source identity
+        run: python3 scripts/ci/verify_ci_source.py --kind head --expected-head "$TRNM_EXPECTED_SOURCE_SHA" --output "$RUNNER_TEMP/ci-observations/source.json"
+      - name: Retrieve both actual cost observations from this run
+        uses: actions/download-artifact@634f93cb2916e3fdff6788551b99b062d0335ce0
+        with:
+          pattern: cost-*-${{ env.TRNM_EXPECTED_SOURCE_SHA }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/cost-inputs/
+          merge-multiple: false
+      - name: Check actual streams and source identity without a speed threshold
+        run: python3 scripts/ci/check_cross_arch_cost.py --artifacts "$RUNNER_TEMP/cost-inputs" --expected-source "$TRNM_EXPECTED_SOURCE_SHA" --output "$RUNNER_TEMP/ci-observations/cross-arch-comparison.json"
+      - name: Check zero-matrix streams and exact source identity
+        if: always()
+        run: python3 scripts/ci/check_cross_arch_cost.py --artifacts "$RUNNER_TEMP/cost-inputs" --expected-source "$TRNM_EXPECTED_SOURCE_SHA" --output "$RUNNER_TEMP/ci-observations/cross-arch-zero-locality-comparison.json" --suite zero-locality --zero-version 2
+      - name: Check one-zero rank-one streams and exact source identity
+        if: always()
+        run: python3 scripts/ci/check_cross_arch_cost.py --artifacts "$RUNNER_TEMP/cost-inputs" --expected-source "$TRNM_EXPECTED_SOURCE_SHA" --output "$RUNNER_TEMP/ci-observations/cross-arch-one-zero-locality-comparison.json" --suite one-zero-locality
+      - name: Check fixed maintenance streams and exact source identity
+        if: always()
+        run: python3 scripts/ci/check_cross_arch_cost.py --artifacts "$RUNNER_TEMP/cost-inputs" --expected-source "$TRNM_EXPECTED_SOURCE_SHA" --output "$RUNNER_TEMP/ci-observations/cross-arch-maintenance-comparison.json" --suite maintenance-paired
+      - name: Check actual rejection stages and paired native architectures
+        if: always()
+        run: python3 scripts/pon_work_rejection_report.py --compare "$RUNNER_TEMP/cost-inputs/cost-x64-$TRNM_EXPECTED_SOURCE_SHA-$GITHUB_RUN_ATTEMPT/work-rejection" "$RUNNER_TEMP/cost-inputs/cost-arm64-$TRNM_EXPECTED_SOURCE_SHA-$GITHUB_RUN_ATTEMPT/work-rejection" --expected-source "$TRNM_EXPECTED_SOURCE_SHA" --expected-run "$GITHUB_RUN_ID" --expected-attempt "$GITHUB_RUN_ATTEMPT" --out "$RUNNER_TEMP/ci-observations/work-rejection-comparison"
+      - name: Verify source remained unchanged
+        if: always()
+        run: python3 scripts/ci/verify_ci_source.py --kind head --expected-head "$TRNM_EXPECTED_SOURCE_SHA"
+      - name: Retain comparison result including missing or failed architectures
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: cost-consistency-${{ env.TRNM_EXPECTED_SOURCE_SHA }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/ci-observations/
+          if-no-files-found: error
+          retention-days: 30
+  protocol-contract:
+    name: protocol-contract
+    runs-on: ubuntu-24.04
+    timeout-minutes: 45
+    steps:
+      - name: Checkout exact candidate
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: ${{ env.TRNM_EXPECTED_SOURCE_SHA }}
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Verify immutable source identity
+        run: python3 scripts/ci/verify_ci_source.py --kind head --expected-head "$TRNM_EXPECTED_SOURCE_SHA" --output "$RUNNER_TEMP/ci-observations/source.json"
+      - name: Set isolated Cargo paths after runner allocation
+        shell: bash
+        run: |
+          set -euo pipefail
+          printf 'CARGO_HOME=%s/cargo-%s\n' "$RUNNER_TEMP" "$GITHUB_JOB" >> "$GITHUB_ENV"
+          printf 'CARGO_TARGET_DIR=%s/target-%s\n' "$RUNNER_TEMP" "$GITHUB_JOB" >> "$GITHUB_ENV"
+          printf 'TRNM_CI_RECEIPT_DIR=%s/ci-observations\n' "$RUNNER_TEMP" >> "$GITHUB_ENV"
+      - name: Install pinned compiler and tools in isolated hosted runner
+        run: |
+          rustup toolchain install 1.95.0 --profile minimal --component rustfmt --component clippy
+      - name: Install isolated conformance-only Python environment
+        run: |
+          python3 -m venv "$RUNNER_TEMP/pon-contract-env"
+          "$RUNNER_TEMP/pon-contract-env/bin/python" -m pip install --disable-pip-version-check --only-binary=:all: -r formal/pon-nakamoto-v1/requirements.txt
+          echo "$RUNNER_TEMP/pon-contract-env/bin" >> "$GITHUB_PATH"
+      - name: Prepare pinned OpenSSL 3.5.9 PQ provider
+        shell: bash
+        run: bash scripts/ci/prepare_pq_provider.sh
+      - name: Run actual protocol-contract checks
+        run: bash scripts/ci/ci_job.sh protocol-contract
+      - name: Verify source remained unchanged
+        if: always()
+        run: python3 scripts/ci/verify_ci_source.py --kind head --expected-head "$TRNM_EXPECTED_SOURCE_SHA"
+      - name: Retain source and execution observations
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: head-${{ github.job }}-${{ env.TRNM_EXPECTED_SOURCE_SHA }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/ci-observations/
+          if-no-files-found: error
+          retention-days: 30
+  fuzz-smoke:
+    name: fuzz-smoke
+    runs-on: ubuntu-24.04
+    timeout-minutes: 45
+    steps:
+      - name: Checkout exact candidate
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: ${{ env.TRNM_EXPECTED_SOURCE_SHA }}
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Verify immutable source identity
+        run: python3 scripts/ci/verify_ci_source.py --kind head --expected-head "$TRNM_EXPECTED_SOURCE_SHA" --output "$RUNNER_TEMP/ci-observations/source.json"
+      - name: Set isolated Cargo paths after runner allocation
+        shell: bash
+        run: |
+          set -euo pipefail
+          printf 'CARGO_HOME=%s/cargo-%s\n' "$RUNNER_TEMP" "$GITHUB_JOB" >> "$GITHUB_ENV"
+          printf 'CARGO_TARGET_DIR=%s/target-%s\n' "$RUNNER_TEMP" "$GITHUB_JOB" >> "$GITHUB_ENV"
+          printf 'TRNM_CI_RECEIPT_DIR=%s/ci-observations\n' "$RUNNER_TEMP" >> "$GITHUB_ENV"
+      - name: Install pinned compiler and tools in isolated hosted runner
+        run: |
+          rustup toolchain install 1.95.0 --profile minimal --component rustfmt --component clippy
+      - name: Install pinned coverage-guided fuzz tools
+        run: bash scripts/ci/install_ci_tools.sh fuzz
+      - name: Run actual fuzz-smoke checks
+        run: bash scripts/ci/ci_job.sh fuzz-smoke
+      - name: Verify source remained unchanged
+        if: always()
+        run: python3 scripts/ci/verify_ci_source.py --kind head --expected-head "$TRNM_EXPECTED_SOURCE_SHA"
+      - name: Retain source and execution observations
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: head-${{ github.job }}-${{ env.TRNM_EXPECTED_SOURCE_SHA }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/ci-observations/
+          if-no-files-found: error
+          retention-days: 30
+  rust-baseline-shards:
+    name: rust-baseline shard (${{ matrix.shard }})
+    runs-on: ubuntu-24.04
+    timeout-minutes: 180
+    strategy:
+      fail-fast: false
+      matrix:
+        shard: [runtime, quality]
+    steps:
+      - name: Checkout exact candidate
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: ${{ env.TRNM_EXPECTED_SOURCE_SHA }}
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Verify immutable source identity
+        run: python3 scripts/ci/verify_ci_source.py --kind head --expected-head "$TRNM_EXPECTED_SOURCE_SHA" --output "$RUNNER_TEMP/ci-observations/source.json"
+      - name: Set isolated Cargo paths after runner allocation
+        shell: bash
+        run: |
+          set -euo pipefail
+          printf 'CARGO_HOME=%s/cargo-%s\n' "$RUNNER_TEMP" "$GITHUB_JOB" >> "$GITHUB_ENV"
+          printf 'CARGO_TARGET_DIR=%s/target-%s\n' "$RUNNER_TEMP" "$GITHUB_JOB" >> "$GITHUB_ENV"
+          printf 'TRNM_CI_RECEIPT_DIR=%s/ci-observations\n' "$RUNNER_TEMP" >> "$GITHUB_ENV"
+      - name: Install pinned compiler and tools in isolated hosted runner
+        run: |
+          rustup toolchain install 1.95.0 --profile minimal --component rustfmt --component clippy
+      - name: Install pinned dependency auditor
+        run: bash scripts/ci/install_ci_tools.sh supply-chain
+      - name: Install isolated signed-state oracle Python environment
+        run: |
+          python3 -m venv "$RUNNER_TEMP/pon-state-env"
+          "$RUNNER_TEMP/pon-state-env/bin/python" -m pip install --disable-pip-version-check --only-binary=:all: -r formal/pon-nakamoto-v1/requirements.txt
+          echo "$RUNNER_TEMP/pon-state-env/bin" >> "$GITHUB_PATH"
+      - name: Prepare pinned OpenSSL 3.5.9 PQ provider
+        shell: bash
+        run: bash scripts/ci/prepare_pq_provider.sh
+      - name: Run retained Rust shard
+        run: python3 scripts/ci/rust_baseline_shards.py run --kind head --candidate "$TRNM_EXPECTED_SOURCE_SHA" --tested "$TRNM_EXPECTED_SOURCE_SHA" --shard "${{ matrix.shard }}" --output "$RUNNER_TEMP/ci-observations/rust-shard.json"
+      - name: Verify source remained unchanged
+        if: always()
+        run: python3 scripts/ci/verify_ci_source.py --kind head --expected-head "$TRNM_EXPECTED_SOURCE_SHA"
+      - name: Retain source and execution observations
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: rust-observations-head-${{ env.TRNM_EXPECTED_SOURCE_SHA }}-${{ github.run_attempt }}-${{ matrix.shard }}
+          path: ${{ runner.temp }}/ci-observations/
+          if-no-files-found: error
+          retention-days: 30
+      - name: Retain lightweight exact Rust shard proof
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: rust-shard-head-${{ env.TRNM_EXPECTED_SOURCE_SHA }}-${{ github.run_attempt }}-${{ matrix.shard }}
+          path: |
+            ${{ runner.temp }}/ci-observations/rust-shard.json
+            ${{ runner.temp }}/ci-observations/rust-shard.sh
+          if-no-files-found: error
+          retention-days: 30
+  rust-baseline:
+    name: rust-baseline
+    needs: rust-baseline-shards
+    if: always()
+    runs-on: ubuntu-24.04
+    timeout-minutes: 180
+    env:
+      TRNM_RUST_SHARD_RESULT: ${{ needs.rust-baseline-shards.result }}
+    steps:
+      - name: Checkout exact tested source
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: ${{ env.TRNM_EXPECTED_SOURCE_SHA }}
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Verify immutable source identity
+        run: python3 scripts/ci/verify_ci_source.py --kind head --expected-head "$TRNM_EXPECTED_SOURCE_SHA" --output "$RUNNER_TEMP/ci-observations/source.json"
+      - name: Retrieve both current-run Rust shard observations
+        uses: actions/download-artifact@634f93cb2916e3fdff6788551b99b062d0335ce0
+        with:
+          pattern: rust-shard-head-${{ env.TRNM_EXPECTED_SOURCE_SHA }}-${{ github.run_attempt }}-*
+          path: ${{ runner.temp }}/rust-shards/
+          merge-multiple: false
+      - name: Require both successful exact-source Rust shards
+        if: always()
+        run: python3 scripts/ci/rust_baseline_shards.py check --kind head --candidate "$TRNM_EXPECTED_SOURCE_SHA" --tested "$TRNM_EXPECTED_SOURCE_SHA" --inputs "$RUNNER_TEMP/rust-shards" --dependency-result "$TRNM_RUST_SHARD_RESULT" --output "$RUNNER_TEMP/ci-observations/rust-fanin.json"
+      - name: Verify source remained unchanged
+        if: always()
+        run: python3 scripts/ci/verify_ci_source.py --kind head --expected-head "$TRNM_EXPECTED_SOURCE_SHA"
+      - name: Retain failed and successful Rust fan-in observations
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: rust-fanin-head-${{ env.TRNM_EXPECTED_SOURCE_SHA }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/ci-observations/
+          if-no-files-found: error
+          retention-days: 30
+  prospective-rust-shards:
+    name: prospective Rust shard (${{ matrix.shard }})
+    if: github.event_name == 'pull_request'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 180
+    strategy:
+      fail-fast: false
+      matrix:
+        shard: [runtime, quality]
+    env:
+      TRNM_EXPECTED_SOURCE_SHA: ${{ github.sha }}
+      TRNM_EXPECTED_CANDIDATE_SHA: ${{ github.event.pull_request.head.sha }}
+      TRNM_EXPECTED_BASE_SHA: ${{ github.event.pull_request.base.sha }}
+    steps:
+      - name: Checkout exact candidate
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: ${{ env.TRNM_EXPECTED_SOURCE_SHA }}
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Verify immutable source identity
+        run: python3 scripts/ci/verify_ci_source.py --kind prospective-merge --expected-head "$TRNM_EXPECTED_CANDIDATE_SHA" --expected-base "$TRNM_EXPECTED_BASE_SHA" --expected-merge "$TRNM_EXPECTED_SOURCE_SHA" --output "$RUNNER_TEMP/ci-observations/source.json"
+      - name: Set isolated Cargo paths after runner allocation
+        shell: bash
+        run: |
+          set -euo pipefail
+          printf 'CARGO_HOME=%s/cargo-%s\n' "$RUNNER_TEMP" "$GITHUB_JOB" >> "$GITHUB_ENV"
+          printf 'CARGO_TARGET_DIR=%s/target-%s\n' "$RUNNER_TEMP" "$GITHUB_JOB" >> "$GITHUB_ENV"
+          printf 'TRNM_CI_RECEIPT_DIR=%s/ci-observations\n' "$RUNNER_TEMP" >> "$GITHUB_ENV"
+      - name: Install pinned compiler and tools in isolated hosted runner
+        run: |
+          rustup toolchain install 1.95.0 --profile minimal --component rustfmt --component clippy
+      - name: Install pinned dependency auditor
+        run: bash scripts/ci/install_ci_tools.sh supply-chain
+      - name: Install isolated signed-state oracle Python environment
+        run: |
+          python3 -m venv "$RUNNER_TEMP/pon-state-env"
+          "$RUNNER_TEMP/pon-state-env/bin/python" -m pip install --disable-pip-version-check --only-binary=:all: -r formal/pon-nakamoto-v1/requirements.txt
+          echo "$RUNNER_TEMP/pon-state-env/bin" >> "$GITHUB_PATH"
+      - name: Prepare pinned OpenSSL 3.5.9 PQ provider
+        shell: bash
+        run: bash scripts/ci/prepare_pq_provider.sh
+      - name: Run retained Rust shard
+        run: python3 scripts/ci/rust_baseline_shards.py run --kind prospective-merge --candidate "$TRNM_EXPECTED_CANDIDATE_SHA" --base "$TRNM_EXPECTED_BASE_SHA" --tested "$TRNM_EXPECTED_SOURCE_SHA" --shard "${{ matrix.shard }}" --output "$RUNNER_TEMP/ci-observations/rust-shard.json"
+      - name: Verify source remained unchanged
+        if: always()
+        run: python3 scripts/ci/verify_ci_source.py --kind prospective-merge --expected-head "$TRNM_EXPECTED_CANDIDATE_SHA" --expected-base "$TRNM_EXPECTED_BASE_SHA" --expected-merge "$TRNM_EXPECTED_SOURCE_SHA"
+      - name: Retain source and execution observations
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: rust-observations-prospective-merge-${{ env.TRNM_EXPECTED_SOURCE_SHA }}-${{ github.run_attempt }}-${{ matrix.shard }}
+          path: ${{ runner.temp }}/ci-observations/
+          if-no-files-found: error
+          retention-days: 30
+      - name: Retain lightweight exact Rust shard proof
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: rust-shard-prospective-merge-${{ env.TRNM_EXPECTED_SOURCE_SHA }}-${{ github.run_attempt }}-${{ matrix.shard }}
+          path: |
+            ${{ runner.temp }}/ci-observations/rust-shard.json
+            ${{ runner.temp }}/ci-observations/rust-shard.sh
+          if-no-files-found: error
+          retention-days: 30
+  prospective-rust-baseline:
+    name: prospective-merge (rust-baseline)
+    needs: prospective-rust-shards
+    if: ${{ always() && github.event_name == 'pull_request' }}
+    runs-on: ubuntu-24.04
+    timeout-minutes: 180
+    env:
+      TRNM_EXPECTED_SOURCE_SHA: ${{ github.sha }}
+      TRNM_EXPECTED_CANDIDATE_SHA: ${{ github.event.pull_request.head.sha }}
+      TRNM_EXPECTED_BASE_SHA: ${{ github.event.pull_request.base.sha }}
+      TRNM_RUST_SHARD_RESULT: ${{ needs.prospective-rust-shards.result }}
+    steps:
+      - name: Checkout exact tested source
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: ${{ env.TRNM_EXPECTED_SOURCE_SHA }}
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Verify immutable source identity
+        run: python3 scripts/ci/verify_ci_source.py --kind prospective-merge --expected-head "$TRNM_EXPECTED_CANDIDATE_SHA" --expected-base "$TRNM_EXPECTED_BASE_SHA" --expected-merge "$TRNM_EXPECTED_SOURCE_SHA" --output "$RUNNER_TEMP/ci-observations/source.json"
+      - name: Retrieve both current-run Rust shard observations
+        uses: actions/download-artifact@634f93cb2916e3fdff6788551b99b062d0335ce0
+        with:
+          pattern: rust-shard-prospective-merge-${{ env.TRNM_EXPECTED_SOURCE_SHA }}-${{ github.run_attempt }}-*
+          path: ${{ runner.temp }}/rust-shards/
+          merge-multiple: false
+      - name: Require both successful exact-source Rust shards
+        if: always()
+        run: python3 scripts/ci/rust_baseline_shards.py check --kind prospective-merge --candidate "$TRNM_EXPECTED_CANDIDATE_SHA" --base "$TRNM_EXPECTED_BASE_SHA" --tested "$TRNM_EXPECTED_SOURCE_SHA" --inputs "$RUNNER_TEMP/rust-shards" --dependency-result "$TRNM_RUST_SHARD_RESULT" --output "$RUNNER_TEMP/ci-observations/rust-fanin.json"
+      - name: Verify source remained unchanged
+        if: always()
+        run: python3 scripts/ci/verify_ci_source.py --kind prospective-merge --expected-head "$TRNM_EXPECTED_CANDIDATE_SHA" --expected-base "$TRNM_EXPECTED_BASE_SHA" --expected-merge "$TRNM_EXPECTED_SOURCE_SHA"
+      - name: Retain failed and successful Rust fan-in observations
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: rust-fanin-prospective-merge-${{ env.TRNM_EXPECTED_SOURCE_SHA }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/ci-observations/
+          if-no-files-found: error
+          retention-days: 30
+  external-evidence-contract:
+    name: external-evidence-contract
+    runs-on: ubuntu-24.04
+    timeout-minutes: 45
+    steps:
+      - name: Checkout exact candidate
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: ${{ env.TRNM_EXPECTED_SOURCE_SHA }}
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Verify immutable source identity
+        run: python3 scripts/ci/verify_ci_source.py --kind head --expected-head "$TRNM_EXPECTED_SOURCE_SHA" --output "$RUNNER_TEMP/ci-observations/source.json"
+      - name: Set isolated Cargo paths after runner allocation
+        shell: bash
+        run: |
+          set -euo pipefail
+          printf 'CARGO_HOME=%s/cargo-%s\n' "$RUNNER_TEMP" "$GITHUB_JOB" >> "$GITHUB_ENV"
+          printf 'CARGO_TARGET_DIR=%s/target-%s\n' "$RUNNER_TEMP" "$GITHUB_JOB" >> "$GITHUB_ENV"
+          printf 'TRNM_CI_RECEIPT_DIR=%s/ci-observations\n' "$RUNNER_TEMP" >> "$GITHUB_ENV"
+      - name: Install isolated evidence-replay Python environment
+        run: |
+          python3 -m venv "$RUNNER_TEMP/pon-evidence-env"
+          "$RUNNER_TEMP/pon-evidence-env/bin/python" -m pip install --disable-pip-version-check --only-binary=:all: -r formal/pon-nakamoto-v1/requirements.txt
+          echo "$RUNNER_TEMP/pon-evidence-env/bin" >> "$GITHUB_PATH"
+      - name: Run actual external-evidence-contract checks
+        run: bash scripts/ci/ci_job.sh external-evidence-contract
+      - name: Verify source remained unchanged
+        if: always()
+        run: python3 scripts/ci/verify_ci_source.py --kind head --expected-head "$TRNM_EXPECTED_SOURCE_SHA"
+      - name: Retain source and execution observations
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: head-${{ github.job }}-${{ env.TRNM_EXPECTED_SOURCE_SHA }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/ci-observations/
+          if-no-files-found: error
+          retention-days: 30
+  prospective-merge:
+    name: prospective-merge (${{ matrix.lane }})
+    if: github.event_name == 'pull_request'
+    runs-on: ubuntu-24.04
+    timeout-minutes: ${{ matrix.lane == 'rust-baseline' && 180 || 45 }}
+    strategy:
+      fail-fast: false
+      matrix:
+        lane: [repository-truth, protocol-contract, fuzz-smoke, external-evidence-contract]
+    env:
+      TRNM_EXPECTED_SOURCE_SHA: ${{ github.sha }}
+      TRNM_EXPECTED_CANDIDATE_SHA: ${{ github.event.pull_request.head.sha }}
+      TRNM_EXPECTED_BASE_SHA: ${{ github.event.pull_request.base.sha }}
+    steps:
+      - name: Checkout exact prospective merge
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: ${{ env.TRNM_EXPECTED_SOURCE_SHA }}
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Verify merge identity and exact ordered parents
+        run: python3 scripts/ci/verify_ci_source.py --kind prospective-merge --expected-head "$TRNM_EXPECTED_CANDIDATE_SHA" --expected-base "$TRNM_EXPECTED_BASE_SHA" --expected-merge "$TRNM_EXPECTED_SOURCE_SHA" --output "$RUNNER_TEMP/ci-observations/source.json"
+      - name: Set isolated Cargo paths after runner allocation
+        shell: bash
+        run: |
+          set -euo pipefail
+          printf 'CARGO_HOME=%s/cargo-%s\n' "$RUNNER_TEMP" "$GITHUB_JOB" >> "$GITHUB_ENV"
+          printf 'CARGO_TARGET_DIR=%s/target-%s\n' "$RUNNER_TEMP" "$GITHUB_JOB" >> "$GITHUB_ENV"
+          printf 'TRNM_CI_RECEIPT_DIR=%s/ci-observations\n' "$RUNNER_TEMP" >> "$GITHUB_ENV"
+      - name: Install pinned compiler and tools in isolated hosted runner
+        if: matrix.lane == 'protocol-contract' || matrix.lane == 'fuzz-smoke' || matrix.lane == 'rust-baseline'
+        run: rustup toolchain install 1.95.0 --profile minimal --component rustfmt --component clippy
+      - name: Install isolated conformance and evidence Python environment
+        if: matrix.lane == 'protocol-contract' || matrix.lane == 'external-evidence-contract' || matrix.lane == 'rust-baseline'
+        run: |
+          python3 -m venv "$RUNNER_TEMP/pon-merge-env"
+          "$RUNNER_TEMP/pon-merge-env/bin/python" -m pip install --disable-pip-version-check --only-binary=:all: -r formal/pon-nakamoto-v1/requirements.txt
+          echo "$RUNNER_TEMP/pon-merge-env/bin" >> "$GITHUB_PATH"
+      - name: Install pinned coverage-guided fuzz tools
+        if: matrix.lane == 'fuzz-smoke'
+        run: bash scripts/ci/install_ci_tools.sh fuzz
+      - name: Install pinned dependency auditor
+        if: matrix.lane == 'rust-baseline'
+        run: bash scripts/ci/install_ci_tools.sh supply-chain
+      - name: Check PQ provider CI wiring and failure controls
+        if: matrix.lane == 'repository-truth'
+        run: python3 scripts/ci/test_pq_provider_ci.py
+      - name: Prepare pinned OpenSSL 3.5.9 PQ provider
+        if: matrix.lane == 'protocol-contract'
+        shell: bash
+        run: bash scripts/ci/prepare_pq_provider.sh
+      - name: Execute the same lane on the prospective merge
+        run: bash scripts/ci/ci_job.sh "${{ matrix.lane }}"
+      - name: Verify merge source remained unchanged
+        if: always()
+        run: python3 scripts/ci/verify_ci_source.py --kind prospective-merge --expected-head "$TRNM_EXPECTED_CANDIDATE_SHA" --expected-base "$TRNM_EXPECTED_BASE_SHA" --expected-merge "$TRNM_EXPECTED_SOURCE_SHA"
+      - name: Retain source and execution observations
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: merge-${{ matrix.lane }}-${{ env.TRNM_EXPECTED_SOURCE_SHA }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/ci-observations/
+          if-no-files-found: error
+          retention-days: 30

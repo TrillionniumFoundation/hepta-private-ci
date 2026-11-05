@@ -1,0 +1,59 @@
+{
+  "after": {
+    "commit": "6db78eca53a5acdda0d96873d3f4cd65863426f0",
+    "dirty": false,
+    "parents": [
+      "595475a615a03ca9f63c2c1f6e532bd362c20a74"
+    ],
+    "tree": "e91f5994017fc5d2cfe58d405a20ee6ad9376772"
+  },
+  "base_sha": "1556a4df6e279055fd8196f81a4ca2fe0f19384a",
+  "before": {
+    "commit": "6db78eca53a5acdda0d96873d3f4cd65863426f0",
+    "dirty": false,
+    "parents": [
+      "595475a615a03ca9f63c2c1f6e532bd362c20a74"
+    ],
+    "tree": "e91f5994017fc5d2cfe58d405a20ee6ad9376772"
+  },
+  "command": [
+    "just",
+    "test",
+    "--locked",
+    "-p",
+    "codex-hepta-agentd",
+    "--test",
+    "neural_comparison_native",
+    "--test",
+    "neural_cognitive_bootstrap",
+    "-E",
+    "test(=native_comparison_input_requires_v2_and_independently_pinned_snapshot) | test(=ordinary_native_composition_rejects_untrusted_qualification_before_inference_owners)",
+    "--no-capture",
+    "--retries",
+    "0",
+    "--test-threads=1"
+  ],
+  "command_exit_code": 0,
+  "elapsed_seconds": 11.718362847925164,
+  "exit_code": 0,
+  "finished_at": "2026-11-05T21:59:00.430551+00:00",
+  "job": null,
+  "lane": "source-head",
+  "log_bytes": 27330,
+  "log_file": "neural-runtime-input.json.3ba6e401414948ecbdf75173da83383a.log",
+  "log_sha256": "2ad7b6eb371c34c8ae81e7d16108a35011930e68feee91fb8822a71a36bf010f",
+  "minimum_tests": 2,
+  "observed_failed_tests": 0,
+  "observed_passed_tests": 2,
+  "output_limit_exceeded": false,
+  "returncode": 0,
+  "run_attempt": null,
+  "run_id": null,
+  "schema_version": 1,
+  "source_sha": "6db78eca53a5acdda0d96873d3f4cd65863426f0",
+  "started_at": "2026-11-05T21:58:48.707532+00:00",
+  "status": "passed",
+  "tested_sha": "6db78eca53a5acdda0d96873d3f4cd65863426f0",
+  "timed_out": false,
+  "working_directory": "/home/qian-qi/work/hepta-pq-effect-v4-20261105-93bfcf/source-h3"
+}

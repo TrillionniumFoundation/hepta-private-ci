@@ -1,0 +1,154 @@
+name: Release finality reference and native baseline
+on:
+  pull_request:
+    paths:
+      - formal/release-finality-v2/**
+      - config/finality-profile-v1.json
+      - config/release-finality-v2.json
+      - scripts/ci/test_finality_profile.py
+      - scripts/ci/check_required_native_test.py
+      - docs/protocol/release-finality-v2/**
+      - trillionnium/crates/trnm-pon-node/**
+      - trillionnium/crates/trnm-crypto-primitives/**
+      - trillionnium/Cargo.toml
+      - trillionnium/Cargo.lock
+      - .github/workflows/release-finality-reference.yml
+permissions:
+  contents: read
+concurrency:
+  group: release-finality-${{ github.event.pull_request.number }}
+  cancel-in-progress: false
+jobs:
+  reference:
+    strategy:
+      fail-fast: false
+      matrix:
+        runner: [ubuntu-24.04, ubuntu-24.04-arm]
+        lane: [head, prospective-merge]
+    runs-on: ${{ matrix.runner }}
+    timeout-minutes: 30
+    env:
+      PYTHONDONTWRITEBYTECODE: "1"
+      CARGO_BUILD_JOBS: "2"
+      RUST_TEST_THREADS: "1"
+      SOURCE: ${{ github.event.pull_request.head.sha }}
+      BASE: ${{ github.event.pull_request.base.sha }}
+      TESTED: ${{ matrix.lane == 'head' && github.event.pull_request.head.sha || github.sha }}
+      LANE: ${{ matrix.lane }}
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ env.TESTED }}
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Verify actual immutable source and unchanged original preflight
+        run: |
+          set -euo pipefail
+          mkdir "$RUNNER_TEMP/release-finality"
+          args=(--kind "$LANE" --expected-head "$SOURCE")
+          if test "$LANE" = prospective-merge; then
+            args+=(--expected-base "$BASE" --expected-merge "$TESTED")
+          fi
+          python3 scripts/ci/verify_ci_source.py "${args[@]}" --output "$RUNNER_TEMP/release-finality/source-before.json"
+          bash scripts/project-preflight.sh --audit
+      - name: Install existing frozen conformance environment
+        run: |
+          set -euo pipefail
+          python3 -m venv "$RUNNER_TEMP/finality-env"
+          "$RUNNER_TEMP/finality-env/bin/python" -m pip install --disable-pip-version-check --only-binary=:all: -r formal/pon-nakamoto-v1/requirements.txt
+      - name: Execute all reference, recovery and separate-reader controls
+        run: |
+          set -euo pipefail
+          py="$RUNNER_TEMP/finality-env/bin/python"
+          "$py" scripts/ci/test_finality_profile.py
+          "$py" formal/release-finality-v2/run_conformance.py --out "$RUNNER_TEMP/release-finality/conformance"
+      - name: Preserve original signed learning suites and execute actual V3 join
+        run: |
+          set -euo pipefail
+          py="$RUNNER_TEMP/finality-env/bin/python"
+          "$py" formal/pon-nakamoto-v1/test_model_generation_sequence.py -v
+          "$py" formal/pon-nakamoto-v1/test_model_generation_sequence_context.py -v
+          "$py" formal/pon-nakamoto-v1/test_model_generation_sequence_parent.py -v
+          "$py" formal/release-finality-v2/check_existing_learning_owner.py
+      - name: Build original native pipeline without changing runtime
+        env:
+          RUSTUP_HOME: ${{ runner.temp }}/release-finality-rustup-${{ github.run_id }}-${{ github.run_attempt }}-${{ matrix.runner }}-${{ matrix.lane }}
+        run: |
+          set -euo pipefail
+          mkdir "$RUSTUP_HOME"
+          rustup toolchain install 1.95.0 --profile minimal --component clippy --component rustfmt
+          cargo +1.95.0 build --locked --release --manifest-path trillionnium/Cargo.toml -p trnm-pon-node --example continuous_pipeline
+          sha256sum trillionnium/target/release/examples/continuous_pipeline > "$RUNNER_TEMP/release-finality/native-binary.sha256"
+          rustc +1.95.0 --version > "$RUNNER_TEMP/release-finality/compiler.txt"
+          uname -a > "$RUNNER_TEMP/release-finality/environment.txt"
+      - name: Require each native certificate and separate-reference selector to execute
+        env:
+          RUSTUP_HOME: ${{ runner.temp }}/release-finality-rustup-${{ github.run_id }}-${{ github.run_attempt }}-${{ matrix.runner }}-${{ matrix.lane }}
+        run: |
+          set -euo pipefail
+          export TRNM_FINALITY_REFERENCE_PYTHON="$RUNNER_TEMP/finality-env/bin/python"
+          overall=0
+          for selector in \
+            original_reference_signed_fixture_preserves_facts_and_scope \
+            native_reader_enforces_adversarial_corpus_without_python \
+            unchanged_python_reference_regenerates_exact_fixture_bytes \
+            original_python_reader_and_native_reader_agree_on_adversarial_corpus; do
+            log="$RUNNER_TEMP/release-finality/$selector.log"
+            if ! cargo +1.95.0 test --locked --release --manifest-path trillionnium/Cargo.toml \
+              -p trnm-pon-node --test release_finality_v2 "$selector" -- \
+              --exact --include-ignored --format pretty --nocapture --test-threads=1 \
+              2>&1 | tee "$log"; then overall=1; fi
+            if ! python3 scripts/ci/check_required_native_test.py "$log" --test "$selector" \
+              > "$RUNNER_TEMP/release-finality/$selector.execution.json"; then overall=1; fi
+          done
+          exit "$overall"
+      - name: Observe every original hot disjoint and growth baseline; preserve failures
+        run: |
+          # GitHub invokes bash with -e; collect all three outcomes explicitly.
+          set +e
+          set -uo pipefail
+          overall=0
+          for pattern in hot disjoint4 growth; do
+            timeout 300s trillionnium/target/release/examples/continuous_pipeline \
+              "$RUNNER_TEMP/release-finality/$pattern" 8 32 1000 "$pattern" protected \
+              > "$RUNNER_TEMP/release-finality/$pattern.stdout" 2> "$RUNNER_TEMP/release-finality/$pattern.stderr"
+            code=$?
+            printf '%s\n' "$code" > "$RUNNER_TEMP/release-finality/$pattern.exit"
+            if test "$code" -ne 0; then overall=1; fi
+          done
+          exit "$overall"
+      - name: Recompute existing native counters without claiming saturation
+        if: always()
+        run: |
+          set -euo pipefail
+          "$RUNNER_TEMP/finality-env/bin/python" - "$RUNNER_TEMP/release-finality" <<'PY'
+          import json, pathlib, sys
+          sys.path.insert(0, 'formal/release-finality-v2')
+          from campaign_gate import pipeline_observation
+          root=pathlib.Path(sys.argv[1]); observations={}; failed=False
+          for pattern in ('hot','disjoint4','growth'):
+              source=root/pattern/'summary.json'
+              if not source.is_file():
+                  observations[pattern]={'status':'not_observed'}; failed=True
+              else:
+                  observations[pattern]=pipeline_observation(json.loads(source.read_bytes()))
+                  failed |= not observations[pattern]['run_passed']
+          (root/'pipeline-observations.json').write_text(json.dumps(observations,indent=2)+'\n')
+          raise SystemExit(int(failed))
+          PY
+      - name: Recheck source even after failures
+        if: always()
+        run: |
+          set -euo pipefail
+          args=(--kind "$LANE" --expected-head "$SOURCE")
+          if test "$LANE" = prospective-merge; then
+            args+=(--expected-base "$BASE" --expected-merge "$TESTED")
+          fi
+          python3 scripts/ci/verify_ci_source.py "${args[@]}" --output "$RUNNER_TEMP/release-finality/source-after.json"
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: release-finality-${{ matrix.runner }}-${{ matrix.lane }}-${{ github.event.pull_request.head.sha }}
+          path: ${{ runner.temp }}/release-finality
+          if-no-files-found: error
+          retention-days: 30

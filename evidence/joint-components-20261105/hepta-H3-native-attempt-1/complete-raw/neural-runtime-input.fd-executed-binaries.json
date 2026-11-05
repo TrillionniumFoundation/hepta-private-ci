@@ -1,0 +1,139 @@
+{
+  "binding_method": "opened ELF fd then same-PID exec, matched to actual libtest outcome",
+  "config_file": "/home/qian-qi/work/hepta-pq-effect-v4-20261105-93bfcf/evidence/joint-h3-native-attempt-1/neural-runtime-input.fd-capture-config.json",
+  "config_sha256": "a85d4f46797daf6c1ede39ca181adc96b7773fe11177a2b247444a83682b80dd",
+  "runner_sha256": "9679cc6e11762c29b4c0ee92dd7715d3fce0555a6f8e0e10ed9d0b007951381a",
+  "records": [
+    {
+      "schema": "hepta-nextest-fd-runner-v2",
+      "status": "pre_exec_fd_bound",
+      "source": {
+        "commit": "6db78eca53a5acdda0d96873d3f4cd65863426f0",
+        "tree": "e91f5994017fc5d2cfe58d405a20ee6ad9376772",
+        "lock_sha256": "0f458d7746a0ca0b95bedc5404fd3347c1b0a7508f1c387f3b1f3f71ced08663",
+        "environment_file": "native-environment.json",
+        "environment_sha256": "3ca2ffadd3c6439f1401f04929b5ee4e8747a813de6d2647f139f8efb3b311f6"
+      },
+      "gate": "neural-runtime-input",
+      "capture_config_sha256": "a85d4f46797daf6c1ede39ca181adc96b7773fe11177a2b247444a83682b80dd",
+      "runner_sha256": "9679cc6e11762c29b4c0ee92dd7715d3fce0555a6f8e0e10ed9d0b007951381a",
+      "actual_executable": "/home/qian-qi/work/hepta-pq-effect-v4-20261105-93bfcf/target/debug/deps/neural_cognitive_bootstrap-427dd7776d1e9f1c",
+      "retained_copy": "/home/qian-qi/work/hepta-pq-effect-v4-20261105-93bfcf/evidence/joint-h3-native-attempt-1/fd-executed-binaries-neural-runtime-input/e1bf913938dd8459cb839b5b9cf6dd5a91d704c3b0240e29e3d4e5f7932549ba.elf",
+      "expected_binary_target": "neural_cognitive_bootstrap",
+      "sha256": "e1bf913938dd8459cb839b5b9cf6dd5a91d704c3b0240e29e3d4e5f7932549ba",
+      "bytes": 78142616,
+      "device": 2050,
+      "inode": 58259829,
+      "mtime_ns": 1793915936942223576,
+      "ctime_ns": 1793915936952223306,
+      "pid": 1034154,
+      "start_ticks": "99360391",
+      "coordinator": {
+        "pid": 989453,
+        "start_ticks": "99250221"
+      },
+      "coordinator_descendant_verified": true,
+      "pre_exec_fd_identity_verified": true,
+      "phase": "run",
+      "exact_test": "ordinary_native_composition_rejects_untrusted_qualification_before_inference_owners",
+      "argv": [
+        "/home/qian-qi/work/hepta-pq-effect-v4-20261105-93bfcf/target/debug/deps/neural_cognitive_bootstrap-427dd7776d1e9f1c",
+        "--exact",
+        "ordinary_native_composition_rejects_untrusted_qualification_before_inference_owners",
+        "--nocapture"
+      ],
+      "observed_selected_tests": [
+        "ordinary_native_composition_rejects_untrusted_qualification_before_inference_owners"
+      ],
+      "captured_unix": 1793915938.4736826,
+      "scope": "opened image bound immediately before same-PID fd-exec; requires matching actual libtest outcome and absence of exec failure"
+    },
+    {
+      "schema": "hepta-nextest-fd-runner-v2",
+      "status": "pre_exec_fd_bound",
+      "source": {
+        "commit": "6db78eca53a5acdda0d96873d3f4cd65863426f0",
+        "tree": "e91f5994017fc5d2cfe58d405a20ee6ad9376772",
+        "lock_sha256": "0f458d7746a0ca0b95bedc5404fd3347c1b0a7508f1c387f3b1f3f71ced08663",
+        "environment_file": "native-environment.json",
+        "environment_sha256": "3ca2ffadd3c6439f1401f04929b5ee4e8747a813de6d2647f139f8efb3b311f6"
+      },
+      "gate": "neural-runtime-input",
+      "capture_config_sha256": "a85d4f46797daf6c1ede39ca181adc96b7773fe11177a2b247444a83682b80dd",
+      "runner_sha256": "9679cc6e11762c29b4c0ee92dd7715d3fce0555a6f8e0e10ed9d0b007951381a",
+      "actual_executable": "/home/qian-qi/work/hepta-pq-effect-v4-20261105-93bfcf/target/debug/deps/neural_comparison_native-8a384ca49a6c6e1c",
+      "retained_copy": "/home/qian-qi/work/hepta-pq-effect-v4-20261105-93bfcf/evidence/joint-h3-native-attempt-1/fd-executed-binaries-neural-runtime-input/cac734666dbcc1f06e38d1200c550c5c99214336a02bb347f9f5e95dadc28ed0.elf",
+      "expected_binary_target": "neural_comparison_native",
+      "sha256": "cac734666dbcc1f06e38d1200c550c5c99214336a02bb347f9f5e95dadc28ed0",
+      "bytes": 70051840,
+      "device": 2050,
+      "inode": 58259789,
+      "mtime_ns": 1793915937354212469,
+      "ctime_ns": 1793915937363212226,
+      "pid": 1034230,
+      "start_ticks": "99360457",
+      "coordinator": {
+        "pid": 989453,
+        "start_ticks": "99250221"
+      },
+      "coordinator_descendant_verified": true,
+      "pre_exec_fd_identity_verified": true,
+      "phase": "run",
+      "exact_test": "native_comparison_input_requires_v2_and_independently_pinned_snapshot",
+      "argv": [
+        "/home/qian-qi/work/hepta-pq-effect-v4-20261105-93bfcf/target/debug/deps/neural_comparison_native-8a384ca49a6c6e1c",
+        "--exact",
+        "native_comparison_input_requires_v2_and_independently_pinned_snapshot",
+        "--nocapture"
+      ],
+      "observed_selected_tests": [
+        "native_comparison_input_requires_v2_and_independently_pinned_snapshot"
+      ],
+      "captured_unix": 1793915939.1231732,
+      "scope": "opened image bound immediately before same-PID fd-exec; requires matching actual libtest outcome and absence of exec failure"
+    }
+  ],
+  "errors": [],
+  "unique_actual_elf_sha256": [
+    "cac734666dbcc1f06e38d1200c550c5c99214336a02bb347f9f5e95dadc28ed0",
+    "e1bf913938dd8459cb839b5b9cf6dd5a91d704c3b0240e29e3d4e5f7932549ba"
+  ],
+  "runner_declared_binary_counts": [
+    2
+  ],
+  "actual_cases": [
+    [
+      "ordinary_native_composition_rejects_untrusted_qualification_before_inference_owners",
+      "ok"
+    ],
+    [
+      "native_comparison_input_requires_v2_and_independently_pinned_snapshot",
+      "ok"
+    ]
+  ],
+  "per_case_bijection_verified": true,
+  "scope": "exact test images only; no retrospective H1 credit or complete dynamic runtime closure",
+  "expected_case_targets": {
+    "native_comparison_input_requires_v2_and_independently_pinned_snapshot": "neural_comparison_native",
+    "ordinary_native_composition_rejects_untrusted_qualification_before_inference_owners": "neural_cognitive_bootstrap"
+  },
+  "expected_binary_targets": [
+    "neural_cognitive_bootstrap",
+    "neural_comparison_native"
+  ],
+  "actual_images_by_target": {
+    "neural_cognitive_bootstrap": [
+      "e1bf913938dd8459cb839b5b9cf6dd5a91d704c3b0240e29e3d4e5f7932549ba"
+    ],
+    "neural_comparison_native": [
+      "cac734666dbcc1f06e38d1200c550c5c99214336a02bb347f9f5e95dadc28ed0"
+    ]
+  },
+  "live_polling_corroboration": {
+    "file": "neural-runtime-input.live-polled-binaries.json",
+    "sha256": "c9c70b5fcd60db2206e9869955c02903dd16fd4ba0648c034eecc9fea86c789b",
+    "captured_processes": 1,
+    "errors": [],
+    "scope": "polling may miss short processes; no assignment of missed processes from other captures"
+  }
+}

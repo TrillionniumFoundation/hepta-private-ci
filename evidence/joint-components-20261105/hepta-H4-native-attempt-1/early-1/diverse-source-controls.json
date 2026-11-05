@@ -1,0 +1,53 @@
+{
+  "after": {
+    "commit": "6db78eca53a5acdda0d96873d3f4cd65863426f0",
+    "dirty": false,
+    "parents": [
+      "595475a615a03ca9f63c2c1f6e532bd362c20a74"
+    ],
+    "tree": "e91f5994017fc5d2cfe58d405a20ee6ad9376772"
+  },
+  "base_sha": "1556a4df6e279055fd8196f81a4ca2fe0f19384a",
+  "before": {
+    "commit": "6db78eca53a5acdda0d96873d3f4cd65863426f0",
+    "dirty": false,
+    "parents": [
+      "595475a615a03ca9f63c2c1f6e532bd362c20a74"
+    ],
+    "tree": "e91f5994017fc5d2cfe58d405a20ee6ad9376772"
+  },
+  "command": [
+    "python3",
+    "-m",
+    "unittest",
+    "discover",
+    "-s",
+    "scripts",
+    "-p",
+    "test_hepta_neural_*diverse_v3.py",
+    "-v"
+  ],
+  "command_exit_code": 0,
+  "elapsed_seconds": 4.037805259926245,
+  "exit_code": 0,
+  "finished_at": "2026-11-05T22:45:34.007792+00:00",
+  "job": null,
+  "lane": "source-head",
+  "log_bytes": 6233,
+  "log_file": "diverse-source-controls.json.6d071765ce1d463caeae30afee6d691c.log",
+  "log_sha256": "31913c96aa2288f813b9b9cfe9bf9c5d431f07f20ce4754e27a5ce3646a2c7b4",
+  "minimum_tests": 32,
+  "observed_failed_tests": 0,
+  "observed_passed_tests": 32,
+  "output_limit_exceeded": false,
+  "returncode": 0,
+  "run_attempt": null,
+  "run_id": null,
+  "schema_version": 1,
+  "source_sha": "6db78eca53a5acdda0d96873d3f4cd65863426f0",
+  "started_at": "2026-11-05T22:45:29.919603+00:00",
+  "status": "passed",
+  "tested_sha": "6db78eca53a5acdda0d96873d3f4cd65863426f0",
+  "timed_out": false,
+  "working_directory": "/home/qian-qi/work/hepta-pq-effect-v4-20261105-93bfcf/source-h3"
+}

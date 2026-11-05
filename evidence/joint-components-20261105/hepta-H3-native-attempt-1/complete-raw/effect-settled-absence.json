@@ -1,0 +1,57 @@
+{
+  "after": {
+    "commit": "6db78eca53a5acdda0d96873d3f4cd65863426f0",
+    "dirty": false,
+    "parents": [
+      "595475a615a03ca9f63c2c1f6e532bd362c20a74"
+    ],
+    "tree": "e91f5994017fc5d2cfe58d405a20ee6ad9376772"
+  },
+  "base_sha": "1556a4df6e279055fd8196f81a4ca2fe0f19384a",
+  "before": {
+    "commit": "6db78eca53a5acdda0d96873d3f4cd65863426f0",
+    "dirty": false,
+    "parents": [
+      "595475a615a03ca9f63c2c1f6e532bd362c20a74"
+    ],
+    "tree": "e91f5994017fc5d2cfe58d405a20ee6ad9376772"
+  },
+  "command": [
+    "just",
+    "test",
+    "--locked",
+    "-p",
+    "codex-hepta-automation",
+    "--test",
+    "authorized_effect",
+    "-E",
+    "test(=owner_recovery_tests::settled_absence_fact_read_survives_reopen_and_new_owner_without_redispatch) | test(=owner_recovery_tests::settled_absence_fact_read_rejects_unknown_unsettled_and_corrupt_evidence)",
+    "--no-capture",
+    "--retries",
+    "0",
+    "--test-threads=1"
+  ],
+  "command_exit_code": 0,
+  "elapsed_seconds": 24.022535272990353,
+  "exit_code": 0,
+  "finished_at": "2026-11-05T21:57:53.824177+00:00",
+  "job": null,
+  "lane": "source-head",
+  "log_bytes": 24416,
+  "log_file": "effect-settled-absence.json.8243c5af805d4d41abea25ce79d7be15.log",
+  "log_sha256": "b8cfdde3574e259cf448b8a8fa5f99273d127a7d2b3a49130fd5908184febad7",
+  "minimum_tests": 2,
+  "observed_failed_tests": 0,
+  "observed_passed_tests": 2,
+  "output_limit_exceeded": false,
+  "returncode": 0,
+  "run_attempt": null,
+  "run_id": null,
+  "schema_version": 1,
+  "source_sha": "6db78eca53a5acdda0d96873d3f4cd65863426f0",
+  "started_at": "2026-11-05T21:57:29.788230+00:00",
+  "status": "passed",
+  "tested_sha": "6db78eca53a5acdda0d96873d3f4cd65863426f0",
+  "timed_out": false,
+  "working_directory": "/home/qian-qi/work/hepta-pq-effect-v4-20261105-93bfcf/source-h3"
+}

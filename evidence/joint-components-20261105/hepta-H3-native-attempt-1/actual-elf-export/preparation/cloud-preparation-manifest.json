@@ -1,0 +1,66 @@
+{
+  "actual_compressed_size": "unknown until successful measured export",
+  "approved_complete_only_exporter": {
+    "bytes": 18885,
+    "path": "/workspace/scratch/93bfcfe29fc8/w1/h1-elf-export/export_retained_elfs.py",
+    "sha256": "8ba375f315433a4eea9a05b9f1a0fbcffced353eb668cca6cd799b433fa4402b"
+  },
+  "archive_plus_parts_max_bytes": 3483368464,
+  "complete_aliases": 30,
+  "compression_preset": 3,
+  "compression_processes": 1,
+  "container_max_bytes": 1741684232,
+  "exporter_semantic_delta": "Only docstring and exact phase H3 validation; all I/O, limits, two-read, no-overwrite, archive/member/part verification, and fsync function bodies remain identical to approved H1.",
+  "files": [
+    {
+      "bytes": 18885,
+      "path": "/workspace/scratch/93bfcfe29fc8/w1/h3-elf-export/export_h3_retained_images.py",
+      "sha256": "9eb404993262589a948a19946819e890ff15875bef1133eab5fe9cee6bb14f53"
+    },
+    {
+      "bytes": 1006,
+      "path": "/workspace/scratch/93bfcfe29fc8/w1/h3-elf-export/H3-exporter-vs-approved-H1.patch",
+      "sha256": "b10509da060e9e47e584df9b812da71df02b10bcc7bcb7d58001340ee98b466a"
+    },
+    {
+      "bytes": 658893,
+      "path": "/workspace/scratch/93bfcfe29fc8/w1/h3-elf-export/H3-export-plan.json",
+      "sha256": "7c140e2a83e9df657aff17c66bb1f307bb6b8a22db6cbba04e38841d7b9ef7a0"
+    },
+    {
+      "bytes": 7655,
+      "path": "/workspace/scratch/93bfcfe29fc8/w1/h3-elf-export/test_export_utility.py",
+      "sha256": "ec087199ea262f952c4578446ac231c238b8248b222f0953997c99e11cd63ae9"
+    },
+    {
+      "bytes": 905736,
+      "path": "/workspace/scratch/93bfcfe29fc8/w1/h3-elf-export/H3-export-bootstrap.py",
+      "sha256": "c5ff3d9ac3d89cdb07a3b276e467e29be58c0699759e524bd93caec345665c94"
+    },
+    {
+      "bytes": 906134,
+      "path": "/workspace/scratch/93bfcfe29fc8/w1/h3-elf-export/H3-export-frozen-launch-request.json",
+      "sha256": "49eb026d9b5376dff8ef9cd596ed8fd243fb094050b84b47f0e6cabf13eb06e3"
+    }
+  ],
+  "original_outcome": "FAILED",
+  "other_aliases_metadata_only": 19,
+  "release_proof": {
+    "bytes": 2662,
+    "path": "/workspace/scratch/93bfcfe29fc8/w1/H3-owned-release-probe/proof.json",
+    "sha256": "06661599f4cd936baa7493ac4f9a1df95def4a0dd391f638145b46f1c032458e"
+  },
+  "remote_started": false,
+  "root_review_and_window_reservation_required": true,
+  "schema": "H3-cloud-only-archive-preparation-v1",
+  "selected_paths": 11,
+  "source_map": {
+    "bytes": 278536,
+    "path": "/workspace/scratch/93bfcfe29fc8/model_storage/h3-preparation/native/joint-h3-native-attempt-1/h3-actual-image-inventory.json",
+    "sha256": "6a8ecb8b9160284baf91d13b61973e4ee3b64b5a740cde0908ccd7b4c03361b7"
+  },
+  "total_actual_input_bytes": 1674575368,
+  "transport_budget_seconds": 900,
+  "unique_complete_images": 11,
+  "utility_scope": "Pending local byte-fixture controls only; no native/learning/process execution credit."
+}

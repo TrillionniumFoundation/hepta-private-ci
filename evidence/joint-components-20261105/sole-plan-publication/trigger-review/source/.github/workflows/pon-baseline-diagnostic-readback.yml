@@ -1,0 +1,429 @@
+name: PoN baseline diagnostic readback
+on:
+  pull_request:
+    paths:
+      - .github/workflows/pon-baseline-diagnostic-readback.yml
+      - trillionnium/**
+permissions:
+  contents: read
+  actions: read
+jobs:
+  retained-failure:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    steps:
+      - name: Read the exact failed baseline without executing repository code
+        env:
+          GH_TOKEN: ${{ github.token }}
+          OUT: ${{ runner.temp }}/baseline-diagnostic-readback
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir "$OUT"
+          api=https://api.github.com/repos/TrillionniumFoundation/Trillionnium-Chain
+          curl --fail --silent --show-error --location --proto '=https' --proto-redir '=https' --retry 2 --max-time 60 --max-filesize 1048576 -H "Authorization: Bearer $GH_TOKEN" "$api/actions/runs/37861647184" -o "$OUT/run.json"
+          curl --fail --silent --show-error --location --proto '=https' --proto-redir '=https' --retry 2 --max-time 60 --max-filesize 1048576 -H "Authorization: Bearer $GH_TOKEN" "$api/actions/jobs/113599036245" -o "$OUT/job.json"
+          python3 - <<'PY'
+          import json, os
+          from pathlib import Path
+          root = Path(os.environ['OUT'])
+          run = json.loads((root / 'run.json').read_text())
+          job = json.loads((root / 'job.json').read_text())
+          assert run['id'] == job['run_id'] == 37861647184
+          assert run['head_sha'] == '544dc613753ac7760af97d378d84da3e2db4e3ff'
+          assert job['id'] == 113599036245 and job['conclusion'] == 'failure'
+          PY
+          # curl does not forward Authorization to another host on a redirect.
+          curl --fail --silent --show-error --location --proto '=https' --proto-redir '=https' --retry 2 --max-time 120 --max-filesize 67108864 -H "Authorization: Bearer $GH_TOKEN" "$api/actions/jobs/113599036245/logs" -o "$OUT/failed-baseline.log"
+          python3 - <<'PY'
+          import hashlib, json, os, re
+          from pathlib import Path
+          root = Path(os.environ['OUT'])
+          raw = (root / 'failed-baseline.log').read_bytes()
+          assert raw and len(raw) <= 64 * 1024 * 1024
+          lines = raw.decode('utf-8', errors='replace').splitlines()
+          selected = set()
+          for i, line in enumerate(lines):
+              if re.search(r'error(?:\[[^]]+\])?:|panicked at|Caused by:', line):
+                  selected.update(range(max(0, i - 3), min(len(lines), i + 14)))
+          excerpt = '\n'.join(lines[i] for i in sorted(selected)[-180:])[-24000:]
+          (root / 'diagnostic-excerpt.txt').write_text(excerpt + '\n')
+          record = dict(schema='pon-retained-baseline-diagnostic-v1',
+                        source='544dc613753ac7760af97d378d84da3e2db4e3ff',
+                        run=37861647184, job=113599036245,
+                        log_sha256=hashlib.sha256(raw).hexdigest(), log_bytes=len(raw),
+                        source_tests_executed=False, acceptance_granted=False)
+          (root / 'readback.json').write_text(json.dumps(record, indent=2) + '\n')
+          print(json.dumps(record))
+          print(excerpt)
+          PY
+      - name: Preserve original failure and bounded diagnostic excerpt
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: retained-baseline-diagnostic-${{ github.event.pull_request.head.sha }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/baseline-diagnostic-readback/
+          if-no-files-found: error
+          retention-days: 30
+  retained-throughput:
+    name: Retained complete-cost failure readback
+    if: github.repository == 'TrillionniumFoundation/Trillionnium-Chain' && github.event_name == 'pull_request' && github.event.pull_request.number == 688
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    permissions:
+      contents: read
+      actions: read
+    steps:
+      - name: Read pinned F0 and campaign artifacts without executing repository code
+        env:
+          GH_TOKEN: ${{ github.token }}
+          OUT: ${{ runner.temp }}/throughput-diagnostic-readback
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p "$OUT/raw" "$OUT/readback"
+          api=https://api.github.com/repos/TrillionniumFoundation/Trillionnium-Chain
+          while read -r label run job artifact; do
+            for pair in "run actions/runs/$run" "job actions/jobs/$job" "artifact actions/artifacts/$artifact"; do
+              read -r kind endpoint <<< "$pair"
+              curl --fail --silent --show-error --location --proto '=https' --proto-redir '=https' --retry 2 --max-time 60 --max-filesize 1048576 -H "Authorization: Bearer $GH_TOKEN" "$api/$endpoint" -o "$OUT/readback/$label-$kind.json"
+            done
+            # Authorization is not forwarded to another host by curl on redirects.
+            curl --fail --silent --show-error --location --proto '=https' --proto-redir '=https' --retry 2 --max-time 120 --max-filesize 67108864 -H "Authorization: Bearer $GH_TOKEN" "$api/actions/artifacts/$artifact/zip" -o "$OUT/raw/$label.zip"
+          done <<'CASES'
+          f0 41753071420 126323929045 13286673364
+          campaign 41753071468 126326178742 13288600275
+          CASES
+          python3 - <<'PY' | tee "$OUT/readback/summary.jsonl"
+          import hashlib
+          import json
+          import os
+          import zipfile
+          from pathlib import Path
+          
+          HEAD = 'be0d5f978dc86008115524a6be85c38e03982b33'
+          TREE = '0042b3212d0960d10e31fdbe8a92a57c50dedd90'
+          CASES = [{"label":"f0","run":41753071420,"job":126323929045,"artifact":13286673364,"name":"pon-fixed-host-root-f0-x64-head-be0d5f978dc86008115524a6be85c38e03982b33-1","size":15946259,"sha256":"90a1834ddc7a083fc9103285c6f42f9c00d421b8c6d6206139f9db3e7f4da042"},{"label":"campaign","run":41753071468,"job":126326178742,"artifact":13288600275,"name":"pon-native-campaign-x64-head-release-be0d5f978dc86008115524a6be85c38e03982b33-1","size":59518668,"sha256":"06bd58d9fb7e10fea73e6f57f2e008295b6515e7be490532deea74711aa6d1be"}]
+          ROOT = Path(os.environ['OUT'])
+          MEMBER_LIMIT = 16 * 1024 * 1024
+          OUTPUT_LIMIT = 4 * 1024 * 1024
+          emitted = 0
+          
+          def require(condition, message):
+              if not condition:
+                  raise ValueError(message)
+          
+          def unique_object(pairs):
+              value = {}
+              for key, item in pairs:
+                  require(key not in value, 'duplicate JSON key')
+                  value[key] = item
+              return value
+          
+          def reject_constant(value):
+              raise ValueError('nonfinite JSON: ' + value)
+          
+          def decode(raw):
+              return json.loads(raw, object_pairs_hook=unique_object, parse_constant=reject_constant)
+          
+          def metadata(label, kind):
+              raw = (ROOT / 'readback' / f'{label}-{kind}.json').read_bytes()
+              require(len(raw) <= 1024 * 1024, 'metadata byte bound')
+              return decode(raw)
+          
+          def project(value, keys):
+              return {key: value[key] for key in keys if key in value}
+          
+          def emit(case, kind, value):
+              global emitted
+              row = {
+                  'schema': 'pon-retained-throughput-readback-v1',
+                  'kind': kind, 'archive': case['label'],
+                  'measured_head': HEAD, 'measured_tree': TREE,
+                  'measured_run': case['run'], 'measured_job': case['job'],
+                  'artifact_id': case['artifact'], 'artifact_sha256': case['sha256'],
+                  'reader_workflow_commit': os.environ['GITHUB_SHA'],
+                  'source_tests_executed': False, 'acceptance_granted': False,
+                  'value': value,
+              }
+              line = json.dumps(row, sort_keys=True, separators=(',', ':'), allow_nan=False)
+              size = len(line.encode('utf-8')) + 1
+              require(size <= 512 * 1024 and emitted + size <= OUTPUT_LIMIT,
+                      'bounded console readback exceeded; complete original artifact retained')
+              emitted += size
+              print(line, flush=True)
+          
+          class Archive:
+              def __init__(self, case):
+                  self.case = case
+                  self.prefix = None
+                  self.members_read = []
+                  run, job, artifact = (metadata(case['label'], kind) for kind in ('run', 'job', 'artifact'))
+                  require(run['id'] == job['run_id'] == case['run']
+                          and job['id'] == case['job'], 'exact run and job')
+                  require(run['head_sha'] == HEAD and run['run_attempt'] == 1
+                          and run['status'] == job['status'] == 'completed'
+                          and run['conclusion'] == job['conclusion'] == 'failure',
+                          'retained first-attempt failure and head')
+                  require(artifact['id'] == case['artifact']
+                          and artifact['name'] == case['name']
+                          and artifact['size_in_bytes'] == case['size']
+                          and artifact['digest'] == 'sha256:' + case['sha256']
+                          and artifact['expired'] is False, 'exact artifact identity')
+                  source = artifact['workflow_run']
+                  require(source['id'] == case['run'] and source['head_sha'] == HEAD
+                          and source['repository_id'] == source['head_repository_id'] == 1323087357,
+                          'artifact repository and measured source')
+                  path = ROOT / 'raw' / (case['label'] + '.zip')
+                  require(path.stat().st_size == case['size'] <= 64 * 1024 * 1024,
+                          'complete ZIP size')
+                  digest = hashlib.sha256()
+                  with path.open('rb') as stream:
+                      for chunk in iter(lambda: stream.read(1024 * 1024), b''):
+                          digest.update(chunk)
+                  require(digest.hexdigest() == case['sha256'], 'complete ZIP SHA256')
+                  self.zip = zipfile.ZipFile(path)
+                  infos = self.zip.infolist()
+                  require(len(infos) <= 8192 and len({item.filename for item in infos}) == len(infos),
+                          'bounded unique archive members')
+                  self.index = {item.filename: item for item in infos if not item.is_dir()}
+          
+              def read(self, relative, optional=False):
+                  if self.prefix is not None:
+                      matches = [self.prefix + relative] if self.prefix + relative in self.index else []
+                  elif relative in self.index:
+                      matches = [relative]
+                  else:
+                      matches = [name for name in self.index if name.endswith('/' + relative)]
+                  if not matches and optional:
+                      return None, None
+                  require(len(matches) == 1, 'unique common-root member: ' + relative)
+                  name = matches[0]
+                  prefix = name[:-len(relative)]
+                  require(self.prefix is None or self.prefix == prefix, 'consistent archive root')
+                  self.prefix = prefix
+                  info = self.index[name]
+                  require(not (info.flag_bits & 1) and info.file_size <= MEMBER_LIMIT,
+                          'bounded unencrypted JSON member')
+                  with self.zip.open(info) as stream:
+                      raw = stream.read(MEMBER_LIMIT + 1)
+                  require(len(raw) == info.file_size <= MEMBER_LIMIT, 'actual member byte bound')
+                  value = decode(raw)
+                  digest = hashlib.sha256(raw).hexdigest()
+                  self.members_read.append({'member': name, 'bytes': len(raw), 'sha256': digest})
+                  (ROOT / 'readback' / (self.case['label'] + '-' + relative.replace('/', '--'))).write_bytes(raw)
+                  return value, digest
+          
+              def finish(self):
+                  self.zip.close()
+                  emit(self.case, 'archive-integrity', {
+                      'archive_sha256_verified': True, 'selected_json_members': self.members_read,
+                      'archive_member_paths_used_as_output_paths': False,
+                      'archive_members_executed': False, 'selected_json_members_copied_to_readback': True,
+                      'scope': 'readback of existing measured JSON only; original failures and acceptance are unchanged',
+                  })
+          
+          for case in CASES:
+              archive = Archive(case)
+              if case['label'] == 'f0':
+                  final, _ = archive.read('finalization/result.json')
+                  execution, execution_hash = archive.read('execution/results.json')
+                  prepared, prepared_hash = archive.read('prepared/prepared.json')
+                  source, _ = archive.read('source-after.json')
+                  outcomes, _ = archive.read('workflow-outcomes.json')
+                  require(final['schema'] == 'fixed-host-root-f0-finalization-v1'
+                          and execution['schema'] == 'pon-fixed-host-root-f0-execution-v1'
+                          and prepared['schema'] == 'pon-fixed-host-root-f0-prepared-v1',
+                          'original F0 schemas')
+                  for value in (final, execution):
+                      require(value['head'] == HEAD and value['tree'] == TREE, 'F0 measured source')
+                  require(source['tested_commit'] == source['candidate'] == HEAD
+                          and source['tested_tree'] == TREE and source['tracked_worktree_verified'] is True,
+                          'F0 unchanged source after measurement')
+                  denominator = final['denominator']
+                  require(execution['prepared_sha256'] == prepared_hash
+                          and denominator['native_result_sha256'] == execution_hash,
+                          'F0 original preparation and result hashes')
+                  require(denominator['planned_confirmations'] == 6
+                          and denominator['planned_business_packet_exposures'] == 42
+                          and len(denominator['all_planned_rounds']) == 6
+                          and len(denominator['all_planned_business_packets']) == 42,
+                          'all original F0 denominators')
+                  require(execution['all_planned_rounds'] == denominator['all_planned_rounds']
+                          and execution['all_planned_business_packets'] == denominator['all_planned_business_packets'],
+                          'F0 execution and finalizer denominator binding')
+                  if denominator['report_observed']:
+                      require(execution['report_sha256'] == denominator['report_sha256'],
+                              'F0 existing raw report hash binding')
+                  emit(case, 'f0-finalization', {
+                      **project(final, ('schema', 'head', 'tree', 'complete_success', 'all_services_known_empty', 'scope')),
+                      'services': [project(row, ('phase', 'ownership_validated', 'known_empty', 'remaining', 'failure'))
+                                   for row in final['services']],
+                      'denominator': denominator, 'workflow_outcomes': outcomes,
+                  })
+                  emit(case, 'f0-execution', project(execution, (
+                      'schema', 'head', 'tree', 'inputs', 'prepared_sha256', 'binary', 'complete_success',
+                      'failure', 'report_validation_failure', 'native_result_failure',
+                      'native_execution_observed', 'step', 'post_observations',
+                      'controller_resources_complete', 'controller_resource_summary', 'all_planned_rounds')))
+              else:
+                  result, _ = archive.read('results.json')
+                  require(result['schema'] == 'pon-original-native-campaign-ci-v1'
+                          and result['expected_head'] == HEAD and result['expected_tree'] == TREE
+                          and result['planned_complete_runs'] == 3, 'original campaign source and denominator')
+                  source = result['source_after']
+                  require(source['tested_commit'] == source['candidate'] == HEAD
+                          and source['tested_tree'] == TREE and source['tracked_worktree_verified'] is True,
+                          'campaign unchanged source after measurement')
+                  attempts = result['attempts']
+                  require([row['number'] for row in attempts] == [1, 2, 3], 'all three original attempts')
+                  emit(case, 'campaign-result', project(result, (
+                      'schema', 'expected_head', 'expected_tree', 'source_after', 'profile', 'toolchain',
+                      'state_backend', 'planned_complete_runs', 'original_inputs', 'expected_resources',
+                      'public_phase_placement', 'expected_public_policy_id', 'binary', 'complete_success',
+                      'failure', 'finalization_failures', 'scope')))
+                  for attempt in attempts:
+                      number = attempt['number']
+                      emit(case, 'campaign-attempt', attempt)
+                      derived, _ = archive.read(f'run-{number}-phase-readback.json', optional=True)
+                      if derived is None:
+                          emit(case, 'campaign-derivation-missing', {
+                              'attempt': number, 'observations_available': False,
+                              'report_validation_failure': attempt.get('report_validation_failure'),
+                              'planned_phase_modes': ['baseline', 'from-zero', 'late-product'],
+                          })
+                          continue
+                      require(derived['schema'] == 'pon-public-v3-multiprocess-phase-derivation-v2'
+                              and derived['input']['sha256'] == attempt['report_sha256'],
+                              'existing campaign derivation and raw report hash')
+                      require([row['mode'] for row in derived['phases']] == ['baseline', 'from-zero', 'late-product'],
+                              'all original phase modes')
+                      for phase in derived['phases']:
+                          selected = project(phase, (
+                              'mode', 'state_backend', 'public_resource_policy', 'work_profile',
+                              'work_arithmetic_owner', 'completion_work_observation',
+                              'observations_available', 'window_seconds', 'scheduled_confirmation_rounds',
+                              'observed_confirmation_rounds', 'confirmed_rounds', 'unobserved_scheduled_rounds',
+                              'confirmation_rounds', 'startup_or_campaign_error', 'native_phase_criteria_met',
+                              'whole_parent_phase_wall_ns', 'whole_parent_phase_cpu_ns',
+                              'receiver_and_verifier_setup_wall_ns', 'receiver_and_verifier_setup_cpu_ns',
+                              'native_service_outcome', 'native_verifier_errors', 'receiver_client_state_equal',
+                              'genuine_budget_depletion_observed', 'attacker_processes_requested',
+                              'attacker_processes_ready', 'actor_reports_successful_without_cap_or_kill',
+                              'submissions', 'history', 'attack_calls', 'final_cpu_meter', 'final_actual_flow',
+                              'client_history_import_observations'))
+                          if 'receiver' in phase:
+                              selected['receiver'] = project(phase['receiver'], (
+                                  'schema', 'capacity', 'accepted_connections_seen', 'records_not_retained',
+                                  'measurement_failures', 'counter_overflow', 'dispatch_cpu_scope',
+                                  'native_observer_complete', 'all_retained_records'))
+                          emit(case, 'campaign-phase', {
+                              'attempt': number, 'input': derived['input'],
+                              'scope': derived['scope'], 'phase': selected,
+                              'omitted_phase_fields': sorted(set(phase) - set(selected)),
+                              'receiver_role_splits_remain_in_complete_archived_derivation': True,
+                          })
+              archive.finish()
+          PY
+      - name: Retain exact archive identities and bounded existing result readback
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: retained-throughput-readback-${{ github.event.pull_request.head.sha }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/throughput-diagnostic-readback/readback/
+          if-no-files-found: error
+          retention-days: 30
+  native-boundary:
+    name: native boundary (${{ matrix.runner }}, ${{ matrix.source }})
+    permissions:
+      contents: read
+    strategy:
+      fail-fast: false
+      matrix:
+        runner: [ubuntu-24.04, ubuntu-24.04-arm]
+        source: [head, prospective-merge]
+    runs-on: ${{ matrix.runner }}
+    timeout-minutes: 25
+    env:
+      CARGO_INCREMENTAL: "0"
+      CARGO_BUILD_JOBS: "2"
+      RUST_TEST_THREADS: "1"
+      PYTHONDONTWRITEBYTECODE: "1"
+      EXPECTED_HEAD: ${{ github.event.pull_request.head.sha }}
+      EXPECTED_BASE: ${{ github.event.pull_request.base.sha }}
+      EXPECTED_MERGE: ${{ github.sha }}
+      SOURCE_KIND: ${{ matrix.source }}
+    steps:
+      - name: Checkout exact current source or actual target merge
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: ${{ matrix.source == 'head' && github.event.pull_request.head.sha || github.sha }}
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Verify source and original project boundary
+        id: source
+        run: |
+          set -euo pipefail
+          export TRNM_CI_RECEIPT_DIR="$RUNNER_TEMP/native-boundary"
+          mkdir "$TRNM_CI_RECEIPT_DIR"
+          echo "TRNM_CI_RECEIPT_DIR=$TRNM_CI_RECEIPT_DIR" >> "$GITHUB_ENV"
+          echo "CARGO_HOME=$RUNNER_TEMP/cargo-boundary" >> "$GITHUB_ENV"
+          echo "CARGO_TARGET_DIR=$RUNNER_TEMP/target-boundary" >> "$GITHUB_ENV"
+          args=(--kind "$SOURCE_KIND" --expected-head "$EXPECTED_HEAD")
+          if test "$SOURCE_KIND" = prospective-merge; then
+            args+=(--expected-base "$EXPECTED_BASE" --expected-merge "$EXPECTED_MERGE")
+          fi
+          python3 scripts/ci/verify_ci_source.py "${args[@]}" --output "$TRNM_CI_RECEIPT_DIR/source.json"
+          bash scripts/project-preflight.sh --audit
+      - name: Install source-pinned compiler and lint tools
+        id: tools
+        run: rustup toolchain install 1.95.0 --profile minimal --component rustfmt --component clippy
+      - name: Prepare pinned OpenSSL 3.5.9 PQ provider
+        id: pq_provider
+        shell: bash
+        run: |
+          set -euo pipefail
+          export TRNM_CI_RECEIPT_DIR="$TRNM_CI_RECEIPT_DIR"
+          bash scripts/ci/prepare_pq_provider.sh
+      - name: Preserve exact formatter diagnostics without changing source
+        if: ${{ !cancelled() && steps.source.outcome == 'success' && steps.tools.outcome == 'success' }}
+        run: |
+          set -euo pipefail
+          cargo +1.95.0 fmt --manifest-path trillionnium/Cargo.toml --all -- --check 2>&1 | tee "$TRNM_CI_RECEIPT_DIR/format.log"
+      - name: Execute strict native all-target Clippy before long campaigns
+        if: ${{ !cancelled() && steps.source.outcome == 'success' && steps.tools.outcome == 'success' && steps.pq_provider.outcome == 'success' }}
+        run: |
+          set -euo pipefail
+          cargo +1.95.0 clippy --locked --manifest-path trillionnium/Cargo.toml -p trnm-pon-node --all-targets --all-features -- -D warnings 2>&1 | tee "$TRNM_CI_RECEIPT_DIR/clippy.log"
+      - name: Execute original accounting and new cooffered depletion regressions
+        if: ${{ !cancelled() && steps.source.outcome == 'success' && steps.tools.outcome == 'success' }}
+        run: |
+          set -euo pipefail
+          # The original transcript validator requires exactly one named invocation.
+          # Execute all four original/current tests once, each with its own full log.
+          for selector in \
+            actual_paid_native_work_rejection_read_frames_and_partial_eof_are_attributed \
+            real_observer_capacity_overflow_does_not_refuse_concurrent_honest_reads \
+            actual_depletion::actual_replay_depletion_public_recovery_and_same_epoch_reopen \
+            actual_depletion::depleted_domain_serves_honest_block_during_rotating_public_false_work; do
+            log="$TRNM_CI_RECEIPT_DIR/accounting-${selector//::/-}.log"
+            cargo +1.95.0 test --locked --release --manifest-path trillionnium/Cargo.toml -p trnm-pon-node --test public_v3_request_accounting "$selector" -- --exact --show-output --test-threads=1 2>&1 | tee "$log"
+            python3 scripts/ci/check_required_native_test.py "$log" --test "$selector"
+          done
+      - name: Reverify unchanged tested source
+        if: always()
+        run: |
+          set -euo pipefail
+          args=(--kind "$SOURCE_KIND" --expected-head "$EXPECTED_HEAD")
+          if test "$SOURCE_KIND" = prospective-merge; then
+            args+=(--expected-base "$EXPECTED_BASE" --expected-merge "$EXPECTED_MERGE")
+          fi
+          python3 scripts/ci/verify_ci_source.py "${args[@]}"
+      - name: Retain current native results including every failure
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: native-boundary-${{ matrix.runner }}-${{ matrix.source }}-${{ github.event.pull_request.head.sha }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/native-boundary/
+          if-no-files-found: error
+          retention-days: 30

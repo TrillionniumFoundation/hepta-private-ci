@@ -1,0 +1,301 @@
+name: PoN fixed Host ROOT F0 diagnostic
+on:
+  # Bootstrap only this separately reviewed route from a same-repository PR.
+  # A new dispatch-only workflow is unavailable before it reaches default branch.
+  pull_request:
+    paths:
+      - .github/workflows/pon-fixed-host-root-f0.yml
+      - scripts/run_fixed_host_root_f0.py
+      - scripts/ci/run_fixed_root_phase_host.py
+      - scripts/ci/fixed_root_f0_ownership.py
+      - scripts/ci/fixed_root_f0_resources.py
+      - scripts/ci/finalize_fixed_root_f0.py
+      - scripts/ci/test_fixed_root_f0.py
+      - scripts/ci/test_fixed_root_phase_host.py
+      - scripts/ci/test_fixed_root_resources.py
+      - scripts/ci/fixtures/fixed_root_f0_legacy_resource_counterexample.json
+      - trillionnium/crates/trnm-pon-node/tests/public_v3_multiprocess.rs
+      - trillionnium/crates/trnm-pon-node/tests/support/multiprocess_root_phase_host.rs
+      - trillionnium/crates/trnm-pon-node/tests/support/multiprocess_root_phase_host_resources.rs
+      - trillionnium/crates/trnm-pon-node/tests/support/multiprocess_phase_host.rs
+      - docs/security/PUBLIC_V3_FIXED_HOST_ROOT_EXPERIMENT_R10.md
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: pon-fixed-host-root-f0-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: false
+jobs:
+  fixed-host-root-f0:
+    name: F0 (x64, head, one baseline and one ROOT phase)
+    if: >-
+      github.repository == 'TrillionniumFoundation/Trillionnium-Chain' &&
+      (github.event_name == 'workflow_dispatch' ||
+       (github.event_name == 'pull_request' &&
+        github.event.pull_request.head.repo.full_name == github.repository &&
+        github.event.pull_request.head.repo.fork == false))
+    runs-on: ubuntu-24.04
+    # Includes separately bounded dependency acquisition/build and always cleanup;
+    # the actual native invocation remains a single 540-second outer cap.
+    timeout-minutes: 100
+    env:
+      CI: "true"
+      CARGO_INCREMENTAL: "0"
+      CARGO_BUILD_JOBS: "2"
+      RUST_TEST_THREADS: "1"
+      PYTHONDONTWRITEBYTECODE: "1"
+      EXPECTED_HEAD: ${{ github.event.pull_request.head.sha || github.sha }}
+    steps:
+      - name: Freeze all denominators before checkout or preparation
+        id: reserve
+        shell: bash
+        run: |
+          set -euo pipefail
+          out="$RUNNER_TEMP/pon-fixed-host-root-f0-$GITHUB_RUN_ID-$GITHUB_RUN_ATTEMPT"
+          mkdir "$out"
+          printf 'OUT=%s\n' "$out" >> "$GITHUB_ENV"
+          printf 'CARGO_HOME=%s/cargo-fixed-host-root-f0\n' "$RUNNER_TEMP" >> "$GITHUB_ENV"
+          printf 'CARGO_TARGET_DIR=%s/target-fixed-host-root-f0\n' "$RUNNER_TEMP" >> "$GITHUB_ENV"
+          export F0_PREDECLARED_OUT="$out"
+          python3 - <<'PY'
+          from datetime import datetime, timezone
+          import json, os, re
+          from pathlib import Path
+          out = Path(os.environ['F0_PREDECLARED_OUT'])
+          head = os.environ['EXPECTED_HEAD']
+          if re.fullmatch('[0-9a-f]{40}', head) is None:
+              raise ValueError('full event head SHA required')
+          phases = ['baseline', 'valid-work-root']
+          value = {
+              'schema': 'fixed-host-root-f0-workflow-predeclaration-v1',
+              'head': head, 'tree': None, 'source_kind': 'event-head',
+              'run_id': os.environ['GITHUB_RUN_ID'], 'run_attempt': os.environ['GITHUB_RUN_ATTEMPT'],
+              'job_id': os.environ['GITHUB_JOB'], 'created_utc': datetime.now(timezone.utc).isoformat(),
+              'selector': 'fixed_public_host_root_rejection_and_signed_confirmation_diagnostic',
+              'planned_complete_runs': 1, 'planned_phases': phases,
+              'planned_confirmations': 6, 'planned_business_packet_exposures': 42,
+              'all_planned_rounds': [
+                  {'phase': phase, 'round': number, 'scheduled_offset_ns': (1+number*4)*1000000000,
+                   'actual_started_ns': None, 'actual_ended_ns': None,
+                   'four_second_slo_met': False, 'status': 'unobserved'}
+                  for phase in phases for number in range(3)],
+              'all_planned_business_packets': [
+                  {'phase': phase, 'packet_index': number, 'observed_attempts': 0,
+                   'timely_network_ack': False, 'ack_is_not_confirmation': True}
+                  for phase in phases for number in range(21)],
+              'public_host': {'cpu_max': '25000 100000', 'memory_max': '2147483648'},
+              'paid_burst_ns': 2000000000, 'paid_refill_ns_per_second': 250000000,
+              'phase_window_ns': 30000000000, 'new_f0_four_second_slo_ns': 4000000000,
+              'slo_from_scheduled_time_includes_queue_and_final_observer': True,
+              'old_root_per_round_four_second_predicate_existed': False,
+              'controller_ceiling_is_not_reserved_physical_capacity': True,
+              'controller_resource_schema': 'fixed-host-root-controller-resources-v1',
+              'planned_controller_resource_boundary_samples': 6,
+              'all_controller_resource_boundaries': [
+                  {'phase': phase, 'stage': stage, 'complete': False, 'status': 'unobserved'}
+                  for phase in phases for stage in ('before_launch','actors_ready','after_reap')],
+              'controller_resources_complete': False, 'per_actor_rss_qualified': False,
+              'selector_invocation_attempted': False, 'native_execution_observed': False,
+              'service_remaining': 'unknown', 'independent_wan_qualification': False,
+              'f1_implemented': False, 'production_activation': False,
+          }
+          with (out/'workflow-predeclared.json').open('x') as stream:
+              json.dump(value, stream, indent=2, sort_keys=True)
+              stream.write('\n')
+          (out/'SCOPE.txt').write_text(
+              'One finite x64 head baseline/ROOT pair: 6 confirmations and 42 business exposures. '
+              'All unobserved, failed and late outcomes remain. No independent operators, '
+              'multi-day WAN, quantum hardness, production or F1 qualification. '
+              'Controller 4-core/16GiB limits are ceilings; actual RAM and affinity are recorded.\n')
+          PY
+      - name: Checkout exactly the event head without retained credentials
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: ${{ env.EXPECTED_HEAD }}
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Verify the exact source and all independent parser controls
+        id: source
+        timeout-minutes: 3
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 scripts/ci/verify_ci_source.py --kind head --expected-head "$EXPECTED_HEAD" --output "$OUT/source-before.json" > "$OUT/source-before.log" 2>&1
+          expected_tree="$(python3 -c 'import json,sys; print(json.load(open(sys.argv[1]))["tested_tree"])' "$OUT/source-before.json")"
+          printf 'EXPECTED_TREE=%s\n' "$expected_tree" >> "$GITHUB_ENV"
+          bash scripts/project-preflight.sh --audit 2>&1 | tee "$OUT/preflight.log"
+          python3 -m unittest discover -s scripts/ci -p 'test_native_phase_host.py' -v 2>&1 | tee "$OUT/original-launcher-controls.log"
+          python3 -m unittest discover -s scripts/ci -p 'test_fixed_root*.py' -v 2>&1 | tee "$OUT/f0-source-controls.log"
+      - name: Install source-pinned compiler and fetch the locked graph
+        id: toolchain
+        timeout-minutes: 15
+        shell: bash
+        run: |
+          set -euo pipefail
+          rustup toolchain install 1.95.0 --profile minimal --component clippy --component rustfmt 2>&1 | tee "$OUT/toolchain-install.log"
+          rustc +1.95.0 -Vv > "$OUT/rustc-version.txt"
+          cargo +1.95.0 -Vv > "$OUT/cargo-version.txt"
+          cargo +1.95.0 fetch --locked --manifest-path trillionnium/Cargo.toml --target x86_64-unknown-linux-gnu 2>&1 | tee "$OUT/dependency-fetch.log"
+      - name: Prepare one source-bound ELF and execute five original plus two resource controls
+        id: preparation
+        timeout-minutes: 58
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(uname -m)" = x86_64
+          python3 scripts/run_fixed_host_root_f0.py prepare --out "$OUT/prepared" \
+            --expected-head "$EXPECTED_HEAD" --expected-tree "$EXPECTED_TREE" \
+            --cargo "$(command -v cargo)" --target-dir "$CARGO_TARGET_DIR" \
+            > "$OUT/preparation.stdout.log" 2> "$OUT/preparation.stderr.log"
+      - name: Arm a previously absent exact controller service
+        id: arm
+        timeout-minutes: 1
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 scripts/ci/finalize_fixed_root_f0.py controller-intent --out "$OUT" \
+            --expected-head "$EXPECTED_HEAD" --expected-tree "$EXPECTED_TREE" \
+            > "$OUT/controller-arm.stdout.log" 2> "$OUT/controller-arm.stderr.log"
+          python3 - <<'PY'
+          import json, os
+          from pathlib import Path
+          value = json.loads((Path(os.environ['OUT'])/'controller-intent.json').read_text())
+          with open(os.environ['GITHUB_ENV'], 'a') as stream:
+              for key, field in [('F0_UNIT','service'), ('F0_DESCRIPTION','description'), ('PREPARED_SHA','job_sha256')]:
+                  if '\n' in value[field] or '\r' in value[field]:
+                      raise ValueError('single-line controller identity required')
+                  stream.write(key+'='+value[field]+'\n')
+          PY
+      - name: Run exactly one pair in the declared controller and public Host
+        id: execution
+        timeout-minutes: 11
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(id -u)" -ne 0
+          test -d /run/systemd/system
+          test -f /sys/fs/cgroup/cgroup.controllers
+          systemd-run --version > "$OUT/systemd-version.txt"
+          rustup_home="$(rustup show home)"
+          # The always finalizer handles both controller and separately owned
+          # public services, after exact receipt/manager/invocation validation.
+          sudo -n systemd-run --unit="$F0_UNIT" --description="$F0_DESCRIPTION" --wait --pipe --collect \
+            --service-type=exec --expand-environment=no \
+            --uid="$(id -u)" --gid="$(id -g)" --working-directory="$GITHUB_WORKSPACE" \
+            --property=CPUAccounting=yes --property=MemoryAccounting=yes \
+            --property=CPUQuota=400% --property=CPUQuotaPeriodSec=100ms \
+            --property=MemoryMax=17179869184 --property=Nice=10 \
+            --property=KillMode=control-group --property=TimeoutStopSec=20s --property=RuntimeMaxSec=600s \
+            --setenv="PATH=$PATH" --setenv="CARGO_HOME=$CARGO_HOME" \
+            --setenv="CARGO_TARGET_DIR=$CARGO_TARGET_DIR" --setenv="RUSTUP_HOME=$rustup_home" \
+            --setenv=CARGO_INCREMENTAL=0 --setenv=CARGO_BUILD_JOBS=2 --setenv=RUST_TEST_THREADS=1 \
+            --setenv=PYTHONDONTWRITEBYTECODE=1 --setenv=CI=true --setenv=GITHUB_ACTIONS=true \
+            --setenv="GITHUB_WORKSPACE=$GITHUB_WORKSPACE" --setenv="GITHUB_RUN_ID=$GITHUB_RUN_ID" \
+            --setenv="GITHUB_RUN_ATTEMPT=$GITHUB_RUN_ATTEMPT" --setenv="GITHUB_JOB=$GITHUB_JOB" \
+            /usr/bin/python3 "$GITHUB_WORKSPACE/scripts/run_fixed_host_root_f0.py" execute \
+            --out "$OUT/execution" --expected-head "$EXPECTED_HEAD" --expected-tree "$EXPECTED_TREE" \
+            --prepared "$OUT/prepared/prepared.json" --prepared-sha256 "$PREPARED_SHA" --unit "$F0_UNIT" \
+            > "$OUT/systemd-run.stdout.log" 2> "$OUT/systemd-run.stderr.log"
+      - name: Always retain denominators and inspect only exact owned services
+        id: finalization
+        if: always() && steps.reserve.outcome == 'success'
+        timeout-minutes: 4
+        env:
+          VERIFIED_SOURCE_OUTCOME: ${{ steps.source.outcome }}
+        shell: bash
+        run: |
+          set -uo pipefail
+          if [ "$VERIFIED_SOURCE_OUTCOME" = success ] && [ -n "${EXPECTED_TREE:-}" ]; then
+            python3 scripts/ci/finalize_fixed_root_f0.py finalize --out "$OUT" \
+              --expected-head "$EXPECTED_HEAD" --expected-tree "$EXPECTED_TREE" \
+              > "$OUT/finalization.stdout.log" 2> "$OUT/finalization.stderr.log"
+            finalization_status=$?
+          else
+            # No unverified checkout code or guessed unit receives cleanup authority.
+            python3 - <<'PY'
+          import json, os
+          from pathlib import Path
+          out = Path(os.environ['OUT'])
+          prior = json.loads((out/'workflow-predeclared.json').read_text())
+          with (out/'finalization-not-run.json').open('x') as stream:
+              json.dump({'source_unverified': True, 'cleanup_attempted': False,
+                         'service_remaining': 'unknown', 'complete_success': False,
+                         'denominator': prior}, stream, indent=2, sort_keys=True)
+              stream.write('\n')
+          PY
+            finalization_status=1
+          fi
+          printf 'exit_code=%s\n' "$finalization_status" > "$OUT/finalization-status.txt"
+          exit "$finalization_status"
+      - name: Retain final source, workflow outcomes and every regular partial artifact
+        id: inventory
+        if: always() && steps.reserve.outcome == 'success'
+        env:
+          SOURCE_OUTCOME: ${{ steps.source.outcome }}
+          TOOLCHAIN_OUTCOME: ${{ steps.toolchain.outcome }}
+          PREPARATION_OUTCOME: ${{ steps.preparation.outcome }}
+          ARM_OUTCOME: ${{ steps.arm.outcome }}
+          EXECUTION_OUTCOME: ${{ steps.execution.outcome }}
+          FINALIZATION_OUTCOME: ${{ steps.finalization.outcome }}
+        shell: bash
+        run: |
+          set -uo pipefail
+          source_status=1
+          if [ "$SOURCE_OUTCOME" = success ]; then
+            python3 scripts/ci/verify_ci_source.py --kind head --expected-head "$EXPECTED_HEAD" --output "$OUT/source-after.json" > "$OUT/source-after.log" 2>&1
+            source_status=$?
+          fi
+          export F0_SOURCE_AFTER_STATUS="$source_status"
+          python3 - <<'PY'
+          import hashlib, json, os, stat, uuid
+          from pathlib import Path
+          out = Path(os.environ['OUT'])
+          outcome = {key: os.environ[key] for key in (
+              'SOURCE_OUTCOME','TOOLCHAIN_OUTCOME','PREPARATION_OUTCOME','ARM_OUTCOME',
+              'EXECUTION_OUTCOME','FINALIZATION_OUTCOME','F0_SOURCE_AFTER_STATUS')}
+          with (out/'workflow-outcomes.json').open('x') as stream:
+              json.dump(outcome, stream, indent=2, sort_keys=True)
+              stream.write('\n')
+          files, paths, errors = [], [], []
+          for path in sorted(out.rglob('*')):
+              try:
+                  before = path.lstat()
+                  if stat.S_ISDIR(before.st_mode):
+                      continue
+                  if not stat.S_ISREG(before.st_mode) or path.resolve(strict=True) != path or '\n' in str(path) or '\r' in str(path):
+                      raise ValueError('only exact regular artifact paths may be uploaded')
+                  digest = hashlib.sha256()
+                  with path.open('rb') as stream:
+                      for chunk in iter(lambda: stream.read(1024*1024), b''):
+                          digest.update(chunk)
+                  after = path.lstat()
+                  if (before.st_dev,before.st_ino,before.st_size,before.st_mtime_ns) != (after.st_dev,after.st_ino,after.st_size,after.st_mtime_ns):
+                      raise ValueError('artifact changed during inventory')
+                  files.append({'path': str(path.relative_to(out)), 'bytes': before.st_size, 'sha256': digest.hexdigest()})
+                  paths.append(str(path))
+              except (OSError, ValueError) as error:
+                  errors.append({'path': str(path.relative_to(out)), 'failure': str(error)})
+          manifest = out/'artifact-files.json'
+          with manifest.open('x') as stream:
+              json.dump({'schema':'fixed-host-root-f0-artifact-inventory-v1',
+                         'files':files, 'errors':errors, 'all_files_retained':not errors,
+                         'scope':'all regular success, failure and partial evidence; not a PASS verdict'},
+                        stream, indent=2, sort_keys=True)
+              stream.write('\n')
+          paths.append(str(manifest))
+          boundary = 'F0_FILES_'+uuid.uuid4().hex
+          with open(os.environ['GITHUB_OUTPUT'], 'a') as stream:
+              stream.write('paths<<'+boundary+'\n'+'\n'.join(paths)+'\n'+boundary+'\n')
+          raise SystemExit(1 if errors else 0)
+          PY
+          inventory_status=$?
+          test "$source_status" -eq 0 && test "$inventory_status" -eq 0
+      - name: Upload all available success, failure and unobserved evidence
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: pon-fixed-host-root-f0-x64-head-${{ env.EXPECTED_HEAD }}-${{ github.run_attempt }}
+          path: ${{ steps.inventory.outputs.paths }}
+          if-no-files-found: error
+          include-hidden-files: true
+          retention-days: 30

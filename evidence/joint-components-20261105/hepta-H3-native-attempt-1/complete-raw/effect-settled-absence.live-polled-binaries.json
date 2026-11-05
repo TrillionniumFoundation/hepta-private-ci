@@ -1,0 +1,63 @@
+{
+  "records": [
+    {
+      "source": {
+        "commit": "6db78eca53a5acdda0d96873d3f4cd65863426f0",
+        "tree": "e91f5994017fc5d2cfe58d405a20ee6ad9376772",
+        "lock_sha256": "0f458d7746a0ca0b95bedc5404fd3347c1b0a7508f1c387f3b1f3f71ced08663",
+        "environment_file": "native-environment.json",
+        "environment_sha256": "3ca2ffadd3c6439f1401f04929b5ee4e8747a813de6d2647f139f8efb3b311f6"
+      },
+      "actual_executable": "/home/qian-qi/work/hepta-pq-effect-v4-20261105-93bfcf/target/debug/deps/authorized_effect-a5d36a2670ed2fe3",
+      "retained_copy": "/home/qian-qi/work/hepta-pq-effect-v4-20261105-93bfcf/evidence/joint-h3-native-attempt-1/executed-binaries-effect-settled-absence/ac768b17ffd1b2f8217c46d6adddf13a085a2f0f32ed25a471e1c8bfd59def58.elf",
+      "sha256": "ac768b17ffd1b2f8217c46d6adddf13a085a2f0f32ed25a471e1c8bfd59def58",
+      "bytes": 52749328,
+      "device": 2050,
+      "inode": 58259813,
+      "pid": 1031274,
+      "start_ticks": "99353077",
+      "wrapper_pid": 1030452,
+      "wrapper_start_ticks": "99351571",
+      "wrapper_descendant_verified": true,
+      "post_open_task_and_exe_verified": true,
+      "observed_selected_tests": [
+        "owner_recovery_tests::settled_absence_fact_read_rejects_unknown_unsettled_and_corrupt_evidence"
+      ],
+      "captured_unix": 1793915865.5067954
+    },
+    {
+      "source": {
+        "commit": "6db78eca53a5acdda0d96873d3f4cd65863426f0",
+        "tree": "e91f5994017fc5d2cfe58d405a20ee6ad9376772",
+        "lock_sha256": "0f458d7746a0ca0b95bedc5404fd3347c1b0a7508f1c387f3b1f3f71ced08663",
+        "environment_file": "native-environment.json",
+        "environment_sha256": "3ca2ffadd3c6439f1401f04929b5ee4e8747a813de6d2647f139f8efb3b311f6"
+      },
+      "actual_executable": "/home/qian-qi/work/hepta-pq-effect-v4-20261105-93bfcf/target/debug/deps/authorized_effect-a5d36a2670ed2fe3",
+      "retained_copy": "/home/qian-qi/work/hepta-pq-effect-v4-20261105-93bfcf/evidence/joint-h3-native-attempt-1/executed-binaries-effect-settled-absence/ac768b17ffd1b2f8217c46d6adddf13a085a2f0f32ed25a471e1c8bfd59def58.elf",
+      "sha256": "ac768b17ffd1b2f8217c46d6adddf13a085a2f0f32ed25a471e1c8bfd59def58",
+      "bytes": 52749328,
+      "device": 2050,
+      "inode": 58259813,
+      "pid": 1031521,
+      "start_ticks": "99353647",
+      "wrapper_pid": 1030452,
+      "wrapper_start_ticks": "99351571",
+      "wrapper_descendant_verified": true,
+      "post_open_task_and_exe_verified": true,
+      "observed_selected_tests": [
+        "owner_recovery_tests::settled_absence_fact_read_survives_reopen_and_new_owner_without_redispatch"
+      ],
+      "captured_unix": 1793915870.8808374
+    }
+  ],
+  "errors": [],
+  "unique_actual_elf_sha256": [
+    "ac768b17ffd1b2f8217c46d6adddf13a085a2f0f32ed25a471e1c8bfd59def58"
+  ],
+  "observed_selected_tests": [
+    "owner_recovery_tests::settled_absence_fact_read_rejects_unknown_unsettled_and_corrupt_evidence",
+    "owner_recovery_tests::settled_absence_fact_read_survives_reopen_and_new_owner_without_redispatch"
+  ],
+  "capture_scope": "actual executing test-image binding; polling may miss individual short-lived cases"
+}

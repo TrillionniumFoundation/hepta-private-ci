@@ -1,0 +1,50 @@
+test_retains_exact_actual_descendant_elf (__main__.CollectorControls.test_retains_exact_actual_descendant_elf) ... ERROR
+test_same_target_and_argv_outside_wrapper_are_not_attributed (__main__.CollectorControls.test_same_target_and_argv_outside_wrapper_are_not_attributed) ... ERROR
+test_wrong_wrapper_start_identity_refuses_descendant (__main__.CollectorControls.test_wrong_wrapper_start_identity_refuses_descendant) ... ERROR
+
+======================================================================
+ERROR: test_retains_exact_actual_descendant_elf (__main__.CollectorControls.test_retains_exact_actual_descendant_elf)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/scratch/93bfcfe29fc8/model_storage/h4-capture-repair/candidate/test_executed_binary_capture.py", line 45, in test_retains_exact_actual_descendant_elf
+    result=self.capture(self.wrapper(True))
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/workspace/scratch/93bfcfe29fc8/model_storage/h4-capture-repair/candidate/test_executed_binary_capture.py", line 39, in capture
+    capture=runner.ExecutedBinaryCapture('collector-control','codex_model_provider',lambda value:value==self.case,{'scope':'collector-only synthetic ELF, not Rust gate evidence'},target=runner.TARGET,evidence=runner.EVIDENCE)
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/workspace/scratch/93bfcfe29fc8/model_storage/h4-capture-repair/candidate/test_elf_capture.py", line 23, in __init__
+    raise RuntimeError('collector requires the process and /proc to share a PID namespace')
+RuntimeError: collector requires the process and /proc to share a PID namespace
+
+======================================================================
+ERROR: test_same_target_and_argv_outside_wrapper_are_not_attributed (__main__.CollectorControls.test_same_target_and_argv_outside_wrapper_are_not_attributed)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/scratch/93bfcfe29fc8/model_storage/h4-capture-repair/candidate/test_executed_binary_capture.py", line 65, in test_same_target_and_argv_outside_wrapper_are_not_attributed
+    result=self.capture(self.wrapper(False))
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/workspace/scratch/93bfcfe29fc8/model_storage/h4-capture-repair/candidate/test_executed_binary_capture.py", line 39, in capture
+    capture=runner.ExecutedBinaryCapture('collector-control','codex_model_provider',lambda value:value==self.case,{'scope':'collector-only synthetic ELF, not Rust gate evidence'},target=runner.TARGET,evidence=runner.EVIDENCE)
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/workspace/scratch/93bfcfe29fc8/model_storage/h4-capture-repair/candidate/test_elf_capture.py", line 23, in __init__
+    raise RuntimeError('collector requires the process and /proc to share a PID namespace')
+RuntimeError: collector requires the process and /proc to share a PID namespace
+
+======================================================================
+ERROR: test_wrong_wrapper_start_identity_refuses_descendant (__main__.CollectorControls.test_wrong_wrapper_start_identity_refuses_descendant)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/scratch/93bfcfe29fc8/model_storage/h4-capture-repair/candidate/test_executed_binary_capture.py", line 69, in test_wrong_wrapper_start_identity_refuses_descendant
+    result=self.capture(self.wrapper(True),wrong_identity=True)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/workspace/scratch/93bfcfe29fc8/model_storage/h4-capture-repair/candidate/test_executed_binary_capture.py", line 39, in capture
+    capture=runner.ExecutedBinaryCapture('collector-control','codex_model_provider',lambda value:value==self.case,{'scope':'collector-only synthetic ELF, not Rust gate evidence'},target=runner.TARGET,evidence=runner.EVIDENCE)
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/workspace/scratch/93bfcfe29fc8/model_storage/h4-capture-repair/candidate/test_elf_capture.py", line 23, in __init__
+    raise RuntimeError('collector requires the process and /proc to share a PID namespace')
+RuntimeError: collector requires the process and /proc to share a PID namespace
+
+----------------------------------------------------------------------
+Ran 3 tests in 2.301s
+
+FAILED (errors=3)

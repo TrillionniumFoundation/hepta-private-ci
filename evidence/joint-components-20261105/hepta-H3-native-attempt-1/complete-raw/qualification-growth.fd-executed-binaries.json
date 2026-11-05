@@ -1,0 +1,131 @@
+{
+  "binding_method": "opened ELF fd then same-PID exec, matched to actual libtest outcome",
+  "config_file": "/home/qian-qi/work/hepta-pq-effect-v4-20261105-93bfcf/evidence/joint-h3-native-attempt-1/qualification-growth.fd-capture-config.json",
+  "config_sha256": "bd542ec75103ad14a104c4b958df4baf640879aa49e3988d97f652f60d35360b",
+  "runner_sha256": "9679cc6e11762c29b4c0ee92dd7715d3fce0555a6f8e0e10ed9d0b007951381a",
+  "records": [
+    {
+      "schema": "hepta-nextest-fd-runner-v1",
+      "status": "pre_exec_fd_bound",
+      "source": {
+        "commit": "6db78eca53a5acdda0d96873d3f4cd65863426f0",
+        "tree": "e91f5994017fc5d2cfe58d405a20ee6ad9376772",
+        "lock_sha256": "0f458d7746a0ca0b95bedc5404fd3347c1b0a7508f1c387f3b1f3f71ced08663",
+        "environment_file": "native-environment.json",
+        "environment_sha256": "3ca2ffadd3c6439f1401f04929b5ee4e8747a813de6d2647f139f8efb3b311f6"
+      },
+      "gate": "qualification-growth",
+      "capture_config_sha256": "bd542ec75103ad14a104c4b958df4baf640879aa49e3988d97f652f60d35360b",
+      "runner_sha256": "9679cc6e11762c29b4c0ee92dd7715d3fce0555a6f8e0e10ed9d0b007951381a",
+      "actual_executable": "/home/qian-qi/work/hepta-pq-effect-v4-20261105-93bfcf/target/debug/deps/codex_hepta_evidence-0f5076227f347d3a",
+      "retained_copy": "/home/qian-qi/work/hepta-pq-effect-v4-20261105-93bfcf/evidence/joint-h3-native-attempt-1/fd-executed-binaries-qualification-growth/a948cdfa5aeafc03fcfc63459e581ca254129f4d878949236e0bf42df3fe725f.elf",
+      "expected_binary_target": "codex_hepta_evidence",
+      "sha256": "a948cdfa5aeafc03fcfc63459e581ca254129f4d878949236e0bf42df3fe725f",
+      "bytes": 53291680,
+      "device": 2050,
+      "inode": 58259816,
+      "mtime_ns": 1793915513651472429,
+      "ctime_ns": 1793915513658472246,
+      "pid": 1022717,
+      "start_ticks": "99328135",
+      "coordinator": {
+        "pid": 989453,
+        "start_ticks": "99250221"
+      },
+      "coordinator_descendant_verified": true,
+      "pre_exec_fd_identity_verified": true,
+      "phase": "run",
+      "exact_test": "qualification_tests::claim_query_rejects_more_than_512_references",
+      "argv": [
+        "/home/qian-qi/work/hepta-pq-effect-v4-20261105-93bfcf/target/debug/deps/codex_hepta_evidence-0f5076227f347d3a",
+        "--exact",
+        "qualification_tests::claim_query_rejects_more_than_512_references",
+        "--nocapture"
+      ],
+      "observed_selected_tests": [
+        "qualification_tests::claim_query_rejects_more_than_512_references"
+      ],
+      "captured_unix": 1793915615.7150822,
+      "scope": "opened image bound immediately before same-PID fd-exec; requires matching actual libtest outcome and absence of exec failure"
+    },
+    {
+      "schema": "hepta-nextest-fd-runner-v1",
+      "status": "pre_exec_fd_bound",
+      "source": {
+        "commit": "6db78eca53a5acdda0d96873d3f4cd65863426f0",
+        "tree": "e91f5994017fc5d2cfe58d405a20ee6ad9376772",
+        "lock_sha256": "0f458d7746a0ca0b95bedc5404fd3347c1b0a7508f1c387f3b1f3f71ced08663",
+        "environment_file": "native-environment.json",
+        "environment_sha256": "3ca2ffadd3c6439f1401f04929b5ee4e8747a813de6d2647f139f8efb3b311f6"
+      },
+      "gate": "qualification-growth",
+      "capture_config_sha256": "bd542ec75103ad14a104c4b958df4baf640879aa49e3988d97f652f60d35360b",
+      "runner_sha256": "9679cc6e11762c29b4c0ee92dd7715d3fce0555a6f8e0e10ed9d0b007951381a",
+      "actual_executable": "/home/qian-qi/work/hepta-pq-effect-v4-20261105-93bfcf/target/debug/deps/codex_hepta_evidence-0f5076227f347d3a",
+      "retained_copy": "/home/qian-qi/work/hepta-pq-effect-v4-20261105-93bfcf/evidence/joint-h3-native-attempt-1/fd-executed-binaries-qualification-growth/a948cdfa5aeafc03fcfc63459e581ca254129f4d878949236e0bf42df3fe725f.elf",
+      "expected_binary_target": "codex_hepta_evidence",
+      "sha256": "a948cdfa5aeafc03fcfc63459e581ca254129f4d878949236e0bf42df3fe725f",
+      "bytes": 53291680,
+      "device": 2050,
+      "inode": 58259816,
+      "mtime_ns": 1793915513651472429,
+      "ctime_ns": 1793915513658472246,
+      "pid": 1024380,
+      "start_ticks": "99332939",
+      "coordinator": {
+        "pid": 989453,
+        "start_ticks": "99250221"
+      },
+      "coordinator_descendant_verified": true,
+      "pre_exec_fd_identity_verified": true,
+      "phase": "run",
+      "exact_test": "qualification_tests::ordinary_append_rejects_historical_projection_drift_without_consuming_replay",
+      "argv": [
+        "/home/qian-qi/work/hepta-pq-effect-v4-20261105-93bfcf/target/debug/deps/codex_hepta_evidence-0f5076227f347d3a",
+        "--exact",
+        "qualification_tests::ordinary_append_rejects_historical_projection_drift_without_consuming_replay",
+        "--nocapture"
+      ],
+      "observed_selected_tests": [
+        "qualification_tests::ordinary_append_rejects_historical_projection_drift_without_consuming_replay"
+      ],
+      "captured_unix": 1793915663.7848463,
+      "scope": "opened image bound immediately before same-PID fd-exec; requires matching actual libtest outcome and absence of exec failure"
+    }
+  ],
+  "errors": [],
+  "unique_actual_elf_sha256": [
+    "a948cdfa5aeafc03fcfc63459e581ca254129f4d878949236e0bf42df3fe725f"
+  ],
+  "runner_declared_binary_counts": [
+    1
+  ],
+  "actual_cases": [
+    [
+      "qualification_tests::claim_query_rejects_more_than_512_references",
+      "ok"
+    ],
+    [
+      "qualification_tests::ordinary_append_rejects_historical_projection_drift_without_consuming_replay",
+      "ok"
+    ]
+  ],
+  "per_case_bijection_verified": true,
+  "scope": "exact test images only; no retrospective H1 credit or complete dynamic runtime closure",
+  "expected_case_targets": null,
+  "expected_binary_targets": [
+    "codex_hepta_evidence"
+  ],
+  "actual_images_by_target": {
+    "codex_hepta_evidence": [
+      "a948cdfa5aeafc03fcfc63459e581ca254129f4d878949236e0bf42df3fe725f"
+    ]
+  },
+  "live_polling_corroboration": {
+    "file": "qualification-growth.live-polled-binaries.json",
+    "sha256": "fadc06790fa21c8e9ac0eda6fa1d7cc8d939840516d9ae2302ee68be96c7eea5",
+    "captured_processes": 2,
+    "errors": [],
+    "scope": "polling may miss short processes; no assignment of missed processes from other captures"
+  }
+}

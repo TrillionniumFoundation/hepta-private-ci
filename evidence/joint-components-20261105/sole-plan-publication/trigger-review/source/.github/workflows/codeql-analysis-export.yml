@@ -1,0 +1,81 @@
+name: CodeQL exact-source analysis export
+on:
+  pull_request:
+  workflow_dispatch:
+    inputs:
+      pr_number:
+        description: Same-repository open PR whose current source should be exported
+        required: true
+        type: string
+permissions:
+  contents: read
+  security-events: read
+  checks: read
+  pull-requests: read
+concurrency:
+  group: codeql-analysis-export-${{ github.event.pull_request.number || inputs.pr_number }}
+  cancel-in-progress: false
+jobs:
+  export:
+    if: github.event_name == 'workflow_dispatch' || github.event.pull_request.head.repo.full_name == github.repository
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    env:
+      PYTHONDONTWRITEBYTECODE: "1"
+      EXPORTER_HEAD: ${{ github.event.pull_request.head.sha || github.sha }}
+      EXPORT_PR_NUMBER: ${{ inputs.pr_number }}
+    steps:
+      - name: Reserve a fresh evidence directory
+        shell: bash
+        run: |
+          set -euo pipefail
+          out="$RUNNER_TEMP/codeql-export-$GITHUB_RUN_ID-$GITHUB_RUN_ATTEMPT"
+          mkdir "$out"
+          printf 'OUT=%s\n' "$out" >> "$GITHUB_ENV"
+      - name: Checkout the immutable exporter source
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: ${{ env.EXPORTER_HEAD }}
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Verify exporter source before reading existing analyses
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 scripts/ci/verify_ci_source.py --kind head --expected-head "$EXPORTER_HEAD" --output "$OUT/exporter-source-before.json"
+          bash scripts/project-preflight.sh --audit 2>&1 | tee "$OUT/preflight.log"
+          python3 scripts/test_export_codeql_analysis.py 2>&1 | tee "$OUT/exporter-offline-tests.log"
+      - name: Export exact PR analyses with the existing read-only token
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 scripts/export_codeql_analysis.py --out "$OUT/analysis" --wait-seconds 1200 --poll-seconds 30
+      - name: Verify unchanged exporter source
+        if: always()
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 scripts/ci/verify_ci_source.py --kind head --expected-head "$EXPORTER_HEAD" --output "$OUT/exporter-source-after.json"
+      - name: Hash all available evidence, including failures
+        if: always()
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          import hashlib, json, os
+          from pathlib import Path
+          out = Path(os.environ['OUT'])
+          hashes = {str(p.relative_to(out)): hashlib.sha256(p.read_bytes()).hexdigest()
+                    for p in sorted(out.rglob('*')) if p.is_file() and p.name != 'sha256.json'}
+          (out / 'sha256.json').write_text(json.dumps(hashes, indent=2) + '\n')
+          PY
+      - name: Preserve metadata, API SARIF subsets and partial failures
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: codeql-analysis-export-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ env.OUT }}
+          if-no-files-found: error
+          retention-days: 30

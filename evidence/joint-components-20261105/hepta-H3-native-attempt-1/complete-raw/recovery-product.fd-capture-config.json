@@ -1,0 +1,25 @@
+{
+  "schema": "hepta-nextest-fd-runner-v1",
+  "target": "/home/qian-qi/work/hepta-pq-effect-v4-20261105-93bfcf/target",
+  "crate": "kernel_evidence_product",
+  "gate": "recovery-product",
+  "directory": "/home/qian-qi/work/hepta-pq-effect-v4-20261105-93bfcf/evidence/joint-h3-native-attempt-1/fd-executed-binaries-recovery-product",
+  "selected_names": [
+    "real_agentd_composes_authenticated_evidence_writer_query_verifier_and_terminal_observer",
+    "signed_recovery_frontier_allows_exact_current_database",
+    "signed_recovery_frontier_rejects_effect_only_database_rollback",
+    "signed_recovery_frontier_rejects_valid_older_database_image"
+  ],
+  "predicate": null,
+  "source": {
+    "commit": "6db78eca53a5acdda0d96873d3f4cd65863426f0",
+    "tree": "e91f5994017fc5d2cfe58d405a20ee6ad9376772",
+    "lock_sha256": "0f458d7746a0ca0b95bedc5404fd3347c1b0a7508f1c387f3b1f3f71ced08663",
+    "environment_file": "native-environment.json",
+    "environment_sha256": "3ca2ffadd3c6439f1401f04929b5ee4e8747a813de6d2647f139f8efb3b311f6"
+  },
+  "coordinator": {
+    "pid": 989453,
+    "start_ticks": "99250221"
+  }
+}

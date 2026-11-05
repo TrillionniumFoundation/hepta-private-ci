@@ -1,0 +1,423 @@
+name: PoN recent batch exact-source acceptance
+on:
+  pull_request:
+    paths:
+      - trillionnium/crates/trnm-pon-node/src/store.rs
+      - trillionnium/crates/trnm-pon-node/src/store/history_page.rs
+      - trillionnium/crates/trnm-pon-node/src/store/history_page_inline_tests.rs
+      - trillionnium/crates/trnm-pon-node/src/native_account_query_tests.rs
+      - trillionnium/crates/trnm-pon-node/src/native_authenticated_tests.rs
+      - trillionnium/crates/trnm-pon-node/src/store/native_authenticated.rs
+      - trillionnium/crates/trnm-pon-node/src/store/native_authenticated/current_accounts_tests.rs
+      - trillionnium/crates/trnm-pon-node/src/store/native_authenticated/history_arithmetic.rs
+      - trillionnium/crates/trnm-pon-node/src/store/native_authenticated/history_arithmetic/tests.rs
+      - trillionnium/crates/trnm-pon-node/src/store/native_authenticated/arithmetic_cache.rs
+      - trillionnium/crates/trnm-pon-node/src/store/native_authenticated/arithmetic_cache/root_arithmetic.rs
+      - trillionnium/crates/trnm-pon-node/src/store/native_authenticated/arithmetic_cache/root_arithmetic/tests.rs
+      - trillionnium/crates/trnm-pon-node/src/account_archive_execution/state_witness.rs
+      - trillionnium/crates/trnm-pon-node/tests/public_v3_multiprocess.rs
+      - trillionnium/crates/trnm-pon-node/src/store/native_fixed_blob_tests.rs
+      - trillionnium/crates/trnm-pon-node/tests/authenticated_storage_cli.rs
+      - trillionnium/crates/trnm-pon-node/examples/continuous_pipeline.rs
+      - trillionnium/crates/trnm-pon-node/tests/public_v3_service_campaign.rs
+      - formal/pon-nakamoto-v1/work_query_bound.py
+      - formal/pon-nakamoto-v1/test_work_query_bound.py
+      - scripts/ci/read_native_cache_observation.py
+      - scripts/ci/test_read_native_cache_observation.py
+      - .github/workflows/pon-recent-batch-acceptance.yml
+permissions:
+  contents: read
+jobs:
+  recent:
+    name: recent batch (${{ matrix.runner }}, ${{ matrix.source }})
+    strategy:
+      fail-fast: false
+      matrix:
+        runner: [ubuntu-24.04, ubuntu-24.04-arm]
+        source: [head, prospective-merge]
+    runs-on: ${{ matrix.runner }}
+    timeout-minutes: 25
+    env:
+      CARGO_INCREMENTAL: "0"
+      CARGO_BUILD_JOBS: "2"
+      RUST_TEST_THREADS: "1"
+      PYTHONDONTWRITEBYTECODE: "1"
+      EXPECTED_HEAD: ${{ github.event.pull_request.head.sha }}
+      EXPECTED_BASE: ${{ github.event.pull_request.base.sha }}
+      EXPECTED_MERGE: ${{ github.sha }}
+      SOURCE_KIND: ${{ matrix.source }}
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ matrix.source == 'head' && github.event.pull_request.head.sha || github.sha }}
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Verify exact source, ordered actual main merge and full repository boundary
+        shell: bash
+        run: |
+          set -euo pipefail
+          out="$RUNNER_TEMP/recent-exact"
+          mkdir -p "$out"
+          echo "OUT=$out" >> "$GITHUB_ENV"
+          echo "TRNM_RETAINED_DELTA_COST_PATH=$out/retained-delta-cost.jsonl" >> "$GITHUB_ENV"
+          echo "CARGO_TARGET_DIR=$RUNNER_TEMP/target-recent-exact" >> "$GITHUB_ENV"
+          args=(--kind "$SOURCE_KIND" --expected-head "$EXPECTED_HEAD")
+          if test "$SOURCE_KIND" = prospective-merge; then
+            args+=(--expected-base "$EXPECTED_BASE" --expected-merge "$EXPECTED_MERGE")
+          fi
+          python3 scripts/ci/verify_ci_source.py "${args[@]}" --output "$out/source.json"
+          test "$(git hash-object trillionnium/crates/trnm-pon-node/src/store/operator_mining_owner.rs)" = 44acbb5d854a8e0a7c4979b4715bd9949b656cd5
+          test "$(git hash-object trillionnium/crates/trnm-pon-node/src/store/operator_continuous_owner.rs)" = a6eb85aa2c2e3ad17244890128ef86975d71ecc9
+          test "$(git hash-object trillionnium/crates/trnm-pon-node/src/store/operator_continuous_owner_tests.rs)" = 6119f98bb45fda6399d2528db9f61a69751e397f
+          test "$(git hash-object trillionnium/crates/trnm-pon-node/src/store.rs)" = 70e42fd48d21755af43c5157c89ebfe5f09663ce
+          test "$(git hash-object trillionnium/crates/trnm-pon-node/src/store/history_page.rs)" = abb5f3193ee4d7f02633be4e3f6fdd3e1365a5e9
+          test "$(git hash-object trillionnium/crates/trnm-pon-node/src/native_authenticated_tests.rs)" = c98c5333ab3609b30b11fd0a700917ce7f2a8999
+          test "$(git hash-object trillionnium/crates/trnm-pon-node/src/store/native_authenticated.rs)" = e99453b1abe6ce589f003be199b5553241cba398
+          test "$(git hash-object trillionnium/crates/trnm-pon-node/src/store/task_observation.rs)" = eed2c350e3dfd17a66d7c4f4225ee2f02d3c0e60
+          test "$(git hash-object trillionnium/crates/trnm-pon-node/src/store/native_fixed_blob_tests.rs)" = 5e3769d3186026a7bac012be534f0d6cad5e362a
+          test "$(git hash-object trillionnium/crates/trnm-pon-node/tests/authenticated_storage_cli.rs)" = 7301aeb3033913f080b23767bfca52a2bf76d45b
+          test "$(git hash-object formal/pon-nakamoto-v1/work_query_bound.py)" = e3ec8bf4bdd510f3fe718e63a4df595d342c61c6
+          test "$(git hash-object formal/pon-nakamoto-v1/test_work_query_bound.py)" = 526f155f2215184aa607da6d453423ca6930ded2
+          test "$(git hash-object trillionnium/crates/trnm-pon-node/src/native_account_query_tests.rs)" = c8567475a36cf449d9fd2b33363a545fbd4704ab
+          test "$(git hash-object trillionnium/crates/trnm-pon-node/src/store/native_authenticated/arithmetic_cache.rs)" = 79a7c0ab6812d5a536f551241cee9a12ebdfb494
+          test "$(git hash-object trillionnium/crates/trnm-pon-node/src/store/native_authenticated/arithmetic_cache/root_arithmetic.rs)" = 3fcbc873fcc89de208922e6ffd74361442797bed
+          test "$(git hash-object trillionnium/crates/trnm-pon-node/src/store/native_authenticated/arithmetic_cache/root_arithmetic/tests.rs)" = 74af81e2e181f6639dd1719a65d91c0ba5323c9b
+          test "$(git hash-object trillionnium/crates/trnm-pon-node/src/account_archive_execution/state_witness.rs)" = 0f611459c4c1c37488861ba36c82ba8302e40c4c
+          test "$(git hash-object trillionnium/crates/trnm-pon-node/src/store/native_authenticated/history_arithmetic.rs)" = 6540d88dc33064ab504607bfa9b7340d42a3c585
+          test "$(git hash-object trillionnium/crates/trnm-pon-node/src/store/native_authenticated/history_arithmetic/tests.rs)" = 27b6342619ee051c57944de88b4bbab33ff4627c
+          # Retain R10 and the subsequent bounded 30-second client-import
+          # observation under the original budgets, with an exact whole-file pin.
+          test "$(git hash-object trillionnium/crates/trnm-pon-node/tests/public_v3_multiprocess.rs)" = ec6420becaba837f22d45c917d15554a8e653275
+          bash scripts/project-preflight.sh --audit
+      - name: Execute conditional query accounting and anytime-bound counterexamples
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 formal/pon-nakamoto-v1/test_work_query_bound.py -v 2>&1 | tee "$OUT/query-bound.log"
+          grep -E '^Ran 21 tests in ' "$OUT/query-bound.log"
+          grep -x 'OK' "$OUT/query-bound.log"
+      - name: Reject incomplete, ambiguous or incorrectly bound cache observations
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 -m unittest discover -s scripts/ci -p test_read_native_cache_observation.py -v 2>&1 | tee "$OUT/cache-receipt-tests.log"
+          grep -E '^Ran 34 tests in ' "$OUT/cache-receipt-tests.log"
+          grep -x 'OK' "$OUT/cache-receipt-tests.log"
+      - name: Install original pinned native compiler and lint tools
+        run: rustup toolchain install 1.95.0 --profile minimal --component rustfmt --component clippy
+      - name: Prepare pinned OpenSSL 3.5.9 PQ provider
+        id: pq_provider
+        shell: bash
+        run: |
+          set -euo pipefail
+          export TRNM_CI_RECEIPT_DIR="$OUT"
+          bash scripts/ci/prepare_pq_provider.sh
+      - name: Check committed formatting without rewriting source
+        shell: bash
+        run: |
+          set -euo pipefail
+          cargo +1.95.0 fmt --manifest-path trillionnium/Cargo.toml --all -- --check 2>&1 | tee "$OUT/format.log"
+      - name: Require bounded ordinary record copies and complete history controls
+        shell: bash
+        run: |
+          set -euo pipefail
+          cargo +1.95.0 test --release --locked --manifest-path trillionnium/Cargo.toml -p trnm-pon-node --lib store::fixed_blob_read_tests:: -- --show-output --test-threads=1 2>&1 | tee "$OUT/fixed-read-suite.log"
+          grep -E '^test result: ok\. 4 passed; 0 failed; 0 ignored;' "$OUT/fixed-read-suite.log"
+          cargo +1.95.0 test --release --locked --manifest-path trillionnium/Cargo.toml -p trnm-pon-node --lib store::history_page:: -- --show-output --test-threads=1 2>&1 | tee "$OUT/history-read-suite.log"
+          grep -E '^test result: ok\. 6 passed; 0 failed; 3 ignored;' "$OUT/history-read-suite.log"
+          grep -Fx 'test store::history_page::tests::inline_record_tests::history_inline_record_types_widths_and_error_precedence_match_original ... ok' "$OUT/history-read-suite.log"
+          grep -Fx 'test store::history_page::tests::inline_record_tests::history_inline_record_complete_pages_and_foreign_corruption_match_original ... ok' "$OUT/history-read-suite.log"
+          for selector in store::fixed_blob_read_tests::fixed_blob_copy_preserves_null_types_and_exact_boundaries store::fixed_blob_read_tests::fixed_header_projection_bounds_all_six_fields_without_type_coercion store::fixed_blob_read_tests::fixed_record_rereads_original_errors_and_restores_both_native_backends store::fixed_blob_read_tests::fixed_context_and_active_tip_reject_oversize_prefix_aliases store::history_page::bounded_record_tests::history_record_copy_bounds_keep_original_conversion_and_shape_order; do
+            log_file="$OUT/${selector//:/__}.log"
+            printf '%s\t%s\n' "${log_file##*/}" "$selector" >> "$OUT/log-paths.tsv"
+            cargo +1.95.0 test --release --locked --manifest-path trillionnium/Cargo.toml -p trnm-pon-node --lib "$selector" -- --exact --show-output --test-threads=1 2>&1 | tee "$log_file"
+            python3 scripts/ci/check_required_native_test.py "$log_file" --test "$selector"
+          done
+      - name: Execute complete original error-boundary suite and all new controls
+        shell: bash
+        run: |
+          set -euo pipefail
+          cargo +1.95.0 test --release --locked --manifest-path trillionnium/Cargo.toml -p trnm-pon-node --lib store::error_boundary_tests:: -- --show-output --test-threads=1 2>&1 | tee "$OUT/error-boundary.log"
+          grep -E '^test result: ok\. 13 passed; 0 failed; 0 ignored;' "$OUT/error-boundary.log"
+          for test in recent_batch_exact_window_and_complete_call_observation recent_batch_retained_corruption_and_read_boundary_match_original recent_batch_branch_reopen_and_callback_errors_preserve_context; do
+            selector="store::error_boundary_tests::$test"
+            cargo +1.95.0 test --release --locked --manifest-path trillionnium/Cargo.toml -p trnm-pon-node --lib "$selector" -- --exact --show-output --test-threads=1 2>&1 | tee "$OUT/$test.log"
+            python3 scripts/ci/check_required_native_test.py "$OUT/$test.log" --test "$selector"
+          done
+      - name: Execute all original authenticated owner controls and five snapshot regressions
+        shell: bash
+        run: |
+          set -euo pipefail
+          cargo +1.95.0 test --release --locked --manifest-path trillionnium/Cargo.toml -p trnm-pon-node --lib store::native_authenticated_tests:: -- --show-output --test-threads=1 2>&1 | tee "$OUT/native-snapshots.log"
+          grep -E '^test result: ok\. 21 passed; 0 failed; 0 ignored;' "$OUT/native-snapshots.log"
+          for test in native_dense_snapshots_retain_64_and_reconstruct_pruned_history native_dense_snapshot_insert_corruption_and_delta_omission_roll_back native_dense_snapshot_pruning_suppression_preserves_atomic_limit native_dense_snapshot_cannot_hide_old_delta_damage_from_admission native_dense_snapshot_readback_cost_keeps_full_state_and_unaccelerated_reference native_inactive_page_parents_use_checked_material_without_early_activation native_inactive_parent_material_keeps_fresh_sql_state_and_cancellation_checks; do
+            selector="store::native_authenticated_tests::$test"
+            cargo +1.95.0 test --release --locked --manifest-path trillionnium/Cargo.toml -p trnm-pon-node --lib "$selector" -- --exact --show-output --test-threads=1 2>&1 | tee "$OUT/$test.log"
+            python3 scripts/ci/check_required_native_test.py "$OUT/$test.log" --test "$selector"
+          done
+      - name: Retain authenticated record, ancestry and cold recovery coverage
+        shell: bash
+        run: |
+          set -euo pipefail
+          for suite in store::native_authenticated:: store::native_ancestry_commit_tests::; do
+            name="${suite//:/_}"
+            options=()
+            if test "$suite" = store::native_authenticated::; then
+              options+=(--include-ignored)
+            fi
+            cargo +1.95.0 test --release --locked --manifest-path trillionnium/Cargo.toml -p trnm-pon-node --lib "$suite" -- "${options[@]}" --show-output --test-threads=1 2>&1 | tee "$OUT/$name.log"
+            grep -E '^test result: ok\. [1-9][0-9]* passed; 0 failed;' "$OUT/$name.log"
+            if test "$suite" = store::native_authenticated::; then
+              grep -E '^test result: ok\. 91 passed; 0 failed; 0 ignored;' "$OUT/$name.log"
+              # Inspect this invocation once; retain all existing executions.
+              python3 - "$OUT/$name.log" <<'PYLOG'
+          import re, sys
+          from pathlib import Path
+          lines = Path(sys.argv[1]).read_text().splitlines()
+          names = [m[1] for line in lines if (m := re.fullmatch(r'test (store::native_authenticated::[A-Za-z0-9_:]+) \.\.\. ok', line))]
+          summaries = [line for line in lines if line.startswith('test result:')]
+          post_write = [name for name in names if name.startswith('store::native_authenticated::post_write_readback::tests::')]
+          current_accounts = {
+              'store::native_authenticated::current_accounts_tests::cold_complete_reuses_actual_account_parse_and_keeps_all_graph_checkpoints',
+              'store::native_authenticated::current_accounts_tests::current_projection_is_bound_to_exact_state_and_never_hides_account_changes',
+              'store::native_authenticated::current_accounts_tests::current_projection_preserves_complete_root_and_late_error_priority',
+              'store::native_authenticated::current_accounts_tests::current_projection_rereads_corrupt_sql_and_preserves_every_cancellation',
+              'store::native_authenticated::current_accounts_tests::cold_full_validation_projection_abba_observation_without_timing_gate',
+          }
+          observed_current = {name for name in names if name.startswith('store::native_authenticated::current_accounts_tests::')}
+          if (len(names) != 91 or len(set(names)) != 91 or len(post_write) != 23
+                  or observed_current != current_accounts
+                  or len(summaries) != 1 or not summaries[0].startswith('test result: ok. 91 passed; 0 failed; 0 ignored;')):
+              raise SystemExit('current authenticated module requires 68 non-post-write and 23 post-write executions, including all five current-account controls, in one log')
+          PYLOG
+            fi
+          done
+          cargo +1.95.0 test --release --locked --manifest-path trillionnium/Cargo.toml -p trnm-pon-node --test continuity_authenticated --test authenticated_storage_cli -- --show-output --test-threads=1 2>&1 | tee "$OUT/recovery.log"
+          grep -E '^test result: ok\. 7 passed; 0 failed; 0 ignored;' "$OUT/recovery.log"
+      - name: Require all five statement-reuse controls and complete-call observations separately
+        shell: bash
+        run: |
+          set -euo pipefail
+          for test in cached_delta_reads_rebind_and_observe_committed_mutations cached_delta_failure_then_rollback_does_not_reuse_a_verdict cached_delta_cursor_is_released_after_cancellation cached_delta_eviction_or_disabled_cache_keeps_original_results cached_delta_complete_call_observation_keeps_checks_and_results; do
+            selector="store::native_authenticated::stored_delta_stream_tests::$test"
+            cargo +1.95.0 test --release --locked --manifest-path trillionnium/Cargo.toml -p trnm-pon-node --lib "$selector" -- --exact --show-output --test-threads=1 2>&1 | tee "$OUT/$test.log"
+            python3 scripts/ci/check_required_native_test.py "$OUT/$test.log" --test "$selector"
+          done
+      - name: Require every cached block, parent, commitment and snapshot owner control
+        shell: bash
+        run: |
+          set -euo pipefail
+          for test in cached_block_reads_do_not_hide_genesis_damage_or_rollback cached_parent_reads_observe_changed_work_then_exact_restore cached_commitment_reads_preserve_limits_missing_and_rollback cached_genesis_snapshot_is_reread_and_survives_cold_reopen; do
+            selector="store::native_authenticated::cached_owner_read_tests::$test"
+            cargo +1.95.0 test --release --locked --manifest-path trillionnium/Cargo.toml -p trnm-pon-node --lib "$selector" -- --exact --show-output --test-threads=1 2>&1 | tee "$OUT/$test.log"
+            python3 scripts/ci/check_required_native_test.py "$OUT/$test.log" --test "$selector"
+          done
+      - name: Require live public owner mutation, admission rollback and cold reopen controls
+        shell: bash
+        run: |
+          set -euo pipefail
+          for test in live_owner_rechecks_genesis_block_after_committed_damage_and_restore live_owner_rechecks_parent_work_after_real_admission live_owner_rechecks_record_limits_missing_rows_and_sql_types live_owner_snapshot_damage_rolls_back_admission_and_rejects_cold_open; do
+            selector="cached_owner_reads::$test"
+            cargo +1.95.0 test --release --locked --manifest-path trillionnium/Cargo.toml -p trnm-pon-node --test authenticated_storage_cli "$selector" -- --exact --show-output --test-threads=1 2>&1 | tee "$OUT/$test.log"
+            python3 scripts/ci/check_required_native_test.py "$OUT/$test.log" --test "$selector"
+          done
+      - name: Require fixed-BLOB allocation bounds with original errors and rollback semantics
+        shell: bash
+        run: |
+          set -euo pipefail
+          for test in fixed_blob_projection_bounds_owned_bytes_and_preserves_sql_types fixed_block_fields_match_original_errors_after_warm_cache_and_rollback fixed_parent_work_matches_original_and_rereads_after_restore fixed_fields_genesis_failure_order_and_cold_reopen_keep_state stored_packet_blob_copy_bound_preserves_sql_types_and_boundary stored_packet_reads_keep_legacy_errors_provenance_and_restoration stored_packet_reads_keep_pq_errors_provenance_and_restoration stored_packet_digest_borrows_full_blob_and_preserves_conversion_errors; do
+            selector="store::native_authenticated::native_fixed_blob_tests::$test"
+            cargo +1.95.0 test --release --locked --manifest-path trillionnium/Cargo.toml -p trnm-pon-node --lib "$selector" -- --exact --show-output --test-threads=1 2>&1 | tee "$OUT/$test.log"
+            python3 scripts/ci/check_required_native_test.py "$OUT/$test.log" --test "$selector"
+          done
+      - name: Reject empty nullable BLOB corruption through original native owners
+        shell: bash
+        run: |
+          set -euo pipefail
+          for test in nullable_delta_projection_preserves_null_empty_types_and_bounds nullable_delta_empty_bytes_are_not_absence_after_warm_cache nullable_delta_late_failure_keeps_cancellation_and_cursor_recovery nullable_genesis_packet_empty_rejects_and_rollback_restores nullable_real_insertion_empty_preimage_rejects_live_and_cold_owner; do
+            selector="store::native_authenticated::nullable_blob_tests::$test"
+            cargo +1.95.0 test --release --locked --manifest-path trillionnium/Cargo.toml -p trnm-pon-node --lib "$selector" -- --exact --show-output --test-threads=1 2>&1 | tee "$OUT/$test.log"
+            python3 scripts/ci/check_required_native_test.py "$OUT/$test.log" --test "$selector"
+          done
+      - name: Keep settings-selected task observations and original legacy readback
+        shell: bash
+        run: |
+          set -euo pipefail
+          for test in configured_profiles_decode_transfers_acceptances_and_reject_foreign_or_malformed_bytes every_native_profile_observes_real_settlement_with_its_exact_wire_id legacy_selection_and_ambiguity_keep_the_original_codec_order; do
+            selector="store::task_observation::tests::$test"
+            cargo +1.95.0 test --release --locked --manifest-path trillionnium/Cargo.toml -p trnm-pon-node --lib "$selector" -- --exact --show-output --test-threads=1 2>&1 | tee "$OUT/$test.log"
+            python3 scripts/ci/check_required_native_test.py "$OUT/$test.log" --test "$selector"
+          done
+          for test in exact_acceptance_survives_restart_and_cli_readback_without_mutation settlement_in_another_packet_never_rescues_a_reorged_exact_packet receipt_only_and_ambiguous_multi_accept_packets_have_no_upgrade_binding altered_current_task_bytes_cannot_become_a_settlement_observation; do
+            cargo +1.95.0 test --release --locked --manifest-path trillionnium/Cargo.toml -p trnm-pon-node --test accepted_task_observation "$test" -- --exact --show-output --test-threads=1 2>&1 | tee "$OUT/$test.log"
+            python3 scripts/ci/check_required_native_test.py "$OUT/$test.log" --test "$test"
+          done
+      - name: Preserve operator packet authorization and complete stored digests
+        shell: bash
+        run: |
+          set -euo pipefail
+          for selector in store::operator_mining_owner::tests::mining_owner_packet_reads_preserve_gates_errors_and_journal store::operator_continuous_owner::tests::continuous_owner_packet_reads_preserve_gates_errors_and_journal; do
+            cargo +1.95.0 test --release --locked --manifest-path trillionnium/Cargo.toml -p trnm-pon-node --lib "$selector" -- --exact --show-output --test-threads=1 2>&1 | tee "$OUT/${selector##*::}.log"
+            python3 scripts/ci/check_required_native_test.py "$OUT/${selector##*::}.log" --test "$selector"
+          done
+      - name: Bound initialization intent reads and reject path substitutions
+        shell: bash
+        run: |
+          set -euo pipefail
+          for test in initialization_marker_preserves_exact_context_errors initialization_marker_recovery_and_cold_reopen_preserve_state initialization_marker_rejects_special_files_and_post_precheck_substitution initialization_marker_read_is_bounded_and_propagates_io_errors; do
+            selector="store::init_marker_tests::$test"
+            cargo +1.95.0 test --release --locked --manifest-path trillionnium/Cargo.toml -p trnm-pon-node --lib "$selector" -- --exact --show-output --test-threads=1 2>&1 | tee "$OUT/$test.log"
+            python3 scripts/ci/check_required_native_test.py "$OUT/$test.log" --test "$selector"
+          done
+      - name: Preserve original source-preserving migration coverage
+        shell: bash
+        run: |
+          set -euo pipefail
+          cargo +1.95.0 test --release --locked --manifest-path trillionnium/Cargo.toml -p trnm-pon-node --lib authenticated_migration -- --show-output --test-threads=1 2>&1 | tee "$OUT/migration.log"
+          grep -E '^test result: ok\. [1-9][0-9]* passed; 0 failed;' "$OUT/migration.log"
+      - name: Preserve pending confirmation ownership and joined shutdown on failures
+        shell: bash
+        run: |
+          set -euo pipefail
+          cargo +1.95.0 test --release --locked --manifest-path trillionnium/Cargo.toml -p trnm-pon-node --example continuous_pipeline -- --show-output --test-threads=1 2>&1 | tee "$OUT/pipeline-failure-controls.log"
+          # Eleven retained controls plus the two later failure/panic ownership controls.
+          grep -E '^test result: ok\. 13 passed; 0 failed; 0 ignored;' "$OUT/pipeline-failure-controls.log"
+          for test in failed_poll_retains_deferred_failed_and_unread_obligations original_drain_loses_obligations_on_the_same_failure every_failure_cut_preserves_exact_remaining_order shutdown_joins_before_returning_server_failure shutdown_preserves_success_and_reports_panicked_server batched_poll_uses_complete_blocks_with_exact_wire_limit batched_poll_every_rpc_failure_preserves_retry_ownership batched_poll_rejects_dimensions_before_any_rpc batched_poll_rejects_partial_or_extra_decisions_without_removal batched_poll_matches_single_queries_without_reordering_deferred_work batched_confirmation_validates_late_context_before_claiming_any_success; do
+            cargo +1.95.0 test --release --locked --manifest-path trillionnium/Cargo.toml -p trnm-pon-node --example continuous_pipeline "tests::$test" -- --exact --show-output --test-threads=1 2>&1 | tee "$OUT/$test.log"
+            python3 scripts/ci/check_required_native_test.py "$OUT/$test.log" --test "tests::$test"
+          done
+      - name: Execute real pipeline boundaries without claiming saturation throughput
+        shell: bash
+        run: |
+          set -euo pipefail
+          cargo +1.95.0 build --release --locked --manifest-path trillionnium/Cargo.toml -p trnm-pon-node --example continuous_pipeline 2>&1 | tee "$OUT/pipeline-build.log"
+          for profile in legacy protected; do
+            "$CARGO_TARGET_DIR/release/examples/continuous_pipeline" "$OUT/pipeline-$profile" 2 2 0 disjoint4 "$profile" 2>&1 | tee "$OUT/pipeline-$profile.log"
+          done
+          python3 - <<'PYTHON'
+          import json, os
+          from pathlib import Path
+          for profile in ('legacy', 'protected'):
+              report = json.loads((Path(os.environ['OUT']) / f'pipeline-{profile}' / 'summary.json').read_text())
+              assert report['campaign_passed'] is True
+              assert report['logical_pacing'] is True
+              assert report['accepted_transactions'] == report['confirmed_transactions'] == 4
+              assert report['pending_confirmation_blocks'] == 0
+              assert report['pending_confirmation_record_indices'] == []
+              assert report['application_executed_transactions'] is None
+              expected = {'input_constructed', 'execution_and_work_completed', 'local_durable_admitted', 'local_active', 'remote_acknowledged', 'remote_membership_verified', 'policy_confirmed'}
+              assert set(report['stage_counts']) == expected
+              assert all(type(value) is int and value == 4 for value in report['stage_counts'].values())
+              assert report['producer_validator_heads_agree'] is True
+              assert report['server_error'] is None and report['producer_final_error'] is None
+              assert len(report['records']) == 8
+              assert report['whole_campaign_seconds'] > 0
+              polls = report['confirmation_poll_counts']
+              assert polls['rpc_started'] == polls['rpc_validated'] == 8
+              assert polls['block_batches_started'] == polls['block_batches_validated'] == 14
+              assert polls['queries_started'] == polls['queries_validated'] == 28
+              assert polls['maximum_queries_per_rpc'] == 4
+              assert polls['rpc_validated'] < polls['block_batches_validated']
+              for row in report['records'][:2]:
+                  assert row['confirmation']['counter_scope'] == 'complete shared RPC'
+                  assert row['confirmation']['shared_query_count'] <= 256
+                  assert len(row['confirmation']['observations']) == 2
+          print('PASS: two local pipelines, exact stage counts, no WAN or saturation claim')
+          PYTHON
+      - name: Require non-committing proof reads and actual nonce snapshot callers
+        shell: bash
+        run: |
+          set -euo pipefail
+          cargo +1.95.0 test --release --locked --manifest-path trillionnium/Cargo.toml -p trnm-pon-node --lib store::native_account_query_tests:: -- --show-output --test-threads=1 2>&1 | tee "$OUT/native-read-snapshot.log"
+          grep -E '^test result: ok\. 11 passed; 0 failed; 0 ignored;' "$OUT/native-read-snapshot.log"
+          for test in native_account_query_final_callback_write_is_rejected_and_rolled_back native_account_query_write_then_restore_still_has_no_commit_authority native_account_query_cancel_after_write_keeps_original_error_and_rollback native_nonce_batch_dimensions_precede_database_and_preserve_single_reads native_nonce_batch_rechecks_actual_state_and_reopens_without_a_verdict_cache native_nonce_batch_arithmetic_retains_absence_bad_nonce_and_overflow_rules native_nonce_batch_tracks_signed_execution_heavier_reorg_and_cold_reopen native_nonce_batch_complete_call_observation_preserves_reference_results; do
+            selector="store::native_account_query_tests::$test"
+            cargo +1.95.0 test --release --locked --manifest-path trillionnium/Cargo.toml -p trnm-pon-node --lib "$selector" -- --exact --show-output --test-threads=1 2>&1 | tee "$OUT/$test.log"
+            python3 scripts/ci/check_required_native_test.py "$OUT/$test.log" --test "$selector"
+          done
+      - name: Execute public TCP business confirmation under rotating false work
+        shell: bash
+        env:
+          TRNM_CI_RECEIPT_DIR: ${{ runner.temp }}/recent-exact
+        run: |
+          set -euo pipefail
+          cargo +1.95.0 test --release --locked --manifest-path trillionnium/Cargo.toml -p trnm-pon-node --test public_v3_service_campaign -- --show-output --test-threads=1 2>&1 | tee "$OUT/network-business.log"
+          grep -E '^test result: ok\. 2 passed; 0 failed; 0 ignored;' "$OUT/network-business.log"
+          mkdir "$OUT/network-singleton"
+          selector=network_only_business::network_only_business_confirmations_survive_rotating_false_work
+          TRNM_CI_RECEIPT_DIR="$OUT/network-singleton" cargo +1.95.0 test --release --locked --manifest-path trillionnium/Cargo.toml -p trnm-pon-node --test public_v3_service_campaign "$selector" -- --exact --show-output --test-threads=1 2>&1 | tee "$OUT/network-business-singleton.log"
+          python3 scripts/ci/check_required_native_test.py "$OUT/network-business-singleton.log" --test "$selector"
+          python3 - <<'PYNETWORK'
+          import json, os
+          from pathlib import Path
+          report = json.loads((Path(os.environ['OUT']) / 'network-only-business/report.json').read_text())
+          assert report['schema'] == 'public-v3-network-only-business-v1'
+          assert report['passed'] is True and report['no_local_depletion_hook'] is True
+          assert report['business_transactions'] == report['native_verified_confirmed_transactions'] == 24
+          assert report['overlapping_false_calls'] > 0
+          assert report['full_state_equal'] is True and report['reopen_equal'] is True
+          assert report['honest_error'] is None and report['service_error'] is None
+          assert all(row['ok'] is True and row['on_time'] is True for row in report['honest_calls'])
+          assert all(row['ok'] is False for worker in report['attack_workers'] for row in worker['calls'])
+          for key in ('independent_accepted', 'work_profile_qualified', 'resource_fairness_qualified', 'physical_power_loss', 'production_activation'):
+              assert report[key] is False
+          assert report['wan_tps'] is None
+          print('PASS: paid TCP pressure and full native consumer confirmations; no external qualification')
+          PYNETWORK
+      - name: Check complete native target lint
+        shell: bash
+        run: |
+          set -euo pipefail
+          cargo +1.95.0 clippy --locked --manifest-path trillionnium/Cargo.toml -p trnm-pon-node --all-targets --all-features -- -D warnings 2>&1 | tee "$OUT/clippy.log"
+      - name: Retain reproducible source and native replay executable
+        if: matrix.runner == 'ubuntu-24.04' && matrix.source == 'head'
+        shell: bash
+        run: |
+          set -euo pipefail
+          cargo +1.95.0 build --release --locked --manifest-path trillionnium/Cargo.toml -p trnm-pon-node --bin trnm-pon-node 2>&1 | tee "$OUT/replay-build.log"
+          git bundle create "$OUT/source.bundle" HEAD
+          git bundle verify "$OUT/source.bundle" 2>&1 | tee "$OUT/source-bundle.log"
+          cp "$CARGO_TARGET_DIR/release/trnm-pon-node" "$OUT/trnm-pon-node"
+          rustc +1.95.0 -vV > "$OUT/replay-compiler.txt"
+          (cd "$OUT" && sha256sum source.bundle trnm-pon-node replay-compiler.txt > replay-inputs.sha256)
+      - name: Recheck unchanged exact source and hash all native logs
+        if: always()
+        shell: bash
+        run: |
+          set -euo pipefail
+          out="${OUT:-$RUNNER_TEMP/recent-exact}"
+          mkdir -p "$out"
+          args=(--kind "$SOURCE_KIND" --expected-head "$EXPECTED_HEAD")
+          if test "$SOURCE_KIND" = prospective-merge; then
+            args+=(--expected-base "$EXPECTED_BASE" --expected-merge "$EXPECTED_MERGE")
+          fi
+          source_status=0
+          python3 scripts/ci/verify_ci_source.py "${args[@]}" --output "$out/source-after.json" || source_status=$?
+          shopt -s nullglob
+          logs=("$out"/*.log)
+          log_status=no-logs-retained
+          if ((${#logs[@]})); then
+            sha256sum "${logs[@]}" > "$out/logs.sha256"
+            log_status=logs-retained
+          else
+            : > "$out/logs.sha256"
+          fi
+          printf '{"schema":"trnm-recent-log-inventory-v1","status":"%s","retained_log_files":%s,"source_identity_exit_code":%s,"native_execution_established_by_inventory":false,"qualification":"unknown"}\n' "$log_status" "${#logs[@]}" "$source_status" > "$out/log-inventory.json"
+          printf 'Exact-source recent-window, bounded snapshots, statement reuse, authenticated recovery and migration scope only. Query bounds require their stated oracle and predictable-target assumptions. Whole baseline, full capacity, public Sybil fairness, physical power loss and WAN acceptance are separate. No cross-call verdict cache; whole-history quadratic traversal remains. A log inventory records only files present; absent logs do not establish native execution or a passing test. Earlier failed steps and the source verifier exit remain failures.\n' > "$out/SCOPE.txt"
+          exit "$source_status"
+      - name: Bind complete native cache observations to the unchanged tested source
+        shell: bash
+        run: |
+          set -euo pipefail
+          args=(--kind "$SOURCE_KIND" --expected-head "$EXPECTED_HEAD")
+          if test "$SOURCE_KIND" = prospective-merge; then
+            args+=(--expected-base "$EXPECTED_BASE" --expected-merge "$EXPECTED_MERGE")
+          fi
+          python3 scripts/ci/read_native_cache_observation.py "$OUT/cached_delta_complete_call_observation_keeps_checks_and_results.log" --source "$OUT/source.json" --source-after "$OUT/source-after.json" "${args[@]}" --output "$OUT/native-statement-cache-readback.json"
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: recent-exact-${{ matrix.runner }}-${{ matrix.source }}-${{ github.event.pull_request.head.sha }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/recent-exact
+          if-no-files-found: error
+          retention-days: 30

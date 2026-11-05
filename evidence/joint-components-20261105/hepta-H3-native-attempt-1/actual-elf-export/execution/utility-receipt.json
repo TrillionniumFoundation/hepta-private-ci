@@ -1,0 +1,35 @@
+{
+  "H3-export-plan.json": {
+    "bytes": 658893,
+    "sha256": "7c140e2a83e9df657aff17c66bb1f307bb6b8a22db6cbba04e38841d7b9ef7a0"
+  },
+  "command": [
+    "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python",
+    "-B",
+    "/workspace/scratch/93bfcfe29fc8/w1/h3-elf-export/test_export_utility.py"
+  ],
+  "cwd": "/workspace/scratch/93bfcfe29fc8/w1/h3-elf-export",
+  "elapsed_seconds": 4.314727043005405,
+  "exit_code": 0,
+  "export_h3_retained_images.py": {
+    "bytes": 18885,
+    "sha256": "9eb404993262589a948a19946819e890ff15875bef1133eab5fe9cee6bb14f53"
+  },
+  "schema": "H3-export-cloud-utility-receipt-v1",
+  "scope": "Local synthetic byte fixtures only; no real image read, remote process, native test, or new capture.",
+  "stderr": {
+    "bytes": 694,
+    "path": "/workspace/scratch/93bfcfe29fc8/w1/h3-elf-export/utility.stderr",
+    "sha256": "32499e0a97fa5ca9d44e318d1375f2e2fb0db5dd64f23c2293e338e30cdc9bd4"
+  },
+  "stdout": {
+    "bytes": 0,
+    "path": "/workspace/scratch/93bfcfe29fc8/w1/h3-elf-export/utility.stdout",
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  "test_export_utility.py": {
+    "bytes": 7655,
+    "sha256": "ec087199ea262f952c4578446ac231c238b8248b222f0953997c99e11cd63ae9"
+  },
+  "timed_out": false
+}

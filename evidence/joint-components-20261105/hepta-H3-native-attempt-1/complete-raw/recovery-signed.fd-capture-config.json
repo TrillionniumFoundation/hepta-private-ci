@@ -1,0 +1,32 @@
+{
+  "schema": "hepta-nextest-fd-runner-v1",
+  "target": "/home/qian-qi/work/hepta-pq-effect-v4-20261105-93bfcf/target",
+  "crate": "codex_hepta_agentd",
+  "gate": "recovery-signed",
+  "directory": "/home/qian-qi/work/hepta-pq-effect-v4-20261105-93bfcf/evidence/joint-h3-native-attempt-1/fd-executed-binaries-recovery-signed",
+  "selected_names": [
+    "evidence_frontier::tests::recovery_frontier_authenticates_both_effect_fields",
+    "evidence_frontier::tests::recovery_frontier_cannot_be_omitted_at_the_ordinary_agentd_run_entry",
+    "evidence_frontier::tests::recovery_frontier_enforces_root_scope_epoch_revocation_and_generation_floor",
+    "evidence_frontier::tests::recovery_frontier_pq_rejects_invocation_only_database_rollbacks",
+    "evidence_frontier::tests::recovery_frontier_pq_survives_store_close_and_reopen",
+    "evidence_frontier::tests::recovery_frontier_read_only_preflight_never_binds_or_changes_the_image",
+    "evidence_frontier::tests::recovery_frontier_refuses_valid_classical_v1_and_v2_signatures",
+    "evidence_frontier::tests::recovery_frontier_refuses_valid_pq_v3_and_relabelled_v2_snapshots",
+    "evidence_frontier::tests::recovery_frontier_rejects_wrong_domain_and_profile",
+    "evidence_frontier::tests::recovery_frontier_rejects_wrong_key_pin_and_noncanonical_signature",
+    "evidence_frontier::tests::recovery_frontier_root_rotation_retires_the_old_key"
+  ],
+  "predicate": null,
+  "source": {
+    "commit": "6db78eca53a5acdda0d96873d3f4cd65863426f0",
+    "tree": "e91f5994017fc5d2cfe58d405a20ee6ad9376772",
+    "lock_sha256": "0f458d7746a0ca0b95bedc5404fd3347c1b0a7508f1c387f3b1f3f71ced08663",
+    "environment_file": "native-environment.json",
+    "environment_sha256": "3ca2ffadd3c6439f1401f04929b5ee4e8747a813de6d2647f139f8efb3b311f6"
+  },
+  "coordinator": {
+    "pid": 989453,
+    "start_ticks": "99250221"
+  }
+}

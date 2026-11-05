@@ -1,0 +1,18 @@
+--- approved-H1/export_retained_elfs.py
++++ H3/export_h3_retained_images.py
+@@ -1,5 +1,5 @@
+ #!/usr/bin/env python3
+-"""Losslessly package only explicitly pinned, already retained executable bytes.
++"""Losslessly package explicitly pinned, already retained H3 executable bytes.
+ 
+ This is an archive operation, never a build, test, binary discovery, or capture.
+ An independently reviewed plan and a completed owned-process release proof are
+@@ -157,7 +157,7 @@
+ def validate_plan(raw):
+     plan = json.loads(raw)
+     require(plan["schema"] == "hepta-actual-retained-elf-export-plan-v1", "unknown plan schema")
+-    require(plan["phase"] in ("H1", "H2"), "explicit source phase required")
++    require(plan["phase"] == "H3", "the explicit H3 source phase is required")
+     require(GIT_SHA.fullmatch(plan["source_commit"]) and GIT_SHA.fullmatch(plan["source_tree"]),
+             "full Git source identity required")
+     require(plan["part_bytes"] == PART_BYTES and plan["native_reexecution"] is False,

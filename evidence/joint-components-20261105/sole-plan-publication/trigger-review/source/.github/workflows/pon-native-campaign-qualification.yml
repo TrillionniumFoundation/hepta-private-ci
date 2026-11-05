@@ -1,0 +1,398 @@
+name: PoN original native campaign
+on:
+  pull_request:
+    paths:
+      - trillionnium/**
+      - config/**
+      - .cargo/**
+      - rust-toolchain.toml
+      - formal/pon-nakamoto-v1/bounded_process*.py
+      - scripts/run_pon_w1_native_campaign.py
+      - scripts/pon_public_v3_phase_read.py
+      - scripts/pon_public_v3_policy_read.py
+      - scripts/ci/test_pon_public_v3_policy_read.py
+      - scripts/ci/test_pon_public_v3_phase_read.py
+      - scripts/project-preflight.sh
+      - scripts/ci/verify_ci_source.py
+      - scripts/ci/run_native_phase_host.py
+      - scripts/ci/test_native_phase_host.py
+      - scripts/ci/public_host_ci_observation.py
+      - .github/workflows/pon-native-campaign-qualification.yml
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: pon-native-campaign-${{ github.event.pull_request.number || github.ref }}
+  # Keep a running failed/partial observation when a newer candidate arrives.
+  cancel-in-progress: false
+jobs:
+  original-campaign:
+    name: original native campaign (x64, head, release)
+    runs-on: ubuntu-24.04
+    timeout-minutes: 80
+    env:
+      CI: "true"
+      CARGO_INCREMENTAL: "0"
+      CARGO_BUILD_JOBS: "2"
+      RUST_TEST_THREADS: "1"
+      PYTHONDONTWRITEBYTECODE: "1"
+      EXPECTED_HEAD: ${{ github.event.pull_request.head.sha || github.sha }}
+    steps:
+      - name: Reserve new output and isolated Cargo directories
+        shell: bash
+        run: |
+          set -euo pipefail
+          out="$RUNNER_TEMP/pon-native-campaign-$GITHUB_RUN_ID-$GITHUB_RUN_ATTEMPT"
+          mkdir "$out"
+          printf 'OUT=%s\n' "$out" >> "$GITHUB_ENV"
+          printf 'CARGO_HOME=%s/cargo-native-campaign\n' "$RUNNER_TEMP" >> "$GITHUB_ENV"
+          printf 'CARGO_TARGET_DIR=%s/target-native-campaign\n' "$RUNNER_TEMP" >> "$GITHUB_ENV"
+          printf 'Head lane only. Three predeclared complete runs of the original release-profile test. This does not qualify ARM64, a prospective merge, independent operators, WAN service, work hardness, model efficacy or production activation. Resource limits are ceilings, not reserved physical RAM or CPU throughput.\n' > "$out/SCOPE.txt"
+      - name: Checkout the immutable candidate head
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: ${{ env.EXPECTED_HEAD }}
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Verify actual tracked bytes and original source boundary
+        id: source
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 scripts/ci/verify_ci_source.py --kind head --expected-head "$EXPECTED_HEAD" --output "$OUT/source-before.json"
+          expected_tree="$(python3 -c 'import json,sys; print(json.load(open(sys.argv[1]))["tested_tree"])' "$OUT/source-before.json")"
+          printf 'EXPECTED_TREE=%s\n' "$expected_tree" >> "$GITHUB_ENV"
+          bash scripts/project-preflight.sh --audit 2>&1 | tee "$OUT/preflight.log"
+          python3 - <<'PY'
+          import os, sys
+          sys.path.insert(0, 'scripts')
+          from run_pon_w1_native_campaign import validate_build_environment
+          validate_build_environment(os.environ)
+          PY
+          python3 -m unittest discover -s scripts/ci -p 'test_pon_public_v3*.py' -v 2>&1 | tee "$OUT/policy-reader-controls.log"
+      - name: Install the source-pinned compiler and fetch locked dependencies
+        id: toolchain
+        shell: bash
+        run: |
+          set -euo pipefail
+          rustup toolchain install 1.95.0 --profile minimal 2>&1 | tee "$OUT/toolchain-install.log"
+          rustc +1.95.0 -Vv > "$OUT/rustc-version.txt"
+          cargo +1.95.0 -Vv > "$OUT/cargo-version.txt"
+          cargo +1.95.0 fetch --locked --manifest-path trillionnium/Cargo.toml --target x86_64-unknown-linux-gnu 2>&1 | tee "$OUT/dependency-fetch.log"
+      - name: Prepare the exact original test runner without changing source
+        shell: bash
+        run: |
+          set -euo pipefail
+          cat > "$OUT/run-native-campaign.py" <<'PY'
+          """Execute the existing multiprocess test; this is not the W1 grid."""
+          from datetime import datetime, timezone
+          import json
+          import os
+          from pathlib import Path
+          import platform
+          import re
+          import shutil
+          import subprocess
+          import sys
+
+          root, out, target = (Path(value).resolve() for value in sys.argv[1:4])
+          cargo, expected_head, expected_tree = sys.argv[4:7]
+          sys.dont_write_bytecode = True
+          sys.path[:0] = [str(root / 'scripts'), str(root / 'scripts/ci')]
+          import run_pon_w1_native_campaign as bounds
+          import pon_public_v3_phase_read as phase_reader
+          from pon_public_v3_policy_read import load_profiles, policy_id
+          from verify_ci_source import verify
+
+          selector = 'separate_process_work_and_signed_confirmation_campaign'
+          policy_vectors = load_profiles()
+          expected_public_policy = policy_id(policy_vectors, policy_vectors['current_revision'], 8, 2000)
+          result = {
+              'schema': 'pon-original-native-campaign-ci-v1',
+              'source_kind': 'head', 'expected_head': expected_head,
+              'expected_tree': expected_tree, 'profile': 'release',
+              'toolchain': '1.95.0', 'state_backend': 'authenticated-v1',
+              'planned_complete_runs': 3, 'attempts': [],
+              'expected_public_policy_id': expected_public_policy,
+              'started_utc': datetime.now(timezone.utc).isoformat(),
+              'build_timeout_seconds': 1800,
+              'original_campaign_outer_timeout_seconds': 600,
+              'original_inputs': {'seed_transfers': 1024, 'seed_blocks': 4,
+                                  'business_blocks': 21, 'phase_seconds': 30,
+                                  'modes': ['baseline', 'from-zero', 'late-product'],
+                                  'attacker_processes': [0, 24, 24]},
+              'expected_resources': {'cpu_max': '400000 100000',
+                                     'memory_max': '17179869184', 'nice': 10},
+              'public_phase_placement': {
+                  'profile': 'fixed-public-phase-external-actors-v1',
+                  'receiver_and_verifier_cpu_max': '25000 100000',
+                  'receiver_and_verifier_memory_max': '2147483648',
+                  'fixed_parent': '/sys/fs/cgroup/trnmponpublic.slice',
+                  'attacker_processes_remain_in_original_controller_domain': True,
+                  'original_3x3_workload_and_depletion_predicates_changed': False,
+              },
+              'binary': None, 'source_after': None, 'complete_success': False,
+              'failure': None, 'finalization_failures': [],
+              'runner_sha256': bounds.sha(__file__),
+              'scope': 'same-host controlled loopback; no independent-operator, WAN, hardness, model-efficacy or activation qualification',
+          }
+          binary = None
+
+          def source_observation(name):
+              value = verify('head', expected_head, root=root)
+              bounds.require(value['tested_tree'] == expected_tree,
+                             'EXPECTED_TREE_CHANGED')
+              bounds.write_new(out / name, value)
+              return value
+
+          def resources(name):
+              value = bounds.resource_observation()
+              bounds.write_new(out / name, value)
+              bounds.validate_resources(value, 10)
+              return value
+
+          try:
+              bounds.require(platform.machine() == 'x86_64', 'NATIVE_X64_REQUIRED')
+              bounds.require(not out.is_relative_to(root)
+                             and not target.is_relative_to(root)
+                             and not out.is_relative_to(target)
+                             and not target.is_relative_to(out), 'ISOLATED_OUTPUT_REQUIRED')
+              bounds.validate_build_environment(os.environ)
+              source_observation('source-before-build.json')
+              resources('resource-before-build.json')
+              bounds.write_new(out / 'hardware.json', {
+                  'machine': platform.machine(), 'kernel': platform.release(),
+                  'logical_cpu_count': os.cpu_count(),
+                  'cpu_models': sorted({
+                      line.split(':', 1)[1].strip()
+                      for line in Path('/proc/cpuinfo').read_text().splitlines()
+                      if line.startswith('model name')}),
+                  'meminfo': Path('/proc/meminfo').read_text(),
+                  'physical_resources_are_observations_not_reservations': True,
+              })
+              env = {key: value for key, value in os.environ.items()
+                     if not key.startswith('TRNM_')}
+              env.update(CARGO_TARGET_DIR=str(target), CARGO_BUILD_JOBS='2',
+                         CARGO_NET_OFFLINE='true', CARGO_INCREMENTAL='0',
+                         RUSTUP_TOOLCHAIN='1.95.0', RUST_TEST_THREADS='1',
+                         PYTHONDONTWRITEBYTECODE='1')
+              command = [cargo, '+1.95.0', 'test', '--locked', '--offline',
+                         '--release', '--manifest-path', 'trillionnium/Cargo.toml',
+                         '-p', 'trnm-pon-node', '--test', 'public_v3_multiprocess']
+              build = bounds.run_step(
+                  out, 'build', [*command, '--no-run', '--message-format=json'],
+                  env, timeout=1800)
+              result['build'] = build
+              bounds.require(build['complete_success'], 'RELEASE_TEST_BUILD_FAILED')
+              artifacts = []
+              for line in (out / build['stdout']).read_bytes().splitlines():
+                  row = json.loads(line)
+                  if (row.get('reason') == 'compiler-artifact'
+                          and row.get('target', {}).get('name') == 'public_v3_multiprocess'
+                          and row.get('profile', {}).get('test') is True
+                          and row.get('executable')):
+                      artifacts.append(row)
+              bounds.require(len(artifacts) == 1, 'ONE_EXACT_TEST_BINARY_REQUIRED')
+              artifact = artifacts[0]
+              bounds.require(artifact['profile']['opt_level'] == '3'
+                             and artifact['profile']['debug_assertions'] is False,
+                             'ACTUAL_OPTIMIZED_RELEASE_TEST_PROFILE_REQUIRED')
+              binary = Path(artifact['executable']).resolve(strict=True)
+              bounds.require(binary.is_relative_to(target) and binary.is_file(),
+                             'EXPECTED_TARGET_BINARY_REQUIRED')
+              retained = out / 'public_v3_multiprocess.bin'
+              digest = bounds.sha(binary)
+              with binary.open('rb') as source, retained.open('xb') as destination:
+                  shutil.copyfileobj(source, destination)
+              retained.chmod(0o700)
+              bounds.require(bounds.sha(retained) == digest, 'BINARY_CAPTURE_CHANGED')
+              result['binary'] = {
+                  'build_artifact': str(binary), 'retained': retained.name,
+                  'sha256_before': digest, 'sha256_after': None,
+                  'bytes': retained.stat().st_size,
+                  'actual_compiler_artifact_profile': artifact['profile'],
+                  'build_separate_from_measured_campaign': True,
+                  'execution': 'original cargo test command using the checked build artifact',
+              }
+              bounds.write_new(out / 'binary-before.json', result['binary'])
+              source_observation('source-before-campaigns.json')
+              for number in range(1, 4):
+                  name = f'run-{number}'
+                  report_dir = out / f'{name}-raw'
+                  # The original Rust test itself must create this directory.
+                  bounds.require(not os.path.lexists(report_dir), 'NEW_REPORT_DIR_REQUIRED')
+                  resources(f'{name}-resource-before.json')
+                  bounds.require(bounds.sha(binary) == digest, 'TEST_BINARY_CHANGED')
+                  run_env = dict(env, TRNM_MULTIPROCESS_STATE_BACKEND='authenticated-v1',
+                                 TRNM_MULTIPROCESS_REPORT_DIR=str(report_dir),
+                                 TRNM_MULTIPROCESS_PHASE_HOST='fixed-public-phase-external-actors-v1')
+                  step = bounds.run_step(
+                      out, name,
+                      [*command, selector, '--', '--exact', '--ignored',
+                       '--nocapture', '--test-threads=1'],
+                      run_env, timeout=600)
+                  attempt = {'number': number, 'step': step,
+                             'report_directory': report_dir.name,
+                             'report_validation_failure': None,
+                             'original_criteria_met': False, 'complete_success': False}
+                  result['attempts'].append(attempt)
+                  try:
+                      raw_path = report_dir / 'report.json'
+                      report_hash = bounds.sha(raw_path)
+                      derived = phase_reader.read_report(raw_path, report_hash, expected_public_policy)
+                      bounds.write_new(out / f'{name}-phase-readback.json', derived)
+                      raw = json.loads(raw_path.read_bytes())
+                      preparation = raw['preparation']
+                      phases = raw['phases']
+                      attempt['phase_startup_errors'] = [
+                          {'mode': phase.get('mode'), 'error': phase['startup_or_campaign_error']}
+                          for phase in phases if phase.get('startup_or_campaign_error') is not None]
+                      bounds.require(not attempt['phase_startup_errors'],
+                                     'ORIGINAL_NATIVE_PHASE_STARTUP_FAILED')
+                      bounds.require(
+                          raw['state_backend'] == 'authenticated-v1'
+                          and preparation['actual_signed_seed_transfers'] == 1024
+                          and preparation['seed_blocks'] == 4
+                          and preparation['business_blocks'] == 21
+                          and [phase['mode'] for phase in phases]
+                              == ['baseline', 'from-zero', 'late-product']
+                          and [phase['duration_seconds'] for phase in phases] == [30, 30, 30]
+                          and [phase['attacker_processes_requested'] for phase in phases]
+                              == [0, 24, 24], 'ORIGINAL_CAMPAIGN_INPUTS_REQUIRED')
+                      attempt['report_sha256'] = report_hash
+                      attempt['original_criteria_met'] = (
+                          raw['finite_experiment_criteria_met'] is True
+                          and raw['economics_complete'] is True
+                          and all(phase['finite_phase_criteria_met'] is True
+                                  for phase in phases))
+                      stdout = (out / step['stdout']).read_text(errors='replace')
+                      one_test_passed = re.search(
+                          r'^test result: ok\. 1 passed; 0 failed; 0 ignored;',
+                          stdout, re.MULTILINE) is not None
+                      attempt['complete_success'] = (
+                          step['complete_success'] and one_test_passed
+                          and attempt['original_criteria_met'])
+                  except (OSError, ValueError, KeyError, TypeError) as error:
+                      attempt['report_validation_failure'] = str(error)
+                  bounds.write_new(out / f'{name}-result.json', attempt)
+                  resources(f'{name}-resource-after.json')
+                  source_observation(f'{name}-source-after.json')
+                  bounds.require(bounds.sha(binary) == digest, 'TEST_BINARY_CHANGED')
+                  # A failed native run stays failed; the next predeclared run is
+                  # a distinct complete observation, never a replacement retry.
+              result['complete_success'] = (
+                  len(result['attempts']) == 3
+                  and all(row['complete_success'] for row in result['attempts']))
+              if not result['complete_success']:
+                  result['failure'] = 'ORIGINAL_THREE_RUN_CAMPAIGN_FAILED'
+          except (OSError, ValueError, KeyError, TypeError, subprocess.SubprocessError) as error:
+              result['failure'] = str(error)
+              result['complete_success'] = False
+          finally:
+              for name, observation in (
+                      ('source', lambda: source_observation('source-after-native.json')),
+                      ('resources', lambda: resources('resource-after-native.json'))):
+                  try:
+                      value = observation()
+                      if name == 'source':
+                          result['source_after'] = value
+                  except (OSError, ValueError, subprocess.SubprocessError) as error:
+                      result['finalization_failures'].append(f'{name}: {error}')
+              if binary is not None and result['binary'] is not None:
+                  try:
+                      result['binary']['sha256_after'] = bounds.sha(binary)
+                      bounds.require(result['binary']['sha256_after']
+                                     == result['binary']['sha256_before'],
+                                     'TEST_BINARY_CHANGED')
+                  except (OSError, ValueError) as error:
+                      result['finalization_failures'].append(f'binary: {error}')
+              result['complete_success'] = (
+                  result['complete_success'] and not result['finalization_failures'])
+              result['completed_utc'] = datetime.now(timezone.utc).isoformat()
+              bounds.write_new(out / 'results.json', result)
+          print(json.dumps(result, sort_keys=True))
+          raise SystemExit(0 if result['complete_success'] else 1)
+          PY
+      - name: Run three original campaigns under verified actual limits
+        id: campaign
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(uname -m)" = x86_64
+          test -d /run/systemd/system
+          test -f /sys/fs/cgroup/cgroup.controllers
+          systemd-run --version > "$OUT/systemd-version.txt"
+          cargo_path="$(command -v cargo)"
+          rustup_home="$(rustup show home)"
+          unit="trnm-native-campaign-$GITHUB_RUN_ID-$GITHUB_RUN_ATTEMPT.service"
+          cleanup() {
+            original_status=$?
+            trap - EXIT INT TERM
+            # Only this workflow's uniquely named transient unit is stopped.
+            set +e
+            sudo -n systemctl stop "$unit" >> "$OUT/unit-cleanup.log" 2>&1
+            cleanup_status=$?
+            printf 'original_exit=%s\ncleanup_exit=%s\n' "$original_status" "$cleanup_status" >> "$OUT/unit-cleanup.log"
+            exit "$original_status"
+          }
+          trap cleanup EXIT
+          trap 'exit 130' INT
+          trap 'exit 143' TERM
+          # No scope/fallback path: a service establishes its own actual cgroup,
+          # carries all native children, and must pass the inherited-limit reader.
+          sudo -n systemd-run --unit="$unit" --wait --pipe --collect \
+            --service-type=exec --expand-environment=no \
+            --uid="$(id -u)" --gid="$(id -g)" \
+            --working-directory="$GITHUB_WORKSPACE" \
+            --property=CPUAccounting=yes --property=MemoryAccounting=yes \
+            --property=CPUQuota=400% --property=CPUQuotaPeriodSec=100ms \
+            --property=MemoryMax=17179869184 --property=Nice=10 \
+            --property=KillMode=control-group --property=TimeoutStopSec=20s \
+            --property=RuntimeMaxSec=4200s \
+            --setenv="PATH=$PATH" --setenv="CARGO_HOME=$CARGO_HOME" \
+            --setenv="RUSTUP_HOME=$rustup_home" --setenv=PYTHONDONTWRITEBYTECODE=1 \
+            --setenv=CI=true --setenv=GITHUB_ACTIONS=true \
+            --setenv="GITHUB_WORKSPACE=$GITHUB_WORKSPACE" \
+            --setenv="GITHUB_RUN_ID=$GITHUB_RUN_ID" --setenv="GITHUB_RUN_ATTEMPT=$GITHUB_RUN_ATTEMPT" \
+            --setenv="GITHUB_JOB=$GITHUB_JOB" \
+            /usr/bin/python3 "$OUT/run-native-campaign.py" \
+            "$GITHUB_WORKSPACE" "$OUT" "$CARGO_TARGET_DIR" "$cargo_path" \
+            "$EXPECTED_HEAD" "$EXPECTED_TREE" 2>&1 | tee "$OUT/systemd-run.log"
+      - name: Preserve final source verification and all partial artifact hashes
+        if: always()
+        shell: bash
+        run: |
+          set -uo pipefail
+          python3 scripts/ci/verify_ci_source.py --kind head --expected-head "$EXPECTED_HEAD" --output "$OUT/source-after.json" > "$OUT/source-after.log" 2>&1
+          source_status=$?
+          python3 - <<'PY'
+          import hashlib, json, os
+          from pathlib import Path
+          out = Path(os.environ['OUT'])
+          rows = []
+          for path in sorted(out.rglob('*')):
+              if path.is_symlink():
+                  raise ValueError('artifact symlink is not a retained regular file')
+              if not path.is_file():
+                  continue
+              digest = hashlib.sha256()
+              with path.open('rb') as stream:
+                  for chunk in iter(lambda: stream.read(1024 * 1024), b''):
+                      digest.update(chunk)
+              rows.append({'path': str(path.relative_to(out)),
+                           'bytes': path.stat().st_size, 'sha256': digest.hexdigest()})
+          with (out / 'artifact-files.json').open('x') as stream:
+              json.dump({'scope': 'retained files including failed or partial runs; not a PASS verdict',
+                         'files': rows}, stream, indent=2, sort_keys=True)
+              stream.write('\n')
+          PY
+          files_status=$?
+          test "$source_status" -eq 0 && test "$files_status" -eq 0
+      - name: Upload successful, failed and partial observations
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: pon-native-campaign-x64-head-release-${{ env.EXPECTED_HEAD }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/pon-native-campaign-${{ github.run_id }}-${{ github.run_attempt }}
+          if-no-files-found: error
+          retention-days: 30

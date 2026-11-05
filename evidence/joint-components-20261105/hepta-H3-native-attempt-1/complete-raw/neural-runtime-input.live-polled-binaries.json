@@ -1,0 +1,77 @@
+{
+  "records": [
+    {
+      "source": {
+        "commit": "6db78eca53a5acdda0d96873d3f4cd65863426f0",
+        "tree": "e91f5994017fc5d2cfe58d405a20ee6ad9376772",
+        "lock_sha256": "0f458d7746a0ca0b95bedc5404fd3347c1b0a7508f1c387f3b1f3f71ced08663",
+        "environment_file": "native-environment.json",
+        "environment_sha256": "3ca2ffadd3c6439f1401f04929b5ee4e8747a813de6d2647f139f8efb3b311f6"
+      },
+      "actual_executable": "/home/qian-qi/work/hepta-pq-effect-v4-20261105-93bfcf/target/debug/deps/neural_cognitive_bootstrap-427dd7776d1e9f1c",
+      "retained_copy": "/home/qian-qi/work/hepta-pq-effect-v4-20261105-93bfcf/evidence/joint-h3-native-attempt-1/executed-binaries-neural-runtime-input-neural_cognitive_bootstrap/e1bf913938dd8459cb839b5b9cf6dd5a91d704c3b0240e29e3d4e5f7932549ba.elf",
+      "sha256": "e1bf913938dd8459cb839b5b9cf6dd5a91d704c3b0240e29e3d4e5f7932549ba",
+      "bytes": 78142616,
+      "device": 2050,
+      "inode": 58259829,
+      "pid": 1034154,
+      "start_ticks": "99360391",
+      "wrapper_pid": 1033703,
+      "wrapper_start_ticks": "99359463",
+      "wrapper_descendant_verified": true,
+      "post_open_task_and_exe_verified": true,
+      "observed_selected_tests": [
+        "ordinary_native_composition_rejects_untrusted_qualification_before_inference_owners"
+      ],
+      "captured_unix": 1793915939.0855181
+    }
+  ],
+  "errors": [],
+  "target_captures": {
+    "neural_cognitive_bootstrap": {
+      "records": [
+        {
+          "source": {
+            "commit": "6db78eca53a5acdda0d96873d3f4cd65863426f0",
+            "tree": "e91f5994017fc5d2cfe58d405a20ee6ad9376772",
+            "lock_sha256": "0f458d7746a0ca0b95bedc5404fd3347c1b0a7508f1c387f3b1f3f71ced08663",
+            "environment_file": "native-environment.json",
+            "environment_sha256": "3ca2ffadd3c6439f1401f04929b5ee4e8747a813de6d2647f139f8efb3b311f6"
+          },
+          "actual_executable": "/home/qian-qi/work/hepta-pq-effect-v4-20261105-93bfcf/target/debug/deps/neural_cognitive_bootstrap-427dd7776d1e9f1c",
+          "retained_copy": "/home/qian-qi/work/hepta-pq-effect-v4-20261105-93bfcf/evidence/joint-h3-native-attempt-1/executed-binaries-neural-runtime-input-neural_cognitive_bootstrap/e1bf913938dd8459cb839b5b9cf6dd5a91d704c3b0240e29e3d4e5f7932549ba.elf",
+          "sha256": "e1bf913938dd8459cb839b5b9cf6dd5a91d704c3b0240e29e3d4e5f7932549ba",
+          "bytes": 78142616,
+          "device": 2050,
+          "inode": 58259829,
+          "pid": 1034154,
+          "start_ticks": "99360391",
+          "wrapper_pid": 1033703,
+          "wrapper_start_ticks": "99359463",
+          "wrapper_descendant_verified": true,
+          "post_open_task_and_exe_verified": true,
+          "observed_selected_tests": [
+            "ordinary_native_composition_rejects_untrusted_qualification_before_inference_owners"
+          ],
+          "captured_unix": 1793915939.0855181
+        }
+      ],
+      "errors": [],
+      "unique_actual_elf_sha256": [
+        "e1bf913938dd8459cb839b5b9cf6dd5a91d704c3b0240e29e3d4e5f7932549ba"
+      ],
+      "observed_selected_tests": [
+        "ordinary_native_composition_rejects_untrusted_qualification_before_inference_owners"
+      ],
+      "capture_scope": "actual executing test-image binding; polling may miss individual short-lived cases"
+    },
+    "neural_comparison_native": {
+      "records": [],
+      "errors": [],
+      "unique_actual_elf_sha256": [],
+      "observed_selected_tests": [],
+      "capture_scope": "actual executing test-image binding; polling may miss individual short-lived cases"
+    }
+  },
+  "capture_scope": "two explicitly mapped target collectors; no global binary allowance or inferred short-process coverage"
+}

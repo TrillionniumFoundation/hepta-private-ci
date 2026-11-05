@@ -1,0 +1,236 @@
+{
+  "schema": "h4-external-capture-independent-review-v1",
+  "decision": "No concrete blocker found in the frozen external package; actual desktop prerequisites and the full original native sequence remain required.",
+  "source_commit": "6db78eca53a5acdda0d96873d3f4cd65863426f0",
+  "source_tree": "e91f5994017fc5d2cfe58d405a20ee6ad9376772",
+  "repository_source_unchanged": true,
+  "frozen_manifest": {
+    "path": "model_storage/h4-capture-repair/native/frozen-package-manifest.json",
+    "bytes": 3607,
+    "sha256": "a977ddb4455e8b3c523924efa53d42f94515f29199c6f2ac51c081e84df2a44f"
+  },
+  "launch": {
+    "path": "model_storage/h4-capture-repair/native/h4-exact-launch-plan.json",
+    "bytes": 5847,
+    "sha256": "64d60aaec961a132c72cec13954fa177edf49ea692278ddfcbc143ad1b33f3ae"
+  },
+  "request": {
+    "path": "model_storage/h4-capture-repair/native/joint-h4-native-attempt-1/launch-request.json",
+    "bytes": 189886,
+    "sha256": "561fa3256c5669f1277f25d977928df6266162c0bc2f8814e7d9a79768b9b128"
+  },
+  "bundle": {
+    "path": "model_storage/h4-capture-repair/native/h4-native-bundle.json",
+    "bytes": 186314,
+    "sha256": "d14a478a6feb2c8ec201ca5dfcf4d2d7cde2a7ae99b70b3aea68c803002c6d93"
+  },
+  "bundle_members": 12,
+  "manifest_file_hashes_checked": 18,
+  "decoded_bundle_equals_files_and_bootstrap_hash_allowlist": true,
+  "exact_request_bootstrap_and_stdin_match": true,
+  "original_workflow_steps_equal": 13,
+  "selected_exact_names": 74,
+  "unchanged_primary_files": [
+    {
+      "current": "nextest_fd_runner.py",
+      "prior": "nextest_fd_runner.py",
+      "sha256": "9679cc6e11762c29b4c0ee92dd7715d3fce0555a6f8e0e10ed9d0b007951381a"
+    },
+    {
+      "current": "fd_gate_evidence.py",
+      "prior": "fd_gate_evidence.py",
+      "sha256": "0fb050f795f982ad718938eba25c06d5e6831ce5c213a57dd166405039ba056d"
+    },
+    {
+      "current": "test_nextest_fd_runner.py",
+      "prior": "test_nextest_fd_runner.py",
+      "sha256": "29a77665a8e255dbd29286709ccab06a4e9f81bf76f6f89ed489613a68ede61a"
+    },
+    {
+      "current": "test_fd_gate_targets.py",
+      "prior": "test_fd_gate_targets.py",
+      "sha256": "642ec3f16702f1f9c9bedd205e8a268841a07c19884d711041504b59c76cbb06"
+    },
+    {
+      "current": "h4-selected-tests-guard.py",
+      "prior": "h3-selected-tests-guard.py",
+      "sha256": "e273e7f5c17704bfb699e90a5d15c8389d349c6c17e271ee26c031e6b3a65d48"
+    },
+    {
+      "current": "h4-extra-controls.json",
+      "prior": "h3-extra-controls.json",
+      "sha256": "08d884ff93090767084059d1b40802fd3269c2b939b0f5534472c3ea663d908c"
+    }
+  ],
+  "full_evidence_original_wrapper_minimum": 22,
+  "full_evidence_exact_name_guard_passed": 161,
+  "full_evidence_expected_ignored": [
+    "authbus_outbox_tests::crash_delivery_child"
+  ],
+  "budgets": {
+    "outer_seconds": 5400,
+    "per_test_seconds": 60,
+    "retries": 0,
+    "test_threads": 1,
+    "original_gate_list_and_relative_order_equal": true,
+    "only_added_gate": {
+      "name": "live-parent-correspondence-controls",
+      "timeout_seconds": 20,
+      "family": "new-declared-synthetic-correspondence-controls",
+      "actual_product_credit": false
+    },
+    "added_gate_charged_inside_original_outer": true
+  },
+  "mechanism_review": [
+    "Equal complete child and direct-parent identity/argv/image observations surround opening both actual executable FDs.",
+    "Equal complete ancestor chains preserve real PPID links to the exact bound wrapper PID/start; both opened image metadata remain stable through retention.",
+    "Parent need not remain alive after the bounded live observation interval; held FD bytes preserve the observed image without claiming end-of-copy liveness.",
+    "Direct matches keep exact primary PID/start/source/hash/metadata/argv/case identity.",
+    "The sole auxiliary role is fixed to FinalUse killed_owner, one same-image direct child of its unique actual outer FD, exact argv and source; no additional case credit.",
+    "Unknown child, wrong/ambiguous parent, source/image/name/argv mismatch, missing relationship fields, chain drift, duplicate or additional helper cause correspondence errors.",
+    "The coordinator preserves original outcomes and FD records and propagates original collector, primary verifier and new correspondence errors before qualification.",
+    "Source/raw guards, exact counts, primary pending/exec-error rejection, original command deadlines, full-library ignored-name check and final configuration check remain active."
+  ],
+  "observed_utility_evidence": {
+    "source": {
+      "path": "model_storage/h4-capture-repair/cloud-utility-controls/receipt.json",
+      "bytes": 3822,
+      "sha256": "0db34cc50fba1a3d84a3cb40abb5af21492125dc1cc520cb7bdba09fcb1f04b0"
+    },
+    "synthetic_correspondence": {
+      "cases": 3,
+      "returncode": 0,
+      "log": {
+        "path": "model_storage/h4-capture-repair/cloud-utility-controls/test_live_fd_correspondence.py.log",
+        "bytes": 643,
+        "sha256": "7a5b826ca8192a1b27e4cdf5264b7412576560eaf614cb89c04fbc5b6cdd0bcd"
+      },
+      "native_product_credit": false
+    },
+    "interim_proc_controls": {
+      "cases": 3,
+      "errors": 3,
+      "returncode": 1,
+      "reason": "original PID namespace guard",
+      "log": {
+        "path": "model_storage/h4-capture-repair/cloud-utility-controls/test_executed_binary_capture.py.log",
+        "bytes": 4992,
+        "sha256": "2a51f73b78e8bbcf49b734b17f737a270de654d88168711d41bf754a3c885d15"
+      },
+      "executed_utility_sha256": "f084ef10f8a6db7845eb0d212ad68840111cec99e5e2052105acbf8a65353715",
+      "final_utility_sha256": "debcc32b403d169a07cbdb4ae04319c9a12e674f0c3bfa412c809bb6ea78a838",
+      "scope": "Interim control source failed before capture. Final strengthened source must execute in the original desktop prerequisite; it has no pass credit from this receipt."
+    }
+  },
+  "limits": [
+    "Static review is not desktop native execution, complete runtime closure, or a hostile privileged-writer proof.",
+    "Polling can miss short processes; no missing observation or old H3 parent relation is invented.",
+    "H3 remains FAILED and no H1/H2/H3 result is requalified.",
+    "Only the parent scheduler may launch after the exact archive owned-process release; bulk downloads remain paused."
+  ],
+  "native_runs_by_this_reviewer": 0,
+  "remote_reads_by_this_reviewer": 0,
+  "review_execution_note": "The first local static-comparison attempt incorrectly assumed the wrapper minimum was 161 and stopped on that reviewer assertion. The unchanged original wrapper minimum is 22; the coordinator separately requires all 161 exact selected names and one exact ignored name. The assertion was corrected to verify both original layers; no project gate or budget was changed.",
+  "input_inventory": [
+    {
+      "path": "model_storage/h4-capture-repair/native/run_h4_native_pipeline.py",
+      "bytes": 34196,
+      "sha256": "5bd64b700c9974582e0b70c3a97117982b8d6f470f8d308b99accc42bba1714a"
+    },
+    {
+      "path": "model_storage/h4-capture-repair/native/test_elf_capture.py",
+      "bytes": 11001,
+      "sha256": "2cb676bff1657866dc39b3e35ff45644d1ce75981ec9ed3f8798509287ab5ebe"
+    },
+    {
+      "path": "model_storage/h4-capture-repair/native/test_executed_binary_capture.py",
+      "bytes": 4011,
+      "sha256": "debcc32b403d169a07cbdb4ae04319c9a12e674f0c3bfa412c809bb6ea78a838"
+    },
+    {
+      "path": "model_storage/h4-capture-repair/native/nextest_fd_runner.py",
+      "bytes": 9554,
+      "sha256": "9679cc6e11762c29b4c0ee92dd7715d3fce0555a6f8e0e10ed9d0b007951381a"
+    },
+    {
+      "path": "model_storage/h4-capture-repair/native/test_nextest_fd_runner.py",
+      "bytes": 5684,
+      "sha256": "29a77665a8e255dbd29286709ccab06a4e9f81bf76f6f89ed489613a68ede61a"
+    },
+    {
+      "path": "model_storage/h4-capture-repair/native/test_fd_gate_targets.py",
+      "bytes": 5708,
+      "sha256": "642ec3f16702f1f9c9bedd205e8a268841a07c19884d711041504b59c76cbb06"
+    },
+    {
+      "path": "model_storage/h4-capture-repair/native/fd_gate_evidence.py",
+      "bytes": 5420,
+      "sha256": "0fb050f795f982ad718938eba25c06d5e6831ce5c213a57dd166405039ba056d"
+    },
+    {
+      "path": "model_storage/h4-capture-repair/native/live_fd_correspondence.py",
+      "bytes": 7949,
+      "sha256": "fc8fc5cfc7c084a3a5884449cd683f94fbd6ee377455ba5a0df6033a6ceed0a4"
+    },
+    {
+      "path": "model_storage/h4-capture-repair/native/test_live_fd_correspondence.py",
+      "bytes": 8160,
+      "sha256": "0e308e80ea2b802f2711c9939b90e1d6989cd062f6170eddd4069db487e251b4"
+    },
+    {
+      "path": "model_storage/h4-capture-repair/native/h4-native-plan.json",
+      "bytes": 22298,
+      "sha256": "c596e0f5a74ee878a20b68d545cefa9aff1d38773f388eb1dae91080acf9b51e"
+    },
+    {
+      "path": "model_storage/h4-capture-repair/native/h4-selected-tests-guard.py",
+      "bytes": 8891,
+      "sha256": "e273e7f5c17704bfb699e90a5d15c8389d349c6c17e271ee26c031e6b3a65d48"
+    },
+    {
+      "path": "model_storage/h4-capture-repair/native/h4-extra-controls.json",
+      "bytes": 16587,
+      "sha256": "08d884ff93090767084059d1b40802fd3269c2b939b0f5534472c3ea663d908c"
+    },
+    {
+      "path": "model_storage/h4-capture-repair/native/bootstrap_h4_native.py",
+      "bytes": 2963,
+      "sha256": "68f6fdf61feb5a6619e2e94538ddcfba0d2c3c9789cc2b26277cc742328d5a38"
+    },
+    {
+      "path": "model_storage/h4-capture-repair/native/h4-native-bundle.json",
+      "bytes": 186314,
+      "sha256": "d14a478a6feb2c8ec201ca5dfcf4d2d7cde2a7ae99b70b3aea68c803002c6d93"
+    },
+    {
+      "path": "model_storage/h4-capture-repair/native/h4-budget-map.json",
+      "bytes": 25293,
+      "sha256": "6e07c95d36fbe9206f143b591a34807779674ebfa24d9fbaf494c1f70afa6bd3"
+    },
+    {
+      "path": "model_storage/h4-capture-repair/native/h4-exact-launch-plan.json",
+      "bytes": 5847,
+      "sha256": "64d60aaec961a132c72cec13954fa177edf49ea692278ddfcbc143ad1b33f3ae"
+    },
+    {
+      "path": "model_storage/h4-capture-repair/native/frozen-configuration-delta.patch",
+      "bytes": 39878,
+      "sha256": "92ef793a4968e93bd98ae856420b97116efc9e09dd9a434fcf86b91a5e2f148e"
+    },
+    {
+      "path": "model_storage/h4-capture-repair/native/joint-h4-native-attempt-1/launch-request.json",
+      "bytes": 189886,
+      "sha256": "561fa3256c5669f1277f25d977928df6266162c0bc2f8814e7d9a79768b9b128"
+    },
+    {
+      "path": "model_storage/h4-capture-repair/native/frozen-package-manifest.json",
+      "bytes": 3607,
+      "sha256": "a977ddb4455e8b3c523924efa53d42f94515f29199c6f2ac51c081e84df2a44f"
+    },
+    {
+      "path": "model_storage/h4-capture-repair/cloud-utility-controls/receipt.json",
+      "bytes": 3822,
+      "sha256": "0db34cc50fba1a3d84a3cb40abb5af21492125dc1cc520cb7bdba09fcb1f04b0"
+    }
+  ]
+}

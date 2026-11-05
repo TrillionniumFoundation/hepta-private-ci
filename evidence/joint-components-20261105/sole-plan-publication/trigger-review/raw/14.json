@@ -1,0 +1,16 @@
+{
+  "content": [
+    {
+      "type": "text",
+      "text": "Action completed."
+    }
+  ],
+  "structuredContent": {
+    "content": "name: PoN SmolLM cooperating campaign once\non:\n  push:\n    branches:\n      - fix/chain-model-owner-hosted-once-20261105\n    paths:\n      - config/pon/hosted-model-intents-v1/*.json\npermissions:\n  contents: read\nconcurrency:\n  group: model-owner-completion-20261104-once-v1\n  cancel-in-progress: false\njobs:\n  original-public-pilot:\n    if: github.repository == 'TrillionniumFoundation/Trillionnium-Chain'\n    runs-on: ubuntu-24.04\n    timeout-minutes: 300\n    env:\n      PYTHONDONTWRITEBYTECODE: '1'\n    steps:\n      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262\n        id: checkout\n        with:\n          ref: ${{ github.event.after }}\n          fetch-depth: 0\n          persist-credentials: false\n      - name: Validate published intent before setup or downloads\n        id: admission\n        run: python3 -I -S -B scripts/ci/llm_hosted_once.py validate\n      - uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405\n        id: python_setup\n        with:\n          python-version: '3.12.3'\n      - name: Execute the original registered pilot once\n        id: execution\n        run: python -I -S -B scripts/ci/llm_hosted_once.py execute\n      - name: Collect bounded observations without recovery or retry\n        if: always()\n        env:\n          HOSTED_CHECKOUT_OUTCOME: ${{ steps.checkout.outcome }}\n          HOSTED_ADMISSION_OUTCOME: ${{ steps.admission.outcome }}\n          HOSTED_PYTHON_SETUP_OUTCOME: ${{ steps.python_setup.outcome }}\n          HOSTED_EXECUTION_OUTCOME: ${{ steps.execution.outcome }}\n        run: python3 -I -S -B scripts/ci/llm_hosted_once.py collect\n      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02\n        if: always()\n        with:\n          name: smollm-campaign-once-${{ github.run_id }}-${{ github.run_attempt }}\n          path: ${{ runner.temp }}/pon-smollm-hosted-once-v1/evidence/\n          if-no-files-found: error\n          retention-days: 30\n          include-hidden-files: false\n",
+    "encoding": "utf-8",
+    "sha": "15638b7be5eb2448f56a434fd99fe944febb71aa",
+    "display_url": "https://github.com/TrillionniumFoundation/Trillionnium-Chain/blob/0e1c25d42fff22bec6ec2a08c4fbdff240229858/.github/workflows/pon-smollm-hosted-once.yml",
+    "display_title": "pon-smollm-hosted-once.yml"
+  },
+  "isError": false
+}
