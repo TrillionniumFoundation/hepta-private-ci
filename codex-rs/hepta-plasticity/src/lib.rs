@@ -8,6 +8,7 @@
 
 #![forbid(unsafe_code)]
 
+mod differentiation_demand;
 mod differentiation_plan;
 mod differentiation_types;
 mod durable_registry;
@@ -22,6 +23,10 @@ mod topology_registry;
 mod topology_v2;
 mod types;
 
+pub use differentiation_demand::DifferentiationDemandAssessmentV1;
+pub use differentiation_demand::DifferentiationDemandCaseV1;
+pub use differentiation_demand::DifferentiationDemandWindowV1;
+pub use differentiation_demand::assess_differentiation_demand_v1;
 pub use differentiation_plan::freeze_differentiation_plan_v1;
 pub use differentiation_types::DifferentiationActorV1;
 pub use differentiation_types::DifferentiationActorsV1;
@@ -172,6 +177,9 @@ pub fn read_versioned_proposal(
         digest_verification,
     })
 }
+
+#[cfg(test)]
+mod differentiation_test_support;
 
 #[cfg(test)]
 #[path = "lib_tests.rs"]
