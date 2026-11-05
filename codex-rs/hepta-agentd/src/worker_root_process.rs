@@ -34,9 +34,7 @@ impl PinnedWorkerChild {
     }
 
     pub(crate) fn verify(&self, end: Instant) -> io::Result<()> {
-        if matches!(self.identity.uid, 0 | u32::MAX)
-            || matches!(self.identity.gid, 0 | u32::MAX)
-        {
+        if matches!(self.identity.uid, 0 | u32::MAX) || matches!(self.identity.gid, 0 | u32::MAX) {
             return Err(refused("dedicated non-Root Worker UID/GID required"));
         }
         verify(&self.identity, &self.pidfd, end)?;

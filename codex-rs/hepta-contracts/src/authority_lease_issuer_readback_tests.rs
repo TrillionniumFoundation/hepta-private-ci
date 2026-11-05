@@ -111,12 +111,14 @@ fn readback_requires_exact_writer_and_never_uses_a_revoked_alias_as_history_auth
     let token = f.token(&f.old);
     f.registry.revoke(&f.old.lease_id, 1, [8; 32]).unwrap();
     assert_eq!(
-        f.registry.verifier().with_pinned_issuer_readback_boundary::<()>(
-            (&f.old.lease_id, 1),
-            token,
-            &f.old.binding,
-            |_, _, _| panic!("revoked writer alias entered readback")
-        ),
+        f.registry
+            .verifier()
+            .with_pinned_issuer_readback_boundary::<()>(
+                (&f.old.lease_id, 1),
+                token,
+                &f.old.binding,
+                |_, _, _| panic!("revoked writer alias entered readback")
+            ),
         Err(AuthorityLeaseError::Revoked)
     );
 }
@@ -133,7 +135,9 @@ fn readback_boundary_holds_original_mutex_through_the_local_parent_decision() {
         let parent_id = &parent.lease_id;
         let revoke = scope.spawn(move || {
             started_rx.recv_timeout(Duration::from_secs(2)).unwrap();
-            done_tx.send(registry.revoke(parent_id, 1, [8; 32])).unwrap();
+            done_tx
+                .send(registry.revoke(parent_id, 1, [8; 32]))
+                .unwrap();
         });
         f.registry
             .verifier()

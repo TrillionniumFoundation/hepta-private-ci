@@ -179,21 +179,21 @@ mod root_production_inputs;
 #[cfg(target_os = "linux")]
 mod worker_root_registration;
 #[cfg(target_os = "linux")]
-pub use worker_root_registration::WORKER_ROOT_REGISTRATION_V1;
-#[cfg(target_os = "linux")]
-pub use worker_root_registration::WorkerProcessIdentityV1;
-#[cfg(target_os = "linux")]
-pub use worker_root_registration::WorkerRootRegistrationV1;
-#[cfg(target_os = "linux")]
-pub use worker_root_registration::WorkerRootRegistrationReceipt;
-#[cfg(target_os = "linux")]
-pub use worker_root_registration::receive_worker_root_registration;
-#[cfg(target_os = "linux")]
 pub use authority_host_runtime::HeldWorkerRootRegistration;
 #[cfg(target_os = "linux")]
 pub use root_production_inputs::AgentdRootProductionInputs;
 #[cfg(target_os = "linux")]
 pub use root_production_inputs::receive_root_production_inputs;
+#[cfg(target_os = "linux")]
+pub use worker_root_registration::WORKER_ROOT_REGISTRATION_V1;
+#[cfg(target_os = "linux")]
+pub use worker_root_registration::WorkerProcessIdentityV1;
+#[cfg(target_os = "linux")]
+pub use worker_root_registration::WorkerRootRegistrationReceipt;
+#[cfg(target_os = "linux")]
+pub use worker_root_registration::WorkerRootRegistrationV1;
+#[cfg(target_os = "linux")]
+pub use worker_root_registration::receive_worker_root_registration;
 #[cfg(target_os = "linux")]
 mod root_production_handoff;
 #[cfg(target_os = "linux")]

@@ -78,7 +78,9 @@ impl PreparedHostAuthoritySession {
         }
         let end = wire::deadline(timeout)?;
         if timeout > Duration::from_millis(self.config.timeout_ms) {
-            return Err(refused("Worker handoff exceeds the original service timeout"));
+            return Err(refused(
+                "Worker handoff exceeds the original service timeout",
+            ));
         }
         let identity = self.registration.registered_identity.identity()?;
         let control = control::WorkerControlCustody::capture(registry, &identity)?;
@@ -120,44 +122,57 @@ impl PreparedHostAuthoritySession {
             wire::remaining(end)?;
         }
         wire::enable_credentials(&channel)?;
-        let (registration, sealed) = self.service.with_worker_registration_fence(|issuer, writer, proof, now| {
-            verify_original()?;
-            let mut registration = WorkerRootRegistrationV1 {
-                schema_version: 1,
-                purpose: WORKER_ROOT_REGISTRATION_V1.into(),
-                registered_agent_id: identity.agent_id.clone(),
-                spawn_generation: identity.spawn_generation,
-                lifecycle_generation: control.generation(),
-                root: root.clone(),
-                agentd: agentd.clone(),
-                worker: worker.identity.clone(),
-                registration_nonce: nonce,
-                consumer_namespace: String::new(),
-                issuer_lease: issuer.clone(),
-                writer: writer.clone(),
-                writer_proof_sha256: proof,
-                observed_unix_ms: now,
-                expires_at_unix_ms: issuer.expires_at_unix_ms.min(writer.authority_lease.expires_at_unix_ms),
-            };
-            registration.consumer_namespace = consumer_namespace(&registration)?;
-            let mut sealed = crate::authority_host_bootstrap_seal::seal_worker_registration(&registration)?;
-            let mut bytes = Vec::new();
-            sealed.read_to_end(&mut bytes)?;
-            sealed.rewind()?;
-            let digest = Sha256Digest::for_bytes(&bytes);
-            crate::send_root_production_handoff(
-                channel.try_clone()?,
-                &sealed,
-                &root_pidfd,
-                wire::remaining(end)?,
-            )
-            .map_err(io::Error::other)?;
-            wire::receive(&channel, wire::Phase::Acknowledged, &digest, &worker.identity, end)?;
-            verify_original()?;
-            wire::send(&channel, wire::Phase::Confirmed, &digest, end)?;
-            verify_original()?;
-            Ok((registration, sealed))
-        })?;
+        let (registration, sealed) =
+            self.service
+                .with_worker_registration_fence(|issuer, writer, proof, now| {
+                    verify_original()?;
+                    let mut registration = WorkerRootRegistrationV1 {
+                        schema_version: 1,
+                        purpose: WORKER_ROOT_REGISTRATION_V1.into(),
+                        registered_agent_id: identity.agent_id.clone(),
+                        spawn_generation: identity.spawn_generation,
+                        lifecycle_generation: control.generation(),
+                        root: root.clone(),
+                        agentd: agentd.clone(),
+                        worker: worker.identity.clone(),
+                        registration_nonce: nonce,
+                        consumer_namespace: String::new(),
+                        issuer_lease: issuer.clone(),
+                        writer: writer.clone(),
+                        writer_proof_sha256: proof,
+                        observed_unix_ms: now,
+                        expires_at_unix_ms: issuer
+                            .expires_at_unix_ms
+                            .min(writer.authority_lease.expires_at_unix_ms),
+                    };
+                    registration.consumer_namespace = consumer_namespace(&registration)?;
+                    let mut sealed =
+                        crate::authority_host_bootstrap_seal::seal_worker_registration(
+                            &registration,
+                        )?;
+                    let mut bytes = Vec::new();
+                    sealed.read_to_end(&mut bytes)?;
+                    sealed.rewind()?;
+                    let digest = Sha256Digest::for_bytes(&bytes);
+                    crate::send_root_production_handoff(
+                        channel.try_clone()?,
+                        &sealed,
+                        &root_pidfd,
+                        wire::remaining(end)?,
+                    )
+                    .map_err(io::Error::other)?;
+                    wire::receive(
+                        &channel,
+                        wire::Phase::Acknowledged,
+                        &digest,
+                        &worker.identity,
+                        end,
+                    )?;
+                    verify_original()?;
+                    wire::send(&channel, wire::Phase::Confirmed, &digest, end)?;
+                    verify_original()?;
+                    Ok((registration, sealed))
+                })?;
         verify_original()?;
         Ok(HeldWorkerRootRegistration {
             registration,

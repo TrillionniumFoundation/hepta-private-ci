@@ -5,9 +5,9 @@ use codex_hepta_intelligence_eval::EvaluationDirectionV1;
 use codex_hepta_intelligence_eval::MetricContractV1;
 use codex_hepta_intelligence_eval::MetricRoleContractV2;
 use codex_hepta_intelligence_eval::MetricRoleV2;
-use codex_hepta_intelligence_eval::SignedEvaluationEvidenceV1;
 use codex_hepta_intelligence_eval::ProductQualificationContextV1;
 use codex_hepta_intelligence_eval::ProductTimingEvidenceV1;
+use codex_hepta_intelligence_eval::SignedEvaluationEvidenceV1;
 use pretty_assertions::assert_eq;
 
 #[path = "intelligence_qualification_test_support.rs"]
@@ -246,20 +246,23 @@ fn evidence_fixture_with_publication(
         ),
     };
 
-    let qualification = runner.qualify_and_persist(
-        &temporal,
-        &context,
-        &evidence,
-        ProductTimingEvidenceV1::Qualification,
-        verifier,
-        now,
-        &mut qualification_support::Sink(publication_namespace),
-    ).unwrap();
+    let qualification = runner
+        .qualify_and_persist(
+            &temporal,
+            &context,
+            &evidence,
+            ProductTimingEvidenceV1::Qualification,
+            verifier,
+            now,
+            &mut qualification_support::Sink(publication_namespace),
+        )
+        .unwrap();
     assert_eq!(
         qualification.decision.decision.disposition,
         codex_hepta_intelligence_eval::IndependentEvaluationDispositionV1::EligibleForIndependentSelection,
     );
-    let payload = intelligence_evaluation_binding_payload_v2(binding, &evidence, &qualification).unwrap();
+    let payload =
+        intelligence_evaluation_binding_payload_v2(binding, &evidence, &qualification).unwrap();
     let use_attestation = sign(
         verifier,
         &evaluator,
@@ -397,9 +400,8 @@ fn evaluator_key_epoch_expiry_and_signed_metrics_are_not_self_asserted() {
 fn independently_resigned_metrics_cannot_replace_the_qualified_estimator_evidence() {
     let binding = binding();
     let mut changed = session(&binding, /*now*/ 1_000);
-    changed.signed.bundle.metrics[0].candidate.upper = FixedQ32::from_raw(
-        changed.signed.bundle.metrics[0].candidate.upper.raw() + 1,
-    );
+    changed.signed.bundle.metrics[0].candidate.upper =
+        FixedQ32::from_raw(changed.signed.bundle.metrics[0].candidate.upper.raw() + 1);
     let key = SigningKey::from_bytes(&[47; 32]);
     changed.signed.evidence.evaluator_bundle = sign(
         changed.trust.verifier(),
@@ -413,7 +415,8 @@ fn independently_resigned_metrics_cannot_replace_the_qualified_estimator_evidenc
         &binding,
         &changed.signed.evidence,
         &changed.signed.qualification,
-    ).unwrap();
+    )
+    .unwrap();
     changed.signed.use_attestation = sign(
         changed.trust.verifier(),
         &changed.signed.bundle.evaluator,
@@ -423,9 +426,15 @@ fn independently_resigned_metrics_cannot_replace_the_qualified_estimator_evidenc
         &use_payload,
     );
     assert!(matches!(
-        changed.evaluate(&input(&binding), &binding.selected_candidate_id, /*now*/ 1_000),
+        changed.evaluate(
+            &input(&binding),
+            &binding.selected_candidate_id,
+            /*now*/ 1_000
+        ),
         Err(AgentdIntelligenceEvaluationError::Qualification(
-            codex_hepta_intelligence_eval::ProductEvaluationError::Binding("qualification use evidence")
+            codex_hepta_intelligence_eval::ProductEvaluationError::Binding(
+                "qualification use evidence"
+            )
         ))
     ));
 }
@@ -435,23 +444,38 @@ fn current_use_attestation_binds_the_exact_sealed_publication() {
     let binding = binding();
     let mut original = session(&binding, /*now*/ 1_000);
     let (_, other_publication) = evidence_fixture_with_publication(
-        &binding, /*now*/ 1_000, digest("another-publication"),
+        &binding,
+        /*now*/ 1_000,
+        digest("another-publication"),
     );
-    assert_eq!(original.signed.qualification.decision, other_publication.qualification.decision);
+    assert_eq!(
+        original.signed.qualification.decision,
+        other_publication.qualification.decision
+    );
     assert_ne!(
         original.signed.qualification.publication_digest,
         other_publication.qualification.publication_digest,
     );
     original.signed.qualification = other_publication.qualification.clone();
     assert!(matches!(
-        original.evaluate(&input(&binding), &binding.selected_candidate_id, /*now*/ 1_000),
+        original.evaluate(
+            &input(&binding),
+            &binding.selected_candidate_id,
+            /*now*/ 1_000
+        ),
         Err(AgentdIntelligenceEvaluationError::Evidence(_))
     ));
 
     // The same publication is usable with its own exact current-use signature.
     let mut correctly_bound = session(&binding, /*now*/ 1_000);
     correctly_bound.signed = other_publication;
-    assert!(correctly_bound.evaluate(
-        &input(&binding), &binding.selected_candidate_id, /*now*/ 1_000,
-    ).is_ok());
+    assert!(
+        correctly_bound
+            .evaluate(
+                &input(&binding),
+                &binding.selected_candidate_id,
+                /*now*/ 1_000,
+            )
+            .is_ok()
+    );
 }
