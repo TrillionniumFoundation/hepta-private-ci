@@ -2,6 +2,7 @@ use super::*;
 use crate::delete_permission_matrix::DeleteMatrix;
 use crate::delete_permission_matrix::DeleteOutcome;
 use crate::delete_permission_matrix::DeleteRoute;
+use pretty_assertions::assert_eq;
 
 fn matrix_script(matrix: &DeleteMatrix) -> (String, HashMap<String, String>) {
     let mut script = "@echo off\r\n".to_owned();

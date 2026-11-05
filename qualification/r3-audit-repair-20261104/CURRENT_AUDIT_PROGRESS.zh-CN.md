@@ -12,7 +12,7 @@
 
 ## 1. 全量盘点与实际开发阶段
 
-最新完整分页快照覆盖 **1,103个open PR、5,193个分支、0个open非PR issue、0个release**。其中1,079个Draft、24个非Draft；155个直接以main为base、948个为其他base；最长依赖链211层。PR13页到终态空页，branch53页到首个空页并另核两个空页guard；issues13页全部为PR，未以open_issues_count替代计数。没有重复、依赖环或head/branch不一致；185个metadata base SHA不同于当前分支tip，不自动证明冲突。首/尾/空页及latest100终锚一致，但多次API读取不是原子快照。相比旧1088 PR/5163分支，新增15个Draft（#4809–#4823）和30个分支；仅旧#4729的head改变。[新完整库存](fourth-repository-inventory-20261105.json) / [逐字归档](repository-inventory-20261105/archive-manifest.json) / [旧1088历史快照](fourth-complete-inventory.json)
+最新完整分页快照覆盖 **1,103个open PR、5,193个分支、0个open非PR issue、0个release**。其中1,079个Draft、24个非Draft；155个直接以main为base、948个为其他base；最长依赖链211层。PR13页到终态空页，branch53页到首个空页并另核两个空页guard；issues13页全部为PR，未以open_issues_count替代计数。没有重复、依赖环或head/branch不一致；185个metadata base SHA不同于当前分支tip，不自动证明冲突。首/尾/空页及latest100终锚一致，但多次API读取不是原子快照。相比旧1088 PR/5163分支，新增15个Draft（#4809–#4823）和30个分支；仅旧#4729的head改变。[完整库存冻结索引](fourth-repository-inventory-20261105.json) / [逐字归档](repository-inventory-20261105/archive-manifest.json) / [旧1088历史快照](fourth-complete-inventory.json)
 
 规范登记为40模块、205契约、58协议、67持久数据域、91工作包。工作包状态为43 planned、25 source_implemented、20 source_implemented_execution_pending、2 source_implemented_semantic_review_pending、1 blocked_external。源码映射为46根、1,408源文件、938 Rust文件、474名称含测试特征的文件。这些分别是登记与源码规模，不是测试执行数或产品完成百分比。[阶段计划与规范映射](PROJECT_DIRECTION_AND_PLAN.zh-CN.md)
 
@@ -226,7 +226,7 @@ Chain固定continuation README中的不同范围控制与结构核查仍保HOLD_
 
 - [第四批技术资格与执行树](FOURTH_BATCH_QUALIFICATION.md)
 - [当前23项机器账本](current-blockers.json)
-- [新完整库存](fourth-repository-inventory-20261105.json) / [旧1088历史快照](fourth-complete-inventory.json)
+- [完整库存冻结索引](fourth-repository-inventory-20261105.json) / [旧1088历史快照](fourth-complete-inventory.json)
 - [新donor固定源与资格](FOURTH_DONOR_PROGRESS_20261105.zh-CN.md) / [机器索引](fourth-donor-progress-20261105.json)
 - [第四批证据索引](fourth-evidence-index.json)
 - [原平台失败全集](fourth-original-platform-failures.json)

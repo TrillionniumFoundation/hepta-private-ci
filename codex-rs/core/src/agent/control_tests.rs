@@ -67,6 +67,7 @@ use codex_thread_store::LocalThreadStoreConfig;
 use codex_thread_store::PersistContext;
 use codex_thread_store::ThreadStore;
 use codex_utils_path_uri::PathUri;
+use core_test_support::responses;
 use core_test_support::responses::strip_response_item_ids;
 use pretty_assertions::assert_eq;
 use tempfile::TempDir;
@@ -74,6 +75,9 @@ use tokio::time::Duration;
 use tokio::time::sleep;
 use tokio::time::timeout;
 use toml::Value as TomlValue;
+use wiremock::Mock;
+use wiremock::matchers::method;
+use wiremock::matchers::path;
 
 #[path = "control_shutdown_tests.rs"]
 mod shutdown_tests;
@@ -346,7 +350,8 @@ async fn wait_for_recorded_user_message(thread: &CodexThread, needle: &str) {
     .await;
     assert!(
         result.is_ok(),
-        "timed out waiting for user message recording: {observed:#?}"
+        "timed out waiting for user message recording: thread_id={}, needle={needle:?}, observed={observed:#?}",
+        thread.session.thread_id(),
     );
 }
 
@@ -4663,7 +4668,46 @@ async fn resume_agent_from_rollout_uses_edge_data_when_descendant_metadata_sourc
 
 #[tokio::test]
 async fn resume_agent_from_rollout_skips_descendants_when_parent_resume_fails() {
-    let harness = AgentControlHarness::new().await;
+    // This fixture verifies the persisted tree after a missing child rollout.
+    // Keep prompt recording real without waiting for an external startup prewarm.
+    let server = responses::start_mock_server().await;
+    Mock::given(method("POST"))
+        .and(path("/v1/responses"))
+        .respond_with(responses::sse_response(responses::sse_completed(
+            "tree-resume-fixture",
+        )))
+        .mount(&server)
+        .await;
+    let base_url = format!("{}/v1", server.uri());
+    let (home, config) = test_config_with_cli_overrides(vec![
+        (
+            "model_provider".to_string(),
+            TomlValue::String("tree_resume_fixture".to_string()),
+        ),
+        (
+            "model_providers.tree_resume_fixture".to_string(),
+            TomlValue::Table(toml::map::Map::from_iter([
+                (
+                    "name".to_string(),
+                    TomlValue::String("Tree resume fixture".to_string()),
+                ),
+                ("base_url".to_string(), TomlValue::String(base_url.clone())),
+                (
+                    "wire_api".to_string(),
+                    TomlValue::String("responses".to_string()),
+                ),
+                ("requires_openai_auth".to_string(), TomlValue::Boolean(false)),
+                ("supports_websockets".to_string(), TomlValue::Boolean(false)),
+            ])),
+        ),
+    ])
+    .await;
+    assert_eq!(
+        config.model_provider.base_url.as_deref(),
+        Some(base_url.as_str())
+    );
+    assert!(!config.model_provider.supports_websockets);
+    let harness = AgentControlHarness::new_with_config(home, config).await;
     let (parent_thread_id, parent_thread) = harness.start_thread().await;
 
     let child_thread_id = harness

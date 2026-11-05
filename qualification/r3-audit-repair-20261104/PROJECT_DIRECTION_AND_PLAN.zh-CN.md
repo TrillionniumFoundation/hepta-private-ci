@@ -40,7 +40,7 @@ Hepta 的目标是本地优先、可恢复的多 Agent 系统。其工程核心�
 
 **先完成当前工程修复、更新现有Draft PR，再以新提交的原始跨平台CI验收。** 当前原23项账本为8项范围内闭合、14项开放、1项科学HOLD。既有局部结果与原失败均保留；工程发布候选与后续Memory大改分阶段执行，避免等待尚未编译的方案阻塞已完成修复。
 
-最新完整清点覆盖2026-11-05 03:16–03:24 UTC：1103个open PR，其中1079 Draft、24非Draft；5193 branches，155 main-base/948 nonmain-base，最长依赖链211；0个open非PR issue/0个release。逐页到空页并核终锚，不把多时点查询称为原子快照。旧22:27的1088 PR/5163分支及下文18:57历史增量分别保留。当前候选仍是PR #4797，目标base为integration/ui-objective-20261103-product，main观察为732e934。没有合入main或改变目标base。[本轮完整进展](CURRENT_AUDIT_PROGRESS.zh-CN.md) / [新完整库存](fourth-repository-inventory-20261105.json)
+最新完整清点覆盖2026-11-05 03:16–03:24 UTC：1103个open PR，其中1079 Draft、24非Draft；5193 branches，155 main-base/948 nonmain-base，最长依赖链211；0个open非PR issue/0个release。逐页到空页并核终锚，不把多时点查询称为原子快照。旧22:27的1088 PR/5163分支及下文18:57历史增量分别保留。当前候选仍是PR #4797，目标base为integration/ui-objective-20261103-product，main观察为732e934。没有合入main或改变目标base。[本轮完整进展](CURRENT_AUDIT_PROGRESS.zh-CN.md) / [完整库存冻结索引](fourth-repository-inventory-20261105.json)
 
 此前f825组合源已执行原25项权限回归25/25通过；原七包选中5416项，其中5408 JUnit PASS、8 FAIL；原全工作区19503项为19485 JUnit PASS、17 FAIL、1 TIMEOUT。24项requires-remote早退已逐名绑定原始输出；后续另核1项原capability早退，已知25项省略行为，均不当作对应行为执行。完整raw/JUnit/catalog/程序身份已独立重建与核验。[完整原始证据](fourth-f825-full-owning-complete-root-review.json)
 

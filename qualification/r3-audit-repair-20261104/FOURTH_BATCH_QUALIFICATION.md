@@ -115,7 +115,7 @@ The B16 two-pool caller binding has a separate static review and three proposed 
 
 ## New inventory and separate donor qualification
 
-The full API interval03:16–03:24 UTC on2026-11-05 enumerated1103 open PRs (1079Draft/24nonDraft;155main-base/948other-base),5193branches,0non-PR issues and0releases. Complete pagination, terminal empty pages and final anchors were checked; these are not an atomic snapshot. The previous1088/5163 snapshot remains historical. Published4797/cabc and research4798/77b244 are unchanged. [New inventory](fourth-repository-inventory-20261105.json)
+The full API interval03:16–03:24 UTC on2026-11-05 enumerated1103 open PRs (1079Draft/24nonDraft;155main-base/948other-base),5193branches,0non-PR issues and0releases. Complete pagination, terminal empty pages and final anchors were checked; these are not an atomic snapshot. The previous1088/5163 snapshot remains historical. Published4797/cabc and research4798/77b244 are unchanged. [Frozen full-inventory index](fourth-repository-inventory-20261105.json)
 
 | Donor | Independently observed scope | Qualification limit |
 |---|---|---|

@@ -119,7 +119,7 @@ impl ParentLiveness {
             return Err(io::Error::last_os_error());
         }
         if !metadata.is_file()
-            || filesystem.f_type != libc::PROC_SUPER_MAGIC
+            || i128::from(filesystem.f_type) != i128::from(libc::PROC_SUPER_MAGIC)
             || status_flags & (libc::O_PATH | libc::O_ACCMODE) != libc::O_RDONLY
             || position != 0
         {
