@@ -163,27 +163,42 @@ fn write_token_budget_compact_hooks(home: &Path) {
 }
 
 async fn assert_context_compaction_item_lifecycle(codex: &std::sync::Arc<codex_core::CodexThread>) {
-    let mut saw_compaction_started = false;
-    let mut saw_compaction_completed = false;
+    // Bound the previously unbounded lifecycle observation, including its
+    // finish owner, by the ordinary event-observation budget.
+    tokio::time::timeout(Duration::from_secs(10), async {
+        let mut saw_compaction_started = false;
+        let mut saw_compaction_completed = false;
 
-    loop {
-        let event = codex.next_event().await.expect("next event");
-        match event.msg {
-            EventMsg::ItemStarted(ItemStartedEvent {
-                item: TurnItem::ContextCompaction(_),
-                ..
-            }) => saw_compaction_started = true,
-            EventMsg::ItemCompleted(ItemCompletedEvent {
-                item: TurnItem::ContextCompaction(_),
-                ..
-            }) => saw_compaction_completed = true,
-            EventMsg::TurnComplete(_) => break,
-            _ => {}
+        loop {
+            let event = codex.next_event().await.expect("next event");
+            match event.msg {
+                EventMsg::ItemStarted(ItemStartedEvent {
+                    item: TurnItem::ContextCompaction(_),
+                    ..
+                }) => saw_compaction_started = true,
+                EventMsg::ItemCompleted(ItemCompletedEvent {
+                    item: TurnItem::ContextCompaction(_),
+                    ..
+                }) => saw_compaction_completed = true,
+                EventMsg::TurnComplete(turn) => {
+                    // The event precedes this exact owner's post-terminal work.
+                    // Observe it before admitting the next turn; this grants no authority.
+                    if let Some(completion) =
+                        codex.pending_normal_turn_finish_completion(&turn.turn_id)
+                    {
+                        completion.await;
+                    }
+                    break;
+                }
+                _ => {}
+            }
         }
-    }
 
-    assert!(saw_compaction_started, "compaction item should start");
-    assert!(saw_compaction_completed, "compaction item should complete");
+        assert!(saw_compaction_started, "compaction item should start");
+        assert!(saw_compaction_completed, "compaction item should complete");
+    })
+    .await
+    .expect("compaction lifecycle and finish owner exceeded the event budget");
 }
 
 #[tokio::test(flavor = "multi_thread", worker_threads = 2)]
