@@ -19,6 +19,9 @@ use windows_sys::Win32::Security::IsValidSid;
 use windows_sys::Win32::Security::RevertToSelf;
 use windows_sys::Win32::Storage::FileSystem::*;
 
+#[path = "token_access_check_diagnostics_tests.rs"]
+mod access_check;
+
 struct Impersonation;
 
 impl Impersonation {
@@ -196,6 +199,7 @@ pub(crate) fn observe(
             }
         }
     }
+    access_check::observe(base, restricted, paths)?;
     Ok(())
 }
 
