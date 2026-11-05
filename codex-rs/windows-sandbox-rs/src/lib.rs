@@ -112,6 +112,8 @@ mod sandbox_utils;
 
 #[cfg(target_os = "windows")]
 mod setup;
+#[cfg(target_os = "windows")]
+mod setup_background;
 
 #[cfg(target_os = "windows")]
 mod setup_error;
@@ -291,6 +293,8 @@ pub use setup::sandbox_bin_dir;
 pub use setup::sandbox_dir;
 #[cfg(target_os = "windows")]
 pub use setup::sandbox_secrets_dir;
+#[cfg(target_os = "windows")]
+pub use setup_background::spawn_background_setup_helper;
 #[cfg(target_os = "windows")]
 pub use setup_error::SetupErrorCode;
 #[cfg(target_os = "windows")]

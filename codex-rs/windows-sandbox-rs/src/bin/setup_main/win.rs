@@ -25,6 +25,7 @@ use codex_windows_sandbox::path_write_aces_need_refresh;
 use codex_windows_sandbox::sandbox_bin_dir;
 use codex_windows_sandbox::sandbox_dir;
 use codex_windows_sandbox::sandbox_secrets_dir;
+use codex_windows_sandbox::spawn_background_setup_helper;
 use codex_windows_sandbox::string_from_sid_bytes;
 use codex_windows_sandbox::sync_persistent_deny_read_acls;
 use codex_windows_sandbox::to_wide;
@@ -38,11 +39,8 @@ use std::ffi::OsStr;
 use std::ffi::c_void;
 use std::io::Write;
 use std::os::windows::io::AsRawHandle;
-use std::os::windows::process::CommandExt;
 use std::path::Path;
 use std::path::PathBuf;
-use std::process::Command;
-use std::process::Stdio;
 use std::sync::mpsc;
 use windows_sys::Win32::Foundation::GetLastError;
 use windows_sys::Win32::Foundation::HLOCAL;
@@ -170,14 +168,8 @@ fn spawn_read_acl_helper(payload: &Payload, _log: &mut dyn Write) -> Result<()> 
     let payload_json = serde_json::to_vec(&read_payload)?;
     let payload_b64 = BASE64.encode(payload_json);
     let exe = std::env::current_exe().context("locate setup helper")?;
-    Command::new(&exe)
-        .arg(payload_b64)
-        .stdin(Stdio::null())
-        .stdout(Stdio::null())
-        .stderr(Stdio::null())
-        .creation_flags(0x08000000) // CREATE_NO_WINDOW
-        .spawn()
-        .context("spawn read ACL helper")?;
+    // Keep the ACL pass asynchronous while excluding unrelated inheritable handles.
+    drop(spawn_background_setup_helper(&exe, &payload_b64).context("spawn read ACL helper")?);
     Ok(())
 }
 
