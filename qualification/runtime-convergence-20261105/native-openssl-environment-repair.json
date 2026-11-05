@@ -1,0 +1,189 @@
+{
+  "schema": "hepta.native-environment-repair.v1",
+  "host": "ai395",
+  "packages": [
+    "libssl-dev",
+    "libssl3t64"
+  ],
+  "version": "3.5.5-1ubuntu3.7",
+  "source": "existing configured Ubuntu APT mirror: https://mirrors.ustc.edu.cn/ubuntu",
+  "source_is_official_direct_domain": false,
+  "global_system_modified": false,
+  "repository_source_modified": false,
+  "test_features_or_backend_modified": false,
+  "steps": [
+    {
+      "name": "installed-runtime-version",
+      "args": [
+        "dpkg-query",
+        "-W",
+        "-f",
+        "${Version}",
+        "libssl3t64"
+      ],
+      "exit_code": 0,
+      "elapsed_seconds": 0.01866769790649414,
+      "stdout_sha256": "92e8c3e33abe15bdbd43af41a8f12f1d035d9be3d30a87bb06e2c0e7815b377c",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "metadata-libssl-dev",
+      "args": [
+        "apt-cache",
+        "show",
+        "libssl-dev=3.5.5-1ubuntu3.7"
+      ],
+      "exit_code": 0,
+      "elapsed_seconds": 0.04111957550048828,
+      "stdout_sha256": "91b2fe96665421a29f3133de3eda3cede48e3191e6b7cd6c6636e73873297d71",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "metadata-libssl3t64",
+      "args": [
+        "apt-cache",
+        "show",
+        "libssl3t64=3.5.5-1ubuntu3.7"
+      ],
+      "exit_code": 0,
+      "elapsed_seconds": 0.03278708457946777,
+      "stdout_sha256": "1b8f9bde4a9497aa9d2ee55227211d0dc1c85b5fab8e5b9b6255db7f441dbe1e",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "download-exact-packages",
+      "args": [
+        "apt-get",
+        "download",
+        "libssl-dev=3.5.5-1ubuntu3.7",
+        "libssl3t64=3.5.5-1ubuntu3.7"
+      ],
+      "exit_code": 0,
+      "elapsed_seconds": 10.408105611801147,
+      "stdout_sha256": "42a6a9380ff5b1a153a9d2f02d6574177e1122869d2999c20d495c2fc850af05",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "archive-0-name",
+      "args": [
+        "dpkg-deb",
+        "-f",
+        "/home/qq/work/hepta-convergence-20261105-0c901b/native-debs/openssl-dev-attempt-1/libssl-dev_3.5.5-1ubuntu3.7_amd64.deb",
+        "Package"
+      ],
+      "exit_code": 0,
+      "elapsed_seconds": 0.007662057876586914,
+      "stdout_sha256": "75ce26826c5f2316f6fadfc6003f0bbd72b64019094baf490ea81c7a7e12937b",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "archive-0-version",
+      "args": [
+        "dpkg-deb",
+        "-f",
+        "/home/qq/work/hepta-convergence-20261105-0c901b/native-debs/openssl-dev-attempt-1/libssl-dev_3.5.5-1ubuntu3.7_amd64.deb",
+        "Version"
+      ],
+      "exit_code": 0,
+      "elapsed_seconds": 0.004311323165893555,
+      "stdout_sha256": "d5e2e8bb7d10da92bc706efd0b0f903703f0035b029e98cfeaa952d98b284b1b",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "unpack-libssl-dev",
+      "args": [
+        "dpkg-deb",
+        "-x",
+        "/home/qq/work/hepta-convergence-20261105-0c901b/native-debs/openssl-dev-attempt-1/libssl-dev_3.5.5-1ubuntu3.7_amd64.deb",
+        "/home/qq/work/hepta-convergence-20261105-0c901b/native-headers/openssl-3.5.5-1ubuntu3.7"
+      ],
+      "exit_code": 0,
+      "elapsed_seconds": 0.04038548469543457,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "archive-1-name",
+      "args": [
+        "dpkg-deb",
+        "-f",
+        "/home/qq/work/hepta-convergence-20261105-0c901b/native-debs/openssl-dev-attempt-1/libssl3t64_3.5.5-1ubuntu3.7_amd64.deb",
+        "Package"
+      ],
+      "exit_code": 0,
+      "elapsed_seconds": 0.0049822330474853516,
+      "stdout_sha256": "3f7dc86af0b93ca091791866ac747305fbb4f0715bfde769e4f41e793dde53af",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "archive-1-version",
+      "args": [
+        "dpkg-deb",
+        "-f",
+        "/home/qq/work/hepta-convergence-20261105-0c901b/native-debs/openssl-dev-attempt-1/libssl3t64_3.5.5-1ubuntu3.7_amd64.deb",
+        "Version"
+      ],
+      "exit_code": 0,
+      "elapsed_seconds": 0.004120826721191406,
+      "stdout_sha256": "d5e2e8bb7d10da92bc706efd0b0f903703f0035b029e98cfeaa952d98b284b1b",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "unpack-libssl3t64",
+      "args": [
+        "dpkg-deb",
+        "-x",
+        "/home/qq/work/hepta-convergence-20261105-0c901b/native-debs/openssl-dev-attempt-1/libssl3t64_3.5.5-1ubuntu3.7_amd64.deb",
+        "/home/qq/work/hepta-convergence-20261105-0c901b/native-headers/openssl-3.5.5-1ubuntu3.7"
+      ],
+      "exit_code": 0,
+      "elapsed_seconds": 0.0311279296875,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  ],
+  "state": "ready-task-local-matched-openssl-development-prefix",
+  "archives": [
+    {
+      "package": "libssl-dev",
+      "version": "3.5.5-1ubuntu3.7",
+      "path": "/home/qq/work/hepta-convergence-20261105-0c901b/native-debs/openssl-dev-attempt-1/libssl-dev_3.5.5-1ubuntu3.7_amd64.deb",
+      "sha256": "d1cf6cafb141490b7020e392964b1f901835d60cb88c3a68ef0f95ef5e930de4"
+    },
+    {
+      "package": "libssl3t64",
+      "version": "3.5.5-1ubuntu3.7",
+      "path": "/home/qq/work/hepta-convergence-20261105-0c901b/native-debs/openssl-dev-attempt-1/libssl3t64_3.5.5-1ubuntu3.7_amd64.deb",
+      "sha256": "3ff73e121f6cd4f19e80ab4329dfd914108b3936c9db3708200203a9b245b34d"
+    }
+  ],
+  "apt_expected_sha256": {
+    "libssl-dev": "d1cf6cafb141490b7020e392964b1f901835d60cb88c3a68ef0f95ef5e930de4",
+    "libssl3t64": "3ff73e121f6cd4f19e80ab4329dfd914108b3936c9db3708200203a9b245b34d"
+  },
+  "runtime_library_identity": [
+    {
+      "name": "libssl.so.3",
+      "sha256": "63b47f444efa588e291e9b650a5ba2ab02f856356f2d50f13a2e477db9119e09",
+      "matches_installed_bytes": true
+    },
+    {
+      "name": "libcrypto.so.3",
+      "sha256": "5385f0436ac2e284ba8c5fb1488874057c29c04be72dea32add832694f381e28",
+      "matches_installed_bytes": true
+    }
+  ],
+  "extraction_directory": "/home/qq/work/hepta-convergence-20261105-0c901b/native-headers/openssl-3.5.5-1ubuntu3.7",
+  "environment": {
+    "OPENSSL_INCLUDE_DIR": "/home/qq/work/hepta-convergence-20261105-0c901b/native-headers/openssl-3.5.5-1ubuntu3.7/usr/include",
+    "OPENSSL_LIB_DIR": "/home/qq/work/hepta-convergence-20261105-0c901b/native-headers/openssl-3.5.5-1ubuntu3.7/usr/lib/x86_64-linux-gnu",
+    "CPATH": "/home/qq/work/hepta-convergence-20261105-0c901b/native-headers/openssl-3.5.5-1ubuntu3.7/usr/include/x86_64-linux-gnu"
+  },
+  "environment_not_set": [
+    "OPENSSL_STATIC",
+    "OPENSSL_NO_VENDOR",
+    "PKG_CONFIG_SYSROOT_DIR",
+    "LD_LIBRARY_PATH"
+  ],
+  "exit_code": 0
+}
