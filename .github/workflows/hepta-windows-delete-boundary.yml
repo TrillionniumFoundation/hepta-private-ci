@@ -9,6 +9,8 @@ on:
       - codex-rs/hepta-prompt-registry/**
       - scripts/test_hepta_windows_boundary_receipts.py
       - scripts/test_hepta_windows_terminal_receipts.py
+      - scripts/hepta_windows_prepared_owner_receipt.py
+      - scripts/test_hepta_windows_prepared_owner_receipt.py
       - .github/workflows/hepta-windows-delete-boundary.yml
 
 permissions:
@@ -680,6 +682,29 @@ jobs:
           codes="${PIPESTATUS[*]}"
           set -e
           python "$RUNNER_TEMP/windows-delete-boundary/check.py" tests command-runner-terminal 3 "$codes"
+      - name: Prepare the independent three-case Windows process-owner scope
+        id: prepared_owner
+        if: ${{ !cancelled() && steps.source.outcome == 'success' }}
+        run: |
+          set -euo pipefail
+          out="$RUNNER_TEMP/windows-prepared-owner"
+          test ! -e "$out"
+          mkdir -p "$out"
+          python -m unittest discover -s scripts -p 'test_hepta_windows_prepared_owner_receipt.py' > "$out/reader-controls.log" 2>&1
+          python scripts/hepta_windows_prepared_owner_receipt.py before "$out"
+          set +e
+          (cd codex-rs && NEXTEST_PROFILE=local RUST_MIN_STACK=8388608 cargo nextest list --locked -p codex-windows-sandbox --lib -E 'test(/^process::prepared_context::tests::/)' --run-ignored all --message-format json) > "$out/registry.json" 2> "$out/registry.stderr"
+          code=$?
+          set -e
+          python scripts/hepta_windows_prepared_owner_receipt.py prepare "$out" "$code"
+      - name: Run exactly the three retained process-owner mechanisms
+        if: ${{ !cancelled() && steps.prepared_owner.outcome == 'success' }}
+        run: |
+          set +e
+          just test --locked -p codex-windows-sandbox --lib -E 'test(/^process::prepared_context::tests::/)' --test-threads 1 --no-capture 2>&1 | tee "$RUNNER_TEMP/windows-prepared-owner/native.log"
+          codes="${PIPESTATUS[*]}"
+          set -e
+          python scripts/hepta_windows_prepared_owner_receipt.py run "$RUNNER_TEMP/windows-prepared-owner" "$codes"
       - name: Require unchanged source and all twenty completed Windows result receipts
         if: ${{ always() && steps.source.outcome == 'success' }}
         run: python "$RUNNER_TEMP/windows-delete-boundary/check.py" source after
@@ -688,5 +713,15 @@ jobs:
         with:
           name: hepta-windows-delete-boundary-${{ matrix.runner }}-${{ matrix.lane }}-${{ github.run_id }}-${{ github.run_attempt }}
           path: ${{ runner.temp }}/windows-delete-boundary/
+          if-no-files-found: error
+          retention-days: 14
+      - name: Bind the independent owner receipt to unchanged source and actual Windows PE
+        if: ${{ always() && steps.source.outcome == 'success' }}
+        run: python scripts/hepta_windows_prepared_owner_receipt.py finish "$RUNNER_TEMP/windows-prepared-owner"
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: hepta-windows-prepared-owner-${{ matrix.runner }}-${{ matrix.lane }}-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/windows-prepared-owner/
           if-no-files-found: error
           retention-days: 14
