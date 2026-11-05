@@ -681,7 +681,8 @@ async fn check_recovery_rollback(fixture: RecoveryRollbackFixture) -> Result<()>
                     "provider:recovery",
                     "run",
                     "step",
-                )?,
+                )
+                .map_err(|error| anyhow::anyhow!("invalid provider effect key: {error:?}"))?,
                 Sha256Digest::for_bytes(b"original external effect"),
             );
             current_store.append_provider_effect_intent(&intent).await?;
