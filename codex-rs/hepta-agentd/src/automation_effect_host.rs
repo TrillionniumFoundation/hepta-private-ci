@@ -1733,12 +1733,20 @@ fn read_revocations_file(path: &Path) -> Result<FinalUseRevocations, AgentdError
     Ok(serde_json::from_slice(&bytes)?)
 }
 
+#[cfg(any(unix, not(test)))]
 fn read_protected_file(path: &Path, max_bytes: u64, label: &str) -> Result<Vec<u8>, AgentdError> {
+    crate::protected_file::read(path, max_bytes)
+        .map_err(|error| AgentdError::Invalid(format!("{label}: {error}")))
+}
+
+// Retain the old non-Unix compatibility fixtures only in unit-test builds.
+// Ordinary PQ hosts on those platforms still fail closed in protected_file.
+#[cfg(all(test, not(unix)))]
+fn read_protected_file(path: &Path, max_bytes: u64, label: &str) -> Result<Vec<u8>, AgentdError> {
+    use std::io::Read;
     if !path.is_absolute() {
         return Err(AgentdError::Invalid(format!("{label} must be absolute")));
     }
-    // Reject special files before open as well as checking the opened file.
-    // All content and permission checks below refer to that same descriptor.
     let initial = fs::symlink_metadata(path)?;
     if !initial.is_file() || initial.file_type().is_symlink() {
         return Err(AgentdError::Invalid(format!(
@@ -1747,9 +1755,7 @@ fn read_protected_file(path: &Path, max_bytes: u64, label: &str) -> Result<Vec<u
     }
     let mut file = fs::File::open(path)?;
     let metadata = file.metadata()?;
-    let named = fs::symlink_metadata(path)?;
     if !metadata.is_file()
-        || named.file_type().is_symlink()
         || path.canonicalize()?.as_os_str() != path.as_os_str()
         || metadata.len() == 0
         || metadata.len() > max_bytes
@@ -1757,25 +1763,6 @@ fn read_protected_file(path: &Path, max_bytes: u64, label: &str) -> Result<Vec<u
         return Err(AgentdError::Invalid(format!(
             "{label} must be a bounded canonical regular file"
         )));
-    }
-    #[cfg(unix)]
-    {
-        use std::os::unix::fs::MetadataExt;
-        let parent = fs::metadata(
-            path.parent()
-                .ok_or_else(|| AgentdError::Invalid(format!("{label} has no parent")))?,
-        )?;
-        if metadata.mode() & 0o077 != 0
-            || metadata.nlink() != 1
-            || metadata.dev() != named.dev()
-            || metadata.ino() != named.ino()
-            || metadata.uid() != parent.uid()
-            || parent.mode() & 0o022 != 0
-        {
-            return Err(AgentdError::Invalid(format!(
-                "{label} file identity or private ownership is unsafe"
-            )));
-        }
     }
     let mut bytes = Vec::new();
     file.by_ref().take(max_bytes + 1).read_to_end(&mut bytes)?;

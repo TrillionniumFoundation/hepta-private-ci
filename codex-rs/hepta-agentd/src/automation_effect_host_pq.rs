@@ -3,18 +3,16 @@
 //! whole-machine recovery remain qualifications outside this composition.
 
 use super::*;
+#[cfg(all(test, target_os = "linux"))]
 use std::collections::BTreeSet;
 
-use codex_hepta_contracts::AuthorityClock;
-use codex_hepta_contracts::AuthorityFrontierStore;
+use crate::pq_final_use::PqDispatchLease;
+use crate::pq_final_use::PqFinalUseConfig as AuthorityConfig;
+use crate::pq_final_use::PqFinalUseGate;
 use codex_hepta_contracts::FinalUseAuthenticationProfile;
-use codex_hepta_contracts::FinalUseRevocationFeedVerifier;
 use codex_hepta_contracts::PqAuthorityTrustKey;
+#[cfg(all(test, target_os = "linux"))]
 use codex_hepta_contracts::SignedFinalUseRevocationUpdate;
-use codex_hepta_contracts::authority_trust_unix::UnixPqAuthorityClock;
-use codex_hepta_contracts::authority_trust_unix::UnixPqFinalUseFrontier;
-use codex_hepta_contracts::authority_trust_unix::UnixPqTrustEndpointConfig;
-use codex_hepta_contracts::pq_auth::PqNativeVerifier;
 use serde::Serialize;
 
 const SCHEMA_VERSION: u32 = 4;
@@ -65,34 +63,7 @@ enum ProviderConfig {
     },
 }
 
-#[derive(Clone, Debug, Deserialize)]
-#[serde(deny_unknown_fields)]
-struct AuthorityConfig {
-    signer_id: String,
-    issuer_keys: Vec<PqAuthorityTrustKey>,
-    head: FinalUseRevocations,
-    revocation_distributor_id: String,
-    revocation_keys: Vec<PqAuthorityTrustKey>,
-    signed_revocations_file: PathBuf,
-    external_clock: UnixPqTrustEndpointConfig,
-    external_frontier: UnixPqTrustEndpointConfig,
-}
-
-pub(super) struct PqEffectAuthority {
-    clock: Arc<dyn AuthorityClock>,
-    feed: FinalUseRevocationFeedVerifier,
-    contract_epoch: u64,
-}
-
-/// Only an authenticated feed creates this lease. Its exact head is checked
-/// inside the original final-use effect fence, after every preceding await.
-#[derive(Clone)]
-pub(super) struct PqDispatchLease {
-    authority: FinalUseAuthority,
-    clock: Arc<dyn AuthorityClock>,
-    head: FinalUseRevocations,
-    valid_until_unix_ms: u64,
-}
+pub(super) struct PqEffectAuthority(PqFinalUseGate);
 
 /// Production drivers must carry the authenticated PQ lease. Classical test
 /// fixtures have an explicit variant that is absent from production builds.
@@ -106,25 +77,12 @@ pub(super) enum EffectDispatchLease {
 impl EffectDispatchLease {
     pub(super) fn check(&self) -> Result<(), AuthorizedEffectDriverError> {
         match self {
-            Self::Pq(lease) => lease.check(),
+            Self::Pq(lease) => lease
+                .check()
+                .map_err(|_| AuthorizedEffectDriverError::BeforeProviderContact),
             #[cfg(test)]
             Self::ClassicalFixture => Ok(()),
         }
-    }
-}
-
-impl PqDispatchLease {
-    pub(super) fn check(&self) -> Result<(), AuthorizedEffectDriverError> {
-        if self.authority.authentication_profile() != FinalUseAuthenticationProfile::MlDsa65V2
-            || self.authority.revocation_head().ok().as_ref() != Some(&self.head)
-            || !self
-                .clock
-                .now_unix_ms()
-                .is_ok_and(|now| now < self.valid_until_unix_ms)
-        {
-            return Err(AuthorizedEffectDriverError::BeforeProviderContact);
-        }
-        Ok(())
     }
 }
 
@@ -135,32 +93,7 @@ impl PqEffectAuthority {
         path: &Path,
         grant: &SignedFinalUseGrant,
     ) -> Result<PqDispatchLease, AgentdError> {
-        let bytes = read_protected_file(
-            path,
-            MAX_AUTOMATION_EFFECT_REVOCATIONS_FILE_BYTES,
-            "PQ automation signed revocations",
-        )?;
-        let signed: SignedFinalUseRevocationUpdate = serde_json::from_slice(&bytes)?;
-        let now = self.clock.now_unix_ms().map_err(invalid)?;
-        let receipt = self
-            .feed
-            .apply_or_confirm_current(authority, &signed, now)
-            .map_err(invalid)?;
-        if grant.grant.schema_version != 2
-            || grant.grant.authority_epoch != receipt.authority_epoch()
-            || receipt.authority_epoch() != self.contract_epoch
-            || grant.grant.expires_at_unix_ms > receipt.valid_until_unix_ms()
-        {
-            return Err(invalid(
-                "PQ effect grant, contract and authenticated feed disagree",
-            ));
-        }
-        Ok(PqDispatchLease {
-            authority: authority.clone(),
-            clock: Arc::clone(&self.clock),
-            head: signed.update.head,
-            valid_until_unix_ms: grant.grant.expires_at_unix_ms,
-        })
+        self.0.authenticate(authority, path, grant).map_err(invalid)
     }
 }
 
@@ -198,7 +131,6 @@ pub(super) fn open(
         .layout
         .automation_root()
         .join("final-use-authority");
-    validate_roles_and_paths(&config, &authority_root)?;
     let attestation = HttpProviderEffectContractAttestation::verify_pq_signed(
         config.contract_id.clone(),
         declared.clone(),
@@ -212,120 +144,22 @@ pub(super) fn open(
         return Err(invalid("PQ provider contract attestation required"));
     }
     let adapter = prepare_provider(&config, attestation, &declared)?;
-    let clock =
-        Arc::new(UnixPqAuthorityClock::new(config.final_use.external_clock).map_err(invalid)?);
-    let frontier =
-        Arc::new(UnixPqFinalUseFrontier::new(config.final_use.external_frontier).map_err(invalid)?);
-    let feed = FinalUseRevocationFeedVerifier::new_pq_with_keys(
-        config.final_use.revocation_distributor_id,
-        config.final_use.revocation_keys,
-    )
-    .map_err(invalid)?;
-    // Existing external registration is mandatory. An absent witness never
-    // bootstraps itself from this rollbackable local configuration.
-    clock.now_unix_ms().map_err(invalid)?;
-    frontier
-        .load(&config.final_use.signer_id)
+    let revocations_file = config.final_use.signed_revocations_file.clone();
+    let (authority, gate) = config
+        .final_use
+        .open(&authority_root, &[&config.contract_key])
         .map_err(invalid)?;
-    let authority = FinalUseAuthority::open_pq_state_dir_with_issuer_keys(
-        &authority_root,
-        config.final_use.signer_id,
-        config.final_use.issuer_keys,
-        config.final_use.head,
-        clock.clone(),
-        frontier,
-    )
-    .map_err(invalid)?;
     Ok(AgentdAutomationEffectHost {
         agent_id: identity.agent_id.clone(),
         provider_scope: config.provider_scope,
         destination_id: config.destination_id,
         final_use_scope_digest: scope,
         authority,
-        revocations_file: config.final_use.signed_revocations_file,
+        revocations_file,
         revocation_refresh: Arc::new(Mutex::new(())),
-        pq: Some(Arc::new(PqEffectAuthority {
-            clock,
-            feed,
-            contract_epoch: config.contract_authority_epoch,
-        })),
+        pq: Some(Arc::new(PqEffectAuthority(gate))),
         adapter,
     })
-}
-
-fn validate_roles_and_paths(config: &EffectHostConfig, owner: &Path) -> Result<(), AgentdError> {
-    if !(1..=8).contains(&config.final_use.issuer_keys.len())
-        || !(1..=8).contains(&config.final_use.revocation_keys.len())
-    {
-        return Err(invalid(
-            "PQ effect requires one to eight keys per authority ring",
-        ));
-    }
-    let mut keys = BTreeSet::new();
-    for (spki, pin) in config
-        .final_use
-        .issuer_keys
-        .iter()
-        .chain(&config.final_use.revocation_keys)
-        .chain(std::iter::once(&config.contract_key))
-        .map(|key| (key.public_key_spki.as_slice(), key.public_key_id))
-        .chain([
-            (
-                config.final_use.external_clock.public_key_spki.as_slice(),
-                config.final_use.external_clock.public_key_id,
-            ),
-            (
-                config
-                    .final_use
-                    .external_frontier
-                    .public_key_spki
-                    .as_slice(),
-                config.final_use.external_frontier.public_key_id,
-            ),
-        ])
-    {
-        let key = PqNativeVerifier::from_pinned_spki(spki, pin).map_err(invalid)?;
-        if !keys.insert(*key.public_spki()) {
-            return Err(invalid(
-                "PQ effect authority roles must have distinct public keys",
-            ));
-        }
-    }
-    let parent = owner
-        .parent()
-        .ok_or_else(|| invalid("authority parent missing"))?
-        .canonicalize()?;
-    if parent.join("final-use-authority").as_os_str() != owner.as_os_str() {
-        return Err(invalid("PQ effect authority directory contains an alias"));
-    }
-    match fs::symlink_metadata(owner) {
-        Ok(metadata)
-            if metadata.is_dir() && owner.canonicalize()?.as_os_str() == owner.as_os_str() => {}
-        Ok(_) => return Err(invalid("PQ effect authority directory contains an alias")),
-        Err(error) if error.kind() == std::io::ErrorKind::NotFound => {}
-        Err(error) => return Err(error.into()),
-    }
-    let clock = &config.final_use.external_clock.socket_path;
-    let frontier = &config.final_use.external_frontier.socket_path;
-    for path in [clock, frontier] {
-        if !path.is_absolute()
-            || path.canonicalize()?.as_os_str() != path.as_os_str()
-            || path.starts_with(owner)
-        {
-            return Err(invalid(
-                "PQ effect requires canonical external trust services",
-            ));
-        }
-    }
-    if clock == frontier {
-        return Err(invalid(
-            "PQ effect clock and frontier must be distinct services",
-        ));
-    }
-    if !config.final_use.signed_revocations_file.is_absolute() {
-        return Err(invalid("PQ signed revocation file must be absolute"));
-    }
-    Ok(())
 }
 
 fn prepare_provider(
