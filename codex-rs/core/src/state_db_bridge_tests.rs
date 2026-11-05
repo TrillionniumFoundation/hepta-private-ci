@@ -62,7 +62,7 @@ async fn initial_alias_binding_keeps_sqlite_listing_on_the_retained_owner() -> a
         .await
         .ok_or_else(|| anyhow::anyhow!("state runtime should initialize"))?;
     assert_eq!(&config.sqlite, runtime.sqlite());
-    assert_eq!(config.sqlite.home().as_path(), sqlite_home.as_path());
+    assert_eq!(config.sqlite.home(), sqlite_home.as_path());
     assert_eq!(config.codex_home.as_path(), home.as_path());
     assert_ne!(config.sqlite, original_alias);
 

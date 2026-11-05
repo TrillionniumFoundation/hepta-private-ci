@@ -201,9 +201,9 @@ async fn root_turn_suspension_preserves_unfinished_turn_history() {
     .await;
     // Retain the original executor owner and path convention when rebuilding
     // the thread manager for cold recovery.
-    let original_config = test.config.clone();
+    let mut original_config = test.config.clone();
     let auth_manager = test.thread_manager.auth_manager();
-    let state_db = codex_core::init_state_db(&original_config).await;
+    let state_db = codex_core::init_state_db(&mut original_config).await;
     let thread_store = codex_core::thread_store_from_config(&original_config, state_db.clone());
     let resumed_manager = codex_core::ThreadManager::new(
         &original_config,
