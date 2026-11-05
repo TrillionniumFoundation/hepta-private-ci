@@ -30,6 +30,131 @@ def simulate(config, drives, coupling_strength=0.0):
     return {k: np.array(v) for k, v in records.items()}
 
 
+def rate_pair_statistics(rates, dt, max_lag_steps, *, atol=1e-10, rtol=1e-6):
+    """Descriptive overlap-centered Pearson correlations, never significance tests.
+
+    Positive lag k correlates unit 0 at t with unit 1 at t+k: unit 0 leads.
+    Near-constant tails are unidentified, not reported as zero correlation.
+    """
+    rates = np.asarray(rates, dtype=np.float64)
+    if rates.ndim != 2 or rates.shape[1] != 2 or len(rates) < 3:
+        raise ValueError("rates must have shape (at least 3 time samples, 2)")
+    if not isinstance(max_lag_steps, int) or not 0 <= max_lag_steps <= len(rates)-3:
+        raise ValueError("lag range must retain at least three overlapping samples")
+    if not np.isfinite(dt) or dt <= 0:
+        raise ValueError("dt must be finite and positive")
+    finite = bool(np.isfinite(rates).all())
+    result = {"samples": len(rates), "all_finite": finite, "std_ddof": 0,
+              "mean_rate": None, "std_rate": None, "peak_rate": None,
+              "peak_to_peak_rate": None, "near_constant_std_threshold": None,
+              "zero_lag_correlation": None, "zero_lag_missing_reason": None,
+              "max_cross_correlation": None, "max_cross_correlation_lag_steps": None,
+              "max_cross_correlation_lag_time": None, "max_cross_correlation_overlap": None,
+              "max_absolute_cross_correlation": None, "max_absolute_cross_correlation_lag_steps": None,
+              "cross_correlation_missing_reason": None}
+    if not finite:
+        result.update(zero_lag_missing_reason="nonfinite_rate_series",
+                      cross_correlation_missing_reason="nonfinite_rate_series")
+        return result
+    mean, std = rates.mean(0), rates.std(0, ddof=0)
+    threshold = atol + rtol*np.maximum(1., np.max(np.abs(rates), axis=0))
+    result.update(mean_rate=mean.tolist(), std_rate=std.tolist(),
+                  peak_rate=rates.max(0).tolist(), peak_to_peak_rate=np.ptp(rates, axis=0).tolist(),
+                  near_constant_std_threshold=threshold.tolist())
+    if np.any(std <= threshold):
+        reason = "near_constant_series_" + "_".join(map(str, np.flatnonzero(std <= threshold)))
+        result.update(zero_lag_missing_reason=reason, cross_correlation_missing_reason=reason)
+        return result
+    candidates = []
+    for lag in range(-max_lag_steps, max_lag_steps+1):
+        if lag > 0:
+            pair = np.column_stack((rates[:-lag, 0], rates[lag:, 1]))
+        elif lag < 0:
+            pair = np.column_stack((rates[-lag:, 0], rates[:lag, 1]))
+        else:
+            pair = rates
+        centered = pair - pair.mean(0)
+        norms = np.linalg.norm(centered, axis=0)
+        if np.any(norms/np.sqrt(len(pair)) <= threshold):
+            continue
+        correlation = float(np.clip(np.dot(centered[:, 0]/norms[0],
+                                            centered[:, 1]/norms[1]), -1., 1.))
+        candidates.append((correlation, lag, len(pair)))
+        if lag == 0:
+            result["zero_lag_correlation"] = correlation
+    if result["zero_lag_correlation"] is None:
+        result["zero_lag_missing_reason"] = "near_constant_zero_lag_overlap"
+    if not candidates:
+        result["cross_correlation_missing_reason"] = "near_constant_all_lag_overlaps"
+        return result
+    best = max(candidates, key=lambda item: (item[0], -abs(item[1]), -item[1]))
+    absolute = max(candidates, key=lambda item: (abs(item[0]), -abs(item[1]), -item[1]))
+    result.update(max_cross_correlation=best[0], max_cross_correlation_lag_steps=best[1],
+                  max_cross_correlation_lag_time=best[1]*dt, max_cross_correlation_overlap=best[2],
+                  max_absolute_cross_correlation=absolute[0],
+                  max_absolute_cross_correlation_lag_steps=absolute[1])
+    return result
+
+
+def coupling_scan(config, *, strengths=(0., .08, .3, .8), seed=20261105,
+                  steps=800, tail_steps=400, max_lag_steps=50):
+    """Heterogeneous two-unit scan with shared draws across coupling strengths."""
+    if not (3 <= tail_steps <= steps and 0 <= max_lag_steps <= tail_steps-3):
+        raise ValueError("Invalid observation window or lag range")
+    if not strengths or not all(np.isfinite(s) and s >= 0 for s in strengths):
+        raise ValueError("Coupling strengths must be finite and nonnegative")
+    configs = (config, replace(config, sigma=1.15*config.sigma,
+                              rest_margin=1.1*config.rest_margin, reset_margin=1.1*config.reset_margin))
+    tonic, noise_std = np.array([3.8, 4.0]), .04
+    rng = np.random.default_rng(seed)
+    drives = tonic + rng.normal(0., noise_std, (steps, 2))
+    delayed_steps = min(round(.4/config.dt), steps)
+    drives[:delayed_steps, 1] = 0.
+    records = []
+    for strength in strengths:
+        models = [Population(c) for c in configs]
+        states = [model.initial_state() for model in models]
+        previous = np.zeros(2)
+        rates, masses, escaped = [], [], []
+        for drive in drives:
+            # Both outputs use the same previous-step rates, so the coupling
+            # update order does not give either unit a same-step advantage.
+            outputs = [models[i].step(states[i], drive[i], strength*previous[1-i]) for i in range(2)]
+            states = [output.state for output in outputs]
+            previous = np.array([float(output.rate) for output in outputs])
+            rates.append(previous)
+            masses.append([float(state.total_mass()-1) for state in states])
+            escaped.append([float(state.escaped) for state in states])
+        rates, masses, escaped = np.asarray(rates), np.asarray(masses), np.asarray(escaped)
+        finite = bool(all(np.isfinite(v).all() for v in (rates, masses, escaped)))
+        max_mass_error = float(np.abs(masses).max()) if finite else None
+        max_escape = float(escaped.max()) if finite else None
+        tail = rate_pair_statistics(rates[-tail_steps:], config.dt, max_lag_steps)
+        records.append({"strength": float(strength), "all_finite": finite,
+                        "numerically_valid": bool(finite and max_mass_error < 1e-10 and max_escape < 1e-6),
+                        "maximum_absolute_mass_error": max_mass_error,
+                        "maximum_escaped_mass": max_escape,
+                        "maximum_rate_entire_run": rates.max(0).tolist() if finite else None,
+                        "tail": tail,
+                        "rate_trace_sha256": hashlib.sha256(rates.tobytes()).hexdigest()})
+    return {"status": "observational", "seed": seed, "steps": steps, "dt": config.dt, "duration": steps*config.dt,
+            "tail_steps": tail_steps, "tail_time_interval": [(steps-tail_steps)*config.dt, steps*config.dt],
+            "tail_time_convention": "rates are interval averages; tail covers (start, end]",
+            "max_lag_steps": max_lag_steps, "max_lag_time": max_lag_steps*config.dt,
+            "lag_convention": "positive k compares rate_0[t] with rate_1[t+k]; unit 0 leads unit 1",
+            "initial_condition": {"active": "linear centre deposition at each unit's rest_margin",
+                                  "refractory_mass": [0., 0.], "recovery": [0., 0.], "escaped_mass": [0., 0.]},
+            "unit_configs": [asdict(c) for c in configs], "tonic_drives": tonic.tolist(),
+            "drive_perturbation": {"distribution": "independent Gaussian draws across units and steps",
+                                   "standard_deviation": noise_std, "same_draws_across_strengths": True,
+                                   "unit_1_zero_drive_initial_steps": delayed_steps,
+                                   "drive_sha256": hashlib.sha256(drives.tobytes()).hexdigest()},
+            "coupling_rule": "drive_i += strength * rate_other from the preceding step",
+            "finite_rate_cap_from_one_event_per_step": 1/config.dt,
+            "records": records,
+            "interpretation": "Descriptive finite-horizon correlations and amplitude observations, not a test of global stability or a phase transition. A finite rate is also constrained by the time grid and does not rule out harmful synchrony. Correlations describe population-rate cofluctuation, not paired microscopic spike coincidence. Maximum cross correlation selects over lags and can select periodic aliases; the maximizing lag is not a causal conduction delay. No significance claim is attached, and synchrony is not a pass/fail gate."}
+
+
 def run_mechanisms():
     started = time.perf_counter()
     cfg = PopulationConfig()
@@ -47,6 +172,7 @@ def run_mechanisms():
     coupled = simulate(cfg, pair_drive, coupling_strength=.08)
     uncoupled = simulate(cfg, pair_drive)
     pair_rate = coupled["rate"]
+    scan = coupling_scan(cfg)
 
     # Start entirely refractory to isolate exact queue timing from spread in
     # firing times. Release is after propagation, so no early event is possible.
@@ -80,6 +206,8 @@ def run_mechanisms():
                             "absolute_error":abs(empirical-exact)})
     mass_error = max(float(np.abs(t["mass_error"]).max()) for t in
                      (traces, sustained, no_recovery, no_refractory, coupled, uncoupled))
+    mass_error = max([mass_error] + [row["maximum_absolute_mass_error"] for row in scan["records"]
+                                   if row["maximum_absolute_mass_error"] is not None])
     checks = {
         "quiet_rate_below_1e-8": rest_max < 1e-8,
         "pulse_peak_above_1": min(peak_a,peak_b) > 1.,
@@ -89,6 +217,7 @@ def run_mechanisms():
         "sustained_finite_nonzero_rate": bool(np.all(np.isfinite(sustained["rate"])) and sustained["rate"][-100:].mean() > .01),
         "mass_error_below_1e-10": mass_error < 1e-10,
         "tested_coupling_finite_and_mass_conserving": bool(np.isfinite(pair_rate).all() and np.max(np.abs(coupled["mass_error"])) < 1e-10),
+        "coupling_scan_numerically_valid": all(row["numerically_valid"] for row in scan["records"]),
         "joint_refinement_error_decreases": refinements[2]["absolute_error"] < refinements[1]["absolute_error"] < refinements[0]["absolute_error"],
     }
     paths = [Path(__file__), Path(__file__).with_name("population.py")]
@@ -111,14 +240,18 @@ def run_mechanisms():
                     "tail_mean_rate":pair_rate[-100:].mean(0).tolist(),
                     "uncoupled_tail_mean_rate":uncoupled["rate"][-100:].mean(0).tolist(),
                     "transient_rate_correlation":float(np.corrcoef(pair_rate[:200].T)[0,1]),
-                    "interpretation":"bounded tested response; synchrony and bifurcation require parameter sweeps"},
+                    "interpretation":"legacy single-strength homogeneous probe; heterogeneous lagged correlations are reported in coupling_scan"},
+        "coupling_scan":scan,
         "mass":{"maximum_absolute_conservation_error":mass_error,
-                "maximum_escaped_mass":max(float(t["escaped"].max()) for t in (traces,sustained,coupled))},
+                "maximum_escaped_mass":max([float(t["escaped"].max()) for t in (traces,sustained,coupled)] +
+                                           [row["maximum_escaped_mass"] for row in scan["records"]
+                                            if row["maximum_escaped_mass"] is not None])},
         "joint_grid_time_refinement":refinements,
         "refinement_scope":"constant Brownian drift, refractory longer than observation; independent first-event CDF target",
         "limits":["Fixed boundary only; time-varying drift is frozen during each step.",
                   "Refractory length is rounded up to a multiple of dt; reset occurs at step end.",
                   "Escaped upper-grid mass stays in a cemetery account; excessive escape invalidates a run.",
+                  "Coupling correlations are descriptive finite-window statistics, not a no-synchrony guarantee or bifurcation test.",
                   "A finite-horizon pass is not proof of global stability, phase transition, bifurcation or task superiority."],
         "checks":checks,"elapsed_seconds":time.perf_counter()-started,
     }
