@@ -1,0 +1,48 @@
+{
+  "patch": "de9a9e3362b77967a9016941b4c8c015dae20c2a",
+  "review": "f4d68bc04ffe1715c9d74a3f1cbb1de7b6105125",
+  "commands": [
+    {
+      "argv": [
+        "git",
+        "apply",
+        "--check",
+        "/workspace/scratch/07dd58cc9630/research-audit/fourth-report-post-three-repairs-review-20261105/report-corrections.patch"
+      ],
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "git",
+        "apply",
+        "/workspace/scratch/07dd58cc9630/research-audit/fourth-report-post-three-repairs-review-20261105/report-corrections.patch"
+      ],
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": ""
+    }
+  ],
+  "postimages": [
+    {
+      "path": "CURRENT_AUDIT_PROGRESS.zh-CN.md",
+      "blob": "1488270363927d3be44035f9f752a8af205adfac",
+      "bytes": 34587,
+      "sha256": "48727f7e0aab9d7d2e62b38212623694f9b88d7468350f60174f1a80c5e3a855"
+    },
+    {
+      "path": "FOURTH_BATCH_QUALIFICATION.md",
+      "blob": "97495e8393e7eed1eaf8573aec6554a0ab95a490",
+      "bytes": 18179,
+      "sha256": "c76a8bd89805b0fa492f606104e3e8cd9b7fa8382c31185e5bde5fca798e86a5"
+    },
+    {
+      "path": "PROJECT_DIRECTION_AND_PLAN.zh-CN.md",
+      "blob": "0e41fff54230c35772b1bc65750e2472503bfb71",
+      "bytes": 17410,
+      "sha256": "6c50ba95f528d205fe7884259d8337743788ef5ab042574c378a72356f5c563f"
+    }
+  ],
+  "original_blocker_statuses_modified": false
+}

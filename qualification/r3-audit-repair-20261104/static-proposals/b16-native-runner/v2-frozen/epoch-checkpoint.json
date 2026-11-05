@@ -1,0 +1,96 @@
+{
+  "epoch": "checkpoint",
+  "operations": [
+    {
+      "kind": "apply",
+      "delta": "checkpoint-production_cohort"
+    },
+    {
+      "kind": "apply",
+      "delta": "checkpoint-physical_control_cohort"
+    },
+    {
+      "kind": "locks",
+      "id": "B17_checkpoint_source_and_second_locks",
+      "change": "checkpoint"
+    },
+    {
+      "kind": "negative",
+      "id": "B18_checkpoint_negative",
+      "before": [
+        "checkpoint-negative"
+      ],
+      "restore": "checkpoint-restore",
+      "scopes": [
+        {
+          "label": "B18_checkpoint_negative",
+          "package": "codex-hepta-memory",
+          "exact_names": [
+            "cognitive_store::recovery::tests::checkpoint_custody::cancelled_private_checkpoint_keeps_actual_recovery_fence_until_native_close"
+          ],
+          "authored_argv": [
+            "just",
+            "test",
+            "-p",
+            "codex-hepta-memory",
+            "--lib",
+            "--locked",
+            "--retries",
+            "0",
+            "-E",
+            "test(=cognitive_store::recovery::tests::checkpoint_custody::cancelled_private_checkpoint_keeps_actual_recovery_fence_until_native_close)"
+          ],
+          "oracle": "checkpoint",
+          "supports": [
+            "cognitive_store::recovery::tests::checkpoint_custody::owned_checkpoint_scenario"
+          ]
+        }
+      ]
+    },
+    {
+      "kind": "scopes",
+      "id": "B19_checkpoint_and_original_recovery",
+      "before": [],
+      "restore": null,
+      "scopes": [
+        {
+          "label": "B19_checkpoint_and_original_recovery",
+          "package": "codex-hepta-memory",
+          "exact_names": [
+            "cognitive_store::recovery::tests::exact_current_cut_recovers_writable_generation_and_persists_activation",
+            "cognitive_store::recovery::tests::graceful_close_retains_store_fence_until_sqlite_connections_finish",
+            "cognitive_store::recovery::tests::post_rename_publication_failure_is_indeterminate_and_retains_candidate",
+            "cognitive_store::recovery::tests::writable_recovery_requires_exclusive_store_fence",
+            "cognitive_store::recovery::tests::predecessor_witness_is_rejected_and_current_witness_recovers",
+            "cognitive_store::recovery::tests::revoked_owner_profile_and_witness_checks_precede_recovery_admission",
+            "cognitive_store::recovery::tests::hostile_file_identities_fail_closed_without_additional_mutation",
+            "cognitive_store::recovery::tests::byte_identical_rename_replacement_can_recover_only_with_current_witness",
+            "cognitive_store::recovery::tests::recovery_bounds_large_rows_before_loading_payloads_and_rejects_unknown_tables",
+            "cognitive_store::recovery::tests::corrupt_physical_fts_cannot_obtain_a_witness_or_trigger_recovery_io",
+            "cognitive_store::recovery::tests::cold_read_only::cold_reopen_reads_canonical_snapshot_without_mutating_source",
+            "cognitive_store::recovery::tests::cold_read_only::cold_recovery_rejects_revision_change_and_forgetting_rollback",
+            "cognitive_store::recovery::tests::cold_read_only::stable_inspection_metadata_cannot_authenticate_changed_content",
+            "cognitive_store::recovery::tests::cold_read_only::crash_reopen_refuses_pending_wal",
+            "cognitive_store::recovery::tests::checkpoint_custody::cancelled_private_checkpoint_keeps_actual_recovery_fence_until_native_close"
+          ],
+          "authored_argv": [
+            "just",
+            "test",
+            "-p",
+            "codex-hepta-memory",
+            "--lib",
+            "--locked",
+            "--retries",
+            "0",
+            "-E",
+            "test(cognitive_store::recovery::tests::)"
+          ],
+          "oracle": null,
+          "supports": [
+            "cognitive_store::recovery::tests::checkpoint_custody::owned_checkpoint_scenario"
+          ]
+        }
+      ]
+    }
+  ]
+}

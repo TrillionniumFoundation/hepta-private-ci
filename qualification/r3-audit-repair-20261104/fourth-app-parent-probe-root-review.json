@@ -1,0 +1,330 @@
+{
+  "schema": "hepta.root.app-parent-lifecycle-observation-review.v1",
+  "observed_at_utc": "2026-11-05T02:43:58.303714+00:00",
+  "status": "ORIGINAL_CASE_FAILED_PARENT_DEATH_SIGNAL_ABSENT_ORIGINAL_GROUP_KILL_SUCCEEDED_SOURCE_RESTORED",
+  "native_job": "1a1a98a00bb-fc05-35d8",
+  "native_status": {
+    "at_unix_ms": 1793846337652,
+    "audit_recorded": true,
+    "automatic_retry": false,
+    "cancelled": false,
+    "exit_code": 1,
+    "job_id": "1a1a98a00bb-fc05-35d8",
+    "launch_nonce": "f58915d60e6f058c8940eb00d38cd6a6",
+    "log_bytes": {
+      "stderr": {
+        "seen": 0,
+        "stored": 0
+      },
+      "stdout": {
+        "seen": 3035,
+        "stored": 3035
+      }
+    },
+    "log_errors": {
+      "stderr": null,
+      "stdout": null
+    },
+    "log_synced": {
+      "stderr": true,
+      "stdout": true
+    },
+    "log_truncated": {
+      "stderr": false,
+      "stdout": false
+    },
+    "output_complete": true,
+    "output_durable": true,
+    "state": "failed",
+    "terminal_publication_confirmed": true,
+    "terminal_publication_protocol": 1,
+    "timed_out": false
+  },
+  "bundle": {
+    "bytes": 73150,
+    "sha256": "5878075282ea7a4ad53327fa62606fe4c530c3d6ab14e16ec1979a1681e33e87",
+    "blob": "2f8ffc305f0e1d5814b9f838f8a3b4ad57bc21ab"
+  },
+  "complete_six_files_reopened": [
+    {
+      "name": "parent-lifecycle-probe-observations.json",
+      "bytes": 2554,
+      "sha256": "c8e544947d1488c8b14b02819b9187d0398a9d73e3494338a36c260794bc7b87",
+      "blob": "cd36dc75154c33c5f741a4fd756b53059b270a17"
+    },
+    {
+      "name": "temporary-source-restoration.json",
+      "bytes": 1022,
+      "sha256": "875ecd72ed82161b4f0f335ab1023f5bfa4d3cdece3f67bb3589aa79da73a2fb",
+      "blob": "abe8c0f723090a169a63832d7f83d58dfd407534"
+    },
+    {
+      "name": "app-disconnect-original-diagnostic.log",
+      "bytes": 10868,
+      "sha256": "b5d871bf80db9b9c8407f66b1197ab1854b9434109b7f6c9a1b896f03eaa3fea",
+      "blob": "efb11da42736b9ff6cdbffa97f97d33a99f43471"
+    },
+    {
+      "name": "app-disconnect-original-diagnostic.junit.xml",
+      "bytes": 2919,
+      "sha256": "fd185d7966d707c3cc5bc62bb40fc8e918f78369c91b53f4c927f4af44a56acd",
+      "blob": "cd778408b59aa263d85feee67bf5a9dbe238b5d7"
+    },
+    {
+      "name": "owned-process-observation-summary.json",
+      "bytes": 3285,
+      "sha256": "6841121a531cd7cc3d9d68baa52a300a588e9f3f315e670484bc9f078261cfab",
+      "blob": "c9c17719db2513813d25c68af71cbd0a382b19f7"
+    },
+    {
+      "name": "terminal.json",
+      "bytes": 44166,
+      "sha256": "6faa44df7a0e67f562ef52b94d1bf1cca3e345673d8fda630546e8759b18f38b",
+      "blob": "55b5f9cdd2ad94a85a60e44026bf27b1733b9afb"
+    }
+  ],
+  "complete_owned_trace": {
+    "bytes": 74782,
+    "sha256": "1fa33b7c25d28646507e3c47961f50e08b7bef74df42830ac9c39e4a63d34a3f",
+    "blob": "6f7132c44c5f83ffa1dd57c75721f0f2a01915a1"
+  },
+  "trace_events": 185,
+  "trace_samples": 155,
+  "event_counts": {
+    "observer-start": 1,
+    "owned-process-state": 106,
+    "owned-identity-no-longer-observed": 77,
+    "observer-terminal": 1
+  },
+  "selected_case": {
+    "classname": "codex-app-server::all",
+    "name": "suite::v2::command_exec::command_exec_process_ids_are_connection_scoped_and_disconnect_terminates_process",
+    "seconds": "5.575",
+    "result": "FAIL",
+    "failure": "Error: process marker \"codex-command-exec-marker-1793846326945313585\" did not exit before timeout"
+  },
+  "original_just_exit": 100,
+  "retries": 0,
+  "source_during_execution": "1e936b1ca6df807d8928a4cc6c527f40f92808aa",
+  "required_and_actual_restored_tree": "f8251e1d14fa8524ab469281296cd4cf708f173c",
+  "one_app_program_and_33_helpers_before_after_exact": true,
+  "source_index_and_locks_stable_during_diagnostic": true,
+  "all_three_raw_probe_lines_and_byte_offsets_verified": [
+    {
+      "raw_line_number": 185,
+      "raw_byte_offset": 9844,
+      "raw_line": "    [websocket app-server stderr] hepta_owned_lifecycle_probe phase=inner_entry pid=1 ppid=0 pgid=1 sid=1 pdeath_rc=0 pdeath_signal=0 error=None\n",
+      "probe": "hepta_owned_lifecycle_probe phase=inner_entry pid=1 ppid=0 pgid=1 sid=1 pdeath_rc=0 pdeath_signal=0 error=None",
+      "parsed": true,
+      "phase": "inner_entry",
+      "pid": 1,
+      "ppid": 0,
+      "pgid": 1,
+      "sid": 1,
+      "pdeath_rc": 0,
+      "observed_parent_death_signal": 0,
+      "raw_signal_output": 0,
+      "error": "None"
+    },
+    {
+      "raw_line_number": 186,
+      "raw_byte_offset": 9989,
+      "raw_line": "    [websocket app-server stderr] hepta_owned_lifecycle_probe phase=inner_after_restrictions pid=1 ppid=0 pgid=1 sid=1 pdeath_rc=0 pdeath_signal=0 error=None\n",
+      "probe": "hepta_owned_lifecycle_probe phase=inner_after_restrictions pid=1 ppid=0 pgid=1 sid=1 pdeath_rc=0 pdeath_signal=0 error=None",
+      "parsed": true,
+      "phase": "inner_after_restrictions",
+      "pid": 1,
+      "ppid": 0,
+      "pgid": 1,
+      "sid": 1,
+      "pdeath_rc": 0,
+      "observed_parent_death_signal": 0,
+      "raw_signal_output": 0,
+      "error": "None"
+    },
+    {
+      "raw_line_number": 187,
+      "raw_byte_offset": 10147,
+      "raw_line": "    [websocket app-server stderr] hepta_owned_lifecycle_probe phase=original_killpg_return pgid=780599 result=Ok(())\n",
+      "probe": "hepta_owned_lifecycle_probe phase=original_killpg_return pgid=780599 result=Ok(())",
+      "parsed": true,
+      "phase": "original_killpg_return",
+      "pgid": 780599,
+      "result": "Ok(())"
+    }
+  ],
+  "same_host_outer_group_correlated_with_process_trace": [
+    {
+      "observed_at": "2026-11-05T02:38:47.146530+00:00",
+      "elapsed_seconds": 4.652817820984637,
+      "event": "owned-process-state",
+      "process": {
+        "pid": 780599,
+        "comm": "codex-linux-san",
+        "state": "S",
+        "ppid": 780485,
+        "pgid": 780599,
+        "sid": 780599,
+        "starttime_ticks": 17653636,
+        "scope": "current-descendant",
+        "cmdline_truncated": false,
+        "cmdline_bytes_observed": 0,
+        "cmdline_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "cmdline": [],
+        "exact_fixture_markers": [],
+        "exe": "/usr/bin/bwrap"
+      }
+    },
+    {
+      "observed_at": "2026-11-05T02:38:47.215687+00:00",
+      "elapsed_seconds": 4.721990684978664,
+      "event": "owned-process-state",
+      "process": {
+        "pid": 780599,
+        "comm": "bwrap",
+        "state": "S",
+        "ppid": 780485,
+        "pgid": 780599,
+        "sid": 780599,
+        "starttime_ticks": 17653636,
+        "scope": "current-descendant",
+        "cmdline_truncated": false,
+        "cmdline_bytes_observed": 810,
+        "cmdline_sha256": "ffc8f6e1d78a9e7b27c8cf7586e5674a643d1052bb0459a2e04b189e1958a188",
+        "cmdline": [
+          "bwrap",
+          "--as-pid-1",
+          "--new-session",
+          "--die-with-parent",
+          "--ro-bind",
+          "/",
+          "/",
+          "--dev",
+          "/dev",
+          "--unshare-user",
+          "--unshare-pid",
+          "--unshare-ipc",
+          "--unshare-net",
+          "--proc",
+          "/proc",
+          "--cap-drop",
+          "ALL",
+          "--argv0",
+          "codex-linux-sandbox",
+          "--",
+          "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/target-app-epoch2-20261105/dev-small/codex-app-server",
+          "--sandbox-policy-cwd",
+          "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/source/codex-rs/app-server",
+          "--command-cwd",
+          "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/source/codex-rs/app-server",
+          "--permission-profile",
+          "{\"type\":\"managed\",\"file_system\":{\"type\":\"restricted\",\"entries\":[{\"path\":{\"type\":\"special\",\"value\":{\"kind\":\"root\"}},\"access\":\"read\"}]},\"network\":\"restricted\"}",
+          "--apply-seccomp-then-exec",
+          "--",
+          "python3",
+          "-c",
+          "import time; print('ready', flush=True); time.sleep(30)",
+          "codex-command-exec-marker-1793846326945313585"
+        ],
+        "exact_fixture_markers": [
+          "codex-command-exec-marker-1793846326945313585"
+        ],
+        "exe": "/usr/bin/bwrap"
+      }
+    },
+    {
+      "observed_at": "2026-11-05T02:38:47.537486+00:00",
+      "elapsed_seconds": 5.0437587759806775,
+      "event": "owned-identity-no-longer-observed",
+      "pid": 780599,
+      "starttime_ticks": 17653636
+    }
+  ],
+  "final_trace_reconstructed_live_identities": [
+    {
+      "pid": 780604,
+      "comm": "codex-app-serve",
+      "state": "S",
+      "ppid": 2217,
+      "pgid": 780604,
+      "sid": 780604,
+      "starttime_ticks": 17653638,
+      "scope": "previously-observed-owned-identity",
+      "cmdline_truncated": false,
+      "cmdline_bytes_observed": 534,
+      "cmdline_sha256": "76c14da5d3f21edd787c8e27de8e562bf49ca4461409a44f17446b1a97cc12de",
+      "cmdline": [
+        "codex-linux-sandbox",
+        "--sandbox-policy-cwd",
+        "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/source/codex-rs/app-server",
+        "--command-cwd",
+        "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/source/codex-rs/app-server",
+        "--permission-profile",
+        "{\"type\":\"managed\",\"file_system\":{\"type\":\"restricted\",\"entries\":[{\"path\":{\"type\":\"special\",\"value\":{\"kind\":\"root\"}},\"access\":\"read\"}]},\"network\":\"restricted\"}",
+        "--apply-seccomp-then-exec",
+        "--",
+        "python3",
+        "-c",
+        "import time; print('ready', flush=True); time.sleep(30)",
+        "codex-command-exec-marker-1793846326945313585"
+      ],
+      "exact_fixture_markers": [
+        "codex-command-exec-marker-1793846326945313585"
+      ],
+      "exe": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/target-app-epoch2-20261105/dev-small/codex-app-server"
+    },
+    {
+      "pid": 780606,
+      "comm": "python3",
+      "state": "S",
+      "ppid": 780604,
+      "pgid": 780604,
+      "sid": 780604,
+      "starttime_ticks": 17653639,
+      "scope": "previously-observed-owned-identity",
+      "cmdline_truncated": false,
+      "cmdline_bytes_observed": 113,
+      "cmdline_sha256": "c60ab8643fd0b507594a0ae7148d39462ebf23b05f3d3f3cf7ed138e0a9d694e",
+      "cmdline": [
+        "python3",
+        "-c",
+        "import time; print('ready', flush=True); time.sleep(30)",
+        "codex-command-exec-marker-1793846326945313585"
+      ],
+      "exact_fixture_markers": [
+        "codex-command-exec-marker-1793846326945313585"
+      ],
+      "exe": "/usr/bin/python3.14"
+    }
+  ],
+  "exact_source_restoration_receipt": {
+    "temporary_applied": true,
+    "diagnostic_tree": "1e936b1ca6df807d8928a4cc6c527f40f92808aa",
+    "expected_restored_tree": "f8251e1d14fa8524ab469281296cd4cf708f173c",
+    "source_variable_at_terminal": "f8251e1d14fa8524ab469281296cd4cf708f173c",
+    "restored_exact_original": true,
+    "original_source_already_exact": false,
+    "diagnostic_eligibility_error": null,
+    "restoration_error": null,
+    "original_exception": {
+      "type": "SystemExit",
+      "message": "1",
+      "traceback": "Traceback (most recent call last):\n  File \"<string>\", line 291, in <module>\n    if not result[\"test_passed\"] or not complete:raise SystemExit(1)\n                                                 ^^^^^^^^^^^^^^^^^^^\nSystemExit: 1\n"
+    },
+    "limit": "Only the exact owned temporary tree with unchanged ordinary index, locks and reviewed untracked inputs may be restored. Existing target executables remain bound to the diagnostic build until a later source-bound rebuild; restoration is not a production fix or binary qualification."
+  },
+  "findings_zh": [
+    "内层namespace PID1在进入时及应用限制后，PR_GET_PDEATHSIG实际均成功返回0；缺失行或读取失败均未被替代为0。",
+    "原killpg操作对host PGID780599实际返回Ok，且同身份外bwrap从trace消失；不是原group-kill API失败导致的结论。",
+    "内层helper780604和Python780606仍保持同PID/starttime/marker、stateS直到终态，原5秒marker退出合同仍FAIL。",
+    "结果证明所观察边界缺少parent-death signal，未证明具体LSM/exec/credential步骤何时、为何改变它。",
+    "三份临时观测源码已在完整owned tree/index/locks/untracked guard下恢复f825；目标目录中旧诊断二进制不因此获得恢复后源码资格。"
+  ],
+  "pending_provenance": "The complete helper compiler/catalog/source-map export is separate and is not yet independently reviewed in this receipt. The six-file bundle and all185 trace events were fully verified here.",
+  "next_execution": {
+    "approved_runner": "6a88d730302334977a3275218443f766cd07fd55",
+    "approved_manifest": "7dbc3adb768e10592beba53ef7511f68dd17cf11",
+    "condition": "Start with fresh exact f825/index/locks/untracked guard; no existing diagnostic binary hash is inherited as a new product PASS."
+  },
+  "all_original_blockers_closed": false
+}

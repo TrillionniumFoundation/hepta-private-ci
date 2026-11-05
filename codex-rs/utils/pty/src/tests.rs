@@ -105,18 +105,29 @@ async fn collect_output_until_exit(
     timeout_ms: u64,
 ) -> (Vec<u8>, i32) {
     let mut collected = Vec::new();
-    let deadline = tokio::time::Instant::now() + tokio::time::Duration::from_millis(timeout_ms);
+    let started = tokio::time::Instant::now();
+    let deadline = started + tokio::time::Duration::from_millis(timeout_ms);
+    let mut output_open = true;
     tokio::pin!(exit_rx);
 
     loop {
         tokio::select! {
-            res = output_rx.recv() => {
-                if let Ok(chunk) = res {
-                    collected.extend_from_slice(&chunk);
+            res = output_rx.recv(), if output_open => {
+                match res {
+                    Ok(chunk) => collected.extend_from_slice(&chunk),
+                    Err(tokio::sync::broadcast::error::RecvError::Lagged(_)) => {}
+                    Err(tokio::sync::broadcast::error::RecvError::Closed) => {
+                        // Output EOF does not acknowledge process exit. Disable
+                        // this ready branch while retaining the original deadline.
+                        output_open = false;
+                    }
                 }
             }
             res = &mut exit_rx => {
-                let code = res.unwrap_or(-1);
+                let (code, outcome) = match res {
+                    Ok(code) => (code, "exit_code_received"),
+                    Err(_) => (-1, "exit_channel_closed"),
+                };
                 // On Windows (ConPTY in particular), it's possible to observe the exit notification
                 // before the final bytes are drained from the PTY reader thread. Drain for a brief
                 // "quiet" window to make output assertions deterministic.
@@ -132,13 +143,53 @@ async fn collect_output_until_exit(
                         Err(_) => break,
                     }
                 }
+                eprintln!(
+                    "PTY output collector: outcome={outcome} code={code} elapsed={:?} output_branch_disabled={} output_bytes={}",
+                    started.elapsed(),
+                    !output_open,
+                    collected.len(),
+                );
                 return (collected, code);
             }
             _ = tokio::time::sleep_until(deadline) => {
+                eprintln!(
+                    "PTY output collector: outcome=deadline_elapsed elapsed={:?} output_branch_disabled={} output_bytes={}",
+                    started.elapsed(),
+                    !output_open,
+                    collected.len(),
+                );
                 return (collected, -1);
             }
         }
     }
+}
+
+#[tokio::test]
+async fn output_collector_waits_for_exit_after_output_closes() -> anyhow::Result<()> {
+    let expected_output = b"__collector_output__".to_vec();
+    let (output_tx, output_rx) = tokio::sync::broadcast::channel(2);
+    output_tx.send(expected_output.clone())?;
+    drop(output_tx);
+    let (exit_tx, exit_rx) = tokio::sync::oneshot::channel();
+    let collected = collect_output_until_exit(output_rx, exit_rx, /*timeout_ms*/ 5_000);
+    tokio::pin!(collected);
+
+    // Actually poll the collector after the output sender has closed, while
+    // the exit sender remains live. EOF must not become a fabricated exit.
+    let pending = std::future::poll_fn(|cx| {
+        std::task::Poll::Ready(std::future::Future::poll(collected.as_mut(), cx).is_pending())
+    })
+    .await;
+    assert!(
+        pending,
+        "closed output must still wait for the real exit signal"
+    );
+    exit_tx
+        .send(37)
+        .expect("collector must retain the exit receiver");
+    let observed = tokio::time::timeout(std::time::Duration::from_secs(2), collected).await?;
+    assert_eq!(observed, (expected_output, 37));
+    Ok(())
 }
 
 async fn wait_for_output_contains(
@@ -221,39 +272,37 @@ async fn wait_for_python_repl_ready_via_probe(
     let mut collected = Vec::new();
     let marker = "__codex_pty_ready__";
     let deadline = tokio::time::Instant::now() + tokio::time::Duration::from_millis(timeout_ms);
-    let probe_window = tokio::time::Duration::from_millis(if cfg!(windows) { 750 } else { 250 });
+    let probe = format!("print('__codex_' + 'pty_ready__'){newline}");
+    // Input echo cannot contain the complete marker. Send one probe initially;
+    // repeated timed probes can queue behind a slow-starting interactive editor.
+    writer.send(probe.as_bytes().to_vec()).await?;
+    let mut probed_after_prompt = false;
 
     while tokio::time::Instant::now() < deadline {
-        writer
-            .send(format!("print('{marker}'){newline}").into_bytes())
-            .await?;
-
-        let probe_deadline = tokio::time::Instant::now() + probe_window;
-        loop {
-            let now = tokio::time::Instant::now();
-            if now >= deadline || now >= probe_deadline {
-                break;
-            }
-            let remaining = std::cmp::min(
-                deadline.saturating_duration_since(now),
-                probe_deadline.saturating_duration_since(now),
-            );
-            match tokio::time::timeout(remaining, output_rx.recv()).await {
-                Ok(Ok(chunk)) => {
-                    collected.extend_from_slice(&chunk);
-                    if String::from_utf8_lossy(&collected).contains(marker) {
-                        return Ok(collected);
-                    }
+        let remaining = deadline.saturating_duration_since(tokio::time::Instant::now());
+        match tokio::time::timeout(remaining, output_rx.recv()).await {
+            Ok(Ok(chunk)) => {
+                collected.extend_from_slice(&chunk);
+                let text = String::from_utf8_lossy(&collected);
+                if text.contains(marker) {
+                    return Ok(collected);
                 }
-                Ok(Err(tokio::sync::broadcast::error::RecvError::Lagged(_))) => continue,
-                Ok(Err(tokio::sync::broadcast::error::RecvError::Closed)) => {
-                    anyhow::bail!(
-                        "PTY output closed while waiting for Python REPL readiness: {:?}",
-                        String::from_utf8_lossy(&collected)
-                    );
+                if !probed_after_prompt && text.contains(">>> ") {
+                    // Python may flush input while configuring its terminal.
+                    // A prompt permits one replacement probe; only its executed
+                    // marker establishes readiness, even if the prompt redraws.
+                    probed_after_prompt = true;
+                    writer.send(probe.as_bytes().to_vec()).await?;
                 }
-                Err(_) => break,
             }
+            Ok(Err(tokio::sync::broadcast::error::RecvError::Lagged(_))) => continue,
+            Ok(Err(tokio::sync::broadcast::error::RecvError::Closed)) => {
+                anyhow::bail!(
+                    "PTY output closed while waiting for Python REPL readiness: {:?}",
+                    String::from_utf8_lossy(&collected)
+                );
+            }
+            Err(_) => break,
         }
     }
 
@@ -1109,26 +1158,81 @@ async fn pty_dropped_output_receiver_keeps_draining_child() -> anyhow::Result<()
     };
     let preserved_fd = std::fs::File::open("/dev/null")?;
     let env_map: HashMap<String, String> = std::env::vars().collect();
-    let script =
-        "import signal, sys\nsignal.alarm(10)\nsys.stdout.buffer.write(b'x' * (4 * 1024 * 1024))";
+    let script = r"import signal, sys
+signal.alarm(10)
+with open(sys.argv[1], 'w') as progress:
+    progress.write('python_started')
+sys.stdout.buffer.write(b'x' * (4 * 1024 * 1024))
+with open(sys.argv[1], 'w') as progress:
+    progress.write('output_write_returned')
+";
     for inherited_fds in [&[][..], &[preserved_fd.as_raw_fd()][..]] {
+        let backend = if inherited_fds.is_empty() {
+            "portable"
+        } else {
+            "preserved_fds"
+        };
+        let progress_path = std::env::temp_dir().join(format!(
+            "codex-pty-drain-{}-{backend}-{}",
+            std::process::id(),
+            std::time::SystemTime::now()
+                .duration_since(std::time::UNIX_EPOCH)?
+                .as_nanos(),
+        ));
+        // The side channel distinguishes interpreter startup from output drain
+        // without retaining the output receiver or changing its two-second budget.
+        let progress_arg = progress_path
+            .to_str()
+            .ok_or_else(|| anyhow::anyhow!("PTY progress path is not UTF-8"))?
+            .to_string();
+        let progress_file = std::fs::File::create_new(&progress_path)?;
+        drop(progress_file);
+        let spawn_started = std::time::Instant::now();
+        eprintln!("PTY dropped receiver: starting backend={backend}");
         let SpawnedProcess {
-            session: _session,
+            session,
             stdout_rx,
             exit_rx,
             ..
         } = spawn_pty_process(
             &python,
-            &["-c".to_string(), script.to_string()],
+            &["-c".to_string(), script.to_string(), progress_arg],
             Path::new("."),
             &env_map,
             &None,
             TerminalSize::default(),
             inherited_fds,
         )
-        .await?;
+        .await
+        .inspect_err(|_| {
+            let _ = std::fs::remove_file(&progress_path);
+        })?;
+        let spawn_elapsed = spawn_started.elapsed();
         drop(stdout_rx);
-        let code = tokio::time::timeout(std::time::Duration::from_secs(2), exit_rx).await??;
+        let wait_started = std::time::Instant::now();
+        let result = tokio::time::timeout(std::time::Duration::from_secs(2), exit_rx).await;
+        let outcome = match &result {
+            Ok(Ok(_)) => "exit_observed",
+            Ok(Err(_)) => "exit_channel_closed",
+            Err(_) => "deadline_elapsed",
+        };
+        eprintln!(
+            "PTY dropped receiver: backend={backend} spawn_elapsed={spawn_elapsed:?} wait_elapsed={:?} outcome={outcome} has_exited={} exit_code={:?}",
+            wait_started.elapsed(),
+            session.has_exited(),
+            session.exit_code(),
+        );
+        eprintln!(
+            "PTY dropped receiver: backend={backend} io_snapshot={}",
+            session.pty_io_diagnostic_snapshot(),
+        );
+        let progress = std::fs::read_to_string(&progress_path);
+        eprintln!("PTY dropped receiver: backend={backend} child_phase={progress:?}");
+        if result.is_err() {
+            session.terminate();
+        }
+        let _ = std::fs::remove_file(&progress_path);
+        let code = result??;
         assert_eq!(code, 0, "child should finish even when output is discarded");
     }
     Ok(())
@@ -1174,6 +1278,12 @@ print('__complete__', flush=True)
     session.close_stdin();
 
     let (output, code) = collect_output_until_exit(output_rx, exit_rx, /*timeout_ms*/ 5_000).await;
+    eprintln!(
+        "PTY close stdin: collected_code={code} has_exited={} session_exit_code={:?} output_bytes={}",
+        session.has_exited(),
+        session.exit_code(),
+        output.len(),
+    );
     assert_eq!(
         (code, String::from_utf8_lossy(&output).trim()),
         (0, "__complete__")
@@ -1412,21 +1522,38 @@ async fn pty_preserving_inherited_fds_keeps_python_repl_running() -> anyhow::Res
     let (session, mut output_rx, exit_rx) = combine_spawned_output(spawned);
     let writer = session.writer_sender();
     let newline = "\n";
-    let mut output = wait_for_python_repl_ready_via_probe(
+    let readiness_started = std::time::Instant::now();
+    let readiness = wait_for_python_repl_ready_via_probe(
         &writer,
         &mut output_rx,
         /*timeout_ms*/ 5_000,
         newline,
     )
-    .await?;
+    .await;
+    eprintln!(
+        "PTY preserved-fd REPL: phase=readiness elapsed={:?} succeeded={} has_exited={} exit_code={:?}",
+        readiness_started.elapsed(),
+        readiness.is_ok(),
+        session.has_exited(),
+        session.exit_code(),
+    );
+    let mut output = readiness?;
     let marker = "__codex_preserved_py_pid:";
     writer
         .send(format!("import os; print('{marker}' + str(os.getpid())){newline}").into_bytes())
         .await?;
 
+    let pid_marker_started = std::time::Instant::now();
     let python_pid = match wait_for_marker_pid(&mut output_rx, marker, /*timeout_ms*/ 2_000).await {
         Ok(pid) => pid,
         Err(err) => {
+            eprintln!(
+                "PTY preserved-fd REPL: phase=pid_marker elapsed={:?} ready_output_bytes={} has_exited={} exit_code={:?}",
+                pid_marker_started.elapsed(),
+                output.len(),
+                session.has_exited(),
+                session.exit_code(),
+            );
             session.terminate();
             return Err(err);
         }
@@ -1443,6 +1570,91 @@ async fn pty_preserving_inherited_fds_keeps_python_repl_running() -> anyhow::Res
 
     assert_eq!(code, 0, "expected python to exit cleanly");
 
+    Ok(())
+}
+
+#[cfg(unix)]
+#[tokio::test(flavor = "multi_thread", worker_threads = 2)]
+async fn pty_python_repl_readiness_waits_for_execution_after_input_echo() -> anyhow::Result<()> {
+    use std::io::Write;
+    use std::os::fd::AsRawFd;
+    use std::os::fd::FromRawFd;
+
+    let python = find_python()
+        .ok_or_else(|| anyhow::anyhow!("Python is required for the PTY readiness regression"))?;
+    let mut fds = [0; 2];
+    if unsafe { libc::pipe(fds.as_mut_ptr()) } != 0 {
+        return Err(std::io::Error::last_os_error().into());
+    }
+    let gate_read = unsafe { std::fs::File::from_raw_fd(fds[0]) };
+    let mut gate_write = unsafe { std::fs::File::from_raw_fd(fds[1]) };
+    let mut env_map: HashMap<String, String> = std::env::vars().collect();
+    env_map.insert(
+        "CODEX_PTY_REPL_GATE_FD".to_string(),
+        gate_read.as_raw_fd().to_string(),
+    );
+    let script = r"import os, sys, termios
+fd = int(os.environ['CODEX_PTY_REPL_GATE_FD'])
+attrs = termios.tcgetattr(0)
+attrs[3] |= termios.ECHO
+termios.tcsetattr(0, termios.TCSANOW, attrs)
+print('__pty_repl_gate_waiting__', flush=True)
+assert os.read(fd, 1) == b'1'
+os.close(fd)
+# Force the initial echoed probe to be lost before the real REPL starts.
+termios.tcflush(0, termios.TCIFLUSH)
+os.execv(sys.executable, [sys.executable])
+";
+    let spawned = spawn_pty_process(
+        &python,
+        &["-c".to_string(), script.to_string()],
+        Path::new("."),
+        &env_map,
+        &None,
+        TerminalSize::default(),
+        &[gate_read.as_raw_fd()],
+    )
+    .await?;
+    drop(gate_read);
+    let (session, mut output_rx, exit_rx) = combine_spawned_output(spawned);
+    wait_for_output_contains(
+        &mut output_rx,
+        "__pty_repl_gate_waiting__",
+        /*timeout_ms*/ 5_000,
+    )
+    .await?;
+    let writer = session.writer_sender();
+    let mut echo_rx = output_rx.resubscribe();
+    {
+        let readiness = wait_for_python_repl_ready_via_probe(
+            &writer,
+            &mut output_rx,
+            /*timeout_ms*/ 5_000,
+            "\n",
+        );
+        tokio::pin!(readiness);
+        tokio::select! {
+            result = &mut readiness => {
+                result?;
+                anyhow::bail!("PTY input echo satisfied readiness before Python could execute the probe");
+            }
+            result = wait_for_output_contains(&mut echo_rx, "__codex_", /*timeout_ms*/ 2_000) => {
+                result?;
+            }
+        }
+        assert!(
+            tokio::time::timeout(std::time::Duration::from_millis(250), &mut readiness)
+                .await
+                .is_err(),
+            "PTY input echo must not satisfy readiness while Python is waiting on the gate"
+        );
+
+        gate_write.write_all(b"1")?;
+        readiness.await?;
+    }
+    writer.send(b"exit()\n".to_vec()).await?;
+    let (_, code) = collect_output_until_exit(output_rx, exit_rx, /*timeout_ms*/ 5_000).await;
+    assert_eq!(code, 0, "expected the gated Python REPL to exit cleanly");
     Ok(())
 }
 

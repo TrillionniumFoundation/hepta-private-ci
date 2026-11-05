@@ -1,0 +1,17 @@
+load("//:defs.bzl", "codex_rust_crate")
+
+codex_rust_crate(
+    name = "sqlx-sqlite",
+    crate_edition = "2021",
+    crate_features = [
+        "bundled",
+        "chrono",
+        "json",
+        "migrate",
+        "offline",
+        "serde",
+        "time",
+        "uuid",
+    ],
+    crate_name = "sqlx_sqlite",
+)

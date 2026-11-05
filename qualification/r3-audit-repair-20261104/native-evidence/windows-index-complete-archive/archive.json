@@ -1,0 +1,653 @@
+{
+  "schema": "hepta-windows-python-index-complete-originals-git-archive-v1",
+  "source": "fb9e131272f7e7a138d6c0d1af2b048b9a6ab7ff",
+  "original_inspector_job": "1a1a9f1377b-fc05-3a1a",
+  "complete_originals": 23,
+  "original_bytes": 12702865,
+  "native_export": {
+    "blob": "e9b9c5cea90a83c0329905bb7a74eac6b38865b2",
+    "bytes": 55379,
+    "sha256": "57540f52e11006cb4e17055ec047eeace27ebd9f6feadb8ed971dabdb35be2e2",
+    "native_path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/windows-python-index-frozen-complete-export-20261105-v1/manifest.json"
+  },
+  "strict_decoding_review": {
+    "blob": "346d434b5b1c174c3f8312d9c481a5b2fbd54885",
+    "bytes": 39367,
+    "sha256": "3f20b5f5e6827c576fa3f5465c1505cf353a5ec5bbf97cd658b552c4a419780f"
+  },
+  "original_attempt_small_bundle": "fdd58c60bc1025ca4ff297254276c6fd29328dcd",
+  "root_checkpoint_review": "e2453cf7c4aa79d3a3e363df437246ab5ad1eb1a",
+  "assets": [
+    {
+      "name": "000-request.json",
+      "original": {
+        "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/windows-python-index-readonly-reconciliation-20261105-v1/request.json",
+        "bytes": 1295,
+        "sha256": "cdb00e377f8d9196b0044531f077bf6276ba16cf1cb7e7633b4443a892ca1fb7"
+      },
+      "gzip": {
+        "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/windows-python-index-frozen-complete-export-20261105-v1/000-request.json.gz",
+        "bytes": 604,
+        "sha256": "3dc24822d6266735c1a37e030dff7d9070faf39fc462f0f35ef63597bd25431f"
+      },
+      "gzip_mtime": 0,
+      "base64_bytes": 808,
+      "base64_sha256": "e95a328e30be843ded992c84e4ec976620a27e3e85380408b881c78365a486dd",
+      "chunks": [
+        {
+          "offset": 0,
+          "bytes": 808,
+          "sha256": "e95a328e30be843ded992c84e4ec976620a27e3e85380408b881c78365a486dd",
+          "git_blob": "a333afd9d500e5631007fb269325eb2dda61ab52",
+          "get_byte_equal": true
+        }
+      ]
+    },
+    {
+      "name": "001-ordinary-index.snapshot",
+      "original": {
+        "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/windows-python-index-readonly-reconciliation-20261105-v1/ordinary-index.snapshot",
+        "bytes": 1222758,
+        "sha256": "c41b4d7645b2b88431ed024e9cc683e31d43fafe7290280eaf0bae656fd6a922"
+      },
+      "gzip": {
+        "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/windows-python-index-frozen-complete-export-20261105-v1/001-ordinary-index.snapshot.gz",
+        "bytes": 413859,
+        "sha256": "bb4886f62ae6707e80297bcfa8639faf104cbb629489ec92b5889c459eda1bc7"
+      },
+      "gzip_mtime": 0,
+      "base64_bytes": 551812,
+      "base64_sha256": "ea22e7b06795ab23ffbf00e96aee693186f47d6a5126c629ca0ed8afefd23589",
+      "chunks": [
+        {
+          "offset": 0,
+          "bytes": 400000,
+          "sha256": "86c264f3ce3d8d7c8f0a559663ba70fd887eddb0a1c1b8911b7f746b2455cdb3",
+          "git_blob": "a2ac6e79fada354d8d210bbc3888c105040751ba",
+          "get_byte_equal": true
+        },
+        {
+          "offset": 400000,
+          "bytes": 151812,
+          "sha256": "2ab76e362bf372e053ffbc914afc62262beee6a20a44dd6fa4ac10e362bb896d",
+          "git_blob": "752a5eb85b1818fe516788c5b3447f3c773c4726",
+          "get_byte_equal": true
+        }
+      ]
+    },
+    {
+      "name": "002-ordinary-index-parsed.json",
+      "original": {
+        "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/windows-python-index-readonly-reconciliation-20261105-v1/ordinary-index-parsed.json",
+        "bytes": 5492063,
+        "sha256": "0500b73f4e50f5896480d37f7ddf9bb2daf91949eb5b5a4e5cddeba338cb0bc3"
+      },
+      "gzip": {
+        "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/windows-python-index-frozen-complete-export-20261105-v1/002-ordinary-index-parsed.json.gz",
+        "bytes": 481394,
+        "sha256": "cb9f46ceeabdafea81d95c1f39ee8d412197000010ca5bdfe71e7f8e8c824e55"
+      },
+      "gzip_mtime": 0,
+      "base64_bytes": 641860,
+      "base64_sha256": "101b3bb061da4e1a29d9c0a68caf46619cee2a28f2757ebf6c01ee4d2f1f1874",
+      "chunks": [
+        {
+          "offset": 0,
+          "bytes": 400000,
+          "sha256": "987a4245aef040cd7d0afc9c855cbe4e078229ef9c518f298652b63da5e736e9",
+          "git_blob": "2b3f90551fe8f5d8cf78fedc919f01e8a7d92cc8",
+          "get_byte_equal": true
+        },
+        {
+          "offset": 400000,
+          "bytes": 241860,
+          "sha256": "92b94b8f5a49a8b5669c58a2b220f31b304ae3d89f2bad4dbacc380d64efebd0",
+          "git_blob": "66959f9819672272209917ea8819f70a25b6503d",
+          "get_byte_equal": true
+        }
+      ]
+    },
+    {
+      "name": "003-head.stdout",
+      "original": {
+        "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/windows-python-index-readonly-reconciliation-20261105-v1/head.stdout",
+        "bytes": 41,
+        "sha256": "8ab9b93605942fba7003b66d39c55d96802c3a9c88431ee67a03b37c9e4846f5"
+      },
+      "gzip": {
+        "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/windows-python-index-frozen-complete-export-20261105-v1/003-head.stdout.gz",
+        "bytes": 59,
+        "sha256": "2242d1beb4f7ef55d18ce9df2b3a35df47ae1e54d2128497905bf2f87e52de2b"
+      },
+      "gzip_mtime": 0,
+      "base64_bytes": 80,
+      "base64_sha256": "1c52207e5d76514d1bf80cdbbd0c7d5b097a1243c8993d437a65665180f446e1",
+      "chunks": [
+        {
+          "offset": 0,
+          "bytes": 80,
+          "sha256": "1c52207e5d76514d1bf80cdbbd0c7d5b097a1243c8993d437a65665180f446e1",
+          "git_blob": "5e88ff0df9d5e72086abc8833b1d4228bd8a165d",
+          "get_byte_equal": true
+        }
+      ]
+    },
+    {
+      "name": "004-head.stderr",
+      "original": {
+        "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/windows-python-index-readonly-reconciliation-20261105-v1/head.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "gzip": {
+        "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/windows-python-index-frozen-complete-export-20261105-v1/004-head.stderr.gz",
+        "bytes": 20,
+        "sha256": "ac73670af3abed54ac6fb4695131f4099be9fbe39d6076c5d0264a6bbdae9d83"
+      },
+      "gzip_mtime": 0,
+      "base64_bytes": 28,
+      "base64_sha256": "8dc73ccdd1e4888c7a99cb1f1908c594d7b5e2f4358f796347ae44af467976fb",
+      "chunks": [
+        {
+          "offset": 0,
+          "bytes": 28,
+          "sha256": "8dc73ccdd1e4888c7a99cb1f1908c594d7b5e2f4358f796347ae44af467976fb",
+          "git_blob": "d0fc00c534d80f423592e68cab57bd497463e056",
+          "get_byte_equal": true
+        }
+      ]
+    },
+    {
+      "name": "005-ordinary-ls-files-stage.stdout",
+      "original": {
+        "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/windows-python-index-readonly-reconciliation-20261105-v1/ordinary-ls-files-stage.stdout",
+        "bytes": 1029335,
+        "sha256": "8e86ce2f774a6be1f417057003a2ffb5c2868ee20a9a06f5f5010ba0e7e8d09f"
+      },
+      "gzip": {
+        "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/windows-python-index-frozen-complete-export-20261105-v1/005-ordinary-ls-files-stage.stdout.gz",
+        "bytes": 332576,
+        "sha256": "113c1456ae70616cf154f87088a7ecb173e237c1b9ae593c9a0bc28dffb47664"
+      },
+      "gzip_mtime": 0,
+      "base64_bytes": 443436,
+      "base64_sha256": "0e425a5f4b3891940087f7094c8636798c342cf467657e866e42f7f9b9e87f69",
+      "chunks": [
+        {
+          "offset": 0,
+          "bytes": 400000,
+          "sha256": "e3631992bce4e87f4acee6dfecb3a3874996e49c2e0d14ba6078c7ceff78a66b",
+          "git_blob": "60fb91b3c663f4ac2ed6947df25d59c5c1d0a525",
+          "get_byte_equal": true
+        },
+        {
+          "offset": 400000,
+          "bytes": 43436,
+          "sha256": "226d95d34367e35a234513ebd108c41d09e28242e1d8772d9797679c788f2dcc",
+          "git_blob": "76ae6dbee898e652d16ca5f3dfd922a3c8cff4c5",
+          "get_byte_equal": true
+        }
+      ]
+    },
+    {
+      "name": "006-ordinary-ls-files-stage.stderr",
+      "original": {
+        "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/windows-python-index-readonly-reconciliation-20261105-v1/ordinary-ls-files-stage.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "gzip": {
+        "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/windows-python-index-frozen-complete-export-20261105-v1/006-ordinary-ls-files-stage.stderr.gz",
+        "bytes": 20,
+        "sha256": "ac73670af3abed54ac6fb4695131f4099be9fbe39d6076c5d0264a6bbdae9d83"
+      },
+      "gzip_mtime": 0,
+      "base64_bytes": 28,
+      "base64_sha256": "8dc73ccdd1e4888c7a99cb1f1908c594d7b5e2f4358f796347ae44af467976fb",
+      "chunks": [
+        {
+          "offset": 0,
+          "bytes": 28,
+          "sha256": "8dc73ccdd1e4888c7a99cb1f1908c594d7b5e2f4358f796347ae44af467976fb",
+          "git_blob": "d0fc00c534d80f423592e68cab57bd497463e056",
+          "get_byte_equal": true
+        }
+      ]
+    },
+    {
+      "name": "007-ordinary-head-ls-tree.stdout",
+      "original": {
+        "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/windows-python-index-readonly-reconciliation-20261105-v1/ordinary-head-ls-tree.stdout",
+        "bytes": 1058060,
+        "sha256": "b738d2f5697c096509741babd1f2c0f95d29f064aabab0f6a3ef508708d70b47"
+      },
+      "gzip": {
+        "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/windows-python-index-frozen-complete-export-20261105-v1/007-ordinary-head-ls-tree.stdout.gz",
+        "bytes": 332540,
+        "sha256": "f57b8d082027d116b763aebac7fd26145bf82b8ed4b0400999f4a131bac70d93"
+      },
+      "gzip_mtime": 0,
+      "base64_bytes": 443388,
+      "base64_sha256": "634f0f483b73b8d774dc1addfcff82d650177298506505bf7e625ec3296d89d0",
+      "chunks": [
+        {
+          "offset": 0,
+          "bytes": 400000,
+          "sha256": "29a6c7642563775b08a4c5539d6aab6f1bb1b03ad8d56814782dba4e2d8db4f9",
+          "git_blob": "00fe36b132b152b23515a5ddd0118667bec2cc3c",
+          "get_byte_equal": true
+        },
+        {
+          "offset": 400000,
+          "bytes": 43388,
+          "sha256": "b121f33840ac00b71d3d3abd57e03ff1813b6016b1773d74f7e4278188f8868a",
+          "git_blob": "fe791fd24b7efce006601c2f0a825552705b82a3",
+          "get_byte_equal": true
+        }
+      ]
+    },
+    {
+      "name": "008-ordinary-head-ls-tree.stderr",
+      "original": {
+        "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/windows-python-index-readonly-reconciliation-20261105-v1/ordinary-head-ls-tree.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "gzip": {
+        "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/windows-python-index-frozen-complete-export-20261105-v1/008-ordinary-head-ls-tree.stderr.gz",
+        "bytes": 20,
+        "sha256": "ac73670af3abed54ac6fb4695131f4099be9fbe39d6076c5d0264a6bbdae9d83"
+      },
+      "gzip_mtime": 0,
+      "base64_bytes": 28,
+      "base64_sha256": "8dc73ccdd1e4888c7a99cb1f1908c594d7b5e2f4358f796347ae44af467976fb",
+      "chunks": [
+        {
+          "offset": 0,
+          "bytes": 28,
+          "sha256": "8dc73ccdd1e4888c7a99cb1f1908c594d7b5e2f4358f796347ae44af467976fb",
+          "git_blob": "d0fc00c534d80f423592e68cab57bd497463e056",
+          "get_byte_equal": true
+        }
+      ]
+    },
+    {
+      "name": "009-ordinary-index-semantic-diff.json",
+      "original": {
+        "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/windows-python-index-readonly-reconciliation-20261105-v1/ordinary-index-semantic-diff.json",
+        "bytes": 35,
+        "sha256": "c5de3e4174e6c86134e6ebc0c9649d55fa1b60786ea270109b7deb3df1b68828"
+      },
+      "gzip": {
+        "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/windows-python-index-frozen-complete-export-20261105-v1/009-ordinary-index-semantic-diff.json.gz",
+        "bytes": 49,
+        "sha256": "88b135fc609d9dd55fa2a1ab381e0790d10c5fc5333d5034bda62879b7f63ab1"
+      },
+      "gzip_mtime": 0,
+      "base64_bytes": 68,
+      "base64_sha256": "f72dff0c6c2fb87f5e047734852eef991f84da66e20ec51018f4ec3663d96da6",
+      "chunks": [
+        {
+          "offset": 0,
+          "bytes": 68,
+          "sha256": "f72dff0c6c2fb87f5e047734852eef991f84da66e20ec51018f4ec3663d96da6",
+          "git_blob": "fec38836675e84b598399d363930ec84cbc995f8",
+          "get_byte_equal": true
+        }
+      ]
+    },
+    {
+      "name": "010-ordinary-ls-files-flags.stdout",
+      "original": {
+        "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/windows-python-index-readonly-reconciliation-20261105-v1/ordinary-ls-files-flags.stdout",
+        "bytes": 569735,
+        "sha256": "dd9f65a990ddb29853b83a3755fa2f3a9792dbd31c9b8b2f6b903a9bd6a2c66b"
+      },
+      "gzip": {
+        "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/windows-python-index-frozen-complete-export-20261105-v1/010-ordinary-ls-files-flags.stdout.gz",
+        "bytes": 70306,
+        "sha256": "5bbf1d04bcc9076fa73f80745972a7a528b87d90bd4bd41b008a3410a04d6445"
+      },
+      "gzip_mtime": 0,
+      "base64_bytes": 93744,
+      "base64_sha256": "3963687a89cc848ce18789b6a5f24425a3ac2ac3bf676dfc5db4712bd7f477fa",
+      "chunks": [
+        {
+          "offset": 0,
+          "bytes": 93744,
+          "sha256": "3963687a89cc848ce18789b6a5f24425a3ac2ac3bf676dfc5db4712bd7f477fa",
+          "git_blob": "c0828406be583b8dce9c79a724ffe6620564d714",
+          "get_byte_equal": true
+        }
+      ]
+    },
+    {
+      "name": "011-ordinary-ls-files-flags.stderr",
+      "original": {
+        "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/windows-python-index-readonly-reconciliation-20261105-v1/ordinary-ls-files-flags.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "gzip": {
+        "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/windows-python-index-frozen-complete-export-20261105-v1/011-ordinary-ls-files-flags.stderr.gz",
+        "bytes": 20,
+        "sha256": "ac73670af3abed54ac6fb4695131f4099be9fbe39d6076c5d0264a6bbdae9d83"
+      },
+      "gzip_mtime": 0,
+      "base64_bytes": 28,
+      "base64_sha256": "8dc73ccdd1e4888c7a99cb1f1908c594d7b5e2f4358f796347ae44af467976fb",
+      "chunks": [
+        {
+          "offset": 0,
+          "bytes": 28,
+          "sha256": "8dc73ccdd1e4888c7a99cb1f1908c594d7b5e2f4358f796347ae44af467976fb",
+          "git_blob": "d0fc00c534d80f423592e68cab57bd497463e056",
+          "get_byte_equal": true
+        }
+      ]
+    },
+    {
+      "name": "012-private-candidate-ls-files-stage.stdout",
+      "original": {
+        "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/windows-python-index-readonly-reconciliation-20261105-v1/private-candidate-ls-files-stage.stdout",
+        "bytes": 1030539,
+        "sha256": "5024515ac0437fe05abdefd22fc33013cc2f1af3481b007d80df6daaf3cc7ac1"
+      },
+      "gzip": {
+        "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/windows-python-index-frozen-complete-export-20261105-v1/012-private-candidate-ls-files-stage.stdout.gz",
+        "bytes": 333009,
+        "sha256": "d83a0cfda2174deae7819bd45d34b0a320002f303e9569c07f8fc39c147f4e02"
+      },
+      "gzip_mtime": 0,
+      "base64_bytes": 444012,
+      "base64_sha256": "8a02b52b5061387f62be5c95932d7c12b347148afb472ad969cd0e2438b8eef4",
+      "chunks": [
+        {
+          "offset": 0,
+          "bytes": 400000,
+          "sha256": "a919016ecec1fbceb00d9c30109a155d65269c2e6079d1c3953d55e5f17c2258",
+          "git_blob": "53346531bde5734fb7a0f9557c75370875859511",
+          "get_byte_equal": true
+        },
+        {
+          "offset": 400000,
+          "bytes": 44012,
+          "sha256": "c957c04a64f3b2492ba6c99c03b05cfad6d137d942ab7692cf1329e2d6c307a5",
+          "git_blob": "ec80249137208e9d4406efd301b9de8c3994b902",
+          "get_byte_equal": true
+        }
+      ]
+    },
+    {
+      "name": "013-private-candidate-ls-files-stage.stderr",
+      "original": {
+        "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/windows-python-index-readonly-reconciliation-20261105-v1/private-candidate-ls-files-stage.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "gzip": {
+        "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/windows-python-index-frozen-complete-export-20261105-v1/013-private-candidate-ls-files-stage.stderr.gz",
+        "bytes": 20,
+        "sha256": "ac73670af3abed54ac6fb4695131f4099be9fbe39d6076c5d0264a6bbdae9d83"
+      },
+      "gzip_mtime": 0,
+      "base64_bytes": 28,
+      "base64_sha256": "8dc73ccdd1e4888c7a99cb1f1908c594d7b5e2f4358f796347ae44af467976fb",
+      "chunks": [
+        {
+          "offset": 0,
+          "bytes": 28,
+          "sha256": "8dc73ccdd1e4888c7a99cb1f1908c594d7b5e2f4358f796347ae44af467976fb",
+          "git_blob": "d0fc00c534d80f423592e68cab57bd497463e056",
+          "get_byte_equal": true
+        }
+      ]
+    },
+    {
+      "name": "014-candidate-ls-tree.stdout",
+      "original": {
+        "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/windows-python-index-readonly-reconciliation-20261105-v1/candidate-ls-tree.stdout",
+        "bytes": 1059300,
+        "sha256": "ee9f6ef3f115b2a03cfbb4649a5724111152489e857aa756e21267ad77aed5f8"
+      },
+      "gzip": {
+        "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/windows-python-index-frozen-complete-export-20261105-v1/014-candidate-ls-tree.stdout.gz",
+        "bytes": 332988,
+        "sha256": "1da1fa2f68b762e880f79a95e48c98185129538a192e22112419c34002b800d5"
+      },
+      "gzip_mtime": 0,
+      "base64_bytes": 443984,
+      "base64_sha256": "2534700465f1a2d85bd2ef5dc539d33d40b781ef10cd05a6e5560f93540344f9",
+      "chunks": [
+        {
+          "offset": 0,
+          "bytes": 400000,
+          "sha256": "8a3bc138fbd94c67b56ab2629a5210849cb564d0ae2bebf2e78ec9bd5d73c98d",
+          "git_blob": "2c7efbacf9c8a3a698410c9801d5ce4ee8ab613c",
+          "get_byte_equal": true
+        },
+        {
+          "offset": 400000,
+          "bytes": 43984,
+          "sha256": "a05c0ec27f649a79a5633817428c92b5e8275b88de996575f11d73cbdc523a12",
+          "git_blob": "70b50914ae2465e9a1be5ba242ae13d12888b507",
+          "get_byte_equal": true
+        }
+      ]
+    },
+    {
+      "name": "015-candidate-ls-tree.stderr",
+      "original": {
+        "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/windows-python-index-readonly-reconciliation-20261105-v1/candidate-ls-tree.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "gzip": {
+        "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/windows-python-index-frozen-complete-export-20261105-v1/015-candidate-ls-tree.stderr.gz",
+        "bytes": 20,
+        "sha256": "ac73670af3abed54ac6fb4695131f4099be9fbe39d6076c5d0264a6bbdae9d83"
+      },
+      "gzip_mtime": 0,
+      "base64_bytes": 28,
+      "base64_sha256": "8dc73ccdd1e4888c7a99cb1f1908c594d7b5e2f4358f796347ae44af467976fb",
+      "chunks": [
+        {
+          "offset": 0,
+          "bytes": 28,
+          "sha256": "8dc73ccdd1e4888c7a99cb1f1908c594d7b5e2f4358f796347ae44af467976fb",
+          "git_blob": "d0fc00c534d80f423592e68cab57bd497463e056",
+          "get_byte_equal": true
+        }
+      ]
+    },
+    {
+      "name": "016-candidate-diff-files.stdout",
+      "original": {
+        "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/windows-python-index-readonly-reconciliation-20261105-v1/candidate-diff-files.stdout",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "gzip": {
+        "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/windows-python-index-frozen-complete-export-20261105-v1/016-candidate-diff-files.stdout.gz",
+        "bytes": 20,
+        "sha256": "ac73670af3abed54ac6fb4695131f4099be9fbe39d6076c5d0264a6bbdae9d83"
+      },
+      "gzip_mtime": 0,
+      "base64_bytes": 28,
+      "base64_sha256": "8dc73ccdd1e4888c7a99cb1f1908c594d7b5e2f4358f796347ae44af467976fb",
+      "chunks": [
+        {
+          "offset": 0,
+          "bytes": 28,
+          "sha256": "8dc73ccdd1e4888c7a99cb1f1908c594d7b5e2f4358f796347ae44af467976fb",
+          "git_blob": "d0fc00c534d80f423592e68cab57bd497463e056",
+          "get_byte_equal": true
+        }
+      ]
+    },
+    {
+      "name": "017-candidate-diff-files.stderr",
+      "original": {
+        "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/windows-python-index-readonly-reconciliation-20261105-v1/candidate-diff-files.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "gzip": {
+        "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/windows-python-index-frozen-complete-export-20261105-v1/017-candidate-diff-files.stderr.gz",
+        "bytes": 20,
+        "sha256": "ac73670af3abed54ac6fb4695131f4099be9fbe39d6076c5d0264a6bbdae9d83"
+      },
+      "gzip_mtime": 0,
+      "base64_bytes": 28,
+      "base64_sha256": "8dc73ccdd1e4888c7a99cb1f1908c594d7b5e2f4358f796347ae44af467976fb",
+      "chunks": [
+        {
+          "offset": 0,
+          "bytes": 28,
+          "sha256": "8dc73ccdd1e4888c7a99cb1f1908c594d7b5e2f4358f796347ae44af467976fb",
+          "git_blob": "d0fc00c534d80f423592e68cab57bd497463e056",
+          "get_byte_equal": true
+        }
+      ]
+    },
+    {
+      "name": "018-candidate-untracked.stdout",
+      "original": {
+        "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/windows-python-index-readonly-reconciliation-20261105-v1/candidate-untracked.stdout",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "gzip": {
+        "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/windows-python-index-frozen-complete-export-20261105-v1/018-candidate-untracked.stdout.gz",
+        "bytes": 20,
+        "sha256": "ac73670af3abed54ac6fb4695131f4099be9fbe39d6076c5d0264a6bbdae9d83"
+      },
+      "gzip_mtime": 0,
+      "base64_bytes": 28,
+      "base64_sha256": "8dc73ccdd1e4888c7a99cb1f1908c594d7b5e2f4358f796347ae44af467976fb",
+      "chunks": [
+        {
+          "offset": 0,
+          "bytes": 28,
+          "sha256": "8dc73ccdd1e4888c7a99cb1f1908c594d7b5e2f4358f796347ae44af467976fb",
+          "git_blob": "d0fc00c534d80f423592e68cab57bd497463e056",
+          "get_byte_equal": true
+        }
+      ]
+    },
+    {
+      "name": "019-candidate-untracked.stderr",
+      "original": {
+        "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/windows-python-index-readonly-reconciliation-20261105-v1/candidate-untracked.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "gzip": {
+        "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/windows-python-index-frozen-complete-export-20261105-v1/019-candidate-untracked.stderr.gz",
+        "bytes": 20,
+        "sha256": "ac73670af3abed54ac6fb4695131f4099be9fbe39d6076c5d0264a6bbdae9d83"
+      },
+      "gzip_mtime": 0,
+      "base64_bytes": 28,
+      "base64_sha256": "8dc73ccdd1e4888c7a99cb1f1908c594d7b5e2f4358f796347ae44af467976fb",
+      "chunks": [
+        {
+          "offset": 0,
+          "bytes": 28,
+          "sha256": "8dc73ccdd1e4888c7a99cb1f1908c594d7b5e2f4358f796347ae44af467976fb",
+          "git_blob": "d0fc00c534d80f423592e68cab57bd497463e056",
+          "get_byte_equal": true
+        }
+      ]
+    },
+    {
+      "name": "020-commands.json",
+      "original": {
+        "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/windows-python-index-readonly-reconciliation-20261105-v1/commands.json",
+        "bytes": 6632,
+        "sha256": "1746b7bceb8747bbbb5c0d628526534b08e90f43ac0530f0b698f87ec9fee5c4"
+      },
+      "gzip": {
+        "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/windows-python-index-frozen-complete-export-20261105-v1/020-commands.json.gz",
+        "bytes": 953,
+        "sha256": "079b9fcfe58d70d30afda6be10477f6527499e7dd26b521acb935d438d672eaf"
+      },
+      "gzip_mtime": 0,
+      "base64_bytes": 1272,
+      "base64_sha256": "e61d93ba4bbbeee1920b9c6573db4a7bfface8555a409ba9794f74313061b69a",
+      "chunks": [
+        {
+          "offset": 0,
+          "bytes": 1272,
+          "sha256": "e61d93ba4bbbeee1920b9c6573db4a7bfface8555a409ba9794f74313061b69a",
+          "git_blob": "ef48d939138a86a27f1dfd678abfd5159fa0e667",
+          "get_byte_equal": true
+        }
+      ]
+    },
+    {
+      "name": "021-summary.json",
+      "original": {
+        "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/windows-python-index-readonly-reconciliation-20261105-v1/summary.json",
+        "bytes": 8892,
+        "sha256": "e5368e231cb032bd1de76f97f42c27edac85d858743c4a62a58eefcf237a0b13"
+      },
+      "gzip": {
+        "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/windows-python-index-frozen-complete-export-20261105-v1/021-summary.json.gz",
+        "bytes": 2004,
+        "sha256": "ddbbc761cc9d05bca12658a164e87887f008e42482f6f5fbca6d86fad93a259c"
+      },
+      "gzip_mtime": 0,
+      "base64_bytes": 2672,
+      "base64_sha256": "6a3672f50b033a6ca6b92a3938f4506785d22b380984a6fdef72e0f6fcfa17a2",
+      "chunks": [
+        {
+          "offset": 0,
+          "bytes": 2672,
+          "sha256": "6a3672f50b033a6ca6b92a3938f4506785d22b380984a6fdef72e0f6fcfa17a2",
+          "git_blob": "c60c0998c91884f6a2a32bf4c0cc627d16dc209b",
+          "get_byte_equal": true
+        }
+      ]
+    },
+    {
+      "name": "022-17-wrapper-python-original-suite-after.index",
+      "original": {
+        "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/windows-python-full-A-WIP-20261105-v1/17-wrapper-python-original-suite-after.index",
+        "bytes": 1224180,
+        "sha256": "9fe5b7d5bb3c9a9ed0d10a1fe6058ea5c45f56bf8d98373ee9e86ea568d8a06c"
+      },
+      "gzip": {
+        "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/windows-python-index-frozen-complete-export-20261105-v1/022-17-wrapper-python-original-suite-after.index.gz",
+        "bytes": 414719,
+        "sha256": "182db727701de41d27a1ea2cd5f76132efdb16fab2e5be879f9c03eb601b335b"
+      },
+      "gzip_mtime": 0,
+      "base64_bytes": 552960,
+      "base64_sha256": "1e9908119fdc7e90a73bf058c3ada59d2469e8e0635f7e8e4b45cc10226a0dea",
+      "chunks": [
+        {
+          "offset": 0,
+          "bytes": 400000,
+          "sha256": "353035913018372f1f25f02ff8d2bc27e0cebc95d085a2b8906eb5fcc519d10f",
+          "git_blob": "91d318b98e7af8512738821623632f9f6f4726de",
+          "get_byte_equal": true
+        },
+        {
+          "offset": 400000,
+          "bytes": 152960,
+          "sha256": "9bb58a6829d7e1c8130593a5730dc16c91f26a6d05726c93fd8a3b4dade05aae",
+          "git_blob": "c7adf91bfc233a9d4d63c23ec24a6e574386ee89",
+          "get_byte_equal": true
+        }
+      ]
+    }
+  ],
+  "limits": [
+    "These 23 frozen files are complete original read-only index-inspection evidence, including binary ordinary/private snapshots and NUL-separated git outputs.",
+    "Original Python57 PASS and controller1 guard failure remain unchanged. No Python or Rust test was repeated for this archive.",
+    "Ordinary index9575 path/mode/OID/stage entries exactly matched cabc and flags were zero in the original inspector. Old pre-change index bytes are unavailable, so specific stat or TREE byte differences are not proven.",
+    "Root transparently accepted the actual c41 index checkpoint; no ordinary index restoration or reset occurred.",
+    "All Git chunks are at most400000 bytes, independently recomputed and GET byte-equal verified. No current native source/target/index was read or mutated by cloud decoding."
+  ]
+}

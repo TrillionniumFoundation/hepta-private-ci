@@ -1,0 +1,89 @@
+{
+  "initial_base": "d8a5e94af06b9555fc8256af1337e9f28f7c7fa8",
+  "status": "FROZEN_PROPOSED_TREES_NOT_YET_NATIVE_APPLIED",
+  "stages": [
+    {
+      "name": "WindowsAclIdempotency",
+      "before_tree": "d8a5e94af06b9555fc8256af1337e9f28f7c7fa8",
+      "after_tree": "bffa657af1116241990bb4deae49809301dc8c2e",
+      "files": [
+        {
+          "path": "codex-rs/windows-sandbox-rs/src/acl.rs",
+          "sha": "53c7053c5880da13640f3bd777998b6998da6d47",
+          "mode": "100644",
+          "type": "blob"
+        },
+        {
+          "path": "codex-rs/windows-sandbox-rs/src/acl_deny.rs",
+          "sha": "3aeb65179f1a8bc77f0314974efdcf8940e5a1f6",
+          "mode": "100644",
+          "type": "blob"
+        },
+        {
+          "path": "codex-rs/windows-sandbox-rs/src/acl_tests.rs",
+          "sha": "31db071d8a2fe2de3e9e9f37cb245a0757ecb973",
+          "mode": "100644",
+          "type": "blob"
+        }
+      ]
+    },
+    {
+      "name": "token-matrix",
+      "before_tree": "bffa657af1116241990bb4deae49809301dc8c2e",
+      "after_tree": "2414c291b86e4e244566a9c1f7e95eed83dada2c",
+      "files": [
+        {
+          "path": "codex-rs/windows-sandbox-rs/src/lib.rs",
+          "sha": "f7b90d6f2d3ecad07f487e05932431c979450c77",
+          "mode": "100644",
+          "type": "blob"
+        },
+        {
+          "path": "codex-rs/windows-sandbox-rs/src/delete_permission_matrix_tests.rs",
+          "sha": "e3c999e68382837bde16e2621de94bcb83509bc8",
+          "mode": "100644",
+          "type": "blob"
+        },
+        {
+          "path": "codex-rs/windows-sandbox-rs/src/token_tests.rs",
+          "sha": "d406532fd3b69bc4a3635963022365aaec93280e",
+          "mode": "100644",
+          "type": "blob"
+        }
+      ]
+    },
+    {
+      "name": "legacy-matrix",
+      "before_tree": "2414c291b86e4e244566a9c1f7e95eed83dada2c",
+      "after_tree": "940d249bdc593968d8f9eec4d29ee099ca6a074d",
+      "files": [
+        {
+          "path": "codex-rs/windows-sandbox-rs/src/unified_exec/tests.rs",
+          "sha": "aea1ff8476ab8ce33642677a36b1609054888a4e",
+          "mode": "100644",
+          "type": "blob"
+        },
+        {
+          "path": "codex-rs/windows-sandbox-rs/src/unified_exec/delete_permission_tests.rs",
+          "sha": "4727675e9b85d75bfbe1de175571bcc481906353",
+          "mode": "100644",
+          "type": "blob"
+        }
+      ]
+    },
+    {
+      "name": "WindowsSuccessRetention",
+      "before_tree": "940d249bdc593968d8f9eec4d29ee099ca6a074d",
+      "after_tree": "c2f75dd34454b11ab0eb0e464d14b3beca86619c",
+      "files": [
+        {
+          "path": ".github/scripts/collect_bazel_failed_test_logs.py",
+          "sha": "5427be6c1f37bd7c302d808c2e4f194727abe700",
+          "mode": "100644",
+          "type": "blob"
+        }
+      ]
+    }
+  ],
+  "final_tree": "c2f75dd34454b11ab0eb0e464d14b3beca86619c"
+}

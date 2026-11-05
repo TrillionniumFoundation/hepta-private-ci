@@ -1,0 +1,1289 @@
+{
+  "manifest": {
+    "schema": "hepta-full18-three-repairs-native-proposal-v2",
+    "status": "STATIC_PREPARED_HOLD_FOR_ROOT_APP_CAUSAL_STAGE",
+    "initial_tree": "f8251e1d14fa8524ab469281296cd4cf708f173c",
+    "ordinary_index": {
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/source/.git/index",
+      "bytes": 1222758,
+      "sha256": "8ccf08bcd5b633a38fa81be4814ae264365f1a2cdd1ed81e1633fbcc0ac31502"
+    },
+    "locks": {
+      "codex-rs/Cargo.lock": {
+        "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/source/codex-rs/Cargo.lock",
+        "bytes": 413768,
+        "sha256": "4a7a5535cf045089458468411e126b5f59bc6bbf34fc0deead9b0c1b8d84000a"
+      },
+      "MODULE.bazel.lock": {
+        "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/source/MODULE.bazel.lock",
+        "bytes": 1738619,
+        "sha256": "11f8a421224b9b05f32c4c14054e8868083d989fc497310c8d51e1156f189ca3"
+      }
+    },
+    "allowed_untracked_source_paths": [],
+    "target_directory": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/target-app-epoch2-20261105",
+    "stages": [
+      {
+        "label": "skills-controlled-marker",
+        "before_tree": "f8251e1d14fa8524ab469281296cd4cf708f173c",
+        "after_tree": "e55c92c7546fceccd37c16fcd04aaf606e182201",
+        "files": [
+          {
+            "path": "codex-rs/ext/skills/src/host_roots_tests.rs",
+            "before_blob": "fee6c1a0398c0f9bacbb60853e20786e804a3271",
+            "after_blob": "9814df0cddc9cf8c02e8e0259ccdac1fa2b117b1",
+            "mode": "100644",
+            "bytes": 23571,
+            "sha256": "a56d6f5d9e6f592ac9e7cd4dd815bd7a8b2d8c31d8902433639c9ff601236a45"
+          }
+        ]
+      },
+      {
+        "label": "skills-restore-absence",
+        "before_tree": "e55c92c7546fceccd37c16fcd04aaf606e182201",
+        "after_tree": "1125d197cf798176bea6dcc2c0b0c499eb22cf44",
+        "files": [
+          {
+            "path": "codex-rs/ext/skills/src/host_roots_tests.rs",
+            "before_blob": "9814df0cddc9cf8c02e8e0259ccdac1fa2b117b1",
+            "after_blob": "3d8412f8eca445b1eba85f26d7975aa7ddfbb524",
+            "mode": "100644",
+            "bytes": 23392,
+            "sha256": "fa2d78f6fea0018f34d57971ff9defb8b709d1085ba6f2e901b14a2e2ae520c4"
+          }
+        ]
+      },
+      {
+        "label": "migration-remove-inference",
+        "before_tree": "1125d197cf798176bea6dcc2c0b0c499eb22cf44",
+        "after_tree": "0b758c27dfaded684601fc138b75f14afe48f565",
+        "files": [
+          {
+            "path": "codex-rs/external-agent-migration/src/service_tests/plugins/marketplaces.rs",
+            "before_blob": "682000381ac7da7d5c4022a83ee6aaf991aa4df5",
+            "after_blob": "5894278bdfb88d5272180651d1a66123cd105200",
+            "mode": "100644",
+            "bytes": 30695,
+            "sha256": "1900d0dcab3fb4a5bc3c24dd277c2da249d2b917cc6bd10a31bc103f5a37c5d3"
+          },
+          {
+            "path": "codex-rs/external-agent-migration/src/source_cla.rs",
+            "before_blob": "b2620eaf1a3b673d451b3fa7448b26ef286bb03b",
+            "after_blob": "54e2051499f2726bf52436e45c046529210de6b0",
+            "mode": "100644",
+            "bytes": 13202,
+            "sha256": "eae19dcc7d235addac73c9f97ca20592aed80eeb8350d3aa2362cd99386d4335"
+          }
+        ]
+      },
+      {
+        "label": "migration-restore-inference",
+        "before_tree": "0b758c27dfaded684601fc138b75f14afe48f565",
+        "after_tree": "babab3d6050c8355299f11ab844d2e8b0cb66e6d",
+        "files": [
+          {
+            "path": "codex-rs/external-agent-migration/src/source_cla.rs",
+            "before_blob": "54e2051499f2726bf52436e45c046529210de6b0",
+            "after_blob": "b2620eaf1a3b673d451b3fa7448b26ef286bb03b",
+            "mode": "100644",
+            "bytes": 13268,
+            "sha256": "a0efc66a1e66d6a3870d4915961bcd708996055bbf0ce89ea8af932e145358ee"
+          }
+        ]
+      },
+      {
+        "label": "v8-default-sandbox",
+        "before_tree": "babab3d6050c8355299f11ab844d2e8b0cb66e6d",
+        "after_tree": "14015a6ec8bce13bc7b291b0fc67651fd03f43a7",
+        "files": [
+          {
+            "path": "codex-rs/v8-poc/Cargo.toml",
+            "before_blob": "9615ab977f9dfdb35467d1eadaf0bc6dfa641625",
+            "after_blob": "a34a1306f1082b3347543749cbfd9a05eee7cb91",
+            "mode": "100644",
+            "bytes": 370,
+            "sha256": "c8fe672a43a8d02afe8ed2822462201bb87d526478c91dc2d2c9fff6dfad7f6a"
+          }
+        ]
+      }
+    ],
+    "scopes": [
+      {
+        "label": "skills-marker-negative",
+        "package_args": [
+          "-p",
+          "codex-skills-extension",
+          "--lib"
+        ],
+        "expression": "test(=host_roots::tests::repo_ancestry_without_project_marker_does_not_walk_parents)",
+        "expected_cases": [
+          {
+            "classname": "codex-skills-extension",
+            "name": "host_roots::tests::repo_ancestry_without_project_marker_does_not_walk_parents"
+          }
+        ],
+        "expected_result": "one exact causal FAIL"
+      },
+      {
+        "label": "skills-original-nine",
+        "package_args": [
+          "-p",
+          "codex-skills-extension",
+          "--lib"
+        ],
+        "expression": "test(host_roots::tests::)",
+        "expected_cases": [
+          {
+            "classname": "codex-skills-extension",
+            "name": "host_roots::tests::layer_roots_preserve_scope_precedence_and_disabled_projects"
+          },
+          {
+            "classname": "codex-skills-extension",
+            "name": "host_roots::tests::plugin_roots_preserve_plugin_resolution_metadata"
+          },
+          {
+            "classname": "codex-skills-extension",
+            "name": "host_roots::tests::repo_ancestry_limits_concurrent_probes_and_preserves_order"
+          },
+          {
+            "classname": "codex-skills-extension",
+            "name": "host_roots::tests::repo_ancestry_stops_at_project_root_and_preserves_root_to_cwd_order"
+          },
+          {
+            "classname": "codex-skills-extension",
+            "name": "host_roots::tests::repo_ancestry_without_project_marker_does_not_walk_parents"
+          },
+          {
+            "classname": "codex-skills-extension",
+            "name": "host_roots::tests::resolved_config_and_repo_roots_preserve_order_and_dedupe_paths_not_names"
+          },
+          {
+            "classname": "codex-skills-extension",
+            "name": "host_roots::tests::resolved_project_layer_loads_skill_when_cwd_is_file"
+          },
+          {
+            "classname": "codex-skills-extension",
+            "name": "host_roots::tests::resolved_project_layer_loads_skill_without_git_marker"
+          },
+          {
+            "classname": "codex-skills-extension",
+            "name": "host_roots::tests::unique_extra_root_loads_as_recursive_user_root"
+          }
+        ],
+        "expected_result": "all 9 PASS"
+      },
+      {
+        "label": "migration-inference-negative",
+        "package_args": [
+          "-p",
+          "codex-external-agent-migration",
+          "--lib"
+        ],
+        "expression": "test(=service::tests::plugins::marketplaces::import_plugins_infers_external_official_marketplace_when_missing_from_settings)",
+        "expected_cases": [
+          {
+            "classname": "codex-external-agent-migration",
+            "name": "service::tests::plugins::marketplaces::import_plugins_infers_external_official_marketplace_when_missing_from_settings"
+          }
+        ],
+        "expected_result": "one exact causal FAIL in child original business assertion"
+      },
+      {
+        "label": "migration-original-package",
+        "package_args": [
+          "-p",
+          "codex-external-agent-migration",
+          "--lib"
+        ],
+        "expression": null,
+        "expected_cases": [
+          {
+            "classname": "codex-external-agent-migration",
+            "name": "detect::sessions::cla::tests::detects_ai_title_over_first_user_message"
+          },
+          {
+            "classname": "codex-external-agent-migration",
+            "name": "detect::sessions::cla::tests::detects_recent_sessions_with_existing_roots"
+          },
+          {
+            "classname": "codex-external-agent-migration",
+            "name": "detect::sessions::cla::tests::detects_sessions_in_batches"
+          },
+          {
+            "classname": "codex-external-agent-migration",
+            "name": "detect::sessions::cla::tests::ignores_sessions_with_old_file_modification_time"
+          },
+          {
+            "classname": "codex-external-agent-migration",
+            "name": "detect::sessions::cla::tests::prefers_custom_title_over_later_ai_title"
+          },
+          {
+            "classname": "codex-external-agent-migration",
+            "name": "detect::sessions::cla::tests::prefers_latest_custom_title_over_first_user_message"
+          },
+          {
+            "classname": "codex-external-agent-migration",
+            "name": "detect::sessions::cla::tests::redetects_sessions_when_source_contents_change_after_import"
+          },
+          {
+            "classname": "codex-external-agent-migration",
+            "name": "detect::sessions::cla::tests::skips_already_imported_current_session_versions"
+          },
+          {
+            "classname": "codex-external-agent-migration",
+            "name": "detect::sessions::cla::tests::uses_file_modification_time_for_recency"
+          },
+          {
+            "classname": "codex-external-agent-migration",
+            "name": "detect::sessions::connectors_cla::tests::keeps_duplicate_session_stems_separate_when_batched"
+          },
+          {
+            "classname": "codex-external-agent-migration",
+            "name": "detect::sessions::connectors_cla::tests::resolves_attributed_server_name_from_session_manifest"
+          },
+          {
+            "classname": "codex-external-agent-migration",
+            "name": "detect::sessions::connectors_cla::tests::still_resolves_attributed_server_uuid_from_session_manifest"
+          },
+          {
+            "classname": "codex-external-agent-migration",
+            "name": "detect::sessions::connectors_cur::tests::detects_call_mcp_tool_connector_from_project_mcp_server_metadata"
+          },
+          {
+            "classname": "codex-external-agent-migration",
+            "name": "detect::sessions::connectors_cur::tests::detects_connector_used_by_session_mcp_tool_call"
+          },
+          {
+            "classname": "codex-external-agent-migration",
+            "name": "detect::sessions::connectors_cur::tests::detects_project_backed_mcp_details_connector_from_metadata_name"
+          },
+          {
+            "classname": "codex-external-agent-migration",
+            "name": "detect::sessions::cur::tests::detects_cur_sessions_in_batches_and_redetects_modified_imports"
+          },
+          {
+            "classname": "codex-external-agent-migration",
+            "name": "detect::sessions::cur::tests::detects_cur_transcript_with_embedded_unc_cwd"
+          },
+          {
+            "classname": "codex-external-agent-migration",
+            "name": "detect::sessions::cur::tests::detects_cur_transcript_with_project_cwd"
+          },
+          {
+            "classname": "codex-external-agent-migration",
+            "name": "detect::sessions::cur::tests::detects_projectless_cur_transcript_without_embedded_metadata"
+          },
+          {
+            "classname": "codex-external-agent-migration",
+            "name": "detect::sessions::cur::tests::ignores_cur_sessions_older_than_import_window"
+          },
+          {
+            "classname": "codex-external-agent-migration",
+            "name": "detect::sessions::cur::tests::parses_windows_cursor_fixture_project_directory"
+          },
+          {
+            "classname": "codex-external-agent-migration",
+            "name": "detect::sessions::cur::tests::rejects_ambiguous_cur_project_with_multiple_punctuated_ancestors"
+          },
+          {
+            "classname": "codex-external-agent-migration",
+            "name": "detect::sessions::cur::tests::rejects_ambiguous_cur_project_with_punctuated_ancestor"
+          },
+          {
+            "classname": "codex-external-agent-migration",
+            "name": "detect::sessions::cur::tests::rejects_ambiguous_cur_project_without_a_direct_match"
+          },
+          {
+            "classname": "codex-external-agent-migration",
+            "name": "detect::sessions::cur::tests::rejects_ambiguous_encoded_project_cwd"
+          },
+          {
+            "classname": "codex-external-agent-migration",
+            "name": "detect::sessions::cur::tests::resolves_cur_project_names_with_common_separators"
+          },
+          {
+            "classname": "codex-external-agent-migration",
+            "name": "detect::sessions::cur::tests::resolves_projectless_cur_cwd_from_relative_home"
+          },
+          {
+            "classname": "codex-external-agent-migration",
+            "name": "detect::sessions::cur::tests::skips_cur_subagent_transcripts"
+          },
+          {
+            "classname": "codex-external-agent-migration",
+            "name": "hooks_cur::tests::imports_supported_cur_hooks_and_drops_failure_policy"
+          },
+          {
+            "classname": "codex-external-agent-migration",
+            "name": "memory::tests::discovers_arbitrary_project_markdown"
+          },
+          {
+            "classname": "codex-external-agent-migration",
+            "name": "memory::tests::leaves_project_unscoped_without_an_existing_absolute_cwd"
+          },
+          {
+            "classname": "codex-external-agent-migration",
+            "name": "memory::tests::skips_symlinked_memory_directory"
+          },
+          {
+            "classname": "codex-external-agent-migration",
+            "name": "memory_import::tests::copies_only_selected_projects_and_recopies_changed_content"
+          },
+          {
+            "classname": "codex-external-agent-migration",
+            "name": "memory_import::tests::does_not_import_a_new_project_without_a_reliable_cwd"
+          },
+          {
+            "classname": "codex-external-agent-migration",
+            "name": "memory_import::tests::missing_cwd_does_not_make_an_existing_scoped_project_look_deleted"
+          },
+          {
+            "classname": "codex-external-agent-migration",
+            "name": "memory_import::tests::preserves_project_successes_and_reports_each_failed_selection"
+          },
+          {
+            "classname": "codex-external-agent-migration",
+            "name": "memory_import::tests::project_rename_removes_the_old_target_and_imports_the_new_target"
+          },
+          {
+            "classname": "codex-external-agent-migration",
+            "name": "memory_import::tests::removes_an_existing_unscoped_target_when_cwd_is_unavailable"
+          },
+          {
+            "classname": "codex-external-agent-migration",
+            "name": "memory_import::tests::removes_project_resources_when_the_source_project_disappears"
+          },
+          {
+            "classname": "codex-external-agent-migration",
+            "name": "memory_import::tests::uses_scope_file_to_identify_owned_projects"
+          },
+          {
+            "classname": "codex-external-agent-migration",
+            "name": "rewrite::tests::rewrites_terms_only_at_word_boundaries"
+          },
+          {
+            "classname": "codex-external-agent-migration",
+            "name": "scope::tests::missing_cwd_selects_home_scope"
+          },
+          {
+            "classname": "codex-external-agent-migration",
+            "name": "scope::tests::nested_cwd_selects_repository_root"
+          },
+          {
+            "classname": "codex-external-agent-migration",
+            "name": "scope::tests::nonexistent_cwd_has_no_scope"
+          },
+          {
+            "classname": "codex-external-agent-migration",
+            "name": "service::tests::general::config_import::detect_home_skips_config_when_target_already_has_supported_fields"
+          },
+          {
+            "classname": "codex-external-agent-migration",
+            "name": "service::tests::general::config_import::detect_home_skips_skills_when_all_skill_directories_exist"
+          },
+          {
+            "classname": "codex-external-agent-migration",
+            "name": "service::tests::general::config_import::detect_repo_mcp_lists_only_missing_servers"
+          },
+          {
+            "classname": "codex-external-agent-migration",
+            "name": "service::tests::general::config_import::import_git_plugins_returns_pending_async_status"
+          },
+          {
+            "classname": "codex-external-agent-migration",
+            "name": "service::tests::general::config_import::import_home_config_ignores_invalid_local_settings"
+          },
+          {
+            "classname": "codex-external-agent-migration",
+            "name": "service::tests::general::config_import::import_home_config_uses_local_settings_over_project_settings"
+          },
+          {
+            "classname": "codex-external-agent-migration",
+            "name": "service::tests::general::config_import::import_home_migrates_supported_config_fields_skills_and_agents_md"
+          },
+          {
+            "classname": "codex-external-agent-migration",
+            "name": "service::tests::general::config_import::import_home_skips_empty_config_migration"
+          },
+          {
+            "classname": "codex-external-agent-migration",
+            "name": "service::tests::general::config_import::import_local_plugins_returns_completed_status"
+          },
+          {
+            "classname": "codex-external-agent-migration",
+            "name": "service::tests::general::config_import::import_repo_mcp_preserves_existing_same_named_server"
+          },
+          {
+            "classname": "codex-external-agent-migration",
+            "name": "service::tests::general::detection::detect_cursor_home_lists_user_and_managed_skills"
+          },
+          {
+            "classname": "codex-external-agent-migration",
+            "name": "service::tests::general::detection::detect_cursor_repo_lists_skills_from_skills"
+          },
+          {
+            "classname": "codex-external-agent-migration",
+            "name": "service::tests::general::detection::detect_home_lists_config_skills_and_agents_md"
+          },
+          {
+            "classname": "codex-external-agent-migration",
+            "name": "service::tests::general::detection::detect_home_lists_recent_sessions"
+          },
+          {
+            "classname": "codex-external-agent-migration",
+            "name": "service::tests::general::detection::detect_repo_lists_agents_md_for_each_cwd"
+          },
+          {
+            "classname": "codex-external-agent-migration",
+            "name": "service::tests::general::detection::detect_repo_lists_mcp_hooks_commands_and_subagents"
+          },
+          {
+            "classname": "codex-external-agent-migration",
+            "name": "service::tests::general::detection::detect_repo_skips_hooks_when_only_unsupported_hooks_exist"
+          },
+          {
+            "classname": "codex-external-agent-migration",
+            "name": "service::tests::general::detection::detect_repo_still_reports_non_plugin_items_when_home_config_is_invalid"
+          },
+          {
+            "classname": "codex-external-agent-migration",
+            "name": "service::tests::general::detection::import_repo_migrates_mcp_hooks_commands_and_subagents"
+          },
+          {
+            "classname": "codex-external-agent-migration",
+            "name": "service::tests::general::repo_import::detect_repo_prefers_non_empty_external_agent_agents_source"
+          },
+          {
+            "classname": "codex-external-agent-migration",
+            "name": "service::tests::general::repo_import::import_continues_after_failed_migration_item"
+          },
+          {
+            "classname": "codex-external-agent-migration",
+            "name": "service::tests::general::repo_import::import_repo_agents_md_from_nested_cwd_rewrites_terms_and_skips_non_empty_targets"
+          },
+          {
+            "classname": "codex-external-agent-migration",
+            "name": "service::tests::general::repo_import::import_repo_agents_md_overwrites_empty_targets"
+          },
+          {
+            "classname": "codex-external-agent-migration",
+            "name": "service::tests::general::repo_import::import_repo_hooks_preserves_disabled_codex_hooks_feature"
+          },
+          {
+            "classname": "codex-external-agent-migration",
+            "name": "service::tests::general::repo_import::import_repo_mcp_ignores_invalid_home_settings_when_repo_settings_missing"
+          },
+          {
+            "classname": "codex-external-agent-migration",
+            "name": "service::tests::general::repo_import::import_repo_mcp_uses_home_settings_toggles_when_repo_settings_missing"
+          },
+          {
+            "classname": "codex-external-agent-migration",
+            "name": "service::tests::general::repo_import::import_repo_mcp_uses_local_settings_toggles_over_project_settings"
+          },
+          {
+            "classname": "codex-external-agent-migration",
+            "name": "service::tests::general::repo_import::import_repo_uses_non_empty_external_agent_agents_source"
+          },
+          {
+            "classname": "codex-external-agent-migration",
+            "name": "service::tests::general::repo_import::migration_metric_tags_for_skills_include_skills_count"
+          },
+          {
+            "classname": "codex-external-agent-migration",
+            "name": "service::tests::general::repo_import::repo_agents_md_migration_skips_symlink_targets"
+          },
+          {
+            "classname": "codex-external-agent-migration",
+            "name": "service::tests::general::repo_import::repo_hooks_migration_skips_symlink_targets"
+          },
+          {
+            "classname": "codex-external-agent-migration",
+            "name": "service::tests::general::repo_import::repo_migration_skips_redirected_generated_destinations"
+          },
+          {
+            "classname": "codex-external-agent-migration",
+            "name": "service::tests::memory::detect_does_not_offer_memory_for_an_unsupported_source"
+          },
+          {
+            "classname": "codex-external-agent-migration",
+            "name": "service::tests::plugins::basics::authenticated_plugin_migration_uses_chatgpt_curated_marketplace"
+          },
+          {
+            "classname": "codex-external-agent-migration",
+            "name": "service::tests::plugins::basics::detect_home_lists_enabled_plugins_from_settings"
+          },
+          {
+            "classname": "codex-external-agent-migration",
+            "name": "service::tests::plugins::basics::detect_home_plugins_uses_local_settings_over_project_settings"
+          },
+          {
+            "classname": "codex-external-agent-migration",
+            "name": "service::tests::plugins::basics::detect_home_skips_plugins_with_invalid_marketplace_source"
+          },
+          {
+            "classname": "codex-external-agent-migration",
+            "name": "service::tests::plugins::basics::detect_home_skips_plugins_without_marketplace_source"
+          },
+          {
+            "classname": "codex-external-agent-migration",
+            "name": "service::tests::plugins::basics::detect_home_uses_materialized_known_marketplace_for_inline_npm_source"
+          },
+          {
+            "classname": "codex-external-agent-migration",
+            "name": "service::tests::plugins::basics::detect_repo_skips_plugins_even_with_installed_marketplace"
+          },
+          {
+            "classname": "codex-external-agent-migration",
+            "name": "service::tests::plugins::basics::detect_repo_skips_plugins_from_remote_marketplace"
+          },
+          {
+            "classname": "codex-external-agent-migration",
+            "name": "service::tests::plugins::basics::detect_repo_skips_plugins_only_configured_in_project_codex"
+          },
+          {
+            "classname": "codex-external-agent-migration",
+            "name": "service::tests::plugins::basics::detect_repo_skips_plugins_that_are_disabled_in_codex"
+          },
+          {
+            "classname": "codex-external-agent-migration",
+            "name": "service::tests::plugins::basics::detect_repo_skips_plugins_without_explicit_enabled_in_codex"
+          },
+          {
+            "classname": "codex-external-agent-migration",
+            "name": "service::tests::plugins::basics::import_plugins_requires_details"
+          },
+          {
+            "classname": "codex-external-agent-migration",
+            "name": "service::tests::plugins::basics::marketplace_import_sources_infers_bundled_claude_code_marketplace"
+          },
+          {
+            "classname": "codex-external-agent-migration",
+            "name": "service::tests::plugins::basics::marketplace_import_sources_prefers_scoped_source_over_registry_name_collision"
+          },
+          {
+            "classname": "codex-external-agent-migration",
+            "name": "service::tests::plugins::basics::marketplace_import_sources_prefers_supported_declaration_over_materialization"
+          },
+          {
+            "classname": "codex-external-agent-migration",
+            "name": "service::tests::plugins::marketplaces::detect_home_infers_external_official_marketplace_when_missing_from_settings"
+          },
+          {
+            "classname": "codex-external-agent-migration",
+            "name": "service::tests::plugins::marketplaces::detect_home_supports_relative_external_agent_plugin_marketplace_path"
+          },
+          {
+            "classname": "codex-external-agent-migration",
+            "name": "service::tests::plugins::marketplaces::detect_repo_skips_project_relative_external_agent_plugin_marketplace_path"
+          },
+          {
+            "classname": "codex-external-agent-migration",
+            "name": "service::tests::plugins::marketplaces::import_cursor_skills_reads_user_and_managed_directories"
+          },
+          {
+            "classname": "codex-external-agent-migration",
+            "name": "service::tests::plugins::marketplaces::import_plugins_defers_marketplace_source_validation_to_add_marketplace"
+          },
+          {
+            "classname": "codex-external-agent-migration",
+            "name": "service::tests::plugins::marketplaces::import_plugins_infers_external_official_marketplace_when_missing_from_settings"
+          },
+          {
+            "classname": "codex-external-agent-migration",
+            "name": "service::tests::plugins::marketplaces::import_plugins_rejects_project_cwd_before_config_loading"
+          },
+          {
+            "classname": "codex-external-agent-migration",
+            "name": "service::tests::plugins::marketplaces::import_plugins_requires_source_marketplace_details"
+          },
+          {
+            "classname": "codex-external-agent-migration",
+            "name": "service::tests::plugins::marketplaces::import_plugins_reuses_configured_marketplace_with_different_source"
+          },
+          {
+            "classname": "codex-external-agent-migration",
+            "name": "service::tests::plugins::marketplaces::import_plugins_supports_relative_external_agent_plugin_marketplace_path"
+          },
+          {
+            "classname": "codex-external-agent-migration",
+            "name": "service::tests::plugins::marketplaces::import_plugins_treats_empty_cwd_as_home_scope"
+          },
+          {
+            "classname": "codex-external-agent-migration",
+            "name": "service::tests::plugins::marketplaces::import_rejects_forged_project_relative_external_agent_plugin_item"
+          },
+          {
+            "classname": "codex-external-agent-migration",
+            "name": "service::tests::plugins::marketplaces::import_skills_returns_only_new_skill_directory_names"
+          },
+          {
+            "classname": "codex-external-agent-migration",
+            "name": "sessions::append::tests::requires_a_strict_nonempty_model_prefix"
+          },
+          {
+            "classname": "codex-external-agent-migration",
+            "name": "sessions::append::tests::returns_the_missing_suffix_from_its_visible_boundary"
+          },
+          {
+            "classname": "codex-external-agent-migration",
+            "name": "sessions::export::tests::adds_import_marker_without_copying_last_agent_message"
+          },
+          {
+            "classname": "codex-external-agent-migration",
+            "name": "sessions::export::tests::builds_visible_turns_for_imported_history"
+          },
+          {
+            "classname": "codex-external-agent-migration",
+            "name": "sessions::export::tests::emits_token_usage_for_imported_history"
+          },
+          {
+            "classname": "codex-external-agent-migration",
+            "name": "sessions::export::tests::loads_ai_title_for_imported_session"
+          },
+          {
+            "classname": "codex-external-agent-migration",
+            "name": "sessions::export::tests::loads_custom_title_for_imported_session"
+          },
+          {
+            "classname": "codex-external-agent-migration",
+            "name": "sessions::export::tests::loads_custom_title_over_later_ai_title_for_imported_session"
+          },
+          {
+            "classname": "codex-external-agent-migration",
+            "name": "sessions::export::tests::sanitizes_only_the_imported_session_fallback_title"
+          },
+          {
+            "classname": "codex-external-agent-migration",
+            "name": "sessions::export::tests::skips_control_only_user_messages_when_choosing_fallback_title"
+          },
+          {
+            "classname": "codex-external-agent-migration",
+            "name": "sessions::export::tests::stores_imported_messages_as_response_items_and_visible_events"
+          },
+          {
+            "classname": "codex-external-agent-migration",
+            "name": "sessions::export::tests::uses_safe_fallback_after_all_user_messages_are_control_only"
+          },
+          {
+            "classname": "codex-external-agent-migration",
+            "name": "sessions::ledger::tests::checkpoint_is_compare_and_swap_and_preserves_record_metadata"
+          },
+          {
+            "classname": "codex-external-agent-migration",
+            "name": "sessions::ledger::tests::completed_import_refreshes_existing_record_metadata"
+          },
+          {
+            "classname": "codex-external-agent-migration",
+            "name": "sessions::ledger::tests::completed_imports_do_not_read_source_files"
+          },
+          {
+            "classname": "codex-external-agent-migration",
+            "name": "sessions::ledger::tests::connector_candidates_accumulate_detected_and_imported_session_clues"
+          },
+          {
+            "classname": "codex-external-agent-migration",
+            "name": "sessions::ledger::tests::connector_candidates_accumulate_imports_for_each_source"
+          },
+          {
+            "classname": "codex-external-agent-migration",
+            "name": "sessions::ledger::tests::empty_ledger_does_not_read_source"
+          },
+          {
+            "classname": "codex-external-agent-migration",
+            "name": "sessions::records_cla::tests::reads_session_import_in_one_pass"
+          },
+          {
+            "classname": "codex-external-agent-migration",
+            "name": "sessions::records_common::tests::converts_error_tool_result_blocks_to_bounded_external_agent_tags"
+          },
+          {
+            "classname": "codex-external-agent-migration",
+            "name": "sessions::records_common::tests::converts_tool_result_blocks_to_bounded_external_agent_tags"
+          },
+          {
+            "classname": "codex-external-agent-migration",
+            "name": "sessions::records_common::tests::converts_tool_use_blocks_to_bounded_external_agent_tags"
+          },
+          {
+            "classname": "codex-external-agent-migration",
+            "name": "sessions::records_cur::tests::embedded_cwd_overrides_migration_fallback"
+          },
+          {
+            "classname": "codex-external-agent-migration",
+            "name": "sessions::records_cur::tests::preserves_user_query_tags_after_unrecognized_context"
+          },
+          {
+            "classname": "codex-external-agent-migration",
+            "name": "sessions::records_cur::tests::unwraps_user_query_after_context_wrappers"
+          },
+          {
+            "classname": "codex-external-agent-migration",
+            "name": "sessions::tests::migration_fallback_metadata_is_opt_in"
+          },
+          {
+            "classname": "codex-external-agent-migration",
+            "name": "sessions::tests::prepares_changed_session_for_its_unique_import"
+          },
+          {
+            "classname": "codex-external-agent-migration",
+            "name": "sessions::tests::prepares_one_validated_session_import_with_content_hash"
+          },
+          {
+            "classname": "codex-external-agent-migration",
+            "name": "sessions::tests::reports_session_preparation_errors"
+          },
+          {
+            "classname": "codex-external-agent-migration",
+            "name": "sessions::tests::skips_changed_session_with_ambiguous_imports"
+          },
+          {
+            "classname": "codex-external-agent-migration",
+            "name": "sessions::tests::skips_session_that_was_already_imported"
+          },
+          {
+            "classname": "codex-external-agent-migration",
+            "name": "sessions::title::tests::bounds_fallback_titles_to_120_characters"
+          },
+          {
+            "classname": "codex-external-agent-migration",
+            "name": "sessions::title::tests::preserves_unknown_and_user_authored_angle_bracket_text"
+          },
+          {
+            "classname": "codex-external-agent-migration",
+            "name": "sessions::title::tests::preserves_valid_ai_title_unchanged_without_custom_title"
+          },
+          {
+            "classname": "codex-external-agent-migration",
+            "name": "sessions::title::tests::preserves_valid_custom_title_unchanged"
+          },
+          {
+            "classname": "codex-external-agent-migration",
+            "name": "sessions::title::tests::returns_no_candidate_for_empty_or_control_only_messages"
+          },
+          {
+            "classname": "codex-external-agent-migration",
+            "name": "sessions::title::tests::strips_nested_repeated_and_multiline_leading_control_wrappers"
+          },
+          {
+            "classname": "codex-external-agent-migration",
+            "name": "sessions::title::tests::strips_observed_external_agent_control_wrapper_families"
+          },
+          {
+            "classname": "codex-external-agent-migration",
+            "name": "sessions::title::tests::uses_first_meaningful_line_from_ordinary_messages"
+          },
+          {
+            "classname": "codex-external-agent-migration",
+            "name": "source_cur::tests::cached_marketplace_plugins_require_manifest_and_cache_entries"
+          },
+          {
+            "classname": "codex-external-agent-migration",
+            "name": "source_cur::tests::detects_legacy_repo_instruction_file"
+          },
+          {
+            "classname": "codex-external-agent-migration",
+            "name": "source_cur::tests::detects_uninstalled_plugin_from_configured_marketplace"
+          },
+          {
+            "classname": "codex-external-agent-migration",
+            "name": "tests::env_placeholder_accepts_defaults"
+          },
+          {
+            "classname": "codex-external-agent-migration",
+            "name": "tests::frontmatter_accepts_crlf_delimiters"
+          },
+          {
+            "classname": "codex-external-agent-migration",
+            "name": "tests::hook_command_paths_rewrite_to_target_hook_dir"
+          },
+          {
+            "classname": "codex-external-agent-migration",
+            "name": "tests::hook_migration_drops_negative_timeouts"
+          },
+          {
+            "classname": "codex-external-agent-migration",
+            "name": "tests::hook_migration_honors_disable_all_hooks"
+          },
+          {
+            "classname": "codex-external-agent-migration",
+            "name": "tests::hook_migration_honors_settings_local_disable_override"
+          },
+          {
+            "classname": "codex-external-agent-migration",
+            "name": "tests::hook_migration_ignores_unsupported_handlers"
+          },
+          {
+            "classname": "codex-external-agent-migration",
+            "name": "tests::hook_script_copy_keeps_existing_target_scripts"
+          },
+          {
+            "classname": "codex-external-agent-migration",
+            "name": "tests::mcp_migration_prefers_command_transport_for_mixed_server_config"
+          },
+          {
+            "classname": "codex-external-agent-migration",
+            "name": "tests::mcp_migration_preserves_repo_servers_over_home_project_entries"
+          },
+          {
+            "classname": "codex-external-agent-migration",
+            "name": "tests::mcp_migration_reads_matching_project_entries_from_home_external_project_config"
+          },
+          {
+            "classname": "codex-external-agent-migration",
+            "name": "tests::mcp_migration_reads_matching_project_entries_from_repo_external_project_config"
+          },
+          {
+            "classname": "codex-external-agent-migration",
+            "name": "tests::mcp_migration_skips_disabled_servers"
+          },
+          {
+            "classname": "codex-external-agent-migration",
+            "name": "tests::mcp_migration_skips_placeholder_args"
+          },
+          {
+            "classname": "codex-external-agent-migration",
+            "name": "tests::mcp_migration_skips_unsupported_transports"
+          },
+          {
+            "classname": "codex-external-agent-migration",
+            "name": "tests::subagent_accepts_yaml_block_lists_by_ignoring_unsupported_fields"
+          },
+          {
+            "classname": "codex-external-agent-migration",
+            "name": "tests::subagent_preserves_default_model_when_source_model_is_present"
+          },
+          {
+            "classname": "codex-external-agent-migration",
+            "name": "tests::subagent_requires_minimum_codex_agent_fields"
+          },
+          {
+            "classname": "codex-external-agent-migration",
+            "name": "tests::subagent_target_preserves_dotted_file_stem"
+          }
+        ],
+        "expected_result": "all 166 PASS including actual successful one-case child"
+      },
+      {
+        "label": "v8-and-runtime-original",
+        "package_args": [
+          "-p",
+          "codex-v8-poc",
+          "-p",
+          "codex-code-mode-runtime"
+        ],
+        "expression": null,
+        "expected_cases": [
+          {
+            "classname": "codex-v8-poc",
+            "name": "tests::evaluates_integer_addition"
+          },
+          {
+            "classname": "codex-v8-poc",
+            "name": "tests::evaluates_string_concatenation"
+          },
+          {
+            "classname": "codex-v8-poc",
+            "name": "tests::exposes_embedded_v8_version"
+          },
+          {
+            "classname": "codex-v8-poc",
+            "name": "tests::exposes_expected_bazel_target"
+          },
+          {
+            "classname": "codex-v8-poc",
+            "name": "tests::parses_crdtp_dispatchable_messages"
+          },
+          {
+            "classname": "codex-v8-poc",
+            "name": "tests::sandbox_feature_matches_linked_v8"
+          },
+          {
+            "classname": "codex-code-mode-runtime",
+            "name": "cell_actor::callbacks::tests::callback_wrapper_join_error_reports_failure"
+          },
+          {
+            "classname": "codex-code-mode-runtime",
+            "name": "cell_actor::callbacks::tests::notification_callback_panic_reports_failure"
+          },
+          {
+            "classname": "codex-code-mode-runtime",
+            "name": "cell_actor::callbacks::tests::tool_callback_panic_rejects_the_js_promise_and_reports_failure"
+          },
+          {
+            "classname": "codex-code-mode-runtime",
+            "name": "cell_actor::tests::buffered_initial_yield_precedes_buffered_completion_for_yield_observer"
+          },
+          {
+            "classname": "codex-code-mode-runtime",
+            "name": "cell_actor::tests::dropped_pending_observation_preserves_the_initial_yield_boundary"
+          },
+          {
+            "classname": "codex-code-mode-runtime",
+            "name": "cell_actor::tests::dropped_pending_observer_preserves_the_frontier_for_the_next_observation"
+          },
+          {
+            "classname": "codex-code-mode-runtime",
+            "name": "cell_actor::tests::dropped_yield_observer_preserves_output_for_the_next_observation"
+          },
+          {
+            "classname": "codex-code-mode-runtime",
+            "name": "cell_actor::tests::failed_completion_delivery_rebuffers_the_event"
+          },
+          {
+            "classname": "codex-code-mode-runtime",
+            "name": "cell_actor::tests::observation_dropped_before_dequeue_does_not_consume_output"
+          },
+          {
+            "classname": "codex-code-mode-runtime",
+            "name": "cell_actor::tests::only_the_first_termination_claims_a_buffered_completion"
+          },
+          {
+            "classname": "codex-code-mode-runtime",
+            "name": "cell_actor::tests::pending_observer_merges_initial_yield_and_completion_output"
+          },
+          {
+            "classname": "codex-code-mode-runtime",
+            "name": "cell_actor::tests::queued_termination_preempts_unobserved_runtime_completion"
+          },
+          {
+            "classname": "codex-code-mode-runtime",
+            "name": "cell_actor::tests::runtime_thread_panic_remains_a_cell_error_without_owner_supervision"
+          },
+          {
+            "classname": "codex-code-mode-runtime",
+            "name": "cell_actor::tests::termination_claim_prevents_stored_value_commit"
+          },
+          {
+            "classname": "codex-code-mode-runtime",
+            "name": "cell_actor::tests::unexpected_runtime_thread_exit_is_reported_to_the_session_owner"
+          },
+          {
+            "classname": "codex-code-mode-runtime",
+            "name": "cell_actor::tests::yield_timer_preempts_buffered_runtime_output"
+          },
+          {
+            "classname": "codex-code-mode-runtime",
+            "name": "runtime::tests::linked_v8_has_sandbox_enabled"
+          },
+          {
+            "classname": "codex-code-mode-runtime",
+            "name": "runtime::tests::pending_mode_freezes_runtime_commands_until_resume"
+          },
+          {
+            "classname": "codex-code-mode-runtime",
+            "name": "runtime::tests::runtime_thread_panic_before_initialization_is_reported_directly"
+          },
+          {
+            "classname": "codex-code-mode-runtime",
+            "name": "runtime::tests::runtime_thread_panic_is_forwarded_without_owner_supervision"
+          },
+          {
+            "classname": "codex-code-mode-runtime",
+            "name": "runtime::tests::terminate_execution_stops_cpu_bound_module"
+          },
+          {
+            "classname": "codex-code-mode-runtime",
+            "name": "service::contract_tests::natural_completion_cleans_up_callbacks_before_responding"
+          },
+          {
+            "classname": "codex-code-mode-runtime",
+            "name": "service::contract_tests::observed_natural_completion_wins_over_termination"
+          },
+          {
+            "classname": "codex-code-mode-runtime",
+            "name": "service::contract_tests::repeated_termination_is_rejected_while_callback_cleanup_is_pending"
+          },
+          {
+            "classname": "codex-code-mode-runtime",
+            "name": "service::contract_tests::returns_and_resumes_from_the_pending_frontier"
+          },
+          {
+            "classname": "codex-code-mode-runtime",
+            "name": "service::contract_tests::second_observer_is_rejected_without_displacing_the_first"
+          },
+          {
+            "classname": "codex-code-mode-runtime",
+            "name": "service::contract_tests::shutdown_cancels_notifications_while_natural_completion_is_draining"
+          },
+          {
+            "classname": "codex-code-mode-runtime",
+            "name": "service::contract_tests::termination_cancels_pending_callbacks_before_responding"
+          },
+          {
+            "classname": "codex-code-mode-runtime",
+            "name": "service::contract_tests::yields_and_resumes"
+          },
+          {
+            "classname": "codex-code-mode-runtime",
+            "name": "service::tests::audio_helper_accepts_audio_url_object_and_raw_mcp_audio_block"
+          },
+          {
+            "classname": "codex-code-mode-runtime",
+            "name": "service::tests::audio_helper_rejects_non_data_urls"
+          },
+          {
+            "classname": "codex-code-mode-runtime",
+            "name": "service::tests::date_locale_string_formats_with_icu_data"
+          },
+          {
+            "classname": "codex-code-mode-runtime",
+            "name": "service::tests::execute_and_wait_clamp_yield_grace_without_stopping_the_cell"
+          },
+          {
+            "classname": "codex-code-mode-runtime",
+            "name": "service::tests::execute_to_pending_excludes_delayed_timeout_tool_calls_until_wait"
+          },
+          {
+            "classname": "codex-code-mode-runtime",
+            "name": "service::tests::execute_to_pending_identifies_tool_calls_in_paused_frontier"
+          },
+          {
+            "classname": "codex-code-mode-runtime",
+            "name": "service::tests::execute_to_pending_returns_completed_for_synchronous_results"
+          },
+          {
+            "classname": "codex-code-mode-runtime",
+            "name": "service::tests::execute_to_pending_returns_once_the_runtime_is_quiescent"
+          },
+          {
+            "classname": "codex-code-mode-runtime",
+            "name": "service::tests::execute_waits_for_nested_tool_during_yield_grace"
+          },
+          {
+            "classname": "codex-code-mode-runtime",
+            "name": "service::tests::generated_image_helper_appends_image_and_output_hint"
+          },
+          {
+            "classname": "codex-code-mode-runtime",
+            "name": "service::tests::global_scope_contains_only_allowed_items"
+          },
+          {
+            "classname": "codex-code-mode-runtime",
+            "name": "service::tests::image_helper_accepts_low_detail"
+          },
+          {
+            "classname": "codex-code-mode-runtime",
+            "name": "service::tests::image_helper_accepts_raw_mcp_image_block_with_original_detail"
+          },
+          {
+            "classname": "codex-code-mode-runtime",
+            "name": "service::tests::image_helper_rejects_raw_mcp_result_container"
+          },
+          {
+            "classname": "codex-code-mode-runtime",
+            "name": "service::tests::image_helper_rejects_unsupported_detail"
+          },
+          {
+            "classname": "codex-code-mode-runtime",
+            "name": "service::tests::image_helper_second_arg_overrides_explicit_object_detail"
+          },
+          {
+            "classname": "codex-code-mode-runtime",
+            "name": "service::tests::image_helper_second_arg_overrides_raw_mcp_image_detail"
+          },
+          {
+            "classname": "codex-code-mode-runtime",
+            "name": "service::tests::image_helpers_reject_invalid_image_outputs"
+          },
+          {
+            "classname": "codex-code-mode-runtime",
+            "name": "service::tests::image_helpers_reject_remote_urls"
+          },
+          {
+            "classname": "codex-code-mode-runtime",
+            "name": "service::tests::intl_date_time_format_formats_with_icu_data"
+          },
+          {
+            "classname": "codex-code-mode-runtime",
+            "name": "service::tests::output_helpers_return_undefined"
+          },
+          {
+            "classname": "codex-code-mode-runtime",
+            "name": "service::tests::resolve_yield_timeout_applies_grace_before_session_limits"
+          },
+          {
+            "classname": "codex-code-mode-runtime",
+            "name": "service::tests::shutdown_interrupts_cpu_bound_cells"
+          },
+          {
+            "classname": "codex-code-mode-runtime",
+            "name": "service::tests::start_cell_rejects_new_cell_after_shutdown_begins"
+          },
+          {
+            "classname": "codex-code-mode-runtime",
+            "name": "service::tests::stored_values_are_shared_between_cells_but_not_sessions"
+          },
+          {
+            "classname": "codex-code-mode-runtime",
+            "name": "service::tests::synchronous_exit_returns_successfully"
+          },
+          {
+            "classname": "codex-code-mode-runtime",
+            "name": "service::tests::text_helper_serializes_objects"
+          },
+          {
+            "classname": "codex-code-mode-runtime",
+            "name": "service::tests::text_helper_surfaces_stringify_errors"
+          },
+          {
+            "classname": "codex-code-mode-runtime",
+            "name": "service::tests::v8_console_is_not_exposed_on_global_this"
+          },
+          {
+            "classname": "codex-code-mode-runtime",
+            "name": "service::tests::wait_reports_missing_cell_separately_from_runtime_results"
+          },
+          {
+            "classname": "codex-code-mode-runtime",
+            "name": "service::tests::wait_to_pending_returns_after_resumed_runtime_becomes_quiescent_again"
+          },
+          {
+            "classname": "codex-code-mode-runtime",
+            "name": "service::tests::wait_to_pending_returns_completed_after_resumed_runtime_finishes"
+          },
+          {
+            "classname": "codex-code-mode-runtime",
+            "name": "service::tests::wait_waits_for_nested_tool_during_yield_grace"
+          },
+          {
+            "classname": "codex-code-mode-runtime",
+            "name": "service::tests::zero_yield_limit_is_immediate_and_scoped_to_its_session"
+          },
+          {
+            "classname": "codex-code-mode-runtime",
+            "name": "session_runtime::tests::cell_id_allocation_fails_before_wrapping"
+          },
+          {
+            "classname": "codex-code-mode-runtime",
+            "name": "session_runtime::tests::drop_terminates_cells_when_the_registry_is_locked"
+          },
+          {
+            "classname": "codex-code-mode-runtime",
+            "name": "session_runtime::tests::reports_cell_actor_panics_to_the_owner"
+          },
+          {
+            "classname": "codex-code-mode-runtime",
+            "name": "session_runtime::tests::shutdown_rejects_cell_admission_queued_before_the_registry_lock"
+          },
+          {
+            "classname": "codex-code-mode-runtime",
+            "name": "session_runtime::tests::termination_rejects_a_waiting_store_commit_before_the_next_cell_can_load_it"
+          },
+          {
+            "classname": "codex-code-mode-runtime::jit",
+            "name": "code_mode_runs_with_jit_disabled"
+          },
+          {
+            "classname": "codex-code-mode-runtime::parallel_initialization",
+            "name": "concurrent_first_sessions_initialize_one_shared_array_buffer_pool"
+          }
+        ],
+        "expected_result": "all 76 PASS"
+      }
+    ],
+    "bazel_bootstrap": {
+      "version": "9.3.0",
+      "release_url": "https://github.com/bazelbuild/bazel/releases/tag/9.3.0",
+      "release_id": 405972569,
+      "assets": [
+        {
+          "id": 619248138,
+          "name": "bazel-9.3.0-linux-x86_64",
+          "size": 77023347,
+          "sha256": "d302d22ed77ee5658b87857249baa579db84300ecebe0a1e9a357b5b20f80eb8",
+          "url": "https://github.com/bazelbuild/bazel/releases/download/9.3.0/bazel-9.3.0-linux-x86_64"
+        },
+        {
+          "id": 619248150,
+          "name": "bazel-9.3.0-linux-x86_64.sha256",
+          "size": 91,
+          "sha256": "92f4bd8ffdbc621d28e97731c61e1c1d09abb5758f0d19dc07b49ee67c7d832c",
+          "url": "https://github.com/bazelbuild/bazel/releases/download/9.3.0/bazel-9.3.0-linux-x86_64.sha256"
+        }
+      ]
+    },
+    "temporary_bazel_config": "startup --output_user_root=/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/v8-lock-cache-20261105/output-user-root\ncommon --repo_contents_cache=/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/v8-lock-cache-20261105/repo-contents-cache\ncommon --repository_cache=/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/v8-lock-cache-20261105/repository-cache\ncommon --disk_cache=/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/v8-lock-cache-20261105/disk-cache\n",
+    "resource_guards": {
+      "minimum_free_bytes_before_and_after_every_phase": 8000000000
+    },
+    "budget_contract": "Original nextest local settings and all original in-test deadlines/parent-child calls/assertions remain unchanged. Each original just test explicitly --locked --cargo-profile dev-small --no-tests fail --retries 0 --success-output immediate. No feature flags, skip additions, retry or timeout extension.",
+    "causal_contracts": {
+      "skills": {
+        "location": "ext/skills/src/host_roots_tests.rs:441",
+        "prerequisites": "Existing real ancestor marker absence checks, then test-owned outer marker creation",
+        "required": "At the original exact full-vector assertion, strip ANSI for observation only, discard right-only Diff lines, and require the actual left/common ordered vector exactly [same fixture outer/.agents/skills, same fixture outer/nested/inner/.agents/skills], with outer on an added-left line. Setup, compile, timeout or a right-only expected cwd is invalid.",
+        "restore": "Exact positive 3d8412f8 bytes, removing only controlled marker creation."
+      },
+      "migration": {
+        "location": "external-agent-migration/src/service_tests/plugins/marketplaces.rs:588",
+        "required": "After real fixture Git-repository setup and deliberate inference removal, the owned child must reach and fail the original succeeded_marketplaces equality; raw must contain its exact source location, original official name, child 0 passed/1 failed and parent isolated-import assertion. The negative may correctly avoid clone when inference is removed; real local clone belongs to the restored positive path.",
+        "restore": "Exact original production source_cla.rs b2620eaf, preserving the reviewed private local-Git fixture."
+      }
+    },
+    "generator_contract": {
+      "original_justfile_blob": "a215a76cf407ace9715bca39c20497014e7dd4dc",
+      "original_lockcheck_script_blob": "49ddaaef2bfc9a3c568bcd2ab3818cd968ccf6dd",
+      "update": [
+        "just",
+        "bazel-lock-update"
+      ],
+      "check": [
+        "just",
+        "bazel-lock-check"
+      ],
+      "cwd": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/source",
+      "allowed_generated_paths": [
+        "MODULE.bazel.lock"
+      ],
+      "cargo_lock_must_remain_exact": true,
+      "no_manual_lock_edits": true,
+      "post_generation_tree": "Use actual generated lock bytes/tree; never assume no diff. If changed, root must recompute later Windows cohort trees from the actual lock."
+    },
+    "temporary_config_contract": "user.bazelrc and cache root must initially be absent. Use repository's existing try-import, retain original flags, record exact task-local configuration. Shut down only its task-owned Bazel server, remove only this newly created byte-identical override, preserve cache and raw logs. No system/user existing config or HOME edits.",
+    "provenance": {
+      "skills_manifest": "fef564ac130fb4bf7cebdcaf4bbd01780c7fe2f9",
+      "original_full_archive": "4fbfb3d05586f87b449a9ec14097982072917934",
+      "original_full_catalog_sha256": "af962c86ba44b1e4931ca61319597cc8c9557cafaaf70dd8cfe8664c6e3815ef",
+      "full_case_counts": {
+        "migration": 166,
+        "skills_host_roots": 9,
+        "v8": 6,
+        "code_mode_runtime": 70
+      },
+      "limit": "These are scoped package iterations, separate from the later complete workspace graph/gate.",
+      "migration_static": "Root reviewed full +75-line fixture and intentional inference-removal control; exact source/patch identities are in stages."
+    },
+    "execution_order": [
+      "Await original App epoch2 terminal and root acceptance before starting.",
+      "Guard/apply exact skills negative; run original case; in finally restore exact positive only under complete owned-tree guards; require real actual-left-vector failure before original9.",
+      "Guard/apply migration fixture plus intentional inference removal; run original case; in finally restore exact b262 production source only under complete owned-tree guards; require child original business failure before original166.",
+      "Guard/apply only V8 default feature; bootstrap exact official Bazel9.3.0; original real update/check, preserving actual generated lock.",
+      "Original V8 six plus code-mode-runtime70 across all original package test targets (including jit and parallel_initialization integrations; no --lib) in normal selected graph; all tests finish before later final hygiene.",
+      "Stop with full source/index/lock/program/helper/command/raw/JUnit receipts for root review; no Windows cohort or full test yet."
+    ],
+    "suggested_controller_timeout_seconds": 7200,
+    "runner": {
+      "git_blob": "6a88d730302334977a3275218443f766cd07fd55",
+      "bytes": 23244,
+      "sha256": "08faad541e33d77c9c5263e90a442011958d34c22418c3f58d5aa638980417f0",
+      "ast_parse_pass": true,
+      "local_path": "/workspace/scratch/07dd58cc9630/ci-audit/recovered-20261105/full18-three-repairs-runner-v2.py"
+    },
+    "negative_restore_contract": "Each negative executes inside try/finally. Restore the exact approved positive postimage only while still on the owned exact negative source tree and all ordinary-index/lock/untracked-input guards pass. Retain the original exception and restoration receipt. An invalid negative stops after successful restoration; any external drift is preserved without overwrite. Positive tests run only after a qualified negative and successful exact restoration.",
+    "supersedes": {
+      "runner_blob": "bd0e21742148f6b443886e9a2b47a90505d9d2e5",
+      "manifest_blob": "86e3577e4de51ee3d5fc6fce635c5be14fa3f48e",
+      "source_payload_blob": "3d8b78905566698fdc7a07d7cf740c6dcbe79dc9",
+      "old_version_not_executed": true
+    }
+  },
+  "sources": {
+    "9814df0cddc9cf8c02e8e0259ccdac1fa2b117b1": "use std::fs;\nuse std::path::Path;\nuse std::sync::Arc;\nuse std::sync::Mutex;\n\nuse codex_config::ConfigLayerEntry;\nuse codex_config::ConfigLayerSource;\nuse codex_config::ConfigLayerStack;\nuse codex_config::ConfigRequirementsToml;\nuse codex_exec_server::CopyOptions;\nuse codex_exec_server::CreateDirectoryOptions;\nuse codex_exec_server::ExecutorFileSystem;\nuse codex_exec_server::ExecutorFileSystemFuture;\nuse codex_exec_server::FileMetadata;\nuse codex_exec_server::FileSystemReadStream;\nuse codex_exec_server::FileSystemSandboxContext;\nuse codex_exec_server::GetMetadataOptions;\nuse codex_exec_server::LOCAL_FS;\nuse codex_exec_server::ReadDirectoryEntry;\nuse codex_exec_server::ReadFileOptions;\nuse codex_exec_server::RemoveOptions;\nuse codex_exec_server::WalkOptions;\nuse codex_exec_server::WalkOutcome;\nuse codex_exec_server::WriteFileOptions;\nuse codex_protocol::protocol::SkillScope;\nuse codex_skills::SkillMetadata;\nuse codex_utils_absolute_path::AbsolutePathBuf;\nuse codex_utils_path_uri::PathUri;\nuse codex_utils_plugins::PluginIdentity;\nuse codex_utils_plugins::PluginSkillRoot;\nuse codex_utils_plugins::SkillDiscoveryMode;\nuse pretty_assertions::assert_eq;\nuse tempfile::TempDir;\nuse tokio::sync::Notify;\nuse tokio::sync::Semaphore;\n\nuse super::repo_agents_skill_roots;\nuse super::resolve_skill_roots_with_home_dir;\nuse super::roots_from_layer_stack;\nuse crate::loader::MAX_CONCURRENT_ROOT_SCANS;\nuse crate::loader::load_and_merge_host_skill_roots;\n\nstruct BlockingMetadataFileSystem {\n    inner: Arc<dyn ExecutorFileSystem>,\n    calls: Arc<BlockingMetadataCalls>,\n}\n\nstruct BlockingMetadataCalls {\n    paths: Mutex<Vec<PathUri>>,\n    started: Notify,\n    release: Semaphore,\n}\n\nimpl Default for BlockingMetadataCalls {\n    fn default() -> Self {\n        Self {\n            paths: Mutex::new(Vec::new()),\n            started: Notify::new(),\n            release: Semaphore::new(0),\n        }\n    }\n}\n\nimpl ExecutorFileSystem for BlockingMetadataFileSystem {\n    fn canonicalize<'a>(\n        &'a self,\n        path: &'a PathUri,\n        sandbox: Option<&'a FileSystemSandboxContext>,\n    ) -> ExecutorFileSystemFuture<'a, PathUri> {\n        self.inner.canonicalize(path, sandbox)\n    }\n\n    fn read_file<'a>(\n        &'a self,\n        path: &'a PathUri,\n        options: ReadFileOptions,\n        sandbox: Option<&'a FileSystemSandboxContext>,\n    ) -> ExecutorFileSystemFuture<'a, Vec<u8>> {\n        self.inner.read_file(path, options, sandbox)\n    }\n\n    fn read_file_stream<'a>(\n        &'a self,\n        path: &'a PathUri,\n        sandbox: Option<&'a FileSystemSandboxContext>,\n    ) -> ExecutorFileSystemFuture<'a, FileSystemReadStream> {\n        self.inner.read_file_stream(path, sandbox)\n    }\n\n    fn write_file<'a>(\n        &'a self,\n        path: &'a PathUri,\n        contents: Vec<u8>,\n        options: WriteFileOptions,\n        sandbox: Option<&'a FileSystemSandboxContext>,\n    ) -> ExecutorFileSystemFuture<'a, ()> {\n        self.inner.write_file(path, contents, options, sandbox)\n    }\n\n    fn create_directory<'a>(\n        &'a self,\n        path: &'a PathUri,\n        options: CreateDirectoryOptions,\n        sandbox: Option<&'a FileSystemSandboxContext>,\n    ) -> ExecutorFileSystemFuture<'a, ()> {\n        self.inner.create_directory(path, options, sandbox)\n    }\n\n    fn get_metadata<'a>(\n        &'a self,\n        path: &'a PathUri,\n        options: GetMetadataOptions,\n        sandbox: Option<&'a FileSystemSandboxContext>,\n    ) -> ExecutorFileSystemFuture<'a, FileMetadata> {\n        let Ok(path_abs) = path.to_abs_path() else {\n            return self.inner.get_metadata(path, options, sandbox);\n        };\n        let repo_skill_root_suffix = Path::new(\".agents\").join(\"skills\");\n        if !path_abs.ends_with(repo_skill_root_suffix) {\n            return self.inner.get_metadata(path, options, sandbox);\n        }\n\n        self.calls\n            .paths\n            .lock()\n            .expect(\"metadata paths lock\")\n            .push(path.clone());\n        self.calls.started.notify_one();\n        Box::pin(async move {\n            self.calls\n                .release\n                .acquire()\n                .await\n                .expect(\"metadata release semaphore\")\n                .forget();\n            self.inner.get_metadata(path, options, sandbox).await\n        })\n    }\n\n    fn read_directory<'a>(\n        &'a self,\n        path: &'a PathUri,\n        sandbox: Option<&'a FileSystemSandboxContext>,\n    ) -> ExecutorFileSystemFuture<'a, Vec<ReadDirectoryEntry>> {\n        self.inner.read_directory(path, sandbox)\n    }\n\n    fn walk<'a>(\n        &'a self,\n        path: &'a PathUri,\n        options: WalkOptions,\n        sandbox: Option<&'a FileSystemSandboxContext>,\n    ) -> ExecutorFileSystemFuture<'a, WalkOutcome> {\n        self.inner.walk(path, options, sandbox)\n    }\n\n    fn remove<'a>(\n        &'a self,\n        path: &'a PathUri,\n        options: RemoveOptions,\n        sandbox: Option<&'a FileSystemSandboxContext>,\n    ) -> ExecutorFileSystemFuture<'a, ()> {\n        self.inner.remove(path, options, sandbox)\n    }\n\n    fn copy<'a>(\n        &'a self,\n        source_path: &'a PathUri,\n        destination_path: &'a PathUri,\n        options: CopyOptions,\n        sandbox: Option<&'a FileSystemSandboxContext>,\n    ) -> ExecutorFileSystemFuture<'a, ()> {\n        self.inner\n            .copy(source_path, destination_path, options, sandbox)\n    }\n}\n\nfn absolute(path: impl Into<std::path::PathBuf>) -> AbsolutePathBuf {\n    AbsolutePathBuf::try_from(path.into()).expect(\"absolute path\")\n}\n\nfn empty_config() -> toml::Value {\n    toml::Value::Table(toml::map::Map::new())\n}\n\nfn stack(layers: Vec<ConfigLayerEntry>) -> ConfigLayerStack {\n    ConfigLayerStack::new(\n        layers,\n        Default::default(),\n        ConfigRequirementsToml::default(),\n    )\n    .expect(\"valid config stack\")\n}\n\nfn user_layer(codex_home: &AbsolutePathBuf) -> ConfigLayerEntry {\n    ConfigLayerEntry::new(\n        ConfigLayerSource::User {\n            file: codex_home.join(\"config.toml\"),\n            profile: None,\n        },\n        empty_config(),\n    )\n}\n\nfn project_layer(dot_codex_folder: &AbsolutePathBuf) -> ConfigLayerEntry {\n    ConfigLayerEntry::new(\n        ConfigLayerSource::Project {\n            dot_codex_folder: dot_codex_folder.clone(),\n        },\n        empty_config(),\n    )\n}\n\nfn write_skill(root: &AbsolutePathBuf, directory: &str, name: &str) -> AbsolutePathBuf {\n    let skill_dir = root.join(directory);\n    fs::create_dir_all(&skill_dir).expect(\"create skill directory\");\n    let skill_path = skill_dir.join(\"SKILL.md\");\n    fs::write(\n        &skill_path,\n        format!(\"---\\nname: {name}\\ndescription: {name} description\\n---\\n\"),\n    )\n    .expect(\"write skill\");\n    AbsolutePathBuf::from_absolute_path(\n        dunce::canonicalize(skill_path).expect(\"canonical skill path\"),\n    )\n    .expect(\"absolute skill path\")\n}\n\nfn expected_skill(path: AbsolutePathBuf, name: &str, scope: SkillScope) -> SkillMetadata {\n    SkillMetadata {\n        name: name.to_string(),\n        description: format!(\"{name} description\"),\n        short_description: None,\n        interface: None,\n        dependencies: None,\n        policy: None,\n        path_to_skills_md: path,\n        scope,\n        plugin_id: None,\n        remote_plugin_id: None,\n    }\n}\n\n#[test]\nfn layer_roots_preserve_scope_precedence_and_disabled_projects() {\n    let temp_dir = TempDir::new().expect(\"temp dir\");\n    let system_folder = absolute(temp_dir.path().join(\"etc/codex\"));\n    let home_folder = absolute(temp_dir.path().join(\"home\"));\n    let user_folder = home_folder.join(\"codex\");\n    let project_folder = absolute(temp_dir.path().join(\"repo/.codex\"));\n    let nested_project_folder = absolute(temp_dir.path().join(\"repo/nested/.codex\"));\n    let config_stack = stack(vec![\n        ConfigLayerEntry::new(\n            ConfigLayerSource::System {\n                file: system_folder.join(\"config.toml\"),\n            },\n            empty_config(),\n        ),\n        user_layer(&user_folder),\n        ConfigLayerEntry::new_disabled(\n            ConfigLayerSource::Project {\n                dot_codex_folder: project_folder.clone(),\n            },\n            empty_config(),\n            \"untrusted project\",\n        ),\n        project_layer(&nested_project_folder),\n    ]);\n\n    let roots = roots_from_layer_stack(\n        &config_stack,\n        Some(&home_folder),\n        Some(Arc::clone(&LOCAL_FS)),\n    )\n    .into_iter()\n    .map(|root| (root.scope, root.path))\n    .collect::<Vec<_>>();\n\n    assert_eq!(\n        roots,\n        vec![\n            (SkillScope::Repo, nested_project_folder.join(\"skills\")),\n            (SkillScope::Repo, project_folder.join(\"skills\")),\n            (SkillScope::User, user_folder.join(\"skills\")),\n            (SkillScope::User, home_folder.join(\".agents/skills\")),\n            (SkillScope::System, user_folder.join(\"skills/.system\")),\n            (SkillScope::Admin, system_folder.join(\"skills\")),\n        ]\n    );\n}\n\n#[tokio::test]\nasync fn plugin_roots_preserve_plugin_resolution_metadata() {\n    let temp_dir = TempDir::new().expect(\"temp dir\");\n    let cwd = absolute(temp_dir.path().join(\"workspace\"));\n    let plugin_root = absolute(temp_dir.path().join(\"plugins/example\"));\n    let skills_root = plugin_root.join(\"skills\");\n    let plugin_identity = PluginIdentity {\n        plugin_id: \"example@test\".to_string(),\n        remote_plugin_id: Some(\"plugins~Plugin_example\".to_string()),\n    };\n    let plugin_namespace = \"example\".to_string();\n\n    let roots = resolve_skill_roots_with_home_dir(\n        /*repository_file_system*/ None,\n        &stack(Vec::new()),\n        &cwd,\n        /*home_dir*/ None,\n        vec![PluginSkillRoot {\n            path: skills_root.clone(),\n            plugin_identity: plugin_identity.clone(),\n            plugin_namespace: plugin_namespace.clone(),\n            plugin_root: plugin_root.clone(),\n            discovery_mode: SkillDiscoveryMode::DirectChildren,\n        }],\n        Vec::new(),\n    )\n    .await;\n\n    assert_eq!(roots.len(), 1);\n    let root = &roots[0];\n    assert_eq!(\n        (\n            root.path.clone(),\n            root.scope,\n            root.plugin_identity().cloned(),\n            root.plugin_namespace().map(str::to_string),\n            root.plugin_root().cloned(),\n            root.discovery_mode(),\n        ),\n        (\n            skills_root,\n            SkillScope::User,\n            Some(plugin_identity),\n            Some(plugin_namespace),\n            Some(plugin_root),\n            SkillDiscoveryMode::DirectChildren,\n        )\n    );\n    assert!(Arc::ptr_eq(&root.file_system, &LOCAL_FS));\n}\n\n#[tokio::test]\nasync fn unique_extra_root_loads_as_recursive_user_root() {\n    let temp_dir = TempDir::new().expect(\"temp dir\");\n    let cwd = absolute(temp_dir.path().join(\"workspace\"));\n    let extra_root = absolute(temp_dir.path().join(\"runtime-skills\"));\n    let skill_path = write_skill(&extra_root, \"runtime\", \"runtime-skill\");\n\n    let roots = resolve_skill_roots_with_home_dir(\n        /*repository_file_system*/ None,\n        &stack(Vec::new()),\n        &cwd,\n        /*home_dir*/ None,\n        Vec::new(),\n        vec![extra_root.clone()],\n    )\n    .await;\n\n    assert_eq!(roots.len(), 1);\n    let root = &roots[0];\n    assert_eq!(\n        (\n            root.path.clone(),\n            root.scope,\n            root.plugin_identity().cloned(),\n            root.plugin_namespace().map(str::to_string),\n            root.plugin_root().cloned(),\n            root.discovery_mode(),\n        ),\n        (\n            extra_root,\n            SkillScope::User,\n            None,\n            None,\n            None,\n            SkillDiscoveryMode::Recursive,\n        )\n    );\n    assert!(Arc::ptr_eq(&root.file_system, &LOCAL_FS));\n\n    let outcome = load_and_merge_host_skill_roots(\n        roots,\n        &Semaphore::new(MAX_CONCURRENT_ROOT_SCANS),\n        /*restriction_product*/ None,\n        /*plugin_skill_snapshots*/ None,\n    )\n    .await;\n\n    assert!(outcome.errors.is_empty());\n    assert_eq!(\n        outcome.skills,\n        vec![expected_skill(\n            skill_path,\n            \"runtime-skill\",\n            SkillScope::User,\n        )]\n    );\n}\n\n#[tokio::test]\nasync fn repo_ancestry_without_project_marker_does_not_walk_parents() {\n    let temp_dir = TempDir::new().expect(\"temp dir\");\n    let outer = absolute(temp_dir.path().join(\"outer\"));\n    let cwd = outer.join(\"nested/inner\");\n    fs::create_dir_all(outer.join(\".agents/skills\")).expect(\"create outer skills\");\n    fs::create_dir_all(cwd.join(\".agents/skills\")).expect(\"create cwd skills\");\n\n    // An ambient .git above the temp directory is a valid project marker.\n    // Keep real nonempty marker discovery, but isolate this no-marker premise.\n    let marker = format!(\n        \".codex-test-project-marker-{}\",\n        temp_dir.path().file_name().expect(\"temp dir name\").to_string_lossy()\n    );\n    for ancestor in cwd.ancestors() {\n        let marker_path = ancestor.join(&marker);\n        assert_eq!(\n            fs::symlink_metadata(&marker_path).err().map(|error| error.kind()),\n            Some(std::io::ErrorKind::NotFound),\n            \"test marker must be absent at {}\",\n            marker_path.display(),\n        );\n    }\n    let mut config = empty_config();\n    config[\"project_root_markers\"] =\n        toml::Value::Array(vec![toml::Value::String(marker.clone())]);\n    let config_stack = stack(vec![ConfigLayerEntry::new(\n        ConfigLayerSource::SessionFlags,\n        config,\n    )]);\n\n    // Controlled counterfactual: discovery must now include the real outer root.\n    fs::write(outer.join(&marker), \"project marker\\n\").expect(\"write controlled outer marker\");\n\n    let roots = repo_agents_skill_roots(Some(Arc::clone(&LOCAL_FS)), &config_stack, &cwd)\n        .await\n        .into_iter()\n        .map(|root| root.path)\n        .collect::<Vec<_>>();\n\n    assert_eq!(roots, vec![cwd.join(\".agents/skills\")]);\n}\n\n#[tokio::test]\nasync fn repo_ancestry_stops_at_project_root_and_preserves_root_to_cwd_order() {\n    let temp_dir = TempDir::new().expect(\"temp dir\");\n    let outer = absolute(temp_dir.path().join(\"outer\"));\n    let repository = outer.join(\"repo\");\n    let nested = repository.join(\"nested/inner\");\n    fs::create_dir_all(&nested).expect(\"create nested cwd\");\n    fs::write(repository.join(\".git\"), \"gitdir: fake\\n\").expect(\"write git marker\");\n    fs::create_dir_all(outer.join(\".agents/skills\")).expect(\"create outer skills\");\n    fs::create_dir_all(repository.join(\".agents/skills\")).expect(\"create repo skills\");\n    fs::create_dir_all(repository.join(\"nested/.agents/skills\")).expect(\"create nested skills\");\n    let config_stack = stack(Vec::new());\n\n    let roots = repo_agents_skill_roots(Some(Arc::clone(&LOCAL_FS)), &config_stack, &nested)\n        .await\n        .into_iter()\n        .map(|root| root.path)\n        .collect::<Vec<_>>();\n\n    assert_eq!(\n        roots,\n        vec![\n            repository.join(\".agents/skills\"),\n            repository.join(\"nested/.agents/skills\"),\n        ]\n    );\n}\n\n#[tokio::test]\nasync fn resolved_project_layer_loads_skill_without_git_marker() {\n    let temp_dir = TempDir::new().expect(\"temp dir\");\n    let workspace = absolute(temp_dir.path().join(\"workspace\"));\n    let dot_codex = workspace.join(\".codex\");\n    let skill_root = dot_codex.join(\"skills\");\n    fs::create_dir_all(&workspace).expect(\"create workspace\");\n    let skill_path = write_skill(&skill_root, \"local\", \"local-skill\");\n    let config_stack = stack(vec![project_layer(&dot_codex)]);\n\n    let roots = resolve_skill_roots_with_home_dir(\n        Some(Arc::clone(&LOCAL_FS)),\n        &config_stack,\n        &workspace,\n        /*home_dir*/ None,\n        Vec::new(),\n        Vec::new(),\n    )\n    .await;\n    let outcome = load_and_merge_host_skill_roots(\n        roots,\n        &Semaphore::new(MAX_CONCURRENT_ROOT_SCANS),\n        /*restriction_product*/ None,\n        /*plugin_skill_snapshots*/ None,\n    )\n    .await;\n\n    assert!(outcome.errors.is_empty());\n    assert_eq!(\n        outcome.skills,\n        vec![expected_skill(skill_path, \"local-skill\", SkillScope::Repo)]\n    );\n}\n\n#[tokio::test]\nasync fn resolved_project_layer_loads_skill_when_cwd_is_file() {\n    let temp_dir = TempDir::new().expect(\"temp dir\");\n    let repository = absolute(temp_dir.path().join(\"repo\"));\n    let dot_codex = repository.join(\".codex\");\n    let skill_root = dot_codex.join(\"skills\");\n    fs::create_dir_all(&repository).expect(\"create repository\");\n    fs::write(repository.join(\".git\"), \"gitdir: fake\\n\").expect(\"write git marker\");\n    let cwd = repository.join(\"some-file.txt\");\n    fs::write(&cwd, \"contents\").expect(\"write cwd file\");\n    let skill_path = write_skill(&skill_root, \"repo\", \"repo-skill\");\n    let config_stack = stack(vec![project_layer(&dot_codex)]);\n\n    let roots = resolve_skill_roots_with_home_dir(\n        Some(Arc::clone(&LOCAL_FS)),\n        &config_stack,\n        &cwd,\n        /*home_dir*/ None,\n        Vec::new(),\n        Vec::new(),\n    )\n    .await;\n    let outcome = load_and_merge_host_skill_roots(\n        roots,\n        &Semaphore::new(MAX_CONCURRENT_ROOT_SCANS),\n        /*restriction_product*/ None,\n        /*plugin_skill_snapshots*/ None,\n    )\n    .await;\n\n    assert!(outcome.errors.is_empty());\n    assert_eq!(\n        outcome.skills,\n        vec![expected_skill(skill_path, \"repo-skill\", SkillScope::Repo)]\n    );\n}\n\n#[tokio::test]\nasync fn repo_ancestry_limits_concurrent_probes_and_preserves_order() {\n    const CONCURRENCY_LIMIT: usize = 256;\n\n    let temp_dir = TempDir::new().expect(\"temp dir\");\n    let repository = absolute(temp_dir.path().join(\"repo\"));\n    fs::create_dir_all(&repository).expect(\"create repository\");\n    fs::write(repository.join(\".git\"), \"gitdir: fake\\n\").expect(\"write git marker\");\n\n    let mut directories = vec![repository.clone()];\n    let mut cwd = repository;\n    for _ in 0..CONCURRENCY_LIMIT {\n        cwd = cwd.join(\"d\");\n        directories.push(cwd.clone());\n    }\n    fs::create_dir_all(&cwd).expect(\"create nested cwd\");\n\n    let expected_roots = [0, CONCURRENCY_LIMIT / 2, CONCURRENCY_LIMIT].map(|index| {\n        let path = directories[index].join(\".agents/skills\");\n        fs::create_dir_all(&path).expect(\"create repo skill root\");\n        path\n    });\n    let expected_probes = directories\n        .iter()\n        .map(|directory| PathUri::from_abs_path(&directory.join(\".agents/skills\")))\n        .collect::<Vec<_>>();\n    let calls = Arc::new(BlockingMetadataCalls::default());\n    let file_system: Arc<dyn ExecutorFileSystem> = Arc::new(BlockingMetadataFileSystem {\n        inner: Arc::clone(&LOCAL_FS),\n        calls: Arc::clone(&calls),\n    });\n\n    let assertions = async {\n        tokio::time::timeout(std::time::Duration::from_secs(/*secs*/ 5), async {\n            loop {\n                let started = calls.started.notified();\n                if calls.paths.lock().expect(\"metadata paths lock\").len() >= CONCURRENCY_LIMIT {\n                    break;\n                }\n                started.await;\n            }\n        })\n        .await\n        .expect(\"initial repo skill root window should start\");\n        assert_eq!(\n            calls.paths.lock().expect(\"metadata paths lock\").as_slice(),\n            &expected_probes[..CONCURRENCY_LIMIT]\n        );\n\n        calls.release.add_permits(/*n*/ 1);\n        tokio::time::timeout(std::time::Duration::from_secs(/*secs*/ 5), async {\n            loop {\n                let started = calls.started.notified();\n                if calls.paths.lock().expect(\"metadata paths lock\").len() > CONCURRENCY_LIMIT {\n                    break;\n                }\n                started.await;\n            }\n        })\n        .await\n        .expect(\"next repo skill root probe should start\");\n        assert_eq!(\n            calls.paths.lock().expect(\"metadata paths lock\").as_slice(),\n            expected_probes.as_slice()\n        );\n\n        calls.release.add_permits(expected_probes.len());\n    };\n    let config_stack = stack(Vec::new());\n    let (roots, ()) = tokio::join!(\n        repo_agents_skill_roots(Some(file_system), &config_stack, &cwd),\n        assertions,\n    );\n\n    assert_eq!(\n        roots.into_iter().map(|root| root.path).collect::<Vec<_>>(),\n        expected_roots\n    );\n}\n\n#[tokio::test]\nasync fn resolved_config_and_repo_roots_preserve_order_and_dedupe_paths_not_names() {\n    let temp_dir = TempDir::new().expect(\"temp dir\");\n    let home_folder = absolute(temp_dir.path().join(\"home\"));\n    let codex_home = home_folder.join(\"codex\");\n    let system_folder = absolute(temp_dir.path().join(\"etc/codex\"));\n    let repository = absolute(temp_dir.path().join(\"repo\"));\n    let cwd = repository.join(\"nested/inner\");\n    fs::create_dir_all(&cwd).expect(\"create cwd\");\n    fs::write(repository.join(\".git\"), \"gitdir: fake\\n\").expect(\"write git marker\");\n\n    let project_dot_codex = repository.join(\".codex\");\n    let nested_project_dot_codex = repository.join(\"nested/.codex\");\n    let user_skills = codex_home.join(\"skills\");\n    let root_project_skill = write_skill(\n        &project_dot_codex.join(\"skills\"),\n        \"root-duplicate\",\n        \"duplicate-skill\",\n    );\n    let nested_project_skill = write_skill(\n        &nested_project_dot_codex.join(\"skills\"),\n        \"nested-duplicate\",\n        \"duplicate-skill\",\n    );\n    let user_skill = write_skill(&user_skills, \"user-duplicate\", \"duplicate-skill\");\n    let home_skill = write_skill(&home_folder.join(\".agents/skills\"), \"home\", \"home-skill\");\n    let system_skill = write_skill(&codex_home.join(\"skills/.system\"), \"system\", \"system-skill\");\n    let admin_skill = write_skill(&system_folder.join(\"skills\"), \"admin\", \"admin-skill\");\n    let repo_agent_skill = write_skill(\n        &repository.join(\".agents/skills\"),\n        \"repo-agent\",\n        \"repo-agent-skill\",\n    );\n    let nested_agent_skill = write_skill(\n        &repository.join(\"nested/.agents/skills\"),\n        \"nested-agent\",\n        \"nested-agent-skill\",\n    );\n    let config_stack = stack(vec![\n        ConfigLayerEntry::new(\n            ConfigLayerSource::System {\n                file: system_folder.join(\"config.toml\"),\n            },\n            empty_config(),\n        ),\n        user_layer(&codex_home),\n        project_layer(&project_dot_codex),\n        project_layer(&nested_project_dot_codex),\n    ]);\n\n    let roots = resolve_skill_roots_with_home_dir(\n        Some(Arc::clone(&LOCAL_FS)),\n        &config_stack,\n        &cwd,\n        Some(&home_folder),\n        Vec::new(),\n        vec![user_skills],\n    )\n    .await;\n    assert_eq!(roots.len(), 8);\n    let outcome = load_and_merge_host_skill_roots(\n        roots,\n        &Semaphore::new(MAX_CONCURRENT_ROOT_SCANS),\n        /*restriction_product*/ None,\n        /*plugin_skill_snapshots*/ None,\n    )\n    .await;\n    assert!(outcome.errors.is_empty());\n    assert_eq!(\n        outcome.skills,\n        vec![\n            expected_skill(root_project_skill, \"duplicate-skill\", SkillScope::Repo),\n            expected_skill(nested_project_skill, \"duplicate-skill\", SkillScope::Repo),\n            expected_skill(nested_agent_skill, \"nested-agent-skill\", SkillScope::Repo),\n            expected_skill(repo_agent_skill, \"repo-agent-skill\", SkillScope::Repo),\n            expected_skill(user_skill, \"duplicate-skill\", SkillScope::User),\n            expected_skill(home_skill, \"home-skill\", SkillScope::User),\n            expected_skill(system_skill, \"system-skill\", SkillScope::System),\n            expected_skill(admin_skill, \"admin-skill\", SkillScope::Admin),\n        ]\n    );\n}\n",
+    "3d8412f8eca445b1eba85f26d7975aa7ddfbb524": "use std::fs;\nuse std::path::Path;\nuse std::sync::Arc;\nuse std::sync::Mutex;\n\nuse codex_config::ConfigLayerEntry;\nuse codex_config::ConfigLayerSource;\nuse codex_config::ConfigLayerStack;\nuse codex_config::ConfigRequirementsToml;\nuse codex_exec_server::CopyOptions;\nuse codex_exec_server::CreateDirectoryOptions;\nuse codex_exec_server::ExecutorFileSystem;\nuse codex_exec_server::ExecutorFileSystemFuture;\nuse codex_exec_server::FileMetadata;\nuse codex_exec_server::FileSystemReadStream;\nuse codex_exec_server::FileSystemSandboxContext;\nuse codex_exec_server::GetMetadataOptions;\nuse codex_exec_server::LOCAL_FS;\nuse codex_exec_server::ReadDirectoryEntry;\nuse codex_exec_server::ReadFileOptions;\nuse codex_exec_server::RemoveOptions;\nuse codex_exec_server::WalkOptions;\nuse codex_exec_server::WalkOutcome;\nuse codex_exec_server::WriteFileOptions;\nuse codex_protocol::protocol::SkillScope;\nuse codex_skills::SkillMetadata;\nuse codex_utils_absolute_path::AbsolutePathBuf;\nuse codex_utils_path_uri::PathUri;\nuse codex_utils_plugins::PluginIdentity;\nuse codex_utils_plugins::PluginSkillRoot;\nuse codex_utils_plugins::SkillDiscoveryMode;\nuse pretty_assertions::assert_eq;\nuse tempfile::TempDir;\nuse tokio::sync::Notify;\nuse tokio::sync::Semaphore;\n\nuse super::repo_agents_skill_roots;\nuse super::resolve_skill_roots_with_home_dir;\nuse super::roots_from_layer_stack;\nuse crate::loader::MAX_CONCURRENT_ROOT_SCANS;\nuse crate::loader::load_and_merge_host_skill_roots;\n\nstruct BlockingMetadataFileSystem {\n    inner: Arc<dyn ExecutorFileSystem>,\n    calls: Arc<BlockingMetadataCalls>,\n}\n\nstruct BlockingMetadataCalls {\n    paths: Mutex<Vec<PathUri>>,\n    started: Notify,\n    release: Semaphore,\n}\n\nimpl Default for BlockingMetadataCalls {\n    fn default() -> Self {\n        Self {\n            paths: Mutex::new(Vec::new()),\n            started: Notify::new(),\n            release: Semaphore::new(0),\n        }\n    }\n}\n\nimpl ExecutorFileSystem for BlockingMetadataFileSystem {\n    fn canonicalize<'a>(\n        &'a self,\n        path: &'a PathUri,\n        sandbox: Option<&'a FileSystemSandboxContext>,\n    ) -> ExecutorFileSystemFuture<'a, PathUri> {\n        self.inner.canonicalize(path, sandbox)\n    }\n\n    fn read_file<'a>(\n        &'a self,\n        path: &'a PathUri,\n        options: ReadFileOptions,\n        sandbox: Option<&'a FileSystemSandboxContext>,\n    ) -> ExecutorFileSystemFuture<'a, Vec<u8>> {\n        self.inner.read_file(path, options, sandbox)\n    }\n\n    fn read_file_stream<'a>(\n        &'a self,\n        path: &'a PathUri,\n        sandbox: Option<&'a FileSystemSandboxContext>,\n    ) -> ExecutorFileSystemFuture<'a, FileSystemReadStream> {\n        self.inner.read_file_stream(path, sandbox)\n    }\n\n    fn write_file<'a>(\n        &'a self,\n        path: &'a PathUri,\n        contents: Vec<u8>,\n        options: WriteFileOptions,\n        sandbox: Option<&'a FileSystemSandboxContext>,\n    ) -> ExecutorFileSystemFuture<'a, ()> {\n        self.inner.write_file(path, contents, options, sandbox)\n    }\n\n    fn create_directory<'a>(\n        &'a self,\n        path: &'a PathUri,\n        options: CreateDirectoryOptions,\n        sandbox: Option<&'a FileSystemSandboxContext>,\n    ) -> ExecutorFileSystemFuture<'a, ()> {\n        self.inner.create_directory(path, options, sandbox)\n    }\n\n    fn get_metadata<'a>(\n        &'a self,\n        path: &'a PathUri,\n        options: GetMetadataOptions,\n        sandbox: Option<&'a FileSystemSandboxContext>,\n    ) -> ExecutorFileSystemFuture<'a, FileMetadata> {\n        let Ok(path_abs) = path.to_abs_path() else {\n            return self.inner.get_metadata(path, options, sandbox);\n        };\n        let repo_skill_root_suffix = Path::new(\".agents\").join(\"skills\");\n        if !path_abs.ends_with(repo_skill_root_suffix) {\n            return self.inner.get_metadata(path, options, sandbox);\n        }\n\n        self.calls\n            .paths\n            .lock()\n            .expect(\"metadata paths lock\")\n            .push(path.clone());\n        self.calls.started.notify_one();\n        Box::pin(async move {\n            self.calls\n                .release\n                .acquire()\n                .await\n                .expect(\"metadata release semaphore\")\n                .forget();\n            self.inner.get_metadata(path, options, sandbox).await\n        })\n    }\n\n    fn read_directory<'a>(\n        &'a self,\n        path: &'a PathUri,\n        sandbox: Option<&'a FileSystemSandboxContext>,\n    ) -> ExecutorFileSystemFuture<'a, Vec<ReadDirectoryEntry>> {\n        self.inner.read_directory(path, sandbox)\n    }\n\n    fn walk<'a>(\n        &'a self,\n        path: &'a PathUri,\n        options: WalkOptions,\n        sandbox: Option<&'a FileSystemSandboxContext>,\n    ) -> ExecutorFileSystemFuture<'a, WalkOutcome> {\n        self.inner.walk(path, options, sandbox)\n    }\n\n    fn remove<'a>(\n        &'a self,\n        path: &'a PathUri,\n        options: RemoveOptions,\n        sandbox: Option<&'a FileSystemSandboxContext>,\n    ) -> ExecutorFileSystemFuture<'a, ()> {\n        self.inner.remove(path, options, sandbox)\n    }\n\n    fn copy<'a>(\n        &'a self,\n        source_path: &'a PathUri,\n        destination_path: &'a PathUri,\n        options: CopyOptions,\n        sandbox: Option<&'a FileSystemSandboxContext>,\n    ) -> ExecutorFileSystemFuture<'a, ()> {\n        self.inner\n            .copy(source_path, destination_path, options, sandbox)\n    }\n}\n\nfn absolute(path: impl Into<std::path::PathBuf>) -> AbsolutePathBuf {\n    AbsolutePathBuf::try_from(path.into()).expect(\"absolute path\")\n}\n\nfn empty_config() -> toml::Value {\n    toml::Value::Table(toml::map::Map::new())\n}\n\nfn stack(layers: Vec<ConfigLayerEntry>) -> ConfigLayerStack {\n    ConfigLayerStack::new(\n        layers,\n        Default::default(),\n        ConfigRequirementsToml::default(),\n    )\n    .expect(\"valid config stack\")\n}\n\nfn user_layer(codex_home: &AbsolutePathBuf) -> ConfigLayerEntry {\n    ConfigLayerEntry::new(\n        ConfigLayerSource::User {\n            file: codex_home.join(\"config.toml\"),\n            profile: None,\n        },\n        empty_config(),\n    )\n}\n\nfn project_layer(dot_codex_folder: &AbsolutePathBuf) -> ConfigLayerEntry {\n    ConfigLayerEntry::new(\n        ConfigLayerSource::Project {\n            dot_codex_folder: dot_codex_folder.clone(),\n        },\n        empty_config(),\n    )\n}\n\nfn write_skill(root: &AbsolutePathBuf, directory: &str, name: &str) -> AbsolutePathBuf {\n    let skill_dir = root.join(directory);\n    fs::create_dir_all(&skill_dir).expect(\"create skill directory\");\n    let skill_path = skill_dir.join(\"SKILL.md\");\n    fs::write(\n        &skill_path,\n        format!(\"---\\nname: {name}\\ndescription: {name} description\\n---\\n\"),\n    )\n    .expect(\"write skill\");\n    AbsolutePathBuf::from_absolute_path(\n        dunce::canonicalize(skill_path).expect(\"canonical skill path\"),\n    )\n    .expect(\"absolute skill path\")\n}\n\nfn expected_skill(path: AbsolutePathBuf, name: &str, scope: SkillScope) -> SkillMetadata {\n    SkillMetadata {\n        name: name.to_string(),\n        description: format!(\"{name} description\"),\n        short_description: None,\n        interface: None,\n        dependencies: None,\n        policy: None,\n        path_to_skills_md: path,\n        scope,\n        plugin_id: None,\n        remote_plugin_id: None,\n    }\n}\n\n#[test]\nfn layer_roots_preserve_scope_precedence_and_disabled_projects() {\n    let temp_dir = TempDir::new().expect(\"temp dir\");\n    let system_folder = absolute(temp_dir.path().join(\"etc/codex\"));\n    let home_folder = absolute(temp_dir.path().join(\"home\"));\n    let user_folder = home_folder.join(\"codex\");\n    let project_folder = absolute(temp_dir.path().join(\"repo/.codex\"));\n    let nested_project_folder = absolute(temp_dir.path().join(\"repo/nested/.codex\"));\n    let config_stack = stack(vec![\n        ConfigLayerEntry::new(\n            ConfigLayerSource::System {\n                file: system_folder.join(\"config.toml\"),\n            },\n            empty_config(),\n        ),\n        user_layer(&user_folder),\n        ConfigLayerEntry::new_disabled(\n            ConfigLayerSource::Project {\n                dot_codex_folder: project_folder.clone(),\n            },\n            empty_config(),\n            \"untrusted project\",\n        ),\n        project_layer(&nested_project_folder),\n    ]);\n\n    let roots = roots_from_layer_stack(\n        &config_stack,\n        Some(&home_folder),\n        Some(Arc::clone(&LOCAL_FS)),\n    )\n    .into_iter()\n    .map(|root| (root.scope, root.path))\n    .collect::<Vec<_>>();\n\n    assert_eq!(\n        roots,\n        vec![\n            (SkillScope::Repo, nested_project_folder.join(\"skills\")),\n            (SkillScope::Repo, project_folder.join(\"skills\")),\n            (SkillScope::User, user_folder.join(\"skills\")),\n            (SkillScope::User, home_folder.join(\".agents/skills\")),\n            (SkillScope::System, user_folder.join(\"skills/.system\")),\n            (SkillScope::Admin, system_folder.join(\"skills\")),\n        ]\n    );\n}\n\n#[tokio::test]\nasync fn plugin_roots_preserve_plugin_resolution_metadata() {\n    let temp_dir = TempDir::new().expect(\"temp dir\");\n    let cwd = absolute(temp_dir.path().join(\"workspace\"));\n    let plugin_root = absolute(temp_dir.path().join(\"plugins/example\"));\n    let skills_root = plugin_root.join(\"skills\");\n    let plugin_identity = PluginIdentity {\n        plugin_id: \"example@test\".to_string(),\n        remote_plugin_id: Some(\"plugins~Plugin_example\".to_string()),\n    };\n    let plugin_namespace = \"example\".to_string();\n\n    let roots = resolve_skill_roots_with_home_dir(\n        /*repository_file_system*/ None,\n        &stack(Vec::new()),\n        &cwd,\n        /*home_dir*/ None,\n        vec![PluginSkillRoot {\n            path: skills_root.clone(),\n            plugin_identity: plugin_identity.clone(),\n            plugin_namespace: plugin_namespace.clone(),\n            plugin_root: plugin_root.clone(),\n            discovery_mode: SkillDiscoveryMode::DirectChildren,\n        }],\n        Vec::new(),\n    )\n    .await;\n\n    assert_eq!(roots.len(), 1);\n    let root = &roots[0];\n    assert_eq!(\n        (\n            root.path.clone(),\n            root.scope,\n            root.plugin_identity().cloned(),\n            root.plugin_namespace().map(str::to_string),\n            root.plugin_root().cloned(),\n            root.discovery_mode(),\n        ),\n        (\n            skills_root,\n            SkillScope::User,\n            Some(plugin_identity),\n            Some(plugin_namespace),\n            Some(plugin_root),\n            SkillDiscoveryMode::DirectChildren,\n        )\n    );\n    assert!(Arc::ptr_eq(&root.file_system, &LOCAL_FS));\n}\n\n#[tokio::test]\nasync fn unique_extra_root_loads_as_recursive_user_root() {\n    let temp_dir = TempDir::new().expect(\"temp dir\");\n    let cwd = absolute(temp_dir.path().join(\"workspace\"));\n    let extra_root = absolute(temp_dir.path().join(\"runtime-skills\"));\n    let skill_path = write_skill(&extra_root, \"runtime\", \"runtime-skill\");\n\n    let roots = resolve_skill_roots_with_home_dir(\n        /*repository_file_system*/ None,\n        &stack(Vec::new()),\n        &cwd,\n        /*home_dir*/ None,\n        Vec::new(),\n        vec![extra_root.clone()],\n    )\n    .await;\n\n    assert_eq!(roots.len(), 1);\n    let root = &roots[0];\n    assert_eq!(\n        (\n            root.path.clone(),\n            root.scope,\n            root.plugin_identity().cloned(),\n            root.plugin_namespace().map(str::to_string),\n            root.plugin_root().cloned(),\n            root.discovery_mode(),\n        ),\n        (\n            extra_root,\n            SkillScope::User,\n            None,\n            None,\n            None,\n            SkillDiscoveryMode::Recursive,\n        )\n    );\n    assert!(Arc::ptr_eq(&root.file_system, &LOCAL_FS));\n\n    let outcome = load_and_merge_host_skill_roots(\n        roots,\n        &Semaphore::new(MAX_CONCURRENT_ROOT_SCANS),\n        /*restriction_product*/ None,\n        /*plugin_skill_snapshots*/ None,\n    )\n    .await;\n\n    assert!(outcome.errors.is_empty());\n    assert_eq!(\n        outcome.skills,\n        vec![expected_skill(\n            skill_path,\n            \"runtime-skill\",\n            SkillScope::User,\n        )]\n    );\n}\n\n#[tokio::test]\nasync fn repo_ancestry_without_project_marker_does_not_walk_parents() {\n    let temp_dir = TempDir::new().expect(\"temp dir\");\n    let outer = absolute(temp_dir.path().join(\"outer\"));\n    let cwd = outer.join(\"nested/inner\");\n    fs::create_dir_all(outer.join(\".agents/skills\")).expect(\"create outer skills\");\n    fs::create_dir_all(cwd.join(\".agents/skills\")).expect(\"create cwd skills\");\n\n    // An ambient .git above the temp directory is a valid project marker.\n    // Keep real nonempty marker discovery, but isolate this no-marker premise.\n    let marker = format!(\n        \".codex-test-project-marker-{}\",\n        temp_dir.path().file_name().expect(\"temp dir name\").to_string_lossy()\n    );\n    for ancestor in cwd.ancestors() {\n        let marker_path = ancestor.join(&marker);\n        assert_eq!(\n            fs::symlink_metadata(&marker_path).err().map(|error| error.kind()),\n            Some(std::io::ErrorKind::NotFound),\n            \"test marker must be absent at {}\",\n            marker_path.display(),\n        );\n    }\n    let mut config = empty_config();\n    config[\"project_root_markers\"] =\n        toml::Value::Array(vec![toml::Value::String(marker.clone())]);\n    let config_stack = stack(vec![ConfigLayerEntry::new(\n        ConfigLayerSource::SessionFlags,\n        config,\n    )]);\n\n    let roots = repo_agents_skill_roots(Some(Arc::clone(&LOCAL_FS)), &config_stack, &cwd)\n        .await\n        .into_iter()\n        .map(|root| root.path)\n        .collect::<Vec<_>>();\n\n    assert_eq!(roots, vec![cwd.join(\".agents/skills\")]);\n}\n\n#[tokio::test]\nasync fn repo_ancestry_stops_at_project_root_and_preserves_root_to_cwd_order() {\n    let temp_dir = TempDir::new().expect(\"temp dir\");\n    let outer = absolute(temp_dir.path().join(\"outer\"));\n    let repository = outer.join(\"repo\");\n    let nested = repository.join(\"nested/inner\");\n    fs::create_dir_all(&nested).expect(\"create nested cwd\");\n    fs::write(repository.join(\".git\"), \"gitdir: fake\\n\").expect(\"write git marker\");\n    fs::create_dir_all(outer.join(\".agents/skills\")).expect(\"create outer skills\");\n    fs::create_dir_all(repository.join(\".agents/skills\")).expect(\"create repo skills\");\n    fs::create_dir_all(repository.join(\"nested/.agents/skills\")).expect(\"create nested skills\");\n    let config_stack = stack(Vec::new());\n\n    let roots = repo_agents_skill_roots(Some(Arc::clone(&LOCAL_FS)), &config_stack, &nested)\n        .await\n        .into_iter()\n        .map(|root| root.path)\n        .collect::<Vec<_>>();\n\n    assert_eq!(\n        roots,\n        vec![\n            repository.join(\".agents/skills\"),\n            repository.join(\"nested/.agents/skills\"),\n        ]\n    );\n}\n\n#[tokio::test]\nasync fn resolved_project_layer_loads_skill_without_git_marker() {\n    let temp_dir = TempDir::new().expect(\"temp dir\");\n    let workspace = absolute(temp_dir.path().join(\"workspace\"));\n    let dot_codex = workspace.join(\".codex\");\n    let skill_root = dot_codex.join(\"skills\");\n    fs::create_dir_all(&workspace).expect(\"create workspace\");\n    let skill_path = write_skill(&skill_root, \"local\", \"local-skill\");\n    let config_stack = stack(vec![project_layer(&dot_codex)]);\n\n    let roots = resolve_skill_roots_with_home_dir(\n        Some(Arc::clone(&LOCAL_FS)),\n        &config_stack,\n        &workspace,\n        /*home_dir*/ None,\n        Vec::new(),\n        Vec::new(),\n    )\n    .await;\n    let outcome = load_and_merge_host_skill_roots(\n        roots,\n        &Semaphore::new(MAX_CONCURRENT_ROOT_SCANS),\n        /*restriction_product*/ None,\n        /*plugin_skill_snapshots*/ None,\n    )\n    .await;\n\n    assert!(outcome.errors.is_empty());\n    assert_eq!(\n        outcome.skills,\n        vec![expected_skill(skill_path, \"local-skill\", SkillScope::Repo)]\n    );\n}\n\n#[tokio::test]\nasync fn resolved_project_layer_loads_skill_when_cwd_is_file() {\n    let temp_dir = TempDir::new().expect(\"temp dir\");\n    let repository = absolute(temp_dir.path().join(\"repo\"));\n    let dot_codex = repository.join(\".codex\");\n    let skill_root = dot_codex.join(\"skills\");\n    fs::create_dir_all(&repository).expect(\"create repository\");\n    fs::write(repository.join(\".git\"), \"gitdir: fake\\n\").expect(\"write git marker\");\n    let cwd = repository.join(\"some-file.txt\");\n    fs::write(&cwd, \"contents\").expect(\"write cwd file\");\n    let skill_path = write_skill(&skill_root, \"repo\", \"repo-skill\");\n    let config_stack = stack(vec![project_layer(&dot_codex)]);\n\n    let roots = resolve_skill_roots_with_home_dir(\n        Some(Arc::clone(&LOCAL_FS)),\n        &config_stack,\n        &cwd,\n        /*home_dir*/ None,\n        Vec::new(),\n        Vec::new(),\n    )\n    .await;\n    let outcome = load_and_merge_host_skill_roots(\n        roots,\n        &Semaphore::new(MAX_CONCURRENT_ROOT_SCANS),\n        /*restriction_product*/ None,\n        /*plugin_skill_snapshots*/ None,\n    )\n    .await;\n\n    assert!(outcome.errors.is_empty());\n    assert_eq!(\n        outcome.skills,\n        vec![expected_skill(skill_path, \"repo-skill\", SkillScope::Repo)]\n    );\n}\n\n#[tokio::test]\nasync fn repo_ancestry_limits_concurrent_probes_and_preserves_order() {\n    const CONCURRENCY_LIMIT: usize = 256;\n\n    let temp_dir = TempDir::new().expect(\"temp dir\");\n    let repository = absolute(temp_dir.path().join(\"repo\"));\n    fs::create_dir_all(&repository).expect(\"create repository\");\n    fs::write(repository.join(\".git\"), \"gitdir: fake\\n\").expect(\"write git marker\");\n\n    let mut directories = vec![repository.clone()];\n    let mut cwd = repository;\n    for _ in 0..CONCURRENCY_LIMIT {\n        cwd = cwd.join(\"d\");\n        directories.push(cwd.clone());\n    }\n    fs::create_dir_all(&cwd).expect(\"create nested cwd\");\n\n    let expected_roots = [0, CONCURRENCY_LIMIT / 2, CONCURRENCY_LIMIT].map(|index| {\n        let path = directories[index].join(\".agents/skills\");\n        fs::create_dir_all(&path).expect(\"create repo skill root\");\n        path\n    });\n    let expected_probes = directories\n        .iter()\n        .map(|directory| PathUri::from_abs_path(&directory.join(\".agents/skills\")))\n        .collect::<Vec<_>>();\n    let calls = Arc::new(BlockingMetadataCalls::default());\n    let file_system: Arc<dyn ExecutorFileSystem> = Arc::new(BlockingMetadataFileSystem {\n        inner: Arc::clone(&LOCAL_FS),\n        calls: Arc::clone(&calls),\n    });\n\n    let assertions = async {\n        tokio::time::timeout(std::time::Duration::from_secs(/*secs*/ 5), async {\n            loop {\n                let started = calls.started.notified();\n                if calls.paths.lock().expect(\"metadata paths lock\").len() >= CONCURRENCY_LIMIT {\n                    break;\n                }\n                started.await;\n            }\n        })\n        .await\n        .expect(\"initial repo skill root window should start\");\n        assert_eq!(\n            calls.paths.lock().expect(\"metadata paths lock\").as_slice(),\n            &expected_probes[..CONCURRENCY_LIMIT]\n        );\n\n        calls.release.add_permits(/*n*/ 1);\n        tokio::time::timeout(std::time::Duration::from_secs(/*secs*/ 5), async {\n            loop {\n                let started = calls.started.notified();\n                if calls.paths.lock().expect(\"metadata paths lock\").len() > CONCURRENCY_LIMIT {\n                    break;\n                }\n                started.await;\n            }\n        })\n        .await\n        .expect(\"next repo skill root probe should start\");\n        assert_eq!(\n            calls.paths.lock().expect(\"metadata paths lock\").as_slice(),\n            expected_probes.as_slice()\n        );\n\n        calls.release.add_permits(expected_probes.len());\n    };\n    let config_stack = stack(Vec::new());\n    let (roots, ()) = tokio::join!(\n        repo_agents_skill_roots(Some(file_system), &config_stack, &cwd),\n        assertions,\n    );\n\n    assert_eq!(\n        roots.into_iter().map(|root| root.path).collect::<Vec<_>>(),\n        expected_roots\n    );\n}\n\n#[tokio::test]\nasync fn resolved_config_and_repo_roots_preserve_order_and_dedupe_paths_not_names() {\n    let temp_dir = TempDir::new().expect(\"temp dir\");\n    let home_folder = absolute(temp_dir.path().join(\"home\"));\n    let codex_home = home_folder.join(\"codex\");\n    let system_folder = absolute(temp_dir.path().join(\"etc/codex\"));\n    let repository = absolute(temp_dir.path().join(\"repo\"));\n    let cwd = repository.join(\"nested/inner\");\n    fs::create_dir_all(&cwd).expect(\"create cwd\");\n    fs::write(repository.join(\".git\"), \"gitdir: fake\\n\").expect(\"write git marker\");\n\n    let project_dot_codex = repository.join(\".codex\");\n    let nested_project_dot_codex = repository.join(\"nested/.codex\");\n    let user_skills = codex_home.join(\"skills\");\n    let root_project_skill = write_skill(\n        &project_dot_codex.join(\"skills\"),\n        \"root-duplicate\",\n        \"duplicate-skill\",\n    );\n    let nested_project_skill = write_skill(\n        &nested_project_dot_codex.join(\"skills\"),\n        \"nested-duplicate\",\n        \"duplicate-skill\",\n    );\n    let user_skill = write_skill(&user_skills, \"user-duplicate\", \"duplicate-skill\");\n    let home_skill = write_skill(&home_folder.join(\".agents/skills\"), \"home\", \"home-skill\");\n    let system_skill = write_skill(&codex_home.join(\"skills/.system\"), \"system\", \"system-skill\");\n    let admin_skill = write_skill(&system_folder.join(\"skills\"), \"admin\", \"admin-skill\");\n    let repo_agent_skill = write_skill(\n        &repository.join(\".agents/skills\"),\n        \"repo-agent\",\n        \"repo-agent-skill\",\n    );\n    let nested_agent_skill = write_skill(\n        &repository.join(\"nested/.agents/skills\"),\n        \"nested-agent\",\n        \"nested-agent-skill\",\n    );\n    let config_stack = stack(vec![\n        ConfigLayerEntry::new(\n            ConfigLayerSource::System {\n                file: system_folder.join(\"config.toml\"),\n            },\n            empty_config(),\n        ),\n        user_layer(&codex_home),\n        project_layer(&project_dot_codex),\n        project_layer(&nested_project_dot_codex),\n    ]);\n\n    let roots = resolve_skill_roots_with_home_dir(\n        Some(Arc::clone(&LOCAL_FS)),\n        &config_stack,\n        &cwd,\n        Some(&home_folder),\n        Vec::new(),\n        vec![user_skills],\n    )\n    .await;\n    assert_eq!(roots.len(), 8);\n    let outcome = load_and_merge_host_skill_roots(\n        roots,\n        &Semaphore::new(MAX_CONCURRENT_ROOT_SCANS),\n        /*restriction_product*/ None,\n        /*plugin_skill_snapshots*/ None,\n    )\n    .await;\n    assert!(outcome.errors.is_empty());\n    assert_eq!(\n        outcome.skills,\n        vec![\n            expected_skill(root_project_skill, \"duplicate-skill\", SkillScope::Repo),\n            expected_skill(nested_project_skill, \"duplicate-skill\", SkillScope::Repo),\n            expected_skill(nested_agent_skill, \"nested-agent-skill\", SkillScope::Repo),\n            expected_skill(repo_agent_skill, \"repo-agent-skill\", SkillScope::Repo),\n            expected_skill(user_skill, \"duplicate-skill\", SkillScope::User),\n            expected_skill(home_skill, \"home-skill\", SkillScope::User),\n            expected_skill(system_skill, \"system-skill\", SkillScope::System),\n            expected_skill(admin_skill, \"admin-skill\", SkillScope::Admin),\n        ]\n    );\n}\n",
+    "5894278bdfb88d5272180651d1a66123cd105200": "use super::super::*;\nuse pretty_assertions::assert_eq;\n\n#[tokio::test]\nasync fn import_plugins_requires_source_marketplace_details() {\n    let (_root, external_agent_home, codex_home) = fixture_paths();\n    fs::create_dir_all(&external_agent_home).expect(\"create external agent home\");\n    fs::write(\n        external_agent_home.join(\"settings.json\"),\n        r#\"{\n          \"enabledPlugins\": {\n            \"formatter@acme-tools\": true\n          },\n          \"extraKnownMarketplaces\": {\n            \"acme-tools\": {\n              \"source\": \"github\",\n              \"repo\": \"acme-corp/external-agent-plugins\"\n            }\n          }\n        }\"#,\n    )\n    .expect(\"write settings\");\n\n    let outcome = service_for_paths(external_agent_home, codex_home)\n        .import_plugins(\n            /*cwd*/ None,\n            Some(MigrationDetails {\n                plugins: vec![PluginsMigration {\n                    marketplace_name: \"other-tools\".to_string(),\n                    plugin_names: github_plugin_details().plugins[0].plugin_names.clone(),\n                }],\n                ..Default::default()\n            }),\n        )\n        .await\n        .expect(\"import plugins\");\n\n    assert_eq!(outcome.succeeded_marketplaces, Vec::<String>::new());\n    assert_eq!(outcome.succeeded_plugin_ids, Vec::<String>::new());\n    assert_eq!(outcome.failed_marketplaces, vec![\"other-tools\".to_string()]);\n    assert_eq!(\n        outcome.failed_plugin_ids,\n        vec![\"formatter@other-tools\".to_string()]\n    );\n    assert_single_plugin_raw_error(\n        &outcome.raw_errors,\n        \"plugin_import\",\n        \"formatter@other-tools\",\n        /*error_type*/ None,\n    );\n}\n\n#[tokio::test]\nasync fn import_plugins_defers_marketplace_source_validation_to_add_marketplace() {\n    let (_root, external_agent_home, codex_home) = fixture_paths();\n    fs::create_dir_all(&external_agent_home).expect(\"create external agent home\");\n    fs::write(\n        external_agent_home.join(\"settings.json\"),\n        r#\"{\n          \"enabledPlugins\": {\n            \"formatter@acme-tools\": true\n          },\n          \"extraKnownMarketplaces\": {\n            \"acme-tools\": {\n              \"source\": \"local\",\n              \"path\": \"./external_plugins/acme-tools\"\n            }\n          }\n        }\"#,\n    )\n    .expect(\"write settings\");\n\n    let outcome = service_for_paths(external_agent_home, codex_home)\n        .import_plugins(/*cwd*/ None, Some(github_plugin_details()))\n        .await\n        .expect(\"import plugins\");\n\n    assert_eq!(outcome.succeeded_marketplaces, Vec::<String>::new());\n    assert_eq!(outcome.succeeded_plugin_ids, Vec::<String>::new());\n    assert_eq!(outcome.failed_marketplaces, vec![\"acme-tools\".to_string()]);\n    assert_eq!(\n        outcome.failed_plugin_ids,\n        vec![\"formatter@acme-tools\".to_string()]\n    );\n    assert_single_plugin_raw_error(\n        &outcome.raw_errors,\n        \"plugin_import\",\n        \"formatter@acme-tools\",\n        /*error_type*/ None,\n    );\n}\n\n#[tokio::test]\nasync fn import_plugins_treats_empty_cwd_as_home_scope() {\n    let (_root, external_agent_home, codex_home) = fixture_paths();\n    let marketplace_root = external_agent_home.join(\"my-marketplace\");\n    let plugin_root = marketplace_root.join(\"plugins\").join(\"cloudflare\");\n    fs::create_dir_all(marketplace_root.join(EXTERNAL_AGENT_PLUGIN_MANIFEST_DIR))\n        .expect(\"create marketplace manifest dir\");\n    fs::create_dir_all(plugin_root.join(\".codex-plugin\")).expect(\"create plugin manifest dir\");\n    fs::create_dir_all(&codex_home).expect(\"create codex home\");\n\n    fs::write(\n        external_agent_home.join(\"settings.json\"),\n        serde_json::to_string_pretty(&serde_json::json!({\n            \"enabledPlugins\": {\n                \"cloudflare@my-plugins\": true\n            },\n            \"extraKnownMarketplaces\": {\n                \"my-plugins\": {\n                    \"source\": \"local\",\n                    \"path\": marketplace_root\n                }\n            }\n        }))\n        .expect(\"serialize settings\"),\n    )\n    .expect(\"write settings\");\n    fs::write(\n        marketplace_root\n            .join(EXTERNAL_AGENT_PLUGIN_MANIFEST_DIR)\n            .join(\"marketplace.json\"),\n        r#\"{\n          \"name\": \"my-plugins\",\n          \"plugins\": [\n            {\n              \"name\": \"cloudflare\",\n              \"source\": \"./plugins/cloudflare\"\n            }\n          ]\n        }\"#,\n    )\n    .expect(\"write marketplace manifest\");\n    fs::write(\n        plugin_root.join(\".codex-plugin\").join(\"plugin.json\"),\n        r#\"{\"name\":\"cloudflare\",\"version\":\"0.1.0\"}\"#,\n    )\n    .expect(\"write plugin manifest\");\n\n    let outcome = service_for_paths(external_agent_home, codex_home.clone())\n        .import_plugins(\n            /*cwd*/ Some(std::path::Path::new(\"\")),\n            Some(MigrationDetails {\n                plugins: vec![PluginsMigration {\n                    marketplace_name: \"my-plugins\".to_string(),\n                    plugin_names: vec![\"cloudflare\".to_string()],\n                }],\n                ..Default::default()\n            }),\n        )\n        .await\n        .expect(\"import plugins\");\n\n    assert_eq!(\n        outcome,\n        PluginImportOutcome {\n            succeeded_marketplaces: vec![\"my-plugins\".to_string()],\n            succeeded_plugin_ids: vec![\"cloudflare@my-plugins\".to_string()],\n            failed_marketplaces: Vec::new(),\n            failed_plugin_ids: Vec::new(),\n            raw_errors: Vec::new(),\n        }\n    );\n    let config = fs::read_to_string(codex_home.join(\"config.toml\")).expect(\"read config\");\n    assert!(config.contains(r#\"[plugins.\"cloudflare@my-plugins\"]\"#));\n    assert!(config.contains(\"enabled = true\"));\n}\n\n#[tokio::test]\nasync fn import_plugins_reuses_configured_marketplace_with_different_source() {\n    let (_root, external_agent_home, codex_home) = fixture_paths();\n    let configured_marketplace_root = external_agent_home.join(\"configured-marketplace\");\n    let source_marketplace_root = external_agent_home.join(\"source-marketplace\");\n    let configured_plugin_root = configured_marketplace_root.join(\"plugins/cloudflare\");\n    let source_plugin_root = source_marketplace_root.join(\"plugins/cloudflare\");\n    fs::create_dir_all(configured_marketplace_root.join(\".agents/plugins\"))\n        .expect(\"create configured marketplace manifest dir\");\n    fs::create_dir_all(configured_plugin_root.join(\".codex-plugin\"))\n        .expect(\"create configured plugin manifest dir\");\n    fs::create_dir_all(source_marketplace_root.join(EXTERNAL_AGENT_PLUGIN_MANIFEST_DIR))\n        .expect(\"create source marketplace manifest dir\");\n    fs::create_dir_all(source_plugin_root.join(\".codex-plugin\"))\n        .expect(\"create source plugin manifest dir\");\n    fs::create_dir_all(&codex_home).expect(\"create codex home\");\n\n    fs::write(\n        external_agent_home.join(\"settings.json\"),\n        serde_json::to_string_pretty(&serde_json::json!({\n            \"enabledPlugins\": {\n                \"cloudflare@my-plugins\": true\n            },\n            \"extraKnownMarketplaces\": {\n                \"my-plugins\": {\n                    \"source\": \"local\",\n                    \"path\": source_marketplace_root\n                }\n            }\n        }))\n        .expect(\"serialize settings\"),\n    )\n    .expect(\"write settings\");\n    fs::write(\n        codex_home.join(\"config.toml\"),\n        format!(\n            r#\"[marketplaces.my-plugins]\nsource_type = \"local\"\nsource = {configured_marketplace_root:?}\n\"#\n        ),\n    )\n    .expect(\"write Codex config\");\n    fs::write(\n        configured_marketplace_root.join(\".agents/plugins/marketplace.json\"),\n        r#\"{\n          \"name\": \"my-plugins\",\n          \"plugins\": [{\n            \"name\": \"cloudflare\",\n            \"source\": {\"source\": \"local\", \"path\": \"./plugins/cloudflare\"}\n          }]\n        }\"#,\n    )\n    .expect(\"write configured marketplace manifest\");\n    fs::write(\n        source_marketplace_root\n            .join(EXTERNAL_AGENT_PLUGIN_MANIFEST_DIR)\n            .join(\"marketplace.json\"),\n        r#\"{\n          \"name\": \"my-plugins\",\n          \"plugins\": [{\"name\": \"cloudflare\", \"source\": \"./plugins/cloudflare\"}]\n        }\"#,\n    )\n    .expect(\"write source marketplace manifest\");\n    fs::write(\n        configured_plugin_root.join(\".codex-plugin/plugin.json\"),\n        r#\"{\"name\":\"cloudflare\",\"version\":\"0.1.0\"}\"#,\n    )\n    .expect(\"write configured plugin manifest\");\n    fs::write(\n        source_plugin_root.join(\".codex-plugin/plugin.json\"),\n        r#\"{\"name\":\"cloudflare\",\"version\":\"0.2.0\"}\"#,\n    )\n    .expect(\"write source plugin manifest\");\n\n    let outcome = service_for_paths(external_agent_home, codex_home.clone())\n        .import_plugins(\n            /*cwd*/ None,\n            Some(MigrationDetails {\n                plugins: vec![PluginsMigration {\n                    marketplace_name: \"my-plugins\".to_string(),\n                    plugin_names: vec![\"cloudflare\".to_string()],\n                }],\n                ..Default::default()\n            }),\n        )\n        .await\n        .expect(\"import plugins\");\n\n    assert_eq!(\n        outcome,\n        PluginImportOutcome {\n            succeeded_marketplaces: vec![\"my-plugins\".to_string()],\n            succeeded_plugin_ids: vec![\"cloudflare@my-plugins\".to_string()],\n            failed_marketplaces: Vec::new(),\n            failed_plugin_ids: Vec::new(),\n            raw_errors: Vec::new(),\n        }\n    );\n    let config: TomlValue =\n        toml::from_str(&fs::read_to_string(codex_home.join(\"config.toml\")).expect(\"read config\"))\n            .expect(\"parse config\");\n    let expected: TomlValue = toml::from_str(&format!(\n        r#\"[marketplaces.my-plugins]\nsource_type = \"local\"\nsource = {configured_marketplace_root:?}\n\n[plugins.\"cloudflare@my-plugins\"]\nenabled = true\n\"#\n    ))\n    .expect(\"parse expected config\");\n    assert_eq!(config, expected);\n}\n\n#[tokio::test]\nasync fn detect_home_supports_relative_external_agent_plugin_marketplace_path() {\n    let (_root, external_agent_home, codex_home) = fixture_paths();\n    let marketplace_root = external_agent_home.join(\"my-marketplace\");\n    let plugin_root = marketplace_root.join(\"plugins\").join(\"cloudflare\");\n    fs::create_dir_all(marketplace_root.join(EXTERNAL_AGENT_PLUGIN_MANIFEST_DIR))\n        .expect(\"create marketplace manifest dir\");\n    fs::create_dir_all(plugin_root.join(\".codex-plugin\")).expect(\"create plugin manifest dir\");\n    fs::create_dir_all(&codex_home).expect(\"create codex home\");\n\n    fs::write(\n        external_agent_home.join(\"settings.json\"),\n        r#\"{\n          \"enabledPlugins\": {\n            \"cloudflare@my-plugins\": true\n          },\n          \"extraKnownMarketplaces\": {\n            \"my-plugins\": {\n              \"source\": \"directory\",\n              \"path\": \"./my-marketplace\"\n            }\n          }\n        }\"#,\n    )\n    .expect(\"write settings\");\n    fs::write(\n        marketplace_root\n            .join(EXTERNAL_AGENT_PLUGIN_MANIFEST_DIR)\n            .join(\"marketplace.json\"),\n        r#\"{\n          \"name\": \"my-plugins\",\n          \"plugins\": [\n            {\n              \"name\": \"cloudflare\",\n              \"source\": \"./plugins/cloudflare\"\n            }\n          ]\n        }\"#,\n    )\n    .expect(\"write marketplace manifest\");\n    fs::write(\n        plugin_root.join(\".codex-plugin\").join(\"plugin.json\"),\n        r#\"{\"name\":\"cloudflare\",\"version\":\"0.1.0\"}\"#,\n    )\n    .expect(\"write plugin manifest\");\n\n    let items = service_for_paths(external_agent_home.clone(), codex_home)\n        .detect(ExternalAgentConfigDetectOptions {\n            include_home: true,\n            include_memory: false,\n            cwds: None,\n        })\n        .await\n        .expect(\"detect\");\n\n    assert_eq!(\n        items,\n        vec![ExternalAgentConfigMigrationItem {\n            item_type: ExternalAgentConfigMigrationItemType::Plugins,\n            description: format!(\n                \"Migrate enabled plugins from {}\",\n                external_agent_home.join(\"settings.json\").display()\n            ),\n            cwd: None,\n            details: Some(MigrationDetails {\n                plugins: vec![PluginsMigration {\n                    marketplace_name: \"my-plugins\".to_string(),\n                    plugin_names: vec![\"cloudflare\".to_string()],\n                }],\n                ..Default::default()\n            }),\n        }]\n    );\n}\n\n#[tokio::test]\nasync fn detect_home_infers_external_official_marketplace_when_missing_from_settings() {\n    let (_root, external_agent_home, codex_home) = fixture_paths();\n    fs::create_dir_all(&external_agent_home).expect(\"create external agent home\");\n    fs::create_dir_all(&codex_home).expect(\"create codex home\");\n\n    fs::write(\n        external_agent_home.join(\"settings.json\"),\n        format!(\n            r#\"{{\n          \"enabledPlugins\": {{\n            \"sample@{EXTERNAL_OFFICIAL_MARKETPLACE_NAME}\": true\n          }}\n        }}\"#\n        ),\n    )\n    .expect(\"write settings\");\n\n    let items = service_for_paths(external_agent_home.clone(), codex_home)\n        .detect(ExternalAgentConfigDetectOptions {\n            include_home: true,\n            include_memory: false,\n            cwds: None,\n        })\n        .await\n        .expect(\"detect\");\n\n    assert_eq!(\n        items,\n        vec![ExternalAgentConfigMigrationItem {\n            item_type: ExternalAgentConfigMigrationItemType::Plugins,\n            description: format!(\n                \"Migrate enabled plugins from {}\",\n                external_agent_home.join(\"settings.json\").display()\n            ),\n            cwd: None,\n            details: Some(MigrationDetails {\n                plugins: vec![PluginsMigration {\n                    marketplace_name: EXTERNAL_OFFICIAL_MARKETPLACE_NAME.to_string(),\n                    plugin_names: vec![\"sample\".to_string()],\n                }],\n                ..Default::default()\n            }),\n        }]\n    );\n}\n\n#[tokio::test]\nasync fn import_plugins_supports_relative_external_agent_plugin_marketplace_path() {\n    let (_root, external_agent_home, codex_home) = fixture_paths();\n    let marketplace_root = external_agent_home.join(\"my-marketplace\");\n    let plugin_root = marketplace_root.join(\"plugins\").join(\"cloudflare\");\n    fs::create_dir_all(marketplace_root.join(EXTERNAL_AGENT_PLUGIN_MANIFEST_DIR))\n        .expect(\"create marketplace manifest dir\");\n    fs::create_dir_all(plugin_root.join(\".codex-plugin\")).expect(\"create plugin manifest dir\");\n    fs::create_dir_all(&codex_home).expect(\"create codex home\");\n\n    fs::write(\n        external_agent_home.join(\"settings.json\"),\n        r#\"{\n          \"enabledPlugins\": {\n            \"cloudflare@my-plugins\": true\n          },\n          \"extraKnownMarketplaces\": {\n            \"my-plugins\": {\n              \"source\": \"directory\",\n              \"path\": \"./my-marketplace\"\n            }\n          }\n        }\"#,\n    )\n    .expect(\"write settings\");\n    fs::write(\n        marketplace_root\n            .join(EXTERNAL_AGENT_PLUGIN_MANIFEST_DIR)\n            .join(\"marketplace.json\"),\n        r#\"{\n          \"name\": \"my-plugins\",\n          \"plugins\": [\n            {\n              \"name\": \"cloudflare\",\n              \"source\": \"./plugins/cloudflare\"\n            }\n          ]\n        }\"#,\n    )\n    .expect(\"write marketplace manifest\");\n    fs::write(\n        plugin_root.join(\".codex-plugin\").join(\"plugin.json\"),\n        r#\"{\"name\":\"cloudflare\",\"version\":\"0.1.0\"}\"#,\n    )\n    .expect(\"write plugin manifest\");\n\n    let outcome = service_for_paths(external_agent_home, codex_home.clone())\n        .import_plugins(\n            /*cwd*/ None,\n            Some(MigrationDetails {\n                plugins: vec![PluginsMigration {\n                    marketplace_name: \"my-plugins\".to_string(),\n                    plugin_names: vec![\"cloudflare\".to_string()],\n                }],\n                ..Default::default()\n            }),\n        )\n        .await\n        .expect(\"import plugins\");\n\n    assert_eq!(\n        outcome,\n        PluginImportOutcome {\n            succeeded_marketplaces: vec![\"my-plugins\".to_string()],\n            succeeded_plugin_ids: vec![\"cloudflare@my-plugins\".to_string()],\n            failed_marketplaces: Vec::new(),\n            failed_plugin_ids: Vec::new(),\n            raw_errors: Vec::new(),\n        }\n    );\n    let config = fs::read_to_string(codex_home.join(\"config.toml\")).expect(\"read config\");\n    assert!(config.contains(r#\"[plugins.\"cloudflare@my-plugins\"]\"#));\n    assert!(config.contains(\"enabled = true\"));\n}\n\n#[tokio::test]\nasync fn import_plugins_infers_external_official_marketplace_when_missing_from_settings() {\n    const FIXTURE_ENV: &str = \"CODEX_TEST_OFFICIAL_MARKETPLACE_REEXEC\";\n    if std::env::var_os(FIXTURE_ENV).is_none() {\n        // Exercise the real inferred source, Git clone, and install path against a\n        // private repository. Only this child process receives the URL rewrite.\n        let fixture = TempDir::new().expect(\"create official marketplace fixture\");\n        let repository = fixture.path().join(\"marketplace\");\n        fs::create_dir_all(repository.join(EXTERNAL_AGENT_PLUGIN_MANIFEST_DIR))\n            .expect(\"create official marketplace manifest directory\");\n        fs::write(\n            repository\n                .join(EXTERNAL_AGENT_PLUGIN_MANIFEST_DIR)\n                .join(\"marketplace.json\"),\n            serde_json::to_vec(&serde_json::json!({\n                \"name\": EXTERNAL_OFFICIAL_MARKETPLACE_NAME,\n                \"plugins\": [],\n            }))\n            .expect(\"serialize official marketplace manifest\"),\n        )\n        .expect(\"write official marketplace manifest\");\n        let git_config = fixture.path().join(\"gitconfig\");\n        fs::write(&git_config, \"\").expect(\"create isolated Git config\");\n        let rewrite_key = format!(\"url.{}.insteadOf\", repository.display());\n        let official_url = format!(\n            \"https://github.com/{}.git\",\n            crate::source_cla::OFFICIAL_MARKETPLACE_SOURCE\n        );\n        for args in [\n            vec![\"init\", \"--quiet\"],\n            vec![\"add\", \".\"],\n            vec![\n                \"-c\",\n                \"user.name=Migration fixture\",\n                \"-c\",\n                \"user.email=migration-fixture@example.invalid\",\n                \"-c\",\n                \"commit.gpgsign=false\",\n                \"commit\",\n                \"--quiet\",\n                \"-m\",\n                \"Official marketplace fixture\",\n            ],\n            vec![\"config\", \"--global\", &rewrite_key, &official_url],\n        ] {\n            let output = std::process::Command::new(\"git\")\n                .args(args)\n                .current_dir(&repository)\n                .env(\"GIT_CONFIG_GLOBAL\", &git_config)\n                .output()\n                .expect(\"run fixture Git command\");\n            assert!(\n                output.status.success(),\n                \"fixture Git command failed: {}\",\n                String::from_utf8_lossy(&output.stderr)\n            );\n        }\n        let output = std::process::Command::new(std::env::current_exe().expect(\"locate test binary\"))\n            .args([\n                \"--exact\",\n                \"service::tests::plugins::marketplaces::import_plugins_infers_external_official_marketplace_when_missing_from_settings\",\n                \"--nocapture\",\n            ])\n            .env(FIXTURE_ENV, \"1\")\n            .env(\"GIT_CONFIG_GLOBAL\", git_config)\n            .output()\n            .expect(\"run isolated official marketplace import\");\n        let stdout = String::from_utf8(output.stdout).expect(\"decode isolated import stdout\");\n        print!(\"{stdout}\");\n        eprint!(\"{}\", String::from_utf8_lossy(&output.stderr));\n        assert!(output.status.success(), \"isolated import assertions failed\");\n        assert!(\n            stdout.contains(\"test result: ok. 1 passed; 0 failed; 0 ignored;\"),\n            \"isolated import must execute the original test exactly once\"\n        );\n        return;\n    }\n    let (_root, external_agent_home, codex_home) = fixture_paths();\n    fs::create_dir_all(&external_agent_home).expect(\"create external agent home\");\n    fs::create_dir_all(&codex_home).expect(\"create codex home\");\n\n    fs::write(\n        external_agent_home.join(\"settings.json\"),\n        format!(\n            r#\"{{\n          \"enabledPlugins\": {{\n            \"sample@{EXTERNAL_OFFICIAL_MARKETPLACE_NAME}\": true\n          }}\n        }}\"#\n        ),\n    )\n    .expect(\"write settings\");\n\n    let outcome = service_for_paths(external_agent_home, codex_home)\n        .import_plugins(\n            /*cwd*/ None,\n            Some(MigrationDetails {\n                plugins: vec![PluginsMigration {\n                    marketplace_name: EXTERNAL_OFFICIAL_MARKETPLACE_NAME.to_string(),\n                    plugin_names: vec![\"sample\".to_string()],\n                }],\n                ..Default::default()\n            }),\n        )\n        .await\n        .expect(\"import plugins\");\n\n    assert_eq!(\n        outcome.succeeded_marketplaces,\n        vec![EXTERNAL_OFFICIAL_MARKETPLACE_NAME.to_string()]\n    );\n    assert_eq!(outcome.succeeded_plugin_ids, Vec::<String>::new());\n    assert_eq!(outcome.failed_marketplaces, Vec::<String>::new());\n    assert_eq!(\n        outcome.failed_plugin_ids,\n        vec![format!(\"sample@{EXTERNAL_OFFICIAL_MARKETPLACE_NAME}\")]\n    );\n    assert_single_plugin_raw_error(\n        &outcome.raw_errors,\n        \"plugin_import\",\n        &format!(\"sample@{EXTERNAL_OFFICIAL_MARKETPLACE_NAME}\"),\n        Some(\"plugin_not_found\"),\n    );\n}\n\n#[tokio::test]\nasync fn detect_repo_skips_project_relative_external_agent_plugin_marketplace_path() {\n    let root = TempDir::new().expect(\"create tempdir\");\n    let external_agent_home = root.path().join(EXTERNAL_AGENT_DIR);\n    let codex_home = root.path().join(\".codex\");\n    let repo_root = root.path().join(\"repo\");\n    let marketplace_root = repo_root.join(\"my-marketplace\");\n    let plugin_root = marketplace_root.join(\"plugins\").join(\"cloudflare\");\n    fs::create_dir_all(repo_root.join(\".git\")).expect(\"create git dir\");\n    fs::create_dir_all(repo_root.join(EXTERNAL_AGENT_DIR)).expect(\"create repo external agent dir\");\n    fs::create_dir_all(marketplace_root.join(EXTERNAL_AGENT_PLUGIN_MANIFEST_DIR))\n        .expect(\"create marketplace manifest dir\");\n    fs::create_dir_all(plugin_root.join(\".codex-plugin\")).expect(\"create plugin manifest dir\");\n    fs::create_dir_all(&codex_home).expect(\"create codex home\");\n\n    fs::write(\n        repo_root.join(EXTERNAL_AGENT_DIR).join(\"settings.json\"),\n        r#\"{\n          \"enabledPlugins\": {\n            \"cloudflare@my-plugins\": true\n          },\n          \"extraKnownMarketplaces\": {\n            \"my-plugins\": {\n              \"source\": \"directory\",\n              \"path\": \"./my-marketplace\"\n            }\n          }\n        }\"#,\n    )\n    .expect(\"write settings\");\n    fs::write(\n        marketplace_root\n            .join(EXTERNAL_AGENT_PLUGIN_MANIFEST_DIR)\n            .join(\"marketplace.json\"),\n        r#\"{\n          \"name\": \"my-plugins\",\n          \"plugins\": [\n            {\n              \"name\": \"cloudflare\",\n              \"source\": \"./plugins/cloudflare\"\n            }\n          ]\n        }\"#,\n    )\n    .expect(\"write marketplace manifest\");\n    fs::write(\n        plugin_root.join(\".codex-plugin\").join(\"plugin.json\"),\n        r#\"{\"name\":\"cloudflare\",\"version\":\"0.1.0\"}\"#,\n    )\n    .expect(\"write plugin manifest\");\n\n    let items = service_for_paths(external_agent_home, codex_home)\n        .detect(ExternalAgentConfigDetectOptions {\n            include_home: false,\n            include_memory: false,\n            cwds: Some(vec![repo_root.clone()]),\n        })\n        .await\n        .expect(\"detect\");\n\n    assert_eq!(items, Vec::<ExternalAgentConfigMigrationItem>::new());\n}\n\n#[tokio::test]\nasync fn import_rejects_forged_project_relative_external_agent_plugin_item() {\n    let root = TempDir::new().expect(\"create tempdir\");\n    let external_agent_home = root.path().join(EXTERNAL_AGENT_DIR);\n    let codex_home = root.path().join(\".codex\");\n    let repo_root = root.path().join(\"repo\");\n    let marketplace_root = repo_root.join(\"my-marketplace\");\n    let plugin_root = marketplace_root.join(\"plugins\").join(\"cloudflare\");\n    fs::create_dir_all(repo_root.join(\".git\")).expect(\"create git dir\");\n    fs::create_dir_all(repo_root.join(EXTERNAL_AGENT_DIR)).expect(\"create repo external agent dir\");\n    fs::create_dir_all(marketplace_root.join(EXTERNAL_AGENT_PLUGIN_MANIFEST_DIR))\n        .expect(\"create marketplace manifest dir\");\n    fs::create_dir_all(plugin_root.join(\".codex-plugin\")).expect(\"create plugin manifest dir\");\n    fs::create_dir_all(&codex_home).expect(\"create codex home\");\n\n    fs::write(\n        repo_root.join(EXTERNAL_AGENT_DIR).join(\"settings.json\"),\n        r#\"{\n          \"enabledPlugins\": {\n            \"cloudflare@my-plugins\": true\n          },\n          \"extraKnownMarketplaces\": {\n            \"my-plugins\": {\n              \"source\": \"directory\",\n              \"path\": \"./my-marketplace\"\n            }\n          }\n        }\"#,\n    )\n    .expect(\"write settings\");\n    fs::write(\n        marketplace_root\n            .join(EXTERNAL_AGENT_PLUGIN_MANIFEST_DIR)\n            .join(\"marketplace.json\"),\n        r#\"{\n          \"name\": \"my-plugins\",\n          \"plugins\": [\n            {\n              \"name\": \"cloudflare\",\n              \"source\": \"./plugins/cloudflare\"\n            }\n          ]\n        }\"#,\n    )\n    .expect(\"write marketplace manifest\");\n    fs::write(\n        plugin_root.join(\".codex-plugin\").join(\"plugin.json\"),\n        r#\"{\"name\":\"cloudflare\",\"version\":\"0.1.0\"}\"#,\n    )\n    .expect(\"write plugin manifest\");\n\n    let outcome = service_for_paths(external_agent_home, codex_home.clone())\n        .import(vec![ExternalAgentConfigMigrationItem {\n            item_type: ExternalAgentConfigMigrationItemType::Plugins,\n            description: String::new(),\n            cwd: Some(repo_root.clone()),\n            details: Some(MigrationDetails {\n                plugins: vec![PluginsMigration {\n                    marketplace_name: \"my-plugins\".to_string(),\n                    plugin_names: vec![\"cloudflare\".to_string()],\n                }],\n                ..Default::default()\n            }),\n        }])\n        .await;\n\n    assert_eq!(\n        outcome,\n        ExternalAgentConfigImportOutcome {\n            pending_plugin_imports: Vec::new(),\n            item_results: vec![ExternalAgentConfigImportItemResult {\n                item_type: ExternalAgentConfigMigrationItemType::Plugins,\n                description: String::new(),\n                cwd: Some(repo_root.clone()),\n                success_count: 0,\n                error_count: 1,\n                successes: Vec::new(),\n                raw_errors: vec![ExternalAgentConfigImportRawError {\n                    item_type: ExternalAgentConfigMigrationItemType::Plugins,\n                    error_type: None,\n                    sub_error_type: None,\n                    failure_stage: \"plugin_import\".to_string(),\n                    message: \"repository-scoped plugin migration is not allowed\".to_string(),\n                    cwd: Some(repo_root),\n                    source: None,\n                }],\n            }],\n        }\n    );\n    assert!(!codex_home.join(\"config.toml\").exists());\n}\n\n#[tokio::test]\nasync fn import_plugins_rejects_project_cwd_before_config_loading() {\n    let root = TempDir::new().expect(\"create tempdir\");\n    let external_agent_home = root.path().join(EXTERNAL_AGENT_DIR);\n    let codex_home = root.path().join(\".codex\");\n    let repo_root = root.path().join(\"repo\");\n    fs::create_dir_all(repo_root.join(\".git\")).expect(\"create git dir\");\n    fs::create_dir_all(&codex_home).expect(\"create codex home\");\n    fs::write(codex_home.join(\"config.toml\"), \"not valid toml\").expect(\"write invalid config\");\n\n    let error = service_for_paths(external_agent_home, codex_home)\n        .import_plugins(Some(repo_root.as_path()), Some(github_plugin_details()))\n        .await\n        .expect_err(\"reject project cwd before config loading\");\n\n    assert_eq!(error.kind(), io::ErrorKind::InvalidData);\n    assert_eq!(\n        error.to_string(),\n        \"repository-scoped plugin migration is not allowed\"\n    );\n}\n\n#[test]\nfn import_skills_returns_only_new_skill_directory_names() {\n    let (_root, external_agent_home, codex_home) = fixture_paths();\n    let agents_skills = codex_home\n        .parent()\n        .map(|parent| parent.join(\".agents\").join(\"skills\"))\n        .unwrap_or_else(|| PathBuf::from(\".agents\").join(\"skills\"));\n    fs::create_dir_all(external_agent_home.join(\"skills\").join(\"skill-a\"))\n        .expect(\"create source a\");\n    fs::create_dir_all(external_agent_home.join(\"skills\").join(\"skill-b\"))\n        .expect(\"create source b\");\n    fs::create_dir_all(agents_skills.join(\"skill-a\")).expect(\"create existing target\");\n\n    let copied_names = service_for_paths(external_agent_home, codex_home)\n        .import_skills(/*cwd*/ None)\n        .expect(\"import skills\");\n\n    assert_eq!(copied_names, vec![\"skill-b\".to_string()]);\n}\n\n#[test]\nfn import_cursor_skills_reads_user_and_managed_directories() {\n    let root = TempDir::new().expect(\"create tempdir\");\n    let external_agent_home = root.path().join(\".cursor\");\n    let codex_home = root.path().join(\".codex\");\n    let user_skill = external_agent_home.join(\"skills\").join(\"user-skill\");\n    let managed_skill = external_agent_home\n        .join(\"skills-cursor\")\n        .join(\"managed-skill\");\n    let target_skills = codex_home\n        .parent()\n        .map(|parent| parent.join(\".agents\").join(\"skills\"))\n        .unwrap_or_else(|| PathBuf::from(\".agents\").join(\"skills\"));\n    fs::create_dir_all(&user_skill).expect(\"create user skill\");\n    fs::create_dir_all(&managed_skill).expect(\"create managed skill\");\n    fs::write(user_skill.join(\"SKILL.md\"), \"# Imported user skill\").expect(\"write user skill\");\n    fs::write(managed_skill.join(\"SKILL.md\"), \"# Imported managed skill\")\n        .expect(\"write managed skill\");\n    let mut service = service_for_paths(external_agent_home, codex_home);\n    service.source = ExternalAgentSource::Cur;\n\n    let mut copied_names = service.import_skills(/*cwd*/ None).expect(\"import skills\");\n    copied_names.sort();\n\n    assert_eq!(\n        copied_names,\n        vec![\"managed-skill\".to_string(), \"user-skill\".to_string()]\n    );\n    assert_eq!(\n        fs::read_to_string(target_skills.join(\"user-skill\").join(\"SKILL.md\"))\n            .expect(\"read user skill\"),\n        \"# Imported user skill\"\n    );\n    assert_eq!(\n        fs::read_to_string(target_skills.join(\"managed-skill\").join(\"SKILL.md\"))\n            .expect(\"read managed skill\"),\n        \"# Imported managed skill\"\n    );\n}\n",
+    "54e2051499f2726bf52436e45c046529210de6b0": "use crate::ClaSource;\nuse crate::RewriteProfile;\nuse codex_core_plugins::CommandDescriptionMode;\nuse codex_core_plugins::CommandMigrationProfile;\nuse codex_core_plugins::CommandRewriteProfile;\nuse codex_core_plugins::count_missing_commands_with_profile;\nuse codex_core_plugins::import_commands_with_profile;\nuse codex_core_plugins::marketplace_add::is_local_marketplace_source;\nuse codex_core_plugins::missing_command_names_with_profile;\nuse codex_plugin::PluginId;\nuse serde_json::Value as JsonValue;\nuse std::collections::BTreeMap;\nuse std::collections::HashSet;\nuse std::io;\nuse std::path::Path;\n\nuse crate::migration_source::MarketplaceImportSource;\nuse crate::model::MigrationDetails;\nuse crate::model::PluginsMigration;\n\npub(super) const KNOWN_MARKETPLACES_PATH: &str = \"plugins/known_marketplaces.json\";\npub(super) const OFFICIAL_MARKETPLACE_NAME: &str = \"claude-plugins-official\";\npub(super) const OFFICIAL_MARKETPLACE_SOURCE: &str = \"anthropics/claude-plugins-official\";\npub(super) const CLAUDE_CODE_MARKETPLACE_NAME: &str = \"claude-code-plugins\";\npub(super) const CLAUDE_CODE_MARKETPLACE_SOURCE: &str = \"anthropics/claude-code\";\npub(super) const REWRITE_PROFILE: RewriteProfile = ClaSource::REWRITE_PROFILE;\nconst COMMAND_MIGRATION_PROFILE: CommandMigrationProfile = CommandMigrationProfile::new(\n    CommandRewriteProfile::new(\n        REWRITE_PROFILE.doc_file_name(),\n        REWRITE_PROFILE.term_variants(),\n    )\n    .with_case_sensitive_term_variants(REWRITE_PROFILE.case_sensitive_term_variants()),\n    CommandDescriptionMode::RequireFrontmatter,\n);\n\npub(super) fn marketplace_import_sources(\n    settings: &JsonValue,\n    external_agent_home: &Path,\n    source_root: &Path,\n) -> BTreeMap<String, MarketplaceImportSource> {\n    let known_marketplaces_path = external_agent_home.join(KNOWN_MARKETPLACES_PATH);\n    let known_marketplaces = match crate::service::read_external_settings(&known_marketplaces_path)\n    {\n        Ok(known_marketplaces) => known_marketplaces,\n        Err(err) => {\n            tracing::warn!(\n                path = %known_marketplaces_path.display(),\n                error = %err,\n                \"ignoring invalid external agent marketplace registry\"\n            );\n            None\n        }\n    };\n    let mut import_sources = known_marketplaces\n        .as_ref()\n        .map(|known_marketplaces| {\n            collect_marketplace_import_sources(known_marketplaces, external_agent_home)\n        })\n        .unwrap_or_default();\n\n    if let Some(extra_known_marketplaces) = settings\n        .as_object()\n        .and_then(|settings| settings.get(\"extraKnownMarketplaces\"))\n    {\n        let mut scoped_marketplaces = extra_known_marketplaces.clone();\n        if let Some(scoped_marketplaces) = scoped_marketplaces.as_object_mut() {\n            for (name, scoped_marketplace) in scoped_marketplaces {\n                import_sources.remove(name);\n                let Some(known_marketplace) = known_marketplaces\n                    .as_ref()\n                    .and_then(JsonValue::as_object)\n                    .and_then(|known_marketplaces| known_marketplaces.get(name))\n                else {\n                    continue;\n                };\n                if scoped_marketplace.get(\"source\") != known_marketplace.get(\"source\") {\n                    continue;\n                }\n                let Some(install_location) = known_marketplace\n                    .get(\"installLocation\")\n                    .and_then(JsonValue::as_str)\n                else {\n                    continue;\n                };\n                let install_location = Path::new(install_location);\n                let install_location = if install_location.is_absolute() {\n                    install_location.to_path_buf()\n                } else {\n                    external_agent_home.join(install_location)\n                };\n                let Some(scoped_marketplace) = scoped_marketplace.as_object_mut() else {\n                    continue;\n                };\n                scoped_marketplace.insert(\n                    \"installLocation\".to_string(),\n                    JsonValue::String(install_location.display().to_string()),\n                );\n            }\n        }\n        import_sources.extend(collect_marketplace_import_sources(\n            &scoped_marketplaces,\n            source_root,\n        ));\n    }\n\n    for (marketplace_name, marketplace_source) in [\n        (CLAUDE_CODE_MARKETPLACE_NAME, CLAUDE_CODE_MARKETPLACE_SOURCE),\n    ] {\n        if has_enabled_plugin_for_marketplace(settings, marketplace_name)\n            && !import_sources.contains_key(marketplace_name)\n        {\n            import_sources.insert(\n                marketplace_name.to_string(),\n                MarketplaceImportSource {\n                    source: marketplace_source.to_string(),\n                    ref_name: None,\n                },\n            );\n        }\n    }\n\n    import_sources\n}\n\npub(super) fn import_source_commands(\n    source_commands: &Path,\n    target_skills: &Path,\n) -> io::Result<Vec<String>> {\n    import_commands_with_profile(source_commands, target_skills, COMMAND_MIGRATION_PROFILE)\n}\n\npub(super) fn count_missing_source_commands(\n    source_commands: &Path,\n    target_skills: &Path,\n) -> io::Result<usize> {\n    count_missing_commands_with_profile(source_commands, target_skills, COMMAND_MIGRATION_PROFILE)\n}\n\npub(super) fn missing_source_command_names(\n    source_commands: &Path,\n    target_skills: &Path,\n) -> io::Result<Vec<String>> {\n    missing_command_names_with_profile(source_commands, target_skills, COMMAND_MIGRATION_PROFILE)\n}\n\npub(crate) fn extract_plugin_migration_details(\n    settings: &JsonValue,\n    import_sources: &BTreeMap<String, MarketplaceImportSource>,\n    configured_plugin_ids: &HashSet<String>,\n    configured_marketplace_plugins: &BTreeMap<String, HashSet<String>>,\n) -> Option<MigrationDetails> {\n    let loadable_marketplaces = import_sources\n        .iter()\n        .filter_map(|(marketplace_name, source)| {\n            is_local_marketplace_source(&source.source, source.ref_name.clone())\n                .ok()\n                .map(|_| marketplace_name.clone())\n        })\n        .collect::<HashSet<_>>();\n    let mut plugins = BTreeMap::new();\n    for plugin_id in collect_enabled_plugins(settings)\n        .into_iter()\n        .filter(|plugin_id| !configured_plugin_ids.contains(plugin_id))\n    {\n        let Ok(plugin_id) = PluginId::parse(&plugin_id) else {\n            continue;\n        };\n        if let Some(installable_plugins) =\n            configured_marketplace_plugins.get(&plugin_id.marketplace_name)\n        {\n            if !installable_plugins.contains(&plugin_id.plugin_name) {\n                tracing::warn!(\n                    plugin_id = %plugin_id.as_key(),\n                    marketplace_name = %plugin_id.marketplace_name,\n                    \"enabled external agent plugin was not found in configured marketplace\"\n                );\n                continue;\n            }\n        } else if !loadable_marketplaces.contains(&plugin_id.marketplace_name) {\n            tracing::warn!(\n                plugin_id = %plugin_id.as_key(),\n                marketplace_name = %plugin_id.marketplace_name,\n                \"marketplace source was not found for enabled external agent plugin\"\n            );\n            continue;\n        }\n        let plugin_group = plugins\n            .entry(plugin_id.marketplace_name.clone())\n            .or_insert_with(|| PluginsMigration {\n                marketplace_name: plugin_id.marketplace_name.clone(),\n                plugin_names: Vec::new(),\n            });\n        plugin_group.plugin_names.push(plugin_id.plugin_name);\n    }\n\n    let plugins = plugins\n        .into_values()\n        .filter_map(|mut plugin_group| {\n            if plugin_group.plugin_names.is_empty() {\n                return None;\n            }\n            plugin_group.plugin_names.sort();\n            Some(plugin_group)\n        })\n        .collect::<Vec<_>>();\n    if plugins.is_empty() {\n        return None;\n    }\n\n    Some(MigrationDetails {\n        plugins,\n        ..Default::default()\n    })\n}\n\nfn collect_enabled_plugins(settings: &JsonValue) -> Vec<String> {\n    let Some(enabled_plugins) = settings\n        .as_object()\n        .and_then(|settings| settings.get(\"enabledPlugins\"))\n        .and_then(JsonValue::as_object)\n    else {\n        return Vec::new();\n    };\n\n    enabled_plugins\n        .iter()\n        .filter_map(|(plugin_key, enabled)| {\n            if !enabled.as_bool().unwrap_or(false) {\n                return None;\n            }\n            PluginId::parse(plugin_key)\n                .ok()\n                .map(|plugin_id| plugin_id.as_key())\n        })\n        .collect()\n}\n\nfn has_enabled_plugin_for_marketplace(settings: &JsonValue, marketplace_name: &str) -> bool {\n    collect_enabled_plugins(settings)\n        .into_iter()\n        .any(|plugin_id| {\n            PluginId::parse(&plugin_id)\n                .map(|plugin_id| plugin_id.marketplace_name == marketplace_name)\n                .unwrap_or(false)\n        })\n}\n\nfn collect_marketplace_import_sources(\n    marketplaces: &JsonValue,\n    source_root: &Path,\n) -> BTreeMap<String, MarketplaceImportSource> {\n    marketplaces\n        .as_object()\n        .map(|extra_known_marketplaces| {\n            extra_known_marketplaces\n                .iter()\n                .filter_map(|(name, value)| {\n                    let source_fields = if let Some(source) = value.get(\"source\")\n                        && source.is_object()\n                    {\n                        source.as_object()?\n                    } else {\n                        value.as_object()?\n                    };\n                    let source_kind = source_fields\n                        .get(\"source\")\n                        .and_then(JsonValue::as_str)\n                        .map(str::trim);\n                    let declared_source = match source_kind {\n                        Some(\"github\") => source_fields.get(\"repo\"),\n                        Some(\"git\") => source_fields.get(\"url\"),\n                        Some(\"directory\" | \"local\") => source_fields.get(\"path\"),\n                        Some(\"file\" | \"url\" | \"npm\" | \"settings\") => None,\n                        Some(_) => source_fields.get(\"source\"),\n                        None => source_fields\n                            .get(\"repo\")\n                            .or_else(|| source_fields.get(\"url\"))\n                            .or_else(|| source_fields.get(\"path\"))\n                            .or_else(|| value.get(\"source\")),\n                    }\n                    .and_then(JsonValue::as_str)\n                    .map(str::trim)\n                    .filter(|value| !value.is_empty());\n                    let materialized_source = value\n                        .get(\"installLocation\")\n                        .and_then(JsonValue::as_str)\n                        .map(str::trim)\n                        .filter(|value| !value.is_empty())\n                        .and_then(|value| {\n                            let path = Path::new(value);\n                            let path = if path.is_absolute() {\n                                path.to_path_buf()\n                            } else {\n                                source_root.join(path)\n                            };\n                            path.is_dir().then(|| path.display().to_string())\n                        });\n                    let (source, ref_name) = if let Some(source) = declared_source {\n                        let source = if matches!(source_kind, Some(\"directory\" | \"local\")) {\n                            let path = Path::new(source);\n                            if path.is_absolute() {\n                                path.to_path_buf()\n                            } else {\n                                source_root.join(path)\n                            }\n                            .display()\n                            .to_string()\n                        } else {\n                            resolve_external_marketplace_source(source, source_root)\n                        };\n                        let ref_name = source_fields\n                            .get(\"ref\")\n                            .or_else(|| value.get(\"ref\"))\n                            .and_then(JsonValue::as_str)\n                            .map(str::trim)\n                            .filter(|value| !value.is_empty())\n                            .map(ToOwned::to_owned);\n                        (source, ref_name)\n                    } else {\n                        (materialized_source?, None)\n                    };\n\n                    Some((name.clone(), MarketplaceImportSource { source, ref_name }))\n                })\n                .collect()\n        })\n        .unwrap_or_default()\n}\n\nfn resolve_external_marketplace_source(source: &str, source_root: &Path) -> String {\n    if !looks_like_relative_local_path(source) {\n        return source.to_string();\n    }\n\n    source_root.join(source).display().to_string()\n}\n\nfn looks_like_relative_local_path(source: &str) -> bool {\n    source.starts_with(\"./\") || source.starts_with(\"../\") || source == \".\" || source == \"..\"\n}\n",
+    "b2620eaf1a3b673d451b3fa7448b26ef286bb03b": "use crate::ClaSource;\nuse crate::RewriteProfile;\nuse codex_core_plugins::CommandDescriptionMode;\nuse codex_core_plugins::CommandMigrationProfile;\nuse codex_core_plugins::CommandRewriteProfile;\nuse codex_core_plugins::count_missing_commands_with_profile;\nuse codex_core_plugins::import_commands_with_profile;\nuse codex_core_plugins::marketplace_add::is_local_marketplace_source;\nuse codex_core_plugins::missing_command_names_with_profile;\nuse codex_plugin::PluginId;\nuse serde_json::Value as JsonValue;\nuse std::collections::BTreeMap;\nuse std::collections::HashSet;\nuse std::io;\nuse std::path::Path;\n\nuse crate::migration_source::MarketplaceImportSource;\nuse crate::model::MigrationDetails;\nuse crate::model::PluginsMigration;\n\npub(super) const KNOWN_MARKETPLACES_PATH: &str = \"plugins/known_marketplaces.json\";\npub(super) const OFFICIAL_MARKETPLACE_NAME: &str = \"claude-plugins-official\";\npub(super) const OFFICIAL_MARKETPLACE_SOURCE: &str = \"anthropics/claude-plugins-official\";\npub(super) const CLAUDE_CODE_MARKETPLACE_NAME: &str = \"claude-code-plugins\";\npub(super) const CLAUDE_CODE_MARKETPLACE_SOURCE: &str = \"anthropics/claude-code\";\npub(super) const REWRITE_PROFILE: RewriteProfile = ClaSource::REWRITE_PROFILE;\nconst COMMAND_MIGRATION_PROFILE: CommandMigrationProfile = CommandMigrationProfile::new(\n    CommandRewriteProfile::new(\n        REWRITE_PROFILE.doc_file_name(),\n        REWRITE_PROFILE.term_variants(),\n    )\n    .with_case_sensitive_term_variants(REWRITE_PROFILE.case_sensitive_term_variants()),\n    CommandDescriptionMode::RequireFrontmatter,\n);\n\npub(super) fn marketplace_import_sources(\n    settings: &JsonValue,\n    external_agent_home: &Path,\n    source_root: &Path,\n) -> BTreeMap<String, MarketplaceImportSource> {\n    let known_marketplaces_path = external_agent_home.join(KNOWN_MARKETPLACES_PATH);\n    let known_marketplaces = match crate::service::read_external_settings(&known_marketplaces_path)\n    {\n        Ok(known_marketplaces) => known_marketplaces,\n        Err(err) => {\n            tracing::warn!(\n                path = %known_marketplaces_path.display(),\n                error = %err,\n                \"ignoring invalid external agent marketplace registry\"\n            );\n            None\n        }\n    };\n    let mut import_sources = known_marketplaces\n        .as_ref()\n        .map(|known_marketplaces| {\n            collect_marketplace_import_sources(known_marketplaces, external_agent_home)\n        })\n        .unwrap_or_default();\n\n    if let Some(extra_known_marketplaces) = settings\n        .as_object()\n        .and_then(|settings| settings.get(\"extraKnownMarketplaces\"))\n    {\n        let mut scoped_marketplaces = extra_known_marketplaces.clone();\n        if let Some(scoped_marketplaces) = scoped_marketplaces.as_object_mut() {\n            for (name, scoped_marketplace) in scoped_marketplaces {\n                import_sources.remove(name);\n                let Some(known_marketplace) = known_marketplaces\n                    .as_ref()\n                    .and_then(JsonValue::as_object)\n                    .and_then(|known_marketplaces| known_marketplaces.get(name))\n                else {\n                    continue;\n                };\n                if scoped_marketplace.get(\"source\") != known_marketplace.get(\"source\") {\n                    continue;\n                }\n                let Some(install_location) = known_marketplace\n                    .get(\"installLocation\")\n                    .and_then(JsonValue::as_str)\n                else {\n                    continue;\n                };\n                let install_location = Path::new(install_location);\n                let install_location = if install_location.is_absolute() {\n                    install_location.to_path_buf()\n                } else {\n                    external_agent_home.join(install_location)\n                };\n                let Some(scoped_marketplace) = scoped_marketplace.as_object_mut() else {\n                    continue;\n                };\n                scoped_marketplace.insert(\n                    \"installLocation\".to_string(),\n                    JsonValue::String(install_location.display().to_string()),\n                );\n            }\n        }\n        import_sources.extend(collect_marketplace_import_sources(\n            &scoped_marketplaces,\n            source_root,\n        ));\n    }\n\n    for (marketplace_name, marketplace_source) in [\n        (OFFICIAL_MARKETPLACE_NAME, OFFICIAL_MARKETPLACE_SOURCE),\n        (CLAUDE_CODE_MARKETPLACE_NAME, CLAUDE_CODE_MARKETPLACE_SOURCE),\n    ] {\n        if has_enabled_plugin_for_marketplace(settings, marketplace_name)\n            && !import_sources.contains_key(marketplace_name)\n        {\n            import_sources.insert(\n                marketplace_name.to_string(),\n                MarketplaceImportSource {\n                    source: marketplace_source.to_string(),\n                    ref_name: None,\n                },\n            );\n        }\n    }\n\n    import_sources\n}\n\npub(super) fn import_source_commands(\n    source_commands: &Path,\n    target_skills: &Path,\n) -> io::Result<Vec<String>> {\n    import_commands_with_profile(source_commands, target_skills, COMMAND_MIGRATION_PROFILE)\n}\n\npub(super) fn count_missing_source_commands(\n    source_commands: &Path,\n    target_skills: &Path,\n) -> io::Result<usize> {\n    count_missing_commands_with_profile(source_commands, target_skills, COMMAND_MIGRATION_PROFILE)\n}\n\npub(super) fn missing_source_command_names(\n    source_commands: &Path,\n    target_skills: &Path,\n) -> io::Result<Vec<String>> {\n    missing_command_names_with_profile(source_commands, target_skills, COMMAND_MIGRATION_PROFILE)\n}\n\npub(crate) fn extract_plugin_migration_details(\n    settings: &JsonValue,\n    import_sources: &BTreeMap<String, MarketplaceImportSource>,\n    configured_plugin_ids: &HashSet<String>,\n    configured_marketplace_plugins: &BTreeMap<String, HashSet<String>>,\n) -> Option<MigrationDetails> {\n    let loadable_marketplaces = import_sources\n        .iter()\n        .filter_map(|(marketplace_name, source)| {\n            is_local_marketplace_source(&source.source, source.ref_name.clone())\n                .ok()\n                .map(|_| marketplace_name.clone())\n        })\n        .collect::<HashSet<_>>();\n    let mut plugins = BTreeMap::new();\n    for plugin_id in collect_enabled_plugins(settings)\n        .into_iter()\n        .filter(|plugin_id| !configured_plugin_ids.contains(plugin_id))\n    {\n        let Ok(plugin_id) = PluginId::parse(&plugin_id) else {\n            continue;\n        };\n        if let Some(installable_plugins) =\n            configured_marketplace_plugins.get(&plugin_id.marketplace_name)\n        {\n            if !installable_plugins.contains(&plugin_id.plugin_name) {\n                tracing::warn!(\n                    plugin_id = %plugin_id.as_key(),\n                    marketplace_name = %plugin_id.marketplace_name,\n                    \"enabled external agent plugin was not found in configured marketplace\"\n                );\n                continue;\n            }\n        } else if !loadable_marketplaces.contains(&plugin_id.marketplace_name) {\n            tracing::warn!(\n                plugin_id = %plugin_id.as_key(),\n                marketplace_name = %plugin_id.marketplace_name,\n                \"marketplace source was not found for enabled external agent plugin\"\n            );\n            continue;\n        }\n        let plugin_group = plugins\n            .entry(plugin_id.marketplace_name.clone())\n            .or_insert_with(|| PluginsMigration {\n                marketplace_name: plugin_id.marketplace_name.clone(),\n                plugin_names: Vec::new(),\n            });\n        plugin_group.plugin_names.push(plugin_id.plugin_name);\n    }\n\n    let plugins = plugins\n        .into_values()\n        .filter_map(|mut plugin_group| {\n            if plugin_group.plugin_names.is_empty() {\n                return None;\n            }\n            plugin_group.plugin_names.sort();\n            Some(plugin_group)\n        })\n        .collect::<Vec<_>>();\n    if plugins.is_empty() {\n        return None;\n    }\n\n    Some(MigrationDetails {\n        plugins,\n        ..Default::default()\n    })\n}\n\nfn collect_enabled_plugins(settings: &JsonValue) -> Vec<String> {\n    let Some(enabled_plugins) = settings\n        .as_object()\n        .and_then(|settings| settings.get(\"enabledPlugins\"))\n        .and_then(JsonValue::as_object)\n    else {\n        return Vec::new();\n    };\n\n    enabled_plugins\n        .iter()\n        .filter_map(|(plugin_key, enabled)| {\n            if !enabled.as_bool().unwrap_or(false) {\n                return None;\n            }\n            PluginId::parse(plugin_key)\n                .ok()\n                .map(|plugin_id| plugin_id.as_key())\n        })\n        .collect()\n}\n\nfn has_enabled_plugin_for_marketplace(settings: &JsonValue, marketplace_name: &str) -> bool {\n    collect_enabled_plugins(settings)\n        .into_iter()\n        .any(|plugin_id| {\n            PluginId::parse(&plugin_id)\n                .map(|plugin_id| plugin_id.marketplace_name == marketplace_name)\n                .unwrap_or(false)\n        })\n}\n\nfn collect_marketplace_import_sources(\n    marketplaces: &JsonValue,\n    source_root: &Path,\n) -> BTreeMap<String, MarketplaceImportSource> {\n    marketplaces\n        .as_object()\n        .map(|extra_known_marketplaces| {\n            extra_known_marketplaces\n                .iter()\n                .filter_map(|(name, value)| {\n                    let source_fields = if let Some(source) = value.get(\"source\")\n                        && source.is_object()\n                    {\n                        source.as_object()?\n                    } else {\n                        value.as_object()?\n                    };\n                    let source_kind = source_fields\n                        .get(\"source\")\n                        .and_then(JsonValue::as_str)\n                        .map(str::trim);\n                    let declared_source = match source_kind {\n                        Some(\"github\") => source_fields.get(\"repo\"),\n                        Some(\"git\") => source_fields.get(\"url\"),\n                        Some(\"directory\" | \"local\") => source_fields.get(\"path\"),\n                        Some(\"file\" | \"url\" | \"npm\" | \"settings\") => None,\n                        Some(_) => source_fields.get(\"source\"),\n                        None => source_fields\n                            .get(\"repo\")\n                            .or_else(|| source_fields.get(\"url\"))\n                            .or_else(|| source_fields.get(\"path\"))\n                            .or_else(|| value.get(\"source\")),\n                    }\n                    .and_then(JsonValue::as_str)\n                    .map(str::trim)\n                    .filter(|value| !value.is_empty());\n                    let materialized_source = value\n                        .get(\"installLocation\")\n                        .and_then(JsonValue::as_str)\n                        .map(str::trim)\n                        .filter(|value| !value.is_empty())\n                        .and_then(|value| {\n                            let path = Path::new(value);\n                            let path = if path.is_absolute() {\n                                path.to_path_buf()\n                            } else {\n                                source_root.join(path)\n                            };\n                            path.is_dir().then(|| path.display().to_string())\n                        });\n                    let (source, ref_name) = if let Some(source) = declared_source {\n                        let source = if matches!(source_kind, Some(\"directory\" | \"local\")) {\n                            let path = Path::new(source);\n                            if path.is_absolute() {\n                                path.to_path_buf()\n                            } else {\n                                source_root.join(path)\n                            }\n                            .display()\n                            .to_string()\n                        } else {\n                            resolve_external_marketplace_source(source, source_root)\n                        };\n                        let ref_name = source_fields\n                            .get(\"ref\")\n                            .or_else(|| value.get(\"ref\"))\n                            .and_then(JsonValue::as_str)\n                            .map(str::trim)\n                            .filter(|value| !value.is_empty())\n                            .map(ToOwned::to_owned);\n                        (source, ref_name)\n                    } else {\n                        (materialized_source?, None)\n                    };\n\n                    Some((name.clone(), MarketplaceImportSource { source, ref_name }))\n                })\n                .collect()\n        })\n        .unwrap_or_default()\n}\n\nfn resolve_external_marketplace_source(source: &str, source_root: &Path) -> String {\n    if !looks_like_relative_local_path(source) {\n        return source.to_string();\n    }\n\n    source_root.join(source).display().to_string()\n}\n\nfn looks_like_relative_local_path(source: &str) -> bool {\n    source.starts_with(\"./\") || source.starts_with(\"../\") || source == \".\" || source == \"..\"\n}\n",
+    "a34a1306f1082b3347543749cbfd9a05eee7cb91": "[package]\nname = \"codex-v8-poc\"\nversion.workspace = true\nedition.workspace = true\nlicense.workspace = true\n\n[lib]\nname = \"codex_v8_poc\"\npath = \"src/lib.rs\"\ndoctest = false\n\n[features]\ndefault = [\"sandbox\"]\nsandbox = [\"v8/v8_enable_sandbox\"]\n\n[lints]\nworkspace = true\n\n[dependencies]\nv8 = { workspace = true }\n\n[dev-dependencies]\npretty_assertions = { workspace = true }\n"
+  }
+}

@@ -1,0 +1,36 @@
+{
+  "schema": "hepta.queue-ack-fixture-review.v2",
+  "path": "codex-rs/ext/queue/tests/queue_service.rs",
+  "old_blob": "19fa5aa60637aef39a396fde3cbbec799e83181c",
+  "baseline_blob": "c4ded73c22da92387cbaae834c2dd140b94cb4b0",
+  "final_blob": "21023fa6e7d554552e40750b1b282976ac6c39ed",
+  "baseline_original_case_byte_equal": true,
+  "original_assertion_tail_byte_equal": true,
+  "control_baseline_to_final_only_removes_old_oracle": true,
+  "shared_observer_prefix_equal": true,
+  "baseline_expected_failure": "TurnComplete arrived before the owned queue database acknowledgement",
+  "original_timeout_seconds": 25,
+  "final_shared_timeout_seconds": 25,
+  "control_timeout_seconds": 25,
+  "original_case_uses_unbound_enqueue": true,
+  "new_control_uses_reserved_exact_binding": true,
+  "negative_validity_requires": [
+    "actual model TurnComplete",
+    "complete_attempts > 0",
+    "exact queue row remains",
+    "one physical model request",
+    "owned dispatch task unfinished",
+    "old immediate is_empty assertion fails"
+  ],
+  "positive_requires": [
+    "actual SQLite nonempty observed before release",
+    "observer task unfinished before gate release",
+    "original existing gate released",
+    "actual SQLite empty",
+    "Started and one physical model request"
+  ],
+  "original_tail_assertions_preserved": true,
+  "no_production_changes": true,
+  "no_new_dependencies": true,
+  "no_new_sleeps": true
+}

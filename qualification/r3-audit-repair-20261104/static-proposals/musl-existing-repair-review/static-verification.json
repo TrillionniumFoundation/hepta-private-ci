@@ -1,0 +1,509 @@
+{
+  "schema": "hepta.musl_existing_repair_static_verification.v1",
+  "verified_sources": [
+    {
+      "repo": "TrillionniumFoundation/hepta-private-ci",
+      "blob": "e95871fa957364dc4cbd2f26b5a0d49f0e41c05a",
+      "local": "original-musl-diagnostic.json",
+      "role": "original_diagnostic_projection",
+      "bytes": 33141,
+      "sha256": "1866761def611e30b0024ea7516b59471efecca01f62b44c8fff4bd09bd4366d",
+      "git_blob": "e95871fa957364dc4cbd2f26b5a0d49f0e41c05a"
+    },
+    {
+      "repo": "TrillionniumFoundation/hepta-private-ci",
+      "blob": "3fd46e3fe77e18899c34b9fd8114f5f438f0406c",
+      "local": "existing-musl-repair.patch",
+      "role": "existing_patch",
+      "bytes": 7485,
+      "sha256": "0efb04129f886625ea3875e253d7cf8d1ebd759add641579b620b0ff99cc1b7b",
+      "git_blob": "3fd46e3fe77e18899c34b9fd8114f5f438f0406c"
+    },
+    {
+      "repo": "TrillionniumFoundation/hepta-private-ci",
+      "blob": "7a88987f54fce5d6062eb7258a7f8679975de90d",
+      "local": "release_binaries.bzl.candidate.txt",
+      "role": "existing_postimage",
+      "bytes": 1132,
+      "sha256": "2e626c8de3a42cee145e1aae552c5ca32f1c06e5d83c4197cf195f28572ab39d",
+      "git_blob": "7a88987f54fce5d6062eb7258a7f8679975de90d"
+    },
+    {
+      "repo": "TrillionniumFoundation/hepta-private-ci",
+      "blob": "a157c21a3e79460dc6f32147d952f3dacb4ed197",
+      "local": "hepta-musl-product-smoke.yml.candidate.txt",
+      "role": "existing_postimage",
+      "bytes": 24659,
+      "sha256": "a96f31f7ee4ce8de9377faf24b0509dc0532590c76d4fac83cd6e7cfd243836a",
+      "git_blob": "a157c21a3e79460dc6f32147d952f3dacb4ed197"
+    },
+    {
+      "repo": "TrillionniumFoundation/hepta-private-ci",
+      "blob": "a21061a8b741fc724edb580e229eb86d9debdc4f",
+      "local": "source/MODULE.bazel.original.txt",
+      "role": "cabc_preimage",
+      "bytes": 22949,
+      "sha256": "7a254eea81ecc408797788e56aacf0a3ac5a285b6ba0b0dbfe6a9ca57d1db1ae",
+      "git_blob": "a21061a8b741fc724edb580e229eb86d9debdc4f"
+    },
+    {
+      "repo": "TrillionniumFoundation/hepta-private-ci",
+      "blob": "7ac59c2b5e1f670d1653c2b3efdd8a82f2963bdc",
+      "local": "source/release_binaries.bzl.original.txt",
+      "role": "cabc_preimage",
+      "bytes": 763,
+      "sha256": "0a0f907294980f9bf640a667d332d0445398496978f17d14031971826f4e5c68",
+      "git_blob": "7ac59c2b5e1f670d1653c2b3efdd8a82f2963bdc"
+    },
+    {
+      "repo": "TrillionniumFoundation/hepta-private-ci",
+      "blob": "6aad46b1fe0edcf315ef8b1a5546225c59efe235",
+      "local": "source/hepta-musl-product-smoke.yml.original.txt",
+      "role": "cabc_preimage",
+      "bytes": 21599,
+      "sha256": "0b980fc83ac32bba15b9f4b6708426d7b182e3c84b6768183dbbdd3fc9091f36",
+      "git_blob": "6aad46b1fe0edcf315ef8b1a5546225c59efe235"
+    },
+    {
+      "repo": "TrillionniumFoundation/hepta-private-ci",
+      "blob": "f58d703ef9ec33b1787668dde454164fa3b52f3d",
+      "local": "source/bwrap.BUILD.original.txt",
+      "role": "cabc_preimage",
+      "bytes": 1603,
+      "sha256": "27d1be7161048f34b2fa8f59148d7690426dadd82b7c4323ff87b0a34b0ecac4",
+      "git_blob": "f58d703ef9ec33b1787668dde454164fa3b52f3d"
+    },
+    {
+      "repo": "TrillionniumFoundation/hepta-private-ci",
+      "blob": "a64e4a8d12045dcd4f83e2a02c262e52e87ef4c8",
+      "local": "source/cli.BUILD.original.txt",
+      "role": "cabc_preimage",
+      "bytes": 802,
+      "sha256": "25bfe4bd6ee523d5859654f34ba3caab21778d3372c239c83f8e07565a03e532",
+      "git_blob": "a64e4a8d12045dcd4f83e2a02c262e52e87ef4c8"
+    },
+    {
+      "repo": "hermeticbuild/rules_rs",
+      "ref": "87811fbf13177eff8f118a808610fe3a4fd0eed7",
+      "path": "rs/platforms/constraints/BUILD.bazel",
+      "blob": "b5751eb62d6169041f67fa5414669f7bff6a8bea",
+      "local": "primary/rules_rs/rs/platforms/constraints/BUILD.bazel.txt",
+      "role": "primary_dependency_source",
+      "bytes": 2554,
+      "sha256": "dff3e7ff860024871c0d1bdc401b22f7f2f7b89b5dd59bcfa8ad99b73940c816",
+      "git_blob": "b5751eb62d6169041f67fa5414669f7bff6a8bea"
+    },
+    {
+      "repo": "hermeticbuild/rules_rs",
+      "ref": "87811fbf13177eff8f118a808610fe3a4fd0eed7",
+      "path": "rs/platforms/triples.bzl",
+      "blob": "22a79a15aa279e76ea8a6fcc2b2ebd750197ced4",
+      "local": "primary/rules_rs/rs/platforms/triples.bzl.txt",
+      "role": "primary_dependency_source",
+      "bytes": 10979,
+      "sha256": "636e9f13b941aa36910dfffc5b3e044a00ecf26521d7764c0c197cc11d098977",
+      "git_blob": "22a79a15aa279e76ea8a6fcc2b2ebd750197ced4"
+    },
+    {
+      "repo": "hermeticbuild/rules_rs",
+      "ref": "87811fbf13177eff8f118a808610fe3a4fd0eed7",
+      "path": "rs/platforms/declare_platforms.bzl",
+      "blob": "74b55b18ba1f346264180d16eef8044b8f7e29ec",
+      "local": "primary/rules_rs/rs/platforms/declare_platforms.bzl.txt",
+      "role": "primary_dependency_source",
+      "bytes": 418,
+      "sha256": "21458a2170c223f70940ebd62e0b8b05c4e16b95cd37657e30495ae2216ebf60",
+      "git_blob": "74b55b18ba1f346264180d16eef8044b8f7e29ec"
+    },
+    {
+      "repo": "hermeticbuild/rules_rs",
+      "ref": "87811fbf13177eff8f118a808610fe3a4fd0eed7",
+      "path": "rs/platforms/BUILD.bazel",
+      "blob": "41d8fa2f521add6ea4a993e051b784bd5fca081c",
+      "local": "primary/rules_rs/rs/platforms/BUILD.bazel.txt",
+      "role": "primary_dependency_source",
+      "bytes": 466,
+      "sha256": "e0436a474d06c90f3145da18e53f128ea59f8ae351471c8c7607eca57caa589b",
+      "git_blob": "41d8fa2f521add6ea4a993e051b784bd5fca081c"
+    },
+    {
+      "repo": "hermeticbuild/rules_rs",
+      "ref": "87811fbf13177eff8f118a808610fe3a4fd0eed7",
+      "path": "rs/toolchains/declare_rustc_toolchains.bzl",
+      "blob": "f005485388c9e57d6904988a36029d3328a8ad63",
+      "local": "primary/rules_rs/rs/toolchains/declare_rustc_toolchains.bzl.txt",
+      "role": "primary_dependency_source",
+      "bytes": 9821,
+      "sha256": "238ff49c2b2cb2e987c40d0d8eefc133b40dd50b41b55cb4aa6677614133e006",
+      "git_blob": "f005485388c9e57d6904988a36029d3328a8ad63"
+    },
+    {
+      "repo": "hermeticbuild/hermetic-llvm",
+      "ref": "d040526d00e4b0ec53b013ef8405c26637446fac",
+      "path": "platforms/declare_platforms.bzl",
+      "blob": "81641339b1d0b6c1810cb360841d934c253d8934",
+      "local": "primary/hermetic-llvm/platforms/declare_platforms.bzl.txt",
+      "role": "primary_dependency_source",
+      "bytes": 2773,
+      "sha256": "062c0566cde14fc8d38ff28fde2d4833f7dc1c58eb5537d44725fc182bb0508a",
+      "git_blob": "81641339b1d0b6c1810cb360841d934c253d8934"
+    },
+    {
+      "repo": "hermeticbuild/hermetic-llvm",
+      "ref": "d040526d00e4b0ec53b013ef8405c26637446fac",
+      "path": "platforms/common.bzl",
+      "blob": "5ee0a4d6b1c6e628ccc0570e49298d2bbd32ba11",
+      "local": "primary/hermetic-llvm/platforms/common.bzl.txt",
+      "role": "primary_dependency_source",
+      "bytes": 808,
+      "sha256": "aae1d313731363e7cf9897980debcc31149e7df5fe4d8621c8e5d1935304ad1f",
+      "git_blob": "5ee0a4d6b1c6e628ccc0570e49298d2bbd32ba11"
+    },
+    {
+      "repo": "hermeticbuild/hermetic-llvm",
+      "ref": "d040526d00e4b0ec53b013ef8405c26637446fac",
+      "path": "constraints/libc/BUILD.bazel",
+      "blob": "312ab111c974fc03905deffa813ed6b8da5d1448",
+      "local": "primary/hermetic-llvm/constraints/libc/BUILD.bazel.txt",
+      "role": "primary_dependency_source",
+      "bytes": 597,
+      "sha256": "4e30da2c963c4a4dd3987e7a7dbb1396fef4ad5d5c1ef859d96c7e6e4d593156",
+      "git_blob": "312ab111c974fc03905deffa813ed6b8da5d1448"
+    },
+    {
+      "repo": "hermeticbuild/hermetic-llvm",
+      "ref": "d040526d00e4b0ec53b013ef8405c26637446fac",
+      "path": "constraints/pie/BUILD.bazel",
+      "blob": "e25d6780b46451507132c49a76ac0e41c7972036",
+      "local": "primary/hermetic-llvm/constraints/pie/BUILD.bazel.txt",
+      "role": "primary_dependency_source",
+      "bytes": 273,
+      "sha256": "73cac6d627eea8a9437aae5bf417b381ec1b19958ccdff10597bd127f4929b05",
+      "git_blob": "e25d6780b46451507132c49a76ac0e41c7972036"
+    },
+    {
+      "repo": "hermeticbuild/rules_rs",
+      "path": "rs/platforms/config/declare_config_settings.bzl",
+      "blob": "cdef8556aa8aad87c56806157c7625bd03ae0cdc",
+      "local": "primary/rules_rs/rs/platforms/config/declare_config_settings.bzl.txt",
+      "role": "fixed_dependency_input",
+      "bytes": 435,
+      "sha256": "7d346009a9f1921f19516d9372b0020f40a3ac47226e4724c97ceabc386b8259",
+      "git_blob": "cdef8556aa8aad87c56806157c7625bd03ae0cdc"
+    },
+    {
+      "repo": "hermeticbuild/hermetic-llvm",
+      "path": "constraints/libc/libc_versions.bzl",
+      "blob": "cd5a8b47256d3b156dd3e6fb1ff2cec81a5aca1e",
+      "local": "primary/hermetic-llvm/constraints/libc/libc_versions.bzl.txt",
+      "role": "fixed_dependency_input",
+      "bytes": 637,
+      "sha256": "10b4b8438e1608e5e04677c1544f858e08b646fee0a3df3b1ef6410880f9024e",
+      "git_blob": "cd5a8b47256d3b156dd3e6fb1ff2cec81a5aca1e"
+    },
+    {
+      "repo": "TrillionniumFoundation/hepta-private-ci",
+      "path": "patches/rules_rs_build_script_deps_annotation.patch",
+      "blob": "53f9603ff8b5ed88f9e6b64cf8bd248dd874d099",
+      "local": "source/patches/rules_rs_build_script_deps_annotation.patch.txt",
+      "role": "fixed_dependency_input",
+      "bytes": 3952,
+      "sha256": "60bd903addfbe5919cec561eda7e8cc25d8c50b34c14d66445db483ac05e42ca",
+      "git_blob": "53f9603ff8b5ed88f9e6b64cf8bd248dd874d099"
+    },
+    {
+      "repo": "TrillionniumFoundation/hepta-private-ci",
+      "path": "patches/rules_rs_windows_msvc_linker.patch",
+      "blob": "66feb78569348668ee0f4fce86c7b50276fc097d",
+      "local": "source/patches/rules_rs_windows_msvc_linker.patch.txt",
+      "role": "fixed_dependency_input",
+      "bytes": 868,
+      "sha256": "6446879bf084a59f86bf9ee4c0ac06ed55bc05ceb630de4bc802d125718f96dc",
+      "git_blob": "66feb78569348668ee0f4fce86c7b50276fc097d"
+    },
+    {
+      "repo": "hermeticbuild/hermetic-llvm",
+      "ref": "d040526d00e4b0ec53b013ef8405c26637446fac",
+      "path": "constraints/cxxstdlib/BUILD.bazel",
+      "blob": "6b6b23487cc0517a429ae399fb35a2881b9fcdd2",
+      "local": "primary/hermetic-llvm/constraints/cxxstdlib/BUILD.bazel.txt",
+      "role": "primary_dependency_source",
+      "bytes": 677,
+      "sha256": "591f280ec69927a79443bb9a24b2ee172cb1d0d54f7edcc18fa587955f65b4e6",
+      "git_blob": "6b6b23487cc0517a429ae399fb35a2881b9fcdd2"
+    },
+    {
+      "repo": "hermeticbuild/hermetic-llvm",
+      "ref": "d040526d00e4b0ec53b013ef8405c26637446fac",
+      "path": "constraints/cxxstdlib/cxxstdlib_versions.bzl",
+      "blob": "14fc8c25f7a183a476f34447dbffe266c9bc6288",
+      "local": "primary/hermetic-llvm/constraints/cxxstdlib/cxxstdlib_versions.bzl.txt",
+      "role": "primary_dependency_source",
+      "bytes": 247,
+      "sha256": "bf98d3cbaea66f0a70d25b8dd7c7c0fdc219b709d32c621807c1c905af71f7ba",
+      "git_blob": "14fc8c25f7a183a476f34447dbffe266c9bc6288"
+    },
+    {
+      "repo": "bazelbuild/bazel",
+      "ref": "9.3.0",
+      "path": "src/main/java/com/google/devtools/build/lib/analysis/configuredtargets/RuleConfiguredTarget.java",
+      "blob": "dfcb73d822c8d41d6ae368bc984537e353eb26c7",
+      "local": "primary/bazel/RuleConfiguredTarget.java.txt",
+      "role": "primary_cquery_api_source",
+      "bytes": 13439,
+      "sha256": "ea261e50c5354ca4d173aa502904ac58fe6796fb2653cb5d8f08c86665bf8020",
+      "git_blob": "dfcb73d822c8d41d6ae368bc984537e353eb26c7"
+    },
+    {
+      "repo": "bazelbuild/bazel",
+      "ref": "9.3.0",
+      "path": "src/main/java/com/google/devtools/build/lib/starlarkbuildapi/ActionApi.java",
+      "blob": "4371dbc4d5fc79072ef68dca2a4b78bf6fabc3b2",
+      "local": "primary/bazel/ActionApi.java.txt",
+      "role": "primary_cquery_api_source",
+      "bytes": 7113,
+      "sha256": "4c0ce84b115e4e374db7b59df4dea6abf861815d20ee28eb4242128d0e858782",
+      "git_blob": "4371dbc4d5fc79072ef68dca2a4b78bf6fabc3b2"
+    },
+    {
+      "repo": "TrillionniumFoundation/hepta-private-ci",
+      "ref": "cabcb40d36e116beaa65750e1f674c52035da785",
+      "path": "defs.bzl",
+      "blob": "6f588ec3057fddfea35170e28e74036162ce6a23",
+      "local": "source/defs.bzl.txt",
+      "role": "cabc_target_registration",
+      "bytes": 34630,
+      "sha256": "f5638a9189632c8d8524a438bbfc6b365bddf7f23dfd2df06a6de3a2ff3f2cfa",
+      "git_blob": "6f588ec3057fddfea35170e28e74036162ce6a23"
+    },
+    {
+      "repo": "TrillionniumFoundation/hepta-private-ci",
+      "ref": "cabcb40d36e116beaa65750e1f674c52035da785",
+      "path": "codex-rs/cli/Cargo.toml",
+      "blob": "d2360ef42c5a8c8a9ffe3231f85220597847f0ab",
+      "local": "source/codex-rs/cli/Cargo.toml.txt",
+      "role": "cabc_target_registration",
+      "bytes": 4239,
+      "sha256": "967fd38c5e9fd05c50f19fbcbde5271e5a786f07436ab05310679fba736a947d",
+      "git_blob": "d2360ef42c5a8c8a9ffe3231f85220597847f0ab"
+    }
+  ],
+  "original_embedded_members": [
+    {
+      "name": "build-events-projection.json",
+      "bytes": 7685,
+      "sha256": "e1d229f3150528df69d4d4a7ee4a6c43029588f276cb7eafde18bf4ff4dcbd1c",
+      "git_blob": "b80f51f4970cf4e1fca6f12762aee12fe3ce3997"
+    },
+    {
+      "name": "receipt.json",
+      "bytes": 2035,
+      "sha256": "ae733e68b76fc0b1a691ef7bfe2c2471ba7a7db0e5848a3590e380a0bd48dd12",
+      "git_blob": "7349b4fbdd3f471d730a3d152162a775512d2282"
+    },
+    {
+      "name": "source.json",
+      "bytes": 1995,
+      "sha256": "5d1dd73040289638242d5502a8fd4587035b83ca0d4c3cc19a8d8e49eb7c744e",
+      "git_blob": "050125630b37ce09d2838065dfef88ae099c0622"
+    }
+  ],
+  "source": {
+    "schema_version": 1,
+    "repository": "TrillionniumFoundation/hepta-private-ci",
+    "event": "pull_request",
+    "run_id": "41902318446",
+    "run_attempt": "1",
+    "workflow_ref": "TrillionniumFoundation/hepta-private-ci/.github/workflows/hepta-musl-product-smoke.yml@refs/pull/4797/merge",
+    "workflow_sha": "28af7f705fa1024b9a6d2ef751fec116002260eb",
+    "expected_checkout": "28af7f705fa1024b9a6d2ef751fec116002260eb",
+    "pr_head": "cabcb40d36e116beaa65750e1f674c52035da785",
+    "checkout": "28af7f705fa1024b9a6d2ef751fec116002260eb",
+    "tree": "b2d7f038d6d88156bc6a4cb29c8703f69b808f29",
+    "parents": [
+      "63652be658ebed8d3052eb789b951793384fd5e4",
+      "cabcb40d36e116beaa65750e1f674c52035da785"
+    ],
+    "tracked_changes_before": "",
+    "runner": {
+      "os": "Linux",
+      "machine": "x86_64",
+      "kernel": "7.0.0-1017-azure",
+      "image_os": "ubuntu24",
+      "image_version": "20261101.360.1"
+    },
+    "inputs": {
+      ".github/workflows/hepta-musl-product-smoke.yml": "6aad46b1fe0edcf315ef8b1a5546225c59efe235",
+      ".github/actions/prepare-bazel-ci/action.yml": "f9508a1659e5f2c54a6ae5b263bb9328095438d7",
+      ".github/actions/setup-bazel-ci/action.yml": "ea3f3a6521b970484ac60d1cebf788092753555a",
+      ".github/scripts/run_bazel_with_buildbuddy.py": "21a5fdf0e7afcde4b6141229e95fcff8f6a7e763",
+      ".bazelrc": "3d5877b283b887091af507f3672003f84c500687",
+      ".bazelversion": "b13d146a7b02b96e4c30340e69388d539c9721be",
+      "MODULE.bazel": "a21061a8b741fc724edb580e229eb86d9debdc4f",
+      "MODULE.bazel.lock": "1904db189003cb0b559f71958518e33a45fb6bb7",
+      "BUILD.bazel": "1f9970fdbd25413e7a4e9a98519ba44a735158d4",
+      "defs.bzl": "6f588ec3057fddfea35170e28e74036162ce6a23",
+      "bazel/platforms/release_binaries.bzl": "7ac59c2b5e1f670d1653c2b3efdd8a82f2963bdc",
+      "codex-rs/Cargo.lock": "9743ef2f4f4c8521265c0187524278c256114163",
+      "codex-rs/cli/BUILD.bazel": "a64e4a8d12045dcd4f83e2a02c262e52e87ef4c8",
+      "codex-rs/cli/src/main_impl.rs": "1bd3eb0bfb183f6a436ba56220906f91b49f0679"
+    }
+  },
+  "original_execution": {
+    "schema_version": 1,
+    "status": "failed",
+    "qualified": false,
+    "scope": "existing static x86_64 musl Hepta CLI build and two CLI process smokes on Ubuntu",
+    "full_musl_behavior_qualified": false,
+    "alpine_deployment_qualified": false,
+    "target": "//codex-rs/cli:hepta_linux_amd64_musl",
+    "target_platform": "@llvm//platforms:linux_amd64_musl",
+    "source": "28af7f705fa1024b9a6d2ef751fec116002260eb",
+    "tree": "b2d7f038d6d88156bc6a4cb29c8703f69b808f29",
+    "buildbuddy_key_present": true,
+    "cache_policy": "existing CI cache policy; no fresh-compilation claim",
+    "commands": [
+      {
+        "name": "bazel-version",
+        "argv": [
+          "bazel",
+          "--version"
+        ],
+        "timeout_seconds": null,
+        "attempt": 1,
+        "timed_out": false,
+        "exit_code": 0,
+        "elapsed_seconds": 0.39606675799996083
+      },
+      {
+        "name": "build",
+        "argv": [
+          "/usr/bin/python3",
+          ".github/scripts/run_bazel_with_buildbuddy.py",
+          "build",
+          "--config=ci-linux",
+          "--config=ci",
+          "-c",
+          "opt",
+          "--platforms=@llvm//platforms:linux_amd64_musl",
+          "--lockfile_mode=error",
+          "--remote_download_toplevel",
+          "--build_metadata=COMMIT_SHA=28af7f705fa1024b9a6d2ef751fec116002260eb",
+          "--build_metadata=REPO_URL=https://github.com/TrillionniumFoundation/hepta-private-ci",
+          "--build_metadata=TAG_workflow=hepta-musl-product-smoke",
+          "--build_event_json_file=/home/runner/work/_temp/hepta-musl-product-build.bep.json",
+          "//codex-rs/cli:hepta_linux_amd64_musl"
+        ],
+        "timeout_seconds": null,
+        "attempt": 1,
+        "timed_out": false,
+        "exit_code": 1,
+        "elapsed_seconds": 1088.832641159
+      }
+    ],
+    "failure_type": "RuntimeError",
+    "terminal_source": {
+      "checkout": "28af7f705fa1024b9a6d2ef751fec116002260eb",
+      "tree": "b2d7f038d6d88156bc6a4cb29c8703f69b808f29",
+      "tracked_changes": ""
+    },
+    "source_unchanged": true,
+    "terminal_product_sha256": null,
+    "product_unchanged": false
+  },
+  "actual_failed_rust_action": {
+    "target": "//codex-rs/bwrap:bwrap",
+    "original_stderr_line": 336,
+    "rust_target_flags": [
+      "--target=x86_64-unknown-linux-gnu"
+    ],
+    "c_linker_target_flags": [
+      "--codegen=link-arg=x86_64-linux-musl"
+    ],
+    "stdlib_search_paths": [
+      "bazel-out/linux_amd64_musl-opt/bin/external/rules_rs++toolchains+default_rust_toolchains/linux_x86_64_1_95_0_rust_toolchain/lib/rustlib/x86_64-unknown-linux-gnu/lib"
+    ],
+    "symbols_from_gnu_libstd": [
+      "open64",
+      "fstat64",
+      "lseek64",
+      "stat64",
+      "mmap64"
+    ],
+    "diagnostic_excerpt_only_not_new_full_zip_verification": true
+  },
+  "isolated_git_commands": [
+    {
+      "argv": [
+        "git",
+        "apply",
+        "--check",
+        "/workspace/scratch/07dd58cc9630/research-audit/musl-link-audit-20261105/existing-musl-repair.patch"
+      ],
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "git",
+        "apply",
+        "--numstat",
+        "/workspace/scratch/07dd58cc9630/research-audit/musl-link-audit-20261105/existing-musl-repair.patch"
+      ],
+      "exit_code": 0,
+      "stdout": "8\t1\tbazel/platforms/release_binaries.bzl\n48\t8\t.github/workflows/hepta-musl-product-smoke.yml\n",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "git",
+        "apply",
+        "/workspace/scratch/07dd58cc9630/research-audit/musl-link-audit-20261105/existing-musl-repair.patch"
+      ],
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": ""
+    }
+  ],
+  "postimages": [
+    {
+      "path": "bazel/platforms/release_binaries.bzl",
+      "before": {
+        "bytes": 763,
+        "sha256": "0a0f907294980f9bf640a667d332d0445398496978f17d14031971826f4e5c68",
+        "git_blob": "7ac59c2b5e1f670d1653c2b3efdd8a82f2963bdc"
+      },
+      "after": {
+        "bytes": 1132,
+        "sha256": "2e626c8de3a42cee145e1aae552c5ca32f1c06e5d83c4197cf195f28572ab39d",
+        "git_blob": "7a88987f54fce5d6062eb7258a7f8679975de90d"
+      },
+      "byte_equal_expected_postimage": true
+    },
+    {
+      "path": ".github/workflows/hepta-musl-product-smoke.yml",
+      "before": {
+        "bytes": 21599,
+        "sha256": "0b980fc83ac32bba15b9f4b6708426d7b182e3c84b6768183dbbdd3fc9091f36",
+        "git_blob": "6aad46b1fe0edcf315ef8b1a5546225c59efe235"
+      },
+      "after": {
+        "bytes": 24659,
+        "sha256": "a96f31f7ee4ce8de9377faf24b0509dc0532590c76d4fac83cd6e7cfd243836a",
+        "git_blob": "a157c21a3e79460dc6f32147d952f3dacb4ed197"
+      },
+      "byte_equal_expected_postimage": true
+    }
+  ],
+  "unchanged_physical_elf_hash_and_two_smoke_block": {
+    "bytes": 4144,
+    "sha256": "aff1928506b4bb011d2503ef9d94965f4f4a13041ea6ec4703167cf6403674cf",
+    "git_blob": "155b5d96631a66f93124d1ad55e218d52f9f02d4"
+  },
+  "new_graph_gate_is_conjunctive": true,
+  "existing_deadlines_preserved": true,
+  "new_native_build_or_test_executed": false,
+  "new_product_patch_created": false,
+  "shared_source_index_target_or_ref_changed": false
+}

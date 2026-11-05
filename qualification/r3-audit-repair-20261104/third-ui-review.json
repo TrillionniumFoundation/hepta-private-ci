@@ -1,0 +1,182 @@
+{
+  "schema": "hepta.ui-checkout-and-timing-candidate.v1",
+  "status": "AUTHOR_VALIDATION_PASSED_ROOT_REVIEW_FOLLOWUP_ADDRESSED",
+  "base_commit": "ff72d462d74f9eb856aa9edbc368caad9c466708",
+  "base_tree": "f780fe13946102a33b329898af48810be9c7bf0c",
+  "source_paths": [
+    {
+      "path": ".github/workflows/ui-product-foundation.yml",
+      "mode": "100644",
+      "before": "385bdc1f5605d67499f041e930b38d8a6c751509",
+      "after": "748773dfa939194f5b8184406a261def15817904",
+      "sha256": "dec7581a5bb0a85f2875fa22a18f4462a6c26b32fbbeded38f4e7be204e3327d",
+      "bytes": 33806
+    },
+    {
+      "path": "scripts/fetch_ui_ci_history.py",
+      "mode": "100644",
+      "before": null,
+      "after": "9cff8182e1e1b65bda5998a6f5380a00ebf42bb5",
+      "sha256": "8725e9587e1bb0cc7930a2792007705a8ed4f70f601deb2c8174afb0c45d7993",
+      "bytes": 3887
+    },
+    {
+      "path": "scripts/test_ui_product_foundation_ci.py",
+      "mode": "100644",
+      "before": "cb1900ddf5702474c8d15b3914fa0ab225f10855",
+      "after": "42d7ed7751f3e0261d13f40db21ed987a9226c8a",
+      "sha256": "1cdde8d45e34ee19ca8f9b3ad66d578ae26dd5d9ec64f301a52edf506ee1771e",
+      "bytes": 16441
+    }
+  ],
+  "artifacts": [
+    {
+      "name": "ui-checkout-and-timing.patch",
+      "blob": "97f5d5a56cf53d85eded51db48263110e91099ff",
+      "bytes": 17110,
+      "sha256": "0880f948ec4a10eb441d617d12e0edf9c1c34256c0f12b53b90149f14e423e36"
+    },
+    {
+      "name": "ui-checkout-only.patch",
+      "blob": "03c9273584e4372739e8bfbdb1c61bdaddf16c97",
+      "bytes": 14898,
+      "sha256": "2ce4d923acaaff3a27bf8ff4f00833741ae8c06227c46423c05983425f5d48a4"
+    },
+    {
+      "name": "receipt.json",
+      "blob": "b47bb3bf10fd415ab58e3cc58d1cb458cbdb242a",
+      "bytes": 2481,
+      "sha256": "8f97e44e04f55cc2bc548be5cee4d5aaa433e32c4706fa23490688c02006c8ff"
+    },
+    {
+      "name": "tests.stderr.txt",
+      "blob": "4b37fe5aa1121e8525f53651d7b5333c445a13d9",
+      "bytes": 1555,
+      "sha256": "0b3287b3b8660e35e4738cb6f46911c6de4f96cad9717faff9db96bc3497b90e"
+    },
+    {
+      "name": "ui-timing-only.patch",
+      "blob": "25b0b5178d6cf6669c6fdd7fa33b2ee19290d3c4",
+      "bytes": 2415,
+      "sha256": "2436348f68cb7d7f8da54020a49d147f2cc0b2bad2c2ac5025721ca75278f105"
+    }
+  ],
+  "problem_evidence": {
+    "run_id": 41875454150,
+    "failed_job_id": 126733504202,
+    "failed_job_conclusion": "cancelled",
+    "configured_budget_minutes": 60,
+    "observed_elapsed_seconds": 3900,
+    "source_job_id": 126733504070,
+    "source_job_conclusion": "success",
+    "source_elapsed_seconds": 1299,
+    "source_full_log": {
+      "job_id": 126733504070,
+      "bytes": 1884390,
+      "sha256": "728a9bb35a2f8774cdbd010d9de60134b881c470a119539fba48d8c86efcc579",
+      "lines": 13210
+    },
+    "checkout": {
+      "source_seconds": 104,
+      "merge_seconds": 652,
+      "actual_source_log_fetched_branches": 5146,
+      "actual_source_refspecs": [
+        "+refs/heads/*:refs/remotes/origin/*",
+        "+refs/tags/*:refs/tags/*"
+      ]
+    },
+    "build_group": {
+      "source_seconds": 197,
+      "merge_seconds": 2153,
+      "slow_inner_command": "NOT_ESTABLISHED: cancelled merge full log returns BlobNotFound"
+    },
+    "fifth_browser_upload": {
+      "group": "fixtures-firefox",
+      "merge_artifact_id": 13350079868,
+      "merge_archive_bytes": 10461005,
+      "source_artifact_id": 13348246502,
+      "source_archive_bytes": 10461769,
+      "merge_created_at": "2026-11-04T18:18:25Z",
+      "conclusion": "Artifact exists; neither an oversized archive nor a failed fifth transfer is established. Archive contents have not been independently parsed."
+    },
+    "cancellation_scope": {
+      "confirmed": "Job is cancelled and full original merge log is not available from the supported log endpoint.",
+      "inference": "Exactly 60 plus 5 minutes is consistent with the documented cancellation grace period and the existing always() steps. It is not an independently retrieved timeout annotation.",
+      "primary_sources": [
+        "https://docs.github.com/en/actions/reference/workflows-and-actions/workflow-cancellation",
+        "https://docs.github.com/en/actions/reference/workflows-and-actions/workflow-syntax#jobsjob_idtimeout-minutes"
+      ]
+    }
+  },
+  "checkout_contract": {
+    "only_robrix_host_changed": true,
+    "persist_credentials_false_retained": true,
+    "permissions_contents_read_unchanged": true,
+    "full_sha_validation": true,
+    "head_tree_clean_worktree_unchanged": true,
+    "exact_two_refspecs": true,
+    "complete_history_required": true,
+    "auth_scope": "Only the authenticated HTTPS fetch subprocess receives the computed Basic header via Git --config-env. The token is removed from the helper process environment, not printed, not written to config or disk, and the effective origin must equal the exact repository URL; redirects and inherited Git tracing are disabled for this fetch.",
+    "original_synthetic_merge_action_unchanged": "905fc5039016ac7aaadbb857c0a7b94bb594f7ce",
+    "source_and_merge_lanes_preserved": true,
+    "failure_is_fatal": true,
+    "caller_wiring_regression": "Existing positive case now isolates robrix-host, requires exactly one history helper step and exact run command plus event base/source SHA environment bindings before its real shallow checkout/helper/action execution."
+  },
+  "timing_contract": {
+    "substeps": 4,
+    "original_command_count": 13,
+    "original_command_bytes_and_order_equal": true,
+    "browser_env_write_and_all_remaining_commands_in_same_shell": true,
+    "default_build_is_last_aggregate_success_gate": true,
+    "all_four_original_default_build_guards_unchanged": true,
+    "native_presentation_and_lock_jobs_byte_equal": true,
+    "timeout_minutes_unchanged": 60,
+    "pixel_assertions_filters_retries_and_budgets_unchanged": true,
+    "purpose": "Expose time spent in npm install, the actual canonical build, resource contracts, and browser/OCR readiness. This does not itself repair the unlocalized 35-minute delay."
+  },
+  "validation": {
+    "job_id": "1a1a7db3679-fc05-2cb8",
+    "terminal_state": "succeeded",
+    "exit_code": 0,
+    "output_complete": true,
+    "scope": "Isolated real local Git/Python fixtures only. No Cargo or product build, no CI worktree or target mutation.",
+    "host": {
+      "system": "Linux",
+      "machine": "x86_64",
+      "release": "7.0.0-38-generic"
+    },
+    "python": "3.12.3 (main, Aug 31 2026, 10:18:26) [GCC 13.3.0]",
+    "git": "git version 2.43.0",
+    "py_compile_exit_code": 0,
+    "tests_exit_code": 0,
+    "test_count": 7,
+    "test_elapsed_seconds": 3.155,
+    "runner_elapsed_seconds": 3.356073917937465,
+    "test_names": [
+      "test_authentication_refuses_an_unexpected_origin_without_exposing_the_token",
+      "test_divergent_merge_fetches_only_the_two_histories_and_no_unrelated_blob",
+      "test_missing_immutable_base_propagates_fetch_failure_without_running_merge",
+      "test_product_caller_history_constructs_exact_two_parent_source_tree",
+      "test_shallow_checkout_cannot_supply_the_immutable_base",
+      "test_source_head_gets_full_non_parent_base_history_without_checkout_change",
+      "test_wrong_source_is_rejected_before_fetch"
+    ],
+    "tests_raw_log_sha256": "0b3287b3b8660e35e4738cb6f46911c6de4f96cad9717faff9db96bc3497b90e",
+    "same_source_hashes_before_execution": true,
+    "prior_version": {
+      "manifest_blob": "15827abef6eac023388f55bc77c5f4fcd3a106ea",
+      "job_id": "1a1a7d77462-fc05-2cab",
+      "tests": 7,
+      "passed": 7,
+      "followup": "Root review required the existing caller test to bind its preparation to the actual workflow helper and immutable base/source environment."
+    }
+  },
+  "pending": [
+    "Independent root review.",
+    "Full existing workflow regression tests against the final candidate checkout.",
+    "Actual authenticated GitHub fetching in original hosted source-head and base-merge lanes.",
+    "Complete original UI assertions and all evidence uploads within the original 60-minute budget.",
+    "Actual merged-source receipt and complete failed merge log if GitHub eventually makes it available."
+  ],
+  "no_ref_or_commit_created": true
+}

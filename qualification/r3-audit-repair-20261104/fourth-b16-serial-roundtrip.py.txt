@@ -1,0 +1,238 @@
+#!/usr/bin/env python3
+"""Rebuild reviewed B patches in isolated, uncompiled file copies.
+
+This script never opens the native checkout, runs Cargo, creates commits, or
+updates Git refs. It deliberately refuses to reuse an existing work directory.
+"""
+
+from __future__ import annotations
+
+import hashlib
+import json
+import os
+from pathlib import Path
+import subprocess
+from datetime import datetime, timezone
+
+
+ROOT = Path(__file__).resolve().parent
+INPUT = json.loads((ROOT / "input-manifest.json").read_text())
+OBJECTS = {item["blob"]: item for item in INPUT["objects"]}
+STAGES = {stage["name"]: stage for stage in INPUT["stages"]}
+EXTRAS = {item["name"]: item["blob"] for item in INPUT["extras"]}
+V3_TEST = "codex-rs/state/src/sqlite_commit_gate_tests.rs"
+V3_BLOB = "31b26a78bffe40815aa8a5b55e61b5139e7bca96"
+EVENTS: list[dict] = []
+
+
+def git_hash(data: bytes) -> str:
+    return hashlib.sha1(b"blob " + str(len(data)).encode() + b"\0" + data).hexdigest()
+
+
+def read_object(blob: str) -> bytes:
+    data = (ROOT / "objects" / (blob + ".txt")).read_bytes()
+    item = OBJECTS[blob]
+    assert git_hash(data) == blob, blob
+    assert len(data) == item["bytes"], blob
+    assert hashlib.sha256(data).hexdigest() == item["sha256"], blob
+    return data
+
+
+def write_source(directory: Path, path: str, blob: str) -> None:
+    destination = directory / path
+    destination.parent.mkdir(parents=True, exist_ok=True)
+    destination.write_bytes(read_object(blob))
+
+
+def create_base(name: str) -> Path:
+    directory = ROOT / name
+    directory.mkdir(exist_ok=False)
+    for path, blob in INPUT["initial_source_map"].items():
+        if blob is not None:
+            write_source(directory, path, blob)
+    return directory
+
+
+def inventory(directory: Path) -> dict[str, str]:
+    return {
+        str(path.relative_to(directory)): git_hash(path.read_bytes())
+        for path in sorted(directory.rglob("*"))
+        if path.is_file()
+    }
+
+
+def changed(before: dict, after: dict) -> dict:
+    return {
+        path: {"before_blob": before.get(path), "after_blob": after.get(path)}
+        for path in sorted(set(before) | set(after))
+        if before.get(path) != after.get(path)
+    }
+
+
+def apply(directory: Path, label: str, patch_blob: str) -> dict:
+    read_object(patch_blob)
+    patch = ROOT / "objects" / (patch_blob + ".txt")
+    before = inventory(directory)
+    env = os.environ.copy()
+    env["GIT_CEILING_DIRECTORIES"] = str(directory)
+    env["GIT_CONFIG_NOSYSTEM"] = "1"
+    commands = []
+    for check in (True, False):
+        argv = ["git", "apply", "--whitespace=error-all"]
+        if check:
+            argv.append("--check")
+        argv.append(str(patch))
+        result = subprocess.run(
+            argv, cwd=directory, env=env, capture_output=True, check=False
+        )
+        commands.append({
+            "argv": ["git", "apply", "--whitespace=error-all"]
+            + (["--check"] if check else []) + ["objects/" + patch.name],
+            "exit_code": result.returncode,
+            "stdout": result.stdout.decode(),
+            "stderr": result.stderr.decode(),
+        })
+        if result.returncode:
+            raise RuntimeError(json.dumps({"label": label, "command": commands[-1]}))
+    after = inventory(directory)
+    event = {
+        "label": label,
+        "isolated_copy": directory.name,
+        "patch_blob": patch_blob,
+        "commands": commands,
+        "changed_files": changed(before, after),
+        "source_map_after": after,
+        "r2c_v3_preserved": after.get(V3_TEST) == V3_BLOB,
+    }
+    EVENTS.append(event)
+    return after
+
+
+def expected_after(before: dict, stage: dict) -> dict:
+    expected = dict(before)
+    for file in stage["files"]:
+        assert expected.get(file["path"]) == file["before_blob"], file
+        expected[file["path"]] = file["blob"]
+    return expected
+
+
+def main() -> None:
+    for blob in OBJECTS:
+        read_object(blob)
+    full = create_base("static-full-patches")
+    serial = create_base("static-causal-sequence")
+    canonical = {}
+    for name in STAGES:
+        stage = STAGES[name]
+        expected = expected_after(inventory(full), stage)
+        actual = apply(full, name + ":full", stage["patch"]["blob"])
+        assert actual == expected, name
+        canonical[name] = actual
+
+    def finish(name: str) -> None:
+        assert inventory(serial) == canonical[name], name
+        assert inventory(serial)[V3_TEST] == V3_BLOB
+
+    apply(serial, "r2c:v3-full", STAGES["r2c"]["patch"]["blob"])
+    finish("r2c")
+    apply(serial, "r2d:full", STAGES["r2d"]["patch"]["blob"])
+    before = inventory(serial)
+    after = apply(serial, "r2d:without-close-on-drop", EXTRAS["r2d-negative"])
+    assert changed(before, after) == {
+        "codex-rs/state/src/sqlite_read_barrier.rs": {
+            "before_blob": "98ed5528e76b948c965def714994d67ecb3e0457",
+            "after_blob": EXTRAS["r2d-negative-source"],
+        }
+    }
+    apply(serial, "r2d:restore-close-on-drop", EXTRAS["r2d-restore"])
+    finish("r2d")
+
+    before = inventory(serial)
+    after = apply(serial, "r2e1:test-only-baseline", EXTRAS["r2e1-baseline"])
+    assert changed(before, after) == {
+        "codex-rs/hepta-memory/src/objective_sender.rs": {
+            "before_blob": "fe3be44196377039070c62c228d5c2e642560ac0",
+            "after_blob": EXTRAS["r2e1-baseline-source"],
+        },
+        "codex-rs/hepta-memory/src/objective_sender_commit_interlock_tests.rs": {
+            "before_blob": None,
+            "after_blob": "62d85c330446b7b5059016d7501bcd85af2e556a",
+        },
+    }
+    apply(serial, "r2e1:repair-after-baseline", EXTRAS["r2e1-after-baseline"])
+    finish("r2e1")
+    for name in ("r2e2a", "r2e2b"):
+        apply(serial, name + ":full", STAGES[name]["patch"]["blob"])
+        finish(name)
+
+    before = inventory(serial)
+    after = apply(serial, "r2e3:test-only-baseline", EXTRAS["r2e3-baseline"])
+    assert changed(before, after) == {
+        "codex-rs/hepta-memory/src/objective_sender.rs": {
+            "before_blob": "6b3102c0ec4422b3658415df2372a7480990c6e2",
+            "after_blob": "e3789436918efae898ecaac96d49e6ac73b37f76",
+        },
+        "codex-rs/hepta-memory/src/objective_sender_connection_custody_tests.rs": {
+            "before_blob": None,
+            "after_blob": "09a61b69e8cd34f27a0c968433b2b29df9c95380",
+        },
+    }
+    apply(serial, "r2e3:repair-after-baseline", EXTRAS["r2e3-after-baseline"])
+    finish("r2e3")
+    before = inventory(serial)
+    after = apply(serial, "r2e3:without-native-anchor", EXTRAS["r2e3-anchor-negative"])
+    assert changed(before, after) == {
+        "codex-rs/state/src/sqlite.rs": {
+            "before_blob": "b9fb565cadd14f6541bfc8421164897e2907e2ad",
+            "after_blob": EXTRAS["r2e3-anchor-negative-source"],
+        }
+    }
+    apply(serial, "r2e3:restore-native-anchor", EXTRAS["r2e3-anchor-restore"])
+    finish("r2e3")
+
+    v3 = ROOT / "static-v3-observation-delta"
+    v3.mkdir(exist_ok=False)
+    write_source(v3, V3_TEST, EXTRAS["r2c-v2-tests"])
+    apply(v3, "r2c:v2-to-v3-observation", EXTRAS["r2c-v3-delta"])
+    assert inventory(v3) == {V3_TEST: V3_BLOB}
+
+    output = {
+        "schema": "hepta.b16.static-sequence-verification.v1",
+        "created_at_utc": datetime.now(timezone.utc).isoformat(),
+        "status": "STATIC_GIT_APPLY_AND_EXACT_BYTE_RECONSTRUCTION_PASS",
+        "native_or_rust_executed": False,
+        "shared_worktree_or_target_accessed": False,
+        "git_commits_or_refs_created": False,
+        "observed_a_partial_source_base_tree": INPUT["base_tree"],
+        "scope": "Only the 16 listed B paths, not a complete product tree.",
+        "source_objects_verified": len(OBJECTS),
+        "source_bytes_verified": sum(x["bytes"] for x in OBJECTS.values()),
+        "full_patch_stages": list(STAGES),
+        "events": EVENTS,
+        "final_source_map": inventory(serial),
+        "r2c_v3_test_preserved_through_every_serial_step": all(
+            event["r2c_v3_preserved"]
+            for event in EVENTS
+            if event["isolated_copy"] == serial.name
+        ),
+        "notes": [
+            "R2d/R2e1 old R2c manifest references are metadata-only; no patch rewrites the V3 test.",
+            "Negative/restore patches rebuilt exact bytes. Their predicted test outcomes were not executed.",
+            "A final native source gate must recheck these preimages after A terminates; f825 is the observed snapshot, not an authorization to mutate its worktree.",
+        ],
+    }
+    destination = ROOT / "static-verification.json"
+    destination.write_text(json.dumps(output, indent=2) + "\n")
+    print(json.dumps({
+        "status": output["status"],
+        "objects": len(OBJECTS),
+        "git_apply_steps": len(EVENTS),
+        "full_stages": len(STAGES),
+        "final_paths": len(output["final_source_map"]),
+        "all_v3_preserved": output["r2c_v3_test_preserved_through_every_serial_step"],
+        "receipt": str(destination),
+    }))
+
+
+if __name__ == "__main__":
+    main()

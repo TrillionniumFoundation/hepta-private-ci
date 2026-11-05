@@ -1,0 +1,27 @@
+{
+  "schema": "hepta.audit.pr4823.audit-tool-preparation-corrections.v1",
+  "scope": "Own reviewer tooling assumptions corrected against frozen data; not original scientific failures or new experiments.",
+  "items": [
+    {
+      "item": "Exploratory legacy fit representation",
+      "correction": "Original fits is a list, not a dict."
+    },
+    {
+      "item": "A input identity scope",
+      "correction": "Original raw archive and normalized saved model are different serializations; their SHA values are not required equal. Exact published C and saved model identities are separately verified."
+    },
+    {
+      "item": "Unused exploratory import",
+      "correction": "A nonexistent audit-module import stopped before calculation and was removed; no result derives from it."
+    },
+    {
+      "item": "Native reference chunks",
+      "correction": "Two fit37 reference gzip files are split; check every part length/hash and reassembled hash before gzip CRC and record comparison."
+    },
+    {
+      "item": "Native command versus outer wall interval",
+      "correction": "Six command wall times sum 1486.6510412059724; outer qualification interval is 1486.7031557450537. The 0.05211453908123076 difference is retained rather than forcing equality."
+    }
+  ],
+  "original_source_or_results_modified": false
+}

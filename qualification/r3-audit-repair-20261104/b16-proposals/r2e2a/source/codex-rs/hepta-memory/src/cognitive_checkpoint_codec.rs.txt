@@ -1,0 +1,141 @@
+//! Bounded checkpoint wire validation. This module performs no I/O or admission.
+
+use codex_hepta_contracts::Sha256Digest;
+
+use crate::ObjectiveSenderCheckpointError as Error;
+use crate::cognitive_checkpoint_wire::COGNITIVE_CHECKPOINT_FRAME_LIMIT;
+use crate::cognitive_checkpoint_wire::CognitiveCheckpointCommand;
+use crate::cognitive_checkpoint_wire::CognitiveCheckpointReceipt;
+use crate::cognitive_checkpoint_wire::CognitiveCheckpointRequest;
+use crate::cognitive_checkpoint_wire::CognitiveCheckpointResponse;
+use crate::cognitive_checkpoint_wire::CognitiveCheckpointStatus;
+
+impl CognitiveCheckpointRequest {
+    /// Encode the exact bytes whose digest the protected peer must retain.
+    /// The caller must send these bytes unchanged over its authenticated channel.
+    /// This owner codec handles reads and publication transitions; it does not
+    /// encode the protected service's FencePublisher lifecycle operation.
+    pub fn encode(&self) -> Result<Vec<u8>, Error> {
+        if self.request_id.len() != 32
+            || !self.request_id.bytes().all(|byte| byte.is_ascii_hexdigit())
+        {
+            return Err(Error::Refused);
+        }
+        let epoch = u64::from_str_radix(&self.request_id[..16], 16).map_err(|_| Error::Refused)?;
+        let sequence = u64::from_str_radix(&self.request_id[16..], 16).map_err(|_| Error::Refused)?;
+        if epoch == 0 || sequence == 0 {
+            return Err(Error::Refused);
+        }
+        let valid_shape = match self.command {
+            CognitiveCheckpointCommand::ReadHead => {
+                self.expected.is_none() && self.proposal.is_none()
+            }
+            CognitiveCheckpointCommand::PreparePublication => {
+                self.expected.is_some() && self.proposal.is_some()
+            }
+            CognitiveCheckpointCommand::BeginWrites
+            | CognitiveCheckpointCommand::CommitPublication => {
+                self.expected.is_some() && self.proposal.is_none()
+            }
+            CognitiveCheckpointCommand::FencePublisher => false,
+        };
+        if self.schema_version != 1
+            || self.operation != "runtime.cognitive.checkpoint.v1"
+            || !valid_shape
+        {
+            return Err(Error::Refused);
+        }
+        let mut digests = Vec::new();
+        if let Some(expected) = &self.expected {
+            digests.push(&expected.head_sha256);
+        }
+        if let Some(proposal) = &self.proposal {
+            digests.extend([
+                &proposal.cut.schema_digest,
+                &proposal.cut.state_digest,
+                &proposal.writer_fence.lease_sha256,
+                &proposal.writer_fence.authority_grant_digest,
+                &proposal.writer_fence.fencing_token_digest,
+            ]);
+        }
+        if !valid_digests(digests) {
+            return Err(Error::Refused);
+        }
+        let bytes = serde_json::to_vec(self).map_err(|_| Error::Unavailable)?;
+        if bytes.len() > COGNITIVE_CHECKPOINT_FRAME_LIMIT {
+            return Err(Error::Refused);
+        }
+        Ok(bytes)
+    }
+
+    /// Decode an ACK bound to this request without authenticating its sender.
+    /// This checks framing and wire consistency only. The owner must additionally
+    /// validate the full predecessor/successor, live authority and fresh Current
+    /// before recovery or binding. This method performs no I/O or admission.
+    pub fn decode_ack(&self, response: &[u8]) -> Result<CognitiveCheckpointReceipt, Error> {
+        self.encode()?;
+        if response.is_empty() || response.len() > COGNITIVE_CHECKPOINT_FRAME_LIMIT {
+            return Err(Error::Unavailable);
+        }
+        let response: CognitiveCheckpointResponse =
+            serde_json::from_slice(response).map_err(|_| Error::Unavailable)?;
+        if response.schema_version != 1 || response.request_id != self.request_id {
+            return Err(Error::Unavailable);
+        }
+        match response.status {
+            CognitiveCheckpointStatus::Refused => return Err(Error::Refused),
+            CognitiveCheckpointStatus::Unknown => return Err(Error::Unavailable),
+            CognitiveCheckpointStatus::Ack => {}
+        }
+        if response.reason.is_some() {
+            return Err(Error::Unavailable);
+        }
+        let receipt = CognitiveCheckpointReceipt {
+            token: response.token.ok_or(Error::Unavailable)?,
+            head: response.head.ok_or(Error::Unavailable)?,
+        };
+        if receipt.head.schema_version != 1
+            || receipt.head.publisher_epoch == 0
+            || receipt.head.counter == 0
+            || receipt.token.publisher_epoch != receipt.head.publisher_epoch
+            || receipt.token.counter != receipt.head.counter
+            || receipt.head.last_current.owner_agent_id != receipt.head.owner_agent_id
+            || receipt.head.last_current.profile != "hepta:cognitive:exact-current-cut:v1"
+        {
+            return Err(Error::Unavailable);
+        }
+        let mut digests = vec![
+            &receipt.token.head_sha256,
+            &receipt.head.writer_binding.authority_grant_digest,
+            &receipt.head.writer_binding.fencing_token_digest,
+            &receipt.head.last_current.schema_digest,
+            &receipt.head.last_current.state_digest,
+        ];
+        if let Some(proposal) = &receipt.head.proposal {
+            digests.extend([
+                &proposal.cut.schema_digest,
+                &proposal.cut.state_digest,
+                &proposal.writer_fence.lease_sha256,
+                &proposal.writer_fence.authority_grant_digest,
+                &proposal.writer_fence.fencing_token_digest,
+            ]);
+        }
+        if let Some(request) = &receipt.head.last_request {
+            digests.extend([&request.request_sha256, &request.predecessor_token.head_sha256]);
+        }
+        if !valid_digests(digests) {
+            return Err(Error::Unavailable);
+        }
+        Ok(receipt)
+    }
+}
+
+fn valid_digests<'a>(digests: impl IntoIterator<Item = &'a Sha256Digest>) -> bool {
+    digests
+        .into_iter()
+        .all(|digest| Sha256Digest::parse(digest.as_str()).is_ok())
+}
+
+#[cfg(test)]
+#[path = "cognitive_checkpoint_codec_tests.rs"]
+mod tests;

@@ -1,0 +1,82 @@
+{
+  "schema": "hepta.third_batch.native_checks_summary.v1",
+  "scope": "Freeze before final workflow/document assembly. Exact original execution remains in the linked complete records; no single combined all-product pass is claimed.",
+  "code_ci_tree": "aa1b76d8591358be2f591c8e411b9e0364a818fd",
+  "selected_rust": {
+    "total": 20,
+    "passed": 20,
+    "retries": 0,
+    "distinct_trees": [
+      {
+        "tree": "eb5a108497371514f4b87f35a77fc2a0e989c459",
+        "selected": 3,
+        "record": "third-core-fixed-native.json"
+      },
+      {
+        "tree": "869971be4145f5e4eea64cfba6e5fef9d5b037a9",
+        "selected": 9,
+        "record": "third-queue-skills-native.json"
+      },
+      {
+        "tree": "a69b20c4c3cfee9cf483496742d6bea1469d847a",
+        "selected": 8,
+        "record": "third-intel-ui-complete-native.json"
+      }
+    ],
+    "last_controller_exit_code": 1,
+    "last_controller_original_success": false,
+    "last_controller_failure_reason": "Original equality to initial combined Agentd fixture hash is false after package-scoped catalog compilation; preserve exact provenance and missing intermediate external-fixture sampling point.",
+    "last_five_nextest_phases_unselected_skipped": 62,
+    "selected_junit_skipped": 0
+  },
+  "script_checks": {
+    "collector": {
+      "passed": 13,
+      "record": "third-docs-collector-native.json"
+    },
+    "ui_isolated_final": {
+      "passed": 7,
+      "record": "third-ui-history-isolated-validation.json"
+    },
+    "ui_full_discover": {
+      "passed": 13,
+      "seconds": 47.297,
+      "git_head_for_six_unchanged_gateway_cases": "907d4f512819a71bece82e7f89944e9406466e36",
+      "record": "third-intel-ui-complete-native.json"
+    },
+    "prior_original_docs_verify": {
+      "result": "PASS_HEPTA_DEVELOPMENT_DOCS_V8",
+      "historical_evidence_revalidated": false,
+      "record": "third-docs-collector-native.json"
+    }
+  },
+  "hygiene": {
+    "scoped_fix": {
+      "crates": 7,
+      "exit_code": 0,
+      "seconds": 442.8829026679741,
+      "source_changes": 0
+    },
+    "initial_fmt": {
+      "exit_code": 1,
+      "record": "third-hygiene-first-attempt.json"
+    },
+    "recovered_fmt": {
+      "exit_code": 0,
+      "seconds": 5.895084053976461,
+      "uv": "0.11.3",
+      "ruff": "0.15.13",
+      "record": "third-fmt-recovery-native.json"
+    },
+    "independent_postimage_review": "third-hygiene-root-review.json",
+    "rust_or_unit_tests_rerun_after_fix_fmt": false
+  },
+  "musl": {
+    "workflow_blob": "6aad46b1fe0edcf315ef8b1a5546225c59efe235",
+    "yaml_syntax_pass": true,
+    "inline_python_ast_pass": 4,
+    "hosted_bazel_or_smoke_executed": false
+  },
+  "final_original_platform_qualification": false,
+  "final_assembly_receipt": "Recorded separately in PR after exact whole-tree guards, original just fmt and development docs verification; this preassembly summary does not claim those future results."
+}

@@ -1,0 +1,567 @@
+{
+  "schema": "hepta.b16.r2e3.registered-connection-custody-candidate.v1",
+  "status": "SOURCE_CANDIDATE_UNAPPLIED_UNFORMATTED_UNEXECUTED",
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "base_commit": "cabcb40d36e116beaa65750e1f674c52035da785",
+  "base_tree": "b2d7f038d6d88156bc6a4cb29c8703f69b808f29",
+  "layered_dependencies": {
+    "required_r2e1_manifest": "3220fc3785f01b45e77a49e71b1d549fd0faea22",
+    "state_preimage": "7b9ee0117d7425e20e4f08255aa0fe3e319f26ea",
+    "note": "The exact preimages include R2e1 and its R2c/R2d state predecessors. Apply against guarded exact source, not directly to cabc. R2e2a/b protocol work is independent and is not made into a Current constructor by this patch. A remains the sole native lane; none of B has been applied here."
+  },
+  "goal": "Keep the original OS file lock and retained Windows directory alive through the native Btree/Pager/WAL teardown of successfully registered guarded SQLite connections, including detached connections and cancellation of a later pool close. This is not a whole-open-lifecycle or Current-authority closure.",
+  "full_patch": {
+    "blob": "5b5a2dee4b33b5946ec21825ed7fc916487a0bf9",
+    "bytes": 17702,
+    "sha256": "123a287b37d37a791208970e2908fc568e8567d86847f8ef1bb0102704aab974"
+  },
+  "source_files": [
+    {
+      "path": "codex-rs/state/src/sqlite.rs",
+      "mode": "100644",
+      "before_blob": "7b9ee0117d7425e20e4f08255aa0fe3e319f26ea",
+      "after_blob": "b9fb565cadd14f6541bfc8421164897e2907e2ad",
+      "bytes": 19950,
+      "sha256": "19d676843c5eda7570d88c5ffed08d9428a3527b1048fd3d1ec4ed40fb2a90e1"
+    },
+    {
+      "path": "codex-rs/hepta-memory/src/cognitive_store.rs",
+      "mode": "100644",
+      "before_blob": "f670ec69480bc8960c7a3f90a9dc80e4ebd9763c",
+      "after_blob": "5c0704c4e70ffdf2f65864a42da5e6e48bf79006",
+      "bytes": 74300,
+      "sha256": "6c978e972615db308542b53d361edfc68bd77f8e2eac6afb5bde6b40286d7440"
+    },
+    {
+      "path": "codex-rs/hepta-memory/src/cognitive_store_gate.rs",
+      "mode": "100644",
+      "before_blob": "f69a43e09aa1864dda3e208ffb7a53b41e05d9d7",
+      "after_blob": "f351700e3a7f382217db9f11f164871e7b2a09e4",
+      "bytes": 1758,
+      "sha256": "216612cbe1d27e3ec75e80e3a54cb54768b3d438667fa69968627cd4d9a9f597"
+    },
+    {
+      "path": "codex-rs/hepta-memory/src/cognitive_store_recovery.rs",
+      "mode": "100644",
+      "before_blob": "994230252cf0992b811c0aba08f5e4d97565c923",
+      "after_blob": "54e917f45520f6b0e31fcd6a2f57ac3a00d8ae6c",
+      "bytes": 27552,
+      "sha256": "7271ec690ac9bd1ef7242f44d127c74dd6232fca107ac89548da285466648599"
+    },
+    {
+      "path": "codex-rs/hepta-memory/src/objective_sender.rs",
+      "mode": "100644",
+      "before_blob": "6b3102c0ec4422b3658415df2372a7480990c6e2",
+      "after_blob": "e3789436918efae898ecaac96d49e6ac73b37f76",
+      "bytes": 20125,
+      "sha256": "556f82d57e3a3d28ea741fa64423f4bb0ac42176daf82eaada1d983fb18795f8"
+    },
+    {
+      "path": "codex-rs/hepta-memory/src/objective_sender_connection_custody_tests.rs",
+      "mode": "100644",
+      "before_blob": null,
+      "after_blob": "09a61b69e8cd34f27a0c968433b2b29df9c95380",
+      "bytes": 8421,
+      "sha256": "6056776c17d1d4f0649ae2936dfad893a16aa52cba175d9859a0e5a8d86f2682"
+    }
+  ],
+  "change_stats": [
+    {
+      "path": "codex-rs/state/src/sqlite.rs",
+      "insertions": 22,
+      "deletions": 9,
+      "hunks": 4
+    },
+    {
+      "path": "codex-rs/hepta-memory/src/cognitive_store.rs",
+      "insertions": 23,
+      "deletions": 10,
+      "hunks": 7
+    },
+    {
+      "path": "codex-rs/hepta-memory/src/cognitive_store_gate.rs",
+      "insertions": 12,
+      "deletions": 0,
+      "hunks": 1
+    },
+    {
+      "path": "codex-rs/hepta-memory/src/cognitive_store_recovery.rs",
+      "insertions": 1,
+      "deletions": 1,
+      "hunks": 1
+    },
+    {
+      "path": "codex-rs/hepta-memory/src/objective_sender.rs",
+      "insertions": 4,
+      "deletions": 0,
+      "hunks": 1
+    },
+    {
+      "path": "codex-rs/hepta-memory/src/objective_sender_connection_custody_tests.rs",
+      "insertions": 229,
+      "deletions": 0,
+      "hunks": 1
+    }
+  ],
+  "total_changed_lines": 311,
+  "roundtrip": [
+    {
+      "path": "codex-rs/state/src/sqlite.rs",
+      "hunks": 4,
+      "exact_reconstructed": true
+    },
+    {
+      "path": "codex-rs/hepta-memory/src/cognitive_store.rs",
+      "hunks": 7,
+      "exact_reconstructed": true
+    },
+    {
+      "path": "codex-rs/hepta-memory/src/cognitive_store_gate.rs",
+      "hunks": 1,
+      "exact_reconstructed": true
+    },
+    {
+      "path": "codex-rs/hepta-memory/src/cognitive_store_recovery.rs",
+      "hunks": 1,
+      "exact_reconstructed": true
+    },
+    {
+      "path": "codex-rs/hepta-memory/src/objective_sender.rs",
+      "hunks": 1,
+      "exact_reconstructed": true
+    },
+    {
+      "path": "codex-rs/hepta-memory/src/objective_sender_connection_custody_tests.rs",
+      "hunks": 1,
+      "exact_reconstructed": true
+    }
+  ],
+  "production_contract": [
+    {
+      "path": "codex-rs/state/src/sqlite.rs",
+      "change": "Only install_commit_guard, called by the two explicit guarded/coordinated APIs, gains a reserved native collation containing another Arc to the same commit predicate capture. Its valid lexical comparator does not call the predicate. The existing commit hook alone decides every commit; false still vetoes with native 531."
+    },
+    {
+      "path": "codex-rs/hepta-memory/src/cognitive_store.rs",
+      "change": "The existing File/path/Windows-directory bundle moves intact into private CognitiveStoreLockCustody. Original Unix open flags, path checks, private mode, shared/exclusive File lock calls and all Windows helpers stay unchanged. Store-handle ownership and physical custody share this lower-level RAII; no reference-count inference grants authority."
+    },
+    {
+      "path": "codex-rs/hepta-memory/src/cognitive_store_gate.rs",
+      "change": "Gate clones retain an optional Arc to the actual acquired custody. for_open_guard borrows an original successfully acquired OpenGuard; it takes no DTO, path-only claim or caller-selected permission flag. It has no back-reference to any pool/store/coordinator, so no reference cycle."
+    },
+    {
+      "path": "codex-rs/hepta-memory/src/cognitive_store_recovery.rs",
+      "change": "The already acquired original exclusive guard supplies custody to the same gate shared by candidate validation and final writer pools. The exact recovery verification, private copy, FULL checkpoint, Windows file/directory sync, pointer publication and error reconciliation remain unchanged."
+    },
+    {
+      "path": "codex-rs/hepta-memory/src/objective_sender.rs",
+      "change": "Only cfg(test) module wiring. The full prior source is an exact prefix of the postimage. Original sender, exact-duplicate rollback, independent read ACK and bootstrap behavior remain unchanged."
+    }
+  ],
+  "native_teardown_proof": {
+    "sqlx_commit_hook_gap": {
+      "source": "218c747143fe80b344bca3405d4b0b38da2bd932",
+      "detail": "ConnectionState Drop removes/drops commit callback before its first field, ConnectionHandle, is dropped. ConnectionHandle invokes sqlite3_close. A commit-hook capture alone therefore does not last through native DB cleanup.",
+      "excerpts": [
+        {
+          "blob": "218c747143fe80b344bca3405d4b0b38da2bd932",
+          "lines": [
+            550,
+            558
+          ],
+          "text": "impl Drop for ConnectionState {\n    fn drop(&mut self) {\n        // explicitly drop statements before the connection handle is dropped\n        self.statements.clear();\n        self.remove_progress_handler();\n        self.remove_update_hook();\n        self.remove_commit_hook();\n        self.remove_rollback_hook();\n    }"
+        },
+        {
+          "blob": "e89179b30ed489bf831e56575d1269f223a368ac",
+          "lines": [
+            139,
+            151
+          ],
+          "text": "impl Drop for ConnectionHandle {\n    fn drop(&mut self) {\n        unsafe {\n            // https://sqlite.org/c3ref/close.html\n            let status = sqlite3_close(self.0.as_ptr());\n            if status != SQLITE_OK {\n                // this should *only* happen due to an internal bug in SQLite where we left\n                // SQLite handles open\n                panic!(\"{}\", SqliteError::new(self.0.as_ptr()));\n            }\n        }\n    }\n}"
+        }
+      ]
+    },
+    "sqlite_success": {
+      "detail": "sqlite3LeaveMutexAndCloseZombie rolls back, closes all Btrees, then calls each collation xDel. BtreeClose calls PagerClose on its final/private Btree owner; PagerClose performs WalClose and closes journal/database descriptors before returning. Thus the native collation outlives this connection's DB file cleanup; its destruction is not asserted to be after sqlite3_close returns or after every last connection-object field is freed.",
+      "excerpts": [
+        {
+          "blob": "6efe538d4d9621818e41e996b622d131d3e216f1",
+          "lines": [
+            1374,
+            1393
+          ],
+          "text": "  /* If a transaction is open, roll it back. This also ensures that if\n  ** any database schemas have been modified by an uncommitted transaction\n  ** they are reset. And that the required b-tree mutex is held to make\n  ** the pager rollback and schema reset an atomic operation. */\n  sqlite3RollbackAll(db, SQLITE_OK);\n\n  /* Free any outstanding Savepoint structures. */\n  sqlite3CloseSavepoints(db);\n\n  /* Close all database connections */\n  for(j=0; j<db->nDb; j++){\n    struct Db *pDb = &db->aDb[j];\n    if( pDb->pBt ){\n      sqlite3BtreeClose(pDb->pBt);\n      pDb->pBt = 0;\n      if( j!=1 ){\n        pDb->pSchema = 0;\n      }\n    }\n  }"
+        },
+        {
+          "blob": "6efe538d4d9621818e41e996b622d131d3e216f1",
+          "lines": [
+            1422,
+            1432
+          ],
+          "text": "  for(i=sqliteHashFirst(&db->aCollSeq); i; i=sqliteHashNext(i)){\n    CollSeq *pColl = (CollSeq *)sqliteHashData(i);\n    /* Invoke any destructors registered for collation sequence user data. */\n    for(j=0; j<3; j++){\n      if( pColl[j].xDel ){\n        pColl[j].xDel(pColl[j].pUser);\n      }\n    }\n    sqlite3DbFree(db, pColl);\n  }\n  sqlite3HashClear(&db->aCollSeq);"
+        },
+        {
+          "blob": "8d0f92222dacce823bf60c38e864e96b7f014b75",
+          "lines": [
+            2944,
+            2956
+          ],
+          "text": "  /* If there are still other outstanding references to the shared-btree\n  ** structure, return now. The remainder of this procedure cleans\n  ** up the shared-btree.\n  */\n  assert( p->wantToLock==0 && p->locked==0 );\n  if( !p->sharable || removeFromSharingList(pBt) ){\n    /* The pBt is no longer on the sharing list, so we can access\n    ** it without having to hold the mutex.\n    **\n    ** Clean out and delete the BtShared object.\n    */\n    assert( !pBt->pCursor );\n    sqlite3PagerClose(pBt->pPager, p->db);"
+        },
+        {
+          "blob": "cbaef186a670de1abf295e9596c8b3a2a99a0a5c",
+          "lines": [
+            4191,
+            4193
+          ],
+          "text": "    }\n    sqlite3WalClose(pPager->pWal, db, pPager->walSyncFlags, pPager->pageSize,a);\n    pPager->pWal = 0;"
+        },
+        {
+          "blob": "cbaef186a670de1abf295e9596c8b3a2a99a0a5c",
+          "lines": [
+            4219,
+            4222
+          ],
+          "text": "  IOTRACE((\"CLOSE %p\\n\", pPager))\n  sqlite3OsClose(pPager->jfd);\n  sqlite3OsClose(pPager->fd);\n  sqlite3PageFree(pTmp);"
+        }
+      ]
+    },
+    "sqlite_close_failure": {
+      "detail": "sqlite3_close returns BUSY before close disposal if statements/backups remain. SQLx panics on non-OK; no collation destruction has established release. An anchored resource may remain retained rather than allowing a false completed cleanup. This failure branch is source-inspected, not newly exercised.",
+      "excerpt": {
+        "blob": "6efe538d4d9621818e41e996b622d131d3e216f1",
+        "lines": [
+          1272,
+          1280
+        ],
+        "text": "  /* Legacy behavior (sqlite3_close() behavior) is to return\n  ** SQLITE_BUSY if the connection can not be closed immediately.\n  */\n  if( !forceZombie && connectionIsBusy(db) ){\n    sqlite3ErrorWithMsg(db, SQLITE_BUSY, \"unable to close due to unfinalized \"\n       \"statements or unfinished backups\");\n    sqlite3_mutex_leave(db->mutex);\n    return SQLITE_BUSY;\n  }"
+      }
+    },
+    "registration_failure": {
+      "detail": "SQLx create_collation frees its boxed capture itself when sqlite3_create_collation_v2 fails; the candidate propagates that error before installing/returning the connection. The hard-coded name contains no NUL, so the separate CString-error path cannot occur for this registration. Pool after_connect retains its original error/close/retry policy. No default-allow callback or failed-setup admission is added. Nevertheless, any native cleanup before successful registration remains the open setup gap below.",
+      "source": "229e780adfbdb34ac117cf279e11b70a79a491fc"
+    },
+    "name_replacement": {
+      "name": "__hepta_commit_guard_custody_v1",
+      "detail": "The name is observable and is not a capability. SQLite permits native same-name replacement/removal, which can run xDel early. The explicit APIs require their trusted private-pool owners not to replace/remove either this collation or the commit hook. Untrusted raw-handle/extension access is not protected by a name. Tests deliberately remove only the commit hook to examine SQLx's teardown gap; production does not.",
+      "source": "6efe538d4d9621818e41e996b622d131d3e216f1",
+      "lines": [
+        2862,
+        2900
+      ]
+    },
+    "cache_scope": {
+      "detail": "These state constructors use SqliteConnectOptions::new with shared_cache=false; EstablishParams chooses SQLITE_OPEN_PRIVATECACHE. An anchor is not proof for independently opened pools, other processes or unrelated shared-cache owners.",
+      "sources": [
+        "0cafc4d08c4c63c342685fedbcc43222dd38d2f1",
+        "cedf752e6adef404b6f7d537f521045cb8342b5a"
+      ]
+    },
+    "pool_close_control": {
+      "detail": "PoolInner::close marks closed, then waits for ALL permits before draining idle connections. The cancellation control physically fills five slots, explicitly closes the other four, verifies size=1, and only then polls/cancels close while one real connection remains borrowed. It does not wait for idle-drain progress that the borrowed permit would prevent.",
+      "source": "b698dc9df07fdd763f6b15a171b7b545c6898696",
+      "lines": [
+        96,
+        118
+      ]
+    },
+    "independent_primary_review": "f332913eacabea8fbc986074f9d0fccc00b803af",
+    "primary_sources": [
+      {
+        "repository": "transact-rs/sqlx",
+        "commit": "75bc0487eb661da811bb7a3c5d158f1bd463fef4",
+        "path": "sqlx-sqlite/src/connection/mod.rs",
+        "blob": "218c747143fe80b344bca3405d4b0b38da2bd932",
+        "bytes": 20337,
+        "sha256": "a20c2e51a1505e298fd897b378f9032c89b82850838aa6e5d9409f612fb1e7fd",
+        "url": "https://github.com/transact-rs/sqlx/blob/75bc0487eb661da811bb7a3c5d158f1bd463fef4/sqlx-sqlite/src/connection/mod.rs"
+      },
+      {
+        "repository": "transact-rs/sqlx",
+        "commit": "75bc0487eb661da811bb7a3c5d158f1bd463fef4",
+        "path": "sqlx-sqlite/src/connection/worker.rs",
+        "blob": "2585dc1312210d9eb18c15f6df1158656d3c6b2c",
+        "bytes": 22317,
+        "sha256": "b66aafc56f0e287eac3b09111c5d4997d350ab61294c5cc576ce359bc18cebe4",
+        "url": "https://github.com/transact-rs/sqlx/blob/75bc0487eb661da811bb7a3c5d158f1bd463fef4/sqlx-sqlite/src/connection/worker.rs"
+      },
+      {
+        "repository": "transact-rs/sqlx",
+        "commit": "75bc0487eb661da811bb7a3c5d158f1bd463fef4",
+        "path": "sqlx-core/src/pool/options.rs",
+        "blob": "3d048f179514e992f478f0f854563fad7c0e41dd",
+        "bytes": 25108,
+        "sha256": "924cd57a062328b2e7c6ac55242eabb1706893d80ce1e8cb02fe643a592f4f83",
+        "url": "https://github.com/transact-rs/sqlx/blob/75bc0487eb661da811bb7a3c5d158f1bd463fef4/sqlx-core/src/pool/options.rs"
+      },
+      {
+        "repository": "transact-rs/sqlx",
+        "commit": "75bc0487eb661da811bb7a3c5d158f1bd463fef4",
+        "path": "sqlx-core/src/pool/inner.rs",
+        "blob": "b698dc9df07fdd763f6b15a171b7b545c6898696",
+        "bytes": 23376,
+        "sha256": "cba56628f259270dccb2f4a0d7a351dcff34d9239f6e6e1aee187ebe0e39c539",
+        "url": "https://github.com/transact-rs/sqlx/blob/75bc0487eb661da811bb7a3c5d158f1bd463fef4/sqlx-core/src/pool/inner.rs"
+      },
+      {
+        "repository": "transact-rs/sqlx",
+        "commit": "75bc0487eb661da811bb7a3c5d158f1bd463fef4",
+        "path": "sqlx-core/src/pool/connection.rs",
+        "blob": "7912b12aa14f763e8928bf8ac9466a97a81f681a",
+        "bytes": 13405,
+        "sha256": "94269a532ef60aaa31321e43af17cba2424f919a36501d862328ed05958a08de",
+        "url": "https://github.com/transact-rs/sqlx/blob/75bc0487eb661da811bb7a3c5d158f1bd463fef4/sqlx-core/src/pool/connection.rs"
+      },
+      {
+        "repository": "transact-rs/sqlx",
+        "commit": "75bc0487eb661da811bb7a3c5d158f1bd463fef4",
+        "path": "sqlx-sqlite/src/connection/handle.rs",
+        "blob": "e89179b30ed489bf831e56575d1269f223a368ac",
+        "bytes": 5320,
+        "sha256": "63d9b11374ebd453f3f7d0be95a728030f05997d5ccdc756fd8057ee0d31dc6f",
+        "url": "https://github.com/transact-rs/sqlx/blob/75bc0487eb661da811bb7a3c5d158f1bd463fef4/sqlx-sqlite/src/connection/handle.rs"
+      },
+      {
+        "repository": "transact-rs/sqlx",
+        "commit": "75bc0487eb661da811bb7a3c5d158f1bd463fef4",
+        "path": "sqlx-sqlite/src/connection/collation.rs",
+        "blob": "229e780adfbdb34ac117cf279e11b70a79a491fc",
+        "bytes": 4730,
+        "sha256": "d863421fe2f377315ca75c2912e702b13cbb4b978ec3940989ae08c9acf2f752",
+        "url": "https://github.com/transact-rs/sqlx/blob/75bc0487eb661da811bb7a3c5d158f1bd463fef4/sqlx-sqlite/src/connection/collation.rs"
+      },
+      {
+        "repository": "transact-rs/sqlx",
+        "commit": "75bc0487eb661da811bb7a3c5d158f1bd463fef4",
+        "path": "sqlx-sqlite/src/connection/establish.rs",
+        "blob": "cedf752e6adef404b6f7d537f521045cb8342b5a",
+        "bytes": 10033,
+        "sha256": "447d5067838ec05c713a53b381df4b8ae16652917b4206c553cdea6d3a1fe92a",
+        "url": "https://github.com/transact-rs/sqlx/blob/75bc0487eb661da811bb7a3c5d158f1bd463fef4/sqlx-sqlite/src/connection/establish.rs"
+      },
+      {
+        "repository": "transact-rs/sqlx",
+        "commit": "75bc0487eb661da811bb7a3c5d158f1bd463fef4",
+        "path": "sqlx-sqlite/src/options/connect.rs",
+        "blob": "cfa25872b2c118cc955ac4e2f9cfb64e19e4a0ee",
+        "bytes": 2305,
+        "sha256": "6eab2d3914a2c9f35c60bd8b324e46790eca39a23c30a0d4101e35be52b04253",
+        "url": "https://github.com/transact-rs/sqlx/blob/75bc0487eb661da811bb7a3c5d158f1bd463fef4/sqlx-sqlite/src/options/connect.rs"
+      },
+      {
+        "repository": "transact-rs/sqlx",
+        "commit": "75bc0487eb661da811bb7a3c5d158f1bd463fef4",
+        "path": "sqlx-sqlite/src/options/mod.rs",
+        "blob": "0cafc4d08c4c63c342685fedbcc43222dd38d2f1",
+        "bytes": 28010,
+        "sha256": "ff5005abc6408f2df073d95bf3440c2a3ee96c1a312d73468bf66123f8ab2f1e",
+        "url": "https://github.com/transact-rs/sqlx/blob/75bc0487eb661da811bb7a3c5d158f1bd463fef4/sqlx-sqlite/src/options/mod.rs"
+      },
+      {
+        "repository": "sqlite/sqlite",
+        "commit": "a5333afb9ad1aa473f8963b92caeaa955f47dc74",
+        "path": "src/main.c",
+        "blob": "6efe538d4d9621818e41e996b622d131d3e216f1",
+        "bytes": 169196,
+        "sha256": "43dbfd4175e6791fa1e7037c7290bbe77b0a2b7bad7fc46acf4c3b09ac886c7f",
+        "url": "https://github.com/sqlite/sqlite/blob/a5333afb9ad1aa473f8963b92caeaa955f47dc74/src/main.c"
+      },
+      {
+        "repository": "sqlite/sqlite",
+        "commit": "a5333afb9ad1aa473f8963b92caeaa955f47dc74",
+        "path": "src/btree.c",
+        "blob": "8d0f92222dacce823bf60c38e864e96b7f014b75",
+        "bytes": 403255,
+        "sha256": "ab4135be6b5e19f1766b1f4022fa6843fe8dd447504d39c49f22598366de8d61",
+        "url": "https://github.com/sqlite/sqlite/blob/a5333afb9ad1aa473f8963b92caeaa955f47dc74/src/btree.c"
+      },
+      {
+        "repository": "sqlite/sqlite",
+        "commit": "a5333afb9ad1aa473f8963b92caeaa955f47dc74",
+        "path": "src/pager.c",
+        "blob": "cbaef186a670de1abf295e9596c8b3a2a99a0a5c",
+        "bytes": 302918,
+        "sha256": "5ef7135d2d67ba7f2be6da0197854788ece57bccd2a743f6f1a5f33c94e8ce7b",
+        "url": "https://github.com/sqlite/sqlite/blob/a5333afb9ad1aa473f8963b92caeaa955f47dc74/src/pager.c"
+      }
+    ]
+  },
+  "explicit_open_gaps": [
+    {
+      "status": "OPEN",
+      "id": "BEFORE_NATIVE_REGISTRATION",
+      "detail": "SQLx establishes its worker/SQLite handle and runs initial PRAGMAs before option collations or after_connect. EstablishParams retains no application guard. Initial open, growth/replacement setup, errors and cancellation before successful anchor registration are NOT proven safe by this patch. The calling initialization fence is still required, and cancelling its owner can still expose this gap. No misleading whole-lifecycle API is introduced."
+    },
+    {
+      "status": "OPEN",
+      "id": "CURRENT_AND_FINAL_USE",
+      "detail": "This patch neither authenticates ReadHead receipts nor issues Current. It does not recheck authority/lease/expiry/exact cut at each commit, close the final-live-check-to-COMMIT time gap, or supply independent peer/caller/Root authority."
+    },
+    {
+      "status": "OPEN",
+      "id": "OTHER_OPENERS_AND_COLD_IMAGE",
+      "detail": "Legacy independent shared opens and other processes do not share this gate. from_read_only_pool has no installed hook; the actual cold-image caller relies on query_only plus SQLITE_DESERIALIZE_READONLY/max1, unchanged here."
+    },
+    {
+      "status": "OPEN",
+      "id": "RAW_HANDLE_REPLACEMENT",
+      "detail": "The physical-lifetime claim requires retaining the native anchor and default private-cache connection ownership. Same-name native replacement/removal or arbitrary raw-handle/extension clients invalidate it. No arbitrary raw pool is authenticated by this mechanism."
+    }
+  ],
+  "validation": {
+    "executed": false,
+    "recipe": {
+      "path": "justfile",
+      "blob": "a215a76cf407ace9715bca39c20497014e7dd4dc",
+      "cwd": "codex-rs",
+      "instructions": {
+        "path": "AGENTS.md",
+        "blob": "a22ff3bee70261f6061d598c31f0016e785a7a3c"
+      }
+    },
+    "baseline": {
+      "patch": {
+        "blob": "d6d9de20165a61736ae033f3e5fd65c14e3170e1",
+        "bytes": 9372,
+        "sha256": "834f9e30e760f48bbbd5a8930c7a74e7ddd89f38af7e143bbaf713f10d8e23e6"
+      },
+      "proof": [
+        {
+          "path": "codex-rs/hepta-memory/src/objective_sender.rs",
+          "hunks": 1,
+          "exact_reconstructed": true
+        },
+        {
+          "path": "codex-rs/hepta-memory/src/objective_sender_connection_custody_tests.rs",
+          "hunks": 1,
+          "exact_reconstructed": true
+        }
+      ],
+      "command": "just test -p codex-hepta-memory --lib -E 'test(/production_writer::objective_sender::connection_custody_tests::/)' --retries 0",
+      "exact_cases": [
+        "production_writer::objective_sender::connection_custody_tests::detached_shared_connection_retains_original_file_lock_until_close",
+        "production_writer::objective_sender::connection_custody_tests::recovered_connection_retains_exclusive_custody_after_store_close",
+        "production_writer::objective_sender::connection_custody_tests::cancelled_close_retains_custody_after_a_cancelled_checkpoint",
+        "production_writer::objective_sender::connection_custody_tests::commit_hook_teardown_keeps_custody_until_native_connection_close"
+      ],
+      "expected": "Four actual failures at competing_exclusive_acquired=true after physical_connection_rows=1. The cancellation case must first record checkpoint_entered=true and original_close_pending=true. These failures are predictions, not observed evidence.",
+      "invalid": "Build/setup/authority/IO failures, timeout, missing metadata read, early skip, or failure before the intended real OS lock assertion are not qualification.",
+      "relative_base": "Test-only relative to the real R2e1 combined source, not an unmodified cabc qualification."
+    },
+    "repair_after_baseline": {
+      "patch": {
+        "blob": "e9653333486372ba9d949ca26052af66873ecd34",
+        "bytes": 8330,
+        "sha256": "c95310545e5d763965b99891005da844d2b06b3645c6b404ac7eaa9d21f8de22"
+      },
+      "proof": [
+        {
+          "path": "codex-rs/state/src/sqlite.rs",
+          "hunks": 4,
+          "exact_reconstructed": true
+        },
+        {
+          "path": "codex-rs/hepta-memory/src/cognitive_store.rs",
+          "hunks": 7,
+          "exact_reconstructed": true
+        },
+        {
+          "path": "codex-rs/hepta-memory/src/cognitive_store_gate.rs",
+          "hunks": 1,
+          "exact_reconstructed": true
+        },
+        {
+          "path": "codex-rs/hepta-memory/src/cognitive_store_recovery.rs",
+          "hunks": 1,
+          "exact_reconstructed": true
+        }
+      ]
+    },
+    "anchor_only_counterfactual": {
+      "source": {
+        "blob": "3c2278650ac27398a24c893465090f5cea57ca3d",
+        "bytes": 19432,
+        "sha256": "662ee1d4eaaaa92244edb7ea635c0514bf0263c3228592f3576534c79ccfbc9b"
+      },
+      "patch": {
+        "blob": "7b931b638dce1e8a8496b1898f9ff0a0fb9abe61",
+        "bytes": 1104,
+        "sha256": "c8b3234ac01c1fa4a66430729201b8c237ad15fc8dd88797737a64d27bcb7cf0"
+      },
+      "proof": [
+        {
+          "path": "codex-rs/state/src/sqlite.rs",
+          "hunks": 2,
+          "exact_reconstructed": true
+        }
+      ],
+      "restore": {
+        "blob": "e14e90930772b7a75580f55e7975439f6750d58f",
+        "bytes": 1104,
+        "sha256": "ba7d339e3059488f68637e72759b93a2ab8ca75448d2d8263c58f6b250ea0c6d"
+      },
+      "restore_proof": [
+        {
+          "path": "codex-rs/state/src/sqlite.rs",
+          "hunks": 2,
+          "exact_reconstructed": true
+        }
+      ],
+      "command": "just test -p codex-hepta-memory --lib -E 'test(=production_writer::objective_sender::connection_custody_tests::commit_hook_teardown_keeps_custody_until_native_connection_close)' --retries 0",
+      "difference": "Apply complete repair, then only remove the native anchor registration and its unused constant. All custody wiring, hook, tests and assertions remain. The restore patch reverses exactly that two-hunk difference.",
+      "expected": "The first real exclusive acquisition must remain blocked. After commit_hook_removed=true/native_close_started=false and another successful physical metadata read, the second real acquisition must succeed and hit the original blocked-lock assertion. That exact ordering proves why holding only the hook is insufficient.",
+      "unexecuted": true
+    },
+    "final_controls": [
+      {
+        "name": "production_writer::objective_sender::connection_custody_tests::detached_shared_connection_retains_original_file_lock_until_close",
+        "proof": "An ordinary shared store, a clone and a distinct shared opener close while one actual connection remains detached. That live connection still reads the real DB; another shared lock succeeds, an exclusive file lock fails, and only actual connection close permits the exclusive lock. Actual sqlite_version is read from this SQLx connection."
+      },
+      {
+        "name": "production_writer::objective_sender::connection_custody_tests::recovered_connection_retains_exclusive_custody_after_store_close",
+        "proof": "The original exact-cut recovery constructor obtains its genuine exclusive file lock. After store close a detached live connection still excludes both another exclusive owner and an ordinary shared opener. After native close a new authority epoch can execute the original recovery flow and retain the same cut."
+      },
+      {
+        "name": "production_writer::objective_sender::connection_custody_tests::cancelled_close_retains_custody_after_a_cancelled_checkpoint",
+        "proof": "Original checkpoint enters the existing real Hold and is cancelled. An actual subsequent BEGIN IMMEDIATE/ROLLBACK establishes its writer-lock release. After filling/closing the other four physical slots, original close is polled until pending then cancelled, the sole borrowed connection detaches, and independent file-lock acquisition remains blocked. Real DDL/COMMIT receives 531, its table is absent, final connection close permits recovery locking, and reopening preserves the exact cut."
+      },
+      {
+        "name": "production_writer::objective_sender::connection_custody_tests::commit_hook_teardown_keeps_custody_until_native_connection_close",
+        "proof": "On a live detached connection after every store-owned handle closes, call the original SQLx remove_commit_hook method. A real SELECT succeeds and another independently opened File still cannot acquire the exclusive lock. Only awaited native connection close permits it. This is a teardown control, not permission for production to remove hooks."
+      }
+    ],
+    "final_commands": [
+      "just test -p codex-hepta-memory --lib -E 'test(/production_writer::objective_sender::connection_custody_tests::/)' --retries 0",
+      "just test -p codex-hepta-memory --lib --retries 0",
+      "just test -p codex-state --lib --retries 0",
+      "just fix -p codex-hepta-memory -p codex-state",
+      "just fmt"
+    ],
+    "receipt_requirements": "Exact roster and source pre/post hashes, complete fresh raw/JUnit with no retries, actual native host/toolchain and actual sqlite_version observation, preserved baseline evidence and filtered/ignored counts. This source proposal has not been compiled/formatted/run. No global green or original-platform closure is inferred.",
+    "scope_of_lock_probes": "The controls use separately opened real File handles in the same test process plus actual independent SQLx connections/recovery constructors. They do not claim a newly executed second-process test.",
+    "lock_inputs": "No Cargo.toml/Cargo.lock/BUILD/MODULE changes or new dependency. Existing original dependency/lock gates for the eventual assembled tree remain required; no lock is hand-edited."
+  },
+  "unchanged_boundaries": [
+    "Original ordinary/current-user peer checking and AgentdProductionHostAttachment<C>/original_sender are not touched.",
+    "Windows token/ACL/loader/DLL files are not touched. Original retained lock file plus directory object and secure sync helpers remain.",
+    "Original tests are not edited, removed, skipped, retried or given larger deadlines; only one new four-case module is wired.",
+    "Original CStore::close body, default SQLite constructors, readonly cold-image handling, independent read ACK and AlreadyRetained semantics remain unchanged.",
+    "No native process, target/cache, branch/ref, other PR or root audit model was modified."
+  ],
+  "superseded_draft": {
+    "blob": "42b678d466f81a396fb757703e0c9128b3a4b665",
+    "reason": "Production unchanged. Final tests additionally print the actual runtime SQLite version and read the live DB before each intended lock-failure stage; no draft was executed."
+  },
+  "static_preservation_checks": {
+    "default_open_durable_evidence_pool_exact_bytes": true,
+    "original_file_path_windows_directory_fields_exact_bytes": true,
+    "whole_original_objective_sender_prefix_exact_bytes": true,
+    "no_Arc_strong_count_or_runtime_complete_claim": true,
+    "no_home_paths_or_temporary_signed_urls": true,
+    "diff_all_six_postimages_roundtrip": true
+  },
+  "superseded_manifest": {
+    "blob": "ec6e6761cc072a8ca9ef24eec32f37bcb393b275",
+    "reason": "Only corrected ConnectionHandle Drop excerpt bounds to actual lines 139-151 and added explicit preservation checks; all source/patch bytes unchanged. Earlier manifest was not executed or applied."
+  }
+}

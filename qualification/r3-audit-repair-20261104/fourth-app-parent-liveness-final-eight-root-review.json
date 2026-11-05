@@ -1,0 +1,218 @@
+{
+  "schema": "hepta-root-app-parent-liveness-final-eight-scope-review-v1",
+  "observed_at_utc": "2026-11-05T04:12:46.205968+00:00",
+  "job_id": "1a1a9cf9300-fc05-3823",
+  "source": "c6fbcfa0d1ba3b1556f601dc4ca3a7734328b9f7",
+  "original_small_bundle": {
+    "bytes": 117184,
+    "sha256": "a6425d65d9e146baa5157d1b6230a55eb549f0cf0f3cdd2385d0fa04cea970db",
+    "blob": "c4c34185b748ad25dccd7ce1d3d180869d9a7a64"
+  },
+  "verified_originals": [
+    {
+      "name": "parent-liveness-final-eight-review.parts.json",
+      "bytes": 633,
+      "sha256": "c12490877d6499152f6c8a75c846b1846e5bba1f8cd03704a6e1073182c432d5"
+    },
+    {
+      "name": "parent-liveness-final-eight.log",
+      "bytes": 14176,
+      "sha256": "f09618b7bf75906e4053d4924e5a6dfb8e410d88b698cec1aae6921442f1fbbb"
+    },
+    {
+      "name": "parent-liveness-final-eight.junit.xml",
+      "bytes": 2302,
+      "sha256": "1b70fd2c2ae8187672fe3a9ed95f41faf52c4bbf7833a25f84f7bdf42774fa50"
+    },
+    {
+      "name": "owned-process-observation-summary.json",
+      "bytes": 1849,
+      "sha256": "12576ea91f3a561433cf2992975936f384a2035c87b48427b030d4025fe5bde3"
+    },
+    {
+      "name": "parent-liveness-final-eight-review.json",
+      "bytes": 40725,
+      "sha256": "a87f7c2538cf67f9953cf3589173727bfd29fe9726be2dc65f5fff26a5cfa30d"
+    },
+    {
+      "name": "parent-liveness-final-eight-command.json",
+      "bytes": 1321,
+      "sha256": "41fc1dd747f6a671bb461703f9ae79c7486a5acbdb4bd107d9e00b2adddfac69"
+    },
+    {
+      "name": "parent-liveness-final-eight-status.json",
+      "bytes": 2079,
+      "sha256": "128115c8cf6025ee6b34e6b8b6e5caaa53a4373e233033e47407e43f7b016853"
+    },
+    {
+      "name": "parent-liveness-final-eight-catalog-status.json",
+      "bytes": 28469,
+      "sha256": "2e0b707c1169e5d4c3660341556f156d095ca1c64b412de80327ee13230d8f22"
+    },
+    {
+      "name": "parent-liveness-final-eight-feature-graph-binding.json",
+      "bytes": 934,
+      "sha256": "9a519506c37d460cc1f2e661e55357299f25b21c8719363d3b6c8a19629110e4"
+    },
+    {
+      "name": "parent-liveness-final-eight-normal-six-helper-receipt.json",
+      "bytes": 7447,
+      "sha256": "8094bc3b0655a26c1724c0e1fc131e8cdb81b664fbf9f586c730808aa71b2aa2"
+    },
+    {
+      "name": "driver-error.parts.json",
+      "bytes": 4857,
+      "sha256": "efac25fe2d01c6f5a02a453056765da3e1cef90ac9b6698355b3f40329308466"
+    }
+  ],
+  "raw_and_fresh_junit_case_identity_exact": true,
+  "case_results": [
+    {
+      "classname": "codex-linux-sandbox",
+      "name": "parent_lifecycle::tests::ordinary_file_and_pre_read_proc_descriptor_are_rejected",
+      "seconds": "0.005",
+      "result": "PASS",
+      "failure": ""
+    },
+    {
+      "classname": "codex-linux-sandbox",
+      "name": "parent_lifecycle::tests::exited_original_parent_is_rejected_after_actual_reparenting",
+      "seconds": "0.019",
+      "result": "PASS",
+      "failure": ""
+    },
+    {
+      "classname": "codex-linux-sandbox",
+      "name": "parent_lifecycle::tests::rearmed_parent_death_terminates_probe_and_closes_fd_before_user_fork",
+      "seconds": "0.019",
+      "result": "PASS",
+      "failure": ""
+    },
+    {
+      "classname": "codex-linux-sandbox::all",
+      "name": "suite::managed_proxy::sandboxed_commands_have_a_seccomp_filtered_namespace_reaper",
+      "seconds": "0.089",
+      "result": "PASS",
+      "failure": ""
+    },
+    {
+      "classname": "codex-linux-sandbox::all",
+      "name": "suite::landlock::sandbox_inner_stage_rejects_retained_capabilities",
+      "seconds": "0.125",
+      "result": "PASS",
+      "failure": ""
+    },
+    {
+      "classname": "codex-linux-sandbox::all",
+      "name": "suite::managed_proxy::namespace_reaper_collects_orphaned_descendants",
+      "seconds": "0.155",
+      "result": "PASS",
+      "failure": ""
+    },
+    {
+      "classname": "codex-linux-sandbox::all",
+      "name": "suite::managed_proxy::managed_proxy_commands_have_a_seccomp_filtered_namespace_reaper",
+      "seconds": "0.161",
+      "result": "PASS",
+      "failure": ""
+    },
+    {
+      "classname": "codex-app-server::all",
+      "name": "suite::v2::command_exec::command_exec_process_ids_are_connection_scoped_and_disconnect_terminates_process",
+      "seconds": "0.606",
+      "result": "PASS",
+      "failure": ""
+    }
+  ],
+  "original_cases": 5,
+  "new_positive_controls": 3,
+  "junit_pass": 8,
+  "observed_executed_positive_behaviors": 7,
+  "unexecuted_original_capability_cases": [
+    {
+      "classname": "codex-linux-sandbox::all",
+      "name": "suite::landlock::sandbox_inner_stage_rejects_retained_capabilities",
+      "notice": "skipping capability test: unprivileged user namespaces are unavailable"
+    }
+  ],
+  "original_just_exit_code": 0,
+  "original_just_seconds": 4.058638201997383,
+  "strict_wrapper_selection_valid": false,
+  "authoritative_controller_exit_code": 1,
+  "counterfactuals_review": "4a280b840e655c2a0f66c904a7cf6016b2c4a3a7",
+  "counterfactuals_valid": 3,
+  "programs_stable": true,
+  "helper_count": 33,
+  "helpers_stable": true,
+  "source_unchanged": true,
+  "full_workspace_graph_equal": true,
+  "full_roster_reference": {
+    "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/app-parent-liveness-three-causal-eight-exact-20261105-v2/parent-liveness-final-eight-catalog.stdout",
+    "bytes": 3295377,
+    "sha256": "e35bd57f1f6e7f89a72e55392659478a628fd10e5061b1fad2f5649272754e30",
+    "source": "c6fbcfa0d1ba3b1556f601dc4ca3a7734328b9f7"
+  },
+  "eligible_count": 19506,
+  "ignored_count": 57,
+  "supplemental_observation": {
+    "source": "c6fbcfa0d1ba3b1556f601dc4ca3a7734328b9f7",
+    "command": [
+      "just",
+      "test",
+      "--locked",
+      "--cargo-profile",
+      "dev-small",
+      "--no-tests",
+      "fail",
+      "--retries",
+      "0",
+      "--success-output",
+      "immediate",
+      "-E",
+      "test(=parent_lifecycle::tests::exited_original_parent_is_rejected_after_actual_reparenting) | test(=parent_lifecycle::tests::rearmed_parent_death_terminates_probe_and_closes_fd_before_user_fork) | test(=parent_lifecycle::tests::ordinary_file_and_pre_read_proc_descriptor_are_rejected) | test(=suite::v2::command_exec::command_exec_process_ids_are_connection_scoped_and_disconnect_terminates_process) | test(=suite::managed_proxy::sandboxed_commands_have_a_seccomp_filtered_namespace_reaper) | test(=suite::managed_proxy::managed_proxy_commands_have_a_seccomp_filtered_namespace_reaper) | test(=suite::managed_proxy::namespace_reaper_collects_orphaned_descendants) | test(=suite::landlock::sandbox_inner_stage_rejects_retained_capabilities)"
+    ],
+    "command_pid": 963318,
+    "command_starttime_ticks": 18166576,
+    "exit_code": 0,
+    "samples": 62,
+    "events": 169,
+    "known_fixture_markers": [
+      "codex-command-exec-marker-1793851459935013409"
+    ],
+    "observer_errors": [],
+    "last_observed_owned_processes": [],
+    "trace": {
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/app-parent-liveness-three-causal-eight-exact-20261105-v2/owned-process-observations.jsonl",
+      "bytes": 78092,
+      "sha256": "2f9005b861dce5aec3e317b744d71e3d035f126dd296b31a36e8dc3b43a40cde"
+    },
+    "limit": "Only observed descendants and identical previously-owned PID/starttime pairs were read. A process that detached before the first observation can be missed. No global cmdline or environment dump, process signal, strace, test deadline change or source change was performed."
+  },
+  "historical_f825_capability_correction": {
+    "raw_original": {
+      "bytes": 34360967,
+      "sha256": "75cd2cd5c89ce70781781c3b8c3e1bb168720b83bf6961c206720b3c08efe15c",
+      "blob": "bff1592df2e83861e1201ca213cc88fc7b7dcd77",
+      "verified_archive_root_review": "0f55bb1d2ca9fd908ab29bebfd9a9bd903715ebb"
+    },
+    "case": {
+      "classname": "codex-linux-sandbox::all",
+      "name": "suite::landlock::sandbox_inner_stage_rejects_retained_capabilities",
+      "junit_reported_result": "PASS",
+      "seconds": "0.116",
+      "notice": "skipping capability test: unprivileged user namespaces are unavailable",
+      "header_line_1_based": 127608
+    },
+    "previous_remote_early_returns": 24,
+    "additional_capability_early_returns": 1,
+    "scope": "The historical 24 remote early returns remain unchanged. This additional observed capability early return was omitted from the derived per-case early-return list, but preserved in raw. Original JUnit counts, original exit code, source and failure counts are unchanged."
+  },
+  "continuation_decision": "Proceed with separately guarded Windows source application, original Python57 and original full workspace as WIP. The actual 3 valid negative phases, original App disconnect and 3 original reapers plus 3 new positive controls support that continuation. The retained-capability behavior remains unqualified and cannot count as an eighth executed positive. Preserve strict outer failure and final platform gate. No host policy, test oracle, budget or skip change.",
+  "limits": [
+    "Small original files and all referenced identities verified; complete metadata/catalog/owned-process trace archive is separately transferred and requires archive-level verification.",
+    "Owned process observation is supplemental; absent observations never substitute for the unchanged original App oracle.",
+    "No claim the narrow PF_EXITING-before-zombie interval was physically observed.",
+    "No original blocker status or exit condition changes; all_blockers_closed=false."
+  ],
+  "reviewer_correction_before_publication": "Initial local review script selected the known truncated 29360128-byte redundant cloud copy. Before publication, this historical observation was independently repeated against the intact root-decoded 34360967-byte original and its already-verified SHA256; exact same case and notice confirmed. No native original was altered."
+}

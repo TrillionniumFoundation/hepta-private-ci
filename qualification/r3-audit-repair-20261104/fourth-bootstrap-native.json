@@ -1,0 +1,601 @@
+{
+  "schema": "hepta.rog.exact_source_and_pinned_tools.bootstrap.v1",
+  "base_head": "cabcb40d36e116beaa65750e1f674c52035da785",
+  "base_tree": "b2d7f038d6d88156bc6a4cb29c8703f69b808f29",
+  "applied_tree": "1c2aa1263d4087fb3432b7b900080a6af7215b14",
+  "controllers": {
+    "source": {
+      "at_unix_ms": 1793829805080,
+      "audit_recorded": true,
+      "automatic_retry": false,
+      "cancelled": false,
+      "exit_code": 0,
+      "job_id": "1a1a8966cf6-fc05-2f32",
+      "launch_nonce": "e2922f39275509a182a5a2901638e092",
+      "log_bytes": {
+        "stderr": {
+          "seen": 0,
+          "stored": 0
+        },
+        "stdout": {
+          "seen": 4476,
+          "stored": 4476
+        }
+      },
+      "log_errors": {
+        "stderr": null,
+        "stdout": null
+      },
+      "log_synced": {
+        "stderr": true,
+        "stdout": true
+      },
+      "log_truncated": {
+        "stderr": false,
+        "stdout": false
+      },
+      "output_complete": true,
+      "output_durable": true,
+      "state": "succeeded",
+      "terminal_publication_confirmed": true,
+      "terminal_publication_protocol": 1,
+      "timed_out": false
+    },
+    "tools": {
+      "at_unix_ms": 1793830203147,
+      "audit_recorded": true,
+      "automatic_retry": false,
+      "cancelled": false,
+      "exit_code": 0,
+      "job_id": "1a1a89a88e1-fc05-2f3e",
+      "launch_nonce": "a67d7622721ed14541c7b728ee48aad7",
+      "log_bytes": {
+        "stderr": {
+          "seen": 0,
+          "stored": 0
+        },
+        "stdout": {
+          "seen": 2318,
+          "stored": 2318
+        }
+      },
+      "log_errors": {
+        "stderr": null,
+        "stdout": null
+      },
+      "log_synced": {
+        "stderr": true,
+        "stdout": true
+      },
+      "log_truncated": {
+        "stderr": false,
+        "stdout": false
+      },
+      "output_complete": true,
+      "output_durable": true,
+      "state": "succeeded",
+      "terminal_publication_confirmed": true,
+      "terminal_publication_protocol": 1,
+      "timed_out": false
+    },
+    "v8": {
+      "at_unix_ms": 1793830472846,
+      "audit_recorded": true,
+      "automatic_retry": false,
+      "cancelled": false,
+      "exit_code": 0,
+      "job_id": "1a1a8a092a8-fc05-2f46",
+      "launch_nonce": "9b6f2429864f49a09574442977094f55",
+      "log_bytes": {
+        "stderr": {
+          "seen": 0,
+          "stored": 0
+        },
+        "stdout": {
+          "seen": 908,
+          "stored": 908
+        }
+      },
+      "log_errors": {
+        "stderr": null,
+        "stdout": null
+      },
+      "log_synced": {
+        "stderr": true,
+        "stdout": true
+      },
+      "log_truncated": {
+        "stderr": false,
+        "stdout": false
+      },
+      "output_complete": true,
+      "output_durable": true,
+      "state": "succeeded",
+      "terminal_publication_confirmed": true,
+      "terminal_publication_protocol": 1,
+      "timed_out": false
+    },
+    "overlay0": {
+      "at_unix_ms": 1793830558156,
+      "audit_recorded": true,
+      "automatic_retry": false,
+      "cancelled": false,
+      "exit_code": 0,
+      "job_id": "1a1a8a2152d-fc05-2f4b",
+      "launch_nonce": "cf2a91484a92a0006e91291feb2cce6f",
+      "log_bytes": {
+        "stderr": {
+          "seen": 0,
+          "stored": 0
+        },
+        "stdout": {
+          "seen": 42,
+          "stored": 42
+        }
+      },
+      "log_errors": {
+        "stderr": null,
+        "stdout": null
+      },
+      "log_synced": {
+        "stderr": true,
+        "stdout": true
+      },
+      "log_truncated": {
+        "stderr": false,
+        "stdout": false
+      },
+      "output_complete": true,
+      "output_durable": true,
+      "state": "succeeded",
+      "terminal_publication_confirmed": true,
+      "terminal_publication_protocol": 1,
+      "timed_out": false
+    },
+    "overlay1": {
+      "at_unix_ms": 1793830591276,
+      "audit_recorded": true,
+      "automatic_retry": false,
+      "cancelled": false,
+      "exit_code": 0,
+      "job_id": "1a1a8a29504-fc05-2f4e",
+      "launch_nonce": "83c795b35447254b424a916bc5d1f0d7",
+      "log_bytes": {
+        "stderr": {
+          "seen": 0,
+          "stored": 0
+        },
+        "stdout": {
+          "seen": 168,
+          "stored": 168
+        }
+      },
+      "log_errors": {
+        "stderr": null,
+        "stdout": null
+      },
+      "log_synced": {
+        "stderr": true,
+        "stdout": true
+      },
+      "log_truncated": {
+        "stderr": false,
+        "stdout": false
+      },
+      "output_complete": true,
+      "output_durable": true,
+      "state": "succeeded",
+      "terminal_publication_confirmed": true,
+      "terminal_publication_protocol": 1,
+      "timed_out": false
+    }
+  },
+  "files": [
+    {
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/init.stdout",
+      "bytes": 101,
+      "sha256": "0f3b2f560daf3f34278c08b3be900c850af94aa2d3a7f2f8c73be7c5cf5634e5",
+      "content": "Initialized empty Git repository in /home/qian-qi/work/hepta-audit-r3-fullgate-20261104/source/.git/\n"
+    },
+    {
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/init.stderr",
+      "bytes": 586,
+      "sha256": "3e70934f1909b0f5a846d62237fcc1509d733b9fb0321187024723dfc67176d3",
+      "content": "hint: Using 'master' as the name for the initial branch. This default branch name\nhint: will change to \"main\" in Git 3.0. To configure the initial branch name\nhint: to use in all of your new repositories, which will suppress this warning,\nhint: call:\nhint:\nhint: \tgit config --global init.defaultBranch <name>\nhint:\nhint: Names commonly chosen instead of 'master' are 'main', 'trunk' and\nhint: 'development'. The just-created branch can be renamed via this command:\nhint:\nhint: \tgit branch -m <name>\nhint:\nhint: Disable this message with \"git config set advice.defaultBranchName false\"\n"
+    },
+    {
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/origin.stdout",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "content": "",
+      "content_basis": "Original terminal records zero bytes and SHA256(empty)."
+    },
+    {
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/origin.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "content": "",
+      "content_basis": "Original terminal records zero bytes and SHA256(empty)."
+    },
+    {
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/fetch-exact-cabc.stdout",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "content": "",
+      "content_basis": "Original terminal records zero bytes and SHA256(empty)."
+    },
+    {
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/fetch-exact-cabc.stderr",
+      "bytes": 140,
+      "sha256": "90c6b2c594846f402ecc6c780c026b0bc40a089e21408df6630bba52bd276606",
+      "content": "From https://github.com/TrillionniumFoundation/hepta-private-ci\n * branch            cabcb40d36e116beaa65750e1f674c52035da785 -> FETCH_HEAD\n"
+    },
+    {
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/fetched-commit.stdout",
+      "bytes": 41,
+      "sha256": "8ab9b93605942fba7003b66d39c55d96802c3a9c88431ee67a03b37c9e4846f5",
+      "content": "cabcb40d36e116beaa65750e1f674c52035da785\n"
+    },
+    {
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/fetched-commit.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "content": "",
+      "content_basis": "Original terminal records zero bytes and SHA256(empty)."
+    },
+    {
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/fetched-tree.stdout",
+      "bytes": 41,
+      "sha256": "f13a9167dfe238d195cfb1aad17594fbfb55aa47956d308804b3374e220507c2",
+      "content": "b2d7f038d6d88156bc6a4cb29c8703f69b808f29\n"
+    },
+    {
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/fetched-tree.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "content": "",
+      "content_basis": "Original terminal records zero bytes and SHA256(empty)."
+    },
+    {
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/checkout.stdout",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "content": "",
+      "content_basis": "Original terminal records zero bytes and SHA256(empty)."
+    },
+    {
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/checkout.stderr",
+      "bytes": 99,
+      "sha256": "bff64f6ace86e383568df486c897b87d9345626fe063c32d66e12301230907c8",
+      "content": "HEAD is now at cabcb40 fix: qualify original r3 fixtures and preserve complete CI failure evidence\n"
+    },
+    {
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/worktree-status.stdout",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "content": "",
+      "content_basis": "Original terminal records zero bytes and SHA256(empty)."
+    },
+    {
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/worktree-status.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "content": "",
+      "content_basis": "Original terminal records zero bytes and SHA256(empty)."
+    },
+    {
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/project-tool-recipes.stdout",
+      "bytes": 32463,
+      "sha256": "8556373e7c9c2c48453dddd53127766b9386dd3a706e6b26e4f0ded42d0b2a1f",
+      "content": ".github/workflows/hepta-supervisor-p0-crossplatform.yml:7:      - \"codex-rs/hepta-agent-protocol/**\"\n.github/workflows/hepta-supervisor-p0-crossplatform.yml:106:      - name: Execute the complete Agentd protocol package\n.github/workflows/hepta-supervisor-p0-crossplatform.yml:107:        run: just test --locked -p codex-hepta-agent-protocol --profile default --test-threads 2 --no-tests fail --retries 0 --status-level all --final-status-level all\n.github/workflows/hepta-supervisor-p0-crossplatform.yml:109:      - name: Verify signed protocol wire regression evidence\n.github/workflows/hepta-supervisor-p0-crossplatform.yml:122:              raise SystemExit(\"source HEAD changed during protocol tests\")\n.github/workflows/hepta-supervisor-p0-crossplatform.yml:128:              raise SystemExit(\"missing unique signed protocol wire regression result\")\n.github/workflows/hepta-supervisor-p0-crossplatform.yml:131:                  raise SystemExit(f\"protocol case did not pass: {case.get('name')}\")\n.github/workflows/hepta-supervisor-p0-crossplatform.yml:157:      - name: Preserve Agentd protocol JUnit evidence\n.github/workflows/hepta-supervisor-p0-crossplatform.yml:161:          name: hepta-agent-protocol-${{ matrix.os }}-${{ github.event.pull_request.head.sha || github.sha }}\nscripts/hepta-generation-pointer:798:  local contract='{\"authority\":{\"automatic_transition\":false,\"enforce\":false,\"model_invocation\":false,\"operator_mutation\":false,\"outbound\":false,\"promotion\":false,\"retirement\":false,\"telegram\":false},\"protocol_version\":1,\"routes\":[\"GET /\",\"GET /api/hepta/runtime\",\"GET /healthz\"],\"runtime\":{\"keyed_integrity_required\":true,\"loopback_only\":true,\"open_mode\":\"immutable-query-only-open-existing\",\"read_only\":true,\"requires_empty_wal\":true,\"schema_version\":5},\"schema\":\"hepta_vnext_live_shell_contract_v1\",\"status\":\"ready\"}'\nscripts/hepta-immutable-release-tree:29:  jq -cn '{schema:\"hepta_vnext_live_shell_contract_v1\",status:\"ready\",protocol_version:1,routes:[\"GET /\",\"GET /api/hepta/runtime\",\"GET /healthz\"],runtime:{loopback_only:true,read_only:true,open_mode:\"immutable-query-only-open-existing\",schema_version:5,requires_empty_wal:true,keyed_integrity_required:true},authority:{telegram:false,outbound:false,model_invocation:false,operator_mutation:false,enforce:false,promotion:false,retirement:false,automatic_transition:false}}' | jq -S -c .\nscripts/test_hepta_consolidated_scope.py:69:        for path in (\"codex-rs/core/x\", \"codex-rs/common/x\", \"codex-rs/protocol/x\"):\n.github/workflows/single-main-maintenance.yml:55:          tool: just@1.51.0,cargo-nextest\n.github/workflows/hepta-diagnostic-source-export.yml:171:              /tmp/uv/bin/python -m pip install uv==0.11.3\nscripts/hepta-implementation-maps.py:1394:            owned_protocols = row.get(\"ownedTargetProtocols\")\nscripts/hepta-implementation-maps.py:1395:            if owned_protocols is not None:\nscripts/hepta-implementation-maps.py:1396:                if not isinstance(owned_protocols, list):\nscripts/hepta-implementation-maps.py:1397:                    raise ValueError(\"owned target protocols\")\nscripts/hepta-implementation-maps.py:1400:                    for item in owned_protocols\nscripts/hepta-implementation-maps.py:1406:                    raise ValueError(\"owned target protocol source claim drift\")\nscripts/hepta-docs.py:64:    \"protocols\": \"docs/contracts/PROTOCOL_SCHEMAS.json\",\nscripts/hepta-docs.py:93:    \"protocols\": \"hepta.protocol-schema-registry.v3\",\nscripts/hepta-docs.py:728:    readiness_protocols = load(READINESS_PROTOCOLS)\nscripts/hepta-docs.py:736:        \"readiness_protocols\": readiness_protocols,\nscripts/hepta-docs.py:775:        f\"- Critical protocols: **{len(d['protocols']['protocols'])}**\",\nscripts/hepta-docs.py:783:        f\"- Readiness protocols: **{len(sub['readiness_protocols']['protocols'])}**\",\nscripts/hepta-docs.py:1169:        d[\"protocols\"].get(\"subordinateProtocolRegistries\")\nscripts/hepta-docs.py:1176:                \"protocolCount\": len(load(READINESS_PROTOCOLS)[\"protocols\"]),\nscripts/hepta-docs.py:1180:        \"subordinate protocol registry closure\",\nscripts/hepta-docs.py:1244:    protocols = d[\"protocols\"][\"protocols\"]\nscripts/hepta-docs.py:1245:    pids = {x[\"id\"] for x in protocols}\nscripts/hepta-docs.py:1246:    need(len(pids) == len(protocols), \"protocol IDs\")\nscripts/hepta-docs.py:1247:    for p in protocols:\nscripts/hepta-docs.py:1252:            \"protocol \" + p[\"id\"],\nscripts/hepta-docs.py:1255:        need(len(names) == len(set(names)), \"protocol duplicate field \" + p[\"id\"])\nscripts/hepta-docs.py:1396:        \"adaptive protocol closure\",\nscripts/hepta-docs.py:1408:        and sub[\"readiness_protocols\"][\"protocols\"]\nscripts/hepta-docs.py:1504:                \"protocols\": len(protocols),\nscripts/hepta-docs.py:1512:                \"readinessProtocols\": len(sub[\"readiness_protocols\"][\"protocols\"]),\nscripts/test_hepta_objective_contracts.py:21:            p for p in registry[\"protocols\"] if p[\"id\"] == \"ObjectiveSourceEnvelopeV1\"\nscripts/test_hepta_objective_contracts.py:36:        # The canonical protocol now records cross-field capacity as a compact\nscripts/test_hepta_objective_contracts.py:48:            p for p in schemas[\"protocols\"] if p[\"id\"] == \"ObjectiveFunctionV1\"\nscripts/hepta-readiness.py:164:    \"\"\"Validate one closed, finite readiness-protocol field schema.\"\"\"\nscripts/hepta-readiness.py:435:    readiness: dict[str, Any], protocols: dict[str, Any], gaps: dict[str, Any]\nscripts/hepta-readiness.py:452:            f\"- Typed readiness protocols: **{len(protocols['protocols'])}**\",\nscripts/hepta-readiness.py:484:    row: dict[str, Any], protocol_ids: set[str], gap_ids: set[str]\nscripts/hepta-readiness.py:497:        \"## Appendix A. Closed gap and protocol mapping\" in text,\nscripts/hepta-readiness.py:500:    for protocol_id in row[\"protocols\"]:\nscripts/hepta-readiness.py:502:            protocol_id in protocol_ids, row[\"id\"] + \" unknown protocol \" + protocol_id\nscripts/hepta-readiness.py:504:        need(protocol_id in text, row[\"id\"] + \" protocol not cited \" + protocol_id)\nscripts/hepta-readiness.py:512:    protocols = load(PROTOCOL_PATH)\nscripts/hepta-readiness.py:526:        protocols.get(\"schema\") == \"hepta.implementation-readiness-protocol-registry.v1\"\nscripts/hepta-readiness.py:527:        and has_schema_version(protocols, 1),\nscripts/hepta-readiness.py:528:        \"protocol schema\",\nscripts/hepta-readiness.py:537:        (\"protocols\", protocols),\nscripts/hepta-readiness.py:577:    protocol_rows = protocols.get(\"protocols\", [])\nscripts/hepta-readiness.py:578:    actual_protocol_ids = [row[\"id\"] for row in protocol_rows]\nscripts/hepta-readiness.py:579:    protocol_id_set = set(actual_protocol_ids)\nscripts/hepta-readiness.py:581:        actual_protocol_ids and len(actual_protocol_ids) == len(protocol_id_set),\nscripts/hepta-readiness.py:582:        \"protocol registry ids\",\nscripts/hepta-readiness.py:585:        protocols.get(\"defaults\")\nscripts/hepta-readiness.py:591:        \"protocol defaults\",\nscripts/hepta-readiness.py:593:    rules = protocols.get(\"rules\", {})\nscripts/hepta-readiness.py:601:        \"protocol rules\",\nscripts/hepta-readiness.py:606:    for row in protocol_rows:\nscripts/hepta-readiness.py:637:            pid + \" bounded protocol posture\",\nscripts/hepta-readiness.py:664:        \"protocol bounded-object schemas\",\nscripts/hepta-readiness.py:685:                    \"protocols\",\nscripts/hepta-readiness.py:698:        need(set(row[\"protocols\"]) <= protocol_id_set, row[\"id\"] + \" protocols\")\nscripts/hepta-readiness.py:741:                    \"protocols\",\nscripts/hepta-readiness.py:753:        need(set(row[\"protocols\"]) <= protocol_id_set, row[\"id\"] + \" protocol bindings\")\nscripts/hepta-readiness.py:763:        validate_markdown_document(row, protocol_id_set, set(gap_ids))\nscripts/hepta-readiness.py:874:            mid + \" owned protocol projection\",\nscripts/hepta-readiness.py:878:            mid + \" consumed protocol projection\",\nscripts/hepta-readiness.py:963:            \"protocolCount\": len(protocol_rows),\nscripts/hepta-readiness.py:1033:        == status_text(readiness, protocols, gaps),\nscripts/hepta-readiness.py:1043:                \"protocols\": len(protocol_rows),\nscripts/hepta-module-docs.py:177:    protocols = load(\"docs/contracts/PROTOCOL_SCHEMAS.json\")[\"protocols\"]\nscripts/hepta-module-docs.py:255:            protocols=sorted(\nscripts/hepta-module-docs.py:256:                p[\"id\"] for p in protocols if p.get(\"contractId\") in touched\nscripts/hepta-module-docs.py:303:    protocols = load(\"docs/contracts/PROTOCOL_SCHEMAS.json\")[\"protocols\"]\nscripts/hepta-module-docs.py:421:        proto = sorted(p[\"id\"] for p in protocols if p.get(\"contractId\") in touched)\nscripts/hepta-module-docs.py:433:            \"protocols\": proto,\n.github/workflows/rust-release-argument-comment-lint.yml:82:          cargo install --locked cargo-dylint --version \"$CARGO_DYLINT_VERSION\" --root \"$install_root\"\n.github/workflows/rust-release-argument-comment-lint.yml:83:          cargo install --locked dylint-link --version \"$DYLINT_LINK_VERSION\"\n.github/workflows/single-main-foundation.yml:138:          tool: just@1.51.0,cargo-nextest\nscripts/hepta-lane-d-semantic-conformance.py:300:            \"## Appendix A. Closed gap and protocol mapping\",\nscripts/hepta-lane-d-semantic-conformance.py:306:            \"## Appendix A. Closed gap and protocol mapping\",\nscripts/hepta-lane-d-semantic-conformance.py:340:    protocols = load(\"docs/readiness/LANE_D_PROTOCOLS.json\")\nscripts/hepta-lane-d-semantic-conformance.py:341:    need(protocols.get(\"authorityDelta\") == \"none\", \"protocol authority delta\")\nscripts/hepta-lane-d-semantic-conformance.py:345:            for row in protocols[\"protocols\"]\nscripts/hepta-lane-d-semantic-conformance.py:347:        \"positive protocol authority\",\n.github/workflows/hepta-app-server-schema-refresh.yml:9:      - codex-rs/app-server-protocol/**\n.github/workflows/hepta-app-server-schema-refresh.yml:26:    name: Generate schemas and run complete protocol tests\n.github/workflows/hepta-app-server-schema-refresh.yml:110:              {\"name\": \"owning-tests\", \"argv\": [\"just\", \"test\", \"-p\", \"codex-app-server-protocol\"], \"exit_code\": None},\n.github/workflows/hepta-app-server-schema-refresh.yml:142:          schema = Path(\"codex-rs/app-server-protocol/schema\")\n.github/workflows/rust-ci-full.yml:90:          cargo install --locked cargo-dylint --version \"$CARGO_DYLINT_VERSION\"\n.github/workflows/rust-ci-full.yml:91:          cargo install --locked dylint-link --version \"$DYLINT_LINK_VERSION\"\n.github/workflows/hepta-consolidated-source.yml:76:            codex-rs/core/ codex-rs/common/ codex-rs/protocol/ \\\nscripts/mcp_conformance/codex_conformance_adapter.py:706:    protocol_version = _required_env(\"MCP_CONFORMANCE_PROTOCOL_VERSION\")\nscripts/mcp_conformance/codex_conformance_adapter.py:742:        if protocol_version == MODERN_VERSION and enable_modern_feature:\nscripts/mcp_conformance/codex_conformance_adapter.py:877:            if protocol_version == MODERN_VERSION and enable_modern_feature:\nscripts/mcp_conformance/codex_conformance_adapter.py:964:        \"protocolVersion\": protocol_version,\nscripts/test_hepta_module_projection_membership.py:38:            (\"contracts/PROTOCOL_SCHEMAS.json\", \"protocols\"),\nscripts/mcp_conformance/official_conformance.py:28:OFFICIAL_CONFORMANCE_REPOSITORY = \"modelcontextprotocol/conformance\"\nscripts/mcp_conformance/official_conformance.py:103:# These scenarios cover separately negotiated protocol extensions rather than\nscripts/mcp_conformance/official_conformance.py:192:        raise ValueError(f\"unsupported MCP protocol version: {mode}\")\nscripts/mcp_conformance/official_conformance.py:230:            f\"requested scenarios are unavailable for MCP protocol version {mode}: \"\nscripts/mcp_conformance/test_server.py:54:        \"io.modelcontextprotocol/protocolVersion\": version,\nscripts/mcp_conformance/test_server.py:55:        \"io.modelcontextprotocol/clientInfo\": {\nscripts/mcp_conformance/test_server.py:59:        \"io.modelcontextprotocol/clientCapabilities\": capabilities or {},\nscripts/mcp_conformance/test_server.py:103:                \"protocolVersion\": version,\nscripts/mcp_conformance/test_server.py:131:        \"io.modelcontextprotocol/serverInfo\": {\nscripts/mcp_conformance/test_server.py:161:        \"message\": \"Unsupported protocol version\",\nscripts/mcp_conformance/test_server.py:186:def test_shipping_legacy_mode_negotiates_the_real_product_protocol() -> None:\nscripts/mcp_conformance/test_server.py:194:                \"protocolVersion\": SHIPPING_LEGACY_VERSION,\nscripts/mcp_conformance/test_server.py:202:    assert result(plan)[\"protocolVersion\"] == \"2025-06-18\"\nscripts/mcp_conformance/test_server.py:230:def test_cli_accepts_the_shipping_legacy_protocol_mode() -> None:\nscripts/mcp_conformance/test_server.py:274:        \"io.modelcontextprotocol/serverInfo\": {\nscripts/mcp_conformance/test_server.py:328:            notification[\"params\"][\"_meta\"][\"io.modelcontextprotocol/subscriptionId\"]\nscripts/mcp_conformance/test_server.py:331:    assert result(plan)[\"_meta\"][\"io.modelcontextprotocol/subscriptionId\"] == 42\nscripts/mcp_conformance/test_server.py:342:                \"io.modelcontextprotocol/logLevel\": \"info\",\nscripts/mcp_conformance/test_server.py:371:                \"protocolVersion\": LEGACY_VERSION,\nscripts/mcp_conformance/test_server.py:395:def test_stdio_negotiates_and_lists_tools_for_the_real_shipping_legacy_protocol() -> (\nscripts/mcp_conformance/test_server.py:402:                \"protocolVersion\": SHIPPING_LEGACY_VERSION,\nscripts/mcp_conformance/test_server.py:425:    assert responses[0][\"result\"][\"protocolVersion\"] == \"2025-06-18\"\nscripts/mcp_conformance/test_server.py:522:                        \"protocolVersion\": mode,\nscripts/mcp_conformance/test_server.py:585:        \"review_protocol_env\",\nscripts/mcp_conformance/test_server.py:885:def test_review_protocol_env_is_available_to_a_legacy_client() -> None:\nscripts/mcp_conformance/test_server.py:891:    assert any(tool[\"name\"] == \"review_protocol_env\" for tool in tools[\"tools\"])\nscripts/mcp_conformance/test_server.py:899:                params={\"name\": \"review_protocol_env\", \"arguments\": {}},\nscripts/mcp_conformance/test_server.py:907:def test_review_protocol_env_is_available_to_the_shipping_legacy_client() -> None:\nscripts/mcp_conformance/test_server.py:913:    assert any(tool[\"name\"] == \"review_protocol_env\" for tool in tools[\"tools\"])\nscripts/mcp_conformance/test_server.py:921:                params={\"name\": \"review_protocol_env\", \"arguments\": {}},\nscripts/mcp_conformance/test_server.py:929:def test_review_protocol_env_is_available_to_a_modern_client() -> None:\nscripts/mcp_conformance/test_server.py:938:                    \"name\": \"review_protocol_env\",\nscripts/mcp_conformance/test_server.py:1085:                        \"protocolVersion\": mode,\nscripts/mcp_conformance/test_server.py:1094:            assert body[\"result\"][\"protocolVersion\"] == mode\nscripts/mcp_conformance/test_server.py:1283:                \"protocolVersion\": LEGACY_VERSION,\nscripts/mcp_conformance/test_server.py:1290:        assert body[\"result\"][\"protocolVersion\"] == LEGACY_VERSION\nscripts/mcp_conformance/test_server.py:1331:                    \"protocolVersion\": SHIPPING_LEGACY_VERSION,\nscripts/mcp_conformance/test_server.py:1341:        assert body[\"result\"][\"protocolVersion\"] == \"2025-06-18\"\nscripts/mcp_conformance/README.md:5:intermediate `2025-11-25`, and modern `2026-07-28` protocols, localhost HTTP,\nscripts/mcp_conformance/README.md:9:`modelcontextprotocol/conformance@49103de6ed70804e940637bf3e9e29e4a3f54e64`.\nscripts/mcp_conformance/README.md:26:  --conformance-cli node_modules/@modelcontextprotocol/conformance/dist/index.js \\\nscripts/mcp_conformance/README.md:38:revision, required protocol versions, HTTP and stdio transports, enabled modern\nscripts/mcp_conformance/README.md:44:- The shipping legacy, intermediate, and modern protocols are actually tested.\nscripts/mcp_conformance/README.md:71:shipping, legacy, and modern protocol modes. It covers stdio and localhost\n.github/workflows/hepta-offline-build-inputs.yml:95:            https://github.com/nextest-rs/nextest/releases/download/cargo-nextest-0.9.103/cargo-nextest-0.9.103-x86_64-unknown-linux-gnu.tar.gz\n.github/workflows/hepta-offline-build-inputs.yml:100:          tar -xOzf nextest.tar.gz cargo-nextest > bin/cargo-nextest\n.github/workflows/hepta-offline-build-inputs.yml:101:          chmod 0755 bin/just bin/cargo-nextest\nscripts/hepta-launchd-cutover-bridge:2320:  local contract='{\"authority\":{\"automatic_transition\":false,\"enforce\":false,\"model_invocation\":false,\"operator_mutation\":false,\"outbound\":false,\"promotion\":false,\"retirement\":false,\"telegram\":false},\"protocol_version\":1,\"routes\":[\"GET /\",\"GET /api/hepta/runtime\",\"GET /healthz\"],\"runtime\":{\"keyed_integrity_required\":true,\"loopback_only\":true,\"open_mode\":\"immutable-query-only-open-existing\",\"read_only\":true,\"requires_empty_wal\":true,\"schema_version\":5},\"schema\":\"hepta_vnext_live_shell_contract_v1\",\"status\":\"ready\"}'\nscripts/mcp_conformance/server.py:2:\"\"\"MCP test server for shipping and draft legacy protocols and MCP 2026-07-28.\"\"\"\nscripts/mcp_conformance/server.py:65:    \"io.modelcontextprotocol/serverInfo\": {\nscripts/mcp_conformance/server.py:236:                    \"name\": \"review_protocol_env\",\nscripts/mcp_conformance/server.py:237:                    \"description\": \"Report the MCP protocol-version environment variable.\",\nscripts/mcp_conformance/server.py:392:        version = meta.get(\"io.modelcontextprotocol/protocolVersion\")\nscripts/mcp_conformance/server.py:393:        capabilities = meta.get(\"io.modelcontextprotocol/clientCapabilities\")\nscripts/mcp_conformance/server.py:399:                    \"_meta must include protocolVersion and clientCapabilities\",\nscripts/mcp_conformance/server.py:408:                    \"Unsupported protocol version\",\nscripts/mcp_conformance/server.py:495:            requested_version = params.get(\"protocolVersion\")\nscripts/mcp_conformance/server.py:501:                        \"initialize requires protocolVersion\",\nscripts/mcp_conformance/server.py:509:                        \"protocolVersion\": self.mode,\nscripts/mcp_conformance/server.py:675:            if isinstance(request_meta.get(\"io.modelcontextprotocol/logLevel\"), str):\nscripts/mcp_conformance/server.py:707:        elif name == \"review_protocol_env\":\nscripts/mcp_conformance/server.py:801:            \"io.modelcontextprotocol/clientCapabilities\", {}\nscripts/mcp_conformance/server.py:902:            \"io.modelcontextprotocol/clientCapabilities\", {}\nscripts/mcp_conformance/server.py:950:            \"io.modelcontextprotocol/clientCapabilities\", {}\nscripts/mcp_conformance/server.py:1188:            \"io.modelcontextprotocol/subscriptionId\": request_id,\nscripts/mcp_conformance/server.py:1225:            \"io.modelcontextprotocol/subscriptionId\": request_id,\nscripts/mcp_conformance/server.py:1273:    header_version = normalized.get(\"mcp-protocol-version\")\nscripts/mcp_conformance/server.py:1277:        body_version = meta.get(\"io.modelcontextprotocol/protocolVersion\")\n.github/workflows/ui-product-foundation.yml:124:          cargo install just --locked --version 1.58.0 --root \"$TOOL_ROOT\"\n.github/workflows/ui-product-foundation.yml:132:          test -x \"$TOOL_ROOT/bin/cargo-nextest\"\n.github/workflows/ui-product-foundation.yml:135:          test \"$(command -v cargo-nextest)\" = \"$TOOL_ROOT/bin/cargo-nextest\"\n.github/workflows/ui-product-foundation.yml:138:          cargo nextest --version | grep -E '^cargo-nextest 0\\.9\\.146([[:space:]]|$)'\n.github/workflows/ui-product-foundation.yml:454:          cargo install just --locked --version 1.58.0 --root \"$TOOL_ROOT\"\nscripts/mcp_conformance/regression-baseline-v1.json:4144:    \"repository\": \"modelcontextprotocol/conformance\",\n.github/workflows/hepta-gap-agentd-process.yml:49:            --package codex-hepta-agent-protocol --package codex-hepta-cognitive-read \\\n.github/workflows/hepta-gap-agentd-process.yml:73:            -p codex-hepta-agent-protocol --test-threads=2\nscripts/mcp_conformance/test_codex_compliance.py:153:    assert \"protocol opt-in\" in detail\nscripts/mcp_conformance/run_codex_compliance.py:88:    \"app_server_protocol\",\nscripts/mcp_conformance/run_codex_compliance.py:157:    \"\"\"Minimal JSONL client for the Codex app-server protocol.\"\"\"\nscripts/mcp_conformance/run_codex_compliance.py:537:            return False, \"modern stdio registration omitted its protocol opt-in\"\nscripts/mcp_conformance/run_codex_compliance.py:541:                \"legacy stdio registration unexpectedly enabled the modern protocol\",\nscripts/mcp_conformance/run_codex_compliance.py:882:        and structured.get(\"io.modelcontextprotocol/protocolVersion\") == MODERN_VERSION\nscripts/mcp_conformance/run_codex_compliance.py:884:            structured.get(\"io.modelcontextprotocol/clientCapabilities\"),\nscripts/mcp_conformance/run_codex_compliance.py:906:            \"io.modelcontextprotocol/logLevel\": \"info\",\nscripts/mcp_conformance/run_codex_compliance.py:1065:                    case.check(\"app_server_protocol\", False, str(exc))\nscripts/mcp_conformance/run_codex_compliance.py:1445:    # protocol assertion, so prefer the upstream check ID when it exists.\nscripts/mcp_conformance/run_codex_compliance.py:1868:        print(\"\\nPass rates by protocol mode\")\nscripts/mcp_conformance/test_review_regressions.py:141:def test_review_matrix_includes_the_actual_shipping_legacy_protocol() -> None:\nscripts/mcp_conformance/test_review_regressions.py:218:def test_shipping_legacy_registration_preserves_the_reserved_protocol_environment() -> (\nscripts/mcp_conformance/test_review_regressions.py:249:def test_modern_registration_explicitly_opts_into_the_modern_protocol() -> None:\nscripts/mcp_conformance/test_review_regressions.py:274:def test_review_cli_supports_the_real_shipping_protocol_and_json_report() -> None:\n.github/workflows/python-sdk-release.yml:204:              /tmp/release-tools/bin/python -m pip install build twine uv==0.11.3\nscripts/test_run_nextest.py:71:    shutil.which(\"cargo\") and shutil.which(\"cargo-nextest\"),\nscripts/mcp_conformance/review_regressions.py:55:LEGACY_ENVIRONMENT_SENTINEL = \"review-legacy-protocol-environment\"\nscripts/mcp_conformance/review_regressions.py:127:        protocol_environment = (\nscripts/mcp_conformance/review_regressions.py:133:                f\"CODEX_MCP_PROTOCOL_VERSION={protocol_environment}\",\nscripts/mcp_conformance/review_regressions.py:325:            \"review_protocol_env\",\nscripts/mcp_conformance/review_regressions.py:375:            tool=\"review_protocol_env\",\nscripts/mcp_conformance/review_regressions.py:388:            \"forwarded the explicitly configured legacy protocol environment unchanged\"\nscripts/mcp_conformance/review_regressions.py:876:        errors.append(f\"{label} does not run all three required MCP protocol modes\")\n.github/workflows/issue-labeler.yml:52:            - For agent-area issues, prefer the most specific applicable label. Use \"agent\" only as a fallback for agent-related issues that do not fit a more specific agent-area label. Prefer \"app-server\" over \"session\" or \"config\" when the issue is about app-server protocol, API, RPC, schema, launch, or bridge behavior. Use \"memory\" for agentic memory storage/retrieval and \"performance\" for high process memory utilization or memory leaks.\n.github/workflows/issue-labeler.yml:70:            18. app-server - Issues involving the app-server protocol or interfaces, including SDK/API payloads, thread/* and turn/* RPCs, app-server launch behavior, external app/controller bridges, and app-server protocol/schema behavior.\nscripts/mcp_conformance/test_official_conformance.py:444:def test_pinned_full_scenarios_are_selected_by_protocol_version() -> None:\nscripts/mcp_conformance/test_official_conformance.py:502:def test_versioned_scenario_selection_rejects_an_incompatible_protocol(\nscripts/mcp_conformance/test_official_conformance.py:507:        match=rf\"unavailable for MCP protocol version {mode}.*{scenario}\",\nscripts/mcp_conformance/test_official_conformance.py:554:        \"requested scenarios are unavailable for MCP protocol version 2025-06-18: \"\n.github/workflows/hepta-browser-servo-worker-dev.yml:99:      - name: Exercise Browser owner, protocol and isolation tests\nscripts/test_hepta_algorithm_semantics.py:44:            \"requiredProtocols\": [\"fixture.protocol\"],\nscripts/test_hepta_algorithm_semantics.py:73:    def test_editorial_revisions_preserve_module_and_protocol_ownership(self):\nscripts/test_hepta_algorithm_semantics.py:89:    def test_missing_protocol_authority_and_empty_document_are_rejected(self):\nscripts/test_hepta_algorithm_semantics.py:93:        with self.assertRaisesRegex(SystemExit, \"protocol authority boundary\"):\nscripts/test_hepta_algorithm_semantics.py:145:            (\"requiredProtocolIds\", [], \"receipt protocols\"),\n.github/workflows/rust-ci.yml:216:          cargo install --locked cargo-dylint --version \"$CARGO_DYLINT_VERSION\"\n.github/workflows/rust-ci.yml:217:          cargo install --locked dylint-link --version \"$DYLINT_LINK_VERSION\"\nscripts/hepta-algorithm-docs.py:342:def protocol_authority_boundary(text: str) -> bool:\nscripts/hepta-algorithm-docs.py:370:    need(protocol_authority_boundary(text), doc_id + \" protocol authority boundary\")\nscripts/hepta-algorithm-docs.py:438:        f\"- Canonical adaptive protocols: **{len(registry['requiredProtocols'])}**\",\nscripts/hepta-algorithm-docs.py:818:    protocols = load(PROTOCOLS_PATH)\nscripts/hepta-algorithm-docs.py:905:    protocol_ids = {row[\"id\"] for row in protocols[\"protocols\"]}\nscripts/hepta-algorithm-docs.py:907:    required_protocols = registry.get(\"requiredProtocols\")\nscripts/hepta-algorithm-docs.py:910:        isinstance(required_protocols, list)\nscripts/hepta-algorithm-docs.py:911:        and bool(required_protocols)\nscripts/hepta-algorithm-docs.py:912:        and len(required_protocols) == len(set(required_protocols)),\nscripts/hepta-algorithm-docs.py:913:        \"protocol closure registry\",\nscripts/hepta-algorithm-docs.py:921:    need(set(required_protocols).issubset(contract_ids), \"required contract missing\")\nscripts/hepta-algorithm-docs.py:923:        set(required_protocols).issubset(protocol_ids),\nscripts/hepta-algorithm-docs.py:924:        \"required protocol schema missing\",\nscripts/hepta-algorithm-docs.py:930:    protocol_rows = {row[\"id\"]: row for row in protocols[\"protocols\"]}\nscripts/hepta-algorithm-docs.py:931:    for protocol_id in required_protocols:\nscripts/hepta-algorithm-docs.py:932:        row = protocol_rows[protocol_id]\nscripts/hepta-algorithm-docs.py:933:        need(row[\"contractId\"] == protocol_id, protocol_id + \" contract identity\")\nscripts/hepta-algorithm-docs.py:936:            protocol_id + \" unknown-field policy\",\nscripts/hepta-algorithm-docs.py:938:        need(row[\"maximumEncodedBytes\"] > 0 and row[\"fields\"], protocol_id + \" bounds\")\nscripts/hepta-algorithm-docs.py:940:        need(len(names) == len(set(names)), protocol_id + \" duplicate field\")\nscripts/hepta-algorithm-docs.py:1059:                \"protocols\": len(required_protocols),\nscripts/hepta-algorithm-docs.py:1099:        \"Canonical production protocols remain owned by \"\nscripts/hepta-algorithm-docs.py:1103:        protocol_authority_boundary(authority_fixture),\nscripts/hepta-algorithm-docs.py:1104:        \"canonical protocol authority fixture\",\nscripts/hepta-algorithm-docs.py:1110:            not protocol_authority_boundary(candidate),\nscripts/hepta-algorithm-docs.py:1111:            \"hostile protocol authority fixture accepted: \" + name,\nscripts/hepta-algorithm-docs.py:1116:        \"abbreviated_protocol_schema\",\nscripts/hepta-algorithm-docs.py:1124:        \"wrong_protocol_directory\",\nscripts/hepta-algorithm-docs.py:1130:        \"unquoted_canonical_protocol_path\",\nscripts/hepta-algorithm-docs.py:1328:        \"receipt protocols\",\n.github/workflows/hepta-browser-agentd-composition.yml:34:      - name: Verify Browser private-parent protocol tests\nscripts/test_hepta_readiness_semantics.py:31:            \"protocols\": [\"FixtureProtocolV1\"],\nscripts/test_hepta_readiness_semantics.py:37:            \"## Appendix A. Closed gap and protocol mapping\\n\"\nscripts/test_hepta_readiness_semantics.py:42:    def verify(self, protocols=None, gaps=None):\nscripts/test_hepta_readiness_semantics.py:46:                {\"FixtureProtocolV1\"} if protocols is None else protocols,\nscripts/test_hepta_readiness_semantics.py:65:    def test_unknown_or_uncited_protocol_and_gap_still_reject(self):\nscripts/test_hepta_readiness_semantics.py:66:        for protocols, gaps, message in [\nscripts/test_hepta_readiness_semantics.py:67:            (set(), {\"GAP-TEST\"}, \"unknown protocol\"),\nscripts/test_hepta_readiness_semantics.py:72:                    self.verify(protocols, gaps)\nscripts/test_hepta_readiness_semantics.py:74:            (\"FixtureProtocolV1\", \"protocol not cited\"),\nscripts/lane_a_foundation_core.py:253:        or v1.get(\"protocol\") != \"HPTA\"\nscripts/lane_a_foundation_core.py:274:        or v2.get(\"protocol\") != \"HPTA\"\nscripts/lane_a_foundation_core.py:295:        or hptn.get(\"protocol\") != \"HPTN\"\nscripts/hepta-cns.py:236:    arch: dict[str, Any], protocols: dict[str, Any], gaps: dict[str, Any]\nscripts/hepta-cns.py:257:            f\"- Typed cross-organ protocols: **{len(protocols['protocols'])}**\",\nscripts/hepta-cns.py:274:    protocols = load(PROTOCOL_PATH)\nscripts/hepta-cns.py:287:        protocols.get(\"schema\") == \"hepta.cns-organ-protocol-registry.v1\"\nscripts/hepta-cns.py:288:        and has_schema_version(protocols, 1),\nscripts/hepta-cns.py:289:        \"protocol schema\",\nscripts/hepta-cns.py:298:        (\"protocols\", protocols),\nscripts/hepta-cns.py:382:    prows = protocols[\"protocols\"]\nscripts/hepta-cns.py:384:    need(pids == REQUIRED_PROTOCOLS and len(set(pids)) == 15, \"protocol closed world\")\nscripts/hepta-cns.py:387:            list(row) == [\"id\", \"owner\", \"requiredFields\"], row[\"id\"] + \" protocol keys\"\nscripts/hepta-cns.py:398:        protocols[\"rules\"][\"queueAckMayEqualTerminalSuccess\"] is False,\nscripts/hepta-cns.py:402:        protocols[\"rules\"][\"modelOutputMayMintAuthority\"] is False,\nscripts/hepta-cns.py:481:        == status_text(arch, protocols, gaps),\nscripts/hepta-cns.py:489:                \"protocols\": 15,\nscripts/hepta-cns.py:573:        \"protocolSha256\": hashlib.sha256(\nscripts/hepta-cns.py:604:        (\"protocolSha256\", PROTOCOL_PATH),\n.github/workflows/sdk.yml:35:              /tmp/uv/bin/python -m pip install uv==0.11.3\nscripts/hepta-hnmf.py:282:    protocol_schemas = load_json(\"docs/contracts/PROTOCOL_SCHEMAS.json\")\nscripts/hepta-hnmf.py:301:        [item.get(\"id\") for item in spec.get(\"protocols\", [])] == PROTOCOLS,\nscripts/hepta-hnmf.py:302:        \"protocol closure\",\nscripts/hepta-hnmf.py:304:    canonical_protocols = {\nscripts/hepta-hnmf.py:305:        item.get(\"id\"): item for item in protocol_schemas.get(\"protocols\", [])\nscripts/hepta-hnmf.py:352:    canonical_protocol_ids = {\nscripts/hepta-hnmf.py:353:        item.get(\"id\") for item in protocol_schemas.get(\"protocols\", [])\nscripts/hepta-hnmf.py:359:            if row.get(\"kind\") == \"typed_protocol\"\nscripts/hepta-hnmf.py:366:            set(actual) <= canonical_protocol_ids,\nscripts/hepta-hnmf.py:373:    for item in spec[\"protocols\"]:\nscripts/hepta-hnmf.py:374:        protocol_id = item[\"id\"]\nscripts/hepta-hnmf.py:375:        canonical = canonical_protocols.get(protocol_id)\nscripts/hepta-hnmf.py:376:        need(canonical is not None, protocol_id + \" global protocol registration\")\nscripts/hepta-hnmf.py:384:            protocol_id + \" encoded-byte bound projection\",\nscripts/hepta-hnmf.py:388:            protocol_id + \" required-field projection\",\nscripts/hepta-hnmf.py:390:        contract = contract_rows.get(protocol_id)\nscripts/hepta-hnmf.py:391:        need(contract is not None, protocol_id + \" typed-contract registration\")\nscripts/hepta-hnmf.py:394:            if protocol_id == \"TopologyProposalV1\"\nscripts/hepta-hnmf.py:399:            protocol_id + \" canonical producer\",\nscripts/hepta-hnmf.py:517:    for protocol_id in PROTOCOLS:\nscripts/hepta-hnmf.py:519:            f\"decode_wire_v1::<{protocol_id}>\" in fuzz_source,\nscripts/hepta-hnmf.py:520:            protocol_id + \" fuzz decoder coverage\",\nscripts/hepta-hnmf.py:576:                \"protocols\": len(PROTOCOLS),\n"
+    },
+    {
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/project-tool-recipes.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "content": "",
+      "content_basis": "Original terminal records zero bytes and SHA256(empty)."
+    },
+    {
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/rust-1.95-existing.stdout",
+      "bytes": 196,
+      "sha256": "4fdff2578428e9c5c08ddd7a0d3079c1a106b1cdaa46e73e46f7cd32b0fb9cad",
+      "content": "rustc 1.95.0 (59807616e 2026-04-14)\nbinary: rustc\ncommit-hash: 59807616e1fa2540724bfbac14d7976d7e4a3860\ncommit-date: 2026-04-14\nhost: x86_64-unknown-linux-gnu\nrelease: 1.95.0\nLLVM version: 22.1.2\n"
+    },
+    {
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/rust-1.95-existing.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "content": "",
+      "content_basis": "Original terminal records zero bytes and SHA256(empty)."
+    },
+    {
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/tool-bootstrap/head-guard.stdout",
+      "bytes": 41,
+      "sha256": "8ab9b93605942fba7003b66d39c55d96802c3a9c88431ee67a03b37c9e4846f5",
+      "content": "cabcb40d36e116beaa65750e1f674c52035da785\n"
+    },
+    {
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/tool-bootstrap/head-guard.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "content": "",
+      "content_basis": "Original terminal records zero bytes and SHA256(empty)."
+    },
+    {
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/tool-bootstrap/tree-guard.stdout",
+      "bytes": 41,
+      "sha256": "f13a9167dfe238d195cfb1aad17594fbfb55aa47956d308804b3374e220507c2",
+      "content": "b2d7f038d6d88156bc6a4cb29c8703f69b808f29\n"
+    },
+    {
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/tool-bootstrap/tree-guard.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "content": "",
+      "content_basis": "Original terminal records zero bytes and SHA256(empty)."
+    },
+    {
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/tool-bootstrap/initial-clean.stdout",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "content": "",
+      "content_basis": "Original terminal records zero bytes and SHA256(empty)."
+    },
+    {
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/tool-bootstrap/initial-clean.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "content": "",
+      "content_basis": "Original terminal records zero bytes and SHA256(empty)."
+    },
+    {
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/tool-bootstrap/just-version.stdout",
+      "bytes": 12,
+      "sha256": "4e91345369534015fde1a3e2fed862ad938bcfda47b993eb02536f7b3f095b87",
+      "content": "just 1.51.0\n"
+    },
+    {
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/tool-bootstrap/just-version.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "content": "",
+      "content_basis": "Original terminal records zero bytes and SHA256(empty)."
+    },
+    {
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/tool-bootstrap/nextest-version.stdout",
+      "bytes": 171,
+      "sha256": "13fae229b3f8485e0d02d80bf3c77e6cd38a2a2f1227d3e70a880cfb49365f61",
+      "content": "cargo-nextest 0.9.103 (d2e7b879f 2025-08-25)\nrelease: 0.9.103\ncommit-hash: d2e7b879fb79975e8b47a8e3ce569b651e6381c0\ncommit-date: 2025-08-25\nhost: x86_64-unknown-linux-gnu\n"
+    },
+    {
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/tool-bootstrap/nextest-version.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "content": "",
+      "content_basis": "Original terminal records zero bytes and SHA256(empty)."
+    },
+    {
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/tool-bootstrap/uv-venv.stdout",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "content": "",
+      "content_basis": "Original terminal records zero bytes and SHA256(empty)."
+    },
+    {
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/tool-bootstrap/uv-venv.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "content": "",
+      "content_basis": "Original terminal records zero bytes and SHA256(empty)."
+    },
+    {
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/tool-bootstrap/uv-install.stdout",
+      "bytes": 434,
+      "sha256": "bdd16b16a36bf446351f17ff3f06e23084d106eb90d9f99b4f95d62d512ca91f",
+      "content": "Collecting uv==0.11.3\n  Downloading uv-0.11.3-py3-none-manylinux_2_17_x86_64.manylinux2014_x86_64.whl.metadata (11 kB)\nDownloading uv-0.11.3-py3-none-manylinux_2_17_x86_64.manylinux2014_x86_64.whl (24.6 MB)\n   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 24.6/24.6 MB 302.6 kB/s eta 0:00:00\nInstalling collected packages: uv\nSuccessfully installed uv-0.11.3\n"
+    },
+    {
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/tool-bootstrap/uv-install.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "content": "",
+      "content_basis": "Original terminal records zero bytes and SHA256(empty)."
+    },
+    {
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/tool-bootstrap/uv-version.stdout",
+      "bytes": 37,
+      "sha256": "cbaa487aa52e8dacd228992f11a8a49459a06b479806187cb00a93c880b5460e",
+      "content": "uv 0.11.3 (x86_64-unknown-linux-gnu)\n"
+    },
+    {
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/tool-bootstrap/uv-version.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "content": "",
+      "content_basis": "Original terminal records zero bytes and SHA256(empty)."
+    },
+    {
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/tool-bootstrap/installed-rust-components.stdout",
+      "bytes": 161,
+      "sha256": "e8831f6eab33b6dd0f72364237d8f7a00d762711a08608010877e0ce0b7f667b",
+      "content": "cargo-x86_64-unknown-linux-gnu\nclippy-x86_64-unknown-linux-gnu\nrust-std-x86_64-unknown-linux-gnu\nrustc-x86_64-unknown-linux-gnu\nrustfmt-x86_64-unknown-linux-gnu\n"
+    },
+    {
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/tool-bootstrap/installed-rust-components.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "content": "",
+      "content_basis": "Original terminal records zero bytes and SHA256(empty)."
+    },
+    {
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/tool-bootstrap/rust-version.stdout",
+      "bytes": 196,
+      "sha256": "4fdff2578428e9c5c08ddd7a0d3079c1a106b1cdaa46e73e46f7cd32b0fb9cad",
+      "content": "rustc 1.95.0 (59807616e 2026-04-14)\nbinary: rustc\ncommit-hash: 59807616e1fa2540724bfbac14d7976d7e4a3860\ncommit-date: 2026-04-14\nhost: x86_64-unknown-linux-gnu\nrelease: 1.95.0\nLLVM version: 22.1.2\n"
+    },
+    {
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/tool-bootstrap/rust-version.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "content": "",
+      "content_basis": "Original terminal records zero bytes and SHA256(empty)."
+    },
+    {
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/tool-bootstrap/cargo-version.stdout",
+      "bytes": 36,
+      "sha256": "c10ec31b8c6e6e2693cf65fc1971b41edbc3da1ae7db6f9f3f36c4823f8dcab5",
+      "content": "cargo 1.95.0 (f2d3ce0bd 2026-03-21)\n"
+    },
+    {
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/tool-bootstrap/cargo-version.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "content": "",
+      "content_basis": "Original terminal records zero bytes and SHA256(empty)."
+    },
+    {
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/tool-bootstrap/protoc-build-usage.stdout",
+      "bytes": 169,
+      "sha256": "3d0a857ab84d37826a5c9a0632a3d2f36a257e354760a74a775656a05e75811a",
+      "content": "codex-rs/code-mode-protocol/build.rs:7:    let mut config = tonic_prost_build::Config::new();\ncodex-rs/code-mode-protocol/build.rs:11:    tonic_prost_build::configure()\n"
+    },
+    {
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/tool-bootstrap/protoc-build-usage.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "content": "",
+      "content_basis": "Original terminal records zero bytes and SHA256(empty)."
+    },
+    {
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/tool-bootstrap/cargo-v8-version.stdout",
+      "bytes": 8,
+      "sha256": "ee7db03d6aad33641791469a5cbec6568b2c05c9112d402008801d9714f7e500",
+      "content": "150.4.0\n"
+    },
+    {
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/tool-bootstrap/cargo-v8-version.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "content": "",
+      "content_basis": "Original terminal records zero bytes and SHA256(empty)."
+    },
+    {
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/tool-bootstrap/normal-runtime-tools.stdout",
+      "bytes": 306,
+      "sha256": "fb673d909e633f689c278a24c145cc150743cbba551f1b541dce7b816f76afe6",
+      "content": "{\"node\": \"/usr/bin/node\", \"deno\": null, \"python3\": \"/usr/bin/python3\", \"python\": \"/usr/local/bin/python\", \"bash\": \"/usr/bin/bash\", \"sh\": \"/usr/bin/sh\", \"setsid\": \"/usr/bin/setsid\", \"dotslash\": null, \"protoc\": null, \"clang\": \"/usr/bin/clang\", \"cmake\": \"/usr/bin/cmake\", \"pkg-config\": \"/usr/bin/pkg-config\"}\n"
+    },
+    {
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/tool-bootstrap/normal-runtime-tools.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "content": "",
+      "content_basis": "Original terminal records zero bytes and SHA256(empty)."
+    },
+    {
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/tool-bootstrap/final-clean.stdout",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "content": "",
+      "content_basis": "Original terminal records zero bytes and SHA256(empty)."
+    },
+    {
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/tool-bootstrap/final-clean.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "content": "",
+      "content_basis": "Original terminal records zero bytes and SHA256(empty)."
+    },
+    {
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/v8-runtime-prerequisites/resolved-v8-version.stdout",
+      "bytes": 8,
+      "sha256": "ee7db03d6aad33641791469a5cbec6568b2c05c9112d402008801d9714f7e500",
+      "content": "150.4.0\n"
+    },
+    {
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/v8-runtime-prerequisites/resolved-v8-version.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "content": "",
+      "content_basis": "Original terminal records zero bytes and SHA256(empty)."
+    },
+    {
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/v8-runtime-prerequisites/dotslash-static-usage.stdout",
+      "bytes": 1749,
+      "sha256": "9c4aec733a3ed0d4e4dbdcd59451734ef898c04f01279611823462ecaec26a55",
+      "content": "codex-rs/core/tests/common/zsh_fork.rs:103:    let dotslash_zsh = repo_root.join(\"codex-rs/app-server/tests/suite/zsh\");\ncodex-rs/core/tests/common/zsh_fork.rs:104:    if !dotslash_zsh.is_file() {\ncodex-rs/core/tests/common/zsh_fork.rs:107:            dotslash_zsh.display()\ncodex-rs/core/tests/common/zsh_fork.rs:112:    match crate::fetch_dotslash_file(&dotslash_zsh, /*dotslash_cache*/ None) {\ncodex-rs/core/tests/common/zsh_fork.rs:115:            eprintln!(\"skipping zsh-fork test: failed to fetch zsh via dotslash: {error:#}\");\ncodex-rs/core/tests/common/lib.rs:158:pub fn fetch_dotslash_file(\ncodex-rs/core/tests/common/lib.rs:159:    dotslash_file: &std::path::Path,\ncodex-rs/core/tests/common/lib.rs:160:    dotslash_cache: Option<&std::path::Path>,\ncodex-rs/core/tests/common/lib.rs:162:    let mut command = std::process::Command::new(\"dotslash\");\ncodex-rs/core/tests/common/lib.rs:163:    command.arg(\"--\").arg(\"fetch\").arg(dotslash_file);\ncodex-rs/core/tests/common/lib.rs:164:    if let Some(dotslash_cache) = dotslash_cache {\ncodex-rs/core/tests/common/lib.rs:165:        command.env(\"DOTSLASH_CACHE\", dotslash_cache);\ncodex-rs/core/tests/common/lib.rs:169:            \"failed to run dotslash to fetch resource {}\",\ncodex-rs/core/tests/common/lib.rs:170:            dotslash_file.display()\ncodex-rs/core/tests/common/lib.rs:175:        \"dotslash fetch failed for {}: {}\",\ncodex-rs/core/tests/common/lib.rs:176:        dotslash_file.display(),\ncodex-rs/core/tests/common/lib.rs:180:        .context(\"dotslash fetch output was not utf8\")?\ncodex-rs/core/tests/common/lib.rs:183:    ensure!(!fetched_path.is_empty(), \"dotslash fetch output was empty\");\ncodex-rs/core/tests/common/lib.rs:187:        \"dotslash returned non-file path: {}\",\n"
+    },
+    {
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/v8-runtime-prerequisites/dotslash-static-usage.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "content": "",
+      "content_basis": "Original terminal records zero bytes and SHA256(empty)."
+    },
+    {
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/v8-runtime-prerequisites/node-version.stdout",
+      "bytes": 9,
+      "sha256": "33e26f35db6e57ce0c486ddc815fe966867e4f649e418eaf323f75f4720eb8e9",
+      "content": "v22.23.3\n"
+    },
+    {
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/v8-runtime-prerequisites/node-version.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "content": "",
+      "content_basis": "Original terminal records zero bytes and SHA256(empty)."
+    },
+    {
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/v8-runtime-prerequisites/python-version.stdout",
+      "bytes": 14,
+      "sha256": "63990b3ee50c49ab28d70e29c0f967f0c71330e39243ffeb4d3a8d5878c8a978",
+      "content": "Python 3.14.4\n"
+    },
+    {
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/v8-runtime-prerequisites/python-version.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "content": "",
+      "content_basis": "Original terminal records zero bytes and SHA256(empty)."
+    },
+    {
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/v8-runtime-prerequisites/runtime-host-controls.stdout",
+      "bytes": 115,
+      "sha256": "32befefc23eff5efb6500e48dd980d166ace39a39629e20aa0a708ed7afa15f5",
+      "content": "{\"/proc/sys/kernel/unprivileged_userns_clone\": \"1\", \"/proc/sys/kernel/apparmor_restrict_unprivileged_userns\": \"1\"}\n"
+    },
+    {
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/v8-runtime-prerequisites/runtime-host-controls.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "content": "",
+      "content_basis": "Original terminal records zero bytes and SHA256(empty)."
+    },
+    {
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/source-terminal.json",
+      "sha256": "4be5b041f8c6c594827f7997216e2ccfdd7d0694e8331437c17d34942e7b7437",
+      "bytes": 9528,
+      "content": "{\n  \"success\": true,\n  \"source\": \"/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/source\",\n  \"git_head\": \"cabcb40d36e116beaa65750e1f674c52035da785\",\n  \"git_tree\": \"b2d7f038d6d88156bc6a4cb29c8703f69b808f29\",\n  \"original_repo_untouched\": true,\n  \"source_network\": \"Normal HTTPS origin with this host's existing credential resolution; GIT_TERMINAL_PROMPT=0; no transferred credentials.\",\n  \"tool_installation\": \"Not attempted; awaiting original recipe/pin review.\",\n  \"cargo_builds_started\": 0,\n  \"rules\": {\n    \"AGENTS.md\": {\n      \"path\": \"/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/source/AGENTS.md\",\n      \"bytes\": 23303,\n      \"sha256\": \"228165a9ff57b98f101917c4c8086ca76a755bec6c726bb29a4ce74408e2d7f8\"\n    },\n    \"justfile\": {\n      \"path\": \"/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/source/justfile\",\n      \"bytes\": 7838,\n      \"sha256\": \"74f869224eba12fc4212b043428e7f5b35b551d26f5b06161c25d8aca525f124\"\n    },\n    \"codex-rs/rust-toolchain.toml\": {\n      \"path\": \"/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/source/codex-rs/rust-toolchain.toml\",\n      \"bytes\": 78,\n      \"sha256\": \"570656042681cfd8795403a455baf9a33035331a07db0645e866bbcea89a3d64\"\n    },\n    \"codex-rs/.config/nextest.toml\": {\n      \"path\": \"/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/source/codex-rs/.config/nextest.toml\",\n      \"bytes\": 5119,\n      \"sha256\": \"06382b08e92307e57a60b526876aa2114aade193ea48aaac1405b0b015d08ed4\"\n    },\n    \"codex-rs/Cargo.toml\": {\n      \"path\": \"/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/source/codex-rs/Cargo.toml\",\n      \"bytes\": 22548,\n      \"sha256\": \"5e19cb310c4bcabc082619d64a028358d5d629e26c179fb38a00432be8f54a6a\"\n    }\n  },\n  \"existing_1_95_exit\": 0,\n  \"steps\": [\n    {\n      \"name\": \"init\",\n      \"argv\": [\n        \"git\",\n        \"init\",\n        \"/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/source\"\n      ],\n      \"cwd\": \"/home/qian-qi/work/hepta-audit-r3-fullgate-20261104\",\n      \"started_at\": \"2026-11-04T22:03:14.243843+00:00\",\n      \"duration_seconds\": 0.001994345017010346,\n      \"exit_code\": 0,\n      \"stdout\": {\n        \"path\": \"/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/init.stdout\",\n        \"bytes\": 101,\n        \"sha256\": \"0f3b2f560daf3f34278c08b3be900c850af94aa2d3a7f2f8c73be7c5cf5634e5\"\n      },\n      \"stderr\": {\n        \"path\": \"/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/init.stderr\",\n        \"bytes\": 586,\n        \"sha256\": \"3e70934f1909b0f5a846d62237fcc1509d733b9fb0321187024723dfc67176d3\"\n      }\n    },\n    {\n      \"name\": \"origin\",\n      \"argv\": [\n        \"git\",\n        \"remote\",\n        \"add\",\n        \"origin\",\n        \"https://github.com/TrillionniumFoundation/hepta-private-ci.git\"\n      ],\n      \"cwd\": \"/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/source\",\n      \"started_at\": \"2026-11-04T22:03:14.245922+00:00\",\n      \"duration_seconds\": 0.001529477012809366,\n      \"exit_code\": 0,\n      \"stdout\": {\n        \"path\": \"/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/origin.stdout\",\n        \"bytes\": 0,\n        \"sha256\": \"e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855\"\n      },\n      \"stderr\": {\n        \"path\": \"/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/origin.stderr\",\n        \"bytes\": 0,\n        \"sha256\": \"e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855\"\n      }\n    },\n    {\n      \"name\": \"fetch-exact-cabc\",\n      \"argv\": [\n        \"git\",\n        \"fetch\",\n        \"--no-tags\",\n        \"--depth=1\",\n        \"origin\",\n        \"cabcb40d36e116beaa65750e1f674c52035da785\"\n      ],\n      \"cwd\": \"/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/source\",\n      \"started_at\": \"2026-11-04T22:03:14.247475+00:00\",\n      \"duration_seconds\": 10.112770392006496,\n      \"exit_code\": 0,\n      \"stdout\": {\n        \"path\": \"/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/fetch-exact-cabc.stdout\",\n        \"bytes\": 0,\n        \"sha256\": \"e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855\"\n      },\n      \"stderr\": {\n        \"path\": \"/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/fetch-exact-cabc.stderr\",\n        \"bytes\": 140,\n        \"sha256\": \"90c6b2c594846f402ecc6c780c026b0bc40a089e21408df6630bba52bd276606\"\n      }\n    },\n    {\n      \"name\": \"fetched-commit\",\n      \"argv\": [\n        \"git\",\n        \"rev-parse\",\n        \"FETCH_HEAD\"\n      ],\n      \"cwd\": \"/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/source\",\n      \"started_at\": \"2026-11-04T22:03:24.360349+00:00\",\n      \"duration_seconds\": 0.0025829240039456636,\n      \"exit_code\": 0,\n      \"stdout\": {\n        \"path\": \"/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/fetched-commit.stdout\",\n        \"bytes\": 41,\n        \"sha256\": \"8ab9b93605942fba7003b66d39c55d96802c3a9c88431ee67a03b37c9e4846f5\"\n      },\n      \"stderr\": {\n        \"path\": \"/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/fetched-commit.stderr\",\n        \"bytes\": 0,\n        \"sha256\": \"e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855\"\n      }\n    },\n    {\n      \"name\": \"fetched-tree\",\n      \"argv\": [\n        \"git\",\n        \"rev-parse\",\n        \"FETCH_HEAD^{tree}\"\n      ],\n      \"cwd\": \"/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/source\",\n      \"started_at\": \"2026-11-04T22:03:24.363033+00:00\",\n      \"duration_seconds\": 0.0012149989779572934,\n      \"exit_code\": 0,\n      \"stdout\": {\n        \"path\": \"/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/fetched-tree.stdout\",\n        \"bytes\": 41,\n        \"sha256\": \"f13a9167dfe238d195cfb1aad17594fbfb55aa47956d308804b3374e220507c2\"\n      },\n      \"stderr\": {\n        \"path\": \"/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/fetched-tree.stderr\",\n        \"bytes\": 0,\n        \"sha256\": \"e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855\"\n      }\n    },\n    {\n      \"name\": \"checkout\",\n      \"argv\": [\n        \"git\",\n        \"checkout\",\n        \"--detach\",\n        \"cabcb40d36e116beaa65750e1f674c52035da785\"\n      ],\n      \"cwd\": \"/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/source\",\n      \"started_at\": \"2026-11-04T22:03:24.364269+00:00\",\n      \"duration_seconds\": 0.3639803230180405,\n      \"exit_code\": 0,\n      \"stdout\": {\n        \"path\": \"/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/checkout.stdout\",\n        \"bytes\": 0,\n        \"sha256\": \"e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855\"\n      },\n      \"stderr\": {\n        \"path\": \"/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/checkout.stderr\",\n        \"bytes\": 99,\n        \"sha256\": \"bff64f6ace86e383568df486c897b87d9345626fe063c32d66e12301230907c8\"\n      }\n    },\n    {\n      \"name\": \"worktree-status\",\n      \"argv\": [\n        \"git\",\n        \"status\",\n        \"--porcelain=v1\",\n        \"--untracked-files=all\"\n      ],\n      \"cwd\": \"/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/source\",\n      \"started_at\": \"2026-11-04T22:03:24.728378+00:00\",\n      \"duration_seconds\": 0.2047805759939365,\n      \"exit_code\": 0,\n      \"stdout\": {\n        \"path\": \"/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/worktree-status.stdout\",\n        \"bytes\": 0,\n        \"sha256\": \"e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855\"\n      },\n      \"stderr\": {\n        \"path\": \"/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/worktree-status.stderr\",\n        \"bytes\": 0,\n        \"sha256\": \"e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855\"\n      }\n    },\n    {\n      \"name\": \"project-tool-recipes\",\n      \"argv\": [\n        \"rg\",\n        \"-n\",\n        \"--hidden\",\n        \"cargo-nextest|nextest-version|protoc|uv-version|uv==|cargo install|protobuf-version\",\n        \".github/actions\",\n        \".github/workflows\",\n        \"scripts\",\n        \"codex-rs/rust-toolchain.toml\"\n      ],\n      \"cwd\": \"/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/source\",\n      \"started_at\": \"2026-11-04T22:03:24.933380+00:00\",\n      \"duration_seconds\": 0.007832659990526736,\n      \"exit_code\": 0,\n      \"stdout\": {\n        \"path\": \"/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/project-tool-recipes.stdout\",\n        \"bytes\": 32463,\n        \"sha256\": \"8556373e7c9c2c48453dddd53127766b9386dd3a706e6b26e4f0ded42d0b2a1f\"\n      },\n      \"stderr\": {\n        \"path\": \"/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/project-tool-recipes.stderr\",\n        \"bytes\": 0,\n        \"sha256\": \"e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855\"\n      }\n    },\n    {\n      \"name\": \"rust-1.95-existing\",\n      \"argv\": [\n        \"rustup\",\n        \"run\",\n        \"1.95.0\",\n        \"rustc\",\n        \"-vV\"\n      ],\n      \"cwd\": \"/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/source\",\n      \"started_at\": \"2026-11-04T22:03:24.941247+00:00\",\n      \"duration_seconds\": 0.06815995098440908,\n      \"exit_code\": 0,\n      \"stdout\": {\n        \"path\": \"/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/rust-1.95-existing.stdout\",\n        \"bytes\": 196,\n        \"sha256\": \"4fdff2578428e9c5c08ddd7a0d3079c1a106b1cdaa46e73e46f7cd32b0fb9cad\"\n      },\n      \"stderr\": {\n        \"path\": \"/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/rust-1.95-existing.stderr\",\n        \"bytes\": 0,\n        \"sha256\": \"e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855\"\n      }\n    }\n  ],\n  \"disk\": {\n    \"total\": 1005867986944,\n    \"used\": 925883322368,\n    \"free\": 69737091072\n  },\n  \"completed_at\": \"2026-11-04T22:03:25.009551+00:00\"\n}\n"
+    },
+    {
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/tool-bootstrap/terminal.json",
+      "sha256": "65e1688a3c7c56ee710f74ef3cb23ebf3f829aaf0203624f38dcdcd8654d87cf",
+      "bytes": 15654,
+      "content": "{\n  \"success\": true,\n  \"source_head\": \"cabcb40d36e116beaa65750e1f674c52035da785\",\n  \"source_tree\": \"b2d7f038d6d88156bc6a4cb29c8703f69b808f29\",\n  \"downloads\": [\n    {\n      \"url\": \"https://github.com/casey/just/releases/download/1.51.0/just-1.51.0-x86_64-unknown-linux-musl.tar.gz\",\n      \"path\": \"/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/tool-bootstrap/just.tar.gz\",\n      \"bytes\": 2257502,\n      \"sha256\": \"c8f085ca3e885723c341d06243fc291b5abfdc8bbe3b2c076b117de490387b59\",\n      \"expected_sha256\": \"c8f085ca3e885723c341d06243fc291b5abfdc8bbe3b2c076b117de490387b59\",\n      \"seconds\": 9.559365846973378\n    },\n    {\n      \"url\": \"https://github.com/nextest-rs/nextest/releases/download/cargo-nextest-0.9.103/cargo-nextest-0.9.103-x86_64-unknown-linux-gnu.tar.gz\",\n      \"path\": \"/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/tool-bootstrap/nextest.tar.gz\",\n      \"bytes\": 8505974,\n      \"sha256\": \"b6b5daad02ddef2d0e1f1114c4cd708f2960fd421a415693f995cef3bef90036\",\n      \"expected_sha256\": \"b6b5daad02ddef2d0e1f1114c4cd708f2960fd421a415693f995cef3bef90036\",\n      \"seconds\": 35.61079396100831\n    }\n  ],\n  \"installed_tool_identities\": {\n    \"just\": {\n      \"path\": \"/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/tools/bin/just\",\n      \"bytes\": 5452040,\n      \"sha256\": \"4f864ee6df9b9f351c8b5f95bc9fe589c92080237c2a87c048218a635c3604f7\"\n    },\n    \"cargo-nextest\": {\n      \"path\": \"/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/tools/bin/cargo-nextest\",\n      \"bytes\": 24038232,\n      \"sha256\": \"e999c122a02c3fe74a1b66d254b6419a8a665e8bf540b1d31de7933a6d3753f1\"\n    },\n    \"uv\": {\n      \"path\": \"/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/tools/uv-venv/bin/uv\",\n      \"bytes\": 59258456,\n      \"sha256\": \"fa5fc652fa5ed5b44fa8e7dda507f27975c02f59643787fd8ab4bf36f1ba7438\"\n    }\n  },\n  \"steps\": [\n    {\n      \"name\": \"head-guard\",\n      \"argv\": [\n        \"git\",\n        \"rev-parse\",\n        \"HEAD\"\n      ],\n      \"cwd\": \"/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/source\",\n      \"started_at\": \"2026-11-04T22:07:43.528600+00:00\",\n      \"seconds\": 0.0011948239989578724,\n      \"exit_code\": 0,\n      \"stdout\": {\n        \"path\": \"/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/tool-bootstrap/head-guard.stdout\",\n        \"bytes\": 41,\n        \"sha256\": \"8ab9b93605942fba7003b66d39c55d96802c3a9c88431ee67a03b37c9e4846f5\"\n      },\n      \"stderr\": {\n        \"path\": \"/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/tool-bootstrap/head-guard.stderr\",\n        \"bytes\": 0,\n        \"sha256\": \"e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855\"\n      }\n    },\n    {\n      \"name\": \"tree-guard\",\n      \"argv\": [\n        \"git\",\n        \"rev-parse\",\n        \"HEAD^{tree}\"\n      ],\n      \"cwd\": \"/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/source\",\n      \"started_at\": \"2026-11-04T22:07:43.529883+00:00\",\n      \"seconds\": 0.0012592840066645294,\n      \"exit_code\": 0,\n      \"stdout\": {\n        \"path\": \"/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/tool-bootstrap/tree-guard.stdout\",\n        \"bytes\": 41,\n        \"sha256\": \"f13a9167dfe238d195cfb1aad17594fbfb55aa47956d308804b3374e220507c2\"\n      },\n      \"stderr\": {\n        \"path\": \"/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/tool-bootstrap/tree-guard.stderr\",\n        \"bytes\": 0,\n        \"sha256\": \"e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855\"\n      }\n    },\n    {\n      \"name\": \"initial-clean\",\n      \"argv\": [\n        \"git\",\n        \"status\",\n        \"--porcelain=v1\",\n        \"--untracked-files=all\"\n      ],\n      \"cwd\": \"/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/source\",\n      \"started_at\": \"2026-11-04T22:07:43.531224+00:00\",\n      \"seconds\": 0.1970332360069733,\n      \"exit_code\": 0,\n      \"stdout\": {\n        \"path\": \"/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/tool-bootstrap/initial-clean.stdout\",\n        \"bytes\": 0,\n        \"sha256\": \"e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855\"\n      },\n      \"stderr\": {\n        \"path\": \"/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/tool-bootstrap/initial-clean.stderr\",\n        \"bytes\": 0,\n        \"sha256\": \"e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855\"\n      }\n    },\n    {\n      \"name\": \"just-version\",\n      \"argv\": [\n        \"/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/tools/bin/just\",\n        \"--version\"\n      ],\n      \"cwd\": \"/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/source\",\n      \"started_at\": \"2026-11-04T22:08:29.068965+00:00\",\n      \"seconds\": 0.0020100869878660887,\n      \"exit_code\": 0,\n      \"stdout\": {\n        \"path\": \"/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/tool-bootstrap/just-version.stdout\",\n        \"bytes\": 12,\n        \"sha256\": \"4e91345369534015fde1a3e2fed862ad938bcfda47b993eb02536f7b3f095b87\"\n      },\n      \"stderr\": {\n        \"path\": \"/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/tool-bootstrap/just-version.stderr\",\n        \"bytes\": 0,\n        \"sha256\": \"e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855\"\n      }\n    },\n    {\n      \"name\": \"nextest-version\",\n      \"argv\": [\n        \"cargo\",\n        \"nextest\",\n        \"--version\"\n      ],\n      \"cwd\": \"/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/source\",\n      \"started_at\": \"2026-11-04T22:08:29.071095+00:00\",\n      \"seconds\": 0.060396554006729275,\n      \"exit_code\": 0,\n      \"stdout\": {\n        \"path\": \"/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/tool-bootstrap/nextest-version.stdout\",\n        \"bytes\": 171,\n        \"sha256\": \"13fae229b3f8485e0d02d80bf3c77e6cd38a2a2f1227d3e70a880cfb49365f61\"\n      },\n      \"stderr\": {\n        \"path\": \"/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/tool-bootstrap/nextest-version.stderr\",\n        \"bytes\": 0,\n        \"sha256\": \"e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855\"\n      }\n    },\n    {\n      \"name\": \"uv-venv\",\n      \"argv\": [\n        \"python3\",\n        \"-m\",\n        \"venv\",\n        \"/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/tools/uv-venv\"\n      ],\n      \"cwd\": \"/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/source\",\n      \"started_at\": \"2026-11-04T22:08:29.131623+00:00\",\n      \"seconds\": 1.124910156999249,\n      \"exit_code\": 0,\n      \"stdout\": {\n        \"path\": \"/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/tool-bootstrap/uv-venv.stdout\",\n        \"bytes\": 0,\n        \"sha256\": \"e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855\"\n      },\n      \"stderr\": {\n        \"path\": \"/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/tool-bootstrap/uv-venv.stderr\",\n        \"bytes\": 0,\n        \"sha256\": \"e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855\"\n      }\n    },\n    {\n      \"name\": \"uv-install\",\n      \"argv\": [\n        \"/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/tools/uv-venv/bin/python\",\n        \"-m\",\n        \"pip\",\n        \"install\",\n        \"--index-url\",\n        \"https://pypi.org/simple\",\n        \"--disable-pip-version-check\",\n        \"--cache-dir\",\n        \"/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/tools/pip-cache\",\n        \"--report\",\n        \"/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/tool-bootstrap/uv-pip-report.json\",\n        \"uv==0.11.3\"\n      ],\n      \"cwd\": \"/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/source\",\n      \"started_at\": \"2026-11-04T22:08:30.256658+00:00\",\n      \"seconds\": 92.6850024620071,\n      \"exit_code\": 0,\n      \"stdout\": {\n        \"path\": \"/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/tool-bootstrap/uv-install.stdout\",\n        \"bytes\": 434,\n        \"sha256\": \"bdd16b16a36bf446351f17ff3f06e23084d106eb90d9f99b4f95d62d512ca91f\"\n      },\n      \"stderr\": {\n        \"path\": \"/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/tool-bootstrap/uv-install.stderr\",\n        \"bytes\": 0,\n        \"sha256\": \"e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855\"\n      }\n    },\n    {\n      \"name\": \"uv-version\",\n      \"argv\": [\n        \"/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/tools/uv-venv/bin/uv\",\n        \"--version\"\n      ],\n      \"cwd\": \"/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/source\",\n      \"started_at\": \"2026-11-04T22:10:02.983911+00:00\",\n      \"seconds\": 0.0043504040222615,\n      \"exit_code\": 0,\n      \"stdout\": {\n        \"path\": \"/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/tool-bootstrap/uv-version.stdout\",\n        \"bytes\": 37,\n        \"sha256\": \"cbaa487aa52e8dacd228992f11a8a49459a06b479806187cb00a93c880b5460e\"\n      },\n      \"stderr\": {\n        \"path\": \"/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/tool-bootstrap/uv-version.stderr\",\n        \"bytes\": 0,\n        \"sha256\": \"e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855\"\n      }\n    },\n    {\n      \"name\": \"installed-rust-components\",\n      \"argv\": [\n        \"rustup\",\n        \"component\",\n        \"list\",\n        \"--installed\",\n        \"--toolchain\",\n        \"1.95.0\"\n      ],\n      \"cwd\": \"/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/source\",\n      \"started_at\": \"2026-11-04T22:10:02.988392+00:00\",\n      \"seconds\": 0.017068854009266943,\n      \"exit_code\": 0,\n      \"stdout\": {\n        \"path\": \"/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/tool-bootstrap/installed-rust-components.stdout\",\n        \"bytes\": 161,\n        \"sha256\": \"e8831f6eab33b6dd0f72364237d8f7a00d762711a08608010877e0ce0b7f667b\"\n      },\n      \"stderr\": {\n        \"path\": \"/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/tool-bootstrap/installed-rust-components.stderr\",\n        \"bytes\": 0,\n        \"sha256\": \"e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855\"\n      }\n    },\n    {\n      \"name\": \"rust-version\",\n      \"argv\": [\n        \"rustc\",\n        \"-vV\"\n      ],\n      \"cwd\": \"/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/source\",\n      \"started_at\": \"2026-11-04T22:10:03.005569+00:00\",\n      \"seconds\": 0.009233513992512599,\n      \"exit_code\": 0,\n      \"stdout\": {\n        \"path\": \"/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/tool-bootstrap/rust-version.stdout\",\n        \"bytes\": 196,\n        \"sha256\": \"4fdff2578428e9c5c08ddd7a0d3079c1a106b1cdaa46e73e46f7cd32b0fb9cad\"\n      },\n      \"stderr\": {\n        \"path\": \"/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/tool-bootstrap/rust-version.stderr\",\n        \"bytes\": 0,\n        \"sha256\": \"e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855\"\n      }\n    },\n    {\n      \"name\": \"cargo-version\",\n      \"argv\": [\n        \"cargo\",\n        \"--version\"\n      ],\n      \"cwd\": \"/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/source\",\n      \"started_at\": \"2026-11-04T22:10:03.014913+00:00\",\n      \"seconds\": 0.00546148099238053,\n      \"exit_code\": 0,\n      \"stdout\": {\n        \"path\": \"/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/tool-bootstrap/cargo-version.stdout\",\n        \"bytes\": 36,\n        \"sha256\": \"c10ec31b8c6e6e2693cf65fc1971b41edbc3da1ae7db6f9f3f36c4823f8dcab5\"\n      },\n      \"stderr\": {\n        \"path\": \"/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/tool-bootstrap/cargo-version.stderr\",\n        \"bytes\": 0,\n        \"sha256\": \"e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855\"\n      }\n    },\n    {\n      \"name\": \"protoc-build-usage\",\n      \"argv\": [\n        \"rg\",\n        \"-n\",\n        \"--glob\",\n        \"build.rs\",\n        \"\\\\bprotoc\\\\b|prost_build|protobuf_codegen\",\n        \"codex-rs\"\n      ],\n      \"cwd\": \"/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/source\",\n      \"started_at\": \"2026-11-04T22:10:03.020430+00:00\",\n      \"seconds\": 0.005956687004072592,\n      \"exit_code\": 0,\n      \"stdout\": {\n        \"path\": \"/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/tool-bootstrap/protoc-build-usage.stdout\",\n        \"bytes\": 169,\n        \"sha256\": \"3d0a857ab84d37826a5c9a0632a3d2f36a257e354760a74a775656a05e75811a\"\n      },\n      \"stderr\": {\n        \"path\": \"/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/tool-bootstrap/protoc-build-usage.stderr\",\n        \"bytes\": 0,\n        \"sha256\": \"e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855\"\n      }\n    },\n    {\n      \"name\": \"cargo-v8-version\",\n      \"argv\": [\n        \"python3\",\n        \".github/scripts/rusty_v8_bazel.py\",\n        \"resolved-v8-crate-version\"\n      ],\n      \"cwd\": \"/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/source\",\n      \"started_at\": \"2026-11-04T22:10:03.026419+00:00\",\n      \"seconds\": 0.059534191008424386,\n      \"exit_code\": 0,\n      \"stdout\": {\n        \"path\": \"/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/tool-bootstrap/cargo-v8-version.stdout\",\n        \"bytes\": 8,\n        \"sha256\": \"ee7db03d6aad33641791469a5cbec6568b2c05c9112d402008801d9714f7e500\"\n      },\n      \"stderr\": {\n        \"path\": \"/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/tool-bootstrap/cargo-v8-version.stderr\",\n        \"bytes\": 0,\n        \"sha256\": \"e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855\"\n      }\n    },\n    {\n      \"name\": \"normal-runtime-tools\",\n      \"argv\": [\n        \"python3\",\n        \"-c\",\n        \"import json,shutil;print(json.dumps({k:shutil.which(k) for k in ('node','deno','python3','python','bash','sh','setsid','dotslash','protoc','clang','cmake','pkg-config')}))\"\n      ],\n      \"cwd\": \"/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/source\",\n      \"started_at\": \"2026-11-04T22:10:03.086032+00:00\",\n      \"seconds\": 0.012841760006267577,\n      \"exit_code\": 0,\n      \"stdout\": {\n        \"path\": \"/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/tool-bootstrap/normal-runtime-tools.stdout\",\n        \"bytes\": 306,\n        \"sha256\": \"fb673d909e633f689c278a24c145cc150743cbba551f1b541dce7b816f76afe6\"\n      },\n      \"stderr\": {\n        \"path\": \"/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/tool-bootstrap/normal-runtime-tools.stderr\",\n        \"bytes\": 0,\n        \"sha256\": \"e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855\"\n      }\n    },\n    {\n      \"name\": \"final-clean\",\n      \"argv\": [\n        \"git\",\n        \"status\",\n        \"--porcelain=v1\",\n        \"--untracked-files=all\"\n      ],\n      \"cwd\": \"/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/source\",\n      \"started_at\": \"2026-11-04T22:10:03.098937+00:00\",\n      \"seconds\": 0.01123874299810268,\n      \"exit_code\": 0,\n      \"stdout\": {\n        \"path\": \"/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/tool-bootstrap/final-clean.stdout\",\n        \"bytes\": 0,\n        \"sha256\": \"e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855\"\n      },\n      \"stderr\": {\n        \"path\": \"/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/tool-bootstrap/final-clean.stderr\",\n        \"bytes\": 0,\n        \"sha256\": \"e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855\"\n      }\n    }\n  ],\n  \"version_basis\": \"Fixed repository .github/workflows/hepta-offline-build-inputs.yml 43980e2 and official PyPI uv==0.11.3 already used by project workflows.\",\n  \"protoc\": \"Not installed before confirming whether a build script requires an external binary.\",\n  \"v8\": \"Version resolved only; actual archive preparation is a separate verified official step.\",\n  \"build_profile\": \"Future requested dev-small; no Cargo build or test has been started.\",\n  \"system_user_config_changed\": false,\n  \"disk\": {\n    \"total\": 1005867986944,\n    \"used\": 926336675840,\n    \"free\": 69283737600\n  },\n  \"completed_at\": \"2026-11-04T22:10:03.110238+00:00\"\n}\n"
+    },
+    {
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/v8-runtime-prerequisites/terminal.json",
+      "sha256": "9929de3e38709fe80e3c1f3c3961ad6e9206439ed80a3226db0b2102bba756b9",
+      "bytes": 6864,
+      "content": "{\n  \"success\": true,\n  \"version\": \"150.4.0\",\n  \"target\": \"x86_64-unknown-linux-gnu\",\n  \"profile\": \"ptrcomp_sandbox_release\",\n  \"artifacts\": {\n    \"librusty_v8_ptrcomp_sandbox_release_x86_64-unknown-linux-gnu.a.gz\": {\n      \"path\": \"/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/tools/rusty-v8/librusty_v8_ptrcomp_sandbox_release_x86_64-unknown-linux-gnu.a.gz\",\n      \"bytes\": 29366352,\n      \"sha256\": \"a35c75d1f26e6a983885a45b33490a4ebe54f05050568b32b89cfb421b30b583\"\n    },\n    \"src_binding_ptrcomp_sandbox_release_x86_64-unknown-linux-gnu.rs\": {\n      \"path\": \"/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/tools/rusty-v8/src_binding_ptrcomp_sandbox_release_x86_64-unknown-linux-gnu.rs\",\n      \"bytes\": 39884,\n      \"sha256\": \"7727826ae479bdb645e807239fb12d1f8e2e23de7a6cf16f5ee592690d1d8506\"\n    }\n  },\n  \"checksum_manifest\": {\n    \"path\": \"/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/tools/rusty-v8/rusty_v8_ptrcomp_sandbox_release_x86_64-unknown-linux-gnu.sha256\",\n    \"bytes\": 262,\n    \"sha256\": \"6774b42c9424c098c72a805c08d4e94be17c591cf02b1dc2633060255a8a61be\"\n  },\n  \"downloads\": [\n    {\n      \"url\": \"https://github.com/openai/codex/releases/download/rusty-v8-v150.4.0/rusty_v8_ptrcomp_sandbox_release_x86_64-unknown-linux-gnu.sha256\",\n      \"path\": \"/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/tools/rusty-v8/rusty_v8_ptrcomp_sandbox_release_x86_64-unknown-linux-gnu.sha256\",\n      \"bytes\": 262,\n      \"sha256\": \"6774b42c9424c098c72a805c08d4e94be17c591cf02b1dc2633060255a8a61be\",\n      \"seconds\": 2.7932095200230833\n    },\n    {\n      \"url\": \"https://github.com/openai/codex/releases/download/rusty-v8-v150.4.0/librusty_v8_ptrcomp_sandbox_release_x86_64-unknown-linux-gnu.a.gz\",\n      \"path\": \"/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/tools/rusty-v8/librusty_v8_ptrcomp_sandbox_release_x86_64-unknown-linux-gnu.a.gz\",\n      \"bytes\": 29366352,\n      \"sha256\": \"a35c75d1f26e6a983885a45b33490a4ebe54f05050568b32b89cfb421b30b583\",\n      \"seconds\": 7.769794349005679\n    },\n    {\n      \"url\": \"https://github.com/openai/codex/releases/download/rusty-v8-v150.4.0/src_binding_ptrcomp_sandbox_release_x86_64-unknown-linux-gnu.rs\",\n      \"path\": \"/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/tools/rusty-v8/src_binding_ptrcomp_sandbox_release_x86_64-unknown-linux-gnu.rs\",\n      \"bytes\": 39884,\n      \"sha256\": \"7727826ae479bdb645e807239fb12d1f8e2e23de7a6cf16f5ee592690d1d8506\",\n      \"seconds\": 2.908191682974575\n    }\n  ],\n  \"steps\": [\n    {\n      \"name\": \"resolved-v8-version\",\n      \"argv\": [\n        \"python3\",\n        \".github/scripts/rusty_v8_bazel.py\",\n        \"resolved-v8-crate-version\"\n      ],\n      \"exit_code\": 0,\n      \"stdout\": {\n        \"path\": \"/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/v8-runtime-prerequisites/resolved-v8-version.stdout\",\n        \"bytes\": 8,\n        \"sha256\": \"ee7db03d6aad33641791469a5cbec6568b2c05c9112d402008801d9714f7e500\"\n      },\n      \"stderr\": {\n        \"path\": \"/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/v8-runtime-prerequisites/resolved-v8-version.stderr\",\n        \"bytes\": 0,\n        \"sha256\": \"e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855\"\n      }\n    },\n    {\n      \"name\": \"dotslash-static-usage\",\n      \"argv\": [\n        \"rg\",\n        \"-n\",\n        \"--glob\",\n        \"*.rs\",\n        \"/usr/local/bin/dotslash|DOTSLASH|dotslash\",\n        \"codex-rs/core/tests\",\n        \"codex-rs/cli/tests\",\n        \"codex-rs/utils\"\n      ],\n      \"exit_code\": 0,\n      \"stdout\": {\n        \"path\": \"/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/v8-runtime-prerequisites/dotslash-static-usage.stdout\",\n        \"bytes\": 1749,\n        \"sha256\": \"9c4aec733a3ed0d4e4dbdcd59451734ef898c04f01279611823462ecaec26a55\"\n      },\n      \"stderr\": {\n        \"path\": \"/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/v8-runtime-prerequisites/dotslash-static-usage.stderr\",\n        \"bytes\": 0,\n        \"sha256\": \"e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855\"\n      }\n    },\n    {\n      \"name\": \"node-version\",\n      \"argv\": [\n        \"node\",\n        \"--version\"\n      ],\n      \"exit_code\": 0,\n      \"stdout\": {\n        \"path\": \"/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/v8-runtime-prerequisites/node-version.stdout\",\n        \"bytes\": 9,\n        \"sha256\": \"33e26f35db6e57ce0c486ddc815fe966867e4f649e418eaf323f75f4720eb8e9\"\n      },\n      \"stderr\": {\n        \"path\": \"/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/v8-runtime-prerequisites/node-version.stderr\",\n        \"bytes\": 0,\n        \"sha256\": \"e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855\"\n      }\n    },\n    {\n      \"name\": \"python-version\",\n      \"argv\": [\n        \"python3\",\n        \"--version\"\n      ],\n      \"exit_code\": 0,\n      \"stdout\": {\n        \"path\": \"/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/v8-runtime-prerequisites/python-version.stdout\",\n        \"bytes\": 14,\n        \"sha256\": \"63990b3ee50c49ab28d70e29c0f967f0c71330e39243ffeb4d3a8d5878c8a978\"\n      },\n      \"stderr\": {\n        \"path\": \"/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/v8-runtime-prerequisites/python-version.stderr\",\n        \"bytes\": 0,\n        \"sha256\": \"e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855\"\n      }\n    },\n    {\n      \"name\": \"runtime-host-controls\",\n      \"argv\": [\n        \"python3\",\n        \"-c\",\n        \"import json,pathlib;paths=['/proc/sys/kernel/unprivileged_userns_clone','/proc/sys/kernel/apparmor_restrict_unprivileged_userns'];print(json.dumps({p:pathlib.Path(p).read_text().strip() if pathlib.Path(p).exists() else None for p in paths}))\"\n      ],\n      \"exit_code\": 0,\n      \"stdout\": {\n        \"path\": \"/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/v8-runtime-prerequisites/runtime-host-controls.stdout\",\n        \"bytes\": 115,\n        \"sha256\": \"32befefc23eff5efb6500e48dd980d166ace39a39629e20aa0a708ed7afa15f5\"\n      },\n      \"stderr\": {\n        \"path\": \"/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/v8-runtime-prerequisites/runtime-host-controls.stderr\",\n        \"bytes\": 0,\n        \"sha256\": \"e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855\"\n      }\n    }\n  ],\n  \"future_env\": {\n    \"RUSTY_V8_ARCHIVE\": \"/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/tools/rusty-v8/librusty_v8_ptrcomp_sandbox_release_x86_64-unknown-linux-gnu.a.gz\",\n    \"RUSTY_V8_SRC_BINDING_PATH\": \"/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/tools/rusty-v8/src_binding_ptrcomp_sandbox_release_x86_64-unknown-linux-gnu.rs\"\n  },\n  \"source_basis\": \".github/actions/setup-rusty-v8/action.yml at cabcb40d, unchanged original official artifact path and exactly two SHA256s.\",\n  \"cargo_started\": false,\n  \"system_settings_modified\": false,\n  \"completed_at\": \"2026-11-04T22:14:32.823404+00:00\"\n}\n"
+    },
+    {
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/source-overlay-1c2aa/terminal.json",
+      "sha256": "832abdcf3d95da87593250067015f5c7473409a036b9842e7faad9480a71ccda",
+      "bytes": 12176,
+      "content": "{\n  \"success\": true,\n  \"source\": \"/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/source\",\n  \"head\": \"cabcb40d36e116beaa65750e1f674c52035da785\",\n  \"base_tree\": \"b2d7f038d6d88156bc6a4cb29c8703f69b808f29\",\n  \"applied_tree\": \"1c2aa1263d4087fb3432b7b900080a6af7215b14\",\n  \"preimages\": [\n    {\n      \"path\": \".codespellignore\",\n      \"old_blob\": \"0da447f000de188776a33e770c2d2d77b37f97ee\",\n      \"new_blob\": \"f97cc66e6b2bffd0c52cb421d820f0bfefc97cf7\",\n      \"mode\": \"100644\"\n    },\n    {\n      \"path\": \".github/scripts/test_run_bazel_ci.py\",\n      \"old_blob\": \"aba44fc70d8b7e786b6c5cc3dc07551eb148f4b8\",\n      \"new_blob\": \"0fc2062e950133a1fc736a5303f928a28698c91b\",\n      \"mode\": \"100644\"\n    },\n    {\n      \"path\": \"codex-rs/Cargo.lock\",\n      \"old_blob\": \"9743ef2f4f4c8521265c0187524278c256114163\",\n      \"new_blob\": \"71fc8fa78b5afa076835b29790a5e6b0bd772558\",\n      \"mode\": \"100644\"\n    },\n    {\n      \"path\": \"codex-rs/arg0/BUILD.bazel\",\n      \"old_blob\": \"4493ee15047b98728c2872e1d4bc746cb4233ffe\",\n      \"new_blob\": \"a61d1808ccabb55308f4771fc0c326903fc8cc4f\",\n      \"mode\": \"100644\"\n    },\n    {\n      \"path\": \"codex-rs/arg0/Cargo.toml\",\n      \"old_blob\": \"bb45db45521a60e80088f9032431d28ff4e717ed\",\n      \"new_blob\": \"a28f6a0bbd75e744e13ad9af22713192f6e6802d\",\n      \"mode\": \"100644\"\n    },\n    {\n      \"path\": \"codex-rs/arg0/src/bin/test_arg0_preflight.rs\",\n      \"old_blob\": null,\n      \"new_blob\": \"be0507472a7277fbb9c22f9c946039b09127355d\",\n      \"mode\": \"100644\"\n    },\n    {\n      \"path\": \"codex-rs/arg0/src/lib.rs\",\n      \"old_blob\": \"f44dc145b15d656fc04d87affe6e760de090ee35\",\n      \"new_blob\": \"bf4181d1b258b11f0bb902145455a1d2cba91c87\",\n      \"mode\": \"100644\"\n    },\n    {\n      \"path\": \"codex-rs/arg0/src/preflight_tests.rs\",\n      \"old_blob\": null,\n      \"new_blob\": \"7e315f1aa7284b3e0899d31520568c474cbddd0d\",\n      \"mode\": \"100644\"\n    },\n    {\n      \"path\": \"codex-rs/cli/src/doctor.rs\",\n      \"old_blob\": \"3fba0e2fdfe012d86cc9bbd9886261ff7fd7ac1f\",\n      \"new_blob\": \"31405ef75226a02b5f3e724e30ef6fbce828ceb8\",\n      \"mode\": \"100644\"\n    },\n    {\n      \"path\": \"codex-rs/core/tests/common/responses.rs\",\n      \"old_blob\": \"4786f1956b23fcf21cbb5e0dfbbb1cd530a5050f\",\n      \"new_blob\": \"707c11dfebf6db065a5fffce8ca37cc184ff2b11\",\n      \"mode\": \"100644\"\n    },\n    {\n      \"path\": \"codex-rs/core/tests/common/responses_websocket_concurrent.rs\",\n      \"old_blob\": null,\n      \"new_blob\": \"44d7b14f91480807d60ace3d1bfdb72b5eaedafe\",\n      \"mode\": \"100644\"\n    },\n    {\n      \"path\": \"codex-rs/core/tests/suite/subagent_notifications.rs\",\n      \"old_blob\": \"55d0092f81ea5b10ac883076aa55bb370119db6a\",\n      \"new_blob\": \"43ac4c161792870ed6340c8b6321cede2a2bace3\",\n      \"mode\": \"100644\"\n    },\n    {\n      \"path\": \"codex-rs/core/tests/suite/turn_state.rs\",\n      \"old_blob\": \"cafb5b4bdea1b05faa0fb8380e538a7d4b6d850f\",\n      \"new_blob\": \"7744c37e11b596d53db1e716de4e7adeff213936\",\n      \"mode\": \"100644\"\n    },\n    {\n      \"path\": \"codex-rs/exec-server/tests/common/relay.rs\",\n      \"old_blob\": \"977b70d1ba423ab02d60305ab62d858d1658f05d\",\n      \"new_blob\": \"50f53629d52a5e5f1347665b4f3de6e6b8ef05ee\",\n      \"mode\": \"100644\"\n    },\n    {\n      \"path\": \"codex-rs/exec-server/tests/forward.rs\",\n      \"old_blob\": \"ad40d691f753c5effaeadc3e7721371a8c23a48e\",\n      \"new_blob\": \"9b29d4dbebde727008ece6772f652b1ac7b9aac3\",\n      \"mode\": \"100644\"\n    },\n    {\n      \"path\": \"codex-rs/hepta-agentd/tests/supervisord_product_e2e.rs\",\n      \"old_blob\": \"1c2e25e878b679839eec372525b213e66b81aa59\",\n      \"new_blob\": \"3c5c913386f10bb0dc3996bd4e37077db2658376\",\n      \"mode\": \"100644\"\n    },\n    {\n      \"path\": \"codex-rs/hepta-contracts/src/authority_lease.rs\",\n      \"old_blob\": \"2c1d39fe296007a0cc7822779ac91ba3c5cab66c\",\n      \"new_blob\": \"7f290284134bbcf33b9143f440cd285ab3c8a306\",\n      \"mode\": \"100644\"\n    },\n    {\n      \"path\": \"codex-rs/hepta-contracts/src/authority_lease_entry_clock_tests.rs\",\n      \"old_blob\": null,\n      \"new_blob\": \"b0c794e17e7b3ded90a2470ce2f0ac3dee5bf0cc\",\n      \"mode\": \"100644\"\n    },\n    {\n      \"path\": \"codex-rs/hepta-supervisor/src/unix.rs\",\n      \"old_blob\": \"d02b9b9b02af2b03f3904277f5028e1fb52672b4\",\n      \"new_blob\": \"bcfbe646c2fb4ed490f5b0388f32c4d47f747e3a\",\n      \"mode\": \"100644\"\n    },\n    {\n      \"path\": \"codex-rs/hepta-supervisor/src/unix_drain_tests.rs\",\n      \"old_blob\": \"3c641c8e44b6eb608e673b39a64725bc0181291f\",\n      \"new_blob\": \"0067065f35d21a5aed15595446277c27691c29f7\",\n      \"mode\": \"100644\"\n    },\n    {\n      \"path\": \"codex-rs/uds/src/inherited.rs\",\n      \"old_blob\": null,\n      \"new_blob\": \"c9c29db63505e4dc3e16f802c7b39755acafdce5\",\n      \"mode\": \"100644\"\n    },\n    {\n      \"path\": \"codex-rs/uds/src/inherited_tests.rs\",\n      \"old_blob\": null,\n      \"new_blob\": \"6976e218cb105880d4845ec0dcaf3672eec6de56\",\n      \"mode\": \"100644\"\n    },\n    {\n      \"path\": \"codex-rs/uds/src/lib.rs\",\n      \"old_blob\": \"1fe59d7df88a6a155e37e36329535231d3c61a86\",\n      \"new_blob\": \"9642dfaac91eee035f3a23cb5609bef6dc556752\",\n      \"mode\": \"100644\"\n    },\n    {\n      \"path\": \"codex-rs/utils/pty/src/tests.rs\",\n      \"old_blob\": \"e66a6e7c519ad28d5657e17b0221be0147c51972\",\n      \"new_blob\": \"42fc028d6e710dab9f9390ad7ee1b711ba1927d6\",\n      \"mode\": \"100644\"\n    }\n  ],\n  \"ordinary_index_before\": {\n    \"path\": \"/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/source/.git/index\",\n    \"bytes\": 1222758,\n    \"sha256\": \"8ccf08bcd5b633a38fa81be4814ae264365f1a2cdd1ed81e1633fbcc0ac31502\"\n  },\n  \"ordinary_index_after\": {\n    \"path\": \"/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/source/.git/index\",\n    \"bytes\": 1222758,\n    \"sha256\": \"8ccf08bcd5b633a38fa81be4814ae264365f1a2cdd1ed81e1633fbcc0ac31502\"\n  },\n  \"private_index\": \"/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/source-overlay-1c2aa/source.index\",\n  \"files\": [\n    {\n      \"path\": \".codespellignore\",\n      \"mode\": \"100644\",\n      \"git_blob\": \"f97cc66e6b2bffd0c52cb421d820f0bfefc97cf7\",\n      \"sha256\": \"0cdbaadae5521f2a3b45cc7a8fa43e2960257ac23dcc1764038d3116bddb509f\",\n      \"bytes\": 75\n    },\n    {\n      \"path\": \".github/scripts/test_run_bazel_ci.py\",\n      \"mode\": \"100644\",\n      \"git_blob\": \"0fc2062e950133a1fc736a5303f928a28698c91b\",\n      \"sha256\": \"df6261055504a1d494afbccda3f173f0c3e0fdc09f02dd9ebf17f0c8c45ba289\",\n      \"bytes\": 24707\n    },\n    {\n      \"path\": \"codex-rs/Cargo.lock\",\n      \"mode\": \"100644\",\n      \"git_blob\": \"71fc8fa78b5afa076835b29790a5e6b0bd772558\",\n      \"sha256\": \"4a7a5535cf045089458468411e126b5f59bc6bbf34fc0deead9b0c1b8d84000a\",\n      \"bytes\": 413768\n    },\n    {\n      \"path\": \"codex-rs/arg0/BUILD.bazel\",\n      \"mode\": \"100644\",\n      \"git_blob\": \"a61d1808ccabb55308f4771fc0c326903fc8cc4f\",\n      \"sha256\": \"12844fa9f096f00ba247ca595fb230ad211dd61857487e9d8db92f80e01012df\",\n      \"bytes\": 168\n    },\n    {\n      \"path\": \"codex-rs/arg0/Cargo.toml\",\n      \"mode\": \"100644\",\n      \"git_blob\": \"a28f6a0bbd75e744e13ad9af22713192f6e6802d\",\n      \"sha256\": \"ec5b8847ffd390c1e21a6b523ed60574ee927b37076f2ec0e38fd97e3c8535df\",\n      \"bytes\": 1007\n    },\n    {\n      \"path\": \"codex-rs/arg0/src/bin/test_arg0_preflight.rs\",\n      \"mode\": \"100644\",\n      \"git_blob\": \"be0507472a7277fbb9c22f9c946039b09127355d\",\n      \"sha256\": \"ec1f052396f896527f6761bba8f42769983f9db5112c4acd8f739206b6ef9270\",\n      \"bytes\": 7323\n    },\n    {\n      \"path\": \"codex-rs/arg0/src/lib.rs\",\n      \"mode\": \"100644\",\n      \"git_blob\": \"bf4181d1b258b11f0bb902145455a1d2cba91c87\",\n      \"sha256\": \"af90f5320183e000a72176ebac11e3e8243d45246ccedcdb2912048423c24976\",\n      \"bytes\": 27589\n    },\n    {\n      \"path\": \"codex-rs/arg0/src/preflight_tests.rs\",\n      \"mode\": \"100644\",\n      \"git_blob\": \"7e315f1aa7284b3e0899d31520568c474cbddd0d\",\n      \"sha256\": \"9bfd0247502d16929ece4e9fa0eb9178d483b70fe916273e23e7cd09842ed850\",\n      \"bytes\": 5833\n    },\n    {\n      \"path\": \"codex-rs/cli/src/doctor.rs\",\n      \"mode\": \"100644\",\n      \"git_blob\": \"31405ef75226a02b5f3e724e30ef6fbce828ceb8\",\n      \"sha256\": \"3efe82de6f8e9a61529b3477e3a30a94c6a8798c9681da121b130f9acb001b16\",\n      \"bytes\": 158088\n    },\n    {\n      \"path\": \"codex-rs/core/tests/common/responses.rs\",\n      \"mode\": \"100644\",\n      \"git_blob\": \"707c11dfebf6db065a5fffce8ca37cc184ff2b11\",\n      \"sha256\": \"4f6baa55dcec3a157e68582a534019d53e5407402fd9924c467b32e4a648f3ff\",\n      \"bytes\": 66235\n    },\n    {\n      \"path\": \"codex-rs/core/tests/common/responses_websocket_concurrent.rs\",\n      \"mode\": \"100644\",\n      \"git_blob\": \"44d7b14f91480807d60ace3d1bfdb72b5eaedafe\",\n      \"sha256\": \"876ecf72a3207973dbc4b1355e12acea792e524d81ef563cff6403a1ea7411fa\",\n      \"bytes\": 7170\n    },\n    {\n      \"path\": \"codex-rs/core/tests/suite/subagent_notifications.rs\",\n      \"mode\": \"100644\",\n      \"git_blob\": \"43ac4c161792870ed6340c8b6321cede2a2bace3\",\n      \"sha256\": \"594620ef204d1264724fe74d40045df636464c92dc1c4143abcdced6c7aa24d0\",\n      \"bytes\": 108182\n    },\n    {\n      \"path\": \"codex-rs/core/tests/suite/turn_state.rs\",\n      \"mode\": \"100644\",\n      \"git_blob\": \"7744c37e11b596d53db1e716de4e7adeff213936\",\n      \"sha256\": \"3c9ddd24b0517a89b55abbc2bb60de96c875bc01b7d9ac2c29d242cb0f95e197\",\n      \"bytes\": 16514\n    },\n    {\n      \"path\": \"codex-rs/exec-server/tests/common/relay.rs\",\n      \"mode\": \"100644\",\n      \"git_blob\": \"50f53629d52a5e5f1347665b4f3de6e6b8ef05ee\",\n      \"sha256\": \"44492888bd0f6777b2e24d7fd800664e8077a237573964c04853c58f1bea7daa\",\n      \"bytes\": 9725\n    },\n    {\n      \"path\": \"codex-rs/exec-server/tests/forward.rs\",\n      \"mode\": \"100644\",\n      \"git_blob\": \"9b29d4dbebde727008ece6772f652b1ac7b9aac3\",\n      \"sha256\": \"77219b08aa3e4f9fa745468af2d81d3263499eb4975ce7c28f2e224eb2e7f8d0\",\n      \"bytes\": 6345\n    },\n    {\n      \"path\": \"codex-rs/hepta-agentd/tests/supervisord_product_e2e.rs\",\n      \"mode\": \"100644\",\n      \"git_blob\": \"3c5c913386f10bb0dc3996bd4e37077db2658376\",\n      \"sha256\": \"a46b9acb3baf8b055e5ab5ce66fc66565767f2c05ea52cc8d0259bbb79b5e904\",\n      \"bytes\": 37344\n    },\n    {\n      \"path\": \"codex-rs/hepta-contracts/src/authority_lease.rs\",\n      \"mode\": \"100644\",\n      \"git_blob\": \"7f290284134bbcf33b9143f440cd285ab3c8a306\",\n      \"sha256\": \"321915ce543f1ff905d9db2e2835b1601fa9fcfa2e58577671662b917db72d5a\",\n      \"bytes\": 63310\n    },\n    {\n      \"path\": \"codex-rs/hepta-contracts/src/authority_lease_entry_clock_tests.rs\",\n      \"mode\": \"100644\",\n      \"git_blob\": \"b0c794e17e7b3ded90a2470ce2f0ac3dee5bf0cc\",\n      \"sha256\": \"eaf7f0d8b8a6e3a1777305612427343f9ba5ec4660d4febde9e43fd56aa1ea5e\",\n      \"bytes\": 4197\n    },\n    {\n      \"path\": \"codex-rs/hepta-supervisor/src/unix.rs\",\n      \"mode\": \"100644\",\n      \"git_blob\": \"bcfbe646c2fb4ed490f5b0388f32c4d47f747e3a\",\n      \"sha256\": \"29e61a38c98eae99d1eea5cce2701d7c9e8c0587f0d727865f4a85025206a8e0\",\n      \"bytes\": 32095\n    },\n    {\n      \"path\": \"codex-rs/hepta-supervisor/src/unix_drain_tests.rs\",\n      \"mode\": \"100644\",\n      \"git_blob\": \"0067065f35d21a5aed15595446277c27691c29f7\",\n      \"sha256\": \"6ad31f5fccd0dd5fcee66e610fef3dfec91ceb55f85e5576d6b4db5ffdff1c74\",\n      \"bytes\": 6580\n    },\n    {\n      \"path\": \"codex-rs/uds/src/inherited.rs\",\n      \"mode\": \"100644\",\n      \"git_blob\": \"c9c29db63505e4dc3e16f802c7b39755acafdce5\",\n      \"sha256\": \"1b36a05b14af9ff79382c393a53602ec8e08d1ec351a283a5ee34cb3ef398a93\",\n      \"bytes\": 3983\n    },\n    {\n      \"path\": \"codex-rs/uds/src/inherited_tests.rs\",\n      \"mode\": \"100644\",\n      \"git_blob\": \"6976e218cb105880d4845ec0dcaf3672eec6de56\",\n      \"sha256\": \"87a594473f59addd4275babf7a8d11cc44d0f760d2d6327f2e57e922e7e1c32c\",\n      \"bytes\": 14153\n    },\n    {\n      \"path\": \"codex-rs/uds/src/lib.rs\",\n      \"mode\": \"100644\",\n      \"git_blob\": \"9642dfaac91eee035f3a23cb5609bef6dc556752\",\n      \"sha256\": \"dfc3cbf07c5a71c5790a82fa060775288dd01929bf24ce112a7b42e7bbb36a35\",\n      \"bytes\": 15096\n    },\n    {\n      \"path\": \"codex-rs/utils/pty/src/tests.rs\",\n      \"mode\": \"100644\",\n      \"git_blob\": \"42fc028d6e710dab9f9390ad7ee1b711ba1927d6\",\n      \"sha256\": \"36d38a4c629f82b0ebb880bd72d578291f6af2c1e80a49c897df2a0dc23d7648\",\n      \"bytes\": 63433\n    }\n  ],\n  \"source_change_scope\": \"24 approved postimages only; no builds/tests; base commit and ordinary index preserved.\",\n  \"completed_at\": \"2026-11-04T22:16:31.222978+00:00\"\n}\n"
+    }
+  ],
+  "large_binaries": "Exact archive/binary identities indexed in original terminal records; executable bodies stay in task-owned tools."
+}

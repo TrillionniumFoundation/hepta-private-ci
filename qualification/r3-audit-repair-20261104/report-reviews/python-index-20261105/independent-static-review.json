@@ -1,0 +1,112 @@
+{
+  "schema": "hepta.python57-index-readonly-static-review.v1",
+  "observed_at": "2026-11-05T04:23:58.497863+00:00",
+  "status": "STATIC_REACHABLE_MECHANISM_CONFIRMED_NO_NATIVE_CAUSAL_REEXECUTION",
+  "source_files": [
+    {
+      "path": ".github/scripts/run-bazel-ci.sh",
+      "git_blob": "204c0ac2481f70cc977f777eb2299b740f7ddc17",
+      "bytes": 17214,
+      "sha256": "c98766a076b79dc00f08104989faf55cce56375da8ff8ac5d14fb4686b1d6fe7"
+    },
+    {
+      "path": ".github/scripts/collect_bazel_failed_test_logs.py",
+      "git_blob": "5427be6c1f37bd7c302d808c2e4f194727abe700",
+      "bytes": 16238,
+      "sha256": "867d2b315dbb37b5b33c0869281c41fc5586a366f0cd1c19a1703f57d40fda9d"
+    },
+    {
+      "path": ".github/scripts/test_run_bazel_ci.py",
+      "git_blob": "045457bb4d7f5e54d4429a93615970a223bb48db",
+      "bytes": 33780,
+      "sha256": "ded8a2f14aab391f3f571780df8e39ee0ca626b6a1962331449318192c67c65c"
+    },
+    {
+      "path": ".github/scripts/test_run_bazel_clippy_targets.py",
+      "git_blob": "7084bf40d39f024f06347b8588e4ef3024e2f7a3",
+      "bytes": 2952,
+      "sha256": "2249aa908329f2312e0ceebac42cc063db7437f1017afb0d8fded3e783bde29d"
+    },
+    {
+      "path": ".github/scripts/test_run_bazel_native_msvc_toolchain.py",
+      "git_blob": "d6a51de52362a910645fd97d4857f00372abdeea",
+      "bytes": 5401,
+      "sha256": "ad71693c007c32c2270f8f0469e8375b2fe04bc6f346a4213d25546820255eab"
+    },
+    {
+      "path": ".github/scripts/test_run_bazel_windows_fallback.py",
+      "git_blob": "12b503d6d70fce2268bebe4a475e64c34b3dc504",
+      "bytes": 12458,
+      "sha256": "5ca1594d20fc73b23c338cda70626365abfaedc0837a3094ae5fa2ecc6d5250b"
+    },
+    {
+      "path": ".github/scripts/test_run_bazel_with_buildbuddy.py",
+      "git_blob": "3c8c83d39328ed5bde888cadafe73888c6d77b74",
+      "bytes": 11353,
+      "sha256": "ab50f8efa2b4687e9f74df1a769a16fed5994bd6b3acc55eeb6564d60ca0903f"
+    }
+  ],
+  "test_definition_counts": {
+    "test_run_bazel_ci.py": 16,
+    "test_run_bazel_clippy_targets.py": 4,
+    "test_run_bazel_native_msvc_toolchain.py": 5,
+    "test_run_bazel_windows_fallback.py": 16,
+    "test_run_bazel_with_buildbuddy.py": 16
+  },
+  "source_contexts": [
+    {
+      "path": ".github/scripts/test_run_bazel_ci.py",
+      "git_blob": "045457bb4d7f5e54d4429a93615970a223bb48db",
+      "start_line": 94,
+      "end_line": 125,
+      "text": "        self.env = {\n            key: value\n            for key, value in os.environ.items()\n            if not key.startswith((\"BAZEL_\", \"BUILDBUDDY_\", \"CODEX_BAZEL_\", \"GITHUB_\"))\n        }\n        self.env.update(\n            RUNNER_OS=\"Windows\",\n            CODEX_BAZEL_BIN=str(executable),\n            CODEX_BAZEL_WINDOWS_PATH=r\"C:\\Program Files\\PowerShell\\7;C:\\Program Files\\Git\\bin\",\n            BAZEL_PROBE_LOG=str(self.log),\n            BAZEL_PROBE_TESTLOGS=str(self.testlogs),\n            BAZEL_REPO_CONTENTS_CACHE=\"job scoped cache\",\n            INCLUDE=r\"C:\\VS\\include;C:\\SDK\\include\",\n            LIB=r\"C:\\VS\\lib;C:\\SDK\\lib\",\n            LIBPATH=r\"C:\\VS\\libpath\",\n            UniversalCRTSdkDir=r\"C:\\SDK\\ucrt\",\n            VCToolsInstallDir=r\"C:\\VS\\VC\\Tools\\MSVC\\14.51.36231\",\n            WindowsSdkDir=r\"C:\\SDK\",\n        )\n\n    def run_wrapper(\n        self, *args: str\n    ) -> tuple[subprocess.CompletedProcess[str], list[list[str]]]:\n        result = subprocess.run(\n            [self.bash, str(SCRIPTS / \"run-bazel-ci.sh\"), *args],\n            env=self.env,\n            check=False,\n            capture_output=True,\n            text=True,\n            timeout=60,\n        )\n        self.assertTrue(self.log.exists(), result.stdout + result.stderr)"
+    },
+    {
+      "path": ".github/scripts/test_run_bazel_ci.py",
+      "git_blob": "045457bb4d7f5e54d4429a93615970a223bb48db",
+      "start_line": 529,
+      "end_line": 546,
+      "text": "        result = subprocess.run(\n            [\n                sys.executable,\n                str(SCRIPTS / \"collect_bazel_failed_test_logs.py\"),\n                \"--testlogs-dir\",\n                str(alias),\n                \"--output-dir\",\n                str(output),\n            ],\n            input=\"\\n\".join(targets) + \"\\n\",\n            capture_output=True,\n            text=True,\n            check=False,\n            timeout=30,\n        )\n        self.assertEqual(result.returncode, 1, result.stdout + result.stderr)\n        manifests = list(output.glob(\"failed-test-logs/invocation-*/manifest.json\"))\n        self.assertEqual(len(manifests), 1)"
+    },
+    {
+      "path": ".github/scripts/run-bazel-ci.sh",
+      "git_blob": "204c0ac2481f70cc977f777eb2299b740f7ddc17",
+      "start_line": 182,
+      "end_line": 225,
+      "text": "\n  # Preserve complete existing shard/attempt logs in the already-uploaded\n  # compact-log directory. Collection must never replace Bazel's exit status.\n  if [[ -n \"${CODEX_BAZEL_EXECUTION_LOG_COMPACT_DIR:-}\" && ${#failed_targets[@]} -gt 0 ]]; then\n    if ! (\n      collector_script=\"$(dirname \"${BASH_SOURCE[0]}\")/collect_bazel_failed_test_logs.py\"\n      collector_testlogs=\"$testlogs_dir\"\n      collector_output=\"$CODEX_BAZEL_EXECUTION_LOG_COMPACT_DIR\"\n      if [[ \"${RUNNER_OS:-}\" == \"Windows\" ]] && command -v cygpath >/dev/null 2>&1; then\n        collector_script=\"$(cygpath -w \"$collector_script\")\" || exit 1\n        collector_testlogs=\"$(cygpath -w \"$collector_testlogs\")\" || exit 1\n        collector_output=\"$(cygpath -w \"$collector_output\")\" || exit 1\n      fi\n      printf '%s\\n' \"${failed_targets[@]}\" \\\n        | MSYS2_ARG_CONV_EXCL='*' python3 \"$collector_script\" \\\n          --testlogs-dir \"$collector_testlogs\" --output-dir \"$collector_output\"\n    ); then\n      echo \"::warning::Failed-test-log collection was incomplete; preserving Bazel exit status.\" >&2\n    fi\n  fi\n  # The same original invocation may pass while its acceptance evidence is\n  # missing. Retain only console-reported allowlisted targets, without rerunning.\n  if [[ -n \"$retained_targets\" ]]; then\n    if ! (\n      collector_script=\"$(dirname \"${BASH_SOURCE[0]}\")/collect_bazel_failed_test_logs.py\"\n      collector_testlogs=\"$testlogs_dir\"\n      collector_output=\"$CODEX_BAZEL_EXECUTION_LOG_COMPACT_DIR\"\n      collector_console=\"$console_log\"\n      collector_arguments=\"$(mktemp)\"\n      trap 'rm -f \"$collector_arguments\"' EXIT\n      printf '%s\\0' \"${bazel_run_args[@]}\" -- \"${bazel_targets[@]}\" > \"$collector_arguments\"\n      collector_native_arguments=\"$collector_arguments\"\n      if [[ \"${RUNNER_OS:-}\" == \"Windows\" ]] && command -v cygpath >/dev/null 2>&1; then\n        collector_script=\"$(cygpath -w \"$collector_script\")\" || exit 1\n        collector_testlogs=\"$(cygpath -w \"$collector_testlogs\")\" || exit 1\n        collector_output=\"$(cygpath -w \"$collector_output\")\" || exit 1\n        collector_console=\"$(cygpath -w \"$collector_console\")\" || exit 1\n        collector_native_arguments=\"$(cygpath -w \"$collector_arguments\")\" || exit 1\n      fi\n      MSYS2_ARG_CONV_EXCL='*' python3 \"$collector_script\" \\\n        --testlogs-dir \"$collector_testlogs\" --output-dir \"$collector_output\" \\\n        --retention-console \"$collector_console\" --invocation-args-file \"$collector_native_arguments\"\n    ); then\n      echo \"::warning::Selected-target-log collection was incomplete; preserving Bazel exit status.\" >&2"
+    },
+    {
+      "path": ".github/scripts/collect_bazel_failed_test_logs.py",
+      "git_blob": "5427be6c1f37bd7c302d808c2e4f194727abe700",
+      "start_line": 141,
+      "end_line": 163,
+      "text": "\n    try:\n        revision = subprocess.run(\n            [\"git\", \"rev-parse\", \"HEAD\", \"HEAD^{tree}\"],\n            check=True,\n            capture_output=True,\n            text=True,\n            timeout=10,\n        ).stdout.splitlines()\n        dirty = subprocess.run(\n            [\"git\", \"diff\", \"--quiet\", \"HEAD\", \"--\"],\n            check=False,\n            capture_output=True,\n            timeout=10,\n        )\n        if len(revision) != 2 or dirty.returncode not in (0, 1):\n            raise ValueError(\"could not identify the checked-out Git source\")\n        manifest[\"source\"] = {\n            \"commit\": revision[0],\n            \"tree\": revision[1],\n            \"tracked_worktree_dirty\": dirty.returncode == 1,\n        }\n    except (OSError, ValueError, subprocess.SubprocessError) as error:"
+    }
+  ],
+  "call_chain": [
+    "unittest original57 includes 16 wrapper/collector cases",
+    "test run_wrapper inherits cwd and Git-related environment",
+    "wrapper failed/selected collection invokes real collector",
+    "collector executes git diff --quiet HEAD -- without optional-lock suppression or private-index override"
+  ],
+  "official_source": {
+    "url": "https://git-scm.com/docs/git-config",
+    "section": "diff.autoRefreshIndex",
+    "paraphrase": "The documented default enables porcelain git diff to refresh cached index stat information when file contents still match the index; lower-level diff commands are distinct.",
+    "role": "Primary Git documentation; not an observation of this particular native run or its effective Git configuration.",
+    "retrieval_time_scope": "Retrieved during this audit session; no separate exact retrieval timestamp was captured."
+  },
+  "native_message_scope": {
+    "source": "CI owner message, not raw evidence re-read by this reviewer",
+    "reported": "9575 path/mode/OID/stage entries agree with cabc; unusual flags absent; source, locks and private index unchanged; original index binary changed",
+    "original_pre_index_bytes_available": false,
+    "therefore": "The precise stat-field or extension-byte difference is not established."
+  },
+  "constraints": [
+    "No source/index/ref/native mutation or test execution by this reviewer.",
+    "Mechanism does not prove it produced this specific index hash change.",
+    "No test/gate/environment change proposed here.",
+    "Current CI runner must preserve its original guard failure and record any reviewed continuation separately."
+  ],
+  "supersedes_metadata_only": "0667cf2a294b52040e4e98bd1f56774c161d610c replaced an unrecorded minute-level documentation retrieval time with an explicit timing limitation; no source or conclusion changed."
+}

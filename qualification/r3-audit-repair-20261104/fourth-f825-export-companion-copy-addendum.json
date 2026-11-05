@@ -1,0 +1,42 @@
+{
+  "schema": "hepta-f825-local-redundant-copy-transport-addendum-v1",
+  "source_tree": "f8251e1d14fa8524ab469281296cd4cf708f173c",
+  "kind": "TRANSPORT_OBSERVATION_NOT_NATIVE_TEST_FAILURE",
+  "observation": {
+    "observed_at": "2026-11-05T01:19:11.015822+00:00",
+    "read_only": true,
+    "files": [
+      {
+        "path": "/workspace/scratch/07dd58cc9630/ci-audit/recovered-20261105/full-owning-compressed-archive/full-full-workspace-stdout.original",
+        "bytes": 29360128,
+        "mtime_ns": 1793841251455273700,
+        "sha256": "c983c6f36a15e06fe47f71fcb5595c70491b385f31d13f772637c2244553a5f8"
+      },
+      {
+        "path": "/workspace/scratch/07dd58cc9630/ci-audit/recovered-20261105/full-f825-original.log",
+        "bytes": 34360967,
+        "mtime_ns": 1793840904531751700,
+        "sha256": "75cd2cd5c89ce70781781c3b8c3e1bb168720b83bf6961c206720b3c08efe15c"
+      },
+      {
+        "path": "/workspace/scratch/07dd58cc9630/ci-audit/recovered-20261105/full-owning-compressed-archive/archive-final.json",
+        "bytes": 33741,
+        "mtime_ns": 1793841266260663000,
+        "sha256": "c74155b29db62682b96bcdea3b7ae14eb239b0ce097a756594aebabbf75e2f75"
+      }
+    ]
+  },
+  "disposition": "The redundant local full-full-workspace-stdout.original file is short and is preserved without repair or overwrite. The cause is not established.",
+  "prior_validation_scope": "The validation script independently strict-decoded base64 and gzip and hashed the complete in-memory original bytes. It wrote local copies with Path.write_bytes but did not validate each destination by reopening it. Therefore its successful decode receipt does not establish the later redundant file's on-disk completeness.",
+  "known_execution": "One validation command was launched in cloud exec session 75326 and reached exit 0; no validation rerun was performed by this agent.",
+  "authoritative_complete_sources": {
+    "native_path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/full-workspace-f825-20261105-0040/full-workspace.log",
+    "bytes": 34360967,
+    "sha256": "75cd2cd5c89ce70781781c3b8c3e1bb168720b83bf6961c206720b3c08efe15c",
+    "complete_local_path": "/workspace/scratch/07dd58cc9630/ci-audit/recovered-20261105/full-f825-original.log",
+    "compressed_git_archive_index": "4fbfb3d05586f87b449a9ec14097982072917934",
+    "root_independent_decode": "Root reports all 18 strict base64/gzip/raw identities independently matched, with all 33 Git blob IDs recomputed."
+  },
+  "effect": "Original native results, compressed evidence and the full case catalog/JUnit comparison are unchanged. Consumers must use a hash-verified complete source rather than the short redundant copy.",
+  "freeze": "All completed archive files are frozen. Subsequent evidence writes use distinct paths."
+}

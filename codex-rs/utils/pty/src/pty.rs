@@ -167,6 +167,9 @@ async fn spawn_process_portable(
             .ok_or_else(|| anyhow::anyhow!("PTY master has no file descriptor"))?,
     )?;
 
+    #[cfg(all(test, unix))]
+    let io_diagnostics = io.diagnostics();
+
     let mut command_builder = CommandBuilder::new(arg0.as_ref().unwrap_or(&program.to_string()));
     command_builder.cwd(cwd);
     command_builder.env_clear();
@@ -279,6 +282,9 @@ async fn spawn_process_portable(
         /*resizer*/ None,
     );
 
+    #[cfg(all(test, unix))]
+    let handle = handle.with_pty_io_diagnostics(io_diagnostics);
+
     Ok(SpawnedProcess {
         session: handle,
         stdout_rx,
@@ -299,6 +305,8 @@ async fn spawn_process_preserving_fds(
 ) -> Result<SpawnedProcess> {
     let (master, slave) = open_unix_pty(size)?;
     let io = crate::unix_io::PtyIo::new(master.as_raw_fd())?;
+    #[cfg(test)]
+    let io_diagnostics = io.diagnostics();
     let mut command = StdCommand::new(program);
     if let Some(arg0) = arg0 {
         command.arg0(arg0);
@@ -407,6 +415,9 @@ async fn spawn_process_preserving_fds(
         Some(handles),
         /*resizer*/ None,
     );
+
+    #[cfg(all(test, unix))]
+    let handle = handle.with_pty_io_diagnostics(io_diagnostics);
 
     Ok(SpawnedProcess {
         session: handle,

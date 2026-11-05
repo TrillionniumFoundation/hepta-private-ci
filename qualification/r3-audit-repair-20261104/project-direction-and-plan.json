@@ -1,0 +1,4580 @@
+{
+  "schema_version": "hepta.architecture.actionable-stage-plan.zh.v1",
+  "generated_at_utc": "2026-11-04T19:02:43.773Z",
+  "plan_role": "审计后的执行建议；不改写 canonical V8 计划、91 个包的 DAG、owner 或 authority flags。",
+  "fixed_source_head": "ff72d462d74f9eb856aa9edbc368caad9c466708",
+  "canonical_plan": {
+    "id": "HEPTA-GLOBAL-MODULAR-DEVELOPMENT-PLAN",
+    "version": "8.0.0",
+    "current_package": "P0.8D-VERTICAL-SLICE",
+    "sources": [
+      {
+        "path": "docs/DEVELOPMENT.md",
+        "ref": "ff72d462d74f9eb856aa9edbc368caad9c466708",
+        "blob": "9ff53000ff301289d87c364eb45a938755a0f11e",
+        "bytes": 56512,
+        "sha256": "33d01302a26146ea2e9db45a6b52a622c99bfa7ce8509b98062ca875285cf187"
+      },
+      {
+        "path": "docs/modules/MODULES.json",
+        "ref": "ff72d462d74f9eb856aa9edbc368caad9c466708",
+        "blob": "2571766d45a0a6b0db0ec83e675c70609d3bc39d",
+        "bytes": 60119,
+        "sha256": "468ce01963e5665ad0b39df7c69a0c630bb93e2168f4d669dd4f8dea55e17716"
+      },
+      {
+        "path": "docs/delivery/WORK_PACKAGES.json",
+        "ref": "ff72d462d74f9eb856aa9edbc368caad9c466708",
+        "blob": "77568a3965c4c68357b2e16f6af10309209b35dd",
+        "bytes": 364370,
+        "sha256": "e110359106c592c3808032defda002df0ef61ac5a9cc8ba94e4fe50248b7e74f"
+      },
+      {
+        "path": "docs/readiness/READINESS.json",
+        "ref": "ff72d462d74f9eb856aa9edbc368caad9c466708",
+        "blob": "2b56ff94aad7e6a0e19b0c2a600a2c3cd3616729",
+        "bytes": 57843,
+        "sha256": "7b665dcdbe7e46525373c3b3f8962c969b898e345a4c419be4978d534e1000f8"
+      },
+      {
+        "path": "docs/readiness/GAPS.json",
+        "ref": "ff72d462d74f9eb856aa9edbc368caad9c466708",
+        "blob": "aa01454cf24a60b8f0c61a8440d5177dced8d7a0",
+        "bytes": 43580,
+        "sha256": "e894aba83d8289a714d059f2b5e9f6467273a8229f25cfecddffaa647964e467"
+      }
+    ]
+  },
+  "verified_static_inventory": {
+    "module_count": 40,
+    "package_count": 91,
+    "module_source_status_counts": {
+      "existing_bound": 40
+    },
+    "module_root_present_claim_count": 40,
+    "module_production_implementation_claim_count": 0,
+    "package_state_counts": {
+      "source_implemented": 25,
+      "source_implemented_execution_pending": 20,
+      "source_implemented_semantic_review_pending": 2,
+      "planned": 43,
+      "blocked_external": 1
+    },
+    "state_interpretation": "注册表状态和 source binding 是静态事实，不是运行资格或完成率；本次没有重新编译所有 40 个模块。",
+    "readiness_documentation_boundary": {
+      "documentationReady": true,
+      "sourceImplementation": false,
+      "runtimeActivation": false,
+      "longitudinalEfficacy": false,
+      "functionalBiomimicry": false,
+      "physicalSafetyQualification": false,
+      "autonomousPropagation": false
+    },
+    "documentation_gap_completion_semantics": {
+      "closedSpecificationMeans": "normative bounded algorithm, protocol, state, failure, resource, test and coding-entry semantics exist and are machine validated",
+      "closedSpecificationDoesNotMean": "source implementation, runtime activation, efficacy, physical safety, acceptance, selection, merge, promotion or release"
+    }
+  },
+  "directions_zh": [
+    "以本地优先、可恢复的多 Agent 产品为首个可接受目标，先获得一个真实正常入口和终态。",
+    "Codex App Server 是唯一 session/thread/turn/model/tool spine；Agentd 是 composition/lifecycle host。",
+    "每个 durable domain 唯一 schema owner / authoritative writer，跨 owner 使用 durable intent/outbox/dedupe/ack/reconciliation。",
+    "Objective/NDU/Prompt/Neuron/learning/control planes 负责选择或提议，不发执行权限；current-run objectives/artifacts 不受学习改写。",
+    "共享 Encoder/Cell/worker 与 isolated Agent workspace / shared experience 组合，避免重复执行层和数据事实域。",
+    "源码集成、真实调用、学习收益、外部接受、promotion/release 分别用对应证据判断。"
+  ],
+  "phases": [
+    {
+      "id": "P0",
+      "title_zh": "收敛一个可复现的集成基线",
+      "owners": [
+        "developer-productivity",
+        "codex-integration",
+        "runtime-control",
+        "security-authority"
+      ],
+      "focus_packages": [
+        "DOC-2-DEFAULT-BRANCH-SELECTION",
+        "P0.7D-FAULT-MATRIX",
+        "P0.7E-DEPENDENCY-INVERSION",
+        "P0.8A-AST-RATCHET"
+      ],
+      "actions_zh": [
+        "收齐当前唯一 native lane 的已启动阶段、final fmt/fix、source map；保持每阶段原始失败及完整回执，合成一个可审候选。",
+        "把已独审的 docs 历史引用修复、完整 failed-target shard/attempt 采集、UI 精确两历史 fetch 与原预算计时改动纳入所属 PR。",
+        "按原 48 与新增可见下界 18 名逐项处理；优先消除真实平台失败、补齐 capped unknown，再处理 retry-stage 不稳定性，保留原断言/过滤/预算。",
+        "对实际最新 main 构造真实 merge candidate，在新固定 head/tree 跑适用原 CI；源头与 merge 的结果分别保留，不从旧绿头继承。"
+      ],
+      "exit_conditions_zh": [
+        "所有适用 required checks 对实际 candidate 终态满足；无未解释的 cancelled/timeout/unknown 必需证据。",
+        "原失败、修后结果、负控及新出现失败均有 exact source + full log/JUnit/平台关联。",
+        "B12/B14 的已满足范围保持闭合；distinct server helper、Windows strict boundary、CodeMode 等剩余项有独立判定，不互相代替。"
+      ],
+      "does_not_claim_zh": "本阶段不宣称 B16 真实业务入口、学习收益、外部接受或 release 已完成。"
+    },
+    {
+      "id": "P1",
+      "title_zh": "打通一个正常业务入口与可恢复终态",
+      "owners": [
+        "agent-runtime",
+        "runtime-control",
+        "codex-integration",
+        "ui-platform",
+        "cognitive-platform",
+        "intelligence-platform"
+      ],
+      "focus_packages": [
+        "P0.8D-VERTICAL-SLICE",
+        "INT-2-AGENTD-CODEX-COMPOSITION",
+        "P0.8B-READINESS",
+        "P0.8C-RESOURCE-BUDGETS",
+        "P0.7B-B4-CALLSITE-PROOF",
+        "OBJ-1-OBJECTIVE-COMPILER",
+        "MEM-8-PRODUCTION-WRITER",
+        "UI-V5",
+        "UI-NATIVE-1-SHELL"
+      ],
+      "actions_zh": [
+        "按 B16 正常入口/joint-cohort 的独立接受输入清单，使用真实被授权的 producer 与 caller，走 UI/API → Objective → bounded Memory/Context → Agentd → Codex App Server → 可观察终态。",
+        "复用现有 session/thread/turn、VerifiedUse 与 typed owner ports；让 Agentd 只组合，不新增平行 execution spine 或跨 owner store 写入。",
+        "在同一组合源上验证 cancel、approval-blocked recovery、lost acknowledgement、process restart、revocation 与 rollback；判定 terminal result 与 durable acknowledgement。",
+        "将 role sockets、cold recovery 等 donor 作为待比较组件：确认 caller 接线与同树正负控制后再吸收，不能按 PR 标题认定整个入口完成。"
+      ],
+      "exit_conditions_zh": [
+        "实际正常 caller 进入受支持的 runtime composition，产生 request/turn/result 的可关联证据；fixture-only 路径和 dispatch ACK 不算业务终态。",
+        "单写者、current fence、final-use、权限撤销、重复提交/重复 ack 的原约束均保持。",
+        "适用真实入口的源码、target host、独立接受与应用结果绑定同一 candidate；外部输入缺失时明确哪一个输入/owner/命令仍待满足。"
+      ],
+      "does_not_claim_zh": "一个真实产品路径通过不等于所有 40 模块生产可用。"
+    },
+    {
+      "id": "P2",
+      "title_zh": "统一共享计算与确定性数据基础",
+      "owners": [
+        "inference-platform",
+        "cognitive-platform",
+        "intelligence-platform",
+        "learning-platform",
+        "kernel-contracts"
+      ],
+      "focus_packages": [
+        "INFER-V4-T1",
+        "INFER-V4-T2",
+        "INFER-V4-T3",
+        "INFER-V4-T4",
+        "INFER-V4-T5",
+        "FLEET-1-ALLOCATION-CONTRACT",
+        "MEM-0-TYPES",
+        "MEM-1-STORE",
+        "MEM-READ-1-SNAPSHOT-PORT",
+        "MEM-2-RETRIEVAL",
+        "MEM-4-KG",
+        "MEM-5-COMPACT",
+        "OBJ-0-OBJECTIVE-CONTRACTS",
+        "NDU-1-DETERMINISTIC-UTILITY-BASELINE",
+        "LRN-1-DURABLE-EPISODE-LEDGER",
+        "PIM-1-PROMPT-FACTOR-REGISTRY",
+        "ART-1-LEARNING-ARTIFACT-REGISTRY"
+      ],
+      "actions_zh": [
+        "通过现有 inference / neuron / organ owners 组合一个共享 Encoder/Cell/worker 调用实现，显式限制队列与 sparse microbatch，不按逻辑 Cell 数复制独立服务。",
+        "以 immutable snapshot、single writer、outbox/dedupe/ack/reconciliation 合同连接 Memory、KG、Context、Prompt 与 learning ledger。",
+        "运行真实 64/256/1024/4096 logical-Cell profile，分开记录 active concurrency、质量、CPU/RSS、p50/p95/p99、队列 age、token 与总成本。",
+        "对 correction/forget/retrieval revalidation 及 artifact lineage 建立相同源的回归；Memory Cell 保持可由 source 重建的 projection。"
+      ],
+      "exit_conditions_zh": [
+        "共享 worker 的真实 caller 与 resource bounds 已实际执行；容量不是配置值推算。",
+        "所有数据域的 authoritative owner 与 writer 唯一，snapshot/forget frontier 一致；跨 owner 失败能恢复和去重。",
+        "确定性基线与可比资源账本可复现，后续学习候选能在同预算比较。"
+      ],
+      "does_not_claim_zh": "适配器存在、store 持久化或模型被调用均不构成学习有效性。"
+    },
+    {
+      "id": "P3",
+      "title_zh": "在等预算下验证 shadow intelligence",
+      "owners": [
+        "learning-platform",
+        "intelligence-platform",
+        "qualification-plane"
+      ],
+      "focus_packages": [
+        "NEU-1-LOCAL-MODEL-BAKEOFF",
+        "NEU-2-TEMPORAL-SIGNAL-RUNTIME",
+        "INT-1-CALIBRATED-INTUITION-POLICY",
+        "HBO-1-OPERATOR-SENSOR-CORE",
+        "HBO-2-BELLMAN-OPERATOR-SHADOW",
+        "PIM-2-PROMPT-PRICING-PORTFOLIO-SHADOW",
+        "CTX-1-CONTEXT-COMPILER",
+        "LRN-2-CAUSAL-EVALUATION"
+      ],
+      "actions_zh": [
+        "固定完整 candidate population、输入/成本预算、deterministic 与 strong-retrieval baselines，再比较真实 local model / Neuron / Intuition / Prompt / Bellman-NDU shadow 候选。",
+        "将 proposer、scorer、selector 的职责分开；负例、unavailable、OOD 与 abstention 保留在预先声明的统计总体。",
+        "分别测 answer generation、Reader capacity、retrieval quality、citation entailment、parameter-learning benefit，避免把其中一项提升当全部有效。"
+      ],
+      "exit_conditions_zh": [
+        "有同预算、真实调用、完整候选集合、独立 outcome 的结果及置信边界。",
+        "shadow 只产生候选与决策记录，不更改 current-run objectives/artifacts，不执行额外效果或签发权限。"
+      ],
+      "does_not_claim_zh": "一次 benchmark、离线 loss 改善或数值 fixture 不等于生产 learned policy 或通用最优。"
+    },
+    {
+      "id": "P4",
+      "title_zh": "完成第一个有因果对照的只读学习闭环",
+      "owners": [
+        "intelligence-platform",
+        "learning-platform",
+        "cognitive-platform",
+        "qualification-plane"
+      ],
+      "focus_packages": [
+        "C1-PROMPTED-MEMORY-RETRIEVAL-RANK"
+      ],
+      "actions_zh": [
+        "在 read-only retrieval-use/report 域运行 C1：request → Objective receipt → bounded candidates → NDU/Prompt portfolio/timing → Context receipt → action distribution/report → outcome/correction → attribution → next-snapshot candidate。",
+        "对 no prompt、单 factor、pairs、全组合、fixed timing、learned timing 做预先声明的消融；初始 factors 为 exact-source、freshness、contradiction、cite-before-use、abstain-on-stale。",
+        "验证 canonical C1 的 zero Memory/KG/tool/provider-effect 合同，记录 task success、retrieval utility、citation precision、stale/contradiction/abstention、latency/token、calibration/OOD。"
+      ],
+      "exit_conditions_zh": [
+        "因果 uplift 与代价在固定总体/预算下可复核，负控有效且没有未经许可效果。",
+        "输出是可回滚的 next-snapshot shadow candidate，当前任务没有被学习结果即时改写。"
+      ],
+      "does_not_claim_zh": "C1 完成仍不等于纵向学习或长期保持已证明。"
+    },
+    {
+      "id": "P5",
+      "title_zh": "用真实未来窗口验证长期学习与遗忘",
+      "owners": [
+        "learning-platform",
+        "cognitive-platform",
+        "qualification-plane"
+      ],
+      "focus_packages": [
+        "ART-2-NEXT-SNAPSHOT-RELOAD-ROLLBACK",
+        "LONG-1-TEMPORAL-HOLDOUT",
+        "LONG-2-RETENTION-FORGETTING",
+        "LONG-3-UNLEARNING-NON-RESURRECTION",
+        "NDU-2-AGENT-DOMAIN-HIERARCHY"
+      ],
+      "actions_zh": [
+        "固定已签名的候选/输入版本，演练 next-snapshot reload 与 predecessor rollback。",
+        "等待真实未来日历 holdout 和 delayed outcomes；保存 retention、forgetting、correction lineage、unlearning/non-resurrection 的跨窗口证据。",
+        "证明删除/撤销传遍 Memory、KG/index、prompt graph、compact、federation、training/cache 与 signed artifacts 的实际消费者。"
+      ],
+      "exit_conditions_zh": [
+        "未来窗口独立结果与准确时间源可验证，不能用离线重放替代尚未发生的窗口。",
+        "跨 projection/artifact 的不可复活与 rollback 在实际 reader/consumer 验证，方可按 canonical claim ladder 升级。"
+      ],
+      "does_not_claim_zh": "工程补丁、加速重放或已过去窗口不能替代新的 longitudinal evidence。"
+    },
+    {
+      "id": "P6",
+      "title_zh": "在前序证据之后推进可塑性与自迭代候选",
+      "owners": [
+        "learning-platform",
+        "intelligence-platform",
+        "developer-productivity",
+        "qualification-plane"
+      ],
+      "focus_packages": [
+        "BIO-1-ELIGIBILITY-HOMEOSTASIS",
+        "BIO-2-REPLAY-CONSOLIDATION",
+        "BIO-3-WORLD-MODEL-PREDICTION-ERROR",
+        "PIM-3-FACTOR-EVOLUTION",
+        "PLS-1-PARAMETER-PLASTICITY",
+        "PLS-2-TOPOLOGY-PROPOSAL",
+        "SELF-1-CODE-CANDIDATE-PIPELINE",
+        "PLS-3-BOUNDED-STRUCTURAL-CANARY"
+      ],
+      "actions_zh": [
+        "依实际 Development/Activation/Evidence DAG 分别实现 eligibility/homeostasis、replay/world-model、PromptFactor evolution 与 parameter plasticity；保持 immutable authority/privacy/truth/writer kernel。",
+        "Engineering Control Plane 生成 bounded code/topology candidates 和独立审查材料，保留 proposer 与 approval/selection 的分离。",
+        "结构 Cell Split、topology canary 与 source evolution 放在依赖与 P0.9 的实际门禁之后，保留 baseline、rollback 与 independent ablation。"
+      ],
+      "exit_conditions_zh": [
+        "参数/拓扑作用有真实因果、资源与安全边界证据；候选生成、selection、promotion、release 各自可审。",
+        "任何 uncertain external effect 按 reconciliation 处理，不写成 absent/success。"
+      ],
+      "does_not_claim_zh": "proposal 存在或 self-edit 成功不等于 self-iteration/evolution 的产品资格。"
+    },
+    {
+      "id": "P7",
+      "title_zh": "先仿真再做具身系统目标主机资格",
+      "owners": [
+        "kernel-contracts",
+        "cognitive-platform",
+        "runtime-control",
+        "learning-platform",
+        "qualification-plane"
+      ],
+      "focus_packages": [
+        "EMB-0-EMBODIED-CONTRACTS",
+        "EMB-1-SENSOR-BUS-BODY-SCHEMA",
+        "EMB-2-REFLEX-MOTOR-ACTUATION",
+        "EMB-3-HIL-SIM-TO-REAL-QUALIFICATION"
+      ],
+      "actions_zh": [
+        "实现共有 sensor/body/reflex/actuation 类型、coherent body state、确定性本地控制与终态 effect reconciliation。",
+        "先在 simulator/HIL 绑定实际 target-host timing、emergency stop、故障恢复和独立 safety evidence。"
+      ],
+      "exit_conditions_zh": [
+        "目标硬件/主机、时序与安全资格齐备且得到对应 activation 决策，方可发生实际物理动作。"
+      ],
+      "does_not_claim_zh": "仿真成功不替代真实硬件安全和操作接受。"
+    },
+    {
+      "id": "P8",
+      "title_zh": "在明确授权的外部 fixture 中推进系统吸收",
+      "owners": [
+        "kernel-contracts",
+        "developer-productivity",
+        "agent-runtime",
+        "durability-kernel",
+        "fleet-runtime",
+        "qualification-plane"
+      ],
+      "focus_packages": [
+        "ASM-0-EXTERNAL-SYSTEM-CONTRACTS",
+        "ASM-1-DISCOVERY-MANIFEST",
+        "ASM-2-DEBIAN-BRIDGE-SANDBOX",
+        "ASM-3-STATE-MIGRATION-QUALIFICATION",
+        "ASM-4-FEDERATED-ORGAN-ENROLLMENT"
+      ],
+      "actions_zh": [
+        "按原 owner 授权从 non-privileged Debian/POSIX fixture 做 read-only discovery、manifest/contract synthesis，再进入 credential-free sandbox 和可回滚 state migration。",
+        "真实 host enrollment 与 federation 逐个绑定明确 owner consent、identity、rollback 和独立 acceptance；外部 HeptaBao/HIA/Chain 由独立门禁清单判定。"
+      ],
+      "exit_conditions_zh": [
+        "每一个实际 external effect 与 host enrollment 均有当前授权和真实 consumer 的输出；HOLD 必须有对应 policy/owner 决策，不能靠改工程声明消除。"
+      ],
+      "does_not_claim_zh": "独立仓库的构建、证书、接口或分支成功不证明已经纳入 hepta-private-ci；禁止未经授权的跨主机/自主传播。"
+    }
+  ],
+  "canonical_lanes": [
+    {
+      "id": "LANE-A-FOUNDATION",
+      "owner": "kernel-contracts",
+      "deputy": "architecture",
+      "modules": [
+        "platform.types",
+        "platform.wire",
+        "kernel.authority",
+        "kernel.operations",
+        "kernel.evidence",
+        "auth.authbus",
+        "secrets.heptabao"
+      ],
+      "dependsOn": [],
+      "entryGate": [
+        "canonical_source_receipt",
+        "readiness_closed"
+      ],
+      "exitGate": [
+        "shared_types_compile",
+        "authority_negative_tests",
+        "fault_taxonomy_frozen"
+      ],
+      "package_ids": [
+        "P0.7B-B0-VERIFIED-USE",
+        "P0.7B-B2-TOOL-NET-FS",
+        "P0.7B-B3-BOUNDARIES",
+        "P0.7B-B4-CALLSITE-PROOF",
+        "AUTHBUS-P1.3-V12",
+        "P0.7D-FAULT-MATRIX",
+        "P0.7E-DEPENDENCY-INVERSION",
+        "P0.8A-AST-RATCHET",
+        "P0.9-EXTERNAL-GATES",
+        "PLATFORM-0-TYPE-BOUNDARY",
+        "HEPTABAO-1-SECRET-BOUNDARY",
+        "EMB-0-EMBODIED-CONTRACTS",
+        "ASM-0-EXTERNAL-SYSTEM-CONTRACTS",
+        "ASM-3-STATE-MIGRATION-QUALIFICATION"
+      ]
+    },
+    {
+      "id": "LANE-B-RUNTIME",
+      "owner": "runtime-control",
+      "deputy": "security-authority",
+      "modules": [
+        "runtime.supervisor",
+        "runtime.fleet",
+        "runtime.agentd",
+        "runtime.codex",
+        "inference.control",
+        "inference.worker",
+        "automation.taskflow",
+        "channel.matrix",
+        "browser.servo",
+        "ui.control",
+        "ui.native"
+      ],
+      "dependsOn": [
+        "LANE-A-FOUNDATION"
+      ],
+      "entryGate": [
+        "foundation_contract_snapshot"
+      ],
+      "exitGate": [
+        "effect_boundaries_typed",
+        "readiness_graph_complete",
+        "deterministic_fallbacks"
+      ],
+      "package_ids": [
+        "P0.7A-RUNTIME-BOOTSTRAP",
+        "P0.7B-B1A-PROVIDER-BOUNDARY",
+        "P0.7B-B1B-MODEL-BOUNDARY",
+        "INFER-V4-T1",
+        "INFER-V4-T2",
+        "INFER-V4-T3",
+        "INFER-V4-T4",
+        "INFER-V4-T5",
+        "UI-V5",
+        "BROWSER-WEB-C1",
+        "P0.8B-READINESS",
+        "P0.8C-RESOURCE-BUDGETS",
+        "P0.8D-VERTICAL-SLICE",
+        "FLEET-1-ALLOCATION-CONTRACT",
+        "TASKFLOW-1-EXECUTION-BOUNDARY",
+        "MATRIX-1-CHANNEL-BOUNDARY",
+        "UI-NATIVE-1-SHELL",
+        "ASM-2-DEBIAN-BRIDGE-SANDBOX",
+        "ASM-4-FEDERATED-ORGAN-ENROLLMENT"
+      ]
+    },
+    {
+      "id": "LANE-C-MEMORY",
+      "owner": "cognitive-platform",
+      "deputy": "durability-kernel",
+      "modules": [
+        "cognitive.types",
+        "cognitive.store",
+        "cognitive.read",
+        "memory.retrieval",
+        "memory.federation",
+        "knowledge.graph",
+        "compact.engine",
+        "prompt.registry",
+        "context.compiler"
+      ],
+      "dependsOn": [
+        "LANE-A-FOUNDATION"
+      ],
+      "entryGate": [
+        "foundation_contract_snapshot"
+      ],
+      "exitGate": [
+        "coherent_snapshot_reads",
+        "single_writer_stores",
+        "deletion_non_resurrection_fixture"
+      ],
+      "package_ids": [
+        "MEM-0-TYPES",
+        "MEM-1-STORE",
+        "MEM-2-RETRIEVAL",
+        "MEM-3-FEDERATION",
+        "MEM-4-KG",
+        "MEM-5-COMPACT",
+        "MEM-8-PRODUCTION-WRITER",
+        "PIM-0-PROMPT-INTERVENTION-CONTRACTS",
+        "PIM-1-PROMPT-FACTOR-REGISTRY",
+        "CTX-1-CONTEXT-COMPILER",
+        "PIM-3-FACTOR-EVOLUTION",
+        "MEM-READ-1-SNAPSHOT-PORT",
+        "EMB-1-SENSOR-BUS-BODY-SCHEMA"
+      ]
+    },
+    {
+      "id": "LANE-D-OBJECTIVE-VALUE",
+      "owner": "intelligence-platform",
+      "deputy": "learning-platform",
+      "modules": [
+        "objective.compiler",
+        "utility.ndu",
+        "control.runtime"
+      ],
+      "dependsOn": [
+        "LANE-A-FOUNDATION",
+        "LANE-C-MEMORY"
+      ],
+      "entryGate": [
+        "objective_and_ndu_specs_bound"
+      ],
+      "exitGate": [
+        "deterministic_objective_compile",
+        "deterministic_ndu_baseline",
+        "resource_conservation"
+      ],
+      "package_ids": [
+        "OBJ-0-OBJECTIVE-CONTRACTS",
+        "NDU-0-PREFERENCE-UTILITY-CONTRACTS",
+        "OBJ-1-OBJECTIVE-COMPILER",
+        "NDU-1-DETERMINISTIC-UTILITY-BASELINE",
+        "RCP-1-RUNTIME-CONTROL-PLANE",
+        "NDU-2-AGENT-DOMAIN-HIERARCHY",
+        "EMB-2-REFLEX-MOTOR-ACTUATION"
+      ]
+    },
+    {
+      "id": "LANE-E-LEARNING",
+      "owner": "learning-platform",
+      "deputy": "qualification-plane",
+      "modules": [
+        "learning.ledger",
+        "learning.operator",
+        "learning.eval",
+        "learning.artifacts"
+      ],
+      "dependsOn": [
+        "LANE-A-FOUNDATION",
+        "LANE-C-MEMORY",
+        "LANE-D-OBJECTIVE-VALUE"
+      ],
+      "entryGate": [
+        "ledger_and_evaluation_specs_bound"
+      ],
+      "exitGate": [
+        "immutable_episode_chain",
+        "independent_evaluation",
+        "artifact_reload_rollback"
+      ],
+      "package_ids": [
+        "LRN-0-CAUSAL-LEARNING-CONTRACTS",
+        "HBO-0-BELLMAN-OPERATOR-CONTRACTS",
+        "LRN-1-DURABLE-EPISODE-LEDGER",
+        "ART-1-LEARNING-ARTIFACT-REGISTRY",
+        "HBO-1-OPERATOR-SENSOR-CORE",
+        "HBO-2-BELLMAN-OPERATOR-SHADOW",
+        "LRN-2-CAUSAL-EVALUATION",
+        "ART-2-NEXT-SNAPSHOT-RELOAD-ROLLBACK",
+        "LONG-1-TEMPORAL-HOLDOUT",
+        "LONG-2-RETENTION-FORGETTING",
+        "LONG-3-UNLEARNING-NON-RESURRECTION",
+        "BIO-2-REPLAY-CONSOLIDATION",
+        "BIO-3-WORLD-MODEL-PREDICTION-ERROR",
+        "EMB-3-HIL-SIM-TO-REAL-QUALIFICATION"
+      ]
+    },
+    {
+      "id": "LANE-F-ADAPTIVE-POLICY",
+      "owner": "learning-platform",
+      "deputy": "intelligence-platform",
+      "modules": [
+        "neuron.runtime",
+        "intuition.policy",
+        "prompt.optimizer",
+        "learning.plasticity",
+        "intelligence.control"
+      ],
+      "dependsOn": [
+        "LANE-B-RUNTIME",
+        "LANE-C-MEMORY",
+        "LANE-D-OBJECTIVE-VALUE",
+        "LANE-E-LEARNING"
+      ],
+      "entryGate": [
+        "selected_local_model_manifest_or_deterministic_fallback"
+      ],
+      "exitGate": [
+        "shadow_only_candidate_path",
+        "no_current_run_mutation",
+        "ablation_plan_bound"
+      ],
+      "package_ids": [
+        "INTELLIGENCE-A0-Q0.63",
+        "BIO-0-NEURON-INTUITION-CONTRACTS",
+        "NEU-1-LOCAL-MODEL-BAKEOFF",
+        "NEU-2-TEMPORAL-SIGNAL-RUNTIME",
+        "INT-1-CALIBRATED-INTUITION-POLICY",
+        "PIM-2-PROMPT-PRICING-PORTFOLIO-SHADOW",
+        "C1-PROMPTED-MEMORY-RETRIEVAL-RANK",
+        "BIO-1-ELIGIBILITY-HOMEOSTASIS",
+        "PLS-1-PARAMETER-PLASTICITY",
+        "PLS-2-TOPOLOGY-PROPOSAL",
+        "PLS-3-BOUNDED-STRUCTURAL-CANARY",
+        "INT-2-AGENTD-CODEX-COMPOSITION"
+      ]
+    },
+    {
+      "id": "LANE-G-ENGINEERING",
+      "owner": "developer-productivity",
+      "deputy": "architecture",
+      "modules": [
+        "control.engineering"
+      ],
+      "dependsOn": [
+        "LANE-A-FOUNDATION"
+      ],
+      "entryGate": [
+        "source_and_parallel_specs_bound"
+      ],
+      "exitGate": [
+        "bounded_work_envelopes",
+        "sandbox_candidate_pipeline",
+        "independent_decision_adapter"
+      ],
+      "package_ids": [
+        "DOC-0-CANONICAL-DOCUMENT-CONSOLIDATION",
+        "DOC-1-V8-SEMANTIC-UPGRADE",
+        "DOC-3D-ADAPTIVE-ALGORITHM-DOC-CLOSED-WORLD",
+        "DOC-2-DEFAULT-BRANCH-SELECTION",
+        "ECP-1-ENGINEERING-CONTROL-PLANE",
+        "SELF-1-CODE-CANDIDATE-PIPELINE",
+        "DOC-REGISTRY-CLOSED-WORLD",
+        "DOC-3A-SOURCE-BINDING-RECONCILIATION",
+        "DOC-3B-MODULE-TECHNICAL-DOCUMENTS",
+        "DOC-3C-MODULE-DOC-CLOSED-WORLD",
+        "DOC-3E-PRECODING-READINESS-CLOSED-WORLD",
+        "ASM-1-DISCOVERY-MANIFEST"
+      ]
+    }
+  ],
+  "canonical_module_index": [
+    {
+      "id": "platform.types",
+      "owner": "kernel-contracts",
+      "deputy": "architecture",
+      "plane": "foundation",
+      "role": "contract",
+      "writes": [],
+      "root_bindings": [
+        {
+          "path": "codex-rs/hepta-types",
+          "mode": "exclusive"
+        }
+      ],
+      "source_status": "existing_bound",
+      "source_root_present_claim": true,
+      "production_implementation_claim": false,
+      "bootstrap_work_package": "PLATFORM-0-TYPE-BOUNDARY",
+      "implementation_map_path": "docs/modules/platform.types/IMPLEMENTATION_MAP.json"
+    },
+    {
+      "id": "platform.wire",
+      "owner": "kernel-contracts",
+      "deputy": "integration",
+      "plane": "foundation",
+      "role": "contract",
+      "writes": [],
+      "root_bindings": [
+        {
+          "path": "codex-rs/hepta-wire",
+          "mode": "exclusive"
+        }
+      ],
+      "source_status": "existing_bound",
+      "source_root_present_claim": true,
+      "production_implementation_claim": false,
+      "bootstrap_work_package": "P0.7E-DEPENDENCY-INVERSION",
+      "implementation_map_path": "docs/modules/platform.wire/IMPLEMENTATION_MAP.json"
+    },
+    {
+      "id": "kernel.authority",
+      "owner": "security-authority",
+      "deputy": "kernel-contracts",
+      "plane": "kernel",
+      "role": "immutable_kernel",
+      "writes": [
+        "authority_lease",
+        "capability_revocation"
+      ],
+      "root_bindings": [
+        {
+          "path": "codex-rs/hepta-contracts",
+          "mode": "exclusive"
+        }
+      ],
+      "source_status": "existing_bound",
+      "source_root_present_claim": true,
+      "production_implementation_claim": false,
+      "bootstrap_work_package": "P0.7B-B0-VERIFIED-USE",
+      "implementation_map_path": "docs/modules/kernel.authority/IMPLEMENTATION_MAP.json"
+    },
+    {
+      "id": "kernel.operations",
+      "owner": "durability-kernel",
+      "deputy": "architecture",
+      "plane": "kernel",
+      "role": "immutable_kernel",
+      "writes": [
+        "operation_ledger",
+        "cross_owner_outbox"
+      ],
+      "root_bindings": [
+        {
+          "path": "codex-rs/hepta-operations",
+          "mode": "exclusive"
+        }
+      ],
+      "source_status": "existing_bound",
+      "source_root_present_claim": true,
+      "production_implementation_claim": false,
+      "bootstrap_work_package": "P0.7D-FAULT-MATRIX",
+      "implementation_map_path": "docs/modules/kernel.operations/IMPLEMENTATION_MAP.json"
+    },
+    {
+      "id": "kernel.evidence",
+      "owner": "qualification-plane",
+      "deputy": "security-authority",
+      "plane": "qualification",
+      "role": "authoritative_store",
+      "writes": [
+        "qualification_evidence"
+      ],
+      "root_bindings": [
+        {
+          "path": "codex-rs/hepta-evidence",
+          "mode": "exclusive"
+        }
+      ],
+      "source_status": "existing_bound",
+      "source_root_present_claim": true,
+      "production_implementation_claim": false,
+      "bootstrap_work_package": "P0.9-EXTERNAL-GATES",
+      "implementation_map_path": "docs/modules/kernel.evidence/IMPLEMENTATION_MAP.json"
+    },
+    {
+      "id": "runtime.supervisor",
+      "owner": "runtime-control",
+      "deputy": "fleet-runtime",
+      "plane": "control",
+      "role": "execution_plant",
+      "writes": [
+        "fleet_registry",
+        "agent_lifecycle",
+        "runtime_instance_projection",
+        "release_selection"
+      ],
+      "root_bindings": [
+        {
+          "path": "codex-rs/hepta-supervisor",
+          "mode": "exclusive"
+        }
+      ],
+      "source_status": "existing_bound",
+      "source_root_present_claim": true,
+      "production_implementation_claim": false,
+      "bootstrap_work_package": "P0.7A-RUNTIME-BOOTSTRAP",
+      "implementation_map_path": "docs/modules/runtime.supervisor/IMPLEMENTATION_MAP.json"
+    },
+    {
+      "id": "runtime.fleet",
+      "owner": "fleet-runtime",
+      "deputy": "runtime-control",
+      "plane": "control",
+      "role": "execution_plant",
+      "writes": [
+        "fleet_allocation_grant"
+      ],
+      "root_bindings": [
+        {
+          "path": "codex-rs/hepta-fleet",
+          "mode": "exclusive"
+        }
+      ],
+      "source_status": "existing_bound",
+      "source_root_present_claim": true,
+      "production_implementation_claim": false,
+      "bootstrap_work_package": "FLEET-1-ALLOCATION-CONTRACT",
+      "implementation_map_path": "docs/modules/runtime.fleet/IMPLEMENTATION_MAP.json"
+    },
+    {
+      "id": "runtime.agentd",
+      "owner": "agent-runtime",
+      "deputy": "runtime-control",
+      "plane": "composition",
+      "role": "execution_plant",
+      "writes": [
+        "runtime_health_observation"
+      ],
+      "root_bindings": [
+        {
+          "path": "codex-rs/hepta-agentd",
+          "mode": "exclusive"
+        }
+      ],
+      "source_status": "existing_bound",
+      "source_root_present_claim": true,
+      "production_implementation_claim": false,
+      "bootstrap_work_package": "P0.8B-READINESS",
+      "implementation_map_path": "docs/modules/runtime.agentd/IMPLEMENTATION_MAP.json"
+    },
+    {
+      "id": "runtime.codex",
+      "owner": "codex-integration",
+      "deputy": "agent-runtime",
+      "plane": "execution",
+      "role": "execution_plant",
+      "writes": [
+        "thread_session"
+      ],
+      "root_bindings": [
+        {
+          "path": "codex-rs/codex-app-server",
+          "mode": "exclusive"
+        },
+        {
+          "path": "codex-rs/hepta-codex-adapter",
+          "mode": "exclusive"
+        }
+      ],
+      "source_status": "existing_bound",
+      "source_root_present_claim": true,
+      "production_implementation_claim": false,
+      "bootstrap_work_package": "P0.7B-B1B-MODEL-BOUNDARY",
+      "implementation_map_path": "docs/modules/runtime.codex/IMPLEMENTATION_MAP.json"
+    },
+    {
+      "id": "auth.authbus",
+      "owner": "identity-access",
+      "deputy": "security-authority",
+      "plane": "domain",
+      "role": "immutable_kernel",
+      "writes": [
+        "auth_policy",
+        "quota_registry",
+        "quota_reservation"
+      ],
+      "root_bindings": [
+        {
+          "path": "codex-rs/hepta-authbus",
+          "mode": "exclusive"
+        },
+        {
+          "path": "codex-rs/hepta-authbus-p1-3-qualification",
+          "mode": "exclusive"
+        }
+      ],
+      "source_status": "existing_bound",
+      "source_root_present_claim": true,
+      "production_implementation_claim": false,
+      "bootstrap_work_package": "AUTHBUS-P1.3-V12",
+      "implementation_map_path": "docs/modules/auth.authbus/IMPLEMENTATION_MAP.json"
+    },
+    {
+      "id": "secrets.heptabao",
+      "owner": "secrets-platform",
+      "deputy": "security-authority",
+      "plane": "external_control",
+      "role": "authoritative_store",
+      "writes": [
+        "secret_metadata",
+        "secret_lease"
+      ],
+      "root_bindings": [
+        {
+          "path": "external/HeptaBao",
+          "mode": "exclusive"
+        },
+        {
+          "path": "codex-rs/hepta-bao-adapter",
+          "mode": "exclusive"
+        }
+      ],
+      "source_status": "existing_bound",
+      "source_root_present_claim": true,
+      "production_implementation_claim": false,
+      "bootstrap_work_package": "HEPTABAO-1-SECRET-BOUNDARY",
+      "implementation_map_path": "docs/modules/secrets.heptabao/IMPLEMENTATION_MAP.json"
+    },
+    {
+      "id": "inference.control",
+      "owner": "inference-platform",
+      "deputy": "runtime-control",
+      "plane": "domain",
+      "role": "execution_plant",
+      "writes": [
+        "inference_request",
+        "inference_reservation",
+        "inference_receipt"
+      ],
+      "root_bindings": [
+        {
+          "path": "codex-rs/hepta-infer-core",
+          "mode": "exclusive"
+        },
+        {
+          "path": "codex-rs/hepta-inferd",
+          "mode": "exclusive"
+        }
+      ],
+      "source_status": "existing_bound",
+      "source_root_present_claim": true,
+      "production_implementation_claim": false,
+      "bootstrap_work_package": "P0.7B-B1A-PROVIDER-BOUNDARY",
+      "implementation_map_path": "docs/modules/inference.control/IMPLEMENTATION_MAP.json"
+    },
+    {
+      "id": "inference.worker",
+      "owner": "inference-platform",
+      "deputy": "security-authority",
+      "plane": "adapter",
+      "role": "checked_adapter",
+      "writes": [],
+      "root_bindings": [
+        {
+          "path": "codex-rs/hepta-infer-worker-host",
+          "mode": "exclusive"
+        }
+      ],
+      "source_status": "existing_bound",
+      "source_root_present_claim": true,
+      "production_implementation_claim": false,
+      "bootstrap_work_package": "INFER-V4-T4",
+      "implementation_map_path": "docs/modules/inference.worker/IMPLEMENTATION_MAP.json"
+    },
+    {
+      "id": "objective.compiler",
+      "owner": "intelligence-platform",
+      "deputy": "kernel-contracts",
+      "plane": "domain",
+      "role": "objective_compiler",
+      "writes": [],
+      "root_bindings": [
+        {
+          "path": "codex-rs/hepta-objective",
+          "mode": "exclusive"
+        }
+      ],
+      "source_status": "existing_bound",
+      "source_root_present_claim": true,
+      "production_implementation_claim": false,
+      "bootstrap_work_package": "OBJ-0-OBJECTIVE-CONTRACTS",
+      "implementation_map_path": "docs/modules/objective.compiler/IMPLEMENTATION_MAP.json"
+    },
+    {
+      "id": "utility.ndu",
+      "owner": "intelligence-platform",
+      "deputy": "learning-platform",
+      "plane": "domain",
+      "role": "preference_utility_controller",
+      "writes": [
+        "ndu_preference_projection",
+        "ndu_utility_projection"
+      ],
+      "root_bindings": [
+        {
+          "path": "codex-rs/hepta-ndu",
+          "mode": "exclusive"
+        }
+      ],
+      "source_status": "existing_bound",
+      "source_root_present_claim": true,
+      "production_implementation_claim": false,
+      "bootstrap_work_package": "NDU-0-PREFERENCE-UTILITY-CONTRACTS",
+      "implementation_map_path": "docs/modules/utility.ndu/IMPLEMENTATION_MAP.json"
+    },
+    {
+      "id": "neuron.runtime",
+      "owner": "learning-platform",
+      "deputy": "inference-platform",
+      "plane": "domain",
+      "role": "functional_substrate",
+      "writes": [
+        "neuron_state_checkpoint",
+        "eligibility_trace_checkpoint"
+      ],
+      "root_bindings": [
+        {
+          "path": "codex-rs/hepta-neuron",
+          "mode": "exclusive"
+        }
+      ],
+      "source_status": "existing_bound",
+      "source_root_present_claim": true,
+      "production_implementation_claim": false,
+      "bootstrap_work_package": "BIO-0-NEURON-INTUITION-CONTRACTS",
+      "implementation_map_path": "docs/modules/neuron.runtime/IMPLEMENTATION_MAP.json"
+    },
+    {
+      "id": "intuition.policy",
+      "owner": "intelligence-platform",
+      "deputy": "learning-platform",
+      "plane": "domain",
+      "role": "intervention_policy",
+      "writes": [],
+      "root_bindings": [
+        {
+          "path": "codex-rs/hepta-intuition",
+          "mode": "exclusive"
+        }
+      ],
+      "source_status": "existing_bound",
+      "source_root_present_claim": true,
+      "production_implementation_claim": false,
+      "bootstrap_work_package": "INT-1-CALIBRATED-INTUITION-POLICY",
+      "implementation_map_path": "docs/modules/intuition.policy/IMPLEMENTATION_MAP.json"
+    },
+    {
+      "id": "prompt.registry",
+      "owner": "intelligence-platform",
+      "deputy": "cognitive-platform",
+      "plane": "domain",
+      "role": "authoritative_store",
+      "writes": [
+        "prompt_factor_registry",
+        "prompt_realization_registry",
+        "prompt_factor_lifecycle"
+      ],
+      "root_bindings": [
+        {
+          "path": "codex-rs/hepta-prompt-registry",
+          "mode": "exclusive"
+        }
+      ],
+      "source_status": "existing_bound",
+      "source_root_present_claim": true,
+      "production_implementation_claim": false,
+      "bootstrap_work_package": "PIM-0-PROMPT-INTERVENTION-CONTRACTS",
+      "implementation_map_path": "docs/modules/prompt.registry/IMPLEMENTATION_MAP.json"
+    },
+    {
+      "id": "prompt.optimizer",
+      "owner": "intelligence-platform",
+      "deputy": "performance",
+      "plane": "domain",
+      "role": "intervention_policy",
+      "writes": [],
+      "root_bindings": [
+        {
+          "path": "codex-rs/hepta-prompt-optimizer",
+          "mode": "exclusive"
+        }
+      ],
+      "source_status": "existing_bound",
+      "source_root_present_claim": true,
+      "production_implementation_claim": false,
+      "bootstrap_work_package": "PIM-2-PROMPT-PRICING-PORTFOLIO-SHADOW",
+      "implementation_map_path": "docs/modules/prompt.optimizer/IMPLEMENTATION_MAP.json"
+    },
+    {
+      "id": "context.compiler",
+      "owner": "intelligence-platform",
+      "deputy": "security-authority",
+      "plane": "domain",
+      "role": "intervention_policy",
+      "writes": [],
+      "root_bindings": [
+        {
+          "path": "codex-rs/hepta-context-compiler",
+          "mode": "exclusive"
+        }
+      ],
+      "source_status": "existing_bound",
+      "source_root_present_claim": true,
+      "production_implementation_claim": false,
+      "bootstrap_work_package": "CTX-1-CONTEXT-COMPILER",
+      "implementation_map_path": "docs/modules/context.compiler/IMPLEMENTATION_MAP.json"
+    },
+    {
+      "id": "intelligence.control",
+      "owner": "intelligence-platform",
+      "deputy": "qualification-plane",
+      "plane": "domain",
+      "role": "composition_facade",
+      "writes": [],
+      "root_bindings": [
+        {
+          "path": "codex-rs/hepta-intelligence",
+          "mode": "exclusive"
+        }
+      ],
+      "source_status": "existing_bound",
+      "source_root_present_claim": true,
+      "production_implementation_claim": false,
+      "bootstrap_work_package": "INTELLIGENCE-A0-Q0.63",
+      "implementation_map_path": "docs/modules/intelligence.control/IMPLEMENTATION_MAP.json"
+    },
+    {
+      "id": "cognitive.types",
+      "owner": "cognitive-platform",
+      "deputy": "kernel-contracts",
+      "plane": "domain",
+      "role": "contract",
+      "writes": [],
+      "root_bindings": [
+        {
+          "path": "codex-rs/hepta-cognitive-types",
+          "mode": "exclusive"
+        }
+      ],
+      "source_status": "existing_bound",
+      "source_root_present_claim": true,
+      "production_implementation_claim": false,
+      "bootstrap_work_package": "MEM-0-TYPES",
+      "implementation_map_path": "docs/modules/cognitive.types/IMPLEMENTATION_MAP.json"
+    },
+    {
+      "id": "cognitive.store",
+      "owner": "cognitive-platform",
+      "deputy": "durability-kernel",
+      "plane": "domain",
+      "role": "authoritative_store",
+      "writes": [
+        "memory_ledger",
+        "knowledge_fact_ledger"
+      ],
+      "root_bindings": [
+        {
+          "path": "codex-rs/hepta-cognitive-store",
+          "mode": "exclusive"
+        }
+      ],
+      "source_status": "existing_bound",
+      "source_root_present_claim": true,
+      "production_implementation_claim": false,
+      "bootstrap_work_package": "MEM-1-STORE",
+      "implementation_map_path": "docs/modules/cognitive.store/IMPLEMENTATION_MAP.json"
+    },
+    {
+      "id": "cognitive.read",
+      "owner": "cognitive-platform",
+      "deputy": "agent-runtime",
+      "plane": "domain",
+      "role": "contract",
+      "writes": [],
+      "root_bindings": [
+        {
+          "path": "codex-rs/hepta-cognitive-read",
+          "mode": "exclusive"
+        }
+      ],
+      "source_status": "existing_bound",
+      "source_root_present_claim": true,
+      "production_implementation_claim": false,
+      "bootstrap_work_package": "MEM-READ-1-SNAPSHOT-PORT",
+      "implementation_map_path": "docs/modules/cognitive.read/IMPLEMENTATION_MAP.json"
+    },
+    {
+      "id": "memory.retrieval",
+      "owner": "cognitive-platform",
+      "deputy": "performance",
+      "plane": "domain",
+      "role": "execution_plant",
+      "writes": [],
+      "root_bindings": [
+        {
+          "path": "codex-rs/hepta-memory-retrieval",
+          "mode": "exclusive"
+        }
+      ],
+      "source_status": "existing_bound",
+      "source_root_present_claim": true,
+      "production_implementation_claim": false,
+      "bootstrap_work_package": "MEM-2-RETRIEVAL",
+      "implementation_map_path": "docs/modules/memory.retrieval/IMPLEMENTATION_MAP.json"
+    },
+    {
+      "id": "memory.federation",
+      "owner": "cognitive-platform",
+      "deputy": "security-authority",
+      "plane": "adapter",
+      "role": "checked_adapter",
+      "writes": [],
+      "root_bindings": [
+        {
+          "path": "codex-rs/hepta-memory-federation",
+          "mode": "exclusive"
+        }
+      ],
+      "source_status": "existing_bound",
+      "source_root_present_claim": true,
+      "production_implementation_claim": false,
+      "bootstrap_work_package": "MEM-3-FEDERATION",
+      "implementation_map_path": "docs/modules/memory.federation/IMPLEMENTATION_MAP.json"
+    },
+    {
+      "id": "knowledge.graph",
+      "owner": "knowledge-graph",
+      "deputy": "cognitive-platform",
+      "plane": "domain",
+      "role": "projection",
+      "writes": [
+        "knowledge_graph_projection",
+        "prompt_factor_graph_projection"
+      ],
+      "root_bindings": [
+        {
+          "path": "codex-rs/hepta-kg",
+          "mode": "exclusive"
+        }
+      ],
+      "source_status": "existing_bound",
+      "source_root_present_claim": true,
+      "production_implementation_claim": false,
+      "bootstrap_work_package": "MEM-4-KG",
+      "implementation_map_path": "docs/modules/knowledge.graph/IMPLEMENTATION_MAP.json"
+    },
+    {
+      "id": "compact.engine",
+      "owner": "cognitive-platform",
+      "deputy": "durability-kernel",
+      "plane": "domain",
+      "role": "execution_plant",
+      "writes": [
+        "compact_checkpoint"
+      ],
+      "root_bindings": [
+        {
+          "path": "codex-rs/hepta-compact-engine",
+          "mode": "exclusive"
+        }
+      ],
+      "source_status": "existing_bound",
+      "source_root_present_claim": true,
+      "production_implementation_claim": false,
+      "bootstrap_work_package": "MEM-5-COMPACT",
+      "implementation_map_path": "docs/modules/compact.engine/IMPLEMENTATION_MAP.json"
+    },
+    {
+      "id": "learning.ledger",
+      "owner": "learning-platform",
+      "deputy": "cognitive-platform",
+      "plane": "domain",
+      "role": "authoritative_store",
+      "writes": [
+        "learning_episode_ledger",
+        "learning_credit_ledger",
+        "learning_unlearning_lineage"
+      ],
+      "root_bindings": [
+        {
+          "path": "codex-rs/hepta-learning-ledger",
+          "mode": "exclusive"
+        }
+      ],
+      "source_status": "existing_bound",
+      "source_root_present_claim": true,
+      "production_implementation_claim": false,
+      "bootstrap_work_package": "LRN-0-CAUSAL-LEARNING-CONTRACTS",
+      "implementation_map_path": "docs/modules/learning.ledger/IMPLEMENTATION_MAP.json"
+    },
+    {
+      "id": "learning.operator",
+      "owner": "learning-platform",
+      "deputy": "qualification-plane",
+      "plane": "qualification",
+      "role": "slow_learner",
+      "writes": [],
+      "root_bindings": [
+        {
+          "path": "codex-rs/hepta-bellman-operator",
+          "mode": "exclusive"
+        }
+      ],
+      "source_status": "existing_bound",
+      "source_root_present_claim": true,
+      "production_implementation_claim": false,
+      "bootstrap_work_package": "HBO-0-BELLMAN-OPERATOR-CONTRACTS",
+      "implementation_map_path": "docs/modules/learning.operator/IMPLEMENTATION_MAP.json"
+    },
+    {
+      "id": "learning.eval",
+      "owner": "learning-platform",
+      "deputy": "qualification-plane",
+      "plane": "qualification",
+      "role": "qualification",
+      "writes": [],
+      "root_bindings": [
+        {
+          "path": "codex-rs/hepta-intelligence-eval",
+          "mode": "exclusive"
+        }
+      ],
+      "source_status": "existing_bound",
+      "source_root_present_claim": true,
+      "production_implementation_claim": false,
+      "bootstrap_work_package": "LRN-2-CAUSAL-EVALUATION",
+      "implementation_map_path": "docs/modules/learning.eval/IMPLEMENTATION_MAP.json"
+    },
+    {
+      "id": "learning.artifacts",
+      "owner": "learning-platform",
+      "deputy": "durability-kernel",
+      "plane": "domain",
+      "role": "authoritative_store",
+      "writes": [
+        "learning_artifact_registry",
+        "operator_sensor_core_registry"
+      ],
+      "root_bindings": [
+        {
+          "path": "codex-rs/hepta-learning-artifacts",
+          "mode": "exclusive"
+        }
+      ],
+      "source_status": "existing_bound",
+      "source_root_present_claim": true,
+      "production_implementation_claim": false,
+      "bootstrap_work_package": "ART-1-LEARNING-ARTIFACT-REGISTRY",
+      "implementation_map_path": "docs/modules/learning.artifacts/IMPLEMENTATION_MAP.json"
+    },
+    {
+      "id": "learning.plasticity",
+      "owner": "learning-platform",
+      "deputy": "architecture",
+      "plane": "qualification",
+      "role": "slow_learner",
+      "writes": [
+        "plasticity_proposal_registry"
+      ],
+      "root_bindings": [
+        {
+          "path": "codex-rs/hepta-plasticity",
+          "mode": "exclusive"
+        }
+      ],
+      "source_status": "existing_bound",
+      "source_root_present_claim": true,
+      "production_implementation_claim": false,
+      "bootstrap_work_package": "PLS-1-PARAMETER-PLASTICITY",
+      "implementation_map_path": "docs/modules/learning.plasticity/IMPLEMENTATION_MAP.json"
+    },
+    {
+      "id": "automation.taskflow",
+      "owner": "automation-platform",
+      "deputy": "agent-runtime",
+      "plane": "domain",
+      "role": "execution_plant",
+      "writes": [
+        "automation_schedule",
+        "automation_occurrence"
+      ],
+      "root_bindings": [
+        {
+          "path": "codex-rs/hepta-automation",
+          "mode": "exclusive"
+        }
+      ],
+      "source_status": "existing_bound",
+      "source_root_present_claim": true,
+      "production_implementation_claim": false,
+      "bootstrap_work_package": "TASKFLOW-1-EXECUTION-BOUNDARY",
+      "implementation_map_path": "docs/modules/automation.taskflow/IMPLEMENTATION_MAP.json"
+    },
+    {
+      "id": "channel.matrix",
+      "owner": "channels-platform",
+      "deputy": "security-authority",
+      "plane": "adapter",
+      "role": "checked_adapter",
+      "writes": [
+        "matrix_ingress_projection",
+        "matrix_dispatch_ledger"
+      ],
+      "root_bindings": [
+        {
+          "path": "codex-rs/hepta-matrix-sdk",
+          "mode": "exclusive"
+        },
+        {
+          "path": "codex-rs/hepta-matrixd",
+          "mode": "exclusive"
+        }
+      ],
+      "source_status": "existing_bound",
+      "source_root_present_claim": true,
+      "production_implementation_claim": false,
+      "bootstrap_work_package": "MATRIX-1-CHANNEL-BOUNDARY",
+      "implementation_map_path": "docs/modules/channel.matrix/IMPLEMENTATION_MAP.json"
+    },
+    {
+      "id": "browser.servo",
+      "owner": "browser-platform",
+      "deputy": "security-authority",
+      "plane": "adapter",
+      "role": "checked_adapter",
+      "writes": [
+        "browser_profile_state"
+      ],
+      "root_bindings": [
+        {
+          "path": "apps/hepta-browser",
+          "mode": "exclusive"
+        },
+        {
+          "path": "third_party/servo-patches",
+          "mode": "exclusive"
+        }
+      ],
+      "source_status": "existing_bound",
+      "source_root_present_claim": true,
+      "production_implementation_claim": false,
+      "bootstrap_work_package": "BROWSER-WEB-C1",
+      "implementation_map_path": "docs/modules/browser.servo/IMPLEMENTATION_MAP.json"
+    },
+    {
+      "id": "ui.control",
+      "owner": "ui-platform",
+      "deputy": "accessibility",
+      "plane": "presentation",
+      "role": "presentation",
+      "writes": [],
+      "root_bindings": [
+        {
+          "path": "apps/hepta-control-ui",
+          "mode": "exclusive"
+        }
+      ],
+      "source_status": "existing_bound",
+      "source_root_present_claim": true,
+      "production_implementation_claim": false,
+      "bootstrap_work_package": "UI-V5",
+      "implementation_map_path": "docs/modules/ui.control/IMPLEMENTATION_MAP.json"
+    },
+    {
+      "id": "ui.native",
+      "owner": "ui-platform",
+      "deputy": "accessibility",
+      "plane": "presentation",
+      "role": "presentation",
+      "writes": [],
+      "root_bindings": [
+        {
+          "path": "apps/hepta-native",
+          "mode": "exclusive"
+        }
+      ],
+      "source_status": "existing_bound",
+      "source_root_present_claim": true,
+      "production_implementation_claim": false,
+      "bootstrap_work_package": "UI-NATIVE-1-SHELL",
+      "implementation_map_path": "docs/modules/ui.native/IMPLEMENTATION_MAP.json"
+    },
+    {
+      "id": "control.runtime",
+      "owner": "runtime-control",
+      "deputy": "security-authority",
+      "plane": "control",
+      "role": "preference_utility_controller",
+      "writes": [
+        "global_state_snapshot",
+        "optimization_decision"
+      ],
+      "root_bindings": [
+        {
+          "path": "codex-rs/hepta-control-plane",
+          "mode": "exclusive"
+        }
+      ],
+      "source_status": "existing_bound",
+      "source_root_present_claim": true,
+      "production_implementation_claim": false,
+      "bootstrap_work_package": "RCP-1-RUNTIME-CONTROL-PLANE",
+      "implementation_map_path": "docs/modules/control.runtime/IMPLEMENTATION_MAP.json"
+    },
+    {
+      "id": "control.engineering",
+      "owner": "developer-productivity",
+      "deputy": "architecture",
+      "plane": "engineering",
+      "role": "engineering_control",
+      "writes": [
+        "work_assignment_projection",
+        "integration_decision"
+      ],
+      "root_bindings": [
+        {
+          "path": "tools/hepta-engineering-control",
+          "mode": "exclusive"
+        }
+      ],
+      "source_status": "existing_bound",
+      "source_root_present_claim": true,
+      "production_implementation_claim": false,
+      "bootstrap_work_package": "ECP-1-ENGINEERING-CONTROL-PLANE",
+      "implementation_map_path": "docs/modules/control.engineering/IMPLEMENTATION_MAP.json"
+    }
+  ],
+  "canonical_package_index": [
+    {
+      "id": "DOC-0-CANONICAL-DOCUMENT-CONSOLIDATION",
+      "module": "control.engineering",
+      "owner": "developer-productivity",
+      "deputy": "architecture",
+      "priority": 0,
+      "registry_state": "source_implemented",
+      "parallel_class": "serial_governance",
+      "authority_delta": "none",
+      "development_after": [],
+      "activation_after": [],
+      "evidence_after": [],
+      "acceptance_criteria": [
+        "single_human_development_document",
+        "canonical_machine_registries",
+        "legacy_inventory_zero",
+        "generated_status_exact",
+        "read_only_ci"
+      ],
+      "qualification_profile": "documentation"
+    },
+    {
+      "id": "DOC-1-V8-SEMANTIC-UPGRADE",
+      "module": "control.engineering",
+      "owner": "developer-productivity",
+      "deputy": "architecture",
+      "priority": 0,
+      "registry_state": "source_implemented",
+      "parallel_class": "serial_governance",
+      "authority_delta": "none",
+      "development_after": [
+        "DOC-0-CANONICAL-DOCUMENT-CONSOLIDATION"
+      ],
+      "activation_after": [
+        "DOC-0-CANONICAL-DOCUMENT-CONSOLIDATION"
+      ],
+      "evidence_after": [
+        "DOC-0-CANONICAL-DOCUMENT-CONSOLIDATION"
+      ],
+      "acceptance_criteria": [
+        "v8_single_commit_on_observed_default_base",
+        "forty_module_registry",
+        "ndu_prompt_learning_registries",
+        "legacy_removal_count_at_least_139",
+        "all_authority_flags_false",
+        "exact_head_docs_verifier_pass",
+        "merge_candidate_docs_verifier_pass"
+      ],
+      "qualification_profile": "documentation"
+    },
+    {
+      "id": "DOC-3D-ADAPTIVE-ALGORITHM-DOC-CLOSED-WORLD",
+      "module": "control.engineering",
+      "owner": "developer-productivity",
+      "deputy": "architecture",
+      "priority": 0,
+      "registry_state": "source_implemented",
+      "parallel_class": "serial_governance",
+      "authority_delta": "none",
+      "development_after": [
+        "DOC-3C-MODULE-DOC-CLOSED-WORLD"
+      ],
+      "activation_after": [
+        "DOC-3C-MODULE-DOC-CLOSED-WORLD"
+      ],
+      "evidence_after": [
+        "DOC-3C-MODULE-DOC-CLOSED-WORLD"
+      ],
+      "acceptance_criteria": [
+        "global_document_system_contains_every_algorithm_path",
+        "global_verifier_invokes_algorithm_verifier",
+        "all_required_protocols_and_domains_registered",
+        "paper_identity_and_claim_anchor_verification_pass",
+        "all_golden_vectors_have_exact_expected_values",
+        "dedicated_and_global_source_head_pass",
+        "dedicated_and_global_synthetic_merge_pass",
+        "temporary_installers_absent",
+        "all_authority_flags_false"
+      ],
+      "qualification_profile": "documentation"
+    },
+    {
+      "id": "DOC-2-DEFAULT-BRANCH-SELECTION",
+      "module": "control.engineering",
+      "owner": "developer-productivity",
+      "deputy": "architecture",
+      "priority": 0,
+      "registry_state": "source_implemented_execution_pending",
+      "parallel_class": "serial_governance",
+      "authority_delta": "none",
+      "development_after": [
+        "DOC-1-V8-SEMANTIC-UPGRADE",
+        "DOC-3C-MODULE-DOC-CLOSED-WORLD",
+        "DOC-3D-ADAPTIVE-ALGORITHM-DOC-CLOSED-WORLD"
+      ],
+      "activation_after": [
+        "DOC-1-V8-SEMANTIC-UPGRADE",
+        "DOC-3C-MODULE-DOC-CLOSED-WORLD",
+        "DOC-3D-ADAPTIVE-ALGORITHM-DOC-CLOSED-WORLD"
+      ],
+      "evidence_after": [
+        "DOC-1-V8-SEMANTIC-UPGRADE",
+        "DOC-3C-MODULE-DOC-CLOSED-WORLD",
+        "DOC-3D-ADAPTIVE-ALGORITHM-DOC-CLOSED-WORLD"
+      ],
+      "acceptance_criteria": [
+        "exact_head_docs_verifier_pass",
+        "merge_candidate_docs_verifier_pass",
+        "canonical_selection",
+        "default_branch_contains_only_v8_document_set"
+      ],
+      "qualification_profile": "documentation"
+    },
+    {
+      "id": "P0.7A-RUNTIME-BOOTSTRAP",
+      "module": "runtime.supervisor",
+      "owner": "runtime-control",
+      "deputy": "fleet-runtime",
+      "priority": 1,
+      "registry_state": "source_implemented_execution_pending",
+      "parallel_class": "independent_source_preparation",
+      "authority_delta": "none",
+      "development_after": [
+        "DOC-1-V8-SEMANTIC-UPGRADE"
+      ],
+      "activation_after": [
+        "DOC-2-DEFAULT-BRANCH-SELECTION"
+      ],
+      "evidence_after": [
+        "DOC-2-DEFAULT-BRANCH-SELECTION"
+      ],
+      "acceptance_criteria": [
+        "exact_source_identity",
+        "source_inventory",
+        "static_verification",
+        "focused_tests",
+        "package_tests",
+        "all_target_check",
+        "strict_lint",
+        "clean_worktree",
+        "exact_head_execution",
+        "merge_candidate_execution"
+      ],
+      "qualification_profile": "contracts"
+    },
+    {
+      "id": "P0.7B-B0-VERIFIED-USE",
+      "module": "kernel.authority",
+      "owner": "security-authority",
+      "deputy": "kernel-contracts",
+      "priority": 1,
+      "registry_state": "source_implemented_execution_pending",
+      "parallel_class": "contract_coordinated",
+      "authority_delta": "none",
+      "development_after": [
+        "P0.7A-RUNTIME-BOOTSTRAP"
+      ],
+      "activation_after": [
+        "P0.7A-RUNTIME-BOOTSTRAP"
+      ],
+      "evidence_after": [
+        "P0.7A-RUNTIME-BOOTSTRAP"
+      ],
+      "acceptance_criteria": [
+        "exact_source_identity",
+        "source_inventory",
+        "static_verification",
+        "focused_tests",
+        "package_tests",
+        "all_target_check",
+        "strict_lint",
+        "clean_worktree",
+        "exact_head_execution",
+        "merge_candidate_execution"
+      ],
+      "qualification_profile": "durable"
+    },
+    {
+      "id": "P0.7B-B1A-PROVIDER-BOUNDARY",
+      "module": "inference.control",
+      "owner": "inference-platform",
+      "deputy": "runtime-control",
+      "priority": 1,
+      "registry_state": "source_implemented_execution_pending",
+      "parallel_class": "contract_coordinated",
+      "authority_delta": "none",
+      "development_after": [
+        "P0.7B-B0-VERIFIED-USE"
+      ],
+      "activation_after": [
+        "P0.7B-B0-VERIFIED-USE"
+      ],
+      "evidence_after": [],
+      "acceptance_criteria": [
+        "exact_source_identity",
+        "source_inventory",
+        "static_verification",
+        "focused_tests",
+        "package_tests",
+        "all_target_check",
+        "strict_lint",
+        "clean_worktree",
+        "exact_head_execution",
+        "merge_candidate_execution"
+      ],
+      "qualification_profile": "contracts"
+    },
+    {
+      "id": "P0.7B-B1B-MODEL-BOUNDARY",
+      "module": "runtime.codex",
+      "owner": "codex-integration",
+      "deputy": "agent-runtime",
+      "priority": 1,
+      "registry_state": "source_implemented_execution_pending",
+      "parallel_class": "contract_coordinated",
+      "authority_delta": "none",
+      "development_after": [
+        "P0.7B-B0-VERIFIED-USE"
+      ],
+      "activation_after": [
+        "P0.7B-B1A-PROVIDER-BOUNDARY"
+      ],
+      "evidence_after": [],
+      "acceptance_criteria": [
+        "exact_source_identity",
+        "source_inventory",
+        "static_verification",
+        "focused_tests",
+        "package_tests",
+        "all_target_check",
+        "strict_lint",
+        "clean_worktree",
+        "exact_head_execution",
+        "merge_candidate_execution"
+      ],
+      "qualification_profile": "contracts"
+    },
+    {
+      "id": "P0.7B-B2-TOOL-NET-FS",
+      "module": "kernel.authority",
+      "owner": "security-authority",
+      "deputy": "kernel-contracts",
+      "priority": 1,
+      "registry_state": "source_implemented_execution_pending",
+      "parallel_class": "contract_coordinated",
+      "authority_delta": "none",
+      "development_after": [
+        "P0.7B-B0-VERIFIED-USE"
+      ],
+      "activation_after": [
+        "P0.7B-B0-VERIFIED-USE"
+      ],
+      "evidence_after": [],
+      "acceptance_criteria": [
+        "exact_source_identity",
+        "source_inventory",
+        "static_verification",
+        "focused_tests",
+        "package_tests",
+        "all_target_check",
+        "strict_lint",
+        "clean_worktree",
+        "exact_head_execution",
+        "merge_candidate_execution"
+      ],
+      "qualification_profile": "durable"
+    },
+    {
+      "id": "P0.7B-B3-BOUNDARIES",
+      "module": "kernel.authority",
+      "owner": "security-authority",
+      "deputy": "kernel-contracts",
+      "priority": 1,
+      "registry_state": "source_implemented_execution_pending",
+      "parallel_class": "contract_coordinated",
+      "authority_delta": "none",
+      "development_after": [
+        "P0.7B-B0-VERIFIED-USE",
+        "P0.7B-B2-TOOL-NET-FS"
+      ],
+      "activation_after": [
+        "P0.7B-B0-VERIFIED-USE",
+        "P0.7B-B2-TOOL-NET-FS"
+      ],
+      "evidence_after": [],
+      "acceptance_criteria": [
+        "exact_source_identity",
+        "source_inventory",
+        "static_verification",
+        "focused_tests",
+        "package_tests",
+        "all_target_check",
+        "strict_lint",
+        "clean_worktree",
+        "exact_head_execution",
+        "merge_candidate_execution"
+      ],
+      "qualification_profile": "durable"
+    },
+    {
+      "id": "P0.7B-B4-CALLSITE-PROOF",
+      "module": "kernel.authority",
+      "owner": "security-authority",
+      "deputy": "kernel-contracts",
+      "priority": 1,
+      "registry_state": "source_implemented_execution_pending",
+      "parallel_class": "contract_coordinated",
+      "authority_delta": "none",
+      "development_after": [
+        "P0.7B-B1A-PROVIDER-BOUNDARY",
+        "P0.7B-B1B-MODEL-BOUNDARY",
+        "P0.7B-B2-TOOL-NET-FS",
+        "P0.7B-B3-BOUNDARIES"
+      ],
+      "activation_after": [
+        "P0.7B-B1A-PROVIDER-BOUNDARY",
+        "P0.7B-B1B-MODEL-BOUNDARY",
+        "P0.7B-B2-TOOL-NET-FS",
+        "P0.7B-B3-BOUNDARIES"
+      ],
+      "evidence_after": [],
+      "acceptance_criteria": [
+        "exact_source_identity",
+        "source_inventory",
+        "static_verification",
+        "focused_tests",
+        "package_tests",
+        "all_target_check",
+        "strict_lint",
+        "clean_worktree",
+        "exact_head_execution",
+        "merge_candidate_execution"
+      ],
+      "qualification_profile": "durable"
+    },
+    {
+      "id": "AUTHBUS-P1.3-V12",
+      "module": "auth.authbus",
+      "owner": "identity-access",
+      "deputy": "security-authority",
+      "priority": 1,
+      "registry_state": "source_implemented_semantic_review_pending",
+      "parallel_class": "independent_qualification_source",
+      "authority_delta": "none",
+      "development_after": [
+        "DOC-1-V8-SEMANTIC-UPGRADE"
+      ],
+      "activation_after": [
+        "P0.7B-B0-VERIFIED-USE"
+      ],
+      "evidence_after": [
+        "P0.7B-B0-VERIFIED-USE"
+      ],
+      "acceptance_criteria": [
+        "exact_source_identity",
+        "source_inventory",
+        "static_verification",
+        "focused_tests",
+        "package_tests",
+        "all_target_check",
+        "strict_lint",
+        "clean_worktree",
+        "exact_head_execution",
+        "merge_candidate_execution"
+      ],
+      "qualification_profile": "durable"
+    },
+    {
+      "id": "INTELLIGENCE-A0-Q0.63",
+      "module": "intelligence.control",
+      "owner": "intelligence-platform",
+      "deputy": "qualification-plane",
+      "priority": 1,
+      "registry_state": "source_implemented_execution_pending",
+      "parallel_class": "independent_qualification_source",
+      "authority_delta": "none",
+      "development_after": [
+        "DOC-1-V8-SEMANTIC-UPGRADE"
+      ],
+      "activation_after": [
+        "P0.7B-B0-VERIFIED-USE"
+      ],
+      "evidence_after": [
+        "DOC-2-DEFAULT-BRANCH-SELECTION"
+      ],
+      "acceptance_criteria": [
+        "exact_source_identity",
+        "source_inventory",
+        "static_verification",
+        "focused_tests",
+        "package_tests",
+        "all_target_check",
+        "strict_lint",
+        "clean_worktree",
+        "exact_head_execution",
+        "merge_candidate_execution"
+      ],
+      "qualification_profile": "contracts"
+    },
+    {
+      "id": "INFER-V4-T1",
+      "module": "inference.control",
+      "owner": "inference-platform",
+      "deputy": "runtime-control",
+      "priority": 1,
+      "registry_state": "planned",
+      "parallel_class": "contract_coordinated",
+      "authority_delta": "none",
+      "development_after": [
+        "P0.7B-B0-VERIFIED-USE",
+        "P0.7B-B1A-PROVIDER-BOUNDARY"
+      ],
+      "activation_after": [
+        "P0.7B-B1B-MODEL-BOUNDARY",
+        "P0.7B-B1A-PROVIDER-BOUNDARY"
+      ],
+      "evidence_after": [],
+      "acceptance_criteria": [
+        "exact_source_identity",
+        "source_inventory",
+        "static_verification",
+        "focused_tests",
+        "package_tests",
+        "all_target_check",
+        "strict_lint",
+        "clean_worktree",
+        "exact_head_execution",
+        "merge_candidate_execution"
+      ],
+      "qualification_profile": "contracts"
+    },
+    {
+      "id": "INFER-V4-T2",
+      "module": "inference.control",
+      "owner": "inference-platform",
+      "deputy": "runtime-control",
+      "priority": 1,
+      "registry_state": "planned",
+      "parallel_class": "contract_coordinated",
+      "authority_delta": "none",
+      "development_after": [
+        "INFER-V4-T1",
+        "P0.7B-B1A-PROVIDER-BOUNDARY"
+      ],
+      "activation_after": [
+        "INFER-V4-T1"
+      ],
+      "evidence_after": [],
+      "acceptance_criteria": [
+        "exact_source_identity",
+        "source_inventory",
+        "static_verification",
+        "focused_tests",
+        "package_tests",
+        "all_target_check",
+        "strict_lint",
+        "clean_worktree",
+        "exact_head_execution",
+        "merge_candidate_execution"
+      ],
+      "qualification_profile": "contracts"
+    },
+    {
+      "id": "INFER-V4-T3",
+      "module": "inference.control",
+      "owner": "inference-platform",
+      "deputy": "runtime-control",
+      "priority": 1,
+      "registry_state": "planned",
+      "parallel_class": "contract_coordinated",
+      "authority_delta": "none",
+      "development_after": [
+        "INFER-V4-T2",
+        "P0.7B-B1A-PROVIDER-BOUNDARY",
+        "INFER-V4-T1"
+      ],
+      "activation_after": [
+        "INFER-V4-T2"
+      ],
+      "evidence_after": [],
+      "acceptance_criteria": [
+        "exact_source_identity",
+        "source_inventory",
+        "static_verification",
+        "focused_tests",
+        "package_tests",
+        "all_target_check",
+        "strict_lint",
+        "clean_worktree",
+        "exact_head_execution",
+        "merge_candidate_execution"
+      ],
+      "qualification_profile": "contracts"
+    },
+    {
+      "id": "INFER-V4-T4",
+      "module": "inference.worker",
+      "owner": "inference-platform",
+      "deputy": "security-authority",
+      "priority": 2,
+      "registry_state": "source_implemented",
+      "parallel_class": "contract_coordinated",
+      "authority_delta": "none",
+      "development_after": [
+        "INFER-V4-T1"
+      ],
+      "activation_after": [
+        "INFER-V4-T3"
+      ],
+      "evidence_after": [],
+      "acceptance_criteria": [
+        "exact_source_identity",
+        "source_inventory",
+        "static_verification",
+        "focused_tests",
+        "package_tests",
+        "all_target_check",
+        "strict_lint",
+        "clean_worktree",
+        "exact_head_execution",
+        "merge_candidate_execution"
+      ],
+      "qualification_profile": "physical"
+    },
+    {
+      "id": "INFER-V4-T5",
+      "module": "inference.worker",
+      "owner": "inference-platform",
+      "deputy": "security-authority",
+      "priority": 2,
+      "registry_state": "planned",
+      "parallel_class": "contract_coordinated",
+      "authority_delta": "none",
+      "development_after": [
+        "INFER-V4-T4"
+      ],
+      "activation_after": [
+        "INFER-V4-T4"
+      ],
+      "evidence_after": [],
+      "acceptance_criteria": [
+        "exact_source_identity",
+        "source_inventory",
+        "static_verification",
+        "focused_tests",
+        "package_tests",
+        "all_target_check",
+        "strict_lint",
+        "clean_worktree",
+        "exact_head_execution",
+        "merge_candidate_execution"
+      ],
+      "qualification_profile": "physical"
+    },
+    {
+      "id": "UI-V5",
+      "module": "ui.control",
+      "owner": "ui-platform",
+      "deputy": "accessibility",
+      "priority": 2,
+      "registry_state": "source_implemented",
+      "parallel_class": "independent_source_preparation",
+      "authority_delta": "none",
+      "development_after": [
+        "DOC-1-V8-SEMANTIC-UPGRADE"
+      ],
+      "activation_after": [
+        "P0.8B-READINESS"
+      ],
+      "evidence_after": [
+        "DOC-2-DEFAULT-BRANCH-SELECTION"
+      ],
+      "acceptance_criteria": [
+        "exact_source_identity",
+        "source_inventory",
+        "static_verification",
+        "focused_tests",
+        "package_tests",
+        "all_target_check",
+        "strict_lint",
+        "clean_worktree",
+        "exact_head_execution",
+        "merge_candidate_execution"
+      ],
+      "qualification_profile": "contracts"
+    },
+    {
+      "id": "BROWSER-WEB-C1",
+      "module": "browser.servo",
+      "owner": "browser-platform",
+      "deputy": "security-authority",
+      "priority": 2,
+      "registry_state": "planned",
+      "parallel_class": "independent_source_preparation",
+      "authority_delta": "none",
+      "development_after": [
+        "DOC-1-V8-SEMANTIC-UPGRADE"
+      ],
+      "activation_after": [
+        "P0.7B-B2-TOOL-NET-FS"
+      ],
+      "evidence_after": [
+        "DOC-2-DEFAULT-BRANCH-SELECTION"
+      ],
+      "acceptance_criteria": [
+        "exact_source_identity",
+        "source_inventory",
+        "static_verification",
+        "focused_tests",
+        "package_tests",
+        "all_target_check",
+        "strict_lint",
+        "clean_worktree",
+        "exact_head_execution",
+        "merge_candidate_execution",
+        "source_baseline_selected",
+        "declared_root_materialized",
+        "module_technical_doc_current",
+        "source_binding_registry_updated"
+      ],
+      "qualification_profile": "physical"
+    },
+    {
+      "id": "MEM-0-TYPES",
+      "module": "cognitive.types",
+      "owner": "cognitive-platform",
+      "deputy": "kernel-contracts",
+      "priority": 2,
+      "registry_state": "planned",
+      "parallel_class": "contract_first_parallel",
+      "authority_delta": "none",
+      "development_after": [
+        "DOC-1-V8-SEMANTIC-UPGRADE"
+      ],
+      "activation_after": [
+        "P0.7B-B4-CALLSITE-PROOF"
+      ],
+      "evidence_after": [],
+      "acceptance_criteria": [
+        "exact_source_identity",
+        "source_inventory",
+        "static_verification",
+        "focused_tests",
+        "package_tests",
+        "all_target_check",
+        "strict_lint",
+        "clean_worktree",
+        "exact_head_execution",
+        "merge_candidate_execution"
+      ],
+      "qualification_profile": "contracts"
+    },
+    {
+      "id": "MEM-1-STORE",
+      "module": "cognitive.store",
+      "owner": "cognitive-platform",
+      "deputy": "durability-kernel",
+      "priority": 2,
+      "registry_state": "source_implemented_execution_pending",
+      "parallel_class": "contract_coordinated",
+      "authority_delta": "none",
+      "development_after": [
+        "MEM-0-TYPES"
+      ],
+      "activation_after": [
+        "MEM-0-TYPES"
+      ],
+      "evidence_after": [],
+      "acceptance_criteria": [
+        "exact_source_identity",
+        "source_inventory",
+        "static_verification",
+        "focused_tests",
+        "package_tests",
+        "all_target_check",
+        "strict_lint",
+        "clean_worktree",
+        "exact_head_execution",
+        "merge_candidate_execution"
+      ],
+      "qualification_profile": "durable"
+    },
+    {
+      "id": "MEM-2-RETRIEVAL",
+      "module": "memory.retrieval",
+      "owner": "cognitive-platform",
+      "deputy": "performance",
+      "priority": 2,
+      "registry_state": "planned",
+      "parallel_class": "contract_first_parallel",
+      "authority_delta": "none",
+      "development_after": [
+        "MEM-0-TYPES"
+      ],
+      "activation_after": [
+        "MEM-1-STORE"
+      ],
+      "evidence_after": [],
+      "acceptance_criteria": [
+        "exact_source_identity",
+        "source_inventory",
+        "static_verification",
+        "focused_tests",
+        "package_tests",
+        "all_target_check",
+        "strict_lint",
+        "clean_worktree",
+        "exact_head_execution",
+        "merge_candidate_execution"
+      ],
+      "qualification_profile": "contracts"
+    },
+    {
+      "id": "MEM-3-FEDERATION",
+      "module": "memory.federation",
+      "owner": "cognitive-platform",
+      "deputy": "security-authority",
+      "priority": 3,
+      "registry_state": "planned",
+      "parallel_class": "contract_coordinated",
+      "authority_delta": "none",
+      "development_after": [
+        "MEM-0-TYPES"
+      ],
+      "activation_after": [
+        "MEM-2-RETRIEVAL"
+      ],
+      "evidence_after": [],
+      "acceptance_criteria": [
+        "exact_source_identity",
+        "source_inventory",
+        "static_verification",
+        "focused_tests",
+        "package_tests",
+        "all_target_check",
+        "strict_lint",
+        "clean_worktree",
+        "exact_head_execution",
+        "merge_candidate_execution"
+      ],
+      "qualification_profile": "physical"
+    },
+    {
+      "id": "MEM-4-KG",
+      "module": "knowledge.graph",
+      "owner": "knowledge-graph",
+      "deputy": "cognitive-platform",
+      "priority": 2,
+      "registry_state": "planned",
+      "parallel_class": "contract_first_parallel",
+      "authority_delta": "none",
+      "development_after": [
+        "MEM-0-TYPES",
+        "PIM-0-PROMPT-INTERVENTION-CONTRACTS"
+      ],
+      "activation_after": [
+        "MEM-1-STORE",
+        "PIM-1-PROMPT-FACTOR-REGISTRY"
+      ],
+      "evidence_after": [],
+      "acceptance_criteria": [
+        "exact_source_identity",
+        "source_inventory",
+        "static_verification",
+        "focused_tests",
+        "package_tests",
+        "all_target_check",
+        "strict_lint",
+        "clean_worktree",
+        "exact_head_execution",
+        "merge_candidate_execution"
+      ],
+      "qualification_profile": "contracts"
+    },
+    {
+      "id": "MEM-5-COMPACT",
+      "module": "compact.engine",
+      "owner": "cognitive-platform",
+      "deputy": "durability-kernel",
+      "priority": 3,
+      "registry_state": "planned",
+      "parallel_class": "contract_coordinated",
+      "authority_delta": "none",
+      "development_after": [
+        "MEM-0-TYPES"
+      ],
+      "activation_after": [
+        "MEM-1-STORE"
+      ],
+      "evidence_after": [],
+      "acceptance_criteria": [
+        "exact_source_identity",
+        "source_inventory",
+        "static_verification",
+        "focused_tests",
+        "package_tests",
+        "all_target_check",
+        "strict_lint",
+        "clean_worktree",
+        "exact_head_execution",
+        "merge_candidate_execution"
+      ],
+      "qualification_profile": "contracts"
+    },
+    {
+      "id": "MEM-8-PRODUCTION-WRITER",
+      "module": "cognitive.store",
+      "owner": "cognitive-platform",
+      "deputy": "durability-kernel",
+      "priority": 2,
+      "registry_state": "source_implemented_execution_pending",
+      "parallel_class": "contract_coordinated",
+      "authority_delta": "none",
+      "development_after": [
+        "MEM-1-STORE"
+      ],
+      "activation_after": [
+        "MEM-1-STORE",
+        "P0.7B-B4-CALLSITE-PROOF"
+      ],
+      "evidence_after": [],
+      "acceptance_criteria": [
+        "exact_source_identity",
+        "source_inventory",
+        "static_verification",
+        "focused_tests",
+        "package_tests",
+        "all_target_check",
+        "strict_lint",
+        "clean_worktree",
+        "exact_head_execution",
+        "merge_candidate_execution"
+      ],
+      "qualification_profile": "durable"
+    },
+    {
+      "id": "OBJ-0-OBJECTIVE-CONTRACTS",
+      "module": "objective.compiler",
+      "owner": "intelligence-platform",
+      "deputy": "kernel-contracts",
+      "priority": 1,
+      "registry_state": "source_implemented",
+      "parallel_class": "contract_first_parallel",
+      "authority_delta": "none",
+      "development_after": [
+        "DOC-1-V8-SEMANTIC-UPGRADE"
+      ],
+      "activation_after": [
+        "DOC-2-DEFAULT-BRANCH-SELECTION"
+      ],
+      "evidence_after": [],
+      "acceptance_criteria": [
+        "exact_source_identity",
+        "source_inventory",
+        "static_verification",
+        "focused_tests",
+        "package_tests",
+        "all_target_check",
+        "strict_lint",
+        "clean_worktree",
+        "exact_head_execution",
+        "merge_candidate_execution"
+      ],
+      "qualification_profile": "contracts"
+    },
+    {
+      "id": "LRN-0-CAUSAL-LEARNING-CONTRACTS",
+      "module": "learning.ledger",
+      "owner": "learning-platform",
+      "deputy": "cognitive-platform",
+      "priority": 1,
+      "registry_state": "source_implemented",
+      "parallel_class": "contract_first_parallel",
+      "authority_delta": "none",
+      "development_after": [
+        "DOC-1-V8-SEMANTIC-UPGRADE",
+        "OBJ-0-OBJECTIVE-CONTRACTS"
+      ],
+      "activation_after": [
+        "DOC-2-DEFAULT-BRANCH-SELECTION"
+      ],
+      "evidence_after": [],
+      "acceptance_criteria": [
+        "exact_source_identity",
+        "source_inventory",
+        "static_verification",
+        "focused_tests",
+        "package_tests",
+        "all_target_check",
+        "strict_lint",
+        "clean_worktree",
+        "exact_head_execution",
+        "merge_candidate_execution"
+      ],
+      "qualification_profile": "durable"
+    },
+    {
+      "id": "NDU-0-PREFERENCE-UTILITY-CONTRACTS",
+      "module": "utility.ndu",
+      "owner": "intelligence-platform",
+      "deputy": "learning-platform",
+      "priority": 1,
+      "registry_state": "source_implemented",
+      "parallel_class": "contract_first_parallel",
+      "authority_delta": "none",
+      "development_after": [
+        "OBJ-0-OBJECTIVE-CONTRACTS",
+        "LRN-0-CAUSAL-LEARNING-CONTRACTS"
+      ],
+      "activation_after": [
+        "OBJ-0-OBJECTIVE-CONTRACTS",
+        "LRN-0-CAUSAL-LEARNING-CONTRACTS"
+      ],
+      "evidence_after": [],
+      "acceptance_criteria": [
+        "exact_source_identity",
+        "source_inventory",
+        "static_verification",
+        "focused_tests",
+        "package_tests",
+        "all_target_check",
+        "strict_lint",
+        "clean_worktree",
+        "exact_head_execution",
+        "merge_candidate_execution"
+      ],
+      "qualification_profile": "adaptive"
+    },
+    {
+      "id": "PIM-0-PROMPT-INTERVENTION-CONTRACTS",
+      "module": "prompt.registry",
+      "owner": "intelligence-platform",
+      "deputy": "cognitive-platform",
+      "priority": 1,
+      "registry_state": "source_implemented",
+      "parallel_class": "contract_first_parallel",
+      "authority_delta": "none",
+      "development_after": [
+        "OBJ-0-OBJECTIVE-CONTRACTS",
+        "LRN-0-CAUSAL-LEARNING-CONTRACTS",
+        "NDU-0-PREFERENCE-UTILITY-CONTRACTS"
+      ],
+      "activation_after": [
+        "OBJ-0-OBJECTIVE-CONTRACTS"
+      ],
+      "evidence_after": [],
+      "acceptance_criteria": [
+        "exact_source_identity",
+        "source_inventory",
+        "static_verification",
+        "focused_tests",
+        "package_tests",
+        "all_target_check",
+        "strict_lint",
+        "clean_worktree",
+        "exact_head_execution",
+        "merge_candidate_execution"
+      ],
+      "qualification_profile": "durable"
+    },
+    {
+      "id": "HBO-0-BELLMAN-OPERATOR-CONTRACTS",
+      "module": "learning.operator",
+      "owner": "learning-platform",
+      "deputy": "qualification-plane",
+      "priority": 2,
+      "registry_state": "source_implemented",
+      "parallel_class": "contract_first_parallel",
+      "authority_delta": "none",
+      "development_after": [
+        "NDU-0-PREFERENCE-UTILITY-CONTRACTS",
+        "OBJ-0-OBJECTIVE-CONTRACTS",
+        "LRN-0-CAUSAL-LEARNING-CONTRACTS",
+        "PIM-0-PROMPT-INTERVENTION-CONTRACTS"
+      ],
+      "activation_after": [
+        "NDU-0-PREFERENCE-UTILITY-CONTRACTS"
+      ],
+      "evidence_after": [],
+      "acceptance_criteria": [
+        "exact_source_identity",
+        "source_inventory",
+        "static_verification",
+        "focused_tests",
+        "package_tests",
+        "all_target_check",
+        "strict_lint",
+        "clean_worktree",
+        "exact_head_execution",
+        "merge_candidate_execution"
+      ],
+      "qualification_profile": "adaptive"
+    },
+    {
+      "id": "BIO-0-NEURON-INTUITION-CONTRACTS",
+      "module": "neuron.runtime",
+      "owner": "learning-platform",
+      "deputy": "inference-platform",
+      "priority": 2,
+      "registry_state": "source_implemented",
+      "parallel_class": "contract_first_parallel",
+      "authority_delta": "none",
+      "development_after": [
+        "NDU-0-PREFERENCE-UTILITY-CONTRACTS",
+        "OBJ-0-OBJECTIVE-CONTRACTS",
+        "LRN-0-CAUSAL-LEARNING-CONTRACTS",
+        "PIM-0-PROMPT-INTERVENTION-CONTRACTS",
+        "HBO-0-BELLMAN-OPERATOR-CONTRACTS"
+      ],
+      "activation_after": [
+        "NDU-0-PREFERENCE-UTILITY-CONTRACTS"
+      ],
+      "evidence_after": [],
+      "acceptance_criteria": [
+        "exact_source_identity",
+        "source_inventory",
+        "static_verification",
+        "focused_tests",
+        "package_tests",
+        "all_target_check",
+        "strict_lint",
+        "clean_worktree",
+        "exact_head_execution",
+        "merge_candidate_execution"
+      ],
+      "qualification_profile": "adaptive"
+    },
+    {
+      "id": "OBJ-1-OBJECTIVE-COMPILER",
+      "module": "objective.compiler",
+      "owner": "intelligence-platform",
+      "deputy": "kernel-contracts",
+      "priority": 1,
+      "registry_state": "source_implemented",
+      "parallel_class": "contract_coordinated",
+      "authority_delta": "none",
+      "development_after": [
+        "OBJ-0-OBJECTIVE-CONTRACTS",
+        "MEM-0-TYPES"
+      ],
+      "activation_after": [
+        "P0.7B-B4-CALLSITE-PROOF",
+        "OBJ-0-OBJECTIVE-CONTRACTS"
+      ],
+      "evidence_after": [],
+      "acceptance_criteria": [
+        "exact_source_identity",
+        "source_inventory",
+        "static_verification",
+        "focused_tests",
+        "package_tests",
+        "all_target_check",
+        "strict_lint",
+        "clean_worktree",
+        "exact_head_execution",
+        "merge_candidate_execution"
+      ],
+      "qualification_profile": "contracts"
+    },
+    {
+      "id": "LRN-1-DURABLE-EPISODE-LEDGER",
+      "module": "learning.ledger",
+      "owner": "learning-platform",
+      "deputy": "cognitive-platform",
+      "priority": 1,
+      "registry_state": "source_implemented",
+      "parallel_class": "contract_coordinated",
+      "authority_delta": "none",
+      "development_after": [
+        "LRN-0-CAUSAL-LEARNING-CONTRACTS",
+        "MEM-1-STORE"
+      ],
+      "activation_after": [
+        "MEM-1-STORE",
+        "LRN-0-CAUSAL-LEARNING-CONTRACTS"
+      ],
+      "evidence_after": [],
+      "acceptance_criteria": [
+        "exact_source_identity",
+        "source_inventory",
+        "static_verification",
+        "focused_tests",
+        "package_tests",
+        "all_target_check",
+        "strict_lint",
+        "clean_worktree",
+        "exact_head_execution",
+        "merge_candidate_execution"
+      ],
+      "qualification_profile": "durable"
+    },
+    {
+      "id": "ART-1-LEARNING-ARTIFACT-REGISTRY",
+      "module": "learning.artifacts",
+      "owner": "learning-platform",
+      "deputy": "durability-kernel",
+      "priority": 1,
+      "registry_state": "source_implemented",
+      "parallel_class": "contract_coordinated",
+      "authority_delta": "none",
+      "development_after": [
+        "LRN-0-CAUSAL-LEARNING-CONTRACTS",
+        "MEM-1-STORE"
+      ],
+      "activation_after": [
+        "MEM-1-STORE"
+      ],
+      "evidence_after": [],
+      "acceptance_criteria": [
+        "exact_source_identity",
+        "source_inventory",
+        "static_verification",
+        "focused_tests",
+        "package_tests",
+        "all_target_check",
+        "strict_lint",
+        "clean_worktree",
+        "exact_head_execution",
+        "merge_candidate_execution"
+      ],
+      "qualification_profile": "durable"
+    },
+    {
+      "id": "PIM-1-PROMPT-FACTOR-REGISTRY",
+      "module": "prompt.registry",
+      "owner": "intelligence-platform",
+      "deputy": "cognitive-platform",
+      "priority": 1,
+      "registry_state": "planned",
+      "parallel_class": "contract_coordinated",
+      "authority_delta": "none",
+      "development_after": [
+        "PIM-0-PROMPT-INTERVENTION-CONTRACTS",
+        "MEM-1-STORE"
+      ],
+      "activation_after": [
+        "PIM-0-PROMPT-INTERVENTION-CONTRACTS",
+        "MEM-1-STORE"
+      ],
+      "evidence_after": [],
+      "acceptance_criteria": [
+        "exact_source_identity",
+        "source_inventory",
+        "static_verification",
+        "focused_tests",
+        "package_tests",
+        "all_target_check",
+        "strict_lint",
+        "clean_worktree",
+        "exact_head_execution",
+        "merge_candidate_execution"
+      ],
+      "qualification_profile": "durable"
+    },
+    {
+      "id": "NDU-1-DETERMINISTIC-UTILITY-BASELINE",
+      "module": "utility.ndu",
+      "owner": "intelligence-platform",
+      "deputy": "learning-platform",
+      "priority": 2,
+      "registry_state": "planned",
+      "parallel_class": "contract_coordinated",
+      "authority_delta": "none",
+      "development_after": [
+        "NDU-0-PREFERENCE-UTILITY-CONTRACTS",
+        "OBJ-1-OBJECTIVE-COMPILER",
+        "LRN-1-DURABLE-EPISODE-LEDGER",
+        "ART-1-LEARNING-ARTIFACT-REGISTRY"
+      ],
+      "activation_after": [
+        "OBJ-1-OBJECTIVE-COMPILER",
+        "LRN-1-DURABLE-EPISODE-LEDGER",
+        "ART-1-LEARNING-ARTIFACT-REGISTRY",
+        "NDU-0-PREFERENCE-UTILITY-CONTRACTS"
+      ],
+      "evidence_after": [],
+      "acceptance_criteria": [
+        "exact_source_identity",
+        "source_inventory",
+        "static_verification",
+        "focused_tests",
+        "package_tests",
+        "all_target_check",
+        "strict_lint",
+        "clean_worktree",
+        "exact_head_execution",
+        "merge_candidate_execution"
+      ],
+      "qualification_profile": "adaptive"
+    },
+    {
+      "id": "HBO-1-OPERATOR-SENSOR-CORE",
+      "module": "learning.artifacts",
+      "owner": "learning-platform",
+      "deputy": "durability-kernel",
+      "priority": 2,
+      "registry_state": "source_implemented",
+      "parallel_class": "contract_coordinated",
+      "authority_delta": "none",
+      "development_after": [
+        "HBO-0-BELLMAN-OPERATOR-CONTRACTS",
+        "LRN-1-DURABLE-EPISODE-LEDGER",
+        "ART-1-LEARNING-ARTIFACT-REGISTRY"
+      ],
+      "activation_after": [
+        "HBO-0-BELLMAN-OPERATOR-CONTRACTS",
+        "ART-1-LEARNING-ARTIFACT-REGISTRY"
+      ],
+      "evidence_after": [],
+      "acceptance_criteria": [
+        "exact_source_identity",
+        "source_inventory",
+        "static_verification",
+        "focused_tests",
+        "package_tests",
+        "all_target_check",
+        "strict_lint",
+        "clean_worktree",
+        "exact_head_execution",
+        "merge_candidate_execution"
+      ],
+      "qualification_profile": "durable"
+    },
+    {
+      "id": "HBO-2-BELLMAN-OPERATOR-SHADOW",
+      "module": "learning.operator",
+      "owner": "learning-platform",
+      "deputy": "qualification-plane",
+      "priority": 2,
+      "registry_state": "planned",
+      "parallel_class": "contract_coordinated",
+      "authority_delta": "none",
+      "development_after": [
+        "HBO-1-OPERATOR-SENSOR-CORE",
+        "NDU-1-DETERMINISTIC-UTILITY-BASELINE",
+        "HBO-0-BELLMAN-OPERATOR-CONTRACTS"
+      ],
+      "activation_after": [
+        "HBO-1-OPERATOR-SENSOR-CORE",
+        "NDU-1-DETERMINISTIC-UTILITY-BASELINE",
+        "HBO-0-BELLMAN-OPERATOR-CONTRACTS"
+      ],
+      "evidence_after": [],
+      "acceptance_criteria": [
+        "exact_source_identity",
+        "source_inventory",
+        "static_verification",
+        "focused_tests",
+        "package_tests",
+        "all_target_check",
+        "strict_lint",
+        "clean_worktree",
+        "exact_head_execution",
+        "merge_candidate_execution"
+      ],
+      "qualification_profile": "adaptive"
+    },
+    {
+      "id": "NEU-1-LOCAL-MODEL-BAKEOFF",
+      "module": "neuron.runtime",
+      "owner": "learning-platform",
+      "deputy": "inference-platform",
+      "priority": 2,
+      "registry_state": "planned",
+      "parallel_class": "external_evidence_coordinated",
+      "authority_delta": "none",
+      "development_after": [
+        "BIO-0-NEURON-INTUITION-CONTRACTS",
+        "INFER-V4-T5",
+        "ART-1-LEARNING-ARTIFACT-REGISTRY",
+        "INFER-V4-T4"
+      ],
+      "activation_after": [
+        "INFER-V4-T5",
+        "ART-1-LEARNING-ARTIFACT-REGISTRY",
+        "BIO-0-NEURON-INTUITION-CONTRACTS"
+      ],
+      "evidence_after": [],
+      "acceptance_criteria": [
+        "exact_source_identity",
+        "source_inventory",
+        "static_verification",
+        "focused_tests",
+        "package_tests",
+        "all_target_check",
+        "strict_lint",
+        "clean_worktree",
+        "exact_head_execution",
+        "merge_candidate_execution"
+      ],
+      "qualification_profile": "adaptive"
+    },
+    {
+      "id": "NEU-2-TEMPORAL-SIGNAL-RUNTIME",
+      "module": "neuron.runtime",
+      "owner": "learning-platform",
+      "deputy": "inference-platform",
+      "priority": 2,
+      "registry_state": "planned",
+      "parallel_class": "contract_coordinated",
+      "authority_delta": "none",
+      "development_after": [
+        "NEU-1-LOCAL-MODEL-BAKEOFF",
+        "LRN-1-DURABLE-EPISODE-LEDGER",
+        "BIO-0-NEURON-INTUITION-CONTRACTS"
+      ],
+      "activation_after": [
+        "NEU-1-LOCAL-MODEL-BAKEOFF",
+        "LRN-1-DURABLE-EPISODE-LEDGER"
+      ],
+      "evidence_after": [],
+      "acceptance_criteria": [
+        "exact_source_identity",
+        "source_inventory",
+        "static_verification",
+        "focused_tests",
+        "package_tests",
+        "all_target_check",
+        "strict_lint",
+        "clean_worktree",
+        "exact_head_execution",
+        "merge_candidate_execution"
+      ],
+      "qualification_profile": "adaptive"
+    },
+    {
+      "id": "INT-1-CALIBRATED-INTUITION-POLICY",
+      "module": "intuition.policy",
+      "owner": "intelligence-platform",
+      "deputy": "learning-platform",
+      "priority": 2,
+      "registry_state": "source_implemented",
+      "parallel_class": "contract_coordinated",
+      "authority_delta": "none",
+      "development_after": [
+        "BIO-0-NEURON-INTUITION-CONTRACTS",
+        "NEU-2-TEMPORAL-SIGNAL-RUNTIME",
+        "NDU-1-DETERMINISTIC-UTILITY-BASELINE"
+      ],
+      "activation_after": [
+        "NEU-2-TEMPORAL-SIGNAL-RUNTIME",
+        "NDU-1-DETERMINISTIC-UTILITY-BASELINE"
+      ],
+      "evidence_after": [],
+      "acceptance_criteria": [
+        "exact_source_identity",
+        "source_inventory",
+        "static_verification",
+        "focused_tests",
+        "package_tests",
+        "all_target_check",
+        "strict_lint",
+        "clean_worktree",
+        "exact_head_execution",
+        "merge_candidate_execution"
+      ],
+      "qualification_profile": "adaptive"
+    },
+    {
+      "id": "PIM-2-PROMPT-PRICING-PORTFOLIO-SHADOW",
+      "module": "prompt.optimizer",
+      "owner": "intelligence-platform",
+      "deputy": "performance",
+      "priority": 2,
+      "registry_state": "source_implemented",
+      "parallel_class": "contract_coordinated",
+      "authority_delta": "none",
+      "development_after": [
+        "PIM-1-PROMPT-FACTOR-REGISTRY",
+        "NDU-1-DETERMINISTIC-UTILITY-BASELINE",
+        "MEM-2-RETRIEVAL",
+        "LRN-1-DURABLE-EPISODE-LEDGER",
+        "PIM-0-PROMPT-INTERVENTION-CONTRACTS"
+      ],
+      "activation_after": [
+        "PIM-1-PROMPT-FACTOR-REGISTRY",
+        "NDU-1-DETERMINISTIC-UTILITY-BASELINE",
+        "MEM-2-RETRIEVAL"
+      ],
+      "evidence_after": [],
+      "acceptance_criteria": [
+        "exact_source_identity",
+        "source_inventory",
+        "static_verification",
+        "focused_tests",
+        "package_tests",
+        "all_target_check",
+        "strict_lint",
+        "clean_worktree",
+        "exact_head_execution",
+        "merge_candidate_execution"
+      ],
+      "qualification_profile": "adaptive"
+    },
+    {
+      "id": "CTX-1-CONTEXT-COMPILER",
+      "module": "context.compiler",
+      "owner": "intelligence-platform",
+      "deputy": "security-authority",
+      "priority": 2,
+      "registry_state": "planned",
+      "parallel_class": "contract_coordinated",
+      "authority_delta": "none",
+      "development_after": [
+        "OBJ-1-OBJECTIVE-COMPILER",
+        "PIM-2-PROMPT-PRICING-PORTFOLIO-SHADOW",
+        "INT-1-CALIBRATED-INTUITION-POLICY"
+      ],
+      "activation_after": [
+        "OBJ-1-OBJECTIVE-COMPILER",
+        "PIM-2-PROMPT-PRICING-PORTFOLIO-SHADOW",
+        "INT-1-CALIBRATED-INTUITION-POLICY"
+      ],
+      "evidence_after": [],
+      "acceptance_criteria": [
+        "exact_source_identity",
+        "source_inventory",
+        "static_verification",
+        "focused_tests",
+        "package_tests",
+        "all_target_check",
+        "strict_lint",
+        "clean_worktree",
+        "exact_head_execution",
+        "merge_candidate_execution"
+      ],
+      "qualification_profile": "contracts"
+    },
+    {
+      "id": "P0.7D-FAULT-MATRIX",
+      "module": "kernel.operations",
+      "owner": "durability-kernel",
+      "deputy": "architecture",
+      "priority": 1,
+      "registry_state": "source_implemented_execution_pending",
+      "parallel_class": "contract_coordinated",
+      "authority_delta": "none",
+      "development_after": [
+        "MEM-1-STORE",
+        "MEM-8-PRODUCTION-WRITER",
+        "LRN-1-DURABLE-EPISODE-LEDGER",
+        "ART-1-LEARNING-ARTIFACT-REGISTRY",
+        "PIM-1-PROMPT-FACTOR-REGISTRY",
+        "P0.7B-B2-TOOL-NET-FS"
+      ],
+      "activation_after": [
+        "MEM-8-PRODUCTION-WRITER",
+        "LRN-1-DURABLE-EPISODE-LEDGER",
+        "ART-1-LEARNING-ARTIFACT-REGISTRY",
+        "PIM-1-PROMPT-FACTOR-REGISTRY"
+      ],
+      "evidence_after": [],
+      "acceptance_criteria": [
+        "exact_source_identity",
+        "source_inventory",
+        "static_verification",
+        "focused_tests",
+        "package_tests",
+        "all_target_check",
+        "strict_lint",
+        "clean_worktree",
+        "exact_head_execution",
+        "merge_candidate_execution"
+      ],
+      "qualification_profile": "durable"
+    },
+    {
+      "id": "P0.7E-DEPENDENCY-INVERSION",
+      "module": "platform.wire",
+      "owner": "kernel-contracts",
+      "deputy": "integration",
+      "priority": 1,
+      "registry_state": "source_implemented_execution_pending",
+      "parallel_class": "contract_coordinated",
+      "authority_delta": "none",
+      "development_after": [
+        "MEM-0-TYPES",
+        "P0.7B-B4-CALLSITE-PROOF",
+        "OBJ-0-OBJECTIVE-CONTRACTS",
+        "LRN-0-CAUSAL-LEARNING-CONTRACTS",
+        "NDU-0-PREFERENCE-UTILITY-CONTRACTS",
+        "PIM-0-PROMPT-INTERVENTION-CONTRACTS",
+        "HBO-0-BELLMAN-OPERATOR-CONTRACTS",
+        "BIO-0-NEURON-INTUITION-CONTRACTS"
+      ],
+      "activation_after": [
+        "P0.7B-B4-CALLSITE-PROOF",
+        "MEM-0-TYPES"
+      ],
+      "evidence_after": [],
+      "acceptance_criteria": [
+        "exact_source_identity",
+        "source_inventory",
+        "static_verification",
+        "focused_tests",
+        "package_tests",
+        "all_target_check",
+        "strict_lint",
+        "clean_worktree",
+        "exact_head_execution",
+        "merge_candidate_execution"
+      ],
+      "qualification_profile": "contracts"
+    },
+    {
+      "id": "P0.8A-AST-RATCHET",
+      "module": "kernel.authority",
+      "owner": "security-authority",
+      "deputy": "kernel-contracts",
+      "priority": 1,
+      "registry_state": "source_implemented_execution_pending",
+      "parallel_class": "contract_coordinated",
+      "authority_delta": "none",
+      "development_after": [
+        "P0.7E-DEPENDENCY-INVERSION",
+        "P0.7B-B4-CALLSITE-PROOF"
+      ],
+      "activation_after": [
+        "P0.7E-DEPENDENCY-INVERSION",
+        "P0.7B-B4-CALLSITE-PROOF"
+      ],
+      "evidence_after": [],
+      "acceptance_criteria": [
+        "exact_source_identity",
+        "source_inventory",
+        "static_verification",
+        "focused_tests",
+        "package_tests",
+        "all_target_check",
+        "strict_lint",
+        "clean_worktree",
+        "exact_head_execution",
+        "merge_candidate_execution"
+      ],
+      "qualification_profile": "durable"
+    },
+    {
+      "id": "P0.8B-READINESS",
+      "module": "runtime.supervisor",
+      "owner": "runtime-control",
+      "deputy": "fleet-runtime",
+      "priority": 1,
+      "registry_state": "source_implemented_execution_pending",
+      "parallel_class": "contract_coordinated",
+      "authority_delta": "none",
+      "development_after": [
+        "P0.8A-AST-RATCHET",
+        "P0.7A-RUNTIME-BOOTSTRAP"
+      ],
+      "activation_after": [
+        "P0.8A-AST-RATCHET",
+        "P0.7A-RUNTIME-BOOTSTRAP"
+      ],
+      "evidence_after": [],
+      "acceptance_criteria": [
+        "exact_source_identity",
+        "source_inventory",
+        "static_verification",
+        "focused_tests",
+        "package_tests",
+        "all_target_check",
+        "strict_lint",
+        "clean_worktree",
+        "exact_head_execution",
+        "merge_candidate_execution"
+      ],
+      "qualification_profile": "contracts"
+    },
+    {
+      "id": "P0.8C-RESOURCE-BUDGETS",
+      "module": "runtime.supervisor",
+      "owner": "runtime-control",
+      "deputy": "fleet-runtime",
+      "priority": 1,
+      "registry_state": "source_implemented_execution_pending",
+      "parallel_class": "contract_coordinated",
+      "authority_delta": "none",
+      "development_after": [
+        "P0.8B-READINESS",
+        "P0.7A-RUNTIME-BOOTSTRAP"
+      ],
+      "activation_after": [
+        "P0.8B-READINESS"
+      ],
+      "evidence_after": [],
+      "acceptance_criteria": [
+        "exact_source_identity",
+        "source_inventory",
+        "static_verification",
+        "focused_tests",
+        "package_tests",
+        "all_target_check",
+        "strict_lint",
+        "clean_worktree",
+        "exact_head_execution",
+        "merge_candidate_execution"
+      ],
+      "qualification_profile": "contracts"
+    },
+    {
+      "id": "ECP-1-ENGINEERING-CONTROL-PLANE",
+      "module": "control.engineering",
+      "owner": "developer-productivity",
+      "deputy": "architecture",
+      "priority": 2,
+      "registry_state": "source_implemented",
+      "parallel_class": "independent_engineering_tooling",
+      "authority_delta": "none",
+      "development_after": [
+        "DOC-2-DEFAULT-BRANCH-SELECTION"
+      ],
+      "activation_after": [
+        "DOC-2-DEFAULT-BRANCH-SELECTION"
+      ],
+      "evidence_after": [],
+      "acceptance_criteria": [
+        "exact_source_identity",
+        "source_inventory",
+        "static_verification",
+        "focused_tests",
+        "package_tests",
+        "all_target_check",
+        "strict_lint",
+        "clean_worktree",
+        "exact_head_execution",
+        "merge_candidate_execution"
+      ],
+      "qualification_profile": "contracts"
+    },
+    {
+      "id": "RCP-1-RUNTIME-CONTROL-PLANE",
+      "module": "control.runtime",
+      "owner": "runtime-control",
+      "deputy": "security-authority",
+      "priority": 2,
+      "registry_state": "planned",
+      "parallel_class": "contract_first_parallel",
+      "authority_delta": "none",
+      "development_after": [
+        "DOC-2-DEFAULT-BRANCH-SELECTION",
+        "P0.8C-RESOURCE-BUDGETS",
+        "NDU-1-DETERMINISTIC-UTILITY-BASELINE"
+      ],
+      "activation_after": [
+        "P0.8C-RESOURCE-BUDGETS",
+        "NDU-1-DETERMINISTIC-UTILITY-BASELINE"
+      ],
+      "evidence_after": [],
+      "acceptance_criteria": [
+        "exact_source_identity",
+        "source_inventory",
+        "static_verification",
+        "focused_tests",
+        "package_tests",
+        "all_target_check",
+        "strict_lint",
+        "clean_worktree",
+        "exact_head_execution",
+        "merge_candidate_execution"
+      ],
+      "qualification_profile": "contracts"
+    },
+    {
+      "id": "P0.8D-VERTICAL-SLICE",
+      "module": "runtime.agentd",
+      "owner": "agent-runtime",
+      "deputy": "runtime-control",
+      "priority": 1,
+      "registry_state": "source_implemented_execution_pending",
+      "parallel_class": "contract_coordinated",
+      "authority_delta": "none",
+      "development_after": [
+        "P0.7D-FAULT-MATRIX",
+        "P0.8C-RESOURCE-BUDGETS",
+        "P0.8B-READINESS"
+      ],
+      "activation_after": [
+        "P0.7D-FAULT-MATRIX",
+        "P0.8C-RESOURCE-BUDGETS"
+      ],
+      "evidence_after": [],
+      "acceptance_criteria": [
+        "exact_source_identity",
+        "source_inventory",
+        "static_verification",
+        "focused_tests",
+        "package_tests",
+        "all_target_check",
+        "strict_lint",
+        "clean_worktree",
+        "exact_head_execution",
+        "merge_candidate_execution"
+      ],
+      "qualification_profile": "contracts"
+    },
+    {
+      "id": "C1-PROMPTED-MEMORY-RETRIEVAL-RANK",
+      "module": "intelligence.control",
+      "owner": "intelligence-platform",
+      "deputy": "qualification-plane",
+      "priority": 1,
+      "registry_state": "planned",
+      "parallel_class": "contract_coordinated",
+      "authority_delta": "none",
+      "development_after": [
+        "CTX-1-CONTEXT-COMPILER",
+        "HBO-2-BELLMAN-OPERATOR-SHADOW",
+        "P0.8D-VERTICAL-SLICE",
+        "INTELLIGENCE-A0-Q0.63"
+      ],
+      "activation_after": [
+        "CTX-1-CONTEXT-COMPILER",
+        "HBO-2-BELLMAN-OPERATOR-SHADOW",
+        "P0.8D-VERTICAL-SLICE",
+        "INTELLIGENCE-A0-Q0.63"
+      ],
+      "evidence_after": [],
+      "acceptance_criteria": [
+        "exact_source_identity",
+        "source_inventory",
+        "static_verification",
+        "focused_tests",
+        "package_tests",
+        "all_target_check",
+        "strict_lint",
+        "clean_worktree",
+        "exact_head_execution",
+        "merge_candidate_execution",
+        "read_only_action_domain",
+        "complete_candidate_set",
+        "logged_propensity",
+        "no_prompt_baseline",
+        "factor_and_timing_ablation",
+        "zero_memory_kg_effect"
+      ],
+      "qualification_profile": "contracts"
+    },
+    {
+      "id": "LRN-2-CAUSAL-EVALUATION",
+      "module": "learning.eval",
+      "owner": "learning-platform",
+      "deputy": "qualification-plane",
+      "priority": 1,
+      "registry_state": "source_implemented",
+      "parallel_class": "contract_coordinated",
+      "authority_delta": "none",
+      "development_after": [
+        "C1-PROMPTED-MEMORY-RETRIEVAL-RANK",
+        "HBO-2-BELLMAN-OPERATOR-SHADOW"
+      ],
+      "activation_after": [
+        "C1-PROMPTED-MEMORY-RETRIEVAL-RANK",
+        "HBO-2-BELLMAN-OPERATOR-SHADOW"
+      ],
+      "evidence_after": [],
+      "acceptance_criteria": [
+        "exact_source_identity",
+        "source_inventory",
+        "static_verification",
+        "focused_tests",
+        "package_tests",
+        "all_target_check",
+        "strict_lint",
+        "clean_worktree",
+        "exact_head_execution",
+        "merge_candidate_execution",
+        "support_coverage",
+        "ess_ips_snips_dr",
+        "cluster_or_bootstrap_ci",
+        "candidate_lcb_gt_baseline_ucb",
+        "subgroup_and_safety_floor"
+      ],
+      "qualification_profile": "adaptive"
+    },
+    {
+      "id": "ART-2-NEXT-SNAPSHOT-RELOAD-ROLLBACK",
+      "module": "learning.artifacts",
+      "owner": "learning-platform",
+      "deputy": "durability-kernel",
+      "priority": 1,
+      "registry_state": "source_implemented",
+      "parallel_class": "contract_coordinated",
+      "authority_delta": "none",
+      "development_after": [
+        "LRN-2-CAUSAL-EVALUATION",
+        "HBO-1-OPERATOR-SENSOR-CORE",
+        "ART-1-LEARNING-ARTIFACT-REGISTRY"
+      ],
+      "activation_after": [
+        "LRN-2-CAUSAL-EVALUATION",
+        "HBO-1-OPERATOR-SENSOR-CORE"
+      ],
+      "evidence_after": [],
+      "acceptance_criteria": [
+        "exact_source_identity",
+        "source_inventory",
+        "static_verification",
+        "focused_tests",
+        "package_tests",
+        "all_target_check",
+        "strict_lint",
+        "clean_worktree",
+        "exact_head_execution",
+        "merge_candidate_execution",
+        "current_snapshot_immutable",
+        "signed_next_snapshot",
+        "exact_reload",
+        "rollback_predecessor",
+        "crash_reopen"
+      ],
+      "qualification_profile": "durable"
+    },
+    {
+      "id": "LONG-1-TEMPORAL-HOLDOUT",
+      "module": "learning.eval",
+      "owner": "learning-platform",
+      "deputy": "qualification-plane",
+      "priority": 2,
+      "registry_state": "planned",
+      "parallel_class": "external_evidence_coordinated",
+      "authority_delta": "none",
+      "development_after": [
+        "ART-2-NEXT-SNAPSHOT-RELOAD-ROLLBACK"
+      ],
+      "activation_after": [
+        "ART-2-NEXT-SNAPSHOT-RELOAD-ROLLBACK"
+      ],
+      "evidence_after": [],
+      "acceptance_criteria": [
+        "exact_source_identity",
+        "source_inventory",
+        "static_verification",
+        "focused_tests",
+        "package_tests",
+        "all_target_check",
+        "strict_lint",
+        "clean_worktree",
+        "exact_head_execution",
+        "merge_candidate_execution",
+        "future_time_window",
+        "distribution_shift",
+        "delayed_outcome_watermark",
+        "confidence_bounds"
+      ],
+      "qualification_profile": "adaptive"
+    },
+    {
+      "id": "LONG-2-RETENTION-FORGETTING",
+      "module": "learning.eval",
+      "owner": "learning-platform",
+      "deputy": "qualification-plane",
+      "priority": 2,
+      "registry_state": "planned",
+      "parallel_class": "external_evidence_coordinated",
+      "authority_delta": "none",
+      "development_after": [
+        "LONG-1-TEMPORAL-HOLDOUT"
+      ],
+      "activation_after": [
+        "LONG-1-TEMPORAL-HOLDOUT"
+      ],
+      "evidence_after": [],
+      "acceptance_criteria": [
+        "exact_source_identity",
+        "source_inventory",
+        "static_verification",
+        "focused_tests",
+        "package_tests",
+        "all_target_check",
+        "strict_lint",
+        "clean_worktree",
+        "exact_head_execution",
+        "merge_candidate_execution",
+        "old_task_holdout",
+        "backward_transfer",
+        "forgetting_bound",
+        "adapter_retirement"
+      ],
+      "qualification_profile": "adaptive"
+    },
+    {
+      "id": "LONG-3-UNLEARNING-NON-RESURRECTION",
+      "module": "learning.eval",
+      "owner": "learning-platform",
+      "deputy": "qualification-plane",
+      "priority": 2,
+      "registry_state": "planned",
+      "parallel_class": "contract_coordinated",
+      "authority_delta": "none",
+      "development_after": [
+        "LONG-2-RETENTION-FORGETTING",
+        "LRN-2-CAUSAL-EVALUATION"
+      ],
+      "activation_after": [
+        "LONG-2-RETENTION-FORGETTING"
+      ],
+      "evidence_after": [],
+      "acceptance_criteria": [
+        "exact_source_identity",
+        "source_inventory",
+        "static_verification",
+        "focused_tests",
+        "package_tests",
+        "all_target_check",
+        "strict_lint",
+        "clean_worktree",
+        "exact_head_execution",
+        "merge_candidate_execution",
+        "lineage_complete",
+        "artifact_revocation",
+        "backup_restore_non_resurrection",
+        "rebuild_excludes_deleted"
+      ],
+      "qualification_profile": "adaptive"
+    },
+    {
+      "id": "NDU-2-AGENT-DOMAIN-HIERARCHY",
+      "module": "utility.ndu",
+      "owner": "intelligence-platform",
+      "deputy": "learning-platform",
+      "priority": 2,
+      "registry_state": "planned",
+      "parallel_class": "contract_coordinated",
+      "authority_delta": "none",
+      "development_after": [
+        "LONG-1-TEMPORAL-HOLDOUT",
+        "RCP-1-RUNTIME-CONTROL-PLANE",
+        "NDU-1-DETERMINISTIC-UTILITY-BASELINE",
+        "NDU-0-PREFERENCE-UTILITY-CONTRACTS"
+      ],
+      "activation_after": [
+        "LONG-3-UNLEARNING-NON-RESURRECTION",
+        "RCP-1-RUNTIME-CONTROL-PLANE",
+        "NDU-1-DETERMINISTIC-UTILITY-BASELINE"
+      ],
+      "evidence_after": [],
+      "acceptance_criteria": [
+        "exact_source_identity",
+        "source_inventory",
+        "static_verification",
+        "focused_tests",
+        "package_tests",
+        "all_target_check",
+        "strict_lint",
+        "clean_worktree",
+        "exact_head_execution",
+        "merge_candidate_execution",
+        "system_domain_agent_episode_only",
+        "boundary_condition_receipts",
+        "resource_conservation",
+        "weak_coupling_stability",
+        "no_central_hot_path_rpc"
+      ],
+      "qualification_profile": "adaptive"
+    },
+    {
+      "id": "BIO-1-ELIGIBILITY-HOMEOSTASIS",
+      "module": "neuron.runtime",
+      "owner": "learning-platform",
+      "deputy": "inference-platform",
+      "priority": 3,
+      "registry_state": "planned",
+      "parallel_class": "contract_coordinated",
+      "authority_delta": "none",
+      "development_after": [
+        "NEU-2-TEMPORAL-SIGNAL-RUNTIME",
+        "C1-PROMPTED-MEMORY-RETRIEVAL-RANK",
+        "BIO-0-NEURON-INTUITION-CONTRACTS",
+        "NEU-1-LOCAL-MODEL-BAKEOFF"
+      ],
+      "activation_after": [
+        "ART-2-NEXT-SNAPSHOT-RELOAD-ROLLBACK",
+        "NEU-2-TEMPORAL-SIGNAL-RUNTIME"
+      ],
+      "evidence_after": [],
+      "acceptance_criteria": [
+        "exact_source_identity",
+        "source_inventory",
+        "static_verification",
+        "focused_tests",
+        "package_tests",
+        "all_target_check",
+        "strict_lint",
+        "clean_worktree",
+        "exact_head_execution",
+        "merge_candidate_execution",
+        "bounded_eligibility_trace",
+        "lateral_inhibition",
+        "homeostatic_target",
+        "adaptive_threshold",
+        "stability_under_replay"
+      ],
+      "qualification_profile": "adaptive"
+    },
+    {
+      "id": "BIO-2-REPLAY-CONSOLIDATION",
+      "module": "learning.operator",
+      "owner": "learning-platform",
+      "deputy": "qualification-plane",
+      "priority": 3,
+      "registry_state": "planned",
+      "parallel_class": "contract_coordinated",
+      "authority_delta": "none",
+      "development_after": [
+        "BIO-1-ELIGIBILITY-HOMEOSTASIS",
+        "LONG-2-RETENTION-FORGETTING",
+        "HBO-2-BELLMAN-OPERATOR-SHADOW",
+        "HBO-0-BELLMAN-OPERATOR-CONTRACTS",
+        "HBO-1-OPERATOR-SENSOR-CORE"
+      ],
+      "activation_after": [
+        "BIO-1-ELIGIBILITY-HOMEOSTASIS",
+        "LONG-2-RETENTION-FORGETTING",
+        "HBO-2-BELLMAN-OPERATOR-SHADOW"
+      ],
+      "evidence_after": [],
+      "acceptance_criteria": [
+        "exact_source_identity",
+        "source_inventory",
+        "static_verification",
+        "focused_tests",
+        "package_tests",
+        "all_target_check",
+        "strict_lint",
+        "clean_worktree",
+        "exact_head_execution",
+        "merge_candidate_execution",
+        "verified_episode_replay",
+        "fast_slow_memory_separation",
+        "replay_ablation",
+        "deletion_eligibility"
+      ],
+      "qualification_profile": "adaptive"
+    },
+    {
+      "id": "BIO-3-WORLD-MODEL-PREDICTION-ERROR",
+      "module": "learning.operator",
+      "owner": "learning-platform",
+      "deputy": "qualification-plane",
+      "priority": 3,
+      "registry_state": "planned",
+      "parallel_class": "contract_coordinated",
+      "authority_delta": "none",
+      "development_after": [
+        "BIO-2-REPLAY-CONSOLIDATION",
+        "HBO-2-BELLMAN-OPERATOR-SHADOW",
+        "HBO-0-BELLMAN-OPERATOR-CONTRACTS",
+        "HBO-1-OPERATOR-SENSOR-CORE"
+      ],
+      "activation_after": [
+        "BIO-2-REPLAY-CONSOLIDATION"
+      ],
+      "evidence_after": [],
+      "acceptance_criteria": [
+        "exact_source_identity",
+        "source_inventory",
+        "static_verification",
+        "focused_tests",
+        "package_tests",
+        "all_target_check",
+        "strict_lint",
+        "clean_worktree",
+        "exact_head_execution",
+        "merge_candidate_execution",
+        "state_action_prediction",
+        "reward_and_risk_prediction",
+        "prediction_error_modulation",
+        "dreamed_and_real_trajectory_separation"
+      ],
+      "qualification_profile": "adaptive"
+    },
+    {
+      "id": "PIM-3-FACTOR-EVOLUTION",
+      "module": "prompt.registry",
+      "owner": "intelligence-platform",
+      "deputy": "cognitive-platform",
+      "priority": 3,
+      "registry_state": "planned",
+      "parallel_class": "contract_coordinated",
+      "authority_delta": "none",
+      "development_after": [
+        "LONG-3-UNLEARNING-NON-RESURRECTION",
+        "PIM-2-PROMPT-PRICING-PORTFOLIO-SHADOW",
+        "PIM-1-PROMPT-FACTOR-REGISTRY",
+        "PIM-0-PROMPT-INTERVENTION-CONTRACTS"
+      ],
+      "activation_after": [
+        "LONG-3-UNLEARNING-NON-RESURRECTION",
+        "PIM-1-PROMPT-FACTOR-REGISTRY"
+      ],
+      "evidence_after": [],
+      "acceptance_criteria": [
+        "exact_source_identity",
+        "source_inventory",
+        "static_verification",
+        "focused_tests",
+        "package_tests",
+        "all_target_check",
+        "strict_lint",
+        "clean_worktree",
+        "exact_head_execution",
+        "merge_candidate_execution",
+        "factor_discovery_from_residual",
+        "split_merge_retire",
+        "model_specific_realization",
+        "causal_ablation",
+        "next_snapshot_only"
+      ],
+      "qualification_profile": "durable"
+    },
+    {
+      "id": "PLS-1-PARAMETER-PLASTICITY",
+      "module": "learning.plasticity",
+      "owner": "learning-platform",
+      "deputy": "architecture",
+      "priority": 3,
+      "registry_state": "source_implemented",
+      "parallel_class": "contract_coordinated",
+      "authority_delta": "none",
+      "development_after": [
+        "LONG-3-UNLEARNING-NON-RESURRECTION",
+        "BIO-3-WORLD-MODEL-PREDICTION-ERROR"
+      ],
+      "activation_after": [
+        "LONG-3-UNLEARNING-NON-RESURRECTION",
+        "BIO-3-WORLD-MODEL-PREDICTION-ERROR"
+      ],
+      "evidence_after": [],
+      "acceptance_criteria": [
+        "exact_source_identity",
+        "source_inventory",
+        "static_verification",
+        "focused_tests",
+        "package_tests",
+        "all_target_check",
+        "strict_lint",
+        "clean_worktree",
+        "exact_head_execution",
+        "merge_candidate_execution",
+        "bounded_parameter_delta",
+        "trust_region",
+        "no_current_run_mutation",
+        "signed_artifact",
+        "rollback"
+      ],
+      "qualification_profile": "adaptive"
+    },
+    {
+      "id": "PLS-2-TOPOLOGY-PROPOSAL",
+      "module": "learning.plasticity",
+      "owner": "learning-platform",
+      "deputy": "architecture",
+      "priority": 4,
+      "registry_state": "planned",
+      "parallel_class": "serial_governance",
+      "authority_delta": "none",
+      "development_after": [
+        "PLS-1-PARAMETER-PLASTICITY",
+        "PIM-3-FACTOR-EVOLUTION",
+        "ECP-1-ENGINEERING-CONTROL-PLANE"
+      ],
+      "activation_after": [
+        "PLS-1-PARAMETER-PLASTICITY",
+        "PIM-3-FACTOR-EVOLUTION"
+      ],
+      "evidence_after": [],
+      "acceptance_criteria": [
+        "exact_source_identity",
+        "source_inventory",
+        "static_verification",
+        "focused_tests",
+        "package_tests",
+        "all_target_check",
+        "strict_lint",
+        "clean_worktree",
+        "exact_head_execution",
+        "merge_candidate_execution",
+        "add_split_merge_retire_rewire",
+        "capability_typing",
+        "lesion_and_ablation",
+        "resource_and_security_review",
+        "no_runtime_graph_mutation"
+      ],
+      "qualification_profile": "adaptive"
+    },
+    {
+      "id": "SELF-1-CODE-CANDIDATE-PIPELINE",
+      "module": "control.engineering",
+      "owner": "developer-productivity",
+      "deputy": "architecture",
+      "priority": 4,
+      "registry_state": "planned",
+      "parallel_class": "independent_engineering_tooling",
+      "authority_delta": "none",
+      "development_after": [
+        "ECP-1-ENGINEERING-CONTROL-PLANE",
+        "LONG-3-UNLEARNING-NON-RESURRECTION",
+        "ART-2-NEXT-SNAPSHOT-RELOAD-ROLLBACK"
+      ],
+      "activation_after": [
+        "ECP-1-ENGINEERING-CONTROL-PLANE"
+      ],
+      "evidence_after": [],
+      "acceptance_criteria": [
+        "exact_source_identity",
+        "source_inventory",
+        "static_verification",
+        "focused_tests",
+        "package_tests",
+        "all_target_check",
+        "strict_lint",
+        "clean_worktree",
+        "exact_head_execution",
+        "merge_candidate_execution",
+        "patch_and_test_generation",
+        "bounded_work_envelope",
+        "independent_review_required",
+        "no_self_merge",
+        "rollback_plan"
+      ],
+      "qualification_profile": "contracts"
+    },
+    {
+      "id": "P0.9-EXTERNAL-GATES",
+      "module": "kernel.evidence",
+      "owner": "qualification-plane",
+      "deputy": "security-authority",
+      "priority": 0,
+      "registry_state": "blocked_external",
+      "parallel_class": "external_independent",
+      "authority_delta": "none",
+      "development_after": [
+        "P0.8D-VERTICAL-SLICE"
+      ],
+      "activation_after": [
+        "P0.8D-VERTICAL-SLICE"
+      ],
+      "evidence_after": [
+        "P0.8D-VERTICAL-SLICE"
+      ],
+      "acceptance_criteria": [
+        "repository_ruleset",
+        "independent_exact_candidate_review",
+        "real_model_provider_corpus",
+        "physical_platform",
+        "operator_acceptance",
+        "trust_root_ceremony",
+        "promotion",
+        "release"
+      ],
+      "qualification_profile": "durable"
+    },
+    {
+      "id": "PLS-3-BOUNDED-STRUCTURAL-CANARY",
+      "module": "learning.plasticity",
+      "owner": "learning-platform",
+      "deputy": "architecture",
+      "priority": 4,
+      "registry_state": "planned",
+      "parallel_class": "external_evidence_coordinated",
+      "authority_delta": "none",
+      "development_after": [
+        "PLS-2-TOPOLOGY-PROPOSAL",
+        "P0.9-EXTERNAL-GATES",
+        "PLS-1-PARAMETER-PLASTICITY"
+      ],
+      "activation_after": [
+        "PLS-2-TOPOLOGY-PROPOSAL",
+        "P0.9-EXTERNAL-GATES"
+      ],
+      "evidence_after": [],
+      "acceptance_criteria": [
+        "exact_source_identity",
+        "source_inventory",
+        "static_verification",
+        "focused_tests",
+        "package_tests",
+        "all_target_check",
+        "strict_lint",
+        "clean_worktree",
+        "exact_head_execution",
+        "merge_candidate_execution",
+        "signed_topology_snapshot",
+        "shadow",
+        "bounded_canary",
+        "kill_switch",
+        "operator_acceptance",
+        "rollback_rehearsal"
+      ],
+      "qualification_profile": "adaptive"
+    },
+    {
+      "id": "PLATFORM-0-TYPE-BOUNDARY",
+      "module": "platform.types",
+      "owner": "kernel-contracts",
+      "deputy": "architecture",
+      "priority": 2,
+      "registry_state": "source_implemented_execution_pending",
+      "parallel_class": "contract_coordinated",
+      "authority_delta": "none",
+      "development_after": [
+        "DOC-1-V8-SEMANTIC-UPGRADE",
+        "OBJ-0-OBJECTIVE-CONTRACTS",
+        "LRN-0-CAUSAL-LEARNING-CONTRACTS",
+        "NDU-0-PREFERENCE-UTILITY-CONTRACTS",
+        "PIM-0-PROMPT-INTERVENTION-CONTRACTS",
+        "HBO-0-BELLMAN-OPERATOR-CONTRACTS",
+        "BIO-0-NEURON-INTUITION-CONTRACTS",
+        "P0.7E-DEPENDENCY-INVERSION"
+      ],
+      "activation_after": [
+        "DOC-1-V8-SEMANTIC-UPGRADE",
+        "OBJ-0-OBJECTIVE-CONTRACTS",
+        "LRN-0-CAUSAL-LEARNING-CONTRACTS",
+        "NDU-0-PREFERENCE-UTILITY-CONTRACTS",
+        "PIM-0-PROMPT-INTERVENTION-CONTRACTS",
+        "HBO-0-BELLMAN-OPERATOR-CONTRACTS",
+        "BIO-0-NEURON-INTUITION-CONTRACTS",
+        "P0.7E-DEPENDENCY-INVERSION"
+      ],
+      "evidence_after": [
+        "DOC-1-V8-SEMANTIC-UPGRADE",
+        "OBJ-0-OBJECTIVE-CONTRACTS",
+        "LRN-0-CAUSAL-LEARNING-CONTRACTS",
+        "NDU-0-PREFERENCE-UTILITY-CONTRACTS",
+        "PIM-0-PROMPT-INTERVENTION-CONTRACTS",
+        "HBO-0-BELLMAN-OPERATOR-CONTRACTS",
+        "BIO-0-NEURON-INTUITION-CONTRACTS",
+        "P0.7E-DEPENDENCY-INVERSION"
+      ],
+      "acceptance_criteria": [
+        "exact_source_identity",
+        "static_verification",
+        "focused_tests",
+        "clean_worktree"
+      ],
+      "qualification_profile": "contracts"
+    },
+    {
+      "id": "FLEET-1-ALLOCATION-CONTRACT",
+      "module": "runtime.fleet",
+      "owner": "fleet-runtime",
+      "deputy": "runtime-control",
+      "priority": 2,
+      "registry_state": "planned",
+      "parallel_class": "contract_coordinated",
+      "authority_delta": "none",
+      "development_after": [
+        "P0.7B-B0-VERIFIED-USE"
+      ],
+      "activation_after": [
+        "P0.7B-B0-VERIFIED-USE"
+      ],
+      "evidence_after": [
+        "P0.7B-B0-VERIFIED-USE"
+      ],
+      "acceptance_criteria": [
+        "exact_source_identity",
+        "static_verification",
+        "focused_tests",
+        "clean_worktree"
+      ],
+      "qualification_profile": "contracts"
+    },
+    {
+      "id": "HEPTABAO-1-SECRET-BOUNDARY",
+      "module": "secrets.heptabao",
+      "owner": "secrets-platform",
+      "deputy": "security-authority",
+      "priority": 2,
+      "registry_state": "planned",
+      "parallel_class": "contract_coordinated",
+      "authority_delta": "none",
+      "development_after": [
+        "AUTHBUS-P1.3-V12",
+        "P0.7B-B3-BOUNDARIES"
+      ],
+      "activation_after": [
+        "AUTHBUS-P1.3-V12",
+        "P0.7B-B3-BOUNDARIES"
+      ],
+      "evidence_after": [
+        "AUTHBUS-P1.3-V12",
+        "P0.7B-B3-BOUNDARIES"
+      ],
+      "acceptance_criteria": [
+        "exact_source_identity",
+        "static_verification",
+        "focused_tests",
+        "clean_worktree"
+      ],
+      "qualification_profile": "durable"
+    },
+    {
+      "id": "MEM-READ-1-SNAPSHOT-PORT",
+      "module": "cognitive.read",
+      "owner": "cognitive-platform",
+      "deputy": "agent-runtime",
+      "priority": 2,
+      "registry_state": "source_implemented_execution_pending",
+      "parallel_class": "contract_coordinated",
+      "authority_delta": "none",
+      "development_after": [
+        "MEM-0-TYPES"
+      ],
+      "activation_after": [
+        "MEM-0-TYPES"
+      ],
+      "evidence_after": [
+        "MEM-0-TYPES"
+      ],
+      "acceptance_criteria": [
+        "exact_source_identity",
+        "static_verification",
+        "focused_tests",
+        "clean_worktree",
+        "package_tests",
+        "all_target_check",
+        "strict_lint",
+        "exact_head_execution",
+        "merge_candidate_execution",
+        "real_product_final_use_e2e"
+      ],
+      "qualification_profile": "contracts"
+    },
+    {
+      "id": "TASKFLOW-1-EXECUTION-BOUNDARY",
+      "module": "automation.taskflow",
+      "owner": "automation-platform",
+      "deputy": "agent-runtime",
+      "priority": 2,
+      "registry_state": "source_implemented_execution_pending",
+      "parallel_class": "contract_coordinated",
+      "authority_delta": "none",
+      "development_after": [
+        "P0.7B-B4-CALLSITE-PROOF",
+        "P0.8D-VERTICAL-SLICE"
+      ],
+      "activation_after": [
+        "P0.7B-B4-CALLSITE-PROOF",
+        "P0.8D-VERTICAL-SLICE"
+      ],
+      "evidence_after": [
+        "P0.7B-B4-CALLSITE-PROOF"
+      ],
+      "acceptance_criteria": [
+        "exact_source_identity",
+        "static_verification",
+        "focused_tests",
+        "clean_worktree"
+      ],
+      "qualification_profile": "contracts"
+    },
+    {
+      "id": "MATRIX-1-CHANNEL-BOUNDARY",
+      "module": "channel.matrix",
+      "owner": "channels-platform",
+      "deputy": "security-authority",
+      "priority": 2,
+      "registry_state": "planned",
+      "parallel_class": "contract_coordinated",
+      "authority_delta": "none",
+      "development_after": [
+        "P0.7B-B3-BOUNDARIES"
+      ],
+      "activation_after": [
+        "P0.7B-B3-BOUNDARIES"
+      ],
+      "evidence_after": [
+        "P0.7B-B3-BOUNDARIES"
+      ],
+      "acceptance_criteria": [
+        "exact_source_identity",
+        "static_verification",
+        "focused_tests",
+        "clean_worktree"
+      ],
+      "qualification_profile": "physical"
+    },
+    {
+      "id": "UI-NATIVE-1-SHELL",
+      "module": "ui.native",
+      "owner": "ui-platform",
+      "deputy": "accessibility",
+      "priority": 2,
+      "registry_state": "planned",
+      "parallel_class": "contract_coordinated",
+      "authority_delta": "none",
+      "development_after": [
+        "P0.8B-READINESS",
+        "UI-V5"
+      ],
+      "activation_after": [
+        "P0.8B-READINESS",
+        "UI-V5"
+      ],
+      "evidence_after": [
+        "P0.8B-READINESS",
+        "UI-V5"
+      ],
+      "acceptance_criteria": [
+        "exact_source_identity",
+        "static_verification",
+        "focused_tests",
+        "clean_worktree"
+      ],
+      "qualification_profile": "contracts"
+    },
+    {
+      "id": "INT-2-AGENTD-CODEX-COMPOSITION",
+      "module": "intelligence.control",
+      "owner": "intelligence-platform",
+      "deputy": "qualification-plane",
+      "priority": 2,
+      "registry_state": "planned",
+      "parallel_class": "contract_coordinated",
+      "authority_delta": "none",
+      "development_after": [
+        "CTX-1-CONTEXT-COMPILER",
+        "INT-1-CALIBRATED-INTUITION-POLICY",
+        "C1-PROMPTED-MEMORY-RETRIEVAL-RANK",
+        "INTELLIGENCE-A0-Q0.63"
+      ],
+      "activation_after": [
+        "CTX-1-CONTEXT-COMPILER",
+        "INT-1-CALIBRATED-INTUITION-POLICY",
+        "C1-PROMPTED-MEMORY-RETRIEVAL-RANK",
+        "INTELLIGENCE-A0-Q0.63"
+      ],
+      "evidence_after": [
+        "CTX-1-CONTEXT-COMPILER",
+        "INT-1-CALIBRATED-INTUITION-POLICY",
+        "C1-PROMPTED-MEMORY-RETRIEVAL-RANK",
+        "INTELLIGENCE-A0-Q0.63"
+      ],
+      "acceptance_criteria": [
+        "exact_source_identity",
+        "static_verification",
+        "focused_tests",
+        "clean_worktree"
+      ],
+      "qualification_profile": "contracts"
+    },
+    {
+      "id": "DOC-REGISTRY-CLOSED-WORLD",
+      "module": "control.engineering",
+      "owner": "developer-productivity",
+      "deputy": "architecture",
+      "priority": 2,
+      "registry_state": "source_implemented",
+      "parallel_class": "contract_coordinated",
+      "authority_delta": "none",
+      "development_after": [
+        "DOC-1-V8-SEMANTIC-UPGRADE",
+        "DOC-0-CANONICAL-DOCUMENT-CONSOLIDATION"
+      ],
+      "activation_after": [
+        "DOC-1-V8-SEMANTIC-UPGRADE",
+        "DOC-0-CANONICAL-DOCUMENT-CONSOLIDATION"
+      ],
+      "evidence_after": [
+        "DOC-1-V8-SEMANTIC-UPGRADE",
+        "DOC-0-CANONICAL-DOCUMENT-CONSOLIDATION"
+      ],
+      "acceptance_criteria": [
+        "exact_source_identity",
+        "static_verification",
+        "focused_tests",
+        "clean_worktree"
+      ],
+      "qualification_profile": "documentation"
+    },
+    {
+      "id": "DOC-3A-SOURCE-BINDING-RECONCILIATION",
+      "module": "control.engineering",
+      "owner": "developer-productivity",
+      "deputy": "architecture",
+      "priority": 0,
+      "registry_state": "source_implemented",
+      "parallel_class": "serial_governance",
+      "authority_delta": "none",
+      "development_after": [
+        "DOC-1-V8-SEMANTIC-UPGRADE",
+        "DOC-REGISTRY-CLOSED-WORLD"
+      ],
+      "activation_after": [
+        "DOC-1-V8-SEMANTIC-UPGRADE"
+      ],
+      "evidence_after": [
+        "DOC-1-V8-SEMANTIC-UPGRADE"
+      ],
+      "acceptance_criteria": [
+        "forty_module_source_classification",
+        "existing_root_reconciliation",
+        "target_root_missing_state",
+        "bootstrap_package_binding",
+        "browser_source_conflict_reclassified"
+      ],
+      "qualification_profile": "documentation"
+    },
+    {
+      "id": "DOC-3B-MODULE-TECHNICAL-DOCUMENTS",
+      "module": "control.engineering",
+      "owner": "developer-productivity",
+      "deputy": "architecture",
+      "priority": 0,
+      "registry_state": "source_implemented",
+      "parallel_class": "serial_governance",
+      "authority_delta": "none",
+      "development_after": [
+        "DOC-3A-SOURCE-BINDING-RECONCILIATION"
+      ],
+      "activation_after": [
+        "DOC-3A-SOURCE-BINDING-RECONCILIATION"
+      ],
+      "evidence_after": [
+        "DOC-3A-SOURCE-BINDING-RECONCILIATION"
+      ],
+      "acceptance_criteria": [
+        "forty_stable_module_guides",
+        "module_specific_contract_inventory",
+        "module_specific_data_inventory",
+        "module_specific_failure_and_test_model",
+        "no_versioned_module_plan_files"
+      ],
+      "qualification_profile": "documentation"
+    },
+    {
+      "id": "DOC-3C-MODULE-DOC-CLOSED-WORLD",
+      "module": "control.engineering",
+      "owner": "developer-productivity",
+      "deputy": "architecture",
+      "priority": 0,
+      "registry_state": "source_implemented",
+      "parallel_class": "serial_governance",
+      "authority_delta": "none",
+      "development_after": [
+        "DOC-3B-MODULE-TECHNICAL-DOCUMENTS"
+      ],
+      "activation_after": [
+        "DOC-3B-MODULE-TECHNICAL-DOCUMENTS"
+      ],
+      "evidence_after": [
+        "DOC-3B-MODULE-TECHNICAL-DOCUMENTS"
+      ],
+      "acceptance_criteria": [
+        "module_document_index",
+        "module_source_binding_index",
+        "closed_world_module_validator",
+        "canonical_path_closure",
+        "exact_head_and_merge_candidate_validation"
+      ],
+      "qualification_profile": "documentation"
+    },
+    {
+      "id": "DOC-3E-PRECODING-READINESS-CLOSED-WORLD",
+      "module": "control.engineering",
+      "owner": "developer-productivity",
+      "deputy": "architecture",
+      "priority": 0,
+      "registry_state": "source_implemented_semantic_review_pending",
+      "parallel_class": "serial_governance",
+      "authority_delta": "none",
+      "development_after": [
+        "DOC-3D-ADAPTIVE-ALGORITHM-DOC-CLOSED-WORLD"
+      ],
+      "activation_after": [
+        "DOC-3D-ADAPTIVE-ALGORITHM-DOC-CLOSED-WORLD"
+      ],
+      "evidence_after": [
+        "DOC-3D-ADAPTIVE-ALGORITHM-DOC-CLOSED-WORLD"
+      ],
+      "acceptance_criteria": [
+        "all_readiness_documents_have_normative_state_algorithm_failure_resource_and_fixture_semantics",
+        "all_readiness_protocols_have_registered_owners_consumers_bounds_and_zero_authority_delta",
+        "all_forty_modules_map_to_exactly_one_primary_lane",
+        "all_gap_evidence_and_protocol_references_resolve",
+        "global_verifier_invokes_readiness_cns_and_hnmf_verifiers",
+        "dedicated_source_head_and_synthetic_merge_jobs_pass",
+        "documentation_closure_does_not_advance_runtime_or_efficacy_claims"
+      ],
+      "qualification_profile": "documentation"
+    },
+    {
+      "id": "EMB-0-EMBODIED-CONTRACTS",
+      "module": "platform.types",
+      "owner": "kernel-contracts",
+      "deputy": "architecture",
+      "priority": 3,
+      "registry_state": "planned",
+      "parallel_class": "contract_first_parallel",
+      "authority_delta": "none",
+      "development_after": [
+        "DOC-3E-PRECODING-READINESS-CLOSED-WORLD",
+        "PLATFORM-0-TYPE-BOUNDARY",
+        "P0.7E-DEPENDENCY-INVERSION"
+      ],
+      "activation_after": [
+        "DOC-2-DEFAULT-BRANCH-SELECTION",
+        "PLATFORM-0-TYPE-BOUNDARY",
+        "P0.7B-B0-VERIFIED-USE"
+      ],
+      "evidence_after": [
+        "DOC-3E-PRECODING-READINESS-CLOSED-WORLD"
+      ],
+      "acceptance_criteria": [
+        "all_embodied_protocols_are_bounded_and_round_trip",
+        "unknown_critical_fields_rejected",
+        "body_calibration_rule_and_authority_generations_are_digest_bound",
+        "no_protocol_grants_effect_authority"
+      ],
+      "qualification_profile": "contracts"
+    },
+    {
+      "id": "EMB-1-SENSOR-BUS-BODY-SCHEMA",
+      "module": "cognitive.types",
+      "owner": "cognitive-platform",
+      "deputy": "kernel-contracts",
+      "priority": 3,
+      "registry_state": "planned",
+      "parallel_class": "contract_coordinated",
+      "authority_delta": "none",
+      "development_after": [
+        "EMB-0-EMBODIED-CONTRACTS",
+        "MEM-0-TYPES",
+        "MEM-1-STORE",
+        "MEM-READ-1-SNAPSHOT-PORT",
+        "P0.8B-READINESS",
+        "MEM-8-PRODUCTION-WRITER"
+      ],
+      "activation_after": [
+        "EMB-0-EMBODIED-CONTRACTS",
+        "MEM-1-STORE",
+        "MEM-READ-1-SNAPSHOT-PORT"
+      ],
+      "evidence_after": [
+        "EMB-0-EMBODIED-CONTRACTS"
+      ],
+      "acceptance_criteria": [
+        "stale_future_unknown_or_scope_escaping_sensor_rows_fail_closed",
+        "body_state_uses_one_coherent_source_generation",
+        "single_writer_and_snapshot_read_semantics_hold",
+        "deletion_and_correction_do_not_resurrect_projections"
+      ],
+      "qualification_profile": "durable"
+    },
+    {
+      "id": "EMB-2-REFLEX-MOTOR-ACTUATION",
+      "module": "control.runtime",
+      "owner": "runtime-control",
+      "deputy": "security-authority",
+      "priority": 3,
+      "registry_state": "planned",
+      "parallel_class": "contract_coordinated",
+      "authority_delta": "none",
+      "development_after": [
+        "EMB-1-SENSOR-BUS-BODY-SCHEMA",
+        "RCP-1-RUNTIME-CONTROL-PLANE",
+        "P0.7A-RUNTIME-BOOTSTRAP",
+        "P0.7B-B0-VERIFIED-USE",
+        "P0.7B-B4-CALLSITE-PROOF",
+        "P0.8D-VERTICAL-SLICE",
+        "NDU-2-AGENT-DOMAIN-HIERARCHY"
+      ],
+      "activation_after": [
+        "EMB-1-SENSOR-BUS-BODY-SCHEMA",
+        "RCP-1-RUNTIME-CONTROL-PLANE",
+        "P0.7B-B4-CALLSITE-PROOF"
+      ],
+      "evidence_after": [
+        "EMB-1-SENSOR-BUS-BODY-SCHEMA"
+      ],
+      "acceptance_criteria": [
+        "no_local_hot_path_requires_central_synchronous_rpc",
+        "reflex_and_human_stop_dominate_learned_action",
+        "queue_acknowledgement_never_equals_terminal_success",
+        "indeterminate_effects_are_fenced_and_reconciled",
+        "generation_or_payload_drift_rejects_before_adapter_entry"
+      ],
+      "qualification_profile": "physical"
+    },
+    {
+      "id": "EMB-3-HIL-SIM-TO-REAL-QUALIFICATION",
+      "module": "learning.eval",
+      "owner": "learning-platform",
+      "deputy": "qualification-plane",
+      "priority": 4,
+      "registry_state": "planned",
+      "parallel_class": "external_evidence_coordinated",
+      "authority_delta": "none",
+      "development_after": [
+        "EMB-2-REFLEX-MOTOR-ACTUATION",
+        "LRN-2-CAUSAL-EVALUATION",
+        "HBO-2-BELLMAN-OPERATOR-SHADOW",
+        "LONG-3-UNLEARNING-NON-RESURRECTION"
+      ],
+      "activation_after": [
+        "EMB-2-REFLEX-MOTOR-ACTUATION",
+        "P0.9-EXTERNAL-GATES"
+      ],
+      "evidence_after": [
+        "EMB-2-REFLEX-MOTOR-ACTUATION",
+        "LRN-2-CAUSAL-EVALUATION"
+      ],
+      "acceptance_criteria": [
+        "real_sensor_calibration_and_hardware_identity_are_observed",
+        "deadline_miss_and_jitter_floors_pass_on_target_host",
+        "emergency_stop_and_collision_force_limits_pass_independently",
+        "simulator_success_does_not_self_certify_physical_safety",
+        "rollback_and_recovery_are_rehearsed"
+      ],
+      "qualification_profile": "physical"
+    },
+    {
+      "id": "ASM-0-EXTERNAL-SYSTEM-CONTRACTS",
+      "module": "platform.types",
+      "owner": "kernel-contracts",
+      "deputy": "architecture",
+      "priority": 3,
+      "registry_state": "planned",
+      "parallel_class": "contract_first_parallel",
+      "authority_delta": "none",
+      "development_after": [
+        "DOC-3E-PRECODING-READINESS-CLOSED-WORLD",
+        "PLATFORM-0-TYPE-BOUNDARY",
+        "P0.7E-DEPENDENCY-INVERSION"
+      ],
+      "activation_after": [
+        "DOC-2-DEFAULT-BRANCH-SELECTION",
+        "PLATFORM-0-TYPE-BOUNDARY",
+        "P0.7B-B0-VERIFIED-USE"
+      ],
+      "evidence_after": [
+        "DOC-3E-PRECODING-READINESS-CLOSED-WORLD"
+      ],
+      "acceptance_criteria": [
+        "all_assimilation_protocols_are_bounded_and_round_trip",
+        "external_owner_scope_and_consent_are_mandatory",
+        "unknown_services_capabilities_and_fields_fail_closed",
+        "protocols_do_not_grant_host_enrollment_or_external_effect"
+      ],
+      "qualification_profile": "contracts"
+    },
+    {
+      "id": "ASM-1-DISCOVERY-MANIFEST",
+      "module": "control.engineering",
+      "owner": "developer-productivity",
+      "deputy": "architecture",
+      "priority": 3,
+      "registry_state": "planned",
+      "parallel_class": "independent_engineering_tooling",
+      "authority_delta": "none",
+      "development_after": [
+        "ASM-0-EXTERNAL-SYSTEM-CONTRACTS",
+        "ECP-1-ENGINEERING-CONTROL-PLANE",
+        "P0.7A-RUNTIME-BOOTSTRAP",
+        "SELF-1-CODE-CANDIDATE-PIPELINE"
+      ],
+      "activation_after": [
+        "ASM-0-EXTERNAL-SYSTEM-CONTRACTS",
+        "ECP-1-ENGINEERING-CONTROL-PLANE"
+      ],
+      "evidence_after": [
+        "ASM-0-EXTERNAL-SYSTEM-CONTRACTS"
+      ],
+      "acceptance_criteria": [
+        "discovery_requires_explicit_scope_and_has_no_mutation_capability",
+        "inventory_is_complete_or_reports_omission_bounds",
+        "service_graph_is_deterministic_and_digest_stable",
+        "contract_synthesis_outputs_candidates_only"
+      ],
+      "qualification_profile": "contracts"
+    },
+    {
+      "id": "ASM-2-DEBIAN-BRIDGE-SANDBOX",
+      "module": "runtime.agentd",
+      "owner": "agent-runtime",
+      "deputy": "runtime-control",
+      "priority": 4,
+      "registry_state": "planned",
+      "parallel_class": "contract_coordinated",
+      "authority_delta": "none",
+      "development_after": [
+        "ASM-1-DISCOVERY-MANIFEST",
+        "P0.7B-B0-VERIFIED-USE",
+        "P0.7B-B2-TOOL-NET-FS",
+        "P0.7B-B4-CALLSITE-PROOF",
+        "P0.7D-FAULT-MATRIX"
+      ],
+      "activation_after": [
+        "ASM-1-DISCOVERY-MANIFEST",
+        "P0.7B-B4-CALLSITE-PROOF",
+        "P0.9-EXTERNAL-GATES"
+      ],
+      "evidence_after": [
+        "ASM-1-DISCOVERY-MANIFEST"
+      ],
+      "acceptance_criteria": [
+        "sandbox_has_no_production_credentials_or_uncontrolled_network",
+        "adapter_effects_require_final_payload_bound_verified_use",
+        "package_and_service_state_changes_are_idempotent_or_reconciled",
+        "no_cross_host_or_autonomous_propagation_path_exists"
+      ],
+      "qualification_profile": "physical"
+    },
+    {
+      "id": "ASM-3-STATE-MIGRATION-QUALIFICATION",
+      "module": "kernel.operations",
+      "owner": "durability-kernel",
+      "deputy": "architecture",
+      "priority": 4,
+      "registry_state": "planned",
+      "parallel_class": "external_evidence_coordinated",
+      "authority_delta": "none",
+      "development_after": [
+        "ASM-2-DEBIAN-BRIDGE-SANDBOX",
+        "LRN-2-CAUSAL-EVALUATION",
+        "P0.7D-FAULT-MATRIX",
+        "LONG-3-UNLEARNING-NON-RESURRECTION"
+      ],
+      "activation_after": [
+        "ASM-2-DEBIAN-BRIDGE-SANDBOX",
+        "P0.9-EXTERNAL-GATES"
+      ],
+      "evidence_after": [
+        "ASM-2-DEBIAN-BRIDGE-SANDBOX",
+        "LRN-2-CAUSAL-EVALUATION"
+      ],
+      "acceptance_criteria": [
+        "source_and_destination_ownership_are_explicit",
+        "partial_migration_never_becomes_silent_success",
+        "rollback_point_is_verified_before mutation",
+        "deleted_or_revoked_state_does_not_reappear_after_restore",
+        "evaluator_cannot_select_or_activate_candidate"
+      ],
+      "qualification_profile": "physical"
+    },
+    {
+      "id": "ASM-4-FEDERATED-ORGAN-ENROLLMENT",
+      "module": "runtime.fleet",
+      "owner": "fleet-runtime",
+      "deputy": "runtime-control",
+      "priority": 5,
+      "registry_state": "planned",
+      "parallel_class": "external_evidence_coordinated",
+      "authority_delta": "none",
+      "development_after": [
+        "ASM-3-STATE-MIGRATION-QUALIFICATION",
+        "FLEET-1-ALLOCATION-CONTRACT",
+        "MEM-3-FEDERATION"
+      ],
+      "activation_after": [
+        "ASM-3-STATE-MIGRATION-QUALIFICATION",
+        "P0.9-EXTERNAL-GATES"
+      ],
+      "evidence_after": [
+        "ASM-3-STATE-MIGRATION-QUALIFICATION"
+      ],
+      "acceptance_criteria": [
+        "every_host_is_explicitly_enrolled_by_authorized_owner",
+        "leases_are_host_scope_operation_and_expiry_bound",
+        "federation_cannot_propagate_enrollment",
+        "network_partition_fails_closed_or_degrades_to_declared_fallback",
+        "retirement_reconciles_operations_and_preserves_evidence"
+      ],
+      "qualification_profile": "physical"
+    }
+  ],
+  "execution_rules_zh": [
+    "每次排队读取实际 package 的 Development/Activation/Evidence 三组前驱及当前 exact receipts；不能凭 source_implemented 自动满足 activation/evidence。",
+    "一个 package 保持一个可审主集成候选；donor 用固定 base/head 的净 diff、source owner 与已有测试判定，保留必要历史，不盲合整支。",
+    "普通授权源码变更走正常 PR 和适用检查；不添加与其边界无关的 runtime/deployment 审批。",
+    "当前共享 native lane 由单一 mutator 串行；只读审计、源码准备和独立评审并行，保持 source/tree/test-report 不被并发改写。",
+    "CI 的 exact case、noncached target、cached、retry-stage fail、capped unknown 分层；failed output 采集完整后重新生成下界，不能靠 absent case 关闭。",
+    "每次只提高已满足的声明层级；valid stop outcome 用真实原因，包含明确 owner、缺失输入、下一条执行动作与出口。"
+  ],
+  "valid_stop_outcomes": [
+    "PACKAGE_CLOSED_CANDIDATE",
+    "BASE_DRIFT",
+    "BLOCKED_UPSTREAM",
+    "BLOCKED_EXTERNAL",
+    "STOP_CONDITION",
+    "RESUME_REQUIRED"
+  ],
+  "external_gates": [
+    {
+      "id": "RDY-EXT-001",
+      "gate": "source_modules_materialized_and_compiling",
+      "state": "requires_source_implementation",
+      "repositoryDocumentationMaySelfCertify": false
+    },
+    {
+      "id": "RDY-EXT-002",
+      "gate": "independent_semantic_review",
+      "state": "requires_distinct_reviewer",
+      "repositoryDocumentationMaySelfCertify": false
+    },
+    {
+      "id": "RDY-EXT-003",
+      "gate": "real_model_consumer_and_runtime_identity",
+      "state": "requires_runtime_evidence",
+      "repositoryDocumentationMaySelfCertify": false
+    },
+    {
+      "id": "RDY-EXT-004",
+      "gate": "future_calendar_longitudinal_efficacy",
+      "state": "requires_future_windows",
+      "repositoryDocumentationMaySelfCertify": false
+    },
+    {
+      "id": "RDY-EXT-005",
+      "gate": "empirical_functional_biomimicry",
+      "state": "requires_ablation_and_lesion_evidence",
+      "repositoryDocumentationMaySelfCertify": false
+    },
+    {
+      "id": "RDY-EXT-006",
+      "gate": "target_host_real_time_and_hardware_in_loop",
+      "state": "requires_target_host_and_hardware",
+      "repositoryDocumentationMaySelfCertify": false
+    },
+    {
+      "id": "RDY-EXT-007",
+      "gate": "authorized_external_system_fixture",
+      "state": "requires_explicit_owner_consent",
+      "repositoryDocumentationMaySelfCertify": false
+    },
+    {
+      "id": "RDY-EXT-008",
+      "gate": "independent_operator_acceptance",
+      "state": "requires_external_decision",
+      "repositoryDocumentationMaySelfCertify": false
+    },
+    {
+      "id": "RDY-EXT-009",
+      "gate": "production_canary_selection_promotion_release",
+      "state": "requires_separate_governed_decisions",
+      "repositoryDocumentationMaySelfCertify": false
+    }
+  ],
+  "external_acceptance_plan_owner": "Separate research_audit B16/B18/B19 acceptance plan; this plan only positions those gates and does not duplicate or self-certify their external evidence.",
+  "current_execution_evidence": {
+    "failure_ledger_json_blob": "3ab93ad3892fc319604f11f069e5775549a9f498",
+    "failure_ledger_compact_publication_blob_reported_by_root": "88ea37869635d4fb1f3f6928dd09d6661656f8b6",
+    "failure_ledger_markdown_blob": "c58b9211c5173bd026d7749916538976da966fb4",
+    "original_full_matrix_closed": 0,
+    "ui_followup_independent_review": {
+      "blob": "88cd502578a06d68b3c6ec1f44de08b8e8f6b7df",
+      "bytes": 2535,
+      "sha256": "cef36f6d16a60eb0edcee241af05ba9ec290b14c84b7b4d4001e24432ff5d207",
+      "mode": "100644",
+      "suggested_path": "architecture-audit/ui-checkout-native-followup-review.json"
+    },
+    "ui_native_scope": "13 original Python cases on a69b20c4; six unchanged Gateway cases still query HEAD907d4f5 graph. Not hosted UI or remaining Rust batch qualification."
+  },
+  "incoming_activity_delta": {
+    "reported_by": "root",
+    "reported_at_utc": "2026-11-04T18:57:00Z",
+    "independently_refetched_by_this_plan": false,
+    "full_inventory_not_refetched": true,
+    "earlier_full_inventory_counts_preserved": {
+      "pull_requests": 1081,
+      "branches": 5146
+    },
+    "main_prefix_reported": "732e934",
+    "items": [
+      {
+        "pull_request": 4800,
+        "head": "1b390853e50aa2fdae2e6c68793f94742d2d667c",
+        "changed_files": 10,
+        "scope_reported": "Updated native role-socket branch; new private async owner::execute inline(never) lines.",
+        "adopted_in_current_candidate": false,
+        "required_next_action": "重新核当前精确 diff 与 base、public caller/ownership、同树真实入口与资源/取消证据，不继承旧 head 的审查结论。"
+      },
+      {
+        "pull_request": 4803,
+        "head": "83ad164ff05cb34d444d51e23ee286fa0241c783",
+        "base_prefix_reported": "14e2",
+        "changed_files": 3,
+        "scope_reported": "V8 local resolver --run",
+        "adopted_in_current_candidate": false,
+        "required_next_action": "独立比较 resolver 实际命令/输入/作用范围与 canonical source/merge 语义；不得将旧独立 base 的成功当现候选执行资格。"
+      }
+    ]
+  },
+  "mutation_boundary": {
+    "canonical_files_modified": false,
+    "refs_modified": false,
+    "native_builds_started": false,
+    "repository_inventory_refetched": false
+  }
+}

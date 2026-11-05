@@ -1,0 +1,84 @@
+#!/usr/bin/env python3
+"""Verify exact dependency source reconstruction; do not build or run it."""
+
+import hashlib
+import json
+import os
+from pathlib import Path
+import subprocess
+
+ROOT = Path(__file__).resolve().parent
+SOURCE = ROOT.parent / "sqlx-pre-registration-custody-20261105" / "sources" / "sqlx"
+MANIFEST = json.loads((ROOT / "input-manifest-v3.json").read_text())
+WORK = ROOT / "static-reconstruction-v3"
+
+
+def identity(data):
+    return {
+        "blob": hashlib.sha1(b"blob " + str(len(data)).encode() + b"\0" + data).hexdigest(),
+        "bytes": len(data),
+        "sha256": hashlib.sha256(data).hexdigest(),
+    }
+
+
+def inventory():
+    return {
+        str(path.relative_to(WORK)): identity(path.read_bytes())["blob"]
+        for path in sorted(WORK.rglob("*")) if path.is_file()
+    }
+
+
+def main():
+    WORK.mkdir(exist_ok=False)
+    for file in MANIFEST["files"]:
+        if file["before_blob"] is not None:
+            data = (SOURCE / file["path"]).read_bytes()
+            assert identity(data)["blob"] == file["before_blob"]
+            target = WORK / file["path"]
+            target.parent.mkdir(parents=True, exist_ok=True)
+            target.write_bytes(data)
+        actual = identity((ROOT / "review-source" / file["path"]).read_bytes())
+        assert actual == {key: file[key] for key in actual}
+    final = {file["path"]: file["blob"] for file in MANIFEST["files"]}
+    phases = []
+    env = os.environ.copy()
+    env["GIT_CEILING_DIRECTORIES"] = str(WORK)
+    env["GIT_CONFIG_NOSYSTEM"] = "1"
+    for patch in MANIFEST["patches"]:
+        path = ROOT / patch["path"]
+        assert identity(path.read_bytes()) == {key: patch[key] for key in ("blob", "bytes", "sha256")}
+        commands = []
+        for check in (True, False):
+            argv = ["git", "apply", "--whitespace=error-all"]
+            if check:
+                argv.append("--check")
+            result = subprocess.run(argv + [str(path)], cwd=WORK, env=env, capture_output=True)
+            commands.append({"argv": argv + [patch["path"]], "exit_code": result.returncode,
+                             "stdout": result.stdout.decode(), "stderr": result.stderr.decode()})
+            assert result.returncode == 0, commands[-1]
+        expected = dict(final)
+        if patch["name"] in MANIFEST["negative_postimages"]:
+            negative = MANIFEST["negative_postimages"][patch["name"]]
+            expected[negative["path"]] = negative["blob"]
+        actual = inventory()
+        assert actual == expected, patch["name"]
+        phases.append({"name": patch["name"], "patch": patch, "commands": commands,
+                       "actual_source_map": actual, "exact_expected_map": True})
+    output = {
+        "schema": "hepta.sqlx.native-lifetime-token.static-roundtrip.v1",
+        "status": "STATIC_GIT_APPLY_AND_POSTIMAGE_PASS",
+        "actual_vcs_origin": MANIFEST["source_vcs"],
+        "registry_alignment_receipt": MANIFEST["registry_alignment"],
+        "uncompiled_unexecuted": True,
+        "native_worktree_target_or_ref_changed": False,
+        "phases": phases,
+        "final_source_map": inventory(),
+        "meaning": "Exact static source reconstruction only; no Rust compile or physical SQLite/lock control has run.",
+    }
+    (ROOT / "static-verification-v3.json").write_text(json.dumps(output, indent=2) + "\n")
+    print(json.dumps({"status": output["status"], "phases": len(phases),
+                      "paths": len(final), "uncompiled_unexecuted": True}))
+
+
+if __name__ == "__main__":
+    main()

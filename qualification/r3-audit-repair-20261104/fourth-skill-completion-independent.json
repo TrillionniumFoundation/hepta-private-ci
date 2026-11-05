@@ -1,0 +1,25 @@
+{
+  "schema": "hepta.skill-completion-fixture-independent-review.v1",
+  "verdict": "STATIC_PASS_PENDING_TARGETED_NATIVE_CAUSAL_EVIDENCE",
+  "preimage": "b78b2741cc205bd445875ad0a79cff6e7bfbd9cb",
+  "postimage": "ddce58d4534ea77bd3ffd84c914aa005edf0d713",
+  "patch": "3a758b74ac48a1979445abbe8dba5741a00b74e5",
+  "path": "codex-rs/core/tests/suite/skill_approval.rs",
+  "checks": {
+    "exact_diff_roundtrip": true,
+    "only_change": "Remove the first case's second wait_for_turn_complete and replace its blank separator with a comment that None already consumed TurnComplete.",
+    "helper_semantics": "wait_for_exec_approval_request returns Some(Some(request)) for ExecApprovalRequest and Some(None) only for TurnComplete. Other events do not satisfy the shared waiter.",
+    "assertion_path": "approval.is_none() must pass before proceeding, so the first case necessarily consumed a real TurnComplete rather than an approval.",
+    "first_case_final_assertions_unchanged": true,
+    "first_case_real_script_and_filesystem_unchanged": true,
+    "second_case_wait_and_assertions_byte_equal": true,
+    "production_and_permissions_unchanged": true,
+    "wait_budget_and_skip_retry_unchanged": true
+  },
+  "native_gate": {
+    "executed_by_reviewer": false,
+    "required_baseline": "The marker added to the original must actually appear, then the unchanged second waiter must time out; a failure before the marker does not establish the duplicate-consumption cause.",
+    "required_fixed": "The unchanged original output/no-policy-denial and physical outside-file-absence assertions must pass with the real zsh/execve/sandbox prerequisites. Preserve any early prerequisite skip as unqualified."
+  },
+  "scope": "The static finding is a deterministic duplicate event consumption in this test path, not a change to product completion or sandbox semantics."
+}

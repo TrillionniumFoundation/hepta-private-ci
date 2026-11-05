@@ -1,0 +1,62 @@
+diff --git a/codex-rs/state/src/sqlite_commit_gate_tests.rs b/codex-rs/state/src/sqlite_commit_gate_tests.rs
+--- a/codex-rs/state/src/sqlite_commit_gate_tests.rs
++++ b/codex-rs/state/src/sqlite_commit_gate_tests.rs
+@@ -85,14 +85,20 @@
+ }
+ 
+ impl CheckoutGate {
+-    fn new(blocked: bool) -> Self {
++    fn ready() -> Self {
+         Self {
+-            blocked: AtomicBool::new(blocked),
++            blocked: AtomicBool::new(false),
+             entered: Semaphore::new(0),
+             resume: Semaphore::new(0),
+         }
+     }
+ 
++    fn blocked() -> Self {
++        let gate = Self::ready();
++        gate.blocked.store(true, Ordering::SeqCst);
++        gate
++    }
++
+     async fn wait(&self) {
+         if self.blocked.load(Ordering::SeqCst) {
+             self.entered.add_permits(1);
+@@ -152,7 +158,7 @@
+     let fixture = Fixture::new().await?;
+     let allowed = Arc::new(AtomicBool::new(true));
+     let pool = fixture
+-        .open(Arc::clone(&allowed), Arc::new(CheckoutGate::new(false)))
++        .open(Arc::clone(&allowed), Arc::new(CheckoutGate::ready()))
+         .await?;
+     let mut transaction = pool.begin().await?;
+     sqlx::query("INSERT INTO evidence VALUES (1)")
+@@ -181,7 +187,7 @@
+     let fixture = Fixture::new().await?;
+     let allowed = Arc::new(AtomicBool::new(false));
+     let pool = fixture
+-        .open(Arc::clone(&allowed), Arc::new(CheckoutGate::new(false)))
++        .open(Arc::clone(&allowed), Arc::new(CheckoutGate::ready()))
+         .await?;
+     let mut connections = Vec::new();
+     for _ in 0..5 {
+@@ -221,7 +227,7 @@
+ #[tokio::test]
+ async fn checkout_callback_blocks_initial_connect_and_reused_connection() -> anyhow::Result<()> {
+     let fixture = Fixture::new().await?;
+-    let gate = Arc::new(CheckoutGate::new(true));
++    let gate = Arc::new(CheckoutGate::blocked());
+     let mut opening = Box::pin(fixture.open(Arc::new(AtomicBool::new(true)), Arc::clone(&gate)));
+     assert_waits_for_checkout(&mut opening, &gate).await?;
+     gate.release();
+@@ -259,7 +265,7 @@
+ #[tokio::test]
+ async fn cancelled_checkout_does_not_release_uncoordinated_connection() -> anyhow::Result<()> {
+     let fixture = Fixture::new().await?;
+-    let gate = Arc::new(CheckoutGate::new(false));
++    let gate = Arc::new(CheckoutGate::ready());
+     let allowed = Arc::new(AtomicBool::new(true));
+     let pool = fixture.open(Arc::clone(&allowed), Arc::clone(&gate)).await?;
+     let mut held = Vec::new();

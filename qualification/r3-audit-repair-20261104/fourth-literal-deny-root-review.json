@@ -1,0 +1,117 @@
+{
+  "schema": "hepta.fourth.literal-deny.root-static-review.v1",
+  "observed_at_utc": "2026-11-04 23:05:13 UTC",
+  "source_before_tree": "e84c2f12e39022701c8a942343b3913faa62cf31",
+  "manifest_blob": "ac84d7cc3184615ba83e64f13ee7c4f7e10848c9",
+  "path": "codex-rs/core/tests/suite/unified_exec_zsh_fork_approvals.rs",
+  "preimage": {
+    "blob": "218e22809391565142021a9809c1d5ef2adc0f14",
+    "bytes": 31383,
+    "sha256": "79e550c948ce2eb51f0829c619bd73c2dd582c800299cbc78bc86c1feb524cae"
+  },
+  "postimage": {
+    "path": "codex-rs/core/tests/suite/unified_exec_zsh_fork_approvals.rs",
+    "blob": "7d7546cd5312dcc681ba8c0788e18923624b532d",
+    "bytes": 31444,
+    "sha256": "f5a339182dab1b052a726b8052e3b831a330cfe9b5208b400e0ed4b599bebdd7"
+  },
+  "patch": {
+    "blob": "07202709f7a5fa7693fb416902c2e99112523acb",
+    "bytes": 1242,
+    "sha256": "f7709f16a15a84b29c7e95a346d9f369db2ea2f9dcab738c1a7229e4de407731"
+  },
+  "checks": {
+    "before": {
+      "bytes": 31383,
+      "sha256": "79e550c948ce2eb51f0829c619bd73c2dd582c800299cbc78bc86c1feb524cae"
+    },
+    "after": {
+      "bytes": 31444,
+      "sha256": "f5a339182dab1b052a726b8052e3b831a330cfe9b5208b400e0ed4b599bebdd7"
+    },
+    "patch": {
+      "bytes": 1242,
+      "sha256": "f7709f16a15a84b29c7e95a346d9f369db2ea2f9dcab738c1a7229e4de407731"
+    },
+    "roundtrip": true,
+    "original_case_byte_identical": true,
+    "helper_reference_lines": [
+      {
+        "n": 635,
+        "l": "    permission_profile_from_toml(&format!("
+      },
+      {
+        "n": 648,
+        "l": "fn permission_profile_from_toml(profile: &str) -> Result<PermissionProfile> {"
+      }
+    ]
+  },
+  "primary_sources": [
+    {
+      "path": "codex-rs/core/tests/suite/unified_exec_zsh_fork_approvals.rs",
+      "blob": "218e22809391565142021a9809c1d5ef2adc0f14",
+      "bytes": 31383,
+      "sha256": "79e550c948ce2eb51f0829c619bd73c2dd582c800299cbc78bc86c1feb524cae",
+      "ref": "cabcb40d36e116beaa65750e1f674c52035da785"
+    },
+    {
+      "path": "codex-rs/core/src/config/permissions.rs",
+      "blob": "a3b6dc5963dda0d0b06ef80c6bf22fad8749a952",
+      "bytes": 34126,
+      "sha256": "7d2566dbc3dc1ef8397f3757373f9983a6dbb2b91c6a0a9e0c7f3c244743e9e9",
+      "ref": "cabcb40d36e116beaa65750e1f674c52035da785"
+    },
+    {
+      "path": "codex-rs/protocol/src/permissions.rs",
+      "blob": "1537230e0a8f1685530eb03c2c782a587ad6bb6a",
+      "bytes": 145214,
+      "sha256": "3ad7c54a19a3bddd72e9e8d8d0641835674ac2b596001ee0d7ce32293863fe06",
+      "ref": "cabcb40d36e116beaa65750e1f674c52035da785"
+    },
+    {
+      "path": "codex-rs/linux-sandbox/src/bwrap.rs",
+      "blob": "11e8e612af3cc4245a537fae18199acc74075a3b",
+      "bytes": 106289,
+      "sha256": "bfce8aa44048b2441a7c02b301fe7366ae1b8b9ddd8ff8518711cd874a9e749e",
+      "ref": "cabcb40d36e116beaa65750e1f674c52035da785"
+    }
+  ],
+  "disposition": "STATIC_ACCEPTED_ORIGINAL_CASE_NATIVE_PENDING",
+  "root_findings": [
+    "Independently read the actual normal config classifier: paths without glob metacharacters go to compile_filesystem_path; only true deny patterns become GlobPattern.",
+    "Independently read typed FileSystemPath and Linux split_pattern_for_ripgrep: the old literal has no * ? [ ] and returns None, consistent with the recorded fail-closed initialization error.",
+    "The test-only TOML converter has one actual caller, denied_read_permission_profile, supplying the exact existing absolute secret.env. The change corrects its representation to PathUri without increasing readable/writable roots.",
+    "The complete original case body is byte-identical. It must still create a real secret, assert a real deny policy, build real zsh/execve/sandbox, obtain parent approval, execute actual cat, and assert nonzero exit and absence of the secret.",
+    "All three current primary source blob bodies independently match their full length/SHA256. Patch roundtrip and both source identities match."
+  ],
+  "native_acceptance": {
+    "case": "suite::unified_exec_zsh_fork_approvals::unified_exec_zsh_fork_parent_approval_preserves_denied_reads",
+    "original_failure": {
+      "projection_blob": "023d6a14b4e8ad37157dc9162d820dc3d6cd6473",
+      "projection_sha256": "5de3245252012f2c125443e91d5f75629e365c6cb16169c6b136b4cc591b0532",
+      "case": "suite::unified_exec_zsh_fork_approvals::unified_exec_zsh_fork_parent_approval_preserves_denied_reads",
+      "classname": "codex-core::all",
+      "elapsed_seconds": 0.128,
+      "retries": 0,
+      "phase": "Session initialization, before parent approval and denied-read command",
+      "case_xml": {
+        "member": "06.testcase.xml",
+        "bytes": 1943,
+        "sha256": "4cb6cf38d6090a71661f50f1dedc2cea9bca265bb4c1cfe97bf5b6927da208a6"
+      },
+      "raw": {
+        "member": "06-raw-0.log",
+        "bytes": 973,
+        "sha256": "87285eee31f047c66c67ea2162478838a19d1e834d936398418ff2f4f8d69586"
+      },
+      "error_summary": "Loading AGENTS.md enters the filesystem sandbox; literal secret.env is rejected as an unreadable GlobPattern because it contains no glob metacharacter."
+    },
+    "required": "Use original exact case with the seven-package feature context of the failed owning run, locked dev-small/local, retries0. A real initialization failure or prerequisite early return does not qualify the denied-read behavior.",
+    "baseline_rerun": "Not required: the preserved original e84 physical failure already identifies the exact bad typed path and phase. Retain it rather than repeatedly reproducing the same initialization error."
+  },
+  "limits": [
+    "No production parser, bwrap enforcement, approval semantics, token, ACL, loader/DLL or deadline changed.",
+    "No native execution or blocker closure in this static review.",
+    "Queued source parent will be bound separately after observational diagnostics and CI-only retention; do not apply onto a different preimage."
+  ]
+}

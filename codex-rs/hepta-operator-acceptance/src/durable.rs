@@ -1,4 +1,5 @@
 use std::fs::File;
+#[cfg(not(windows))]
 use std::fs::OpenOptions;
 use std::io::Read;
 use std::io::Seek;
@@ -36,6 +37,8 @@ pub(crate) fn secure_root(path: &Path, label: &str) -> Result<PathBuf, Acceptanc
     if !path.is_absolute() {
         return Err(invalid(format!("{label} must be absolute")));
     }
+    #[cfg(windows)]
+    let _directory = windows::DirectoryGuard::open(path, false)?;
     let canonical = path.canonicalize()?;
     if canonical != path {
         return Err(invalid(format!(
@@ -53,6 +56,8 @@ pub(crate) fn secure_canonical_file_path(
     if !path.is_absolute() {
         return Err(invalid(format!("{label} must be absolute")));
     }
+    #[cfg(windows)]
+    let (_file, _directory) = windows::open_input(path)?;
     let canonical = path.canonicalize()?;
     if canonical != path {
         return Err(invalid(format!(
@@ -71,20 +76,27 @@ pub(crate) fn verify_secure_directory(path: &Path, label: &str) -> Result<(), Ac
     if metadata.file_type().is_symlink() || !metadata.is_dir() {
         return Err(invalid(format!("{label} must be a real directory")));
     }
-    verify_private_mode(&metadata, label)
+    #[cfg(unix)]
+    verify_private_mode(&metadata, label)?;
+    #[cfg(windows)]
+    windows::DirectoryGuard::open(path, false)?;
+    Ok(())
 }
 
 pub(crate) fn secure_read(path: &Path, max_bytes: usize) -> Result<Vec<u8>, AcceptanceError> {
-    let mut options = OpenOptions::new();
-    options.read(true);
-    #[cfg(unix)]
-    {
-        use std::os::unix::fs::OpenOptionsExt;
-        options.custom_flags(libc::O_CLOEXEC | libc::O_NOFOLLOW);
-    }
+    #[cfg(not(windows))]
+    let mut file = {
+        let mut options = OpenOptions::new();
+        options.read(true);
+        #[cfg(unix)]
+        {
+            use std::os::unix::fs::OpenOptionsExt;
+            options.custom_flags(libc::O_CLOEXEC | libc::O_NOFOLLOW);
+        }
+        options.open(path)?
+    };
     #[cfg(windows)]
-    windows::configure_open(&mut options);
-    let mut file = options.open(path)?;
+    let (mut file, _directory) = windows::open_input(path)?;
     let before = file.metadata()?;
     verify_regular_metadata(&before, "input artifact")?;
     #[cfg(windows)]
@@ -114,16 +126,19 @@ pub(crate) fn secure_read(path: &Path, max_bytes: usize) -> Result<Vec<u8>, Acce
 }
 
 pub(crate) fn secure_hash(path: &Path) -> Result<(String, u64), AcceptanceError> {
-    let mut options = OpenOptions::new();
-    options.read(true);
-    #[cfg(unix)]
-    {
-        use std::os::unix::fs::OpenOptionsExt;
-        options.custom_flags(libc::O_CLOEXEC | libc::O_NOFOLLOW);
-    }
+    #[cfg(not(windows))]
+    let mut file = {
+        let mut options = OpenOptions::new();
+        options.read(true);
+        #[cfg(unix)]
+        {
+            use std::os::unix::fs::OpenOptionsExt;
+            options.custom_flags(libc::O_CLOEXEC | libc::O_NOFOLLOW);
+        }
+        options.open(path)?
+    };
     #[cfg(windows)]
-    windows::configure_open(&mut options);
-    let mut file = options.open(path)?;
+    let (mut file, _directory) = windows::open_input(path)?;
     let before = file.metadata()?;
     verify_regular_metadata(&before, "manifest artifact")?;
     #[cfg(windows)]
@@ -159,19 +174,23 @@ pub(crate) fn write_private_new(path: &Path, bytes: &[u8]) -> Result<(), Accepta
         .parent()
         .ok_or_else(|| invalid("sidecar artifact has no parent"))?;
     verify_secure_directory(parent, "sidecar directory")?;
+    #[cfg(not(windows))]
     let parent_before = std::fs::symlink_metadata(parent)?;
-    let mut options = OpenOptions::new();
-    options.create_new(true).read(true).write(true);
-    #[cfg(unix)]
-    {
-        use std::os::unix::fs::OpenOptionsExt;
-        options
-            .mode(0o600)
-            .custom_flags(libc::O_CLOEXEC | libc::O_NOFOLLOW);
-    }
+    #[cfg(not(windows))]
+    let mut file = {
+        let mut options = OpenOptions::new();
+        options.create_new(true).read(true).write(true);
+        #[cfg(unix)]
+        {
+            use std::os::unix::fs::OpenOptionsExt;
+            options
+                .mode(0o600)
+                .custom_flags(libc::O_CLOEXEC | libc::O_NOFOLLOW);
+        }
+        options.open(path)?
+    };
     #[cfg(windows)]
-    windows::configure_open(&mut options);
-    let mut file = options.open(path)?;
+    let (mut file, directory) = windows::create_new(path)?;
     file.write_all(bytes)?;
     file.sync_all()?;
     let fd_after = file.metadata()?;
@@ -193,14 +212,26 @@ pub(crate) fn write_private_new(path: &Path, bytes: &[u8]) -> Result<(), Accepta
     file.seek(SeekFrom::Start(0))?;
     let mut fd_bytes = Vec::with_capacity(bytes.len());
     file.read_to_end(&mut fd_bytes)?;
+    // Release this writer before opening the immutable Windows readback handle.
+    drop(file);
     if fd_bytes != bytes || secure_read(path, bytes.len())? != bytes {
         return Err(invalid("sidecar artifact differs after durable write"));
     }
-    let parent_after = std::fs::symlink_metadata(parent)?;
-    if parent_after.file_type().is_symlink() || !same_file_identity(&parent_before, &parent_after) {
-        return Err(invalid("sidecar parent changed during durable write"));
+    #[cfg(not(windows))]
+    {
+        let parent_after = std::fs::symlink_metadata(parent)?;
+        if parent_after.file_type().is_symlink()
+            || !same_file_identity(&parent_before, &parent_after)
+        {
+            return Err(invalid("sidecar parent changed during durable write"));
+        }
     }
+    #[cfg(windows)]
+    directory.verify()?;
+    #[cfg(not(windows))]
     File::open(parent)?.sync_all()?;
+    #[cfg(windows)]
+    directory.sync_all()?;
     Ok(())
 }
 
@@ -218,32 +249,50 @@ pub(crate) fn write_private_atomic_replace(
         ));
     }
     verify_secure_directory(parent, "sidecar directory")?;
+    #[cfg(windows)]
+    let directory = windows::DirectoryGuard::open(parent, true)?;
     if let Ok(metadata) = std::fs::symlink_metadata(path) {
         verify_regular_metadata(&metadata, "replaced sidecar artifact")?;
         #[cfg(windows)]
         windows::verify_path(path, "replaced sidecar artifact")?;
     }
     write_private_new(temporary_path, bytes)?;
+    #[cfg(not(windows))]
     let parent_before = std::fs::symlink_metadata(parent)?;
+    #[cfg(not(windows))]
     let rename_result = std::fs::rename(temporary_path, path);
+    #[cfg(windows)]
+    let rename_result = directory.replace(temporary_path, path);
     if rename_result.is_err() {
         let _ = std::fs::remove_file(temporary_path);
     }
     rename_result?;
-    let parent_after = std::fs::symlink_metadata(parent)?;
-    if parent_after.file_type().is_symlink() || !same_file_identity(&parent_before, &parent_after) {
-        return Err(invalid("sidecar parent changed during atomic replace"));
+    #[cfg(not(windows))]
+    {
+        let parent_after = std::fs::symlink_metadata(parent)?;
+        if parent_after.file_type().is_symlink()
+            || !same_file_identity(&parent_before, &parent_after)
+        {
+            return Err(invalid("sidecar parent changed during atomic replace"));
+        }
     }
+    #[cfg(windows)]
+    directory.verify()?;
     let persisted = secure_read(path, bytes.len())?;
     if persisted != bytes {
         return Err(invalid("atomic sidecar artifact differs after persistence"));
     }
+    #[cfg(not(windows))]
     File::open(parent)?.sync_all()?;
+    #[cfg(windows)]
+    directory.sync_all()?;
     Ok(())
 }
 
 pub(crate) struct SidecarLock {
     _file: File,
+    #[cfg(windows)]
+    _directory: windows::DirectoryGuard,
 }
 
 pub(crate) fn lock_sidecar(root: &Path) -> Result<SidecarLock, AcceptanceError> {
@@ -257,24 +306,27 @@ pub(crate) fn lock_existing_sidecar(root: &Path) -> Result<SidecarLock, Acceptan
 fn open_sidecar_lock(root: &Path, create: bool) -> Result<SidecarLock, AcceptanceError> {
     verify_secure_directory(root, "sidecar directory")?;
     let path = root.join(".operator-acceptance.lock");
-    let mut options = OpenOptions::new();
-    options.create(create).read(true).write(true);
-    #[cfg(unix)]
-    {
-        use std::os::unix::fs::OpenOptionsExt;
-        options
-            .mode(0o600)
-            .custom_flags(libc::O_CLOEXEC | libc::O_NOFOLLOW);
-    }
-    #[cfg(windows)]
-    windows::configure_open(&mut options);
-    let file = options.open(&path).map_err(|error| {
-        if !create && error.kind() == std::io::ErrorKind::NotFound {
-            invalid("read-only receipt verification requires the existing sidecar lock")
-        } else {
-            error.into()
+    #[cfg(not(windows))]
+    let file = {
+        let mut options = OpenOptions::new();
+        options.create(create).read(true).write(true);
+        #[cfg(unix)]
+        {
+            use std::os::unix::fs::OpenOptionsExt;
+            options
+                .mode(0o600)
+                .custom_flags(libc::O_CLOEXEC | libc::O_NOFOLLOW);
         }
-    })?;
+        options.open(&path).map_err(|error| {
+            if !create && error.kind() == std::io::ErrorKind::NotFound {
+                invalid("read-only receipt verification requires the existing sidecar lock")
+            } else {
+                error.into()
+            }
+        })?
+    };
+    #[cfg(windows)]
+    let (file, directory) = windows::open_lock(root, create)?;
     let fd_metadata = file.metadata()?;
     #[cfg(windows)]
     let windows_before = windows::FileSnapshot::capture(&file, "sidecar lock")?;
@@ -300,7 +352,17 @@ fn open_sidecar_lock(root: &Path, create: bool) -> Result<SidecarLock, Acceptanc
             ));
         }
     }
-    Ok(SidecarLock { _file: file })
+    #[cfg(windows)]
+    file.try_lock().map_err(|error| {
+        invalid(format!(
+            "another operator-acceptance process holds the sidecar lock: {error}"
+        ))
+    })?;
+    Ok(SidecarLock {
+        _file: file,
+        #[cfg(windows)]
+        _directory: directory,
+    })
 }
 
 impl Drop for SidecarLock {
@@ -346,7 +408,9 @@ fn verify_regular_metadata(
             return Err(invalid(format!("{label} must have exactly one hard link")));
         }
     }
-    verify_private_mode(metadata, label)
+    #[cfg(unix)]
+    verify_private_mode(metadata, label)?;
+    Ok(())
 }
 
 #[cfg(unix)]
@@ -370,11 +434,6 @@ fn verify_private_mode(metadata: &std::fs::Metadata, label: &str) -> Result<(), 
     Ok(())
 }
 
-#[cfg(not(unix))]
-fn verify_private_mode(_metadata: &std::fs::Metadata, _label: &str) -> Result<(), AcceptanceError> {
-    Ok(())
-}
-
 fn same_file_snapshot(before: &std::fs::Metadata, after: &std::fs::Metadata) -> bool {
     #[cfg(unix)]
     {
@@ -395,6 +454,7 @@ fn same_file_snapshot(before: &std::fs::Metadata, after: &std::fs::Metadata) -> 
     }
 }
 
+#[cfg(not(windows))]
 fn same_file_identity(before: &std::fs::Metadata, after: &std::fs::Metadata) -> bool {
     #[cfg(unix)]
     {

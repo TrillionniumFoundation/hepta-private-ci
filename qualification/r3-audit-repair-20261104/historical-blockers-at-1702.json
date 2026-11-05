@@ -1,0 +1,200 @@
+{
+  "schema": "hepta-original-23-blocker-ledger-library-checkpoint.v1",
+  "source": {
+    "library_file_id": "libfile_80ac18769b7c8191b7bd5878ba6924c3",
+    "version_id": "1",
+    "name": "hepta_audit_20261104.html",
+    "modified_at": "2026-11-04T17:02:40.802136Z",
+    "size_bytes": 483484,
+    "read_full": true,
+    "has_more": false
+  },
+  "status_scope": "Historical 17:02 checkpoint only. Do not substitute for later ff72 CI outcomes.",
+  "count": 23,
+  "entries": [
+    {
+      "id": "B01",
+      "priority": "P0",
+      "name": "仓库与证据清单",
+      "status": "已完成本轮盘点",
+      "evidence": "仓库与证据清单完整分页、模块结构和两主分支全部路径差异已留档；未把 300 文件 compare 截断当全量。",
+      "exit_condition": "固定时间、固定 refs、无分页缺口、完整机器可读清单。"
+    },
+    {
+      "id": "B02",
+      "priority": "P0",
+      "name": "单一整合候选",
+      "status": "整合取舍已完成；最终候选资格未闭合",
+      "evidence": "单一整合候选已逐项处置13组件与全部27个双方分歧路径，选定#4797系列为单一产品候选。当前已存在cwd、RPC capability拒绝、ZIP模式剥离与SQLite路径修复；延期整组依赖升级并保留Guardian截止/取消与runtime-scoped Git缓存。固定候选全CI仍待通过。",
+      "exit_condition": "逐路径决定保留/合入/延期；manifest、vendor、Cargo 与 Bazel 锁同步；固定候选 head、目标 base 与执行 merge tree；原始必需 CI 全通过。"
+    },
+    {
+      "id": "B03",
+      "priority": "P0",
+      "name": "cwd 展示语义",
+      "status": "范围内已验证并提交",
+      "evidence": "cwd 展示语义恢复特性启用时工作目录语义，关闭时保持 Git 根语义。原 7 个回归 7/7 通过，零选中跳过、零重试。",
+      "exit_condition": "已满足该原始回归范围；不自动代表整个 Core 或 main 资格通过。"
+    },
+    {
+      "id": "B04",
+      "priority": "P0",
+      "name": "认知投影 oracle",
+      "status": "原始产品目标已通过",
+      "evidence": "认知投影 oracle断言读取已发布且处于当前指针的不可变 revision facts，保留来源、摘要、更正、删除、重启和物理发送断言。GNU/musl 原目标通过；macOS ARM 原目标 25.2 秒通过；SQL 边界检查 10 + 独立 5 例通过。 macOS Intel原目标74.9秒也通过。",
+      "exit_condition": "已满足修复后的原产品目标；生产投影协议保持不变。"
+    },
+    {
+      "id": "B05",
+      "priority": "P0",
+      "name": "supervisord 子进程定位",
+      "status": "原始产品目标已通过",
+      "evidence": "supervisord 子进程定位测试夹具将 Cargo / Bazel runfile 解析并 canonicalize 成绝对二进制路径；GNU/musl 原产品目标通过，macOS ARM 原产品目标 21.9 秒通过。",
+      "exit_condition": "已满足原目标的子进程执行断言；不以脚本存在代替真实启动。"
+    },
+    {
+      "id": "B06",
+      "priority": "P0",
+      "name": "正向私有路径夹具",
+      "status": "已提交；核对各平台结果",
+      "evidence": "正向私有路径夹具AuthBus、Kernel evidence、terminal cell 的正向临时父目录 canonicalize；生产拒绝别名/逃逸逻辑未改。TUI 同类夹具补丁已准备。 d12补充TUI原例1/1通过，0.541秒；新增并行#4799为同类正向夹具的不同blob，已独立记录，未重复采纳或关闭他人PR。",
+      "exit_condition": "原 macOS / Windows 对应正向用例通过，原负控维持通过。"
+    },
+    {
+      "id": "B07",
+      "priority": "P0",
+      "name": "Hook 元数据与工具可见性",
+      "status": "原生原组 22/22 通过；待提交及新 CI",
+      "evidence": "Hook 元数据与工具可见性真实配置 Hook 的 thread metadata/threadId 与已过滤工具目录修复已核；binding6/6、recorder/threadId3/3及完整原 Hook/MCP/Executor/TokenBudget22/22通过，含未配置、allow/deny、环境错配、陈旧目录及governed/active policy拒绝控制。最终d12e1f20固定源码上再次22/22通过；待发布与跨平台总 CI。",
+      "exit_condition": "binding、原 Hook executor、MCP、TokenBudget 用例通过；未配置 server、allow/deny list、环境错配和陈旧目录负控均拒绝。"
+    },
+    {
+      "id": "B08",
+      "priority": "P0",
+      "name": "私有 attempted tool 元数据",
+      "status": "原生观测边界已验证；待提交及新 CI",
+      "evidence": "私有 attempted tool 元数据私有 attempted-calls仅在内部prompt/有界retained recorder存在，不在非官方wire或durable rollout。新增只读观测已通过真实prompt匹配和原exact attempted-calls，所有22原case通过；pending/overflow与32KB保留边界单元3/3通过。",
+      "exit_condition": "实际 prompt 已附加的内部 retained calls 与真实 output 对应、原 exact calls 断言通过；非官方 wire 无私有字段；不改变生产持久化。"
+    },
+    {
+      "id": "B09",
+      "priority": "P0",
+      "name": "终态清理与恢复",
+      "status": "修复验证中",
+      "evidence": "终态清理与恢复TurnComplete可能先于终态清理完成。高层注入和mailbox观察既有有界terminalization completion，保留实例/lineage与底层fence。d12原生命周期2/2、busy/lineage/fork7/7已通过；后续7ffccb6树compact与startup最终oracle2/2通过。实时有界顺序worker的真实pending-owner负控与旧同步worker音频阻塞负控已复现；8940f571树三个新主/overflow/close控制3/3通过。新V2业务断言后的requested-close夹具经精确关闭语义修正，3b5f68e4树真实V2顺序/guidance/完成回归1/1通过（1.549秒）；v3原20例与2个WS身份例的完整JUnit已由root逐hash/用例名复核为20/20及2/2通过，绑定36e6bdee树、0重试/0选中跳过，仍须最终产品提交和原平台CI。 同98e7be30树AppServer恢复/注入/Skills授权完整14/14通过，含8个turn_recover原例、5个Skills原例和1个原注入；8.156秒、0重试/0选中跳过。",
+      "exit_condition": "原注入、idle-steer、suspension、8 个 turn_recover 原用例（含特性门负控）和 panic/cancel/watchdog 负控通过。"
+    },
+    {
+      "id": "B10",
+      "priority": "P0",
+      "name": "WebSocket / prewarm / compact",
+      "status": "生产修复已独立审阅；原测试验证中",
+      "evidence": "WebSocket / prewarm / compactd12树8/8身份边界unit及7/8原WS/model-switch/Git/service-tier/inline-compact集成通过；剩余startup Git正向fixture意外更改sandbox/approval设置，已只修正fixture并保留匹配turn-id的30秒原完成预算。7ffccb6树startup与compact最终oracle2/2实跑通过，原始失败仍保留。生产规范化只涉及请求作用域元数据，full wire/recovery及provider/auth/sandbox/Memory边界保留；仍待最终提交和跨平台原CI。",
+      "exit_condition": "原连接数、请求数、工具/模型/工作区断言通过；身份变化的拒绝和重连边界保留。"
+    },
+    {
+      "id": "B11",
+      "priority": "P0",
+      "name": "Windows 原生 sandbox 与 helper",
+      "status": "未闭合",
+      "evidence": "Windows 原生 sandbox 与 helper三个原严格测试分别为native ACL修复幂等性不收敛、native外部remove_file/remove_dir成功、legacy保护后置条件失败；保持开放。第三项原oracle丢弃OS错误，不将读回None单独当成删除的完整证明。普通selector已把workspace-write/overrides交broker且原选择测试通过，不能外推为所有Windows入口均同样越权。exec-server 8 个 filesystem 与 CLI cloud profile 用例另有 setup helper program-not-found：仅测试布局补丁已独立审阅，真实声明的两 helper 写到现有 codex-resources 布局，严格字节相等/no-clobber，所有 I/O 其他错误失败。此前自动审批拒绝 token/loader/DLL 生产边界修改，本轮未绕过。 helper原Bazel锁生成门已取得真实hosted成功：固定ea84源，update21.057s/check13.607s均exit0，805输入不变，真实生成锁与原锁逐字节一致。此前共享cache失败和独占cache1500秒超时证据保留；helper仍待产品提交及Windows原测试。CodeMode patch审批另有Approved后的35.372秒sandbox尝试超出原30秒finish预算，正在定位。 已独立审查只读test-only ACL/SID/原OS错误观察补丁，43个原assert及原权限/删除/impersonation次序保持，Windows编译和原失败执行待完成；这属于诊断，不是安全修复。CLI与Exec Server组合固定3dd8aa36源已单独取得新成功收据：806输入前后一致，原update26.807秒/check19.534秒均exit0，run41865994466终态success；实际锁仍逐字节同e729。前一805输入成功收据单独保留。",
+      "exit_condition": "在获准的修复范围内提供原生 helper 与原严格 token 契约，原攻击/权限/文件系统用例全部通过；需要超出已允许边界时明确升级审批。"
+    },
+    {
+      "id": "B12",
+      "priority": "P0",
+      "name": "Windows 私有目录冻结对照",
+      "status": "修复验证中",
+      "evidence": "Windows 私有目录冻结对照冻结 source hash 和两份负控 patch 属于历史 open 实现；当前源码含 existing / handle identity / create-new 演进，原目录前缀也从 2 扩到 5 个用例。",
+      "exit_condition": "不改生产代码和攻击断言；重建当前源的两个负控，正向 2/2、两负控各精确 1 fail + 1 pass、真实文件系统观察和干净恢复全部成立。"
+    },
+    {
+      "id": "B13",
+      "priority": "P0",
+      "name": "Lease / Queue 时序夹具",
+      "status": "原生原组5/5通过；待产品提交与原平台CI",
+      "evidence": "Lease / Queue 时序夹具d12固定源码的Agentd lease原例1/1通过，真实等待30.375秒到期；Queue4个原例4/4通过。准备阶段和故意过期阶段分离，ExpiredActive/quarantine/guardian/release=0/不重放断言保留；零重试、无选中跳过、源码前后hash不变。",
+      "exit_condition": "原过期、quarantine、guardian、release=0、单发送及重启不重放断言全保留并在原平台通过。"
+    },
+    {
+      "id": "B14",
+      "priority": "P0",
+      "name": "Windows exec 恢复清理开销",
+      "status": "最小夹具修复已审阅；Windows 原验证待完成",
+      "evidence": "Windows exec 恢复清理开销原 source/merge 的 server254、rollout121各全通过，resume12 pass/1 timeout。该例业务断言65.149秒完成，.tmp 27,171条/425MB在完整清理时触发90秒。候选只在该例 fresh home 禁用无关 plugin warmup；5次真实exec、全部原业务断言、两时间排序等待、inventory与checked close都保留。未把全部.tmp文件擅自归因插件，也不将夹具隔离称为生产性能修复。",
+      "exit_condition": "保持原 90 秒限制和业务/清理断言，解决真实临时 runtime 开销；原 source 与 merge 的 13 例全部通过。"
+    },
+    {
+      "id": "B15",
+      "priority": "P0",
+      "name": "最终 CI 与 main 资格",
+      "status": "未闭合",
+      "evidence": "最终 CI 与 main 资格第一候选e729全部18工作流已终态：13success、3failure、2skip。blocking37jobs为24success、9failure、4skip；七份平台失败日志含48个不同原失败名。后续native成功只能归属于自己的固定树；当前PR仍非main合成结果。 ANSI归一化独立复核补回一个Windows TUI interrupt→shutdown原失败，纳入后续诊断。",
+      "exit_condition": "最新候选所有必需工作流终态成功；目标 main 基线重新核实；合成 merge 与发布 commit 树一致；保留原失败和修复回执。"
+    },
+    {
+      "id": "B16",
+      "priority": "P1",
+      "name": "可信产品入口及外部效果",
+      "status": "正常启动接线缺口已证实；完整组件迁移与真实验收待完成",
+      "evidence": "可信产品入口及外部效果固定e729/r3对六个明确符号的完整tracked-source检索证明，现有严格production attachment、UI installer、native presentation及provider binder没有正常可执行调用者；desktop-objective-ui为Linux专用非默认feature。#4749存在合法Root/Session producer，但相对e729分叉478 ahead/328 behind，checkpoint/verifier/FinalUse/attachment返回值与UI owner均有跨层差异，不能薄移植或用fixture身份替代。 进一步固定源码显示donor Agentd joint consumer与Session显式joint模式已接，但配套Desktop c2c36983的正常Root仍选择Notes-only profile/seed/factory、锁Hepta a39；其5个绿色workflow不覆盖joint donor或本候选。缺失caller位于另一仓库，必须配套同源迁移。",
+      "exit_condition": "先完整迁移并验收Root handoff、Registry/arg0、protected checkpoint/verifier、FinalUse/issuer、listener custody和一个真实正常UI caller；再由同源实际Root/Session、原signed objective、provider/target完成任务/取消/丢ACK/重启，保留物理效果、authority、evidence、Memory一致性回执。"
+    },
+    {
+      "id": "B17",
+      "priority": "P1",
+      "name": "#4578 缺失确认终稿",
+      "status": "已复算并提交 #4798",
+      "evidence": "#4578 缺失确认终稿32/32 拟合保留；4 主比较全部未达增益门槛；256 必需组合 0 个同时通过八质量标准。三份结果 JSON 独立复算逐字节一致。",
+      "exit_condition": "缺失报告与结果失真问题已完成；原研究分支全部工程 CI、科学采用门槛不因此闭合。"
+    },
+    {
+      "id": "B18",
+      "priority": "P1",
+      "name": "解析核心 / 参数记忆科学采用",
+      "status": "HOLD；证据不足以采用",
+      "evidence": "解析核心 / 参数记忆科学采用当前有限研究未证明同信息、完整成本条件下稳定优于强普通基线；不能用更多参数/更多信息/不完整成本或复用验证集代替主比较。",
+      "exit_condition": "新的事前冻结 2×2 比较，重点 D−B；独立数据、充分精度、全部失败尝试与完整成本；未通过就保留强普通默认而非追求事后绿色。"
+    },
+    {
+      "id": "B19",
+      "priority": "P1",
+      "name": "HeptaBao / Chain / HIA 外部接受",
+      "status": "未闭合",
+      "evidence": "HeptaBao / Chain / HIA 外部接受当前产品固定HeptaBao兼容矩阵有13个blocking capability（11 partial、2 gap），与13/60 scoped实现surface是两套计数。产品仍锁定eac9c608/OpenBao 2.6.2；外仓main7b4a59bd未被采用。现有BaoFinalUseHost::consume_kv_v2具备受限consumer、独立signed approval和revocation/epoch校验，但无本候选正常产品provider接线与完整替代接受。Chain与HIA证据来自各自独立候选，非e729已集成；HIA的DENY_ALL/safety_certificate=false是正确advisory边界，不能以改标志闭合。",
+      "exit_condition": "固定外部版本、接口与契约、兼容/故障/安全回执，以及本产品真实调用者的独立接受。"
+    },
+    {
+      "id": "B20",
+      "priority": "P0",
+      "name": "远程控制握手夹具",
+      "status": "确定性原失败已复现，修后19/19通过；待最终产品原CI",
+      "evidence": "远程控制握手夹具共享listener上的正常models HTTP与WebSocket握手竞争已用真实握手复现：0ec7ee50树2例为1个目标失败（缺Connection: upgrade）+1个负控通过。修后98e7be30树remote-control全19/19通过，包括原stdio EOF/真实断连和新增半截头EOF，4.592秒，零重试/零选中跳过；完整JUnit逐hash/名字与native status一致。原10秒预算和所有既有断言保持。",
+      "exit_condition": "确定性旧源同握手错误、新源对照及原真实AppServer关闭/断连断言全部通过。"
+    },
+    {
+      "id": "B21",
+      "priority": "P0",
+      "name": "macOS Intel PTY退出和输出",
+      "status": "PTY假就绪已复现并修复；Linux28/28，Intel原门待验",
+      "evidence": "macOS Intel PTY退出和输出原Intel的PTY输出drain与继承FD/REPL用例失败已全量保留。真实pipe gate负控证明完整readiness标记会被输入echo提前满足；分段输出标记修复后a3a25267树Linux原27+新1共28/28通过（0.563秒、0重试/0选中跳过）。另2例源码明确macOS-only，Mac正确总数30；误套30到Linux的runner计数失败已保留更正。原Intel dropped-output-receiver根因仍未确认，Linux该例通过不能替代Intel修复。",
+      "exit_condition": "保持原2秒/5秒预算、完整drain与child退出/FD断言；修复源在原macOS Intel的30例与相关原CI通过，并解释实际Intel drain失败原因。"
+    },
+    {
+      "id": "B22",
+      "priority": "P0",
+      "name": "TUI 中断与退出顺序",
+      "status": "真实负控已命中；修后12/12通过；原Windows门待验",
+      "evidence": "TUI 中断与退出顺序原Windows attempt1出现no active turn to interrupt，完整日志的ANSI归一化补回此原失败。现已真实复现旧predicate把TurnStarted当就绪、实际missing cwd导致shell失败的窗口；负控1.086秒目标失败。fixture拥有canonical临时目录并等真实stdout标记，保原5秒总就绪预算和全部原退出/interrupt断言；7c437033树原11+新1共12/12通过，6.242秒、0重试/0选中跳过。该因果路径成立，原Windows那次失败是否同因仍需原平台新CI。",
+      "exit_condition": "定位真实turn/interrupt与关闭顺序，保留原断言和时间预算，以固定修复源的原用例/有效负控及原WindowsCI验收。"
+    },
+    {
+      "id": "B23",
+      "priority": "P0",
+      "name": "App Server Unix关闭信号生命周期",
+      "status": "真实丢信号负控成立；修后5/5通过；待最终提交及原CI",
+      "evidence": "App Server Unix关闭信号生命周期原select future被其他事件取消时，关闭信号receiver随之被销毁。owned-child TERM/INT/HUP三原逻辑负控均在独立subscriber确认真实信号后，于retained.recv精确超时（原源码116行）；2个原drain控制通过。保持server生命周期receiver后，57b8d270树同5例5/5通过，0.089秒、0重试/0选中跳过，原stop/drain状态机未改。配置要求且非stdio时，初次signal注册失败会在acceptor开启前返回启动错误，这是有意兼容变化。B23不属于48个旧CI失败名。",
+      "exit_condition": "真实baseline丢信号窗口成立；修后3个单信号父测试与2个原drain用例通过；配置关闭/stdio及平台语义不变，最终原CI验收。"
+    }
+  ]
+}

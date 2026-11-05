@@ -1,0 +1,506 @@
+{
+  "schema": "hepta.musl_existing_candidate_independent_review.v1",
+  "reviewed_at_utc": "2026-11-05T02:55:12.634414+00:00",
+  "reviewer": "research_audit",
+  "verdict": "STATIC_PASS_EXISTING_C8_REPAIR_NO_ADDITIONAL_SOURCE_PATCH",
+  "scope": "Original cabc musl linker failure and existing two-path configuration repair; static source/receipt review only.",
+  "source": {
+    "schema_version": 1,
+    "repository": "TrillionniumFoundation/hepta-private-ci",
+    "event": "pull_request",
+    "run_id": "41902318446",
+    "run_attempt": "1",
+    "workflow_ref": "TrillionniumFoundation/hepta-private-ci/.github/workflows/hepta-musl-product-smoke.yml@refs/pull/4797/merge",
+    "workflow_sha": "28af7f705fa1024b9a6d2ef751fec116002260eb",
+    "expected_checkout": "28af7f705fa1024b9a6d2ef751fec116002260eb",
+    "pr_head": "cabcb40d36e116beaa65750e1f674c52035da785",
+    "checkout": "28af7f705fa1024b9a6d2ef751fec116002260eb",
+    "tree": "b2d7f038d6d88156bc6a4cb29c8703f69b808f29",
+    "parents": [
+      "63652be658ebed8d3052eb789b951793384fd5e4",
+      "cabcb40d36e116beaa65750e1f674c52035da785"
+    ],
+    "tracked_changes_before": "",
+    "runner": {
+      "os": "Linux",
+      "machine": "x86_64",
+      "kernel": "7.0.0-1017-azure",
+      "image_os": "ubuntu24",
+      "image_version": "20261101.360.1"
+    },
+    "inputs": {
+      ".github/workflows/hepta-musl-product-smoke.yml": "6aad46b1fe0edcf315ef8b1a5546225c59efe235",
+      ".github/actions/prepare-bazel-ci/action.yml": "f9508a1659e5f2c54a6ae5b263bb9328095438d7",
+      ".github/actions/setup-bazel-ci/action.yml": "ea3f3a6521b970484ac60d1cebf788092753555a",
+      ".github/scripts/run_bazel_with_buildbuddy.py": "21a5fdf0e7afcde4b6141229e95fcff8f6a7e763",
+      ".bazelrc": "3d5877b283b887091af507f3672003f84c500687",
+      ".bazelversion": "b13d146a7b02b96e4c30340e69388d539c9721be",
+      "MODULE.bazel": "a21061a8b741fc724edb580e229eb86d9debdc4f",
+      "MODULE.bazel.lock": "1904db189003cb0b559f71958518e33a45fb6bb7",
+      "BUILD.bazel": "1f9970fdbd25413e7a4e9a98519ba44a735158d4",
+      "defs.bzl": "6f588ec3057fddfea35170e28e74036162ce6a23",
+      "bazel/platforms/release_binaries.bzl": "7ac59c2b5e1f670d1653c2b3efdd8a82f2963bdc",
+      "codex-rs/Cargo.lock": "9743ef2f4f4c8521265c0187524278c256114163",
+      "codex-rs/cli/BUILD.bazel": "a64e4a8d12045dcd4f83e2a02c262e52e87ef4c8",
+      "codex-rs/cli/src/main_impl.rs": "1bd3eb0bfb183f6a436ba56220906f91b49f0679"
+    }
+  },
+  "original_result": {
+    "schema_version": 1,
+    "status": "failed",
+    "qualified": false,
+    "scope": "existing static x86_64 musl Hepta CLI build and two CLI process smokes on Ubuntu",
+    "full_musl_behavior_qualified": false,
+    "alpine_deployment_qualified": false,
+    "target": "//codex-rs/cli:hepta_linux_amd64_musl",
+    "target_platform": "@llvm//platforms:linux_amd64_musl",
+    "source": "28af7f705fa1024b9a6d2ef751fec116002260eb",
+    "tree": "b2d7f038d6d88156bc6a4cb29c8703f69b808f29",
+    "buildbuddy_key_present": true,
+    "cache_policy": "existing CI cache policy; no fresh-compilation claim",
+    "commands": [
+      {
+        "name": "bazel-version",
+        "argv": [
+          "bazel",
+          "--version"
+        ],
+        "timeout_seconds": null,
+        "attempt": 1,
+        "timed_out": false,
+        "exit_code": 0,
+        "elapsed_seconds": 0.39606675799996083
+      },
+      {
+        "name": "build",
+        "argv": [
+          "/usr/bin/python3",
+          ".github/scripts/run_bazel_with_buildbuddy.py",
+          "build",
+          "--config=ci-linux",
+          "--config=ci",
+          "-c",
+          "opt",
+          "--platforms=@llvm//platforms:linux_amd64_musl",
+          "--lockfile_mode=error",
+          "--remote_download_toplevel",
+          "--build_metadata=COMMIT_SHA=28af7f705fa1024b9a6d2ef751fec116002260eb",
+          "--build_metadata=REPO_URL=https://github.com/TrillionniumFoundation/hepta-private-ci",
+          "--build_metadata=TAG_workflow=hepta-musl-product-smoke",
+          "--build_event_json_file=/home/runner/work/_temp/hepta-musl-product-build.bep.json",
+          "//codex-rs/cli:hepta_linux_amd64_musl"
+        ],
+        "timeout_seconds": null,
+        "attempt": 1,
+        "timed_out": false,
+        "exit_code": 1,
+        "elapsed_seconds": 1088.832641159
+      }
+    ],
+    "failure_type": "RuntimeError",
+    "terminal_source": {
+      "checkout": "28af7f705fa1024b9a6d2ef751fec116002260eb",
+      "tree": "b2d7f038d6d88156bc6a4cb29c8703f69b808f29",
+      "tracked_changes": ""
+    },
+    "source_unchanged": true,
+    "terminal_product_sha256": null,
+    "product_unchanged": false
+  },
+  "original_diagnostic": {
+    "bytes": 33141,
+    "sha256": "1866761def611e30b0024ea7516b59471efecca01f62b44c8fff4bd09bd4366d",
+    "git_blob": "e95871fa957364dc4cbd2f26b5a0d49f0e41c05a",
+    "original_job_id": 126827727706,
+    "original_artifact_id": 13360485473,
+    "original_artifact_bytes_reported_by_root": 14791,
+    "original_artifact_sha256_reported_by_root": "a2cae80ca67a725bf7df2ce197e7c36908f379678e68f200ced90de96f93036f",
+    "projection_body_read_and_hash_verified": true,
+    "available_diagnostic_lines": 85,
+    "original_stderr_line_count": 666,
+    "complete_embedded_members_independently_verified": [
+      {
+        "name": "build-events-projection.json",
+        "bytes": 7685,
+        "sha256": "e1d229f3150528df69d4d4a7ee4a6c43029588f276cb7eafde18bf4ff4dcbd1c",
+        "git_blob": "b80f51f4970cf4e1fca6f12762aee12fe3ce3997"
+      },
+      {
+        "name": "receipt.json",
+        "bytes": 2035,
+        "sha256": "ae733e68b76fc0b1a691ef7bfe2c2471ba7a7db0e5848a3590e380a0bd48dd12",
+        "git_blob": "7349b4fbdd3f471d730a3d152162a775512d2282"
+      },
+      {
+        "name": "source.json",
+        "bytes": 1995,
+        "sha256": "5d1dd73040289638242d5502a8fd4587035b83ca0d4c3cc19a8d8e49eb7c744e",
+        "git_blob": "050125630b37ce09d2838065dfef88ae099c0622"
+      }
+    ],
+    "new_zip_download_or_crc_verification": false,
+    "full_original_stderr_newly_read": false,
+    "scope_limit": "This pass checked the fixed 85-line projection and three complete embedded member bodies, not a new full-ZIP acquisition.",
+    "selected_original_diagnostic_lines": [
+      {
+        "line": 314,
+        "text": "ERROR: /home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/bwrap/BUILD.bazel:4:17: Compiling Rust bin //codex-rs/bwrap:bwrap (1 file) failed: (Exit 1): process_wrapper failed: error executing Rustc command (from rust_binary rule target //codex-rs/bwrap:bwrap) "
+      },
+      {
+        "line": 336,
+        "text": "  bazel-out/rbe_platform-opt-exec-ST-fd45d9624a1f/bin/external/rules_rs++rules_rust+rules_rust/util/process_wrapper/process_wrapper '--wrapper-args=bazel-out/linux_amd64_musl-opt/bin/codex-rs/bwrap/bwrap-0.params' -- bazel-out/linux_amd64_musl-opt/bin/external/rules_rs++toolchains+default_rust_toolchains/linux_x86_64_1_95_0_rust_toolchain/bin/rustc codex-rs/bwrap/src/main.rs '--crate-name=bwrap' '--crate-type=bin' '--error-format=human' '--out-dir=bazel-out/linux_amd64_musl-opt/bin/codex-rs/bwrap' '--codegen=opt-level=3' '--codegen=debuginfo=0' '--codegen=strip=debuginfo' '--remap-path-prefix=${output_base}=.' '--remap-path-prefix=${pwd}=.' '--remap-path-prefix=${exec_root}=.' '--emit=link=bazel-out/linux_amd64_musl-opt/bin/codex-rs/bwrap/bwrap' '--color=always' '--target=x86_64-unknown-linux-gnu' -L bazel-out/linux_amd64_musl-opt/bin/external/rules_rs++toolchains+default_rust_toolchains/linux_x86_64_1_95_0_rust_toolchain/lib/rustlib/x86_64-unknown-linux-gnu/lib '--edition=2024' '-Cembed-bitcode=no' '--codegen=linker=external/llvm++llvm_toolchain_minimal+llvm-toolchain-minimal-22.1.8-linux-amd64/bin/clang++' '--codegen=link-arg=-target' '--codegen=link-arg=x86_64-linux-musl' '--codegen=link-arg=--sysroot=/dev/null' '--codegen=link-arg=-static-pie' '--codegen=link-arg=-fuse-ld=lld' '--codegen=link-arg=-Lbazel-out/linux_amd64_musl-opt/bin/external/llvm+/runtimes/libcxx/libcxx_library_search_directory' '--codegen=link-arg=-Lbazel-out/linux_amd64_musl-opt/bin/external/llvm+/runtimes/libunwind/libunwind_library_search_directory' '--codegen=link-arg=-rtlib=compiler-rt' '--codegen=link-arg=-nostdlib++' '--codegen=link-arg=--unwindlib=none' '--codegen=link-arg=-resource-dir' '--codegen=link-arg=bazel-out/linux_amd64_musl-opt/bin/external/llvm+/runtimes/resource_directory' '--codegen=link-arg=-Wl,-no-as-needed' '--codegen=link-arg=-Wl,-z,relro,-z,now' '--codegen=link-arg=-Bbazel-out/linux_amd64_musl-opt/bin/external/llvm+/runtimes/crt_objects_directory_linux' '--codegen=link-arg=-Lbazel-out/linux_amd64_musl-opt/bin/external/llvm+/runtimes/musl/musl_library_search_directory' '--codegen=link-arg=-Wl,--push-state' '--codegen=link-arg=-Wl,--as-needed' '--codegen=link-arg=-lpthread' '--codegen=link-arg=-ldl' '--codegen=link-arg=-Wl,--pop-state' '--codegen=link-arg=-Wl,--gc-sections' '--codegen=link-arg=-Wl,--icf=safe' '-Lnative=bazel-out/linux_amd64_musl-opt/bin/codex-rs/bwrap' '-Lnative=bazel-out/linux_amd64_musl-opt/bin/external/libcap+' '-lstatic=bwrap-ffi' '-Clink-arg=-lbwrap-ffi' '-lstatic=cap' '-Clink-arg=-lcap' '-Lnative=bazel-out/linux_amd64_musl-opt-ST-bdec89fd5d65/bin/external/llvm++llvm+llvm-project/libcxx/libcxx.static_' '-Lnative=bazel-out/linux_amd64_musl-opt-ST-bdec89fd5d65/bin/external/llvm++llvm+llvm-project/libcxxabi/libcxxabi.static_' '-Lnative=bazel-out/linux_amd64_musl-opt-ST-bdec89fd5d65/bin/external/llvm++llvm+llvm-project/libunwind/libunwind.static_' '-lstatic=libcxx.static' '-lstatic=libcxxabi.static' '-lstatic=libunwind.static' '--extern=libc=bazel-out/linux_amd64_musl-opt/bin/external/rules_rs++crate+crates__libc-0.2.191/liblibc-3293300815.rlib' '-Ldependency=bazel-out/linux_amd64_musl-opt/bin/external/rules_rs++crate+crates__libc-0.2.191' '--sysroot=bazel-out/linux_amd64_musl-opt/bin/external/rules_rs++toolchains+default_rust_toolchains/linux_x86_64_1_95_0_rust_toolchain' '-Cdebuginfo=0' '-Cdebuginfo=0' '--cfg=bwrap_available' '-Cstrip=symbols')"
+      },
+      {
+        "line": 345,
+        "text": "          ld.lld: error: undefined symbol: open64"
+      },
+      {
+        "line": 347,
+        "text": "          >>>               std-d1237ef7159db0a2.std.e28293b1aa0f68bd-cgu.0.rcgu.o:(<std::sys::fs::unix::File>::open_c) in archive bazel-out/linux_amd64_musl-opt/bin/external/rules_rs++toolchains+default_rust_toolchains/linux_x86_64_1_95_0_rust_toolchain/lib/rustlib/x86_64-unknown-linux-gnu/lib/libstd-d1237ef7159db0a2.rlib"
+      },
+      {
+        "line": 354,
+        "text": "          ld.lld: error: undefined symbol: fstat64"
+      },
+      {
+        "line": 356,
+        "text": "          >>>               std-d1237ef7159db0a2.std.e28293b1aa0f68bd-cgu.0.rcgu.o:(std::fs::buffer_capacity_required) in archive bazel-out/linux_amd64_musl-opt/bin/external/rules_rs++toolchains+default_rust_toolchains/linux_x86_64_1_95_0_rust_toolchain/lib/rustlib/x86_64-unknown-linux-gnu/lib/libstd-d1237ef7159db0a2.rlib"
+      },
+      {
+        "line": 360,
+        "text": "          ld.lld: error: undefined symbol: lseek64"
+      },
+      {
+        "line": 362,
+        "text": "          >>>               std-d1237ef7159db0a2.std.e28293b1aa0f68bd-cgu.0.rcgu.o:(std::fs::buffer_capacity_required) in archive bazel-out/linux_amd64_musl-opt/bin/external/rules_rs++toolchains+default_rust_toolchains/linux_x86_64_1_95_0_rust_toolchain/lib/rustlib/x86_64-unknown-linux-gnu/lib/libstd-d1237ef7159db0a2.rlib"
+      },
+      {
+        "line": 364,
+        "text": "          ld.lld: error: undefined symbol: stat64"
+      },
+      {
+        "line": 366,
+        "text": "          >>>               std-d1237ef7159db0a2.std.e28293b1aa0f68bd-cgu.0.rcgu.o:(std::sys::fs::metadata) in archive bazel-out/linux_amd64_musl-opt/bin/external/rules_rs++toolchains+default_rust_toolchains/linux_x86_64_1_95_0_rust_toolchain/lib/rustlib/x86_64-unknown-linux-gnu/lib/libstd-d1237ef7159db0a2.rlib"
+      },
+      {
+        "line": 372,
+        "text": "          ld.lld: error: undefined symbol: mmap64"
+      },
+      {
+        "line": 374,
+        "text": "          >>>               std-d1237ef7159db0a2.std.e28293b1aa0f68bd-cgu.0.rcgu.o:(std::backtrace_rs::symbolize::gimli::mmap) in archive bazel-out/linux_amd64_musl-opt/bin/external/rules_rs++toolchains+default_rust_toolchains/linux_x86_64_1_95_0_rust_toolchain/lib/rustlib/x86_64-unknown-linux-gnu/lib/libstd-d1237ef7159db0a2.rlib"
+      }
+    ]
+  },
+  "cause": {
+    "target": "//codex-rs/bwrap:bwrap",
+    "original_stderr_line": 336,
+    "rust_target_flags": [
+      "--target=x86_64-unknown-linux-gnu"
+    ],
+    "c_linker_target_flags": [
+      "--codegen=link-arg=x86_64-linux-musl"
+    ],
+    "stdlib_search_paths": [
+      "bazel-out/linux_amd64_musl-opt/bin/external/rules_rs++toolchains+default_rust_toolchains/linux_x86_64_1_95_0_rust_toolchain/lib/rustlib/x86_64-unknown-linux-gnu/lib"
+    ],
+    "symbols_from_gnu_libstd": [
+      "open64",
+      "fstat64",
+      "lseek64",
+      "stat64",
+      "mmap64"
+    ],
+    "diagnostic_excerpt_only_not_new_full_zip_verification": true,
+    "confidence": "Direct original compiler/linker argv and linker library attribution, supported by fixed dependency source.",
+    "description": "The Rust product target and GNU libstd were selected independently of the musl C linker target. GNU libstd supplied the unresolved open64/fstat64/lseek64/stat64/mmap64 references.",
+    "not_inferred_from": [
+      "workflow label alone",
+      "GNU-host rustc executable name alone",
+      "cargo-binstall or just download names",
+      "unrelated rama-dns bindgen changes"
+    ]
+  },
+  "fixed_primary_sources": [
+    {
+      "repository": "hermeticbuild/rules_rs",
+      "ref": "87811fbf13177eff8f118a808610fe3a4fd0eed7",
+      "path": "rs/platforms/constraints/BUILD.bazel",
+      "blob": "b5751eb62d6169041f67fa5414669f7bff6a8bea",
+      "lines": [
+        3,
+        20
+      ],
+      "url": "https://github.com/hermeticbuild/rules_rs/blob/87811fbf13177eff8f118a808610fe3a4fd0eed7/rs/platforms/constraints/BUILD.bazel",
+      "finding": "Independent linux_libc constraint defaults to glibc; LLVM libc selection alone does not set it."
+    },
+    {
+      "repository": "hermeticbuild/rules_rs",
+      "ref": "87811fbf13177eff8f118a808610fe3a4fd0eed7",
+      "path": "rs/platforms/triples.bzl",
+      "blob": "22a79a15aa279e76ea8a6fcc2b2ebd750197ced4",
+      "lines": [
+        7,
+        51
+      ],
+      "url": "https://github.com/hermeticbuild/rules_rs/blob/87811fbf13177eff8f118a808610fe3a4fd0eed7/rs/platforms/triples.bzl",
+      "finding": "Published musl triple platform combines rules_rs musl, LLVM musl, and LLVM pie:off constraints."
+    },
+    {
+      "repository": "hermeticbuild/rules_rs",
+      "ref": "87811fbf13177eff8f118a808610fe3a4fd0eed7",
+      "path": "rs/platforms/declare_platforms.bzl",
+      "blob": "74b55b18ba1f346264180d16eef8044b8f7e29ec",
+      "lines": [
+        1,
+        14
+      ],
+      "url": "https://github.com/hermeticbuild/rules_rs/blob/87811fbf13177eff8f118a808610fe3a4fd0eed7/rs/platforms/declare_platforms.bzl",
+      "finding": "Existing published target platform uses the complete triple_to_constraint_set result."
+    },
+    {
+      "repository": "hermeticbuild/rules_rs",
+      "ref": "87811fbf13177eff8f118a808610fe3a4fd0eed7",
+      "path": "rs/platforms/config/declare_config_settings.bzl",
+      "blob": "cdef8556aa8aad87c56806157c7625bd03ae0cdc",
+      "lines": [
+        1,
+        14
+      ],
+      "url": "https://github.com/hermeticbuild/rules_rs/blob/87811fbf13177eff8f118a808610fe3a4fd0eed7/rs/platforms/config/declare_config_settings.bzl",
+      "finding": "Target configuration selectors use triple_to_rust_constraint_set including the independent libc constraint."
+    },
+    {
+      "repository": "hermeticbuild/rules_rs",
+      "ref": "87811fbf13177eff8f118a808610fe3a4fd0eed7",
+      "path": "rs/toolchains/declare_rustc_toolchains.bzl",
+      "blob": "f005485388c9e57d6904988a36029d3328a8ad63",
+      "lines": [
+        [
+          64,
+          78
+        ],
+        [
+          155,
+          164
+        ]
+      ],
+      "url": "https://github.com/hermeticbuild/rules_rs/blob/87811fbf13177eff8f118a808610fe3a4fd0eed7/rs/toolchains/declare_rustc_toolchains.bzl",
+      "finding": "The selected target configuration controls both target_triple and Rust standard-library target."
+    },
+    {
+      "repository": "hermeticbuild/hermetic-llvm",
+      "ref": "d040526d00e4b0ec53b013ef8405c26637446fac",
+      "path": "platforms/declare_platforms.bzl",
+      "blob": "81641339b1d0b6c1810cb360841d934c253d8934",
+      "lines": [
+        41,
+        65
+      ],
+      "url": "https://github.com/hermeticbuild/hermetic-llvm/blob/d040526d00e4b0ec53b013ef8405c26637446fac/platforms/declare_platforms.bzl",
+      "finding": "LLVM-only musl platform sets CPU/OS/LLVM libc/C++ stdlib, without rules_rs linux_libc."
+    },
+    {
+      "repository": "bazelbuild/bazel",
+      "ref": "9.3.0",
+      "path": "src/main/java/com/google/devtools/build/lib/analysis/configuredtargets/RuleConfiguredTarget.java",
+      "blob": "dfcb73d822c8d41d6ae368bc984537e353eb26c7",
+      "lines": [
+        262,
+        278
+      ],
+      "url": "https://github.com/bazelbuild/bazel/blob/9.3.0/src/main/java/com/google/devtools/build/lib/analysis/configuredtargets/RuleConfiguredTarget.java",
+      "finding": "Configured target actions are exposed to Starlark; API premise for the candidate cquery action inspection."
+    },
+    {
+      "repository": "bazelbuild/bazel",
+      "ref": "9.3.0",
+      "path": "src/main/java/com/google/devtools/build/lib/starlarkbuildapi/ActionApi.java",
+      "blob": "4371dbc4d5fc79072ef68dca2a4b78bf6fabc3b2",
+      "lines": [
+        45,
+        71
+      ],
+      "url": "https://github.com/bazelbuild/bazel/blob/9.3.0/src/main/java/com/google/devtools/build/lib/starlarkbuildapi/ActionApi.java",
+      "finding": "Action mnemonic and argv API exist; this review does not claim an actual cquery invocation succeeded."
+    }
+  ],
+  "dependency_identity": {
+    "rules_rs": {
+      "version": "0.0.96",
+      "tag_object": "26fb0022577a73141b6c9c1419e0841d84fd5043",
+      "commit": "87811fbf13177eff8f118a808610fe3a4fd0eed7",
+      "bcr_source_blob": "8217cc6d3e132a3bfd077222d771d78dedb1e35c"
+    },
+    "hermetic_llvm": {
+      "module_requested_version": "0.8.11",
+      "tag_object": "a363d7fb9569d667ef39860bad7f8150063f28a7",
+      "commit": "d040526d00e4b0ec53b013ef8405c26637446fac",
+      "bcr_source_blob": "2e8b6248f0502646a6300054c9dc0485f922062d"
+    },
+    "release_archive_redownloaded_or_rebuilt": false,
+    "full_module_lock_mvs_resolution_reaudited": false,
+    "repo_rules_rs_override_patches_read": [
+      "53f9603ff8b5ed88f9e6b64cf8bd248dd874d099",
+      "66feb78569348668ee0f4fce86c7b50276fc097d"
+    ],
+    "override_observation": "Neither fixed repository override changes the Linux Rust libc selector/default."
+  },
+  "candidate": {
+    "integration_commit_from_root_cohort_mapping": "c8f5d3c7b96e9d649cf34f6cfcac3d7b1912ed5e",
+    "existing_patch": {
+      "bytes": 7485,
+      "sha256": "0efb04129f886625ea3875e253d7cf8d1ebd759add641579b620b0ff99cc1b7b",
+      "git_blob": "3fd46e3fe77e18899c34b9fd8114f5f438f0406c"
+    },
+    "postimages": [
+      {
+        "path": "bazel/platforms/release_binaries.bzl",
+        "before": {
+          "bytes": 763,
+          "sha256": "0a0f907294980f9bf640a667d332d0445398496978f17d14031971826f4e5c68",
+          "git_blob": "7ac59c2b5e1f670d1653c2b3efdd8a82f2963bdc"
+        },
+        "after": {
+          "bytes": 1132,
+          "sha256": "2e626c8de3a42cee145e1aae552c5ca32f1c06e5d83c4197cf195f28572ab39d",
+          "git_blob": "7a88987f54fce5d6062eb7258a7f8679975de90d"
+        },
+        "byte_equal_expected_postimage": true
+      },
+      {
+        "path": ".github/workflows/hepta-musl-product-smoke.yml",
+        "before": {
+          "bytes": 21599,
+          "sha256": "0b980fc83ac32bba15b9f4b6708426d7b182e3c84b6768183dbbdd3fc9091f36",
+          "git_blob": "6aad46b1fe0edcf315ef8b1a5546225c59efe235"
+        },
+        "after": {
+          "bytes": 24659,
+          "sha256": "a96f31f7ee4ce8de9377faf24b0509dc0532590c76d4fac83cd6e7cfd243836a",
+          "git_blob": "a157c21a3e79460dc6f32147d952f3dacb4ed197"
+        },
+        "byte_equal_expected_postimage": true
+      }
+    ],
+    "musl_path_count": 2,
+    "musl_changed_lines": 65,
+    "other_cohort_paths_not_reviewed_as_musl": [
+      "Windows lifecycle workflow change"
+    ],
+    "static_mapping_effect": "Only existing aarch64/x86_64 musl aliases switch to the already-published complete rules_rs target platforms. Other platform aliases keep their prior LLVM mapping.",
+    "action_gate": {
+      "targets": [
+        "//codex-rs/cli:hepta",
+        "//codex-rs/bwrap:bwrap"
+      ],
+      "requires": [
+        "exact configured target label and resolved canonical target platform",
+        "exactly one Rustc action",
+        "--target=x86_64-unknown-linux-musl",
+        "musl C linker target",
+        "nonempty exclusively-musl Rust standard-library search paths",
+        "one configured Rust compiler path"
+      ],
+      "actual_cquery_not_executed_by_reviewer": true,
+      "new_gate_is_conjunctive": true
+    },
+    "preserved_physical_product_smokes": {
+      "bytes": 4144,
+      "sha256": "aff1928506b4bb011d2503ef9d94965f4f4a13041ea6ec4703167cf6403674cf",
+      "git_blob": "155b5d96631a66f93124d1ad55e218d52f9f02d4",
+      "byte_equal": true,
+      "checks": [
+        "resolved executable remains inside the Bazel output tree",
+        "outer and inner executables identify the same physical file",
+        "actual ELF64 little-endian x86_64 executable/PIE",
+        "no PT_INTERP and no DT_NEEDED",
+        "exact binary --version and --help, each 30 seconds",
+        "source and product pre/post identity"
+      ]
+    },
+    "existing_deadlines_preserved": true,
+    "new_platform_definitions_or_dependency_changes": false,
+    "native_or_hosted_build_or_test_executed_by_reviewer": false,
+    "additional_product_patch_needed_for_the_proven_mismatch": false
+  },
+  "verification": {
+    "source_body_count": 28,
+    "source_bodies_verified_bytes_sha256_git_sha": true,
+    "actual_isolated_git_apply_check_and_apply": [
+      {
+        "argv": [
+          "git",
+          "apply",
+          "--check",
+          "/workspace/scratch/07dd58cc9630/research-audit/musl-link-audit-20261105/existing-musl-repair.patch"
+        ],
+        "exit_code": 0,
+        "stdout": "",
+        "stderr": ""
+      },
+      {
+        "argv": [
+          "git",
+          "apply",
+          "--numstat",
+          "/workspace/scratch/07dd58cc9630/research-audit/musl-link-audit-20261105/existing-musl-repair.patch"
+        ],
+        "exit_code": 0,
+        "stdout": "8\t1\tbazel/platforms/release_binaries.bzl\n48\t8\t.github/workflows/hepta-musl-product-smoke.yml\n",
+        "stderr": ""
+      },
+      {
+        "argv": [
+          "git",
+          "apply",
+          "/workspace/scratch/07dd58cc9630/research-audit/musl-link-audit-20261105/existing-musl-repair.patch"
+        ],
+        "exit_code": 0,
+        "stdout": "",
+        "stderr": ""
+      }
+    ],
+    "full_receipt": {
+      "path": "static-verification.json",
+      "bytes": 20860,
+      "sha256": "b7fe409f31e9f120d8ce43fcce8339290259d2f8cc3735d00286abe114c0329f",
+      "git_blob": "4f35d3acd09988e12d10a5cadb560df6272d17e2"
+    },
+    "candidate_source_tree_shared_native_refs_changed": false
+  },
+  "next_exact_head_gate": {
+    "workflow": ".github/workflows/hepta-musl-product-smoke.yml",
+    "target": "//codex-rs/cli:hepta_linux_amd64_musl",
+    "platform": "@rules_rs//rs/platforms:x86_64-unknown-linux-musl",
+    "build_argv_prefix": [
+      "python3",
+      ".github/scripts/run_bazel_with_buildbuddy.py",
+      "build",
+      "--config=ci-linux",
+      "--config=ci",
+      "-c",
+      "opt",
+      "--platforms=@rules_rs//rs/platforms:x86_64-unknown-linux-musl",
+      "--lockfile_mode=error",
+      "--remote_download_toplevel"
+    ],
+    "additional_original_arguments": "Retain the original source/workflow build metadata and BEP file argument, then the existing product target.",
+    "required_receipts": [
+      "exact checkout/tree and before/after unchanged source",
+      "canonical configured platform and both actual Rust action projections",
+      "successful actual build with original cache/execution provenance",
+      "physical product hash and ELF checks",
+      "the exact binary's successful --version and --help smokes with original 30-second budgets",
+      "final qualified receipt and unchanged product"
+    ],
+    "not_satisfied_by": [
+      "prior GNU/RBE 441 passing targets",
+      "a musl label",
+      "static diff acceptance",
+      "aarch64 mapping without its own build",
+      "a successful cquery without product build and execution"
+    ],
+    "full_musl_behavior_and_alpine_deployment_remain_out_of_scope": true
+  }
+}

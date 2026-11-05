@@ -1,0 +1,441 @@
+{
+  "base_commit": "e729e6c2becb528e3a6b49c9e5bbea57bd26637a",
+  "base_tree": "6790800b883d3655538869ea90f17c5ff86b7507",
+  "previous_source_tree": "57b8d27014ac37bc2ea6262b2c6a52fb6c2e33b0",
+  "source_tree": "edcc50b93a0b95342567bdfe98e5c0d96c85e52f",
+  "stage": "combined-final",
+  "files": [
+    {
+      "path": ".github/fixtures/windows-private-state-acquisition/path-check-open.patch",
+      "bytes": 962,
+      "sha256": "e57b07ed6fc04bd973d05c4426576cb42253b35ab423ac39f1a3c2f792f2fdd9",
+      "git_blob": "e388cf7576b827be199b6fdf8893571f8c7a9e3b"
+    },
+    {
+      "path": ".github/fixtures/windows-private-state-acquisition/unchecked-create.patch",
+      "bytes": 728,
+      "sha256": "c882a2f9798b3aa5318236c6a16b7bd0edde1cd5b88395e3364a2bb831899448",
+      "git_blob": "83cdc99550cf514f90875714a2f7629e3948a191"
+    },
+    {
+      "path": ".github/scripts/check_windows_private_state_acquisition.py",
+      "bytes": 7966,
+      "sha256": "28c0f9677e113c3a969b75ae5facd49b049e863881c6ce8423be418bf7daf240",
+      "git_blob": "baffaf6cf4119def7ed504c8d585678311de67c2"
+    },
+    {
+      "path": ".github/workflows/windows-core-lifecycle.yml",
+      "bytes": 10036,
+      "sha256": "42784beb505bd405056d918204eda76a8309be8f1f851fafad68a4e3b080df1d",
+      "git_blob": "6fbd9f042239332613365b61b205f2c3535011c5"
+    },
+    {
+      "path": ".github/workflows/windows-retained-recovery.yml",
+      "bytes": 9035,
+      "sha256": "bff03f860b15ee6cb313cd38051aad7d624d049ef366cdf0d22185cd2999faf9",
+      "git_blob": "dd4716a3540b752dc49e2ee193c90170187bf251"
+    },
+    {
+      "path": "MODULE.bazel.lock",
+      "bytes": 1738619,
+      "sha256": "11f8a421224b9b05f32c4c14054e8868083d989fc497310c8d51e1156f189ca3",
+      "git_blob": "1904db189003cb0b559f71958518e33a45fb6bb7"
+    },
+    {
+      "path": "codex-rs/Cargo.lock",
+      "bytes": 413742,
+      "sha256": "c9778dfe2a3c1e8c06f5ca41d84d544c70bc07171f3b8ae5c3bc5f041d51496e",
+      "git_blob": "9743ef2f4f4c8521265c0187524278c256114163"
+    },
+    {
+      "path": "codex-rs/app-server/src/lib.rs",
+      "bytes": 78648,
+      "sha256": "0f6371ae5795963a451be0a9e9af7c55898644e817533bbe0597c275a992bdaf",
+      "git_blob": "484970198d5a8c71f0d4bf8e92fa0e8a2780f45e"
+    },
+    {
+      "path": "codex-rs/app-server/src/shutdown_signals.rs",
+      "bytes": 1691,
+      "sha256": "aa030d124ee50cf1dabaa6a885846b9eccb4f36dcb2900c4b2df88c103b7ff5a",
+      "git_blob": "a45eca7491eb9d588a703668c10ab4aadf20b101"
+    },
+    {
+      "path": "codex-rs/app-server/src/shutdown_signals_tests.rs",
+      "bytes": 4809,
+      "sha256": "c664383fe6d0943e9df9be1ca8acc21b3c9b16e2926e5cb42bf13bb7625d4537",
+      "git_blob": "cf2f370bf35fc7cbb8d3b339f92f7da25b87cb51"
+    },
+    {
+      "path": "codex-rs/app-server/tests/suite/v2/executor_skills.rs",
+      "bytes": 23811,
+      "sha256": "9b96409f1d4cd1e96acc478a1667b7dd79b584d5da6b9f4b25982a6ad04c7cb6",
+      "git_blob": "6731fefddbc5ab1158234877939ebdc10ddfd206"
+    },
+    {
+      "path": "codex-rs/app-server/tests/suite/v2/remote_control.rs",
+      "bytes": 54158,
+      "sha256": "0b47589519b840f641fcbe42342d81edafff4065b30265aa1f913cb98799d165",
+      "git_blob": "10a523727b458839c4c2899596f01338e871248e"
+    },
+    {
+      "path": "codex-rs/app-server/tests/suite/v2/turn_recover.rs",
+      "bytes": 35436,
+      "sha256": "5272864c814ae433c971bcb875658742c9552d1324a78e94013148497182d729",
+      "git_blob": "43cd9b0c2d1ba3a6560ade3f3a85616674fcd4c8"
+    },
+    {
+      "path": "codex-rs/cli/BUILD.bazel",
+      "bytes": 802,
+      "sha256": "25bfe4bd6ee523d5859654f34ba3caab21778d3372c239c83f8e07565a03e532",
+      "git_blob": "a64e4a8d12045dcd4f83e2a02c262e52e87ef4c8"
+    },
+    {
+      "path": "codex-rs/cli/tests/sandbox_cloud_config.rs",
+      "bytes": 8755,
+      "sha256": "85c638b37cbbd21fde7d63eaadc93210d244d26c15ea3914d75e8aaf387d1fa6",
+      "git_blob": "59f5e95058985857df3f7604f320861f0db22f8b"
+    },
+    {
+      "path": "codex-rs/codex-mcp/src/binding.rs",
+      "bytes": 11804,
+      "sha256": "dbf388038db00379c8f50f9fc3cf34946d7e01b6c92e6466530ec9b9e6f65d4e",
+      "git_blob": "de0238af78e06046a110877513ff172a3a44ff85"
+    },
+    {
+      "path": "codex-rs/codex-mcp/src/binding_tests.rs",
+      "bytes": 13600,
+      "sha256": "972f394f14572afc9d88fd9f1eb7c613c68802a1edfde35c77e3e612a92dc036",
+      "git_blob": "a95d1913cd11a8426e56c3b1d030641d9c287220"
+    },
+    {
+      "path": "codex-rs/core/src/client.rs",
+      "bytes": 162877,
+      "sha256": "b295e4af51993e2254f2bb1473591dd02dd0e8b15e9591bbcdf45d60d9d8b75b",
+      "git_blob": "4f16e0eec07d7d95ad3fc206140d260500592277"
+    },
+    {
+      "path": "codex-rs/core/src/client_tests.rs",
+      "bytes": 64121,
+      "sha256": "dfba3299f419a9090a9ef47b86d651fc3130624246bf45461885cafe5213892b",
+      "git_blob": "ff91f479aa615f56ae26d910894598a4e51895ae"
+    },
+    {
+      "path": "codex-rs/core/src/codex_thread.rs",
+      "bytes": 49604,
+      "sha256": "bd552252887317518d7eeb77fd80f3c8744729a2f2f3708d0487cac4f5597475",
+      "git_blob": "0d96d2b722eb1ade7b4974ffee1fbb729847508b"
+    },
+    {
+      "path": "codex-rs/core/src/hook_mcp_executor.rs",
+      "bytes": 3100,
+      "sha256": "21c841f114dbd06925ea444bde1adcb00f5720c6d96849b722aaa4f72fa2564f",
+      "git_blob": "6eca59da7d93ae157af653e8ce19159bfa728dc8"
+    },
+    {
+      "path": "codex-rs/core/src/mcp_tool_call.rs",
+      "bytes": 79166,
+      "sha256": "1e389b1679afed6086dce708e02f5efb7b01f970d2fefdcbdb468b1e9114f36e",
+      "git_blob": "467034ba40066bf954004230d20e67e9010fc176"
+    },
+    {
+      "path": "codex-rs/core/src/mcp_tool_call_tests.rs",
+      "bytes": 103868,
+      "sha256": "391edf924685bcb9e0e5524a13c3167c881a6b5695f8bccbbcfc927417a16e1b",
+      "git_blob": "682f3b96e7f2aaf993497ea6b02553c16439136c"
+    },
+    {
+      "path": "codex-rs/core/src/realtime_conversation.rs",
+      "bytes": 93881,
+      "sha256": "9b22b49b5461b61b6d1912097d3ac2ef126751a72ea91c6afe3b21df51459d25",
+      "git_blob": "0e6ccdbff0351ee1ef21f67fbd76557a26e03321"
+    },
+    {
+      "path": "codex-rs/core/src/session/mod.rs",
+      "bytes": 215824,
+      "sha256": "a666d5f63dddd2a197827082087692819a841cfa2d30943ab3a19a7ba983ba39",
+      "git_blob": "b71bc56687973debf2b8615da036e60a436e3c08"
+    },
+    {
+      "path": "codex-rs/core/src/session/turn.rs",
+      "bytes": 132572,
+      "sha256": "20b756ac6cfbf03a5cec343366cc8e529a653e615befaa2362b3524837ce100a",
+      "git_blob": "942935e6d73ef3e3fc53c1fd73dd490e0247354e"
+    },
+    {
+      "path": "codex-rs/core/src/session/turn_input.rs",
+      "bytes": 41654,
+      "sha256": "7959e38afd075c5cad233a7d1ba59b3406b1de96d9076e444a51ce8ac33b9841",
+      "git_blob": "215af4dd2a36cf07915e2451040c19527bac3c9a"
+    },
+    {
+      "path": "codex-rs/core/src/test_support.rs",
+      "bytes": 9850,
+      "sha256": "f454e4ad511be5230ee1381645a43d67a2ea199f1e37507a3c13a34adf9ee8ad",
+      "git_blob": "fb8180571b43debdd4234cece1f5fda348437f75"
+    },
+    {
+      "path": "codex-rs/core/src/thread_manager/runtime_identity.rs",
+      "bytes": 3535,
+      "sha256": "15aea88903b360c1addb8f4d5f1ca00fcc655a11fd7528d872e1315286ee26ff",
+      "git_blob": "bbd4399112c275fc8d250d02a3c6d9270587d882"
+    },
+    {
+      "path": "codex-rs/core/src/tools/executed_tool_calls.rs",
+      "bytes": 13108,
+      "sha256": "ad3ce658481f5235c325b450c851c9a91fbfc3b85581b572f5d08a74996688fc",
+      "git_blob": "51d4e15fd553c4fd28d347368ebac002d914a900"
+    },
+    {
+      "path": "codex-rs/core/src/tools/executed_tool_calls_tests.rs",
+      "bytes": 8153,
+      "sha256": "daaf1e229fe00d8602e17052dca53b3fc2246b90e6e7351f102a0557bba68a8a",
+      "git_blob": "5f6000efaf34116e40abae14797df8fac30e4824"
+    },
+    {
+      "path": "codex-rs/core/tests/common/test_codex.rs",
+      "bytes": 49258,
+      "sha256": "c1bcaaaee64a84edefa078f7aa477c243976f9a1f402f817842145c8637b6f72",
+      "git_blob": "8bf703d6eedb4e2319367e060a48316f70bdeb8b"
+    },
+    {
+      "path": "codex-rs/core/tests/suite/abort_tasks.rs",
+      "bytes": 14448,
+      "sha256": "0c4b1e88857aafa4f5b370c3b2fc5be5500f2b944e3b530323c24f86ce62c226",
+      "git_blob": "73825f8423aed96bc71cd8f67109a1bb54bb2543"
+    },
+    {
+      "path": "codex-rs/core/tests/suite/agent_websocket.rs",
+      "bytes": 19012,
+      "sha256": "e6944d496a8e0ec006f828f49d56a0c611dcaebbed89265f38cf026b715572f6",
+      "git_blob": "0c4ba0b0b0bd88278028a9209fdbd536546512b9"
+    },
+    {
+      "path": "codex-rs/core/tests/suite/code_mode.rs",
+      "bytes": 213008,
+      "sha256": "b053267b92afa19a861d800814e43c8a33e4ea2f823fb26e0a4eb89c6853eba2",
+      "git_blob": "d1970f7853bcd5777ef96881b457525b7abfa92a"
+    },
+    {
+      "path": "codex-rs/core/tests/suite/code_mode_elicitation.rs",
+      "bytes": 14986,
+      "sha256": "a49bd4528f27b22811a2faabce36f341292dc28d5ed45ecaf749963a5928a0f8",
+      "git_blob": "797aa1a3854389fdaf001fbab6bbcddb54f3f97f"
+    },
+    {
+      "path": "codex-rs/core/tests/suite/compact.rs",
+      "bytes": 185829,
+      "sha256": "b2b90c258d31e0873ac2e3fc56d015072f1835f0a6d2f78d5249bd338cc7dc42",
+      "git_blob": "aab24b45c2ad9aa8752ebefd4a4715a7680a484c"
+    },
+    {
+      "path": "codex-rs/core/tests/suite/compact_remote.rs",
+      "bytes": 180028,
+      "sha256": "5a6cd839b17f0caccec09073a376bc2599c672e1be7eb8753e7eecbdcfaca1df",
+      "git_blob": "80d019affee98bd59f3031e37060452c1ebc68a3"
+    },
+    {
+      "path": "codex-rs/core/tests/suite/git_enrichment.rs",
+      "bytes": 18867,
+      "sha256": "0109af205815229761e7a62b50a4893ac89803435cf892677f12a442c9086909",
+      "git_blob": "f82539307bddd975872e018e0bc1f8a9c61b5aba"
+    },
+    {
+      "path": "codex-rs/core/tests/suite/hooks_mcp.rs",
+      "bytes": 44872,
+      "sha256": "b5a7a405723e233c14ab3e73213f8010f53c862df1328a92ae92c32f7e9ba73b",
+      "git_blob": "4fd06489fb864fb74d1b457f5eb39cc279c23ec0"
+    },
+    {
+      "path": "codex-rs/core/tests/suite/realtime_conversation.rs",
+      "bytes": 239103,
+      "sha256": "314a7848bea445957d23f493e7e21c19e6275464f203ea66a7c8b2c97a2ba9b3",
+      "git_blob": "cbf2a822295c51901d4c59a04af49d811b2f26e5"
+    },
+    {
+      "path": "codex-rs/core/tests/suite/turn_input_submission.rs",
+      "bytes": 23281,
+      "sha256": "35852574b6b625cfc1f64883e5ecd744f9c338273923d5a6ff0ab3bd217240c4",
+      "git_blob": "f1020ab3da6b95d2afda7caff4d8bb28c8f5e193"
+    },
+    {
+      "path": "codex-rs/exec-server/BUILD.bazel",
+      "bytes": 890,
+      "sha256": "7ebe1f8d7aa1f5bbe8eb55b8f3914af11ca97032cd604cc68686ad4fd2cc2244",
+      "git_blob": "73c71a65112db4c7d306f3be215ab17907decfa5"
+    },
+    {
+      "path": "codex-rs/exec-server/Cargo.toml",
+      "bytes": 2741,
+      "sha256": "c45429a966e8d087144085598cac8c63e6e9b285fad97a5700294b409665ee14",
+      "git_blob": "455df9eedc14b77ac3779899087cd8391b153b37"
+    },
+    {
+      "path": "codex-rs/exec-server/tests/common/exec_server.rs",
+      "bytes": 15955,
+      "sha256": "b2107193d5acbdcd345f28ce167ffe42d2e642de4f013e06ad7332a40d63dda6",
+      "git_blob": "98bb544e1ba70a44c4ece9dd7d46caecc4d8e906"
+    },
+    {
+      "path": "codex-rs/exec/tests/suite/resume.rs",
+      "bytes": 41833,
+      "sha256": "a0a3d845e0bb0754da593991cc6d4186b0fa91f4537a19deefd58a88557e064f",
+      "git_blob": "3d70c6c80105230e148c4ab207ce6b912cf79fab"
+    },
+    {
+      "path": "codex-rs/ext/queue/tests/queue_service.rs",
+      "bytes": 97249,
+      "sha256": "034aa04e254c24e4377a1a659b2b8f8a97f3082c514319391493881ab1db9f80",
+      "git_blob": "19fa5aa60637aef39a396fde3cbbec799e83181c"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/runtime_tests.rs",
+      "bytes": 38274,
+      "sha256": "dd57c70dc21e92d82ee609bd2f771413c57c189ac2cadd581af7bf47f634b972",
+      "git_blob": "31a41d8cad53ee3f04a1106e245dc5c3f4392a5b"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/tests/authbus_text_product.rs",
+      "bytes": 14551,
+      "sha256": "efc549f5345dbe7ec33af2b90df606c4764c2c8890ba35e79cc520b97768dc41",
+      "git_blob": "060618beec4ca97e83746d1e1d3ee8fe44fc3c29"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/tests/cognitive_product_e2e.rs",
+      "bytes": 98456,
+      "sha256": "6350d57788046ddbb4a290d51c13340fe9db64de8ac43c9ae4203f35c7d7ab9c",
+      "git_blob": "92834434a1c673f08b6fca038b4966d821306232"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/tests/kernel_evidence_product.rs",
+      "bytes": 30223,
+      "sha256": "fc0eea67cc550f558296996edbcf6de99248f5bbddad9425067f3e6a2751904c",
+      "git_blob": "a9855037383f3c84e2ecca0dd881bb4cb2df3cb3"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/tests/supervisord_product_e2e.rs",
+      "bytes": 26769,
+      "sha256": "915a0fd2489edcb7479a4f529a9ead3c4cc0a329f97742c4a41581952c3d1881",
+      "git_blob": "01c7b1cfbaaf08c304ecc9c8983ae26c54a813b0"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/tests/terminal_cell_owner.rs",
+      "bytes": 26064,
+      "sha256": "7ed28a40684fdabae2af45344fa31eee31520612984a6c97c86159686408e63a",
+      "git_blob": "8990c7336abbab8af2d461f51adeb9e9c8a0e0fc"
+    },
+    {
+      "path": "codex-rs/tui/src/app/tests/background_exit_tests.rs",
+      "bytes": 22060,
+      "sha256": "468897b04633ca59ffe873bfce3fcdac504dd886b8ab5772049eca4dc65ea53f",
+      "git_blob": "d7d9ed4435b3fb7cb7d8303e94cbb223b5ced438"
+    },
+    {
+      "path": "codex-rs/tui/src/lib.rs",
+      "bytes": 122961,
+      "sha256": "acb8d9e8fd21aad9f121d2d7ca1db818f54cb86c8e9bc035cca4413d93a675af",
+      "git_blob": "1b99810dec2de74f11514f8e0dc1a126e6e5b8d7"
+    },
+    {
+      "path": "codex-rs/utils/pty/src/tests.rs",
+      "bytes": 59522,
+      "sha256": "12e5d0fc9e5c801aa959144b5c2c5ccff9032ce58459e96ffbf17a140ff28229",
+      "git_blob": "dddfec083378c10398ccdcf7ab99bcdf7d1e1fe4"
+    },
+    {
+      "path": "codex-rs/windows-sandbox-rs/src/token_tests.rs",
+      "bytes": 18059,
+      "sha256": "17c7398576cebbd83cfc236c0e2788eccff0765e2ff058676aa7a9c334d6a850",
+      "git_blob": "140f141bc0a5807856ceb1068c9fbf423d5ce543"
+    },
+    {
+      "path": "codex-rs/windows-sandbox-rs/src/unified_exec/tests.rs",
+      "bytes": 43037,
+      "sha256": "9dcb0cc508227290437dd6b851496d02b9731bac8e91c087d11a2b57a0e1706d",
+      "git_blob": "694db339514d08efb54c05d82f2e58026b673998"
+    },
+    {
+      "path": "qualification/r3-audit-repair-20261104/README.md",
+      "bytes": 3488,
+      "sha256": "b0278aef570ac67e22c09fec51a9b41ede51198e04776caf1db367abb142eb02",
+      "git_blob": "d9213244291663f996945956506dac413c486057"
+    },
+    {
+      "path": "qualification/r3-audit-repair-20261104/cognitive-query-independent-review.json",
+      "bytes": 976,
+      "sha256": "9388150eff7b606e2bbc760cf44965659fd002fd5558d3665889b30024bed901",
+      "git_blob": "1166d988b99ec7d180261f48b51e1c07a369680c"
+    },
+    {
+      "path": "qualification/r3-audit-repair-20261104/cognitive_projection_sql_validation.json",
+      "bytes": 3003,
+      "sha256": "3f45414fd3f2eab76d951e8650d5ef716ef76be3ae5f612b92fbe9a1800bdb20",
+      "git_blob": "3963783cd3b3b9232c8dc9c64bd42d2b141dd3ef"
+    },
+    {
+      "path": "qualification/r3-audit-repair-20261104/verify_cognitive_projection_sql.py",
+      "bytes": 7055,
+      "sha256": "b20408b340fdadb96cd70e895c0c1f10fcdae94cb90d75b26c3fe8dba9a2d3f3",
+      "git_blob": "952d11e047e6c377892347b04ec7feb4aa245256"
+    }
+  ],
+  "changed_since_e729": [
+    ".github/fixtures/windows-private-state-acquisition/path-check-open.patch",
+    ".github/fixtures/windows-private-state-acquisition/unchecked-create.patch",
+    ".github/scripts/check_windows_private_state_acquisition.py",
+    "codex-rs/Cargo.lock",
+    "codex-rs/app-server/src/lib.rs",
+    "codex-rs/app-server/src/shutdown_signals.rs",
+    "codex-rs/app-server/src/shutdown_signals_tests.rs",
+    "codex-rs/app-server/tests/suite/v2/executor_skills.rs",
+    "codex-rs/app-server/tests/suite/v2/remote_control.rs",
+    "codex-rs/app-server/tests/suite/v2/turn_recover.rs",
+    "codex-rs/cli/BUILD.bazel",
+    "codex-rs/cli/tests/sandbox_cloud_config.rs",
+    "codex-rs/codex-mcp/src/binding.rs",
+    "codex-rs/codex-mcp/src/binding_tests.rs",
+    "codex-rs/core/src/client.rs",
+    "codex-rs/core/src/client_tests.rs",
+    "codex-rs/core/src/codex_thread.rs",
+    "codex-rs/core/src/hook_mcp_executor.rs",
+    "codex-rs/core/src/mcp_tool_call.rs",
+    "codex-rs/core/src/mcp_tool_call_tests.rs",
+    "codex-rs/core/src/realtime_conversation.rs",
+    "codex-rs/core/src/session/mod.rs",
+    "codex-rs/core/src/test_support.rs",
+    "codex-rs/core/src/thread_manager/runtime_identity.rs",
+    "codex-rs/core/src/tools/executed_tool_calls.rs",
+    "codex-rs/core/src/tools/executed_tool_calls_tests.rs",
+    "codex-rs/core/tests/common/test_codex.rs",
+    "codex-rs/core/tests/suite/abort_tasks.rs",
+    "codex-rs/core/tests/suite/agent_websocket.rs",
+    "codex-rs/core/tests/suite/code_mode.rs",
+    "codex-rs/core/tests/suite/code_mode_elicitation.rs",
+    "codex-rs/core/tests/suite/compact.rs",
+    "codex-rs/core/tests/suite/compact_remote.rs",
+    "codex-rs/core/tests/suite/git_enrichment.rs",
+    "codex-rs/core/tests/suite/hooks_mcp.rs",
+    "codex-rs/core/tests/suite/realtime_conversation.rs",
+    "codex-rs/core/tests/suite/turn_input_submission.rs",
+    "codex-rs/exec-server/BUILD.bazel",
+    "codex-rs/exec-server/Cargo.toml",
+    "codex-rs/exec-server/tests/common/exec_server.rs",
+    "codex-rs/exec/tests/suite/resume.rs",
+    "codex-rs/ext/queue/tests/queue_service.rs",
+    "codex-rs/hepta-agentd/src/runtime_tests.rs",
+    "codex-rs/tui/src/app/tests/background_exit_tests.rs",
+    "codex-rs/tui/src/lib.rs",
+    "codex-rs/utils/pty/src/tests.rs",
+    "codex-rs/windows-sandbox-rs/src/token_tests.rs",
+    "codex-rs/windows-sandbox-rs/src/unified_exec/tests.rs"
+  ],
+  "format_pass": true,
+  "diff_check": 0,
+  "additional_paths_from_automatic_lint": [],
+  "module_lock_sha256": "11f8a421224b9b05f32c4c14054e8868083d989fc497310c8d51e1156f189ca3",
+  "module_lock_is_unchanged_original_generator_output": true,
+  "combined_helper_bazel_run": 41865994466,
+  "combined_helper_bazel_verification_sha256": "d3fd94e4dd9d1283e8016fba0568376a6b6f0cafc761b8ccb4b6acf7fddccb99",
+  "six_line_observer_present": false,
+  "needs_root_review_before_publication": true,
+  "native_windows_diagnostics_and_helpers_qualification": "PENDING_EXACT_FINAL_HEAD_CI"
+}

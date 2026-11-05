@@ -34,6 +34,11 @@ impl TestCodexExecBuilder {
     pub fn home_path(&self) -> &Path {
         self.home.path()
     }
+
+    /// Exposes the actual fixture owners for explicit, checked cleanup in lifecycle tests.
+    pub fn into_temp_dirs(self) -> (TempDir, TempDir) {
+        (self.home, self.cwd)
+    }
 }
 
 fn toml_string_literal(value: &str) -> String {

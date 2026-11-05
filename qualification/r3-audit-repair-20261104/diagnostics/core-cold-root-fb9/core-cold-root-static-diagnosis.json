@@ -1,0 +1,637 @@
+{
+  "schema": "hepta.core-cold-root-resume.readonly-diagnosis.v1",
+  "frozen_at_utc": "2026-11-05T05:03:29.674290+00:00",
+  "status": "CAUSE_OPEN_SOURCE_SUPPORTED_DIAGNOSTIC_PROPOSAL_ONLY",
+  "source_tree": "fb9e131272f7e7a138d6c0d1af2b048b9a6ab7ff",
+  "native_full_job": "1a1a9f68261-fc05-3a71",
+  "case": {
+    "classname": "codex-core::all",
+    "name": "suite::multi_agent_resume::cold_root_resume_restores_agent_identity_and_role_on_followup"
+  },
+  "comparison": {
+    "path": "ci-audit/recovered-20261105/full-f825-to-fb9-exact-case-comparison-v1.json",
+    "identity": {
+      "bytes": 45458,
+      "sha256": "551e5fc8f776339aecdf3311e683a4a3fc93f3ef8ddc54407e6ff219a4a1e90d",
+      "git_blob": "12ba495fa1c545f5e56f9444f420f23dba61b59e"
+    },
+    "git_blob_published": "12ba495fa1c545f5e56f9444f420f23dba61b59e",
+    "data": {
+      "classname": "codex-core::all",
+      "name": "suite::multi_agent_resume::cold_root_resume_restores_agent_identity_and_role_on_followup",
+      "old_case": {
+        "name": "suite::multi_agent_resume::cold_root_resume_restores_agent_identity_and_role_on_followup",
+        "classname": "codex-core::all",
+        "seconds": "8.780",
+        "result": "PASS",
+        "failure": ""
+      },
+      "new_case": {
+        "name": "suite::multi_agent_resume::cold_root_resume_restores_agent_identity_and_role_on_followup",
+        "classname": "codex-core::all",
+        "seconds": "8.209",
+        "result": "FAIL",
+        "failure": "Error: thread 01a1a9fe-9432-7365-982c-7a0f11490eee not found"
+      },
+      "old_xml": "<testcase name=\"suite::multi_agent_resume::cold_root_resume_restores_agent_identity_and_role_on_followup\" classname=\"codex-core::all\" timestamp=\"2026-11-04T19:52:26.136-05:00\" time=\"8.780\">\n        </testcase>\n        ",
+      "new_xml": "<testcase name=\"suite::multi_agent_resume::cold_root_resume_restores_agent_identity_and_role_on_followup\" classname=\"codex-core::all\" timestamp=\"2026-11-04T23:36:35.632-05:00\" time=\"8.209\">\n            <failure message=\"Error: thread 01a1a9fe-9432-7365-982c-7a0f11490eee not found\" type=\"test failure with exit code 101\">Error: thread 01a1a9fe-9432-7365-982c-7a0f11490eee not found</failure>\n            <system-out>\nrunning 1 test\ntest suite::multi_agent_resume::cold_root_resume_restores_agent_identity_and_role_on_followup ... FAILED\n\nfailures:\n\nfailures:\n    suite::multi_agent_resume::cold_root_resume_restores_agent_identity_and_role_on_followup\n\ntest result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 1432 filtered out; finished in 8.19s\n\n</system-out>\n            <system-err>Error: thread 01a1a9fe-9432-7365-982c-7a0f11490eee not found\n</system-err>\n        </testcase>\n        ",
+      "old_programs": {
+        "before": [
+          {
+            "binary_id": "codex-core::all",
+            "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/target/dev-small/deps/all-916220dd7febbd0c",
+            "bytes": 284353072,
+            "sha256": "fd184542d7c329087374bae331f30eb187206d5d065f452a0feb7df74bdaa47c"
+          }
+        ],
+        "after": [
+          {
+            "binary_id": "codex-core::all",
+            "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/target/dev-small/deps/all-916220dd7febbd0c",
+            "bytes": 284353072,
+            "sha256": "fd184542d7c329087374bae331f30eb187206d5d065f452a0feb7df74bdaa47c"
+          }
+        ]
+      },
+      "new_programs": {
+        "before": [
+          {
+            "binary_id": "codex-core::all",
+            "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/target-app-epoch2-20261105/dev-small/deps/all-916220dd7febbd0c",
+            "bytes": 284376560,
+            "sha256": "4c62e88f00028e2e9b08cf22ad8a848e7fc8aab3a889c370da9e77dd74d35b01"
+          }
+        ],
+        "after": [
+          {
+            "binary_id": "codex-core::all",
+            "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/target-app-epoch2-20261105/dev-small/deps/all-916220dd7febbd0c",
+            "bytes": 284376560,
+            "sha256": "4c62e88f00028e2e9b08cf22ad8a848e7fc8aab3a889c370da9e77dd74d35b01"
+          }
+        ]
+      }
+    }
+  },
+  "original_evidence": {
+    "old_case": {
+      "source_path": "ci-audit/recovered-20261105/full-owning-compressed-archive/full-junit.original",
+      "source_identity": {
+        "bytes": 4149275,
+        "sha256": "afdf124cb8cb44e65808b71f824c880875253378588ccaffc9b4783857fc18ed",
+        "git_blob": "d1778762119d44c5753ea19cdb94bf81e79d222f"
+      },
+      "byte_start_inclusive": 1545582,
+      "byte_end_exclusive": 1545791,
+      "line_start_1_based": 14920,
+      "line_end_1_based": 14921,
+      "member_identity": {
+        "bytes": 209,
+        "sha256": "73ae2fe968c3eff8f9e70bab95a412bb19aa0511e099456db445d3b8459c8461",
+        "git_blob": "584dbf6a26aa712e6d71cec2b44118bdb68b0e64"
+      },
+      "text": "<testcase name=\"suite::multi_agent_resume::cold_root_resume_restores_agent_identity_and_role_on_followup\" classname=\"codex-core::all\" timestamp=\"2026-11-04T19:52:26.136-05:00\" time=\"8.780\">\n        </testcase>"
+    },
+    "current_case": {
+      "source_path": "ci-audit/recovered-20261105/full-fb9-complete-archive/decoded-verified-v1/full-workspace.junit.xml",
+      "source_identity": {
+        "bytes": 4147101,
+        "sha256": "a64ad0f88d187caa6dd0fa7c2dedd2f816a8366bedb1a93d026c169a16cf7ac8",
+        "git_blob": "b1bec87f2dc96169e79042114df3261ec7cd73fd"
+      },
+      "byte_start_inclusive": 1520080,
+      "byte_end_exclusive": 1520967,
+      "line_start_1_based": 14669,
+      "line_end_1_based": 14685,
+      "member_identity": {
+        "bytes": 887,
+        "sha256": "3e6cd6202a780ae0eb2ca476de0edcda1a703b3ce7562f4426686f89611f0899",
+        "git_blob": "16dee1e3d63349216eaaf832f17c7a8e3b9ea511"
+      },
+      "text": "<testcase name=\"suite::multi_agent_resume::cold_root_resume_restores_agent_identity_and_role_on_followup\" classname=\"codex-core::all\" timestamp=\"2026-11-04T23:36:35.632-05:00\" time=\"8.209\">\n            <failure message=\"Error: thread 01a1a9fe-9432-7365-982c-7a0f11490eee not found\" type=\"test failure with exit code 101\">Error: thread 01a1a9fe-9432-7365-982c-7a0f11490eee not found</failure>\n            <system-out>\nrunning 1 test\ntest suite::multi_agent_resume::cold_root_resume_restores_agent_identity_and_role_on_followup ... FAILED\n\nfailures:\n\nfailures:\n    suite::multi_agent_resume::cold_root_resume_restores_agent_identity_and_role_on_followup\n\ntest result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 1432 filtered out; finished in 8.19s\n\n</system-out>\n            <system-err>Error: thread 01a1a9fe-9432-7365-982c-7a0f11490eee not found\n</system-err>\n        </testcase>"
+    },
+    "current_full_raw_block": {
+      "source_path": "ci-audit/recovered-20261105/full-fb9-complete-archive/decoded-verified-v1/full-workspace.log",
+      "source_identity": {
+        "bytes": 33668423,
+        "sha256": "32a5b36b73badb7b9096759e0faf58aa6acb6679aac90f7dc593118c62f90735",
+        "git_blob": "5e3ec063f037c5665e3a5e09057753333219f84e"
+      },
+      "line_start_1_based": 73017,
+      "line_end_1_based": 73031,
+      "byte_start_inclusive": 11046394,
+      "byte_end_exclusive": 11046990,
+      "excerpt_identity": {
+        "bytes": 596,
+        "sha256": "b616de94819aebe43cf8de1748dd59560452eedb5cf5f30903f936b70a33dacb",
+        "git_blob": "d3631986e5cafd679e585b7c2fe40aebe743eb9a"
+      },
+      "text": "        FAIL [   8.209s] codex-core::all suite::multi_agent_resume::cold_root_resume_restores_agent_identity_and_role_on_followup\n  stdout ───\n\n    running 1 test\n    test suite::multi_agent_resume::cold_root_resume_restores_agent_identity_and_role_on_followup ... FAILED\n\n    failures:\n\n    failures:\n        suite::multi_agent_resume::cold_root_resume_restores_agent_identity_and_role_on_followup\n\n    test result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 1432 filtered out; finished in 8.19s\n\n  stderr ───\n    Error: thread 01a1a9fe-9432-7365-982c-7a0f11490eee not found\n",
+      "exact_error_occurrences_in_complete_raw": 1
+    }
+  },
+  "source_acquisition": {
+    "mechanism": "Typed read_multiple_files / immutable-version binary_read or fixed Git blob cross-checked with actual file_info SHA; read-only, no native process job launched.",
+    "snapshot_limit": "Each file is independently versioned. These reads are not an atomic whole-tree snapshot; the source tree/job binding comes from CI's unchanged-source receipts.",
+    "files": [
+      {
+        "path": "codex-rs/core/tests/suite/multi_agent_resume.rs",
+        "bytes": 24016,
+        "sha256": "9bba749625fae2e012ec0e5f03e1c60a6a93b11e5dc581782358748168665ddc",
+        "git_blob": "5cffeb3a7683c6654bbfe5474296b5458659aeec",
+        "native_version": "66306:39862416:24016:1793829804520167017:1793829804520167017",
+        "verification_receipt": "source-read-1-verification.json"
+      },
+      {
+        "path": "codex-rs/core/tests/common/test_codex.rs",
+        "bytes": 49262,
+        "sha256": "318fb9469c3f65839f7384c29414b14f9f3617400e65829a47de9ad964fd28da",
+        "git_blob": "efaaf61844b49a1e42e9d630b306733d06647094",
+        "native_version": "66306:39862339:49262:1793829804515234660:1793829804515234660",
+        "verification_receipt": "source-read-2-verification.json"
+      },
+      {
+        "path": "codex-rs/core/src/agent/control.rs",
+        "bytes": 32877,
+        "sha256": "ffc845797169d04df4a23335549c50fce5ef3d8f0f5afeab48c22c3a2537a59e",
+        "git_blob": "19c4e0fb80ca8990ab30aac2836542cd8369357a",
+        "native_version": "66306:39861786:32877:1793829804485351243:1793829804485351243",
+        "verification_receipt": "source-read-2-verification.json"
+      },
+      {
+        "path": "codex-rs/core/src/agent/control/spawn.rs",
+        "bytes": 55556,
+        "sha256": "9c34e1f645186cfc43a132e2b256577640e0f3931322b8e27441f622e12f4171",
+        "git_blob": "3722500c55ac82a216bf6593f86c8d716b74f11c",
+        "native_version": "66306:39861793:55556:1793829804485463764:1793829804485463764",
+        "verification_receipt": "source-read-2-verification.json"
+      },
+      {
+        "path": "codex-rs/core/src/agent/control/residency.rs",
+        "bytes": 9260,
+        "sha256": "0e0c29185ccc1264e26cdd89418a469b46fc22727d6fe91253bd495a8846eeb3",
+        "git_blob": "bbf3370c9378fea72d3d87bf1d85528658dcbe84",
+        "native_version": "66306:39861791:9260:1793829804485463764:1793829804485463764",
+        "verification_receipt": "source-read-2-verification.json"
+      },
+      {
+        "path": "codex-rs/core/src/thread_manager.rs",
+        "bytes": 115922,
+        "sha256": "db91bc4e84bc8f6d2fa7acf21e92d5714c8c4ee1fe379169d9a15c99e7e30ba4",
+        "git_blob": "d598d7e652254796321de6a16a98ef35c5181365",
+        "native_version": "66306:39862149:115922:1793829804498167189:1793829804498167189",
+        "verification_receipt": "source-read-2-verification.json"
+      },
+      {
+        "path": "codex-rs/core/tests/common/responses.rs",
+        "bytes": 66235,
+        "sha256": "4f6baa55dcec3a157e68582a534019d53e5407402fd9924c467b32e4a648f3ff",
+        "git_blob": "707c11dfebf6db065a5fffce8ca37cc184ff2b11",
+        "native_version": "66306:39862337:66235:1793830591004331277:1793830591004331277",
+        "verification_receipt": "source-read-3-verification.json"
+      },
+      {
+        "path": "codex-rs/core/src/codex_thread.rs",
+        "bytes": 49604,
+        "sha256": "bd552252887317518d7eeb77fd80f3c8744729a2f2f3708d0487cac4f5597475",
+        "git_blob": "0d96d2b722eb1ade7b4974ffee1fbb729847508b",
+        "native_version": "66306:39861823:49604:1793829804486338167:1793829804486338167",
+        "verification_receipt": "source-read-3-verification.json"
+      },
+      {
+        "path": "codex-rs/protocol/src/error.rs",
+        "bytes": 30252,
+        "sha256": "982d6968960b97ccb592c31c7b1cea4832b541be1f22ac054fa15c2b5b2b2d10",
+        "git_blob": "65ed48e03501429752f5c4f92365f7556b08e5a4",
+        "native_version": "66306:39865250:30252:1793829804601771086:1793829804601771086",
+        "verification_receipt": "source-read-3-verification.json"
+      },
+      {
+        "path": "codex-rs/thread-store/src/error.rs",
+        "bytes": 1790,
+        "sha256": "f4fa3ecb68c589eb75d30518d580f97940a970c6fbf2ec3df5cd4dc5ce8d12a7",
+        "git_blob": "bc5e8ed7c4f9c8692fb19f6d94c623f6bc0f3335",
+        "native_version": "66306:39866218:1790:1793829804629984784:1793829804629984784",
+        "verification_receipt": "source-read-4-verification.json"
+      },
+      {
+        "path": "codex-rs/thread-store/src/live_thread.rs",
+        "bytes": 14647,
+        "sha256": "2898a00fe99ddcb0bcd7ae6db320998eb614ff8170f244893374acccfb1dc7cc",
+        "git_blob": "2f043800f252f1d32e1b22c4496fe42cec78f2be",
+        "native_version": "66306:39866221:14647:1793829804630019329:1793829804630019329",
+        "verification_receipt": "source-read-4-verification.json"
+      },
+      {
+        "path": "codex-rs/thread-store/src/local/live_writer.rs",
+        "bytes": 12878,
+        "sha256": "d5b9ab7710e192ea1f8a3819eaf4afa5371b6f92cabf42d21de787dc69449dbd",
+        "git_blob": "3c48136272acd090451d200dbeb4020d5cf147d2",
+        "native_version": "66306:39866228:12878:1793829804630193464:1793829804630193464",
+        "verification_receipt": "source-read-4-verification.json"
+      },
+      {
+        "path": "codex-rs/thread-store/src/local/helpers.rs",
+        "bytes": 12330,
+        "sha256": "f76544e01f4015e611cce27bd2de3fab54dd028293b64a76ac8a6d78aa4cf2db",
+        "git_blob": "1323252e82af4cc9878cf9a5782545ca5c1c3976",
+        "native_version": "66306:39866226:12330:1793829804630193464:1793829804630193464",
+        "verification_receipt": "source-read-4-verification.json"
+      },
+      {
+        "path": "codex-rs/core/src/session/session.rs",
+        "bytes": 80362,
+        "sha256": "3bd010c24ce1e11e42956d40c949ad0f72de93da1b590349c3aad776660ea756",
+        "git_blob": "b3a03355df039c9406c30a07be87bac83e390ad9",
+        "native_version": "66306:39862098:80362:1793829804495167213:1793829804495167213",
+        "verification_receipt": "source-read-4-verification.json"
+      },
+      {
+        "path": "codex-rs/thread-store/src/thread_metadata_sync.rs",
+        "bytes": 32577,
+        "sha256": "42733826370c292b9b4f13fc4ed98901e2aebdd9792d6d8c4adc4c559f82997d",
+        "git_blob": "5afd3dd6d53023cac4298dc3a96d19d19cd5f476",
+        "native_version": "66306:39866279:32577:1793829804632166138:1793829804632166138",
+        "verification_receipt": "source-read-5-verification.json"
+      },
+      {
+        "path": "codex-rs/core/src/session/handlers.rs",
+        "bytes": 31881,
+        "sha256": "e447596dbf5293c3f35a081ab38bbc242a4b02dc2dd8aa63b0d24664eb681251",
+        "git_blob": "b17acec0478ca043bff26ec9b44ba7cc54d324ca",
+        "native_version": "66306:39862084:31881:1793829804494757372:1793829804494757372",
+        "verification_receipt": "source-read-5-verification.json"
+      },
+      {
+        "path": "codex-rs/core/src/session/mod.rs",
+        "bytes": 215824,
+        "sha256": "a666d5f63dddd2a197827082087692819a841cfa2d30943ab3a19a7ba983ba39",
+        "git_blob": "b71bc56687973debf2b8615da036e60a436e3c08",
+        "native_version": "66306:39862092:215824:1793829804495167213:1793829804495167213",
+        "verification_receipt": "source-read-5-verification.json"
+      },
+      {
+        "path": "codex-rs/core/src/session/turn_input.rs",
+        "bytes": 41654,
+        "sha256": "7959e38afd075c5cad233a7d1ba59b3406b1de96d9076e444a51ce8ac33b9841",
+        "git_blob": "215af4dd2a36cf07915e2451040c19527bac3c9a",
+        "native_version": "66306:39862110:41654:1793829804497167197:1793829804497167197",
+        "verification_receipt": "source-read-6-verification.json"
+      },
+      {
+        "path": "codex-rs/core/src/agent/control/execution.rs",
+        "bytes": 3446,
+        "sha256": "35a187aeedcdaa0b74f87f0b2833c37d680348129a0d67207c22bb704b713876",
+        "git_blob": "9274aaa86ee7ef005a90f88401458a9655d0b218",
+        "native_version": "66306:39861788:3446:1793829804485351243:1793829804485351243",
+        "verification_receipt": "source-read-6-verification.json"
+      },
+      {
+        "path": "codex-rs/core/src/rollout.rs",
+        "bytes": 1873,
+        "sha256": "1aa136709f80968ee68f4430efcffd6442a2837c34c7c7c78cc43bd83e738bf3",
+        "git_blob": "ca1dcdeb17e5aae098211cabe2b9dc8b3557cb46",
+        "native_version": "66306:39862068:1873:1793829804494375028:1793829804494375028",
+        "verification_receipt": "source-read-7-8-verification.json"
+      },
+      {
+        "path": "codex-rs/core/src/session_rollout_init_error.rs",
+        "bytes": 2647,
+        "sha256": "4484d8a42d34ad586af2c79f7e5eb6756569f5f94e802e1cee82f8b1284fc207",
+        "git_blob": "7e62462add4f2f9819daa5393b84dd1237cd2eb6",
+        "native_version": "66306:39862117:2647:1793829804497167197:1793829804497167197",
+        "verification_receipt": "source-read-7-8-verification.json"
+      }
+    ]
+  },
+  "confirmed": [
+    "The old f825 exact case passed in 8.780 s; current fb9 failed in 8.209 s with ordinary Rust exit 101. This is not a nextest timeout. Different source/program identities are retained.",
+    "The complete current raw block and XML contain only the bare thread-store-style error; no phase, traceback, selected child identity or shutdown/eviction event is present.",
+    "ThreadManager::get_thread produces CodexErr::ThreadNotFound whose display is `no thread with id: ...`, unlike the current error. The two direct get_thread ? sites are therefore not supported as the source of this exact text.",
+    "Session-init maps ThreadStoreError::ThreadNotFound to `Failed to initialize session: ...`; the inspected rollout-resume read mapper instead uses the different CodexErr::ThreadNotFound wording.",
+    "The original sibling/worker/root flushes at lines 365-367 preserve a ThreadStoreError via io::Error::other without adding a prefix. LiveThread::flush first flushes the store, then applies pending metadata. This is a concrete compatible propagation path, not proof of the failed phase or specific cause.",
+    "A missing live recorder produces the same ThreadStoreError. Shutdown/discard remove that recorder; this is intended fail-closed behavior for late writes and must not be converted to success merely to green this test.",
+    "The ordinary initial input is dispatched after exact runtime insertion, delivery acknowledgement and spawn reservation commit. Therefore simple actual INITIAL_TASK-before-registration is not supported by this inspected order.",
+    "ResponseMock records before a later custom matcher, while this test chooses a child only by parent ID. Unmatched-request selection is a real fixture observation risk, but the original run has no request bodies to prove it happened or caused this error."
+  ],
+  "open_hypotheses": [
+    "Which of the three explicit flushes, or an uninspected wrapper path, produced the bare error.",
+    "Whether the failing thread's live recorder had been shut down/retired, or post-flush metadata could not resolve the stored thread.",
+    "Whether the fixture selected the intended worker/grandchild/sibling from recorded-but-unmatched requests.",
+    "Whether any residency unload occurred. Capacity is three and only SubAgent sessions are residents; no eviction event is in the original output."
+  ],
+  "rejected_shortcuts": [
+    "No cold-reload failure is inferred from the test name.",
+    "No old passing program or other platform scope is borrowed as current qualification.",
+    "No retries, longer waits, ignored error, persistence bypass, capacity increase or matcher change is proposed as a proven fix."
+  ],
+  "evidence_anchors": {
+    "original_flushes_before_shutdown": {
+      "path": "codex-rs/core/tests/suite/multi_agent_resume.rs",
+      "bytes": 24016,
+      "sha256": "9bba749625fae2e012ec0e5f03e1c60a6a93b11e5dc581782358748168665ddc",
+      "git_blob": "5cffeb3a7683c6654bbfe5474296b5458659aeec",
+      "start_line_1_based": 349,
+      "end_line_inclusive": 371,
+      "text": "    initial.submit_turn(SIBLING_PROMPT).await?;\n\n    let grandchild = nested_mock.last_request().expect(\"grandchild\").body_json();\n    let nested_id = &grandchild[\"client_metadata\"][\"thread_id\"];\n    let sibling_thread_id = initial\n        .thread_manager\n        .list_thread_ids()\n        .await\n        .into_iter()\n        .find(|id| ![root_thread_id, worker_thread_id].contains(id) && &json!(id) != nested_id)\n        .ok_or_else(|| anyhow::anyhow!(\"spawned sibling should be registered\"))?;\n    let sibling_thread = initial.thread_manager.get_thread(sibling_thread_id).await?;\n    wait_for_event(sibling_thread.as_ref(), |event| {\n        matches!(event, EventMsg::TurnComplete(_))\n    })\n    .await;\n    sibling_thread.flush_rollout().await?;\n    worker_thread.flush_rollout().await?;\n    initial.codex.flush_rollout().await?;\n    sibling_thread.shutdown_and_wait().await?;\n    worker_thread.shutdown_and_wait().await?;\n    drop(sibling_thread);\n    drop(worker_thread);\n"
+    },
+    "codex_flush_delegates": {
+      "path": "codex-rs/core/src/codex_thread.rs",
+      "bytes": 49604,
+      "sha256": "bd552252887317518d7eeb77fd80f3c8744729a2f2f3708d0487cac4f5597475",
+      "git_blob": "0d96d2b722eb1ade7b4974ffee1fbb729847508b",
+      "start_line_1_based": 330,
+      "end_line_inclusive": 339,
+      "text": "            .ensure_rollout_materialized(PersistContext::Standard)\n            .await;\n    }\n\n    #[doc(hidden)]\n    pub async fn flush_rollout(&self) -> std::io::Result<()> {\n        self.session.flush_rollout().await\n    }\n\n    /// Observes pending terminalization before submitting settings, history, or mailbox changes.\n"
+    },
+    "session_preserves_store_error_as_io_other": {
+      "path": "codex-rs/core/src/session/mod.rs",
+      "bytes": 215824,
+      "sha256": "a666d5f63dddd2a197827082087692819a841cfa2d30943ab3a19a7ba983ba39",
+      "git_blob": "b71bc56687973debf2b8615da036e60a436e3c08",
+      "start_line_1_based": 1355,
+      "end_line_inclusive": 1367,
+      "text": "    #[instrument(name = \"session.flush_rollout\", level = \"trace\", skip_all)]\n    pub(crate) async fn flush_rollout(&self) -> std::io::Result<()> {\n        let result = if let Some(live_thread) = self.live_thread() {\n            live_thread.flush().await.map_err(std::io::Error::other)\n        } else {\n            Ok(())\n        };\n        if result.is_err() {\n            self.rollout_persistence_failure_generation\n                .fetch_add(1, Ordering::AcqRel);\n        }\n        result\n    }\n"
+    },
+    "live_flush_two_operations": {
+      "path": "codex-rs/thread-store/src/live_thread.rs",
+      "bytes": 14647,
+      "sha256": "2898a00fe99ddcb0bcd7ae6db320998eb614ff8170f244893374acccfb1dc7cc",
+      "git_blob": "2f043800f252f1d32e1b22c4496fe42cec78f2be",
+      "start_line_1_based": 268,
+      "end_line_inclusive": 282,
+      "text": "    pub async fn flush(&self) -> ThreadStoreResult<()> {\n        self.thread_store.flush_thread(self.thread_id).await?;\n        self.flush_pending_metadata_update_for_existing_history()\n            .await\n    }\n\n    pub async fn shutdown(&self) -> ThreadStoreResult<()> {\n        let metadata_result = self\n            .flush_pending_metadata_update_for_existing_history()\n            .await;\n        let shutdown_result = self.thread_store.shutdown_thread(self.thread_id).await;\n        match (metadata_result, shutdown_result) {\n            (Err(metadata_error), Err(shutdown_error)) => Err(ThreadStoreError::Internal {\n                message: format!(\n                    \"thread metadata update failed: {metadata_error}; thread shutdown failed: {shutdown_error}\"\n"
+    },
+    "metadata_after_flush": {
+      "path": "codex-rs/thread-store/src/live_thread.rs",
+      "bytes": 14647,
+      "sha256": "2898a00fe99ddcb0bcd7ae6db320998eb614ff8170f244893374acccfb1dc7cc",
+      "git_blob": "2f043800f252f1d32e1b22c4496fe42cec78f2be",
+      "start_line_1_based": 388,
+      "end_line_inclusive": 416,
+      "text": "    async fn flush_pending_metadata_update_for_existing_history(&self) -> ThreadStoreResult<()> {\n        let update = self\n            .metadata_sync\n            .lock()\n            .await\n            .take_pending_update_for_existing_history();\n        self.apply_pending_metadata_update(update).await\n    }\n\n    async fn apply_pending_metadata_update(\n        &self,\n        update: Option<crate::thread_metadata_sync::PendingThreadMetadataPatch>,\n    ) -> ThreadStoreResult<()> {\n        let Some(update) = update else {\n            return Ok(());\n        };\n        self.thread_store\n            .update_thread_metadata(UpdateThreadMetadataParams {\n                thread_id: self.thread_id,\n                patch: update.patch.clone(),\n                include_archived: true,\n            })\n            .await?;\n        self.metadata_sync\n            .lock()\n            .await\n            .mark_pending_update_applied(&update);\n        Ok(())\n    }\n"
+    },
+    "missing_live_recorder_and_flush_path": {
+      "path": "codex-rs/thread-store/src/local/live_writer.rs",
+      "bytes": 12878,
+      "sha256": "d5b9ab7710e192ea1f8a3819eaf4afa5371b6f92cabf42d21de787dc69449dbd",
+      "git_blob": "3c48136272acd090451d200dbeb4020d5cf147d2",
+      "start_line_1_based": 298,
+      "end_line_inclusive": 351,
+      "text": "pub(super) async fn live_writer_parts(\n    store: &LocalThreadStore,\n    thread_id: ThreadId,\n) -> ThreadStoreResult<(RolloutRecorder, ThreadId, ThreadHistoryMode)> {\n    let live_recorders = store.live_recorders.lock().await;\n    let entry = live_recorders\n        .get(&thread_id)\n        .ok_or(ThreadStoreError::ThreadNotFound { thread_id })?;\n    Ok((entry.recorder.clone(), entry.rollout_id, entry.history_mode))\n}\n\nasync fn write_and_project(\n    store: &LocalThreadStore,\n    thread_id: ThreadId,\n    write_op: RolloutWriteOp,\n) -> ThreadStoreResult<()> {\n    // Every live write should have a recorder: create/resume installs one, while\n    // shutdown/discard/delete removes it. Keep the lookup defensive so late writes fail after\n    // teardown.\n    let _live_writer_guard = store.live_writer_locks.lock(thread_id).await;\n    let (recorder, rollout_id, history_mode) = live_writer_parts(store, thread_id).await?;\n    let sync_rollout_path = matches!(&write_op, RolloutWriteOp::Persist | RolloutWriteOp::Flush);\n    let write_op = match write_op {\n        RolloutWriteOp::AppendItems(mut items) => {\n            items.retain(|item| is_persisted_rollout_item(item, history_mode));\n            if items.is_empty() {\n                return Ok(());\n            }\n            RolloutWriteOp::AppendItems(items)\n        }\n        RolloutWriteOp::Persist => RolloutWriteOp::Persist,\n        RolloutWriteOp::Flush => RolloutWriteOp::Flush,\n    };\n    if matches!(history_mode, ThreadHistoryMode::Legacy) {\n        durable_write(&recorder, write_op).await?;\n    } else {\n        let rollout_path = recorder.rollout_path();\n        // SQLite is a rebuildable view. The flush barrier must win before projection starts so it\n        // can lag JSONL after failure, but can never get ahead of canonical history.\n        durable_write(&recorder, write_op).await?;\n        if let Err(err) = super::thread_history_materialization::materialize_to_sqlite(\n            store,\n            rollout_id,\n            rollout_path,\n        )\n        .await\n        {\n            warn!(\"failed to project durable rollout for {thread_id}: {err}\");\n        }\n    }\n    if sync_rollout_path {\n        sync_materialized_rollout_path(store, thread_id, recorder.rollout_path()).await?;\n    }\n    Ok(())\n"
+    },
+    "shutdown_removes_recorder": {
+      "path": "codex-rs/thread-store/src/local/live_writer.rs",
+      "bytes": 12878,
+      "sha256": "d5b9ab7710e192ea1f8a3819eaf4afa5371b6f92cabf42d21de787dc69449dbd",
+      "git_blob": "3c48136272acd090451d200dbeb4020d5cf147d2",
+      "start_line_1_based": 155,
+      "end_line_inclusive": 199,
+      "text": "pub(super) async fn shutdown_thread(\n    store: &LocalThreadStore,\n    thread_id: ThreadId,\n) -> ThreadStoreResult<()> {\n    let mut pending_metadata = store.pending_thread_metadata.lock(thread_id).await;\n    let _live_writer_guard = store.live_writer_locks.lock(thread_id).await;\n    let (recorder, rollout_id, history_mode) = live_writer_parts(store, thread_id).await?;\n    let rollout_path = recorder.rollout_path().to_path_buf();\n    if matches!(history_mode, ThreadHistoryMode::Legacy) {\n        recorder.shutdown().await.map_err(thread_store_io_error)?;\n    } else {\n        recorder.shutdown().await.map_err(thread_store_io_error)?;\n        if let Err(err) = super::thread_history_materialization::materialize_to_sqlite(\n            store,\n            rollout_id,\n            rollout_path.as_path(),\n        )\n        .await\n        {\n            warn!(\"failed to project durable rollout during shutdown for {thread_id}: {err}\");\n        }\n    }\n    sync_materialized_rollout_path(store, thread_id, rollout_path.as_path()).await?;\n    if let Some(metrics) = codex_otel::global()\n        && let Ok(metadata) = tokio::fs::metadata(&rollout_path).await\n    {\n        let size_bytes = i64::try_from(metadata.len()).unwrap_or(i64::MAX);\n        let _ = metrics.histogram(ROLLOUT_SIZE_BYTES_METRIC, size_bytes, &[]);\n    }\n    let rollout_exists = match tokio::fs::try_exists(&rollout_path).await {\n        Ok(rollout_exists) => rollout_exists,\n        Err(err) => {\n            warn!(\n                \"failed to check rollout path after shutdown for {thread_id}; preserving pending metadata: {err}\"\n            );\n            true\n        }\n    };\n    store.live_recorders.lock().await.remove(&thread_id);\n    drop(_live_writer_guard);\n    if !rollout_exists && pending_metadata.take().is_some() {\n        store.pending_thread_metadata.remove(thread_id).await;\n    }\n    Ok(())\n}\n"
+    },
+    "bare_store_error_display": {
+      "path": "codex-rs/thread-store/src/error.rs",
+      "bytes": 1790,
+      "sha256": "f4fa3ecb68c589eb75d30518d580f97940a970c6fbf2ec3df5cd4dc5ce8d12a7",
+      "git_blob": "bc5e8ed7c4f9c8692fb19f6d94c623f6bc0f3335",
+      "start_line_1_based": 18,
+      "end_line_inclusive": 26,
+      "text": "/// Error type shared by thread-store implementations.\n#[derive(Debug, thiserror::Error)]\npub enum ThreadStoreError {\n    /// The requested thread does not exist in this store.\n    #[error(\"thread {thread_id} not found\")]\n    ThreadNotFound {\n        /// Thread id requested by the caller.\n        thread_id: ThreadId,\n    },\n"
+    },
+    "different_manager_error_display": {
+      "path": "codex-rs/protocol/src/error.rs",
+      "bytes": 30252,
+      "sha256": "982d6968960b97ccb592c31c7b1cea4832b541be1f22ac054fa15c2b5b2b2d10",
+      "git_blob": "65ed48e03501429752f5c4f92365f7556b08e5a4",
+      "start_line_1_based": 91,
+      "end_line_inclusive": 102,
+      "text": "    /// The Session loop treats this as a transient error and will automatically retry the turn.\n    #[error(\"stream disconnected before completion: {0}\")]\n    Stream(String),\n    #[error(\n        \"Codex ran out of room in the model's context window. Start a new thread or clear earlier history before retrying.\"\n    )]\n    ContextWindowExceeded,\n    #[error(\"no thread with id: {0}\")]\n    ThreadNotFound(ThreadId),\n    #[error(\"agent thread limit reached\")]\n    AgentLimitReached { max_threads: usize },\n    #[error(\"session configured event was not the first event in the stream\")]\n"
+    },
+    "manager_get_maps_missing_thread": {
+      "path": "codex-rs/core/src/thread_manager.rs",
+      "bytes": 115922,
+      "sha256": "db91bc4e84bc8f6d2fa7acf21e92d5714c8c4ee1fe379169d9a15c99e7e30ba4",
+      "git_blob": "d598d7e652254796321de6a16a98ef35c5181365",
+      "start_line_1_based": 1859,
+      "end_line_inclusive": 1866,
+      "text": "    pub(crate) async fn get_thread(&self, thread_id: ThreadId) -> CodexResult<Arc<CodexThread>> {\n        let registry = self.thread_registry.read().await;\n        match registry.threads.get(&thread_id) {\n            Some(thread) if !thread.session_source.is_internal() => Ok(thread.clone()),\n            Some(_) | None => Err(CodexErr::ThreadNotFound(thread_id)),\n        }\n    }\n\n"
+    },
+    "session_init_adds_prefix": {
+      "path": "codex-rs/core/src/session_rollout_init_error.rs",
+      "bytes": 2647,
+      "sha256": "4484d8a42d34ad586af2c79f7e5eb6756569f5f94e802e1cee82f8b1284fc207",
+      "git_blob": "7e62462add4f2f9819daa5393b84dd1237cd2eb6",
+      "start_line_1_based": 8,
+      "end_line_inclusive": 36,
+      "text": "pub(crate) fn map_session_init_error(err: &anyhow::Error, codex_home: &Path) -> CodexErr {\n    if let Some(store_error) = err\n        .chain()\n        .find_map(|cause| cause.downcast_ref::<ThreadStoreError>())\n    {\n        match store_error {\n            ThreadStoreError::Unsupported { operation } => {\n                return CodexErr::UnsupportedOperation(format!(\"{operation} is not supported yet\"));\n            }\n            ThreadStoreError::Conflict { message } => {\n                return CodexErr::InvalidRequest(message.clone());\n            }\n            ThreadStoreError::ThreadNotFound { .. }\n            | ThreadStoreError::InvalidRequest { .. }\n            | ThreadStoreError::Internal { .. } => {}\n        }\n    }\n\n    if let Some(mapped) = err\n        .chain()\n        .filter_map(|cause| cause.downcast_ref::<std::io::Error>())\n        .find_map(|io_err| map_rollout_io_error(io_err, codex_home))\n    {\n        return mapped;\n    }\n\n    CodexErr::Fatal(format!(\"Failed to initialize session: {err:#}\"))\n}\n\n"
+    },
+    "resume_read_maps_missing_thread": {
+      "path": "codex-rs/core/src/thread_manager.rs",
+      "bytes": 115922,
+      "sha256": "db91bc4e84bc8f6d2fa7acf21e92d5714c8c4ee1fe379169d9a15c99e7e30ba4",
+      "git_blob": "d598d7e652254796321de6a16a98ef35c5181365",
+      "start_line_1_based": 2803,
+      "end_line_inclusive": 2810,
+      "text": "fn thread_store_rollout_read_error(err: ThreadStoreError) -> CodexErr {\n    match err {\n        ThreadStoreError::ThreadNotFound { thread_id } => CodexErr::ThreadNotFound(thread_id),\n        ThreadStoreError::InvalidRequest { message } => CodexErr::InvalidRequest(message),\n        err => CodexErr::Fatal(format!(\"failed to read thread by rollout path: {err}\")),\n    }\n}\n\n"
+    },
+    "fixture_restart_calls_shutdown_then_resume": {
+      "path": "codex-rs/core/tests/common/test_codex.rs",
+      "bytes": 49262,
+      "sha256": "318fb9469c3f65839f7384c29414b14f9f3617400e65829a47de9ad964fd28da",
+      "git_blob": "efaaf61844b49a1e42e9d630b306733d06647094",
+      "start_line_1_based": 589,
+      "end_line_inclusive": 603,
+      "text": "    pub async fn restart(\n        &mut self,\n        server: &MockServer,\n        previous: &TestCodex,\n    ) -> Result<TestCodex> {\n        let rollout_path = previous\n            .session_configured\n            .rollout_path\n            .clone()\n            .context(\"rollout path\")?;\n        previous.codex.shutdown_and_wait().await?;\n        self.resume(server, Arc::clone(&previous.home), rollout_path)\n            .await\n    }\n\n"
+    },
+    "shutdown_wait_does_not_propagate_store_shutdown_error": {
+      "path": "codex-rs/core/src/session/mod.rs",
+      "bytes": 215824,
+      "sha256": "a666d5f63dddd2a197827082087692819a841cfa2d30943ab3a19a7ba983ba39",
+      "git_blob": "b71bc56687973debf2b8615da036e60a436e3c08",
+      "start_line_1_based": 930,
+      "end_line_inclusive": 939,
+      "text": "    pub(crate) async fn shutdown_and_wait(&self) -> CodexResult<()> {\n        let session_loop_termination = self.session_loop_termination.clone();\n        match self.submit(Op::Shutdown).await {\n            Ok(_) => {}\n            Err(err) if matches!(err.details(), CodexErrorDetails::InternalAgentDied) => {}\n            Err(err) => return Err(err),\n        }\n        session_loop_termination.await;\n        Ok(())\n    }\n"
+    },
+    "thread_registry_insertion": {
+      "path": "codex-rs/core/src/thread_manager.rs",
+      "bytes": 115922,
+      "sha256": "db91bc4e84bc8f6d2fa7acf21e92d5714c8c4ee1fe379169d9a15c99e7e30ba4",
+      "git_blob": "d598d7e652254796321de6a16a98ef35c5181365",
+      "start_line_1_based": 2708,
+      "end_line_inclusive": 2735,
+      "text": "        let spawn_error = {\n            let mut registry = self.thread_registry.write().await;\n            if let Err(err) =\n                ensure_registry_allows_spawn(&registry, thread_id, immediate_parent_thread_id)\n            {\n                err\n            } else {\n                match registry.threads.entry(thread_id) {\n                    std::collections::hash_map::Entry::Vacant(e) => {\n                        let thread = Arc::new(CodexThread::new(\n                            session,\n                            io,\n                            session_configured.clone(),\n                            session_configured.rollout_path.clone(),\n                            session_source,\n                        ));\n                        e.insert(thread.clone());\n                        let delivery_claim = Arc::new(StartupDeliveryClaim::default());\n                        registry\n                            .startup_delivery_claims\n                            .insert(thread_id, Arc::clone(&delivery_claim));\n                        return Ok(FinalizedThreadSpawn {\n                            new_thread: NewThread {\n                                thread_id,\n                                thread,\n                                session_configured,\n                            },\n                            delivery_claim,\n"
+    },
+    "startup_delivery_ack_before_return": {
+      "path": "codex-rs/core/src/thread_manager.rs",
+      "bytes": 115922,
+      "sha256": "db91bc4e84bc8f6d2fa7acf21e92d5714c8c4ee1fe379169d9a15c99e7e30ba4",
+      "git_blob": "d598d7e652254796321de6a16a98ef35c5181365",
+      "start_line_1_based": 2409,
+      "end_line_inclusive": 2414,
+      "text": "        let (result, ack_tx) = result_rx.await.map_err(|_| {\n            CodexErr::Fatal(\"thread startup owner exited before returning a result\".to_string())\n        })?;\n        let _ = ack_tx.send(());\n        result\n    }\n"
+    },
+    "spawn_commit_before_initial_input": {
+      "path": "codex-rs/core/src/agent/control/spawn.rs",
+      "bytes": 55556,
+      "sha256": "9c34e1f645186cfc43a132e2b256577640e0f3931322b8e27441f622e12f4171",
+      "git_blob": "3722500c55ac82a216bf6593f86c8d716b74f11c",
+      "start_line_1_based": 730,
+      "end_line_inclusive": 742,
+      "text": "            (None, _, _) => Box::pin(state.spawn_new_thread(config.clone(), self.clone())).await?,\n        };\n        let transition = self.transitions.lock(new_thread.thread_id).await;\n        agent_metadata.agent_id = Some(new_thread.thread_id);\n        state\n            .with_current_runtime(new_thread.thread_id, &new_thread.thread, || {\n                reservation.commit(agent_metadata.clone());\n                if let Some(residency_slot) = residency_slot {\n                    residency_slot.commit(new_thread.thread_id);\n                }\n            })\n            .await\n            .ok_or(CodexErr::ThreadNotFound(new_thread.thread_id))?;\n"
+    },
+    "initial_input_after_registration": {
+      "path": "codex-rs/core/src/agent/control/spawn.rs",
+      "bytes": 55556,
+      "sha256": "9c34e1f645186cfc43a132e2b256577640e0f3931322b8e27441f622e12f4171",
+      "git_blob": "3722500c55ac82a216bf6593f86c8d716b74f11c",
+      "start_line_1_based": 790,
+      "end_line_inclusive": 810,
+      "text": "        match initial_input {\n            SpawnInitialInput::UserInput(input) => {\n                Box::pin(self.send_input(\n                    new_thread.thread_id,\n                    input,\n                    options.parent_turn_id,\n                    options.root_turn_id,\n                ))\n                .await?;\n            }\n            SpawnInitialInput::InterAgentCommunication(communication, context) => {\n                self.send_inter_agent_communication_after_capacity_check(\n                    new_thread.thread_id,\n                    &state,\n                    communication,\n                    context,\n                    options.parent_turn_id,\n                    options.root_turn_id,\n                )\n                .await?;\n            }\n"
+    },
+    "recorder_before_custom_matcher": {
+      "path": "codex-rs/core/tests/common/responses.rs",
+      "bytes": 66235,
+      "sha256": "4f6baa55dcec3a157e68582a534019d53e5407402fd9924c467b32e4a648f3ff",
+      "git_blob": "707c11dfebf6db065a5fffce8ca37cc184ff2b11",
+      "start_line_1_based": 877,
+      "end_line_inclusive": 887,
+      "text": "impl Match for ResponseMock {\n    fn matches(&self, request: &wiremock::Request) -> bool {\n        self.requests\n            .lock()\n            .unwrap()\n            .push(ResponsesRequest(request.clone()));\n\n        // Enforce invariant checks on every request body captured by the mock.\n        // Panic on orphan tool outputs or calls to catch regressions early.\n        validate_request_body_invariants(request);\n        true\n"
+    },
+    "matcher_composition_order": {
+      "path": "codex-rs/core/tests/common/responses.rs",
+      "bytes": 66235,
+      "sha256": "4f6baa55dcec3a157e68582a534019d53e5407402fd9924c467b32e4a648f3ff",
+      "git_blob": "707c11dfebf6db065a5fffce8ca37cc184ff2b11",
+      "start_line_1_based": 1252,
+      "end_line_inclusive": 1287,
+      "text": "}\n\nfn base_mock() -> (MockBuilder, ResponseMock) {\n    let response_mock = ResponseMock::new();\n    let mock = Mock::given(method(\"POST\"))\n        .and(path_regex(\".*/responses$\"))\n        .and(response_mock.clone());\n    (mock, response_mock)\n}\n\nfn compact_mock() -> (MockBuilder, ResponseMock) {\n    let response_mock = ResponseMock::new();\n    let mock = Mock::given(method(\"POST\"))\n        .and(path_regex(\".*/responses/compact$\"))\n        .and(response_mock.clone());\n    (mock, response_mock)\n}\n\nfn models_mock() -> (MockBuilder, ModelsMock) {\n    let models_mock = ModelsMock::new();\n    let mock = Mock::given(method(\"GET\"))\n        .and(path_regex(\".*/models$\"))\n        .and(models_mock.clone());\n    (mock, models_mock)\n}\n\npub async fn mount_sse_once_match<M>(server: &MockServer, matcher: M, body: String) -> ResponseMock\nwhere\n    M: wiremock::Match + Send + Sync + 'static,\n{\n    let (mock, response_mock) = base_mock();\n    mock.and(matcher)\n        .respond_with(sse_response(body))\n        .up_to_n_times(1)\n        .mount(server)\n        .await;\n"
+    },
+    "worker_id_selection_is_only_parent_id": {
+      "path": "codex-rs/core/tests/suite/multi_agent_resume.rs",
+      "bytes": 24016,
+      "sha256": "9bba749625fae2e012ec0e5f03e1c60a6a93b11e5dc581782358748168665ddc",
+      "git_blob": "5cffeb3a7683c6654bbfe5474296b5458659aeec",
+      "start_line_1_based": 266,
+      "end_line_inclusive": 288,
+      "text": "    let deadline = Instant::now() + Duration::from_secs(2);\n    let worker_thread_id = loop {\n        if let Some(thread_id) = initial_child_request\n            .requests()\n            .into_iter()\n            .find_map(|request| {\n                let body = request.body_json();\n                if body[\"client_metadata\"][\"x-codex-parent-thread-id\"] != json!(root_thread_id) {\n                    return None;\n                }\n                body[\"client_metadata\"][\"thread_id\"]\n                    .as_str()\n                    .and_then(|thread_id| codex_protocol::ThreadId::from_string(thread_id).ok())\n            })\n        {\n            break thread_id;\n        }\n        if Instant::now() >= deadline {\n            anyhow::bail!(\"timed out waiting for spawned worker\");\n        }\n        sleep(Duration::from_millis(10)).await;\n    };\n    let worker_thread = initial.thread_manager.get_thread(worker_thread_id).await?;\n"
+    },
+    "residency_unload_path": {
+      "path": "codex-rs/core/src/agent/control/residency.rs",
+      "bytes": 9260,
+      "sha256": "0e0c29185ccc1264e26cdd89418a469b46fc22727d6fe91253bd495a8846eeb3",
+      "git_blob": "bbf3370c9378fea72d3d87bf1d85528658dcbe84",
+      "start_line_1_based": 117,
+      "end_line_inclusive": 178,
+      "text": "    async fn try_unload_one_resident(\n        &self,\n        manager: &Arc<ThreadManagerState>,\n        protected_thread_id: Option<ThreadId>,\n    ) -> bool {\n        let candidates_to_scan = self.resident_count();\n        for _ in 0..candidates_to_scan {\n            let Some(candidate_thread_id) = self.pop_lru_candidate(protected_thread_id) else {\n                return false;\n            };\n            let Some(candidate_thread) = manager\n                .get_thread(candidate_thread_id)\n                .await\n                .ok()\n                .filter(|thread| is_resident_candidate(thread))\n            else {\n                continue;\n            };\n            let control = &candidate_thread.session.services.agent_control;\n            // The requesting reload may already hold another agent's guard.\n            // Skip a busy candidate rather than waiting and reversing that order.\n            let Some(_transition) = control.transitions.try_lock(candidate_thread_id) else {\n                let _ = manager\n                    .with_current_runtime(candidate_thread_id, &candidate_thread, || {\n                        self.touch(candidate_thread_id)\n                    })\n                    .await;\n                continue;\n            };\n            if !is_unloadable(candidate_thread.as_ref()).await {\n                let _ = manager\n                    .with_current_runtime(candidate_thread_id, &candidate_thread, || {\n                        self.touch(candidate_thread_id)\n                    })\n                    .await;\n                continue;\n            }\n            candidate_thread.ensure_rollout_materialized().await;\n            if let Err(err) = candidate_thread.shutdown_and_wait().await {\n                warn!(\n                    \"failed to shut down v2 resident thread before unloading {candidate_thread_id}: {err}\"\n                );\n                let _ = manager\n                    .with_current_runtime(candidate_thread_id, &candidate_thread, || {\n                        self.touch(candidate_thread_id)\n                    })\n                    .await;\n                continue;\n            }\n            let environments = candidate_thread.environment_selections().await;\n            if manager\n                .retire_runtime_if_current(candidate_thread_id, &candidate_thread, || {\n                    control\n                        .state\n                        .save_evicted_environments(candidate_thread_id, environments);\n                })\n                .await\n                .is_some()\n            {\n                return true;\n            }\n        }\n"
+    },
+    "residency_excludes_root_and_protects_active_work": {
+      "path": "codex-rs/core/src/agent/control/residency.rs",
+      "bytes": 9260,
+      "sha256": "0e0c29185ccc1264e26cdd89418a469b46fc22727d6fe91253bd495a8846eeb3",
+      "git_blob": "bbf3370c9378fea72d3d87bf1d85528658dcbe84",
+      "start_line_1_based": 246,
+      "end_line_inclusive": 280,
+      "text": "fn is_resident_candidate(thread: &CodexThread) -> bool {\n    thread.multi_agent_version() == Some(MultiAgentVersion::V2)\n        && is_v2_resident_session_source(&thread.session_source)\n}\n\npub(super) fn is_v2_resident_session_source(session_source: &SessionSource) -> bool {\n    matches!(session_source, SessionSource::SubAgent(_))\n}\n\n#[expect(\n    clippy::await_holding_invalid_type,\n    reason = \"the active-turn guard is the atomic ownership fence across this awaited state transition\"\n)]\nasync fn is_unloadable(thread: &CodexThread) -> bool {\n    if !matches!(\n        thread.agent_status().await,\n        AgentStatus::Completed(_) | AgentStatus::Errored(_) | AgentStatus::Interrupted\n    ) {\n        return false;\n    }\n    // Keep the active-turn snapshot through the mailbox check.  Otherwise a\n    // terminalizer can claim immediately after the `is_none()` await and the\n    // residency eviction path can still unload a thread whose terminal work\n    // has not drained.\n    let active = thread.session.active_turn.lock().await;\n    if thread.session.shutdown_started()\n        || thread.session.has_pending_task_terminalization()\n        || active.is_some()\n    {\n        return false;\n    }\n    !thread.session.input_queue.has_pending_mailbox_items().await\n}\n\n#[cfg(test)]\n"
+    },
+    "later_reload_lookup_has_explicit_expect": {
+      "path": "codex-rs/core/tests/suite/multi_agent_resume.rs",
+      "bytes": 24016,
+      "sha256": "9bba749625fae2e012ec0e5f03e1c60a6a93b11e5dc581782358748168665ddc",
+      "git_blob": "5cffeb3a7683c6654bbfe5474296b5458659aeec",
+      "start_line_1_based": 474,
+      "end_line_inclusive": 481,
+      "text": "    resumed.submit_turn(QUEUE_PROMPT).await?;\n\n    let reloaded_worker = resumed\n        .thread_manager\n        .get_thread(worker_thread_id)\n        .await\n        .expect(\"queued message should lazily reload the original worker\");\n    assert_eq!(\n"
+    }
+  },
+  "diagnostic_proposal": {
+    "schema": "hepta.core-cold-root-stage-diagnostic.v1",
+    "status": "DIAGNOSTIC_ONLY_STATIC_NOT_APPLIED_OR_EXECUTED",
+    "source_tree": "fb9e131272f7e7a138d6c0d1af2b048b9a6ab7ff",
+    "path": "codex-rs/core/tests/suite/multi_agent_resume.rs",
+    "preimage": {
+      "bytes": 24016,
+      "sha256": "9bba749625fae2e012ec0e5f03e1c60a6a93b11e5dc581782358748168665ddc",
+      "git_blob": "5cffeb3a7683c6654bbfe5474296b5458659aeec"
+    },
+    "postimage": {
+      "bytes": 25159,
+      "sha256": "3439c978dfcdfd177dbc08b3bedf21986997f49c47d6fead159b0b95229d09f4",
+      "git_blob": "e2b3daac03d9e15b1641e11f23377bf56bf397db"
+    },
+    "patch": {
+      "path": "core-cold-root-stage-diagnostic.patch",
+      "bytes": 3098,
+      "sha256": "24c67f040eb76ca087dcf4dd754536ee213c72cb34d7505229139911b2cbcefe",
+      "git_blob": "525c4702fe3d2f8193e45d37fde977402cb7180b"
+    },
+    "sites": [
+      {
+        "stage": "lookup_worker",
+        "old_line": 288,
+        "preimage": "    let worker_thread = initial.thread_manager.get_thread(worker_thread_id).await?;",
+        "postimage": "    let worker_thread = initial\n        .thread_manager\n        .get_thread(worker_thread_id)\n        .await\n        .inspect_err(|error| {\n            eprintln!(\n                \"COLD_ROOT_RESUME_STAGE_ERROR stage=lookup_worker thread_id={worker_thread_id} error={error:?}\"\n            );\n        })?;"
+      },
+      {
+        "stage": "lookup_sibling",
+        "old_line": 360,
+        "preimage": "    let sibling_thread = initial.thread_manager.get_thread(sibling_thread_id).await?;",
+        "postimage": "    let sibling_thread = initial\n        .thread_manager\n        .get_thread(sibling_thread_id)\n        .await\n        .inspect_err(|error| {\n            eprintln!(\n                \"COLD_ROOT_RESUME_STAGE_ERROR stage=lookup_sibling thread_id={sibling_thread_id} error={error:?}\"\n            );\n        })?;"
+      },
+      {
+        "stage": "flush_sibling",
+        "old_line": 365,
+        "preimage": "    sibling_thread.flush_rollout().await?;",
+        "postimage": "    sibling_thread.flush_rollout().await.inspect_err(|error| {\n        eprintln!(\n            \"COLD_ROOT_RESUME_STAGE_ERROR stage=flush_sibling thread_id={sibling_thread_id} error={error:?}\"\n        );\n    })?;"
+      },
+      {
+        "stage": "flush_worker",
+        "old_line": 366,
+        "preimage": "    worker_thread.flush_rollout().await?;",
+        "postimage": "    worker_thread.flush_rollout().await.inspect_err(|error| {\n        eprintln!(\n            \"COLD_ROOT_RESUME_STAGE_ERROR stage=flush_worker thread_id={worker_thread_id} error={error:?}\"\n        );\n    })?;"
+      },
+      {
+        "stage": "flush_root",
+        "old_line": 367,
+        "preimage": "    initial.codex.flush_rollout().await?;",
+        "postimage": "    initial.codex.flush_rollout().await.inspect_err(|error| {\n        eprintln!(\n            \"COLD_ROOT_RESUME_STAGE_ERROR stage=flush_root thread_id={root_thread_id} error={error:?}\"\n        );\n    })?;"
+      },
+      {
+        "stage": "restart_root",
+        "old_line": 424,
+        "preimage": "    let resumed = resume_builder.restart(&server, &initial).await?;",
+        "postimage": "    let resumed = resume_builder\n        .restart(&server, &initial)\n        .await\n        .inspect_err(|error| {\n            eprintln!(\n                \"COLD_ROOT_RESUME_STAGE_ERROR stage=restart_root thread_id={root_thread_id} error={error:?}\"\n            );\n        })?;"
+      }
+    ],
+    "mechanism": "Result::inspect_err adds only an error-path stderr line; the same original Err is propagated by the same ?; no error conversion/context replacement.",
+    "unchanged_token_counts": {
+      ".await": 56,
+      "assert!(": 9,
+      "assert_eq!(": 6,
+      "Duration::": 2,
+      "sleep(": 1,
+      ".expect(": 13,
+      "shutdown_and_wait(": 3
+    },
+    "original_source_exactly_restored_by_reversing_six_insertions": true,
+    "isolated_git_apply_check_apply_reverse_check_reverse_exact": true,
+    "original_case": "suite::multi_agent_resume::cold_root_resume_restores_agent_identity_and_role_on_followup",
+    "gate": "Run only on a future root-approved exact source through the existing codex-core integration target, original timeout/profile/retries unchanged; require exact selected case and raw stderr/XML. This proposal itself is not a fix or a test result.",
+    "limits": [
+      "No production source, runtime settings, persistence semantics, request filters, capacity, assertion, wait, retry or timeout is changed.",
+      "No extra HTTP, thread-store or manager request is made. No shared logs, credentials, home contents or process state are inspected.",
+      "The six sites cover the source-supported persistence/error hypotheses, not every possible ? in external dependencies. Absence of the new marker would leave that broader propagation path open.",
+      "Static apply/reverse checks do not prove Rust compilation, formatting or native behavior. No native lane was started."
+    ]
+  },
+  "next_gate": {
+    "package": "codex-core",
+    "binary": "all",
+    "exact_case": "suite::multi_agent_resume::cold_root_resume_restores_agent_identity_and_role_on_followup",
+    "source_before_after_required": true,
+    "same_original_budgets_and_zero_retries": true,
+    "raw_stderr_and_junit_required": true,
+    "success_does_not_prove_historical_cause": true,
+    "approval_and_execution": "Await root review and a future sole-CI exact-source scope. No native execution has been requested or performed by this audit."
+  },
+  "ledger": "The new full failure stays OPEN. This receipt does not change any original 23 blocker ID, exit condition or scoped-closure count and does not delay the current A Draft publication."
+}

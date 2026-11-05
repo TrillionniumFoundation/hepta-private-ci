@@ -1,0 +1,14 @@
+diff --git a/codex-rs/state/src/sqlite_commit_gate_tests.rs b/codex-rs/state/src/sqlite_commit_gate_tests.rs
+--- a/codex-rs/state/src/sqlite_commit_gate_tests.rs
++++ b/codex-rs/state/src/sqlite_commit_gate_tests.rs
+@@ -160,6 +160,10 @@
+     let pool = fixture
+         .open(Arc::clone(&allowed), Arc::new(CheckoutGate::ready()))
+         .await?;
++    let sqlite_version: String = sqlx::query_scalar("SELECT sqlite_version()")
++        .fetch_one(&pool)
++        .await?;
++    eprintln!("commit_gate_runtime: sqlite_version={sqlite_version}");
+     let mut transaction = pool.begin().await?;
+     sqlx::query("INSERT INTO evidence VALUES (1)")
+         .execute(&mut *transaction)

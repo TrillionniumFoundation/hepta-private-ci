@@ -1,0 +1,384 @@
+{
+  "schema": "hepta.rog-stream-fd-eperm-static-attribution.v1",
+  "source": "e84c2f12e39022701c8a942343b3913faa62cf31",
+  "original_owning_job": "1a1a8baa3a0-fc05-2f94",
+  "original_failure_full_projection_blob": "023d6a14b4e8ad37157dc9162d820dc3d6cd6473",
+  "classification": "Observed host startup output interference; exact failing syscall and each process's runtime caller trace have not been recorded. Static attribution is not a permission relaxation or a product fix.",
+  "observations": [
+    "All eight listed original cases failed after capturing three copies of the same systemd-cat stream-fd EPERM message; functional child execution in the exec-server fallback cases still returned original/exit0.",
+    "The error literal is absent from repository source and present in the installed /usr/bin/systemd-cat. Its --version output identifies systemd 259 (259.9-0ubuntu0.1).",
+    "/etc/profile sources readable /etc/profile.d scripts outside its interactive PS1 branch. im-config_wayland.sh unconditionally sources /usr/share/im-config/initializer.",
+    "The initializer selects /usr/bin/systemd-cat for LOGGER whenever that installed path exists, and logger_debug checks only whether IM_CONFIG_VERBOSE is nonempty.",
+    "The installed default config leaves IM_CONFIG_VERBOSE commented out. The initializer assigns the nonempty string false when it is unset or empty; this satisfies logger_debug's -n condition.",
+    "After this default assignment, the initializer contains two unconditional debug calls and one debug call in every mutually exclusive desktop-selection branch, matching the observed three messages.",
+    "No existing quiet/noninteractive guard was found in the complete installed initializer/default/profile entry files. Setting IM_CONFIG_VERBOSE to empty falls through to false; literal false remains nonempty.",
+    "BASH_ENV and ENV are absent and no exported shell function name with a systemd-cat body was observed by the restricted environment projection."
+  ],
+  "public_host_sources": [
+    {
+      "path": "/etc/profile",
+      "content": "# /etc/profile: system-wide .profile file for the Bourne shell (sh(1))\n# and Bourne compatible shells (bash(1), ksh(1), ash(1), ...).\n\nif [ \"${PS1-}\" ]; then\n  if [ \"${BASH-}\" ] && [ \"$BASH\" != \"/bin/sh\" ]; then\n    # The file bash.bashrc already sets the default PS1.\n    # PS1='\\h:\\w\\$ '\n    if [ -f /etc/bash.bashrc ]; then\n      . /etc/bash.bashrc\n    fi\n  else\n    if [ \"$(id -u)\" -eq 0 ]; then\n      PS1='# '\n    else\n      PS1='$ '\n    fi\n  fi\nfi\n\nif [ -d /etc/profile.d ]; then\n  for i in $(run-parts --list --regex '^[a-zA-Z0-9_][a-zA-Z0-9._-]*\\.sh$' /etc/profile.d); do\n    if [ -r $i ]; then\n      . $i\n    fi\n  done\n  unset i\nfi\n",
+      "sha256": "e11b4fef7ad303d10cfcc733171713a31183e8b44d8600587e5f72c56a675a5a",
+      "bytes": 641
+    },
+    {
+      "path": "/etc/profile.d/im-config_wayland.sh",
+      "content": "# to be placed in /etc/profile.d/im-config_wayland.sh\nIMLAUNCH=/usr/bin/im-launch\nIM_CONFIG_ENTRY=\"profile\"\nexport IM_CONFIG_ENTRY\n. /usr/share/im-config/initializer\n# # This sets the IM variables on Wayland only when im-config is installed\n# if false && [ -x \"$IMLAUNCH\" ] && [ \"$XDG_SESSION_TYPE\" = 'wayland' ]; then\n#     # If already tweaked, keep hands off :-)\n#     # If im-config is removed but not purged, keep hands off :-)\n#     if [ -z \"$XMODIFIERS\" ] &&\n#         [ -z \"$GTK_IM_MODULE\" ] &&\n#         [ -z \"$QT_IM_MODULE\" ] &&\n#         [ -z \"$CLUTTER_IM_MODULE\" ] &&\n#         [ -z \"$SDL_IM_MODULE\" ]; then\n#         # if freash, set environments\n#         logger_info \"  Set environment variables (all empty strings)\"\n#         IM_CONFIG_PHASE=1\n#         . /usr/share/im-config/im-config_setting\n#     else\n#         logger_info \"  Skip setting environment variables (non-empty strings)\"\n#     fi\n# else\n#     logger_debug \"  Skip setting environment variables (autostart script disabled)\"\n# fi\n# logger_debug \"  EXIT @profile IM_CONFIG_ENTRY='$IM_CONFIG_ENTRY'\"\n",
+      "sha256": "51541d1eb2d4a4cab0be7272e053cff4e31a1ba7b8367a4908183da5f1566101",
+      "bytes": 1078
+    },
+    {
+      "path": "/usr/share/im-config/initializer",
+      "content": "# Common shell routine used by im-config\n# (C) 2026 Osamu Aoki <osamu@debian.org>, GPL-2+\n# vim: set sts=4 sw=4 expandtab:\n#\n#############################################################\n# Common logging functions `\n#############################################################\nIM_CONFIG_DEFAULT=/etc/default/im-config\n# logger_info -- nice to have systemd installed\n# gnu-which doesn't support \"which -s ...\"\nif [ -e /usr/bin/systemd-cat ] ; then\n    LOGGER='/usr/bin/systemd-cat -p 6 -t \"im-config\" echo'\nelif [ -e /usr/bin/logger ] ; then\n    LOGGER='/usr/bin/logger -p local0.info -t \"im-config\" echo'\nelse\n    LOGGER='>&2 echo'\nfi\n\nlogger_info() {\n    eval \"$LOGGER \\\"$1\\\"\"\n}\n\nlogger_debug() {\n    if [ -n \"$IM_CONFIG_VERBOSE\" ]; then\n        eval \"$LOGGER \\\"$1\\\"\"\n    fi\n}\n\n# Reduce risk of random script executions\nset_val () {\n    MATCH=\"^$1=[\\\"']?[-a-zA-Z:_,][-a-zA-Z:_,]*.[\\\"']?\\$\"\n    eval \"$(grep -e \"$MATCH\" $IM_CONFIG_DEFAULT | head -1)\"\n    logger_debug \"Set $(grep -e \"$MATCH\" $IM_CONFIG_DEFAULT | head -1)\"\n}\n\n# parse /etc/default/im-config\nlogger_debug \"Parse $IM_CONFIG_DEFAULT\"\nif [ -r $IM_CONFIG_DEFAULT ]; then\n    set_val IM_CONFIG_DEFAULT_MODE\n    set_val CJKV_DEFAULT_DESKTOP\n    set_val CJKV_LOCALES\n    set_val IM_CONFIG_PREFERRED_RULE\n    set_val DESKTOP_SETUP_IBUS\n    set_val IM_CONFIG_SETMODE\n    set_val IM_CONFIG_VERBOSE\nfi\n# provide fall back values for undefined cases\nif [ -z \"$IM_CONFIG_DEFAULT_MODE\" ]; then\n    IM_CONFIG_DEFAULT_MODE=\"auto\"\nfi\nif [ -z \"$CJKV_DEFAULT_DESKTOP\" ]; then\n    CJKV_DEFAULT_DESKTOP=\"*\"\nfi\nif [ -z \"$CJKV_LOCALE\" ]; then\n    CJKV_LOCALES=\"zh_TW:zh_HK:zh_SG:zh_CN:ja_JP:ko_KR:vi_VN\"\nfi\nif [ -z \"$IM_CONFIG_PREFERRED_RULE\" ]; then\n    IM_CONFIG_PREFERRED_RULE=\"zh_CN,fcitx5:zh_TW,fcitx5:zh_HK,fcitx5:zh_SG,fcitx5\"\nfi\nif [ -z \"$DESKTOP_SETUP_IBUS\" ]; then\n    DESKTOP_SETUP_IBUS=\"GNOME\"\nfi\nif [ -z \"$IM_CONFIG_SETMODE\" ]; then\n    IM_CONFIG_SETMODE=\"\"\nfi\nif [ -z \"$IM_CONFIG_VERBOSE\" ]; then\n    IM_CONFIG_VERBOSE=\"false\"\nfi\n\n# 2026-0317\n# Primary variable to determine DE\n# XDG_CURRENT_DESKTOP -- defined in the Desktop Entry Specification since its version 1.2\n#   Set by set by DesktopNames in some code, multi value capable\n#   See https://specifications.freedesktop.org/menu/latest/onlyshowin-registry.html\n#   budgie-session       GNOME\n#   cinnamon-session     IM_CONFIG_CURRENT_DESKTOP <- DESKTOP_SESSION='cinnamon' (Later: X-Cinamon)\n#   gnome-flashback      GNOME-Flashback:GNOME\n#   gnome-session        GNOME\n#   lxqt-session         LXQt\n#   lxsession            LXDE     (this code mentions Lubuntu migration, and has example with qt/platform=lxqt)\n#   mate-session-manager MATE\n#   plasma-workspace     KDE\n#   xfce4-session        XFCE\n#\n# XDG_SESSION_DESKTOP -- non-standard\n# DESKTOP_SESSION     -- deprecated, backward-compatibility\n#\nlogger_debug \"@ IM_CONFIG_ENTRY='$IM_CONFIG_ENTRY' XDG_SESSION_TYPE ='$XDG_SESSION_TYPE' UID=$(id -u) PID=$$ PPID=$PPID\"\nlogger_debug \"  GTK_IM_MODULE='$GTK_IM_MODULE' QT_IM_MODULE='$QT_IM_MODULE' CLUTTER_IM_MODULE='$CLUTTER_IM_MODULE' SDL_IM_MODULE='$SDL_IM_MODULE' XMODIFIERS='$XMODIFIERS'\"\nif [ -n \"$XDG_CURRENT_DESKTOP\" ]; then\n    IM_CONFIG_CURRENT_DESKTOP=\"$XDG_CURRENT_DESKTOP\"\n    logger_debug \"  Set IM_CONFIG_CURRENT_DESKTOP <- XDG_CURRENT_DESKTOP='$XDG_CURRENT_DESKTOP'\"\nelif [ \"$DESKTOP_SESSION\" = 'lxqt' -o \"$DESKTOP_SESSION\" = 'Lubuntu' ]; then\n    # hack since LXQt sets XDG_CURRENT_DESKTOP late - https://github.com/lxqt/lxqt/issues/1830\n    # Upstream claims that the issue was fixed in lxqt-session 0.17.0. However, Lubuntu 21.10\n    # uses 0.17.1 but it still does not work. So let's keep this hack for now.\n    IM_CONFIG_CURRENT_DESKTOP=\"LXQt\"\n    logger_debug \"  Set IM_CONFIG_CURRENT_DESKTOP <- DESKTOP_SESSION='$DESKTOP_SESSION' (special case for Ubuntu lxqt Lubuntu)\"\nelif [ -n \"$DESKTOP_SESSION\" ]; then\n    #  Since LXDE also sets $XDG_CURRENT_DESKTOP='', let's make generic fall back\n    IM_CONFIG_CURRENT_DESKTOP=\"$DESKTOP_SESSION\"\n    logger_debug \"  Set IM_CONFIG_CURRENT_DESKTOP <- DESKTOP_SESSION='$DESKTOP_SESSION' (generic backword compatibility)\"\nelse\n    IM_CONFIG_CURRENT_DESKTOP=\"UNDEFINED\"\n    logger_debug \"  Set IM_CONFIG_CURRENT_DESKTOP <- 'UNDEFINED'\"\nfi\n\n",
+      "sha256": "e4efe8ab8f7cfc8d15525b5e30d9562abe64fa9a603599bc806d8cc7d263683c",
+      "bytes": 4215
+    },
+    {
+      "path": "/etc/default/im-config",
+      "content": "# Default im-config mode (see im-config(8))\n\n# This im-config helps to start best available input method (IM)\n\n# Always start highest priority IM\nIM_CONFIG_DEFAULT_MODE=auto\n# Start or not to start IM dynamically under CJKV/desktop environment\n#IM_CONFIG_DEFAULT_MODE=cjkv\n# Never start IM by im-config (Leave it to desktop system)\n#IM_CONFIG_DEFAULT_MODE=none\n\n# cjkv mode behavior:\n#  case 1:\n#    * desktop is listed in CJKV_DEFAULT_DESKTOP\n#    * locale is under so-called CJKV environments\n#    --> auto mode\n#  case 2:\n#    * desktop is listed in CJKV_DEFAULT_DESKTOP\n#    * locale is *not* under so-called CJKV environments\n#    --> none mode\n#  case 3:\n#    * desktop is *not* listed in CJKV_DEFAULT_DESKTOP\n#    * locale is under any environments\n#    --> auto mode\n#\nCJKV_DEFAULT_DESKTOP=\"*\"\n#CJKV_DEFAULT_DESKTOP=\"KDE:LXQt:XFCE\"\n\n# List of locales for so-called CJKV environments\nCJKV_LOCALES=\"zh_TW:zh_HK:zh_SG:zh_CN:ja_JP:ko_KR:vi_VN\"\n\n# Set locale dependent preferred IM over standard auto mode if not GNOME\nIM_CONFIG_PREFERRED_RULE=\"zh_CN,fcitx5:zh_TW,fcitx5:zh_HK,fcitx5:zh_SG,fcitx5\"\n\n# User and system wide configuration is normally done via im-config program.\n# The above IM_CONFIG_PREFERRED_RULE sets locale dependent preferred IM\n# override rule.  If you wish to use uim over ibus just for ja_JP,\n# add :ja_JP,uim at the end of the above list. (Marked by \"!\" in GUI)\n\n# List of desktop systems which starts ibus if available\n#   Applicable desktops are excluded for applying IM_CONFIG_PREFERRED_RULE\nDESKTOP_SETUP_IBUS=\"GNOME\"\n\n# Trace commands for debug\n# (This may cause problem configuration file generated under console mode)\n#IM_CONFIG_SETMODE=\"-x\"\n\n# Verbose output for debug (uncomment following)\n#IM_CONFIG_VERBOSE=\"true\"\n\n",
+      "sha256": "90586c0bdf4a8febbbafacdbc922c5142494b0ca34b77fc4ec2ab5644e981f5a",
+      "bytes": 1752
+    }
+  ],
+  "emitter_read_only_receipt": {
+    "observed_at": "2026-11-04T22:53:16.954346+00:00",
+    "read_only": true,
+    "source_expected": "e84c2f12e39022701c8a942343b3913faa62cf31",
+    "test_rerun": false,
+    "source_target_or_policy_changes": false,
+    "commands": [
+      {
+        "label": "repo-error-text",
+        "argv": [
+          "rg",
+          "-n",
+          "--fixed-strings",
+          "Failed to create stream fd",
+          "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/source"
+        ],
+        "exit_code": 1,
+        "stdout": "",
+        "stderr": ""
+      },
+      {
+        "label": "binary-error-text",
+        "argv": [
+          "rg",
+          "-a",
+          "-l",
+          "--fixed-strings",
+          "Failed to create stream fd",
+          "/usr/bin/systemd-cat",
+          "/usr/bin/systemd-run",
+          "/usr/bin/logger"
+        ],
+        "exit_code": 0,
+        "stdout": "/usr/bin/systemd-cat\n",
+        "stderr": ""
+      },
+      {
+        "label": "profile-name-only-matches",
+        "argv": [
+          "rg",
+          "-n",
+          "-o",
+          "--no-heading",
+          "(?:/usr/bin/)?systemd-cat|BASH_ENV|journal/stdout",
+          "/etc/profile",
+          "/etc/bash.bashrc",
+          "/home/qian-qi/.bashrc",
+          "/home/qian-qi/.profile",
+          "/etc/profile.d/im-config_wayland.sh",
+          "/etc/profile.d/80-systemd-osc-context.sh",
+          "/etc/profile.d/01-locale-fix.sh",
+          "/etc/profile.d/gnome-session_gnomerc.sh",
+          "/etc/profile.d/gawk.sh",
+          "/etc/profile.d/cedilla-portuguese.sh",
+          "/etc/profile.d/vte-2.91.sh",
+          "/etc/profile.d/70-systemd-shell-extra.sh",
+          "/etc/profile.d/Z99-cloud-locale-test.sh",
+          "/etc/profile.d/apps-bin-path.sh",
+          "/etc/profile.d/bash_completion.sh",
+          "/etc/profile.d/Z99-cloudinit-warnings.sh",
+          "/etc/profile.d/xdg_dirs_desktop_session.sh",
+          "/etc/profile.d/debuginfod.sh"
+        ],
+        "exit_code": 1,
+        "stdout": "",
+        "stderr": ""
+      },
+      {
+        "label": "systemd-version",
+        "argv": [
+          "/usr/bin/systemd-cat",
+          "--version"
+        ],
+        "exit_code": 0,
+        "stdout": "systemd 259 (259.9-0ubuntu0.1)\n+PAM +AUDIT +SELINUX +APPARMOR +IMA +IPE +SMACK +SECCOMP +GCRYPT -GNUTLS +OPENSSL +ACL +BLKID +CURL +ELFUTILS +FIDO2 +IDN2 -IDN +KMOD +LIBCRYPTSETUP +LIBCRYPTSETUP_PLUGINS +LIBFDISK +PCRE2 +PWQUALITY +P11KIT +QRENCODE +TPM2 +BZIP2 +LZ4 +XZ +ZLIB +ZSTD +BPF_FRAMEWORK +BTF -XKBCOMMON -UTMP +SYSVINIT +LIBARCHIVE\n",
+        "stderr": ""
+      },
+      {
+        "label": "dpkg-systemd-cat-owner",
+        "argv": [
+          "dpkg-query",
+          "-S",
+          "/usr/bin/systemd-cat"
+        ],
+        "exit_code": 0,
+        "stdout": "systemd: /usr/bin/systemd-cat\n",
+        "stderr": ""
+      },
+      {
+        "label": "dpkg-systemd-version",
+        "argv": [
+          "dpkg-query",
+          "-W",
+          "-f=\\u0024{Package} \\u0024{Version}\\n",
+          "systemd"
+        ],
+        "exit_code": 0,
+        "stdout": "u0024{Package} u0024{Version}\n",
+        "stderr": ""
+      }
+    ],
+    "matched_binary_identities": [
+      {
+        "path": "/usr/bin/systemd-cat",
+        "bytes": 18896,
+        "sha256": "8b532f8a7d340915fc938ad7144f6957162dabd14f697d7c4141f16b08100bac"
+      },
+      {
+        "path": "/usr/bin/systemd-run",
+        "bytes": 97272,
+        "sha256": "6eaf6650fc3bc07ba2fb51242d9d286e56770a2abd7306678aa22050ddf9f935"
+      },
+      {
+        "path": "/usr/bin/logger",
+        "bytes": 39984,
+        "sha256": "ca5a480f98adb51409b9291f679b14f2c9d4b4cef0460c8f73349753e3b6cfad"
+      }
+    ],
+    "profile_files_scanned": [
+      {
+        "path": "/etc/profile",
+        "bytes": 641
+      },
+      {
+        "path": "/etc/bash.bashrc",
+        "bytes": 2553
+      },
+      {
+        "path": "/home/qian-qi/.bashrc",
+        "bytes": 4042
+      },
+      {
+        "path": "/home/qian-qi/.profile",
+        "bytes": 984
+      },
+      {
+        "path": "/etc/profile.d/im-config_wayland.sh",
+        "bytes": 1078
+      },
+      {
+        "path": "/etc/profile.d/80-systemd-osc-context.sh",
+        "bytes": 4476
+      },
+      {
+        "path": "/etc/profile.d/01-locale-fix.sh",
+        "bytes": 96
+      },
+      {
+        "path": "/etc/profile.d/gnome-session_gnomerc.sh",
+        "bytes": 1010
+      },
+      {
+        "path": "/etc/profile.d/gawk.sh",
+        "bytes": 757
+      },
+      {
+        "path": "/etc/profile.d/cedilla-portuguese.sh",
+        "bytes": 1003
+      },
+      {
+        "path": "/etc/profile.d/vte-2.91.sh",
+        "bytes": 5062
+      },
+      {
+        "path": "/etc/profile.d/70-systemd-shell-extra.sh",
+        "bytes": 1484
+      },
+      {
+        "path": "/etc/profile.d/Z99-cloud-locale-test.sh",
+        "bytes": 3415
+      },
+      {
+        "path": "/etc/profile.d/apps-bin-path.sh",
+        "bytes": 840
+      },
+      {
+        "path": "/etc/profile.d/bash_completion.sh",
+        "bytes": 747
+      },
+      {
+        "path": "/etc/profile.d/Z99-cloudinit-warnings.sh",
+        "bytes": 844
+      },
+      {
+        "path": "/etc/profile.d/xdg_dirs_desktop_session.sh",
+        "bytes": 954
+      },
+      {
+        "path": "/etc/profile.d/debuginfod.sh",
+        "bytes": 923
+      }
+    ]
+  },
+  "startup_environment_projection": {
+    "BASH_ENV": {
+      "present": false,
+      "absolute_existing_regular_file": false
+    },
+    "ENV": {
+      "present": false,
+      "absolute_existing_regular_file": false
+    },
+    "exported_function_names_containing_systemd_cat": []
+  },
+  "original_cases": [
+    {
+      "name": "suite::approvals::approving_execpolicy_amendment_persists_policy_and_skips_future_prompts",
+      "classname": "codex-core::all",
+      "seconds": "0.378",
+      "result": "FAIL",
+      "failure": "thread 'suite::approvals::approving_execpolicy_amendment_persists_policy_and_skips_future_prompts' (3658852) panicked at core/tests/suite/approvals.rs:2540:5:\nunexpected stdout: Failed to create stream fd: Operation not permitted\nFailed to create stream fd: Operation not permitted\nFailed to create stream fd: Operation not permitted\n\nnote: run with `RUST_BACKTRACE=1` environment variable to display a backtrace"
+    },
+    {
+      "name": "suite::request_permissions::partial_request_permissions_grants_do_not_preapprove_new_permissions",
+      "classname": "codex-core::all",
+      "seconds": "0.443",
+      "result": "FAIL",
+      "failure": "thread 'suite::request_permissions::partial_request_permissions_grants_do_not_preapprove_new_permissions' (3764768) panicked at core/tests/suite/request_permissions.rs:1802:5:\nassertion failed: `(left == right)`\n\nDiff < left / right > :\n<Failed to create stream fd: Operation not permitted\n<Failed to create stream fd: Operation not permitted\n<Failed to create stream fd: Operation not permitted\n partial-grant-ok\n\n\nnote: run with `RUST_BACKTRACE=1` environment variable to display a backtrace"
+    },
+    {
+      "name": "suite::request_permissions::request_permissions_grants_apply_to_later_exec_command_calls",
+      "classname": "codex-core::all",
+      "seconds": "0.465",
+      "result": "FAIL",
+      "failure": "thread 'suite::request_permissions::request_permissions_grants_apply_to_later_exec_command_calls' (3764948) panicked at core/tests/suite/request_permissions.rs:1391:5:\nassertion failed: `(left == right)`\n\nDiff < left / right > :\n<Failed to create stream fd: Operation not permitted\n<Failed to create stream fd: Operation not permitted\n<Failed to create stream fd: Operation not permitted\n sticky-grant-ok\n\n\nnote: run with `RUST_BACKTRACE=1` environment variable to display a backtrace"
+    },
+    {
+      "name": "suite::request_permissions::request_permissions_grants_apply_to_later_exec_command_calls_without_inline_permission_feature",
+      "classname": "codex-core::all",
+      "seconds": "0.469",
+      "result": "FAIL",
+      "failure": "thread 'suite::request_permissions::request_permissions_grants_apply_to_later_exec_command_calls_without_inline_permission_feature' (3764986) panicked at core/tests/suite/request_permissions.rs:1626:5:\nassertion failed: `(left == right)`\n\nDiff < left / right > :\n<Failed to create stream fd: Operation not permitted\n<Failed to create stream fd: Operation not permitted\n<Failed to create stream fd: Operation not permitted\n sticky-shell-feature-independent-ok\n\n\nnote: run with `RUST_BACKTRACE=1` environment variable to display a backtrace"
+    },
+    {
+      "name": "suite::request_permissions::request_permissions_preapprove_explicit_exec_permissions_outside_on_request",
+      "classname": "codex-core::all",
+      "seconds": "0.478",
+      "result": "FAIL",
+      "failure": "thread 'suite::request_permissions::request_permissions_preapprove_explicit_exec_permissions_outside_on_request' (3765124) panicked at core/tests/suite/request_permissions.rs:1510:5:\nassertion failed: `(left == right)`\n\nDiff < left / right > :\n<Failed to create stream fd: Operation not permitted\n<Failed to create stream fd: Operation not permitted\n<Failed to create stream fd: Operation not permitted\n sticky-explicit-grant-ok\n\n\nnote: run with `RUST_BACKTRACE=1` environment variable to display a backtrace"
+    },
+    {
+      "name": "shell_snapshot_v2_capture_failure_falls_back_and_retries::test_case_3_remote_pipe_recovery",
+      "classname": "codex-exec-server::exec_process",
+      "seconds": "0.314",
+      "result": "FAIL",
+      "failure": "thread 'shell_snapshot_v2_capture_failure_falls_back_and_retries::test_case_3_remote_pipe_recovery' (3804580) panicked at exec-server/tests/exec_process.rs:434:9:\nassertion failed: `(left == right)`\n\nDiff < left / right > :\n (\n     \"original\",\n<    \"Failed to create stream fd: Operation not permitted\\nFailed to create stream fd: Operation not permitted\\nFailed to create stream fd: Operation not permitted\\n\",\n>    \"\",\n     Some(\n         0,\n     ),\n     true,\n )\n\n\nnote: run with `RUST_BACKTRACE=1` environment variable to display a backtrace"
+    },
+    {
+      "name": "shell_snapshot_v2_capture_failure_falls_back_and_retries::test_case_4_remote_tty_recovery",
+      "classname": "codex-exec-server::exec_process",
+      "seconds": "0.337",
+      "result": "FAIL",
+      "failure": "thread 'shell_snapshot_v2_capture_failure_falls_back_and_retries::test_case_4_remote_tty_recovery' (3804688) panicked at exec-server/tests/exec_process.rs:434:9:\nassertion failed: `(left == right)`\n\nDiff < left / right > :\n (\n<    \"Failed to create stream fd: Operation not permitted\\r\\nFailed to create stream fd: Operation not permitted\\r\\nFailed to create stream fd: Operation not permitted\\r\\noriginal\",\n>    \"original\",\n     \"\",\n     Some(\n         0,\n     ),\n     true,\n )\n\n\nnote: run with `RUST_BACKTRACE=1` environment variable to display a backtrace"
+    },
+    {
+      "name": "shell_snapshot_v2_capture_failure_falls_back_and_retries::test_case_6_remote_retry_budget_exhausted",
+      "classname": "codex-exec-server::exec_process",
+      "seconds": "0.336",
+      "result": "FAIL",
+      "failure": "thread 'shell_snapshot_v2_capture_failure_falls_back_and_retries::test_case_6_remote_retry_budget_exhausted' (3804761) panicked at exec-server/tests/exec_process.rs:434:9:\nassertion failed: `(left == right)`\n\nDiff < left / right > :\n (\n     \"original\",\n<    \"Failed to create stream fd: Operation not permitted\\nFailed to create stream fd: Operation not permitted\\nFailed to create stream fd: Operation not permitted\\n\",\n>    \"\",\n     Some(\n         0,\n     ),\n     true,\n )\n\n\nnote: run with `RUST_BACKTRACE=1` environment variable to display a backtrace"
+    }
+  ],
+  "fixed_primary_upstream_sources": [
+    {
+      "url": "https://github.com/systemd/systemd/blob/v259/src/journal/cat.c",
+      "git_blob": "d1f4db80308552401d050535c1763861c84b0eba",
+      "sha256": "ed158500b043932261de404ed10e77e2ef2704102b602b76826498411ff0557f",
+      "bytes": 6751,
+      "source_scope": "systemd v259 primary source; static lookup only, not actual syscall tracing"
+    },
+    {
+      "url": "https://github.com/systemd/systemd/blob/v259/src/libsystemd/sd-journal/journal-send.c",
+      "git_blob": "d1a8ebdfad01ee7bd80b55c97b203716dc60eed3",
+      "sha256": "b690dbdda11659d41c92e4e547927a2f9a883d4281e48daad91ff6852fb5de3a",
+      "bytes": 16819,
+      "source_scope": "systemd v259 primary source; static lookup only, not actual syscall tracing"
+    }
+  ],
+  "native_static_source_search": {
+    "source": "e84c2f12e39022701c8a942343b3913faa62cf31",
+    "read_only": true,
+    "test_or_policy_change": false,
+    "observed_at": "2026-11-04T23:04:42.082418+00:00",
+    "records": [
+      {
+        "label": "linux-sandbox-paths",
+        "argv": [
+          "git",
+          "ls-tree",
+          "-r",
+          "--name-only",
+          "e84c2f12e39022701c8a942343b3913faa62cf31",
+          "--",
+          "codex-rs/linux-sandbox"
+        ],
+        "exit_code": 0,
+        "stdout": "codex-rs/linux-sandbox/BUILD.bazel\ncodex-rs/linux-sandbox/Cargo.toml\ncodex-rs/linux-sandbox/README.md\ncodex-rs/linux-sandbox/build.rs\ncodex-rs/linux-sandbox/src/bazel_bwrap.rs\ncodex-rs/linux-sandbox/src/bundled_bwrap.rs\ncodex-rs/linux-sandbox/src/bwrap.rs\ncodex-rs/linux-sandbox/src/exec_util.rs\ncodex-rs/linux-sandbox/src/fd_mount.rs\ncodex-rs/linux-sandbox/src/fd_mount_tests.rs\ncodex-rs/linux-sandbox/src/landlock.rs\ncodex-rs/linux-sandbox/src/launcher.rs\ncodex-rs/linux-sandbox/src/lib.rs\ncodex-rs/linux-sandbox/src/linux_run_main.rs\ncodex-rs/linux-sandbox/src/linux_run_main_tests.rs\ncodex-rs/linux-sandbox/src/main.rs\ncodex-rs/linux-sandbox/src/proxy_lifecycle.rs\ncodex-rs/linux-sandbox/src/proxy_lifecycle_tests.rs\ncodex-rs/linux-sandbox/src/proxy_routing.rs\ncodex-rs/linux-sandbox/tests/all.rs\ncodex-rs/linux-sandbox/tests/suite/bundled_bwrap.rs\ncodex-rs/linux-sandbox/tests/suite/landlock.rs\ncodex-rs/linux-sandbox/tests/suite/managed_proxy.rs\ncodex-rs/linux-sandbox/tests/suite/mod.rs\n",
+        "stderr": ""
+      },
+      {
+        "label": "unix-socket-filter-sites",
+        "argv": [
+          "git",
+          "grep",
+          "-n",
+          "-E",
+          "AF_UNIX|SYS_socket|socketpair|SECCOMP_RET_ERRNO|deny.*connect|connect.*deny",
+          "e84c2f12e39022701c8a942343b3913faa62cf31",
+          "--",
+          "codex-rs/linux-sandbox",
+          "codex-rs/exec-server"
+        ],
+        "exit_code": 0,
+        "stdout": "e84c2f12e39022701c8a942343b3913faa62cf31:codex-rs/linux-sandbox/README.md:92:  AF_UNIX/socketpair creation for the user command.\ne84c2f12e39022701c8a942343b3913faa62cf31:codex-rs/linux-sandbox/src/landlock.rs:188:            deny_syscall(&mut rules, libc::SYS_connect);\ne84c2f12e39022701c8a942343b3913faa62cf31:codex-rs/linux-sandbox/src/landlock.rs:199:            // to run with their socketpair + child processes for sub-proc\ne84c2f12e39022701c8a942343b3913faa62cf31:codex-rs/linux-sandbox/src/landlock.rs:206:            // For `socket` we allow AF_UNIX (arg0 == AF_UNIX) and deny\ne84c2f12e39022701c8a942343b3913faa62cf31:codex-rs/linux-sandbox/src/landlock.rs:212:                libc::AF_UNIX as u64,\ne84c2f12e39022701c8a942343b3913faa62cf31:codex-rs/linux-sandbox/src/landlock.rs:215:            rules.insert(libc::SYS_socket, vec![unix_only_rule.clone()]);\ne84c2f12e39022701c8a942343b3913faa62cf31:codex-rs/linux-sandbox/src/landlock.rs:216:            rules.insert(libc::SYS_socketpair, vec![unix_only_rule]);\ne84c2f12e39022701c8a942343b3913faa62cf31:codex-rs/linux-sandbox/src/landlock.rs:221:            // for all other families, including AF_UNIX. Only AF_UNIX\ne84c2f12e39022701c8a942343b3913faa62cf31:codex-rs/linux-sandbox/src/landlock.rs:222:            // socketpair() remains available for process-local IPC because it\ne84c2f12e39022701c8a942343b3913faa62cf31:codex-rs/linux-sandbox/src/landlock.rs:239:            let deny_non_unix_socketpair = SeccompRule::new(vec![SeccompCondition::new(\ne84c2f12e39022701c8a942343b3913faa62cf31:codex-rs/linux-sandbox/src/landlock.rs:243:                libc::AF_UNIX as u64,\ne84c2f12e39022701c8a942343b3913faa62cf31:codex-rs/linux-sandbox/src/landlock.rs:245:            rules.insert(libc::SYS_socket, vec![deny_non_ip_socket]);\ne84c2f12e39022701c8a942343b3913faa62cf31:codex-rs/linux-sandbox/src/landlock.rs:246:            rules.insert(libc::SYS_socketpair, vec![deny_non_unix_socketpair]);\ne84c2f12e39022701c8a942343b3913faa62cf31:codex-rs/linux-sandbox/tests/suite/managed_proxy.rs:650:async fn managed_proxy_mode_denies_af_unix_socket_but_allows_socketpair() {\ne84c2f12e39022701c8a942343b3913faa62cf31:codex-rs/linux-sandbox/tests/suite/managed_proxy.rs:664:        eprintln!(\"skipping managed proxy AF_UNIX test: python3 is unavailable\");\ne84c2f12e39022701c8a942343b3913faa62cf31:codex-rs/linux-sandbox/tests/suite/managed_proxy.rs:676:            \"import socket,sys\\ntry:\\n    socket.socket(socket.AF_UNIX, socket.SOCK_STREAM)\\nexcept PermissionError:\\n    pass\\nexcept OSError:\\n    sys.exit(2)\\nelse:\\n    sys.exit(1)\\nleft,right = socket.socketpair(socket.AF_UNIX, socket.SOCK_STREAM)\\nleft.sendall(b'ok')\\nif right.recv(2) != b'ok':\\n    sys.exit(3)\\n\",\ne84c2f12e39022701c8a942343b3913faa62cf31:codex-rs/linux-sandbox/tests/suite/managed_proxy.rs:688:        \"expected AF_UNIX socket creation to be denied and socketpair to work; status={:?}; stdout={}; stderr={}\",\n",
+        "stderr": ""
+      },
+      {
+        "label": "snapshot-login-paths",
+        "argv": [
+          "git",
+          "grep",
+          "-n",
+          "-E",
+          "login_shell|--login|bashrc|snapshot.*fallback",
+          "e84c2f12e39022701c8a942343b3913faa62cf31",
+          "--",
+          "codex-rs/exec-server/src",
+          "codex-rs/core/src/shell_snapshot.rs"
+        ],
+        "exit_code": 0,
+        "stdout": "e84c2f12e39022701c8a942343b3913faa62cf31:codex-rs/core/src/shell_snapshot.rs:257:        /*use_login_shell*/ false,\ne84c2f12e39022701c8a942343b3913faa62cf31:codex-rs/core/src/shell_snapshot.rs:269:        /*use_login_shell*/ true,\ne84c2f12e39022701c8a942343b3913faa62cf31:codex-rs/core/src/shell_snapshot.rs:279:    use_login_shell: bool,\ne84c2f12e39022701c8a942343b3913faa62cf31:codex-rs/core/src/shell_snapshot.rs:282:    let args = shell.derive_exec_args(script, use_login_shell);\ne84c2f12e39022701c8a942343b3913faa62cf31:codex-rs/exec-server/src/shell_snapshot_tests.rs:26:    let profile = home.path().join(\".bashrc\");\n",
+        "stderr": ""
+      }
+    ]
+  },
+  "safety_and_qualification": [
+    "No test has been rerun for this attribution; no source, system profile, kernel policy, journal permission or CODEX_SANDBOX environment key was changed.",
+    "No --noprofile substitution, stderr filtering or output assertion weakening was applied.",
+    "Do not label all eight as product regressions or close them based on static host attribution; preserve original failures and use original clean platform qualification.",
+    "No claimed connect/socket/shutdown/loop_write runtime diagnosis: systemd's common error path can report EPERM from multiple underlying operations."
+  ]
+}

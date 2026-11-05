@@ -1,0 +1,2824 @@
+{
+  "schema": "hepta-three-repairs-v3-local-complete-archive-verification-v1",
+  "archive_git_blob": "4a43c4f6422d4611e9c0abd55f91e51544f189a0",
+  "archive": {
+    "path": "/workspace/scratch/07dd58cc9630/ci-audit/recovered-20261105/three-repairs-v3-compressed-archive/archive.json",
+    "bytes": 17639,
+    "sha256": "ed0933978c7ab6ebdb8d2330144b9b05cdb4a724e3f61d151bee4411ad80f11b"
+  },
+  "asset_checks": [
+    {
+      "name": "migration-inference-negative-metadata.stdout",
+      "bytes": 8163658,
+      "sha256": "51ff98c991ea71a7a1be5135acb3c35bd6070b09544306f4b3bbc0fa1ea52e19",
+      "github_chunks": 2
+    },
+    {
+      "name": "migration-original-package-metadata.stdout",
+      "bytes": 8163658,
+      "sha256": "51ff98c991ea71a7a1be5135acb3c35bd6070b09544306f4b3bbc0fa1ea52e19",
+      "github_chunks": 2
+    },
+    {
+      "name": "migration-original-package-selection.json",
+      "bytes": 78838,
+      "sha256": "a0bf469b95fea9053f1ad3feef9f05779a9427f2dabdb92881389e245c622cf9",
+      "github_chunks": 1
+    },
+    {
+      "name": "migration-original-package.log",
+      "bytes": 78925,
+      "sha256": "a994abd8523a56c5124ebf3d16b12137c6f122cc71743c423c83fcef75be8905",
+      "github_chunks": 1
+    },
+    {
+      "name": "skills-marker-negative-metadata.stdout",
+      "bytes": 8163658,
+      "sha256": "51ff98c991ea71a7a1be5135acb3c35bd6070b09544306f4b3bbc0fa1ea52e19",
+      "github_chunks": 2
+    },
+    {
+      "name": "skills-original-nine-metadata.stdout",
+      "bytes": 8163658,
+      "sha256": "51ff98c991ea71a7a1be5135acb3c35bd6070b09544306f4b3bbc0fa1ea52e19",
+      "github_chunks": 2
+    },
+    {
+      "name": "terminal.json",
+      "bytes": 442484,
+      "sha256": "8eeb0e45ba86abe64d603b55f3dd9e81427f892f88a558ab887dfef24f9b415d",
+      "github_chunks": 1
+    },
+    {
+      "name": "v8-and-runtime-original-metadata.stdout",
+      "bytes": 8163699,
+      "sha256": "3a53323eae920e2e53dcb3e334128a4aff63cfb51840793e9150d617d2c9ba18",
+      "github_chunks": 2
+    },
+    {
+      "name": "complete-small-originals.json",
+      "bytes": 1191872,
+      "sha256": "0610d0b9281881287d1b77bed196f66f5f7b442394aa7799654e2ce301255cc2",
+      "github_chunks": 1
+    }
+  ],
+  "embedded_original_checks": [
+    {
+      "name": "1-initial-source-guard.json",
+      "bytes": 962,
+      "sha256": "6c775939ce8a33761b0413685d9153465b810b9145a0f1d3008494d5b992546f"
+    },
+    {
+      "name": "10-skills-negative-finally-restore-eligible-source-guard.json",
+      "bytes": 962,
+      "sha256": "09057853fae688d75fbd5889d3bb64d9c8f986b32b1490349cda2dda64aa8cec"
+    },
+    {
+      "name": "11-skills-restore-absence-before-source-guard.json",
+      "bytes": 962,
+      "sha256": "09057853fae688d75fbd5889d3bb64d9c8f986b32b1490349cda2dda64aa8cec"
+    },
+    {
+      "name": "12-skills-restore-absence-after-source-guard.json",
+      "bytes": 962,
+      "sha256": "b7496869f4ffaeff98c7224558b06b4d4732cc9a4770e4b464a3f3354b50c1c8"
+    },
+    {
+      "name": "13-skills-original-nine-metadata-before-source-guard.json",
+      "bytes": 962,
+      "sha256": "b7496869f4ffaeff98c7224558b06b4d4732cc9a4770e4b464a3f3354b50c1c8"
+    },
+    {
+      "name": "14-skills-original-nine-metadata-after-source-guard.json",
+      "bytes": 962,
+      "sha256": "b7496869f4ffaeff98c7224558b06b4d4732cc9a4770e4b464a3f3354b50c1c8"
+    },
+    {
+      "name": "15-skills-original-nine-catalog-before-source-guard.json",
+      "bytes": 962,
+      "sha256": "b7496869f4ffaeff98c7224558b06b4d4732cc9a4770e4b464a3f3354b50c1c8"
+    },
+    {
+      "name": "16-skills-original-nine-catalog-after-source-guard.json",
+      "bytes": 962,
+      "sha256": "b7496869f4ffaeff98c7224558b06b4d4732cc9a4770e4b464a3f3354b50c1c8"
+    },
+    {
+      "name": "17-skills-original-nine-before-source-guard.json",
+      "bytes": 962,
+      "sha256": "b7496869f4ffaeff98c7224558b06b4d4732cc9a4770e4b464a3f3354b50c1c8"
+    },
+    {
+      "name": "18-skills-original-nine-after-source-guard.json",
+      "bytes": 962,
+      "sha256": "b7496869f4ffaeff98c7224558b06b4d4732cc9a4770e4b464a3f3354b50c1c8"
+    },
+    {
+      "name": "19-migration-remove-inference-before-source-guard.json",
+      "bytes": 962,
+      "sha256": "b7496869f4ffaeff98c7224558b06b4d4732cc9a4770e4b464a3f3354b50c1c8"
+    },
+    {
+      "name": "2-skills-controlled-marker-before-source-guard.json",
+      "bytes": 962,
+      "sha256": "6c775939ce8a33761b0413685d9153465b810b9145a0f1d3008494d5b992546f"
+    },
+    {
+      "name": "20-migration-remove-inference-after-source-guard.json",
+      "bytes": 962,
+      "sha256": "99157ace49a895d957944fec8e73cc4399876f6084c3563a3018e080174c55d4"
+    },
+    {
+      "name": "21-migration-inference-negative-metadata-before-source-guard.json",
+      "bytes": 962,
+      "sha256": "99157ace49a895d957944fec8e73cc4399876f6084c3563a3018e080174c55d4"
+    },
+    {
+      "name": "22-migration-inference-negative-metadata-after-source-guard.json",
+      "bytes": 962,
+      "sha256": "99157ace49a895d957944fec8e73cc4399876f6084c3563a3018e080174c55d4"
+    },
+    {
+      "name": "23-migration-inference-negative-catalog-before-source-guard.json",
+      "bytes": 962,
+      "sha256": "99157ace49a895d957944fec8e73cc4399876f6084c3563a3018e080174c55d4"
+    },
+    {
+      "name": "24-migration-inference-negative-catalog-after-source-guard.json",
+      "bytes": 962,
+      "sha256": "99157ace49a895d957944fec8e73cc4399876f6084c3563a3018e080174c55d4"
+    },
+    {
+      "name": "25-migration-inference-negative-before-source-guard.json",
+      "bytes": 962,
+      "sha256": "99157ace49a895d957944fec8e73cc4399876f6084c3563a3018e080174c55d4"
+    },
+    {
+      "name": "26-migration-inference-negative-after-source-guard.json",
+      "bytes": 962,
+      "sha256": "99157ace49a895d957944fec8e73cc4399876f6084c3563a3018e080174c55d4"
+    },
+    {
+      "name": "27-migration-negative-finally-restore-eligible-source-guard.json",
+      "bytes": 962,
+      "sha256": "99157ace49a895d957944fec8e73cc4399876f6084c3563a3018e080174c55d4"
+    },
+    {
+      "name": "28-migration-restore-inference-before-source-guard.json",
+      "bytes": 962,
+      "sha256": "99157ace49a895d957944fec8e73cc4399876f6084c3563a3018e080174c55d4"
+    },
+    {
+      "name": "29-migration-restore-inference-after-source-guard.json",
+      "bytes": 962,
+      "sha256": "fddec3bca482a471b0a12b30d6bf88c1612028c20fb79d15e6b1dd3d1365b77c"
+    },
+    {
+      "name": "3-skills-controlled-marker-after-source-guard.json",
+      "bytes": 962,
+      "sha256": "09057853fae688d75fbd5889d3bb64d9c8f986b32b1490349cda2dda64aa8cec"
+    },
+    {
+      "name": "30-migration-original-package-metadata-before-source-guard.json",
+      "bytes": 962,
+      "sha256": "fddec3bca482a471b0a12b30d6bf88c1612028c20fb79d15e6b1dd3d1365b77c"
+    },
+    {
+      "name": "31-migration-original-package-metadata-after-source-guard.json",
+      "bytes": 962,
+      "sha256": "fddec3bca482a471b0a12b30d6bf88c1612028c20fb79d15e6b1dd3d1365b77c"
+    },
+    {
+      "name": "32-migration-original-package-catalog-before-source-guard.json",
+      "bytes": 962,
+      "sha256": "fddec3bca482a471b0a12b30d6bf88c1612028c20fb79d15e6b1dd3d1365b77c"
+    },
+    {
+      "name": "33-migration-original-package-catalog-after-source-guard.json",
+      "bytes": 962,
+      "sha256": "fddec3bca482a471b0a12b30d6bf88c1612028c20fb79d15e6b1dd3d1365b77c"
+    },
+    {
+      "name": "34-migration-original-package-before-source-guard.json",
+      "bytes": 962,
+      "sha256": "fddec3bca482a471b0a12b30d6bf88c1612028c20fb79d15e6b1dd3d1365b77c"
+    },
+    {
+      "name": "35-migration-original-package-after-source-guard.json",
+      "bytes": 962,
+      "sha256": "fddec3bca482a471b0a12b30d6bf88c1612028c20fb79d15e6b1dd3d1365b77c"
+    },
+    {
+      "name": "36-v8-default-sandbox-before-source-guard.json",
+      "bytes": 962,
+      "sha256": "fddec3bca482a471b0a12b30d6bf88c1612028c20fb79d15e6b1dd3d1365b77c"
+    },
+    {
+      "name": "37-v8-default-sandbox-after-source-guard.json",
+      "bytes": 962,
+      "sha256": "cdb8955959a24a807ffbc176d2a3107369f2bb25018bd903746f382b31c23998"
+    },
+    {
+      "name": "38-official-bazel-version-before-source-guard.json",
+      "bytes": 962,
+      "sha256": "cdb8955959a24a807ffbc176d2a3107369f2bb25018bd903746f382b31c23998"
+    },
+    {
+      "name": "39-official-bazel-version-after-source-guard.json",
+      "bytes": 962,
+      "sha256": "cdb8955959a24a807ffbc176d2a3107369f2bb25018bd903746f382b31c23998"
+    },
+    {
+      "name": "4-skills-marker-negative-metadata-before-source-guard.json",
+      "bytes": 962,
+      "sha256": "09057853fae688d75fbd5889d3bb64d9c8f986b32b1490349cda2dda64aa8cec"
+    },
+    {
+      "name": "40-original-bazel-lock-update-before-source-guard.json",
+      "bytes": 984,
+      "sha256": "10bd4a2d9fd49276cf8f894e0003645a1181a7dd8c2c7f15d01fcf1cfa60d167"
+    },
+    {
+      "name": "41-original-bazel-lock-update-generator-result-source-guard.json",
+      "bytes": 984,
+      "sha256": "10bd4a2d9fd49276cf8f894e0003645a1181a7dd8c2c7f15d01fcf1cfa60d167"
+    },
+    {
+      "name": "42-original-bazel-lock-update-after-source-guard.json",
+      "bytes": 984,
+      "sha256": "10bd4a2d9fd49276cf8f894e0003645a1181a7dd8c2c7f15d01fcf1cfa60d167"
+    },
+    {
+      "name": "43-original-bazel-lock-check-before-source-guard.json",
+      "bytes": 984,
+      "sha256": "10bd4a2d9fd49276cf8f894e0003645a1181a7dd8c2c7f15d01fcf1cfa60d167"
+    },
+    {
+      "name": "44-original-bazel-lock-check-after-source-guard.json",
+      "bytes": 984,
+      "sha256": "10bd4a2d9fd49276cf8f894e0003645a1181a7dd8c2c7f15d01fcf1cfa60d167"
+    },
+    {
+      "name": "45-task-owned-bazel-server-shutdown-before-source-guard.json",
+      "bytes": 984,
+      "sha256": "10bd4a2d9fd49276cf8f894e0003645a1181a7dd8c2c7f15d01fcf1cfa60d167"
+    },
+    {
+      "name": "46-task-owned-bazel-server-shutdown-after-source-guard.json",
+      "bytes": 984,
+      "sha256": "10bd4a2d9fd49276cf8f894e0003645a1181a7dd8c2c7f15d01fcf1cfa60d167"
+    },
+    {
+      "name": "47-after-original-lock-gates-source-guard.json",
+      "bytes": 962,
+      "sha256": "cdb8955959a24a807ffbc176d2a3107369f2bb25018bd903746f382b31c23998"
+    },
+    {
+      "name": "48-v8-and-runtime-original-metadata-before-source-guard.json",
+      "bytes": 962,
+      "sha256": "cdb8955959a24a807ffbc176d2a3107369f2bb25018bd903746f382b31c23998"
+    },
+    {
+      "name": "49-v8-and-runtime-original-metadata-after-source-guard.json",
+      "bytes": 962,
+      "sha256": "cdb8955959a24a807ffbc176d2a3107369f2bb25018bd903746f382b31c23998"
+    },
+    {
+      "name": "5-skills-marker-negative-metadata-after-source-guard.json",
+      "bytes": 962,
+      "sha256": "09057853fae688d75fbd5889d3bb64d9c8f986b32b1490349cda2dda64aa8cec"
+    },
+    {
+      "name": "50-v8-and-runtime-original-catalog-before-source-guard.json",
+      "bytes": 962,
+      "sha256": "cdb8955959a24a807ffbc176d2a3107369f2bb25018bd903746f382b31c23998"
+    },
+    {
+      "name": "51-v8-and-runtime-original-catalog-after-source-guard.json",
+      "bytes": 962,
+      "sha256": "cdb8955959a24a807ffbc176d2a3107369f2bb25018bd903746f382b31c23998"
+    },
+    {
+      "name": "52-v8-and-runtime-original-before-source-guard.json",
+      "bytes": 962,
+      "sha256": "cdb8955959a24a807ffbc176d2a3107369f2bb25018bd903746f382b31c23998"
+    },
+    {
+      "name": "53-v8-and-runtime-original-after-source-guard.json",
+      "bytes": 962,
+      "sha256": "cdb8955959a24a807ffbc176d2a3107369f2bb25018bd903746f382b31c23998"
+    },
+    {
+      "name": "54-final-source-guard.json",
+      "bytes": 962,
+      "sha256": "cdb8955959a24a807ffbc176d2a3107369f2bb25018bd903746f382b31c23998"
+    },
+    {
+      "name": "6-skills-marker-negative-catalog-before-source-guard.json",
+      "bytes": 962,
+      "sha256": "09057853fae688d75fbd5889d3bb64d9c8f986b32b1490349cda2dda64aa8cec"
+    },
+    {
+      "name": "7-skills-marker-negative-catalog-after-source-guard.json",
+      "bytes": 962,
+      "sha256": "09057853fae688d75fbd5889d3bb64d9c8f986b32b1490349cda2dda64aa8cec"
+    },
+    {
+      "name": "8-skills-marker-negative-before-source-guard.json",
+      "bytes": 962,
+      "sha256": "09057853fae688d75fbd5889d3bb64d9c8f986b32b1490349cda2dda64aa8cec"
+    },
+    {
+      "name": "9-skills-marker-negative-after-source-guard.json",
+      "bytes": 962,
+      "sha256": "09057853fae688d75fbd5889d3bb64d9c8f986b32b1490349cda2dda64aa8cec"
+    },
+    {
+      "name": "actual-lock-generation.json",
+      "bytes": 2340,
+      "sha256": "99f56b6c6a5d64193e5a4df44626edd3cb06857cb6105c3844c572cb06b23d43"
+    },
+    {
+      "name": "actual-module-generator.patch",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "final-source-map.json",
+      "bytes": 949,
+      "sha256": "778d821ed151e1dafdc520feaf6a21f0487535796ea03cb0923ff5d1745dcd97"
+    },
+    {
+      "name": "migration-causal-negative.json",
+      "bytes": 1050,
+      "sha256": "a541d49b5b22dec874e7c4a367c70468b2cb51b1187a45f63f3999d8fa50799f"
+    },
+    {
+      "name": "migration-inference-negative-catalog-command.json",
+      "bytes": 715,
+      "sha256": "9addc06397ab44ba58d2f2e23763c7d78141ef00c52a8fa18141ff2a30382b4a"
+    },
+    {
+      "name": "migration-inference-negative-catalog-status.json",
+      "bytes": 2115,
+      "sha256": "104ebc94a61ada9e37cc9b2bdc4776e93b14f2ebc60b3e37e43655500bf63ce6"
+    },
+    {
+      "name": "migration-inference-negative-catalog.stderr",
+      "bytes": 13310,
+      "sha256": "7025830f2af31ce1d6d4cfd8e7d6b971ef3fb31a10dcd41f84545011e28d1e39"
+    },
+    {
+      "name": "migration-inference-negative-catalog.stdout",
+      "bytes": 28225,
+      "sha256": "84401a975cb6129904172d4eb85a85124bba6b38f323f6b830840acef3054381"
+    },
+    {
+      "name": "migration-inference-negative-command.json",
+      "bytes": 767,
+      "sha256": "83d73067f0b127bf6e51995dfc2917e366a14a34129a14f03290aaf534bc32fb"
+    },
+    {
+      "name": "migration-inference-negative-metadata-command.json",
+      "bytes": 458,
+      "sha256": "ff379800528e2709851cd9d38668f7c66885a2841afd6ebec64da991022f5574"
+    },
+    {
+      "name": "migration-inference-negative-metadata-status.json",
+      "bytes": 62743,
+      "sha256": "2a1b6b9559d1b91e0129f973c0344a1a58f8615ea6c590f9ae22bbe6ba8bba8e"
+    },
+    {
+      "name": "migration-inference-negative-metadata.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "migration-inference-negative-review.json",
+      "bytes": 2705,
+      "sha256": "b1f04390eff4ea417325dc1292b5170a21d4dfae838ecd632407f7e20f6cd375"
+    },
+    {
+      "name": "migration-inference-negative-review.parts.json",
+      "bytes": 595,
+      "sha256": "ddde15a53b3d922d47488214d9466fdf166845696c3c8ca2c7bbc16fde43419a"
+    },
+    {
+      "name": "migration-inference-negative-selection.json",
+      "bytes": 56345,
+      "sha256": "b2f0c9f31b6d4149080825f8fa2a5cb3bec351d8914260197266f342e29c23de"
+    },
+    {
+      "name": "migration-inference-negative-selection.parts.json",
+      "bytes": 914,
+      "sha256": "b0b7c86a2d0a56b7428eb3ebc4b7b18f84acb1c4099ae015b33e0f7e527f4559"
+    },
+    {
+      "name": "migration-inference-negative-status.json",
+      "bytes": 1493,
+      "sha256": "8598bc7c61bf37af3e2bb8877738deeabe3cfc3daee2aa9b19654fcd46955712"
+    },
+    {
+      "name": "migration-inference-negative.junit.xml",
+      "bytes": 2910,
+      "sha256": "fd38f4b91dfc461315e8184bc0a235e96120697a56fe2173805f79154960d199"
+    },
+    {
+      "name": "migration-inference-negative.log",
+      "bytes": 18592,
+      "sha256": "9bf88614115633ba44f2a5f7df3b9f91ffb5015ff3c2860f0bbde98fa3ddd9cd"
+    },
+    {
+      "name": "migration-negative-finally-restore.json",
+      "bytes": 586,
+      "sha256": "dad70cd3652e3c4296b77ba452fb371691ed7c5ffaa71ba35b3c585c70d6a750"
+    },
+    {
+      "name": "migration-original-package-catalog-command.json",
+      "bytes": 573,
+      "sha256": "4f1731318859c6509d777ebacba0285aea513071fa7bf141edbf62b510226b54"
+    },
+    {
+      "name": "migration-original-package-catalog-status.json",
+      "bytes": 1960,
+      "sha256": "9130d1150639e1f1dcf718b9bbbaa0e6fe0c298f189c89f856ff65b31da3ded6"
+    },
+    {
+      "name": "migration-original-package-catalog.stderr",
+      "bytes": 2600,
+      "sha256": "a84dcc3bc19d79a5b23bb447f8dd9ca4eecdc4cae166013e67ffce8f5cb70e66"
+    },
+    {
+      "name": "migration-original-package-catalog.stdout",
+      "bytes": 24430,
+      "sha256": "186745912fc5d1078072d03e8a8af122bf318128c2d7724d2db9062058a682e0"
+    },
+    {
+      "name": "migration-original-package-command.json",
+      "bytes": 625,
+      "sha256": "07a18f148d375228a2f4f8cb3362d1a71b830e02cc81de57584a6d53db539c47"
+    },
+    {
+      "name": "migration-original-package-metadata-command.json",
+      "bytes": 458,
+      "sha256": "a9ff929b8753eeef00c6befc52ebf152f23ee3063d531297414afcde2bcf6ad1"
+    },
+    {
+      "name": "migration-original-package-metadata-status.json",
+      "bytes": 62365,
+      "sha256": "c6244fd5dc2babc0f210081f7e4d8c381d742dfc2501324d07eb9c68853140c3"
+    },
+    {
+      "name": "migration-original-package-metadata.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "migration-original-package-review.json",
+      "bytes": 40803,
+      "sha256": "50313344db919851de544ca62103b3e30c6c457b2328cd01a0758bfde9972670"
+    },
+    {
+      "name": "migration-original-package-review.parts.json",
+      "bytes": 593,
+      "sha256": "d24c1826a03dbdc79568ea2b9d1610f4a76007176d1ceeb6752f6e88fb00bd6f"
+    },
+    {
+      "name": "migration-original-package-selection.parts.json",
+      "bytes": 908,
+      "sha256": "2a882a11de9de62e090f7062c077c3f294137637c68eebef7af3fef4f9aec73a"
+    },
+    {
+      "name": "migration-original-package-status.json",
+      "bytes": 1661,
+      "sha256": "3fe5c95464d8bc1e2d548881b42aed201cb7541e99182e6280a6770e4757a79b"
+    },
+    {
+      "name": "migration-original-package.junit.xml",
+      "bytes": 37579,
+      "sha256": "7401b36e8cb8d5b8ff7b62d39495282310da1ea2dd1eae22121fa19119b270d0"
+    },
+    {
+      "name": "migration-remove-inference-apply.json",
+      "bytes": 886,
+      "sha256": "78773d19d6c22d6b27ad509975a60059e3f95f6e752c91baf6a783cfcd81d516"
+    },
+    {
+      "name": "migration-restore-inference-apply.json",
+      "bytes": 523,
+      "sha256": "04e780fa0af626a95f941e6dd97b30f44bb3ce3a55ecdcbbb8ade394ba024df8"
+    },
+    {
+      "name": "native-host-and-tools.json",
+      "bytes": 755,
+      "sha256": "51204697cee6b583b15ffaee3c1a0655a584a155c164f1f5991cd89fd7b43380"
+    },
+    {
+      "name": "official-bazel-bootstrap.json",
+      "bytes": 1993,
+      "sha256": "120e846d7a6c38ca763b0488c775f9767eb48bf4f870692cd53fcc4f6375865a"
+    },
+    {
+      "name": "official-bazel-version-command.json",
+      "bytes": 408,
+      "sha256": "bd5b63d8e848c411d803a776d6914486648215692154eadb195eef08d0ed9282"
+    },
+    {
+      "name": "official-bazel-version-status.json",
+      "bytes": 1425,
+      "sha256": "43c3230a1243c6d590a94582d8fa2405f5ddf458b991bce38875430c58e09cc4"
+    },
+    {
+      "name": "official-bazel-version.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "official-bazel-version.stdout",
+      "bytes": 12,
+      "sha256": "975f11fdb2255b8f73742a67a3e471115f829095af0931945a505f8401740e21"
+    },
+    {
+      "name": "original-bazel-lock-check-command.json",
+      "bytes": 414,
+      "sha256": "cd11d9ee21a398a7610e5195bd56dfe3a5844f2ad1fe6f5d92cf55fe9f9e8081"
+    },
+    {
+      "name": "original-bazel-lock-check-status.json",
+      "bytes": 1758,
+      "sha256": "63fa9780657e0efae0a5c4a7244f650cfe48f0708ff6946fcec79410d9f6fd02"
+    },
+    {
+      "name": "original-bazel-lock-check.stderr",
+      "bytes": 938,
+      "sha256": "a6d8257aa7027398226ee585d749e8e11462856c9adae29e0713fa880cfa05e4"
+    },
+    {
+      "name": "original-bazel-lock-check.stdout",
+      "bytes": 18,
+      "sha256": "3e7b29182cce6e36002b75542488111789f464957b5728ab4de90ab2cf4c4fe3"
+    },
+    {
+      "name": "original-bazel-lock-update-command.json",
+      "bytes": 415,
+      "sha256": "eb8ae3af1a4610f8d35dd80a4ba0f90721471d2858b8c58d3087911920d05230"
+    },
+    {
+      "name": "original-bazel-lock-update-status.json",
+      "bytes": 2430,
+      "sha256": "50a1c5529d7840dbbff7ce85ae1b19c766df733c72345a6b4e0c0dce0f70c966"
+    },
+    {
+      "name": "original-bazel-lock-update.stderr",
+      "bytes": 4718,
+      "sha256": "dea4c5d269d03341689fb6b3929a5c4325afeea0818258e8d91a4d6c5988709d"
+    },
+    {
+      "name": "original-bazel-lock-update.stdout",
+      "bytes": 18,
+      "sha256": "3e7b29182cce6e36002b75542488111789f464957b5728ab4de90ab2cf4c4fe3"
+    },
+    {
+      "name": "root-guard.json",
+      "bytes": 56952,
+      "sha256": "3e7b174f6dbb5090d8d81271ebd999e9d6da8faae3f4023ef29878a39c27dca2"
+    },
+    {
+      "name": "runner.py",
+      "bytes": 23244,
+      "sha256": "abac4fd7590dbb607a9069b969ae2185b3d530c7ba612c9bc3f87e37e5ac8bf3"
+    },
+    {
+      "name": "skills-causal-negative.json",
+      "bytes": 1327,
+      "sha256": "0aed8696260d4bec6234332935669f5c099c7b58bc355738ea0e33fa4be05b4d"
+    },
+    {
+      "name": "skills-controlled-marker-apply.json",
+      "bytes": 512,
+      "sha256": "dc7958ea7ff45a9c306860799b845b851fa5e16ff65dbb568497b79e11ea91b7"
+    },
+    {
+      "name": "skills-marker-negative-catalog-command.json",
+      "bytes": 667,
+      "sha256": "fb100b6e704ed0c3e092c779b4d156bb12aae54dd52627c7c56916612b0b832c"
+    },
+    {
+      "name": "skills-marker-negative-catalog-status.json",
+      "bytes": 2035,
+      "sha256": "ab87b2411e955f1d0e1ff5c2a72c065069facdea7b8bd8f49ea596443a6cacb3"
+    },
+    {
+      "name": "skills-marker-negative-catalog.stderr",
+      "bytes": 2107,
+      "sha256": "a0e949a6cd1fcae344c05754557b9fa4b96efca5e1bdfb4a2c5dbf901ce0df85"
+    },
+    {
+      "name": "skills-marker-negative-catalog.stdout",
+      "bytes": 25207,
+      "sha256": "2b5a2226def2abe394fe624ed4e0da24a0866b4a0f5e2ea3fe8a9064cf9f30a4"
+    },
+    {
+      "name": "skills-marker-negative-command.json",
+      "bytes": 719,
+      "sha256": "3d348f9436da087732da5b820d2d7a1a111a12fea5212ac40dc82b975afe4eb9"
+    },
+    {
+      "name": "skills-marker-negative-metadata-command.json",
+      "bytes": 458,
+      "sha256": "aa1727bcf2d6e8326d5e879971e8ca80082f5f7c289a8a963db2ae510ec9d5a6"
+    },
+    {
+      "name": "skills-marker-negative-metadata-status.json",
+      "bytes": 61609,
+      "sha256": "25bcfa6ba9b7704b2c717eb879850bd3f13680f0608a93ba03219da1935b89a0"
+    },
+    {
+      "name": "skills-marker-negative-metadata.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "skills-marker-negative-review.json",
+      "bytes": 2747,
+      "sha256": "218c790efa0a35868863bc8c1c14a80d2598be53897f198a11ff7f5a58865c42"
+    },
+    {
+      "name": "skills-marker-negative-review.parts.json",
+      "bytes": 583,
+      "sha256": "17ed72176d0e64769dd09460bbd0dec3238c83f2d3145cccaaef1e2848fd5753"
+    },
+    {
+      "name": "skills-marker-negative-selection.json",
+      "bytes": 47315,
+      "sha256": "9c79bb3509747a60a42b00c13a5031f04fe8016b98b238500f43518c18e295a6"
+    },
+    {
+      "name": "skills-marker-negative-selection.parts.json",
+      "bytes": 895,
+      "sha256": "b689e2f19132bd9c171c564c0b1853d5ee9283783093d1f7f0e8f16a3409da4d"
+    },
+    {
+      "name": "skills-marker-negative-status.json",
+      "bytes": 1427,
+      "sha256": "acfe566d1ccbb0f74da3df57003c0b316771d1aa5d05a26994c4d37f382feb10"
+    },
+    {
+      "name": "skills-marker-negative.junit.xml",
+      "bytes": 2200,
+      "sha256": "578ad847f4c099588a039a0bddc4eaa60d2d15d3437bc309ad0412c8ba050a4e"
+    },
+    {
+      "name": "skills-marker-negative.log",
+      "bytes": 16663,
+      "sha256": "458e62c5746a014e92fe8a6160cb2954d15e63a56f417f1bd0502b5080fc5283"
+    },
+    {
+      "name": "skills-negative-finally-restore.json",
+      "bytes": 586,
+      "sha256": "4949f514c7c0f5cfe2cdf5354d78846d8e78fe9e8a32d80d5b7bbf21536059d1"
+    },
+    {
+      "name": "skills-original-nine-catalog-command.json",
+      "bytes": 608,
+      "sha256": "bb9576126af0b834b6464a75e86e85ce8fd40bcd283ec4bf6957666e0e0aeb7c"
+    },
+    {
+      "name": "skills-original-nine-catalog-status.json",
+      "bytes": 1965,
+      "sha256": "d4a3cd67d0700b620154c19569f6c9f013f0fbf875ef72f8244baa7e20d637bd"
+    },
+    {
+      "name": "skills-original-nine-catalog.stderr",
+      "bytes": 2107,
+      "sha256": "c8696b740fa307d97f1e4291ed0d5b3d0c93d301f48298bdc0f0be68f501dd1d"
+    },
+    {
+      "name": "skills-original-nine-catalog.stdout",
+      "bytes": 25023,
+      "sha256": "02c105d8e2548b03238ff63eb83c74562e25b8d1856b05ef255b781a0c0ed98e"
+    },
+    {
+      "name": "skills-original-nine-command.json",
+      "bytes": 660,
+      "sha256": "c6943924130cd90635580f34235149b21c87a7f90582cf2abb1bfa8bdfd7a03b"
+    },
+    {
+      "name": "skills-original-nine-metadata-command.json",
+      "bytes": 458,
+      "sha256": "f46c534c9f93eef8f15096d0deb36a591d3cb75549766fa899e6d00c47de23b9"
+    },
+    {
+      "name": "skills-original-nine-metadata-status.json",
+      "bytes": 61231,
+      "sha256": "7be7d6f869ac0aed5a97323327fb7c2fbd69e64a17324844523e96e2ac1b9313"
+    },
+    {
+      "name": "skills-original-nine-metadata.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "skills-original-nine-review.json",
+      "bytes": 4020,
+      "sha256": "34fa5d3bb8688dcd554c6c5409c8e20565ecbcb4c3d15f1d10f7357a681dd80a"
+    },
+    {
+      "name": "skills-original-nine-review.parts.json",
+      "bytes": 579,
+      "sha256": "0f3ced94b00eca78ea26a600644de2733cc1589833a2dd419876968ccf280ac0"
+    },
+    {
+      "name": "skills-original-nine-selection.json",
+      "bytes": 48249,
+      "sha256": "ca614b67d49d130c543ad410257ac633ae6c93a4f0c68e26b5af9fc0e8caeedb"
+    },
+    {
+      "name": "skills-original-nine-selection.parts.json",
+      "bytes": 889,
+      "sha256": "ce6b1f061810fcb8e0c7bdb1726e4b7f21a4b1293344c702880a7db630d28ebd"
+    },
+    {
+      "name": "skills-original-nine-status.json",
+      "bytes": 1360,
+      "sha256": "eb9d844d98e4bb47793e740c3b9c42a11ac3d50a42580882a7ad981e3251b850"
+    },
+    {
+      "name": "skills-original-nine.junit.xml",
+      "bytes": 2244,
+      "sha256": "9764a5765ddcc4c4d7e7ba142cc9fb1e473fc9bcf90c214f3e7d71874bfea8a4"
+    },
+    {
+      "name": "skills-original-nine.log",
+      "bytes": 18664,
+      "sha256": "9494172628de52da8e72ae6db5170bfbace20426dcedf59c3783c97b86fff4b6"
+    },
+    {
+      "name": "skills-restore-absence-apply.json",
+      "bytes": 510,
+      "sha256": "bda481d10e9fb76cc552d286ae2fffc86d0b18ee6d714a91854b9800b286af10"
+    },
+    {
+      "name": "task-owned-bazel-server-shutdown-command.json",
+      "bytes": 407,
+      "sha256": "15ed9999a3d0c5322223566b672f8bb2a5ac02e2127a0d5985968e92f8ed874e"
+    },
+    {
+      "name": "task-owned-bazel-server-shutdown-status.json",
+      "bytes": 1462,
+      "sha256": "a60b3513830daa460c03a4e8c25a75cfee665dafd41a53349737bc8c2db0704a"
+    },
+    {
+      "name": "task-owned-bazel-server-shutdown.stderr",
+      "bytes": 58,
+      "sha256": "5b39a9f56c09bbddb2bdf68c9eba5114cf29e200fb93cd6ec20af01b89e9199e"
+    },
+    {
+      "name": "task-owned-bazel-server-shutdown.stdout",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "task-owned-bazel-shutdown-result.json",
+      "bytes": 147,
+      "sha256": "2453cddc1681d601732eb17bb83e69c27152bd08956f547fecac04d70c2702c2"
+    },
+    {
+      "name": "temporary-task-user-bazelrc-restored.json",
+      "bytes": 134,
+      "sha256": "f1fb444cb4ea33b393f47034824ff9102f2c16a8e53eccdffdc10de3a3da5672"
+    },
+    {
+      "name": "temporary-task-user-bazelrc.json",
+      "bytes": 937,
+      "sha256": "db1a919f0b1059992b8d6f6227c311df3d7541172884aaa4daf33d12313cfce8"
+    },
+    {
+      "name": "terminal.parts.json",
+      "bytes": 3361,
+      "sha256": "661b9dd584b2ee9cc893400c608666583a0260dabdaf932fe2daf90ba869e50a"
+    },
+    {
+      "name": "v8-and-runtime-original-catalog-command.json",
+      "bytes": 583,
+      "sha256": "65fc517c058b753414750a933fe95ab815b2f4f7f88f9b7225e6db2c2566a663"
+    },
+    {
+      "name": "v8-and-runtime-original-catalog-status.json",
+      "bytes": 1956,
+      "sha256": "99181046ff4a6559d8d42ff279bbfba564fab4a56cd78ba986e7cd231667c110"
+    },
+    {
+      "name": "v8-and-runtime-original-catalog.stderr",
+      "bytes": 6602,
+      "sha256": "c7c9c24507bef31be95140631162ff425a9832aa08e16fd312b2270c2848dc8c"
+    },
+    {
+      "name": "v8-and-runtime-original-catalog.stdout",
+      "bytes": 12602,
+      "sha256": "358d2ed02d01734d1ebe389f187f5fb891b35251768a8782afb6cb93d04816cb"
+    },
+    {
+      "name": "v8-and-runtime-original-command.json",
+      "bytes": 635,
+      "sha256": "390aaf5dfe9c0f0c3920185a7166be46410bc093c1c2399a018d467ea78425a9"
+    },
+    {
+      "name": "v8-and-runtime-original-metadata-command.json",
+      "bytes": 458,
+      "sha256": "815d340da625d99871fe3b7e47f529a354cb7eccd9060bdd6b4f468ae2fc57fe"
+    },
+    {
+      "name": "v8-and-runtime-original-metadata-status.json",
+      "bytes": 61797,
+      "sha256": "85423bc028a68fa59b9da13523370f244650f524725da11048981c8aeb79fec0"
+    },
+    {
+      "name": "v8-and-runtime-original-metadata.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "v8-and-runtime-original-review.json",
+      "bytes": 20135,
+      "sha256": "bcb1398e124ffeec014d3903f166b598efa154e727904e089055050ea0ec071f"
+    },
+    {
+      "name": "v8-and-runtime-original-review.parts.json",
+      "bytes": 587,
+      "sha256": "7d138c1941cd9adb26947403534dd4ca5fe138368cfd95389f52144a4be9b219"
+    },
+    {
+      "name": "v8-and-runtime-original-selection.json",
+      "bytes": 33903,
+      "sha256": "9f83a736f181298b531b474fb96c432a57adea08caa4263e48b279e6a5c63f82"
+    },
+    {
+      "name": "v8-and-runtime-original-selection.parts.json",
+      "bytes": 593,
+      "sha256": "fee53fcbf58f916d32cbc3b214d796c48d506b5647a655b3a7af8dbbed4d5905"
+    },
+    {
+      "name": "v8-and-runtime-original-status.json",
+      "bytes": 1344,
+      "sha256": "f5dbfc94be8180ec2c684ebdf8af1f6a9a4c915463f442eae8f2c730b8bc9479"
+    },
+    {
+      "name": "v8-and-runtime-original.junit.xml",
+      "bytes": 16206,
+      "sha256": "b0b00c04eecfed8ed5a0e4721e239a19ec9a62d09f2affc3943859a28998a783"
+    },
+    {
+      "name": "v8-and-runtime-original.log",
+      "bytes": 38079,
+      "sha256": "28cfa1bcac5a087268662b65baca775b45e5546036cdc34fcd928b82a282963c"
+    },
+    {
+      "name": "v8-default-sandbox-apply.json",
+      "bytes": 487,
+      "sha256": "a9579cf17efdb6ae99460d187847817f3873d07b2aa83c2386d3072cf9244bf2"
+    }
+  ],
+  "unique_native_originals": 171,
+  "strict_chunk_base64_gzip_original_hash_checks": true,
+  "phases": [
+    {
+      "name": "skills-marker-negative",
+      "source": "59fa1100c2ad24328e7841611092132ca08942ad",
+      "actual_cases": [
+        {
+          "classname": "codex-skills-extension",
+          "name": "host_roots::tests::repo_ancestry_without_project_marker_does_not_walk_parents",
+          "result": "FAIL"
+        }
+      ],
+      "count": 1,
+      "result": "FAIL",
+      "exit_code": 100,
+      "retries": 0,
+      "original_ignored_count": 0,
+      "filter_unmatched_count": 144,
+      "exact_catalog_selection_xml_review_roster": true,
+      "all_names_in_original_raw": true,
+      "programs_stable": true,
+      "helpers_stable": true,
+      "early_return_notices": [],
+      "raw": {
+        "path": "/workspace/scratch/07dd58cc9630/ci-audit/recovered-20261105/three-repairs-v3-compressed-archive/decoded-verified-v1/skills-marker-negative.log",
+        "bytes": 16663,
+        "sha256": "458e62c5746a014e92fe8a6160cb2954d15e63a56f417f1bd0502b5080fc5283"
+      },
+      "junit": {
+        "path": "/workspace/scratch/07dd58cc9630/ci-audit/recovered-20261105/three-repairs-v3-compressed-archive/decoded-verified-v1/skills-marker-negative.junit.xml",
+        "bytes": 2200,
+        "sha256": "578ad847f4c099588a039a0bddc4eaa60d2d15d3437bc309ad0412c8ba050a4e"
+      },
+      "catalog": {
+        "path": "/workspace/scratch/07dd58cc9630/ci-audit/recovered-20261105/three-repairs-v3-compressed-archive/decoded-verified-v1/skills-marker-negative-catalog.stdout",
+        "bytes": 25207,
+        "sha256": "2b5a2226def2abe394fe624ed4e0da24a0866b4a0f5e2ea3fe8a9064cf9f30a4"
+      }
+    },
+    {
+      "name": "skills-original-nine",
+      "source": "51673d30d34674faeac6bb17e565fc9d04aec8f1",
+      "actual_cases": [
+        {
+          "classname": "codex-skills-extension",
+          "name": "host_roots::tests::layer_roots_preserve_scope_precedence_and_disabled_projects",
+          "result": "PASS"
+        },
+        {
+          "classname": "codex-skills-extension",
+          "name": "host_roots::tests::repo_ancestry_stops_at_project_root_and_preserves_root_to_cwd_order",
+          "result": "PASS"
+        },
+        {
+          "classname": "codex-skills-extension",
+          "name": "host_roots::tests::repo_ancestry_without_project_marker_does_not_walk_parents",
+          "result": "PASS"
+        },
+        {
+          "classname": "codex-skills-extension",
+          "name": "host_roots::tests::resolved_project_layer_loads_skill_without_git_marker",
+          "result": "PASS"
+        },
+        {
+          "classname": "codex-skills-extension",
+          "name": "host_roots::tests::resolved_project_layer_loads_skill_when_cwd_is_file",
+          "result": "PASS"
+        },
+        {
+          "classname": "codex-skills-extension",
+          "name": "host_roots::tests::unique_extra_root_loads_as_recursive_user_root",
+          "result": "PASS"
+        },
+        {
+          "classname": "codex-skills-extension",
+          "name": "host_roots::tests::plugin_roots_preserve_plugin_resolution_metadata",
+          "result": "PASS"
+        },
+        {
+          "classname": "codex-skills-extension",
+          "name": "host_roots::tests::resolved_config_and_repo_roots_preserve_order_and_dedupe_paths_not_names",
+          "result": "PASS"
+        },
+        {
+          "classname": "codex-skills-extension",
+          "name": "host_roots::tests::repo_ancestry_limits_concurrent_probes_and_preserves_order",
+          "result": "PASS"
+        }
+      ],
+      "count": 9,
+      "result": "PASS",
+      "exit_code": 0,
+      "retries": 0,
+      "original_ignored_count": 0,
+      "filter_unmatched_count": 136,
+      "exact_catalog_selection_xml_review_roster": true,
+      "all_names_in_original_raw": true,
+      "programs_stable": true,
+      "helpers_stable": true,
+      "early_return_notices": [],
+      "raw": {
+        "path": "/workspace/scratch/07dd58cc9630/ci-audit/recovered-20261105/three-repairs-v3-compressed-archive/decoded-verified-v1/skills-original-nine.log",
+        "bytes": 18664,
+        "sha256": "9494172628de52da8e72ae6db5170bfbace20426dcedf59c3783c97b86fff4b6"
+      },
+      "junit": {
+        "path": "/workspace/scratch/07dd58cc9630/ci-audit/recovered-20261105/three-repairs-v3-compressed-archive/decoded-verified-v1/skills-original-nine.junit.xml",
+        "bytes": 2244,
+        "sha256": "9764a5765ddcc4c4d7e7ba142cc9fb1e473fc9bcf90c214f3e7d71874bfea8a4"
+      },
+      "catalog": {
+        "path": "/workspace/scratch/07dd58cc9630/ci-audit/recovered-20261105/three-repairs-v3-compressed-archive/decoded-verified-v1/skills-original-nine-catalog.stdout",
+        "bytes": 25023,
+        "sha256": "02c105d8e2548b03238ff63eb83c74562e25b8d1856b05ef255b781a0c0ed98e"
+      }
+    },
+    {
+      "name": "migration-inference-negative",
+      "source": "f9bfef21d511a3e9ee25fb67802d240c691f62ec",
+      "actual_cases": [
+        {
+          "classname": "codex-external-agent-migration",
+          "name": "service::tests::plugins::marketplaces::import_plugins_infers_external_official_marketplace_when_missing_from_settings",
+          "result": "FAIL"
+        }
+      ],
+      "count": 1,
+      "result": "FAIL",
+      "exit_code": 100,
+      "retries": 0,
+      "original_ignored_count": 0,
+      "filter_unmatched_count": 165,
+      "exact_catalog_selection_xml_review_roster": true,
+      "all_names_in_original_raw": true,
+      "programs_stable": true,
+      "helpers_stable": true,
+      "early_return_notices": [],
+      "raw": {
+        "path": "/workspace/scratch/07dd58cc9630/ci-audit/recovered-20261105/three-repairs-v3-compressed-archive/decoded-verified-v1/migration-inference-negative.log",
+        "bytes": 18592,
+        "sha256": "9bf88614115633ba44f2a5f7df3b9f91ffb5015ff3c2860f0bbde98fa3ddd9cd"
+      },
+      "junit": {
+        "path": "/workspace/scratch/07dd58cc9630/ci-audit/recovered-20261105/three-repairs-v3-compressed-archive/decoded-verified-v1/migration-inference-negative.junit.xml",
+        "bytes": 2910,
+        "sha256": "fd38f4b91dfc461315e8184bc0a235e96120697a56fe2173805f79154960d199"
+      },
+      "catalog": {
+        "path": "/workspace/scratch/07dd58cc9630/ci-audit/recovered-20261105/three-repairs-v3-compressed-archive/decoded-verified-v1/migration-inference-negative-catalog.stdout",
+        "bytes": 28225,
+        "sha256": "84401a975cb6129904172d4eb85a85124bba6b38f323f6b830840acef3054381"
+      }
+    },
+    {
+      "name": "migration-original-package",
+      "source": "b2cee2e56d32199dc67d362ec15b796b2814ee7e",
+      "actual_cases": [
+        {
+          "classname": "codex-external-agent-migration",
+          "name": "detect::sessions::cur::tests::parses_windows_cursor_fixture_project_directory",
+          "result": "PASS"
+        },
+        {
+          "classname": "codex-external-agent-migration",
+          "name": "detect::sessions::cla::tests::detects_ai_title_over_first_user_message",
+          "result": "PASS"
+        },
+        {
+          "classname": "codex-external-agent-migration",
+          "name": "detect::sessions::cur::tests::detects_cur_transcript_with_project_cwd",
+          "result": "PASS"
+        },
+        {
+          "classname": "codex-external-agent-migration",
+          "name": "memory::tests::leaves_project_unscoped_without_an_existing_absolute_cwd",
+          "result": "PASS"
+        },
+        {
+          "classname": "codex-external-agent-migration",
+          "name": "detect::sessions::cla::tests::ignores_sessions_with_old_file_modification_time",
+          "result": "PASS"
+        },
+        {
+          "classname": "codex-external-agent-migration",
+          "name": "detect::sessions::cla::tests::prefers_latest_custom_title_over_first_user_message",
+          "result": "PASS"
+        },
+        {
+          "classname": "codex-external-agent-migration",
+          "name": "detect::sessions::cla::tests::prefers_custom_title_over_later_ai_title",
+          "result": "PASS"
+        },
+        {
+          "classname": "codex-external-agent-migration",
+          "name": "detect::sessions::cla::tests::detects_recent_sessions_with_existing_roots",
+          "result": "PASS"
+        },
+        {
+          "classname": "codex-external-agent-migration",
+          "name": "detect::sessions::connectors_cla::tests::resolves_attributed_server_name_from_session_manifest",
+          "result": "PASS"
+        },
+        {
+          "classname": "codex-external-agent-migration",
+          "name": "detect::sessions::cla::tests::redetects_sessions_when_source_contents_change_after_import",
+          "result": "PASS"
+        },
+        {
+          "classname": "codex-external-agent-migration",
+          "name": "memory_import::tests::does_not_import_a_new_project_without_a_reliable_cwd",
+          "result": "PASS"
+        },
+        {
+          "classname": "codex-external-agent-migration",
+          "name": "memory_import::tests::removes_project_resources_when_the_source_project_disappears",
+          "result": "PASS"
+        },
+        {
+          "classname": "codex-external-agent-migration",
+          "name": "memory_import::tests::preserves_project_successes_and_reports_each_failed_selection",
+          "result": "PASS"
+        },
+        {
+          "classname": "codex-external-agent-migration",
+          "name": "rewrite::tests::rewrites_terms_only_at_word_boundaries",
+          "result": "PASS"
+        },
+        {
+          "classname": "codex-external-agent-migration",
+          "name": "memory_import::tests::project_rename_removes_the_old_target_and_imports_the_new_target",
+          "result": "PASS"
+        },
+        {
+          "classname": "codex-external-agent-migration",
+          "name": "memory_import::tests::missing_cwd_does_not_make_an_existing_scoped_project_look_deleted",
+          "result": "PASS"
+        },
+        {
+          "classname": "codex-external-agent-migration",
+          "name": "scope::tests::missing_cwd_selects_home_scope",
+          "result": "PASS"
+        },
+        {
+          "classname": "codex-external-agent-migration",
+          "name": "memory_import::tests::removes_an_existing_unscoped_target_when_cwd_is_unavailable",
+          "result": "PASS"
+        },
+        {
+          "classname": "codex-external-agent-migration",
+          "name": "memory_import::tests::uses_scope_file_to_identify_owned_projects",
+          "result": "PASS"
+        },
+        {
+          "classname": "codex-external-agent-migration",
+          "name": "detect::sessions::cur::tests::rejects_ambiguous_cur_project_with_multiple_punctuated_ancestors",
+          "result": "PASS"
+        },
+        {
+          "classname": "codex-external-agent-migration",
+          "name": "memory::tests::skips_symlinked_memory_directory",
+          "result": "PASS"
+        },
+        {
+          "classname": "codex-external-agent-migration",
+          "name": "detect::sessions::cur::tests::rejects_ambiguous_cur_project_with_punctuated_ancestor",
+          "result": "PASS"
+        },
+        {
+          "classname": "codex-external-agent-migration",
+          "name": "detect::sessions::cur::tests::skips_cur_subagent_transcripts",
+          "result": "PASS"
+        },
+        {
+          "classname": "codex-external-agent-migration",
+          "name": "memory_import::tests::copies_only_selected_projects_and_recopies_changed_content",
+          "result": "PASS"
+        },
+        {
+          "classname": "codex-external-agent-migration",
+          "name": "detect::sessions::cur::tests::rejects_ambiguous_cur_project_without_a_direct_match",
+          "result": "PASS"
+        },
+        {
+          "classname": "codex-external-agent-migration",
+          "name": "memory::tests::discovers_arbitrary_project_markdown",
+          "result": "PASS"
+        },
+        {
+          "classname": "codex-external-agent-migration",
+          "name": "detect::sessions::connectors_cur::tests::detects_connector_used_by_session_mcp_tool_call",
+          "result": "PASS"
+        },
+        {
+          "classname": "codex-external-agent-migration",
+          "name": "detect::sessions::cur::tests::detects_cur_transcript_with_embedded_unc_cwd",
+          "result": "PASS"
+        },
+        {
+          "classname": "codex-external-agent-migration",
+          "name": "detect::sessions::cur::tests::resolves_projectless_cur_cwd_from_relative_home",
+          "result": "PASS"
+        },
+        {
+          "classname": "codex-external-agent-migration",
+          "name": "hooks_cur::tests::imports_supported_cur_hooks_and_drops_failure_policy",
+          "result": "PASS"
+        },
+        {
+          "classname": "codex-external-agent-migration",
+          "name": "detect::sessions::cur::tests::ignores_cur_sessions_older_than_import_window",
+          "result": "PASS"
+        },
+        {
+          "classname": "codex-external-agent-migration",
+          "name": "detect::sessions::connectors_cla::tests::keeps_duplicate_session_stems_separate_when_batched",
+          "result": "PASS"
+        },
+        {
+          "classname": "codex-external-agent-migration",
+          "name": "detect::sessions::cur::tests::detects_projectless_cur_transcript_without_embedded_metadata",
+          "result": "PASS"
+        },
+        {
+          "classname": "codex-external-agent-migration",
+          "name": "detect::sessions::cur::tests::rejects_ambiguous_encoded_project_cwd",
+          "result": "PASS"
+        },
+        {
+          "classname": "codex-external-agent-migration",
+          "name": "scope::tests::nonexistent_cwd_has_no_scope",
+          "result": "PASS"
+        },
+        {
+          "classname": "codex-external-agent-migration",
+          "name": "detect::sessions::connectors_cla::tests::still_resolves_attributed_server_uuid_from_session_manifest",
+          "result": "PASS"
+        },
+        {
+          "classname": "codex-external-agent-migration",
+          "name": "detect::sessions::cla::tests::uses_file_modification_time_for_recency",
+          "result": "PASS"
+        },
+        {
+          "classname": "codex-external-agent-migration",
+          "name": "detect::sessions::connectors_cur::tests::detects_call_mcp_tool_connector_from_project_mcp_server_metadata",
+          "result": "PASS"
+        },
+        {
+          "classname": "codex-external-agent-migration",
+          "name": "service::tests::general::config_import::detect_repo_mcp_lists_only_missing_servers",
+          "result": "PASS"
+        },
+        {
+          "classname": "codex-external-agent-migration",
+          "name": "service::tests::general::config_import::detect_home_skips_skills_when_all_skill_directories_exist",
+          "result": "PASS"
+        },
+        {
+          "classname": "codex-external-agent-migration",
+          "name": "service::tests::general::config_import::import_git_plugins_returns_pending_async_status",
+          "result": "PASS"
+        },
+        {
+          "classname": "codex-external-agent-migration",
+          "name": "service::tests::general::config_import::import_home_config_ignores_invalid_local_settings",
+          "result": "PASS"
+        },
+        {
+          "classname": "codex-external-agent-migration",
+          "name": "service::tests::general::config_import::import_home_config_uses_local_settings_over_project_settings",
+          "result": "PASS"
+        },
+        {
+          "classname": "codex-external-agent-migration",
+          "name": "scope::tests::nested_cwd_selects_repository_root",
+          "result": "PASS"
+        },
+        {
+          "classname": "codex-external-agent-migration",
+          "name": "service::tests::general::detection::detect_cursor_repo_lists_skills_from_skills",
+          "result": "PASS"
+        },
+        {
+          "classname": "codex-external-agent-migration",
+          "name": "service::tests::general::config_import::import_home_migrates_supported_config_fields_skills_and_agents_md",
+          "result": "PASS"
+        },
+        {
+          "classname": "codex-external-agent-migration",
+          "name": "detect::sessions::connectors_cur::tests::detects_project_backed_mcp_details_connector_from_metadata_name",
+          "result": "PASS"
+        },
+        {
+          "classname": "codex-external-agent-migration",
+          "name": "service::tests::general::detection::detect_repo_lists_agents_md_for_each_cwd",
+          "result": "PASS"
+        },
+        {
+          "classname": "codex-external-agent-migration",
+          "name": "detect::sessions::cur::tests::resolves_cur_project_names_with_common_separators",
+          "result": "PASS"
+        },
+        {
+          "classname": "codex-external-agent-migration",
+          "name": "service::tests::general::detection::detect_home_lists_recent_sessions",
+          "result": "PASS"
+        },
+        {
+          "classname": "codex-external-agent-migration",
+          "name": "service::tests::general::config_import::import_home_skips_empty_config_migration",
+          "result": "PASS"
+        },
+        {
+          "classname": "codex-external-agent-migration",
+          "name": "service::tests::general::repo_import::import_repo_hooks_preserves_disabled_codex_hooks_feature",
+          "result": "PASS"
+        },
+        {
+          "classname": "codex-external-agent-migration",
+          "name": "service::tests::general::detection::detect_repo_skips_hooks_when_only_unsupported_hooks_exist",
+          "result": "PASS"
+        },
+        {
+          "classname": "codex-external-agent-migration",
+          "name": "service::tests::general::repo_import::import_repo_agents_md_overwrites_empty_targets",
+          "result": "PASS"
+        },
+        {
+          "classname": "codex-external-agent-migration",
+          "name": "service::tests::general::config_import::import_repo_mcp_preserves_existing_same_named_server",
+          "result": "PASS"
+        },
+        {
+          "classname": "codex-external-agent-migration",
+          "name": "service::tests::general::detection::detect_repo_still_reports_non_plugin_items_when_home_config_is_invalid",
+          "result": "PASS"
+        },
+        {
+          "classname": "codex-external-agent-migration",
+          "name": "service::tests::general::repo_import::import_repo_agents_md_from_nested_cwd_rewrites_terms_and_skips_non_empty_targets",
+          "result": "PASS"
+        },
+        {
+          "classname": "codex-external-agent-migration",
+          "name": "service::tests::general::repo_import::detect_repo_prefers_non_empty_external_agent_agents_source",
+          "result": "PASS"
+        },
+        {
+          "classname": "codex-external-agent-migration",
+          "name": "service::tests::general::detection::detect_repo_lists_mcp_hooks_commands_and_subagents",
+          "result": "PASS"
+        },
+        {
+          "classname": "codex-external-agent-migration",
+          "name": "service::tests::general::detection::import_repo_migrates_mcp_hooks_commands_and_subagents",
+          "result": "PASS"
+        },
+        {
+          "classname": "codex-external-agent-migration",
+          "name": "service::tests::general::detection::detect_cursor_home_lists_user_and_managed_skills",
+          "result": "PASS"
+        },
+        {
+          "classname": "codex-external-agent-migration",
+          "name": "service::tests::general::repo_import::repo_agents_md_migration_skips_symlink_targets",
+          "result": "PASS"
+        },
+        {
+          "classname": "codex-external-agent-migration",
+          "name": "service::tests::general::repo_import::import_repo_uses_non_empty_external_agent_agents_source",
+          "result": "PASS"
+        },
+        {
+          "classname": "codex-external-agent-migration",
+          "name": "detect::sessions::cla::tests::skips_already_imported_current_session_versions",
+          "result": "PASS"
+        },
+        {
+          "classname": "codex-external-agent-migration",
+          "name": "service::tests::general::repo_import::repo_hooks_migration_skips_symlink_targets",
+          "result": "PASS"
+        },
+        {
+          "classname": "codex-external-agent-migration",
+          "name": "service::tests::general::repo_import::import_repo_mcp_uses_home_settings_toggles_when_repo_settings_missing",
+          "result": "PASS"
+        },
+        {
+          "classname": "codex-external-agent-migration",
+          "name": "service::tests::general::repo_import::import_continues_after_failed_migration_item",
+          "result": "PASS"
+        },
+        {
+          "classname": "codex-external-agent-migration",
+          "name": "service::tests::general::detection::detect_home_lists_config_skills_and_agents_md",
+          "result": "PASS"
+        },
+        {
+          "classname": "codex-external-agent-migration",
+          "name": "service::tests::general::config_import::detect_home_skips_config_when_target_already_has_supported_fields",
+          "result": "PASS"
+        },
+        {
+          "classname": "codex-external-agent-migration",
+          "name": "service::tests::general::repo_import::migration_metric_tags_for_skills_include_skills_count",
+          "result": "PASS"
+        },
+        {
+          "classname": "codex-external-agent-migration",
+          "name": "service::tests::plugins::basics::detect_repo_skips_plugins_even_with_installed_marketplace",
+          "result": "PASS"
+        },
+        {
+          "classname": "codex-external-agent-migration",
+          "name": "service::tests::general::repo_import::import_repo_mcp_uses_local_settings_toggles_over_project_settings",
+          "result": "PASS"
+        },
+        {
+          "classname": "codex-external-agent-migration",
+          "name": "service::tests::general::repo_import::import_repo_mcp_ignores_invalid_home_settings_when_repo_settings_missing",
+          "result": "PASS"
+        },
+        {
+          "classname": "codex-external-agent-migration",
+          "name": "service::tests::plugins::basics::import_plugins_requires_details",
+          "result": "PASS"
+        },
+        {
+          "classname": "codex-external-agent-migration",
+          "name": "service::tests::general::repo_import::repo_migration_skips_redirected_generated_destinations",
+          "result": "PASS"
+        },
+        {
+          "classname": "codex-external-agent-migration",
+          "name": "service::tests::memory::detect_does_not_offer_memory_for_an_unsupported_source",
+          "result": "PASS"
+        },
+        {
+          "classname": "codex-external-agent-migration",
+          "name": "service::tests::plugins::basics::detect_repo_skips_plugins_that_are_disabled_in_codex",
+          "result": "PASS"
+        },
+        {
+          "classname": "codex-external-agent-migration",
+          "name": "service::tests::plugins::basics::marketplace_import_sources_prefers_scoped_source_over_registry_name_collision",
+          "result": "PASS"
+        },
+        {
+          "classname": "codex-external-agent-migration",
+          "name": "service::tests::plugins::basics::detect_repo_skips_plugins_only_configured_in_project_codex",
+          "result": "PASS"
+        },
+        {
+          "classname": "codex-external-agent-migration",
+          "name": "service::tests::plugins::basics::detect_repo_skips_plugins_without_explicit_enabled_in_codex",
+          "result": "PASS"
+        },
+        {
+          "classname": "codex-external-agent-migration",
+          "name": "service::tests::plugins::basics::detect_home_lists_enabled_plugins_from_settings",
+          "result": "PASS"
+        },
+        {
+          "classname": "codex-external-agent-migration",
+          "name": "service::tests::general::config_import::import_local_plugins_returns_completed_status",
+          "result": "PASS"
+        },
+        {
+          "classname": "codex-external-agent-migration",
+          "name": "service::tests::plugins::basics::marketplace_import_sources_prefers_supported_declaration_over_materialization",
+          "result": "PASS"
+        },
+        {
+          "classname": "codex-external-agent-migration",
+          "name": "service::tests::plugins::basics::detect_home_skips_plugins_with_invalid_marketplace_source",
+          "result": "PASS"
+        },
+        {
+          "classname": "codex-external-agent-migration",
+          "name": "service::tests::plugins::basics::detect_repo_skips_plugins_from_remote_marketplace",
+          "result": "PASS"
+        },
+        {
+          "classname": "codex-external-agent-migration",
+          "name": "service::tests::plugins::basics::detect_home_skips_plugins_without_marketplace_source",
+          "result": "PASS"
+        },
+        {
+          "classname": "codex-external-agent-migration",
+          "name": "service::tests::plugins::basics::marketplace_import_sources_infers_bundled_claude_code_marketplace",
+          "result": "PASS"
+        },
+        {
+          "classname": "codex-external-agent-migration",
+          "name": "service::tests::plugins::marketplaces::import_cursor_skills_reads_user_and_managed_directories",
+          "result": "PASS"
+        },
+        {
+          "classname": "codex-external-agent-migration",
+          "name": "service::tests::plugins::basics::detect_home_plugins_uses_local_settings_over_project_settings",
+          "result": "PASS"
+        },
+        {
+          "classname": "codex-external-agent-migration",
+          "name": "service::tests::plugins::marketplaces::import_skills_returns_only_new_skill_directory_names",
+          "result": "PASS"
+        },
+        {
+          "classname": "codex-external-agent-migration",
+          "name": "sessions::append::tests::returns_the_missing_suffix_from_its_visible_boundary",
+          "result": "PASS"
+        },
+        {
+          "classname": "codex-external-agent-migration",
+          "name": "service::tests::plugins::marketplaces::detect_repo_skips_project_relative_external_agent_plugin_marketplace_path",
+          "result": "PASS"
+        },
+        {
+          "classname": "codex-external-agent-migration",
+          "name": "service::tests::plugins::marketplaces::import_rejects_forged_project_relative_external_agent_plugin_item",
+          "result": "PASS"
+        },
+        {
+          "classname": "codex-external-agent-migration",
+          "name": "sessions::append::tests::requires_a_strict_nonempty_model_prefix",
+          "result": "PASS"
+        },
+        {
+          "classname": "codex-external-agent-migration",
+          "name": "service::tests::plugins::basics::detect_home_uses_materialized_known_marketplace_for_inline_npm_source",
+          "result": "PASS"
+        },
+        {
+          "classname": "codex-external-agent-migration",
+          "name": "service::tests::plugins::marketplaces::import_plugins_rejects_project_cwd_before_config_loading",
+          "result": "PASS"
+        },
+        {
+          "classname": "codex-external-agent-migration",
+          "name": "sessions::export::tests::builds_visible_turns_for_imported_history",
+          "result": "PASS"
+        },
+        {
+          "classname": "codex-external-agent-migration",
+          "name": "sessions::export::tests::loads_custom_title_for_imported_session",
+          "result": "PASS"
+        },
+        {
+          "classname": "codex-external-agent-migration",
+          "name": "sessions::export::tests::loads_custom_title_over_later_ai_title_for_imported_session",
+          "result": "PASS"
+        },
+        {
+          "classname": "codex-external-agent-migration",
+          "name": "sessions::export::tests::skips_control_only_user_messages_when_choosing_fallback_title",
+          "result": "PASS"
+        },
+        {
+          "classname": "codex-external-agent-migration",
+          "name": "sessions::export::tests::emits_token_usage_for_imported_history",
+          "result": "PASS"
+        },
+        {
+          "classname": "codex-external-agent-migration",
+          "name": "sessions::export::tests::stores_imported_messages_as_response_items_and_visible_events",
+          "result": "PASS"
+        },
+        {
+          "classname": "codex-external-agent-migration",
+          "name": "service::tests::plugins::marketplaces::import_plugins_requires_source_marketplace_details",
+          "result": "PASS"
+        },
+        {
+          "classname": "codex-external-agent-migration",
+          "name": "sessions::export::tests::adds_import_marker_without_copying_last_agent_message",
+          "result": "PASS"
+        },
+        {
+          "classname": "codex-external-agent-migration",
+          "name": "sessions::ledger::tests::connector_candidates_accumulate_imports_for_each_source",
+          "result": "PASS"
+        },
+        {
+          "classname": "codex-external-agent-migration",
+          "name": "sessions::export::tests::loads_ai_title_for_imported_session",
+          "result": "PASS"
+        },
+        {
+          "classname": "codex-external-agent-migration",
+          "name": "sessions::records_cur::tests::embedded_cwd_overrides_migration_fallback",
+          "result": "PASS"
+        },
+        {
+          "classname": "codex-external-agent-migration",
+          "name": "sessions::records_cur::tests::preserves_user_query_tags_after_unrecognized_context",
+          "result": "PASS"
+        },
+        {
+          "classname": "codex-external-agent-migration",
+          "name": "sessions::ledger::tests::empty_ledger_does_not_read_source",
+          "result": "PASS"
+        },
+        {
+          "classname": "codex-external-agent-migration",
+          "name": "sessions::ledger::tests::completed_import_refreshes_existing_record_metadata",
+          "result": "PASS"
+        },
+        {
+          "classname": "codex-external-agent-migration",
+          "name": "sessions::ledger::tests::connector_candidates_accumulate_detected_and_imported_session_clues",
+          "result": "PASS"
+        },
+        {
+          "classname": "codex-external-agent-migration",
+          "name": "service::tests::plugins::marketplaces::import_plugins_treats_empty_cwd_as_home_scope",
+          "result": "PASS"
+        },
+        {
+          "classname": "codex-external-agent-migration",
+          "name": "service::tests::plugins::marketplaces::detect_home_supports_relative_external_agent_plugin_marketplace_path",
+          "result": "PASS"
+        },
+        {
+          "classname": "codex-external-agent-migration",
+          "name": "sessions::ledger::tests::checkpoint_is_compare_and_swap_and_preserves_record_metadata",
+          "result": "PASS"
+        },
+        {
+          "classname": "codex-external-agent-migration",
+          "name": "sessions::records_cur::tests::unwraps_user_query_after_context_wrappers",
+          "result": "PASS"
+        },
+        {
+          "classname": "codex-external-agent-migration",
+          "name": "service::tests::plugins::marketplaces::import_plugins_defers_marketplace_source_validation_to_add_marketplace",
+          "result": "PASS"
+        },
+        {
+          "classname": "codex-external-agent-migration",
+          "name": "sessions::records_common::tests::converts_tool_result_blocks_to_bounded_external_agent_tags",
+          "result": "PASS"
+        },
+        {
+          "classname": "codex-external-agent-migration",
+          "name": "sessions::tests::migration_fallback_metadata_is_opt_in",
+          "result": "PASS"
+        },
+        {
+          "classname": "codex-external-agent-migration",
+          "name": "sessions::records_cla::tests::reads_session_import_in_one_pass",
+          "result": "PASS"
+        },
+        {
+          "classname": "codex-external-agent-migration",
+          "name": "sessions::ledger::tests::completed_imports_do_not_read_source_files",
+          "result": "PASS"
+        },
+        {
+          "classname": "codex-external-agent-migration",
+          "name": "sessions::records_common::tests::converts_tool_use_blocks_to_bounded_external_agent_tags",
+          "result": "PASS"
+        },
+        {
+          "classname": "codex-external-agent-migration",
+          "name": "sessions::export::tests::uses_safe_fallback_after_all_user_messages_are_control_only",
+          "result": "PASS"
+        },
+        {
+          "classname": "codex-external-agent-migration",
+          "name": "sessions::tests::prepares_changed_session_for_its_unique_import",
+          "result": "PASS"
+        },
+        {
+          "classname": "codex-external-agent-migration",
+          "name": "sessions::records_common::tests::converts_error_tool_result_blocks_to_bounded_external_agent_tags",
+          "result": "PASS"
+        },
+        {
+          "classname": "codex-external-agent-migration",
+          "name": "detect::sessions::cur::tests::detects_cur_sessions_in_batches_and_redetects_modified_imports",
+          "result": "PASS"
+        },
+        {
+          "classname": "codex-external-agent-migration",
+          "name": "service::tests::plugins::marketplaces::detect_home_infers_external_official_marketplace_when_missing_from_settings",
+          "result": "PASS"
+        },
+        {
+          "classname": "codex-external-agent-migration",
+          "name": "sessions::tests::skips_session_that_was_already_imported",
+          "result": "PASS"
+        },
+        {
+          "classname": "codex-external-agent-migration",
+          "name": "sessions::title::tests::preserves_valid_custom_title_unchanged",
+          "result": "PASS"
+        },
+        {
+          "classname": "codex-external-agent-migration",
+          "name": "sessions::title::tests::preserves_valid_ai_title_unchanged_without_custom_title",
+          "result": "PASS"
+        },
+        {
+          "classname": "codex-external-agent-migration",
+          "name": "tests::env_placeholder_accepts_defaults",
+          "result": "PASS"
+        },
+        {
+          "classname": "codex-external-agent-migration",
+          "name": "sessions::tests::prepares_one_validated_session_import_with_content_hash",
+          "result": "PASS"
+        },
+        {
+          "classname": "codex-external-agent-migration",
+          "name": "sessions::tests::reports_session_preparation_errors",
+          "result": "PASS"
+        },
+        {
+          "classname": "codex-external-agent-migration",
+          "name": "tests::hook_command_paths_rewrite_to_target_hook_dir",
+          "result": "PASS"
+        },
+        {
+          "classname": "codex-external-agent-migration",
+          "name": "source_cur::tests::cached_marketplace_plugins_require_manifest_and_cache_entries",
+          "result": "PASS"
+        },
+        {
+          "classname": "codex-external-agent-migration",
+          "name": "source_cur::tests::detects_uninstalled_plugin_from_configured_marketplace",
+          "result": "PASS"
+        },
+        {
+          "classname": "codex-external-agent-migration",
+          "name": "service::tests::plugins::marketplaces::import_plugins_reuses_configured_marketplace_with_different_source",
+          "result": "PASS"
+        },
+        {
+          "classname": "codex-external-agent-migration",
+          "name": "sessions::title::tests::strips_nested_repeated_and_multiline_leading_control_wrappers",
+          "result": "PASS"
+        },
+        {
+          "classname": "codex-external-agent-migration",
+          "name": "sessions::title::tests::bounds_fallback_titles_to_120_characters",
+          "result": "PASS"
+        },
+        {
+          "classname": "codex-external-agent-migration",
+          "name": "sessions::export::tests::sanitizes_only_the_imported_session_fallback_title",
+          "result": "PASS"
+        },
+        {
+          "classname": "codex-external-agent-migration",
+          "name": "tests::hook_migration_honors_disable_all_hooks",
+          "result": "PASS"
+        },
+        {
+          "classname": "codex-external-agent-migration",
+          "name": "source_cur::tests::detects_legacy_repo_instruction_file",
+          "result": "PASS"
+        },
+        {
+          "classname": "codex-external-agent-migration",
+          "name": "service::tests::plugins::marketplaces::import_plugins_supports_relative_external_agent_plugin_marketplace_path",
+          "result": "PASS"
+        },
+        {
+          "classname": "codex-external-agent-migration",
+          "name": "tests::hook_script_copy_keeps_existing_target_scripts",
+          "result": "PASS"
+        },
+        {
+          "classname": "codex-external-agent-migration",
+          "name": "tests::hook_migration_honors_settings_local_disable_override",
+          "result": "PASS"
+        },
+        {
+          "classname": "codex-external-agent-migration",
+          "name": "sessions::tests::skips_changed_session_with_ambiguous_imports",
+          "result": "PASS"
+        },
+        {
+          "classname": "codex-external-agent-migration",
+          "name": "sessions::title::tests::strips_observed_external_agent_control_wrapper_families",
+          "result": "PASS"
+        },
+        {
+          "classname": "codex-external-agent-migration",
+          "name": "sessions::title::tests::returns_no_candidate_for_empty_or_control_only_messages",
+          "result": "PASS"
+        },
+        {
+          "classname": "codex-external-agent-migration",
+          "name": "tests::mcp_migration_skips_disabled_servers",
+          "result": "PASS"
+        },
+        {
+          "classname": "codex-external-agent-migration",
+          "name": "tests::mcp_migration_reads_matching_project_entries_from_repo_external_project_config",
+          "result": "PASS"
+        },
+        {
+          "classname": "codex-external-agent-migration",
+          "name": "tests::subagent_preserves_default_model_when_source_model_is_present",
+          "result": "PASS"
+        },
+        {
+          "classname": "codex-external-agent-migration",
+          "name": "tests::mcp_migration_reads_matching_project_entries_from_home_external_project_config",
+          "result": "PASS"
+        },
+        {
+          "classname": "codex-external-agent-migration",
+          "name": "tests::mcp_migration_preserves_repo_servers_over_home_project_entries",
+          "result": "PASS"
+        },
+        {
+          "classname": "codex-external-agent-migration",
+          "name": "sessions::title::tests::uses_first_meaningful_line_from_ordinary_messages",
+          "result": "PASS"
+        },
+        {
+          "classname": "codex-external-agent-migration",
+          "name": "sessions::title::tests::preserves_unknown_and_user_authored_angle_bracket_text",
+          "result": "PASS"
+        },
+        {
+          "classname": "codex-external-agent-migration",
+          "name": "tests::mcp_migration_skips_placeholder_args",
+          "result": "PASS"
+        },
+        {
+          "classname": "codex-external-agent-migration",
+          "name": "tests::subagent_target_preserves_dotted_file_stem",
+          "result": "PASS"
+        },
+        {
+          "classname": "codex-external-agent-migration",
+          "name": "tests::frontmatter_accepts_crlf_delimiters",
+          "result": "PASS"
+        },
+        {
+          "classname": "codex-external-agent-migration",
+          "name": "tests::hook_migration_drops_negative_timeouts",
+          "result": "PASS"
+        },
+        {
+          "classname": "codex-external-agent-migration",
+          "name": "tests::mcp_migration_prefers_command_transport_for_mixed_server_config",
+          "result": "PASS"
+        },
+        {
+          "classname": "codex-external-agent-migration",
+          "name": "tests::hook_migration_ignores_unsupported_handlers",
+          "result": "PASS"
+        },
+        {
+          "classname": "codex-external-agent-migration",
+          "name": "tests::subagent_requires_minimum_codex_agent_fields",
+          "result": "PASS"
+        },
+        {
+          "classname": "codex-external-agent-migration",
+          "name": "tests::subagent_accepts_yaml_block_lists_by_ignoring_unsupported_fields",
+          "result": "PASS"
+        },
+        {
+          "classname": "codex-external-agent-migration",
+          "name": "tests::mcp_migration_skips_unsupported_transports",
+          "result": "PASS"
+        },
+        {
+          "classname": "codex-external-agent-migration",
+          "name": "service::tests::plugins::marketplaces::import_plugins_infers_external_official_marketplace_when_missing_from_settings",
+          "result": "PASS"
+        },
+        {
+          "classname": "codex-external-agent-migration",
+          "name": "detect::sessions::cla::tests::detects_sessions_in_batches",
+          "result": "PASS"
+        },
+        {
+          "classname": "codex-external-agent-migration",
+          "name": "service::tests::plugins::basics::authenticated_plugin_migration_uses_chatgpt_curated_marketplace",
+          "result": "PASS"
+        }
+      ],
+      "count": 166,
+      "result": "PASS",
+      "exit_code": 0,
+      "retries": 0,
+      "original_ignored_count": 0,
+      "filter_unmatched_count": 0,
+      "exact_catalog_selection_xml_review_roster": true,
+      "all_names_in_original_raw": true,
+      "programs_stable": true,
+      "helpers_stable": true,
+      "early_return_notices": [],
+      "raw": {
+        "path": "/workspace/scratch/07dd58cc9630/ci-audit/recovered-20261105/three-repairs-v3-compressed-archive/decoded-verified-v1/migration-original-package.log",
+        "bytes": 78925,
+        "sha256": "a994abd8523a56c5124ebf3d16b12137c6f122cc71743c423c83fcef75be8905"
+      },
+      "junit": {
+        "path": "/workspace/scratch/07dd58cc9630/ci-audit/recovered-20261105/three-repairs-v3-compressed-archive/decoded-verified-v1/migration-original-package.junit.xml",
+        "bytes": 37579,
+        "sha256": "7401b36e8cb8d5b8ff7b62d39495282310da1ea2dd1eae22121fa19119b270d0"
+      },
+      "catalog": {
+        "path": "/workspace/scratch/07dd58cc9630/ci-audit/recovered-20261105/three-repairs-v3-compressed-archive/decoded-verified-v1/migration-original-package-catalog.stdout",
+        "bytes": 24430,
+        "sha256": "186745912fc5d1078072d03e8a8af122bf318128c2d7724d2db9062058a682e0"
+      }
+    },
+    {
+      "name": "v8-and-runtime-original",
+      "source": "7d703610ae4f778ad305ebc139860d276f416e8c",
+      "actual_cases": [
+        {
+          "classname": "codex-code-mode-runtime",
+          "name": "cell_actor::tests::failed_completion_delivery_rebuffers_the_event",
+          "result": "PASS"
+        },
+        {
+          "classname": "codex-code-mode-runtime",
+          "name": "cell_actor::tests::dropped_pending_observation_preserves_the_initial_yield_boundary",
+          "result": "PASS"
+        },
+        {
+          "classname": "codex-code-mode-runtime",
+          "name": "cell_actor::callbacks::tests::tool_callback_panic_rejects_the_js_promise_and_reports_failure",
+          "result": "PASS"
+        },
+        {
+          "classname": "codex-code-mode-runtime",
+          "name": "cell_actor::callbacks::tests::callback_wrapper_join_error_reports_failure",
+          "result": "PASS"
+        },
+        {
+          "classname": "codex-code-mode-runtime",
+          "name": "cell_actor::tests::buffered_initial_yield_precedes_buffered_completion_for_yield_observer",
+          "result": "PASS"
+        },
+        {
+          "classname": "codex-code-mode-runtime",
+          "name": "cell_actor::tests::pending_observer_merges_initial_yield_and_completion_output",
+          "result": "PASS"
+        },
+        {
+          "classname": "codex-code-mode-runtime",
+          "name": "cell_actor::callbacks::tests::notification_callback_panic_reports_failure",
+          "result": "PASS"
+        },
+        {
+          "classname": "codex-code-mode-runtime",
+          "name": "cell_actor::tests::dropped_pending_observer_preserves_the_frontier_for_the_next_observation",
+          "result": "PASS"
+        },
+        {
+          "classname": "codex-code-mode-runtime",
+          "name": "service::tests::audio_helper_rejects_non_data_urls",
+          "result": "PASS"
+        },
+        {
+          "classname": "codex-code-mode-runtime",
+          "name": "service::tests::execute_and_wait_clamp_yield_grace_without_stopping_the_cell",
+          "result": "PASS"
+        },
+        {
+          "classname": "codex-code-mode-runtime",
+          "name": "service::tests::execute_waits_for_nested_tool_during_yield_grace",
+          "result": "PASS"
+        },
+        {
+          "classname": "codex-code-mode-runtime",
+          "name": "service::tests::execute_to_pending_identifies_tool_calls_in_paused_frontier",
+          "result": "PASS"
+        },
+        {
+          "classname": "codex-code-mode-runtime",
+          "name": "service::tests::generated_image_helper_appends_image_and_output_hint",
+          "result": "PASS"
+        },
+        {
+          "classname": "codex-code-mode-runtime",
+          "name": "service::tests::execute_to_pending_returns_completed_for_synchronous_results",
+          "result": "PASS"
+        },
+        {
+          "classname": "codex-code-mode-runtime",
+          "name": "service::tests::execute_to_pending_returns_once_the_runtime_is_quiescent",
+          "result": "PASS"
+        },
+        {
+          "classname": "codex-code-mode-runtime",
+          "name": "service::tests::global_scope_contains_only_allowed_items",
+          "result": "PASS"
+        },
+        {
+          "classname": "codex-code-mode-runtime",
+          "name": "service::tests::image_helper_accepts_low_detail",
+          "result": "PASS"
+        },
+        {
+          "classname": "codex-code-mode-runtime",
+          "name": "service::tests::image_helper_rejects_raw_mcp_result_container",
+          "result": "PASS"
+        },
+        {
+          "classname": "codex-code-mode-runtime",
+          "name": "service::tests::image_helper_second_arg_overrides_raw_mcp_image_detail",
+          "result": "PASS"
+        },
+        {
+          "classname": "codex-code-mode-runtime",
+          "name": "service::tests::image_helper_accepts_raw_mcp_image_block_with_original_detail",
+          "result": "PASS"
+        },
+        {
+          "classname": "codex-code-mode-runtime",
+          "name": "runtime::tests::runtime_thread_panic_before_initialization_is_reported_directly",
+          "result": "PASS"
+        },
+        {
+          "classname": "codex-code-mode-runtime",
+          "name": "service::tests::image_helper_rejects_unsupported_detail",
+          "result": "PASS"
+        },
+        {
+          "classname": "codex-code-mode-runtime",
+          "name": "runtime::tests::linked_v8_has_sandbox_enabled",
+          "result": "PASS"
+        },
+        {
+          "classname": "codex-code-mode-runtime",
+          "name": "cell_actor::tests::only_the_first_termination_claims_a_buffered_completion",
+          "result": "PASS"
+        },
+        {
+          "classname": "codex-code-mode-runtime",
+          "name": "service::tests::image_helper_second_arg_overrides_explicit_object_detail",
+          "result": "PASS"
+        },
+        {
+          "classname": "codex-code-mode-runtime",
+          "name": "service::contract_tests::shutdown_cancels_notifications_while_natural_completion_is_draining",
+          "result": "PASS"
+        },
+        {
+          "classname": "codex-code-mode-runtime",
+          "name": "cell_actor::tests::queued_termination_preempts_unobserved_runtime_completion",
+          "result": "PASS"
+        },
+        {
+          "classname": "codex-code-mode-runtime",
+          "name": "service::tests::start_cell_rejects_new_cell_after_shutdown_begins",
+          "result": "PASS"
+        },
+        {
+          "classname": "codex-code-mode-runtime",
+          "name": "runtime::tests::runtime_thread_panic_is_forwarded_without_owner_supervision",
+          "result": "PASS"
+        },
+        {
+          "classname": "codex-code-mode-runtime",
+          "name": "service::contract_tests::yields_and_resumes",
+          "result": "PASS"
+        },
+        {
+          "classname": "codex-code-mode-runtime",
+          "name": "service::tests::audio_helper_accepts_audio_url_object_and_raw_mcp_audio_block",
+          "result": "PASS"
+        },
+        {
+          "classname": "codex-code-mode-runtime",
+          "name": "service::contract_tests::second_observer_is_rejected_without_displacing_the_first",
+          "result": "PASS"
+        },
+        {
+          "classname": "codex-code-mode-runtime",
+          "name": "service::tests::resolve_yield_timeout_applies_grace_before_session_limits",
+          "result": "PASS"
+        },
+        {
+          "classname": "codex-code-mode-runtime",
+          "name": "service::tests::image_helpers_reject_invalid_image_outputs",
+          "result": "PASS"
+        },
+        {
+          "classname": "codex-code-mode-runtime",
+          "name": "service::contract_tests::returns_and_resumes_from_the_pending_frontier",
+          "result": "PASS"
+        },
+        {
+          "classname": "codex-code-mode-runtime",
+          "name": "cell_actor::tests::unexpected_runtime_thread_exit_is_reported_to_the_session_owner",
+          "result": "PASS"
+        },
+        {
+          "classname": "codex-code-mode-runtime",
+          "name": "cell_actor::tests::termination_claim_prevents_stored_value_commit",
+          "result": "PASS"
+        },
+        {
+          "classname": "codex-code-mode-runtime",
+          "name": "service::contract_tests::termination_cancels_pending_callbacks_before_responding",
+          "result": "PASS"
+        },
+        {
+          "classname": "codex-code-mode-runtime",
+          "name": "service::contract_tests::natural_completion_cleans_up_callbacks_before_responding",
+          "result": "PASS"
+        },
+        {
+          "classname": "codex-code-mode-runtime",
+          "name": "cell_actor::tests::runtime_thread_panic_remains_a_cell_error_without_owner_supervision",
+          "result": "PASS"
+        },
+        {
+          "classname": "codex-code-mode-runtime",
+          "name": "service::contract_tests::observed_natural_completion_wins_over_termination",
+          "result": "PASS"
+        },
+        {
+          "classname": "codex-code-mode-runtime",
+          "name": "service::contract_tests::repeated_termination_is_rejected_while_callback_cleanup_is_pending",
+          "result": "PASS"
+        },
+        {
+          "classname": "codex-code-mode-runtime",
+          "name": "cell_actor::tests::dropped_yield_observer_preserves_output_for_the_next_observation",
+          "result": "PASS"
+        },
+        {
+          "classname": "codex-code-mode-runtime",
+          "name": "service::tests::output_helpers_return_undefined",
+          "result": "PASS"
+        },
+        {
+          "classname": "codex-code-mode-runtime",
+          "name": "cell_actor::tests::observation_dropped_before_dequeue_does_not_consume_output",
+          "result": "PASS"
+        },
+        {
+          "classname": "codex-code-mode-runtime",
+          "name": "cell_actor::tests::yield_timer_preempts_buffered_runtime_output",
+          "result": "PASS"
+        },
+        {
+          "classname": "codex-code-mode-runtime",
+          "name": "service::tests::stored_values_are_shared_between_cells_but_not_sessions",
+          "result": "PASS"
+        },
+        {
+          "classname": "codex-code-mode-runtime",
+          "name": "runtime::tests::terminate_execution_stops_cpu_bound_module",
+          "result": "PASS"
+        },
+        {
+          "classname": "codex-code-mode-runtime",
+          "name": "session_runtime::tests::shutdown_rejects_cell_admission_queued_before_the_registry_lock",
+          "result": "PASS"
+        },
+        {
+          "classname": "codex-code-mode-runtime",
+          "name": "service::tests::shutdown_interrupts_cpu_bound_cells",
+          "result": "PASS"
+        },
+        {
+          "classname": "codex-code-mode-runtime",
+          "name": "service::tests::synchronous_exit_returns_successfully",
+          "result": "PASS"
+        },
+        {
+          "classname": "codex-code-mode-runtime",
+          "name": "service::tests::wait_reports_missing_cell_separately_from_runtime_results",
+          "result": "PASS"
+        },
+        {
+          "classname": "codex-code-mode-runtime",
+          "name": "service::tests::text_helper_surfaces_stringify_errors",
+          "result": "PASS"
+        },
+        {
+          "classname": "codex-code-mode-runtime",
+          "name": "service::tests::image_helpers_reject_remote_urls",
+          "result": "PASS"
+        },
+        {
+          "classname": "codex-code-mode-runtime",
+          "name": "session_runtime::tests::cell_id_allocation_fails_before_wrapping",
+          "result": "PASS"
+        },
+        {
+          "classname": "codex-code-mode-runtime",
+          "name": "service::tests::wait_to_pending_returns_after_resumed_runtime_becomes_quiescent_again",
+          "result": "PASS"
+        },
+        {
+          "classname": "codex-code-mode-runtime",
+          "name": "session_runtime::tests::termination_rejects_a_waiting_store_commit_before_the_next_cell_can_load_it",
+          "result": "PASS"
+        },
+        {
+          "classname": "codex-code-mode-runtime",
+          "name": "service::tests::intl_date_time_format_formats_with_icu_data",
+          "result": "PASS"
+        },
+        {
+          "classname": "codex-code-mode-runtime",
+          "name": "service::tests::v8_console_is_not_exposed_on_global_this",
+          "result": "PASS"
+        },
+        {
+          "classname": "codex-code-mode-runtime",
+          "name": "session_runtime::tests::reports_cell_actor_panics_to_the_owner",
+          "result": "PASS"
+        },
+        {
+          "classname": "codex-code-mode-runtime",
+          "name": "service::tests::text_helper_serializes_objects",
+          "result": "PASS"
+        },
+        {
+          "classname": "codex-code-mode-runtime",
+          "name": "service::tests::zero_yield_limit_is_immediate_and_scoped_to_its_session",
+          "result": "PASS"
+        },
+        {
+          "classname": "codex-code-mode-runtime",
+          "name": "service::tests::date_locale_string_formats_with_icu_data",
+          "result": "PASS"
+        },
+        {
+          "classname": "codex-code-mode-runtime",
+          "name": "service::tests::wait_waits_for_nested_tool_during_yield_grace",
+          "result": "PASS"
+        },
+        {
+          "classname": "codex-code-mode-runtime",
+          "name": "session_runtime::tests::drop_terminates_cells_when_the_registry_is_locked",
+          "result": "PASS"
+        },
+        {
+          "classname": "codex-code-mode-runtime",
+          "name": "service::tests::wait_to_pending_returns_completed_after_resumed_runtime_finishes",
+          "result": "PASS"
+        },
+        {
+          "classname": "codex-code-mode-runtime",
+          "name": "runtime::tests::pending_mode_freezes_runtime_commands_until_resume",
+          "result": "PASS"
+        },
+        {
+          "classname": "codex-code-mode-runtime",
+          "name": "service::tests::execute_to_pending_excludes_delayed_timeout_tool_calls_until_wait",
+          "result": "PASS"
+        },
+        {
+          "classname": "codex-v8-poc",
+          "name": "tests::exposes_embedded_v8_version",
+          "result": "PASS"
+        },
+        {
+          "classname": "codex-v8-poc",
+          "name": "tests::parses_crdtp_dispatchable_messages",
+          "result": "PASS"
+        },
+        {
+          "classname": "codex-v8-poc",
+          "name": "tests::sandbox_feature_matches_linked_v8",
+          "result": "PASS"
+        },
+        {
+          "classname": "codex-v8-poc",
+          "name": "tests::exposes_expected_bazel_target",
+          "result": "PASS"
+        },
+        {
+          "classname": "codex-v8-poc",
+          "name": "tests::evaluates_integer_addition",
+          "result": "PASS"
+        },
+        {
+          "classname": "codex-v8-poc",
+          "name": "tests::evaluates_string_concatenation",
+          "result": "PASS"
+        },
+        {
+          "classname": "codex-code-mode-runtime::jit",
+          "name": "code_mode_runs_with_jit_disabled",
+          "result": "PASS"
+        },
+        {
+          "classname": "codex-code-mode-runtime::parallel_initialization",
+          "name": "concurrent_first_sessions_initialize_one_shared_array_buffer_pool",
+          "result": "PASS"
+        }
+      ],
+      "count": 76,
+      "result": "PASS",
+      "exit_code": 0,
+      "retries": 0,
+      "original_ignored_count": 0,
+      "filter_unmatched_count": 0,
+      "exact_catalog_selection_xml_review_roster": true,
+      "all_names_in_original_raw": true,
+      "programs_stable": true,
+      "helpers_stable": true,
+      "early_return_notices": [],
+      "raw": {
+        "path": "/workspace/scratch/07dd58cc9630/ci-audit/recovered-20261105/three-repairs-v3-compressed-archive/decoded-verified-v1/v8-and-runtime-original.log",
+        "bytes": 38079,
+        "sha256": "28cfa1bcac5a087268662b65baca775b45e5546036cdc34fcd928b82a282963c"
+      },
+      "junit": {
+        "path": "/workspace/scratch/07dd58cc9630/ci-audit/recovered-20261105/three-repairs-v3-compressed-archive/decoded-verified-v1/v8-and-runtime-original.junit.xml",
+        "bytes": 16206,
+        "sha256": "b0b00c04eecfed8ed5a0e4721e239a19ec9a62d09f2affc3943859a28998a783"
+      },
+      "catalog": {
+        "path": "/workspace/scratch/07dd58cc9630/ci-audit/recovered-20261105/three-repairs-v3-compressed-archive/decoded-verified-v1/v8-and-runtime-original-catalog.stdout",
+        "bytes": 12602,
+        "sha256": "358d2ed02d01734d1ebe389f187f5fb891b35251768a8782afb6cb93d04816cb"
+      }
+    }
+  ],
+  "causal_controls": [
+    {
+      "proof": {
+        "kind": "skills",
+        "source": "59fa1100c2ad24328e7841611092132ca08942ad",
+        "case": {
+          "classname": "codex-skills-extension",
+          "name": "host_roots::tests::repo_ancestry_without_project_marker_does_not_walk_parents",
+          "seconds": "0.008",
+          "result": "FAIL",
+          "failure": "thread 'host_roots::tests::repo_ancestry_without_project_marker_does_not_walk_parents' (807610) panicked at ext/skills/src/host_roots_tests.rs:446:5:\nassertion failed: `(left == right)`\n\nDiff < left / right > :\n [\n     AbsolutePathBuf(\n<        \"/tmp/.tmpsJg6QP/outer/.agents/skills\",\n<    ),\n<    AbsolutePathBuf(\n         \"/tmp/.tmpsJg6QP/outer/nested/inner/.agents/skills\",\n     ),\n ]\n\n\nnote: run with `RUST_BACKTRACE=1` environment variable to display a backtrace"
+        },
+        "original_exit": 100,
+        "raw_sha256": "458e62c5746a014e92fe8a6160cb2954d15e63a56f417f1bd0502b5080fc5283",
+        "actual_left_vector_paths": [
+          "/tmp/.tmpsJg6QP/outer/.agents/skills",
+          "/tmp/.tmpsJg6QP/outer/nested/inner/.agents/skills"
+        ],
+        "added_left_paths": [
+          "/tmp/.tmpsJg6QP/outer/.agents/skills"
+        ],
+        "conditions": {
+          "original_assertion_location": true,
+          "exact_vector_assertion": true,
+          "controlled_outer_added": true,
+          "exact_actual_ordered_outer_and_cwd": true,
+          "not_timeout": true
+        },
+        "qualified": true
+      },
+      "finally_restore": {
+        "negative_tree": "59fa1100c2ad24328e7841611092132ca08942ad",
+        "positive_tree": "51673d30d34674faeac6bb17e565fc9d04aec8f1",
+        "actual_source_at_return": "51673d30d34674faeac6bb17e565fc9d04aec8f1",
+        "restored_exact_positive": true,
+        "original_exception": null,
+        "restoration_exception": null,
+        "negative_qualified": true,
+        "positive_tests_allowed": true,
+        "contract": "Restore only after exact owned-negative source, ordinary index, locks and untracked-input guards pass. An invalid negative remains invalid and stops after restoration; external drift is never overwritten."
+      }
+    },
+    {
+      "proof": {
+        "kind": "migration",
+        "source": "f9bfef21d511a3e9ee25fb67802d240c691f62ec",
+        "case": {
+          "classname": "codex-external-agent-migration",
+          "name": "service::tests::plugins::marketplaces::import_plugins_infers_external_official_marketplace_when_missing_from_settings",
+          "seconds": "0.031",
+          "result": "FAIL",
+          "failure": "thread 'service::tests::plugins::marketplaces::import_plugins_infers_external_official_marketplace_when_missing_from_settings' (815610) panicked at external-agent-migration/src/service_tests/plugins/marketplaces.rs:551:9:\nisolated import assertions failed\nnote: run with `RUST_BACKTRACE=1` environment variable to display a backtrace"
+        },
+        "original_exit": 100,
+        "raw_sha256": "9bf88614115633ba44f2a5f7df3b9f91ffb5015ff3c2860f0bbde98fa3ddd9cd",
+        "conditions": {
+          "child_original_assertion_location": true,
+          "child_original_equality": true,
+          "original_inferred_name": true,
+          "child_one_failed": true,
+          "parent_reports_child_failure": true,
+          "not_timeout": true
+        },
+        "qualified": true
+      },
+      "finally_restore": {
+        "negative_tree": "f9bfef21d511a3e9ee25fb67802d240c691f62ec",
+        "positive_tree": "b2cee2e56d32199dc67d362ec15b796b2814ee7e",
+        "actual_source_at_return": "b2cee2e56d32199dc67d362ec15b796b2814ee7e",
+        "restored_exact_positive": true,
+        "original_exception": null,
+        "restoration_exception": null,
+        "negative_qualified": true,
+        "positive_tests_allowed": true,
+        "contract": "Restore only after exact owned-negative source, ordinary index, locks and untracked-input guards pass. An invalid negative remains invalid and stops after restoration; external drift is never overwritten."
+      }
+    }
+  ],
+  "source_guards": [
+    {
+      "name": "1-initial-source-guard.json",
+      "source": "1125d197cf798176bea6dcc2c0b0c499eb22cf44",
+      "untracked": [],
+      "allowed": []
+    },
+    {
+      "name": "10-skills-negative-finally-restore-eligible-source-guard.json",
+      "source": "59fa1100c2ad24328e7841611092132ca08942ad",
+      "untracked": [],
+      "allowed": []
+    },
+    {
+      "name": "11-skills-restore-absence-before-source-guard.json",
+      "source": "59fa1100c2ad24328e7841611092132ca08942ad",
+      "untracked": [],
+      "allowed": []
+    },
+    {
+      "name": "12-skills-restore-absence-after-source-guard.json",
+      "source": "51673d30d34674faeac6bb17e565fc9d04aec8f1",
+      "untracked": [],
+      "allowed": []
+    },
+    {
+      "name": "13-skills-original-nine-metadata-before-source-guard.json",
+      "source": "51673d30d34674faeac6bb17e565fc9d04aec8f1",
+      "untracked": [],
+      "allowed": []
+    },
+    {
+      "name": "14-skills-original-nine-metadata-after-source-guard.json",
+      "source": "51673d30d34674faeac6bb17e565fc9d04aec8f1",
+      "untracked": [],
+      "allowed": []
+    },
+    {
+      "name": "15-skills-original-nine-catalog-before-source-guard.json",
+      "source": "51673d30d34674faeac6bb17e565fc9d04aec8f1",
+      "untracked": [],
+      "allowed": []
+    },
+    {
+      "name": "16-skills-original-nine-catalog-after-source-guard.json",
+      "source": "51673d30d34674faeac6bb17e565fc9d04aec8f1",
+      "untracked": [],
+      "allowed": []
+    },
+    {
+      "name": "17-skills-original-nine-before-source-guard.json",
+      "source": "51673d30d34674faeac6bb17e565fc9d04aec8f1",
+      "untracked": [],
+      "allowed": []
+    },
+    {
+      "name": "18-skills-original-nine-after-source-guard.json",
+      "source": "51673d30d34674faeac6bb17e565fc9d04aec8f1",
+      "untracked": [],
+      "allowed": []
+    },
+    {
+      "name": "19-migration-remove-inference-before-source-guard.json",
+      "source": "51673d30d34674faeac6bb17e565fc9d04aec8f1",
+      "untracked": [],
+      "allowed": []
+    },
+    {
+      "name": "2-skills-controlled-marker-before-source-guard.json",
+      "source": "1125d197cf798176bea6dcc2c0b0c499eb22cf44",
+      "untracked": [],
+      "allowed": []
+    },
+    {
+      "name": "20-migration-remove-inference-after-source-guard.json",
+      "source": "f9bfef21d511a3e9ee25fb67802d240c691f62ec",
+      "untracked": [],
+      "allowed": []
+    },
+    {
+      "name": "21-migration-inference-negative-metadata-before-source-guard.json",
+      "source": "f9bfef21d511a3e9ee25fb67802d240c691f62ec",
+      "untracked": [],
+      "allowed": []
+    },
+    {
+      "name": "22-migration-inference-negative-metadata-after-source-guard.json",
+      "source": "f9bfef21d511a3e9ee25fb67802d240c691f62ec",
+      "untracked": [],
+      "allowed": []
+    },
+    {
+      "name": "23-migration-inference-negative-catalog-before-source-guard.json",
+      "source": "f9bfef21d511a3e9ee25fb67802d240c691f62ec",
+      "untracked": [],
+      "allowed": []
+    },
+    {
+      "name": "24-migration-inference-negative-catalog-after-source-guard.json",
+      "source": "f9bfef21d511a3e9ee25fb67802d240c691f62ec",
+      "untracked": [],
+      "allowed": []
+    },
+    {
+      "name": "25-migration-inference-negative-before-source-guard.json",
+      "source": "f9bfef21d511a3e9ee25fb67802d240c691f62ec",
+      "untracked": [],
+      "allowed": []
+    },
+    {
+      "name": "26-migration-inference-negative-after-source-guard.json",
+      "source": "f9bfef21d511a3e9ee25fb67802d240c691f62ec",
+      "untracked": [],
+      "allowed": []
+    },
+    {
+      "name": "27-migration-negative-finally-restore-eligible-source-guard.json",
+      "source": "f9bfef21d511a3e9ee25fb67802d240c691f62ec",
+      "untracked": [],
+      "allowed": []
+    },
+    {
+      "name": "28-migration-restore-inference-before-source-guard.json",
+      "source": "f9bfef21d511a3e9ee25fb67802d240c691f62ec",
+      "untracked": [],
+      "allowed": []
+    },
+    {
+      "name": "29-migration-restore-inference-after-source-guard.json",
+      "source": "b2cee2e56d32199dc67d362ec15b796b2814ee7e",
+      "untracked": [],
+      "allowed": []
+    },
+    {
+      "name": "3-skills-controlled-marker-after-source-guard.json",
+      "source": "59fa1100c2ad24328e7841611092132ca08942ad",
+      "untracked": [],
+      "allowed": []
+    },
+    {
+      "name": "30-migration-original-package-metadata-before-source-guard.json",
+      "source": "b2cee2e56d32199dc67d362ec15b796b2814ee7e",
+      "untracked": [],
+      "allowed": []
+    },
+    {
+      "name": "31-migration-original-package-metadata-after-source-guard.json",
+      "source": "b2cee2e56d32199dc67d362ec15b796b2814ee7e",
+      "untracked": [],
+      "allowed": []
+    },
+    {
+      "name": "32-migration-original-package-catalog-before-source-guard.json",
+      "source": "b2cee2e56d32199dc67d362ec15b796b2814ee7e",
+      "untracked": [],
+      "allowed": []
+    },
+    {
+      "name": "33-migration-original-package-catalog-after-source-guard.json",
+      "source": "b2cee2e56d32199dc67d362ec15b796b2814ee7e",
+      "untracked": [],
+      "allowed": []
+    },
+    {
+      "name": "34-migration-original-package-before-source-guard.json",
+      "source": "b2cee2e56d32199dc67d362ec15b796b2814ee7e",
+      "untracked": [],
+      "allowed": []
+    },
+    {
+      "name": "35-migration-original-package-after-source-guard.json",
+      "source": "b2cee2e56d32199dc67d362ec15b796b2814ee7e",
+      "untracked": [],
+      "allowed": []
+    },
+    {
+      "name": "36-v8-default-sandbox-before-source-guard.json",
+      "source": "b2cee2e56d32199dc67d362ec15b796b2814ee7e",
+      "untracked": [],
+      "allowed": []
+    },
+    {
+      "name": "37-v8-default-sandbox-after-source-guard.json",
+      "source": "7d703610ae4f778ad305ebc139860d276f416e8c",
+      "untracked": [],
+      "allowed": []
+    },
+    {
+      "name": "38-official-bazel-version-before-source-guard.json",
+      "source": "7d703610ae4f778ad305ebc139860d276f416e8c",
+      "untracked": [],
+      "allowed": []
+    },
+    {
+      "name": "39-official-bazel-version-after-source-guard.json",
+      "source": "7d703610ae4f778ad305ebc139860d276f416e8c",
+      "untracked": [],
+      "allowed": []
+    },
+    {
+      "name": "4-skills-marker-negative-metadata-before-source-guard.json",
+      "source": "59fa1100c2ad24328e7841611092132ca08942ad",
+      "untracked": [],
+      "allowed": []
+    },
+    {
+      "name": "40-original-bazel-lock-update-before-source-guard.json",
+      "source": "7d703610ae4f778ad305ebc139860d276f416e8c",
+      "untracked": [],
+      "allowed": [
+        "user.bazelrc"
+      ]
+    },
+    {
+      "name": "41-original-bazel-lock-update-generator-result-source-guard.json",
+      "source": "7d703610ae4f778ad305ebc139860d276f416e8c",
+      "untracked": [],
+      "allowed": [
+        "user.bazelrc"
+      ]
+    },
+    {
+      "name": "42-original-bazel-lock-update-after-source-guard.json",
+      "source": "7d703610ae4f778ad305ebc139860d276f416e8c",
+      "untracked": [],
+      "allowed": [
+        "user.bazelrc"
+      ]
+    },
+    {
+      "name": "43-original-bazel-lock-check-before-source-guard.json",
+      "source": "7d703610ae4f778ad305ebc139860d276f416e8c",
+      "untracked": [],
+      "allowed": [
+        "user.bazelrc"
+      ]
+    },
+    {
+      "name": "44-original-bazel-lock-check-after-source-guard.json",
+      "source": "7d703610ae4f778ad305ebc139860d276f416e8c",
+      "untracked": [],
+      "allowed": [
+        "user.bazelrc"
+      ]
+    },
+    {
+      "name": "45-task-owned-bazel-server-shutdown-before-source-guard.json",
+      "source": "7d703610ae4f778ad305ebc139860d276f416e8c",
+      "untracked": [],
+      "allowed": [
+        "user.bazelrc"
+      ]
+    },
+    {
+      "name": "46-task-owned-bazel-server-shutdown-after-source-guard.json",
+      "source": "7d703610ae4f778ad305ebc139860d276f416e8c",
+      "untracked": [],
+      "allowed": [
+        "user.bazelrc"
+      ]
+    },
+    {
+      "name": "47-after-original-lock-gates-source-guard.json",
+      "source": "7d703610ae4f778ad305ebc139860d276f416e8c",
+      "untracked": [],
+      "allowed": []
+    },
+    {
+      "name": "48-v8-and-runtime-original-metadata-before-source-guard.json",
+      "source": "7d703610ae4f778ad305ebc139860d276f416e8c",
+      "untracked": [],
+      "allowed": []
+    },
+    {
+      "name": "49-v8-and-runtime-original-metadata-after-source-guard.json",
+      "source": "7d703610ae4f778ad305ebc139860d276f416e8c",
+      "untracked": [],
+      "allowed": []
+    },
+    {
+      "name": "5-skills-marker-negative-metadata-after-source-guard.json",
+      "source": "59fa1100c2ad24328e7841611092132ca08942ad",
+      "untracked": [],
+      "allowed": []
+    },
+    {
+      "name": "50-v8-and-runtime-original-catalog-before-source-guard.json",
+      "source": "7d703610ae4f778ad305ebc139860d276f416e8c",
+      "untracked": [],
+      "allowed": []
+    },
+    {
+      "name": "51-v8-and-runtime-original-catalog-after-source-guard.json",
+      "source": "7d703610ae4f778ad305ebc139860d276f416e8c",
+      "untracked": [],
+      "allowed": []
+    },
+    {
+      "name": "52-v8-and-runtime-original-before-source-guard.json",
+      "source": "7d703610ae4f778ad305ebc139860d276f416e8c",
+      "untracked": [],
+      "allowed": []
+    },
+    {
+      "name": "53-v8-and-runtime-original-after-source-guard.json",
+      "source": "7d703610ae4f778ad305ebc139860d276f416e8c",
+      "untracked": [],
+      "allowed": []
+    },
+    {
+      "name": "54-final-source-guard.json",
+      "source": "7d703610ae4f778ad305ebc139860d276f416e8c",
+      "untracked": [],
+      "allowed": []
+    },
+    {
+      "name": "6-skills-marker-negative-catalog-before-source-guard.json",
+      "source": "59fa1100c2ad24328e7841611092132ca08942ad",
+      "untracked": [],
+      "allowed": []
+    },
+    {
+      "name": "7-skills-marker-negative-catalog-after-source-guard.json",
+      "source": "59fa1100c2ad24328e7841611092132ca08942ad",
+      "untracked": [],
+      "allowed": []
+    },
+    {
+      "name": "8-skills-marker-negative-before-source-guard.json",
+      "source": "59fa1100c2ad24328e7841611092132ca08942ad",
+      "untracked": [],
+      "allowed": []
+    },
+    {
+      "name": "9-skills-marker-negative-after-source-guard.json",
+      "source": "59fa1100c2ad24328e7841611092132ca08942ad",
+      "untracked": [],
+      "allowed": []
+    }
+  ],
+  "final_source_guard": {
+    "expected_source": "7d703610ae4f778ad305ebc139860d276f416e8c",
+    "actual_source": "7d703610ae4f778ad305ebc139860d276f416e8c",
+    "head": "cabcb40d36e116beaa65750e1f674c52035da785",
+    "ordinary_index": {
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/source/.git/index",
+      "bytes": 1222758,
+      "sha256": "8ccf08bcd5b633a38fa81be4814ae264365f1a2cdd1ed81e1633fbcc0ac31502"
+    },
+    "locks": {
+      "codex-rs/Cargo.lock": {
+        "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/source/codex-rs/Cargo.lock",
+        "bytes": 413768,
+        "sha256": "4a7a5535cf045089458468411e126b5f59bc6bbf34fc0deead9b0c1b8d84000a"
+      },
+      "MODULE.bazel.lock": {
+        "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/source/MODULE.bazel.lock",
+        "bytes": 1738619,
+        "sha256": "11f8a421224b9b05f32c4c14054e8868083d989fc497310c8d51e1156f189ca3"
+      }
+    },
+    "untracked_source_paths": [],
+    "allowed_untracked_source_paths": []
+  },
+  "actual_lock_generation": {
+    "name": "original-bazel-lock-update",
+    "argv": [
+      "just",
+      "bazel-lock-update"
+    ],
+    "source_before": "7d703610ae4f778ad305ebc139860d276f416e8c",
+    "exit_code": 0,
+    "started_at": "2026-11-05T02:57:03.423722+00:00",
+    "completed_at": "2026-11-05T02:58:55.157551+00:00",
+    "duration_seconds": 111.73385336800129,
+    "stdout": {
+      "full": {
+        "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/full18-three-repairs-v3-20261105-0254/original-bazel-lock-update.stdout",
+        "bytes": 18,
+        "sha256": "3e7b29182cce6e36002b75542488111789f464957b5728ab4de90ab2cf4c4fe3"
+      },
+      "parts": [
+        {
+          "offset": 0,
+          "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/full18-three-repairs-v3-20261105-0254/parts/original-bazel-lock-update-stdout/0000.txt",
+          "bytes": 18,
+          "sha256": "3e7b29182cce6e36002b75542488111789f464957b5728ab4de90ab2cf4c4fe3"
+        }
+      ]
+    },
+    "disk_after": {
+      "total": 1005867986944,
+      "used": 943378984960,
+      "free": 52241428480
+    },
+    "stderr": {
+      "full": {
+        "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/full18-three-repairs-v3-20261105-0254/original-bazel-lock-update.stderr",
+        "bytes": 4718,
+        "sha256": "dea4c5d269d03341689fb6b3929a5c4325afeea0818258e8d91a4d6c5988709d"
+      },
+      "parts": [
+        {
+          "offset": 0,
+          "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/full18-three-repairs-v3-20261105-0254/parts/original-bazel-lock-update-stderr/0000.txt",
+          "bytes": 4718,
+          "sha256": "dea4c5d269d03341689fb6b3929a5c4325afeea0818258e8d91a4d6c5988709d"
+        }
+      ]
+    },
+    "generator_changed_paths": [],
+    "generator_after_tree": "7d703610ae4f778ad305ebc139860d276f416e8c",
+    "actual_module_diff": {
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/full18-three-repairs-v3-20261105-0254/actual-module-generator.patch",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "generated_module_lock": {
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/source/MODULE.bazel.lock",
+      "bytes": 1738619,
+      "sha256": "11f8a421224b9b05f32c4c14054e8868083d989fc497310c8d51e1156f189ca3",
+      "git_blob": "1904db189003cb0b559f71958518e33a45fb6bb7"
+    }
+  },
+  "temporary_config_restore": {
+    "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/source/user.bazelrc",
+    "exists": false,
+    "cache_preserved": true
+  },
+  "native_terminal": {
+    "path": "/workspace/scratch/07dd58cc9630/ci-audit/recovered-20261105/three-repairs-v3-compressed-archive/decoded-verified-v1/terminal.json",
+    "bytes": 442484,
+    "sha256": "8eeb0e45ba86abe64d603b55f3dd9e81427f892f88a558ab887dfef24f9b415d"
+  },
+  "qualification_limit": "Exact native Linux scoped tests and real Bazel lock recipes only. Neither all-platform qualification nor the pending App parent-liveness repair is implied. The previous invalid Skills fixture attempt remains separately preserved."
+}

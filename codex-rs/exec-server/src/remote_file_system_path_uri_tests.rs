@@ -224,6 +224,40 @@ async fn authorized_read_redacts_all_remote_server_errors() {
 }
 
 #[tokio::test]
+async fn authorized_read_preserves_server_bound_failure_without_returning_bytes() {
+    let (websocket_url, captured_params, server) = record_authorized_reads(vec![(
+        Some(true),
+        Err(JSONRPCErrorError {
+            code: -32603,
+            data: None,
+            message: "authorized file read exceeds bound".to_string(),
+        }),
+    )])
+    .await;
+    let file_system = remote_file_system(websocket_url);
+    let sandbox = authorized_sandbox();
+    let path = non_native_cwd().join("AGENTS.md").expect("file URI");
+    let error = file_system
+        .read_file_bounded_authorized(&path, &sandbox, 8)
+        .await
+        .expect_err("the server must reject the whole oversized read");
+    assert_eq!(error.kind(), std::io::ErrorKind::InvalidData);
+    assert_eq!(
+        error.to_string(),
+        "remote authorized file read exceeded its bound"
+    );
+    assert_eq!(
+        captured_params.await.expect("captured request"),
+        vec![FsReadFileAuthorizedParams {
+            path,
+            sandbox: sandbox.drop_cwd_if_unused(),
+            max_bytes: 8,
+        }],
+    );
+    server.await.expect("recording server should succeed");
+}
+
+#[tokio::test]
 async fn authorized_read_rejects_invalid_bounds_before_connecting() {
     let listener = TcpListener::bind("127.0.0.1:0")
         .await

@@ -1,0 +1,520 @@
+{
+  "schema": "hepta-owning-f825-actual-raw-early-return-binding-v1",
+  "source_tree": "f8251e1d14fa8524ab469281296cd4cf708f173c",
+  "original_raw": {
+    "bytes": 11635674,
+    "sha256": "bbcba614a398d56e62fad2b3959cc87442e91c46140601789183a4ec22191fda"
+  },
+  "original_junit": {
+    "bytes": 1149890,
+    "sha256": "956ffd45997a1d77093187e1f212b4634d1d5a55d17893a19e1b8390a02ed65c"
+  },
+  "cases": [
+    {
+      "classname": "codex-core",
+      "name": "unified_exec::tests::remote_exec_server_rejects_inherited_fd_launches",
+      "junit_result": "PASS",
+      "nextest_result": "PASS",
+      "messages": [
+        {
+          "line": 29744,
+          "original_line": "    Skipping test because it requires a remote test environment.\n"
+        }
+      ],
+      "original_raw_block": {
+        "start_line": 29735,
+        "end_line": 29745,
+        "byte_offset": 1337030,
+        "bytes": 419,
+        "sha256": "6c44bda00821fafa1b27aed2553e8f5a40d927f10beb760996c782560701bed5",
+        "content": "        PASS [   0.011s] codex-core unified_exec::tests::remote_exec_server_rejects_inherited_fd_launches\n  stdout \u2500\u2500\u2500\n\n    running 1 test\n    test unified_exec::tests::remote_exec_server_rejects_inherited_fd_launches ... ok\n\n    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 2433 filtered out; finished in 0.00s\n\n  stderr \u2500\u2500\u2500\n    Skipping test because it requires a remote test environment.\n\n"
+      },
+      "exact_junit_key_bound": true
+    },
+    {
+      "classname": "codex-core",
+      "name": "unified_exec::tests::unified_exec_uses_remote_exec_server_when_configured",
+      "junit_result": "PASS",
+      "nextest_result": "PASS",
+      "messages": [
+        {
+          "line": 29827,
+          "original_line": "    Skipping test because it requires a remote test environment.\n"
+        }
+      ],
+      "original_raw_block": {
+        "start_line": 29818,
+        "end_line": 29828,
+        "byte_offset": 1340453,
+        "bytes": 427,
+        "sha256": "cbbd7604af2c81fdb58f72a6fea5d7b82cad33525994146f60e20a1b46d817e8",
+        "content": "        PASS [   0.010s] codex-core unified_exec::tests::unified_exec_uses_remote_exec_server_when_configured\n  stdout \u2500\u2500\u2500\n\n    running 1 test\n    test unified_exec::tests::unified_exec_uses_remote_exec_server_when_configured ... ok\n\n    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 2433 filtered out; finished in 0.00s\n\n  stderr \u2500\u2500\u2500\n    Skipping test because it requires a remote test environment.\n\n"
+      },
+      "exact_junit_key_bound": true
+    },
+    {
+      "classname": "codex-core::all",
+      "name": "suite::agents_md::multi_environment_project_instructions_share_one_byte_budget",
+      "junit_result": "PASS",
+      "nextest_result": "PASS",
+      "messages": [
+        {
+          "line": 30365,
+          "original_line": "    Skipping test because it requires a remote test environment.\n"
+        }
+      ],
+      "original_raw_block": {
+        "start_line": 30356,
+        "end_line": 30366,
+        "byte_offset": 1363738,
+        "bytes": 442,
+        "sha256": "15c4cad223529b30326a93dc1c911588025ab1efac2056772bd45637877f858c",
+        "content": "        PASS [   0.012s] codex-core::all suite::agents_md::multi_environment_project_instructions_share_one_byte_budget\n  stdout \u2500\u2500\u2500\n\n    running 1 test\n    test suite::agents_md::multi_environment_project_instructions_share_one_byte_budget ... ok\n\n    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 1432 filtered out; finished in 0.00s\n\n  stderr \u2500\u2500\u2500\n    Skipping test because it requires a remote test environment.\n\n"
+      },
+      "exact_junit_key_bound": true
+    },
+    {
+      "classname": "codex-core::all",
+      "name": "suite::agents_md::multi_environment_thread_loads_every_project_and_keeps_creation_snapshot",
+      "junit_result": "PASS",
+      "nextest_result": "PASS",
+      "messages": [
+        {
+          "line": 30376,
+          "original_line": "    Skipping test because it requires a remote test environment.\n"
+        }
+      ],
+      "original_raw_block": {
+        "start_line": 30367,
+        "end_line": 30377,
+        "byte_offset": 1364180,
+        "bytes": 466,
+        "sha256": "fbfb943ea80e4405591e902d57a6885639de1a0b3be84a3cc1ecfe47d93ad43b",
+        "content": "        PASS [   0.013s] codex-core::all suite::agents_md::multi_environment_thread_loads_every_project_and_keeps_creation_snapshot\n  stdout \u2500\u2500\u2500\n\n    running 1 test\n    test suite::agents_md::multi_environment_thread_loads_every_project_and_keeps_creation_snapshot ... ok\n\n    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 1432 filtered out; finished in 0.00s\n\n  stderr \u2500\u2500\u2500\n    Skipping test because it requires a remote test environment.\n\n"
+      },
+      "exact_junit_key_bound": true
+    },
+    {
+      "classname": "codex-core::all",
+      "name": "suite::apply_patch_cli::apply_patch_turn_diff_emits_portable_paths_for_remote_cwd",
+      "junit_result": "PASS",
+      "nextest_result": "PASS",
+      "messages": [
+        {
+          "line": 36329,
+          "original_line": "    Skipping test because it requires a remote test environment.\n"
+        }
+      ],
+      "original_raw_block": {
+        "start_line": 36320,
+        "end_line": 36330,
+        "byte_offset": 1665689,
+        "bytes": 448,
+        "sha256": "d9ea7620b6060081a9419f6ba4f2f1fcf24082126bc2346f251a739d179e5046",
+        "content": "        PASS [   0.014s] codex-core::all suite::apply_patch_cli::apply_patch_turn_diff_emits_portable_paths_for_remote_cwd\n  stdout \u2500\u2500\u2500\n\n    running 1 test\n    test suite::apply_patch_cli::apply_patch_turn_diff_emits_portable_paths_for_remote_cwd ... ok\n\n    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 1432 filtered out; finished in 0.00s\n\n  stderr \u2500\u2500\u2500\n    Skipping test because it requires a remote test environment.\n\n"
+      },
+      "exact_junit_key_bound": true
+    },
+    {
+      "classname": "codex-core::all",
+      "name": "suite::network_approval::approved_network_host_for_one_environment_still_prompts_in_another",
+      "junit_result": "PASS",
+      "nextest_result": "PASS",
+      "messages": [
+        {
+          "line": 37141,
+          "original_line": "    Skipping test because it requires a remote test environment.\n"
+        }
+      ],
+      "original_raw_block": {
+        "start_line": 37132,
+        "end_line": 37142,
+        "byte_offset": 1702303,
+        "bytes": 468,
+        "sha256": "7bfce2ebeb20d74301d5abff66e3e18589d1919503e009a2d7bed9e87a175292",
+        "content": "        PASS [   0.018s] codex-core::all suite::network_approval::approved_network_host_for_one_environment_still_prompts_in_another\n  stdout \u2500\u2500\u2500\n\n    running 1 test\n    test suite::network_approval::approved_network_host_for_one_environment_still_prompts_in_another ... ok\n\n    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 1432 filtered out; finished in 0.00s\n\n  stderr \u2500\u2500\u2500\n    Skipping test because it requires a remote test environment.\n\n"
+      },
+      "exact_junit_key_bound": true
+    },
+    {
+      "classname": "codex-core::all",
+      "name": "suite::network_approval::owner_network_policy_follows_the_selected_remote_command",
+      "junit_result": "PASS",
+      "nextest_result": "PASS",
+      "messages": [
+        {
+          "line": 37242,
+          "original_line": "    Skipping test because it requires a remote test environment.\n"
+        }
+      ],
+      "original_raw_block": {
+        "start_line": 37233,
+        "end_line": 37243,
+        "byte_offset": 1706397,
+        "bytes": 448,
+        "sha256": "8fe4fdfe77efcfefcd8f54e16f4d626c053282a7a073c09ba6f854946df12b46",
+        "content": "        PASS [   0.016s] codex-core::all suite::network_approval::owner_network_policy_follows_the_selected_remote_command\n  stdout \u2500\u2500\u2500\n\n    running 1 test\n    test suite::network_approval::owner_network_policy_follows_the_selected_remote_command ... ok\n\n    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 1432 filtered out; finished in 0.00s\n\n  stderr \u2500\u2500\u2500\n    Skipping test because it requires a remote test environment.\n\n"
+      },
+      "exact_junit_key_bound": true
+    },
+    {
+      "classname": "codex-core::all",
+      "name": "suite::network_approval::remote_guardian_network_decisions_are_scoped_to_each_request_and_environment",
+      "junit_result": "PASS",
+      "nextest_result": "PASS",
+      "messages": [
+        {
+          "line": 37262,
+          "original_line": "    Skipping test because it requires a remote test environment.\n"
+        }
+      ],
+      "original_raw_block": {
+        "start_line": 37253,
+        "end_line": 37263,
+        "byte_offset": 1707217,
+        "bytes": 488,
+        "sha256": "2bf54156e4750580dcdce0062a1d9c56080e5ffef9fd1615eddc4e8adf1a3acd",
+        "content": "        PASS [   0.016s] codex-core::all suite::network_approval::remote_guardian_network_decisions_are_scoped_to_each_request_and_environment\n  stdout \u2500\u2500\u2500\n\n    running 1 test\n    test suite::network_approval::remote_guardian_network_decisions_are_scoped_to_each_request_and_environment ... ok\n\n    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 1432 filtered out; finished in 0.00s\n\n  stderr \u2500\u2500\u2500\n    Skipping test because it requires a remote test environment.\n\n"
+      },
+      "exact_junit_key_bound": true
+    },
+    {
+      "classname": "codex-core::all",
+      "name": "suite::apply_patch_cli::apply_patch_turn_diff_tracks_local_and_remote_environment_paths",
+      "junit_result": "PASS",
+      "nextest_result": "PASS",
+      "messages": [
+        {
+          "line": 37691,
+          "original_line": "    Skipping test because it requires a remote test environment.\n"
+        }
+      ],
+      "original_raw_block": {
+        "start_line": 37682,
+        "end_line": 37692,
+        "byte_offset": 2094571,
+        "bytes": 460,
+        "sha256": "2da645d889158c757dfcd40ae7685dd12a33fa7400f17e6af11c7f3938c6059d",
+        "content": "        PASS [   0.014s] codex-core::all suite::apply_patch_cli::apply_patch_turn_diff_tracks_local_and_remote_environment_paths\n  stdout \u2500\u2500\u2500\n\n    running 1 test\n    test suite::apply_patch_cli::apply_patch_turn_diff_tracks_local_and_remote_environment_paths ... ok\n\n    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 1432 filtered out; finished in 0.00s\n\n  stderr \u2500\u2500\u2500\n    Skipping test because it requires a remote test environment.\n\n"
+      },
+      "exact_junit_key_bound": true
+    },
+    {
+      "classname": "codex-core::all",
+      "name": "suite::remote_env::apply_patch_approvals_are_remembered_per_environment",
+      "junit_result": "PASS",
+      "nextest_result": "PASS",
+      "messages": [
+        {
+          "line": 51265,
+          "original_line": "    Skipping test because it requires a remote test environment.\n"
+        }
+      ],
+      "original_raw_block": {
+        "start_line": 51256,
+        "end_line": 51266,
+        "byte_offset": 9828070,
+        "bytes": 428,
+        "sha256": "7718d3f30de5a3f3a4ad18e96d68bf870afe31725f7f2ba2f81b875fb9d5d85d",
+        "content": "        PASS [   0.012s] codex-core::all suite::remote_env::apply_patch_approvals_are_remembered_per_environment\n  stdout \u2500\u2500\u2500\n\n    running 1 test\n    test suite::remote_env::apply_patch_approvals_are_remembered_per_environment ... ok\n\n    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 1432 filtered out; finished in 0.00s\n\n  stderr \u2500\u2500\u2500\n    Skipping test because it requires a remote test environment.\n\n"
+      },
+      "exact_junit_key_bound": true
+    },
+    {
+      "classname": "codex-core::all",
+      "name": "suite::remote_env::apply_patch_freeform_routes_to_selected_remote_environment",
+      "junit_result": "PASS",
+      "nextest_result": "PASS",
+      "messages": [
+        {
+          "line": 51276,
+          "original_line": "    Skipping test because it requires a remote test environment.\n"
+        }
+      ],
+      "original_raw_block": {
+        "start_line": 51267,
+        "end_line": 51277,
+        "byte_offset": 9828498,
+        "bytes": 440,
+        "sha256": "5280548ddac6c837001789a3c8e5de4ea77e897bbfc407445abe115db11cc318",
+        "content": "        PASS [   0.011s] codex-core::all suite::remote_env::apply_patch_freeform_routes_to_selected_remote_environment\n  stdout \u2500\u2500\u2500\n\n    running 1 test\n    test suite::remote_env::apply_patch_freeform_routes_to_selected_remote_environment ... ok\n\n    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 1432 filtered out; finished in 0.00s\n\n  stderr \u2500\u2500\u2500\n    Skipping test because it requires a remote test environment.\n\n"
+      },
+      "exact_junit_key_bound": true
+    },
+    {
+      "classname": "codex-core::all",
+      "name": "suite::remote_env::apply_patch_intercepted_exec_command_routes_to_selected_remote_environment",
+      "junit_result": "PASS",
+      "nextest_result": "PASS",
+      "messages": [
+        {
+          "line": 51299,
+          "original_line": "    Skipping test because it requires a remote test environment.\n"
+        }
+      ],
+      "original_raw_block": {
+        "start_line": 51290,
+        "end_line": 51300,
+        "byte_offset": 9829561,
+        "bytes": 472,
+        "sha256": "a381dae22e1b014b67d2a4ce76b4c70573458ed7e4a4372c9a6294f70f07f429",
+        "content": "        PASS [   0.012s] codex-core::all suite::remote_env::apply_patch_intercepted_exec_command_routes_to_selected_remote_environment\n  stdout \u2500\u2500\u2500\n\n    running 1 test\n    test suite::remote_env::apply_patch_intercepted_exec_command_routes_to_selected_remote_environment ... ok\n\n    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 1432 filtered out; finished in 0.00s\n\n  stderr \u2500\u2500\u2500\n    Skipping test because it requires a remote test environment.\n\n"
+      },
+      "exact_junit_key_bound": true
+    },
+    {
+      "classname": "codex-core::all",
+      "name": "suite::remote_env::explicit_remote_shell_runs_in_remote_cwd",
+      "junit_result": "PASS",
+      "nextest_result": "PASS",
+      "messages": [
+        {
+          "line": 51406,
+          "original_line": "    Skipping test because it requires a remote test environment.\n"
+        }
+      ],
+      "original_raw_block": {
+        "start_line": 51397,
+        "end_line": 51407,
+        "byte_offset": 9860586,
+        "bytes": 404,
+        "sha256": "e696340cac0aaa3b2652be7c769e41d58ecc84488069f086b995f40d26dc14c1",
+        "content": "        PASS [   0.013s] codex-core::all suite::remote_env::explicit_remote_shell_runs_in_remote_cwd\n  stdout \u2500\u2500\u2500\n\n    running 1 test\n    test suite::remote_env::explicit_remote_shell_runs_in_remote_cwd ... ok\n\n    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 1432 filtered out; finished in 0.00s\n\n  stderr \u2500\u2500\u2500\n    Skipping test because it requires a remote test environment.\n\n"
+      },
+      "exact_junit_key_bound": true
+    },
+    {
+      "classname": "codex-core::all",
+      "name": "suite::remote_env::exec_command_routes_to_selected_remote_environment",
+      "junit_result": "PASS",
+      "nextest_result": "PASS",
+      "messages": [
+        {
+          "line": 51417,
+          "original_line": "    Skipping test because it requires a remote test environment.\n"
+        }
+      ],
+      "original_raw_block": {
+        "start_line": 51408,
+        "end_line": 51418,
+        "byte_offset": 9860990,
+        "bytes": 424,
+        "sha256": "4425682c231ad67835966493d28c9e477a6a13766d275b3c7efedcd87f3236d2",
+        "content": "        PASS [   0.014s] codex-core::all suite::remote_env::exec_command_routes_to_selected_remote_environment\n  stdout \u2500\u2500\u2500\n\n    running 1 test\n    test suite::remote_env::exec_command_routes_to_selected_remote_environment ... ok\n\n    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 1432 filtered out; finished in 0.00s\n\n  stderr \u2500\u2500\u2500\n    Skipping test because it requires a remote test environment.\n\n"
+      },
+      "exact_junit_key_bound": true
+    },
+    {
+      "classname": "codex-core::all",
+      "name": "suite::remote_env::remote_exec_materializes_target_roots_before_sandbox_selection",
+      "junit_result": "PASS",
+      "nextest_result": "PASS",
+      "messages": [
+        {
+          "line": 51472,
+          "original_line": "    Skipping test because it requires a remote test environment.\n"
+        }
+      ],
+      "original_raw_block": {
+        "start_line": 51463,
+        "end_line": 51473,
+        "byte_offset": 9864776,
+        "bytes": 448,
+        "sha256": "30da94cb6c502917fcac71227c6265aabb537686963eea78ba92f29cad0e0ced",
+        "content": "        PASS [   0.011s] codex-core::all suite::remote_env::remote_exec_materializes_target_roots_before_sandbox_selection\n  stdout \u2500\u2500\u2500\n\n    running 1 test\n    test suite::remote_env::remote_exec_materializes_target_roots_before_sandbox_selection ... ok\n\n    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 1432 filtered out; finished in 0.00s\n\n  stderr \u2500\u2500\u2500\n    Skipping test because it requires a remote test environment.\n\n"
+      },
+      "exact_junit_key_bound": true
+    },
+    {
+      "classname": "codex-core::all",
+      "name": "suite::remote_env::remote_request_permissions_grant_unblocks_later_remote_exec",
+      "junit_result": "PASS",
+      "nextest_result": "PASS",
+      "messages": [
+        {
+          "line": 51483,
+          "original_line": "    Skipping test because it requires a remote test environment.\n"
+        }
+      ],
+      "original_raw_block": {
+        "start_line": 51474,
+        "end_line": 51484,
+        "byte_offset": 9865224,
+        "bytes": 442,
+        "sha256": "b36827024f1c93912275a47e76fa9a41271f38ef0c6d814af2d17654848b6aab",
+        "content": "        PASS [   0.013s] codex-core::all suite::remote_env::remote_request_permissions_grant_unblocks_later_remote_exec\n  stdout \u2500\u2500\u2500\n\n    running 1 test\n    test suite::remote_env::remote_request_permissions_grant_unblocks_later_remote_exec ... ok\n\n    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 1432 filtered out; finished in 0.00s\n\n  stderr \u2500\u2500\u2500\n    Skipping test because it requires a remote test environment.\n\n"
+      },
+      "exact_junit_key_bound": true
+    },
+    {
+      "classname": "codex-core::all",
+      "name": "suite::remote_env::remote_test_env_can_connect_and_use_filesystem",
+      "junit_result": "PASS",
+      "nextest_result": "PASS",
+      "messages": [
+        {
+          "line": 51494,
+          "original_line": "    Skipping test because it requires a remote test environment.\n"
+        }
+      ],
+      "original_raw_block": {
+        "start_line": 51485,
+        "end_line": 51495,
+        "byte_offset": 9865666,
+        "bytes": 416,
+        "sha256": "7d0d309cae9df27e9bac4a04c026e5887bb3142198b48da631c54d474bcb46b4",
+        "content": "        PASS [   0.013s] codex-core::all suite::remote_env::remote_test_env_can_connect_and_use_filesystem\n  stdout \u2500\u2500\u2500\n\n    running 1 test\n    test suite::remote_env::remote_test_env_can_connect_and_use_filesystem ... ok\n\n    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 1432 filtered out; finished in 0.00s\n\n  stderr \u2500\u2500\u2500\n    Skipping test because it requires a remote test environment.\n\n"
+      },
+      "exact_junit_key_bound": true
+    },
+    {
+      "classname": "codex-core::all",
+      "name": "suite::remote_env::remote_test_env_copy_preserves_symlink_source",
+      "junit_result": "PASS",
+      "nextest_result": "PASS",
+      "messages": [
+        {
+          "line": 51505,
+          "original_line": "    Skipping test because it requires a remote test environment.\n"
+        }
+      ],
+      "original_raw_block": {
+        "start_line": 51496,
+        "end_line": 51506,
+        "byte_offset": 9866082,
+        "bytes": 414,
+        "sha256": "4f44d6d8cf9cc7d8f82a0a388944dc20dfcd30196fc379eaf30436abd0c7a14b",
+        "content": "        PASS [   0.013s] codex-core::all suite::remote_env::remote_test_env_copy_preserves_symlink_source\n  stdout \u2500\u2500\u2500\n\n    running 1 test\n    test suite::remote_env::remote_test_env_copy_preserves_symlink_source ... ok\n\n    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 1432 filtered out; finished in 0.00s\n\n  stderr \u2500\u2500\u2500\n    Skipping test because it requires a remote test environment.\n\n"
+      },
+      "exact_junit_key_bound": true
+    },
+    {
+      "classname": "codex-core::all",
+      "name": "suite::remote_env::remote_test_env_exposes_target_shell_to_model",
+      "junit_result": "PASS",
+      "nextest_result": "PASS",
+      "messages": [
+        {
+          "line": 51516,
+          "original_line": "    Skipping test because it requires a remote test environment.\n"
+        }
+      ],
+      "original_raw_block": {
+        "start_line": 51507,
+        "end_line": 51517,
+        "byte_offset": 9866496,
+        "bytes": 414,
+        "sha256": "4f70a7e50ba52e68bce47728b42c6a9ff0f6c0033254d75a56a996e4e23f5709",
+        "content": "        PASS [   0.012s] codex-core::all suite::remote_env::remote_test_env_exposes_target_shell_to_model\n  stdout \u2500\u2500\u2500\n\n    running 1 test\n    test suite::remote_env::remote_test_env_exposes_target_shell_to_model ... ok\n\n    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 1432 filtered out; finished in 0.00s\n\n  stderr \u2500\u2500\u2500\n    Skipping test because it requires a remote test environment.\n\n"
+      },
+      "exact_junit_key_bound": true
+    },
+    {
+      "classname": "codex-core::all",
+      "name": "suite::remote_env::remote_test_env_remove_removes_symlink_not_target",
+      "junit_result": "PASS",
+      "nextest_result": "PASS",
+      "messages": [
+        {
+          "line": 51527,
+          "original_line": "    Skipping test because it requires a remote test environment.\n"
+        }
+      ],
+      "original_raw_block": {
+        "start_line": 51518,
+        "end_line": 51528,
+        "byte_offset": 9866910,
+        "bytes": 422,
+        "sha256": "60a44fb21ee604b614bde736d7fafb992a6e966550327b4954d7a5ea49ca2615",
+        "content": "        PASS [   0.012s] codex-core::all suite::remote_env::remote_test_env_remove_removes_symlink_not_target\n  stdout \u2500\u2500\u2500\n\n    running 1 test\n    test suite::remote_env::remote_test_env_remove_removes_symlink_not_target ... ok\n\n    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 1432 filtered out; finished in 0.00s\n\n  stderr \u2500\u2500\u2500\n    Skipping test because it requires a remote test environment.\n\n"
+      },
+      "exact_junit_key_bound": true
+    },
+    {
+      "classname": "codex-core::all",
+      "name": "suite::remote_env::remote_test_env_sandboxed_read_allows_readable_root",
+      "junit_result": "PASS",
+      "nextest_result": "PASS",
+      "messages": [
+        {
+          "line": 51538,
+          "original_line": "    Skipping test because it requires a remote test environment.\n"
+        }
+      ],
+      "original_raw_block": {
+        "start_line": 51529,
+        "end_line": 51539,
+        "byte_offset": 9867332,
+        "bytes": 426,
+        "sha256": "03331f08ef9cb867cf5ad592ea0f677be1e6eac0d02363dbdd5d08ec87b1fd91",
+        "content": "        PASS [   0.013s] codex-core::all suite::remote_env::remote_test_env_sandboxed_read_allows_readable_root\n  stdout \u2500\u2500\u2500\n\n    running 1 test\n    test suite::remote_env::remote_test_env_sandboxed_read_allows_readable_root ... ok\n\n    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 1432 filtered out; finished in 0.00s\n\n  stderr \u2500\u2500\u2500\n    Skipping test because it requires a remote test environment.\n\n"
+      },
+      "exact_junit_key_bound": true
+    },
+    {
+      "classname": "codex-core::all",
+      "name": "suite::remote_env::remote_test_env_sandboxed_read_rejects_symlink_parent_dotdot_escape",
+      "junit_result": "PASS",
+      "nextest_result": "PASS",
+      "messages": [
+        {
+          "line": 51549,
+          "original_line": "    Skipping test because it requires a remote test environment.\n"
+        }
+      ],
+      "original_raw_block": {
+        "start_line": 51540,
+        "end_line": 51550,
+        "byte_offset": 9867758,
+        "bytes": 458,
+        "sha256": "171e36a28505b782ab3c1464a39c84fe1549c3d1b96d776d77842259f3a42fb9",
+        "content": "        PASS [   0.012s] codex-core::all suite::remote_env::remote_test_env_sandboxed_read_rejects_symlink_parent_dotdot_escape\n  stdout \u2500\u2500\u2500\n\n    running 1 test\n    test suite::remote_env::remote_test_env_sandboxed_read_rejects_symlink_parent_dotdot_escape ... ok\n\n    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 1432 filtered out; finished in 0.00s\n\n  stderr \u2500\u2500\u2500\n    Skipping test because it requires a remote test environment.\n\n"
+      },
+      "exact_junit_key_bound": true
+    },
+    {
+      "classname": "codex-core::all",
+      "name": "suite::rmcp_client::remote_stdio_env_var_source_does_not_copy_local_env",
+      "junit_result": "PASS",
+      "nextest_result": "PASS",
+      "messages": [
+        {
+          "line": 52715,
+          "original_line": "    Skipping test because it requires a remote test environment.\n"
+        }
+      ],
+      "original_raw_block": {
+        "start_line": 52706,
+        "end_line": 52716,
+        "byte_offset": 9918711,
+        "bytes": 428,
+        "sha256": "68d4b339f4cb55465395b3f270bc6a187c77489ee0d5eb7ebe71e87be56721ac",
+        "content": "        PASS [   0.013s] codex-core::all suite::rmcp_client::remote_stdio_env_var_source_does_not_copy_local_env\n  stdout \u2500\u2500\u2500\n\n    running 1 test\n    test suite::rmcp_client::remote_stdio_env_var_source_does_not_copy_local_env ... ok\n\n    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 1432 filtered out; finished in 0.00s\n\n  stderr \u2500\u2500\u2500\n    Skipping test because it requires a remote test environment.\n\n"
+      },
+      "exact_junit_key_bound": true
+    },
+    {
+      "classname": "codex-core::all",
+      "name": "suite::view_image::view_image_routes_to_selected_remote_environment",
+      "junit_result": "PASS",
+      "nextest_result": "PASS",
+      "messages": [
+        {
+          "line": 56335,
+          "original_line": "    Skipping test because it requires a remote test environment.\n"
+        }
+      ],
+      "original_raw_block": {
+        "start_line": 56326,
+        "end_line": 56336,
+        "byte_offset": 11273192,
+        "bytes": 420,
+        "sha256": "2e465cc1eb8f7e2c10eff07ccb634f08ddaa7f0034c866b66a8f41fc5f0f9b26",
+        "content": "        PASS [   0.011s] codex-core::all suite::view_image::view_image_routes_to_selected_remote_environment\n  stdout \u2500\u2500\u2500\n\n    running 1 test\n    test suite::view_image::view_image_routes_to_selected_remote_environment ... ok\n\n    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 1432 filtered out; finished in 0.00s\n\n  stderr \u2500\u2500\u2500\n    Skipping test because it requires a remote test environment.\n\n"
+      },
+      "exact_junit_key_bound": true
+    }
+  ],
+  "previous_empty_xml_only_observer_preserved": true,
+  "limit": "JUnit PASS is retained; these 24 original remote-dependent behavior paths explicitly returned early."
+}

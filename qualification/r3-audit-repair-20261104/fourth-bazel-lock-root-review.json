@@ -1,0 +1,50 @@
+{
+  "schema": "hepta.r1-r2b.original-bazel-lock.root-review.v1",
+  "status": "PASS_ORIGINAL_LOCK_GENERATOR_AND_CHECK_ONLY",
+  "source": "6eafed3863a36f9f5a1f28034e098dd195331334",
+  "receipt": "386a02aeb1ff3ef03c7f040a7dde0fbb6f51c5c1",
+  "original_failure_evidence": "37f5e6a463e589ad5b28a5fdf5fd1c3e0172df43",
+  "before_broken_cache_attempt_retained": true,
+  "commands": [
+    {
+      "argv": [
+        "just",
+        "bazel-lock-update"
+      ],
+      "exit_code": 0,
+      "seconds": 66.78991336899344,
+      "raw_sha256": "cc924d586aea40855300f1e99c77be224dd0e8d1da23e2fef49dd482e271a0ed",
+      "source_unchanged": true,
+      "watchdog_reason": null
+    },
+    {
+      "argv": [
+        "just",
+        "bazel-lock-check"
+      ],
+      "exit_code": 0,
+      "seconds": 2.7902750390348956,
+      "raw_sha256": "9a58a7f9efe33aa739069874891ea64f5307813d88add8d661edcfc1feea0a00",
+      "source_unchanged": true,
+      "watchdog_reason": null
+    }
+  ],
+  "module_lock_blob": "1904db189003cb0b559f71958518e33a45fb6bb7",
+  "module_lock_sha256": "11f8a421224b9b05f32c4c14054e8868083d989fc497310c8d51e1156f189ca3",
+  "module_lock_generated_diff": "empty",
+  "local_config_restored": true,
+  "ordinary_index_unchanged": true,
+  "private_four_caches": true,
+  "original_experimental_flag_preserved": true,
+  "no_wrapper_or_home_change": true,
+  "no_shared_cleanup": true,
+  "warnings_preserved": [
+    "Existing direct-vs-resolved versions: platforms 1.0.0 -> 1.1.0, apple_support 2.1.0 -> 2.5.2, rules_cc 0.2.18 -> 0.2.20.",
+    "Existing zstd-sys, libgit2-sys and libssh2-sys annotation advice remains unmodified."
+  ],
+  "limits": [
+    "This closes the local original dependency lock-generation/check gate for the R1/R2b composition; it does not assert product builds, new target execution or complete CI success.",
+    "Recovery uses the repository's existing optional user.bazelrc import; original source config/recipes and shared cache are unchanged.",
+    "The original MODULE lock generator actually ran and found no file change; no hand-written lock update was substituted."
+  ]
+}

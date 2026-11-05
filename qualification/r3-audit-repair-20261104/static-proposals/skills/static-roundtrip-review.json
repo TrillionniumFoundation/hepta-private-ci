@@ -1,0 +1,69 @@
+{
+  "roundtrips": [
+    {
+      "patch": "skills-marker-fixture.patch",
+      "identity": {
+        "bytes": 1481,
+        "sha256": "9cbcb52f018e76e0abfb6b373128ce66e3fc76c70b09ee33546a568ceeb778e1",
+        "blob": "34b6bbd7afdc5865735171acb173e496975b1891"
+      },
+      "before": {
+        "bytes": 22485,
+        "sha256": "054070e3f7935d2945b99987e08eff5cbf96c27870d25c466bc31b54b174f00b",
+        "blob": "fee6c1a0398c0f9bacbb60853e20786e804a3271"
+      },
+      "after": {
+        "bytes": 23392,
+        "sha256": "fa2d78f6fea0018f34d57971ff9defb8b709d1085ba6f2e901b14a2e2ae520c4",
+        "blob": "3d8412f8eca445b1eba85f26d7975aa7ddfbb524"
+      },
+      "roundtrip_byteequal": true
+    },
+    {
+      "patch": "skills-marker-controlled-negative.patch",
+      "identity": {
+        "bytes": 1663,
+        "sha256": "4e2df28b9ee3c628494d380f771b2ab6ace9982ebca1b108ee28cabd2c55debc",
+        "blob": "7da3ab834be1da080980d07b6b975970683bbdc2"
+      },
+      "before": {
+        "bytes": 22485,
+        "sha256": "054070e3f7935d2945b99987e08eff5cbf96c27870d25c466bc31b54b174f00b",
+        "blob": "fee6c1a0398c0f9bacbb60853e20786e804a3271"
+      },
+      "after": {
+        "bytes": 23571,
+        "sha256": "a56d6f5d9e6f592ac9e7cd4dd815bd7a8b2d8c31d8902433639c9ff601236a45",
+        "blob": "9814df0cddc9cf8c02e8e0259ccdac1fa2b117b1"
+      },
+      "roundtrip_byteequal": true
+    },
+    {
+      "patch": "skills-marker-fix-after-negative.patch",
+      "identity": {
+        "bytes": 460,
+        "sha256": "0bf8f7594e1a88b0b194eab99d61d64b6ff96b9843cb235fec4295ade8f5e547",
+        "blob": "1e6b7dacfc527c3edf6aafebcb28c8c882bc64ef"
+      },
+      "before": {
+        "bytes": 23571,
+        "sha256": "a56d6f5d9e6f592ac9e7cd4dd815bd7a8b2d8c31d8902433639c9ff601236a45",
+        "blob": "9814df0cddc9cf8c02e8e0259ccdac1fa2b117b1"
+      },
+      "after": {
+        "bytes": 23392,
+        "sha256": "fa2d78f6fea0018f34d57971ff9defb8b709d1085ba6f2e901b14a2e2ae520c4",
+        "blob": "3d8412f8eca445b1eba85f26d7975aa7ddfbb524"
+      },
+      "roundtrip_byteequal": true
+    }
+  ],
+  "all_other_file_bytes_unchanged": true,
+  "all_function_names_unchanged": true,
+  "original_whole_vector_assertion_unchanged": true,
+  "nonempty_real_marker_config": true,
+  "native_executed": false,
+  "formatter_executed": false,
+  "compile_executed": false,
+  "refs_changed": false
+}

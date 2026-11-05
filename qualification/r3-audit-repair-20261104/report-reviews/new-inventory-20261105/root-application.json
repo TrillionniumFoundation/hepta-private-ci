@@ -1,0 +1,59 @@
+{
+  "schema": "hepta-root-three-md-inventory-donor-update-application-v1",
+  "at_utc": "2026-11-05T03:56:53.618589+00:00",
+  "patch": {
+    "bytes": 30447,
+    "sha256": "a40ebf5c566dde95bd490c3b16c9178d0395dca8c9ab13a296e728284b788388",
+    "git_blob": "07eeff3ec15ffbc2d64d87c28b11cb237bc6049a"
+  },
+  "independent_review": {
+    "bytes": 8434,
+    "sha256": "fc82471615d62725a3a698149e217f495b81438a1ca1e7cab0c844c5d6cbce10",
+    "git_blob": "cdeabf9ff1a92f35a7259e6d88b9be5bffd1047c"
+  },
+  "original_preimages_match": true,
+  "commands": [
+    {
+      "argv": [
+        "git",
+        "apply",
+        "--check",
+        "research-audit/fourth-report-new-inventory-review-20261105/report-inventory-donor-update.patch"
+      ],
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "git",
+        "apply",
+        "research-audit/fourth-report-new-inventory-review-20261105/report-inventory-donor-update.patch"
+      ],
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": ""
+    }
+  ],
+  "actual_postimages": [
+    {
+      "path": "hepta-audit-fourth/deliverables/CURRENT_AUDIT_PROGRESS.zh-CN.md",
+      "bytes": 36913,
+      "sha256": "deeba7758435cadd70b18d901c54b58496083417f3553b4488cffab29359c7bd",
+      "git_blob": "50a2e9a4b070cc4c381e39dea9422aa7c2e7986e"
+    },
+    {
+      "path": "hepta-audit-fourth/deliverables/FOURTH_BATCH_QUALIFICATION.md",
+      "bytes": 20346,
+      "sha256": "ade06de4dd04e3b612618c1e8f07698467e401fda08ef5505d482cf37e47a6de",
+      "git_blob": "80febcb8909d7bdc7ea06829bf00ca338d642469"
+    },
+    {
+      "path": "hepta-audit-fourth/deliverables/PROJECT_DIRECTION_AND_PLAN.zh-CN.md",
+      "bytes": 18945,
+      "sha256": "31f87409aee44bb6e2ae835bf0f603d613d27fd7e00d4dbd99e04b5b82f189f4",
+      "git_blob": "f73bafd33d55e379bf0a39a983f92b2efeb384b5"
+    }
+  ],
+  "scope": "Actual report updates only. Latest App V2 causal stage receipts will be added after this historical first-attempt checkpoint. Original23 statuses/exit conditions untouched."
+}

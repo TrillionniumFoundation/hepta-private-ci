@@ -1,0 +1,382 @@
+{
+  "schema": "hepta-three-repairs-v3-complete-original-archive-v1",
+  "original_native_job": "1a1a9a0aa93-fc05-3667",
+  "original_native_status": {
+    "at_unix_ms": 1793847602768,
+    "audit_recorded": true,
+    "automatic_retry": false,
+    "cancelled": false,
+    "exit_code": 0,
+    "job_id": "1a1a9a0aa93-fc05-3667",
+    "launch_nonce": "4067f462e81d570b2753c3e87ec258ec",
+    "log_bytes": {
+      "stderr": {
+        "seen": 0,
+        "stored": 0
+      },
+      "stdout": {
+        "seen": 9659,
+        "stored": 9659
+      }
+    },
+    "log_errors": {
+      "stderr": null,
+      "stdout": null
+    },
+    "log_synced": {
+      "stderr": true,
+      "stdout": true
+    },
+    "log_truncated": {
+      "stderr": false,
+      "stdout": false
+    },
+    "output_complete": true,
+    "output_durable": true,
+    "state": "succeeded",
+    "terminal_publication_confirmed": true,
+    "terminal_publication_protocol": 1,
+    "timed_out": false
+  },
+  "runner": "89a705ef48b40e2834bd218744d2d56d58c0031a",
+  "manifest": "c09347fa144265745105f1955f36611dadaa211b",
+  "payload": "585a76d167f66378b40ebd713cee9ce0416b25c9",
+  "execution_guard": "f9e355f7b7b39749fe64811bb029d2e6d6e3c174",
+  "terminal_source_tree": "7d703610ae4f778ad305ebc139860d276f416e8c",
+  "complete_native_terminal": "0d851076ebfcc8795c0cbda80ab86304f612bc20",
+  "phase_complete_bundles": {
+    "skills": "df61b67369e67f7f697dd80cb9810f476c01829b",
+    "migration": "d1b0677fac6e39f4dc2a3a0ececc20e88a7ba797",
+    "bazel": "64ef3bacc481baff02f51b738e0c8a45f8da0662",
+    "v8": "ce0c122c1168625640e038955623a6ff0fa0e3aa"
+  },
+  "previous_invalid_fixture_archive": "90befbfd7def648605f5dda067939c9844457115",
+  "export_job": "1a1a9a909d3-fc05-3697",
+  "export_status": {
+    "at_unix_ms": 1793847791631,
+    "audit_recorded": true,
+    "automatic_retry": false,
+    "cancelled": false,
+    "exit_code": 0,
+    "job_id": "1a1a9a909d3-fc05-3697",
+    "launch_nonce": "7c12921b43f06a0b7149cfbd2775b5d0",
+    "log_bytes": {
+      "stderr": {
+        "seen": 0,
+        "stored": 0
+      },
+      "stdout": {
+        "seen": 304,
+        "stored": 304
+      }
+    },
+    "log_errors": {
+      "stderr": null,
+      "stdout": null
+    },
+    "log_synced": {
+      "stderr": true,
+      "stdout": true
+    },
+    "log_truncated": {
+      "stderr": false,
+      "stdout": false
+    },
+    "output_complete": true,
+    "output_durable": true,
+    "state": "succeeded",
+    "terminal_publication_confirmed": true,
+    "terminal_publication_protocol": 1,
+    "timed_out": false
+  },
+  "native_export_manifest": {
+    "git_blob": "c1c45ecd46109bb027d3da40dcf473698af2ecca",
+    "bytes": 44906,
+    "sha256": "9243b2f50a79945b2dbefc5e3be501dbccb0923e4ad508b5492fa76589fb0912"
+  },
+  "original_unique_files_count": 171,
+  "assets": [
+    {
+      "name": "migration-inference-negative-metadata.stdout",
+      "original": {
+        "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/full18-three-repairs-v3-20261105-0254/migration-inference-negative-metadata.stdout",
+        "bytes": 8163658,
+        "sha256": "51ff98c991ea71a7a1be5135acb3c35bd6070b09544306f4b3bbc0fa1ea52e19"
+      },
+      "gzip": {
+        "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/full18-three-repairs-v3-frozen-export-20261105/migration-inference-negative-metadata.stdout.gz",
+        "bytes": 596961,
+        "sha256": "8e52af367ddcdc8a0694f7ab5aecc04137d9e6be16c24089c3b869f216d6e826"
+      },
+      "gzip_mtime": 0,
+      "base64_bytes": 795948,
+      "base64_sha256": "05b7da731e02afd2751d37771428d5bfe9fb37d31d0793ae05d86aaf6bc1198c",
+      "github_chunks": [
+        {
+          "offset": 0,
+          "git_blob": "bb2caf6d3e7ab1572e10e56f7a91f1a08072ee56",
+          "bytes": 400000,
+          "sha256": "fa002bff4c2de97ba41138c7fe8d464ffaca6bb87d016a4118a3f5d9be4d9752",
+          "local_transport_file": "/workspace/scratch/07dd58cc9630/ci-audit/recovered-20261105/app-parent-probe-compressed-archive/02-000.b64.txt",
+          "local_transport_added_final_newline": true
+        },
+        {
+          "offset": 400000,
+          "git_blob": "d6cc00eb227cd2ab00162be0b66c09df89a4d0cb",
+          "bytes": 395948,
+          "sha256": "5520e1b07f6788cf6eeaf35cced07b9bb352ab7555e7f361f96151e97c6ead94",
+          "local_transport_file": "/workspace/scratch/07dd58cc9630/ci-audit/recovered-20261105/app-parent-probe-compressed-archive/02-001.b64.txt",
+          "local_transport_added_final_newline": true
+        }
+      ],
+      "byte_identical_asset_reused_from": "8c1e13c2d6c91597dc5543ff16a50892ba7da891"
+    },
+    {
+      "name": "migration-original-package-metadata.stdout",
+      "original": {
+        "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/full18-three-repairs-v3-20261105-0254/migration-original-package-metadata.stdout",
+        "bytes": 8163658,
+        "sha256": "51ff98c991ea71a7a1be5135acb3c35bd6070b09544306f4b3bbc0fa1ea52e19"
+      },
+      "gzip": {
+        "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/full18-three-repairs-v3-frozen-export-20261105/migration-original-package-metadata.stdout.gz",
+        "bytes": 596961,
+        "sha256": "8e52af367ddcdc8a0694f7ab5aecc04137d9e6be16c24089c3b869f216d6e826"
+      },
+      "gzip_mtime": 0,
+      "base64_bytes": 795948,
+      "base64_sha256": "05b7da731e02afd2751d37771428d5bfe9fb37d31d0793ae05d86aaf6bc1198c",
+      "github_chunks": [
+        {
+          "offset": 0,
+          "git_blob": "bb2caf6d3e7ab1572e10e56f7a91f1a08072ee56",
+          "bytes": 400000,
+          "sha256": "fa002bff4c2de97ba41138c7fe8d464ffaca6bb87d016a4118a3f5d9be4d9752",
+          "local_transport_file": "/workspace/scratch/07dd58cc9630/ci-audit/recovered-20261105/app-parent-probe-compressed-archive/02-000.b64.txt",
+          "local_transport_added_final_newline": true
+        },
+        {
+          "offset": 400000,
+          "git_blob": "d6cc00eb227cd2ab00162be0b66c09df89a4d0cb",
+          "bytes": 395948,
+          "sha256": "5520e1b07f6788cf6eeaf35cced07b9bb352ab7555e7f361f96151e97c6ead94",
+          "local_transport_file": "/workspace/scratch/07dd58cc9630/ci-audit/recovered-20261105/app-parent-probe-compressed-archive/02-001.b64.txt",
+          "local_transport_added_final_newline": true
+        }
+      ],
+      "byte_identical_asset_reused_from": "8c1e13c2d6c91597dc5543ff16a50892ba7da891"
+    },
+    {
+      "name": "migration-original-package-selection.json",
+      "original": {
+        "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/full18-three-repairs-v3-20261105-0254/migration-original-package-selection.json",
+        "bytes": 78838,
+        "sha256": "a0bf469b95fea9053f1ad3feef9f05779a9427f2dabdb92881389e245c622cf9"
+      },
+      "gzip": {
+        "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/full18-three-repairs-v3-frozen-export-20261105/migration-original-package-selection.json.gz",
+        "bytes": 6639,
+        "sha256": "b27d533ee83a1394b72b8244ad2721078838c839d5ec86fa48da367f12670dc7"
+      },
+      "gzip_mtime": 0,
+      "base64_bytes": 8852,
+      "base64_sha256": "3bc01305942c56e74db5ea33aed24eb49d104b6ae06d478cf9c5f5c2bed4a082",
+      "github_chunks": [
+        {
+          "offset": 0,
+          "git_blob": "b9b9e0fc72c829069e60a6ab8720a34e8b6f34c9",
+          "bytes": 8852,
+          "sha256": "3bc01305942c56e74db5ea33aed24eb49d104b6ae06d478cf9c5f5c2bed4a082",
+          "local_transport_file": "/workspace/scratch/07dd58cc9630/ci-audit/recovered-20261105/three-repairs-v3-compressed-archive/02-000.b64.txt",
+          "local_transport_added_final_newline": true
+        }
+      ]
+    },
+    {
+      "name": "migration-original-package.log",
+      "original": {
+        "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/full18-three-repairs-v3-20261105-0254/migration-original-package.log",
+        "bytes": 78925,
+        "sha256": "a994abd8523a56c5124ebf3d16b12137c6f122cc71743c423c83fcef75be8905"
+      },
+      "gzip": {
+        "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/full18-three-repairs-v3-frozen-export-20261105/migration-original-package.log.gz",
+        "bytes": 7056,
+        "sha256": "6952789b17d96c565115726b578caefd323d7181ffdc8ab82f587f2ef00a3fe6"
+      },
+      "gzip_mtime": 0,
+      "base64_bytes": 9408,
+      "base64_sha256": "f52aa5b95adc9068a0ed075c8418e8cb48e7ecb1956b5d043ed1d75c7c064861",
+      "github_chunks": [
+        {
+          "offset": 0,
+          "git_blob": "c9d69460a7e827f4df56c5356a15573392b44463",
+          "bytes": 9408,
+          "sha256": "f52aa5b95adc9068a0ed075c8418e8cb48e7ecb1956b5d043ed1d75c7c064861",
+          "local_transport_file": "/workspace/scratch/07dd58cc9630/ci-audit/recovered-20261105/three-repairs-v3-compressed-archive/03-000.b64.txt",
+          "local_transport_added_final_newline": true
+        }
+      ]
+    },
+    {
+      "name": "skills-marker-negative-metadata.stdout",
+      "original": {
+        "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/full18-three-repairs-v3-20261105-0254/skills-marker-negative-metadata.stdout",
+        "bytes": 8163658,
+        "sha256": "51ff98c991ea71a7a1be5135acb3c35bd6070b09544306f4b3bbc0fa1ea52e19"
+      },
+      "gzip": {
+        "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/full18-three-repairs-v3-frozen-export-20261105/skills-marker-negative-metadata.stdout.gz",
+        "bytes": 596961,
+        "sha256": "8e52af367ddcdc8a0694f7ab5aecc04137d9e6be16c24089c3b869f216d6e826"
+      },
+      "gzip_mtime": 0,
+      "base64_bytes": 795948,
+      "base64_sha256": "05b7da731e02afd2751d37771428d5bfe9fb37d31d0793ae05d86aaf6bc1198c",
+      "github_chunks": [
+        {
+          "offset": 0,
+          "git_blob": "bb2caf6d3e7ab1572e10e56f7a91f1a08072ee56",
+          "bytes": 400000,
+          "sha256": "fa002bff4c2de97ba41138c7fe8d464ffaca6bb87d016a4118a3f5d9be4d9752",
+          "local_transport_file": "/workspace/scratch/07dd58cc9630/ci-audit/recovered-20261105/app-parent-probe-compressed-archive/02-000.b64.txt",
+          "local_transport_added_final_newline": true
+        },
+        {
+          "offset": 400000,
+          "git_blob": "d6cc00eb227cd2ab00162be0b66c09df89a4d0cb",
+          "bytes": 395948,
+          "sha256": "5520e1b07f6788cf6eeaf35cced07b9bb352ab7555e7f361f96151e97c6ead94",
+          "local_transport_file": "/workspace/scratch/07dd58cc9630/ci-audit/recovered-20261105/app-parent-probe-compressed-archive/02-001.b64.txt",
+          "local_transport_added_final_newline": true
+        }
+      ],
+      "byte_identical_asset_reused_from": "8c1e13c2d6c91597dc5543ff16a50892ba7da891"
+    },
+    {
+      "name": "skills-original-nine-metadata.stdout",
+      "original": {
+        "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/full18-three-repairs-v3-20261105-0254/skills-original-nine-metadata.stdout",
+        "bytes": 8163658,
+        "sha256": "51ff98c991ea71a7a1be5135acb3c35bd6070b09544306f4b3bbc0fa1ea52e19"
+      },
+      "gzip": {
+        "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/full18-three-repairs-v3-frozen-export-20261105/skills-original-nine-metadata.stdout.gz",
+        "bytes": 596961,
+        "sha256": "8e52af367ddcdc8a0694f7ab5aecc04137d9e6be16c24089c3b869f216d6e826"
+      },
+      "gzip_mtime": 0,
+      "base64_bytes": 795948,
+      "base64_sha256": "05b7da731e02afd2751d37771428d5bfe9fb37d31d0793ae05d86aaf6bc1198c",
+      "github_chunks": [
+        {
+          "offset": 0,
+          "git_blob": "bb2caf6d3e7ab1572e10e56f7a91f1a08072ee56",
+          "bytes": 400000,
+          "sha256": "fa002bff4c2de97ba41138c7fe8d464ffaca6bb87d016a4118a3f5d9be4d9752",
+          "local_transport_file": "/workspace/scratch/07dd58cc9630/ci-audit/recovered-20261105/app-parent-probe-compressed-archive/02-000.b64.txt",
+          "local_transport_added_final_newline": true
+        },
+        {
+          "offset": 400000,
+          "git_blob": "d6cc00eb227cd2ab00162be0b66c09df89a4d0cb",
+          "bytes": 395948,
+          "sha256": "5520e1b07f6788cf6eeaf35cced07b9bb352ab7555e7f361f96151e97c6ead94",
+          "local_transport_file": "/workspace/scratch/07dd58cc9630/ci-audit/recovered-20261105/app-parent-probe-compressed-archive/02-001.b64.txt",
+          "local_transport_added_final_newline": true
+        }
+      ],
+      "byte_identical_asset_reused_from": "8c1e13c2d6c91597dc5543ff16a50892ba7da891"
+    },
+    {
+      "name": "terminal.json",
+      "original": {
+        "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/full18-three-repairs-v3-20261105-0254/terminal.json",
+        "bytes": 442484,
+        "sha256": "8eeb0e45ba86abe64d603b55f3dd9e81427f892f88a558ab887dfef24f9b415d"
+      },
+      "gzip": {
+        "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/full18-three-repairs-v3-frozen-export-20261105/terminal.json.gz",
+        "bytes": 61867,
+        "sha256": "6f9bac3246aa5c1a92c291151db9d285e19cd63163ad0bf9450ec61e11aad172"
+      },
+      "gzip_mtime": 0,
+      "base64_bytes": 82492,
+      "base64_sha256": "2c27a39dca00f8dfba2776c3b2cc98334bbb0497a348fdf62c4ead13d278e584",
+      "github_chunks": [
+        {
+          "offset": 0,
+          "git_blob": "a5ee7743c564a93f33049540820097ffe53a0cae",
+          "bytes": 82492,
+          "sha256": "2c27a39dca00f8dfba2776c3b2cc98334bbb0497a348fdf62c4ead13d278e584",
+          "local_transport_file": "/workspace/scratch/07dd58cc9630/ci-audit/recovered-20261105/three-repairs-v3-compressed-archive/06-000.b64.txt",
+          "local_transport_added_final_newline": true
+        }
+      ]
+    },
+    {
+      "name": "v8-and-runtime-original-metadata.stdout",
+      "original": {
+        "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/full18-three-repairs-v3-20261105-0254/v8-and-runtime-original-metadata.stdout",
+        "bytes": 8163699,
+        "sha256": "3a53323eae920e2e53dcb3e334128a4aff63cfb51840793e9150d617d2c9ba18"
+      },
+      "gzip": {
+        "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/full18-three-repairs-v3-frozen-export-20261105/v8-and-runtime-original-metadata.stdout.gz",
+        "bytes": 596975,
+        "sha256": "2bfdeb1b46c29492c9af1a154f7a6ef9c2dca853991dc92d66704244fd23553d"
+      },
+      "gzip_mtime": 0,
+      "base64_bytes": 795968,
+      "base64_sha256": "b435316db0802312920c577b35ece7871377b854bada0d9a1451338f8944e720",
+      "github_chunks": [
+        {
+          "offset": 0,
+          "git_blob": "2bfdec5855e4d8be582c2c45d3e61e853ec8c1b0",
+          "bytes": 400000,
+          "sha256": "4eff581346b14d5d60dbaa890a2bd6d225604bc8c377b69fb5309ad4f999eaee",
+          "local_transport_file": "/workspace/scratch/07dd58cc9630/ci-audit/recovered-20261105/three-repairs-v3-compressed-archive/07-000.b64.txt",
+          "local_transport_added_final_newline": true
+        },
+        {
+          "offset": 400000,
+          "git_blob": "028d94d6f0793bcbf9f9ffe396ba71104a2978d4",
+          "bytes": 395968,
+          "sha256": "e9d1577555af5f1c029f1a6b7bc52f20a3a8bab2e78405f91d8f9ffbbc9f1466",
+          "local_transport_file": "/workspace/scratch/07dd58cc9630/ci-audit/recovered-20261105/three-repairs-v3-compressed-archive/07-001.b64.txt",
+          "local_transport_added_final_newline": true
+        }
+      ]
+    },
+    {
+      "name": "complete-small-originals.json",
+      "original": {
+        "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/full18-three-repairs-v3-frozen-export-20261105/complete-small-originals.json",
+        "bytes": 1191872,
+        "sha256": "0610d0b9281881287d1b77bed196f66f5f7b442394aa7799654e2ce301255cc2"
+      },
+      "gzip": {
+        "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/full18-three-repairs-v3-frozen-export-20261105/complete-small-originals.json.gz",
+        "bytes": 154170,
+        "sha256": "4df4032372ec03aa0af2351c82698969d89043b4b0f17365f77ede1cc3ce348b"
+      },
+      "gzip_mtime": 0,
+      "base64_bytes": 205560,
+      "base64_sha256": "1b8b3c5877011cbaa556b05e90d0ef7a6385faccf251758af24347e172370e12",
+      "github_chunks": [
+        {
+          "offset": 0,
+          "git_blob": "09a1352a4b29554034dd79aa31698e3e1e799b5f",
+          "bytes": 205560,
+          "sha256": "1b8b3c5877011cbaa556b05e90d0ef7a6385faccf251758af24347e172370e12",
+          "local_transport_file": "/workspace/scratch/07dd58cc9630/ci-audit/recovered-20261105/three-repairs-v3-compressed-archive/08-000.b64.txt",
+          "local_transport_added_final_newline": true
+        }
+      ]
+    }
+  ],
+  "originals_untouched": true,
+  "decode_contract": "Strict exact Git base64 UTF-8 chunks -> verify bytes/SHA/Git id -> concatenate offsets -> verify base64 bytes/SHA -> decode validate=true -> gzip bytes/SHA -> decompress -> original bytes/SHA. Local transport has exactly one added final newline removed before hash verification.",
+  "deduplication_contract": "Four current original full metadata files match each other and the preceding full metadata at original/gzip/base64 hashes. Existing identical Git chunks are reused while retaining each actual current native path/command/source binding. No old test execution is reused as current pass.",
+  "qualification_limit": "Two independently qualified deliberate negatives plus original9/166/76 Linux scoped package PASS with zero retries and no early returns; actual official Bazel original lock update/check passed and produced no lock diff. No full-workspace or cross-platform qualification, no final hygiene after these tests."
+}

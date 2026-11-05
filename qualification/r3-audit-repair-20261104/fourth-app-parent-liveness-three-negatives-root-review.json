@@ -1,0 +1,98 @@
+{
+  "schema": "hepta-app-parent-liveness-three-causal-negatives-root-review-v1",
+  "at_utc": "2026-11-05T04:03:30.852187+00:00",
+  "native_job": "1a1a9cf9300-fc05-3823",
+  "root_guard": "a8c1ed05af9d75795d5c78806680e90ec8d5ac9b",
+  "phases": [
+    {
+      "kind": "no_exit_rejection",
+      "source": "8c9b3cab2887ac8512529ff73b90584232ca5a17",
+      "bundle": {
+        "bytes": 21532,
+        "sha256": "16a27765e06cb9b6797a9f51d307d83448dadc1afc012c1f47d915180484928f",
+        "blob": "6ba5374e7e5d5bb021c520b4a0e2f4d7957f6b9f"
+      },
+      "original_case": "parent_lifecycle::tests::exited_original_parent_is_rejected_after_actual_reparenting",
+      "actual_result": "FAIL",
+      "seconds": "0.018",
+      "causal_negative_valid": true,
+      "restored_tree": "c6fbcfa0d1ba3b1556f601dc4ca3a7734328b9f7",
+      "original_test_exit": 100,
+      "retries": 0,
+      "all_six_original_files_hashed": true,
+      "specific_causal_evidence": {
+        "inherited_unread_parent_marker": true,
+        "not_outer_timeout": true,
+        "actual_reparented_ok": true,
+        "exact_child_assertion": true,
+        "exact_assert_location": true
+      }
+    },
+    {
+      "kind": "no_rearm",
+      "source": "eafff444da46518a66e1d1db8369ec868719de97",
+      "bundle": {
+        "bytes": 20657,
+        "sha256": "ba6765ae8aad9a823ab51b4f57a3162975ab52b024eb19b80feafeeb795ccff8",
+        "blob": "fed15970b5370eafdeda2aeb5298f8462ad59ceb"
+      },
+      "original_case": "parent_lifecycle::tests::rearmed_parent_death_terminates_probe_and_closes_fd_before_user_fork",
+      "actual_result": "FAIL",
+      "seconds": "5.022",
+      "causal_negative_valid": true,
+      "restored_tree": "c6fbcfa0d1ba3b1556f601dc4ca3a7734328b9f7",
+      "original_test_exit": 100,
+      "retries": 0,
+      "all_six_original_files_hashed": true,
+      "specific_causal_evidence": {
+        "inherited_unread_parent_marker": true,
+        "not_outer_timeout": true,
+        "armed_after_fd_close_and_exec": true,
+        "exact_own_five_second_oracle": true,
+        "exact_oracle_location": true,
+        "no_launcher_waitid_timeout": true
+      }
+    },
+    {
+      "kind": "leaked_parent_fd",
+      "source": "a1da95cc0a5b18250ffe3957671c11f098265b8e",
+      "bundle": {
+        "bytes": 23519,
+        "sha256": "4a025dfed6fab9f570b98b014a38aad8b5c2a5840eb25ee69e41386c0627cdc8",
+        "blob": "a2e425d87200c30616ed62c6bc3f4d5703723771"
+      },
+      "original_case": "parent_lifecycle::tests::rearmed_parent_death_terminates_probe_and_closes_fd_before_user_fork",
+      "actual_result": "FAIL",
+      "seconds": "0.010",
+      "causal_negative_valid": true,
+      "restored_tree": "c6fbcfa0d1ba3b1556f601dc4ca3a7734328b9f7",
+      "original_test_exit": 100,
+      "retries": 0,
+      "all_six_original_files_hashed": true,
+      "specific_causal_evidence": [
+        {
+          "actual_left_numbers": [
+            1,
+            0
+          ],
+          "expected_right_numbers": [
+            -1,
+            9
+          ],
+          "original_diff": "     (\n    <    1,\n    >    -1,\n         Some(\n    <        0,\n    >        9,\n         ),\n     )"
+        }
+      ]
+    }
+  ],
+  "valid_causal_phases": 3,
+  "distinct_negative_parent_cases": 2,
+  "ignored_support_counted_as_pass": false,
+  "positive_cases_status": "RUNNING_NOT_YET_QUALIFIED",
+  "all_original_ids_unchanged": true,
+  "limits": [
+    "Raw source-specific physical failures establish the three counterfactual oracles. They are not production PASS.",
+    "kill/WNOWAIT ordering is bound through the reviewed fixed source; raw does not separately print waitid values.",
+    "The early-exit case does not physically demonstrate the narrow PF_EXITING-before-zombie race window.",
+    "Complete per-phase metadata/catalog/program provenance remains separately required and is not replaced by these small six-file bundles."
+  ]
+}

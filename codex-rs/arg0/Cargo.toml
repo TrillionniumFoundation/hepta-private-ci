@@ -9,6 +9,12 @@ name = "codex_arg0"
 path = "src/lib.rs"
 doctest = false
 
+[[bin]]
+name = "test_arg0_preflight"
+path = "src/bin/test_arg0_preflight.rs"
+test = false
+bench = false
+
 [lints]
 workspace = true
 
@@ -30,4 +36,5 @@ tokio = { workspace = true, features = ["rt-multi-thread"] }
 codex-windows-sandbox = { workspace = true }
 
 [dev-dependencies]
+codex-utils-cargo-bin = { workspace = true }
 pretty_assertions = { workspace = true }

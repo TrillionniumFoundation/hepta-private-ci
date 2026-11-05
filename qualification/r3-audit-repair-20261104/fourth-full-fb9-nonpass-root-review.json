@@ -1,0 +1,163 @@
+{
+  "schema": "hepta-fourth-full-fb9-nonpass-root-review-v1",
+  "observed_at_utc": "2026-11-05T04:46:56.202535+00:00",
+  "source_tree": "fb9e131272f7e7a138d6c0d1af2b048b9a6ab7ff",
+  "job": "1a1a9f68261-fc05-3a71",
+  "projection": {
+    "path": "native-evidence/full-fb9/nonpass-projection-v1.json",
+    "bytes": 91707,
+    "sha256": "e2c91d696fb32cda9f0983f9b3d45acaea065505ecffac8a4aa0dd50617445f5",
+    "blob": "2b0f472449c79f559f85d445d3583f87bc879203"
+  },
+  "prior_full_original_xml": {
+    "bytes": 4149275,
+    "sha256": "afdf124cb8cb44e65808b71f824c880875253378588ccaffc9b4783857fc18ed",
+    "blob": "d1778762119d44c5753ea19cdb94bf81e79d222f"
+  },
+  "root_parsed_all16_complete_serialized_failure_nodes": true,
+  "root_compared_all19503_prior_original_junit_case_keys": true,
+  "projection_reported_full_counts": {
+    "PASS": 19490,
+    "FAIL": 16
+  },
+  "selected": 19506,
+  "original_ignored": 57,
+  "unmatched": 0,
+  "original_just_exit": 100,
+  "controller_exit": 1,
+  "retries": 0,
+  "all16_failure_node_types": {
+    "test failure with exit code 101": 16
+  },
+  "common_nonpass_names": [
+    {
+      "classname": "codex-app-server::all",
+      "name": "suite::v2::command_exec::command_exec_accepts_permission_profile",
+      "current_failure": "thread 'suite::v2::command_exec::command_exec_accepts_permission_profile' (1182049) panicked at app-server/tests/suite/v2/command_exec.rs:321:5:\nassertion failed: `(left == right)`\n\nDiff < left / right > :\n CommandExecResponse {\n     exit_code: 0,\n     stdout: \"profile\",\n<    stderr: \"Failed to create stream fd: Operation not permitted\\nFailed to create stream fd: Operation not permitted\\nFailed to create stream fd: Operation not permitted\\n\",\n>    stderr: \"\",\n }\n\n\nnote: run with `RUST_BACKTRACE=1` environment variable to display a backtrace"
+    },
+    {
+      "classname": "codex-app-server::all",
+      "name": "suite::v2::command_exec::command_exec_env_overrides_merge_with_server_environment_and_support_unset",
+      "current_failure": "thread 'suite::v2::command_exec::command_exec_env_overrides_merge_with_server_environment_and_support_unset' (1184430) panicked at app-server/tests/suite/v2/command_exec.rs:190:5:\nassertion failed: `(left == right)`\n\nDiff < left / right > :\n CommandExecResponse {\n     exit_code: 0,\n     stdout: \"request|added|unset|/tmp/.tmpt0QjYi||\",\n<    stderr: \"Failed to create stream fd: Operation not permitted\\nFailed to create stream fd: Operation not permitted\\nFailed to create stream fd: Operation not permitted\\n\",\n>    stderr: \"\",\n }\n\n\nnote: run with `RUST_BACKTRACE=1` environment variable to display a backtrace"
+    },
+    {
+      "classname": "codex-app-server::all",
+      "name": "suite::v2::command_exec::command_exec_non_streaming_respects_output_cap",
+      "current_failure": "thread 'suite::v2::command_exec::command_exec_non_streaming_respects_output_cap' (1185757) panicked at app-server/tests/suite/v2/command_exec.rs:886:5:\nassertion failed: `(left == right)`\n\nDiff < left / right > :\n CommandExecResponse {\n     exit_code: 0,\n     stdout: \"abcde\",\n<    stderr: \"Faile\",\n>    stderr: \"uvwxy\",\n }\n\n\nnote: run with `RUST_BACKTRACE=1` environment variable to display a backtrace"
+    },
+    {
+      "classname": "codex-app-server::all",
+      "name": "suite::v2::command_exec::command_exec_permission_profile_does_not_reuse_default_network_proxy",
+      "current_failure": "thread 'suite::v2::command_exec::command_exec_permission_profile_does_not_reuse_default_network_proxy' (1186116) panicked at app-server/tests/suite/v2/command_exec.rs:533:5:\nassertion failed: `(left == right)`\n\nDiff < left / right > :\n CommandExecResponse {\n     exit_code: 0,\n     stdout: \"unset\",\n<    stderr: \"Failed to create stream fd: Operation not permitted\\nFailed to create stream fd: Operation not permitted\\nFailed to create stream fd: Operation not permitted\\n\",\n>    stderr: \"\",\n }\n\n\nnote: run with `RUST_BACKTRACE=1` environment variable to display a backtrace"
+    },
+    {
+      "classname": "codex-app-server::all",
+      "name": "suite::v2::command_exec::command_exec_permission_profile_starts_selected_network_proxy",
+      "current_failure": "thread 'suite::v2::command_exec::command_exec_permission_profile_starts_selected_network_proxy' (1188037) panicked at app-server/tests/suite/v2/command_exec.rs:485:5:\nassertion failed: `(left == right)`\n\nDiff < left / right > :\n CommandExecResponse {\n     exit_code: 0,\n     stdout: \"1\",\n<    stderr: \"Failed to create stream fd: Operation not permitted\\nFailed to create stream fd: Operation not permitted\\nFailed to create stream fd: Operation not permitted\\n\",\n>    stderr: \"\",\n }\n\n\nnote: run with `RUST_BACKTRACE=1` environment variable to display a backtrace"
+    },
+    {
+      "classname": "codex-app-server::all",
+      "name": "suite::v2::command_exec::command_exec_without_process_id_keeps_buffered_compatibility",
+      "current_failure": "thread 'suite::v2::command_exec::command_exec_without_process_id_keeps_buffered_compatibility' (1196652) panicked at app-server/tests/suite/v2/command_exec.rs:126:5:\nassertion failed: `(left == right)`\n\nDiff < left / right > :\n CommandExecResponse {\n     exit_code: 0,\n     stdout: \"legacy-out\",\n<    stderr: \"Failed to create stream fd: Operation not permitted\\nFailed to create stream fd: Operation not permitted\\nFailed to create stream fd: Operation not permitted\\nlegacy-err\",\n>    stderr: \"legacy-err\",\n }\n\n\nnote: run with `RUST_BACKTRACE=1` environment variable to display a backtrace"
+    },
+    {
+      "classname": "codex-core::all",
+      "name": "suite::approvals::approving_execpolicy_amendment_persists_policy_and_skips_future_prompts",
+      "current_failure": "thread 'suite::approvals::approving_execpolicy_amendment_persists_policy_and_skips_future_prompts' (1116655) panicked at core/tests/suite/approvals.rs:2540:5:\nunexpected stdout: Failed to create stream fd: Operation not permitted\nFailed to create stream fd: Operation not permitted\nFailed to create stream fd: Operation not permitted\n\nnote: run with `RUST_BACKTRACE=1` environment variable to display a backtrace"
+    },
+    {
+      "classname": "codex-core::all",
+      "name": "suite::request_permissions::partial_request_permissions_grants_do_not_preapprove_new_permissions",
+      "current_failure": "thread 'suite::request_permissions::partial_request_permissions_grants_do_not_preapprove_new_permissions' (1243109) panicked at core/tests/suite/request_permissions.rs:1802:5:\nassertion failed: `(left == right)`\n\nDiff < left / right > :\n<Failed to create stream fd: Operation not permitted\n<Failed to create stream fd: Operation not permitted\n<Failed to create stream fd: Operation not permitted\n partial-grant-ok\n\n\nnote: run with `RUST_BACKTRACE=1` environment variable to display a backtrace"
+    },
+    {
+      "classname": "codex-core::all",
+      "name": "suite::request_permissions::request_permissions_grants_apply_to_later_exec_command_calls",
+      "current_failure": "thread 'suite::request_permissions::request_permissions_grants_apply_to_later_exec_command_calls' (1243269) panicked at core/tests/suite/request_permissions.rs:1391:5:\nassertion failed: `(left == right)`\n\nDiff < left / right > :\n<Failed to create stream fd: Operation not permitted\n<Failed to create stream fd: Operation not permitted\n<Failed to create stream fd: Operation not permitted\n sticky-grant-ok\n\n\nnote: run with `RUST_BACKTRACE=1` environment variable to display a backtrace"
+    },
+    {
+      "classname": "codex-core::all",
+      "name": "suite::request_permissions::request_permissions_grants_apply_to_later_exec_command_calls_without_inline_permission_feature",
+      "current_failure": "thread 'suite::request_permissions::request_permissions_grants_apply_to_later_exec_command_calls_without_inline_permission_feature' (1243353) panicked at core/tests/suite/request_permissions.rs:1626:5:\nassertion failed: `(left == right)`\n\nDiff < left / right > :\n<Failed to create stream fd: Operation not permitted\n<Failed to create stream fd: Operation not permitted\n<Failed to create stream fd: Operation not permitted\n sticky-shell-feature-independent-ok\n\n\nnote: run with `RUST_BACKTRACE=1` environment variable to display a backtrace"
+    },
+    {
+      "classname": "codex-core::all",
+      "name": "suite::request_permissions::request_permissions_preapprove_explicit_exec_permissions_outside_on_request",
+      "current_failure": "thread 'suite::request_permissions::request_permissions_preapprove_explicit_exec_permissions_outside_on_request' (1243845) panicked at core/tests/suite/request_permissions.rs:1510:5:\nassertion failed: `(left == right)`\n\nDiff < left / right > :\n<Failed to create stream fd: Operation not permitted\n<Failed to create stream fd: Operation not permitted\n<Failed to create stream fd: Operation not permitted\n sticky-explicit-grant-ok\n\n\nnote: run with `RUST_BACKTRACE=1` environment variable to display a backtrace"
+    },
+    {
+      "classname": "codex-exec-server::exec_process",
+      "name": "shell_snapshot_v2_capture_failure_falls_back_and_retries::test_case_3_remote_pipe_recovery",
+      "current_failure": "thread 'shell_snapshot_v2_capture_failure_falls_back_and_retries::test_case_3_remote_pipe_recovery' (1316040) panicked at exec-server/tests/exec_process.rs:449:9:\nassertion failed: `(left == right)`\n\nDiff < left / right > :\n (\n     \"original\",\n<    \"Failed to create stream fd: Operation not permitted\\nFailed to create stream fd: Operation not permitted\\nFailed to create stream fd: Operation not permitted\\n\",\n>    \"\",\n     Some(\n         0,\n     ),\n     true,\n )\n\n\nnote: run with `RUST_BACKTRACE=1` environment variable to display a backtrace"
+    },
+    {
+      "classname": "codex-exec-server::exec_process",
+      "name": "shell_snapshot_v2_capture_failure_falls_back_and_retries::test_case_4_remote_tty_recovery",
+      "current_failure": "thread 'shell_snapshot_v2_capture_failure_falls_back_and_retries::test_case_4_remote_tty_recovery' (1316080) panicked at exec-server/tests/exec_process.rs:449:9:\nassertion failed: `(left == right)`\n\nDiff < left / right > :\n (\n<    \"Failed to create stream fd: Operation not permitted\\r\\nFailed to create stream fd: Operation not permitted\\r\\nFailed to create stream fd: Operation not permitted\\r\\noriginal\",\n>    \"original\",\n     \"\",\n     Some(\n         0,\n     ),\n     true,\n )\n\n\nnote: run with `RUST_BACKTRACE=1` environment variable to display a backtrace"
+    },
+    {
+      "classname": "codex-exec-server::exec_process",
+      "name": "shell_snapshot_v2_capture_failure_falls_back_and_retries::test_case_6_remote_retry_budget_exhausted",
+      "current_failure": "thread 'shell_snapshot_v2_capture_failure_falls_back_and_retries::test_case_6_remote_retry_budget_exhausted' (1316466) panicked at exec-server/tests/exec_process.rs:449:9:\nassertion failed: `(left == right)`\n\nDiff < left / right > :\n (\n     \"original\",\n<    \"Failed to create stream fd: Operation not permitted\\nFailed to create stream fd: Operation not permitted\\nFailed to create stream fd: Operation not permitted\\n\",\n>    \"\",\n     Some(\n         0,\n     ),\n     true,\n )\n\n\nnote: run with `RUST_BACKTRACE=1` environment variable to display a backtrace"
+    }
+  ],
+  "common_failure_signature": {
+    "explicit_stream_fd_eperm": 13,
+    "output_cap_prefix_only": {
+      "count": 1,
+      "actual_stdout": "abcde",
+      "actual_stderr": "Faile",
+      "expected_stderr": "uvwxy"
+    },
+    "limit": "Same original test names and output signatures are observed. The truncated output alone does not independently establish the underlying syscall or host-policy cause."
+  },
+  "new_nonpass_names": [
+    {
+      "classname": "codex-core::all",
+      "name": "suite::multi_agent_resume::cold_root_resume_restores_agent_identity_and_role_on_followup",
+      "previous_f825_junit": "PASS",
+      "previous_seconds": "8.780",
+      "current_seconds": "8.209",
+      "current_failure": "Error: thread 01a1a9fe-9432-7365-982c-7a0f11490eee not found",
+      "cause": "OPEN: no host, load, or implementation cause established by these logs alone"
+    },
+    {
+      "classname": "codex-exec-server",
+      "name": "process_sandbox::tests::native_request_handles_remote_proxy_config_for_platform",
+      "previous_f825_junit": "PASS",
+      "previous_seconds": "0.501",
+      "current_seconds": "10.514",
+      "current_failure": "thread 'process_sandbox::tests::native_request_handles_remote_proxy_config_for_platform' (1312423) panicked at exec-server/src/process_sandbox_tests.rs:338:10:\nproxy response timeout: Elapsed(())\nnote: run with `RUST_BACKTRACE=1` environment variable to display a backtrace",
+      "cause": "OPEN: no host, load, or implementation cause established by these logs alone"
+    }
+  ],
+  "four_previous_failures_absent_from_current_nonpass_projection": [
+    {
+      "classname": "codex-app-server::all",
+      "name": "suite::v2::command_exec::command_exec_process_ids_are_connection_scoped_and_disconnect_terminates_process"
+    },
+    {
+      "classname": "codex-external-agent-migration",
+      "name": "service::tests::plugins::marketplaces::import_plugins_infers_external_official_marketplace_when_missing_from_settings"
+    },
+    {
+      "classname": "codex-skills-extension",
+      "name": "host_roots::tests::repo_ancestry_without_project_marker_does_not_walk_parents"
+    },
+    {
+      "classname": "codex-v8-poc",
+      "name": "tests::sandbox_feature_matches_linked_v8"
+    }
+  ],
+  "four_previous_failures_positive_verification": "Current exact PASS nodes and full raw remain to be checked from the complete current original export; absence from this nonpass projection alone is not used as execution proof.",
+  "early_return_observations": {
+    "bound": 25,
+    "requires_remote": 24,
+    "capability": 1,
+    "unbound": 0
+  },
+  "full_original_review_at_this_checkpoint": "PENDING: current full XML, raw, source guards, complete catalog, helper and test-program files have not yet been independently reconstructed by root. Their declared identities are preserved by the projection.",
+  "hygiene_executed": false,
+  "whole_candidate_qualified": false,
+  "all_blockers_closed": false
+}

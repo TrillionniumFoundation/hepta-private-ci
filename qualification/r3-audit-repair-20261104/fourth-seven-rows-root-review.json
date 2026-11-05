@@ -1,0 +1,318 @@
+{
+  "schema": "hepta.fourth.seven-rows.root-projection-review.v1",
+  "observed_at_utc": "2026-11-04 23:24:58 UTC",
+  "projection_blob": "37a93aba1fb93023262caf5f51d43960c5acc83d",
+  "projection_identity": {
+    "bytes": 370941,
+    "sha256": "6eaae624e71dd127102f8a7a19a92240bb59df5d9401fb684b2b713e1c8f8378"
+  },
+  "interpretation_blob": "203d8eab0dd003f272c09f962e16ca9505da4f2a",
+  "interpretation_identity": {
+    "bytes": 139128,
+    "sha256": "fe3225123ace3aacd6781278b370a687e54dcabe777e7feb7bab1d2bef63128a"
+  },
+  "reproduction_script_blob": "bbe91c8941ebe2736c6ef62fe7edea89e1acb6b6",
+  "input_blob": "68a2fda31908f5f4f35384b4b2facd52096b19fb",
+  "root_checks": {
+    "archives": [
+      {
+        "artifact_id": 13360091629,
+        "expected_matches": true,
+        "all_members_match": true,
+        "member_count": 54,
+        "source_documents": [
+          {
+            "member": "failed-test-logs/invocation-3o4m7oxz/manifest.json",
+            "bytes": 19494,
+            "sha256": "f40cf4cee31aec9ee2a35621bcfb219b6f47983b9410c7103b0434d94d95e364",
+            "tree": "b2d7f038d6d88156bc6a4cb29c8703f69b808f29"
+          }
+        ],
+        "source_all_expected": true
+      },
+      {
+        "artifact_id": 13359672251,
+        "expected_matches": true,
+        "all_members_match": true,
+        "member_count": 54,
+        "source_documents": [
+          {
+            "member": "failed-test-logs/invocation-bco2aijj/manifest.json",
+            "bytes": 19494,
+            "sha256": "f40cf4cee31aec9ee2a35621bcfb219b6f47983b9410c7103b0434d94d95e364",
+            "tree": "b2d7f038d6d88156bc6a4cb29c8703f69b808f29"
+          }
+        ],
+        "source_all_expected": true
+      },
+      {
+        "artifact_id": 13361006797,
+        "expected_matches": true,
+        "all_members_match": true,
+        "member_count": 38,
+        "source_documents": [
+          {
+            "member": "failed-test-logs/invocation-fziepbgx/manifest.json",
+            "bytes": 13129,
+            "sha256": "0c18949720ded4b02f10b20d0fda9607c9c6a047ef83a80a149f6d2bee13469e",
+            "tree": "b2d7f038d6d88156bc6a4cb29c8703f69b808f29"
+          }
+        ],
+        "source_all_expected": true
+      },
+      {
+        "artifact_id": 13361109041,
+        "expected_matches": true,
+        "all_members_match": true,
+        "member_count": 40,
+        "source_documents": [
+          {
+            "member": "failed-test-logs/invocation-naq70rbw/manifest.json",
+            "bytes": 13678,
+            "sha256": "4a03c2bea5e28ffb5c7775b0380a27180403ea113b22dca6f109275ce2b1e571",
+            "tree": "b2d7f038d6d88156bc6a4cb29c8703f69b808f29"
+          }
+        ],
+        "source_all_expected": true
+      },
+      {
+        "artifact_id": 13358839533,
+        "expected_matches": true,
+        "all_members_match": true,
+        "member_count": 20,
+        "source_documents": [
+          {
+            "member": "failed-test-logs/invocation-esqqyejf/manifest.json",
+            "bytes": 14889,
+            "sha256": "a05b100becc7286b0d02ff661d9e37345a7144525fcba9ba85d05dd593f14c23",
+            "tree": "b2d7f038d6d88156bc6a4cb29c8703f69b808f29"
+          }
+        ],
+        "source_all_expected": true
+      },
+      {
+        "artifact_id": 13361670377,
+        "expected_matches": true,
+        "all_members_match": true,
+        "member_count": 24,
+        "source_documents": [
+          {
+            "member": "failed-test-logs/invocation-3wf91hzs/manifest.json",
+            "bytes": 17003,
+            "sha256": "a2994571b31f8bd242c3a8fd322ef1bd0de0f8e4ee413a3cb69e23d79eb13494",
+            "tree": "b2d7f038d6d88156bc6a4cb29c8703f69b808f29"
+          }
+        ],
+        "source_all_expected": true
+      },
+      {
+        "artifact_id": 13359089737,
+        "expected_matches": true,
+        "all_members_match": true,
+        "member_count": 13,
+        "source_documents": [
+          {
+            "member": "source.json",
+            "bytes": 294,
+            "sha256": "8c620090076943f155b6fc7f2e9f676e8ebd647dc594b3d9f4ef6d2b831eeec9",
+            "tree": "b2d7f038d6d88156bc6a4cb29c8703f69b808f29"
+          }
+        ],
+        "source_all_expected": true
+      }
+    ],
+    "duplicate_linux": {
+      "gnu": 54,
+      "musl_label": 54,
+      "equal": 54
+    },
+    "xml": {
+      "count": 39,
+      "all_single_wrapper": true,
+      "all_zero_exact": true
+    },
+    "requested": 105,
+    "seven_item_case_index": 97,
+    "extra_context_names": 8,
+    "exact_rows": 406,
+    "seven_item_rows": 331,
+    "all_seven_item_pointers_valid": true,
+    "cfg_checks": [
+      {
+        "status": "fulfilled",
+        "value": {
+          "path": "codex-rs/core/tests/suite/mod.rs",
+          "blob": "17145f671a76a894ab374ca299a67cf1a43e9c55",
+          "identity": {
+            "bytes": 4895,
+            "sha256": "6cfc926f1fb4417554b75f337372fd714fdd3769b0db9db1398bc8a0ffc9938e"
+          },
+          "checks": [
+            {
+              "line": 78,
+              "expected": "mod guardian_subagent_authorization;",
+              "actual": "mod guardian_subagent_authorization;",
+              "ok": true
+            },
+            {
+              "line": 79,
+              "expected": "#[cfg(not(target_os = \"windows\"))]",
+              "actual": "#[cfg(not(target_os = \"windows\"))]",
+              "ok": true
+            },
+            {
+              "line": 80,
+              "expected": "mod hooks;",
+              "actual": "mod hooks;",
+              "ok": true
+            },
+            {
+              "line": 81,
+              "expected": "#[cfg(not(target_os = \"windows\"))]",
+              "actual": "#[cfg(not(target_os = \"windows\"))]",
+              "ok": true
+            },
+            {
+              "line": 82,
+              "expected": "mod hooks_executor;",
+              "actual": "mod hooks_executor;",
+              "ok": true
+            },
+            {
+              "line": 83,
+              "expected": "#[cfg(not(target_os = \"windows\"))]",
+              "actual": "#[cfg(not(target_os = \"windows\"))]",
+              "ok": true
+            },
+            {
+              "line": 84,
+              "expected": "mod hooks_mcp;",
+              "actual": "mod hooks_mcp;",
+              "ok": true
+            },
+            {
+              "line": 35,
+              "expected": "",
+              "actual": "",
+              "ok": true
+            },
+            {
+              "line": 36,
+              "expected": "#[cfg(not(target_os = \"windows\"))]",
+              "actual": "#[cfg(not(target_os = \"windows\"))]",
+              "ok": true
+            },
+            {
+              "line": 37,
+              "expected": "mod abort_tasks;",
+              "actual": "mod abort_tasks;",
+              "ok": true
+            }
+          ]
+        }
+      },
+      {
+        "status": "fulfilled",
+        "value": {
+          "path": "codex-rs/core/tests/suite/tools.rs",
+          "blob": "1fc4b08dd39ec30085d38cc3b5b661e2bdc6775e",
+          "identity": {
+            "bytes": 33296,
+            "sha256": "5db0cdf87d36b8b00e066c15675b522f6d0392804303f2300177f677d6e477e8"
+          },
+          "checks": [
+            {
+              "line": 1,
+              "expected": "#![cfg(not(target_os = \"windows\"))]",
+              "actual": "#![cfg(not(target_os = \"windows\"))]",
+              "ok": true
+            },
+            {
+              "line": 2,
+              "expected": "#![allow(clippy::unwrap_used)]",
+              "actual": "#![allow(clippy::unwrap_used)]",
+              "ok": true
+            }
+          ]
+        }
+      },
+      {
+        "status": "fulfilled",
+        "value": {
+          "path": "codex-rs/app-server/tests/suite/v2/turn_recover.rs",
+          "blob": "43cd9b0c2d1ba3a6560ade3f3a85616674fcd4c8",
+          "identity": {
+            "bytes": 35436,
+            "sha256": "5272864c814ae433c971bcb875658742c9552d1324a78e94013148497182d729"
+          },
+          "checks": [
+            {
+              "line": 1,
+              "expected": "#![cfg(unix)]",
+              "actual": "#![cfg(unix)]",
+              "ok": true
+            },
+            {
+              "line": 2,
+              "expected": "",
+              "actual": "",
+              "ok": true
+            }
+          ]
+        }
+      },
+      {
+        "status": "fulfilled",
+        "value": {
+          "path": "codex-rs/core/tests/suite/code_mode.rs",
+          "blob": "d1970f7853bcd5777ef96881b457525b7abfa92a",
+          "identity": {
+            "bytes": 213008,
+            "sha256": "b053267b92afa19a861d800814e43c8a33e4ea2f823fb26e0a4eb89c6853eba2"
+          },
+          "checks": [
+            {
+              "line": 2046,
+              "expected": "#[cfg_attr(windows, ignore = \"no exec_command on Windows\")]",
+              "actual": "#[cfg_attr(windows, ignore = \"no exec_command on Windows\")]",
+              "ok": true
+            },
+            {
+              "line": 2047,
+              "expected": "#[tokio::test(flavor = \"multi_thread\", worker_threads = 2)]",
+              "actual": "#[tokio::test(flavor = \"multi_thread\", worker_threads = 2)]",
+              "ok": true
+            },
+            {
+              "line": 2048,
+              "expected": "async fn code_mode_exec_surfaces_handler_errors_as_exceptions() -> Result<()> {",
+              "actual": "async fn code_mode_exec_surfaces_handler_errors_as_exceptions() -> Result<()> {",
+              "ok": true
+            },
+            {
+              "line": 2049,
+              "expected": "    skip_if_no_network!(Ok(()));",
+              "actual": "    skip_if_no_network!(Ok(()));",
+              "ok": true
+            }
+          ]
+        }
+      }
+    ]
+  },
+  "findings": [
+    "Root compared all243 output members against the frozen input member identities, all7 complete archive identities and every embedded source document tree. The original projection script verifies whole ZIP SHA/length, unique member names, every read CRC and each indexed member SHA/length, then matches exact original test result lines.",
+    "105 requested names comprise97 original seven-item case identities plus8 extra Windows lifecycle context names.406 result rows comprise331 seven-item observations plus75 context rows. Root independently dereferenced every one of the331 case-index pointers and checked exact name, result, platform, target and attempt/final classification.",
+    "All54 corresponding GNU/musl-label target-relative members have the same size/SHA, including their source manifest. They cannot be counted as independent libc executions or actual musl product qualification.",
+    "All39 XML members contain one target wrapper case and zero exact requested Rust names. Their target status supplies no extra exact case PASS.",
+    "Root fetched four fixed primary source blobs and checked the cited cfg/ignore lines verbatim. Windows exclusions and CodeMode's original ignore remain explicit N/A/ignored rather than runtime success.",
+    "Exact old successes strengthen only their original source/platform/attempt scopes. The full Windows unit shard4 failure, other original AppServer FLAKY attempts and missing successful target bodies remain open."
+  ],
+  "disposition": "OLD_CABC_EVIDENCE_MORE_PRECISE_NO_FULL_BLOCKER_CLOSED",
+  "limits": [
+    "The native projection independently reopened existing ZIPs, not new tests/downloads. Root verified complete projection/input/source structure and fixed primary source bytes; root did not independently reopen every ZIP a second time.",
+    "All product evidence is cabc/treeb2d7; it does not qualify e84/df74 or later source. Target/cache PASS is not filled in as exact case results.",
+    "B22 shard3 single-member identity remains an explicitly labeled source/count inference.",
+    "New three-script retention implementation passed only actual Linux57-case script gate atdf74. Hosted artifact behavior and future final-head platform gates remain to be observed."
+  ]
+}

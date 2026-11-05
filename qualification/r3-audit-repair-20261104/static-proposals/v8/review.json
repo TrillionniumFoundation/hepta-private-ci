@@ -1,0 +1,222 @@
+{
+  "schema": "hepta.v8-poc-default-sandbox.repair-review.v1",
+  "status": "STATIC_PASS_UNEXECUTED",
+  "baseline_commit": "cabcb40d36e116beaa65750e1f674c52035da785",
+  "observed_failure_source_tree": "f8251e1d14fa8524ab469281296cd4cf708f173c",
+  "path": "codex-rs/v8-poc/Cargo.toml",
+  "before_blob": "9615ab977f9dfdb35467d1eadaf0bc6dfa641625",
+  "after": {
+    "path": "codex-rs/v8-poc/Cargo.toml",
+    "blob": "a34a1306f1082b3347543749cbfd9a05eee7cb91",
+    "bytes": 370,
+    "sha256": "c8fe672a43a8d02afe8ed2822462201bb87d526478c91dc2d2c9fff6dfad7f6a"
+  },
+  "patch": {
+    "path": "v8-default-sandbox.patch",
+    "blob": "1552877bb076eab752f2b1a5444591375365026f",
+    "bytes": 254,
+    "sha256": "721c983abe503002a083c68a36871b6a9b7d32c2701d5d6fd0cf19ea0c62c990"
+  },
+  "change": "Add only default = [\"sandbox\"] to the existing [features] table.",
+  "unchanged": [
+    "The full v8-poc/src/lib.rs including the unsafe linked-library FFI probe and exact equality assertion",
+    "All six original v8-poc tests",
+    "Code-mode-runtime's explicit V8 sandbox dependency feature",
+    "Bazel's existing explicit sandbox feature",
+    "Any original deadlines, retry counts or test filters"
+  ],
+  "cause": {
+    "workspace_v8_pin": "=150.4.0",
+    "resolver": "2",
+    "actual_full_failure": {
+      "classname": "codex-v8-poc",
+      "name": "tests::sandbox_feature_matches_linked_v8",
+      "raw_result": "FAIL",
+      "seconds": "0.004",
+      "offset": 19601032,
+      "bytes": 656,
+      "sha256": "590c9043b340b2e40629f5758c2012279d153b233f387841d827c2a54f314fbf",
+      "original_raw_block": "        FAIL [   0.004s] codex-v8-poc tests::sandbox_feature_matches_linked_v8\n  stdout ───\n\n    running 1 test\n    test tests::sandbox_feature_matches_linked_v8 ... FAILED\n\n    failures:\n\n    failures:\n        tests::sandbox_feature_matches_linked_v8\n\n    test result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 5 filtered out; finished in 0.00s\n\n  stderr ───\n\n    thread 'tests::sandbox_feature_matches_linked_v8' (406503) panicked at v8-poc/src/lib.rs:69:9:\n    assertion failed: `(left == right)`\n\n    Diff < left / right > :\n    <true\n    >false\n\n\n    note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace\n\n"
+    },
+    "raw_scope": "Independently rehashed the complete 656-byte V8 failure block in root's complete full-raw review. This agent did not independently decompress or parse all 34,360,967 raw bytes.",
+    "raw_root_receipt": {
+      "blob": "c91458f39f0e3c02bce94809626c1be18e882384",
+      "sha256": "35432aaa6b8f1add0ccdcd5c24db24b2d4542d9102e0bb31d45712153a5624d4",
+      "original_full_raw": {
+        "bytes": 34360967,
+        "sha256": "75cd2cd5c89ce70781781c3b8c3e1bb168720b83bf6961c206720b3c08efe15c",
+        "gzip_bytes": 2337598,
+        "gzip_sha256": "6a9cd6f82bf42ba2543f9d491e4205f2b3e4ca8d36027ef84be579b9e885f134"
+      },
+      "summary": "     Summary [ 220.419s] 19503 tests run: 19485 passed (4 slow), 17 failed, 1 timed out, 56 skipped"
+    },
+    "source_reason": "Normal dependency features are unified for the single v8 package. codex-code-mode-runtime explicitly enables v8_enable_sandbox, but that does not turn on codex-v8-poc's locally named sandbox feature. Thus the original full-workspace binary can correctly report linked=true while cfg!(feature=\"sandbox\") is false.",
+    "default_effect": "Enable the existing local sandbox forwarding feature in normal builds so local expectation and the deliberately sandboxed shared dependency agree. This also matches the existing Bazel crate_features=[sandbox]."
+  },
+  "actual_dependency_api_review": {
+    "checked_version": "denoland/rusty_v8 v150.4.0",
+    "upstream_native_selection": "build.rs reads CARGO_FEATURE_V8_ENABLE_SANDBOX and selects the _sandbox prebuilt suffix or v8_enable_sandbox=true GN settings. The feature also enables pointer compression.",
+    "public_cfg_alternative": "The inspected V8 module exposes the sandbox probe only inside its own test module and explicitly calls it unstable. The crate's generated binding module is private; the inspected build script emits no sandbox metadata/rustc-cfg for dependents and Cargo.toml declares no links metadata contract. No reviewed stable dependency-config API can replace this local expectation without expanding scope.",
+    "rejected_alternatives": [
+      "Deriving expected from linked_v8_has_sandbox itself would make the comparison circular.",
+      "Checking only the feature-enabled branch would remove the original off-state negative.",
+      "Reading CARGO_FEATURE_* from a downstream build script would only describe that downstream package; resolver 2 also separates build-dependency features, so adding a build dependency is not reliable normal-graph introspection.",
+      "Adding an upstream public compiled-feature constant would be a separate dependency/API change and still require explicit preservation of the intended off-state control."
+    ],
+    "upstream_identity_limit": "Exact fetched tagged source blobs are recorded and rehashed. This review did not extract the native v8 crate archive or independently resolve its .cargo_vcs_info; no broader tag/archive equivalence is asserted."
+  },
+  "qualification_matrix": [
+    {
+      "invocation": "Normal default codex-v8-poc package",
+      "expected_local": true,
+      "expected_dependency": true,
+      "expected_original_assert": "PASS after real build; unexecuted"
+    },
+    {
+      "invocation": "Normal default full workspace including code-mode-runtime",
+      "expected_local": true,
+      "expected_dependency": true,
+      "expected_original_assert": "PASS after real build; other 17 original full-workspace nonpasses are separate"
+    },
+    {
+      "invocation": "Bazel original target",
+      "expected_local": true,
+      "expected_dependency": true,
+      "expected_original_assert": "Unchanged original sandbox requirement; must run original gate"
+    },
+    {
+      "invocation": "Standalone codex-v8-poc --no-default-features with no other sandbox-enabling dependency or forced archive",
+      "expected_local": false,
+      "expected_dependency": false,
+      "expected_original_assert": "Off-state negative remains intact; actual artifact/feature identity must be verified, not inferred"
+    },
+    {
+      "invocation": "--no-default-features jointly selecting codex-v8-poc and code-mode-runtime",
+      "expected_local": false,
+      "expected_dependency": true,
+      "expected_original_assert": "Original contract remains mismatched; this one-line repair does not claim support or PASS for this combination. Separate the off-state invocation or explicitly request codex-v8-poc/sandbox."
+    }
+  ],
+  "required_gates": [
+    "Sole native writer applies this exact one-path postimage to the frozen current A tree.",
+    "Run original just bazel-lock-update and lock check. Preserve both Cargo/MODULE real generated results, whether changed or unchanged; no manual lock edits and no predicted no-drift claim.",
+    "Run the original six v8-poc tests and applicable code-mode-runtime owning tests with the normal graph, then the already-required whole-workspace gate. Keep the original assertion and linked probe unchanged.",
+    "Retain any separate standalone no-default-feature control as a separate actual graph/artifact qualification; never call a mixed no-default+runtime failure a successful off-state control.",
+    "Original format/hygiene/source and lock fences remain required."
+  ],
+  "source_evidence": [
+    {
+      "key": "v8_review_poc_cargo",
+      "repository": "TrillionniumFoundation/hepta-private-ci",
+      "ref": "cabcb40d36e116beaa65750e1f674c52035da785",
+      "path": "codex-rs/v8-poc/Cargo.toml",
+      "blob": "9615ab977f9dfdb35467d1eadaf0bc6dfa641625",
+      "bytes": 348,
+      "sha256": "e98d307ee1683087debb02cf5fba46cc1a23177a25cd6b03f74f1539239312c9"
+    },
+    {
+      "key": "v8_review_poc_lib",
+      "repository": "TrillionniumFoundation/hepta-private-ci",
+      "ref": "cabcb40d36e116beaa65750e1f674c52035da785",
+      "path": "codex-rs/v8-poc/src/lib.rs",
+      "blob": "5103cdeb39d5e7f28442c7adaef4969e5a008ea4",
+      "bytes": 2752,
+      "sha256": "7121f241941ebc18758bbc9dbfb0848a9ea25a93a65eecd34c890fc86ccecfcc"
+    },
+    {
+      "key": "v8_review_poc_build",
+      "repository": "TrillionniumFoundation/hepta-private-ci",
+      "ref": "cabcb40d36e116beaa65750e1f674c52035da785",
+      "path": "codex-rs/v8-poc/BUILD.bazel",
+      "blob": "075774aaa59c1d0caa264880256fc63648d06492",
+      "bytes": 394,
+      "sha256": "22553bd0f0fce67d05ca68aac925bb5700fb73febeca24f8a5db6a50a134cf3f"
+    },
+    {
+      "key": "v8_review_runtime_cargo",
+      "repository": "TrillionniumFoundation/hepta-private-ci",
+      "ref": "cabcb40d36e116beaa65750e1f674c52035da785",
+      "path": "codex-rs/code-mode-runtime/Cargo.toml",
+      "blob": "e3708b657ebd5e05a289acffea1dccb2061db4fd",
+      "bytes": 762,
+      "sha256": "8ed47545fe5902110ba01998f94b72b97b6d2df4ed1391f86dae97e01ba29c4c"
+    },
+    {
+      "key": "v8_review_workspace_cargo",
+      "repository": "TrillionniumFoundation/hepta-private-ci",
+      "ref": "cabcb40d36e116beaa65750e1f674c52035da785",
+      "path": "codex-rs/Cargo.toml",
+      "blob": "4713741651affd053bb8ae5aa8b5d76831c15c0e",
+      "bytes": 22548,
+      "sha256": "5e19cb310c4bcabc082619d64a028358d5d629e26c179fb38a00432be8f54a6a"
+    },
+    {
+      "key": "v8_review_module",
+      "repository": "TrillionniumFoundation/hepta-private-ci",
+      "ref": "cabcb40d36e116beaa65750e1f674c52035da785",
+      "path": "MODULE.bazel",
+      "blob": "a21061a8b741fc724edb580e229eb86d9debdc4f",
+      "bytes": 22949,
+      "sha256": "7a254eea81ecc408797788e56aacf0a3ac5a285b6ba0b0dbfe6a9ca57d1db1ae"
+    },
+    {
+      "key": "v8_review_upstream_cargo",
+      "repository": "denoland/rusty_v8",
+      "ref": "v150.4.0",
+      "path": "Cargo.toml",
+      "blob": "d73af077ca2fa3f012158d498e14b18055e01f54",
+      "bytes": 3914,
+      "sha256": "7545a213e76d4c9ce5fb2ecbad30bf3c0505777d966333ddb4576f7dcd948a0f"
+    },
+    {
+      "key": "v8_review_upstream_build",
+      "repository": "denoland/rusty_v8",
+      "ref": "v150.4.0",
+      "path": "build.rs",
+      "blob": "d570790bbd18fe7cee802726d4b5c1ee9f4cedd3",
+      "bytes": 45593,
+      "sha256": "cd979d31a70f3d5a2d240019a52de2412a803690f8d3b441bf8254c548588c31"
+    },
+    {
+      "key": "v8_review_upstream_lib",
+      "repository": "denoland/rusty_v8",
+      "ref": "v150.4.0",
+      "path": "src/lib.rs",
+      "blob": "f78efdcac986f9f0e5569c3f279362dbeca00a66",
+      "bytes": 6747,
+      "sha256": "f540631f8b80fd026f5143059ed76effaa90ad8bff400597f73bcd7f926dc770"
+    },
+    {
+      "key": "v8_review_upstream_v8",
+      "repository": "denoland/rusty_v8",
+      "ref": "v150.4.0",
+      "path": "src/V8.rs",
+      "blob": "0793c2fed7421841dc8c2e34fabd083cd87f2d68",
+      "bytes": 9758,
+      "sha256": "d92c7cd331f80349d6923ea1ec059f8a8b69628ab088a1afced99d2e18083be4"
+    },
+    {
+      "key": "v8_review_upstream_bindings",
+      "repository": "denoland/rusty_v8",
+      "ref": "v150.4.0",
+      "path": "src/binding.rs",
+      "blob": "4a1ff2826929cc785c028d5f9aa6f7c58192706f",
+      "bytes": 189,
+      "sha256": "e0c40566255d55a8a8ad5df7930cea8a7ef434e6f372ccccabb7f7a1ca46119e"
+    }
+  ],
+  "official_cargo_contract": {
+    "url": "https://doc.rust-lang.org/stable/cargo/reference/features.html",
+    "retrieval_ref": "turn72view0",
+    "claim": "Features belong to each package; dependencies are built with the union of selected features. Resolver 2 does not segregate ordinary selected normal dependency graphs."
+  },
+  "execution": {
+    "static_patch_check_and_exact_apply": true,
+    "toml_only_one_semantic_change": true,
+    "source_blob_hashes_recomputed": true,
+    "rust_compile": false,
+    "native_tests": false,
+    "cargo_or_bazel_generator": false,
+    "shared_source_or_ref_mutation": false
+  }
+}

@@ -1,0 +1,221 @@
+{
+  "schema": "hepta-three-document-new-inventory-donor-review-v1",
+  "scope": "Isolated patch only; root deliverables, registry and original23 ledger were not changed.",
+  "files": [
+    {
+      "path": "hepta-audit-fourth/deliverables/CURRENT_AUDIT_PROGRESS.zh-CN.md",
+      "preimage": {
+        "bytes": 34587,
+        "sha256": "48727f7e0aab9d7d2e62b38212623694f9b88d7468350f60174f1a80c5e3a855",
+        "git_blob": "1488270363927d3be44035f9f752a8af205adfac"
+      },
+      "postimage": {
+        "bytes": 36913,
+        "sha256": "deeba7758435cadd70b18d901c54b58496083417f3553b4488cffab29359c7bd",
+        "git_blob": "50a2e9a4b070cc4c381e39dea9422aa7c2e7986e"
+      }
+    },
+    {
+      "path": "hepta-audit-fourth/deliverables/FOURTH_BATCH_QUALIFICATION.md",
+      "preimage": {
+        "bytes": 18179,
+        "sha256": "c76a8bd89805b0fa492f606104e3e8cd9b7fa8382c31185e5bde5fca798e86a5",
+        "git_blob": "97495e8393e7eed1eaf8573aec6554a0ab95a490"
+      },
+      "postimage": {
+        "bytes": 20346,
+        "sha256": "ade06de4dd04e3b612618c1e8f07698467e401fda08ef5505d482cf37e47a6de",
+        "git_blob": "80febcb8909d7bdc7ea06829bf00ca338d642469"
+      }
+    },
+    {
+      "path": "hepta-audit-fourth/deliverables/PROJECT_DIRECTION_AND_PLAN.zh-CN.md",
+      "preimage": {
+        "bytes": 17410,
+        "sha256": "6c50ba95f528d205fe7884259d8337743788ef5ab042574c378a72356f5c563f",
+        "git_blob": "0e41fff54230c35772b1bc65750e2472503bfb71"
+      },
+      "postimage": {
+        "bytes": 18945,
+        "sha256": "31f87409aee44bb6e2ae835bf0f603d613d27fd7e00d4dbd99e04b5b82f189f4",
+        "git_blob": "f73bafd33d55e379bf0a39a983f92b2efeb384b5"
+      }
+    }
+  ],
+  "patch": {
+    "bytes": 30447,
+    "sha256": "a40ebf5c566dde95bd490c3b16c9178d0395dca8c9ab13a296e728284b788388",
+    "git_blob": "07eeff3ec15ffbc2d64d87c28b11cb237bc6049a"
+  },
+  "real_git_apply_check_and_reconstruction": [
+    {
+      "argv": [
+        "git",
+        "apply",
+        "--check",
+        "/workspace/scratch/07dd58cc9630/research-audit/fourth-report-new-inventory-review-20261105/report-inventory-donor-update.patch"
+      ],
+      "returncode": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "git",
+        "apply",
+        "/workspace/scratch/07dd58cc9630/research-audit/fourth-report-new-inventory-review-20261105/report-inventory-donor-update.patch"
+      ],
+      "returncode": 0,
+      "stdout": "",
+      "stderr": ""
+    }
+  ],
+  "new_inventory": {
+    "blob": "5fac62f2526a56ebc0cdaa8cfe66531c9a33f912",
+    "archive_manifest": "a4cb25e1bd5a9e161c1ebae494a8cddb3681512b",
+    "interval_utc": "2026-11-05T03:16:46.083Z through 2026-11-05T03:24:00.347Z",
+    "open_prs": 1103,
+    "draft": 1079,
+    "non_draft": 24,
+    "branches": 5193,
+    "main_base": 155,
+    "non_main_base": 948
+  },
+  "new_relative_artifacts_for_parent_registration": [
+    {
+      "path": "fourth-repository-inventory-20261105.json",
+      "blob": "5fac62f2526a56ebc0cdaa8cfe66531c9a33f912"
+    },
+    {
+      "path": "repository-inventory-20261105/archive-manifest.json",
+      "blob": "a4cb25e1bd5a9e161c1ebae494a8cddb3681512b"
+    },
+    {
+      "path": "fourth-donor-progress-20261105.json",
+      "blob": "392fb36948e6f3dbeeb93ba8f5cb4acc14de375c"
+    },
+    {
+      "path": "FOURTH_DONOR_PROGRESS_20261105.zh-CN.md",
+      "blob": "cf7897da3dda9c138fca67d9174e17252bef50eb"
+    },
+    {
+      "path": "fourth-blocker-external-progress-20261105.json",
+      "blob": "5a220bb71507aaa22fa2152844e7e15306e9c3bf"
+    }
+  ],
+  "app_invalid_attempt_source": {
+    "path": "hepta-audit-fourth/deliverables/fourth-app-parent-liveness-invalid-negative-root-review.json",
+    "bytes": 3873,
+    "sha256": "908f2a37d2db09fa2c2e5d2a7dab6a74eb2464b21659fa5cf5657ccaf947dcd6",
+    "git_blob": "6f43608e78054b44a541d3d52ebf57965413ccdc",
+    "evidence_level": "Parent complete original review read; not a repeated execution or independent re-download of all originals"
+  },
+  "unchanged_claim_boundaries": [
+    "8 scoped closed /14OPEN/B18HOLD",
+    "Original23 exit conditions",
+    "f825 owning/full failure outcomes and raw identities",
+    "Skills9/Migration166/V8 76 source-specific results",
+    "B16 static proposals are unexecuted",
+    "B10 deliberate prewarm request oracle correction",
+    "No Windows/native/product qualification inherited from donor or old source"
+  ],
+  "tests_executed": false,
+  "new_relative_link_checks": [
+    {
+      "document": "hepta-audit-fourth/deliverables/CURRENT_AUDIT_PROGRESS.zh-CN.md",
+      "link": "FOURTH_DONOR_PROGRESS_20261105.zh-CN.md",
+      "exists_locally": false,
+      "exact_blob_registration_supplied": true
+    },
+    {
+      "document": "hepta-audit-fourth/deliverables/CURRENT_AUDIT_PROGRESS.zh-CN.md",
+      "link": "fourth-app-parent-liveness-invalid-negative-root-review.json",
+      "exists_locally": true,
+      "exact_blob_registration_supplied": false
+    },
+    {
+      "document": "hepta-audit-fourth/deliverables/CURRENT_AUDIT_PROGRESS.zh-CN.md",
+      "link": "fourth-blocker-external-progress-20261105.json",
+      "exists_locally": false,
+      "exact_blob_registration_supplied": true
+    },
+    {
+      "document": "hepta-audit-fourth/deliverables/CURRENT_AUDIT_PROGRESS.zh-CN.md",
+      "link": "fourth-donor-progress-20261105.json",
+      "exists_locally": false,
+      "exact_blob_registration_supplied": true
+    },
+    {
+      "document": "hepta-audit-fourth/deliverables/CURRENT_AUDIT_PROGRESS.zh-CN.md",
+      "link": "fourth-repository-inventory-20261105.json",
+      "exists_locally": false,
+      "exact_blob_registration_supplied": true
+    },
+    {
+      "document": "hepta-audit-fourth/deliverables/CURRENT_AUDIT_PROGRESS.zh-CN.md",
+      "link": "repository-inventory-20261105/archive-manifest.json",
+      "exists_locally": false,
+      "exact_blob_registration_supplied": true
+    },
+    {
+      "document": "hepta-audit-fourth/deliverables/FOURTH_BATCH_QUALIFICATION.md",
+      "link": "FOURTH_DONOR_PROGRESS_20261105.zh-CN.md",
+      "exists_locally": false,
+      "exact_blob_registration_supplied": true
+    },
+    {
+      "document": "hepta-audit-fourth/deliverables/FOURTH_BATCH_QUALIFICATION.md",
+      "link": "fourth-app-parent-liveness-invalid-negative-root-review.json",
+      "exists_locally": true,
+      "exact_blob_registration_supplied": false
+    },
+    {
+      "document": "hepta-audit-fourth/deliverables/FOURTH_BATCH_QUALIFICATION.md",
+      "link": "fourth-blocker-external-progress-20261105.json",
+      "exists_locally": false,
+      "exact_blob_registration_supplied": true
+    },
+    {
+      "document": "hepta-audit-fourth/deliverables/FOURTH_BATCH_QUALIFICATION.md",
+      "link": "fourth-repository-inventory-20261105.json",
+      "exists_locally": false,
+      "exact_blob_registration_supplied": true
+    },
+    {
+      "document": "hepta-audit-fourth/deliverables/PROJECT_DIRECTION_AND_PLAN.zh-CN.md",
+      "link": "FOURTH_DONOR_PROGRESS_20261105.zh-CN.md",
+      "exists_locally": false,
+      "exact_blob_registration_supplied": true
+    },
+    {
+      "document": "hepta-audit-fourth/deliverables/PROJECT_DIRECTION_AND_PLAN.zh-CN.md",
+      "link": "fourth-app-parent-liveness-invalid-negative-root-review.json",
+      "exists_locally": true,
+      "exact_blob_registration_supplied": false
+    },
+    {
+      "document": "hepta-audit-fourth/deliverables/PROJECT_DIRECTION_AND_PLAN.zh-CN.md",
+      "link": "fourth-repository-inventory-20261105.json",
+      "exists_locally": false,
+      "exact_blob_registration_supplied": true
+    }
+  ],
+  "whitespace_check": {
+    "argv": [
+      "git",
+      "diff",
+      "--no-index",
+      "--check",
+      "research-audit/fourth-report-new-inventory-review-20261105/before",
+      "research-audit/fourth-report-new-inventory-review-20261105/candidate"
+    ],
+    "returncode": 1,
+    "stdout": "",
+    "stderr": "",
+    "qualification": "No whitespace diagnostics; --no-index exit1 means different documents, retained as1, not falsely recorded0. Initial verification assertion expected0 and was corrected; no product test ran."
+  },
+  "verification_corrections": [
+    "The first check required a no-index exit0 and was corrected to retain its no-diagnostic exit1. A following inline verifier had a missing parenthesis and did not execute; the corrected verifier completed. Neither event is product execution."
+  ],
+  "new_workflow_path_literals": []
+}

@@ -1,0 +1,1694 @@
+{
+  "schema": "hepta.cabc-browser-originals.root-review.v1",
+  "created_at_utc": "2026-11-04 22:15:43 UTC",
+  "reviewer": "root",
+  "full_agent_review": "b5ca2759a16be47b27320077db1a7ccdef946e6e",
+  "status": "SELECTED_ORIGINAL_RESULT_RECORDS_VERIFIED_SCOPED_ONLY",
+  "tested_sources": {
+    "source": "cabcb40d36e116beaa65750e1f674c52035da785",
+    "synthetic_browser_merge": "7ccc78d7830a15fb95d3a77b9e18914382382a32",
+    "tree": "b2d7f038d6d88156bc6a4cb29c8703f69b808f29",
+    "merge_parents": [
+      "63652be658ebed8d3052eb789b951793384fd5e4",
+      "cabcb40d36e116beaa65750e1f674c52035da785"
+    ],
+    "ordinary_ci_merge": "28af7f705fa1024b9a6d2ef751fec116002260eb",
+    "native_presentation_merge": "4344bb3abcc615dfeadb99d9122a90ebe1d36557",
+    "identity_note": "Actual backend before/after Git receipts, HTTP sources, browser gitCommit and runtime bindings agree. Browser config.metadata.ci retains the ordinary CI merge. Synthetic browser merge GitHub retrieval was404, so its identity is credited to original native receipts, not a nonexistent fetched commit."
+  },
+  "inputs": [
+    {
+      "artifact_id": 13359883002,
+      "original_projection_blob": "d5477db4a8fcc043dbc7cc234c35d0be2b00db60",
+      "projection_bytes": 84109,
+      "projection_sha256": "a5cf29d0d9b9dcc60873341ffa34085dc675f5757ae81b1df3c5daa533cbc55e",
+      "zip_bytes": 27526,
+      "zip_sha256": "6792cc687a9c4a6d10cf58eb530d9883217b93d5a6ef8ceeb8c03d1a21485afb",
+      "zip_digest_matches": true,
+      "zip_size_matches": true,
+      "all_member_crc_passed": true,
+      "members": 5
+    },
+    {
+      "artifact_id": 13358904331,
+      "original_projection_blob": "7112a31e13245d48aab906caa4b1413f604d405f",
+      "projection_bytes": 84103,
+      "projection_sha256": "2d342a499bf9deab66c3c51916a54a2e12a242795775d591ba6c87206f278519",
+      "zip_bytes": 27323,
+      "zip_sha256": "f890fe8f95b3066af88b70035cf34a82b97b4ec5767bd213cc22fff62f9452e3",
+      "zip_digest_matches": true,
+      "zip_size_matches": true,
+      "all_member_crc_passed": true,
+      "members": 5
+    },
+    {
+      "artifact_id": 13360500202,
+      "original_projection_blob": "191457004696f65510393c373d6bc2114846b46a",
+      "projection_bytes": 212916,
+      "projection_sha256": "431abc9933b01ed9a6e69832efaa0bdd25f749a76eee3593d432a9c163a8fecd",
+      "zip_bytes": 2111981,
+      "zip_sha256": "fe5cce76e495c6f224afc68967c812f0263594044ea9f32a167197b9dc069d78",
+      "zip_digest_matches": true,
+      "zip_size_matches": true,
+      "all_member_crc_passed": true,
+      "members": 161
+    },
+    {
+      "artifact_id": 13358858149,
+      "original_projection_blob": "359a65b83eabc564dc6556de8a7f635941008b43",
+      "projection_bytes": 212674,
+      "projection_sha256": "a5e3f40eacf8846ba5b4dc0bf54525dbc21263fd75c521091f8fd12a21fa6459",
+      "zip_bytes": 2110928,
+      "zip_sha256": "972ea0ee11cd03481f113a11ce36fd5c1ae47d491f7b482460578fec3ba4b77a",
+      "zip_digest_matches": true,
+      "zip_size_matches": true,
+      "all_member_crc_passed": true,
+      "members": 161
+    },
+    {
+      "artifact_id": 13361800600,
+      "original_projection_blob": "73ade62ececf2dc29c2af4f3d90ced79b74ca65c",
+      "projection_bytes": 397115,
+      "projection_sha256": "2d59ebe8162fe4c95498064250def6120b40f9ccc2372b4b75e5592ff62e62b8",
+      "zip_bytes": 335830,
+      "zip_sha256": "14468277dcd2270268a5769a2e4256047722bf67a68449979357ad8fe784b9e3",
+      "zip_digest_matches": true,
+      "zip_size_matches": true,
+      "all_member_crc_passed": true,
+      "members": 13
+    },
+    {
+      "artifact_id": 13360915040,
+      "original_projection_blob": "3bd5c9832c4c3a5245cd81d1c13dcdc6034bd67d",
+      "projection_bytes": 394625,
+      "projection_sha256": "8dff17ca9d572ee7c63f720a2a0d30b25c0379aad615cf2ee004f8598e2da6c7",
+      "zip_bytes": 333076,
+      "zip_sha256": "26d35cd2df15dbae74c9c970a93ce9f9b9860af289dac3df486aa00df2c1a36a",
+      "zip_digest_matches": true,
+      "zip_size_matches": true,
+      "all_member_crc_passed": true,
+      "members": 13
+    }
+  ],
+  "root_recomputed": [
+    {
+      "artifact_id": 13359883002,
+      "expected_source": "cabcb40d36e116beaa65750e1f674c52035da785",
+      "http": {
+        "source": {
+          "commit": "cabcb40d36e116beaa65750e1f674c52035da785",
+          "tree": "b2d7f038d6d88156bc6a4cb29c8703f69b808f29",
+          "sdkAssetSha256": "b70442ed46ab0663323a1d7debd5676cc1dc281ec57d0be2a86f81b9eec078fc",
+          "sdkMethodsSha256": "4694a1d1de93b18c2eb14efdbccc8e13fe6fc2eeea106676c7dee236689bb9d1",
+          "manifestSha256": "05e7a8d1122a5c9b212783fce856f4da749049f06d102037fcddca45a3dce8da",
+          "sourceIdentity": "3eef2a75a5e7513f68046fbe8bb4bbcd56264c145714f9174fa4aa45ab0ca15c"
+        },
+        "required": true,
+        "passed": true,
+        "body_limit": 262144,
+        "stall_timeout_ms": 20000,
+        "summary": {
+          "matrix": {
+            "required": 60,
+            "executed": 60,
+            "passed": 60
+          },
+          "hardNegative": {
+            "required": 36,
+            "executed": 36,
+            "passed": 36
+          }
+        },
+        "rows": 96,
+        "all_rows_and_checks_pass": true,
+        "scope": "Real HTTP and exact shipping SDK methods with synthetic WASM exports; does not qualify Rust rendering, owner attachment, or gateway status"
+      }
+    },
+    {
+      "artifact_id": 13358904331,
+      "expected_source": "7ccc78d7830a15fb95d3a77b9e18914382382a32",
+      "http": {
+        "source": {
+          "commit": "7ccc78d7830a15fb95d3a77b9e18914382382a32",
+          "tree": "b2d7f038d6d88156bc6a4cb29c8703f69b808f29",
+          "sdkAssetSha256": "b70442ed46ab0663323a1d7debd5676cc1dc281ec57d0be2a86f81b9eec078fc",
+          "sdkMethodsSha256": "4694a1d1de93b18c2eb14efdbccc8e13fe6fc2eeea106676c7dee236689bb9d1",
+          "manifestSha256": "05e7a8d1122a5c9b212783fce856f4da749049f06d102037fcddca45a3dce8da",
+          "sourceIdentity": "3eef2a75a5e7513f68046fbe8bb4bbcd56264c145714f9174fa4aa45ab0ca15c"
+        },
+        "required": true,
+        "passed": true,
+        "body_limit": 262144,
+        "stall_timeout_ms": 20000,
+        "summary": {
+          "matrix": {
+            "required": 60,
+            "executed": 60,
+            "passed": 60
+          },
+          "hardNegative": {
+            "required": 36,
+            "executed": 36,
+            "passed": 36
+          }
+        },
+        "rows": 96,
+        "all_rows_and_checks_pass": true,
+        "scope": "Real HTTP and exact shipping SDK methods with synthetic WASM exports; does not qualify Rust rendering, owner attachment, or gateway status"
+      }
+    },
+    {
+      "artifact_id": 13360500202,
+      "expected_source": "cabcb40d36e116beaa65750e1f674c52035da785",
+      "playwright": [
+        {
+          "path": "hepta-private-ci/hepta-private-ci/apps/hepta-control-ui/test-results/product-status-results.json",
+          "stats": {
+            "startTime": "2026-11-04T20:14:39.928Z",
+            "duration": 116115.91600000001,
+            "expected": 7,
+            "skipped": 0,
+            "unexpected": 0,
+            "flaky": 0
+          },
+          "count": 7,
+          "all_once_pass": true,
+          "source": "cabcb40d36e116beaa65750e1f674c52035da785",
+          "ci_metadata_source": "28af7f705fa1024b9a6d2ef751fec116002260eb",
+          "projects": [
+            {
+              "id": "chromium",
+              "name": "chromium",
+              "retries": 0,
+              "timeout": 90000,
+              "repeatEach": 1
+            }
+          ],
+          "roster": [
+            {
+              "title": "bounded SDK stream terminal controls",
+              "project": "chromium",
+              "status": "passed",
+              "retry": 0
+            },
+            {
+              "title": "actual missing-owner status 1280 timeout",
+              "project": "chromium",
+              "status": "passed",
+              "retry": 0
+            },
+            {
+              "title": "actual missing-owner status 1280 navigation",
+              "project": "chromium",
+              "status": "passed",
+              "retry": 0
+            },
+            {
+              "title": "actual missing-owner status 1280 background",
+              "project": "chromium",
+              "status": "passed",
+              "retry": 0
+            },
+            {
+              "title": "actual missing-owner status 640 timeout",
+              "project": "chromium",
+              "status": "passed",
+              "retry": 0
+            },
+            {
+              "title": "actual missing-owner status 640 navigation",
+              "project": "chromium",
+              "status": "passed",
+              "retry": 0
+            },
+            {
+              "title": "actual missing-owner status 640 background",
+              "project": "chromium",
+              "status": "passed",
+              "retry": 0
+            }
+          ]
+        }
+      ],
+      "backend": [
+        {
+          "path": "_temp/gateway-boundary-http-origin-source-head.json",
+          "command": [
+            "just",
+            "test",
+            "--locked",
+            "-p",
+            "codex-hepta-native-gateway",
+            "--lib",
+            "-E",
+            "test(http_origin::tests::)"
+          ],
+          "status": "passed",
+          "source_stable_and_clean": true,
+          "passed": 2,
+          "failed": 0,
+          "original_results": [
+            {
+              "line": 26,
+              "text": "        PASS [   0.005s] (1/2) codex-hepta-native-gateway http_origin::tests::expected_loopback_host_and_same_origin_are_admitted"
+            },
+            {
+              "line": 27,
+              "text": "        PASS [   0.005s] (2/2) codex-hepta-native-gateway http_origin::tests::rebinding_cross_origin_ambiguous_and_opaque_hosts_are_rejected"
+            },
+            {
+              "line": 29,
+              "text": "     Summary [   0.006s] 2 tests run: 2 passed, 38 skipped"
+            }
+          ]
+        },
+        {
+          "path": "_temp/gateway-boundary-owner-status-source-head.json",
+          "command": [
+            "just",
+            "test",
+            "--locked",
+            "-p",
+            "codex-hepta-native-gateway",
+            "--lib",
+            "-E",
+            "test(owner_status::tests::)"
+          ],
+          "status": "passed",
+          "source_stable_and_clean": true,
+          "passed": 5,
+          "failed": 0,
+          "original_results": [
+            {
+              "line": 26,
+              "text": "        PASS [   0.007s] (1/5) codex-hepta-native-gateway owner_status::tests::inconsistent_missing_generation_is_sanitized"
+            },
+            {
+              "line": 27,
+              "text": "        PASS [   0.008s] (2/5) codex-hepta-native-gateway owner_status::tests::cancelling_a_request_does_not_release_the_single_flight_while_scan_is_alive"
+            },
+            {
+              "line": 28,
+              "text": "        PASS [   0.008s] (3/5) codex-hepta-native-gateway owner_status::tests::unsigned_max_is_a_lossless_wire_value_not_a_claim_sqlite_admits_it"
+            },
+            {
+              "line": 29,
+              "text": "        PASS [   0.005s] (4/5) codex-hepta-native-gateway owner_status::tests::weak_provider_neither_creates_nor_retains_an_owner"
+            },
+            {
+              "line": 30,
+              "text": "        PASS [   0.029s] (5/5) codex-hepta-native-gateway owner_status::tests::timeout_does_not_accumulate_detached_reads_and_releases_the_weak_upgrade"
+            },
+            {
+              "line": 32,
+              "text": "     Summary [   0.030s] 5 tests run: 5 passed, 35 skipped"
+            }
+          ]
+        },
+        {
+          "path": "_temp/gateway-boundary-ui-bundle-source-head.json",
+          "command": [
+            "just",
+            "test",
+            "--locked",
+            "-p",
+            "codex-hepta-native-gateway",
+            "--lib",
+            "-E",
+            "test(ui_bundle::tests::)"
+          ],
+          "status": "passed",
+          "source_stable_and_clean": true,
+          "passed": 12,
+          "failed": 0,
+          "original_results": [
+            {
+              "line": 26,
+              "text": "        PASS [   0.007s] ( 1/12) codex-hepta-native-gateway ui_bundle::tests::bundle_arguments_are_paired_without_changing_api_only_startup"
+            },
+            {
+              "line": 27,
+              "text": "        PASS [   0.007s] ( 2/12) codex-hepta-native-gateway ui_bundle::tests::anchored_reader_rejects_symlink_ancestors_and_final_files"
+            },
+            {
+              "line": 28,
+              "text": "        PASS [   0.011s] ( 3/12) codex-hepta-native-gateway ui_bundle::tests::malformed_requests_never_escape_the_selected_asset_map"
+            },
+            {
+              "line": 29,
+              "text": "        PASS [   0.011s] ( 4/12) codex-hepta-native-gateway ui_bundle::tests::nonregular_and_oversize_resources_fail_before_unbounded_read"
+            },
+            {
+              "line": 30,
+              "text": "        PASS [   0.024s] ( 5/12) codex-hepta-native-gateway ui_bundle::tests::actual_entry_serves_verified_ui_and_not_attached_without_initializing_legacy_state"
+            },
+            {
+              "line": 31,
+              "text": "        PASS [   0.022s] ( 6/12) codex-hepta-native-gateway ui_bundle::tests::manifest_selection_and_resource_failures_are_closed"
+            },
+            {
+              "line": 32,
+              "text": "        PASS [   0.009s] ( 7/12) codex-hepta-native-gateway ui_bundle::tests::only_verified_fonts_allow_private_revalidated_storage"
+            },
+            {
+              "line": 33,
+              "text": "        PASS [   0.007s] ( 8/12) codex-hepta-native-gateway ui_bundle::tests::pinned_directory_survives_path_rename_and_replacement"
+            },
+            {
+              "line": 34,
+              "text": "        PASS [   0.009s] ( 9/12) codex-hepta-native-gateway ui_bundle::tests::verified_snapshot_survives_asset_replacement_without_copying_bodies"
+            },
+            {
+              "line": 35,
+              "text": "        PASS [   0.014s] (10/12) codex-hepta-native-gateway ui_bundle::tests::real_ui_socket_serves_selected_bytes_and_preserves_read_only_apis"
+            },
+            {
+              "line": 36,
+              "text": "        PASS [   0.014s] (11/12) codex-hepta-native-gateway ui_bundle::tests::rebinding_and_cross_origin_are_denied_before_ui_or_runtime_dispatch"
+            },
+            {
+              "line": 37,
+              "text": "        PASS [   0.060s] (12/12) codex-hepta-native-gateway ui_bundle::tests::manifest_count_aggregate_and_entry_limits_reject_before_asset_reads"
+            },
+            {
+              "line": 39,
+              "text": "     Summary [   0.068s] 12 tests run: 12 passed, 28 skipped"
+            }
+          ]
+        },
+        {
+          "path": "_temp/gateway-transport-source-head.json",
+          "command": [
+            "just",
+            "test",
+            "--locked",
+            "-p",
+            "codex-hepta-native-gateway",
+            "--lib",
+            "-E",
+            "test(http_transport::tests::)"
+          ],
+          "status": "passed",
+          "source_stable_and_clean": true,
+          "passed": 9,
+          "failed": 0,
+          "original_results": [
+            {
+              "line": 27,
+              "text": "        PASS [   0.008s] (1/9) codex-hepta-native-gateway http_transport::tests::disconnected_writer_reports_error_without_claiming_delivery"
+            },
+            {
+              "line": 28,
+              "text": "        PASS [   0.008s] (2/9) codex-hepta-native-gateway http_transport::tests::old_five_second_budget_expires_with_exact_partial_count"
+            },
+            {
+              "line": 29,
+              "text": "        PASS [   0.007s] (3/9) codex-hepta-native-gateway http_transport::tests::mid_transfer_writer_error_reports_exact_accepted_bytes"
+            },
+            {
+              "line": 30,
+              "text": "        PASS [   0.008s] (4/9) codex-hepta-native-gateway http_transport::tests::connection_cap_drops_overload_without_polling_or_retaining_it"
+            },
+            {
+              "line": 31,
+              "text": "        PASS [   0.007s] (5/9) codex-hepta-native-gateway http_transport::tests::oversized_headers_fail_before_any_write"
+            },
+            {
+              "line": 32,
+              "text": "        PASS [   0.007s] (6/9) codex-hepta-native-gateway http_transport::tests::permanent_backpressure_still_expires_at_asset_budget"
+            },
+            {
+              "line": 33,
+              "text": "        PASS [   0.008s] (7/9) codex-hepta-native-gateway http_transport::tests::shutdown_and_completed_connections_release_owned_resources"
+            },
+            {
+              "line": 34,
+              "text": "        PASS [   0.008s] (8/9) codex-hepta-native-gateway http_transport::tests::ready_writer_still_uses_bounded_chunks_and_exact_bytes"
+            },
+            {
+              "line": 35,
+              "text": "        PASS [   0.005s] (9/9) codex-hepta-native-gateway http_transport::tests::slow_reader_beyond_api_budget_receives_exact_asset"
+            },
+            {
+              "line": 37,
+              "text": "     Summary [   0.021s] 9 tests run: 9 passed, 31 skipped"
+            }
+          ]
+        }
+      ],
+      "bindings": [
+        {
+          "path": "hepta-private-ci/hepta-private-ci/apps/hepta-control-ui/test-results/product-status/robrix-product-status-actu-0368f-owner-status-640-navigation-chromium/binding.json",
+          "source": "cabcb40d36e116beaa65750e1f674c52035da785",
+          "tree": "b2d7f038d6d88156bc6a4cb29c8703f69b808f29",
+          "gateway_binary_sha256": "b208e84065f695a3f3ca6e72068e1e55c8fac64276789b0322e41cca7d8785b1",
+          "browser_sha256": "37164bfc553db9c17e11bc19c291738a1179c5b13529ec6f20a39bd665e91be0",
+          "browser_identity_method": "cdp-browser-pid/proc-exe-fd",
+          "browser_verified": true
+        },
+        {
+          "path": "hepta-private-ci/hepta-private-ci/apps/hepta-control-ui/test-results/product-status/robrix-product-status-actu-53fb0-ng-owner-status-640-timeout-chromium/binding.json",
+          "source": "cabcb40d36e116beaa65750e1f674c52035da785",
+          "tree": "b2d7f038d6d88156bc6a4cb29c8703f69b808f29",
+          "gateway_binary_sha256": "b208e84065f695a3f3ca6e72068e1e55c8fac64276789b0322e41cca7d8785b1",
+          "browser_sha256": "37164bfc553db9c17e11bc19c291738a1179c5b13529ec6f20a39bd665e91be0",
+          "browser_identity_method": "cdp-browser-pid/proc-exe-fd",
+          "browser_verified": true
+        },
+        {
+          "path": "hepta-private-ci/hepta-private-ci/apps/hepta-control-ui/test-results/product-status/robrix-product-status-actu-9b64d-g-owner-status-1280-timeout-chromium/binding.json",
+          "source": "cabcb40d36e116beaa65750e1f674c52035da785",
+          "tree": "b2d7f038d6d88156bc6a4cb29c8703f69b808f29",
+          "gateway_binary_sha256": "b208e84065f695a3f3ca6e72068e1e55c8fac64276789b0322e41cca7d8785b1",
+          "browser_sha256": "37164bfc553db9c17e11bc19c291738a1179c5b13529ec6f20a39bd665e91be0",
+          "browser_identity_method": "cdp-browser-pid/proc-exe-fd",
+          "browser_verified": true
+        },
+        {
+          "path": "hepta-private-ci/hepta-private-ci/apps/hepta-control-ui/test-results/product-status/robrix-product-status-actu-c7ba4-wner-status-1280-navigation-chromium/binding.json",
+          "source": "cabcb40d36e116beaa65750e1f674c52035da785",
+          "tree": "b2d7f038d6d88156bc6a4cb29c8703f69b808f29",
+          "gateway_binary_sha256": "b208e84065f695a3f3ca6e72068e1e55c8fac64276789b0322e41cca7d8785b1",
+          "browser_sha256": "37164bfc553db9c17e11bc19c291738a1179c5b13529ec6f20a39bd665e91be0",
+          "browser_identity_method": "cdp-browser-pid/proc-exe-fd",
+          "browser_verified": true
+        },
+        {
+          "path": "hepta-private-ci/hepta-private-ci/apps/hepta-control-ui/test-results/product-status/robrix-product-status-actu-d26eb-wner-status-1280-background-chromium/binding.json",
+          "source": "cabcb40d36e116beaa65750e1f674c52035da785",
+          "tree": "b2d7f038d6d88156bc6a4cb29c8703f69b808f29",
+          "gateway_binary_sha256": "b208e84065f695a3f3ca6e72068e1e55c8fac64276789b0322e41cca7d8785b1",
+          "browser_sha256": "37164bfc553db9c17e11bc19c291738a1179c5b13529ec6f20a39bd665e91be0",
+          "browser_identity_method": "cdp-browser-pid/proc-exe-fd",
+          "browser_verified": true
+        },
+        {
+          "path": "hepta-private-ci/hepta-private-ci/apps/hepta-control-ui/test-results/product-status/robrix-product-status-actu-d90bd-owner-status-640-background-chromium/binding.json",
+          "source": "cabcb40d36e116beaa65750e1f674c52035da785",
+          "tree": "b2d7f038d6d88156bc6a4cb29c8703f69b808f29",
+          "gateway_binary_sha256": "b208e84065f695a3f3ca6e72068e1e55c8fac64276789b0322e41cca7d8785b1",
+          "browser_sha256": "37164bfc553db9c17e11bc19c291738a1179c5b13529ec6f20a39bd665e91be0",
+          "browser_identity_method": "cdp-browser-pid/proc-exe-fd",
+          "browser_verified": true
+        }
+      ]
+    },
+    {
+      "artifact_id": 13358858149,
+      "expected_source": "7ccc78d7830a15fb95d3a77b9e18914382382a32",
+      "playwright": [
+        {
+          "path": "hepta-private-ci/hepta-private-ci/apps/hepta-control-ui/test-results/product-status-results.json",
+          "stats": {
+            "startTime": "2026-11-04T20:10:03.691Z",
+            "duration": 78724.93400000001,
+            "expected": 7,
+            "skipped": 0,
+            "unexpected": 0,
+            "flaky": 0
+          },
+          "count": 7,
+          "all_once_pass": true,
+          "source": "7ccc78d7830a15fb95d3a77b9e18914382382a32",
+          "ci_metadata_source": "28af7f705fa1024b9a6d2ef751fec116002260eb",
+          "projects": [
+            {
+              "id": "chromium",
+              "name": "chromium",
+              "retries": 0,
+              "timeout": 90000,
+              "repeatEach": 1
+            }
+          ],
+          "roster": [
+            {
+              "title": "bounded SDK stream terminal controls",
+              "project": "chromium",
+              "status": "passed",
+              "retry": 0
+            },
+            {
+              "title": "actual missing-owner status 1280 timeout",
+              "project": "chromium",
+              "status": "passed",
+              "retry": 0
+            },
+            {
+              "title": "actual missing-owner status 1280 navigation",
+              "project": "chromium",
+              "status": "passed",
+              "retry": 0
+            },
+            {
+              "title": "actual missing-owner status 1280 background",
+              "project": "chromium",
+              "status": "passed",
+              "retry": 0
+            },
+            {
+              "title": "actual missing-owner status 640 timeout",
+              "project": "chromium",
+              "status": "passed",
+              "retry": 0
+            },
+            {
+              "title": "actual missing-owner status 640 navigation",
+              "project": "chromium",
+              "status": "passed",
+              "retry": 0
+            },
+            {
+              "title": "actual missing-owner status 640 background",
+              "project": "chromium",
+              "status": "passed",
+              "retry": 0
+            }
+          ]
+        }
+      ],
+      "backend": [
+        {
+          "path": "_temp/gateway-boundary-http-origin-base-merge.json",
+          "command": [
+            "just",
+            "test",
+            "--locked",
+            "-p",
+            "codex-hepta-native-gateway",
+            "--lib",
+            "-E",
+            "test(http_origin::tests::)"
+          ],
+          "status": "passed",
+          "source_stable_and_clean": true,
+          "passed": 2,
+          "failed": 0,
+          "original_results": [
+            {
+              "line": 26,
+              "text": "        PASS [   0.004s] (1/2) codex-hepta-native-gateway http_origin::tests::rebinding_cross_origin_ambiguous_and_opaque_hosts_are_rejected"
+            },
+            {
+              "line": 27,
+              "text": "        PASS [   0.004s] (2/2) codex-hepta-native-gateway http_origin::tests::expected_loopback_host_and_same_origin_are_admitted"
+            },
+            {
+              "line": 29,
+              "text": "     Summary [   0.004s] 2 tests run: 2 passed, 38 skipped"
+            }
+          ]
+        },
+        {
+          "path": "_temp/gateway-boundary-owner-status-base-merge.json",
+          "command": [
+            "just",
+            "test",
+            "--locked",
+            "-p",
+            "codex-hepta-native-gateway",
+            "--lib",
+            "-E",
+            "test(owner_status::tests::)"
+          ],
+          "status": "passed",
+          "source_stable_and_clean": true,
+          "passed": 5,
+          "failed": 0,
+          "original_results": [
+            {
+              "line": 26,
+              "text": "        PASS [   0.005s] (1/5) codex-hepta-native-gateway owner_status::tests::inconsistent_missing_generation_is_sanitized"
+            },
+            {
+              "line": 27,
+              "text": "        PASS [   0.006s] (2/5) codex-hepta-native-gateway owner_status::tests::cancelling_a_request_does_not_release_the_single_flight_while_scan_is_alive"
+            },
+            {
+              "line": 28,
+              "text": "        PASS [   0.006s] (3/5) codex-hepta-native-gateway owner_status::tests::unsigned_max_is_a_lossless_wire_value_not_a_claim_sqlite_admits_it"
+            },
+            {
+              "line": 29,
+              "text": "        PASS [   0.004s] (4/5) codex-hepta-native-gateway owner_status::tests::weak_provider_neither_creates_nor_retains_an_owner"
+            },
+            {
+              "line": 30,
+              "text": "        PASS [   0.026s] (5/5) codex-hepta-native-gateway owner_status::tests::timeout_does_not_accumulate_detached_reads_and_releases_the_weak_upgrade"
+            },
+            {
+              "line": 32,
+              "text": "     Summary [   0.027s] 5 tests run: 5 passed, 35 skipped"
+            }
+          ]
+        },
+        {
+          "path": "_temp/gateway-boundary-ui-bundle-base-merge.json",
+          "command": [
+            "just",
+            "test",
+            "--locked",
+            "-p",
+            "codex-hepta-native-gateway",
+            "--lib",
+            "-E",
+            "test(ui_bundle::tests::)"
+          ],
+          "status": "passed",
+          "source_stable_and_clean": true,
+          "passed": 12,
+          "failed": 0,
+          "original_results": [
+            {
+              "line": 26,
+              "text": "        PASS [   0.006s] ( 1/12) codex-hepta-native-gateway ui_bundle::tests::bundle_arguments_are_paired_without_changing_api_only_startup"
+            },
+            {
+              "line": 27,
+              "text": "        PASS [   0.007s] ( 2/12) codex-hepta-native-gateway ui_bundle::tests::malformed_requests_never_escape_the_selected_asset_map"
+            },
+            {
+              "line": 28,
+              "text": "        PASS [   0.007s] ( 3/12) codex-hepta-native-gateway ui_bundle::tests::anchored_reader_rejects_symlink_ancestors_and_final_files"
+            },
+            {
+              "line": 29,
+              "text": "        PASS [   0.006s] ( 4/12) codex-hepta-native-gateway ui_bundle::tests::nonregular_and_oversize_resources_fail_before_unbounded_read"
+            },
+            {
+              "line": 30,
+              "text": "        PASS [   0.012s] ( 5/12) codex-hepta-native-gateway ui_bundle::tests::manifest_selection_and_resource_failures_are_closed"
+            },
+            {
+              "line": 31,
+              "text": "        PASS [   0.019s] ( 6/12) codex-hepta-native-gateway ui_bundle::tests::actual_entry_serves_verified_ui_and_not_attached_without_initializing_legacy_state"
+            },
+            {
+              "line": 32,
+              "text": "        PASS [   0.006s] ( 7/12) codex-hepta-native-gateway ui_bundle::tests::only_verified_fonts_allow_private_revalidated_storage"
+            },
+            {
+              "line": 33,
+              "text": "        PASS [   0.005s] ( 8/12) codex-hepta-native-gateway ui_bundle::tests::pinned_directory_survives_path_rename_and_replacement"
+            },
+            {
+              "line": 34,
+              "text": "        PASS [   0.012s] ( 9/12) codex-hepta-native-gateway ui_bundle::tests::rebinding_and_cross_origin_are_denied_before_ui_or_runtime_dispatch"
+            },
+            {
+              "line": 35,
+              "text": "        PASS [   0.012s] (10/12) codex-hepta-native-gateway ui_bundle::tests::real_ui_socket_serves_selected_bytes_and_preserves_read_only_apis"
+            },
+            {
+              "line": 36,
+              "text": "        PASS [   0.007s] (11/12) codex-hepta-native-gateway ui_bundle::tests::verified_snapshot_survives_asset_replacement_without_copying_bodies"
+            },
+            {
+              "line": 37,
+              "text": "        PASS [   0.048s] (12/12) codex-hepta-native-gateway ui_bundle::tests::manifest_count_aggregate_and_entry_limits_reject_before_asset_reads"
+            },
+            {
+              "line": 39,
+              "text": "     Summary [   0.054s] 12 tests run: 12 passed, 28 skipped"
+            }
+          ]
+        },
+        {
+          "path": "_temp/gateway-transport-base-merge.json",
+          "command": [
+            "just",
+            "test",
+            "--locked",
+            "-p",
+            "codex-hepta-native-gateway",
+            "--lib",
+            "-E",
+            "test(http_transport::tests::)"
+          ],
+          "status": "passed",
+          "source_stable_and_clean": true,
+          "passed": 9,
+          "failed": 0,
+          "original_results": [
+            {
+              "line": 27,
+              "text": "        PASS [   0.006s] (1/9) codex-hepta-native-gateway http_transport::tests::old_five_second_budget_expires_with_exact_partial_count"
+            },
+            {
+              "line": 28,
+              "text": "        PASS [   0.005s] (2/9) codex-hepta-native-gateway http_transport::tests::disconnected_writer_reports_error_without_claiming_delivery"
+            },
+            {
+              "line": 29,
+              "text": "        PASS [   0.006s] (3/9) codex-hepta-native-gateway http_transport::tests::mid_transfer_writer_error_reports_exact_accepted_bytes"
+            },
+            {
+              "line": 30,
+              "text": "        PASS [   0.006s] (4/9) codex-hepta-native-gateway http_transport::tests::connection_cap_drops_overload_without_polling_or_retaining_it"
+            },
+            {
+              "line": 31,
+              "text": "        PASS [   0.005s] (5/9) codex-hepta-native-gateway http_transport::tests::shutdown_and_completed_connections_release_owned_resources"
+            },
+            {
+              "line": 32,
+              "text": "        PASS [   0.005s] (6/9) codex-hepta-native-gateway http_transport::tests::ready_writer_still_uses_bounded_chunks_and_exact_bytes"
+            },
+            {
+              "line": 33,
+              "text": "        PASS [   0.006s] (7/9) codex-hepta-native-gateway http_transport::tests::permanent_backpressure_still_expires_at_asset_budget"
+            },
+            {
+              "line": 34,
+              "text": "        PASS [   0.006s] (8/9) codex-hepta-native-gateway http_transport::tests::oversized_headers_fail_before_any_write"
+            },
+            {
+              "line": 35,
+              "text": "        PASS [   0.004s] (9/9) codex-hepta-native-gateway http_transport::tests::slow_reader_beyond_api_budget_receives_exact_asset"
+            },
+            {
+              "line": 37,
+              "text": "     Summary [   0.015s] 9 tests run: 9 passed, 31 skipped"
+            }
+          ]
+        }
+      ],
+      "bindings": [
+        {
+          "path": "hepta-private-ci/hepta-private-ci/apps/hepta-control-ui/test-results/product-status/robrix-product-status-actu-0368f-owner-status-640-navigation-chromium/binding.json",
+          "source": "7ccc78d7830a15fb95d3a77b9e18914382382a32",
+          "tree": "b2d7f038d6d88156bc6a4cb29c8703f69b808f29",
+          "gateway_binary_sha256": "b208e84065f695a3f3ca6e72068e1e55c8fac64276789b0322e41cca7d8785b1",
+          "browser_sha256": "37164bfc553db9c17e11bc19c291738a1179c5b13529ec6f20a39bd665e91be0",
+          "browser_identity_method": "cdp-browser-pid/proc-exe-fd",
+          "browser_verified": true
+        },
+        {
+          "path": "hepta-private-ci/hepta-private-ci/apps/hepta-control-ui/test-results/product-status/robrix-product-status-actu-53fb0-ng-owner-status-640-timeout-chromium/binding.json",
+          "source": "7ccc78d7830a15fb95d3a77b9e18914382382a32",
+          "tree": "b2d7f038d6d88156bc6a4cb29c8703f69b808f29",
+          "gateway_binary_sha256": "b208e84065f695a3f3ca6e72068e1e55c8fac64276789b0322e41cca7d8785b1",
+          "browser_sha256": "37164bfc553db9c17e11bc19c291738a1179c5b13529ec6f20a39bd665e91be0",
+          "browser_identity_method": "cdp-browser-pid/proc-exe-fd",
+          "browser_verified": true
+        },
+        {
+          "path": "hepta-private-ci/hepta-private-ci/apps/hepta-control-ui/test-results/product-status/robrix-product-status-actu-9b64d-g-owner-status-1280-timeout-chromium/binding.json",
+          "source": "7ccc78d7830a15fb95d3a77b9e18914382382a32",
+          "tree": "b2d7f038d6d88156bc6a4cb29c8703f69b808f29",
+          "gateway_binary_sha256": "b208e84065f695a3f3ca6e72068e1e55c8fac64276789b0322e41cca7d8785b1",
+          "browser_sha256": "37164bfc553db9c17e11bc19c291738a1179c5b13529ec6f20a39bd665e91be0",
+          "browser_identity_method": "cdp-browser-pid/proc-exe-fd",
+          "browser_verified": true
+        },
+        {
+          "path": "hepta-private-ci/hepta-private-ci/apps/hepta-control-ui/test-results/product-status/robrix-product-status-actu-c7ba4-wner-status-1280-navigation-chromium/binding.json",
+          "source": "7ccc78d7830a15fb95d3a77b9e18914382382a32",
+          "tree": "b2d7f038d6d88156bc6a4cb29c8703f69b808f29",
+          "gateway_binary_sha256": "b208e84065f695a3f3ca6e72068e1e55c8fac64276789b0322e41cca7d8785b1",
+          "browser_sha256": "37164bfc553db9c17e11bc19c291738a1179c5b13529ec6f20a39bd665e91be0",
+          "browser_identity_method": "cdp-browser-pid/proc-exe-fd",
+          "browser_verified": true
+        },
+        {
+          "path": "hepta-private-ci/hepta-private-ci/apps/hepta-control-ui/test-results/product-status/robrix-product-status-actu-d26eb-wner-status-1280-background-chromium/binding.json",
+          "source": "7ccc78d7830a15fb95d3a77b9e18914382382a32",
+          "tree": "b2d7f038d6d88156bc6a4cb29c8703f69b808f29",
+          "gateway_binary_sha256": "b208e84065f695a3f3ca6e72068e1e55c8fac64276789b0322e41cca7d8785b1",
+          "browser_sha256": "37164bfc553db9c17e11bc19c291738a1179c5b13529ec6f20a39bd665e91be0",
+          "browser_identity_method": "cdp-browser-pid/proc-exe-fd",
+          "browser_verified": true
+        },
+        {
+          "path": "hepta-private-ci/hepta-private-ci/apps/hepta-control-ui/test-results/product-status/robrix-product-status-actu-d90bd-owner-status-640-background-chromium/binding.json",
+          "source": "7ccc78d7830a15fb95d3a77b9e18914382382a32",
+          "tree": "b2d7f038d6d88156bc6a4cb29c8703f69b808f29",
+          "gateway_binary_sha256": "b208e84065f695a3f3ca6e72068e1e55c8fac64276789b0322e41cca7d8785b1",
+          "browser_sha256": "37164bfc553db9c17e11bc19c291738a1179c5b13529ec6f20a39bd665e91be0",
+          "browser_identity_method": "cdp-browser-pid/proc-exe-fd",
+          "browser_verified": true
+        }
+      ]
+    },
+    {
+      "artifact_id": 13361800600,
+      "expected_source": "cabcb40d36e116beaa65750e1f674c52035da785",
+      "playwright": [
+        {
+          "path": "test-results/robrix-buffer-results.json",
+          "stats": {
+            "startTime": "2026-11-04T20:28:29.739Z",
+            "duration": 38152.393000000004,
+            "expected": 1,
+            "skipped": 0,
+            "unexpected": 0,
+            "flaky": 0
+          },
+          "count": 1,
+          "all_once_pass": true,
+          "source": "cabcb40d36e116beaa65750e1f674c52035da785",
+          "ci_metadata_source": "28af7f705fa1024b9a6d2ef751fec116002260eb",
+          "projects": [
+            {
+              "id": "chromium",
+              "name": "chromium",
+              "retries": 0,
+              "timeout": 90000,
+              "repeatEach": 1
+            },
+            {
+              "id": "firefox",
+              "name": "firefox",
+              "retries": 0,
+              "timeout": 90000,
+              "repeatEach": 1
+            },
+            {
+              "id": "webkit",
+              "name": "webkit",
+              "retries": 0,
+              "timeout": 90000,
+              "repeatEach": 1
+            }
+          ],
+          "roster": [
+            {
+              "title": "compare the same WASM with discarded and retained drawing buffers",
+              "project": "webkit",
+              "status": "passed",
+              "retry": 0
+            }
+          ]
+        },
+        {
+          "path": "test-results/robrix-default-results.json",
+          "stats": {
+            "startTime": "2026-11-04T20:09:41.333Z",
+            "duration": 137682.635,
+            "expected": 6,
+            "skipped": 0,
+            "unexpected": 0,
+            "flaky": 0
+          },
+          "count": 6,
+          "all_once_pass": true,
+          "source": "cabcb40d36e116beaa65750e1f674c52035da785",
+          "ci_metadata_source": "28af7f705fa1024b9a6d2ef751fec116002260eb",
+          "projects": [
+            {
+              "id": "chromium",
+              "name": "chromium",
+              "retries": 0,
+              "timeout": 90000,
+              "repeatEach": 1
+            },
+            {
+              "id": "firefox",
+              "name": "firefox",
+              "retries": 0,
+              "timeout": 90000,
+              "repeatEach": 1
+            },
+            {
+              "id": "webkit",
+              "name": "webkit",
+              "retries": 0,
+              "timeout": 90000,
+              "repeatEach": 1
+            }
+          ],
+          "roster": [
+            {
+              "title": "Robrix host starts under strict CSP 1280",
+              "project": "chromium",
+              "status": "passed",
+              "retry": 0
+            },
+            {
+              "title": "Robrix host starts under strict CSP 640",
+              "project": "chromium",
+              "status": "passed",
+              "retry": 0
+            },
+            {
+              "title": "Robrix host starts under strict CSP 1280",
+              "project": "firefox",
+              "status": "passed",
+              "retry": 0
+            },
+            {
+              "title": "Robrix host starts under strict CSP 640",
+              "project": "firefox",
+              "status": "passed",
+              "retry": 0
+            },
+            {
+              "title": "Robrix host starts under strict CSP 1280",
+              "project": "webkit",
+              "status": "passed",
+              "retry": 0
+            },
+            {
+              "title": "Robrix host starts under strict CSP 640",
+              "project": "webkit",
+              "status": "passed",
+              "retry": 0
+            }
+          ]
+        },
+        {
+          "path": "test-results/robrix-fixtures-results.json",
+          "stats": {
+            "startTime": "2026-11-04T20:20:51.519Z",
+            "duration": 247823.296,
+            "expected": 9,
+            "skipped": 0,
+            "unexpected": 0,
+            "flaky": 0
+          },
+          "count": 9,
+          "all_once_pass": true,
+          "source": "cabcb40d36e116beaa65750e1f674c52035da785",
+          "ci_metadata_source": "28af7f705fa1024b9a6d2ef751fec116002260eb",
+          "projects": [
+            {
+              "id": "chromium",
+              "name": "chromium",
+              "retries": 0,
+              "timeout": 90000,
+              "repeatEach": 1
+            },
+            {
+              "id": "firefox",
+              "name": "firefox",
+              "retries": 0,
+              "timeout": 90000,
+              "repeatEach": 1
+            },
+            {
+              "id": "webkit",
+              "name": "webkit",
+              "retries": 0,
+              "timeout": 90000,
+              "repeatEach": 1
+            }
+          ],
+          "roster": [
+            {
+              "title": "Robrix host starts under strict CSP 1280",
+              "project": "chromium",
+              "status": "passed",
+              "retry": 0
+            },
+            {
+              "title": "Robrix host starts under strict CSP 640",
+              "project": "chromium",
+              "status": "passed",
+              "retry": 0
+            },
+            {
+              "title": "Robrix host starts under strict CSP 1280",
+              "project": "firefox",
+              "status": "passed",
+              "retry": 0
+            },
+            {
+              "title": "Robrix host starts under strict CSP 640",
+              "project": "firefox",
+              "status": "passed",
+              "retry": 0
+            },
+            {
+              "title": "Robrix host starts under strict CSP 1280",
+              "project": "webkit",
+              "status": "passed",
+              "retry": 0
+            },
+            {
+              "title": "Robrix host starts under strict CSP 640",
+              "project": "webkit",
+              "status": "passed",
+              "retry": 0
+            },
+            {
+              "title": "Compact sidebar creates once and preserves both conversations",
+              "project": "chromium",
+              "status": "passed",
+              "retry": 0
+            },
+            {
+              "title": "Compact sidebar creates once and preserves both conversations",
+              "project": "firefox",
+              "status": "passed",
+              "retry": 0
+            },
+            {
+              "title": "Compact sidebar creates once and preserves both conversations",
+              "project": "webkit",
+              "status": "passed",
+              "retry": 0
+            }
+          ]
+        }
+      ],
+      "pixels": [
+        {
+          "path": "test-results/robrix-default-pixel-results.json",
+          "fixtures": false,
+          "source": "cabcb40d36e116beaa65750e1f674c52035da785",
+          "captures": {
+            "required": 60,
+            "passed": 60
+          },
+          "semantic_checks": {
+            "required": 138,
+            "evaluated": 138,
+            "passed": 138
+          },
+          "actual_records": 60,
+          "actual_checks": 138,
+          "every_record_pass": true,
+          "fresh_visual_reinspection": false
+        },
+        {
+          "path": "test-results/robrix-fixtures-pixel-results.json",
+          "fixtures": true,
+          "source": "cabcb40d36e116beaa65750e1f674c52035da785",
+          "captures": {
+            "required": 78,
+            "passed": 78
+          },
+          "semantic_checks": {
+            "required": 438,
+            "evaluated": 438,
+            "passed": 438
+          },
+          "actual_records": 78,
+          "actual_checks": 438,
+          "every_record_pass": true,
+          "fresh_visual_reinspection": false
+        }
+      ],
+      "manifests": [
+        {
+          "path": "dist/build-manifest.json",
+          "fixtures": false,
+          "browserRuntime": "rust-makepad-wasm",
+          "threads": false,
+          "automaticCrashUpload": false,
+          "webglContext": {
+            "preserveDrawingBuffer": true,
+            "reason": "verified-visible-resize-loss-with-discarded-buffer"
+          },
+          "sourceIdentity": {
+            "sha256": "3eef2a75a5e7513f68046fbe8bb4bbcd56264c145714f9174fa4aa45ab0ca15c",
+            "source_file_count": 93,
+            "source_files_map_sha256": "7f521f0f02f506e6b012798c049e6e49387facb6e74c31d41aabfd52610bff00"
+          },
+          "file_map_key_count": 52,
+          "file_map_projection_sha256": "b5fa7b1c0e68b75daf9a4b68f1ed21a9023dcd763bce62a70a49045528cb47ac"
+        },
+        {
+          "path": "dist-robrix-fixtures/build-manifest.json",
+          "fixtures": true,
+          "browserRuntime": "rust-makepad-wasm",
+          "threads": false,
+          "automaticCrashUpload": false,
+          "webglContext": {
+            "preserveDrawingBuffer": true,
+            "reason": "verified-visible-resize-loss-with-discarded-buffer"
+          },
+          "sourceIdentity": {
+            "sha256": "3eef2a75a5e7513f68046fbe8bb4bbcd56264c145714f9174fa4aa45ab0ca15c",
+            "source_file_count": 93,
+            "source_files_map_sha256": "7f521f0f02f506e6b012798c049e6e49387facb6e74c31d41aabfd52610bff00"
+          },
+          "file_map_key_count": 52,
+          "file_map_projection_sha256": "373cc5baf6c796574cbceb4c2168c6118fea3b8b5c4a66012a5c7521561d9f86"
+        }
+      ],
+      "sdk_auxiliary": [
+        {
+          "path": "test-results/robrix-cjk-font-results.json",
+          "scope": "actual SDK CFF parsing/shaping/outlines/CPU rasterization only; no GPU/layout qualification",
+          "appQualified": false,
+          "sourceIdentityCurrent": true,
+          "wasm_sha256": "6ec5af9863c3da2e668fb1df2a683bd3440de3e92c53bde0d366e984160bd51a",
+          "results": [
+            {
+              "name": "check_fonts",
+              "count": 48,
+              "passed": true
+            }
+          ]
+        },
+        {
+          "path": "test-results/robrix-ime-router-results.json",
+          "scope": "actual SDK TextInput event behavior only; no GPU/physical-IME qualification",
+          "appQualified": false,
+          "sourceIdentityCurrent": true,
+          "wasm_sha256": "1e36701434188c4c69a0a979f78ee6bb4631eb4d34fddaec62beb18bf0034ec6",
+          "results": [
+            {
+              "name": "check_negative_control",
+              "count": 1,
+              "passed": true
+            },
+            {
+              "name": "check_keys",
+              "count": 14,
+              "passed": true
+            },
+            {
+              "name": "check_mouse",
+              "count": 2,
+              "passed": true
+            },
+            {
+              "name": "check_scope_and_resize",
+              "count": 2,
+              "passed": true
+            },
+            {
+              "name": "check_detached_and_focus_lost",
+              "count": 2,
+              "passed": true
+            },
+            {
+              "name": "check_edit_shortcuts_and_clipboard",
+              "count": 5,
+              "passed": true
+            },
+            {
+              "name": "check_mixed_touch_claims",
+              "count": 2,
+              "passed": true
+            }
+          ]
+        },
+        {
+          "path": "test-results/robrix-widget-borrow-results.json",
+          "scope": "SDK borrow contract only",
+          "appQualified": false,
+          "sourceIdentityCurrent": true,
+          "wasm_sha256": "2ef09e1853044d9e821647d5e39a7e8b7ee1f54de5e145b4e5a347f871fda498",
+          "results": null,
+          "negativeReborrowObserved": true,
+          "releasedGuardRedrawPassed": true,
+          "drawActionRedraw": [
+            {
+              "mode": 0,
+              "frame": 1,
+              "draws": 1,
+              "actions": 1,
+              "nexts": 0
+            },
+            {
+              "mode": 0,
+              "frame": 2,
+              "draws": 1,
+              "actions": 1,
+              "nexts": 0
+            },
+            {
+              "mode": 0,
+              "frame": 3,
+              "draws": 1,
+              "actions": 1,
+              "nexts": 0
+            },
+            {
+              "mode": 1,
+              "frame": 1,
+              "draws": 1,
+              "actions": 1,
+              "nexts": 0
+            },
+            {
+              "mode": 1,
+              "frame": 2,
+              "draws": 2,
+              "actions": 1,
+              "nexts": 1
+            },
+            {
+              "mode": 1,
+              "frame": 3,
+              "draws": 2,
+              "actions": 1,
+              "nexts": 1
+            }
+          ]
+        }
+      ],
+      "group_index": {
+        "schema": "hepta.robrix-browser-evidence.v1",
+        "sourceSha": "cabcb40d36e116beaa65750e1f674c52035da785",
+        "group": "summary",
+        "qualification": false,
+        "file_count": 1745
+      }
+    },
+    {
+      "artifact_id": 13360915040,
+      "expected_source": "7ccc78d7830a15fb95d3a77b9e18914382382a32",
+      "playwright": [
+        {
+          "path": "test-results/robrix-buffer-results.json",
+          "stats": {
+            "startTime": "2026-11-04T20:19:54.720Z",
+            "duration": 25598.198,
+            "expected": 1,
+            "skipped": 0,
+            "unexpected": 0,
+            "flaky": 0
+          },
+          "count": 1,
+          "all_once_pass": true,
+          "source": "7ccc78d7830a15fb95d3a77b9e18914382382a32",
+          "ci_metadata_source": "28af7f705fa1024b9a6d2ef751fec116002260eb",
+          "projects": [
+            {
+              "id": "chromium",
+              "name": "chromium",
+              "retries": 0,
+              "timeout": 90000,
+              "repeatEach": 1
+            },
+            {
+              "id": "firefox",
+              "name": "firefox",
+              "retries": 0,
+              "timeout": 90000,
+              "repeatEach": 1
+            },
+            {
+              "id": "webkit",
+              "name": "webkit",
+              "retries": 0,
+              "timeout": 90000,
+              "repeatEach": 1
+            }
+          ],
+          "roster": [
+            {
+              "title": "compare the same WASM with discarded and retained drawing buffers",
+              "project": "webkit",
+              "status": "passed",
+              "retry": 0
+            }
+          ]
+        },
+        {
+          "path": "test-results/robrix-default-results.json",
+          "stats": {
+            "startTime": "2026-11-04T20:06:52.689Z",
+            "duration": 86702.897,
+            "expected": 6,
+            "skipped": 0,
+            "unexpected": 0,
+            "flaky": 0
+          },
+          "count": 6,
+          "all_once_pass": true,
+          "source": "7ccc78d7830a15fb95d3a77b9e18914382382a32",
+          "ci_metadata_source": "28af7f705fa1024b9a6d2ef751fec116002260eb",
+          "projects": [
+            {
+              "id": "chromium",
+              "name": "chromium",
+              "retries": 0,
+              "timeout": 90000,
+              "repeatEach": 1
+            },
+            {
+              "id": "firefox",
+              "name": "firefox",
+              "retries": 0,
+              "timeout": 90000,
+              "repeatEach": 1
+            },
+            {
+              "id": "webkit",
+              "name": "webkit",
+              "retries": 0,
+              "timeout": 90000,
+              "repeatEach": 1
+            }
+          ],
+          "roster": [
+            {
+              "title": "Robrix host starts under strict CSP 1280",
+              "project": "chromium",
+              "status": "passed",
+              "retry": 0
+            },
+            {
+              "title": "Robrix host starts under strict CSP 640",
+              "project": "chromium",
+              "status": "passed",
+              "retry": 0
+            },
+            {
+              "title": "Robrix host starts under strict CSP 1280",
+              "project": "firefox",
+              "status": "passed",
+              "retry": 0
+            },
+            {
+              "title": "Robrix host starts under strict CSP 640",
+              "project": "firefox",
+              "status": "passed",
+              "retry": 0
+            },
+            {
+              "title": "Robrix host starts under strict CSP 1280",
+              "project": "webkit",
+              "status": "passed",
+              "retry": 0
+            },
+            {
+              "title": "Robrix host starts under strict CSP 640",
+              "project": "webkit",
+              "status": "passed",
+              "retry": 0
+            }
+          ]
+        },
+        {
+          "path": "test-results/robrix-fixtures-results.json",
+          "stats": {
+            "startTime": "2026-11-04T20:15:05.180Z",
+            "duration": 148585.594,
+            "expected": 9,
+            "skipped": 0,
+            "unexpected": 0,
+            "flaky": 0
+          },
+          "count": 9,
+          "all_once_pass": true,
+          "source": "7ccc78d7830a15fb95d3a77b9e18914382382a32",
+          "ci_metadata_source": "28af7f705fa1024b9a6d2ef751fec116002260eb",
+          "projects": [
+            {
+              "id": "chromium",
+              "name": "chromium",
+              "retries": 0,
+              "timeout": 90000,
+              "repeatEach": 1
+            },
+            {
+              "id": "firefox",
+              "name": "firefox",
+              "retries": 0,
+              "timeout": 90000,
+              "repeatEach": 1
+            },
+            {
+              "id": "webkit",
+              "name": "webkit",
+              "retries": 0,
+              "timeout": 90000,
+              "repeatEach": 1
+            }
+          ],
+          "roster": [
+            {
+              "title": "Robrix host starts under strict CSP 1280",
+              "project": "chromium",
+              "status": "passed",
+              "retry": 0
+            },
+            {
+              "title": "Robrix host starts under strict CSP 640",
+              "project": "chromium",
+              "status": "passed",
+              "retry": 0
+            },
+            {
+              "title": "Robrix host starts under strict CSP 1280",
+              "project": "firefox",
+              "status": "passed",
+              "retry": 0
+            },
+            {
+              "title": "Robrix host starts under strict CSP 640",
+              "project": "firefox",
+              "status": "passed",
+              "retry": 0
+            },
+            {
+              "title": "Robrix host starts under strict CSP 1280",
+              "project": "webkit",
+              "status": "passed",
+              "retry": 0
+            },
+            {
+              "title": "Robrix host starts under strict CSP 640",
+              "project": "webkit",
+              "status": "passed",
+              "retry": 0
+            },
+            {
+              "title": "Compact sidebar creates once and preserves both conversations",
+              "project": "chromium",
+              "status": "passed",
+              "retry": 0
+            },
+            {
+              "title": "Compact sidebar creates once and preserves both conversations",
+              "project": "firefox",
+              "status": "passed",
+              "retry": 0
+            },
+            {
+              "title": "Compact sidebar creates once and preserves both conversations",
+              "project": "webkit",
+              "status": "passed",
+              "retry": 0
+            }
+          ]
+        }
+      ],
+      "pixels": [
+        {
+          "path": "test-results/robrix-default-pixel-results.json",
+          "fixtures": false,
+          "source": "7ccc78d7830a15fb95d3a77b9e18914382382a32",
+          "captures": {
+            "required": 60,
+            "passed": 60
+          },
+          "semantic_checks": {
+            "required": 138,
+            "evaluated": 138,
+            "passed": 138
+          },
+          "actual_records": 60,
+          "actual_checks": 138,
+          "every_record_pass": true,
+          "fresh_visual_reinspection": false
+        },
+        {
+          "path": "test-results/robrix-fixtures-pixel-results.json",
+          "fixtures": true,
+          "source": "7ccc78d7830a15fb95d3a77b9e18914382382a32",
+          "captures": {
+            "required": 78,
+            "passed": 78
+          },
+          "semantic_checks": {
+            "required": 438,
+            "evaluated": 438,
+            "passed": 438
+          },
+          "actual_records": 78,
+          "actual_checks": 438,
+          "every_record_pass": true,
+          "fresh_visual_reinspection": false
+        }
+      ],
+      "manifests": [
+        {
+          "path": "dist-robrix-fixtures/build-manifest.json",
+          "fixtures": true,
+          "browserRuntime": "rust-makepad-wasm",
+          "threads": false,
+          "automaticCrashUpload": false,
+          "webglContext": {
+            "preserveDrawingBuffer": true,
+            "reason": "verified-visible-resize-loss-with-discarded-buffer"
+          },
+          "sourceIdentity": {
+            "sha256": "3eef2a75a5e7513f68046fbe8bb4bbcd56264c145714f9174fa4aa45ab0ca15c",
+            "source_file_count": 93,
+            "source_files_map_sha256": "7f521f0f02f506e6b012798c049e6e49387facb6e74c31d41aabfd52610bff00"
+          },
+          "file_map_key_count": 52,
+          "file_map_projection_sha256": "373cc5baf6c796574cbceb4c2168c6118fea3b8b5c4a66012a5c7521561d9f86"
+        },
+        {
+          "path": "dist/build-manifest.json",
+          "fixtures": false,
+          "browserRuntime": "rust-makepad-wasm",
+          "threads": false,
+          "automaticCrashUpload": false,
+          "webglContext": {
+            "preserveDrawingBuffer": true,
+            "reason": "verified-visible-resize-loss-with-discarded-buffer"
+          },
+          "sourceIdentity": {
+            "sha256": "3eef2a75a5e7513f68046fbe8bb4bbcd56264c145714f9174fa4aa45ab0ca15c",
+            "source_file_count": 93,
+            "source_files_map_sha256": "7f521f0f02f506e6b012798c049e6e49387facb6e74c31d41aabfd52610bff00"
+          },
+          "file_map_key_count": 52,
+          "file_map_projection_sha256": "b5fa7b1c0e68b75daf9a4b68f1ed21a9023dcd763bce62a70a49045528cb47ac"
+        }
+      ],
+      "sdk_auxiliary": [
+        {
+          "path": "test-results/robrix-cjk-font-results.json",
+          "scope": "actual SDK CFF parsing/shaping/outlines/CPU rasterization only; no GPU/layout qualification",
+          "appQualified": false,
+          "sourceIdentityCurrent": true,
+          "wasm_sha256": "6ec5af9863c3da2e668fb1df2a683bd3440de3e92c53bde0d366e984160bd51a",
+          "results": [
+            {
+              "name": "check_fonts",
+              "count": 48,
+              "passed": true
+            }
+          ]
+        },
+        {
+          "path": "test-results/robrix-ime-router-results.json",
+          "scope": "actual SDK TextInput event behavior only; no GPU/physical-IME qualification",
+          "appQualified": false,
+          "sourceIdentityCurrent": true,
+          "wasm_sha256": "1e36701434188c4c69a0a979f78ee6bb4631eb4d34fddaec62beb18bf0034ec6",
+          "results": [
+            {
+              "name": "check_negative_control",
+              "count": 1,
+              "passed": true
+            },
+            {
+              "name": "check_keys",
+              "count": 14,
+              "passed": true
+            },
+            {
+              "name": "check_mouse",
+              "count": 2,
+              "passed": true
+            },
+            {
+              "name": "check_scope_and_resize",
+              "count": 2,
+              "passed": true
+            },
+            {
+              "name": "check_detached_and_focus_lost",
+              "count": 2,
+              "passed": true
+            },
+            {
+              "name": "check_edit_shortcuts_and_clipboard",
+              "count": 5,
+              "passed": true
+            },
+            {
+              "name": "check_mixed_touch_claims",
+              "count": 2,
+              "passed": true
+            }
+          ]
+        },
+        {
+          "path": "test-results/robrix-widget-borrow-results.json",
+          "scope": "SDK borrow contract only",
+          "appQualified": false,
+          "sourceIdentityCurrent": true,
+          "wasm_sha256": "8a4bfbdff58d1927013287feaa3c9da3849f6ea5e55417a8019295a1c599b544",
+          "results": null,
+          "negativeReborrowObserved": true,
+          "releasedGuardRedrawPassed": true,
+          "drawActionRedraw": [
+            {
+              "mode": 0,
+              "frame": 1,
+              "draws": 1,
+              "actions": 1,
+              "nexts": 0
+            },
+            {
+              "mode": 0,
+              "frame": 2,
+              "draws": 1,
+              "actions": 1,
+              "nexts": 0
+            },
+            {
+              "mode": 0,
+              "frame": 3,
+              "draws": 1,
+              "actions": 1,
+              "nexts": 0
+            },
+            {
+              "mode": 1,
+              "frame": 1,
+              "draws": 1,
+              "actions": 1,
+              "nexts": 0
+            },
+            {
+              "mode": 1,
+              "frame": 2,
+              "draws": 2,
+              "actions": 1,
+              "nexts": 1
+            },
+            {
+              "mode": 1,
+              "frame": 3,
+              "draws": 2,
+              "actions": 1,
+              "nexts": 1
+            }
+          ]
+        }
+      ],
+      "group_index": {
+        "schema": "hepta.robrix-browser-evidence.v1",
+        "sourceSha": "7ccc78d7830a15fb95d3a77b9e18914382382a32",
+        "group": "summary",
+        "qualification": false,
+        "file_count": 1745
+      }
+    }
+  ],
+  "limits": [
+    "No fresh build, test execution, screenshot/video re-render, or physical IME interaction was performed by this review.",
+    "Per-source/merge repeated cases are distinct executions of corresponding scenarios, not additional distinct product behavior. Selected gateway groups overlap the owning library.",
+    "HTTP uses real HTTP and exact shipping SDK methods with synthetic WASM exports; it does not qualify Rust rendering or owner attachment.",
+    "Actual preview gateway browser scenarios are missing-owner cases. No attached-owner positive is demonstrated.",
+    "SDK CJK/IME/widget records explicitly say appQualified=false. No physical IME, complete application, Root/Current/Session/Desktop attachment or production activation is inferred.",
+    "Both default and fixture builds actually retain the drawing buffer. The separate WebKit comparison is a diagnostic; do not claim the default uses preserveDrawingBuffer=false.",
+    "The group index qualification=false and1745 files is an inventory, not an acceptance result. The six selectedZIPs have358 verified members.",
+    "Auxiliary widget WASM differs between source and merge; no explanation or byte-equivalence is invented.",
+    "All new source changes aftercabc require their own original platform qualification. These are historicalcabc receipts."
+  ],
+  "zip_total_bytes": 4946664,
+  "zip_total_members": 358,
+  "robrix_file_map_matches": [
+    {
+      "path": "dist/build-manifest.json",
+      "identical": true
+    },
+    {
+      "path": "dist-robrix-fixtures/build-manifest.json",
+      "identical": true
+    }
+  ]
+}

@@ -1,0 +1,34 @@
+{
+  "schema": "app_parent_liveness_banner_separator_native_trees_v2",
+  "base": "d8a5e94af06b9555fc8256af1337e9f28f7c7fa8",
+  "positive": "c6fbcfa0d1ba3b1556f601dc4ca3a7734328b9f7",
+  "source_path": "codex-rs/linux-sandbox/src/parent_lifecycle.rs",
+  "positive_blob": "ffc5774508ab4a069a6bcb70f27950300b86fbfe",
+  "test_path": "codex-rs/linux-sandbox/src/parent_lifecycle_tests.rs",
+  "test_preimage": "0293bce3c08720952fd3413c92c4e9a033da3d03",
+  "test_postimage": "ed07ba4eed573d659dfdf647b1aab241a28e4b46",
+  "manifest": "d65c86642df3e61d5af9fac80fe162921f5689de",
+  "negatives": [
+    {
+      "kind": "no_exit_rejection",
+      "blob": "4b395cc9faa7f10dbd5d4efef8036b0170164ec0",
+      "tree": "8c9b3cab2887ac8512529ff73b90584232ca5a17",
+      "restore_tree": "c6fbcfa0d1ba3b1556f601dc4ca3a7734328b9f7"
+    },
+    {
+      "kind": "no_rearm",
+      "blob": "eab9c5023d6f688bfbda563348490e9bb39a6aee",
+      "tree": "eafff444da46518a66e1d1db8369ec868719de97",
+      "restore_tree": "c6fbcfa0d1ba3b1556f601dc4ca3a7734328b9f7"
+    },
+    {
+      "kind": "leaked_parent_fd",
+      "blob": "63df209d8ebda1776b5526123ff08b3382982804",
+      "tree": "a1da95cc0a5b18250ffe3957671c11f098265b8e",
+      "restore_tree": "c6fbcfa0d1ba3b1556f601dc4ca3a7734328b9f7"
+    }
+  ],
+  "previous_invalid_job": "1a1a9bd0f35-fc05-3714",
+  "previous_invalid_evidence": "92e85c6f4ccdcf54e49ea7dbb6269bde28938f91",
+  "scope": "Actual Git trees only; runtime pending; same production source, strict markers and original budgets preserved."
+}

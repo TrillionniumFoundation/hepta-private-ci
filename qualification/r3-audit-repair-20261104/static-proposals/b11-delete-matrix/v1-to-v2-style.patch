@@ -1,0 +1,25 @@
+diff --git a/codex-rs/windows-sandbox-rs/src/lib.rs b/codex-rs/windows-sandbox-rs/src/lib.rs
+--- a/codex-rs/windows-sandbox-rs/src/lib.rs
++++ b/codex-rs/windows-sandbox-rs/src/lib.rs
+@@ -59,6 +59,7 @@
+ #[cfg(target_os = "windows")]
+ mod deny_read_state;
+ #[cfg(all(test, target_os = "windows"))]
++#[path = "delete_permission_matrix_tests.rs"]
+ mod delete_permission_matrix;
+ 
+ #[cfg(target_os = "windows")]
+diff --git a/codex-rs/windows-sandbox-rs/src/delete_permission_matrix.rs b/codex-rs/windows-sandbox-rs/src/delete_permission_matrix_tests.rs
+similarity index 99%
+rename from codex-rs/windows-sandbox-rs/src/delete_permission_matrix.rs
+rename to codex-rs/windows-sandbox-rs/src/delete_permission_matrix_tests.rs
+--- a/codex-rs/windows-sandbox-rs/src/delete_permission_matrix.rs
++++ b/codex-rs/windows-sandbox-rs/src/delete_permission_matrix_tests.rs
+@@ -3,6 +3,7 @@
+ use anyhow::Context;
+ use anyhow::Result;
+ use anyhow::ensure;
++use pretty_assertions::assert_eq;
+ use std::ffi::c_void;
+ use std::fs;
+ use std::fs::File;

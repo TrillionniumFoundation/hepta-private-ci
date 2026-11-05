@@ -4,7 +4,12 @@ use chrono::Utc;
 use codex_config::config_toml::RealtimeWsMode;
 use codex_config::config_toml::RealtimeWsVersion;
 use codex_core::TurnInputRequest;
+use codex_core::config::Config;
 use codex_core::test_support::auth_manager_from_auth;
+use codex_extension_api::ExtensionFuture;
+use codex_extension_api::ExtensionRegistryBuilder;
+use codex_extension_api::ThreadIdleInput;
+use codex_extension_api::ThreadLifecycleContributor;
 use codex_history::InitialHistory;
 use codex_history::RolloutItem;
 use codex_login::CodexAuth;
@@ -54,10 +59,13 @@ use std::fs;
 use std::process::Command;
 use std::sync::Arc;
 use std::sync::Mutex;
+use std::sync::atomic::AtomicBool;
+use std::sync::atomic::Ordering;
 use std::time::Duration;
 use test_case::test_case;
 use tokio::io::AsyncReadExt;
 use tokio::io::AsyncWriteExt;
+use tokio::sync::Notify;
 use tokio::sync::oneshot;
 use tokio::time::timeout;
 use tokio_tungstenite::accept_async;
@@ -5273,6 +5281,1061 @@ async fn inbound_handoff_request_starts_turn_and_does_not_block_realtime_audio()
     assert!(first_texts.iter().any(|text| text == &expected_text));
 
     realtime_server.shutdown().await;
+    api_server.shutdown().await;
+    Ok(())
+}
+
+struct BlockingFirstRealtimeIdle {
+    entered: Arc<Notify>,
+    release: Arc<Notify>,
+    claimed: AtomicBool,
+}
+
+impl ThreadLifecycleContributor<Config> for BlockingFirstRealtimeIdle {
+    fn on_thread_idle<'a>(&'a self, _input: ThreadIdleInput<'a>) -> ExtensionFuture<'a, ()> {
+        Box::pin(async move {
+            if !self.claimed.swap(true, Ordering::SeqCst) {
+                self.entered.notify_one();
+                self.release.notified().await;
+            }
+        })
+    }
+}
+
+struct RealtimeIdleReleaseGuard(Arc<Notify>);
+
+impl Drop for RealtimeIdleReleaseGuard {
+    fn drop(&mut self) {
+        self.0.notify_one();
+    }
+}
+
+#[tokio::test(flavor = "multi_thread", worker_threads = 2)]
+async fn inbound_handoff_after_turn_complete_waits_for_terminalization() -> Result<()> {
+    let api_server = start_mock_server().await;
+    let response_mock = responses::mount_sse_sequence(
+        &api_server,
+        vec![
+            responses::sse(vec![
+                responses::ev_response_created("resp-1"),
+                responses::ev_assistant_message("msg-1", "first ok"),
+                responses::ev_completed("resp-1"),
+            ]),
+            responses::sse(vec![
+                responses::ev_response_created("resp-2"),
+                responses::ev_assistant_message("msg-2", "second ok"),
+                responses::ev_completed("resp-2"),
+            ]),
+        ],
+    )
+    .await;
+
+    let realtime_server = start_websocket_server(vec![vec![
+        vec![
+            json!({
+                "type": "session.updated",
+                "session": { "id": "sess_terminalizing_handoff", "instructions": "backend prompt" }
+            }),
+            json!({
+                "type": "conversation.input_transcript.delta",
+                "delta": "first question"
+            }),
+            json!({
+                "type": "conversation.handoff.requested",
+                "handoff_id": "handoff_terminalizing_1",
+                "item_id": "item_terminalizing_1",
+                "input_transcript": "first question"
+            }),
+        ],
+        vec![],
+        vec![
+            json!({
+                "type": "conversation.input_transcript.delta",
+                "delta": "second question"
+            }),
+            json!({
+                "type": "conversation.handoff.requested",
+                "handoff_id": "handoff_terminalizing_2",
+                "item_id": "item_terminalizing_2",
+                "input_transcript": "second question"
+            }),
+            json!({
+                "type": "conversation.output_audio.delta",
+                "delta": "AQID",
+                "sample_rate": 24000,
+                "channels": 1
+            }),
+        ],
+    ]])
+    .await;
+
+    let idle_entered = Arc::new(Notify::new());
+    let idle_release = Arc::new(Notify::new());
+    let idle_release_guard = RealtimeIdleReleaseGuard(Arc::clone(&idle_release));
+    let mut extensions = ExtensionRegistryBuilder::<Config>::new();
+    extensions.thread_lifecycle_contributor(Arc::new(BlockingFirstRealtimeIdle {
+        entered: Arc::clone(&idle_entered),
+        release: Arc::clone(&idle_release),
+        claimed: AtomicBool::new(false),
+    }));
+
+    let mut builder = test_codex()
+        .with_extensions(Arc::new(extensions.build()))
+        .with_config({
+            let realtime_base_url = realtime_server.uri().to_string();
+            move |config| {
+                config.experimental_realtime_ws_base_url = Some(realtime_base_url);
+                config.realtime.version = RealtimeWsVersion::V1;
+            }
+        });
+    let test = builder.build(&api_server).await?;
+
+    test.codex
+        .submit(Op::RealtimeConversationStart(ConversationStartParams {
+            client_managed_handoffs: false,
+            delegation_ack_filler: None,
+            flush_transcript_tail_on_session_end: false,
+            codex_responses_as_items: false,
+            codex_response_item_prefix: None,
+            codex_response_handoff_mode:
+                codex_protocol::protocol::CodexResponseHandoffMode::Thinking,
+            codex_response_handoff_channel_prefixes: None,
+            model: None,
+            output_modality: RealtimeOutputModality::Audio,
+            include_startup_context: true,
+            initial_items: Vec::new(),
+            realtime_start_instructions: None,
+            realtime_end_instructions: None,
+            prompt: Some(Some("backend prompt".to_string())),
+            realtime_session_id: None,
+            transport: None,
+            version: None,
+            voice: None,
+        }))
+        .await?;
+
+    let _ = wait_for_event_match(&test.codex, |msg| match msg {
+        EventMsg::RealtimeConversationRealtime(RealtimeConversationRealtimeEvent {
+            payload:
+                RealtimeEvent::SessionUpdated {
+                    realtime_session_id: session_id,
+                    ..
+                },
+        }) => Some(session_id.clone()),
+        _ => None,
+    })
+    .await;
+
+    let first_turn_id = wait_for_event_match(&test.codex, |event| match event {
+        EventMsg::TurnComplete(completed) => Some(completed.turn_id.clone()),
+        _ => None,
+    })
+    .await;
+    timeout(Duration::from_secs(10), idle_entered.notified())
+        .await
+        .context("first terminalizer must reach the blocked idle callback")?;
+    assert!(test.codex.pending_turn_terminalization().is_some());
+    assert_eq!(response_mock.requests().len(), 1);
+
+    // Drain the first handoff's outbound message before sending the audio
+    // request that makes the websocket peer issue the second handoff.
+    let first_output = wait_for_websocket_request(&realtime_server, 0, 1).await?;
+    assert_eq!(
+        first_output.body_json()["type"].as_str(),
+        Some("conversation.handoff.append")
+    );
+    assert_eq!(
+        first_output.body_json()["handoff_id"].as_str(),
+        Some("handoff_terminalizing_1")
+    );
+    assert_eq!(
+        first_output.body_json()["output_text"].as_str(),
+        Some("\"Agent Final Message\":\n\nfirst ok")
+    );
+
+    test.codex
+        .submit(Op::RealtimeConversationAudio(ConversationAudioParams {
+            frame: RealtimeAudioFrame {
+                data: "AQID".to_string(),
+                sample_rate: 24000,
+                num_channels: 1,
+                samples_per_channel: Some(480),
+                item_id: None,
+            },
+        }))
+        .await?;
+
+    let audio_request = wait_for_websocket_request(&realtime_server, 0, 2).await?;
+    assert_eq!(
+        audio_request.body_json()["type"].as_str(),
+        Some("input_audio_buffer.append")
+    );
+
+    // The second handoff and audio are adjacent events from the same peer.
+    // Routing must wait for the existing owner while realtime audio continues
+    // within the same budget as the original audio nonblocking regression.
+    let mut saw_second_handoff = false;
+    let before_release = timeout(Duration::from_millis(500), async {
+        loop {
+            match test.codex.next_event().await?.msg {
+                EventMsg::Error(error) => {
+                    anyhow::bail!(
+                        "handoff rejected while terminalizer still owns its fence: {error:?}"
+                    );
+                }
+                event @ (EventMsg::TurnStarted(_) | EventMsg::TurnComplete(_)) => {
+                    anyhow::bail!("turn admitted before terminalization release: {event:?}");
+                }
+                EventMsg::RealtimeConversationRealtime(RealtimeConversationRealtimeEvent {
+                    payload: RealtimeEvent::HandoffRequested(handoff),
+                }) if handoff.handoff_id == "handoff_terminalizing_2" => {
+                    saw_second_handoff = true;
+                }
+                EventMsg::RealtimeConversationRealtime(RealtimeConversationRealtimeEvent {
+                    payload: RealtimeEvent::AudioOut(frame),
+                }) => break Ok::<_, anyhow::Error>(frame),
+                _ => {}
+            }
+        }
+    })
+    .await;
+    let pending_before_release = test.codex.pending_turn_terminalization().is_some();
+    let requests_before_release = response_mock.requests().len();
+    // Release this exact gate on audio delivery, timeout and every error path.
+    drop(idle_release_guard);
+    assert!(
+        pending_before_release,
+        "first terminalizer must still own its completion fence"
+    );
+    assert_eq!(requests_before_release, 1);
+    let audio_out = match before_release {
+        Err(_) => {
+            eprintln!(
+                "realtime audio blocked by terminalizing handoff beyond 500ms; pending_owner={pending_before_release}; physical_model_requests={requests_before_release}"
+            );
+            anyhow::bail!(
+                "realtime audio blocked by terminalizing handoff beyond 500ms; pending_owner={pending_before_release}; physical_model_requests={requests_before_release}"
+            );
+        }
+        Ok(Err(error)) => {
+            eprintln!(
+                "{error:#}; pending_owner={pending_before_release}; physical_model_requests={requests_before_release}"
+            );
+            anyhow::bail!(
+                "{error:#}; pending_owner={pending_before_release}; physical_model_requests={requests_before_release}"
+            );
+        }
+        Ok(Ok(frame)) => frame,
+    };
+    assert_eq!(audio_out.data, "AQID");
+
+    let second_turn = timeout(Duration::from_secs(10), async {
+        let mut completed = None;
+        loop {
+            match test.codex.next_event().await?.msg {
+                EventMsg::Error(error) => {
+                    anyhow::bail!("second handoff was rejected after release: {error:?}");
+                }
+                EventMsg::TurnComplete(turn) => completed = Some(turn),
+                EventMsg::RealtimeConversationRealtime(RealtimeConversationRealtimeEvent {
+                    payload: RealtimeEvent::HandoffRequested(handoff),
+                }) if handoff.handoff_id == "handoff_terminalizing_2" => {
+                    saw_second_handoff = true;
+                }
+                _ => {}
+            }
+            if saw_second_handoff && let Some(turn) = completed.take() {
+                break Ok::<_, anyhow::Error>(turn);
+            }
+        }
+    })
+    .await
+    .context("second handoff must resume after the exact idle gate is released")??;
+    assert_ne!(second_turn.turn_id, first_turn_id);
+    assert_eq!(second_turn.last_agent_message.as_deref(), Some("second ok"));
+
+    let requests = response_mock.requests();
+    assert_eq!(requests.len(), 2);
+
+    let first_user_texts = requests[0].message_input_texts("user");
+    assert!(first_user_texts.iter().any(|text| text
+        == "<realtime_delegation>\n  <input>first question</input>\n  <transcript_delta>user: first question</transcript_delta>\n</realtime_delegation>"));
+
+    let second_user_texts = requests[1].message_input_texts("user");
+    assert!(second_user_texts.iter().any(|text| text
+        == "<realtime_delegation>\n  <input>second question</input>\n  <transcript_delta>user: second question</transcript_delta>\n</realtime_delegation>"));
+    assert!(!second_user_texts.iter().any(|text| text
+        == "<realtime_delegation>\n  <input>second question</input>\n  <transcript_delta>user: first question\nuser: second question</transcript_delta>\n</realtime_delegation>"));
+
+    realtime_server.shutdown().await;
+    Ok(())
+}
+
+struct BlockedRealtimeHandoff {
+    // Release first if an assertion or early return drops the fixture.
+    release_guard: Option<RealtimeIdleReleaseGuard>,
+    test: TestCodex,
+    realtime_server: responses::WebSocketTestServer,
+    response_mock: responses::ResponseMock,
+    _api_server: wiremock::MockServer,
+}
+
+impl BlockedRealtimeHandoff {
+    fn release(&mut self) {
+        drop(self.release_guard.take());
+    }
+}
+
+async fn start_realtime_with_blocked_terminalizer(
+    pending_events: Vec<Value>,
+) -> Result<BlockedRealtimeHandoff> {
+    let api_server = start_mock_server().await;
+    let response_mock = responses::mount_sse_sequence(
+        &api_server,
+        vec![responses::sse(vec![
+            responses::ev_response_created("resp-1"),
+            responses::ev_assistant_message("msg-1", "first ok"),
+            responses::ev_completed("resp-1"),
+        ])],
+    )
+    .await;
+
+    let realtime_server = start_websocket_server(vec![vec![
+        vec![
+            json!({
+                "type": "session.updated",
+                "session": { "id": "sess_terminalizing_handoff", "instructions": "backend prompt" }
+            }),
+            json!({
+                "type": "conversation.input_transcript.delta",
+                "delta": "first question"
+            }),
+            json!({
+                "type": "conversation.handoff.requested",
+                "handoff_id": "handoff_terminalizing_1",
+                "item_id": "item_terminalizing_1",
+                "input_transcript": "first question"
+            }),
+        ],
+        vec![],
+        pending_events,
+    ]])
+    .await;
+
+    let idle_entered = Arc::new(Notify::new());
+    let idle_release = Arc::new(Notify::new());
+    let idle_release_guard = RealtimeIdleReleaseGuard(Arc::clone(&idle_release));
+    let mut extensions = ExtensionRegistryBuilder::<Config>::new();
+    extensions.thread_lifecycle_contributor(Arc::new(BlockingFirstRealtimeIdle {
+        entered: Arc::clone(&idle_entered),
+        release: Arc::clone(&idle_release),
+        claimed: AtomicBool::new(false),
+    }));
+
+    let mut builder = test_codex()
+        .with_extensions(Arc::new(extensions.build()))
+        .with_config({
+            let realtime_base_url = realtime_server.uri().to_string();
+            move |config| {
+                config.experimental_realtime_ws_base_url = Some(realtime_base_url);
+                config.realtime.version = RealtimeWsVersion::V1;
+            }
+        });
+    let test = builder.build(&api_server).await?;
+
+    test.codex
+        .submit(Op::RealtimeConversationStart(ConversationStartParams {
+            client_managed_handoffs: false,
+            delegation_ack_filler: None,
+            flush_transcript_tail_on_session_end: false,
+            codex_responses_as_items: false,
+            codex_response_item_prefix: None,
+            codex_response_handoff_mode:
+                codex_protocol::protocol::CodexResponseHandoffMode::Thinking,
+            codex_response_handoff_channel_prefixes: None,
+            model: None,
+            output_modality: RealtimeOutputModality::Audio,
+            include_startup_context: true,
+            initial_items: Vec::new(),
+            realtime_start_instructions: None,
+            realtime_end_instructions: None,
+            prompt: Some(Some("backend prompt".to_string())),
+            realtime_session_id: None,
+            transport: None,
+            version: None,
+            voice: None,
+        }))
+        .await?;
+
+    let _ = wait_for_event_match(&test.codex, |msg| match msg {
+        EventMsg::RealtimeConversationRealtime(RealtimeConversationRealtimeEvent {
+            payload:
+                RealtimeEvent::SessionUpdated {
+                    realtime_session_id: session_id,
+                    ..
+                },
+        }) => Some(session_id.clone()),
+        _ => None,
+    })
+    .await;
+
+    let _first_turn_id = wait_for_event_match(&test.codex, |event| match event {
+        EventMsg::TurnComplete(completed) => Some(completed.turn_id.clone()),
+        _ => None,
+    })
+    .await;
+    timeout(Duration::from_secs(10), idle_entered.notified())
+        .await
+        .context("first terminalizer must reach the blocked idle callback")?;
+    assert!(test.codex.pending_turn_terminalization().is_some());
+    assert_eq!(response_mock.requests().len(), 1);
+
+    // Drain the first handoff's outbound message before sending the audio
+    // request that makes the websocket peer issue the second handoff.
+    let first_output = wait_for_websocket_request(&realtime_server, 0, 1).await?;
+    assert_eq!(
+        first_output.body_json()["type"].as_str(),
+        Some("conversation.handoff.append")
+    );
+    assert_eq!(
+        first_output.body_json()["handoff_id"].as_str(),
+        Some("handoff_terminalizing_1")
+    );
+    assert_eq!(
+        first_output.body_json()["output_text"].as_str(),
+        Some("\"Agent Final Message\":\n\nfirst ok")
+    );
+
+    Ok(BlockedRealtimeHandoff {
+        release_guard: Some(idle_release_guard),
+        test,
+        realtime_server,
+        response_mock,
+        _api_server: api_server,
+    })
+}
+
+async fn trigger_handoffs_while_terminalizer_is_blocked(
+    fixture: &BlockedRealtimeHandoff,
+) -> Result<()> {
+    fixture
+        .test
+        .codex
+        .submit(Op::RealtimeConversationAudio(ConversationAudioParams {
+            frame: RealtimeAudioFrame {
+                data: "AQID".to_string(),
+                sample_rate: 24000,
+                num_channels: 1,
+                samples_per_channel: Some(480),
+                item_id: None,
+            },
+        }))
+        .await?;
+    let audio_request = wait_for_websocket_request(&fixture.realtime_server, 0, 2).await?;
+    assert_eq!(
+        audio_request.body_json()["type"].as_str(),
+        Some("input_audio_buffer.append")
+    );
+    Ok(())
+}
+
+#[tokio::test(flavor = "multi_thread", worker_threads = 2)]
+async fn inbound_handoff_overflow_closes_while_terminalizer_is_blocked() -> Result<()> {
+    // Twice the combined 64-entry routing and 256-entry event capacities also
+    // covers in-flight messages. The input task can be inside a blocked
+    // events_tx.send when fanout fails.
+    let pending_events = (0..(2 * (64 + 256)))
+        .map(|index| {
+            json!({
+                "type": "conversation.handoff.requested",
+                "handoff_id": format!("overflow_handoff_{index}"),
+                "item_id": format!("overflow_item_{index}"),
+                "input_transcript": format!("pending handoff {index}")
+            })
+        })
+        .collect();
+    let mut fixture = start_realtime_with_blocked_terminalizer(pending_events).await?;
+    trigger_handoffs_while_terminalizer_is_blocked(&fixture).await?;
+    let first_completion = fixture
+        .test
+        .codex
+        .pending_turn_terminalization()
+        .context("first terminalization must still be pending")?;
+
+    timeout(Duration::from_secs(10), async {
+        let mut saw_overflow = false;
+        loop {
+            match fixture.test.codex.next_event().await?.msg {
+                EventMsg::Error(error)
+                    if error.message == "realtime handoff routing queue is full"
+                        && error.codex_error_info == Some(CodexErrorInfo::InternalServerError) =>
+                {
+                    saw_overflow = true;
+                }
+                EventMsg::Error(error) => anyhow::bail!("unexpected overflow result: {error:?}"),
+                event @ (EventMsg::TurnStarted(_) | EventMsg::TurnComplete(_)) => {
+                    anyhow::bail!("queued input escaped the blocked terminalizer: {event:?}");
+                }
+                EventMsg::RealtimeConversationClosed(closed) => {
+                    assert!(saw_overflow, "overflow must be reported before closure");
+                    assert_eq!(closed.reason.as_deref(), Some("error"));
+                    break Ok::<_, anyhow::Error>(());
+                }
+                _ => {}
+            }
+        }
+    })
+    .await
+    .context("overflow must close the input task while the idle gate is still held")??;
+    assert!(fixture.test.codex.pending_turn_terminalization().is_some());
+    assert_eq!(fixture.response_mock.requests().len(), 1);
+    fixture.release();
+    timeout(Duration::from_secs(10), first_completion)
+        .await
+        .context("release the original terminalizer after overflow shutdown")?;
+    assert_eq!(fixture.response_mock.requests().len(), 1);
+    fixture.realtime_server.shutdown().await;
+    Ok(())
+}
+
+#[tokio::test(flavor = "multi_thread", worker_threads = 2)]
+async fn conversation_close_cancels_handoff_waiting_for_terminalization() -> Result<()> {
+    let pending_events = vec![
+        json!({
+            "type": "conversation.handoff.requested",
+            "handoff_id": "close_pending_handoff",
+            "item_id": "close_pending_item",
+            "input_transcript": "must not run after conversation close"
+        }),
+        json!({
+            "type": "conversation.output_audio.delta",
+            "delta": "AQID",
+            "sample_rate": 24000,
+            "channels": 1
+        }),
+    ];
+    let mut fixture = start_realtime_with_blocked_terminalizer(pending_events).await?;
+    trigger_handoffs_while_terminalizer_is_blocked(&fixture).await?;
+    let first_completion = fixture
+        .test
+        .codex
+        .pending_turn_terminalization()
+        .context("first terminalization must still be pending")?;
+
+    let audio = timeout(Duration::from_millis(500), async {
+        loop {
+            match fixture.test.codex.next_event().await?.msg {
+                EventMsg::Error(error) => anyhow::bail!("handoff was rejected: {error:?}"),
+                event @ (EventMsg::TurnStarted(_) | EventMsg::TurnComplete(_)) => {
+                    anyhow::bail!("handoff was admitted before release: {event:?}");
+                }
+                EventMsg::RealtimeConversationRealtime(RealtimeConversationRealtimeEvent {
+                    payload: RealtimeEvent::AudioOut(frame),
+                }) => break Ok::<_, anyhow::Error>(frame),
+                _ => {}
+            }
+        }
+    })
+    .await
+    .context("realtime audio must remain live while admission waits")??;
+    assert_eq!(audio.data, "AQID");
+    assert_eq!(fixture.response_mock.requests().len(), 1);
+    fixture
+        .test
+        .codex
+        .submit(Op::RealtimeConversationClose)
+        .await?;
+    timeout(Duration::from_secs(10), async {
+        loop {
+            match fixture.test.codex.next_event().await?.msg {
+                EventMsg::Error(error) => anyhow::bail!("conversation close failed: {error:?}"),
+                event @ (EventMsg::TurnStarted(_) | EventMsg::TurnComplete(_)) => {
+                    anyhow::bail!("closed conversation admitted a queued handoff: {event:?}");
+                }
+                EventMsg::RealtimeConversationClosed(closed) => {
+                    assert_eq!(closed.reason.as_deref(), Some("requested"));
+                    break Ok::<_, anyhow::Error>(());
+                }
+                _ => {}
+            }
+        }
+    })
+    .await
+    .context("explicit close must finish before the old idle gate is released")??;
+    assert!(fixture.test.codex.pending_turn_terminalization().is_some());
+    assert_eq!(fixture.response_mock.requests().len(), 1);
+    fixture.release();
+    timeout(Duration::from_secs(10), first_completion)
+        .await
+        .context("release the original terminalizer after conversation close")?;
+    assert_eq!(fixture.response_mock.requests().len(), 1);
+    fixture.realtime_server.shutdown().await;
+    Ok(())
+}
+
+async fn wait_for_v2_guidance_output<F>(
+    output: &Arc<Mutex<Vec<Value>>>,
+    changed: &Notify,
+    description: &str,
+    predicate: F,
+) -> Result<Value>
+where
+    F: Fn(&Value) -> bool,
+{
+    timeout(Duration::from_secs(10), async {
+        loop {
+            let found = output
+                .lock()
+                .expect("V2 output capture poisoned")
+                .iter()
+                .find(|message| predicate(message))
+                .cloned();
+            if let Some(message) = found {
+                return message;
+            }
+            changed.notified().await;
+        }
+    })
+    .await
+    .with_context(|| format!("missing V2 output: {description}"))
+}
+
+#[tokio::test(flavor = "multi_thread", worker_threads = 2)]
+async fn realtime_v2_queued_handoffs_preserve_guidance_and_call_completion() -> Result<()> {
+    skip_if_no_network!(Ok(()));
+
+    let (model_release_tx, model_release_rx) = oneshot::channel();
+    let initial_response = vec![StreamingSseChunk {
+        gate: None,
+        body: responses::sse(vec![
+            responses::ev_response_created("resp-v2-initial"),
+            responses::ev_assistant_message("msg-v2-initial", "initial result"),
+            responses::ev_completed("resp-v2-initial"),
+        ]),
+    }];
+    let first_queued_response = vec![
+        StreamingSseChunk {
+            gate: None,
+            body: sse_event(responses::ev_response_created("resp-v2-queued-2")),
+        },
+        StreamingSseChunk {
+            gate: Some(model_release_rx),
+            body: responses::sse(vec![
+                responses::ev_assistant_message("msg-v2-queued-2", "queued response 2"),
+                responses::ev_completed("resp-v2-queued-2"),
+            ]),
+        },
+    ];
+    // Guidance may already be in the first queued model request, or may require
+    // one more model round. Do not require one Core turn per realtime call ID.
+    let further_guidance_response = vec![StreamingSseChunk {
+        gate: None,
+        body: responses::sse(vec![
+            responses::ev_response_created("resp-v2-queued-3"),
+            responses::ev_assistant_message("msg-v2-queued-3", "queued response 3"),
+            responses::ev_completed("resp-v2-queued-3"),
+        ]),
+    }];
+    let (api_server, _completions) = start_streaming_sse_server(vec![
+        initial_response,
+        first_queued_response,
+        further_guidance_response,
+    ])
+    .await;
+
+    let listener = tokio::net::TcpListener::bind("127.0.0.1:0").await?;
+    let realtime_base_url = format!("ws://{}", listener.local_addr()?);
+    let output = Arc::new(Mutex::new(Vec::<Value>::new()));
+    let output_changed = Arc::new(Notify::new());
+    let peer_output = Arc::clone(&output);
+    let peer_output_changed = Arc::clone(&output_changed);
+    let requested_close_started = Arc::new(AtomicBool::new(false));
+    let peer_requested_close_started = Arc::clone(&requested_close_started);
+    let reset_during_requested_close = Arc::new(AtomicBool::new(false));
+    let peer_reset_during_requested_close = Arc::clone(&reset_during_requested_close);
+    let (send_queued_tx, mut send_queued_rx) = oneshot::channel();
+    let peer = tokio_util::task::AbortOnDropHandle::new(tokio::spawn(async move {
+        let (stream, _) = listener.accept().await?;
+        let mut socket = accept_async(stream).await?;
+        let mut initial_sent = false;
+        let mut queued_sent = false;
+        let mut response_ordinal = 0;
+        loop {
+            tokio::select! {
+                ready = &mut send_queued_rx, if !queued_sent => {
+                    ready.context("V2 guidance trigger dropped")?;
+                    queued_sent = true;
+                    for event in [
+                        json!({
+                            "type": "conversation.item.done",
+                            "item": {
+                                "id": "item-v2-queued-task",
+                                "type": "function_call",
+                                "name": "background_agent",
+                                "call_id": "call-v2-queued-task",
+                                "arguments": "{\"input_transcript\":\"begin queued task\"}"
+                            }
+                        }),
+                        json!({
+                            "type": "conversation.item.done",
+                            "item": {
+                                "id": "item-v2-queued-guidance",
+                                "type": "function_call",
+                                "name": "background_agent",
+                                "call_id": "call-v2-queued-guidance",
+                                "arguments": "{\"input_transcript\":\"apply queued guidance\"}"
+                            }
+                        }),
+                        json!({
+                            "type": "response.output_audio.delta",
+                            "delta": "AQID",
+                            "sample_rate": 24000,
+                            "channels": 1,
+                            "item_id": "audio-v2-queued"
+                        }),
+                    ] {
+                        socket.send(Message::Text(event.to_string().into())).await?;
+                    }
+                }
+                message = socket.next() => {
+                    let Some(message) = message else { break };
+                    if matches!(
+                        &message,
+                        Err(tokio_tungstenite::tungstenite::Error::Protocol(
+                            tokio_tungstenite::tungstenite::error::ProtocolError::ResetWithoutClosingHandshake
+                        ))
+                    ) && peer_requested_close_started.load(Ordering::Acquire) {
+                        peer_reset_during_requested_close.store(true, Ordering::Release);
+                    }
+                    let message = message.context("V2 peer receive failed")?;
+                    if message.is_close() {
+                        break;
+                    }
+                    let Message::Text(text) = message else { continue };
+                    let value: Value = serde_json::from_str(text.as_ref())?;
+                    peer_output.lock().expect("V2 output capture poisoned").push(value.clone());
+                    peer_output_changed.notify_one();
+                    if !initial_sent {
+                        assert_eq!(value["type"].as_str(), Some("session.update"));
+                        initial_sent = true;
+                        for event in [
+                            json!({
+                                "type": "session.updated",
+                                "session": { "id": "sess-v2-queued-guidance", "instructions": "backend prompt" }
+                            }),
+                            json!({
+                                "type": "conversation.item.done",
+                                "item": {
+                                    "id": "item-v2-initial",
+                                    "type": "function_call",
+                                    "name": "background_agent",
+                                    "call_id": "call-v2-initial",
+                                    "arguments": "{\"input_transcript\":\"initial task\"}"
+                                }
+                            }),
+                        ] {
+                            socket.send(Message::Text(event.to_string().into())).await?;
+                        }
+                    } else if value["type"].as_str() == Some("response.create") {
+                        response_ordinal += 1;
+                        let response_id = format!("realtime-v2-response-{response_ordinal}");
+                        for event_type in ["response.created", "response.done"] {
+                            socket.send(Message::Text(json!({
+                                "type": event_type,
+                                "response": { "id": response_id }
+                            }).to_string().into())).await?;
+                        }
+                    }
+                }
+            }
+        }
+        Ok::<_, anyhow::Error>(())
+    }));
+
+    let idle_entered = Arc::new(Notify::new());
+    let idle_release = Arc::new(Notify::new());
+    let mut extensions = ExtensionRegistryBuilder::<Config>::new();
+    extensions.thread_lifecycle_contributor(Arc::new(BlockingFirstRealtimeIdle {
+        entered: Arc::clone(&idle_entered),
+        release: Arc::clone(&idle_release),
+        claimed: AtomicBool::new(false),
+    }));
+    let mut builder = test_codex()
+        .with_extensions(Arc::new(extensions.build()))
+        .with_config(move |config| {
+            config.experimental_realtime_ws_base_url = Some(realtime_base_url);
+            config.realtime.version = RealtimeWsVersion::V2;
+        });
+    let test = builder.build_with_streaming_server(&api_server).await?;
+    let idle_release_guard = RealtimeIdleReleaseGuard(Arc::clone(&idle_release));
+    test.codex
+        .submit(Op::RealtimeConversationStart(ConversationStartParams {
+            client_managed_handoffs: false,
+            delegation_ack_filler: None,
+            flush_transcript_tail_on_session_end: false,
+            codex_responses_as_items: false,
+            codex_response_item_prefix: None,
+            codex_response_handoff_mode:
+                codex_protocol::protocol::CodexResponseHandoffMode::Thinking,
+            codex_response_handoff_channel_prefixes: None,
+            model: None,
+            output_modality: RealtimeOutputModality::Audio,
+            include_startup_context: true,
+            initial_items: Vec::new(),
+            realtime_start_instructions: None,
+            realtime_end_instructions: None,
+            prompt: Some(Some("backend prompt".to_string())),
+            realtime_session_id: None,
+            transport: None,
+            version: None,
+            voice: None,
+        }))
+        .await?;
+
+    wait_for_event(&test.codex, |event| {
+        matches!(event, EventMsg::TurnComplete(_))
+    })
+    .await;
+    timeout(Duration::from_secs(10), idle_entered.notified())
+        .await
+        .context("V2 initial terminalizer must reach the real idle gate")?;
+    assert!(test.codex.pending_turn_terminalization().is_some());
+    assert_eq!(api_server.requests().await.len(), 1);
+    let initial_complete =
+        wait_for_v2_guidance_output(&output, &output_changed, "initial completion", |message| {
+            message["item"]["call_id"].as_str() == Some("call-v2-initial")
+        })
+        .await?;
+    assert_eq!(
+        initial_complete,
+        json!({
+            "type": "conversation.item.create",
+            "item": {
+                "type": "function_call_output",
+                "call_id": "call-v2-initial",
+                "output": "Background agent finished. Use the preceding [BACKEND] messages as the result."
+            }
+        })
+    );
+
+    send_queued_tx
+        .send(())
+        .expect("V2 peer must still be connected");
+    let mut saw_task = false;
+    let mut saw_guidance = false;
+    let audio = timeout(Duration::from_millis(500), async {
+        loop {
+            match test.codex.next_event().await?.msg {
+                EventMsg::Error(error) => anyhow::bail!("queued V2 handoff rejected: {error:?}"),
+                event @ (EventMsg::TurnStarted(_) | EventMsg::TurnComplete(_)) => {
+                    anyhow::bail!("V2 input admitted before owner release: {event:?}");
+                }
+                EventMsg::RealtimeConversationRealtime(RealtimeConversationRealtimeEvent {
+                    payload: RealtimeEvent::Error(error),
+                }) => {
+                    anyhow::bail!("V2 transport failed before owner release: {error}");
+                }
+                EventMsg::RealtimeConversationRealtime(RealtimeConversationRealtimeEvent {
+                    payload: RealtimeEvent::HandoffRequested(handoff),
+                }) => match handoff.handoff_id.as_str() {
+                    "call-v2-queued-task" => saw_task = true,
+                    "call-v2-queued-guidance" => saw_guidance = true,
+                    _ => {}
+                },
+                EventMsg::RealtimeConversationRealtime(RealtimeConversationRealtimeEvent {
+                    payload: RealtimeEvent::AudioOut(frame),
+                }) => break Ok::<_, anyhow::Error>(frame),
+                _ => {}
+            }
+        }
+    })
+    .await
+    .context("V2 queued guidance must not block 500ms audio forwarding")??;
+    assert_eq!(audio.data, "AQID");
+    assert!(saw_task && saw_guidance);
+    assert!(test.codex.pending_turn_terminalization().is_some());
+    assert_eq!(api_server.requests().await.len(), 1);
+    let steer = wait_for_v2_guidance_output(
+        &output,
+        &output_changed,
+        "guidance steering acknowledgement",
+        |message| message["item"]["call_id"].as_str() == Some("call-v2-queued-guidance"),
+    )
+    .await?;
+    assert_eq!(
+        steer,
+        json!({
+            "type": "conversation.item.create",
+            "item": {
+                "type": "function_call_output",
+                "call_id": "call-v2-queued-guidance",
+                "output": "This was sent to steer the previous background agent task."
+            }
+        })
+    );
+    assert!(
+        !output
+            .lock()
+            .expect("V2 output capture poisoned")
+            .iter()
+            .any(|message| { message["item"]["call_id"].as_str() == Some("call-v2-queued-task") })
+    );
+    drop(idle_release_guard);
+
+    timeout(
+        Duration::from_secs(10),
+        api_server.wait_for_request_count(2),
+    )
+    .await
+    .context("the first queued V2 request must reach the physical model after owner release")?;
+    model_release_tx
+        .send(())
+        .expect("queued model response must still be waiting");
+    let final_message = timeout(Duration::from_secs(10), async {
+        'completed: loop {
+            match test.codex.next_event().await?.msg {
+                EventMsg::Error(error) => {
+                    anyhow::bail!("V2 queued guidance was rejected after release: {error:?}")
+                }
+                EventMsg::RealtimeConversationRealtime(RealtimeConversationRealtimeEvent {
+                    payload: RealtimeEvent::Error(error),
+                }) => {
+                    anyhow::bail!("V2 transport failed after owner release: {error}");
+                }
+                EventMsg::TurnComplete(completed) => {
+                    for (index, request) in api_server.requests().await.iter().enumerate().skip(1) {
+                        let body: Value = serde_json::from_slice(request)?;
+                        let texts = message_input_texts(&body, "user").join("\n");
+                        let task = texts.find("<input>begin queued task</input>");
+                        let guidance = texts.find("<input>apply queued guidance</input>");
+                        if let (Some(task), Some(guidance)) = (task, guidance) {
+                            assert!(
+                                task < guidance,
+                                "queued task must precede its guidance in physical model input"
+                            );
+                            let expected = format!("queued response {}", index + 1);
+                            if completed.last_agent_message.as_deref() == Some(expected.as_str()) {
+                                break 'completed Ok::<_, anyhow::Error>(expected);
+                            }
+                        }
+                    }
+                }
+                _ => {}
+            }
+        }
+    })
+    .await
+    .context(
+        "both queued inputs must reach the model and complete according to V2 steering semantics",
+    )??;
+    if let Some(completion) = test.codex.pending_turn_terminalization() {
+        timeout(Duration::from_secs(10), completion)
+            .await
+            .context("V2 guided owner must finish")?;
+    }
+
+    let task_complete = wait_for_v2_guidance_output(
+        &output,
+        &output_changed,
+        "queued task completion",
+        |message| message["item"]["call_id"].as_str() == Some("call-v2-queued-task"),
+    )
+    .await?;
+    assert_eq!(
+        task_complete,
+        json!({
+            "type": "conversation.item.create",
+            "item": {
+                "type": "function_call_output",
+                "call_id": "call-v2-queued-task",
+                "output": "Background agent finished. Use the preceding [BACKEND] messages as the result."
+            }
+        })
+    );
+    let expected_backend_text = format!("[BACKEND] {final_message}");
+    let backend = wait_for_v2_guidance_output(
+        &output,
+        &output_changed,
+        "actual guided backend result",
+        |message| {
+            message["item"]["content"][0]["text"].as_str() == Some(expected_backend_text.as_str())
+        },
+    )
+    .await?;
+    assert_eq!(
+        backend,
+        json!({
+            "type": "conversation.item.create",
+            "item": {
+                "type": "message",
+                "role": "user",
+                "content": [{ "type": "input_text", "text": expected_backend_text }]
+            }
+        })
+    );
+    for call_id in [
+        "call-v2-initial",
+        "call-v2-queued-task",
+        "call-v2-queued-guidance",
+    ] {
+        assert_eq!(
+            output
+                .lock()
+                .expect("V2 output capture poisoned")
+                .iter()
+                .filter(|message| {
+                    message["item"]["type"].as_str() == Some("function_call_output")
+                        && message["item"]["call_id"].as_str() == Some(call_id)
+                })
+                .count(),
+            1,
+            "every V2 call must resolve exactly once using its existing completion or steering contract"
+        );
+    }
+    // All model, guidance, audio and call-resolution assertions above passed.
+    // The production stop path cancels and drops the websocket transport; it
+    // does not promise a websocket close-handshake exchange with this test peer.
+    requested_close_started.store(true, Ordering::Release);
+    test.codex.submit(Op::RealtimeConversationClose).await?;
+    let closed = timeout(Duration::from_secs(10), async {
+        loop {
+            match test.codex.next_event().await?.msg {
+                EventMsg::Error(error) => anyhow::bail!("V2 closure failed: {error:?}"),
+                EventMsg::RealtimeConversationClosed(closed) => {
+                    break Ok::<_, anyhow::Error>(closed);
+                }
+                _ => {}
+            }
+        }
+    })
+    .await
+    .context("V2 conversation must close after guidance completion")??;
+    assert_eq!(closed.reason.as_deref(), Some("requested"));
+    let peer_result = timeout(Duration::from_secs(10), peer)
+        .await
+        .context("V2 peer must terminate after requested close")?
+        .context("V2 peer task failed after requested close")?;
+    match peer_result {
+        Ok(()) => {}
+        Err(error)
+            if reset_during_requested_close.load(Ordering::Acquire)
+                && matches!(
+                    error.downcast_ref::<tokio_tungstenite::tungstenite::Error>(),
+                    Some(tokio_tungstenite::tungstenite::Error::Protocol(
+                        tokio_tungstenite::tungstenite::error::ProtocolError::ResetWithoutClosingHandshake
+                    ))
+                ) =>
+        {
+            eprintln!(
+                "V2 peer termination: exact transport reset after explicit close; guidance, audio, call completion and requested-closure assertions passed"
+            );
+        }
+        Err(error) => {
+            return Err(error).context(
+                "V2 peer completion rejected an early or unexpected transport failure",
+            );
+        }
+    }
     api_server.shutdown().await;
     Ok(())
 }

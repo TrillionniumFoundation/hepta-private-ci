@@ -1,0 +1,173 @@
+{
+  "schema": "hepta.shell-snapshot-norc-independent-static-review.v1",
+  "reviewer": "architecture_audit",
+  "verdict": "STATIC_PASS_NO_NATIVE_EXECUTION",
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "source_manifest": "84ea8933e64f63565e714923de852a1fbe511df6",
+  "source": {
+    "path": "codex-rs/exec-server/src/shell_snapshot.rs",
+    "before": {
+      "blob": "e352d63641c9aba6f201ebb34ebb6d433f24c080",
+      "bytes": 11746,
+      "sha256": "bae797689be9f48fc85572ff9ebd09bc9d6f3e5b171caa4bdd9f8637c695298c"
+    },
+    "after": {
+      "blob": "ef1156328fa36ed41fb54f74f481b26196f4a118",
+      "bytes": 12086,
+      "sha256": "7f00a3d7cfc71376545ff4eea0cc3be8cc6303dc81a9484979d39984d9fd1170"
+    },
+    "patch": {
+      "blob": "cd3f8230cd714bcce2029d9c84b982fa901c7675",
+      "bytes": 788,
+      "sha256": "e40a6918cb323b7610b0930e3f8ce794c4a8505a6500ad3e52d81a5d108f182e"
+    }
+  },
+  "exact_diff": {
+    "insertions": 7,
+    "deletions": 0,
+    "roundtrip": [
+      {
+        "path": "codex-rs/exec-server/src/shell_snapshot.rs",
+        "hunks": 1,
+        "exact_reconstructed": true
+      }
+    ],
+    "removing_only_inserted_branch_restores_complete_original_bytes": true
+  },
+  "findings": [
+    {
+      "id": "ARGV_POSITION",
+      "verdict": "PASS",
+      "detail": "The existing precondition requires argv length >= 3, shell-path equality, argv[1] == -lc, and prepared.command suffix equality. shell_start cannot underflow. Original flag/script replacements occur before the new insertion. Bash receives [original prefix, shell, --norc, -pc, original restore script, original trailing args]. Long option placement precedes -pc. No quoting or shell-string concatenation is added."
+    },
+    {
+      "id": "SHELL_LIFETIME",
+      "verdict": "PASS",
+      "detail": "ShellType derives Copy in fixed shell_detect.rs; using it after capture and match is legal. The new branch executes only on Bash after successful capture/cache resolution. No new task, child process, ownership transfer, or cancellation path is introduced.",
+      "source": {
+        "path": "codex-rs/shell-command/src/shell_detect.rs",
+        "blob": "2545bf09b0e84d8f989b0fb780114f5c73aa2740",
+        "lines": [
+          6,
+          13
+        ]
+      }
+    },
+    {
+      "id": "UNCHANGED_BOUNDARIES",
+      "verdict": "PASS",
+      "detail": "The complete source becomes its original bytes on deleting the seven added lines. Capture -lc, failed-capture early return/fallback -lc, set +o privileged, request/environment policy filtering, prepared prefix, sandbox/permissions, cache key, deadlines/retry budget, and non-Bash handling remain unchanged. This is not --noprofile and does not suppress the separate host-profile noise on fallback."
+    },
+    {
+      "id": "ACTUAL_BASELINE",
+      "verdict": "OBSERVED_NOT_FIXED",
+      "detail": "The complete diagnostic bundle has 10 byte/hash-verified records. Its original JUnit selects exactly the remote_sandbox case and fails its first full tuple: stdout empty, diagnostic stderr identifies .bashrc/line 2/function unset with BASH_ENV empty and the actual restoration string, exit 41. The poison marker has not been reached. This is evidence of pre-restoration profile execution, not a valid cache-key negative and not proof of a specific getpeername syscall or errno.",
+      "bundle": "263a23cecb280f02fc52873de8040f27abf1c99e",
+      "source_tree": "19ecb32bb92429ef9019ae3d4720e46dbdd9a7b0",
+      "junit_uuid": "34b56555-58c5-45d3-a0a0-dcd54cd1202a",
+      "case_seconds": 0.217,
+      "record_checks": [
+        {
+          "name": "readonly-unset-observation-review.json",
+          "bytes": 14617,
+          "sha256": "882b57d2fe4bac991fb736362e40031c51a36cc42835db0a0c737d5690a34ee0"
+        },
+        {
+          "name": "readonly-unset-observation.log",
+          "bytes": 22835,
+          "sha256": "672a489ef0ba600c27b52746b5f8a45378bbe862f798562afb65e227c0826c6b"
+        },
+        {
+          "name": "readonly-unset-observation.junit.xml",
+          "bytes": 3157,
+          "sha256": "09ad5de854bf45ce6f5198696f836792476a5a1f49dd778ba79a7a4de160f731"
+        },
+        {
+          "name": "terminal.json",
+          "bytes": 22426,
+          "sha256": "ec900a9deba57974b84e4d09e1fbdab2230b9c8fe19b323d110fbdd1e18ea9ad"
+        },
+        {
+          "name": "native-host.json",
+          "bytes": 522,
+          "sha256": "74ac01eb7e67fcbc77d57618a12a73766202f36d79572558ab3aec5ae7f58ca6"
+        },
+        {
+          "name": "helper-build-input.json",
+          "bytes": 5319,
+          "sha256": "eba5bde641316729d911c3a70eaa0de73f6a46223763df5a436035ab7a48cc42"
+        },
+        {
+          "name": "source-map.json",
+          "bytes": 9513,
+          "sha256": "e8ea0d7a5aafeb76608f5b3e4a3675df7a4dce40d85dcafb09bb7ca5122b8363"
+        },
+        {
+          "name": "unset-observation-apply.json",
+          "bytes": 472,
+          "sha256": "d0694b3897cbb6f4331b63f6643bdea4e7d4331bacf9dc6af576ae3a0a7c81eb"
+        },
+        {
+          "name": "readonly-unset-observation-command.json",
+          "bytes": 907,
+          "sha256": "09d68e55f5b2d6d0822dec82979f27a443daeec4b9eaf503511e6a811b892d2b"
+        },
+        {
+          "name": "readonly-unset-observation-catalog-command.json",
+          "bytes": 1035,
+          "sha256": "df47529f59fc276f8d9c7c2da70a0ae16e615330c0b34099dc709174a5609d49"
+        }
+      ]
+    },
+    {
+      "id": "ORIGINAL_COVERAGE",
+      "verdict": "PRESERVED_PENDING_EXECUTION",
+      "detail": "The fixed positive fixture still has the 8 Unix matrix declarations, plus 3 macOS-only zsh declarations. Both original full output/stderr/status/closed tuples, filtered variables, shadowed builtin controls, in-memory-only/no capture-file assertions and exact sandbox key remain. Original shell_snapshot_tests.rs still has the real bounded/single-flight 3-case retry control and 3 parser tests; no exact -pc vector assertion is invalidated. These statements describe source, not new test passes.",
+      "positive_fixture": "7794052d69fa71dcea99dfd9425654e3cc6ceadb",
+      "single_key_negative": "7027153a35a377ba9bbea3ddce2b923b01857b49",
+      "original_unit_tests": "1f24ef5de8b1ae9b648af676876d95d704833275"
+    }
+  ],
+  "primary_manual": [
+    {
+      "url": "https://www.gnu.org/software/bash/manual/html_node/Bash-Startup-Files",
+      "observed": "GNU documents the noninteractive remote-shell .bashrc path and that --norc inhibits it."
+    },
+    {
+      "url": "https://www.gnu.org/s/bash/manual/html_node/The-Set-Builtin.html",
+      "observed": "GNU documents -p suppression of BASH_ENV/ENV and imported shell functions. It is not a documented blanket replacement for --norc."
+    }
+  ],
+  "static_index_simulations": [
+    {
+      "prefix_length": 0,
+      "trailing_arguments": 0,
+      "exact_expected_argv": true
+    },
+    {
+      "prefix_length": 0,
+      "trailing_arguments": 2,
+      "exact_expected_argv": true
+    },
+    {
+      "prefix_length": 3,
+      "trailing_arguments": 0,
+      "exact_expected_argv": true
+    },
+    {
+      "prefix_length": 3,
+      "trailing_arguments": 2,
+      "exact_expected_argv": true
+    }
+  ],
+  "required_native_gate": [
+    "First restore exact single-key negative fixture 7027153, removing both temporary diagnostics. Use the same original owning7 dependency/features/profile context and retries 0.",
+    "A qualified negative requires the first complete tuple PASS, then the real profile-poison marker, then the second complete tuple FAIL. Early 41, setup failure, skips, timeouts or missing marker are not cache-key causality.",
+    "Restore exact positive fixture 7794052; original 13 selected roster includes all 8 Linux snapshot matrix cases. Preserve raw/JUnit, exact source/helper identities and all original assertions. Do not infer qualification before it executes."
+  ],
+  "not_done": [
+    "No native/Cargo/source-worktree/ref mutation.",
+    "No syscall tracing or new platform qualification.",
+    "No claim that the initial read-only fixture correction alone fixed this production startup issue."
+  ]
+}

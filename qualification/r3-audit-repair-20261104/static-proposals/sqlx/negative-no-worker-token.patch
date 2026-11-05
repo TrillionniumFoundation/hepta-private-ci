@@ -1,0 +1,12 @@
+diff --git a/sqlx-sqlite/src/connection/establish.rs b/sqlx-sqlite/src/connection/establish.rs
+--- a/sqlx-sqlite/src/connection/establish.rs
++++ b/sqlx-sqlite/src/connection/establish.rs
+@@ -149,7 +149,7 @@
+             busy_timeout: options.busy_timeout,
+             statement_cache_capacity: options.statement_cache_capacity,
+             log_settings: options.log_settings.clone(),
+-            connection_lifetime: options.connection_lifetime.clone(),
++            connection_lifetime: None,
+             #[cfg(feature = "load-extension")]
+             extensions,
+             thread_name: (options.thread_name)(thread_id as u64),

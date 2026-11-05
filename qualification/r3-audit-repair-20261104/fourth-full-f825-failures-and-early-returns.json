@@ -1,0 +1,715 @@
+{
+  "kind": "FULL_ORIGINAL_FAILURE_PROJECTION",
+  "source": "f8251e1d14fa8524ab469281296cd4cf708f173c",
+  "original_review": {
+    "bytes": 4612052,
+    "sha256": "bafcd1f099ea219d29055c1694ad9b61b73ab123da5415f7b8e31b8473ba4b0c"
+  },
+  "original_junit": {
+    "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/full-workspace-f825-20261105-0040/full-workspace.junit.xml",
+    "bytes": 4149275,
+    "sha256": "afdf124cb8cb44e65808b71f824c880875253378588ccaffc9b4783857fc18ed"
+  },
+  "counts": {
+    "PASS": 19485,
+    "FAIL": 18
+  },
+  "failures": [
+    {
+      "name": "suite::v2::command_exec::command_exec_accepts_permission_profile",
+      "classname": "codex-app-server::all",
+      "seconds": "0.487",
+      "result": "FAIL",
+      "failure": "thread 'suite::v2::command_exec::command_exec_accepts_permission_profile' (157332) panicked at app-server/tests/suite/v2/command_exec.rs:321:5:\nassertion failed: `(left == right)`\n\nDiff < left / right > :\n CommandExecResponse {\n     exit_code: 0,\n     stdout: \"profile\",\n<    stderr: \"Failed to create stream fd: Operation not permitted\\nFailed to create stream fd: Operation not permitted\\nFailed to create stream fd: Operation not permitted\\n\",\n>    stderr: \"\",\n }\n\n\nnote: run with `RUST_BACKTRACE=1` environment variable to display a backtrace"
+    },
+    {
+      "name": "suite::v2::command_exec::command_exec_env_overrides_merge_with_server_environment_and_support_unset",
+      "classname": "codex-app-server::all",
+      "seconds": "0.466",
+      "result": "FAIL",
+      "failure": "thread 'suite::v2::command_exec::command_exec_env_overrides_merge_with_server_environment_and_support_unset' (160570) panicked at app-server/tests/suite/v2/command_exec.rs:190:5:\nassertion failed: `(left == right)`\n\nDiff < left / right > :\n CommandExecResponse {\n     exit_code: 0,\n     stdout: \"request|added|unset|/tmp/.tmpi3Qf17||\",\n<    stderr: \"Failed to create stream fd: Operation not permitted\\nFailed to create stream fd: Operation not permitted\\nFailed to create stream fd: Operation not permitted\\n\",\n>    stderr: \"\",\n }\n\n\nnote: run with `RUST_BACKTRACE=1` environment variable to display a backtrace"
+    },
+    {
+      "name": "suite::v2::command_exec::command_exec_non_streaming_respects_output_cap",
+      "classname": "codex-app-server::all",
+      "seconds": "0.421",
+      "result": "FAIL",
+      "failure": "thread 'suite::v2::command_exec::command_exec_non_streaming_respects_output_cap' (161632) panicked at app-server/tests/suite/v2/command_exec.rs:886:5:\nassertion failed: `(left == right)`\n\nDiff < left / right > :\n CommandExecResponse {\n     exit_code: 0,\n     stdout: \"abcde\",\n<    stderr: \"Faile\",\n>    stderr: \"uvwxy\",\n }\n\n\nnote: run with `RUST_BACKTRACE=1` environment variable to display a backtrace"
+    },
+    {
+      "name": "suite::v2::command_exec::command_exec_permission_profile_does_not_reuse_default_network_proxy",
+      "classname": "codex-app-server::all",
+      "seconds": "0.395",
+      "result": "FAIL",
+      "failure": "thread 'suite::v2::command_exec::command_exec_permission_profile_does_not_reuse_default_network_proxy' (162375) panicked at app-server/tests/suite/v2/command_exec.rs:533:5:\nassertion failed: `(left == right)`\n\nDiff < left / right > :\n CommandExecResponse {\n     exit_code: 0,\n     stdout: \"unset\",\n<    stderr: \"Failed to create stream fd: Operation not permitted\\nFailed to create stream fd: Operation not permitted\\nFailed to create stream fd: Operation not permitted\\n\",\n>    stderr: \"\",\n }\n\n\nnote: run with `RUST_BACKTRACE=1` environment variable to display a backtrace"
+    },
+    {
+      "name": "suite::v2::command_exec::command_exec_permission_profile_starts_selected_network_proxy",
+      "classname": "codex-app-server::all",
+      "seconds": "0.402",
+      "result": "FAIL",
+      "failure": "thread 'suite::v2::command_exec::command_exec_permission_profile_starts_selected_network_proxy' (163434) panicked at app-server/tests/suite/v2/command_exec.rs:485:5:\nassertion failed: `(left == right)`\n\nDiff < left / right > :\n CommandExecResponse {\n     exit_code: 0,\n     stdout: \"1\",\n<    stderr: \"Failed to create stream fd: Operation not permitted\\nFailed to create stream fd: Operation not permitted\\nFailed to create stream fd: Operation not permitted\\n\",\n>    stderr: \"\",\n }\n\n\nnote: run with `RUST_BACKTRACE=1` environment variable to display a backtrace"
+    },
+    {
+      "name": "suite::v2::command_exec::command_exec_without_process_id_keeps_buffered_compatibility",
+      "classname": "codex-app-server::all",
+      "seconds": "0.383",
+      "result": "FAIL",
+      "failure": "thread 'suite::v2::command_exec::command_exec_without_process_id_keeps_buffered_compatibility' (171342) panicked at app-server/tests/suite/v2/command_exec.rs:126:5:\nassertion failed: `(left == right)`\n\nDiff < left / right > :\n CommandExecResponse {\n     exit_code: 0,\n     stdout: \"legacy-out\",\n<    stderr: \"Failed to create stream fd: Operation not permitted\\nFailed to create stream fd: Operation not permitted\\nFailed to create stream fd: Operation not permitted\\nlegacy-err\",\n>    stderr: \"legacy-err\",\n }\n\n\nnote: run with `RUST_BACKTRACE=1` environment variable to display a backtrace"
+    },
+    {
+      "name": "suite::v2::command_exec::command_exec_process_ids_are_connection_scoped_and_disconnect_terminates_process",
+      "classname": "codex-app-server::all",
+      "seconds": "5.706",
+      "result": "FAIL",
+      "failure": "Error: process marker \"codex-command-exec-marker-1793839941980771310\" did not exit before timeout"
+    },
+    {
+      "name": "suite::approvals::approving_execpolicy_amendment_persists_policy_and_skips_future_prompts",
+      "classname": "codex-core::all",
+      "seconds": "0.441",
+      "result": "FAIL",
+      "failure": "thread 'suite::approvals::approving_execpolicy_amendment_persists_policy_and_skips_future_prompts' (82121) panicked at core/tests/suite/approvals.rs:2540:5:\nunexpected stdout: Failed to create stream fd: Operation not permitted\nFailed to create stream fd: Operation not permitted\nFailed to create stream fd: Operation not permitted\n\nnote: run with `RUST_BACKTRACE=1` environment variable to display a backtrace"
+    },
+    {
+      "name": "suite::request_permissions::partial_request_permissions_grants_do_not_preapprove_new_permissions",
+      "classname": "codex-core::all",
+      "seconds": "0.489",
+      "result": "FAIL",
+      "failure": "thread 'suite::request_permissions::partial_request_permissions_grants_do_not_preapprove_new_permissions' (209054) panicked at core/tests/suite/request_permissions.rs:1802:5:\nassertion failed: `(left == right)`\n\nDiff < left / right > :\n<Failed to create stream fd: Operation not permitted\n<Failed to create stream fd: Operation not permitted\n<Failed to create stream fd: Operation not permitted\n partial-grant-ok\n\n\nnote: run with `RUST_BACKTRACE=1` environment variable to display a backtrace"
+    },
+    {
+      "name": "suite::request_permissions::request_permissions_grants_apply_to_later_exec_command_calls",
+      "classname": "codex-core::all",
+      "seconds": "0.482",
+      "result": "FAIL",
+      "failure": "thread 'suite::request_permissions::request_permissions_grants_apply_to_later_exec_command_calls' (209491) panicked at core/tests/suite/request_permissions.rs:1391:5:\nassertion failed: `(left == right)`\n\nDiff < left / right > :\n<Failed to create stream fd: Operation not permitted\n<Failed to create stream fd: Operation not permitted\n<Failed to create stream fd: Operation not permitted\n sticky-grant-ok\n\n\nnote: run with `RUST_BACKTRACE=1` environment variable to display a backtrace"
+    },
+    {
+      "name": "suite::request_permissions::request_permissions_grants_apply_to_later_exec_command_calls_without_inline_permission_feature",
+      "classname": "codex-core::all",
+      "seconds": "0.481",
+      "result": "FAIL",
+      "failure": "thread 'suite::request_permissions::request_permissions_grants_apply_to_later_exec_command_calls_without_inline_permission_feature' (209621) panicked at core/tests/suite/request_permissions.rs:1626:5:\nassertion failed: `(left == right)`\n\nDiff < left / right > :\n<Failed to create stream fd: Operation not permitted\n<Failed to create stream fd: Operation not permitted\n<Failed to create stream fd: Operation not permitted\n sticky-shell-feature-independent-ok\n\n\nnote: run with `RUST_BACKTRACE=1` environment variable to display a backtrace"
+    },
+    {
+      "name": "suite::request_permissions::request_permissions_preapprove_explicit_exec_permissions_outside_on_request",
+      "classname": "codex-core::all",
+      "seconds": "0.509",
+      "result": "FAIL",
+      "failure": "thread 'suite::request_permissions::request_permissions_preapprove_explicit_exec_permissions_outside_on_request' (209934) panicked at core/tests/suite/request_permissions.rs:1510:5:\nassertion failed: `(left == right)`\n\nDiff < left / right > :\n<Failed to create stream fd: Operation not permitted\n<Failed to create stream fd: Operation not permitted\n<Failed to create stream fd: Operation not permitted\n sticky-explicit-grant-ok\n\n\nnote: run with `RUST_BACKTRACE=1` environment variable to display a backtrace"
+    },
+    {
+      "name": "shell_snapshot_v2_capture_failure_falls_back_and_retries::test_case_3_remote_pipe_recovery",
+      "classname": "codex-exec-server::exec_process",
+      "seconds": "0.328",
+      "result": "FAIL",
+      "failure": "thread 'shell_snapshot_v2_capture_failure_falls_back_and_retries::test_case_3_remote_pipe_recovery' (282161) panicked at exec-server/tests/exec_process.rs:449:9:\nassertion failed: `(left == right)`\n\nDiff < left / right > :\n (\n     \"original\",\n<    \"Failed to create stream fd: Operation not permitted\\nFailed to create stream fd: Operation not permitted\\nFailed to create stream fd: Operation not permitted\\n\",\n>    \"\",\n     Some(\n         0,\n     ),\n     true,\n )\n\n\nnote: run with `RUST_BACKTRACE=1` environment variable to display a backtrace"
+    },
+    {
+      "name": "shell_snapshot_v2_capture_failure_falls_back_and_retries::test_case_4_remote_tty_recovery",
+      "classname": "codex-exec-server::exec_process",
+      "seconds": "0.328",
+      "result": "FAIL",
+      "failure": "thread 'shell_snapshot_v2_capture_failure_falls_back_and_retries::test_case_4_remote_tty_recovery' (282167) panicked at exec-server/tests/exec_process.rs:449:9:\nassertion failed: `(left == right)`\n\nDiff < left / right > :\n (\n<    \"Failed to create stream fd: Operation not permitted\\r\\nFailed to create stream fd: Operation not permitted\\r\\nFailed to create stream fd: Operation not permitted\\r\\noriginal\",\n>    \"original\",\n     \"\",\n     Some(\n         0,\n     ),\n     true,\n )\n\n\nnote: run with `RUST_BACKTRACE=1` environment variable to display a backtrace"
+    },
+    {
+      "name": "shell_snapshot_v2_capture_failure_falls_back_and_retries::test_case_6_remote_retry_budget_exhausted",
+      "classname": "codex-exec-server::exec_process",
+      "seconds": "0.320",
+      "result": "FAIL",
+      "failure": "thread 'shell_snapshot_v2_capture_failure_falls_back_and_retries::test_case_6_remote_retry_budget_exhausted' (282286) panicked at exec-server/tests/exec_process.rs:449:9:\nassertion failed: `(left == right)`\n\nDiff < left / right > :\n (\n     \"original\",\n<    \"Failed to create stream fd: Operation not permitted\\nFailed to create stream fd: Operation not permitted\\nFailed to create stream fd: Operation not permitted\\n\",\n>    \"\",\n     Some(\n         0,\n     ),\n     true,\n )\n\n\nnote: run with `RUST_BACKTRACE=1` environment variable to display a backtrace"
+    },
+    {
+      "name": "service::tests::plugins::marketplaces::import_plugins_infers_external_official_marketplace_when_missing_from_settings",
+      "classname": "codex-external-agent-migration",
+      "seconds": "60.004",
+      "result": "FAIL",
+      "failure": ""
+    },
+    {
+      "name": "host_roots::tests::repo_ancestry_without_project_marker_does_not_walk_parents",
+      "classname": "codex-skills-extension",
+      "seconds": "0.008",
+      "result": "FAIL",
+      "failure": "thread 'host_roots::tests::repo_ancestry_without_project_marker_does_not_walk_parents' (351158) panicked at ext/skills/src/host_roots_tests.rs:415:5:\nassertion failed: `(left == right)`\n\nDiff < left / right > :\n [\n     AbsolutePathBuf(\n<        \"/tmp/.tmpkvHiR0/outer/.agents/skills\",\n<    ),\n<    AbsolutePathBuf(\n         \"/tmp/.tmpkvHiR0/outer/nested/inner/.agents/skills\",\n     ),\n ]\n\n\nnote: run with `RUST_BACKTRACE=1` environment variable to display a backtrace"
+    },
+    {
+      "name": "tests::sandbox_feature_matches_linked_v8",
+      "classname": "codex-v8-poc",
+      "seconds": "0.004",
+      "result": "FAIL",
+      "failure": "thread 'tests::sandbox_feature_matches_linked_v8' (406503) panicked at v8-poc/src/lib.rs:69:9:\nassertion failed: `(left == right)`\n\nDiff < left / right > :\n<true\n>false\n\n\nnote: run with `RUST_BACKTRACE=1` environment variable to display a backtrace"
+    }
+  ],
+  "early_return_cases": [
+    {
+      "classname": "codex-core",
+      "name": "unified_exec::tests::remote_exec_server_rejects_inherited_fd_launches",
+      "nextest_header_result": "PASS",
+      "junit_result": "PASS",
+      "exact_junit_key_bound": true,
+      "messages": [
+        {
+          "line": 47766,
+          "original_line": "    Skipping test because it requires a remote test environment.\n",
+          "plain_line": "    Skipping test because it requires a remote test environment.\n"
+        }
+      ],
+      "original_raw_block": {
+        "start_line": 47757,
+        "end_line": 47767,
+        "byte_offset": 2217368,
+        "bytes": 419,
+        "sha256": "2dcb1c9baa9d4b46b1702f2993e5502db32645c62a35d377f516f905fd052d97",
+        "content": "        PASS [   0.009s] codex-core unified_exec::tests::remote_exec_server_rejects_inherited_fd_launches\n  stdout \u2500\u2500\u2500\n\n    running 1 test\n    test unified_exec::tests::remote_exec_server_rejects_inherited_fd_launches ... ok\n\n    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 2433 filtered out; finished in 0.00s\n\n  stderr \u2500\u2500\u2500\n    Skipping test because it requires a remote test environment.\n\n"
+      },
+      "limit": "Original explicit early-return notice is preserved. JUnit PASS does not establish execution of the omitted remote or prerequisite-dependent behavior."
+    },
+    {
+      "classname": "codex-core",
+      "name": "unified_exec::tests::unified_exec_uses_remote_exec_server_when_configured",
+      "nextest_header_result": "PASS",
+      "junit_result": "PASS",
+      "exact_junit_key_bound": true,
+      "messages": [
+        {
+          "line": 47884,
+          "original_line": "    Skipping test because it requires a remote test environment.\n",
+          "plain_line": "    Skipping test because it requires a remote test environment.\n"
+        }
+      ],
+      "original_raw_block": {
+        "start_line": 47875,
+        "end_line": 47885,
+        "byte_offset": 2223831,
+        "bytes": 427,
+        "sha256": "f053ab564d750488b50d95609c732f059c2a6b9e493dc8c2cd7a2643abb1cf6f",
+        "content": "        PASS [   0.014s] codex-core unified_exec::tests::unified_exec_uses_remote_exec_server_when_configured\n  stdout \u2500\u2500\u2500\n\n    running 1 test\n    test unified_exec::tests::unified_exec_uses_remote_exec_server_when_configured ... ok\n\n    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 2433 filtered out; finished in 0.00s\n\n  stderr \u2500\u2500\u2500\n    Skipping test because it requires a remote test environment.\n\n"
+      },
+      "limit": "Original explicit early-return notice is preserved. JUnit PASS does not establish execution of the omitted remote or prerequisite-dependent behavior."
+    },
+    {
+      "classname": "codex-core::all",
+      "name": "suite::agents_md::multi_environment_project_instructions_share_one_byte_budget",
+      "nextest_header_result": "PASS",
+      "junit_result": "PASS",
+      "exact_junit_key_bound": true,
+      "messages": [
+        {
+          "line": 48591,
+          "original_line": "    Skipping test because it requires a remote test environment.\n",
+          "plain_line": "    Skipping test because it requires a remote test environment.\n"
+        }
+      ],
+      "original_raw_block": {
+        "start_line": 48582,
+        "end_line": 48592,
+        "byte_offset": 2269396,
+        "bytes": 442,
+        "sha256": "774dcf6853b0dd5e6cef74d5972f0eca8ecc69c0e8892fed2e559b035c270e6f",
+        "content": "        PASS [   0.013s] codex-core::all suite::agents_md::multi_environment_project_instructions_share_one_byte_budget\n  stdout \u2500\u2500\u2500\n\n    running 1 test\n    test suite::agents_md::multi_environment_project_instructions_share_one_byte_budget ... ok\n\n    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 1432 filtered out; finished in 0.00s\n\n  stderr \u2500\u2500\u2500\n    Skipping test because it requires a remote test environment.\n\n"
+      },
+      "limit": "Original explicit early-return notice is preserved. JUnit PASS does not establish execution of the omitted remote or prerequisite-dependent behavior."
+    },
+    {
+      "classname": "codex-core::all",
+      "name": "suite::agents_md::multi_environment_thread_loads_every_project_and_keeps_creation_snapshot",
+      "nextest_header_result": "PASS",
+      "junit_result": "PASS",
+      "exact_junit_key_bound": true,
+      "messages": [
+        {
+          "line": 48611,
+          "original_line": "    Skipping test because it requires a remote test environment.\n",
+          "plain_line": "    Skipping test because it requires a remote test environment.\n"
+        }
+      ],
+      "original_raw_block": {
+        "start_line": 48602,
+        "end_line": 48612,
+        "byte_offset": 2270200,
+        "bytes": 466,
+        "sha256": "fbfb943ea80e4405591e902d57a6885639de1a0b3be84a3cc1ecfe47d93ad43b",
+        "content": "        PASS [   0.013s] codex-core::all suite::agents_md::multi_environment_thread_loads_every_project_and_keeps_creation_snapshot\n  stdout \u2500\u2500\u2500\n\n    running 1 test\n    test suite::agents_md::multi_environment_thread_loads_every_project_and_keeps_creation_snapshot ... ok\n\n    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 1432 filtered out; finished in 0.00s\n\n  stderr \u2500\u2500\u2500\n    Skipping test because it requires a remote test environment.\n\n"
+      },
+      "limit": "Original explicit early-return notice is preserved. JUnit PASS does not establish execution of the omitted remote or prerequisite-dependent behavior."
+    },
+    {
+      "classname": "codex-core::all",
+      "name": "suite::apply_patch_cli::apply_patch_turn_diff_emits_portable_paths_for_remote_cwd",
+      "nextest_header_result": "PASS",
+      "junit_result": "PASS",
+      "exact_junit_key_bound": true,
+      "messages": [
+        {
+          "line": 55569,
+          "original_line": "    Skipping test because it requires a remote test environment.\n",
+          "plain_line": "    Skipping test because it requires a remote test environment.\n"
+        }
+      ],
+      "original_raw_block": {
+        "start_line": 55560,
+        "end_line": 55570,
+        "byte_offset": 2971773,
+        "bytes": 448,
+        "sha256": "b9bf7ae6800cef6532aab053c9bdd225229f0d23e19c46d93f77a137260551fb",
+        "content": "        PASS [   0.016s] codex-core::all suite::apply_patch_cli::apply_patch_turn_diff_emits_portable_paths_for_remote_cwd\n  stdout \u2500\u2500\u2500\n\n    running 1 test\n    test suite::apply_patch_cli::apply_patch_turn_diff_emits_portable_paths_for_remote_cwd ... ok\n\n    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 1432 filtered out; finished in 0.00s\n\n  stderr \u2500\u2500\u2500\n    Skipping test because it requires a remote test environment.\n\n"
+      },
+      "limit": "Original explicit early-return notice is preserved. JUnit PASS does not establish execution of the omitted remote or prerequisite-dependent behavior."
+    },
+    {
+      "classname": "codex-core::all",
+      "name": "suite::apply_patch_cli::apply_patch_turn_diff_tracks_local_and_remote_environment_paths",
+      "nextest_header_result": "PASS",
+      "junit_result": "PASS",
+      "exact_junit_key_bound": true,
+      "messages": [
+        {
+          "line": 57045,
+          "original_line": "    Skipping test because it requires a remote test environment.\n",
+          "plain_line": "    Skipping test because it requires a remote test environment.\n"
+        }
+      ],
+      "original_raw_block": {
+        "start_line": 57036,
+        "end_line": 57046,
+        "byte_offset": 3061747,
+        "bytes": 460,
+        "sha256": "98abe608c035e3b9050de0eeeac3d10593d857e502b35d050437fe6c44a158d3",
+        "content": "        PASS [   0.020s] codex-core::all suite::apply_patch_cli::apply_patch_turn_diff_tracks_local_and_remote_environment_paths\n  stdout \u2500\u2500\u2500\n\n    running 1 test\n    test suite::apply_patch_cli::apply_patch_turn_diff_tracks_local_and_remote_environment_paths ... ok\n\n    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 1432 filtered out; finished in 0.00s\n\n  stderr \u2500\u2500\u2500\n    Skipping test because it requires a remote test environment.\n\n"
+      },
+      "limit": "Original explicit early-return notice is preserved. JUnit PASS does not establish execution of the omitted remote or prerequisite-dependent behavior."
+    },
+    {
+      "classname": "codex-core::all",
+      "name": "suite::network_approval::approved_network_host_for_one_environment_still_prompts_in_another",
+      "nextest_header_result": "PASS",
+      "junit_result": "PASS",
+      "exact_junit_key_bound": true,
+      "messages": [
+        {
+          "line": 58004,
+          "original_line": "    Skipping test because it requires a remote test environment.\n",
+          "plain_line": "    Skipping test because it requires a remote test environment.\n"
+        }
+      ],
+      "original_raw_block": {
+        "start_line": 57995,
+        "end_line": 58005,
+        "byte_offset": 3167182,
+        "bytes": 468,
+        "sha256": "e1abf04a7e339903ccf3d61e2f304e5bc711070ddefbb220574fa1b705a24142",
+        "content": "        PASS [   0.017s] codex-core::all suite::network_approval::approved_network_host_for_one_environment_still_prompts_in_another\n  stdout \u2500\u2500\u2500\n\n    running 1 test\n    test suite::network_approval::approved_network_host_for_one_environment_still_prompts_in_another ... ok\n\n    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 1432 filtered out; finished in 0.00s\n\n  stderr \u2500\u2500\u2500\n    Skipping test because it requires a remote test environment.\n\n"
+      },
+      "limit": "Original explicit early-return notice is preserved. JUnit PASS does not establish execution of the omitted remote or prerequisite-dependent behavior."
+    },
+    {
+      "classname": "codex-core::all",
+      "name": "suite::network_approval::owner_network_policy_follows_the_selected_remote_command",
+      "nextest_header_result": "PASS",
+      "junit_result": "PASS",
+      "exact_junit_key_bound": true,
+      "messages": [
+        {
+          "line": 58148,
+          "original_line": "    Skipping test because it requires a remote test environment.\n",
+          "plain_line": "    Skipping test because it requires a remote test environment.\n"
+        }
+      ],
+      "original_raw_block": {
+        "start_line": 58139,
+        "end_line": 58149,
+        "byte_offset": 3174284,
+        "bytes": 448,
+        "sha256": "a948686241b447b0739e8ada376e7044c37865873237dce34a0f88543d6eaa7a",
+        "content": "        PASS [   0.024s] codex-core::all suite::network_approval::owner_network_policy_follows_the_selected_remote_command\n  stdout \u2500\u2500\u2500\n\n    running 1 test\n    test suite::network_approval::owner_network_policy_follows_the_selected_remote_command ... ok\n\n    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 1432 filtered out; finished in 0.00s\n\n  stderr \u2500\u2500\u2500\n    Skipping test because it requires a remote test environment.\n\n"
+      },
+      "limit": "Original explicit early-return notice is preserved. JUnit PASS does not establish execution of the omitted remote or prerequisite-dependent behavior."
+    },
+    {
+      "classname": "codex-core::all",
+      "name": "suite::network_approval::remote_guardian_network_decisions_are_scoped_to_each_request_and_environment",
+      "nextest_header_result": "PASS",
+      "junit_result": "PASS",
+      "exact_junit_key_bound": true,
+      "messages": [
+        {
+          "line": 58159,
+          "original_line": "    Skipping test because it requires a remote test environment.\n",
+          "plain_line": "    Skipping test because it requires a remote test environment.\n"
+        }
+      ],
+      "original_raw_block": {
+        "start_line": 58150,
+        "end_line": 58160,
+        "byte_offset": 3174732,
+        "bytes": 488,
+        "sha256": "77c3d1094d4818bab7206d02909c4b8d8a4accf39a8cc96a5f3ec9aacdaccad0",
+        "content": "        PASS [   0.017s] codex-core::all suite::network_approval::remote_guardian_network_decisions_are_scoped_to_each_request_and_environment\n  stdout \u2500\u2500\u2500\n\n    running 1 test\n    test suite::network_approval::remote_guardian_network_decisions_are_scoped_to_each_request_and_environment ... ok\n\n    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 1432 filtered out; finished in 0.00s\n\n  stderr \u2500\u2500\u2500\n    Skipping test because it requires a remote test environment.\n\n"
+      },
+      "limit": "Original explicit early-return notice is preserved. JUnit PASS does not establish execution of the omitted remote or prerequisite-dependent behavior."
+    },
+    {
+      "classname": "codex-core::all",
+      "name": "suite::remote_env::apply_patch_approvals_are_remembered_per_environment",
+      "nextest_header_result": "PASS",
+      "junit_result": "PASS",
+      "exact_junit_key_bound": true,
+      "messages": [
+        {
+          "line": 72950,
+          "original_line": "    Skipping test because it requires a remote test environment.\n",
+          "plain_line": "    Skipping test because it requires a remote test environment.\n"
+        }
+      ],
+      "original_raw_block": {
+        "start_line": 72941,
+        "end_line": 72951,
+        "byte_offset": 11520934,
+        "bytes": 428,
+        "sha256": "39d350e5bd26c474b98f190bda5d1c8af87b4fd46f5399608a79a7b4363b3e42",
+        "content": "        PASS [   0.015s] codex-core::all suite::remote_env::apply_patch_approvals_are_remembered_per_environment\n  stdout \u2500\u2500\u2500\n\n    running 1 test\n    test suite::remote_env::apply_patch_approvals_are_remembered_per_environment ... ok\n\n    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 1432 filtered out; finished in 0.00s\n\n  stderr \u2500\u2500\u2500\n    Skipping test because it requires a remote test environment.\n\n"
+      },
+      "limit": "Original explicit early-return notice is preserved. JUnit PASS does not establish execution of the omitted remote or prerequisite-dependent behavior."
+    },
+    {
+      "classname": "codex-core::all",
+      "name": "suite::remote_env::apply_patch_intercepted_exec_command_routes_to_selected_remote_environment",
+      "nextest_header_result": "PASS",
+      "junit_result": "PASS",
+      "exact_junit_key_bound": true,
+      "messages": [
+        {
+          "line": 72977,
+          "original_line": "    Skipping test because it requires a remote test environment.\n",
+          "plain_line": "    Skipping test because it requires a remote test environment.\n"
+        }
+      ],
+      "original_raw_block": {
+        "start_line": 72968,
+        "end_line": 72978,
+        "byte_offset": 11522691,
+        "bytes": 472,
+        "sha256": "27437ef044f12186cc7eb8dc0f82015872847113ecc50c2f1994c219148b127f",
+        "content": "        PASS [   0.016s] codex-core::all suite::remote_env::apply_patch_intercepted_exec_command_routes_to_selected_remote_environment\n  stdout \u2500\u2500\u2500\n\n    running 1 test\n    test suite::remote_env::apply_patch_intercepted_exec_command_routes_to_selected_remote_environment ... ok\n\n    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 1432 filtered out; finished in 0.00s\n\n  stderr \u2500\u2500\u2500\n    Skipping test because it requires a remote test environment.\n\n"
+      },
+      "limit": "Original explicit early-return notice is preserved. JUnit PASS does not establish execution of the omitted remote or prerequisite-dependent behavior."
+    },
+    {
+      "classname": "codex-core::all",
+      "name": "suite::remote_env::apply_patch_freeform_routes_to_selected_remote_environment",
+      "nextest_header_result": "PASS",
+      "junit_result": "PASS",
+      "exact_junit_key_bound": true,
+      "messages": [
+        {
+          "line": 72988,
+          "original_line": "    Skipping test because it requires a remote test environment.\n",
+          "plain_line": "    Skipping test because it requires a remote test environment.\n"
+        }
+      ],
+      "original_raw_block": {
+        "start_line": 72979,
+        "end_line": 72989,
+        "byte_offset": 11523163,
+        "bytes": 440,
+        "sha256": "09fd81464822107c20319bc717cb4fda5263d338b6330ded0447b218c81c4c64",
+        "content": "        PASS [   0.017s] codex-core::all suite::remote_env::apply_patch_freeform_routes_to_selected_remote_environment\n  stdout \u2500\u2500\u2500\n\n    running 1 test\n    test suite::remote_env::apply_patch_freeform_routes_to_selected_remote_environment ... ok\n\n    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 1432 filtered out; finished in 0.00s\n\n  stderr \u2500\u2500\u2500\n    Skipping test because it requires a remote test environment.\n\n"
+      },
+      "limit": "Original explicit early-return notice is preserved. JUnit PASS does not establish execution of the omitted remote or prerequisite-dependent behavior."
+    },
+    {
+      "classname": "codex-core::all",
+      "name": "suite::remote_env::exec_command_routes_to_selected_remote_environment",
+      "nextest_header_result": "PASS",
+      "junit_result": "PASS",
+      "exact_junit_key_bound": true,
+      "messages": [
+        {
+          "line": 73072,
+          "original_line": "    Skipping test because it requires a remote test environment.\n",
+          "plain_line": "    Skipping test because it requires a remote test environment.\n"
+        }
+      ],
+      "original_raw_block": {
+        "start_line": 73063,
+        "end_line": 73073,
+        "byte_offset": 11528005,
+        "bytes": 424,
+        "sha256": "3fa4450faea9855993df668c3f0bcd22fd88df140835a81f071f958efbe3a589",
+        "content": "        PASS [   0.015s] codex-core::all suite::remote_env::exec_command_routes_to_selected_remote_environment\n  stdout \u2500\u2500\u2500\n\n    running 1 test\n    test suite::remote_env::exec_command_routes_to_selected_remote_environment ... ok\n\n    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 1432 filtered out; finished in 0.00s\n\n  stderr \u2500\u2500\u2500\n    Skipping test because it requires a remote test environment.\n\n"
+      },
+      "limit": "Original explicit early-return notice is preserved. JUnit PASS does not establish execution of the omitted remote or prerequisite-dependent behavior."
+    },
+    {
+      "classname": "codex-core::all",
+      "name": "suite::remote_env::explicit_remote_shell_runs_in_remote_cwd",
+      "nextest_header_result": "PASS",
+      "junit_result": "PASS",
+      "exact_junit_key_bound": true,
+      "messages": [
+        {
+          "line": 73106,
+          "original_line": "    Skipping test because it requires a remote test environment.\n",
+          "plain_line": "    Skipping test because it requires a remote test environment.\n"
+        }
+      ],
+      "original_raw_block": {
+        "start_line": 73097,
+        "end_line": 73107,
+        "byte_offset": 11529715,
+        "bytes": 404,
+        "sha256": "f6488dcfd7a1270deee8743fe08ceb9347c8fb87e1bf14a6bd66b6e779279bd6",
+        "content": "        PASS [   0.018s] codex-core::all suite::remote_env::explicit_remote_shell_runs_in_remote_cwd\n  stdout \u2500\u2500\u2500\n\n    running 1 test\n    test suite::remote_env::explicit_remote_shell_runs_in_remote_cwd ... ok\n\n    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 1432 filtered out; finished in 0.00s\n\n  stderr \u2500\u2500\u2500\n    Skipping test because it requires a remote test environment.\n\n"
+      },
+      "limit": "Original explicit early-return notice is preserved. JUnit PASS does not establish execution of the omitted remote or prerequisite-dependent behavior."
+    },
+    {
+      "classname": "codex-core::all",
+      "name": "suite::remote_env::remote_exec_materializes_target_roots_before_sandbox_selection",
+      "nextest_header_result": "PASS",
+      "junit_result": "PASS",
+      "exact_junit_key_bound": true,
+      "messages": [
+        {
+          "line": 73126,
+          "original_line": "    Skipping test because it requires a remote test environment.\n",
+          "plain_line": "    Skipping test because it requires a remote test environment.\n"
+        }
+      ],
+      "original_raw_block": {
+        "start_line": 73117,
+        "end_line": 73127,
+        "byte_offset": 11530481,
+        "bytes": 448,
+        "sha256": "c166a73bf59233b14aefdff4d98b2dd728709d5a0a488e8973e1c55345c3a441",
+        "content": "        PASS [   0.015s] codex-core::all suite::remote_env::remote_exec_materializes_target_roots_before_sandbox_selection\n  stdout \u2500\u2500\u2500\n\n    running 1 test\n    test suite::remote_env::remote_exec_materializes_target_roots_before_sandbox_selection ... ok\n\n    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 1432 filtered out; finished in 0.00s\n\n  stderr \u2500\u2500\u2500\n    Skipping test because it requires a remote test environment.\n\n"
+      },
+      "limit": "Original explicit early-return notice is preserved. JUnit PASS does not establish execution of the omitted remote or prerequisite-dependent behavior."
+    },
+    {
+      "classname": "codex-core::all",
+      "name": "suite::remote_env::remote_request_permissions_grant_unblocks_later_remote_exec",
+      "nextest_header_result": "PASS",
+      "junit_result": "PASS",
+      "exact_junit_key_bound": true,
+      "messages": [
+        {
+          "line": 73153,
+          "original_line": "    Skipping test because it requires a remote test environment.\n",
+          "plain_line": "    Skipping test because it requires a remote test environment.\n"
+        }
+      ],
+      "original_raw_block": {
+        "start_line": 73144,
+        "end_line": 73154,
+        "byte_offset": 11532225,
+        "bytes": 442,
+        "sha256": "91621807f07db09423e365c14292e7f4cb0f2e03e7f2e971337401bbe27ff572",
+        "content": "        PASS [   0.014s] codex-core::all suite::remote_env::remote_request_permissions_grant_unblocks_later_remote_exec\n  stdout \u2500\u2500\u2500\n\n    running 1 test\n    test suite::remote_env::remote_request_permissions_grant_unblocks_later_remote_exec ... ok\n\n    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 1432 filtered out; finished in 0.00s\n\n  stderr \u2500\u2500\u2500\n    Skipping test because it requires a remote test environment.\n\n"
+      },
+      "limit": "Original explicit early-return notice is preserved. JUnit PASS does not establish execution of the omitted remote or prerequisite-dependent behavior."
+    },
+    {
+      "classname": "codex-core::all",
+      "name": "suite::remote_env::remote_test_env_can_connect_and_use_filesystem",
+      "nextest_header_result": "PASS",
+      "junit_result": "PASS",
+      "exact_junit_key_bound": true,
+      "messages": [
+        {
+          "line": 73164,
+          "original_line": "    Skipping test because it requires a remote test environment.\n",
+          "plain_line": "    Skipping test because it requires a remote test environment.\n"
+        }
+      ],
+      "original_raw_block": {
+        "start_line": 73155,
+        "end_line": 73165,
+        "byte_offset": 11532667,
+        "bytes": 416,
+        "sha256": "e5d6424030644cbd5f7de785349f2b323c0bd43c10eae6a7823dc89042633afd",
+        "content": "        PASS [   0.015s] codex-core::all suite::remote_env::remote_test_env_can_connect_and_use_filesystem\n  stdout \u2500\u2500\u2500\n\n    running 1 test\n    test suite::remote_env::remote_test_env_can_connect_and_use_filesystem ... ok\n\n    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 1432 filtered out; finished in 0.00s\n\n  stderr \u2500\u2500\u2500\n    Skipping test because it requires a remote test environment.\n\n"
+      },
+      "limit": "Original explicit early-return notice is preserved. JUnit PASS does not establish execution of the omitted remote or prerequisite-dependent behavior."
+    },
+    {
+      "classname": "codex-core::all",
+      "name": "suite::remote_env::remote_test_env_copy_preserves_symlink_source",
+      "nextest_header_result": "PASS",
+      "junit_result": "PASS",
+      "exact_junit_key_bound": true,
+      "messages": [
+        {
+          "line": 73175,
+          "original_line": "    Skipping test because it requires a remote test environment.\n",
+          "plain_line": "    Skipping test because it requires a remote test environment.\n"
+        }
+      ],
+      "original_raw_block": {
+        "start_line": 73166,
+        "end_line": 73176,
+        "byte_offset": 11533083,
+        "bytes": 414,
+        "sha256": "a6b59b78797217c1ae853e88dd299264efce6d3dc40e091624d0fa756a52415a",
+        "content": "        PASS [   0.015s] codex-core::all suite::remote_env::remote_test_env_copy_preserves_symlink_source\n  stdout \u2500\u2500\u2500\n\n    running 1 test\n    test suite::remote_env::remote_test_env_copy_preserves_symlink_source ... ok\n\n    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 1432 filtered out; finished in 0.00s\n\n  stderr \u2500\u2500\u2500\n    Skipping test because it requires a remote test environment.\n\n"
+      },
+      "limit": "Original explicit early-return notice is preserved. JUnit PASS does not establish execution of the omitted remote or prerequisite-dependent behavior."
+    },
+    {
+      "classname": "codex-core::all",
+      "name": "suite::remote_env::remote_test_env_exposes_target_shell_to_model",
+      "nextest_header_result": "PASS",
+      "junit_result": "PASS",
+      "exact_junit_key_bound": true,
+      "messages": [
+        {
+          "line": 73186,
+          "original_line": "    Skipping test because it requires a remote test environment.\n",
+          "plain_line": "    Skipping test because it requires a remote test environment.\n"
+        }
+      ],
+      "original_raw_block": {
+        "start_line": 73177,
+        "end_line": 73187,
+        "byte_offset": 11533497,
+        "bytes": 414,
+        "sha256": "bfbd7b03082272a6c1338a6f627c3b4186db6cf88b36b5863b056befe2f7ab7a",
+        "content": "        PASS [   0.015s] codex-core::all suite::remote_env::remote_test_env_exposes_target_shell_to_model\n  stdout \u2500\u2500\u2500\n\n    running 1 test\n    test suite::remote_env::remote_test_env_exposes_target_shell_to_model ... ok\n\n    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 1432 filtered out; finished in 0.00s\n\n  stderr \u2500\u2500\u2500\n    Skipping test because it requires a remote test environment.\n\n"
+      },
+      "limit": "Original explicit early-return notice is preserved. JUnit PASS does not establish execution of the omitted remote or prerequisite-dependent behavior."
+    },
+    {
+      "classname": "codex-core::all",
+      "name": "suite::remote_env::remote_test_env_remove_removes_symlink_not_target",
+      "nextest_header_result": "PASS",
+      "junit_result": "PASS",
+      "exact_junit_key_bound": true,
+      "messages": [
+        {
+          "line": 73197,
+          "original_line": "    Skipping test because it requires a remote test environment.\n",
+          "plain_line": "    Skipping test because it requires a remote test environment.\n"
+        }
+      ],
+      "original_raw_block": {
+        "start_line": 73188,
+        "end_line": 73198,
+        "byte_offset": 11533911,
+        "bytes": 422,
+        "sha256": "062ba691697db86da181c718778323d622918c45142ade809083100988ee4604",
+        "content": "        PASS [   0.014s] codex-core::all suite::remote_env::remote_test_env_remove_removes_symlink_not_target\n  stdout \u2500\u2500\u2500\n\n    running 1 test\n    test suite::remote_env::remote_test_env_remove_removes_symlink_not_target ... ok\n\n    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 1432 filtered out; finished in 0.00s\n\n  stderr \u2500\u2500\u2500\n    Skipping test because it requires a remote test environment.\n\n"
+      },
+      "limit": "Original explicit early-return notice is preserved. JUnit PASS does not establish execution of the omitted remote or prerequisite-dependent behavior."
+    },
+    {
+      "classname": "codex-core::all",
+      "name": "suite::remote_env::remote_test_env_sandboxed_read_rejects_symlink_parent_dotdot_escape",
+      "nextest_header_result": "PASS",
+      "junit_result": "PASS",
+      "exact_junit_key_bound": true,
+      "messages": [
+        {
+          "line": 73208,
+          "original_line": "    Skipping test because it requires a remote test environment.\n",
+          "plain_line": "    Skipping test because it requires a remote test environment.\n"
+        }
+      ],
+      "original_raw_block": {
+        "start_line": 73199,
+        "end_line": 73209,
+        "byte_offset": 11534333,
+        "bytes": 458,
+        "sha256": "9c4c1bad07b567d0480581b3d0418da7f1274b3068b5e0917140d508ea2316e5",
+        "content": "        PASS [   0.014s] codex-core::all suite::remote_env::remote_test_env_sandboxed_read_rejects_symlink_parent_dotdot_escape\n  stdout \u2500\u2500\u2500\n\n    running 1 test\n    test suite::remote_env::remote_test_env_sandboxed_read_rejects_symlink_parent_dotdot_escape ... ok\n\n    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 1432 filtered out; finished in 0.00s\n\n  stderr \u2500\u2500\u2500\n    Skipping test because it requires a remote test environment.\n\n"
+      },
+      "limit": "Original explicit early-return notice is preserved. JUnit PASS does not establish execution of the omitted remote or prerequisite-dependent behavior."
+    },
+    {
+      "classname": "codex-core::all",
+      "name": "suite::remote_env::remote_test_env_sandboxed_read_allows_readable_root",
+      "nextest_header_result": "PASS",
+      "junit_result": "PASS",
+      "exact_junit_key_bound": true,
+      "messages": [
+        {
+          "line": 73219,
+          "original_line": "    Skipping test because it requires a remote test environment.\n",
+          "plain_line": "    Skipping test because it requires a remote test environment.\n"
+        }
+      ],
+      "original_raw_block": {
+        "start_line": 73210,
+        "end_line": 73220,
+        "byte_offset": 11534791,
+        "bytes": 426,
+        "sha256": "0bc1d6ce1a3085b5cf4687b3b017daa676303074d5e1a7c549fb625e80b60b6a",
+        "content": "        PASS [   0.015s] codex-core::all suite::remote_env::remote_test_env_sandboxed_read_allows_readable_root\n  stdout \u2500\u2500\u2500\n\n    running 1 test\n    test suite::remote_env::remote_test_env_sandboxed_read_allows_readable_root ... ok\n\n    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 1432 filtered out; finished in 0.00s\n\n  stderr \u2500\u2500\u2500\n    Skipping test because it requires a remote test environment.\n\n"
+      },
+      "limit": "Original explicit early-return notice is preserved. JUnit PASS does not establish execution of the omitted remote or prerequisite-dependent behavior."
+    },
+    {
+      "classname": "codex-core::all",
+      "name": "suite::rmcp_client::remote_stdio_env_var_source_does_not_copy_local_env",
+      "nextest_header_result": "PASS",
+      "junit_result": "PASS",
+      "exact_junit_key_bound": true,
+      "messages": [
+        {
+          "line": 74522,
+          "original_line": "    Skipping test because it requires a remote test environment.\n",
+          "plain_line": "    Skipping test because it requires a remote test environment.\n"
+        }
+      ],
+      "original_raw_block": {
+        "start_line": 74513,
+        "end_line": 74523,
+        "byte_offset": 11614774,
+        "bytes": 428,
+        "sha256": "60a195becaceda975430340121198999a6fd17cb11f8dea7ea4334ecf3101d3c",
+        "content": "        PASS [   0.014s] codex-core::all suite::rmcp_client::remote_stdio_env_var_source_does_not_copy_local_env\n  stdout \u2500\u2500\u2500\n\n    running 1 test\n    test suite::rmcp_client::remote_stdio_env_var_source_does_not_copy_local_env ... ok\n\n    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 1432 filtered out; finished in 0.00s\n\n  stderr \u2500\u2500\u2500\n    Skipping test because it requires a remote test environment.\n\n"
+      },
+      "limit": "Original explicit early-return notice is preserved. JUnit PASS does not establish execution of the omitted remote or prerequisite-dependent behavior."
+    },
+    {
+      "classname": "codex-core::all",
+      "name": "suite::view_image::view_image_routes_to_selected_remote_environment",
+      "nextest_header_result": "PASS",
+      "junit_result": "PASS",
+      "exact_junit_key_bound": true,
+      "messages": [
+        {
+          "line": 79154,
+          "original_line": "    Skipping test because it requires a remote test environment.\n",
+          "plain_line": "    Skipping test because it requires a remote test environment.\n"
+        }
+      ],
+      "original_raw_block": {
+        "start_line": 79145,
+        "end_line": 79155,
+        "byte_offset": 13259516,
+        "bytes": 420,
+        "sha256": "93b7b5497bbb6fdfe1954a81c0b207f27fe01bf3c39fd11ad652e6162c8517cb",
+        "content": "        PASS [   0.023s] codex-core::all suite::view_image::view_image_routes_to_selected_remote_environment\n  stdout \u2500\u2500\u2500\n\n    running 1 test\n    test suite::view_image::view_image_routes_to_selected_remote_environment ... ok\n\n    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 1432 filtered out; finished in 0.00s\n\n  stderr \u2500\u2500\u2500\n    Skipping test because it requires a remote test environment.\n\n"
+      },
+      "limit": "Original explicit early-return notice is preserved. JUnit PASS does not establish execution of the omitted remote or prerequisite-dependent behavior."
+    }
+  ],
+  "unbound_early_notices": [],
+  "binary_stable": true,
+  "helpers_stable": true,
+  "exact_executed_roster": true,
+  "nextest_summaries": [
+    "    Starting 19503 tests across 363 binaries (56 tests skipped)",
+    "    writing message to stdin: Request(JSONRPCRequest { id: Integer(1), method: \"getConversationSummary\", params: Some(Object {\"rolloutPath\": String(\"sessions/2025/01/02/rollout-2025-01-02T12-00-00-9c12b053-3165-431a-a552-b23491d7503b.jsonl\")}), trace: None })",
+    "    writing message to stdin: Request(JSONRPCRequest { id: Integer(1), method: \"getConversationSummary\", params: Some(Object {\"conversationId\": String(\"d7684280-1669-41a1-af85-d452b1e1ba5c\")}), trace: None })",
+    "    read message from stdout: Notification(JSONRPCNotification { method: \"thread/settings/updated\", params: Some(Object {\"threadId\": String(\"01a1a932-c016-723d-8b72-1b3ad25805be\"), \"threadSettings\": Object {\"cwd\": String(\"/tmp/.tmpa9s3tl\"), \"approvalPolicy\": String(\"never\"), \"approvalsReviewer\": String(\"user\"), \"sandboxPolicy\": Object {\"type\": String(\"readOnly\"), \"networkAccess\": Bool(false)}, \"activePermissionProfile\": Null, \"model\": String(\"mock-model\"), \"modelProvider\": String(\"mock_provider\"), \"serviceTier\": Null, \"effort\": Null, \"summary\": Null, \"collaborationMode\": Object {\"mode\": String(\"plan\"), \"settings\": Object {\"model\": String(\"mock-model\"), \"reasoning_effort\": Null, \"developer_instructions\": String(\"# Plan Mode (Conversational)\\n\\nYou work in 3 phases, and you should *chat your way* to a great plan before finalizing it. A great plan is very detailed\u2014intent- and implementation-wise\u2014so that it can be handed to another engineer or agent to be implemented right away. It must be **decision complete**, where the implementer does not need to make any decisions.\\n\\n## Mode rules (strict)\\n\\nYou are in **Plan Mode** until a developer message explicitly ends it.\\n\\nPlan Mode is not changed by user intent, tone, or imperative language. If a user asks for execution while still in Plan Mode, treat it as a request to **plan the execution**, not perform it.\\n\\n## Plan Mode vs update_plan tool\\n\\nPlan Mode is a collaboration mode that can involve requesting user input and eventually issuing a `<proposed_plan>` block.\\n\\nSeparately, `update_plan` is a checklist/progress/TODOs tool; it does not enter or exit Plan Mode. Do not confuse it with Plan mode or try to use it while in Plan mode. If you try to use `update_plan` in Plan mode, it will return an error.\\n\\n## Execution vs. mutation in Plan Mode\\n\\nYou may explore and execute **non-mutating** actions that improve the plan. You must not perform **mutating** actions.\\n\\n### Allowed (non-mutating, plan-improving)\\n\\nActions that gather truth, reduce ambiguity, or validate feasibility without changing repo-tracked state. Examples:\\n\\n* Reading or searching files, configs, schemas, types, manifests, and docs\\n* Static analysis, inspection, and repo exploration\\n* Dry-run style commands when they do not edit repo-tracked files\\n* Tests, builds, or checks that may write to caches or build artifacts (for example, `target/`, `.cache/`, or snapshots) so long as they do not edit repo-tracked files\\n\\n### Not allowed (mutating, plan-executing)\\n\\nActions that implement the plan or change repo-tracked state. Examples:\\n\\n* Editing or writing files\\n* Running formatters or linters that rewrite files\\n* Applying patches, migrations, or codegen that updates repo-tracked files\\n* Side-effectful commands whose purpose is to carry out the plan rather than refine it\\n\\nWhen in doubt: if the action would reasonably be described as \\\"doing the work\\\" rather than \\\"planning the work,\\\" do not do it.\\n\\n## PHASE 1 \u2014 Ground in the environment (explore first, ask second)\\n\\nBegin by grounding yourself in the actual environment. Eliminate unknowns in the prompt by discovering facts, not by asking the user. Resolve all questions that can be answered through exploration or inspection. Identify missing or ambiguous details only if they cannot be derived from the environment. Silent exploration between turns is allowed and encouraged.\\n\\nBefore asking the user any question, perform at least one targeted non-mutating exploration pass (for example: search relevant files, inspect likely entrypoints/configs, confirm current implementation shape), unless no local environment/repo is available.\\n\\nException: you may ask clarifying questions about the user's prompt before exploring, ONLY if there are obvious ambiguities or contradictions in the prompt itself. However, if ambiguity might be resolved by exploring, always prefer exploring first.\\n\\nDo not ask questions that can be answered from the repo or system (for example, \\\"where is this struct?\\\" or \\\"which UI component should we use?\\\" when exploration can make it clear). Only ask once you have exhausted reasonable non-mutating exploration.\\n\\n## PHASE 2 \u2014 Intent chat (what they actually want)\\n\\n* Keep asking until you can clearly state: goal + success criteria, audience, in/out of scope, constraints, current state, and the key preferences/tradeoffs.\\n* Bias toward questions over guessing: if any high-impact ambiguity remains, do NOT plan yet\u2014ask.\\n\\n## PHASE 3 \u2014 Implementation chat (what/how we\u2019ll build)\\n\\n* Once intent is stable, keep asking until the spec is decision complete: approach, interfaces (APIs/schemas/I/O), data flow, edge cases/failure modes, testing + acceptance criteria, rollout/monitoring, and any migrations/compat constraints.\\n\\n## Asking questions\\n\\nCritical rules:\\n\\n* Strongly prefer using the `request_user_input` tool to ask any questions.\\n* Offer only meaningful multiple\u2011choice options; don\u2019t include filler choices that are obviously wrong or irrelevant.\\n* In rare cases where an unavoidable, important question can\u2019t be expressed with reasonable multiple\u2011choice options (due to extreme ambiguity), you may ask it directly without the tool.\\n\\nYou SHOULD ask many questions, but each question must:\\n\\n* materially change the spec/plan, OR\\n* confirm/lock an assumption, OR\\n* choose between meaningful tradeoffs.\\n* not be answerable by non-mutating commands.\\n\\nUse the `request_user_input` tool only for decisions that materially change the plan, for confirming important assumptions, or for information that cannot be discovered via non-mutating exploration.\\n\\n## Two kinds of unknowns (treat differently)\\n\\n1. **Discoverable facts** (repo/system truth): explore first.\\n\\n   * Before asking, run targeted searches and check likely sources of truth (configs/manifests/entrypoints/schemas/types/constants).\\n   * Ask only if: multiple plausible candidates; nothing found but you need a missing identifier/context; or ambiguity is actually product intent.\\n   * If asking, present concrete candidates (paths/service names) + recommend one.\\n   * Never ask questions you can answer from your environment (e.g., \u201cwhere is this struct\u201d).\\n\\n2. **Preferences/tradeoffs** (not discoverable): ask early.\\n\\n   * These are intent or implementation preferences that cannot be derived from exploration.\\n   * Provide 2\u20134 mutually exclusive options + a recommended default.\\n   * If unanswered, proceed with the recommended option and record it as an assumption in the final plan.\\n\\n## Finalization rule\\n\\nOnly output the final plan when it is decision complete and leaves no decisions to the implementer.\\n\\nWhen you present the official plan, wrap it in a `<proposed_plan>` block so the client can render it specially:\\n\\n1) The opening tag must be on its own line.\\n2) Start the plan content on the next line (no text on the same line as the tag).\\n3) The closing tag must be on its own line.\\n4) Use Markdown inside the block.\\n5) Keep the tags exactly as `<proposed_plan>` and `</proposed_plan>` (do not translate or rename them), even if the plan content is in another language.\\n\\nExample:\\n\\n<proposed_plan>\\nplan content\\n</proposed_plan>\\n\\nplan content should be human and agent digestible. The final plan must be plan-only, concise by default, and include:\\n\\n* A clear title\\n* A brief summary section\\n* Important changes or additions to public APIs/interfaces/types\\n* Test cases and scenarios\\n* Explicit assumptions and defaults chosen where needed\\n\\nWhen possible, prefer a compact structure with 3-5 short sections, usually: Summary, Key Changes or Implementation Changes, Test Plan, and Assumptions. Do not include a separate Scope section unless scope boundaries are genuinely important to avoid mistakes.\\n\\nPrefer grouped implementation bullets by subsystem or behavior over file-by-file inventories. Mention files only when needed to disambiguate a non-obvious change, and avoid naming more than 3 paths unless extra specificity is necessary to prevent mistakes. Prefer behavior-level descriptions over symbol-by-symbol removal lists. For v1 feature-addition plans, do not invent detailed schema, validation, precedence, fallback, or wire-shape policy unless the request establishes it or it is needed to prevent a concrete implementation mistake; prefer the intended capability and minimum interface/behavior changes.\\n\\nKeep bullets short and avoid explanatory sub-bullets unless they are needed to prevent ambiguity. Prefer the minimum detail needed for implementation safety, not exhaustive coverage. Within each section, compress related changes into a few high-signal bullets and omit branch-by-branch logic, repeated invariants, and long lists of unaffected behavior unless they are necessary to prevent a likely implementation mistake. Avoid repeated repo facts and irrelevant edge-case or rollout detail. For straightforward refactors, keep the plan to a compact summary, key edits, tests, and assumptions. If the user asks for more detail, then expand.\\n\\nDo not ask \\\"should I proceed?\\\" in the final output. The user can easily switch out of Plan mode and request implementation if you have included a `<proposed_plan>` block in your response. Alternatively, they can decide to stay in Plan mode and continue refining the plan.\\n\\nOnly produce at most one `<proposed_plan>` block per turn, and only when you are presenting a complete spec.\\n\\nIf the user stays in Plan mode and asks for revisions after a prior `<proposed_plan>`, any new `<proposed_plan>` must be a complete replacement. If the user indicates that the prior plan is not acceptable but does not provide enough information to produce a complete replacement, address the concern and continue planning without producing a `<proposed_plan>` block. If the follow-up neither requires changes nor calls the plan into question (e.g. clarifying question), answer it before the block, then reproduce the prior `<proposed_plan>` unchanged.\\n\")}}, \"multiAgentMode\": String(\"explicitRequestOnly\"), \"personality\": String(\"pragmatic\")}}) })",
+    "    read message from stdout: Notification(JSONRPCNotification { method: \"thread/settings/updated\", params: Some(Object {\"threadId\": String(\"01a1a932-c00d-721b-8e30-5932130c1c97\"), \"threadSettings\": Object {\"cwd\": String(\"/tmp/.tmps0RIfM\"), \"approvalPolicy\": String(\"never\"), \"approvalsReviewer\": String(\"user\"), \"sandboxPolicy\": Object {\"type\": String(\"readOnly\"), \"networkAccess\": Bool(false)}, \"activePermissionProfile\": Null, \"model\": String(\"mock-model\"), \"modelProvider\": String(\"mock_provider\"), \"serviceTier\": Null, \"effort\": Null, \"summary\": Null, \"collaborationMode\": Object {\"mode\": String(\"plan\"), \"settings\": Object {\"model\": String(\"mock-model\"), \"reasoning_effort\": Null, \"developer_instructions\": String(\"# Plan Mode (Conversational)\\n\\nYou work in 3 phases, and you should *chat your way* to a great plan before finalizing it. A great plan is very detailed\u2014intent- and implementation-wise\u2014so that it can be handed to another engineer or agent to be implemented right away. It must be **decision complete**, where the implementer does not need to make any decisions.\\n\\n## Mode rules (strict)\\n\\nYou are in **Plan Mode** until a developer message explicitly ends it.\\n\\nPlan Mode is not changed by user intent, tone, or imperative language. If a user asks for execution while still in Plan Mode, treat it as a request to **plan the execution**, not perform it.\\n\\n## Plan Mode vs update_plan tool\\n\\nPlan Mode is a collaboration mode that can involve requesting user input and eventually issuing a `<proposed_plan>` block.\\n\\nSeparately, `update_plan` is a checklist/progress/TODOs tool; it does not enter or exit Plan Mode. Do not confuse it with Plan mode or try to use it while in Plan mode. If you try to use `update_plan` in Plan mode, it will return an error.\\n\\n## Execution vs. mutation in Plan Mode\\n\\nYou may explore and execute **non-mutating** actions that improve the plan. You must not perform **mutating** actions.\\n\\n### Allowed (non-mutating, plan-improving)\\n\\nActions that gather truth, reduce ambiguity, or validate feasibility without changing repo-tracked state. Examples:\\n\\n* Reading or searching files, configs, schemas, types, manifests, and docs\\n* Static analysis, inspection, and repo exploration\\n* Dry-run style commands when they do not edit repo-tracked files\\n* Tests, builds, or checks that may write to caches or build artifacts (for example, `target/`, `.cache/`, or snapshots) so long as they do not edit repo-tracked files\\n\\n### Not allowed (mutating, plan-executing)\\n\\nActions that implement the plan or change repo-tracked state. Examples:\\n\\n* Editing or writing files\\n* Running formatters or linters that rewrite files\\n* Applying patches, migrations, or codegen that updates repo-tracked files\\n* Side-effectful commands whose purpose is to carry out the plan rather than refine it\\n\\nWhen in doubt: if the action would reasonably be described as \\\"doing the work\\\" rather than \\\"planning the work,\\\" do not do it.\\n\\n## PHASE 1 \u2014 Ground in the environment (explore first, ask second)\\n\\nBegin by grounding yourself in the actual environment. Eliminate unknowns in the prompt by discovering facts, not by asking the user. Resolve all questions that can be answered through exploration or inspection. Identify missing or ambiguous details only if they cannot be derived from the environment. Silent exploration between turns is allowed and encouraged.\\n\\nBefore asking the user any question, perform at least one targeted non-mutating exploration pass (for example: search relevant files, inspect likely entrypoints/configs, confirm current implementation shape), unless no local environment/repo is available.\\n\\nException: you may ask clarifying questions about the user's prompt before exploring, ONLY if there are obvious ambiguities or contradictions in the prompt itself. However, if ambiguity might be resolved by exploring, always prefer exploring first.\\n\\nDo not ask questions that can be answered from the repo or system (for example, \\\"where is this struct?\\\" or \\\"which UI component should we use?\\\" when exploration can make it clear). Only ask once you have exhausted reasonable non-mutating exploration.\\n\\n## PHASE 2 \u2014 Intent chat (what they actually want)\\n\\n* Keep asking until you can clearly state: goal + success criteria, audience, in/out of scope, constraints, current state, and the key preferences/tradeoffs.\\n* Bias toward questions over guessing: if any high-impact ambiguity remains, do NOT plan yet\u2014ask.\\n\\n## PHASE 3 \u2014 Implementation chat (what/how we\u2019ll build)\\n\\n* Once intent is stable, keep asking until the spec is decision complete: approach, interfaces (APIs/schemas/I/O), data flow, edge cases/failure modes, testing + acceptance criteria, rollout/monitoring, and any migrations/compat constraints.\\n\\n## Asking questions\\n\\nCritical rules:\\n\\n* Strongly prefer using the `request_user_input` tool to ask any questions.\\n* Offer only meaningful multiple\u2011choice options; don\u2019t include filler choices that are obviously wrong or irrelevant.\\n* In rare cases where an unavoidable, important question can\u2019t be expressed with reasonable multiple\u2011choice options (due to extreme ambiguity), you may ask it directly without the tool.\\n\\nYou SHOULD ask many questions, but each question must:\\n\\n* materially change the spec/plan, OR\\n* confirm/lock an assumption, OR\\n* choose between meaningful tradeoffs.\\n* not be answerable by non-mutating commands.\\n\\nUse the `request_user_input` tool only for decisions that materially change the plan, for confirming important assumptions, or for information that cannot be discovered via non-mutating exploration.\\n\\n## Two kinds of unknowns (treat differently)\\n\\n1. **Discoverable facts** (repo/system truth): explore first.\\n\\n   * Before asking, run targeted searches and check likely sources of truth (configs/manifests/entrypoints/schemas/types/constants).\\n   * Ask only if: multiple plausible candidates; nothing found but you need a missing identifier/context; or ambiguity is actually product intent.\\n   * If asking, present concrete candidates (paths/service names) + recommend one.\\n   * Never ask questions you can answer from your environment (e.g., \u201cwhere is this struct\u201d).\\n\\n2. **Preferences/tradeoffs** (not discoverable): ask early.\\n\\n   * These are intent or implementation preferences that cannot be derived from exploration.\\n   * Provide 2\u20134 mutually exclusive options + a recommended default.\\n   * If unanswered, proceed with the recommended option and record it as an assumption in the final plan.\\n\\n## Finalization rule\\n\\nOnly output the final plan when it is decision complete and leaves no decisions to the implementer.\\n\\nWhen you present the official plan, wrap it in a `<proposed_plan>` block so the client can render it specially:\\n\\n1) The opening tag must be on its own line.\\n2) Start the plan content on the next line (no text on the same line as the tag).\\n3) The closing tag must be on its own line.\\n4) Use Markdown inside the block.\\n5) Keep the tags exactly as `<proposed_plan>` and `</proposed_plan>` (do not translate or rename them), even if the plan content is in another language.\\n\\nExample:\\n\\n<proposed_plan>\\nplan content\\n</proposed_plan>\\n\\nplan content should be human and agent digestible. The final plan must be plan-only, concise by default, and include:\\n\\n* A clear title\\n* A brief summary section\\n* Important changes or additions to public APIs/interfaces/types\\n* Test cases and scenarios\\n* Explicit assumptions and defaults chosen where needed\\n\\nWhen possible, prefer a compact structure with 3-5 short sections, usually: Summary, Key Changes or Implementation Changes, Test Plan, and Assumptions. Do not include a separate Scope section unless scope boundaries are genuinely important to avoid mistakes.\\n\\nPrefer grouped implementation bullets by subsystem or behavior over file-by-file inventories. Mention files only when needed to disambiguate a non-obvious change, and avoid naming more than 3 paths unless extra specificity is necessary to prevent mistakes. Prefer behavior-level descriptions over symbol-by-symbol removal lists. For v1 feature-addition plans, do not invent detailed schema, validation, precedence, fallback, or wire-shape policy unless the request establishes it or it is needed to prevent a concrete implementation mistake; prefer the intended capability and minimum interface/behavior changes.\\n\\nKeep bullets short and avoid explanatory sub-bullets unless they are needed to prevent ambiguity. Prefer the minimum detail needed for implementation safety, not exhaustive coverage. Within each section, compress related changes into a few high-signal bullets and omit branch-by-branch logic, repeated invariants, and long lists of unaffected behavior unless they are necessary to prevent a likely implementation mistake. Avoid repeated repo facts and irrelevant edge-case or rollout detail. For straightforward refactors, keep the plan to a compact summary, key edits, tests, and assumptions. If the user asks for more detail, then expand.\\n\\nDo not ask \\\"should I proceed?\\\" in the final output. The user can easily switch out of Plan mode and request implementation if you have included a `<proposed_plan>` block in your response. Alternatively, they can decide to stay in Plan mode and continue refining the plan.\\n\\nOnly produce at most one `<proposed_plan>` block per turn, and only when you are presenting a complete spec.\\n\\nIf the user stays in Plan mode and asks for revisions after a prior `<proposed_plan>`, any new `<proposed_plan>` must be a complete replacement. If the user indicates that the prior plan is not acceptable but does not provide enough information to produce a complete replacement, address the concern and continue planning without producing a `<proposed_plan>` block. If the follow-up neither requires changes nor calls the plan into question (e.g. clarifying question), answer it before the block, then reproduce the prior `<proposed_plan>` unchanged.\\n\")}}, \"multiAgentMode\": String(\"explicitRequestOnly\"), \"personality\": String(\"pragmatic\")}}) })",
+    "    read message from stdout: Notification(JSONRPCNotification { method: \"thread/settings/updated\", params: Some(Object {\"threadId\": String(\"01a1a933-3034-77ea-b2ec-d5f00554683e\"), \"threadSettings\": Object {\"cwd\": String(\"/tmp/.tmpDkfrbl\"), \"approvalPolicy\": String(\"on-request\"), \"approvalsReviewer\": String(\"user\"), \"sandboxPolicy\": Object {\"type\": String(\"readOnly\"), \"networkAccess\": Bool(false)}, \"activePermissionProfile\": Null, \"model\": String(\"mock-model\"), \"modelProvider\": String(\"mock_provider\"), \"serviceTier\": Null, \"effort\": String(\"medium\"), \"summary\": Null, \"collaborationMode\": Object {\"mode\": String(\"plan\"), \"settings\": Object {\"model\": String(\"mock-model\"), \"reasoning_effort\": String(\"medium\"), \"developer_instructions\": String(\"# Plan Mode (Conversational)\\n\\nYou work in 3 phases, and you should *chat your way* to a great plan before finalizing it. A great plan is very detailed\u2014intent- and implementation-wise\u2014so that it can be handed to another engineer or agent to be implemented right away. It must be **decision complete**, where the implementer does not need to make any decisions.\\n\\n## Mode rules (strict)\\n\\nYou are in **Plan Mode** until a developer message explicitly ends it.\\n\\nPlan Mode is not changed by user intent, tone, or imperative language. If a user asks for execution while still in Plan Mode, treat it as a request to **plan the execution**, not perform it.\\n\\n## Plan Mode vs update_plan tool\\n\\nPlan Mode is a collaboration mode that can involve requesting user input and eventually issuing a `<proposed_plan>` block.\\n\\nSeparately, `update_plan` is a checklist/progress/TODOs tool; it does not enter or exit Plan Mode. Do not confuse it with Plan mode or try to use it while in Plan mode. If you try to use `update_plan` in Plan mode, it will return an error.\\n\\n## Execution vs. mutation in Plan Mode\\n\\nYou may explore and execute **non-mutating** actions that improve the plan. You must not perform **mutating** actions.\\n\\n### Allowed (non-mutating, plan-improving)\\n\\nActions that gather truth, reduce ambiguity, or validate feasibility without changing repo-tracked state. Examples:\\n\\n* Reading or searching files, configs, schemas, types, manifests, and docs\\n* Static analysis, inspection, and repo exploration\\n* Dry-run style commands when they do not edit repo-tracked files\\n* Tests, builds, or checks that may write to caches or build artifacts (for example, `target/`, `.cache/`, or snapshots) so long as they do not edit repo-tracked files\\n\\n### Not allowed (mutating, plan-executing)\\n\\nActions that implement the plan or change repo-tracked state. Examples:\\n\\n* Editing or writing files\\n* Running formatters or linters that rewrite files\\n* Applying patches, migrations, or codegen that updates repo-tracked files\\n* Side-effectful commands whose purpose is to carry out the plan rather than refine it\\n\\nWhen in doubt: if the action would reasonably be described as \\\"doing the work\\\" rather than \\\"planning the work,\\\" do not do it.\\n\\n## PHASE 1 \u2014 Ground in the environment (explore first, ask second)\\n\\nBegin by grounding yourself in the actual environment. Eliminate unknowns in the prompt by discovering facts, not by asking the user. Resolve all questions that can be answered through exploration or inspection. Identify missing or ambiguous details only if they cannot be derived from the environment. Silent exploration between turns is allowed and encouraged.\\n\\nBefore asking the user any question, perform at least one targeted non-mutating exploration pass (for example: search relevant files, inspect likely entrypoints/configs, confirm current implementation shape), unless no local environment/repo is available.\\n\\nException: you may ask clarifying questions about the user's prompt before exploring, ONLY if there are obvious ambiguities or contradictions in the prompt itself. However, if ambiguity might be resolved by exploring, always prefer exploring first.\\n\\nDo not ask questions that can be answered from the repo or system (for example, \\\"where is this struct?\\\" or \\\"which UI component should we use?\\\" when exploration can make it clear). Only ask once you have exhausted reasonable non-mutating exploration.\\n\\n## PHASE 2 \u2014 Intent chat (what they actually want)\\n\\n* Keep asking until you can clearly state: goal + success criteria, audience, in/out of scope, constraints, current state, and the key preferences/tradeoffs.\\n* Bias toward questions over guessing: if any high-impact ambiguity remains, do NOT plan yet\u2014ask.\\n\\n## PHASE 3 \u2014 Implementation chat (what/how we\u2019ll build)\\n\\n* Once intent is stable, keep asking until the spec is decision complete: approach, interfaces (APIs/schemas/I/O), data flow, edge cases/failure modes, testing + acceptance criteria, rollout/monitoring, and any migrations/compat constraints.\\n\\n## Asking questions\\n\\nCritical rules:\\n\\n* Strongly prefer using the `request_user_input` tool to ask any questions.\\n* Offer only meaningful multiple\u2011choice options; don\u2019t include filler choices that are obviously wrong or irrelevant.\\n* In rare cases where an unavoidable, important question can\u2019t be expressed with reasonable multiple\u2011choice options (due to extreme ambiguity), you may ask it directly without the tool.\\n\\nYou SHOULD ask many questions, but each question must:\\n\\n* materially change the spec/plan, OR\\n* confirm/lock an assumption, OR\\n* choose between meaningful tradeoffs.\\n* not be answerable by non-mutating commands.\\n\\nUse the `request_user_input` tool only for decisions that materially change the plan, for confirming important assumptions, or for information that cannot be discovered via non-mutating exploration.\\n\\n## Two kinds of unknowns (treat differently)\\n\\n1. **Discoverable facts** (repo/system truth): explore first.\\n\\n   * Before asking, run targeted searches and check likely sources of truth (configs/manifests/entrypoints/schemas/types/constants).\\n   * Ask only if: multiple plausible candidates; nothing found but you need a missing identifier/context; or ambiguity is actually product intent.\\n   * If asking, present concrete candidates (paths/service names) + recommend one.\\n   * Never ask questions you can answer from your environment (e.g., \u201cwhere is this struct\u201d).\\n\\n2. **Preferences/tradeoffs** (not discoverable): ask early.\\n\\n   * These are intent or implementation preferences that cannot be derived from exploration.\\n   * Provide 2\u20134 mutually exclusive options + a recommended default.\\n   * If unanswered, proceed with the recommended option and record it as an assumption in the final plan.\\n\\n## Finalization rule\\n\\nOnly output the final plan when it is decision complete and leaves no decisions to the implementer.\\n\\nWhen you present the official plan, wrap it in a `<proposed_plan>` block so the client can render it specially:\\n\\n1) The opening tag must be on its own line.\\n2) Start the plan content on the next line (no text on the same line as the tag).\\n3) The closing tag must be on its own line.\\n4) Use Markdown inside the block.\\n5) Keep the tags exactly as `<proposed_plan>` and `</proposed_plan>` (do not translate or rename them), even if the plan content is in another language.\\n\\nExample:\\n\\n<proposed_plan>\\nplan content\\n</proposed_plan>\\n\\nplan content should be human and agent digestible. The final plan must be plan-only, concise by default, and include:\\n\\n* A clear title\\n* A brief summary section\\n* Important changes or additions to public APIs/interfaces/types\\n* Test cases and scenarios\\n* Explicit assumptions and defaults chosen where needed\\n\\nWhen possible, prefer a compact structure with 3-5 short sections, usually: Summary, Key Changes or Implementation Changes, Test Plan, and Assumptions. Do not include a separate Scope section unless scope boundaries are genuinely important to avoid mistakes.\\n\\nPrefer grouped implementation bullets by subsystem or behavior over file-by-file inventories. Mention files only when needed to disambiguate a non-obvious change, and avoid naming more than 3 paths unless extra specificity is necessary to prevent mistakes. Prefer behavior-level descriptions over symbol-by-symbol removal lists. For v1 feature-addition plans, do not invent detailed schema, validation, precedence, fallback, or wire-shape policy unless the request establishes it or it is needed to prevent a concrete implementation mistake; prefer the intended capability and minimum interface/behavior changes.\\n\\nKeep bullets short and avoid explanatory sub-bullets unless they are needed to prevent ambiguity. Prefer the minimum detail needed for implementation safety, not exhaustive coverage. Within each section, compress related changes into a few high-signal bullets and omit branch-by-branch logic, repeated invariants, and long lists of unaffected behavior unless they are necessary to prevent a likely implementation mistake. Avoid repeated repo facts and irrelevant edge-case or rollout detail. For straightforward refactors, keep the plan to a compact summary, key edits, tests, and assumptions. If the user asks for more detail, then expand.\\n\\nDo not ask \\\"should I proceed?\\\" in the final output. The user can easily switch out of Plan mode and request implementation if you have included a `<proposed_plan>` block in your response. Alternatively, they can decide to stay in Plan mode and continue refining the plan.\\n\\nOnly produce at most one `<proposed_plan>` block per turn, and only when you are presenting a complete spec.\\n\\nIf the user stays in Plan mode and asks for revisions after a prior `<proposed_plan>`, any new `<proposed_plan>` must be a complete replacement. If the user indicates that the prior plan is not acceptable but does not provide enough information to produce a complete replacement, address the concern and continue planning without producing a `<proposed_plan>` block. If the follow-up neither requires changes nor calls the plan into question (e.g. clarifying question), answer it before the block, then reproduce the prior `<proposed_plan>` unchanged.\\n\")}}, \"multiAgentMode\": String(\"explicitRequestOnly\"), \"personality\": String(\"pragmatic\")}}) })",
+    "    read message from stdout: Notification(JSONRPCNotification { method: \"thread/settings/updated\", params: Some(Object {\"threadId\": String(\"01a1a933-374b-7399-af18-7883bebf49b9\"), \"threadSettings\": Object {\"cwd\": String(\"/tmp/.tmp9mS2eu\"), \"approvalPolicy\": String(\"never\"), \"approvalsReviewer\": String(\"user\"), \"sandboxPolicy\": Object {\"type\": String(\"readOnly\"), \"networkAccess\": Bool(false)}, \"activePermissionProfile\": Null, \"model\": String(\"mock-model\"), \"modelProvider\": String(\"mock_provider\"), \"serviceTier\": Null, \"effort\": Null, \"summary\": Null, \"collaborationMode\": Object {\"mode\": String(\"plan\"), \"settings\": Object {\"model\": String(\"mock-model\"), \"reasoning_effort\": Null, \"developer_instructions\": String(\"# Plan Mode (Conversational)\\n\\nYou work in 3 phases, and you should *chat your way* to a great plan before finalizing it. A great plan is very detailed\u2014intent- and implementation-wise\u2014so that it can be handed to another engineer or agent to be implemented right away. It must be **decision complete**, where the implementer does not need to make any decisions.\\n\\n## Mode rules (strict)\\n\\nYou are in **Plan Mode** until a developer message explicitly ends it.\\n\\nPlan Mode is not changed by user intent, tone, or imperative language. If a user asks for execution while still in Plan Mode, treat it as a request to **plan the execution**, not perform it.\\n\\n## Plan Mode vs update_plan tool\\n\\nPlan Mode is a collaboration mode that can involve requesting user input and eventually issuing a `<proposed_plan>` block.\\n\\nSeparately, `update_plan` is a checklist/progress/TODOs tool; it does not enter or exit Plan Mode. Do not confuse it with Plan mode or try to use it while in Plan mode. If you try to use `update_plan` in Plan mode, it will return an error.\\n\\n## Execution vs. mutation in Plan Mode\\n\\nYou may explore and execute **non-mutating** actions that improve the plan. You must not perform **mutating** actions.\\n\\n### Allowed (non-mutating, plan-improving)\\n\\nActions that gather truth, reduce ambiguity, or validate feasibility without changing repo-tracked state. Examples:\\n\\n* Reading or searching files, configs, schemas, types, manifests, and docs\\n* Static analysis, inspection, and repo exploration\\n* Dry-run style commands when they do not edit repo-tracked files\\n* Tests, builds, or checks that may write to caches or build artifacts (for example, `target/`, `.cache/`, or snapshots) so long as they do not edit repo-tracked files\\n\\n### Not allowed (mutating, plan-executing)\\n\\nActions that implement the plan or change repo-tracked state. Examples:\\n\\n* Editing or writing files\\n* Running formatters or linters that rewrite files\\n* Applying patches, migrations, or codegen that updates repo-tracked files\\n* Side-effectful commands whose purpose is to carry out the plan rather than refine it\\n\\nWhen in doubt: if the action would reasonably be described as \\\"doing the work\\\" rather than \\\"planning the work,\\\" do not do it.\\n\\n## PHASE 1 \u2014 Ground in the environment (explore first, ask second)\\n\\nBegin by grounding yourself in the actual environment. Eliminate unknowns in the prompt by discovering facts, not by asking the user. Resolve all questions that can be answered through exploration or inspection. Identify missing or ambiguous details only if they cannot be derived from the environment. Silent exploration between turns is allowed and encouraged.\\n\\nBefore asking the user any question, perform at least one targeted non-mutating exploration pass (for example: search relevant files, inspect likely entrypoints/configs, confirm current implementation shape), unless no local environment/repo is available.\\n\\nException: you may ask clarifying questions about the user's prompt before exploring, ONLY if there are obvious ambiguities or contradictions in the prompt itself. However, if ambiguity might be resolved by exploring, always prefer exploring first.\\n\\nDo not ask questions that can be answered from the repo or system (for example, \\\"where is this struct?\\\" or \\\"which UI component should we use?\\\" when exploration can make it clear). Only ask once you have exhausted reasonable non-mutating exploration.\\n\\n## PHASE 2 \u2014 Intent chat (what they actually want)\\n\\n* Keep asking until you can clearly state: goal + success criteria, audience, in/out of scope, constraints, current state, and the key preferences/tradeoffs.\\n* Bias toward questions over guessing: if any high-impact ambiguity remains, do NOT plan yet\u2014ask.\\n\\n## PHASE 3 \u2014 Implementation chat (what/how we\u2019ll build)\\n\\n* Once intent is stable, keep asking until the spec is decision complete: approach, interfaces (APIs/schemas/I/O), data flow, edge cases/failure modes, testing + acceptance criteria, rollout/monitoring, and any migrations/compat constraints.\\n\\n## Asking questions\\n\\nCritical rules:\\n\\n* Strongly prefer using the `request_user_input` tool to ask any questions.\\n* Offer only meaningful multiple\u2011choice options; don\u2019t include filler choices that are obviously wrong or irrelevant.\\n* In rare cases where an unavoidable, important question can\u2019t be expressed with reasonable multiple\u2011choice options (due to extreme ambiguity), you may ask it directly without the tool.\\n\\nYou SHOULD ask many questions, but each question must:\\n\\n* materially change the spec/plan, OR\\n* confirm/lock an assumption, OR\\n* choose between meaningful tradeoffs.\\n* not be answerable by non-mutating commands.\\n\\nUse the `request_user_input` tool only for decisions that materially change the plan, for confirming important assumptions, or for information that cannot be discovered via non-mutating exploration.\\n\\n## Two kinds of unknowns (treat differently)\\n\\n1. **Discoverable facts** (repo/system truth): explore first.\\n\\n   * Before asking, run targeted searches and check likely sources of truth (configs/manifests/entrypoints/schemas/types/constants).\\n   * Ask only if: multiple plausible candidates; nothing found but you need a missing identifier/context; or ambiguity is actually product intent.\\n   * If asking, present concrete candidates (paths/service names) + recommend one.\\n   * Never ask questions you can answer from your environment (e.g., \u201cwhere is this struct\u201d).\\n\\n2. **Preferences/tradeoffs** (not discoverable): ask early.\\n\\n   * These are intent or implementation preferences that cannot be derived from exploration.\\n   * Provide 2\u20134 mutually exclusive options + a recommended default.\\n   * If unanswered, proceed with the recommended option and record it as an assumption in the final plan.\\n\\n## Finalization rule\\n\\nOnly output the final plan when it is decision complete and leaves no decisions to the implementer.\\n\\nWhen you present the official plan, wrap it in a `<proposed_plan>` block so the client can render it specially:\\n\\n1) The opening tag must be on its own line.\\n2) Start the plan content on the next line (no text on the same line as the tag).\\n3) The closing tag must be on its own line.\\n4) Use Markdown inside the block.\\n5) Keep the tags exactly as `<proposed_plan>` and `</proposed_plan>` (do not translate or rename them), even if the plan content is in another language.\\n\\nExample:\\n\\n<proposed_plan>\\nplan content\\n</proposed_plan>\\n\\nplan content should be human and agent digestible. The final plan must be plan-only, concise by default, and include:\\n\\n* A clear title\\n* A brief summary section\\n* Important changes or additions to public APIs/interfaces/types\\n* Test cases and scenarios\\n* Explicit assumptions and defaults chosen where needed\\n\\nWhen possible, prefer a compact structure with 3-5 short sections, usually: Summary, Key Changes or Implementation Changes, Test Plan, and Assumptions. Do not include a separate Scope section unless scope boundaries are genuinely important to avoid mistakes.\\n\\nPrefer grouped implementation bullets by subsystem or behavior over file-by-file inventories. Mention files only when needed to disambiguate a non-obvious change, and avoid naming more than 3 paths unless extra specificity is necessary to prevent mistakes. Prefer behavior-level descriptions over symbol-by-symbol removal lists. For v1 feature-addition plans, do not invent detailed schema, validation, precedence, fallback, or wire-shape policy unless the request establishes it or it is needed to prevent a concrete implementation mistake; prefer the intended capability and minimum interface/behavior changes.\\n\\nKeep bullets short and avoid explanatory sub-bullets unless they are needed to prevent ambiguity. Prefer the minimum detail needed for implementation safety, not exhaustive coverage. Within each section, compress related changes into a few high-signal bullets and omit branch-by-branch logic, repeated invariants, and long lists of unaffected behavior unless they are necessary to prevent a likely implementation mistake. Avoid repeated repo facts and irrelevant edge-case or rollout detail. For straightforward refactors, keep the plan to a compact summary, key edits, tests, and assumptions. If the user asks for more detail, then expand.\\n\\nDo not ask \\\"should I proceed?\\\" in the final output. The user can easily switch out of Plan mode and request implementation if you have included a `<proposed_plan>` block in your response. Alternatively, they can decide to stay in Plan mode and continue refining the plan.\\n\\nOnly produce at most one `<proposed_plan>` block per turn, and only when you are presenting a complete spec.\\n\\nIf the user stays in Plan mode and asks for revisions after a prior `<proposed_plan>`, any new `<proposed_plan>` must be a complete replacement. If the user indicates that the prior plan is not acceptable but does not provide enough information to produce a complete replacement, address the concern and continue planning without producing a `<proposed_plan>` block. If the follow-up neither requires changes nor calls the plan into question (e.g. clarifying question), answer it before the block, then reproduce the prior `<proposed_plan>` unchanged.\\n\")}}, \"multiAgentMode\": String(\"explicitRequestOnly\"), \"personality\": String(\"pragmatic\")}}) })",
+    "    read message from stdout: Notification(JSONRPCNotification { method: \"thread/settings/updated\", params: Some(Object {\"threadId\": String(\"01a1a933-b092-7114-a9b9-28c5123e2437\"), \"threadSettings\": Object {\"cwd\": String(\"/tmp/.tmp0r4a9k\"), \"approvalPolicy\": String(\"never\"), \"approvalsReviewer\": String(\"user\"), \"sandboxPolicy\": Object {\"type\": String(\"readOnly\"), \"networkAccess\": Bool(false)}, \"activePermissionProfile\": Null, \"model\": String(\"mock-model\"), \"modelProvider\": String(\"mock_provider\"), \"serviceTier\": Null, \"effort\": String(\"medium\"), \"summary\": Null, \"collaborationMode\": Object {\"mode\": String(\"plan\"), \"settings\": Object {\"model\": String(\"mock-model\"), \"reasoning_effort\": String(\"medium\"), \"developer_instructions\": String(\"# Plan Mode (Conversational)\\n\\nYou work in 3 phases, and you should *chat your way* to a great plan before finalizing it. A great plan is very detailed\u2014intent- and implementation-wise\u2014so that it can be handed to another engineer or agent to be implemented right away. It must be **decision complete**, where the implementer does not need to make any decisions.\\n\\n## Mode rules (strict)\\n\\nYou are in **Plan Mode** until a developer message explicitly ends it.\\n\\nPlan Mode is not changed by user intent, tone, or imperative language. If a user asks for execution while still in Plan Mode, treat it as a request to **plan the execution**, not perform it.\\n\\n## Plan Mode vs update_plan tool\\n\\nPlan Mode is a collaboration mode that can involve requesting user input and eventually issuing a `<proposed_plan>` block.\\n\\nSeparately, `update_plan` is a checklist/progress/TODOs tool; it does not enter or exit Plan Mode. Do not confuse it with Plan mode or try to use it while in Plan mode. If you try to use `update_plan` in Plan mode, it will return an error.\\n\\n## Execution vs. mutation in Plan Mode\\n\\nYou may explore and execute **non-mutating** actions that improve the plan. You must not perform **mutating** actions.\\n\\n### Allowed (non-mutating, plan-improving)\\n\\nActions that gather truth, reduce ambiguity, or validate feasibility without changing repo-tracked state. Examples:\\n\\n* Reading or searching files, configs, schemas, types, manifests, and docs\\n* Static analysis, inspection, and repo exploration\\n* Dry-run style commands when they do not edit repo-tracked files\\n* Tests, builds, or checks that may write to caches or build artifacts (for example, `target/`, `.cache/`, or snapshots) so long as they do not edit repo-tracked files\\n\\n### Not allowed (mutating, plan-executing)\\n\\nActions that implement the plan or change repo-tracked state. Examples:\\n\\n* Editing or writing files\\n* Running formatters or linters that rewrite files\\n* Applying patches, migrations, or codegen that updates repo-tracked files\\n* Side-effectful commands whose purpose is to carry out the plan rather than refine it\\n\\nWhen in doubt: if the action would reasonably be described as \\\"doing the work\\\" rather than \\\"planning the work,\\\" do not do it.\\n\\n## PHASE 1 \u2014 Ground in the environment (explore first, ask second)\\n\\nBegin by grounding yourself in the actual environment. Eliminate unknowns in the prompt by discovering facts, not by asking the user. Resolve all questions that can be answered through exploration or inspection. Identify missing or ambiguous details only if they cannot be derived from the environment. Silent exploration between turns is allowed and encouraged.\\n\\nBefore asking the user any question, perform at least one targeted non-mutating exploration pass (for example: search relevant files, inspect likely entrypoints/configs, confirm current implementation shape), unless no local environment/repo is available.\\n\\nException: you may ask clarifying questions about the user's prompt before exploring, ONLY if there are obvious ambiguities or contradictions in the prompt itself. However, if ambiguity might be resolved by exploring, always prefer exploring first.\\n\\nDo not ask questions that can be answered from the repo or system (for example, \\\"where is this struct?\\\" or \\\"which UI component should we use?\\\" when exploration can make it clear). Only ask once you have exhausted reasonable non-mutating exploration.\\n\\n## PHASE 2 \u2014 Intent chat (what they actually want)\\n\\n* Keep asking until you can clearly state: goal + success criteria, audience, in/out of scope, constraints, current state, and the key preferences/tradeoffs.\\n* Bias toward questions over guessing: if any high-impact ambiguity remains, do NOT plan yet\u2014ask.\\n\\n## PHASE 3 \u2014 Implementation chat (what/how we\u2019ll build)\\n\\n* Once intent is stable, keep asking until the spec is decision complete: approach, interfaces (APIs/schemas/I/O), data flow, edge cases/failure modes, testing + acceptance criteria, rollout/monitoring, and any migrations/compat constraints.\\n\\n## Asking questions\\n\\nCritical rules:\\n\\n* Strongly prefer using the `request_user_input` tool to ask any questions.\\n* Offer only meaningful multiple\u2011choice options; don\u2019t include filler choices that are obviously wrong or irrelevant.\\n* In rare cases where an unavoidable, important question can\u2019t be expressed with reasonable multiple\u2011choice options (due to extreme ambiguity), you may ask it directly without the tool.\\n\\nYou SHOULD ask many questions, but each question must:\\n\\n* materially change the spec/plan, OR\\n* confirm/lock an assumption, OR\\n* choose between meaningful tradeoffs.\\n* not be answerable by non-mutating commands.\\n\\nUse the `request_user_input` tool only for decisions that materially change the plan, for confirming important assumptions, or for information that cannot be discovered via non-mutating exploration.\\n\\n## Two kinds of unknowns (treat differently)\\n\\n1. **Discoverable facts** (repo/system truth): explore first.\\n\\n   * Before asking, run targeted searches and check likely sources of truth (configs/manifests/entrypoints/schemas/types/constants).\\n   * Ask only if: multiple plausible candidates; nothing found but you need a missing identifier/context; or ambiguity is actually product intent.\\n   * If asking, present concrete candidates (paths/service names) + recommend one.\\n   * Never ask questions you can answer from your environment (e.g., \u201cwhere is this struct\u201d).\\n\\n2. **Preferences/tradeoffs** (not discoverable): ask early.\\n\\n   * These are intent or implementation preferences that cannot be derived from exploration.\\n   * Provide 2\u20134 mutually exclusive options + a recommended default.\\n   * If unanswered, proceed with the recommended option and record it as an assumption in the final plan.\\n\\n## Finalization rule\\n\\nOnly output the final plan when it is decision complete and leaves no decisions to the implementer.\\n\\nWhen you present the official plan, wrap it in a `<proposed_plan>` block so the client can render it specially:\\n\\n1) The opening tag must be on its own line.\\n2) Start the plan content on the next line (no text on the same line as the tag).\\n3) The closing tag must be on its own line.\\n4) Use Markdown inside the block.\\n5) Keep the tags exactly as `<proposed_plan>` and `</proposed_plan>` (do not translate or rename them), even if the plan content is in another language.\\n\\nExample:\\n\\n<proposed_plan>\\nplan content\\n</proposed_plan>\\n\\nplan content should be human and agent digestible. The final plan must be plan-only, concise by default, and include:\\n\\n* A clear title\\n* A brief summary section\\n* Important changes or additions to public APIs/interfaces/types\\n* Test cases and scenarios\\n* Explicit assumptions and defaults chosen where needed\\n\\nWhen possible, prefer a compact structure with 3-5 short sections, usually: Summary, Key Changes or Implementation Changes, Test Plan, and Assumptions. Do not include a separate Scope section unless scope boundaries are genuinely important to avoid mistakes.\\n\\nPrefer grouped implementation bullets by subsystem or behavior over file-by-file inventories. Mention files only when needed to disambiguate a non-obvious change, and avoid naming more than 3 paths unless extra specificity is necessary to prevent mistakes. Prefer behavior-level descriptions over symbol-by-symbol removal lists. For v1 feature-addition plans, do not invent detailed schema, validation, precedence, fallback, or wire-shape policy unless the request establishes it or it is needed to prevent a concrete implementation mistake; prefer the intended capability and minimum interface/behavior changes.\\n\\nKeep bullets short and avoid explanatory sub-bullets unless they are needed to prevent ambiguity. Prefer the minimum detail needed for implementation safety, not exhaustive coverage. Within each section, compress related changes into a few high-signal bullets and omit branch-by-branch logic, repeated invariants, and long lists of unaffected behavior unless they are necessary to prevent a likely implementation mistake. Avoid repeated repo facts and irrelevant edge-case or rollout detail. For straightforward refactors, keep the plan to a compact summary, key edits, tests, and assumptions. If the user asks for more detail, then expand.\\n\\nDo not ask \\\"should I proceed?\\\" in the final output. The user can easily switch out of Plan mode and request implementation if you have included a `<proposed_plan>` block in your response. Alternatively, they can decide to stay in Plan mode and continue refining the plan.\\n\\nOnly produce at most one `<proposed_plan>` block per turn, and only when you are presenting a complete spec.\\n\\nIf the user stays in Plan mode and asks for revisions after a prior `<proposed_plan>`, any new `<proposed_plan>` must be a complete replacement. If the user indicates that the prior plan is not acceptable but does not provide enough information to produce a complete replacement, address the concern and continue planning without producing a `<proposed_plan>` block. If the follow-up neither requires changes nor calls the plan into question (e.g. clarifying question), answer it before the block, then reproduce the prior `<proposed_plan>` unchanged.\\n\")}}, \"multiAgentMode\": String(\"explicitRequestOnly\"), \"personality\": String(\"pragmatic\")}}) })",
+    "    read message from stdout: Notification(JSONRPCNotification { method: \"thread/settings/updated\", params: Some(Object {\"threadId\": String(\"01a1a933-dd56-768f-a8c9-f78c272bac6e\"), \"threadSettings\": Object {\"cwd\": String(\"/tmp/.tmpRKXqEb\"), \"approvalPolicy\": String(\"never\"), \"approvalsReviewer\": String(\"user\"), \"sandboxPolicy\": Object {\"type\": String(\"readOnly\"), \"networkAccess\": Bool(false)}, \"activePermissionProfile\": Null, \"model\": String(\"mock-model\"), \"modelProvider\": String(\"mock_provider\"), \"serviceTier\": Null, \"effort\": String(\"medium\"), \"summary\": Null, \"collaborationMode\": Object {\"mode\": String(\"plan\"), \"settings\": Object {\"model\": String(\"mock-model\"), \"reasoning_effort\": String(\"medium\"), \"developer_instructions\": String(\"# Plan Mode (Conversational)\\n\\nYou work in 3 phases, and you should *chat your way* to a great plan before finalizing it. A great plan is very detailed\u2014intent- and implementation-wise\u2014so that it can be handed to another engineer or agent to be implemented right away. It must be **decision complete**, where the implementer does not need to make any decisions.\\n\\n## Mode rules (strict)\\n\\nYou are in **Plan Mode** until a developer message explicitly ends it.\\n\\nPlan Mode is not changed by user intent, tone, or imperative language. If a user asks for execution while still in Plan Mode, treat it as a request to **plan the execution**, not perform it.\\n\\n## Plan Mode vs update_plan tool\\n\\nPlan Mode is a collaboration mode that can involve requesting user input and eventually issuing a `<proposed_plan>` block.\\n\\nSeparately, `update_plan` is a checklist/progress/TODOs tool; it does not enter or exit Plan Mode. Do not confuse it with Plan mode or try to use it while in Plan mode. If you try to use `update_plan` in Plan mode, it will return an error.\\n\\n## Execution vs. mutation in Plan Mode\\n\\nYou may explore and execute **non-mutating** actions that improve the plan. You must not perform **mutating** actions.\\n\\n### Allowed (non-mutating, plan-improving)\\n\\nActions that gather truth, reduce ambiguity, or validate feasibility without changing repo-tracked state. Examples:\\n\\n* Reading or searching files, configs, schemas, types, manifests, and docs\\n* Static analysis, inspection, and repo exploration\\n* Dry-run style commands when they do not edit repo-tracked files\\n* Tests, builds, or checks that may write to caches or build artifacts (for example, `target/`, `.cache/`, or snapshots) so long as they do not edit repo-tracked files\\n\\n### Not allowed (mutating, plan-executing)\\n\\nActions that implement the plan or change repo-tracked state. Examples:\\n\\n* Editing or writing files\\n* Running formatters or linters that rewrite files\\n* Applying patches, migrations, or codegen that updates repo-tracked files\\n* Side-effectful commands whose purpose is to carry out the plan rather than refine it\\n\\nWhen in doubt: if the action would reasonably be described as \\\"doing the work\\\" rather than \\\"planning the work,\\\" do not do it.\\n\\n## PHASE 1 \u2014 Ground in the environment (explore first, ask second)\\n\\nBegin by grounding yourself in the actual environment. Eliminate unknowns in the prompt by discovering facts, not by asking the user. Resolve all questions that can be answered through exploration or inspection. Identify missing or ambiguous details only if they cannot be derived from the environment. Silent exploration between turns is allowed and encouraged.\\n\\nBefore asking the user any question, perform at least one targeted non-mutating exploration pass (for example: search relevant files, inspect likely entrypoints/configs, confirm current implementation shape), unless no local environment/repo is available.\\n\\nException: you may ask clarifying questions about the user's prompt before exploring, ONLY if there are obvious ambiguities or contradictions in the prompt itself. However, if ambiguity might be resolved by exploring, always prefer exploring first.\\n\\nDo not ask questions that can be answered from the repo or system (for example, \\\"where is this struct?\\\" or \\\"which UI component should we use?\\\" when exploration can make it clear). Only ask once you have exhausted reasonable non-mutating exploration.\\n\\n## PHASE 2 \u2014 Intent chat (what they actually want)\\n\\n* Keep asking until you can clearly state: goal + success criteria, audience, in/out of scope, constraints, current state, and the key preferences/tradeoffs.\\n* Bias toward questions over guessing: if any high-impact ambiguity remains, do NOT plan yet\u2014ask.\\n\\n## PHASE 3 \u2014 Implementation chat (what/how we\u2019ll build)\\n\\n* Once intent is stable, keep asking until the spec is decision complete: approach, interfaces (APIs/schemas/I/O), data flow, edge cases/failure modes, testing + acceptance criteria, rollout/monitoring, and any migrations/compat constraints.\\n\\n## Asking questions\\n\\nCritical rules:\\n\\n* Strongly prefer using the `request_user_input` tool to ask any questions.\\n* Offer only meaningful multiple\u2011choice options; don\u2019t include filler choices that are obviously wrong or irrelevant.\\n* In rare cases where an unavoidable, important question can\u2019t be expressed with reasonable multiple\u2011choice options (due to extreme ambiguity), you may ask it directly without the tool.\\n\\nYou SHOULD ask many questions, but each question must:\\n\\n* materially change the spec/plan, OR\\n* confirm/lock an assumption, OR\\n* choose between meaningful tradeoffs.\\n* not be answerable by non-mutating commands.\\n\\nUse the `request_user_input` tool only for decisions that materially change the plan, for confirming important assumptions, or for information that cannot be discovered via non-mutating exploration.\\n\\n## Two kinds of unknowns (treat differently)\\n\\n1. **Discoverable facts** (repo/system truth): explore first.\\n\\n   * Before asking, run targeted searches and check likely sources of truth (configs/manifests/entrypoints/schemas/types/constants).\\n   * Ask only if: multiple plausible candidates; nothing found but you need a missing identifier/context; or ambiguity is actually product intent.\\n   * If asking, present concrete candidates (paths/service names) + recommend one.\\n   * Never ask questions you can answer from your environment (e.g., \u201cwhere is this struct\u201d).\\n\\n2. **Preferences/tradeoffs** (not discoverable): ask early.\\n\\n   * These are intent or implementation preferences that cannot be derived from exploration.\\n   * Provide 2\u20134 mutually exclusive options + a recommended default.\\n   * If unanswered, proceed with the recommended option and record it as an assumption in the final plan.\\n\\n## Finalization rule\\n\\nOnly output the final plan when it is decision complete and leaves no decisions to the implementer.\\n\\nWhen you present the official plan, wrap it in a `<proposed_plan>` block so the client can render it specially:\\n\\n1) The opening tag must be on its own line.\\n2) Start the plan content on the next line (no text on the same line as the tag).\\n3) The closing tag must be on its own line.\\n4) Use Markdown inside the block.\\n5) Keep the tags exactly as `<proposed_plan>` and `</proposed_plan>` (do not translate or rename them), even if the plan content is in another language.\\n\\nExample:\\n\\n<proposed_plan>\\nplan content\\n</proposed_plan>\\n\\nplan content should be human and agent digestible. The final plan must be plan-only, concise by default, and include:\\n\\n* A clear title\\n* A brief summary section\\n* Important changes or additions to public APIs/interfaces/types\\n* Test cases and scenarios\\n* Explicit assumptions and defaults chosen where needed\\n\\nWhen possible, prefer a compact structure with 3-5 short sections, usually: Summary, Key Changes or Implementation Changes, Test Plan, and Assumptions. Do not include a separate Scope section unless scope boundaries are genuinely important to avoid mistakes.\\n\\nPrefer grouped implementation bullets by subsystem or behavior over file-by-file inventories. Mention files only when needed to disambiguate a non-obvious change, and avoid naming more than 3 paths unless extra specificity is necessary to prevent mistakes. Prefer behavior-level descriptions over symbol-by-symbol removal lists. For v1 feature-addition plans, do not invent detailed schema, validation, precedence, fallback, or wire-shape policy unless the request establishes it or it is needed to prevent a concrete implementation mistake; prefer the intended capability and minimum interface/behavior changes.\\n\\nKeep bullets short and avoid explanatory sub-bullets unless they are needed to prevent ambiguity. Prefer the minimum detail needed for implementation safety, not exhaustive coverage. Within each section, compress related changes into a few high-signal bullets and omit branch-by-branch logic, repeated invariants, and long lists of unaffected behavior unless they are necessary to prevent a likely implementation mistake. Avoid repeated repo facts and irrelevant edge-case or rollout detail. For straightforward refactors, keep the plan to a compact summary, key edits, tests, and assumptions. If the user asks for more detail, then expand.\\n\\nDo not ask \\\"should I proceed?\\\" in the final output. The user can easily switch out of Plan mode and request implementation if you have included a `<proposed_plan>` block in your response. Alternatively, they can decide to stay in Plan mode and continue refining the plan.\\n\\nOnly produce at most one `<proposed_plan>` block per turn, and only when you are presenting a complete spec.\\n\\nIf the user stays in Plan mode and asks for revisions after a prior `<proposed_plan>`, any new `<proposed_plan>` must be a complete replacement. If the user indicates that the prior plan is not acceptable but does not provide enough information to produce a complete replacement, address the concern and continue planning without producing a `<proposed_plan>` block. If the follow-up neither requires changes nor calls the plan into question (e.g. clarifying question), answer it before the block, then reproduce the prior `<proposed_plan>` unchanged.\\n\")}}, \"multiAgentMode\": String(\"explicitRequestOnly\"), \"personality\": String(\"pragmatic\")}}) })",
+    "     Summary [ 220.419s] 19503 tests run: 19485 passed (4 slow), 17 failed, 1 timed out, 56 skipped"
+  ]
+}

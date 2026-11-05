@@ -27,11 +27,20 @@ jobs:
       derived: ${{ steps.scope.outputs.derived }}
       full_repo: ${{ steps.scope.outputs.full_repo }}
     steps:
+      # Scope compares these two trees directly; it does not need repository history.
+      - name: Checkout exact diff base
+        if: github.event_name == 'pull_request'
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          ref: ${{ github.event.pull_request.base.sha }}
+          fetch-depth: 1
+          persist-credentials: false
+
       - name: Checkout exact candidate
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
         with:
           ref: ${{ github.event.pull_request.head.sha || github.sha }}
-          fetch-depth: 0
+          fetch-depth: 1
           persist-credentials: false
 
       - name: Select dependency impact
@@ -43,6 +52,10 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$HEAD_SHA"
+          if [ "$EVENT_NAME" = "pull_request" ]; then
+            git cat-file -e "$BASE_SHA^{commit}"
+          fi
           python3 -m unittest -v scripts.tests.test_hepta_ci_scope scripts.tests.test_hepta_ci_dependencies
           python3 -m unittest -v scripts.test_hepta_readiness_semantics
           args=(--head "$HEAD_SHA" --github-output "$GITHUB_OUTPUT")

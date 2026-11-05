@@ -6,10 +6,9 @@ use crate::chat_timeline::MessagePhase;
 use crate::chat_timeline::Role;
 use crate::chat_timeline::ViewFence;
 pub fn owner_conversation_fixture() -> ChatWorkspace {
-    let mut workspace = ChatWorkspace {
-        presentation_note: Some("DETERMINISTIC OWNER FIXTURE · no live chat connection".into()),
-        ..Default::default()
-    };
+    let mut workspace = ChatWorkspace::default();
+    workspace.presentation_note =
+        Some("DETERMINISTIC OWNER FIXTURE · no live chat connection".into());
     let fence = ViewFence {
         owner_session: "fixture-owner-session".into(),
         generation: 4,

@@ -1,0 +1,20 @@
+{
+  "schema": "hepta.supervisord-diagnostic-bounded-output-review.v1",
+  "before_blob": "986251837a2942433b1bf22b6e26d88597667376",
+  "after_blob": "3f7a0d264ad081977705dcaa348aa9cc44ea1234",
+  "after_sha256": "65ec39db031f4b9c0d001410440c785f50f78b7f58e5e02d00dc6d5cc026b5ae",
+  "after_bytes": 31355,
+  "verdict": "STATIC_PASS",
+  "unchanged_prefix_and_err_tail": true,
+  "scope": "Only comment and Ok diagnostic formatting arm after unchanged owned-child kill/wait",
+  "findings": [
+    "Raw read still seek+take <= 65536 bytes",
+    "Lossy UTF-8 and Debug escape happen once before an independent 65536-byte UTF-8-safe body cap",
+    "Final eprintln uses Display contents={body}; no second debug escape expansion",
+    "raw_tail_bytes and body_truncated retain output-loss evidence",
+    "Two daemon generations share this test-owned append stream; neither diagnostic is attributed solely to one PID",
+    "All RPC contexts, expected rejection paths, original deadlines, and assertions byte-identical to previous reviewed diagnostic candidate"
+  ],
+  "runtime_qualification": "PENDING original native exact case; Intel root cause remains OPEN",
+  "superseded_executed": false
+}

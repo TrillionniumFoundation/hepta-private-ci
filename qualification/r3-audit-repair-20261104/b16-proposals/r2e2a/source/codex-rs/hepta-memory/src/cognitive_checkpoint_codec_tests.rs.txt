@@ -1,0 +1,155 @@
+//! Synthetic wire bytes exercise the codec, not a Root peer or Current authority.
+
+use super::*;
+use pretty_assertions::assert_eq;
+use serde_json::Value;
+use serde_json::json;
+
+const REQUEST: &str = r#"{"schema_version":1,"operation":"runtime.cognitive.checkpoint.v1","request_id":"00000000000000070000000000000003","command":"read_head","expected":null,"proposal":null}"#;
+const ACK: &str = r#"{
+  "schema_version": 1, "request_id": "00000000000000070000000000000003", "status": "ack", "reason": null,
+  "token": {"publisher_epoch":7,"counter":1,"head_sha256":"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"},
+  "head": {
+    "schema_version": 1, "owner_agent_id": "56d6489e-c050-4de0-ab29-61c2ea00d860",
+    "publisher_epoch": 7, "counter": 1, "last_mutation_sequence": 2,
+    "writer_binding": {"lease_id":"checkpoint-wire-fixture","generation":1,"authority_epoch":2,"owner_epoch":3,"authority_grant_digest":"bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb","fencing_token_digest":"cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc","expires_at_unix_seconds":1000},
+    "peer_lifetime": {"uid":0,"pid":17,"boot_id":"fixture-boot","process_start_ticks":4},
+    "phase": "current",
+    "last_current": {"profile":"hepta:cognitive:exact-current-cut:v1","owner_agent_id":"56d6489e-c050-4de0-ab29-61c2ea00d860","schema_digest":"dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd","state_digest":"eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee"},
+    "proposal": null, "last_request": null
+  }
+}"#;
+
+fn request() -> CognitiveCheckpointRequest {
+    serde_json::from_str(REQUEST).unwrap()
+}
+
+#[test]
+fn bounded_ack_preserves_the_opaque_token_and_complete_head() {
+    let request = request();
+    assert_eq!(request.encode().unwrap().as_slice(), REQUEST.as_bytes());
+    let wire: CognitiveCheckpointResponse = serde_json::from_str(ACK).unwrap();
+    let expected = CognitiveCheckpointReceipt {
+        token: wire.token.unwrap(),
+        head: wire.head.unwrap(),
+    };
+    let mut padded = ACK.as_bytes().to_vec();
+    padded.resize(COGNITIVE_CHECKPOINT_FRAME_LIMIT, b' ');
+    assert_eq!(request.decode_ack(&padded), Ok(expected));
+    padded.push(b' ');
+    assert_eq!(request.decode_ack(&padded), Err(Error::Unavailable));
+    for invalid in [
+        Vec::new(),
+        vec![0xff],
+        format!("{ACK} trailing").into_bytes(),
+    ] {
+        assert_eq!(request.decode_ack(&invalid), Err(Error::Unavailable));
+    }
+}
+
+#[test]
+fn malformed_or_misbound_ack_is_refused() {
+    let request = request();
+    let source: Value = serde_json::from_str(ACK).unwrap();
+    for (path, replacement) in [
+        ("/schema_version", json!(2)),
+        ("/request_id", json!("00000000000000070000000000000004")),
+        ("/reason", json!("conflict")),
+        ("/token", Value::Null),
+        ("/head", Value::Null),
+        ("/head/schema_version", json!(2)),
+        ("/token/head_sha256", json!("not-a-digest")),
+        ("/head/writer_binding/authority_grant_digest", json!("")),
+        ("/head/last_current/schema_digest", json!("UPPERCASE")),
+        ("/head/last_current/state_digest", json!("short")),
+        ("/head/counter", json!(2)),
+        ("/head/publisher_epoch", json!(8)),
+        ("/head/last_current/profile", json!("not-exact-current")),
+        (
+            "/head/last_current/owner_agent_id",
+            json!("fe4d9e62-67be-4ca8-bfed-8080d473e6a9"),
+        ),
+    ] {
+        let mut frame = source.clone();
+        *frame.pointer_mut(path).unwrap() = replacement;
+        assert_eq!(
+            request.decode_ack(&serde_json::to_vec(&frame).unwrap()),
+            Err(Error::Unavailable),
+            "{path}"
+        );
+    }
+    for path in ["", "/head", "/head/writer_binding", "/head/last_current"] {
+        let mut frame = source.clone();
+        frame
+            .pointer_mut(path)
+            .unwrap()
+            .as_object_mut()
+            .unwrap()
+            .insert("unexpected".to_string(), json!(true));
+        assert_eq!(
+            request.decode_ack(&serde_json::to_vec(&frame).unwrap()),
+            Err(Error::Unavailable),
+            "{path}"
+        );
+    }
+    let duplicate = ACK.replacen('"', "\"schema_version\":1,\"", /*count*/ 1);
+    assert_eq!(
+        request.decode_ack(duplicate.as_bytes()),
+        Err(Error::Unavailable)
+    );
+    for (status, expected) in [
+        ("refused", Error::Refused),
+        ("unknown", Error::Unavailable),
+    ] {
+        let mut frame = source.clone();
+        frame["status"] = json!(status);
+        frame["reason"] = json!("unavailable");
+        assert_eq!(
+            request.decode_ack(&serde_json::to_vec(&frame).unwrap()),
+            Err(expected)
+        );
+    }
+}
+
+#[test]
+fn request_validation_rejects_bad_ids_shapes_and_oversized_frames() {
+    for id in [
+        "",
+        "short",
+        "000000000000000é000000000000000",
+        "000000000000000g0000000000000003",
+        "00000000000000000000000000000003",
+        "00000000000000070000000000000000",
+    ] {
+        let mut request = request();
+        request.request_id = id.to_string();
+        assert_eq!(request.encode(), Err(Error::Refused), "{id}");
+    }
+    let source: Value = serde_json::from_str(REQUEST).unwrap();
+    for (path, replacement) in [
+        ("/schema_version", json!(2)),
+        ("/operation", json!("wrong-operation")),
+        ("/command", json!("begin_writes")),
+        ("/command", json!("prepare_publication")),
+        ("/command", json!("commit_publication")),
+        ("/command", json!("fence_publisher")),
+    ] {
+        let mut value = source.clone();
+        *value.pointer_mut(path).unwrap() = replacement;
+        let request: CognitiveCheckpointRequest = serde_json::from_value(value).unwrap();
+        assert_eq!(request.encode(), Err(Error::Refused), "{path}");
+    }
+    let receipt: Value = serde_json::from_str(ACK).unwrap();
+    let mut fence = receipt["head"]["writer_binding"].clone();
+    fence["owner_agent_id"] = receipt["head"]["owner_agent_id"].clone();
+    fence["lease_sha256"] = receipt["token"]["head_sha256"].clone();
+    let mut value = source;
+    value["command"] = json!("prepare_publication");
+    value["expected"] = receipt["token"].clone();
+    value["proposal"] = json!({"cut": receipt["head"]["last_current"], "writer_fence": fence});
+    let valid: CognitiveCheckpointRequest = serde_json::from_value(value.clone()).unwrap();
+    assert!(valid.encode().is_ok());
+    value["proposal"]["writer_fence"]["lease_id"] = json!("x".repeat(COGNITIVE_CHECKPOINT_FRAME_LIMIT));
+    let oversized: CognitiveCheckpointRequest = serde_json::from_value(value).unwrap();
+    assert_eq!(oversized.encode(), Err(Error::Refused));
+}

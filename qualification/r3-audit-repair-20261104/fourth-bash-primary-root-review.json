@@ -1,0 +1,32 @@
+{
+  "schema": "hepta.fourth.bash-primary-provenance-root-review.v1",
+  "observed_at_utc": "2026-11-04 23:51:35 UTC",
+  "status": "SOURCE_SUPPORT_ONLY_CONDITIONAL_RUNTIME_CAUSE",
+  "inputs": [
+    {
+      "blob": "a9a61bb9fd038e782254f68abd3f30d8db358c10",
+      "bytes": 8177,
+      "sha256": "a537a09b1213a5a10f66b50ae6498dab4c54ca813fc8cbfb862a529382cf0753"
+    },
+    {
+      "blob": "74f8f44bd4ab90b9f1045c7b3528d6da80f56c4a",
+      "bytes": 2776,
+      "sha256": "046cfaed5243c8e06b9f0a93e811876467ed151eb61d998f8e72a9da6be6d50f"
+    }
+  ],
+  "root_scope": "Read complete research JSON/MD and independently previously inspected actual ROG binary identity, diagnostic XML and repository seccomp source. Official GNU startup and set builtin manuals were independently retrieved. The fixed mirror implementation was reviewed by research; no raw-byte equivalence to installed Bash is claimed.",
+  "observed_runtime": [
+    "Actual .bashrc unset function ran before the original snapshot restore command.",
+    "BASH_ENV was absent in actual diagnostic.",
+    "--norc candidate valid negative and original8 Linux matrix evidence is recorded separately."
+  ],
+  "inference": "If the installed binary uses the inspected getpeername branch and this invocation receives seccomp EPERM, its remote-shell detection may treat stdin as network-connected and source .bashrc despite -p. No syscall trace establishes that precise runtime path.",
+  "actual_bash_identity": "cf6d9577b7a986952b635e9f7aa55173e5a61a71",
+  "test_evidence": "f488fe2819ce0e63fad7dbae5f8386b9e4aac99f",
+  "limits": [
+    "No syscall trace of the actual failing invocation",
+    "No actual compiler/config.h provenance for ROG /bin/bash",
+    "No raw source/binary correspondence or completepatch1–9 verification",
+    "No original native result for the seven-line candidate in this subtask"
+  ]
+}

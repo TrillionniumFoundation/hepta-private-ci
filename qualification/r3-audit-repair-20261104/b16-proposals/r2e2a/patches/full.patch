@@ -1,0 +1,500 @@
+diff --git a/codex-rs/hepta-memory/src/lib.rs b/codex-rs/hepta-memory/src/lib.rs
+--- a/codex-rs/hepta-memory/src/lib.rs
++++ b/codex-rs/hepta-memory/src/lib.rs
+@@ -3,6 +3,8 @@
+ pub use codex_hepta_memory_federation::FederatedCoverageV2;
+ pub use codex_hepta_memory_federation::FederatedFailureCoverageV2;
+ 
++mod cognitive_checkpoint_codec;
++mod cognitive_checkpoint_wire;
+ mod cognitive_compact;
+ mod cognitive_federation;
+ mod cognitive_intelligence_writer;
+@@ -43,6 +45,22 @@
+ mod shadow_model_runtime;
+ mod shared_experience;
+ 
++pub use cognitive_checkpoint_wire::COGNITIVE_CHECKPOINT_FRAME_LIMIT;
++pub use cognitive_checkpoint_wire::CognitiveCheckpointCommand;
++pub use cognitive_checkpoint_wire::CognitiveCheckpointHead;
++pub use cognitive_checkpoint_wire::CognitiveCheckpointPeerLifetime;
++pub use cognitive_checkpoint_wire::CognitiveCheckpointPhase;
++pub use cognitive_checkpoint_wire::CognitiveCheckpointProposal;
++pub use cognitive_checkpoint_wire::CognitiveCheckpointReason;
++pub use cognitive_checkpoint_wire::CognitiveCheckpointReceipt;
++pub use cognitive_checkpoint_wire::CognitiveCheckpointRequest;
++pub use cognitive_checkpoint_wire::CognitiveCheckpointResponse;
++pub use cognitive_checkpoint_wire::CognitiveCheckpointRetainedProposal;
++pub use cognitive_checkpoint_wire::CognitiveCheckpointRetainedRequest;
++pub use cognitive_checkpoint_wire::CognitiveCheckpointStatus;
++pub use cognitive_checkpoint_wire::CognitiveCheckpointToken;
++pub use cognitive_checkpoint_wire::CognitiveCheckpointWriterBinding;
++
+ pub use production_hos2::HOS2_CPU_PERIOD_NS;
+ pub use production_hos2::HOS2_DESTINATION_V1;
+ pub use production_hos2::HOS2_INSTALL_TOPIC_V1;
+diff --git a/codex-rs/hepta-memory/src/cognitive_checkpoint_wire.rs b/codex-rs/hepta-memory/src/cognitive_checkpoint_wire.rs
+new file mode 100644
+--- /dev/null
++++ b/codex-rs/hepta-memory/src/cognitive_checkpoint_wire.rs
+@@ -0,0 +1,154 @@
++//! Protected-host protocol records. These describe recovery frontiers, not
++//! authority grants or a second Objective/effect ledger. Decoding a record does
++//! not authenticate its sender or establish that its cut is independently Current.
++
++use codex_hepta_contracts::AgentId;
++use codex_hepta_contracts::Sha256Digest;
++use serde::Deserialize;
++use serde::Serialize;
++
++use crate::CognitiveRecoveryAnchor;
++use crate::ObjectiveSenderWriterFence;
++
++pub const COGNITIVE_CHECKPOINT_FRAME_LIMIT: usize = 32_768;
++
++#[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
++#[serde(deny_unknown_fields)]
++pub struct CognitiveCheckpointToken {
++    pub publisher_epoch: u64,
++    pub counter: u64,
++    /// Opaque protected-server token; clients must not recompute it from JSON.
++    pub head_sha256: Sha256Digest,
++}
++
++#[derive(Clone, Copy, Debug, Deserialize, Eq, PartialEq, Serialize)]
++#[serde(rename_all = "snake_case")]
++pub enum CognitiveCheckpointCommand {
++    ReadHead,
++    BeginWrites,
++    PreparePublication,
++    CommitPublication,
++    FencePublisher,
++}
++
++#[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
++#[serde(deny_unknown_fields)]
++pub struct CognitiveCheckpointProposal {
++    pub cut: CognitiveRecoveryAnchor,
++    pub writer_fence: ObjectiveSenderWriterFence,
++}
++
++#[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
++#[serde(deny_unknown_fields)]
++pub struct CognitiveCheckpointRequest {
++    pub schema_version: u32,
++    pub operation: String,
++    pub request_id: String,
++    pub command: CognitiveCheckpointCommand,
++    pub expected: Option<CognitiveCheckpointToken>,
++    pub proposal: Option<CognitiveCheckpointProposal>,
++}
++
++#[derive(Clone, Copy, Debug, Deserialize, Eq, PartialEq, Serialize)]
++#[serde(rename_all = "snake_case")]
++pub enum CognitiveCheckpointPhase {
++    Current,
++    Dirty,
++    Publishing,
++    Fenced,
++}
++
++#[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
++#[serde(deny_unknown_fields)]
++pub struct CognitiveCheckpointWriterBinding {
++    pub lease_id: String,
++    pub generation: u64,
++    pub authority_epoch: u64,
++    pub owner_epoch: u64,
++    pub authority_grant_digest: Sha256Digest,
++    pub fencing_token_digest: Sha256Digest,
++    pub expires_at_unix_seconds: u64,
++}
++
++#[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
++#[serde(deny_unknown_fields)]
++pub struct CognitiveCheckpointPeerLifetime {
++    pub uid: u32,
++    pub pid: u32,
++    pub boot_id: String,
++    pub process_start_ticks: u64,
++}
++
++#[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
++#[serde(deny_unknown_fields)]
++pub struct CognitiveCheckpointRetainedProposal {
++    pub request_id: String,
++    pub cut: CognitiveRecoveryAnchor,
++    pub writer_fence: ObjectiveSenderWriterFence,
++}
++
++#[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
++#[serde(deny_unknown_fields)]
++pub struct CognitiveCheckpointRetainedRequest {
++    pub request_id: String,
++    pub request_sha256: Sha256Digest,
++    pub command: CognitiveCheckpointCommand,
++    pub predecessor_token: CognitiveCheckpointToken,
++}
++
++#[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
++#[serde(deny_unknown_fields)]
++pub struct CognitiveCheckpointHead {
++    pub schema_version: u32,
++    pub owner_agent_id: AgentId,
++    pub publisher_epoch: u64,
++    pub counter: u64,
++    /// Durable request-ID high-water mark within this publisher epoch. Read
++    /// requests consume local IDs without incrementing the mutation counter.
++    pub last_mutation_sequence: u64,
++    pub writer_binding: CognitiveCheckpointWriterBinding,
++    pub peer_lifetime: CognitiveCheckpointPeerLifetime,
++    pub phase: CognitiveCheckpointPhase,
++    pub last_current: CognitiveRecoveryAnchor,
++    pub proposal: Option<CognitiveCheckpointRetainedProposal>,
++    pub last_request: Option<CognitiveCheckpointRetainedRequest>,
++}
++
++/// Wire representation of a protected head, not proof obtained from a local
++/// database hash. Authentication and an independent Current observation are
++/// prerequisites of original exact-cut recovery; deserialization supplies neither.
++#[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
++#[serde(deny_unknown_fields)]
++pub struct CognitiveCheckpointReceipt {
++    pub token: CognitiveCheckpointToken,
++    pub head: CognitiveCheckpointHead,
++}
++
++#[derive(Clone, Copy, Debug, Deserialize, Eq, PartialEq, Serialize)]
++#[serde(rename_all = "snake_case")]
++pub enum CognitiveCheckpointStatus {
++    Ack,
++    Refused,
++    Unknown,
++}
++
++#[derive(Clone, Copy, Debug, Deserialize, Eq, PartialEq, Serialize)]
++#[serde(rename_all = "snake_case")]
++pub enum CognitiveCheckpointReason {
++    Invalid,
++    Conflict,
++    StalePublisher,
++    AuthorityDenied,
++    Unavailable,
++}
++
++#[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
++#[serde(deny_unknown_fields)]
++pub struct CognitiveCheckpointResponse {
++    pub schema_version: u32,
++    pub request_id: String,
++    pub status: CognitiveCheckpointStatus,
++    pub reason: Option<CognitiveCheckpointReason>,
++    pub token: Option<CognitiveCheckpointToken>,
++    pub head: Option<CognitiveCheckpointHead>,
++}
+diff --git a/codex-rs/hepta-memory/src/cognitive_checkpoint_codec.rs b/codex-rs/hepta-memory/src/cognitive_checkpoint_codec.rs
+new file mode 100644
+--- /dev/null
++++ b/codex-rs/hepta-memory/src/cognitive_checkpoint_codec.rs
+@@ -0,0 +1,141 @@
++//! Bounded checkpoint wire validation. This module performs no I/O or admission.
++
++use codex_hepta_contracts::Sha256Digest;
++
++use crate::ObjectiveSenderCheckpointError as Error;
++use crate::cognitive_checkpoint_wire::COGNITIVE_CHECKPOINT_FRAME_LIMIT;
++use crate::cognitive_checkpoint_wire::CognitiveCheckpointCommand;
++use crate::cognitive_checkpoint_wire::CognitiveCheckpointReceipt;
++use crate::cognitive_checkpoint_wire::CognitiveCheckpointRequest;
++use crate::cognitive_checkpoint_wire::CognitiveCheckpointResponse;
++use crate::cognitive_checkpoint_wire::CognitiveCheckpointStatus;
++
++impl CognitiveCheckpointRequest {
++    /// Encode the exact bytes whose digest the protected peer must retain.
++    /// The caller must send these bytes unchanged over its authenticated channel.
++    /// This owner codec handles reads and publication transitions; it does not
++    /// encode the protected service's FencePublisher lifecycle operation.
++    pub fn encode(&self) -> Result<Vec<u8>, Error> {
++        if self.request_id.len() != 32
++            || !self.request_id.bytes().all(|byte| byte.is_ascii_hexdigit())
++        {
++            return Err(Error::Refused);
++        }
++        let epoch = u64::from_str_radix(&self.request_id[..16], 16).map_err(|_| Error::Refused)?;
++        let sequence = u64::from_str_radix(&self.request_id[16..], 16).map_err(|_| Error::Refused)?;
++        if epoch == 0 || sequence == 0 {
++            return Err(Error::Refused);
++        }
++        let valid_shape = match self.command {
++            CognitiveCheckpointCommand::ReadHead => {
++                self.expected.is_none() && self.proposal.is_none()
++            }
++            CognitiveCheckpointCommand::PreparePublication => {
++                self.expected.is_some() && self.proposal.is_some()
++            }
++            CognitiveCheckpointCommand::BeginWrites
++            | CognitiveCheckpointCommand::CommitPublication => {
++                self.expected.is_some() && self.proposal.is_none()
++            }
++            CognitiveCheckpointCommand::FencePublisher => false,
++        };
++        if self.schema_version != 1
++            || self.operation != "runtime.cognitive.checkpoint.v1"
++            || !valid_shape
++        {
++            return Err(Error::Refused);
++        }
++        let mut digests = Vec::new();
++        if let Some(expected) = &self.expected {
++            digests.push(&expected.head_sha256);
++        }
++        if let Some(proposal) = &self.proposal {
++            digests.extend([
++                &proposal.cut.schema_digest,
++                &proposal.cut.state_digest,
++                &proposal.writer_fence.lease_sha256,
++                &proposal.writer_fence.authority_grant_digest,
++                &proposal.writer_fence.fencing_token_digest,
++            ]);
++        }
++        if !valid_digests(digests) {
++            return Err(Error::Refused);
++        }
++        let bytes = serde_json::to_vec(self).map_err(|_| Error::Unavailable)?;
++        if bytes.len() > COGNITIVE_CHECKPOINT_FRAME_LIMIT {
++            return Err(Error::Refused);
++        }
++        Ok(bytes)
++    }
++
++    /// Decode an ACK bound to this request without authenticating its sender.
++    /// This checks framing and wire consistency only. The owner must additionally
++    /// validate the full predecessor/successor, live authority and fresh Current
++    /// before recovery or binding. This method performs no I/O or admission.
++    pub fn decode_ack(&self, response: &[u8]) -> Result<CognitiveCheckpointReceipt, Error> {
++        self.encode()?;
++        if response.is_empty() || response.len() > COGNITIVE_CHECKPOINT_FRAME_LIMIT {
++            return Err(Error::Unavailable);
++        }
++        let response: CognitiveCheckpointResponse =
++            serde_json::from_slice(response).map_err(|_| Error::Unavailable)?;
++        if response.schema_version != 1 || response.request_id != self.request_id {
++            return Err(Error::Unavailable);
++        }
++        match response.status {
++            CognitiveCheckpointStatus::Refused => return Err(Error::Refused),
++            CognitiveCheckpointStatus::Unknown => return Err(Error::Unavailable),
++            CognitiveCheckpointStatus::Ack => {}
++        }
++        if response.reason.is_some() {
++            return Err(Error::Unavailable);
++        }
++        let receipt = CognitiveCheckpointReceipt {
++            token: response.token.ok_or(Error::Unavailable)?,
++            head: response.head.ok_or(Error::Unavailable)?,
++        };
++        if receipt.head.schema_version != 1
++            || receipt.head.publisher_epoch == 0
++            || receipt.head.counter == 0
++            || receipt.token.publisher_epoch != receipt.head.publisher_epoch
++            || receipt.token.counter != receipt.head.counter
++            || receipt.head.last_current.owner_agent_id != receipt.head.owner_agent_id
++            || receipt.head.last_current.profile != "hepta:cognitive:exact-current-cut:v1"
++        {
++            return Err(Error::Unavailable);
++        }
++        let mut digests = vec![
++            &receipt.token.head_sha256,
++            &receipt.head.writer_binding.authority_grant_digest,
++            &receipt.head.writer_binding.fencing_token_digest,
++            &receipt.head.last_current.schema_digest,
++            &receipt.head.last_current.state_digest,
++        ];
++        if let Some(proposal) = &receipt.head.proposal {
++            digests.extend([
++                &proposal.cut.schema_digest,
++                &proposal.cut.state_digest,
++                &proposal.writer_fence.lease_sha256,
++                &proposal.writer_fence.authority_grant_digest,
++                &proposal.writer_fence.fencing_token_digest,
++            ]);
++        }
++        if let Some(request) = &receipt.head.last_request {
++            digests.extend([&request.request_sha256, &request.predecessor_token.head_sha256]);
++        }
++        if !valid_digests(digests) {
++            return Err(Error::Unavailable);
++        }
++        Ok(receipt)
++    }
++}
++
++fn valid_digests<'a>(digests: impl IntoIterator<Item = &'a Sha256Digest>) -> bool {
++    digests
++        .into_iter()
++        .all(|digest| Sha256Digest::parse(digest.as_str()).is_ok())
++}
++
++#[cfg(test)]
++#[path = "cognitive_checkpoint_codec_tests.rs"]
++mod tests;
+diff --git a/codex-rs/hepta-memory/src/cognitive_checkpoint_codec_tests.rs b/codex-rs/hepta-memory/src/cognitive_checkpoint_codec_tests.rs
+new file mode 100644
+--- /dev/null
++++ b/codex-rs/hepta-memory/src/cognitive_checkpoint_codec_tests.rs
+@@ -0,0 +1,155 @@
++//! Synthetic wire bytes exercise the codec, not a Root peer or Current authority.
++
++use super::*;
++use pretty_assertions::assert_eq;
++use serde_json::Value;
++use serde_json::json;
++
++const REQUEST: &str = r#"{"schema_version":1,"operation":"runtime.cognitive.checkpoint.v1","request_id":"00000000000000070000000000000003","command":"read_head","expected":null,"proposal":null}"#;
++const ACK: &str = r#"{
++  "schema_version": 1, "request_id": "00000000000000070000000000000003", "status": "ack", "reason": null,
++  "token": {"publisher_epoch":7,"counter":1,"head_sha256":"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"},
++  "head": {
++    "schema_version": 1, "owner_agent_id": "56d6489e-c050-4de0-ab29-61c2ea00d860",
++    "publisher_epoch": 7, "counter": 1, "last_mutation_sequence": 2,
++    "writer_binding": {"lease_id":"checkpoint-wire-fixture","generation":1,"authority_epoch":2,"owner_epoch":3,"authority_grant_digest":"bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb","fencing_token_digest":"cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc","expires_at_unix_seconds":1000},
++    "peer_lifetime": {"uid":0,"pid":17,"boot_id":"fixture-boot","process_start_ticks":4},
++    "phase": "current",
++    "last_current": {"profile":"hepta:cognitive:exact-current-cut:v1","owner_agent_id":"56d6489e-c050-4de0-ab29-61c2ea00d860","schema_digest":"dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd","state_digest":"eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee"},
++    "proposal": null, "last_request": null
++  }
++}"#;
++
++fn request() -> CognitiveCheckpointRequest {
++    serde_json::from_str(REQUEST).unwrap()
++}
++
++#[test]
++fn bounded_ack_preserves_the_opaque_token_and_complete_head() {
++    let request = request();
++    assert_eq!(request.encode().unwrap().as_slice(), REQUEST.as_bytes());
++    let wire: CognitiveCheckpointResponse = serde_json::from_str(ACK).unwrap();
++    let expected = CognitiveCheckpointReceipt {
++        token: wire.token.unwrap(),
++        head: wire.head.unwrap(),
++    };
++    let mut padded = ACK.as_bytes().to_vec();
++    padded.resize(COGNITIVE_CHECKPOINT_FRAME_LIMIT, b' ');
++    assert_eq!(request.decode_ack(&padded), Ok(expected));
++    padded.push(b' ');
++    assert_eq!(request.decode_ack(&padded), Err(Error::Unavailable));
++    for invalid in [
++        Vec::new(),
++        vec![0xff],
++        format!("{ACK} trailing").into_bytes(),
++    ] {
++        assert_eq!(request.decode_ack(&invalid), Err(Error::Unavailable));
++    }
++}
++
++#[test]
++fn malformed_or_misbound_ack_is_refused() {
++    let request = request();
++    let source: Value = serde_json::from_str(ACK).unwrap();
++    for (path, replacement) in [
++        ("/schema_version", json!(2)),
++        ("/request_id", json!("00000000000000070000000000000004")),
++        ("/reason", json!("conflict")),
++        ("/token", Value::Null),
++        ("/head", Value::Null),
++        ("/head/schema_version", json!(2)),
++        ("/token/head_sha256", json!("not-a-digest")),
++        ("/head/writer_binding/authority_grant_digest", json!("")),
++        ("/head/last_current/schema_digest", json!("UPPERCASE")),
++        ("/head/last_current/state_digest", json!("short")),
++        ("/head/counter", json!(2)),
++        ("/head/publisher_epoch", json!(8)),
++        ("/head/last_current/profile", json!("not-exact-current")),
++        (
++            "/head/last_current/owner_agent_id",
++            json!("fe4d9e62-67be-4ca8-bfed-8080d473e6a9"),
++        ),
++    ] {
++        let mut frame = source.clone();
++        *frame.pointer_mut(path).unwrap() = replacement;
++        assert_eq!(
++            request.decode_ack(&serde_json::to_vec(&frame).unwrap()),
++            Err(Error::Unavailable),
++            "{path}"
++        );
++    }
++    for path in ["", "/head", "/head/writer_binding", "/head/last_current"] {
++        let mut frame = source.clone();
++        frame
++            .pointer_mut(path)
++            .unwrap()
++            .as_object_mut()
++            .unwrap()
++            .insert("unexpected".to_string(), json!(true));
++        assert_eq!(
++            request.decode_ack(&serde_json::to_vec(&frame).unwrap()),
++            Err(Error::Unavailable),
++            "{path}"
++        );
++    }
++    let duplicate = ACK.replacen('"', "\"schema_version\":1,\"", /*count*/ 1);
++    assert_eq!(
++        request.decode_ack(duplicate.as_bytes()),
++        Err(Error::Unavailable)
++    );
++    for (status, expected) in [
++        ("refused", Error::Refused),
++        ("unknown", Error::Unavailable),
++    ] {
++        let mut frame = source.clone();
++        frame["status"] = json!(status);
++        frame["reason"] = json!("unavailable");
++        assert_eq!(
++            request.decode_ack(&serde_json::to_vec(&frame).unwrap()),
++            Err(expected)
++        );
++    }
++}
++
++#[test]
++fn request_validation_rejects_bad_ids_shapes_and_oversized_frames() {
++    for id in [
++        "",
++        "short",
++        "000000000000000é000000000000000",
++        "000000000000000g0000000000000003",
++        "00000000000000000000000000000003",
++        "00000000000000070000000000000000",
++    ] {
++        let mut request = request();
++        request.request_id = id.to_string();
++        assert_eq!(request.encode(), Err(Error::Refused), "{id}");
++    }
++    let source: Value = serde_json::from_str(REQUEST).unwrap();
++    for (path, replacement) in [
++        ("/schema_version", json!(2)),
++        ("/operation", json!("wrong-operation")),
++        ("/command", json!("begin_writes")),
++        ("/command", json!("prepare_publication")),
++        ("/command", json!("commit_publication")),
++        ("/command", json!("fence_publisher")),
++    ] {
++        let mut value = source.clone();
++        *value.pointer_mut(path).unwrap() = replacement;
++        let request: CognitiveCheckpointRequest = serde_json::from_value(value).unwrap();
++        assert_eq!(request.encode(), Err(Error::Refused), "{path}");
++    }
++    let receipt: Value = serde_json::from_str(ACK).unwrap();
++    let mut fence = receipt["head"]["writer_binding"].clone();
++    fence["owner_agent_id"] = receipt["head"]["owner_agent_id"].clone();
++    fence["lease_sha256"] = receipt["token"]["head_sha256"].clone();
++    let mut value = source;
++    value["command"] = json!("prepare_publication");
++    value["expected"] = receipt["token"].clone();
++    value["proposal"] = json!({"cut": receipt["head"]["last_current"], "writer_fence": fence});
++    let valid: CognitiveCheckpointRequest = serde_json::from_value(value.clone()).unwrap();
++    assert!(valid.encode().is_ok());
++    value["proposal"]["writer_fence"]["lease_id"] = json!("x".repeat(COGNITIVE_CHECKPOINT_FRAME_LIMIT));
++    let oversized: CognitiveCheckpointRequest = serde_json::from_value(value).unwrap();
++    assert_eq!(oversized.encode(), Err(Error::Refused));
++}

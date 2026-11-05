@@ -1,0 +1,69 @@
+--- 86e3577e-manifest-v1.json
++++ full18-three-repairs-manifest-v2.json
+@@ -1,6 +1,6 @@
+ {
+-  "schema": "hepta-full18-three-repairs-native-proposal-v1",
+-  "status": "STATIC_PREPARED_NOT_AUTHORIZED_NOT_APPLIED",
++  "schema": "hepta-full18-three-repairs-native-proposal-v2",
++  "status": "STATIC_PREPARED_HOLD_FOR_ROOT_APP_CAUSAL_STAGE",
+   "initial_tree": "f8251e1d14fa8524ab469281296cd4cf708f173c",
+   "ordinary_index": {
+     "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/source/.git/index",
+@@ -869,8 +869,7 @@
+         "-p",
+         "codex-v8-poc",
+         "-p",
+-        "codex-code-mode-runtime",
+-        "--lib"
++        "codex-code-mode-runtime"
+       ],
+       "expression": null,
+       "expected_cases": [
+@@ -1212,12 +1211,12 @@
+     "skills": {
+       "location": "ext/skills/src/host_roots_tests.rs:441",
+       "prerequisites": "Existing real ancestor marker absence checks, then test-owned outer marker creation",
+-      "required": "Original exact full vector assertion fails with the same fixture outer/.agents/skills and cwd outer/nested/inner/.agents/skills. Setup, compile or timeout is invalid.",
++      "required": "At the original exact full-vector assertion, strip ANSI for observation only, discard right-only Diff lines, and require the actual left/common ordered vector exactly [same fixture outer/.agents/skills, same fixture outer/nested/inner/.agents/skills], with outer on an added-left line. Setup, compile, timeout or a right-only expected cwd is invalid.",
+       "restore": "Exact positive 3d8412f8 bytes, removing only controlled marker creation."
+     },
+     "migration": {
+       "location": "external-agent-migration/src/service_tests/plugins/marketplaces.rs:588",
+-      "required": "Child executes original succeeded_marketplaces equality and fails after real private Git clone/inference setup; raw includes original official name, child 0 passed/1 failed and parent isolated-import assertion. Compile, fixture setup or timeout is invalid.",
++      "required": "After real fixture Git-repository setup and deliberate inference removal, the owned child must reach and fail the original succeeded_marketplaces equality; raw must contain its exact source location, original official name, child 0 passed/1 failed and parent isolated-import assertion. The negative may correctly avoid clone when inference is removed; real local clone belongs to the restored positive path.",
+       "restore": "Exact original production source_cla.rs b2620eaf, preserving the reviewed private local-Git fixture."
+     }
+   },
+@@ -1256,18 +1255,25 @@
+   },
+   "execution_order": [
+     "Await original App epoch2 terminal and root acceptance before starting.",
+-    "Guard/apply exact skills negative; qualify real vector failure; restore; original9.",
+-    "Guard/apply migration fixture plus intentional inference removal; qualify child original business failure; restore; original166.",
++    "Guard/apply exact skills negative; run original case; in finally restore exact positive only under complete owned-tree guards; require real actual-left-vector failure before original9.",
++    "Guard/apply migration fixture plus intentional inference removal; run original case; in finally restore exact b262 production source only under complete owned-tree guards; require child original business failure before original166.",
+     "Guard/apply only V8 default feature; bootstrap exact official Bazel9.3.0; original real update/check, preserving actual generated lock.",
+-    "Original V8 six plus code-mode-runtime70 in normal selected graph; all tests finish before later final hygiene.",
++    "Original V8 six plus code-mode-runtime70 across all original package test targets (including jit and parallel_initialization integrations; no --lib) in normal selected graph; all tests finish before later final hygiene.",
+     "Stop with full source/index/lock/program/helper/command/raw/JUnit receipts for root review; no Windows cohort or full test yet."
+   ],
+   "suggested_controller_timeout_seconds": 7200,
+   "runner": {
+-    "git_blob": "bd0e21742148f6b443886e9a2b47a90505d9d2e5",
+-    "bytes": 21025,
+-    "sha256": "8e943dd681a172e9d9cd537d03e10b6f19a66fe3a4392fce7b196db698746b9d",
++    "git_blob": "6a88d730302334977a3275218443f766cd07fd55",
++    "bytes": 23244,
++    "sha256": "08faad541e33d77c9c5263e90a442011958d34c22418c3f58d5aa638980417f0",
+     "ast_parse_pass": true,
+-    "local_path": "/workspace/scratch/07dd58cc9630/ci-audit/recovered-20261105/full18-three-repairs-runner-draft.py"
++    "local_path": "/workspace/scratch/07dd58cc9630/ci-audit/recovered-20261105/full18-three-repairs-runner-v2.py"
++  },
++  "negative_restore_contract": "Each negative executes inside try/finally. Restore the exact approved positive postimage only while still on the owned exact negative source tree and all ordinary-index/lock/untracked-input guards pass. Retain the original exception and restoration receipt. An invalid negative stops after successful restoration; any external drift is preserved without overwrite. Positive tests run only after a qualified negative and successful exact restoration.",
++  "supersedes": {
++    "runner_blob": "bd0e21742148f6b443886e9a2b47a90505d9d2e5",
++    "manifest_blob": "86e3577e4de51ee3d5fc6fce635c5be14fa3f48e",
++    "source_payload_blob": "3d8b78905566698fdc7a07d7cf740c6dcbe79dc9",
++    "old_version_not_executed": true
+   }
+ }

@@ -1,0 +1,11 @@
+diff --git a/codex-rs/linux-sandbox/src/parent_lifecycle_tests.rs b/codex-rs/linux-sandbox/src/parent_lifecycle_tests.rs
+--- a/codex-rs/linux-sandbox/src/parent_lifecycle_tests.rs
++++ b/codex-rs/linux-sandbox/src/parent_lifecycle_tests.rs
+@@ -185,6 +185,7 @@
+ #[test]
+ #[ignore]
+ fn owned_liveness_scenario() {
++    println!();
+     let mode = std::env::var(MODE).unwrap();
+     if mode == "launch-early" || mode == "launch-live" {
+         let parent = ParentLiveness::capture_current_process().unwrap();

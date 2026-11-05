@@ -166,7 +166,7 @@ async fn cognitive_fixture() -> CognitiveFixture {
     let fleet_root = temp.path().join("fleet");
     std::fs::create_dir_all(&fleet_root).expect("fleet root");
     let agent_id = AgentId::parse("00000000-0000-4000-8000-000000000311").expect("agent id");
-    let layout = HeptaFleetRoot::parse(fleet_root)
+    let layout = HeptaFleetRoot::parse(fleet_root.canonicalize().expect("canonical fleet root"))
         .expect("fleet")
         .layout()
         .agent(&agent_id);

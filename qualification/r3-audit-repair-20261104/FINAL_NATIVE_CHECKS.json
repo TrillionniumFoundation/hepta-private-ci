@@ -1,0 +1,98 @@
+{
+  "schema_version": 1,
+  "status": "SCOPED_NATIVE_CHECKS_PASS_FINAL_PLATFORM_CI_PENDING",
+  "base_commit": "e729e6c2becb528e3a6b49c9e5bbea57bd26637a",
+  "base_tree": "6790800b883d3655538869ea90f17c5ff86b7507",
+  "native_source_tree": "edcc50b93a0b95342567bdfe98e5c0d96c85e52f",
+  "github_reconstructed_source_tree": "edcc50b93a0b95342567bdfe98e5c0d96c85e52f",
+  "reconstruction": {
+    "changed_source_files": 48,
+    "all_paths_match_native_manifest": true,
+    "all_previous_47_blobs_preserved": true,
+    "only_post_lint_changed_blob": {
+      "path": "codex-rs/core/src/client_tests.rs",
+      "before": "b230762c190e18cafad30d987cfa092ab8851798",
+      "after": "ff91f479aa615f56ae26d910894598a4e51895ae",
+      "bytes": 64121,
+      "sha256": "dfba3299f419a9090a9ef47b86d651fc3130624246bf45461885cafe5213892b"
+    },
+    "whole_tree_equals_native": true
+  },
+  "native_job": "1a1a774e5e5-fc05-2b81",
+  "native_terminal_exit_code": 0,
+  "just_fix": {
+    "phase": "combined-scoped-just-fix",
+    "command": [
+      "just",
+      "fix",
+      "--locked",
+      "--offline",
+      "-p",
+      "codex-mcp",
+      "-p",
+      "codex-core",
+      "-p",
+      "codex-app-server",
+      "-p",
+      "codex-exec",
+      "-p",
+      "codex-queue-extension",
+      "-p",
+      "codex-hepta-agentd",
+      "-p",
+      "codex-tui",
+      "-p",
+      "codex-utils-pty",
+      "-p",
+      "codex-exec-server",
+      "-p",
+      "codex-cli",
+      "-p",
+      "codex-windows-sandbox"
+    ],
+    "exit_code": 0,
+    "elapsed_seconds": 783.9706347150495,
+    "log_sha256": "d8a1581bef0cf8c1def90c08fad61e4834c2d7f32bf52b0ef67b23136431799f"
+  },
+  "just_fmt": {
+    "phase": "combined-final-fmt",
+    "command": [
+      "just",
+      "fmt"
+    ],
+    "exit_code": 0,
+    "elapsed_seconds": 4.734201175975613,
+    "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  "git_diff_check_exit": 0,
+  "lint_warnings": "The command returned zero with warnings in existing code. This is not a warning-free claim.",
+  "reviewed_automatic_delta": {
+    "path": "codex-rs/core/src/client_tests.rs",
+    "patch_sha256": "df97b9824b59151382d6462c40c163ba97c9ae96bc9c50aa84be123158498017",
+    "before": "let mut changed_compaction = metadata.clone();",
+    "after": "let mut changed_compaction = metadata;",
+    "review": "Root read the complete identity regression and verified this is the last use of metadata. All five identity, physical-wire and cold-recovery assertions and all production files are unchanged."
+  },
+  "source_manifest_sha256": "bc88c59dd2240d21f38ed0be57801d52ad2f6d49a256bb3efc3720920bbe55c5",
+  "terminal_receipt_sha256": "d60d48a83a18b1e93a8c07e1935c3a454e77fd837fc1fcdad3959b2fe663c24e",
+  "host": {
+    "system": "Linux",
+    "machine": "x86_64",
+    "kernel": "7.0.0-38-generic",
+    "rustc": "1.95.0",
+    "rustc_commit": "59807616e1fa2540724bfbac14d7976d7e4a3860",
+    "llvm": "22.1.2",
+    "receipt_sha256": "fec69075b4c533c0d94d99c69edf613c7a3c0165e35f3f52519ac8a370da58b3",
+    "receipt_capture_source_tree": "57b8d27014ac37bc2ea6262b2c6a52fb6c2e33b0",
+    "scope": "Same lane receipt captured before helper composition, not a separate historical environment snapshot for every earlier test."
+  },
+  "module_lock_sha256": "11f8a421224b9b05f32c4c14054e8868083d989fc497310c8d51e1156f189ca3",
+  "combined_helper_bazel_run": 41865994466,
+  "windows_format_review_sha256": "fc22f3bb88f2fbad8cc3739a327f143ac3c169970fdc4d15fbf76729a43c2aa8",
+  "windows_format_independent_review_sha256": "62e682aeb2e8971c608316a29813baa16f8559c432f6a515c9bea4f1bdc94c5d",
+  "tests_rerun_after_final_fix_fmt": false,
+  "publication_boundary": "The final publication appends qualification documentation to this exact native source tree. Its full tree and commit are recorded in the PR; they cannot be embedded self-referentially here.",
+  "remaining_gate": "Full original exact-commit Linux GNU/musl, macOS ARM/Intel and Windows CI; Windows security and Code Mode diagnoses, private-state controls and Intel PTY cause remain open.",
+  "all_blockers_closed": false,
+  "production_ready": false
+}

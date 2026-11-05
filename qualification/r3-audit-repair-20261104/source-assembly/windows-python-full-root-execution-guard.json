@@ -1,0 +1,162 @@
+{
+  "schema": "hepta-root-windows-python-full-independent-A-WIP-execution-guard-v1",
+  "state": "AUTHORIZED_TO_EXECUTE_INDEPENDENT_A_WIP_NOT_FINAL_QUALIFICATION",
+  "observed_at_utc": "2026-11-05T04:13:42.383642+00:00",
+  "authorization": "The user already authorized the full audit and necessary blocker repairs, validation and Draft publication. Execute this reviewed source integration and original suites without further user confirmation.",
+  "initial_source_tree": "c6fbcfa0d1ba3b1556f601dc4ca3a7734328b9f7",
+  "expected_final_source_tree": "fb9e131272f7e7a138d6c0d1af2b048b9a6ab7ff",
+  "runner": {
+    "bytes": 28735,
+    "sha256": "e32da3b0334f7a85ecb72fe8bf5b0baf10dfdc6f3ff73a0ae85f800c654638c2",
+    "blob": "bd0461a2c99364a62bbbc5aa525ad25c85a17f40"
+  },
+  "manifest": {
+    "bytes": 12371,
+    "sha256": "72d761239b9a5b9ebc211cdbdfaf159db4fb143905854b4225f30cd63f1d1904",
+    "blob": "be23ab7d53f775c87dad62d264d74716f1ea9c1f"
+  },
+  "source_payload": {
+    "bytes": 198629,
+    "sha256": "0d48638ac65a9ec2c0f759d64811fe8b54f11dcb6709c654483e7ed72f1a3fe5",
+    "blob": "85f29bdddd1cc2d1a4b171205e80ee40783bc032"
+  },
+  "root_source_tree_plan": "11da59fc2b97560a972c4ce6da6af1f654a13d47",
+  "unpublished_source_commit": "ccf0f78ce84caf5dde40e639d45a91a737096df6",
+  "root_three_counterfactuals_review": {
+    "bytes": 3890,
+    "sha256": "c0c45a35add263c7a5c5ec0d5f0770193637ab408887cd4969225c9c8bfcb7e0",
+    "blob": "4a280b840e655c2a0f66c904a7cf6016b2c4a3a7"
+  },
+  "root_final_eight_scope_review": {
+    "bytes": 9874,
+    "sha256": "262eb71a2dfab3c2ca78615c849411f58147fcdef9bdd7156ec7041212ce3437",
+    "blob": "e409fcdd2d634fdfbb4697cec151286c30bc7c4c"
+  },
+  "actual_prior_app_outcome": {
+    "root_authorization_required": true,
+    "app_source": "c6fbcfa0d1ba3b1556f601dc4ca3a7734328b9f7",
+    "native_job": "1a1a9cf9300-fc05-3823",
+    "actual_valid_causal_negatives": 3,
+    "actual_junit_pass": 8,
+    "actual_behavior_pass": 7,
+    "actual_existing_capability_early_return": 1,
+    "original_just_exit_code": 0,
+    "original_outer_controller_exit_code": 1,
+    "evidence": "c4c34185b748ad25dccd7ce1d3d180869d9a7a64",
+    "capability_case": "suite::landlock::sandbox_inner_stage_rejects_retained_capabilities",
+    "actual_message": "skipping capability test: unprivileged user namespaces are unavailable",
+    "independent_A_WIP_may_continue": true,
+    "original_capability_behavior_gate": "OPEN; not waived, not counted as actual execution, and still requires the unchanged original platform case on a supporting environment.",
+    "superseded_payload_precondition": "Root addendum permits Windows source/Python/full WIP despite the original App wrapper failing closed on this existing capability early return. The immutable source payload and actual failed receipt remain unchanged; this is not a retroactive PASS."
+  },
+  "full_roster_reference": {
+    "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/app-parent-liveness-three-causal-eight-exact-20261105-v2/parent-liveness-final-eight-catalog.stdout",
+    "bytes": 3295377,
+    "sha256": "e35bd57f1f6e7f89a72e55392659478a628fd10e5061b1fad2f5649272754e30",
+    "source": "c6fbcfa0d1ba3b1556f601dc4ca3a7734328b9f7"
+  },
+  "full_roster_expected_eligible_count": 19506,
+  "full_roster_expected_ignored_count": 57,
+  "guard_contract": {
+    "ordinary_head": "cabcb40d36e116beaa65750e1f674c52035da785",
+    "ordinary_index": {
+      "bytes": 1222758,
+      "sha256": "8ccf08bcd5b633a38fa81be4814ae264365f1a2cdd1ed81e1633fbcc0ac31502"
+    },
+    "locks": {
+      "codex-rs/Cargo.lock": {
+        "bytes": 413768,
+        "sha256": "4a7a5535cf045089458468411e126b5f59bc6bbf34fc0deead9b0c1b8d84000a"
+      },
+      "MODULE.bazel.lock": {
+        "bytes": 1738619,
+        "sha256": "11f8a421224b9b05f32c4c14054e8868083d989fc497310c8d51e1156f189ca3"
+      }
+    },
+    "untracked_source_paths": [],
+    "whole_tree_before_and_after_each_phase": true,
+    "normal_six_helpers_built_on_actual_final_source": true,
+    "catalog_before_just_and_after_just_program_and_33_helper_identity": true,
+    "original_full_workspace_no_p_no_E": true,
+    "actual_ignored_and_early_returns_separate": true,
+    "full_catalog_unmatched_must_equal_zero": true,
+    "frozen_App_full_roster_compared_with_multiplicity": true
+  },
+  "original_gates": {
+    "python_roster_count": 57,
+    "bash_argv": [
+      "bash",
+      "-n",
+      ".github/scripts/run-bazel-ci.sh"
+    ],
+    "python_compile_argv": [
+      "python3",
+      "-m",
+      "py_compile",
+      ".github/scripts/collect_bazel_failed_test_logs.py",
+      ".github/scripts/test_run_bazel_ci.py"
+    ],
+    "python_test_argv": [
+      "python3",
+      "-m",
+      "unittest",
+      "discover",
+      "-s",
+      ".github/scripts",
+      "-p",
+      "test_run_bazel*.py"
+    ],
+    "full_metadata_argv": [
+      "cargo",
+      "metadata",
+      "--format-version=1",
+      "--locked"
+    ],
+    "full_catalog_argv": [
+      "cargo",
+      "nextest",
+      "list",
+      "--locked",
+      "--cargo-profile",
+      "dev-small",
+      "--message-format=json"
+    ],
+    "full_workspace_argv": [
+      "just",
+      "test",
+      "--locked",
+      "--cargo-profile",
+      "dev-small",
+      "--no-tests",
+      "fail",
+      "--retries",
+      "0",
+      "--success-output",
+      "immediate"
+    ]
+  },
+  "baseline_metadata": {
+    "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/full18-three-repairs-v3-20261105-0254/v8-and-runtime-original-metadata.stdout",
+    "bytes": 8163699,
+    "sha256": "3a53323eae920e2e53dcb3e334128a4aff63cfb51840793e9150d617d2c9ba18",
+    "source": "7d703610ae4f778ad305ebc139860d276f416e8c"
+  },
+  "precedence_addendum": "For continuing independent A WIP only, the actual three valid causal counterfactuals plus seven executing positive cases and one original capability early return supersede the old static prerequisite that all eight behavior bodies had to execute before any Windows/Python/full work. That original capability qualification remains OPEN. Preserve original App just0, JUnit8PASS, strict wrapper selection_valid=false and controller1; do not relabel it.",
+  "required_behavior": [
+    "Apply only the four exact reviewed source stages and nine exact postimages.",
+    "Preserve ordinary HEAD/index/locks; use private source snapshots before and after every phase.",
+    "Execute original Python 57 with separate exact catalog, build six normal helpers and run unfiltered full cargo metadata and full nextest catalog.",
+    "Compare the complete actual c6 App catalog to the unfiltered full catalog as case-key Counters with multiplicity, preserving all original ignored cases and rejecting unmatched cases.",
+    "Execute the original no-package/no-expression full just test command, retries0; retain complete raw/JUnit/all nonpass cases and report capability/remote omissions separately.",
+    "No host profile, sandbox policy, test oracle, timeout, retry or skip changes. No native Windows qualification is inferred from Linux."
+  ],
+  "stop_after": "Stop after the full actual result and source/program/helper/metadata/catalog receipts for root triage. No hygiene or ref mutation in this runner.",
+  "limits": [
+    "Linux builds do not qualify Windows cfg branches or native token/ACL behavior.",
+    "The original full-workspace selection has no package or expression filter; ignored support and original early-return notices are reported separately.",
+    "JUnit PASS is distinct from execution of omitted remote/prerequisite-dependent behavior.",
+    "No tests, lint, fmt or ref mutation follows the complete full result inside this runner. Root reviews actual results before hygiene."
+  ],
+  "all_blockers_closed": false,
+  "whole_candidate_qualified": false
+}

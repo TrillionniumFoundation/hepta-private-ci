@@ -1,0 +1,344 @@
+{
+  "schema": "hepta_b16_r2c_sqlite_writer_foundation_candidate_v2",
+  "created_at_utc": "2026-11-04 21:26:50 UTC",
+  "status": "SOURCE_CANDIDATE_UNEXECUTED",
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "base_commit": "cabcb40d36e116beaa65750e1f674c52035da785",
+  "base_tree": "b2d7f038d6d88156bc6a4cb29c8703f69b808f29",
+  "corrected_r0": {
+    "json_blob": "1bb19c599efc651465d00843fce025635a60556d",
+    "markdown_blob": "bd9f208933636b2f2c3fc24491979fc1d368b058"
+  },
+  "scope": "An additive codex-state SQLite commit/checkout primitive. No Current record, trust credential, Root parser or normal product caller is added by this batch.",
+  "files": [
+    {
+      "path": "codex-rs/state/src/sqlite.rs",
+      "mode": "100644",
+      "before_blob": "9f5c491e1ba85d88cd03d8bfafc1671494b7ac96",
+      "blob": "4a147f593ef580de5d79b1dd47b0234437c629ca",
+      "bytes": 15999,
+      "sha256": "27c9c58c8a8d1426a2bd026cbdacebd0083243dd4023f117e698149d25eaf057"
+    },
+    {
+      "path": "codex-rs/state/src/sqlite_commit_gate_tests.rs",
+      "mode": "100644",
+      "before_blob": null,
+      "blob": "31b26a78bffe40815aa8a5b55e61b5139e7bca96",
+      "bytes": 10046,
+      "sha256": "07e66e695078f06768aa951dd5c4f2419fe99657cc90e2e263d111eeafa7ca90"
+    }
+  ],
+  "patch": {
+    "blob": "62a94bf93569570daace6cf80972f8909b3f8736",
+    "bytes": 14383,
+    "sha256": "9cea5e6b67c466177c722069b8e66541b14c34147889914c08e34de1a5a5184b"
+  },
+  "diff": {
+    "insertions": 382,
+    "deletions": 0,
+    "paths": 2,
+    "complex_diff_below_500_lines": true
+  },
+  "meaningful_production_change": {
+    "api": "SqliteConfig::open_coordinated_durable_evidence_pool<F,C,Fut>",
+    "default_caller_change": false,
+    "connection_creation": "Each physical connection installs the real SQLx/SQLite commit hook before it can reach the caller, then awaits checkout coordination.",
+    "connection_reuse": "The existing idle-connection before_acquire callback also awaits checkout coordination; SQLx does not call before_acquire for new connections.",
+    "commit_boundary": "SQLite runs the supplied bounded synchronous Fn()->bool for explicit and implicit commits; false converts the real commit into rollback. Completion of checkout coordination never substitutes for this final callback.",
+    "lock_order": "connection.lock_handle() is held only while installing the hook; its lexical scope ends before awaiting before_checkout. Callback contracts prohibit re-entering this pool and prohibit retaining a lock required by the commit hook.",
+    "initialization_limit": "SQLx applies connection options before after_connect. The owner must retain its file/initialization fence while opening; this method does not make path reopen safe or protect setup before the hook.",
+    "trusted_owner_limit": "The owner must keep the raw pool private, keep the independently authenticated Current/writer gate alive, and must not replace the SQLite hook. This API alone cannot prevent an independent legacy connection from writing."
+  },
+  "actual_dependency_chain": [
+    {
+      "path": "codex-rs/hepta-memory/src/cognitive_checkpoint_bind.rs",
+      "ref": "14e2d89b3367232ec5dbe6187f09feed0f2b68d3",
+      "blob": "d8106db0d9ca9ff7abf38d104c7fc76e3c1f552f",
+      "lines": [
+        24,
+        122
+      ],
+      "facts": [
+        "The actual donor binder consumes the sole exclusive recovered CognitiveStore handle and refuses an already managed owner.",
+        "It manages the existing whole-pool gate, validates independently supplied Current against the exact recovery cut, rolls back its guard transaction, and closes the old pool.",
+        "Lines 78-88 call the coordinated writer API with connection_gate.commit_allowed and coordinator.before_checkout.",
+        "Lines 103-119 still require open_durable_observation_pool and open_durable_read_barrier, which this R2c does not add."
+      ]
+    },
+    {
+      "path": "codex-rs/hepta-memory/src/cognitive_checkpoint.rs",
+      "ref": "14e2d89b3367232ec5dbe6187f09feed0f2b68d3",
+      "blob": "43df08a341423db901a800749ee7387c084afb35",
+      "lines": [
+        100,
+        107,
+        317,
+        338
+      ],
+      "facts": [
+        "Actual checkout coordination serializes the protected receipt transition.",
+        "A failed transition fences writes; read-only inspection may still obtain a connection. That explains the Future<Output=()> contract without treating success of checkout as permission to commit."
+      ]
+    }
+  ],
+  "primary_api_evidence": {
+    "project_lock": {
+      "path": "codex-rs/Cargo.lock",
+      "blob": "9743ef2f4f4c8521265c0187524278c256114163",
+      "sqlx": "0.9.0",
+      "sqlx_sqlite": "0.9.0",
+      "sqlx_core": "0.9.0",
+      "libsqlite3_sys": "0.37.0"
+    },
+    "upstream": {
+      "repository": "transact-rs/sqlx",
+      "resolved_version_tag": "v0.9.0",
+      "commit": "75bc0487eb661da811bb7a3c5d158f1bd463fef4",
+      "files": [
+        {
+          "key": "connection",
+          "path": "sqlx-sqlite/src/connection/mod.rs",
+          "blob": "218c747143fe80b344bca3405d4b0b38da2bd932",
+          "bytes": 20337,
+          "sha256": "a20c2e51a1505e298fd897b378f9032c89b82850838aa6e5d9409f612fb1e7fd"
+        },
+        {
+          "key": "pool-options",
+          "path": "sqlx-core/src/pool/options.rs",
+          "blob": "3d048f179514e992f478f0f854563fad7c0e41dd",
+          "bytes": 25108,
+          "sha256": "924cd57a062328b2e7c6ac55242eabb1706893d80ce1e8cb02fe643a592f4f83"
+        },
+        {
+          "key": "pool-inner",
+          "path": "sqlx-core/src/pool/inner.rs",
+          "blob": "b698dc9df07fdd763f6b15a171b7b545c6898696",
+          "bytes": 23376,
+          "sha256": "cba56628f259270dccb2f4a0d7a351dcff34d9239f6e6e1aee187ebe0e39c539"
+        },
+        {
+          "key": "pool-connection",
+          "path": "sqlx-core/src/pool/connection.rs",
+          "blob": "7912b12aa14f763e8928bf8ac9466a97a81f681a",
+          "bytes": 13405,
+          "sha256": "94269a532ef60aaa31321e43af17cba2424f919a36501d862328ed05958a08de"
+        },
+        {
+          "key": "error",
+          "path": "sqlx-sqlite/src/error.rs",
+          "ref": "75bc0487eb661da811bb7a3c5d158f1bd463fef4",
+          "blob": "5510e25d9716852823422277991d81571fa8bcf6",
+          "bytes": 4233,
+          "sha256": "446bf97a158fc6a3978fb8965e8c3d500e00baf6e9cc3fba086cd689c05579ad"
+        }
+      ]
+    },
+    "sources": [
+      {
+        "url": "https://docs.rs/sqlx/0.9.0/sqlx/sqlite/struct.LockedSqliteHandle.html#method.set_commit_hook",
+        "claim": "The documented boolean is true to permit and false to veto; only one hook exists per SQLite connection."
+      },
+      {
+        "url": "https://www.sqlite.org/c3ref/commit_hook.html",
+        "claim": "SQLite converts a nonzero native hook response into rollback and prohibits reentrant SQL in the callback."
+      },
+      {
+        "url": "https://github.com/transact-rs/sqlx/blob/75bc0487eb661da811bb7a3c5d158f1bd463fef4/sqlx-sqlite/src/connection/mod.rs",
+        "lines": [
+          331,
+          341,
+          468,
+          497
+        ],
+        "claim": "SQLx converts false (or a caught callback panic) to the native nonzero veto; set_commit_hook installs and retains the real callback."
+      },
+      {
+        "url": "https://github.com/transact-rs/sqlx/blob/75bc0487eb661da811bb7a3c5d158f1bd463fef4/sqlx-core/src/pool/options.rs",
+        "lines": [
+          393,
+          407
+        ],
+        "claim": "before_acquire runs on idle reused connections and explicitly does not run for new connections."
+      },
+      {
+        "url": "https://github.com/transact-rs/sqlx/blob/75bc0487eb661da811bb7a3c5d158f1bd463fef4/sqlx-core/src/pool/inner.rs",
+        "lines": [
+          254,
+          297,
+          350,
+          374,
+          469,
+          505
+        ],
+        "claim": "Fresh and reused acquisitions follow distinct callbacks; a new connection is returned only after successful after_connect. Cancellation drops the in-progress owned connection."
+      },
+      {
+        "url": "https://github.com/transact-rs/sqlx/blob/75bc0487eb661da811bb7a3c5d158f1bd463fef4/sqlx-sqlite/src/error.rs",
+        "lines": [
+          29,
+          47,
+          103,
+          115
+        ],
+        "claim": "DatabaseError.code reflects the actual extended SQLite error code, allowing exact SQLITE_CONSTRAINT_COMMITHOOK rejection rather than any generic failure."
+      }
+    ],
+    "limit": "The primary implementation was read at the upstream version tag resolved to its commit and byte-hashed. No local Cargo source extraction or compile was performed; the registry checksum remains the project's existing lock identity."
+  },
+  "tests": {
+    "new_exact_names": [
+      "sqlite::commit_gate_tests::commit_gate_rejects_explicit_transaction_after_revocation",
+      "sqlite::commit_gate_tests::commit_gate_covers_pool_growth_and_replacement",
+      "sqlite::commit_gate_tests::checkout_callback_blocks_initial_connect_and_reused_connection",
+      "sqlite::commit_gate_tests::cancelled_checkout_does_not_release_uncoordinated_connection"
+    ],
+    "expected_new_count": 4,
+    "physical_controls": [
+      {
+        "name": "sqlite::commit_gate_tests::commit_gate_rejects_explicit_transaction_after_revocation",
+        "assertions": [
+          "A real explicit transaction inserts while the gate is true; the gate is then revoked before COMMIT.",
+          "The actual COMMIT must return SQLITE_CONSTRAINT_COMMITHOOK, and a separate read-only SQLite pool must observe no row.",
+          "Restoring the same gate permits a subsequent write, and reopening the reader observes exactly that committed row."
+        ]
+      },
+      {
+        "name": "sqlite::commit_gate_tests::commit_gate_covers_pool_growth_and_replacement",
+        "assertions": [
+          "Five simultaneously held pool connections each reject actual implicit INSERT commits.",
+          "An explicitly closed connection is replaced while the other four remain held, and the replacement must reject its real INSERT too.",
+          "A later permitted write persists exactly one expected row through an independently opened reader."
+        ]
+      },
+      {
+        "name": "sqlite::commit_gate_tests::checkout_callback_blocks_initial_connect_and_reused_connection",
+        "assertions": [
+          "A real semaphore gate is entered during initial connection setup; the pool-opening future remains Pending before release.",
+          "Four held connections force the fifth acquisition to reuse the sole released connection; the callback must enter and remain Pending again.",
+          "A TEMP table marker proves the returned connection is physically the same reused SQLite connection."
+        ]
+      },
+      {
+        "name": "sqlite::commit_gate_tests::cancelled_checkout_does_not_release_uncoordinated_connection",
+        "assertions": [
+          "Cancel a real reused-connection acquisition only after observing that its coordination callback entered and the acquisition remained Pending.",
+          "The subsequent acquisition must have no original TEMP marker, proving the canceled connection was discarded.",
+          "The replacement must still reject an actual write with the exact commit-hook error, and a separate reader observes no row."
+        ]
+      }
+    ],
+    "test_budget": "Only the four new tests use a 5-second bound for their own synchronization/checkout steps. No original test or production timeout, retry, filter, permission or assertion changes.",
+    "cleanup": "No test spawns its own detached task. Successful paths explicitly close every held connection and pool. Dropped in-progress SQLx acquisition futures retain SQLx's owned-connection cleanup; cancellation is tested by acquiring a fresh physical replacement. Fixture Drop performs best-effort removal of its unique private directory on an error; this is not a claim of synchronous descendant cleanup.",
+    "baseline_claim": "These are executable physical negative/positive controls of a new API. They are not a claimed reproduction against the old source, where this API does not exist.",
+    "original_tests": "Every pre-existing test file is unchanged. The original state test count must be taken from the actual selected native roster; it is not guessed.",
+    "actual_linked_runtime_version": "First existing new test queries sqlite_version() on the actual compiled pool before its real write/COMMIT. Native receipts must retain the observed version; upstream source is not itself runtime version evidence."
+  },
+  "source_preservation": {
+    "exact_remove_new_import_api_test_module_equals_entire_original": true,
+    "entire_old_sqlite_blob": "9f5c491e1ba85d88cd03d8bfafc1671494b7ac96",
+    "original_open_durable_evidence_pool": "Byte-identical; not redirected through an allow-all hook.",
+    "original_in_memory_test_helper": "Byte-identical; donor's deletion is not copied.",
+    "original_path_based_recovery": "Byte-identical deliberately unavailable API; not reopened.",
+    "unchanged_contracts": [
+      "AgentdProductionHostAttachment<C>.original_sender",
+      "ordinary ensure_control_peer/current-user admission",
+      "existing owner_local platform modules",
+      "Windows token/ACL/loader/DLL production files"
+    ],
+    "patch_roundtrip": [
+      {
+        "path": "codex-rs/state/src/sqlite.rs",
+        "hunks": 3,
+        "exact_reconstructed": true
+      },
+      {
+        "path": "codex-rs/state/src/sqlite_commit_gate_tests.rs",
+        "hunks": 1,
+        "exact_reconstructed": true
+      }
+    ],
+    "writes": "Only unreachable GitHub blobs created; no branch/ref, native source or shared target mutation."
+  },
+  "dependency_and_lock_gate": {
+    "direct_compile_dependency_on_r1": false,
+    "direct_compile_dependency_on_r2a": false,
+    "direct_compile_dependency_on_r2b": false,
+    "cargo_toml_unchanged": {
+      "path": "codex-rs/state/Cargo.toml",
+      "blob": "02cb82d778fc02859a42c0658597799ad00f5559"
+    },
+    "build_unchanged": {
+      "path": "codex-rs/state/BUILD.bazel",
+      "blob": "8f27a6255fa88e40a93db65e110a4b3c934b6958"
+    },
+    "dependencies": "Existing sqlx/libsqlite3-sys, Tokio synchronization/time, anyhow, pretty_assertions and existing state test-directory helper only.",
+    "locks": "No Cargo, BUILD, dependency declaration or MODULE input change is proposed. Cargo.lock and MODULE.bazel.lock must remain equal to the actual application base. If native verification discovers a real dependency change, stop and use the repository's original generator; do not hand-edit a lock.",
+    "original_recipes": {
+      "agents_blob": "a22ff3bee70261f6061d598c31f0016e785a7a3c",
+      "justfile_blob": "a215a76cf407ace9715bca39c20497014e7dd4dc"
+    },
+    "native_validation_proposed": [
+      "Freeze and verify the two exact postimages against the current isolated candidate before any command.",
+      "just test -p codex-state --lib -E 'test(sqlite::commit_gate_tests::)' --retries 0 --no-fail-fast",
+      "just test -p codex-state --lib --retries 0 --no-fail-fast",
+      "Preserve fresh complete JUnit, raw stdout, command, target/toolchain and source-tree/unchanged receipt; verify all four exact names and the original selected roster.",
+      "just fix -p codex-state",
+      "just fmt",
+      "Review the final source diff and hashes; do not rerun tests after fix/fmt unless a material behavioral change or required gate demands it."
+    ]
+  },
+  "next_cohorts": [
+    {
+      "id": "R2d",
+      "prerequisite": "R2c may be reviewed/applied independently; both are needed by the actual binder.",
+      "scope": "Actual read-only observation pool plus lock-only SqliteReadBarrier with physical writer exclusion/cancellation controls; preserve the existing descriptor-bound recovery boundary."
+    },
+    {
+      "id": "R2e",
+      "prerequisite": "R2c + R2d + fully reviewed Current/writer ownership contract",
+      "scope": "Integrate actual whole-pool CognitiveStore gate/coordinator and authenticated exact-current binding in small compilable changes; never expose wire DTOs as a substitute."
+    },
+    {
+      "id": "R3",
+      "prerequisite": "R1 + completed R2 trust/Current/inherited foundations",
+      "scope": "Actual parser, inherited descriptor/caller and Root startup composition; preserve generic attachment/original sender and ordinary peer path."
+    }
+  ],
+  "not_done": [
+    "No compilation, formatting, lint, Cargo test or Bazel test has run for this candidate.",
+    "No whole-pool protected Current binding or authenticated Root peer is claimed.",
+    "No normal Root/Agentd joint producer, credential conversion, signature or product activation is introduced.",
+    "B16 remains open."
+  ],
+  "updated_at_utc": "2026-11-04 22:21:29 UTC",
+  "review_revision": {
+    "superseded_manifest": "081aa0f20aa3c05c43aa0a3ea48254039321bd92",
+    "superseded_test_blob": "e1ea6dcb1c7911d42e0e892c2697dedf4a56f665",
+    "superseded_full_patch": "d432cbd726a15200ae332b3c9be47a8aa7f69643",
+    "delta": {
+      "blob": "ccd3ff82ae33fd44b4f1ca625d853a4a5f5061ec",
+      "bytes": 682,
+      "sha256": "e9922dfdd59475d89ffa327cde87621b0cd713102d24fd39af8e71d6779fda60"
+    },
+    "reason": "Root adds four observational lines inside the already-required first real control: query SELECT sqlite_version() through the actual tested SQLx pool and log it. This records the linked runtime SQLite implementation instead of attributing the host Python/system SQLite version to the Rust test. No added test, helper, assertion, permission, timeout, retry, gate or production change.",
+    "execution_of_superseded_candidate": false
+  },
+  "review_revision_history": [
+    {
+      "superseded_manifest": {
+        "blob": "282de9b8a1326d86189008dce070b2111e6d6f5e",
+        "bytes": 16488,
+        "sha256": "7ca28d7d92a52491912d46ecae33f3e7bf830e3c4f0e4759ef42adab52b32e19"
+      },
+      "superseded_test_blob": "e7ef9d3ff668bdce5fda4dd5317f4d4f5513a110",
+      "superseded_full_patch": "cce89886bad5d7f947bb6ab0d529c4e584d9b85b",
+      "delta": {
+        "blob": "9b7b8c942dce05a37454a7595918b037d7d6ec6a",
+        "bytes": 2450,
+        "sha256": "dedb512d891b5c7b53593ed71c65bd575bbb0ff3e8fd5db89a0106c600f14587"
+      },
+      "reason": "Independent review requested named ready()/blocked() fixture constructors instead of a new boolean constructor parameter. Production source and every test assertion/case/budget remain unchanged.",
+      "execution_of_superseded_candidate": false
+    }
+  ]
+}

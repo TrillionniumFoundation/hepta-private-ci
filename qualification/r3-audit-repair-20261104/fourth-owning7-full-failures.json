@@ -1,0 +1,1017 @@
+{
+  "schema": "hepta.rog.e84.owning-seven.complete-failed-cases.v2",
+  "source": "e84c2f12e39022701c8a942343b3913faa62cf31",
+  "controller": {
+    "at_unix_ms": 1793832429176,
+    "audit_recorded": true,
+    "automatic_retry": false,
+    "cancelled": false,
+    "exit_code": 1,
+    "job_id": "1a1a8baa3a0-fc05-2f94",
+    "launch_nonce": "a104fa740e6ed5608eb44b08fb469a6b",
+    "log_bytes": {
+      "stderr": {
+        "seen": 0,
+        "stored": 0
+      },
+      "stdout": {
+        "seen": 2343,
+        "stored": 2343
+      }
+    },
+    "log_errors": {
+      "stderr": null,
+      "stdout": null
+    },
+    "log_synced": {
+      "stderr": true,
+      "stdout": true
+    },
+    "log_truncated": {
+      "stderr": false,
+      "stdout": false
+    },
+    "output_complete": true,
+    "output_durable": true,
+    "state": "failed",
+    "terminal_publication_confirmed": true,
+    "terminal_publication_protocol": 1,
+    "timed_out": false
+  },
+  "projection": {
+    "source": "e84c2f12e39022701c8a942343b3913faa62cf31",
+    "observed_at": "2026-11-04T22:51:51.892956+00:00",
+    "original_review": {
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/owning-seven-project-gate-e84-20261104-2255/owning-seven-review.json",
+      "bytes": 1245743,
+      "sha256": "718248dd1fe8cc0af880e4b4bb107c8ff9e90ad3c9294029135e0f1820f76b37"
+    },
+    "original_raw": {
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/owning-seven-project-gate-e84-20261104-2255/owning-seven.log",
+      "bytes": 11676772,
+      "sha256": "73f4c625c46606ec042889e39e92fe39d0670d62d763b4d3bd1ecd85ec315d23"
+    },
+    "original_junit": {
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/owning-seven-project-gate-e84-20261104-2255/owning-seven.junit.xml",
+      "bytes": 1155445,
+      "sha256": "0cd59b4942ccbefc3225f34457991b1193d96a622da80a7cea98371f701c7df1"
+    },
+    "counts": {
+      "PASS": 5404,
+      "FAIL": 12
+    },
+    "retries": 0,
+    "profile": {
+      "build": "dev-small",
+      "nextest": "local"
+    },
+    "binary_stable": true,
+    "helpers_stable": true,
+    "source_unchanged": true,
+    "exact_executed_roster": true,
+    "known_missing_prerequisite_early_returns": [],
+    "all_skip_observations": [
+      "    Skipping test because it requires a remote test environment.",
+      "    Skipping test because it requires a remote test environment.",
+      "    Skipping test because it requires a remote test environment.",
+      "    Skipping test because it requires a remote test environment.",
+      "    Skipping test because it requires a remote test environment.",
+      "    Skipping test because it requires a remote test environment.",
+      "    Skipping test because it requires a remote test environment.",
+      "    Skipping test because it requires a remote test environment.",
+      "    Skipping test because it requires a remote test environment.",
+      "    Skipping test because it requires a remote test environment.",
+      "    Skipping test because it requires a remote test environment.",
+      "    Skipping test because it requires a remote test environment.",
+      "    Skipping test because it requires a remote test environment.",
+      "    Skipping test because it requires a remote test environment.",
+      "    Skipping test because it requires a remote test environment.",
+      "    Skipping test because it requires a remote test environment.",
+      "    Skipping test because it requires a remote test environment.",
+      "    Skipping test because it requires a remote test environment.",
+      "    Skipping test because it requires a remote test environment.",
+      "    Skipping test because it requires a remote test environment.",
+      "    Skipping test because it requires a remote test environment.",
+      "    Skipping test because it requires a remote test environment.",
+      "    Skipping test because it requires a remote test environment.",
+      "    2026-11-04T22:46:40.789037Z  WARN codex_core::session: skipping subagent thread analytics: missing inherited client metadata",
+      "    2026-11-04T22:46:40.793366Z  WARN codex_core::session: skipping subagent thread analytics: missing inherited client metadata",
+      "    2026-11-04T22:46:40.792452Z  WARN codex_core::session: skipping subagent thread analytics: missing inherited client metadata",
+      "    2026-11-04T22:46:40.794443Z  WARN codex_core::session: skipping subagent thread analytics: missing inherited client metadata",
+      "    Skipping test because it requires a remote test environment."
+    ],
+    "failures": [
+      {
+        "name": "suite::approvals::approving_execpolicy_amendment_persists_policy_and_skips_future_prompts",
+        "classname": "codex-core::all",
+        "seconds": "0.378",
+        "result": "FAIL",
+        "failure": "thread 'suite::approvals::approving_execpolicy_amendment_persists_policy_and_skips_future_prompts' (3658852) panicked at core/tests/suite/approvals.rs:2540:5:\nunexpected stdout: Failed to create stream fd: Operation not permitted\nFailed to create stream fd: Operation not permitted\nFailed to create stream fd: Operation not permitted\n\nnote: run with `RUST_BACKTRACE=1` environment variable to display a backtrace",
+        "original_case_xml": {
+          "full": {
+            "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/owning-seven-project-gate-e84-20261104-2255/failure-extract-2/00.testcase.xml",
+            "bytes": 1722,
+            "sha256": "7b8635b1d3804f362ece06037d67ba3f95d74220a602ead639f82382688c45b8"
+          },
+          "parts": [
+            {
+              "offset": 0,
+              "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/owning-seven-project-gate-e84-20261104-2255/failure-extract-2/parts/00-xml/0000.txt",
+              "bytes": 1722,
+              "sha256": "7b8635b1d3804f362ece06037d67ba3f95d74220a602ead639f82382688c45b8"
+            }
+          ]
+        },
+        "xml_original_character_start": 663886,
+        "xml_original_character_end": 665608,
+        "raw_failure_sections": [
+          {
+            "line_start": 30482,
+            "line_end": 30503,
+            "ansi_normalized": false,
+            "full": {
+              "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/owning-seven-project-gate-e84-20261104-2255/failure-extract-2/00-raw-0.log",
+              "bytes": 969,
+              "sha256": "2dcb47fdd1077e79232ec822222a88d9b2193c7f86475e2e10f36e56fe6216a9"
+            },
+            "parts": [
+              {
+                "offset": 0,
+                "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/owning-seven-project-gate-e84-20261104-2255/failure-extract-2/parts/00-raw-0/0000.txt",
+                "bytes": 969,
+                "sha256": "2dcb47fdd1077e79232ec822222a88d9b2193c7f86475e2e10f36e56fe6216a9"
+              }
+            ]
+          },
+          {
+            "line_start": 64882,
+            "line_end": 64882,
+            "ansi_normalized": false,
+            "full": {
+              "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/owning-seven-project-gate-e84-20261104-2255/failure-extract-2/00-raw-1.log",
+              "bytes": 131,
+              "sha256": "ed431f7254045aa3a1e6f2d82cf14229f568ab5c052b162f105ac82ab54c7e15"
+            },
+            "parts": [
+              {
+                "offset": 0,
+                "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/owning-seven-project-gate-e84-20261104-2255/failure-extract-2/parts/00-raw-1/0000.txt",
+                "bytes": 131,
+                "sha256": "ed431f7254045aa3a1e6f2d82cf14229f568ab5c052b162f105ac82ab54c7e15"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "name": "suite::hooks::async_hook_finishing_while_idle_waits_for_the_next_turn",
+        "classname": "codex-core::all",
+        "seconds": "5.405",
+        "result": "FAIL",
+        "failure": "Error: timed out waiting for the next turn to complete\n\nCaused by:\n    deadline has elapsed",
+        "original_case_xml": {
+          "full": {
+            "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/owning-seven-project-gate-e84-20261104-2255/failure-extract-2/01.testcase.xml",
+            "bytes": 886,
+            "sha256": "9d70713484757bf760ebc3ed6963d03a6fc95399504e4a77d44af548af6ec666"
+          },
+          "parts": [
+            {
+              "offset": 0,
+              "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/owning-seven-project-gate-e84-20261104-2255/failure-extract-2/parts/01-xml/0000.txt",
+              "bytes": 886,
+              "sha256": "9d70713484757bf760ebc3ed6963d03a6fc95399504e4a77d44af548af6ec666"
+            }
+          ]
+        },
+        "xml_original_character_start": 811432,
+        "xml_original_character_end": 812318,
+        "raw_failure_sections": [
+          {
+            "line_start": 45312,
+            "line_end": 45330,
+            "ansi_normalized": false,
+            "full": {
+              "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/owning-seven-project-gate-e84-20261104-2255/failure-extract-2/01-raw-0.log",
+              "bytes": 579,
+              "sha256": "a91fea622e9981d6c72d026d49cde4c575966143090d5cbda90a4b74fb862cfa"
+            },
+            "parts": [
+              {
+                "offset": 0,
+                "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/owning-seven-project-gate-e84-20261104-2255/failure-extract-2/parts/01-raw-0/0000.txt",
+                "bytes": 579,
+                "sha256": "a91fea622e9981d6c72d026d49cde4c575966143090d5cbda90a4b74fb862cfa"
+              }
+            ]
+          },
+          {
+            "line_start": 64883,
+            "line_end": 64883,
+            "ansi_normalized": false,
+            "full": {
+              "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/owning-seven-project-gate-e84-20261104-2255/failure-extract-2/01-raw-1.log",
+              "bytes": 111,
+              "sha256": "f4760684ef8144a88661824a130dbbfe9d6a9225b1ba025af825a5002d51a3fb"
+            },
+            "parts": [
+              {
+                "offset": 0,
+                "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/owning-seven-project-gate-e84-20261104-2255/failure-extract-2/parts/01-raw-1/0000.txt",
+                "bytes": 111,
+                "sha256": "f4760684ef8144a88661824a130dbbfe9d6a9225b1ba025af825a5002d51a3fb"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "name": "suite::request_permissions::partial_request_permissions_grants_do_not_preapprove_new_permissions",
+        "classname": "codex-core::all",
+        "seconds": "0.443",
+        "result": "FAIL",
+        "failure": "thread 'suite::request_permissions::partial_request_permissions_grants_do_not_preapprove_new_permissions' (3764768) panicked at core/tests/suite/request_permissions.rs:1802:5:\nassertion failed: `(left == right)`\n\nDiff < left / right > :\n<Failed to create stream fd: Operation not permitted\n<Failed to create stream fd: Operation not permitted\n<Failed to create stream fd: Operation not permitted\n partial-grant-ok\n\n\nnote: run with `RUST_BACKTRACE=1` environment variable to display a backtrace",
+        "original_case_xml": {
+          "full": {
+            "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/owning-seven-project-gate-e84-20261104-2255/failure-extract-2/02.testcase.xml",
+            "bytes": 1952,
+            "sha256": "f5b86c24b142b86b8aca862820905f340b5816a6ed79cc3dd06db82c6f6d42e5"
+          },
+          "parts": [
+            {
+              "offset": 0,
+              "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/owning-seven-project-gate-e84-20261104-2255/failure-extract-2/parts/02-xml/0000.txt",
+              "bytes": 1952,
+              "sha256": "f5b86c24b142b86b8aca862820905f340b5816a6ed79cc3dd06db82c6f6d42e5"
+            }
+          ]
+        },
+        "xml_original_character_start": 854640,
+        "xml_original_character_end": 856592,
+        "raw_failure_sections": [
+          {
+            "line_start": 52052,
+            "line_end": 52078,
+            "ansi_normalized": false,
+            "full": {
+              "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/owning-seven-project-gate-e84-20261104-2255/failure-extract-2/02-raw-0.log",
+              "bytes": 1083,
+              "sha256": "ac509e32b715dffd85b01c072c81525f8a13de6ef0f745417ca34391bb78eb70"
+            },
+            "parts": [
+              {
+                "offset": 0,
+                "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/owning-seven-project-gate-e84-20261104-2255/failure-extract-2/parts/02-raw-0/0000.txt",
+                "bytes": 1083,
+                "sha256": "ac509e32b715dffd85b01c072c81525f8a13de6ef0f745417ca34391bb78eb70"
+              }
+            ]
+          },
+          {
+            "line_start": 64884,
+            "line_end": 64884,
+            "ansi_normalized": false,
+            "full": {
+              "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/owning-seven-project-gate-e84-20261104-2255/failure-extract-2/02-raw-1.log",
+              "bytes": 138,
+              "sha256": "dee12eb28efcc35734e0845dcdc34cb0fc245a5efa35947f9bb27d9b22079fa0"
+            },
+            "parts": [
+              {
+                "offset": 0,
+                "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/owning-seven-project-gate-e84-20261104-2255/failure-extract-2/parts/02-raw-1/0000.txt",
+                "bytes": 138,
+                "sha256": "dee12eb28efcc35734e0845dcdc34cb0fc245a5efa35947f9bb27d9b22079fa0"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "name": "suite::request_permissions::request_permissions_grants_apply_to_later_exec_command_calls",
+        "classname": "codex-core::all",
+        "seconds": "0.465",
+        "result": "FAIL",
+        "failure": "thread 'suite::request_permissions::request_permissions_grants_apply_to_later_exec_command_calls' (3764948) panicked at core/tests/suite/request_permissions.rs:1391:5:\nassertion failed: `(left == right)`\n\nDiff < left / right > :\n<Failed to create stream fd: Operation not permitted\n<Failed to create stream fd: Operation not permitted\n<Failed to create stream fd: Operation not permitted\n sticky-grant-ok\n\n\nnote: run with `RUST_BACKTRACE=1` environment variable to display a backtrace",
+        "original_case_xml": {
+          "full": {
+            "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/owning-seven-project-gate-e84-20261104-2255/failure-extract-2/03.testcase.xml",
+            "bytes": 1902,
+            "sha256": "b5339c2478f7e4f1fff1dfb96cfd0a22f774eb2e459e2d281875b328024d0727"
+          },
+          "parts": [
+            {
+              "offset": 0,
+              "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/owning-seven-project-gate-e84-20261104-2255/failure-extract-2/parts/03-xml/0000.txt",
+              "bytes": 1902,
+              "sha256": "b5339c2478f7e4f1fff1dfb96cfd0a22f774eb2e459e2d281875b328024d0727"
+            }
+          ]
+        },
+        "xml_original_character_start": 857316,
+        "xml_original_character_end": 859218,
+        "raw_failure_sections": [
+          {
+            "line_start": 52106,
+            "line_end": 52132,
+            "ansi_normalized": false,
+            "full": {
+              "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/owning-seven-project-gate-e84-20261104-2255/failure-extract-2/03-raw-0.log",
+              "bytes": 1050,
+              "sha256": "10156594c06656b3df088d94be26af02ed6d5ff541d9e8c50bb3e160dccb78a5"
+            },
+            "parts": [
+              {
+                "offset": 0,
+                "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/owning-seven-project-gate-e84-20261104-2255/failure-extract-2/parts/03-raw-0/0000.txt",
+                "bytes": 1050,
+                "sha256": "10156594c06656b3df088d94be26af02ed6d5ff541d9e8c50bb3e160dccb78a5"
+              }
+            ]
+          },
+          {
+            "line_start": 64885,
+            "line_end": 64885,
+            "ansi_normalized": false,
+            "full": {
+              "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/owning-seven-project-gate-e84-20261104-2255/failure-extract-2/03-raw-1.log",
+              "bytes": 130,
+              "sha256": "e3d575174399d47a364a1484644b700d241d43ff4feb268c6dd3e048473e4283"
+            },
+            "parts": [
+              {
+                "offset": 0,
+                "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/owning-seven-project-gate-e84-20261104-2255/failure-extract-2/parts/03-raw-1/0000.txt",
+                "bytes": 130,
+                "sha256": "e3d575174399d47a364a1484644b700d241d43ff4feb268c6dd3e048473e4283"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "name": "suite::request_permissions::request_permissions_grants_apply_to_later_exec_command_calls_without_inline_permission_feature",
+        "classname": "codex-core::all",
+        "seconds": "0.469",
+        "result": "FAIL",
+        "failure": "thread 'suite::request_permissions::request_permissions_grants_apply_to_later_exec_command_calls_without_inline_permission_feature' (3764986) panicked at core/tests/suite/request_permissions.rs:1626:5:\nassertion failed: `(left == right)`\n\nDiff < left / right > :\n<Failed to create stream fd: Operation not permitted\n<Failed to create stream fd: Operation not permitted\n<Failed to create stream fd: Operation not permitted\n sticky-shell-feature-independent-ok\n\n\nnote: run with `RUST_BACKTRACE=1` environment variable to display a backtrace",
+        "original_case_xml": {
+          "full": {
+            "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/owning-seven-project-gate-e84-20261104-2255/failure-extract-2/04.testcase.xml",
+            "bytes": 2146,
+            "sha256": "f1cde54bce856e2b1b870652565fd13e7c99db8747fa34c40aae80e977f47990"
+          },
+          "parts": [
+            {
+              "offset": 0,
+              "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/owning-seven-project-gate-e84-20261104-2255/failure-extract-2/parts/04-xml/0000.txt",
+              "bytes": 2146,
+              "sha256": "f1cde54bce856e2b1b870652565fd13e7c99db8747fa34c40aae80e977f47990"
+            }
+          ]
+        },
+        "xml_original_character_start": 859227,
+        "xml_original_character_end": 861373,
+        "raw_failure_sections": [
+          {
+            "line_start": 52133,
+            "line_end": 52159,
+            "ansi_normalized": false,
+            "full": {
+              "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/owning-seven-project-gate-e84-20261104-2255/failure-extract-2/04-raw-0.log",
+              "bytes": 1206,
+              "sha256": "b5264937a9461ef878203c2cb45d87121147677ffbfa5cd86400608b9e0a90c9"
+            },
+            "parts": [
+              {
+                "offset": 0,
+                "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/owning-seven-project-gate-e84-20261104-2255/failure-extract-2/parts/04-raw-0/0000.txt",
+                "bytes": 1206,
+                "sha256": "b5264937a9461ef878203c2cb45d87121147677ffbfa5cd86400608b9e0a90c9"
+              }
+            ]
+          },
+          {
+            "line_start": 64886,
+            "line_end": 64886,
+            "ansi_normalized": false,
+            "full": {
+              "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/owning-seven-project-gate-e84-20261104-2255/failure-extract-2/04-raw-1.log",
+              "bytes": 164,
+              "sha256": "fef105f82b0a67495c717a72c9d8e4a17e1d5060f00c3b1b38516597292612c2"
+            },
+            "parts": [
+              {
+                "offset": 0,
+                "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/owning-seven-project-gate-e84-20261104-2255/failure-extract-2/parts/04-raw-1/0000.txt",
+                "bytes": 164,
+                "sha256": "fef105f82b0a67495c717a72c9d8e4a17e1d5060f00c3b1b38516597292612c2"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "name": "suite::request_permissions::request_permissions_preapprove_explicit_exec_permissions_outside_on_request",
+        "classname": "codex-core::all",
+        "seconds": "0.478",
+        "result": "FAIL",
+        "failure": "thread 'suite::request_permissions::request_permissions_preapprove_explicit_exec_permissions_outside_on_request' (3765124) panicked at core/tests/suite/request_permissions.rs:1510:5:\nassertion failed: `(left == right)`\n\nDiff < left / right > :\n<Failed to create stream fd: Operation not permitted\n<Failed to create stream fd: Operation not permitted\n<Failed to create stream fd: Operation not permitted\n sticky-explicit-grant-ok\n\n\nnote: run with `RUST_BACKTRACE=1` environment variable to display a backtrace",
+        "original_case_xml": {
+          "full": {
+            "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/owning-seven-project-gate-e84-20261104-2255/failure-extract-2/05.testcase.xml",
+            "bytes": 2010,
+            "sha256": "541f8f214a9e0317c5ea3832755762589c96691b184acb575b58bedbdaa6933b"
+          },
+          "parts": [
+            {
+              "offset": 0,
+              "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/owning-seven-project-gate-e84-20261104-2255/failure-extract-2/parts/05-xml/0000.txt",
+              "bytes": 2010,
+              "sha256": "541f8f214a9e0317c5ea3832755762589c96691b184acb575b58bedbdaa6933b"
+            }
+          ]
+        },
+        "xml_original_character_start": 861612,
+        "xml_original_character_end": 863622,
+        "raw_failure_sections": [
+          {
+            "line_start": 52169,
+            "line_end": 52195,
+            "ansi_normalized": false,
+            "full": {
+              "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/owning-seven-project-gate-e84-20261104-2255/failure-extract-2/05-raw-0.log",
+              "bytes": 1119,
+              "sha256": "e6799b122b792c0abcb453c031a0ec0e6b6702ae5c243fd84bb8568c1d0117be"
+            },
+            "parts": [
+              {
+                "offset": 0,
+                "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/owning-seven-project-gate-e84-20261104-2255/failure-extract-2/parts/05-raw-0/0000.txt",
+                "bytes": 1119,
+                "sha256": "e6799b122b792c0abcb453c031a0ec0e6b6702ae5c243fd84bb8568c1d0117be"
+              }
+            ]
+          },
+          {
+            "line_start": 64887,
+            "line_end": 64887,
+            "ansi_normalized": false,
+            "full": {
+              "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/owning-seven-project-gate-e84-20261104-2255/failure-extract-2/05-raw-1.log",
+              "bytes": 145,
+              "sha256": "ec50cb6e99a1c556d86e16cab712447f408d97beaca89bc88819473a66d75136"
+            },
+            "parts": [
+              {
+                "offset": 0,
+                "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/owning-seven-project-gate-e84-20261104-2255/failure-extract-2/parts/05-raw-1/0000.txt",
+                "bytes": 145,
+                "sha256": "ec50cb6e99a1c556d86e16cab712447f408d97beaca89bc88819473a66d75136"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "name": "suite::unified_exec_zsh_fork_approvals::unified_exec_zsh_fork_parent_approval_preserves_denied_reads",
+        "classname": "codex-core::all",
+        "seconds": "0.128",
+        "result": "FAIL",
+        "failure": "Error: Fatal error: Failed to initialize session: failed to load AGENTS.md instructions for environment `local`: fs sandbox helper failed with status exit status: 1: error building bubblewrap command: Fatal error: unreadable glob `/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/source/codex-rs/core/.tmpqCGbr8/secret.env` cannot be safely expanded; use a pattern with a non-root directory prefix",
+        "original_case_xml": {
+          "full": {
+            "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/owning-seven-project-gate-e84-20261104-2255/failure-extract-2/06.testcase.xml",
+            "bytes": 1943,
+            "sha256": "4cb6cf38d6090a71661f50f1dedc2cea9bca265bb4c1cfe97bf5b6927da208a6"
+          },
+          "parts": [
+            {
+              "offset": 0,
+              "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/owning-seven-project-gate-e84-20261104-2255/failure-extract-2/parts/06-xml/0000.txt",
+              "bytes": 1943,
+              "sha256": "4cb6cf38d6090a71661f50f1dedc2cea9bca265bb4c1cfe97bf5b6927da208a6"
+            }
+          ]
+        },
+        "xml_original_character_start": 941003,
+        "xml_original_character_end": 942946,
+        "raw_failure_sections": [
+          {
+            "line_start": 56177,
+            "line_end": 56192,
+            "ansi_normalized": false,
+            "full": {
+              "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/owning-seven-project-gate-e84-20261104-2255/failure-extract-2/06-raw-0.log",
+              "bytes": 973,
+              "sha256": "87285eee31f047c66c67ea2162478838a19d1e834d936398418ff2f4f8d69586"
+            },
+            "parts": [
+              {
+                "offset": 0,
+                "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/owning-seven-project-gate-e84-20261104-2255/failure-extract-2/parts/06-raw-0/0000.txt",
+                "bytes": 973,
+                "sha256": "87285eee31f047c66c67ea2162478838a19d1e834d936398418ff2f4f8d69586"
+              }
+            ]
+          },
+          {
+            "line_start": 64889,
+            "line_end": 64889,
+            "ansi_normalized": false,
+            "full": {
+              "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/owning-seven-project-gate-e84-20261104-2255/failure-extract-2/06-raw-1.log",
+              "bytes": 142,
+              "sha256": "e7ae555c7742239d07229f1a557742def55d024435f420a8b7877e843a6b400a"
+            },
+            "parts": [
+              {
+                "offset": 0,
+                "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/owning-seven-project-gate-e84-20261104-2255/failure-extract-2/parts/06-raw-1/0000.txt",
+                "bytes": 142,
+                "sha256": "e7ae555c7742239d07229f1a557742def55d024435f420a8b7877e843a6b400a"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "name": "suite::skill_approval::shell_zsh_fork_skill_scripts_ignore_declared_permissions",
+        "classname": "codex-core::all",
+        "seconds": "10.399",
+        "result": "FAIL",
+        "failure": "thread 'suite::skill_approval::shell_zsh_fork_skill_scripts_ignore_declared_permissions' (3777869) panicked at core/tests/common/lib.rs:353:14:\ntimeout waiting for event: Elapsed(())\nnote: run with `RUST_BACKTRACE=1` environment variable to display a backtrace",
+        "original_case_xml": {
+          "full": {
+            "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/owning-seven-project-gate-e84-20261104-2255/failure-extract-2/07.testcase.xml",
+            "bytes": 1375,
+            "sha256": "b7349c58a9897d54e27eb698329eac25f18fd80d555bbfe5835291605c8348be"
+          },
+          "parts": [
+            {
+              "offset": 0,
+              "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/owning-seven-project-gate-e84-20261104-2255/failure-extract-2/parts/07-xml/0000.txt",
+              "bytes": 1375,
+              "sha256": "b7349c58a9897d54e27eb698329eac25f18fd80d555bbfe5835291605c8348be"
+            }
+          ]
+        },
+        "xml_original_character_start": 959982,
+        "xml_original_character_end": 961357,
+        "raw_failure_sections": [
+          {
+            "line_start": 64658,
+            "line_end": 64676,
+            "ansi_normalized": false,
+            "full": {
+              "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/owning-seven-project-gate-e84-20261104-2255/failure-extract-2/07-raw-0.log",
+              "bytes": 780,
+              "sha256": "0faf87e220fd0c55998123510c7a2aa9d6cd9d281192e864821ae42fe2d2e1c2"
+            },
+            "parts": [
+              {
+                "offset": 0,
+                "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/owning-seven-project-gate-e84-20261104-2255/failure-extract-2/parts/07-raw-0/0000.txt",
+                "bytes": 780,
+                "sha256": "0faf87e220fd0c55998123510c7a2aa9d6cd9d281192e864821ae42fe2d2e1c2"
+              }
+            ]
+          },
+          {
+            "line_start": 64888,
+            "line_end": 64888,
+            "ansi_normalized": false,
+            "full": {
+              "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/owning-seven-project-gate-e84-20261104-2255/failure-extract-2/07-raw-1.log",
+              "bytes": 121,
+              "sha256": "8263a13a31b489bbf47becd28465993e741ff5e022fc4fb2ab5f9b9603f22e61"
+            },
+            "parts": [
+              {
+                "offset": 0,
+                "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/owning-seven-project-gate-e84-20261104-2255/failure-extract-2/parts/07-raw-1/0000.txt",
+                "bytes": 121,
+                "sha256": "8263a13a31b489bbf47becd28465993e741ff5e022fc4fb2ab5f9b9603f22e61"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "name": "shell_snapshot_v2_capture_failure_falls_back_and_retries::test_case_3_remote_pipe_recovery",
+        "classname": "codex-exec-server::exec_process",
+        "seconds": "0.314",
+        "result": "FAIL",
+        "failure": "thread 'shell_snapshot_v2_capture_failure_falls_back_and_retries::test_case_3_remote_pipe_recovery' (3804580) panicked at exec-server/tests/exec_process.rs:434:9:\nassertion failed: `(left == right)`\n\nDiff < left / right > :\n (\n     \"original\",\n<    \"Failed to create stream fd: Operation not permitted\\nFailed to create stream fd: Operation not permitted\\nFailed to create stream fd: Operation not permitted\\n\",\n>    \"\",\n     Some(\n         0,\n     ),\n     true,\n )\n\n\nnote: run with `RUST_BACKTRACE=1` environment variable to display a backtrace",
+        "original_case_xml": {
+          "full": {
+            "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/owning-seven-project-gate-e84-20261104-2255/failure-extract-2/08.testcase.xml",
+            "bytes": 2093,
+            "sha256": "00570bb57e93652d69b6e7f06dab027edf283a84525624fe82f3359c95916df0"
+          },
+          "parts": [
+            {
+              "offset": 0,
+              "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/owning-seven-project-gate-e84-20261104-2255/failure-extract-2/parts/08-xml/0000.txt",
+              "bytes": 2093,
+              "sha256": "00570bb57e93652d69b6e7f06dab027edf283a84525624fe82f3359c95916df0"
+            }
+          ]
+        },
+        "xml_original_character_start": 1029202,
+        "xml_original_character_end": 1031295,
+        "raw_failure_sections": [
+          {
+            "line_start": 59801,
+            "line_end": 59832,
+            "ansi_normalized": false,
+            "full": {
+              "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/owning-seven-project-gate-e84-20261104-2255/failure-extract-2/08-raw-0.log",
+              "bytes": 1151,
+              "sha256": "86e850c4d6b48f789840a4feb8f2cab3ce1ad6af207ccce76feaabd8edd58c52"
+            },
+            "parts": [
+              {
+                "offset": 0,
+                "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/owning-seven-project-gate-e84-20261104-2255/failure-extract-2/parts/08-raw-0/0000.txt",
+                "bytes": 1151,
+                "sha256": "86e850c4d6b48f789840a4feb8f2cab3ce1ad6af207ccce76feaabd8edd58c52"
+              }
+            ]
+          },
+          {
+            "line_start": 64890,
+            "line_end": 64890,
+            "ansi_normalized": false,
+            "full": {
+              "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/owning-seven-project-gate-e84-20261104-2255/failure-extract-2/08-raw-1.log",
+              "bytes": 148,
+              "sha256": "4c5b3bbcca501cd339cb391c15ca7eeee630a38a22b96d9601ef30c1efc40406"
+            },
+            "parts": [
+              {
+                "offset": 0,
+                "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/owning-seven-project-gate-e84-20261104-2255/failure-extract-2/parts/08-raw-1/0000.txt",
+                "bytes": 148,
+                "sha256": "4c5b3bbcca501cd339cb391c15ca7eeee630a38a22b96d9601ef30c1efc40406"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "name": "shell_snapshot_v2_capture_failure_falls_back_and_retries::test_case_4_remote_tty_recovery",
+        "classname": "codex-exec-server::exec_process",
+        "seconds": "0.337",
+        "result": "FAIL",
+        "failure": "thread 'shell_snapshot_v2_capture_failure_falls_back_and_retries::test_case_4_remote_tty_recovery' (3804688) panicked at exec-server/tests/exec_process.rs:434:9:\nassertion failed: `(left == right)`\n\nDiff < left / right > :\n (\n<    \"Failed to create stream fd: Operation not permitted\\r\\nFailed to create stream fd: Operation not permitted\\r\\nFailed to create stream fd: Operation not permitted\\r\\noriginal\",\n>    \"original\",\n     \"\",\n     Some(\n         0,\n     ),\n     true,\n )\n\n\nnote: run with `RUST_BACKTRACE=1` environment variable to display a backtrace",
+        "original_case_xml": {
+          "full": {
+            "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/owning-seven-project-gate-e84-20261104-2255/failure-extract-2/09.testcase.xml",
+            "bytes": 2115,
+            "sha256": "8078bc02b5e381270fa7b2c89df38915c8e83c5c19c5eee2263621756d62a727"
+          },
+          "parts": [
+            {
+              "offset": 0,
+              "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/owning-seven-project-gate-e84-20261104-2255/failure-extract-2/parts/09-xml/0000.txt",
+              "bytes": 2115,
+              "sha256": "8078bc02b5e381270fa7b2c89df38915c8e83c5c19c5eee2263621756d62a727"
+            }
+          ]
+        },
+        "xml_original_character_start": 1031727,
+        "xml_original_character_end": 1033842,
+        "raw_failure_sections": [
+          {
+            "line_start": 59914,
+            "line_end": 59945,
+            "ansi_normalized": false,
+            "full": {
+              "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/owning-seven-project-gate-e84-20261104-2255/failure-extract-2/09-raw-0.log",
+              "bytes": 1161,
+              "sha256": "e84675b1fa04891387fef2a89d315601ad0a056cc2e0db378a1e416e9d0fc2b5"
+            },
+            "parts": [
+              {
+                "offset": 0,
+                "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/owning-seven-project-gate-e84-20261104-2255/failure-extract-2/parts/09-raw-0/0000.txt",
+                "bytes": 1161,
+                "sha256": "e84675b1fa04891387fef2a89d315601ad0a056cc2e0db378a1e416e9d0fc2b5"
+              }
+            ]
+          },
+          {
+            "line_start": 64891,
+            "line_end": 64891,
+            "ansi_normalized": false,
+            "full": {
+              "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/owning-seven-project-gate-e84-20261104-2255/failure-extract-2/09-raw-1.log",
+              "bytes": 147,
+              "sha256": "4b40c658a6afb10821069be5f88a168d9ba329ee6be364d35bcc520ee60ea134"
+            },
+            "parts": [
+              {
+                "offset": 0,
+                "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/owning-seven-project-gate-e84-20261104-2255/failure-extract-2/parts/09-raw-1/0000.txt",
+                "bytes": 147,
+                "sha256": "4b40c658a6afb10821069be5f88a168d9ba329ee6be364d35bcc520ee60ea134"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "name": "shell_snapshot_v2_filters_profile_exports_and_stays_in_memory::test_case_5_remote_sandbox",
+        "classname": "codex-exec-server::exec_process",
+        "seconds": "0.278",
+        "result": "FAIL",
+        "failure": "thread 'shell_snapshot_v2_filters_profile_exports_and_stays_in_memory::test_case_5_remote_sandbox' (3805137) panicked at exec-server/tests/exec_process.rs:258:9:\nassertion failed: `(left == right)`\n\nDiff < left / right > :\n (\n>    \"helper|profile|missing|missing|/tmp/.tmppS2P8q/runtime-bin:/tmp/.tmppS2P8q/profile-bin:/usr/bin:/bin|missing|missing\",\n     \"\",\n<    \"/tmp/.tmppS2P8q/.bashrc: line 1: /tmp/.tmppS2P8q/captures: Read-only file system\\n\",\n     Some(\n<        41,\n>        0,\n     ),\n     true,\n )\n\n\nnote: run with `RUST_BACKTRACE=1` environment variable to display a backtrace",
+        "original_case_xml": {
+          "full": {
+            "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/owning-seven-project-gate-e84-20261104-2255/failure-extract-2/10.testcase.xml",
+            "bytes": 2187,
+            "sha256": "514c65303bff11a1db0c7bdca16effa1260b5eafb90ccc9c4be68743ff02ca4b"
+          },
+          "parts": [
+            {
+              "offset": 0,
+              "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/owning-seven-project-gate-e84-20261104-2255/failure-extract-2/parts/10-xml/0000.txt",
+              "bytes": 2187,
+              "sha256": "514c65303bff11a1db0c7bdca16effa1260b5eafb90ccc9c4be68743ff02ca4b"
+            }
+          ]
+        },
+        "xml_original_character_start": 1033851,
+        "xml_original_character_end": 1036038,
+        "raw_failure_sections": [
+          {
+            "line_start": 59955,
+            "line_end": 59987,
+            "ansi_normalized": false,
+            "full": {
+              "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/owning-seven-project-gate-e84-20261104-2255/failure-extract-2/10-raw-0.log",
+              "bytes": 1195,
+              "sha256": "cc332f86c8819f8288c9e587435601724d1316b932b7d38d2c24c185cefff01d"
+            },
+            "parts": [
+              {
+                "offset": 0,
+                "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/owning-seven-project-gate-e84-20261104-2255/failure-extract-2/parts/10-raw-0/0000.txt",
+                "bytes": 1195,
+                "sha256": "cc332f86c8819f8288c9e587435601724d1316b932b7d38d2c24c185cefff01d"
+              }
+            ]
+          },
+          {
+            "line_start": 64893,
+            "line_end": 64895,
+            "ansi_normalized": false,
+            "full": {
+              "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/owning-seven-project-gate-e84-20261104-2255/failure-extract-2/10-raw-1.log",
+              "bytes": 228,
+              "sha256": "1dc035c9b87f35614eb483d535241ee5f4958f5249ddd9ea007c497885276f0c"
+            },
+            "parts": [
+              {
+                "offset": 0,
+                "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/owning-seven-project-gate-e84-20261104-2255/failure-extract-2/parts/10-raw-1/0000.txt",
+                "bytes": 228,
+                "sha256": "1dc035c9b87f35614eb483d535241ee5f4958f5249ddd9ea007c497885276f0c"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "name": "shell_snapshot_v2_capture_failure_falls_back_and_retries::test_case_6_remote_retry_budget_exhausted",
+        "classname": "codex-exec-server::exec_process",
+        "seconds": "0.336",
+        "result": "FAIL",
+        "failure": "thread 'shell_snapshot_v2_capture_failure_falls_back_and_retries::test_case_6_remote_retry_budget_exhausted' (3804761) panicked at exec-server/tests/exec_process.rs:434:9:\nassertion failed: `(left == right)`\n\nDiff < left / right > :\n (\n     \"original\",\n<    \"Failed to create stream fd: Operation not permitted\\nFailed to create stream fd: Operation not permitted\\nFailed to create stream fd: Operation not permitted\\n\",\n>    \"\",\n     Some(\n         0,\n     ),\n     true,\n )\n\n\nnote: run with `RUST_BACKTRACE=1` environment variable to display a backtrace",
+        "original_case_xml": {
+          "full": {
+            "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/owning-seven-project-gate-e84-20261104-2255/failure-extract-2/11.testcase.xml",
+            "bytes": 2147,
+            "sha256": "92fd0d8a8dbb79c516b2b25c53c6e0c1dbb571ef8f4c5593c9e93ad9bcb8c07b"
+          },
+          "parts": [
+            {
+              "offset": 0,
+              "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/owning-seven-project-gate-e84-20261104-2255/failure-extract-2/parts/11-xml/0000.txt",
+              "bytes": 2147,
+              "sha256": "92fd0d8a8dbb79c516b2b25c53c6e0c1dbb571ef8f4c5593c9e93ad9bcb8c07b"
+            }
+          ]
+        },
+        "xml_original_character_start": 1036499,
+        "xml_original_character_end": 1038646,
+        "raw_failure_sections": [
+          {
+            "line_start": 60033,
+            "line_end": 60064,
+            "ansi_normalized": false,
+            "full": {
+              "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/owning-seven-project-gate-e84-20261104-2255/failure-extract-2/11-raw-0.log",
+              "bytes": 1187,
+              "sha256": "3be960385a83423f4d55fa6e9d41b64a907be001fa512b905a2bd101931503e9"
+            },
+            "parts": [
+              {
+                "offset": 0,
+                "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/owning-seven-project-gate-e84-20261104-2255/failure-extract-2/parts/11-raw-0/0000.txt",
+                "bytes": 1187,
+                "sha256": "3be960385a83423f4d55fa6e9d41b64a907be001fa512b905a2bd101931503e9"
+              }
+            ]
+          },
+          {
+            "line_start": 64892,
+            "line_end": 64892,
+            "ansi_normalized": false,
+            "full": {
+              "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/owning-seven-project-gate-e84-20261104-2255/failure-extract-2/11-raw-1.log",
+              "bytes": 157,
+              "sha256": "263767880063b18640dd89546a5a809cc21505f2fba07c2567bd333fa18410d2"
+            },
+            "parts": [
+              {
+                "offset": 0,
+                "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/owning-seven-project-gate-e84-20261104-2255/failure-extract-2/parts/11-raw-1/0000.txt",
+                "bytes": 157,
+                "sha256": "263767880063b18640dd89546a5a809cc21505f2fba07c2567bd333fa18410d2"
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "records": [
+    {
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/owning-seven-project-gate-e84-20261104-2255/failure-extract-2/failures.json",
+      "content": "{\n  \"source\": \"e84c2f12e39022701c8a942343b3913faa62cf31\",\n  \"observed_at\": \"2026-11-04T22:51:51.892956+00:00\",\n  \"original_review\": {\n    \"path\": \"/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/owning-seven-project-gate-e84-20261104-2255/owning-seven-review.json\",\n    \"bytes\": 1245743,\n    \"sha256\": \"718248dd1fe8cc0af880e4b4bb107c8ff9e90ad3c9294029135e0f1820f76b37\"\n  },\n  \"original_raw\": {\n    \"path\": \"/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/owning-seven-project-gate-e84-20261104-2255/owning-seven.log\",\n    \"bytes\": 11676772,\n    \"sha256\": \"73f4c625c46606ec042889e39e92fe39d0670d62d763b4d3bd1ecd85ec315d23\"\n  },\n  \"original_junit\": {\n    \"path\": \"/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/owning-seven-project-gate-e84-20261104-2255/owning-seven.junit.xml\",\n    \"bytes\": 1155445,\n    \"sha256\": \"0cd59b4942ccbefc3225f34457991b1193d96a622da80a7cea98371f701c7df1\"\n  },\n  \"counts\": {\n    \"PASS\": 5404,\n    \"FAIL\": 12\n  },\n  \"retries\": 0,\n  \"profile\": {\n    \"build\": \"dev-small\",\n    \"nextest\": \"local\"\n  },\n  \"binary_stable\": true,\n  \"helpers_stable\": true,\n  \"source_unchanged\": true,\n  \"exact_executed_roster\": true,\n  \"known_missing_prerequisite_early_returns\": [],\n  \"all_skip_observations\": [\n    \"    Skipping test because it requires a remote test environment.\",\n    \"    Skipping test because it requires a remote test environment.\",\n    \"    Skipping test because it requires a remote test environment.\",\n    \"    Skipping test because it requires a remote test environment.\",\n    \"    Skipping test because it requires a remote test environment.\",\n    \"    Skipping test because it requires a remote test environment.\",\n    \"    Skipping test because it requires a remote test environment.\",\n    \"    Skipping test because it requires a remote test environment.\",\n    \"    Skipping test because it requires a remote test environment.\",\n    \"    Skipping test because it requires a remote test environment.\",\n    \"    Skipping test because it requires a remote test environment.\",\n    \"    Skipping test because it requires a remote test environment.\",\n    \"    Skipping test because it requires a remote test environment.\",\n    \"    Skipping test because it requires a remote test environment.\",\n    \"    Skipping test because it requires a remote test environment.\",\n    \"    Skipping test because it requires a remote test environment.\",\n    \"    Skipping test because it requires a remote test environment.\",\n    \"    Skipping test because it requires a remote test environment.\",\n    \"    Skipping test because it requires a remote test environment.\",\n    \"    Skipping test because it requires a remote test environment.\",\n    \"    Skipping test because it requires a remote test environment.\",\n    \"    Skipping test because it requires a remote test environment.\",\n    \"    Skipping test because it requires a remote test environment.\",\n    \"    2026-11-04T22:46:40.789037Z  WARN codex_core::session: skipping subagent thread analytics: missing inherited client metadata\",\n    \"    2026-11-04T22:46:40.793366Z  WARN codex_core::session: skipping subagent thread analytics: missing inherited client metadata\",\n    \"    2026-11-04T22:46:40.792452Z  WARN codex_core::session: skipping subagent thread analytics: missing inherited client metadata\",\n    \"    2026-11-04T22:46:40.794443Z  WARN codex_core::session: skipping subagent thread analytics: missing inherited client metadata\",\n    \"    Skipping test because it requires a remote test environment.\"\n  ],\n  \"failures\": [\n    {\n      \"name\": \"suite::approvals::approving_execpolicy_amendment_persists_policy_and_skips_future_prompts\",\n      \"classname\": \"codex-core::all\",\n      \"seconds\": \"0.378\",\n      \"result\": \"FAIL\",\n      \"failure\": \"thread 'suite::approvals::approving_execpolicy_amendment_persists_policy_and_skips_future_prompts' (3658852) panicked at core/tests/suite/approvals.rs:2540:5:\\nunexpected stdout: Failed to create stream fd: Operation not permitted\\nFailed to create stream fd: Operation not permitted\\nFailed to create stream fd: Operation not permitted\\n\\nnote: run with `RUST_BACKTRACE=1` environment variable to display a backtrace\",\n      \"original_case_xml\": {\n        \"full\": {\n          \"path\": \"/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/owning-seven-project-gate-e84-20261104-2255/failure-extract-2/00.testcase.xml\",\n          \"bytes\": 1722,\n          \"sha256\": \"7b8635b1d3804f362ece06037d67ba3f95d74220a602ead639f82382688c45b8\"\n        },\n        \"parts\": [\n          {\n            \"offset\": 0,\n            \"path\": \"/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/owning-seven-project-gate-e84-20261104-2255/failure-extract-2/parts/00-xml/0000.txt\",\n            \"bytes\": 1722,\n            \"sha256\": \"7b8635b1d3804f362ece06037d67ba3f95d74220a602ead639f82382688c45b8\"\n          }\n        ]\n      },\n      \"xml_original_character_start\": 663886,\n      \"xml_original_character_end\": 665608,\n      \"raw_failure_sections\": [\n        {\n          \"line_start\": 30482,\n          \"line_end\": 30503,\n          \"ansi_normalized\": false,\n          \"full\": {\n            \"path\": \"/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/owning-seven-project-gate-e84-20261104-2255/failure-extract-2/00-raw-0.log\",\n            \"bytes\": 969,\n            \"sha256\": \"2dcb47fdd1077e79232ec822222a88d9b2193c7f86475e2e10f36e56fe6216a9\"\n          },\n          \"parts\": [\n            {\n              \"offset\": 0,\n              \"path\": \"/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/owning-seven-project-gate-e84-20261104-2255/failure-extract-2/parts/00-raw-0/0000.txt\",\n              \"bytes\": 969,\n              \"sha256\": \"2dcb47fdd1077e79232ec822222a88d9b2193c7f86475e2e10f36e56fe6216a9\"\n            }\n          ]\n        },\n        {\n          \"line_start\": 64882,\n          \"line_end\": 64882,\n          \"ansi_normalized\": false,\n          \"full\": {\n            \"path\": \"/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/owning-seven-project-gate-e84-20261104-2255/failure-extract-2/00-raw-1.log\",\n            \"bytes\": 131,\n            \"sha256\": \"ed431f7254045aa3a1e6f2d82cf14229f568ab5c052b162f105ac82ab54c7e15\"\n          },\n          \"parts\": [\n            {\n              \"offset\": 0,\n              \"path\": \"/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/owning-seven-project-gate-e84-20261104-2255/failure-extract-2/parts/00-raw-1/0000.txt\",\n              \"bytes\": 131,\n              \"sha256\": \"ed431f7254045aa3a1e6f2d82cf14229f568ab5c052b162f105ac82ab54c7e15\"\n            }\n          ]\n        }\n      ]\n    },\n    {\n      \"name\": \"suite::hooks::async_hook_finishing_while_idle_waits_for_the_next_turn\",\n      \"classname\": \"codex-core::all\",\n      \"seconds\": \"5.405\",\n      \"result\": \"FAIL\",\n      \"failure\": \"Error: timed out waiting for the next turn to complete\\n\\nCaused by:\\n    deadline has elapsed\",\n      \"original_case_xml\": {\n        \"full\": {\n          \"path\": \"/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/owning-seven-project-gate-e84-20261104-2255/failure-extract-2/01.testcase.xml\",\n          \"bytes\": 886,\n          \"sha256\": \"9d70713484757bf760ebc3ed6963d03a6fc95399504e4a77d44af548af6ec666\"\n        },\n        \"parts\": [\n          {\n            \"offset\": 0,\n            \"path\": \"/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/owning-seven-project-gate-e84-20261104-2255/failure-extract-2/parts/01-xml/0000.txt\",\n            \"bytes\": 886,\n            \"sha256\": \"9d70713484757bf760ebc3ed6963d03a6fc95399504e4a77d44af548af6ec666\"\n          }\n        ]\n      },\n      \"xml_original_character_start\": 811432,\n      \"xml_original_character_end\": 812318,\n      \"raw_failure_sections\": [\n        {\n          \"line_start\": 45312,\n          \"line_end\": 45330,\n          \"ansi_normalized\": false,\n          \"full\": {\n            \"path\": \"/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/owning-seven-project-gate-e84-20261104-2255/failure-extract-2/01-raw-0.log\",\n            \"bytes\": 579,\n            \"sha256\": \"a91fea622e9981d6c72d026d49cde4c575966143090d5cbda90a4b74fb862cfa\"\n          },\n          \"parts\": [\n            {\n              \"offset\": 0,\n              \"path\": \"/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/owning-seven-project-gate-e84-20261104-2255/failure-extract-2/parts/01-raw-0/0000.txt\",\n              \"bytes\": 579,\n              \"sha256\": \"a91fea622e9981d6c72d026d49cde4c575966143090d5cbda90a4b74fb862cfa\"\n            }\n          ]\n        },\n        {\n          \"line_start\": 64883,\n          \"line_end\": 64883,\n          \"ansi_normalized\": false,\n          \"full\": {\n            \"path\": \"/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/owning-seven-project-gate-e84-20261104-2255/failure-extract-2/01-raw-1.log\",\n            \"bytes\": 111,\n            \"sha256\": \"f4760684ef8144a88661824a130dbbfe9d6a9225b1ba025af825a5002d51a3fb\"\n          },\n          \"parts\": [\n            {\n              \"offset\": 0,\n              \"path\": \"/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/owning-seven-project-gate-e84-20261104-2255/failure-extract-2/parts/01-raw-1/0000.txt\",\n              \"bytes\": 111,\n              \"sha256\": \"f4760684ef8144a88661824a130dbbfe9d6a9225b1ba025af825a5002d51a3fb\"\n            }\n          ]\n        }\n      ]\n    },\n    {\n      \"name\": \"suite::request_permissions::partial_request_permissions_grants_do_not_preapprove_new_permissions\",\n      \"classname\": \"codex-core::all\",\n      \"seconds\": \"0.443\",\n      \"result\": \"FAIL\",\n      \"failure\": \"thread 'suite::request_permissions::partial_request_permissions_grants_do_not_preapprove_new_permissions' (3764768) panicked at core/tests/suite/request_permissions.rs:1802:5:\\nassertion failed: `(left == right)`\\n\\nDiff < left / right > :\\n<Failed to create stream fd: Operation not permitted\\n<Failed to create stream fd: Operation not permitted\\n<Failed to create stream fd: Operation not permitted\\n partial-grant-ok\\n\\n\\nnote: run with `RUST_BACKTRACE=1` environment variable to display a backtrace\",\n      \"original_case_xml\": {\n        \"full\": {\n          \"path\": \"/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/owning-seven-project-gate-e84-20261104-2255/failure-extract-2/02.testcase.xml\",\n          \"bytes\": 1952,\n          \"sha256\": \"f5b86c24b142b86b8aca862820905f340b5816a6ed79cc3dd06db82c6f6d42e5\"\n        },\n        \"parts\": [\n          {\n            \"offset\": 0,\n            \"path\": \"/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/owning-seven-project-gate-e84-20261104-2255/failure-extract-2/parts/02-xml/0000.txt\",\n            \"bytes\": 1952,\n            \"sha256\": \"f5b86c24b142b86b8aca862820905f340b5816a6ed79cc3dd06db82c6f6d42e5\"\n          }\n        ]\n      },\n      \"xml_original_character_start\": 854640,\n      \"xml_original_character_end\": 856592,\n      \"raw_failure_sections\": [\n        {\n          \"line_start\": 52052,\n          \"line_end\": 52078,\n          \"ansi_normalized\": false,\n          \"full\": {\n            \"path\": \"/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/owning-seven-project-gate-e84-20261104-2255/failure-extract-2/02-raw-0.log\",\n            \"bytes\": 1083,\n            \"sha256\": \"ac509e32b715dffd85b01c072c81525f8a13de6ef0f745417ca34391bb78eb70\"\n          },\n          \"parts\": [\n            {\n              \"offset\": 0,\n              \"path\": \"/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/owning-seven-project-gate-e84-20261104-2255/failure-extract-2/parts/02-raw-0/0000.txt\",\n              \"bytes\": 1083,\n              \"sha256\": \"ac509e32b715dffd85b01c072c81525f8a13de6ef0f745417ca34391bb78eb70\"\n            }\n          ]\n        },\n        {\n          \"line_start\": 64884,\n          \"line_end\": 64884,\n          \"ansi_normalized\": false,\n          \"full\": {\n            \"path\": \"/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/owning-seven-project-gate-e84-20261104-2255/failure-extract-2/02-raw-1.log\",\n            \"bytes\": 138,\n            \"sha256\": \"dee12eb28efcc35734e0845dcdc34cb0fc245a5efa35947f9bb27d9b22079fa0\"\n          },\n          \"parts\": [\n            {\n              \"offset\": 0,\n              \"path\": \"/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/owning-seven-project-gate-e84-20261104-2255/failure-extract-2/parts/02-raw-1/0000.txt\",\n              \"bytes\": 138,\n              \"sha256\": \"dee12eb28efcc35734e0845dcdc34cb0fc245a5efa35947f9bb27d9b22079fa0\"\n            }\n          ]\n        }\n      ]\n    },\n    {\n      \"name\": \"suite::request_permissions::request_permissions_grants_apply_to_later_exec_command_calls\",\n      \"classname\": \"codex-core::all\",\n      \"seconds\": \"0.465\",\n      \"result\": \"FAIL\",\n      \"failure\": \"thread 'suite::request_permissions::request_permissions_grants_apply_to_later_exec_command_calls' (3764948) panicked at core/tests/suite/request_permissions.rs:1391:5:\\nassertion failed: `(left == right)`\\n\\nDiff < left / right > :\\n<Failed to create stream fd: Operation not permitted\\n<Failed to create stream fd: Operation not permitted\\n<Failed to create stream fd: Operation not permitted\\n sticky-grant-ok\\n\\n\\nnote: run with `RUST_BACKTRACE=1` environment variable to display a backtrace\",\n      \"original_case_xml\": {\n        \"full\": {\n          \"path\": \"/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/owning-seven-project-gate-e84-20261104-2255/failure-extract-2/03.testcase.xml\",\n          \"bytes\": 1902,\n          \"sha256\": \"b5339c2478f7e4f1fff1dfb96cfd0a22f774eb2e459e2d281875b328024d0727\"\n        },\n        \"parts\": [\n          {\n            \"offset\": 0,\n            \"path\": \"/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/owning-seven-project-gate-e84-20261104-2255/failure-extract-2/parts/03-xml/0000.txt\",\n            \"bytes\": 1902,\n            \"sha256\": \"b5339c2478f7e4f1fff1dfb96cfd0a22f774eb2e459e2d281875b328024d0727\"\n          }\n        ]\n      },\n      \"xml_original_character_start\": 857316,\n      \"xml_original_character_end\": 859218,\n      \"raw_failure_sections\": [\n        {\n          \"line_start\": 52106,\n          \"line_end\": 52132,\n          \"ansi_normalized\": false,\n          \"full\": {\n            \"path\": \"/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/owning-seven-project-gate-e84-20261104-2255/failure-extract-2/03-raw-0.log\",\n            \"bytes\": 1050,\n            \"sha256\": \"10156594c06656b3df088d94be26af02ed6d5ff541d9e8c50bb3e160dccb78a5\"\n          },\n          \"parts\": [\n            {\n              \"offset\": 0,\n              \"path\": \"/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/owning-seven-project-gate-e84-20261104-2255/failure-extract-2/parts/03-raw-0/0000.txt\",\n              \"bytes\": 1050,\n              \"sha256\": \"10156594c06656b3df088d94be26af02ed6d5ff541d9e8c50bb3e160dccb78a5\"\n            }\n          ]\n        },\n        {\n          \"line_start\": 64885,\n          \"line_end\": 64885,\n          \"ansi_normalized\": false,\n          \"full\": {\n            \"path\": \"/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/owning-seven-project-gate-e84-20261104-2255/failure-extract-2/03-raw-1.log\",\n            \"bytes\": 130,\n            \"sha256\": \"e3d575174399d47a364a1484644b700d241d43ff4feb268c6dd3e048473e4283\"\n          },\n          \"parts\": [\n            {\n              \"offset\": 0,\n              \"path\": \"/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/owning-seven-project-gate-e84-20261104-2255/failure-extract-2/parts/03-raw-1/0000.txt\",\n              \"bytes\": 130,\n              \"sha256\": \"e3d575174399d47a364a1484644b700d241d43ff4feb268c6dd3e048473e4283\"\n            }\n          ]\n        }\n      ]\n    },\n    {\n      \"name\": \"suite::request_permissions::request_permissions_grants_apply_to_later_exec_command_calls_without_inline_permission_feature\",\n      \"classname\": \"codex-core::all\",\n      \"seconds\": \"0.469\",\n      \"result\": \"FAIL\",\n      \"failure\": \"thread 'suite::request_permissions::request_permissions_grants_apply_to_later_exec_command_calls_without_inline_permission_feature' (3764986) panicked at core/tests/suite/request_permissions.rs:1626:5:\\nassertion failed: `(left == right)`\\n\\nDiff < left / right > :\\n<Failed to create stream fd: Operation not permitted\\n<Failed to create stream fd: Operation not permitted\\n<Failed to create stream fd: Operation not permitted\\n sticky-shell-feature-independent-ok\\n\\n\\nnote: run with `RUST_BACKTRACE=1` environment variable to display a backtrace\",\n      \"original_case_xml\": {\n        \"full\": {\n          \"path\": \"/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/owning-seven-project-gate-e84-20261104-2255/failure-extract-2/04.testcase.xml\",\n          \"bytes\": 2146,\n          \"sha256\": \"f1cde54bce856e2b1b870652565fd13e7c99db8747fa34c40aae80e977f47990\"\n        },\n        \"parts\": [\n          {\n            \"offset\": 0,\n            \"path\": \"/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/owning-seven-project-gate-e84-20261104-2255/failure-extract-2/parts/04-xml/0000.txt\",\n            \"bytes\": 2146,\n            \"sha256\": \"f1cde54bce856e2b1b870652565fd13e7c99db8747fa34c40aae80e977f47990\"\n          }\n        ]\n      },\n      \"xml_original_character_start\": 859227,\n      \"xml_original_character_end\": 861373,\n      \"raw_failure_sections\": [\n        {\n          \"line_start\": 52133,\n          \"line_end\": 52159,\n          \"ansi_normalized\": false,\n          \"full\": {\n            \"path\": \"/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/owning-seven-project-gate-e84-20261104-2255/failure-extract-2/04-raw-0.log\",\n            \"bytes\": 1206,\n            \"sha256\": \"b5264937a9461ef878203c2cb45d87121147677ffbfa5cd86400608b9e0a90c9\"\n          },\n          \"parts\": [\n            {\n              \"offset\": 0,\n              \"path\": \"/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/owning-seven-project-gate-e84-20261104-2255/failure-extract-2/parts/04-raw-0/0000.txt\",\n              \"bytes\": 1206,\n              \"sha256\": \"b5264937a9461ef878203c2cb45d87121147677ffbfa5cd86400608b9e0a90c9\"\n            }\n          ]\n        },\n        {\n          \"line_start\": 64886,\n          \"line_end\": 64886,\n          \"ansi_normalized\": false,\n          \"full\": {\n            \"path\": \"/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/owning-seven-project-gate-e84-20261104-2255/failure-extract-2/04-raw-1.log\",\n            \"bytes\": 164,\n            \"sha256\": \"fef105f82b0a67495c717a72c9d8e4a17e1d5060f00c3b1b38516597292612c2\"\n          },\n          \"parts\": [\n            {\n              \"offset\": 0,\n              \"path\": \"/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/owning-seven-project-gate-e84-20261104-2255/failure-extract-2/parts/04-raw-1/0000.txt\",\n              \"bytes\": 164,\n              \"sha256\": \"fef105f82b0a67495c717a72c9d8e4a17e1d5060f00c3b1b38516597292612c2\"\n            }\n          ]\n        }\n      ]\n    },\n    {\n      \"name\": \"suite::request_permissions::request_permissions_preapprove_explicit_exec_permissions_outside_on_request\",\n      \"classname\": \"codex-core::all\",\n      \"seconds\": \"0.478\",\n      \"result\": \"FAIL\",\n      \"failure\": \"thread 'suite::request_permissions::request_permissions_preapprove_explicit_exec_permissions_outside_on_request' (3765124) panicked at core/tests/suite/request_permissions.rs:1510:5:\\nassertion failed: `(left == right)`\\n\\nDiff < left / right > :\\n<Failed to create stream fd: Operation not permitted\\n<Failed to create stream fd: Operation not permitted\\n<Failed to create stream fd: Operation not permitted\\n sticky-explicit-grant-ok\\n\\n\\nnote: run with `RUST_BACKTRACE=1` environment variable to display a backtrace\",\n      \"original_case_xml\": {\n        \"full\": {\n          \"path\": \"/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/owning-seven-project-gate-e84-20261104-2255/failure-extract-2/05.testcase.xml\",\n          \"bytes\": 2010,\n          \"sha256\": \"541f8f214a9e0317c5ea3832755762589c96691b184acb575b58bedbdaa6933b\"\n        },\n        \"parts\": [\n          {\n            \"offset\": 0,\n            \"path\": \"/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/owning-seven-project-gate-e84-20261104-2255/failure-extract-2/parts/05-xml/0000.txt\",\n            \"bytes\": 2010,\n            \"sha256\": \"541f8f214a9e0317c5ea3832755762589c96691b184acb575b58bedbdaa6933b\"\n          }\n        ]\n      },\n      \"xml_original_character_start\": 861612,\n      \"xml_original_character_end\": 863622,\n      \"raw_failure_sections\": [\n        {\n          \"line_start\": 52169,\n          \"line_end\": 52195,\n          \"ansi_normalized\": false,\n          \"full\": {\n            \"path\": \"/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/owning-seven-project-gate-e84-20261104-2255/failure-extract-2/05-raw-0.log\",\n            \"bytes\": 1119,\n            \"sha256\": \"e6799b122b792c0abcb453c031a0ec0e6b6702ae5c243fd84bb8568c1d0117be\"\n          },\n          \"parts\": [\n            {\n              \"offset\": 0,\n              \"path\": \"/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/owning-seven-project-gate-e84-20261104-2255/failure-extract-2/parts/05-raw-0/0000.txt\",\n              \"bytes\": 1119,\n              \"sha256\": \"e6799b122b792c0abcb453c031a0ec0e6b6702ae5c243fd84bb8568c1d0117be\"\n            }\n          ]\n        },\n        {\n          \"line_start\": 64887,\n          \"line_end\": 64887,\n          \"ansi_normalized\": false,\n          \"full\": {\n            \"path\": \"/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/owning-seven-project-gate-e84-20261104-2255/failure-extract-2/05-raw-1.log\",\n            \"bytes\": 145,\n            \"sha256\": \"ec50cb6e99a1c556d86e16cab712447f408d97beaca89bc88819473a66d75136\"\n          },\n          \"parts\": [\n            {\n              \"offset\": 0,\n              \"path\": \"/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/owning-seven-project-gate-e84-20261104-2255/failure-extract-2/parts/05-raw-1/0000.txt\",\n              \"bytes\": 145,\n              \"sha256\": \"ec50cb6e99a1c556d86e16cab712447f408d97beaca89bc88819473a66d75136\"\n            }\n          ]\n        }\n      ]\n    },\n    {\n      \"name\": \"suite::unified_exec_zsh_fork_approvals::unified_exec_zsh_fork_parent_approval_preserves_denied_reads\",\n      \"classname\": \"codex-core::all\",\n      \"seconds\": \"0.128\",\n      \"result\": \"FAIL\",\n      \"failure\": \"Error: Fatal error: Failed to initialize session: failed to load AGENTS.md instructions for environment `local`: fs sandbox helper failed with status exit status: 1: error building bubblewrap command: Fatal error: unreadable glob `/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/source/codex-rs/core/.tmpqCGbr8/secret.env` cannot be safely expanded; use a pattern with a non-root directory prefix\",\n      \"original_case_xml\": {\n        \"full\": {\n          \"path\": \"/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/owning-seven-project-gate-e84-20261104-2255/failure-extract-2/06.testcase.xml\",\n          \"bytes\": 1943,\n          \"sha256\": \"4cb6cf38d6090a71661f50f1dedc2cea9bca265bb4c1cfe97bf5b6927da208a6\"\n        },\n        \"parts\": [\n          {\n            \"offset\": 0,\n            \"path\": \"/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/owning-seven-project-gate-e84-20261104-2255/failure-extract-2/parts/06-xml/0000.txt\",\n            \"bytes\": 1943,\n            \"sha256\": \"4cb6cf38d6090a71661f50f1dedc2cea9bca265bb4c1cfe97bf5b6927da208a6\"\n          }\n        ]\n      },\n      \"xml_original_character_start\": 941003,\n      \"xml_original_character_end\": 942946,\n      \"raw_failure_sections\": [\n        {\n          \"line_start\": 56177,\n          \"line_end\": 56192,\n          \"ansi_normalized\": false,\n          \"full\": {\n            \"path\": \"/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/owning-seven-project-gate-e84-20261104-2255/failure-extract-2/06-raw-0.log\",\n            \"bytes\": 973,\n            \"sha256\": \"87285eee31f047c66c67ea2162478838a19d1e834d936398418ff2f4f8d69586\"\n          },\n          \"parts\": [\n            {\n              \"offset\": 0,\n              \"path\": \"/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/owning-seven-project-gate-e84-20261104-2255/failure-extract-2/parts/06-raw-0/0000.txt\",\n              \"bytes\": 973,\n              \"sha256\": \"87285eee31f047c66c67ea2162478838a19d1e834d936398418ff2f4f8d69586\"\n            }\n          ]\n        },\n        {\n          \"line_start\": 64889,\n          \"line_end\": 64889,\n          \"ansi_normalized\": false,\n          \"full\": {\n            \"path\": \"/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/owning-seven-project-gate-e84-20261104-2255/failure-extract-2/06-raw-1.log\",\n            \"bytes\": 142,\n            \"sha256\": \"e7ae555c7742239d07229f1a557742def55d024435f420a8b7877e843a6b400a\"\n          },\n          \"parts\": [\n            {\n              \"offset\": 0,\n              \"path\": \"/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/owning-seven-project-gate-e84-20261104-2255/failure-extract-2/parts/06-raw-1/0000.txt\",\n              \"bytes\": 142,\n              \"sha256\": \"e7ae555c7742239d07229f1a557742def55d024435f420a8b7877e843a6b400a\"\n            }\n          ]\n        }\n      ]\n    },\n    {\n      \"name\": \"suite::skill_approval::shell_zsh_fork_skill_scripts_ignore_declared_permissions\",\n      \"classname\": \"codex-core::all\",\n      \"seconds\": \"10.399\",\n      \"result\": \"FAIL\",\n      \"failure\": \"thread 'suite::skill_approval::shell_zsh_fork_skill_scripts_ignore_declared_permissions' (3777869) panicked at core/tests/common/lib.rs:353:14:\\ntimeout waiting for event: Elapsed(())\\nnote: run with `RUST_BACKTRACE=1` environment variable to display a backtrace\",\n      \"original_case_xml\": {\n        \"full\": {\n          \"path\": \"/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/owning-seven-project-gate-e84-20261104-2255/failure-extract-2/07.testcase.xml\",\n          \"bytes\": 1375,\n          \"sha256\": \"b7349c58a9897d54e27eb698329eac25f18fd80d555bbfe5835291605c8348be\"\n        },\n        \"parts\": [\n          {\n            \"offset\": 0,\n            \"path\": \"/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/owning-seven-project-gate-e84-20261104-2255/failure-extract-2/parts/07-xml/0000.txt\",\n            \"bytes\": 1375,\n            \"sha256\": \"b7349c58a9897d54e27eb698329eac25f18fd80d555bbfe5835291605c8348be\"\n          }\n        ]\n      },\n      \"xml_original_character_start\": 959982,\n      \"xml_original_character_end\": 961357,\n      \"raw_failure_sections\": [\n        {\n          \"line_start\": 64658,\n          \"line_end\": 64676,\n          \"ansi_normalized\": false,\n          \"full\": {\n            \"path\": \"/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/owning-seven-project-gate-e84-20261104-2255/failure-extract-2/07-raw-0.log\",\n            \"bytes\": 780,\n            \"sha256\": \"0faf87e220fd0c55998123510c7a2aa9d6cd9d281192e864821ae42fe2d2e1c2\"\n          },\n          \"parts\": [\n            {\n              \"offset\": 0,\n              \"path\": \"/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/owning-seven-project-gate-e84-20261104-2255/failure-extract-2/parts/07-raw-0/0000.txt\",\n              \"bytes\": 780,\n              \"sha256\": \"0faf87e220fd0c55998123510c7a2aa9d6cd9d281192e864821ae42fe2d2e1c2\"\n            }\n          ]\n        },\n        {\n          \"line_start\": 64888,\n          \"line_end\": 64888,\n          \"ansi_normalized\": false,\n          \"full\": {\n            \"path\": \"/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/owning-seven-project-gate-e84-20261104-2255/failure-extract-2/07-raw-1.log\",\n            \"bytes\": 121,\n            \"sha256\": \"8263a13a31b489bbf47becd28465993e741ff5e022fc4fb2ab5f9b9603f22e61\"\n          },\n          \"parts\": [\n            {\n              \"offset\": 0,\n              \"path\": \"/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/owning-seven-project-gate-e84-20261104-2255/failure-extract-2/parts/07-raw-1/0000.txt\",\n              \"bytes\": 121,\n              \"sha256\": \"8263a13a31b489bbf47becd28465993e741ff5e022fc4fb2ab5f9b9603f22e61\"\n            }\n          ]\n        }\n      ]\n    },\n    {\n      \"name\": \"shell_snapshot_v2_capture_failure_falls_back_and_retries::test_case_3_remote_pipe_recovery\",\n      \"classname\": \"codex-exec-server::exec_process\",\n      \"seconds\": \"0.314\",\n      \"result\": \"FAIL\",\n      \"failure\": \"thread 'shell_snapshot_v2_capture_failure_falls_back_and_retries::test_case_3_remote_pipe_recovery' (3804580) panicked at exec-server/tests/exec_process.rs:434:9:\\nassertion failed: `(left == right)`\\n\\nDiff < left / right > :\\n (\\n     \\\"original\\\",\\n<    \\\"Failed to create stream fd: Operation not permitted\\\\nFailed to create stream fd: Operation not permitted\\\\nFailed to create stream fd: Operation not permitted\\\\n\\\",\\n>    \\\"\\\",\\n     Some(\\n         0,\\n     ),\\n     true,\\n )\\n\\n\\nnote: run with `RUST_BACKTRACE=1` environment variable to display a backtrace\",\n      \"original_case_xml\": {\n        \"full\": {\n          \"path\": \"/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/owning-seven-project-gate-e84-20261104-2255/failure-extract-2/08.testcase.xml\",\n          \"bytes\": 2093,\n          \"sha256\": \"00570bb57e93652d69b6e7f06dab027edf283a84525624fe82f3359c95916df0\"\n        },\n        \"parts\": [\n          {\n            \"offset\": 0,\n            \"path\": \"/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/owning-seven-project-gate-e84-20261104-2255/failure-extract-2/parts/08-xml/0000.txt\",\n            \"bytes\": 2093,\n            \"sha256\": \"00570bb57e93652d69b6e7f06dab027edf283a84525624fe82f3359c95916df0\"\n          }\n        ]\n      },\n      \"xml_original_character_start\": 1029202,\n      \"xml_original_character_end\": 1031295,\n      \"raw_failure_sections\": [\n        {\n          \"line_start\": 59801,\n          \"line_end\": 59832,\n          \"ansi_normalized\": false,\n          \"full\": {\n            \"path\": \"/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/owning-seven-project-gate-e84-20261104-2255/failure-extract-2/08-raw-0.log\",\n            \"bytes\": 1151,\n            \"sha256\": \"86e850c4d6b48f789840a4feb8f2cab3ce1ad6af207ccce76feaabd8edd58c52\"\n          },\n          \"parts\": [\n            {\n              \"offset\": 0,\n              \"path\": \"/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/owning-seven-project-gate-e84-20261104-2255/failure-extract-2/parts/08-raw-0/0000.txt\",\n              \"bytes\": 1151,\n              \"sha256\": \"86e850c4d6b48f789840a4feb8f2cab3ce1ad6af207ccce76feaabd8edd58c52\"\n            }\n          ]\n        },\n        {\n          \"line_start\": 64890,\n          \"line_end\": 64890,\n          \"ansi_normalized\": false,\n          \"full\": {\n            \"path\": \"/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/owning-seven-project-gate-e84-20261104-2255/failure-extract-2/08-raw-1.log\",\n            \"bytes\": 148,\n            \"sha256\": \"4c5b3bbcca501cd339cb391c15ca7eeee630a38a22b96d9601ef30c1efc40406\"\n          },\n          \"parts\": [\n            {\n              \"offset\": 0,\n              \"path\": \"/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/owning-seven-project-gate-e84-20261104-2255/failure-extract-2/parts/08-raw-1/0000.txt\",\n              \"bytes\": 148,\n              \"sha256\": \"4c5b3bbcca501cd339cb391c15ca7eeee630a38a22b96d9601ef30c1efc40406\"\n            }\n          ]\n        }\n      ]\n    },\n    {\n      \"name\": \"shell_snapshot_v2_capture_failure_falls_back_and_retries::test_case_4_remote_tty_recovery\",\n      \"classname\": \"codex-exec-server::exec_process\",\n      \"seconds\": \"0.337\",\n      \"result\": \"FAIL\",\n      \"failure\": \"thread 'shell_snapshot_v2_capture_failure_falls_back_and_retries::test_case_4_remote_tty_recovery' (3804688) panicked at exec-server/tests/exec_process.rs:434:9:\\nassertion failed: `(left == right)`\\n\\nDiff < left / right > :\\n (\\n<    \\\"Failed to create stream fd: Operation not permitted\\\\r\\\\nFailed to create stream fd: Operation not permitted\\\\r\\\\nFailed to create stream fd: Operation not permitted\\\\r\\\\noriginal\\\",\\n>    \\\"original\\\",\\n     \\\"\\\",\\n     Some(\\n         0,\\n     ),\\n     true,\\n )\\n\\n\\nnote: run with `RUST_BACKTRACE=1` environment variable to display a backtrace\",\n      \"original_case_xml\": {\n        \"full\": {\n          \"path\": \"/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/owning-seven-project-gate-e84-20261104-2255/failure-extract-2/09.testcase.xml\",\n          \"bytes\": 2115,\n          \"sha256\": \"8078bc02b5e381270fa7b2c89df38915c8e83c5c19c5eee2263621756d62a727\"\n        },\n        \"parts\": [\n          {\n            \"offset\": 0,\n            \"path\": \"/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/owning-seven-project-gate-e84-20261104-2255/failure-extract-2/parts/09-xml/0000.txt\",\n            \"bytes\": 2115,\n            \"sha256\": \"8078bc02b5e381270fa7b2c89df38915c8e83c5c19c5eee2263621756d62a727\"\n          }\n        ]\n      },\n      \"xml_original_character_start\": 1031727,\n      \"xml_original_character_end\": 1033842,\n      \"raw_failure_sections\": [\n        {\n          \"line_start\": 59914,\n          \"line_end\": 59945,\n          \"ansi_normalized\": false,\n          \"full\": {\n            \"path\": \"/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/owning-seven-project-gate-e84-20261104-2255/failure-extract-2/09-raw-0.log\",\n            \"bytes\": 1161,\n            \"sha256\": \"e84675b1fa04891387fef2a89d315601ad0a056cc2e0db378a1e416e9d0fc2b5\"\n          },\n          \"parts\": [\n            {\n              \"offset\": 0,\n              \"path\": \"/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/owning-seven-project-gate-e84-20261104-2255/failure-extract-2/parts/09-raw-0/0000.txt\",\n              \"bytes\": 1161,\n              \"sha256\": \"e84675b1fa04891387fef2a89d315601ad0a056cc2e0db378a1e416e9d0fc2b5\"\n            }\n          ]\n        },\n        {\n          \"line_start\": 64891,\n          \"line_end\": 64891,\n          \"ansi_normalized\": false,\n          \"full\": {\n            \"path\": \"/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/owning-seven-project-gate-e84-20261104-2255/failure-extract-2/09-raw-1.log\",\n            \"bytes\": 147,\n            \"sha256\": \"4b40c658a6afb10821069be5f88a168d9ba329ee6be364d35bcc520ee60ea134\"\n          },\n          \"parts\": [\n            {\n              \"offset\": 0,\n              \"path\": \"/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/owning-seven-project-gate-e84-20261104-2255/failure-extract-2/parts/09-raw-1/0000.txt\",\n              \"bytes\": 147,\n              \"sha256\": \"4b40c658a6afb10821069be5f88a168d9ba329ee6be364d35bcc520ee60ea134\"\n            }\n          ]\n        }\n      ]\n    },\n    {\n      \"name\": \"shell_snapshot_v2_filters_profile_exports_and_stays_in_memory::test_case_5_remote_sandbox\",\n      \"classname\": \"codex-exec-server::exec_process\",\n      \"seconds\": \"0.278\",\n      \"result\": \"FAIL\",\n      \"failure\": \"thread 'shell_snapshot_v2_filters_profile_exports_and_stays_in_memory::test_case_5_remote_sandbox' (3805137) panicked at exec-server/tests/exec_process.rs:258:9:\\nassertion failed: `(left == right)`\\n\\nDiff < left / right > :\\n (\\n>    \\\"helper|profile|missing|missing|/tmp/.tmppS2P8q/runtime-bin:/tmp/.tmppS2P8q/profile-bin:/usr/bin:/bin|missing|missing\\\",\\n     \\\"\\\",\\n<    \\\"/tmp/.tmppS2P8q/.bashrc: line 1: /tmp/.tmppS2P8q/captures: Read-only file system\\\\n\\\",\\n     Some(\\n<        41,\\n>        0,\\n     ),\\n     true,\\n )\\n\\n\\nnote: run with `RUST_BACKTRACE=1` environment variable to display a backtrace\",\n      \"original_case_xml\": {\n        \"full\": {\n          \"path\": \"/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/owning-seven-project-gate-e84-20261104-2255/failure-extract-2/10.testcase.xml\",\n          \"bytes\": 2187,\n          \"sha256\": \"514c65303bff11a1db0c7bdca16effa1260b5eafb90ccc9c4be68743ff02ca4b\"\n        },\n        \"parts\": [\n          {\n            \"offset\": 0,\n            \"path\": \"/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/owning-seven-project-gate-e84-20261104-2255/failure-extract-2/parts/10-xml/0000.txt\",\n            \"bytes\": 2187,\n            \"sha256\": \"514c65303bff11a1db0c7bdca16effa1260b5eafb90ccc9c4be68743ff02ca4b\"\n          }\n        ]\n      },\n      \"xml_original_character_start\": 1033851,\n      \"xml_original_character_end\": 1036038,\n      \"raw_failure_sections\": [\n        {\n          \"line_start\": 59955,\n          \"line_end\": 59987,\n          \"ansi_normalized\": false,\n          \"full\": {\n            \"path\": \"/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/owning-seven-project-gate-e84-20261104-2255/failure-extract-2/10-raw-0.log\",\n            \"bytes\": 1195,\n            \"sha256\": \"cc332f86c8819f8288c9e587435601724d1316b932b7d38d2c24c185cefff01d\"\n          },\n          \"parts\": [\n            {\n              \"offset\": 0,\n              \"path\": \"/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/owning-seven-project-gate-e84-20261104-2255/failure-extract-2/parts/10-raw-0/0000.txt\",\n              \"bytes\": 1195,\n              \"sha256\": \"cc332f86c8819f8288c9e587435601724d1316b932b7d38d2c24c185cefff01d\"\n            }\n          ]\n        },\n        {\n          \"line_start\": 64893,\n          \"line_end\": 64895,\n          \"ansi_normalized\": false,\n          \"full\": {\n            \"path\": \"/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/owning-seven-project-gate-e84-20261104-2255/failure-extract-2/10-raw-1.log\",\n            \"bytes\": 228,\n            \"sha256\": \"1dc035c9b87f35614eb483d535241ee5f4958f5249ddd9ea007c497885276f0c\"\n          },\n          \"parts\": [\n            {\n              \"offset\": 0,\n              \"path\": \"/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/owning-seven-project-gate-e84-20261104-2255/failure-extract-2/parts/10-raw-1/0000.txt\",\n              \"bytes\": 228,\n              \"sha256\": \"1dc035c9b87f35614eb483d535241ee5f4958f5249ddd9ea007c497885276f0c\"\n            }\n          ]\n        }\n      ]\n    },\n    {\n      \"name\": \"shell_snapshot_v2_capture_failure_falls_back_and_retries::test_case_6_remote_retry_budget_exhausted\",\n      \"classname\": \"codex-exec-server::exec_process\",\n      \"seconds\": \"0.336\",\n      \"result\": \"FAIL\",\n      \"failure\": \"thread 'shell_snapshot_v2_capture_failure_falls_back_and_retries::test_case_6_remote_retry_budget_exhausted' (3804761) panicked at exec-server/tests/exec_process.rs:434:9:\\nassertion failed: `(left == right)`\\n\\nDiff < left / right > :\\n (\\n     \\\"original\\\",\\n<    \\\"Failed to create stream fd: Operation not permitted\\\\nFailed to create stream fd: Operation not permitted\\\\nFailed to create stream fd: Operation not permitted\\\\n\\\",\\n>    \\\"\\\",\\n     Some(\\n         0,\\n     ),\\n     true,\\n )\\n\\n\\nnote: run with `RUST_BACKTRACE=1` environment variable to display a backtrace\",\n      \"original_case_xml\": {\n        \"full\": {\n          \"path\": \"/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/owning-seven-project-gate-e84-20261104-2255/failure-extract-2/11.testcase.xml\",\n          \"bytes\": 2147,\n          \"sha256\": \"92fd0d8a8dbb79c516b2b25c53c6e0c1dbb571ef8f4c5593c9e93ad9bcb8c07b\"\n        },\n        \"parts\": [\n          {\n            \"offset\": 0,\n            \"path\": \"/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/owning-seven-project-gate-e84-20261104-2255/failure-extract-2/parts/11-xml/0000.txt\",\n            \"bytes\": 2147,\n            \"sha256\": \"92fd0d8a8dbb79c516b2b25c53c6e0c1dbb571ef8f4c5593c9e93ad9bcb8c07b\"\n          }\n        ]\n      },\n      \"xml_original_character_start\": 1036499,\n      \"xml_original_character_end\": 1038646,\n      \"raw_failure_sections\": [\n        {\n          \"line_start\": 60033,\n          \"line_end\": 60064,\n          \"ansi_normalized\": false,\n          \"full\": {\n            \"path\": \"/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/owning-seven-project-gate-e84-20261104-2255/failure-extract-2/11-raw-0.log\",\n            \"bytes\": 1187,\n            \"sha256\": \"3be960385a83423f4d55fa6e9d41b64a907be001fa512b905a2bd101931503e9\"\n          },\n          \"parts\": [\n            {\n              \"offset\": 0,\n              \"path\": \"/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/owning-seven-project-gate-e84-20261104-2255/failure-extract-2/parts/11-raw-0/0000.txt\",\n              \"bytes\": 1187,\n              \"sha256\": \"3be960385a83423f4d55fa6e9d41b64a907be001fa512b905a2bd101931503e9\"\n            }\n          ]\n        },\n        {\n          \"line_start\": 64892,\n          \"line_end\": 64892,\n          \"ansi_normalized\": false,\n          \"full\": {\n            \"path\": \"/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/owning-seven-project-gate-e84-20261104-2255/failure-extract-2/11-raw-1.log\",\n            \"bytes\": 157,\n            \"sha256\": \"263767880063b18640dd89546a5a809cc21505f2fba07c2567bd333fa18410d2\"\n          },\n          \"parts\": [\n            {\n              \"offset\": 0,\n              \"path\": \"/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/owning-seven-project-gate-e84-20261104-2255/failure-extract-2/parts/11-raw-1/0000.txt\",\n              \"bytes\": 157,\n              \"sha256\": \"263767880063b18640dd89546a5a809cc21505f2fba07c2567bd333fa18410d2\"\n            }\n          ]\n        }\n      ]\n    }\n  ]\n}\n",
+      "sha256": "231538a2de185acbfcfb68a124585b9239a2034cdfc1bd23a1bcf0cd95f3923f",
+      "bytes": 41242
+    },
+    {
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/owning-seven-project-gate-e84-20261104-2255/failure-extract-2/00.testcase.xml",
+      "content": "<testcase name=\"suite::approvals::approving_execpolicy_amendment_persists_policy_and_skips_future_prompts\" classname=\"codex-core::all\" timestamp=\"2026-11-04T17:46:18.641-05:00\" time=\"0.378\">\n            <failure message=\"thread &apos;suite::approvals::approving_execpolicy_amendment_persists_policy_and_skips_future_prompts&apos; (3658852) panicked at core/tests/suite/approvals.rs:2540:5\" type=\"test failure with exit code 101\">thread &apos;suite::approvals::approving_execpolicy_amendment_persists_policy_and_skips_future_prompts&apos; (3658852) panicked at core/tests/suite/approvals.rs:2540:5:\nunexpected stdout: Failed to create stream fd: Operation not permitted\nFailed to create stream fd: Operation not permitted\nFailed to create stream fd: Operation not permitted\n\nnote: run with `RUST_BACKTRACE=1` environment variable to display a backtrace</failure>\n            <system-out>\nrunning 1 test\ntest suite::approvals::approving_execpolicy_amendment_persists_policy_and_skips_future_prompts ... FAILED\n\nfailures:\n\nfailures:\n    suite::approvals::approving_execpolicy_amendment_persists_policy_and_skips_future_prompts\n\ntest result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 1432 filtered out; finished in 0.36s\n\n</system-out>\n            <system-err>\nthread &apos;suite::approvals::approving_execpolicy_amendment_persists_policy_and_skips_future_prompts&apos; (3658852) panicked at core/tests/suite/approvals.rs:2540:5:\nunexpected stdout: Failed to create stream fd: Operation not permitted\nFailed to create stream fd: Operation not permitted\nFailed to create stream fd: Operation not permitted\n\nnote: run with `RUST_BACKTRACE=1` environment variable to display a backtrace\n</system-err>\n        </testcase>",
+      "sha256": "7b8635b1d3804f362ece06037d67ba3f95d74220a602ead639f82382688c45b8",
+      "bytes": 1722
+    },
+    {
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/owning-seven-project-gate-e84-20261104-2255/failure-extract-2/01.testcase.xml",
+      "content": "<testcase name=\"suite::hooks::async_hook_finishing_while_idle_waits_for_the_next_turn\" classname=\"codex-core::all\" timestamp=\"2026-11-04T17:46:29.412-05:00\" time=\"5.405\">\n            <failure message=\"Error: timed out waiting for the next turn to complete\" type=\"test failure with exit code 101\">Error: timed out waiting for the next turn to complete\n\nCaused by:\n    deadline has elapsed</failure>\n            <system-out>\nrunning 1 test\ntest suite::hooks::async_hook_finishing_while_idle_waits_for_the_next_turn ... FAILED\n\nfailures:\n\nfailures:\n    suite::hooks::async_hook_finishing_while_idle_waits_for_the_next_turn\n\ntest result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 1432 filtered out; finished in 5.39s\n\n</system-out>\n            <system-err>Error: timed out waiting for the next turn to complete\n\nCaused by:\n    deadline has elapsed\n</system-err>\n        </testcase>",
+      "sha256": "9d70713484757bf760ebc3ed6963d03a6fc95399504e4a77d44af548af6ec666",
+      "bytes": 886
+    },
+    {
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/owning-seven-project-gate-e84-20261104-2255/failure-extract-2/02.testcase.xml",
+      "content": "<testcase name=\"suite::request_permissions::partial_request_permissions_grants_do_not_preapprove_new_permissions\" classname=\"codex-core::all\" timestamp=\"2026-11-04T17:46:37.222-05:00\" time=\"0.443\">\n            <failure message=\"thread &apos;suite::request_permissions::partial_request_permissions_grants_do_not_preapprove_new_permissions&apos; (3764768) panicked at core/tests/suite/request_permissions.rs:1802:5\" type=\"test failure with exit code 101\">thread &apos;suite::request_permissions::partial_request_permissions_grants_do_not_preapprove_new_permissions&apos; (3764768) panicked at core/tests/suite/request_permissions.rs:1802:5:\nassertion failed: `(left == right)`\n\nDiff &lt; left / right &gt; :\n&lt;Failed to create stream fd: Operation not permitted\n&lt;Failed to create stream fd: Operation not permitted\n&lt;Failed to create stream fd: Operation not permitted\n partial-grant-ok\n\n\nnote: run with `RUST_BACKTRACE=1` environment variable to display a backtrace</failure>\n            <system-out>\nrunning 1 test\ntest suite::request_permissions::partial_request_permissions_grants_do_not_preapprove_new_permissions ... FAILED\n\nfailures:\n\nfailures:\n    suite::request_permissions::partial_request_permissions_grants_do_not_preapprove_new_permissions\n\ntest result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 1432 filtered out; finished in 0.43s\n\n</system-out>\n            <system-err>\nthread &apos;suite::request_permissions::partial_request_permissions_grants_do_not_preapprove_new_permissions&apos; (3764768) panicked at core/tests/suite/request_permissions.rs:1802:5:\nassertion failed: `(left == right)`\n\nDiff &lt; left / right &gt; :\n&lt;Failed to create stream fd: Operation not permitted\n&lt;Failed to create stream fd: Operation not permitted\n&lt;Failed to create stream fd: Operation not permitted\n partial-grant-ok\n\n\nnote: run with `RUST_BACKTRACE=1` environment variable to display a backtrace\n</system-err>\n        </testcase>",
+      "sha256": "f5b86c24b142b86b8aca862820905f340b5816a6ed79cc3dd06db82c6f6d42e5",
+      "bytes": 1952
+    },
+    {
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/owning-seven-project-gate-e84-20261104-2255/failure-extract-2/03.testcase.xml",
+      "content": "<testcase name=\"suite::request_permissions::request_permissions_grants_apply_to_later_exec_command_calls\" classname=\"codex-core::all\" timestamp=\"2026-11-04T17:46:37.261-05:00\" time=\"0.465\">\n            <failure message=\"thread &apos;suite::request_permissions::request_permissions_grants_apply_to_later_exec_command_calls&apos; (3764948) panicked at core/tests/suite/request_permissions.rs:1391:5\" type=\"test failure with exit code 101\">thread &apos;suite::request_permissions::request_permissions_grants_apply_to_later_exec_command_calls&apos; (3764948) panicked at core/tests/suite/request_permissions.rs:1391:5:\nassertion failed: `(left == right)`\n\nDiff &lt; left / right &gt; :\n&lt;Failed to create stream fd: Operation not permitted\n&lt;Failed to create stream fd: Operation not permitted\n&lt;Failed to create stream fd: Operation not permitted\n sticky-grant-ok\n\n\nnote: run with `RUST_BACKTRACE=1` environment variable to display a backtrace</failure>\n            <system-out>\nrunning 1 test\ntest suite::request_permissions::request_permissions_grants_apply_to_later_exec_command_calls ... FAILED\n\nfailures:\n\nfailures:\n    suite::request_permissions::request_permissions_grants_apply_to_later_exec_command_calls\n\ntest result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 1432 filtered out; finished in 0.45s\n\n</system-out>\n            <system-err>\nthread &apos;suite::request_permissions::request_permissions_grants_apply_to_later_exec_command_calls&apos; (3764948) panicked at core/tests/suite/request_permissions.rs:1391:5:\nassertion failed: `(left == right)`\n\nDiff &lt; left / right &gt; :\n&lt;Failed to create stream fd: Operation not permitted\n&lt;Failed to create stream fd: Operation not permitted\n&lt;Failed to create stream fd: Operation not permitted\n sticky-grant-ok\n\n\nnote: run with `RUST_BACKTRACE=1` environment variable to display a backtrace\n</system-err>\n        </testcase>",
+      "sha256": "b5339c2478f7e4f1fff1dfb96cfd0a22f774eb2e459e2d281875b328024d0727",
+      "bytes": 1902
+    },
+    {
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/owning-seven-project-gate-e84-20261104-2255/failure-extract-2/04.testcase.xml",
+      "content": "<testcase name=\"suite::request_permissions::request_permissions_grants_apply_to_later_exec_command_calls_without_inline_permission_feature\" classname=\"codex-core::all\" timestamp=\"2026-11-04T17:46:37.270-05:00\" time=\"0.469\">\n            <failure message=\"thread &apos;suite::request_permissions::request_permissions_grants_apply_to_later_exec_command_calls_without_inline_permission_feature&apos; (3764986) panicked at core/tests/suite/request_permissions.rs:1626:5\" type=\"test failure with exit code 101\">thread &apos;suite::request_permissions::request_permissions_grants_apply_to_later_exec_command_calls_without_inline_permission_feature&apos; (3764986) panicked at core/tests/suite/request_permissions.rs:1626:5:\nassertion failed: `(left == right)`\n\nDiff &lt; left / right &gt; :\n&lt;Failed to create stream fd: Operation not permitted\n&lt;Failed to create stream fd: Operation not permitted\n&lt;Failed to create stream fd: Operation not permitted\n sticky-shell-feature-independent-ok\n\n\nnote: run with `RUST_BACKTRACE=1` environment variable to display a backtrace</failure>\n            <system-out>\nrunning 1 test\ntest suite::request_permissions::request_permissions_grants_apply_to_later_exec_command_calls_without_inline_permission_feature ... FAILED\n\nfailures:\n\nfailures:\n    suite::request_permissions::request_permissions_grants_apply_to_later_exec_command_calls_without_inline_permission_feature\n\ntest result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 1432 filtered out; finished in 0.45s\n\n</system-out>\n            <system-err>\nthread &apos;suite::request_permissions::request_permissions_grants_apply_to_later_exec_command_calls_without_inline_permission_feature&apos; (3764986) panicked at core/tests/suite/request_permissions.rs:1626:5:\nassertion failed: `(left == right)`\n\nDiff &lt; left / right &gt; :\n&lt;Failed to create stream fd: Operation not permitted\n&lt;Failed to create stream fd: Operation not permitted\n&lt;Failed to create stream fd: Operation not permitted\n sticky-shell-feature-independent-ok\n\n\nnote: run with `RUST_BACKTRACE=1` environment variable to display a backtrace\n</system-err>\n        </testcase>",
+      "sha256": "f1cde54bce856e2b1b870652565fd13e7c99db8747fa34c40aae80e977f47990",
+      "bytes": 2146
+    },
+    {
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/owning-seven-project-gate-e84-20261104-2255/failure-extract-2/05.testcase.xml",
+      "content": "<testcase name=\"suite::request_permissions::request_permissions_preapprove_explicit_exec_permissions_outside_on_request\" classname=\"codex-core::all\" timestamp=\"2026-11-04T17:46:37.307-05:00\" time=\"0.478\">\n            <failure message=\"thread &apos;suite::request_permissions::request_permissions_preapprove_explicit_exec_permissions_outside_on_request&apos; (3765124) panicked at core/tests/suite/request_permissions.rs:1510:5\" type=\"test failure with exit code 101\">thread &apos;suite::request_permissions::request_permissions_preapprove_explicit_exec_permissions_outside_on_request&apos; (3765124) panicked at core/tests/suite/request_permissions.rs:1510:5:\nassertion failed: `(left == right)`\n\nDiff &lt; left / right &gt; :\n&lt;Failed to create stream fd: Operation not permitted\n&lt;Failed to create stream fd: Operation not permitted\n&lt;Failed to create stream fd: Operation not permitted\n sticky-explicit-grant-ok\n\n\nnote: run with `RUST_BACKTRACE=1` environment variable to display a backtrace</failure>\n            <system-out>\nrunning 1 test\ntest suite::request_permissions::request_permissions_preapprove_explicit_exec_permissions_outside_on_request ... FAILED\n\nfailures:\n\nfailures:\n    suite::request_permissions::request_permissions_preapprove_explicit_exec_permissions_outside_on_request\n\ntest result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 1432 filtered out; finished in 0.46s\n\n</system-out>\n            <system-err>\nthread &apos;suite::request_permissions::request_permissions_preapprove_explicit_exec_permissions_outside_on_request&apos; (3765124) panicked at core/tests/suite/request_permissions.rs:1510:5:\nassertion failed: `(left == right)`\n\nDiff &lt; left / right &gt; :\n&lt;Failed to create stream fd: Operation not permitted\n&lt;Failed to create stream fd: Operation not permitted\n&lt;Failed to create stream fd: Operation not permitted\n sticky-explicit-grant-ok\n\n\nnote: run with `RUST_BACKTRACE=1` environment variable to display a backtrace\n</system-err>\n        </testcase>",
+      "sha256": "541f8f214a9e0317c5ea3832755762589c96691b184acb575b58bedbdaa6933b",
+      "bytes": 2010
+    },
+    {
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/owning-seven-project-gate-e84-20261104-2255/failure-extract-2/06.testcase.xml",
+      "content": "<testcase name=\"suite::unified_exec_zsh_fork_approvals::unified_exec_zsh_fork_parent_approval_preserves_denied_reads\" classname=\"codex-core::all\" timestamp=\"2026-11-04T17:46:43.314-05:00\" time=\"0.128\">\n            <failure message=\"Error: Fatal error: Failed to initialize session: failed to load AGENTS.md instructions for environment `local`: fs sandbox helper failed with status exit status: 1: error building bubblewrap command: Fatal error: unreadable glob `/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/source/codex-rs/core/.tmpqCGbr8/secret.env` cannot be safely expanded; use a pattern with a non-root directory prefix\" type=\"test failure with exit code 101\">Error: Fatal error: Failed to initialize session: failed to load AGENTS.md instructions for environment `local`: fs sandbox helper failed with status exit status: 1: error building bubblewrap command: Fatal error: unreadable glob `/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/source/codex-rs/core/.tmpqCGbr8/secret.env` cannot be safely expanded; use a pattern with a non-root directory prefix</failure>\n            <system-out>\nrunning 1 test\ntest suite::unified_exec_zsh_fork_approvals::unified_exec_zsh_fork_parent_approval_preserves_denied_reads ... FAILED\n\nfailures:\n\nfailures:\n    suite::unified_exec_zsh_fork_approvals::unified_exec_zsh_fork_parent_approval_preserves_denied_reads\n\ntest result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 1432 filtered out; finished in 0.11s\n\n</system-out>\n            <system-err>Error: Fatal error: Failed to initialize session: failed to load AGENTS.md instructions for environment `local`: fs sandbox helper failed with status exit status: 1: error building bubblewrap command: Fatal error: unreadable glob `/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/source/codex-rs/core/.tmpqCGbr8/secret.env` cannot be safely expanded; use a pattern with a non-root directory prefix\n</system-err>\n        </testcase>",
+      "sha256": "4cb6cf38d6090a71661f50f1dedc2cea9bca265bb4c1cfe97bf5b6927da208a6",
+      "bytes": 1943
+    },
+    {
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/owning-seven-project-gate-e84-20261104-2255/failure-extract-2/07.testcase.xml",
+      "content": "<testcase name=\"suite::skill_approval::shell_zsh_fork_skill_scripts_ignore_declared_permissions\" classname=\"codex-core::all\" timestamp=\"2026-11-04T17:46:39.670-05:00\" time=\"10.399\">\n            <failure message=\"thread &apos;suite::skill_approval::shell_zsh_fork_skill_scripts_ignore_declared_permissions&apos; (3777869) panicked at core/tests/common/lib.rs:353:14\" type=\"test failure with exit code 101\">thread &apos;suite::skill_approval::shell_zsh_fork_skill_scripts_ignore_declared_permissions&apos; (3777869) panicked at core/tests/common/lib.rs:353:14:\ntimeout waiting for event: Elapsed(())\nnote: run with `RUST_BACKTRACE=1` environment variable to display a backtrace</failure>\n            <system-out>\nrunning 1 test\ntest suite::skill_approval::shell_zsh_fork_skill_scripts_ignore_declared_permissions ... FAILED\n\nfailures:\n\nfailures:\n    suite::skill_approval::shell_zsh_fork_skill_scripts_ignore_declared_permissions\n\ntest result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 1432 filtered out; finished in 10.38s\n\n</system-out>\n            <system-err>\nthread &apos;suite::skill_approval::shell_zsh_fork_skill_scripts_ignore_declared_permissions&apos; (3777869) panicked at core/tests/common/lib.rs:353:14:\ntimeout waiting for event: Elapsed(())\nnote: run with `RUST_BACKTRACE=1` environment variable to display a backtrace\n</system-err>\n        </testcase>",
+      "sha256": "b7349c58a9897d54e27eb698329eac25f18fd80d555bbfe5835291605c8348be",
+      "bytes": 1375
+    },
+    {
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/owning-seven-project-gate-e84-20261104-2255/failure-extract-2/08.testcase.xml",
+      "content": "<testcase name=\"shell_snapshot_v2_capture_failure_falls_back_and_retries::test_case_3_remote_pipe_recovery\" classname=\"codex-exec-server::exec_process\" timestamp=\"2026-11-04T17:46:45.460-05:00\" time=\"0.314\">\n            <failure message=\"thread &apos;shell_snapshot_v2_capture_failure_falls_back_and_retries::test_case_3_remote_pipe_recovery&apos; (3804580) panicked at exec-server/tests/exec_process.rs:434:9\" type=\"test failure with exit code 101\">thread &apos;shell_snapshot_v2_capture_failure_falls_back_and_retries::test_case_3_remote_pipe_recovery&apos; (3804580) panicked at exec-server/tests/exec_process.rs:434:9:\nassertion failed: `(left == right)`\n\nDiff &lt; left / right &gt; :\n (\n     &quot;original&quot;,\n&lt;    &quot;Failed to create stream fd: Operation not permitted\\nFailed to create stream fd: Operation not permitted\\nFailed to create stream fd: Operation not permitted\\n&quot;,\n&gt;    &quot;&quot;,\n     Some(\n         0,\n     ),\n     true,\n )\n\n\nnote: run with `RUST_BACKTRACE=1` environment variable to display a backtrace</failure>\n            <system-out>\nrunning 1 test\ntest shell_snapshot_v2_capture_failure_falls_back_and_retries::test_case_3_remote_pipe_recovery ... FAILED\n\nfailures:\n\nfailures:\n    shell_snapshot_v2_capture_failure_falls_back_and_retries::test_case_3_remote_pipe_recovery\n\ntest result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 42 filtered out; finished in 0.31s\n\n</system-out>\n            <system-err>\nthread &apos;shell_snapshot_v2_capture_failure_falls_back_and_retries::test_case_3_remote_pipe_recovery&apos; (3804580) panicked at exec-server/tests/exec_process.rs:434:9:\nassertion failed: `(left == right)`\n\nDiff &lt; left / right &gt; :\n (\n     &quot;original&quot;,\n&lt;    &quot;Failed to create stream fd: Operation not permitted\\nFailed to create stream fd: Operation not permitted\\nFailed to create stream fd: Operation not permitted\\n&quot;,\n&gt;    &quot;&quot;,\n     Some(\n         0,\n     ),\n     true,\n )\n\n\nnote: run with `RUST_BACKTRACE=1` environment variable to display a backtrace\n</system-err>\n        </testcase>",
+      "sha256": "00570bb57e93652d69b6e7f06dab027edf283a84525624fe82f3359c95916df0",
+      "bytes": 2093
+    },
+    {
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/owning-seven-project-gate-e84-20261104-2255/failure-extract-2/09.testcase.xml",
+      "content": "<testcase name=\"shell_snapshot_v2_capture_failure_falls_back_and_retries::test_case_4_remote_tty_recovery\" classname=\"codex-exec-server::exec_process\" timestamp=\"2026-11-04T17:46:45.480-05:00\" time=\"0.337\">\n            <failure message=\"thread &apos;shell_snapshot_v2_capture_failure_falls_back_and_retries::test_case_4_remote_tty_recovery&apos; (3804688) panicked at exec-server/tests/exec_process.rs:434:9\" type=\"test failure with exit code 101\">thread &apos;shell_snapshot_v2_capture_failure_falls_back_and_retries::test_case_4_remote_tty_recovery&apos; (3804688) panicked at exec-server/tests/exec_process.rs:434:9:\nassertion failed: `(left == right)`\n\nDiff &lt; left / right &gt; :\n (\n&lt;    &quot;Failed to create stream fd: Operation not permitted\\r\\nFailed to create stream fd: Operation not permitted\\r\\nFailed to create stream fd: Operation not permitted\\r\\noriginal&quot;,\n&gt;    &quot;original&quot;,\n     &quot;&quot;,\n     Some(\n         0,\n     ),\n     true,\n )\n\n\nnote: run with `RUST_BACKTRACE=1` environment variable to display a backtrace</failure>\n            <system-out>\nrunning 1 test\ntest shell_snapshot_v2_capture_failure_falls_back_and_retries::test_case_4_remote_tty_recovery ... FAILED\n\nfailures:\n\nfailures:\n    shell_snapshot_v2_capture_failure_falls_back_and_retries::test_case_4_remote_tty_recovery\n\ntest result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 42 filtered out; finished in 0.33s\n\n</system-out>\n            <system-err>\nthread &apos;shell_snapshot_v2_capture_failure_falls_back_and_retries::test_case_4_remote_tty_recovery&apos; (3804688) panicked at exec-server/tests/exec_process.rs:434:9:\nassertion failed: `(left == right)`\n\nDiff &lt; left / right &gt; :\n (\n&lt;    &quot;Failed to create stream fd: Operation not permitted\\r\\nFailed to create stream fd: Operation not permitted\\r\\nFailed to create stream fd: Operation not permitted\\r\\noriginal&quot;,\n&gt;    &quot;original&quot;,\n     &quot;&quot;,\n     Some(\n         0,\n     ),\n     true,\n )\n\n\nnote: run with `RUST_BACKTRACE=1` environment variable to display a backtrace\n</system-err>\n        </testcase>",
+      "sha256": "8078bc02b5e381270fa7b2c89df38915c8e83c5c19c5eee2263621756d62a727",
+      "bytes": 2115
+    },
+    {
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/owning-seven-project-gate-e84-20261104-2255/failure-extract-2/10.testcase.xml",
+      "content": "<testcase name=\"shell_snapshot_v2_filters_profile_exports_and_stays_in_memory::test_case_5_remote_sandbox\" classname=\"codex-exec-server::exec_process\" timestamp=\"2026-11-04T17:46:45.546-05:00\" time=\"0.278\">\n            <failure message=\"thread &apos;shell_snapshot_v2_filters_profile_exports_and_stays_in_memory::test_case_5_remote_sandbox&apos; (3805137) panicked at exec-server/tests/exec_process.rs:258:9\" type=\"test failure with exit code 101\">thread &apos;shell_snapshot_v2_filters_profile_exports_and_stays_in_memory::test_case_5_remote_sandbox&apos; (3805137) panicked at exec-server/tests/exec_process.rs:258:9:\nassertion failed: `(left == right)`\n\nDiff &lt; left / right &gt; :\n (\n&gt;    &quot;helper|profile|missing|missing|/tmp/.tmppS2P8q/runtime-bin:/tmp/.tmppS2P8q/profile-bin:/usr/bin:/bin|missing|missing&quot;,\n     &quot;&quot;,\n&lt;    &quot;/tmp/.tmppS2P8q/.bashrc: line 1: /tmp/.tmppS2P8q/captures: Read-only file system\\n&quot;,\n     Some(\n&lt;        41,\n&gt;        0,\n     ),\n     true,\n )\n\n\nnote: run with `RUST_BACKTRACE=1` environment variable to display a backtrace</failure>\n            <system-out>\nrunning 1 test\ntest shell_snapshot_v2_filters_profile_exports_and_stays_in_memory::test_case_5_remote_sandbox ... FAILED\n\nfailures:\n\nfailures:\n    shell_snapshot_v2_filters_profile_exports_and_stays_in_memory::test_case_5_remote_sandbox\n\ntest result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 42 filtered out; finished in 0.27s\n\n</system-out>\n            <system-err>\nthread &apos;shell_snapshot_v2_filters_profile_exports_and_stays_in_memory::test_case_5_remote_sandbox&apos; (3805137) panicked at exec-server/tests/exec_process.rs:258:9:\nassertion failed: `(left == right)`\n\nDiff &lt; left / right &gt; :\n (\n&gt;    &quot;helper|profile|missing|missing|/tmp/.tmppS2P8q/runtime-bin:/tmp/.tmppS2P8q/profile-bin:/usr/bin:/bin|missing|missing&quot;,\n     &quot;&quot;,\n&lt;    &quot;/tmp/.tmppS2P8q/.bashrc: line 1: /tmp/.tmppS2P8q/captures: Read-only file system\\n&quot;,\n     Some(\n&lt;        41,\n&gt;        0,\n     ),\n     true,\n )\n\n\nnote: run with `RUST_BACKTRACE=1` environment variable to display a backtrace\n</system-err>\n        </testcase>",
+      "sha256": "514c65303bff11a1db0c7bdca16effa1260b5eafb90ccc9c4be68743ff02ca4b",
+      "bytes": 2187
+    },
+    {
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/owning-seven-project-gate-e84-20261104-2255/failure-extract-2/11.testcase.xml",
+      "content": "<testcase name=\"shell_snapshot_v2_capture_failure_falls_back_and_retries::test_case_6_remote_retry_budget_exhausted\" classname=\"codex-exec-server::exec_process\" timestamp=\"2026-11-04T17:46:45.497-05:00\" time=\"0.336\">\n            <failure message=\"thread &apos;shell_snapshot_v2_capture_failure_falls_back_and_retries::test_case_6_remote_retry_budget_exhausted&apos; (3804761) panicked at exec-server/tests/exec_process.rs:434:9\" type=\"test failure with exit code 101\">thread &apos;shell_snapshot_v2_capture_failure_falls_back_and_retries::test_case_6_remote_retry_budget_exhausted&apos; (3804761) panicked at exec-server/tests/exec_process.rs:434:9:\nassertion failed: `(left == right)`\n\nDiff &lt; left / right &gt; :\n (\n     &quot;original&quot;,\n&lt;    &quot;Failed to create stream fd: Operation not permitted\\nFailed to create stream fd: Operation not permitted\\nFailed to create stream fd: Operation not permitted\\n&quot;,\n&gt;    &quot;&quot;,\n     Some(\n         0,\n     ),\n     true,\n )\n\n\nnote: run with `RUST_BACKTRACE=1` environment variable to display a backtrace</failure>\n            <system-out>\nrunning 1 test\ntest shell_snapshot_v2_capture_failure_falls_back_and_retries::test_case_6_remote_retry_budget_exhausted ... FAILED\n\nfailures:\n\nfailures:\n    shell_snapshot_v2_capture_failure_falls_back_and_retries::test_case_6_remote_retry_budget_exhausted\n\ntest result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 42 filtered out; finished in 0.33s\n\n</system-out>\n            <system-err>\nthread &apos;shell_snapshot_v2_capture_failure_falls_back_and_retries::test_case_6_remote_retry_budget_exhausted&apos; (3804761) panicked at exec-server/tests/exec_process.rs:434:9:\nassertion failed: `(left == right)`\n\nDiff &lt; left / right &gt; :\n (\n     &quot;original&quot;,\n&lt;    &quot;Failed to create stream fd: Operation not permitted\\nFailed to create stream fd: Operation not permitted\\nFailed to create stream fd: Operation not permitted\\n&quot;,\n&gt;    &quot;&quot;,\n     Some(\n         0,\n     ),\n     true,\n )\n\n\nnote: run with `RUST_BACKTRACE=1` environment variable to display a backtrace\n</system-err>\n        </testcase>",
+      "sha256": "92fd0d8a8dbb79c516b2b25c53c6e0c1dbb571ef8f4c5593c9e93ad9bcb8c07b",
+      "bytes": 2147
+    },
+    {
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/owning-seven-project-gate-e84-20261104-2255/failure-extract-2/00-raw-0.log",
+      "content": "        FAIL [   0.378s] codex-core::all suite::approvals::approving_execpolicy_amendment_persists_policy_and_skips_future_prompts\n  stdout ───\n\n    running 1 test\n    test suite::approvals::approving_execpolicy_amendment_persists_policy_and_skips_future_prompts ... FAILED\n\n    failures:\n\n    failures:\n        suite::approvals::approving_execpolicy_amendment_persists_policy_and_skips_future_prompts\n\n    test result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 1432 filtered out; finished in 0.36s\n\n  stderr ───\n\n    thread 'suite::approvals::approving_execpolicy_amendment_persists_policy_and_skips_future_prompts' (3658852) panicked at core/tests/suite/approvals.rs:2540:5:\n    unexpected stdout: Failed to create stream fd: Operation not permitted\n    Failed to create stream fd: Operation not permitted\n    Failed to create stream fd: Operation not permitted\n\n    note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace\n\n",
+      "sha256": "2dcb47fdd1077e79232ec822222a88d9b2193c7f86475e2e10f36e56fe6216a9",
+      "bytes": 969
+    },
+    {
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/owning-seven-project-gate-e84-20261104-2255/failure-extract-2/01-raw-0.log",
+      "content": "        FAIL [   5.405s] codex-core::all suite::hooks::async_hook_finishing_while_idle_waits_for_the_next_turn\n  stdout ───\n\n    running 1 test\n    test suite::hooks::async_hook_finishing_while_idle_waits_for_the_next_turn ... FAILED\n\n    failures:\n\n    failures:\n        suite::hooks::async_hook_finishing_while_idle_waits_for_the_next_turn\n\n    test result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 1432 filtered out; finished in 5.39s\n\n  stderr ───\n    Error: timed out waiting for the next turn to complete\n\n    Caused by:\n        deadline has elapsed\n\n",
+      "sha256": "a91fea622e9981d6c72d026d49cde4c575966143090d5cbda90a4b74fb862cfa",
+      "bytes": 579
+    },
+    {
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/owning-seven-project-gate-e84-20261104-2255/failure-extract-2/02-raw-0.log",
+      "content": "        FAIL [   0.443s] codex-core::all suite::request_permissions::partial_request_permissions_grants_do_not_preapprove_new_permissions\n  stdout ───\n\n    running 1 test\n    test suite::request_permissions::partial_request_permissions_grants_do_not_preapprove_new_permissions ... FAILED\n\n    failures:\n\n    failures:\n        suite::request_permissions::partial_request_permissions_grants_do_not_preapprove_new_permissions\n\n    test result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 1432 filtered out; finished in 0.43s\n\n  stderr ───\n\n    thread 'suite::request_permissions::partial_request_permissions_grants_do_not_preapprove_new_permissions' (3764768) panicked at core/tests/suite/request_permissions.rs:1802:5:\n    assertion failed: `(left == right)`\n\n    Diff < left / right > :\n    <Failed to create stream fd: Operation not permitted\n    <Failed to create stream fd: Operation not permitted\n    <Failed to create stream fd: Operation not permitted\n     partial-grant-ok\n\n\n    note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace\n\n",
+      "sha256": "ac509e32b715dffd85b01c072c81525f8a13de6ef0f745417ca34391bb78eb70",
+      "bytes": 1083
+    },
+    {
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/owning-seven-project-gate-e84-20261104-2255/failure-extract-2/03-raw-0.log",
+      "content": "        FAIL [   0.465s] codex-core::all suite::request_permissions::request_permissions_grants_apply_to_later_exec_command_calls\n  stdout ───\n\n    running 1 test\n    test suite::request_permissions::request_permissions_grants_apply_to_later_exec_command_calls ... FAILED\n\n    failures:\n\n    failures:\n        suite::request_permissions::request_permissions_grants_apply_to_later_exec_command_calls\n\n    test result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 1432 filtered out; finished in 0.45s\n\n  stderr ───\n\n    thread 'suite::request_permissions::request_permissions_grants_apply_to_later_exec_command_calls' (3764948) panicked at core/tests/suite/request_permissions.rs:1391:5:\n    assertion failed: `(left == right)`\n\n    Diff < left / right > :\n    <Failed to create stream fd: Operation not permitted\n    <Failed to create stream fd: Operation not permitted\n    <Failed to create stream fd: Operation not permitted\n     sticky-grant-ok\n\n\n    note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace\n\n",
+      "sha256": "10156594c06656b3df088d94be26af02ed6d5ff541d9e8c50bb3e160dccb78a5",
+      "bytes": 1050
+    },
+    {
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/owning-seven-project-gate-e84-20261104-2255/failure-extract-2/04-raw-0.log",
+      "content": "        FAIL [   0.469s] codex-core::all suite::request_permissions::request_permissions_grants_apply_to_later_exec_command_calls_without_inline_permission_feature\n  stdout ───\n\n    running 1 test\n    test suite::request_permissions::request_permissions_grants_apply_to_later_exec_command_calls_without_inline_permission_feature ... FAILED\n\n    failures:\n\n    failures:\n        suite::request_permissions::request_permissions_grants_apply_to_later_exec_command_calls_without_inline_permission_feature\n\n    test result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 1432 filtered out; finished in 0.45s\n\n  stderr ───\n\n    thread 'suite::request_permissions::request_permissions_grants_apply_to_later_exec_command_calls_without_inline_permission_feature' (3764986) panicked at core/tests/suite/request_permissions.rs:1626:5:\n    assertion failed: `(left == right)`\n\n    Diff < left / right > :\n    <Failed to create stream fd: Operation not permitted\n    <Failed to create stream fd: Operation not permitted\n    <Failed to create stream fd: Operation not permitted\n     sticky-shell-feature-independent-ok\n\n\n    note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace\n\n",
+      "sha256": "b5264937a9461ef878203c2cb45d87121147677ffbfa5cd86400608b9e0a90c9",
+      "bytes": 1206
+    },
+    {
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/owning-seven-project-gate-e84-20261104-2255/failure-extract-2/05-raw-0.log",
+      "content": "        FAIL [   0.478s] codex-core::all suite::request_permissions::request_permissions_preapprove_explicit_exec_permissions_outside_on_request\n  stdout ───\n\n    running 1 test\n    test suite::request_permissions::request_permissions_preapprove_explicit_exec_permissions_outside_on_request ... FAILED\n\n    failures:\n\n    failures:\n        suite::request_permissions::request_permissions_preapprove_explicit_exec_permissions_outside_on_request\n\n    test result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 1432 filtered out; finished in 0.46s\n\n  stderr ───\n\n    thread 'suite::request_permissions::request_permissions_preapprove_explicit_exec_permissions_outside_on_request' (3765124) panicked at core/tests/suite/request_permissions.rs:1510:5:\n    assertion failed: `(left == right)`\n\n    Diff < left / right > :\n    <Failed to create stream fd: Operation not permitted\n    <Failed to create stream fd: Operation not permitted\n    <Failed to create stream fd: Operation not permitted\n     sticky-explicit-grant-ok\n\n\n    note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace\n\n",
+      "sha256": "e6799b122b792c0abcb453c031a0ec0e6b6702ae5c243fd84bb8568c1d0117be",
+      "bytes": 1119
+    },
+    {
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/owning-seven-project-gate-e84-20261104-2255/failure-extract-2/06-raw-0.log",
+      "content": "        FAIL [   0.128s] codex-core::all suite::unified_exec_zsh_fork_approvals::unified_exec_zsh_fork_parent_approval_preserves_denied_reads\n  stdout ───\n\n    running 1 test\n    test suite::unified_exec_zsh_fork_approvals::unified_exec_zsh_fork_parent_approval_preserves_denied_reads ... FAILED\n\n    failures:\n\n    failures:\n        suite::unified_exec_zsh_fork_approvals::unified_exec_zsh_fork_parent_approval_preserves_denied_reads\n\n    test result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 1432 filtered out; finished in 0.11s\n\n  stderr ───\n    Error: Fatal error: Failed to initialize session: failed to load AGENTS.md instructions for environment `local`: fs sandbox helper failed with status exit status: 1: error building bubblewrap command: Fatal error: unreadable glob `/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/source/codex-rs/core/.tmpqCGbr8/secret.env` cannot be safely expanded; use a pattern with a non-root directory prefix\n\n",
+      "sha256": "87285eee31f047c66c67ea2162478838a19d1e834d936398418ff2f4f8d69586",
+      "bytes": 973
+    },
+    {
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/owning-seven-project-gate-e84-20261104-2255/failure-extract-2/07-raw-0.log",
+      "content": "        FAIL [  10.399s] codex-core::all suite::skill_approval::shell_zsh_fork_skill_scripts_ignore_declared_permissions\n  stdout ───\n\n    running 1 test\n    test suite::skill_approval::shell_zsh_fork_skill_scripts_ignore_declared_permissions ... FAILED\n\n    failures:\n\n    failures:\n        suite::skill_approval::shell_zsh_fork_skill_scripts_ignore_declared_permissions\n\n    test result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 1432 filtered out; finished in 10.38s\n\n  stderr ───\n\n    thread 'suite::skill_approval::shell_zsh_fork_skill_scripts_ignore_declared_permissions' (3777869) panicked at core/tests/common/lib.rs:353:14:\n    timeout waiting for event: Elapsed(())\n    note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace\n\n",
+      "sha256": "0faf87e220fd0c55998123510c7a2aa9d6cd9d281192e864821ae42fe2d2e1c2",
+      "bytes": 780
+    },
+    {
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/owning-seven-project-gate-e84-20261104-2255/failure-extract-2/08-raw-0.log",
+      "content": "        FAIL [   0.314s] codex-exec-server::exec_process shell_snapshot_v2_capture_failure_falls_back_and_retries::test_case_3_remote_pipe_recovery\n  stdout ───\n\n    running 1 test\n    test shell_snapshot_v2_capture_failure_falls_back_and_retries::test_case_3_remote_pipe_recovery ... FAILED\n\n    failures:\n\n    failures:\n        shell_snapshot_v2_capture_failure_falls_back_and_retries::test_case_3_remote_pipe_recovery\n\n    test result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 42 filtered out; finished in 0.31s\n\n  stderr ───\n\n    thread 'shell_snapshot_v2_capture_failure_falls_back_and_retries::test_case_3_remote_pipe_recovery' (3804580) panicked at exec-server/tests/exec_process.rs:434:9:\n    assertion failed: `(left == right)`\n\n    Diff < left / right > :\n     (\n         \"original\",\n    <    \"Failed to create stream fd: Operation not permitted\\nFailed to create stream fd: Operation not permitted\\nFailed to create stream fd: Operation not permitted\\n\",\n    >    \"\",\n         Some(\n             0,\n         ),\n         true,\n     )\n\n\n    note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace\n\n",
+      "sha256": "86e850c4d6b48f789840a4feb8f2cab3ce1ad6af207ccce76feaabd8edd58c52",
+      "bytes": 1151
+    },
+    {
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/owning-seven-project-gate-e84-20261104-2255/failure-extract-2/09-raw-0.log",
+      "content": "        FAIL [   0.337s] codex-exec-server::exec_process shell_snapshot_v2_capture_failure_falls_back_and_retries::test_case_4_remote_tty_recovery\n  stdout ───\n\n    running 1 test\n    test shell_snapshot_v2_capture_failure_falls_back_and_retries::test_case_4_remote_tty_recovery ... FAILED\n\n    failures:\n\n    failures:\n        shell_snapshot_v2_capture_failure_falls_back_and_retries::test_case_4_remote_tty_recovery\n\n    test result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 42 filtered out; finished in 0.33s\n\n  stderr ───\n\n    thread 'shell_snapshot_v2_capture_failure_falls_back_and_retries::test_case_4_remote_tty_recovery' (3804688) panicked at exec-server/tests/exec_process.rs:434:9:\n    assertion failed: `(left == right)`\n\n    Diff < left / right > :\n     (\n    <    \"Failed to create stream fd: Operation not permitted\\r\\nFailed to create stream fd: Operation not permitted\\r\\nFailed to create stream fd: Operation not permitted\\r\\noriginal\",\n    >    \"original\",\n         \"\",\n         Some(\n             0,\n         ),\n         true,\n     )\n\n\n    note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace\n\n",
+      "sha256": "e84675b1fa04891387fef2a89d315601ad0a056cc2e0db378a1e416e9d0fc2b5",
+      "bytes": 1161
+    },
+    {
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/owning-seven-project-gate-e84-20261104-2255/failure-extract-2/10-raw-0.log",
+      "content": "        FAIL [   0.278s] codex-exec-server::exec_process shell_snapshot_v2_filters_profile_exports_and_stays_in_memory::test_case_5_remote_sandbox\n  stdout ───\n\n    running 1 test\n    test shell_snapshot_v2_filters_profile_exports_and_stays_in_memory::test_case_5_remote_sandbox ... FAILED\n\n    failures:\n\n    failures:\n        shell_snapshot_v2_filters_profile_exports_and_stays_in_memory::test_case_5_remote_sandbox\n\n    test result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 42 filtered out; finished in 0.27s\n\n  stderr ───\n\n    thread 'shell_snapshot_v2_filters_profile_exports_and_stays_in_memory::test_case_5_remote_sandbox' (3805137) panicked at exec-server/tests/exec_process.rs:258:9:\n    assertion failed: `(left == right)`\n\n    Diff < left / right > :\n     (\n    >    \"helper|profile|missing|missing|/tmp/.tmppS2P8q/runtime-bin:/tmp/.tmppS2P8q/profile-bin:/usr/bin:/bin|missing|missing\",\n         \"\",\n    <    \"/tmp/.tmppS2P8q/.bashrc: line 1: /tmp/.tmppS2P8q/captures: Read-only file system\\n\",\n         Some(\n    <        41,\n    >        0,\n         ),\n         true,\n     )\n\n\n    note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace\n\n",
+      "sha256": "cc332f86c8819f8288c9e587435601724d1316b932b7d38d2c24c185cefff01d",
+      "bytes": 1195
+    },
+    {
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/owning-seven-project-gate-e84-20261104-2255/failure-extract-2/11-raw-0.log",
+      "content": "        FAIL [   0.336s] codex-exec-server::exec_process shell_snapshot_v2_capture_failure_falls_back_and_retries::test_case_6_remote_retry_budget_exhausted\n  stdout ───\n\n    running 1 test\n    test shell_snapshot_v2_capture_failure_falls_back_and_retries::test_case_6_remote_retry_budget_exhausted ... FAILED\n\n    failures:\n\n    failures:\n        shell_snapshot_v2_capture_failure_falls_back_and_retries::test_case_6_remote_retry_budget_exhausted\n\n    test result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 42 filtered out; finished in 0.33s\n\n  stderr ───\n\n    thread 'shell_snapshot_v2_capture_failure_falls_back_and_retries::test_case_6_remote_retry_budget_exhausted' (3804761) panicked at exec-server/tests/exec_process.rs:434:9:\n    assertion failed: `(left == right)`\n\n    Diff < left / right > :\n     (\n         \"original\",\n    <    \"Failed to create stream fd: Operation not permitted\\nFailed to create stream fd: Operation not permitted\\nFailed to create stream fd: Operation not permitted\\n\",\n    >    \"\",\n         Some(\n             0,\n         ),\n         true,\n     )\n\n\n    note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace\n\n",
+      "sha256": "3be960385a83423f4d55fa6e9d41b64a907be001fa512b905a2bd101931503e9",
+      "bytes": 1187
+    }
+  ],
+  "qualification": {
+    "selected": 5416,
+    "junit_pass": 5404,
+    "fail": 12,
+    "original_ignored": 19,
+    "requires_remote_environment_early_return_messages": 24,
+    "retries": 0,
+    "source_test_binary_helper_stable": true
+  },
+  "limits": [
+    "Complete original XML testcase substrings for all12 failures, plus whole captured original failure output section for each case.",
+    "Full 1155445-byte JUnit and 11676772-byte raw remain preserved and hash-indexed in projection; full5416 roster transfer is in progress.",
+    "24 original requires-remote-environment early returns are not qualified remote behavior; no new skips were added.",
+    "v1 projection raw matcher used substring and matched longer sibling names; v2 matches exact classname+case at end of actual status line. Original source/logs/test outcomes unchanged; v1 not used as qualification."
+  ]
+}

@@ -1,0 +1,129 @@
+{
+  "schema": "hepta-app-disconnect-owned-process-diagnostic-v2",
+  "status": "REVIEWED_DIRECTION_AWAITING_ROOT_LAUNCH_GUARD",
+  "expected_tree": "f8251e1d14fa8524ab469281296cd4cf708f173c",
+  "source_changes": [],
+  "runner": {
+    "git_blob": "c55030b2cabbeb4a7e8e217126a78160063e3925",
+    "bytes": 19335,
+    "sha256": "f5b5edef2f9a900993f572cab7e9f734c0736bda71147d22b6543b9e672d93a8",
+    "local_path": "/workspace/scratch/07dd58cc9630/ci-audit/recovered-20261105/app-disconnect-owned-diagnostic-v2.py",
+    "ast_parse_pass": true
+  },
+  "ordinary_index": {
+    "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/source/.git/index",
+    "bytes": 1222758,
+    "sha256": "8ccf08bcd5b633a38fa81be4814ae264365f1a2cdd1ed81e1633fbcc0ac31502"
+  },
+  "locks": {
+    "codex-rs/Cargo.lock": {
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/source/codex-rs/Cargo.lock",
+      "bytes": 413768,
+      "sha256": "4a7a5535cf045089458468411e126b5f59bc6bbf34fc0deead9b0c1b8d84000a"
+    },
+    "MODULE.bazel.lock": {
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/source/MODULE.bazel.lock",
+      "bytes": 1738619,
+      "sha256": "11f8a421224b9b05f32c4c14054e8868083d989fc497310c8d51e1156f189ca3"
+    }
+  },
+  "commands": {
+    "metadata": [
+      "cargo",
+      "metadata",
+      "--format-version=1",
+      "--locked"
+    ],
+    "catalog": [
+      "cargo",
+      "nextest",
+      "list",
+      "--locked",
+      "--cargo-profile",
+      "dev-small",
+      "--message-format=json",
+      "-E",
+      "test(=suite::v2::command_exec::command_exec_process_ids_are_connection_scoped_and_disconnect_terminates_process)"
+    ],
+    "test": [
+      "just",
+      "test",
+      "--locked",
+      "--cargo-profile",
+      "dev-small",
+      "--no-tests",
+      "fail",
+      "--retries",
+      "0",
+      "--success-output",
+      "immediate",
+      "-E",
+      "test(=suite::v2::command_exec::command_exec_process_ids_are_connection_scoped_and_disconnect_terminates_process)"
+    ]
+  },
+  "selected_case": {
+    "classname": "codex-app-server::all",
+    "name": "suite::v2::command_exec::command_exec_process_ids_are_connection_scoped_and_disconnect_terminates_process"
+  },
+  "original_fixture": {
+    "path": "codex-rs/app-server/tests/suite/v2/command_exec.rs",
+    "git_blob": "ea833ea2113346d30eeb64999e31351d3c11031a",
+    "bytes": 50345,
+    "sha256": "d964c52c2f4f75388b7dc468d30c689d9b0e8e5620fd25ef46b65697a4e70d93",
+    "native_file_info_verified": true,
+    "marker_child": "python3 -c \"import time; print('ready', flush=True); time.sleep(30)\" <dynamic-marker>",
+    "original_wait_seconds": 5,
+    "original_poll_milliseconds": 50
+  },
+  "provenance": {
+    "full_evidence_archive": "4fbfb3d05586f87b449a9ec14097982072917934",
+    "original_failure_block": "3a969dedeeb3ac1030fc3061fe2af975a055a169",
+    "full_metadata_sha256": "959b827393fc6830e8fd6c55a83a519217ab0debb7c033b42e64306bc373fece",
+    "full_selection_sha256": "5f2118b2def8bb6aac31a78bb08bd1d355033a826d4fadfe0c305ff37ae662be",
+    "full_catalog_sha256": "af962c86ba44b1e4931ca61319597cc8c9557cafaaf70dd8cfe8664c6e3815ef"
+  },
+  "feature_graph_contract": "No -p or --no-deps. Read fresh full normal metadata and require exact original workspace_members/resolve node feature+dependency graph. Selected program and all 33 original full helper hashes must equal the source-bound full run before and after this attempt.",
+  "observation": {
+    "root": "Actual original just test PID+starttime recorded immediately after Popen. Seed descendant traversal only while that exact identity still matches; observer PID excluded.",
+    "sampling_seconds": 0.05,
+    "structural_proc_stat": "Read pid/comm/state/ppid/pgid/sid/starttime for ancestry; persist only this command's observed descendants.",
+    "cmdline_scope": "Read bounded 16384B cmdline/exe only for current descendants or identical previously-owned PID/starttime pairs; never read env.",
+    "marker_policy": "Learn exact codex-command-exec-marker-[0-9]+ only from owned argv. No external ps/pgrep/observer command receives a dynamic marker, avoiding contamination of the original ps oracle.",
+    "recorded_fields": [
+      "UTC time",
+      "monotonic elapsed",
+      "pid",
+      "ppid",
+      "pgid",
+      "sid",
+      "state",
+      "starttime_ticks",
+      "comm",
+      "bounded cmdline",
+      "exe",
+      "exact markers",
+      "disappearance"
+    ],
+    "control": "No signal/kill/strace/policy or sandbox changes. Observer failure is recorded; it does not cancel original test.",
+    "limitation": "A child that detached before first observation can be missed. An isolated PASS is not a fix; preserve the original full failure.",
+    "completeness": "Requires exactly one actually observed dynamic fixture marker, no observer errors, exact selected JUnit name, and stable source/helpers/program; no marker or multiple markers retain the original test result but diagnose incomplete observation."
+  },
+  "stop_conditions": [
+    "Any source/index/lock/helper or full feature graph drift stops before test.",
+    "Exactly one fresh JUnit case, original result and complete raw must be retained.",
+    "Any observer error, early-return skip or unstable binary remains incomplete.",
+    "Stop after this diagnostic for root review; no hygiene or next test."
+  ],
+  "suggested_runtime_timeout_seconds": 3600,
+  "suggested_disk_guard_bytes": 8000000000,
+  "authorization": "Only cloud preparation and Git blob creation performed. No native launch/source/Cargo action until root exact guard approval.",
+  "supersedes": {
+    "runner_blob": "e957e962bd26ec6cbaf01faeeeade56b589c02c8",
+    "manifest_blob": "0dffabd5818f7b572d614b37c892d94101a7c345",
+    "old_draft_preserved": true
+  },
+  "review_tightening": [
+    "Root PID reuse exclusion for final and intermediate snapshots.",
+    "Require exactly one observed dynamic fixture marker for observation_complete."
+  ]
+}

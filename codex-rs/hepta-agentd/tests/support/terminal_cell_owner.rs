@@ -11,13 +11,12 @@ use codex_hepta_types::ProbabilityQ32;
 use codex_hepta_types::StableId;
 use ed25519_dalek::Signer;
 use ed25519_dalek::SigningKey;
+#[cfg(not(windows))]
 use std::fs;
 use std::fs::File;
+#[cfg(not(windows))]
 use std::fs::OpenOptions;
 use std::path::PathBuf;
-use std::sync::atomic::AtomicU64;
-use std::sync::atomic::Ordering;
-static NEXT: AtomicU64 = AtomicU64::new(0);
 pub(super) fn id(value: &str) -> StableId {
     StableId::new(value.to_owned()).unwrap()
 }
@@ -171,22 +170,51 @@ pub(super) fn sign(
 
 pub(super) struct Fixture {
     pub(super) root: PathBuf,
+    #[cfg(windows)]
+    directory_handle: File,
+    // The retained directory handle must close before its temporary owner cleans up.
+    _temporary: tempfile::TempDir,
 }
 
 impl Fixture {
     pub(super) fn new() -> Self {
-        let serial = NEXT.fetch_add(1, Ordering::Relaxed);
-        let root = std::env::temp_dir().join(format!(
-            "hepta-cell-owner-loop-{}-{serial}",
-            std::process::id()
-        ));
-        fs::create_dir(&root).unwrap();
-        File::create(root.join("ledger")).unwrap();
-        File::create(root.join("witness")).unwrap();
-        Self { root }
+        let temporary = tempfile::Builder::new()
+            .prefix("hepta-cell-owner-loop-")
+            .tempdir()
+            .unwrap();
+        let root = temporary.path().join("private-state");
+        #[cfg(windows)]
+        let directory_handle = {
+            let directory = codex_utils_path::open_private_state_directory(&root).unwrap();
+            drop(codex_utils_path::create_new_private_state_child(&directory, "ledger").unwrap());
+            drop(codex_utils_path::create_new_private_state_child(&directory, "witness").unwrap());
+            codex_utils_path::open_existing_private_state_directory_for_sync(&root).unwrap()
+        };
+        #[cfg(not(windows))]
+        {
+            fs::create_dir(&root).unwrap();
+            File::create(root.join("ledger")).unwrap();
+            File::create(root.join("witness")).unwrap();
+        }
+        Self {
+            root,
+            #[cfg(windows)]
+            directory_handle,
+            _temporary: temporary,
+        }
     }
 
     pub(super) fn file(&self, name: &str) -> File {
+        #[cfg(windows)]
+        {
+            codex_utils_path::open_private_state_child(
+                &self.directory_handle,
+                name,
+                codex_utils_path::PrivateFileAccess::Write,
+            )
+            .unwrap()
+        }
+        #[cfg(not(windows))]
         OpenOptions::new()
             .read(true)
             .write(true)
@@ -195,6 +223,12 @@ impl Fixture {
     }
 
     pub(super) fn directory(&self) -> File {
+        #[cfg(windows)]
+        {
+            // Clone the validated writable handle; LedgerWriter still performs the real flush.
+            self.directory_handle.try_clone().unwrap()
+        }
+        #[cfg(not(windows))]
         File::open(&self.root).unwrap()
     }
 
@@ -241,12 +275,6 @@ impl Fixture {
             &self.directory(),
         )
         .unwrap()
-    }
-}
-
-impl Drop for Fixture {
-    fn drop(&mut self) {
-        let _ = fs::remove_dir_all(&self.root);
     }
 }
 

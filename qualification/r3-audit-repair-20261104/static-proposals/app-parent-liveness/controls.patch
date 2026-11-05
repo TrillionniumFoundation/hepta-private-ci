@@ -1,0 +1,299 @@
+diff --git a/codex-rs/linux-sandbox/src/parent_lifecycle.rs b/codex-rs/linux-sandbox/src/parent_lifecycle.rs
+--- a/codex-rs/linux-sandbox/src/parent_lifecycle.rs
++++ b/codex-rs/linux-sandbox/src/parent_lifecycle.rs
+@@ -147,3 +147,7 @@
+         Ok(())
+     }
+ }
++
++#[cfg(test)]
++#[path = "parent_lifecycle_tests.rs"]
++mod tests;
+diff --git a/codex-rs/linux-sandbox/src/parent_lifecycle_tests.rs b/codex-rs/linux-sandbox/src/parent_lifecycle_tests.rs
+new file mode 100644
+--- /dev/null
++++ b/codex-rs/linux-sandbox/src/parent_lifecycle_tests.rs
+@@ -0,0 +1,283 @@
++use super::ParentLiveness;
++use pretty_assertions::assert_eq;
++use std::io;
++use std::io::BufRead;
++use std::io::BufReader;
++use std::io::Read;
++use std::io::Write;
++use std::mem::MaybeUninit;
++use std::os::fd::AsRawFd;
++use std::os::fd::IntoRawFd;
++use std::os::unix::fs::MetadataExt;
++use std::os::unix::process::CommandExt;
++use std::os::unix::process::ExitStatusExt;
++use std::process::Child;
++use std::process::ChildStdin;
++use std::process::Command;
++use std::process::Stdio;
++use std::sync::mpsc;
++use std::thread;
++use std::thread::JoinHandle;
++use std::time::Duration;
++use std::time::Instant;
++
++const CHILD: &str = "parent_lifecycle::tests::owned_liveness_scenario";
++const MODE: &str = "CODEX_PARENT_LIVENESS_TEST_MODE";
++const ARGUMENT: &str = "CODEX_PARENT_LIVENESS_TEST_ARGUMENT";
++const PARENT: &str = "CODEX_PARENT_LIVENESS_TEST_PARENT";
++const BOUND: Duration = Duration::from_secs(5);
++
++struct OwnedScenario {
++    child: Child,
++    input: Option<ChildStdin>,
++    lines: Option<mpsc::Receiver<String>>,
++    reader: Option<JoinHandle<io::Result<String>>>,
++    reaped: bool,
++}
++
++impl OwnedScenario {
++    fn start(mode: &str) -> Self {
++        let mut child = child_command(mode).process_group(0)
++            .stdin(Stdio::piped()).stdout(Stdio::piped()).stderr(Stdio::inherit())
++            .spawn().unwrap();
++        let input = child.stdin.take();
++        let output = child.stdout.take().unwrap();
++        let (sender, lines) = mpsc::sync_channel(32);
++        let mut owned = Self { child, input, lines: Some(lines), reader: None, reaped: false };
++        owned.reader = Some(thread::spawn(move || {
++            let mut raw = String::new();
++            for line in BufReader::new(output).take(64 * 1024 + 1).lines() {
++                let line = line?;
++                raw.push_str(&line);
++                raw.push('\n');
++                if raw.len() > 64 * 1024 {
++                    return Err(io::Error::other("owned liveness control output exceeded its bound"));
++                }
++                if sender.send(line).is_err() { break; }
++            }
++            Ok(raw)
++        }));
++        owned
++    }
++
++    fn marker(&self, expected: &str) {
++        let deadline = Instant::now() + BOUND;
++        loop {
++            let line = self.lines.as_ref().unwrap()
++                .recv_timeout(deadline.saturating_duration_since(Instant::now()))
++                .expect("owned liveness child did not reach the required stage");
++            eprintln!("owned liveness: {line}");
++            if line == expected { return; }
++        }
++    }
++
++    fn release(&mut self) {
++        self.input.as_mut().unwrap().write_all(b"go\n").unwrap();
++        self.input.as_mut().unwrap().flush().unwrap();
++    }
++
++    fn kill_launcher_without_reaping(&mut self) {
++        self.child.kill().unwrap();
++        let deadline = Instant::now() + BOUND;
++        loop {
++            let mut info = MaybeUninit::<libc::siginfo_t>::zeroed();
++            // SAFETY: this is our unreaped direct child; WNOWAIT keeps its PID
++            // reserved until all group members have completed or been killed.
++            let rc = unsafe { libc::waitid(libc::P_PID, self.child.id(), info.as_mut_ptr(),
++                libc::WEXITED | libc::WNOHANG | libc::WNOWAIT) };
++            if rc < 0 {
++                let error = io::Error::last_os_error();
++                assert_eq!(error.raw_os_error(), Some(libc::EINTR));
++            } else {
++                // SAFETY: waitid initialized the zeroed output on success.
++                if unsafe { info.assume_init().si_pid() } == self.child.id() as libc::pid_t {
++                    return;
++                }
++            }
++            assert!(Instant::now() < deadline, "original launcher did not exit");
++            thread::sleep(Duration::from_millis(10));
++        }
++    }
++
++    fn finish_killed_launcher(&mut self) -> String {
++        // The test still owns the stdin writer. EOF therefore cannot release
++        // the live probe: its stdout closes only when that process exits.
++        let deadline = Instant::now() + BOUND;
++        loop {
++            match self.lines.as_ref().unwrap()
++                .recv_timeout(deadline.saturating_duration_since(Instant::now())) {
++                Ok(line) => eprintln!("owned liveness: {line}"),
++                Err(mpsc::RecvTimeoutError::Disconnected) => break,
++                Err(mpsc::RecvTimeoutError::Timeout) => panic!("reaper survived original launcher exit"),
++            }
++        }
++        drop(self.lines.take());
++        let raw = self.reader.take().unwrap().join().unwrap().unwrap();
++        let status = self.child.wait().unwrap();
++        self.reaped = true;
++        assert_eq!(status.signal(), Some(libc::SIGKILL));
++        raw
++    }
++}
++
++impl Drop for OwnedScenario {
++    fn drop(&mut self) {
++        drop(self.input.take());
++        drop(self.lines.take());
++        if !self.reaped {
++            // SAFETY: our dedicated group's leader is still owned and unreaped,
++            // so its PID cannot be reused for another process group.
++            unsafe { libc::kill(-(self.child.id() as libc::pid_t), libc::SIGKILL); }
++            let _ = self.child.wait();
++        }
++        if let Some(reader) = self.reader.take() { let _ = reader.join(); }
++    }
++}
++
++fn child_command(mode: &str) -> Command {
++    let mut command = Command::new(std::env::current_exe().unwrap());
++    command.args(["--exact", CHILD, "--ignored", "--nocapture", "--test-threads=1"])
++        .env(MODE, mode);
++    command
++}
++
++#[test]
++fn exited_original_parent_is_rejected_after_actual_reparenting() {
++    let mut scenario = OwnedScenario::start("launch-early");
++    scenario.marker("LIVENESS: inherited_unread_parent");
++    scenario.kill_launcher_without_reaping();
++    scenario.release();
++    scenario.marker("LIVENESS: exited_original_parent_rejected");
++    let raw = scenario.finish_killed_launcher();
++    assert!(raw.contains("1 passed; 0 failed; 0 ignored"), "owned probe did not complete: {raw}");
++}
++
++#[test]
++fn rearmed_parent_death_terminates_probe_and_closes_fd_before_user_fork() {
++    let mut scenario = OwnedScenario::start("launch-live");
++    scenario.marker("LIVENESS: inherited_unread_parent");
++    scenario.release();
++    scenario.marker("LIVENESS: armed_with_fd_closed_before_fork_and_exec");
++    scenario.kill_launcher_without_reaping();
++    let raw = scenario.finish_killed_launcher();
++    assert!(!raw.contains("LIVENESS: unexpectedly_resumed"));
++}
++
++#[test]
++fn ordinary_file_and_pre_read_proc_descriptor_are_rejected() {
++    let temporary = tempfile::NamedTempFile::new().unwrap();
++    let file = temporary.as_file().try_clone().unwrap();
++    let metadata = file.metadata().unwrap();
++    let fd = file.into_raw_fd();
++    let argument = format!("{fd}:{}:{}", metadata.dev(), metadata.ino());
++    assert!(matches!(ParentLiveness::from_inherited(&argument),
++        Err(error) if error.kind() == io::ErrorKind::InvalidInput));
++    let mut parent = ParentLiveness::capture_current_process().unwrap();
++    parent.0.read_exact(&mut [0_u8; 1]).unwrap();
++    let argument = parent.inheritance_argument().unwrap();
++    let _ = parent.into_file().into_raw_fd();
++    assert!(matches!(ParentLiveness::from_inherited(&argument),
++        Err(error) if error.kind() == io::ErrorKind::InvalidInput));
++}
++
++// Invoked only by the owned parent controls, through ordinary Rust/libtest
++// startup. This ignored support is not an additional passing case.
++#[test]
++#[ignore]
++fn owned_liveness_scenario() {
++    let mode = std::env::var(MODE).unwrap();
++    if mode == "launch-early" || mode == "launch-live" {
++        let parent = ParentLiveness::capture_current_process().unwrap();
++        let argument = parent.inheritance_argument().unwrap();
++        let file = parent.into_file();
++        let fd = file.as_raw_fd();
++        // SAFETY: querying our owned file's descriptor flags has no side effects.
++        let flags = unsafe { libc::fcntl(fd, libc::F_GETFD) };
++        assert!(flags >= 0);
++        let mut command = child_command(if mode == "launch-early" { "probe-early" } else { "probe-live" });
++        command.env(ARGUMENT, argument).env(PARENT, std::process::id().to_string());
++        // SAFETY: the child closure only performs async-signal-safe fcntl;
++        // the File remains owned here until spawn completes its exec handshake.
++        unsafe { command.pre_exec(move || {
++            if libc::fcntl(fd, libc::F_SETFD, flags & !libc::FD_CLOEXEC) < 0 {
++                return Err(io::Error::last_os_error());
++            }
++            Ok(())
++        }); }
++        let mut probe = command.spawn().unwrap();
++        drop(file);
++        assert!(probe.wait().unwrap().success());
++        return;
++    }
++    let argument = std::env::var(ARGUMENT).unwrap();
++    let mut identity = argument.split(':');
++    let fd: libc::c_int = identity.next().unwrap().parse().unwrap();
++    let device: u64 = identity.next().unwrap().parse().unwrap();
++    let inode: u64 = identity.next().unwrap().parse().unwrap();
++    if mode == "inspect-exec" {
++        let mut actual = MaybeUninit::<libc::stat>::uninit();
++        // SAFETY: fstat either initializes actual or returns an error.
++        if unsafe { libc::fstat(fd, actual.as_mut_ptr()) } == 0 {
++            // SAFETY: fstat succeeded; FD reuse is allowed, original inode is not.
++            let actual = unsafe { actual.assume_init() };
++            assert_ne!((actual.st_dev as u64, actual.st_ino as u64), (device, inode));
++        } else {
++            assert_eq!(io::Error::last_os_error().raw_os_error(), Some(libc::EBADF));
++        }
++        // Only this owned child closes a standard descriptor. The private
++        // constructor must not return the low FD that its receiver rejects.
++        assert_eq!(unsafe { libc::close(libc::STDIN_FILENO) }, 0);
++        let captured = ParentLiveness::capture_current_process().unwrap();
++        assert!(captured.0.as_raw_fd() > libc::STDERR_FILENO);
++        assert_eq!(unsafe { libc::fcntl(libc::STDIN_FILENO, libc::F_GETFD) }, -1);
++        assert_eq!(io::Error::last_os_error().raw_os_error(), Some(libc::EBADF));
++        let private_argument = captured.inheritance_argument().unwrap();
++        let _ = captured.into_file().into_raw_fd();
++        drop(ParentLiveness::from_inherited(&private_argument).unwrap());
++        println!("LIVENESS: closed_stdin_capture_promoted");
++        println!("LIVENESS: original_fd_absent_after_exec");
++        return;
++    }
++    let original_pid: libc::pid_t = std::env::var(PARENT).unwrap().parse().unwrap();
++    assert_eq!(unsafe { libc::getppid() }, original_pid);
++    let mut death_signal: libc::c_int = -1;
++    // SAFETY: PR_GET_PDEATHSIG writes one int into the supplied live pointer.
++    assert_eq!(unsafe { libc::prctl(libc::PR_GET_PDEATHSIG, &mut death_signal as *mut libc::c_int,
++        0 as libc::c_ulong, 0 as libc::c_ulong, 0 as libc::c_ulong) }, 0);
++    assert_eq!(death_signal, 0, "control must begin with no parent-death signal");
++    let parent = ParentLiveness::from_inherited(&argument).unwrap();
++    println!("LIVENESS: inherited_unread_parent");
++    std::io::stdout().flush().unwrap();
++    let mut line = String::new();
++    std::io::stdin().read_line(&mut line).unwrap();
++    assert_eq!(line, "go\n");
++    if mode == "probe-early" {
++        assert_ne!(unsafe { libc::getppid() }, original_pid);
++        let result = parent.arm_and_check();
++        eprintln!("actual reparented liveness result={result:?}");
++        assert!(matches!(result, Err(error) if error.kind() == io::ErrorKind::BrokenPipe),
++            "exited original parent was admitted");
++        println!("LIVENESS: exited_original_parent_rejected");
++        return;
++    }
++    assert_eq!(mode, "probe-live");
++    parent.arm_and_check().unwrap();
++    // This observation precedes the actual subprocess fork, not just exec.
++    let descriptor_state = unsafe { libc::fcntl(fd, libc::F_GETFD) };
++    let descriptor_error = io::Error::last_os_error().raw_os_error();
++    assert_eq!((descriptor_state, descriptor_error), (-1, Some(libc::EBADF)));
++    let output = child_command("inspect-exec").env(ARGUMENT, argument)
++        .stdout(Stdio::piped()).stderr(Stdio::inherit()).output().unwrap();
++    let output_text = String::from_utf8(output.stdout).unwrap();
++    print!("{output_text}");
++    assert!(output.status.success());
++    assert!(output_text.contains("LIVENESS: original_fd_absent_after_exec"));
++    assert!(output_text.contains("LIVENESS: closed_stdin_capture_promoted"));
++    assert!(output_text.contains("1 passed; 0 failed; 0 ignored"));
++    println!("LIVENESS: armed_with_fd_closed_before_fork_and_exec");
++    std::io::stdout().flush().unwrap();
++    line.clear();
++    std::io::stdin().read_line(&mut line).unwrap();
++    println!("LIVENESS: unexpectedly_resumed");
++    panic!("probe survived with its original parent gone");
++}

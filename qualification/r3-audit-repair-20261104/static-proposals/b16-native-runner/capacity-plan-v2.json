@@ -1,0 +1,93 @@
+{
+  "schema": "hepta-b16-conditional-capacity-plan-v2",
+  "native_access_performed": false,
+  "internal_stage_ids_are_not_original_blocker_ids": true,
+  "display_namespace": "B16/phase",
+  "current_binding_status": "UNBOUND: final_A_tree after hygiene, last_tested_A_tree with its actual full artifact receipt, their independent source-relation review, current full metadata, complete helper basename roster, paths, ordinary-index SHA and actual free bytes must be supplied after A finishes.",
+  "cargo_target": {
+    "mode": "reuse_final_A",
+    "new_empty_targets": 0,
+    "epochs_sharing_one_target": [
+      "foundation",
+      "driver",
+      "pool",
+      "checkpoint",
+      "owning"
+    ],
+    "profile": "dev-small",
+    "initial_cache_copy_bytes": 0,
+    "freshness": "Every scope performs the original normal-helper builds and full-workspace catalogue against its current source; actual postcatalog test/helper bytes are independently recorded before and after each run. A retained directory is not retained qualification."
+  },
+  "bazel_cache": {
+    "new_task_owned_roots": 1,
+    "creation_epoch": "driver",
+    "reuse": [
+      "driver registration",
+      "checkpoint original update/check",
+      "owning original lock check"
+    ],
+    "owner_fields": [
+      "bazel_cache_owner",
+      "final_A_tree",
+      "approved_payload_sha256",
+      "target_directory"
+    ],
+    "existing_cache_deletion": false,
+    "cache_or_user_config_overwrite": false
+  },
+  "historical_measured_basis": {
+    "relative_evidence_path": "ci-audit/recovered-20261105/full-owning-compressed-archive/full-selection.original",
+    "bytes": 5357276,
+    "sha256": "5f2118b2def8bb6aac31a78bb08bd1d355033a826d4fadfe0c305ff37ae662be",
+    "source_tree": "f8251e1d14fa8524ab469281296cd4cf708f173c",
+    "cargo_profile": "dev-small",
+    "nextest_profile": "local",
+    "test_program_count": 321,
+    "test_program_bytes": 15299566984,
+    "helper_count": 33,
+    "helper_bytes": 2821801608,
+    "unique_executable_paths": 354,
+    "unique_executable_bytes": 18121368592,
+    "limits": [
+      "Earlier f825 receipt, not the current final A target or graph.",
+      "Measures selected executable file sizes, not all target files or peak allocated filesystem blocks.",
+      "No current native filesystem inspection was made for this static estimate."
+    ]
+  },
+  "illustrative_initial_allowances": {
+    "additional_executable_families": 1,
+    "other_cargo_growth_bytes": 12000000000,
+    "bazel_growth_bytes": 8000000000,
+    "evidence_growth_bytes": 2000000000,
+    "unchanged_reserve_bytes": 8000000000,
+    "historical_basis_required_free_bytes": 48121368592,
+    "basis": "One additional complete observed executable family allows for registry-to-local-driver identity changes. Cargo objects/rlibs, Bazel and evidence amounts are explicitly unmeasured planning allowances, not proven maxima."
+  },
+  "reported_available_space": {
+    "source": "Root task message",
+    "approximate_value": "49 GB",
+    "independently_measured_now": false,
+    "qualification": "Conditional only; unit precision and final A growth are unknown. The runner uses actual integer free bytes and actual final-A artifact sizes before launch."
+  },
+  "enforcement": {
+    "same_filesystem_required_for": [
+      "source",
+      "existing final A target",
+      "evidence parent",
+      "private B cache or its parent"
+    ],
+    "before_launch": "Use pinned last-tested-A full-workspace artifact receipt under its true source identity; bind reviewed relationship to final_A_tree. Sum unique executable sizes and require actual free >= reviewed remaining-growth plan + 8,000,000,000-byte reserve.",
+    "between_epochs": "Keep exact target/cache/owner/last-tested-A receipt/helper roster and final-A relation-review continuity; root may separately review the remaining-growth estimate after each completed epoch.",
+    "before_after_commands": "Existing 8,000,000,000-byte reserve guard remains.",
+    "if_insufficient": "Stop. Do not delete A/shared/B caches, weaken scopes, switch profiles or alter test timeouts. Capacity expansion or a revised supported estimate requires a concrete review."
+  },
+  "original_physical_test_changes": false,
+  "original_blocker_exit_changes": false,
+  "tested_vs_final_A": {
+    "final_A_tree": "Actual final source after fix/fmt.",
+    "last_tested_A_tree": "Actual source of the prior complete test/catalogue artifact receipt, even if final hygiene changes source.",
+    "relation": "Root must bind an independent source-relation review; no relabeling of tested binaries or old receipts.",
+    "B_compilation": "Each phase actually rebuilds helpers/catalogue and hashes its current programs.",
+    "A_post_hygiene_rerun_required": false
+  }
+}

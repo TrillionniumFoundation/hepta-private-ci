@@ -1,0 +1,1273 @@
+{
+  "schema": "hepta-full18-three-repairs-native-proposal-v1",
+  "status": "STATIC_PREPARED_NOT_AUTHORIZED_NOT_APPLIED",
+  "initial_tree": "f8251e1d14fa8524ab469281296cd4cf708f173c",
+  "ordinary_index": {
+    "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/source/.git/index",
+    "bytes": 1222758,
+    "sha256": "8ccf08bcd5b633a38fa81be4814ae264365f1a2cdd1ed81e1633fbcc0ac31502"
+  },
+  "locks": {
+    "codex-rs/Cargo.lock": {
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/source/codex-rs/Cargo.lock",
+      "bytes": 413768,
+      "sha256": "4a7a5535cf045089458468411e126b5f59bc6bbf34fc0deead9b0c1b8d84000a"
+    },
+    "MODULE.bazel.lock": {
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/source/MODULE.bazel.lock",
+      "bytes": 1738619,
+      "sha256": "11f8a421224b9b05f32c4c14054e8868083d989fc497310c8d51e1156f189ca3"
+    }
+  },
+  "allowed_untracked_source_paths": [],
+  "target_directory": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/target-app-epoch2-20261105",
+  "stages": [
+    {
+      "label": "skills-controlled-marker",
+      "before_tree": "f8251e1d14fa8524ab469281296cd4cf708f173c",
+      "after_tree": "e55c92c7546fceccd37c16fcd04aaf606e182201",
+      "files": [
+        {
+          "path": "codex-rs/ext/skills/src/host_roots_tests.rs",
+          "before_blob": "fee6c1a0398c0f9bacbb60853e20786e804a3271",
+          "after_blob": "9814df0cddc9cf8c02e8e0259ccdac1fa2b117b1",
+          "mode": "100644",
+          "bytes": 23571,
+          "sha256": "a56d6f5d9e6f592ac9e7cd4dd815bd7a8b2d8c31d8902433639c9ff601236a45"
+        }
+      ]
+    },
+    {
+      "label": "skills-restore-absence",
+      "before_tree": "e55c92c7546fceccd37c16fcd04aaf606e182201",
+      "after_tree": "1125d197cf798176bea6dcc2c0b0c499eb22cf44",
+      "files": [
+        {
+          "path": "codex-rs/ext/skills/src/host_roots_tests.rs",
+          "before_blob": "9814df0cddc9cf8c02e8e0259ccdac1fa2b117b1",
+          "after_blob": "3d8412f8eca445b1eba85f26d7975aa7ddfbb524",
+          "mode": "100644",
+          "bytes": 23392,
+          "sha256": "fa2d78f6fea0018f34d57971ff9defb8b709d1085ba6f2e901b14a2e2ae520c4"
+        }
+      ]
+    },
+    {
+      "label": "migration-remove-inference",
+      "before_tree": "1125d197cf798176bea6dcc2c0b0c499eb22cf44",
+      "after_tree": "0b758c27dfaded684601fc138b75f14afe48f565",
+      "files": [
+        {
+          "path": "codex-rs/external-agent-migration/src/service_tests/plugins/marketplaces.rs",
+          "before_blob": "682000381ac7da7d5c4022a83ee6aaf991aa4df5",
+          "after_blob": "5894278bdfb88d5272180651d1a66123cd105200",
+          "mode": "100644",
+          "bytes": 30695,
+          "sha256": "1900d0dcab3fb4a5bc3c24dd277c2da249d2b917cc6bd10a31bc103f5a37c5d3"
+        },
+        {
+          "path": "codex-rs/external-agent-migration/src/source_cla.rs",
+          "before_blob": "b2620eaf1a3b673d451b3fa7448b26ef286bb03b",
+          "after_blob": "54e2051499f2726bf52436e45c046529210de6b0",
+          "mode": "100644",
+          "bytes": 13202,
+          "sha256": "eae19dcc7d235addac73c9f97ca20592aed80eeb8350d3aa2362cd99386d4335"
+        }
+      ]
+    },
+    {
+      "label": "migration-restore-inference",
+      "before_tree": "0b758c27dfaded684601fc138b75f14afe48f565",
+      "after_tree": "babab3d6050c8355299f11ab844d2e8b0cb66e6d",
+      "files": [
+        {
+          "path": "codex-rs/external-agent-migration/src/source_cla.rs",
+          "before_blob": "54e2051499f2726bf52436e45c046529210de6b0",
+          "after_blob": "b2620eaf1a3b673d451b3fa7448b26ef286bb03b",
+          "mode": "100644",
+          "bytes": 13268,
+          "sha256": "a0efc66a1e66d6a3870d4915961bcd708996055bbf0ce89ea8af932e145358ee"
+        }
+      ]
+    },
+    {
+      "label": "v8-default-sandbox",
+      "before_tree": "babab3d6050c8355299f11ab844d2e8b0cb66e6d",
+      "after_tree": "14015a6ec8bce13bc7b291b0fc67651fd03f43a7",
+      "files": [
+        {
+          "path": "codex-rs/v8-poc/Cargo.toml",
+          "before_blob": "9615ab977f9dfdb35467d1eadaf0bc6dfa641625",
+          "after_blob": "a34a1306f1082b3347543749cbfd9a05eee7cb91",
+          "mode": "100644",
+          "bytes": 370,
+          "sha256": "c8fe672a43a8d02afe8ed2822462201bb87d526478c91dc2d2c9fff6dfad7f6a"
+        }
+      ]
+    }
+  ],
+  "scopes": [
+    {
+      "label": "skills-marker-negative",
+      "package_args": [
+        "-p",
+        "codex-skills-extension",
+        "--lib"
+      ],
+      "expression": "test(=host_roots::tests::repo_ancestry_without_project_marker_does_not_walk_parents)",
+      "expected_cases": [
+        {
+          "classname": "codex-skills-extension",
+          "name": "host_roots::tests::repo_ancestry_without_project_marker_does_not_walk_parents"
+        }
+      ],
+      "expected_result": "one exact causal FAIL"
+    },
+    {
+      "label": "skills-original-nine",
+      "package_args": [
+        "-p",
+        "codex-skills-extension",
+        "--lib"
+      ],
+      "expression": "test(host_roots::tests::)",
+      "expected_cases": [
+        {
+          "classname": "codex-skills-extension",
+          "name": "host_roots::tests::layer_roots_preserve_scope_precedence_and_disabled_projects"
+        },
+        {
+          "classname": "codex-skills-extension",
+          "name": "host_roots::tests::plugin_roots_preserve_plugin_resolution_metadata"
+        },
+        {
+          "classname": "codex-skills-extension",
+          "name": "host_roots::tests::repo_ancestry_limits_concurrent_probes_and_preserves_order"
+        },
+        {
+          "classname": "codex-skills-extension",
+          "name": "host_roots::tests::repo_ancestry_stops_at_project_root_and_preserves_root_to_cwd_order"
+        },
+        {
+          "classname": "codex-skills-extension",
+          "name": "host_roots::tests::repo_ancestry_without_project_marker_does_not_walk_parents"
+        },
+        {
+          "classname": "codex-skills-extension",
+          "name": "host_roots::tests::resolved_config_and_repo_roots_preserve_order_and_dedupe_paths_not_names"
+        },
+        {
+          "classname": "codex-skills-extension",
+          "name": "host_roots::tests::resolved_project_layer_loads_skill_when_cwd_is_file"
+        },
+        {
+          "classname": "codex-skills-extension",
+          "name": "host_roots::tests::resolved_project_layer_loads_skill_without_git_marker"
+        },
+        {
+          "classname": "codex-skills-extension",
+          "name": "host_roots::tests::unique_extra_root_loads_as_recursive_user_root"
+        }
+      ],
+      "expected_result": "all 9 PASS"
+    },
+    {
+      "label": "migration-inference-negative",
+      "package_args": [
+        "-p",
+        "codex-external-agent-migration",
+        "--lib"
+      ],
+      "expression": "test(=service::tests::plugins::marketplaces::import_plugins_infers_external_official_marketplace_when_missing_from_settings)",
+      "expected_cases": [
+        {
+          "classname": "codex-external-agent-migration",
+          "name": "service::tests::plugins::marketplaces::import_plugins_infers_external_official_marketplace_when_missing_from_settings"
+        }
+      ],
+      "expected_result": "one exact causal FAIL in child original business assertion"
+    },
+    {
+      "label": "migration-original-package",
+      "package_args": [
+        "-p",
+        "codex-external-agent-migration",
+        "--lib"
+      ],
+      "expression": null,
+      "expected_cases": [
+        {
+          "classname": "codex-external-agent-migration",
+          "name": "detect::sessions::cla::tests::detects_ai_title_over_first_user_message"
+        },
+        {
+          "classname": "codex-external-agent-migration",
+          "name": "detect::sessions::cla::tests::detects_recent_sessions_with_existing_roots"
+        },
+        {
+          "classname": "codex-external-agent-migration",
+          "name": "detect::sessions::cla::tests::detects_sessions_in_batches"
+        },
+        {
+          "classname": "codex-external-agent-migration",
+          "name": "detect::sessions::cla::tests::ignores_sessions_with_old_file_modification_time"
+        },
+        {
+          "classname": "codex-external-agent-migration",
+          "name": "detect::sessions::cla::tests::prefers_custom_title_over_later_ai_title"
+        },
+        {
+          "classname": "codex-external-agent-migration",
+          "name": "detect::sessions::cla::tests::prefers_latest_custom_title_over_first_user_message"
+        },
+        {
+          "classname": "codex-external-agent-migration",
+          "name": "detect::sessions::cla::tests::redetects_sessions_when_source_contents_change_after_import"
+        },
+        {
+          "classname": "codex-external-agent-migration",
+          "name": "detect::sessions::cla::tests::skips_already_imported_current_session_versions"
+        },
+        {
+          "classname": "codex-external-agent-migration",
+          "name": "detect::sessions::cla::tests::uses_file_modification_time_for_recency"
+        },
+        {
+          "classname": "codex-external-agent-migration",
+          "name": "detect::sessions::connectors_cla::tests::keeps_duplicate_session_stems_separate_when_batched"
+        },
+        {
+          "classname": "codex-external-agent-migration",
+          "name": "detect::sessions::connectors_cla::tests::resolves_attributed_server_name_from_session_manifest"
+        },
+        {
+          "classname": "codex-external-agent-migration",
+          "name": "detect::sessions::connectors_cla::tests::still_resolves_attributed_server_uuid_from_session_manifest"
+        },
+        {
+          "classname": "codex-external-agent-migration",
+          "name": "detect::sessions::connectors_cur::tests::detects_call_mcp_tool_connector_from_project_mcp_server_metadata"
+        },
+        {
+          "classname": "codex-external-agent-migration",
+          "name": "detect::sessions::connectors_cur::tests::detects_connector_used_by_session_mcp_tool_call"
+        },
+        {
+          "classname": "codex-external-agent-migration",
+          "name": "detect::sessions::connectors_cur::tests::detects_project_backed_mcp_details_connector_from_metadata_name"
+        },
+        {
+          "classname": "codex-external-agent-migration",
+          "name": "detect::sessions::cur::tests::detects_cur_sessions_in_batches_and_redetects_modified_imports"
+        },
+        {
+          "classname": "codex-external-agent-migration",
+          "name": "detect::sessions::cur::tests::detects_cur_transcript_with_embedded_unc_cwd"
+        },
+        {
+          "classname": "codex-external-agent-migration",
+          "name": "detect::sessions::cur::tests::detects_cur_transcript_with_project_cwd"
+        },
+        {
+          "classname": "codex-external-agent-migration",
+          "name": "detect::sessions::cur::tests::detects_projectless_cur_transcript_without_embedded_metadata"
+        },
+        {
+          "classname": "codex-external-agent-migration",
+          "name": "detect::sessions::cur::tests::ignores_cur_sessions_older_than_import_window"
+        },
+        {
+          "classname": "codex-external-agent-migration",
+          "name": "detect::sessions::cur::tests::parses_windows_cursor_fixture_project_directory"
+        },
+        {
+          "classname": "codex-external-agent-migration",
+          "name": "detect::sessions::cur::tests::rejects_ambiguous_cur_project_with_multiple_punctuated_ancestors"
+        },
+        {
+          "classname": "codex-external-agent-migration",
+          "name": "detect::sessions::cur::tests::rejects_ambiguous_cur_project_with_punctuated_ancestor"
+        },
+        {
+          "classname": "codex-external-agent-migration",
+          "name": "detect::sessions::cur::tests::rejects_ambiguous_cur_project_without_a_direct_match"
+        },
+        {
+          "classname": "codex-external-agent-migration",
+          "name": "detect::sessions::cur::tests::rejects_ambiguous_encoded_project_cwd"
+        },
+        {
+          "classname": "codex-external-agent-migration",
+          "name": "detect::sessions::cur::tests::resolves_cur_project_names_with_common_separators"
+        },
+        {
+          "classname": "codex-external-agent-migration",
+          "name": "detect::sessions::cur::tests::resolves_projectless_cur_cwd_from_relative_home"
+        },
+        {
+          "classname": "codex-external-agent-migration",
+          "name": "detect::sessions::cur::tests::skips_cur_subagent_transcripts"
+        },
+        {
+          "classname": "codex-external-agent-migration",
+          "name": "hooks_cur::tests::imports_supported_cur_hooks_and_drops_failure_policy"
+        },
+        {
+          "classname": "codex-external-agent-migration",
+          "name": "memory::tests::discovers_arbitrary_project_markdown"
+        },
+        {
+          "classname": "codex-external-agent-migration",
+          "name": "memory::tests::leaves_project_unscoped_without_an_existing_absolute_cwd"
+        },
+        {
+          "classname": "codex-external-agent-migration",
+          "name": "memory::tests::skips_symlinked_memory_directory"
+        },
+        {
+          "classname": "codex-external-agent-migration",
+          "name": "memory_import::tests::copies_only_selected_projects_and_recopies_changed_content"
+        },
+        {
+          "classname": "codex-external-agent-migration",
+          "name": "memory_import::tests::does_not_import_a_new_project_without_a_reliable_cwd"
+        },
+        {
+          "classname": "codex-external-agent-migration",
+          "name": "memory_import::tests::missing_cwd_does_not_make_an_existing_scoped_project_look_deleted"
+        },
+        {
+          "classname": "codex-external-agent-migration",
+          "name": "memory_import::tests::preserves_project_successes_and_reports_each_failed_selection"
+        },
+        {
+          "classname": "codex-external-agent-migration",
+          "name": "memory_import::tests::project_rename_removes_the_old_target_and_imports_the_new_target"
+        },
+        {
+          "classname": "codex-external-agent-migration",
+          "name": "memory_import::tests::removes_an_existing_unscoped_target_when_cwd_is_unavailable"
+        },
+        {
+          "classname": "codex-external-agent-migration",
+          "name": "memory_import::tests::removes_project_resources_when_the_source_project_disappears"
+        },
+        {
+          "classname": "codex-external-agent-migration",
+          "name": "memory_import::tests::uses_scope_file_to_identify_owned_projects"
+        },
+        {
+          "classname": "codex-external-agent-migration",
+          "name": "rewrite::tests::rewrites_terms_only_at_word_boundaries"
+        },
+        {
+          "classname": "codex-external-agent-migration",
+          "name": "scope::tests::missing_cwd_selects_home_scope"
+        },
+        {
+          "classname": "codex-external-agent-migration",
+          "name": "scope::tests::nested_cwd_selects_repository_root"
+        },
+        {
+          "classname": "codex-external-agent-migration",
+          "name": "scope::tests::nonexistent_cwd_has_no_scope"
+        },
+        {
+          "classname": "codex-external-agent-migration",
+          "name": "service::tests::general::config_import::detect_home_skips_config_when_target_already_has_supported_fields"
+        },
+        {
+          "classname": "codex-external-agent-migration",
+          "name": "service::tests::general::config_import::detect_home_skips_skills_when_all_skill_directories_exist"
+        },
+        {
+          "classname": "codex-external-agent-migration",
+          "name": "service::tests::general::config_import::detect_repo_mcp_lists_only_missing_servers"
+        },
+        {
+          "classname": "codex-external-agent-migration",
+          "name": "service::tests::general::config_import::import_git_plugins_returns_pending_async_status"
+        },
+        {
+          "classname": "codex-external-agent-migration",
+          "name": "service::tests::general::config_import::import_home_config_ignores_invalid_local_settings"
+        },
+        {
+          "classname": "codex-external-agent-migration",
+          "name": "service::tests::general::config_import::import_home_config_uses_local_settings_over_project_settings"
+        },
+        {
+          "classname": "codex-external-agent-migration",
+          "name": "service::tests::general::config_import::import_home_migrates_supported_config_fields_skills_and_agents_md"
+        },
+        {
+          "classname": "codex-external-agent-migration",
+          "name": "service::tests::general::config_import::import_home_skips_empty_config_migration"
+        },
+        {
+          "classname": "codex-external-agent-migration",
+          "name": "service::tests::general::config_import::import_local_plugins_returns_completed_status"
+        },
+        {
+          "classname": "codex-external-agent-migration",
+          "name": "service::tests::general::config_import::import_repo_mcp_preserves_existing_same_named_server"
+        },
+        {
+          "classname": "codex-external-agent-migration",
+          "name": "service::tests::general::detection::detect_cursor_home_lists_user_and_managed_skills"
+        },
+        {
+          "classname": "codex-external-agent-migration",
+          "name": "service::tests::general::detection::detect_cursor_repo_lists_skills_from_skills"
+        },
+        {
+          "classname": "codex-external-agent-migration",
+          "name": "service::tests::general::detection::detect_home_lists_config_skills_and_agents_md"
+        },
+        {
+          "classname": "codex-external-agent-migration",
+          "name": "service::tests::general::detection::detect_home_lists_recent_sessions"
+        },
+        {
+          "classname": "codex-external-agent-migration",
+          "name": "service::tests::general::detection::detect_repo_lists_agents_md_for_each_cwd"
+        },
+        {
+          "classname": "codex-external-agent-migration",
+          "name": "service::tests::general::detection::detect_repo_lists_mcp_hooks_commands_and_subagents"
+        },
+        {
+          "classname": "codex-external-agent-migration",
+          "name": "service::tests::general::detection::detect_repo_skips_hooks_when_only_unsupported_hooks_exist"
+        },
+        {
+          "classname": "codex-external-agent-migration",
+          "name": "service::tests::general::detection::detect_repo_still_reports_non_plugin_items_when_home_config_is_invalid"
+        },
+        {
+          "classname": "codex-external-agent-migration",
+          "name": "service::tests::general::detection::import_repo_migrates_mcp_hooks_commands_and_subagents"
+        },
+        {
+          "classname": "codex-external-agent-migration",
+          "name": "service::tests::general::repo_import::detect_repo_prefers_non_empty_external_agent_agents_source"
+        },
+        {
+          "classname": "codex-external-agent-migration",
+          "name": "service::tests::general::repo_import::import_continues_after_failed_migration_item"
+        },
+        {
+          "classname": "codex-external-agent-migration",
+          "name": "service::tests::general::repo_import::import_repo_agents_md_from_nested_cwd_rewrites_terms_and_skips_non_empty_targets"
+        },
+        {
+          "classname": "codex-external-agent-migration",
+          "name": "service::tests::general::repo_import::import_repo_agents_md_overwrites_empty_targets"
+        },
+        {
+          "classname": "codex-external-agent-migration",
+          "name": "service::tests::general::repo_import::import_repo_hooks_preserves_disabled_codex_hooks_feature"
+        },
+        {
+          "classname": "codex-external-agent-migration",
+          "name": "service::tests::general::repo_import::import_repo_mcp_ignores_invalid_home_settings_when_repo_settings_missing"
+        },
+        {
+          "classname": "codex-external-agent-migration",
+          "name": "service::tests::general::repo_import::import_repo_mcp_uses_home_settings_toggles_when_repo_settings_missing"
+        },
+        {
+          "classname": "codex-external-agent-migration",
+          "name": "service::tests::general::repo_import::import_repo_mcp_uses_local_settings_toggles_over_project_settings"
+        },
+        {
+          "classname": "codex-external-agent-migration",
+          "name": "service::tests::general::repo_import::import_repo_uses_non_empty_external_agent_agents_source"
+        },
+        {
+          "classname": "codex-external-agent-migration",
+          "name": "service::tests::general::repo_import::migration_metric_tags_for_skills_include_skills_count"
+        },
+        {
+          "classname": "codex-external-agent-migration",
+          "name": "service::tests::general::repo_import::repo_agents_md_migration_skips_symlink_targets"
+        },
+        {
+          "classname": "codex-external-agent-migration",
+          "name": "service::tests::general::repo_import::repo_hooks_migration_skips_symlink_targets"
+        },
+        {
+          "classname": "codex-external-agent-migration",
+          "name": "service::tests::general::repo_import::repo_migration_skips_redirected_generated_destinations"
+        },
+        {
+          "classname": "codex-external-agent-migration",
+          "name": "service::tests::memory::detect_does_not_offer_memory_for_an_unsupported_source"
+        },
+        {
+          "classname": "codex-external-agent-migration",
+          "name": "service::tests::plugins::basics::authenticated_plugin_migration_uses_chatgpt_curated_marketplace"
+        },
+        {
+          "classname": "codex-external-agent-migration",
+          "name": "service::tests::plugins::basics::detect_home_lists_enabled_plugins_from_settings"
+        },
+        {
+          "classname": "codex-external-agent-migration",
+          "name": "service::tests::plugins::basics::detect_home_plugins_uses_local_settings_over_project_settings"
+        },
+        {
+          "classname": "codex-external-agent-migration",
+          "name": "service::tests::plugins::basics::detect_home_skips_plugins_with_invalid_marketplace_source"
+        },
+        {
+          "classname": "codex-external-agent-migration",
+          "name": "service::tests::plugins::basics::detect_home_skips_plugins_without_marketplace_source"
+        },
+        {
+          "classname": "codex-external-agent-migration",
+          "name": "service::tests::plugins::basics::detect_home_uses_materialized_known_marketplace_for_inline_npm_source"
+        },
+        {
+          "classname": "codex-external-agent-migration",
+          "name": "service::tests::plugins::basics::detect_repo_skips_plugins_even_with_installed_marketplace"
+        },
+        {
+          "classname": "codex-external-agent-migration",
+          "name": "service::tests::plugins::basics::detect_repo_skips_plugins_from_remote_marketplace"
+        },
+        {
+          "classname": "codex-external-agent-migration",
+          "name": "service::tests::plugins::basics::detect_repo_skips_plugins_only_configured_in_project_codex"
+        },
+        {
+          "classname": "codex-external-agent-migration",
+          "name": "service::tests::plugins::basics::detect_repo_skips_plugins_that_are_disabled_in_codex"
+        },
+        {
+          "classname": "codex-external-agent-migration",
+          "name": "service::tests::plugins::basics::detect_repo_skips_plugins_without_explicit_enabled_in_codex"
+        },
+        {
+          "classname": "codex-external-agent-migration",
+          "name": "service::tests::plugins::basics::import_plugins_requires_details"
+        },
+        {
+          "classname": "codex-external-agent-migration",
+          "name": "service::tests::plugins::basics::marketplace_import_sources_infers_bundled_claude_code_marketplace"
+        },
+        {
+          "classname": "codex-external-agent-migration",
+          "name": "service::tests::plugins::basics::marketplace_import_sources_prefers_scoped_source_over_registry_name_collision"
+        },
+        {
+          "classname": "codex-external-agent-migration",
+          "name": "service::tests::plugins::basics::marketplace_import_sources_prefers_supported_declaration_over_materialization"
+        },
+        {
+          "classname": "codex-external-agent-migration",
+          "name": "service::tests::plugins::marketplaces::detect_home_infers_external_official_marketplace_when_missing_from_settings"
+        },
+        {
+          "classname": "codex-external-agent-migration",
+          "name": "service::tests::plugins::marketplaces::detect_home_supports_relative_external_agent_plugin_marketplace_path"
+        },
+        {
+          "classname": "codex-external-agent-migration",
+          "name": "service::tests::plugins::marketplaces::detect_repo_skips_project_relative_external_agent_plugin_marketplace_path"
+        },
+        {
+          "classname": "codex-external-agent-migration",
+          "name": "service::tests::plugins::marketplaces::import_cursor_skills_reads_user_and_managed_directories"
+        },
+        {
+          "classname": "codex-external-agent-migration",
+          "name": "service::tests::plugins::marketplaces::import_plugins_defers_marketplace_source_validation_to_add_marketplace"
+        },
+        {
+          "classname": "codex-external-agent-migration",
+          "name": "service::tests::plugins::marketplaces::import_plugins_infers_external_official_marketplace_when_missing_from_settings"
+        },
+        {
+          "classname": "codex-external-agent-migration",
+          "name": "service::tests::plugins::marketplaces::import_plugins_rejects_project_cwd_before_config_loading"
+        },
+        {
+          "classname": "codex-external-agent-migration",
+          "name": "service::tests::plugins::marketplaces::import_plugins_requires_source_marketplace_details"
+        },
+        {
+          "classname": "codex-external-agent-migration",
+          "name": "service::tests::plugins::marketplaces::import_plugins_reuses_configured_marketplace_with_different_source"
+        },
+        {
+          "classname": "codex-external-agent-migration",
+          "name": "service::tests::plugins::marketplaces::import_plugins_supports_relative_external_agent_plugin_marketplace_path"
+        },
+        {
+          "classname": "codex-external-agent-migration",
+          "name": "service::tests::plugins::marketplaces::import_plugins_treats_empty_cwd_as_home_scope"
+        },
+        {
+          "classname": "codex-external-agent-migration",
+          "name": "service::tests::plugins::marketplaces::import_rejects_forged_project_relative_external_agent_plugin_item"
+        },
+        {
+          "classname": "codex-external-agent-migration",
+          "name": "service::tests::plugins::marketplaces::import_skills_returns_only_new_skill_directory_names"
+        },
+        {
+          "classname": "codex-external-agent-migration",
+          "name": "sessions::append::tests::requires_a_strict_nonempty_model_prefix"
+        },
+        {
+          "classname": "codex-external-agent-migration",
+          "name": "sessions::append::tests::returns_the_missing_suffix_from_its_visible_boundary"
+        },
+        {
+          "classname": "codex-external-agent-migration",
+          "name": "sessions::export::tests::adds_import_marker_without_copying_last_agent_message"
+        },
+        {
+          "classname": "codex-external-agent-migration",
+          "name": "sessions::export::tests::builds_visible_turns_for_imported_history"
+        },
+        {
+          "classname": "codex-external-agent-migration",
+          "name": "sessions::export::tests::emits_token_usage_for_imported_history"
+        },
+        {
+          "classname": "codex-external-agent-migration",
+          "name": "sessions::export::tests::loads_ai_title_for_imported_session"
+        },
+        {
+          "classname": "codex-external-agent-migration",
+          "name": "sessions::export::tests::loads_custom_title_for_imported_session"
+        },
+        {
+          "classname": "codex-external-agent-migration",
+          "name": "sessions::export::tests::loads_custom_title_over_later_ai_title_for_imported_session"
+        },
+        {
+          "classname": "codex-external-agent-migration",
+          "name": "sessions::export::tests::sanitizes_only_the_imported_session_fallback_title"
+        },
+        {
+          "classname": "codex-external-agent-migration",
+          "name": "sessions::export::tests::skips_control_only_user_messages_when_choosing_fallback_title"
+        },
+        {
+          "classname": "codex-external-agent-migration",
+          "name": "sessions::export::tests::stores_imported_messages_as_response_items_and_visible_events"
+        },
+        {
+          "classname": "codex-external-agent-migration",
+          "name": "sessions::export::tests::uses_safe_fallback_after_all_user_messages_are_control_only"
+        },
+        {
+          "classname": "codex-external-agent-migration",
+          "name": "sessions::ledger::tests::checkpoint_is_compare_and_swap_and_preserves_record_metadata"
+        },
+        {
+          "classname": "codex-external-agent-migration",
+          "name": "sessions::ledger::tests::completed_import_refreshes_existing_record_metadata"
+        },
+        {
+          "classname": "codex-external-agent-migration",
+          "name": "sessions::ledger::tests::completed_imports_do_not_read_source_files"
+        },
+        {
+          "classname": "codex-external-agent-migration",
+          "name": "sessions::ledger::tests::connector_candidates_accumulate_detected_and_imported_session_clues"
+        },
+        {
+          "classname": "codex-external-agent-migration",
+          "name": "sessions::ledger::tests::connector_candidates_accumulate_imports_for_each_source"
+        },
+        {
+          "classname": "codex-external-agent-migration",
+          "name": "sessions::ledger::tests::empty_ledger_does_not_read_source"
+        },
+        {
+          "classname": "codex-external-agent-migration",
+          "name": "sessions::records_cla::tests::reads_session_import_in_one_pass"
+        },
+        {
+          "classname": "codex-external-agent-migration",
+          "name": "sessions::records_common::tests::converts_error_tool_result_blocks_to_bounded_external_agent_tags"
+        },
+        {
+          "classname": "codex-external-agent-migration",
+          "name": "sessions::records_common::tests::converts_tool_result_blocks_to_bounded_external_agent_tags"
+        },
+        {
+          "classname": "codex-external-agent-migration",
+          "name": "sessions::records_common::tests::converts_tool_use_blocks_to_bounded_external_agent_tags"
+        },
+        {
+          "classname": "codex-external-agent-migration",
+          "name": "sessions::records_cur::tests::embedded_cwd_overrides_migration_fallback"
+        },
+        {
+          "classname": "codex-external-agent-migration",
+          "name": "sessions::records_cur::tests::preserves_user_query_tags_after_unrecognized_context"
+        },
+        {
+          "classname": "codex-external-agent-migration",
+          "name": "sessions::records_cur::tests::unwraps_user_query_after_context_wrappers"
+        },
+        {
+          "classname": "codex-external-agent-migration",
+          "name": "sessions::tests::migration_fallback_metadata_is_opt_in"
+        },
+        {
+          "classname": "codex-external-agent-migration",
+          "name": "sessions::tests::prepares_changed_session_for_its_unique_import"
+        },
+        {
+          "classname": "codex-external-agent-migration",
+          "name": "sessions::tests::prepares_one_validated_session_import_with_content_hash"
+        },
+        {
+          "classname": "codex-external-agent-migration",
+          "name": "sessions::tests::reports_session_preparation_errors"
+        },
+        {
+          "classname": "codex-external-agent-migration",
+          "name": "sessions::tests::skips_changed_session_with_ambiguous_imports"
+        },
+        {
+          "classname": "codex-external-agent-migration",
+          "name": "sessions::tests::skips_session_that_was_already_imported"
+        },
+        {
+          "classname": "codex-external-agent-migration",
+          "name": "sessions::title::tests::bounds_fallback_titles_to_120_characters"
+        },
+        {
+          "classname": "codex-external-agent-migration",
+          "name": "sessions::title::tests::preserves_unknown_and_user_authored_angle_bracket_text"
+        },
+        {
+          "classname": "codex-external-agent-migration",
+          "name": "sessions::title::tests::preserves_valid_ai_title_unchanged_without_custom_title"
+        },
+        {
+          "classname": "codex-external-agent-migration",
+          "name": "sessions::title::tests::preserves_valid_custom_title_unchanged"
+        },
+        {
+          "classname": "codex-external-agent-migration",
+          "name": "sessions::title::tests::returns_no_candidate_for_empty_or_control_only_messages"
+        },
+        {
+          "classname": "codex-external-agent-migration",
+          "name": "sessions::title::tests::strips_nested_repeated_and_multiline_leading_control_wrappers"
+        },
+        {
+          "classname": "codex-external-agent-migration",
+          "name": "sessions::title::tests::strips_observed_external_agent_control_wrapper_families"
+        },
+        {
+          "classname": "codex-external-agent-migration",
+          "name": "sessions::title::tests::uses_first_meaningful_line_from_ordinary_messages"
+        },
+        {
+          "classname": "codex-external-agent-migration",
+          "name": "source_cur::tests::cached_marketplace_plugins_require_manifest_and_cache_entries"
+        },
+        {
+          "classname": "codex-external-agent-migration",
+          "name": "source_cur::tests::detects_legacy_repo_instruction_file"
+        },
+        {
+          "classname": "codex-external-agent-migration",
+          "name": "source_cur::tests::detects_uninstalled_plugin_from_configured_marketplace"
+        },
+        {
+          "classname": "codex-external-agent-migration",
+          "name": "tests::env_placeholder_accepts_defaults"
+        },
+        {
+          "classname": "codex-external-agent-migration",
+          "name": "tests::frontmatter_accepts_crlf_delimiters"
+        },
+        {
+          "classname": "codex-external-agent-migration",
+          "name": "tests::hook_command_paths_rewrite_to_target_hook_dir"
+        },
+        {
+          "classname": "codex-external-agent-migration",
+          "name": "tests::hook_migration_drops_negative_timeouts"
+        },
+        {
+          "classname": "codex-external-agent-migration",
+          "name": "tests::hook_migration_honors_disable_all_hooks"
+        },
+        {
+          "classname": "codex-external-agent-migration",
+          "name": "tests::hook_migration_honors_settings_local_disable_override"
+        },
+        {
+          "classname": "codex-external-agent-migration",
+          "name": "tests::hook_migration_ignores_unsupported_handlers"
+        },
+        {
+          "classname": "codex-external-agent-migration",
+          "name": "tests::hook_script_copy_keeps_existing_target_scripts"
+        },
+        {
+          "classname": "codex-external-agent-migration",
+          "name": "tests::mcp_migration_prefers_command_transport_for_mixed_server_config"
+        },
+        {
+          "classname": "codex-external-agent-migration",
+          "name": "tests::mcp_migration_preserves_repo_servers_over_home_project_entries"
+        },
+        {
+          "classname": "codex-external-agent-migration",
+          "name": "tests::mcp_migration_reads_matching_project_entries_from_home_external_project_config"
+        },
+        {
+          "classname": "codex-external-agent-migration",
+          "name": "tests::mcp_migration_reads_matching_project_entries_from_repo_external_project_config"
+        },
+        {
+          "classname": "codex-external-agent-migration",
+          "name": "tests::mcp_migration_skips_disabled_servers"
+        },
+        {
+          "classname": "codex-external-agent-migration",
+          "name": "tests::mcp_migration_skips_placeholder_args"
+        },
+        {
+          "classname": "codex-external-agent-migration",
+          "name": "tests::mcp_migration_skips_unsupported_transports"
+        },
+        {
+          "classname": "codex-external-agent-migration",
+          "name": "tests::subagent_accepts_yaml_block_lists_by_ignoring_unsupported_fields"
+        },
+        {
+          "classname": "codex-external-agent-migration",
+          "name": "tests::subagent_preserves_default_model_when_source_model_is_present"
+        },
+        {
+          "classname": "codex-external-agent-migration",
+          "name": "tests::subagent_requires_minimum_codex_agent_fields"
+        },
+        {
+          "classname": "codex-external-agent-migration",
+          "name": "tests::subagent_target_preserves_dotted_file_stem"
+        }
+      ],
+      "expected_result": "all 166 PASS including actual successful one-case child"
+    },
+    {
+      "label": "v8-and-runtime-original",
+      "package_args": [
+        "-p",
+        "codex-v8-poc",
+        "-p",
+        "codex-code-mode-runtime",
+        "--lib"
+      ],
+      "expression": null,
+      "expected_cases": [
+        {
+          "classname": "codex-v8-poc",
+          "name": "tests::evaluates_integer_addition"
+        },
+        {
+          "classname": "codex-v8-poc",
+          "name": "tests::evaluates_string_concatenation"
+        },
+        {
+          "classname": "codex-v8-poc",
+          "name": "tests::exposes_embedded_v8_version"
+        },
+        {
+          "classname": "codex-v8-poc",
+          "name": "tests::exposes_expected_bazel_target"
+        },
+        {
+          "classname": "codex-v8-poc",
+          "name": "tests::parses_crdtp_dispatchable_messages"
+        },
+        {
+          "classname": "codex-v8-poc",
+          "name": "tests::sandbox_feature_matches_linked_v8"
+        },
+        {
+          "classname": "codex-code-mode-runtime",
+          "name": "cell_actor::callbacks::tests::callback_wrapper_join_error_reports_failure"
+        },
+        {
+          "classname": "codex-code-mode-runtime",
+          "name": "cell_actor::callbacks::tests::notification_callback_panic_reports_failure"
+        },
+        {
+          "classname": "codex-code-mode-runtime",
+          "name": "cell_actor::callbacks::tests::tool_callback_panic_rejects_the_js_promise_and_reports_failure"
+        },
+        {
+          "classname": "codex-code-mode-runtime",
+          "name": "cell_actor::tests::buffered_initial_yield_precedes_buffered_completion_for_yield_observer"
+        },
+        {
+          "classname": "codex-code-mode-runtime",
+          "name": "cell_actor::tests::dropped_pending_observation_preserves_the_initial_yield_boundary"
+        },
+        {
+          "classname": "codex-code-mode-runtime",
+          "name": "cell_actor::tests::dropped_pending_observer_preserves_the_frontier_for_the_next_observation"
+        },
+        {
+          "classname": "codex-code-mode-runtime",
+          "name": "cell_actor::tests::dropped_yield_observer_preserves_output_for_the_next_observation"
+        },
+        {
+          "classname": "codex-code-mode-runtime",
+          "name": "cell_actor::tests::failed_completion_delivery_rebuffers_the_event"
+        },
+        {
+          "classname": "codex-code-mode-runtime",
+          "name": "cell_actor::tests::observation_dropped_before_dequeue_does_not_consume_output"
+        },
+        {
+          "classname": "codex-code-mode-runtime",
+          "name": "cell_actor::tests::only_the_first_termination_claims_a_buffered_completion"
+        },
+        {
+          "classname": "codex-code-mode-runtime",
+          "name": "cell_actor::tests::pending_observer_merges_initial_yield_and_completion_output"
+        },
+        {
+          "classname": "codex-code-mode-runtime",
+          "name": "cell_actor::tests::queued_termination_preempts_unobserved_runtime_completion"
+        },
+        {
+          "classname": "codex-code-mode-runtime",
+          "name": "cell_actor::tests::runtime_thread_panic_remains_a_cell_error_without_owner_supervision"
+        },
+        {
+          "classname": "codex-code-mode-runtime",
+          "name": "cell_actor::tests::termination_claim_prevents_stored_value_commit"
+        },
+        {
+          "classname": "codex-code-mode-runtime",
+          "name": "cell_actor::tests::unexpected_runtime_thread_exit_is_reported_to_the_session_owner"
+        },
+        {
+          "classname": "codex-code-mode-runtime",
+          "name": "cell_actor::tests::yield_timer_preempts_buffered_runtime_output"
+        },
+        {
+          "classname": "codex-code-mode-runtime",
+          "name": "runtime::tests::linked_v8_has_sandbox_enabled"
+        },
+        {
+          "classname": "codex-code-mode-runtime",
+          "name": "runtime::tests::pending_mode_freezes_runtime_commands_until_resume"
+        },
+        {
+          "classname": "codex-code-mode-runtime",
+          "name": "runtime::tests::runtime_thread_panic_before_initialization_is_reported_directly"
+        },
+        {
+          "classname": "codex-code-mode-runtime",
+          "name": "runtime::tests::runtime_thread_panic_is_forwarded_without_owner_supervision"
+        },
+        {
+          "classname": "codex-code-mode-runtime",
+          "name": "runtime::tests::terminate_execution_stops_cpu_bound_module"
+        },
+        {
+          "classname": "codex-code-mode-runtime",
+          "name": "service::contract_tests::natural_completion_cleans_up_callbacks_before_responding"
+        },
+        {
+          "classname": "codex-code-mode-runtime",
+          "name": "service::contract_tests::observed_natural_completion_wins_over_termination"
+        },
+        {
+          "classname": "codex-code-mode-runtime",
+          "name": "service::contract_tests::repeated_termination_is_rejected_while_callback_cleanup_is_pending"
+        },
+        {
+          "classname": "codex-code-mode-runtime",
+          "name": "service::contract_tests::returns_and_resumes_from_the_pending_frontier"
+        },
+        {
+          "classname": "codex-code-mode-runtime",
+          "name": "service::contract_tests::second_observer_is_rejected_without_displacing_the_first"
+        },
+        {
+          "classname": "codex-code-mode-runtime",
+          "name": "service::contract_tests::shutdown_cancels_notifications_while_natural_completion_is_draining"
+        },
+        {
+          "classname": "codex-code-mode-runtime",
+          "name": "service::contract_tests::termination_cancels_pending_callbacks_before_responding"
+        },
+        {
+          "classname": "codex-code-mode-runtime",
+          "name": "service::contract_tests::yields_and_resumes"
+        },
+        {
+          "classname": "codex-code-mode-runtime",
+          "name": "service::tests::audio_helper_accepts_audio_url_object_and_raw_mcp_audio_block"
+        },
+        {
+          "classname": "codex-code-mode-runtime",
+          "name": "service::tests::audio_helper_rejects_non_data_urls"
+        },
+        {
+          "classname": "codex-code-mode-runtime",
+          "name": "service::tests::date_locale_string_formats_with_icu_data"
+        },
+        {
+          "classname": "codex-code-mode-runtime",
+          "name": "service::tests::execute_and_wait_clamp_yield_grace_without_stopping_the_cell"
+        },
+        {
+          "classname": "codex-code-mode-runtime",
+          "name": "service::tests::execute_to_pending_excludes_delayed_timeout_tool_calls_until_wait"
+        },
+        {
+          "classname": "codex-code-mode-runtime",
+          "name": "service::tests::execute_to_pending_identifies_tool_calls_in_paused_frontier"
+        },
+        {
+          "classname": "codex-code-mode-runtime",
+          "name": "service::tests::execute_to_pending_returns_completed_for_synchronous_results"
+        },
+        {
+          "classname": "codex-code-mode-runtime",
+          "name": "service::tests::execute_to_pending_returns_once_the_runtime_is_quiescent"
+        },
+        {
+          "classname": "codex-code-mode-runtime",
+          "name": "service::tests::execute_waits_for_nested_tool_during_yield_grace"
+        },
+        {
+          "classname": "codex-code-mode-runtime",
+          "name": "service::tests::generated_image_helper_appends_image_and_output_hint"
+        },
+        {
+          "classname": "codex-code-mode-runtime",
+          "name": "service::tests::global_scope_contains_only_allowed_items"
+        },
+        {
+          "classname": "codex-code-mode-runtime",
+          "name": "service::tests::image_helper_accepts_low_detail"
+        },
+        {
+          "classname": "codex-code-mode-runtime",
+          "name": "service::tests::image_helper_accepts_raw_mcp_image_block_with_original_detail"
+        },
+        {
+          "classname": "codex-code-mode-runtime",
+          "name": "service::tests::image_helper_rejects_raw_mcp_result_container"
+        },
+        {
+          "classname": "codex-code-mode-runtime",
+          "name": "service::tests::image_helper_rejects_unsupported_detail"
+        },
+        {
+          "classname": "codex-code-mode-runtime",
+          "name": "service::tests::image_helper_second_arg_overrides_explicit_object_detail"
+        },
+        {
+          "classname": "codex-code-mode-runtime",
+          "name": "service::tests::image_helper_second_arg_overrides_raw_mcp_image_detail"
+        },
+        {
+          "classname": "codex-code-mode-runtime",
+          "name": "service::tests::image_helpers_reject_invalid_image_outputs"
+        },
+        {
+          "classname": "codex-code-mode-runtime",
+          "name": "service::tests::image_helpers_reject_remote_urls"
+        },
+        {
+          "classname": "codex-code-mode-runtime",
+          "name": "service::tests::intl_date_time_format_formats_with_icu_data"
+        },
+        {
+          "classname": "codex-code-mode-runtime",
+          "name": "service::tests::output_helpers_return_undefined"
+        },
+        {
+          "classname": "codex-code-mode-runtime",
+          "name": "service::tests::resolve_yield_timeout_applies_grace_before_session_limits"
+        },
+        {
+          "classname": "codex-code-mode-runtime",
+          "name": "service::tests::shutdown_interrupts_cpu_bound_cells"
+        },
+        {
+          "classname": "codex-code-mode-runtime",
+          "name": "service::tests::start_cell_rejects_new_cell_after_shutdown_begins"
+        },
+        {
+          "classname": "codex-code-mode-runtime",
+          "name": "service::tests::stored_values_are_shared_between_cells_but_not_sessions"
+        },
+        {
+          "classname": "codex-code-mode-runtime",
+          "name": "service::tests::synchronous_exit_returns_successfully"
+        },
+        {
+          "classname": "codex-code-mode-runtime",
+          "name": "service::tests::text_helper_serializes_objects"
+        },
+        {
+          "classname": "codex-code-mode-runtime",
+          "name": "service::tests::text_helper_surfaces_stringify_errors"
+        },
+        {
+          "classname": "codex-code-mode-runtime",
+          "name": "service::tests::v8_console_is_not_exposed_on_global_this"
+        },
+        {
+          "classname": "codex-code-mode-runtime",
+          "name": "service::tests::wait_reports_missing_cell_separately_from_runtime_results"
+        },
+        {
+          "classname": "codex-code-mode-runtime",
+          "name": "service::tests::wait_to_pending_returns_after_resumed_runtime_becomes_quiescent_again"
+        },
+        {
+          "classname": "codex-code-mode-runtime",
+          "name": "service::tests::wait_to_pending_returns_completed_after_resumed_runtime_finishes"
+        },
+        {
+          "classname": "codex-code-mode-runtime",
+          "name": "service::tests::wait_waits_for_nested_tool_during_yield_grace"
+        },
+        {
+          "classname": "codex-code-mode-runtime",
+          "name": "service::tests::zero_yield_limit_is_immediate_and_scoped_to_its_session"
+        },
+        {
+          "classname": "codex-code-mode-runtime",
+          "name": "session_runtime::tests::cell_id_allocation_fails_before_wrapping"
+        },
+        {
+          "classname": "codex-code-mode-runtime",
+          "name": "session_runtime::tests::drop_terminates_cells_when_the_registry_is_locked"
+        },
+        {
+          "classname": "codex-code-mode-runtime",
+          "name": "session_runtime::tests::reports_cell_actor_panics_to_the_owner"
+        },
+        {
+          "classname": "codex-code-mode-runtime",
+          "name": "session_runtime::tests::shutdown_rejects_cell_admission_queued_before_the_registry_lock"
+        },
+        {
+          "classname": "codex-code-mode-runtime",
+          "name": "session_runtime::tests::termination_rejects_a_waiting_store_commit_before_the_next_cell_can_load_it"
+        },
+        {
+          "classname": "codex-code-mode-runtime::jit",
+          "name": "code_mode_runs_with_jit_disabled"
+        },
+        {
+          "classname": "codex-code-mode-runtime::parallel_initialization",
+          "name": "concurrent_first_sessions_initialize_one_shared_array_buffer_pool"
+        }
+      ],
+      "expected_result": "all 76 PASS"
+    }
+  ],
+  "bazel_bootstrap": {
+    "version": "9.3.0",
+    "release_url": "https://github.com/bazelbuild/bazel/releases/tag/9.3.0",
+    "release_id": 405972569,
+    "assets": [
+      {
+        "id": 619248138,
+        "name": "bazel-9.3.0-linux-x86_64",
+        "size": 77023347,
+        "sha256": "d302d22ed77ee5658b87857249baa579db84300ecebe0a1e9a357b5b20f80eb8",
+        "url": "https://github.com/bazelbuild/bazel/releases/download/9.3.0/bazel-9.3.0-linux-x86_64"
+      },
+      {
+        "id": 619248150,
+        "name": "bazel-9.3.0-linux-x86_64.sha256",
+        "size": 91,
+        "sha256": "92f4bd8ffdbc621d28e97731c61e1c1d09abb5758f0d19dc07b49ee67c7d832c",
+        "url": "https://github.com/bazelbuild/bazel/releases/download/9.3.0/bazel-9.3.0-linux-x86_64.sha256"
+      }
+    ]
+  },
+  "temporary_bazel_config": "startup --output_user_root=/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/v8-lock-cache-20261105/output-user-root\ncommon --repo_contents_cache=/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/v8-lock-cache-20261105/repo-contents-cache\ncommon --repository_cache=/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/v8-lock-cache-20261105/repository-cache\ncommon --disk_cache=/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/v8-lock-cache-20261105/disk-cache\n",
+  "resource_guards": {
+    "minimum_free_bytes_before_and_after_every_phase": 8000000000
+  },
+  "budget_contract": "Original nextest local settings and all original in-test deadlines/parent-child calls/assertions remain unchanged. Each original just test explicitly --locked --cargo-profile dev-small --no-tests fail --retries 0 --success-output immediate. No feature flags, skip additions, retry or timeout extension.",
+  "causal_contracts": {
+    "skills": {
+      "location": "ext/skills/src/host_roots_tests.rs:441",
+      "prerequisites": "Existing real ancestor marker absence checks, then test-owned outer marker creation",
+      "required": "Original exact full vector assertion fails with the same fixture outer/.agents/skills and cwd outer/nested/inner/.agents/skills. Setup, compile or timeout is invalid.",
+      "restore": "Exact positive 3d8412f8 bytes, removing only controlled marker creation."
+    },
+    "migration": {
+      "location": "external-agent-migration/src/service_tests/plugins/marketplaces.rs:588",
+      "required": "Child executes original succeeded_marketplaces equality and fails after real private Git clone/inference setup; raw includes original official name, child 0 passed/1 failed and parent isolated-import assertion. Compile, fixture setup or timeout is invalid.",
+      "restore": "Exact original production source_cla.rs b2620eaf, preserving the reviewed private local-Git fixture."
+    }
+  },
+  "generator_contract": {
+    "original_justfile_blob": "a215a76cf407ace9715bca39c20497014e7dd4dc",
+    "original_lockcheck_script_blob": "49ddaaef2bfc9a3c568bcd2ab3818cd968ccf6dd",
+    "update": [
+      "just",
+      "bazel-lock-update"
+    ],
+    "check": [
+      "just",
+      "bazel-lock-check"
+    ],
+    "cwd": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/source",
+    "allowed_generated_paths": [
+      "MODULE.bazel.lock"
+    ],
+    "cargo_lock_must_remain_exact": true,
+    "no_manual_lock_edits": true,
+    "post_generation_tree": "Use actual generated lock bytes/tree; never assume no diff. If changed, root must recompute later Windows cohort trees from the actual lock."
+  },
+  "temporary_config_contract": "user.bazelrc and cache root must initially be absent. Use repository's existing try-import, retain original flags, record exact task-local configuration. Shut down only its task-owned Bazel server, remove only this newly created byte-identical override, preserve cache and raw logs. No system/user existing config or HOME edits.",
+  "provenance": {
+    "skills_manifest": "fef564ac130fb4bf7cebdcaf4bbd01780c7fe2f9",
+    "original_full_archive": "4fbfb3d05586f87b449a9ec14097982072917934",
+    "original_full_catalog_sha256": "af962c86ba44b1e4931ca61319597cc8c9557cafaaf70dd8cfe8664c6e3815ef",
+    "full_case_counts": {
+      "migration": 166,
+      "skills_host_roots": 9,
+      "v8": 6,
+      "code_mode_runtime": 70
+    },
+    "limit": "These are scoped package iterations, separate from the later complete workspace graph/gate.",
+    "migration_static": "Root reviewed full +75-line fixture and intentional inference-removal control; exact source/patch identities are in stages."
+  },
+  "execution_order": [
+    "Await original App epoch2 terminal and root acceptance before starting.",
+    "Guard/apply exact skills negative; qualify real vector failure; restore; original9.",
+    "Guard/apply migration fixture plus intentional inference removal; qualify child original business failure; restore; original166.",
+    "Guard/apply only V8 default feature; bootstrap exact official Bazel9.3.0; original real update/check, preserving actual generated lock.",
+    "Original V8 six plus code-mode-runtime70 in normal selected graph; all tests finish before later final hygiene.",
+    "Stop with full source/index/lock/program/helper/command/raw/JUnit receipts for root review; no Windows cohort or full test yet."
+  ],
+  "suggested_controller_timeout_seconds": 7200,
+  "runner": {
+    "git_blob": "bd0e21742148f6b443886e9a2b47a90505d9d2e5",
+    "bytes": 21025,
+    "sha256": "8e943dd681a172e9d9cd537d03e10b6f19a66fe3a4392fce7b196db698746b9d",
+    "ast_parse_pass": true,
+    "local_path": "/workspace/scratch/07dd58cc9630/ci-audit/recovered-20261105/full18-three-repairs-runner-draft.py"
+  }
+}

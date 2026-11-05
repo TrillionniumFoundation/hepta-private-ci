@@ -1,0 +1,233 @@
+name: Native Windows Core lifecycle ordering
+
+on:
+  push:
+    branches:
+      - fix/windows-core-lifecycle-order-20261103
+      - fix/windows-core-websocket-fork-20261104
+      - integration/unified-blocker-20261104-r2
+      - integration/unified-blocker-20261104-r3
+      - fix/r3-original-product-contracts-20261104
+      - fix/guardian-review-deadline-20261104
+      - fix/core-fork-observation-20261104
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: windows-core-lifecycle-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  core-lifecycle:
+    runs-on: windows-2025
+    timeout-minutes: 60
+    environment:
+      name: bazel
+      deployment: false
+    env:
+      SOURCE_SHA: ${{ github.sha }}
+      PYTHONDONTWRITEBYTECODE: "1"
+      PYTHONIOENCODING: "utf-8"
+    defaults:
+      run:
+        shell: bash
+    steps:
+      - name: Checkout exact source head
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+
+      - name: Record source provenance
+        run: |
+          python - <<'PY'
+          import json
+          import os
+          from pathlib import Path
+          import subprocess
+          import sys
+
+          output = Path(os.environ["RUNNER_TEMP"]) / "windows-core-lifecycle"
+          output.mkdir(parents=True, exist_ok=True)
+          head = subprocess.check_output(["git", "rev-parse", "HEAD"], text=True).strip()
+          if head != os.environ["SOURCE_SHA"]:
+              raise SystemExit("checkout does not match the requested source head")
+          subprocess.run(["git", "diff", "--exit-code"], check=True)
+          subprocess.run(["git", "diff", "--cached", "--exit-code"], check=True)
+          receipt = {
+              "source_head": head,
+              "source_tree": subprocess.check_output(
+                  ["git", "rev-parse", "HEAD^{tree}"], text=True
+              ).strip(),
+              "run_id": os.environ["GITHUB_RUN_ID"],
+              "run_attempt": os.environ["GITHUB_RUN_ATTEMPT"],
+              "scope": "Original isolated controls and complete Core native target; full repository CI remains independent",
+          }
+          (output / "source.json").write_text(json.dumps(receipt, indent=2) + "\n")
+          PY
+
+      - name: Prepare native Windows Bazel
+        id: prepare
+        uses: ./.github/actions/prepare-bazel-ci
+        with:
+          target: x86_64-pc-windows-msvc
+          cache-scope: bazel-test
+
+      - name: Run original resume, fork-prefix, and environment controls
+        if: ${{ !cancelled() && steps.prepare.outcome == 'success' }}
+        env:
+          BUILDBUDDY_API_KEY: ${{ secrets.BUILDBUDDY_API_KEY }}
+        run: |
+          set -euo pipefail
+          output="$(cygpath -u "$RUNNER_TEMP")/windows-core-lifecycle"
+          ./.github/scripts/run-bazel-ci.sh \
+            --print-failed-action-summary --print-failed-test-logs \
+            --windows-msvc-host-platform -- \
+            test --platforms=//:windows_x86_64_msvc \
+            --cache_test_results=no --flaky_test_attempts=1 \
+            --test_sharding_strategy=disabled --test_output=all \
+            --test_arg=agent::control::tests::resume_agent_from_paginated_rollout_loads_model_context \
+            --test_arg=agent::control::tests::resume_agent_from_rollout_reads_archived_rollout_path \
+            --test_arg=agent::control::tests::spawn_agent_fork_last_n_turns_strips_parent_usage_hints \
+            --test_arg=environment_selection::tests::blocking_snapshot_waits_for_starting_environment \
+            --test_arg=--exact --test_arg=--nocapture -- \
+            //codex-rs/core:core-unit-tests \
+            2>&1 | tee "$output/core-resume.log"
+
+      - name: Preserve the original resume results before full Core
+        if: ${{ always() && !cancelled() && steps.prepare.outcome == 'success' }}
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: windows-core-resume-${{ github.sha }}
+          path: ${{ runner.temp }}/windows-core-lifecycle/
+          if-no-files-found: error
+          retention-days: 7
+
+      - name: Isolate the sanitized parent-history fork lifecycle
+        if: ${{ !cancelled() && steps.prepare.outcome == 'success' }}
+        env:
+          BUILDBUDDY_API_KEY: ${{ secrets.BUILDBUDDY_API_KEY }}
+        run: |
+          set -euo pipefail
+          output="$(cygpath -u "$RUNNER_TEMP")/windows-core-lifecycle"
+          ./.github/scripts/run-bazel-ci.sh \
+            --print-failed-action-summary --print-failed-test-logs \
+            --windows-msvc-host-platform -- \
+            test --platforms=//:windows_x86_64_msvc \
+            --cache_test_results=no --flaky_test_attempts=1 \
+            --test_sharding_strategy=disabled --test_output=all \
+            --test_arg=agent::control::tests::spawn_agent_can_fork_parent_thread_history_with_sanitized_items \
+            --test_arg=--exact --test_arg=--nocapture -- \
+            //codex-rs/core:core-unit-tests \
+            2>&1 | tee "$output/core-fork.log"
+
+      - name: Exercise runtime ownership and cold-close regressions
+        if: ${{ !cancelled() && steps.prepare.outcome == 'success' }}
+        env:
+          BUILDBUDDY_API_KEY: ${{ secrets.BUILDBUDDY_API_KEY }}
+        run: |
+          set -euo pipefail
+          output="$(cygpath -u "$RUNNER_TEMP")/windows-core-lifecycle"
+          ./.github/scripts/run-bazel-ci.sh \
+            --print-failed-action-summary --print-failed-test-logs \
+            --windows-msvc-host-platform -- \
+            test --platforms=//:windows_x86_64_msvc \
+            --cache_test_results=no --flaky_test_attempts=1 \
+            --test_sharding_strategy=disabled --test_output=all \
+            --test_arg=agent::control::tests::shutdown_tests::delayed_shutdown_preserves_replacement_runtime_and_ownership \
+            --test_arg=agent::control::tests::shutdown_tests::cold_close_waits_for_cancelled_reload_then_releases_ownership \
+            --test_arg=agent::registry::tests::replacement_registration_rejects_stale_release_and_preserves_budget \
+            --test_arg=--exact --test_arg=--nocapture -- \
+            //codex-rs/core:core-unit-tests \
+            2>&1 | tee "$output/core-ownership.log"
+          python - "$output/core-ownership.log" <<'PY'
+          from pathlib import Path
+          import sys
+
+          log = Path(sys.argv[1]).read_text(encoding="utf-8", errors="replace")
+          if "test result: ok. 3 passed; 0 failed" not in log:
+              raise SystemExit("the three exact ownership regressions did not all execute and pass")
+          PY
+
+      # The workspace launcher treats any libtest argument as an unsharded request.
+      # Leave this complete target argument-free so each declared shard runs its own cases.
+      - name: Exercise the complete Core unit target under normal sharding
+        if: ${{ !cancelled() && steps.prepare.outcome == 'success' }}
+        env:
+          BUILDBUDDY_API_KEY: ${{ secrets.BUILDBUDDY_API_KEY }}
+        run: |
+          set -euo pipefail
+          output="$(cygpath -u "$RUNNER_TEMP")/windows-core-lifecycle"
+          ./.github/scripts/run-bazel-ci.sh \
+            --print-failed-action-summary --print-failed-test-logs \
+            --windows-msvc-host-platform -- \
+            test --platforms=//:windows_x86_64_msvc \
+            --cache_test_results=no --flaky_test_attempts=1 \
+            --test_output=all -- \
+            //codex-rs/core:core-unit-tests \
+            2>&1 | tee "$output/core-unit-target.log"
+
+      - name: Preserve complete native test logs from every shard
+        if: ${{ always() && !cancelled() && steps.prepare.outcome == 'success' }}
+        env:
+          BUILDBUDDY_API_KEY: ${{ secrets.BUILDBUDDY_API_KEY }}
+        run: |
+          python - <<'PY'
+          import hashlib
+          import json
+          import os
+          from pathlib import Path
+          import shutil
+          import subprocess
+          import sys
+
+          output = Path(os.environ["RUNNER_TEMP"]) / "windows-core-lifecycle"
+          result = subprocess.run(
+              [
+                  sys.executable, ".github/scripts/run_bazel_with_buildbuddy.py",
+                  "info", "--config=ci-windows",
+                  "--host_platform=//:local_windows_msvc",
+                  "--platforms=//:windows_x86_64_msvc", "bazel-testlogs",
+              ],
+              capture_output=True, text=True,
+          )
+          if result.returncode:
+              raise RuntimeError(f"bazel info failed: {result.stderr[-8000:]}")
+          root = Path(result.stdout.strip().splitlines()[-1])
+          records = []
+          for target in (
+              "codex-rs/core/core-unit-tests",
+          ):
+              for path in sorted((root / target).rglob("test.log")):
+                  relative = path.relative_to(root)
+                  destination = output / "native-test-logs" / relative
+                  destination.parent.mkdir(parents=True, exist_ok=True)
+                  shutil.copyfile(path, destination)
+                  data = destination.read_bytes()
+                  records.append({
+                      "path": relative.as_posix(),
+                      "bytes": len(data),
+                      "sha256": hashlib.sha256(data).hexdigest(),
+                  })
+          if not records:
+              raise RuntimeError("no completed native test logs found")
+          (output / "native-test-logs.json").write_text(
+              json.dumps(records, indent=2) + "\n", encoding="utf-8",
+          )
+          print(json.dumps({"complete_test_logs": records}))
+          PY
+
+      - name: Preserve diagnostics even after a failed probe
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: windows-core-lifecycle-${{ github.sha }}
+          path: ${{ runner.temp }}/windows-core-lifecycle/
+          if-no-files-found: warn
+          retention-days: 7
+
+      - name: Check unchanged tracked source
+        if: ${{ always() && !cancelled() }}
+        uses: ./.github/actions/check-clean-worktree

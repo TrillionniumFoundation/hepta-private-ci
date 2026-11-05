@@ -1,0 +1,33 @@
+{
+  "status": "STATIC_PATCH_AND_TOML_PASS",
+  "commands": [
+    {
+      "argv": [
+        "git",
+        "apply",
+        "--whitespace=error-all",
+        "--check",
+        "v8-default-sandbox.patch"
+      ],
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "git",
+        "apply",
+        "--whitespace=error-all",
+        "v8-default-sandbox.patch"
+      ],
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": ""
+    }
+  ],
+  "only_semantic_toml_change": "features.default=[sandbox]",
+  "actual_post_blob": "a34a1306f1082b3347543749cbfd9a05eee7cb91",
+  "actual_post_sha256": "c8fe672a43a8d02afe8ed2822462201bb87d526478c91dc2d2c9fff6dfad7f6a",
+  "native_execution": false,
+  "cargo_or_bazel_run": false
+}

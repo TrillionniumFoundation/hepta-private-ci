@@ -1,0 +1,114 @@
+{
+  "schema": "hepta-app-parent-observation-independent-projection-v1",
+  "state": "ORIGINAL_CASE_STILL_FAIL_DIAGNOSTIC_ONLY",
+  "job": "1a1a98a00bb-fc05-35d8",
+  "record_source": {
+    "relative_path": "ci-audit/recovered-20261105/app-parent-probe-compressed-archive/decoded-verified-v1/complete-small-originals.json",
+    "bytes": 406873,
+    "sha256": "79a91174c011f668b5f9d893ffc6db2884af82e21631966ff3fdee4b8d6ee0d1"
+  },
+  "all_small_records_verified": 44,
+  "source_tree": "1e936b1ca6df807d8928a4cc6c527f40f92808aa",
+  "restored_tree": "f8251e1d14fa8524ab469281296cd4cf708f173c",
+  "restored_exact_original": true,
+  "raw_observations": [
+    {
+      "raw_line_number": 185,
+      "raw_byte_offset": 9844,
+      "raw_line": "    [websocket app-server stderr] hepta_owned_lifecycle_probe phase=inner_entry pid=1 ppid=0 pgid=1 sid=1 pdeath_rc=0 pdeath_signal=0 error=None\n",
+      "probe": "hepta_owned_lifecycle_probe phase=inner_entry pid=1 ppid=0 pgid=1 sid=1 pdeath_rc=0 pdeath_signal=0 error=None",
+      "parsed": true,
+      "phase": "inner_entry",
+      "pid": 1,
+      "ppid": 0,
+      "pgid": 1,
+      "sid": 1,
+      "pdeath_rc": 0,
+      "observed_parent_death_signal": 0,
+      "raw_signal_output": 0,
+      "error": "None"
+    },
+    {
+      "raw_line_number": 186,
+      "raw_byte_offset": 9989,
+      "raw_line": "    [websocket app-server stderr] hepta_owned_lifecycle_probe phase=inner_after_restrictions pid=1 ppid=0 pgid=1 sid=1 pdeath_rc=0 pdeath_signal=0 error=None\n",
+      "probe": "hepta_owned_lifecycle_probe phase=inner_after_restrictions pid=1 ppid=0 pgid=1 sid=1 pdeath_rc=0 pdeath_signal=0 error=None",
+      "parsed": true,
+      "phase": "inner_after_restrictions",
+      "pid": 1,
+      "ppid": 0,
+      "pgid": 1,
+      "sid": 1,
+      "pdeath_rc": 0,
+      "observed_parent_death_signal": 0,
+      "raw_signal_output": 0,
+      "error": "None"
+    },
+    {
+      "raw_line_number": 187,
+      "raw_byte_offset": 10147,
+      "raw_line": "    [websocket app-server stderr] hepta_owned_lifecycle_probe phase=original_killpg_return pgid=780599 result=Ok(())\n",
+      "probe": "hepta_owned_lifecycle_probe phase=original_killpg_return pgid=780599 result=Ok(())",
+      "parsed": true,
+      "phase": "original_killpg_return",
+      "pgid": 780599,
+      "result": "Ok(())"
+    }
+  ],
+  "junit_cases": [
+    {
+      "name": "suite::v2::command_exec::command_exec_process_ids_are_connection_scoped_and_disconnect_terminates_process",
+      "classname": "codex-app-server::all",
+      "time": "5.575",
+      "failures": 1,
+      "errors": 0
+    }
+  ],
+  "records": [
+    {
+      "name": "app-disconnect-original-diagnostic.log",
+      "bytes": 10868,
+      "sha256": "b5d871bf80db9b9c8407f66b1197ab1854b9434109b7f6c9a1b896f03eaa3fea"
+    },
+    {
+      "name": "app-disconnect-original-diagnostic.junit.xml",
+      "bytes": 2919,
+      "sha256": "fd185d7966d707c3cc5bc62bb40fc8e918f78369c91b53f4c927f4af44a56acd"
+    },
+    {
+      "name": "parent-lifecycle-probe-observations.json",
+      "bytes": 2554,
+      "sha256": "c8e544947d1488c8b14b02819b9187d0398a9d73e3494338a36c260794bc7b87"
+    },
+    {
+      "name": "temporary-source-restoration.json",
+      "bytes": 1022,
+      "sha256": "875ecd72ed82161b4f0f335ab1023f5bfa4d3cdece3f67bb3589aa79da73a2fb"
+    },
+    {
+      "name": "owned-process-observations.jsonl",
+      "bytes": 74782,
+      "sha256": "1fa33b7c25d28646507e3c47961f50e08b7bef74df42830ac9c39e4a63d34a3f"
+    },
+    {
+      "name": "source-map-diagnostic-before-build.json",
+      "bytes": 10838,
+      "sha256": "6068dc0eb669ef6604a6c40cf239b82e07e001508a9ac4cb744d5e0365b268e1"
+    },
+    {
+      "name": "source-map-diagnostic-after-test.json",
+      "bytes": 10838,
+      "sha256": "6068dc0eb669ef6604a6c40cf239b82e07e001508a9ac4cb744d5e0365b268e1"
+    },
+    {
+      "name": "source-map-restored.json",
+      "bytes": 10059,
+      "sha256": "e1685c6b1122e93a0bc6c264122bc1b540f9b465f6fc4c61fd77e8ecfe533fcf"
+    }
+  ],
+  "limits": [
+    "Only inherited signal zero and successful original killpg are directly observed; no particular LSM transition is proven.",
+    "This attempt and its source are diagnostic, not a repaired production qualification.",
+    "Restoring source does not qualify the diagnostic binary as the restored source."
+  ]
+}

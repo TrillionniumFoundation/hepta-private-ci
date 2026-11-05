@@ -1,0 +1,108 @@
+{
+  "schema": "hepta-complete-repository-inventory-independent-root-review-v1",
+  "reviewed_at_utc": "2026-11-05T03:50:26.148933+00:00",
+  "inventory": {
+    "bytes": 1846885,
+    "sha256": "4adb3a73f03226fd73daba8c5ae2a5644fb84cde7702ddc892abb72d75a810f9",
+    "blob": "5fac62f2526a56ebc0cdaa8cfe66531c9a33f912"
+  },
+  "archive_manifest": {
+    "bytes": 31853,
+    "sha256": "7cc03695bd6488a6838d50d58a91f126c7c87dc0a8923296df832395e729d08d",
+    "blob": "a4cb25e1bd5a9e161c1ebae494a8cddb3681512b"
+  },
+  "actual_local_reconstruction": {
+    "strict_base64_parts": 18,
+    "gzip_crc_checked_by_full_decompression": true,
+    "full_tar_identity_matches": true,
+    "all_members_reopened_and_hashed": 117,
+    "no_extraction_or_execution": true,
+    "raw_api_body_count_from_manifest": 110,
+    "raw_api_bytes_from_manifest": 42829895,
+    "scope": "Independent local reconstruction from exact published-object bytes. Agent Git readback receipt separately records remote availability; this script does not re-fetch Git objects."
+  },
+  "counts_recomputed_from_original_api_pages": {
+    "open_prs": 1103,
+    "draft": 1079,
+    "non_draft": 24,
+    "branches": 5193,
+    "base_main": 155,
+    "base_non_main": 948,
+    "open_issues": 0,
+    "published_releases": 0,
+    "all_releases_including_drafts": 0
+  },
+  "pagination": {
+    "pulls": {
+      "pages": 13,
+      "first_empty": 13
+    },
+    "branches": {
+      "pages": 55,
+      "first_empty": 53
+    },
+    "issues": {
+      "pages": 13,
+      "first_empty": 13
+    }
+  },
+  "stack_recomputed": {
+    "maximum_open_ref_chain": 211,
+    "all_1103_depths_equal": true,
+    "cycles": [],
+    "duplicate_head_refs": [],
+    "head_branch_mismatches": [],
+    "metadata_base_vs_current_ref_tip_discrepancies": 185,
+    "limit": "Ref-name dependency graph; 185 base metadata discrepancies are not proof of merge conflicts."
+  },
+  "ending_anchor_comparisons": {
+    "pulls-first": true,
+    "pulls-last": true,
+    "pulls-empty": true,
+    "branches-first": true,
+    "branches-last": true,
+    "branches-empty": true,
+    "latest100": true
+  },
+  "pushed_at_unchanged": "2026-11-05T03:08:33Z",
+  "reviewer_check_correction": "The first root check sorted only creation timestamps and reversed two same-second PRs, #4743/#4744. The observed API order uses descending PR number within this tie. Adding that tie-breaker reproduced all 100 original identities; no inventory input or acceptance scope changed.",
+  "previous_snapshot_bytes_unchanged": {
+    "bytes": 1600034,
+    "sha256": "cce019aa8702e53b59f6a888eb598471eb136b336dc3dec897447580784cc22e",
+    "blob": "0db12ef5efcb2df620def35407a3076f1af8aa2b"
+  },
+  "delta": {
+    "added_prs": [
+      4809,
+      4810,
+      4811,
+      4812,
+      4813,
+      4814,
+      4815,
+      4816,
+      4817,
+      4818,
+      4819,
+      4820,
+      4821,
+      4822,
+      4823
+    ],
+    "removed_open_prs": [],
+    "added_branches": 30,
+    "removed_branches": []
+  },
+  "candidate_at_observation": {
+    "number": 4797,
+    "draft": true,
+    "head": "cabcb40d36e116beaa65750e1f674c52035da785",
+    "base": "63652be658ebed8d3052eb789b951793384fd5e4",
+    "merge_commit": "28af7f705fa1024b9a6d2ef751fec116002260eb"
+  },
+  "scope_limits": [
+    "Pagination is not an atomic GitHub transaction. Ending anchors reduce observed drift but do not guarantee unobserved intermediate stability.",
+    "Counts describe the stated observation window, not all future repository changes.",
+    "No whole blocker, runtime qualification, mergeability, release readiness or scientific efficacy follows from inventory counts."
+  ]
+}

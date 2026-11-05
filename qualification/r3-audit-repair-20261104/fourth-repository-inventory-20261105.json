@@ -1,0 +1,89 @@
+{
+  "schema": "hepta.frozen-repository-inventory-index.v1",
+  "kind": "Frozen complete-inventory transport index; not the original JSON object",
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "original": {
+    "bytes": 1846885,
+    "sha256": "4adb3a73f03226fd73daba8c5ae2a5644fb84cde7702ddc892abb72d75a810f9",
+    "blob": "5fac62f2526a56ebc0cdaa8cfe66531c9a33f912",
+    "schema": "hepta.complete-repository-inventory.v2",
+    "logical_archive_path": "complete-inventory.json",
+    "original_repository_path": "qualification/r3-audit-repair-20261104/fourth-repository-inventory-20261105.json",
+    "preserved_at_commit": "5b6331250ff459033bd44d1a95daec70131277cc",
+    "created_at_utc": "2026-11-05T03:28:14.986966+00:00"
+  },
+  "counts": {
+    "open_prs": 1103,
+    "draft": 1079,
+    "non_draft": 24,
+    "branches": 5193,
+    "base_main": 155,
+    "base_non_main": 948,
+    "open_issues": 0,
+    "published_releases": 0,
+    "all_releases_including_drafts": 0,
+    "repo_open_issues_including_pr": 1103
+  },
+  "count_projection_scope": "Copied unchanged from the frozen original. No new inventory observation.",
+  "observation_intervals": {
+    "pulls": {
+      "started_at_utc": "2026-11-05T03:16:46.083Z",
+      "read_finished_at_utc": "2026-11-05T03:19:02.659Z",
+      "first_terminal_empty_page": 13
+    },
+    "branches": {
+      "started_at_utc": "2026-11-05T03:16:46.083Z",
+      "read_finished_at_utc": "2026-11-05T03:19:19.592Z",
+      "first_terminal_empty_page": 53
+    },
+    "issues": {
+      "started_at_utc": "2026-11-05T03:19:02.318Z",
+      "read_finished_at_utc": "2026-11-05T03:19:05.074Z",
+      "first_terminal_empty_page": 13
+    }
+  },
+  "archive": {
+    "manifest": "repository-inventory-20261105/archive-manifest.json",
+    "manifest_identity": {
+      "bytes": 31853,
+      "sha256": "7cc03695bd6488a6838d50d58a91f126c7c87dc0a8923296df832395e729d08d",
+      "blob": "a4cb25e1bd5a9e161c1ebae494a8cddb3681512b"
+    },
+    "part_count": 18,
+    "member_count": 117,
+    "inventory_member": "complete-inventory.json",
+    "encoding": "Existing ordered base64 text parts, one complete gzip stream, TAR members",
+    "parts_relative_to": "repository-inventory-20261105/",
+    "all_existing_part_bytes_unchanged": true,
+    "gzip": {
+      "bytes": 5180088,
+      "sha256": "0ec837b4a55ce666ddc8555391c0bd399ba39700fd276c28a2617930b0204bc1",
+      "blob": "9119bb11ab2f1b7b22bfae997605e942490ea6d3"
+    },
+    "uncompressed_tar": {
+      "bytes": 44881920,
+      "sha256": "54e748e89947725254c62722d911a289e950bc6dbdd25d1791d6e8628ea5705c",
+      "blob": "289472178e2751c8d896b885d6a7fe5fd6896d58"
+    }
+  },
+  "restore": {
+    "instructions": "repository-inventory-20261105/RESTORE_INVENTORY.md",
+    "entry_point": "repository-inventory-20261105/restore_inventory.py",
+    "default": "Verify all 18 parts and 117 original members without writing output.",
+    "output": "Optional --output writes the exact original JSON only to a new file."
+  },
+  "parser_contract": [
+    "This path now contains an explicitly typed index. It does not contain the prs or branches arrays.",
+    "Consumers that need the original object must restore complete-inventory.json, verify its identity, then parse it.",
+    "The restored original schema and every JSON value and byte remain unchanged, including all 1103 PR rows and 5193 branch rows.",
+    "Original internal relative paths refer to the frozen archive layout; they are not rewritten into current repository paths."
+  ],
+  "scope_limits": [
+    "The API collections were fully paginated during separate recorded intervals. This is not an atomic point-in-time snapshot.",
+    "First/last/empty-page and latest100 PR anchors agreed; repository pushed_at was unchanged. These checks do not prove absence of all concurrent metadata changes.",
+    "Counts are from enumerated collection rows; repository open_issues_count includes PRs and is only an independently recorded supplemental value.",
+    "Ref-name stack depth is not verified commit ancestry, integration compatibility, or mergeability; PR base.sha mismatches are not declared merge conflicts.",
+    "The unchanged published PR4797 source is distinct from the unpublished native work tree and from all donor candidates.",
+    "No test, ref/PR mutation, external message, release or whole-blocker status change was performed."
+  ]
+}

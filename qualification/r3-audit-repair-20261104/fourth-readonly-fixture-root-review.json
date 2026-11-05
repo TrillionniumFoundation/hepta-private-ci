@@ -1,0 +1,126 @@
+{
+  "schema": "hepta.fourth.readonly-snapshot.root-static-review.v1",
+  "observed_at_utc": "2026-11-04 23:10:40 UTC",
+  "manifest_blob": "d39e6fc948a1d02916add0542cff24298b760881",
+  "disposition": "STATIC_ACCEPTED_PHYSICAL_COUNTERFACTUAL_AND_ORIGINAL_MATRIX_PENDING",
+  "source_before_tree": "e84c2f12e39022701c8a942343b3913faa62cf31",
+  "path": "codex-rs/exec-server/tests/exec_process.rs",
+  "preimage": {
+    "blob": "82fc6590f5174599b5b3b9896920d53cf608510f",
+    "bytes": 62025,
+    "sha256": "40a210ce7d533746d95c184844fe3425c9d52aec6911dddf810200549691ce93"
+  },
+  "postimage": {
+    "path": "codex-rs/exec-server/tests/exec_process.rs",
+    "blob": "7794052d69fa71dcea99dfd9425654e3cc6ceadb",
+    "bytes": 62591,
+    "sha256": "c7e2df70f5c08b88ecc61941fc940b047deea571a70972f42f82b7859cbbc8f2"
+  },
+  "patch": {
+    "blob": "3807b516e5818b9ee3f1be98e24a89a97e0c96fe",
+    "bytes": 2378,
+    "sha256": "495fe6939cbf85cec456c30292637ee60b8270f2671b96ab461eea4670701b9b"
+  },
+  "counterfactual": {
+    "status": "UNEXECUTED_SINGLE_KEY_DIFFERENCE_CONTROL",
+    "postimage": {
+      "path": "codex-rs/exec-server/tests/exec_process.rs",
+      "blob": "7027153a35a377ba9bbea3ddce2b923b01857b49",
+      "bytes": 62745,
+      "sha256": "bbb6c1ad9d59391521350b1dff4c7d01185dfc7b31651190cae9f21700b4f6c6"
+    },
+    "increment_from_candidate": {
+      "blob": "1fc23a67ebccd09ac3ac51d60189001d2d4324ea",
+      "bytes": 793,
+      "sha256": "4919447ab8aa419118a7e8fdba944ab4cc2aa81173fc7e04b6d651fccc570152"
+    },
+    "reconstruction": [
+      {
+        "path": "codex-rs/exec-server/tests/exec_process.rs",
+        "hunks": 1,
+        "exact_reconstructed": true
+      }
+    ],
+    "only_change": "For the readonly branch, first scope remains attachment-1 and second becomes attachment-2; every other request/cache field, profile poison and assertion is unchanged.",
+    "valid_negative": "The first original complete tuple must pass and shell_snapshot_readonly_phase: first_result_verified_profile_poisoned must appear. Then the second original tuple must fail after the real new scope triggers a fresh capture of the poisoned profile.",
+    "invalid_negative": "A failure before that marker, an early skip, a setup error, or a mere aggregate FAIL without the targeted second tuple is not causal evidence.",
+    "no_assumed_exit_code": "Do not require final exit 42: capture failures deliberately fall back to the original /bin/bash -lc command. The original full tuple is the real oracle."
+  },
+  "root_checks": {
+    "original": {
+      "bytes": 62025,
+      "sha256": "40a210ce7d533746d95c184844fe3425c9d52aec6911dddf810200549691ce93"
+    },
+    "positive": {
+      "bytes": 62591,
+      "sha256": "c7e2df70f5c08b88ecc61941fc940b047deea571a70972f42f82b7859cbbc8f2"
+    },
+    "negative": {
+      "bytes": 62745,
+      "sha256": "bbb6c1ad9d59391521350b1dff4c7d01185dfc7b31651190cae9f21700b4f6c6"
+    },
+    "positive_roundtrip": true,
+    "negative_roundtrip": true,
+    "other_case_suffix_byte_equal": true,
+    "annotations_unchanged": true,
+    "full_result_tuple_unchanged": true
+  },
+  "primary_sources": [
+    {
+      "path": "codex-rs/exec-server/tests/exec_process.rs",
+      "blob": "82fc6590f5174599b5b3b9896920d53cf608510f",
+      "bytes": 62025,
+      "sha256": "40a210ce7d533746d95c184844fe3425c9d52aec6911dddf810200549691ce93",
+      "ref": "cabcb40d36e116beaa65750e1f674c52035da785"
+    },
+    {
+      "path": "codex-rs/exec-server/src/shell_snapshot.rs",
+      "blob": "e352d63641c9aba6f201ebb34ebb6d433f24c080",
+      "bytes": 11746,
+      "sha256": "bae797689be9f48fc85572ff9ebd09bc9d6f3e5b171caa4bdd9f8637c695298c",
+      "ref": "cabcb40d36e116beaa65750e1f674c52035da785"
+    },
+    {
+      "path": "codex-rs/exec-server/src/local_process.rs",
+      "blob": "927276f36e75669c7b44384075d8c0d1e98a634e",
+      "bytes": 72783,
+      "sha256": "b31c2b41edcf71a8f6abebfb078d5a036b01ee24efc0fcd266da5709958bc96b",
+      "ref": "cabcb40d36e116beaa65750e1f674c52035da785"
+    },
+    {
+      "path": "codex-rs/exec-server/src/process_sandbox.rs",
+      "blob": "0bf5853a1d82df037d406fdffbe31d6bada1b2b4",
+      "bytes": 14720,
+      "sha256": "0bfa0326269aafbd3578e17d3f56eb0c19e73653cd89142a288fc1d45677cd04",
+      "ref": "cabcb40d36e116beaa65750e1f674c52035da785"
+    },
+    {
+      "path": "codex-rs/shell-command/src/shell_snapshot.rs",
+      "blob": "d0cf01c3b3a36cbc2560f6c4da735e5c1884bd6a",
+      "bytes": 6529,
+      "sha256": "d02c6c2ec5c8a6f7e8bbdcdf99d05faa6168b6d9e468c546d3cb32f585b139f8",
+      "ref": "cabcb40d36e116beaa65750e1f674c52035da785"
+    }
+  ],
+  "findings": [
+    "Actual LocalExecBackend prepares the sandbox before ShellSnapshotCache::prepare. Capture clones that prepared command/environment; the proposal keeps capture inside the original read_only boundary.",
+    "Actual cache comparison includes request(scope and shell), cwd, env_policy and sandbox. The original first-Some/second-None test used two cache keys while asserting one capture.",
+    "The read_only branch's regular-file counter conflicts with a genuinely read-only home. The positive fixture replaces only that incompatible measurement with a physical profile-poison oracle after the original first full result passes.",
+    "The second request keeps exactly the same read_only key; successful reuse must return the exact original stdout, empty stderr, exit0 and closed=true despite the now-poisoned actual profile. No expected tuple is weakened.",
+    "All non-sandbox profile-counter behavior remains the same. All original annotations and all other test-function suffix bytes are unchanged. Secret/denied exports, shadowed unset/builtin, padding, memory-only storage and physical no-captures assertions remain explicit.",
+    "The negative control changes only the second scope_id, from attachment-1 to attachment-2. Its first tuple and poison marker must pass, and only then may a second-tuple failure be attributed to requiring another capture.",
+    "Actual capture errors intentionally fall back to the original -lc command. The negative control cannot assume final user exit42, and the e84 exit41 raw did not identify the internal capture/restore step. Both limitations are preserved."
+  ],
+  "native_contract": {
+    "negative_exact": "shell_snapshot_v2_filters_profile_exports_and_stays_in_memory::test_case_5_remote_sandbox",
+    "positive_matrix": "shell_snapshot_v2_filters_profile_exports_and_stays_in_memory",
+    "expected_native_count": "Linux annotations define8, macOS11; actual fresh catalog/XML determine execution count.",
+    "same_feature_context": "Keep seven owning packages while selecting the exact Exec case/matrix; use original locked dev-small/local, retries0.",
+    "meaningful_negative": "Marker first_result_verified_profile_poisoned must be present after first original tuple succeeds; failure before that marker, setup failure or early return is invalid. Preserve original negative status and restore exact positive postimage before fixed tests."
+  },
+  "limits": [
+    "Test fixture correction only. No production caching, permission, sandbox, command, dependency or deadline change.",
+    "Native compile/control/matrix has not run. A remaining positive exit41 or other failure must be diagnosed, never hidden by changing tuple expectations.",
+    "No B11/B15/full-platform closure follows from this source review."
+  ]
+}

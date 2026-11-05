@@ -1,0 +1,642 @@
+{
+  "schema_version": 1,
+  "title": "Independent musl qualification scope review",
+  "generated_at": "2026-11-04T18:25:24.378Z",
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "head": "ff72d462d74f9eb856aa9edbc368caad9c466708",
+  "actual_ci_merge": "8e20cb5ec8261053ea472f06f79a0def072f3dce",
+  "tree": "f780fe13946102a33b329898af48810be9c7bf0c",
+  "conclusion": "Current blocking GNU-labelled and musl-labelled Linux test jobs use the same GNU/glibc RBE platform. Independent current-source musl V8 dependency artifacts exist, but their smoke steps explicitly skip. No reviewed receipt qualifies current Rust/Hepta product execution under musl.",
+  "current_blocking_jobs": {
+    "run_id": 41875454075,
+    "gnu_label": {
+      "job_id": 126733764675,
+      "actual_test_invocation": "bde32dd9-f619-4e18-b75b-a27f863acd8e",
+      "actual_wrapper_line": 837,
+      "invocation_line": 862,
+      "full_decoded_log": {
+        "utf8_bytes": 2207973,
+        "sha256": "9ce6829a4ccbd6f8156942ac66138a89dd881a99d0641a0167d3b67a9a5fd716",
+        "basis": "ci_audit retained complete decoded original job log including terminal cleanup"
+      }
+    },
+    "musl_label": {
+      "job_id": 126733764827,
+      "actual_test_invocation": "99b1f5d9-685c-4337-9cf1-502f666dad5a",
+      "actual_wrapper_line": 697,
+      "invocation_line": 725,
+      "full_decoded_log": {
+        "utf8_bytes": 2199546,
+        "sha256": "f1206af791e4fd04c685715b70a285b7451ea861d10b08992010b9fb2d1966f2",
+        "basis": "ci_audit retained complete decoded original job log including terminal cleanup"
+      }
+    },
+    "actual_platform": "//:rbe -> @rbe_platform; Linux x86_64, libc gnu.2.28",
+    "evidence_owner": "ci_audit independently retains the two complete original logs; this review independently read fixed workflow/action/wrapper/platform sources.",
+    "classification": "Two matrix jobs and cache namespaces; one Linux libc target class, not two independent libc runtime qualifications."
+  },
+  "source_evidence": [
+    {
+      "path": ".bazelrc",
+      "blob": "3d5877b283b887091af507f3672003f84c500687",
+      "ranges": [
+        [
+          194,
+          200
+        ]
+      ],
+      "meaning": "Both Linux CI labels select ci-linux, whose target platform is //:rbe.",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/ff72d462d74f9eb856aa9edbc368caad9c466708/.bazelrc"
+    },
+    {
+      "path": "BUILD.bazel",
+      "blob": "1f9970fdbd25413e7a4e9a98519ba44a735158d4",
+      "ranges": [
+        [
+          91,
+          94
+        ]
+      ],
+      "meaning": "Root rbe alias resolves to generated @rbe_platform.",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/ff72d462d74f9eb856aa9edbc368caad9c466708/BUILD.bazel"
+    },
+    {
+      "path": "rbe.bzl",
+      "blob": "57e301ac776d9c7196e9c854bc6e27ce2718d886",
+      "ranges": [
+        [
+          14,
+          29
+        ]
+      ],
+      "meaning": "Generated execution/target platform declares Linux and libc gnu.2.28 with a pinned Ubuntu-based RBE container.",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/ff72d462d74f9eb856aa9edbc368caad9c466708/rbe.bzl"
+    },
+    {
+      "path": ".github/workflows/bazel.yml",
+      "blob": "9eed8ed8fa46c88d9d89d1499f55cb8c303137af",
+      "ranges": [
+        [
+          31,
+          43
+        ],
+        [
+          62,
+          69
+        ],
+        [
+          98,
+          113
+        ],
+        [
+          472,
+          507
+        ]
+      ],
+      "meaning": "Matrix labels enter setup target input; no Linux musl --platforms override is supplied by the test command. Verify-release covers debug_assertions-off compilation under the same default Linux CI platform.",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/ff72d462d74f9eb856aa9edbc368caad9c466708/.github/workflows/bazel.yml"
+    },
+    {
+      "path": ".github/actions/setup-bazel-ci/action.yml",
+      "blob": "ea3f3a6521b970484ac60d1cebf788092753555a",
+      "ranges": [
+        [
+          4,
+          5
+        ]
+      ],
+      "meaning": "Target input is documented as cache namespacing.",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/ff72d462d74f9eb856aa9edbc368caad9c466708/.github/actions/setup-bazel-ci/action.yml"
+    },
+    {
+      "path": ".github/scripts/run-bazel-ci.sh",
+      "blob": "2bb6994771e1bfaa6b6e9f2824758188f8e454a9",
+      "ranges": [
+        [
+          84,
+          95
+        ],
+        [
+          425,
+          425
+        ]
+      ],
+      "meaning": "Linux wrapper chooses ci-linux and appends that config.",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/ff72d462d74f9eb856aa9edbc368caad9c466708/.github/scripts/run-bazel-ci.sh"
+    },
+    {
+      "path": "MODULE.bazel",
+      "blob": "a21061a8b741fc724edb580e229eb86d9debdc4f",
+      "ranges": [],
+      "meaning": "Registers LLVM and rules_rs toolchain sets and includes both musl triples in Cargo dependency metadata. Metadata availability and broad registration are not evidence that a Rust musl product test executed.",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/ff72d462d74f9eb856aa9edbc368caad9c466708/MODULE.bazel"
+    },
+    {
+      "path": "bazel/platforms/release_binaries.bzl",
+      "blob": "7ac59c2b5e1f670d1653c2b3efdd8a82f2963bdc",
+      "ranges": [
+        [
+          5,
+          26
+        ]
+      ],
+      "meaning": "Existing manual platform_data transitions target @llvm//platforms:linux_amd64_musl and linux_arm64_musl.",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/ff72d462d74f9eb856aa9edbc368caad9c466708/bazel/platforms/release_binaries.bzl"
+    },
+    {
+      "path": "codex-rs/cli/BUILD.bazel",
+      "blob": "a64e4a8d12045dcd4f83e2a02c262e52e87ef4c8",
+      "ranges": [
+        [
+          17,
+          24
+        ]
+      ],
+      "meaning": "Existing codex and hepta calls instantiate explicit musl product build targets.",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/ff72d462d74f9eb856aa9edbc368caad9c466708/codex-rs/cli/BUILD.bazel"
+    },
+    {
+      "path": ".github/workflows/v8-canary.yml",
+      "blob": "7bd9a55dcab283c743bd3a05f69c8c6c3e3ff2c4",
+      "ranges": [
+        [
+          149,
+          175
+        ],
+        [
+          209,
+          244
+        ],
+        [
+          290,
+          326
+        ]
+      ],
+      "meaning": "V8 explicitly selects musl target platforms; Cargo smoke excludes all musl targets and exits successfully after a skip message.",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/ff72d462d74f9eb856aa9edbc368caad9c466708/.github/workflows/v8-canary.yml"
+    },
+    {
+      "path": ".github/workflows/rust-ci-full.yml",
+      "blob": "e02bd495a9aace4d789cd9a579c9c3b6ae4f5b40",
+      "ranges": [
+        [
+          180,
+          224
+        ],
+        [
+          346,
+          378
+        ],
+        [
+          440,
+          496
+        ]
+      ],
+      "meaning": "Existing full-CI compile/lint matrix includes explicit musl targets; existing Linux runtime-test callers select GNU targets only.",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/ff72d462d74f9eb856aa9edbc368caad9c466708/.github/workflows/rust-ci-full.yml"
+    },
+    {
+      "path": ".github/workflows/rust-ci-full-nextest-platform.yml",
+      "blob": "0ea9d5dcd5ffd622c2d25f3d808ab5738142a851",
+      "ranges": [
+        [
+          180,
+          211
+        ],
+        [
+          360,
+          405
+        ]
+      ],
+      "meaning": "Reusable nextest flow builds an explicit target archive and executes the archive; its current Linux callers are GNU, not musl.",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/ff72d462d74f9eb856aa9edbc368caad9c466708/.github/workflows/rust-ci-full-nextest-platform.yml"
+    },
+    {
+      "path": ".github/workflows/rust-release.yml",
+      "blob": "4f4eb28f9be4d399b89087c42f02d1be5693c176",
+      "ranges": [
+        [
+          11,
+          15
+        ],
+        [
+          114,
+          137
+        ],
+        [
+          202,
+          262
+        ]
+      ],
+      "meaning": "Tag-only release workflow has genuine Cargo --target musl product build steps, with existing tool setup, V8 checksums, and prehashed bwrap packaging.",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/ff72d462d74f9eb856aa9edbc368caad9c466708/.github/workflows/rust-release.yml"
+    },
+    {
+      "path": ".github/scripts/install-musl-build-tools.sh",
+      "blob": "49035f53911aa09f954337dab6a4295679237e05",
+      "ranges": [
+        [
+          40,
+          46
+        ],
+        [
+          246,
+          261
+        ]
+      ],
+      "meaning": "Existing musl linker/build preparation is available for a future qualification; it was not installed or run by this review.",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/ff72d462d74f9eb856aa9edbc368caad9c466708/.github/scripts/install-musl-build-tools.sh"
+    },
+    {
+      "path": "scripts/list-bazel-release-targets.sh",
+      "blob": "154f0b3580f3ba3216b6e4b840a3a7364e24e007",
+      "ranges": [
+        [
+          8,
+          19
+        ]
+      ],
+      "meaning": "PR release-mode sweep uses first-party wildcard targets, not a recorded explicit invocation of the manual musl CLI transition.",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/ff72d462d74f9eb856aa9edbc368caad9c466708/scripts/list-bazel-release-targets.sh"
+    },
+    {
+      "path": ".github/workflows/blocking-ci.yml",
+      "blob": "fd01ab5edac5d78c9bcfb78397a157a3d5ea7c71",
+      "ranges": [
+        [
+          91,
+          95
+        ],
+        [
+          124,
+          126
+        ]
+      ],
+      "meaning": "Blocking workflow invokes bazel.yml and the smaller rust-ci.yml; full postmerge CI is a different workflow.",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/ff72d462d74f9eb856aa9edbc368caad9c466708/.github/workflows/blocking-ci.yml"
+    },
+    {
+      "path": ".github/workflows/postmerge-ci.yml",
+      "blob": "2a7032e049df0efb8056211f96bc9b41174c10e2",
+      "ranges": [
+        [
+          23,
+          30
+        ]
+      ],
+      "meaning": "Postmerge flow, not this current PR, invokes rust-ci-full.",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/ff72d462d74f9eb856aa9edbc368caad9c466708/.github/workflows/postmerge-ci.yml"
+    }
+  ],
+  "current_head_run_inventory": {
+    "head": "ff72d462d74f9eb856aa9edbc368caad9c466708",
+    "first_page_count": 18,
+    "api_total_count": 18,
+    "terminal_second_page_count": 0,
+    "duplicate_ids": 0,
+    "matching_release_or_postmerge_or_full_ci_runs": [],
+    "scope_limit": "Exact-head GitHub run inventory, not an assertion that no musl qualification exists anywhere in repository history or off-platform."
+  },
+  "v8_run": {
+    "id": 41875454034,
+    "jobs_api_total": 14,
+    "returned_first_page": 14,
+    "terminal_second_page": 0,
+    "musl_jobs": [
+      {
+        "job_id": 126734406638,
+        "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/41875454034/job/126734406638",
+        "name": "Build ptrcomp-sandbox x86_64-unknown-linux-musl",
+        "status": "completed",
+        "conclusion": "success",
+        "actual_checkout": "8e20cb5ec8261053ea472f06f79a0def072f3dce",
+        "tree": "f780fe13946102a33b329898af48810be9c7bf0c",
+        "target": "x86_64-unknown-linux-musl",
+        "platform": "@llvm//platforms:linux_amd64_musl",
+        "variant": "ptrcomp-sandbox",
+        "build_invocation": "7223f23e-3ef3-4af3-a5a0-e3cc0d429f08",
+        "full_decoded_log": {
+          "job_id": 126734406638,
+          "observed_at": "2026-11-04T18:21:39.438Z",
+          "bytes": 516510,
+          "sha256": "352c9b2c1bed646736cc83d9f0b3bedae67f76ae6bf0157fa19a847a005c8ec9",
+          "lines": 5514
+        },
+        "build_result_line": 5224,
+        "cache": {
+          "remote_cache_hits": 5823,
+          "internal_actions": 9886,
+          "fresh_native_compilation_not_claimed": true
+        },
+        "smoke": {
+          "api_step_conclusion": "success",
+          "actual_status": "SKIPPED_BY_SCRIPT",
+          "line": 5372,
+          "message": "Skipping non-native Cargo smoke for x86_64-unknown-linux-musl on x86_64.",
+          "runtime_pass": false
+        },
+        "artifact": {
+          "id": 13346887327,
+          "name": "v8-canary-150.4.0-ptrcomp-sandbox-x86_64-unknown-linux-musl",
+          "zip_bytes": 112761923,
+          "digest": "sha256:106a466df2722f8df9eefa31f45e27e6d5336959fd4e6a180b52aa635e09adde",
+          "metadata_observed_at": "2026-11-04T18:23:37.824Z",
+          "downloaded_or_member_bytes_verified_in_this_review": false
+        },
+        "bounded_build_excerpts": [
+          {
+            "line": 5220,
+            "text": "Target //third_party/v8:rusty_v8_sandbox_release_pair_x86_64_unknown_linux_musl up-to-date:"
+          },
+          {
+            "line": 5223,
+            "text": "INFO: 15709 processes: 5823 remote cache hit, 9886 internal."
+          },
+          {
+            "line": 5224,
+            "text": "INFO: Build completed successfully, 15709 total actions"
+          },
+          {
+            "line": 5287,
+            "text": "Target //third_party/v8:rusty_v8_sandbox_release_pair_x86_64_unknown_linux_musl up-to-date:"
+          },
+          {
+            "line": 5290,
+            "text": "INFO: 1 process: 1502 action cache hit, 1 internal."
+          },
+          {
+            "line": 5305,
+            "text": "INFO: Build completed successfully, 0 total actions"
+          },
+          {
+            "line": 5310,
+            "text": "dist/x86_64-unknown-linux-musl/librusty_v8_ptrcomp_sandbox_release_x86_64-unknown-linux-musl.a.gz"
+          },
+          {
+            "line": 5372,
+            "text": "Skipping non-native Cargo smoke for x86_64-unknown-linux-musl on x86_64."
+          }
+        ]
+      },
+      {
+        "job_id": 126734406654,
+        "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/41875454034/job/126734406654",
+        "name": "Build release x86_64-unknown-linux-musl",
+        "status": "completed",
+        "conclusion": "success",
+        "actual_checkout": "8e20cb5ec8261053ea472f06f79a0def072f3dce",
+        "tree": "f780fe13946102a33b329898af48810be9c7bf0c",
+        "target": "x86_64-unknown-linux-musl",
+        "platform": "@llvm//platforms:linux_amd64_musl",
+        "variant": "release",
+        "build_invocation": "957e4c12-019a-480d-af17-7cbd72cc12a5",
+        "full_decoded_log": {
+          "job_id": 126734406654,
+          "observed_at": "2026-11-04T18:21:40.039Z",
+          "bytes": 514389,
+          "sha256": "0297bd7e728c5a4e5564347561eff4c615d0a6fe30b4ecf95aac04ece693235a",
+          "lines": 5495
+        },
+        "build_result_line": 5207,
+        "cache": {
+          "remote_cache_hits": 5823,
+          "internal_actions": 9886,
+          "fresh_native_compilation_not_claimed": true
+        },
+        "smoke": {
+          "api_step_conclusion": "success",
+          "actual_status": "SKIPPED_BY_SCRIPT",
+          "line": 5354,
+          "message": "Skipping non-native Cargo smoke for x86_64-unknown-linux-musl on x86_64.",
+          "runtime_pass": false
+        },
+        "artifact": {
+          "id": 13347505391,
+          "name": "v8-canary-150.4.0-release-x86_64-unknown-linux-musl",
+          "zip_bytes": 108464475,
+          "digest": "sha256:841d7f4779cf33b7839eac6fd981d3b5e987d40da7b805eac502efcd82cc6ed8",
+          "metadata_observed_at": "2026-11-04T18:23:37.824Z",
+          "downloaded_or_member_bytes_verified_in_this_review": false
+        },
+        "bounded_build_excerpts": [
+          {
+            "line": 5203,
+            "text": "Target //third_party/v8:rusty_v8_release_pair_x86_64_unknown_linux_musl up-to-date:"
+          },
+          {
+            "line": 5206,
+            "text": "INFO: 15709 processes: 5823 remote cache hit, 9886 internal."
+          },
+          {
+            "line": 5207,
+            "text": "INFO: Build completed successfully, 15709 total actions"
+          },
+          {
+            "line": 5269,
+            "text": "Target //third_party/v8:rusty_v8_release_pair_x86_64_unknown_linux_musl up-to-date:"
+          },
+          {
+            "line": 5272,
+            "text": "INFO: 1 process: 1502 action cache hit, 1 internal."
+          },
+          {
+            "line": 5287,
+            "text": "INFO: Build completed successfully, 0 total actions"
+          },
+          {
+            "line": 5292,
+            "text": "dist/x86_64-unknown-linux-musl/librusty_v8_release_x86_64-unknown-linux-musl.a.gz"
+          },
+          {
+            "line": 5354,
+            "text": "Skipping non-native Cargo smoke for x86_64-unknown-linux-musl on x86_64."
+          }
+        ]
+      },
+      {
+        "job_id": 126734406655,
+        "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/41875454034/job/126734406655",
+        "name": "Build release aarch64-unknown-linux-musl",
+        "status": "completed",
+        "conclusion": "success",
+        "actual_checkout": "8e20cb5ec8261053ea472f06f79a0def072f3dce",
+        "tree": "f780fe13946102a33b329898af48810be9c7bf0c",
+        "target": "aarch64-unknown-linux-musl",
+        "platform": "@llvm//platforms:linux_arm64_musl",
+        "variant": "release",
+        "build_invocation": "32dc07ec-2d97-4992-816c-6b19868ea944",
+        "full_decoded_log": {
+          "job_id": 126734406655,
+          "observed_at": "2026-11-04T18:21:40.659Z",
+          "bytes": 511234,
+          "sha256": "70c0713ce51e31a1a7d3810962eec7d339eb6c0b8228ce1a12151943cda0eb39",
+          "lines": 5467
+        },
+        "build_result_line": 5177,
+        "cache": {
+          "remote_cache_hits": 6062,
+          "internal_actions": 10388,
+          "fresh_native_compilation_not_claimed": true
+        },
+        "smoke": {
+          "api_step_conclusion": "success",
+          "actual_status": "SKIPPED_BY_SCRIPT",
+          "line": 5325,
+          "message": "Skipping non-native Cargo smoke for aarch64-unknown-linux-musl on aarch64.",
+          "runtime_pass": false
+        },
+        "artifact": {
+          "id": 13345983851,
+          "name": "v8-canary-150.4.0-release-aarch64-unknown-linux-musl",
+          "zip_bytes": 111615200,
+          "digest": "sha256:137b833bbcd6b1eb5ed123c956c8997d3ef545828988855c0c06c4719c9ad34e",
+          "metadata_observed_at": "2026-11-04T18:23:37.824Z",
+          "downloaded_or_member_bytes_verified_in_this_review": false
+        },
+        "bounded_build_excerpts": [
+          {
+            "line": 5173,
+            "text": "Target //third_party/v8:rusty_v8_release_pair_aarch64_unknown_linux_musl up-to-date:"
+          },
+          {
+            "line": 5176,
+            "text": "INFO: 16450 processes: 6062 remote cache hit, 10388 internal."
+          },
+          {
+            "line": 5177,
+            "text": "INFO: Build completed successfully, 16450 total actions"
+          },
+          {
+            "line": 5240,
+            "text": "Target //third_party/v8:rusty_v8_release_pair_aarch64_unknown_linux_musl up-to-date:"
+          },
+          {
+            "line": 5243,
+            "text": "INFO: 1 process: 1502 action cache hit, 1 internal."
+          },
+          {
+            "line": 5258,
+            "text": "INFO: Build completed successfully, 0 total actions"
+          },
+          {
+            "line": 5263,
+            "text": "dist/aarch64-unknown-linux-musl/librusty_v8_release_aarch64-unknown-linux-musl.a.gz"
+          },
+          {
+            "line": 5325,
+            "text": "Skipping non-native Cargo smoke for aarch64-unknown-linux-musl on aarch64."
+          }
+        ]
+      },
+      {
+        "job_id": 126734406721,
+        "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/41875454034/job/126734406721",
+        "name": "Build ptrcomp-sandbox aarch64-unknown-linux-musl",
+        "status": "completed",
+        "conclusion": "success",
+        "actual_checkout": "8e20cb5ec8261053ea472f06f79a0def072f3dce",
+        "tree": "f780fe13946102a33b329898af48810be9c7bf0c",
+        "target": "aarch64-unknown-linux-musl",
+        "platform": "@llvm//platforms:linux_arm64_musl",
+        "variant": "ptrcomp-sandbox",
+        "build_invocation": "67373a2d-61ba-422e-81f6-66d1140e2d6d",
+        "full_decoded_log": {
+          "job_id": 126734406721,
+          "observed_at": "2026-11-04T18:21:41.259Z",
+          "bytes": 512327,
+          "sha256": "9e7deeb4b27a3da1d7b13171f1e3d54d9f0b0cc6a245bdfb37e9adcd200ba628",
+          "lines": 5477
+        },
+        "build_result_line": 5187,
+        "cache": {
+          "remote_cache_hits": 6062,
+          "internal_actions": 10388,
+          "fresh_native_compilation_not_claimed": true
+        },
+        "smoke": {
+          "api_step_conclusion": "success",
+          "actual_status": "SKIPPED_BY_SCRIPT",
+          "line": 5335,
+          "message": "Skipping non-native Cargo smoke for aarch64-unknown-linux-musl on aarch64.",
+          "runtime_pass": false
+        },
+        "artifact": {
+          "id": 13345759100,
+          "name": "v8-canary-150.4.0-ptrcomp-sandbox-aarch64-unknown-linux-musl",
+          "zip_bytes": 115991509,
+          "digest": "sha256:3d1b57ef9b6a170fbaa27fc362e3f8aa71855cc21baf23dea98b66d1cdd5c937",
+          "metadata_observed_at": "2026-11-04T18:23:37.824Z",
+          "downloaded_or_member_bytes_verified_in_this_review": false
+        },
+        "bounded_build_excerpts": [
+          {
+            "line": 5183,
+            "text": "Target //third_party/v8:rusty_v8_sandbox_release_pair_aarch64_unknown_linux_musl up-to-date:"
+          },
+          {
+            "line": 5186,
+            "text": "INFO: 16450 processes: 6062 remote cache hit, 10388 internal."
+          },
+          {
+            "line": 5187,
+            "text": "INFO: Build completed successfully, 16450 total actions"
+          },
+          {
+            "line": 5250,
+            "text": "Target //third_party/v8:rusty_v8_sandbox_release_pair_aarch64_unknown_linux_musl up-to-date:"
+          },
+          {
+            "line": 5253,
+            "text": "INFO: 1 process: 1502 action cache hit, 1 internal."
+          },
+          {
+            "line": 5268,
+            "text": "INFO: Build completed successfully, 0 total actions"
+          },
+          {
+            "line": 5273,
+            "text": "dist/aarch64-unknown-linux-musl/librusty_v8_ptrcomp_sandbox_release_aarch64-unknown-linux-musl.a.gz"
+          },
+          {
+            "line": 5335,
+            "text": "Skipping non-native Cargo smoke for aarch64-unknown-linux-musl on aarch64."
+          }
+        ]
+      }
+    ],
+    "qualification_scope": "Successful platform-specific dependency library/archive and binding builds using remote action cache; neither fresh full recompilation nor an executable product/runtime test."
+  },
+  "existing_reusable_product_targets": [
+    "//codex-rs/cli:codex_linux_amd64_musl",
+    "//codex-rs/cli:hepta_linux_amd64_musl",
+    "//codex-rs/cli:codex_linux_arm64_musl",
+    "//codex-rs/cli:hepta_linux_arm64_musl"
+  ],
+  "recommended_reporting": {
+    "blocking_linux": "Linux GNU/glibc RBE — GNU-labelled lane / musl-labelled lane",
+    "v8": "musl-target V8 dependency build (cache-backed); Cargo smoke skipped",
+    "rust_musl_product_build": "Not qualified by reviewed current-head receipts",
+    "rust_musl_product_runtime": "Not qualified; requires actual executed product/test binaries",
+    "limits": "Toolchain registration, platform-triple dependency metadata, downloaded musl host tools, successful skip steps, and other-head release artifacts do not qualify current product runtime."
+  },
+  "next_choices": [
+    {
+      "stage": "Minimal exact-source product build qualification",
+      "action": "Prepare a separate nonpublishing qualification using one existing explicit x86_64 musl CLI transition above. Retain GNU execution toolchains for proc macros/build tools, record resolved musl target and resulting product ELF/hash/source, and obtain an actual build result before broadening scope.",
+      "why": "Reuses existing registered platform/transition; no new platform definition or rewrite of the current blocking matrix is needed.",
+      "remaining": "No such build was started by this review; Rust target toolchain/linker resolution still needs real qualification."
+    },
+    {
+      "stage": "Actual musl runtime qualification",
+      "action": "Execute those exact musl-linked product bytes and selected original behavioral tests, recording executable/ELF identity, OS/architecture, command, JUnit counts and all skips/retries. The existing explicit-target nextest archive workflow is a reusable mechanism only after validating musl prerequisites and a real musl caller.",
+      "naming": "A musl-linked process run on Ubuntu is a bounded musl runtime result, not Alpine deployment acceptance; full integration coverage must be separately named.",
+      "remaining": "Do not count --no-run, archive creation, staging or skip-exit-zero as runtime; do not remove capability/security oracles."
+    },
+    {
+      "stage": "Alternative existing Cargo build recipe",
+      "action": "Reuse the musl parts of rust-release build preparation (musl linker setup, checksum-verified V8 artifacts, bwrap build/finalize/hash, explicit cargo --target) in a separately reviewed nonrelease job if the Bazel product transition cannot qualify.",
+      "limits": "Do not trigger tag/release/signing or change dependencies to manufacture a passing label."
+    }
+  ],
+  "actions_taken": "Read-only GitHub GETs and in-memory evidence composition. No builds, tool installation, platform definitions, matrix/filter/dependency edits, workflow starts/reruns, or ref changes."
+}

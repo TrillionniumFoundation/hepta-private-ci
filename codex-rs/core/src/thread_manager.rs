@@ -1,5 +1,8 @@
+mod runtime_identity;
+
 use crate::CodexAppsToolsCache;
 use crate::agent::AgentControl;
+use crate::agent::control::AgentTransitionLease;
 use crate::attestation::AttestationProvider;
 use crate::codex_thread::CodexThread;
 use crate::config::Config;
@@ -264,6 +267,7 @@ struct ThreadSpawnRequest {
     options: StartThreadOptions,
     auth_manager: Arc<AuthManager>,
     agent_control: AgentControl,
+    agent_transition: Option<AgentTransitionLease>,
     parent_thread_id: Option<ThreadId>,
     forked_from_thread_id: Option<ThreadId>,
     fork_persistence: ForkPersistence,
@@ -516,6 +520,7 @@ impl ThreadSpawnRequest {
             options,
             auth_manager,
             agent_control,
+            agent_transition: None,
             parent_thread_id: None,
             forked_from_thread_id: None,
             fork_persistence: ForkPersistence::Copied,
@@ -560,6 +565,7 @@ pub(crate) struct ResumeThreadWithHistoryOptions {
     pub(crate) config: Config,
     pub(crate) initial_history: InitialHistory,
     pub(crate) agent_control: AgentControl,
+    pub(crate) agent_transition: AgentTransitionLease,
     pub(crate) session_source: SessionSource,
     pub(crate) parent_thread_id: Option<ThreadId>,
     pub(crate) environment_selections: Option<Vec<TurnEnvironmentSelection>>,
@@ -1485,16 +1491,9 @@ impl ThreadManager {
         thread_id: &ThreadId,
         expected: &Arc<CodexThread>,
     ) -> Option<Arc<CodexThread>> {
-        let mut registry = self.state.thread_registry.write().await;
-        if registry
-            .threads
-            .get(thread_id)
-            .is_some_and(|thread| Arc::ptr_eq(thread, expected))
-        {
-            registry.threads.remove(thread_id)
-        } else {
-            None
-        }
+        self.state
+            .retire_runtime_if_current(*thread_id, expected, || {})
+            .await
     }
 
     /// Tries to shut down all tracked threads concurrently within the provided timeout.
@@ -1519,22 +1518,23 @@ impl ThreadManager {
                     Ok(Err(_)) => ShutdownOutcome::SubmitFailed,
                     Err(_) => ShutdownOutcome::TimedOut,
                 };
-                (thread_id, outcome)
+                (thread_id, thread, outcome)
             })
             .collect::<FuturesUnordered<_>>();
         let mut report = ThreadShutdownReport::default();
 
-        while let Some((thread_id, outcome)) = shutdowns.next().await {
+        while let Some((thread_id, thread, outcome)) = shutdowns.next().await {
             match outcome {
-                ShutdownOutcome::Complete => report.completed.push(thread_id),
+                ShutdownOutcome::Complete => {
+                    let _ = self
+                        .state
+                        .retire_runtime_if_current(thread_id, &thread, || {})
+                        .await;
+                    report.completed.push(thread_id);
+                }
                 ShutdownOutcome::SubmitFailed => report.submit_failed.push(thread_id),
                 ShutdownOutcome::TimedOut => report.timed_out.push(thread_id),
             }
-        }
-
-        let mut registry = self.state.thread_registry.write().await;
-        for thread_id in &report.completed {
-            registry.threads.remove(thread_id);
         }
 
         report
@@ -1923,32 +1923,6 @@ impl ThreadManagerState {
             })
     }
 
-    /// Send an operation to a thread by ID.
-    pub(crate) async fn send_op(
-        &self,
-        thread_id: ThreadId,
-        op: Op,
-        parent_turn_id: Option<String>,
-        root_turn_id: Option<String>,
-    ) -> CodexResult<String> {
-        let thread = self.get_thread(thread_id).await?;
-        if let Some(ops_log) = &self.ops_log
-            && let Ok(mut log) = ops_log.lock()
-            && let Some(captured_op) = capture_test_op(&op)
-        {
-            log.push((thread_id, captured_op));
-        }
-        thread
-            .io
-            .submit_with_trace(op, /*trace*/ None, parent_turn_id, root_turn_id)
-            .await
-    }
-
-    /// Remove a thread from the manager by ID, returning it when present.
-    pub(crate) async fn remove_thread(&self, thread_id: &ThreadId) -> Option<Arc<CodexThread>> {
-        self.thread_registry.write().await.threads.remove(thread_id)
-    }
-
     async fn claim_published_thread(&self, cleanup: &UnclaimedThreadCleanup) {
         let mut registry = self.thread_registry.write().await;
         cleanup
@@ -2302,6 +2276,7 @@ impl ThreadManagerState {
             config,
             initial_history,
             agent_control,
+            agent_transition,
             session_source,
             parent_thread_id,
             environment_selections,
@@ -2329,6 +2304,7 @@ impl ThreadManagerState {
         };
         let mut request =
             ThreadSpawnRequest::new(options, Arc::clone(&self.auth_manager), agent_control);
+        request.agent_transition = Some(agent_transition);
         request.parent_thread_id = parent_thread_id;
         request.inherited_environments = inherited_environments;
         request.inherited_exec_policy = inherited_exec_policy;
@@ -2387,9 +2363,13 @@ impl ThreadManagerState {
     /// Keep startup ownership independent of the requesting future. Dropping a caller while
     /// Session::spawn is materializing history must not release its hard-delete admission before
     /// the owner has either registered the runtime or completed rejected-startup cleanup.
-    async fn spawn_thread(self: &Arc<Self>, request: ThreadSpawnRequest) -> CodexResult<NewThread> {
+    async fn spawn_thread(
+        self: &Arc<Self>,
+        mut request: ThreadSpawnRequest,
+    ) -> CodexResult<NewThread> {
         let (result_tx, result_rx) = tokio::sync::oneshot::channel();
         let state = Arc::clone(self);
+        let agent_transition = request.agent_transition.take();
         // Tokio tasks do not inherit the caller's tracing span. Preserve it explicitly so the
         // cancellation-safe owner remains part of the request's startup trace after detaching.
         tokio::spawn(
@@ -2420,6 +2400,9 @@ impl ThreadManagerState {
                     .lock()
                     .unwrap_or_else(std::sync::PoisonError::into_inner)
                     .take();
+                // Keep a canceled agent reload fenced even before admission,
+                // and through delivery acknowledgement or unclaimed cleanup.
+                drop(agent_transition);
             }
             .in_current_span(),
         );
@@ -2440,6 +2423,7 @@ impl ThreadManagerState {
             options,
             auth_manager,
             agent_control,
+            agent_transition: _,
             parent_thread_id,
             forked_from_thread_id,
             fork_persistence,

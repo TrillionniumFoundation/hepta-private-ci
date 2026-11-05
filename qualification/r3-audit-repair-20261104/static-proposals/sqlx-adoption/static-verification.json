@@ -1,0 +1,150 @@
+{
+  "schema": "hepta.sqlx.adoption-scaffold.static-proof.v1",
+  "status": "STATIC_PATCH_AND_TOML_SCOPE_PASS",
+  "commands": [
+    {
+      "argv": [
+        "git",
+        "apply",
+        "--whitespace=error-all",
+        "--check",
+        "adoption-scaffold.patch"
+      ],
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "git",
+        "apply",
+        "--whitespace=error-all",
+        "adoption-scaffold.patch"
+      ],
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": ""
+    }
+  ],
+  "exact_three_postimages": {
+    "codex-rs/Cargo.toml": {
+      "blob": "ef34e2f3926055d868a00ceafb3ac4694d7156ed",
+      "bytes": 22725,
+      "sha256": "6474e8e9ce81df154d76bc68671acfa25aec0b306b419a14b6ed58dbe8e169ff"
+    },
+    "codex-rs/third_party/sqlx-sqlite-0.9.0/BUILD.bazel": {
+      "blob": "4b8bcf22ab952a65c3e6bf0a25d36cb49869425d",
+      "bytes": 317,
+      "sha256": "60920bd8b2f0af6742449ee52c5527b40062fd5611c5a46fd82cb10a8df49d88"
+    },
+    "codex-rs/third_party/sqlx-sqlite-0.9.0/Cargo.toml": {
+      "blob": "39b9edd7321acfcd60dcfc6422160a8b233e9ffc",
+      "bytes": 3836,
+      "sha256": "a344e9400a2cea7feb0d59fbf0122e5b7a1d1e174b31a8b2286d0a585110f3f7"
+    }
+  },
+  "only_workspace_member_and_patch_added": true,
+  "only_driver_dev_runtime_edge_added": true,
+  "observed_A_metadata": {
+    "bytes": 8163618,
+    "sha256": "959b827393fc6830e8fd6c55a83a519217ab0debb7c033b42e64306bc373fece",
+    "source_tree": "f8251e1d14fa8524ab469281296cd4cf708f173c",
+    "archive_index": "4fbfb3d05586f87b449a9ec14097982072917934",
+    "record": "full-workspace-metadata-stdout"
+  },
+  "observed_A_nodes": [
+    {
+      "name": "codex-state",
+      "version": "0.0.0",
+      "features": [],
+      "workspace_member": true
+    },
+    {
+      "name": "libsqlite3-sys",
+      "version": "0.37.0",
+      "features": [
+        "bundled",
+        "bundled_bindings",
+        "cc",
+        "default",
+        "min_sqlite_version_3_34_1",
+        "pkg-config",
+        "vcpkg"
+      ],
+      "workspace_member": false
+    },
+    {
+      "name": "sqlx-core",
+      "version": "0.9.0",
+      "features": [
+        "_rt-tokio",
+        "_tls-rustls",
+        "_tls-rustls-ring-webpki",
+        "any",
+        "chrono",
+        "crc",
+        "default",
+        "json",
+        "migrate",
+        "offline",
+        "rustls",
+        "serde",
+        "serde_json",
+        "sha2",
+        "time",
+        "tokio",
+        "tokio-stream",
+        "uuid",
+        "webpki-roots"
+      ],
+      "workspace_member": false
+    },
+    {
+      "name": "sqlx-sqlite",
+      "version": "0.9.0",
+      "features": [
+        "bundled",
+        "chrono",
+        "json",
+        "migrate",
+        "offline",
+        "serde",
+        "time",
+        "uuid"
+      ],
+      "workspace_member": false
+    },
+    {
+      "name": "tokio",
+      "version": "1.53.3",
+      "features": [
+        "bytes",
+        "default",
+        "fs",
+        "full",
+        "io-std",
+        "io-util",
+        "libc",
+        "macros",
+        "mio",
+        "net",
+        "parking_lot",
+        "process",
+        "rt",
+        "rt-multi-thread",
+        "signal",
+        "signal-hook-registry",
+        "socket2",
+        "sync",
+        "test-util",
+        "time",
+        "tokio-macros",
+        "windows-sys"
+      ],
+      "workspace_member": false
+    }
+  ],
+  "proposed_B_member_not_executed": true,
+  "cargo_bazel_native_or_ref_mutation": false,
+  "complete_vendor_extraction_and_generated_locks_pending": true
+}

@@ -123,6 +123,8 @@ pub struct ProcessHandle {
     // Optional resize hook for driver-backed sessions that proxy PTY control to
     // another backend instead of owning local PTY handles.
     resizer: StdMutex<Option<ResizeFn>>,
+    #[cfg(all(test, unix))]
+    pty_io_diagnostics: Option<Arc<crate::unix_io::PtyIoDiagnostics>>,
 }
 
 impl fmt::Debug for ProcessHandle {
@@ -156,6 +158,8 @@ impl ProcessHandle {
             exit_code,
             _pty_handles: StdMutex::new(pty_handles),
             resizer: StdMutex::new(resizer),
+            #[cfg(all(test, unix))]
+            pty_io_diagnostics: None,
         }
     }
 
@@ -180,6 +184,34 @@ impl ProcessHandle {
     /// Returns the exit code if known.
     pub fn exit_code(&self) -> Option<i32> {
         self.exit_code.lock().ok().and_then(|guard| *guard)
+    }
+
+    #[cfg(all(test, unix))]
+    pub(crate) fn with_pty_io_diagnostics(
+        mut self,
+        diagnostics: Arc<crate::unix_io::PtyIoDiagnostics>,
+    ) -> Self {
+        self.pty_io_diagnostics = Some(diagnostics);
+        self
+    }
+
+    #[cfg(all(test, unix))]
+    pub(crate) fn pty_io_diagnostic_snapshot(&self) -> String {
+        let finished = |handle: &StdMutex<Option<JoinHandle<()>>>| {
+            handle
+                .lock()
+                .map(|handle| handle.as_ref().map(JoinHandle::is_finished))
+                .map_err(|_| "poisoned task handle")
+        };
+        format!(
+            "reader_finished={:?} writer_finished={:?} waiter_finished={:?} io={:?}",
+            finished(&self.reader_handle),
+            finished(&self.writer_handle),
+            finished(&self.wait_handle),
+            self.pty_io_diagnostics
+                .as_ref()
+                .map(|value| value.snapshot()),
+        )
     }
 
     /// Resize the PTY in character cells.

@@ -1,0 +1,351 @@
+{
+  "schema": "hepta.fourth-report-and-ledger-independent-scope-review.v1",
+  "status": "PASS_AFTER_CORRECTIONS",
+  "observed_at_utc": "2026-11-05 00:16:34 UTC",
+  "review_kind": "Read-only complete prose/ledger consistency review with targeted fixed-source verification. No native test/build, source/ref changes or altered acceptance conditions.",
+  "reviewed_files": [
+    {
+      "path": "/workspace/scratch/07dd58cc9630/hepta-audit-fourth/deliverables/CURRENT_AUDIT_PROGRESS.zh-CN.md",
+      "bytes": 24378,
+      "sha256": "c1bc9fad0eea6de4d90a6f7ab8b03b790320d3afbf701ed93497c3a96be00e70",
+      "git_blob_identity": "92cb65326b5b2ec3ab91880da7129cdbcbe1e450"
+    },
+    {
+      "path": "/workspace/scratch/07dd58cc9630/hepta-audit-fourth/deliverables/current-blockers.json",
+      "bytes": 20205,
+      "sha256": "95f7728ef3af11765b0b585f1090114afac4e3be9649a79a6f102b9171e76da3",
+      "git_blob_identity": "31925dfb9862daa65eb494209415dc6bf15f1698"
+    }
+  ],
+  "local_git_identity_note": "Git blob identities of local report/ledger bytes are computed identities; this receipt does not claim they were already published at a branch ref.",
+  "previous_local_versions": [
+    {
+      "path": "/workspace/scratch/07dd58cc9630/hepta-audit-fourth/deliverables/CURRENT_AUDIT_PROGRESS.zh-CN.md",
+      "bytes": 24203,
+      "sha256": "c9aad45fb64b4ccb78c9ac25bb2ea058d739ee8405f523012587fe5886cf1e70",
+      "git_blob_identity": "f0a39cb1ea9a0be406f23356bba5b854221b5494"
+    },
+    {
+      "path": "/workspace/scratch/07dd58cc9630/hepta-audit-fourth/deliverables/current-blockers.json",
+      "bytes": 19931,
+      "sha256": "4f2c8bec9aaa5ee8d839697b562ca0b1f1ac6bcfc101699ec9638646fd1c17e3",
+      "git_blob_identity": "29d402f1726e46e497e6aa5b34dd60c1be74ac9a"
+    }
+  ],
+  "baseline_ledger_blob": "63518e970668e3a77ade10ae0230b99bc728f726",
+  "machine_checks": {
+    "row_count": 23,
+    "unique_ids": 23,
+    "all_23_original_exit_conditions_byteequal": true,
+    "all_23_status_codes_unchanged": true,
+    "actual_closure_counts": {
+      "CLOSED_SCOPED": 8,
+      "OPEN": 14,
+      "SCIENTIFIC_HOLD": 1
+    },
+    "declared_counts": {
+      "inherited_work_packages": 23,
+      "scoped_closed": 8,
+      "open": 14,
+      "scientific_hold": 1,
+      "new_whole_ids_closed_in_fourth_batch": 0
+    },
+    "scoped_closed_ids": [
+      "B01",
+      "B03",
+      "B04",
+      "B05",
+      "B06",
+      "B12",
+      "B14",
+      "B17"
+    ],
+    "scientific_hold_ids": [
+      "B18"
+    ],
+    "all_23_report_table_rows_match_current_ledger": true,
+    "whole_candidate_qualified": false,
+    "all_blockers_closed": false,
+    "per_row": [
+      {
+        "id": "B01",
+        "status_unchanged": true,
+        "original_exit_condition_unchanged": true,
+        "closure_class": "CLOSED_SCOPED"
+      },
+      {
+        "id": "B02",
+        "status_unchanged": true,
+        "original_exit_condition_unchanged": true,
+        "closure_class": "OPEN"
+      },
+      {
+        "id": "B03",
+        "status_unchanged": true,
+        "original_exit_condition_unchanged": true,
+        "closure_class": "CLOSED_SCOPED"
+      },
+      {
+        "id": "B04",
+        "status_unchanged": true,
+        "original_exit_condition_unchanged": true,
+        "closure_class": "CLOSED_SCOPED"
+      },
+      {
+        "id": "B05",
+        "status_unchanged": true,
+        "original_exit_condition_unchanged": true,
+        "closure_class": "CLOSED_SCOPED"
+      },
+      {
+        "id": "B06",
+        "status_unchanged": true,
+        "original_exit_condition_unchanged": true,
+        "closure_class": "CLOSED_SCOPED"
+      },
+      {
+        "id": "B07",
+        "status_unchanged": true,
+        "original_exit_condition_unchanged": true,
+        "closure_class": "OPEN"
+      },
+      {
+        "id": "B08",
+        "status_unchanged": true,
+        "original_exit_condition_unchanged": true,
+        "closure_class": "OPEN"
+      },
+      {
+        "id": "B09",
+        "status_unchanged": true,
+        "original_exit_condition_unchanged": true,
+        "closure_class": "OPEN"
+      },
+      {
+        "id": "B10",
+        "status_unchanged": true,
+        "original_exit_condition_unchanged": true,
+        "closure_class": "OPEN"
+      },
+      {
+        "id": "B11",
+        "status_unchanged": true,
+        "original_exit_condition_unchanged": true,
+        "closure_class": "OPEN"
+      },
+      {
+        "id": "B12",
+        "status_unchanged": true,
+        "original_exit_condition_unchanged": true,
+        "closure_class": "CLOSED_SCOPED"
+      },
+      {
+        "id": "B13",
+        "status_unchanged": true,
+        "original_exit_condition_unchanged": true,
+        "closure_class": "OPEN"
+      },
+      {
+        "id": "B14",
+        "status_unchanged": true,
+        "original_exit_condition_unchanged": true,
+        "closure_class": "CLOSED_SCOPED"
+      },
+      {
+        "id": "B15",
+        "status_unchanged": true,
+        "original_exit_condition_unchanged": true,
+        "closure_class": "OPEN"
+      },
+      {
+        "id": "B16",
+        "status_unchanged": true,
+        "original_exit_condition_unchanged": true,
+        "closure_class": "OPEN"
+      },
+      {
+        "id": "B17",
+        "status_unchanged": true,
+        "original_exit_condition_unchanged": true,
+        "closure_class": "CLOSED_SCOPED"
+      },
+      {
+        "id": "B18",
+        "status_unchanged": true,
+        "original_exit_condition_unchanged": true,
+        "closure_class": "SCIENTIFIC_HOLD"
+      },
+      {
+        "id": "B19",
+        "status_unchanged": true,
+        "original_exit_condition_unchanged": true,
+        "closure_class": "OPEN"
+      },
+      {
+        "id": "B20",
+        "status_unchanged": true,
+        "original_exit_condition_unchanged": true,
+        "closure_class": "OPEN"
+      },
+      {
+        "id": "B21",
+        "status_unchanged": true,
+        "original_exit_condition_unchanged": true,
+        "closure_class": "OPEN"
+      },
+      {
+        "id": "B22",
+        "status_unchanged": true,
+        "original_exit_condition_unchanged": true,
+        "closure_class": "OPEN"
+      },
+      {
+        "id": "B23",
+        "status_unchanged": true,
+        "original_exit_condition_unchanged": true,
+        "closure_class": "OPEN"
+      }
+    ]
+  },
+  "resolved_findings": [
+    {
+      "id": "B10_INTENTIONAL_ORACLE_CHANGE",
+      "initial_locations": [
+        "CURRENT_AUDIT_PROGRESS.zh-CN.md:47",
+        "current-blockers.json:items[B10].evidence_scope_zh"
+      ],
+      "problem": "Original draft incorrectly said original connection/request assertions were unchanged. The stable case intentionally corrects its total requests from 3 to 4: one genuine no-tool prewarm plus all three actual turn requests.",
+      "proof": {
+        "path": "codex-rs/core/tests/suite/turn_state.rs",
+        "before": {
+          "commit": "cabcb40d36e116beaa65750e1f674c52035da785",
+          "blob": "cafb5b4bdea1b05faa0fb8380e538a7d4b6d850f",
+          "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/cabcb40d36e116beaa65750e1f674c52035da785/codex-rs/core/tests/suite/turn_state.rs",
+          "excerpt": {
+            "start_line": 244,
+            "end_line": 252,
+            "text": "    assert_eq!(server.handshakes().len(), 1);\n    let requests = server.single_connection();\n    assert_eq!(requests.len(), 3);\n    assert_eq!(\n        requests\n            .iter()\n            .map(|request| request.body_json()[\"client_metadata\"][TURN_STATE_HEADER].clone())\n            .collect::<Vec<_>>(),\n        vec![json!(null), json!(\"ts-1\"), json!(\"ts-1\")]"
+          }
+        },
+        "after": {
+          "commit": "2250e5fecfb2c2d5ce889fd66a495a7c8739b148",
+          "tree": "5d8a5db90c83c12b19cbcd24b2d49d94542f73a1",
+          "blob": "7744c37e11b596d53db1e716de4e7adeff213936",
+          "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/2250e5fecfb2c2d5ce889fd66a495a7c8739b148/codex-rs/core/tests/suite/turn_state.rs",
+          "total_request_excerpt": {
+            "start_line": 291,
+            "end_line": 305,
+            "text": "    assert_eq!(server.handshakes().len(), 1);\n    let requests = server.single_connection();\n    // One real prewarm plus all three real requests in this turn.\n    assert_eq!(requests.len(), 4);\n    let bodies = requests\n        .iter()\n        .map(core_test_support::responses::WebSocketRequest::body_json)\n        .collect::<Vec<_>>();\n    assert_eq!(bodies[0][\"client_metadata\"][TURN_STATE_HEADER], json!(null));\n    assert_eq!(\n        bodies[1..]\n            .iter()\n            .map(|body| body[\"client_metadata\"][TURN_STATE_HEADER].clone())\n            .collect::<Vec<_>>(),\n        vec![json!(null), json!(\"ts-1\"), json!(\"ts-1\")]"
+          },
+          "kind_and_actual_output_lines": [
+            [
+              307,
+              328
+            ],
+            [
+              330,
+              331
+            ]
+          ],
+          "new_case": "suite::turn_state::websocket_turn_state_survives_permission_change_by_reconnecting",
+          "new_case_definition_lines": [
+            338,
+            434
+          ],
+          "original_policy_vector_before_lines": [
+            173,
+            182
+          ],
+          "original_policy_vector_preserved_after_lines": [
+            407,
+            418
+          ],
+          "real_concurrent_isolation_lines": [
+            343,
+            356,
+            378,
+            389
+          ],
+          "note": "Both sockets are configured close_after_requests=false. New case requires two physical handshakes and connection request lengths [1,3]; the policy vector read-only/full/full/full is retained there, with turn-ID and real tool-output checks. Production identity fence is not changed."
+        }
+      },
+      "resolution_seen_in_local_files": true,
+      "final_ledger_evidence": "5d8上选中6例PASS（含新增真实重连控制）/0retry：真实EOF/并发消费、启动前配置、身份重连、真实提示匹配。有意修正prewarm/request oracle：stable实际4请求=1无工具prewarm+3turn；保留turn-state、turn-id、真实工具结果、原预算和生产身份隔离，不宣称全部原请求/连接数或断言字节不变。",
+      "original_exit_condition_unchanged": true
+    },
+    {
+      "id": "CORE_SIX_IS_SELECTED_NOT_ALL_PREEXISTING",
+      "problem": "The six selected passing cases include one newly added reconnect control. Labeling them all as six original preexisting cases overstates the roster provenance.",
+      "proof": {
+        "guard_blob": "47fd0d172afb2aeee5b7fbb838fef8d8f454fbd0",
+        "guard_status": "SOURCE_STATIC_REVIEWED_NATIVE_PENDING",
+        "exact_names": [
+          "suite::turn_state::responses_turn_state_persists_within_turn_and_resets_after",
+          "suite::turn_state::websocket_turn_state_persists_within_turn_and_resets_after",
+          "suite::turn_state::websocket_turn_state_is_stable_within_turn",
+          "suite::turn_state::websocket_turn_state_survives_permission_change_by_reconnecting",
+          "suite::subagent_notifications::subagent_stop_replaces_stop_and_skips_internal_subagents",
+          "suite::subagent_notifications::subagent_start_replaces_session_start_and_injects_context"
+        ],
+        "new_name": "suite::turn_state::websocket_turn_state_survives_permission_change_by_reconnecting",
+        "native_actual_bundle_identified_by_ci_owner": "ce067a749f248d9b684cc3f8bc82281890f98bc8",
+        "scope": "Guard and fixed old/new source were independently read here. Full native bundle was not re-downloaded or re-executed for this prose review."
+      },
+      "resolution_seen_in_local_files": true,
+      "final_report_line": "| Core response/WS/subagent | 5d8选中6PASS（含新增真实重连控制）：并发消费与真实EOF、配置先于启动、身份重连、真实提示匹配 | 有意修正prewarm/request oracle；保留turn-state、turn-id、工具结果、原预算与生产身份隔离；最终CI |",
+      "counts_changed": false
+    },
+    {
+      "id": "B14_COMPLETED_HELPER_NOT_PENDING_IMPLEMENTATION",
+      "problem": "The next gate still described helper prerequisites as awaiting submission/Windows revalidation, although the same report records cabc source/merge 254 exec and original 13 resume passes. That stale text can make a completed scoped prerequisite appear unimplemented.",
+      "resolution_seen_in_local_files": true,
+      "final_next_gate": "保留已完成的原Windows helper前置、source/merge各13恢复例及原业务/清理断言；新最终head的整体平台资格归B15，不重复旧scope以凑通过数。",
+      "original_exit_condition_unchanged": true,
+      "scope": "Preserves original closed resume/helper scope; final new-head aggregate platform qualification belongs to B15. No old scope rerun was requested or launched."
+    }
+  ],
+  "accepted_scope_checks": [
+    {
+      "id": "NATIVE_AND_HOSTED_SOURCES",
+      "finding": "Report keeps da60 original13 outcome at 12 PASS/1 FAIL and leaves owning-seven/full-workspace/hygiene/new hosted CI pending. e84 owning-seven 5404 JUnit passes/12 failures separately preserves 24 prerequisite early returns and 19 original ignores; no whole-ID closure is inferred."
+    },
+    {
+      "id": "PUBLISHED_CABC_VS_NEW_LOCAL",
+      "finding": "Published cabc/tree b2 and ordinary merge28af are distinct from later local source trees. Original platform failures, cache, retries and skipped states remain independent; UI merge7ccc is separately identified."
+    },
+    {
+      "id": "SEVEN_LEDGER_PROJECTION",
+      "finding": "97 original indexed names plus 8 context names equals105 searched;243 members/406 rows split331 ledger+75 context and64+8 distinct names.24 sufficiently evidenced old names are not needlessly rerun;73 names remain deficient on at least one required platform. B22 target PASS remains distinct from unavailable per-case success logs."
+    },
+    {
+      "id": "B16_CURRENT_SCOPE",
+      "finding": "R1/R2a/R2b native scope is separate from R2c/d/e1/e2/e3 static unexecuted proposals. Registered-connection custody does not close setup cancellation, Current/final-use, ordinary Root/joint producer/consumer wiring or real external acceptance."
+    },
+    {
+      "id": "R2E3_PRIMARY_LIMITS",
+      "finding": "The report matches independent review2cc31: SQLx removes callback before native close; collation xDestroy is after this connection's Btree/Pager/WAL cleanup, not after sqlite3_close returns. Four controls are proposals, not executed successes.",
+      "review_blob": "2cc31c4e2e812294ef1523ebd8d96edfe63ca8ed"
+    },
+    {
+      "id": "SCIENCE_HOLD",
+      "finding": "Fresh PR4798 delta keeps77b244/base903946 and no new experiments;32 fits,4 confidence intervals cross0,0/4 benefit gates and0/256 joint eight-criterion passes remain HOLD. Family feedback comparisons are not D-minus-B; report completion is separate from scientific adoption.",
+      "fresh_manifest_blob": "79677c0b8cba68a3d22c08de5542490bb0fedfae",
+      "fresh_md_blob": "18169aea1de696df4b4bd6ea32bb44a61ced0d64"
+    },
+    {
+      "id": "EXTERNAL_ACCEPTANCE",
+      "finding": "Bao internal13=11partial/2gap and separately pinned external60/13 are explicitly different denominators. Chain27/6/9/12 remains frozen historical secondary evidence, not newly revalidated rounds. HIA DENY_ALL/safety_certificate=false is retained."
+    },
+    {
+      "id": "WINDOWS_APPROVAL_SCOPE",
+      "finding": "Missing original automatic-approval receipt is explicit; no rejection reason is invented, and the restriction is not extended to a general Root prohibition. Original strict Windows failures remain open."
+    }
+  ],
+  "unresolved_factual_findings_within_review_scope": [],
+  "limitations": [
+    "This is not a new native/CI run or an exhaustive independent reparse of every historical runtime artifact.",
+    "Inventory1088/5163 and prior cabc per-platform/raw receipt counts are checked for scope consistency with existing audits; no new complete inventory was performed.",
+    "Future report link packaging/branch publication is not established merely by local file existence.",
+    "No original exit condition, closure-class count, source test or production permission boundary was edited by this reviewer."
+  ]
+}

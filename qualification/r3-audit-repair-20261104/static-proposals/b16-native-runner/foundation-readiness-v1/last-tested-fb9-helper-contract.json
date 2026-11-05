@@ -1,0 +1,225 @@
+{
+  "schema": "hepta-b16-last-tested-A-helper-roster-v1",
+  "source_tree": "fb9e131272f7e7a138d6c0d1af2b048b9a6ab7ff",
+  "full_original_artifact_receipt": {
+    "path": "ci-audit/recovered-20261105/full-fb9-complete-archive/decoded-verified-v1/full-workspace-selection.json",
+    "bytes": 5364870,
+    "sha256": "48dcb2b104793c7dac9699803e4746d6d8145bcc66701de167de57cbf6bd3c6c",
+    "blob": "cfe723c534fab7be981a38aa64e5ca99de412bc2"
+  },
+  "catalogue_is_original_full_workspace": true,
+  "program_count": 321,
+  "program_bytes": 15300982712,
+  "helper_count": 33,
+  "helper_bytes": 2822015256,
+  "unique_executable_count": 354,
+  "unique_executable_bytes": 18122997968,
+  "helper_basename_multiset": [
+    "apply_patch",
+    "codex",
+    "codex-app-server",
+    "codex-app-server-test-notify-capture",
+    "codex-code-mode-host",
+    "codex-command-runner",
+    "codex-exec",
+    "codex-execpolicy",
+    "codex-execve-wrapper",
+    "codex-hepta-agentd",
+    "codex-linux-sandbox",
+    "codex-mcp-server",
+    "codex-stdio-to-uds",
+    "codex-tui",
+    "codex-windows-sandbox-setup",
+    "codex-write-config-schema",
+    "custom_ca_probe",
+    "exec-server",
+    "hepta",
+    "hepta-agentd-browser",
+    "hepta-shadow-live-trial",
+    "hepta-supervisor-intent-recovery",
+    "hepta-supervisord",
+    "hepta-taskflow-runtime",
+    "logs_client",
+    "md-events",
+    "rmcp_test_server",
+    "test_arg0_preflight",
+    "test_mcp_2026_discovery_stdio_server",
+    "test_mcp_2026_stdio_server",
+    "test_notify_capture",
+    "test_stdio_server",
+    "test_streamable_http_server"
+  ],
+  "helper_identity_observations": [
+    {
+      "basename": "apply_patch",
+      "bytes": 30123944,
+      "sha256": "55c846dcb0d6622faf3d614b80c7d8588a8db5e38457a8cfed7a9d95b93d1fa6"
+    },
+    {
+      "basename": "codex",
+      "bytes": 377964000,
+      "sha256": "6ef6fd5648361f7787abf88ae44eeaed47033c069ee3bfeb7aec45c280fd76ac"
+    },
+    {
+      "basename": "codex-app-server",
+      "bytes": 302417024,
+      "sha256": "459ade82562accb037d78bc312ff33f2846acf1fb46b4714d7baef79e0a7f164"
+    },
+    {
+      "basename": "codex-app-server-test-notify-capture",
+      "bytes": 456864,
+      "sha256": "5eac835bede735b095a1cb459f93de8e4d5ba7a293b39081e600e77211e76331"
+    },
+    {
+      "basename": "codex-code-mode-host",
+      "bytes": 82244280,
+      "sha256": "d4fd1c38f5b814784747ecd737e508cfbae086abf4670fdd7499a669d93e1055"
+    },
+    {
+      "basename": "codex-command-runner",
+      "bytes": 339016,
+      "sha256": "df168530af721509be7064b25eadb71d518dc9b7d54c669fe0c3f57226214630"
+    },
+    {
+      "basename": "codex-exec",
+      "bytes": 290455712,
+      "sha256": "0cf6dd13ba5bc7831be3514c0484e661b8aedfa752b780c6bc7e4d5cbb3b3700"
+    },
+    {
+      "basename": "codex-execpolicy",
+      "bytes": 22550112,
+      "sha256": "c6ccf807c5ce38a31117a905a0519df2e8a3322dc6e49d4e80d88811e555aa63"
+    },
+    {
+      "basename": "codex-execve-wrapper",
+      "bytes": 26140384,
+      "sha256": "a2311f4168c2b474af7b9c9966bb386832a18b88db3895cb44b89e0a25fd740b"
+    },
+    {
+      "basename": "codex-hepta-agentd",
+      "bytes": 329635552,
+      "sha256": "9df231c3f93dee269ec2876f8b0b5350b577fffc27652945aa66514fc2c5f75b"
+    },
+    {
+      "basename": "codex-linux-sandbox",
+      "bytes": 28254576,
+      "sha256": "e02260c168677c56ad950a9a0772a54d582efb626818712288c09ce993502cef"
+    },
+    {
+      "basename": "codex-mcp-server",
+      "bytes": 247537568,
+      "sha256": "8131ad12f03bb15c943cd627c8cf5972c9d68e194c00dd92f8f1ddf36945bd0b"
+    },
+    {
+      "basename": "codex-stdio-to-uds",
+      "bytes": 1608152,
+      "sha256": "24c37195e6401592fb5c52f15fcf41fe8236de47640f0beca5d60bc821108d57"
+    },
+    {
+      "basename": "codex-tui",
+      "bytes": 337348112,
+      "sha256": "3222e3c388b59a6f4ab4b1a1d5302fd79f2384362870b324a18eaf34bdd87cea"
+    },
+    {
+      "basename": "codex-windows-sandbox-setup",
+      "bytes": 339016,
+      "sha256": "b3219deb4dc54fbe8dc4eee7eb00f9886c019eadf1d139a21f057669d13a0472"
+    },
+    {
+      "basename": "codex-write-config-schema",
+      "bytes": 29546088,
+      "sha256": "b6820dcf138eb37cce016d08ade784bde7e964eaf2fa682f974aecf2c0a76394"
+    },
+    {
+      "basename": "custom_ca_probe",
+      "bytes": 13847192,
+      "sha256": "e0ca57d51e59c7da4dfb8c3cad23f79311b84e1ed063486f70c93678fdbae4c2"
+    },
+    {
+      "basename": "exec-server",
+      "bytes": 80640496,
+      "sha256": "cbb8eef7b9efa9bcd35d9d3ac10c79dd685d760a1190e98602f20f4da60c1074"
+    },
+    {
+      "basename": "hepta",
+      "bytes": 377964064,
+      "sha256": "bd3ec13fdb5917731da74f9179f87dce19279de2943240065b498c6e2bb17460"
+    },
+    {
+      "basename": "hepta-agentd-browser",
+      "bytes": 35417968,
+      "sha256": "214b0711e730d33c1506fd0ec1ee2ffac3d5afa48e15e49dac24bf841d296818"
+    },
+    {
+      "basename": "hepta-shadow-live-trial",
+      "bytes": 8671456,
+      "sha256": "073f8fdfcc28d79c3fb3449ee8a2cb61e4a77a7b25a3071e93d18c48093979d8"
+    },
+    {
+      "basename": "hepta-supervisor-intent-recovery",
+      "bytes": 24321448,
+      "sha256": "177ba32d9d69820a162c146ce8f156de2fd1a4aec2b7dcd65ae34a80f92390df"
+    },
+    {
+      "basename": "hepta-supervisord",
+      "bytes": 31953168,
+      "sha256": "7446b4d01b197cbf84b2c90cb9898d3a50f55109280c942e2af26966281705cc"
+    },
+    {
+      "basename": "hepta-taskflow-runtime",
+      "bytes": 342432,
+      "sha256": "6b52de7ffb2dcfd306533873d2359b8520e12558b79b3f321fa966e30b19cdf2"
+    },
+    {
+      "basename": "logs_client",
+      "bytes": 76383752,
+      "sha256": "cd672b828e77b48e430d10f273e32d57d4232ca2db8248d9cd334e26a9cdd49f"
+    },
+    {
+      "basename": "md-events",
+      "bytes": 1082320,
+      "sha256": "7f0e07169e1a1c218644b7e7655ad1411dc79d99850528d6de9d17d496e28c60"
+    },
+    {
+      "basename": "rmcp_test_server",
+      "bytes": 6769704,
+      "sha256": "61d058ae6f5e666df788fe61f336d2ac6019a0749d1391ffb07b9f30f3a858cd"
+    },
+    {
+      "basename": "test_arg0_preflight",
+      "bytes": 35827728,
+      "sha256": "53762cf69bdefd603456f3b484c0837449ccdde40b426796d50684cc98ba8518"
+    },
+    {
+      "basename": "test_mcp_2026_discovery_stdio_server",
+      "bytes": 848520,
+      "sha256": "489d738b172d8c44233037a87cd4f96c0f020f083e8b5e0f11973841b5323b42"
+    },
+    {
+      "basename": "test_mcp_2026_stdio_server",
+      "bytes": 949688,
+      "sha256": "ec36c797c678e0f213bd83b402d797e8606a6556e2a461dab936f69468a91c82"
+    },
+    {
+      "basename": "test_notify_capture",
+      "bytes": 443600,
+      "sha256": "853a09fd0f2c1cd42aebfe4274f5f535d8ec519d011bf63e5344fff96b34b88e"
+    },
+    {
+      "basename": "test_stdio_server",
+      "bytes": 7086400,
+      "sha256": "fb1266222b55876d64354c62639c1f3bf12fd4053c80e489c191766528d97dac"
+    },
+    {
+      "basename": "test_streamable_http_server",
+      "bytes": 12504920,
+      "sha256": "b9723c91b29ad17f7d28d1e9be4c0c17ca8995ed859bd61c315d7434a2c9957c"
+    }
+  ],
+  "limits": [
+    "Observed executable file bytes are not total target allocation or a measured peak.",
+    "The native paths remain in the original receipt; this projection does not change or relabel it.",
+    "These old hashes are not B execution qualifications. Each B scope actually rebuilds and records current identities.",
+    "Final A after hygiene remains a separately bound source identity."
+  ]
+}

@@ -1,0 +1,237 @@
+{
+  "complete_cost_accounting": false,
+  "gaps": [
+    "All agent tokens, source editing, complete environment setup, network transfer, energy and monetary costs are not accounted.",
+    "First native journal compile failure CPU is unknown; official runtime CI runner CPU is unknown.",
+    "Prior trust compatibility/journal-contract CPU appear in summary sources; their original process receipts are outside this 452-file package.",
+    "README public-input recovery 2.702490917 remote + 0.184370975 local is not the 1.438252137 CPU in the packaged acquisition receipt; the extra components lack separately matched receipts here.",
+    "D/G inclusive construction costs share charges and are nested in primary worker; neither sum is a completed equal-quality speedup."
+  ],
+  "native_local_source_scope": {
+    "binary": {
+      "bytes": 380407976,
+      "sha256": "a576b51e3fcb3d3a657e9d723bf2a9bfa579a3f6912178ee6e71a14c4ccd9854"
+    },
+    "checkout_head": "2809dc57a6ec393e4ab8e9935a047c79e66c679b",
+    "checkout_identity_note": "Actual checkout identity is reported separately from the declared public parent; explicitly overlaid source identities qualify this build.",
+    "declared_public_baseline_commit": "e7a2688acc5504412d45160a08d2bf864be6b650",
+    "source_unchanged_after_format": true
+  },
+  "native_three_nonoverlapping_stages_cpu_seconds": 228.94331499999998,
+  "records": [
+    {
+      "exit_code": 0,
+      "overlap": null,
+      "path": "ndu_policy/execution_r1/PROCESS_RECEIPT.json",
+      "reported_cpu_seconds": 460.03881,
+      "reported_wall_seconds": 460.98599251199994,
+      "scope": "complete waited worker; separate controller window not included",
+      "source_identity": {
+        "bytes": 833,
+        "git_blob": "f9d363ce2a306f2e1eefb23c7bba395b6b5c0802",
+        "sha256": "32a1979c8dd8c301aa028fcb2105571bed676c160ba5a82a4f163ffc3cdd9920"
+      },
+      "stage": "primary_worker"
+    },
+    {
+      "exit_code": 1,
+      "overlap": null,
+      "path": "independent_replay/attempt_1/PROCESS_RECEIPT.json",
+      "reported_cpu_seconds": 1.142841,
+      "reported_wall_seconds": 1.1437098320002406,
+      "scope": "complete waited worker; separate controller window not included",
+      "source_identity": {
+        "bytes": 829,
+        "git_blob": "795c3b5faeefe50daea850b0b4a75e7e5a72866c",
+        "sha256": "005ffd3044ea5f71d4a6f607dad503772dffe177ab51c014af7ac00de9704d42"
+      },
+      "stage": "replay_failed_invocation"
+    },
+    {
+      "exit_code": 0,
+      "overlap": null,
+      "path": "independent_replay/attempt_2/PROCESS_RECEIPT.json",
+      "reported_cpu_seconds": 467.78403,
+      "reported_wall_seconds": 470.2093376470002,
+      "scope": "complete waited worker; separate controller window not included",
+      "source_identity": {
+        "bytes": 832,
+        "git_blob": "a441b7b33f8eeba0e196d66edbe7e21a5892e21b",
+        "sha256": "0ea493533b684b1afed1d84b23ab497df63c751c6ea0d52cafd93fcff5662054"
+      },
+      "stage": "replay_worker"
+    },
+    {
+      "exit_code": 0,
+      "overlap": null,
+      "path": "ndu_policy/execution_r1/VERIFICATION_PROCESS_RECEIPT.json",
+      "reported_cpu_seconds": 1.614201,
+      "reported_wall_seconds": 1.6164117060002354,
+      "scope": "waited verifier child",
+      "source_identity": {
+        "bytes": 791,
+        "git_blob": "2903d8943830e8436225276af80449a0aa5a04b5",
+        "sha256": "84301e6ba785d272c861b5b4a13a6b2489c4f6f735dc710821397913771ae3fa"
+      },
+      "stage": "primary_record_verifier"
+    },
+    {
+      "exit_code": null,
+      "overlap": null,
+      "path": "independent_replay/attempt_2/ACCEPTANCE_PROCESS_RECEIPT.json",
+      "reported_cpu_seconds": 16.279512,
+      "reported_wall_seconds": 18.87121690099957,
+      "scope": "two sequential verifier children; controller windows separate",
+      "source_identity": {
+        "bytes": 1213,
+        "git_blob": "8fc8c286fb1eb4c44524c3de7a313318eaf4ed24",
+        "sha256": "069b05b17e156259ff759c6c57761a1be3305121b7430b85c42bd68d4a236da3"
+      },
+      "stage": "replay_acceptance_two_children"
+    },
+    {
+      "exit_code": 0,
+      "overlap": "producer/verifier children are nested and must not be added",
+      "path": "train_margin_certificate/execution_r1/PROCESS_RECEIPT.json",
+      "reported_cpu_seconds": 422.017378,
+      "reported_wall_seconds": 422.568301790001,
+      "scope": "complete pipeline import/startup/final writes and waited producer/verifier descendants; excludes this measurement supervisor startup/publication",
+      "source_identity": {
+        "bytes": 900,
+        "git_blob": "f39d679117c1aa43c716656c23715b3d219ccc4c",
+        "sha256": "83ed465965a8f99295b46ce59c1114a6f39cf52923f58d848f33daa0e1709d38"
+      },
+      "stage": "train_certificate_pipeline"
+    },
+    {
+      "exit_code": 0,
+      "overlap": null,
+      "path": "ROOT_TRAIN_CERTIFICATE_VERIFICATION.json",
+      "reported_cpu_seconds": 13.134654,
+      "reported_wall_seconds": 13.14167589399949,
+      "scope": "Package hashes and exact rational algebra reexecuted; no source feature, Bellman, trajectory or new candidate execution. Complete waited command tree; parent startup/publication excluded.",
+      "source_identity": {
+        "bytes": 1961,
+        "git_blob": "7c64ce36e969994d561181d32915377270dd769f",
+        "sha256": "a1c82922479519f78ca33102b56fa04e96236d4e6cb6479e1fa125ac8fa6a564"
+      },
+      "stage": "archived_root_records_only_certificate_verifier"
+    },
+    {
+      "exit_code": 0,
+      "overlap": null,
+      "path": "native_bellman_replay/export_r1/PROCESS_RECEIPT.json",
+      "reported_cpu_seconds": 138.20635099999998,
+      "reported_wall_seconds": 138.2780519830003,
+      "scope": "complete waited child; separate controller window excluded",
+      "source_identity": {
+        "bytes": 826,
+        "git_blob": "272c0ed011ad818ef832d4c323239a6fa69e7912",
+        "sha256": "ccffbebb64a36bce4ebd06f9401ee01fd0fbd149f49bd21c0efb94c2f449c48c"
+      },
+      "stage": "native_graph_export"
+    },
+    {
+      "exit_code": 0,
+      "overlap": null,
+      "path": "native_bellman_replay/replay_r1/PROCESS_RECEIPT.json",
+      "reported_cpu_seconds": 52.947453,
+      "reported_wall_seconds": 52.97309572800077,
+      "scope": "complete waited child; separate controller window excluded",
+      "source_identity": {
+        "bytes": 804,
+        "git_blob": "8101e4f1c8c28e54d160666e1b7ae8d8fc5694f4",
+        "sha256": "54901d666485dd2eb6fa6a061c96c06d569ee38287956d94133b83b7a1112ecb"
+      },
+      "stage": "native_verifier_and_J_replay"
+    },
+    {
+      "exit_code": 0,
+      "overlap": "No original training, graph export, independent comparison/J replay, Rust compilation, LLM, transfer or energy accounting is included in this process interval.",
+      "path": "native_bellman_replay/native_corpus/WHOLE_PROCESS_RECEIPT.json",
+      "reported_cpu_seconds": 37.789511,
+      "reported_wall_seconds": 75.1330581830116,
+      "scope": "Process spawn through driver termination, using monotonic wall time and the supervisor's RUSAGE_CHILDREN delta. The driver waits for the MCP child, so descendant CPU is included. Includes Python imports, argument parsing, runtime startup, all internal execution and the driver's final receipt/manifest writes. Internal timing overlaps and must not be added.",
+      "source_identity": {
+        "bytes": 1586,
+        "git_blob": "e980d492379a89a6d54ffa7df8a0a81d274c73e4",
+        "sha256": "c83d112efbf9146cf023e752e3ce0894676c5e89ceb585fa6e06d150ce4b55cb"
+      },
+      "stage": "native_mcp_driver_and_descendants"
+    },
+    {
+      "exit_code": null,
+      "outer_minus_command_wall_seconds": 0.05211453908123076,
+      "overlap": null,
+      "path": "native_bellman_replay/native_corpus/LOCAL_QUALIFICATION.json",
+      "reported_cpu_seconds": 2665.505785,
+      "reported_outer_qualification_wall_seconds": 1486.7031557450537,
+      "reported_wall_seconds": 1486.6510412059724,
+      "scope": "six waited command records; overlay source qualifies exact recorded manifest, not declared base head alone",
+      "source_identity": {
+        "bytes": 11331,
+        "git_blob": "9bc1b695c6eac20558ef4b1cb31423cd868bfc24",
+        "sha256": "c2953b97c8ba515a9c2fe6f768a206274b3bced285bd82cd558f16a78ca6beab"
+      },
+      "stage": "native_six_build_and_qualification_commands"
+    },
+    {
+      "exit_code": null,
+      "overlap": "per-variant worker internal CPU is nested; RSS is not a tree sum",
+      "path": "qwen_cache/receipt.json",
+      "reported_cpu_seconds": 35.756121194,
+      "reported_wall_seconds": 40.662795775017,
+      "scope": "not complete supervisor lifetime; imports/argument parsing/final publication excluded",
+      "source_identity": {
+        "bytes": 25927,
+        "git_blob": "0da7d3acb577ffaad4b2ef828db39601c658ce68",
+        "sha256": "a055831533050e0cbdf0d79b398a1abd6e75da261d6de9d0865ad16455690b7d"
+      },
+      "stage": "qwen_measured_supervisor_window_and_waited_children"
+    },
+    {
+      "exit_code": null,
+      "overlap": null,
+      "path": "ndu_policy/PREPARATION_CHECK.json",
+      "reported_cpu_seconds": 3.157098624,
+      "reported_wall_seconds": 3.1638244569999188,
+      "scope": "in-process recorded measurement; not entire author workflow",
+      "source_identity": {
+        "bytes": 2813,
+        "git_blob": "fcf02bd4bc122ed4e9f942774bca938539ad38fd",
+        "sha256": "81e214c3186410428679398a9b5b53a69dc1115b704652c62da5f45e15aa2bd9"
+      },
+      "stage": "preparation_1"
+    },
+    {
+      "exit_code": null,
+      "overlap": null,
+      "path": "ndu_policy/PREPARATION_CHECK_FINAL.json",
+      "reported_cpu_seconds": 3.43496571,
+      "reported_wall_seconds": 3.435184106000179,
+      "scope": "in-process recorded measurement; not entire author workflow",
+      "source_identity": {
+        "bytes": 4291,
+        "git_blob": "c90aa8b1a8597b4953267dbb0ebf7816004221a5",
+        "sha256": "097f7e2bb9f4eaffe26f17702685988fc2b01248d7492725e8028a2a21c45d3e"
+      },
+      "stage": "preparation_2"
+    },
+    {
+      "exit_code": null,
+      "overlap": null,
+      "path": "ndu_policy/INPUT_ACQUISITION_RECEIPT.json",
+      "reported_cpu_seconds": 1.438252137,
+      "reported_wall_seconds": 17.296389615978114,
+      "scope": "in-process recorded measurement; not entire author workflow",
+      "source_identity": {
+        "bytes": 2037,
+        "git_blob": "aab14e3dae0d127c95651202c46af451007de107",
+        "sha256": "6b574988b2b98d768975c581ec6fb79792bb8be016175c9bfb3d8ae4e81ac2a9"
+      },
+      "stage": "input_acquisition_receipt"
+    }
+  ],
+  "schema": "hepta.audit.pr4823.cost-record-review.v1",
+  "total_not_provided": "No complete additive total: nested alternative columns and unmetered/unsupported components remain."
+}

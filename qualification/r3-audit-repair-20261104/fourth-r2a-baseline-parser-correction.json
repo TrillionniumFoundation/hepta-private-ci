@@ -1,0 +1,27 @@
+{
+  "schema": "hepta.r2a.v4.baseline.root-review.v1",
+  "source": "630b5bbdd4cbfcf1a29fe7d89aacd9a342b6a76d",
+  "original_evidence": "198ebd14c2defc0b008f2fbaccc08c64496bee78",
+  "checks": {
+    "same_source": true,
+    "no_rerun": true,
+    "before_present": true,
+    "after_present": true,
+    "actual_before_success": true,
+    "actual_after_failure": true,
+    "exact_source_assert": true,
+    "expected_mismatch": true,
+    "flags_zero": true,
+    "single_junit_case": true,
+    "original_case": true,
+    "no_skipped_selected": true
+  },
+  "original_runner_parser_failure_preserved": true,
+  "negative_control_qualified": true,
+  "normalization": "Remove only display ANSI actual escape sequences and Rust Debug escaped ANSI; preserve original raw bytes.",
+  "limits": [
+    "One expected failing parent case with three real child processes, not multiple successful JUnit cases.",
+    "The baseline is the proposed new API without its close-on-exec restoration.",
+    "Original controller failure remains a failure; only independent causal acceptance authorizes the separate fixed continuation."
+  ]
+}

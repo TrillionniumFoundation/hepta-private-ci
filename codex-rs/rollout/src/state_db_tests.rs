@@ -94,6 +94,109 @@ async fn list_threads_db_rejects_mismatched_sqlite_config_without_cleanup() -> a
     Ok(())
 }
 
+async fn assert_index_reads(
+    runtime: &codex_state::StateRuntime,
+    requested: &SqliteConfig,
+    expected: Option<Vec<ThreadId>>,
+) -> anyhow::Result<()> {
+    let ids = list_thread_ids_db(
+        Some(runtime),
+        requested,
+        /*page_size*/ 10,
+        /*cursor*/ None,
+        ThreadSortKey::CreatedAt,
+        &[],
+        /*model_providers*/ None,
+        /*archived_only*/ false,
+        "native-home-alias-regression",
+    )
+    .await;
+    assert_eq!(ids, expected);
+    let page = list_threads_db(
+        Some(runtime),
+        requested,
+        /*page_size*/ 10,
+        /*cursor*/ None,
+        ThreadSortKey::CreatedAt,
+        SortDirection::Desc,
+        &[],
+        /*model_providers*/ None,
+        /*cwd_filters*/ None,
+        /*relation_filter*/ None,
+        /*archived*/ false,
+        /*section*/ None,
+        /*project_id*/ None,
+        /*search_term*/ None,
+    )
+    .await;
+    assert_eq!(
+        page.map(|page| page
+            .items
+            .into_iter()
+            .map(|item| item.id)
+            .collect::<Vec<_>>()),
+        expected,
+    );
+    Ok(())
+}
+
+#[tokio::test]
+async fn index_reads_accept_config_before_native_home_canonicalization() -> anyhow::Result<()> {
+    let home = TempDir::new()?;
+    let requested = SqliteConfig::new_for_testing(home.path().abs());
+    let runtime =
+        codex_state::StateRuntime::init(requested.clone(), "test-provider".to_string()).await?;
+    let rollout = home.path().join("existing-rollout.jsonl");
+    tokio::fs::write(&rollout, b"{}\n").await?;
+    let thread_id = ThreadId::new();
+    let mut metadata =
+        ThreadMetadataBuilder::new(thread_id, rollout, Utc::now(), SessionSource::Cli)
+            .build("test-provider");
+    metadata.first_user_message = Some("indexed user message".to_string());
+    metadata.preview = metadata.first_user_message.clone();
+    runtime.upsert_thread(&metadata).await?;
+
+    assert_index_reads(&runtime, &requested, Some(vec![thread_id])).await?;
+    assert_eq!(runtime.get_thread(thread_id).await?, Some(metadata));
+    Ok(())
+}
+
+#[cfg(unix)]
+#[tokio::test]
+async fn index_reads_accept_same_home_alias_but_reject_retargeted_or_missing_alias()
+-> anyhow::Result<()> {
+    let root = TempDir::new()?;
+    let runtime = codex_state::StateRuntime::init(
+        SqliteConfig::new_for_testing(root.path().join("runtime").as_path().abs()),
+        "test-provider".to_string(),
+    )
+    .await?;
+    let alias = root.path().join("configured-home");
+    std::os::unix::fs::symlink(runtime.sqlite().home(), &alias)?;
+    let requested = SqliteConfig::new_for_testing(alias.as_path().abs());
+    assert_ne!(runtime.sqlite(), &requested);
+    let rollout = root.path().join("existing-rollout.jsonl");
+    tokio::fs::write(&rollout, b"{}\n").await?;
+    let thread_id = ThreadId::new();
+    let mut metadata =
+        ThreadMetadataBuilder::new(thread_id, rollout, Utc::now(), SessionSource::Cli)
+            .build("test-provider");
+    metadata.first_user_message = Some("indexed user message".to_string());
+    metadata.preview = metadata.first_user_message.clone();
+    runtime.upsert_thread(&metadata).await?;
+
+    assert_index_reads(&runtime, &requested, Some(vec![thread_id])).await?;
+    std::fs::remove_file(&alias)?;
+    let other = root.path().join("other-home");
+    std::fs::create_dir(&other)?;
+    std::os::unix::fs::symlink(&other, &alias)?;
+    assert_index_reads(&runtime, &requested, /*expected*/ None).await?;
+    std::fs::remove_file(&alias)?;
+    assert_index_reads(&runtime, &requested, /*expected*/ None).await?;
+    assert_eq!(runtime.get_thread(thread_id).await?, Some(metadata));
+    Ok(())
+}
+
 #[tokio::test]
 async fn try_init_waits_for_concurrent_startup_backfill() -> anyhow::Result<()> {
     let home = TempDir::new().expect("temp dir");

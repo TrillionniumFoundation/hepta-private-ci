@@ -1,0 +1,169 @@
+{
+  "baseline_source": "907d4f512819a71bece82e7f89944e9406466e36",
+  "validation_kind": "SQLite independent in-memory generation-history oracle",
+  "cases": [
+    {
+      "case": "initial remember",
+      "scope": "scope-a",
+      "generation": 1,
+      "expected_counts": [
+        2,
+        1
+      ],
+      "old_counts": [
+        0,
+        0
+      ],
+      "repaired_counts": [
+        2,
+        1
+      ],
+      "passed": true
+    },
+    {
+      "case": "different scope excluded",
+      "scope": "scope-b",
+      "generation": 1,
+      "expected_counts": [
+        9,
+        8
+      ],
+      "old_counts": [
+        0,
+        0
+      ],
+      "repaired_counts": [
+        9,
+        8
+      ],
+      "passed": true
+    },
+    {
+      "case": "multiple active memories retained",
+      "scope": "scope-a",
+      "generation": 2,
+      "expected_counts": [
+        5,
+        3
+      ],
+      "old_counts": [
+        0,
+        0
+      ],
+      "repaired_counts": [
+        5,
+        3
+      ],
+      "passed": true
+    },
+    {
+      "case": "correction supersedes old revision",
+      "scope": "scope-a",
+      "generation": 3,
+      "expected_counts": [
+        7,
+        4
+      ],
+      "old_counts": [
+        0,
+        0
+      ],
+      "repaired_counts": [
+        7,
+        4
+      ],
+      "passed": true
+    },
+    {
+      "case": "forget removes prior active facts",
+      "scope": "scope-a",
+      "generation": 4,
+      "expected_counts": [
+        3,
+        2
+      ],
+      "old_counts": [
+        0,
+        0
+      ],
+      "repaired_counts": [
+        3,
+        2
+      ],
+      "passed": true
+    },
+    {
+      "case": "unverified facts excluded",
+      "scope": "scope-a",
+      "generation": 5,
+      "expected_counts": [
+        3,
+        2
+      ],
+      "old_counts": [
+        0,
+        0
+      ],
+      "repaired_counts": [
+        3,
+        2
+      ],
+      "passed": true
+    },
+    {
+      "case": "last active memory forgotten",
+      "scope": "scope-a",
+      "generation": 6,
+      "expected_counts": [
+        0,
+        0
+      ],
+      "old_counts": [
+        0,
+        0
+      ],
+      "repaired_counts": [
+        0,
+        0
+      ],
+      "passed": true
+    },
+    {
+      "case": "new active generation",
+      "scope": "scope-a",
+      "generation": 7,
+      "expected_counts": [
+        2,
+        1
+      ],
+      "old_counts": [
+        0,
+        0
+      ],
+      "repaired_counts": [
+        2,
+        1
+      ],
+      "passed": true
+    },
+    {
+      "case": "missing immutable fact rejected by count assertion",
+      "passed": true,
+      "receipt_counts": [
+        2,
+        1
+      ],
+      "actual_counts": [
+        1,
+        1
+      ]
+    },
+    {
+      "case": "unknown storage mode does not qualify",
+      "passed": true
+    }
+  ],
+  "passed": true,
+  "full_agentd_process_test_executed": false,
+  "limits": "This verifies the repaired evidence query. Original Agentd/Bazel end-to-end qualification remains required."
+}

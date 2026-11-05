@@ -1,0 +1,220 @@
+{
+  "schema": "skills-host-root-marker-fixture/v1",
+  "state": "STATIC_CANDIDATE_NOT_APPLIED_NOT_FORMATTED_NOT_COMPILED_NOT_EXECUTED",
+  "base_commit": "7bc267096f23159605c0b6563374e697f8a0bd1f",
+  "base_tree": "f8251e1d14fa8524ab469281296cd4cf708f173c",
+  "commit_tree_independently_verified": "f8251e1d14fa8524ab469281296cd4cf708f173c",
+  "path": "codex-rs/ext/skills/src/host_roots_tests.rs",
+  "before": {
+    "bytes": 22485,
+    "sha256": "054070e3f7935d2945b99987e08eff5cbf96c27870d25c466bc31b54b174f00b",
+    "blob": "fee6c1a0398c0f9bacbb60853e20786e804a3271"
+  },
+  "after": {
+    "bytes": 23392,
+    "sha256": "fa2d78f6fea0018f34d57971ff9defb8b709d1085ba6f2e901b14a2e2ae520c4",
+    "blob": "3d8412f8eca445b1eba85f26d7975aa7ddfbb524"
+  },
+  "counterfactual": {
+    "bytes": 23571,
+    "sha256": "a56d6f5d9e6f592ac9e7cd4dd815bd7a8b2d8c31d8902433639c9ff601236a45",
+    "blob": "9814df0cddc9cf8c02e8e0259ccdac1fa2b117b1"
+  },
+  "artifacts": [
+    {
+      "path": "candidate/codex-rs/ext/skills/src/host_roots_tests.rs",
+      "bytes": 23392,
+      "sha256": "fa2d78f6fea0018f34d57971ff9defb8b709d1085ba6f2e901b14a2e2ae520c4",
+      "blob": "3d8412f8eca445b1eba85f26d7975aa7ddfbb524"
+    },
+    {
+      "path": "counterfactual/codex-rs/ext/skills/src/host_roots_tests.rs",
+      "bytes": 23571,
+      "sha256": "a56d6f5d9e6f592ac9e7cd4dd815bd7a8b2d8c31d8902433639c9ff601236a45",
+      "blob": "9814df0cddc9cf8c02e8e0259ccdac1fa2b117b1"
+    },
+    {
+      "path": "skills-marker-fixture.patch",
+      "bytes": 1481,
+      "sha256": "9cbcb52f018e76e0abfb6b373128ce66e3fc76c70b09ee33546a568ceeb778e1",
+      "blob": "34b6bbd7afdc5865735171acb173e496975b1891"
+    },
+    {
+      "path": "skills-marker-controlled-negative.patch",
+      "bytes": 1663,
+      "sha256": "4e2df28b9ee3c628494d380f771b2ab6ace9982ebca1b108ee28cabd2c55debc",
+      "blob": "7da3ab834be1da080980d07b6b975970683bbdc2"
+    },
+    {
+      "path": "skills-marker-fix-after-negative.patch",
+      "bytes": 460,
+      "sha256": "0bf8f7594e1a88b0b194eab99d61d64b6ff96b9843cb235fec4295ade8f5e547",
+      "blob": "1e6b7dacfc527c3edf6aafebcb28c8c882bc64ef"
+    }
+  ],
+  "sources": [
+    {
+      "path": "codex-rs/ext/skills/src/host_roots.rs",
+      "blob": "ac2bf3e9cdf8ccf0c396f011f3dbb8f515db39c7",
+      "bytes": 9511,
+      "sha256": "d4290ba4d783110e7533586ad19719536aa9b23f517b43e3147d3afb40c91d56"
+    },
+    {
+      "path": "codex-rs/ext/skills/src/host_roots_tests.rs",
+      "blob": "fee6c1a0398c0f9bacbb60853e20786e804a3271",
+      "bytes": 22485,
+      "sha256": "054070e3f7935d2945b99987e08eff5cbf96c27870d25c466bc31b54b174f00b"
+    },
+    {
+      "path": "codex-rs/ext/skills/Cargo.toml",
+      "blob": "256d0aaa8710fff8d7a9d5c8eba242cd282b868e",
+      "bytes": 1454,
+      "sha256": "6dc94276d1316b6c3d911e957f1c80f849c4b92ad679edd64864d7128ce350e0"
+    },
+    {
+      "path": "codex-rs/config/src/project_root_markers.rs",
+      "bytes": 1686,
+      "sha256": "21d3a86eea7a34f39b1ebc82037d78dd9c1c46fef0c4c74de584bae7cab17f53",
+      "blob": "3061dacc6b793cc33265a81ed704d8369240bbfc"
+    }
+  ],
+  "original_case": "host_roots::tests::repo_ancestry_without_project_marker_does_not_walk_parents",
+  "original_raw": {
+    "source": "ci-audit/recovered-20261105/full-f825-original.log",
+    "source_bytes": 34360967,
+    "source_sha256": "75cd2cd5c89ce70781781c3b8c3e1bb168720b83bf6961c206720b3c08efe15c",
+    "line_start": 148025,
+    "line_end": 148058,
+    "byte_start": 17379196,
+    "byte_end_exclusive": 17380375,
+    "bytes": 1179,
+    "sha256": "1ae9a0d9afc2531dae875414f2689fd7d05f63c26d72c1f9e8af99fe0614e55e"
+  },
+  "actual_evidence": [
+    "original exact case fails at line415: result contains fixture-owned outer/.agents/skills plus cwd/.agents/skills",
+    "full original raw independently bytes/SHA checked; no native rerun",
+    "default markers from empty config stack are the nonempty singleton .git",
+    "find_project_root probes every cwd ancestor; only successful marker metadata causes an ancestor boundary",
+    "test creates no .git and does not isolate or verify ancestors outside its TempDir"
+  ],
+  "causal_limit": "The actual successful marker path and metadata result were not recorded. Ambient ancestor marker is source-and-result inference; no claim which /tmp/root path existed or which process created it. Extra skills path is the fixture outer, not observed host .agents content.",
+  "fix": [
+    "unique relative nonempty marker filename tied to TempDir name",
+    "assert actual symlink_metadata NotFound for every cwd ancestor before the query",
+    "use existing SessionFlags config-layer path and real LOCAL_FS; preserve actual marker scanning",
+    "retain original whole vector cwd-only assertion byte-for-byte",
+    "all other original test definitions and production source remain byte-identical"
+  ],
+  "not_claimed": [
+    "default .git absence on the original host",
+    "production directory boundary bug",
+    "actual fixed or counterfactual native result",
+    "new public APIs/permissions",
+    "full source qualification"
+  ],
+  "no_empty_markers_no_mock_no_environment_mutation": true,
+  "counterfactual_gate": {
+    "patch_from_original": "skills-marker-controlled-negative.patch",
+    "restoration_patch": "skills-marker-fix-after-negative.patch",
+    "real_mutation": "after all absence checks, create the same configured marker in fixture outer",
+    "required_failure": "original full roots vector assertion must receive outer/.agents/skills then cwd/.agents/skills; setup failure/timeout/selected-zero is not causal proof",
+    "expected_recovery": "remove only controlled marker write; exact fixed postimage restored"
+  },
+  "existing_actual_f825_host_roots_roster": [
+    {
+      "name": "host_roots::tests::layer_roots_preserve_scope_precedence_and_disabled_projects",
+      "classname": "codex-skills-extension",
+      "seconds": "0.006",
+      "result": "PASS",
+      "failure": ""
+    },
+    {
+      "name": "host_roots::tests::plugin_roots_preserve_plugin_resolution_metadata",
+      "classname": "codex-skills-extension",
+      "seconds": "0.006",
+      "result": "PASS",
+      "failure": ""
+    },
+    {
+      "name": "host_roots::tests::repo_ancestry_stops_at_project_root_and_preserves_root_to_cwd_order",
+      "classname": "codex-skills-extension",
+      "seconds": "0.008",
+      "result": "PASS",
+      "failure": ""
+    },
+    {
+      "name": "host_roots::tests::repo_ancestry_without_project_marker_does_not_walk_parents",
+      "classname": "codex-skills-extension",
+      "seconds": "0.008",
+      "result": "FAIL",
+      "failure": "thread 'host_roots::tests::repo_ancestry_without_project_marker_does_not_walk_parents' (351158) panicked at ext/skills/src/host_roots_tests.rs:415:5:\nassertion failed: `(left == right)`\n\nDiff < left / right > :\n [\n     AbsolutePathBuf(\n<        \"/tmp/.tmpkvHiR0/outer/.agents/skills\",\n<    ),\n<    AbsolutePathBuf(\n         \"/tmp/.tmpkvHiR0/outer/nested/inner/.agents/skills\",\n     ),\n ]\n\n\nnote: run with `RUST_BACKTRACE=1` environment variable to display a backtrace"
+    },
+    {
+      "name": "host_roots::tests::resolved_project_layer_loads_skill_when_cwd_is_file",
+      "classname": "codex-skills-extension",
+      "seconds": "0.010",
+      "result": "PASS",
+      "failure": ""
+    },
+    {
+      "name": "host_roots::tests::resolved_project_layer_loads_skill_without_git_marker",
+      "classname": "codex-skills-extension",
+      "seconds": "0.010",
+      "result": "PASS",
+      "failure": ""
+    },
+    {
+      "name": "host_roots::tests::unique_extra_root_loads_as_recursive_user_root",
+      "classname": "codex-skills-extension",
+      "seconds": "0.009",
+      "result": "PASS",
+      "failure": ""
+    },
+    {
+      "name": "host_roots::tests::resolved_config_and_repo_roots_preserve_order_and_dedupe_paths_not_names",
+      "classname": "codex-skills-extension",
+      "seconds": "0.019",
+      "result": "PASS",
+      "failure": ""
+    },
+    {
+      "name": "host_roots::tests::repo_ancestry_limits_concurrent_probes_and_preserves_order",
+      "classname": "codex-skills-extension",
+      "seconds": "0.096",
+      "result": "PASS",
+      "failure": ""
+    }
+  ],
+  "planned_validation": {
+    "negative": "just test --locked -p codex-skills-extension --lib -E 'test(=host_roots::tests::repo_ancestry_without_project_marker_does_not_walk_parents)' --retries 0",
+    "fixed": "just test --locked -p codex-skills-extension --lib -E 'test(host_roots::tests::)' --retries 0",
+    "fixed_exact_names": [
+      "host_roots::tests::layer_roots_preserve_scope_precedence_and_disabled_projects",
+      "host_roots::tests::plugin_roots_preserve_plugin_resolution_metadata",
+      "host_roots::tests::repo_ancestry_stops_at_project_root_and_preserves_root_to_cwd_order",
+      "host_roots::tests::repo_ancestry_without_project_marker_does_not_walk_parents",
+      "host_roots::tests::resolved_project_layer_loads_skill_when_cwd_is_file",
+      "host_roots::tests::resolved_project_layer_loads_skill_without_git_marker",
+      "host_roots::tests::unique_extra_root_loads_as_recursive_user_root",
+      "host_roots::tests::resolved_config_and_repo_roots_preserve_order_and_dedupe_paths_not_names",
+      "host_roots::tests::repo_ancestry_limits_concurrent_probes_and_preserves_order"
+    ],
+    "budget_policy": "all original deadlines, outer harness and filters unchanged; concurrency original5s waits untouched",
+    "original_default_marker_controls": [
+      "host_roots::tests::repo_ancestry_stops_at_project_root_and_preserves_root_to_cwd_order",
+      "host_roots::tests::repo_ancestry_limits_concurrent_probes_and_preserves_order"
+    ],
+    "new_test_count": 0
+  },
+  "static_roundtrip_review": {
+    "bytes": 2377,
+    "sha256": "2d46b9047118720b9415147fd8e19afc74405ae883db71426bdaa9fda77a8219",
+    "blob": "ef44e5c9e659ba4f865faba89cfca5ee3dc42a55"
+  },
+  "fixed_original_assertion_line": 438,
+  "counterfactual_original_assertion_line": 441,
+  "changed_lines": {
+    "added": 24,
+    "removed": 1
+  }
+}

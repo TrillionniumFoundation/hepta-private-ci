@@ -1,0 +1,102 @@
+{
+  "schema": "hepta.original-bazel-lock.isolated-recovery.v1",
+  "original_failed_evidence_blob": "37f5e6a463e589ad5b28a5fdf5fd1c3e0172df43",
+  "preflight_blob": "24026994253a85960f3febd2b74905d1a7b8605f",
+  "controller_job_id": "1a1a867748d-fc05-2e9a",
+  "controller": {
+    "at_unix_ms": 1793826791043,
+    "audit_recorded": true,
+    "automatic_retry": false,
+    "cancelled": false,
+    "exit_code": 0,
+    "job_id": "1a1a867748d-fc05-2e9a",
+    "launch_nonce": "88d5a07e33a87928db0fa71fd7081d30",
+    "log_bytes": {
+      "stderr": {
+        "seen": 0,
+        "stored": 0
+      },
+      "stdout": {
+        "seen": 1479,
+        "stored": 1479
+      }
+    },
+    "log_errors": {
+      "stderr": null,
+      "stdout": null
+    },
+    "log_synced": {
+      "stderr": true,
+      "stdout": true
+    },
+    "log_truncated": {
+      "stderr": false,
+      "stdout": false
+    },
+    "output_complete": true,
+    "output_durable": true,
+    "state": "succeeded",
+    "terminal_publication_confirmed": true,
+    "terminal_publication_protocol": 1,
+    "timed_out": false
+  },
+  "source_before": "6eafed3863a36f9f5a1f28034e098dd195331334",
+  "source_after": "6eafed3863a36f9f5a1f28034e098dd195331334",
+  "files": [
+    {
+      "path": "/home/qian-qi/work/hepta-audit-20261104-1230-hookmetadata-evidence/fourth-bazel-private-cache-20261104-2115/terminal.json",
+      "sha256": "3ea335f4c224e08ac2de06f5ff3403f0b87a4c10b8601564eacfdfafb6f147e2",
+      "bytes": 5379,
+      "git_blob": "a09ff068ec434cd5bc37021c6d5a4d8a9f8b056c",
+      "content": "{\n  \"success\": true,\n  \"error\": null,\n  \"source\": {\n    \"source_before\": \"6eafed3863a36f9f5a1f28034e098dd195331334\",\n    \"source_after\": \"6eafed3863a36f9f5a1f28034e098dd195331334\",\n    \"changed_paths\": [],\n    \"module_lock\": {\n      \"path\": \"/home/qian-qi/work/hepta-audit-20261104-1230-hookmetadata-evidence/fourth-bazel-private-cache-20261104-2115/MODULE.bazel.lock.after\",\n      \"bytes\": 1738619,\n      \"sha256\": \"11f8a421224b9b05f32c4c14054e8868083d989fc497310c8d51e1156f189ca3\"\n    },\n    \"module_git_blob\": \"1904db189003cb0b559f71958518e33a45fb6bb7\",\n    \"cargo_lock\": {\n      \"path\": \"/home/qian-qi/worktrees/hepta-audit-20261104-1230-hookmetadata/codex-rs/Cargo.lock\",\n      \"bytes\": 413768,\n      \"sha256\": \"4a7a5535cf045089458468411e126b5f59bc6bbf34fc0deead9b0c1b8d84000a\"\n    },\n    \"ordinary_index_before\": {\n      \"path\": \"/home/qian-qi/worktrees/hepta-product-p0-cache-20261103.git/worktrees/hepta-audit-20261104-1230-hookmetadata/index\",\n      \"bytes\": 1211788,\n      \"sha256\": \"4d8c23cf3816e0f9adb7a0a78520adb188d990a393ea36e409258b59b853f37a\"\n    },\n    \"ordinary_index_after\": {\n      \"path\": \"/home/qian-qi/worktrees/hepta-product-p0-cache-20261103.git/worktrees/hepta-audit-20261104-1230-hookmetadata/index\",\n      \"bytes\": 1211788,\n      \"sha256\": \"4d8c23cf3816e0f9adb7a0a78520adb188d990a393ea36e409258b59b853f37a\"\n    }\n  },\n  \"phases\": [\n    {\n      \"name\": \"original-bazel-lock-update\",\n      \"argv\": [\n        \"just\",\n        \"bazel-lock-update\"\n      ],\n      \"cwd\": \"/home/qian-qi/worktrees/hepta-audit-20261104-1230-hookmetadata\",\n      \"started_at\": \"2026-11-04T21:11:59.232684+00:00\",\n      \"completed_at\": \"2026-11-04T21:13:06.022619+00:00\",\n      \"duration_seconds\": 66.78991336899344,\n      \"exit_code\": 0,\n      \"watchdog_reason\": null,\n      \"minimum_free_bytes\": 4377624576,\n      \"source_before\": \"6eafed3863a36f9f5a1f28034e098dd195331334\",\n      \"source_after\": \"6eafed3863a36f9f5a1f28034e098dd195331334\",\n      \"changed_paths\": [],\n      \"raw\": {\n        \"full\": {\n          \"path\": \"/home/qian-qi/work/hepta-audit-20261104-1230-hookmetadata-evidence/fourth-bazel-private-cache-20261104-2115/original-bazel-lock-update.log\",\n          \"bytes\": 3975,\n          \"sha256\": \"cc924d586aea40855300f1e99c77be224dd0e8d1da23e2fef49dd482e271a0ed\"\n        },\n        \"parts\": [\n          {\n            \"offset\": 0,\n            \"path\": \"/home/qian-qi/work/hepta-audit-20261104-1230-hookmetadata-evidence/fourth-bazel-private-cache-20261104-2115/original-bazel-lock-update-raw.parts/0000.txt\",\n            \"bytes\": 3975,\n            \"sha256\": \"cc924d586aea40855300f1e99c77be224dd0e8d1da23e2fef49dd482e271a0ed\"\n          }\n        ]\n      },\n      \"source_diff\": {\n        \"full\": {\n          \"path\": \"/home/qian-qi/work/hepta-audit-20261104-1230-hookmetadata-evidence/fourth-bazel-private-cache-20261104-2115/original-bazel-lock-update-source.diff\",\n          \"bytes\": 0,\n          \"sha256\": \"e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855\"\n        },\n        \"parts\": []\n      },\n      \"attempt\": 1\n    },\n    {\n      \"name\": \"original-bazel-lock-check\",\n      \"argv\": [\n        \"just\",\n        \"bazel-lock-check\"\n      ],\n      \"cwd\": \"/home/qian-qi/worktrees/hepta-audit-20261104-1230-hookmetadata\",\n      \"started_at\": \"2026-11-04T21:13:06.787555+00:00\",\n      \"completed_at\": \"2026-11-04T21:13:09.577831+00:00\",\n      \"duration_seconds\": 2.7902750390348956,\n      \"exit_code\": 0,\n      \"watchdog_reason\": null,\n      \"minimum_free_bytes\": 4452573184,\n      \"source_before\": \"6eafed3863a36f9f5a1f28034e098dd195331334\",\n      \"source_after\": \"6eafed3863a36f9f5a1f28034e098dd195331334\",\n      \"changed_paths\": [],\n      \"raw\": {\n        \"full\": {\n          \"path\": \"/home/qian-qi/work/hepta-audit-20261104-1230-hookmetadata-evidence/fourth-bazel-private-cache-20261104-2115/original-bazel-lock-check.log\",\n          \"bytes\": 960,\n          \"sha256\": \"9a58a7f9efe33aa739069874891ea64f5307813d88add8d661edcfc1feea0a00\"\n        },\n        \"parts\": [\n          {\n            \"offset\": 0,\n            \"path\": \"/home/qian-qi/work/hepta-audit-20261104-1230-hookmetadata-evidence/fourth-bazel-private-cache-20261104-2115/original-bazel-lock-check-raw.parts/0000.txt\",\n            \"bytes\": 960,\n            \"sha256\": \"9a58a7f9efe33aa739069874891ea64f5307813d88add8d661edcfc1feea0a00\"\n          }\n        ]\n      },\n      \"source_diff\": {\n        \"full\": {\n          \"path\": \"/home/qian-qi/work/hepta-audit-20261104-1230-hookmetadata-evidence/fourth-bazel-private-cache-20261104-2115/original-bazel-lock-check-source.diff\",\n          \"bytes\": 0,\n          \"sha256\": \"e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855\"\n        },\n        \"parts\": []\n      },\n      \"attempt\": 1\n    }\n  ],\n  \"cleanup\": {\n    \"created_rc\": true,\n    \"observed_at\": \"2026-11-04T21:13:09.579160+00:00\",\n    \"own_server_shutdown\": {\n      \"exit_code\": 0,\n      \"raw\": {\n        \"path\": \"/home/qian-qi/work/hepta-audit-20261104-1230-hookmetadata-evidence/fourth-bazel-private-cache-20261104-2115/owned-bazel-server-shutdown.log\",\n        \"bytes\": 58,\n        \"sha256\": \"2e1f4c9cb10b59a1d80b6f2a7abb0823217288d5cd8c7b529798b1fc18866b9b\"\n      }\n    },\n    \"local_rc_removed\": true\n  },\n  \"completed_at\": \"2026-11-04T21:13:11.010941+00:00\",\n  \"no_product_tests_executed\": true,\n  \"no_shared_cache_or_target_cleaned\": true,\n  \"no_lock_hand_edit\": true\n}\n"
+    },
+    {
+      "path": "/home/qian-qi/work/hepta-audit-20261104-1230-hookmetadata-evidence/fourth-bazel-private-cache-20261104-2115/source-result.json",
+      "sha256": "7c17af64120c30b76eb057e18188c60b13bc1853c08a169b79e62ec0c32995df",
+      "bytes": 1246,
+      "git_blob": "9fcbf7ef2d55ec7391176cd55eab5841613ad31d",
+      "content": "{\n  \"source_before\": \"6eafed3863a36f9f5a1f28034e098dd195331334\",\n  \"source_after\": \"6eafed3863a36f9f5a1f28034e098dd195331334\",\n  \"changed_paths\": [],\n  \"module_lock\": {\n    \"path\": \"/home/qian-qi/work/hepta-audit-20261104-1230-hookmetadata-evidence/fourth-bazel-private-cache-20261104-2115/MODULE.bazel.lock.after\",\n    \"bytes\": 1738619,\n    \"sha256\": \"11f8a421224b9b05f32c4c14054e8868083d989fc497310c8d51e1156f189ca3\"\n  },\n  \"module_git_blob\": \"1904db189003cb0b559f71958518e33a45fb6bb7\",\n  \"cargo_lock\": {\n    \"path\": \"/home/qian-qi/worktrees/hepta-audit-20261104-1230-hookmetadata/codex-rs/Cargo.lock\",\n    \"bytes\": 413768,\n    \"sha256\": \"4a7a5535cf045089458468411e126b5f59bc6bbf34fc0deead9b0c1b8d84000a\"\n  },\n  \"ordinary_index_before\": {\n    \"path\": \"/home/qian-qi/worktrees/hepta-product-p0-cache-20261103.git/worktrees/hepta-audit-20261104-1230-hookmetadata/index\",\n    \"bytes\": 1211788,\n    \"sha256\": \"4d8c23cf3816e0f9adb7a0a78520adb188d990a393ea36e409258b59b853f37a\"\n  },\n  \"ordinary_index_after\": {\n    \"path\": \"/home/qian-qi/worktrees/hepta-product-p0-cache-20261103.git/worktrees/hepta-audit-20261104-1230-hookmetadata/index\",\n    \"bytes\": 1211788,\n    \"sha256\": \"4d8c23cf3816e0f9adb7a0a78520adb188d990a393ea36e409258b59b853f37a\"\n  }\n}\n"
+    },
+    {
+      "path": "/home/qian-qi/work/hepta-audit-20261104-1230-hookmetadata-evidence/fourth-bazel-private-cache-20261104-2115/cleanup.json",
+      "sha256": "9e2c11308ff8c1abca823ce8df39255a05e99ccc252690761bc0dd64886666d6",
+      "bytes": 436,
+      "git_blob": "a9d2cd702cdf130608d482d262f3f9a84079808f",
+      "content": "{\n  \"created_rc\": true,\n  \"observed_at\": \"2026-11-04T21:13:09.579160+00:00\",\n  \"own_server_shutdown\": {\n    \"exit_code\": 0,\n    \"raw\": {\n      \"path\": \"/home/qian-qi/work/hepta-audit-20261104-1230-hookmetadata-evidence/fourth-bazel-private-cache-20261104-2115/owned-bazel-server-shutdown.log\",\n      \"bytes\": 58,\n      \"sha256\": \"2e1f4c9cb10b59a1d80b6f2a7abb0823217288d5cd8c7b529798b1fc18866b9b\"\n    }\n  },\n  \"local_rc_removed\": true\n}\n"
+    },
+    {
+      "path": "/home/qian-qi/work/hepta-audit-20261104-1230-hookmetadata-evidence/fourth-bazel-private-cache-20261104-2115/original-bazel-lock-update.log",
+      "sha256": "cc924d586aea40855300f1e99c77be224dd0e8d1da23e2fef49dd482e271a0ed",
+      "bytes": 3975,
+      "git_blob": "0dfdcfbb2b5adabf8e77960f126c34b0886e3e3e",
+      "content": "bazel mod deps --lockfile_mode=update\nExtracting Bazel installation...\nStarting local Bazel server (9.3.0) and connecting to it...\nINFO: Invocation ID: 2a2296fd-03b0-4419-bab6-5acece2a57ad\n no actions running\n no actions running\n no actions running\n no actions running\n no actions running\n no actions running\n no actions running\n no actions running\n no actions running\n no actions running\n no actions running\n no actions running\n no actions running\n no actions running\n no actions running\n no actions running\n no actions running\n no actions running\n no actions running\n no actions running\n no actions running\n no actions running\n no actions running\nWARNING: For repository 'platforms', the root module requires module version platforms@1.0.0, but got platforms@1.1.0 in the resolved dependency graph. Please update the version in your MODULE.bazel or set --check_direct_dependencies=off\nWARNING: For repository 'apple_support', the root module requires module version apple_support@2.1.0, but got apple_support@2.5.2 in the resolved dependency graph. Please update the version in your MODULE.bazel or set --check_direct_dependencies=off\nWARNING: For repository 'rules_cc', the root module requires module version rules_cc@0.2.18, but got rules_cc@0.2.20 in the resolved dependency graph. Please update the version in your MODULE.bazel or set --check_direct_dependencies=off\n no actions running\n no actions running\n no actions running\n no actions running\n no actions running\n no actions running\n no actions running\n no actions running\n no actions running\n no actions running\n no actions running\n no actions running\n no actions running\n no actions running\n no actions running\n no actions running\n no actions running\n no actions running\n no actions running\n no actions running\n no actions running\n no actions running\nDEBUG: /home/qian-qi/work/hepta-audit-20261104-1230-hookmetadata-evidence/fourth-bazel-private-cache-20261104-2115/output-user-root/08a99e35a8a6dda841c0df87f2f44d12/external/rules_rs+/rs/extensions.bzl:302:18: \nWARNING: A well-known crate annotation exists for zstd-sys! Apply the following to your MODULE.bazel:\n\n```\nbazel_dep(name = \"zstd\", version = \"1.5.7.bcr.1\")\n\ncrate = use_extension(\"@rules_rs//rs:extensions.bzl\", \"crate\")\ncrate.annotation(\n    crate = \"zstd-sys\",\n    gen_build_script = \"off\",\n    deps = [\"@zstd\"],\n)\n```\n\nYou can disable this warning by configuring your MODULE.bazel like so:\n\n```\ncrate.annotation(\n    crate = \"zstd-sys\",\n    gen_build_script = \"on\",\n)\n```\nDEBUG: /home/qian-qi/work/hepta-audit-20261104-1230-hookmetadata-evidence/fourth-bazel-private-cache-20261104-2115/output-user-root/08a99e35a8a6dda841c0df87f2f44d12/external/rules_rs+/rs/extensions.bzl:302:18: \nWARNING: A well-known crate annotation exists for libgit2-sys! Apply the following to your MODULE.bazel:\n\n```\nbazel_dep(name = \"libgit2\", version = \"1.9.1\")\n\ncrate = use_extension(\"@rules_rs//rs:extensions.bzl\", \"crate\")\ncrate.annotation(\n    crate = \"libgit2-sys\",\n    gen_build_script = \"off\",\n    deps = [\"@libgit2\"],\n)\n```\n\nYou can disable this warning by configuring your MODULE.bazel like so:\n\n```\ncrate.annotation(\n    crate = \"libgit2-sys\",\n    gen_build_script = \"on\",\n)\n```\nDEBUG: /home/qian-qi/work/hepta-audit-20261104-1230-hookmetadata-evidence/fourth-bazel-private-cache-20261104-2115/output-user-root/08a99e35a8a6dda841c0df87f2f44d12/external/rules_rs+/rs/extensions.bzl:302:18: \nWARNING: A well-known crate annotation exists for libssh2-sys! Apply the following to your MODULE.bazel:\n\n```\nbazel_dep(name = \"libssh2\", version = \"1.11.1.bcr.1\")\n\ncrate = use_extension(\"@rules_rs//rs:extensions.bzl\", \"crate\")\ncrate.annotation(\n    crate = \"libssh2-sys\",\n    gen_build_script = \"off\",\n    deps = [\"@libssh2\"],\n)\n```\n\nYou can disable this warning by configuring your MODULE.bazel like so:\n\n```\ncrate.annotation(\n    crate = \"libssh2-sys\",\n    gen_build_script = \"on\",\n)\n```\n no actions running\n no actions running\n no actions running\n<root> (codex@_)\n\n"
+    },
+    {
+      "path": "/home/qian-qi/work/hepta-audit-20261104-1230-hookmetadata-evidence/fourth-bazel-private-cache-20261104-2115/original-bazel-lock-check.log",
+      "sha256": "9a58a7f9efe33aa739069874891ea64f5307813d88add8d661edcfc1feea0a00",
+      "bytes": 960,
+      "git_blob": "ec83912391425f40b00108b316fc5e0a99dd9d7b",
+      "content": "/home/qian-qi/worktrees/hepta-audit-20261104-1230-hookmetadata/scripts/check-module-bazel-lock.sh\nBuildBuddy key unavailable; using local Bazel configuration.\nINFO: Invocation ID: 7eafa2f0-a50f-4782-a7c2-064492f4c2f9\nWARNING: For repository 'platforms', the root module requires module version platforms@1.0.0, but got platforms@1.1.0 in the resolved dependency graph. Please update the version in your MODULE.bazel or set --check_direct_dependencies=off\nWARNING: For repository 'apple_support', the root module requires module version apple_support@2.1.0, but got apple_support@2.5.2 in the resolved dependency graph. Please update the version in your MODULE.bazel or set --check_direct_dependencies=off\nWARNING: For repository 'rules_cc', the root module requires module version rules_cc@0.2.18, but got rules_cc@0.2.20 in the resolved dependency graph. Please update the version in your MODULE.bazel or set --check_direct_dependencies=off\n<root> (codex@_)\n\n"
+    },
+    {
+      "path": "/home/qian-qi/work/hepta-audit-20261104-1230-hookmetadata-evidence/fourth-bazel-private-cache-20261104-2115/temporary-local-config.json",
+      "sha256": "ae34dc4b194cc71bc14fcb2a76c47db0c31863f25c0ffa2cf025aa8054b72d2b",
+      "bytes": 1919,
+      "git_blob": "a717e02d25696bf758a104774ca9d73acf102183",
+      "content": "{\n  \"path\": \"/home/qian-qi/worktrees/hepta-audit-20261104-1230-hookmetadata/user.bazelrc\",\n  \"content\": \"# This task-owned file uses the repository's existing try-import. Remove after the original lock recipes.\\nstartup --output_user_root=/home/qian-qi/work/hepta-audit-20261104-1230-hookmetadata-evidence/fourth-bazel-private-cache-20261104-2115/output-user-root\\ncommon --repository_cache=/home/qian-qi/work/hepta-audit-20261104-1230-hookmetadata-evidence/fourth-bazel-private-cache-20261104-2115/repository-cache\\ncommon --repo_contents_cache=/home/qian-qi/work/hepta-audit-20261104-1230-hookmetadata-evidence/fourth-bazel-private-cache-20261104-2115/repo-contents-cache\\ncommon --disk_cache=/home/qian-qi/work/hepta-audit-20261104-1230-hookmetadata-evidence/fourth-bazel-private-cache-20261104-2115/disk-cache\\n\",\n  \"bytes\": 705,\n  \"sha256\": \"3ffd7787c1f83adca052ebaf731ec4f8023448021a8a18228cade28616f92b7c\",\n  \"identity\": [\n    2050,\n    6468266\n  ],\n  \"original_rc_unchanged\": {\n    \"path\": \"/home/qian-qi/worktrees/hepta-audit-20261104-1230-hookmetadata/.bazelrc\",\n    \"bytes\": 14926,\n    \"sha256\": \"53a5fd4e65e4e9937b826174520fe1eb642adb79cfe7a6335c871d5fa9db57fa\"\n  },\n  \"experimental_remote_repo_contents_cache_preserved\": true,\n  \"cache_paths\": {\n    \"output-user-root\": \"/home/qian-qi/work/hepta-audit-20261104-1230-hookmetadata-evidence/fourth-bazel-private-cache-20261104-2115/output-user-root\",\n    \"repository-cache\": \"/home/qian-qi/work/hepta-audit-20261104-1230-hookmetadata-evidence/fourth-bazel-private-cache-20261104-2115/repository-cache\",\n    \"repo-contents-cache\": \"/home/qian-qi/work/hepta-audit-20261104-1230-hookmetadata-evidence/fourth-bazel-private-cache-20261104-2115/repo-contents-cache\",\n    \"disk-cache\": \"/home/qian-qi/work/hepta-audit-20261104-1230-hookmetadata-evidence/fourth-bazel-private-cache-20261104-2115/disk-cache\"\n  },\n  \"home_changed\": false,\n  \"wrapper_created\": false\n}\n"
+    },
+    {
+      "path": "/home/qian-qi/work/hepta-audit-20261104-1230-hookmetadata-evidence/fourth-bazel-private-cache-20261104-2115/candidate-copy-removal.json",
+      "sha256": "532834e589fa96654a8f54eba8946ae6598df6ef65ebf66d382064e35d4d0f36",
+      "bytes": 1231,
+      "git_blob": "c30f519b354742aee1bbf7bcd54ec91069ec8eef",
+      "content": "{\n  \"path\": \"/home/qian-qi/work/hepta-audit-20261104-1230-hookmetadata-evidence/fourth-batch-r1-20261104-2020-tests-hygiene-source-check-hygiene/candidate-source\",\n  \"guarded_tree\": \"5fc8073d849199ad243c6814344a06e846ff358d\",\n  \"original_provenance\": {\n    \"path\": \"/home/qian-qi/work/hepta-audit-20261104-1230-hookmetadata-evidence/fourth-batch-r1-20261104-2020-tests-hygiene-source-check-hygiene/clean-source-provenance.json\",\n    \"bytes\": 1531,\n    \"sha256\": \"2e27c3d44891e99972849034ebf598eb607df7578bff0437cb2af581d0d9ebe4\"\n  },\n  \"ordinary_worktree_untouched\": true,\n  \"extra_files\": [],\n  \"du_allocated\": \"145838080\\t/home/qian-qi/work/hepta-audit-20261104-1230-hookmetadata-evidence/fourth-batch-r1-20261104-2020-tests-hygiene-source-check-hygiene/candidate-source\\n\",\n  \"du_apparent\": \"116116488\\t/home/qian-qi/work/hepta-audit-20261104-1230-hookmetadata-evidence/fourth-batch-r1-20261104-2020-tests-hygiene-source-check-hygiene/candidate-source\\n\",\n  \"free_before_bytes\": 5751504896,\n  \"preserved\": \"All original commands, raw outputs, Git tree objects, source maps, ZIPs, shared test target and shared caches.\",\n  \"removed\": true,\n  \"free_after_bytes\": 5897334784,\n  \"completed_at\": \"2026-11-04T21:11:58.440001+00:00\"\n}\n"
+    }
+  ],
+  "limits": [
+    "No source/lock hand edit.",
+    "Actual original just update/check commands; original known-broken shared cache failure retained.",
+    "Only task-local caches and temporary existing-import localrc used; localrc removed and only task-owned Bazel server shut down.",
+    "Original raw and source receipts remain in native evidence; no product tests run in this recovery."
+  ]
+}

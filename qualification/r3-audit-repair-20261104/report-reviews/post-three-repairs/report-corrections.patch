@@ -1,0 +1,91 @@
+--- a/hepta-audit-fourth/deliverables/CURRENT_AUDIT_PROGRESS.zh-CN.md
++++ b/hepta-audit-fourth/deliverables/CURRENT_AUDIT_PROGRESS.zh-CN.md
+@@ -6,7 +6,7 @@
+ 
+ 近期发展方向依次是：**可重复验证的整合候选 → 普通启动可用的可信任务闭环 → 同信息、等总成本的共享计算与学习验证 → 独立外部接受**。源码存在、局部通过、科学采用和生产发布需要各自的退出证据。
+ 
+-报告更新于2026-11-04美国东部时间；机器收据保留UTC。完整库存终锚为2026-11-04 22:27:38 UTC，各增量和原生执行另有source tree与时间。已发布候选为cabcb40d36e116beaa65750e1f674c52035da785；最近审读原生树为f8251e1d14fa8524ab469281296cd4cf708f173c；原25审批控制已通过，原owning7终态为5,408 JUnit PASS/8FAIL；完整workspace已实际执行19,503例，19,485 JUnit PASS/17FAIL/1TIMEOUT。最终commit、base和实际merge checkout由PR与新CI另行绑定，不能继承旧源绿色。
++报告更新于2026-11-04美国东部时间；机器收据保留UTC。完整库存终锚为2026-11-04 22:27:38 UTC，各增量和原生执行另有source tree与时间。已发布候选为cabcb40d36e116beaa65750e1f674c52035da785。原生树f8251e1d14fa8524ab469281296cd4cf708f173c上的原25审批控制已通过，原owning7为5,408 JUnit PASS/8FAIL，完整workspace为19,485 JUnit PASS/17FAIL/1TIMEOUT；这些完整门结果仍绑定f825。后续Skills、Migration、V8分别在各自固定源取得原9、166、76例PASS，最终审读源树为7d703610ae4f778ad305ebc139860d276f416e8c，尚未在该树重新取得完整工程门。最终commit、base和实际merge checkout由PR与新CI另行绑定，不能继承旧源绿色。
+ 
+ 全局架构权威仍为 [docs/DEVELOPMENT.md](../../docs/DEVELOPMENT.md)。本目录记录特定候选资格；[前一版完整报告](THIRD_AUDIT_PROGRESS.zh-CN.md)、旧失败和原退出条件都保留。
+ 
+@@ -88,9 +88,13 @@
+ 
+ 完整raw为34,360,967字节，SHA256为75cd2cd5c89ce70781781c3b8c3e1bb168720b83bf6961c206720b3c08efe15c。完整workspace与所属包的18件原始日志、catalog、selection、metadata、review及新JUnit共74,867,442字节，已通过33个Git压缩分片保存；独立解码后逐件重新打开验证长度/hash，并逐名核对原日志、JUnit和选择集。所属包24个早退也全部精确绑定。一个冗余cloud副本曾短写，原件和压缩分片不受影响；该差异与重新解码的结果均保留，不把短副本充当完整证据。[完整原件与解码器](fourth-f825-full-owning-compressed-index.json) / [完整独立根审](fourth-f825-full-owning-complete-root-review.json) / [副本差异记录](fourth-f825-export-companion-copy-addendum.json)
+ 
+-可修的新失败已形成三个静态候选：skills使用非空唯一project marker并断言祖先均无该marker，保留原roots断言；市场迁移用独立子进程的Git URL映射到真实本地仓库，保留原推断、克隆及plugin_not_found路径；V8仅将既有sandbox feature加入默认，保持原六项断言。前两项还准备了实际marker/删除官方推断的负控；V8需真实生成Cargo/Bazel锁。三项尚未原生执行，不能记为修复通过。
+-
+-App首次断连诊断在helper前置检查停止，未启动metadata、catalog或测试。只读复查发现原target/dev-small及33个helper不存在，原因未定；初始f825/index/锁/测试源码检查通过，异常后的最终guard未执行。其后独立只读检查重新确认f825、普通index、双锁及无未审untracked路径，已在全新目录启动epoch2冷构建（job 1a1a967b3ab-fc05-34f6）。本次绑定自己的程序身份、原193成员依赖图和33 helper名单，原5秒断言及零重试不变；原1例终态为FAIL，耗时5.491秒。实际观测为外层bwrap已消失、内层 sandbox helper与Python仍存活，尚不能将原因归于信号。首次前置停止与原完整运行失败继续分别保留。[首次停止](fourth-app-disconnect-preflight-stopped.json) / [epoch2原终态](fourth-app-epoch2-terminal-diagnostic.json) / [独立根审](fourth-app-epoch2-root-terminal-review.json) / [系统 bwrap 身份](fourth-app-bwrap-exact-readonly.json)
++三项新增修复已完成各自原范围验收。Skills正负夹具都改用Table.insert设置非空project marker，实际负控在原446行完整roots断言得到outer＋cwd两项，恢复后原9例PASS；此前425行的index panic仍记为无效准备失败。Migration负控实际到达子进程原588行，得到[]而非["claude-plugins-official"]；精确恢复后原166例PASS，正例原日志1613–1627行同时保留父、子两层同名测试成功。V8仅将既有sandbox feature加入默认，原6例及runtime68＋jit1＋parallel_initialization1共76例PASS，包含两个原integration。三组范围均为零重试，原输出、JUnit、冻结名单和程序身份已核；各自精确源树见[三修复完整根审](fourth-three-repairs-v3-root-review.json)。
++
++最终7d703源上实际执行原just bazel-lock-update和check，分别exit0/111.734秒与exit0/0.493秒，真实生成流程没有锁差异；原Cargo.lock与MODULE.bazel.lock的字节身份保持。现有缓存如实保留，未称fresh-cache资格。这些局部结果没有重写f825的完整工作区失败，也没有关闭新的原阻塞项。
++
++App首次断连诊断在helper前置检查停止，未启动metadata、catalog或测试。只读复查发现原target/dev-small及33个helper不存在，原因未定；初始f825/index/锁/测试源码检查通过，异常后的最终guard未执行。其后独立只读检查重新确认f825、普通index、双锁及无未审untracked路径，随后在全新目录完成epoch2冷构建（job 1a1a967b3ab-fc05-34f6）。本次绑定自己的程序身份、原193成员依赖图和33 helper名单，原5秒断言及零重试不变；原1例终态为FAIL，耗时5.491秒。该次观测为外层bwrap已消失、内层 sandbox helper与Python仍存活，未确定信号原因。首次前置停止与原完整运行失败继续分别保留。[首次停止](fourth-app-disconnect-preflight-stopped.json) / [epoch2原终态](fourth-app-epoch2-terminal-diagnostic.json) / [独立根审](fourth-app-epoch2-root-terminal-review.json) / [系统 bwrap 身份](fourth-app-bwrap-exact-readonly.json)
++
++随后仅增加观测的临时树1e936b1ca6df807d8928a4cc6c527f40f92808aa再次运行同一原App例，终态为FAIL/5.575秒，原5秒预算不变。inner_entry与inner_after_restrictions的PR_GET_PDEATHSIG均实际返回rc0、signal0，原killpg返回Ok(())；这没有定位信号在哪一步被清除。50件完整原件已独立核验，诊断结束后精确恢复f825源码及原source map。新的父存活修复候选已完成静态审查，尚未编译或执行，不能把观测或静态控制写成修复通过。[完整50件根审及恢复](fourth-app-parent-probe-complete-root-review.json)
+ 
+ 所属包与完整workspace失败均未豁免。最终fix/fmt及新head的hosted CI尚未完成。
+ 
+--- a/hepta-audit-fourth/deliverables/FOURTH_BATCH_QUALIFICATION.md
++++ b/hepta-audit-fourth/deliverables/FOURTH_BATCH_QUALIFICATION.md
+@@ -1,6 +1,6 @@
+ # Fourth batch qualification: source-specific outcomes
+ 
+-This is an audit checkpoint for the continuing repair of PR #4797. The branch remains Draft. The published head is cabcb40d36e116beaa65750e1f674c52035da785; the latest reviewed native source tree is f8251e1d14fa8524ab469281296cd4cf708f173c. The fourth-batch source commits below are not yet a published or fully qualified product. No main, release, activation or external acceptance is claimed.
++This is an audit checkpoint for the continuing repair of PR #4797. The branch remains Draft. The published head is cabcb40d36e116beaa65750e1f674c52035da785; the latest reviewed native source tree is 7d703610ae4f778ad305ebc139860d276f416e8c after three sequential, source-specific repair scopes. The original owning7 and full-workspace results remain bound to f8251e1d14fa8524ab469281296cd4cf708f173c. The fourth-batch source commits below are not yet a published or fully qualified product. No main, release, activation or external acceptance is claimed.
+ 
+ ## Source and tool contract
+ 
+@@ -32,6 +32,11 @@
+ | Original owning7 continuation | f8251e1d14fa8524ab469281296cd4cf708f173c | 5416 selected:5408 JUnit PASS/8FAIL;19 ignored,0 unmatched; just100/controller1 | Same8 original host-output failures;24 remote early-return messages are not behavior passes |
+ | Full workspace preparation | Same f825 source | Original6 normal helpers actually rebuilt, all fresh=false; build0/129.402s | Full catalog rehashes feature-unified programs; earlier helper hashes not reused |
+ | Original full workspace | Same f825 source | 19503 selected:19485 JUnit PASS/17FAIL/1TIMEOUT;56 ignored,0 unmatched,0retry; just100/228.919s | 321 test programs/33 helpers stable;24 raw-bound remote early returns are not remote behavior passes |
++| App parent-signal observation | Temporary1e936b1ca6df807d8928a4cc6c527f40f92808aa; exact restoration to f825 | Original1FAIL/5.575s; both PR_GET reads rc0/signal0; original killpg Ok(()) | Original5s deadline unchanged;50 originals reviewed; observation is not a repair PASS |
++| Skills marker fixture | Negative59fa1100c2ad24328e7841611092132ca08942ad → positive51673d30d34674faeac6bb17e565fc9d04aec8f1 | Valid original whole-vector FAIL → original9PASS,0retry | Table.insert fixes both variants; prior setup panic remains INVALID |
++| Marketplace migration fixture | Negativef9bfef21d511a3e9ee25fb67802d240c691f62ec → positiveb2cee2e56d32199dc67d362ec15b796b2814ee7e | Original child assertion FAIL → original166PASS,0retry | Positive raw contains both nested same-name successes; not merely a parent process result |
++| V8 default feature alignment | 7d703610ae4f778ad305ebc139860d276f416e8c | Original76PASS,0retry: runtime68+poc6+jit1+parallel_initialization1 | Both original integration targets included; four test-program identities stable |
++| Original Bazel lock gates | Same7d703 source before/after | update0/111.734s;check0/0.493s; no generated lock diff | Existing cache retained; Cargo/MODULE lock identities unchanged |
+ | Final fix/fmt | Pending after concrete failure triage | Not yet executed | No final code-tree qualification |
+ 
+ The c270 controller's TypeError happened in the first restoration guard after the valid negative, before writing source. Its failed exit1 remains unchanged. The continuation revalidated all seven original evidence files, exact source, prior helper/test-program identities, ordinary index and both locks; only the one approved test-file restoration proceeded. The valid negative was not repeated. [Native source/control review](fourth-bash-no-rc-native-root-review.json)
+@@ -81,14 +86,16 @@
+ The original full invocation retained all193 workspace members, normal complete Cargo metadata and the original unfiltered just test command. Eighteen failures include the eight owning7 host-output failures, six additional App command/exec output assertions, one App disconnect/process-lifetime failure, one external-agent migration timeout, one skills ancestry boundary failure and one V8 sandbox feature mismatch. The complete failure projection and24 raw-bound early-return blocks are preserved in [the source-bound projection](fourth-full-f825-failures-and-early-returns.json). Independent root reconstruction is complete: all33 encoded parts reconstruct18 original artifacts totaling74,867,442 bytes. Every decoded file was reopened and hash-verified; original raw/JUnit/catalog/selection rosters and outcomes were reconciled by exact name. One short redundant cloud copy is retained as a transport discrepancy; intact native/compressed originals and the independently decoded complete files are not replaced by that copy. [Complete root review](fourth-f825-full-owning-complete-root-review.json) / [Reconstruction index](fourth-f825-full-owning-compressed-index.json) / [Companion discrepancy](fourth-f825-export-companion-copy-addendum.json)
+ 
+ 
+-### New repair candidates and fresh diagnostic epoch
++### Three scoped repairs passed; App lifecycle remains open
+ 
+-The skills marker fixture, actual local-Git marketplace fixture and one-line V8 default feature alignment are reviewed source proposals. The original outcome assertions remain; controlled negatives are prepared for the two fixture repairs. V8 requires real Cargo/Bazel lock generation. No native PASS is yet claimed for these proposals.
++The skills positive and negative fixtures now use Table.insert instead of indexing a missing key in an empty table. The valid negative reaches the original roots assertion at line446 with outer+cwd, then exact restoration passes all9 original cases; the first line425 setup panic remains invalid evidence. Migration reaches the original child assertion at marketplaces.rs:588 with [] versus ["claude-plugins-official"], then exact restoration passes all166 original package cases. Positive raw lines1613–1627 show both nested same-name test successes. The V8 scope passes all76 original cases, including jit and parallel_initialization integrations. The real original Bazel update/check both exit0 without changing either lock identity. Complete raw/JUnit/frozen rosters and executable identities are reconciled in [the source-specific root review](fourth-three-repairs-v3-root-review.json). These passes do not replace the earlier full-workspace failure or establish final-head hosted qualification.
+ 
+-The App disconnect observation job1a1a951380e-fc05-342f stopped before any Cargo or test command because the original target/dev-small helper directory was absent. All33 original helpers were absent in a subsequent read-only probe. This is a preflight failure, not an execution of the original App case. Initial source/index/lock/fixture guards passed; no final source guard ran after the exception. The cause remains undetermined. A fresh isolated build must bind its own executable identities before further qualification; it cannot inherit the vanished binaries' identity. [Original stopped attempt](fourth-app-disconnect-preflight-stopped.json)
++The App disconnect observation job1a1a951380e-fc05-342f stopped before any Cargo or test command because the original target/dev-small helper directory was absent. All33 original helpers were absent in a subsequent read-only probe. This is a preflight failure, not an execution of the original App case. Initial source/index/lock/fixture guards passed; no final source guard ran after the exception. The cause remains undetermined. The later isolated rebuild binds new executable identities; it does not inherit the vanished binaries' identity. [Original stopped attempt](fourth-app-disconnect-preflight-stopped.json)
+ 
+-A separate epoch2 was launched as job1a1a967b3ab-fc05-34f6 after an independent fresh source/index/lock/untracked guard. It rebuilds only in a new exclusive target, compares the full original193-member resolved graph, and binds the original33 helper roster to new executable hashes. The original one-case5s oracle and0retry remain. The original single case terminated as FAIL in 5.491s. Observation found the outer bwrap gone while the inner sandbox helper and Python remained alive; a signal cause is not established. The stopped attempt and original full failure remain unchanged. [Epoch2 terminal evidence](fourth-app-epoch2-terminal-diagnostic.json) / [Independent root review](fourth-app-epoch2-root-terminal-review.json) / [Exact system bwrap identity](fourth-app-bwrap-exact-readonly.json)
++A separate epoch2 completed as job1a1a967b3ab-fc05-34f6 after an independent fresh source/index/lock/untracked guard. It rebuilt in a new exclusive target, compared the full original193-member resolved graph, and bound the original33 helper roster to new executable hashes. The original one-case5s oracle and0retry remain. The original single case terminated as FAIL in 5.491s. That observation found the outer bwrap gone while the inner sandbox helper and Python remained alive; it did not establish a signal cause. The stopped attempt and original full failure remain unchanged. [Epoch2 terminal evidence](fourth-app-epoch2-terminal-diagnostic.json) / [Independent root review](fourth-app-epoch2-root-terminal-review.json) / [Exact system bwrap identity](fourth-app-bwrap-exact-readonly.json)
+ 
+-The reviewed A proposal roster is skills9 original cases, migration166 original package cases, V8 poc6 plus runtime70 in the normal graph, Windows narrow ACL and four-cell original-token/legacy controls, and one-line Windows target log retention. These counts describe planned scopes, not executed passes. [Windows matrix V2](static-proposals/b11-delete-matrix/repair-manifest.json)
++A later observation-only tree1e936b1ca6df807d8928a4cc6c527f40f92808aa ran the same original App case and failed in5.575s with its original5s deadline. PR_GET_PDEATHSIG succeeded with signal0 at both inner_entry and inner_after_restrictions; the original killpg returned Ok(()). These observations do not identify which transition cleared the signal. All50 original files were independently verified and source was restored exactly to f825, including the initial source map. The new parent-liveness repair and physical controls remain statically reviewed, uncompiled and unexecuted. [Complete observation and restoration review](fourth-app-parent-probe-complete-root-review.json)
++
++The Windows narrow ACL, four-cell original-token/legacy controls and target-log retention are still prepared scopes, not Windows execution passes. The original App lifecycle gate, full engineering gates, final fix/fmt and new-head hosted CI remain pending. The original23 ledger remains8 scoped closed/14OPEN/B18HOLD. [Windows matrix V2](static-proposals/b11-delete-matrix/repair-manifest.json)
+ 
+ The B16 two-pool caller binding has a separate static review and three proposed parent controls. The two state controls include runtime shutdown plus opening cancellation. A separate private recovery checkpoint connection is unbound in the current source. Its distinct static proposal now contains two production paths with 15 additions/3 deletions and three control paths with 324 additions; these are source-line counts, not executed cases. It has not been applied, compiled or run, and does not change checkpoint, ACK, publication or Current authorization. Do not generalize pool custody to the whole recovery flow. [Caller review](fourth-b16-native-caller-independent-review.json) / [Checkpoint static proposal](static-proposals/b16-checkpoint/repair-manifest.json)
+--- a/hepta-audit-fourth/deliverables/PROJECT_DIRECTION_AND_PLAN.zh-CN.md
++++ b/hepta-audit-fourth/deliverables/PROJECT_DIRECTION_AND_PLAN.zh-CN.md
+@@ -42,11 +42,13 @@
+ 
+ 最新完整清点为2026-11-04 22:27:38 UTC：1088个open PR，其中1064 Draft、24非Draft；5163 branches，PR最长依赖链211。此快照与下文18:57历史增量分开；新的零散PR观察不当作全库总数。当前候选仍是PR #4797，目标base为integration/ui-objective-20261103-product，main观察为732e934。没有合入main或改变目标base。[本轮完整进展](CURRENT_AUDIT_PROGRESS.zh-CN.md)
+ 
+-当前f825组合源已执行原25项权限回归25/25通过；原七包选中5416项，其中5408 JUnit PASS、8 FAIL；原全工作区19503项为19485 JUnit PASS、17 FAIL、1 TIMEOUT。24项requires-remote早退已逐名绑定原始输出，未当作远端行为执行。完整raw/JUnit/catalog/程序身份已独立重建与核验。[完整原始证据](fourth-f825-full-owning-complete-root-review.json)
++此前f825组合源已执行原25项权限回归25/25通过；原七包选中5416项，其中5408 JUnit PASS、8 FAIL；原全工作区19503项为19485 JUnit PASS、17 FAIL、1 TIMEOUT。24项requires-remote早退已逐名绑定原始输出，未当作远端行为执行。完整raw/JUnit/catalog/程序身份已独立重建与核验。[完整原始证据](fourth-f825-full-owning-complete-root-review.json)
+ 
+-执行队列为：App断开进程生命周期原例诊断；skills原9例及真实marker负控；迁移原166例及官方推断负控；V8原6例和runtime70例、真实Cargo/Bazel锁生成；Windows窄ACL与四格DELETE/父DELETE_CHILD控制；原完整工程门与最终fix/fmt；最后将固定候选送入原Windows/macOS Intel/Linux等CI。所有计划用例数都单列为计划，不计PASS。原始断言、5秒/2秒等预算及零重试保持各自原范围。
++此后三项修复已按各自固定源验收：Skills修正Table.insert后取得有效marker完整roots负控，恢复后原9例PASS；Migration负控到达原子进程588行的[]与官方名断言，恢复后原166例PASS，正例原日志1613–1627行保留两层同名成功；V8原6例及runtime68＋两个原integration共76例PASS。最终审读源树为7d703610ae4f778ad305ebc139860d276f416e8c，原Bazel update/check实际exit0，耗时111.734/0.493秒，双锁身份不变。前三组原测试均零重试，第一次Skills准备panic仍单列为无效负控，未借局部通过关闭新账本ID。[三项修复与锁门根审](fourth-three-repairs-v3-root-review.json)
+ 
+-原helper目录意外缺失的诊断已保留，原因未知；epoch2以同一f825源在全新目录重建并重新绑定程序身份，原1例已在5.491秒终态FAIL。外层bwrap已消失、内层 sandbox helper与Python仍存活；现有观察尚不能将原因归于信号。不能继承消失的二进制身份，也不能把该次失败算作已修复。[epoch2原终态](fourth-app-epoch2-terminal-diagnostic.json) / [独立根审](fourth-app-epoch2-root-terminal-review.json)
++后续队列为：新的App父存活候选接受真实物理控制和断连原例验收；Windows窄ACL与四格DELETE/父DELETE_CHILD控制；原完整工程门与最终fix/fmt；最后将固定候选送入原Windows/macOS Intel/Linux等CI。已通过的局部范围与这些待执行门分别记录，原始断言、5秒/2秒等预算及零重试保持各自原范围。
++
++原helper目录意外缺失的诊断已保留，原因未知；epoch2以f825在全新目录重建并绑定自己的程序身份，原1例FAIL/5.491秒，外层bwrap已消失而inner helper及Python仍存活。之后临时观测树1e936再次执行同一原例，FAIL/5.575秒；PR_GET在inner_entry与inner_after_restrictions均rc0/signal0，原killpg为Ok(())。50件原件及精确恢复f825已经独立核验；观测未定位清除信号的具体步骤，新的父存活修复仍仅静态审查、尚未编译运行。两次失败和首次前置停止各自保留，不把诊断算修复通过。[epoch2原终态](fourth-app-epoch2-terminal-diagnostic.json) / [新观测50件与恢复根审](fourth-app-parent-probe-complete-root-review.json)
+ 
+ 原平台仍有73个ledger名字缺至少一个平台的充分逐例证据，已收敛为10个查询组、7个原目标和33个target/platform配对；最终必须绑定实际发布head与执行merge tree。现有Windows private-state和13-case resume的已满足范围继续闭合，其余strict token、Intel PTY、TUI与正常UI接受分别验收。现有ARM Mac或Linux Intel环境不能代替所需平台。
+ 

@@ -1,0 +1,25 @@
+diff --git a/codex-rs/state/src/sqlite.rs b/codex-rs/state/src/sqlite.rs
+--- a/codex-rs/state/src/sqlite.rs
++++ b/codex-rs/state/src/sqlite.rs
+@@ -349,7 +349,9 @@
+         F: Fn() -> bool + Send + Sync + 'static,
+     {
+         let commit_allowed = Arc::new(commit_allowed);
++        let connection_custody = Arc::clone(&commit_allowed);
+         let options = SqliteConnectOptions::new()
++            .connection_lifetime_token(connection_custody)
+             .filename(path)
+             .create_if_missing(true)
+             .journal_mode(SqliteJournalMode::Wal)
+@@ -400,9 +402,11 @@
+         Fut: std::future::Future<Output = ()> + Send + 'static,
+     {
+         let commit_allowed = Arc::new(commit_allowed);
++        let connection_custody = Arc::clone(&commit_allowed);
+         let before_checkout = Arc::new(before_checkout);
+         let before_reuse = Arc::clone(&before_checkout);
+         let options = SqliteConnectOptions::new()
++            .connection_lifetime_token(connection_custody)
+             .filename(path)
+             .create_if_missing(true)
+             .journal_mode(SqliteJournalMode::Wal)

@@ -1,7 +1,8 @@
 diff --git a/codex-rs/utils/path-utils/src/private_state_windows_directory.rs b/codex-rs/utils/path-utils/src/private_state_windows_directory.rs
 --- a/codex-rs/utils/path-utils/src/private_state_windows_directory.rs
 +++ b/codex-rs/utils/path-utils/src/private_state_windows_directory.rs
-@@ -66,0 +67,12 @@
+@@ -95,0 +96,13 @@
++    let name = wide_path(root)?;
 +    with_private_security(|security| {
 +        if unsafe {
 +            windows_sys::Win32::Storage::FileSystem::CreateDirectoryW(name.as_ptr(), security)

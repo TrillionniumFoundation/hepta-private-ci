@@ -1,0 +1,56 @@
+diff --git a/codex-rs/Cargo.toml b/codex-rs/Cargo.toml
+--- a/codex-rs/Cargo.toml
++++ b/codex-rs/Cargo.toml
+@@ -179,6 +179,7 @@
+     "codex-client",
+     "codex-api",
+     "state",
++    "third_party/sqlx-sqlite-0.9.0",
+     "terminal-detection",
+     "test-binary-support",
+     "thread-manager-sample",
+@@ -665,6 +666,8 @@
+ opt-level = 0
+ 
+ [patch.crates-io]
++# Retain native SQLite resource custody from establishment through physical close.
++sqlx-sqlite = { path = "third_party/sqlx-sqlite-0.9.0" }
+ # Preserve AWS login while using the maintained constant-time P-256 dependency chain.
+ aws-config = { path = "third_party/aws-config-1.12.0" }
+ # Backport maintained TOML parsing for age's i18n-config dependency.
+diff --git a/codex-rs/third_party/sqlx-sqlite-0.9.0/Cargo.toml b/codex-rs/third_party/sqlx-sqlite-0.9.0/Cargo.toml
+--- a/codex-rs/third_party/sqlx-sqlite-0.9.0/Cargo.toml
++++ b/codex-rs/third_party/sqlx-sqlite-0.9.0/Cargo.toml
+@@ -189,7 +189,9 @@
+ version = "1.12.1"
+ optional = true
+ 
+-[dev-dependencies]
++[dev-dependencies.sqlx-core]
++version = "=0.9.0"
++features = ["_rt-tokio"]
+ 
+ [lints.clippy]
+ cast_possible_truncation = "deny"
+diff --git a/codex-rs/third_party/sqlx-sqlite-0.9.0/BUILD.bazel b/codex-rs/third_party/sqlx-sqlite-0.9.0/BUILD.bazel
+new file mode 100644
+--- /dev/null
++++ b/codex-rs/third_party/sqlx-sqlite-0.9.0/BUILD.bazel
+@@ -0,0 +1,17 @@
++load("//:defs.bzl", "codex_rust_crate")
++
++codex_rust_crate(
++    name = "sqlx-sqlite",
++    crate_edition = "2021",
++    crate_features = [
++        "bundled",
++        "chrono",
++        "json",
++        "migrate",
++        "offline",
++        "serde",
++        "time",
++        "uuid",
++    ],
++    crate_name = "sqlx_sqlite",
++)

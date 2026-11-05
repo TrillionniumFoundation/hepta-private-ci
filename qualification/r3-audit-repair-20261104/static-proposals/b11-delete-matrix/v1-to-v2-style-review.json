@@ -1,0 +1,74 @@
+{
+  "schema": "b11-delete-matrix-v1-to-v2-style/v1",
+  "state": "STATIC_EXACT_NO_EXECUTION",
+  "prior_manifest": "9565e857b2797cd401b1ed0b3e1c6fb00a6ceca9",
+  "delta": {
+    "blob": "2812cd6ee5f536f9d0a055c200bc9413f1c07c89",
+    "bytes": 1027,
+    "sha256": "7d8d201d518397e248244a98351dce27d8169a1819ff32a0c808ee4181935b4e"
+  },
+  "commands": [
+    {
+      "argv": [
+        "git",
+        "apply",
+        "--whitespace=error-all",
+        "--check",
+        "/workspace/scratch/07dd58cc9630/research-audit/b11-delete-matrix/v1-to-v2-style.patch"
+      ],
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "git",
+        "apply",
+        "--whitespace=error-all",
+        "/workspace/scratch/07dd58cc9630/research-audit/b11-delete-matrix/v1-to-v2-style.patch"
+      ],
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": ""
+    }
+  ],
+  "postimages": {
+    "codex-rs/windows-sandbox-rs/src/delete_permission_matrix_tests.rs": {
+      "blob": "e3c999e68382837bde16e2621de94bcb83509bc8",
+      "bytes": 14651,
+      "sha256": "c4f985e1e89e5915cab13955bd26af2a1a79802f635f4c0b974a09eb24275f9e"
+    },
+    "codex-rs/windows-sandbox-rs/src/lib.rs": {
+      "blob": "f7b90d6f2d3ecad07f487e05932431c979450c77",
+      "bytes": 30379,
+      "sha256": "51f901eb825ee60491aff7fffae23e90b9987de900c81774abdb15e3e63c807e"
+    },
+    "codex-rs/windows-sandbox-rs/src/token_tests.rs": {
+      "blob": "d406532fd3b69bc4a3635963022365aaec93280e",
+      "bytes": 21983,
+      "sha256": "471403c4500ef70a4f12ce3fa7af75cec4d314a2718129b8d08334c74edf33ea"
+    },
+    "codex-rs/windows-sandbox-rs/src/unified_exec/tests.rs": {
+      "blob": "aea1ff8476ab8ce33642677a36b1609054888a4e",
+      "bytes": 43106,
+      "sha256": "f6b49b35c8c0aed98dc621ae179faa2ec6d5d33858c09223a38bf4784fa2b940"
+    },
+    "codex-rs/windows-sandbox-rs/src/unified_exec/delete_permission_tests.rs": {
+      "blob": "4727675e9b85d75bfbe1de175571bcc481906353",
+      "bytes": 6737,
+      "sha256": "996b47813dde5e21ed6ca33f8764a6249957d2f3ace93b50c36d3d622895f775"
+    }
+  },
+  "complete_map_byte_equal": true,
+  "style_only": [
+    "Explicit path rename to *_tests.rs; Rust module name unchanged",
+    "Import pretty_assertions::assert_eq; original operands and budgets untouched"
+  ],
+  "three_other_postimages_byte_equal": [
+    "codex-rs/windows-sandbox-rs/src/token_tests.rs",
+    "codex-rs/windows-sandbox-rs/src/unified_exec/tests.rs",
+    "codex-rs/windows-sandbox-rs/src/unified_exec/delete_permission_tests.rs"
+  ],
+  "no_behavior_assertion_or_budget_changes": true,
+  "format_compile_native_tests_refs": "NOT_RUN_OR_CHANGED"
+}

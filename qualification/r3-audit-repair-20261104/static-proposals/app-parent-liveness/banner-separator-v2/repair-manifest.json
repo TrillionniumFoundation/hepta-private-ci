@@ -1,0 +1,76 @@
+{
+  "schema": "app_parent_liveness_banner_separator_review_v1",
+  "scope": "test-only; not native executed; no shared checkout or ref changes",
+  "path": "codex-rs/linux-sandbox/src/parent_lifecycle_tests.rs",
+  "preimage": {
+    "bytes": 12752,
+    "sha256": "cbd431000c30fa687422dbed660235edb16c4ce50b6f62c87def5e2957b2487e",
+    "git_blob": "0293bce3c08720952fd3413c92c4e9a033da3d03"
+  },
+  "postimage": {
+    "bytes": 12768,
+    "sha256": "08c1c79aaa41a9ca727ce3e4c77a46781d2b167d0127fbc401fba589e5ce4b9d",
+    "git_blob": "ed07ba4eed573d659dfdf647b1aab241a28e4b46"
+  },
+  "patch": {
+    "bytes": 506,
+    "sha256": "eed7f8bfa9784650060cf9de893e06339bd147397cdc586a05ba2b8d83376621",
+    "git_blob": "82953f6cc46503aa837d2f87e33a438aaf838b73"
+  },
+  "logical_change": {
+    "added": 1,
+    "removed": 0,
+    "statement": "println!(); at entry of the explicitly invoked ignored owned_liveness_scenario support test"
+  },
+  "reason": "Actual native first negative stopped before parent kill/reparent: the nested libtest test-name banner was not newline terminated and prefixed the first LIVENESS marker. Exact-line matching correctly rejected the contaminated line. This adds a line delimiter in every owned nested support process, preserving strict marker equality.",
+  "preserved": [
+    "marker comparison remains whole-line equality",
+    "all original 5-second bounds",
+    "all physical parent-death / closed-before-fork oracles",
+    "all production source files",
+    "ignored support is not counted as a passing parent case"
+  ],
+  "native_failure_classification": "INVALID_FIXTURE_BEFORE_CAUSAL_STAGE; not proof of parent-death counterfactual",
+  "anchors": {
+    "pre": {
+      "scenario": [
+        187
+      ],
+      "early_rejection": [
+        259
+      ],
+      "prefork_fd": [
+        268
+      ],
+      "survived": [
+        111
+      ],
+      "marker_equality": [
+        70
+      ]
+    },
+    "post": {
+      "scenario": [
+        187
+      ],
+      "early_rejection": [
+        260
+      ],
+      "prefork_fd": [
+        269
+      ],
+      "survived": [
+        111
+      ],
+      "marker_equality": [
+        70
+      ]
+    }
+  },
+  "static_validation": {
+    "git_apply_check_exit": 0,
+    "git_apply_exit": 0,
+    "exact_postimage": true
+  },
+  "native_validation": "PENDING"
+}

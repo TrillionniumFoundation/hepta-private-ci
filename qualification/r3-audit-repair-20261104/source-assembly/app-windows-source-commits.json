@@ -1,0 +1,37 @@
+[
+  {
+    "stage": "AppParentLiveness",
+    "tree": "c6fbcfa0d1ba3b1556f601dc4ca3a7734328b9f7",
+    "message": "fix(linux-sandbox): rearm parent death with original process liveness custody",
+    "sha": "b141e287b7c1c581b7e57bf7f3a5722f8bd42b79",
+    "parent": "bd7631e98f295fefad7654865cea497ceacf7d06"
+  },
+  {
+    "stage": "WindowsAclIdempotency",
+    "tree": "ef96589ba7bed90ebb600c0132af67c5cc03f635",
+    "message": "fix(windows-sandbox): recognize complete deny ACLs on the retained file object",
+    "sha": "bb5d1316a84a710898156ffcb862ba07267c7af7",
+    "parent": "b141e287b7c1c581b7e57bf7f3a5722f8bd42b79"
+  },
+  {
+    "stage": "WindowsTokenDeleteMatrix",
+    "tree": "deaefe6c6e0c68b64bc4b505e9dc8347bde4dd3e",
+    "message": "test(windows-sandbox): verify both deletion permission routes with native file controls",
+    "sha": "fec05bab68c2de0472f6d9bd73727b4a48dc8a96",
+    "parent": "bb5d1316a84a710898156ffcb862ba07267c7af7"
+  },
+  {
+    "stage": "WindowsLegacyDeleteMatrix",
+    "tree": "5b84397a61f79279875d268c0e2f2f19f4d7e30e",
+    "message": "test(windows-sandbox): exercise legacy deletion against all permission cells",
+    "sha": "104d2b187457897f595aab7a70559a85b499339f",
+    "parent": "fec05bab68c2de0472f6d9bd73727b4a48dc8a96"
+  },
+  {
+    "stage": "WindowsSuccessRetention",
+    "tree": "fb9e131272f7e7a138d6c0d1af2b048b9a6ab7ff",
+    "message": "ci: retain original Windows sandbox unit logs for case qualification",
+    "sha": "ccf0f78ce84caf5dde40e639d45a91a737096df6",
+    "parent": "104d2b187457897f595aab7a70559a85b499339f"
+  }
+]

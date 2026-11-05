@@ -1,0 +1,93 @@
+diff --git a/deliverables/CURRENT_AUDIT_PROGRESS.zh-CN.md b/deliverables/CURRENT_AUDIT_PROGRESS.zh-CN.md
+--- a/deliverables/CURRENT_AUDIT_PROGRESS.zh-CN.md
++++ b/deliverables/CURRENT_AUDIT_PROGRESS.zh-CN.md
+@@ -6,7 +6,7 @@
+ 
+ 近期发展方向依次是：**可重复验证的整合候选 → 普通启动可用的可信任务闭环 → 同信息、等总成本的共享计算与学习验证 → 独立外部接受**。源码存在、局部通过、科学采用和生产发布需要各自的退出证据。
+ 
+-本报告完整库存覆盖2026-11-05 03:16–03:24 UTC；旧2026-11-04 22:27:38 UTC快照保留，各增量和原生执行另有source tree与时间。已发布候选仍为cabcb40d36e116beaa65750e1f674c52035da785。旧f825原25审批控制、owning7和完整workspace的原结果保持。后续Skills、Migration、V8各自在固定源取得原9、166、76例PASS；App父存活控制和Windows/Python源码继续整合到fb9e131272f7e7a138d6c0d1af2b048b9a6ab7ff。fb9现已实际执行未过滤的原完整工作区命令：19,506项中19,490 JUnit PASS、16 FAIL，另有57项原ignored和25项已绑定早退，零重试。14项与旧失败逐名重合，新增恢复线程不存在和代理响应超时两项，原因待查。完整新42件原件已独立重建，最终fix/fmt正在按原流程执行并逐步审查改动，候选未全绿。[本轮非通过逐项根审](fourth-full-fb9-nonpass-root-review.json)
++本报告完整库存覆盖2026-11-05 03:16–03:24 UTC；旧2026-11-04 22:27:38 UTC快照保留，各增量和原生执行另有source tree与时间。已发布候选仍为cabcb40d36e116beaa65750e1f674c52035da785。旧f825原25审批控制、owning7和完整workspace的原结果保持。后续Skills、Migration、V8各自在固定源取得原9、166、76例PASS；App父存活控制和Windows/Python源码继续整合到fb9e131272f7e7a138d6c0d1af2b048b9a6ab7ff。fb9现已实际执行未过滤的原完整工作区命令：19,506项中19,490 JUnit PASS、16 FAIL，另有57项原ignored和25项已绑定早退，零重试。14项与旧失败逐名重合，新增恢复线程不存在和代理响应超时两项，原因待查。完整新42件原件已独立重建，最终fix/fmt正在按原流程执行并逐步审查改动，候选未全绿。[本轮非通过逐项根审](fourth-full-fb9-nonpass-root-review.json) / [新42件完整原件根审](fourth-full-fb9-complete-root-review.json)
+ 
+ 全局架构权威仍为 [docs/DEVELOPMENT.md](../../docs/DEVELOPMENT.md)。本目录记录特定候选资格；[前一版完整报告](THIRD_AUDIT_PROGRESS.zh-CN.md)、旧失败和原退出条件都保留。
+ 
+@@ -180,7 +180,7 @@
+ 
+ | 顺序 | 实际工作与交付 | 退出条件 |
+ |---|---|---|
+-| P0当前 | literal-deny原25已通过；继续原所属7包和完整workspace、原fix/fmt，统一源码/锁/证据发布 | 原断言/预算/负控不弱化，完整raw/JUnit、程序身份一致，剩余失败如实保留 |
++| P0当前 | 保留原25、所属7包与两轮full的已完成原结果；完成原fix/fmt后统一源码/锁/证据发布，16项失败继续开放 | 原断言/预算/负控不弱化，完整raw/JUnit、程序身份一致，剩余失败如实保留 |
+ | P0原平台 | 最终head与merge原CI；成功正文；真实musl ELF/smoke；Intel/Windows逐因果处理 | 原required均满足；cache/skip/retry/早退分列，审批限制不绕过 |
+ | P1可信普通入口 | 执行R2c/d/e与native token/caller/checkpoint控制；独立审4812/4821净迁移，保Current、Root/joint/FinalUse/listener合同 | 普通启动同源authority/sender，任务/拒绝/取消/丢ACK/重启/回滚有独立物理证据 |
+ | P2共享计算/Memory | 一套Encoder/Cell/worker、单写者域、有界队列、可重建投影 | 64/256/1024/4096 logical Cell与实际并发分别测质量、CPU、RSS、p50/p95/p99、总成本及恢复 |
+@@ -211,7 +211,7 @@
+ | B15 | 最终 CI 与 main 资格 | cabc完整CI失败；新组合原全门禁待验 | 最终精确head、base和merge tree、所有required门、原失败与有效负控齐全；保全部skip/retry/cache/unknown，原48映射独立维护。 |
+ | B16 | 可信产品入口及外部效果 | 入口基础已实测；Current、正常接线和真实接受开放 | 按独立R1–R6批次实现：arg0基础→trust/Current与inherited合同→Agentd装配→joint consumer→normal producer与paired pin→原真实接受。R0的102决策/474净差不等于编译最小闭包。 |
+ | B17 | #4578 缺失确认终稿 | 32-fit缺失终稿已补；报告范围闭合 | 保77b244终稿与冻结903946源、全部失败与成本unknown；不为使结论变绿重训同一确认集。 |
+-| B18 | 解析核心 / 参数记忆科学采用 | 科学HOLD | 若继续研究，执行R0/R1/R2的新冻结协议与独立数据；不继续也可保留明确不采用决策，不追求事后正结果。 |
++| B18 | 解析核心 / 参数记忆科学采用 | 科学HOLD | 保留原D−B采用门与HOLD。J有限规划作为独立有证据的组件继续评估，权重编辑保强普通默认与验证回退；新实验先冻结独立数据、拟合单位、计算成本和全部失败保留，禁止以J−C、原记录重放或移植一致性换名关闭D−B。 |
+ | B19 | HeptaBao / Chain / HIA 外部接受 | 外部兼容及本产品独立接受开放 | 按B19-Bao/B19-Chain/B19-HIA分开取得同源实现与真实目标接受；advisory DENY_ALL/safety_certificate=false保持。 |
+ | B20 | 远程控制握手夹具 | 旧原19例正文已核；新最终同源CI开放 | 最新候选原19例及原平台CI以精确收据关闭；不得跳过正常HTTP或替代真实握手。 |
+ | B21 | macOS Intel PTY退出和输出 | ROG PTY29/转发/监督31例通过；Intel原门开放 | 原Intel30例、完整drain/child/FD原断言和2/5秒预算不变；同源因果与原平台结果齐全。 |
+diff --git a/deliverables/FOURTH_BATCH_QUALIFICATION.md b/deliverables/FOURTH_BATCH_QUALIFICATION.md
+--- a/deliverables/FOURTH_BATCH_QUALIFICATION.md
++++ b/deliverables/FOURTH_BATCH_QUALIFICATION.md
+@@ -37,7 +37,7 @@
+ | Marketplace migration fixture | Negativef9bfef21d511a3e9ee25fb67802d240c691f62ec → positiveb2cee2e56d32199dc67d362ec15b796b2814ee7e | Original child assertion FAIL → original166PASS,0retry | Positive raw contains both nested same-name successes; not merely a parent process result |
+ | V8 default feature alignment | 7d703610ae4f778ad305ebc139860d276f416e8c | Original76PASS,0retry: runtime68+poc6+jit1+parallel_initialization1 | Both original integration targets included; four test-program identities stable |
+ | Original Bazel lock gates | Same7d703 source before/after | update0/111.734s;check0/0.493s; no generated lock diff | Existing cache retained; Cargo/MODULE lock identities unchanged |
+-| Final fix/fmt | Pending after concrete failure triage | Not yet executed | No final code-tree qualification |
++| Final fix/fmt | Original scoped flow after fb9 full | Execution and any automatic source delta are tracked by the current root receipt; no terminal success claimed here | No final code-tree qualification |
+ 
+ The c270 controller's TypeError happened in the first restoration guard after the valid negative, before writing source. Its failed exit1 remains unchanged. The continuation revalidated all seven original evidence files, exact source, prior helper/test-program identities, ordinary index and both locks; only the one approved test-file restoration proceeded. The valid negative was not repeated. [Native source/control review](fourth-bash-no-rc-native-root-review.json)
+ 
+diff --git a/deliverables/PROJECT_DIRECTION_AND_PLAN.zh-CN.md b/deliverables/PROJECT_DIRECTION_AND_PLAN.zh-CN.md
+--- a/deliverables/PROJECT_DIRECTION_AND_PLAN.zh-CN.md
++++ b/deliverables/PROJECT_DIRECTION_AND_PLAN.zh-CN.md
+@@ -46,7 +46,7 @@
+ 
+ 此后三项修复已按各自固定源验收：Skills修正Table.insert后取得有效marker完整roots负控，恢复后原9例PASS；Migration负控到达原子进程588行的[]与官方名断言，恢复后原166例PASS，正例原日志1613–1627行保留两层同名成功；V8原6例及runtime68＋两个原integration共76例PASS。这三项修复的终态源树为7d703610ae4f778ad305ebc139860d276f416e8c，原Bazel update/check实际exit0，耗时111.734/0.493秒，双锁身份不变。前三组原测试均零重试，第一次Skills准备panic仍单列为无效负控，未借局部通过关闭新账本ID。[三项修复与锁门根审](fourth-three-repairs-v3-root-review.json)
+ 
+-App父存活V2已取得3项有效因果反例；八项正例中原App断连、3项原reaper及3项新控制实际通过，1项原capability因宿主前置缺失早退，原wrapper failure保留。完整157件原件已经独立重建。Windows窄ACL与四格DELETE/父DELETE_CHILD源码已整合，但Linux不提供Windows原生资格。Python原57项实际通过，普通index内容语义已只读核准。fb9原完整工作区现已执行，19,506项中19,490 JUnit PASS、16 FAIL，并保留25项早退；先追查新增线程恢复与代理响应失败，再完成最终fix/fmt并发布现有Draft，以固定新提交运行原Windows/macOS Intel/Linux等CI。原始断言、5秒/2秒等预算及零重试保持各自范围。[App完整根审](fourth-app-parent-liveness-v2-complete-root-review.json) / [新full逐项根审](fourth-full-fb9-nonpass-root-review.json)
++App父存活V2已取得3项有效因果反例；八项正例中原App断连、3项原reaper及3项新控制实际通过，1项原capability因宿主前置缺失早退，原wrapper failure保留。完整157件原件已经独立重建。Windows窄ACL与四格DELETE/父DELETE_CHILD源码已整合，但Linux不提供Windows原生资格。Python原57项实际通过，普通index内容语义已只读核准。fb9原完整工作区现已执行，19,506项中19,490 JUnit PASS、16 FAIL，并保留25项早退；新增线程恢复与代理响应失败的原因保持OPEN并单独继续定位；完成最终fix/fmt后发布现有Draft，以固定新提交运行原Windows/macOS Intel/Linux等CI。原始断言、5秒/2秒等预算及零重试保持各自范围。[App完整根审](fourth-app-parent-liveness-v2-complete-root-review.json) / [新full逐项根审](fourth-full-fb9-nonpass-root-review.json)
+ 
+ 原helper目录意外缺失的诊断已保留，原因未知；epoch2以f825在全新目录重建并绑定自己的程序身份，原1例FAIL/5.491秒，外层bwrap已消失而inner helper及Python仍存活。之后临时观测树1e936再次执行同一原例，FAIL/5.575秒；PR_GET在inner_entry与inner_after_restrictions均rc0/signal0，原killpg为Ok(())。50件原件及精确恢复f825已经独立核验；观测未定位清除信号的具体步骤，新的父存活候选首个native反事实在5.005秒因libtest banner与marker同一行而停于因果阶段前，未到kill/reparent/arm；该无效负控已精确恢复d8a5e94，新增一行println!后V2已完成3项有效因果反例及8 JUnit PASS，其中仅7项行为实际执行，原capability早退与严格controller1保持开放。两次失败和首次前置停止各自保留，不把诊断算修复通过。[epoch2原终态](fourth-app-epoch2-terminal-diagnostic.json) / [新观测50件与恢复根审](fourth-app-parent-probe-complete-root-review.json) / [首反事实无效与恢复](fourth-app-parent-liveness-invalid-negative-root-review.json)
+ 
+diff --git a/deliverables/current-blockers.json b/deliverables/current-blockers.json
+--- a/deliverables/current-blockers.json
++++ b/deliverables/current-blockers.json
+@@ -40,7 +40,7 @@
+       "priority": "P0",
+       "status": "OPEN_FINAL_PRODUCT_QUALIFICATION",
+       "current_label_zh": "单一候选确定；最终源码/CI资格开放",
+-      "evidence_scope_zh": "PR#4797保持Draft，已发布cabc。第四批f825原25控制25PASS；所属七包5408 JUnit PASS/8FAIL；完整workspace19503 selected=19485 JUnit PASS/17FAIL/1TIMEOUT，0retry。完整原件已独立重建核验。三个新修复静态候选、最终fix/fmt及新head CI仍待验，尚未发布。",
++      "evidence_scope_zh": "PR#4797保持Draft，已发布cabc。保留第四批f825原25控制25PASS、所属七包5408 JUnit PASS/8FAIL与完整workspace19503 selected=19485 JUnit PASS/17FAIL/1TIMEOUT的原结果。随后Skills9、Migration166、V8及runtime76已在各自固定源通过，App原断连在c6限域通过；新fb9原full19506 selected=19490 JUnit PASS/16FAIL，57ignored、25早退、零retry。完整新旧原件均已独立重建核验；最终fix/fmt和新head原平台CI仍开放，尚未发布第四批源码。",
+       "original_exit_condition_zh": "逐路径决定保留/合入/延期；manifest、vendor、Cargo 与 Bazel 锁同步；固定候选 head、目标 base 与执行 merge tree；原始必需 CI 全通过。",
+       "next_closure_gate_zh": "保r3 Guardian取消/截止及runtime-scoped Git缓存；最终同一次提交完整源码/锁/证据，验原required CI和合成merge树。",
+       "closure_class": "OPEN"
+@@ -139,7 +139,7 @@
+       "priority": "P0",
+       "status": "OPEN_WINDOWS_BOUNDARY_AND_DIAGNOSTIC_SCOPE",
+       "current_label_zh": "Windows helper原范围通过；三个严格权限失败仍开放",
+-      "evidence_scope_zh": "cabc source/merge各254exec通过，13resume和121rollout分列。strict ACL/token/delete原3失败保留。保持原public query和token旗标的窄ACL幂等V2、DELETE与父DELETE_CHILD四格物理矩阵V2及原Windows成功日志保留均已静态审查，尚未应用或原生执行。历史助手所述审批限制的原decision/action/reason尚未恢复，不作为新审批事实或永久禁令。",
++      "evidence_scope_zh": "cabc source/merge各254exec通过，13resume和121rollout分列。strict ACL/token/delete原3失败保留。保持原public query和token旗标的窄ACL幂等V2、DELETE与父DELETE_CHILD四格物理矩阵V2及原Windows成功日志保留均已静态审查并精确应用到fb9组合源，尚未在Windows原生编译或执行。历史助手所述审批限制的原decision/action/reason尚未恢复，不作为新审批事实或永久禁令。",
+       "original_exit_condition_zh": "在获准的修复范围内提供原生 helper 与原严格 token 契约，原攻击/权限/文件系统用例全部通过；需要超出已允许边界时明确升级审批。",
+       "next_closure_gate_zh": "已审窄ACL与四格控制已应用到组合源，待最终fix/fmt与发布后由新head原WindowsCI验收。保留原严格token/legacy断言和预算；历史审批原receipt未恢复，不虚构新拒绝或永久禁令。",
+       "closure_class": "OPEN"
+@@ -183,7 +183,7 @@
+       "priority": "P0",
+       "status": "OPEN_REQUIRED_CI_AND_PRODUCT_ACCEPTANCE",
+       "current_label_zh": "cabc完整CI失败；新组合原全门禁待验",
+-      "evidence_scope_zh": "cabc19workflow=14成功3失败2跳过；blocking37jobs=22成功11失败4跳过。f825原full19503=19485 JUnit PASS/17FAIL/1TIMEOUT，24remote和另1capability早退保留。Skills9/Migration166/V8+runtime76原范围已通过，App原断连0.606秒通过但capability门开放。新fb9原Python57/57通过，普通index9,575项语义只读核准；新原full19506=19490 JUnit PASS/16FAIL，57ignored、25早退、零retry；14旧同名失败和2新问题待闭合。完整新原件复核、最终fix/fmt与固定新源原平台CI仍待完成。",
++      "evidence_scope_zh": "cabc19workflow=14成功3失败2跳过；blocking37jobs=22成功11失败4跳过。f825原full19503=19485 JUnit PASS/17FAIL/1TIMEOUT，24remote和另1capability早退保留。Skills9/Migration166/V8+runtime76原范围已通过，App原断连0.606秒通过但capability门开放。新fb9原Python57/57通过，普通index9,575项语义只读核准；新原full19506=19490 JUnit PASS/16FAIL，57ignored、25早退、零retry；14旧同名失败和2新问题待闭合。完整新42件原件已独立重建复核；最终fix/fmt与固定新源原平台CI仍待完成。",
+       "original_exit_condition_zh": "最新候选所有必需工作流终态成功；目标 main 基线重新核实；合成 merge 与发布 commit 树一致；保留原失败和修复回执。",
+       "next_closure_gate_zh": "最终精确head、base和merge tree、所有required门、原失败与有效负控齐全；保全部skip/retry/cache/unknown，原48映射独立维护。",
+       "closure_class": "OPEN"
+@@ -323,7 +323,7 @@
+     "fourth-pr4823-root-review.json"
+   ],
+   "native_latest_reviewed_tree": "fb9e131272f7e7a138d6c0d1af2b048b9a6ab7ff",
+-  "code_ci_composition_note": "21 unpublished source commits reach actualfb9. OriginalPython57 passed; post-Python ordinary-index byte failure is preserved and all9575 entry semantics match originalcabc. Root accepted currentc41 snapshot; remaining full stages are running without source reapplication or Python rerun. No final hygiene or final published-head CI qualification.",
++  "code_ci_composition_note": "21 unpublished source commits reach actualfb9. OriginalPython57 passed; post-Python ordinary-index byte failure is preserved and all9575 entry semantics match originalcabc. Root accepted currentc41 snapshot. The unfiltered full continuation completed without source reapplication or Python rerun:19490 JUnit PASS/16FAIL,57ignored,25bound early returns,0retry. All42 original files were independently reconstructed. Original scoped hygiene is tracked separately; no final code-tree or published-head CI qualification is claimed.",
+   "open_ids": [
+     "B02",
+     "B07",

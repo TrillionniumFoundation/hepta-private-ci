@@ -1,0 +1,226 @@
+{
+  "schema": "hepta-app-epoch2-complete-original-evidence-archive-v1",
+  "native_export_job": "1a1a97b2720-fc05-357a",
+  "native_export_status": "succeeded",
+  "native_export_exit_code": 0,
+  "native_export_manifest": {
+    "git_blob": "94400649b6e0683d6c5984ab11e062aed5d44cf0",
+    "bytes": 23102,
+    "sha256": "8ca4456f4bba6eaa827169f5889a873549f83a1bdee093aec468d1815bdae648"
+  },
+  "native_original_job": "1a1a967b3ab-fc05-34f6",
+  "source_tree": "f8251e1d14fa8524ab469281296cd4cf708f173c",
+  "original_unique_files_count": 38,
+  "assets": [
+    {
+      "name": "normal-six-helper-build-epoch2.stdout",
+      "original": {
+        "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/app-disconnect-epoch2-20261105-0152/normal-six-helper-build-epoch2.stdout",
+        "bytes": 1130496,
+        "sha256": "28e8049fa45e3bfed9914105fe0d840dee4adf719bd15e006eb5f9343ca60e67"
+      },
+      "gzip": {
+        "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/app-disconnect-epoch2-frozen-export-20261105-0210/normal-six-helper-build-epoch2.stdout.gz",
+        "bytes": 74981,
+        "sha256": "2744db2b9b60faa6c5530ce71526714316eb42ddd5a48f0f94281f773fa6342d"
+      },
+      "gzip_mtime": 0,
+      "base64_bytes": 99976,
+      "base64_sha256": "0a72f11faabe8430e52aaa7dd3ddd030893507f525ff4412b96816566c913a29",
+      "github_chunks": [
+        {
+          "offset": 0,
+          "git_blob": "3332adf85c0c049e3eae9537995529a5f4a0a5e9",
+          "bytes": 99976,
+          "sha256": "0a72f11faabe8430e52aaa7dd3ddd030893507f525ff4412b96816566c913a29",
+          "local_transport_file": "/workspace/scratch/07dd58cc9630/ci-audit/recovered-20261105/app-epoch2-compressed-archive/00-000.b64.txt",
+          "local_transport_added_final_newline": true
+        }
+      ]
+    },
+    {
+      "name": "normal-six-helper-build-epoch2.stderr",
+      "original": {
+        "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/app-disconnect-epoch2-20261105-0152/normal-six-helper-build-epoch2.stderr",
+        "bytes": 47465,
+        "sha256": "e08c92634803e7bdd0aba7ad3721f5045254bd3afd809014dd0ce31f75dcfc91"
+      },
+      "gzip": {
+        "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/app-disconnect-epoch2-frozen-export-20261105-0210/normal-six-helper-build-epoch2.stderr.gz",
+        "bytes": 9948,
+        "sha256": "0068d4f647edd4e8bc271b913c9382a9112a2e8c409897577429d7f2128b3808"
+      },
+      "gzip_mtime": 0,
+      "base64_bytes": 13264,
+      "base64_sha256": "67e4b84162a927de99dff466bb3d4ab52ec4a22cc9c5595e72c57ba9327ba98c",
+      "github_chunks": [
+        {
+          "offset": 0,
+          "git_blob": "de9943bb37e6360c1614d063b2fa2d74f62463b2",
+          "bytes": 13264,
+          "sha256": "67e4b84162a927de99dff466bb3d4ab52ec4a22cc9c5595e72c57ba9327ba98c",
+          "local_transport_file": "/workspace/scratch/07dd58cc9630/ci-audit/recovered-20261105/app-epoch2-compressed-archive/01-000.b64.txt",
+          "local_transport_added_final_newline": true
+        }
+      ]
+    },
+    {
+      "name": "workspace-metadata.stdout",
+      "original": {
+        "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/app-disconnect-epoch2-20261105-0152/workspace-metadata.stdout",
+        "bytes": 8163658,
+        "sha256": "51ff98c991ea71a7a1be5135acb3c35bd6070b09544306f4b3bbc0fa1ea52e19"
+      },
+      "gzip": {
+        "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/app-disconnect-epoch2-frozen-export-20261105-0210/workspace-metadata.stdout.gz",
+        "bytes": 596961,
+        "sha256": "8e52af367ddcdc8a0694f7ab5aecc04137d9e6be16c24089c3b869f216d6e826"
+      },
+      "gzip_mtime": 0,
+      "base64_bytes": 795948,
+      "base64_sha256": "05b7da731e02afd2751d37771428d5bfe9fb37d31d0793ae05d86aaf6bc1198c",
+      "github_chunks": [
+        {
+          "offset": 0,
+          "git_blob": "bb2caf6d3e7ab1572e10e56f7a91f1a08072ee56",
+          "bytes": 400000,
+          "sha256": "fa002bff4c2de97ba41138c7fe8d464ffaca6bb87d016a4118a3f5d9be4d9752",
+          "local_transport_file": "/workspace/scratch/07dd58cc9630/ci-audit/recovered-20261105/app-epoch2-compressed-archive/02-000.b64.txt",
+          "local_transport_added_final_newline": true
+        },
+        {
+          "offset": 400000,
+          "git_blob": "d6cc00eb227cd2ab00162be0b66c09df89a4d0cb",
+          "bytes": 395948,
+          "sha256": "5520e1b07f6788cf6eeaf35cced07b9bb352ab7555e7f361f96151e97c6ead94",
+          "local_transport_file": "/workspace/scratch/07dd58cc9630/ci-audit/recovered-20261105/app-epoch2-compressed-archive/02-001.b64.txt",
+          "local_transport_added_final_newline": true
+        }
+      ]
+    },
+    {
+      "name": "app-disconnect-full-context-catalog.stdout",
+      "original": {
+        "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/app-disconnect-epoch2-20261105-0152/app-disconnect-full-context-catalog.stdout",
+        "bytes": 3294917,
+        "sha256": "00fc38c7ac704092f801f975f23dc3d119c982caf34096cc2fe123f05d2dd153"
+      },
+      "gzip": {
+        "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/app-disconnect-epoch2-frozen-export-20261105-0210/app-disconnect-full-context-catalog.stdout.gz",
+        "bytes": 378606,
+        "sha256": "4b1219fafd7f57191db0e47cb59a2a8c010ab192c7b15e572ad0c456bc1d9030"
+      },
+      "gzip_mtime": 0,
+      "base64_bytes": 504808,
+      "base64_sha256": "ceab390919382a0375d5fad92a63b60fcbb785e8a0de203fa7aa17c5da758683",
+      "github_chunks": [
+        {
+          "offset": 0,
+          "git_blob": "d60f682878fc8b14dfa9b56753464846a96b9c01",
+          "bytes": 400000,
+          "sha256": "2e262dec3d4094539583241e6c191a84b95e47406783c0d95dc44354fd5ba25c",
+          "local_transport_file": "/workspace/scratch/07dd58cc9630/ci-audit/recovered-20261105/app-epoch2-compressed-archive/03-000.b64.txt",
+          "local_transport_added_final_newline": true
+        },
+        {
+          "offset": 400000,
+          "git_blob": "be5984a3f9453349ea6b9788957a754416dab616",
+          "bytes": 104808,
+          "sha256": "8c167e28dcd440d32f65bdcc5e1378b1d8a92dd02f95ab82bd1c3f5f68eab093",
+          "local_transport_file": "/workspace/scratch/07dd58cc9630/ci-audit/recovered-20261105/app-epoch2-compressed-archive/03-001.b64.txt",
+          "local_transport_added_final_newline": true
+        }
+      ]
+    },
+    {
+      "name": "app-disconnect-full-context-catalog.stderr",
+      "original": {
+        "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/app-disconnect-epoch2-20261105-0152/app-disconnect-full-context-catalog.stderr",
+        "bytes": 48117,
+        "sha256": "5ef4a2e04f9f5b2c3a9a86d809be75d48c0546bffe614c5d8d58f19de5f95082"
+      },
+      "gzip": {
+        "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/app-disconnect-epoch2-frozen-export-20261105-0210/app-disconnect-full-context-catalog.stderr.gz",
+        "bytes": 8685,
+        "sha256": "b2359badd0934184117ba84b4b4bc039d043dc618129e6a9aa5b6d34bc824a1c"
+      },
+      "gzip_mtime": 0,
+      "base64_bytes": 11580,
+      "base64_sha256": "0cc5fb9da222340a8370a0fc3261e98456b0c6fc0847c6dd51594fdb44943d2f",
+      "github_chunks": [
+        {
+          "offset": 0,
+          "git_blob": "bf41adc557ef4bdca95a803e71487653fe219023",
+          "bytes": 11580,
+          "sha256": "0cc5fb9da222340a8370a0fc3261e98456b0c6fc0847c6dd51594fdb44943d2f",
+          "local_transport_file": "/workspace/scratch/07dd58cc9630/ci-audit/recovered-20261105/app-epoch2-compressed-archive/04-000.b64.txt",
+          "local_transport_added_final_newline": true
+        }
+      ]
+    },
+    {
+      "name": "selection.json",
+      "original": {
+        "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/app-disconnect-epoch2-20261105-0152/selection.json",
+        "bytes": 5894093,
+        "sha256": "8f5d1132c4b693c0b96321779a5a92f93dfa696698abca18f0063fe04e88fc37"
+      },
+      "gzip": {
+        "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/app-disconnect-epoch2-frozen-export-20261105-0210/selection.json.gz",
+        "bytes": 394334,
+        "sha256": "34a2fe2856453b71f1a872ccca1f9477b490d9b2cc16e860413dd9f6bc9bf0b8"
+      },
+      "gzip_mtime": 0,
+      "base64_bytes": 525780,
+      "base64_sha256": "6a89edc4eef098124da986f1d73943abc1858ae889c58852ee10bcdf5f2abb49",
+      "github_chunks": [
+        {
+          "offset": 0,
+          "git_blob": "aaa2cfa68b9fd7fd80dcfda169ca59ae6468c155",
+          "bytes": 400000,
+          "sha256": "b26640800a845c25c2963348cdd0299f6eb6e5fd6767328732949568905c806f",
+          "local_transport_file": "/workspace/scratch/07dd58cc9630/ci-audit/recovered-20261105/app-epoch2-compressed-archive/05-000.b64.txt",
+          "local_transport_added_final_newline": true
+        },
+        {
+          "offset": 400000,
+          "git_blob": "62a6fa2e1d15234e8301e77465f95080704475ce",
+          "bytes": 125780,
+          "sha256": "489c7264737ab65c913b54f21295c8c1b5f0bdd27c7f26138789f3b4f830beba",
+          "local_transport_file": "/workspace/scratch/07dd58cc9630/ci-audit/recovered-20261105/app-epoch2-compressed-archive/05-001.b64.txt",
+          "local_transport_added_final_newline": true
+        }
+      ]
+    },
+    {
+      "name": "complete-small-originals.json",
+      "original": {
+        "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/app-disconnect-epoch2-frozen-export-20261105-0210/complete-small-originals.json",
+        "bytes": 329753,
+        "sha256": "57f4a308d538047f32c7d5b18ed2ce0f1d695fafb86cb8007bc22e8da1decdf3"
+      },
+      "gzip": {
+        "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/app-disconnect-epoch2-frozen-export-20261105-0210/complete-small-originals.json.gz",
+        "bytes": 49965,
+        "sha256": "9f55b4e830f8b2031d2571e57c06f694119f6772b04daef0e3e8b24b49b99b52"
+      },
+      "gzip_mtime": 0,
+      "base64_bytes": 66620,
+      "base64_sha256": "ff65a437f2ddb3dd839463573d7073a8532b1555e511b12d8932ee5525bd0569",
+      "github_chunks": [
+        {
+          "offset": 0,
+          "git_blob": "15cf2abf959ba9455d3486e237bd06f3d5ad4d0c",
+          "bytes": 66620,
+          "sha256": "ff65a437f2ddb3dd839463573d7073a8532b1555e511b12d8932ee5525bd0569",
+          "local_transport_file": "/workspace/scratch/07dd58cc9630/ci-audit/recovered-20261105/app-epoch2-compressed-archive/06-000.b64.txt",
+          "local_transport_added_final_newline": true
+        }
+      ]
+    }
+  ],
+  "terminal_diagnostic_bundle": "106cf2684ee66709db063d714c5d31f86d42fd45",
+  "originals_untouched": true,
+  "decode_contract": "Fetch each Git blob as exact UTF-8 base64 text, verify chunk bytes/SHA256, concatenate by offset, verify full base64 bytes/SHA256, strict decode, verify gzip bytes/SHA256, decompress, verify original bytes/SHA256. Local .b64.txt conveniences add exactly one trailing newline; remove only that one newline before comparing with the Git chunk. Never modify any original evidence.",
+  "qualification_limit": "Raw actual original App FAIL and process evidence; complete compiler/catalog/selection/metadata are included. No product repair or Windows/macOS qualification."
+}

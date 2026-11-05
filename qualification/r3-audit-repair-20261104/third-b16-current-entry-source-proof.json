@@ -1,0 +1,418 @@
+{
+  "schema": "hepta.b16_r0.current_normal_entry_source_proof.v1",
+  "scope": "Read-only fixed Git objects. No source/ref mutation, Root launch, credentials, build or new runtime qualification.",
+  "refs": {
+    "hepta_ff72": {
+      "repository": "TrillionniumFoundation/hepta-private-ci",
+      "commit": "ff72d462d74f9eb856aa9edbc368caad9c466708",
+      "tree": "f780fe13946102a33b329898af48810be9c7bf0c",
+      "parents": [
+        "e729e6c2becb528e3a6b49c9e5bbea57bd26637a"
+      ]
+    },
+    "hepta_donor": {
+      "repository": "TrillionniumFoundation/hepta-private-ci",
+      "commit": "14e2d89b3367232ec5dbe6187f09feed0f2b68d3",
+      "tree": "0e12d53adf6a13721fdb2feef0e974d903b92e85",
+      "parents": [
+        "a39a0871d9601ffccb5e0d95d8f39d54b3a63360"
+      ]
+    },
+    "hepta_pr4800": {
+      "repository": "TrillionniumFoundation/hepta-private-ci",
+      "commit": "1b390853e50aa2fdae2e6c68793f94742d2d667c",
+      "tree": "14a9e4ef975734cd9416014f6d0a11bca50599e4",
+      "parents": [
+        "6b715d2c92ce8ab74f0829ce6926fe8dfc8d7f5f"
+      ]
+    },
+    "desktop_current": {
+      "repository": "TrillionniumFoundation/trillionnium-os-desktop",
+      "commit": "c42eccaf8b9b5a163d0c52b1a3c42466fe0f425b",
+      "tree": "6133f7825fd266f47c5546cb1220b25dba5361ff",
+      "parents": [
+        "07116475bf07db624144086af51224590b68fe76"
+      ]
+    },
+    "desktop_old": {
+      "repository": "TrillionniumFoundation/trillionnium-os-desktop",
+      "commit": "c2c369836e87e9cf27b4dc9aa8b7446e85efdf90",
+      "tree": "56f2672a7eeca971870e616762b0a730bec2d32b",
+      "parents": [
+        "5a8684cc4591a4163c162f198b4121ca4cfc6ebc"
+      ]
+    }
+  },
+  "verdict": {
+    "normal_joint_notes_calculator_root_producer_in_desktop_c42": "ABSENT_FROM_INSPECTED_PRODUCT_ROOT_PATH",
+    "current_desktop_joint_consumer": "MISSING_RELATIVE_TO_OLD_C2",
+    "ff72_and_a69_production_agentd_entry": "NO_ROOT_PRODUCTION_STARTUP_PARSER_OR_CALLER",
+    "external_only_blocker": false
+  },
+  "desktop_services_identity": {
+    "path": "services",
+    "current": "247dfcc7a451b8bd6926fe2d5013120ace0c984d",
+    "old": "247dfcc7a451b8bd6926fe2d5013120ace0c984d",
+    "read_tree": "247dfcc7a451b8bd6926fe2d5013120ace0c984d",
+    "truncated": false
+  },
+  "desktop_branch_relation": {
+    "status": "diverged",
+    "ahead": 12,
+    "behind": 2,
+    "merge_base": "fd8d56c52b971c2d5d0e6430f296803b43ef60a3",
+    "not_successor_union": true
+  },
+  "consumer_absence": {
+    "current_complete_ui_tree": "008a430cb3122b14b6f4907ed30094b10845d303",
+    "old_complete_ui_tree": "d076fbecc6d017d31963520fb34f3b496d58b66a",
+    "current_truncated": false,
+    "old_truncated": false,
+    "paths": [
+      {
+        "path": "ui/core/src/desktop_startup.rs",
+        "current": null,
+        "old": "46e10c811042728546ad6060d08cafd54bb3343f"
+      },
+      {
+        "path": "ui/core/src/calculator.rs",
+        "current": null,
+        "old": "9724a2091a753bfc59d6865780b7985baff87275"
+      },
+      {
+        "path": "ui/core/src/calculator_lifetime.rs",
+        "current": null,
+        "old": "91a9bb58d17c64f54e14a712d08cc679fdf6571f"
+      },
+      {
+        "path": "ui/session/src/desktop_bootstrap.rs",
+        "current": null,
+        "old": "0ae04796e17d1a8db85ce5995ef07e5cb9503fdd"
+      },
+      {
+        "path": "ui/app-window/src/calculator_organ.rs",
+        "current": null,
+        "old": "87bd6d7b0c1e1de8299aae7df7d2abdf9fa72fa7"
+      }
+    ],
+    "limited_to": "These named joint consumer modules and the actual ui/session main parser, not a claim that all current Desktop features are absent."
+  },
+  "current_producer_proofs": [
+    {
+      "ref_key": "desktop_current",
+      "repository": "TrillionniumFoundation/trillionnium-os-desktop",
+      "path": "services/hepta-session-host/src/bin/hepta-desktop-root.rs",
+      "blob": "7f3acf48ee1f7bead9563742e34486449f7f3a2d",
+      "bytes": 1447,
+      "sha256": "035688fe72bd16b76da1a4871e4ec72ed5b2cd84c3e214d1f49b0ec9d7151932",
+      "url": "https://github.com/TrillionniumFoundation/trillionnium-os-desktop/blob/c42eccaf8b9b5a163d0c52b1a3c42466fe0f425b/services/hepta-session-host/src/bin/hepta-desktop-root.rs",
+      "lines": {
+        "start": 1,
+        "end": 49,
+        "text": "//! Explicit administrator-only fresh or exact existing-state recovery entry.\n#[cfg(target_os = \"linux\")]\n#[path = \"../product_root/mod.rs\"]\nmod product_root;\n\nfn main() -> Result<(), Box<dyn std::error::Error>> {\n    #[cfg(target_os = \"linux\")]\n    {\n        let mut args = std::env::args_os().skip(1);\n        let action = args.next();\n        if action.as_deref() == Some(std::ffi::OsStr::new(\"admin\")) {\n            return product_root::administer(args);\n        }\n        let flag = args.next();\n        let path = args.next();\n        if flag.as_deref() != Some(std::ffi::OsStr::new(\"--config\")) || path.is_none() {\n            return Err(\"expected initialize --config <Root0600-input> or recover --config <same-input> (--operation-id <original-id> | --latest-original-notes)\".into());\n        }\n        let path = std::path::Path::new(path.as_ref().ok_or(\"missing config\")?);\n        match action.as_deref().and_then(std::ffi::OsStr::to_str) {\n            Some(\"initialize\") if args.next().is_none() => product_root::initialize(path),\n            Some(\"recover\") => {\n                let selection = product_root::RecoverySelection::from_arguments(args)?;\n                product_root::recover(path, selection)\n            }\n            _ => Err(\"unknown or repeated original Root action\".into()),\n        }\n    }\n    #[cfg(not(target_os = \"linux\"))]\n    {\n        Err(\"the original first-product Root entry requires Linux\".into())\n    }\n}\n"
+      }
+    },
+    {
+      "ref_key": "desktop_current",
+      "repository": "TrillionniumFoundation/trillionnium-os-desktop",
+      "path": "services/hepta-session-host/src/product_root/mod.rs",
+      "blob": "3c62925cc7e6c7aae2fc6805fa64c2bf11cc196b",
+      "bytes": 11438,
+      "sha256": "8cd94ae1184f0f66d2352b6fdef5ffb62113477e6c08f02d33299b774160a46c",
+      "url": "https://github.com/TrillionniumFoundation/trillionnium-os-desktop/blob/c42eccaf8b9b5a163d0c52b1a3c42466fe0f425b/services/hepta-session-host/src/product_root/mod.rs",
+      "lines": {
+        "start": 120,
+        "end": 160,
+        "text": "    let mut args = Vec::<OsString>::new();\n    let mut pair = |name: &str, value: OsString| {\n        args.push(name.into());\n        args.push(value);\n    };\n    pair(\"--root-production-profile\", \"notes\".into());\n    pair(\n        \"--root-production-handoff-fd\",\n        child_handoff.as_raw_fd().to_string().into(),\n    );\n    pair(\"--root-production-uid\", inputs.uid.to_string().into());\n    pair(\"--root-production-gid\", inputs.gid.to_string().into());\n    pair(\n        \"--root-production-control-fd\",\n        control.as_raw_fd().to_string().into(),\n    );\n    pair(\n        \"--root-production-app-server-fd\",\n        app_server.as_raw_fd().to_string().into(),\n    );\n    pair(\n        \"--root-production-lifetime-ms\",\n        inputs.lifetime_ms.to_string().into(),\n    );\n    pair(\n        \"--notes-production-handoff-fd\",\n        app_pair.as_raw_fd().to_string().into(),\n    );\n    pair(\n        \"--notes-literal-deployment-fd\",\n        consumer.as_raw_fd().to_string().into(),\n    );\n    pair(\n        \"--notes-literal-ui-fd\",\n        notes_listener.as_raw_fd().to_string().into(),\n    );\n    pair(\n        \"--notes-session-pidfd\",\n        inherited_session.as_raw_fd().to_string().into(),\n    );\n    pair("
+      }
+    },
+    {
+      "ref_key": "desktop_current",
+      "repository": "TrillionniumFoundation/trillionnium-os-desktop",
+      "path": "services/hepta-session-host/src/product_root/mod.rs",
+      "blob": "3c62925cc7e6c7aae2fc6805fa64c2bf11cc196b",
+      "bytes": 11438,
+      "sha256": "8cd94ae1184f0f66d2352b6fdef5ffb62113477e6c08f02d33299b774160a46c",
+      "url": "https://github.com/TrillionniumFoundation/trillionnium-os-desktop/blob/c42eccaf8b9b5a163d0c52b1a3c42466fe0f425b/services/hepta-session-host/src/product_root/mod.rs",
+      "lines": {
+        "start": 259,
+        "end": 279,
+        "text": "    let prepared = match &previous {\n        None => prepared.with_notes_startup_from_session_before(\n            &files.profile,\n            application_pair,\n            session_owner.pidfd.try_clone()?,\n            deployment,\n            end,\n        )?,\n        Some((old, _)) => prepared.with_notes_recovery_startup_from_session_before(\n            &files.profile,\n            application_pair,\n            session_owner.pidfd.try_clone()?,\n            deployment,\n            end,\n            codex_hepta_agentd::RootNotesPolicyPredecessor {\n                target: &old.target,\n                grant_lifetime_ms: inputs.grant_lifetime_ms,\n            },\n        )?,\n    };\n    let bootstrap = prepared.seal_bootstrap(&consumer_root)?;"
+      }
+    },
+    {
+      "ref_key": "desktop_current",
+      "repository": "TrillionniumFoundation/trillionnium-os-desktop",
+      "path": "services/hepta-session-host/src/product_root/session.rs",
+      "blob": "7054223d1c27a66f02da4f487e094fc7029cc0ff",
+      "bytes": 5596,
+      "sha256": "74761962344338f099cf41c0000e663cf59fb955eac5a66d03d3793ae8087229",
+      "url": "https://github.com/TrillionniumFoundation/trillionnium-os-desktop/blob/c42eccaf8b9b5a163d0c52b1a3c42466fe0f425b/services/hepta-session-host/src/product_root/session.rs",
+      "lines": {
+        "start": 50,
+        "end": 74,
+        "text": "            .create_new(true)\n            .mode(0o600)\n            .open(fresh.admin.join(\"session.stderr\"))?;\n        let mut command = Command::new(format!(\"/proc/self/fd/{}\", program.as_raw_fd()));\n        command\n            .arg(\"--notes-root-bootstrap-stdin\")\n            .current_dir(&fresh.user)\n            .env_clear()\n            .envs(&environment)\n            .env(\"PATH\", \"/usr/bin:/bin\")\n            // The final Notes App must open its original durable store. Keep\n            // this application setting out of the native human UI environment.\n            .env(\"TRILL_NOTES_STATE_DIR\", fresh.user.join(\"notes\"))\n            .env(\n                \"TRILL_NOTES_READBACK_HELPER_SHA256\",\n                fs::digest(\n                    &inputs\n                        .programs\n                        .app_window\n                        .with_file_name(\"trill-notes-recovery\"),\n                )?,\n            )\n            .stdin(Stdio::from(File::from(std::os::fd::OwnedFd::from(\n                child_pair,\n            ))))"
+      }
+    },
+    {
+      "ref_key": "desktop_current",
+      "repository": "TrillionniumFoundation/trillionnium-os-desktop",
+      "path": "services/hepta-session-host/src/product_root/session.rs",
+      "blob": "7054223d1c27a66f02da4f487e094fc7029cc0ff",
+      "bytes": 5596,
+      "sha256": "74761962344338f099cf41c0000e663cf59fb955eac5a66d03d3793ae8087229",
+      "url": "https://github.com/TrillionniumFoundation/trillionnium-os-desktop/blob/c42eccaf8b9b5a163d0c52b1a3c42466fe0f425b/services/hepta-session-host/src/product_root/session.rs",
+      "lines": {
+        "start": 98,
+        "end": 112,
+        "text": "            end,\n        )?;\n        let reservation = trill_ui_core::notes_startup::NotesStartupReservation::parse_exact(&raw)\n            .map_err(std::io::Error::other)?;\n        let target: NotesTargetIdentity =\n            serde_json::from_value(serde_json::to_value(&reservation.target)?)?;\n        target.validate()?;\n        if target.task_id != 1\n            || birth != packet::pinned_metadata(&owner.pidfd, owner.pid())?\n            || serde_json::to_value(&target)? != serde_json::to_value(&reservation.target)?\n        {\n            return Err(\n                \"actual initial Session target/birth or canonical Notes identity changed\".into(),\n            );\n        }"
+      }
+    },
+    {
+      "ref_key": "desktop_current",
+      "repository": "TrillionniumFoundation/trillionnium-os-desktop",
+      "path": "services/hepta-session-host/src/product_root/seed.rs",
+      "blob": "64156170baea0436213546da6b710b511a8e79eb",
+      "bytes": 7660,
+      "sha256": "a1fba7c32a18e516e26aec6968f7a5351ea15befca1b11f3419145243e9471e0",
+      "url": "https://github.com/TrillionniumFoundation/trillionnium-os-desktop/blob/c42eccaf8b9b5a163d0c52b1a3c42466fe0f425b/services/hepta-session-host/src/product_root/seed.rs",
+      "lines": {
+        "start": 1,
+        "end": 10,
+        "text": "//! Actual original Core Start/Resume before the bounded Root/Session episode.\nuse super::{Result, config::Inputs, fs, geometry::Product, process::ChildOwner};\nuse codex_app_server_client::{\n    RemoteAppServerClient, RemoteAppServerConnectArgs, RemoteAppServerEndpoint,\n};\nuse codex_hepta_agentd::{\n    NotesThreadSeedOptions, NotesThreadSeedReceipt, ORIGINAL_NOTES_THREAD_ENVIRONMENTS_CONFIG,\n    ORIGINAL_NOTES_THREAD_EXECUTION_CONFIG, seed_original_notes_thread,\n};\nuse codex_utils_absolute_path::AbsolutePathBuf;"
+      }
+    },
+    {
+      "ref_key": "desktop_current",
+      "repository": "TrillionniumFoundation/trillionnium-os-desktop",
+      "path": "services/hepta-session-host/src/product_root/seed.rs",
+      "blob": "64156170baea0436213546da6b710b511a8e79eb",
+      "bytes": 7660,
+      "sha256": "a1fba7c32a18e516e26aec6968f7a5351ea15befca1b11f3419145243e9471e0",
+      "url": "https://github.com/TrillionniumFoundation/trillionnium-os-desktop/blob/c42eccaf8b9b5a163d0c52b1a3c42466fe0f425b/services/hepta-session-host/src/product_root/seed.rs",
+      "lines": {
+        "start": 120,
+        "end": 138,
+        "text": "            Err(_) => return Err(\"original AppServer seed connection timed out\".into()),\n        }\n    };\n    let receipt = seed_original_notes_thread(\n        &client,\n        home,\n        NotesThreadSeedOptions {\n            model: Some(preferences.model.clone()),\n            model_provider: Some(preferences.model_provider.clone()),\n            cwd: Some(fresh.record.manifest.workspace.as_path().to_path_buf()),\n            developer_instructions: Some(prompts.developer_instructions),\n        },\n    )\n    .await?;\n    if receipt.model != preferences.model || receipt.model_provider != preferences.model_provider {\n        return Err(\"actual Start result differs from the explicit product model/provider\".into());\n    }\n    client.shutdown().await?;\n    owner.terminate()?;"
+      }
+    },
+    {
+      "ref_key": "desktop_current",
+      "repository": "TrillionniumFoundation/trillionnium-os-desktop",
+      "path": "services/hepta-session-host/src/product_root/authority.rs",
+      "blob": "0c030f500806c8b7a18c714e328aab10c1a0215e",
+      "bytes": 11394,
+      "sha256": "d4bdd5a4d92fe5cd9ca1d2f30c2f7025deda893bde86ca21df9007a1c2c8be92",
+      "url": "https://github.com/TrillionniumFoundation/trillionnium-os-desktop/blob/c42eccaf8b9b5a163d0c52b1a3c42466fe0f425b/services/hepta-session-host/src/product_root/authority.rs",
+      "lines": {
+        "start": 177,
+        "end": 181,
+        "text": "        peer_uid: inputs.uid,\n        peer_gid: inputs.gid,\n        timeout_ms: 5_000,\n        lifetime_ms: inputs.lifetime_ms,\n        issuer_record_profile: HostIssuerRecordProfile::TextRecovery,"
+      }
+    },
+    {
+      "ref_key": "desktop_current",
+      "repository": "TrillionniumFoundation/trillionnium-os-desktop",
+      "path": "services/hepta-session-host/src/product_root/authority.rs",
+      "blob": "0c030f500806c8b7a18c714e328aab10c1a0215e",
+      "bytes": 11394,
+      "sha256": "d4bdd5a4d92fe5cd9ca1d2f30c2f7025deda893bde86ca21df9007a1c2c8be92",
+      "url": "https://github.com/TrillionniumFoundation/trillionnium-os-desktop/blob/c42eccaf8b9b5a163d0c52b1a3c42466fe0f425b/services/hepta-session-host/src/product_root/authority.rs",
+      "lines": {
+        "start": 189,
+        "end": 229,
+        "text": "    let route = codex_hepta_agentd::text_session::AgentdTextSessionConfig {\n        control_socket: actual.control_socket.clone(),\n        agent_id: actual.agent_id.clone(),\n        spawn_generation: actual.spawn_generation,\n        thread_id: seed.thread_id.clone(),\n        app_server_session_id: seed.app_server_session_id.clone(),\n        codex_home: actual.home_root.clone(),\n    };\n    let principal_scope = \"organ.desktop.notes\";\n    let principal_scope_digest = Digest32::of_bytes(&serde_json::to_vec(&(\n        \"trill.desktop.original-notes-scope.v1\",\n        fresh.agent.as_str(),\n        &signer_id,\n    ))?);\n    let objective = fresh\n        .record\n        .layout\n        .home_root()\n        .join(\"notes-thread-profile.json\");\n    let admission = codex_hepta_objective::thread_notes_admission_profile_json_v1(\n        principal_scope,\n        principal_scope_digest,\n        &signer_id,\n    )\n    .map_err(std::io::Error::other)?;\n    fs::write_new(&objective, admission.as_bytes())?;\n    let profile = fresh.admin.join(\"notes-startup.json\");\n    fs::json_new(\n        &profile,\n        &json!({\n            \"schema\":\"hepta.root.notes_launch_profile.v1\", \"grant_lifetime_ms\": inputs.grant_lifetime_ms,\n            \"interaction\":{\"kind\":\"original_thread_tool_v1\", \"route\":&route, \"seed\":seed},\n            \"bindings\": { \"principal_scope\":principal_scope,\n                \"principal_scope_digest\": principal_scope_digest.to_string(), \"issuer_id\":&signer_id,\n                \"policy_generation\":1, \"locale\":&inputs.locale,\n                \"runtime_body_digest\":fs::digest(&inputs.sources.runtime_body)?,\n                \"preference_state_digest\":fs::digest(&inputs.sources.preferences)?,\n                \"model_tuple_digest\":seed.model_tuple_digest()?.to_string(),\n                \"prompt_registry_digest\":fs::digest(&inputs.sources.prompt_registry)?,\n                \"artifact_set_digest\":artifact_set.to_string() }\n        }),"
+      }
+    },
+    {
+      "ref_key": "desktop_current",
+      "repository": "TrillionniumFoundation/trillionnium-os-desktop",
+      "path": "ui/session/src/main.rs",
+      "blob": "e5fd020369f8ce51c7a4fcf438e95e795e5d0ac8",
+      "bytes": 71258,
+      "sha256": "b1d54488d6d00ca4ed60d6fb7bfba84b5f8d1ac5284b9a9e22b2bea7028b22e0",
+      "url": "https://github.com/TrillionniumFoundation/trillionnium-os-desktop/blob/c42eccaf8b9b5a163d0c52b1a3c42466fe0f425b/ui/session/src/main.rs",
+      "lines": {
+        "start": 852,
+        "end": 875,
+        "text": "#[derive(Clone, Copy, Debug, Eq, PartialEq)]\nenum NotesBootstrapMode {\n    None,\n    Direct,\n    Reserved,\n}\n\nfn notes_bootstrap_requested(\n    args: impl IntoIterator<Item = std::ffi::OsString>,\n) -> io::Result<NotesBootstrapMode> {\n    let mut args = args.into_iter();\n    match args.next() {\n        None => Ok(NotesBootstrapMode::None),\n        Some(flag) if flag == \"--notes-bootstrap-stdin\" && args.next().is_none() => {\n            Ok(NotesBootstrapMode::Direct)\n        }\n        Some(flag) if flag == \"--notes-root-bootstrap-stdin\" && args.next().is_none() => {\n            Ok(NotesBootstrapMode::Reserved)\n        }\n        _ => Err(io::Error::new(\n            io::ErrorKind::InvalidInput,\n            \"expected no arguments, --notes-bootstrap-stdin or --notes-root-bootstrap-stdin\",\n        )),\n    }"
+      }
+    },
+    {
+      "ref_key": "desktop_old",
+      "repository": "TrillionniumFoundation/trillionnium-os-desktop",
+      "path": "ui/session/src/main.rs",
+      "blob": "ef957ebff5908511ec0a45a924ec085bd27d6310",
+      "bytes": 79985,
+      "sha256": "f47cf6502a73018a7202f4def9131e0bc2afc11781b190271e87b95b9abc50c6",
+      "url": "https://github.com/TrillionniumFoundation/trillionnium-os-desktop/blob/c2c369836e87e9cf27b4dc9aa8b7446e85efdf90/ui/session/src/main.rs",
+      "lines": {
+        "start": 1019,
+        "end": 1048,
+        "text": "}\n\n#[derive(Clone, Copy, Debug, Eq, PartialEq)]\nenum NotesBootstrapMode {\n    None,\n    Direct,\n    Reserved,\n    DesktopReserved,\n}\n\nfn notes_bootstrap_requested(\n    args: impl IntoIterator<Item = std::ffi::OsString>,\n) -> io::Result<NotesBootstrapMode> {\n    let mut args = args.into_iter();\n    match args.next() {\n        None => Ok(NotesBootstrapMode::None),\n        Some(flag) if flag == \"--notes-bootstrap-stdin\" && args.next().is_none() => {\n            Ok(NotesBootstrapMode::Direct)\n        }\n        Some(flag) if flag == \"--notes-root-bootstrap-stdin\" && args.next().is_none() => {\n            Ok(NotesBootstrapMode::Reserved)\n        }\n        Some(flag) if flag == \"--desktop-root-bootstrap-stdin\" && args.next().is_none() => {\n            Ok(NotesBootstrapMode::DesktopReserved)\n        }\n        _ => Err(io::Error::new(\n            io::ErrorKind::InvalidInput,\n            \"expected no arguments, --notes-bootstrap-stdin, --notes-root-bootstrap-stdin or --desktop-root-bootstrap-stdin\",\n        )),\n    }"
+      }
+    }
+  ],
+  "donor_joint_contract_proofs": [
+    {
+      "ref_key": "hepta_donor",
+      "repository": "TrillionniumFoundation/hepta-private-ci",
+      "path": "codex-rs/hepta-agentd/src/root_desktop_startup.rs",
+      "blob": "4dc5fb941e4e082bb41447d4ec2faaf4cc412bd2",
+      "bytes": 4429,
+      "sha256": "5f9d613feeedf8016e64dcf23f7d2dc8f95ab847da96d90b0899cd3d0ccfb8be",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/14e2d89b3367232ec5dbe6187f09feed0f2b68d3/codex-rs/hepta-agentd/src/root_desktop_startup.rs",
+      "lines": {
+        "start": 35,
+        "end": 56,
+        "text": "impl PreparedHostAuthoritySession {\n    /// Consume the real joint reservation after Root provisioned both exact\n    /// policies in its original issuer. SO_PASSCRED must precede Session spawn.\n    /// No policy, issuer or ledger is created here. Old Notes recovery is never\n    /// inferred. Agentd activates and consumes both ordered offers only after\n    /// recovering its one original protected writer.\n    pub fn with_desktop_startup_from_session_before(\n        mut self,\n        profile_file: &Path,\n        bootstrap: UnixDatagram,\n        session_pidfd: OwnedFd,\n        deployment: File,\n        end: Instant,\n    ) -> io::Result<Self> {\n        reservation::remaining(end)?;\n        let profile: Profile = crate::authority_host_config::read_root_json(profile_file)?;\n        if profile.schema != \"hepta.root.desktop_launch_profile.v1\"\n            || profile.profile != \"notes_calculator_v1\"\n            || profile.grant_lifetime_ms == 0\n            || profile.grant_lifetime_ms > 30_000\n            || profile.bindings.issuer_id != self.config.signer_id\n        {"
+      }
+    },
+    {
+      "ref_key": "hepta_donor",
+      "repository": "TrillionniumFoundation/hepta-private-ci",
+      "path": "codex-rs/hepta-agentd/src/root_desktop_startup.rs",
+      "blob": "4dc5fb941e4e082bb41447d4ec2faaf4cc412bd2",
+      "bytes": 4429,
+      "sha256": "5f9d613feeedf8016e64dcf23f7d2dc8f95ab847da96d90b0899cd3d0ccfb8be",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/14e2d89b3367232ec5dbe6187f09feed0f2b68d3/codex-rs/hepta-agentd/src/root_desktop_startup.rs",
+      "lines": {
+        "start": 85,
+        "end": 118,
+        "text": "        self.service = self\n            .service\n            .with_notes_from_original_session(&release.notes, profile.grant_lifetime_ms)?;\n        self.service = self.service.with_calculator_from_original_session(\n            &release.calculator,\n            profile.grant_lifetime_ms,\n        )?;\n        crate::authority_host_runtime::verify_pinned_process(\n            &self.registration,\n            self.config.peer_uid,\n            self.config.peer_gid,\n            &self.owner_pidfd,\n            end,\n        )?;\n        let value = Deployment {\n            schema: \"hepta.agentd.original_desktop_launch.v1\",\n            profile: \"notes_calculator_v1\",\n            agent_id: self\n                .registration\n                .registered_identity\n                .agent_id\n                .as_str()\n                .to_owned(),\n            spawn_generation: self.registration.registered_identity.spawn_generation,\n            session,\n            bindings: profile.bindings,\n            startup_release: release,\n            interaction: profile.interaction,\n        };\n        super::notes_startup::seal_deployment(\n            deployment,\n            &serde_json::to_vec(&value).map_err(io::Error::other)?,\n        )?;\n        crate::authority_host_runtime::owner_alive(&session_pidfd, end)?;"
+      }
+    },
+    {
+      "ref_key": "hepta_donor",
+      "repository": "TrillionniumFoundation/hepta-private-ci",
+      "path": "codex-rs/hepta-agentd/src/production_desktop_deployment.rs",
+      "blob": "c756a1ac5f22644a9b0b1c012c2dfd5879750a13",
+      "bytes": 4005,
+      "sha256": "1c7c57bea82bbf9b60a8ecef25cc2b5955a8b9d46125ab387ae7734eefd3526e",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/14e2d89b3367232ec5dbe6187f09feed0f2b68d3/codex-rs/hepta-agentd/src/production_desktop_deployment.rs",
+      "lines": {
+        "start": 60,
+        "end": 74,
+        "text": "        if self.schema != \"hepta.agentd.original_desktop_launch.v1\"\n            || self.profile != \"notes_calculator_v1\"\n            || self.agent_id != agent_id\n            || self.spawn_generation != spawn_generation\n            || owner == 0\n            || self.session.uid != owner\n            || self.session.pid == 0\n            || self.session.pid > i32::MAX as u32\n            || self.session.process_start_ticks == 0\n            || self.session.boot_id.len() != 36\n        {\n            return Err(invalid(\"profile or actual Agentd/Session identity differs\"));\n        }\n        self.startup_release.validate()\n    }"
+      }
+    }
+  ],
+  "current_return_contract_must_survive": [
+    {
+      "ref_key": "hepta_ff72",
+      "repository": "TrillionniumFoundation/hepta-private-ci",
+      "path": "codex-rs/hepta-agentd/src/production_composition.rs",
+      "blob": "1464029ba8643aa7a44f3835d0ab700bb3673156",
+      "bytes": 11438,
+      "sha256": "f42a4d48ff4be8f20662e41b9c0bfe97275dc866c28ea723b18b0971c531f4c4",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/ff72d462d74f9eb856aa9edbc368caad9c466708/codex-rs/hepta-agentd/src/production_composition.rs",
+      "lines": {
+        "start": 34,
+        "end": 58,
+        "text": "pub struct AgentdProductionHostInputs<'a, C: ObjectiveSenderCheckpoint> {\n    pub current_cut: CognitiveRecoveryRequirement<'a>,\n    pub checkpoint: Arc<C>,\n    pub checkpoint_deadline: Duration,\n    pub authority: ProductionAuthorityLease,\n    pub verifier: Arc<dyn ProductionAuthorityVerifier>,\n    pub lease_id: String,\n    pub lease_generation: u64,\n    pub final_use: AgentdFinalUseHostInputs,\n    pub issuer_stream: UnixStream,\n    pub issuer_peer: AgentdFinalUseIssuerPeer,\n    pub issuer_timeout: Duration,\n    pub target: Arc<dyn FinalUseProductionOutboxTarget>,\n    pub reconcile_interval: Duration,\n    pub notes: Option<AgentdProductionNotesInputs>,\n}\n\n/// Successful strict composition. The canonical embedding uses this sender,\n/// bound to the same original writer and checkpoint Arc used for bootstrap.\n/// The optional Notes identity is returned only after both handles install;\n/// neither value claims that a runtime, Objective or effect has started.\npub struct AgentdProductionHostAttachment<C: ObjectiveSenderCheckpoint> {\n    pub notes_identity: Option<NotesTargetIdentity>,\n    pub original_sender: ProductionObjectiveSender<C>,\n}"
+      }
+    },
+    {
+      "ref_key": "hepta_ff72",
+      "repository": "TrillionniumFoundation/hepta-private-ci",
+      "path": "codex-rs/hepta-agentd/src/production_composition.rs",
+      "blob": "1464029ba8643aa7a44f3835d0ab700bb3673156",
+      "bytes": 11438,
+      "sha256": "f42a4d48ff4be8f20662e41b9c0bfe97275dc866c28ea723b18b0971c531f4c4",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/ff72d462d74f9eb856aa9edbc368caad9c466708/codex-rs/hepta-agentd/src/production_composition.rs",
+      "lines": {
+        "start": 232,
+        "end": 255,
+        "text": "    let writer = recovered_host.writer();\n    // The lease acquired by the original recovered writer changes its exact\n    // cut. Publish that live cut without creating a synthetic Objective. Notes\n    // attached is a descriptor ACK, not a CognitiveStore row in this cut.\n    writer\n        .checkpoint_current(inputs.checkpoint.as_ref(), inputs.checkpoint_deadline)\n        .await\n        .map_err(|error| {\n            AgentdError::Invalid(format!(\"production current-cut checkpoint: {error}\"))\n        })?;\n    let original_sender = writer\n        .objective_sender(inputs.checkpoint, inputs.checkpoint_deadline)\n        .map_err(|error| {\n            AgentdError::Invalid(format!(\"original Objective sender unavailable: {error}\"))\n        })?;\n    config.install_production_hosts(recovered_host, operations)?;\n    // A handoff ACK can precede a final live-authority refusal. Only return\n    // this identity after both original handles were installed successfully.\n    Ok(AgentdProductionHostAttachment {\n        notes_identity,\n        original_sender,\n    })\n}\n"
+      }
+    },
+    {
+      "ref_key": "hepta_ff72",
+      "repository": "TrillionniumFoundation/hepta-private-ci",
+      "path": "codex-rs/hepta-agentd/src/desktop_objective_ui.rs",
+      "blob": "88fbf93a7d27f0382143df8caaab8a65591699e2",
+      "bytes": 14556,
+      "sha256": "24bbb8ab438e42cab8153efef0bec3e3fac269cb6319da5772b75b120653445c",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/ff72d462d74f9eb856aa9edbc368caad9c466708/codex-rs/hepta-agentd/src/desktop_objective_ui.rs",
+      "lines": {
+        "start": 33,
+        "end": 43,
+        "text": "/// The authenticated embedding supplies an existing production attachment and\n/// already-signed request. Its run ID must bind the complete current UI scope;\n/// its source digest must bind the displayed draft. This API never signs text.\npub struct AgentdObjectiveUiInputs<C: ObjectiveSenderCheckpoint> {\n    pub attachment: AgentdProductionHostAttachment<C>,\n    pub client: AgentdClient,\n    pub original: ObjectiveSenderRequest,\n    pub peer: AgentdObjectivePeer,\n    pub binding: ObjectiveUiBinding,\n    pub mode: ObjectiveClientMode,\n    pub runtime: Handle,"
+      }
+    },
+    {
+      "ref_key": "hepta_donor",
+      "repository": "TrillionniumFoundation/hepta-private-ci",
+      "path": "codex-rs/hepta-agentd/src/production_composition.rs",
+      "blob": "3e554d364d992c20ca53628b3f0852d5cb296782",
+      "bytes": 9635,
+      "sha256": "82acddc7bcfb717e1a88cfd51be0551c25cda2b9473077a2addbb4cca67e4dfd",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/14e2d89b3367232ec5dbe6187f09feed0f2b68d3/codex-rs/hepta-agentd/src/production_composition.rs",
+      "lines": {
+        "start": 133,
+        "end": 150,
+        "text": "                AgentdError::Invalid(format!(\"original Objective sender unavailable: {error}\"))\n            })\n    }\n}\n\n/// Build against the original owners and install both handles only on success.\n/// A failure leaves `config` unchanged. Original durable recovery/authority\n/// writes are never deleted or rolled back: a later retry still needs current\n/// independent recovery authorization. No runtime or effect starts here.\npub async fn attach_production_operation_host(\n    config: &mut AgentdConfig,\n    inputs: AgentdProductionHostInputs<'_>,\n) -> Result<Option<NotesTargetIdentity>, AgentdError> {\n    config.require_unconfigured_production_hosts()?;\n    match &inputs.current_cut {\n        CognitiveRecoveryRequirement::Revoked => {\n            return Err(AgentdError::GenerationFenced(\n                \"production current-cut authorization is revoked\".to_string(),"
+      }
+    }
+  ],
+  "a69_source_identity": {
+    "tree": "a69b20c4c3cfee9cf483496742d6bea1469d847a",
+    "root_truncated": false,
+    "crate_comparison": [
+      {
+        "crate": "hepta-agentd",
+        "ff72": "b47bd855d1e4aec4a0531fa446245408779a8738",
+        "a69": "f62527b778f5c36d5e3de6307cf942b1303d495b"
+      },
+      {
+        "crate": "arg0",
+        "ff72": "7d10dc2504e676703f7fb10c592075f4e7b6459d",
+        "a69": "7d10dc2504e676703f7fb10c592075f4e7b6459d"
+      },
+      {
+        "crate": "hepta-memory",
+        "ff72": "34e3ebcde71af34b16a606aede989a6385fa6f03",
+        "a69": "34e3ebcde71af34b16a606aede989a6385fa6f03"
+      },
+      {
+        "crate": "hepta-contracts",
+        "ff72": "5502d4677142ac68a7b7e9fc21c1a9da4272d5e6",
+        "a69": "5502d4677142ac68a7b7e9fc21c1a9da4272d5e6"
+      },
+      {
+        "crate": "hepta-objective",
+        "ff72": "4fe20d6ca8de0e7ea61a5b633f49268c4af9f80a",
+        "a69": "4fe20d6ca8de0e7ea61a5b633f49268c4af9f80a"
+      },
+      {
+        "crate": "hepta-agent-protocol",
+        "ff72": "2a18353c1abbf5d2b2f413dd07b61df6e6b99137",
+        "a69": "2a18353c1abbf5d2b2f413dd07b61df6e6b99137"
+      }
+    ],
+    "agentd_full_tree": {
+      "ff72": "b47bd855d1e4aec4a0531fa446245408779a8738",
+      "a69": "f62527b778f5c36d5e3de6307cf942b1303d495b",
+      "both_truncated_false": true,
+      "exact_path_net_diff": [
+        {
+          "path": "tests/five_agent_rolling_upgrade.rs",
+          "ff72": "08afc2c6c333974567385a9f5630e0b6b71a6fbd",
+          "a69": "61f225f28bfb1be24457868b5822999f5e5e5861"
+        },
+        {
+          "path": "tests/supervisord_product_e2e.rs",
+          "ff72": "01c7b1cfbaaf08c304ecc9c8983ae26c54a813b0",
+          "a69": "3f7a0d264ad081977705dcaa348aa9cc44ea1234"
+        }
+      ]
+    },
+    "claim": "All Agentd src and Cargo paths are identical; five other complete support crates are identical. This binds source findings only, not execution qualification."
+  },
+  "limitations": [
+    "The old c2 joint modules are source components, not proof of a normal Root producer or same-tree product acceptance.",
+    "The native G2 role socket PR is a distinct source branch and does not alter Desktop services/product_root.",
+    "No inherited PR-body runtime claim is independently qualified by this proof.",
+    "Joint recovery and issuer renewal require separate designed and executed acceptance; old Notes recovery must not be renamed into joint recovery."
+  ]
+}

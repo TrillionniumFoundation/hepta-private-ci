@@ -1,0 +1,11 @@
+--- a/codex-rs/linux-sandbox/src/parent_lifecycle_tests.rs
++++ b/codex-rs/linux-sandbox/src/parent_lifecycle_tests.rs
+@@ -221,7 +221,7 @@
+         if unsafe { libc::fstat(fd, actual.as_mut_ptr()) } == 0 {
+             // SAFETY: fstat succeeded; FD reuse is allowed, original inode is not.
+             let actual = unsafe { actual.assume_init() };
+-            assert_ne!((actual.st_dev as u64, actual.st_ino as u64), (device, inode));
++            assert_ne!((actual.st_dev, actual.st_ino), (device, inode));
+         } else {
+             assert_eq!(io::Error::last_os_error().raw_os_error(), Some(libc::EBADF));
+         }

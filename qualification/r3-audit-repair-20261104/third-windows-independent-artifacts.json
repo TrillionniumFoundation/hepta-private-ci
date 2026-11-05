@@ -1,0 +1,502 @@
+{
+  "schema": "hepta.third-batch-independent-exec-artifacts.v1",
+  "scope": "Original ff72 source-head and its base merge, both tree f780fe13946102a33b329898af48810be9c7bf0c. Archive bytes and SHA-256 were verified before independent XML parsing. No rerun and no signed download URL is retained.",
+  "source_head": {
+    "artifact_id": 13347559410,
+    "archive_verified": true,
+    "junit": {
+      "server-junit.xml": {
+        "bytes": 54491,
+        "sha256": "5c27002d38c7bcdbdc86530113b4301c1f1b3e47af57aaa12fe5a6bce46d67d3",
+        "tests": 254,
+        "failed": 1,
+        "skipped": 0,
+        "passed": 253,
+        "suites": [
+          {
+            "name": "codex-exec-server",
+            "tests": "253",
+            "disabled": "0",
+            "errors": "0",
+            "failures": "0"
+          },
+          {
+            "name": "codex-exec-server::authorized_read_rpc",
+            "tests": "1",
+            "disabled": "0",
+            "errors": "0",
+            "failures": "1"
+          }
+        ],
+        "failures": [
+          {
+            "attributes": {
+              "name": "authorized_read_rpc_is_capability_gated_and_denies_outside_root",
+              "classname": "codex-exec-server::authorized_read_rpc",
+              "timestamp": "2026-11-04T17:27:50.977+00:00",
+              "time": "0.024"
+            },
+            "children": [
+              {
+                "tag": "failure",
+                "attributes": {
+                  "message": "Error: could not locate binary \"codex-windows-sandbox-setup\"; tried env vars [\"CARGO_BIN_EXE_codex-windows-sandbox-setup\", \"CARGO_BIN_EXE_codex_windows_sandbox_setup\"]; Cargo binary was not found at D:\\a\\_temp\\hepta-exec-authorized-read-target\\debug\\codex-windows-sandbox-setup.exe",
+                  "type": "test failure with exit code 101"
+                },
+                "text": "Error: could not locate binary \"codex-windows-sandbox-setup\"; tried env vars [\"CARGO_BIN_EXE_codex-windows-sandbox-setup\", \"CARGO_BIN_EXE_codex_windows_sandbox_setup\"]; Cargo binary was not found at D:\\a\\_temp\\hepta-exec-authorized-read-target\\debug\\codex-windows-sandbox-setup.exe"
+              },
+              {
+                "tag": "system-out",
+                "attributes": {},
+                "text": "\nrunning 1 test\ntest authorized_read_rpc_is_capability_gated_and_denies_outside_root ... FAILED\n\nfailures:\n\nfailures:\n    authorized_read_rpc_is_capability_gated_and_denies_outside_root\n\ntest result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s\n\n"
+              },
+              {
+                "tag": "system-err",
+                "attributes": {},
+                "text": "Error: could not locate binary \"codex-windows-sandbox-setup\"; tried env vars [\"CARGO_BIN_EXE_codex-windows-sandbox-setup\", \"CARGO_BIN_EXE_codex_windows_sandbox_setup\"]; Cargo binary was not found at D:\\a\\_temp\\hepta-exec-authorized-read-target\\debug\\codex-windows-sandbox-setup.exe\n"
+              }
+            ]
+          }
+        ]
+      },
+      "resume-junit.xml": {
+        "bytes": 2878,
+        "sha256": "c3e64fcc508604a0df10c8ea0f731828a999dbccd60e90df91be11847aad27fa",
+        "tests": 13,
+        "failed": 0,
+        "skipped": 0,
+        "passed": 13,
+        "suites": [
+          {
+            "name": "codex-exec::all",
+            "tests": "13",
+            "disabled": "0",
+            "errors": "0",
+            "failures": "0"
+          }
+        ],
+        "failures": []
+      },
+      "rollout-junit.xml": {
+        "bytes": 24242,
+        "sha256": "b724b75178db8d1ea8e4564a115297f14af0297ab7800e4113f8312215479627",
+        "tests": 121,
+        "failed": 0,
+        "skipped": 0,
+        "passed": 121,
+        "suites": [
+          {
+            "name": "codex-rollout",
+            "tests": "121",
+            "disabled": "0",
+            "errors": "0",
+            "failures": "0"
+          }
+        ],
+        "failures": []
+      }
+    },
+    "receipts": {
+      "source.json": {
+        "source": "ff72d462d74f9eb856aa9edbc368caad9c466708",
+        "tree": "f780fe13946102a33b329898af48810be9c7bf0c",
+        "platform": "Windows-2025Server-10.0.26100-SP0",
+        "inputs": {
+          "codex-rs/exec/Cargo.toml": "e36607e5f02152f22fc6de4d6893e2c36d18c5fcf33919ce795b00430f89d2bb",
+          "codex-rs/exec/tests/suite/resume.rs": "3b1b3a049a2d70e117c5c0bcba6043f0aea5d17b0e02a1830443a9b1af6c004b",
+          "codex-rs/exec-server/tests/file_system_unix.rs": "4ba2ff436a388e2fc5b809221e525bdf3450506cc227ab7e0eae0b9c71aa1dbe",
+          "codex-rs/exec-server/tests/authorized_read_rpc.rs": "631c14e1980f65ff49d47ba9a5783534c9f5dffa424115ca800bb14e93ce3264",
+          "codex-rs/exec-server/src/client.rs": "bbd67b6791f23784a8e2f57925cde890e21f15325076a5b93eb38c92d75b7db8",
+          "codex-rs/exec-server/src/client_stdio_tests.rs": "7ab9b83c452b1e211ef39a1be262afc0b11411926f863b00dc3893b63e334181",
+          "codex-rs/exec-server/src/lib.rs": "194cbe8eada6379358cf4ba4743294084d81977db316776c258cf4bbf8c5cb61",
+          "codex-rs/exec-server/src/remote_file_system.rs": "a56426a26040d3c8df304b1dd31a3529246a4ecb488c6f93b6a8252ed0b99073",
+          "codex-rs/exec-server/src/remote_file_system_path_uri_tests.rs": "443e13057b277d3d0ee437b6a044854a10a1d2a55bbb62525681a47ecce464b4",
+          "codex-rs/exec-server/src/local_file_system_authorized_read_tests.rs": "8201adb8bd745e7ecbee185f5cf477e1f7cbd84a0bd71e22ff66050f437ed858",
+          "codex-rs/rollout/src/state_db.rs": "d4dd2020daefcdfe9e67168f3a35f5c0eb80daf4ea6fdde576b9304b8dcc31d3",
+          "codex-rs/rollout/src/state_db_tests.rs": "cb7c881c970e3632ce12edac4bbcde535e6fe143bb5ddf73338fe7d19d769bc4",
+          "codex-rs/Cargo.lock": "55f38f4e831683fa3f42f7465395860e3dd50c06b876504a1fde5ef2f4738fbb",
+          "codex-rs/rust-toolchain.toml": "029fd8fde748bb7dd75f20e21576e36f1f567bba8149af4602310086a2a0dc58",
+          "codex-rs/.config/nextest.toml": "b7341ed779adcbeff363df4de96fdb1bab7c705244c928e8a4b019373f250585",
+          "scripts/run-nextest.py": "5688430c4e061bdd46e9aa37cf37b078ff0dbc52a8f8e641dc6583a7581738e0",
+          "justfile": "325e27adeb9034ffbabf4a7c6245447fc65c496365ddacc16eb1c80ca4636b3e"
+        },
+        "input_git_objects": "100644 blob 868f75986ea9719e116b8fa8a0aa53bd269bc830\tcodex-rs/.config/nextest.toml\n100644 blob 9743ef2f4f4c8521265c0187524278c256114163\tcodex-rs/Cargo.lock\n100644 blob d5b5c20eaa846713af5279675efcf2d8f5b11643\tcodex-rs/exec-server/src/client.rs\n100644 blob 1f0e145eed988c0940263d54829ceabd3118a8cf\tcodex-rs/exec-server/src/client_stdio_tests.rs\n100644 blob 1506b032568d76c30209b8c5533ac867c23cdafc\tcodex-rs/exec-server/src/lib.rs\n100644 blob e67e1f65896c81bddeb70c411bae75f99557c7ff\tcodex-rs/exec-server/src/local_file_system_authorized_read_tests.rs\n100644 blob 62bc9682f502ff95dffef9bc2b5548cad034dbf1\tcodex-rs/exec-server/src/remote_file_system.rs\n100644 blob d1d34281d7a56db3278773d69ed972fd90610a25\tcodex-rs/exec-server/src/remote_file_system_path_uri_tests.rs\n100644 blob 7f1ea1795fba968d8223760893d5dfe6841d4509\tcodex-rs/exec-server/tests/authorized_read_rpc.rs\n100644 blob b0436c0a20a36d8808b5c33416ff7272e4533501\tcodex-rs/exec-server/tests/file_system_unix.rs\n100644 blob eebecc9ff1bb3b0cd3e914f510fce599e1cf3cf0\tcodex-rs/exec/Cargo.toml\n100644 blob 3d70c6c80105230e148c4ab207ce6b912cf79fab\tcodex-rs/exec/tests/suite/resume.rs\n100644 blob 1c021fd3c1c09509af6926080023617886e0da7a\tcodex-rs/rollout/src/state_db.rs\n100644 blob ac8694562b341f0df65fd1d523a2401c28c9645b\tcodex-rs/rollout/src/state_db_tests.rs\n100644 blob 910c65114ec128a8317ee8257428451f3cd28230\tcodex-rs/rust-toolchain.toml\n100644 blob a215a76cf407ace9715bca39c20497014e7dd4dc\tjustfile\n100644 blob 1ed63abe84267b320cbfb0123a70aac5507f4595\tscripts/run-nextest.py\n",
+        "run_id": "41875453940",
+        "run_attempt": "1",
+        "rustc": "rustc 1.95.0 (59807616e 2026-04-14)\nbinary: rustc\ncommit-hash: 59807616e1fa2540724bfbac14d7976d7e4a3860\ncommit-date: 2026-04-14\nhost: x86_64-pc-windows-msvc\nrelease: 1.95.0\nLLVM version: 22.1.2\n"
+      },
+      "server.json": {
+        "scope": "server",
+        "command": [
+          "just",
+          "test",
+          "--locked",
+          "-p",
+          "codex-exec-server",
+          "--lib",
+          "--test",
+          "authorized_read_rpc",
+          "--no-tests",
+          "fail",
+          "--retries",
+          "0",
+          "--status-level",
+          "all",
+          "--final-status-level",
+          "all"
+        ],
+        "exit": 1,
+        "seconds": 594.9380000000001,
+        "required": [
+          "authorized_read_rpc_is_capability_gated_and_denies_outside_root",
+          "client::tests::connect_stdio_command_initializes_json_rpc_client_on_windows"
+        ],
+        "log_sha256": "a1457b6f070976121fe59ec3896b16e451fb5a82bac7d876fd1504d709417b24",
+        "valid": false,
+        "passed": 253,
+        "invalid": [
+          "authorized_read_rpc_is_capability_gated_and_denies_outside_root"
+        ],
+        "missing": [],
+        "junit_sha256": "5c27002d38c7bcdbdc86530113b4301c1f1b3e47af57aaa12fe5a6bce46d67d3"
+      },
+      "resume.json": {
+        "scope": "resume",
+        "command": [
+          "just",
+          "test",
+          "--locked",
+          "-p",
+          "codex-exec",
+          "--test",
+          "all",
+          "-E",
+          "test(suite::resume::)",
+          "--no-tests",
+          "fail",
+          "--retries",
+          "0",
+          "--status-level",
+          "all",
+          "--final-status-level",
+          "all",
+          "--success-output",
+          "final"
+        ],
+        "exit": 0,
+        "seconds": 889.453,
+        "required": [
+          "suite::resume::exec_resume_last_repairs_rollout_missing_from_state_db",
+          "suite::resume::exec_resume_last_trusts_usable_state_db_candidate",
+          "suite::resume::exec_resume_last_respects_cwd_filter_and_all_flag"
+        ],
+        "log_sha256": "37eff08981eb94e2d80675d1364644e34c22f9939094c437d1c2d01dda4e7c34",
+        "valid": true,
+        "passed": 13,
+        "invalid": [],
+        "missing": [],
+        "junit_sha256": "c3e64fcc508604a0df10c8ea0f731828a999dbccd60e90df91be11847aad27fa"
+      },
+      "rollout.json": {
+        "scope": "rollout",
+        "command": [
+          "just",
+          "test",
+          "--locked",
+          "-p",
+          "codex-rollout",
+          "--lib",
+          "--no-tests",
+          "fail",
+          "--retries",
+          "0",
+          "--status-level",
+          "all",
+          "--final-status-level",
+          "all"
+        ],
+        "exit": 0,
+        "seconds": 241.59399999999994,
+        "required": [
+          "state_db::tests::list_threads_db_rejects_mismatched_sqlite_config_without_cleanup",
+          "state_db::tests::index_reads_accept_config_before_native_home_canonicalization"
+        ],
+        "log_sha256": "15a0e7473135f31ad6b30600b4d11c8cf8c3dbeac2e83aa642f5d9a25cdd6c9a",
+        "valid": true,
+        "passed": 121,
+        "invalid": [],
+        "missing": [],
+        "junit_sha256": "b724b75178db8d1ea8e4564a115297f14af0297ab7800e4113f8312215479627"
+      },
+      "retained.json": {
+        "unchanged_inputs": true,
+        "after": {
+          "codex-rs/exec/Cargo.toml": "e36607e5f02152f22fc6de4d6893e2c36d18c5fcf33919ce795b00430f89d2bb",
+          "codex-rs/exec/tests/suite/resume.rs": "3b1b3a049a2d70e117c5c0bcba6043f0aea5d17b0e02a1830443a9b1af6c004b",
+          "codex-rs/exec-server/tests/file_system_unix.rs": "4ba2ff436a388e2fc5b809221e525bdf3450506cc227ab7e0eae0b9c71aa1dbe",
+          "codex-rs/exec-server/tests/authorized_read_rpc.rs": "631c14e1980f65ff49d47ba9a5783534c9f5dffa424115ca800bb14e93ce3264",
+          "codex-rs/exec-server/src/client.rs": "bbd67b6791f23784a8e2f57925cde890e21f15325076a5b93eb38c92d75b7db8",
+          "codex-rs/exec-server/src/client_stdio_tests.rs": "7ab9b83c452b1e211ef39a1be262afc0b11411926f863b00dc3893b63e334181",
+          "codex-rs/exec-server/src/lib.rs": "194cbe8eada6379358cf4ba4743294084d81977db316776c258cf4bbf8c5cb61",
+          "codex-rs/exec-server/src/remote_file_system.rs": "a56426a26040d3c8df304b1dd31a3529246a4ecb488c6f93b6a8252ed0b99073",
+          "codex-rs/exec-server/src/remote_file_system_path_uri_tests.rs": "443e13057b277d3d0ee437b6a044854a10a1d2a55bbb62525681a47ecce464b4",
+          "codex-rs/exec-server/src/local_file_system_authorized_read_tests.rs": "8201adb8bd745e7ecbee185f5cf477e1f7cbd84a0bd71e22ff66050f437ed858",
+          "codex-rs/rollout/src/state_db.rs": "d4dd2020daefcdfe9e67168f3a35f5c0eb80daf4ea6fdde576b9304b8dcc31d3",
+          "codex-rs/rollout/src/state_db_tests.rs": "cb7c881c970e3632ce12edac4bbcde535e6fe143bb5ddf73338fe7d19d769bc4",
+          "codex-rs/Cargo.lock": "55f38f4e831683fa3f42f7465395860e3dd50c06b876504a1fde5ef2f4738fbb",
+          "codex-rs/rust-toolchain.toml": "029fd8fde748bb7dd75f20e21576e36f1f567bba8149af4602310086a2a0dc58",
+          "codex-rs/.config/nextest.toml": "b7341ed779adcbeff363df4de96fdb1bab7c705244c928e8a4b019373f250585",
+          "scripts/run-nextest.py": "5688430c4e061bdd46e9aa37cf37b078ff0dbc52a8f8e641dc6583a7581738e0",
+          "justfile": "325e27adeb9034ffbabf4a7c6245447fc65c496365ddacc16eb1c80ca4636b3e"
+        },
+        "scopes": [
+          {
+            "scope": "server",
+            "command": [
+              "just",
+              "test",
+              "--locked",
+              "-p",
+              "codex-exec-server",
+              "--lib",
+              "--test",
+              "authorized_read_rpc",
+              "--no-tests",
+              "fail",
+              "--retries",
+              "0",
+              "--status-level",
+              "all",
+              "--final-status-level",
+              "all"
+            ],
+            "exit": 1,
+            "seconds": 594.9380000000001,
+            "required": [
+              "authorized_read_rpc_is_capability_gated_and_denies_outside_root",
+              "client::tests::connect_stdio_command_initializes_json_rpc_client_on_windows"
+            ],
+            "log_sha256": "a1457b6f070976121fe59ec3896b16e451fb5a82bac7d876fd1504d709417b24",
+            "valid": false,
+            "passed": 253,
+            "invalid": [
+              "authorized_read_rpc_is_capability_gated_and_denies_outside_root"
+            ],
+            "missing": [],
+            "junit_sha256": "5c27002d38c7bcdbdc86530113b4301c1f1b3e47af57aaa12fe5a6bce46d67d3"
+          },
+          {
+            "scope": "rollout",
+            "command": [
+              "just",
+              "test",
+              "--locked",
+              "-p",
+              "codex-rollout",
+              "--lib",
+              "--no-tests",
+              "fail",
+              "--retries",
+              "0",
+              "--status-level",
+              "all",
+              "--final-status-level",
+              "all"
+            ],
+            "exit": 0,
+            "seconds": 241.59399999999994,
+            "required": [
+              "state_db::tests::list_threads_db_rejects_mismatched_sqlite_config_without_cleanup",
+              "state_db::tests::index_reads_accept_config_before_native_home_canonicalization"
+            ],
+            "log_sha256": "15a0e7473135f31ad6b30600b4d11c8cf8c3dbeac2e83aa642f5d9a25cdd6c9a",
+            "valid": true,
+            "passed": 121,
+            "invalid": [],
+            "missing": [],
+            "junit_sha256": "b724b75178db8d1ea8e4564a115297f14af0297ab7800e4113f8312215479627"
+          },
+          {
+            "scope": "resume",
+            "command": [
+              "just",
+              "test",
+              "--locked",
+              "-p",
+              "codex-exec",
+              "--test",
+              "all",
+              "-E",
+              "test(suite::resume::)",
+              "--no-tests",
+              "fail",
+              "--retries",
+              "0",
+              "--status-level",
+              "all",
+              "--final-status-level",
+              "all",
+              "--success-output",
+              "final"
+            ],
+            "exit": 0,
+            "seconds": 889.453,
+            "required": [
+              "suite::resume::exec_resume_last_repairs_rollout_missing_from_state_db",
+              "suite::resume::exec_resume_last_trusts_usable_state_db_candidate",
+              "suite::resume::exec_resume_last_respects_cwd_filter_and_all_flag"
+            ],
+            "log_sha256": "37eff08981eb94e2d80675d1364644e34c22f9939094c437d1c2d01dda4e7c34",
+            "valid": true,
+            "passed": 13,
+            "invalid": [],
+            "missing": [],
+            "junit_sha256": "c3e64fcc508604a0df10c8ea0f731828a999dbccd60e90df91be11847aad27fa"
+          }
+        ]
+      }
+    }
+  },
+  "base_merge": {
+    "artifact_id": 13350280119,
+    "archive_bytes": 52267,
+    "archive_sha256": "af7de3a60c44b23354ea1495aa0cc03951852495dddff584429651cc1ad96b64",
+    "archive_verified": true,
+    "crc_verified": true,
+    "members": [
+      {
+        "path": "resume.json",
+        "bytes": 890,
+        "sha256": "025d3f1673882f7e2820d5e4e0ef910e8e07e32cf8972f2b625bb763013ccfca"
+      },
+      {
+        "path": "resume.log",
+        "bytes": 71442,
+        "sha256": "2306b573d01141133ef9a1058b65c17f3af84bbb5cce51c47507d6dbca178332"
+      },
+      {
+        "path": "retained.json",
+        "bytes": 4934,
+        "sha256": "657ac0d4bcd6af2186b4ef4f9cd8bc4441b74629e098b6692fc25e66b4e1ba2f"
+      },
+      {
+        "path": "resume-junit.xml",
+        "bytes": 2878,
+        "sha256": "a5907110e273b92d1c64ba6d96c1ae2ec5f28db08e7fbf2766757351525cf172"
+      },
+      {
+        "path": "rollout-junit.xml",
+        "bytes": 24243,
+        "sha256": "5d35651976500f5e97ece47ce20bd12972137b1dbec9e96f1b1e95a3d61d5e82"
+      },
+      {
+        "path": "rollout.json",
+        "bytes": 766,
+        "sha256": "6abf8229ee2a06b7f8ddb807ec95486d19a5c29349e0bab7706b4df497bcd2c1"
+      },
+      {
+        "path": "rollout.log",
+        "bytes": 47279,
+        "sha256": "f16f30a3703f525f9d00f3df2f26e65fa8b05f9a91fdc69a1480b24d5f257eb6"
+      },
+      {
+        "path": "server-junit.xml",
+        "bytes": 54491,
+        "sha256": "7e66eca2cc115e54a0a75a1a9f84d9373b9cb5da2ec094f6744e2b2caee1a1cb"
+      },
+      {
+        "path": "server.json",
+        "bytes": 866,
+        "sha256": "584d740b15d5cef5a75c6e74cb2905dd20783d2b5a7608173738b07cb480464b"
+      },
+      {
+        "path": "server.log",
+        "bytes": 118097,
+        "sha256": "be0e87a943297c67f9ea0ca285f24b56b7963184c3aac85328bcbeeeeddd1fa2"
+      },
+      {
+        "path": "source.json",
+        "bytes": 3976,
+        "sha256": "441e506d40efa7051c6c068cf0b0c6bf001b585ec9de0e6f7964566a1778b22b"
+      }
+    ],
+    "junit": {
+      "resume-junit.xml": {
+        "tests": 13,
+        "failed": 0,
+        "skipped": 0,
+        "passed": 13,
+        "sha256": "a5907110e273b92d1c64ba6d96c1ae2ec5f28db08e7fbf2766757351525cf172",
+        "failures": []
+      },
+      "rollout-junit.xml": {
+        "tests": 121,
+        "failed": 0,
+        "skipped": 0,
+        "passed": 121,
+        "sha256": "5d35651976500f5e97ece47ce20bd12972137b1dbec9e96f1b1e95a3d61d5e82",
+        "failures": []
+      },
+      "server-junit.xml": {
+        "tests": 254,
+        "failed": 1,
+        "skipped": 0,
+        "passed": 253,
+        "sha256": "7e66eca2cc115e54a0a75a1a9f84d9373b9cb5da2ec094f6744e2b2caee1a1cb",
+        "failures": [
+          {
+            "attributes": {
+              "name": "authorized_read_rpc_is_capability_gated_and_denies_outside_root",
+              "classname": "codex-exec-server::authorized_read_rpc",
+              "timestamp": "2026-11-04T17:33:57.015+00:00",
+              "time": "0.017"
+            },
+            "children": [
+              {
+                "tag": "failure",
+                "attributes": {
+                  "message": "Error: could not locate binary \"codex-windows-sandbox-setup\"; tried env vars [\"CARGO_BIN_EXE_codex-windows-sandbox-setup\", \"CARGO_BIN_EXE_codex_windows_sandbox_setup\"]; Cargo binary was not found at D:\\a\\_temp\\hepta-exec-authorized-read-target\\debug\\codex-windows-sandbox-setup.exe",
+                  "type": "test failure with exit code 101"
+                },
+                "text": "Error: could not locate binary \"codex-windows-sandbox-setup\"; tried env vars [\"CARGO_BIN_EXE_codex-windows-sandbox-setup\", \"CARGO_BIN_EXE_codex_windows_sandbox_setup\"]; Cargo binary was not found at D:\\a\\_temp\\hepta-exec-authorized-read-target\\debug\\codex-windows-sandbox-setup.exe"
+              },
+              {
+                "tag": "system-out",
+                "attributes": {},
+                "text": "\nrunning 1 test\ntest authorized_read_rpc_is_capability_gated_and_denies_outside_root ... FAILED\n\nfailures:\n\nfailures:\n    authorized_read_rpc_is_capability_gated_and_denies_outside_root\n\ntest result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s\n\n"
+              },
+              {
+                "tag": "system-err",
+                "attributes": {},
+                "text": "Error: could not locate binary \"codex-windows-sandbox-setup\"; tried env vars [\"CARGO_BIN_EXE_codex-windows-sandbox-setup\", \"CARGO_BIN_EXE_codex_windows_sandbox_setup\"]; Cargo binary was not found at D:\\a\\_temp\\hepta-exec-authorized-read-target\\debug\\codex-windows-sandbox-setup.exe\n"
+              }
+            ]
+          }
+        ]
+      }
+    },
+    "source": "8e20cb5ec8261053ea472f06f79a0def072f3dce",
+    "tree": "f780fe13946102a33b329898af48810be9c7bf0c",
+    "unchanged_inputs": true,
+    "review_sha256": "9afc1c8a4376176855d5a9cbfb1027485adaccce659a9a010c9856cabefa5831"
+  },
+  "interpretation": {
+    "source_head_passes": {
+      "resume": 13,
+      "rollout": 121,
+      "server": 253
+    },
+    "base_merge_passes": {
+      "resume": 13,
+      "rollout": 121,
+      "server": 253
+    },
+    "server_failures_each": 1,
+    "selected_skips_each": 0,
+    "retries": 0,
+    "failed_case": "authorized_read_rpc_is_capability_gated_and_denies_outside_root",
+    "failure_phase": "Missing codex-windows-sandbox-setup.exe before the capability oracle",
+    "workflow_candidate_blob": "6044fc72bc0b27a56445670ab9f11ea9375fd20e",
+    "repair_not_yet_windows_validated": true
+  }
+}

@@ -377,6 +377,31 @@ async fn wait_for_requests(
     }
 }
 
+// ResponseMock records requests before the caller's matcher is evaluated.
+// Wait until the request for this child phase has been observed.
+async fn wait_for_subagent_request(
+    mock: &core_test_support::responses::ResponseMock,
+    prompt: &str,
+) -> Result<Vec<ResponsesRequest>> {
+    let deadline = Instant::now() + Duration::from_secs(2);
+    loop {
+        let requests = mock
+            .requests()
+            .into_iter()
+            .filter(|request| {
+                request.body_contains_text(prompt) && !request.body_contains_text(SPAWN_CALL_ID)
+            })
+            .collect::<Vec<_>>();
+        if !requests.is_empty() {
+            return Ok(requests);
+        }
+        if Instant::now() >= deadline {
+            anyhow::bail!("expected a subagent request containing {prompt:?}, got none");
+        }
+        sleep(Duration::from_millis(10)).await;
+    }
+}
+
 async fn wait_for_request_with_model(
     mock: &core_test_support::responses::ResponseMock,
     model: &str,
@@ -760,8 +785,8 @@ async fn subagent_stop_replaces_stop_and_skips_internal_subagents() -> Result<()
         .await?;
 
     test.submit_turn(TURN_1_PROMPT).await?;
-    let _ = wait_for_requests(&first_child_request).await?;
-    let _ = wait_for_requests(&second_child_request).await?;
+    let _ = wait_for_subagent_request(&first_child_request, CHILD_PROMPT).await?;
+    let _ = wait_for_subagent_request(&second_child_request, SUBAGENT_STOP_CONTINUATION).await?;
 
     let subagent_stop_inputs = wait_for_hook_log(
         test.codex_home_path(),
@@ -850,7 +875,7 @@ async fn subagent_stop_replaces_stop_and_skips_internal_subagents() -> Result<()
         _ => None,
     })
     .await;
-    let requests = wait_for_requests(&internal_request).await?;
+    let requests = wait_for_subagent_request(&internal_request, INTERNAL_SUBAGENT_PROMPT).await?;
     assert_eq!(requests.len(), 1);
 
     let subagent_stop_inputs_after_internal =
@@ -884,11 +909,13 @@ async fn subagent_notification_is_included_without_wait() -> Result<()> {
     test.submit_turn(TURN_2_NO_WAIT_PROMPT).await?;
 
     let turn2_requests = wait_for_requests(&turn2).await?;
-    assert!(
-        turn2_requests
-            .iter()
-            .any(|request| request.has_content_kinds(&["multi_agent.subagent_notification"]))
-    );
+    let notification_request = turn2_requests
+        .iter()
+        .find(|request| request.body_contains_text("<subagent_notification>"))
+        .expect("notification must be present in an actual parent request");
+    notification_request
+        .assert_durable_content_kinds(&test.codex, &["multi_agent.subagent_notification"])
+        .await;
 
     Ok(())
 }
@@ -1336,11 +1363,32 @@ async fn spawned_full_history_v2_child_uses_model_precedence_without_dropping_co
     let parent_request = spawn_turn.single_request();
 
     let child_request = wait_for_request_with_model(&child_request_log, expected_model).await?;
+    let child_body = child_request.body_json();
+    let child_thread_id = ThreadId::from_string(
+        child_body["client_metadata"]["thread_id"]
+            .as_str()
+            .expect("child thread id"),
+    )?;
+    let child_thread = test.thread_manager.get_thread(child_thread_id).await?;
+    // Match the original Message annotation scope against actual child history and lite prefix.
+    // All wire item types remain covered by the metadata-leakage assertion in the helper.
+    let child_local_input = child_request.current_history_messages(&child_thread).await;
+    let child_has_content_kind = |kind: &str| {
+        child_local_input.iter().any(|item| {
+            item["internal_chat_message_metadata_passthrough"]["content_item_kinds"]
+                == json!([kind])
+        })
+    };
+    assert!(child_local_input.iter().any(|item| {
+        item.pointer("/internal_chat_message_metadata_passthrough/content_item_kinds")
+            .is_some()
+    }));
+
     assert!(child_request.body_contains_text(TURN_0_FORK_PROMPT));
-    let misaligned_child_messages = child_request
-        .inputs_of_type("message")
-        .into_iter()
-        .filter(|message| {
+    let misaligned_child_messages = child_local_input
+        .iter()
+        .filter(|&item| item["type"] == "message")
+        .filter(|&message| {
             message["internal_chat_message_metadata_passthrough"]["content_item_kinds"]
                 .as_array()
                 .is_some_and(|kinds| {
@@ -1349,27 +1397,28 @@ async fn spawned_full_history_v2_child_uses_model_precedence_without_dropping_co
                         .is_none_or(|content| content.len() != kinds.len())
                 })
         })
+        .cloned()
         .collect::<Vec<_>>();
     assert_eq!(misaligned_child_messages, Vec::<Value>::new());
     let child_developer_messages = child_request.message_input_texts("developer");
     if matches!(selection, FullHistoryV2ModelSelection::ConfiguredDefault) {
+        assert!(child_has_content_kind("generic.developer_instructions"));
         assert_eq!(
             (
                 parent_request.body_contains_text(FULL_HISTORY_SUBAGENT_DEVELOPER_INSTRUCTIONS),
-                child_request.has_content_kinds(&["generic.developer_instructions"]),
                 child_developer_messages
                     .iter()
                     .filter(|text| text.as_str() == FULL_HISTORY_SUBAGENT_DEVELOPER_INSTRUCTIONS)
                     .count(),
             ),
-            (false, true, 1)
+            (false, 1)
         );
     }
     if !matches!(
         selection,
         FullHistoryV2ModelSelection::MultiAgentModeTransitions
     ) {
-        assert!(child_request.has_content_kinds(&["multi_agent.role_instructions"]));
+        assert!(child_has_content_kind("multi_agent.role_instructions"));
         assert_eq!(
             child_developer_messages
                 .iter()
@@ -1438,14 +1487,7 @@ async fn spawned_full_history_v2_child_uses_model_precedence_without_dropping_co
         assert_eq!(reminder_count(&parent_request), 2);
         assert_eq!(reminder_count(&child_request), 1);
     }
-    let child_body = child_request.body_json();
     if matches!(selection, FullHistoryV2ModelSelection::WorldStateIdentity) {
-        let child_thread_id = ThreadId::from_string(
-            child_body["client_metadata"]["thread_id"]
-                .as_str()
-                .expect("child thread id"),
-        )?;
-        let child_thread = test.thread_manager.get_thread(child_thread_id).await?;
         child_thread.flush_rollout().await?;
         let child_rollout = codex_rollout::RolloutRecorder::get_rollout_history(
             &child_thread

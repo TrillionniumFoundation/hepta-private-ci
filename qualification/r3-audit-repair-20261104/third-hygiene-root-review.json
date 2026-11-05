@@ -1,0 +1,163 @@
+{
+  "schema": "hepta.third_batch.hygiene_independent_root_review.v1",
+  "rust": {
+    "initial_tree": "a69b20c4c3cfee9cf483496742d6bea1469d847a",
+    "after_tree": "06f7c229f020d2dae174f91e0ed411a08e62070c",
+    "full_diff_read": true,
+    "scope": "Formatting only; macro source-line diagnostic positions move with formatting. No assertion, budget, ordering, production interface or command changed.",
+    "files": [
+      {
+        "path": "codex-rs/core/tests/suite/abort_tasks.rs",
+        "before_sha": "c080f759823bc059cb0cb646bcdd8e649d20a3bd",
+        "sha": "bd4c8c8057d8626d0265ba61d54d705d6b844baf",
+        "patch_reconstructed_equal": true,
+        "bytes": 16433
+      },
+      {
+        "path": "codex-rs/core/tests/suite/tools.rs",
+        "before_sha": "0836d0f881a54a41cd6261de60b3591d1e902d48",
+        "sha": "1fc4b08dd39ec30085d38cc3b5b661e2bdc6775e",
+        "patch_reconstructed_equal": true,
+        "bytes": 33296
+      },
+      {
+        "path": "codex-rs/exec-server/tests/forward.rs",
+        "before_sha": "8abb5269f6ceb6aea0766721868065d88a191bad",
+        "sha": "ad40d691f753c5effaeadc3e7721371a8c23a48e",
+        "patch_reconstructed_equal": true,
+        "bytes": 5879
+      },
+      {
+        "path": "codex-rs/ext/queue/tests/queue_service.rs",
+        "before_sha": "21023fa6e7d554552e40750b1b282976ac6c39ed",
+        "sha": "13afd7f2c536c5622fc7f8cc3fe68c0cc1a59cc1",
+        "patch_reconstructed_equal": true,
+        "bytes": 103291
+      },
+      {
+        "path": "codex-rs/hepta-agentd/tests/supervisord_product_e2e.rs",
+        "before_sha": "3f7a0d264ad081977705dcaa348aa9cc44ea1234",
+        "sha": "1c2e25e878b679839eec372525b213e66b81aa59",
+        "patch_reconstructed_equal": true,
+        "bytes": 32986
+      },
+      {
+        "path": "codex-rs/utils/pty/src/tests.rs",
+        "before_sha": "c7f12dde042d887613a28cfca7de9408cae0570e",
+        "sha": "e66a6e7c519ad28d5657e17b0221be0147c51972",
+        "patch_reconstructed_equal": true,
+        "bytes": 60907
+      }
+    ],
+    "lint_exit_code": 0,
+    "lint_source_unchanged": true,
+    "first_format_exit_code": 1,
+    "first_format_gate_passed": false,
+    "tests_rerun": false
+  },
+  "python": {
+    "before_tree": "06f7c229f020d2dae174f91e0ed411a08e62070c",
+    "after_tree": "7aa959b44ed8d2bdad2ab83fb103c40a3333cf0b",
+    "full_diff_read": true,
+    "source_scope": "Only Ruff formatting; full patch independently reproduces all four postimages. Native AST comparisons all equal and Rust subtree identical.",
+    "files": [
+      {
+        "path": ".github/scripts/collect_bazel_failed_test_logs.py",
+        "before_sha": "912925eb8e8ef2cf0c7bbcdf63e481a29c989508",
+        "sha": "27294323b62aae86d288a9d42d4c7cf21f5da003",
+        "patch_reconstructed_equal": true,
+        "native_ast_equivalent": true
+      },
+      {
+        "path": ".github/scripts/test_run_bazel_ci.py",
+        "before_sha": "0597945519c3c6092d258eb1122e2d93f73bd418",
+        "sha": "aba44fc70d8b7e786b6c5cc3dc07551eb148f4b8",
+        "patch_reconstructed_equal": true,
+        "native_ast_equivalent": true
+      },
+      {
+        "path": "scripts/fetch_ui_ci_history.py",
+        "before_sha": "9cff8182e1e1b65bda5998a6f5380a00ebf42bb5",
+        "sha": "ed8f23d52526620b46313ecba8baba9c47e3f7ab",
+        "patch_reconstructed_equal": true,
+        "native_ast_equivalent": true
+      },
+      {
+        "path": "scripts/test_ui_product_foundation_ci.py",
+        "before_sha": "42d7ed7751f3e0261d13f40db21ed987a9226c8a",
+        "sha": "cc822b9c8ced16e2c8379d4e5c7f2c9df6c67a77",
+        "patch_reconstructed_equal": true,
+        "native_ast_equivalent": true
+      }
+    ],
+    "format_exit_code": 0,
+    "seconds": 5.895084053976461,
+    "uv_version": "0.11.3",
+    "frozen_ruff_version": "0.15.13",
+    "tests_rerun": false
+  },
+  "composition_tree": "aa1b76d8591358be2f591c8e411b9e0364a818fd",
+  "musl_workflow_blob": "6aad46b1fe0edcf315ef8b1a5546225c59efe235",
+  "musl_static_review": {
+    "schema": "hepta.musl-product-workflow-root-static-review.v1",
+    "candidate_blob": "6aad46b1fe0edcf315ef8b1a5546225c59efe235",
+    "full_initial_source_read": true,
+    "complete_final_delta_reviewed": true,
+    "independent_review_blob": "1bf22c996098bfc0e6ac29a460ba17f7bf13c121",
+    "reviewed_source_parent_fix": true,
+    "resolved_platform_not_guessed": true,
+    "scope": "New PR/manual workflow; existing explicit musl Hepta CLI target, one version and one help process; original blocking workflows unchanged.",
+    "status": "STATIC_ACCEPT_PENDING_SYNTAX_AND_HOSTED_EXECUTION",
+    "no_build_or_runtime_qualification_claimed": true
+  },
+  "musl_syntax_receipt": {
+    "workflow_git_blob": "6aad46b1fe0edcf315ef8b1a5546225c59efe235",
+    "workflow_sha256": "0b980fc83ac32bba15b9f4b6708426d7b182e3c84b6768183dbbdd3fc9091f36",
+    "workflow_bytes": 21599,
+    "yaml_parser": "PyYAML 6.0.1 safe_load (syntax only)",
+    "python_version": "3.12.3 (main, Aug 31 2026, 10:18:26) [GCC 13.3.0]",
+    "blocks": [
+      {
+        "job": "musl-product-smoke",
+        "step": "Record exact checkout and runner",
+        "step_id": null,
+        "path": "/home/qian-qi/work/hepta-audit-20261104-1230-hookmetadata-evidence/postpub-fmt-recovery-20261104-1935/inline-python-1.py",
+        "sha256": "38421a98b6dbdfe5bfe69e25d710f4f9d778dead9a6660648fe9a2706a41c1eb",
+        "bytes": 2254,
+        "ast_nodes": 335
+      },
+      {
+        "job": "musl-product-smoke",
+        "step": "Build explicit musl product and run those exact bytes",
+        "step_id": null,
+        "path": "/home/qian-qi/work/hepta-audit-20261104-1230-hookmetadata-evidence/postpub-fmt-recovery-20261104-1935/inline-python-2.py",
+        "sha256": "193921254194cd7a586b4777d86c78ae54e3576dc7d1a279962141e809621e42",
+        "bytes": 8979,
+        "ast_nodes": 1520
+      },
+      {
+        "job": "musl-product-smoke",
+        "step": "Finalize source and bounded-scope artifact evidence",
+        "step_id": "finalize",
+        "path": "/home/qian-qi/work/hepta-audit-20261104-1230-hookmetadata-evidence/postpub-fmt-recovery-20261104-1935/inline-python-3.py",
+        "sha256": "e6a7dfe2d2572d27a6776344549e18dcd6ee6ad9e3d7de4fc2da6e0df932d50e",
+        "bytes": 4154,
+        "ast_nodes": 814
+      },
+      {
+        "job": "musl-product-smoke",
+        "step": "Require the narrow qualification receipt",
+        "step_id": null,
+        "path": "/home/qian-qi/work/hepta-audit-20261104-1230-hookmetadata-evidence/postpub-fmt-recovery-20261104-1935/inline-python-4.py",
+        "sha256": "2e5441975dc08ebbb2ab00d0d63d15ae1db11909e3d76b606082dc88f86ef05e",
+        "bytes": 282,
+        "ast_nodes": 53
+      }
+    ],
+    "syntax_pass": true,
+    "workflow_actions_semantics_executed": false,
+    "bazel_executed": false,
+    "rust_tests_executed": false
+  },
+  "no_hosted_or_full_candidate_pass_claim": true
+}

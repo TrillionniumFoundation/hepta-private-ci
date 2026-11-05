@@ -1,0 +1,62 @@
+--- a/hepta-audit-fourth/deliverables/CURRENT_AUDIT_PROGRESS.zh-CN.md
++++ b/hepta-audit-fourth/deliverables/CURRENT_AUDIT_PROGRESS.zh-CN.md
+@@ -90,7 +90,7 @@
+ 
+ 可修的新失败已形成三个静态候选：skills使用非空唯一project marker并断言祖先均无该marker，保留原roots断言；市场迁移用独立子进程的Git URL映射到真实本地仓库，保留原推断、克隆及plugin_not_found路径；V8仅将既有sandbox feature加入默认，保持原六项断言。前两项还准备了实际marker/删除官方推断的负控；V8需真实生成Cargo/Bazel锁。三项尚未原生执行，不能记为修复通过。
+ 
+-App首次断连诊断在helper前置检查停止，未启动metadata、catalog或测试。只读复查发现原target/dev-small及33个helper不存在，原因未定；初始f825/index/锁/测试源码检查通过，异常后的最终guard未执行。其后独立只读检查重新确认f825、普通index、双锁及无未审untracked路径，已在全新目录启动epoch2冷构建（job 1a1a967b3ab-fc05-34f6）。本次绑定自己的程序身份、原193成员依赖图和33 helper名单，原5秒断言及零重试不变；终态尚待独审，原完整运行失败继续保留。[首次停止](fourth-app-disconnect-preflight-stopped.json) / [新构建与原例计划](fourth-app-disconnect-epoch2-manifest.json) / [只读源码复核](fourth-app-disconnect-epoch2-source-readonly.json)
++App首次断连诊断在helper前置检查停止，未启动metadata、catalog或测试。只读复查发现原target/dev-small及33个helper不存在，原因未定；初始f825/index/锁/测试源码检查通过，异常后的最终guard未执行。其后独立只读检查重新确认f825、普通index、双锁及无未审untracked路径，已在全新目录启动epoch2冷构建（job 1a1a967b3ab-fc05-34f6）。本次绑定自己的程序身份、原193成员依赖图和33 helper名单，原5秒断言及零重试不变；原1例终态为FAIL，耗时5.491秒。实际观测为外层bwrap已消失、内层bwrap与Python仍存活，尚不能将原因归于信号。首次前置停止与原完整运行失败继续分别保留。[首次停止](fourth-app-disconnect-preflight-stopped.json) / [epoch2原终态](fourth-app-epoch2-terminal-diagnostic.json) / [独立根审](fourth-app-epoch2-root-terminal-review.json) / [进程只读观察](fourth-app-bwrap-exact-readonly.json)
+ 
+ 所属包与完整workspace失败均未豁免。最终fix/fmt及新head的hosted CI尚未完成。
+ 
+@@ -137,7 +137,7 @@
+ 
+ 完整workspace的正常Cargo metadata给出了实际SQLx缓存身份：两个0.9.0 crate的VCS为003b698e，发布标签为75bc048。17个原包文件逐字核验，11个关键SQLite/Core源与此前主源完全相同；两个原.crate的SHA256与Cargo.lock checksum相等。根tree并非整个相同，规范化Cargo.toml与原Cargo.toml.orig分开保存，实际不存在.cargo-checksum.json也如实记录；B16继续以这些实际包字节为基线。[实际依赖增补](FOURTH_SQLX_ACTUAL_CRATE.zh-CN.md) / [根审](fourth-sqlx-actual-crate-root-review.json)
+ 
+-两个state pool入口已准备四行实际owner接线，并有独立静态重建和三项父控制设计；同一原File及Windows目录句柄经CognitiveCommitGate捕获进入native token，未创造新授权。两个state控制包含临时Tokio runtime退出与opening future取消，不单独证明runtime存活时取消；Memory控制仅在移除旧hook/collation后读取真实SQL，再验证native close释放锁。独审同时发现private recovery checkpoint在validation pool关闭后另开普通连接，尚未绑定同一owner，正在单独补齐。B16整体保持开放。[caller独审与明确缺口](fourth-b16-native-caller-independent-review.json)
++两个state pool入口已准备四行实际owner接线，并有独立静态重建和三项父控制设计；同一原File及Windows目录句柄经CognitiveCommitGate捕获进入native token，未创造新授权。两个state控制包含临时Tokio runtime退出与opening future取消，不单独证明runtime存活时取消；Memory控制仅在移除旧hook/collation后读取真实SQL，再验证native close释放锁。独审同时发现private recovery checkpoint在validation pool关闭后另开普通连接，未绑定同一owner。针对这个实际入口，已另备2个生产路径15增/3删、3个控制路径324增的静态候选；这些是源码行数，不是通过用例数。该候选尚未应用、编译或执行，不改变checkpoint、ACK、发布或Current授权。B16整体保持开放。[caller独审与明确缺口](fourth-b16-native-caller-independent-review.json) / [checkpoint静态候选](static-proposals/b16-checkpoint/repair-manifest.json)
+ 
+ ## 7. 科学采用与外部接受
+ 
+@@ -202,7 +202,7 @@
+ 
+ 八项范围内闭合为B01/B03/B04/B05/B06/B12/B14/B17，科学HOLD为B18，其余14项开放。新失败作为对应包子项记录，原23项退出条件不因拆分或改名改变。
+ 
+-候选保持Draft。可执行修复和验收继续推进；具体Windows审批限制、真实外部权威输入与科学HOLD分别保留边界。没有以自签authority、删失败、跳控制、降低断言或增加原预算取得完成判定。
++候选保持Draft。可执行修复和验收继续推进；Windows严格权限契约、真实外部权威输入与科学HOLD分别保留边界。没有以自签authority、删失败、跳控制、降低断言或增加原预算取得完成判定。
+ 
+ ## 证据导航
+ 
+--- a/hepta-audit-fourth/deliverables/FOURTH_BATCH_QUALIFICATION.md
++++ b/hepta-audit-fourth/deliverables/FOURTH_BATCH_QUALIFICATION.md
+@@ -6,7 +6,7 @@
+ 
+ ROG is the sole native Cargo/source mutation lane at /home/qian-qi/work/hepta-audit-r3-fullgate-20261104. Ordinary HEAD/index are preserved. The ordinary index has 1,222,758 bytes and SHA256 8ccf08bcd5b633a38fa81be4814ae264365f1a2cdd1ed81e1633fbcc0ac31502. Source snapshots use a separate complete index. Cargo.lock has 413,768 bytes/SHA256 4a7a5535cf045089458468411e126b5f59bc6bbf34fc0deead9b0c1b8d84000a; MODULE.bazel.lock has 1,738,619 bytes/SHA256 11f8a421224b9b05f32c4c14054e8868083d989fc497310c8d51e1156f189ca3.
+ 
+-The actual Linux toolchain uses Rust1.95, original just test, locked dependencies, dev-small and local nextest profile. Selected retries remain zero; original ignore, filtered cases, cache and remote early returns are recorded separately. No cargo test, all-features expansion, altered failure assertions or enlarged product deadlines were substituted.
++The actual Linux toolchain uses Rust1.95, original just test, locked dependencies, dev-small and local nextest profile. Selected retries remain zero; original ignore, filtered cases, cache and remote early returns are recorded separately. No cargo test, all-features expansion or enlarged product deadlines were substituted. B10 intentionally corrects the stable WebSocket fixture's expected total from 3 to 4 requests: one real prewarm plus three turn requests. It does not claim that every original assertion was unchanged.
+ 
+ The original normal-helper build resolves test_arg0_preflight, codex-code-mode-host, codex-execve-wrapper, test_stdio_server and test_streamable_http_server. The complete c270 build emitted964 compiler JSON records and one successful build-finished; three helpers were rebuilt and two were fresh=true cache hits. Actual helper/test-program hashes are collected again after the original seven-package catalog and immediately before/after test execution. Cached compilation is not represented as new compilation. [Complete helper bytes](fourth-helper-c270-complete.json)
+ 
+@@ -87,8 +87,8 @@
+ 
+ The App disconnect observation job1a1a951380e-fc05-342f stopped before any Cargo or test command because the original target/dev-small helper directory was absent. All33 original helpers were absent in a subsequent read-only probe. This is a preflight failure, not an execution of the original App case. Initial source/index/lock/fixture guards passed; no final source guard ran after the exception. The cause remains undetermined. A fresh isolated build must bind its own executable identities before further qualification; it cannot inherit the vanished binaries' identity. [Original stopped attempt](fourth-app-disconnect-preflight-stopped.json)
+ 
+-A separate epoch2 was launched as job1a1a967b3ab-fc05-34f6 after an independent fresh source/index/lock/untracked guard. It rebuilds only in a new exclusive target, compares the full original193-member resolved graph, and binds the original33 helper roster to new executable hashes. The original one-case5s oracle and0retry remain. Its terminal result is still pending independent review; the stopped attempt and original full failure remain unchanged. [Epoch2 manifest](fourth-app-disconnect-epoch2-manifest.json) / [Source guard](fourth-app-disconnect-epoch2-source-readonly.json)
++A separate epoch2 was launched as job1a1a967b3ab-fc05-34f6 after an independent fresh source/index/lock/untracked guard. It rebuilds only in a new exclusive target, compares the full original193-member resolved graph, and binds the original33 helper roster to new executable hashes. The original one-case5s oracle and0retry remain. The original single case terminated as FAIL in 5.491s. Observation found the outer bwrap gone while the inner bwrap and Python remained alive; a signal cause is not established. The stopped attempt and original full failure remain unchanged. [Epoch2 terminal evidence](fourth-app-epoch2-terminal-diagnostic.json) / [Independent root review](fourth-app-epoch2-root-terminal-review.json) / [Read-only process observation](fourth-app-bwrap-exact-readonly.json)
+ 
+ The reviewed A proposal roster is skills9 original cases, migration166 original package cases, V8 poc6 plus runtime70 in the normal graph, Windows narrow ACL and four-cell original-token/legacy controls, and one-line Windows target log retention. These counts describe planned scopes, not executed passes. [Windows matrix V2](static-proposals/b11-delete-matrix/repair-manifest.json)
+ 
+-The B16 two-pool caller binding has a separate static review and three proposed parent controls. The two state controls include runtime shutdown plus opening cancellation. A separate private recovery checkpoint connection remains unbound and is under a distinct repair review; do not generalize pool custody to the whole recovery flow. [Caller review](fourth-b16-native-caller-independent-review.json)
++The B16 two-pool caller binding has a separate static review and three proposed parent controls. The two state controls include runtime shutdown plus opening cancellation. A separate private recovery checkpoint connection is unbound in the current source. Its distinct static proposal now contains two production paths with 15 additions/3 deletions and three control paths with 324 additions; these are source-line counts, not executed cases. It has not been applied, compiled or run, and does not change checkpoint, ACK, publication or Current authorization. Do not generalize pool custody to the whole recovery flow. [Caller review](fourth-b16-native-caller-independent-review.json) / [Checkpoint static proposal](static-proposals/b16-checkpoint/repair-manifest.json)
+--- a/hepta-audit-fourth/deliverables/PROJECT_DIRECTION_AND_PLAN.zh-CN.md
++++ b/hepta-audit-fourth/deliverables/PROJECT_DIRECTION_AND_PLAN.zh-CN.md
+@@ -46,7 +46,7 @@
+ 
+ 执行队列为：App断开进程生命周期原例诊断；skills原9例及真实marker负控；迁移原166例及官方推断负控；V8原6例和runtime70例、真实Cargo/Bazel锁生成；Windows窄ACL与四格DELETE/父DELETE_CHILD控制；原完整工程门与最终fix/fmt；最后将固定候选送入原Windows/macOS Intel/Linux等CI。所有计划用例数都单列为计划，不计PASS。原始断言、5秒/2秒等预算及零重试保持各自原范围。
+ 
+-原helper目录意外缺失的诊断已保留，原因未知；epoch2以同一f825源在全新目录重建并重新绑定程序身份，当前终态待审。不能继承消失的二进制身份或用单次隔离PASS覆盖原完整运行失败。[诊断执行计划](fourth-app-disconnect-epoch2-manifest.json)
++原helper目录意外缺失的诊断已保留，原因未知；epoch2以同一f825源在全新目录重建并重新绑定程序身份，原1例已在5.491秒终态FAIL。外层bwrap已消失、内层bwrap与Python仍存活；现有观察尚不能将原因归于信号。不能继承消失的二进制身份，也不能把该次失败算作已修复。[epoch2原终态](fourth-app-epoch2-terminal-diagnostic.json) / [独立根审](fourth-app-epoch2-root-terminal-review.json)
+ 
+ 原平台仍有73个ledger名字缺至少一个平台的充分逐例证据，已收敛为10个查询组、7个原目标和33个target/platform配对；最终必须绑定实际发布head与执行merge tree。现有Windows private-state和13-case resume的已满足范围继续闭合，其余strict token、Intel PTY、TUI与正常UI接受分别验收。现有ARM Mac或Linux Intel环境不能代替所需平台。
+ 

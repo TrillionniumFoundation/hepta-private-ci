@@ -1,0 +1,5762 @@
+{
+  "schema": "hepta-A-actual-fmt-independent-review-v1",
+  "verdict": "STATIC_ACCEPT_ALL_17_ACTUAL_FORMATTER_POSTIMAGES",
+  "native_execution": {
+    "job_as_reported": "1a1aa209167-fc05-3db7",
+    "argv": [
+      "just",
+      "fmt"
+    ],
+    "exit_code": 0,
+    "duration_seconds": 42.683927650010446,
+    "command_status_receipt": {
+      "path": "ci-audit/recovered-20261105/final-A-fmt-complete-v1/original-fmt-status.json",
+      "bytes": 14063,
+      "sha256": "8eaeeb55b05f31340a7f2a802619a96aad92bb322d2eedbc4123268140698db3",
+      "blob": "9b316d02ecdcb15e6aabcb2eb02abf05a5927c31"
+    },
+    "controller_terminal_receipt": {
+      "path": "ci-audit/recovered-20261105/final-A-fmt-complete-v1/terminal.json",
+      "bytes": 54856,
+      "sha256": "d263684929039925c0295debf74d7e071968c17587d24b64222668a1608f5643",
+      "blob": "12efc096deb85c22b069938df2e67987982010f6"
+    },
+    "controller_review_stop_is_not_formatter_failure": true
+  },
+  "source": {
+    "last_tested_A_tree": "fb9e131272f7e7a138d6c0d1af2b048b9a6ab7ff",
+    "pre_fmt_tree": "b2901e2beb8171f125fe5906d585fbe134802423",
+    "post_fmt_tree": "4a3374e22e16ce5c764288ad018cd9affadf94ea",
+    "complete_tree_recomputed": true,
+    "patch": {
+      "path": "ci-audit/recovered-20261105/final-A-fmt-complete-v1/large-decoded/original-fmt.patch",
+      "bytes": 66988,
+      "sha256": "870bebd231538f636a89e4e23b87b2933429ae75d9977b9c88b6141a92afa66d",
+      "blob": "99ca4fb388b31cc0e0cbd6ed5646a0c77357b1c9"
+    },
+    "patch_github_blob": "99ca4fb388b31cc0e0cbd6ed5646a0c77357b1c9",
+    "native_changes_receipt": {
+      "path": "ci-audit/recovered-20261105/final-A-fmt-complete-v1/original-fmt-changes.json",
+      "bytes": 11057,
+      "sha256": "3deb3880dc5f7fa7ce9b49502d3836fa59cf8fd9a1c6b5af15003299033ea5fa",
+      "blob": "11ba001abeac1edeebceb1aa2edf0611c9121a85"
+    },
+    "complete_base_tree_receipt": {
+      "path": "hepta-audit-fourth/inputs/cabc-tree.json",
+      "bytes": 3703447,
+      "sha256": "25e4f292abeb6e8341e7000e8eac24c7ea281b2163f512f00a53e789ed16fb39",
+      "blob": "df0c8aaf483cd5b9f57d25fcea3bc5693e2b542e"
+    },
+    "native_full_source_map": {
+      "path": "ci-audit/recovered-20261105/full-fb9-complete-archive/decoded-verified-v1/small/final-source-map.json",
+      "bytes": 14360,
+      "sha256": "79fc8b5da99da4f89a824d4615a7d470fa43116bdb835016cf6324deae977fa0",
+      "blob": "1c4acd1b81bff76db6c99fda5c98e5c7c3607862"
+    },
+    "all_17_preimages_reverse_reconstructed_exact": true,
+    "all_17_postimages_forward_reconstructed_exact": true,
+    "changes_outside_declared_17_paths": false,
+    "active_locks_or_manifests_changed": false
+  },
+  "per_path": [
+    {
+      "path": ".github/scripts/collect_bazel_failed_test_logs.py",
+      "preimage": {
+        "bytes": 16238,
+        "sha256": "867d2b315dbb37b5b33c0869281c41fc5586a366f0cd1c19a1703f57d40fda9d",
+        "blob": "5427be6c1f37bd7c302d808c2e4f194727abe700"
+      },
+      "postimage": {
+        "bytes": 16260,
+        "sha256": "55353f094531a4af974c519fadca01dcd0c8be6ece1f8b10efb70d24ae2a44eb",
+        "blob": "2142eeb382664d95f77d83ac7ae3da4459601abf"
+      },
+      "verification": "FULL_PYTHON_AST_EQUAL",
+      "ast_sha256": "9ceafc83d844fc394ee03713b99da05b0b00ec5d4d8cf40d2ff2cbb8ccb00ad2"
+    },
+    {
+      "path": ".github/scripts/test_run_bazel_ci.py",
+      "preimage": {
+        "bytes": 33780,
+        "sha256": "ded8a2f14aab391f3f571780df8e39ee0ca626b6a1962331449318192c67c65c",
+        "blob": "045457bb4d7f5e54d4429a93615970a223bb48db"
+      },
+      "postimage": {
+        "bytes": 33989,
+        "sha256": "83dfc9788189aa2279dbc4be8ad0aacca31c9c63c0d2cd3b58e386784b7cc80d",
+        "blob": "ed8276016bcf8ff7738c1769907ae1c145438add"
+      },
+      "verification": "FULL_PYTHON_AST_EQUAL",
+      "ast_sha256": "a3c612d9c0839f6e5a45ad4a1989696b3eecd213358265f3c81a0fb50a692727"
+    },
+    {
+      "path": "codex-rs/apply-patch/src/lib.rs",
+      "preimage": {
+        "bytes": 48021,
+        "sha256": "7577bae513e8ce3ef5fc1af0dcf6d3076b1d635007dd707812a0dbc26abd2a12",
+        "blob": "e21b00a4282e247c7a4341095367bf81e7a59aa1"
+      },
+      "postimage": {
+        "bytes": 47989,
+        "sha256": "2a72afc9b9c8514bc64b4d97400d5d1cf1ff5b2aee9bb6f4aa2b0e45531d4894",
+        "blob": "6e585b683e9e40e0a4d759674207647d716d53bd"
+      },
+      "verification": "FULL_DIFF_MANUAL_REVIEW_PLUS_LEXICAL_DIAGNOSTIC_NOT_RUST_AST",
+      "literal_token_multiset_exact": true,
+      "literal_token_sequence_exact": true,
+      "comment_tokens_exact": true,
+      "word_token_sequence_exact": true,
+      "non_whitespace_lexical_edits": [
+        {
+          "kind": "delete",
+          "pre_tokens": [
+            [
+              "punct",
+              "{"
+            ]
+          ],
+          "post_tokens": [],
+          "pre_context_before": [
+            [
+              "punct",
+              ")"
+            ],
+            [
+              "punct",
+              "}"
+            ],
+            [
+              "punct",
+              "."
+            ],
+            [
+              "word",
+              "map_err"
+            ],
+            [
+              "punct",
+              "("
+            ],
+            [
+              "punct",
+              "|"
+            ],
+            [
+              "word",
+              "error"
+            ],
+            [
+              "punct",
+              "|"
+            ]
+          ],
+          "pre_context_after": [
+            [
+              "word",
+              "ApplyPatchFailure"
+            ],
+            [
+              "punct",
+              ":"
+            ],
+            [
+              "punct",
+              ":"
+            ],
+            [
+              "word",
+              "new"
+            ],
+            [
+              "punct",
+              "("
+            ],
+            [
+              "word",
+              "ApplyPatchError"
+            ],
+            [
+              "punct",
+              ":"
+            ],
+            [
+              "punct",
+              ":"
+            ]
+          ]
+        },
+        {
+          "kind": "delete",
+          "pre_tokens": [
+            [
+              "punct",
+              "}"
+            ]
+          ],
+          "post_tokens": [],
+          "pre_context_before": [
+            [
+              "punct",
+              ")"
+            ],
+            [
+              "punct",
+              ","
+            ],
+            [
+              "word",
+              "delta"
+            ],
+            [
+              "punct",
+              "."
+            ],
+            [
+              "word",
+              "clone"
+            ],
+            [
+              "punct",
+              "("
+            ],
+            [
+              "punct",
+              ")"
+            ],
+            [
+              "punct",
+              ")"
+            ]
+          ],
+          "pre_context_after": [
+            [
+              "punct",
+              ")"
+            ],
+            [
+              "punct",
+              "?"
+            ],
+            [
+              "punct",
+              ";"
+            ],
+            [
+              "word",
+              "let"
+            ],
+            [
+              "word",
+              "error"
+            ],
+            [
+              "punct",
+              "="
+            ],
+            [
+              "word",
+              "if"
+            ],
+            [
+              "word",
+              "let"
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "path": "codex-rs/core/tests/suite/turn_state.rs",
+      "preimage": {
+        "bytes": 16514,
+        "sha256": "3c9ddd24b0517a89b55abbc2bb60de96c875bc01b7d9ac2c29d242cb0f95e197",
+        "blob": "7744c37e11b596d53db1e716de4e7adeff213936"
+      },
+      "postimage": {
+        "bytes": 16656,
+        "sha256": "434a40d98a8c399144d430799332f9706b54d0494a6fe26c1ec031bca61008d0",
+        "blob": "8c20f52ed34b6cf848ee1851f0ff3507f6a26cb6"
+      },
+      "verification": "FULL_DIFF_MANUAL_REVIEW_PLUS_LEXICAL_DIAGNOSTIC_NOT_RUST_AST",
+      "literal_token_multiset_exact": true,
+      "literal_token_sequence_exact": true,
+      "comment_tokens_exact": true,
+      "word_token_sequence_exact": true,
+      "non_whitespace_lexical_edits": []
+    },
+    {
+      "path": "codex-rs/ext/skills/src/host_roots_tests.rs",
+      "preimage": {
+        "bytes": 23508,
+        "sha256": "1987b4f5b24df98283281f1124f6ab9fa364da41ac1cbf352e4b952058f82f94",
+        "blob": "ffae69d365402929787f9029a15f02d9c328149b"
+      },
+      "postimage": {
+        "bytes": 23555,
+        "sha256": "a4df9258761578f5532e44cec9318e10a4c005f838d903db6e1e6bf8c335a8e4",
+        "blob": "36a8127e157540d78d4abf0408e7d792b69d39c6"
+      },
+      "verification": "FULL_DIFF_MANUAL_REVIEW_PLUS_LEXICAL_DIAGNOSTIC_NOT_RUST_AST",
+      "literal_token_multiset_exact": true,
+      "literal_token_sequence_exact": true,
+      "comment_tokens_exact": true,
+      "word_token_sequence_exact": true,
+      "non_whitespace_lexical_edits": []
+    },
+    {
+      "path": "codex-rs/linux-sandbox/src/launcher.rs",
+      "preimage": {
+        "bytes": 17189,
+        "sha256": "4c8c80c86477b6bbfdc002eee06c3d70ea09829a92eb079f8d309a13d22ea8bf",
+        "blob": "a1d761fba56d6b1653598e82f5d5d81207719ef5"
+      },
+      "postimage": {
+        "bytes": 17251,
+        "sha256": "1d85a735ba4d0c8096c73a094e7bb2e1e4fb320086ace6a1ab6cbeacef93b732",
+        "blob": "bd36a1d8d49ccde5cc892e36e323443323e3c167"
+      },
+      "verification": "FULL_DIFF_MANUAL_REVIEW_PLUS_LEXICAL_DIAGNOSTIC_NOT_RUST_AST",
+      "literal_token_multiset_exact": true,
+      "literal_token_sequence_exact": true,
+      "comment_tokens_exact": true,
+      "word_token_sequence_exact": true,
+      "non_whitespace_lexical_edits": [
+        {
+          "kind": "insert",
+          "pre_tokens": [],
+          "post_tokens": [
+            [
+              "punct",
+              ","
+            ]
+          ],
+          "pre_context_before": [
+            [
+              "literal",
+              "\"--parent-liveness\""
+            ],
+            [
+              "punct",
+              "."
+            ],
+            [
+              "word",
+              "to_string"
+            ],
+            [
+              "punct",
+              "("
+            ],
+            [
+              "punct",
+              ")"
+            ],
+            [
+              "punct",
+              ","
+            ],
+            [
+              "word",
+              "argument"
+            ],
+            [
+              "punct",
+              "]"
+            ]
+          ],
+          "pre_context_after": [
+            [
+              "punct",
+              ")"
+            ],
+            [
+              "punct",
+              ";"
+            ],
+            [
+              "word",
+              "preserved_files"
+            ],
+            [
+              "punct",
+              "."
+            ],
+            [
+              "word",
+              "push"
+            ],
+            [
+              "punct",
+              "("
+            ],
+            [
+              "word",
+              "parent"
+            ],
+            [
+              "punct",
+              "."
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "path": "codex-rs/linux-sandbox/src/linux_run_main.rs",
+      "preimage": {
+        "bytes": 56541,
+        "sha256": "c62b0014d1a539bb0343048fffa5283816f66dd17abcfb089ba3bce60eb247ca",
+        "blob": "e8eab2ed1b8221c75a366e0cc93851cf98d6f490"
+      },
+      "postimage": {
+        "bytes": 56614,
+        "sha256": "70a8e4f72413a07ba2dce95e1e0f4c453d4642d761b3f98f05f13966b0621b53",
+        "blob": "03170649aa71575c88a3307f78095b03855d0c34"
+      },
+      "verification": "FULL_DIFF_MANUAL_REVIEW_PLUS_LEXICAL_DIAGNOSTIC_NOT_RUST_AST",
+      "literal_token_multiset_exact": true,
+      "literal_token_sequence_exact": true,
+      "comment_tokens_exact": true,
+      "word_token_sequence_exact": true,
+      "non_whitespace_lexical_edits": [
+        {
+          "kind": "insert",
+          "pre_tokens": [],
+          "post_tokens": [
+            [
+              "punct",
+              ","
+            ]
+          ],
+          "pre_context_before": [
+            [
+              "word",
+              "bwrap_args"
+            ],
+            [
+              "punct",
+              "."
+            ],
+            [
+              "word",
+              "preserved_files"
+            ],
+            [
+              "punct",
+              ","
+            ],
+            [
+              "word",
+              "BwrapCommandRole"
+            ],
+            [
+              "punct",
+              ":"
+            ],
+            [
+              "punct",
+              ":"
+            ],
+            [
+              "word",
+              "SandboxReaper"
+            ]
+          ],
+          "pre_context_after": [
+            [
+              "punct",
+              ")"
+            ],
+            [
+              "punct",
+              ";"
+            ],
+            [
+              "punct",
+              "}"
+            ],
+            [
+              "word",
+              "run_bwrap_in_child_with_synthetic_mount_cleanup"
+            ],
+            [
+              "punct",
+              "("
+            ],
+            [
+              "word",
+              "bwrap_args"
+            ],
+            [
+              "punct",
+              ")"
+            ],
+            [
+              "punct",
+              ";"
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "path": "codex-rs/linux-sandbox/src/parent_lifecycle.rs",
+      "preimage": {
+        "bytes": 7437,
+        "sha256": "2568b9008d8b6db84b40ace134c5aef6b493d316bfe1d977aab8290b58b64db6",
+        "blob": "ffc5774508ab4a069a6bcb70f27950300b86fbfe"
+      },
+      "postimage": {
+        "bytes": 8228,
+        "sha256": "6b1df4d24e48d9eaf772c85e70ebca822b5fd23d3708b2c749158b9cb4350c68",
+        "blob": "8f500e03938718820360ce2ad41f2286eb9071bd"
+      },
+      "verification": "FULL_DIFF_MANUAL_REVIEW_PLUS_LEXICAL_DIAGNOSTIC_NOT_RUST_AST",
+      "literal_token_multiset_exact": true,
+      "literal_token_sequence_exact": true,
+      "comment_tokens_exact": true,
+      "word_token_sequence_exact": true,
+      "non_whitespace_lexical_edits": [
+        {
+          "kind": "insert",
+          "pre_tokens": [],
+          "post_tokens": [
+            [
+              "punct",
+              ","
+            ]
+          ],
+          "pre_context_before": [
+            [
+              "word",
+              "F_DUPFD_CLOEXEC"
+            ],
+            [
+              "punct",
+              ","
+            ],
+            [
+              "word",
+              "libc"
+            ],
+            [
+              "punct",
+              ":"
+            ],
+            [
+              "punct",
+              ":"
+            ],
+            [
+              "word",
+              "STDERR_FILENO"
+            ],
+            [
+              "punct",
+              "+"
+            ],
+            [
+              "word",
+              "1"
+            ]
+          ],
+          "pre_context_after": [
+            [
+              "punct",
+              ")"
+            ],
+            [
+              "punct",
+              "}"
+            ],
+            [
+              "punct",
+              ";"
+            ],
+            [
+              "word",
+              "if"
+            ],
+            [
+              "word",
+              "fd"
+            ],
+            [
+              "punct",
+              "<"
+            ],
+            [
+              "word",
+              "0"
+            ],
+            [
+              "punct",
+              "{"
+            ]
+          ]
+        },
+        {
+          "kind": "insert",
+          "pre_tokens": [],
+          "post_tokens": [
+            [
+              "punct",
+              "{"
+            ]
+          ],
+          "pre_context_before": [
+            [
+              "word",
+              "Self"
+            ],
+            [
+              "punct",
+              ">"
+            ],
+            [
+              "punct",
+              "{"
+            ],
+            [
+              "word",
+              "let"
+            ],
+            [
+              "word",
+              "invalid"
+            ],
+            [
+              "punct",
+              "="
+            ],
+            [
+              "punct",
+              "|"
+            ],
+            [
+              "punct",
+              "|"
+            ]
+          ],
+          "pre_context_after": [
+            [
+              "word",
+              "io"
+            ],
+            [
+              "punct",
+              ":"
+            ],
+            [
+              "punct",
+              ":"
+            ],
+            [
+              "word",
+              "Error"
+            ],
+            [
+              "punct",
+              ":"
+            ],
+            [
+              "punct",
+              ":"
+            ],
+            [
+              "word",
+              "new"
+            ],
+            [
+              "punct",
+              "("
+            ]
+          ]
+        },
+        {
+          "kind": "insert",
+          "pre_tokens": [],
+          "post_tokens": [
+            [
+              "punct",
+              ","
+            ]
+          ],
+          "pre_context_before": [
+            [
+              "punct",
+              ":"
+            ],
+            [
+              "punct",
+              ":"
+            ],
+            [
+              "word",
+              "ErrorKind"
+            ],
+            [
+              "punct",
+              ":"
+            ],
+            [
+              "punct",
+              ":"
+            ],
+            [
+              "word",
+              "InvalidInput"
+            ],
+            [
+              "punct",
+              ","
+            ],
+            [
+              "literal",
+              "\"invalid parent liveness descriptor\""
+            ]
+          ],
+          "pre_context_after": [
+            [
+              "punct",
+              ")"
+            ],
+            [
+              "punct",
+              ";"
+            ],
+            [
+              "word",
+              "let"
+            ],
+            [
+              "word",
+              "mut"
+            ],
+            [
+              "word",
+              "fields"
+            ],
+            [
+              "punct",
+              "="
+            ],
+            [
+              "word",
+              "argument"
+            ],
+            [
+              "punct",
+              "."
+            ]
+          ]
+        },
+        {
+          "kind": "insert",
+          "pre_tokens": [],
+          "post_tokens": [
+            [
+              "punct",
+              "}"
+            ]
+          ],
+          "pre_context_before": [
+            [
+              "punct",
+              ":"
+            ],
+            [
+              "word",
+              "ErrorKind"
+            ],
+            [
+              "punct",
+              ":"
+            ],
+            [
+              "punct",
+              ":"
+            ],
+            [
+              "word",
+              "InvalidInput"
+            ],
+            [
+              "punct",
+              ","
+            ],
+            [
+              "literal",
+              "\"invalid parent liveness descriptor\""
+            ],
+            [
+              "punct",
+              ")"
+            ]
+          ],
+          "pre_context_after": [
+            [
+              "punct",
+              ";"
+            ],
+            [
+              "word",
+              "let"
+            ],
+            [
+              "word",
+              "mut"
+            ],
+            [
+              "word",
+              "fields"
+            ],
+            [
+              "punct",
+              "="
+            ],
+            [
+              "word",
+              "argument"
+            ],
+            [
+              "punct",
+              "."
+            ],
+            [
+              "word",
+              "split"
+            ]
+          ]
+        },
+        {
+          "kind": "insert",
+          "pre_tokens": [],
+          "post_tokens": [
+            [
+              "punct",
+              ","
+            ]
+          ],
+          "pre_context_before": [
+            [
+              "punct",
+              ":"
+            ],
+            [
+              "punct",
+              ":"
+            ],
+            [
+              "word",
+              "ErrorKind"
+            ],
+            [
+              "punct",
+              ":"
+            ],
+            [
+              "punct",
+              ":"
+            ],
+            [
+              "word",
+              "InvalidData"
+            ],
+            [
+              "punct",
+              ","
+            ],
+            [
+              "literal",
+              "\"parent liveness descriptor identity changed\""
+            ]
+          ],
+          "pre_context_after": [
+            [
+              "punct",
+              ")"
+            ],
+            [
+              "punct",
+              ")"
+            ],
+            [
+              "punct",
+              ";"
+            ],
+            [
+              "punct",
+              "}"
+            ],
+            [
+              "word",
+              "let"
+            ],
+            [
+              "word",
+              "mut"
+            ],
+            [
+              "word",
+              "filesystem"
+            ],
+            [
+              "punct",
+              "="
+            ]
+          ]
+        },
+        {
+          "kind": "insert",
+          "pre_tokens": [],
+          "post_tokens": [
+            [
+              "punct",
+              ","
+            ]
+          ],
+          "pre_context_before": [
+            [
+              "punct",
+              ":"
+            ],
+            [
+              "punct",
+              ":"
+            ],
+            [
+              "word",
+              "ErrorKind"
+            ],
+            [
+              "punct",
+              ":"
+            ],
+            [
+              "punct",
+              ":"
+            ],
+            [
+              "word",
+              "InvalidInput"
+            ],
+            [
+              "punct",
+              ","
+            ],
+            [
+              "literal",
+              "\"parent liveness descriptor must be an unread read-only procfs file\""
+            ]
+          ],
+          "pre_context_after": [
+            [
+              "punct",
+              ")"
+            ],
+            [
+              "punct",
+              ")"
+            ],
+            [
+              "punct",
+              ";"
+            ],
+            [
+              "punct",
+              "}"
+            ],
+            [
+              "word",
+              "Ok"
+            ],
+            [
+              "punct",
+              "("
+            ],
+            [
+              "word",
+              "Self"
+            ],
+            [
+              "punct",
+              "("
+            ]
+          ]
+        },
+        {
+          "kind": "insert",
+          "pre_tokens": [],
+          "post_tokens": [
+            [
+              "punct",
+              ","
+            ]
+          ],
+          "pre_context_before": [
+            [
+              "word",
+              "c_ulong"
+            ],
+            [
+              "punct",
+              ","
+            ],
+            [
+              "word",
+              "0"
+            ],
+            [
+              "word",
+              "as"
+            ],
+            [
+              "word",
+              "libc"
+            ],
+            [
+              "punct",
+              ":"
+            ],
+            [
+              "punct",
+              ":"
+            ],
+            [
+              "word",
+              "c_ulong"
+            ]
+          ],
+          "pre_context_after": [
+            [
+              "punct",
+              ")"
+            ],
+            [
+              "punct",
+              "}"
+            ],
+            [
+              "punct",
+              "<"
+            ],
+            [
+              "word",
+              "0"
+            ],
+            [
+              "punct",
+              "{"
+            ],
+            [
+              "word",
+              "return"
+            ],
+            [
+              "word",
+              "Err"
+            ],
+            [
+              "punct",
+              "("
+            ]
+          ]
+        },
+        {
+          "kind": "insert",
+          "pre_tokens": [],
+          "post_tokens": [
+            [
+              "punct",
+              "{"
+            ]
+          ],
+          "pre_context_before": [
+            [
+              "punct",
+              ")"
+            ],
+            [
+              "punct",
+              "?"
+            ],
+            [
+              "punct",
+              ";"
+            ],
+            [
+              "word",
+              "let"
+            ],
+            [
+              "word",
+              "malformed"
+            ],
+            [
+              "punct",
+              "="
+            ],
+            [
+              "punct",
+              "|"
+            ],
+            [
+              "punct",
+              "|"
+            ]
+          ],
+          "pre_context_after": [
+            [
+              "word",
+              "io"
+            ],
+            [
+              "punct",
+              ":"
+            ],
+            [
+              "punct",
+              ":"
+            ],
+            [
+              "word",
+              "Error"
+            ],
+            [
+              "punct",
+              ":"
+            ],
+            [
+              "punct",
+              ":"
+            ],
+            [
+              "word",
+              "new"
+            ],
+            [
+              "punct",
+              "("
+            ]
+          ]
+        },
+        {
+          "kind": "insert",
+          "pre_tokens": [],
+          "post_tokens": [
+            [
+              "punct",
+              ","
+            ]
+          ],
+          "pre_context_before": [
+            [
+              "punct",
+              ":"
+            ],
+            [
+              "punct",
+              ":"
+            ],
+            [
+              "word",
+              "ErrorKind"
+            ],
+            [
+              "punct",
+              ":"
+            ],
+            [
+              "punct",
+              ":"
+            ],
+            [
+              "word",
+              "InvalidData"
+            ],
+            [
+              "punct",
+              ","
+            ],
+            [
+              "literal",
+              "\"malformed original parent proc stat\""
+            ]
+          ],
+          "pre_context_after": [
+            [
+              "punct",
+              ")"
+            ],
+            [
+              "punct",
+              ";"
+            ],
+            [
+              "word",
+              "if"
+            ],
+            [
+              "word",
+              "record"
+            ],
+            [
+              "punct",
+              "."
+            ],
+            [
+              "word",
+              "is_empty"
+            ],
+            [
+              "punct",
+              "("
+            ],
+            [
+              "punct",
+              ")"
+            ]
+          ]
+        },
+        {
+          "kind": "insert",
+          "pre_tokens": [],
+          "post_tokens": [
+            [
+              "punct",
+              "}"
+            ]
+          ],
+          "pre_context_before": [
+            [
+              "punct",
+              ":"
+            ],
+            [
+              "word",
+              "ErrorKind"
+            ],
+            [
+              "punct",
+              ":"
+            ],
+            [
+              "punct",
+              ":"
+            ],
+            [
+              "word",
+              "InvalidData"
+            ],
+            [
+              "punct",
+              ","
+            ],
+            [
+              "literal",
+              "\"malformed original parent proc stat\""
+            ],
+            [
+              "punct",
+              ")"
+            ]
+          ],
+          "pre_context_after": [
+            [
+              "punct",
+              ";"
+            ],
+            [
+              "word",
+              "if"
+            ],
+            [
+              "word",
+              "record"
+            ],
+            [
+              "punct",
+              "."
+            ],
+            [
+              "word",
+              "is_empty"
+            ],
+            [
+              "punct",
+              "("
+            ],
+            [
+              "punct",
+              ")"
+            ],
+            [
+              "punct",
+              "|"
+            ]
+          ]
+        },
+        {
+          "kind": "insert",
+          "pre_tokens": [],
+          "post_tokens": [
+            [
+              "punct",
+              ","
+            ]
+          ],
+          "pre_context_before": [
+            [
+              "punct",
+              ":"
+            ],
+            [
+              "punct",
+              ":"
+            ],
+            [
+              "word",
+              "ErrorKind"
+            ],
+            [
+              "punct",
+              ":"
+            ],
+            [
+              "punct",
+              ":"
+            ],
+            [
+              "word",
+              "BrokenPipe"
+            ],
+            [
+              "punct",
+              ","
+            ],
+            [
+              "literal",
+              "\"original sandbox launcher is exiting or exited\""
+            ]
+          ],
+          "pre_context_after": [
+            [
+              "punct",
+              ")"
+            ],
+            [
+              "punct",
+              ")"
+            ],
+            [
+              "punct",
+              ";"
+            ],
+            [
+              "punct",
+              "}"
+            ],
+            [
+              "word",
+              "Ok"
+            ],
+            [
+              "punct",
+              "("
+            ],
+            [
+              "punct",
+              "("
+            ],
+            [
+              "punct",
+              ")"
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "path": "codex-rs/linux-sandbox/src/parent_lifecycle_tests.rs",
+      "preimage": {
+        "bytes": 12754,
+        "sha256": "dc61d2f17ad7131d5c49584f95f332af9cb1ee4776960607e831e6544f727458",
+        "blob": "58eff73120448cb122c3e6d22ea60a7ee1899844"
+      },
+      "postimage": {
+        "bytes": 13771,
+        "sha256": "61bf19d456a4ec7e6133792907a092af29d2ba4dc564e4e9715e4c2b622ae098",
+        "blob": "b6a52517913ad570b9468ec69bcb3c2741f1e40a"
+      },
+      "verification": "FULL_DIFF_MANUAL_REVIEW_PLUS_LEXICAL_DIAGNOSTIC_NOT_RUST_AST",
+      "literal_token_multiset_exact": true,
+      "literal_token_sequence_exact": true,
+      "comment_tokens_exact": true,
+      "word_token_sequence_exact": true,
+      "non_whitespace_lexical_edits": [
+        {
+          "kind": "insert",
+          "pre_tokens": [],
+          "post_tokens": [
+            [
+              "punct",
+              ","
+            ]
+          ],
+          "pre_context_before": [
+            [
+              "punct",
+              ","
+            ],
+            [
+              "word",
+              "reader"
+            ],
+            [
+              "punct",
+              ":"
+            ],
+            [
+              "word",
+              "None"
+            ],
+            [
+              "punct",
+              ","
+            ],
+            [
+              "word",
+              "reaped"
+            ],
+            [
+              "punct",
+              ":"
+            ],
+            [
+              "word",
+              "false"
+            ]
+          ],
+          "pre_context_after": [
+            [
+              "punct",
+              "}"
+            ],
+            [
+              "punct",
+              ";"
+            ],
+            [
+              "word",
+              "owned"
+            ],
+            [
+              "punct",
+              "."
+            ],
+            [
+              "word",
+              "reader"
+            ],
+            [
+              "punct",
+              "="
+            ],
+            [
+              "word",
+              "Some"
+            ],
+            [
+              "punct",
+              "("
+            ]
+          ]
+        },
+        {
+          "kind": "insert",
+          "pre_tokens": [],
+          "post_tokens": [
+            [
+              "punct",
+              ","
+            ]
+          ],
+          "pre_context_before": [
+            [
+              "punct",
+              ":"
+            ],
+            [
+              "punct",
+              ":"
+            ],
+            [
+              "word",
+              "Error"
+            ],
+            [
+              "punct",
+              ":"
+            ],
+            [
+              "punct",
+              ":"
+            ],
+            [
+              "word",
+              "other"
+            ],
+            [
+              "punct",
+              "("
+            ],
+            [
+              "literal",
+              "\"owned liveness control output exceeded its bound\""
+            ]
+          ],
+          "pre_context_after": [
+            [
+              "punct",
+              ")"
+            ],
+            [
+              "punct",
+              ")"
+            ],
+            [
+              "punct",
+              ";"
+            ],
+            [
+              "punct",
+              "}"
+            ],
+            [
+              "word",
+              "if"
+            ],
+            [
+              "word",
+              "sender"
+            ],
+            [
+              "punct",
+              "."
+            ],
+            [
+              "word",
+              "send"
+            ]
+          ]
+        },
+        {
+          "kind": "insert",
+          "pre_tokens": [],
+          "post_tokens": [
+            [
+              "punct",
+              ","
+            ]
+          ],
+          "pre_context_before": [
+            [
+              "punct",
+              ":"
+            ],
+            [
+              "punct",
+              ":"
+            ],
+            [
+              "word",
+              "WNOHANG"
+            ],
+            [
+              "punct",
+              "|"
+            ],
+            [
+              "word",
+              "libc"
+            ],
+            [
+              "punct",
+              ":"
+            ],
+            [
+              "punct",
+              ":"
+            ],
+            [
+              "word",
+              "WNOWAIT"
+            ]
+          ],
+          "pre_context_after": [
+            [
+              "punct",
+              ")"
+            ],
+            [
+              "punct",
+              "}"
+            ],
+            [
+              "punct",
+              ";"
+            ],
+            [
+              "word",
+              "if"
+            ],
+            [
+              "word",
+              "rc"
+            ],
+            [
+              "punct",
+              "<"
+            ],
+            [
+              "word",
+              "0"
+            ],
+            [
+              "punct",
+              "{"
+            ]
+          ]
+        },
+        {
+          "kind": "insert",
+          "pre_tokens": [],
+          "post_tokens": [
+            [
+              "punct",
+              "{"
+            ]
+          ],
+          "pre_context_before": [
+            [
+              "punct",
+              ":"
+            ],
+            [
+              "word",
+              "RecvTimeoutError"
+            ],
+            [
+              "punct",
+              ":"
+            ],
+            [
+              "punct",
+              ":"
+            ],
+            [
+              "word",
+              "Timeout"
+            ],
+            [
+              "punct",
+              ")"
+            ],
+            [
+              "punct",
+              "="
+            ],
+            [
+              "punct",
+              ">"
+            ]
+          ],
+          "pre_context_after": [
+            [
+              "word",
+              "panic"
+            ],
+            [
+              "punct",
+              "!"
+            ],
+            [
+              "punct",
+              "("
+            ],
+            [
+              "literal",
+              "\"reaper survived original launcher exit\""
+            ],
+            [
+              "punct",
+              ")"
+            ],
+            [
+              "punct",
+              ","
+            ],
+            [
+              "punct",
+              "}"
+            ],
+            [
+              "punct",
+              "}"
+            ]
+          ]
+        },
+        {
+          "kind": "replace",
+          "pre_tokens": [
+            [
+              "punct",
+              ","
+            ]
+          ],
+          "post_tokens": [
+            [
+              "punct",
+              "}"
+            ]
+          ],
+          "pre_context_before": [
+            [
+              "punct",
+              ")"
+            ],
+            [
+              "punct",
+              "="
+            ],
+            [
+              "punct",
+              ">"
+            ],
+            [
+              "word",
+              "panic"
+            ],
+            [
+              "punct",
+              "!"
+            ],
+            [
+              "punct",
+              "("
+            ],
+            [
+              "literal",
+              "\"reaper survived original launcher exit\""
+            ],
+            [
+              "punct",
+              ")"
+            ]
+          ],
+          "pre_context_after": [
+            [
+              "punct",
+              "}"
+            ],
+            [
+              "punct",
+              "}"
+            ],
+            [
+              "word",
+              "drop"
+            ],
+            [
+              "punct",
+              "("
+            ],
+            [
+              "word",
+              "self"
+            ],
+            [
+              "punct",
+              "."
+            ],
+            [
+              "word",
+              "lines"
+            ],
+            [
+              "punct",
+              "."
+            ]
+          ]
+        },
+        {
+          "kind": "insert",
+          "pre_tokens": [],
+          "post_tokens": [
+            [
+              "punct",
+              ","
+            ]
+          ],
+          "pre_context_before": [
+            [
+              "punct",
+              ","
+            ],
+            [
+              "word",
+              "CHILD"
+            ],
+            [
+              "punct",
+              ","
+            ],
+            [
+              "literal",
+              "\"--ignored\""
+            ],
+            [
+              "punct",
+              ","
+            ],
+            [
+              "literal",
+              "\"--nocapture\""
+            ],
+            [
+              "punct",
+              ","
+            ],
+            [
+              "literal",
+              "\"--test-threads=1\""
+            ]
+          ],
+          "pre_context_after": [
+            [
+              "punct",
+              "]"
+            ],
+            [
+              "punct",
+              ")"
+            ],
+            [
+              "punct",
+              "."
+            ],
+            [
+              "word",
+              "env"
+            ],
+            [
+              "punct",
+              "("
+            ],
+            [
+              "word",
+              "MODE"
+            ],
+            [
+              "punct",
+              ","
+            ],
+            [
+              "word",
+              "mode"
+            ]
+          ]
+        },
+        {
+          "kind": "insert",
+          "pre_tokens": [],
+          "post_tokens": [
+            [
+              "punct",
+              ","
+            ]
+          ],
+          "pre_context_before": [
+            [
+              "word",
+              "c_ulong"
+            ],
+            [
+              "punct",
+              ","
+            ],
+            [
+              "word",
+              "0"
+            ],
+            [
+              "word",
+              "as"
+            ],
+            [
+              "word",
+              "libc"
+            ],
+            [
+              "punct",
+              ":"
+            ],
+            [
+              "punct",
+              ":"
+            ],
+            [
+              "word",
+              "c_ulong"
+            ]
+          ],
+          "pre_context_after": [
+            [
+              "punct",
+              ")"
+            ],
+            [
+              "punct",
+              "}"
+            ],
+            [
+              "punct",
+              ","
+            ],
+            [
+              "word",
+              "0"
+            ],
+            [
+              "punct",
+              ")"
+            ],
+            [
+              "punct",
+              ";"
+            ],
+            [
+              "word",
+              "assert_eq"
+            ],
+            [
+              "punct",
+              "!"
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "path": "codex-rs/windows-sandbox-rs/src/acl_deny.rs",
+      "preimage": {
+        "bytes": 6999,
+        "sha256": "0808a06e71bca59f3807f9efde0ebc0e2c4847d8de22c98cb68b9de1ef2f1c56",
+        "blob": "3aeb65179f1a8bc77f0314974efdcf8940e5a1f6"
+      },
+      "postimage": {
+        "bytes": 7038,
+        "sha256": "d5025de042ffe10f8aa1692fbee8858a0178012b62a9cc77fd9152c3f715fb50",
+        "blob": "8f73a1a58176a1a15b3476c008cb3682b24f6579"
+      },
+      "verification": "FULL_DIFF_MANUAL_REVIEW_PLUS_LEXICAL_DIAGNOSTIC_NOT_RUST_AST",
+      "literal_token_multiset_exact": true,
+      "literal_token_sequence_exact": true,
+      "comment_tokens_exact": true,
+      "word_token_sequence_exact": true,
+      "non_whitespace_lexical_edits": [
+        {
+          "kind": "insert",
+          "pre_tokens": [],
+          "post_tokens": [
+            [
+              "punct",
+              ","
+            ]
+          ],
+          "pre_context_before": [
+            [
+              "punct",
+              "&"
+            ],
+            [
+              "word",
+              "entry"
+            ],
+            [
+              "punct",
+              ","
+            ],
+            [
+              "word",
+              "dacl"
+            ],
+            [
+              "punct",
+              ","
+            ],
+            [
+              "punct",
+              "&"
+            ],
+            [
+              "word",
+              "mut"
+            ],
+            [
+              "word",
+              "new_dacl"
+            ]
+          ],
+          "pre_context_after": [
+            [
+              "punct",
+              ")"
+            ],
+            [
+              "punct",
+              ";"
+            ],
+            [
+              "word",
+              "let"
+            ],
+            [
+              "word",
+              "allocation"
+            ],
+            [
+              "punct",
+              "="
+            ],
+            [
+              "word",
+              "LocalAllocation"
+            ],
+            [
+              "punct",
+              "("
+            ],
+            [
+              "word",
+              "new_dacl"
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "path": "codex-rs/windows-sandbox-rs/src/acl_tests.rs",
+      "preimage": {
+        "bytes": 15843,
+        "sha256": "efb7d60719fbea616518081bc125dca03901c56d2712a4e689d8b01772634851",
+        "blob": "31db071d8a2fe2de3e9e9f37cb245a0757ecb973"
+      },
+      "postimage": {
+        "bytes": 17018,
+        "sha256": "c3046023fa1be667d93386968e73e88bbc42dfc618a1b7ecebcd771a25e09023",
+        "blob": "2e16c9e370368fd4b75e346dd2aac7e632b19975"
+      },
+      "verification": "FULL_DIFF_MANUAL_REVIEW_PLUS_LEXICAL_DIAGNOSTIC_NOT_RUST_AST",
+      "literal_token_multiset_exact": true,
+      "literal_token_sequence_exact": true,
+      "comment_tokens_exact": true,
+      "word_token_sequence_exact": true,
+      "non_whitespace_lexical_edits": [
+        {
+          "kind": "insert",
+          "pre_tokens": [],
+          "post_tokens": [
+            [
+              "punct",
+              ","
+            ]
+          ],
+          "pre_context_before": [
+            [
+              "punct",
+              "|"
+            ],
+            [
+              "word",
+              "NO_PROPAGATE_INHERIT_ACE"
+            ],
+            [
+              "punct",
+              ","
+            ],
+            [
+              "punct",
+              "("
+            ],
+            [
+              "word",
+              "true"
+            ],
+            [
+              "punct",
+              ","
+            ],
+            [
+              "word",
+              "false"
+            ],
+            [
+              "punct",
+              ")"
+            ]
+          ],
+          "pre_context_after": [
+            [
+              "punct",
+              ")"
+            ],
+            [
+              "punct",
+              ","
+            ],
+            [
+              "punct",
+              "("
+            ],
+            [
+              "word",
+              "full"
+            ],
+            [
+              "punct",
+              ","
+            ],
+            [
+              "word",
+              "full"
+            ],
+            [
+              "punct",
+              ","
+            ],
+            [
+              "punct",
+              "&"
+            ]
+          ]
+        },
+        {
+          "kind": "insert",
+          "pre_tokens": [],
+          "post_tokens": [
+            [
+              "punct",
+              ","
+            ]
+          ],
+          "pre_context_before": [
+            [
+              "word",
+              "INHERITED_ACE"
+            ],
+            [
+              "punct",
+              ")"
+            ],
+            [
+              "punct",
+              ","
+            ],
+            [
+              "punct",
+              "("
+            ],
+            [
+              "word",
+              "true"
+            ],
+            [
+              "punct",
+              ","
+            ],
+            [
+              "word",
+              "false"
+            ],
+            [
+              "punct",
+              ")"
+            ]
+          ],
+          "pre_context_after": [
+            [
+              "punct",
+              ")"
+            ],
+            [
+              "punct",
+              ","
+            ],
+            [
+              "punct",
+              "("
+            ],
+            [
+              "word",
+              "full"
+            ],
+            [
+              "punct",
+              ","
+            ],
+            [
+              "word",
+              "full"
+            ],
+            [
+              "punct",
+              ","
+            ],
+            [
+              "punct",
+              "&"
+            ]
+          ]
+        },
+        {
+          "kind": "insert",
+          "pre_tokens": [],
+          "post_tokens": [
+            [
+              "punct",
+              ","
+            ]
+          ],
+          "pre_context_before": [
+            [
+              "word",
+              "INHERIT_ONLY_ACE"
+            ],
+            [
+              "punct",
+              ")"
+            ],
+            [
+              "punct",
+              ","
+            ],
+            [
+              "punct",
+              "("
+            ],
+            [
+              "word",
+              "true"
+            ],
+            [
+              "punct",
+              ","
+            ],
+            [
+              "word",
+              "false"
+            ],
+            [
+              "punct",
+              ")"
+            ]
+          ],
+          "pre_context_after": [
+            [
+              "punct",
+              ")"
+            ],
+            [
+              "punct",
+              ","
+            ],
+            [
+              "punct",
+              "("
+            ],
+            [
+              "word",
+              "full"
+            ],
+            [
+              "punct",
+              ","
+            ],
+            [
+              "word",
+              "full"
+            ],
+            [
+              "punct",
+              ","
+            ],
+            [
+              "punct",
+              "&"
+            ]
+          ]
+        },
+        {
+          "kind": "insert",
+          "pre_tokens": [],
+          "post_tokens": [
+            [
+              "punct",
+              ","
+            ]
+          ],
+          "pre_context_before": [
+            [
+              "word",
+              "INHERIT_ONLY_ACE"
+            ],
+            [
+              "punct",
+              ")"
+            ],
+            [
+              "punct",
+              ","
+            ],
+            [
+              "punct",
+              "("
+            ],
+            [
+              "word",
+              "true"
+            ],
+            [
+              "punct",
+              ","
+            ],
+            [
+              "word",
+              "false"
+            ],
+            [
+              "punct",
+              ")"
+            ]
+          ],
+          "pre_context_after": [
+            [
+              "punct",
+              ")"
+            ],
+            [
+              "punct",
+              ","
+            ],
+            [
+              "punct",
+              "]"
+            ],
+            [
+              "punct",
+              "{"
+            ],
+            [
+              "word",
+              "let"
+            ],
+            [
+              "word",
+              "mut"
+            ],
+            [
+              "word",
+              "acl"
+            ],
+            [
+              "punct",
+              "="
+            ]
+          ]
+        },
+        {
+          "kind": "insert",
+          "pre_tokens": [],
+          "post_tokens": [
+            [
+              "punct",
+              ","
+            ]
+          ],
+          "pre_context_before": [
+            [
+              "punct",
+              ")"
+            ],
+            [
+              "punct",
+              ","
+            ],
+            [
+              "word",
+              "kind"
+            ],
+            [
+              "punct",
+              ","
+            ],
+            [
+              "word",
+              "DenyObjectScope"
+            ],
+            [
+              "punct",
+              ":"
+            ],
+            [
+              "punct",
+              ":"
+            ],
+            [
+              "word",
+              "File"
+            ]
+          ],
+          "pre_context_after": [
+            [
+              "punct",
+              ")"
+            ],
+            [
+              "punct",
+              ","
+            ],
+            [
+              "word",
+              "dacl_has_complete_deny_for_object"
+            ],
+            [
+              "punct",
+              "("
+            ],
+            [
+              "word",
+              "acl"
+            ],
+            [
+              "punct",
+              "."
+            ],
+            [
+              "word",
+              "as_ptr"
+            ],
+            [
+              "punct",
+              "("
+            ]
+          ]
+        },
+        {
+          "kind": "insert",
+          "pre_tokens": [],
+          "post_tokens": [
+            [
+              "punct",
+              ","
+            ]
+          ],
+          "pre_context_before": [
+            [
+              "punct",
+              ")"
+            ],
+            [
+              "punct",
+              ","
+            ],
+            [
+              "word",
+              "kind"
+            ],
+            [
+              "punct",
+              ","
+            ],
+            [
+              "word",
+              "DenyObjectScope"
+            ],
+            [
+              "punct",
+              ":"
+            ],
+            [
+              "punct",
+              ":"
+            ],
+            [
+              "word",
+              "Directory"
+            ]
+          ],
+          "pre_context_after": [
+            [
+              "punct",
+              ")"
+            ],
+            [
+              "punct",
+              ","
+            ],
+            [
+              "punct",
+              ")"
+            ],
+            [
+              "punct",
+              "}"
+            ],
+            [
+              "punct",
+              ";"
+            ],
+            [
+              "word",
+              "assert_eq"
+            ],
+            [
+              "punct",
+              "!"
+            ],
+            [
+              "punct",
+              "("
+            ]
+          ]
+        },
+        {
+          "kind": "insert",
+          "pre_tokens": [],
+          "post_tokens": [
+            [
+              "punct",
+              ","
+            ]
+          ],
+          "pre_context_before": [
+            [
+              "punct",
+              "="
+            ],
+            [
+              "word",
+              "RestoreDacl"
+            ],
+            [
+              "punct",
+              "{"
+            ],
+            [
+              "word",
+              "file"
+            ],
+            [
+              "punct",
+              ","
+            ],
+            [
+              "word",
+              "dacl"
+            ],
+            [
+              "punct",
+              ","
+            ],
+            [
+              "word",
+              "descriptor"
+            ]
+          ],
+          "pre_context_after": [
+            [
+              "punct",
+              "}"
+            ],
+            [
+              "punct",
+              ";"
+            ],
+            [
+              "word",
+              "let"
+            ],
+            [
+              "word",
+              "sid"
+            ],
+            [
+              "punct",
+              "="
+            ],
+            [
+              "word",
+              "LocalSid"
+            ],
+            [
+              "punct",
+              ":"
+            ],
+            [
+              "punct",
+              ":"
+            ]
+          ]
+        },
+        {
+          "kind": "insert",
+          "pre_tokens": [],
+          "post_tokens": [
+            [
+              "punct",
+              ","
+            ]
+          ],
+          "pre_context_before": [
+            [
+              "punct",
+              "&"
+            ],
+            [
+              "word",
+              "entry"
+            ],
+            [
+              "punct",
+              ","
+            ],
+            [
+              "word",
+              "current"
+            ],
+            [
+              "punct",
+              ","
+            ],
+            [
+              "punct",
+              "&"
+            ],
+            [
+              "word",
+              "mut"
+            ],
+            [
+              "word",
+              "protected"
+            ]
+          ],
+          "pre_context_after": [
+            [
+              "punct",
+              ")"
+            ],
+            [
+              "punct",
+              ";"
+            ],
+            [
+              "word",
+              "let"
+            ],
+            [
+              "word",
+              "code"
+            ],
+            [
+              "punct",
+              "="
+            ],
+            [
+              "word",
+              "if"
+            ],
+            [
+              "word",
+              "code"
+            ],
+            [
+              "punct",
+              "="
+            ]
+          ]
+        },
+        {
+          "kind": "insert",
+          "pre_tokens": [],
+          "post_tokens": [
+            [
+              "punct",
+              ","
+            ]
+          ],
+          "pre_context_before": [
+            [
+              "punct",
+              ":"
+            ],
+            [
+              "punct",
+              ":"
+            ],
+            [
+              "word",
+              "ptr"
+            ],
+            [
+              "punct",
+              ":"
+            ],
+            [
+              "punct",
+              ":"
+            ],
+            [
+              "word",
+              "null_mut"
+            ],
+            [
+              "punct",
+              "("
+            ],
+            [
+              "punct",
+              ")"
+            ]
+          ],
+          "pre_context_after": [
+            [
+              "punct",
+              ")"
+            ],
+            [
+              "punct",
+              "}"
+            ],
+            [
+              "word",
+              "else"
+            ],
+            [
+              "punct",
+              "{"
+            ],
+            [
+              "word",
+              "code"
+            ],
+            [
+              "punct",
+              "}"
+            ],
+            [
+              "punct",
+              ";"
+            ],
+            [
+              "word",
+              "if"
+            ]
+          ]
+        },
+        {
+          "kind": "insert",
+          "pre_tokens": [],
+          "post_tokens": [
+            [
+              "punct",
+              ","
+            ]
+          ],
+          "pre_context_before": [
+            [
+              "punct",
+              ","
+            ],
+            [
+              "word",
+              "sid"
+            ],
+            [
+              "punct",
+              "."
+            ],
+            [
+              "word",
+              "as_ptr"
+            ],
+            [
+              "punct",
+              "("
+            ],
+            [
+              "punct",
+              ")"
+            ],
+            [
+              "punct",
+              ")"
+            ],
+            [
+              "punct",
+              "?"
+            ]
+          ],
+          "pre_context_after": [
+            [
+              "punct",
+              ")"
+            ],
+            [
+              "punct",
+              "}"
+            ],
+            [
+              "punct",
+              ";"
+            ],
+            [
+              "word",
+              "assert_eq"
+            ],
+            [
+              "punct",
+              "!"
+            ],
+            [
+              "punct",
+              "("
+            ],
+            [
+              "word",
+              "noops"
+            ],
+            [
+              "punct",
+              ","
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "path": "codex-rs/windows-sandbox-rs/src/delete_permission_matrix_tests.rs",
+      "preimage": {
+        "bytes": 14651,
+        "sha256": "c4f985e1e89e5915cab13955bd26af2a1a79802f635f4c0b974a09eb24275f9e",
+        "blob": "e3c999e68382837bde16e2621de94bcb83509bc8"
+      },
+      "postimage": {
+        "bytes": 16652,
+        "sha256": "a0954c32043c5d4a816cceed2d985d9b299755bd3c041834a9b5bae8ed1f58a9",
+        "blob": "d324b587bc298b84fea79239bbd74d2352fc7f39"
+      },
+      "verification": "FULL_DIFF_MANUAL_REVIEW_PLUS_LEXICAL_DIAGNOSTIC_NOT_RUST_AST",
+      "literal_token_multiset_exact": true,
+      "literal_token_sequence_exact": true,
+      "comment_tokens_exact": true,
+      "word_token_sequence_exact": true,
+      "non_whitespace_lexical_edits": [
+        {
+          "kind": "insert",
+          "pre_tokens": [],
+          "post_tokens": [
+            [
+              "punct",
+              ","
+            ]
+          ],
+          "pre_context_before": [
+            [
+              "punct",
+              ":"
+            ],
+            [
+              "word",
+              "null_mut"
+            ],
+            [
+              "punct",
+              "("
+            ],
+            [
+              "punct",
+              ")"
+            ],
+            [
+              "punct",
+              ","
+            ],
+            [
+              "word",
+              "protection"
+            ],
+            [
+              "punct",
+              ":"
+            ],
+            [
+              "word",
+              "0"
+            ]
+          ],
+          "pre_context_after": [
+            [
+              "punct",
+              "}"
+            ],
+            [
+              "punct",
+              ";"
+            ],
+            [
+              "comment",
+              "// SAFETY: handle is borrowed from a live owned fixture file. The result owns its descriptor."
+            ],
+            [
+              "word",
+              "let"
+            ],
+            [
+              "word",
+              "code"
+            ],
+            [
+              "punct",
+              "="
+            ],
+            [
+              "word",
+              "unsafe"
+            ],
+            [
+              "punct",
+              "{"
+            ]
+          ]
+        },
+        {
+          "kind": "insert",
+          "pre_tokens": [],
+          "post_tokens": [
+            [
+              "punct",
+              ","
+            ]
+          ],
+          "pre_context_before": [
+            [
+              "punct",
+              ","
+            ],
+            [
+              "punct",
+              "&"
+            ],
+            [
+              "word",
+              "mut"
+            ],
+            [
+              "word",
+              "result"
+            ],
+            [
+              "punct",
+              "."
+            ],
+            [
+              "word",
+              "descriptor"
+            ],
+            [
+              "punct",
+              "."
+            ],
+            [
+              "word",
+              "0"
+            ]
+          ],
+          "pre_context_after": [
+            [
+              "punct",
+              ")"
+            ],
+            [
+              "punct",
+              "}"
+            ],
+            [
+              "punct",
+              ";"
+            ],
+            [
+              "word",
+              "ensure"
+            ],
+            [
+              "punct",
+              "!"
+            ],
+            [
+              "punct",
+              "("
+            ],
+            [
+              "word",
+              "code"
+            ],
+            [
+              "punct",
+              "="
+            ]
+          ]
+        },
+        {
+          "kind": "insert",
+          "pre_tokens": [],
+          "post_tokens": [
+            [
+              "punct",
+              ","
+            ]
+          ],
+          "pre_context_before": [
+            [
+              "punct",
+              ":"
+            ],
+            [
+              "punct",
+              ":"
+            ],
+            [
+              "word",
+              "ptr"
+            ],
+            [
+              "punct",
+              ":"
+            ],
+            [
+              "punct",
+              ":"
+            ],
+            [
+              "word",
+              "null_mut"
+            ],
+            [
+              "punct",
+              "("
+            ],
+            [
+              "punct",
+              ")"
+            ]
+          ],
+          "pre_context_after": [
+            [
+              "punct",
+              ")"
+            ],
+            [
+              "punct",
+              "}"
+            ],
+            [
+              "punct",
+              ";"
+            ],
+            [
+              "word",
+              "ensure"
+            ],
+            [
+              "punct",
+              "!"
+            ],
+            [
+              "punct",
+              "("
+            ],
+            [
+              "word",
+              "code"
+            ],
+            [
+              "punct",
+              "="
+            ]
+          ]
+        },
+        {
+          "kind": "insert",
+          "pre_tokens": [],
+          "post_tokens": [
+            [
+              "punct",
+              ","
+            ]
+          ],
+          "pre_context_before": [
+            [
+              "punct",
+              ","
+            ],
+            [
+              "word",
+              "info"
+            ],
+            [
+              "punct",
+              "."
+            ],
+            [
+              "word",
+              "nFileIndexHigh"
+            ],
+            [
+              "punct",
+              ","
+            ],
+            [
+              "word",
+              "info"
+            ],
+            [
+              "punct",
+              "."
+            ],
+            [
+              "word",
+              "nFileIndexLow"
+            ]
+          ],
+          "pre_context_after": [
+            [
+              "punct",
+              ")"
+            ],
+            [
+              "punct",
+              ")"
+            ],
+            [
+              "punct",
+              "}"
+            ],
+            [
+              "word",
+              "struct"
+            ],
+            [
+              "word",
+              "HeldObject"
+            ],
+            [
+              "punct",
+              "{"
+            ],
+            [
+              "word",
+              "path"
+            ],
+            [
+              "punct",
+              ":"
+            ]
+          ]
+        },
+        {
+          "kind": "insert",
+          "pre_tokens": [],
+          "post_tokens": [
+            [
+              "punct",
+              ","
+            ]
+          ],
+          "pre_context_before": [
+            [
+              "punct",
+              "("
+            ],
+            [
+              "punct",
+              ")"
+            ],
+            [
+              "punct",
+              ","
+            ],
+            [
+              "word",
+              "original"
+            ],
+            [
+              "punct",
+              ","
+            ],
+            [
+              "word",
+              "restore"
+            ],
+            [
+              "punct",
+              ":"
+            ],
+            [
+              "word",
+              "true"
+            ]
+          ],
+          "pre_context_after": [
+            [
+              "punct",
+              "}"
+            ],
+            [
+              "punct",
+              ")"
+            ],
+            [
+              "punct",
+              "}"
+            ],
+            [
+              "word",
+              "fn"
+            ],
+            [
+              "word",
+              "set_access"
+            ],
+            [
+              "punct",
+              "("
+            ],
+            [
+              "punct",
+              "&"
+            ],
+            [
+              "word",
+              "mut"
+            ]
+          ]
+        },
+        {
+          "kind": "insert",
+          "pre_tokens": [],
+          "post_tokens": [
+            [
+              "punct",
+              ","
+            ]
+          ],
+          "pre_context_before": [
+            [
+              "punct",
+              ","
+            ],
+            [
+              "word",
+              "ptstrName"
+            ],
+            [
+              "punct",
+              ":"
+            ],
+            [
+              "word",
+              "everyone"
+            ],
+            [
+              "punct",
+              "."
+            ],
+            [
+              "word",
+              "cast"
+            ],
+            [
+              "punct",
+              "("
+            ],
+            [
+              "punct",
+              ")"
+            ]
+          ],
+          "pre_context_after": [
+            [
+              "punct",
+              "}"
+            ],
+            [
+              "punct",
+              ";"
+            ],
+            [
+              "word",
+              "let"
+            ],
+            [
+              "word",
+              "mut"
+            ],
+            [
+              "word",
+              "entries"
+            ],
+            [
+              "punct",
+              "="
+            ],
+            [
+              "word",
+              "vec"
+            ],
+            [
+              "punct",
+              "!"
+            ]
+          ]
+        },
+        {
+          "kind": "insert",
+          "pre_tokens": [],
+          "post_tokens": [
+            [
+              "punct",
+              ","
+            ]
+          ],
+          "pre_context_before": [
+            [
+              "punct",
+              ","
+            ],
+            [
+              "word",
+              "grfInheritance"
+            ],
+            [
+              "punct",
+              ":"
+            ],
+            [
+              "word",
+              "0"
+            ],
+            [
+              "punct",
+              ","
+            ],
+            [
+              "word",
+              "Trustee"
+            ],
+            [
+              "punct",
+              ":"
+            ],
+            [
+              "word",
+              "trustee"
+            ]
+          ],
+          "pre_context_after": [
+            [
+              "punct",
+              "}"
+            ],
+            [
+              "punct",
+              "]"
+            ],
+            [
+              "punct",
+              ";"
+            ],
+            [
+              "word",
+              "if"
+            ],
+            [
+              "word",
+              "matches"
+            ],
+            [
+              "punct",
+              "!"
+            ],
+            [
+              "punct",
+              "("
+            ],
+            [
+              "word",
+              "access"
+            ]
+          ]
+        },
+        {
+          "kind": "insert",
+          "pre_tokens": [],
+          "post_tokens": [
+            [
+              "punct",
+              ","
+            ]
+          ],
+          "pre_context_before": [
+            [
+              "punct",
+              ","
+            ],
+            [
+              "word",
+              "grfInheritance"
+            ],
+            [
+              "punct",
+              ":"
+            ],
+            [
+              "word",
+              "0"
+            ],
+            [
+              "punct",
+              ","
+            ],
+            [
+              "word",
+              "Trustee"
+            ],
+            [
+              "punct",
+              ":"
+            ],
+            [
+              "word",
+              "trustee"
+            ]
+          ],
+          "pre_context_after": [
+            [
+              "punct",
+              "}"
+            ],
+            [
+              "punct",
+              ")"
+            ],
+            [
+              "punct",
+              ";"
+            ],
+            [
+              "punct",
+              "}"
+            ],
+            [
+              "word",
+              "let"
+            ],
+            [
+              "word",
+              "mut"
+            ],
+            [
+              "word",
+              "acl"
+            ],
+            [
+              "punct",
+              "="
+            ]
+          ]
+        },
+        {
+          "kind": "insert",
+          "pre_tokens": [],
+          "post_tokens": [
+            [
+              "punct",
+              ","
+            ]
+          ],
+          "pre_context_before": [
+            [
+              "word",
+              "grfInheritance"
+            ],
+            [
+              "punct",
+              ":"
+            ],
+            [
+              "word",
+              "0"
+            ],
+            [
+              "punct",
+              ","
+            ],
+            [
+              "word",
+              "Trustee"
+            ],
+            [
+              "punct",
+              ":"
+            ],
+            [
+              "word",
+              "trustee"
+            ],
+            [
+              "punct",
+              "}"
+            ]
+          ],
+          "pre_context_after": [
+            [
+              "punct",
+              ")"
+            ],
+            [
+              "punct",
+              ";"
+            ],
+            [
+              "punct",
+              "}"
+            ],
+            [
+              "word",
+              "let"
+            ],
+            [
+              "word",
+              "mut"
+            ],
+            [
+              "word",
+              "acl"
+            ],
+            [
+              "punct",
+              "="
+            ],
+            [
+              "word",
+              "std"
+            ]
+          ]
+        },
+        {
+          "kind": "insert",
+          "pre_tokens": [],
+          "post_tokens": [
+            [
+              "punct",
+              ","
+            ]
+          ],
+          "pre_context_before": [
+            [
+              "punct",
+              ":"
+            ],
+            [
+              "word",
+              "null_mut"
+            ],
+            [
+              "punct",
+              "("
+            ],
+            [
+              "punct",
+              ")"
+            ],
+            [
+              "punct",
+              ","
+            ],
+            [
+              "punct",
+              "&"
+            ],
+            [
+              "word",
+              "mut"
+            ],
+            [
+              "word",
+              "acl"
+            ]
+          ],
+          "pre_context_after": [
+            [
+              "punct",
+              ")"
+            ],
+            [
+              "punct",
+              "}"
+            ],
+            [
+              "punct",
+              ";"
+            ],
+            [
+              "word",
+              "let"
+            ],
+            [
+              "word",
+              "_allocation"
+            ],
+            [
+              "punct",
+              "="
+            ],
+            [
+              "word",
+              "LocalMemory"
+            ],
+            [
+              "punct",
+              "("
+            ]
+          ]
+        },
+        {
+          "kind": "insert",
+          "pre_tokens": [],
+          "post_tokens": [
+            [
+              "punct",
+              ","
+            ]
+          ],
+          "pre_context_before": [
+            [
+              "punct",
+              ":"
+            ],
+            [
+              "punct",
+              ":"
+            ],
+            [
+              "word",
+              "ptr"
+            ],
+            [
+              "punct",
+              ":"
+            ],
+            [
+              "punct",
+              ":"
+            ],
+            [
+              "word",
+              "null_mut"
+            ],
+            [
+              "punct",
+              "("
+            ],
+            [
+              "punct",
+              ")"
+            ]
+          ],
+          "pre_context_after": [
+            [
+              "punct",
+              ")"
+            ],
+            [
+              "punct",
+              "}"
+            ],
+            [
+              "punct",
+              ";"
+            ],
+            [
+              "word",
+              "ensure"
+            ],
+            [
+              "punct",
+              "!"
+            ],
+            [
+              "punct",
+              "("
+            ],
+            [
+              "word",
+              "code"
+            ],
+            [
+              "punct",
+              "="
+            ]
+          ]
+        },
+        {
+          "kind": "insert",
+          "pre_tokens": [],
+          "post_tokens": [
+            [
+              "punct",
+              ","
+            ]
+          ],
+          "pre_context_before": [
+            [
+              "punct",
+              ":"
+            ],
+            [
+              "punct",
+              "<"
+            ],
+            [
+              "word",
+              "FILE_STANDARD_INFO"
+            ],
+            [
+              "punct",
+              ">"
+            ],
+            [
+              "punct",
+              "("
+            ],
+            [
+              "punct",
+              ")"
+            ],
+            [
+              "word",
+              "as"
+            ],
+            [
+              "word",
+              "u32"
+            ]
+          ],
+          "pre_context_after": [
+            [
+              "punct",
+              ")"
+            ],
+            [
+              "punct",
+              "}"
+            ],
+            [
+              "punct",
+              "!"
+            ],
+            [
+              "punct",
+              "="
+            ],
+            [
+              "word",
+              "0"
+            ],
+            [
+              "punct",
+              ","
+            ],
+            [
+              "literal",
+              "\"FileStandardInfo: {}\""
+            ],
+            [
+              "punct",
+              ","
+            ]
+          ]
+        },
+        {
+          "kind": "insert",
+          "pre_tokens": [],
+          "post_tokens": [
+            [
+              "punct",
+              ","
+            ]
+          ],
+          "pre_context_before": [
+            [
+              "punct",
+              ":"
+            ],
+            [
+              "punct",
+              ":"
+            ],
+            [
+              "word",
+              "ParentOnly"
+            ],
+            [
+              "punct",
+              ","
+            ],
+            [
+              "word",
+              "DeleteRoute"
+            ],
+            [
+              "punct",
+              ":"
+            ],
+            [
+              "punct",
+              ":"
+            ],
+            [
+              "word",
+              "Both"
+            ]
+          ],
+          "pre_context_after": [
+            [
+              "punct",
+              "]"
+            ],
+            [
+              "punct",
+              "{"
+            ],
+            [
+              "word",
+              "let"
+            ],
+            [
+              "word",
+              "path"
+            ],
+            [
+              "punct",
+              "="
+            ],
+            [
+              "word",
+              "root"
+            ],
+            [
+              "punct",
+              "."
+            ],
+            [
+              "word",
+              "join"
+            ]
+          ]
+        },
+        {
+          "kind": "insert",
+          "pre_tokens": [],
+          "post_tokens": [
+            [
+              "punct",
+              ","
+            ]
+          ],
+          "pre_context_before": [
+            [
+              "punct",
+              "{"
+            ],
+            [
+              "word",
+              "route"
+            ],
+            [
+              "punct",
+              ","
+            ],
+            [
+              "word",
+              "parent"
+            ],
+            [
+              "punct",
+              ","
+            ],
+            [
+              "word",
+              "file"
+            ],
+            [
+              "punct",
+              ","
+            ],
+            [
+              "word",
+              "directory"
+            ]
+          ],
+          "pre_context_after": [
+            [
+              "punct",
+              "}"
+            ],
+            [
+              "punct",
+              ")"
+            ],
+            [
+              "punct",
+              ";"
+            ],
+            [
+              "punct",
+              "}"
+            ],
+            [
+              "word",
+              "Ok"
+            ],
+            [
+              "punct",
+              "("
+            ],
+            [
+              "word",
+              "Self"
+            ],
+            [
+              "punct",
+              "("
+            ]
+          ]
+        },
+        {
+          "kind": "insert",
+          "pre_tokens": [],
+          "post_tokens": [
+            [
+              "punct",
+              "{"
+            ]
+          ],
+          "pre_context_before": [
+            [
+              "punct",
+              ":"
+            ],
+            [
+              "punct",
+              ":"
+            ],
+            [
+              "word",
+              "ErrorKind"
+            ],
+            [
+              "punct",
+              ":"
+            ],
+            [
+              "punct",
+              ":"
+            ],
+            [
+              "word",
+              "NotFound"
+            ],
+            [
+              "punct",
+              "="
+            ],
+            [
+              "punct",
+              ">"
+            ]
+          ],
+          "pre_context_after": [
+            [
+              "word",
+              "deleted"
+            ],
+            [
+              "punct",
+              "."
+            ],
+            [
+              "word",
+              "push"
+            ],
+            [
+              "punct",
+              "("
+            ],
+            [
+              "word",
+              "true"
+            ],
+            [
+              "punct",
+              ")"
+            ],
+            [
+              "punct",
+              ","
+            ],
+            [
+              "word",
+              "Err"
+            ]
+          ]
+        },
+        {
+          "kind": "replace",
+          "pre_tokens": [
+            [
+              "punct",
+              ","
+            ]
+          ],
+          "post_tokens": [
+            [
+              "punct",
+              "}"
+            ]
+          ],
+          "pre_context_before": [
+            [
+              "punct",
+              "="
+            ],
+            [
+              "punct",
+              ">"
+            ],
+            [
+              "word",
+              "deleted"
+            ],
+            [
+              "punct",
+              "."
+            ],
+            [
+              "word",
+              "push"
+            ],
+            [
+              "punct",
+              "("
+            ],
+            [
+              "word",
+              "true"
+            ],
+            [
+              "punct",
+              ")"
+            ]
+          ],
+          "pre_context_after": [
+            [
+              "word",
+              "Err"
+            ],
+            [
+              "punct",
+              "("
+            ],
+            [
+              "word",
+              "error"
+            ],
+            [
+              "punct",
+              ")"
+            ],
+            [
+              "punct",
+              "="
+            ],
+            [
+              "punct",
+              ">"
+            ],
+            [
+              "word",
+              "return"
+            ],
+            [
+              "word",
+              "Err"
+            ]
+          ]
+        },
+        {
+          "kind": "insert",
+          "pre_tokens": [],
+          "post_tokens": [
+            [
+              "punct",
+              "{"
+            ]
+          ],
+          "pre_context_before": [
+            [
+              "punct",
+              ")"
+            ],
+            [
+              "punct",
+              ","
+            ],
+            [
+              "word",
+              "Err"
+            ],
+            [
+              "punct",
+              "("
+            ],
+            [
+              "word",
+              "error"
+            ],
+            [
+              "punct",
+              ")"
+            ],
+            [
+              "punct",
+              "="
+            ],
+            [
+              "punct",
+              ">"
+            ]
+          ],
+          "pre_context_after": [
+            [
+              "word",
+              "return"
+            ],
+            [
+              "word",
+              "Err"
+            ],
+            [
+              "punct",
+              "("
+            ],
+            [
+              "word",
+              "error"
+            ],
+            [
+              "punct",
+              ")"
+            ],
+            [
+              "punct",
+              "."
+            ],
+            [
+              "word",
+              "with_context"
+            ],
+            [
+              "punct",
+              "("
+            ]
+          ]
+        },
+        {
+          "kind": "replace",
+          "pre_tokens": [
+            [
+              "punct",
+              ","
+            ]
+          ],
+          "post_tokens": [
+            [
+              "punct",
+              ";"
+            ],
+            [
+              "punct",
+              "}"
+            ]
+          ],
+          "pre_context_before": [
+            [
+              "punct",
+              ","
+            ],
+            [
+              "word",
+              "path"
+            ],
+            [
+              "punct",
+              "."
+            ],
+            [
+              "word",
+              "display"
+            ],
+            [
+              "punct",
+              "("
+            ],
+            [
+              "punct",
+              ")"
+            ],
+            [
+              "punct",
+              ")"
+            ],
+            [
+              "punct",
+              ")"
+            ]
+          ],
+          "pre_context_after": [
+            [
+              "punct",
+              "}"
+            ],
+            [
+              "punct",
+              "}"
+            ],
+            [
+              "word",
+              "outcomes"
+            ],
+            [
+              "punct",
+              "."
+            ],
+            [
+              "word",
+              "push"
+            ],
+            [
+              "punct",
+              "("
+            ],
+            [
+              "word",
+              "DeleteOutcome"
+            ],
+            [
+              "punct",
+              "{"
+            ]
+          ]
+        },
+        {
+          "kind": "insert",
+          "pre_tokens": [],
+          "post_tokens": [
+            [
+              "punct",
+              ","
+            ]
+          ],
+          "pre_context_before": [
+            [
+              "punct",
+              "]"
+            ],
+            [
+              "punct",
+              ","
+            ],
+            [
+              "word",
+              "directory_deleted"
+            ],
+            [
+              "punct",
+              ":"
+            ],
+            [
+              "word",
+              "deleted"
+            ],
+            [
+              "punct",
+              "["
+            ],
+            [
+              "word",
+              "1"
+            ],
+            [
+              "punct",
+              "]"
+            ]
+          ],
+          "pre_context_after": [
+            [
+              "punct",
+              "}"
+            ],
+            [
+              "punct",
+              ")"
+            ],
+            [
+              "punct",
+              ";"
+            ],
+            [
+              "punct",
+              "}"
+            ],
+            [
+              "word",
+              "eprintln"
+            ],
+            [
+              "punct",
+              "!"
+            ],
+            [
+              "punct",
+              "("
+            ],
+            [
+              "literal",
+              "\"delete_matrix {label} after_release={outcomes:?}\""
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "path": "codex-rs/windows-sandbox-rs/src/lib.rs",
+      "preimage": {
+        "bytes": 30379,
+        "sha256": "51f901eb825ee60491aff7fffae23e90b9987de900c81774abdb15e3e63c807e",
+        "blob": "f7b90d6f2d3ecad07f487e05932431c979450c77"
+      },
+      "postimage": {
+        "bytes": 30379,
+        "sha256": "6a656c06930bcf07075db8712292bb8040a33667231783dba177e62230982b38",
+        "blob": "11778af7beb645b36401807cf3e31a0dd4deddc0"
+      },
+      "verification": "FULL_DIFF_MANUAL_REVIEW_PLUS_LEXICAL_DIAGNOSTIC_NOT_RUST_AST",
+      "literal_token_multiset_exact": true,
+      "literal_token_sequence_exact": false,
+      "comment_tokens_exact": true,
+      "word_token_sequence_exact": false,
+      "non_whitespace_lexical_edits": [
+        {
+          "kind": "insert",
+          "pre_tokens": [],
+          "post_tokens": [
+            [
+              "word",
+              "all"
+            ],
+            [
+              "punct",
+              "("
+            ],
+            [
+              "word",
+              "test"
+            ],
+            [
+              "punct",
+              ","
+            ],
+            [
+              "word",
+              "target_os"
+            ],
+            [
+              "punct",
+              "="
+            ],
+            [
+              "literal",
+              "\"windows\""
+            ],
+            [
+              "punct",
+              ")"
+            ],
+            [
+              "punct",
+              ")"
+            ],
+            [
+              "punct",
+              "]"
+            ],
+            [
+              "punct",
+              "#"
+            ],
+            [
+              "punct",
+              "["
+            ],
+            [
+              "word",
+              "path"
+            ],
+            [
+              "punct",
+              "="
+            ],
+            [
+              "literal",
+              "\"delete_permission_matrix_tests.rs\""
+            ],
+            [
+              "punct",
+              "]"
+            ],
+            [
+              "word",
+              "mod"
+            ],
+            [
+              "word",
+              "delete_permission_matrix"
+            ],
+            [
+              "punct",
+              ";"
+            ],
+            [
+              "punct",
+              "#"
+            ],
+            [
+              "punct",
+              "["
+            ],
+            [
+              "word",
+              "cfg"
+            ],
+            [
+              "punct",
+              "("
+            ]
+          ],
+          "pre_context_before": [
+            [
+              "punct",
+              "]"
+            ],
+            [
+              "word",
+              "mod"
+            ],
+            [
+              "word",
+              "cap"
+            ],
+            [
+              "punct",
+              ";"
+            ],
+            [
+              "punct",
+              "#"
+            ],
+            [
+              "punct",
+              "["
+            ],
+            [
+              "word",
+              "cfg"
+            ],
+            [
+              "punct",
+              "("
+            ]
+          ],
+          "pre_context_after": [
+            [
+              "word",
+              "target_os"
+            ],
+            [
+              "punct",
+              "="
+            ],
+            [
+              "literal",
+              "\"windows\""
+            ],
+            [
+              "punct",
+              ")"
+            ],
+            [
+              "punct",
+              "]"
+            ],
+            [
+              "word",
+              "mod"
+            ],
+            [
+              "word",
+              "deny_read_acl"
+            ],
+            [
+              "punct",
+              ";"
+            ]
+          ]
+        },
+        {
+          "kind": "delete",
+          "pre_tokens": [
+            [
+              "punct",
+              ";"
+            ],
+            [
+              "punct",
+              "#"
+            ],
+            [
+              "punct",
+              "["
+            ],
+            [
+              "word",
+              "cfg"
+            ],
+            [
+              "punct",
+              "("
+            ],
+            [
+              "word",
+              "all"
+            ],
+            [
+              "punct",
+              "("
+            ],
+            [
+              "word",
+              "test"
+            ],
+            [
+              "punct",
+              ","
+            ],
+            [
+              "word",
+              "target_os"
+            ],
+            [
+              "punct",
+              "="
+            ],
+            [
+              "literal",
+              "\"windows\""
+            ],
+            [
+              "punct",
+              ")"
+            ],
+            [
+              "punct",
+              ")"
+            ],
+            [
+              "punct",
+              "]"
+            ],
+            [
+              "punct",
+              "#"
+            ],
+            [
+              "punct",
+              "["
+            ],
+            [
+              "word",
+              "path"
+            ],
+            [
+              "punct",
+              "="
+            ],
+            [
+              "literal",
+              "\"delete_permission_matrix_tests.rs\""
+            ],
+            [
+              "punct",
+              "]"
+            ],
+            [
+              "word",
+              "mod"
+            ],
+            [
+              "word",
+              "delete_permission_matrix"
+            ]
+          ],
+          "post_tokens": [],
+          "pre_context_before": [
+            [
+              "punct",
+              "("
+            ],
+            [
+              "word",
+              "target_os"
+            ],
+            [
+              "punct",
+              "="
+            ],
+            [
+              "literal",
+              "\"windows\""
+            ],
+            [
+              "punct",
+              ")"
+            ],
+            [
+              "punct",
+              "]"
+            ],
+            [
+              "word",
+              "mod"
+            ],
+            [
+              "word",
+              "deny_read_state"
+            ]
+          ],
+          "pre_context_after": [
+            [
+              "punct",
+              ";"
+            ],
+            [
+              "punct",
+              "#"
+            ],
+            [
+              "punct",
+              "["
+            ],
+            [
+              "word",
+              "cfg"
+            ],
+            [
+              "punct",
+              "("
+            ],
+            [
+              "word",
+              "target_os"
+            ],
+            [
+              "punct",
+              "="
+            ],
+            [
+              "literal",
+              "\"windows\""
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "path": "codex-rs/windows-sandbox-rs/src/token_tests.rs",
+      "preimage": {
+        "bytes": 21983,
+        "sha256": "471403c4500ef70a4f12ce3fa7af75cec4d314a2718129b8d08334c74edf33ea",
+        "blob": "d406532fd3b69bc4a3635963022365aaec93280e"
+      },
+      "postimage": {
+        "bytes": 22681,
+        "sha256": "cda729e069f427b9fb197a75391ea30b3427a6b6c98a8ecb60d858328b808af0",
+        "blob": "042858ce22b784d7809612e2d80e35d29b559f1a"
+      },
+      "verification": "FULL_DIFF_MANUAL_REVIEW_PLUS_LEXICAL_DIAGNOSTIC_NOT_RUST_AST",
+      "literal_token_multiset_exact": true,
+      "literal_token_sequence_exact": true,
+      "comment_tokens_exact": true,
+      "word_token_sequence_exact": true,
+      "non_whitespace_lexical_edits": [
+        {
+          "kind": "insert",
+          "pre_tokens": [],
+          "post_tokens": [
+            [
+              "punct",
+              "{"
+            ]
+          ],
+          "pre_context_before": [
+            [
+              "punct",
+              ")"
+            ],
+            [
+              "punct",
+              "]"
+            ],
+            [
+              "punct",
+              "."
+            ],
+            [
+              "word",
+              "map"
+            ],
+            [
+              "punct",
+              "("
+            ],
+            [
+              "punct",
+              "|"
+            ],
+            [
+              "word",
+              "result"
+            ],
+            [
+              "punct",
+              "|"
+            ]
+          ],
+          "pre_context_after": [
+            [
+              "word",
+              "result"
+            ],
+            [
+              "punct",
+              "."
+            ],
+            [
+              "word",
+              "err"
+            ],
+            [
+              "punct",
+              "("
+            ],
+            [
+              "punct",
+              ")"
+            ],
+            [
+              "punct",
+              "."
+            ],
+            [
+              "word",
+              "map"
+            ],
+            [
+              "punct",
+              "("
+            ]
+          ]
+        },
+        {
+          "kind": "insert",
+          "pre_tokens": [],
+          "post_tokens": [
+            [
+              "punct",
+              "}"
+            ]
+          ],
+          "pre_context_before": [
+            [
+              "punct",
+              ","
+            ],
+            [
+              "word",
+              "error"
+            ],
+            [
+              "punct",
+              "."
+            ],
+            [
+              "word",
+              "raw_os_error"
+            ],
+            [
+              "punct",
+              "("
+            ],
+            [
+              "punct",
+              ")"
+            ],
+            [
+              "punct",
+              ")"
+            ],
+            [
+              "punct",
+              ")"
+            ]
+          ],
+          "pre_context_after": [
+            [
+              "punct",
+              ")"
+            ],
+            [
+              "punct",
+              "}"
+            ],
+            [
+              "punct",
+              ")"
+            ],
+            [
+              "punct",
+              "."
+            ],
+            [
+              "word",
+              "collect"
+            ],
+            [
+              "punct",
+              "("
+            ],
+            [
+              "punct",
+              ")"
+            ],
+            [
+              "punct",
+              ";"
+            ]
+          ]
+        },
+        {
+          "kind": "insert",
+          "pre_tokens": [],
+          "post_tokens": [
+            [
+              "punct",
+              ","
+            ]
+          ],
+          "pre_context_before": [
+            [
+              "punct",
+              ")"
+            ],
+            [
+              "punct",
+              ","
+            ],
+            [
+              "word",
+              "second_capability"
+            ],
+            [
+              "punct",
+              "."
+            ],
+            [
+              "word",
+              "as_ptr"
+            ],
+            [
+              "punct",
+              "("
+            ],
+            [
+              "punct",
+              ")"
+            ],
+            [
+              "punct",
+              "]"
+            ]
+          ],
+          "pre_context_after": [
+            [
+              "punct",
+              ")"
+            ],
+            [
+              "punct",
+              "?"
+            ],
+            [
+              "punct",
+              "}"
+            ],
+            [
+              "punct",
+              ")"
+            ],
+            [
+              "punct",
+              ";"
+            ],
+            [
+              "word",
+              "let"
+            ],
+            [
+              "word",
+              "mut"
+            ],
+            [
+              "word",
+              "logon"
+            ]
+          ]
+        },
+        {
+          "kind": "insert",
+          "pre_tokens": [],
+          "post_tokens": [
+            [
+              "punct",
+              ","
+            ]
+          ],
+          "pre_context_before": [
+            [
+              "punct",
+              "."
+            ],
+            [
+              "word",
+              "as_mut_ptr"
+            ],
+            [
+              "punct",
+              "("
+            ],
+            [
+              "punct",
+              ")"
+            ],
+            [
+              "punct",
+              "."
+            ],
+            [
+              "word",
+              "cast"
+            ],
+            [
+              "punct",
+              "("
+            ],
+            [
+              "punct",
+              ")"
+            ]
+          ],
+          "pre_context_after": [
+            [
+              "punct",
+              "]"
+            ],
+            [
+              "punct",
+              "."
+            ],
+            [
+              "word",
+              "into_iter"
+            ],
+            [
+              "punct",
+              "("
+            ],
+            [
+              "punct",
+              ")"
+            ],
+            [
+              "punct",
+              "."
+            ],
+            [
+              "word",
+              "map"
+            ],
+            [
+              "punct",
+              "("
+            ]
+          ]
+        },
+        {
+          "kind": "insert",
+          "pre_tokens": [],
+          "post_tokens": [
+            [
+              "punct",
+              "{"
+            ]
+          ],
+          "pre_context_before": [
+            [
+              "punct",
+              ")"
+            ],
+            [
+              "punct",
+              "]"
+            ],
+            [
+              "punct",
+              "."
+            ],
+            [
+              "word",
+              "map"
+            ],
+            [
+              "punct",
+              "("
+            ],
+            [
+              "punct",
+              "|"
+            ],
+            [
+              "word",
+              "result"
+            ],
+            [
+              "punct",
+              "|"
+            ]
+          ],
+          "pre_context_after": [
+            [
+              "word",
+              "result"
+            ],
+            [
+              "punct",
+              "."
+            ],
+            [
+              "word",
+              "err"
+            ],
+            [
+              "punct",
+              "("
+            ],
+            [
+              "punct",
+              ")"
+            ],
+            [
+              "punct",
+              "."
+            ],
+            [
+              "word",
+              "map"
+            ],
+            [
+              "punct",
+              "("
+            ]
+          ]
+        },
+        {
+          "kind": "insert",
+          "pre_tokens": [],
+          "post_tokens": [
+            [
+              "punct",
+              "}"
+            ]
+          ],
+          "pre_context_before": [
+            [
+              "punct",
+              ","
+            ],
+            [
+              "word",
+              "error"
+            ],
+            [
+              "punct",
+              "."
+            ],
+            [
+              "word",
+              "raw_os_error"
+            ],
+            [
+              "punct",
+              "("
+            ],
+            [
+              "punct",
+              ")"
+            ],
+            [
+              "punct",
+              ")"
+            ],
+            [
+              "punct",
+              ")"
+            ]
+          ],
+          "pre_context_after": [
+            [
+              "punct",
+              ")"
+            ],
+            [
+              "punct",
+              ")"
+            ],
+            [
+              "punct",
+              ";"
+            ],
+            [
+              "punct",
+              "}"
+            ],
+            [
+              "punct",
+              "}"
+            ],
+            [
+              "comment",
+              "// All four observations are taken before asserting, after RevertToSelf."
+            ],
+            [
+              "word",
+              "eprintln"
+            ],
+            [
+              "punct",
+              "!"
+            ]
+          ]
+        },
+        {
+          "kind": "insert",
+          "pre_tokens": [],
+          "post_tokens": [
+            [
+              "punct",
+              ","
+            ]
+          ],
+          "pre_context_before": [
+            [
+              "word",
+              "error"
+            ],
+            [
+              "punct",
+              "."
+            ],
+            [
+              "word",
+              "raw_os_error"
+            ],
+            [
+              "punct",
+              "("
+            ],
+            [
+              "punct",
+              ")"
+            ],
+            [
+              "punct",
+              ")"
+            ],
+            [
+              "punct",
+              ")"
+            ],
+            [
+              "punct",
+              ")"
+            ]
+          ],
+          "pre_context_after": [
+            [
+              "punct",
+              ")"
+            ],
+            [
+              "punct",
+              ";"
+            ],
+            [
+              "punct",
+              "}"
+            ],
+            [
+              "punct",
+              "}"
+            ],
+            [
+              "comment",
+              "// All four observations are taken before asserting, after RevertToSelf."
+            ],
+            [
+              "word",
+              "eprintln"
+            ],
+            [
+              "punct",
+              "!"
+            ],
+            [
+              "punct",
+              "("
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "path": "codex-rs/windows-sandbox-rs/src/unified_exec/delete_permission_tests.rs",
+      "preimage": {
+        "bytes": 6737,
+        "sha256": "996b47813dde5e21ed6ca33f8764a6249957d2f3ace93b50c36d3d622895f775",
+        "blob": "4727675e9b85d75bfbe1de175571bcc481906353"
+      },
+      "postimage": {
+        "bytes": 6807,
+        "sha256": "8dc0ae01935586ac22001a5b567c148fa9ff744bf10e4de691c6fbe0993021da",
+        "blob": "a0cb1647d95f067fcf135bc9ea2a654ca3e5e7a2"
+      },
+      "verification": "FULL_DIFF_MANUAL_REVIEW_PLUS_LEXICAL_DIAGNOSTIC_NOT_RUST_AST",
+      "literal_token_multiset_exact": true,
+      "literal_token_sequence_exact": true,
+      "comment_tokens_exact": true,
+      "word_token_sequence_exact": true,
+      "non_whitespace_lexical_edits": [
+        {
+          "kind": "insert",
+          "pre_tokens": [],
+          "post_tokens": [
+            [
+              "punct",
+              ","
+            ]
+          ],
+          "pre_context_before": [
+            [
+              "punct",
+              "."
+            ],
+            [
+              "word",
+              "to_string_lossy"
+            ],
+            [
+              "punct",
+              "("
+            ],
+            [
+              "punct",
+              ")"
+            ],
+            [
+              "punct",
+              "."
+            ],
+            [
+              "word",
+              "into_owned"
+            ],
+            [
+              "punct",
+              "("
+            ],
+            [
+              "punct",
+              ")"
+            ]
+          ],
+          "pre_context_after": [
+            [
+              "punct",
+              ")"
+            ],
+            [
+              "punct",
+              ";"
+            ],
+            [
+              "word",
+              "env"
+            ],
+            [
+              "punct",
+              "."
+            ],
+            [
+              "word",
+              "insert"
+            ],
+            [
+              "punct",
+              "("
+            ],
+            [
+              "word",
+              "format"
+            ],
+            [
+              "punct",
+              "!"
+            ]
+          ]
+        },
+        {
+          "kind": "insert",
+          "pre_tokens": [],
+          "post_tokens": [
+            [
+              "punct",
+              ","
+            ]
+          ],
+          "pre_context_before": [
+            [
+              "punct",
+              "."
+            ],
+            [
+              "word",
+              "to_string_lossy"
+            ],
+            [
+              "punct",
+              "("
+            ],
+            [
+              "punct",
+              ")"
+            ],
+            [
+              "punct",
+              "."
+            ],
+            [
+              "word",
+              "into_owned"
+            ],
+            [
+              "punct",
+              "("
+            ],
+            [
+              "punct",
+              ")"
+            ]
+          ],
+          "pre_context_after": [
+            [
+              "punct",
+              ")"
+            ],
+            [
+              "punct",
+              ";"
+            ],
+            [
+              "word",
+              "script"
+            ],
+            [
+              "punct",
+              "."
+            ],
+            [
+              "word",
+              "push_str"
+            ],
+            [
+              "punct",
+              "("
+            ],
+            [
+              "punct",
+              "&"
+            ],
+            [
+              "word",
+              "format"
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "path": "codex-rs/cli/src/doctor.rs",
+      "preimage": {
+        "bytes": 158088,
+        "sha256": "3efe82de6f8e9a61529b3477e3a30a94c6a8798c9681da121b130f9acb001b16",
+        "blob": "31405ef75226a02b5f3e724e30ef6fbce828ceb8"
+      },
+      "postimage": {
+        "bytes": 158254,
+        "sha256": "efd89178c1073b679661b8fe0a1daa5799d15c31bc57b5d275c40115ad34476a",
+        "blob": "7b23af0646fbae988d58c6828e2878c19224d6c7"
+      },
+      "verification": "FULL_DIFF_MANUAL_REVIEW_PLUS_LEXICAL_DIAGNOSTIC_NOT_RUST_AST",
+      "literal_token_multiset_exact": true,
+      "literal_token_sequence_exact": true,
+      "comment_tokens_exact": true,
+      "word_token_sequence_exact": true,
+      "non_whitespace_lexical_edits": [
+        {
+          "kind": "insert",
+          "pre_tokens": [],
+          "post_tokens": [
+            [
+              "punct",
+              ","
+            ]
+          ],
+          "pre_context_before": [
+            [
+              "word",
+              "Err"
+            ],
+            [
+              "punct",
+              "("
+            ],
+            [
+              "word",
+              "format"
+            ],
+            [
+              "punct",
+              "!"
+            ],
+            [
+              "punct",
+              "("
+            ],
+            [
+              "literal",
+              "\"probe handler task failed: {error}\""
+            ],
+            [
+              "punct",
+              ")"
+            ],
+            [
+              "punct",
+              ")"
+            ]
+          ],
+          "pre_context_after": [
+            [
+              "punct",
+              ")"
+            ],
+            [
+              "punct",
+              ","
+            ],
+            [
+              "punct",
+              "}"
+            ],
+            [
+              "punct",
+              ";"
+            ],
+            [
+              "word",
+              "outcomes"
+            ],
+            [
+              "punct",
+              "."
+            ],
+            [
+              "word",
+              "push"
+            ],
+            [
+              "punct",
+              "("
+            ]
+          ]
+        },
+        {
+          "kind": "insert",
+          "pre_tokens": [],
+          "post_tokens": [
+            [
+              "punct",
+              ","
+            ]
+          ],
+          "pre_context_before": [
+            [
+              "punct",
+              ","
+            ],
+            [
+              "word",
+              "Duration"
+            ],
+            [
+              "punct",
+              ":"
+            ],
+            [
+              "punct",
+              ":"
+            ],
+            [
+              "word",
+              "from_millis"
+            ],
+            [
+              "punct",
+              "("
+            ],
+            [
+              "word",
+              "10"
+            ],
+            [
+              "punct",
+              ")"
+            ]
+          ],
+          "pre_context_after": [
+            [
+              "punct",
+              ")"
+            ],
+            [
+              "punct",
+              "."
+            ],
+            [
+              "word",
+              "await"
+            ],
+            [
+              "punct",
+              ";"
+            ],
+            [
+              "word",
+              "let"
+            ],
+            [
+              "word",
+              "client_returned_at"
+            ],
+            [
+              "punct",
+              "="
+            ],
+            [
+              "word",
+              "started_at"
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "path": "codex-rs/core/tests/suite/hooks.rs",
+      "preimage": {
+        "bytes": 179703,
+        "sha256": "5825b06b28ecf123f588b1a2764f513c4ce7a39f486e4fa5c8b65e6f0379818a",
+        "blob": "e9ddd7198c4c1550741fcb58524ba2108337ab15"
+      },
+      "postimage": {
+        "bytes": 179712,
+        "sha256": "438731ed5c05f862f2fe3fddf3485b94272cabdc343d5ed51dadd852c1949c63",
+        "blob": "f8cf3fe144ebb42cd08faed023161ce6423c5b8f"
+      },
+      "verification": "FULL_DIFF_MANUAL_REVIEW_PLUS_LEXICAL_DIAGNOSTIC_NOT_RUST_AST",
+      "literal_token_multiset_exact": true,
+      "literal_token_sequence_exact": true,
+      "comment_tokens_exact": true,
+      "word_token_sequence_exact": true,
+      "non_whitespace_lexical_edits": []
+    }
+  ],
+  "substantive_review": [
+    {
+      "path": "codex-rs/apply-patch/src/lib.rs",
+      "finding": "The closure body changes from { ApplyPatchFailure::new(...) } to that same expression. No statement, capture, return value, evaluation order, error cause, or delta changes."
+    },
+    {
+      "path": "codex-rs/windows-sandbox-rs/src/delete_permission_matrix_tests.rs",
+      "finding": "The Err(error) match arm changes from return Err(error).with_context(...) as the arm expression to a block containing that same return with a terminal semicolon. Both return from finish immediately; no local is introduced and no later action becomes reachable. Exact object identity, same-DACL, retained bytes, delete-pending/link-count, after-close filesystem checks and strict outcomes remain."
+    },
+    {
+      "path": "codex-rs/windows-sandbox-rs/src/lib.rs",
+      "finding": "The complete test-only cfg+path+mod item moves before deny_read_acl/deny_read_state. Removing that item makes pre/post byte-equal. No macro_use attribute or macro_rules definition exists in the moved or crossed modules. Its calls resolve through ordinary module paths; item order does not change runtime initialization or cfg scope.",
+      "crossed_module_primary": [
+        {
+          "path": "architecture-audit/a-hygiene-independent-review-20261105/context/codex-rs/windows-sandbox-rs/src/deny_read_acl.rs",
+          "bytes": 4118,
+          "sha256": "80a1f89c6badd8240102d4c50c982a2aa88bf2c5c49e19e672145076e61415c4",
+          "blob": "dd3bc350e48299fe5a99e8d45eba61a239e5a186"
+        },
+        {
+          "path": "architecture-audit/a-hygiene-independent-review-20261105/context/codex-rs/windows-sandbox-rs/src/deny_read_state.rs",
+          "bytes": 2983,
+          "sha256": "1a277638c3b7a39cf3d9eed32f954a0c3e32110ccbc738c8348b2ba7dabba82a",
+          "blob": "fd073a4d45c781f0441839708f92e32d0831556c"
+        }
+      ]
+    },
+    {
+      "path": "codex-rs/linux-sandbox/src/parent_lifecycle.rs",
+      "finding": "Private role capture, low-FD duplication, unread proc identity/offset/flags checks, capability-first order, PR_SET then PF_EXITING/state validation, owned-FD drop and pre-user-fork ordering are retained. Only layout and optional trailing commas change."
+    },
+    {
+      "path": "codex-rs/linux-sandbox/src/parent_lifecycle_tests.rs",
+      "finding": "All marker strings, exact line equality, 5-second bounds, WNOWAIT process-group custody, kill/reparent ordering, no-rearm panic, pre-fork EBADF tuple and exec inode checks remain. Formatter changes assertion line numbers; this is not retroactive relocation of prior negative-run evidence."
+    },
+    {
+      "path": "codex-rs/windows-sandbox-rs/src/acl_deny.rs",
+      "finding": "SetEntriesInAclW receives the same four arguments in the same order; same-handle rights, masks, flags, DACL matching, error propagation and early no-op are unchanged."
+    },
+    {
+      "path": "remaining changed Rust and Python files",
+      "finding": "Every diff hunk was read. Full Python ASTs match. Rust literal/comment bytes and non-module word sequences match; only layout, optional trailing commas and the explicitly reviewed closure/match blocks remain. All original approvals, assertions, matrices, fixture commands, syscall arguments and deadlines retain their values and order."
+    }
+  ],
+  "cloud_only_git_roundtrip_commands": [
+    {
+      "argv": [
+        "git",
+        "init",
+        "-q"
+      ],
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "git",
+        "apply",
+        "--reverse",
+        "--check",
+        "/workspace/scratch/07dd58cc9630/ci-audit/recovered-20261105/final-A-fmt-complete-v1/large-decoded/original-fmt.patch"
+      ],
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "git",
+        "apply",
+        "--reverse",
+        "/workspace/scratch/07dd58cc9630/ci-audit/recovered-20261105/final-A-fmt-complete-v1/large-decoded/original-fmt.patch"
+      ],
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "git",
+        "apply",
+        "--check",
+        "/workspace/scratch/07dd58cc9630/ci-audit/recovered-20261105/final-A-fmt-complete-v1/large-decoded/original-fmt.patch"
+      ],
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "git",
+        "apply",
+        "/workspace/scratch/07dd58cc9630/ci-audit/recovered-20261105/final-A-fmt-complete-v1/large-decoded/original-fmt.patch"
+      ],
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": ""
+    }
+  ],
+  "limits": [
+    "No Cargo, Bazel, product test, native host command, shared-source/cache mutation, or ref mutation performed.",
+    "No post-hygiene A test is implied; full 19,506 execution belongs to fb9 and its original 16 failures/25 early returns remain.",
+    "Rust lexical diagnostics supplement full diff review; they are not a compiler or Rust AST equivalence proof.",
+    "Root still owns remaining diff gates, final source qualification and publication.",
+    "B remains unbound. The new 25,447,063,552-byte capacity reading does not authorize execution or cache deletion."
+  ]
+}

@@ -1,0 +1,1171 @@
+{
+  "schema": "hepta.fourth.workflow-reference-review-completion.v1",
+  "observed_at": "2026-11-05T00:42:56.778705+00:00",
+  "status": "STATIC_INDEX_PROJECTION_ZERO_MISSING_CURRENT_REFERENCES",
+  "registry_snapshot": {
+    "path": "/workspace/scratch/07dd58cc9630/research-audit/workflow-reference-review/artifact-registry-snapshot.json",
+    "bytes": 61684,
+    "sha256": "36bf4d6a2dff66a52fce1cdbfc241beb73f2f2cbf28c07139759ea6409082592",
+    "blob": "34fdf1f2406a8a33053168caceee9ee12a39e7f4",
+    "rows": 194
+  },
+  "verifier": {
+    "path": "/workspace/scratch/07dd58cc9630/hepta-audit-fourth/inputs/hepta-docs.py.txt",
+    "bytes": 78882,
+    "sha256": "63adeefe7231e970b21b8d6a3014986fcb8cf16f1741f4a36b9dd4717196e33d",
+    "blob": "0d65aa4dee439e58ef124d99f4d422affdfae82f"
+  },
+  "source_tree": {
+    "stage": "EffectiveChildApproval",
+    "sha": "7bc267096f23159605c0b6563374e697f8a0bd1f",
+    "tree": "f8251e1d14fa8524ab469281296cd4cf708f173c",
+    "parent": "03e4945876cfd44ff886aea35bcc5576cbd0055d",
+    "message": "fix(core): evaluate child approval with effective denied-read sandbox permissions",
+    "changed_lines_excluding_locks": 8
+  },
+  "original_counts": {
+    "scanned_md_json": 115,
+    "local_reused": 51,
+    "github_get": 64,
+    "reference_occurrences": 76,
+    "distinct_referenced_paths": 22,
+    "missing_occurrences": 3,
+    "affected_files": 1,
+    "distinct_missing_paths": 2
+  },
+  "classification": [
+    {
+      "evidence_file": "fourth-pr-current-delta.json",
+      "source_blob": "d302cad4ead462c17258c8fce33eac0c21f5ad37",
+      "line": 556,
+      "recorded_workflow_basename": "hepta-windows-current-ci.yml",
+      "classification": "other_candidate_workflow_path_not_a_current_integrated_tree_reference",
+      "pr_number": 4806,
+      "original_json_pointer": "/head_workflow_runs/4806/runs/5/path",
+      "original_line": 556,
+      "run_id": 41920240805,
+      "workflow_display_name": "Windows original CI regressions (declared scope only)",
+      "head_sha": "fbf786803f07e402bcaddbb8fbe3dd387f6b7688",
+      "run_attempt": 1,
+      "status": "completed",
+      "conclusion": "failure",
+      "run_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/41920240805"
+    },
+    {
+      "evidence_file": "fourth-pr-current-delta.json",
+      "source_blob": "d302cad4ead462c17258c8fce33eac0c21f5ad37",
+      "line": 683,
+      "recorded_workflow_basename": "keyring-sync-lock-proposal.yml",
+      "classification": "other_candidate_workflow_path_not_a_current_integrated_tree_reference",
+      "pr_number": 4808,
+      "original_json_pointer": "/head_workflow_runs/4808/runs/7/path",
+      "original_line": 683,
+      "run_id": 41925027821,
+      "workflow_display_name": "Keyring synchronous backend lock proposal",
+      "head_sha": "2496308dbbe8b2452ea599357fcd9cd63884e2b9",
+      "run_attempt": 1,
+      "status": "completed",
+      "conclusion": "success",
+      "run_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/41925027821"
+    },
+    {
+      "evidence_file": "fourth-pr-current-delta.json",
+      "source_blob": "d302cad4ead462c17258c8fce33eac0c21f5ad37",
+      "line": 696,
+      "recorded_workflow_basename": "hepta-windows-current-ci.yml",
+      "classification": "other_candidate_workflow_path_not_a_current_integrated_tree_reference",
+      "pr_number": 4808,
+      "original_json_pointer": "/head_workflow_runs/4808/runs/8/path",
+      "original_line": 696,
+      "run_id": 41925028068,
+      "workflow_display_name": "Windows original CI regressions (declared scope only)",
+      "head_sha": "2496308dbbe8b2452ea599357fcd9cd63884e2b9",
+      "run_attempt": 1,
+      "status": "completed",
+      "conclusion": "failure",
+      "run_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/41925028068"
+    }
+  ],
+  "proposed_archive_changes": {
+    "schema": "hepta.historical-evidence-transparent-archive-mapping.v1",
+    "changes": [
+      {
+        "action": "replace_index_only",
+        "path": "fourth-pr-current-delta.json",
+        "old_blob": "d302cad4ead462c17258c8fce33eac0c21f5ad37",
+        "new": {
+          "bytes": 6384,
+          "sha256": "e56a45e07b7a7482629ccf9c35f3a681947b966d130476ae20faf369b6a2e169",
+          "blob": "3e8145f2620fad6f365486feaec3e8026d317c09"
+        },
+        "local_path": "/workspace/scratch/07dd58cc9630/research-audit/workflow-reference-review/proposed-index/fourth-pr-current-delta.json"
+      },
+      {
+        "action": "add_exact_original_body",
+        "path": "fourth-pr-current-delta.original.json.txt",
+        "blob": "d302cad4ead462c17258c8fce33eac0c21f5ad37",
+        "bytes": 495624,
+        "sha256": "047268359a985db7ccd7ad37b4fe6c18107b01c76db0491546b3d4781285763e",
+        "local_path": "/workspace/scratch/07dd58cc9630/research-audit/workflow-reference-review/proposed-index/fourth-pr-current-delta.original.json.txt"
+      }
+    ],
+    "qualification_scope": "No original evidence bytes rewritten. Current .json becomes a typed index; other-candidate raw history is inert .json.txt.",
+    "original_registry_scan": {
+      "scanned_md_json": 115,
+      "local_reused": 51,
+      "github_get": 64,
+      "reference_occurrences": 76,
+      "distinct_referenced_paths": 22,
+      "missing_occurrences": 3,
+      "affected_files": 1,
+      "distinct_missing_paths": 2
+    },
+    "projected_remaining_missing_occurrences": 0,
+    "projected_check_is_not_full_docs_gate": true
+  },
+  "index_publication": {
+    "schema": "hepta.historical-donor-index-publication.v1",
+    "repository": "TrillionniumFoundation/hepta-private-ci",
+    "created_at": "2026-11-05T00:42:05.842Z",
+    "read_back_at": "2026-11-05T00:42:11.358Z",
+    "index": {
+      "path": "fourth-pr-current-delta.json",
+      "blob": "3e8145f2620fad6f365486feaec3e8026d317c09",
+      "bytes": 6384,
+      "sha256": "e56a45e07b7a7482629ccf9c35f3a681947b966d130476ae20faf369b6a2e169"
+    },
+    "raw": {
+      "path": "fourth-pr-current-delta.original.json.txt",
+      "blob": "d302cad4ead462c17258c8fce33eac0c21f5ad37",
+      "bytes": 495624,
+      "sha256": "047268359a985db7ccd7ad37b4fe6c18107b01c76db0491546b3d4781285763e"
+    },
+    "exact_readback_equal": true,
+    "ref_changes": false,
+    "root_registry_changes": false
+  },
+  "projected_registry_counts": {
+    "md_json": 115,
+    "workflow_reference_occurrences": 59,
+    "missing_current_reference_occurrences": 0,
+    "raw_original_is_inert_txt": true
+  },
+  "extra_local_deliverables": [
+    {
+      "path": "/workspace/scratch/07dd58cc9630/hepta-audit-fourth/deliverables/CURRENT_AUDIT_PROGRESS.zh-CN.md",
+      "relative_name": "CURRENT_AUDIT_PROGRESS.zh-CN.md",
+      "bytes": 27461,
+      "sha256": "ff4087423f5f361b3455ce32c51a470a684b989fc78bdd3b35ab3c227fca53d6",
+      "blob": "dacb03cba26cae058c19210f7a68a1e5c3c58d01",
+      "reference_occurrences": 0,
+      "missing": []
+    },
+    {
+      "path": "/workspace/scratch/07dd58cc9630/hepta-audit-fourth/deliverables/FOURTH_BATCH_QUALIFICATION.md",
+      "relative_name": "FOURTH_BATCH_QUALIFICATION.md",
+      "bytes": 10769,
+      "sha256": "ce7a333bf72dabbbd3d3ad1786ec3b6061812f628ed8d8c487313859abc3e5e1",
+      "blob": "40d387507e7270d1e7422d845d59d7503c25dafb",
+      "reference_occurrences": 0,
+      "missing": []
+    },
+    {
+      "path": "/workspace/scratch/07dd58cc9630/hepta-audit-fourth/deliverables/README.md",
+      "relative_name": "README.md",
+      "bytes": 9658,
+      "sha256": "1237e840a67a750d99a1c4876f7b9d6b9d86a1f0707c13167c7b86c1288b3969",
+      "blob": "26552b0a4cf493e0f962cec9f4801f5687e2f92c",
+      "reference_occurrences": 0,
+      "missing": []
+    },
+    {
+      "path": "/workspace/scratch/07dd58cc9630/hepta-audit-fourth/deliverables/current-blockers.json",
+      "relative_name": "current-blockers.json",
+      "bytes": 21219,
+      "sha256": "a7ba3093500f11b2369394d49ac3ed1320a497069350bb7e347970c99c7d1e37",
+      "blob": "b65f30d17ced2bb40f8d712a7d11315f2ea67075",
+      "reference_occurrences": 0,
+      "missing": []
+    },
+    {
+      "path": "/workspace/scratch/07dd58cc9630/hepta-audit-fourth/deliverables/fourth-b16-pre-registration-root-review.json",
+      "relative_name": "fourth-b16-pre-registration-root-review.json",
+      "bytes": 5558,
+      "sha256": "28ff1a6f750e0c832c5c6e8de38fbd1cbe3de512dc367631f0d97ba5c30b2991",
+      "blob": "6d891f49fce364fe886d3aa357ec66c3c4150795",
+      "reference_occurrences": 0,
+      "missing": []
+    },
+    {
+      "path": "/workspace/scratch/07dd58cc9630/hepta-audit-fourth/deliverables/fourth-f825-owning8-root-review.json",
+      "relative_name": "fourth-f825-owning8-root-review.json",
+      "bytes": 8020,
+      "sha256": "f4c21ecaacd36989ddee11143932205c5e5697625d5a7a2ba9877f3f2d5e7dfe",
+      "blob": "9dbc7f2c39bbcc523c3bc5718873c5364b697be7",
+      "reference_occurrences": 0,
+      "missing": []
+    },
+    {
+      "path": "/workspace/scratch/07dd58cc9630/hepta-audit-fourth/deliverables/fourth-helper-c270-root-completion.json",
+      "relative_name": "fourth-helper-c270-root-completion.json",
+      "bytes": 3459,
+      "sha256": "887321088ea6f086e0952a60b4e321bd34b869c689f6da69f6bb9c9cbfacb08a",
+      "blob": "86ebca03ab8a17f43eaa32416fed8212c72f1991",
+      "reference_occurrences": 0,
+      "missing": []
+    },
+    {
+      "path": "/workspace/scratch/07dd58cc9630/hepta-audit-fourth/deliverables/fourth-literal-approval-native-root-review.json",
+      "relative_name": "fourth-literal-approval-native-root-review.json",
+      "bytes": 31404,
+      "sha256": "1d3875454239403ddd37d1fb5514067d72f01b59a6355c131a75ae6f65ed4169",
+      "blob": "6266148d903085ee8151831168548b9d68be05bb",
+      "reference_occurrences": 2,
+      "missing": []
+    },
+    {
+      "path": "/workspace/scratch/07dd58cc9630/hepta-audit-fourth/deliverables/fourth-research-api-root-review.json",
+      "relative_name": "fourth-research-api-root-review.json",
+      "bytes": 12195,
+      "sha256": "49eb6b6002229e44a4ab061c8bbdbbede877ce01313215f2cb2438a1888813de",
+      "blob": "465841db3a3e3110f87426c287a82fa7d3e6c8dc",
+      "reference_occurrences": 0,
+      "missing": []
+    }
+  ],
+  "full_scan_raw": {
+    "path": "registry-workflow-reference-precheck.original.json.txt",
+    "bytes": 151072,
+    "sha256": "08e0cbeb45c03b9e91a9bcd6576ea1bdee792f28455929bf8775b7eeefd6b746",
+    "blob": "4363be51648b2c41d4caab8753949e2812303ce2",
+    "note": "Contains the exact historical missing-path strings; archive as inert raw if retained in qualification"
+  },
+  "checked_registry_files": [
+    {
+      "path": "fourth-cabc-ci-terminal.json",
+      "bytes": 11838,
+      "sha256": "7ef2eea8a18a154fd0b7271439051f1c1f8c12ce6bcc6898c94bd33bb753fb58",
+      "blob": "4b0e76e480475a806bfa111c60feac1752aab9e0",
+      "reference_occurrences": 0,
+      "missing_count": 0
+    },
+    {
+      "path": "fourth-bootstrap-native.json",
+      "bytes": 109298,
+      "sha256": "50748475d28243402b7da1263c3ff33a828d6a99e952d376c20c66a0bc3d5e4c",
+      "blob": "efa6c42f28913ede333c5a975c222a8b1c150cfe",
+      "reference_occurrences": 2,
+      "missing_count": 0
+    },
+    {
+      "path": "fourth-bootstrap-root-review.json",
+      "bytes": 27458,
+      "sha256": "83533af7cfb79d6af8b5770467d07e2ca9657bf419a353347234473a843b3d00",
+      "blob": "1fab8b3ab6969f82c9e61848c7acdd90fcabcc49",
+      "reference_occurrences": 0,
+      "missing_count": 0
+    },
+    {
+      "path": "fourth-helper-preparation-native.json",
+      "bytes": 107938,
+      "sha256": "d2941e5540e6dfe2022eb13103642b22e1f25550a1105eade127a71dc6226a39",
+      "blob": "69e22fb16b97eb15d42ddeb80b32c2255d810e22",
+      "reference_occurrences": 0,
+      "missing_count": 0
+    },
+    {
+      "path": "fourth-helper-preparation-root-review.json",
+      "bytes": 17932,
+      "sha256": "44960fdf44fd425226cfddf5200ea396a6f797e2b33ed8e9fa06588ce70eefec",
+      "blob": "0dfadead11a0f0933e811c0dec40565fcd2f2ce6",
+      "reference_occurrences": 0,
+      "missing_count": 0
+    },
+    {
+      "path": "fourth-helper-caller-review.json",
+      "bytes": 14546,
+      "sha256": "e4e62c2c535f286be11db9e3aa09f04b6e9a2c4f7fc02123bc67ba9bba87ec44",
+      "blob": "cb8f4821c526cab974b8d0f477a1f5e7d226cd40",
+      "reference_occurrences": 0,
+      "missing_count": 0
+    },
+    {
+      "path": "fourth-r1-native.json",
+      "bytes": 344718,
+      "sha256": "956eefc1dd4c62d20fe9e859eed866aae4d85c53cbc403e552e3f25aa7d3622d",
+      "blob": "4a14b0187892f2c26a127e8963a5ec919a3002c2",
+      "reference_occurrences": 0,
+      "missing_count": 0
+    },
+    {
+      "path": "fourth-r2b-native.json",
+      "bytes": 234184,
+      "sha256": "dd33fce626e0a720f17f0a0de83e15364bf3acaad3c59414a039e9cf3084eafe",
+      "blob": "0248de74537c21f089a1377933b553acad6b2630",
+      "reference_occurrences": 0,
+      "missing_count": 0
+    },
+    {
+      "path": "fourth-r1-r2b-root-review.json",
+      "bytes": 2037,
+      "sha256": "9dba3e2b6702cec5659783144939aec208b44aff1775f4d4449d5127f4e106a8",
+      "blob": "f08d0b5cff5e9c4051b36280845ff24c1c4593ae",
+      "reference_occurrences": 0,
+      "missing_count": 0
+    },
+    {
+      "path": "fourth-bazel-lock-native.json",
+      "bytes": 20064,
+      "sha256": "929a6d220dd31553b094b9d254e3953fa975c64311063d06491eddf68178ea73",
+      "blob": "386a02aeb1ff3ef03c7f040a7dde0fbb6f51c5c1",
+      "reference_occurrences": 0,
+      "missing_count": 0
+    },
+    {
+      "path": "fourth-bazel-lock-root-review.json",
+      "bytes": 2092,
+      "sha256": "9b7240c7ea214eda07f48efa0a21f97dde9617d028c1b51042c28ca7946903eb",
+      "blob": "7811ab63e82f5c1aa44a3ad8527044777f469f38",
+      "reference_occurrences": 0,
+      "missing_count": 0
+    },
+    {
+      "path": "fourth-r2a-native.json",
+      "bytes": 280970,
+      "sha256": "6d3f4ece286403748c8e190da38b30889ba4787128962d040d09ed8d60885972",
+      "blob": "c0437389a140c65eb77769d48e62af7c8aba87d7",
+      "reference_occurrences": 0,
+      "missing_count": 0
+    },
+    {
+      "path": "fourth-r2a-baseline-parser-correction.json",
+      "bytes": 1109,
+      "sha256": "3c52dd0da712016a28ca940319c3a08816d5f6f7443c3434484fb6b1faf8f833",
+      "blob": "d14e6c6491bb33667446b41a4d94414fc42a9ab3",
+      "reference_occurrences": 0,
+      "missing_count": 0
+    },
+    {
+      "path": "fourth-r2a-root-review.json",
+      "bytes": 25524,
+      "sha256": "8c40160b103f5636599ec77206d252d20539d73938602860d38b058189cd05f9",
+      "blob": "6995e3e392defcce38728badfc2df0cf19fd6a25",
+      "reference_occurrences": 0,
+      "missing_count": 0
+    },
+    {
+      "path": "fourth-fleet-native.json",
+      "bytes": 417692,
+      "sha256": "8d7017205f5b5b282897ced218e782328b79a8ad6f56783277d6b7a66015fa47",
+      "blob": "de89251365f5b5387b904ebde9ba249aa335b5d1",
+      "reference_occurrences": 0,
+      "missing_count": 0
+    },
+    {
+      "path": "fourth-fleet-root-review.json",
+      "bytes": 18830,
+      "sha256": "55036bb1a4478434ba2a8586e2cd3809f20d2c5b2b83314ca160468b1c2d202f",
+      "blob": "2fdaaadfab0ef298207fd7a307574da2bd12f5ab",
+      "reference_occurrences": 0,
+      "missing_count": 0
+    },
+    {
+      "path": "fourth-core-four-path-native.json",
+      "bytes": 80574,
+      "sha256": "41853a7a2cfeb613b21814676fbe710e69ff47683c7bd74fd92086718685fbab",
+      "blob": "ce067a749f248d9b684cc3f8bc82281890f98bc8",
+      "reference_occurrences": 0,
+      "missing_count": 0
+    },
+    {
+      "path": "fourth-core-four-path-root-review.json",
+      "bytes": 6788,
+      "sha256": "d40c34f73739ce6eeb860b57cf5216fa59c06628d4522004280c6a8369c40415",
+      "blob": "fb6a2797746190941bd9121b21de85130190d6eb",
+      "reference_occurrences": 0,
+      "missing_count": 0
+    },
+    {
+      "path": "fourth-diagnostic-31-native.json",
+      "bytes": 310361,
+      "sha256": "7975b51d59aab8f979515d250b345574d65705cfd6903af4a7520c31094d9560",
+      "blob": "843a05a880818265f816fca44993c726ca4172b9",
+      "reference_occurrences": 0,
+      "missing_count": 0
+    },
+    {
+      "path": "fourth-diagnostic-31-root-review.json",
+      "bytes": 28359,
+      "sha256": "8962a4df8ff4fe2a6b0a8b9ff1d9895546dfb670d0c5503df436c229fb58909e",
+      "blob": "859b5686042ead9b0ec96b2b7a5ad308ec1e0973",
+      "reference_occurrences": 0,
+      "missing_count": 0
+    },
+    {
+      "path": "fourth-doctor-native.json",
+      "bytes": 131067,
+      "sha256": "1a394e328f00a1027286e7b83e94f1d3dcea8170bd93c74bfcefc0d5536872db",
+      "blob": "f02bf4f1256722f9f04a5154cd47f58f76bd9a42",
+      "reference_occurrences": 0,
+      "missing_count": 0
+    },
+    {
+      "path": "fourth-doctor-root-review.json",
+      "bytes": 7514,
+      "sha256": "15064f5ea8fa8e97cf1ed385475f40b29a61c59708ec2c42fc2db57dff1d5827",
+      "blob": "7f57377074dee8f41e865b3443f1c8a5fcc60408",
+      "reference_occurrences": 0,
+      "missing_count": 0
+    },
+    {
+      "path": "fourth-applypatch-ci-native.json",
+      "bytes": 150866,
+      "sha256": "cd95bb049e17112313f5f69b92fcff5598e8976345a67731c1c93b6ff1d18101",
+      "blob": "e0873d09f7d911b39b5f8c67fbe7f80ce96f266e",
+      "reference_occurrences": 15,
+      "missing_count": 0
+    },
+    {
+      "path": "fourth-applypatch-root-review.json",
+      "bytes": 20157,
+      "sha256": "afbd3195ad55e91d6091b9eab71b20a636d607636539ae6b74f2d98f890dad5c",
+      "blob": "d025a7b3ffc15b98fdff3fba106e0ac328352de5",
+      "reference_occurrences": 7,
+      "missing_count": 0
+    },
+    {
+      "path": "fourth-owning7-complete-index.json",
+      "bytes": 230267,
+      "sha256": "e8b73ded59041c5440edeca13e1c3950a7d5371f96b139fe1e2af677a87e2887",
+      "blob": "b865a749262162d0d2042deaa2bd48ceaaeb5e2b",
+      "reference_occurrences": 2,
+      "missing_count": 0
+    },
+    {
+      "path": "fourth-owning7-root-review.json",
+      "bytes": 26170,
+      "sha256": "b8343637c16cd9eeaf45b22226b9c265b5a65ab5ef2c564ee73b7600c56668bb",
+      "blob": "3a5423a3963f38a09a69a633148384f4bf8d951e",
+      "reference_occurrences": 0,
+      "missing_count": 0
+    },
+    {
+      "path": "fourth-owning7-full-failures.json",
+      "bytes": 131683,
+      "sha256": "5de3245252012f2c125443e91d5f75629e365c6cb16169c6b136b4cc591b0532",
+      "blob": "023d6a14b4e8ad37157dc9162d820dc3d6cd6473",
+      "reference_occurrences": 0,
+      "missing_count": 0
+    },
+    {
+      "path": "fourth-owning7-failures-root-review.json",
+      "bytes": 29804,
+      "sha256": "717989bc92447ba954a7a3332d77d977777d47069bc8b71ae84b404658aa6d1c",
+      "blob": "895f4d0fd9bf901c414e87ca93016f9426f22d13",
+      "reference_occurrences": 0,
+      "missing_count": 0
+    },
+    {
+      "path": "fourth-event-diagnostics-native.json",
+      "bytes": 86956,
+      "sha256": "1029b32964583b7c10e13a2a3aa048864196f47d563f3b5f528c4164b3c41752",
+      "blob": "d11d068455d15b5b89f5cd70445ffb8c51f9ebff",
+      "reference_occurrences": 0,
+      "missing_count": 0
+    },
+    {
+      "path": "fourth-event-diagnostics-metadata.json",
+      "bytes": 65122,
+      "sha256": "e5e268235c557285ec8eee3491ef05e94b2764c1db4526a3ea192e9fb087efed",
+      "blob": "e6d80d53a710ed82389a753cc7f3f5d3b2cb440f",
+      "reference_occurrences": 2,
+      "missing_count": 0
+    },
+    {
+      "path": "fourth-event-diagnostics-root-review.json",
+      "bytes": 5974,
+      "sha256": "7876aa93479925b8ff5b2ca211c94919d5b77f450e3c19246e33f0c5e43588d8",
+      "blob": "5a0370f6b935ff2fed4290697975ffb1543e554e",
+      "reference_occurrences": 0,
+      "missing_count": 0
+    },
+    {
+      "path": "fourth-host-startup-attribution.json",
+      "bytes": 30105,
+      "sha256": "7d1f1f2e1362f73724e28a3555a11cc535fc19dac1bd34b5094c2193e6bb2f5d",
+      "blob": "739f32634f2d8b7361e1ea001b344851eed5e1dc",
+      "reference_occurrences": 0,
+      "missing_count": 0
+    },
+    {
+      "path": "fourth-host-startup-root-review.json",
+      "bytes": 4547,
+      "sha256": "9e12d6684ead9bac21c6544ad93091affeaeaf3b2223a3edfa87d46ea586eed1",
+      "blob": "df9e01214e24614121f4ba3a055d7ff7c1dac99e",
+      "reference_occurrences": 0,
+      "missing_count": 0
+    },
+    {
+      "path": "fourth-ci-success-retention-native.json",
+      "bytes": 54266,
+      "sha256": "dc3144e49d0c4444cd6149a769f9c136973930f7662e598452b57b02126201fd",
+      "blob": "e30e254b712f868ec0c21ecf272cbaa294cde8ef",
+      "reference_occurrences": 2,
+      "missing_count": 0
+    },
+    {
+      "path": "fourth-ci-success-retention-root-review.json",
+      "bytes": 6885,
+      "sha256": "c3137218237d991022ab974a9b1c8aafe25c5bc8faacc4ec27dadefeb32f6e63",
+      "blob": "ca33e423db6f2bf7aa9e552b6a468af6ed484484",
+      "reference_occurrences": 0,
+      "missing_count": 0
+    },
+    {
+      "path": "fourth-ci-success-retention-manifest.json",
+      "bytes": 13849,
+      "sha256": "0666269b5aa2042adc2a0e7b2a9d904eb60548d4d0fcb94e5912fe263e54ce02",
+      "blob": "00869f84b429c93e8006a248faf57af80012d5e7",
+      "reference_occurrences": 0,
+      "missing_count": 0
+    },
+    {
+      "path": "fourth-ci-success-retention-static-review.json",
+      "bytes": 6173,
+      "sha256": "f0c1e79b69b1c8158620633f4375db6569f64ffb0079d09002276ddfa6cdbe41",
+      "blob": "0ff3886fbd3e22ac8ea9709284e0380d28dd4af7",
+      "reference_occurrences": 0,
+      "missing_count": 0
+    },
+    {
+      "path": "fourth-ci-success-retention-independent.json",
+      "bytes": 5549,
+      "sha256": "f10f7a781d993321258235bbdbc9e1bd1731b9de302c54e4276d8066642cf77f",
+      "blob": "2542b3f69b62aa8844fa56bc7fa094ce5656f391",
+      "reference_occurrences": 0,
+      "missing_count": 0
+    },
+    {
+      "path": "fourth-literal-deny-manifest.json",
+      "bytes": 5911,
+      "sha256": "624a602e71047b69941eac88aa941c31927f09de8c3d1a7d2f1b83b1097b2bd2",
+      "blob": "ac84d7cc3184615ba83e64f13ee7c4f7e10848c9",
+      "reference_occurrences": 0,
+      "missing_count": 0
+    },
+    {
+      "path": "fourth-literal-deny-root-review.json",
+      "bytes": 5900,
+      "sha256": "5f3a418d257147c15c350c0867cecdd07d760abb06a75e6b31b946ea84af973c",
+      "blob": "aa770a6045590acbe5e4e254af9204fad8fb523d",
+      "reference_occurrences": 0,
+      "missing_count": 0
+    },
+    {
+      "path": "fourth-readonly-fixture-manifest.json",
+      "bytes": 9631,
+      "sha256": "097bc847485a0875f6a0d39af26a202013f18062deec92f718390aa5cb4fadf9",
+      "blob": "d39e6fc948a1d02916add0542cff24298b760881",
+      "reference_occurrences": 0,
+      "missing_count": 0
+    },
+    {
+      "path": "fourth-readonly-fixture-root-review.json",
+      "bytes": 7372,
+      "sha256": "e11d2d59bef98ff2e3c0e6388413b41537d6a65d8917fc1c0bfeb6810653cd1e",
+      "blob": "4e3f0649de7bf9b523d6f10cc9723bd3cc0a29c4",
+      "reference_occurrences": 0,
+      "missing_count": 0
+    },
+    {
+      "path": "fourth-readonly-fixture-independent.json",
+      "bytes": 4950,
+      "sha256": "0d5ceccfc9a72705df3f0c1f487a1368c0a4692b48885bb2f0d999a9c5af0a9d",
+      "blob": "b416f9a79a22e28850d78c33f7f66c9f74903697",
+      "reference_occurrences": 0,
+      "missing_count": 0
+    },
+    {
+      "path": "fourth-skill-completion-independent.json",
+      "bytes": 1857,
+      "sha256": "cdabee377efcfd966de76c4179e63c649ff77aa683fb658612d725c9ac92e9d1",
+      "blob": "2155546efd2852de4cb8b8d2a37945dbd3ed9e60",
+      "reference_occurrences": 0,
+      "missing_count": 0
+    },
+    {
+      "path": "fourth-hook-once-independent.json",
+      "bytes": 5494,
+      "sha256": "1637cb521408bc5884537b3aeb8f69d583fb80d5c5a356e2a259fcd9348c9c16",
+      "blob": "5322f0b465316ad1794eeaf7a5df3b1ae22686b3",
+      "reference_occurrences": 0,
+      "missing_count": 0
+    },
+    {
+      "path": "fourth-readonly-invalid-negative.json",
+      "bytes": 56989,
+      "sha256": "4ca5ad304bd320706df7efd52877a1a043b647721820944e317c94280b15a955",
+      "blob": "bcc3c856c6029bc03db15355c2705dd864f6fb4c",
+      "reference_occurrences": 2,
+      "missing_count": 0
+    },
+    {
+      "path": "fourth-readonly-invalid-negative-metadata.json",
+      "bytes": 74121,
+      "sha256": "fad23064153369d66a4a20b19bb2edc6f84da01f3f78500be38cdccedd6b18ed",
+      "blob": "089615824b72be09f6f672d6b38be831cfb2b0e9",
+      "reference_occurrences": 0,
+      "missing_count": 0
+    },
+    {
+      "path": "fourth-readonly-invalid-negative-root-review.json",
+      "bytes": 2565,
+      "sha256": "d733a0129ebcb96eadb06c98880a053bfcf5b3a6a37315892099bfdad489f3cd",
+      "blob": "b7216bf2898d2f8a107e9912e96657285cd21114",
+      "reference_occurrences": 0,
+      "missing_count": 0
+    },
+    {
+      "path": "fourth-readonly-unset-diagnostic.json",
+      "bytes": 104748,
+      "sha256": "397d8cb0b6903aae98590688f029bf7a88b4572a0e9e1ae7688830b9653c78b2",
+      "blob": "a82cf7b55f456a9b8c6820deaa701b6c27cf7584",
+      "reference_occurrences": 2,
+      "missing_count": 0
+    },
+    {
+      "path": "fourth-readonly-command-diagnostic.json",
+      "bytes": 105970,
+      "sha256": "6f8a378dce3b687326e95e5f5fb30886a1182a65ad1da39d9bf5958716593800",
+      "blob": "263a23cecb280f02fc52873de8040f27abf1c99e",
+      "reference_occurrences": 2,
+      "missing_count": 0
+    },
+    {
+      "path": "fourth-bash-no-rc-manifest.json",
+      "bytes": 3498,
+      "sha256": "075a8e487af5965472f168758b2e29e3732aaf8045e6666f56ca8bd9db71bc58",
+      "blob": "84ea8933e64f63565e714923de852a1fbe511df6",
+      "reference_occurrences": 0,
+      "missing_count": 0
+    },
+    {
+      "path": "fourth-bash-no-rc-independent.json",
+      "bytes": 8102,
+      "sha256": "7727a65c0487009de64d60b60dab6b3eedb8724b25791285589058b14a192e49",
+      "blob": "b9c19747b3bc6a637b0151a7807bbb0f0b4cb920",
+      "reference_occurrences": 0,
+      "missing_count": 0
+    },
+    {
+      "path": "fourth-bash-native-identity.json",
+      "bytes": 738,
+      "sha256": "9059200df38290ec54a41960eb8aa355b838697e65761cbc1d2d9ca9dd2d5104",
+      "blob": "cf6d9577b7a986952b635e9f7aa55173e5a61a71",
+      "reference_occurrences": 0,
+      "missing_count": 0
+    },
+    {
+      "path": "fourth-seven-rows-original-projection.json",
+      "bytes": 370941,
+      "sha256": "6eaae624e71dd127102f8a7a19a92240bb59df5d9401fb684b2b713e1c8f8378",
+      "blob": "37a93aba1fb93023262caf5f51d43960c5acc83d",
+      "reference_occurrences": 0,
+      "missing_count": 0
+    },
+    {
+      "path": "fourth-seven-rows-interpretation.json",
+      "bytes": 139128,
+      "sha256": "fe3225123ace3aacd6781278b370a687e54dcabe777e7feb7bab1d2bef63128a",
+      "blob": "203d8eab0dd003f272c09f962e16ca9505da4f2a",
+      "reference_occurrences": 0,
+      "missing_count": 0
+    },
+    {
+      "path": "fourth-seven-rows-root-review.json",
+      "bytes": 12015,
+      "sha256": "f79942be68fc002f383345d448f0a2721657f0315b6fa93f0f0d529e25398e92",
+      "blob": "2b4ed0d5e11cef3cc1380599c5027755dd9dd538",
+      "reference_occurrences": 0,
+      "missing_count": 0
+    },
+    {
+      "path": "FOURTH_SEVEN_ROWS_SCOPE.zh-CN.md",
+      "bytes": 9988,
+      "sha256": "caaa4eb52a1648c92a3f21bb778ece006d9157fb1ff1af8a4aa3e989b2a41e2c",
+      "blob": "757c46a9db648552e12a9ce944b81ae862efba9e",
+      "reference_occurrences": 0,
+      "missing_count": 0
+    },
+    {
+      "path": "fourth-seven-rows-missing-evidence.json",
+      "bytes": 145618,
+      "sha256": "626391a3932d1cafa2209d7a367bdb002b4beba652b5a006a45933e463b78059",
+      "blob": "6f8f5bbc43a627f280766457ccdae46cef93a9c9",
+      "reference_occurrences": 0,
+      "missing_count": 0
+    },
+    {
+      "path": "fourth-original-archive-projection-inputs.json",
+      "bytes": 124022,
+      "sha256": "a190becad3e6752481cc24eed8824c3008f2fca250ac56f231574fcdc3ad021b",
+      "blob": "68a2fda31908f5f4f35384b4b2facd52096b19fb",
+      "reference_occurrences": 0,
+      "missing_count": 0
+    },
+    {
+      "path": "fourth-pr-current-delta.json",
+      "bytes": 6384,
+      "sha256": "e56a45e07b7a7482629ccf9c35f3a681947b966d130476ae20faf369b6a2e169",
+      "blob": "3e8145f2620fad6f365486feaec3e8026d317c09",
+      "reference_occurrences": 0,
+      "missing_count": 0
+    },
+    {
+      "path": "fourth-pr-delta-root-review.json",
+      "bytes": 9239,
+      "sha256": "fe8ec8ddc57da6f2836b7790e3ecff69d32eae6b6ba7514b90d729151366eb5b",
+      "blob": "594963102c79ce9baa49fd6965bdde50841db16a",
+      "reference_occurrences": 0,
+      "missing_count": 0
+    },
+    {
+      "path": "fourth-ui-original-root-review.json",
+      "bytes": 63730,
+      "sha256": "a22c06366b365f206947a9dc11cca7219bb8d38c6e24580af49ad21a7492ea12",
+      "blob": "04893bac43873bd7b891878d998c9f1426de1c39",
+      "reference_occurrences": 0,
+      "missing_count": 0
+    },
+    {
+      "path": "fourth-original-platform-failures.json",
+      "bytes": 182560,
+      "sha256": "989019e16bb816cdc719fcffe16c148822e622ad7c6918faf64e9008c1c5f101",
+      "blob": "36920461da0727915efb9e0735377d3d0021f8d7",
+      "reference_occurrences": 0,
+      "missing_count": 0
+    },
+    {
+      "path": "fourth-b16-r2c-v3-manifest.json",
+      "bytes": 18526,
+      "sha256": "270829e249f71389e6a1c60c2e0e4e0735a685da9c1ce88e77ffd87ffe270b68",
+      "blob": "a33a305d001eed9b2aa2a3d3c916dfd5a9924a47",
+      "reference_occurrences": 0,
+      "missing_count": 0
+    },
+    {
+      "path": "fourth-b16-r2c-v3-independent.json",
+      "bytes": 1752,
+      "sha256": "cbe664ca2afc12d07f596618ba883e46be6d011ad04d37c3077def76b9931112",
+      "blob": "9d20afa6d9f5702a107365351515ad465365c7a8",
+      "reference_occurrences": 0,
+      "missing_count": 0
+    },
+    {
+      "path": "fourth-b16-r2d-manifest.json",
+      "bytes": 21208,
+      "sha256": "523b51882e7e108fbb5a17b6f4f51c3c8891de2dacc6df82b0e23deb4f188a2c",
+      "blob": "526fa18835b0502fd388660ded3884a61fb5a456",
+      "reference_occurrences": 0,
+      "missing_count": 0
+    },
+    {
+      "path": "fourth-b16-r2d-root-review.json",
+      "bytes": 6642,
+      "sha256": "5e8e26dbeb599996669a829976ea1f0665355815bca99e59823d31284b4478ca",
+      "blob": "a099a878d68d04418d0f99374ee1810496112592",
+      "reference_occurrences": 0,
+      "missing_count": 0
+    },
+    {
+      "path": "fourth-b16-r2e1-manifest.json",
+      "bytes": 20429,
+      "sha256": "379e4905b171cb1b2f95ee593971ac080a3fbcf2e189e2c27ff0e04e13167958",
+      "blob": "3220fc3785f01b45e77a49e71b1d549fd0faea22",
+      "reference_occurrences": 0,
+      "missing_count": 0
+    },
+    {
+      "path": "fourth-b16-r2e1-root-review.json",
+      "bytes": 11107,
+      "sha256": "26097aa9170738b506bc13caba2558498d9ae8365f7b9cd78e7c782952f46f72",
+      "blob": "2bfb479e769bde5949f5c65f3064d71107ef5e13",
+      "reference_occurrences": 0,
+      "missing_count": 0
+    },
+    {
+      "path": "fourth-b16-r2e2a-manifest.json",
+      "bytes": 11542,
+      "sha256": "1f93de7cea300e1daf41b3bf4ed2dfc7ba21c4ce20bc762545fa38129616f3be",
+      "blob": "2fccd651a28b485348aeb8073079663870b4c771",
+      "reference_occurrences": 0,
+      "missing_count": 0
+    },
+    {
+      "path": "fourth-b16-r2e2b-manifest.json",
+      "bytes": 11347,
+      "sha256": "af2b89c8e6c5e6927a05ee471f40a117d1890bb75c9062cfb6b074c0022eac2b",
+      "blob": "ba53d728a0b893e990fead60055707f84821fc7b",
+      "reference_occurrences": 0,
+      "missing_count": 0
+    },
+    {
+      "path": "fourth-b16-r2e2-root-review.json",
+      "bytes": 11267,
+      "sha256": "561e7cd88b849849525e3639ac0e158b80b5e058256b5b10f51ab9583eda78aa",
+      "blob": "8c59cfa509181bc50526f590d8de8b50caf7eb21",
+      "reference_occurrences": 0,
+      "missing_count": 0
+    },
+    {
+      "path": "fourth-bash-no-rc-native-root-review.json",
+      "bytes": 17135,
+      "sha256": "a1eb4b80e2f5bf83e99597db39e675668ed858cf88f68dc5fe0a812021e6471d",
+      "blob": "64bc0c6cb27f8cb54cd21f9d7c8f0cf6dd06a2dd",
+      "reference_occurrences": 0,
+      "missing_count": 0
+    },
+    {
+      "path": "fourth-b16-r2e3-root-review.json",
+      "bytes": 12889,
+      "sha256": "ec1c3d747f8db846945b9110de46c951bfb9827d3c937ab9314d3e3f997c5b0f",
+      "blob": "1b12bd357ac49c29f5eb34310c3ce2f2a1e8b2d0",
+      "reference_occurrences": 0,
+      "missing_count": 0
+    },
+    {
+      "path": "fourth-bash-primary-root-review.json",
+      "bytes": 1863,
+      "sha256": "6ef9ddaed89483487f2690a1c6e8782b43f66cf39843530a9203de4ab2b45d11",
+      "blob": "f26b7d722684a2241ba746d19df598edbb1c0175",
+      "reference_occurrences": 0,
+      "missing_count": 0
+    },
+    {
+      "path": "fourth-bash-no-rc-valid-negative.json",
+      "bytes": 105832,
+      "sha256": "1e20f77fd0d50e911201e6352fe809bd557c8a86d51a97104d3034cecee5b965",
+      "blob": "93d21dd2555e4e43170b9ee9e29239ca3e6a9183",
+      "reference_occurrences": 2,
+      "missing_count": 0
+    },
+    {
+      "path": "fourth-four-fixtures-13-native.json",
+      "bytes": 167654,
+      "sha256": "2630f7d60fb28a5c0bafef984501e27b38f6cdf3e9dabbda85571f984fedab9b",
+      "blob": "f488fe2819ce0e63fad7dbae5f8386b9e4aac99f",
+      "reference_occurrences": 2,
+      "missing_count": 0
+    },
+    {
+      "path": "fourth-bash-primary.json",
+      "bytes": 8177,
+      "sha256": "a537a09b1213a5a10f66b50ae6498dab4c54ca813fc8cbfb862a529382cf0753",
+      "blob": "a9a61bb9fd038e782254f68abd3f30d8db358c10",
+      "reference_occurrences": 0,
+      "missing_count": 0
+    },
+    {
+      "path": "FOURTH_BASH_STARTUP_SOURCE.zh-CN.md",
+      "bytes": 2776,
+      "sha256": "046cfaed5243c8e06b9f0a93e811876467ed151eb61d998f8e72a9da6be6d50f",
+      "blob": "74f8f44bd4ab90b9f1045c7b3528d6da80f56c4a",
+      "reference_occurrences": 0,
+      "missing_count": 0
+    },
+    {
+      "path": "fourth-b16-r2e3-manifest.json",
+      "bytes": 32260,
+      "sha256": "4be47d9aed988921e470b86dadec21a5dc6fda65061ce3f2fd4649afb6d37b23",
+      "blob": "6985c5154f8f6c7ae42f94fd4d569dc6a1dab3b2",
+      "reference_occurrences": 0,
+      "missing_count": 0
+    },
+    {
+      "path": "fourth-b16-r2e3-scope-independent.json",
+      "bytes": 6768,
+      "sha256": "df1c5531853a3b9fc1f78dd882d759ee5c10e030e6f06626c0895ee6d7fc2985",
+      "blob": "2cc31c4e2e812294ef1523ebd8d96edfe63ca8ed",
+      "reference_occurrences": 0,
+      "missing_count": 0
+    },
+    {
+      "path": "fourth-helper-c270-complete.json",
+      "bytes": 14689,
+      "sha256": "f28c6b8014a2a21f765c5a12bb36c2d5d6526f164893fb3ec76eded4940fc9d3",
+      "blob": "6bb153fb2905dc9664d212893c2f87015e8c81dd",
+      "reference_occurrences": 0,
+      "missing_count": 0
+    },
+    {
+      "path": "fourth-complete-inventory.json",
+      "bytes": 3333,
+      "sha256": "a8188b52de2629a29b058af72386b8dfbb364b1017dbbaa5b2e4f002bf86074b",
+      "blob": "b957953fefebbf1ee547d24739cbc40db709b7c8",
+      "reference_occurrences": 0,
+      "missing_count": 0
+    },
+    {
+      "path": "THIRD_AUDIT_PROGRESS.zh-CN.md",
+      "bytes": 31030,
+      "sha256": "e41c79425f2a24771cd25ae801fc2d290063248378334a254bbcf8eef5052731",
+      "blob": "2c9508848fea72d796fd6ab7df5202f20323a471",
+      "reference_occurrences": 1,
+      "missing_count": 0
+    },
+    {
+      "path": "fourth-research-current-delta.json",
+      "bytes": 24825,
+      "sha256": "2bc5fb655e5e055dc4d23bb55df5af2aadfd6cc47e8096c936144fe047c21429",
+      "blob": "79677c0b8cba68a3d22c08de5542490bb0fedfae",
+      "reference_occurrences": 3,
+      "missing_count": 0
+    },
+    {
+      "path": "FOURTH_RESEARCH_DELTA.zh-CN.md",
+      "bytes": 3873,
+      "sha256": "21ea8751a58ed9ff607e26580ebf0bed4efc14595071752affd3610724291967",
+      "blob": "18169aea1de696df4b4bd6ea32bb44a61ced0d64",
+      "reference_occurrences": 0,
+      "missing_count": 0
+    },
+    {
+      "path": "fourth-research-original-api.json",
+      "bytes": 288339,
+      "sha256": "03ea0c46a985f45ccdbb7e944bd48f117ee9df32ad91dede7d0cbb46517dbfd5",
+      "blob": "24e7a368a0614410aa3618f5dcbc7afbfac89710",
+      "reference_occurrences": 11,
+      "missing_count": 0
+    },
+    {
+      "path": "fourth-literal-approval-manifest.json",
+      "bytes": 43245,
+      "sha256": "6800143e499c7169e2bb6115adf2daade486c6c56615b4d75a76c2758b131aa8",
+      "blob": "7b25405ed36e2d16edfd18f2d53becb8f5d11698",
+      "reference_occurrences": 0,
+      "missing_count": 0
+    },
+    {
+      "path": "fourth-literal-approval-root-review.json",
+      "bytes": 6525,
+      "sha256": "7e6d9041c87c6f79963e7f1449f5c3ef2e20f7a0b75d8761317399d1f98a7a3b",
+      "blob": "709aa9067a6412c813f51e613cb366b0540adaa8",
+      "reference_occurrences": 0,
+      "missing_count": 0
+    },
+    {
+      "path": "fourth-literal-approval-native-guard.json",
+      "bytes": 11314,
+      "sha256": "2c5deaf8599c8dbec4837e7bbc5d81055f4ec3e19ff3f3e9d85eac86b958edb0",
+      "blob": "444087077958019ce36a86927fa90c5309989d66",
+      "reference_occurrences": 0,
+      "missing_count": 0
+    },
+    {
+      "path": "FOURTH_REPORT_REVIEW_CHECKPOINT.zh-CN.md",
+      "bytes": 24378,
+      "sha256": "c1bc9fad0eea6de4d90a6f7ab8b03b790320d3afbf701ed93497c3a96be00e70",
+      "blob": "92cb65326b5b2ec3ab91880da7129cdbcbe1e450",
+      "reference_occurrences": 0,
+      "missing_count": 0
+    },
+    {
+      "path": "fourth-blockers-review-checkpoint.json",
+      "bytes": 20205,
+      "sha256": "95f7728ef3af11765b0b585f1090114afac4e3be9649a79a6f102b9171e76da3",
+      "blob": "31925dfb9862daa65eb494209415dc6bf15f1698",
+      "reference_occurrences": 0,
+      "missing_count": 0
+    },
+    {
+      "path": "fourth-research-api-root-review.json",
+      "bytes": 12195,
+      "sha256": "49eb6b6002229e44a4ab061c8bbdbbede877ce01313215f2cb2438a1888813de",
+      "blob": "465841db3a3e3110f87426c287a82fa7d3e6c8dc",
+      "reference_occurrences": 0,
+      "missing_count": 0
+    },
+    {
+      "path": "fourth-literal-approval-original25-native.json",
+      "bytes": 240289,
+      "sha256": "b4020bf981dff4fb003643ea2b717d233a951fa7b05c9f4203059109cbeb09e8",
+      "blob": "b9f330b300a82abefad7d680eee331876d80305d",
+      "reference_occurrences": 2,
+      "missing_count": 0
+    },
+    {
+      "path": "fourth-literal-approval-native-root-review.json",
+      "bytes": 31404,
+      "sha256": "1d3875454239403ddd37d1fb5514067d72f01b59a6355c131a75ae6f65ed4169",
+      "blob": "6266148d903085ee8151831168548b9d68be05bb",
+      "reference_occurrences": 2,
+      "missing_count": 0
+    },
+    {
+      "path": "fourth-f825-owning7-guard.json",
+      "bytes": 3004,
+      "sha256": "48dda4cc176b28eec55d69b54f456084f4f505523c50a7cadf68c2375d0f0ea1",
+      "blob": "4127593f2824adb31df38f8b9737ed566e35f6cf",
+      "reference_occurrences": 0,
+      "missing_count": 0
+    },
+    {
+      "path": "fourth-report-independent-review.json",
+      "bytes": 16380,
+      "sha256": "e2c4367570090fa462df4137b9dd88ad2068aa275a2fee5afacf1e2adf02fee1",
+      "blob": "cd0ac10e3f4870bd0b5f06cef4137b0783eb1f37",
+      "reference_occurrences": 0,
+      "missing_count": 0
+    },
+    {
+      "path": "fourth-literal-approval-native-author-review.json",
+      "bytes": 13926,
+      "sha256": "35640975e4ada446372013b4ce0240a298a933695ee822f49e96f030e2a81653",
+      "blob": "b67bcaf89e528728a03a35bb38a002502347cde2",
+      "reference_occurrences": 0,
+      "missing_count": 0
+    },
+    {
+      "path": "fourth-b16-pre-registration-custody.json",
+      "bytes": 38399,
+      "sha256": "8196dd779711c25cfdf125cd04bb1cdb60d825f7874e411fc55b1dfe35b42fd1",
+      "blob": "da59ec79283bd997502cd57590ce416ca4e4851c",
+      "reference_occurrences": 0,
+      "missing_count": 0
+    },
+    {
+      "path": "FOURTH_B16_PRE_REGISTRATION_CUSTODY.zh-CN.md",
+      "bytes": 6858,
+      "sha256": "3445bb7380a544aeefab72400b15e35ff6eed6c4ce2d71378940441fe04a5d71",
+      "blob": "6d77b14be65d876a04b7df4be15066fddce38b73",
+      "reference_occurrences": 0,
+      "missing_count": 0
+    },
+    {
+      "path": "fourth-b16-pre-registration-sources.json",
+      "bytes": 7038,
+      "sha256": "c4c8cd90a296566f7c77287d27031823dbfbadb3d00ef066711b32c959074946",
+      "blob": "cbd90475e362945032b3ad94046f8bc3220550c7",
+      "reference_occurrences": 0,
+      "missing_count": 0
+    },
+    {
+      "path": "fourth-helper-c270-root-completion.json",
+      "bytes": 3459,
+      "sha256": "887321088ea6f086e0952a60b4e321bd34b869c689f6da69f6bb9c9cbfacb08a",
+      "blob": "86ebca03ab8a17f43eaa32416fed8212c72f1991",
+      "reference_occurrences": 0,
+      "missing_count": 0
+    },
+    {
+      "path": "fourth-b16-pre-registration-root-review.json",
+      "bytes": 5558,
+      "sha256": "28ff1a6f750e0c832c5c6e8de38fbd1cbe3de512dc367631f0d97ba5c30b2991",
+      "blob": "6d891f49fce364fe886d3aa357ec66c3c4150795",
+      "reference_occurrences": 0,
+      "missing_count": 0
+    },
+    {
+      "path": "b16-proposals/r2e1/interface-contract.json",
+      "bytes": 8001,
+      "sha256": "569617248028b93e28ad31eb34d0581327771433a3ac1736eb11c0522bfb1823",
+      "blob": "5b901bc677cea3b3af687bc709f10349ad604372",
+      "reference_occurrences": 0,
+      "missing_count": 0
+    },
+    {
+      "path": "b16-proposals/r2e2a/superseded/manifest-draft.json",
+      "bytes": 11233,
+      "sha256": "5c44961a8b9411873fe33cab754c94cb7c63a2d41f5ed125ef1cd2da55ef5d65",
+      "blob": "18e884793c669f4a533aea76bfdf0c28806b39be",
+      "reference_occurrences": 0,
+      "missing_count": 0
+    },
+    {
+      "path": "fourth-b16-proposal-archive-inventory.json",
+      "bytes": 44850,
+      "sha256": "e50ce0e46341f2412486d67841cbbbebec7e7679c84a7f5edcd29d680c836bf8",
+      "blob": "6c18f51db52ef2839df461de8dcf6c4b8fe0a778",
+      "reference_occurrences": 0,
+      "missing_count": 0
+    },
+    {
+      "path": "fourth-b16-proposal-verified-archive-rows.json",
+      "bytes": 31955,
+      "sha256": "2603fc08c9b990bb19ac99f64d653bee10b4447993906a68766d1dc576a78a16",
+      "blob": "36a3b3ca37db0431233fe81c8592babb32908952",
+      "reference_occurrences": 0,
+      "missing_count": 0
+    },
+    {
+      "path": "fourth-b16-proposal-body-verification.json",
+      "bytes": 85398,
+      "sha256": "3e13633c7e4f814e190482eda9691e7f95018ffb9758c961f145ef8e81e14dda",
+      "blob": "1ab4a196344f5edc7e27aa7e37680fc92f6d7015",
+      "reference_occurrences": 0,
+      "missing_count": 0
+    },
+    {
+      "path": "fourth-b16-proposal-reference-coverage.json",
+      "bytes": 82042,
+      "sha256": "43deaa8fc9ff36dc29524085cd78d3161d49efefae1670fe1eafe4562226b568",
+      "blob": "4f76458c43d630fd10ba0a3ec2de76840c9cb10b",
+      "reference_occurrences": 0,
+      "missing_count": 0
+    },
+    {
+      "path": "fourth-f825-owning8-failures.json",
+      "bytes": 9354,
+      "sha256": "e5d1e3e12e34739bd62efb0c7a9df98d7ff495e2a6c8508d58f764e6a743ead1",
+      "blob": "306b27bc52bb8d6246711235ee85e30467c1acc7",
+      "reference_occurrences": 0,
+      "missing_count": 0
+    },
+    {
+      "path": "fourth-f825-owning8-root-review.json",
+      "bytes": 8020,
+      "sha256": "f4c21ecaacd36989ddee11143932205c5e5697625d5a7a2ba9877f3f2d5e7dfe",
+      "blob": "9dbc7f2c39bbcc523c3bc5718873c5364b697be7",
+      "reference_occurrences": 0,
+      "missing_count": 0
+    },
+    {
+      "path": "fourth-f825-full-workspace-guard.json",
+      "bytes": 4185,
+      "sha256": "cef2634b7e8b6524faf552cdc5fd20424c56a22208e94e8263063ed5cfa96a8c",
+      "blob": "3512e07b1b1b23163085ef83b2869cf3340ea555",
+      "reference_occurrences": 0,
+      "missing_count": 0
+    },
+    {
+      "path": "fourth-b16-serial-plan.json",
+      "bytes": 40856,
+      "sha256": "359719619e261bbfa0639a0435d9ef38c32ebcc0de66d25c5c5ad1387bd67047",
+      "blob": "a46fdc65f78295bfb041732aeb03b1937f85eab9",
+      "reference_occurrences": 0,
+      "missing_count": 0
+    },
+    {
+      "path": "FOURTH_B16_SERIAL_PLAN.zh-CN.md",
+      "bytes": 6454,
+      "sha256": "c7c4b0eaf0337a8b2a8c58fe93f243dc1b5cf20261abb95d268cd7a046378db6",
+      "blob": "2e86a5ce5d8f5bdf43862ccab382176208de6e30",
+      "reference_occurrences": 0,
+      "missing_count": 0
+    },
+    {
+      "path": "fourth-b16-serial-roundtrip.json",
+      "bytes": 53367,
+      "sha256": "933a2976b2ad12b6eed350b41d1243d9941a04f0fe8b6730045ff288a7861dc7",
+      "blob": "8e41007fab486df67c0d8b34442b2b8b4a999bd3",
+      "reference_occurrences": 0,
+      "missing_count": 0
+    }
+  ],
+  "scope_limits": [
+    "Original registry, scanner and raw evidence were not edited",
+    "This is exact-rule static projection, not execution of the complete development docs gate",
+    "Later registry/source/report changes need delta inspection before the actual original docs gate",
+    "No current invalid reference was hidden; all three occurrences point into explicit other-PR run snapshots and preserve those fixed head/run identities"
+  ]
+}

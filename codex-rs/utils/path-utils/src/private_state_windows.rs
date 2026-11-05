@@ -83,6 +83,17 @@ use creation_security::with_private_security;
 
 #[path = "private_state_windows_directory.rs"]
 mod directory;
+pub use directory::canonical_existing_path_without_reparse;
+
+#[path = "private_state_windows_recovery.rs"]
+mod recovery;
+pub use recovery::PrivateStateSnapshot;
+pub use recovery::create_new_private_state_child;
+pub use recovery::open_existing_private_state_directory;
+pub use recovery::open_existing_private_state_directory_for_sync;
+pub use recovery::open_frozen_private_state_child;
+pub use recovery::private_state_directory_snapshot;
+pub use recovery::private_state_file_snapshot;
 
 const ACCESS_ALLOWED_ACE_TYPE: u8 = 0;
 const ACCESS_DENIED_ACE_TYPE: u8 = 1;
@@ -102,6 +113,17 @@ pub enum PrivateFileAccess {
 /// Creates or opens a retained private-state directory.
 pub fn open_private_state_directory(root: &Path) -> io::Result<File> {
     let directory = directory::open(root)?;
+    validate_handle(&directory, HandleKind::Directory)?;
+    Ok(directory)
+}
+
+/// Creates one new retained private-state directory with its private descriptor.
+///
+/// An occupied leaf returns `AlreadyExists`; existing state is never adopted,
+/// re-owned, or re-permissioned. Acquisition rejects reparse traversal before
+/// creating the leaf and validates the exact returned handle.
+pub fn create_new_private_state_directory(root: &Path) -> io::Result<File> {
+    let directory = directory::create_new(root)?;
     validate_handle(&directory, HandleKind::Directory)?;
     Ok(directory)
 }

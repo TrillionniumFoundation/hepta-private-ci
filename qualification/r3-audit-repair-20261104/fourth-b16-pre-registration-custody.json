@@ -1,0 +1,749 @@
+{
+  "schema": "hepta_b16_sqlx_pre_registration_custody_feasibility_v1",
+  "prepared_at_utc_date": "2026-11-05",
+  "status": "EXISTING_PUBLIC_API_GAP_CONFIRMED_STATIC_REMAINS_OPEN",
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "request_constraints": {
+    "no_dependency_fork": "No fork was performed in that investigation; not a permanent prohibition.",
+    "no_privilege_expansion": true,
+    "no_native_or_shared_worktree_or_ref_mutation": true,
+    "no_store_arc_or_post_registration_hook_claimed_as_full_custody": true,
+    "no_unbounded_background_task_workaround": true,
+    "applies_to": "completed public-API investigation phase"
+  },
+  "verdict": {
+    "existing_conventional_public_api_sufficient": false,
+    "claim_scope": "This is a source-level conclusion about the pinned SQLx SqliteConnectOptions/SqliteConnection/SqlitePool APIs and the current private-pool design. It is not a claim that arbitrary new VFS/driver/process architectures are mathematically impossible.",
+    "reason": "No public entry transfers the application custody object into the actual native worker or ConnectionHandle before sqlite3_open_v2. Current available registration hooks execute after native open and initial PRAGMAs.",
+    "current_r2e3_scope_unchanged": "Registered-connection Btree/WAL/descriptor custody remains a separately reviewable bounded proposal. Its pre-registration initialization fence gap is not closed by this report.",
+    "no_production_patch": "No source patch, dependency edit, fabricated DTO, default-true gate, authority credential, signature, or global unsafe callback was created to bypass this gap."
+  },
+  "dependency_identity": {
+    "project_sources": [
+      {
+        "name": "cargo_lock",
+        "repo": "TrillionniumFoundation/hepta-private-ci",
+        "path": "codex-rs/Cargo.lock",
+        "blob": "71fc8fa78b5afa076835b29790a5e6b0bd772558",
+        "bytes": 413768,
+        "sha256": "4a7a5535cf045089458468411e126b5f59bc6bbf34fc0deead9b0c1b8d84000a"
+      },
+      {
+        "name": "workspace_cargo",
+        "repo": "TrillionniumFoundation/hepta-private-ci",
+        "path": "codex-rs/Cargo.toml",
+        "blob": "4713741651affd053bb8ae5aa8b5d76831c15c0e",
+        "bytes": 22548,
+        "sha256": "5e19cb310c4bcabc082619d64a028358d5d629e26c179fb38a00432be8f54a6a"
+      },
+      {
+        "name": "state_cargo",
+        "repo": "TrillionniumFoundation/hepta-private-ci",
+        "path": "codex-rs/state/Cargo.toml",
+        "blob": "02cb82d778fc02859a42c0658597799ad00f5559",
+        "bytes": 1080,
+        "sha256": "4f23f906aa42996fd57abb8c5e725b369ae01432ef90fcdd5cd370117699ac20"
+      }
+    ],
+    "locked_packages": [
+      {
+        "name": "sqlx",
+        "version": "0.9.0",
+        "checksum": "378620ccc25c62c89d8be1c819e76a88d59bdcc3304733330788948e619bfd71"
+      },
+      {
+        "name": "sqlx-core",
+        "version": "0.9.0",
+        "checksum": "05b44e85bf579a8eeb4ceaa77a3a523baf2bf0e9bac7e40f405d537b5d2d5ccb"
+      },
+      {
+        "name": "sqlx-sqlite",
+        "version": "0.9.0",
+        "checksum": "488e99c397a62007e4229aec669a179816339afc6d2620ca6fa420dbee2e982c"
+      },
+      {
+        "name": "libsqlite3-sys",
+        "version": "0.37.0",
+        "checksum": "b1f111c8c41e7c61a49cd34e44c7619462967221a6443b0ec299e0ac30cfb9b1"
+      }
+    ],
+    "upstream_release_ref": {
+      "repository": "transact-rs/sqlx",
+      "tag": "v0.9.0",
+      "object_type": "commit",
+      "commit": "75bc0487eb661da811bb7a3c5d158f1bd463fef4",
+      "url": "https://api.github.com/repos/transact-rs/sqlx/git/ref/tags/v0.9.0"
+    },
+    "declared_sqlite_feature": "sqlite-bundled",
+    "source_identity_limit": "The 0.9.0 tag was resolved directly and all listed Git blobs were checked against exact UTF-8 byte hashes. The registry .crate archives/native cache were not independently extracted in this read-only pass; two docs.rs VCS-info lookups were inaccessible and are not evidence.",
+    "native_runtime_version_limit": "No host Python/system SQLite version is substituted for the actual SQLx runtime. The pending R2c V3 real pool SELECT sqlite_version() observation remains its own gate."
+  },
+  "phase_order": [
+    {
+      "phase": 1,
+      "owner": "application/options/pool",
+      "action": "Build ConnectOptions and PoolOptions; any captured callback custody is still outside native worker ownership."
+    },
+    {
+      "phase": 2,
+      "owner": "EstablishParams",
+      "action": "Copy ordinary options; evaluate thread_name to String; no guard/collation capture is retained."
+    },
+    {
+      "phase": 3,
+      "owner": "dedicated std thread",
+      "action": "Move EstablishParams into worker, call native sqlite3_open_v2, configure native state and send establishment result."
+    },
+    {
+      "phase": 4,
+      "owner": "SQLx connect future and worker",
+      "action": "Execute initial PRAGMAs via worker; cancellation can drop the future while a native operation/cleanup continues."
+    },
+    {
+      "phase": 5,
+      "owner": "SqliteConnectOptions::connect",
+      "action": "Register options collations after PRAGMAs."
+    },
+    {
+      "phase": 6,
+      "owner": "pool after_connect",
+      "action": "Run the current application's commit-hook/custody installation and optional checkout coordination."
+    }
+  ],
+  "public_api_matrix": [
+    {
+      "entry": "SqliteConnectOptions::collation",
+      "result": "TOO_LATE_FOR_OPEN_AND_INITIAL_PRAGMA",
+      "facts": "The public options carry an Arc-backed collation closure, but the closure is not copied into EstablishParams. The driver first awaits establish and executes its initial PRAGMAs, then registers option collations.",
+      "anchors": [
+        {
+          "repository": "transact-rs/sqlx",
+          "commit": "75bc0487eb661da811bb7a3c5d158f1bd463fef4",
+          "path": "sqlx-sqlite/src/options/mod.rs",
+          "blob": "0cafc4d08c4c63c342685fedbcc43222dd38d2f1",
+          "lines": [
+            83,
+            95
+          ],
+          "url": "https://github.com/transact-rs/sqlx/blob/75bc0487eb661da811bb7a3c5d158f1bd463fef4/sqlx-sqlite/src/options/mod.rs#L83-L95"
+        },
+        {
+          "repository": "transact-rs/sqlx",
+          "commit": "75bc0487eb661da811bb7a3c5d158f1bd463fef4",
+          "path": "sqlx-sqlite/src/connection/establish.rs",
+          "blob": "cedf752e6adef404b6f7d537f521045cb8342b5a",
+          "lines": [
+            26,
+            38
+          ],
+          "url": "https://github.com/transact-rs/sqlx/blob/75bc0487eb661da811bb7a3c5d158f1bd463fef4/sqlx-sqlite/src/connection/establish.rs#L26-L38"
+        },
+        {
+          "repository": "transact-rs/sqlx",
+          "commit": "75bc0487eb661da811bb7a3c5d158f1bd463fef4",
+          "path": "sqlx-sqlite/src/connection/establish.rs",
+          "blob": "cedf752e6adef404b6f7d537f521045cb8342b5a",
+          "lines": [
+            144,
+            156
+          ],
+          "url": "https://github.com/transact-rs/sqlx/blob/75bc0487eb661da811bb7a3c5d158f1bd463fef4/sqlx-sqlite/src/connection/establish.rs#L144-L156"
+        },
+        {
+          "repository": "transact-rs/sqlx",
+          "commit": "75bc0487eb661da811bb7a3c5d158f1bd463fef4",
+          "path": "sqlx-sqlite/src/options/connect.rs",
+          "blob": "cfa25872b2c118cc955ac4e2f9cfb64e19e4a0ee",
+          "lines": [
+            32,
+            49
+          ],
+          "url": "https://github.com/transact-rs/sqlx/blob/75bc0487eb661da811bb7a3c5d158f1bd463fef4/sqlx-sqlite/src/options/connect.rs#L32-L49"
+        },
+        {
+          "repository": "transact-rs/sqlx",
+          "commit": "75bc0487eb661da811bb7a3c5d158f1bd463fef4",
+          "path": "sqlx-sqlite/src/connection/collation.rs",
+          "blob": "229e780adfbdb34ac117cf279e11b70a79a491fc",
+          "lines": [
+            13,
+            26
+          ],
+          "url": "https://github.com/transact-rs/sqlx/blob/75bc0487eb661da811bb7a3c5d158f1bd463fef4/sqlx-sqlite/src/connection/collation.rs#L13-L26"
+        }
+      ]
+    },
+    {
+      "entry": "SqlitePoolOptions::after_connect / before_acquire",
+      "result": "TOO_LATE_OR_NOT_CALLED_FOR_NEW_CONNECTION",
+      "facts": "after_connect receives only a successfully initialized SqliteConnection. before_acquire concerns an existing pooled connection; it cannot supply ownership to the native opening worker. R2e3 remains registration-bounded.",
+      "anchors": [
+        {
+          "repository": "transact-rs/sqlx",
+          "commit": "75bc0487eb661da811bb7a3c5d158f1bd463fef4",
+          "path": "sqlx-core/src/pool/inner.rs",
+          "blob": "b698dc9df07fdd763f6b15a171b7b545c6898696",
+          "lines": [
+            350,
+            370
+          ],
+          "url": "https://github.com/transact-rs/sqlx/blob/75bc0487eb661da811bb7a3c5d158f1bd463fef4/sqlx-core/src/pool/inner.rs#L350-L370"
+        },
+        {
+          "repository": "transact-rs/sqlx",
+          "commit": "75bc0487eb661da811bb7a3c5d158f1bd463fef4",
+          "path": "sqlx-core/src/pool/options.rs",
+          "blob": "3d048f179514e992f478f0f854563fad7c0e41dd",
+          "lines": [
+            399,
+            410
+          ],
+          "url": "https://github.com/transact-rs/sqlx/blob/75bc0487eb661da811bb7a3c5d158f1bd463fef4/sqlx-core/src/pool/options.rs#L399-L410"
+        }
+      ]
+    },
+    {
+      "entry": "SqliteConnectOptions::thread_name",
+      "result": "DOES_NOT_TRANSFER_CAPTURE_TO_WORKER",
+      "facts": "The callback is evaluated synchronously in EstablishParams::from_options. Only its returned String, not the callback or captured custody, enters the worker.",
+      "anchors": [
+        {
+          "repository": "transact-rs/sqlx",
+          "commit": "75bc0487eb661da811bb7a3c5d158f1bd463fef4",
+          "path": "sqlx-sqlite/src/options/mod.rs",
+          "blob": "0cafc4d08c4c63c342685fedbcc43222dd38d2f1",
+          "lines": [
+            431,
+            439
+          ],
+          "url": "https://github.com/transact-rs/sqlx/blob/75bc0487eb661da811bb7a3c5d158f1bd463fef4/sqlx-sqlite/src/options/mod.rs#L431-L439"
+        },
+        {
+          "repository": "transact-rs/sqlx",
+          "commit": "75bc0487eb661da811bb7a3c5d158f1bd463fef4",
+          "path": "sqlx-sqlite/src/connection/establish.rs",
+          "blob": "cedf752e6adef404b6f7d537f521045cb8342b5a",
+          "lines": [
+            142,
+            155
+          ],
+          "url": "https://github.com/transact-rs/sqlx/blob/75bc0487eb661da811bb7a3c5d158f1bd463fef4/sqlx-sqlite/src/connection/establish.rs#L142-L155"
+        },
+        {
+          "repository": "transact-rs/sqlx",
+          "commit": "75bc0487eb661da811bb7a3c5d158f1bd463fef4",
+          "path": "sqlx-sqlite/src/connection/worker.rs",
+          "blob": "2585dc1312210d9eb18c15f6df1158656d3c6b2c",
+          "lines": [
+            105,
+            119
+          ],
+          "url": "https://github.com/transact-rs/sqlx/blob/75bc0487eb661da811bb7a3c5d158f1bd463fef4/sqlx-sqlite/src/connection/worker.rs#L105-L119"
+        }
+      ]
+    },
+    {
+      "entry": "SqliteConnection::lock_handle / LockedSqliteHandle::as_raw_handle",
+      "result": "REQUIRES_ALREADY_ESTABLISHED_CONNECTION",
+      "facts": "The private driver establish routine must finish before application code receives a connection. The exposed locked handle is not a public native-handle adoption constructor and cannot protect the earlier open/PRAGMA interval.",
+      "anchors": [
+        {
+          "repository": "transact-rs/sqlx",
+          "commit": "75bc0487eb661da811bb7a3c5d158f1bd463fef4",
+          "path": "sqlx-sqlite/src/connection/mod.rs",
+          "blob": "218c747143fe80b344bca3405d4b0b38da2bd932",
+          "lines": [
+            184,
+            203
+          ],
+          "url": "https://github.com/transact-rs/sqlx/blob/75bc0487eb661da811bb7a3c5d158f1bd463fef4/sqlx-sqlite/src/connection/mod.rs#L184-L203"
+        },
+        {
+          "repository": "transact-rs/sqlx",
+          "commit": "75bc0487eb661da811bb7a3c5d158f1bd463fef4",
+          "path": "sqlx-sqlite/src/connection/mod.rs",
+          "blob": "218c747143fe80b344bca3405d4b0b38da2bd932",
+          "lines": [
+            356,
+            383
+          ],
+          "url": "https://github.com/transact-rs/sqlx/blob/75bc0487eb661da811bb7a3c5d158f1bd463fef4/sqlx-sqlite/src/connection/mod.rs#L356-L383"
+        },
+        {
+          "repository": "transact-rs/sqlx",
+          "commit": "75bc0487eb661da811bb7a3c5d158f1bd463fef4",
+          "path": "sqlx-sqlite/src/lib.rs",
+          "blob": "17b4bed1ca40f112690011dbc3f38b4585ed1001",
+          "lines": [
+            77,
+            95
+          ],
+          "url": "https://github.com/transact-rs/sqlx/blob/75bc0487eb661da811bb7a3c5d158f1bd463fef4/sqlx-sqlite/src/lib.rs#L77-L95"
+        }
+      ]
+    },
+    {
+      "entry": "SqlitePoolOptions::connect_lazy_with",
+      "result": "DEFERS_OPEN_DOES_NOT_TRANSFER_CUSTODY",
+      "facts": "Lazy construction delegates eventual openings to the same PoolInner connect path; min_connections can also open connections in background maintenance. It cannot establish a per-native-handle ownership contract.",
+      "anchors": [
+        {
+          "repository": "transact-rs/sqlx",
+          "commit": "75bc0487eb661da811bb7a3c5d158f1bd463fef4",
+          "path": "sqlx-core/src/pool/options.rs",
+          "blob": "3d048f179514e992f478f0f854563fad7c0e41dd",
+          "lines": [
+            560,
+            582
+          ],
+          "url": "https://github.com/transact-rs/sqlx/blob/75bc0487eb661da811bb7a3c5d158f1bd463fef4/sqlx-core/src/pool/options.rs#L560-L582"
+        },
+        {
+          "repository": "transact-rs/sqlx",
+          "commit": "75bc0487eb661da811bb7a3c5d158f1bd463fef4",
+          "path": "sqlx-core/src/pool/inner.rs",
+          "blob": "b698dc9df07fdd763f6b15a171b7b545c6898696",
+          "lines": [
+            25,
+            35
+          ],
+          "url": "https://github.com/transact-rs/sqlx/blob/75bc0487eb661da811bb7a3c5d158f1bd463fef4/sqlx-core/src/pool/inner.rs#L25-L35"
+        }
+      ]
+    },
+    {
+      "entry": "Outer application task / store-level Arc / custom timeout",
+      "result": "NOT_A_NATIVE_LIFETIME_PROOF",
+      "facts": "The pool independently applies acquire deadlines around driver connect. That cancellation can occur even if an outer task is intentionally kept alive. A dropped driver future or close_hard does not synchronously join the native worker; retaining an unrelated outer Arc or unbounded background task does not bind the lock to the SQLite handle.",
+      "anchors": [
+        {
+          "repository": "transact-rs/sqlx",
+          "commit": "75bc0487eb661da811bb7a3c5d158f1bd463fef4",
+          "path": "sqlx-core/src/pool/inner.rs",
+          "blob": "b698dc9df07fdd763f6b15a171b7b545c6898696",
+          "lines": [
+            248,
+            297
+          ],
+          "url": "https://github.com/transact-rs/sqlx/blob/75bc0487eb661da811bb7a3c5d158f1bd463fef4/sqlx-core/src/pool/inner.rs#L248-L297"
+        },
+        {
+          "repository": "transact-rs/sqlx",
+          "commit": "75bc0487eb661da811bb7a3c5d158f1bd463fef4",
+          "path": "sqlx-core/src/pool/inner.rs",
+          "blob": "b698dc9df07fdd763f6b15a171b7b545c6898696",
+          "lines": [
+            325,
+            388
+          ],
+          "url": "https://github.com/transact-rs/sqlx/blob/75bc0487eb661da811bb7a3c5d158f1bd463fef4/sqlx-core/src/pool/inner.rs#L325-L388"
+        },
+        {
+          "repository": "transact-rs/sqlx",
+          "commit": "75bc0487eb661da811bb7a3c5d158f1bd463fef4",
+          "path": "sqlx-sqlite/src/connection/mod.rs",
+          "blob": "218c747143fe80b344bca3405d4b0b38da2bd932",
+          "lines": [
+            220,
+            239
+          ],
+          "url": "https://github.com/transact-rs/sqlx/blob/75bc0487eb661da811bb7a3c5d158f1bd463fef4/sqlx-sqlite/src/connection/mod.rs#L220-L239"
+        },
+        {
+          "repository": "transact-rs/sqlx",
+          "commit": "75bc0487eb661da811bb7a3c5d158f1bd463fef4",
+          "path": "sqlx-sqlite/src/connection/worker.rs",
+          "blob": "2585dc1312210d9eb18c15f6df1158656d3c6b2c",
+          "lines": [
+            105,
+            139
+          ],
+          "url": "https://github.com/transact-rs/sqlx/blob/75bc0487eb661da811bb7a3c5d158f1bd463fef4/sqlx-sqlite/src/connection/worker.rs#L105-L139"
+        },
+        {
+          "repository": "transact-rs/sqlx",
+          "commit": "75bc0487eb661da811bb7a3c5d158f1bd463fef4",
+          "path": "sqlx-sqlite/src/connection/worker.rs",
+          "blob": "2585dc1312210d9eb18c15f6df1158656d3c6b2c",
+          "lines": [
+            335,
+            347
+          ],
+          "url": "https://github.com/transact-rs/sqlx/blob/75bc0487eb661da811bb7a3c5d158f1bd463fef4/sqlx-sqlite/src/connection/worker.rs#L335-L347"
+        }
+      ]
+    },
+    {
+      "entry": "Custom ConnectOptions wrapper for existing SqlitePool",
+      "result": "ASSOCIATED_TYPES_FIX_THE_SQLITE_OPTIONS_TYPE",
+      "facts": "ConnectOptions::Connection must itself use that same Options type; SqliteConnection fixes Options=SqliteConnectOptions. A transparent application wrapper cannot be substituted into existing SqlitePool without a new driver/type implementation.",
+      "anchors": [
+        {
+          "repository": "transact-rs/sqlx",
+          "commit": "75bc0487eb661da811bb7a3c5d158f1bd463fef4",
+          "path": "sqlx-core/src/connection.rs",
+          "blob": "b5f8138b2bc1b2a9a82a21b4aa8c65fe0e42934f",
+          "lines": [
+            221,
+            223
+          ],
+          "url": "https://github.com/transact-rs/sqlx/blob/75bc0487eb661da811bb7a3c5d158f1bd463fef4/sqlx-core/src/connection.rs#L221-L223"
+        },
+        {
+          "repository": "transact-rs/sqlx",
+          "commit": "75bc0487eb661da811bb7a3c5d158f1bd463fef4",
+          "path": "sqlx-core/src/connection.rs",
+          "blob": "b5f8138b2bc1b2a9a82a21b4aa8c65fe0e42934f",
+          "lines": [
+            256,
+            259
+          ],
+          "url": "https://github.com/transact-rs/sqlx/blob/75bc0487eb661da811bb7a3c5d158f1bd463fef4/sqlx-core/src/connection.rs#L256-L259"
+        },
+        {
+          "repository": "transact-rs/sqlx",
+          "commit": "75bc0487eb661da811bb7a3c5d158f1bd463fef4",
+          "path": "sqlx-sqlite/src/connection/mod.rs",
+          "blob": "218c747143fe80b344bca3405d4b0b38da2bd932",
+          "lines": [
+            215,
+            218
+          ],
+          "url": "https://github.com/transact-rs/sqlx/blob/75bc0487eb661da811bb7a3c5d158f1bd463fef4/sqlx-sqlite/src/connection/mod.rs#L215-L218"
+        },
+        {
+          "repository": "transact-rs/sqlx",
+          "commit": "75bc0487eb661da811bb7a3c5d158f1bd463fef4",
+          "path": "sqlx-core/src/pool/options.rs",
+          "blob": "3d048f179514e992f478f0f854563fad7c0e41dd",
+          "lines": [
+            537,
+            540
+          ],
+          "url": "https://github.com/transact-rs/sqlx/blob/75bc0487eb661da811bb7a3c5d158f1bd463fef4/sqlx-core/src/pool/options.rs#L537-L540"
+        }
+      ]
+    },
+    {
+      "entry": "SqliteConnectOptions::vfs / extension / global SQLite callbacks",
+      "result": "NOT_AN_EXISTING_SCOPED_CUSTODY_HOOK",
+      "facts": "vfs supplies only a name. A custom VFS or global auto-extension would be a new native lifecycle implementation with its own lifetime, registry, cancellation and error obligations; it is not an existing per-worker ownership hook. Extension loading is an unsafe optional dynamic-library facility and is outside this task's permission/scope constraints. No such route was implemented or treated as a proven safe workaround.",
+      "anchors": [
+        {
+          "repository": "transact-rs/sqlx",
+          "commit": "75bc0487eb661da811bb7a3c5d158f1bd463fef4",
+          "path": "sqlx-sqlite/src/options/mod.rs",
+          "blob": "0cafc4d08c4c63c342685fedbcc43222dd38d2f1",
+          "lines": [
+            462,
+            468
+          ],
+          "url": "https://github.com/transact-rs/sqlx/blob/75bc0487eb661da811bb7a3c5d158f1bd463fef4/sqlx-sqlite/src/options/mod.rs#L462-L468"
+        },
+        {
+          "repository": "transact-rs/sqlx",
+          "commit": "75bc0487eb661da811bb7a3c5d158f1bd463fef4",
+          "path": "sqlx-sqlite/src/options/mod.rs",
+          "blob": "0cafc4d08c4c63c342685fedbcc43222dd38d2f1",
+          "lines": [
+            480,
+            521
+          ],
+          "url": "https://github.com/transact-rs/sqlx/blob/75bc0487eb661da811bb7a3c5d158f1bd463fef4/sqlx-sqlite/src/options/mod.rs#L480-L521"
+        },
+        {
+          "repository": "transact-rs/sqlx",
+          "commit": "75bc0487eb661da811bb7a3c5d158f1bd463fef4",
+          "path": "sqlx-sqlite/src/connection/establish.rs",
+          "blob": "cedf752e6adef404b6f7d537f521045cb8342b5a",
+          "lines": [
+            90,
+            105
+          ],
+          "url": "https://github.com/transact-rs/sqlx/blob/75bc0487eb661da811bb7a3c5d158f1bd463fef4/sqlx-sqlite/src/connection/establish.rs#L90-L105"
+        },
+        {
+          "repository": "transact-rs/sqlx",
+          "commit": "75bc0487eb661da811bb7a3c5d158f1bd463fef4",
+          "path": "sqlx-sqlite/src/connection/establish.rs",
+          "blob": "cedf752e6adef404b6f7d537f521045cb8342b5a",
+          "lines": [
+            159,
+            174
+          ],
+          "url": "https://github.com/transact-rs/sqlx/blob/75bc0487eb661da811bb7a3c5d158f1bd463fef4/sqlx-sqlite/src/connection/establish.rs#L159-L174"
+        }
+      ]
+    }
+  ],
+  "additional_material_finding": {
+    "name": "Pool-owned timeout is an independent cancellation source",
+    "fact": "Even shielding only caller cancellation is insufficient: PoolInner wraps connect_options.connect in its own timeout and turns timeout into PoolTimedOut. SqliteConnection::close_hard drops the wrapper and returns Ok without native close acknowledgement.",
+    "anchors": [
+      {
+        "repository": "transact-rs/sqlx",
+        "commit": "75bc0487eb661da811bb7a3c5d158f1bd463fef4",
+        "path": "sqlx-core/src/pool/inner.rs",
+        "blob": "b698dc9df07fdd763f6b15a171b7b545c6898696",
+        "lines": [
+          248,
+          297
+        ],
+        "url": "https://github.com/transact-rs/sqlx/blob/75bc0487eb661da811bb7a3c5d158f1bd463fef4/sqlx-core/src/pool/inner.rs#L248-L297"
+      },
+      {
+        "repository": "transact-rs/sqlx",
+        "commit": "75bc0487eb661da811bb7a3c5d158f1bd463fef4",
+        "path": "sqlx-core/src/pool/inner.rs",
+        "blob": "b698dc9df07fdd763f6b15a171b7b545c6898696",
+        "lines": [
+          348,
+          388
+        ],
+        "url": "https://github.com/transact-rs/sqlx/blob/75bc0487eb661da811bb7a3c5d158f1bd463fef4/sqlx-core/src/pool/inner.rs#L348-L388"
+      },
+      {
+        "repository": "transact-rs/sqlx",
+        "commit": "75bc0487eb661da811bb7a3c5d158f1bd463fef4",
+        "path": "sqlx-sqlite/src/connection/mod.rs",
+        "blob": "218c747143fe80b344bca3405d4b0b38da2bd932",
+        "lines": [
+          237,
+          240
+        ],
+        "url": "https://github.com/transact-rs/sqlx/blob/75bc0487eb661da811bb7a3c5d158f1bd463fef4/sqlx-sqlite/src/connection/mod.rs#L237-L240"
+      }
+    ],
+    "implication": "No plan may turn the existing pool timeout into an indefinite wait, swallow an initialization error, or declare close_hard success to prove a native lock was safely released."
+  },
+  "minimum_dependency_cooperation_direction": {
+    "status": "DESIGN_COMPLETE_STATIC_PATCH_PREPARATION_NOW_SEPARATELY_AUTHORIZED_BY_PARENT",
+    "preferred_contract": "An optional opaque, cloneable, Send+Sync lifetime token on SqliteConnectOptions, carried through EstablishParams into the actual native ConnectionHandle from before sqlite3_open_v2. It represents custody only, never authority or permission to commit.",
+    "why_handle_owner": "The native handle can outlive an async wrapper, a connect future, a pool, or a worker callback. Its custody must survive those wrapper drops and cannot be released merely because a hook/callback was removed.",
+    "required_steps": [
+      {
+        "file": "sqlx-sqlite/src/options/mod.rs",
+        "change": "Add an explicit optional ownership token with default None; all existing constructors and default behavior remain unchanged. Do not overload thread-name generation, logging, collation comparisons, or a global registry as a lifecycle API."
+      },
+      {
+        "file": "sqlx-sqlite/src/connection/establish.rs",
+        "change": "Copy/move the token into EstablishParams before thread creation and pass it as owned state into native handle opening. No interval may contain an active native open with only caller-owned custody."
+      },
+      {
+        "file": "sqlx-sqlite/src/connection/handle.rs",
+        "change": "Own the token during sqlite3_open_v2, through initialization, and through actual sqlite3_close. Successful close may release it only after native close succeeds. A non-OK close must retain custody fail-closed; the current panic on close failure must not accidentally unwind/drop the only token while a native handle remains live."
+      },
+      {
+        "file": "sqlx-sqlite dependency tests",
+        "change": "Prove cancellation/error lifetimes with real file-lock contention and owned process/worker termination evidence, including native open failure and close failure. Do not use Arc counts or a callback-drop marker alone as closure proof."
+      },
+      {
+        "file": "codex-rs/state/src/sqlite.rs (later separate integration)",
+        "change": "Only after the capability exists in the accepted pinned dependency, supply the existing actual OpenGuard custody to the two explicit guarded/coordinated constructors; preserve all default constructors, SQL pragmas, commit callback semantics, retained-directory protection, synchronization, and error propagation."
+      }
+    ],
+    "narrow_alternative_not_yet_accepted": "Moving options-collation ownership into EstablishParams and registering it synchronously in worker establishment could shorten the gap, but it still needs a rigorous native-open/error/close lifetime contract and mutable-collation namespace analysis. Merely moving registration before PRAGMAs or retaining params only until the worker returns is not accepted as a full fix.",
+    "dependency_gate": [
+      "No fork, external repository mutation, or native integration was performed in this completed investigation. A subsequent separately reviewed static lifetime-token candidate is now authorized by parent; no external PR/ref mutation is authorized.",
+      "Review the actual dependency change and its cancellation/close failure contract; accept a released/pinned version through the repository's normal dependency process.",
+      "Preserve the single libsqlite3-sys links graph and the existing SQLite security fix baseline; do not roll back SQLite to obtain a convenient API.",
+      "Run original Cargo and Bazel lock generators/checkers; do not hand-edit locks.",
+      "Run actual state/Memory owner suites plus the defined physical cancellation controls on the exact integrated source and supported platforms."
+    ]
+  },
+  "required_future_physical_controls": [
+    {
+      "id": "OPEN_CANCEL",
+      "stage": "Worker has begun actual native open but has not published a usable connection.",
+      "control": "Use a dependency-local deterministic gate on the real opening path. Cancel the caller and drop its options/pool references. A separately owned normal helper process must still fail to acquire the existing owner lock while native opening/cleanup is held. Release the gate, collect actual termination/close evidence, then require the competing lock to succeed.",
+      "negative": "Removing the worker/native custody transfer must permit the competing lock too early, while the real gated worker remains alive.",
+      "status": "NOT_IMPLEMENTED_NOT_RUN"
+    },
+    {
+      "id": "INITIAL_PRAGMA_CANCEL",
+      "stage": "A real initial SQLite PRAGMA is executing before any application hook/option collation.",
+      "control": "Hold a real SQLite lock/operation to control initialization, observe entry at the actual dependency seam, then cancel or expire the existing pool deadline. The competing owner lock must remain blocked until real initialization cleanup has completed; do not just await the cancelled outer future.",
+      "negative": "Post-after_connect or options-collation-only custody cannot satisfy the pre-registration hold.",
+      "status": "NOT_IMPLEMENTED_NOT_RUN"
+    },
+    {
+      "id": "GROWTH_REPLACEMENT_CANCEL",
+      "stage": "A new physical connection is opening after initial pool creation, including growth/replacement and pool close cancellation.",
+      "control": "Hold a borrowed connection plus a real replacement opening; drop all wrapper clones and cancel close. Require the real owner lock to stay unavailable until every physical native owner and in-flight opening has ended. Reuse existing R2e3 live SELECT/COMMIT-veto controls after registration without calling them proof for the earlier opening phase.",
+      "negative": "Protecting only the first connection or only pool/store Arc lifetime must fail this control.",
+      "status": "NOT_IMPLEMENTED_NOT_RUN"
+    },
+    {
+      "id": "OPEN_ERROR_AND_CLOSE_FAILURE",
+      "stage": "Initialization errors and a real SQLite busy close caused by a live native statement.",
+      "control": "Retain and report the original typed error. A normal successful native close permits lock release; an unconfirmed/busy close must retain custody and remain a failure. Use an owned isolated test process for the busy-close branch and require process cleanup/reaping before final competing lock success; do not leak uncontrolled test children.",
+      "negative": "A plain token field that is dropped during panic/unwind after SQLITE_BUSY must visibly unlock too early and fail the control.",
+      "status": "NOT_IMPLEMENTED_NOT_RUN"
+    }
+  ],
+  "registered_custody_candidate": {
+    "manifest_blob": "6985c5154f8f6c7ae42f94fd4d569dc6a1dab3b2",
+    "full_patch_blob": "5b5a2dee4b33b5946ec21825ed7fc916487a0bf9",
+    "state_source": {
+      "blob": "b9fb565cadd14f6541bfc8421164897e2907e2ad",
+      "sha256": "19d676843c5eda7570d88c5ffed08d9428a3527b1048fd3d1ec4ed40fb2a90e1",
+      "bytes": 19950
+    },
+    "independent_scope_review_blob": "2cc31c4e2e812294ef1523ebd8d96edfe63ca8ed",
+    "qualification": "Static/unexecuted. Existing four proposed registered-connection controls and two counterfactuals remain their own pending native gates."
+  },
+  "sources": [
+    {
+      "name": "options_mod",
+      "repo": "transact-rs/sqlx",
+      "ref": "75bc0487eb661da811bb7a3c5d158f1bd463fef4",
+      "path": "sqlx-sqlite/src/options/mod.rs",
+      "blob": "0cafc4d08c4c63c342685fedbcc43222dd38d2f1",
+      "bytes": 28010,
+      "sha256": "ff5005abc6408f2df073d95bf3440c2a3ee96c1a312d73468bf66123f8ab2f1e",
+      "url": "https://github.com/transact-rs/sqlx/blob/75bc0487eb661da811bb7a3c5d158f1bd463fef4/sqlx-sqlite/src/options/mod.rs"
+    },
+    {
+      "name": "options_connect",
+      "repo": "transact-rs/sqlx",
+      "ref": "75bc0487eb661da811bb7a3c5d158f1bd463fef4",
+      "path": "sqlx-sqlite/src/options/connect.rs",
+      "blob": "cfa25872b2c118cc955ac4e2f9cfb64e19e4a0ee",
+      "bytes": 2305,
+      "sha256": "6eab2d3914a2c9f35c60bd8b324e46790eca39a23c30a0d4101e35be52b04253",
+      "url": "https://github.com/transact-rs/sqlx/blob/75bc0487eb661da811bb7a3c5d158f1bd463fef4/sqlx-sqlite/src/options/connect.rs"
+    },
+    {
+      "name": "establish",
+      "repo": "transact-rs/sqlx",
+      "ref": "75bc0487eb661da811bb7a3c5d158f1bd463fef4",
+      "path": "sqlx-sqlite/src/connection/establish.rs",
+      "blob": "cedf752e6adef404b6f7d537f521045cb8342b5a",
+      "bytes": 10033,
+      "sha256": "447d5067838ec05c713a53b381df4b8ae16652917b4206c553cdea6d3a1fe92a",
+      "url": "https://github.com/transact-rs/sqlx/blob/75bc0487eb661da811bb7a3c5d158f1bd463fef4/sqlx-sqlite/src/connection/establish.rs"
+    },
+    {
+      "name": "worker",
+      "repo": "transact-rs/sqlx",
+      "ref": "75bc0487eb661da811bb7a3c5d158f1bd463fef4",
+      "path": "sqlx-sqlite/src/connection/worker.rs",
+      "blob": "2585dc1312210d9eb18c15f6df1158656d3c6b2c",
+      "bytes": 22317,
+      "sha256": "b66aafc56f0e287eac3b09111c5d4997d350ab61294c5cc576ce359bc18cebe4",
+      "url": "https://github.com/transact-rs/sqlx/blob/75bc0487eb661da811bb7a3c5d158f1bd463fef4/sqlx-sqlite/src/connection/worker.rs"
+    },
+    {
+      "name": "connection",
+      "repo": "transact-rs/sqlx",
+      "ref": "75bc0487eb661da811bb7a3c5d158f1bd463fef4",
+      "path": "sqlx-sqlite/src/connection/mod.rs",
+      "blob": "218c747143fe80b344bca3405d4b0b38da2bd932",
+      "bytes": 20337,
+      "sha256": "a20c2e51a1505e298fd897b378f9032c89b82850838aa6e5d9409f612fb1e7fd",
+      "url": "https://github.com/transact-rs/sqlx/blob/75bc0487eb661da811bb7a3c5d158f1bd463fef4/sqlx-sqlite/src/connection/mod.rs"
+    },
+    {
+      "name": "handle",
+      "repo": "transact-rs/sqlx",
+      "ref": "75bc0487eb661da811bb7a3c5d158f1bd463fef4",
+      "path": "sqlx-sqlite/src/connection/handle.rs",
+      "blob": "e89179b30ed489bf831e56575d1269f223a368ac",
+      "bytes": 5320,
+      "sha256": "63d9b11374ebd453f3f7d0be95a728030f05997d5ccdc756fd8057ee0d31dc6f",
+      "url": "https://github.com/transact-rs/sqlx/blob/75bc0487eb661da811bb7a3c5d158f1bd463fef4/sqlx-sqlite/src/connection/handle.rs"
+    },
+    {
+      "name": "pool_inner",
+      "repo": "transact-rs/sqlx",
+      "ref": "75bc0487eb661da811bb7a3c5d158f1bd463fef4",
+      "path": "sqlx-core/src/pool/inner.rs",
+      "blob": "b698dc9df07fdd763f6b15a171b7b545c6898696",
+      "bytes": 23376,
+      "sha256": "cba56628f259270dccb2f4a0d7a351dcff34d9239f6e6e1aee187ebe0e39c539",
+      "url": "https://github.com/transact-rs/sqlx/blob/75bc0487eb661da811bb7a3c5d158f1bd463fef4/sqlx-core/src/pool/inner.rs"
+    },
+    {
+      "name": "pool_options",
+      "repo": "transact-rs/sqlx",
+      "ref": "75bc0487eb661da811bb7a3c5d158f1bd463fef4",
+      "path": "sqlx-core/src/pool/options.rs",
+      "blob": "3d048f179514e992f478f0f854563fad7c0e41dd",
+      "bytes": 25108,
+      "sha256": "924cd57a062328b2e7c6ac55242eabb1706893d80ce1e8cb02fe643a592f4f83",
+      "url": "https://github.com/transact-rs/sqlx/blob/75bc0487eb661da811bb7a3c5d158f1bd463fef4/sqlx-core/src/pool/options.rs"
+    },
+    {
+      "name": "lib",
+      "repo": "transact-rs/sqlx",
+      "ref": "75bc0487eb661da811bb7a3c5d158f1bd463fef4",
+      "path": "sqlx-sqlite/src/lib.rs",
+      "blob": "17b4bed1ca40f112690011dbc3f38b4585ed1001",
+      "bytes": 6797,
+      "sha256": "6e19e45ffc8e018912798e2290527a2a332ecc775b70bd86223efffc06d6e57b",
+      "url": "https://github.com/transact-rs/sqlx/blob/75bc0487eb661da811bb7a3c5d158f1bd463fef4/sqlx-sqlite/src/lib.rs"
+    },
+    {
+      "name": "core_connection",
+      "repo": "transact-rs/sqlx",
+      "ref": "75bc0487eb661da811bb7a3c5d158f1bd463fef4",
+      "path": "sqlx-core/src/connection.rs",
+      "blob": "b5f8138b2bc1b2a9a82a21b4aa8c65fe0e42934f",
+      "bytes": 10046,
+      "sha256": "a0ea974fb1bfe6ec7891e594333098b3d2fac3b3e27737e733dea461e8dee737",
+      "url": "https://github.com/transact-rs/sqlx/blob/75bc0487eb661da811bb7a3c5d158f1bd463fef4/sqlx-core/src/connection.rs"
+    },
+    {
+      "name": "collation",
+      "repo": "transact-rs/sqlx",
+      "ref": "75bc0487eb661da811bb7a3c5d158f1bd463fef4",
+      "path": "sqlx-sqlite/src/connection/collation.rs",
+      "blob": "229e780adfbdb34ac117cf279e11b70a79a491fc",
+      "bytes": 4730,
+      "sha256": "d863421fe2f377315ca75c2912e702b13cbb4b978ec3940989ae08c9acf2f752",
+      "url": "https://github.com/transact-rs/sqlx/blob/75bc0487eb661da811bb7a3c5d158f1bd463fef4/sqlx-sqlite/src/connection/collation.rs"
+    },
+    {
+      "name": "release_cargo",
+      "repo": "transact-rs/sqlx",
+      "ref": "75bc0487eb661da811bb7a3c5d158f1bd463fef4",
+      "path": "Cargo.toml",
+      "blob": "3738b814ca07636ec652be18d95de0559f279182",
+      "bytes": 14370,
+      "sha256": "77c3ab21aa396a7dad0daf09210d9c517cd98ca084c39f59e8db28ba1b9221fe",
+      "url": "https://github.com/transact-rs/sqlx/blob/75bc0487eb661da811bb7a3c5d158f1bd463fef4/Cargo.toml"
+    }
+  ],
+  "execution_receipt": {
+    "source_reads_only": true,
+    "all_listed_source_git_blob_hashes_verified": true,
+    "all_listed_source_sha256_recorded": true,
+    "release_tag_resolved": true,
+    "native_commands_run": 0,
+    "production_files_mutated": 0,
+    "dependency_files_mutated": 0,
+    "git_refs_mutated": 0,
+    "external_messages_or_prs_sent": 0
+  },
+  "open_boundaries": [
+    "Initial open, growth and replacement before native ownership exists.",
+    "Unknown native close/error completion; no success may be inferred from wrapper/future drop.",
+    "Current authentication, independent issuer/peer, live lease/expiry/final-use and exact checkpoint binding.",
+    "Independent shared-open pools/processes and real normal Root/Agentd/desktop joint acceptance.",
+    "The R2e3 reserved collation remains replaceable by an arbitrary raw-handle user; its private-owner contract is not removed by this feasibility report."
+  ],
+  "scope_clarification": {
+    "original_instruction_author": "parent /root",
+    "original_instruction_excerpt": "在现有依赖公开API、不fork依赖且不扩大权限的约束下",
+    "scope": "The earlier read-only public-API feasibility phase only.",
+    "not_a_user_permanent_prohibition": true,
+    "not_an_automatic_approval_rejection": true,
+    "subsequent_root_instruction": "Parent has now authorized preparation of a separate minimal native lifetime-token static patch and real causal-control design. This does not authorize native/ref mutation or external PRs; dependency acquisition, normalization and actual lock generation remain with the sole native CI lane.",
+    "claim": "The current API insufficiency remains a source fact; the scope constraint is changeable and is not itself a permanent project blocker."
+  },
+  "supersedes": {
+    "report_blob": "b3b65a1bdbc9caa78adad0319063a49aa2cbb179",
+    "markdown_blob": "3625ce3995e03a632ef272cc55a10b4c077c26ef",
+    "scope": "Clarifies instruction provenance and later authorization only; the fixed-source API analysis and existing OPEN initialization gap are unchanged."
+  }
+}

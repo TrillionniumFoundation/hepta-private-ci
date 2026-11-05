@@ -1,0 +1,156 @@
+{
+  "schema": "hepta-final-A-hygiene-prepared-executable-manifest-v1",
+  "state": "PREPARED_ONLY_NOT_AUTHORIZED_NOT_EXECUTED",
+  "runner": {
+    "blob": "3b679c52a5b2e0da6fda8ccf8fa5ad450b6f395f",
+    "bytes": 12146,
+    "sha256": "6ad17ba555e8024e07bd6e56e5a35af636f4fe63e8ca70454fd84a2a0898a1e0"
+  },
+  "guard_payload_template": {
+    "blob": "0e3ccf56b29a692ec1609f3f863a87c8102e1cdb",
+    "bytes": 5454,
+    "sha256": "b6bd99971695ab50b24ee9b23e2e0a17ef47ef715264803d1d9cb8812f8ff050"
+  },
+  "source_tree": "fb9e131272f7e7a138d6c0d1af2b048b9a6ab7ff",
+  "actual_complete_test_source": "fb9e131272f7e7a138d6c0d1af2b048b9a6ab7ff",
+  "full_actual_result": {
+    "job": "1a1a9f68261-fc05-3a71",
+    "selected": 19506,
+    "counts": {
+      "PASS": 19490,
+      "FAIL": 16
+    },
+    "existing_ignored": 57,
+    "early_return_cases": 25,
+    "original_just_exit_code": 100,
+    "original_controller_exit_code": 1,
+    "root_triage_required": true
+  },
+  "original_recipe_plan": "943f1d93961bb90b2228cb3d1e055610364f3ef8",
+  "owners": [
+    "codex-apply-patch",
+    "codex-arg0",
+    "codex-cli",
+    "codex-core",
+    "core_test_support",
+    "codex-exec-server",
+    "codex-skills-extension",
+    "codex-external-agent-migration",
+    "codex-hepta-agentd",
+    "codex-hepta-contracts",
+    "codex-hepta-supervisor",
+    "codex-linux-sandbox",
+    "codex-uds",
+    "codex-utils-pty",
+    "codex-v8-poc",
+    "codex-windows-sandbox"
+  ],
+  "commands": [
+    [
+      "just",
+      "fix",
+      "--locked",
+      "--profile",
+      "dev-small",
+      "-p",
+      "codex-apply-patch",
+      "-p",
+      "codex-arg0",
+      "-p",
+      "codex-cli",
+      "-p",
+      "codex-core",
+      "-p",
+      "core_test_support",
+      "-p",
+      "codex-exec-server",
+      "-p",
+      "codex-skills-extension",
+      "-p",
+      "codex-external-agent-migration",
+      "-p",
+      "codex-hepta-agentd",
+      "-p",
+      "codex-hepta-contracts",
+      "-p",
+      "codex-hepta-supervisor",
+      "-p",
+      "codex-linux-sandbox",
+      "-p",
+      "codex-uds",
+      "-p",
+      "codex-utils-pty",
+      "-p",
+      "codex-v8-poc",
+      "-p",
+      "codex-windows-sandbox"
+    ],
+    [
+      "just",
+      "fmt"
+    ],
+    [
+      "git",
+      "diff",
+      "--check"
+    ]
+  ],
+  "additional_readonly_whitespace_gate": {
+    "argv": [
+      "git",
+      "diff",
+      "--check",
+      "b2d7f038d6d88156bc6a4cb29c8703f69b808f29",
+      "ACTUAL_POST_FORMAT_TREE",
+      "--"
+    ],
+    "reason": "The ordinary index remains at cabc; this object-to-object check also covers the candidate's new source files without changing that index."
+  },
+  "recipe_files": [
+    {
+      "relative_path": "justfile",
+      "bytes": 7838,
+      "sha256": "74f869224eba12fc4212b043428e7f5b35b551d26f5b06161c25d8aca525f124"
+    },
+    {
+      "relative_path": "codex-rs/Cargo.toml",
+      "bytes": 22548,
+      "sha256": "5e19cb310c4bcabc082619d64a028358d5d629e26c179fb38a00432be8f54a6a"
+    },
+    {
+      "relative_path": "scripts/format.py",
+      "bytes": 16599,
+      "sha256": "8d93d7a6261bbe5f2b9fceea228154f0be29f721015d05b4f538c30076dd80b3"
+    },
+    {
+      "relative_path": "scripts/just-shell.py",
+      "bytes": 2030,
+      "sha256": "444d6b328d44abf6453b77b6acce2a0c881fc162ff30b20f352c85067797fbe9"
+    }
+  ],
+  "resource": {
+    "target": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/target-app-epoch2-20261105",
+    "minimum_before_after_each_phase": 8000000000,
+    "last_actual_full_terminal_free": 47045021696,
+    "no_cleanup": true
+  },
+  "phase_contract": [
+    "Pin source, ordinary HEAD/index, real locks, untracked set and original recipe bytes before execution.",
+    "Bind frozen full metadata/catalog/XML/review/terminal identities; they are evidence of the actual completed test source, not an assertion that scoped Clippy uses the full test feature graph.",
+    "Run original just fix for the exact 16 owner packages, passing --locked --profile dev-small to the unmodified clippy --fix --tests --allow-dirty recipe.",
+    "Capture stdout/stderr, exit code, before/after source tree, complete binary patch and every changed postimage before deciding whether to continue.",
+    "Stop on any automatic source change with explicit review-required terminal/outer3; original command exit remains recorded. No next hygiene command is run before root reviews the change.",
+    "Stop on command failure or index/lock/source guard drift with original evidence retained; never restore the index or silently accept a new checkpoint.",
+    "If previous commands made no source changes, proceed to original just fmt and original git diff --check, then the whole-candidate read-only whitespace check.",
+    "Export the whole candidate source map and complete changed postimages relative to the published cabc tree. Root owns review and publication.",
+    "No local A tests, optional validation suite, cache cleanup, policy change or ref mutation occurs after this hygiene sequence."
+  ],
+  "limits": [
+    "Prepared only; root must triage the two new failures and bind an explicit execution guard before use.",
+    "The 14 same-name host-related failures, 25 early-return cases and original full just100/controller1 remain in their original evidence; hygiene cannot change their status.",
+    "Any automatic source change stops before the next hygiene stage for root review, even if the original command succeeded.",
+    "Any original command failure, index byte change, unexpected source path, lock drift or resource guard stops without reset, cleanup, retry or skipped commands.",
+    "Linux scoped lint/format does not establish native Windows security or platform qualification.",
+    "No local A tests or ref changes follow hygiene in this runner."
+  ]
+}

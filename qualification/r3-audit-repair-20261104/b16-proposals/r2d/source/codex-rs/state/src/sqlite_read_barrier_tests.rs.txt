@@ -1,0 +1,275 @@
+use super::SqliteReadBarrier;
+use crate::SqliteConfig;
+use crate::runtime::test_support::create_private_test_directory;
+use crate::runtime::test_support::unique_temp_dir;
+use anyhow::Context;
+use codex_utils_absolute_path::test_support::PathExt;
+use pretty_assertions::assert_eq;
+use sqlx::Error;
+use sqlx::SqlitePool;
+use std::future::Future;
+use std::path::PathBuf;
+use std::task::Poll;
+use std::time::Duration;
+use tokio::sync::oneshot;
+use tokio::time::timeout;
+
+const TRANSITION_DEADLINE: Duration = Duration::from_secs(5);
+
+struct Fixture {
+    home: PathBuf,
+    database: PathBuf,
+    sqlite: SqliteConfig,
+}
+
+impl Fixture {
+    async fn new() -> anyhow::Result<Self> {
+        let home = unique_temp_dir();
+        create_private_test_directory(&home)?;
+        let fixture = Self {
+            database: home.join("read-barrier.sqlite"),
+            sqlite: SqliteConfig::new_for_testing(home.as_path().abs()),
+            home,
+        };
+        let pool = fixture.writer().await?;
+        let result = async {
+            sqlx::query("CREATE TABLE evidence (value INTEGER NOT NULL)")
+                .execute(&pool)
+                .await?;
+            sqlx::query("INSERT INTO evidence VALUES (1)")
+                .execute(&pool)
+                .await?;
+            Ok::<_, Error>(())
+        }
+        .await;
+        pool.close().await;
+        result?;
+        Ok(fixture)
+    }
+
+    async fn writer(&self) -> Result<SqlitePool, Error> {
+        self.sqlite.open_durable_evidence_pool(&self.database).await
+    }
+
+    async fn rows(&self) -> anyhow::Result<Vec<i64>> {
+        let reader = self.sqlite.open_read_only_pool(&self.database).await?;
+        let result = sqlx::query_scalar("SELECT value FROM evidence ORDER BY value")
+            .fetch_all(&reader)
+            .await;
+        reader.close().await;
+        Ok(result?)
+    }
+}
+
+impl Drop for Fixture {
+    fn drop(&mut self) {
+        let _ = std::fs::remove_dir_all(&self.home);
+    }
+}
+
+fn assert_sqlite_code(error: Error, expected: i32) {
+    let Error::Database(error) = error else {
+        panic!("expected a SQLite database rejection, got {error:?}");
+    };
+    let expected = expected.to_string();
+    assert_eq!(error.code().as_deref(), Some(expected.as_str()));
+}
+
+#[tokio::test]
+async fn observation_pool_is_read_only_and_does_not_create_missing_database() -> anyhow::Result<()> {
+    let fixture = Fixture::new().await?;
+    let observer = fixture
+        .sqlite
+        .open_durable_observation_pool(&fixture.database)
+        .await?;
+    let mut connection = observer.acquire().await?;
+    let observed: Vec<i64> = sqlx::query_scalar("SELECT value FROM evidence")
+        .fetch_all(&mut *connection)
+        .await?;
+    assert_eq!(observed, vec![1]);
+    assert_sqlite_code(
+        sqlx::query("INSERT INTO evidence VALUES (2)")
+            .execute(&mut *connection)
+            .await
+            .expect_err("observation must not become a writer"),
+        libsqlite3_sys::SQLITE_READONLY,
+    );
+    connection.close().await?;
+    observer.close().await;
+    let missing = fixture.home.join("missing.sqlite");
+    assert_sqlite_code(
+        fixture
+            .sqlite
+            .open_durable_observation_pool(&missing)
+            .await
+            .expect_err("observation must not create a database"),
+        libsqlite3_sys::SQLITE_CANTOPEN,
+    );
+    assert!(!missing.exists());
+    assert!(fixture.sqlite.open_durable_read_barrier(&missing).await.is_err());
+    assert!(!missing.exists());
+    assert_eq!(fixture.rows().await?, vec![1]);
+    Ok(())
+}
+
+#[tokio::test]
+async fn barrier_excludes_real_writer_while_observer_reads() -> anyhow::Result<()> {
+    let fixture = Fixture::new().await?;
+    let writer = fixture.writer().await?;
+    let mut writing = writer.acquire().await?;
+    sqlx::query("PRAGMA busy_timeout=0").execute(&mut *writing).await?;
+    let barrier = fixture.sqlite.open_durable_read_barrier(&fixture.database).await?;
+    let mut transaction = barrier.begin().await?;
+    let observed: Vec<i64> = sqlx::query_scalar("SELECT value FROM evidence")
+        .fetch_all(&mut *transaction)
+        .await?;
+    assert_eq!(observed, vec![1]);
+    assert_eq!(fixture.rows().await?, vec![1]);
+    assert_sqlite_code(
+        sqlx::query("INSERT INTO evidence VALUES (2)")
+            .execute(&mut *writing)
+            .await
+            .expect_err("the live barrier must hold the actual writer lock"),
+        libsqlite3_sys::SQLITE_BUSY,
+    );
+    assert_sqlite_code(
+        sqlx::query("INSERT INTO evidence VALUES (9)")
+            .execute(&mut *transaction)
+            .await
+            .expect_err("the barrier transaction must remain read-only"),
+        libsqlite3_sys::SQLITE_READONLY,
+    );
+    transaction.rollback().await?;
+    sqlx::query("INSERT INTO evidence VALUES (2)")
+        .execute(&mut *writing)
+        .await?;
+    let dropped = barrier.begin().await?;
+    drop(dropped);
+    timeout(TRANSITION_DEADLINE, barrier.close()).await?;
+    sqlx::query("INSERT INTO evidence VALUES (3)")
+        .execute(&mut *writing)
+        .await?;
+    writing.close().await?;
+    writer.close().await;
+    assert_eq!(fixture.rows().await?, vec![1, 2, 3]);
+    Ok(())
+}
+
+#[tokio::test]
+async fn barrier_commit_hook_rejects_writes_if_query_only_is_disabled() -> anyhow::Result<()> {
+    let fixture = Fixture::new().await?;
+    let barrier = fixture.sqlite.open_durable_read_barrier(&fixture.database).await?;
+    let mut transaction = barrier.begin().await?;
+    sqlx::query("PRAGMA query_only=OFF")
+        .execute(&mut *transaction)
+        .await?;
+    sqlx::query("INSERT INTO evidence VALUES (7)")
+        .execute(&mut *transaction)
+        .await?;
+    assert_sqlite_code(
+        transaction.commit().await.expect_err("commit hook must still veto actual writes"),
+        libsqlite3_sys::SQLITE_CONSTRAINT_COMMITHOOK,
+    );
+    timeout(TRANSITION_DEADLINE, barrier.close()).await?;
+    assert_eq!(fixture.rows().await?, vec![1]);
+    Ok(())
+}
+
+#[tokio::test]
+async fn barrier_rejects_read_only_connection() -> anyhow::Result<()> {
+    let fixture = Fixture::new().await?;
+    let pool = fixture
+        .sqlite
+        .open_durable_observation_pool(&fixture.database)
+        .await?;
+    // READONLY BEGIN IMMEDIATE is a real read transaction, not a writer fence.
+    let plain_read = pool.begin_with("BEGIN IMMEDIATE").await?;
+    let writer = fixture.writer().await?;
+    sqlx::query("INSERT INTO evidence VALUES (8)")
+        .execute(&writer)
+        .await?;
+    writer.close().await;
+    plain_read.rollback().await?;
+    // Exercise actual READONLY mode without depending on the test account's
+    // ability to bypass OS file permissions.
+    let barrier = SqliteReadBarrier { pool };
+    let error = barrier.begin().await.expect_err("READONLY cannot supply a writer barrier");
+    assert!(
+        matches!(&error, Error::Protocol(message)
+            if message == "read barrier requires a writable existing main database"),
+        "unexpected read-only barrier failure: {error:?}"
+    );
+    timeout(TRANSITION_DEADLINE, barrier.close()).await?;
+    assert_eq!(fixture.rows().await?, vec![1, 8]);
+    Ok(())
+}
+
+#[tokio::test]
+async fn cancelled_barrier_transition_discards_changed_connection() -> anyhow::Result<()> {
+    let fixture = Fixture::new().await?;
+    let barrier = fixture.sqlite.open_durable_read_barrier(&fixture.database).await?;
+    let mut original = barrier.pool.acquire().await?;
+    sqlx::query("PRAGMA busy_timeout=7").execute(&mut *original).await?;
+    let initial_query_only: i64 = sqlx::query_scalar("PRAGMA query_only")
+        .fetch_one(&mut *original)
+        .await?;
+    assert_eq!(initial_query_only, 1);
+    let initial_busy_timeout: i64 = sqlx::query_scalar("PRAGMA busy_timeout")
+        .fetch_one(&mut *original)
+        .await?;
+    assert_eq!(initial_busy_timeout, 7);
+    let (entered_tx, entered_rx) = oneshot::channel();
+    let (release_tx, release_rx) = std::sync::mpsc::channel();
+    let release = scopeguard::guard(release_tx, |sender| {
+        let _ = sender.send(());
+    });
+    {
+        let mut entered = Some(entered_tx);
+        original.lock_handle().await?.set_progress_handler(1, move || {
+            let Some(entered) = entered.take() else {
+                return true;
+            };
+            let _ = entered.send(());
+            // SQLite executes on SQLx's own blocking worker, not the Tokio test
+            // thread. Release-on-drop and this bound cover every test exit.
+            release_rx.recv_timeout(TRANSITION_DEADLINE).is_ok()
+        });
+    }
+    drop(original);
+    let mut beginning = Box::pin(barrier.begin());
+    timeout(TRANSITION_DEADLINE, async {
+        tokio::select! {
+            result = beginning.as_mut() => {
+                anyhow::bail!("barrier completed before the SQLite transition gate: {result:?}");
+            }
+            result = entered_rx => result.context("SQLite transition callback entered"),
+        }
+    })
+    .await??;
+    let polled = std::future::poll_fn(|cx| Poll::Ready(beginning.as_mut().poll(cx))).await;
+    assert!(polled.is_pending(), "transition completed before release: {polled:?}");
+    drop(beginning);
+    release.send(()).context("release SQLite transition")?;
+
+    let mut replacement = timeout(TRANSITION_DEADLINE, barrier.pool.acquire()).await??;
+    let query_only: i64 = sqlx::query_scalar("PRAGMA query_only")
+        .fetch_one(&mut *replacement)
+        .await?;
+    let busy_timeout: i64 = sqlx::query_scalar("PRAGMA busy_timeout")
+        .fetch_one(&mut *replacement)
+        .await?;
+    eprintln!(
+        "cancelled barrier: SQLite callback entered; replacement query_only={query_only}, busy_timeout={busy_timeout}"
+    );
+    assert_eq!(query_only, 1, "intermediate query_only=OFF must not return to the pool");
+    assert_eq!(busy_timeout, 5_000, "the marked physical connection must be discarded");
+    replacement.close().await?;
+    let mut next = barrier.begin().await?;
+    let rows: Vec<i64> = sqlx::query_scalar("SELECT value FROM evidence")
+        .fetch_all(&mut *next)
+        .await?;
+    assert_eq!(rows, vec![1]);
+    next.rollback().await?;
+    timeout(TRANSITION_DEADLINE, barrier.close()).await?;
+    Ok(())
+}

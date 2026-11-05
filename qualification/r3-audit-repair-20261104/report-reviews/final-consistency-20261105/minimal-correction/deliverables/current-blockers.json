@@ -1,0 +1,930 @@
+{
+  "schema": "hepta.current_blocker_ledger.v2",
+  "observed_at_utc": "2026-11-05T05:02:52.716696+00:00",
+  "scope": "23 inherited work packages, not a count of all independent defects. Original exit conditions remain unchanged. Scoped closure does not qualify the full product or latest main.",
+  "last_published_source_at_observation": "cabcb40d36e116beaa65750e1f674c52035da785",
+  "last_complete_original_ci": "fourth-cabc-ci-terminal.json",
+  "code_ci_composition_tree": null,
+  "main_observed": "732e934ba496d90fbe042b8d41d479ef901643e5",
+  "base_observed": "63652be658ebed8d3052eb789b951793384fd5e4",
+  "whole_candidate_qualified": false,
+  "all_blockers_closed": false,
+  "scoped_closed_ids": [
+    "B01",
+    "B03",
+    "B04",
+    "B05",
+    "B06",
+    "B12",
+    "B14",
+    "B17"
+  ],
+  "scientific_hold_ids": [
+    "B18"
+  ],
+  "items": [
+    {
+      "id": "B01",
+      "name": "仓库与证据清单",
+      "priority": "P0",
+      "status": "CLOSED_SCOPED_INVENTORY",
+      "current_label_zh": "新固定全量快照完成；1103 PR / 5193 分支",
+      "evidence_scope_zh": "2026-11-05 03:16–03:24 UTC完整分页与终锚：1103 open PR（1079 Draft/24非Draft）、5193 branches、155 main-base/948 nonmain-base、0非PR open issue/0release；非原子快照及旧1088/5163历史分别保留，110原API正文与117归档成员已根审重建。",
+      "original_exit_condition_zh": "固定时间、固定 refs、无分页缺口、完整机器可读清单。",
+      "next_closure_gate_zh": "后续发布与新CI继续绑定各自观察时间；不把增量观察冒充全量当前总数。",
+      "closure_class": "CLOSED_SCOPED"
+    },
+    {
+      "id": "B02",
+      "name": "单一整合候选",
+      "priority": "P0",
+      "status": "OPEN_FINAL_PRODUCT_QUALIFICATION",
+      "current_label_zh": "单一候选确定；最终源码/CI资格开放",
+      "evidence_scope_zh": "PR#4797保持Draft，已发布cabc。保留第四批f825原25控制25PASS、所属七包5408 JUnit PASS/8FAIL与完整workspace19503 selected=19485 JUnit PASS/17FAIL/1TIMEOUT的原结果。随后Skills9、Migration166、V8及runtime76已在各自固定源通过，App原断连在c6限域通过；新fb9原full19506 selected=19490 JUnit PASS/16FAIL，57ignored、25早退、零retry。完整新旧原件均已独立重建核验；最终fix/fmt和新head原平台CI仍开放，尚未发布第四批源码。",
+      "original_exit_condition_zh": "逐路径决定保留/合入/延期；manifest、vendor、Cargo 与 Bazel 锁同步；固定候选 head、目标 base 与执行 merge tree；原始必需 CI 全通过。",
+      "next_closure_gate_zh": "保r3 Guardian取消/截止及runtime-scoped Git缓存；最终同一次提交完整源码/锁/证据，验原required CI和合成merge树。",
+      "closure_class": "OPEN"
+    },
+    {
+      "id": "B03",
+      "name": "cwd 展示语义",
+      "priority": "P0",
+      "status": "CLOSED_ORIGINAL_CWD_SCOPE",
+      "current_label_zh": "cwd原始7例范围闭合",
+      "evidence_scope_zh": "保留原7/7、0重试/0选中跳过的固定源回执；不外推整个Core/main。",
+      "original_exit_condition_zh": "已满足该原始回归范围；不自动代表整个 Core 或 main 资格通过。",
+      "next_closure_gate_zh": "新整合树保留原语义，若改该代码才触发相应重验。",
+      "closure_class": "CLOSED_SCOPED"
+    },
+    {
+      "id": "B04",
+      "name": "认知投影 oracle",
+      "priority": "P0",
+      "status": "CLOSED_ORIGINAL_PROJECTION_TARGET_SCOPE",
+      "current_label_zh": "认知投影oracle原目标范围闭合",
+      "evidence_scope_zh": "原适用平台目标与SQL边界验证已留档；未改生产投影协议。",
+      "original_exit_condition_zh": "已满足修复后的原产品目标；生产投影协议保持不变。",
+      "next_closure_gate_zh": "保不可变revision/当前指针、来源/更正/删除/重启等原断言；最终产品资格另归B15。",
+      "closure_class": "CLOSED_SCOPED"
+    },
+    {
+      "id": "B05",
+      "name": "supervisord 子进程定位",
+      "priority": "P0",
+      "status": "CLOSED_EXECUTABLE_LOCATION_SCOPE",
+      "current_label_zh": "supervisord绝对可执行路径范围闭合",
+      "evidence_scope_zh": "新Intel daemon RPC超时与已关闭的runfile/cwd定位问题区分；当前诊断不倒退或继承旧闭合。",
+      "original_exit_condition_zh": "已满足原目标的子进程执行断言；不以脚本存在代替真实启动。",
+      "next_closure_gate_zh": "新RPC失败由独立诊断记录处理，保原daemon预算和控制fence。",
+      "closure_class": "CLOSED_SCOPED"
+    },
+    {
+      "id": "B06",
+      "name": "正向私有路径夹具",
+      "priority": "P0",
+      "status": "CLOSED_FIRST_BATCH_TARGET_SCOPE_TUI_SEPARATE",
+      "current_label_zh": "首批正向路径原目标闭合；TUI另列",
+      "evidence_scope_zh": "已提交B06_ORIGINAL_PLATFORM_TARGETS：e729/6b280同树、3目标适用平台通过；Unix-only在Windows为N/A，既有ignore不算通过。",
+      "original_exit_condition_zh": "原 macOS / Windows 对应正向用例通过，原负控维持通过。",
+      "next_closure_gate_zh": "不得写逐case7/7或零skip/retry；TUI第二批仅按其真实原平台收据更新，不混B22。",
+      "closure_class": "CLOSED_SCOPED"
+    },
+    {
+      "id": "B07",
+      "name": "Hook 元数据与工具可见性",
+      "priority": "P0",
+      "status": "IMPLEMENTED_SCOPED_NATIVE_PASS_PLATFORM_RECONCILIATION",
+      "current_label_zh": "原元数据控制有证据；新Hook两例通过，最终平台开放",
+      "evidence_scope_zh": "旧cabc Unix22例及WindowsTokenBudget3例有正文；Windows18Hook为cfg不适用，CodeMode原ignore。da60 active/idle两Hook实际PASS，原请求/顺序/预算保留。",
+      "original_exit_condition_zh": "binding、原 Hook executor、MCP、TokenBudget 用例通过；未配置 server、allow/deny list、环境错配和陈旧目录负控均拒绝。",
+      "next_closure_gate_zh": "最终候选原Hook/MCP/Executor/TokenBudget及allow/deny、环境错配、陈旧目录控制同源终态通过。",
+      "closure_class": "OPEN"
+    },
+    {
+      "id": "B08",
+      "name": "私有 attempted tool 元数据",
+      "priority": "P0",
+      "status": "OPEN_ADDITIONAL_REPLAY_ORACLE_QUALIFICATION",
+      "current_label_zh": "原retained/wire与Linux replay已有局部证据",
+      "evidence_scope_zh": "Windows三个原单元在8份unit日志产生24条观察，非24独立用例；Unixreplay有正文，Windowscfg不适用。新head/merge验收仍开放。",
+      "original_exit_condition_zh": "实际 prompt 已附加的内部 retained calls 与真实 output 对应、原 exact calls 断言通过；非官方 wire 无私有字段；不改变生产持久化。",
+      "next_closure_gate_zh": "在新固定head及merge的原平台执行新增namespaced原例与保留的wire/retained边界；不借B09/B10通过计数。",
+      "closure_class": "OPEN"
+    },
+    {
+      "id": "B09",
+      "name": "终态清理与恢复",
+      "priority": "P0",
+      "status": "IMPLEMENTED_WITH_WINDOWS_LIFECYCLE_SCOPED_PASS",
+      "current_label_zh": "原恢复与Windows指定范围有证据；最终CI开放",
+      "evidence_scope_zh": "旧GNU Wine8恢复+注入有正文；Windows7terminalizer+2steer在8份unit日志为72条观察。原平台失败和retry不被覆盖。",
+      "original_exit_condition_zh": "原注入、idle-steer、suspension、8 个 turn_recover 原用例（含特性门负控）和 panic/cancel/watchdog 负控通过。",
+      "next_closure_gate_zh": "保busy/lineage/exact实例/fence与恢复原负控；最终范围依独立原48映射和本候选原CI。",
+      "closure_class": "OPEN"
+    },
+    {
+      "id": "B10",
+      "name": "WebSocket / prewarm / compact",
+      "priority": "P0",
+      "status": "OPEN_TURN_STATE_FIXTURE_AND_PLATFORM_QUALIFICATION",
+      "current_label_zh": "新Core六例通过；最终原平台开放",
+      "evidence_scope_zh": "5d8上选中6例PASS（含新增真实重连控制）/0retry：真实EOF/并发消费、启动前配置、身份重连、真实提示匹配。有意修正prewarm/request oracle：stable实际4请求=1无工具prewarm+3turn；保留turn-state、turn-id、真实工具结果、原预算和生产身份隔离，不宣称全部原请求/连接数或断言字节不变。",
+      "original_exit_condition_zh": "原连接数、请求数、工具/模型/工作区断言通过；身份变化的拒绝和重连边界保留。",
+      "next_closure_gate_zh": "用同源原turn_state与身份负控验收；不修改production身份或通过放宽请求数获取绿色。",
+      "closure_class": "OPEN"
+    },
+    {
+      "id": "B11",
+      "name": "Windows 原生 sandbox 与 helper",
+      "priority": "P0",
+      "status": "OPEN_WINDOWS_BOUNDARY_AND_DIAGNOSTIC_SCOPE",
+      "current_label_zh": "Windows helper原范围通过；三个严格权限失败仍开放",
+      "evidence_scope_zh": "cabc source/merge各254exec通过，13resume和121rollout分列。strict ACL/token/delete原3失败保留。保持原public query和token旗标的窄ACL幂等V2、DELETE与父DELETE_CHILD四格物理矩阵V2及原Windows成功日志保留均已静态审查并精确应用到fb9组合源，尚未在Windows原生编译或执行。历史助手所述审批限制的原decision/action/reason尚未恢复，不作为新审批事实或永久禁令。",
+      "original_exit_condition_zh": "在获准的修复范围内提供原生 helper 与原严格 token 契约，原攻击/权限/文件系统用例全部通过；需要超出已允许边界时明确升级审批。",
+      "next_closure_gate_zh": "已审窄ACL与四格控制已应用到组合源，待最终fix/fmt与发布后由新head原WindowsCI验收。保留原严格token/legacy断言和预算；历史审批原receipt未恢复，不虚构新拒绝或永久禁令。",
+      "closure_class": "OPEN"
+    },
+    {
+      "id": "B12",
+      "name": "Windows 私有目录冻结对照",
+      "priority": "P0",
+      "status": "CLOSED_ORIGINAL_WINDOWS_ATTACK_COUNTERFACTUAL_SCOPE",
+      "current_label_zh": "原Windows两正向与两冻结负控范围闭合",
+      "evidence_scope_zh": "原两个正向PASS；两个反事实各1FAIL+1PASS，真实文件系统与精确恢复有收据；不外推一般Windows权限。",
+      "original_exit_condition_zh": "不改生产代码和攻击断言；重建当前源的两个负控，正向 2/2、两负控各精确 1 fail + 1 pass、真实文件系统观察和干净恢复全部成立。",
+      "next_closure_gate_zh": "保留该scope闭合；不外推一般Windows权限或原strict delete三例。",
+      "closure_class": "CLOSED_SCOPED"
+    },
+    {
+      "id": "B13",
+      "name": "Lease / Queue 时序夹具",
+      "priority": "P0",
+      "status": "IMPLEMENTED_SCOPED_NATIVE_PASS_PLATFORM_RECONCILIATION",
+      "current_label_zh": "Lease/Queue局部通过；成功正文缺口仍开放",
+      "evidence_scope_zh": "原负控和局部通过保留。旧成功target缺原名正文仍UNKNOWN；新的成功日志保留已有57Python PASS，待新原平台执行。",
+      "original_exit_condition_zh": "原过期、quarantine、guardian、release=0、单发送及重启不重放断言全保留并在原平台通过。",
+      "next_closure_gate_zh": "原平台同源结果以独立48映射为准；不在此重算或将异源native通过升级全矩阵。",
+      "closure_class": "OPEN"
+    },
+    {
+      "id": "B14",
+      "name": "Windows exec 恢复清理开销",
+      "priority": "P0",
+      "status": "CLOSED_ORIGINAL_WINDOWS_SOURCE_MERGE_RESUME_SCOPE",
+      "current_label_zh": "原Windows source/merge各13恢复例闭合",
+      "evidence_scope_zh": "cabc source与merge各13resume/121rollout/254exec通过；原90秒和业务/清理断言未变。完整Windows required另归B15。",
+      "original_exit_condition_zh": "保持原 90 秒限制和业务/清理断言，解决真实临时 runtime 开销；原 source 与 merge 的 13 例全部通过。",
+      "next_closure_gate_zh": "保留已完成的原Windows helper前置、source/merge各13恢复例及原业务/清理断言；新最终head的整体平台资格归B15，不重复旧scope以凑通过数。",
+      "closure_class": "CLOSED_SCOPED"
+    },
+    {
+      "id": "B15",
+      "name": "最终 CI 与 main 资格",
+      "priority": "P0",
+      "status": "OPEN_REQUIRED_CI_AND_PRODUCT_ACCEPTANCE",
+      "current_label_zh": "cabc完整CI失败；新组合原全门禁待验",
+      "evidence_scope_zh": "cabc19workflow=14成功3失败2跳过；blocking37jobs=22成功11失败4跳过。f825原full19503=19485 JUnit PASS/17FAIL/1TIMEOUT，24remote和另1capability早退保留。Skills9/Migration166/V8+runtime76原范围已通过，App原断连0.606秒通过但capability门开放。新fb9原Python57/57通过，普通index9,575项语义只读核准；新原full19506=19490 JUnit PASS/16FAIL，57ignored、25早退、零retry；14旧同名失败和2新问题待闭合。完整新42件原件已独立重建复核；最终fix/fmt与固定新源原平台CI仍待完成。",
+      "original_exit_condition_zh": "最新候选所有必需工作流终态成功；目标 main 基线重新核实；合成 merge 与发布 commit 树一致；保留原失败和修复回执。",
+      "next_closure_gate_zh": "最终精确head、base和merge tree、所有required门、原失败与有效负控齐全；保全部skip/retry/cache/unknown，原48映射独立维护。",
+      "closure_class": "OPEN"
+    },
+    {
+      "id": "B16",
+      "name": "可信产品入口及外部效果",
+      "priority": "P1",
+      "status": "OPEN_CODE_WIRING_AND_REAL_ACCEPTANCE",
+      "current_label_zh": "入口基础已实测；Current、正常接线和真实接受开放",
+      "evidence_scope_zh": "R1 arg010/Python54、R2a inherited FD15、R2b clock18已有有限域原生结果。R2c/d/e1/e2/e3、SQLx native-lifetime token及两个state pool的实际owner绑定均完成静态独审，尚未编译/执行。两个state新控制包含runtime shutdown与opening cancellation，不能外推runtime-alive取消。独立private recovery checkpoint连接的实际custody补丁（15增/3删）及runtime保持运行的跨进程物理取消控制（324增）已完成静态双审，未应用/执行。完整SQLx原包及明确license/mode覆盖已核验；真实依赖采用与生成锁、四项driver控制、24项基础控制、三个pool caller控制、一个checkpoint父控制、Current/FinalUse及真实Root/UI/provider接受仍开放。 后续5个epoch、24个精确源码迁移的执行草案已准备，尚未绑定最终A源或启动native；不以草案/内部解析器控制替代原生接受。",
+      "original_exit_condition_zh": "先完整迁移并验收Root handoff、Registry/arg0、protected checkpoint/verifier、FinalUse/issuer、listener custody和一个真实正常UI caller；再由同源实际Root/Session、原signed objective、provider/target完成任务/取消/丢ACK/重启，保留物理效果、authority、evidence、Memory一致性回执。",
+      "next_closure_gate_zh": "按独立R1–R6批次实现：arg0基础→trust/Current与inherited合同→Agentd装配→joint consumer→normal producer与paired pin→原真实接受。R0的102决策/474净差不等于编译最小闭包。",
+      "closure_class": "OPEN"
+    },
+    {
+      "id": "B17",
+      "name": "#4578 缺失确认终稿",
+      "priority": "P1",
+      "status": "CLOSED_RESEARCH_REPORT_COMPLETION",
+      "current_label_zh": "32-fit缺失终稿已补；报告范围闭合",
+      "evidence_scope_zh": "#4798固定77b244终稿保留。23:49–23:51 UTC刷新无源码/实验/rerun增量；研究blocking仍失败，科学采用不因此通过。",
+      "original_exit_condition_zh": "缺失报告与结果失真问题已完成；原研究分支全部工程 CI、科学采用门槛不因此闭合。",
+      "next_closure_gate_zh": "保77b244终稿与冻结903946源、全部失败与成本unknown；不为使结论变绿重训同一确认集。",
+      "closure_class": "CLOSED_SCOPED"
+    },
+    {
+      "id": "B18",
+      "name": "解析核心 / 参数记忆科学采用",
+      "priority": "P1",
+      "status": "SCIENTIFIC_HOLD_NOT_ENGINEERING_DEFECT",
+      "current_label_zh": "科学HOLD",
+      "evidence_scope_zh": "原#4798固定77b244终稿及32fits/4主比较未过门保持。新#4823固定9f2d的452件原件39,426,104B已独立逐字核验和记录复算：5既有fit为单位，J−C IID均值0.105277、OOD0.202161，Bonferroni4区间下界各0.047767/0.120359超过0.005；D_gated两域0源于15验证候选均拒绝并恢复C，不是等效证明。5个条件式TRAIN分离证书和77项同实现重放一致性有精确保存记录证据；OOD分布已用于VAL、完整成本未齐，均不替代原D−B门。",
+      "original_exit_condition_zh": "新的事前冻结 2×2 比较，重点 D−B；独立数据、充分精度、全部失败尝试与完整成本；未通过就保留强普通默认而非追求事后绿色。",
+      "next_closure_gate_zh": "保留原D−B采用门与HOLD。J有限规划作为独立有证据的组件继续评估，权重编辑保强普通默认与验证回退；新实验先冻结独立数据、拟合单位、计算成本和全部失败保留，禁止以J−C、原记录重放或移植一致性换名关闭D−B。",
+      "closure_class": "SCIENTIFIC_HOLD"
+    },
+    {
+      "id": "B19",
+      "name": "HeptaBao / Chain / HIA 外部接受",
+      "priority": "P1",
+      "status": "OPEN_EXTERNAL_COMPATIBILITY_AND_PRODUCT_CONSUMER",
+      "current_label_zh": "外部兼容及本产品独立接受开放",
+      "evidence_scope_zh": "Hepta内Bao13关键项11partial+2gap；外部固定源60surface/13限域实现是另一分母。真实consumer/签名/epoch/撤销与Chain/HIA接受未完成。",
+      "original_exit_condition_zh": "固定外部版本、接口与契约、兼容/故障/安全回执，以及本产品真实调用者的独立接受。",
+      "next_closure_gate_zh": "按B19-Bao/B19-Chain/B19-HIA分开取得同源实现与真实目标接受；advisory DENY_ALL/safety_certificate=false保持。",
+      "closure_class": "OPEN"
+    },
+    {
+      "id": "B20",
+      "name": "远程控制握手夹具",
+      "priority": "P0",
+      "status": "IMPLEMENTED_ORIGINAL_NATIVE_PASS_FINAL_PLATFORM_PENDING",
+      "current_label_zh": "旧原19例正文已核；新最终同源CI开放",
+      "evidence_scope_zh": "GNU Wine19例含2次额外attempt、Windows19含3次额外attempt分别记录。原握手/EOF边界与新最终source原CI仍必需。 新c6源原真实App断连例实际0.606秒PASS，三项父存活因果反例有效；同组原capability控制因宿主前置缺失早退，8 JUnit PASS仅7项行为实际执行，最终平台门仍开放。",
+      "original_exit_condition_zh": "确定性旧源同握手错误、新源对照及原真实AppServer关闭/断连断言全部通过。",
+      "next_closure_gate_zh": "最新候选原19例及原平台CI以精确收据关闭；不得跳过正常HTTP或替代真实握手。",
+      "closure_class": "OPEN"
+    },
+    {
+      "id": "B21",
+      "name": "macOS Intel PTY退出和输出",
+      "priority": "P0",
+      "status": "OPEN_ORIGINAL_INTEL_PTY_QUALIFICATION",
+      "current_label_zh": "ROG PTY29/转发/监督31例通过；Intel原门开放",
+      "evidence_scope_zh": "1c2原31例PASS/0retry不覆盖Intel30.603秒、drain2秒及close-stdin失败。Mac专属两例与真实因果尚需原平台。",
+      "original_exit_condition_zh": "保持原2秒/5秒预算、完整drain与child退出/FD断言；修复源在原macOS Intel的30例与相关原CI通过，并解释实际Intel drain失败原因。",
+      "next_closure_gate_zh": "原Intel30例、完整drain/child/FD原断言和2/5秒预算不变；同源因果与原平台结果齐全。",
+      "closure_class": "OPEN"
+    },
+    {
+      "id": "B22",
+      "name": "TUI 中断与退出顺序",
+      "priority": "P0",
+      "status": "OPEN_ORIGINAL_WINDOWS_TUI_QUALIFICATION",
+      "current_label_zh": "Windows目标级通过；逐case正文仍缺",
+      "evidence_scope_zh": "旧Windows TUI非缓存target PASS，没有独立成功原名正文。原单upload身份仅source+count推断；新原CI需补13原名平台观察。",
+      "original_exit_condition_zh": "定位真实turn/interrupt与关闭顺序，保留原断言和时间预算，以固定修复源的原用例/有效负控及原WindowsCI验收。",
+      "next_closure_gate_zh": "原Windows interrupt/shutdown case与真实stdout就绪、canonical cwd和原5秒预算；结果交独立48映射。",
+      "closure_class": "OPEN"
+    },
+    {
+      "id": "B23",
+      "name": "App Server Unix关闭信号生命周期",
+      "priority": "P0",
+      "status": "IMPLEMENTED_CAUSAL_NEGATIVE_AND_FIVE_NATIVE_PASS",
+      "current_label_zh": "Unix原因果负控及5例通过；最终原平台开放",
+      "evidence_scope_zh": "原3signal/2drain和真实丢订阅负控保留；成功target摘要不补逐casePASS。新source原UnixCI、stdio/disabled与原预算仍必需。",
+      "original_exit_condition_zh": "真实baseline丢信号窗口成立；修后3个单信号父测试与2个原drain用例通过；配置关闭/stdio及平台语义不变，最终原CI验收。",
+      "next_closure_gate_zh": "同最终source原Unix平台验收；原stdio/disabled语义和drain规则保持；首signal注册失败提前报错属已审兼容差异。",
+      "closure_class": "OPEN"
+    }
+  ],
+  "references": [
+    "CURRENT_AUDIT_PROGRESS.zh-CN.md",
+    "FOURTH_BATCH_QUALIFICATION.md",
+    "fourth-complete-inventory.json",
+    "fourth-evidence-index.json",
+    "FOURTH_SEVEN_ROWS_SCOPE.zh-CN.md",
+    "fourth-seven-rows-missing-evidence.json",
+    "THIRD_BATCH_QUALIFICATION.md",
+    "third-original-failure-reconciliation.json",
+    "B16_R0_SOURCE_AND_MIGRATION.zh-CN.md",
+    "EXTERNAL_CLOSURE_PLAN_ZH.md",
+    "PROJECT_DIRECTION_AND_PLAN.zh-CN.md",
+    "fourth-app-disconnect-epoch2-manifest.json",
+    "fourth-app-disconnect-epoch2-root-guard.json",
+    "fourth-app-disconnect-epoch2-source-readonly.json",
+    "fourth-app-disconnect-old-target-review.json",
+    "fourth-b16-native-caller-independent-review.json",
+    "static-proposals/b11-delete-matrix/repair-manifest.json",
+    "fourth-app-epoch2-terminal-diagnostic.json",
+    "fourth-app-epoch2-root-terminal-review.json",
+    "fourth-app-epoch2-complete-root-review.json",
+    "fourth-app-bwrap-exact-readonly.json",
+    "static-proposals/b16-checkpoint/repair-manifest.json",
+    "static-proposals/sqlx-adoption/adoption-manifest-v2.json",
+    "fourth-app-parent-probe-root-review.json",
+    "fourth-app-parent-probe-complete-root-review.json",
+    "fourth-skills-v2-root-review.json",
+    "fourth-three-repairs-v3-root-review.json",
+    "native-evidence/v8-default-real-bazel-lock-phase.json",
+    "static-proposals/musl-existing-repair-review/independent-review.json",
+    "static-proposals/app-parent-liveness/independent/independent-review.json",
+    "fourth-three-repairs-complete-root-review.json",
+    "static-proposals/app-parent-liveness/repair-manifest.json",
+    "fourth-repository-inventory-20261105.json",
+    "fourth-repository-inventory-root-review-20261105.json",
+    "FOURTH_DONOR_PROGRESS_20261105.zh-CN.md",
+    "fourth-donor-progress-root-review-20261105.json",
+    "fourth-intel-selected-originals-root-review.json",
+    "fourth-app-invalid-first-complete-root-review.json",
+    "fourth-app-parent-liveness-three-negatives-root-review.json",
+    "fourth-app-parent-liveness-final-eight-root-review.json",
+    "source-assembly/windows-python-full-root-execution-guard.json",
+    "scientific-pr4823/INDEPENDENT_REVIEW.zh-CN.md",
+    "fourth-pr4823-root-review.json"
+  ],
+  "native_latest_reviewed_tree": "fb9e131272f7e7a138d6c0d1af2b048b9a6ab7ff",
+  "code_ci_composition_note": "21 unpublished source commits reach actualfb9. OriginalPython57 passed; post-Python ordinary-index byte failure is preserved and all9575 entry semantics match originalcabc. Root accepted currentc41 snapshot. The unfiltered full continuation completed without source reapplication or Python rerun:19490 JUnit PASS/16FAIL,57ignored,25bound early returns,0retry. All42 original files were independently reconstructed. Original scoped hygiene is tracked separately; no final code-tree or published-head CI qualification is claimed.",
+  "open_ids": [
+    "B02",
+    "B07",
+    "B08",
+    "B09",
+    "B10",
+    "B11",
+    "B13",
+    "B15",
+    "B16",
+    "B19",
+    "B20",
+    "B21",
+    "B22",
+    "B23"
+  ],
+  "counts": {
+    "inherited_work_packages": 23,
+    "scoped_closed": 8,
+    "open": 14,
+    "scientific_hold": 1,
+    "new_whole_ids_closed_in_fourth_batch": 0
+  },
+  "native_current_execution": {
+    "source_tree": "f8251e1d14fa8524ab469281296cd4cf708f173c",
+    "original25": {
+      "pass": 25,
+      "fail": 0,
+      "selected_skip": 0,
+      "retries": 0,
+      "early_returns": 0,
+      "bundle": "fourth-literal-approval-original25-native.json",
+      "root_review": "fourth-literal-approval-native-root-review.json"
+    },
+    "owning7": {
+      "status": "FAILED",
+      "selected": 5416,
+      "junit_pass": 5408,
+      "fail": 8,
+      "original_ignored": 19,
+      "unmatched": 0,
+      "requires_remote_raw_notices": 24,
+      "full_raw_case_binding": "COMPLETE_INDEPENDENT_ROOT_REVIEW",
+      "exit_code": 100,
+      "controller_exit": 1,
+      "duration_seconds": 54.872,
+      "job_id": "1a1a916fc98-fc05-3136",
+      "failure_projection": "fourth-f825-owning8-failures.json",
+      "root_failure_scope_review": "fourth-f825-owning8-root-review.json",
+      "complete_original_review": "fourth-f825-full-owning-complete-root-review.json"
+    },
+    "full_workspace": {
+      "state": "ORIGINAL_TERMINAL_FAILED",
+      "source_tree": "f8251e1d14fa8524ab469281296cd4cf708f173c",
+      "selected": 19503,
+      "junit_pass": 19485,
+      "fail": 18,
+      "original_ignored": 56,
+      "unmatched": 0,
+      "selected_retries": 0,
+      "remote_early_returns_in_junit_pass": 24,
+      "unbound_early_return_notices": 0,
+      "just_exit_code": 100,
+      "command_seconds": 228.919,
+      "actual_selected_test_programs": 321,
+      "helper_programs": 33,
+      "program_identities_stable": true,
+      "raw_sha256": "75cd2cd5c89ce70781781c3b8c3e1bb168720b83bf6961c206720b3c08efe15c",
+      "raw_bytes": 34360967,
+      "failure_projection": "fourth-full-f825-failures-and-early-returns.json",
+      "independent_root_complete_original_review": "fourth-f825-full-owning-complete-root-review.json",
+      "nonpassing": 18,
+      "raw_failed": 17,
+      "raw_timed_out": 1,
+      "fail_count_semantics": "The inherited aggregate fail=18 includes 17 raw FAIL and one raw TIMEOUT; all 18 are nonpassing JUnit cases.",
+      "complete_original_archive": "fourth-f825-full-owning-compressed-index.json",
+      "complete_original_reconstruction": {
+        "artifacts": 18,
+        "raw_bytes": 74867442,
+        "encoded_parts": 33,
+        "root_reopened_all_decoded_files": true,
+        "root_exact_raw_junit_catalog_selection_case_binding": true
+      },
+      "additional_capability_early_returns_in_junit_pass": 1,
+      "known_omitted_behavior_cases": 25,
+      "historical_early_return_observer_limit": "The original unbound_early_return_notices=0 covered its old recognized-prefix list. The root later observed one additional original capability early return in the intact full raw; the original JUnit/result/raw and original24 remote cases are unchanged.",
+      "capability_correction_root_review": "fourth-app-parent-liveness-final-eight-root-review.json"
+    },
+    "final_hygiene": {
+      "state": "ORIGINAL_SCOPED_FIX_RUNNING",
+      "job_id": "1a1aa159580-fc05-3cbe",
+      "initial_source_tree": "fb9e131272f7e7a138d6c0d1af2b048b9a6ab7ff",
+      "root_guard_blob": "2764c93d3e0d7067b93b5a2f31bb398a85aaf755",
+      "payload_blob": "ea103ddf98081d88bd50560b65cd8b0736d6f872",
+      "runner_blob": "3b679c52a5b2e0da6fda8ccf8fa5ad450b6f395f",
+      "source_changes_require_root_review": true,
+      "tests_after_hygiene": false
+    },
+    "app_disconnect_diagnostic": {
+      "state": "ORIGINAL_CASE_FAIL_COMPLETE_38_ORIGINALS_INDEPENDENTLY_REVIEWED",
+      "job_id": "1a1a967b3ab-fc05-34f6",
+      "source_tree": "f8251e1d14fa8524ab469281296cd4cf708f173c",
+      "manifest": "fourth-app-disconnect-epoch2-manifest.json",
+      "root_guard": "fourth-app-disconnect-epoch2-root-guard.json",
+      "source_readonly_guard": "fourth-app-disconnect-epoch2-source-readonly.json",
+      "old_target_audit": "fourth-app-disconnect-old-target-review.json",
+      "new_target": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/target-app-epoch2-20261105",
+      "terminal_result": {
+        "selected": 1,
+        "failed": 1,
+        "seconds": 5.491,
+        "original_just_exit": 100,
+        "retries": 0,
+        "original_ignored": 56,
+        "filter_unmatched": 19502
+      },
+      "qualification": "New cold build epoch, independently verified complete compiler streams, original193-member/1501-node resolved graph, original33 helper roster and fresh stable executable identities. Original single case failed at5.491s with unchanged5s process-exit oracle,50ms polls and0retry. Outer bwrap disappeared while the same inner helper/Python PID-starttime identities remained alive. The unmodified run does not establish signal-call failure or the parent-death signal value/cause.",
+      "terminal_bundle": "fourth-app-epoch2-terminal-diagnostic.json",
+      "root_terminal_review": "fourth-app-epoch2-root-terminal-review.json",
+      "complete_originals_review": "fourth-app-epoch2-complete-root-review.json",
+      "complete_originals": {
+        "count": 38,
+        "bytes": 18874324,
+        "archive_index_blob": "777b62b813b3dfe366c551b9f6c42b4f82e311ba",
+        "root_review_blob": "15f49df80c6f6912cf571a831e01fd5f65b0a826"
+      }
+    },
+    "app_disconnect_prior_stopped_attempt": {
+      "state": "STOPPED_AT_HELPER_PREFLIGHT",
+      "job_id": "1a1a951380e-fc05-342f",
+      "controller_exit": 1,
+      "original_case_executed": false,
+      "cargo_metadata_catalog_or_test_executed": false,
+      "source_initial_guard": "f8251e1d14fa8524ab469281296cd4cf708f173c",
+      "final_guard_completed": false,
+      "missing_original_helpers": 33,
+      "profile_directory_absent": true,
+      "cause": "UNDETERMINED",
+      "receipt": "fourth-app-disconnect-preflight-stopped.json",
+      "qualification": "No App test PASS or FAIL was produced by this stopped attempt. The original full-run failure and all original evidence remain preserved."
+    },
+    "pending_A_repairs": {
+      "state": "FULL16_FAILED_TRIAGED_ORIGINAL_HYGIENE_RUNNING_FOR_DRAFT_PUBLICATION",
+      "skills_original_scope": 9,
+      "migration_original_package_scope": 166,
+      "v8_original_poc_scope": 6,
+      "v8_related_runtime_scope": 70,
+      "windows_acl_manifest": "static-proposals/b11/idempotency-candidate-manifest.json",
+      "windows_matrix_manifest": "static-proposals/b11-delete-matrix/repair-manifest.json",
+      "windows_log_retention": "static-proposals/b11/windows-strict-success-retention.json",
+      "sequence": "Preserve full16FAIL/25early-return observations and continue diagnosis of the2new failures; complete original owner-scoped fix/fmt with delta review; publish source/evidence to existing Draft and run fresh original hosted CI. B16 native follows separately."
+    },
+    "app_parent_lifecycle_temporary_observation": {
+      "state": "ORIGINAL_CASE_FAILED_DIAGNOSTIC_CAPTURED_EXACT_SOURCE_RESTORED",
+      "job_id": "1a1a98a00bb-fc05-35d8",
+      "base_and_required_restored_tree": "f8251e1d14fa8524ab469281296cd4cf708f173c",
+      "temporary_diagnostic_tree": "1e936b1ca6df807d8928a4cc6c527f40f92808aa",
+      "runner_blob": "55bbe3e4512eeeba6b27c3bc2061cde572c8c5ea",
+      "guard_blob": "961ec3880199c1a2ee367d6291bcee393436f169",
+      "completed_prerequisites": {
+        "six_normal_helpers_exit": 0,
+        "six_normal_helpers_seconds": 111.977,
+        "full_metadata_exit": 0,
+        "full_metadata_seconds": 1.583
+      },
+      "terminal_result": {
+        "selected": 1,
+        "failed": 1,
+        "seconds": 5.575,
+        "original_just_exit": 100,
+        "controller_exit": 1,
+        "retries": 0,
+        "original_ignored": 56,
+        "filter_unmatched": 19502
+      },
+      "source_restoration": "EXACT_F825_RESTORED_WITH_ORDINARY_INDEX_LOCKS_AND_UNTRACKED_GUARDS",
+      "limit": "Temporary observation only; source restored exactly. Kernel signal-loss cause is not established. Exporter's stale copied metadata is retained and explicitly corrected by actual source maps. Restoring source does not qualify the old or future executables.",
+      "observations": {
+        "inner_entry_pdeathsig": 0,
+        "inner_after_restrictions_pdeathsig": 0,
+        "inner_namespace_pid": 1,
+        "inner_namespace_ppid": 0,
+        "original_killpg_result": "Ok(())",
+        "outer_pgid": 780599,
+        "same_inner_helper_and_python_survive_outer_exit": true,
+        "specific_lsm_or_exec_cause_proven": false
+      },
+      "complete_originals": {
+        "count": 50,
+        "bytes": 18873887,
+        "archive_index": "native-evidence/app-parent-probe-compressed-archive/archive.json",
+        "archive_blob": "8c1e13c2d6c91597dc5543ff16a50892ba7da891",
+        "root_review": "fourth-app-parent-probe-complete-root-review.json",
+        "root_review_blob": "508f90b42ce54373abff4c9530f736c36ca154dc"
+      }
+    },
+    "three_repairs_v3": {
+      "state": "COMPLETE_ORIGINAL_SCOPES_PASS_WITH_VALID_CAUSAL_CONTROLS",
+      "job_id": "1a1a9a0aa93-fc05-3667",
+      "controller_exit": 0,
+      "before_tree": "1125d197cf798176bea6dcc2c0b0c499eb22cf44",
+      "final_tree": "7d703610ae4f778ad305ebc139860d276f416e8c",
+      "runner_blob": "89a705ef48b40e2834bd218744d2d56d58c0031a",
+      "manifest_blob": "c09347fa144265745105f1955f36611dadaa211b",
+      "guard_blob": "f9e355f7b7b39749fe64811bb029d2e6d6e3c174",
+      "skills": {
+        "valid_marker_negative": true,
+        "original_pass": 9,
+        "scope": "host_roots nine original cases; not all145 package cases",
+        "earlier_fixture_preparation_panic_retained_and_not_causal": true
+      },
+      "migration": {
+        "valid_inference_negative": true,
+        "original_pass": 166,
+        "actual_child_original_assertion": "marketplaces.rs:588:5",
+        "actual_empty_left_expected_official_marketplace": true,
+        "positive_nested_child_success_bound_to_exact_parent_raw_block": true
+      },
+      "v8_runtime": {
+        "original_pass": 76,
+        "runtime_unit": 68,
+        "poc_unit": 6,
+        "runtime_integration": 2,
+        "lib_only_filter": false
+      },
+      "real_bazel_locks": {
+        "version": "9.3.0",
+        "update_exit": 0,
+        "update_seconds": 111.734,
+        "check_exit": 0,
+        "check_seconds": 0.493,
+        "actual_generated_changes": [],
+        "task_config_restored": true
+      },
+      "retries": 0,
+      "selected_ignored": 0,
+      "early_return_notices": 0,
+      "root_review": "fourth-three-repairs-v3-root-review.json",
+      "root_review_blob": "1504d23acdb8fc5076d4216ee693b220d9c44391",
+      "qualification": "Original scoped tests passed on their exact source epochs. Whole-workspace and fresh hosted CI at the final published commit remain required.",
+      "complete_original_archive": {
+        "count": 171,
+        "bytes": 42477051,
+        "root_review": "fourth-three-repairs-complete-root-review.json",
+        "root_review_blob": "dcd1e280b7eb0c32042c32f4a59e5179c27b282f",
+        "prior_invalid_attempt_originals": 36
+      }
+    },
+    "latest_actual_source_tree": "fb9e131272f7e7a138d6c0d1af2b048b9a6ab7ff",
+    "app_parent_liveness_formal_candidate": {
+      "state": "THREE_VALID_CAUSAL_NEGATIVES_SEVEN_EXECUTED_POSITIVES_ONE_CAPABILITY_EARLY_RETURN",
+      "job_id": "1a1a9cf9300-fc05-3823",
+      "base_tree": "d8a5e94af06b9555fc8256af1337e9f28f7c7fa8",
+      "positive_tree": "c6fbcfa0d1ba3b1556f601dc4ca3a7734328b9f7",
+      "runner_blob": "6fd0636bdc81848f757893192021aede12129915",
+      "execution_manifest_blob": "a81ab520b6b0327d2da9e4c862a141c25480563f",
+      "root_execution_guard_blob": "a8c1ed05af9d75795d5c78806680e90ec8d5ac9b",
+      "counterfactuals": [
+        {
+          "kind": "no_exit_rejection",
+          "tree": "8c9b3cab2887ac8512529ff73b90584232ca5a17",
+          "seconds": 0.018,
+          "valid": true,
+          "actual_child_oracle": "tests.rs259 original exited parent incorrectly admitted as Ok(())"
+        },
+        {
+          "kind": "no_rearm",
+          "tree": "eafff444da46518a66e1d1db8369ec868719de97",
+          "seconds": 5.022,
+          "valid": true,
+          "actual_oracle": "tests.rs111 reaper survived original launcher exit"
+        },
+        {
+          "kind": "leaked_fd",
+          "tree": "a1da95cc0a5b18250ffe3957671c11f098265b8e",
+          "seconds": 0.01,
+          "valid": true,
+          "actual_child_oracle": "tests.rs269 pre-fork FD tuple (1,Some(0)) instead of (-1,Some(9))"
+        }
+      ],
+      "all_negative_finally_restored_exact_c6": true,
+      "counterfactuals_root_review": "fourth-app-parent-liveness-three-negatives-root-review.json",
+      "positive_scope_root_review": "fourth-app-parent-liveness-final-eight-root-review.json",
+      "positive_scope": {
+        "original_cases": 5,
+        "new_controls": 3,
+        "selected": 8,
+        "junit_pass": 8,
+        "executed_behaviors_pass": 7,
+        "original_capability_early_return": 1,
+        "original_app_seconds": 0.606,
+        "original_reaper_pass": 3,
+        "new_control_pass": 3,
+        "just_exit": 0,
+        "just_seconds": 4.058638201997383,
+        "strict_selection_valid": false,
+        "controller_exit": 1,
+        "retries": 0,
+        "ignored_support_not_a_pass": 1
+      },
+      "original_capability_gate": "OPEN: skipping capability test: unprivileged user namespaces are unavailable",
+      "source_unchanged": true,
+      "normal_helper_count": 6,
+      "stable_helper_roster": 33,
+      "full_catalog_eligible": 19506,
+      "full_catalog_ignored": 57,
+      "scope_note": "The one-line fixture banner separator preserved exact marker matching and all deadlines. No host policy or original test oracle was changed. Seven actual positive behaviors do not qualify the omitted capability behavior or all original blockers.",
+      "complete_original_archive": {
+        "archive": "native-evidence/app-parent-liveness-v2-complete-archive/archive.json",
+        "archive_blob": "ec98df80acd03e4353dd5739cb38fc15cec38d6b",
+        "originals": 157,
+        "original_bytes": 75747488,
+        "root_review": "fourth-app-parent-liveness-v2-complete-root-review.json",
+        "root_review_blob": "8b3fe3c462371c0eb32f6021cda79632ebe0a3a5",
+        "unique_git_chunks": 26,
+        "asset_chunk_references": 34,
+        "all_four_full_catalogs_identical_case_counters": true
+      }
+    },
+    "app_parent_liveness_invalid_first_attempt": {
+      "state": "INVALID_FIRST_COUNTERFACTUAL_BEFORE_CAUSAL_STAGE_EXACT_D8_RESTORED",
+      "base_tree": "7d703610ae4f778ad305ebc139860d276f416e8c",
+      "positive_tree": "d8a5e94af06b9555fc8256af1337e9f28f7c7fa8",
+      "manifest_blob": "014cd58cb83cb04bbf9329486f42cfe22b30182a",
+      "full_patch_blob": "5847179e988ea0719766cd25be293e09efd882c3",
+      "independent_review_blob": "ea366bc37dcf9df49e5564329c62f107f9e4b7a7",
+      "paths": 5,
+      "new_parent_tests": 3,
+      "ignored_support": 1,
+      "actual_native_result": {
+        "original_test": "FAIL",
+        "seconds": 5.005,
+        "just_exit": 100,
+        "controller_exit": 1,
+        "valid_causal_negative": false,
+        "cause": "Owned nested libtest banner and first marker were on the same line; strict whole-line marker precondition timed out before launcher kill/reparent/arm."
+      },
+      "scope": "Unread original proc inode, post-restriction PDEATHSIG rearm and PF_EXITING check, FD closed before user fork; preserves namespace PID1 and existing seccomp/capability restrictions. Kernel-source race argument remains distinct from physically observed cases.",
+      "job_id": "1a1a9bd0f35-fc05-3714",
+      "runner_blob": "7b4fce92dfe624f046c1cb022b7f9618d7dcb09d",
+      "execution_manifest_blob": "39bbc1032d3b703ea0b21d1e0e290d39512e06a3",
+      "root_execution_guard_blob": "104a43936267d8b28b00cc54df90013c6f7ecccc",
+      "last_observed_temporary_tree": "7e1bb54a24c240287c7f4f6a2b85fed008509cff",
+      "scope_note": "Temporary no-exit-rejection counterfactual; not the intended production source. Exact d8 restoration required.",
+      "restored_tree": "d8a5e94af06b9555fc8256af1337e9f28f7c7fa8",
+      "root_review": "fourth-app-parent-liveness-invalid-negative-root-review.json",
+      "complete_archive_root_review": "fourth-app-invalid-first-complete-root-review.json",
+      "complete_original_count": 47,
+      "complete_original_bytes": 19084610
+    },
+    "windows_python_full_continuation": {
+      "state": "PYTHON57_PASS_INDEX_RECONCILED_FULL_FB9_ACTUAL_FAILED_16",
+      "job_id": "1a1a9ea52e8-fc05-399a",
+      "root_execution_guard": "source-assembly/windows-python-full-root-execution-guard.json",
+      "root_execution_guard_blob": "491a8f9769f486f1a69098be8e29b4a1e046df72",
+      "runner_blob": "bd0461a2c99364a62bbbc5aa525ad25c85a17f40",
+      "manifest_blob": "be23ab7d53f775c87dad62d264d74716f1ea9c1f",
+      "initial_tree": "c6fbcfa0d1ba3b1556f601dc4ca3a7734328b9f7",
+      "expected_final_tree": "fb9e131272f7e7a138d6c0d1af2b048b9a6ab7ff",
+      "last_agent_reported_source": "fb9e131272f7e7a138d6c0d1af2b048b9a6ab7ff",
+      "root_complete_original_review": null,
+      "agent_report": "Historical first job: four source stages applied and original57 Python PASS; its ordinary-index byte guard then stopped before Cargo/full. A separate read-only reconciliation accepted the current semantically identical9,575-entry index, and the continuation below actually executed the original full command without repeating Python.",
+      "original_capability_gate_still_open": true,
+      "hygiene_executed": false,
+      "root_complete_small_original_review": "fourth-windows-python-index-root-review.json",
+      "python_actual_result": {
+        "selected": 57,
+        "pass": 57,
+        "skipped": 0,
+        "exit": 0,
+        "command_seconds": 8.738489650015254,
+        "controller_exit_preserved": 1
+      },
+      "accepted_index_snapshot": {
+        "bytes": 1222758,
+        "sha256": "c41b4d7645b2b88431ed024e9cc683e31d43fafe7290280eaf0bae656fd6a922"
+      },
+      "semantic_entries_exact_cabc": 9575,
+      "index_field_cause": "UNKNOWN_OLD_BINARY_NOT_AVAILABLE",
+      "continuation": {
+        "job_id": "1a1a9f68261-fc05-3a71",
+        "state": "COMPLETED_ORIGINAL_FULL_FAILED",
+        "root_guard": "source-assembly/windows-full-after-index-root-execution-guard.json",
+        "root_guard_blob": "0a052ff4d439405e12a16a9a5291b8995cfe0e83",
+        "runner": "050c507c59a270802cd4791e5c7c5ec57ea5a978",
+        "manifest": "04b9d5069b8391a8160d41c3035ec8d3012d96c0",
+        "payload": "3fade0440b35669b9cb8e0f4999bf56abd1c690f",
+        "source": "fb9e131272f7e7a138d6c0d1af2b048b9a6ab7ff",
+        "python_reexecuted": false,
+        "source_reapplied": false,
+        "full_result": {
+          "state": "ACTUAL_ORIGINAL_FULL_FAILED_16_COMPLETE42_ROOT_VERIFIED",
+          "source_tree": "fb9e131272f7e7a138d6c0d1af2b048b9a6ab7ff",
+          "job_id": "1a1a9f68261-fc05-3a71",
+          "selected": 19506,
+          "junit_pass": 19490,
+          "fail": 16,
+          "timeout_nodes_in_nonpass_projection": 0,
+          "original_ignored": 57,
+          "unmatched": 0,
+          "retries": 0,
+          "original_just_exit": 100,
+          "controller_exit": 1,
+          "agent_reported_command_seconds": 231.986,
+          "bound_early_returns": 25,
+          "remote_early_returns": 24,
+          "capability_early_returns": 1,
+          "common_previous_nonpass_names": 14,
+          "new_nonpass_names": 2,
+          "nonpass_projection": {
+            "path": "native-evidence/full-fb9/nonpass-projection-v1.json",
+            "bytes": 91707,
+            "sha256": "e2c91d696fb32cda9f0983f9b3d45acaea065505ecffac8a4aa0dd50617445f5",
+            "blob": "2b0f472449c79f559f85d445d3583f87bc879203"
+          },
+          "nonpass_root_review": "fourth-full-fb9-nonpass-root-review.json",
+          "full_original_source_review_identity": {
+            "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/windows-full-after-index-continuation-20261105-v1/full-workspace-review.json",
+            "bytes": 4625796,
+            "sha256": "8ba22d57c10ea80ac35603cdafeac538f1c13b83a83afd3cb03f792ee5b052bb"
+          },
+          "full_original_junit_identity": {
+            "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/windows-full-after-index-continuation-20261105-v1/full-workspace.junit.xml",
+            "bytes": 4147101,
+            "sha256": "a64ad0f88d187caa6dd0fa7c2dedd2f816a8366bedb1a93d026c169a16cf7ac8"
+          },
+          "full_original_terminal_identity": {
+            "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/windows-full-after-index-continuation-20261105-v1/terminal.json",
+            "bytes": 369147,
+            "sha256": "b02cfd1fd44fc0aad5cd759608e663bc2917ce95cf3de429f7f24697d4fa7e82"
+          },
+          "full_complete_original_root_review": "fourth-full-fb9-complete-root-review.json",
+          "hygiene_executed": false,
+          "full_complete_original_root_review_blob": "0b4205090db60b218c225db0e6d695d2bd79067d",
+          "complete_original_count": 42,
+          "complete_original_bytes": 60915164,
+          "actual_command_seconds": 231.98570543699316,
+          "four_repaired_original_cases_exact_pass": [
+            {
+              "classname": "codex-app-server::all",
+              "name": "suite::v2::command_exec::command_exec_process_ids_are_connection_scoped_and_disconnect_terminates_process",
+              "seconds": "1.216",
+              "raw_headers": [
+                {
+                  "result": "PASS",
+                  "seconds": "1.216"
+                }
+              ],
+              "observed_early_return": false
+            },
+            {
+              "classname": "codex-external-agent-migration",
+              "name": "service::tests::plugins::marketplaces::import_plugins_infers_external_official_marketplace_when_missing_from_settings",
+              "seconds": "0.060",
+              "raw_headers": [
+                {
+                  "result": "PASS",
+                  "seconds": "0.060"
+                }
+              ],
+              "observed_early_return": false
+            },
+            {
+              "classname": "codex-skills-extension",
+              "name": "host_roots::tests::repo_ancestry_without_project_marker_does_not_walk_parents",
+              "seconds": "0.006",
+              "raw_headers": [
+                {
+                  "result": "PASS",
+                  "seconds": "0.006"
+                }
+              ],
+              "observed_early_return": false
+            },
+            {
+              "classname": "codex-v8-poc",
+              "name": "tests::sandbox_feature_matches_linked_v8",
+              "seconds": "0.010",
+              "raw_headers": [
+                {
+                  "result": "PASS",
+                  "seconds": "0.010"
+                }
+              ],
+              "observed_early_return": false
+            }
+          ]
+        }
+      }
+    },
+    "full_workspace_fb9": {
+      "state": "ACTUAL_ORIGINAL_FULL_FAILED_16_COMPLETE42_ROOT_VERIFIED",
+      "source_tree": "fb9e131272f7e7a138d6c0d1af2b048b9a6ab7ff",
+      "job_id": "1a1a9f68261-fc05-3a71",
+      "selected": 19506,
+      "junit_pass": 19490,
+      "fail": 16,
+      "timeout_nodes_in_nonpass_projection": 0,
+      "original_ignored": 57,
+      "unmatched": 0,
+      "retries": 0,
+      "original_just_exit": 100,
+      "controller_exit": 1,
+      "agent_reported_command_seconds": 231.986,
+      "bound_early_returns": 25,
+      "remote_early_returns": 24,
+      "capability_early_returns": 1,
+      "common_previous_nonpass_names": 14,
+      "new_nonpass_names": 2,
+      "nonpass_projection": {
+        "path": "native-evidence/full-fb9/nonpass-projection-v1.json",
+        "bytes": 91707,
+        "sha256": "e2c91d696fb32cda9f0983f9b3d45acaea065505ecffac8a4aa0dd50617445f5",
+        "blob": "2b0f472449c79f559f85d445d3583f87bc879203"
+      },
+      "nonpass_root_review": "fourth-full-fb9-nonpass-root-review.json",
+      "full_original_source_review_identity": {
+        "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/windows-full-after-index-continuation-20261105-v1/full-workspace-review.json",
+        "bytes": 4625796,
+        "sha256": "8ba22d57c10ea80ac35603cdafeac538f1c13b83a83afd3cb03f792ee5b052bb"
+      },
+      "full_original_junit_identity": {
+        "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/windows-full-after-index-continuation-20261105-v1/full-workspace.junit.xml",
+        "bytes": 4147101,
+        "sha256": "a64ad0f88d187caa6dd0fa7c2dedd2f816a8366bedb1a93d026c169a16cf7ac8"
+      },
+      "full_original_terminal_identity": {
+        "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/windows-full-after-index-continuation-20261105-v1/terminal.json",
+        "bytes": 369147,
+        "sha256": "b02cfd1fd44fc0aad5cd759608e663bc2917ce95cf3de429f7f24697d4fa7e82"
+      },
+      "full_complete_original_root_review": "fourth-full-fb9-complete-root-review.json",
+      "hygiene_executed": false,
+      "full_complete_original_root_review_blob": "0b4205090db60b218c225db0e6d695d2bd79067d",
+      "complete_original_count": 42,
+      "complete_original_bytes": 60915164,
+      "actual_command_seconds": 231.98570543699316,
+      "four_repaired_original_cases_exact_pass": [
+        {
+          "classname": "codex-app-server::all",
+          "name": "suite::v2::command_exec::command_exec_process_ids_are_connection_scoped_and_disconnect_terminates_process",
+          "seconds": "1.216",
+          "raw_headers": [
+            {
+              "result": "PASS",
+              "seconds": "1.216"
+            }
+          ],
+          "observed_early_return": false
+        },
+        {
+          "classname": "codex-external-agent-migration",
+          "name": "service::tests::plugins::marketplaces::import_plugins_infers_external_official_marketplace_when_missing_from_settings",
+          "seconds": "0.060",
+          "raw_headers": [
+            {
+              "result": "PASS",
+              "seconds": "0.060"
+            }
+          ],
+          "observed_early_return": false
+        },
+        {
+          "classname": "codex-skills-extension",
+          "name": "host_roots::tests::repo_ancestry_without_project_marker_does_not_walk_parents",
+          "seconds": "0.006",
+          "raw_headers": [
+            {
+              "result": "PASS",
+              "seconds": "0.006"
+            }
+          ],
+          "observed_early_return": false
+        },
+        {
+          "classname": "codex-v8-poc",
+          "name": "tests::sandbox_feature_matches_linked_v8",
+          "seconds": "0.010",
+          "raw_headers": [
+            {
+              "result": "PASS",
+              "seconds": "0.010"
+            }
+          ],
+          "observed_early_return": false
+        }
+      ]
+    }
+  },
+  "scientific_pr4823_increment": {
+    "fixed_source": "9f2d00f79bfe7abc334e51f52a0d16f685656e5d",
+    "observed_head": "85f507fb2e1c9e8ad9941451641bb4ec3f1dccb4",
+    "observation_utc": "2026-11-05T04:29:37.932Z",
+    "report": "scientific-pr4823/INDEPENDENT_REVIEW.zh-CN.md",
+    "machine_review": "scientific-pr4823/independent-review.json",
+    "root_review": "fourth-pr4823-root-review.json",
+    "root_review_blob": "7bd9021141a8d690d8556773d92d8168382316a5",
+    "original_files": 452,
+    "original_bytes": 39426104,
+    "new_experiments_by_audit": false,
+    "original_B18_exit_changed": false,
+    "complete_cost_accounting": false
+  }
+}

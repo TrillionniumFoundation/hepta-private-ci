@@ -1,0 +1,72 @@
+{
+  "schema": "b16-operation-order-static-validation-v1",
+  "final_81_equal": true,
+  "deltas_applied": [
+    "r2c-v3-full",
+    "r2d-full",
+    "r2d-without-close-on-drop",
+    "r2d-restore-close-on-drop",
+    "r2e1-test-only-baseline",
+    "r2e1-repair-after-baseline",
+    "r2e2a-full",
+    "r2e2b-full",
+    "r2e3-test-only-baseline",
+    "r2e3-repair-after-baseline",
+    "r2e3-without-native-anchor",
+    "r2e3-restore-native-anchor",
+    "driver-adoption",
+    "driver-no_worker_token-patch",
+    "driver-no_worker_token-restore",
+    "driver-unwind_releases-patch",
+    "driver-unwind_releases-restore",
+    "pool-binding",
+    "pool-patch",
+    "pool-restore",
+    "checkpoint-production_cohort",
+    "checkpoint-physical_control_cohort",
+    "checkpoint-negative",
+    "checkpoint-restore"
+  ],
+  "deltas_count": 24,
+  "epochs": [
+    {
+      "epoch": "foundation",
+      "selected_case_executions": {
+        "scopes": 27,
+        "negative": 10
+      },
+      "distinct_selected_names_in_epoch": 24
+    },
+    {
+      "epoch": "driver",
+      "selected_case_executions": {
+        "negative": 3,
+        "scopes": 12
+      },
+      "distinct_selected_names_in_epoch": 12
+    },
+    {
+      "epoch": "pool",
+      "selected_case_executions": {
+        "negative": 3,
+        "scopes": 3
+      },
+      "distinct_selected_names_in_epoch": 3
+    },
+    {
+      "epoch": "checkpoint",
+      "selected_case_executions": {
+        "negative": 1,
+        "scopes": 15
+      },
+      "distinct_selected_names_in_epoch": 15
+    },
+    {
+      "epoch": "owning",
+      "selected_case_executions": {},
+      "distinct_selected_names_in_epoch": 0
+    }
+  ],
+  "native_executed": false,
+  "limit": "Source object transition model plus previous actual isolated git apply reconstruction; no Cargo, runtime or lock generation."
+}

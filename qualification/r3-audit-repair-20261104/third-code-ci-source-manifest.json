@@ -1,0 +1,231 @@
+{
+  "schema": "hepta.third_batch.code_and_ci_composition.v1",
+  "parent_commit": "ff72d462d74f9eb856aa9edbc368caad9c466708",
+  "parent_tree": "f780fe13946102a33b329898af48810be9c7bf0c",
+  "pre_hygiene_tree": "a69b20c4c3cfee9cf483496742d6bea1469d847a",
+  "formatted_tree": "7aa959b44ed8d2bdad2ab83fb103c40a3333cf0b",
+  "code_ci_tree": "aa1b76d8591358be2f591c8e411b9e0364a818fd",
+  "scope": "The tree before adding the current third-batch audit/evidence documents; it includes eight repaired historical qualification indexes already in the reviewed source snapshot. Publication commit/tree and actual next CI execution are separately recorded.",
+  "source_and_ci_files": 20,
+  "historical_qualification_repairs": 8,
+  "all_entries": [
+    {
+      "path": "codex-rs/core/tests/suite/tools.rs",
+      "mode": "100644",
+      "sha": "1fc4b08dd39ec30085d38cc3b5b661e2bdc6775e",
+      "before_blob": "f66216a93969c79bd3dc9cdd45437d47b05285e2",
+      "type": "blob",
+      "tested_preformat_sha": "0836d0f881a54a41cd6261de60b3591d1e902d48",
+      "final_hygiene": "format-only"
+    },
+    {
+      "path": "codex-rs/core/tests/common/test_codex.rs",
+      "mode": "100644",
+      "sha": "efaaf61844b49a1e42e9d630b306733d06647094",
+      "before_blob": "8bf703d6eedb4e2319367e060a48316f70bdeb8b",
+      "type": "blob"
+    },
+    {
+      "path": "codex-rs/core/tests/suite/turn_state.rs",
+      "mode": "100644",
+      "sha": "cafb5b4bdea1b05faa0fb8380e538a7d4b6d850f",
+      "before_blob": "ce306dbe96b47ed0ab48cd86fb8cfab0777e044c",
+      "type": "blob"
+    },
+    {
+      "path": "codex-rs/core/tests/suite/abort_tasks.rs",
+      "mode": "100644",
+      "sha": "bd4c8c8057d8626d0265ba61d54d705d6b844baf",
+      "before_blob": "73825f8423aed96bc71cd8f67109a1bb54bb2543",
+      "type": "blob",
+      "tested_preformat_sha": "c080f759823bc059cb0cb646bcdd8e649d20a3bd",
+      "final_hygiene": "format-only"
+    },
+    {
+      "path": "qualification/r3-audit-repair-20261104/windows-helper-source-inputs.json",
+      "mode": "100644",
+      "sha": "09ea912786888ba420741156897b944333c32672",
+      "before_blob": "93cd6aaab78f17e035bd1ae85439cfe82433bbdb",
+      "type": "blob"
+    },
+    {
+      "path": "qualification/r3-audit-repair-20261104/windows-helper-source-inputs-after.json",
+      "mode": "100644",
+      "sha": "7b45e1a0a7cb6b8a7b2225fe111e025f47506a93",
+      "before_blob": "93cd6aaab78f17e035bd1ae85439cfe82433bbdb",
+      "type": "blob"
+    },
+    {
+      "path": "qualification/r3-audit-repair-20261104/windows-helper-combined-source-manifest.json",
+      "mode": "100644",
+      "sha": "d35f29aa1d723f79670f24607bf38b69dd184c71",
+      "before_blob": "8981bff3e13b32979028143c51146f664996e5a7",
+      "type": "blob"
+    },
+    {
+      "path": "qualification/r3-audit-repair-20261104/windows-helper-combined-generator-receipt.json",
+      "mode": "100644",
+      "sha": "635416eda8cbe50f1790d81ea78bc6750bbfc4fe",
+      "before_blob": "dfb54f463bd951095d91b90c9d0442bf01637df4",
+      "type": "blob"
+    },
+    {
+      "path": "qualification/r3-audit-repair-20261104/windows-helper-combined-lock-verification.json",
+      "mode": "100644",
+      "sha": "a0d595b5320b24e0a633be31a7131cf3bb4ae6e0",
+      "before_blob": "94adfe2abed352be63b93cdc9a9126d0a9731d6c",
+      "type": "blob"
+    },
+    {
+      "path": "qualification/r3-audit-repair-20261104/windows-helper-receipt.json",
+      "mode": "100644",
+      "sha": "a698b4dd7ee50ecdd50101784524a266b5fc6eb6",
+      "before_blob": "71bea4b699f017d1b86d367f532d12d0df7db24f",
+      "type": "blob"
+    },
+    {
+      "path": "qualification/r3-audit-repair-20261104/windows-helper-lock-verification.json",
+      "mode": "100644",
+      "sha": "3f52b9929cacdcec1de9513db34acf7cb3ae9de4",
+      "before_blob": "4afa39832837465e84964825c0e89c56789aa490",
+      "type": "blob"
+    },
+    {
+      "path": "qualification/r3-audit-repair-20261104/README.md",
+      "mode": "100644",
+      "sha": "43223adc86ac812825dc04b0c18838ac20e19735",
+      "before_blob": "3638e2d64df54c0d806fe9e16caae8a307648120",
+      "type": "blob"
+    },
+    {
+      "path": ".github/scripts/collect_bazel_failed_test_logs.py",
+      "mode": "100644",
+      "sha": "27294323b62aae86d288a9d42d4c7cf21f5da003",
+      "before_blob": null,
+      "type": "blob",
+      "tested_preformat_sha": "912925eb8e8ef2cf0c7bbcdf63e481a29c989508",
+      "final_hygiene": "format-only"
+    },
+    {
+      "path": ".github/scripts/run-bazel-ci.sh",
+      "mode": "100755",
+      "sha": "6960ef43592d3f09454374367da1cd8923e2ed80",
+      "before_blob": "2bb6994771e1bfaa6b6e9f2824758188f8e454a9",
+      "type": "blob"
+    },
+    {
+      "path": ".github/scripts/test_run_bazel_ci.py",
+      "mode": "100644",
+      "sha": "aba44fc70d8b7e786b6c5cc3dc07551eb148f4b8",
+      "before_blob": "03cbaf7cf988f978d60b59f2efddf599d97255b5",
+      "type": "blob",
+      "tested_preformat_sha": "0597945519c3c6092d258eb1122e2d93f73bd418",
+      "final_hygiene": "format-only"
+    },
+    {
+      "path": ".github/workflows/hepta-exec-authorized-read-compat.yml",
+      "mode": "100644",
+      "sha": "6044fc72bc0b27a56445670ab9f11ea9375fd20e",
+      "before_blob": "17f4e56b5d67feca6b816c0a83a955e9b6c70a62",
+      "type": "blob"
+    },
+    {
+      "path": "codex-rs/ext/queue/tests/queue_service.rs",
+      "mode": "100644",
+      "sha": "13afd7f2c536c5622fc7f8cc3fe68c0cc1a59cc1",
+      "before_blob": "19fa5aa60637aef39a396fde3cbbec799e83181c",
+      "type": "blob",
+      "tested_preformat_sha": "21023fa6e7d554552e40750b1b282976ac6c39ed",
+      "final_hygiene": "format-only"
+    },
+    {
+      "path": "codex-rs/app-server/tests/suite/v2/executor_skills.rs",
+      "mode": "100644",
+      "sha": "a31ab6b9139ce122a95cecfd2171fac92ba3121d",
+      "before_blob": "6731fefddbc5ab1158234877939ebdc10ddfd206",
+      "type": "blob"
+    },
+    {
+      "path": "codex-rs/utils/pty/src/tests.rs",
+      "mode": "100644",
+      "sha": "e66a6e7c519ad28d5657e17b0221be0147c51972",
+      "before_blob": "dddfec083378c10398ccdcf7ab99bcdf7d1e1fe4",
+      "type": "blob",
+      "tested_preformat_sha": "c7f12dde042d887613a28cfca7de9408cae0570e",
+      "final_hygiene": "format-only"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/tests/five_agent_rolling_upgrade.rs",
+      "mode": "100644",
+      "sha": "61f225f28bfb1be24457868b5822999f5e5e5861",
+      "before_blob": "08afc2c6c333974567385a9f5630e0b6b71a6fbd",
+      "type": "blob"
+    },
+    {
+      "path": "codex-rs/hepta-infer-worker-host/src/native_app_server.rs",
+      "mode": "100644",
+      "sha": "fc66858f3be9161ef42f0cda8e37a79d16fc4a24",
+      "before_blob": "79b05c7f9601dd61ac69b2f212305db5393ed138",
+      "type": "blob"
+    },
+    {
+      "path": "codex-rs/hepta-infer-worker-host/src/native_app_server_tests.rs",
+      "mode": "100644",
+      "sha": "3b3f2dae67c9034b4466ac553370b797cc703e8c",
+      "before_blob": "f519b7f49d76eab8e65989f80aad02847a5566ba",
+      "type": "blob"
+    },
+    {
+      "path": "codex-rs/exec-server/tests/forward.rs",
+      "mode": "100644",
+      "sha": "ad40d691f753c5effaeadc3e7721371a8c23a48e",
+      "before_blob": "02c272bdaef11e8106769444bdc75adb3af33cc7",
+      "type": "blob",
+      "tested_preformat_sha": "8abb5269f6ceb6aea0766721868065d88a191bad",
+      "final_hygiene": "format-only"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/tests/supervisord_product_e2e.rs",
+      "mode": "100644",
+      "sha": "1c2e25e878b679839eec372525b213e66b81aa59",
+      "before_blob": "01c7b1cfbaaf08c304ecc9c8983ae26c54a813b0",
+      "type": "blob",
+      "tested_preformat_sha": "3f7a0d264ad081977705dcaa348aa9cc44ea1234",
+      "final_hygiene": "format-only"
+    },
+    {
+      "path": ".github/workflows/ui-product-foundation.yml",
+      "mode": "100644",
+      "sha": "748773dfa939194f5b8184406a261def15817904",
+      "before_blob": "385bdc1f5605d67499f041e930b38d8a6c751509",
+      "type": "blob"
+    },
+    {
+      "path": "scripts/fetch_ui_ci_history.py",
+      "mode": "100644",
+      "sha": "ed8f23d52526620b46313ecba8baba9c47e3f7ab",
+      "before_blob": null,
+      "type": "blob",
+      "tested_preformat_sha": "9cff8182e1e1b65bda5998a6f5380a00ebf42bb5",
+      "final_hygiene": "format-only"
+    },
+    {
+      "path": "scripts/test_ui_product_foundation_ci.py",
+      "mode": "100644",
+      "sha": "cc822b9c8ced16e2c8379d4e5c7f2c9df6c67a77",
+      "before_blob": "cb1900ddf5702474c8d15b3914fa0ab225f10855",
+      "type": "blob",
+      "tested_preformat_sha": "42d7ed7751f3e0261d13f40db21ed987a9226c8a",
+      "final_hygiene": "format-only"
+    },
+    {
+      "path": ".github/workflows/hepta-musl-product-smoke.yml",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "6aad46b1fe0edcf315ef8b1a5546225c59efe235",
+      "before_blob": null,
+      "qualification": "YAML and four inline Python syntax checks; hosted build/process pending"
+    }
+  ],
+  "all_sources_reconstructed_equal": true
+}

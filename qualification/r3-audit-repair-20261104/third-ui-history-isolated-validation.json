@@ -1,0 +1,69 @@
+{
+  "schema": "hepta.ui-checkout-isolated-git-validation.v1",
+  "host": {
+    "system": "Linux",
+    "node": "qian-qi",
+    "release": "7.0.0-38-generic",
+    "version": "#38~24.04.4-Ubuntu SMP PREEMPT_DYNAMIC Mon Sep 14 16:37:11 UTC 2",
+    "machine": "x86_64",
+    "processor": "x86_64"
+  },
+  "python": "3.12.3 (main, Aug 31 2026, 10:18:26) [GCC 13.3.0]",
+  "git": "git version 2.43.0",
+  "scope": "Isolated local Git/Python fixture only; no Cargo, product build, native test worktree or target.",
+  "compile_exit_code": 0,
+  "tests_exit_code": 0,
+  "elapsed_seconds": 3.356073917937465,
+  "source_identities": {
+    ".github/workflows/ui-product-foundation.yml": {
+      "bytes": 33806,
+      "sha256": "dec7581a5bb0a85f2875fa22a18f4462a6c26b32fbbeded38f4e7be204e3327d",
+      "git_blob": "748773dfa939194f5b8184406a261def15817904"
+    },
+    ".github/actions/hepta-synthetic-merge/action.yml": {
+      "bytes": 2413,
+      "sha256": "8f1d4a453717b5386ac3cfbc2827c23a0c973b6b8c5851e059fda6cda2d8b07f",
+      "git_blob": "905fc5039016ac7aaadbb857c0a7b94bb594f7ce"
+    },
+    "scripts/fetch_ui_ci_history.py": {
+      "bytes": 3887,
+      "sha256": "8725e9587e1bb0cc7930a2792007705a8ed4f70f601deb2c8174afb0c45d7993",
+      "git_blob": "9cff8182e1e1b65bda5998a6f5380a00ebf42bb5"
+    },
+    "scripts/test_ui_product_foundation_ci.py": {
+      "bytes": 16441,
+      "sha256": "1cdde8d45e34ee19ca8f9b3ad66d578ae26dd5d9ec64f301a52edf506ee1771e",
+      "git_blob": "42d7ed7751f3e0261d13f40db21ed987a9226c8a"
+    }
+  },
+  "patches": {
+    "ui-checkout-and-timing.patch": {
+      "bytes": 17110,
+      "sha256": "0880f948ec4a10eb441d617d12e0edf9c1c34256c0f12b53b90149f14e423e36"
+    },
+    "ui-checkout-only.patch": {
+      "bytes": 14898,
+      "sha256": "2ce4d923acaaff3a27bf8ff4f00833741ae8c06227c46423c05983425f5d48a4"
+    },
+    "ui-timing-only.patch": {
+      "bytes": 2415,
+      "sha256": "2436348f68cb7d7f8da54020a49d147f2cc0b2bad2c2ac5025721ca75278f105"
+    }
+  },
+  "compile.stdout.txt": {
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  "compile.stderr.txt": {
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  "tests.stdout.txt": {
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  "tests.stderr.txt": {
+    "bytes": 1555,
+    "sha256": "0b3287b3b8660e35e4738cb6f46911c6de4f96cad9717faff9db96bc3497b90e"
+  }
+}

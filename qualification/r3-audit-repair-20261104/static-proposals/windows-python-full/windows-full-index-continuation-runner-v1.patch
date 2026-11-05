@@ -1,0 +1,54 @@
+--- v4-executed-python-index-failure
++++ index-continuation-v1
+@@ -289,6 +289,39 @@
+  reviews.append(review)
+  return review
+ 
++def read_completed_python_scope():
++ reference = request["completed_python_reference"]; original_files = {}
++ for name, expected in reference["files"].items():
++  path = pathlib.Path(expected["path"])
++  assert path.is_relative_to(root / "evidence") and not path.is_symlink()
++  assert all(rec(path)[key] == expected[key] for key in ("bytes", "sha256")), "completed Python evidence changed: " + name
++  original_files[name] = path.read_text()
++ ids = json.loads(original_files["catalog"])
++ assert len(ids) == len(set(ids)) == approved["original_gates"]["python_roster_count"]
++ assert not any("_FailedTest" in name for name in ids)
++ status = json.loads(original_files["status"]); command = json.loads(original_files["command"])
++ assert status["source_before"] == status["source_after"] == command["source"] == source
++ assert status["argv"] == command["argv"] == approved["original_gates"]["python_test_argv"]
++ before = json.loads(original_files["before_guard"]); after = json.loads(original_files["after_guard"])
++ assert before["actual_source"] == after["actual_source"] == source
++ assert before["head"] == after["head"] == approved["ordinary_head"]
++ assert before["locks"] == after["locks"] and not before["untracked_source_paths"] and not after["untracked_source_paths"]
++ assert all(after["ordinary_index"][key] == approved["ordinary_index"][key] for key in ("bytes", "sha256"))
++ reconciliation = json.loads(original_files["index_reconciliation"])
++ assert reconciliation["source"] == source and reconciliation["ordinary_head"] == approved["ordinary_head"]
++ assert reconciliation["index_semantics_exact_head"] and reconciliation["parsed_index_matches_git_ls_files"]
++ assert reconciliation["private_source_index_exact_candidate"] and reconciliation["working_tree_raw_diff_empty"]
++ assert reconciliation["ordinary_index_bytes_stable_during_read"] and not reconciliation["untracked_source_paths"]
++ assert all(reconciliation["actual_ordinary_index"][key] == approved["ordinary_index"][key] for key in ("bytes", "sha256"))
++ assert all(reconciliation["flags"][key] == 0 for key in ("stage_nonzero", "assume_valid", "extended_nonzero", "skip_worktree", "intent_to_add"))
++ raw = original_files["raw"]
++ count = re.findall(r"(?m)^Ran ([0-9]+) tests? in [0-9.]+s$", raw)
++ ok = status["exit_code"] == 0 and count == [str(len(ids))] and re.search(r"(?m)^OK$", raw) is not None
++ receipt = {"source": source, "catalog_ids": ids, "catalog": reference["files"]["catalog"], "original_argv": approved["original_gates"]["python_test_argv"], "actual_summary_counts": count, "original_raw": reference["files"]["raw"], "exit_code": status["exit_code"], "passed": ok, "original_attempt_job": reference["job_id"], "original_controller_exit_code": 1, "original_guard_failure_retained": reference["failure_originals_blob"], "readonly_index_reconciliation": reference["files"]["index_reconciliation"], "not_reexecuted": True, "limit": "Previously completed original 57-test suite is read and hash-verified, not rerun. The prior controller failed on ordinary-index bytes; semantic reconciliation and the new snapshot require an explicit root continuation guard. No claim is made about the unavailable prior index stat or extension bytes."}
++ save("wrapper-python-original-review.json", receipt)
++ assert ok, "completed original Python evidence does not qualify"
++ return receipt
++
+ try:
+  save("execution-request.json", request); guard("initial")
+  assert target.is_dir() and not target.is_symlink()
+@@ -297,9 +330,8 @@
+  baseline_graph = feature_graph(json.loads(baseline.read_text()))
+  assert len(baseline_graph["workspace_members"]) == 193 and len(baseline_graph["nodes"]) == 1501
+  save("native-host.json", {"host_alias":"rog","uname":list(os.uname()),"rustc":subprocess.run(["rustc","-vV"],env=env,capture_output=True,text=True,check=True).stdout,"target":str(target),"source":source,"initial_free_bytes":shutil.disk_usage(tree).free,"cargo_profile":"dev-small","nextest_profile":"local","environment_policy_changed":False})
+- for stage in approved["stages"]: apply_stage(stage)
+- assert source == approved["final_tree"]
+- python_review = run_python_scope()
++ assert approved["stages"] == [] and source == approved["final_tree"], "continuation must not reapply source"
++ python_review = read_completed_python_scope()
+  full_review = run_full()
+  guard("final"); export_source("final-source-map.json")
+  terminal = {"source":source,"root_guard_blob":request["root_guard_blob"],"runner":request["runner"],"python_passed":python_review["passed"],"full_original_command_exit_code":full_review["exit_code"],"full_review":rec(out/"full-workspace-review.json"),"full_counts":full_review["counts"],"full_passed":full_review["passed"],"exact_executed_roster":full_review["exact_executed_roster"],"binary_stable":full_review["binary_stable"],"helpers_stable":full_review["helpers_stable"],"observed_early_return_cases":len(full_review["early_return_case_observations"]),"unbound_early_return_notices":full_review["unbound_early_return_notices"],"phases":phases,"limits":approved["limits"],"next_step":"Stop for root review of every actual full-suite outcome. No hygiene, additional tests or publication is performed."}

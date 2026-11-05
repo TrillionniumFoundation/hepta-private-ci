@@ -1,0 +1,322 @@
+{
+  "schema": "windows_boundary_repair_acceptance_design_v1",
+  "status": "READ_ONLY_DESIGN_ALL_THREE_ORIGINAL_CASES_REMAIN_OPEN",
+  "authority": {
+    "allowed": "Read fixed source, original CI evidence and primary documentation; create unreachable qualification-review blobs.",
+    "not_performed": [
+      "No production token/ACL/loader/DLL edit or patch.",
+      "No ref/commit mutation.",
+      "No permission experiment or native execution.",
+      "No skip, timeout, expected-result or capability broadening."
+    ],
+    "approval_gate": "Earlier automatic approval rejection for production security-boundary changes remains in force. This design does not bypass it."
+  },
+  "identity": {
+    "repository": "TrillionniumFoundation/hepta-private-ci",
+    "reviewed_head": "ff72d462d74f9eb856aa9edbc368caad9c466708",
+    "reviewed_tree": "f780fe13946102a33b329898af48810be9c7bf0c",
+    "actual_ci_checkout": "8e20cb5ec8261053ea472f06f79a0def072f3dce",
+    "actual_ci_parents": [
+      "63652be658ebed8d3052eb789b951793384fd5e4",
+      "ff72d462d74f9eb856aa9edbc368caad9c466708"
+    ],
+    "actual_ci_tree": "f780fe13946102a33b329898af48810be9c7bf0c",
+    "merge_tree_independently_verified": true,
+    "run": 41875454075,
+    "job": 126733764659,
+    "job_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/41875454075/job/126733764659",
+    "full_log": {
+      "bytes": 559323,
+      "sha256": "9366f22f8137626203debc8be5448a8156b4d75b8fac7569bc55967ddcc4cda8",
+      "lines": 4398
+    },
+    "exact_bazel_target": "//codex-rs/windows-sandbox-rs:windows-sandbox-rs-unit-tests",
+    "observed_original_unit_summary": {
+      "passed": 52,
+      "failed": 3,
+      "ignored": 2,
+      "filtered_out": 92,
+      "seconds": 4.39
+    },
+    "duplicate_log_rule": "The later wrapper tail repeats the same PIDs, fixture paths, failures and 4.39s summary. It is not a second native reproduction.",
+    "source_files": [
+      {
+        "path": "codex-rs/windows-sandbox-rs/src/acl.rs",
+        "blob": "755083dd97ef25065692028405412326e4e2ac49",
+        "bytes": 27953,
+        "sha256": "58976c6d1594c116dfd108316bb748b5cf2e9f108785605eaa93c96b77145b83",
+        "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/ff72d462d74f9eb856aa9edbc368caad9c466708/codex-rs/windows-sandbox-rs/src/acl.rs"
+      },
+      {
+        "path": "codex-rs/windows-sandbox-rs/src/acl_tests.rs",
+        "blob": "a27ce6bde8a5a8ec68b005d6fc10cc4abf261d59",
+        "bytes": 8717,
+        "sha256": "45c313a55741e798af7efc3ef3d9b3878f6ffa092ad77fe2457dacab777db06b",
+        "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/ff72d462d74f9eb856aa9edbc368caad9c466708/codex-rs/windows-sandbox-rs/src/acl_tests.rs"
+      },
+      {
+        "path": "codex-rs/windows-sandbox-rs/src/token.rs",
+        "blob": "8945d75fe172679479b738e6266cac99a6f7ed16",
+        "bytes": 18359,
+        "sha256": "3fe5daee06868755f298a415864e4087984f95b1d20325a86687638bba4cd8ac",
+        "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/ff72d462d74f9eb856aa9edbc368caad9c466708/codex-rs/windows-sandbox-rs/src/token.rs"
+      },
+      {
+        "path": "codex-rs/windows-sandbox-rs/src/token_tests.rs",
+        "blob": "140f141bc0a5807856ceb1068c9fbf423d5ce543",
+        "bytes": 18059,
+        "sha256": "17c7398576cebbd83cfc236c0e2788eccff0765e2ff058676aa7a9c334d6a850",
+        "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/ff72d462d74f9eb856aa9edbc368caad9c466708/codex-rs/windows-sandbox-rs/src/token_tests.rs"
+      },
+      {
+        "path": "codex-rs/windows-sandbox-rs/src/unified_exec/mod.rs",
+        "blob": "c98f3e5d217ada48732e1686129806d0dd52169e",
+        "bytes": 8588,
+        "sha256": "6de412ae0a3102084a0b28fc57a276dfc58e5113ffbd0e2d39df4931863e3a72",
+        "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/ff72d462d74f9eb856aa9edbc368caad9c466708/codex-rs/windows-sandbox-rs/src/unified_exec/mod.rs"
+      },
+      {
+        "path": "codex-rs/windows-sandbox-rs/src/unified_exec/tests.rs",
+        "blob": "694db339514d08efb54c05d82f2e58026b673998",
+        "bytes": 43037,
+        "sha256": "9dcb0cc508227290437dd6b851496d02b9731bac8e91c087d11a2b57a0e1706d",
+        "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/ff72d462d74f9eb856aa9edbc368caad9c466708/codex-rs/windows-sandbox-rs/src/unified_exec/tests.rs"
+      },
+      {
+        "path": "codex-rs/windows-sandbox-rs/src/lib.rs",
+        "blob": "43d3e5c935db4579809525e58f33718e8a250005",
+        "bytes": 30261,
+        "sha256": "7154ed07604553cd278db04a9e39b337aa2abe12dd8b5df782b3461cd906e124",
+        "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/ff72d462d74f9eb856aa9edbc368caad9c466708/codex-rs/windows-sandbox-rs/src/lib.rs"
+      },
+      {
+        "path": "codex-rs/windows-sandbox-rs/Cargo.toml",
+        "blob": "aa41ed5f08608c0275785b2f5e27ec5db08f50dd",
+        "bytes": 2438,
+        "sha256": "183a3691be018640668dfb766f29651d8fd75ab08f7fd526f3d378ae2a86469d",
+        "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/ff72d462d74f9eb856aa9edbc368caad9c466708/codex-rs/windows-sandbox-rs/Cargo.toml"
+      }
+    ]
+  },
+  "original_cases": [
+    {
+      "name": "token::tests::partial_delete_deny_is_repaired_before_native_workspace_writes",
+      "observed": "Repeated repair tuple is (true,true,true), expected (false,true,false); stored directory ACE count 11->13, direct file 8->9.",
+      "disposition": "ROOT_CAUSE_ESTABLISHED_IMPLEMENTATION_NOT_AUTHORIZED",
+      "preserved_oracles": [
+        "First repair true and both overwrite/create PermissionDenied.",
+        "Repeat tuple exactly (false,true,false).",
+        "Read/content remain 'before repair'; created file absent."
+      ]
+    },
+    {
+      "name": "token::tests::workspace_capabilities_deny_writes_and_deletes_under_broad_identity_aces",
+      "observed": "Overwrite/create yield PermissionDenied raw OS 5; remove_file/remove_dir return success; parent observation finds both objects NotFound raw OS 2.",
+      "disposition": "VIOLATION_ESTABLISHED_DELETE_ROUTE_CAUSE_OPEN",
+      "preserved_oracles": [
+        "All four outside operations must return PermissionDenied.",
+        "Outside original contents and directory must remain; outside-created file absent.",
+        "Both allowed roots must allow create and deletion with physical postconditions.",
+        "Allowed capability a/b present, unrelated/logon/Everyone excluded from restriction matches."
+      ]
+    },
+    {
+      "name": "unified_exec::tests::legacy_workspace_write_delete_is_limited_to_writable_roots",
+      "observed": "Real cmd.exe child exits 0 and deletes three allowed files, but also removes outside file and protected .git; both parent metadata observations are NotFound.",
+      "disposition": "REAL_CHILD_VIOLATION_ESTABLISHED_DELETE_ROUTE_CAUSE_OPEN",
+      "preserved_oracles": [
+        "Original tuple remains (0,false,false,false,Some('outside'),true).",
+        "Original real child, command body, private desktop and 5000ms child/10s collection budgets remain.",
+        "Physical post-exit filesystem observations remain authoritative; child exit 0 alone is not a deny proof."
+      ]
+    }
+  ],
+  "established_dacl_cause": {
+    "query": "acl.rs dacl_has_complete_deny_for_sid maps masks but accepts only leading explicit unconditional deny entries with exact flags 0x03.",
+    "stored_directory": [
+      {
+        "type": "ACCESS_DENIED_ACE",
+        "flags": "0x00",
+        "mask": "0x00130156",
+        "role": "effective on this object"
+      },
+      {
+        "type": "ACCESS_DENIED_ACE",
+        "flags": "0x0b",
+        "mask": "0x40130156",
+        "role": "inherit-only, object+container recursively inheritable"
+      }
+    ],
+    "stored_direct_file": {
+      "type": "ACCESS_DENIED_ACE",
+      "flags": "0x00",
+      "mask": "0x00130156"
+    },
+    "inference": "All observed complete normalized entries fail the exact flags==0x03 comparison, so already_present returns false and the unchanged setter adds another deny. The source predicate plus real stored ACEs and counts establish this cause.",
+    "limit": "This establishes repair idempotence failure, not the root cause of outside deletion."
+  },
+  "dacl_repair_design": {
+    "scope": "Future reviewed production change only to recognition of already-installed complete deny scope; no ACL permission mask, token policy or ordering relaxation.",
+    "object_kind": "Use explicit file-versus-directory scope at the path-aware callsite; current no-path predicate cannot distinguish their contracts.",
+    "file_rule": "A leading explicit effective full-mask deny for the exact SID is enough for a file. Inherited-only coverage is not an explicit repair certificate; first direct repair must still return true.",
+    "directory_rule": "Require complete effective denial on the directory AND complete recursive object+container propagation. A complete 0x03 entry supplies both; the complete 0x00 plus 0x0b pair for the same SID is another representation.",
+    "strictness": [
+      "Keep generic-to-specific comparison with the existing filesystem mapping.",
+      "Keep prefix/order boundary: an earlier allow, unknown/conditional/object-specific ACE or inherited entry cannot certify a later deny.",
+      "Do not accept inherit-only alone, self-only alone for a directory, no-propagate, missing object/container scope, unrelated SID or partial mask.",
+      "Do not combine unrelated SIDs or arbitrarily union partial ACEs to satisfy a complete mask.",
+      "Do not rewrite/reorder/deduplicate existing ACLs merely to match the query representation.",
+      "Keep errors as errors and preserve explicit-versus-inherited semantics."
+    ],
+    "necessary_controls": [
+      "Existing complete_denies_compare_mapped_masks_and_require_every_right unchanged.",
+      "Existing complete_denies_require_effective_recursive_scope_and_precede_allows remains a directory-scope negative control; flags 0 alone must still fail there.",
+      "New native normalized-pair positive, each-half-only negatives, wrong SID, partial-rights, no-propagate and allow-before-deny negatives.",
+      "File native first direct repair true and second false, with byte-equal DACL and unchanged ACE count on the second call.",
+      "Directory first repair true and second false; capture the actual DACL after setter normalization, not only an in-memory synthetic ACL.",
+      "Existing partial_read_deny_is_repaired_before_native_file_data_access and deny_ace_update_failure_is_an_error remain mandatory because the query is shared with read denies."
+    ]
+  },
+  "deletion_analysis": {
+    "established": [
+      "The actual token matches allowed a/b restricting SIDs and does not match unrelated, logon or Everyone SIDs in five original probes; source passes capability-only restricting entries for this legacy factory.",
+      "The outside object has a broad identity DELETE route and its parent has a broad identity FILE_DELETE_CHILD route; both exist together in the current fixture.",
+      "Source uses DISABLE_MAX_PRIVILEGE | LUA_TOKEN | WRITE_RESTRICTED.",
+      "Actual deletion and post-impersonation/post-child disappearance are proven, so this is not a renamed error or missing setup helper."
+    ],
+    "unresolved_hypotheses": [
+      {
+        "id": "WRITE_RESTRICTED_CLASSIFICATION",
+        "hypothesis": "The actual deletion rights may avoid the capability-restricted write check.",
+        "not_proven": "Microsoft documents write-only restricting SID checks but does not resolve this exact filesystem delete path from this evidence."
+      },
+      {
+        "id": "PARENT_DELETE_CHILD_ROUTE",
+        "hypothesis": "The filesystem may authorize deletion via parent FILE_DELETE_CHILD even when the object path would be denied.",
+        "not_proven": "Current fixture grants both parent and object deletion routes; no controlled removal of one route has been observed."
+      },
+      {
+        "id": "TOKEN_OR_HANDLE_CONTEXT",
+        "hypothesis": "The particular active token, inherited handles, enabled privileges or Win32 operation path may affect the effective check.",
+        "not_proven": "Five SID-membership probes and source flags are not a complete active child-token/handle audit."
+      }
+    ],
+    "no_safe_minimal_delete_patch_established": true,
+    "prohibited_shortcuts": [
+      "Add Everyone/logon/user identity as a capability.",
+      "Drop WRITE_RESTRICTED without qualifying read/load/IPC semantics.",
+      "Treat acl idempotence repair as a deletion fix.",
+      "Rewrite global parent ACLs or machine security policy.",
+      "Force a setup or loader error so the destructive branch never runs.",
+      "Change expected errors, skip or filter the original failing cases."
+    ]
+  },
+  "discriminating_controls_design": {
+    "authorization": "Design only. Creating or executing altered-token/ACL controls requires the existing security approval gate to be resolved first.",
+    "fixture_boundary": "Owned disposable fixture trees only; no production Root, host parent ACL, DLL search path or global token policy changes.",
+    "object_parent_matrix": [
+      {
+        "object_identity_DELETE": false,
+        "parent_identity_DELETE_CHILD": false,
+        "purpose": "No identity delete route; mandatory deny control."
+      },
+      {
+        "object_identity_DELETE": true,
+        "parent_identity_DELETE_CHILD": false,
+        "purpose": "Isolate object DELETE."
+      },
+      {
+        "object_identity_DELETE": false,
+        "parent_identity_DELETE_CHILD": true,
+        "purpose": "Isolate parent DELETE_CHILD."
+      },
+      {
+        "object_identity_DELETE": true,
+        "parent_identity_DELETE_CHILD": true,
+        "purpose": "Retain original broad-identity condition."
+      }
+    ],
+    "acl_integrity": "Verify all relevant effective ACEs and inherited grants on both object and parent so alternate enabled identities cannot silently reintroduce the route being removed. Preserve the outside-other-capability negative.",
+    "token_matrix": "Keep the current exact factory as the product baseline. An unmodified identity token can validate the fixture rights matrix; a separately reviewed full-restriction diagnostic token may test the flag hypothesis, but its result is not a production fix.",
+    "operations": "Keep the original Rust filesystem and real legacy cmd child operations. Any exact-rights handle/AccessCheck observation is supplemental; fresh actual operations and parent physical readback decide the outcome.",
+    "observations": [
+      "Actual active impersonation or child token identity, restriction roster, enabled/deny-only groups and privileges, integrity level, token type; no credential values.",
+      "Complete DACL role/ACE type/flags/SID-category/mask for object and parent, with bytes/hash and no truncated diagnostic claim.",
+      "No reused privileged object handles; capture requested operation, native error and lifecycle of new handles.",
+      "Parent observations after impersonation ends or actual child exit: original content, existence, directory type and allowed-root side effects.",
+      "Exact source commit/tree/toolchain, exact test roster, original XML/log, no retries and before/after source invariance."
+    ],
+    "decision_rule": "Only select a production deletion enforcement design after the matrix identifies which check is bypassed; both object DELETE and parent DELETE_CHILD must remain within the declared capability policy. A broader restriction model must separately preserve legitimate read, loader, desktop and IPC access."
+  },
+  "routing_scope": {
+    "ordinary_selector_blob": "c98f3e5d217ada48732e1686129806d0dd52169e",
+    "observed_source": "Normal workspace-write/override requests select the elevated backend. Current backend-selection original tests pass.",
+    "residual": "lib.rs publicly re-exports the direct legacy spawn entry and capability-only token factory. Their original contracts still fail.",
+    "conclusion": "Do not assert every normal Windows entry point reproduced the same deletion behavior; do not close the demonstrated legacy/token boundary failure using ordinary routing."
+  },
+  "acceptance": {
+    "original_case_set_must_equal": [
+      "token::tests::partial_delete_deny_is_repaired_before_native_workspace_writes",
+      "token::tests::workspace_capabilities_deny_writes_and_deletes_under_broad_identity_aces",
+      "unified_exec::tests::legacy_workspace_write_delete_is_limited_to_writable_roots"
+    ],
+    "exact_native_windows_command_design": "just test --locked -p codex-windows-sandbox --lib -E 'test(=token::tests::partial_delete_deny_is_repaired_before_native_workspace_writes) | test(=token::tests::workspace_capabilities_deny_writes_and_deletes_under_broad_identity_aces) | test(=unified_exec::tests::legacy_workspace_write_delete_is_limited_to_writable_roots)' --retries 0",
+    "command_not_run": true,
+    "mandatory_positive_controls": [
+      "unified_exec::tests::legacy_non_tty_cmd_emits_output",
+      "unified_exec::tests::legacy_tty_powershell_emits_output_and_accepts_input",
+      "unified_exec::tests::elevated_non_tty_cmd_forwards_env_output_and_exit",
+      "unified_exec::tests::finish_driver_spawn_keeps_stdin_open_when_requested",
+      "unified_exec::tests::finish_driver_spawn_closes_stdin_when_not_requested",
+      "desktop::tests::readonly_preserves_private_and_default_desktop_access",
+      "desktop::tests::workspace_private_desktop_checks_the_exact_capability",
+      "token::tests::elevated_token_includes_network_proxy_restricting_sid",
+      "All existing backend-selection and ACL-setup-before-spawn rejection cases"
+    ],
+    "additional_ipc_requirement": "If token restriction/default DACL policy changes, require an actual restricted child to load the original executable/DLLs and complete bidirectional IPC plus a child-created object accessibility control; isolated channel unit tests alone do not qualify token ACL compatibility.",
+    "original_ignored_cases": [
+      "unified_exec::tests::legacy_tty_cmd_default_desktop_emits_output_and_accepts_input",
+      "unified_exec::tests::legacy_tty_cmd_emits_output_and_accepts_input"
+    ],
+    "ignored_semantics": "Existing STATUS_DLL_INIT_FAILED ignores remain explicitly unqualified; do not convert them into passes or add new ignores.",
+    "final_platform_gate": "Original Windows x86_64-pc-windows-msvc Bazel target and workflow, unchanged filters/retries/budgets, at the exact approved production candidate. Full JUnit/test.log and actual checkout/tree must be collected.",
+    "completion_rule": "All three original tests execute and pass with original strict assertions; new causal negatives fail only at their intended security oracle; positive loader/IPC/read/allowed-root controls pass; security review authorizes the exact production diff. Until then the three cases remain OPEN."
+  },
+  "primary_sources": [
+    {
+      "id": "M1",
+      "url": "https://learn.microsoft.com/en-us/windows/win32/api/securitybaseapi/nf-securitybaseapi-createrestrictedtoken",
+      "supports": "WRITE_RESTRICTED write-only restriction scope; not proof of the exact delete-path cause."
+    },
+    {
+      "id": "M2",
+      "url": "https://learn.microsoft.com/en-us/windows/win32/api/fileapi/nf-fileapi-deletefilew",
+      "supports": "Deletion may be authorized by object DELETE or parent delete-child; deletion effects depend on handle lifecycle."
+    },
+    {
+      "id": "M3",
+      "url": "https://learn.microsoft.com/en-us/windows/win32/secauthz/ace-inheritance-rules",
+      "supports": "Effective versus inherit-only ACEs, generic mapping and split representations."
+    },
+    {
+      "id": "M4",
+      "url": "https://learn.microsoft.com/en-us/windows/win32/api/winnt/ns-winnt-ace_header",
+      "supports": "Inheritance/effective flags and inherited/no-propagate distinctions."
+    },
+    {
+      "id": "M5",
+      "url": "https://learn.microsoft.com/en-us/windows/win32/secauthz/automatic-propagation-of-inheritable-aces",
+      "supports": "Native ACL setters propagate inheritable ACEs and preserve ordering semantics."
+    },
+    {
+      "id": "M6",
+      "url": "https://learn.microsoft.com/en-us/windows/win32/fileio/file-security-and-access-rights",
+      "supports": "Generic read/write mappings overlap in SYNCHRONIZE, requiring read/loader compatibility controls for any restriction change."
+    },
+    {
+      "id": "M7",
+      "url": "https://learn.microsoft.com/en-us/windows/win32/secauthz/order-of-aces-in-a-dacl",
+      "supports": "Order-sensitive access checks and explicit/inherited deny/allow ordering."
+    }
+  ]
+}

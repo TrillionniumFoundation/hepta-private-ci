@@ -1,0 +1,624 @@
+{
+  "schema": "hepta.f825-compressed-evidence-repository-index.v1",
+  "source_tree": "f8251e1d14fa8524ab469281296cd4cf708f173c",
+  "kind": "EXACT_ORIGINAL_EVIDENCE_NO_TEST_REPLAY",
+  "native_export_job": "1a1a9375428-fc05-32d7",
+  "original_index": {
+    "path": "fourth-f825-full-owning-compressed-index.original.json",
+    "git_blob": "4fbfb3d05586f87b449a9ec14097982072917934",
+    "bytes": 33741,
+    "sha256": "c74155b29db62682b96bcdea3b7ae14eb239b0ce097a756594aebabbf75e2f75"
+  },
+  "independent_root_review": "fourth-f825-full-owning-complete-root-review.json",
+  "decoder": "fourth-f825-decode-evidence.py.txt",
+  "instructions": "Read each artifact's parts in order with no inserted bytes, check base64 and gzip hashes, strict-decode, decompress, then check the complete original hash before parsing. No binary part is a separate run.",
+  "artifacts": [
+    {
+      "label": "full-review",
+      "original": {
+        "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/full-workspace-f825-20261105-0040/full-workspace-review.json",
+        "bytes": 4612052,
+        "sha256": "bafcd1f099ea219d29055c1694ad9b61b73ab123da5415f7b8e31b8473ba4b0c"
+      },
+      "gzip": {
+        "bytes": 494844,
+        "sha256": "c04c2cd8b8d778abafab9ddf06f4b1a60d8201b294869f39ca613a834f0f70df",
+        "mtime": 0
+      },
+      "base64": {
+        "bytes": 659792,
+        "sha256": "5bc206d12a20424c0f73f5b8371e3c45026f04f729a1ae82fa83e640980423ac"
+      },
+      "parts": [
+        {
+          "archive_path": "fourth-f825-compressed/00-000.b64.txt",
+          "offset": 0,
+          "bytes": 400000,
+          "sha256": "05d8d3f3cc3f7cd63a9869815c32e6d8040ac1c5aa1768714bf64373e8dbb7ac",
+          "git_blob": "e79fe99e69e146af76660d08ad258b3fe8268073",
+          "independently_verified": true
+        },
+        {
+          "archive_path": "fourth-f825-compressed/00-001.b64.txt",
+          "offset": 400000,
+          "bytes": 259792,
+          "sha256": "359abc84b730f510312038033f2d4b84525492f92ef3b7267b6f7b4cb6a12121",
+          "git_blob": "c4f307878014c75c1b39d4e07f7b899099950bed",
+          "independently_verified": true
+        }
+      ]
+    },
+    {
+      "label": "full-selection",
+      "original": {
+        "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/full-workspace-f825-20261105-0040/full-workspace-selection.json",
+        "bytes": 5357276,
+        "sha256": "5f2118b2def8bb6aac31a78bb08bd1d355033a826d4fadfe0c305ff37ae662be"
+      },
+      "gzip": {
+        "bytes": 410870,
+        "sha256": "ff500eb0c551479caaf487fc027e77fa8036898bdea7bd6c1c021c0024b2b6d2",
+        "mtime": 0
+      },
+      "base64": {
+        "bytes": 547828,
+        "sha256": "eab7b25bc3c264696e789fdc54c151362cead03cf22786e652b72c99bed9d7db"
+      },
+      "parts": [
+        {
+          "archive_path": "fourth-f825-compressed/01-000.b64.txt",
+          "offset": 0,
+          "bytes": 400000,
+          "sha256": "ce2d9ea26044893f8f69029ec094751b8f379adf256d1a8a88c0b5a7eea1398e",
+          "git_blob": "cb2a94d511141c7b70144c75226183bbe226e6ce",
+          "independently_verified": true
+        },
+        {
+          "archive_path": "fourth-f825-compressed/01-001.b64.txt",
+          "offset": 400000,
+          "bytes": 147828,
+          "sha256": "f2bf7941ccac70000b19f09c659a810d47561c948a7fd543a2494d3ede0a80bb",
+          "git_blob": "b8ce3117c1583f74fb62e9f7759a301a0aab8970",
+          "independently_verified": true
+        }
+      ]
+    },
+    {
+      "label": "full-junit",
+      "original": {
+        "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/full-workspace-f825-20261105-0040/full-workspace.junit.xml",
+        "bytes": 4149275,
+        "sha256": "afdf124cb8cb44e65808b71f824c880875253378588ccaffc9b4783857fc18ed"
+      },
+      "gzip": {
+        "bytes": 492180,
+        "sha256": "938901912637e947c0b2726db94f8ae802fd76e94d444e7f7dfdc56f28829bfd",
+        "mtime": 0
+      },
+      "base64": {
+        "bytes": 656240,
+        "sha256": "0803515abb669ebf450e8044a9b916e216b1577b52905426bdc2bb419b18c992"
+      },
+      "parts": [
+        {
+          "archive_path": "fourth-f825-compressed/02-000.b64.txt",
+          "offset": 0,
+          "bytes": 400000,
+          "sha256": "ea46d141b4635cd0c89640d9ce70f79d6fad55d43a1b837683be47e97783b9e7",
+          "git_blob": "09426991b538ac32e06e90f148d2a34cc10c6ebb",
+          "independently_verified": true
+        },
+        {
+          "archive_path": "fourth-f825-compressed/02-001.b64.txt",
+          "offset": 400000,
+          "bytes": 256240,
+          "sha256": "33d3cee221fe2f684bba3e437827a4c0cb727ab3afeffea0b0d41511136b4c90",
+          "git_blob": "2631d211299c83f455af0633d64eef8a976e0120",
+          "independently_verified": true
+        }
+      ]
+    },
+    {
+      "label": "full-early-return-observations",
+      "original": {
+        "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/full-workspace-f825-20261105-0040/early-return-case-observations.json",
+        "bytes": 34694,
+        "sha256": "d30ba0e7ea2121e63a211160fafcd03df56c807269fef2fdca21685e030c8744"
+      },
+      "gzip": {
+        "bytes": 3650,
+        "sha256": "dacfbd7b096feedf33a03b75c3802b69333cd405373794a8a3b1a66b0ac89660",
+        "mtime": 0
+      },
+      "base64": {
+        "bytes": 4868,
+        "sha256": "37583ccbdeadc0bb4694ba2e929eef2771e6ceda1082b7a2054ea7a5d8143963"
+      },
+      "parts": [
+        {
+          "archive_path": "fourth-f825-compressed/03-000.b64.txt",
+          "offset": 0,
+          "bytes": 4868,
+          "sha256": "37583ccbdeadc0bb4694ba2e929eef2771e6ceda1082b7a2054ea7a5d8143963",
+          "git_blob": "956bd2d8bad78a930003d72876ac7d06ce86267b",
+          "independently_verified": true
+        }
+      ]
+    },
+    {
+      "label": "full-terminal",
+      "original": {
+        "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/full-workspace-f825-20261105-0040/terminal.json",
+        "bytes": 346709,
+        "sha256": "2a5ffd426a1b05be1716120447f60adb4d2e3bc939152ba3e41377f355d65e49"
+      },
+      "gzip": {
+        "bytes": 47410,
+        "sha256": "d0990da4907cff6f732b4298b5f4bfc7d1b4d067453957ea95e167ee3b06bded",
+        "mtime": 0
+      },
+      "base64": {
+        "bytes": 63216,
+        "sha256": "82170f3a6fd0b5fdcf1b08e20d9ce29a411d505fe6ba8cb069f1f9a5998203ce"
+      },
+      "parts": [
+        {
+          "archive_path": "fourth-f825-compressed/04-000.b64.txt",
+          "offset": 0,
+          "bytes": 63216,
+          "sha256": "82170f3a6fd0b5fdcf1b08e20d9ce29a411d505fe6ba8cb069f1f9a5998203ce",
+          "git_blob": "1c80925fab5d7b4b33288b1e3b5bb323718b49d6",
+          "independently_verified": true
+        }
+      ]
+    },
+    {
+      "label": "full-workspace-metadata-stdout",
+      "original": {
+        "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/full-workspace-f825-20261105-0040/workspace-metadata.stdout",
+        "bytes": 8163618,
+        "sha256": "959b827393fc6830e8fd6c55a83a519217ab0debb7c033b42e64306bc373fece"
+      },
+      "gzip": {
+        "bytes": 596949,
+        "sha256": "b0b98069883bdb0192420f3911564eaf1c5797b4a50b45c530dfc5a38876db3e",
+        "mtime": 0
+      },
+      "base64": {
+        "bytes": 795932,
+        "sha256": "54cd18c9e64736cb2a8c3055df7fc8c7005123b094f38b7b4f0f58846e35ed73"
+      },
+      "parts": [
+        {
+          "archive_path": "fourth-f825-compressed/05-000.b64.txt",
+          "offset": 0,
+          "bytes": 400000,
+          "sha256": "fa002bff4c2de97ba41138c7fe8d464ffaca6bb87d016a4118a3f5d9be4d9752",
+          "git_blob": "bb2caf6d3e7ab1572e10e56f7a91f1a08072ee56",
+          "independently_verified": true
+        },
+        {
+          "archive_path": "fourth-f825-compressed/05-001.b64.txt",
+          "offset": 400000,
+          "bytes": 395932,
+          "sha256": "978297e11109c14ad76c4e34829419eb9f83547387d89c0ad3332a1432852f33",
+          "git_blob": "05d65f0272461515aeb8e52c5e7597c10a0dd111",
+          "independently_verified": true
+        }
+      ]
+    },
+    {
+      "label": "full-workspace-metadata-stderr",
+      "original": {
+        "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/full-workspace-f825-20261105-0040/workspace-metadata.stderr",
+        "bytes": 4257,
+        "sha256": "efa6a1c6c2bfd203e3545659a4950320f2c666a8a699767efd67abfcbad8ca76"
+      },
+      "gzip": {
+        "bytes": 1155,
+        "sha256": "f02f54419829765fb5f83e7e421d82e9ad27d1ee9d667a462a744ff648496b3b",
+        "mtime": 0
+      },
+      "base64": {
+        "bytes": 1540,
+        "sha256": "5f6f1f9b4b8596aa5c95d94eeb5a0a86215847dc412a06caa4aaa1e41e9dbdbf"
+      },
+      "parts": [
+        {
+          "archive_path": "fourth-f825-compressed/06-000.b64.txt",
+          "offset": 0,
+          "bytes": 1540,
+          "sha256": "5f6f1f9b4b8596aa5c95d94eeb5a0a86215847dc412a06caa4aaa1e41e9dbdbf",
+          "git_blob": "b02b5ee6cd610e2b1409c0ce4028aa99bada0f19",
+          "independently_verified": true
+        }
+      ]
+    },
+    {
+      "label": "full-full-workspace-catalog-stdout",
+      "original": {
+        "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/full-workspace-f825-20261105-0040/full-workspace-catalog.stdout",
+        "bytes": 2839091,
+        "sha256": "af962c86ba44b1e4931ca61319597cc8c9557cafaaf70dd8cfe8664c6e3815ef"
+      },
+      "gzip": {
+        "bytes": 368527,
+        "sha256": "271db82b619b34adf6ae5c982205cd7f50029798a8e3b10895c783faccb06a6d",
+        "mtime": 0
+      },
+      "base64": {
+        "bytes": 491372,
+        "sha256": "2dcfb2cb4bafae6332f24342054379ced3aec46f3b22f4c74ef623078a7357ac"
+      },
+      "parts": [
+        {
+          "archive_path": "fourth-f825-compressed/07-000.b64.txt",
+          "offset": 0,
+          "bytes": 400000,
+          "sha256": "7c64198ed6aa5b7b6f44b0909ac87f8c92aefe86a9e1fcd0b14d2a897df07cb0",
+          "git_blob": "5b44aed938a4e45bd51db8b02911fdae25bbf543",
+          "independently_verified": true
+        },
+        {
+          "archive_path": "fourth-f825-compressed/07-001.b64.txt",
+          "offset": 400000,
+          "bytes": 91372,
+          "sha256": "12760a755627ad33906c4d0f0155144e266f372652279cc8cf30dea5512b05f9",
+          "git_blob": "711360900bc639667af02d74429335910f8d614f",
+          "independently_verified": true
+        }
+      ]
+    },
+    {
+      "label": "full-full-workspace-catalog-stderr",
+      "original": {
+        "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/full-workspace-f825-20261105-0040/full-workspace-catalog.stderr",
+        "bytes": 46499,
+        "sha256": "649c84534e4a59a7776d0979fa248ed47e59b1853d9cf117f2101b16da543ae8"
+      },
+      "gzip": {
+        "bytes": 8207,
+        "sha256": "16eb4a8a8cad3f4e88455b018714bffb17e22e3dbd55aaa60ca9183a19301199",
+        "mtime": 0
+      },
+      "base64": {
+        "bytes": 10944,
+        "sha256": "207cd956b18d10ea7f7cd7fb87e33f58860a079add1d079d0c943d141bec85b5"
+      },
+      "parts": [
+        {
+          "archive_path": "fourth-f825-compressed/08-000.b64.txt",
+          "offset": 0,
+          "bytes": 10944,
+          "sha256": "207cd956b18d10ea7f7cd7fb87e33f58860a079add1d079d0c943d141bec85b5",
+          "git_blob": "b417a399de64b471fe0c6f6b3f7726e2c8facf2e",
+          "independently_verified": true
+        }
+      ]
+    },
+    {
+      "label": "full-full-workspace-stdout",
+      "original": {
+        "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/full-workspace-f825-20261105-0040/full-workspace.log",
+        "bytes": 34360967,
+        "sha256": "75cd2cd5c89ce70781781c3b8c3e1bb168720b83bf6961c206720b3c08efe15c"
+      },
+      "gzip": {
+        "bytes": 2337598,
+        "sha256": "6a9cd6f82bf42ba2543f9d491e4205f2b3e4ca8d36027ef84be579b9e885f134",
+        "mtime": 0
+      },
+      "base64": {
+        "bytes": 3116800,
+        "sha256": "6b91a396ac13e01612a1f45aef41fe0cf51775692037f0857f556eff4820a0f8"
+      },
+      "parts": [
+        {
+          "archive_path": "fourth-f825-compressed/09-000.b64.txt",
+          "offset": 0,
+          "bytes": 400000,
+          "sha256": "0e78c7c5ea56bf652083e35e591ac96f1582e0638375a2cbbe154180e8799183",
+          "git_blob": "04e983c5c3f0c4ae7988deacff40ba942faee0ec",
+          "independently_verified": true
+        },
+        {
+          "archive_path": "fourth-f825-compressed/09-001.b64.txt",
+          "offset": 400000,
+          "bytes": 400000,
+          "sha256": "26c7f06aeb60babbe3abd0edfa20a08620e89e8ecf528021016d5e28d8255aab",
+          "git_blob": "1a40fdd3ff5829a9ca345199e19978acae66e7c8",
+          "independently_verified": true
+        },
+        {
+          "archive_path": "fourth-f825-compressed/09-002.b64.txt",
+          "offset": 800000,
+          "bytes": 400000,
+          "sha256": "7803c221e1948bef04ce500dfd06c3c33b0e37d542e1f974ebb20ed1b58055f6",
+          "git_blob": "fa33e1d384ceccbbdb553e8330dcc95319d850ce",
+          "independently_verified": true
+        },
+        {
+          "archive_path": "fourth-f825-compressed/09-003.b64.txt",
+          "offset": 1200000,
+          "bytes": 400000,
+          "sha256": "9d319eba9094ee8f3d3a1b4f407a91cf9acbbd44f9fdf5f13b5bcd224cc2918e",
+          "git_blob": "701206e8f3ca3fc83cbf0cf2c8c3aa348456bb2a",
+          "independently_verified": true
+        },
+        {
+          "archive_path": "fourth-f825-compressed/09-004.b64.txt",
+          "offset": 1600000,
+          "bytes": 400000,
+          "sha256": "f9a22f7adfb2c165622c615e64b66d316525b3fd3511643a336ffdb193bb2a25",
+          "git_blob": "0b716be1b22c447af46bcc58743598f9a2d29c61",
+          "independently_verified": true
+        },
+        {
+          "archive_path": "fourth-f825-compressed/09-005.b64.txt",
+          "offset": 2000000,
+          "bytes": 400000,
+          "sha256": "eaac75e17c35dfc23d10dbff983bc5077643721a8e23e9b5318030b20e2a3aad",
+          "git_blob": "d2bc3e764dfe209fae66c2c9fa360492395762ea",
+          "independently_verified": true
+        },
+        {
+          "archive_path": "fourth-f825-compressed/09-006.b64.txt",
+          "offset": 2400000,
+          "bytes": 400000,
+          "sha256": "f6750d8701d8991e22b02e0bf3156009852ad5b954dd3508fb9bce66e26006f2",
+          "git_blob": "bcb3eb8646b30db37957f4ddb97dcbe66791f73b",
+          "independently_verified": true
+        },
+        {
+          "archive_path": "fourth-f825-compressed/09-007.b64.txt",
+          "offset": 2800000,
+          "bytes": 316800,
+          "sha256": "451964b8c89a3af283ec5e0e6a0d589b1cfb434bc11a705f247f2938cf473d07",
+          "git_blob": "6787a7f0272a878efec243a6261b8de5a7b48acb",
+          "independently_verified": true
+        }
+      ]
+    },
+    {
+      "label": "full-native-host",
+      "original": {
+        "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/full-workspace-f825-20261105-0040/native-host.json",
+        "bytes": 1621,
+        "sha256": "e5934337d674717e0f0cbda9371e25577054879b87960eda42006a128a2e34b6"
+      },
+      "gzip": {
+        "bytes": 797,
+        "sha256": "f0ba7de495cd3cededf87bf6fdae7eebd4167ca41995023f512ae43adab12e94",
+        "mtime": 0
+      },
+      "base64": {
+        "bytes": 1064,
+        "sha256": "87eb6624373bd1109fc1fb749d8b9b07c8c632cedfc451be38e3de933926d8c9"
+      },
+      "parts": [
+        {
+          "archive_path": "fourth-f825-compressed/10-000.b64.txt",
+          "offset": 0,
+          "bytes": 1064,
+          "sha256": "87eb6624373bd1109fc1fb749d8b9b07c8c632cedfc451be38e3de933926d8c9",
+          "git_blob": "57a5a619eaaeb0e897af1cf68b679b2b0eda9f08",
+          "independently_verified": true
+        }
+      ]
+    },
+    {
+      "label": "owning-raw",
+      "original": {
+        "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/owning-seven-f825-20261105-0025/owning-seven.log",
+        "bytes": 11635674,
+        "sha256": "bbcba614a398d56e62fad2b3959cc87442e91c46140601789183a4ec22191fda"
+      },
+      "gzip": {
+        "bytes": 1125821,
+        "sha256": "22e1461ea95fad1cc38fd57c2483630881aa7d272d6ef92f2d059ea8f410d6f2",
+        "mtime": 0
+      },
+      "base64": {
+        "bytes": 1501096,
+        "sha256": "c7746b5285c4a8ef1e3b065c136e987c7051181d1f47511528482905ae32787c"
+      },
+      "parts": [
+        {
+          "archive_path": "fourth-f825-compressed/11-000.b64.txt",
+          "offset": 0,
+          "bytes": 400000,
+          "sha256": "16e76f046bf3f6187726a536ef0bdb81013c4d97a09ccf57d03d34c713b64fc8",
+          "git_blob": "c80151ba0711270bc607e618466bb946b2118ff5",
+          "independently_verified": true
+        },
+        {
+          "archive_path": "fourth-f825-compressed/11-001.b64.txt",
+          "offset": 400000,
+          "bytes": 400000,
+          "sha256": "4d9fe14f1e509db83656d35ba7da5bf209faf32c9452d7b181d524cb713a945d",
+          "git_blob": "6d60be0e58d20b5486b44d2e79821b1bc467a9f0",
+          "independently_verified": true
+        },
+        {
+          "archive_path": "fourth-f825-compressed/11-002.b64.txt",
+          "offset": 800000,
+          "bytes": 400000,
+          "sha256": "9569714bc84e81f4425a735a165b0ddc0dd115d045b5c3e8ed764e9fd6a0d061",
+          "git_blob": "eee0caafb69f3c90727667dc44ec2fb0ac532021",
+          "independently_verified": true
+        },
+        {
+          "archive_path": "fourth-f825-compressed/11-003.b64.txt",
+          "offset": 1200000,
+          "bytes": 301096,
+          "sha256": "e56a22fbf31084ff6a8e23ae339b0c0a839dee46f140b32db4da9230b19d9c91",
+          "git_blob": "41e97fec0e3589de8e6e99d5a28ddade88ed98d5",
+          "independently_verified": true
+        }
+      ]
+    },
+    {
+      "label": "owning-selection",
+      "original": {
+        "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/owning-seven-f825-20261105-0025/owning-seven-selection.json",
+        "bytes": 1459914,
+        "sha256": "9f3e4fd322adf36a33414250e1a8db21a1bac095e2e55b1ca507b0300a60df0b"
+      },
+      "gzip": {
+        "bytes": 109921,
+        "sha256": "d76a9d1120c3991bb9642fec5ccd5323b5042c64a78975aeca18c896be8ce279",
+        "mtime": 0
+      },
+      "base64": {
+        "bytes": 146564,
+        "sha256": "839747dcc0e011952251dee1e9bbe6b52d81e1cc2210064b334fa81b9014795a"
+      },
+      "parts": [
+        {
+          "archive_path": "fourth-f825-compressed/12-000.b64.txt",
+          "offset": 0,
+          "bytes": 146564,
+          "sha256": "839747dcc0e011952251dee1e9bbe6b52d81e1cc2210064b334fa81b9014795a",
+          "git_blob": "408e87981aa096cd0b8c4446064ed607bebae64d",
+          "independently_verified": true
+        }
+      ]
+    },
+    {
+      "label": "owning-terminal",
+      "original": {
+        "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/owning-seven-f825-20261105-0025/terminal.json",
+        "bytes": 105541,
+        "sha256": "deaffbcd15e46df6d467526341990696634d584cbb6243078c96270c853f56c0"
+      },
+      "gzip": {
+        "bytes": 16694,
+        "sha256": "6f980fb1694f75b4472a0f517003482d87c8e1fa23cb4d1d318d80650c2d8536",
+        "mtime": 0
+      },
+      "base64": {
+        "bytes": 22260,
+        "sha256": "7f25dc30a23abbd2ac1393d63b66529a8cd24d6f557c49498096167a4a6ff886"
+      },
+      "parts": [
+        {
+          "archive_path": "fourth-f825-compressed/13-000.b64.txt",
+          "offset": 0,
+          "bytes": 22260,
+          "sha256": "7f25dc30a23abbd2ac1393d63b66529a8cd24d6f557c49498096167a4a6ff886",
+          "git_blob": "0454a98cf2aa5015b8822d23132b2a706be70eb7",
+          "independently_verified": true
+        }
+      ]
+    },
+    {
+      "label": "owning-workspace-metadata-stdout",
+      "original": {
+        "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/owning-seven-f825-20261105-0025/workspace-metadata.stdout",
+        "bytes": 950797,
+        "sha256": "5292ffac7b1e1760806f2ddc7c4f7152f82b4faf0d596f8ba8e231b0bd08e205"
+      },
+      "gzip": {
+        "bytes": 40750,
+        "sha256": "a157ca496e18c53d40b959f44a6b868204e197a5d507521f7750bb7f7c39e94f",
+        "mtime": 0
+      },
+      "base64": {
+        "bytes": 54336,
+        "sha256": "9bd28806dffeef4d20c620b98c8230b7bec3e1f685b8599f55b7a5ffc1d8c2e4"
+      },
+      "parts": [
+        {
+          "archive_path": "fourth-f825-compressed/14-000.b64.txt",
+          "offset": 0,
+          "bytes": 54336,
+          "sha256": "9bd28806dffeef4d20c620b98c8230b7bec3e1f685b8599f55b7a5ffc1d8c2e4",
+          "git_blob": "ae201492323ee9b5c033a98a9fa10338b6c81ab6",
+          "independently_verified": true
+        }
+      ]
+    },
+    {
+      "label": "owning-workspace-metadata-stderr",
+      "original": {
+        "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/owning-seven-f825-20261105-0025/workspace-metadata.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "gzip": {
+        "bytes": 20,
+        "sha256": "ac73670af3abed54ac6fb4695131f4099be9fbe39d6076c5d0264a6bbdae9d83",
+        "mtime": 0
+      },
+      "base64": {
+        "bytes": 28,
+        "sha256": "8dc73ccdd1e4888c7a99cb1f1908c594d7b5e2f4358f796347ae44af467976fb"
+      },
+      "parts": [
+        {
+          "archive_path": "fourth-f825-compressed/15-000.b64.txt",
+          "offset": 0,
+          "bytes": 28,
+          "sha256": "8dc73ccdd1e4888c7a99cb1f1908c594d7b5e2f4358f796347ae44af467976fb",
+          "git_blob": "d0fc00c534d80f423592e68cab57bd497463e056",
+          "independently_verified": true
+        }
+      ]
+    },
+    {
+      "label": "owning-owning-seven-catalog-stdout",
+      "original": {
+        "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/owning-seven-f825-20261105-0025/owning-seven-catalog.stdout",
+        "bytes": 778676,
+        "sha256": "b8c5cf49f723d7ec527e69ca19e5d86bd45b9760ec1650c13b2cbeaf8178056e"
+      },
+      "gzip": {
+        "bytes": 95263,
+        "sha256": "95c93d6d63504f825567af027590df74d3e6867006adc7fc08c70254f3b50a97",
+        "mtime": 0
+      },
+      "base64": {
+        "bytes": 127020,
+        "sha256": "a2c6b7b3e9a0f0244d669f82f5a58466d3f39873594508926b4b0e175d34f0cc"
+      },
+      "parts": [
+        {
+          "archive_path": "fourth-f825-compressed/16-000.b64.txt",
+          "offset": 0,
+          "bytes": 127020,
+          "sha256": "a2c6b7b3e9a0f0244d669f82f5a58466d3f39873594508926b4b0e175d34f0cc",
+          "git_blob": "d71b04db7e9190837da86b8a33ab04243c309a31",
+          "independently_verified": true
+        }
+      ]
+    },
+    {
+      "label": "owning-owning-seven-catalog-stderr",
+      "original": {
+        "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/owning-seven-f825-20261105-0025/owning-seven-catalog.stderr",
+        "bytes": 20781,
+        "sha256": "0ea69876469435777e8210b5d7ed355ca0bc5f827431783c992927c54f08d7e9"
+      },
+      "gzip": {
+        "bytes": 2586,
+        "sha256": "eecce4ed5ef932627fb27f3d944d46b9f54c4efadb4b585a425577fb1d80e57f",
+        "mtime": 0
+      },
+      "base64": {
+        "bytes": 3448,
+        "sha256": "0f71837fd5a6474b130293c478cc46ed8b620028e30a82a423957dab9ddee86f"
+      },
+      "parts": [
+        {
+          "archive_path": "fourth-f825-compressed/17-000.b64.txt",
+          "offset": 0,
+          "bytes": 3448,
+          "sha256": "0f71837fd5a6474b130293c478cc46ed8b620028e30a82a423957dab9ddee86f",
+          "git_blob": "6f1bb6e7489fbcc7b07ae95b306fbabe1b142a8d",
+          "independently_verified": true
+        }
+      ]
+    }
+  ],
+  "reused_owning_xml_and_review": "fourth-f825-owning-xml-review-index.json"
+}

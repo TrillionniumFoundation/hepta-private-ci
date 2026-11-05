@@ -1,0 +1,182 @@
+{
+  "schema": "hepta_b16_r2e2b_checkpoint_cas_review_v1",
+  "status": "SOURCE_CANDIDATE_ONLY_NOT_FORMATTED_COMPILED_OR_EXECUTED",
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "base_commit": "cabcb40d36e116beaa65750e1f674c52035da785",
+  "base_tree": "b2d7f038d6d88156bc6a4cb29c8703f69b808f29",
+  "required_predecessor": {
+    "cohort": "R2e2a",
+    "manifest": {
+      "blob": "2fccd651a28b485348aeb8073079663870b4c771",
+      "bytes": 11542,
+      "sha256": "1f93de7cea300e1daf41b3bf4ed2dfc7ba21c4ce20bc762545fa38129616f3be"
+    },
+    "patch": {
+      "blob": "9743a504dc5993a5d7b47dac49e94e64e158a252",
+      "bytes": 20834,
+      "sha256": "835df1d767cb4f95e4d577072c66c0034978db2d0ce8c51f90163482ecec4d91"
+    }
+  },
+  "scope": "Second protocol prerequisite. Actual whole-head CAS/successor validation over bounded raw ACK bytes. Does not add a transport, coordinator, Current admission, recovered store binder or production caller.",
+  "files": [
+    {
+      "path": "codex-rs/hepta-memory/src/cognitive_checkpoint_codec.rs",
+      "add": 150,
+      "del": 37,
+      "before_blob": "ea998b49788062dea8d9d93d786e771a76a8e937",
+      "postimage": "3a6b75875c7e265ba71e7948b70e7e3fcd608c0f",
+      "bytes": 11437,
+      "sha256": "bea6cd9ed80d5a04e5cfc7d47707b9313d216509449e0360cbcd4f6ac566b3ae"
+    },
+    {
+      "path": "codex-rs/hepta-memory/src/cognitive_checkpoint_codec_tests.rs",
+      "add": 175,
+      "del": 0,
+      "before_blob": "04647377829ad94baddc8fef1e92538902e60385",
+      "postimage": "60a9fafef10f77d2ae85f3d8f8c1c22d60e27eb1",
+      "bytes": 20212,
+      "sha256": "9e19b65bc67a3b43c87611006b363c5e65a089a6061bfd6bcce01a1819e2b931"
+    }
+  ],
+  "postimages": [
+    {
+      "path": "codex-rs/hepta-memory/src/cognitive_checkpoint_codec.rs",
+      "blob": "3a6b75875c7e265ba71e7948b70e7e3fcd608c0f",
+      "bytes": 11437,
+      "sha256": "bea6cd9ed80d5a04e5cfc7d47707b9313d216509449e0360cbcd4f6ac566b3ae"
+    },
+    {
+      "path": "codex-rs/hepta-memory/src/cognitive_checkpoint_codec_tests.rs",
+      "blob": "60a9fafef10f77d2ae85f3d8f8c1c22d60e27eb1",
+      "bytes": 20212,
+      "sha256": "9e19b65bc67a3b43c87611006b363c5e65a089a6061bfd6bcce01a1819e2b931"
+    }
+  ],
+  "patch": {
+    "blob": "cbeca259e8fe571e8926c6331df6fa67dfbffa0b",
+    "bytes": 24918,
+    "sha256": "d97257906289e2556fcfd72bb6118ab764a8181303237bac94d62ede910f189c"
+  },
+  "diff": {
+    "paths": 2,
+    "insertions": 325,
+    "deletions": 37,
+    "changed_lines": 362,
+    "roundtrip": [
+      {
+        "path": "codex-rs/hepta-memory/src/cognitive_checkpoint_codec.rs",
+        "hunks": 3,
+        "exact_reconstructed": true
+      },
+      {
+        "path": "codex-rs/hepta-memory/src/cognitive_checkpoint_codec_tests.rs",
+        "hunks": 1,
+        "exact_reconstructed": true
+      }
+    ]
+  },
+  "source_proofs": [
+    {
+      "repository": "TrillionniumFoundation/hepta-private-ci",
+      "ref": "14e2d89b3367232ec5dbe6187f09feed0f2b68d3",
+      "path": "codex-rs/hepta-memory/src/cognitive_checkpoint.rs",
+      "blob": "43df08a341423db901a800749ee7387c084afb35",
+      "lines": "116-264",
+      "use": "Fixed publisher/sequence request identity, exact prior token, full successor head, encoded request digest, monotonic ReadHead, legal Current→Dirty→Publishing→Current transitions and changed opaque token."
+    },
+    {
+      "ref": "14e2d89b3367232ec5dbe6187f09feed0f2b68d3",
+      "path": "codex-rs/hepta-memory/src/cognitive_checkpoint_wire.rs",
+      "blob": "de9f9690da2853a86da5ea8140b70cc6814f1c24",
+      "lines": "72-81",
+      "use": "Seven-field writer binding equality copied as expressions into the shared proposal validator. No otherwise-unused method added to the wire module."
+    },
+    {
+      "ref": "cabcb40d36e116beaa65750e1f674c52035da785",
+      "path": "codex-rs/hepta-memory/src/objective_sender_model.rs",
+      "blob": "e1e0155936a493adadf883ffda47caea58fbb7ad",
+      "lines": "252-266",
+      "use": "Actual original ObjectiveSenderWriterFence shape; owner binding and full lease/writer digest are retained in the requested and acknowledged proposal. This codec does not independently verify the underlying lease."
+    }
+  ],
+  "behavior": [
+    "decode_against first applies the real R2e2a request bounds/shape/digest validation and validates the caller-provided predecessor's wire consistency. Epoch must match; sequence must strictly exceed the last mutation; every mutation must carry the exact full prior token.",
+    "ReadHead only accepts the same owner/publisher/writer binding/peer lifetime with nonregressing counter and mutation sequence. It may return Dirty/Publishing/Fenced as observations; that is explicitly not Current admission.",
+    "For mutation ACKs, derive the complete successor by cloning the predecessor, checked-incrementing the counter, retaining the exact request ID, SHA-256 of encode() bytes, command and predecessor token, and performing only the legal three publication transitions.",
+    "Prepare and commit both check the proposal's owner/profile and the original seven writer-binding fields. Commit consumes the already-retained proposal cut. Missing or mismatched proposal data is refusal; no default Current or empty receipt is supplied.",
+    "Accept only if the entire returned head equals that expected successor and the opaque token has changed. No local JSON hash replaces the server token.",
+    "R2e2a sequence and receipt checks move unchanged into helpers now actually called from two API paths. All three prior R2e2a controls remain byte-identical; all cabc pre-existing tests and production callers remain unchanged."
+  ],
+  "meaningful_tests": {
+    "new_exact_names": [
+      "cognitive_checkpoint_codec::tests::complete_current_dirty_publishing_current_transcript_is_required",
+      "cognitive_checkpoint_codec::tests::matching_counters_do_not_accept_tampered_successor_heads",
+      "cognitive_checkpoint_codec::tests::predecessor_cas_replay_phase_and_writer_mismatch_are_refused",
+      "cognitive_checkpoint_codec::tests::read_head_checks_identity_and_monotonicity_without_granting_current"
+    ],
+    "new_count": 4,
+    "combined_codec_exact_count": 7,
+    "frozen_transcript": [
+      {
+        "command": "begin_writes",
+        "request_bytes": 281,
+        "request_sha256": "62d929bbcdedfa662403a40b9c1ad02667a85ddd2c20852d19fd551c0964b5d7",
+        "response_bytes": 1471,
+        "response_sha256": "42028e06aa80ff41bca22b683ed3f6f99059d90d6f134b9ee15ba1fc1b755f8e",
+        "opaque_token_not_derived_from_local_head": true
+      },
+      {
+        "command": "prepare_publication",
+        "request_bytes": 1019,
+        "request_sha256": "177cc26478704bbbcafa50763f8a2b2ae7f8e91c45c3e1cf35f896eca09dca6d",
+        "response_bytes": 2262,
+        "response_sha256": "359403ed16b08d02e22279f4cb4b518341a11276e7febdfc984510cb9f042393",
+        "opaque_token_not_derived_from_local_head": true
+      },
+      {
+        "command": "commit_publication",
+        "request_bytes": 287,
+        "request_sha256": "9f1d9c58b23324b42b202c84d148e67a445265459a6b4913d294c913108ccb07",
+        "response_bytes": 1479,
+        "response_sha256": "213fff9e0ae358dcfcfb6a63962b5b0908de813dea35be2c2ecf09cd1485e144",
+        "opaque_token_not_derived_from_local_head": true
+      }
+    ],
+    "transcript_scope": "Synthetic fixed raw protocol frames. Request digests were calculated independently in V8 from the literal bytes, and parser/shape consistency was checked there. No protected service, transport or Rust test execution is claimed.",
+    "controls": [
+      "The full three-step serialized transcript must validate, with exact encoded request byte equality and complete returned receipt equality at each step.",
+      "Keep counters valid while independently tampering phase, sequence, writer generation/expiry, peer lifetime, exact cut, retained request identity/digest/command or full predecessor token. Each actual raw ACK must be rejected; an unchanged opaque server token also rejects.",
+      "Bad expected token, foreign epoch, replay sequence, illegal phase and overflowing counter reject. Prepare rejects wrong owner/profile/generation/expiry; commit rejects missing or mismatched previously retained proposal.",
+      "ReadHead returns a valid Fenced observation without converting it into Current, while writer/lifetime changes and counter/sequence rollback reject."
+    ],
+    "no_baseline_claim": "New codec API input negatives; absence of the API in cabc is not a runnable baseline failure. All Rust tests remain unexecuted."
+  },
+  "dependencies_and_lock_gate": {
+    "compile": "R2e2a plus existing Memory/contracts/serde/serde_json/sha2. No new Cargo/Bazel dependency, binary, compile_data, lock or cfg change.",
+    "integration": "No compile dependence on R1/R2a/R2c/R2d/R2e1. Real production use remains blocked on the actual authenticated transport, serialized receipt ownership, uncertainty/cancel fence and consuming exact recovery/three-pool binder.",
+    "caller_rule": "Future owner coordinator must choose legal transitions before sending over its authenticated fixed peer, own request sequencing and hold its receipt mutex over the exchange. decode_against validates content after reception; it does not itself send, allocate IDs, serialize concurrent callers, enforce time, authenticate a Root or hold SQLite locks."
+  },
+  "preservation": {
+    "r2e2a_tests_prefix_exact": true,
+    "wire_file_byte_equal_to_r2e2a": true,
+    "original_sender_bootstrap_and_duplicates": "Agentd production_composition generic attachment, original_sender, bootstrap ACK and R2e1 exact duplicate rollback+original independent ACK untouched.",
+    "windows_and_readonly": "All retained-directory/private-state-sync/ordinary peer/Windows permission behavior untouched. No hook protection claimed for provided read-only pools."
+  },
+  "required_commands": {
+    "working_directory": "codex-rs",
+    "new_controls": "just test -p codex-hepta-memory --lib --retries 0 -E 'test(=cognitive_checkpoint_codec::tests::complete_current_dirty_publishing_current_transcript_is_required) | test(=cognitive_checkpoint_codec::tests::matching_counters_do_not_accept_tampered_successor_heads) | test(=cognitive_checkpoint_codec::tests::predecessor_cas_replay_phase_and_writer_mismatch_are_refused) | test(=cognitive_checkpoint_codec::tests::read_head_checks_identity_and_monotonicity_without_granting_current)'",
+    "combined_codec": "just test -p codex-hepta-memory --lib --retries 0 -E 'test(cognitive_checkpoint_codec::tests::)'",
+    "original_package": "just test -p codex-hepta-memory --retries 0",
+    "hygiene": [
+      "just fix -p codex-hepta-memory",
+      "just fmt"
+    ],
+    "scope": "Sole native executor only, after root review. Actual fresh JUnit/roster/source/platform/terminal receipts required; no counts or passes inferred."
+  },
+  "next": "R2e3 actual coordinator and cancellation/write gate, followed by consuming recovered-store three-pool binding and original protected host consumer. Do not make the coordinator constructible from a DTO at a public arbitrary caller.",
+  "not_done": [
+    "No native, Cargo/Bazel, format or actual Root execution.",
+    "No source worktree, target or ref mutation.",
+    "No Current, authority, deadline, revocation, FinalUse, external effect or B16 closure claimed."
+  ]
+}

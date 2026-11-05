@@ -1,0 +1,272 @@
+{
+  "schema": "hepta.b16.state-native-token-binding.v1",
+  "status": "SOURCE_CANDIDATE_STATIC_RECONSTRUCTION_ONLY",
+  "created_at_utc": "2026-11-05",
+  "purpose": "Bind the same actual commit-callback resource custody to SQLx before native open in both explicit state APIs; exercise actual Memory custody independently of registered callbacks.",
+  "authority_and_scope": {
+    "parent_authorized": "Root instructed preparation of an unreachable caller-binding cohort on the serial-final state/sqlite b9fb source after the SQLx native-lifetime candidate; no native/ref mutation.",
+    "no_native_worktree_or_target_changes": true,
+    "no_external_ref_changes": true,
+    "ordinary_dependency_work_not_permanently_prohibited": true
+  },
+  "base": {
+    "repository": "TrillionniumFoundation/hepta-private-ci",
+    "product_commit": "cabcb40d36e116beaa65750e1f674c52035da785",
+    "serial_alignment": {
+      "blob": "a46fdc65f78295bfb041732aeb03b1937f85eab9",
+      "sha256": "359719619e261bbfa0639a0435d9ef38c32ebcc0de66d25c5c5ad1387bd67047"
+    },
+    "must_apply_after": "The exact R2c V3 -> R2d -> R2e1 -> R2e2a -> R2e2b -> R2e3 source sequence, or a subsequently independently realigned equivalent source map. This is not a patch against unmodified cabc.",
+    "state_before": "b9fb565cadd14f6541bfc8421164897e2907e2ad",
+    "serial_validation_base_tree": "f8251e1d14fa8524ab469281296cd4cf708f173c",
+    "product_commit_is_lineage_reference_not_executed_candidate": true
+  },
+  "dependency_prerequisite": {
+    "manifest": "9262807373267fe42587a36a50721aa08b60c56b",
+    "patch": "abe067bc6f2ca9601eef83b0cd4e0db4811827ac",
+    "independent_review": "52dda1339aa03370401be2611ad5002860d37e8b",
+    "actual_registry_receipt": "93b99eb2fc88c5b8fd4b48f7efc0db8057e24d47",
+    "source_alignment": "246b438e9f8026abaa4c48b62dd4d55ffa470cee",
+    "actual_vcs": "003b698e99e024f3621b8043a2426fde5b741171",
+    "api": "SqliteConnectOptions::connection_lifetime_token(Arc<dyn Send + Sync + 'static>)",
+    "adoption_state": "NOT_ADOPTED_NOT_COMPILED; exact normalized vendor/package selection/runtime feature/BUILD and real Cargo/MODULE generators remain separate prerequisites. The source cannot compile against the unchanged published dependency."
+  },
+  "changes": [
+    {
+      "path": "codex-rs/state/src/sqlite.rs",
+      "mode": "100644",
+      "before_blob": "b9fb565cadd14f6541bfc8421164897e2907e2ad",
+      "after_blob": "27b123f6862ca4355da74ed4d1b21c7047b3b2df",
+      "bytes": 20446,
+      "sha256": "2f940666b2e309c5767f9e9f5912f403f622886566a7c4275a8f8af03f737088",
+      "additions": 17,
+      "deletions": 7
+    },
+    {
+      "path": "codex-rs/state/src/sqlite_native_custody_tests.rs",
+      "mode": "100644",
+      "before_blob": null,
+      "after_blob": "469db639ae19cb89263089045c2f05814000d5a0",
+      "bytes": 11254,
+      "sha256": "e3683461e310713d1566f225e1de22cf5e64782cbd6a116ddc61abafd0ab6f0e",
+      "additions": 308,
+      "deletions": 0
+    },
+    {
+      "path": "codex-rs/hepta-memory/src/cognitive_store.rs",
+      "mode": "100644",
+      "before_blob": "5c0704c4e70ffdf2f65864a42da5e6e48bf79006",
+      "after_blob": "1cb023504fa3b871e9c60d60b8ed84047c058072",
+      "bytes": 74394,
+      "sha256": "dbe8075c35d0eb870744eead691de8a2a31b1a289e2ed68babb4c80c7bbb5e4b",
+      "additions": 3,
+      "deletions": 2
+    },
+    {
+      "path": "codex-rs/hepta-memory/src/objective_sender_connection_custody_tests.rs",
+      "mode": "100644",
+      "before_blob": "09a61b69e8cd34f27a0c968433b2b29df9c95380",
+      "after_blob": "6b8e88296507a8fe302aa45cd9015ce602465b56",
+      "bytes": 9608,
+      "sha256": "09b25d8faa1cbace0088175494dc01918fa156f0a78b3c376c1bbf0eccab3fcf",
+      "additions": 27,
+      "deletions": 0
+    }
+  ],
+  "patch": {
+    "path": "state-native-token-binding.patch",
+    "blob": "223ce97fbdeec446f8baf1f44831954041026321",
+    "bytes": 17656,
+    "sha256": "e5c9a1822ecd3d6b4f46709b356e10881d6f9a440cb6f1286807f67c02489e2d"
+  },
+  "totals": {
+    "additions": 355,
+    "deletions": 9,
+    "executable_production_additions": 4,
+    "test_module_declaration_additions": 4,
+    "other_production_edits": "Documentation only. No new dependency in either application crate."
+  },
+  "actual_callers": [
+    {
+      "path": "codex-rs/state/src/sqlite.rs",
+      "blob": "b9fb565cadd14f6541bfc8421164897e2907e2ad",
+      "interface": "open_commit_guarded_durable_evidence_pool",
+      "binding": "Wrap the supplied F once, clone the same Arc<F> into native connection_lifetime_token before filename/connect, retain the unchanged after_connect hook+collation."
+    },
+    {
+      "path": "codex-rs/state/src/sqlite.rs",
+      "blob": "b9fb565cadd14f6541bfc8421164897e2907e2ad",
+      "interface": "open_coordinated_durable_evidence_pool",
+      "binding": "Same native token binding. Original after_connect and every reused checkout gate remain unchanged, including handle-lock release before awaiting coordination."
+    },
+    {
+      "path": "codex-rs/hepta-memory/src/cognitive_store.rs",
+      "blob": "5c0704c4e70ffdf2f65864a42da5e6e48bf79006",
+      "interface": "ordinary CognitiveStore::open",
+      "binding": "Existing acquire_shared OpenGuard -> CognitiveCommitGate::for_open_guard -> commit_check closure -> explicit guarded state API. No new Memory production call or credential conversion."
+    },
+    {
+      "path": "codex-rs/hepta-memory/src/cognitive_store_recovery.rs",
+      "blob": "54e917f45520f6b0e31fcd6a2f57ac3a00d8ae6c",
+      "interface": "recovery candidate validation and published-store reopen",
+      "binding": "Both existing guarded pool calls capture the same actual exclusive guard custody. Current candidate does not change their ordering, path checks, publication, original ACK or sender."
+    },
+    {
+      "path": "codex-rs/hepta-memory/src/cognitive_store_gate.rs",
+      "blob": "f351700e3a7f382217db9f11f164871e7b2a09e4",
+      "interface": "CognitiveCommitGate::for_open_guard",
+      "binding": "Its _custody is the original Arc<CognitiveStoreLockCustody> containing File and, on Windows, retained directory File. The monotonic allowed/fenced predicate is not a Current authentication check."
+    }
+  ],
+  "ownership_chain": [
+    "Actual original File/Windows directory owner -> CognitiveCommitGate custody -> existing commit predicate closure F.",
+    "State Arc<F> -> both original registered callback anchors and SqliteConnectOptions native token.",
+    "Native token -> EstablishParams before worker spawn -> ConnectionHandle before sqlite3_open_v2 -> released only after successful native close; original failing close retains token as documented by the dependency patch."
+  ],
+  "preserved_boundaries": [
+    "Default open_durable_evidence_pool and all other unguarded constructors are byte-for-byte unchanged; only explicit guarded/coordinated callers opt in.",
+    "Original commit hook remains the sole commit oracle. The reserved collation remains unchanged. Neither callback is removed/replaced by production code.",
+    "Memory source changes outside tests are documentation only; original OpenGuard acquisition, Windows retained directory/private-state sync, read-only recovery, original_sender, bootstrap ACK and exact-duplicate behavior are unchanged.",
+    "from_read_only_pool remains a production provided-pool path without token/hook adoption; its existing actual cold-image query_only/deserialize READONLY protection is a separate mechanism.",
+    "No public arbitrary Receipt-to-Current constructor, Root seal, signature minting, listener registration, credentials, Windows token/ACL/loader/DLL or peer checks are introduced or changed.",
+    "The caller must actually capture a resource owner. A borrowed path, empty callback, counter or Arc count cannot create custody."
+  ],
+  "exact_new_parent_tests": [
+    {
+      "package": "codex-state",
+      "name": "sqlite::native_custody_tests::guarded_pool_retains_custody_when_native_open_is_cancelled",
+      "mechanism": "Owned ordinary libtest subprocess holds a real File lock. sqlite3_auto_extension blocks during native open; the real state opening future is actively polled to the callback then cancelled. Parent independently opens/try_locks in another process while child gate is still zero; after release and actual resource destruction, lock succeeds.",
+      "expected": "WouldBlock before native gate release; gate_status=0 is checked after physical probe. After native close: lock available and gate_status=1; child exits successfully and is reaped."
+    },
+    {
+      "package": "codex-state",
+      "name": "sqlite::native_custody_tests::coordinated_pool_retains_custody_when_initial_pragma_is_cancelled",
+      "mechanism": "Same physical cross-process proof, with a real SQLite progress callback paused during initial statement execution. The actual coordinated state constructor is used. Its before_checkout is a deliberate panic sentinel because it must not be reached before cancelled initialization finishes; it is not a successful no-op coordinator.",
+      "expected": "Same physical lock/gate proof. Any successful early open, checkout sentinel, callback timeout or cleanup failure does not qualify."
+    },
+    {
+      "package": "codex-hepta-memory",
+      "name": "production_writer::objective_sender::connection_custody_tests::native_custody_survives_removal_of_both_registered_anchors",
+      "mechanism": "Open the actual CognitiveStore, detach a real connection, close the store, verify live SELECT and real exclusive OpenGuard contention. Test-only removal of the commit hook and replacement of the reserved collation eliminate both old captured owners; a second live SELECT and real File/OpenGuard contention must still hold until physical connection.close. No write follows hook removal.",
+      "expected": "Actual same-process independently opened original OpenGuard handles contend after both anchor removals, then succeed after connection.close. This third control is not claimed to be cross-process."
+    }
+  ],
+  "state_support": {
+    "exact_name": "sqlite::native_custody_tests::owned_state_scenario",
+    "attribute": "#[test] #[ignore]",
+    "invocation": "Only selected parent tests invoke current_exe --exact <support> --ignored --nocapture --test-threads=1 with private scenario/directory child environment.",
+    "counting": "Two state parent tests plus one Memory parent test are three selected controls; support is not a fourth PASS. No existing ignored/skip behavior is changed.",
+    "runtime": "Child uses an ordinary libtest entry and a new_current_thread Tokio runtime after normal Rust initialization; SQLx connection workers are original dependency threads.",
+    "cleanup": "Owns direct child and bounded stdout reader; drops channel/input then kills/waits unreaped child and joins reader. No grandchildren are spawned. Parent reaps successful child before marking its PID reusable.",
+    "bounds": "Only new controls have 5-second stage bounds. Original production/test timeout, retry, permission or skip behavior is unchanged.",
+    "native_gate": "No production test hook; SQLite's existing auto_extension/progress APIs are isolated to the owned child. Callback uses no panic and returns nonzero on timeout/disconnect. Successful path unregisters its exact autoextension."
+  },
+  "counterfactual": {
+    "patch": {
+      "path": "negative-no-options-binding.patch",
+      "blob": "842177e235d729e92e73e82c1ebd4fac2ede7fb2",
+      "bytes": 1125,
+      "sha256": "bd4041c7d8515df786812715f27b5a909727d49fde2057ce2a6775c9938800ba"
+    },
+    "restore": {
+      "path": "restore-options-binding.patch",
+      "blob": "40e559a07abbe39d4d796311b09252fc07e43a9d",
+      "bytes": 1125,
+      "sha256": "28866cf8b2305ff6e75c079fceddaca8584eac3a8be3fcc8846b2d81d4a42501"
+    },
+    "scope": "Only four executable state lines are removed: two Arc clones and two connection_lifetime_token builder calls. Dependency token API and all parent/support tests stay present. Both full->negative->restore reconstructions were checked.",
+    "expected_selected_parent_count": 3,
+    "acceptance": [
+      "Both owned state children must actually enter the intended native callback, the opening future must be cancelled, and parent must observe an erroneously available real lock while post-probe gate_status remains zero.",
+      "The Memory test must complete original opening/close/live-SELECT/initial contention and emit both_registered_anchors_removed=true native_close_started=false; only then unexpected exclusive-lock success proves missing native custody.",
+      "Compile/setup errors, no tests, a failed child selector, gate timeout/outcome 2, sentinel panic, earlier SQL failure or missing stage do not count as causal negatives."
+    ],
+    "scope_wording": "A missing-options-binding counterfactual on the combined B and adopted dependency candidate; not an untouched cabc product baseline."
+  },
+  "native_gates": {
+    "state_dependency_manifest": {
+      "path": "codex-rs/state/Cargo.toml",
+      "blob": "02cb82d778fc02859a42c0658597799ad00f5559",
+      "change": "none; existing sqlx, libsqlite3-sys, Tokio, std and pretty_assertions suffice"
+    },
+    "commands_after_approved_adoption": [
+      "just test -p codex-state --lib --locked --retries 0 -E 'test(=sqlite::native_custody_tests::guarded_pool_retains_custody_when_native_open_is_cancelled) | test(=sqlite::native_custody_tests::coordinated_pool_retains_custody_when_initial_pragma_is_cancelled)'",
+      "just test -p codex-hepta-memory --lib --locked --retries 0 -E 'test(=production_writer::objective_sender::connection_custody_tests::native_custody_survives_removal_of_both_registered_anchors)'",
+      "just test -p codex-state --lib --locked --retries 0",
+      "just test -p codex-hepta-memory --lib --locked --retries 0"
+    ],
+    "requirements": [
+      "Root-approved sole native writer only after actual driver package adoption/real dependency locks and driver physical controls.",
+      "Fresh catalog must show exactly two state and one Memory selected parent names; original 4 state commit-gate controls, 5 read-barrier controls and 4 Memory registered-custody controls remain unchanged and must be included in their owning regression gates.",
+      "Original sender/read-ACK/AlreadyRetained, checkpoint interlock, cold recovery and whole-state tests cannot be replaced with only these three controls.",
+      "Capture true source/package/helper identities, raw complete output, JUnit, actual linked SQLite version from existing R2c V3 observation, selection counts/retries/ignored separately.",
+      "Run original just fix / just fmt and generated lock checks in the owning lane; no tests have yet run on this source. No optional rerun after hygiene unless a required new gate is identified."
+    ],
+    "application_dependency_changes": "No Cargo/BUILD dependency edge is added by these four application source paths. Separate SQLx adoption needs explicit manifests/BUILD and real lock generation."
+  },
+  "static_validation": {
+    "proof": {
+      "path": "static-verification.json",
+      "blob": "1cf40482a527d548dca08cde2fcda58335a654b8",
+      "bytes": 4659,
+      "sha256": "df107c699863b4f31ab8df48102e5938aa0cf9675b5cbb4523dd4348ece9d2c0"
+    },
+    "script": {
+      "path": "verify_static_patch.py",
+      "blob": "34271a382c817f7b4fb41f96fc43728cba2dcd8d",
+      "bytes": 3436,
+      "sha256": "b12b3c4c2b3845fa24801759fc4018f37d568f4aa2aa6f077d722fcc7f7b8bf8"
+    },
+    "input": {
+      "path": "input-manifest.json",
+      "blob": "56ea9f136190b1f05cffae9a6ca75ae6b04f9ed8",
+      "bytes": 2662,
+      "sha256": "d0a011a07e387c3ac7a92dddb8965d40f671c6008f18a14959d719e67374910f"
+    },
+    "result": "Three real isolated git apply --check/apply phases, four final paths, exact negative state postimage, final restoration equal. This is source reconstruction only.",
+    "no_compile_or_native": true
+  },
+  "explicit_open": [
+    "Actual dependency packaging/workspace membership/test runtime/BUILD/locks adoption and all physical runtime controls.",
+    "Current authentication and independent peer/owner/lease/deadline/exact-cut authority; descriptor-bound recovery; Root normal-entry signed provisioning and final-use checks.",
+    "Cross-process independent shared-open instances and any connections opened without these explicit token-bound options.",
+    "Actual platform matrix and Windows permission boundary qualification; none is inferred from static code or from a future Linux result."
+  ],
+  "primary_api_anchors": [
+    {
+      "repository": "TrillionniumFoundation/hepta-private-ci",
+      "ref": "cabcb40d36e116beaa65750e1f674c52035da785",
+      "path": "codex-rs/state/src/runtime.rs",
+      "blob": "10b3f4534e426645f12e3737c0056a0dde5e85ea",
+      "fact": "Existing cfg(test) pub(crate) test_support module is accessible from sibling sqlite tests."
+    },
+    {
+      "repository": "TrillionniumFoundation/hepta-private-ci",
+      "ref": "cabcb40d36e116beaa65750e1f674c52035da785",
+      "path": "codex-rs/state/src/runtime/test_support.rs",
+      "blob": "a89d00c2c250279fce9f22ecbf69b1aa08c2e1a2",
+      "fact": "Existing pub(crate) create_private_test_directory uses the original private directory policy."
+    },
+    {
+      "repository": "transact-rs/sqlx",
+      "ref": "003b698e99e024f3621b8043a2426fde5b741171",
+      "path": "sqlx-sqlite/src/options/connect.rs",
+      "blob": "cfa25872b2c118cc955ac4e2f9cfb64e19e4a0ee",
+      "fact": "Original connect actively awaits establishment and then executes its configured initial PRAGMA string before returning the connection; the new tests keep polling to the actual callback."
+    },
+    {
+      "repository": "transact-rs/sqlx",
+      "ref": "003b698e99e024f3621b8043a2426fde5b741171",
+      "path": "sqlx-sqlite/src/connection/establish.rs",
+      "blob": "cedf752e6adef404b6f7d537f521045cb8342b5a",
+      "fact": "Source basis of reviewed native token ownership addition, before actual sqlite3_open_v2."
+    },
+    {
+      "repository": "sqlite/sqlite",
+      "ref": "a5333afb9ad1aa473f8963b92caeaa955f47dc74",
+      "path": "src/main.c",
+      "blob": "6efe538d4d9621818e41e996b622d131d3e216f1",
+      "fact": "Existing autoextension callback runs inside native opening. Source review found no later SQL execution in the ordinary native-open tail before SQLx initial PRAGMAs; actual callback entry and non-completion are required at runtime."
+    }
+  ]
+}

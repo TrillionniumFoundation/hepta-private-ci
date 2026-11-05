@@ -1,0 +1,536 @@
+{
+  "schema": "hepta-selected-donor-static-review-v1",
+  "donor_reconstructions": [
+    {
+      "pr": 4810,
+      "selected_files": 6,
+      "files": [
+        {
+          "path": "codex-rs/hepta-operator-acceptance/src/trust.rs",
+          "status": "modified",
+          "preimage": {
+            "bytes": 14394,
+            "sha256": "3072a8b128814ef04834186d4f4a3c490de009e67aef064101100d9d18784a98",
+            "git_blob": "c4fe8f803c93eac6a3ed58c4457989baec6a0057"
+          },
+          "postimage": {
+            "bytes": 14655,
+            "sha256": "78fcf19655bf6754ec3454065d3c8d3b253240692dbd5155f0e88b5bba76eb12",
+            "git_blob": "668b8cd71600329de90aec2ea9411af7469819f0"
+          },
+          "exact_postimage_equal": true
+        },
+        {
+          "path": "codex-rs/hepta-operator-acceptance/src/g5_trust.rs",
+          "status": "modified",
+          "preimage": {
+            "bytes": 33126,
+            "sha256": "ecc51180c9ef80fac92851992f74482a7e941cb84ef46fcdc9d3ad7a3c18e33f",
+            "git_blob": "cf32c926288c6712523f3179dd00bd4b24d2df01"
+          },
+          "postimage": {
+            "bytes": 33355,
+            "sha256": "f2db388f3bb57be27030ef53d5cb3c0962247c53906bbda6d5dc13f0219f5e28",
+            "git_blob": "694defecd0cf2addd782c80c56196b85c68f7421"
+          },
+          "exact_postimage_equal": true
+        },
+        {
+          "path": "codex-rs/utils/path-utils/src/private_state_windows.rs",
+          "status": "modified",
+          "preimage": {
+            "bytes": 26201,
+            "sha256": "ab6b480dc11705751f09f25ddf125f6d0ee7a3c42809d9d8867bac4803d5593d",
+            "git_blob": "03a8170a874621c362e1b135df654016207082d5"
+          },
+          "postimage": {
+            "bytes": 27818,
+            "sha256": "7c25eb86e660ff7f4321275ac6c906a004a87c3e134684193b3ef2d90fae87ee",
+            "git_blob": "a3d4040372a3e3ec6a257b385bc9fbcae2c6e9ff"
+          },
+          "exact_postimage_equal": true
+        },
+        {
+          "path": "codex-rs/utils/path-utils/src/private_state_windows_directory.rs",
+          "status": "modified",
+          "preimage": {
+            "bytes": 5376,
+            "sha256": "05f8abf49d5a0d5f099695d6138e01525ac9b5e0b369e5172e0dd8f342e2f2a6",
+            "git_blob": "b4e85af5ba4f2a92d37bbec2c3fa1d65795ce6c4"
+          },
+          "postimage": {
+            "bytes": 5769,
+            "sha256": "6a4b854b9443ced326733c38631ce2120636b50da511f632790c585c3d3e5b2b",
+            "git_blob": "e4badee66d7b8d6eae6e89f766976ac847e4cd1c"
+          },
+          "exact_postimage_equal": true
+        },
+        {
+          "path": "codex-rs/state/src/sqlite_recovery_windows.rs",
+          "status": "modified",
+          "preimage": {
+            "bytes": 11150,
+            "sha256": "5e07069d3f823fdf01387c498c564c16f2e315d678ba70633e3dcce81acf1135",
+            "git_blob": "c050342ecfc2a319ce7cdc3772854081f3e3f5ca"
+          },
+          "postimage": {
+            "bytes": 11232,
+            "sha256": "66bf3e5df3f45a84bb891e6014e91cfe95afa4d0b4e99cb6e864699cdfb5e4c2",
+            "git_blob": "f97d39d6f09797efbb989ce30b8c0e6c3e4c0f53"
+          },
+          "exact_postimage_equal": true
+        },
+        {
+          "path": "codex-rs/hepta-operator-acceptance/src/openssh_windows.rs",
+          "status": "added",
+          "preimage": null,
+          "postimage": {
+            "bytes": 14820,
+            "sha256": "285227b186415307463d50a6b207bdf01ae657ef24574ca3aeb5801f7ff2f86c",
+            "git_blob": "73bea387f84c9ee382f734356917ce7ee8009168"
+          },
+          "exact_postimage_equal": true
+        }
+      ],
+      "patch": {
+        "path": "static-reconstruction/pr-4810-selected-production.patch",
+        "bytes": 26759,
+        "sha256": "cf55ebf3bc7f4a4d6ca6b4e0e7dae0adac2ecfa05f1c49f8ad0d8138d80c86c2",
+        "git_blob": "fa6d35b266391c1ede731a8aadc58214f99f22db"
+      },
+      "commands": [
+        {
+          "argv": [
+            "git",
+            "apply",
+            "--check",
+            "/workspace/scratch/07dd58cc9630/research-audit/repository-inventory-20261105/static-reconstruction/pr-4810-selected-production.patch"
+          ],
+          "cwd": "/workspace/scratch/07dd58cc9630/research-audit/repository-inventory-20261105/static-reconstruction/pr-4810",
+          "returncode": 0,
+          "stdout": "",
+          "stderr": ""
+        },
+        {
+          "argv": [
+            "git",
+            "apply",
+            "/workspace/scratch/07dd58cc9630/research-audit/repository-inventory-20261105/static-reconstruction/pr-4810-selected-production.patch"
+          ],
+          "cwd": "/workspace/scratch/07dd58cc9630/research-audit/repository-inventory-20261105/static-reconstruction/pr-4810",
+          "returncode": 0,
+          "stdout": "",
+          "stderr": ""
+        }
+      ],
+      "scope": "Only these selected production paths; no whole-donor build, compatibility test, adoption or execution."
+    },
+    {
+      "pr": 4812,
+      "selected_files": 7,
+      "files": [
+        {
+          "path": "codex-rs/hepta-contracts/src/final_use.rs",
+          "status": "modified",
+          "preimage": {
+            "bytes": 41363,
+            "sha256": "ee47a741721a216671ed3728034265714ebd8268bc55fe731bfd21bb263f9bec",
+            "git_blob": "61c7ce18fe06becc5a0a02ce3f75fa51becc9cb6"
+          },
+          "postimage": {
+            "bytes": 41743,
+            "sha256": "b829c56d411d0db2b59c4ccfa01ae8d881fcc0dc86b78db55efe460988d6ff54",
+            "git_blob": "c5c4d81b1be5556e241810fc617037ebdad4ba11"
+          },
+          "exact_postimage_equal": true
+        },
+        {
+          "path": "codex-rs/hepta-contracts/src/final_use_live_owner.rs",
+          "status": "modified",
+          "preimage": {
+            "bytes": 1009,
+            "sha256": "750f2902c607cb8bb5663f72ab37785aa1571173b2ae620a93551feffa3ac19f",
+            "git_blob": "e7e44bb748f3de84e7ae6ab0c5cce01027c1d410"
+          },
+          "postimage": {
+            "bytes": 1942,
+            "sha256": "d1e8206836893e8ee145fcea1c0e4d24d778457418acfe4e9c54e0f74a051673",
+            "git_blob": "8a3bd8afc6cdcb88a3176511797849b9c9005214"
+          },
+          "exact_postimage_equal": true
+        },
+        {
+          "path": "codex-rs/hepta-infer-worker-host/src/final_use_authorizer.rs",
+          "status": "modified",
+          "preimage": {
+            "bytes": 11993,
+            "sha256": "4a563de735e62f826e49f3757e97ad8269ac526524690de7bbdae75d8a5e7099",
+            "git_blob": "047ca3a27968d636f123defdb373a3ac63bd2e92"
+          },
+          "postimage": {
+            "bytes": 12872,
+            "sha256": "0f4b6b1c3508ffc579052a13bc67b5686b1a9327ce28df83ed170081b2bac20c",
+            "git_blob": "77aa43f26579f087c6d15ee981aa7090f368d4a6"
+          },
+          "exact_postimage_equal": true
+        },
+        {
+          "path": "codex-rs/hepta-infer-worker-host/src/final_use_authorizer/pq.rs",
+          "status": "modified",
+          "preimage": {
+            "bytes": 11430,
+            "sha256": "9c731c9043cc028387090c66509ca135b71a961bdbfd1379d15b79975eba5797",
+            "git_blob": "d0a06b3e72c684f062700a3ad3d1aaa32c4bfa34"
+          },
+          "postimage": {
+            "bytes": 11473,
+            "sha256": "8248dce487954198981a1359d1f4848be140b5230952e0231068dc27c0a87195",
+            "git_blob": "5f7c4e58418af1deb57ebb12a62ef1742f4c75c8"
+          },
+          "exact_postimage_equal": true
+        },
+        {
+          "path": "codex-rs/hepta-infer-worker-host/src/smollm_cognitive_host.rs",
+          "status": "modified",
+          "preimage": {
+            "bytes": 14918,
+            "sha256": "99d51bef7512378ea91b84943b7bbf8102661bfba0a216281549a07df9a24b19",
+            "git_blob": "e6bbc43ae6ef44c6dbbb360788dabd0f2fc8314f"
+          },
+          "postimage": {
+            "bytes": 15124,
+            "sha256": "dfe68305c76ba4a94a4f006679ecad51660c3c2c40ebefa40e80f2345830d863",
+            "git_blob": "b2982a0e83314a67a47b49fbeb0a7c16eef97905"
+          },
+          "exact_postimage_equal": true
+        },
+        {
+          "path": "codex-rs/hepta-learning-artifacts/src/selected_public_initial_smollm.rs",
+          "status": "modified",
+          "preimage": {
+            "bytes": 3384,
+            "sha256": "d67cd38be604e684cd50e9c783fafcf2251e2401b776e1a019cc332dd4a5c110",
+            "git_blob": "f89100a879108f6df25d6a8a08bb85150de672d2"
+          },
+          "postimage": {
+            "bytes": 3757,
+            "sha256": "e2a48d4e5a9291acfd31885c7512baea24f4b3155df92ce867fa2466b877311d",
+            "git_blob": "837e230c52bf2fe55346ed3d5adddf60aac3da2f"
+          },
+          "exact_postimage_equal": true
+        },
+        {
+          "path": "codex-rs/hepta-learning-artifacts/src/selection.rs",
+          "status": "modified",
+          "preimage": {
+            "bytes": 32652,
+            "sha256": "a1b41f04fbef983d8776a14ae5b3dae1b5479646615ddd7bb7709545d69c3050",
+            "git_blob": "71f5acb379e844cac522939cdc67a2c2355a604b"
+          },
+          "postimage": {
+            "bytes": 32721,
+            "sha256": "ba325f8b3ad813dbcc61fa95bf7d85706f34356584773c7d1f7896bca17d6a42",
+            "git_blob": "79e2d89a24dffe72ed9d1837f14a4c48950a2527"
+          },
+          "exact_postimage_equal": true
+        }
+      ],
+      "patch": {
+        "path": "static-reconstruction/pr-4812-selected-production.patch",
+        "bytes": 11926,
+        "sha256": "f106dbaecbc5945426fa8205be242093e29cdb2e431ae430f4f6a50fade7055d",
+        "git_blob": "1f59644d3b891060487bfc1697eb750174ac2670"
+      },
+      "commands": [
+        {
+          "argv": [
+            "git",
+            "apply",
+            "--check",
+            "/workspace/scratch/07dd58cc9630/research-audit/repository-inventory-20261105/static-reconstruction/pr-4812-selected-production.patch"
+          ],
+          "cwd": "/workspace/scratch/07dd58cc9630/research-audit/repository-inventory-20261105/static-reconstruction/pr-4812",
+          "returncode": 0,
+          "stdout": "",
+          "stderr": ""
+        },
+        {
+          "argv": [
+            "git",
+            "apply",
+            "/workspace/scratch/07dd58cc9630/research-audit/repository-inventory-20261105/static-reconstruction/pr-4812-selected-production.patch"
+          ],
+          "cwd": "/workspace/scratch/07dd58cc9630/research-audit/repository-inventory-20261105/static-reconstruction/pr-4812",
+          "returncode": 0,
+          "stdout": "",
+          "stderr": ""
+        }
+      ],
+      "scope": "Only these selected production paths; no whole-donor build, compatibility test, adoption or execution."
+    }
+  ],
+  "memory_v15_actual_log_review": {
+    "run_id": 41950367467,
+    "job_id": 126992613476,
+    "tested_source": "386f7a4453b5e59e83db12d8bf958cfb5e4847d0",
+    "current_donor_head": "379c21c2e625c3a3dfbb514e11b9e8fe2213cda8",
+    "log": {
+      "path": "donors/evidence/memory-v15-job-126992613476.log.txt",
+      "bytes": 35814,
+      "sha256": "51e3f78cf3cc57ca02e55848fb32eb7fe1c115d99ce70e4529b191cf9b8eb7e9",
+      "git_blob": "2e912415e3a1ea14cb9600f20df5f8bb40bd64e9"
+    },
+    "exact_cases": [
+      {
+        "name": "admission_tests.AdmissionTests.test_all_failed_search_cost_can_reverse_admission",
+        "status": "ok"
+      },
+      {
+        "name": "admission_tests.AdmissionTests.test_bad_cost_values_and_rebound_receipts_reject",
+        "status": "ok"
+      },
+      {
+        "name": "admission_tests.AdmissionTests.test_common_resource_cap_is_applied_to_candidate",
+        "status": "ok"
+      },
+      {
+        "name": "admission_tests.AdmissionTests.test_duplicate_queries_and_double_pricing_reject",
+        "status": "ok"
+      },
+      {
+        "name": "admission_tests.AdmissionTests.test_errors_and_deadlines_stay_in_denominator",
+        "status": "ok"
+      },
+      {
+        "name": "admission_tests.AdmissionTests.test_historical_holdout_does_not_authorize_new_growth",
+        "status": "ok"
+      },
+      {
+        "name": "admission_tests.AdmissionTests.test_manifest_and_same_information_are_enforced",
+        "status": "ok"
+      },
+      {
+        "name": "admission_tests.AdmissionTests.test_positive_synthetic_fixture_executes_both_arms",
+        "status": "ok"
+      },
+      {
+        "name": "admission_tests.AdmissionTests.test_regression_on_old_stratum_cannot_hide_behind_average_gain",
+        "status": "ok"
+      },
+      {
+        "name": "admission_tests.AdmissionTests.test_repeated_seeds_are_not_independent_queries",
+        "status": "ok"
+      },
+      {
+        "name": "admission_tests.AdmissionTests.test_unknown_energy_rejects_even_with_zero_energy_price",
+        "status": "ok"
+      },
+      {
+        "name": "authority_tests.AuthorityTests.test_admin_recovers_absent_owner_without_old_owner_abort",
+        "status": "ok"
+      },
+      {
+        "name": "authority_tests.AuthorityTests.test_atomic_split_merge_and_owner_exclusion",
+        "status": "ok"
+      },
+      {
+        "name": "authority_tests.AuthorityTests.test_bad_source_types_rejected_without_mutation",
+        "status": "ok"
+      },
+      {
+        "name": "authority_tests.AuthorityTests.test_bundle_bytes_and_lineage_verified",
+        "status": "ok"
+      },
+      {
+        "name": "authority_tests.AuthorityTests.test_complete_plan_gate_missing_or_misbound_refuses_reshape",
+        "status": "ok"
+      },
+      {
+        "name": "authority_tests.AuthorityTests.test_corrupted_persisted_object_is_rejected",
+        "status": "ok"
+      },
+      {
+        "name": "authority_tests.AuthorityTests.test_failed_reshape_restores_all_addresses",
+        "status": "ok"
+      },
+      {
+        "name": "authority_tests.AuthorityTests.test_kill_before_and_after_commit_then_reconcile_same_request",
+        "status": "ok"
+      },
+      {
+        "name": "authority_tests.AuthorityTests.test_last_reader_revoke_keeps_owner_repair_path",
+        "status": "ok"
+      },
+      {
+        "name": "authority_tests.AuthorityTests.test_migration_cold_restart_and_old_owner_fenced",
+        "status": "ok"
+      },
+      {
+        "name": "authority_tests.AuthorityTests.test_quality_cannot_be_client_approval",
+        "status": "ok"
+      },
+      {
+        "name": "authority_tests.AuthorityTests.test_ready_requires_exact_bytes_and_receiver_identity",
+        "status": "ok"
+      },
+      {
+        "name": "authority_tests.AuthorityTests.test_receipt_replay_never_reapplies_mutation",
+        "status": "ok"
+      },
+      {
+        "name": "authority_tests.AuthorityTests.test_rollback_new_epoch_and_no_permission_or_source_rollback",
+        "status": "ok"
+      },
+      {
+        "name": "authority_tests.AuthorityTests.test_signed_receipt_and_tampered_command",
+        "status": "ok"
+      },
+      {
+        "name": "authority_tests.AuthorityTests.test_signed_rejections_durable_and_cannot_replace_success",
+        "status": "ok"
+      },
+      {
+        "name": "authority_tests.AuthorityTests.test_source_update_after_ready_blocks_commit",
+        "status": "ok"
+      },
+      {
+        "name": "authority_tests.AuthorityTests.test_two_actual_processes_compete_for_same_epoch",
+        "status": "ok"
+      },
+      {
+        "name": "authority_tests.AuthorityTests.test_two_processes_cannot_rebind_rejected_request_id",
+        "status": "ok"
+      },
+      {
+        "name": "authority_tests.AuthorityTests.test_unrelated_source_update_does_not_stale_cell",
+        "status": "ok"
+      },
+      {
+        "name": "authority_tests.AuthorityTests.test_verified_bytes_are_immutable_and_manifest_isolated",
+        "status": "ok"
+      },
+      {
+        "name": "authority_tests.AuthorityTests.test_wrong_service_identity_cannot_reopen_authority",
+        "status": "ok"
+      },
+      {
+        "name": "integration_tests.IntegratedAdmissionTests.test_verified_parameter_bytes_control_activation",
+        "status": "ok"
+      },
+      {
+        "name": "review_tests.IndependentAdmissionReview.test_factory_reusing_one_executor_is_rejected",
+        "status": "ok"
+      },
+      {
+        "name": "review_tests.IndependentAdmissionReview.test_frozen_dataset_survives_callers_nested_mutation",
+        "status": "ok"
+      },
+      {
+        "name": "review_tests.IndependentAdmissionReview.test_identical_predictors_do_not_gain_from_shared_executor_state",
+        "status": "ok"
+      },
+      {
+        "name": "review_tests.IndependentAuthorityReview.test_admin_can_recover_unreachable_owner_without_old_owner_signature",
+        "status": "ok"
+      },
+      {
+        "name": "review_tests.IndependentAuthorityReview.test_commit_fences_former_owner_after_restart",
+        "status": "ok"
+      },
+      {
+        "name": "review_tests.IndependentAuthorityReview.test_evaluator_annotation_cannot_corrupt_signed_candidate_manifest",
+        "status": "ok"
+      },
+      {
+        "name": "review_tests.IndependentAuthorityReview.test_idempotency_key_conflict_cannot_change_owner_or_repeat_effect",
+        "status": "ok"
+      },
+      {
+        "name": "review_tests.IndependentAuthorityReview.test_individual_child_approvals_cannot_replace_joint_structure_admission",
+        "status": "ok"
+      },
+      {
+        "name": "review_tests.IndependentAuthorityReview.test_merge_uses_permission_intersection_and_rejects_union",
+        "status": "ok"
+      },
+      {
+        "name": "review_tests.IndependentAuthorityReview.test_read_request_replay_rechecks_current_permission",
+        "status": "ok"
+      },
+      {
+        "name": "review_tests.IndependentAuthorityReview.test_rejected_request_id_cannot_be_rebound_to_a_successful_payload",
+        "status": "ok"
+      },
+      {
+        "name": "review_tests.IndependentAuthorityReview.test_restriction_survives_restart_and_old_bundle_republication",
+        "status": "ok"
+      },
+      {
+        "name": "review_tests.IndependentAuthorityReview.test_revoke_all_readers_is_local_to_the_cell",
+        "status": "ok"
+      },
+      {
+        "name": "review_tests.IndependentAuthorityReview.test_second_child_gate_failure_rolls_back_the_whole_split",
+        "status": "ok"
+      },
+      {
+        "name": "review_tests.IndependentAuthorityReview.test_source_revoked_after_ready_blocks_commit_and_all_old_model_reads",
+        "status": "ok"
+      },
+      {
+        "name": "review_tests.IndependentAuthorityReview.test_split_cannot_drop_source_lineage_or_duplicate_addresses",
+        "status": "ok"
+      },
+      {
+        "name": "review_tests.IndependentAuthorityReview.test_successful_split_retires_parent_and_prevents_its_reuse",
+        "status": "ok"
+      },
+      {
+        "name": "review_tests.IndependentAuthorityReview.test_transfer_abort_fences_the_preparation_and_original_epochs",
+        "status": "ok"
+      },
+      {
+        "name": "review_tests.IndependentAuthorityReview.test_truthy_non_boolean_gate_and_nonhex_evidence_do_not_publish",
+        "status": "ok"
+      }
+    ],
+    "ordered_roster_matches_fixed_checks_json": true,
+    "actual_pass": 53,
+    "actual_skip": 0,
+    "source_hashes_checked": [
+      {
+        "path": "authority.py",
+        "bytes": 26721,
+        "sha256": "7e5a2016347718e87df147f2ae96f2e56b9813d2c11e705bf88c8649a16bbe68",
+        "git_blob": "8a8791e79f3e1a84c1244271db83886ab1cc72c6",
+        "equals_source_run_report": true
+      },
+      {
+        "path": "admission.py",
+        "bytes": 10959,
+        "sha256": "7e3cf0ae3d6cb12d904d5d2d5e104f93bb8d2677124cfc232fd19818975a9cf0",
+        "git_blob": "23618c4366a71c319640742e5f080021f916f15c",
+        "equals_source_run_report": true
+      }
+    ],
+    "head_after_tested_commit": {
+      "files": [
+        "qualification/memory-cell-v15/README.md",
+        "qualification/memory-cell-v15/evidence/ci_41950367467/acquisition.json",
+        "qualification/memory-cell-v15/evidence/ci_41950367467/checks.json",
+        "qualification/memory-cell-v15/evidence/ci_41950367467/checks.log",
+        "qualification/memory-cell-v15/evidence/ci_41950367467/device_review_checks.json"
+      ],
+      "code_or_workflow_changes": false,
+      "comparison": {
+        "bytes": 36278,
+        "sha256": "b0e55a2dda9a9b6abbe92a726deeef9fdeba4213206a43db4063ff74cc02f053",
+        "git_blob": "369421d37d6f107610f6e25eae7fd6f97750beed"
+      }
+    },
+    "scope": "Actual same-host Python synthetic/control-plane tests and an offline historical-device-receipt verifier. No repeated physical remote run, Rust/native integration, language training or efficacy acceptance.",
+    "artifact_zip_downloaded_in_this_audit": false,
+    "production_activation_allowed": false
+  },
+  "native_or_product_tests_run_by_this_audit": 0
+}

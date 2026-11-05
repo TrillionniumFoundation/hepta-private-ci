@@ -1,0 +1,280 @@
+{
+  "schema": "hepta-app-parent-lifecycle-complete-original-evidence-archive-v1",
+  "native_export_job": "1a1a9945033-fc05-361e",
+  "native_export_status": {
+    "at_unix_ms": 1793846433197,
+    "audit_recorded": true,
+    "automatic_retry": false,
+    "cancelled": false,
+    "exit_code": 0,
+    "job_id": "1a1a9945033-fc05-361e",
+    "launch_nonce": "c7ac43c421d22300e34b6b92d0b8dfaa",
+    "log_bytes": {
+      "stderr": {
+        "seen": 0,
+        "stored": 0
+      },
+      "stdout": {
+        "seen": 567,
+        "stored": 567
+      }
+    },
+    "log_errors": {
+      "stderr": null,
+      "stdout": null
+    },
+    "log_synced": {
+      "stderr": true,
+      "stdout": true
+    },
+    "log_truncated": {
+      "stderr": false,
+      "stdout": false
+    },
+    "output_complete": true,
+    "output_durable": true,
+    "state": "succeeded",
+    "terminal_publication_confirmed": true,
+    "terminal_publication_protocol": 1,
+    "timed_out": false
+  },
+  "native_export_manifest": {
+    "git_blob": "a365e446f2d93f001345635f968f90cf4e2f5087",
+    "bytes": 22816,
+    "sha256": "89174b4f6393ebd2ef328b62c5ee9935577b51a569b653be8fa66488be48eed5"
+  },
+  "native_original_job": "1a1a98a00bb-fc05-35d8",
+  "tested_source_tree": "1e936b1ca6df807d8928a4cc6c527f40f92808aa",
+  "restored_source_tree": "f8251e1d14fa8524ab469281296cd4cf708f173c",
+  "root_guard_blob": "961ec3880199c1a2ee367d6291bcee393436f169",
+  "original_unique_files_count": 50,
+  "assets": [
+    {
+      "name": "normal-six-helper-build-epoch2.stdout",
+      "original": {
+        "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/app-parent-lifecycle-probe-f825-1e936-20261105/normal-six-helper-build-epoch2.stdout",
+        "bytes": 1129355,
+        "sha256": "ae13b94486f64ed67bc00fddde76aaaaefeae66d853d7a68cc2560f23f84381a"
+      },
+      "gzip": {
+        "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/app-parent-lifecycle-frozen-export-20261105/normal-six-helper-build-epoch2.stdout.gz",
+        "bytes": 74502,
+        "sha256": "15a9e1c187457f717d51c15d6abf0da3cf60603c1d9759a43a6e5d28fc123c53"
+      },
+      "gzip_mtime": 0,
+      "base64_bytes": 99336,
+      "base64_sha256": "e38b6246aedb06b428b5dad13dfabe6db6be2113fc95b6cc5fbbd70d6705bcc7",
+      "github_chunks": [
+        {
+          "offset": 0,
+          "git_blob": "9cf780dad1f0a1ee6233ab3dc21667bb1ec4b9dd",
+          "bytes": 99336,
+          "sha256": "e38b6246aedb06b428b5dad13dfabe6db6be2113fc95b6cc5fbbd70d6705bcc7",
+          "local_transport_file": "/workspace/scratch/07dd58cc9630/ci-audit/recovered-20261105/app-parent-probe-compressed-archive/00-000.b64.txt",
+          "local_transport_added_final_newline": true
+        }
+      ]
+    },
+    {
+      "name": "normal-six-helper-build-epoch2.stderr",
+      "original": {
+        "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/app-parent-lifecycle-probe-f825-1e936-20261105/normal-six-helper-build-epoch2.stderr",
+        "bytes": 10263,
+        "sha256": "78c60b8da80efab73cc780757ed8f7a2ef0cbcd48efa77f84d2ca31e3152bd9b"
+      },
+      "gzip": {
+        "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/app-parent-lifecycle-frozen-export-20261105/normal-six-helper-build-epoch2.stderr.gz",
+        "bytes": 1547,
+        "sha256": "7785d8cc7420e20e9c62f3ef4ee0eb1dd9054873692c9ae31c1732026afad02d"
+      },
+      "gzip_mtime": 0,
+      "base64_bytes": 2064,
+      "base64_sha256": "2ae2cb1c2c4a066db4b94380540d9dafa64fc408f87e36b5862830087bb3aa98",
+      "github_chunks": [
+        {
+          "offset": 0,
+          "git_blob": "60149fbc90ea0baf823969c0e7299ea7c4db1b8b",
+          "bytes": 2064,
+          "sha256": "2ae2cb1c2c4a066db4b94380540d9dafa64fc408f87e36b5862830087bb3aa98",
+          "local_transport_file": "/workspace/scratch/07dd58cc9630/ci-audit/recovered-20261105/app-parent-probe-compressed-archive/01-000.b64.txt",
+          "local_transport_added_final_newline": true
+        }
+      ]
+    },
+    {
+      "name": "workspace-metadata.stdout",
+      "original": {
+        "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/app-parent-lifecycle-probe-f825-1e936-20261105/workspace-metadata.stdout",
+        "bytes": 8163658,
+        "sha256": "51ff98c991ea71a7a1be5135acb3c35bd6070b09544306f4b3bbc0fa1ea52e19"
+      },
+      "gzip": {
+        "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/app-parent-lifecycle-frozen-export-20261105/workspace-metadata.stdout.gz",
+        "bytes": 596961,
+        "sha256": "8e52af367ddcdc8a0694f7ab5aecc04137d9e6be16c24089c3b869f216d6e826"
+      },
+      "gzip_mtime": 0,
+      "base64_bytes": 795948,
+      "base64_sha256": "05b7da731e02afd2751d37771428d5bfe9fb37d31d0793ae05d86aaf6bc1198c",
+      "github_chunks": [
+        {
+          "offset": 0,
+          "git_blob": "bb2caf6d3e7ab1572e10e56f7a91f1a08072ee56",
+          "bytes": 400000,
+          "sha256": "fa002bff4c2de97ba41138c7fe8d464ffaca6bb87d016a4118a3f5d9be4d9752",
+          "local_transport_file": "/workspace/scratch/07dd58cc9630/ci-audit/recovered-20261105/app-parent-probe-compressed-archive/02-000.b64.txt",
+          "local_transport_added_final_newline": true
+        },
+        {
+          "offset": 400000,
+          "git_blob": "d6cc00eb227cd2ab00162be0b66c09df89a4d0cb",
+          "bytes": 395948,
+          "sha256": "5520e1b07f6788cf6eeaf35cced07b9bb352ab7555e7f361f96151e97c6ead94",
+          "local_transport_file": "/workspace/scratch/07dd58cc9630/ci-audit/recovered-20261105/app-parent-probe-compressed-archive/02-001.b64.txt",
+          "local_transport_added_final_newline": true
+        }
+      ]
+    },
+    {
+      "name": "app-disconnect-full-context-catalog.stdout",
+      "original": {
+        "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/app-parent-lifecycle-probe-f825-1e936-20261105/app-disconnect-full-context-catalog.stdout",
+        "bytes": 3294917,
+        "sha256": "00fc38c7ac704092f801f975f23dc3d119c982caf34096cc2fe123f05d2dd153"
+      },
+      "gzip": {
+        "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/app-parent-lifecycle-frozen-export-20261105/app-disconnect-full-context-catalog.stdout.gz",
+        "bytes": 378606,
+        "sha256": "4b1219fafd7f57191db0e47cb59a2a8c010ab192c7b15e572ad0c456bc1d9030"
+      },
+      "gzip_mtime": 0,
+      "base64_bytes": 504808,
+      "base64_sha256": "ceab390919382a0375d5fad92a63b60fcbb785e8a0de203fa7aa17c5da758683",
+      "github_chunks": [
+        {
+          "offset": 0,
+          "git_blob": "d60f682878fc8b14dfa9b56753464846a96b9c01",
+          "bytes": 400000,
+          "sha256": "2e262dec3d4094539583241e6c191a84b95e47406783c0d95dc44354fd5ba25c",
+          "local_transport_file": "/workspace/scratch/07dd58cc9630/ci-audit/recovered-20261105/app-parent-probe-compressed-archive/03-000.b64.txt",
+          "local_transport_added_final_newline": true
+        },
+        {
+          "offset": 400000,
+          "git_blob": "be5984a3f9453349ea6b9788957a754416dab616",
+          "bytes": 104808,
+          "sha256": "8c167e28dcd440d32f65bdcc5e1378b1d8a92dd02f95ab82bd1c3f5f68eab093",
+          "local_transport_file": "/workspace/scratch/07dd58cc9630/ci-audit/recovered-20261105/app-parent-probe-compressed-archive/03-001.b64.txt",
+          "local_transport_added_final_newline": true
+        }
+      ]
+    },
+    {
+      "name": "app-disconnect-full-context-catalog.stderr",
+      "original": {
+        "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/app-parent-lifecycle-probe-f825-1e936-20261105/app-disconnect-full-context-catalog.stderr",
+        "bytes": 19492,
+        "sha256": "81b55fd27b802c08a7d783522e7d7e07d830da7badf729f2965aec613c04b902"
+      },
+      "gzip": {
+        "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/app-parent-lifecycle-frozen-export-20261105/app-disconnect-full-context-catalog.stderr.gz",
+        "bytes": 2987,
+        "sha256": "a17ef2c12cba289b787acd83b639b720bb5a8dec882a935e44b9c225e707ffa5"
+      },
+      "gzip_mtime": 0,
+      "base64_bytes": 3984,
+      "base64_sha256": "000a375b910d592716e7b564e7cd9048c2fd8e241bafec431768e2fdbdd7129e",
+      "github_chunks": [
+        {
+          "offset": 0,
+          "git_blob": "8b5b426cfd6596c579eb2ea2f861de157e583530",
+          "bytes": 3984,
+          "sha256": "000a375b910d592716e7b564e7cd9048c2fd8e241bafec431768e2fdbdd7129e",
+          "local_transport_file": "/workspace/scratch/07dd58cc9630/ci-audit/recovered-20261105/app-parent-probe-compressed-archive/04-000.b64.txt",
+          "local_transport_added_final_newline": true
+        }
+      ]
+    },
+    {
+      "name": "selection.json",
+      "original": {
+        "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/app-parent-lifecycle-probe-f825-1e936-20261105/selection.json",
+        "bytes": 5894093,
+        "sha256": "70a38d7b3ef3c8198da59fd76e5c11cc214265c94b6c90b0f9ece2614077be47"
+      },
+      "gzip": {
+        "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/app-parent-lifecycle-frozen-export-20261105/selection.json.gz",
+        "bytes": 394337,
+        "sha256": "ec86cf817b4dac0f2008cdae7d6a5560d93ea9ef668b30bb321fe8508036f774"
+      },
+      "gzip_mtime": 0,
+      "base64_bytes": 525784,
+      "base64_sha256": "4d9d4fbe3860ad6b648e87581db0cb076f695ec0df90638eabe3227ebd19090a",
+      "github_chunks": [
+        {
+          "offset": 0,
+          "git_blob": "0f43fb6db7d3771a105847062c9ae0a0283e86d4",
+          "bytes": 400000,
+          "sha256": "5501a27701702aba7673bd989ec5d79371d045aab85f5dc6767b6edf21be6db2",
+          "local_transport_file": "/workspace/scratch/07dd58cc9630/ci-audit/recovered-20261105/app-parent-probe-compressed-archive/05-000.b64.txt",
+          "local_transport_added_final_newline": true
+        },
+        {
+          "offset": 400000,
+          "git_blob": "4d1b2fb3e4566957e029e15368c9c45b6409ded6",
+          "bytes": 125784,
+          "sha256": "82ff676057feb4ce58f4c1c55d4d6882418e2a612366e3ee9d21130c93ed4f52",
+          "local_transport_file": "/workspace/scratch/07dd58cc9630/ci-audit/recovered-20261105/app-parent-probe-compressed-archive/05-001.b64.txt",
+          "local_transport_added_final_newline": true
+        }
+      ]
+    },
+    {
+      "name": "complete-small-originals.json",
+      "original": {
+        "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/app-parent-lifecycle-frozen-export-20261105/complete-small-originals.json",
+        "bytes": 406873,
+        "sha256": "79a91174c011f668b5f9d893ffc6db2884af82e21631966ff3fdee4b8d6ee0d1"
+      },
+      "gzip": {
+        "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/app-parent-lifecycle-frozen-export-20261105/complete-small-originals.json.gz",
+        "bytes": 57316,
+        "sha256": "3437a5ca41b57c86f440aa1e2009a78a862b4663a5cd64b1523f6ad1a2e910e1"
+      },
+      "gzip_mtime": 0,
+      "base64_bytes": 76424,
+      "base64_sha256": "04a2a672ae5ba8d1ed6a49bd786b650a58c5625c552ae682e2fc22c76aa183ba",
+      "github_chunks": [
+        {
+          "offset": 0,
+          "git_blob": "0d2c4be022fe2179b6f1149fa132018e371dde04",
+          "bytes": 76424,
+          "sha256": "04a2a672ae5ba8d1ed6a49bd786b650a58c5625c552ae682e2fc22c76aa183ba",
+          "local_transport_file": "/workspace/scratch/07dd58cc9630/ci-audit/recovered-20261105/app-parent-probe-compressed-archive/06-000.b64.txt",
+          "local_transport_added_final_newline": true
+        }
+      ]
+    }
+  ],
+  "terminal_diagnostic_bundle": "2f8ffc305f0e1d5814b9f838f8a3b4ad57bc21ab",
+  "complete_owned_trace": "6f7132c44c5f83ffa1dd57c75721f0f2a01915a1",
+  "originals_untouched": true,
+  "native_export_metadata_correction": {
+    "cause": "The evidence-only exporter reused three descriptive provenance constants and its schema label from the preceding epoch2 export. It read the correct current probe paths and verified original bytes/hashes. The original export manifest is preserved unchanged; this additive index corrects only its descriptive source/job/guard fields and records the new schema.",
+    "original_values": {
+      "schema": "hepta-app-epoch2-complete-frozen-compressed-export-v1",
+      "source_tree": "f8251e1d14fa8524ab469281296cd4cf708f173c",
+      "original_job": "1a1a967b3ab-fc05-34f6",
+      "root_guard": "6387885b8582939442405fd511b7af9c344869e4"
+    },
+    "correct_values": {
+      "schema": "hepta-app-parent-lifecycle-complete-frozen-compressed-export-v1",
+      "source_tree": "1e936b1ca6df807d8928a4cc6c527f40f92808aa",
+      "original_job": "1a1a98a00bb-fc05-35d8",
+      "root_guard": "961ec3880199c1a2ee367d6291bcee393436f169"
+    },
+    "basis": "Actual terminal.json, original command/status files, diagnostic source maps and original job status; post-test temporary-source-restoration.json separately verifies f825 restoration."
+  },
+  "decode_contract": "Fetch exact Git UTF-8 base64 chunks, verify each bytes/SHA256/Git blob, concatenate by offset, verify whole base64, strict decode, verify gzip, decompress and verify original bytes/SHA256. Local .b64.txt conveniences have exactly one added final newline; remove only that newline before chunk verification. Never overwrite frozen original files.",
+  "qualification_limit": "Original App selected case remains FAIL5.575s/just100/controller1 at the temporary probe source. Complete observations are diagnostic evidence only. Source was guarded-restored to f825; diagnostic binaries remain bound to temporary source until a new real rebuild. No production fix or cross-platform qualification."
+}

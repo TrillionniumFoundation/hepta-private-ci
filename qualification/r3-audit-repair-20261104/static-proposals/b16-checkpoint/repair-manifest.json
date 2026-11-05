@@ -1,0 +1,452 @@
+{
+  "schema": "hepta.b16.actual-recovery-checkpoint-native-custody.v1",
+  "status": "STATIC_SOURCE_PROPOSAL_UNAPPLIED_UNCOMPILED_UNEXECUTED",
+  "source_observation_started_at_utc": "2026-11-05 02:00:38 UTC",
+  "author": "/root/research_audit",
+  "authorization": "Parent authorized a separate minimal checkpoint custody proposal and actual-entry physical control. No native/shared-source/ref changes; the frozen two-pool caller-binding cohort is untouched.",
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "base": {
+    "lineage_commit": "cabcb40d36e116beaa65750e1f674c52035da785",
+    "lineage_tree": "b2d7f038d6d88156bc6a4cb29c8703f69b808f29",
+    "lineage_is_not_new_candidate_runtime_evidence": true,
+    "required_order": "Exact serial B foundation source, followed by the frozen native-token caller binding, then these separate checkpoint cohorts; SQLx driver adoption is a hard compile prerequisite.",
+    "caller_binding_manifest": "781d9153910147841372cf60ab4919033668c5cd",
+    "caller_binding_patch": "223ce97fbdeec446f8baf1f44831954041026321",
+    "independent_caller_review": "d657b13823b526833a038f6ff0b790a52204d263",
+    "state_preimage": "27b123f6862ca4355da74ed4d1b21c7047b3b2df",
+    "memory_recovery_preimage": "54e917f45520f6b0e31fcd6a2f57ac3a00d8ae6c",
+    "new_test_absence": {
+      "path": "codex-rs/hepta-memory/src/cognitive_store_recovery_custody_tests.rs",
+      "complete_cabc_tree_count": 10874,
+      "cabc_tree_truncated": false,
+      "absent_from_frozen_serial_plan": true
+    }
+  },
+  "dependency_prerequisites": {
+    "driver_manifest": "9262807373267fe42587a36a50721aa08b60c56b",
+    "driver_patch": "abe067bc6f2ca9601eef83b0cd4e0db4811827ac",
+    "driver_independent_review": "52dda1339aa03370401be2611ad5002860d37e8b",
+    "api": "SqliteConnectOptions::connection_lifetime_token(Arc<dyn Send + Sync + 'static>)",
+    "application_test_change": "Add only libsqlite3-sys = { workspace = true } in hepta-memory dev-dependencies. Existing workspace pins 0.37 with default-features=false; no package version or feature changes are proposed here.",
+    "lock_generation": "No hand-written lockfile supplied. Actual approved Cargo and MODULE generators must incorporate this dev edge together with exact driver adoption; original locked checks and actual package-source evidence remain required.",
+    "default_dependency": "This API is absent in the unchanged published SQLx dependency; no claim that these source files compile before adoption."
+  },
+  "source_finding": {
+    "id": "PRIVATE_RECOVERY_CHECKPOINT_CONNECTION_NOT_BOUND",
+    "state_method": "SqliteConfig::checkpoint_private_recovery_database",
+    "state_original_lines": "444-477",
+    "actual_memory_call_lines": "cognitive_store_recovery.rs 216-224",
+    "higher_product_caller": {
+      "path": "codex-rs/hepta-agentd/src/production_writer_host.rs",
+      "blob": "f881d7c4d20a189d781977da09237f8c82dc4012",
+      "lines": "272-304"
+    },
+    "actual_chain": [
+      "AgentdProductionWriterHost::open_with_recovery calls actual CognitiveStore::open_with_recovery with original authority/verifier.",
+      "Memory checks recovery requirement, authority and fence digest before filesystem work; it holds original exclusive OpenGuard custody while copying and validating the candidate.",
+      "Guarded validation pool is closed, then the separate checkpoint method opens an ordinary single SQLite connection without native owner.",
+      "Only after checkpoint success does Memory clean sidecars, protect/sync the candidate, revalidate through a guarded pool and publish the active pointer."
+    ],
+    "cancellation_chain": "The recovery future owns lexical exclusive_guard/commit_gate/closed-pool captures. Dropping it can release these owners. Original SQLx ConnectionWorker::establish spawns a separate thread before params.establish; connection commands also execute on that worker. Future cancellation does not wait for a blocked native open/command/close. This separate connection currently carries no native owner.",
+    "inference_limit": "Source establishes a potential cancellation lifetime gap, not an observed on-platform escape. No physical counterfactual has run for this entry.",
+    "not_introduced_by_previous_pool_patch": true
+  },
+  "caller_search": {
+    "raw_indexes": [
+      {
+        "raw_path": "checkpoint-code-search-api.json",
+        "blob": "aff6ad774a8b5a1e0248c552d2cf66e03bc924a3",
+        "bytes": 11468,
+        "sha256": "83340250c1917333ef02cea39100b9bfc430a6a5dd61098fc50a1f5d3682050e",
+        "total_count": 2,
+        "incomplete_results": false,
+        "items": [
+          {
+            "path": "codex-rs/state/src/sqlite.rs",
+            "indexed_blob": "c687edbf6bad547ab342fb7269f3b4b1e8f51773",
+            "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/732e934ba496d90fbe042b8d41d479ef901643e5/codex-rs/state/src/sqlite.rs"
+          },
+          {
+            "path": "codex-rs/hepta-memory/src/cognitive_store_recovery.rs",
+            "indexed_blob": "b04217a0de797501c61262b20b8c52d2bd1b1822",
+            "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/732e934ba496d90fbe042b8d41d479ef901643e5/codex-rs/hepta-memory/src/cognitive_store_recovery.rs"
+          }
+        ]
+      },
+      {
+        "raw_path": "memory-recovery-code-search-api.json",
+        "blob": "a7dccd709c0e8ca42da304f4800817c03f771c79",
+        "bytes": 22930,
+        "sha256": "bade94c79bc63c10d91b860a2cf659f40aed2b7e371348749ac9e8c51e33c37d",
+        "total_count": 4,
+        "incomplete_results": false,
+        "items": [
+          {
+            "path": "CALLERS.toml",
+            "indexed_blob": "a9f08f8729bf81a078ae3c4277e3a97ff2a564f4",
+            "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/732e934ba496d90fbe042b8d41d479ef901643e5/CALLERS.toml"
+          },
+          {
+            "path": "codex-rs/hepta-agentd/src/production_writer_host.rs",
+            "indexed_blob": "dbf3f0729e336ed0a4d4ce3ce1ec90eced4f5c91",
+            "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/732e934ba496d90fbe042b8d41d479ef901643e5/codex-rs/hepta-agentd/src/production_writer_host.rs"
+          },
+          {
+            "path": "docs/modules/cognitive.store/PRODUCTION_CLOSURE.md",
+            "indexed_blob": "eb7f395ec724d50ad428e7e761a1957e6accaa9a",
+            "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/732e934ba496d90fbe042b8d41d479ef901643e5/docs/modules/cognitive.store/PRODUCTION_CLOSURE.md"
+          },
+          {
+            "path": "codex-rs/hepta-memory/src/cognitive_store_recovery_tests.rs",
+            "indexed_blob": "72eaa499826321a2564614706a38d91dff149b72",
+            "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/732e934ba496d90fbe042b8d41d479ef901643e5/codex-rs/hepta-memory/src/cognitive_store_recovery_tests.rs"
+          }
+        ]
+      }
+    ],
+    "indexed_ref": "732e934ba496d90fbe042b8d41d479ef901643e5",
+    "fixed_source_validation": "Indexed implementation paths were resolved to fixed cabc raw blobs or exact B postimages; their actual bodies, callers and tests were read and hashed.",
+    "completeness": "GitHub default-ref index is discovery only, not a complete cabc/B tree content search. Confirmed direct checkpoint caller is the actual Memory recovery path. The mandatory public signature and full compile gate must reveal any index-excluded callers; each must pass a real owner, never ()."
+  },
+  "production_cohort": {
+    "schema": "recovery-checkpoint-native-custody-source.v1",
+    "files": [
+      {
+        "path": "codex-rs/state/src/sqlite.rs",
+        "before": {
+          "blob": "27b123f6862ca4355da74ed4d1b21c7047b3b2df",
+          "bytes": 20446,
+          "sha256": "2f940666b2e309c5767f9e9f5912f403f622886566a7c4275a8f8af03f737088"
+        },
+        "after": {
+          "blob": "85984c8c0fb1f699ad761de7383f920decad4808",
+          "bytes": 20834,
+          "sha256": "d68ee42f26b764105936b57f70f588a4b3d7c0bcc32e4e660680354fa165830c"
+        }
+      },
+      {
+        "path": "codex-rs/hepta-memory/src/cognitive_store_recovery.rs",
+        "before": {
+          "blob": "54e917f45520f6b0e31fcd6a2f57ac3a00d8ae6c",
+          "bytes": 27552,
+          "sha256": "7271ec690ac9bd1ef7242f44d127c74dd6232fca107ac89548da285466648599"
+        },
+        "after": {
+          "blob": "fe9f45abbb87393994f7e006db0705de164a9380",
+          "bytes": 27644,
+          "sha256": "dd79f06618de18c3c74d56950e0f3c94d71c803fb5e3d17c02e9224a419b2aa5"
+        }
+      }
+    ],
+    "patch": {
+      "blob": "e5334f2c317dd79221edfcd82529efa52b69a2e7",
+      "bytes": 1880,
+      "sha256": "b6ed8fde7f84f2e02b851fae0f1c7be4762366ea66774c74e5dc7cada5cab8f2"
+    },
+    "additions": 15,
+    "deletions": 3,
+    "native_compile_format_tests": "NOT_RUN",
+    "ref_changes": false,
+    "public_api_change": "Existing checkpoint method now requires owned Arc<dyn Send + Sync + 'static>; no known-unbound compatibility overload is added.",
+    "memory_owner": "exclusive_guard.custody.clone() is the same Arc<CognitiveStoreLockCustody>, containing original File and cfg(windows) retained directory File. Method-call clone is used so the concrete Arc can unsize at the parameter boundary.",
+    "preserved": [
+      "Remaining options, existing busy_timeout five seconds, exact SQL, busy and journal-mode rejection.",
+      "Explicit connection.close().await and checkpoint-error precedence before returning close error.",
+      "All recovery authority, witness, schema/integrity, publication, cleanup and original ACK behavior.",
+      "Both frozen guarded/coordinated pool native bindings; default non-Memory pools and cold readonly constructors."
+    ]
+  },
+  "physical_control_cohort": {
+    "schema": "recovery-checkpoint-physical-control-source.v1",
+    "files": [
+      {
+        "path": "codex-rs/hepta-memory/src/cognitive_store_recovery_tests.rs",
+        "before": {
+          "blob": "20e743f2921ad15399aa6318e6809486daf05f41",
+          "bytes": 21602,
+          "sha256": "a9b9aa9bb6cabea8ef38998ad5392c7275e9a362a44cf14343511161e06e4c7a"
+        },
+        "after": {
+          "blob": "9b4767fae6cf319fc99b1e12237d57af1a6566a9",
+          "bytes": 21681,
+          "sha256": "aea5bf98f7de36a2886084688aaf0fd9b39cb477412e38368b34ad3d5cc5fda1"
+        }
+      },
+      {
+        "path": "codex-rs/hepta-memory/Cargo.toml",
+        "before": {
+          "blob": "048e31020125843c2265a8bc0db256fa504d92af",
+          "bytes": 1477,
+          "sha256": "beb9e85b2326099cc2f3542e9fc012a5cf5bf9436caef903c718c98a1fdea373"
+        },
+        "after": {
+          "blob": "6a6c2ad82f7ffe72db8b6c8703414f9885119bd8",
+          "bytes": 1515,
+          "sha256": "a15ec362eb47247e69561c31509e4ee14f572e33d4ca50d84540f5b7b839dc7d"
+        }
+      },
+      {
+        "path": "codex-rs/hepta-memory/src/cognitive_store_recovery_custody_tests.rs",
+        "before": null,
+        "after": {
+          "blob": "377b8227ff9ae33493467527130092415e2a08e0",
+          "bytes": 12147,
+          "sha256": "f82e40b05c99257e30f045f919db10b2976445d2d2f611877456f4d19450af41"
+        }
+      }
+    ],
+    "patch": {
+      "blob": "5cc2b66cca5c8e598c3f632472faa63163f01a8a",
+      "bytes": 13664,
+      "sha256": "20d8449179281e43717cdda614f2ab588f31a8db56a98a96e1a691c423cfad9f"
+    },
+    "additions": 324,
+    "deletions": 0,
+    "negative": {
+      "source": {
+        "blob": "6133170ba4e2a27c05aa32263b2f3fa5c2697d43",
+        "bytes": 20829,
+        "sha256": "63ace260b537d4f264f7fd18db158d31363860993046f33e5842d2c115515fbc"
+      },
+      "patch": {
+        "blob": "46f21a20bbaeb8100ae56ff9f04068e65feeb3f6",
+        "bytes": 612,
+        "sha256": "25a096aedc53c0b76177f9bbce58b6f7a3d26c2383bf319f28f7554cca7fc9eb"
+      },
+      "scope": "Remove only the checkpoint native attachment; retain the same incoming actual owner in a named local until ordinary future cancellation. The two guarded pool bindings and actual Memory caller remain intact."
+    },
+    "restore": {
+      "blob": "4f2a33948557226afa92371eab433431afd70a64",
+      "bytes": 612,
+      "sha256": "905411deac3005b0d0f3d0f1e63e0f4ee3a94f5b86e9f479e8c54bff015c142d"
+    },
+    "dependency_change": "One existing workspace libsqlite3-sys dev edge; real Cargo/MODULE lock generation remains required and has not been performed.",
+    "native_compile_format_tests": "NOT_RUN",
+    "ref_changes": false,
+    "selected_parent": "cognitive_store::recovery::tests::checkpoint_custody::cancelled_private_checkpoint_keeps_actual_recovery_fence_until_native_close",
+    "support": {
+      "name": "cognitive_store::recovery::tests::checkpoint_custody::owned_checkpoint_scenario",
+      "attribute": "#[test] #[ignore]",
+      "invocation": "Owned current_exe --exact support --ignored --nocapture --test-threads=1",
+      "counting": "One selected parent control; support is not another passing case."
+    },
+    "actual_entry": "Full CognitiveStore::open_with_recovery after seeding/anchoring/closing an actual store, using existing test-only RecoveryVerifier/recovery_authority. This is actual application code with fixture authority, not external production Root/Current acceptance.",
+    "exact_native_stage": "SQLITE_TRACE_STMT must see exact PRAGMA wal_checkpoint(TRUNCATE); it arms only the same connection pointer. Its subsequent actual progress callback signals entry and waits. No open-count heuristic, startup sleep, production test hook or modified checkpoint SQL.",
+    "cancel": "Drop only the real recovery future. The explicitly retained Tokio multi-thread runtime with one worker remains alive until native completion and final parent handshake.",
+    "physical_proof": "Parent process independently opens the original lock file and calls try_lock. Require WouldBlock, then post-probe gate_status=0. After callback release, observe native TRACE_CLOSE and separately require actual file-lock availability in child and parent, gate_status=1 and successful child reap.",
+    "close_precision": "TRACE_CLOSE is a close event, not proof sqlite3_close returned; separate physical lock availability is required. Dependency native-close ordering remains independently qualified by its own controls.",
+    "callback_errors": "Five-second callback wait; missing receiver, timeout or disconnected release returns nonzero and stores outcome2. No panic crosses the FFI callbacks. Parent requires outcome0 after physical probe, so such failures cannot qualify the counterfactual.",
+    "cleanup": "Parent owns temp directory, child stdin, bounded stdout receiver and reader thread; Drop closes channels, kills/waits unreaped direct child, joins reader, then drops temp fixture. No grandchildren. Child unregisters the exact autoextension after observed completion.",
+    "budget": "New stage bounds five seconds, new physical-release/child-exit polling ten milliseconds. No original test/production budget, retry, skip or assertion changes.",
+    "counterfactual_endpoint": "Same actual caller/owner and all source controls remain. Replace only checkpoint native attachment with a named ordinary local holding the same incoming owner until future cancellation. Must reach exact callback, cancel, then observe actual_cross_process_lock=Ok(()) with post-probe gate_status=0 and the final parent fence assertion FAIL.",
+    "invalid_negative": [
+      "Compile or setup failure",
+      "No selected parent/support",
+      "Different panic stage",
+      "Callback timeout or status2",
+      "Unexpected I/O instead of real lock acquisition",
+      "Missing actual stage/physical probe logs",
+      "A passing counterfactual"
+    ]
+  },
+  "original_test_gate": {
+    "definitions": [
+      {
+        "name": "cognitive_store::recovery::tests::exact_current_cut_recovers_writable_generation_and_persists_activation",
+        "cfg": "test"
+      },
+      {
+        "name": "cognitive_store::recovery::tests::graceful_close_retains_store_fence_until_sqlite_connections_finish",
+        "cfg": "test"
+      },
+      {
+        "name": "cognitive_store::recovery::tests::post_rename_publication_failure_is_indeterminate_and_retains_candidate",
+        "cfg": "test"
+      },
+      {
+        "name": "cognitive_store::recovery::tests::writable_recovery_requires_exclusive_store_fence",
+        "cfg": "test"
+      },
+      {
+        "name": "cognitive_store::recovery::tests::predecessor_witness_is_rejected_and_current_witness_recovers",
+        "cfg": "test"
+      },
+      {
+        "name": "cognitive_store::recovery::tests::revoked_owner_profile_and_witness_checks_precede_recovery_admission",
+        "cfg": "test"
+      },
+      {
+        "name": "cognitive_store::recovery::tests::hostile_file_identities_fail_closed_without_additional_mutation",
+        "cfg": "unix"
+      },
+      {
+        "name": "cognitive_store::recovery::tests::byte_identical_rename_replacement_can_recover_only_with_current_witness",
+        "cfg": "unix"
+      },
+      {
+        "name": "cognitive_store::recovery::tests::recovery_bounds_large_rows_before_loading_payloads_and_rejects_unknown_tables",
+        "cfg": "test"
+      },
+      {
+        "name": "cognitive_store::recovery::tests::corrupt_physical_fts_cannot_obtain_a_witness_or_trigger_recovery_io",
+        "cfg": "test"
+      },
+      {
+        "name": "cognitive_store::recovery::tests::cold_read_only::cold_reopen_reads_canonical_snapshot_without_mutating_source",
+        "cfg": "unix"
+      },
+      {
+        "name": "cognitive_store::recovery::tests::cold_read_only::cold_recovery_rejects_revision_change_and_forgetting_rollback",
+        "cfg": "unix"
+      },
+      {
+        "name": "cognitive_store::recovery::tests::cold_read_only::stable_inspection_metadata_cannot_authenticate_changed_content",
+        "cfg": "unix"
+      },
+      {
+        "name": "cognitive_store::recovery::tests::cold_read_only::crash_reopen_refuses_pending_wal",
+        "cfg": "unix"
+      }
+    ],
+    "original_file_body_preserved_except_module": true,
+    "linux_static_expected": "14 original definitions + 1 new parent, plus one explicitly ignored child support. Fresh native roster is authoritative, no runtime count claimed.",
+    "windows_static_expected": "Eight non-Unix original definitions plus the new parent; no Windows run or ABI qualification claimed.",
+    "commands_after_approved_dependency_adoption": [
+      "just test -p codex-hepta-memory --lib --locked --retries 0 -E 'test(=cognitive_store::recovery::tests::checkpoint_custody::cancelled_private_checkpoint_keeps_actual_recovery_fence_until_native_close)'",
+      "just test -p codex-hepta-memory --lib --locked --retries 0 -E 'test(cognitive_store::recovery::tests::)'",
+      "just test -p codex-hepta-memory --lib --locked --retries 0",
+      "just test -p codex-state --lib --locked --retries 0"
+    ],
+    "sequence": "On exact adopted source: physical counterfactual -> verify required actual failure endpoint -> exact restore -> new parent and original owning gates. Setup failures remain failures. No inherited PASS from other heads or donor components.",
+    "old_source_gaps": "Read original ten Memory recovery tests, four Unix cold-image tests and fixed state recovery tests. None of those read definitions cancels this actual checkpoint entry while native work is blocked; full repository test-content uniqueness was not searched."
+  },
+  "primary_context": [
+    {
+      "path": "source/codex-rs/hepta-memory/src/cognitive_store_recovery_tests.rs",
+      "blob": "20e743f2921ad15399aa6318e6809486daf05f41",
+      "bytes": 21602,
+      "sha256": "a9b9aa9bb6cabea8ef38998ad5392c7275e9a362a44cf14343511161e06e4c7a"
+    },
+    {
+      "path": "source/codex-rs/hepta-memory/src/cognitive_store_recovery_read_only.rs",
+      "blob": "0e8dd0d0f147ee75baba3a613a28f51d8bdd5cb8",
+      "bytes": 5300,
+      "sha256": "930050a22cf813f23163a78299afbeecb7957e5a80517f0b1c83cff412a0e305"
+    },
+    {
+      "path": "source/codex-rs/hepta-memory/src/cognitive_store_recovery_read_only_tests.rs",
+      "blob": "da72483192728ae45824bd0febe14c86806d2bd8",
+      "bytes": 8390,
+      "sha256": "b2752c6116989c481f9566ffbc6c6f53834bdcb489c30c13771a7cf22a73a93f"
+    },
+    {
+      "path": "source/codex-rs/hepta-memory/src/cognitive_test_support.rs",
+      "blob": "11306805bca685a18758b50c16659a75092e0077",
+      "bytes": 1710,
+      "sha256": "a23027d9f04293a0830ebd76a315f8f8a7a6b4844f072519be1c2d33402cf151"
+    },
+    {
+      "path": "source/codex-rs/hepta-memory/Cargo.toml",
+      "blob": "048e31020125843c2265a8bc0db256fa504d92af",
+      "bytes": 1477,
+      "sha256": "beb9e85b2326099cc2f3542e9fc012a5cf5bf9436caef903c718c98a1fdea373"
+    },
+    {
+      "path": "source/codex-rs/hepta-memory/BUILD.bazel",
+      "blob": "75dda822f4ef6eac1e15366974f722edf5332781",
+      "bytes": 468,
+      "sha256": "854978f8b89813ce1f9ddf45a06adc1f14fe00f2c989b2465e4e3ece73600ed0"
+    },
+    {
+      "path": "source/codex-rs/Cargo.toml",
+      "blob": "4713741651affd053bb8ae5aa8b5d76831c15c0e",
+      "bytes": 22548,
+      "sha256": "5e19cb310c4bcabc082619d64a028358d5d629e26c179fb38a00432be8f54a6a"
+    },
+    {
+      "path": "source/codex-rs/hepta-agentd/src/production_writer_host.rs",
+      "blob": "f881d7c4d20a189d781977da09237f8c82dc4012",
+      "bytes": 24439,
+      "sha256": "9cbf7ebd1be6c93bbee336c56a020861f85e295778683a729aa8eceaddbd1ecb"
+    },
+    {
+      "path": "source/codex-rs/state/src/sqlite_recovery_tests.rs",
+      "blob": "c039a1b56cfbb53ff4d90d0fe1fbd6018f4be370",
+      "bytes": 13637,
+      "sha256": "14d85fca2a4ebf0aee13c9cc0bc4bf3a010c6c286973a383a476d0f7b4045e16"
+    },
+    {
+      "path": "context/libsqlite3_sys_bindgen_bundled_v0_37.rs.txt",
+      "blob": "c892eefa6d15577af6379e39872420b9829903b7",
+      "bytes": 123641,
+      "sha256": "3640b99203cb2c2dfa5797043cf01dc8dcee8cef62c6b88e937e364a8614744b"
+    },
+    {
+      "path": "context/libsqlite3_sys_v0_37_Cargo.toml.txt",
+      "blob": "0c5c19c5985edfd4f5a1b8ac29b6f64dc7d8ef5d",
+      "bytes": 2084,
+      "sha256": "e0f5f73f6a36336b53d0e4321f48e852aa2fff8f8d2e0033025a4bdc6c5625ed"
+    }
+  ],
+  "sqlx_worker_source": {
+    "path": "sqlx-sqlite/src/connection/worker.rs",
+    "fixed_upstream": "75bc0487eb661da811bb7a3c5d158f1bd463fef4",
+    "blob": "2585dc1312210d9eb18c15f6df1158656d3c6b2c",
+    "bytes": 22317,
+    "sha256": "b66aafc56f0e287eac3b09111c5d4997d350ab61294c5cc576ce359bc18cebe4",
+    "local_source": "architecture-audit/sqlx-pre-registration-custody-20261105/sources/sqlx/sqlx-sqlite/src/connection/worker.rs",
+    "lines": "105-150 and command dispatch/Shutdown",
+    "actual_registry_alignment": "246b438e9f8026abaa4c48b62dd4d55ffa470cee",
+    "scope": "Previously verified actual-registry equality; no dependency package extraction repeated for this proposal."
+  },
+  "native_callback_api_sources": {
+    "repository": "rusqlite/rusqlite",
+    "tag": "v0.39.0",
+    "commit": "2a1790a69107cd03dae85d501dcbdb11c5b32ef3",
+    "libsqlite3_sys_version": "0.37.0",
+    "bindings_blob": "c892eefa6d15577af6379e39872420b9829903b7",
+    "exact_types_checked": "SQLITE_TRACE_* c_uint; sqlite3_trace_v2 callback c_uint,*mut c_void,*mut c_void,*mut c_void -> c_int; existing auto_extension/progress signatures.",
+    "primary_docs": [
+      "https://www.sqlite.org/c3ref/c_trace.html",
+      "https://www.sqlite.org/c3ref/progress_handler.html"
+    ],
+    "scope": "API/source review only; no linkage, runtime or native timing proof."
+  },
+  "static_validation": {
+    "receipt": {
+      "blob": "623ad8982aba2ae28f19b9046e732085a18cbc2e",
+      "bytes": 10909,
+      "sha256": "07a682806cfa6c309bed4143598983f3ec0dd9b6395fbc95a9555358e15550d5"
+    },
+    "four_phase_roundtrip": true,
+    "five_postimages_exact": true,
+    "original_checkpoint_tail": {
+      "blob": "8e25cba2e4b450371710ddc4def6b015117f4562",
+      "bytes": 958,
+      "sha256": "182906ff0180eaaf7fff395484867a8fb74ed8c2fc5e0236990c78f00e855a70"
+    }
+  },
+  "chinese_design": {
+    "blob": "e1e9c552f3df57d09c5424b8cfff882efd349e2f",
+    "bytes": 6714,
+    "sha256": "34fb3b8bd9fa0586928b68ebdfed2799e44886dcfc6cf505815f0f40b73d19af"
+  },
+  "remaining_boundaries": [
+    "Not a proof of Current/Root/Session issuer admission or real production signed objective acceptance.",
+    "No change to Windows token/ACL/loader/DLL production code; Windows owner retention is a source trace until platform tests run.",
+    "No universal protection for independently opened legacy SQLite instances or unopted state APIs.",
+    "This control covers actual checkpoint execution cancellation; separate driver and two-pool controls still own native-open/initial-PRAGMA/close-error guarantees.",
+    "Existing B16 normal producer/consumer integration, signed inputs, actual external acceptance and full platform gates remain separate."
+  ],
+  "actual_validation": {
+    "format": "NOT_RUN",
+    "compile": "NOT_RUN",
+    "tests": "NOT_RUN",
+    "native": false,
+    "ref_changes": false,
+    "shared_source_changes": false,
+    "dependency_adoption": false,
+    "lock_generation": false,
+    "no_scope_closed": true
+  }
+}

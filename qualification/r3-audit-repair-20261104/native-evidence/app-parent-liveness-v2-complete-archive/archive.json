@@ -1,0 +1,726 @@
+{
+  "schema": "hepta-app-parent-liveness-v2-complete-originals-git-archive-v1",
+  "original_job": "1a1a9cf9300-fc05-3823",
+  "execution_guard": "a8c1ed05af9d75795d5c78806680e90ec8d5ac9b",
+  "terminal_source": "c6fbcfa0d1ba3b1556f601dc4ca3a7734328b9f7",
+  "actual_results": {
+    "valid_causal_negatives": 3,
+    "negative_original_just_exit_codes": [
+      100,
+      100,
+      100
+    ],
+    "final_selected_junit_pass": 8,
+    "final_actual_behavior_pass": 7,
+    "final_original_capability_early_return": 1,
+    "final_original_just_exit": 0,
+    "actual_controller_exit": 1,
+    "capability_behavior_gate": "OPEN",
+    "no_windows_or_macos_qualification_inferred": true
+  },
+  "native_export": {
+    "blob": "d78beb6117e3258b7b2e937a43b9e0be5ede671e",
+    "bytes": 87868,
+    "sha256": "237eddb8600b87b597f86ce15dee84487784f108511016d2c6f16c9b7979a150",
+    "original_files": 156,
+    "original_bytes": 75669396
+  },
+  "strict_cloud_transport_validation": {
+    "blob": "e9f268d76b23c147fdfca0f572b8d209abf68edb",
+    "bytes": 76062,
+    "sha256": "3bf07bf0f2ad3abfb7dbfe0d36e98eaf7d410698ed1c60b71d8520a65be6a93c"
+  },
+  "cloud_qualification_crosscheck": {
+    "blob": "88dee0916cd96368e11a11ff2041aee281599297",
+    "bytes": 5331,
+    "sha256": "a63187664ab7c04cb8180d014fc4a2c42e2aa27dea3a938f6c1d69092b6ac51e"
+  },
+  "root_direct_reviews": {
+    "counterfactuals": "4a280b840e655c2a0f66c904a7cf6016b2c4a3a7",
+    "final_scope": "e409fcdd2d634fdfbb4697cec151286c30bc7c4c"
+  },
+  "additional_originals": [
+    {
+      "name": "owned-process-observations.jsonl",
+      "original_path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/app-parent-liveness-three-causal-eight-exact-20261105-v2/owned-process-observations.jsonl",
+      "blob": "474964238e26cbef7b07a85e025c6970be02f892",
+      "bytes": 78092,
+      "sha256": "2f9005b861dce5aec3e317b744d71e3d035f126dd296b31a36e8dc3b43a40cde",
+      "jsonl_records": 169,
+      "qualification": "Owned dynamic marker observation only; no host-wide command/environment dump.",
+      "why_separate": "The original native export suffix list did not include .jsonl. This complete original is added explicitly without rewriting the native export."
+    }
+  ],
+  "total_original_files": 157,
+  "asset_count": 22,
+  "chunk_references": 34,
+  "unique_chunks": 26,
+  "all_chunks_max_bytes": 400000,
+  "all_chunks_github_get_byte_equal": true,
+  "all_chunk_git_sha1_independently_recomputed": true,
+  "assets": [
+    {
+      "name": "driver-error.json",
+      "original": {
+        "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/app-parent-liveness-three-causal-eight-exact-20261105-v2/driver-error.json",
+        "bytes": 622668,
+        "sha256": "dbb95f8da343ac31fb816335834a83e177ac9c66d658e49ddcad9ca4cbff45b7"
+      },
+      "gzip": {
+        "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/app-parent-liveness-v2-frozen-export-20261105/driver-error.json.gz",
+        "bytes": 73757,
+        "sha256": "a95278c3a08129c071e1e2bfbe3696e023da95736ecfda205d646bb4b671bc02"
+      },
+      "base64_bytes": 98344,
+      "base64_sha256": "c91b679074454e6d538835a358da90bfac248d6862a24e0e34a8cb4ec89704ff",
+      "chunks": [
+        {
+          "offset": 0,
+          "bytes": 98344,
+          "sha256": "c91b679074454e6d538835a358da90bfac248d6862a24e0e34a8cb4ec89704ff",
+          "blob": "ce37a259533faf90b938efe3a69580a5bededef2",
+          "github_get_byte_equal": true,
+          "git_sha1_independently_verified": true
+        }
+      ]
+    },
+    {
+      "name": "execution-request.json",
+      "original": {
+        "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/app-parent-liveness-three-causal-eight-exact-20261105-v2/execution-request.json",
+        "bytes": 91498,
+        "sha256": "f8c7d2002b7fead1a7d9ec3e1cee26b720912eedf73c1f02c496a31aef5e0053"
+      },
+      "gzip": {
+        "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/app-parent-liveness-v2-frozen-export-20261105/execution-request.json.gz",
+        "bytes": 20841,
+        "sha256": "22ff605137aad90123b6533d16e292ac69994e3a49eb8412b281adf222090368"
+      },
+      "base64_bytes": 27788,
+      "base64_sha256": "89e26395dbc4b687b96f8578b8d339080eb3e7e0c0a13e1e94f9de52a3e024ca",
+      "chunks": [
+        {
+          "offset": 0,
+          "bytes": 27788,
+          "sha256": "89e26395dbc4b687b96f8578b8d339080eb3e7e0c0a13e1e94f9de52a3e024ca",
+          "blob": "efce59160c9f52538981d0f38c44e5ebb25b2ce4",
+          "github_get_byte_equal": true,
+          "git_sha1_independently_verified": true
+        }
+      ]
+    },
+    {
+      "name": "leaked_parent_fd-negative-catalog.stdout",
+      "original": {
+        "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/app-parent-liveness-three-causal-eight-exact-20261105-v2/leaked_parent_fd-negative-catalog.stdout",
+        "bytes": 3295538,
+        "sha256": "70e0011b3bce6ab5132d720c614bc8ab51575350e8b52232968ec42d9df49109"
+      },
+      "gzip": {
+        "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/app-parent-liveness-v2-frozen-export-20261105/leaked_parent_fd-negative-catalog.stdout.gz",
+        "bytes": 378718,
+        "sha256": "fa9ef2ef48e4d4398d9a1f9cfa50603d72b40af33a9a2c9b7b0eba973f7d262a"
+      },
+      "base64_bytes": 504960,
+      "base64_sha256": "3de9b9b1daf57ffbe6512311e2d47bb587cbe11aff6c7db98dba58d58e80d9bf",
+      "chunks": [
+        {
+          "offset": 0,
+          "bytes": 400000,
+          "sha256": "5e859cb1c1e2de2f28dc7fc866181457d87210fc3b98ea7f64ea8916580695f7",
+          "blob": "938ff8fa66ceca898aaab1826ec6dfbff06e3b7e",
+          "github_get_byte_equal": true,
+          "git_sha1_independently_verified": true
+        },
+        {
+          "offset": 400000,
+          "bytes": 104960,
+          "sha256": "2511b10dbf23f82d3bbbd7cfe547cb03a1d07b0a1480e4cd2cbc7e318ca27f98",
+          "blob": "563eaa7dab98e63a55e73bddb096344259631124",
+          "github_get_byte_equal": true,
+          "git_sha1_independently_verified": true
+        }
+      ]
+    },
+    {
+      "name": "leaked_parent_fd-negative-metadata-status.json",
+      "original": {
+        "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/app-parent-liveness-three-causal-eight-exact-20261105-v2/leaked_parent_fd-negative-metadata-status.json",
+        "bytes": 65748,
+        "sha256": "0335a18e8555c97dbea9030048117221fa66324fd0d77765b9705478bd4d641f"
+      },
+      "gzip": {
+        "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/app-parent-liveness-v2-frozen-export-20261105/leaked_parent_fd-negative-metadata-status.json.gz",
+        "bytes": 9676,
+        "sha256": "8fe8d5be6a969ec72d0663359c2b6a7c78f74e84e9f11c2b6cd6a9bbf33b4109"
+      },
+      "base64_bytes": 12904,
+      "base64_sha256": "369c188cf2d8942997ecf4c8a85ea118745e5549c2623f38f676a7620473ff41",
+      "chunks": [
+        {
+          "offset": 0,
+          "bytes": 12904,
+          "sha256": "369c188cf2d8942997ecf4c8a85ea118745e5549c2623f38f676a7620473ff41",
+          "blob": "3ed1e5bebc082a3eedb4760db0e5a38d2bba3157",
+          "github_get_byte_equal": true,
+          "git_sha1_independently_verified": true
+        }
+      ]
+    },
+    {
+      "name": "leaked_parent_fd-negative-metadata.stdout",
+      "original": {
+        "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/app-parent-liveness-three-causal-eight-exact-20261105-v2/leaked_parent_fd-negative-metadata.stdout",
+        "bytes": 8163699,
+        "sha256": "3a53323eae920e2e53dcb3e334128a4aff63cfb51840793e9150d617d2c9ba18"
+      },
+      "gzip": {
+        "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/app-parent-liveness-v2-frozen-export-20261105/leaked_parent_fd-negative-metadata.stdout.gz",
+        "bytes": 596975,
+        "sha256": "2bfdeb1b46c29492c9af1a154f7a6ef9c2dca853991dc92d66704244fd23553d"
+      },
+      "base64_bytes": 795968,
+      "base64_sha256": "b435316db0802312920c577b35ece7871377b854bada0d9a1451338f8944e720",
+      "chunks": [
+        {
+          "offset": 0,
+          "bytes": 400000,
+          "sha256": "4eff581346b14d5d60dbaa890a2bd6d225604bc8c377b69fb5309ad4f999eaee",
+          "blob": "2bfdec5855e4d8be582c2c45d3e61e853ec8c1b0",
+          "reused_from_archive": "c926481003faa6675e84007f02af0f0e15b0b681",
+          "github_get_byte_equal": true,
+          "git_sha1_independently_verified": true
+        },
+        {
+          "offset": 400000,
+          "bytes": 395968,
+          "sha256": "e9d1577555af5f1c029f1a6b7bc52f20a3a8bab2e78405f91d8f9ffbbc9f1466",
+          "blob": "028d94d6f0793bcbf9f9ffe396ba71104a2978d4",
+          "reused_from_archive": "c926481003faa6675e84007f02af0f0e15b0b681",
+          "github_get_byte_equal": true,
+          "git_sha1_independently_verified": true
+        }
+      ]
+    },
+    {
+      "name": "leaked_parent_fd-negative-normal-six-helper-build.stdout",
+      "original": {
+        "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/app-parent-liveness-three-causal-eight-exact-20261105-v2/leaked_parent_fd-negative-normal-six-helper-build.stdout",
+        "bytes": 1129294,
+        "sha256": "db8aa03e15fe091690bb4faa43d59ca9ed30ff5a8a6ba6d2428147e8ce3a12d6"
+      },
+      "gzip": {
+        "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/app-parent-liveness-v2-frozen-export-20261105/leaked_parent_fd-negative-normal-six-helper-build.stdout.gz",
+        "bytes": 74780,
+        "sha256": "1e3da768642adee6866cd1a17958f163ca5feb63f6d569851947735dae89b599"
+      },
+      "base64_bytes": 99708,
+      "base64_sha256": "03e5d4a3a410af525b569817831095f4b0c6d1eee0dd14d8f35e092e9509e8c1",
+      "chunks": [
+        {
+          "offset": 0,
+          "bytes": 99708,
+          "sha256": "03e5d4a3a410af525b569817831095f4b0c6d1eee0dd14d8f35e092e9509e8c1",
+          "blob": "97d90d2db7983bdf2bb24944c8d469a4897ab123",
+          "github_get_byte_equal": true,
+          "git_sha1_independently_verified": true
+        }
+      ]
+    },
+    {
+      "name": "leaked_parent_fd-negative-selection.json",
+      "original": {
+        "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/app-parent-liveness-three-causal-eight-exact-20261105-v2/leaked_parent_fd-negative-selection.json",
+        "bytes": 5903823,
+        "sha256": "9193b18cab2e600709a4f164df0e476b3b1a10b337fcc40426c9c27f1f139116"
+      },
+      "gzip": {
+        "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/app-parent-liveness-v2-frozen-export-20261105/leaked_parent_fd-negative-selection.json.gz",
+        "bytes": 395346,
+        "sha256": "a6e977d194e3edced76aacd039649d8e82f8b778c9ccb2557eac23c3544d336e"
+      },
+      "base64_bytes": 527128,
+      "base64_sha256": "e1e570f2656bf78f1a8453921ac3414ac3b078e425f87423d2434069e0a5c8e2",
+      "chunks": [
+        {
+          "offset": 0,
+          "bytes": 400000,
+          "sha256": "4323319c8dfc2943a66b845a1b76761e08a8aa2d57f32b0863e0b8810ee356a3",
+          "blob": "e87294b3158274414a143b76a295f294a1cb0291",
+          "github_get_byte_equal": true,
+          "git_sha1_independently_verified": true
+        },
+        {
+          "offset": 400000,
+          "bytes": 127128,
+          "sha256": "9454e4336c594c9575ecb58e705d4d0d63a89d2b43f1dd1a0ff6de05f15e8e25",
+          "blob": "b65177ea5aeb3d12d3a80b5345b930f192b20915",
+          "github_get_byte_equal": true,
+          "git_sha1_independently_verified": true
+        }
+      ]
+    },
+    {
+      "name": "no_exit_rejection-negative-catalog.stdout",
+      "original": {
+        "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/app-parent-liveness-three-causal-eight-exact-20261105-v2/no_exit_rejection-negative-catalog.stdout",
+        "bytes": 3295538,
+        "sha256": "d32340eb7632d30b33f6f01a827f6c871b2792f1135b1816ddf730c04a660f29"
+      },
+      "gzip": {
+        "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/app-parent-liveness-v2-frozen-export-20261105/no_exit_rejection-negative-catalog.stdout.gz",
+        "bytes": 378716,
+        "sha256": "8e5cd3fad6d9af104f9d3ca3cb9201146a3cef53634777541695fe160aaefcbc"
+      },
+      "base64_bytes": 504956,
+      "base64_sha256": "c7c2a28253f5b82286d3708f53fdde2bfd862d5339d084ffee162f4f15c61c31",
+      "chunks": [
+        {
+          "offset": 0,
+          "bytes": 400000,
+          "sha256": "fd18fa911d14e37ec224ef6ecd102b1b144aa88fdfd79253ce2344163ba0e553",
+          "blob": "dc70be7916a1624d0cc544b527792a01a46f04fc",
+          "reused_from_archive": "c926481003faa6675e84007f02af0f0e15b0b681",
+          "github_get_byte_equal": true,
+          "git_sha1_independently_verified": true
+        },
+        {
+          "offset": 400000,
+          "bytes": 104956,
+          "sha256": "75187b7352847bc2b110707c7b0787c1ce9379cf1c359fc80b2f124315043d99",
+          "blob": "48b0a1a3af01d9c0cbd01d189e7dc20ab5d3a1f7",
+          "reused_from_archive": "c926481003faa6675e84007f02af0f0e15b0b681",
+          "github_get_byte_equal": true,
+          "git_sha1_independently_verified": true
+        }
+      ]
+    },
+    {
+      "name": "no_exit_rejection-negative-metadata-status.json",
+      "original": {
+        "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/app-parent-liveness-three-causal-eight-exact-20261105-v2/no_exit_rejection-negative-metadata-status.json",
+        "bytes": 65937,
+        "sha256": "4730295ac83498a8b8b844af4f2379d8466f29985b40375a310194e84da8fdb1"
+      },
+      "gzip": {
+        "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/app-parent-liveness-v2-frozen-export-20261105/no_exit_rejection-negative-metadata-status.json.gz",
+        "bytes": 9674,
+        "sha256": "fd946ff47d414969c65000f83ec20a53a14ad8e66d9eaa6746f14cf95d359746"
+      },
+      "base64_bytes": 12900,
+      "base64_sha256": "1f58d48447acfcb2915aaf4735fcd171d3d3c11ae39f38cea27e5a9fa1433be4",
+      "chunks": [
+        {
+          "offset": 0,
+          "bytes": 12900,
+          "sha256": "1f58d48447acfcb2915aaf4735fcd171d3d3c11ae39f38cea27e5a9fa1433be4",
+          "blob": "202f46666d7761f205299c6620f20561624fd2ad",
+          "github_get_byte_equal": true,
+          "git_sha1_independently_verified": true
+        }
+      ]
+    },
+    {
+      "name": "no_exit_rejection-negative-metadata.stdout",
+      "original": {
+        "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/app-parent-liveness-three-causal-eight-exact-20261105-v2/no_exit_rejection-negative-metadata.stdout",
+        "bytes": 8163699,
+        "sha256": "3a53323eae920e2e53dcb3e334128a4aff63cfb51840793e9150d617d2c9ba18"
+      },
+      "gzip": {
+        "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/app-parent-liveness-v2-frozen-export-20261105/no_exit_rejection-negative-metadata.stdout.gz",
+        "bytes": 596975,
+        "sha256": "2bfdeb1b46c29492c9af1a154f7a6ef9c2dca853991dc92d66704244fd23553d"
+      },
+      "base64_bytes": 795968,
+      "base64_sha256": "b435316db0802312920c577b35ece7871377b854bada0d9a1451338f8944e720",
+      "chunks": [
+        {
+          "offset": 0,
+          "bytes": 400000,
+          "sha256": "4eff581346b14d5d60dbaa890a2bd6d225604bc8c377b69fb5309ad4f999eaee",
+          "blob": "2bfdec5855e4d8be582c2c45d3e61e853ec8c1b0",
+          "reused_from_archive": "c926481003faa6675e84007f02af0f0e15b0b681",
+          "github_get_byte_equal": true,
+          "git_sha1_independently_verified": true
+        },
+        {
+          "offset": 400000,
+          "bytes": 395968,
+          "sha256": "e9d1577555af5f1c029f1a6b7bc52f20a3a8bab2e78405f91d8f9ffbbc9f1466",
+          "blob": "028d94d6f0793bcbf9f9ffe396ba71104a2978d4",
+          "reused_from_archive": "c926481003faa6675e84007f02af0f0e15b0b681",
+          "github_get_byte_equal": true,
+          "git_sha1_independently_verified": true
+        }
+      ]
+    },
+    {
+      "name": "no_exit_rejection-negative-normal-six-helper-build.stdout",
+      "original": {
+        "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/app-parent-liveness-three-causal-eight-exact-20261105-v2/no_exit_rejection-negative-normal-six-helper-build.stdout",
+        "bytes": 1129294,
+        "sha256": "d2ccfdfe670a4456709a382c38caa3698b655bf769ecffba0524f370073a7253"
+      },
+      "gzip": {
+        "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/app-parent-liveness-v2-frozen-export-20261105/no_exit_rejection-negative-normal-six-helper-build.stdout.gz",
+        "bytes": 74762,
+        "sha256": "d43209a5c03463df77400614c9694b48d9616d65b14f15ab2524e361c37a3c27"
+      },
+      "base64_bytes": 99684,
+      "base64_sha256": "69fbce574593ebf858b3957f18e3f6d9032710ab05650bd996e8516f87ee0fb5",
+      "chunks": [
+        {
+          "offset": 0,
+          "bytes": 99684,
+          "sha256": "69fbce574593ebf858b3957f18e3f6d9032710ab05650bd996e8516f87ee0fb5",
+          "blob": "8e76ddb78c5426aa979da02416c0ad6e10f3b54f",
+          "github_get_byte_equal": true,
+          "git_sha1_independently_verified": true
+        }
+      ]
+    },
+    {
+      "name": "no_exit_rejection-negative-selection.json",
+      "original": {
+        "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/app-parent-liveness-three-causal-eight-exact-20261105-v2/no_exit_rejection-negative-selection.json",
+        "bytes": 5903806,
+        "sha256": "820e32684a49297444508a73c9691183dfcf89c235f79373599fdec8ff02eeab"
+      },
+      "gzip": {
+        "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/app-parent-liveness-v2-frozen-export-20261105/no_exit_rejection-negative-selection.json.gz",
+        "bytes": 395334,
+        "sha256": "9baa2a574191e58950fc4c227c88d4632956f7faf2a676a01ff33f4131b18fa4"
+      },
+      "base64_bytes": 527112,
+      "base64_sha256": "2c1ce4a523a26f32fe797fbca3a1d6f95ed3ac21aa5f7f6e2bda15af4968a7f1",
+      "chunks": [
+        {
+          "offset": 0,
+          "bytes": 400000,
+          "sha256": "32339275649e98797e003deea5aa107684185fa02874c1432e46af83d4f5eb25",
+          "blob": "b08887a575f7e84a0714240a4fde3a19b0d2e747",
+          "github_get_byte_equal": true,
+          "git_sha1_independently_verified": true
+        },
+        {
+          "offset": 400000,
+          "bytes": 127112,
+          "sha256": "f7efaaff3c20926c231c8d2e3622f7335e8c2e0a02b98cf1d01bd4808cdbd618",
+          "blob": "840f0c403c6900b8d72dc2389e7c696f03cc8366",
+          "github_get_byte_equal": true,
+          "git_sha1_independently_verified": true
+        }
+      ]
+    },
+    {
+      "name": "no_rearm-negative-catalog.stdout",
+      "original": {
+        "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/app-parent-liveness-three-causal-eight-exact-20261105-v2/no_rearm-negative-catalog.stdout",
+        "bytes": 3295538,
+        "sha256": "70e0011b3bce6ab5132d720c614bc8ab51575350e8b52232968ec42d9df49109"
+      },
+      "gzip": {
+        "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/app-parent-liveness-v2-frozen-export-20261105/no_rearm-negative-catalog.stdout.gz",
+        "bytes": 378718,
+        "sha256": "fa9ef2ef48e4d4398d9a1f9cfa50603d72b40af33a9a2c9b7b0eba973f7d262a"
+      },
+      "base64_bytes": 504960,
+      "base64_sha256": "3de9b9b1daf57ffbe6512311e2d47bb587cbe11aff6c7db98dba58d58e80d9bf",
+      "chunks": [
+        {
+          "offset": 0,
+          "bytes": 400000,
+          "sha256": "5e859cb1c1e2de2f28dc7fc866181457d87210fc3b98ea7f64ea8916580695f7",
+          "blob": "938ff8fa66ceca898aaab1826ec6dfbff06e3b7e",
+          "github_get_byte_equal": true,
+          "git_sha1_independently_verified": true
+        },
+        {
+          "offset": 400000,
+          "bytes": 104960,
+          "sha256": "2511b10dbf23f82d3bbbd7cfe547cb03a1d07b0a1480e4cd2cbc7e318ca27f98",
+          "blob": "563eaa7dab98e63a55e73bddb096344259631124",
+          "github_get_byte_equal": true,
+          "git_sha1_independently_verified": true
+        }
+      ]
+    },
+    {
+      "name": "no_rearm-negative-metadata.stdout",
+      "original": {
+        "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/app-parent-liveness-three-causal-eight-exact-20261105-v2/no_rearm-negative-metadata.stdout",
+        "bytes": 8163699,
+        "sha256": "3a53323eae920e2e53dcb3e334128a4aff63cfb51840793e9150d617d2c9ba18"
+      },
+      "gzip": {
+        "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/app-parent-liveness-v2-frozen-export-20261105/no_rearm-negative-metadata.stdout.gz",
+        "bytes": 596975,
+        "sha256": "2bfdeb1b46c29492c9af1a154f7a6ef9c2dca853991dc92d66704244fd23553d"
+      },
+      "base64_bytes": 795968,
+      "base64_sha256": "b435316db0802312920c577b35ece7871377b854bada0d9a1451338f8944e720",
+      "chunks": [
+        {
+          "offset": 0,
+          "bytes": 400000,
+          "sha256": "4eff581346b14d5d60dbaa890a2bd6d225604bc8c377b69fb5309ad4f999eaee",
+          "blob": "2bfdec5855e4d8be582c2c45d3e61e853ec8c1b0",
+          "reused_from_archive": "c926481003faa6675e84007f02af0f0e15b0b681",
+          "github_get_byte_equal": true,
+          "git_sha1_independently_verified": true
+        },
+        {
+          "offset": 400000,
+          "bytes": 395968,
+          "sha256": "e9d1577555af5f1c029f1a6b7bc52f20a3a8bab2e78405f91d8f9ffbbc9f1466",
+          "blob": "028d94d6f0793bcbf9f9ffe396ba71104a2978d4",
+          "reused_from_archive": "c926481003faa6675e84007f02af0f0e15b0b681",
+          "github_get_byte_equal": true,
+          "git_sha1_independently_verified": true
+        }
+      ]
+    },
+    {
+      "name": "no_rearm-negative-normal-six-helper-build.stdout",
+      "original": {
+        "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/app-parent-liveness-three-causal-eight-exact-20261105-v2/no_rearm-negative-normal-six-helper-build.stdout",
+        "bytes": 1129294,
+        "sha256": "37bf1374ac1a9471365ef94ee0cabb8c4a53719cdab6d3eee7a3bee110e9a770"
+      },
+      "gzip": {
+        "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/app-parent-liveness-v2-frozen-export-20261105/no_rearm-negative-normal-six-helper-build.stdout.gz",
+        "bytes": 74786,
+        "sha256": "2c8ca3046811070d70b31c1be34ebc25d1d34b33c150a0c90128936b8f9c8f22"
+      },
+      "base64_bytes": 99716,
+      "base64_sha256": "97539bfca9b3ef0590fc8de6fa5155e0197a74fd84e1a016219bc654e3345c06",
+      "chunks": [
+        {
+          "offset": 0,
+          "bytes": 99716,
+          "sha256": "97539bfca9b3ef0590fc8de6fa5155e0197a74fd84e1a016219bc654e3345c06",
+          "blob": "313c7b1734a0503e16b93248297e525945e6a51f",
+          "github_get_byte_equal": true,
+          "git_sha1_independently_verified": true
+        }
+      ]
+    },
+    {
+      "name": "no_rearm-negative-selection.json",
+      "original": {
+        "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/app-parent-liveness-three-causal-eight-exact-20261105-v2/no_rearm-negative-selection.json",
+        "bytes": 5903815,
+        "sha256": "de3e23247f3b39f67bfb3210c492ec0d6a7255dd3e77fc3ad0a728e6cd3fea7b"
+      },
+      "gzip": {
+        "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/app-parent-liveness-v2-frozen-export-20261105/no_rearm-negative-selection.json.gz",
+        "bytes": 395334,
+        "sha256": "66de328a4a9381542c7a54dd449babc37c48afeff4445ade25ef3e2a65140d98"
+      },
+      "base64_bytes": 527112,
+      "base64_sha256": "3617c4f95bedb6815670914fe1bb3fe39d8711874ab35d9f8584591cc1a19162",
+      "chunks": [
+        {
+          "offset": 0,
+          "bytes": 400000,
+          "sha256": "a34198669568f6091de127e86896b524985bec6252d8aff5aa431e12b04a6696",
+          "blob": "4cd29e7fcb650df420b531bfcfe3efbd2f00faf3",
+          "github_get_byte_equal": true,
+          "git_sha1_independently_verified": true
+        },
+        {
+          "offset": 400000,
+          "bytes": 127112,
+          "sha256": "aaa9bca7741347676b5403ac52abbc260cce06a753300fdf3c67648fd8d2cc03",
+          "blob": "192e011fb7d1e400a31ae004f53bbdea2abbf15a",
+          "github_get_byte_equal": true,
+          "git_sha1_independently_verified": true
+        }
+      ]
+    },
+    {
+      "name": "parent-liveness-final-eight-catalog.stdout",
+      "original": {
+        "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/app-parent-liveness-three-causal-eight-exact-20261105-v2/parent-liveness-final-eight-catalog.stdout",
+        "bytes": 3295377,
+        "sha256": "e35bd57f1f6e7f89a72e55392659478a628fd10e5061b1fad2f5649272754e30"
+      },
+      "gzip": {
+        "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/app-parent-liveness-v2-frozen-export-20261105/parent-liveness-final-eight-catalog.stdout.gz",
+        "bytes": 378737,
+        "sha256": "2094375f18e2530ca70e92870f680d48ff10c600925df380e32c4ed0753c6a86"
+      },
+      "base64_bytes": 504984,
+      "base64_sha256": "10b309dd4e6f19712abbfb881110cff9219b2688046435062c93f220d503a8ac",
+      "chunks": [
+        {
+          "offset": 0,
+          "bytes": 400000,
+          "sha256": "8352866861527b141a249343125fa4d1b7f407637a844238eb46009b4e0ebf09",
+          "blob": "cb25765da18495b29ddcbd0fbe1ab54dbd56ec58",
+          "github_get_byte_equal": true,
+          "git_sha1_independently_verified": true
+        },
+        {
+          "offset": 400000,
+          "bytes": 104984,
+          "sha256": "9c1c0f8f93480732bd69c8e050120eedbaaea2fca50b0c46a51e27c15d81c288",
+          "blob": "d8ef798fa86e5faa76e0b3a7d68c9fd11efae215",
+          "github_get_byte_equal": true,
+          "git_sha1_independently_verified": true
+        }
+      ]
+    },
+    {
+      "name": "parent-liveness-final-eight-metadata-status.json",
+      "original": {
+        "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/app-parent-liveness-three-causal-eight-exact-20261105-v2/parent-liveness-final-eight-metadata-status.json",
+        "bytes": 66126,
+        "sha256": "c05f651ca2c48ba1f95948d25593892e5a2df9e54ed2fc1978da0035f66320cf"
+      },
+      "gzip": {
+        "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/app-parent-liveness-v2-frozen-export-20261105/parent-liveness-final-eight-metadata-status.json.gz",
+        "bytes": 9659,
+        "sha256": "13030566a457905adc7fe65f11c0b03403865306219317bcea1e2c175b2f67b5"
+      },
+      "base64_bytes": 12880,
+      "base64_sha256": "0970c203ed3859a4dcf8c4f26940d2fe18f938df19f3c56ded29fc666ec47b34",
+      "chunks": [
+        {
+          "offset": 0,
+          "bytes": 12880,
+          "sha256": "0970c203ed3859a4dcf8c4f26940d2fe18f938df19f3c56ded29fc666ec47b34",
+          "blob": "1297f7768be27b5a96d69557d52b039b5b61bafe",
+          "github_get_byte_equal": true,
+          "git_sha1_independently_verified": true
+        }
+      ]
+    },
+    {
+      "name": "parent-liveness-final-eight-metadata.stdout",
+      "original": {
+        "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/app-parent-liveness-three-causal-eight-exact-20261105-v2/parent-liveness-final-eight-metadata.stdout",
+        "bytes": 8163699,
+        "sha256": "3a53323eae920e2e53dcb3e334128a4aff63cfb51840793e9150d617d2c9ba18"
+      },
+      "gzip": {
+        "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/app-parent-liveness-v2-frozen-export-20261105/parent-liveness-final-eight-metadata.stdout.gz",
+        "bytes": 596975,
+        "sha256": "2bfdeb1b46c29492c9af1a154f7a6ef9c2dca853991dc92d66704244fd23553d"
+      },
+      "base64_bytes": 795968,
+      "base64_sha256": "b435316db0802312920c577b35ece7871377b854bada0d9a1451338f8944e720",
+      "chunks": [
+        {
+          "offset": 0,
+          "bytes": 400000,
+          "sha256": "4eff581346b14d5d60dbaa890a2bd6d225604bc8c377b69fb5309ad4f999eaee",
+          "blob": "2bfdec5855e4d8be582c2c45d3e61e853ec8c1b0",
+          "reused_from_archive": "c926481003faa6675e84007f02af0f0e15b0b681",
+          "github_get_byte_equal": true,
+          "git_sha1_independently_verified": true
+        },
+        {
+          "offset": 400000,
+          "bytes": 395968,
+          "sha256": "e9d1577555af5f1c029f1a6b7bc52f20a3a8bab2e78405f91d8f9ffbbc9f1466",
+          "blob": "028d94d6f0793bcbf9f9ffe396ba71104a2978d4",
+          "reused_from_archive": "c926481003faa6675e84007f02af0f0e15b0b681",
+          "github_get_byte_equal": true,
+          "git_sha1_independently_verified": true
+        }
+      ]
+    },
+    {
+      "name": "parent-liveness-final-eight-normal-six-helper-build.stdout",
+      "original": {
+        "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/app-parent-liveness-three-causal-eight-exact-20261105-v2/parent-liveness-final-eight-normal-six-helper-build.stdout",
+        "bytes": 1129294,
+        "sha256": "b0db284b8f275434fbdaca73b5245ee7d42429815fa01cb880234c69dfa00de7"
+      },
+      "gzip": {
+        "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/app-parent-liveness-v2-frozen-export-20261105/parent-liveness-final-eight-normal-six-helper-build.stdout.gz",
+        "bytes": 74751,
+        "sha256": "cb154b1f0cfc699419a9b5178f8d2b0dab9c05d25cc0e0cfd796a2d3cb5b09c1"
+      },
+      "base64_bytes": 99668,
+      "base64_sha256": "85e828175fb15a3e2c40e13f49a333763beec8f754c4c29b3668e817a4a6f539",
+      "chunks": [
+        {
+          "offset": 0,
+          "bytes": 99668,
+          "sha256": "85e828175fb15a3e2c40e13f49a333763beec8f754c4c29b3668e817a4a6f539",
+          "blob": "be3f8f5806d6683766f1f5e616b2eabfbe6e6de4",
+          "github_get_byte_equal": true,
+          "git_sha1_independently_verified": true
+        }
+      ]
+    },
+    {
+      "name": "parent-liveness-final-eight-selection.json",
+      "original": {
+        "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/app-parent-liveness-three-causal-eight-exact-20261105-v2/parent-liveness-final-eight-selection.json",
+        "bytes": 5905981,
+        "sha256": "f8953fd5b340703415a8d1659a81be4d7b4c7679212412d182e951ed9c972f8d"
+      },
+      "gzip": {
+        "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/app-parent-liveness-v2-frozen-export-20261105/parent-liveness-final-eight-selection.json.gz",
+        "bytes": 395637,
+        "sha256": "9d635d23ecaf73c51233120eb15ed651e51d3540bac2263a1647565f751c8de5"
+      },
+      "base64_bytes": 527516,
+      "base64_sha256": "eeef28f216c6bcda482c52ded7a4bbe1136584aaaf23e0861e438b580653c7b3",
+      "chunks": [
+        {
+          "offset": 0,
+          "bytes": 400000,
+          "sha256": "ef37acca713c0e284bddc1033eda939b599066d1499418556e3d8d6d49c25e08",
+          "blob": "4c43c5c33d29c5c8d502cd9653026816e75f26a6",
+          "github_get_byte_equal": true,
+          "git_sha1_independently_verified": true
+        },
+        {
+          "offset": 400000,
+          "bytes": 127516,
+          "sha256": "da1aaed1ce31686c3961556373cda9102a0353898b144ad90dedebeb6be91902",
+          "blob": "add0990cb6163afa00c80be9e3524b256afbad92",
+          "github_get_byte_equal": true,
+          "git_sha1_independently_verified": true
+        }
+      ]
+    },
+    {
+      "name": "complete-small-originals.json",
+      "original": {
+        "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/app-parent-liveness-v2-frozen-export-20261105/complete-small-originals.json",
+        "bytes": 887161,
+        "sha256": "d5921f17f6081713b69992aab28de3ad3f5cb390c4d5775b14572b73f81ea0fb"
+      },
+      "gzip": {
+        "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/app-parent-liveness-v2-frozen-export-20261105/complete-small-originals.json.gz",
+        "bytes": 122213,
+        "sha256": "b82ccccd5d83acd4b9ac964d4cfb5fb289819b8b19814db6d77bda5952204e65"
+      },
+      "base64_bytes": 162952,
+      "base64_sha256": "2c7ea161a9bee2554d6283cc0395438c11a3f0519ab521c7b08ed8fe0cf82a5a",
+      "chunks": [
+        {
+          "offset": 0,
+          "bytes": 162952,
+          "sha256": "2c7ea161a9bee2554d6283cc0395438c11a3f0519ab521c7b08ed8fe0cf82a5a",
+          "blob": "446ea948af9208f7501b2c0c561b003c72d5ead5",
+          "github_get_byte_equal": true,
+          "git_sha1_independently_verified": true
+        }
+      ]
+    }
+  ],
+  "limits": [
+    "All native original files are retained unchanged.",
+    "The invalid first App attempt is separately preserved in c926481003faa6675e84007f02af0f0e15b0b681; it is not counted as a causal negative.",
+    "Only identical original/gzip/base64 bytes are reused from already archived assets; reuse is by hash identity, not by source-qualification substitution.",
+    "Three valid counterfactual failures do not count as production PASS.",
+    "The existing retained-capability early return remains OPEN despite its JUnit PASS."
+  ]
+}

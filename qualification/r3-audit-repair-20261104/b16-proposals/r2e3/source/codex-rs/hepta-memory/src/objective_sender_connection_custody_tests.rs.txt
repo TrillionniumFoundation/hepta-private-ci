@@ -1,0 +1,229 @@
+use std::path::Path;
+
+use pretty_assertions::assert_eq;
+use sqlx::Connection;
+
+use super::test_support::*;
+use super::*;
+use crate::CognitiveStore;
+use crate::cognitive_store::CognitiveStoreOpenGuard;
+use crate::cognitive_test_support::agent_id;
+use crate::cognitive_test_support::layout;
+
+fn require_exclusive_lock_blocked(root: &Path) {
+    // Open a different file handle and perform the original OS lock operation.
+    let competing = CognitiveStoreOpenGuard::acquire_exclusive(root);
+    eprintln!(
+        "connection_custody: competing_exclusive_acquired={}",
+        competing.is_ok()
+    );
+    assert!(matches!(
+        competing,
+        Err(CognitiveStoreError::Unavailable(reason))
+            if reason.contains("cannot fence active store handles")
+    ));
+}
+
+fn require_exclusive_lock_available(root: &Path) {
+    let competing = CognitiveStoreOpenGuard::acquire_exclusive(root)
+        .expect("physical SQLite close releases the last original file lock");
+    drop(competing);
+}
+
+async fn require_live_connection(connection: &mut sqlx::SqliteConnection) {
+    let rows: i64 = sqlx::query_scalar("SELECT count(*) FROM cognitive_meta")
+        .fetch_one(connection)
+        .await
+        .unwrap();
+    assert_eq!(rows, 1);
+    eprintln!("connection_custody: physical_connection_rows={rows}");
+}
+
+#[tokio::test]
+async fn detached_shared_connection_retains_original_file_lock_until_close() {
+    let temp = tempfile::TempDir::new().unwrap();
+    let owner = agent_id(OWNER);
+    let layout = layout(&temp, &owner);
+    let store = CognitiveStore::open(&layout).await.unwrap();
+    let clone = store.clone();
+    let peer = CognitiveStore::open(&layout).await.unwrap();
+    let root = store.path().parent().unwrap().to_path_buf();
+    let mut connection = store.pool.acquire().await.unwrap().detach();
+    store.close().await;
+    clone.close().await;
+    peer.close().await;
+    let sqlite_version: String = sqlx::query_scalar("SELECT sqlite_version()")
+        .fetch_one(&mut connection)
+        .await
+        .unwrap();
+    eprintln!("connection_custody: sqlite_version={sqlite_version}");
+    require_live_connection(&mut connection).await;
+
+    // Shared custody remains shared; it must not silently become an exclusive lock.
+    let compatible = CognitiveStoreOpenGuard::acquire_shared(&root).unwrap();
+    drop(compatible);
+    require_exclusive_lock_blocked(&root);
+    connection.close().await.unwrap();
+    require_exclusive_lock_available(&root);
+}
+
+#[tokio::test]
+async fn recovered_connection_retains_exclusive_custody_after_store_close() {
+    let temp = tempfile::TempDir::new().unwrap();
+    let owner = agent_id(OWNER);
+    let layout = layout(&temp, &owner);
+    let initial = CognitiveStore::open(&layout).await.unwrap();
+    let cut = initial.recovery_anchor().await.unwrap();
+    initial.close().await;
+    let store = CognitiveStore::open_with_recovery(
+        &layout,
+        crate::CognitiveRecoveryRequirement::ExactCurrentCut(&cut),
+        &authority(&owner, 87),
+        &TestVerifier::new(),
+    )
+    .await
+    .unwrap();
+    let root = store.path().parent().unwrap().to_path_buf();
+    let mut connection = store.pool.acquire().await.unwrap().detach();
+    store.close().await;
+    require_live_connection(&mut connection).await;
+
+    require_exclusive_lock_blocked(&root);
+    assert!(matches!(
+        CognitiveStoreOpenGuard::acquire_shared(&root),
+        Err(CognitiveStoreError::Unavailable(reason))
+            if reason.contains("store is fenced by recovery")
+    ));
+    connection.close().await.unwrap();
+    require_exclusive_lock_available(&root);
+    let successor = CognitiveStore::open_with_recovery(
+        &layout,
+        crate::CognitiveRecoveryRequirement::ExactCurrentCut(&cut),
+        &authority(&owner, 88),
+        &TestVerifier::new(),
+    )
+    .await
+    .unwrap();
+    assert_eq!(successor.recovery_anchor().await.unwrap(), cut);
+    successor.close().await;
+}
+
+#[tokio::test]
+async fn cancelled_close_retains_custody_after_a_cancelled_checkpoint() {
+    let Fixture {
+        writer,
+        store,
+        checkpoint,
+        verifier,
+        temp,
+    } = Fixture::new().await;
+    let before = store.recovery_anchor().await.unwrap();
+    let root = store.path().parent().unwrap().to_path_buf();
+    let connection = store.pool.acquire().await.unwrap();
+    *checkpoint.mode.lock().unwrap() = CheckpointMode::Hold;
+    let mut pending =
+        Box::pin(writer.checkpoint_current(checkpoint.as_ref(), Duration::from_secs(2)));
+    tokio::time::timeout(Duration::from_secs(2), async {
+        tokio::select! {
+            result = &mut pending => panic!("checkpoint completed before hold: {result:?}"),
+            () = checkpoint.entered.notified() => {}
+        }
+    })
+    .await
+    .unwrap();
+    eprintln!("connection_custody: checkpoint_entered=true");
+    drop(pending);
+    let released = store.pool.begin_with("BEGIN IMMEDIATE").await.unwrap();
+    released.rollback().await.unwrap();
+    assert_eq!(store.recovery_anchor().await.unwrap(), before);
+    drop(writer);
+    drop(checkpoint);
+    drop(verifier);
+
+    // Pool::close waits for all permits before draining idle connections.
+    // Close the other four real slots first; the held connection is the only
+    // remaining reason for the following close future to stay pending.
+    let mut others = Vec::new();
+    for _ in 0..4 {
+        others.push(store.pool.acquire().await.unwrap());
+    }
+    for other in others {
+        other.close().await.unwrap();
+    }
+    assert_eq!(store.pool.size(), 1);
+    let pool = store.pool.clone();
+    let mut closing = Box::pin(store.close());
+    tokio::time::timeout(Duration::from_secs(5), async {
+        tokio::select! {
+            () = &mut closing => panic!("close completed while a connection was borrowed"),
+            () = async {
+                while !pool.is_closed() {
+                    tokio::task::yield_now().await;
+                }
+            } => {}
+        }
+    })
+    .await
+    .unwrap();
+    eprintln!("connection_custody: original_close_pending=true pool_closed=true");
+    drop(closing);
+    let mut connection = connection.detach();
+    drop(pool);
+    require_live_connection(&mut connection).await;
+
+    require_exclusive_lock_blocked(&root);
+    sqlx::query("BEGIN IMMEDIATE")
+        .execute(&mut connection)
+        .await
+        .unwrap();
+    sqlx::query("CREATE TABLE custody_cancel_probe (value INTEGER)")
+        .execute(&mut connection)
+        .await
+        .unwrap();
+    let result = sqlx::query("COMMIT").execute(&mut connection).await;
+    let code = result
+        .as_ref()
+        .err()
+        .and_then(|error| error.as_database_error())
+        .and_then(|error| error.code());
+    eprintln!(
+        "connection_custody: cancelled_checkpoint_commit_succeeded={} sqlite_code={code:?}",
+        result.is_ok()
+    );
+    assert_eq!(code.as_deref(), Some("531"));
+    let tables: i64 = sqlx::query_scalar(
+        "SELECT count(*) FROM sqlite_schema WHERE name = 'custody_cancel_probe'",
+    )
+    .fetch_one(&mut connection)
+    .await
+    .unwrap();
+    assert_eq!(tables, 0);
+    connection.close().await.unwrap();
+    require_exclusive_lock_available(&root);
+    let reopened = CognitiveStore::open(&layout(&temp, &agent_id(OWNER)))
+        .await
+        .unwrap();
+    assert_eq!(reopened.recovery_anchor().await.unwrap(), before);
+    reopened.close().await;
+}
+
+#[tokio::test]
+async fn commit_hook_teardown_keeps_custody_until_native_connection_close() {
+    let temp = tempfile::TempDir::new().unwrap();
+    let owner = agent_id(OWNER);
+    let store = CognitiveStore::open(&layout(&temp, &owner)).await.unwrap();
+    let root = store.path().parent().unwrap().to_path_buf();
+    let mut connection = store.pool.acquire().await.unwrap().detach();
+    store.close().await;
+    require_live_connection(&mut connection).await;
+    require_exclusive_lock_blocked(&root);
+
+    // Reproduce SQLx's real pre-close hook-removal operation on a live native
+    // handle. Only this test bypasses the commit oracle; no write follows it.
+    connection.lock_handle().await.unwrap().remove_commit_hook();
+    eprintln!("connection_custody: commit_hook_removed=true native_close_started=false");
+    require_live_connection(&mut connection).await;
+    require_exclusive_lock_blocked(&root);
+    connection.close().await.unwrap();
+    require_exclusive_lock_available(&root);
+}

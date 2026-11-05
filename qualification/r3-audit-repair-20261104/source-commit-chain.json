@@ -1,0 +1,157 @@
+{
+  "status": "UNPUBLISHED_NOT_FINAL_QUALIFICATION",
+  "branch_head_unchanged": "cabcb40d36e116beaa65750e1f674c52035da785",
+  "chain": [
+    {
+      "stage": "R1",
+      "sha": "03c5d693de306daf52b6a6d13261c2e00b5e4b63",
+      "tree": "a5e96b7e10c6d6f9c5fd3ec6a4cbad47448aa323"
+    },
+    {
+      "stage": "R2b",
+      "sha": "e01a3f9face6e4c81b0fd9805465aa922e02f685",
+      "tree": "6eafed3863a36f9f5a1f28034e098dd195331334"
+    },
+    {
+      "stage": "R2a",
+      "sha": "4c8979e3bc9baf6e75326270cd46d4e3c0c58fa3",
+      "tree": "c0c8e9e386b63ef1872750f9c0e70b9fad318461"
+    },
+    {
+      "stage": "Fleet",
+      "sha": "d12cf0ad91ee5da6d116cbe4a0024269345d9d43",
+      "tree": "c058953879b13a687163d0038a6031dfdb3c725f"
+    },
+    {
+      "stage": "CoreLifecycle",
+      "sha": "2250e5fecfb2c2d5ce889fd66a495a7c8739b148",
+      "tree": "5d8a5db90c83c12b19cbcd24b2d49d94542f73a1",
+      "parent": "d12cf0ad91ee5da6d116cbe4a0024269345d9d43",
+      "message": "test(core): align response and websocket fixtures with actual lifecycle"
+    },
+    {
+      "stage": "RuntimeDiagnostics",
+      "sha": "b5f899e49c98ac5fc387c33848b9bdbe34396e2d",
+      "tree": "1c2aa1263d4087fb3432b7b900080a6af7215b14",
+      "parent": "2250e5fecfb2c2d5ce889fd66a495a7c8739b148",
+      "message": "test(runtime): preserve bounded PTY and daemon failure diagnostics"
+    },
+    {
+      "stage": "MuslAndLifecycleCI",
+      "sha": "c8f5d3c7b96e9d649cf34f6cfcac3d7b1912ed5e",
+      "tree": "c90d537a743cf39ed92286b6ba1b3a25b014c989",
+      "parent": "b5f899e49c98ac5fc387c33848b9bdbe34396e2d",
+      "message": "ci: select musl toolchains and avoid duplicate lifecycle invocations"
+    },
+    {
+      "stage": "ApplyPatchCause",
+      "sha": "42410fe3c080c01655ba1dc6970a05632969ecc6",
+      "tree": "e84c2f12e39022701c8a942343b3913faa62cf31",
+      "parent": "c8f5d3c7b96e9d649cf34f6cfcac3d7b1912ed5e",
+      "message": "fix(apply-patch): retain filesystem error causes in diagnostics"
+    },
+    {
+      "stage": "HookSkillDiagnostics",
+      "sha": "fdeb9fda5df70e12917bb6bf2a77bc56e4b868e5",
+      "tree": "073bc9fbcd958d0281eedc52f330c9847a0961d5",
+      "parent": "42410fe3c080c01655ba1dc6970a05632969ecc6",
+      "message": "test(core): retain bounded hook and skill event diagnostics"
+    },
+    {
+      "stage": "SuccessfulTargetEvidence",
+      "sha": "6f9c32e8d4fc5e5d23c2b28d72b484794d3528ab",
+      "tree": "df74afac9e4e31b61a94725d9689b5d0e40eddfe",
+      "parent": "fdeb9fda5df70e12917bb6bf2a77bc56e4b868e5",
+      "message": "ci: retain complete original logs for selected successful targets"
+    },
+    {
+      "stage": "OwningRegressionFixtures",
+      "sha": "dbfba62e08ee1b22c9f873260f9fa79faebd58bf",
+      "tree": "a0e8dc2df02c7c7b9d3a41be5997d2ccb37f9ed2",
+      "parent": "6f9c32e8d4fc5e5d23c2b28d72b484794d3528ab",
+      "message": "test(core): correct hook completion and shell permission fixtures"
+    },
+    {
+      "stage": "BashSnapshotRestoration",
+      "sha": "03e4945876cfd44ff886aea35bcc5576cbd0055d",
+      "tree": "da60f29b6789434c394edeff3c79f59191ad932c",
+      "parent": "dbfba62e08ee1b22c9f873260f9fa79faebd58bf",
+      "message": "fix(exec-server): prevent bashrc startup during snapshot restoration"
+    },
+    {
+      "stage": "EffectiveChildApproval",
+      "sha": "7bc267096f23159605c0b6563374e697f8a0bd1f",
+      "tree": "f8251e1d14fa8524ab469281296cd4cf708f173c",
+      "parent": "03e4945876cfd44ff886aea35bcc5576cbd0055d",
+      "message": "fix(core): evaluate child approval with effective denied-read sandbox permissions",
+      "changed_lines_excluding_locks": 8
+    },
+    {
+      "stage": "SkillsFixtureIsolationV2",
+      "tree": "51673d30d34674faeac6bb17e565fc9d04aec8f1",
+      "message": "test(skills): isolate host roots with an explicit project marker",
+      "sha": "1175e9b91528db4ab9426fe0bec92aa34a1013d2",
+      "parent": "7bc267096f23159605c0b6563374e697f8a0bd1f"
+    },
+    {
+      "stage": "MigrationOfflineOfficialFixture",
+      "tree": "b2cee2e56d32199dc67d362ec15b796b2814ee7e",
+      "message": "test(migration): exercise official marketplace import with an isolated local Git fixture",
+      "sha": "d09b54495a364170859a28d1656dc9fe4286c216",
+      "parent": "1175e9b91528db4ab9426fe0bec92aa34a1013d2"
+    },
+    {
+      "stage": "V8DefaultSandboxAlignment",
+      "tree": "7d703610ae4f778ad305ebc139860d276f416e8c",
+      "message": "fix(v8-poc): align the default sandbox feature with the linked runtime",
+      "sha": "bd7631e98f295fefad7654865cea497ceacf7d06",
+      "parent": "d09b54495a364170859a28d1656dc9fe4286c216"
+    },
+    {
+      "stage": "AppParentLiveness",
+      "tree": "c6fbcfa0d1ba3b1556f601dc4ca3a7734328b9f7",
+      "message": "fix(linux-sandbox): rearm parent death with original process liveness custody",
+      "sha": "b141e287b7c1c581b7e57bf7f3a5722f8bd42b79",
+      "parent": "bd7631e98f295fefad7654865cea497ceacf7d06"
+    },
+    {
+      "stage": "WindowsAclIdempotency",
+      "tree": "ef96589ba7bed90ebb600c0132af67c5cc03f635",
+      "message": "fix(windows-sandbox): recognize complete deny ACLs on the retained file object",
+      "sha": "bb5d1316a84a710898156ffcb862ba07267c7af7",
+      "parent": "b141e287b7c1c581b7e57bf7f3a5722f8bd42b79"
+    },
+    {
+      "stage": "WindowsTokenDeleteMatrix",
+      "tree": "deaefe6c6e0c68b64bc4b505e9dc8347bde4dd3e",
+      "message": "test(windows-sandbox): verify both deletion permission routes with native file controls",
+      "sha": "fec05bab68c2de0472f6d9bd73727b4a48dc8a96",
+      "parent": "bb5d1316a84a710898156ffcb862ba07267c7af7"
+    },
+    {
+      "stage": "WindowsLegacyDeleteMatrix",
+      "tree": "5b84397a61f79279875d268c0e2f2f19f4d7e30e",
+      "message": "test(windows-sandbox): exercise legacy deletion against all permission cells",
+      "sha": "104d2b187457897f595aab7a70559a85b499339f",
+      "parent": "fec05bab68c2de0472f6d9bd73727b4a48dc8a96"
+    },
+    {
+      "stage": "WindowsSuccessRetention",
+      "tree": "fb9e131272f7e7a138d6c0d1af2b048b9a6ab7ff",
+      "message": "ci: retain original Windows sandbox unit logs for case qualification",
+      "sha": "ccf0f78ce84caf5dde40e639d45a91a737096df6",
+      "parent": "104d2b187457897f595aab7a70559a85b499339f"
+    },
+    {
+      "stage": "OriginalFinalHygiene",
+      "tree": "4a3374e22e16ce5c764288ad018cd9affadf94ea",
+      "sha": "20fd174ded4e5ce01bda34e4f6d1d74803301f49",
+      "parent": "ccf0f78ce84caf5dde40e639d45a91a737096df6",
+      "message": "style: apply original scoped lint and formatting to r3 repairs",
+      "changed_lines": 865,
+      "mechanical_formatting_except_two_same_type_cast_removals": true,
+      "last_full_test_tree": "fb9e131272f7e7a138d6c0d1af2b048b9a6ab7ff",
+      "no_post_hygiene_A_tests": true
+    }
+  ]
+}

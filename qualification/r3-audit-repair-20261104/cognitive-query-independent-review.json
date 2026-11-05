@@ -1,0 +1,45 @@
+{
+  "reviewer": "ci_audit",
+  "source": "907d4f512819a71bece82e7f89944e9406466e36",
+  "production_comparison": [
+    "cognitive_kg_store.rs:308-397",
+    "cognitive_kg_store.rs:1024-1067",
+    "0014_kg_incremental_generation_storage.sql:40-95"
+  ],
+  "cases": [
+    {
+      "case": "unpublished future receipt excluded from current-generation facts",
+      "passed": true,
+      "counts": [
+        2,
+        1
+      ]
+    },
+    {
+      "case": "future trigger cannot be mistaken for current pointer",
+      "passed": true
+    },
+    {
+      "case": "concurrent second current scope excluded",
+      "passed": true,
+      "counts": [
+        2,
+        1
+      ]
+    },
+    {
+      "case": "future immutable facts without publication excluded",
+      "passed": true,
+      "counts": [
+        2,
+        1
+      ]
+    },
+    {
+      "case": "missing storage witness does not qualify",
+      "passed": true
+    }
+  ],
+  "passed": true,
+  "full_agentd_test_executed": false
+}

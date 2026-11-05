@@ -83,6 +83,16 @@ fn runtime_fixture() -> RuntimeFixture {
         .path()
         .canonicalize()
         .expect("canonical temporary root");
+    #[cfg(windows)]
+    let root = {
+        // Keep this positive owner fixture independent of the runner's inherited ACL.
+        let private = root.join("private-fixture");
+        drop(
+            codex_utils_path::open_private_state_directory(&private)
+                .expect("new private fixture root"),
+        );
+        private
+    };
     let fleet_path = root.join("fleet");
     let fleet_root = HeptaFleetRoot::parse(fleet_path.clone()).expect("valid fleet root");
     let registry = FleetRegistry::initialize(fleet_root.clone()).expect("initialize registry");
@@ -629,11 +639,15 @@ async fn qualification_prepare_quarantines_expired_registry_attempt_with_h7_evid
         Sha256Digest::for_bytes(format!("qualification:logical-binding:v1:{turn_id}").as_bytes()),
     )
     .expect("logical request");
+    // The real bound writes must finish while the setup lease is live. Expiry
+    // is exercised afterward against its actual deadline, not a setup race.
+    const SETUP_LEASE_TTL_SECONDS: u64 = 30;
     let expires_at = SystemTime::now()
         .duration_since(UNIX_EPOCH)
         .expect("clock")
         .as_secs()
-        + 1;
+        .checked_add(SETUP_LEASE_TTL_SECONDS)
+        .expect("setup lease expiry");
     let old = LogicalTurnAttemptRequest::new(
         "seed-terminal-attempt",
         "seed-terminal-lease",
@@ -744,10 +758,26 @@ async fn qualification_prepare_quarantines_expired_registry_attempt_with_h7_evid
     append_h7_trajectory_event_bound(&lease, &executor, &binding, &terminal)
         .await
         .expect("append H7 terminal");
+    lease
+        .verify_current()
+        .await
+        .expect("bound H7 setup must complete under a live lease");
     drop(binding);
     drop(executor);
     drop(lease);
-    tokio::time::sleep(Duration::from_secs(2)).await;
+    let remaining = (UNIX_EPOCH + Duration::from_secs(expires_at))
+        .duration_since(SystemTime::now())
+        .unwrap_or_default();
+    tokio::time::sleep(remaining).await;
+    let expired = store
+        .inspect_local_lease_head(&attempt.lease_id)
+        .await
+        .expect("inspect expired fixture head");
+    assert_eq!(
+        expired.disposition,
+        LocalLeaseHeadDisposition::ExpiredActive,
+        "qualification prepare must observe an already-expired active head"
+    );
 
     let result = prepare_qualification_turn_writer_input(
         Arc::clone(&fixture.state),
@@ -769,6 +799,10 @@ async fn qualification_prepare_quarantines_expired_registry_attempt_with_h7_evid
         inspected.disposition,
         LocalLeaseHeadDisposition::ExpiredActive,
         "registry-backed H7 quarantine must not mutate the active registry head"
+    );
+    assert_eq!(
+        inspected, expired,
+        "quarantine must preserve the exact head"
     );
 }
 

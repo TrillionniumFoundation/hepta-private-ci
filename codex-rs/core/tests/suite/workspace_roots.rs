@@ -125,6 +125,23 @@ async fn read_file(test: &TestCodex, path: &PathUri) -> Result<String> {
     )?)
 }
 
+fn workspace_readback_context(path: &PathUri, call_id: &str, output: Option<&str>) -> String {
+    const OUTPUT_LIMIT: usize = 8 * 1024;
+    let mut escaped = format!("{output:?}");
+    let output_truncated = escaped.len() > OUTPUT_LIMIT;
+    if output_truncated {
+        let mut end = OUTPUT_LIMIT;
+        while !escaped.is_char_boundary(end) {
+            end -= 1;
+        }
+        escaped.truncate(end);
+    }
+    format!(
+        "workspace-root readback failed: path={:?}, call_id={call_id}, output_truncated={output_truncated}, tool_output={escaped}",
+        path.inferred_native_path_string()
+    )
+}
+
 async fn remove_files(test: &TestCodex, paths: &[&PathUri]) -> Result<()> {
     for path in paths {
         test.fs()
@@ -153,7 +170,9 @@ async fn workspace_roots_allow_file_and_command_writes() -> Result<()> {
     );
 
     let server = start_mock_server().await;
-    let test = workspace_roots_test(&server).await?;
+    let test = workspace_roots_test(&server)
+        .await
+        .context("initialize primary workspace-root fixture")?;
     let cwd = PathUri::from_abs_path(&test.config.cwd);
     let patch_path = cwd.join("workspace-root-patch.txt")?;
     let command_path = cwd.join("workspace-root-command.txt")?;
@@ -168,30 +187,45 @@ async fn workspace_roots_allow_file_and_command_writes() -> Result<()> {
         COMMAND_CONTENTS,
     )
     .await?;
-    submit_workspace_turn(&test, "write files inside the workspace roots").await?;
+    submit_workspace_turn(&test, "write files inside the workspace roots")
+        .await
+        .context("complete primary workspace-root turn")?;
 
     let request = response_mock
         .last_request()
         .context("model should receive both workspace-root tool results")?;
-    let (_, patch_success) = request
+    let (patch_output, patch_success) = request
         .custom_tool_call_output_content_and_success(PATCH_CALL_ID)
         .context("patch result should be present")?;
     assert_ne!(patch_success, Some(false));
 
-    let (_, command_success) = request
+    let (command_output, command_success) = request
         .function_call_output_content_and_success(COMMAND_CALL_ID)
         .context("command result should be present")?;
     assert_ne!(command_success, Some(false));
     assert_eq!(
-        read_file(&test, &patch_path).await?,
+        read_file(&test, &patch_path).await.with_context(|| {
+            workspace_readback_context(&patch_path, PATCH_CALL_ID, patch_output.as_deref())
+        })?,
         format!("{PATCH_CONTENTS}\n")
     );
     assert_eq!(
-        read_file(&test, &command_path).await?.trim_end(),
+        read_file(&test, &command_path)
+            .await
+            .with_context(|| {
+                workspace_readback_context(
+                    &command_path,
+                    COMMAND_CALL_ID,
+                    command_output.as_deref(),
+                )
+            })?
+            .trim_end(),
         COMMAND_CONTENTS
     );
 
-    remove_files(&test, &[&patch_path, &command_path]).await
+    remove_files(&test, &[&patch_path, &command_path])
+        .await
+        .context("remove primary workspace-root fixture files")
 }
 
 #[tokio::test(flavor = "multi_thread", worker_threads = 2)]
@@ -236,10 +270,14 @@ async fn workspace_roots_allow_apply_patch_in_secondary_root() -> Result<()> {
                 },
                 /*sandbox*/ None,
             )
-            .await?;
+            .await
+            .context("create secondary workspace-root fixture directory")?;
             Ok(())
         });
-    let test = builder.build_with_auto_env(&server).await?;
+    let test = builder
+        .build_with_auto_env(&server)
+        .await
+        .context("initialize secondary workspace-root fixture")?;
     let secondary_root_name = sibling_workspace_root_name(&test.config.cwd, SECONDARY_ROOT_NAME);
     let secondary_root = PathUri::from_abs_path(&test.config.cwd)
         .parent()
@@ -265,7 +303,9 @@ async fn workspace_roots_allow_apply_patch_in_secondary_root() -> Result<()> {
     )
     .await;
 
-    submit_workspace_turn(&test, "write in the secondary workspace root").await?;
+    submit_workspace_turn(&test, "write in the secondary workspace root")
+        .await
+        .context("complete secondary workspace-root turn")?;
 
     let request = response_mock
         .last_request()
@@ -281,7 +321,12 @@ async fn workspace_roots_allow_apply_patch_in_secondary_root() -> Result<()> {
         "{patch_output:?}"
     );
     let patched_file = secondary_root.join("secondary-root-patch.txt")?;
-    assert_eq!(read_file(&test, &patched_file).await?, "secondary root\n");
+    assert_eq!(
+        read_file(&test, &patched_file).await.with_context(|| {
+            workspace_readback_context(&patched_file, PATCH_CALL_ID, patch_output.as_deref())
+        })?,
+        "secondary root\n"
+    );
 
     test.fs()
         .remove(
@@ -293,7 +338,8 @@ async fn workspace_roots_allow_apply_patch_in_secondary_root() -> Result<()> {
             },
             /*sandbox*/ None,
         )
-        .await?;
+        .await
+        .context("remove secondary workspace-root fixture directory")?;
     Ok(())
 }
 

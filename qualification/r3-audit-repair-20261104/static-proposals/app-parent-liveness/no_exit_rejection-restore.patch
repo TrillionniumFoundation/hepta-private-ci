@@ -1,0 +1,13 @@
+diff --git a/codex-rs/linux-sandbox/src/parent_lifecycle.rs b/codex-rs/linux-sandbox/src/parent_lifecycle.rs
+--- a/codex-rs/linux-sandbox/src/parent_lifecycle.rs
++++ b/codex-rs/linux-sandbox/src/parent_lifecycle.rs
+@@ -141,6 +141,9 @@
+             b"R" | b"S" | b"D" | b"T" | b"t" | b"W" | b"K" | b"P" | b"I" | b"Z" | b"X" | b"x" => {}
+             _ => return Err(malformed()),
+         }
++        if flags & PF_EXITING != 0 || matches!(state, b"Z" | b"X" | b"x") {
++            return Err(io::Error::new(io::ErrorKind::BrokenPipe, "original sandbox launcher is exiting or exited"));
++        }
+         Ok(())
+     }
+ }

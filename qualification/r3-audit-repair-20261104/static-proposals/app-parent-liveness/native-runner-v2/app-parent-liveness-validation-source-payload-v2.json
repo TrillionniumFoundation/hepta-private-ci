@@ -1,0 +1,381 @@
+{
+  "guard": {
+    "schema": "hepta-app-parent-liveness-native-exact-serial-guard-draft-v2",
+    "host": "rog",
+    "initial_tree": "d8a5e94af06b9555fc8256af1337e9f28f7c7fa8",
+    "positive_tree": "c6fbcfa0d1ba3b1556f601dc4ca3a7734328b9f7",
+    "ordinary_head": "cabcb40d36e116beaa65750e1f674c52035da785",
+    "ordinary_index": {
+      "bytes": 1222758,
+      "sha256": "8ccf08bcd5b633a38fa81be4814ae264365f1a2cdd1ed81e1633fbcc0ac31502"
+    },
+    "locks": {
+      "codex-rs/Cargo.lock": {
+        "bytes": 413768,
+        "sha256": "4a7a5535cf045089458468411e126b5f59bc6bbf34fc0deead9b0c1b8d84000a"
+      },
+      "MODULE.bazel.lock": {
+        "bytes": 1738619,
+        "sha256": "11f8a421224b9b05f32c4c14054e8868083d989fc497310c8d51e1156f189ca3"
+      }
+    },
+    "allowed_untracked_source_paths": [],
+    "normal_helper_build": [
+      "cargo",
+      "build",
+      "--locked",
+      "--profile",
+      "dev-small",
+      "--message-format=json-render-diagnostics",
+      "-p",
+      "codex-arg0",
+      "--bin",
+      "test_arg0_preflight",
+      "-p",
+      "codex-code-mode-host",
+      "--bin",
+      "codex-code-mode-host",
+      "-p",
+      "codex-shell-escalation",
+      "--bin",
+      "codex-execve-wrapper",
+      "-p",
+      "codex-rmcp-client",
+      "--bin",
+      "test_stdio_server",
+      "--bin",
+      "test_streamable_http_server",
+      "-p",
+      "codex-exec",
+      "--bin",
+      "codex-exec"
+    ],
+    "historical_helper_basename_roster": [
+      "apply_patch",
+      "codex",
+      "codex-app-server",
+      "codex-app-server-test-notify-capture",
+      "codex-code-mode-host",
+      "codex-command-runner",
+      "codex-exec",
+      "codex-execpolicy",
+      "codex-execve-wrapper",
+      "codex-hepta-agentd",
+      "codex-linux-sandbox",
+      "codex-mcp-server",
+      "codex-stdio-to-uds",
+      "codex-tui",
+      "codex-windows-sandbox-setup",
+      "codex-write-config-schema",
+      "custom_ca_probe",
+      "exec-server",
+      "hepta",
+      "hepta-agentd-browser",
+      "hepta-shadow-live-trial",
+      "hepta-supervisor-intent-recovery",
+      "hepta-supervisord",
+      "hepta-taskflow-runtime",
+      "logs_client",
+      "md-events",
+      "rmcp_test_server",
+      "test_arg0_preflight",
+      "test_mcp_2026_discovery_stdio_server",
+      "test_mcp_2026_stdio_server",
+      "test_notify_capture",
+      "test_stdio_server",
+      "test_streamable_http_server"
+    ],
+    "baseline_metadata": {
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/full18-three-repairs-v3-20261105-0254/v8-and-runtime-original-metadata.stdout",
+      "bytes": 8163699,
+      "sha256": "3a53323eae920e2e53dcb3e334128a4aff63cfb51840793e9150d617d2c9ba18",
+      "source": "7d703610ae4f778ad305ebc139860d276f416e8c"
+    },
+    "control_source": {
+      "path": "codex-rs/linux-sandbox/src/parent_lifecycle_tests.rs",
+      "mode": "100644",
+      "before_blob": "0293bce3c08720952fd3413c92c4e9a033da3d03",
+      "after_blob": "ed07ba4eed573d659dfdf647b1aab241a28e4b46",
+      "bytes": 12768,
+      "sha256": "08c1c79aaa41a9ca727ce3e4c77a46781d2b167d0127fbc401fba589e5ce4b9d"
+    },
+    "causal_source_anchors": {
+      "no_exit_rejection": {
+        "parent": "145-152; kill_launcher_without_reaping precedes release",
+        "child": "243 original parent; 246-248 PR_GET=0; 250 inherited marker; 254 go; 256 actual reparenting; 258 actual result; 259-260 exact BrokenPipe assertion",
+        "raw_does_not_print_waitid_result": true
+      },
+      "no_rearm": {
+        "parent": "156-163; 160 armed marker; 161 synchronous kill/WNOWAIT; 162 finish",
+        "waitid": "80 owned child kill; 86-94 WEXITED|WNOHANG|WNOWAIT returns only exact owned si_pid; 97 separate deadline error",
+        "oracle": "111 own five-second survived assertion while stdin writer remains held",
+        "child": "265 arm; 269 descriptor closed; 270-277 successful inspect exec; 278 armed marker; 279 flush; 281 stdin block",
+        "raw_does_not_print_waitid_result": true
+      },
+      "leaked_parent_fd": {
+        "child": "265 arm_and_check unwrap; 267 F_GETFD; 268 errno; 269 exact pre-fork tuple assertion",
+        "required_actual_left": "F_GETFD nonnegative, expected right is (-1, EBADF)",
+        "later_exec_marker_is_not_a_substitute": true
+      }
+    },
+    "apply_fixed": {
+      "label": "apply-owned-libtest-output-separator",
+      "before_tree": "d8a5e94af06b9555fc8256af1337e9f28f7c7fa8",
+      "after_tree": "c6fbcfa0d1ba3b1556f601dc4ca3a7734328b9f7",
+      "files": [
+        {
+          "path": "codex-rs/linux-sandbox/src/parent_lifecycle_tests.rs",
+          "mode": "100644",
+          "before_blob": "0293bce3c08720952fd3413c92c4e9a033da3d03",
+          "after_blob": "ed07ba4eed573d659dfdf647b1aab241a28e4b46",
+          "bytes": 12768,
+          "sha256": "08c1c79aaa41a9ca727ce3e4c77a46781d2b167d0127fbc401fba589e5ce4b9d"
+        }
+      ]
+    },
+    "counterfactual_stages": [
+      {
+        "kind": "no_exit_rejection",
+        "apply": {
+          "label": "no_exit_rejection-apply-negative",
+          "before_tree": "c6fbcfa0d1ba3b1556f601dc4ca3a7734328b9f7",
+          "after_tree": "8c9b3cab2887ac8512529ff73b90584232ca5a17",
+          "files": [
+            {
+              "path": "codex-rs/linux-sandbox/src/parent_lifecycle.rs",
+              "mode": "100644",
+              "before_blob": "ffc5774508ab4a069a6bcb70f27950300b86fbfe",
+              "after_blob": "4b395cc9faa7f10dbd5d4efef8036b0170164ec0",
+              "bytes": 7234,
+              "sha256": "eb552931c2cb8515d577df020196ace5ce5b7e4970775b7b54e8e170539382f1"
+            }
+          ]
+        },
+        "scope": {
+          "label": "no_exit_rejection-negative",
+          "expression": "test(=parent_lifecycle::tests::exited_original_parent_is_rejected_after_actual_reparenting)",
+          "expected_cases": [
+            {
+              "classname": "codex-linux-sandbox",
+              "name": "parent_lifecycle::tests::exited_original_parent_is_rejected_after_actual_reparenting"
+            }
+          ],
+          "package_filter": null,
+          "full_workspace_metadata_and_catalog": true,
+          "observe_original_app": false
+        },
+        "restore": {
+          "label": "no_exit_rejection-restore-positive",
+          "before_tree": "8c9b3cab2887ac8512529ff73b90584232ca5a17",
+          "after_tree": "c6fbcfa0d1ba3b1556f601dc4ca3a7734328b9f7",
+          "files": [
+            {
+              "path": "codex-rs/linux-sandbox/src/parent_lifecycle.rs",
+              "mode": "100644",
+              "before_blob": "4b395cc9faa7f10dbd5d4efef8036b0170164ec0",
+              "after_blob": "ffc5774508ab4a069a6bcb70f27950300b86fbfe",
+              "bytes": 7437,
+              "sha256": "2568b9008d8b6db84b40ace134c5aef6b493d316bfe1d977aab8290b58b64db6"
+            }
+          ]
+        },
+        "required_actual_evidence": [
+          "inherited_unread_parent reached",
+          "owned original launcher killed and waitid WNOWAIT observed its exit",
+          "probe getppid differs from original launcher",
+          "actual reparented liveness result=Ok(())",
+          "owned child assertion: exited original parent was admitted"
+        ],
+        "invalid_evidence": [
+          "parent RecvError alone",
+          "setup failure",
+          "generic timeout"
+        ]
+      },
+      {
+        "kind": "no_rearm",
+        "apply": {
+          "label": "no_rearm-apply-negative",
+          "before_tree": "c6fbcfa0d1ba3b1556f601dc4ca3a7734328b9f7",
+          "after_tree": "eafff444da46518a66e1d1db8369ec868719de97",
+          "files": [
+            {
+              "path": "codex-rs/linux-sandbox/src/parent_lifecycle.rs",
+              "mode": "100644",
+              "before_blob": "ffc5774508ab4a069a6bcb70f27950300b86fbfe",
+              "after_blob": "eab9c5023d6f688bfbda563348490e9bb39a6aee",
+              "bytes": 7102,
+              "sha256": "a83ed718ca4171673e56eb9c6421b5abb158ab9ff2ea10cdc98670d5cec199a8"
+            }
+          ]
+        },
+        "scope": {
+          "label": "no_rearm-negative",
+          "expression": "test(=parent_lifecycle::tests::rearmed_parent_death_terminates_probe_and_closes_fd_before_user_fork)",
+          "expected_cases": [
+            {
+              "classname": "codex-linux-sandbox",
+              "name": "parent_lifecycle::tests::rearmed_parent_death_terminates_probe_and_closes_fd_before_user_fork"
+            }
+          ],
+          "package_filter": null,
+          "full_workspace_metadata_and_catalog": true,
+          "observe_original_app": false
+        },
+        "restore": {
+          "label": "no_rearm-restore-positive",
+          "before_tree": "eafff444da46518a66e1d1db8369ec868719de97",
+          "after_tree": "c6fbcfa0d1ba3b1556f601dc4ca3a7734328b9f7",
+          "files": [
+            {
+              "path": "codex-rs/linux-sandbox/src/parent_lifecycle.rs",
+              "mode": "100644",
+              "before_blob": "eab9c5023d6f688bfbda563348490e9bb39a6aee",
+              "after_blob": "ffc5774508ab4a069a6bcb70f27950300b86fbfe",
+              "bytes": 7437,
+              "sha256": "2568b9008d8b6db84b40ace134c5aef6b493d316bfe1d977aab8290b58b64db6"
+            }
+          ]
+        },
+        "required_actual_evidence": [
+          "inherited_unread_parent reached",
+          "armed_with_fd_closed_before_fork_and_exec reached",
+          "owned original launcher killed and waitid WNOWAIT observed its exit",
+          "test's own five-second reaper survived original launcher exit assertion while stdin writer is still held"
+        ],
+        "invalid_evidence": [
+          "nextest timeout",
+          "missing stage marker",
+          "setup or early child failure"
+        ]
+      },
+      {
+        "kind": "leaked_parent_fd",
+        "apply": {
+          "label": "leaked_parent_fd-apply-negative",
+          "before_tree": "c6fbcfa0d1ba3b1556f601dc4ca3a7734328b9f7",
+          "after_tree": "a1da95cc0a5b18250ffe3957671c11f098265b8e",
+          "files": [
+            {
+              "path": "codex-rs/linux-sandbox/src/parent_lifecycle.rs",
+              "mode": "100644",
+              "before_blob": "ffc5774508ab4a069a6bcb70f27950300b86fbfe",
+              "after_blob": "63df209d8ebda1776b5526123ff08b3382982804",
+              "bytes": 7469,
+              "sha256": "e339d9e553715f27655c5386fcc1d386e8d84477ff92cb325966889cf03a409b"
+            }
+          ]
+        },
+        "scope": {
+          "label": "leaked_parent_fd-negative",
+          "expression": "test(=parent_lifecycle::tests::rearmed_parent_death_terminates_probe_and_closes_fd_before_user_fork)",
+          "expected_cases": [
+            {
+              "classname": "codex-linux-sandbox",
+              "name": "parent_lifecycle::tests::rearmed_parent_death_terminates_probe_and_closes_fd_before_user_fork"
+            }
+          ],
+          "package_filter": null,
+          "full_workspace_metadata_and_catalog": true,
+          "observe_original_app": false
+        },
+        "restore": {
+          "label": "leaked_parent_fd-restore-positive",
+          "before_tree": "a1da95cc0a5b18250ffe3957671c11f098265b8e",
+          "after_tree": "c6fbcfa0d1ba3b1556f601dc4ca3a7734328b9f7",
+          "files": [
+            {
+              "path": "codex-rs/linux-sandbox/src/parent_lifecycle.rs",
+              "mode": "100644",
+              "before_blob": "63df209d8ebda1776b5526123ff08b3382982804",
+              "after_blob": "ffc5774508ab4a069a6bcb70f27950300b86fbfe",
+              "bytes": 7437,
+              "sha256": "2568b9008d8b6db84b40ace134c5aef6b493d316bfe1d977aab8290b58b64db6"
+            }
+          ]
+        },
+        "required_actual_evidence": [
+          "inherited_unread_parent reached",
+          "arm_and_check returned success in owned probe",
+          "original descriptor F_GETFD is still open and original pre-fork EBADF assertion fails"
+        ],
+        "invalid_evidence": [
+          "post-exec-only result",
+          "setup failure",
+          "generic timeout"
+        ]
+      }
+    ],
+    "positive_scope": {
+      "label": "parent-liveness-final-eight",
+      "expression": "test(=parent_lifecycle::tests::exited_original_parent_is_rejected_after_actual_reparenting) | test(=parent_lifecycle::tests::rearmed_parent_death_terminates_probe_and_closes_fd_before_user_fork) | test(=parent_lifecycle::tests::ordinary_file_and_pre_read_proc_descriptor_are_rejected) | test(=suite::v2::command_exec::command_exec_process_ids_are_connection_scoped_and_disconnect_terminates_process) | test(=suite::managed_proxy::sandboxed_commands_have_a_seccomp_filtered_namespace_reaper) | test(=suite::managed_proxy::managed_proxy_commands_have_a_seccomp_filtered_namespace_reaper) | test(=suite::managed_proxy::namespace_reaper_collects_orphaned_descendants) | test(=suite::landlock::sandbox_inner_stage_rejects_retained_capabilities)",
+      "expected_cases": [
+        {
+          "classname": "codex-linux-sandbox",
+          "name": "parent_lifecycle::tests::exited_original_parent_is_rejected_after_actual_reparenting"
+        },
+        {
+          "classname": "codex-linux-sandbox",
+          "name": "parent_lifecycle::tests::rearmed_parent_death_terminates_probe_and_closes_fd_before_user_fork"
+        },
+        {
+          "classname": "codex-linux-sandbox",
+          "name": "parent_lifecycle::tests::ordinary_file_and_pre_read_proc_descriptor_are_rejected"
+        },
+        {
+          "classname": "codex-app-server::all",
+          "name": "suite::v2::command_exec::command_exec_process_ids_are_connection_scoped_and_disconnect_terminates_process"
+        },
+        {
+          "classname": "codex-linux-sandbox::all",
+          "name": "suite::managed_proxy::sandboxed_commands_have_a_seccomp_filtered_namespace_reaper"
+        },
+        {
+          "classname": "codex-linux-sandbox::all",
+          "name": "suite::managed_proxy::managed_proxy_commands_have_a_seccomp_filtered_namespace_reaper"
+        },
+        {
+          "classname": "codex-linux-sandbox::all",
+          "name": "suite::managed_proxy::namespace_reaper_collects_orphaned_descendants"
+        },
+        {
+          "classname": "codex-linux-sandbox::all",
+          "name": "suite::landlock::sandbox_inner_stage_rejects_retained_capabilities"
+        }
+      ],
+      "package_filter": null,
+      "full_workspace_metadata_and_catalog": true,
+      "observe_original_app": true
+    },
+    "budgets": "All original nextest-local and test-internal budgets retained; original App five seconds and liveness BOUND five seconds; retries zero. No all-features/package narrowing or retry is introduced.",
+    "resource_guard": {
+      "before_each_phase_free_bytes": 8000000000,
+      "after_each_phase_free_bytes": 8000000000,
+      "target": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/target-app-epoch2-20261105",
+      "existing_target_reused": true,
+      "no_cleanup": true
+    },
+    "finally_contract": "Restore each exact owned counterfactual to c6fbc only after source/index/locks/untracked guards; invalid negatives remain invalid and stop after restoration; external drift is never overwritten.",
+    "observer_contract": "Final eight use the exact previously reviewed read-only owned process observer functions. Marker/trace completeness is separate from the original product test oracle; no missing trace is represented as proof of termination.",
+    "stop_after": "Final eight actual outcomes and complete source/helper/program receipts; no Windows mutation, whole-workspace tests, fix, fmt, publication or ref changes.",
+    "provenance": {
+      "author_manifest": "014cd58cb83cb04bbf9329486f42cfe22b30182a",
+      "source_map": "e8dc1d43488e90c77c2e2b017f79da7ec3c6e93c",
+      "negative_source_map": "7220f059499b5a30c6f4dc459f84bd7847a819f9",
+      "full_patch": "5847179e988ea0719766cd25be293e09efd882c3",
+      "tree_input": "/workspace/scratch/07dd58cc9630/hepta-audit-fourth/inputs/app-parent-liveness-banner-separator-native-trees.json",
+      "marker_separator_manifest": "d65c86642df3e61d5af9fac80fe162921f5689de",
+      "marker_separator_patch": "82953f6cc46503aa837d2f87e33a438aaf838b73",
+      "tree_plan_blob": "ac35285ab4e787c98f6d4a7eaa7a676459d67f4f",
+      "previous_invalid_job": "1a1a9bd0f35-fc05-3714",
+      "previous_invalid_complete_small_evidence": "92e85c6f4ccdcf54e49ea7dbb6269bde28938f91"
+    }
+  },
+  "sources": {
+    "ed07ba4eed573d659dfdf647b1aab241a28e4b46": "use super::ParentLiveness;\nuse pretty_assertions::assert_eq;\nuse std::io;\nuse std::io::BufRead;\nuse std::io::BufReader;\nuse std::io::Read;\nuse std::io::Write;\nuse std::mem::MaybeUninit;\nuse std::os::fd::AsRawFd;\nuse std::os::fd::IntoRawFd;\nuse std::os::unix::fs::MetadataExt;\nuse std::os::unix::process::CommandExt;\nuse std::os::unix::process::ExitStatusExt;\nuse std::process::Child;\nuse std::process::ChildStdin;\nuse std::process::Command;\nuse std::process::Stdio;\nuse std::sync::mpsc;\nuse std::thread;\nuse std::thread::JoinHandle;\nuse std::time::Duration;\nuse std::time::Instant;\n\nconst CHILD: &str = \"parent_lifecycle::tests::owned_liveness_scenario\";\nconst MODE: &str = \"CODEX_PARENT_LIVENESS_TEST_MODE\";\nconst ARGUMENT: &str = \"CODEX_PARENT_LIVENESS_TEST_ARGUMENT\";\nconst PARENT: &str = \"CODEX_PARENT_LIVENESS_TEST_PARENT\";\nconst BOUND: Duration = Duration::from_secs(5);\n\nstruct OwnedScenario {\n    child: Child,\n    input: Option<ChildStdin>,\n    lines: Option<mpsc::Receiver<String>>,\n    reader: Option<JoinHandle<io::Result<String>>>,\n    reaped: bool,\n}\n\nimpl OwnedScenario {\n    fn start(mode: &str) -> Self {\n        let mut child = child_command(mode).process_group(0)\n            .stdin(Stdio::piped()).stdout(Stdio::piped()).stderr(Stdio::inherit())\n            .spawn().unwrap();\n        let input = child.stdin.take();\n        let output = child.stdout.take().unwrap();\n        let (sender, lines) = mpsc::sync_channel(32);\n        let mut owned = Self { child, input, lines: Some(lines), reader: None, reaped: false };\n        owned.reader = Some(thread::spawn(move || {\n            let mut raw = String::new();\n            for line in BufReader::new(output).take(64 * 1024 + 1).lines() {\n                let line = line?;\n                raw.push_str(&line);\n                raw.push('\\n');\n                if raw.len() > 64 * 1024 {\n                    return Err(io::Error::other(\"owned liveness control output exceeded its bound\"));\n                }\n                if sender.send(line).is_err() { break; }\n            }\n            Ok(raw)\n        }));\n        owned\n    }\n\n    fn marker(&self, expected: &str) {\n        let deadline = Instant::now() + BOUND;\n        loop {\n            let line = self.lines.as_ref().unwrap()\n                .recv_timeout(deadline.saturating_duration_since(Instant::now()))\n                .expect(\"owned liveness child did not reach the required stage\");\n            eprintln!(\"owned liveness: {line}\");\n            if line == expected { return; }\n        }\n    }\n\n    fn release(&mut self) {\n        self.input.as_mut().unwrap().write_all(b\"go\\n\").unwrap();\n        self.input.as_mut().unwrap().flush().unwrap();\n    }\n\n    fn kill_launcher_without_reaping(&mut self) {\n        self.child.kill().unwrap();\n        let deadline = Instant::now() + BOUND;\n        loop {\n            let mut info = MaybeUninit::<libc::siginfo_t>::zeroed();\n            // SAFETY: this is our unreaped direct child; WNOWAIT keeps its PID\n            // reserved until all group members have completed or been killed.\n            let rc = unsafe { libc::waitid(libc::P_PID, self.child.id(), info.as_mut_ptr(),\n                libc::WEXITED | libc::WNOHANG | libc::WNOWAIT) };\n            if rc < 0 {\n                let error = io::Error::last_os_error();\n                assert_eq!(error.raw_os_error(), Some(libc::EINTR));\n            } else {\n                // SAFETY: waitid initialized the zeroed output on success.\n                if unsafe { info.assume_init().si_pid() } == self.child.id() as libc::pid_t {\n                    return;\n                }\n            }\n            assert!(Instant::now() < deadline, \"original launcher did not exit\");\n            thread::sleep(Duration::from_millis(10));\n        }\n    }\n\n    fn finish_killed_launcher(&mut self) -> String {\n        // The test still owns the stdin writer. EOF therefore cannot release\n        // the live probe: its stdout closes only when that process exits.\n        let deadline = Instant::now() + BOUND;\n        loop {\n            match self.lines.as_ref().unwrap()\n                .recv_timeout(deadline.saturating_duration_since(Instant::now())) {\n                Ok(line) => eprintln!(\"owned liveness: {line}\"),\n                Err(mpsc::RecvTimeoutError::Disconnected) => break,\n                Err(mpsc::RecvTimeoutError::Timeout) => panic!(\"reaper survived original launcher exit\"),\n            }\n        }\n        drop(self.lines.take());\n        let raw = self.reader.take().unwrap().join().unwrap().unwrap();\n        let status = self.child.wait().unwrap();\n        self.reaped = true;\n        assert_eq!(status.signal(), Some(libc::SIGKILL));\n        raw\n    }\n}\n\nimpl Drop for OwnedScenario {\n    fn drop(&mut self) {\n        drop(self.input.take());\n        drop(self.lines.take());\n        if !self.reaped {\n            // SAFETY: our dedicated group's leader is still owned and unreaped,\n            // so its PID cannot be reused for another process group.\n            unsafe { libc::kill(-(self.child.id() as libc::pid_t), libc::SIGKILL); }\n            let _ = self.child.wait();\n        }\n        if let Some(reader) = self.reader.take() { let _ = reader.join(); }\n    }\n}\n\nfn child_command(mode: &str) -> Command {\n    let mut command = Command::new(std::env::current_exe().unwrap());\n    command.args([\"--exact\", CHILD, \"--ignored\", \"--nocapture\", \"--test-threads=1\"])\n        .env(MODE, mode);\n    command\n}\n\n#[test]\nfn exited_original_parent_is_rejected_after_actual_reparenting() {\n    let mut scenario = OwnedScenario::start(\"launch-early\");\n    scenario.marker(\"LIVENESS: inherited_unread_parent\");\n    scenario.kill_launcher_without_reaping();\n    scenario.release();\n    scenario.marker(\"LIVENESS: exited_original_parent_rejected\");\n    let raw = scenario.finish_killed_launcher();\n    assert!(raw.contains(\"1 passed; 0 failed; 0 ignored\"), \"owned probe did not complete: {raw}\");\n}\n\n#[test]\nfn rearmed_parent_death_terminates_probe_and_closes_fd_before_user_fork() {\n    let mut scenario = OwnedScenario::start(\"launch-live\");\n    scenario.marker(\"LIVENESS: inherited_unread_parent\");\n    scenario.release();\n    scenario.marker(\"LIVENESS: armed_with_fd_closed_before_fork_and_exec\");\n    scenario.kill_launcher_without_reaping();\n    let raw = scenario.finish_killed_launcher();\n    assert!(!raw.contains(\"LIVENESS: unexpectedly_resumed\"));\n}\n\n#[test]\nfn ordinary_file_and_pre_read_proc_descriptor_are_rejected() {\n    let temporary = tempfile::NamedTempFile::new().unwrap();\n    let file = temporary.as_file().try_clone().unwrap();\n    let metadata = file.metadata().unwrap();\n    let fd = file.into_raw_fd();\n    let argument = format!(\"{fd}:{}:{}\", metadata.dev(), metadata.ino());\n    assert!(matches!(ParentLiveness::from_inherited(&argument),\n        Err(error) if error.kind() == io::ErrorKind::InvalidInput));\n    let mut parent = ParentLiveness::capture_current_process().unwrap();\n    parent.0.read_exact(&mut [0_u8; 1]).unwrap();\n    let argument = parent.inheritance_argument().unwrap();\n    let _ = parent.into_file().into_raw_fd();\n    assert!(matches!(ParentLiveness::from_inherited(&argument),\n        Err(error) if error.kind() == io::ErrorKind::InvalidInput));\n}\n\n// Invoked only by the owned parent controls, through ordinary Rust/libtest\n// startup. This ignored support is not an additional passing case.\n#[test]\n#[ignore]\nfn owned_liveness_scenario() {\n    println!();\n    let mode = std::env::var(MODE).unwrap();\n    if mode == \"launch-early\" || mode == \"launch-live\" {\n        let parent = ParentLiveness::capture_current_process().unwrap();\n        let argument = parent.inheritance_argument().unwrap();\n        let file = parent.into_file();\n        let fd = file.as_raw_fd();\n        // SAFETY: querying our owned file's descriptor flags has no side effects.\n        let flags = unsafe { libc::fcntl(fd, libc::F_GETFD) };\n        assert!(flags >= 0);\n        let mut command = child_command(if mode == \"launch-early\" { \"probe-early\" } else { \"probe-live\" });\n        command.env(ARGUMENT, argument).env(PARENT, std::process::id().to_string());\n        // SAFETY: the child closure only performs async-signal-safe fcntl;\n        // the File remains owned here until spawn completes its exec handshake.\n        unsafe { command.pre_exec(move || {\n            if libc::fcntl(fd, libc::F_SETFD, flags & !libc::FD_CLOEXEC) < 0 {\n                return Err(io::Error::last_os_error());\n            }\n            Ok(())\n        }); }\n        let mut probe = command.spawn().unwrap();\n        drop(file);\n        assert!(probe.wait().unwrap().success());\n        return;\n    }\n    let argument = std::env::var(ARGUMENT).unwrap();\n    let mut identity = argument.split(':');\n    let fd: libc::c_int = identity.next().unwrap().parse().unwrap();\n    let device: u64 = identity.next().unwrap().parse().unwrap();\n    let inode: u64 = identity.next().unwrap().parse().unwrap();\n    if mode == \"inspect-exec\" {\n        let mut actual = MaybeUninit::<libc::stat>::uninit();\n        // SAFETY: fstat either initializes actual or returns an error.\n        if unsafe { libc::fstat(fd, actual.as_mut_ptr()) } == 0 {\n            // SAFETY: fstat succeeded; FD reuse is allowed, original inode is not.\n            let actual = unsafe { actual.assume_init() };\n            assert_ne!((actual.st_dev as u64, actual.st_ino as u64), (device, inode));\n        } else {\n            assert_eq!(io::Error::last_os_error().raw_os_error(), Some(libc::EBADF));\n        }\n        // Only this owned child closes a standard descriptor. The private\n        // constructor must not return the low FD that its receiver rejects.\n        assert_eq!(unsafe { libc::close(libc::STDIN_FILENO) }, 0);\n        let captured = ParentLiveness::capture_current_process().unwrap();\n        assert!(captured.0.as_raw_fd() > libc::STDERR_FILENO);\n        assert_eq!(unsafe { libc::fcntl(libc::STDIN_FILENO, libc::F_GETFD) }, -1);\n        assert_eq!(io::Error::last_os_error().raw_os_error(), Some(libc::EBADF));\n        let private_argument = captured.inheritance_argument().unwrap();\n        let _ = captured.into_file().into_raw_fd();\n        drop(ParentLiveness::from_inherited(&private_argument).unwrap());\n        println!(\"LIVENESS: closed_stdin_capture_promoted\");\n        println!(\"LIVENESS: original_fd_absent_after_exec\");\n        return;\n    }\n    let original_pid: libc::pid_t = std::env::var(PARENT).unwrap().parse().unwrap();\n    assert_eq!(unsafe { libc::getppid() }, original_pid);\n    let mut death_signal: libc::c_int = -1;\n    // SAFETY: PR_GET_PDEATHSIG writes one int into the supplied live pointer.\n    assert_eq!(unsafe { libc::prctl(libc::PR_GET_PDEATHSIG, &mut death_signal as *mut libc::c_int,\n        0 as libc::c_ulong, 0 as libc::c_ulong, 0 as libc::c_ulong) }, 0);\n    assert_eq!(death_signal, 0, \"control must begin with no parent-death signal\");\n    let parent = ParentLiveness::from_inherited(&argument).unwrap();\n    println!(\"LIVENESS: inherited_unread_parent\");\n    std::io::stdout().flush().unwrap();\n    let mut line = String::new();\n    std::io::stdin().read_line(&mut line).unwrap();\n    assert_eq!(line, \"go\\n\");\n    if mode == \"probe-early\" {\n        assert_ne!(unsafe { libc::getppid() }, original_pid);\n        let result = parent.arm_and_check();\n        eprintln!(\"actual reparented liveness result={result:?}\");\n        assert!(matches!(result, Err(error) if error.kind() == io::ErrorKind::BrokenPipe),\n            \"exited original parent was admitted\");\n        println!(\"LIVENESS: exited_original_parent_rejected\");\n        return;\n    }\n    assert_eq!(mode, \"probe-live\");\n    parent.arm_and_check().unwrap();\n    // This observation precedes the actual subprocess fork, not just exec.\n    let descriptor_state = unsafe { libc::fcntl(fd, libc::F_GETFD) };\n    let descriptor_error = io::Error::last_os_error().raw_os_error();\n    assert_eq!((descriptor_state, descriptor_error), (-1, Some(libc::EBADF)));\n    let output = child_command(\"inspect-exec\").env(ARGUMENT, argument)\n        .stdout(Stdio::piped()).stderr(Stdio::inherit()).output().unwrap();\n    let output_text = String::from_utf8(output.stdout).unwrap();\n    print!(\"{output_text}\");\n    assert!(output.status.success());\n    assert!(output_text.contains(\"LIVENESS: original_fd_absent_after_exec\"));\n    assert!(output_text.contains(\"LIVENESS: closed_stdin_capture_promoted\"));\n    assert!(output_text.contains(\"1 passed; 0 failed; 0 ignored\"));\n    println!(\"LIVENESS: armed_with_fd_closed_before_fork_and_exec\");\n    std::io::stdout().flush().unwrap();\n    line.clear();\n    std::io::stdin().read_line(&mut line).unwrap();\n    println!(\"LIVENESS: unexpectedly_resumed\");\n    panic!(\"probe survived with its original parent gone\");\n}\n",
+    "4b395cc9faa7f10dbd5d4efef8036b0170164ec0": "//! Bind the inner reaper to the original bubblewrap monitor across exec.\n\nuse std::fs::File;\nuse std::io;\nuse std::io::Read;\nuse std::mem::MaybeUninit;\nuse std::os::fd::AsRawFd;\nuse std::os::fd::FromRawFd;\nuse std::os::fd::RawFd;\nuse std::os::unix::fs::MetadataExt;\n\n// Linux /proc/PID/stat field 9 exposes task flags, including PF_EXITING.\n// It is set before children are reparented, unlike the later zombie state.\nconst PF_EXITING: u64 = 0x0000_0004;\nconst MAX_STAT_BYTES: u64 = 4096;\n\npub(crate) struct ParentLiveness(File);\n\nimpl ParentLiveness {\n    /// Capture only this process, after the cleanup supervisor's optional fork.\n    /// Do not read this file before the inner reaper arms its death signal:\n    /// seq_file could otherwise retain a pre-exit record across exec.\n    pub(crate) fn capture_current_process() -> io::Result<Self> {\n        let file = File::open(\"/proc/self/stat\")?;\n        if file.as_raw_fd() > libc::STDERR_FILENO {\n            return Ok(Self(file));\n        }\n        // SAFETY: duplicate our owned, unread file above the standard FDs.\n        // Dropping file restores the originally closed standard descriptor.\n        let fd = unsafe { libc::fcntl(file.as_raw_fd(), libc::F_DUPFD_CLOEXEC, libc::STDERR_FILENO + 1) };\n        if fd < 0 {\n            return Err(io::Error::last_os_error());\n        }\n        // SAFETY: fcntl returned a new owned descriptor with CLOEXEC set.\n        Ok(Self(unsafe { File::from_raw_fd(fd) }))\n    }\n\n    pub(crate) fn inheritance_argument(&self) -> io::Result<String> {\n        let metadata = self.0.metadata()?;\n        let fd = self.0.as_raw_fd();\n        Ok(format!(\"{fd}:{}:{}\", metadata.dev(), metadata.ino()))\n    }\n\n    pub(crate) fn into_file(self) -> File {\n        self.0\n    }\n\n    /// Consume the descriptor created by the private SandboxReaper launch role.\n    /// The device/inode check rejects descriptor reuse during launcher setup;\n    /// it is not an authentication scheme for arbitrary caller-supplied FDs.\n    pub(crate) fn from_inherited(argument: &str) -> io::Result<Self> {\n        let invalid = || io::Error::new(io::ErrorKind::InvalidInput, \"invalid parent liveness descriptor\");\n        let mut fields = argument.split(':');\n        let fd: RawFd = fields.next().ok_or_else(invalid)?.parse().map_err(|_| invalid())?;\n        let device: u64 = fields.next().ok_or_else(invalid)?.parse().map_err(|_| invalid())?;\n        let inode: u64 = fields.next().ok_or_else(invalid)?.parse().map_err(|_| invalid())?;\n        if fields.next().is_some() || fd <= libc::STDERR_FILENO {\n            return Err(invalid());\n        }\n        // SAFETY: fcntl validates the inherited numeric descriptor before it\n        // is adopted; no Rust owner exists for this private handoff in inner.\n        let descriptor_flags = unsafe { libc::fcntl(fd, libc::F_GETFD) };\n        if descriptor_flags < 0 {\n            return Err(io::Error::last_os_error());\n        }\n        // SAFETY: this valid inherited FD is consumed exactly once. Standard\n        // descriptors are excluded above; the launcher retained its own copy.\n        let file = unsafe { File::from_raw_fd(fd) };\n        // SAFETY: the File owns fd, and all existing descriptor flags remain.\n        if unsafe { libc::fcntl(fd, libc::F_SETFD, descriptor_flags | libc::FD_CLOEXEC) } < 0 {\n            return Err(io::Error::last_os_error());\n        }\n        let metadata = file.metadata()?;\n        if (metadata.dev(), metadata.ino()) != (device, inode) {\n            return Err(io::Error::new(io::ErrorKind::InvalidData, \"parent liveness descriptor identity changed\"));\n        }\n        let mut filesystem = MaybeUninit::<libc::statfs>::uninit();\n        // SAFETY: fd is valid, and fstatfs initializes the output on success.\n        if unsafe { libc::fstatfs(fd, filesystem.as_mut_ptr()) } < 0 {\n            return Err(io::Error::last_os_error());\n        }\n        // SAFETY: fstatfs succeeded above.\n        let filesystem = unsafe { filesystem.assume_init() };\n        // SAFETY: fd is owned and valid. These operations do not read or\n        // populate the procfs seq_file.\n        let status_flags = unsafe { libc::fcntl(fd, libc::F_GETFL) };\n        if status_flags < 0 {\n            return Err(io::Error::last_os_error());\n        }\n        // SAFETY: querying the valid file's current offset changes no data.\n        let position = unsafe { libc::lseek(fd, 0, libc::SEEK_CUR) };\n        if position < 0 {\n            return Err(io::Error::last_os_error());\n        }\n        if !metadata.is_file()\n            || filesystem.f_type != libc::PROC_SUPER_MAGIC\n            || status_flags & (libc::O_PATH | libc::O_ACCMODE) != libc::O_RDONLY\n            || position != 0\n        {\n            return Err(io::Error::new(io::ErrorKind::InvalidInput, \"parent liveness descriptor must be an unread read-only procfs file\"));\n        }\n        Ok(Self(file))\n    }\n\n    /// Call after all reaper restrictions, before forking the user command.\n    /// The first read is tied to the original proc inode, including after PID\n    /// reuse. Checking PF_EXITING also covers reparent-before-EXIT_ZOMBIE.\n    /// Consuming self closes the descriptor on every return, before user fork.\n    pub(crate) fn arm_and_check(mut self) -> io::Result<()> {\n        // SAFETY: PR_SET_PDEATHSIG takes a signal number, no pointer arguments.\n        if unsafe {\n            libc::prctl(libc::PR_SET_PDEATHSIG, libc::SIGKILL as libc::c_ulong,\n                0 as libc::c_ulong, 0 as libc::c_ulong, 0 as libc::c_ulong)\n        } < 0 {\n            return Err(io::Error::last_os_error());\n        }\n        let mut record = Vec::new();\n        (&mut self.0).take(MAX_STAT_BYTES + 1).read_to_end(&mut record)?;\n        let malformed = || io::Error::new(io::ErrorKind::InvalidData, \"malformed original parent proc stat\");\n        if record.is_empty() || record.len() as u64 > MAX_STAT_BYTES {\n            return Err(malformed());\n        }\n        // comm can contain spaces, parentheses and non-UTF8 bytes. The final\n        // ')' precedes the fixed numeric fields, so never split comm on spaces.\n        let closing = record.iter().rposition(|byte| *byte == b')').ok_or_else(malformed)?;\n        let opening = record.iter().position(|byte| *byte == b'(').ok_or_else(malformed)?;\n        if opening >= closing {\n            return Err(malformed());\n        }\n        let pid = std::str::from_utf8(&record[..opening]).map_err(|_| malformed())?\n            .trim().parse::<u64>().map_err(|_| malformed())?;\n        if pid == 0 || record.get(closing + 1) != Some(&b' ') {\n            return Err(malformed());\n        }\n        let mut fields = record[closing + 1..].split(u8::is_ascii_whitespace)\n            .filter(|field| !field.is_empty());\n        let state = fields.next().ok_or_else(malformed)?;\n        let flags = std::str::from_utf8(fields.nth(5).ok_or_else(malformed)?)\n            .map_err(|_| malformed())?.parse::<u64>().map_err(|_| malformed())?;\n        match state {\n            b\"R\" | b\"S\" | b\"D\" | b\"T\" | b\"t\" | b\"W\" | b\"K\" | b\"P\" | b\"I\" | b\"Z\" | b\"X\" | b\"x\" => {}\n            _ => return Err(malformed()),\n        }\n        Ok(())\n    }\n}\n\n#[cfg(test)]\n#[path = \"parent_lifecycle_tests.rs\"]\nmod tests;\n",
+    "ffc5774508ab4a069a6bcb70f27950300b86fbfe": "//! Bind the inner reaper to the original bubblewrap monitor across exec.\n\nuse std::fs::File;\nuse std::io;\nuse std::io::Read;\nuse std::mem::MaybeUninit;\nuse std::os::fd::AsRawFd;\nuse std::os::fd::FromRawFd;\nuse std::os::fd::RawFd;\nuse std::os::unix::fs::MetadataExt;\n\n// Linux /proc/PID/stat field 9 exposes task flags, including PF_EXITING.\n// It is set before children are reparented, unlike the later zombie state.\nconst PF_EXITING: u64 = 0x0000_0004;\nconst MAX_STAT_BYTES: u64 = 4096;\n\npub(crate) struct ParentLiveness(File);\n\nimpl ParentLiveness {\n    /// Capture only this process, after the cleanup supervisor's optional fork.\n    /// Do not read this file before the inner reaper arms its death signal:\n    /// seq_file could otherwise retain a pre-exit record across exec.\n    pub(crate) fn capture_current_process() -> io::Result<Self> {\n        let file = File::open(\"/proc/self/stat\")?;\n        if file.as_raw_fd() > libc::STDERR_FILENO {\n            return Ok(Self(file));\n        }\n        // SAFETY: duplicate our owned, unread file above the standard FDs.\n        // Dropping file restores the originally closed standard descriptor.\n        let fd = unsafe { libc::fcntl(file.as_raw_fd(), libc::F_DUPFD_CLOEXEC, libc::STDERR_FILENO + 1) };\n        if fd < 0 {\n            return Err(io::Error::last_os_error());\n        }\n        // SAFETY: fcntl returned a new owned descriptor with CLOEXEC set.\n        Ok(Self(unsafe { File::from_raw_fd(fd) }))\n    }\n\n    pub(crate) fn inheritance_argument(&self) -> io::Result<String> {\n        let metadata = self.0.metadata()?;\n        let fd = self.0.as_raw_fd();\n        Ok(format!(\"{fd}:{}:{}\", metadata.dev(), metadata.ino()))\n    }\n\n    pub(crate) fn into_file(self) -> File {\n        self.0\n    }\n\n    /// Consume the descriptor created by the private SandboxReaper launch role.\n    /// The device/inode check rejects descriptor reuse during launcher setup;\n    /// it is not an authentication scheme for arbitrary caller-supplied FDs.\n    pub(crate) fn from_inherited(argument: &str) -> io::Result<Self> {\n        let invalid = || io::Error::new(io::ErrorKind::InvalidInput, \"invalid parent liveness descriptor\");\n        let mut fields = argument.split(':');\n        let fd: RawFd = fields.next().ok_or_else(invalid)?.parse().map_err(|_| invalid())?;\n        let device: u64 = fields.next().ok_or_else(invalid)?.parse().map_err(|_| invalid())?;\n        let inode: u64 = fields.next().ok_or_else(invalid)?.parse().map_err(|_| invalid())?;\n        if fields.next().is_some() || fd <= libc::STDERR_FILENO {\n            return Err(invalid());\n        }\n        // SAFETY: fcntl validates the inherited numeric descriptor before it\n        // is adopted; no Rust owner exists for this private handoff in inner.\n        let descriptor_flags = unsafe { libc::fcntl(fd, libc::F_GETFD) };\n        if descriptor_flags < 0 {\n            return Err(io::Error::last_os_error());\n        }\n        // SAFETY: this valid inherited FD is consumed exactly once. Standard\n        // descriptors are excluded above; the launcher retained its own copy.\n        let file = unsafe { File::from_raw_fd(fd) };\n        // SAFETY: the File owns fd, and all existing descriptor flags remain.\n        if unsafe { libc::fcntl(fd, libc::F_SETFD, descriptor_flags | libc::FD_CLOEXEC) } < 0 {\n            return Err(io::Error::last_os_error());\n        }\n        let metadata = file.metadata()?;\n        if (metadata.dev(), metadata.ino()) != (device, inode) {\n            return Err(io::Error::new(io::ErrorKind::InvalidData, \"parent liveness descriptor identity changed\"));\n        }\n        let mut filesystem = MaybeUninit::<libc::statfs>::uninit();\n        // SAFETY: fd is valid, and fstatfs initializes the output on success.\n        if unsafe { libc::fstatfs(fd, filesystem.as_mut_ptr()) } < 0 {\n            return Err(io::Error::last_os_error());\n        }\n        // SAFETY: fstatfs succeeded above.\n        let filesystem = unsafe { filesystem.assume_init() };\n        // SAFETY: fd is owned and valid. These operations do not read or\n        // populate the procfs seq_file.\n        let status_flags = unsafe { libc::fcntl(fd, libc::F_GETFL) };\n        if status_flags < 0 {\n            return Err(io::Error::last_os_error());\n        }\n        // SAFETY: querying the valid file's current offset changes no data.\n        let position = unsafe { libc::lseek(fd, 0, libc::SEEK_CUR) };\n        if position < 0 {\n            return Err(io::Error::last_os_error());\n        }\n        if !metadata.is_file()\n            || filesystem.f_type != libc::PROC_SUPER_MAGIC\n            || status_flags & (libc::O_PATH | libc::O_ACCMODE) != libc::O_RDONLY\n            || position != 0\n        {\n            return Err(io::Error::new(io::ErrorKind::InvalidInput, \"parent liveness descriptor must be an unread read-only procfs file\"));\n        }\n        Ok(Self(file))\n    }\n\n    /// Call after all reaper restrictions, before forking the user command.\n    /// The first read is tied to the original proc inode, including after PID\n    /// reuse. Checking PF_EXITING also covers reparent-before-EXIT_ZOMBIE.\n    /// Consuming self closes the descriptor on every return, before user fork.\n    pub(crate) fn arm_and_check(mut self) -> io::Result<()> {\n        // SAFETY: PR_SET_PDEATHSIG takes a signal number, no pointer arguments.\n        if unsafe {\n            libc::prctl(libc::PR_SET_PDEATHSIG, libc::SIGKILL as libc::c_ulong,\n                0 as libc::c_ulong, 0 as libc::c_ulong, 0 as libc::c_ulong)\n        } < 0 {\n            return Err(io::Error::last_os_error());\n        }\n        let mut record = Vec::new();\n        (&mut self.0).take(MAX_STAT_BYTES + 1).read_to_end(&mut record)?;\n        let malformed = || io::Error::new(io::ErrorKind::InvalidData, \"malformed original parent proc stat\");\n        if record.is_empty() || record.len() as u64 > MAX_STAT_BYTES {\n            return Err(malformed());\n        }\n        // comm can contain spaces, parentheses and non-UTF8 bytes. The final\n        // ')' precedes the fixed numeric fields, so never split comm on spaces.\n        let closing = record.iter().rposition(|byte| *byte == b')').ok_or_else(malformed)?;\n        let opening = record.iter().position(|byte| *byte == b'(').ok_or_else(malformed)?;\n        if opening >= closing {\n            return Err(malformed());\n        }\n        let pid = std::str::from_utf8(&record[..opening]).map_err(|_| malformed())?\n            .trim().parse::<u64>().map_err(|_| malformed())?;\n        if pid == 0 || record.get(closing + 1) != Some(&b' ') {\n            return Err(malformed());\n        }\n        let mut fields = record[closing + 1..].split(u8::is_ascii_whitespace)\n            .filter(|field| !field.is_empty());\n        let state = fields.next().ok_or_else(malformed)?;\n        let flags = std::str::from_utf8(fields.nth(5).ok_or_else(malformed)?)\n            .map_err(|_| malformed())?.parse::<u64>().map_err(|_| malformed())?;\n        match state {\n            b\"R\" | b\"S\" | b\"D\" | b\"T\" | b\"t\" | b\"W\" | b\"K\" | b\"P\" | b\"I\" | b\"Z\" | b\"X\" | b\"x\" => {}\n            _ => return Err(malformed()),\n        }\n        if flags & PF_EXITING != 0 || matches!(state, b\"Z\" | b\"X\" | b\"x\") {\n            return Err(io::Error::new(io::ErrorKind::BrokenPipe, \"original sandbox launcher is exiting or exited\"));\n        }\n        Ok(())\n    }\n}\n\n#[cfg(test)]\n#[path = \"parent_lifecycle_tests.rs\"]\nmod tests;\n",
+    "eab9c5023d6f688bfbda563348490e9bb39a6aee": "//! Bind the inner reaper to the original bubblewrap monitor across exec.\n\nuse std::fs::File;\nuse std::io;\nuse std::io::Read;\nuse std::mem::MaybeUninit;\nuse std::os::fd::AsRawFd;\nuse std::os::fd::FromRawFd;\nuse std::os::fd::RawFd;\nuse std::os::unix::fs::MetadataExt;\n\n// Linux /proc/PID/stat field 9 exposes task flags, including PF_EXITING.\n// It is set before children are reparented, unlike the later zombie state.\nconst PF_EXITING: u64 = 0x0000_0004;\nconst MAX_STAT_BYTES: u64 = 4096;\n\npub(crate) struct ParentLiveness(File);\n\nimpl ParentLiveness {\n    /// Capture only this process, after the cleanup supervisor's optional fork.\n    /// Do not read this file before the inner reaper arms its death signal:\n    /// seq_file could otherwise retain a pre-exit record across exec.\n    pub(crate) fn capture_current_process() -> io::Result<Self> {\n        let file = File::open(\"/proc/self/stat\")?;\n        if file.as_raw_fd() > libc::STDERR_FILENO {\n            return Ok(Self(file));\n        }\n        // SAFETY: duplicate our owned, unread file above the standard FDs.\n        // Dropping file restores the originally closed standard descriptor.\n        let fd = unsafe { libc::fcntl(file.as_raw_fd(), libc::F_DUPFD_CLOEXEC, libc::STDERR_FILENO + 1) };\n        if fd < 0 {\n            return Err(io::Error::last_os_error());\n        }\n        // SAFETY: fcntl returned a new owned descriptor with CLOEXEC set.\n        Ok(Self(unsafe { File::from_raw_fd(fd) }))\n    }\n\n    pub(crate) fn inheritance_argument(&self) -> io::Result<String> {\n        let metadata = self.0.metadata()?;\n        let fd = self.0.as_raw_fd();\n        Ok(format!(\"{fd}:{}:{}\", metadata.dev(), metadata.ino()))\n    }\n\n    pub(crate) fn into_file(self) -> File {\n        self.0\n    }\n\n    /// Consume the descriptor created by the private SandboxReaper launch role.\n    /// The device/inode check rejects descriptor reuse during launcher setup;\n    /// it is not an authentication scheme for arbitrary caller-supplied FDs.\n    pub(crate) fn from_inherited(argument: &str) -> io::Result<Self> {\n        let invalid = || io::Error::new(io::ErrorKind::InvalidInput, \"invalid parent liveness descriptor\");\n        let mut fields = argument.split(':');\n        let fd: RawFd = fields.next().ok_or_else(invalid)?.parse().map_err(|_| invalid())?;\n        let device: u64 = fields.next().ok_or_else(invalid)?.parse().map_err(|_| invalid())?;\n        let inode: u64 = fields.next().ok_or_else(invalid)?.parse().map_err(|_| invalid())?;\n        if fields.next().is_some() || fd <= libc::STDERR_FILENO {\n            return Err(invalid());\n        }\n        // SAFETY: fcntl validates the inherited numeric descriptor before it\n        // is adopted; no Rust owner exists for this private handoff in inner.\n        let descriptor_flags = unsafe { libc::fcntl(fd, libc::F_GETFD) };\n        if descriptor_flags < 0 {\n            return Err(io::Error::last_os_error());\n        }\n        // SAFETY: this valid inherited FD is consumed exactly once. Standard\n        // descriptors are excluded above; the launcher retained its own copy.\n        let file = unsafe { File::from_raw_fd(fd) };\n        // SAFETY: the File owns fd, and all existing descriptor flags remain.\n        if unsafe { libc::fcntl(fd, libc::F_SETFD, descriptor_flags | libc::FD_CLOEXEC) } < 0 {\n            return Err(io::Error::last_os_error());\n        }\n        let metadata = file.metadata()?;\n        if (metadata.dev(), metadata.ino()) != (device, inode) {\n            return Err(io::Error::new(io::ErrorKind::InvalidData, \"parent liveness descriptor identity changed\"));\n        }\n        let mut filesystem = MaybeUninit::<libc::statfs>::uninit();\n        // SAFETY: fd is valid, and fstatfs initializes the output on success.\n        if unsafe { libc::fstatfs(fd, filesystem.as_mut_ptr()) } < 0 {\n            return Err(io::Error::last_os_error());\n        }\n        // SAFETY: fstatfs succeeded above.\n        let filesystem = unsafe { filesystem.assume_init() };\n        // SAFETY: fd is owned and valid. These operations do not read or\n        // populate the procfs seq_file.\n        let status_flags = unsafe { libc::fcntl(fd, libc::F_GETFL) };\n        if status_flags < 0 {\n            return Err(io::Error::last_os_error());\n        }\n        // SAFETY: querying the valid file's current offset changes no data.\n        let position = unsafe { libc::lseek(fd, 0, libc::SEEK_CUR) };\n        if position < 0 {\n            return Err(io::Error::last_os_error());\n        }\n        if !metadata.is_file()\n            || filesystem.f_type != libc::PROC_SUPER_MAGIC\n            || status_flags & (libc::O_PATH | libc::O_ACCMODE) != libc::O_RDONLY\n            || position != 0\n        {\n            return Err(io::Error::new(io::ErrorKind::InvalidInput, \"parent liveness descriptor must be an unread read-only procfs file\"));\n        }\n        Ok(Self(file))\n    }\n\n    /// Call after all reaper restrictions, before forking the user command.\n    /// The first read is tied to the original proc inode, including after PID\n    /// reuse. Checking PF_EXITING also covers reparent-before-EXIT_ZOMBIE.\n    /// Consuming self closes the descriptor on every return, before user fork.\n    pub(crate) fn arm_and_check(mut self) -> io::Result<()> {\n        let mut record = Vec::new();\n        (&mut self.0).take(MAX_STAT_BYTES + 1).read_to_end(&mut record)?;\n        let malformed = || io::Error::new(io::ErrorKind::InvalidData, \"malformed original parent proc stat\");\n        if record.is_empty() || record.len() as u64 > MAX_STAT_BYTES {\n            return Err(malformed());\n        }\n        // comm can contain spaces, parentheses and non-UTF8 bytes. The final\n        // ')' precedes the fixed numeric fields, so never split comm on spaces.\n        let closing = record.iter().rposition(|byte| *byte == b')').ok_or_else(malformed)?;\n        let opening = record.iter().position(|byte| *byte == b'(').ok_or_else(malformed)?;\n        if opening >= closing {\n            return Err(malformed());\n        }\n        let pid = std::str::from_utf8(&record[..opening]).map_err(|_| malformed())?\n            .trim().parse::<u64>().map_err(|_| malformed())?;\n        if pid == 0 || record.get(closing + 1) != Some(&b' ') {\n            return Err(malformed());\n        }\n        let mut fields = record[closing + 1..].split(u8::is_ascii_whitespace)\n            .filter(|field| !field.is_empty());\n        let state = fields.next().ok_or_else(malformed)?;\n        let flags = std::str::from_utf8(fields.nth(5).ok_or_else(malformed)?)\n            .map_err(|_| malformed())?.parse::<u64>().map_err(|_| malformed())?;\n        match state {\n            b\"R\" | b\"S\" | b\"D\" | b\"T\" | b\"t\" | b\"W\" | b\"K\" | b\"P\" | b\"I\" | b\"Z\" | b\"X\" | b\"x\" => {}\n            _ => return Err(malformed()),\n        }\n        if flags & PF_EXITING != 0 || matches!(state, b\"Z\" | b\"X\" | b\"x\") {\n            return Err(io::Error::new(io::ErrorKind::BrokenPipe, \"original sandbox launcher is exiting or exited\"));\n        }\n        Ok(())\n    }\n}\n\n#[cfg(test)]\n#[path = \"parent_lifecycle_tests.rs\"]\nmod tests;\n",
+    "63df209d8ebda1776b5526123ff08b3382982804": "//! Bind the inner reaper to the original bubblewrap monitor across exec.\n\nuse std::fs::File;\nuse std::io;\nuse std::io::Read;\nuse std::mem::MaybeUninit;\nuse std::os::fd::AsRawFd;\nuse std::os::fd::FromRawFd;\nuse std::os::fd::RawFd;\nuse std::os::unix::fs::MetadataExt;\n\n// Linux /proc/PID/stat field 9 exposes task flags, including PF_EXITING.\n// It is set before children are reparented, unlike the later zombie state.\nconst PF_EXITING: u64 = 0x0000_0004;\nconst MAX_STAT_BYTES: u64 = 4096;\n\npub(crate) struct ParentLiveness(File);\n\nimpl ParentLiveness {\n    /// Capture only this process, after the cleanup supervisor's optional fork.\n    /// Do not read this file before the inner reaper arms its death signal:\n    /// seq_file could otherwise retain a pre-exit record across exec.\n    pub(crate) fn capture_current_process() -> io::Result<Self> {\n        let file = File::open(\"/proc/self/stat\")?;\n        if file.as_raw_fd() > libc::STDERR_FILENO {\n            return Ok(Self(file));\n        }\n        // SAFETY: duplicate our owned, unread file above the standard FDs.\n        // Dropping file restores the originally closed standard descriptor.\n        let fd = unsafe { libc::fcntl(file.as_raw_fd(), libc::F_DUPFD_CLOEXEC, libc::STDERR_FILENO + 1) };\n        if fd < 0 {\n            return Err(io::Error::last_os_error());\n        }\n        // SAFETY: fcntl returned a new owned descriptor with CLOEXEC set.\n        Ok(Self(unsafe { File::from_raw_fd(fd) }))\n    }\n\n    pub(crate) fn inheritance_argument(&self) -> io::Result<String> {\n        let metadata = self.0.metadata()?;\n        let fd = self.0.as_raw_fd();\n        Ok(format!(\"{fd}:{}:{}\", metadata.dev(), metadata.ino()))\n    }\n\n    pub(crate) fn into_file(self) -> File {\n        self.0\n    }\n\n    /// Consume the descriptor created by the private SandboxReaper launch role.\n    /// The device/inode check rejects descriptor reuse during launcher setup;\n    /// it is not an authentication scheme for arbitrary caller-supplied FDs.\n    pub(crate) fn from_inherited(argument: &str) -> io::Result<Self> {\n        let invalid = || io::Error::new(io::ErrorKind::InvalidInput, \"invalid parent liveness descriptor\");\n        let mut fields = argument.split(':');\n        let fd: RawFd = fields.next().ok_or_else(invalid)?.parse().map_err(|_| invalid())?;\n        let device: u64 = fields.next().ok_or_else(invalid)?.parse().map_err(|_| invalid())?;\n        let inode: u64 = fields.next().ok_or_else(invalid)?.parse().map_err(|_| invalid())?;\n        if fields.next().is_some() || fd <= libc::STDERR_FILENO {\n            return Err(invalid());\n        }\n        // SAFETY: fcntl validates the inherited numeric descriptor before it\n        // is adopted; no Rust owner exists for this private handoff in inner.\n        let descriptor_flags = unsafe { libc::fcntl(fd, libc::F_GETFD) };\n        if descriptor_flags < 0 {\n            return Err(io::Error::last_os_error());\n        }\n        // SAFETY: this valid inherited FD is consumed exactly once. Standard\n        // descriptors are excluded above; the launcher retained its own copy.\n        let file = unsafe { File::from_raw_fd(fd) };\n        // SAFETY: the File owns fd, and all existing descriptor flags remain.\n        if unsafe { libc::fcntl(fd, libc::F_SETFD, descriptor_flags | libc::FD_CLOEXEC) } < 0 {\n            return Err(io::Error::last_os_error());\n        }\n        let metadata = file.metadata()?;\n        if (metadata.dev(), metadata.ino()) != (device, inode) {\n            return Err(io::Error::new(io::ErrorKind::InvalidData, \"parent liveness descriptor identity changed\"));\n        }\n        let mut filesystem = MaybeUninit::<libc::statfs>::uninit();\n        // SAFETY: fd is valid, and fstatfs initializes the output on success.\n        if unsafe { libc::fstatfs(fd, filesystem.as_mut_ptr()) } < 0 {\n            return Err(io::Error::last_os_error());\n        }\n        // SAFETY: fstatfs succeeded above.\n        let filesystem = unsafe { filesystem.assume_init() };\n        // SAFETY: fd is owned and valid. These operations do not read or\n        // populate the procfs seq_file.\n        let status_flags = unsafe { libc::fcntl(fd, libc::F_GETFL) };\n        if status_flags < 0 {\n            return Err(io::Error::last_os_error());\n        }\n        // SAFETY: querying the valid file's current offset changes no data.\n        let position = unsafe { libc::lseek(fd, 0, libc::SEEK_CUR) };\n        if position < 0 {\n            return Err(io::Error::last_os_error());\n        }\n        if !metadata.is_file()\n            || filesystem.f_type != libc::PROC_SUPER_MAGIC\n            || status_flags & (libc::O_PATH | libc::O_ACCMODE) != libc::O_RDONLY\n            || position != 0\n        {\n            return Err(io::Error::new(io::ErrorKind::InvalidInput, \"parent liveness descriptor must be an unread read-only procfs file\"));\n        }\n        Ok(Self(file))\n    }\n\n    /// Call after all reaper restrictions, before forking the user command.\n    /// The first read is tied to the original proc inode, including after PID\n    /// reuse. Checking PF_EXITING also covers reparent-before-EXIT_ZOMBIE.\n    /// Consuming self closes the descriptor on every return, before user fork.\n    pub(crate) fn arm_and_check(mut self) -> io::Result<()> {\n        // SAFETY: PR_SET_PDEATHSIG takes a signal number, no pointer arguments.\n        if unsafe {\n            libc::prctl(libc::PR_SET_PDEATHSIG, libc::SIGKILL as libc::c_ulong,\n                0 as libc::c_ulong, 0 as libc::c_ulong, 0 as libc::c_ulong)\n        } < 0 {\n            return Err(io::Error::last_os_error());\n        }\n        let mut record = Vec::new();\n        (&mut self.0).take(MAX_STAT_BYTES + 1).read_to_end(&mut record)?;\n        let malformed = || io::Error::new(io::ErrorKind::InvalidData, \"malformed original parent proc stat\");\n        if record.is_empty() || record.len() as u64 > MAX_STAT_BYTES {\n            return Err(malformed());\n        }\n        // comm can contain spaces, parentheses and non-UTF8 bytes. The final\n        // ')' precedes the fixed numeric fields, so never split comm on spaces.\n        let closing = record.iter().rposition(|byte| *byte == b')').ok_or_else(malformed)?;\n        let opening = record.iter().position(|byte| *byte == b'(').ok_or_else(malformed)?;\n        if opening >= closing {\n            return Err(malformed());\n        }\n        let pid = std::str::from_utf8(&record[..opening]).map_err(|_| malformed())?\n            .trim().parse::<u64>().map_err(|_| malformed())?;\n        if pid == 0 || record.get(closing + 1) != Some(&b' ') {\n            return Err(malformed());\n        }\n        let mut fields = record[closing + 1..].split(u8::is_ascii_whitespace)\n            .filter(|field| !field.is_empty());\n        let state = fields.next().ok_or_else(malformed)?;\n        let flags = std::str::from_utf8(fields.nth(5).ok_or_else(malformed)?)\n            .map_err(|_| malformed())?.parse::<u64>().map_err(|_| malformed())?;\n        match state {\n            b\"R\" | b\"S\" | b\"D\" | b\"T\" | b\"t\" | b\"W\" | b\"K\" | b\"P\" | b\"I\" | b\"Z\" | b\"X\" | b\"x\" => {}\n            _ => return Err(malformed()),\n        }\n        if flags & PF_EXITING != 0 || matches!(state, b\"Z\" | b\"X\" | b\"x\") {\n            return Err(io::Error::new(io::ErrorKind::BrokenPipe, \"original sandbox launcher is exiting or exited\"));\n        }\n        std::mem::forget(self);\n        Ok(())\n    }\n}\n\n#[cfg(test)]\n#[path = \"parent_lifecycle_tests.rs\"]\nmod tests;\n"
+  }
+}

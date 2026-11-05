@@ -1,0 +1,401 @@
+{
+  "schema": "hepta.fourth.bash-no-rc-and-four-fixtures-root-review.v1",
+  "observed_at_utc": "2026-11-04 23:51:35 UTC",
+  "status": "VALID_NEGATIVE_AND_12_PASS_1_FAIL_NOT_GLOBAL_PASS",
+  "source_inputs": [
+    {
+      "blob": "93d21dd2555e4e43170b9ee9e29239ca3e6a9183",
+      "bytes": 105832,
+      "sha256": "1e20f77fd0d50e911201e6352fe809bd557c8a86d51a97104d3034cecee5b965"
+    },
+    {
+      "blob": "f488fe2819ce0e63fad7dbae5f8386b9e4aac99f",
+      "bytes": 167654,
+      "sha256": "2630f7d60fb28a5c0bafef984501e27b38f6cdf3e9dabbda85571f984fedab9b"
+    }
+  ],
+  "root_verified_files": [
+    {
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/norc-four-fixtures-c270-da60-20261104-2340/readonly-key-counterfactual.log",
+      "bytes": 23323,
+      "sha256": "6fed09e48bfd9809189523de02105d2950ee18cd380644118714641737b887d5",
+      "actual": {
+        "bytes": 23323,
+        "sha256": "6fed09e48bfd9809189523de02105d2950ee18cd380644118714641737b887d5"
+      },
+      "ok": true
+    },
+    {
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/norc-four-fixtures-c270-da60-20261104-2340/readonly-key-counterfactual.junit.xml",
+      "bytes": 3975,
+      "sha256": "9f968adf5ababb4e79127e7dfc83cc8778aaf704816e3a84c69f24bdd7d8e973",
+      "actual": {
+        "bytes": 3975,
+        "sha256": "9f968adf5ababb4e79127e7dfc83cc8778aaf704816e3a84c69f24bdd7d8e973"
+      },
+      "ok": true
+    },
+    {
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/norc-four-fixtures-c270-da60-20261104-2340/readonly-key-counterfactual-review.json",
+      "bytes": 15022,
+      "sha256": "b019c5570f55cc72efdc5e4dd0530ee065ca4ca630fa7f69e4833c9d242be45f",
+      "actual": {
+        "bytes": 15022,
+        "sha256": "b019c5570f55cc72efdc5e4dd0530ee065ca4ca630fa7f69e4833c9d242be45f"
+      },
+      "ok": true
+    },
+    {
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/norc-four-fixtures-c270-da60-20261104-2340/counterfactual-causality.json",
+      "bytes": 399,
+      "sha256": "b5fad8b6c6fb208a0bf6f721e2c379edb3be925d32c9a09ff044250c9587a206",
+      "actual": {
+        "bytes": 399,
+        "sha256": "b5fad8b6c6fb208a0bf6f721e2c379edb3be925d32c9a09ff044250c9587a206"
+      },
+      "ok": true
+    },
+    {
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/norc-four-fixtures-c270-da60-20261104-2340/terminal.json",
+      "bytes": 30450,
+      "sha256": "92b92f7ae250772e2661053ab79175a9fc313b13ce453271c4d16225d7e3bf35",
+      "actual": {
+        "bytes": 30450,
+        "sha256": "92b92f7ae250772e2661053ab79175a9fc313b13ce453271c4d16225d7e3bf35"
+      },
+      "ok": true
+    },
+    {
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/norc-four-fixtures-c270-da60-20261104-2340/source-map.json",
+      "bytes": 9777,
+      "sha256": "43cfa1dc4582f08724c8a8421a36dc86bbf820e6307a6f24e5b69982df0176a6",
+      "actual": {
+        "bytes": 9777,
+        "sha256": "43cfa1dc4582f08724c8a8421a36dc86bbf820e6307a6f24e5b69982df0176a6"
+      },
+      "ok": true
+    },
+    {
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/norc-four-fixtures-c270-da60-20261104-2340/source-bound-helper-build-terminal.json",
+      "bytes": 13946,
+      "sha256": "d0e55ec5ae1ff13cd1129dc7fdad874690022a818b998c43d5ab84c29003a040",
+      "actual": {
+        "bytes": 13946,
+        "sha256": "d0e55ec5ae1ff13cd1129dc7fdad874690022a818b998c43d5ab84c29003a040"
+      },
+      "ok": true
+    },
+    {
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/norc-positive-continuation-da60-20261104-2350/original-four-fixture-regression-review.json",
+      "bytes": 17512,
+      "sha256": "3b1da4dcee5e25909982a2bc55918c4ebd792dfbba149b9dc43bbb8e5b58a064",
+      "ok": true
+    },
+    {
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/norc-positive-continuation-da60-20261104-2350/original-four-fixture-regression.junit.xml",
+      "bytes": 4953,
+      "sha256": "559a2ccb22942e8e41e6f5a38733cab65518919765798eb040dcf8c9372330a7",
+      "ok": true
+    },
+    {
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/norc-positive-continuation-da60-20261104-2350/checkpoint-revalidation.json",
+      "bytes": 4491,
+      "sha256": "f92cbf50f64363df799f4e99732772d57b41b57c8690e5347ed5b066f7c191da",
+      "ok": true
+    },
+    {
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/norc-positive-continuation-da60-20261104-2350/terminal.json",
+      "bytes": 25193,
+      "sha256": "f9a30218c0d444e02543b565fa893bfd7b3ea64a512ab0753d5b6479630ae5f0",
+      "ok": true
+    },
+    {
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/norc-positive-continuation-da60-20261104-2350/original-four-fixture-regression.log",
+      "bytes": 27060,
+      "sha256": "2a8ed980393a50aae15590143fb4c697fa85a864991725c3b6d9e3484e419915",
+      "ok": true
+    },
+    {
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/norc-positive-continuation-da60-20261104-2350/source-map.json",
+      "bytes": 9777,
+      "sha256": "f233be5206099b0f8842ca98023c747409ad79319b0ab951741ef88c32f3f5b8",
+      "ok": true
+    },
+    {
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/norc-positive-continuation-da60-20261104-2350/restore-positive-apply.json",
+      "bytes": 472,
+      "sha256": "785c31ac12fae4ae9df4cff8528a2e9be248e5a4ebddd9cbc857d6ca3f34028c",
+      "ok": true
+    },
+    {
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/norc-positive-continuation-da60-20261104-2350/original-four-fixture-regression-command.json",
+      "bytes": 1317,
+      "sha256": "0ad7d22160aaa11f0de37ca5bf55de2aa573424df845cd44a50e8914e0642620",
+      "ok": true
+    },
+    {
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/norc-positive-continuation-da60-20261104-2350/original-four-fixture-regression-status.json",
+      "bytes": 2069,
+      "sha256": "01eb27da950842f5db1c8a8e500c949b4a3be02ec0a26ab851a586c03b938e72",
+      "ok": true
+    },
+    {
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/norc-positive-continuation-da60-20261104-2350/original-four-fixture-regression-catalog-command.json",
+      "bytes": 1452,
+      "sha256": "181f9066a3b41fb63b8ab5a2a1adc493add17c8ab387635de62ddde2c97a283b",
+      "ok": true
+    },
+    {
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/norc-positive-continuation-da60-20261104-2350/original-four-fixture-regression-catalog-status.json",
+      "bytes": 9723,
+      "sha256": "e16e8f555e424b32717fe3188a1d7204b87ab044dca811c95d9b0340008f3de3",
+      "ok": true
+    },
+    {
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/norc-positive-continuation-da60-20261104-2350/original-four-fixture-regression-catalog.stderr",
+      "bytes": 20901,
+      "sha256": "b02e1515e548fd794fab796142629ae6c1b1dff1cf07fbc4acd7467353251e92",
+      "ok": true
+    },
+    {
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/norc-positive-continuation-da60-20261104-2350/native-host.json",
+      "bytes": 522,
+      "sha256": "416f451873e34aa6987fa69cfbf259acfd7980c504f5bd091e27c5f9c1067867",
+      "ok": true
+    },
+    {
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/norc-positive-continuation-da60-20261104-2350/runner.py",
+      "bytes": 19603,
+      "sha256": "191e413bc23dfecc4e7b57969f610abb4c96e46bf66889fd96e7e1f39c1ca694",
+      "ok": true
+    },
+    {
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/norc-positive-continuation-da60-20261104-2350/approved-guard.json",
+      "bytes": 8419,
+      "sha256": "dd18bcba2b2e284354aec49744b8d55f5f5f1845621e975e66179427bc194311",
+      "ok": true
+    }
+  ],
+  "negative": {
+    "source": "c270ab7afca8d91c6b579f133fdf04af79300c9b",
+    "exact_case": {
+      "name": "shell_snapshot_v2_filters_profile_exports_and_stays_in_memory::test_case_5_remote_sandbox",
+      "classname": "codex-exec-server::exec_process",
+      "seconds": "0.338",
+      "result": "FAIL",
+      "failure": "thread 'shell_snapshot_v2_filters_profile_exports_and_stays_in_memory::test_case_5_remote_sandbox' (3874119) panicked at exec-server/tests/exec_process.rs:267:9:\nassertion failed: `(left == right)`\n\nDiff < left / right > :\n (\n<    \"||missing|missing|/tmp/.tmpikJXo6/runtime-bin:/tmp/codex-exec-server-testsvEV7N5/tmp/arg0/codex-arg0vRKXnY:/tmp/codex-exec-server-teststtICDh/tmp/arg0/codex-arg071DYwt:/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/tools/uv-venv/bin:/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/tools/bin:/home/qian-qi/.cargo/bin:/home/qian-qi/.local/bin:/home/qian-qi/.local/bin:/home/qian-qi/.cargo/bin:/home/qian-qi/.local/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/snap/bin:/snap/bin|missing|missing\",\n<    \"Failed to create stream fd: Operation not permitted\\nFailed to create stream fd: Operation not permitted\\nFailed to create stream fd: Operation not permitted\\n/bin/bash: line 1: profile_helper: command not found\\n\",\n>    \"helper|profile|missing|missing|/tmp/.tmpikJXo6/runtime-bin:/tmp/.tmpikJXo6/profile-bin:/usr/bin:/bin|missing|missing\",\n>    \"\",\n     Some(\n         0,\n     ),\n     true,\n )\n\n\nnote: run with `RUST_BACKTRACE=1` environment variable to display a backtrace"
+    },
+    "just_exit": 100,
+    "controller": {
+      "at_unix_ms": 1793835656456,
+      "audit_recorded": true,
+      "automatic_retry": false,
+      "cancelled": false,
+      "exit_code": 1,
+      "job_id": "1a1a8eda51b-fc05-300e",
+      "launch_nonce": "daf26627014e01f907d397c7c0d0a49a",
+      "log_bytes": {
+        "stderr": {
+          "seen": 713,
+          "stored": 713
+        },
+        "stdout": {
+          "seen": 4945,
+          "stored": 4945
+        }
+      },
+      "log_errors": {
+        "stderr": null,
+        "stdout": null
+      },
+      "log_synced": {
+        "stderr": true,
+        "stdout": true
+      },
+      "log_truncated": {
+        "stderr": false,
+        "stdout": false
+      },
+      "output_complete": true,
+      "output_durable": true,
+      "state": "failed",
+      "terminal_publication_confirmed": true,
+      "terminal_publication_protocol": 1,
+      "timed_out": false
+    },
+    "packages": [
+      "codex-core",
+      "core_test_support",
+      "codex-cli",
+      "codex-utils-pty",
+      "codex-exec-server",
+      "codex-hepta-agentd",
+      "codex-apply-patch"
+    ],
+    "retries": 0,
+    "marker_position": 21559,
+    "original_second_tuple_failure_line": 267,
+    "qualified": true,
+    "reason": "Original first full tuple succeeded before actual profile poison marker; original second full tuple then failed only after second scope changed. No final exit42 assumption. Actual second status0 with missing profile_helper and original fallback host noise remains in raw.",
+    "subsequent_driver_failure": "Integer counter was overwritten with a causal dict; first restore guard raised TypeError before source write. Preserve controller failed1. Continuation revalidated previous complete raw/XML/source/helpers/index/locks and did not repeat negative."
+  },
+  "positive": {
+    "source": "da60f29b6789434c394edeff3c79f59191ad932c",
+    "original_just_exit": 100,
+    "controller": {
+      "at_unix_ms": 1793836056573,
+      "audit_recorded": true,
+      "automatic_retry": false,
+      "cancelled": false,
+      "exit_code": 1,
+      "job_id": "1a1a8f5d546-fc05-301b",
+      "launch_nonce": "4ed226c20ddd6179c36c3aeb501ebb21",
+      "log_bytes": {
+        "stderr": {
+          "seen": 0,
+          "stored": 0
+        },
+        "stdout": {
+          "seen": 4297,
+          "stored": 4297
+        }
+      },
+      "log_errors": {
+        "stderr": null,
+        "stdout": null
+      },
+      "log_synced": {
+        "stderr": true,
+        "stdout": true
+      },
+      "log_truncated": {
+        "stderr": false,
+        "stdout": false
+      },
+      "output_complete": true,
+      "output_durable": true,
+      "state": "failed",
+      "terminal_publication_confirmed": true,
+      "terminal_publication_protocol": 1,
+      "timed_out": false
+    },
+    "xml": {
+      "count": 13,
+      "unique": 13,
+      "reviewMatches": true,
+      "passed": 12,
+      "failed": 1,
+      "cases": [
+        {
+          "classname": "codex-exec-server::exec_process",
+          "name": "shell_snapshot_v2_filters_profile_exports_and_stays_in_memory::test_case_6_local_sh_pipe",
+          "seconds": "0.052",
+          "result": "PASS"
+        },
+        {
+          "classname": "codex-exec-server::exec_process",
+          "name": "shell_snapshot_v2_filters_profile_exports_and_stays_in_memory::test_case_2_local_tty",
+          "seconds": "0.056",
+          "result": "PASS"
+        },
+        {
+          "classname": "codex-exec-server::exec_process",
+          "name": "shell_snapshot_v2_filters_profile_exports_and_stays_in_memory::test_case_7_local_bash_env",
+          "seconds": "0.057",
+          "result": "PASS"
+        },
+        {
+          "classname": "codex-exec-server::exec_process",
+          "name": "shell_snapshot_v2_filters_profile_exports_and_stays_in_memory::test_case_1_local_pipe",
+          "seconds": "0.058",
+          "result": "PASS"
+        },
+        {
+          "classname": "codex-exec-server::exec_process",
+          "name": "shell_snapshot_v2_filters_profile_exports_and_stays_in_memory::test_case_3_remote_pipe",
+          "seconds": "0.198",
+          "result": "PASS"
+        },
+        {
+          "classname": "codex-exec-server::exec_process",
+          "name": "shell_snapshot_v2_filters_profile_exports_and_stays_in_memory::test_case_4_remote_tty",
+          "seconds": "0.199",
+          "result": "PASS"
+        },
+        {
+          "classname": "codex-exec-server::exec_process",
+          "name": "shell_snapshot_v2_filters_profile_exports_and_stays_in_memory::test_case_8_remote_bash_env",
+          "seconds": "0.200",
+          "result": "PASS"
+        },
+        {
+          "classname": "codex-exec-server::exec_process",
+          "name": "shell_snapshot_v2_filters_profile_exports_and_stays_in_memory::test_case_5_remote_sandbox",
+          "seconds": "0.267",
+          "result": "PASS"
+        },
+        {
+          "classname": "codex-core::all",
+          "name": "suite::skill_approval::shell_zsh_fork_skill_scripts_ignore_declared_permissions",
+          "seconds": "0.255",
+          "result": "PASS"
+        },
+        {
+          "classname": "codex-core::all",
+          "name": "suite::skill_approval::shell_zsh_fork_still_enforces_workspace_write_sandbox",
+          "seconds": "0.255",
+          "result": "PASS"
+        },
+        {
+          "classname": "codex-core::all",
+          "name": "suite::hooks::async_hook_finishing_while_idle_waits_for_the_next_turn",
+          "seconds": "0.322",
+          "result": "PASS"
+        },
+        {
+          "classname": "codex-core::all",
+          "name": "suite::hooks::async_hook_context_is_injected_into_the_active_turn",
+          "seconds": "0.331",
+          "result": "PASS"
+        },
+        {
+          "classname": "codex-core::all",
+          "name": "suite::unified_exec_zsh_fork_approvals::unified_exec_zsh_fork_parent_approval_preserves_denied_reads",
+          "seconds": "0.408",
+          "result": "FAIL"
+        }
+      ]
+    },
+    "original_counts": {
+      "PASS": 12,
+      "FAIL": 1
+    },
+    "selected_skips": 0,
+    "unselected_ignored": 19,
+    "unselected_nonignored": 5403,
+    "retries": 0,
+    "early_returns": [],
+    "binaries_before_after_equal": true,
+    "helpers_before_after_equal": true,
+    "source_unchanged": true,
+    "snapshot_readonly_poison_marker_in_pass": true,
+    "original_failure_retained": "Literal deny now reaches the real parent approval, but then unexpectedly asks approval for /usr/bin/cat; original no-second-approval assertion fails at893. No secret-read or final exit assertion was reached, so no permission-contract closure."
+  },
+  "helper_build": {
+    "source": "c270ab7afca8d91c6b579f133fdf04af79300c9b",
+    "summary_record_sha256": "d0e55ec5ae1ff13cd1129dc7fdad874690022a818b998c43d5ab84c29003a040",
+    "success": true,
+    "cargo_finished": true,
+    "normal_helpers": 5,
+    "fresh_true": 2,
+    "fresh_false": 3,
+    "raw_stdout_pending_independent_read": true
+  },
+  "limits": [
+    "Linux ROG dev-small/local original seven-package feature context only; no macOS/Windows/hosted final-head qualification.",
+    "No all-green owning7 or full-workspace result. No final fix/fmt here.",
+    "Bash source explanation remains conditional; no actual getpeername syscall trace.",
+    "No production permission/host-profile/seccomp weakening and no altered original test budgets."
+  ],
+  "next": "Diagnose the one literal-deny approval failure with original assertions preserved; then original owning7 and complete workspace gates."
+}

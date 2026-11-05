@@ -1,0 +1,59 @@
+--- a/windows-python-full-continuation-manifest-v4.json
++++ b/windows-python-full-continuation-manifest-v5.json
+@@ -1,5 +1,5 @@
+ {
+-  "schema": "hepta-windows-python-full-native-continuation-review-v4",
++  "schema": "hepta-windows-python-full-native-continuation-review-v5",
+   "status": "STATIC_PREPARATION_ONLY_NOT_LAUNCHED",
+   "runner": {
+     "bytes": 28735,
+@@ -177,10 +177,19 @@
+   "required_prior_app_outcome": {
+     "root_authorization_required": true,
+     "app_source": "c6fbcfa0d1ba3b1556f601dc4ca3a7734328b9f7",
+-    "app_counterfactuals": 3,
+-    "app_positive_cases": 8,
+-    "all_counterfactuals_valid_and_positive_pass_required": true,
+-    "actual_receipt_will_be_bound_by_execution_guard": true
++    "native_job": "1a1a9cf9300-fc05-3823",
++    "actual_valid_causal_negatives": 3,
++    "actual_junit_pass": 8,
++    "actual_behavior_pass": 7,
++    "actual_existing_capability_early_return": 1,
++    "original_just_exit_code": 0,
++    "original_outer_controller_exit_code": 1,
++    "evidence": "c4c34185b748ad25dccd7ce1d3d180869d9a7a64",
++    "capability_case": "suite::landlock::sandbox_inner_stage_rejects_retained_capabilities",
++    "actual_message": "skipping capability test: unprivileged user namespaces are unavailable",
++    "independent_A_WIP_may_continue": true,
++    "original_capability_behavior_gate": "OPEN; not waived, not counted as actual execution, and still requires the unchanged original platform case on a supporting environment.",
++    "superseded_payload_precondition": "Root addendum permits Windows source/Python/full WIP despite the original App wrapper failing closed on this existing capability early return. The immutable source payload and actual failed receipt remain unchanged; this is not a retroactive PASS."
+   },
+   "source_file_count": 9,
+   "source_cohorts": 4,
+@@ -244,7 +253,7 @@
+       "export_source"
+     ],
+     "common_function_source_blob": "6fd0636bdc81848f757893192021aede12129915",
+-    "full_case_early_return_parser": "Original reviewed full-workspace-f825-runner-final.py raw block association retained unchanged",
++    "full_case_early_return_parser": "Original reviewed f825 raw case-block association retained; only the exact observed prefix skipping capability test: is added to the derived message list. Original test, argv, budget and suite outcome calculation are unchanged.",
+     "new_work": "Only guarded Windows source application, original Python suite with separate catalog, and normal helper/full workspace composition. Root must bind the completed App prerequisite before launch."
+   },
+   "previous_unexecuted_runner": {
+@@ -275,5 +284,16 @@
+     "actual_message": "skipping capability test: unprivileged user namespaces are unavailable",
+     "change": "Only add the observed exact prefix to derived raw case-block association. Original test, command, selected roster, timeouts and suite outcome calculation are unchanged. This retains the capability behavior as unexecuted when the original case returns early.",
+     "source": "c6fbcfa0d1ba3b1556f601dc4ca3a7734328b9f7"
++  },
++  "state": "STATIC_ACCEPTED_FOR_INDEPENDENT_A_WIP_PENDING_EXACT_ROOT_EXECUTION_GUARD",
++  "historical_early_return_correction": {
++    "source": "f8251e1d14fa8524ab469281296cd4cf708f173c",
++    "root_checked_raw_lines": [
++      127610,
++      127619
++    ],
++    "known_remote_early_return_cases": 24,
++    "additional_known_capability_early_return_cases": 1,
++    "limit": "The previous24 remote notices are retained; they did not cover all omitted behaviors. Original raw and JUnit remain unchanged."
+   }
+ }

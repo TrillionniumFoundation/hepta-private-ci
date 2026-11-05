@@ -1,0 +1,127 @@
+{
+  "schema": "hepta.selected-target-collector-independent-review.v1",
+  "reviewer": "architecture_audit",
+  "verdict": "STATIC_PASS_WITH_EXPLICIT_EVIDENCE_LIMITS",
+  "execution_performed": false,
+  "patch": "08813bc3453b331056c2fb1a1b16f90aed88720e",
+  "author_manifest": "00869f84b429c93e8006a248faf57af80012d5e7",
+  "source_postimages": [
+    {
+      "path": ".github/scripts/collect_bazel_failed_test_logs.py",
+      "blob": "e7745ee2a1b8b230119027c0faf56e58462d97ed"
+    },
+    {
+      "path": ".github/scripts/run-bazel-ci.sh",
+      "blob": "204c0ac2481f70cc977f777eb2299b740f7ddc17"
+    },
+    {
+      "path": ".github/scripts/test_run_bazel_ci.py",
+      "blob": "045457bb4d7f5e54d4429a93615970a223bb48db"
+    }
+  ],
+  "independent_checks": {
+    "roundtrip": [
+      {
+        "path": ".github/scripts/collect_bazel_failed_test_logs.py",
+        "hunks": 6,
+        "exact_reconstructed": true
+      },
+      {
+        "path": ".github/scripts/run-bazel-ci.sh",
+        "hunks": 5,
+        "exact_reconstructed": true
+      },
+      {
+        "path": ".github/scripts/test_run_bazel_ci.py",
+        "hunks": 2,
+        "exact_reconstructed": true
+      }
+    ],
+    "old_test_defs": [
+      {
+        "name": "test_keyless_cross_uses_msvc_exec_and_gnullvm_target",
+        "byteequal": true
+      },
+      {
+        "name": "test_large_windows_build_preserves_all_targets_without_a_large_native_command",
+        "byteequal": true
+      },
+      {
+        "name": "test_windows_target_files_preserve_test_and_coverage_failures",
+        "byteequal": true
+      },
+      {
+        "name": "test_native_windows_forwards_required_msvc_environment",
+        "byteequal": true
+      },
+      {
+        "name": "test_native_windows_rejects_missing_required_msvc_environment",
+        "byteequal": true
+      },
+      {
+        "name": "test_windows_argument_lint_uses_the_shared_split_abi_wrapper",
+        "byteequal": true
+      },
+      {
+        "name": "test_windows_argument_lint_preserves_the_entire_large_crlf_query_roster",
+        "byteequal": true
+      },
+      {
+        "name": "test_authenticated_cross_keeps_linux_build_actions_and_windows_tests",
+        "byteequal": true
+      },
+      {
+        "name": "test_failure_preserves_status_linker_diagnostics_and_test_log_configuration",
+        "byteequal": true
+      },
+      {
+        "name": "test_failure_archives_all_selected_shards_and_attempts_without_truncation",
+        "byteequal": true
+      },
+      {
+        "name": "test_collector_accepts_root_link_but_refuses_traversal_and_external_links",
+        "byteequal": true
+      },
+      {
+        "name": "test_collector_failure_keeps_original_bazel_status_and_tail",
+        "byteequal": true
+      },
+      {
+        "name": "test_success_does_not_collect_failed_test_logs",
+        "byteequal": true
+      }
+    ],
+    "new_test_defs": [
+      "test_success_retains_reported_targets_and_preserves_status_scope",
+      "test_missing_selected_logs_preserve_success_and_failure_status",
+      "test_conflicting_selected_summaries_do_not_read_existing_logs"
+    ],
+    "command_region_equal": true,
+    "command_region_bytes": 6529
+  },
+  "findings": [
+    {
+      "area": "Command and exit status",
+      "conclusion": "The complete original argument preparation and Bazel invocation region is byte-equal. PIPESTATUS[0] is captured before new evidence work, and the wrapper explicitly exits with that original value. Selection/collection is in guarded negative conditionals that emit warnings rather than substituting collector status."
+    },
+    {
+      "area": "Selection and stale records",
+      "conclusion": "Only exact ten allowlisted console target summaries are eligible. PASSED and FLAKY select existing records; SKIPPED, NOT_REPORTED and conflicting summaries do not traverse their old target directories. Failed-target collection remains separate. Cached markers and absent markers are recorded without claiming fresh execution."
+    },
+    {
+      "area": "Copy safety",
+      "conclusion": "The original bounded-scope path validation, nested-link refusal, regular-file requirement, streaming full-byte hash/copy, changing-file checks and exclusive destination creation are retained. The added mtime field records local metadata and does not establish invocation identity."
+    },
+    {
+      "area": "Original controls",
+      "conclusion": "All thirteen existing test function bodies are byte-equal after ignoring only trailing separators; three new tests exercise actual temporary files, status 0 and 37, missing logs, large binary records, skipped/unreported stale directories and ambiguous reports."
+    }
+  ],
+  "limits": [
+    "No Python, Bash, Git fixture or Bazel execution was performed in this review; the original sole-lane syntax and complete unittest gates remain required.",
+    "A console PASSED summary plus a local file is not independent proof that the file belongs to the current invocation. The manifest explicitly preserves that limit; this collection alone cannot close a case or platform gate.",
+    "complete_for_selected_targets reports successful copying of selected existing records, not complete suite or attempt coverage. Cached FLAKY/attempt evidence must retain retries and origin distinctions.",
+    "If no allowlisted target is reported, no selected archive is produced. Missing archives remain missing evidence, not implicit success.",
+    "No workflow, test budget, filter, cache policy, retry, source permission boundary or Rust production source is changed."
+  ]
+}

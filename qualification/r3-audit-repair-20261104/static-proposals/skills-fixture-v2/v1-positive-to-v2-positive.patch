@@ -1,0 +1,18 @@
+--- a/codex-rs/ext/skills/src/host_roots_tests.rs
++++ b/codex-rs/ext/skills/src/host_roots_tests.rs
+@@ -422,8 +422,13 @@
+         );
+     }
+     let mut config = empty_config();
+-    config["project_root_markers"] =
+-        toml::Value::Array(vec![toml::Value::String(marker.clone())]);
++    config
++        .as_table_mut()
++        .expect("empty config table")
++        .insert(
++            "project_root_markers".to_string(),
++            toml::Value::Array(vec![toml::Value::String(marker.clone())]),
++        );
+     let config_stack = stack(vec![ConfigLayerEntry::new(
+         ConfigLayerSource::SessionFlags,
+         config,

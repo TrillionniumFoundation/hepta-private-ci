@@ -1,0 +1,123 @@
+{
+  "schema": "hepta.fourth-f825-full-workspace-root-gate.v1",
+  "status": "AUTHORIZED_ORIGINAL_FULL_WORKSPACE_DIAGNOSTIC_CONTINUATION",
+  "observed_at_utc": "2026-11-05 00:36:38 UTC",
+  "source_tree": "f8251e1d14fa8524ab469281296cd4cf708f173c",
+  "ordinary_head": "cabcb40d36e116beaa65750e1f674c52035da785",
+  "ordinary_index": {
+    "bytes": 1222758,
+    "sha256": "8ccf08bcd5b633a38fa81be4814ae264365f1a2cdd1ed81e1633fbcc0ac31502"
+  },
+  "locks": {
+    "codex-rs/Cargo.lock": {
+      "bytes": 413768,
+      "sha256": "4a7a5535cf045089458468411e126b5f59bc6bbf34fc0deead9b0c1b8d84000a"
+    },
+    "MODULE.bazel.lock": {
+      "bytes": 1738619,
+      "sha256": "11f8a421224b9b05f32c4c14054e8868083d989fc497310c8d51e1156f189ca3"
+    }
+  },
+  "owning_failure_scope_review": "9dbc7f2c39bbcc523c3bc5718873c5364b697be7",
+  "owning_gate_state": "FAILED_5408_JUNIT_PASS_8_FAIL_WITH_REMOTE_EARLY_RETURNS_SEPARATE",
+  "normal_helper_preparation": {
+    "source_tree": "f8251e1d14fa8524ab469281296cd4cf708f173c",
+    "argv": [
+      "cargo",
+      "build",
+      "--locked",
+      "--profile",
+      "dev-small",
+      "--message-format=json-render-diagnostics",
+      "-p",
+      "codex-arg0",
+      "--bin",
+      "test_arg0_preflight",
+      "-p",
+      "codex-code-mode-host",
+      "--bin",
+      "codex-code-mode-host",
+      "-p",
+      "codex-shell-escalation",
+      "--bin",
+      "codex-execve-wrapper",
+      "-p",
+      "codex-rmcp-client",
+      "--bin",
+      "test_stdio_server",
+      "--bin",
+      "test_streamable_http_server",
+      "-p",
+      "codex-exec",
+      "--bin",
+      "codex-exec"
+    ],
+    "expected_names": [
+      "test_arg0_preflight",
+      "codex-code-mode-host",
+      "codex-execve-wrapper",
+      "test_stdio_server",
+      "test_streamable_http_server",
+      "codex-exec"
+    ],
+    "fresh_cache_report_separately": true
+  },
+  "original_gates": {
+    "owning_packages": [
+      "codex-core",
+      "core_test_support",
+      "codex-cli",
+      "codex-utils-pty",
+      "codex-exec-server",
+      "codex-hepta-agentd",
+      "codex-apply-patch"
+    ],
+    "full_workspace_argv": [
+      "just",
+      "test",
+      "--locked",
+      "--cargo-profile",
+      "dev-small",
+      "--no-tests",
+      "fail",
+      "--retries",
+      "0",
+      "--success-output",
+      "immediate"
+    ],
+    "full_metadata_argv": [
+      "cargo",
+      "metadata",
+      "--format-version=1",
+      "--locked"
+    ],
+    "full_catalog_argv": [
+      "cargo",
+      "nextest",
+      "list",
+      "--locked",
+      "--cargo-profile",
+      "dev-small",
+      "--message-format=json"
+    ],
+    "package_filter": null,
+    "test_filter": null,
+    "virtual_workspace_without_default_members_required": true,
+    "nextest_profile": "local",
+    "retries": 0,
+    "source_delta": []
+  },
+  "requirements": [
+    "Guard fixed f825 source, original HEAD/index and both locks before/after every phase. No production or test edits.",
+    "Require actual same-source normal six-helper build with successful build-finished/exact roster; record fresh values without pretending cache is compilation.",
+    "Use original no-package complete-workspace recipe, normal full metadata and all-default workspace selection. No --no-deps scoped shortcut, package exclusions, --all-features or added skip keys.",
+    "Capture all catalog/selection/raw stdout/fresh JUnit and actual test/helper identities before/after execution; preserve errors, resource limits and original outcomes.",
+    "Record and bind original early returns from full raw per-case blocks because PASS JUnit may omit captured stdout. Keep unselected, original ignored, early return, cache and retry distinct.",
+    "No assertion, host profile, sandbox, failure normalization, retry, timeout, expected denial or testsuite changes.",
+    "Stop after actual full-workspace terminal for root review. No final fix/fmt or new tests beyond the original gate in this phase."
+  ],
+  "template_base": {
+    "blob": "226ebb37ab43f42a535494906c666794eafd367b",
+    "amendments_allowed": "Initial exact index/locks/argv guards plus truthful raw per-case early-return observation only; retain actual final runner bytes/hash."
+  }
+}

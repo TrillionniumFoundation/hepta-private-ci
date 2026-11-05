@@ -1,0 +1,210 @@
+{
+  "state": "STATIC_DRAFT_NOT_APPLIED_NOT_FORMATTED_NOT_COMPILED_NOT_EXECUTED",
+  "base_head": "cabcb40d36e116beaa65750e1f674c52035da785",
+  "base_tree": "b2d7f038d6d88156bc6a4cb29c8703f69b808f29",
+  "files": [
+    {
+      "path": "codex-rs/windows-sandbox-rs/src/acl.rs",
+      "before": {
+        "bytes": 27953,
+        "sha256": "58976c6d1594c116dfd108316bb748b5cf2e9f108785605eaa93c96b77145b83",
+        "blob": "755083dd97ef25065692028405412326e4e2ac49"
+      },
+      "after": {
+        "bytes": 25821,
+        "sha256": "c6507c81014e82a7d968530e72b6f8534e5eb62040222fefd226e90060713eb7",
+        "blob": "53c7053c5880da13640f3bd777998b6998da6d47"
+      },
+      "candidate_path": "/workspace/scratch/07dd58cc9630/research-audit/b11-current-boundary-design/candidate/codex-rs/windows-sandbox-rs/src/acl.rs"
+    },
+    {
+      "path": "codex-rs/windows-sandbox-rs/src/acl_deny.rs",
+      "before": null,
+      "after": {
+        "bytes": 6999,
+        "sha256": "0808a06e71bca59f3807f9efde0ebc0e2c4847d8de22c98cb68b9de1ef2f1c56",
+        "blob": "3aeb65179f1a8bc77f0314974efdcf8940e5a1f6"
+      },
+      "candidate_path": "/workspace/scratch/07dd58cc9630/research-audit/b11-current-boundary-design/candidate/codex-rs/windows-sandbox-rs/src/acl_deny.rs"
+    },
+    {
+      "path": "codex-rs/windows-sandbox-rs/src/acl_tests.rs",
+      "before": {
+        "bytes": 8717,
+        "sha256": "45c313a55741e798af7efc3ef3d9b3878f6ffa092ad77fe2457dacab777db06b",
+        "blob": "a27ce6bde8a5a8ec68b005d6fc10cc4abf261d59"
+      },
+      "after": {
+        "bytes": 15843,
+        "sha256": "efb7d60719fbea616518081bc125dca03901c56d2712a4e689d8b01772634851",
+        "blob": "31db071d8a2fe2de3e9e9f37cb245a0757ecb973"
+      },
+      "candidate_path": "/workspace/scratch/07dd58cc9630/research-audit/b11-current-boundary-design/candidate/codex-rs/windows-sandbox-rs/src/acl_tests.rs"
+    }
+  ],
+  "patch": {
+    "bytes": 17274,
+    "sha256": "6327a84870d5e69ad95fcf8f6d22ce496e505f45b8b4fb95f124140c8d13dd70",
+    "blob": "a7b977f79547249bc253c0bc915d7e85f13480dc"
+  },
+  "changed_lines": {
+    "added": 349,
+    "removed": 63
+  },
+  "schema": "b11-deny-idempotency-static-candidate/v1",
+  "static_roundtrip": [
+    {
+      "path": "codex-rs/windows-sandbox-rs/src/acl.rs",
+      "reconstructed": {
+        "bytes": 25821,
+        "sha256": "c6507c81014e82a7d968530e72b6f8534e5eb62040222fefd226e90060713eb7",
+        "blob": "53c7053c5880da13640f3bd777998b6998da6d47"
+      },
+      "exact": true
+    },
+    {
+      "path": "codex-rs/windows-sandbox-rs/src/acl_deny.rs",
+      "reconstructed": {
+        "bytes": 6999,
+        "sha256": "0808a06e71bca59f3807f9efde0ebc0e2c4847d8de22c98cb68b9de1ef2f1c56",
+        "blob": "3aeb65179f1a8bc77f0314974efdcf8940e5a1f6"
+      },
+      "exact": true
+    },
+    {
+      "path": "codex-rs/windows-sandbox-rs/src/acl_tests.rs",
+      "reconstructed": {
+        "bytes": 15843,
+        "sha256": "efb7d60719fbea616518081bc125dca03901c56d2712a4e689d8b01772634851",
+        "blob": "31db071d8a2fe2de3e9e9f37cb245a0757ecb973"
+      },
+      "exact": true
+    }
+  ],
+  "public_query_bytes_unchanged": {
+    "bytes": 2800,
+    "sha256": "2ee8ef81982ec74134bba14787f953cccfa5c79c4d0fd4ec9ba0d8acccc0e3a8",
+    "blob": "7cfc0c5dd3fa585bdd57c52177eed96251515c61"
+  },
+  "original_acl_tests_prefix_bytes_unchanged": {
+    "bytes": 8717,
+    "sha256": "45c313a55741e798af7efc3ef3d9b3878f6ffa092ad77fe2457dacab777db06b",
+    "blob": "a27ce6bde8a5a8ec68b005d6fc10cc4abf261d59"
+  },
+  "original_token_legacy_cases_untouched": [
+    "token::tests::partial_delete_deny_is_repaired_before_native_workspace_writes",
+    "token::tests::workspace_capabilities_deny_writes_and_deletes_under_broad_identity_aces",
+    "unified_exec::tests::legacy_workspace_write_delete_is_limited_to_writable_roots"
+  ],
+  "new_controls_unexecuted": [
+    "acl::tests::normalized_denies_require_same_sid_complete_masks_and_both_directory_scopes",
+    "acl::tests::native_file_and_directory_repairs_are_idempotent_for_read_and_write",
+    "acl::tests::existing_native_deny_does_not_require_write_dac"
+  ],
+  "role": "PROPOSED_FIX_FOR_IDEMPOTENCY_ONLY",
+  "not_a_delete_permission_strategy": true,
+  "source_preimages_unchanged_through_f825": true,
+  "physical_effects_performed_by_author": [],
+  "git_refs_changed": [],
+  "current_contract_and_limitations": {
+    "no_op": "READ_CONTROL handle only; strict original public query unchanged",
+    "type_and_dacl": "same retained handle, FileStandardInfo + GetSecurityInfo",
+    "repair": "ReOpenFile of original object requests WRITE_DAC only when incomplete; original mask/SetEntriesInAcl/recursive inheritance; SetSecurityInfo on that reopened object",
+    "file": "complete explicit effective flags0 or original complete flags3; inherited-only is insufficient",
+    "directory": "original complete flags3 or same-SID independently complete flags0 + flags0xb, before any allow/unknown/inherited entry",
+    "not_changed": [
+      "token flags/identities",
+      "public recursive DACL query",
+      "grant masks",
+      "original cases/assertions",
+      "budgets/retries/skips",
+      "loader/DLL",
+      "normal backend routing"
+    ],
+    "compatibility_and_limits": [
+      "CreateFile/GetFileInformationByHandleEx/ReOpenFile support and sharing requirements now apply; fail as errors, not fake no-op",
+      "WRITE_DAC acquired only for actual repairs; no privilege is enabled, but existing Windows privilege/access rules still apply",
+      "error operation labels change from named security APIs to actual handle APIs; existing generic setter-error contract preserved",
+      "same object does not serialize concurrent DACL writers or guarantee stable path/ancestor custody",
+      "no deletion-enforcement or WRITE_RESTRICTED fix is claimed",
+      "native controls may expose API/filesystem differences; currently none run"
+    ]
+  },
+  "dependency_api_evidence": "locked-windows-sys-api-evidence.json",
+  "design_evidence": "b11-boundary-current-design.json",
+  "format_compile_and_native_checks": "PENDING; no formatter installed in cloud; no Cargo/Bazel/native invocation",
+  "qualification_plan": {
+    "platform": "Windows x86_64-pc-windows-msvc; no configured native Windows host",
+    "selected_original_cases": [
+      "token::tests::partial_delete_deny_is_repaired_before_native_workspace_writes",
+      "token::tests::workspace_capabilities_deny_writes_and_deletes_under_broad_identity_aces",
+      "unified_exec::tests::legacy_workspace_write_delete_is_limited_to_writable_roots"
+    ],
+    "additional_original_controls": [
+      "acl::tests::complete_denies_compare_mapped_masks_and_require_every_right",
+      "acl::tests::complete_denies_require_effective_recursive_scope_and_precede_allows",
+      "acl::tests::partial_read_deny_is_repaired_before_native_file_data_access",
+      "acl::tests::deny_ace_update_failure_is_an_error",
+      "desktop::tests::desktop_rejects_unrestricted_and_invalid_tokens",
+      "desktop::tests::readonly_preserves_private_and_default_desktop_access",
+      "desktop::tests::workspace_private_desktop_checks_the_exact_capability",
+      "token::tests::elevated_token_includes_network_proxy_restricting_sid",
+      "unified_exec::backend_selection_tests::explicit_elevated_level_always_uses_elevated_broker",
+      "unified_exec::backend_selection_tests::deny_write_override_is_forced_through_elevated_broker",
+      "unified_exec::backend_selection_tests::workspace_write_profile_is_forced_through_elevated_broker",
+      "unified_exec::backend_selection_tests::read_only_profile_without_overrides_keeps_restricted_token_backend",
+      "unified_exec::tests::acl_setup_tests::legacy_capture_rejects_deny_acl_setup_failure_before_spawn",
+      "unified_exec::tests::acl_setup_tests::legacy_session_rejects_deny_acl_setup_failure_before_spawn",
+      "unified_exec::tests::finish_driver_spawn_keeps_stdin_open_when_requested",
+      "unified_exec::tests::finish_driver_spawn_closes_stdin_when_not_requested",
+      "unified_exec::tests::legacy_tty_powershell_emits_output_and_accepts_input",
+      "unified_exec::tests::elevated_non_tty_cmd_forwards_env_output_and_exit",
+      "unified_exec::tests::legacy_non_tty_cmd_emits_output",
+      "unified_exec::tests::legacy_non_tty_cmd_rejects_deny_read_overrides"
+    ],
+    "new_controls": [
+      "acl::tests::normalized_denies_require_same_sid_complete_masks_and_both_directory_scopes",
+      "acl::tests::native_file_and_directory_repairs_are_idempotent_for_read_and_write",
+      "acl::tests::existing_native_deny_does_not_require_write_dac"
+    ],
+    "native_command_design_only": "just test --locked -p codex-windows-sandbox --lib -E 'test(=token::tests::partial_delete_deny_is_repaired_before_native_workspace_writes) | test(=token::tests::workspace_capabilities_deny_writes_and_deletes_under_broad_identity_aces) | test(=unified_exec::tests::legacy_workspace_write_delete_is_limited_to_writable_roots) | test(=acl::tests::complete_denies_compare_mapped_masks_and_require_every_right) | test(=acl::tests::complete_denies_require_effective_recursive_scope_and_precede_allows) | test(=acl::tests::partial_read_deny_is_repaired_before_native_file_data_access) | test(=acl::tests::deny_ace_update_failure_is_an_error) | test(=acl::tests::normalized_denies_require_same_sid_complete_masks_and_both_directory_scopes) | test(=acl::tests::native_file_and_directory_repairs_are_idempotent_for_read_and_write) | test(=acl::tests::existing_native_deny_does_not_require_write_dac)' --retries 0",
+    "original_legacy_child_budget_ms": 5000,
+    "original_collection_budget_seconds": 10,
+    "full_gate": "original Windows Bazel target/workflow with unchanged command/filter/cache/retry/ignore policies and complete source-bound logs/XML",
+    "cannot_close_from": [
+      "Linux",
+      "Wine alone",
+      "static review",
+      "target absence",
+      "old ff72 results",
+      "new helper success without originals"
+    ]
+  },
+  "revision": "V2_LITERAL_ONLY_FOLLOWUP",
+  "supersedes_unexecuted_manifest": "7fe0cd9b6f6ea3ed720f81f967798989cd12a7de",
+  "v1_to_v2_diff": {
+    "bytes": 1622,
+    "sha256": "923e35e6e9fa959dc5a8f2d0556bf6c01a17d008f02ab3eb18145f9561050f9d",
+    "blob": "c93a17ca8d8fee7a4e5720ca87cf21a6c72ee311"
+  },
+  "literal_api_source": {
+    "repository": "microsoft/windows-rs",
+    "ref": "0.52.0",
+    "filesystem_blob": "5cb313fe5ba69cbec6eee56b86ec13608744dae4",
+    "authorization_blob": "75767ccc1fd85b05762b66339e432b4e45ab711e",
+    "checks": [
+      "SE_FILE_OBJECT=1i32",
+      "CreateFileW final parameter htemplatefile",
+      "SetEntriesInAclW first parameter ccountofexplicitentries"
+    ]
+  },
+  "only_v1_changes": [
+    "import SE_FILE_OBJECT and replace two equal1 literals",
+    "add actual binding parameter comments for two new opaque numeric calls"
+  ],
+  "design_evidence_identity": {
+    "bytes": 29368,
+    "sha256": "dac3d4ddde9ed259c0909545c3ae414f94cb4f0de1f6f3d6c628f69b65790eaf",
+    "blob": "1239c75487f6ae2882b712690cf59ecc4760e92a"
+  }
+}

@@ -1,0 +1,14 @@
+diff --git a/codex-rs/state/src/sqlite.rs b/codex-rs/state/src/sqlite.rs
+--- a/codex-rs/state/src/sqlite.rs
++++ b/codex-rs/state/src/sqlite.rs
+@@ -450,8 +450,8 @@
+         path: &Path,
+         connection_custody: Arc<dyn Send + Sync + 'static>,
+     ) -> Result<(), Error> {
+-        let options = SqliteConnectOptions::new()
+-            .connection_lifetime_token(connection_custody)
++        let _connection_custody = connection_custody;
++        let options = SqliteConnectOptions::new()
+             .filename(path)
+             .create_if_missing(false)
+             .synchronous(SqliteSynchronous::Full)

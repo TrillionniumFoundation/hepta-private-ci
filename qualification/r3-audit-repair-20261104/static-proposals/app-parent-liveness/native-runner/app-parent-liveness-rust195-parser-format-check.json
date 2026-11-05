@@ -1,0 +1,18 @@
+{
+  "schema": "hepta-observed-rust195-panic-parser-format-check-v1",
+  "runner_sha256": "9ee2ae01565bfede3984ee2390ef5bf16cca5e504667397ce665945d67c82040",
+  "raw_path": "/workspace/scratch/07dd58cc9630/ci-audit/recovered-20261105/three-repairs-v3-compressed-archive/decoded-verified-v1/migration-inference-negative.log",
+  "raw_bytes": 18592,
+  "raw_sha256": "9bf88614115633ba44f2a5f7df3b9f91ffb5015ff3c2860f0bbde98fa3ddd9cd",
+  "actual_child_header": "    thread 'service::tests::plugins::marketplaces::import_plugins_infers_external_official_marketplace_when_missing_from_settings' (815623) panicked at external-agent-migration/src/service_tests/plugins/marketplaces.rs:588:5:\n",
+  "observed_thread_id": "815623",
+  "actual_diff_header": "Diff < left / right > :",
+  "instantiated_structure_pattern": "(?m)^[ \\t]*thread 'service::tests::plugins::marketplaces::import_plugins_infers_external_official_marketplace_when_missing_from_settings'(?: \\([0-9]+\\))? panicked at [^\\n]*marketplaces\\.rs:588:\\d+:\\n",
+  "unique_actual_child_header_matches": 1,
+  "child_block_boundary": "    thread 'service::tests::plugins::marketplaces::import_plugins_infers_external_official_marketplace_when_missing_from_settings' (815610) panicked at external-agent-migration/src/service_tests/plugins/marketplaces.rs:551:9:\n    isolated import asse",
+  "diff_count": 1,
+  "old_header_pattern_rejects_actual_format": true,
+  "old_diff_pattern_rejects_actual_format": true,
+  "new_patterns_accept_actual_format": true,
+  "limit": "Structural parse against preserved real Migration output only. Only expected child name/file/line literals were instantiated for that historical output. This is not App negative execution or qualification; native App still must match the exact owned_liveness_scenario:268 block and actual open-FD tuple."
+}

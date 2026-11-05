@@ -1,0 +1,1209 @@
+{
+  "schema": "hepta-fourth-new-evidence-links-and-workflows-review-v1",
+  "observed_utc": "2026-11-05T05:30:02.525710+00:00",
+  "registry": {
+    "path": "hepta-audit-fourth/artifact-registry.json",
+    "entries": 985,
+    "bytes": 409413,
+    "sha256": "33a42973a3e900fb0d4e1ff8d0cb6c76a1fe67aa0c14aab0419d026469cd6dff",
+    "blob": "a3c529eea00b1bff89374001c213b6436a4528f5"
+  },
+  "scope": {
+    "requested_new_rows": 57,
+    "additional_root_layout_and_source_receipts": 2,
+    "inspected_new_rows": 59,
+    "source_commit": "20fd174ded4e5ce01bda34e4f6d1d74803301f49",
+    "source_tree": "4a3374e22e16ce5c764288ad018cd9affadf94ea",
+    "source_manifest_method": "Complete non-truncated cabc recursive tree plus all 21 exact one-parent cohort diffs and cohort22 17-file comparison.",
+    "checker_identity": {
+      "bytes": 78882,
+      "sha256": "63adeefe7231e970b21b8d6a3014986fcb8cf16f1741f4a36b9dd4717196e33d",
+      "blob": "0d65aa4dee439e58ef124d99f4d422affdfae82f"
+    },
+    "checker_function": "verify_exact_workflow_references",
+    "checker_exact_regex": "(?<![A-Za-z0-9_.-])(?P<path>\\.github/workflows/[A-Za-z0-9_.-]+\\.ya?ml)(?![A-Za-z0-9_.-])",
+    "root_documents_registry_native_refs_unchanged": true
+  },
+  "summary": {
+    "all_59_bodies_exact": true,
+    "new_active_markdown_documents": 3,
+    "new_checker_scanned_md_json": 25,
+    "literal_workflow_occurrences": 79,
+    "distinct_workflows": 15,
+    "missing_workflows": 0,
+    "active_markdown_relative_links": 0,
+    "missing_active_relative_link_targets": 0,
+    "sibling_document_references_checked": 4,
+    "passive_sources_and_report_snapshots": 4
+  },
+  "files": [
+    {
+      "path": "native-evidence/windows-index-complete-archive/archive.json",
+      "local_file": "/workspace/scratch/07dd58cc9630/ci-audit/recovered-20261105/windows-index-complete-originals-git-archive-v1.json",
+      "bytes": 28560,
+      "sha256": "5267e79c1efe22cbc57237abb8cd2fbafda2b3ed4598b14789ce149455c26765",
+      "blob": "288c45f95aa442e7c00048c87fcc76cfbfccef36",
+      "checker_scanned": true
+    },
+    {
+      "path": "native-evidence/windows-index-complete-archive/chunks/00fe36b132b152b23515a5ddd0118667bec2cc3c.b64.txt",
+      "local_file": "/workspace/scratch/07dd58cc9630/hepta-audit-fourth/inputs/windows-index-exact-git-chunks/00fe36b132b152b23515a5ddd0118667bec2cc3c.b64.txt",
+      "bytes": 400000,
+      "sha256": "29a6c7642563775b08a4c5539d6aab6f1bb1b03ad8d56814782dba4e2d8db4f9",
+      "blob": "00fe36b132b152b23515a5ddd0118667bec2cc3c",
+      "checker_scanned": false
+    },
+    {
+      "path": "native-evidence/windows-index-complete-archive/chunks/2b3f90551fe8f5d8cf78fedc919f01e8a7d92cc8.b64.txt",
+      "local_file": "/workspace/scratch/07dd58cc9630/hepta-audit-fourth/inputs/windows-index-exact-git-chunks/2b3f90551fe8f5d8cf78fedc919f01e8a7d92cc8.b64.txt",
+      "bytes": 400000,
+      "sha256": "987a4245aef040cd7d0afc9c855cbe4e078229ef9c518f298652b63da5e736e9",
+      "blob": "2b3f90551fe8f5d8cf78fedc919f01e8a7d92cc8",
+      "checker_scanned": false
+    },
+    {
+      "path": "native-evidence/windows-index-complete-archive/chunks/2c7efbacf9c8a3a698410c9801d5ce4ee8ab613c.b64.txt",
+      "local_file": "/workspace/scratch/07dd58cc9630/hepta-audit-fourth/inputs/windows-index-exact-git-chunks/2c7efbacf9c8a3a698410c9801d5ce4ee8ab613c.b64.txt",
+      "bytes": 400000,
+      "sha256": "8a3bc138fbd94c67b56ab2629a5210849cb564d0ae2bebf2e78ec9bd5d73c98d",
+      "blob": "2c7efbacf9c8a3a698410c9801d5ce4ee8ab613c",
+      "checker_scanned": false
+    },
+    {
+      "path": "native-evidence/windows-index-complete-archive/chunks/53346531bde5734fb7a0f9557c75370875859511.b64.txt",
+      "local_file": "/workspace/scratch/07dd58cc9630/hepta-audit-fourth/inputs/windows-index-exact-git-chunks/53346531bde5734fb7a0f9557c75370875859511.b64.txt",
+      "bytes": 400000,
+      "sha256": "a919016ecec1fbceb00d9c30109a155d65269c2e6079d1c3953d55e5f17c2258",
+      "blob": "53346531bde5734fb7a0f9557c75370875859511",
+      "checker_scanned": false
+    },
+    {
+      "path": "native-evidence/windows-index-complete-archive/chunks/5e88ff0df9d5e72086abc8833b1d4228bd8a165d.b64.txt",
+      "local_file": "/workspace/scratch/07dd58cc9630/hepta-audit-fourth/inputs/windows-index-exact-git-chunks/5e88ff0df9d5e72086abc8833b1d4228bd8a165d.b64.txt",
+      "bytes": 80,
+      "sha256": "1c52207e5d76514d1bf80cdbbd0c7d5b097a1243c8993d437a65665180f446e1",
+      "blob": "5e88ff0df9d5e72086abc8833b1d4228bd8a165d",
+      "checker_scanned": false
+    },
+    {
+      "path": "native-evidence/windows-index-complete-archive/chunks/60fb91b3c663f4ac2ed6947df25d59c5c1d0a525.b64.txt",
+      "local_file": "/workspace/scratch/07dd58cc9630/hepta-audit-fourth/inputs/windows-index-exact-git-chunks/60fb91b3c663f4ac2ed6947df25d59c5c1d0a525.b64.txt",
+      "bytes": 400000,
+      "sha256": "e3631992bce4e87f4acee6dfecb3a3874996e49c2e0d14ba6078c7ceff78a66b",
+      "blob": "60fb91b3c663f4ac2ed6947df25d59c5c1d0a525",
+      "checker_scanned": false
+    },
+    {
+      "path": "native-evidence/windows-index-complete-archive/chunks/66959f9819672272209917ea8819f70a25b6503d.b64.txt",
+      "local_file": "/workspace/scratch/07dd58cc9630/hepta-audit-fourth/inputs/windows-index-exact-git-chunks/66959f9819672272209917ea8819f70a25b6503d.b64.txt",
+      "bytes": 241860,
+      "sha256": "92b94b8f5a49a8b5669c58a2b220f31b304ae3d89f2bad4dbacc380d64efebd0",
+      "blob": "66959f9819672272209917ea8819f70a25b6503d",
+      "checker_scanned": false
+    },
+    {
+      "path": "native-evidence/windows-index-complete-archive/chunks/70b50914ae2465e9a1be5ba242ae13d12888b507.b64.txt",
+      "local_file": "/workspace/scratch/07dd58cc9630/hepta-audit-fourth/inputs/windows-index-exact-git-chunks/70b50914ae2465e9a1be5ba242ae13d12888b507.b64.txt",
+      "bytes": 43984,
+      "sha256": "a05c0ec27f649a79a5633817428c92b5e8275b88de996575f11d73cbdc523a12",
+      "blob": "70b50914ae2465e9a1be5ba242ae13d12888b507",
+      "checker_scanned": false
+    },
+    {
+      "path": "native-evidence/windows-index-complete-archive/chunks/752a5eb85b1818fe516788c5b3447f3c773c4726.b64.txt",
+      "local_file": "/workspace/scratch/07dd58cc9630/hepta-audit-fourth/inputs/windows-index-exact-git-chunks/752a5eb85b1818fe516788c5b3447f3c773c4726.b64.txt",
+      "bytes": 151812,
+      "sha256": "2ab76e362bf372e053ffbc914afc62262beee6a20a44dd6fa4ac10e362bb896d",
+      "blob": "752a5eb85b1818fe516788c5b3447f3c773c4726",
+      "checker_scanned": false
+    },
+    {
+      "path": "native-evidence/windows-index-complete-archive/chunks/76ae6dbee898e652d16ca5f3dfd922a3c8cff4c5.b64.txt",
+      "local_file": "/workspace/scratch/07dd58cc9630/hepta-audit-fourth/inputs/windows-index-exact-git-chunks/76ae6dbee898e652d16ca5f3dfd922a3c8cff4c5.b64.txt",
+      "bytes": 43436,
+      "sha256": "226d95d34367e35a234513ebd108c41d09e28242e1d8772d9797679c788f2dcc",
+      "blob": "76ae6dbee898e652d16ca5f3dfd922a3c8cff4c5",
+      "checker_scanned": false
+    },
+    {
+      "path": "native-evidence/windows-index-complete-archive/chunks/91d318b98e7af8512738821623632f9f6f4726de.b64.txt",
+      "local_file": "/workspace/scratch/07dd58cc9630/hepta-audit-fourth/inputs/windows-index-exact-git-chunks/91d318b98e7af8512738821623632f9f6f4726de.b64.txt",
+      "bytes": 400000,
+      "sha256": "353035913018372f1f25f02ff8d2bc27e0cebc95d085a2b8906eb5fcc519d10f",
+      "blob": "91d318b98e7af8512738821623632f9f6f4726de",
+      "checker_scanned": false
+    },
+    {
+      "path": "native-evidence/windows-index-complete-archive/chunks/a2ac6e79fada354d8d210bbc3888c105040751ba.b64.txt",
+      "local_file": "/workspace/scratch/07dd58cc9630/hepta-audit-fourth/inputs/windows-index-exact-git-chunks/a2ac6e79fada354d8d210bbc3888c105040751ba.b64.txt",
+      "bytes": 400000,
+      "sha256": "86c264f3ce3d8d7c8f0a559663ba70fd887eddb0a1c1b8911b7f746b2455cdb3",
+      "blob": "a2ac6e79fada354d8d210bbc3888c105040751ba",
+      "checker_scanned": false
+    },
+    {
+      "path": "native-evidence/windows-index-complete-archive/chunks/a333afd9d500e5631007fb269325eb2dda61ab52.b64.txt",
+      "local_file": "/workspace/scratch/07dd58cc9630/hepta-audit-fourth/inputs/windows-index-exact-git-chunks/a333afd9d500e5631007fb269325eb2dda61ab52.b64.txt",
+      "bytes": 808,
+      "sha256": "e95a328e30be843ded992c84e4ec976620a27e3e85380408b881c78365a486dd",
+      "blob": "a333afd9d500e5631007fb269325eb2dda61ab52",
+      "checker_scanned": false
+    },
+    {
+      "path": "native-evidence/windows-index-complete-archive/chunks/c0828406be583b8dce9c79a724ffe6620564d714.b64.txt",
+      "local_file": "/workspace/scratch/07dd58cc9630/hepta-audit-fourth/inputs/windows-index-exact-git-chunks/c0828406be583b8dce9c79a724ffe6620564d714.b64.txt",
+      "bytes": 93744,
+      "sha256": "3963687a89cc848ce18789b6a5f24425a3ac2ac3bf676dfc5db4712bd7f477fa",
+      "blob": "c0828406be583b8dce9c79a724ffe6620564d714",
+      "checker_scanned": false
+    },
+    {
+      "path": "native-evidence/windows-index-complete-archive/chunks/c60c0998c91884f6a2a32bf4c0cc627d16dc209b.b64.txt",
+      "local_file": "/workspace/scratch/07dd58cc9630/hepta-audit-fourth/inputs/windows-index-exact-git-chunks/c60c0998c91884f6a2a32bf4c0cc627d16dc209b.b64.txt",
+      "bytes": 2672,
+      "sha256": "6a3672f50b033a6ca6b92a3938f4506785d22b380984a6fdef72e0f6fcfa17a2",
+      "blob": "c60c0998c91884f6a2a32bf4c0cc627d16dc209b",
+      "checker_scanned": false
+    },
+    {
+      "path": "native-evidence/windows-index-complete-archive/chunks/c7adf91bfc233a9d4d63c23ec24a6e574386ee89.b64.txt",
+      "local_file": "/workspace/scratch/07dd58cc9630/hepta-audit-fourth/inputs/windows-index-exact-git-chunks/c7adf91bfc233a9d4d63c23ec24a6e574386ee89.b64.txt",
+      "bytes": 152960,
+      "sha256": "9bb58a6829d7e1c8130593a5730dc16c91f26a6d05726c93fd8a3b4dade05aae",
+      "blob": "c7adf91bfc233a9d4d63c23ec24a6e574386ee89",
+      "checker_scanned": false
+    },
+    {
+      "path": "native-evidence/windows-index-complete-archive/chunks/ec80249137208e9d4406efd301b9de8c3994b902.b64.txt",
+      "local_file": "/workspace/scratch/07dd58cc9630/hepta-audit-fourth/inputs/windows-index-exact-git-chunks/ec80249137208e9d4406efd301b9de8c3994b902.b64.txt",
+      "bytes": 44012,
+      "sha256": "c957c04a64f3b2492ba6c99c03b05cfad6d137d942ab7692cf1329e2d6c307a5",
+      "blob": "ec80249137208e9d4406efd301b9de8c3994b902",
+      "checker_scanned": false
+    },
+    {
+      "path": "native-evidence/windows-index-complete-archive/chunks/ef48d939138a86a27f1dfd678abfd5159fa0e667.b64.txt",
+      "local_file": "/workspace/scratch/07dd58cc9630/hepta-audit-fourth/inputs/windows-index-exact-git-chunks/ef48d939138a86a27f1dfd678abfd5159fa0e667.b64.txt",
+      "bytes": 1272,
+      "sha256": "e61d93ba4bbbeee1920b9c6573db4a7bfface8555a409ba9794f74313061b69a",
+      "blob": "ef48d939138a86a27f1dfd678abfd5159fa0e667",
+      "checker_scanned": false
+    },
+    {
+      "path": "native-evidence/windows-index-complete-archive/chunks/fe791fd24b7efce006601c2f0a825552705b82a3.b64.txt",
+      "local_file": "/workspace/scratch/07dd58cc9630/hepta-audit-fourth/inputs/windows-index-exact-git-chunks/fe791fd24b7efce006601c2f0a825552705b82a3.b64.txt",
+      "bytes": 43388,
+      "sha256": "b121f33840ac00b71d3d3abd57e03ff1813b6016b1773d74f7e4278188f8868a",
+      "blob": "fe791fd24b7efce006601c2f0a825552705b82a3",
+      "checker_scanned": false
+    },
+    {
+      "path": "native-evidence/windows-index-complete-archive/chunks/fec38836675e84b598399d363930ec84cbc995f8.b64.txt",
+      "local_file": "/workspace/scratch/07dd58cc9630/hepta-audit-fourth/inputs/windows-index-exact-git-chunks/fec38836675e84b598399d363930ec84cbc995f8.b64.txt",
+      "bytes": 68,
+      "sha256": "f72dff0c6c2fb87f5e047734852eef991f84da66e20ec51018f4ec3663d96da6",
+      "blob": "fec38836675e84b598399d363930ec84cbc995f8",
+      "checker_scanned": false
+    },
+    {
+      "path": "native-evidence/windows-index-complete-archive/native-export-manifest-v1.json",
+      "local_file": "/workspace/scratch/07dd58cc9630/ci-audit/recovered-20261105/windows-index-complete-archive/native-export-manifest-v1.json",
+      "bytes": 55379,
+      "sha256": "57540f52e11006cb4e17055ec047eeace27ebd9f6feadb8ed971dabdb35be2e2",
+      "blob": "e9b9c5cea90a83c0329905bb7a74eac6b38865b2",
+      "checker_scanned": true
+    },
+    {
+      "path": "native-evidence/windows-index-complete-archive/strict-decoding-validation-v1.json",
+      "local_file": "/workspace/scratch/07dd58cc9630/ci-audit/recovered-20261105/windows-index-complete-archive/strict-decoding-validation-v1.json",
+      "bytes": 39367,
+      "sha256": "3f20b5f5e6827c576fa3f5465c1505cf353a5ec5bbf97cd658b552c4a419780f",
+      "blob": "346d434b5b1c174c3f8312d9c481a5b2fbd54885",
+      "checker_scanned": true
+    },
+    {
+      "path": "fourth-windows-index-complete-root-review.json",
+      "local_file": "/workspace/scratch/07dd58cc9630/hepta-audit-fourth/deliverables/fourth-windows-index-complete-root-review.json",
+      "bytes": 17349,
+      "sha256": "9b416db045006c93fd86039173b26188da712954a18c396162a3d52b22046292",
+      "blob": "f1a4698b3c990044be26da79e5f1e5fbca9cef61",
+      "checker_scanned": true
+    },
+    {
+      "path": "repro/review_windows_index_complete.py",
+      "local_file": "/workspace/scratch/07dd58cc9630/hepta-audit-fourth/review_windows_index_complete.py",
+      "bytes": 10698,
+      "sha256": "7d21aeacd5a0fef5277ee768902b12b8b0813504bd158a2147728ce7e016859b",
+      "blob": "2cd5b8e5fe3307a56672a38ad1868be746cdc775",
+      "checker_scanned": false
+    },
+    {
+      "path": "diagnostics/core-cold-root-fb9/core-cold-root-static-diagnosis.json",
+      "local_file": "/workspace/scratch/07dd58cc9630/research-audit/fb9-new-failures-20261105/core-cold-root-static-diagnosis.json",
+      "bytes": 55679,
+      "sha256": "9f3f5e7fa6237c8161f605afe85f057c88e8d371088287033364b0c90aa49093",
+      "blob": "9e860385dccb24ab3debe0cf748e33950e4895ca",
+      "checker_scanned": true
+    },
+    {
+      "path": "diagnostics/core-cold-root-fb9/CORE_COLD_ROOT_DIAGNOSIS.zh-CN.md",
+      "local_file": "/workspace/scratch/07dd58cc9630/research-audit/fb9-new-failures-20261105/CORE_COLD_ROOT_DIAGNOSIS.zh-CN.md",
+      "bytes": 2956,
+      "sha256": "819a7ad44522706a9f84bf4fd5ecdc0fa4449420465884b2e434a77bae741227",
+      "blob": "dea99715983d6306648764e181f23b44c79c924f",
+      "checker_scanned": true
+    },
+    {
+      "path": "diagnostics/core-cold-root-fb9/core-cold-root-fb9-original-block.log",
+      "local_file": "/workspace/scratch/07dd58cc9630/research-audit/fb9-new-failures-20261105/core-cold-root-fb9-original-block.log",
+      "bytes": 596,
+      "sha256": "b616de94819aebe43cf8de1748dd59560452eedb5cf5f30903f936b70a33dacb",
+      "blob": "d3631986e5cafd679e585b7c2fe40aebe743eb9a",
+      "checker_scanned": false
+    },
+    {
+      "path": "diagnostics/core-cold-root-fb9/core-diagnostic-proposal/repair-manifest.json",
+      "local_file": "/workspace/scratch/07dd58cc9630/research-audit/fb9-new-failures-20261105/core-diagnostic-proposal/repair-manifest.json",
+      "bytes": 4912,
+      "sha256": "7570a0774e13735a113a9c08ba89f8e2ce26bb34c7921c6e403a03223be2166b",
+      "blob": "0f7a9952ef577090bf29d270bc85581595347efb",
+      "checker_scanned": true
+    },
+    {
+      "path": "diagnostics/core-cold-root-fb9/core-diagnostic-proposal/core-cold-root-stage-diagnostic.patch",
+      "local_file": "/workspace/scratch/07dd58cc9630/research-audit/fb9-new-failures-20261105/core-diagnostic-proposal/core-cold-root-stage-diagnostic.patch",
+      "bytes": 3098,
+      "sha256": "24c67f040eb76ca087dcf4dd754536ee213c72cb34d7505229139911b2cbcefe",
+      "blob": "525c4702fe3d2f8193e45d37fde977402cb7180b",
+      "checker_scanned": false
+    },
+    {
+      "path": "diagnostics/core-cold-root-fb9/core-diagnostic-proposal/candidate/codex-rs/core/tests/suite/multi_agent_resume.rs.source.txt",
+      "local_file": "/workspace/scratch/07dd58cc9630/research-audit/fb9-new-failures-20261105/core-diagnostic-proposal/candidate/codex-rs/core/tests/suite/multi_agent_resume.rs",
+      "bytes": 25159,
+      "sha256": "3439c978dfcdfd177dbc08b3bedf21986997f49c47d6fead159b0b95229d09f4",
+      "blob": "e2b3daac03d9e15b1641e11f23377bf56bf397db",
+      "checker_scanned": false
+    },
+    {
+      "path": "diagnostics/core-cold-root-fb9/build_core_diagnostic.py",
+      "local_file": "/workspace/scratch/07dd58cc9630/research-audit/fb9-new-failures-20261105/build_core_diagnostic.py",
+      "bytes": 6396,
+      "sha256": "b615bd06eb83cb5b91cc84165bbe7a14dfff7ea5e11d4d64efc526de9cd947e7",
+      "blob": "651029c1916cd5b2412dab84ea10cfc5f0b2e053",
+      "checker_scanned": false
+    },
+    {
+      "path": "diagnostics/core-cold-root-fb9/freeze_core_diagnosis.py",
+      "local_file": "/workspace/scratch/07dd58cc9630/research-audit/fb9-new-failures-20261105/freeze_core_diagnosis.py",
+      "bytes": 15026,
+      "sha256": "ac183878d4970fbb01336c29f1e8383f22032d96e44a380d6ca88f0315ff2e9d",
+      "blob": "d49120fe309a19e4647b51930bb0eb239cce5277",
+      "checker_scanned": false
+    },
+    {
+      "path": "diagnostics/core-cold-root-fb9/publication.json",
+      "local_file": "/workspace/scratch/07dd58cc9630/research-audit/fb9-new-failures-20261105/publication.json",
+      "bytes": 3102,
+      "sha256": "ddb2d3386e9207b3582d3a7e212a7b407be2640974c1a24139ce8ad339e4ebbd",
+      "blob": "50d05f7fbbad2050390260307ec56153de505dcb",
+      "checker_scanned": true
+    },
+    {
+      "path": "diagnostics/proxy-connect-fb9/static-diagnosis.json",
+      "local_file": "/workspace/scratch/07dd58cc9630/architecture-audit/fb9-proxy-connect-20261105/static-diagnosis.json",
+      "bytes": 26894,
+      "sha256": "9acdaaf94346948afb173bd0b76b379c19e4780703b660bea00d0cb37292a121",
+      "blob": "2e005c3940d129398dd48722d70c15525118d23c",
+      "checker_scanned": true
+    },
+    {
+      "path": "diagnostics/proxy-connect-fb9/STATIC_DIAGNOSIS_ZH.md",
+      "local_file": "/workspace/scratch/07dd58cc9630/architecture-audit/fb9-proxy-connect-20261105/STATIC_DIAGNOSIS_ZH.md",
+      "bytes": 3983,
+      "sha256": "13f58c2a77015220603e00458729bff416ec61ea8ef560f06be6e049afd06a80",
+      "blob": "c703af956eaab77bb7842fda380ae49192ae5d52",
+      "checker_scanned": true
+    },
+    {
+      "path": "diagnostics/proxy-connect-fb9/build_static_receipt.py",
+      "local_file": "/workspace/scratch/07dd58cc9630/architecture-audit/fb9-proxy-connect-20261105/build_static_receipt.py",
+      "bytes": 18628,
+      "sha256": "b723ded4317a914a7d43f64cc2f35cdae91f2b657ae2becbb21bb9647dd3fa43",
+      "blob": "6cb902633ac774bd6b9d4943dff1cb49dde2aafa",
+      "checker_scanned": false
+    },
+    {
+      "path": "diagnostics/proxy-connect-fb9/git-delivery-map.json",
+      "local_file": "/workspace/scratch/07dd58cc9630/architecture-audit/fb9-proxy-connect-20261105/git-delivery-map.json",
+      "bytes": 1118,
+      "sha256": "729fc753493c0a46c5dbfc2b76739d43db34dfad449a1c868cba2b3813942356",
+      "blob": "14db944bd93bbad69b8e51b842ed088284051582",
+      "checker_scanned": true
+    },
+    {
+      "path": "static-proposals/b16-native-runner/foundation-readiness-v1/foundation-readiness.json",
+      "local_file": "/workspace/scratch/07dd58cc9630/architecture-audit/b16-guarded-native-runner-20261105/foundation-readiness-v1/foundation-readiness.json",
+      "bytes": 26344,
+      "sha256": "8b71095c82a9a9439cbef5514d1319d48e40fa95c6e3754e2fd786af474fda5b",
+      "blob": "4c99a3176a85fc21a2023665a437de382ebf3f03",
+      "checker_scanned": true
+    },
+    {
+      "path": "static-proposals/b16-native-runner/foundation-readiness-v1/foundation-binding-UNBOUND.json",
+      "local_file": "/workspace/scratch/07dd58cc9630/architecture-audit/b16-guarded-native-runner-20261105/foundation-readiness-v1/foundation-binding-UNBOUND.json",
+      "bytes": 4198,
+      "sha256": "1db45d7e7f98cab58b5e4cc7e5d621530e4e81d574b1ffb904674009b03748d8",
+      "blob": "5d446082b37d2bee4120abd9bb0aaa608e63e423",
+      "checker_scanned": true
+    },
+    {
+      "path": "static-proposals/b16-native-runner/foundation-readiness-v1/last-tested-fb9-helper-contract.json",
+      "local_file": "/workspace/scratch/07dd58cc9630/architecture-audit/b16-guarded-native-runner-20261105/foundation-readiness-v1/last-tested-fb9-helper-contract.json",
+      "bytes": 7349,
+      "sha256": "89e4c46a2c54063344c6db9f172d2b21f7c58c376f4a1b53821a5a5e3dd56b5b",
+      "blob": "ed308a0a9048dbd0e5b3ed72c76a717136faf265",
+      "checker_scanned": true
+    },
+    {
+      "path": "static-proposals/b16-native-runner/foundation-readiness-v1/FOUNDATION_BINDING_ZH.md",
+      "local_file": "/workspace/scratch/07dd58cc9630/architecture-audit/b16-guarded-native-runner-20261105/foundation-readiness-v1/FOUNDATION_BINDING_ZH.md",
+      "bytes": 3695,
+      "sha256": "86f101895968bbe0e8ab15a0d3919eb18527566c9d2f37c54eb7940c85889448",
+      "blob": "59144be0270c1b9fb33e9007d8e4dcae10f5b19d",
+      "checker_scanned": true
+    },
+    {
+      "path": "static-proposals/b16-native-runner/build_foundation_readiness.py",
+      "local_file": "/workspace/scratch/07dd58cc9630/architecture-audit/b16-guarded-native-runner-20261105/build_foundation_readiness.py",
+      "bytes": 17403,
+      "sha256": "56443de1064a14863b68668cd8dcb64851ff5ca30697e7e65c7de7d39dfbe770",
+      "blob": "cc0bbbfd3c6389cf36766e165fd84708cee42487",
+      "checker_scanned": false
+    },
+    {
+      "path": "static-proposals/b16-native-runner/foundation-readiness-v1/git-delivery-map.json",
+      "local_file": "/workspace/scratch/07dd58cc9630/architecture-audit/b16-guarded-native-runner-20261105/foundation-readiness-v1/git-delivery-map.json",
+      "bytes": 1859,
+      "sha256": "ef54b0ce2781a4153669b3972ec33aa37f3c6bb88287fb184f6a22800fcd64bc",
+      "blob": "6b377d51ad98c01a6f153874930df0d1bd735b18",
+      "checker_scanned": true
+    },
+    {
+      "path": "report-reviews/final-consistency-20261105/independent-review.json",
+      "local_file": "/workspace/scratch/07dd58cc9630/research-audit/fourth-final-report-review-20261105/independent-review.json",
+      "bytes": 17221,
+      "sha256": "d803fe77544ff181f4e94f1fc90ab74e3138c00ece7b297b500f71837296e342",
+      "blob": "a27f9afb0cdcb0eb80b052f13491cc9dc20e84ad",
+      "checker_scanned": true
+    },
+    {
+      "path": "report-reviews/final-consistency-20261105/minimal-correction/report-consistency.patch",
+      "local_file": "/workspace/scratch/07dd58cc9630/research-audit/fourth-final-report-review-20261105/minimal-correction/report-consistency.patch",
+      "bytes": 17567,
+      "sha256": "a3765a0e932972d5fd2a81bd142dfc18a18c2f062142f378d0a3a1a01c7f4c66",
+      "blob": "5ec9b41f050d333810c960f2c02a04b143ecbe36",
+      "checker_scanned": false
+    },
+    {
+      "path": "report-reviews/final-consistency-20261105/minimal-correction/manifest.json",
+      "local_file": "/workspace/scratch/07dd58cc9630/research-audit/fourth-final-report-review-20261105/minimal-correction/manifest.json",
+      "bytes": 10172,
+      "sha256": "e15847412ad5e9e131cd15d6fac45becba030a9235fa6adb877a8bf75277155e",
+      "blob": "bc0fbdc17e2c88c2cfc39f2ed7f5c5f93e6f2ae0",
+      "checker_scanned": true
+    },
+    {
+      "path": "report-reviews/final-consistency-20261105/structural-reference-review.json",
+      "local_file": "/workspace/scratch/07dd58cc9630/research-audit/fourth-final-report-review-20261105/structural-reference-review.json",
+      "bytes": 245194,
+      "sha256": "fded7d6ecba3d93f5b33664c584b7f220a54d1068fe5201f951ece2cf9620a75",
+      "blob": "0ca4aa3a7b0fa22137af88323188899c52b888ba",
+      "checker_scanned": true
+    },
+    {
+      "path": "report-reviews/final-consistency-20261105/snapshot-1/snapshot-receipt.json",
+      "local_file": "/workspace/scratch/07dd58cc9630/research-audit/fourth-final-report-review-20261105/snapshot-1/snapshot-receipt.json",
+      "bytes": 2725,
+      "sha256": "2e18f9994f86f902ea4e5dea9ed4e4b7b102a1371d30f97f8c427f2a0499ec00",
+      "blob": "623135f3e3136eb6290cc7218e8d102814e26af8",
+      "checker_scanned": true
+    },
+    {
+      "path": "report-reviews/final-consistency-20261105/build_minimal_correction.py",
+      "local_file": "/workspace/scratch/07dd58cc9630/research-audit/fourth-final-report-review-20261105/build_minimal_correction.py",
+      "bytes": 8982,
+      "sha256": "9733a160cd197765b41224ec2893e392ea483145cc1b9c2325200335efbb7b01",
+      "blob": "e3ea420c461a13d5d30d589e99427a830c3cc22f",
+      "checker_scanned": false
+    },
+    {
+      "path": "report-reviews/final-consistency-20261105/review_current_reports.py",
+      "local_file": "/workspace/scratch/07dd58cc9630/research-audit/fourth-final-report-review-20261105/review_current_reports.py",
+      "bytes": 9512,
+      "sha256": "dd4df0b62221ed48341af2be718226fddd426785973f3d649cfce1541d1b5cd5",
+      "blob": "f7068cc62f571490eb38f90b4d9bf69af824af28",
+      "checker_scanned": false
+    },
+    {
+      "path": "report-reviews/final-consistency-20261105/minimal-correction/deliverables/CURRENT_AUDIT_PROGRESS.zh-CN.md.source.txt",
+      "local_file": "/workspace/scratch/07dd58cc9630/research-audit/fourth-final-report-review-20261105/minimal-correction/deliverables/CURRENT_AUDIT_PROGRESS.zh-CN.md",
+      "bytes": 41263,
+      "sha256": "f87fdb3ae97116bda122c78987c9dcfadd18110dc25102fdf5a286a4fa5f7804",
+      "blob": "f13c800f37546793df76edb4fab1fde1b78cdc51",
+      "checker_scanned": false
+    },
+    {
+      "path": "report-reviews/final-consistency-20261105/minimal-correction/deliverables/FOURTH_BATCH_QUALIFICATION.md.source.txt",
+      "local_file": "/workspace/scratch/07dd58cc9630/research-audit/fourth-final-report-review-20261105/minimal-correction/deliverables/FOURTH_BATCH_QUALIFICATION.md",
+      "bytes": 26136,
+      "sha256": "bb24c02b78b2acb606819fe991aefd4dd1602bc498f1064390d6f71b9369f9c1",
+      "blob": "206a7a9f0320521d84c0b56f96ae8429d774cada",
+      "checker_scanned": false
+    },
+    {
+      "path": "report-reviews/final-consistency-20261105/minimal-correction/deliverables/PROJECT_DIRECTION_AND_PLAN.zh-CN.md.source.txt",
+      "local_file": "/workspace/scratch/07dd58cc9630/research-audit/fourth-final-report-review-20261105/minimal-correction/deliverables/PROJECT_DIRECTION_AND_PLAN.zh-CN.md",
+      "bytes": 20206,
+      "sha256": "30a393f4b1eb85dfa77710ff2defe1730d7fcc4d80c858275c8b8d2f32f5f18b",
+      "blob": "87edc4cdd5bb4ff98941cc12c822498ff52feca4",
+      "checker_scanned": false
+    },
+    {
+      "path": "report-reviews/final-consistency-20261105/minimal-correction/deliverables/current-blockers.json",
+      "local_file": "/workspace/scratch/07dd58cc9630/research-audit/fourth-final-report-review-20261105/minimal-correction/deliverables/current-blockers.json",
+      "bytes": 52432,
+      "sha256": "fd733ae37f6339d79da5c417a5390b85b3a6f2a139b2639a1065421d2385b4ee",
+      "blob": "33fc9ab935830c14e512161ff72d941769af3377",
+      "checker_scanned": true
+    },
+    {
+      "path": "report-reviews/final-consistency-20261105/publication.json",
+      "local_file": "/workspace/scratch/07dd58cc9630/research-audit/fourth-final-report-review-20261105/publication.json",
+      "bytes": 4592,
+      "sha256": "47981264b52c012444986f48c9ddd9792cc338629f2a91b3e1a20a3b335af994",
+      "blob": "7a42427138b0e81183a58624bda223b58fd2c510",
+      "checker_scanned": true
+    },
+    {
+      "path": "source-assembly/pending-evidence-registration-plan.json",
+      "local_file": "/workspace/scratch/07dd58cc9630/research-audit/fourth-final-report-review-20261105/pending-registration-manifest.json",
+      "bytes": 136884,
+      "sha256": "de7d499ba1ea9892db30e8cf76749c808bbe3da7027eaf6ed3e98585b968bf56",
+      "blob": "1a4a405a7cfdd6b3257f4acd4e4aa8d17d9e9618",
+      "checker_scanned": true
+    },
+    {
+      "path": "source-assembly/pending-evidence-repository-layout.json",
+      "local_file": "/workspace/scratch/07dd58cc9630/hepta-audit-fourth/inputs/pending-evidence-repository-layout.json",
+      "bytes": 5568,
+      "sha256": "98754b9c7f3dce14a0b653285fcc9951f053fcf02696e3432d28c6215dbefb52",
+      "blob": "aa547801e3ce306717b3b8ea75bd087234636c79",
+      "checker_scanned": true
+    },
+    {
+      "path": "source-assembly/final-A-hygiene-source-commit.json",
+      "local_file": "/workspace/scratch/07dd58cc9630/hepta-audit-fourth/inputs/final-A-hygiene-source-commit.json",
+      "bytes": 95592,
+      "sha256": "c8717857fd586edf1a3b4b267831ada37b9fac43d35db14f7c95292c3b16e841",
+      "blob": "b6a303cd3f93e32c2ef858009f52028930863728",
+      "checker_scanned": true
+    }
+  ],
+  "workflow_references": [
+    {
+      "path": "report-reviews/final-consistency-20261105/structural-reference-review.json",
+      "blob": "0ca4aa3a7b0fa22137af88323188899c52b888ba",
+      "line": 3582,
+      "workflow": ".github/workflows/hepta-supervisor-p0-crossplatform.yml",
+      "exists_in_source_cohort_22": true,
+      "workflow_blob": "fdeb340099f9f720a353aa8b69372e75a335387e"
+    },
+    {
+      "path": "report-reviews/final-consistency-20261105/structural-reference-review.json",
+      "blob": "0ca4aa3a7b0fa22137af88323188899c52b888ba",
+      "line": 3589,
+      "workflow": ".github/workflows/hepta-offline-build-inputs.yml",
+      "exists_in_source_cohort_22": true,
+      "workflow_blob": "43980e2ef6870d20d1a3fedebcb04fbfd647c1c2"
+    },
+    {
+      "path": "report-reviews/final-consistency-20261105/structural-reference-review.json",
+      "blob": "0ca4aa3a7b0fa22137af88323188899c52b888ba",
+      "line": 3596,
+      "workflow": ".github/workflows/hepta-musl-product-smoke.yml",
+      "exists_in_source_cohort_22": true,
+      "workflow_blob": "a157c21a3e79460dc6f32147d952f3dacb4ed197"
+    },
+    {
+      "path": "report-reviews/final-consistency-20261105/structural-reference-review.json",
+      "blob": "0ca4aa3a7b0fa22137af88323188899c52b888ba",
+      "line": 3603,
+      "workflow": ".github/workflows/hepta-musl-product-smoke.yml",
+      "exists_in_source_cohort_22": true,
+      "workflow_blob": "a157c21a3e79460dc6f32147d952f3dacb4ed197"
+    },
+    {
+      "path": "report-reviews/final-consistency-20261105/structural-reference-review.json",
+      "blob": "0ca4aa3a7b0fa22137af88323188899c52b888ba",
+      "line": 3610,
+      "workflow": ".github/workflows/hepta-musl-product-smoke.yml",
+      "exists_in_source_cohort_22": true,
+      "workflow_blob": "a157c21a3e79460dc6f32147d952f3dacb4ed197"
+    },
+    {
+      "path": "report-reviews/final-consistency-20261105/structural-reference-review.json",
+      "blob": "0ca4aa3a7b0fa22137af88323188899c52b888ba",
+      "line": 3617,
+      "workflow": ".github/workflows/hepta-musl-product-smoke.yml",
+      "exists_in_source_cohort_22": true,
+      "workflow_blob": "a157c21a3e79460dc6f32147d952f3dacb4ed197"
+    },
+    {
+      "path": "report-reviews/final-consistency-20261105/structural-reference-review.json",
+      "blob": "0ca4aa3a7b0fa22137af88323188899c52b888ba",
+      "line": 3624,
+      "workflow": ".github/workflows/windows-core-lifecycle.yml",
+      "exists_in_source_cohort_22": true,
+      "workflow_blob": "95371c3bcd383f5f2356fe4b10bd8ccc2fde6b88"
+    },
+    {
+      "path": "report-reviews/final-consistency-20261105/structural-reference-review.json",
+      "blob": "0ca4aa3a7b0fa22137af88323188899c52b888ba",
+      "line": 3631,
+      "workflow": ".github/workflows/windows-core-lifecycle.yml",
+      "exists_in_source_cohort_22": true,
+      "workflow_blob": "95371c3bcd383f5f2356fe4b10bd8ccc2fde6b88"
+    },
+    {
+      "path": "report-reviews/final-consistency-20261105/structural-reference-review.json",
+      "blob": "0ca4aa3a7b0fa22137af88323188899c52b888ba",
+      "line": 3638,
+      "workflow": ".github/workflows/windows-core-lifecycle.yml",
+      "exists_in_source_cohort_22": true,
+      "workflow_blob": "95371c3bcd383f5f2356fe4b10bd8ccc2fde6b88"
+    },
+    {
+      "path": "report-reviews/final-consistency-20261105/structural-reference-review.json",
+      "blob": "0ca4aa3a7b0fa22137af88323188899c52b888ba",
+      "line": 3645,
+      "workflow": ".github/workflows/hepta-musl-product-smoke.yml",
+      "exists_in_source_cohort_22": true,
+      "workflow_blob": "a157c21a3e79460dc6f32147d952f3dacb4ed197"
+    },
+    {
+      "path": "report-reviews/final-consistency-20261105/structural-reference-review.json",
+      "blob": "0ca4aa3a7b0fa22137af88323188899c52b888ba",
+      "line": 3652,
+      "workflow": ".github/workflows/windows-core-lifecycle.yml",
+      "exists_in_source_cohort_22": true,
+      "workflow_blob": "95371c3bcd383f5f2356fe4b10bd8ccc2fde6b88"
+    },
+    {
+      "path": "report-reviews/final-consistency-20261105/structural-reference-review.json",
+      "blob": "0ca4aa3a7b0fa22137af88323188899c52b888ba",
+      "line": 3659,
+      "workflow": ".github/workflows/hepta-musl-product-smoke.yml",
+      "exists_in_source_cohort_22": true,
+      "workflow_blob": "a157c21a3e79460dc6f32147d952f3dacb4ed197"
+    },
+    {
+      "path": "report-reviews/final-consistency-20261105/structural-reference-review.json",
+      "blob": "0ca4aa3a7b0fa22137af88323188899c52b888ba",
+      "line": 3666,
+      "workflow": ".github/workflows/windows-core-lifecycle.yml",
+      "exists_in_source_cohort_22": true,
+      "workflow_blob": "95371c3bcd383f5f2356fe4b10bd8ccc2fde6b88"
+    },
+    {
+      "path": "report-reviews/final-consistency-20261105/structural-reference-review.json",
+      "blob": "0ca4aa3a7b0fa22137af88323188899c52b888ba",
+      "line": 3673,
+      "workflow": ".github/workflows/hepta-musl-product-smoke.yml",
+      "exists_in_source_cohort_22": true,
+      "workflow_blob": "a157c21a3e79460dc6f32147d952f3dacb4ed197"
+    },
+    {
+      "path": "report-reviews/final-consistency-20261105/structural-reference-review.json",
+      "blob": "0ca4aa3a7b0fa22137af88323188899c52b888ba",
+      "line": 3680,
+      "workflow": ".github/workflows/windows-core-lifecycle.yml",
+      "exists_in_source_cohort_22": true,
+      "workflow_blob": "95371c3bcd383f5f2356fe4b10bd8ccc2fde6b88"
+    },
+    {
+      "path": "report-reviews/final-consistency-20261105/structural-reference-review.json",
+      "blob": "0ca4aa3a7b0fa22137af88323188899c52b888ba",
+      "line": 3687,
+      "workflow": ".github/workflows/hepta-musl-product-smoke.yml",
+      "exists_in_source_cohort_22": true,
+      "workflow_blob": "a157c21a3e79460dc6f32147d952f3dacb4ed197"
+    },
+    {
+      "path": "report-reviews/final-consistency-20261105/structural-reference-review.json",
+      "blob": "0ca4aa3a7b0fa22137af88323188899c52b888ba",
+      "line": 3694,
+      "workflow": ".github/workflows/windows-core-lifecycle.yml",
+      "exists_in_source_cohort_22": true,
+      "workflow_blob": "95371c3bcd383f5f2356fe4b10bd8ccc2fde6b88"
+    },
+    {
+      "path": "report-reviews/final-consistency-20261105/structural-reference-review.json",
+      "blob": "0ca4aa3a7b0fa22137af88323188899c52b888ba",
+      "line": 3701,
+      "workflow": ".github/workflows/hepta-musl-product-smoke.yml",
+      "exists_in_source_cohort_22": true,
+      "workflow_blob": "a157c21a3e79460dc6f32147d952f3dacb4ed197"
+    },
+    {
+      "path": "report-reviews/final-consistency-20261105/structural-reference-review.json",
+      "blob": "0ca4aa3a7b0fa22137af88323188899c52b888ba",
+      "line": 3708,
+      "workflow": ".github/workflows/hepta-musl-product-smoke.yml",
+      "exists_in_source_cohort_22": true,
+      "workflow_blob": "a157c21a3e79460dc6f32147d952f3dacb4ed197"
+    },
+    {
+      "path": "report-reviews/final-consistency-20261105/structural-reference-review.json",
+      "blob": "0ca4aa3a7b0fa22137af88323188899c52b888ba",
+      "line": 3715,
+      "workflow": ".github/workflows/hepta-musl-product-smoke.yml",
+      "exists_in_source_cohort_22": true,
+      "workflow_blob": "a157c21a3e79460dc6f32147d952f3dacb4ed197"
+    },
+    {
+      "path": "report-reviews/final-consistency-20261105/structural-reference-review.json",
+      "blob": "0ca4aa3a7b0fa22137af88323188899c52b888ba",
+      "line": 3722,
+      "workflow": ".github/workflows/hepta-musl-product-smoke.yml",
+      "exists_in_source_cohort_22": true,
+      "workflow_blob": "a157c21a3e79460dc6f32147d952f3dacb4ed197"
+    },
+    {
+      "path": "report-reviews/final-consistency-20261105/structural-reference-review.json",
+      "blob": "0ca4aa3a7b0fa22137af88323188899c52b888ba",
+      "line": 3729,
+      "workflow": ".github/workflows/windows-core-lifecycle.yml",
+      "exists_in_source_cohort_22": true,
+      "workflow_blob": "95371c3bcd383f5f2356fe4b10bd8ccc2fde6b88"
+    },
+    {
+      "path": "report-reviews/final-consistency-20261105/structural-reference-review.json",
+      "blob": "0ca4aa3a7b0fa22137af88323188899c52b888ba",
+      "line": 3736,
+      "workflow": ".github/workflows/windows-core-lifecycle.yml",
+      "exists_in_source_cohort_22": true,
+      "workflow_blob": "95371c3bcd383f5f2356fe4b10bd8ccc2fde6b88"
+    },
+    {
+      "path": "report-reviews/final-consistency-20261105/structural-reference-review.json",
+      "blob": "0ca4aa3a7b0fa22137af88323188899c52b888ba",
+      "line": 3743,
+      "workflow": ".github/workflows/windows-core-lifecycle.yml",
+      "exists_in_source_cohort_22": true,
+      "workflow_blob": "95371c3bcd383f5f2356fe4b10bd8ccc2fde6b88"
+    },
+    {
+      "path": "report-reviews/final-consistency-20261105/structural-reference-review.json",
+      "blob": "0ca4aa3a7b0fa22137af88323188899c52b888ba",
+      "line": 3750,
+      "workflow": ".github/workflows/hepta-musl-product-smoke.yml",
+      "exists_in_source_cohort_22": true,
+      "workflow_blob": "a157c21a3e79460dc6f32147d952f3dacb4ed197"
+    },
+    {
+      "path": "report-reviews/final-consistency-20261105/structural-reference-review.json",
+      "blob": "0ca4aa3a7b0fa22137af88323188899c52b888ba",
+      "line": 3757,
+      "workflow": ".github/workflows/windows-core-lifecycle.yml",
+      "exists_in_source_cohort_22": true,
+      "workflow_blob": "95371c3bcd383f5f2356fe4b10bd8ccc2fde6b88"
+    },
+    {
+      "path": "report-reviews/final-consistency-20261105/structural-reference-review.json",
+      "blob": "0ca4aa3a7b0fa22137af88323188899c52b888ba",
+      "line": 3764,
+      "workflow": ".github/workflows/hepta-musl-product-smoke.yml",
+      "exists_in_source_cohort_22": true,
+      "workflow_blob": "a157c21a3e79460dc6f32147d952f3dacb4ed197"
+    },
+    {
+      "path": "report-reviews/final-consistency-20261105/structural-reference-review.json",
+      "blob": "0ca4aa3a7b0fa22137af88323188899c52b888ba",
+      "line": 3771,
+      "workflow": ".github/workflows/windows-core-lifecycle.yml",
+      "exists_in_source_cohort_22": true,
+      "workflow_blob": "95371c3bcd383f5f2356fe4b10bd8ccc2fde6b88"
+    },
+    {
+      "path": "report-reviews/final-consistency-20261105/structural-reference-review.json",
+      "blob": "0ca4aa3a7b0fa22137af88323188899c52b888ba",
+      "line": 3778,
+      "workflow": ".github/workflows/hepta-musl-product-smoke.yml",
+      "exists_in_source_cohort_22": true,
+      "workflow_blob": "a157c21a3e79460dc6f32147d952f3dacb4ed197"
+    },
+    {
+      "path": "report-reviews/final-consistency-20261105/structural-reference-review.json",
+      "blob": "0ca4aa3a7b0fa22137af88323188899c52b888ba",
+      "line": 3785,
+      "workflow": ".github/workflows/windows-core-lifecycle.yml",
+      "exists_in_source_cohort_22": true,
+      "workflow_blob": "95371c3bcd383f5f2356fe4b10bd8ccc2fde6b88"
+    },
+    {
+      "path": "report-reviews/final-consistency-20261105/structural-reference-review.json",
+      "blob": "0ca4aa3a7b0fa22137af88323188899c52b888ba",
+      "line": 3792,
+      "workflow": ".github/workflows/hepta-musl-product-smoke.yml",
+      "exists_in_source_cohort_22": true,
+      "workflow_blob": "a157c21a3e79460dc6f32147d952f3dacb4ed197"
+    },
+    {
+      "path": "report-reviews/final-consistency-20261105/structural-reference-review.json",
+      "blob": "0ca4aa3a7b0fa22137af88323188899c52b888ba",
+      "line": 3799,
+      "workflow": ".github/workflows/windows-core-lifecycle.yml",
+      "exists_in_source_cohort_22": true,
+      "workflow_blob": "95371c3bcd383f5f2356fe4b10bd8ccc2fde6b88"
+    },
+    {
+      "path": "report-reviews/final-consistency-20261105/structural-reference-review.json",
+      "blob": "0ca4aa3a7b0fa22137af88323188899c52b888ba",
+      "line": 3806,
+      "workflow": ".github/workflows/hepta-musl-product-smoke.yml",
+      "exists_in_source_cohort_22": true,
+      "workflow_blob": "a157c21a3e79460dc6f32147d952f3dacb4ed197"
+    },
+    {
+      "path": "report-reviews/final-consistency-20261105/structural-reference-review.json",
+      "blob": "0ca4aa3a7b0fa22137af88323188899c52b888ba",
+      "line": 3813,
+      "workflow": ".github/workflows/windows-core-lifecycle.yml",
+      "exists_in_source_cohort_22": true,
+      "workflow_blob": "95371c3bcd383f5f2356fe4b10bd8ccc2fde6b88"
+    },
+    {
+      "path": "report-reviews/final-consistency-20261105/structural-reference-review.json",
+      "blob": "0ca4aa3a7b0fa22137af88323188899c52b888ba",
+      "line": 3820,
+      "workflow": ".github/workflows/hepta-musl-product-smoke.yml",
+      "exists_in_source_cohort_22": true,
+      "workflow_blob": "a157c21a3e79460dc6f32147d952f3dacb4ed197"
+    },
+    {
+      "path": "report-reviews/final-consistency-20261105/structural-reference-review.json",
+      "blob": "0ca4aa3a7b0fa22137af88323188899c52b888ba",
+      "line": 3827,
+      "workflow": ".github/workflows/windows-core-lifecycle.yml",
+      "exists_in_source_cohort_22": true,
+      "workflow_blob": "95371c3bcd383f5f2356fe4b10bd8ccc2fde6b88"
+    },
+    {
+      "path": "report-reviews/final-consistency-20261105/structural-reference-review.json",
+      "blob": "0ca4aa3a7b0fa22137af88323188899c52b888ba",
+      "line": 3834,
+      "workflow": ".github/workflows/hepta-musl-product-smoke.yml",
+      "exists_in_source_cohort_22": true,
+      "workflow_blob": "a157c21a3e79460dc6f32147d952f3dacb4ed197"
+    },
+    {
+      "path": "report-reviews/final-consistency-20261105/structural-reference-review.json",
+      "blob": "0ca4aa3a7b0fa22137af88323188899c52b888ba",
+      "line": 3841,
+      "workflow": ".github/workflows/windows-core-lifecycle.yml",
+      "exists_in_source_cohort_22": true,
+      "workflow_blob": "95371c3bcd383f5f2356fe4b10bd8ccc2fde6b88"
+    },
+    {
+      "path": "report-reviews/final-consistency-20261105/structural-reference-review.json",
+      "blob": "0ca4aa3a7b0fa22137af88323188899c52b888ba",
+      "line": 3848,
+      "workflow": ".github/workflows/hepta-musl-product-smoke.yml",
+      "exists_in_source_cohort_22": true,
+      "workflow_blob": "a157c21a3e79460dc6f32147d952f3dacb4ed197"
+    },
+    {
+      "path": "report-reviews/final-consistency-20261105/structural-reference-review.json",
+      "blob": "0ca4aa3a7b0fa22137af88323188899c52b888ba",
+      "line": 3855,
+      "workflow": ".github/workflows/windows-core-lifecycle.yml",
+      "exists_in_source_cohort_22": true,
+      "workflow_blob": "95371c3bcd383f5f2356fe4b10bd8ccc2fde6b88"
+    },
+    {
+      "path": "report-reviews/final-consistency-20261105/structural-reference-review.json",
+      "blob": "0ca4aa3a7b0fa22137af88323188899c52b888ba",
+      "line": 3862,
+      "workflow": ".github/workflows/hepta-musl-product-smoke.yml",
+      "exists_in_source_cohort_22": true,
+      "workflow_blob": "a157c21a3e79460dc6f32147d952f3dacb4ed197"
+    },
+    {
+      "path": "report-reviews/final-consistency-20261105/structural-reference-review.json",
+      "blob": "0ca4aa3a7b0fa22137af88323188899c52b888ba",
+      "line": 3869,
+      "workflow": ".github/workflows/hepta-architecture-convergence.yml",
+      "exists_in_source_cohort_22": true,
+      "workflow_blob": "fb2491dea531af8f2750d08c9010069065bc35fc"
+    },
+    {
+      "path": "report-reviews/final-consistency-20261105/structural-reference-review.json",
+      "blob": "0ca4aa3a7b0fa22137af88323188899c52b888ba",
+      "line": 3876,
+      "workflow": ".github/workflows/blocking-ci.yml",
+      "exists_in_source_cohort_22": true,
+      "workflow_blob": "fd01ab5edac5d78c9bcfb78397a157a3d5ea7c71"
+    },
+    {
+      "path": "report-reviews/final-consistency-20261105/structural-reference-review.json",
+      "blob": "0ca4aa3a7b0fa22137af88323188899c52b888ba",
+      "line": 3883,
+      "workflow": ".github/workflows/v8-canary.yml",
+      "exists_in_source_cohort_22": true,
+      "workflow_blob": "7bd9a55dcab283c743bd3a05f69c8c6c3e3ff2c4"
+    },
+    {
+      "path": "report-reviews/final-consistency-20261105/structural-reference-review.json",
+      "blob": "0ca4aa3a7b0fa22137af88323188899c52b888ba",
+      "line": 3890,
+      "workflow": ".github/workflows/hepta-architecture-convergence.yml",
+      "exists_in_source_cohort_22": true,
+      "workflow_blob": "fb2491dea531af8f2750d08c9010069065bc35fc"
+    },
+    {
+      "path": "report-reviews/final-consistency-20261105/structural-reference-review.json",
+      "blob": "0ca4aa3a7b0fa22137af88323188899c52b888ba",
+      "line": 3897,
+      "workflow": ".github/workflows/blocking-ci.yml",
+      "exists_in_source_cohort_22": true,
+      "workflow_blob": "fd01ab5edac5d78c9bcfb78397a157a3d5ea7c71"
+    },
+    {
+      "path": "report-reviews/final-consistency-20261105/structural-reference-review.json",
+      "blob": "0ca4aa3a7b0fa22137af88323188899c52b888ba",
+      "line": 3904,
+      "workflow": ".github/workflows/codespell.yml",
+      "exists_in_source_cohort_22": true,
+      "workflow_blob": "06ea9c7226d265405c73850c449b3d6b96d82514"
+    },
+    {
+      "path": "report-reviews/final-consistency-20261105/structural-reference-review.json",
+      "blob": "0ca4aa3a7b0fa22137af88323188899c52b888ba",
+      "line": 3911,
+      "workflow": ".github/workflows/blob-size-policy.yml",
+      "exists_in_source_cohort_22": true,
+      "workflow_blob": "ac1e8f5ec3354017a76695e5a1f0e270cee440ba"
+    },
+    {
+      "path": "report-reviews/final-consistency-20261105/structural-reference-review.json",
+      "blob": "0ca4aa3a7b0fa22137af88323188899c52b888ba",
+      "line": 3918,
+      "workflow": ".github/workflows/repo-checks.yml",
+      "exists_in_source_cohort_22": true,
+      "workflow_blob": "72bd28da471f893a556c2acb689e52a28d73ff99"
+    },
+    {
+      "path": "report-reviews/final-consistency-20261105/structural-reference-review.json",
+      "blob": "0ca4aa3a7b0fa22137af88323188899c52b888ba",
+      "line": 3925,
+      "workflow": ".github/workflows/rust-ci.yml",
+      "exists_in_source_cohort_22": true,
+      "workflow_blob": "81330bf3ed388e9deafa474516be437ac165cbb7"
+    },
+    {
+      "path": "report-reviews/final-consistency-20261105/structural-reference-review.json",
+      "blob": "0ca4aa3a7b0fa22137af88323188899c52b888ba",
+      "line": 3932,
+      "workflow": ".github/workflows/hepta-contract-gate.yml",
+      "exists_in_source_cohort_22": true,
+      "workflow_blob": "0eb3d84801cc456b34fa1e33957400c1a00dcb68"
+    },
+    {
+      "path": "report-reviews/final-consistency-20261105/structural-reference-review.json",
+      "blob": "0ca4aa3a7b0fa22137af88323188899c52b888ba",
+      "line": 3939,
+      "workflow": ".github/workflows/sdk.yml",
+      "exists_in_source_cohort_22": true,
+      "workflow_blob": "8af39601ed7cf800e1449ca12141ac1fdb33937f"
+    },
+    {
+      "path": "report-reviews/final-consistency-20261105/structural-reference-review.json",
+      "blob": "0ca4aa3a7b0fa22137af88323188899c52b888ba",
+      "line": 3946,
+      "workflow": ".github/workflows/bazel.yml",
+      "exists_in_source_cohort_22": true,
+      "workflow_blob": "9eed8ed8fa46c88d9d89d1499f55cb8c303137af"
+    },
+    {
+      "path": "report-reviews/final-consistency-20261105/structural-reference-review.json",
+      "blob": "0ca4aa3a7b0fa22137af88323188899c52b888ba",
+      "line": 3953,
+      "workflow": ".github/workflows/cargo-deny.yml",
+      "exists_in_source_cohort_22": true,
+      "workflow_blob": "88b6308899357e23b4a4058aecd4527b4edcee9b"
+    },
+    {
+      "path": "report-reviews/final-consistency-20261105/structural-reference-review.json",
+      "blob": "0ca4aa3a7b0fa22137af88323188899c52b888ba",
+      "line": 3960,
+      "workflow": ".github/workflows/v8-canary.yml",
+      "exists_in_source_cohort_22": true,
+      "workflow_blob": "7bd9a55dcab283c743bd3a05f69c8c6c3e3ff2c4"
+    },
+    {
+      "path": "report-reviews/final-consistency-20261105/structural-reference-review.json",
+      "blob": "0ca4aa3a7b0fa22137af88323188899c52b888ba",
+      "line": 3967,
+      "workflow": ".github/workflows/hepta-musl-product-smoke.yml",
+      "exists_in_source_cohort_22": true,
+      "workflow_blob": "a157c21a3e79460dc6f32147d952f3dacb4ed197"
+    },
+    {
+      "path": "report-reviews/final-consistency-20261105/structural-reference-review.json",
+      "blob": "0ca4aa3a7b0fa22137af88323188899c52b888ba",
+      "line": 3974,
+      "workflow": ".github/workflows/windows-core-lifecycle.yml",
+      "exists_in_source_cohort_22": true,
+      "workflow_blob": "95371c3bcd383f5f2356fe4b10bd8ccc2fde6b88"
+    },
+    {
+      "path": "report-reviews/final-consistency-20261105/structural-reference-review.json",
+      "blob": "0ca4aa3a7b0fa22137af88323188899c52b888ba",
+      "line": 3981,
+      "workflow": ".github/workflows/hepta-musl-product-smoke.yml",
+      "exists_in_source_cohort_22": true,
+      "workflow_blob": "a157c21a3e79460dc6f32147d952f3dacb4ed197"
+    },
+    {
+      "path": "report-reviews/final-consistency-20261105/structural-reference-review.json",
+      "blob": "0ca4aa3a7b0fa22137af88323188899c52b888ba",
+      "line": 3988,
+      "workflow": ".github/workflows/windows-core-lifecycle.yml",
+      "exists_in_source_cohort_22": true,
+      "workflow_blob": "95371c3bcd383f5f2356fe4b10bd8ccc2fde6b88"
+    },
+    {
+      "path": "report-reviews/final-consistency-20261105/structural-reference-review.json",
+      "blob": "0ca4aa3a7b0fa22137af88323188899c52b888ba",
+      "line": 3995,
+      "workflow": ".github/workflows/bazel.yml",
+      "exists_in_source_cohort_22": true,
+      "workflow_blob": "9eed8ed8fa46c88d9d89d1499f55cb8c303137af"
+    },
+    {
+      "path": "report-reviews/final-consistency-20261105/structural-reference-review.json",
+      "blob": "0ca4aa3a7b0fa22137af88323188899c52b888ba",
+      "line": 4002,
+      "workflow": ".github/workflows/bazel.yml",
+      "exists_in_source_cohort_22": true,
+      "workflow_blob": "9eed8ed8fa46c88d9d89d1499f55cb8c303137af"
+    },
+    {
+      "path": "report-reviews/final-consistency-20261105/structural-reference-review.json",
+      "blob": "0ca4aa3a7b0fa22137af88323188899c52b888ba",
+      "line": 4009,
+      "workflow": ".github/workflows/bazel.yml",
+      "exists_in_source_cohort_22": true,
+      "workflow_blob": "9eed8ed8fa46c88d9d89d1499f55cb8c303137af"
+    },
+    {
+      "path": "report-reviews/final-consistency-20261105/structural-reference-review.json",
+      "blob": "0ca4aa3a7b0fa22137af88323188899c52b888ba",
+      "line": 4016,
+      "workflow": ".github/workflows/bazel.yml",
+      "exists_in_source_cohort_22": true,
+      "workflow_blob": "9eed8ed8fa46c88d9d89d1499f55cb8c303137af"
+    },
+    {
+      "path": "report-reviews/final-consistency-20261105/structural-reference-review.json",
+      "blob": "0ca4aa3a7b0fa22137af88323188899c52b888ba",
+      "line": 4023,
+      "workflow": ".github/workflows/bazel.yml",
+      "exists_in_source_cohort_22": true,
+      "workflow_blob": "9eed8ed8fa46c88d9d89d1499f55cb8c303137af"
+    },
+    {
+      "path": "report-reviews/final-consistency-20261105/structural-reference-review.json",
+      "blob": "0ca4aa3a7b0fa22137af88323188899c52b888ba",
+      "line": 4030,
+      "workflow": ".github/workflows/bazel.yml",
+      "exists_in_source_cohort_22": true,
+      "workflow_blob": "9eed8ed8fa46c88d9d89d1499f55cb8c303137af"
+    },
+    {
+      "path": "report-reviews/final-consistency-20261105/structural-reference-review.json",
+      "blob": "0ca4aa3a7b0fa22137af88323188899c52b888ba",
+      "line": 4037,
+      "workflow": ".github/workflows/hepta-musl-product-smoke.yml",
+      "exists_in_source_cohort_22": true,
+      "workflow_blob": "a157c21a3e79460dc6f32147d952f3dacb4ed197"
+    },
+    {
+      "path": "report-reviews/final-consistency-20261105/structural-reference-review.json",
+      "blob": "0ca4aa3a7b0fa22137af88323188899c52b888ba",
+      "line": 4044,
+      "workflow": ".github/workflows/windows-core-lifecycle.yml",
+      "exists_in_source_cohort_22": true,
+      "workflow_blob": "95371c3bcd383f5f2356fe4b10bd8ccc2fde6b88"
+    },
+    {
+      "path": "report-reviews/final-consistency-20261105/structural-reference-review.json",
+      "blob": "0ca4aa3a7b0fa22137af88323188899c52b888ba",
+      "line": 4051,
+      "workflow": ".github/workflows/hepta-musl-product-smoke.yml",
+      "exists_in_source_cohort_22": true,
+      "workflow_blob": "a157c21a3e79460dc6f32147d952f3dacb4ed197"
+    },
+    {
+      "path": "report-reviews/final-consistency-20261105/structural-reference-review.json",
+      "blob": "0ca4aa3a7b0fa22137af88323188899c52b888ba",
+      "line": 4058,
+      "workflow": ".github/workflows/hepta-musl-product-smoke.yml",
+      "exists_in_source_cohort_22": true,
+      "workflow_blob": "a157c21a3e79460dc6f32147d952f3dacb4ed197"
+    },
+    {
+      "path": "report-reviews/final-consistency-20261105/structural-reference-review.json",
+      "blob": "0ca4aa3a7b0fa22137af88323188899c52b888ba",
+      "line": 4065,
+      "workflow": ".github/workflows/hepta-musl-product-smoke.yml",
+      "exists_in_source_cohort_22": true,
+      "workflow_blob": "a157c21a3e79460dc6f32147d952f3dacb4ed197"
+    },
+    {
+      "path": "report-reviews/final-consistency-20261105/structural-reference-review.json",
+      "blob": "0ca4aa3a7b0fa22137af88323188899c52b888ba",
+      "line": 4072,
+      "workflow": ".github/workflows/hepta-musl-product-smoke.yml",
+      "exists_in_source_cohort_22": true,
+      "workflow_blob": "a157c21a3e79460dc6f32147d952f3dacb4ed197"
+    },
+    {
+      "path": "report-reviews/final-consistency-20261105/structural-reference-review.json",
+      "blob": "0ca4aa3a7b0fa22137af88323188899c52b888ba",
+      "line": 4079,
+      "workflow": ".github/workflows/hepta-musl-product-smoke.yml",
+      "exists_in_source_cohort_22": true,
+      "workflow_blob": "a157c21a3e79460dc6f32147d952f3dacb4ed197"
+    },
+    {
+      "path": "report-reviews/final-consistency-20261105/structural-reference-review.json",
+      "blob": "0ca4aa3a7b0fa22137af88323188899c52b888ba",
+      "line": 4086,
+      "workflow": ".github/workflows/hepta-musl-product-smoke.yml",
+      "exists_in_source_cohort_22": true,
+      "workflow_blob": "a157c21a3e79460dc6f32147d952f3dacb4ed197"
+    },
+    {
+      "path": "report-reviews/final-consistency-20261105/structural-reference-review.json",
+      "blob": "0ca4aa3a7b0fa22137af88323188899c52b888ba",
+      "line": 4093,
+      "workflow": ".github/workflows/hepta-musl-product-smoke.yml",
+      "exists_in_source_cohort_22": true,
+      "workflow_blob": "a157c21a3e79460dc6f32147d952f3dacb4ed197"
+    },
+    {
+      "path": "report-reviews/final-consistency-20261105/structural-reference-review.json",
+      "blob": "0ca4aa3a7b0fa22137af88323188899c52b888ba",
+      "line": 4100,
+      "workflow": ".github/workflows/hepta-musl-product-smoke.yml",
+      "exists_in_source_cohort_22": true,
+      "workflow_blob": "a157c21a3e79460dc6f32147d952f3dacb4ed197"
+    },
+    {
+      "path": "report-reviews/final-consistency-20261105/structural-reference-review.json",
+      "blob": "0ca4aa3a7b0fa22137af88323188899c52b888ba",
+      "line": 4107,
+      "workflow": ".github/workflows/hepta-musl-product-smoke.yml",
+      "exists_in_source_cohort_22": true,
+      "workflow_blob": "a157c21a3e79460dc6f32147d952f3dacb4ed197"
+    },
+    {
+      "path": "report-reviews/final-consistency-20261105/structural-reference-review.json",
+      "blob": "0ca4aa3a7b0fa22137af88323188899c52b888ba",
+      "line": 4114,
+      "workflow": ".github/workflows/windows-core-lifecycle.yml",
+      "exists_in_source_cohort_22": true,
+      "workflow_blob": "95371c3bcd383f5f2356fe4b10bd8ccc2fde6b88"
+    },
+    {
+      "path": "report-reviews/final-consistency-20261105/structural-reference-review.json",
+      "blob": "0ca4aa3a7b0fa22137af88323188899c52b888ba",
+      "line": 4121,
+      "workflow": ".github/workflows/hepta-musl-product-smoke.yml",
+      "exists_in_source_cohort_22": true,
+      "workflow_blob": "a157c21a3e79460dc6f32147d952f3dacb4ed197"
+    },
+    {
+      "path": "report-reviews/final-consistency-20261105/structural-reference-review.json",
+      "blob": "0ca4aa3a7b0fa22137af88323188899c52b888ba",
+      "line": 4128,
+      "workflow": ".github/workflows/windows-core-lifecycle.yml",
+      "exists_in_source_cohort_22": true,
+      "workflow_blob": "95371c3bcd383f5f2356fe4b10bd8ccc2fde6b88"
+    }
+  ],
+  "markdown_relative_links": [],
+  "companion_document_references": [
+    {
+      "reader_document": "diagnostics/core-cold-root-fb9/CORE_COLD_ROOT_DIAGNOSIS.zh-CN.md",
+      "sibling_document": "core-cold-root-static-diagnosis.json",
+      "resolved_repository_path": "qualification/r3-audit-repair-20261104/diagnostics/core-cold-root-fb9/core-cold-root-static-diagnosis.json",
+      "target_exists": true
+    },
+    {
+      "reader_document": "diagnostics/proxy-connect-fb9/STATIC_DIAGNOSIS_ZH.md",
+      "sibling_document": "static-diagnosis.json",
+      "resolved_repository_path": "qualification/r3-audit-repair-20261104/diagnostics/proxy-connect-fb9/static-diagnosis.json",
+      "target_exists": true
+    },
+    {
+      "reader_document": "static-proposals/b16-native-runner/foundation-readiness-v1/FOUNDATION_BINDING_ZH.md",
+      "sibling_document": "foundation-readiness.json",
+      "resolved_repository_path": "qualification/r3-audit-repair-20261104/static-proposals/b16-native-runner/foundation-readiness-v1/foundation-readiness.json",
+      "target_exists": true
+    },
+    {
+      "reader_document": "static-proposals/b16-native-runner/foundation-readiness-v1/FOUNDATION_BINDING_ZH.md",
+      "sibling_document": "foundation-binding-UNBOUND.json",
+      "resolved_repository_path": "qualification/r3-audit-repair-20261104/static-proposals/b16-native-runner/foundation-readiness-v1/foundation-binding-UNBOUND.json",
+      "target_exists": true
+    }
+  ],
+  "passive_source_mapping": [
+    {
+      "path": "diagnostics/core-cold-root-fb9/core-diagnostic-proposal/candidate/codex-rs/core/tests/suite/multi_agent_resume.rs.source.txt",
+      "archived_logical_source_path": "diagnostics/core-cold-root-fb9/core-diagnostic-proposal/candidate/codex-rs/core/tests/suite/multi_agent_resume.rs",
+      "blob": "e2b3daac03d9e15b1641e11f23377bf56bf397db"
+    },
+    {
+      "path": "report-reviews/final-consistency-20261105/minimal-correction/deliverables/CURRENT_AUDIT_PROGRESS.zh-CN.md.source.txt",
+      "archived_logical_source_path": "deliverables/CURRENT_AUDIT_PROGRESS.zh-CN.md",
+      "blob": "f13c800f37546793df76edb4fab1fde1b78cdc51"
+    },
+    {
+      "path": "report-reviews/final-consistency-20261105/minimal-correction/deliverables/FOURTH_BATCH_QUALIFICATION.md.source.txt",
+      "archived_logical_source_path": "deliverables/FOURTH_BATCH_QUALIFICATION.md",
+      "blob": "206a7a9f0320521d84c0b56f96ae8429d774cada"
+    },
+    {
+      "path": "report-reviews/final-consistency-20261105/minimal-correction/deliverables/PROJECT_DIRECTION_AND_PLAN.zh-CN.md.source.txt",
+      "archived_logical_source_path": "deliverables/PROJECT_DIRECTION_AND_PLAN.zh-CN.md",
+      "blob": "87edc4cdd5bb4ff98941cc12c822498ff52feca4"
+    }
+  ],
+  "interpretation": [
+    "No new missing workflow path or broken active Markdown relative link was found within these 59 rows.",
+    "The three new active Markdown notes use code/prose sibling filenames rather than Markdown hyperlinks; their four companion documents resolve in the same archive directories.",
+    "The three immutable main-report postimages are passive .md.source.txt files; original relative links remain historical bytes explained by the root layout map. Their current active main reports are separate.",
+    "Original JSON local/native paths, logical source paths, embedded prior scan findings and unbound execution templates are historical metadata, not claimed repository-relative links.",
+    "The Core .rs.source.txt postimage remains unexecuted diagnostic evidence. Foundation remains unbound; neither path checking nor archived status upgrades tests or closes original blockers."
+  ],
+  "limitations": [
+    "This is a path/reference audit, not a run of the entire repository documentation verifier.",
+    "The prospective source commit and registry are still publication inputs; no final published head or CI outcome is inferred.",
+    "External URL availability and historical absolute local/native file paths were not followed.",
+    "No Markdown fragment validation was necessary because these active new notes contain no relative Markdown links."
+  ]
+}

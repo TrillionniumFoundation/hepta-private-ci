@@ -1,0 +1,287 @@
+{
+  "schema": "hepta.root.app-epoch2-terminal-independent-review.v1",
+  "observed_at_utc": "2026-11-05T02:27:00.450219+00:00",
+  "status": "ORIGINAL_SINGLE_CASE_FAIL_FULL_SMALL_TERMINAL_BUNDLE_REOPENED",
+  "source_tree": "f8251e1d14fa8524ab469281296cd4cf708f173c",
+  "input_bundle": {
+    "bytes": 166118,
+    "sha256": "d42561e6c804537b91dbf427df5cb63bda176ec3e15a4716da68d98fe32ff709",
+    "blob": "106cf2684ee66709db063d714c5d31f86d42fd45"
+  },
+  "authoritative_controller_status": {
+    "at_unix_ms": 1793844126508,
+    "audit_recorded": true,
+    "automatic_retry": false,
+    "cancelled": false,
+    "exit_code": 1,
+    "job_id": "1a1a967b3ab-fc05-34f6",
+    "launch_nonce": "281962084808528f625fbf5011af1190",
+    "log_bytes": {
+      "stderr": {
+        "seen": 0,
+        "stored": 0
+      },
+      "stdout": {
+        "seen": 2881,
+        "stored": 2881
+      }
+    },
+    "log_errors": {
+      "stderr": null,
+      "stdout": null
+    },
+    "log_synced": {
+      "stderr": true,
+      "stdout": true
+    },
+    "log_truncated": {
+      "stderr": false,
+      "stdout": false
+    },
+    "output_complete": true,
+    "output_durable": true,
+    "state": "failed",
+    "terminal_publication_confirmed": true,
+    "terminal_publication_protocol": 1,
+    "timed_out": false
+  },
+  "all_nine_embedded_original_files_reopened_byteequal": [
+    {
+      "name": "terminal.json",
+      "bytes": 41339,
+      "sha256": "03c9beb2445e5d38cc894ce279a6a17fc70fbb3910f77dda12b4745d1d1e8a4d",
+      "blob": "273b73f9c7a612d2dc01221503c9534629c119c7"
+    },
+    {
+      "name": "owned-process-observation-summary.json",
+      "bytes": 3274,
+      "sha256": "f015aa9a8db1f9d51f6ed9052a168aa0a526253538964e7359acb0f86d5ebaea",
+      "blob": "8f1bfc630af1cee1ee4a8b0a0992897c30740f97"
+    },
+    {
+      "name": "app-disconnect-original-diagnostic.log",
+      "bytes": 10448,
+      "sha256": "3bd0c4477bb7cc6d0ea93aaff3b713fac56844244bdd9801b5950bad1026a240",
+      "blob": "a3241c8e4aa5b74e84b14239a7bed358046fa0e8"
+    },
+    {
+      "name": "app-disconnect-original-diagnostic.junit.xml",
+      "bytes": 2511,
+      "sha256": "c40678750962473f77d373b0533bd406bdea31a44fe882db25fdf7d4f47ec83f",
+      "blob": "58c03c6e72410297e82466081c3278de4dc8cf21"
+    },
+    {
+      "name": "owned-process-observations.jsonl",
+      "bytes": 64170,
+      "sha256": "7985d31908b8619f2f81acf3249262e7572d6c9bfb965cbfe6ac7ec0ba17ebb0",
+      "blob": "69dc6b5157cd7cbee6c00d6205cc4aec6acbb6ad"
+    },
+    {
+      "name": "normal-six-helper-build-epoch2-receipt.json",
+      "bytes": 7387,
+      "sha256": "fcd66f6f5b4caa6cdc777936ae9cbb394d49217eb0a0bb3346cf08e080f629d3",
+      "blob": "ece450c7d06745435e6ca0a2c3e6819c045cd187"
+    },
+    {
+      "name": "full-workspace-feature-graph-binding.json",
+      "bytes": 697,
+      "sha256": "1ca040e0d638dc96db45fb3d73fd821457a7587dded3cdb44b6f2414f0979587",
+      "blob": "b47f9a714fbec0ea965fb7244573d59ad9d3548e"
+    },
+    {
+      "name": "source-map.json",
+      "bytes": 10059,
+      "sha256": "e1685c6b1122e93a0bc6c264122bc1b540f9b465f6fc4c61fd77e8ecfe533fcf",
+      "blob": "1d8bb948a06415edc30597c3743446c5d811affb"
+    },
+    {
+      "name": "native-host.json",
+      "bytes": 480,
+      "sha256": "adbb0d3b6899025fbffd2f1f395923c997bdde2519fa1349b8495edb72952235",
+      "blob": "59ba56de87ecd081d169b06594fa30361d6cc91f"
+    }
+  ],
+  "selected_case": {
+    "classname": "codex-app-server::all",
+    "name": "suite::v2::command_exec::command_exec_process_ids_are_connection_scoped_and_disconnect_terminates_process",
+    "seconds": "5.491",
+    "result": "FAIL",
+    "failure": "Error: process marker \"codex-command-exec-marker-1793844118581301105\" did not exit before timeout"
+  },
+  "selection": {
+    "selected_count": 1,
+    "original_ignored_count": 56,
+    "filter_unmatched_count": 19502,
+    "retries": 0,
+    "original_just_exit": 100,
+    "skip_notices": []
+  },
+  "source_index_and_both_locks_stable": true,
+  "one_selected_program_and_33_helpers_stable": true,
+  "selected_program": {
+    "binary_id": "codex-app-server::all",
+    "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/target-app-epoch2-20261105/dev-small/deps/all-828a7c4f37edd91e",
+    "bytes": 365268656,
+    "sha256": "6b320e6445726976653bf41d59657d763bee242ef6871f21b1178146948e200c"
+  },
+  "feature_graph_receipt": {
+    "source": "f8251e1d14fa8524ab469281296cd4cf708f173c",
+    "workspace_members": 193,
+    "resolved_nodes": 1501,
+    "exact_original_full_graph": true,
+    "original": {
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/full-workspace-f825-20261105-0040/workspace-metadata.stdout",
+      "bytes": 8163618,
+      "sha256": "959b827393fc6830e8fd6c55a83a519217ab0debb7c033b42e64306bc373fece"
+    },
+    "current": {
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/app-disconnect-epoch2-20261105-0152/workspace-metadata.stdout",
+      "bytes": 8163658,
+      "sha256": "51ff98c991ea71a7a1be5135acb3c35bd6070b09544306f4b3bbc0fa1ea52e19"
+    },
+    "package_filter": null
+  },
+  "feature_graph_review_limit": "This small bundle contains the exact graph-comparison receipt. Complete new metadata/catalog/helper compiler streams are in the separate 38-artifact archive, whose root transfer review is still pending at this receipt.",
+  "raw_and_fresh_junit_agree_on_original_failure": true,
+  "observer": {
+    "samples": 137,
+    "events": 151,
+    "event_counts": {
+      "observer-start": 1,
+      "owned-process-state": 84,
+      "owned-identity-no-longer-observed": 65,
+      "observer-terminal": 1
+    },
+    "errors": [],
+    "marker": "codex-command-exec-marker-1793844118581301105",
+    "final_state_reconstructed_from_all_151_events": true,
+    "outer_first_observed": {
+      "observed_at": "2026-11-05T02:01:58.753767+00:00",
+      "elapsed_seconds": 2.9445067640044726,
+      "event": "owned-process-state",
+      "process": {
+        "pid": 702763,
+        "comm": "bwrap",
+        "state": "S",
+        "ppid": 702627,
+        "pgid": 702763,
+        "sid": 702763,
+        "starttime_ticks": 17432796,
+        "scope": "current-descendant",
+        "cmdline_truncated": false,
+        "cmdline_bytes_observed": 810,
+        "cmdline_sha256": "c816e4652f8cf2d86f3aab1641895f5903e03b445a34d9e1d5a222795574018d",
+        "cmdline": [
+          "bwrap",
+          "--as-pid-1",
+          "--new-session",
+          "--die-with-parent",
+          "--ro-bind",
+          "/",
+          "/",
+          "--dev",
+          "/dev",
+          "--unshare-user",
+          "--unshare-pid",
+          "--unshare-ipc",
+          "--unshare-net",
+          "--proc",
+          "/proc",
+          "--cap-drop",
+          "ALL",
+          "--argv0",
+          "codex-linux-sandbox",
+          "--",
+          "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/target-app-epoch2-20261105/dev-small/codex-app-server",
+          "--sandbox-policy-cwd",
+          "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/source/codex-rs/app-server",
+          "--command-cwd",
+          "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/source/codex-rs/app-server",
+          "--permission-profile",
+          "{\"type\":\"managed\",\"file_system\":{\"type\":\"restricted\",\"entries\":[{\"path\":{\"type\":\"special\",\"value\":{\"kind\":\"root\"}},\"access\":\"read\"}]},\"network\":\"restricted\"}",
+          "--apply-seccomp-then-exec",
+          "--",
+          "python3",
+          "-c",
+          "import time; print('ready', flush=True); time.sleep(30)",
+          "codex-command-exec-marker-1793844118581301105"
+        ],
+        "exact_fixture_markers": [
+          "codex-command-exec-marker-1793844118581301105"
+        ],
+        "exe": "/usr/bin/bwrap"
+      }
+    },
+    "outer_no_longer_observed": {
+      "observed_at": "2026-11-05T02:01:59.063420+00:00",
+      "elapsed_seconds": 3.254143782018218,
+      "event": "owned-identity-no-longer-observed",
+      "pid": 702763,
+      "starttime_ticks": 17432796
+    },
+    "outer_observed_to_disappearance_seconds": 0.30963701801374555,
+    "last_current_live_identities": [
+      {
+        "pid": 702768,
+        "comm": "codex-app-serve",
+        "state": "S",
+        "ppid": 2217,
+        "pgid": 702768,
+        "sid": 702768,
+        "starttime_ticks": 17432797,
+        "scope": "previously-observed-owned-identity",
+        "cmdline_truncated": false,
+        "cmdline_bytes_observed": 534,
+        "cmdline_sha256": "8586f45fcbf6b8bfc44520148ad4dd9789cec853b9e3168cd89a146633fd2cb6",
+        "cmdline": [
+          "codex-linux-sandbox",
+          "--sandbox-policy-cwd",
+          "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/source/codex-rs/app-server",
+          "--command-cwd",
+          "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/source/codex-rs/app-server",
+          "--permission-profile",
+          "{\"type\":\"managed\",\"file_system\":{\"type\":\"restricted\",\"entries\":[{\"path\":{\"type\":\"special\",\"value\":{\"kind\":\"root\"}},\"access\":\"read\"}]},\"network\":\"restricted\"}",
+          "--apply-seccomp-then-exec",
+          "--",
+          "python3",
+          "-c",
+          "import time; print('ready', flush=True); time.sleep(30)",
+          "codex-command-exec-marker-1793844118581301105"
+        ],
+        "exact_fixture_markers": [
+          "codex-command-exec-marker-1793844118581301105"
+        ],
+        "exe": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/target-app-epoch2-20261105/dev-small/codex-app-server"
+      },
+      {
+        "pid": 702769,
+        "comm": "python3",
+        "state": "S",
+        "ppid": 702768,
+        "pgid": 702768,
+        "sid": 702768,
+        "starttime_ticks": 17432798,
+        "scope": "previously-observed-owned-identity",
+        "cmdline_truncated": false,
+        "cmdline_bytes_observed": 113,
+        "cmdline_sha256": "2ea01ffcb63d48b102f4b5321589993dd59d3d90d1d0f161f7785b054c877397",
+        "cmdline": [
+          "python3",
+          "-c",
+          "import time; print('ready', flush=True); time.sleep(30)",
+          "codex-command-exec-marker-1793844118581301105"
+        ],
+        "exact_fixture_markers": [
+          "codex-command-exec-marker-1793844118581301105"
+        ],
+        "exe": "/usr/bin/python3.14"
+      }
+    ],
+    "last_state_is_not_stale_cache": "Root read observer implementation: each sample rebuilds observed from current /proc stat with exact PID/starttime, replaces previous and last, and final sample runs after command poll. Event replay agrees with final summary.",
+    "implementation_blob": "0ffac5c2e4c1ece9a737e442dffdfc3fcecd7225",
+    "limit": "Sampling can miss processes before first observed ownership. No signal call/result, parent-death setting, credential/LSM event or syscall trace was captured in this unmodified run."
+  },
+  "conclusion_zh": "原5秒断连退出合同失败。已观察到外bwrap退出而同身份inner helper及Python仍存活，且不是zombie或observer命令误匹配；现有证据不足以判定killpg失败或AppArmor清除信号。随后只读PR_GET与原killpg返回值观测属于新临时源码epoch，必须单独绑定并恢复，不提升本原测试结果。",
+  "all_original_blockers_closed": false,
+  "no_blocker_status_or_original_exit_change": true
+}

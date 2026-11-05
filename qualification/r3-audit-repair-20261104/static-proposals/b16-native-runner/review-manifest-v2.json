@@ -1,0 +1,394 @@
+{
+  "schema": "hepta-b16-guarded-native-runner-review-v2",
+  "status": "STATIC_PREPARATION_UNBOUND_NOT_LAUNCHED",
+  "created_at_utc": "2026-11-05T04:38:49.914682+00:00",
+  "prior_review_manifest_blob": "268e751c92f80cbb181276d6689246749d0ba688",
+  "prior_28_object_delivery_map_blob": "c4885b9005d85ddf4c1647b8a96538957a7a7ab1",
+  "prior_full_local_snapshot": "v1-frozen",
+  "frozen_plan": "dc12d596172c4f24c1ec4216e05b4662aed590b8",
+  "internal_stage_ids_are_not_original_blocker_ids": true,
+  "display_namespace": "B16/phase",
+  "original_23_blocker_exit_conditions_or_statuses_modified": false,
+  "actual_final_A_tree": null,
+  "actual_last_tested_A_tree": null,
+  "native_or_Cargo_Bazel_run": false,
+  "shared_source_target_cache_or_project_refs_modified": false,
+  "entrypoint": "b16_runner.py",
+  "binding": "binding-template-UNBOUND.json",
+  "runtime_integrity": {
+    "path": "runner-integrity.json",
+    "bytes": 4102,
+    "sha256": "aec4b97e1b12dc4d0875cc57231a4e000280c847ef04bf752b1132ff76054aba",
+    "blob": "dc7f3855d3b9ee47afd3150d171f3f26712a5fcc"
+  },
+  "payload": {
+    "path": "payload-manifest.json",
+    "bytes": 62667,
+    "sha256": "a34cd6c5400deff4fedfffcb1f4f170eecabbb6bbfab1916829ab3911e986237",
+    "blob": "64db580beabe2642eb8611184dac4fc686fe34e1"
+  },
+  "narrow_changes": [
+    "B16/phase/B20 original just fix adds --locked --profile dev-small, preserving recipe/package scope and requiring both lock bytes unchanged.",
+    "All five epochs must reuse the same explicitly approved final-A dev-small Cargo target; one owner-bound B Bazel cache is created in driver and reused by registration, checkpoint and final check. No existing cache is deleted.",
+    "Actual last-tested-A complete artifact receipt and full helper basename multiset are pinned separately from final_A_tree. Current source metadata and independent tested-to-final relation review are required; no A post-hygiene test rerun or relabeling.",
+    "Each B scope actually normal-builds six helpers, catalogues full workspace, strictly compares all helper basenames including required originals, and records rebuilt bytes before/after the original test.",
+    "Exact observed skipping capability test: prefix becomes an early-return qualification failure, preserving all original physical marker and assertion parsers.",
+    "Read-only launch capacity gate requires reviewed remaining-growth allowances plus unchanged 8 GB reserve on the same source/target/evidence/cache filesystem; insufficiency stops without cleanup or scope changes.",
+    "Execution output/receipts show B16/phase and explicitly separate internal IDs from the original 23-blocker ledger."
+  ],
+  "critical_review_files": [
+    "b16_guard.py",
+    "b16_runner.py",
+    "b16_oracles.py",
+    "b16_native.py",
+    "b16_locks.py",
+    "b16_capacity.py"
+  ],
+  "epoch_order": [
+    "foundation",
+    "driver",
+    "pool",
+    "checkpoint",
+    "owning"
+  ],
+  "counts": [
+    {
+      "epoch": "foundation",
+      "selected_case_executions": {
+        "scopes": 27,
+        "negative": 10
+      },
+      "distinct_selected_names_in_epoch": 24
+    },
+    {
+      "epoch": "driver",
+      "selected_case_executions": {
+        "negative": 3,
+        "scopes": 12
+      },
+      "distinct_selected_names_in_epoch": 12
+    },
+    {
+      "epoch": "pool",
+      "selected_case_executions": {
+        "negative": 3,
+        "scopes": 3
+      },
+      "distinct_selected_names_in_epoch": 3
+    },
+    {
+      "epoch": "checkpoint",
+      "selected_case_executions": {
+        "negative": 1,
+        "scopes": 15
+      },
+      "distinct_selected_names_in_epoch": 15
+    },
+    {
+      "epoch": "owning",
+      "selected_case_executions": {},
+      "distinct_selected_names_in_epoch": 0
+    }
+  ],
+  "causal_isolation": "Foundation24/10negative case executions complete before driver source/registry patch/native options binding; driver12 before pool3; checkpoint dev-edge then second locks before checkpoint1+original14. Supports ignored, repeated cases and owning cases separated.",
+  "source_guards": {
+    "preimages": "all original known bytes required at final A, else stop for rebase/review; do not overwrite",
+    "source_objects": 112,
+    "exact_deltas": 24,
+    "final_static_paths": 81,
+    "full_product_tree_precomputed": false,
+    "dynamic_generated_lock_tree": "Only real allowed generator writes can form the next tree; originals/diff/metadata recorded. Unknown resolver upgrades stop."
+  },
+  "intentional_executor_adaptations": {
+    "authored_commands": "Every exact original package/lib argv is retained in epoch JSON.",
+    "actual_catalog_and_test": "No -p Cargo limitation. Full workspace feature graph + exact nextest package/ kind(lib)/case filters.",
+    "failure_collection": "--no-fail-fast collects complete selected negative vectors; --no-tests fail; retries0; original budgets and physical assertions unchanged.",
+    "success_output": "--success-output immediate preserves positive runtime observations.",
+    "bazel": "B15 is actual original plain-host query/dependency/compilation, not claimed Bazel test execution or hosted-matrix acceptance. B14 runs the original 12 driver cases through just test."
+  },
+  "source_relationship": {
+    "final_A_tree": "Actual final source after A hygiene.",
+    "last_tested_A_tree": "Actual source recorded by A last full test/catalogue artifact receipt; remains unchanged if A hygiene later changes source.",
+    "baseline_metadata": "Each binding includes source_tree==initial_tree and exact raw metadata bytes; actual normal metadata is rerun by the B runner after source guards.",
+    "helper_roster": "Names come from pinned last-tested receipt. Bytes are never inherited as current B qualification.",
+    "A_post_hygiene_rerun_required": false
+  },
+  "capacity_plan": {
+    "path": "capacity-plan-v2.json",
+    "bytes": 4751,
+    "sha256": "8dbabb53d8e199b87bc637c8e1d5d6fd17463bcca64e493c3fee9428a62f3f9f",
+    "blob": "1850906a2c60abc7926eb93f73f5e16ec1cf868c"
+  },
+  "validation": {
+    "pure_guard_tests": {
+      "path": "pure-guard-validation-v2.json",
+      "bytes": 2569,
+      "sha256": "005244408c5ed289418be4426239ef8464041e24246d531f6c2bee632ba5e69b",
+      "blob": "26ad020c558a9330d7e53fc41cf4117d636c7ab0"
+    },
+    "pure_guard_raw": {
+      "path": "pure-guard-validation-v2.log",
+      "bytes": 2075,
+      "sha256": "cc27410c4a7eff46acc07efa284f0adaf72f60e06d5b01c8725707ab74664c4c",
+      "blob": "a022840f1fe3511d27cfb3d7f9ecc0dba16148df"
+    },
+    "unbound_cli": {
+      "path": "unbound-refusal-v2.json",
+      "bytes": 973,
+      "sha256": "98d81fd972a92866d5c09cb92be4c44512930fc1eb56c33df41607d1258e5229",
+      "blob": "6125161985f570034e72e35a3559ee5d8d47eafd"
+    },
+    "unbound_cli_raw": {
+      "path": "unbound-refusal-v2.log",
+      "bytes": 868,
+      "sha256": "b03190cbfeaf080d9ef8d5cb04c6228111207d0dda6bbfffb160ce7b541c21ba",
+      "blob": "2b64caa3c2b979e3a457765151b71f9ec84402f2"
+    },
+    "exact_v1_to_v2_roundtrip": {
+      "path": "v2-delta-validation.json",
+      "bytes": 7927,
+      "sha256": "c22d778ab2d9e1009062fb170a95fc2790bbab8743b68aa7af36456a0cdf556b",
+      "blob": "42aaa6877cfe6d9275d43fdcb2e57d29c99923f1"
+    },
+    "AST_python_modules": 8,
+    "pure_tests_passed": 13,
+    "unchanged_original_tests": 10,
+    "unchanged_physical_parser_functions": true,
+    "unchanged_payload_and_epochs": true
+  },
+  "open": [
+    "Actual independent authority peer and Current three-pool binder",
+    "Normal Root signed producer/lease/revocation/FinalUse acceptance",
+    "Independent non-opt-in opens and any unbound caller not covered by these exact APIs",
+    "All original required CI platform qualification",
+    "No B16 closure merely from a DTO, native token API or selected tests",
+    "No native invocation, resolver result, new Bazel artifact or final A qualification exists for B yet.",
+    "Generated DEP_DATA location and current helper/catalog schemas must be observed successfully; a mismatch stops, never invents a path or roster.",
+    "Final owning hygiene is always AWAITING_HYGIENE_DIFF_REVIEW; no post-hygiene test rerun is claimed.",
+    "Final-A source, ordinary index, full metadata, last-tested artifact identity/helper roster, filesystem capacity and execution approval remain unbound.",
+    "Conditional allowances are not a measured compiler peak. Insufficient capacity cannot be solved by automatic cache deletion."
+  ],
+  "delta": {
+    "path": "runner-v2.delta.patch",
+    "bytes": 49463,
+    "sha256": "5cdee5f87633af8ece538e58044126189c6076703f67e8570ada5aade99cf350",
+    "blob": "c6a4304533f42fdf758dd6d391af0150b4c02b0b"
+  },
+  "changed_or_new_files": [
+    {
+      "path": "b16_capacity.py",
+      "before_blob": null,
+      "after": {
+        "path": "b16_capacity.py",
+        "bytes": 4796,
+        "sha256": "2879eaf9f1e3c87bc575e33e34880ba3dc6b80a211687a1317533fcfbf8e3168",
+        "blob": "12d04a630e613c6170d2e1172c3fc988dcfc2965"
+      }
+    },
+    {
+      "path": "b16_guard.py",
+      "before_blob": "9c8caa0993dac4c57c1f88e142f1e6f31b907e50",
+      "after": {
+        "path": "b16_guard.py",
+        "bytes": 10724,
+        "sha256": "dfaa27e85dd1ee2843893af811484f7bc059583615a4234a716e3472d507bb3d",
+        "blob": "9d1c5716db2b50ef86a689fe43db18816d06b561"
+      }
+    },
+    {
+      "path": "b16_locks.py",
+      "before_blob": "f484c2bb30669c3ab1a22533ca4fc9a6876b1fd2",
+      "after": {
+        "path": "b16_locks.py",
+        "bytes": 13015,
+        "sha256": "5edb44c7e4a6ce63981adc4681fead1987ddc19389e7d0659c9e4d3e13d8514e",
+        "blob": "1a6583b6226af4d20bb336b778476dedb02d59f4"
+      }
+    },
+    {
+      "path": "b16_native.py",
+      "before_blob": "9c98e5716b399dcecb90032d3bb55ed89933f416",
+      "after": {
+        "path": "b16_native.py",
+        "bytes": 16306,
+        "sha256": "ce9bdfb7697b74ae8f1189a39c84a9aa928a40be4cd5dee6ce195a9366e1af81",
+        "blob": "eee5c2792fb72b4e73591ebfffcce10c1aeb829f"
+      }
+    },
+    {
+      "path": "b16_oracles.py",
+      "before_blob": "b8dce12b4a6fbd8979003ca9216522941cc04f07",
+      "after": {
+        "path": "b16_oracles.py",
+        "bytes": 7483,
+        "sha256": "5928528add9ecb0f6a1681057a26954d9c607fb14c129293fa4bc6eac4e07e85",
+        "blob": "1a6efff50846f5c04bb5ea6def203ada42342050"
+      }
+    },
+    {
+      "path": "b16_runner.py",
+      "before_blob": "6125db4e7102c226f2c2deee45459fa1202e5894",
+      "after": {
+        "path": "b16_runner.py",
+        "bytes": 15307,
+        "sha256": "63aac34b3bd16201615b6b3f4391d468fb0dad39c2a6187bfe17d7b627b33e6a",
+        "blob": "f0ecc2359b81d49a5088e51cedbad32a8b54504a"
+      }
+    },
+    {
+      "path": "test_runner_guards.py",
+      "before_blob": "af782ede2efd32bc4e437b341c395bfa8c826a4a",
+      "after": {
+        "path": "test_runner_guards.py",
+        "bytes": 13792,
+        "sha256": "a15285bda85d38b774395f989a6d29600a463ec1fd5a42705276cd3bf2163bed",
+        "blob": "f294bc0400619ba7017d85c7c690c70acae41547"
+      }
+    },
+    {
+      "path": "binding-template-UNBOUND.json",
+      "before_blob": "0b0642ed0d60af9bbdee9f137beae20d0811df6e",
+      "after": {
+        "path": "binding-template-UNBOUND.json",
+        "bytes": 3229,
+        "sha256": "0621cabbb6edd65c90d587f237105c070c02f5026b05e2e515af4eed19807c12",
+        "blob": "676d731d0059b35d9004e1c23b8a09b26e4927b7"
+      }
+    },
+    {
+      "path": "README.md",
+      "before_blob": "a82874494ab5ea1bc6ffc8d5f4fea47116d18c5a",
+      "after": {
+        "path": "README.md",
+        "bytes": 12373,
+        "sha256": "57d5f493bbb06e249062fcfa11d91286c6bc7bcd95ab976be3d2d461e35eb1bf",
+        "blob": "5b624ee97a7a71ad9dd673324cde710d7d1cfcad"
+      }
+    },
+    {
+      "path": "runner-integrity.json",
+      "before_blob": "7db21a0086cb3ebe5c7e1b83f9de7ecb3bc66075",
+      "after": {
+        "path": "runner-integrity.json",
+        "bytes": 4102,
+        "sha256": "aec4b97e1b12dc4d0875cc57231a4e000280c847ef04bf752b1132ff76054aba",
+        "blob": "dc7f3855d3b9ee47afd3150d171f3f26712a5fcc"
+      }
+    },
+    {
+      "path": "capacity-plan-v2.json",
+      "before_blob": null,
+      "after": {
+        "path": "capacity-plan-v2.json",
+        "bytes": 4751,
+        "sha256": "8dbabb53d8e199b87bc637c8e1d5d6fd17463bcca64e493c3fee9428a62f3f9f",
+        "blob": "1850906a2c60abc7926eb93f73f5e16ec1cf868c"
+      }
+    }
+  ],
+  "files": [
+    {
+      "path": "b16_capacity.py",
+      "bytes": 4796,
+      "sha256": "2879eaf9f1e3c87bc575e33e34880ba3dc6b80a211687a1317533fcfbf8e3168",
+      "blob": "12d04a630e613c6170d2e1172c3fc988dcfc2965"
+    },
+    {
+      "path": "b16_guard.py",
+      "bytes": 10724,
+      "sha256": "dfaa27e85dd1ee2843893af811484f7bc059583615a4234a716e3472d507bb3d",
+      "blob": "9d1c5716db2b50ef86a689fe43db18816d06b561"
+    },
+    {
+      "path": "b16_locks.py",
+      "bytes": 13015,
+      "sha256": "5edb44c7e4a6ce63981adc4681fead1987ddc19389e7d0659c9e4d3e13d8514e",
+      "blob": "1a6583b6226af4d20bb336b778476dedb02d59f4"
+    },
+    {
+      "path": "b16_native.py",
+      "bytes": 16306,
+      "sha256": "ce9bdfb7697b74ae8f1189a39c84a9aa928a40be4cd5dee6ce195a9366e1af81",
+      "blob": "eee5c2792fb72b4e73591ebfffcce10c1aeb829f"
+    },
+    {
+      "path": "b16_oracles.py",
+      "bytes": 7483,
+      "sha256": "5928528add9ecb0f6a1681057a26954d9c607fb14c129293fa4bc6eac4e07e85",
+      "blob": "1a6efff50846f5c04bb5ea6def203ada42342050"
+    },
+    {
+      "path": "b16_runner.py",
+      "bytes": 15307,
+      "sha256": "63aac34b3bd16201615b6b3f4391d468fb0dad39c2a6187bfe17d7b627b33e6a",
+      "blob": "f0ecc2359b81d49a5088e51cedbad32a8b54504a"
+    },
+    {
+      "path": "test_runner_guards.py",
+      "bytes": 13792,
+      "sha256": "a15285bda85d38b774395f989a6d29600a463ec1fd5a42705276cd3bf2163bed",
+      "blob": "f294bc0400619ba7017d85c7c690c70acae41547"
+    },
+    {
+      "path": "binding-template-UNBOUND.json",
+      "bytes": 3229,
+      "sha256": "0621cabbb6edd65c90d587f237105c070c02f5026b05e2e515af4eed19807c12",
+      "blob": "676d731d0059b35d9004e1c23b8a09b26e4927b7"
+    },
+    {
+      "path": "README.md",
+      "bytes": 12373,
+      "sha256": "57d5f493bbb06e249062fcfa11d91286c6bc7bcd95ab976be3d2d461e35eb1bf",
+      "blob": "5b624ee97a7a71ad9dd673324cde710d7d1cfcad"
+    },
+    {
+      "path": "runner-integrity.json",
+      "bytes": 4102,
+      "sha256": "aec4b97e1b12dc4d0875cc57231a4e000280c847ef04bf752b1132ff76054aba",
+      "blob": "dc7f3855d3b9ee47afd3150d171f3f26712a5fcc"
+    },
+    {
+      "path": "capacity-plan-v2.json",
+      "bytes": 4751,
+      "sha256": "8dbabb53d8e199b87bc637c8e1d5d6fd17463bcca64e493c3fee9428a62f3f9f",
+      "blob": "1850906a2c60abc7926eb93f73f5e16ec1cf868c"
+    },
+    {
+      "path": "pure-guard-validation-v2.json",
+      "bytes": 2569,
+      "sha256": "005244408c5ed289418be4426239ef8464041e24246d531f6c2bee632ba5e69b",
+      "blob": "26ad020c558a9330d7e53fc41cf4117d636c7ab0"
+    },
+    {
+      "path": "pure-guard-validation-v2.log",
+      "bytes": 2075,
+      "sha256": "cc27410c4a7eff46acc07efa284f0adaf72f60e06d5b01c8725707ab74664c4c",
+      "blob": "a022840f1fe3511d27cfb3d7f9ecc0dba16148df"
+    },
+    {
+      "path": "unbound-refusal-v2.json",
+      "bytes": 973,
+      "sha256": "98d81fd972a92866d5c09cb92be4c44512930fc1eb56c33df41607d1258e5229",
+      "blob": "6125161985f570034e72e35a3559ee5d8d47eafd"
+    },
+    {
+      "path": "unbound-refusal-v2.log",
+      "bytes": 868,
+      "sha256": "b03190cbfeaf080d9ef8d5cb04c6228111207d0dda6bbfffb160ce7b541c21ba",
+      "blob": "2b64caa3c2b979e3a457765151b71f9ec84402f2"
+    },
+    {
+      "path": "v2-delta-validation.json",
+      "bytes": 7927,
+      "sha256": "c22d778ab2d9e1009062fb170a95fc2790bbab8743b68aa7af36456a0cdf556b",
+      "blob": "42aaa6877cfe6d9275d43fdcb2e57d29c99923f1"
+    },
+    {
+      "path": "runner-v2.delta.patch",
+      "bytes": 49463,
+      "sha256": "5cdee5f87633af8ece538e58044126189c6076703f67e8570ada5aade99cf350",
+      "blob": "c6a4304533f42fdf758dd6d391af0150b4c02b0b"
+    }
+  ],
+  "unreachable_git_upload": "Pending separate V2 create/GET-readback map. Calculated hashes alone are not uploaded-object evidence."
+}
