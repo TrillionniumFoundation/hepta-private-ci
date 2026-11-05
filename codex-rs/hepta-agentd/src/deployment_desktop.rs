@@ -85,12 +85,7 @@ impl DeploymentFinalUseIssuer {
                 "Desktop succession requires a new writer and actual Session pair",
             ));
         }
-        let verifier = &self
-            .lease
-            .as_ref()
-            .ok_or_else(|| denied("protected canonical issuer required"))?
-            .verifier;
-        registration.with_live(verifier, |_| {
+        self.with_live_issuer_and_writer(registration, || {
             let proof = self.retained_writer_authorization(registration)?;
             let _guard = self
                 .request_lock

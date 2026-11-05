@@ -60,6 +60,10 @@ struct Fixture {
 
 impl Fixture {
     fn new() -> Self {
+        Self::with_issuer_expiry(/*issuer_expires_at_unix_ms*/ 100_000)
+    }
+
+    fn with_issuer_expiry(issuer_expires_at_unix_ms: u64) -> Self {
         let root = tempfile::tempdir().unwrap();
         let clock = Arc::new(Clock(AtomicU64::new(10_000)));
         let directory = root.path().join("leases");
@@ -106,7 +110,7 @@ impl Fixture {
         issuer_lease.lease_id = "desktop-issuer-authority".into();
         issuer_lease.binding.operation_class = "runtime.agentd.root_issuer".into();
         issuer_lease.binding.destination_id = "original-desktop-issuer".into();
-        issuer_lease.expires_at_unix_ms = 100_000;
+        issuer_lease.expires_at_unix_ms = issuer_expires_at_unix_ms;
         registry.put_lease(issuer_lease.clone(), 0).unwrap();
         let old = Pair::successor("1", "2", "3");
         let next = Pair::successor("4", "5", "6");
@@ -294,6 +298,130 @@ fn desktop_policy_expired_or_revoked_writer_keeps_both_original_slots() {
             serde_json::to_value(f.state()).unwrap(),
             serde_json::to_value(before).unwrap()
         );
+    }
+}
+
+#[test]
+fn desktop_policy_expired_or_revoked_issuer_keeps_both_original_slots() {
+    for revoked in [false, true] {
+        let f = Fixture::with_issuer_expiry(/*issuer_expires_at_unix_ms*/ 15_000);
+        let before = f.state();
+        if revoked {
+            f.registry
+                .revoke("desktop-issuer-authority", /*expected_revision*/ 1, [8; 32])
+                .unwrap();
+        } else {
+            f.clock.0.store(15_000, Ordering::SeqCst);
+        }
+        f.writer
+            .with_live(&f.registry.verifier(), |_| Ok(()))
+            .expect("current writer remains live");
+        assert_eq!(
+            f.replace(&f.old, &f.next).unwrap_err().kind(),
+            io::ErrorKind::PermissionDenied
+        );
+        assert_eq!(
+            serde_json::to_value(f.state()).unwrap(),
+            serde_json::to_value(before).unwrap()
+        );
+    }
+}
+
+#[test]
+fn desktop_policy_changed_pinned_issuer_revision_keeps_both_original_slots() {
+    let f = Fixture::new();
+    let before = f.state();
+    let mut issuer_lease = f
+        .registry
+        .read_lease("desktop-issuer-authority")
+        .unwrap()
+        .unwrap()
+        .lease;
+    issuer_lease.revision = 2;
+    f.registry
+        .put_lease(issuer_lease, /*expected_revision*/ 1)
+        .unwrap();
+    assert_eq!(
+        f.replace(&f.old, &f.next).unwrap_err().kind(),
+        io::ErrorKind::PermissionDenied
+    );
+    assert_eq!(
+        serde_json::to_value(f.state()).unwrap(),
+        serde_json::to_value(before).unwrap()
+    );
+}
+
+#[test]
+fn desktop_policy_cannot_substitute_writer_for_original_issuer() {
+    let mut f = Fixture::new();
+    let before = f.state();
+    f.issuer.lease = Some(
+        ProtectedLease::new(
+            f.registry.verifier(),
+            f.writer.authority_lease.lease_id.clone(),
+            f.writer.authority_lease.revision,
+        )
+        .unwrap(),
+    );
+    assert_eq!(
+        f.replace(&f.old, &f.next).unwrap_err().kind(),
+        io::ErrorKind::PermissionDenied
+    );
+    assert_eq!(
+        serde_json::to_value(f.state()).unwrap(),
+        serde_json::to_value(before).unwrap()
+    );
+}
+
+#[test]
+fn desktop_policy_mismatched_full_writer_lease_keeps_both_original_slots() {
+    let f = Fixture::new();
+    let before = f.state();
+    let mut registration = f.writer.clone();
+    registration.authority_lease.expires_at_unix_ms += 1;
+    assert_eq!(
+        f.issuer
+            .replace_desktop_policy(&registration, f.old.policy(), f.next.policy())
+            .unwrap_err()
+            .kind(),
+        io::ErrorKind::PermissionDenied
+    );
+    assert_eq!(
+        serde_json::to_value(f.state()).unwrap(),
+        serde_json::to_value(before).unwrap()
+    );
+}
+
+#[test]
+fn desktop_authority_expiry_after_publication_keeps_complete_pair_without_acknowledging() {
+    for (issuer_expiry, after_io) in [(15_000, 15_000), (100_000, 21_000)] {
+        let f = Fixture::with_issuer_expiry(issuer_expiry);
+        let before = f.state();
+        let mut published = before.clone();
+        let policies = f
+            .next
+            .policy()
+            .policies(f.writer.registered_agent_id.as_str())
+            .unwrap();
+        published.policies[0] = policies[0].clone();
+        published.policies[1] = policies[1].clone();
+        // Exercise the bounded publication helper directly: a real complete
+        // issuer-state CAS can finish after either original lease expires.
+        // Its durable result remains exact, but must not be acknowledged.
+        let result = f.issuer.with_live_issuer_and_writer(&f.writer, || {
+            f.issuer
+                .store
+                .compare_and_set(STATE_OWNER, &before, &published)
+                .map_err(io::Error::other)?;
+            f.clock.0.store(after_io, Ordering::SeqCst);
+            Ok(())
+        });
+        assert!(result.is_err());
+        assert_eq!(
+            serde_json::to_value(f.state()).unwrap(),
+            serde_json::to_value(published).unwrap()
+        );
+        assert!(f.replace(&f.old, &f.next).is_err());
     }
 }
 

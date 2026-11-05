@@ -83,6 +83,80 @@ pub(super) fn lease_error(error: AuthorityLeaseError) -> io::Error {
 }
 
 impl DeploymentFinalUseIssuer {
+    /// Hold the original issuer and a distinct registered writer under their
+    /// one canonical registry fence for a bounded local publication. The
+    /// callback must not reenter that registry. Both leases are checked again
+    /// after its I/O before acknowledging the result.
+    pub(super) fn with_live_issuer_and_writer<T>(
+        &self,
+        registration: &HostAuthorityWriterRegistration,
+        publish: impl FnOnce() -> io::Result<T>,
+    ) -> io::Result<T> {
+        registration.validate()?;
+        let pinned: &ProtectedLease = self
+            .lease
+            .as_ref()
+            .ok_or_else(|| {
+                io::Error::new(io::ErrorKind::PermissionDenied, "protected issuer required")
+            })?;
+        let issuer = pinned
+            .verifier
+            .read_lease(&pinned.id)
+            .map_err(lease_error)?
+            .ok_or_else(|| {
+                io::Error::new(io::ErrorKind::PermissionDenied, "original lease missing")
+            })?
+            .lease;
+        if issuer.revision != pinned.revision {
+            return Err(io::Error::new(
+                io::ErrorKind::PermissionDenied,
+                "original lease revision mismatch",
+            ));
+        }
+        let issuer_token = pinned
+            .verifier
+            .verify_use(&pinned.id, pinned.revision, &issuer.binding)
+            .map_err(lease_error)?;
+        let writer = &registration.authority_lease;
+        let writer_token = pinned
+            .verifier
+            .verify_use(&writer.lease_id, writer.revision, &writer.binding)
+            .map_err(lease_error)?;
+        pinned
+            .verifier
+            .with_joint_dispatch_boundary(
+                issuer_token,
+                &issuer.binding,
+                writer_token,
+                &writer.binding,
+                |actual_issuer, actual_writer, _| {
+                    if actual_writer != writer {
+                        return Err(io::Error::new(
+                            io::ErrorKind::PermissionDenied,
+                            "writer lease changed",
+                        ));
+                    }
+                    let result = publish()?;
+                    let after = self.clock.now_unix_ms().map_err(io::Error::other)?;
+                    if after < actual_issuer.issued_at_unix_ms
+                        || after >= actual_issuer.expires_at_unix_ms
+                    {
+                        return Err(io::Error::new(
+                            io::ErrorKind::PermissionDenied,
+                            "original issuer lease expired during publication",
+                        ));
+                    }
+                    writer::validate_writer_time(
+                        registration,
+                        actual_issuer.authority_epoch,
+                        after,
+                    )?;
+                    Ok(result)
+                },
+            )
+            .map_err(lease_error)?
+    }
+
     /// Observe only under the same original pinned lease/revocation fence used
     /// by issuance. The callback must check its final post-I/O observation
     /// against this lease's expiry before publishing a feed response.
