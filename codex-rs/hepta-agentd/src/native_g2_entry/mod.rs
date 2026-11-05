@@ -13,6 +13,7 @@ mod recovery;
 mod recovery_process;
 mod recovery_registration;
 mod root;
+mod socket_publication;
 mod supervisor;
 mod workload;
 

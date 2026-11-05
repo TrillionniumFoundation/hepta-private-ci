@@ -5,6 +5,9 @@
 //! It does not implement a second runtime kernel or a fleet-wide message bus.
 
 mod app_runtime;
+#[cfg(all(test, target_os = "linux"))]
+#[path = "native_g2_entry/socket_publication.rs"]
+mod native_g2_socket_publication;
 #[cfg(target_os = "linux")]
 mod native_hos2_owner;
 #[cfg(target_os = "linux")]
