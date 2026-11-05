@@ -24,8 +24,10 @@ use crate::bwrap::BwrapNetworkMode;
 use crate::bwrap::BwrapOptions;
 use crate::bwrap::create_bwrap_command_args;
 use crate::landlock::apply_permission_profile_to_current_thread;
+use crate::launcher::BwrapCommandRole;
 use crate::launcher::exec_bwrap;
 use crate::launcher::preferred_bwrap_supports_argv0;
+use crate::parent_lifecycle::ParentLiveness;
 use crate::proxy_routing::activate_proxy_routes_in_netns;
 use crate::proxy_routing::prepare_host_proxy_route_spec;
 use codex_protocol::error::Result as CodexResult;
@@ -138,6 +140,10 @@ pub struct LandlockCommand {
     #[arg(long = "verify-fd-mount", hide = true)]
     pub verify_fd_mounts: Vec<String>,
 
+    /// Private original-parent proc descriptor, supplied only by the outer launcher.
+    #[arg(long = "parent-liveness", hide = true)]
+    pub parent_liveness: Option<String>,
+
     /// When set, skip mounting a fresh `/proc` even though PID isolation is
     /// still enabled. This is primarily intended for restrictive container
     /// environments that deny `--proc /proc`.
@@ -166,6 +172,7 @@ pub fn run_main() -> ! {
         allow_network_for_proxy,
         proxy_route_spec,
         verify_fd_mounts,
+        parent_liveness,
         no_proc,
         command,
     } = LandlockCommand::parse();
@@ -175,6 +182,9 @@ pub fn run_main() -> ! {
     }
     if !apply_seccomp_then_exec && !verify_fd_mounts.is_empty() {
         panic!("--verify-fd-mount is only supported in the inner sandbox stage");
+    }
+    if !apply_seccomp_then_exec && parent_liveness.is_some() {
+        panic!("--parent-liveness is only supported in the inner sandbox stage");
     }
     ensure_inner_stage_mode_is_valid(apply_seccomp_then_exec, use_legacy_landlock);
     let EffectivePermissions {
@@ -220,6 +230,12 @@ pub fn run_main() -> ! {
             panic!("Linux sandbox retained effective or permitted capabilities");
         }
 
+        let parent_liveness = parent_liveness
+            .as_deref()
+            .unwrap_or_else(|| panic!("inner sandbox stage requires original-parent custody"));
+        let original_parent = ParentLiveness::from_inherited(parent_liveness)
+            .unwrap_or_else(|error| panic!("invalid original sandbox parent custody: {error}"));
+
         if allow_network_for_proxy {
             let spec = proxy_route_spec
                 .as_deref()
@@ -239,6 +255,12 @@ pub fn run_main() -> ! {
             panic!("error applying Linux sandbox restrictions: {e:?}");
         }
 
+        // Re-arm after exec and all restrictions. The original proc inode
+        // also detects exit-in-progress before reparenting/zombie publication.
+        // Consuming the guard closes its FD before any user-command fork.
+        original_parent
+            .arm_and_check()
+            .unwrap_or_else(|error| panic!("failed to bind original sandbox parent: {error}"));
         let signal_mask = ForwardedSignalMask::block();
         let command_pid = unsafe { libc::fork() };
         if command_pid < 0 {
@@ -560,7 +582,11 @@ fn run_or_exec_bwrap(bwrap_args: crate::bwrap::BwrapArgs) -> ! {
     if bwrap_args.synthetic_mount_targets.is_empty()
         && bwrap_args.protected_create_targets.is_empty()
     {
-        exec_bwrap(bwrap_args.args, bwrap_args.preserved_files);
+        exec_bwrap(
+            bwrap_args.args,
+            bwrap_args.preserved_files,
+            BwrapCommandRole::SandboxReaper,
+        );
     }
     run_bwrap_in_child_with_synthetic_mount_cleanup(bwrap_args);
 }
@@ -594,7 +620,7 @@ fn run_bwrap_in_child_with_synthetic_mount_cleanup(bwrap_args: crate::bwrap::Bwr
         }
         terminate_with_parent(parent_pid);
         wait_for_parent_exec_start(exec_start_pipe[0], exec_start_pipe[1]);
-        exec_bwrap(args, preserved_files);
+        exec_bwrap(args, preserved_files, BwrapCommandRole::SandboxReaper);
     }
 
     close_child_exec_start_read(exec_start_pipe[0]);
@@ -1450,7 +1476,7 @@ fn run_bwrap_in_child_capture_stderr(bwrap_args: crate::bwrap::BwrapArgs) -> Str
             close_fd_or_panic(write_fd, "close write end in bubblewrap child");
         }
 
-        exec_bwrap(args, preserved_files);
+        exec_bwrap(args, preserved_files, BwrapCommandRole::ProcMountProbe);
     }
 
     let signal_forwarders = install_bwrap_signal_forwarders(pid);
