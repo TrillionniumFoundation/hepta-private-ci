@@ -1,0 +1,484 @@
+{
+  "schema_version": 1,
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "pull_request": 4729,
+  "qualification": "UNQUALIFIED",
+  "recorded_date_utc": "2026-11-05",
+  "source": {
+    "original_commit": "5cb4ee7b63dc91e3c3023f0687f0ea7d2b0a8497",
+    "original_tree": "1c0c36124721a79c8b672804bd7d134a62bf7f4b",
+    "implementation_commit": "52d6128e14b6c21f2ce4889e9c13e2a6713b83fb",
+    "complete_source_commit": "ff280f268f4f2d2287109b7af7f8c22ba790df6c",
+    "complete_source_tree": "7f26786ed3dc94f4d47d2c1a46b686b9f616295b",
+    "local_head_during_attempts": "5cb4ee7b63dc91e3c3023f0687f0ea7d2b0a8497",
+    "binding": "The local candidate contains the frozen changes on original HEAD. After the final failed Clippy command and read-only format check, all 13 changed source/document hashes matched; Git reported no tracked differences from the complete source tree across 11,253 entries after refreshing an independent index. This source match is not native qualification.",
+    "files": [
+      {
+        "path": "codex-rs/hepta-evidence/src/recovery_frontier.rs",
+        "git_blob": "202486445c3ae9a75e3eb63726313145332a8438",
+        "bytes": 9724,
+        "sha256": "aa04df00510000848bd1ddb316ecf7f2f0832ed9d1f178215492ad9ed266d70c"
+      },
+      {
+        "path": "codex-rs/hepta-evidence/src/recovery_effect_frontier.rs",
+        "git_blob": "9cd2cfb8e8409df19ae18ee9042641cb0e493837",
+        "bytes": 4395,
+        "sha256": "86f5e0c2fea6909bffa871775336d2dd82edcb7e33cfbf7700494fd2af7f44a2"
+      },
+      {
+        "path": "codex-rs/hepta-evidence/src/recovery_effect_frontier_tests.rs",
+        "git_blob": "369d06302da7abda994e3befb3e5dbdd8a4648e9",
+        "bytes": 9737,
+        "sha256": "e3ffb6b954cfe9666818586eca261cd83db9a05d883d6b8d5acbccd15918399a"
+      },
+      {
+        "path": "codex-rs/hepta-evidence/src/provider_effect_store.rs",
+        "git_blob": "a1015a232d770b920bf814f3ed0eb0aa44b73891",
+        "bytes": 58338,
+        "sha256": "90a763e505766d3e85f62e26af89e5e501c3ed8f8c4175ce407d7b3490f13f22"
+      },
+      {
+        "path": "codex-rs/hepta-evidence/src/lib.rs",
+        "git_blob": "2bf6230c9a8a615fde97eaabf5d1222c82093628",
+        "bytes": 5262,
+        "sha256": "fcb7f7ed340233d05fb69bd184f58932cfe9ed1d57b61cedcf9e7d64e773a52b"
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/evidence_frontier.rs",
+        "git_blob": "758a78047e2d5666cb2c839e5abee1bc3e424657",
+        "bytes": 10833,
+        "sha256": "ac8cb28362eb509b2b5cb18b1b45b5201d3e79a2ec8804b7d64c0facdeada24b"
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/evidence_frontier_tests.rs",
+        "git_blob": "2d3c263aaa447fce32e867f98c9ecad65aeb7f1c",
+        "bytes": 7231,
+        "sha256": "8a469e6db132aed35a58130047874f2e25c916ffaae75e4da709a6b6f0c5383a"
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/lib.rs",
+        "git_blob": "e173a35b89d0bc79f68e35c4ee558c5b37998173",
+        "bytes": 14213,
+        "sha256": "99f43e9eaa31b4be7d7cf59e32f2c0c9a0e29650645e033bce16b056c8286265"
+      },
+      {
+        "path": "codex-rs/hepta-agentd/tests/kernel_evidence_product.rs",
+        "git_blob": "33df89f287b98e5b0dbbe2bd3305d2007812e613",
+        "bytes": 31625,
+        "sha256": "9f39733d5d275150f12fc29c0a23899f880b308ff182dff5aa45636e90cf732b"
+      },
+      {
+        "path": "codex-rs/hepta-contracts/FINAL_USE.md",
+        "git_blob": "d6fb8d9e90c047481dff6607b7e2b7822568d910",
+        "bytes": 37043,
+        "sha256": "eb1dc8db8e986f5ac247a2d22cd7ec2d3b65be84e1d8d442149319be3e13b971"
+      },
+      {
+        "path": "docs/lane-a-foundation/kernel.evidence/RECOVERY_FRONTIER_V1.md",
+        "git_blob": "9674f1f086ecc0a680e864a71c4f4c3018c25873",
+        "bytes": 9155,
+        "sha256": "c74ebc984f65df8290455bb5a736f14efb681020c45b035b9f75e3e80bcabdd5"
+      }
+    ],
+    "metadata_files": [
+      {
+        "path": "docs/lane-a-foundation/CAPABILITY_EVIDENCE_MAP.json",
+        "bytes": 73068,
+        "sha256": "a931667ddff3f0a60bd6e17038b6a966e4042c2c22cda7fb3e595a5f0df1d631"
+      },
+      {
+        "path": "docs/lane-a-foundation/MODULE_TRUTH_MATRIX.json",
+        "bytes": 25296,
+        "sha256": "65f9a69670239f693b5aa60e61a75436cd9677d254b5e556e9f0d447ac832392"
+      }
+    ],
+    "unchanged_build_inputs": {
+      "scripts/run-nextest.py": {
+        "bytes": 10517,
+        "sha256": "b939d9c06af3269924e05de14abb1cc7e4c44be32024325a593300b5199dd385"
+      },
+      "scripts/verify_lane_a_foundation.py": {
+        "bytes": 1387,
+        "sha256": "b152d0932eb74f8f67ad24cc3543ab3ab43af76cfcd83e477b53522f99d807bb"
+      },
+      "justfile": {
+        "bytes": 7992,
+        "sha256": "837b31ce1b29a48a69dac729357deb034dbf111845990e95b916dc55d0e1b061"
+      },
+      "codex-rs/Cargo.lock": {
+        "bytes": 425163,
+        "sha256": "aabdc987ff578836729359be72ce15b383d6dd86f8689680e1d8ac8291772349"
+      },
+      "codex-rs/rust-toolchain.toml": {
+        "bytes": 78,
+        "sha256": "e8b379eaa492bf59d35187de269afd1c4f55d85e0322f6fea32803a3fec1a380"
+      }
+    },
+    "baseline_fixture": {
+      "production_commit": "5cb4ee7b63dc91e3c3023f0687f0ea7d2b0a8497",
+      "only_changes": [
+        "test module declaration in codex-rs/hepta-evidence/src/lib.rs",
+        "codex-rs/hepta-evidence/src/recovery_effect_frontier_tests.rs"
+      ],
+      "test_file_sha256": "e3ffb6b954cfe9666818586eca261cd83db9a05d883d6b8d5acbccd15918399a"
+    },
+    "post_fix_verification": {
+      "frozen_files_checked": 13,
+      "frozen_hash_mismatches": {},
+      "format_check_changed_source": {},
+      "tracked_tree": "7f26786ed3dc94f4d47d2c1a46b686b9f616295b",
+      "tracked_entries": 11253,
+      "independent_index": true,
+      "original_index_modified": false,
+      "commands": [
+        {
+          "command": [
+            "git",
+            "read-tree",
+            "7f26786ed3dc94f4d47d2c1a46b686b9f616295b"
+          ],
+          "exit_code": 0
+        },
+        {
+          "command": [
+            "git",
+            "update-index",
+            "--refresh"
+          ],
+          "exit_code": 0,
+          "stdout": "",
+          "stderr": ""
+        },
+        {
+          "command": [
+            "git",
+            "diff-files",
+            "--exit-code",
+            "--name-status"
+          ],
+          "exit_code": 0,
+          "stdout": "",
+          "stderr": ""
+        },
+        {
+          "command": [
+            "git",
+            "diff",
+            "--check"
+          ],
+          "exit_code": 0,
+          "stdout": "",
+          "stderr": ""
+        }
+      ],
+      "stat_refresh": {
+        "exit_code": 1,
+        "reported_entries": 11253,
+        "note": "read-tree creates an index without worktree stat information; this comparison preceded index refresh"
+      },
+      "receipt_sha256": "7c9ada10033b752a0d45b2ea9dc5a1a22e8deb2f1509c9424916b9d09ea8687b"
+    }
+  },
+  "toolchain": {
+    "rustc": "1.96.0 (ac68faa20 2026-05-25)",
+    "cargo": "1.96.0 (30a34c682 2026-05-25)",
+    "just": "1.59.0",
+    "cargo_nextest": "0.9.151 (6b3f99457 2026-11-02)",
+    "host": "x86_64-unknown-linux-gnu",
+    "extra_env_unset": [
+      "RUSTFLAGS",
+      "RUSTC_WRAPPER",
+      "CARGO_INCREMENTAL",
+      "RUSTUP_TOOLCHAIN",
+      "HEPTA_NEXTTEST_FULL_METADATA"
+    ],
+    "test_entry": "just test; existing scripts/run-nextest.py; no direct cargo test invocation",
+    "wrapper_defaults": {
+      "RUST_MIN_STACK": "8388608",
+      "NEXTEST_PROFILE": "local",
+      "nextest_argument": "--no-fail-fast"
+    },
+    "metadata_warning": "Scoped package tests use the original wrapper's --no-deps metadata path. Dependency IDs missing from that metadata were warnings, not native test results.",
+    "rustfmt": "rustfmt 1.9.0-stable (ac68faa20c 2026-05-25)"
+  },
+  "attempts": [
+    {
+      "id": "candidate-initial",
+      "source": "in-progress candidate; no final-source execution qualification",
+      "command": [
+        "just",
+        "test",
+        "-p",
+        "codex-hepta-evidence",
+        "--locked"
+      ],
+      "exit_code": 130,
+      "status": "INTERRUPTED_DURING_BUILD",
+      "observed_native_test_executions": 0,
+      "detail": "Stopped normally while compiling dependencies amid shared memory pressure.",
+      "log": {
+        "name": "finaluse-evidence-test.log",
+        "bytes": 20621,
+        "sha256": "44ba9cd37d0535bfbc43f40d3c065f046bbc144044cd20aceff701d941afc9b1"
+      }
+    },
+    {
+      "id": "candidate-singlejob-runner-lost",
+      "source": "in-progress candidate; no final-source execution qualification",
+      "command": [
+        "just",
+        "test",
+        "-p",
+        "codex-hepta-evidence",
+        "--locked"
+      ],
+      "environment": {
+        "CARGO_BUILD_JOBS": "1"
+      },
+      "exec_session": 58873,
+      "exit_code": null,
+      "status": "RUNNER_LOST",
+      "observed_native_test_executions": 0,
+      "detail": "Executor disconnected while compiling dependencies. Resume timed out; after restoration the process was absent and session was unknown. No exit code or native test result was observed.",
+      "log": {
+        "name": "finaluse-evidence-singlejob-test.log",
+        "bytes": 16662,
+        "sha256": "bd9dfc7a7d3fd8793d6ffb5729562102108cdd87aedf798e6d551632320f3051"
+      }
+    },
+    {
+      "id": "finaluse-run03-baseline-red-20261105",
+      "source": "baseline plus identical five new tests",
+      "command": [
+        "just",
+        "test",
+        "-p",
+        "codex-hepta-evidence",
+        "--locked",
+        "--lib",
+        "--retries",
+        "0",
+        "--no-fail-fast",
+        "-E",
+        "test(recovery_snapshot_)"
+      ],
+      "environment": {
+        "CARGO_BUILD_JOBS": "1",
+        "CARGO_TARGET_DIR": "candidate/codex-rs/target"
+      },
+      "started_at": "2026-11-05T01:21:28.371872+00:00",
+      "finished_at": "2026-11-05T01:21:29.076629+00:00",
+      "exit_code": 2,
+      "status": "ARGUMENT_ERROR",
+      "observed_native_test_executions": 0,
+      "detail": "Repository wrapper injects --no-fail-fast; explicitly repeating it is rejected before test compilation.",
+      "log": {
+        "name": "finaluse-run03-baseline-red-20261105.log",
+        "bytes": 320,
+        "sha256": "94a13165531f92b7446617855d826f81a1ff10b66d20dc1bb23864376425480c"
+      }
+    },
+    {
+      "id": "finaluse-run04-baseline-red-20261105",
+      "source": "baseline plus identical five new tests",
+      "command": [
+        "just",
+        "test",
+        "-p",
+        "codex-hepta-evidence",
+        "--locked",
+        "--lib",
+        "--retries",
+        "0",
+        "-E",
+        "test(recovery_snapshot_)"
+      ],
+      "environment": {
+        "CARGO_BUILD_JOBS": "1",
+        "CARGO_TARGET_DIR": "candidate/codex-rs/target"
+      },
+      "started_at": "2026-11-05T01:21:39.967404+00:00",
+      "finished_at": "2026-11-05T01:23:53.892274+00:00",
+      "exit_code": 101,
+      "status": "BUILD_FAILED_ENOSPC",
+      "observed_native_test_executions": 0,
+      "detail": "Compilation failed writing schemafy fingerprint: No space left on device (os error 28). Not a regression assertion.",
+      "log": {
+        "name": "finaluse-run04-baseline-red-20261105.log",
+        "bytes": 10803,
+        "sha256": "20ca4a62f67fd42be8326dc9e38dfd9fe9f12bc2e32d1bce65f43dcc5387d67f"
+      }
+    },
+    {
+      "id": "finaluse-run05-fix-20261105",
+      "source": "frozen complete-source candidate",
+      "command": [
+        "just",
+        "fix",
+        "-p",
+        "codex-hepta-evidence",
+        "-p",
+        "codex-hepta-agentd",
+        "--locked"
+      ],
+      "environment": {
+        "CARGO_BUILD_JOBS": "1",
+        "CARGO_TARGET_DIR": "/workspace/scratch/fae095a59687/hepta-finaluse/codex-rs/target"
+      },
+      "started_at": "2026-11-05T01:26:37.666255+00:00",
+      "finished_at": "2026-11-05T01:31:47.603327+00:00",
+      "exit_code": 101,
+      "status": "CLIPPY_DEPENDENCY_BUILD_FAILED_ENOSPC",
+      "observed_native_test_executions": 0,
+      "detail": "codex-network-proxy could not write full.rmeta: No space left on device (os error 28). No completed scoped Clippy qualification.",
+      "log": {
+        "name": "finaluse-run05-fix-20261105.log",
+        "bytes": 14031,
+        "sha256": "18ee6f4a561ba163ac1a1b6956eaa489e559b1ce1e5bbe06b9588031bb2e2743"
+      }
+    }
+  ],
+  "native_result": {
+    "baseline_red": "NOT_RUN_UNAVAILABLE_STORAGE",
+    "final_candidate_owner_suite": "NOT_RUN_UNAVAILABLE_STORAGE",
+    "signed_file_verifier_units": "NOT_RUN_UNAVAILABLE_STORAGE",
+    "agentd_recovery_product_tests": "NOT_RUN_UNAVAILABLE_STORAGE",
+    "authored_new_tests": 8,
+    "observed_native_test_executions": 0,
+    "red_green_established": false,
+    "hosted_ci_result": "NOT_OBSERVED",
+    "historical_results": "Earlier PR test counts do not qualify this V2 source."
+  },
+  "authored_test_scope": {
+    "owner_tests": 5,
+    "owner_oracles": [
+      "Intent, Unknown, and receipt each change the checkpoint while the operation key remains stable.",
+      "A structurally valid effect-only old database differs from the retained current checkpoint.",
+      "ACK source and recorded time participate even with an unchanged record digest.",
+      "The 257th effect row participates after the first page.",
+      "Changed raw JSON with retained record digests is refused for all three effect tables."
+    ],
+    "verifier_units": 2,
+    "verifier_oracles": [
+      "A correctly signed enrolled-key V1 record is refused by the V2 verifier.",
+      "Unmodified V2 is accepted; independently tampered effect row count or frontier digest fails signature verification."
+    ],
+    "new_product_tests": 1,
+    "product_oracle": "Agentd recovery refuses an effect-only database rollback; original exact-current and qualification-rollback cases remain.",
+    "unit_and_product_filter": "test(recovery_frontier_) targets the two verifier units plus three signed recovery product cases; no native enumeration or execution completed."
+  },
+  "environment_blockers": {
+    "storage": {
+      "observed": "Overlay filesystem reported 63 GB used of 63 GB, available 0; /, /workspace and /tmp shared that device.",
+      "native_error": "No space left on device (os error 28)",
+      "response": "Only completed build caches owned by this task were reclaimed. No other session files were deleted; free space remained unavailable.",
+      "artifact_storage": "Small final receipts and documents were staged in /dev/shm, then saved as GitHub blobs. Rust build targets were not moved into shared memory."
+    },
+    "unix_socket_probe": {
+      "source": "parent agent capability probe",
+      "result": "AF_UNIX socket creation returned EPERM",
+      "scope": "Not an Agentd product test result; the product tests were not executed."
+    }
+  },
+  "repository_gate": {
+    "unchanged_verifier_sha256": "b152d0932eb74f8f67ad24cc3543ab3ab43af76cfcd83e477b53522f99d807bb",
+    "before_order": {
+      "commands": [
+        "python3 scripts/verify_lane_a_foundation.py verify",
+        "python3 scripts/verify_lane_a_foundation.py self-test"
+      ],
+      "exit_codes": [
+        1,
+        1
+      ],
+      "error": "closed-world module order mismatch",
+      "log_sha256": "8ab90c0d139fe2a1d0b737e3bcfcb756edce4b8cce668f556d8e49a1aa707ad2"
+    },
+    "after_order": {
+      "commands": [
+        "python3 scripts/verify_lane_a_foundation.py verify",
+        "python3 scripts/verify_lane_a_foundation.py self-test"
+      ],
+      "exit_codes": [
+        1,
+        1
+      ],
+      "error": "platform.types: current-contract sections missing/out of order",
+      "log_sha256": "fc44364e9b8c3ba31e16dc7736d13ad806d4f58e28284753c1a9170ec8345601"
+    },
+    "preservation": {
+      "module_count": 7,
+      "capability_count": 42,
+      "all_rows_and_qualifications_preserved": true,
+      "only_existing_order_corrected_beyond_v2_symbol_updates": true,
+      "gate_weakened": false,
+      "artifact_sha256": "eb2f9dc45eaeffc0b8d8027b30d2c1ed34a83b49537d5d3d5a82b6c54224fc9f"
+    },
+    "baseline_diagnosis": "The original HEAD matrix reproduces the order mismatch with the byte-identical gate. The later platform.types contract is byte-identical to HEAD; additional original source-anchor failures were retained, not broadened into this change.",
+    "platform_types_contract_sha256": "613799c98f256eac37e1001f868b1f6350eed792a4472a6846dd764fa5d20d47",
+    "targeted_review_artifact_sha256": "1544525695af9b1763e8635047c0a1bafdc886c73a78eac88e232351dd773ec0"
+  },
+  "boundaries": [
+    "This change commits hepta-evidence qualification-facade effect history for Agentd kernel.evidence recovery admission. It does not compose AutomationStore runtime state, budget reservation, FinalUse consumption and external execution into one transaction.",
+    "A current checkpoint must come from an independent fresh state source. A same-host fixture or path outside Agent home does not establish a fresh failure domain; rollback of all replicas and checkpoints remains outside the guarantee.",
+    "No online witness service, expected-old checkpoint CAS, transparency-log consistency proof, or availability qualification is supplied by this patch.",
+    "V1 recovery checkpoints are refused; an authorized publisher must review and re-sign V2. Trust-file schema remains V1 and recovery identity remains Ed25519.",
+    "The frontier reads 256-row pages and caps total effect rows at 1,000,000. This is neither a strict byte-memory limit nor a bound for all startup verification; existing cold-open verification still fetches all effect rows.",
+    "Snapshot validation rechecks actual JSON bytes against their stored digests. It does not enforce canonical JSON reserialization or replace existing typed/column-projection checks.",
+    "External effects without idempotency or result lookup still require an unresolved state; no arbitrary exactly-once guarantee is established."
+  ],
+  "raw_artifacts": "Only this compact manifest and reproduction instructions are packaged. Raw build logs and binaries are not included or claimed to be downloadable; recorded log digests identify the observed local artifacts.",
+  "attempt_counts": {
+    "test_command_attempts": 4,
+    "scoped_fix_command_attempts": 1,
+    "native_command_attempts": 5,
+    "observed_native_test_executions": 0
+  },
+  "source_hygiene": {
+    "final_just_fix": {
+      "status": "FAILED_UNAVAILABLE_STORAGE",
+      "exit_code": 101,
+      "attempt_id": "finaluse-run05-fix-20261105"
+    },
+    "final_just_fmt": {
+      "status": "NOT_RUN_UNAVAILABLE_STORAGE",
+      "exit_code": null,
+      "reason": "Avoid rewriting source on the full filesystem."
+    },
+    "read_only_scoped_format": {
+      "status": "PASS",
+      "exit_code": 0,
+      "tool": "rustfmt 1.9.0-stable (ac68faa20c 2026-05-25)",
+      "started_at": "2026-11-05T01:32:50.529018+00:00",
+      "finished_at": "2026-11-05T01:32:50.807543+00:00",
+      "command": [
+        "rustfmt",
+        "--edition",
+        "2024",
+        "--config",
+        "imports_granularity=Item,skip_children=true",
+        "--config-path",
+        "/workspace/scratch/fae095a59687/hepta-finaluse/codex-rs/rustfmt.toml",
+        "--check",
+        "--",
+        "/workspace/scratch/fae095a59687/hepta-finaluse/codex-rs/hepta-evidence/src/recovery_frontier.rs",
+        "/workspace/scratch/fae095a59687/hepta-finaluse/codex-rs/hepta-evidence/src/recovery_effect_frontier.rs",
+        "/workspace/scratch/fae095a59687/hepta-finaluse/codex-rs/hepta-evidence/src/recovery_effect_frontier_tests.rs",
+        "/workspace/scratch/fae095a59687/hepta-finaluse/codex-rs/hepta-evidence/src/provider_effect_store.rs",
+        "/workspace/scratch/fae095a59687/hepta-finaluse/codex-rs/hepta-evidence/src/lib.rs",
+        "/workspace/scratch/fae095a59687/hepta-finaluse/codex-rs/hepta-agentd/src/evidence_frontier.rs",
+        "/workspace/scratch/fae095a59687/hepta-finaluse/codex-rs/hepta-agentd/src/evidence_frontier_tests.rs",
+        "/workspace/scratch/fae095a59687/hepta-finaluse/codex-rs/hepta-agentd/src/lib.rs",
+        "/workspace/scratch/fae095a59687/hepta-finaluse/codex-rs/hepta-agentd/tests/kernel_evidence_product.rs"
+      ],
+      "rust_files": 9,
+      "source_unchanged": true,
+      "log": {
+        "name": "finaluse-run06-scoped-rustfmt-check-20261105.log",
+        "bytes": 106,
+        "sha256": "46e6296365b301e2eb16bb5b40f88b1aab521b90ae30c5631fe41d6319ca14c8"
+      },
+      "scope": "Only the nine changed Rust files. Not just fmt, not a native compile/test result."
+    }
+  }
+}
