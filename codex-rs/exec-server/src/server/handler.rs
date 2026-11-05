@@ -158,6 +158,7 @@ impl ExecServerHandler {
             .lock()
             .unwrap_or_else(std::sync::PoisonError::into_inner) = Some(session);
         Ok(InitializeResponse {
+            process_exit_observation: true,
             session_id,
             environment_info: Some(crate::local_environment_info()),
         })

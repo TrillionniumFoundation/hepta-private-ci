@@ -99,6 +99,7 @@ async fn initialized_handler() -> Arc<ExecServerHandler> {
     ));
     let initialize_response = handler
         .initialize(InitializeParams {
+            process_exit_observation: true,
             client_name: "exec-server-test".to_string(),
             resume_session_id: None,
         })
@@ -178,6 +179,7 @@ async fn long_poll_read_fails_after_session_resume() {
     ));
     let initialize_response = first_handler
         .initialize(InitializeParams {
+            process_exit_observation: true,
             client_name: "exec-server-test".to_string(),
             resume_session_id: None,
         })
@@ -219,6 +221,7 @@ async fn long_poll_read_fails_after_session_resume() {
     ));
     second_handler
         .initialize(InitializeParams {
+            process_exit_observation: true,
             client_name: "exec-server-test".to_string(),
             resume_session_id: Some(initialize_response.session_id),
         })
@@ -253,6 +256,7 @@ async fn active_session_resume_is_rejected() {
     ));
     let initialize_response = first_handler
         .initialize(InitializeParams {
+            process_exit_observation: true,
             client_name: "exec-server-test".to_string(),
             resume_session_id: None,
         })
@@ -268,6 +272,7 @@ async fn active_session_resume_is_rejected() {
     ));
     let err = second_handler
         .initialize(InitializeParams {
+            process_exit_observation: true,
             client_name: "exec-server-test".to_string(),
             resume_session_id: Some(initialize_response.session_id.clone()),
         })
@@ -297,6 +302,7 @@ async fn output_and_exit_are_retained_after_notification_receiver_closes() {
     ));
     handler
         .initialize(InitializeParams {
+            process_exit_observation: true,
             client_name: "exec-server-test".to_string(),
             resume_session_id: None,
         })

@@ -739,6 +739,7 @@ impl ExecServerClient {
                 .call(
                     INITIALIZE_METHOD,
                     &InitializeParams {
+                        process_exit_observation: true,
                         client_name,
                         resume_session_id,
                     },
@@ -1827,6 +1828,7 @@ mod tests {
                 JSONRPCMessage::Response(JSONRPCResponse {
                     id: initialize.id,
                     result: serde_json::to_value(InitializeResponse {
+                        process_exit_observation: true,
                         session_id: "trace-test".to_string(),
                         environment_info: None,
                     })
@@ -2008,6 +2010,7 @@ mod tests {
             JSONRPCMessage::Response(JSONRPCResponse {
                 id: request.id,
                 result: serde_json::to_value(InitializeResponse {
+                    process_exit_observation: true,
                     session_id: session_id.to_string(),
                     environment_info,
                 })
@@ -2249,6 +2252,7 @@ mod tests {
                 JSONRPCMessage::Response(JSONRPCResponse {
                     id: request.id,
                     result: serde_json::to_value(InitializeResponse {
+                        process_exit_observation: true,
                         session_id: "session-1".to_string(),
                         environment_info: None,
                     })
@@ -2395,6 +2399,7 @@ mod tests {
                 JSONRPCMessage::Response(JSONRPCResponse {
                     id: request.id,
                     result: serde_json::to_value(InitializeResponse {
+                        process_exit_observation: true,
                         session_id: "session-1".to_string(),
                         environment_info: None,
                     })
@@ -2737,6 +2742,7 @@ mod tests {
                 JSONRPCMessage::Response(JSONRPCResponse {
                     id: request.id,
                     result: serde_json::to_value(InitializeResponse {
+                        process_exit_observation: true,
                         session_id: "session-1".to_string(),
                         environment_info: None,
                     })
@@ -3055,6 +3061,7 @@ mod tests {
                 JSONRPCMessage::Response(JSONRPCResponse {
                     id: request.id,
                     result: serde_json::to_value(InitializeResponse {
+                        process_exit_observation: true,
                         session_id: "session-1".to_string(),
                         environment_info: None,
                     })

@@ -19,6 +19,7 @@ async fn exec_server_accepts_initialize() -> anyhow::Result<()> {
         .send_request(
             "initialize",
             serde_json::to_value(InitializeParams {
+                process_exit_observation: true,
                 client_name: "exec-server-test".to_string(),
                 resume_session_id: None,
             })?,
@@ -56,6 +57,7 @@ async fn exec_server_rejects_pipelined_requests_before_initialized() -> anyhow::
         .send_request(
             "initialize",
             serde_json::to_value(InitializeParams {
+                process_exit_observation: true,
                 client_name: "exec-server-test".to_string(),
                 resume_session_id: None,
             })?,
