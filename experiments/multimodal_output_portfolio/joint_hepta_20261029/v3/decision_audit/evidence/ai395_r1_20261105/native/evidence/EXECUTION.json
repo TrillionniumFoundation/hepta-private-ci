@@ -1,0 +1,166 @@
+{
+  "schema": "hepta.r1-independent-execution.v1",
+  "source_sha": "975e1a264c14ed3da02dcee23a64327825387e42",
+  "source_tree": "cb612abe0d02afaf711d37f5d8575a577da5524e",
+  "host": "ai395",
+  "platform": "Linux-7.0.0-38-generic-x86_64-with-glibc2.43",
+  "launcher_python": "3.14.4 (main, Aug 20 2026, 10:41:58) [GCC 15.2.0]",
+  "python_environment_difference": "Python 3.12.16 instead of original Actions Python 3.12.14; all declared packages are pinned identically. Results belong to this exact environment only.",
+  "started_unix": 1793859900.8155985,
+  "source_manifest": {
+    "source_sha": "975e1a264c14ed3da02dcee23a64327825387e42",
+    "tree": "cb612abe0d02afaf711d37f5d8575a577da5524e",
+    "files": [
+      {
+        "path": "experiments/multimodal_output_portfolio/joint_hepta_20261029/v3/decision_audit/diagnostics.py",
+        "size": 9125,
+        "sha256": "e9ed1bd8205f9be8518b2ba6e0792e015ab28bfa0649e707bc19b124f1810db1",
+        "git_blob": "be772e797531f467ae9d93c3d4af4f48ceff3978"
+      },
+      {
+        "path": "experiments/multimodal_output_portfolio/joint_hepta_20261029/v3/decision_audit/acquire_models.py",
+        "size": 8135,
+        "sha256": "ec9d7dbc943ab029e51174fbf6065be4bd29ac23fb912d1aa3f14c065ad0e1cf",
+        "git_blob": "9ca4a48f9fb85e1d58223315b1ce4701f9e20629"
+      },
+      {
+        "path": "experiments/multimodal_output_portfolio/joint_hepta_20261029/v3/decision_audit/local_models.py",
+        "size": 8933,
+        "sha256": "70a119d2ac4297c31fe86b5c299b30b1f43bb128e3a72f06087a32162f3965e1",
+        "git_blob": "48d533d353cdc92c01d69116098344d5d2caaf63"
+      },
+      {
+        "path": "inputs/input.png",
+        "size": 264452,
+        "sha256": "672f4e47b0e541cf66214e2dc41ec9c91315449b3df3dd0788523cb2a25bff71",
+        "git_blob": "bdd6b93a1dc60c82eca92a488898b301380ce82b"
+      },
+      {
+        "path": "inputs/direct.png",
+        "size": 107704,
+        "sha256": "12fb2f9528cea05c213940d4579faa9fa657fcb4b19e38aec9661acf8483e0a9",
+        "git_blob": "6c6739370d59250a9608ee3e8beb0e911c154261"
+      },
+      {
+        "path": "inputs/REVIEW.json",
+        "size": 39998,
+        "sha256": "bf1353d6069d54003285a22187464e2d20afefba92a7accf75f6d968247e1e65",
+        "git_blob": "9f6f2cdb7849d7a234fbbab7c6c66b7b229e9822"
+      }
+    ]
+  },
+  "phases": [
+    {
+      "name": "create-env",
+      "argv": [
+        "/home/qq/hepta-smollm2-weight-research-20261103/ci-env/bin/python",
+        "-m",
+        "venv",
+        "/home/qq/work/hepta-r1-4835-20261105-w0-r1/venv"
+      ],
+      "exit_code": 0,
+      "wall_seconds": 1.1300343989860266,
+      "child_cpu_seconds": 1.030231,
+      "cumulative_child_peak_rss_bytes": 62935040,
+      "scope": "inclusive_child_wait",
+      "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "install",
+      "argv": [
+        "/home/qq/work/hepta-r1-4835-20261105-w0-r1/venv/bin/python",
+        "-m",
+        "pip",
+        "install",
+        "--no-cache-dir",
+        "--disable-pip-version-check",
+        "--extra-index-url",
+        "https://download.pytorch.org/whl/cpu",
+        "torch==2.8.0+cpu",
+        "torchvision==0.23.0+cpu",
+        "numpy==2.3.5",
+        "Pillow==13.0.0",
+        "transformers==4.57.3",
+        "diffusers==0.35.2",
+        "accelerate==1.12.0",
+        "safetensors==0.7.0",
+        "num2words==0.5.14"
+      ],
+      "exit_code": 0,
+      "wall_seconds": 232.09713926701806,
+      "child_cpu_seconds": 17.07378,
+      "cumulative_child_peak_rss_bytes": 195821568,
+      "scope": "inclusive_child_wait",
+      "log_sha256": "b7f078e8ae26cd76179a9be1e4480c5f189581b9fb7d867a3c25eb7c40b563a9"
+    },
+    {
+      "name": "freeze",
+      "argv": [
+        "/home/qq/work/hepta-r1-4835-20261105-w0-r1/venv/bin/python",
+        "-m",
+        "pip",
+        "freeze"
+      ],
+      "exit_code": 0,
+      "wall_seconds": 0.10235069901682436,
+      "child_cpu_seconds": 0.10153500000000326,
+      "cumulative_child_peak_rss_bytes": 195821568,
+      "scope": "inclusive_child_wait",
+      "log_sha256": "278217908b960310cf8a3a87ab73e364b2dae464c1b918fa2ff0a6324b7b90e5"
+    },
+    {
+      "name": "acquisition",
+      "argv": [
+        "/home/qq/work/hepta-r1-4835-20261105-w0-r1/venv/bin/python",
+        "-B",
+        "-m",
+        "experiments.multimodal_output_portfolio.joint_hepta_20261029.v3.decision_audit.acquire_models",
+        "--root",
+        "/home/qq/work/hepta-r1-4835-20261105-w0-r1/models"
+      ],
+      "exit_code": 0,
+      "wall_seconds": 308.9491323289694,
+      "child_cpu_seconds": 3.5844209999999994,
+      "cumulative_child_peak_rss_bytes": 195821568,
+      "scope": "inclusive_child_wait",
+      "log_sha256": "7a46789ce0e5747170ae68f43954bc72d8f2b77fa2e035dc7688952acb44e01c"
+    },
+    {
+      "name": "diagnostics",
+      "argv": [
+        "/home/qq/work/hepta-r1-4835-20261105-w0-r1/venv/bin/python",
+        "-B",
+        "-m",
+        "experiments.multimodal_output_portfolio.joint_hepta_20261029.v3.decision_audit.diagnostics",
+        "--models",
+        "/home/qq/work/hepta-r1-4835-20261105-w0-r1/models",
+        "--original",
+        "/home/qq/work/hepta-r1-4835-20261105-w0-r1/source/inputs/input.png",
+        "--generated",
+        "/home/qq/work/hepta-r1-4835-20261105-w0-r1/source/inputs/direct.png",
+        "--output",
+        "/home/qq/work/hepta-r1-4835-20261105-w0-r1/evidence/diagnostics",
+        "--source-sha",
+        "975e1a264c14ed3da02dcee23a64327825387e42",
+        "--threads",
+        "2",
+        "--max-tokens",
+        "80"
+      ],
+      "exit_code": 0,
+      "wall_seconds": 29.19702258205507,
+      "child_cpu_seconds": 40.723438,
+      "cumulative_child_peak_rss_bytes": 2203029504,
+      "scope": "inclusive_child_wait",
+      "log_sha256": "7290b9f3229a0f8e7403d7eca02011275c7d3195dc202baacd5ca8e2f47d21c8"
+    }
+  ],
+  "status": "completed",
+  "semantic_acceptance": "not_inferred",
+  "training_performed": false,
+  "production_qualified": false,
+  "wall_seconds": 571.4814202070702,
+  "cpu_seconds_including_all_setup_and_children": 62.537423,
+  "cost_scope": "all recorded setup, downloads, verification, model runs and failures; excludes agent orchestration and transport; no energy meter",
+  "energy_joules": null
+}

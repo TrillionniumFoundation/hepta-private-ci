@@ -1,0 +1,86 @@
+{
+  "schema": "hepta.r1-historical-prompt-probes.v1",
+  "source_sha": "975e1a264c14ed3da02dcee23a64327825387e42",
+  "historical_source_sha": "4e3b8c3c242d7d6d83086e7375a354a30647e040",
+  "original_archive_sha256": "e3607ef03ca027e1fc91fbe09e354e30c8521f8bf66062bfd153e75659ced050",
+  "historical_output_sha256": "e868d31e1cdee549254b25203d775363f10b19ab97a01ba7f19e60873caf52d6",
+  "purpose": "Replay exact historical VLM inputs using the preserved historical plan/explanation/critique and frozen actual images; then test blank-image dependence on historical versus rival plan. This does not regenerate diffusion images or replay controller semantics.",
+  "fresh_model_per_case": true,
+  "max_new_tokens": 80,
+  "threads": 2,
+  "cases": [
+    {
+      "id": "direct-perceive",
+      "image": "original",
+      "prompt": "Describe visible objects and their spatial relations for a simple explanatory diagram. Explain the main visible subject and its relation to the plant. Produce a simple diagram showing their relative positions.",
+      "role": "historical_input_replay"
+    },
+    {
+      "id": "direct-text",
+      "image": "original",
+      "prompt": "Write a concise explanation grounded in this image and shared diagram plan. Request: Explain the main visible subject and its relation to the plant. Produce a simple diagram showing their relative positions.\nPlan: The diagram shows a close-up view of a pink flower with a bee on it. The bee is in the center of the flower, and the flower is surrounded by other flowers. The flower is pink, and the bee is yellow. The background is green, and there are leaves in the background. The diagram is simple and uses a simple color scheme, with the bee and flower being the main",
+      "role": "historical_input_replay"
+    },
+    {
+      "id": "direct-verify",
+      "image": "generated",
+      "prompt": "Check whether this generated diagram matches the explanation and common plan. State any mismatch. Explanation: The diagram shows a close-up view of a pink flower with a bee on it. The bee is in the center of the flower, and the flower is surrounded by other flowers. The flower is pink, and the bee is yellow. The background is green, and there are leaves in the background. The diagram is simple and uses a simple color scheme, with the bee and flower being the main\nPlan: The diagram shows a close-up view of a pink flower with a bee on it. The bee is in the center of the flower, and the flower is surrounded by other flowers. The flower is pink, and the bee is yellow. The background is green, and there are leaves in the background. The diagram is simple and uses a simple color scheme, with the bee and flower being the main",
+      "role": "historical_input_replay"
+    },
+    {
+      "id": "revision-perceive",
+      "image": "original",
+      "prompt": "Describe visible objects and their spatial relations for a simple explanatory diagram. Explain the main visible subject and its relation to the plant. Produce a simple diagram showing their relative positions.",
+      "role": "historical_input_replay"
+    },
+    {
+      "id": "revision-text",
+      "image": "original",
+      "prompt": "Write a concise explanation grounded in this image and shared diagram plan. Request: Explain the main visible subject and its relation to the plant. Produce a simple diagram showing their relative positions.\nPlan: The diagram shows a close-up view of a pink flower with a bee on it. The bee is in the center of the flower, and the flower is surrounded by other flowers. The flower is pink, and the bee is yellow. The background is green, and there are leaves in the background. The diagram is simple and uses a simple color scheme, with the bee and flower being the main",
+      "role": "historical_input_replay"
+    },
+    {
+      "id": "revision-verify",
+      "image": "generated",
+      "prompt": "Check whether this generated diagram matches the explanation and common plan. State any mismatch. Explanation: The diagram shows a close-up view of a pink flower with a bee on it. The bee is in the center of the flower, and the flower is surrounded by other flowers. The flower is pink, and the bee is yellow. The background is green, and there are leaves in the background. The diagram is simple and uses a simple color scheme, with the bee and flower being the main\nPlan: The diagram shows a close-up view of a pink flower with a bee on it. The bee is in the center of the flower, and the flower is surrounded by other flowers. The flower is pink, and the bee is yellow. The background is green, and there are leaves in the background. The diagram is simple and uses a simple color scheme, with the bee and flower being the main",
+      "role": "historical_input_replay"
+    },
+    {
+      "id": "revision-revise",
+      "image": "original",
+      "prompt": "Revise the common plan for an explanation and a simple diagram. Preserve visible facts. Request: Explain the main visible subject and its relation to the plant. Produce a simple diagram showing their relative positions.\nPrevious plan: The diagram shows a close-up view of a pink flower with a bee on it. The bee is in the center of the flower, and the flower is surrounded by other flowers. The flower is pink, and the bee is yellow. The background is green, and there are leaves in the background. The diagram is simple and uses a simple color scheme, with the bee and flower being the main\nCritique: The diagram shows a close-up view of a pink flower with a bee on it. The bee is in the center of the flower, and the flower is surrounded by other flowers. The flower is pink, and the bee is yellow. The background is green, and there are leaves in the background. The diagram is simple and uses a simple color scheme, with the bee and flower being the main",
+      "role": "historical_input_replay"
+    },
+    {
+      "id": "revision-text2",
+      "image": "original",
+      "prompt": "Write a concise explanation grounded in this image and shared diagram plan. Request: Explain the main visible subject and its relation to the plant. Produce a simple diagram showing their relative positions.\nPlan: The diagram shows a close-up view of a pink flower with a bee on it. The bee is in the center of the flower, and the flower is surrounded by other flowers. The flower is pink, and the bee is yellow. The background is green, and there are leaves in the background. The diagram is simple and uses a simple color scheme, with the bee and flower being the main",
+      "role": "historical_input_replay"
+    },
+    {
+      "id": "revision-verify2",
+      "image": "refined",
+      "prompt": "Check whether this generated diagram matches the explanation and common plan. State any mismatch. Explanation: The diagram shows a close-up view of a pink flower with a bee on it. The bee is in the center of the flower, and the flower is surrounded by other flowers. The flower is pink, and the bee is yellow. The background is green, and there are leaves in the background. The diagram is simple and uses a simple color scheme, with the bee and flower being the main\nPlan: The diagram shows a close-up view of a pink flower with a bee on it. The bee is in the center of the flower, and the flower is surrounded by other flowers. The flower is pink, and the bee is yellow. The background is green, and there are leaves in the background. The diagram is simple and uses a simple color scheme, with the bee and flower being the main",
+      "role": "historical_input_replay"
+    },
+    {
+      "id": "blank-historical-plan",
+      "image": "blank",
+      "prompt": "Check whether this generated diagram matches the explanation and common plan. State any mismatch. Explanation: The diagram shows a close-up view of a pink flower with a bee on it. The bee is in the center of the flower, and the flower is surrounded by other flowers. The flower is pink, and the bee is yellow. The background is green, and there are leaves in the background. The diagram is simple and uses a simple color scheme, with the bee and flower being the main\nPlan: The diagram shows a close-up view of a pink flower with a bee on it. The bee is in the center of the flower, and the flower is surrounded by other flowers. The flower is pink, and the bee is yellow. The background is green, and there are leaves in the background. The diagram is simple and uses a simple color scheme, with the bee and flower being the main",
+      "role": "negative_control"
+    },
+    {
+      "id": "blank-rival-plan",
+      "image": "blank",
+      "prompt": "Check whether this generated diagram matches the explanation and common plan. State any mismatch. Explanation: A red ball is centered on a blue square.\nPlan: A red ball is centered on a blue square.",
+      "role": "negative_control"
+    }
+  ],
+  "predictions_before_execution": {
+    "input_fault": "Already contradicted for neutral prompts by distinct actual pixels/features/output. Historical replay checks prompt family and tokens.",
+    "prompt_dominance": "A historical plan may elicit its own description even for the generated or blank image; rival-plan control should change output if plan content is causal.",
+    "historical_equivalence": "Report whether each replay equals archived text/token truncation. If it differs, do not overwrite history or claim historical cause proven."
+  },
+  "semantic_acceptance": false,
+  "training_performed": false
+}

@@ -1,0 +1,109 @@
+{
+  "schema": "hepta.r1-raw-tensor-observer.v1",
+  "source_sha": "975e1a264c14ed3da02dcee23a64327825387e42",
+  "source_tree": "cb612abe0d02afaf711d37f5d8575a577da5524e",
+  "observer_sha256": "e4448ee4ff1f91fb1a7e873b31c52159bee14fdc091b483e847855f37b0f128a",
+  "host": "ai395",
+  "python": "3.12.16 (main, Oct 26 2026, 14:08:45) [Clang 23.1.3 ]",
+  "platform": "Linux-7.0.0-38-generic-x86_64-with-glibc2.43",
+  "status": "completed",
+  "purpose": "Supplement exact-source run with complete values of all observed actual input tensors and vision encoder outputs.",
+  "semantics_modified": false,
+  "production_qualified": false,
+  "training_performed": false,
+  "energy_joules": null,
+  "energy_unavailable_reason": "No whole-process energy meter configured for this run.",
+  "summary": {
+    "source_sha": "975e1a264c14ed3da02dcee23a64327825387e42",
+    "registered_cases": 6,
+    "completed_cases": 6,
+    "actual_generate_calls": 6,
+    "comparisons": {
+      "distinct_pixel_inputs": 3,
+      "distinct_token_inputs": 2,
+      "distinct_outputs": 6,
+      "distinct_vision_outputs": 3,
+      "by_instruction": {
+        "caption": 3,
+        "object": 3
+      },
+      "by_image": {
+        "original": 2,
+        "generated": 2,
+        "blank": 2
+      }
+    },
+    "statuses": [
+      "completed",
+      "completed",
+      "completed",
+      "completed",
+      "completed",
+      "completed"
+    ],
+    "cpu_seconds": 15.438895677000001,
+    "wall_seconds": 10.685286590945907,
+    "cumulative_process_peak_rss_bytes": 2190479360,
+    "cost_scope": "inclusive_fresh_loads_tracing_cleanup_and_case_writes_before_summary_write",
+    "semantic_acceptance": "not_inferred",
+    "production_qualified": false,
+    "training_performed": false
+  },
+  "cpu_seconds": 16.213814242,
+  "wall_seconds": 11.375480856047943,
+  "peak_rss_bytes": 2190479360,
+  "cost_scope": "Inclusive imports, six fresh VLM loads, exact diagnostics, numerical observation, serialization and cleanup before final write. Acquisition/setup shared with first run; see parent EXECUTION.json; do not double charge. Agent orchestration/transport is separately unmetered.",
+  "tensor_files": [
+    {
+      "path": "tensors/0f469b31cdae1258e76fa10365aba76257f700f370b6e095bc0ac58a9ac23d52.safetensors",
+      "size": 1573160,
+      "sha256": "1af2caf8090007cc6d19baac8187a43c318b696ba131cb48f4a5c4e579b6705b"
+    },
+    {
+      "path": "tensors/323ed7e912d30e618807350dd0c697cb4d2a18530c50e29ee190f470f36a8139.safetensors",
+      "size": 1016,
+      "sha256": "c70dde918b6c886ae4729cf0dc295c1d8ba40c14d2ab7fad2150d82f7481b664"
+    },
+    {
+      "path": "tensors/4081782f95fe221be0395dda53b602f1b73dafcbbbd2031fd876efb64195affe.safetensors",
+      "size": 2097448,
+      "sha256": "dcc7dfcaae754ed2a4f4612e6d04244d7432f3e6021d5abdc9c3d977134e7a4a"
+    },
+    {
+      "path": "tensors/8dd3c54bca6f16efe9d7604bded4d2e827274cb0fada3318c9dd2a98324c48f2.safetensors",
+      "size": 1016,
+      "sha256": "22c9b0977caabe599ff7ccb48dbca04cbb5f01896606885224d94e6d0f9cb97b"
+    },
+    {
+      "path": "tensors/a8e939da390513167c995ab7dd0779bb11226ddd75e58824717cad3035173714.safetensors",
+      "size": 1573168,
+      "sha256": "1345b4e86ce3e53b37d8f5a49c61a71fb0d853c0d554df7911bb76ac8f799228"
+    },
+    {
+      "path": "tensors/b95d42235e7a6aec642399ca365a1d3ffdbc421f142ba841a8ee0d9408e16362.safetensors",
+      "size": 1573168,
+      "sha256": "6863dd04ecb9a0816589d0fb71756f6d6b45e8609d780cc9899ce8f6b1b1b447"
+    },
+    {
+      "path": "tensors/be3a2936b0efa1e86af71cb3a34c2bbdde81efd2c05b1457aa523e7553500328.safetensors",
+      "size": 1573168,
+      "sha256": "ec24d00fe5c3642ed3f4bb7ca6fb6e4c96745e5d0295390629bf200d1ee9a9a2"
+    },
+    {
+      "path": "tensors/ee59f2374f6d0b59e81f2bdea53bfe7a1877b0a912e4944a5e4be854e77ad5e4.safetensors",
+      "size": 1016,
+      "sha256": "e14f02b3f24f872f5d24ef61739532b3ff6314ca8cafbed77b9634f063e4fb4e"
+    },
+    {
+      "path": "tensors/ee6d3d558e1b68d723117e422411bec12647625cd3c6e4cd0754fd9cdb62d878.safetensors",
+      "size": 1573160,
+      "sha256": "00ece6e88c7c78906b8e860ee4647119043f35fa83a4df3ffaf5efe33b98c9dd"
+    },
+    {
+      "path": "tensors/fd6260cf85ced94bca34938d9ca7a1419d09ce89dc16fd3960e3755881ad03d9.safetensors",
+      "size": 1573160,
+      "sha256": "e1f3c67b38833da0581a317656e562efeeeb46015b0e2472def96028bd6c7382"
+    }
+  ],
+  "retained_tensor_bytes": 11539480
+}

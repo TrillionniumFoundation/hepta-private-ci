@@ -1,0 +1,36 @@
+{
+  "actual_generate_calls": 6,
+  "comparisons": {
+    "by_image": {
+      "blank": 2,
+      "generated": 2,
+      "original": 2
+    },
+    "by_instruction": {
+      "caption": 3,
+      "object": 3
+    },
+    "distinct_outputs": 6,
+    "distinct_pixel_inputs": 3,
+    "distinct_token_inputs": 2,
+    "distinct_vision_outputs": 3
+  },
+  "completed_cases": 6,
+  "cost_scope": "inclusive_fresh_loads_tracing_cleanup_and_case_writes_before_summary_write",
+  "cpu_seconds": 22.041747192,
+  "cumulative_process_peak_rss_bytes": 2201509888,
+  "production_qualified": false,
+  "registered_cases": 6,
+  "semantic_acceptance": "not_inferred",
+  "source_sha": "975e1a264c14ed3da02dcee23a64327825387e42",
+  "statuses": [
+    "completed",
+    "completed",
+    "completed",
+    "completed",
+    "completed",
+    "completed"
+  ],
+  "training_performed": false,
+  "wall_seconds": 15.303040409000005
+}

@@ -1,0 +1,420 @@
+{
+  "id": "blank-rival-plan",
+  "image": "blank",
+  "prompt": "Check whether this generated diagram matches the explanation and common plan. State any mismatch. Explanation: A red ball is centered on a blue square.\nPlan: A red ball is centered on a blue square.",
+  "role": "negative_control",
+  "index": 10,
+  "status": "completed",
+  "model_generate_calls": 1,
+  "image_sha256": "6c04fff04b3c72be7df55bad041c9173f29c056532af3075734d3a9bb2052cee",
+  "vision_outputs": [
+    {
+      "shape": [
+        1,
+        1024,
+        768
+      ],
+      "dtype": "torch.bfloat16",
+      "sha256": "fd6260cf85ced94bca34938d9ca7a1419d09ce89dc16fd3960e3755881ad03d9",
+      "finite": true,
+      "artifact_relative_path": "tensors/fd6260cf85ced94bca34938d9ca7a1419d09ce89dc16fd3960e3755881ad03d9.safetensors",
+      "artifact_sha256": "8297267290ee43814e886e63a7f55931299f5ad6b2672a8b0e555c30cace2315",
+      "artifact_bytes": 1573112
+    }
+  ],
+  "rendered_prompt": "<|im_start|>User:<image>Check whether this generated diagram matches the explanation and common plan. State any mismatch. Explanation: A red ball is centered on a blue square.\nPlan: A red ball is centered on a blue square.<end_of_utterance>\nAssistant:",
+  "rendered_prompt_sha256": "2763bbe34fa87f2c30de6459f3f22e6b95660aef295540bbc889819eb79c0118",
+  "inputs": {
+    "pixel_values": {
+      "shape": [
+        1,
+        1,
+        3,
+        512,
+        512
+      ],
+      "dtype": "torch.bfloat16",
+      "sha256": "be3a2936b0efa1e86af71cb3a34c2bbdde81efd2c05b1457aa523e7553500328",
+      "finite": true,
+      "artifact_relative_path": "tensors/be3a2936b0efa1e86af71cb3a34c2bbdde81efd2c05b1457aa523e7553500328.safetensors",
+      "artifact_sha256": "63abced256fc7d1db72526ca5a8d9c95f606a38063428e2ee5d3d1629da40a6f",
+      "artifact_bytes": 1573112
+    },
+    "pixel_attention_mask": {
+      "shape": [
+        1,
+        1,
+        512,
+        512
+      ],
+      "dtype": "torch.int64",
+      "sha256": "4081782f95fe221be0395dda53b602f1b73dafcbbbd2031fd876efb64195affe",
+      "artifact_relative_path": "tensors/4081782f95fe221be0395dda53b602f1b73dafcbbbd2031fd876efb64195affe.safetensors",
+      "artifact_sha256": "64fbed9500c9f9c0ea7e9f149ea493d92bc441491b8a7b274f07d0c90e489800",
+      "artifact_bytes": 2097400
+    },
+    "input_ids": {
+      "shape": [
+        1,
+        116
+      ],
+      "dtype": "torch.int64",
+      "sha256": "0a94fdb90c445e839710b3f49cb14db02410863230e059adc8df0988e06ccf99",
+      "artifact_relative_path": "tensors/0a94fdb90c445e839710b3f49cb14db02410863230e059adc8df0988e06ccf99.safetensors",
+      "artifact_sha256": "f9d98a83a3ee3d931d4a50ad6be5bc17299e2e7f27e0f371ea21576322a23a58",
+      "artifact_bytes": 1168
+    },
+    "attention_mask": {
+      "shape": [
+        1,
+        116
+      ],
+      "dtype": "torch.int64",
+      "sha256": "2c00c282c5ec0074eda7ccad032ff1160840ce3759c1e701f4fdcd98583dab2b",
+      "artifact_relative_path": "tensors/2c00c282c5ec0074eda7ccad032ff1160840ce3759c1e701f4fdcd98583dab2b.safetensors",
+      "artifact_sha256": "1b586884fb6022a01843ba47b15dc1dbe29e51e88ea9d92cbdea5291b9c77c1d",
+      "artifact_bytes": 1168
+    }
+  },
+  "input_token_ids": [
+    1,
+    11126,
+    42,
+    49189,
+    49152,
+    49190,
+    49190,
+    49190,
+    49190,
+    49190,
+    49190,
+    49190,
+    49190,
+    49190,
+    49190,
+    49190,
+    49190,
+    49190,
+    49190,
+    49190,
+    49190,
+    49190,
+    49190,
+    49190,
+    49190,
+    49190,
+    49190,
+    49190,
+    49190,
+    49190,
+    49190,
+    49190,
+    49190,
+    49190,
+    49190,
+    49190,
+    49190,
+    49190,
+    49190,
+    49190,
+    49190,
+    49190,
+    49190,
+    49190,
+    49190,
+    49190,
+    49190,
+    49190,
+    49190,
+    49190,
+    49190,
+    49190,
+    49190,
+    49190,
+    49190,
+    49190,
+    49190,
+    49190,
+    49190,
+    49190,
+    49190,
+    49190,
+    49190,
+    49190,
+    49190,
+    49190,
+    49190,
+    49190,
+    49190,
+    49189,
+    10280,
+    1991,
+    451,
+    6171,
+    11262,
+    12643,
+    260,
+    7718,
+    284,
+    1273,
+    1252,
+    30,
+    2888,
+    750,
+    37578,
+    30,
+    39092,
+    42,
+    330,
+    2382,
+    4405,
+    314,
+    10534,
+    335,
+    253,
+    4461,
+    5222,
+    30,
+    198,
+    23296,
+    42,
+    330,
+    2382,
+    4405,
+    314,
+    10534,
+    335,
+    253,
+    4461,
+    5222,
+    30,
+    49279,
+    198,
+    9519,
+    9531,
+    42
+  ],
+  "input_tokens": 116,
+  "output_token_ids": [
+    378,
+    11262,
+    2744,
+    253,
+    2382,
+    4405,
+    335,
+    253,
+    4461,
+    5222,
+    30,
+    378,
+    2382,
+    4405,
+    314,
+    10534,
+    335,
+    260,
+    4461,
+    5222,
+    30,
+    378,
+    4461,
+    5222,
+    314,
+    253,
+    23710,
+    30,
+    378,
+    2382,
+    4405,
+    314,
+    335,
+    260,
+    2049,
+    2103,
+    282,
+    260,
+    4461,
+    5222,
+    30,
+    378,
+    4461,
+    5222,
+    314,
+    335,
+    260,
+    1048,
+    2103,
+    282,
+    260,
+    2382,
+    4405,
+    30,
+    378,
+    2382,
+    4405,
+    314,
+    335,
+    260,
+    2049,
+    2103,
+    282,
+    260,
+    4461,
+    5222,
+    30,
+    378,
+    4461,
+    5222,
+    314,
+    335,
+    260,
+    1048,
+    2103,
+    282,
+    260,
+    2382,
+    4405,
+    30
+  ],
+  "output_tokens": 80,
+  "eos_token_ids": [
+    49279
+  ],
+  "last_token_is_eos": false,
+  "hit_max_new_tokens": true,
+  "stop_reason": "max_new_tokens",
+  "output": "The diagram shows a red ball on a blue square. The red ball is centered on the blue square. The blue square is a rectangle. The red ball is on the left side of the blue square. The blue square is on the right side of the red ball. The red ball is on the left side of the blue square. The blue square is on the right side of the red ball.",
+  "output_sha256": "44e96fae6aaf39c6a59d80f4b4dd69761e338215b04060f4489f1c1fbe220c11",
+  "backend": {
+    "backend": "frozen_pretrained_local",
+    "device": "cpu",
+    "dtype": "bfloat16",
+    "threads": 2,
+    "residency": "one_model_family_at_a_time",
+    "image_preprocessing": {
+      "longest_edge": 512,
+      "do_image_splitting": false
+    },
+    "independent_semantic_scorer": false,
+    "models": {
+      "vlm": {
+        "model": "HuggingFaceTB/SmolVLM2-256M-Video-Instruct",
+        "revision": "067788b187b95ebe7b2e040b3e4299e342e5b8fd",
+        "manifest_sha256": "432a086810f32ba90ef34dc210fcb2f0f56fe8b27595266725d1846b5dad0e6c",
+        "files": [
+          {
+            "path": "README.md",
+            "sha256": "25f0d36cb69a8f7185f945288236d61e519a206800e89a5ae64111924fdb6952",
+            "size": 10856,
+            "source": "https://huggingface.co/HuggingFaceTB/SmolVLM2-256M-Video-Instruct/resolve/067788b187b95ebe7b2e040b3e4299e342e5b8fd/README.md"
+          },
+          {
+            "path": "added_tokens.json",
+            "sha256": "74135b8664b56088c0006f1c8e848d79a8eba003411f72ebf1dc2ee96227be3a",
+            "size": 4739,
+            "source": "https://huggingface.co/HuggingFaceTB/SmolVLM2-256M-Video-Instruct/resolve/067788b187b95ebe7b2e040b3e4299e342e5b8fd/added_tokens.json"
+          },
+          {
+            "path": "chat_template.json",
+            "sha256": "b585e3598909a5687f9f9d738d35223724dedef256b9b274e1cbfb32b13c74bf",
+            "size": 430,
+            "source": "https://huggingface.co/HuggingFaceTB/SmolVLM2-256M-Video-Instruct/resolve/067788b187b95ebe7b2e040b3e4299e342e5b8fd/chat_template.json"
+          },
+          {
+            "path": "config.json",
+            "sha256": "756cb7d37d7659c9d5a71c563f9d2530f9dd674ab7e909d8d0dd5b1a2d3e8317",
+            "size": 3812,
+            "source": "https://huggingface.co/HuggingFaceTB/SmolVLM2-256M-Video-Instruct/resolve/067788b187b95ebe7b2e040b3e4299e342e5b8fd/config.json"
+          },
+          {
+            "path": "generation_config.json",
+            "sha256": "34835060c9f0f74d1acb456cc72ca32746d3843d9eb5f578f9cbffac1d2eb840",
+            "size": 136,
+            "source": "https://huggingface.co/HuggingFaceTB/SmolVLM2-256M-Video-Instruct/resolve/067788b187b95ebe7b2e040b3e4299e342e5b8fd/generation_config.json"
+          },
+          {
+            "path": "merges.txt",
+            "sha256": "0b54e8aa4e53d5383e2e4bc635a56b43f9647f7b13832d5d9ecd8f82dac4f510",
+            "size": 466391,
+            "source": "https://huggingface.co/HuggingFaceTB/SmolVLM2-256M-Video-Instruct/resolve/067788b187b95ebe7b2e040b3e4299e342e5b8fd/merges.txt"
+          },
+          {
+            "path": "model.safetensors",
+            "sha256": "dcc8f4c00d30d70bb3028a1bfc373e1b1972e25919f8788183cae4ae72431ce2",
+            "size": 1025998224,
+            "source": "https://huggingface.co/HuggingFaceTB/SmolVLM2-256M-Video-Instruct/resolve/067788b187b95ebe7b2e040b3e4299e342e5b8fd/model.safetensors"
+          },
+          {
+            "path": "preprocessor_config.json",
+            "sha256": "149e315d9410368e5491455bb06e0f763426e9e56cca731c13b24404a29b6374",
+            "size": 599,
+            "source": "https://huggingface.co/HuggingFaceTB/SmolVLM2-256M-Video-Instruct/resolve/067788b187b95ebe7b2e040b3e4299e342e5b8fd/preprocessor_config.json"
+          },
+          {
+            "path": "processor_config.json",
+            "sha256": "f3ad45028447b3562b4752be0d5916d6806c1ef589091a469608dcf0faa1737c",
+            "size": 67,
+            "source": "https://huggingface.co/HuggingFaceTB/SmolVLM2-256M-Video-Instruct/resolve/067788b187b95ebe7b2e040b3e4299e342e5b8fd/processor_config.json"
+          },
+          {
+            "path": "special_tokens_map.json",
+            "sha256": "2dfea2a426162316ff1567c82bc6d36d9690cd9f90455f075c77daca78b45c60",
+            "size": 868,
+            "source": "https://huggingface.co/HuggingFaceTB/SmolVLM2-256M-Video-Instruct/resolve/067788b187b95ebe7b2e040b3e4299e342e5b8fd/special_tokens_map.json"
+          },
+          {
+            "path": "tokenizer.json",
+            "sha256": "5ece781dc8d2b2f3e2f289ca0ae50b17cfc27dd27bfe7971bb8241e0b964331a",
+            "size": 3548256,
+            "source": "https://huggingface.co/HuggingFaceTB/SmolVLM2-256M-Video-Instruct/resolve/067788b187b95ebe7b2e040b3e4299e342e5b8fd/tokenizer.json"
+          },
+          {
+            "path": "tokenizer_config.json",
+            "sha256": "dd9ce2ab89a3dd881bd9378f1a79b943a064b9275a7e1706d5b7b47b68977913",
+            "size": 28626,
+            "source": "https://huggingface.co/HuggingFaceTB/SmolVLM2-256M-Video-Instruct/resolve/067788b187b95ebe7b2e040b3e4299e342e5b8fd/tokenizer_config.json"
+          },
+          {
+            "path": "vocab.json",
+            "sha256": "82b84012e3add4d01d12ba14442026e49b8cbbaead1f79ecf3d919784f82dc79",
+            "size": 800662,
+            "source": "https://huggingface.co/HuggingFaceTB/SmolVLM2-256M-Video-Instruct/resolve/067788b187b95ebe7b2e040b3e4299e342e5b8fd/vocab.json"
+          }
+        ]
+      }
+    },
+    "reviewed_model_pins": {
+      "vlm": {
+        "model": "HuggingFaceTB/SmolVLM2-256M-Video-Instruct",
+        "revision": "067788b187b95ebe7b2e040b3e4299e342e5b8fd"
+      },
+      "sd": {
+        "model": "segmind/tiny-sd",
+        "revision": "cad0bd7495fa6c4bcca01b19a723dc91627fe84f"
+      }
+    },
+    "loads": [
+      {
+        "model": "vlm",
+        "wall_seconds": 0.7888611849630252,
+        "resources": {
+          "filesystem_free_bytes": 978626338816
+        }
+      }
+    ],
+    "versions": {
+      "torch": "2.8.0+cpu",
+      "torchvision": "0.23.0+cpu",
+      "transformers": "4.57.3",
+      "diffusers": "0.35.2",
+      "accelerate": "1.12.0",
+      "safetensors": "0.7.0",
+      "num2words": "0.5.14"
+    }
+  },
+  "equals_historical_text": false,
+  "cpu_seconds": 6.124398240999994,
+  "wall_seconds": 3.4296695560915396,
+  "cumulative_peak_rss_bytes": 2623545344
+}
