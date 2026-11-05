@@ -43,6 +43,7 @@ use codex_hepta_memory::append_h7_trajectory_event_bound;
 #[cfg(feature = "qualification-cognitive-write")]
 use codex_hepta_memory::h7_trajectory_local_receipt_digest;
 use codex_hepta_paths::HeptaFleetRoot;
+use pretty_assertions::assert_eq;
 use tokio::time::timeout;
 use tokio_util::sync::CancellationToken;
 
@@ -132,6 +133,183 @@ async fn attach_runtime_prerequisites(fixture: &RuntimeFixture) {
         .state
         .mark_runtime_prerequisites_ready()
         .expect("owner prerequisites");
+}
+
+async fn runtime_readiness(fixture: &RuntimeFixture) -> crate::ReadinessSnapshot {
+    let response = fixture
+        .state
+        .response(1, 1, AgentdMethod::Readiness)
+        .await
+        .expect("readiness response");
+    let AgentdPayload::Readiness(snapshot) = response.payload else {
+        panic!("expected readiness snapshot");
+    };
+    snapshot
+}
+
+#[tokio::test]
+async fn runtime_prerequisites_without_cognitive_owner_keep_admission_closed() {
+    let fixture = runtime_fixture();
+    fixture
+        .state
+        .mark_runtime_prerequisites_ready()
+        .expect("strict prerequisites");
+    fixture
+        .state
+        .mark_app_server_ready()
+        .expect("App Server ready");
+    assert_eq!(
+        runtime_readiness(&fixture).await,
+        crate::ReadinessSnapshot {
+            critical_stores_ready: false,
+            revocation_ready: true,
+            required_ports_ready: true,
+            admission_open: false,
+        }
+    );
+}
+
+#[tokio::test]
+async fn available_cognitive_runtime_requires_original_attached_store() {
+    let fixture = runtime_fixture();
+    let store = codex_hepta_cognitive_store::DurableCognitiveStore::open(&fixture.identity.layout)
+        .await
+        .expect("real cognitive store");
+    let runtime = CognitiveRuntime::Available(Arc::new(store));
+    fixture
+        .state
+        .mark_runtime_prerequisites_ready_for_cognitive_runtime(
+            &runtime, /*production_writer_host*/ None,
+        )
+        .expect("runtime prerequisites");
+    fixture
+        .state
+        .mark_app_server_ready()
+        .expect("App Server ready");
+    assert_eq!(
+        runtime_readiness(&fixture).await,
+        crate::ReadinessSnapshot {
+            critical_stores_ready: false,
+            revocation_ready: true,
+            required_ports_ready: true,
+            admission_open: false,
+        }
+    );
+}
+
+#[tokio::test]
+async fn degraded_cognitive_readiness_respects_profile_and_app_server_barriers() {
+    let fixture = runtime_fixture();
+    let runtime = CognitiveRuntime::Unavailable(
+        codex_hepta_memory::CognitiveUnavailableReason::StorageUnavailable,
+    );
+    fixture
+        .state
+        .mark_runtime_prerequisites_ready_for_cognitive_runtime(
+            &runtime, /*production_writer_host*/ None,
+        )
+        .expect("profile-specific prerequisites");
+    let read_only = !cfg!(feature = "production-cognitive-write");
+    assert_eq!(
+        runtime_readiness(&fixture).await,
+        crate::ReadinessSnapshot {
+            critical_stores_ready: read_only,
+            revocation_ready: true,
+            required_ports_ready: false,
+            admission_open: false,
+        }
+    );
+    fixture
+        .state
+        .mark_app_server_ready()
+        .expect("App Server ready");
+    let health = fixture
+        .state
+        .response(2, 1, AgentdMethod::Health)
+        .await
+        .expect("promotion health response");
+    let AgentdPayload::Health(health) = health.payload else {
+        panic!("expected health snapshot");
+    };
+    assert_eq!((health.promotion_ready, health.ready), (read_only, false));
+    fixture
+        .registry
+        .compare_and_transition(
+            &fixture.identity.agent_id,
+            /*expected_generation*/ 1,
+            AgentLifecycle::Running,
+        )
+        .expect("running generation");
+    fixture.state.refresh_generation().expect("refresh running");
+    assert_eq!(
+        runtime_readiness(&fixture).await,
+        crate::ReadinessSnapshot {
+            critical_stores_ready: read_only,
+            revocation_ready: true,
+            required_ports_ready: true,
+            admission_open: read_only,
+        }
+    );
+}
+
+#[tokio::test]
+async fn configured_objective_without_writer_never_uses_read_only_readiness() {
+    let notes_fixture = runtime_fixture();
+    let desktop_fixture = runtime_fixture();
+    let notes = codex_hepta_memory::NotesTargetIdentity {
+        session_instance: "a".repeat(32),
+        task_id: 1,
+        incarnation: "b".repeat(32),
+    };
+    let notes_config = crate::AgentdNotesObjectiveConfig {
+        profile_digest: codex_hepta_types::Digest32::of_bytes(b"notes readiness profile"),
+        target: notes.clone(),
+    };
+    notes_config.validate().expect("valid Notes profile");
+    notes_fixture
+        .state
+        .notes_objective
+        .set(notes_config)
+        .expect("attach Notes profile");
+    let desktop_config = crate::AgentdDesktopObjectiveConfig {
+        profile_digest: codex_hepta_types::Digest32::of_bytes(b"desktop readiness profile"),
+        notes,
+        calculator: codex_hepta_memory::CalculatorTargetIdentity {
+            session_instance: "a".repeat(32),
+            task_id: 2,
+            incarnation: "c".repeat(32),
+        },
+    };
+    desktop_config.validate().expect("valid Desktop profile");
+    desktop_fixture
+        .state
+        .desktop_objective
+        .set(desktop_config)
+        .expect("attach Desktop profile");
+    let runtime = CognitiveRuntime::Unavailable(
+        codex_hepta_memory::CognitiveUnavailableReason::StorageUnavailable,
+    );
+    for fixture in [&notes_fixture, &desktop_fixture] {
+        fixture
+            .state
+            .mark_runtime_prerequisites_ready_for_cognitive_runtime(
+                &runtime, /*production_writer_host*/ None,
+            )
+            .expect("objective prerequisites");
+        fixture
+            .state
+            .mark_app_server_ready()
+            .expect("App Server ready");
+        assert_eq!(
+            runtime_readiness(fixture).await,
+            crate::ReadinessSnapshot {
+                critical_stores_ready: false,
+                revocation_ready: true,
+                required_ports_ready: true,
+                admission_open: false,
+            }
+        );
+    }
 }
 
 #[tokio::test]

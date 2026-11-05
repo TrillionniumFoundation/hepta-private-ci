@@ -14,6 +14,7 @@ use codex_hepta_fleet::AgentLifecycle;
 use codex_hepta_fleet::FleetRegistry;
 use codex_hepta_learning_ledger::DurableRunStartJournal;
 use codex_hepta_learning_ledger::RunStartRecordV1;
+use codex_hepta_memory::CognitiveRuntime;
 use codex_hepta_types::Digest32;
 use codex_hepta_types::Generation;
 use codex_hepta_types::StableId;
@@ -454,6 +455,32 @@ impl AgentdState {
         let critical_stores_ready = self.cognitive.lock().map_err(poisoned_state)?.is_some();
         let mut runtime = self.runtime.lock().map_err(poisoned_state)?;
         runtime.critical_stores_ready = critical_stores_ready;
+        runtime.revocation_ready = true;
+        Ok(())
+    }
+
+    /// Apply the availability-tolerant read-only startup policy only after the
+    /// cognitive runtime and every explicit writer owner have been composed.
+    /// Uninitialized states and every writer composition retain the strict
+    /// attached-store barrier above.
+    pub(crate) fn mark_runtime_prerequisites_ready_for_cognitive_runtime(
+        &self,
+        cognitive_runtime: &CognitiveRuntime,
+        production_writer_host: Option<&crate::AgentdProductionWriterHost>,
+    ) -> Result<(), AgentdError> {
+        if cfg!(feature = "production-cognitive-write")
+            || !matches!(cognitive_runtime, CognitiveRuntime::Unavailable(_))
+            || production_writer_host.is_some()
+            || self.production_operations.get().is_some()
+            || self.notes_objective.get().is_some()
+            || self.desktop_objective.get().is_some()
+            || self.automation_effect.get().is_some()
+        {
+            return self.mark_runtime_prerequisites_ready();
+        }
+
+        let mut runtime = self.runtime.lock().map_err(poisoned_state)?;
+        runtime.critical_stores_ready = true;
         runtime.revocation_ready = true;
         Ok(())
     }

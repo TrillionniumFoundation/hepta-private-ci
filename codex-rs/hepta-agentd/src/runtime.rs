@@ -239,10 +239,8 @@ pub async fn run(
             .await?
         }
     };
-    // The writer-enabled qualification binary must never start in a
-    // degraded CognitiveRuntime state.  The default/production binary keeps
-    // the existing availability-tolerant behavior; only the explicit
-    // compile-time qualification profile takes this fail-closed startup gate.
+    // Every production-write profile must reject a degraded CognitiveRuntime.
+    // Only the read-only profile retains availability-tolerant startup.
     let cognitive_runtime = require_cognitive_runtime_for_profile(cognitive_runtime)?;
     if let Some(store) = cognitive_runtime.available_store() {
         state.attach_cognitive_store(Arc::clone(store))?;
@@ -298,7 +296,10 @@ pub async fn run(
         state.refresh_generation()?;
         state.attach_automation_effect_host(Arc::new(host))?;
     }
-    state.mark_runtime_prerequisites_ready()?;
+    state.mark_runtime_prerequisites_ready_for_cognitive_runtime(
+        &cognitive_runtime,
+        production_writer_host.as_deref(),
+    )?;
     let cancellation = CancellationToken::new();
     let (control, app_server_socket) = match sockets {
         crate::config::AgentdSocketInputs::Bind => (
