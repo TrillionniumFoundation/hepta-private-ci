@@ -33,6 +33,10 @@ use fixture::PqFixture;
 #[path = "automation_effect_host_pq_chain_tests.rs"]
 mod chain_tests;
 
+#[cfg(any(target_arch = "x86_64", target_arch = "aarch64"))]
+#[path = "automation_effect_host_pq_packet_chain_tests.rs"]
+mod packet_chain_tests;
+
 #[path = "automation_effect_host_packet_tests.rs"]
 mod packet_tests;
 

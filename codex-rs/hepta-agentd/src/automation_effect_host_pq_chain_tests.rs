@@ -10,7 +10,7 @@ use std::time::UNIX_EPOCH;
 
 #[tokio::test(flavor = "multi_thread", worker_threads = 2)]
 #[ignore = "requires the exact Chain release binary; selected explicitly by paired native CI"]
-async fn real_chain_ordinary_pq_loader_dispatches_once_and_reads_original_receipt()
+async fn real_chain_ordinary_pq_packet_v1_dispatches_once_and_reads_original_receipt()
 -> anyhow::Result<()> {
     let source = std::env::var("HEPTA_PON_CHAIN_SOURCE")?;
     anyhow::ensure!(
@@ -52,14 +52,10 @@ async fn real_chain_ordinary_pq_loader_dispatches_once_and_reads_original_receip
                 genesis_time + 10,
             )
             .await?;
-        // The original adapter permits 1 MiB; ordinary Agentd is stricter.
-        // A larger real workload is a blocker, never permission to raise 24 KiB.
-        anyhow::ensure!(
-            wire.len() <= crate::MAX_AUTOMATION_EFFECT_WIRE_BYTES,
-            "real Chain packet is {} bytes, beyond ordinary Agentd's {}-byte limit",
-            wire.len(),
-            crate::MAX_AUTOMATION_EFFECT_WIRE_BYTES
-        );
+        // The original inline interface remains too small for this exact
+        // workload. The successor packet protocol is qualified separately.
+        assert!(wire.len() > crate::MAX_AUTOMATION_EFFECT_WIRE_BYTES);
+        assert!(wire.len() <= crate::MAX_AUTOMATION_EFFECT_PACKET_V1_BYTES);
         let scope = Sha256Digest::for_bytes(b"ordinary-pq-real-chain");
         let mut setup = PqFixture::http("http://127.0.0.1:9", &scope)?;
         setup.config["contract_id"] = serde_json::json!("pq-real-chain-fixture");
@@ -107,11 +103,42 @@ async fn real_chain_ordinary_pq_loader_dispatches_once_and_reads_original_receip
             .context("real pre-dispatch packet observation")?;
         assert!(!before.stored_exact);
         let grant = setup.grant(&intent, NOW + 30_000)?;
-        let receipt = host
-            .execute(
+        assert!(matches!(
+            host.execute(
                 &fixture.store,
                 &intent,
                 &wire,
+                &grant,
+                "pq-real-chain-dispatch",
+                NOW + 5,
+            )
+            .await,
+            Err(AgentdError::Invalid(message))
+                if message == "automation effect wire payload is empty or too large"
+        ));
+        assert_eq!(host.authority.capacity()?.used_nonces, 0);
+        assert!(
+            fixture.store
+                .authorized_taskflow_effect_attempt(&intent.run_id, &intent.step_id, intent.attempt)
+                .await?
+                .is_none()
+        );
+        let permits = Arc::new(tokio::sync::Semaphore::new(/*permits*/ 2));
+        let packet = crate::control_packet::AdmittedEffectPacketV1::read(
+            &mut wire.as_slice(),
+            u32::try_from(wire.len())?,
+            &intent.payload_digest,
+            Arc::clone(&permits),
+            &crate::NeuralCognitiveExecutionV1::with_deadline(
+                Instant::now() + Duration::from_secs(30),
+                tokio_util::sync::CancellationToken::new(),
+            ),
+        ).await?;
+        let receipt = host
+            .execute_packet_v1(
+                &fixture.store,
+                &intent,
+                &packet,
                 &grant,
                 "pq-real-chain-dispatch",
                 NOW + 5,
@@ -185,10 +212,10 @@ async fn real_chain_ordinary_pq_loader_dispatches_once_and_reads_original_receip
         setup.now.store(NOW + 90_000, Ordering::SeqCst);
         drop(setup);
         let replay = reopened
-            .execute(
+            .execute_packet_v1(
                 &store,
                 &intent,
-                &wire,
+                &packet,
                 &grant,
                 "pq-real-chain-dispatch",
                 NOW + 90_000,
@@ -203,12 +230,17 @@ async fn real_chain_ordinary_pq_loader_dispatches_once_and_reads_original_receip
             .context("retained original provider attempt")?;
         assert_eq!(retained, durable);
         store.close().await;
+        drop(packet);
+        assert_eq!(permits.available_permits(), 2);
         println!(
-            "PON_ORDINARY_PQ_PAIR {}",
+            "PON_ORDINARY_PQ_PACKET_V1_PAIR {}",
             serde_json::json!({
                 "chain_source": source, "binary_sha256": digest.as_str(), "backend": backend,
                 "provider_effect_key": key.as_str(), "payload_sha256": intent.payload_digest.as_str(),
                 "packet_bytes": wire.len(), "ordinary_wire_limit": crate::MAX_AUTOMATION_EFFECT_WIRE_BYTES,
+                "packet_v1_limit": crate::MAX_AUTOMATION_EFFECT_PACKET_V1_BYTES,
+                "legacy_inline_refused_before_consumption": true,
+                "transport_version": "packet_v1", "control_socket_exercised": false,
                 "included": included, "used_nonces": 1,
                 "exact_terminal_readback_without_provider_or_trust": true,
                 "process_start_count_measured": false, "chain_task_profile_is_pq": false,
