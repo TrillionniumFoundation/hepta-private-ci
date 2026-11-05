@@ -1,4 +1,5 @@
 use super::*;
+use std::os::windows::io::AsHandle;
 
 #[test]
 fn process_fallback_interrupt_terminates_root() -> anyhow::Result<()> {
@@ -9,7 +10,7 @@ fn process_fallback_interrupt_terminates_root() -> anyhow::Result<()> {
         .stderr(Stdio::null())
         .spawn()?;
     let mut terminator = PipeChildTerminator {
-        windows: WindowsChildTerminator::Process(child.id()),
+        windows: WindowsChildTerminator::Process(Arc::new(child.as_handle().try_clone_to_owned()?)),
     };
 
     terminator.signal(ProcessSignal::Interrupt)?;
