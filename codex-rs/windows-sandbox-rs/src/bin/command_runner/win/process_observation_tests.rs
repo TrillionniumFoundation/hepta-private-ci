@@ -32,7 +32,9 @@ fn command(script: &str) -> Result<Command> {
     let shell = std::path::PathBuf::from(std::env::var_os("SystemRoot").context("SystemRoot")?)
         .join("System32/cmd.exe");
     let mut command = Command::new(shell);
-    command.args(["/D", "/C", script]);
+    // Rust quotes this complete script as one argument. /S makes cmd remove
+    // those outer quotes before interpreting the fixture command text.
+    command.args(["/D", "/S", "/C", script]);
     command
         .stdin(Stdio::piped())
         .stdout(Stdio::null())
