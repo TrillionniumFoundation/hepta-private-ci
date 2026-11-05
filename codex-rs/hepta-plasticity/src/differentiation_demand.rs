@@ -142,7 +142,8 @@ pub fn assess_differentiation_demand_v1(
                 return Err(DifferentiationErrorV1::Observation);
             }
             require_digest(case.observation_digest)?;
-            if !task_ids.insert(case.task_id.clone()) || !evidence_ids.insert(case.observation_digest)
+            if !task_ids.insert(case.task_id.clone())
+                || !evidence_ids.insert(case.observation_digest)
             {
                 return Err(DifferentiationErrorV1::DuplicateIdentity);
             }

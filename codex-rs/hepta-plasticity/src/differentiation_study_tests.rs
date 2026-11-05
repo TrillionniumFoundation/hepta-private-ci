@@ -171,7 +171,10 @@ fn six_arm_study_recommends_only_owner_review_and_enters_existing_proposal_owner
         DifferentiationConclusionV1::RecommendForOwnerReview
     );
     assert_eq!(receipt.authority(), AuthorityPosture::DENY_ALL);
-    assert_eq!(receipt.candidate_artifact_digest(), study.candidate.artifact_digest);
+    assert_eq!(
+        receipt.candidate_artifact_digest(),
+        study.candidate.artifact_digest
+    );
     study.arms.reverse();
     study.candidate.training_task_ids.reverse();
     for arm in &mut study.arms {
@@ -187,7 +190,10 @@ fn six_arm_study_recommends_only_owner_review_and_enters_existing_proposal_owner
             .expect("proposal");
     assert_eq!(
         (proposed.status, proposed.authority),
-        (ProposalStatus::RequiresIndependentAcceptance, AuthorityPosture::DENY_ALL)
+        (
+            ProposalStatus::RequiresIndependentAcceptance,
+            AuthorityPosture::DENY_ALL
+        )
     );
     assert_eq!(
         proposed
@@ -212,7 +218,13 @@ fn every_required_comparator_must_be_present_and_be_beaten() {
             Err(DifferentiationErrorV1::MissingComparator)
         );
         let (plan, demand, mut study) = fixture();
-        for row in &mut study.arms.iter_mut().find(|a| a.arm == arm).expect("arm").outcomes {
+        for row in &mut study
+            .arms
+            .iter_mut()
+            .find(|a| a.arm == arm)
+            .expect("arm")
+            .outcomes
+        {
             if plan.request.new_task_ids.contains(&row.task_id) {
                 row.score_ppm = 900_000;
             }
@@ -402,7 +414,8 @@ fn one_source_record_cannot_impersonate_multiple_costs_outcomes_training_or_dema
                     study.arms[0].outcomes[0].evidence_digest;
             }
             3 => {
-                study.arms[0].outcomes[0].evidence_digest = study.candidate.training_evidence_digest;
+                study.arms[0].outcomes[0].evidence_digest =
+                    study.candidate.training_evidence_digest;
             }
             _ => {
                 study.arms[0].outcomes[0].evidence_digest =
