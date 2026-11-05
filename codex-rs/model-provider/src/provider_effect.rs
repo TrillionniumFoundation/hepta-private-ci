@@ -36,6 +36,10 @@ use http::HeaderValue;
 use serde::Deserialize;
 use url::Url;
 
+#[path = "provider_effect_pq.rs"]
+mod pq_attestation;
+pub use pq_attestation::HttpProviderEffectAuthenticationProfile;
+
 /// Header carrying the stable occurrence identity to a provider adapter.
 pub const PROVIDER_EFFECT_IDEMPOTENCY_KEY_HEADER: &str = "idempotency-key";
 /// Header carrying the exact payload binding alongside the occurrence key.
@@ -175,13 +179,16 @@ impl HttpProviderEffectConfig {
 ///
 /// The fields are private on purpose: callers cannot construct an attestation
 /// by filling in a digest/epoch and thereby make an adapter claim support.
-/// Use [`Self::verify_signed`] with a pinned external Ed25519 key.
+/// Use [`Self::verify_signed`] for the explicit classical V1 profile or
+/// [`Self::verify_pq_signed`] with an independently pinned ML-DSA-65 key for V2.
+/// Verification does not establish current role, revocation or FinalUse authority.
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub struct HttpProviderEffectContractAttestation {
     contract_id: String,
     contract_sha256: Sha256Digest,
     authority_epoch: u64,
     verified: bool,
+    authentication_profile: HttpProviderEffectAuthenticationProfile,
 }
 
 impl HttpProviderEffectContractAttestation {
@@ -236,6 +243,7 @@ impl HttpProviderEffectContractAttestation {
             contract_sha256,
             authority_epoch,
             verified: true,
+            authentication_profile: HttpProviderEffectAuthenticationProfile::ClassicalV1,
         })
     }
 
