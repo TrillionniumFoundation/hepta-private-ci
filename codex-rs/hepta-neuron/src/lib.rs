@@ -15,6 +15,7 @@ use codex_hepta_types::FixedQ32;
 use codex_hepta_types::Generation;
 use codex_hepta_types::StableId;
 
+mod cell_roles;
 mod deletion;
 mod inference_control;
 mod journal;
@@ -28,6 +29,10 @@ mod runtime_types;
 mod sparse;
 mod witness;
 
+pub use cell_roles::CellCapabilityContractV1;
+pub use cell_roles::CellCapabilityErrorV1;
+pub use cell_roles::CellFunctionalRoleV1;
+pub use cell_roles::DeterministicCellSupportV1;
 pub use deletion::DeletionRebuildError;
 pub use deletion::NeuronDeletionRebuildPlanV1;
 pub use deletion::NeuronDeletionRebuildReceiptV1;
