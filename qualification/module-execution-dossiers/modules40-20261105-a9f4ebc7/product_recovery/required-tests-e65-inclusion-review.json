@@ -1,0 +1,30 @@
+{
+  "scope": "Manifest/source identity check only; no native execution",
+  "original_manifest_sha256": "16f15023d778b5c230c47f8ca934a434f522856622e6b9760630a10380d9af50",
+  "original_49_rows_unchanged": true,
+  "extended_manifest": "/workspace/scratch/a9f4ebc7dfa7/product_recovery/required-tests.with-e65.json",
+  "extended_manifest_sha256": "f832236003c1937c29ba9ca3f6faeafa2dc9799664ae1069d0df78339366f56e",
+  "required_count": 59,
+  "added_count": 10,
+  "source_snapshot_sha256": "e72edce0e1941c52f1564daa2e4c8f1aca54aa141c4c68f4a3008a3f5303bdfe",
+  "source_module_chain": [
+    "native_app_server",
+    "tests",
+    "message_output"
+  ],
+  "added_exact_names": [
+    "native_app_server::tests::message_output::complete_only_message_is_observed_only_for_the_bound_turn",
+    "native_app_server::tests::message_output::completed_snapshot_replaces_partial_text_without_double_counting",
+    "native_app_server::tests::message_output::distinct_item_ids_preserve_identical_message_text",
+    "native_app_server::tests::message_output::item_start_order_survives_later_item_text_arriving_first",
+    "native_app_server::tests::message_output::terminal_summary_merges_last_message_without_dropping_earlier_messages",
+    "native_app_server::tests::message_output::interrupt_grace_keeps_item_identity_and_cannot_restore_cancelled_authority",
+    "native_app_server::tests::message_output::oversized_complete_item_preserves_previous_output_and_pending_state",
+    "native_app_server::tests::message_output::empty_items_cannot_retain_unbounded_metadata",
+    "native_app_server::tests::message_output::conflicting_completion_or_late_delta_cannot_change_a_completed_item",
+    "native_app_server::tests::message_output::oversized_terminal_snapshot_cannot_authorize_completion"
+  ],
+  "assertion_count_preserved": 30,
+  "checker_sha256": "043448357a05cd2c71f3a812a0d9e623e4313a50c6222cbbba03172f95dcae5b",
+  "test_filter_or_budget_change": "NONE"
+}

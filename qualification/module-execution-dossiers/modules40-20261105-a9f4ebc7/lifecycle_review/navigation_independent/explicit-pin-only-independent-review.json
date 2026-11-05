@@ -1,0 +1,35 @@
+{
+  "status": "INDEPENDENT_REVIEW_APPROVES_NAVIGATION_ONLY_CORRECTION",
+  "helper_sha256": "940f0fe0d5fccf53dc8d00dacbd4f572cf9b02419704dba0cde35d495f9e7e3b",
+  "change": "Exactly one new migrated explicit-pin verification call inside the existing SourceDrift try; original true-claim guards before it and final explicit-pin verification preserved",
+  "real_map": {
+    "module": "learning.artifacts",
+    "sourceBase": {
+      "commit": "fd6d8d3fcd9aee36711381adf74b6ba7162cda1b",
+      "tree": "755e3264fb49a7fedf56a4d2a77befca7af8c384"
+    },
+    "mode": "path_only",
+    "map_blob": "9d826ffb7ed7fb96caf1f2d052b5fa66312a384b",
+    "stale_operation_blob": "3ff1450b5111706d737643351fb5692ee657726c",
+    "current_source_manifest_and_fresh_historical_source_blob": "3a097702ef7294467e2a16b5ae8624b716372c41",
+    "affected_operations": [
+      "load_pinned_candidate",
+      "revalidate_pinned_candidate"
+    ]
+  },
+  "evidence": {
+    "original_red": "explicit-pin-only-original-RED.json",
+    "corrected_green": "explicit-pin-only-corrected-GREEN.json",
+    "historical_source": "historical-pinned-source.json"
+  },
+  "requirements_preserved": [
+    "old sourceBase",
+    "old exactSourceCandidate and productCompositionSourceCandidate",
+    "all execution claim values",
+    "all original true-claim prechecks",
+    "final original explicit pin validator",
+    "byte-exact old Map and old pin recoverable through ledger"
+  ],
+  "real_ai395_preview_or_qualification_claimed": false,
+  "native_execution_claimed": false
+}

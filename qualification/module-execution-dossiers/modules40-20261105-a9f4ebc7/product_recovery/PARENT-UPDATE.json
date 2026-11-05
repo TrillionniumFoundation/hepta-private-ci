@@ -1,0 +1,291 @@
+{
+  "base": "f7a57e6f40e3e8220233f0d27b8cfbdf1f721c55",
+  "source": "78668ea2837a16811b922dfcfbc438f3d8a98f5e",
+  "files": [
+    {
+      "path": "codex-rs/hepta-agent-protocol/src/lib.rs",
+      "added": false
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/client.rs",
+      "added": false
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/intelligence_canonical_runtime_test_support.rs",
+      "added": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/intelligence_canonical_runtime_tests.rs",
+      "added": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/intelligence_ingress.rs",
+      "added": false
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/intelligence_product_runner.rs",
+      "added": false
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/intelligence_product_signed_tests.rs",
+      "added": false
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/intelligence_product_tests.rs",
+      "added": false
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/intelligence_run_start.rs",
+      "added": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/intelligence_run_start_tests.rs",
+      "added": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/lane_b_bound.rs",
+      "added": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/lane_b_bound_tests.rs",
+      "added": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/lane_b_runtime.rs",
+      "added": false
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/lane_b_runtime_fault_tests.rs",
+      "added": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/lib.rs",
+      "added": false
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/runtime.rs",
+      "added": false
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/state.rs",
+      "added": false
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/state_control.rs",
+      "added": false
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/state_run_reconciliation.rs",
+      "added": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/test_support.rs",
+      "added": false
+    },
+    {
+      "path": "codex-rs/hepta-infer-worker-host/src/bin/hepta-infer-worker.rs",
+      "added": false
+    },
+    {
+      "path": "codex-rs/hepta-infer-worker-host/src/native_app_server.rs",
+      "added": false
+    },
+    {
+      "path": "codex-rs/hepta-infer-worker-host/src/native_app_server_tests.rs",
+      "added": false
+    },
+    {
+      "path": "codex-rs/hepta-infer-worker-host/src/native_failure_tests.rs",
+      "added": false
+    },
+    {
+      "path": "codex-rs/hepta-infer-worker-host/src/native_intelligence_recovery.rs",
+      "added": true
+    },
+    {
+      "path": "codex-rs/hepta-infer-worker-host/src/native_intelligence_recovery_process_tests.rs",
+      "added": true
+    },
+    {
+      "path": "codex-rs/hepta-infer-worker-host/src/native_intelligence_recovery_tests.rs",
+      "added": true
+    },
+    {
+      "path": "codex-rs/hepta-infer-worker-host/src/native_output.rs",
+      "added": true
+    },
+    {
+      "path": "codex-rs/hepta-infer-worker-host/src/native_output_tests.rs",
+      "added": true
+    },
+    {
+      "path": "codex-rs/hepta-infer-worker-host/src/native_recovery_tests.rs",
+      "added": false
+    },
+    {
+      "path": "codex-rs/hepta-infer-worker-host/src/native_run_control.rs",
+      "added": false
+    },
+    {
+      "path": "codex-rs/hepta-infer-worker-host/src/native_run_control_tests.rs",
+      "added": false
+    },
+    {
+      "path": "codex-rs/hepta-infer-worker-host/src/native_worker_cli_tests.rs",
+      "added": true
+    }
+  ],
+  "patch": "/workspace/scratch/a9f4ebc7dfa7/product_recovery/product-recovery-integration.patch",
+  "patch_sha256": "da1cc217f19b2c7a3d1b7961a154eaf20997dc529f7fb6a892ca13d0f19c3f38",
+  "patch_bytes": 157997,
+  "git_apply_check": "PASS",
+  "rust_tests": "NOT_RUN",
+  "preserved_unified": [
+    "native_recovery.rs including binding, duplicate-turn, observation identity, owner-loss checks and native_reconciliation_tests",
+    "native_failure_tests.rs process isolation and owner-loss cases",
+    "native_recovery_tests.rs process isolation and recovery cases",
+    "lane_b_runtime overflow atomicity including changed counter",
+    "native_test_process module"
+  ],
+  "excluded": [
+    "desktop issuer files: lifecycle_review has separate stronger patch",
+    "three identical hepta-runtime files",
+    "docs/status files: module_matrix owns"
+  ],
+  "merge_note": "Four overlapping files were merged explicitly. Existing failure/recovery test host calls use explicit Arg0DispatchPaths. No new feature beyond product source delta.",
+  "small_integration_fix": "Two new intelligence recovery process tests now use the already-existing unified native_test_process isolate_host helper and completion marker. Otherwise both initialize process-wide Codex homes in the same harness and can fail/contaminate each other. No new isolation framework.",
+  "validation_limit": "Only textual application and manual conflict audit are confirmed; ai395 must run just fmt and just test -p codex-hepta-agentd / codex-hepta-infer-worker-host before reporting native test success.",
+  "host_call_review": {
+    "path": "/workspace/scratch/a9f4ebc7dfa7/product_recovery/host-call-review.json",
+    "scan_sha256": "4899f39b8afad16e97f7226d69c59974bd9fb8bbf9790d5e6597ce6badb81cc5",
+    "status": "PASS for 5 direct call sites in 4 files; no extra direct calls in recorded full-tree scan",
+    "build_or_test_claim": "NONE"
+  },
+  "final_evidence_preparation": {
+    "files": [
+      {
+        "path": "/workspace/scratch/a9f4ebc7dfa7/product_recovery/required-tests.json",
+        "sha256": "16f15023d778b5c230c47f8ca934a434f522856622e6b9760630a10380d9af50"
+      },
+      {
+        "path": "/workspace/scratch/a9f4ebc7dfa7/product_recovery/check_required_junit.py",
+        "sha256": "043448357a05cd2c71f3a812a0d9e623e4313a50c6222cbbba03172f95dcae5b"
+      },
+      {
+        "path": "/workspace/scratch/a9f4ebc7dfa7/product_recovery/bind_required_tests_manifest.py",
+        "sha256": "ac912800a10b48382800a92edc21ad2ce8e15c435e83ff7359f1a9a8951bdfc9"
+      },
+      {
+        "path": "/workspace/scratch/a9f4ebc7dfa7/product_recovery/manifest-binding-selftest.json",
+        "sha256": "dee9614d8e331174e58ec37478be02291e439832f293eee7cb0a3b095c50637f"
+      },
+      {
+        "path": "/workspace/scratch/a9f4ebc7dfa7/product_recovery/manifest-provenance.md",
+        "sha256": "5e5ab9edf8860989a832e42508a433160f9f27b098f443ef3673564b910df5c8"
+      },
+      {
+        "path": "/workspace/scratch/a9f4ebc7dfa7/product_recovery/source-impact-compatibility.zh.md",
+        "sha256": "1fc92c6f9ca3ac43dc6029408862d7fe1641608b4f8e5b0c4d92eb3e04e0a224"
+      },
+      {
+        "path": "/workspace/scratch/a9f4ebc7dfa7/product_recovery/original-junit-wrapper-review.json",
+        "sha256": "a02394d2fe40a9ed1a0ba0e88c10d415b6428a1ad9c188fb242cce6ae45c533e"
+      },
+      {
+        "path": "/workspace/scratch/a9f4ebc7dfa7/product_recovery/scoped-fix-review.json",
+        "sha256": "5c159186568a13e0a7fb7982c074044e0f2460ecf29e192242b7146b30550b92"
+      }
+    ],
+    "status": "READY FOR REAL NATIVE REPORT; no Rust test execution claimed by these artifacts",
+    "requirements_count": 49,
+    "review_manifest_immutable": true,
+    "candidate_bound_manifest": "Generate schema-v2 only after actual final commit/tree supplied",
+    "native_junit_expected": "/home/qq/work/hepta-modules40-20261105-a9f4ebc7/source/codex-rs/target/nextest/local/junit.xml",
+    "native_wrapper_changes": "NONE",
+    "binder_regression": {
+      "path": "/workspace/scratch/a9f4ebc7dfa7/product_recovery/reviewer-hidden-drift-recheck.json",
+      "sha256": "791a7a4566ac11231f8170169bd3ae18d85d2c917fede177f58c13a55eab855a",
+      "status": "Original independent reviewer hidden-production/index counterexample now rejected; no source/index mutation",
+      "superseded_unexecuted_binder_sha256": "79ee9c9e8c11a6da07afc8d44bf6a90a4bfeb46271c3c5e65b8f9a7f1751ba0b"
+    },
+    "binder_independent_review": {
+      "path": "/workspace/scratch/a9f4ebc7dfa7/lifecycle_review/manifest_binding_review/independent-fixed-hidden-drift-review.json",
+      "sha256": "ecfd4f2baf48d3e820a3ecc922f41a012ccdf975d790bad567ee027a43572321",
+      "status": "Accepted after original hidden production/index drift counterexample rejected without mutations"
+    }
+  },
+  "e65_integration": {
+    "common_base": "f7a57e6f40e3e8220233f0d27b8cfbdf1f721c55",
+    "ours_source_commit": "e9b84f242326e5280ee2b2de937f03f78bc1e907",
+    "ours_tree": "4d9de9f9d5eef537e5cee1c07b3d1875d30af56e",
+    "new_base_commit": "e65a53ddfc872ef66edc63dff8f28d4414817c60",
+    "new_base_tree": "93a323f016388426d4eb1dead99ac273963c9935",
+    "files": [
+      {
+        "path": "/workspace/scratch/a9f4ebc7dfa7/product_recovery/base_refresh/e65-integration-on-c0.patch",
+        "sha256": "43e9be990f7e5a8a91485ec93192ed52ca2b795a6cf0b5217824b9a5eaea861f"
+      },
+      {
+        "path": "/workspace/scratch/a9f4ebc7dfa7/product_recovery/base_refresh/merge-resolution-manifest.json",
+        "sha256": "bed3a02526dbf076893584026b2c38a42a340d70f1d690cb0682e647e7c3e151"
+      },
+      {
+        "path": "/workspace/scratch/a9f4ebc7dfa7/product_recovery/base_refresh/e65-base-object-package.json",
+        "sha256": "5187b6fe75e207a041d57d26b92b567df4e3a7cebdbffae7935f130b5f4c97ba"
+      },
+      {
+        "path": "/workspace/scratch/a9f4ebc7dfa7/product_recovery/base_refresh/patch-review.json",
+        "sha256": "9e8734c17017cfbc759a57d4052e0e872e72689601573b833b3c996b1f52d6fe"
+      },
+      {
+        "path": "/workspace/scratch/a9f4ebc7dfa7/product_recovery/required-tests.with-e65.json",
+        "sha256": "f832236003c1937c29ba9ca3f6faeafa2dc9799664ae1069d0df78339366f56e"
+      },
+      {
+        "path": "/workspace/scratch/a9f4ebc7dfa7/product_recovery/required-tests-e65-inclusion-review.json",
+        "sha256": "eff8a6d972eef9ad39656f8cdac1b10fd6d041fc0bea5398c92082bdfb8495c4"
+      }
+    ],
+    "root_review": "Root explicitly accepted 339-line source integration on line-by-line review; real merge and native execution handled by root.",
+    "test_requirements": "59 = immutable original49 plus e65 original10; original full suite nofilter",
+    "native_execution_claim": "NONE BY THIS AGENT",
+    "independent_review": {
+      "path": "/workspace/scratch/a9f4ebc7dfa7/lifecycle_review/e65-independent-source-review.json",
+      "sha256": "35382348934a5b8b51e8079dd7bc68135134d8d1822aa30dcb4bf950959b72e3",
+      "scope": "Source/code and manifest identity review only; native execution not established"
+    }
+  },
+  "junit_inheritance_correction": {
+    "path": "/workspace/scratch/a9f4ebc7dfa7/product_recovery/nextest-0.9.103-junit-correction.json",
+    "sha256": "5c388b88c19c8bfd8e5ed14c504968383616eb581d733e52c942bb2c7d09dcea",
+    "supersedes_prior_assumption": true,
+    "run1_native_junit": "ABSENT"
+  },
+  "socket_environment_review": {
+    "path": "/workspace/scratch/a9f4ebc7dfa7/product_recovery/socket-path-environment-review.json",
+    "sha256": "4713967dff19b22fad99fcc16610f78ce94881ca41abb5d5d172a0ea3458579d",
+    "run2_tmpdir": "/tmp/a9f4ebc7",
+    "socket_bytes": 102
+  },
+  "actual_native_audit": {
+    "status": "ACTUAL_NATIVE_RUN2_INDEPENDENTLY_VERIFIED_WITH_STATED_LIMITS",
+    "candidate_commit": "58c81ccdd25002ae0f481d434af067a56fa7ddb8",
+    "candidate_tree": "57809be09ef01c02389ef37a817f1447d13d167b",
+    "audit_file": "native_audit/independent-native-run-audit.json",
+    "audit_sha256": "383dabe21b476310516058f3484e35074435b5bb3587f04565c3e467077c34be",
+    "human_report": "native_audit/independent-native-run-audit.md",
+    "human_report_sha256": "d5c304397aabf54fc71ad00345b29ee3c75bacb45b15d02bb36bc9a9d3193397",
+    "runner_exit": 0,
+    "executed_passed": 697,
+    "whole_suite_skipped": 66,
+    "native_xml_cases": 697,
+    "required_clean_passes": 59,
+    "run1_failure_and_absent_junit_preserved": true,
+    "source_or_native_commands_mutated_by_reviewer": false,
+    "runner_performed_by": "root on ai395; child performed read-only local artifact/source review",
+    "consistency_checks_passed": 59,
+    "original_metadata_raw_gzip_receipt_and_report_config_verified": true,
+    "publication_links_review": "native_audit/publication-link-review.json",
+    "environment_review_sha256": "7b2f270a276bee189614cd91bfbc813568cac795b8420aa788f6bb9573bbdacf"
+  }
+}

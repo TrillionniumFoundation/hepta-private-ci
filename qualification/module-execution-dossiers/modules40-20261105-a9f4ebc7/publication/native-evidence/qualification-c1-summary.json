@@ -1,0 +1,147 @@
+{
+  "candidate_commit": "5e917b9f5fb3e841dbcaefcd5bbbf59b32f20411",
+  "candidate_tree": "5f02eb87cce34d40d6ddf21722305192b4fa00d7",
+  "all_exit_zero": true,
+  "checks": [
+    {
+      "name": "maps-qualification-c1",
+      "command": [
+        "python3",
+        "scripts/hepta-implementation-maps.py",
+        "verify",
+        "--profile",
+        "qualification",
+        "--expected-sha",
+        "5e917b9f5fb3e841dbcaefcd5bbbf59b32f20411",
+        "--expected-tree",
+        "5f02eb87cce34d40d6ddf21722305192b4fa00d7"
+      ],
+      "cwd": "/home/qq/work/hepta-modules40-20261105-a9f4ebc7/source",
+      "candidate_commit": "5e917b9f5fb3e841dbcaefcd5bbbf59b32f20411",
+      "candidate_tree": "5f02eb87cce34d40d6ddf21722305192b4fa00d7",
+      "start_utc": "2026-11-05T11:19:16.075002+00:00",
+      "elapsed_seconds": 2.679835867951624,
+      "exit": 0,
+      "log_sha256": "5764c87c8c0a14aa4040931975675bcb48a4008b2c0d5cbef13b571a7ca795c8",
+      "log_bytes": 691,
+      "source_after": "5e917b9f5fb3e841dbcaefcd5bbbf59b32f20411",
+      "tree_after": "5f02eb87cce34d40d6ddf21722305192b4fa00d7",
+      "status_after": ""
+    },
+    {
+      "name": "module-status-facts-c1",
+      "command": [
+        "python3",
+        "scripts/test_hepta_module_status_facts.py"
+      ],
+      "cwd": "/home/qq/work/hepta-modules40-20261105-a9f4ebc7/source",
+      "candidate_commit": "5e917b9f5fb3e841dbcaefcd5bbbf59b32f20411",
+      "candidate_tree": "5f02eb87cce34d40d6ddf21722305192b4fa00d7",
+      "start_utc": "2026-11-05T11:19:18.770396+00:00",
+      "elapsed_seconds": 0.04326133104041219,
+      "exit": 0,
+      "log_sha256": "24adda79e21044fef19cdc7f0606a9cd7770fc9a99c705a8622ee923c13bce5d",
+      "log_bytes": 100,
+      "source_after": "5e917b9f5fb3e841dbcaefcd5bbbf59b32f20411",
+      "tree_after": "5f02eb87cce34d40d6ddf21722305192b4fa00d7",
+      "status_after": ""
+    },
+    {
+      "name": "module-registry-strict-c1",
+      "command": [
+        "python3",
+        "scripts/hepta_module_registry.py",
+        "--strict",
+        "--pretty"
+      ],
+      "cwd": "/home/qq/work/hepta-modules40-20261105-a9f4ebc7/source",
+      "candidate_commit": "5e917b9f5fb3e841dbcaefcd5bbbf59b32f20411",
+      "candidate_tree": "5f02eb87cce34d40d6ddf21722305192b4fa00d7",
+      "start_utc": "2026-11-05T11:19:18.828387+00:00",
+      "elapsed_seconds": 0.09495058702304959,
+      "exit": 0,
+      "log_sha256": "e856e4c966f130ea6d3f52ab8ca8bcf31ead62ccc173424ac57c809887e3b2e9",
+      "log_bytes": 896,
+      "source_after": "5e917b9f5fb3e841dbcaefcd5bbbf59b32f20411",
+      "tree_after": "5f02eb87cce34d40d6ddf21722305192b4fa00d7",
+      "status_after": ""
+    },
+    {
+      "name": "module-docs-qualification-c1",
+      "command": [
+        "python3",
+        "scripts/hepta-module-docs.py",
+        "verify",
+        "--profile",
+        "qualification"
+      ],
+      "cwd": "/home/qq/work/hepta-modules40-20261105-a9f4ebc7/source",
+      "candidate_commit": "5e917b9f5fb3e841dbcaefcd5bbbf59b32f20411",
+      "candidate_tree": "5f02eb87cce34d40d6ddf21722305192b4fa00d7",
+      "start_utc": "2026-11-05T11:19:18.937612+00:00",
+      "elapsed_seconds": 2.5909998660208657,
+      "exit": 0,
+      "log_sha256": "db8def5c9333745c8aa3af8688d7d9e2b67b9041e6b005a45d15db8eecbf3e10",
+      "log_bytes": 323,
+      "source_after": "5e917b9f5fb3e841dbcaefcd5bbbf59b32f20411",
+      "tree_after": "5f02eb87cce34d40d6ddf21722305192b4fa00d7",
+      "status_after": ""
+    },
+    {
+      "name": "navigation-noop-c1",
+      "command": [
+        "python3",
+        "/home/qq/work/hepta-modules40-20261105-a9f4ebc7/refresh-navigation-explicit-pins.py",
+        "--root",
+        "/home/qq/work/hepta-modules40-20261105-a9f4ebc7/source",
+        "--expected-sha",
+        "5e917b9f5fb3e841dbcaefcd5bbbf59b32f20411",
+        "--expected-tree",
+        "5f02eb87cce34d40d6ddf21722305192b4fa00d7",
+        "--ledger",
+        "qualification/module-execution-dossiers/SOURCE_NAVIGATION_POST_C1_NOOP_A9F4EBC7.json"
+      ],
+      "cwd": "/home/qq/work/hepta-modules40-20261105-a9f4ebc7/source",
+      "candidate_commit": "5e917b9f5fb3e841dbcaefcd5bbbf59b32f20411",
+      "candidate_tree": "5f02eb87cce34d40d6ddf21722305192b4fa00d7",
+      "start_utc": "2026-11-05T11:19:21.544175+00:00",
+      "elapsed_seconds": 2.9397872081026435,
+      "exit": 0,
+      "log_sha256": "fe163834cea728da412251b9762a0d1e911f516e2b5f5332503f4c3445fd2f78",
+      "log_bytes": 363,
+      "source_after": "5e917b9f5fb3e841dbcaefcd5bbbf59b32f20411",
+      "tree_after": "5f02eb87cce34d40d6ddf21722305192b4fa00d7",
+      "status_after": ""
+    },
+    {
+      "name": "navigation-execution-input-equivalence",
+      "command": [
+        "python3",
+        "/home/qq/work/hepta-modules40-20261105-a9f4ebc7/verify_navigation_execution_equivalence.py",
+        "--repo",
+        "/home/qq/work/hepta-modules40-20261105-a9f4ebc7/source",
+        "--candidate",
+        "5e917b9f5fb3e841dbcaefcd5bbbf59b32f20411",
+        "--candidate-tree",
+        "5f02eb87cce34d40d6ddf21722305192b4fa00d7",
+        "--run-receipt",
+        "/home/qq/work/hepta-modules40-20261105-a9f4ebc7/evidence/four-package-run2.json",
+        "--run-log",
+        "/home/qq/work/hepta-modules40-20261105-a9f4ebc7/evidence/four-package-run2.log",
+        "--run-junit",
+        "/home/qq/work/hepta-modules40-20261105-a9f4ebc7/evidence/four-package-run2.junit.xml"
+      ],
+      "cwd": "/home/qq/work/hepta-modules40-20261105-a9f4ebc7/source",
+      "candidate_commit": "5e917b9f5fb3e841dbcaefcd5bbbf59b32f20411",
+      "candidate_tree": "5f02eb87cce34d40d6ddf21722305192b4fa00d7",
+      "start_utc": "2026-11-05T11:19:24.500262+00:00",
+      "elapsed_seconds": 0.24939528200775385,
+      "exit": 0,
+      "log_sha256": "dc72975cb0ca6f0a5732198fdb0162f316b4f9cd59a4b18951235239915238a6",
+      "log_bytes": 26653,
+      "source_after": "5e917b9f5fb3e841dbcaefcd5bbbf59b32f20411",
+      "tree_after": "5f02eb87cce34d40d6ddf21722305192b4fa00d7",
+      "status_after": ""
+    }
+  ]
+}

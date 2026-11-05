@@ -1,0 +1,12 @@
+{
+  "returncode": 0,
+  "inputSha256": {
+    "hepta-implementation-maps.py": "a72b1aca62257154488ed2da6fa2378d7a4d65e0e6366fa1be9841db4c74fce3",
+    "test_hepta_implementation_maps.py": "1929e8065dea848dfab463d1d01a3d618698b3fe0825023e8484c68d5b268678",
+    "test_hepta_implementation_claim_pins.py": "0eff9d3aff275fd222c53bc5af8af16e602a5a24a4b9848fc1c7c1a834f23037"
+  },
+  "inputHashesUnchanged": true,
+  "command": "python -m unittest test_hepta_implementation_maps test_hepta_implementation_source_identity test_hepta_implementation_identity test_hepta_implementation_git_environment test_hepta_source_observation test_hepta_implementation_claim_pins",
+  "cwd": "scripts",
+  "scope": "original verifier and real-Git provenance regressions; no product execution claim"
+}

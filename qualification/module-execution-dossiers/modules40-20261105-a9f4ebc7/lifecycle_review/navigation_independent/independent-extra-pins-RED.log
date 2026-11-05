@@ -1,0 +1,175 @@
+test_refresh_refuses_all_stale_explicit_pins_without_writes (test_refresh_navigation_claim_pins.ExecutionClaimPins.test_refresh_refuses_all_stale_explicit_pins_without_writes) ... 
+  test_refresh_refuses_all_stale_explicit_pins_without_writes (test_refresh_navigation_claim_pins.ExecutionClaimPins.test_refresh_refuses_all_stale_explicit_pins_without_writes) (kind='source_objects_extra_witness', claim='productExecutionProved') ... FAIL
+  test_refresh_refuses_all_stale_explicit_pins_without_writes (test_refresh_navigation_claim_pins.ExecutionClaimPins.test_refresh_refuses_all_stale_explicit_pins_without_writes) (kind='source_objects_extra_witness', claim='productExecutionComplete') ... FAIL
+  test_refresh_refuses_all_stale_explicit_pins_without_writes (test_refresh_navigation_claim_pins.ExecutionClaimPins.test_refresh_refuses_all_stale_explicit_pins_without_writes) (kind='exact_manifest_extra_witness', claim='productExecutionProved') ... FAIL
+  test_refresh_refuses_all_stale_explicit_pins_without_writes (test_refresh_navigation_claim_pins.ExecutionClaimPins.test_refresh_refuses_all_stale_explicit_pins_without_writes) (kind='exact_manifest_extra_witness', claim='productExecutionComplete') ... FAIL
+  test_refresh_refuses_all_stale_explicit_pins_without_writes (test_refresh_navigation_claim_pins.ExecutionClaimPins.test_refresh_refuses_all_stale_explicit_pins_without_writes) (kind='operation_source_blob', claim='productExecutionProved') ... FAIL
+  test_refresh_refuses_all_stale_explicit_pins_without_writes (test_refresh_navigation_claim_pins.ExecutionClaimPins.test_refresh_refuses_all_stale_explicit_pins_without_writes) (kind='operation_source_blob', claim='productExecutionComplete') ... FAIL
+  test_refresh_refuses_all_stale_explicit_pins_without_writes (test_refresh_navigation_claim_pins.ExecutionClaimPins.test_refresh_refuses_all_stale_explicit_pins_without_writes) (kind='caller_blob', claim='productExecutionProved') ... FAIL
+  test_refresh_refuses_all_stale_explicit_pins_without_writes (test_refresh_navigation_claim_pins.ExecutionClaimPins.test_refresh_refuses_all_stale_explicit_pins_without_writes) (kind='caller_blob', claim='productExecutionComplete') ... FAIL
+test_unchanged_true_qualification_is_preserved (test_refresh_navigation_claim_pins.ExecutionClaimPins.test_unchanged_true_qualification_is_preserved) ... ok
+test_all_candidate_policy_maps_pass_without_legacy_batch (test_hepta_implementation_maps.SourceIdentityTests.test_all_candidate_policy_maps_pass_without_legacy_batch) ... ok
+test_all_module_migration_only_rebinds_changed_source (test_hepta_implementation_maps.SourceIdentityTests.test_all_module_migration_only_rebinds_changed_source) ... ok
+test_ambient_git_dir_does_not_redirect_verification (test_hepta_implementation_maps.SourceIdentityTests.test_ambient_git_dir_does_not_redirect_verification) ... ok
+test_assume_unchanged_cannot_hide_native_drift (test_hepta_implementation_maps.SourceIdentityTests.test_assume_unchanged_cannot_hide_native_drift) ... ok
+test_clean_hidden_index_is_not_an_exact_checkout (test_hepta_implementation_maps.SourceIdentityTests.test_clean_hidden_index_is_not_an_exact_checkout) ... ok
+test_clearing_hidden_flag_restores_verification_without_rebinding (test_hepta_implementation_maps.SourceIdentityTests.test_clearing_hidden_flag_restores_verification_without_rebinding) ... ok
+test_closed_public_inventory_rejects_nonexistent_exports (test_hepta_implementation_maps.SourceIdentityTests.test_closed_public_inventory_rejects_nonexistent_exports) ... ok
+test_closed_public_inventory_rejects_unmapped_exports (test_hepta_implementation_maps.SourceIdentityTests.test_closed_public_inventory_rejects_unmapped_exports) ... ok
+test_closed_public_inventory_uses_resolved_crate_roots (test_hepta_implementation_maps.SourceIdentityTests.test_closed_public_inventory_uses_resolved_crate_roots) ... ok
+test_closed_world_markers_cannot_escape_source_namespace (test_hepta_implementation_maps.SourceIdentityTests.test_closed_world_markers_cannot_escape_source_namespace) ... ok
+test_closed_world_writer_binding_preserves_exact_source_identity (test_hepta_implementation_maps.SourceIdentityTests.test_closed_world_writer_binding_preserves_exact_source_identity) ... ok
+test_combined_index_flags_cannot_hide_native_drift (test_hepta_implementation_maps.SourceIdentityTests.test_combined_index_flags_cannot_hide_native_drift) ... ok
+test_composed_caller_requires_nonempty_source_binding_list (test_hepta_implementation_maps.SourceIdentityTests.test_composed_caller_requires_nonempty_source_binding_list) ... ok
+test_composed_writer_rejects_missing_closed_world_bindings (test_hepta_implementation_maps.SourceIdentityTests.test_composed_writer_rejects_missing_closed_world_bindings) ... ok
+test_conflicting_legacy_caller_aliases_reject_before_any_write (test_hepta_implementation_maps.SourceIdentityTests.test_conflicting_legacy_caller_aliases_reject_before_any_write) ... ok
+test_delegated_caller_drift_rejects (test_hepta_implementation_maps.SourceIdentityTests.test_delegated_caller_drift_rejects) ... ok
+test_document_only_commit_preserves_evidence (test_hepta_implementation_maps.SourceIdentityTests.test_document_only_commit_preserves_evidence) ... ok
+test_duplicate_json_keys_reject (test_hepta_implementation_maps.SourceIdentityTests.test_duplicate_json_keys_reject) ... ok
+test_duplicate_module_identity_rejects (test_hepta_implementation_maps.SourceIdentityTests.test_duplicate_module_identity_rejects) ... ok
+test_empty_registry_rejects (test_hepta_implementation_maps.SourceIdentityTests.test_empty_registry_rejects) ... ok
+test_exact_blob_migration_preserves_provenance_and_rebinds_observation (test_hepta_implementation_maps.SourceIdentityTests.test_exact_blob_migration_preserves_provenance_and_rebinds_observation) ... ok
+test_exact_blob_observation_covers_non_operation_evidence (test_hepta_implementation_maps.SourceIdentityTests.test_exact_blob_observation_covers_non_operation_evidence) ... ok
+test_exact_blob_verify_requires_explicit_current_observation (test_hepta_implementation_maps.SourceIdentityTests.test_exact_blob_verify_requires_explicit_current_observation) ... ok
+test_explicit_newline_and_tab_evidence_paths_remain_unambiguous (test_hepta_implementation_maps.SourceIdentityTests.test_explicit_newline_and_tab_evidence_paths_remain_unambiguous) ... ok
+test_generator_does_not_infer_complete_mapping (test_hepta_implementation_maps.SourceIdentityTests.test_generator_does_not_infer_complete_mapping) ... ok
+test_git_pathspec_magic_rejects (test_hepta_implementation_maps.SourceIdentityTests.test_git_pathspec_magic_rejects) ... ok
+test_guide_and_legacy_caller_spelling_are_exact_evidence (test_hepta_implementation_maps.SourceIdentityTests.test_guide_and_legacy_caller_spelling_are_exact_evidence) ... ok
+test_hidden_filename_record_cannot_split_the_index_check (test_hepta_implementation_maps.SourceIdentityTests.test_hidden_filename_record_cannot_split_the_index_check) ... ok
+test_hidden_index_remains_rejected_during_migration (test_hepta_implementation_maps.SourceIdentityTests.test_hidden_index_remains_rejected_during_migration) ... ok
+test_hidden_map_cannot_change_the_claim_input (test_hepta_implementation_maps.SourceIdentityTests.test_hidden_map_cannot_change_the_claim_input) ... ok
+test_hidden_registry_is_rejected_before_it_controls_verification (test_hepta_implementation_maps.SourceIdentityTests.test_hidden_registry_is_rejected_before_it_controls_verification) ... ok
+test_independent_module_anchors_pass (test_hepta_implementation_maps.SourceIdentityTests.test_independent_module_anchors_pass) ... ok
+test_legacy_execution_claims_cannot_be_rebound_after_source_drift (test_hepta_implementation_maps.SourceIdentityTests.test_legacy_execution_claims_cannot_be_rebound_after_source_drift) ... ok
+test_legacy_named_caller_normalizes_and_receives_exact_source_objects (test_hepta_implementation_maps.SourceIdentityTests.test_legacy_named_caller_normalizes_and_receives_exact_source_objects) ... ok
+test_malformed_batch_response_is_rejected (test_hepta_implementation_maps.SourceIdentityTests.test_malformed_batch_response_is_rejected) ... ok
+test_mapped_test_drift_rejects (test_hepta_implementation_maps.SourceIdentityTests.test_mapped_test_drift_rejects) ... ok
+test_migration_does_not_promote_mapping_claim (test_hepta_implementation_maps.SourceIdentityTests.test_migration_does_not_promote_mapping_claim) ... ok
+test_migration_does_not_repair_unknown_policy (test_hepta_implementation_maps.SourceIdentityTests.test_migration_does_not_repair_unknown_policy) ... ok
+test_migration_git_failure_is_not_treated_as_drift (test_hepta_implementation_maps.SourceIdentityTests.test_migration_git_failure_is_not_treated_as_drift) ... ok
+test_migration_rejects_dirty_source_without_writing_maps (test_hepta_implementation_maps.SourceIdentityTests.test_migration_rejects_dirty_source_without_writing_maps) ... ok
+test_migration_rejects_duplicate_module_registry (test_hepta_implementation_maps.SourceIdentityTests.test_migration_rejects_duplicate_module_registry) ... ok
+test_migration_rejects_invalid_identity_before_any_write (test_hepta_implementation_maps.SourceIdentityTests.test_migration_rejects_invalid_identity_before_any_write) ... ok
+test_migration_rejects_missing_evidence_at_both_ends (test_hepta_implementation_maps.SourceIdentityTests.test_migration_rejects_missing_evidence_at_both_ends) ... ok
+test_migration_rejects_untracked_evidence_without_partial_write (test_hepta_implementation_maps.SourceIdentityTests.test_migration_rejects_untracked_evidence_without_partial_write) ... ok
+test_missing_mapped_test_rejects (test_hepta_implementation_maps.SourceIdentityTests.test_missing_mapped_test_rejects) ... ok
+test_navigation_rebind_preserves_historical_candidate_records (test_hepta_implementation_maps.SourceIdentityTests.test_navigation_rebind_preserves_historical_candidate_records) ... ok
+test_new_committed_evidence_can_be_explicitly_rebound (test_hepta_implementation_maps.SourceIdentityTests.test_new_committed_evidence_can_be_explicitly_rebound) ... ok
+test_new_file_in_root_rejects (test_hepta_implementation_maps.SourceIdentityTests.test_new_file_in_root_rejects) ... ok
+test_nonancestor_rejects (test_hepta_implementation_maps.SourceIdentityTests.test_nonancestor_rejects) ... ok
+test_noop_preserves_custom_json_formatting (test_hepta_implementation_maps.SourceIdentityTests.test_noop_preserves_custom_json_formatting) ... ok
+test_object_query_count_is_bounded_independent_of_evidence_count (test_hepta_implementation_maps.SourceIdentityTests.test_object_query_count_is_bounded_independent_of_evidence_count) ... ok
+test_observed_additional_input_drift_rejects (test_hepta_implementation_maps.SourceIdentityTests.test_observed_additional_input_drift_rejects) ... ok
+test_observed_additional_input_rebind_is_still_checked (test_hepta_implementation_maps.SourceIdentityTests.test_observed_additional_input_rebind_is_still_checked) ... ok
+test_observed_paths_must_cover_resolved_roots (test_hepta_implementation_maps.SourceIdentityTests.test_observed_paths_must_cover_resolved_roots) ... ok
+test_partial_operator_inventory_cannot_claim_a_closed_map (test_hepta_implementation_maps.SourceIdentityTests.test_partial_operator_inventory_cannot_claim_a_closed_map) ... ok
+test_path_traversal_rejects (test_hepta_implementation_maps.SourceIdentityTests.test_path_traversal_rejects) ... ok
+test_prose_edit_does_not_refresh_any_anchor (test_hepta_implementation_maps.SourceIdentityTests.test_prose_edit_does_not_refresh_any_anchor) ... ok
+test_public_inventory_excludes_methods_tests_and_literal_decoys (test_hepta_implementation_maps.SourceIdentityTests.test_public_inventory_excludes_methods_tests_and_literal_decoys) ... ok
+test_public_inventory_includes_const_reexports_not_types (test_hepta_implementation_maps.SourceIdentityTests.test_public_inventory_includes_const_reexports_not_types) ... ok
+test_rebind_refreshes_exact_operation_blob (test_hepta_implementation_maps.SourceIdentityTests.test_rebind_refreshes_exact_operation_blob) ... ok
+test_rejecting_hidden_index_does_not_clear_user_flags (test_hepta_implementation_maps.SourceIdentityTests.test_rejecting_hidden_index_does_not_clear_user_flags) ... ok
+test_removed_file_in_root_rejects (test_hepta_implementation_maps.SourceIdentityTests.test_removed_file_in_root_rejects) ... ok
+test_repeated_migration_after_commit_is_noop (test_hepta_implementation_maps.SourceIdentityTests.test_repeated_migration_after_commit_is_noop) ... ok
+test_replace_object_cannot_forge_anchor_tree (test_hepta_implementation_maps.SourceIdentityTests.test_replace_object_cannot_forge_anchor_tree) ... ok
+test_repository_verification_scans_checkout_twice_not_per_module (test_hepta_implementation_maps.SourceIdentityTests.test_repository_verification_scans_checkout_twice_not_per_module) ... ok
+test_rust_function_test_identity_resolves_to_exact_source (test_hepta_implementation_maps.SourceIdentityTests.test_rust_function_test_identity_resolves_to_exact_source) ... ok
+test_selected_migration_leaves_other_module_bytes_unchanged (test_hepta_implementation_maps.SourceIdentityTests.test_selected_migration_leaves_other_module_bytes_unchanged) ... ok
+test_skip_worktree_cannot_hide_native_drift (test_hepta_implementation_maps.SourceIdentityTests.test_skip_worktree_cannot_hide_native_drift) ... ok
+test_source_objects_keep_tests_delegates_callers_and_legacy_witnesses (test_hepta_implementation_maps.SourceIdentityTests.test_source_objects_keep_tests_delegates_callers_and_legacy_witnesses) ... ok
+test_source_objects_reject_self_reference_without_rewriting_maps (test_hepta_implementation_maps.SourceIdentityTests.test_source_objects_reject_self_reference_without_rewriting_maps) ... ok
+test_staged_source_change_rejects (test_hepta_implementation_maps.SourceIdentityTests.test_staged_source_change_rejects) ... ok
+test_strong_migration_never_repairs_unproved_execution_by_adding_observation (test_hepta_implementation_maps.SourceIdentityTests.test_strong_migration_never_repairs_unproved_execution_by_adding_observation) ... ok
+test_strong_navigation_migration_without_observation_survives_commit (test_hepta_implementation_maps.SourceIdentityTests.test_strong_navigation_migration_without_observation_survives_commit) ... ok
+test_symbolic_source_ref_rejects (test_hepta_implementation_maps.SourceIdentityTests.test_symbolic_source_ref_rejects) ... ok
+test_symlink_evidence_rejects (test_hepta_implementation_maps.SourceIdentityTests.test_symlink_evidence_rejects) ... ok
+test_test_identity_does_not_admit_invalid_paths_or_symbols (test_hepta_implementation_maps.SourceIdentityTests.test_test_identity_does_not_admit_invalid_paths_or_symbols) ... ok
+test_unavailable_commit_rejects (test_hepta_implementation_maps.SourceIdentityTests.test_unavailable_commit_rejects) ... ok
+test_unchanged_ancestral_source_passes (test_hepta_implementation_maps.SourceIdentityTests.test_unchanged_ancestral_source_passes) ... ok
+test_uniformly_stale_maps_reject (test_hepta_implementation_maps.SourceIdentityTests.test_uniformly_stale_maps_reject) ... ok
+test_unknown_identity_policy_rejects (test_hepta_implementation_maps.SourceIdentityTests.test_unknown_identity_policy_rejects) ... ok
+test_unknown_migration_module_fails_before_writes (test_hepta_implementation_maps.SourceIdentityTests.test_unknown_migration_module_fails_before_writes) ... ok
+test_unstaged_source_change_rejects (test_hepta_implementation_maps.SourceIdentityTests.test_unstaged_source_change_rejects) ... ok
+test_untracked_ci_report_outside_sources_is_not_a_mutation (test_hepta_implementation_maps.SourceIdentityTests.test_untracked_ci_report_outside_sources_is_not_a_mutation) ... ok
+test_untracked_source_rejects (test_hepta_implementation_maps.SourceIdentityTests.test_untracked_source_rejects) ... ok
+test_verifier_helpers_cannot_be_shadowed_by_duplicate_definitions (test_hepta_implementation_maps.SourceIdentityTests.test_verifier_helpers_cannot_be_shadowed_by_duplicate_definitions) ... ok
+test_verify_accepts_exact_expected_candidate_identity (test_hepta_implementation_maps.SourceIdentityTests.test_verify_accepts_exact_expected_candidate_identity) ... ok
+test_verify_rejects_wrong_or_malformed_expected_candidate_identity (test_hepta_implementation_maps.SourceIdentityTests.test_verify_rejects_wrong_or_malformed_expected_candidate_identity) ... ok
+test_wrong_tree_rejects (test_hepta_implementation_maps.SourceIdentityTests.test_wrong_tree_rejects) ... ok
+
+======================================================================
+FAIL: test_refresh_refuses_all_stale_explicit_pins_without_writes (test_refresh_navigation_claim_pins.ExecutionClaimPins.test_refresh_refuses_all_stale_explicit_pins_without_writes) (kind='source_objects_extra_witness', claim='productExecutionProved')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/scratch/a9f4ebc7dfa7/lifecycle_review/navigation_independent/test_refresh_navigation_claim_pins.py", line 94, in test_refresh_refuses_all_stale_explicit_pins_without_writes
+    with self.assertRaises(ValueError):
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: ValueError not raised
+
+======================================================================
+FAIL: test_refresh_refuses_all_stale_explicit_pins_without_writes (test_refresh_navigation_claim_pins.ExecutionClaimPins.test_refresh_refuses_all_stale_explicit_pins_without_writes) (kind='source_objects_extra_witness', claim='productExecutionComplete')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/scratch/a9f4ebc7dfa7/lifecycle_review/navigation_independent/test_refresh_navigation_claim_pins.py", line 94, in test_refresh_refuses_all_stale_explicit_pins_without_writes
+    with self.assertRaises(ValueError):
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: ValueError not raised
+
+======================================================================
+FAIL: test_refresh_refuses_all_stale_explicit_pins_without_writes (test_refresh_navigation_claim_pins.ExecutionClaimPins.test_refresh_refuses_all_stale_explicit_pins_without_writes) (kind='exact_manifest_extra_witness', claim='productExecutionProved')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/scratch/a9f4ebc7dfa7/lifecycle_review/navigation_independent/test_refresh_navigation_claim_pins.py", line 94, in test_refresh_refuses_all_stale_explicit_pins_without_writes
+    with self.assertRaises(ValueError):
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: ValueError not raised
+
+======================================================================
+FAIL: test_refresh_refuses_all_stale_explicit_pins_without_writes (test_refresh_navigation_claim_pins.ExecutionClaimPins.test_refresh_refuses_all_stale_explicit_pins_without_writes) (kind='exact_manifest_extra_witness', claim='productExecutionComplete')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/scratch/a9f4ebc7dfa7/lifecycle_review/navigation_independent/test_refresh_navigation_claim_pins.py", line 94, in test_refresh_refuses_all_stale_explicit_pins_without_writes
+    with self.assertRaises(ValueError):
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: ValueError not raised
+
+======================================================================
+FAIL: test_refresh_refuses_all_stale_explicit_pins_without_writes (test_refresh_navigation_claim_pins.ExecutionClaimPins.test_refresh_refuses_all_stale_explicit_pins_without_writes) (kind='operation_source_blob', claim='productExecutionProved')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/scratch/a9f4ebc7dfa7/lifecycle_review/navigation_independent/test_refresh_navigation_claim_pins.py", line 94, in test_refresh_refuses_all_stale_explicit_pins_without_writes
+    with self.assertRaises(ValueError):
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: ValueError not raised
+
+======================================================================
+FAIL: test_refresh_refuses_all_stale_explicit_pins_without_writes (test_refresh_navigation_claim_pins.ExecutionClaimPins.test_refresh_refuses_all_stale_explicit_pins_without_writes) (kind='operation_source_blob', claim='productExecutionComplete')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/scratch/a9f4ebc7dfa7/lifecycle_review/navigation_independent/test_refresh_navigation_claim_pins.py", line 94, in test_refresh_refuses_all_stale_explicit_pins_without_writes
+    with self.assertRaises(ValueError):
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: ValueError not raised
+
+======================================================================
+FAIL: test_refresh_refuses_all_stale_explicit_pins_without_writes (test_refresh_navigation_claim_pins.ExecutionClaimPins.test_refresh_refuses_all_stale_explicit_pins_without_writes) (kind='caller_blob', claim='productExecutionProved')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/scratch/a9f4ebc7dfa7/lifecycle_review/navigation_independent/test_refresh_navigation_claim_pins.py", line 94, in test_refresh_refuses_all_stale_explicit_pins_without_writes
+    with self.assertRaises(ValueError):
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: ValueError not raised
+
+======================================================================
+FAIL: test_refresh_refuses_all_stale_explicit_pins_without_writes (test_refresh_navigation_claim_pins.ExecutionClaimPins.test_refresh_refuses_all_stale_explicit_pins_without_writes) (kind='caller_blob', claim='productExecutionComplete')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/scratch/a9f4ebc7dfa7/lifecycle_review/navigation_independent/test_refresh_navigation_claim_pins.py", line 94, in test_refresh_refuses_all_stale_explicit_pins_without_writes
+    with self.assertRaises(ValueError):
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: ValueError not raised
+
+----------------------------------------------------------------------
+Ran 90 tests in 40.959s
+
+FAILED (failures=8)

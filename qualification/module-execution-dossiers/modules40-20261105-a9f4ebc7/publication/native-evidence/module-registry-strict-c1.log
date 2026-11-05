@@ -1,0 +1,41 @@
+{
+  "ambiguousRootBindings": [],
+  "boundCrateCount": 51,
+  "canonicalModuleCount": 40,
+  "cargoHeptaCrateCount": 51,
+  "declaredRootsWithoutCargoPackage": [
+    "apps/hepta-browser",
+    "apps/hepta-control-ui",
+    "apps/hepta-native",
+    "codex-rs/codex-app-server",
+    "external/HeptaBao",
+    "third_party/servo-patches",
+    "tools/hepta-engineering-control"
+  ],
+  "modulesWithoutCargoPackage": [
+    {
+      "module": "browser.servo",
+      "paths": [
+        "apps/hepta-browser",
+        "third_party/servo-patches"
+      ]
+    },
+    {
+      "module": "ui.control",
+      "paths": [
+        "apps/hepta-control-ui"
+      ]
+    },
+    {
+      "module": "ui.native",
+      "paths": [
+        "apps/hepta-native"
+      ]
+    }
+  ],
+  "schema": "hepta.module-registry-drift.v1",
+  "status": "aligned",
+  "unclaimedCargoCrates": [],
+  "unknownModules": [],
+  "unregisteredBindings": []
+}

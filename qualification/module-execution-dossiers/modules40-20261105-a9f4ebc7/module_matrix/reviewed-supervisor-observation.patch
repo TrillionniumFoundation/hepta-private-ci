@@ -1,0 +1,122 @@
+diff --git a/refresh-navigation.py b/refresh-navigation.py
+--- a/refresh-navigation.py
++++ b/refresh-navigation.py
+@@ -28,6 +28,52 @@
+     "independentDecisionEvidenceProved",
+     "namedHostQualificationReceiptProved",
+ }
++
++
++REVIEWED_SUPERVISOR_OBSERVATION = {
++    "module": "runtime.supervisor",
++    "mapBlob": "0ebfc4d68fd9cc6c60b9e612d3003f55bb97b89c",
++    "mapSha256": "362f4f5ca0a88f603099f4c0f02c434945d81b3210fa2af833de4be4332f4d69",
++    "observationSha256": "68b7b5826763ebc54617a46d4d48b19fb4baa4a183f5b382923e5f56dc7a7be3",
++}
++
++
++def reviewed_supervisor_observation(row, before_bytes, original_blob):
++    """Archive only the exact old source observation explicitly reviewed here."""
++    observed = row.get("observedAtHead")
++    if (
++        row.get("module") != REVIEWED_SUPERVISOR_OBSERVATION["module"]
++        or not isinstance(observed, dict)
++        or set(observed) != {"commit", "tree", "interpretation"}
++        or not isinstance(observed["interpretation"], str)
++    ):
++        raise ValueError("observation is not the reviewed supervisor record")
++    map_sha256 = hashlib.sha256(before_bytes).hexdigest()
++    observation_sha256 = hashlib.sha256(
++        json.dumps(observed, ensure_ascii=False, sort_keys=True, separators=(",", ":")).encode()
++    ).hexdigest()
++    if (
++        original_blob != REVIEWED_SUPERVISOR_OBSERVATION["mapBlob"]
++        or map_sha256 != REVIEWED_SUPERVISOR_OBSERVATION["mapSha256"]
++        or observation_sha256 != REVIEWED_SUPERVISOR_OBSERVATION["observationSha256"]
++        or json.loads(before_bytes) != row
++    ):
++        raise ValueError("reviewed supervisor observation or original map identity changed")
++    return {
++        "module": row["module"],
++        "previousMapBlob": original_blob,
++        "previousMapSha256": map_sha256,
++        "previousObservationSha256": observation_sha256,
++        "previousObservedAtHead": copy.deepcopy(observed),
++        "reviewReason": (
++            "This exact historical source-convergence observation explicitly leaves "
++            "product activation, deployed trust roots, target-host qualification and "
++            "independent acceptance external. Preserve its full interpretation here; "
++            "the replacement observation records current source navigation only."
++        ),
++        "historicalInterpretationTransferred": False,
++        "replacementScope": "source_navigation_only",
++    }
+ 
+ 
+ def semantic_view(row):
+@@ -51,7 +97,8 @@
+     return result
+ 
+ 
+-def refresh(verifier, *, expected_sha, expected_tree, ledger, apply):
++def refresh(verifier, *, expected_sha, expected_tree, ledger, apply,
++            archive_reviewed_supervisor_observation=False):
+     root = verifier.ROOT
+     candidate = verifier.current_source_base()
+     expected = {"commit": expected_sha, "tree": expected_tree}
+@@ -79,6 +126,7 @@
+         path = verifier.checked_source_path(root, relative)
+         before_bytes = path.read_bytes()
+         row = verifier.load(relative)
++        reviewed_archival = None
+         if row.get("module") != mid or row.get("schemaVersion") != 3:
+             raise ValueError(f"{mid}: expected its canonical v3 map")
+         anchor = verifier.checked_identity(row.get("sourceBase"), candidate)
+@@ -97,8 +145,15 @@
+             )
+         except verifier.SourceDrift:
+             observed = row.get("observedAtHead", {})
+-            if not isinstance(observed, dict) or set(observed) - {"commit", "tree"}:
++            if not isinstance(observed, dict):
+                 raise ValueError(f"{mid}: observation has fields requiring explicit review")
++            if set(observed) - {"commit", "tree"}:
++                if not archive_reviewed_supervisor_observation:
++                    raise ValueError(f"{mid}: observation has fields requiring explicit review")
++                reviewed_archival = reviewed_supervisor_observation(
++                    row, before_bytes,
++                    verifier.git("rev-parse", f"{expected_sha}:{relative}"),
++                )
+             stronger = copy.deepcopy(row)
+             stronger["mappingSourceIdentityMode"] = "exact_blob"
+             migrated = verifier.migrate_map(stronger, module, lanes, anchor)
+@@ -150,6 +205,8 @@
+                 "replacementSha256": hashlib.sha256(rendered.encode()).hexdigest(),
+             }
+         )
++        if reviewed_archival is not None:
++            records[-1]["reviewedObservationArchival"] = reviewed_archival
+         pending.append((path, rendered))
+     verifier.require_clean_candidate(candidate, sorted(checked_paths))
+     if verifier.current_source_base() != candidate:
+@@ -193,6 +250,10 @@
+     parser.add_argument("--expected-tree", required=True)
+     parser.add_argument("--ledger", required=True)
+     parser.add_argument("--apply", action="store_true")
++    parser.add_argument(
++        "--archive-reviewed-supervisor-observation", action="store_true",
++        help="archive only the exact reviewed old supervisor map/observation; no execution transfer",
++    )
+     args = parser.parse_args()
+     root = args.root.resolve()
+     sys.path.insert(0, str(root / "scripts"))
+@@ -205,7 +266,9 @@
+     spec.loader.exec_module(verifier)
+     print(json.dumps(refresh(verifier, expected_sha=args.expected_sha,
+                              expected_tree=args.expected_tree, ledger=args.ledger,
+-                             apply=args.apply), sort_keys=True))
++                             apply=args.apply,
++                             archive_reviewed_supervisor_observation=
++                             args.archive_reviewed_supervisor_observation), sort_keys=True))
+ 
+ 
+ if __name__ == "__main__":

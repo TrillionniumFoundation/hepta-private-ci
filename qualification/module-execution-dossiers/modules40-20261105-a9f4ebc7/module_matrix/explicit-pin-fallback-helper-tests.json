@@ -1,0 +1,33 @@
+{
+  "scope": "Temporary navigation helper only; original product verifier unchanged; real C58 file bytes and original two Map operations in isolated Git history",
+  "command": "python -m unittest -v test_refresh_navigation test_reviewed_supervisor_observation test_actual_artifact_pin_navigation",
+  "inputSha256": {
+    "refresh-navigation.py": "940f0fe0d5fccf53dc8d00dacbd4f572cf9b02419704dba0cde35d495f9e7e3b",
+    "test_refresh_navigation.py": "f51d24fa046ca466ecdf722910456780ceb183b3a5b627b4f2f1f45013f56e48",
+    "test_reviewed_supervisor_observation.py": "b027548a5e811431f01216eea222dc96db7245f81c35c412848c92f709286ef7",
+    "test_actual_artifact_pin_navigation.py": "4b8847f37a46495dacb411b4af634755f3cbc3dba9eaafa2c1b589178f7a3356",
+    "actual-c58-pinned.rs": "bdca616c77008c7b4fb9cdbdc0dd972f912facd3665279d1ede0df15e6654098"
+  },
+  "inputUnchanged": true,
+  "exitCode": 0,
+  "tests": 11,
+  "log": "explicit-pin-fallback-helper-tests.log",
+  "patchSha256": "94ae0ea2538c531ecb33fd95daf2aec8577d8a66361b51c22ef7eff5eb4d1dfb",
+  "actualData": {
+    "mapCommit": "f7a57e6f40e3e8220233f0d27b8cfbdf1f721c55",
+    "module": "learning.artifacts",
+    "sourceCommit": "58c81ccdd25002ae0f481d434af067a56fa7ddb8",
+    "sourcePath": "codex-rs/hepta-learning-artifacts/src/pinned.rs",
+    "currentSourceBlob": "3a097702ef7294467e2a16b5ae8624b716372c41",
+    "oldOperationSourceBlob": "3ff1450b5111706d737643351fb5692ee657726c",
+    "affectedOperations": [
+      "load_pinned_candidate",
+      "revalidate_pinned_candidate"
+    ],
+    "originalMode": "path_only",
+    "originalSourceObjectsCurrent": true,
+    "oldTrueClaims": false
+  },
+  "change": "Add migrated explicit-pin verification inside the existing SourceDrift-only try. Keep original true-claim prechecks and final guard unchanged. Format/structure errors are not caught.",
+  "productExecutionQualification": "NONE"
+}

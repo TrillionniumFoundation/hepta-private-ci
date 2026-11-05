@@ -1,0 +1,11 @@
+diff --git a/refresh-navigation.py b/refresh-navigation.py
+--- a/refresh-navigation.py
++++ b/refresh-navigation.py
+@@ -143,6 +143,7 @@
+             paths = verifier.verify_source_identity(
+                 migrated, roots, candidate, check_checkout=False
+             )
++            verifier.verify_explicit_source_pins(migrated, candidate)
+         except verifier.SourceDrift:
+             observed = row.get("observedAtHead", {})
+             if not isinstance(observed, dict):

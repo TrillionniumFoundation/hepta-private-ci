@@ -1,0 +1,104 @@
+{
+  "scope": "Independent object/edge/shallow-set audit and native Git primitives in a fresh isolated bare repository only; no ai395/shared repository or remote mutation",
+  "inputSha256": "ea70dd4a37a281207211b87d433cf4fc1d60bd43956d18b0f70fbbf45f610a31",
+  "objects": 223,
+  "commitObjects": 218,
+  "proofCommits": 181,
+  "sideFrontiers": 37,
+  "anchorRootTrees": 5,
+  "allOriginalOrderedParentsAndObjectHashesMatch": true,
+  "proofPathEdgesPreserved": true,
+  "proofAndShallowDisjoint": true,
+  "nativeObjectHashAndReadbackChecks": 223,
+  "nativeBeforeWithOriginalBoundary": [
+    {
+      "anchor": "de47d561266c97d8350de71ae710b650a3b61447",
+      "ancestorExit": 128,
+      "ancestorStderr": "error: Could not read 2abccb463e217faa7bff58dfd92612ddceb7f5b5\nerror: could not parse commit 2abccb463e217faa7bff58dfd92612ddceb7f5b5\n",
+      "treeExit": 0,
+      "tree": "b1d01b56a15c87c340192289087f20c8cc571eff",
+      "treeMatches": true
+    },
+    {
+      "anchor": "fd6d8d3fcd9aee36711381adf74b6ba7162cda1b",
+      "ancestorExit": 128,
+      "ancestorStderr": "error: Could not read 2abccb463e217faa7bff58dfd92612ddceb7f5b5\nerror: could not parse commit 2abccb463e217faa7bff58dfd92612ddceb7f5b5\n",
+      "treeExit": 0,
+      "tree": "755e3264fb49a7fedf56a4d2a77befca7af8c384",
+      "treeMatches": true
+    },
+    {
+      "anchor": "3659cee8f716511219547fd5f329dbd83faf324b",
+      "ancestorExit": 128,
+      "ancestorStderr": "error: Could not read f5a05484a66ebcfde2d43017c7d38bfcdf241d57\nerror: could not parse commit f5a05484a66ebcfde2d43017c7d38bfcdf241d57\n",
+      "treeExit": 0,
+      "tree": "08dfb5cb2f319e047e58499600c6b0e36380bbef",
+      "treeMatches": true
+    },
+    {
+      "anchor": "05b8bcdc02919ce10a8451d6402de8dd29d6e9ff",
+      "ancestorExit": 128,
+      "ancestorStderr": "error: Could not read f5a05484a66ebcfde2d43017c7d38bfcdf241d57\nerror: could not parse commit f5a05484a66ebcfde2d43017c7d38bfcdf241d57\n",
+      "treeExit": 0,
+      "tree": "f9737e2d6c420d94b14aa3dcdb021e58d49ecfe7",
+      "treeMatches": true
+    },
+    {
+      "anchor": "331b81d385a88837e252bd80fda8b8ac35ea4191",
+      "ancestorExit": 128,
+      "ancestorStderr": "error: Could not read 9ec8f3bf1c2add4e0c2cb0b0f6754a336ebd8326\nerror: could not parse commit 9ec8f3bf1c2add4e0c2cb0b0f6754a336ebd8326\n",
+      "treeExit": 0,
+      "tree": "0b67403646bb9ba576b39edd88607eb54aa121db",
+      "treeMatches": true
+    }
+  ],
+  "nativeAfterWithVerifiedFrontiers": [
+    {
+      "anchor": "de47d561266c97d8350de71ae710b650a3b61447",
+      "ancestorExit": 0,
+      "ancestorStderr": "",
+      "treeExit": 0,
+      "tree": "b1d01b56a15c87c340192289087f20c8cc571eff",
+      "treeMatches": true
+    },
+    {
+      "anchor": "fd6d8d3fcd9aee36711381adf74b6ba7162cda1b",
+      "ancestorExit": 0,
+      "ancestorStderr": "",
+      "treeExit": 0,
+      "tree": "755e3264fb49a7fedf56a4d2a77befca7af8c384",
+      "treeMatches": true
+    },
+    {
+      "anchor": "3659cee8f716511219547fd5f329dbd83faf324b",
+      "ancestorExit": 0,
+      "ancestorStderr": "",
+      "treeExit": 0,
+      "tree": "08dfb5cb2f319e047e58499600c6b0e36380bbef",
+      "treeMatches": true
+    },
+    {
+      "anchor": "05b8bcdc02919ce10a8451d6402de8dd29d6e9ff",
+      "ancestorExit": 0,
+      "ancestorStderr": "",
+      "treeExit": 0,
+      "tree": "f9737e2d6c420d94b14aa3dcdb021e58d49ecfe7",
+      "treeMatches": true
+    },
+    {
+      "anchor": "331b81d385a88837e252bd80fda8b8ac35ea4191",
+      "ancestorExit": 0,
+      "ancestorStderr": "",
+      "treeExit": 0,
+      "tree": "0b67403646bb9ba576b39edd88607eb54aa121db",
+      "treeMatches": true
+    }
+  ],
+  "freshRepo": "/workspace/scratch/a9f4ebc7dfa7/module_matrix/independent-history-proof-o1lx1mm9",
+  "allFiveNativeAncestryAndTreeChecksPass": true,
+  "sourceExecutionQualification": false,
+  "fullReachableHistory": false,
+  "historicalSubtreesAndBlobsProvided": false,
+  "newShallowBoundariesOnlyCutOffPathEdges": true,
+  "removedOldBoundariesRestoreOriginalVerifiedEdges": true
+}

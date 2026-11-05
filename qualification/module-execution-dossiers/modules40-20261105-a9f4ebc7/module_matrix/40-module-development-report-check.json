@@ -1,0 +1,158 @@
+{
+  "document": "HEPTA-40-MODULE-DEVELOPMENT-FACTS.zh.md",
+  "sha256": "39d21ca5653ea21cb1ad2cbd0d609a984c3d24c07bfd5d0eb356c58171996b6b",
+  "bytes": 82098,
+  "moduleCount": 40,
+  "moduleOrder": [
+    "platform.types",
+    "platform.wire",
+    "kernel.authority",
+    "kernel.operations",
+    "kernel.evidence",
+    "runtime.supervisor",
+    "runtime.fleet",
+    "runtime.agentd",
+    "runtime.codex",
+    "auth.authbus",
+    "secrets.heptabao",
+    "inference.control",
+    "inference.worker",
+    "objective.compiler",
+    "utility.ndu",
+    "neuron.runtime",
+    "intuition.policy",
+    "prompt.registry",
+    "prompt.optimizer",
+    "context.compiler",
+    "intelligence.control",
+    "cognitive.types",
+    "cognitive.store",
+    "cognitive.read",
+    "memory.retrieval",
+    "memory.federation",
+    "knowledge.graph",
+    "compact.engine",
+    "learning.ledger",
+    "learning.operator",
+    "learning.eval",
+    "learning.artifacts",
+    "learning.plasticity",
+    "automation.taskflow",
+    "channel.matrix",
+    "browser.servo",
+    "ui.control",
+    "ui.native",
+    "control.runtime",
+    "control.engineering"
+  ],
+  "operationCount": 369,
+  "fixedBaseline": {
+    "commit": "f7a57e6f40e3e8220233f0d27b8cfbdf1f721c55",
+    "tree": "1f3d38ee52320bba1f345da2f2c54b23a36832ee"
+  },
+  "sourceObjectDriftAtBaseline": {
+    "maps": 18,
+    "objects": 70
+  },
+  "qualification": {
+    "productionImplementationTrue": 0,
+    "finalSourceIdentity": "C1_PUBLISHED_NAVIGATION_C58_EXECUTION_RETAINED",
+    "finalNativeSuite": "RUN2_697_PASSED_66_SKIPPED_ON_C58_59_REQUIRED_CLEAN_INDEPENDENTLY_AUDITED",
+    "final40MapStrict": "PASS_ON_CANONICAL_C1_40_MAPS_ORIGINAL_QUALIFICATION",
+    "navigationApply": "APPLIED_40_CHECKED_26_UPDATED_INDEPENDENTLY_REVIEWED_C1_NOOP_0",
+    "githubMerge": "OPEN_DRAFT_MERGEABLE_FALSE_DIRTY",
+    "githubCI": "ZERO_CHECK_RUNS_COMMIT_STATUS_PENDING_ZERO_STATUSES"
+  },
+  "coverage": {
+    "everyRegistryModuleExactlyOnce": true,
+    "allRolesAndGatesPresent": true,
+    "allFixedMapLinksPresent": true,
+    "moduleHeadings": 40,
+    "fixedBaselineMapLinks": 40,
+    "localEvidenceLinks": 66,
+    "allLocalEvidenceLinksResolve": true
+  },
+  "basis": "Fixed source maps and actual patch/review/test artifacts; no final candidate execution claimed",
+  "canonicalSource": {
+    "commit": "e9b84f242326e5280ee2b2de937f03f78bc1e907",
+    "tree": "4d9de9f9d5eef537e5cee1c07b3d1875d30af56e",
+    "publishedStages": 17
+  },
+  "actualMechanismExecution": {
+    "commit": "910a5373c786c3e180f5b4d743ad794d88df5cec",
+    "tree": "4d9de9f9d5eef537e5cee1c07b3d1875d30af56e",
+    "tests": 159,
+    "exit": 0,
+    "testSeconds": 31.78,
+    "wrapperSeconds": 32.03937917796429,
+    "onCanonicalCommit": false
+  },
+  "currentHelper": {
+    "sha256": "940f0fe0d5fccf53dc8d00dacbd4f572cf9b02419704dba0cde35d495f9e7e3b",
+    "tests": 11,
+    "independentlyRetested": true,
+    "scope": "exact reviewed supervisor historical observation archival and SourceDrift-only operation-pin fallback; original verifier and execution qualification guards unchanged"
+  },
+  "generatedAt": "2026-11-05T11:27:02.612781+00:00",
+  "currentCanonicalSource": {
+    "commit": "58c81ccdd25002ae0f481d434af067a56fa7ddb8",
+    "tree": "57809be09ef01c02389ef37a817f1447d13d167b",
+    "nativeMergeCommit": "f29a30f5f9ba42d139659b80ec332e75ee0ccfb9",
+    "nativeMergeParents": [
+      "e9b84f242326e5280ee2b2de937f03f78bc1e907",
+      "e65a53ddfc872ef66edc63dff8f28d4414817c60"
+    ],
+    "fullSuiteStartedAt": "2026-11-05T10:57:01Z",
+    "requiredAuditTests": 59,
+    "runtimePassClaim": true,
+    "runtimePassScope": "Actual original four-package Run2 697 passed, 66 skipped; 59 required cases clean; 59 independent evidence consistency checks pass; no production qualification"
+  },
+  "nativeRuns": [
+    {
+      "run": "Run1",
+      "commit": "58c81ccdd25002ae0f481d434af067a56fa7ddb8",
+      "exit": 100,
+      "runCount": 697,
+      "passed": 696,
+      "failed": 1,
+      "skipped": 66,
+      "nativeJunitAvailable": false
+    },
+    {
+      "run": "Run2",
+      "commit": "58c81ccdd25002ae0f481d434af067a56fa7ddb8",
+      "exit": 0,
+      "runCount": 697,
+      "passed": 697,
+      "failed": 0,
+      "skipped": 66,
+      "nativeJunitAvailable": true,
+      "requiredCases": 59,
+      "requiredCleanPasses": 59,
+      "independentAudit": "PASS",
+      "evidenceConsistencyChecks": 59,
+      "evidenceConsistencyChecksPassed": 59,
+      "runtimeTestsReexecutedByAuditor": false
+    }
+  ],
+  "navigationCandidate": {
+    "commit": "5e917b9f5fb3e841dbcaefcd5bbbf59b32f20411",
+    "tree": "5f02eb87cce34d40d6ddf21722305192b4fa00d7",
+    "parents": [
+      "58c81ccdd25002ae0f481d434af067a56fa7ddb8"
+    ],
+    "originalChecksExitZero": true,
+    "maps": 40,
+    "changedMaps": 26,
+    "docs": 40,
+    "bindings": 40,
+    "noOpChangedMaps": 0,
+    "equivalentNonNavigationTrackedEntries": 10795,
+    "rustTestsReexecutedOnThisCommit": false
+  },
+  "publicationLayout": {
+    "branch": "evidence/modules40-source-recovery-20261105-a9f4ebc7",
+    "prefix": "qualification/module-execution-dossiers/modules40-20261105-a9f4ebc7/",
+    "status": "PREPARED_FOR_PARENT_PUBLICATION"
+  }
+}

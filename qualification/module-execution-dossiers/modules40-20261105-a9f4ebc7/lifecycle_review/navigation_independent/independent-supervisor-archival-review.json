@@ -1,0 +1,21 @@
+{
+  "status": "INDEPENDENT_REVIEW_AND_EIGHT_TESTS_PASS",
+  "helper_sha256": "790d124c85dc299f6254fcd0427461881023bf60fcc4943713867eacd3dba438",
+  "test_count": 8,
+  "exit": 0,
+  "all_inputs_unchanged": true,
+  "checks": [
+    "Only exact runtime.supervisor old Map blob and SHA256 plus exact canonical observation SHA are accepted",
+    "Original true-claim checks occur before archival SourceDrift catch",
+    "Old observation including full interpretation is retained in ledger; replacement is only current commit/tree",
+    "sourceBase, claim boundaries, semantic fields and original pin guards preserved",
+    "Unreviewed module/map/extra observation fields remain refused even with opt-in"
+  ],
+  "native_execution_claimed": false,
+  "source_hashes": {
+    "/workspace/scratch/a9f4ebc7dfa7/module_matrix/refresh-navigation.py": "790d124c85dc299f6254fcd0427461881023bf60fcc4943713867eacd3dba438",
+    "/workspace/scratch/a9f4ebc7dfa7/module_matrix/test_refresh_navigation.py": "f51d24fa046ca466ecdf722910456780ceb183b3a5b627b4f2f1f45013f56e48",
+    "/workspace/scratch/a9f4ebc7dfa7/module_matrix/test_reviewed_supervisor_observation.py": "b027548a5e811431f01216eea222dc96db7245f81c35c412848c92f709286ef7",
+    "/workspace/scratch/a9f4ebc7dfa7/module_matrix/source/docs/modules/runtime.supervisor/IMPLEMENTATION_MAP.json": "362f4f5ca0a88f603099f4c0f02c434945d81b3210fa2af833de4be4332f4d69"
+  }
+}

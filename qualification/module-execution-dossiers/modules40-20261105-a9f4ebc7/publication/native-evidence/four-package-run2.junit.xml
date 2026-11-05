@@ -1,0 +1,1439 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuites name="nextest-run" tests="697" failures="0" errors="0" uuid="68d65468-d9d7-41fb-8089-b02ab0534b7c" timestamp="2026-11-05T19:07:15.396+08:00" time="37.045">
+    <testsuite name="codex-hepta-agent-protocol" tests="14" disabled="0" errors="0" failures="0">
+        <testcase name="objective_tests::signed_objective_control_request_round_trips_inside_frame_bound" classname="codex-hepta-agent-protocol" timestamp="2026-11-05T19:07:15.399+08:00" time="0.004">
+        </testcase>
+        <testcase name="tests::memory_federation_control_is_typed_strict_and_bounded" classname="codex-hepta-agent-protocol" timestamp="2026-11-05T19:07:15.399+08:00" time="0.005">
+        </testcase>
+        <testcase name="capabilities::tests::duplicate_and_invalid_ids_are_rejected" classname="codex-hepta-agent-protocol" timestamp="2026-11-05T19:07:15.399+08:00" time="0.005">
+        </testcase>
+        <testcase name="objective_tests::history::history_query_preserves_historical_body_and_current_outer_generation" classname="codex-hepta-agent-protocol" timestamp="2026-11-05T19:07:15.399+08:00" time="0.005">
+        </testcase>
+        <testcase name="tests::host_turn_authority_binding_is_strict_and_fail_closed" classname="codex-hepta-agent-protocol" timestamp="2026-11-05T19:07:15.399+08:00" time="0.005">
+        </testcase>
+        <testcase name="tests::automation_wire_round_trip_is_strict_and_bounded" classname="codex-hepta-agent-protocol" timestamp="2026-11-05T19:07:15.399+08:00" time="0.005">
+        </testcase>
+        <testcase name="tests::automation_effect_wire_round_trip_is_strict_and_bounded" classname="codex-hepta-agent-protocol" timestamp="2026-11-05T19:07:15.399+08:00" time="0.005">
+        </testcase>
+        <testcase name="tests::capabilities_endpoint_is_additive_and_bounded" classname="codex-hepta-agent-protocol" timestamp="2026-11-05T19:07:15.399+08:00" time="0.006">
+        </testcase>
+        <testcase name="tests::health_wire_round_trip_is_strict_and_bounded" classname="codex-hepta-agent-protocol" timestamp="2026-11-05T19:07:15.399+08:00" time="0.007">
+        </testcase>
+        <testcase name="tests::cognitive_context_response_stays_v2_compatible_and_revalidation_is_additive" classname="codex-hepta-agent-protocol" timestamp="2026-11-05T19:07:15.399+08:00" time="0.007">
+        </testcase>
+        <testcase name="objective_tests::history::history_unknown_is_nested_and_cannot_decode_as_non_admission" classname="codex-hepta-agent-protocol" timestamp="2026-11-05T19:07:15.399+08:00" time="0.007">
+        </testcase>
+        <testcase name="objective_tests::objective_start_outcomes_are_strict_wire_types" classname="codex-hepta-agent-protocol" timestamp="2026-11-05T19:07:15.399+08:00" time="0.009">
+        </testcase>
+        <testcase name="tests::run_lifecycle_wire_round_trip_is_strict_and_bounded" classname="codex-hepta-agent-protocol" timestamp="2026-11-05T19:07:15.399+08:00" time="0.009">
+        </testcase>
+        <testcase name="capabilities::tests::negotiation_is_intersection_with_minor_downgrade" classname="codex-hepta-agent-protocol" timestamp="2026-11-05T19:07:15.399+08:00" time="0.009">
+        </testcase>
+    </testsuite>
+    <testsuite name="codex-hepta-agentd" tests="562" disabled="0" errors="0" failures="0">
+        <testcase name="app_runtime::tests::manifest_queue_capacity_reaches_app_server_runtime_options_exactly" classname="codex-hepta-agentd" timestamp="2026-11-05T19:07:15.399+08:00" time="0.010">
+        </testcase>
+        <testcase name="app_runtime::tests::agentd_forces_hepta_turn_recovery_on" classname="codex-hepta-agentd" timestamp="2026-11-05T19:07:15.399+08:00" time="0.010">
+        </testcase>
+        <testcase name="app_runtime::tests::agentd_forces_explicit_cognitive_write_profile_state" classname="codex-hepta-agentd" timestamp="2026-11-05T19:07:15.399+08:00" time="0.011">
+        </testcase>
+        <testcase name="authority_host_bootstrap_seal::tests::non_root_cannot_create_the_bootstrap_descriptor" classname="codex-hepta-agentd" timestamp="2026-11-05T19:07:15.406+08:00" time="0.008">
+        </testcase>
+        <testcase name="authority_host_admin::tests::capability_does_not_retain_dropped_or_inactive_original_runtime" classname="codex-hepta-agentd" timestamp="2026-11-05T19:07:15.399+08:00" time="0.014">
+        </testcase>
+        <testcase name="android_runtime::tests::android_runtime_invalidation_after_start_keeps_job_without_accepting_late_ack" classname="codex-hepta-agentd" timestamp="2026-11-05T19:07:15.399+08:00" time="0.017">
+        </testcase>
+        <testcase name="authority_host_admin::tests::live_route_rejects_each_changed_root_lifetime_and_nonce" classname="codex-hepta-agentd" timestamp="2026-11-05T19:07:15.405+08:00" time="0.010">
+        </testcase>
+        <testcase name="authority_host_native_launch::tests::native_resources_and_private_draft_paths_are_required_without_loader_overrides" classname="codex-hepta-agentd" timestamp="2026-11-05T19:07:15.406+08:00" time="0.010">
+        </testcase>
+        <testcase name="authority_host_admin::tests::observed_current_root_identity_refuses_zero_nonce_and_changed_birth" classname="codex-hepta-agentd" timestamp="2026-11-05T19:07:15.408+08:00" time="0.008">
+        </testcase>
+        <testcase name="android_runtime::tests::android_runtime_invalidation_allows_only_original_readback_and_payload_drift_sends_nothing" classname="codex-hepta-agentd" timestamp="2026-11-05T19:07:15.399+08:00" time="0.017">
+        </testcase>
+        <testcase name="android_runtime::tests::android_runtime_fixed_helper_uses_original_bytes_then_independent_read_job" classname="codex-hepta-agentd" timestamp="2026-11-05T19:07:15.399+08:00" time="0.018">
+        </testcase>
+        <testcase name="authority_host_admin::tests::issuer_revocation_is_an_exact_strict_original_selector" classname="codex-hepta-agentd" timestamp="2026-11-05T19:07:15.405+08:00" time="0.011">
+        </testcase>
+        <testcase name="authority_host_runtime::issuer_renewal::tests::concurrent_canonical_revision_or_epoch_change_is_not_overwritten" classname="codex-hepta-agentd" timestamp="2026-11-05T19:07:15.406+08:00" time="0.012">
+        </testcase>
+        <testcase name="authority_host_runtime::issuer_renewal::tests::expired_original_preparation_is_read_only_and_preserves_identity" classname="codex-hepta-agentd" timestamp="2026-11-05T19:07:15.409+08:00" time="0.009">
+        </testcase>
+        <testcase name="authority_host_admin::tests::paused_or_ended_route_cannot_be_reactivated_by_capability" classname="codex-hepta-agentd" timestamp="2026-11-05T19:07:15.406+08:00" time="0.012">
+        </testcase>
+        <testcase name="authority_host_bootstrap_seal::tests::bounded_encoder_does_not_append_an_oversized_fragment" classname="codex-hepta-agentd" timestamp="2026-11-05T19:07:15.407+08:00" time="0.011">
+        </testcase>
+        <testcase name="authority_host_runtime::issuer_renewal::tests::preparation_rejects_invalid_lifetime_revision_and_time" classname="codex-hepta-agentd" timestamp="2026-11-05T19:07:15.409+08:00" time="0.009">
+        </testcase>
+        <testcase name="authority_host_runtime::issuer_renewal::tests::pruned_original_cannot_be_recreated_from_the_plan" classname="codex-hepta-agentd" timestamp="2026-11-05T19:07:15.409+08:00" time="0.009">
+        </testcase>
+        <testcase name="authority_host_runtime::issuer_renewal::tests::changed_plan_fields_never_mutate_the_original_registry" classname="codex-hepta-agentd" timestamp="2026-11-05T19:07:15.407+08:00" time="0.012">
+        </testcase>
+        <testcase name="authority_host_admin::tests::strict_admin_schema_rejects_duplicate_unknown_and_oversized_inputs" classname="codex-hepta-agentd" timestamp="2026-11-05T19:07:15.406+08:00" time="0.013">
+        </testcase>
+        <testcase name="authority_host_runtime::issuer_renewal::tests::revoked_predecessor_or_committed_postimage_cannot_be_renewed" classname="codex-hepta-agentd" timestamp="2026-11-05T19:07:15.410+08:00" time="0.012">
+        </testcase>
+        <testcase name="authority_host_runtime::issuer_renewal::tests::ordinary_process_is_rejected_before_opening_config" classname="codex-hepta-agentd" timestamp="2026-11-05T19:07:15.408+08:00" time="0.014">
+        </testcase>
+        <testcase name="authority_host_runtime::listeners::tests::readiness_is_not_called_for_an_invalid_original_lane_parent" classname="codex-hepta-agentd" timestamp="2026-11-05T19:07:15.413+08:00" time="0.011">
+        </testcase>
+        <testcase name="authority_host_runtime::session::notes_startup::reservation::tests::reservation_closes_unexpected_rights_and_disables_credentials_for_original_offer" classname="codex-hepta-agentd" timestamp="2026-11-05T19:07:15.416+08:00" time="0.008">
+        </testcase>
+        <testcase name="authority_host_runtime::session::desktop_startup::tests::joint_root_fresh_and_recovery_profiles_cannot_relabel_each_other" classname="codex-hepta-agentd" timestamp="2026-11-05T19:07:15.416+08:00" time="0.008">
+        </testcase>
+        <testcase name="authority_host_runtime::issuer_renewal::tests::unknown_plan_fields_are_rejected" classname="codex-hepta-agentd" timestamp="2026-11-05T19:07:15.413+08:00" time="0.011">
+        </testcase>
+        <testcase name="authority_host_runtime::session::desktop_startup::tests::joint_root_bounds_every_saved_selector_and_original_helper_path" classname="codex-hepta-agentd" timestamp="2026-11-05T19:07:15.416+08:00" time="0.009">
+        </testcase>
+        <testcase name="authority_host_runtime::session::desktop_startup::tests::joint_root_requires_both_exact_previous_policies_and_a_distinct_actual_pair" classname="codex-hepta-agentd" timestamp="2026-11-05T19:07:15.416+08:00" time="0.010">
+        </testcase>
+        <testcase name="authority_host_runtime::session::notes_startup::reservation::tests::expired_original_consume_neither_reads_nor_rearms_the_queued_reservation" classname="codex-hepta-agentd" timestamp="2026-11-05T19:07:15.416+08:00" time="0.010">
+        </testcase>
+        <testcase name="authority_host_runtime::session::notes_startup::tests::successor_policy_contract_requires_the_exact_old_identity_and_distinct_reserved_target" classname="codex-hepta-agentd" timestamp="2026-11-05T19:07:15.418+08:00" time="0.008">
+        </testcase>
+        <testcase name="authority_host_runtime::session::notes_startup::tests::ordinary_file_cannot_be_a_pending_root_deployment" classname="codex-hepta-agentd" timestamp="2026-11-05T19:07:15.418+08:00" time="0.009">
+        </testcase>
+        <testcase name="authority_host_service::admin_issuer::tests::actual_issuer_receipt_matches_exact_retained_canonical_postimage" classname="codex-hepta-agentd" timestamp="2026-11-05T19:07:15.418+08:00" time="0.009">
+        </testcase>
+        <testcase name="authority_host_runtime::session::notes_startup::tests::successor_policy_contract_cannot_drop_the_old_recovery_or_invent_a_policy_lifetime" classname="codex-hepta-agentd" timestamp="2026-11-05T19:07:15.420+08:00" time="0.008">
+        </testcase>
+        <testcase name="authority_host_service::admin_issuer::tests::late_client_confirmation_preserves_committed_revoke_and_refuses_renewal" classname="codex-hepta-agentd" timestamp="2026-11-05T19:07:15.418+08:00" time="0.009">
+        </testcase>
+        <testcase name="authority_host_runtime::issuer_renewal::tests::exact_postimage_retry_does_not_advance_frontier_or_extend_deadline" classname="codex-hepta-agentd" timestamp="2026-11-05T19:07:15.408+08:00" time="0.020">
+        </testcase>
+        <testcase name="authority_host_runtime::session::notes_startup::reservation::tests::reservation_rejects_extra_authority_fields_zero_nonce_and_wrong_destination" classname="codex-hepta-agentd" timestamp="2026-11-05T19:07:15.418+08:00" time="0.012">
+        </testcase>
+        <testcase name="authority_host_runtime::session::notes_startup::reservation::tests::reservation_checks_real_sender_and_rejects_missing_credential_option" classname="codex-hepta-agentd" timestamp="2026-11-05T19:07:15.416+08:00" time="0.014">
+        </testcase>
+        <testcase name="authority_host_service::admin_issuer::tests::terminal_confirmation_refuses_new_epoch_without_reconstructing_original_lease" classname="codex-hepta-agentd" timestamp="2026-11-05T19:07:15.419+08:00" time="0.012">
+        </testcase>
+        <testcase name="authority_host_service::tests::observation_discards_a_lease_expiring_during_io_or_a_different_epoch" classname="codex-hepta-agentd" timestamp="2026-11-05T19:07:15.422+08:00" time="0.010">
+        </testcase>
+        <testcase name="authority_host_wire::tests::shared_proof_digest_covers_signature_and_closed_nested_original_lease" classname="codex-hepta-agentd" timestamp="2026-11-05T19:07:15.425+08:00" time="0.008">
+        </testcase>
+        <testcase name="authority_host_service::tests::observation_never_truncates_a_complete_revocation_head_to_fit" classname="codex-hepta-agentd" timestamp="2026-11-05T19:07:15.423+08:00" time="0.011">
+        </testcase>
+        <testcase name="authority_host_service::text_ui::deadline_tests::timely_text_frame_still_uses_the_original_peer_channel" classname="codex-hepta-agentd" timestamp="2026-11-05T19:07:15.425+08:00" time="0.009">
+        </testcase>
+        <testcase name="authority_host_service::tests::lane_decoders_reject_unknown_duplicate_and_self_selected_authority" classname="codex-hepta-agentd" timestamp="2026-11-05T19:07:15.419+08:00" time="0.015">
+        </testcase>
+        <testcase name="automation::tests::automation_reconcile_payload_uses_stable_client_identity" classname="codex-hepta-agentd" timestamp="2026-11-05T19:07:15.429+08:00" time="0.010">
+        </testcase>
+        <testcase name="automation::tests::queue_failures_after_admission_seam_are_never_dispatch_retries" classname="codex-hepta-agentd" timestamp="2026-11-05T19:07:15.431+08:00" time="0.009">
+        </testcase>
+        <testcase name="calculator_channel::tests::calculator_recovery_rejects_effect_before_sending_any_datagram" classname="codex-hepta-agentd" timestamp="2026-11-05T19:07:15.434+08:00" time="0.006">
+        </testcase>
+        <testcase name="automation::tests::dispatch_retry_budget_is_bounded_and_progress_resets_it" classname="codex-hepta-agentd" timestamp="2026-11-05T19:07:15.430+08:00" time="0.010">
+        </testcase>
+        <testcase name="calculator_channel::tests::calculator_lost_effect_reply_disables_only_effect_and_keeps_correlated_readback" classname="codex-hepta-agentd" timestamp="2026-11-05T19:07:15.434+08:00" time="0.007">
+        </testcase>
+        <testcase name="browser_servo::tests::non_effect_calls_never_enter_final_use_authority" classname="codex-hepta-agentd" timestamp="2026-11-05T19:07:15.434+08:00" time="0.012">
+        </testcase>
+        <testcase name="calculator_recovery_selection::tests::startup_selector_and_legacy_exact_are_exclusive_and_strict" classname="codex-hepta-agentd" timestamp="2026-11-05T19:07:15.440+08:00" time="0.007">
+        </testcase>
+        <testcase name="calculator_deadline::tests::total_budget_rejects_clock_regression_and_late_final_io" classname="codex-hepta-agentd" timestamp="2026-11-05T19:07:15.439+08:00" time="0.008">
+        </testcase>
+        <testcase name="android_runtime::tests::android_runtime_requires_terminal_success_complete_lossless_same_job_output" classname="codex-hepta-agentd" timestamp="2026-11-05T19:07:15.399+08:00" time="0.049">
+        </testcase>
+        <testcase name="cognitive_checkpoint_unix::tests::bootstrap_rejects_wrong_lifetime_peer_and_non_pidfd_capabilities" classname="codex-hepta-agentd" timestamp="2026-11-05T19:07:15.441+08:00" time="0.011">
+        </testcase>
+        <testcase name="calculator_recovery_process::tests::calculator_recovery_process_seals_bytes_and_refuses_effect_or_foreign_operation_without_spawn" classname="codex-hepta-agentd" timestamp="2026-11-05T19:07:15.440+08:00" time="0.014">
+        </testcase>
+        <testcase name="calculator_recovery_process::tests::calculator_recovery_process_rejects_unsafe_or_mismatched_executable_before_start" classname="codex-hepta-agentd" timestamp="2026-11-05T19:07:15.440+08:00" time="0.014">
+        </testcase>
+        <testcase name="cognitive_checkpoint_unix::tests::exact_framing_keeps_a_complete_refusal_lane_usable_without_retrying" classname="codex-hepta-agentd" timestamp="2026-11-05T19:07:15.447+08:00" time="0.010">
+        </testcase>
+        <testcase name="cognitive_checkpoint_unix::tests::concurrent_checkpoint_read_cannot_consume_the_original_inflight_reply" classname="codex-hepta-agentd" timestamp="2026-11-05T19:07:15.447+08:00" time="0.011">
+        </testcase>
+        <testcase name="cognitive_checkpoint_unix::tests::initial::changed_current_or_incomplete_ack_drops_the_consumed_lane_without_resend" classname="codex-hepta-agentd" timestamp="2026-11-05T19:07:15.447+08:00" time="0.013">
+        </testcase>
+        <testcase name="cognitive_checkpoint_unix::tests::initial::initial_current_keeps_original_token_and_the_same_live_lane" classname="codex-hepta-agentd" timestamp="2026-11-05T19:07:15.451+08:00" time="0.010">
+        </testcase>
+        <testcase name="cognitive_checkpoint_unix::tests::initial::non_current_handoff_is_rejected_before_output_and_closes_owned_lane" classname="codex-hepta-agentd" timestamp="2026-11-05T19:07:15.454+08:00" time="0.010">
+        </testcase>
+        <testcase name="cognitive_checkpoint_unix::tests::invalid_request_is_refused_before_io_without_consuming_the_channel" classname="codex-hepta-agentd" timestamp="2026-11-05T19:07:15.454+08:00" time="0.010">
+        </testcase>
+        <testcase name="browser_servo::tests::challenge_request_digest_must_match_signed_final_use_binding" classname="codex-hepta-agentd" timestamp="2026-11-05T19:07:15.432+08:00" time="0.040">
+        </testcase>
+        <testcase name="cognitive_checkpoint_unix::tests::malformed_or_mismatched_reply_never_leaves_a_reusable_stream" classname="codex-hepta-agentd" timestamp="2026-11-05T19:07:15.458+08:00" time="0.014">
+        </testcase>
+        <testcase name="automation::service_tests::production_constructor_never_resumes_a_draining_owner" classname="codex-hepta-agentd" timestamp="2026-11-05T19:07:15.427+08:00" time="0.052">
+        </testcase>
+        <testcase name="automation::service_tests::process_shutdown_does_not_turn_into_durable_timer_retirement" classname="codex-hepta-agentd" timestamp="2026-11-05T19:07:15.426+08:00" time="0.057">
+        </testcase>
+        <testcase name="automation::service_tests::production_constructor_rejects_mismatched_identity_before_spawn" classname="codex-hepta-agentd" timestamp="2026-11-05T19:07:15.429+08:00" time="0.057">
+        </testcase>
+        <testcase name="cognitive_context::tests::encoded_read_budget_unavailability_is_local_not_store_failure" classname="codex-hepta-agentd" timestamp="2026-11-05T19:07:15.479+08:00" time="0.013">
+        </testcase>
+        <testcase name="authority_host_wire::tests::shared_typed_proof_signature_binds_original_identity_epochs_lease_and_sequence" classname="codex-hepta-agentd" timestamp="2026-11-05T19:07:15.424+08:00" time="0.069">
+        </testcase>
+        <testcase name="cognitive_checkpoint_unix::tests::original_peer_exit_refuses_even_while_a_child_retains_the_connected_descriptor" classname="codex-hepta-agentd" timestamp="2026-11-05T19:07:15.458+08:00" time="0.038">
+        </testcase>
+        <testcase name="browser_servo::tests::final_use_fence_covers_exactly_the_browser_local_dispatch_boundary" classname="codex-hepta-agentd" timestamp="2026-11-05T19:07:15.433+08:00" time="0.083">
+        </testcase>
+        <testcase name="authority_host_service::text_ui::deadline_tests::idle_text_connection_respects_exchange_and_remaining_root_budgets" classname="codex-hepta-agentd" timestamp="2026-11-05T19:07:15.424+08:00" time="0.110">
+        </testcase>
+        <testcase name="app_runtime::tests::desktop_embedding_keeps_the_store_but_removes_general_cognitive_tool_state" classname="codex-hepta-agentd" timestamp="2026-11-05T19:07:15.399+08:00" time="0.137">
+        </testcase>
+        <testcase name="android_runtime::tests::android_runtime_unknown_start_and_lost_reply_never_repeat_effect_or_reconnect" classname="codex-hepta-agentd" timestamp="2026-11-05T19:07:15.399+08:00" time="0.137">
+        </testcase>
+        <testcase name="app_runtime::tests::notes_embedding_keeps_the_store_but_removes_general_cognitive_tool_state" classname="codex-hepta-agentd" timestamp="2026-11-05T19:07:15.399+08:00" time="0.151">
+        </testcase>
+        <testcase name="cognitive_ranker::tests::missing_or_revoked_current_witness_closes_ranker_without_baseline_fallback" classname="codex-hepta-agentd" timestamp="2026-11-05T19:07:15.516+08:00" time="0.044">
+        </testcase>
+        <testcase name="cognitive_ranker::tests::current_loaded_model_changes_read_order_and_abstains_on_unseen_or_corrected_records" classname="codex-hepta-agentd" timestamp="2026-11-05T19:07:15.496+08:00" time="0.065">
+        </testcase>
+        <testcase name="authority_host_admin::deadline::tests::late_actual_owner_check_cannot_enter_registry_or_issuer_cas" classname="codex-hepta-agentd" timestamp="2026-11-05T19:07:15.399+08:00" time="0.164">
+        </testcase>
+        <testcase name="authority_host_admin::deadline::tests::late_actual_lifetime_read_cannot_enter_registry_or_issuer_cas" classname="codex-hepta-agentd" timestamp="2026-11-05T19:07:15.399+08:00" time="0.168">
+        </testcase>
+        <testcase name="cognitive_retrieval_learning::tests::different_rpc_ids_create_distinct_assignment_records" classname="codex-hepta-agentd" timestamp="2026-11-05T19:07:15.550+08:00" time="0.020">
+        </testcase>
+        <testcase name="cognitive_checkpoint_unix::tests::cancelling_an_exchange_discards_its_late_reply_and_cannot_rearm_the_lane" classname="codex-hepta-agentd" timestamp="2026-11-05T19:07:15.446+08:00" time="0.131">
+        </testcase>
+        <testcase name="cognitive_checkpoint_unix::tests::partial_frame_deadline_permanently_closes_the_original_stream" classname="codex-hepta-agentd" timestamp="2026-11-05T19:07:15.461+08:00" time="0.118">
+        </testcase>
+        <testcase name="config::root_handoff::credentials::tests::another_live_thread_is_rejected_without_changing_credentials" classname="codex-hepta-agentd" timestamp="2026-11-05T19:07:15.570+08:00" time="0.009">
+        </testcase>
+        <testcase name="cognitive_retrieval_learning::tests::same_rpc_and_observation_replays_idempotently" classname="codex-hepta-agentd" timestamp="2026-11-05T19:07:15.563+08:00" time="0.022">
+        </testcase>
+        <testcase name="cognitive_retrieval_learning::tests::indexed_historical_identity_does_not_accept_changed_assignment" classname="codex-hepta-agentd" timestamp="2026-11-05T19:07:15.562+08:00" time="0.027">
+        </testcase>
+        <testcase name="config::tests::cognitive_retrieval_process_profile_is_explicit_and_fail_closed" classname="codex-hepta-agentd" timestamp="2026-11-05T19:07:15.579+08:00" time="0.012">
+        </testcase>
+        <testcase name="cognitive_retrieval_learning::tests::same_rpc_with_different_assignment_is_identity_conflict" classname="codex-hepta-agentd" timestamp="2026-11-05T19:07:15.567+08:00" time="0.026">
+        </testcase>
+        <testcase name="cognitive_ranker::tests::new_generation_candidate_changes_behavior_and_explicit_predecessor_reload_restores_it" classname="codex-hepta-agentd" timestamp="2026-11-05T19:07:15.534+08:00" time="0.059">
+        </testcase>
+        <testcase name="cognitive_retrieval_learning::tests::historical_assignment_retry_keeps_original_predecessor_after_later_appends" classname="codex-hepta-agentd" timestamp="2026-11-05T19:07:15.560+08:00" time="0.037">
+        </testcase>
+        <testcase name="control::tests::dangling_control_symlink_is_not_treated_as_a_missing_entry" classname="codex-hepta-agentd" timestamp="2026-11-05T19:07:15.589+08:00" time="0.013">
+        </testcase>
+        <testcase name="config::root_handoff::late_writer::custody_tests::postload_birth_refusal_consumes_config_but_retains_active_original_session_file" classname="codex-hepta-agentd" timestamp="2026-11-05T19:07:15.577+08:00" time="0.025">
+        </testcase>
+        <testcase name="control::tests::live_control_socket_entry_is_preserved" classname="codex-hepta-agentd" timestamp="2026-11-05T19:07:15.591+08:00" time="0.013">
+        </testcase>
+        <testcase name="config::root_handoff::tests::root_handoff_rejects_zero_uid_or_gid_without_releasing_a_runtime" classname="codex-hepta-agentd" timestamp="2026-11-05T19:07:15.579+08:00" time="0.026">
+        </testcase>
+        <testcase name="config::tests::config_binds_exact_registered_agent_roots_and_workspace" classname="codex-hepta-agentd" timestamp="2026-11-05T19:07:15.586+08:00" time="0.023">
+        </testcase>
+        <testcase name="control::tests::stale_control_socket_entry_is_removed_before_rebinding" classname="codex-hepta-agentd" timestamp="2026-11-05T19:07:15.597+08:00" time="0.012">
+        </testcase>
+        <testcase name="control::tests::missing_control_socket_path_is_preparable_without_a_listener" classname="codex-hepta-agentd" timestamp="2026-11-05T19:07:15.593+08:00" time="0.018">
+        </testcase>
+        <testcase name="control::tests::non_socket_control_path_is_preserved" classname="codex-hepta-agentd" timestamp="2026-11-05T19:07:15.593+08:00" time="0.021">
+        </testcase>
+        <testcase name="cpu_policy::tests::both_bounds_saturate_without_generating_equal_cap_writes" classname="codex-hepta-agentd" timestamp="2026-11-05T19:07:15.602+08:00" time="0.012">
+        </testcase>
+        <testcase name="cpu_policy::tests::event_loss_is_not_cleared_by_a_later_zero_count" classname="codex-hepta-agentd" timestamp="2026-11-05T19:07:15.605+08:00" time="0.011">
+        </testcase>
+        <testcase name="cpu_policy::tests::feedback_requires_two_separated_same_direction_samples" classname="codex-hepta-agentd" timestamp="2026-11-05T19:07:15.609+08:00" time="0.009">
+        </testcase>
+        <testcase name="cpu_policy::tests::another_valid_revision_starts_a_new_pressure_streak" classname="codex-hepta-agentd" timestamp="2026-11-05T19:07:15.603+08:00" time="0.016">
+        </testcase>
+        <testcase name="cpu_policy::tests::fixed_target_obeys_slew_bound_and_does_not_refill_same_budget" classname="codex-hepta-agentd" timestamp="2026-11-05T19:07:15.611+08:00" time="0.012">
+        </testcase>
+        <testcase name="automation_effect_host::tests::host_dispatches_exact_wire_payload_once" classname="codex-hepta-agentd" timestamp="2026-11-05T19:07:15.431+08:00" time="0.192">
+        </testcase>
+        <testcase name="cpu_policy::tests::fresh_native_usage_cannot_refresh_old_or_foreign_demand_evidence" classname="codex-hepta-agentd" timestamp="2026-11-05T19:07:15.614+08:00" time="0.011">
+        </testcase>
+        <testcase name="cpu_policy::tests::fast_polling_cannot_create_pressure_or_repeated_proposals" classname="codex-hepta-agentd" timestamp="2026-11-05T19:07:15.609+08:00" time="0.016">
+        </testcase>
+        <testcase name="cpu_policy::tests::changed_lifetime_and_counter_regression_are_refused" classname="codex-hepta-agentd" timestamp="2026-11-05T19:07:15.605+08:00" time="0.022">
+        </testcase>
+        <testcase name="cognitive_context::tests::context_reads_real_owner_content_and_removes_committed_tombstones" classname="codex-hepta-agentd" timestamp="2026-11-05T19:07:15.473+08:00" time="0.156">
+        </testcase>
+        <testcase name="cpu_policy::tests::reversed_pressure_does_not_reuse_the_old_streak" classname="codex-hepta-agentd" timestamp="2026-11-05T19:07:15.619+08:00" time="0.010">
+        </testcase>
+        <testcase name="cpu_policy::tests::two_native_reads_cannot_reuse_one_demand_sample" classname="codex-hepta-agentd" timestamp="2026-11-05T19:07:15.623+08:00" time="0.010">
+        </testcase>
+        <testcase name="cpu_policy::tests::retained_charge_above_a_lowered_cap_is_a_valid_observation" classname="codex-hepta-agentd" timestamp="2026-11-05T19:07:15.618+08:00" time="0.015">
+        </testcase>
+        <testcase name="cpu_policy::tests::old_future_and_replayed_measurements_are_refused" classname="codex-hepta-agentd" timestamp="2026-11-05T19:07:15.615+08:00" time="0.018">
+        </testcase>
+        <testcase name="cpu_policy::tests::proposal_revalidates_original_sample_age_even_with_a_fresh_read" classname="codex-hepta-agentd" timestamp="2026-11-05T19:07:15.615+08:00" time="0.018">
+        </testcase>
+        <testcase name="cpu_policy::tests::zero_budget_is_not_inferred_to_be_user_pause" classname="codex-hepta-agentd" timestamp="2026-11-05T19:07:15.625+08:00" time="0.012">
+        </testcase>
+        <testcase name="cpu_policy::tests::unknown_wait_reason_and_explicit_pause_do_not_raise_cap" classname="codex-hepta-agentd" timestamp="2026-11-05T19:07:15.623+08:00" time="0.014">
+        </testcase>
+        <testcase name="deployment_frontier::tests::missing_corrupt_wrong_owner_and_symlink_never_reinitialize" classname="codex-hepta-agentd" timestamp="2026-11-05T19:07:15.626+08:00" time="0.011">
+        </testcase>
+        <testcase name="deployment_frontier::tests::restart_retains_cas_and_rejects_an_old_local_snapshot" classname="codex-hepta-agentd" timestamp="2026-11-05T19:07:15.628+08:00" time="0.010">
+        </testcase>
+        <testcase name="deployment_frontier::tests::unsafe_permissions_and_hardlinks_are_refused" classname="codex-hepta-agentd" timestamp="2026-11-05T19:07:15.630+08:00" time="0.012">
+        </testcase>
+        <testcase name="deployment_issuer::authbus::tests::deployment_authbus_discards_expired_response_and_never_reuses_reserved_sequence" classname="codex-hepta-agentd" timestamp="2026-11-05T19:07:15.633+08:00" time="0.015">
+        </testcase>
+        <testcase name="deployment_issuer::authbus::tests::deployment_authbus_rejects_body_scope_subject_route_and_epoch_without_consuming_sequence" classname="codex-hepta-agentd" timestamp="2026-11-05T19:07:15.633+08:00" time="0.014">
+        </testcase>
+        <testcase name="deployment_frontier::tests::independent_handles_have_exactly_one_cas_winner" classname="codex-hepta-agentd" timestamp="2026-11-05T19:07:15.625+08:00" time="0.024">
+        </testcase>
+        <testcase name="deployment_issuer::authbus::tests::deployment_authbus_fails_closed_on_counter_or_time_overflow" classname="codex-hepta-agentd" timestamp="2026-11-05T19:07:15.634+08:00" time="0.017">
+        </testcase>
+        <testcase name="deployment_issuer::authbus::tests::deployment_authbus_shares_durable_sequence_with_final_use_and_reopen" classname="codex-hepta-agentd" timestamp="2026-11-05T19:07:15.637+08:00" time="0.014">
+        </testcase>
+        <testcase name="deployment_issuer::authbus::tests::deployment_authbus_concurrent_requests_get_unique_durable_sequences" classname="codex-hepta-agentd" timestamp="2026-11-05T19:07:15.633+08:00" time="0.022">
+        </testcase>
+        <testcase name="cognitive_context::tests::hnmf::changed_hnmf_context_before_publication_fails_closed" classname="codex-hepta-agentd" timestamp="2026-11-05T19:07:15.486+08:00" time="0.175">
+        </testcase>
+        <testcase name="cognitive_context::tests::final_use_binds_complete_owner_cut_not_only_memory_snapshot" classname="codex-hepta-agentd" timestamp="2026-11-05T19:07:15.483+08:00" time="0.180">
+        </testcase>
+        <testcase name="deployment_issuer::authbus::tests::deployment_authbus_uses_original_signature_and_registered_host_identity" classname="codex-hepta-agentd" timestamp="2026-11-05T19:07:15.637+08:00" time="0.032">
+        </testcase>
+        <testcase name="deployment_issuer::authbus::tests::writer_tests::deployment_writer_objective_refuses_revoked_or_changed_exact_lease_before_sequence" classname="codex-hepta-agentd" timestamp="2026-11-05T19:07:15.639+08:00" time="0.035">
+        </testcase>
+        <testcase name="authority_host_runtime::session::notes_startup::reservation::tests::original_reservation_consume_keeps_the_elapsed_episode_budget" classname="codex-hepta-agentd" timestamp="2026-11-05T19:07:15.416+08:00" time="0.260">
+        </testcase>
+        <testcase name="deployment_issuer::authbus::tests::writer_tests::deployment_writer_objective_discards_post_io_expiry_without_reusing_sequence" classname="codex-hepta-agentd" timestamp="2026-11-05T19:07:15.638+08:00" time="0.039">
+        </testcase>
+        <testcase name="deployment_issuer::authbus::tests::writer_tests::deployment_writer_objective_refuses_wrong_proof_or_spawn_before_sequence" classname="codex-hepta-agentd" timestamp="2026-11-05T19:07:15.642+08:00" time="0.041">
+        </testcase>
+        <testcase name="cognitive_context::tests::budget::oversized_learned_winner_does_not_consume_the_only_result_slot" classname="codex-hepta-agentd" timestamp="2026-11-05T19:07:15.472+08:00" time="0.217">
+        </testcase>
+        <testcase name="authbus_dispatch::tests::abandoned_first_claim_without_admission_is_quarantined_after_lookup_missing" classname="codex-hepta-agentd" timestamp="2026-11-05T19:07:15.399+08:00" time="0.290">
+        </testcase>
+        <testcase name="deployment_issuer::notes::observation::tests::dropped_capture_cannot_return_an_older_artifact_as_latest_issue" classname="codex-hepta-agentd" timestamp="2026-11-05T19:07:15.676+08:00" time="0.015">
+        </testcase>
+        <testcase name="deployment_issuer::authbus::tests::writer_tests::deployment_writer_objective_uses_original_claims_and_caps_expiry_to_the_live_lease" classname="codex-hepta-agentd" timestamp="2026-11-05T19:07:15.647+08:00" time="0.045">
+        </testcase>
+        <testcase name="cognitive_context::tests::hnmf::current_hnmf_context_filters_owner_candidates_before_delivery" classname="codex-hepta-agentd" timestamp="2026-11-05T19:07:15.493+08:00" time="0.200">
+        </testcase>
+        <testcase name="cognitive_context::tests::budget::byte_cut_cannot_hide_an_unsupported_candidate_from_whole_batch_abstention" classname="codex-hepta-agentd" timestamp="2026-11-05T19:07:15.461+08:00" time="0.234">
+        </testcase>
+        <testcase name="automation::service_tests::cancellation_preserves_in_flight_queue_ack_before_scheduler_exit" classname="codex-hepta-agentd" timestamp="2026-11-05T19:07:15.426+08:00" time="0.270">
+        </testcase>
+        <testcase name="deployment_issuer::notes::observation::tests::issued_observation_selector_rejects_unknown_and_duplicate_fields" classname="codex-hepta-agentd" timestamp="2026-11-05T19:07:15.683+08:00" time="0.013">
+        </testcase>
+        <testcase name="deployment_issuer::notes::observation::tests::actual_issuer_result_preserves_original_bytes_id_nonce_epoch_binding_and_signature" classname="codex-hepta-agentd" timestamp="2026-11-05T19:07:15.674+08:00" time="0.023">
+        </testcase>
+        <testcase name="deployment_issuer::notes::observation::tests::eviction_and_restart_are_unknown_and_never_reissue_or_extend_storage" classname="codex-hepta-agentd" timestamp="2026-11-05T19:07:15.677+08:00" time="0.020">
+        </testcase>
+        <testcase name="deployment_issuer::notes::observation::tests::oversized_metadata_and_counter_overflow_cannot_fall_back_to_old_latest" classname="codex-hepta-agentd" timestamp="2026-11-05T19:07:15.689+08:00" time="0.016">
+        </testcase>
+        <testcase name="cognitive_context::tests::hnmf::final_use_revalidation_rejects_changed_hnmf_context" classname="codex-hepta-agentd" timestamp="2026-11-05T19:07:15.493+08:00" time="0.215">
+        </testcase>
+        <testcase name="deployment_issuer::desktop::tests::desktop_policy_public_entry_requires_actual_root_before_any_state_change" classname="codex-hepta-agentd" timestamp="2026-11-05T19:07:15.661+08:00" time="0.048">
+        </testcase>
+        <testcase name="deployment_issuer::desktop::tests::desktop_policy_cross_session_pair_or_reused_incarnation_cannot_change_owner_state" classname="codex-hepta-agentd" timestamp="2026-11-05T19:07:15.649+08:00" time="0.061">
+        </testcase>
+        <testcase name="deployment_issuer::desktop::tests::desktop_policy_competing_successors_publish_only_one_complete_pair" classname="codex-hepta-agentd" timestamp="2026-11-05T19:07:15.648+08:00" time="0.074">
+        </testcase>
+        <testcase name="deployment_issuer::notes::tests::deployment_notes_changed_canonical_proof_cannot_sign_after_original_delegation" classname="codex-hepta-agentd" timestamp="2026-11-05T19:07:15.692+08:00" time="0.030">
+        </testcase>
+        <testcase name="deployment_issuer::notes::tests::deployment_notes_lookalike_registry_cannot_install_delegation" classname="codex-hepta-agentd" timestamp="2026-11-05T19:07:15.694+08:00" time="0.028">
+        </testcase>
+        <testcase name="deployment_issuer::notes::tests::deployment_notes_ambiguous_notes_slot_cannot_install_or_replace_policy" classname="codex-hepta-agentd" timestamp="2026-11-05T19:07:15.690+08:00" time="0.034">
+        </testcase>
+        <testcase name="deployment_issuer::desktop::tests::desktop_policy_expired_or_revoked_writer_keeps_both_original_slots" classname="codex-hepta-agentd" timestamp="2026-11-05T19:07:15.651+08:00" time="0.075">
+        </testcase>
+        <testcase name="authbus_dispatch::tests::matching_receipt_metadata_with_different_queue_input_never_acknowledges" classname="codex-hepta-agentd" timestamp="2026-11-05T19:07:15.399+08:00" time="0.327">
+        </testcase>
+        <testcase name="deployment_issuer::desktop::tests::desktop_policy_wrong_calculator_predecessor_does_not_replace_notes" classname="codex-hepta-agentd" timestamp="2026-11-05T19:07:15.670+08:00" time="0.060">
+        </testcase>
+        <testcase name="deployment_issuer::notes::tests::issuer_routing::deployment_notes_route_denied_notes_writer_never_falls_back_to_generic_grant" classname="codex-hepta-agentd" timestamp="2026-11-05T19:07:15.709+08:00" time="0.028">
+        </testcase>
+        <testcase name="deployment_issuer::root::tests::deployment_final_use_discards_post_io_expiry_without_reusing_its_sequence" classname="codex-hepta-agentd" timestamp="2026-11-05T19:07:15.726+08:00" time="0.011">
+        </testcase>
+        <testcase name="deployment_issuer::original_grant::tests::exact_original_head_cas_refuses_stale_revision_without_advancing_real_state" classname="codex-hepta-agentd" timestamp="2026-11-05T19:07:15.722+08:00" time="0.015">
+        </testcase>
+        <testcase name="deployment_issuer::root::tests::deployment_live_observation_cannot_use_an_older_clone_for_a_requested_new_revision" classname="codex-hepta-agentd" timestamp="2026-11-05T19:07:15.730+08:00" time="0.011">
+        </testcase>
+        <testcase name="cognitive_context::tests::budget::learned_ranker_can_select_a_candidate_outside_legacy_top_four" classname="codex-hepta-agentd" timestamp="2026-11-05T19:07:15.464+08:00" time="0.278">
+        </testcase>
+        <testcase name="deployment_issuer::notes::tests::deployment_notes_wrong_scope_subject_or_incarnation_creates_no_lease_or_grant" classname="codex-hepta-agentd" timestamp="2026-11-05T19:07:15.705+08:00" time="0.038">
+        </testcase>
+        <testcase name="deployment_issuer::notes::tests::deployment_notes_policy_wrong_predecessor_or_expired_writer_cannot_change_state" classname="codex-hepta-agentd" timestamp="2026-11-05T19:07:15.699+08:00" time="0.045">
+        </testcase>
+        <testcase name="deployment_issuer::desktop::tests::desktop_policy_two_successors_keep_one_original_issuer_then_revocation_fences_the_pair" classname="codex-hepta-agentd" timestamp="2026-11-05T19:07:15.663+08:00" time="0.083">
+        </testcase>
+        <testcase name="deployment_issuer::desktop::tests::desktop_policy_pair_cas_preserves_original_owner_and_reconciles_exact_lost_ack" classname="codex-hepta-agentd" timestamp="2026-11-05T19:07:15.652+08:00" time="0.095">
+        </testcase>
+        <testcase name="deployment_issuer::root::tests::deployment_protected_concurrent_revision_cannot_sign_with_an_older_expiry" classname="codex-hepta-agentd" timestamp="2026-11-05T19:07:15.737+08:00" time="0.010">
+        </testcase>
+        <testcase name="deployment_issuer::root::tests::deployment_protected_factory_rejects_unprotected_parent_without_creating_key" classname="codex-hepta-agentd" timestamp="2026-11-05T19:07:15.738+08:00" time="0.012">
+        </testcase>
+        <testcase name="deployment_issuer::notes::tests::deployment_notes_revoked_effect_and_writer_cannot_sign_or_reset" classname="codex-hepta-agentd" timestamp="2026-11-05T19:07:15.698+08:00" time="0.051">
+        </testcase>
+        <testcase name="deployment_issuer::root::tests::deployment_live_observation_uses_the_original_revision_revocation_and_expiry_checks" classname="codex-hepta-agentd" timestamp="2026-11-05T19:07:15.737+08:00" time="0.013">
+        </testcase>
+        <testcase name="authbus_dispatch::tests::revocation_during_queue_request_prevents_success_ack" classname="codex-hepta-agentd" timestamp="2026-11-05T19:07:15.399+08:00" time="0.351">
+        </testcase>
+        <testcase name="deployment_issuer::notes::tests::issuer_routing::deployment_notes_route_wrong_notes_scope_or_owner_creates_no_authority" classname="codex-hepta-agentd" timestamp="2026-11-05T19:07:15.722+08:00" time="0.029">
+        </testcase>
+        <testcase name="deployment_issuer::notes::tests::issuer_routing::deployment_notes_route_requires_original_non_notes_policy_and_exact_live_lease" classname="codex-hepta-agentd" timestamp="2026-11-05T19:07:15.710+08:00" time="0.042">
+        </testcase>
+        <testcase name="deployment_issuer::original_grant::tests::expired_original_artifact_can_only_be_observed_without_advancing_any_state" classname="codex-hepta-agentd" timestamp="2026-11-05T19:07:15.722+08:00" time="0.032">
+        </testcase>
+        <testcase name="deployment_issuer::root::tests::deployment_protected_final_use_uses_exact_lease_revision_binding_and_expiry" classname="codex-hepta-agentd" timestamp="2026-11-05T19:07:15.742+08:00" time="0.014">
+        </testcase>
+        <testcase name="deployment_issuer::tests::original_agentd_client_reads_real_server_grant_and_denial_on_same_channel" classname="codex-hepta-agentd" timestamp="2026-11-05T19:07:15.743+08:00" time="0.013">
+        </testcase>
+        <testcase name="deployment_issuer::tests::out_of_scope_and_invalid_grants_do_not_issue_and_revocation_is_durable" classname="codex-hepta-agentd" timestamp="2026-11-05T19:07:15.747+08:00" time="0.011">
+        </testcase>
+        <testcase name="deployment_issuer::text::human::tests::exact_human_binding_survives_reopen_and_readback_never_changes_the_original_cas" classname="codex-hepta-agentd" timestamp="2026-11-05T19:07:15.747+08:00" time="0.015">
+        </testcase>
+        <testcase name="deployment_issuer::text::human::tests::generic_signature_cannot_upgrade_into_human_provenance_or_consume_another_sequence" classname="codex-hepta-agentd" timestamp="2026-11-05T19:07:15.748+08:00" time="0.014">
+        </testcase>
+        <testcase name="cognitive_context::tests::budget::learned_winner_survives_legacy_byte_cut_and_response_stays_bounded" classname="codex-hepta-agentd" timestamp="2026-11-05T19:07:15.464+08:00" time="0.300">
+        </testcase>
+        <testcase name="deployment_issuer::text::recovery::tests::restart_recovers_only_exact_namespace_and_old_generation_without_signing" classname="codex-hepta-agentd" timestamp="2026-11-05T19:07:15.750+08:00" time="0.014">
+        </testcase>
+        <testcase name="deployment_issuer::text::retirement::tests::retiring_later_input_keeps_unknown_earlier_identity_and_rejects_wrong_proof" classname="codex-hepta-agentd" timestamp="2026-11-05T19:07:15.750+08:00" time="0.014">
+        </testcase>
+        <testcase name="deployment_issuer::tests::actual_random_key_signs_original_grant_and_ids_survive_reopen" classname="codex-hepta-agentd" timestamp="2026-11-05T19:07:15.742+08:00" time="0.024">
+        </testcase>
+        <testcase name="deployment_issuer::text::tests::missing_lookup_and_scope_conflict_do_not_sign_or_consume_sequence" classname="codex-hepta-agentd" timestamp="2026-11-05T19:07:15.754+08:00" time="0.012">
+        </testcase>
+        <testcase name="deployment_issuer::original_grant::tests::valid_own_signature_cannot_bypass_old_epoch_canonical_id_or_elapsed_budget" classname="codex-hepta-agentd" timestamp="2026-11-05T19:07:15.726+08:00" time="0.040">
+        </testcase>
+        <testcase name="deployment_issuer::text::unsigned::tests::lost_unsigned_close_ack_and_late_sign_stay_closed_after_original_owner_reopen" classname="codex-hepta-agentd" timestamp="2026-11-05T19:07:15.758+08:00" time="0.011">
+        </testcase>
+        <testcase name="deployment_issuer::notes::tests::issuer_routing::deployment_notes_route_preserves_authorized_non_notes_and_canonical_issuer" classname="codex-hepta-agentd" timestamp="2026-11-05T19:07:15.709+08:00" time="0.060">
+        </testcase>
+        <testcase name="deployment_issuer::text::unsigned::tests::lost_sign_ack_returns_exact_retained_original_and_cannot_be_closed_or_replaced" classname="codex-hepta-agentd" timestamp="2026-11-05T19:07:15.756+08:00" time="0.017">
+        </testcase>
+        <testcase name="deployment_issuer::desktop::tests::desktop_policy_partial_pair_and_ambiguous_slot_are_never_promoted" classname="codex-hepta-agentd" timestamp="2026-11-05T19:07:15.654+08:00" time="0.119">
+        </testcase>
+        <testcase name="deployment_issuer::notes::tests::deployment_notes_distinct_payloads_share_canonical_signer_and_original_counter" classname="codex-hepta-agentd" timestamp="2026-11-05T19:07:15.693+08:00" time="0.081">
+        </testcase>
+        <testcase name="deployment_issuer::text::tests::retained_text_signature_uses_original_key_store_and_sequence_after_reopen" classname="codex-hepta-agentd" timestamp="2026-11-05T19:07:15.756+08:00" time="0.020">
+        </testcase>
+        <testcase name="deployment_issuer::writer::tests::writer_proof_rejects_effect_lease_stale_full_lease_and_revocation" classname="codex-hepta-agentd" timestamp="2026-11-05T19:07:15.769+08:00" time="0.010">
+        </testcase>
+        <testcase name="desktop_thread_catalog::tests::desktop_catalog_has_only_six_finite_tools_and_preserves_legacy_catalog" classname="codex-hepta-agentd" timestamp="2026-11-05T19:07:15.774+08:00" time="0.009">
+        </testcase>
+        <testcase name="deployment_issuer::notes::tests::deployment_notes_repeated_binding_never_renews_expired_or_pruned_lease" classname="codex-hepta-agentd" timestamp="2026-11-05T19:07:15.699+08:00" time="0.085">
+        </testcase>
+        <testcase name="deployment_issuer::tests::original_final_use_owner_rejects_replay_revocation_and_local_state_rollback" classname="codex-hepta-agentd" timestamp="2026-11-05T19:07:15.744+08:00" time="0.045">
+        </testcase>
+        <testcase name="deployment_issuer::writer::tests::rotation::same_canonical_lease_id_is_refused_before_any_predecessor_replacement" classname="codex-hepta-agentd" timestamp="2026-11-05T19:07:15.766+08:00" time="0.024">
+        </testcase>
+        <testcase name="deployment_issuer::writer::tests::rotation::full_successor_and_generation_must_match_before_any_sequence_is_spent" classname="codex-hepta-agentd" timestamp="2026-11-05T19:07:15.764+08:00" time="0.027">
+        </testcase>
+        <testcase name="deployment_issuer::text::recovery::tests::encoded_capacity_preserves_original_refs_and_does_not_consume_next_intent" classname="codex-hepta-agentd" timestamp="2026-11-05T19:07:15.749+08:00" time="0.043">
+        </testcase>
+        <testcase name="desktop_thread_tool::proof::tests::each_app_requires_current_exact_callback_but_can_observe_its_completed_original_item" classname="codex-hepta-agentd" timestamp="2026-11-05T19:07:15.783+08:00" time="0.010">
+        </testcase>
+        <testcase name="deployment_issuer::writer::tests::writer_proof_expiring_after_durable_sequence_is_discarded_without_refund" classname="codex-hepta-agentd" timestamp="2026-11-05T19:07:15.766+08:00" time="0.029">
+        </testcase>
+        <testcase name="cognitive_ranker::tests::sqlite_read_consumer_uses_fitted_order_before_limit_and_rechecks_deletion" classname="codex-hepta-agentd" timestamp="2026-11-05T19:07:15.536+08:00" time="0.259">
+        </testcase>
+        <testcase name="desktop_thread_tool::proof::tests::neither_app_can_choose_authority_or_replace_the_original_callback_route" classname="codex-hepta-agentd" timestamp="2026-11-05T19:07:15.784+08:00" time="0.011">
+        </testcase>
+        <testcase name="desktop_thread_tool::runtime::tests::a_later_application_cannot_inherit_the_first_applications_success" classname="codex-hepta-agentd" timestamp="2026-11-05T19:07:15.789+08:00" time="0.008">
+        </testcase>
+        <testcase name="desktop_thread_tool::runtime::tests::missing_history_and_current_state_do_not_manufacture_an_effect_success" classname="codex-hepta-agentd" timestamp="2026-11-05T19:07:15.790+08:00" time="0.007">
+        </testcase>
+        <testcase name="desktop_thread_tool::proof::tests::actual_callback_decoder_enforces_canonical_operands_and_app_specific_status_selection" classname="codex-hepta-agentd" timestamp="2026-11-05T19:07:15.780+08:00" time="0.018">
+        </testcase>
+        <testcase name="deployment_issuer::writer::tests::writer_proof_concurrent_registration_returns_one_exact_retained_signature" classname="codex-hepta-agentd" timestamp="2026-11-05T19:07:15.766+08:00" time="0.034">
+        </testcase>
+        <testcase name="desktop_thread_seed::tests::new_desktop_seed_binds_six_tools_and_cannot_enter_legacy_notes_recovery" classname="codex-hepta-agentd" timestamp="2026-11-05T19:07:15.776+08:00" time="0.025">
+        </testcase>
+        <testcase name="final_use_issuer::root_client::tests::root_issuer_legacy_constructor_cannot_request_signing_or_bypass_uid_zero" classname="codex-hepta-agentd" timestamp="2026-11-05T19:07:15.793+08:00" time="0.008">
+        </testcase>
+        <testcase name="event_buffer::tests::bounded_buffer_reports_cursor_gap_and_resumes" classname="codex-hepta-agentd" timestamp="2026-11-05T19:07:15.791+08:00" time="0.013">
+        </testcase>
+        <testcase name="deployment_issuer::writer::tests::writer_proof_unrelated_lease_mutation_advances_metadata_without_changing_proof" classname="codex-hepta-agentd" timestamp="2026-11-05T19:07:15.773+08:00" time="0.033">
+        </testcase>
+        <testcase name="final_use_issuer::root_client::tests::root_issuer_wrong_body_or_extra_field_permanently_closes_both_operations" classname="codex-hepta-agentd" timestamp="2026-11-05T19:07:15.795+08:00" time="0.011">
+        </testcase>
+        <testcase name="deployment_issuer::notes::tests::deployment_notes_policy_incarnation_cas_retains_key_head_counter_and_old_grant" classname="codex-hepta-agentd" timestamp="2026-11-05T19:07:15.695+08:00" time="0.111">
+        </testcase>
+        <testcase name="final_use_issuer::root_client::tests::root_issuer_preserves_typed_objective_then_original_final_use_on_one_lane" classname="codex-hepta-agentd" timestamp="2026-11-05T19:07:15.795+08:00" time="0.011">
+        </testcase>
+        <testcase name="deployment_issuer::writer::tests::writer_proof_is_retained_across_reads_reopen_and_shared_original_sequence" classname="codex-hepta-agentd" timestamp="2026-11-05T19:07:15.769+08:00" time="0.037">
+        </testcase>
+        <testcase name="desktop_thread_seed::tests::desktop_seed_rechecks_actual_configuration_and_session_metadata" classname="codex-hepta-agentd" timestamp="2026-11-05T19:07:15.774+08:00" time="0.032">
+        </testcase>
+        <testcase name="final_use_issuer::root_client::tests::root_text_sign_then_lookup_keeps_original_generation_and_signature_identity" classname="codex-hepta-agentd" timestamp="2026-11-05T19:07:15.797+08:00" time="0.009">
+        </testcase>
+        <testcase name="final_use_issuer::tests::malformed_or_wrong_binding_responses_fence_the_channel_without_retry" classname="codex-hepta-agentd" timestamp="2026-11-05T19:07:15.798+08:00" time="0.011">
+        </testcase>
+        <testcase name="final_use_issuer::tests::concurrent_requests_do_not_interleave_and_complete_denial_can_be_observed" classname="codex-hepta-agentd" timestamp="2026-11-05T19:07:15.798+08:00" time="0.012">
+        </testcase>
+        <testcase name="deployment_issuer::writer::tests::rotation::post_io_expiry_keeps_old_proof_and_never_refunds_reserved_sequence" classname="codex-hepta-agentd" timestamp="2026-11-05T19:07:15.765+08:00" time="0.046">
+        </testcase>
+        <testcase name="final_use_issuer::tests::oversized_and_empty_frames_are_rejected_without_reading_a_body" classname="codex-hepta-agentd" timestamp="2026-11-05T19:07:15.801+08:00" time="0.012">
+        </testcase>
+        <testcase name="final_use_issuer::tests::truncated_response_closes_the_channel_and_oversized_binding_writes_nothing" classname="codex-hepta-agentd" timestamp="2026-11-05T19:07:15.804+08:00" time="0.010">
+        </testcase>
+        <testcase name="final_use_issuer::tests::wrong_peer_and_unbounded_timeouts_fail_before_any_request" classname="codex-hepta-agentd" timestamp="2026-11-05T19:07:15.806+08:00" time="0.010">
+        </testcase>
+        <testcase name="hos2_device::bootstrap_tests::g2_initial_and_successor_attach_only_the_original_matching_role" classname="codex-hepta-agentd" timestamp="2026-11-05T19:07:15.806+08:00" time="0.010">
+        </testcase>
+        <testcase name="hos2_device::tests::changed_boot_and_inaccessible_history_remain_unavailable" classname="codex-hepta-agentd" timestamp="2026-11-05T19:07:15.809+08:00" time="0.007">
+        </testcase>
+        <testcase name="hos2_device::bootstrap_tests::g2_successor_local_identity_and_queryabi_cannot_alias_old_history" classname="codex-hepta-agentd" timestamp="2026-11-05T19:07:15.806+08:00" time="0.010">
+        </testcase>
+        <testcase name="hos2_device::bootstrap_tests::g2_wrong_process_root_role_slot_or_page_is_rejected_before_transport" classname="codex-hepta-agentd" timestamp="2026-11-05T19:07:15.806+08:00" time="0.010">
+        </testcase>
+        <testcase name="hos2_device::bootstrap_tests::legacy_v2_constructor_does_not_silently_admit_g2" classname="codex-hepta-agentd" timestamp="2026-11-05T19:07:15.807+08:00" time="0.010">
+        </testcase>
+        <testcase name="hos2_device::bootstrap_tests::g2_truncated_oversized_or_other_version_records_never_reach_ioctl" classname="codex-hepta-agentd" timestamp="2026-11-05T19:07:15.806+08:00" time="0.011">
+        </testcase>
+        <testcase name="deployment_issuer::text::tests::full_retention_refuses_new_identity_without_eviction_or_new_signature" classname="codex-hepta-agentd" timestamp="2026-11-05T19:07:15.752+08:00" time="0.065">
+        </testcase>
+        <testcase name="grant_provider_worker::tests::cancelled_waiter_does_not_release_capacity_held_by_the_original_worker" classname="codex-hepta-agentd" timestamp="2026-11-05T19:07:15.807+08:00" time="0.010">
+        </testcase>
+        <testcase name="deployment_issuer::writer::tests::rotation::concurrent_exact_rotations_reconcile_one_original_counter_reservation" classname="codex-hepta-agentd" timestamp="2026-11-05T19:07:15.762+08:00" time="0.057">
+        </testcase>
+        <testcase name="hos2_device::tests::cpu_policy::cpu_policy_native_recheck_refuses_revision_drift_and_post_io_expiry" classname="codex-hepta-agentd" timestamp="2026-11-05T19:07:15.811+08:00" time="0.008">
+        </testcase>
+        <testcase name="hos2_device::tests::conflict_does_not_query_or_commit_the_previous_request_using_the_same_d" classname="codex-hepta-agentd" timestamp="2026-11-05T19:07:15.810+08:00" time="0.010">
+        </testcase>
+        <testcase name="deployment_issuer::text::retirement::tests::retirement_frees_capacity_without_reissuing_past_intents_after_reopen" classname="codex-hepta-agentd" timestamp="2026-11-05T19:07:15.750+08:00" time="0.072">
+        </testcase>
+        <testcase name="hos2_device::tests::cpu_policy::cpu_policy_preparation_reads_original_device_and_never_installs_or_allocates_d" classname="codex-hepta-agentd" timestamp="2026-11-05T19:07:15.813+08:00" time="0.009">
+        </testcase>
+        <testcase name="hos2_device::tests::native_usage_requires_an_existing_manager_or_recovery_observe_handle" classname="codex-hepta-agentd" timestamp="2026-11-05T19:07:15.817+08:00" time="0.008">
+        </testcase>
+        <testcase name="hos2_device::tests::known_request_refusals_cannot_query_an_older_applied_delivery" classname="codex-hepta-agentd" timestamp="2026-11-05T19:07:15.817+08:00" time="0.009">
+        </testcase>
+        <testcase name="hos2_device::tests::malformed_success_is_a_contradiction_and_lost_transport_reply_remains_unknown" classname="codex-hepta-agentd" timestamp="2026-11-05T19:07:15.817+08:00" time="0.011">
+        </testcase>
+        <testcase name="hos2_device::tests::production_owner_request_and_a02_wire_vectors_match" classname="codex-hepta-agentd" timestamp="2026-11-05T19:07:15.817+08:00" time="0.011">
+        </testcase>
+        <testcase name="hos2_device::tests::read_usage_refusal_or_lost_reply_never_becomes_a_snapshot_or_retry" classname="codex-hepta-agentd" timestamp="2026-11-05T19:07:15.819+08:00" time="0.009">
+        </testcase>
+        <testcase name="hos2_device::tests::read_usage_accepts_boot_origin_and_full_unsigned_observation_range" classname="codex-hepta-agentd" timestamp="2026-11-05T19:07:15.819+08:00" time="0.009">
+        </testcase>
+        <testcase name="hos2_device::tests::read_usage_correlates_observer_handle_without_consuming_delivery_sequence" classname="codex-hepta-agentd" timestamp="2026-11-05T19:07:15.819+08:00" time="0.010">
+        </testcase>
+        <testcase name="hos2_device::tests::read_usage_rejects_foreign_or_malformed_response_headers" classname="codex-hepta-agentd" timestamp="2026-11-05T19:07:15.822+08:00" time="0.009">
+        </testcase>
+        <testcase name="hos2_device::tests::read_usage_rejects_impossible_single_cpu_snapshots" classname="codex-hepta-agentd" timestamp="2026-11-05T19:07:15.823+08:00" time="0.010">
+        </testcase>
+        <testcase name="final_use_issuer::tests::original_authority_verifies_grants_without_trusting_the_provider_head" classname="codex-hepta-agentd" timestamp="2026-11-05T19:07:15.800+08:00" time="0.033">
+        </testcase>
+        <testcase name="hos2_device::tests::recovery_observes_original_manager_namespace_without_reinstalling_it" classname="codex-hepta-agentd" timestamp="2026-11-05T19:07:15.825+08:00" time="0.011">
+        </testcase>
+        <testcase name="hos2_device::tests::successful_acknowledgement_matches_all_four_shared_history_values" classname="codex-hepta-agentd" timestamp="2026-11-05T19:07:15.826+08:00" time="0.010">
+        </testcase>
+        <testcase name="intelligence_product::runner::run_start::tests::preparation_budget_is_capped_by_the_original_deadline" classname="codex-hepta-agentd" timestamp="2026-11-05T19:07:15.831+08:00" time="0.007">
+        </testcase>
+        <testcase name="deployment_issuer::writer::tests::rotation::original_revocation_allows_one_rotation_and_exact_lost_ack_reconcile" classname="codex-hepta-agentd" timestamp="2026-11-05T19:07:15.764+08:00" time="0.078">
+        </testcase>
+        <testcase name="deployment_issuer::original_grant::tests::original_signature_nonce_and_each_signed_field_are_independently_required" classname="codex-hepta-agentd" timestamp="2026-11-05T19:07:15.723+08:00" time="0.119">
+        </testcase>
+        <testcase name="intelligence_product::tests::aborted_owner_work_retains_its_budget_until_computation_finishes" classname="codex-hepta-agentd" timestamp="2026-11-05T19:07:15.833+08:00" time="0.011">
+        </testcase>
+        <testcase name="deployment_issuer::notes::tests::deployment_notes_preserves_original_objective_route_across_exact_policy_replacement" classname="codex-hepta-agentd" timestamp="2026-11-05T19:07:15.699+08:00" time="0.161">
+        </testcase>
+        <testcase name="deployment_issuer::writer::tests::rotation::expired_or_original_pruned_predecessor_keeps_strict_signed_identity" classname="codex-hepta-agentd" timestamp="2026-11-05T19:07:15.762+08:00" time="0.103">
+        </testcase>
+        <testcase name="intelligence_product::tests::missing_current_owner_fails_before_product_use" classname="codex-hepta-agentd" timestamp="2026-11-05T19:07:15.833+08:00" time="0.035">
+        </testcase>
+        <testcase name="final_use_issuer::tests::total_deadline_is_not_extended_by_partial_response_progress" classname="codex-hepta-agentd" timestamp="2026-11-05T19:07:15.801+08:00" time="0.070">
+        </testcase>
+        <testcase name="authbus_dispatch::tests::ready_generation_and_owner_private_trust_are_required_before_admission" classname="codex-hepta-agentd" timestamp="2026-11-05T19:07:15.399+08:00" time="0.476">
+        </testcase>
+        <testcase name="intuition_policy::tests::host_identity_and_owner_pins_fail_closed_before_policy_admission" classname="codex-hepta-agentd" timestamp="2026-11-05T19:07:15.868+08:00" time="0.012">
+        </testcase>
+        <testcase name="lane_b_runtime::bound::tests::exact_bound_transitions_compare_revision_before_any_idempotent_return" classname="codex-hepta-agentd" timestamp="2026-11-05T19:07:15.872+08:00" time="0.009">
+        </testcase>
+        <testcase name="lane_b_runtime::bound::tests::reused_run_ids_cannot_redirect_bound_mutations_or_idempotent_acknowledgements" classname="codex-hepta-agentd" timestamp="2026-11-05T19:07:15.875+08:00" time="0.012">
+        </testcase>
+        <testcase name="intelligence_product::tests::total_budget_timeout_never_creates_a_dispatch_or_ledger_capability" classname="codex-hepta-agentd" timestamp="2026-11-05T19:07:15.860+08:00" time="0.031">
+        </testcase>
+        <testcase name="cognitive_ranker::tests::running_socket_uses_launch_bound_model_and_isolates_ranker_revocation" classname="codex-hepta-agentd" timestamp="2026-11-05T19:07:15.536+08:00" time="0.357">
+        </testcase>
+        <testcase name="intelligence_product::tests::unsigned_currentness_substitution_fails_before_owner_use" classname="codex-hepta-agentd" timestamp="2026-11-05T19:07:15.865+08:00" time="0.030">
+        </testcase>
+        <testcase name="lane_b_runtime::fault_tests::acknowledgement_deadline_overflow_preserves_dispatched_record" classname="codex-hepta-agentd" timestamp="2026-11-05T19:07:15.880+08:00" time="0.016">
+        </testcase>
+        <testcase name="lane_b_runtime::tests::active_run_capacity_is_bound_by_runtime_composition" classname="codex-hepta-agentd" timestamp="2026-11-05T19:07:15.892+08:00" time="0.008">
+        </testcase>
+        <testcase name="lane_b_runtime::fault_tests::exhausted_recovered_revision_keeps_unresolved_reservation" classname="codex-hepta-agentd" timestamp="2026-11-05T19:07:15.881+08:00" time="0.021">
+        </testcase>
+        <testcase name="lane_b_runtime::fault_tests::last_representable_terminal_transition_still_reconciles" classname="codex-hepta-agentd" timestamp="2026-11-05T19:07:15.887+08:00" time="0.015">
+        </testcase>
+        <testcase name="lane_b_runtime::tests::bulk_deadline_error_retains_completed_prefix_and_failed_record" classname="codex-hepta-agentd" timestamp="2026-11-05T19:07:15.893+08:00" time="0.010">
+        </testcase>
+        <testcase name="lane_b_runtime::tests::cancellation_deadline_overflow_preserves_dispatched_run" classname="codex-hepta-agentd" timestamp="2026-11-05T19:07:15.895+08:00" time="0.014">
+        </testcase>
+        <testcase name="lane_b_runtime::tests::bulk_unknown_error_retains_completed_prefix_and_failed_record" classname="codex-hepta-agentd" timestamp="2026-11-05T19:07:15.895+08:00" time="0.015">
+        </testcase>
+        <testcase name="lane_b_runtime::tests::cancellation_preserves_the_dispatch_boundary_and_reason" classname="codex-hepta-agentd" timestamp="2026-11-05T19:07:15.900+08:00" time="0.017">
+        </testcase>
+        <testcase name="lane_b_runtime::tests::last_representable_cancel_deadline_remains_reconcilable" classname="codex-hepta-agentd" timestamp="2026-11-05T19:07:15.911+08:00" time="0.009">
+        </testcase>
+        <testcase name="lane_b_runtime::tests::freezes_the_complete_run_tuple_before_context_attachment" classname="codex-hepta-agentd" timestamp="2026-11-05T19:07:15.903+08:00" time="0.017">
+        </testcase>
+        <testcase name="lane_b_runtime::tests::drain_closes_admission_and_preserves_dispatch_uncertainty" classname="codex-hepta-agentd" timestamp="2026-11-05T19:07:15.903+08:00" time="0.019">
+        </testcase>
+        <testcase name="lane_b_runtime::tests::last_available_revision_accepts_terminal_observation_once" classname="codex-hepta-agentd" timestamp="2026-11-05T19:07:15.909+08:00" time="0.014">
+        </testcase>
+        <testcase name="lane_b_runtime::tests::revalidated_durable_explicit_abstain_never_enters_runtime_admission" classname="codex-hepta-agentd" timestamp="2026-11-05T19:07:15.924+08:00" time="0.008">
+        </testcase>
+        <testcase name="lane_b_runtime::tests::recovery_rehydrates_only_an_indeterminate_non_redispatchable_run" classname="codex-hepta-agentd" timestamp="2026-11-05T19:07:15.920+08:00" time="0.014">
+        </testcase>
+        <testcase name="lane_b_runtime::tests::lifecycle_deadline_is_enforced_after_admission" classname="codex-hepta-agentd" timestamp="2026-11-05T19:07:15.917+08:00" time="0.018">
+        </testcase>
+        <testcase name="lane_b_runtime::tests::rejected_terminal_observation_preserves_recovered_uncertainty" classname="codex-hepta-agentd" timestamp="2026-11-05T19:07:15.922+08:00" time="0.013">
+        </testcase>
+        <testcase name="lane_b_runtime::tests::operation_identity_is_idempotent_only_for_equal_semantics" classname="codex-hepta-agentd" timestamp="2026-11-05T19:07:15.920+08:00" time="0.019">
+        </testcase>
+        <testcase name="lane_b_runtime::tests::indeterminate_outcomes_reconcile_without_redispatch_or_leaked_capacity" classname="codex-hepta-agentd" timestamp="2026-11-05T19:07:15.903+08:00" time="0.036">
+        </testcase>
+        <testcase name="authority_host_service::text_ui::deadline_tests::first_text_byte_does_not_refresh_the_connection_budget" classname="codex-hepta-agentd" timestamp="2026-11-05T19:07:15.425+08:00" time="0.514">
+        </testcase>
+        <testcase name="lane_b_runtime::tests::revision_overflow_preserves_pre_dispatch_state" classname="codex-hepta-agentd" timestamp="2026-11-05T19:07:15.935+08:00" time="0.012">
+        </testcase>
+        <testcase name="lane_b_runtime::tests::revalidated_durable_run_start_uses_admitted_source_identity_and_exact_fence" classname="codex-hepta-agentd" timestamp="2026-11-05T19:07:15.932+08:00" time="0.017">
+        </testcase>
+        <testcase name="lane_b_runtime::tests::terminal_observation_is_idempotent_and_only_closed_runs_can_be_removed" classname="codex-hepta-agentd" timestamp="2026-11-05T19:07:15.935+08:00" time="0.017">
+        </testcase>
+        <testcase name="lane_b_runtime::tests::revision_overflow_preserves_dispatched_and_cancelling_state" classname="codex-hepta-agentd" timestamp="2026-11-05T19:07:15.934+08:00" time="0.018">
+        </testcase>
+        <testcase name="final_use_issuer::root_client::tests::root_issuer_lifetime_is_absolute_and_lost_ack_never_reopens" classname="codex-hepta-agentd" timestamp="2026-11-05T19:07:15.795+08:00" time="0.164">
+        </testcase>
+        <testcase name="neuron_runtime::tests::agentd_neuron_owner_is_a_compiled_product_surface" classname="codex-hepta-agentd" timestamp="2026-11-05T19:07:15.947+08:00" time="0.013">
+        </testcase>
+        <testcase name="notes_bootstrap::startup::tests::notes_startup_refuses_uncleared_root_credential_mode_before_send" classname="codex-hepta-agentd" timestamp="2026-11-05T19:07:15.952+08:00" time="0.013">
+        </testcase>
+        <testcase name="notes_bootstrap::startup::tests::notes_startup_sends_exact_reserved_identity_without_descriptors" classname="codex-hepta-agentd" timestamp="2026-11-05T19:07:15.953+08:00" time="0.012">
+        </testcase>
+        <testcase name="notes_bootstrap::startup::tests::notes_startup_refuses_invalid_reservations_before_send" classname="codex-hepta-agentd" timestamp="2026-11-05T19:07:15.950+08:00" time="0.020">
+        </testcase>
+        <testcase name="deployment_issuer::text::retirement::tests::thirty_two_refused_signs_close_without_eviction_and_next_input_works_after_original_retirement" classname="codex-hepta-agentd" timestamp="2026-11-05T19:07:15.752+08:00" time="0.218">
+        </testcase>
+        <testcase name="final_use_issuer::root_client::tests::root_issuer_dead_original_process_cannot_authorize_inherited_stream_reply" classname="codex-hepta-agentd" timestamp="2026-11-05T19:07:15.793+08:00" time="0.178">
+        </testcase>
+        <testcase name="notes_bootstrap::tests::absent_multiple_and_truncated_descriptor_sets_are_rejected_and_closed" classname="codex-hepta-agentd" timestamp="2026-11-05T19:07:15.959+08:00" time="0.013">
+        </testcase>
+        <testcase name="notes_bootstrap::tests::bootstrap_golden_transfers_two_ordered_cloexec_endpoints_and_correlates_only_registration" classname="codex-hepta-agentd" timestamp="2026-11-05T19:07:15.960+08:00" time="0.015">
+        </testcase>
+        <testcase name="notes_bootstrap::tests::datagram_or_named_effect_descriptor_cannot_be_attached" classname="codex-hepta-agentd" timestamp="2026-11-05T19:07:15.965+08:00" time="0.013">
+        </testcase>
+        <testcase name="hos2_device::tests::cpu_policy_consumer::cpu_policy_consumer_preserves_one_proposal_and_fences_observed_event_loss" classname="codex-hepta-agentd" timestamp="2026-11-05T19:07:15.816+08:00" time="0.162">
+        </testcase>
+        <testcase name="notes_bootstrap::tests::duplicate_unknown_wrong_identity_and_oversized_offers_close_received_descriptor" classname="codex-hepta-agentd" timestamp="2026-11-05T19:07:15.970+08:00" time="0.011">
+        </testcase>
+        <testcase name="notes_channel::tests::independent_recovery_survives_effect_loss_and_filters_late_datagrams" classname="codex-hepta-agentd" timestamp="2026-11-05T19:07:15.973+08:00" time="0.010">
+        </testcase>
+        <testcase name="notes_bootstrap::tests::expired_deadline_cannot_receive_an_offer_or_emit_an_ack" classname="codex-hepta-agentd" timestamp="2026-11-05T19:07:15.970+08:00" time="0.016">
+        </testcase>
+        <testcase name="notes_channel::tests::invalid_bound_does_not_write_and_explicit_invalidation_is_permanent" classname="codex-hepta-agentd" timestamp="2026-11-05T19:07:15.978+08:00" time="0.008">
+        </testcase>
+        <testcase name="notes_bootstrap::tests::canonical_notes_model_uses_original_two_descriptor_bootstrap_and_startup" classname="codex-hepta-agentd" timestamp="2026-11-05T19:07:15.965+08:00" time="0.023">
+        </testcase>
+        <testcase name="notes_bootstrap::tests::notes_startup_mismatched_offer_is_rejected_before_target_composition_or_attached_ack" classname="codex-hepta-agentd" timestamp="2026-11-05T19:07:15.971+08:00" time="0.020">
+        </testcase>
+        <testcase name="notes_channel::tests::lost_reply_permanently_disables_further_effect_entry" classname="codex-hepta-agentd" timestamp="2026-11-05T19:07:15.978+08:00" time="0.013">
+        </testcase>
+        <testcase name="notes_channel::tests::inherited_socketpair_preserves_exact_frame_bytes" classname="codex-hepta-agentd" timestamp="2026-11-05T19:07:15.975+08:00" time="0.017">
+        </testcase>
+        <testcase name="notes_document_observer::tests::notes_objective_private_document_observer_correlates_fresh_nonce_and_never_writes_effect" classname="codex-hepta-agentd" timestamp="2026-11-05T19:07:15.986+08:00" time="0.008">
+        </testcase>
+        <testcase name="notes_channel::tests::malformed_reply_prefix_closes_stream_without_accepting_a_later_reply" classname="codex-hepta-agentd" timestamp="2026-11-05T19:07:15.983+08:00" time="0.013">
+        </testcase>
+        <testcase name="notes_channel::tests::named_socket_is_not_a_bootstrap_channel" classname="codex-hepta-agentd" timestamp="2026-11-05T19:07:15.986+08:00" time="0.012">
+        </testcase>
+        <testcase name="notes_literal_adapter::desktop_recorded::recovery::tests::acknowledged_prior_operation_allows_next_original_operation" classname="codex-hepta-agentd" timestamp="2026-11-05T19:07:15.991+08:00" time="0.011">
+        </testcase>
+        <testcase name="native_g2_command_runtime::tests::pending_cancellation_keeps_the_original_drop_context" classname="codex-hepta-agentd" timestamp="2026-11-05T19:07:15.940+08:00" time="0.062">
+        </testcase>
+        <testcase name="notes_document_observer::tests::notes_objective_recovery_handle_retains_no_effect_descriptor_and_correlates_discovery" classname="codex-hepta-agentd" timestamp="2026-11-05T19:07:15.988+08:00" time="0.015">
+        </testcase>
+        <testcase name="notes_literal_adapter::desktop_recorded::recovery::tests::another_pending_target_blocks_latest_and_exact" classname="codex-hepta-agentd" timestamp="2026-11-05T19:07:15.993+08:00" time="0.010">
+        </testcase>
+        <testcase name="notes_literal_adapter::desktop_recorded::recovery::tests::already_acknowledged_selected_operation_remains_exact_and_idempotent" classname="codex-hepta-agentd" timestamp="2026-11-05T19:07:15.992+08:00" time="0.014">
+        </testcase>
+        <testcase name="hos2_device::tests::cpu_policy_consumer::cpu_policy_final_use_never_turns_entered_transport_failure_into_non_entry" classname="codex-hepta-agentd" timestamp="2026-11-05T19:07:15.817+08:00" time="0.189">
+        </testcase>
+        <testcase name="notes_literal_adapter::desktop_recorded::recovery::tests::duplicate_order_and_duplicate_operation_are_never_none" classname="codex-hepta-agentd" timestamp="2026-11-05T19:07:15.996+08:00" time="0.011">
+        </testcase>
+        <testcase name="hos2_device::tests::cpu_policy_consumer::cpu_policy_final_use_installs_only_after_the_consumer_observation" classname="codex-hepta-agentd" timestamp="2026-11-05T19:07:15.816+08:00" time="0.193">
+        </testcase>
+        <testcase name="notes_literal_adapter::desktop_recorded::recovery::tests::empty_validated_cut_has_no_previous_operation" classname="codex-hepta-agentd" timestamp="2026-11-05T19:07:15.996+08:00" time="0.015">
+        </testcase>
+        <testcase name="notes_literal_adapter::desktop_recorded::recovery::tests::exact_selector_cannot_cross_previous_target_or_invent_operation" classname="codex-hepta-agentd" timestamp="2026-11-05T19:07:15.998+08:00" time="0.015">
+        </testcase>
+        <testcase name="notes_literal_adapter::desktop_recorded::recovery::tests::only_durable_acknowledged_other_targets_allow_no_selection" classname="codex-hepta-agentd" timestamp="2026-11-05T19:07:16.003+08:00" time="0.014">
+        </testcase>
+        <testcase name="intelligence_product::evaluation_tests::signed_candidate_passes_only_with_bound_owner_run_context_and_root_trust" classname="codex-hepta-agentd" timestamp="2026-11-05T19:07:15.828+08:00" time="0.188">
+        </testcase>
+        <testcase name="notes_literal_adapter::desktop_recorded::recovery::tests::original_order_is_generation_then_sequence_not_lexical_id" classname="codex-hepta-agentd" timestamp="2026-11-05T19:07:16.003+08:00" time="0.014">
+        </testcase>
+        <testcase name="notes_literal_adapter::desktop_recorded::recovery::tests::latest_uses_exact_previous_target_instead_of_global_latest" classname="codex-hepta-agentd" timestamp="2026-11-05T19:07:16.002+08:00" time="0.016">
+        </testcase>
+        <testcase name="notes_literal_adapter::thread_sender_tests::a_retained_original_turn_source_cannot_be_attributed_to_a_new_call" classname="codex-hepta-agentd" timestamp="2026-11-05T19:07:16.006+08:00" time="0.014">
+        </testcase>
+        <testcase name="intelligence_product::evaluation_tests::independently_resigned_metrics_cannot_replace_the_qualified_estimator_evidence" classname="codex-hepta-agentd" timestamp="2026-11-05T19:07:15.828+08:00" time="0.193">
+        </testcase>
+        <testcase name="notes_literal_adapter::ui_worker::tests::notes_ui_failed_or_cancelled_refresh_cannot_renew_cached_ready" classname="codex-hepta-agentd" timestamp="2026-11-05T19:07:16.007+08:00" time="0.016">
+        </testcase>
+        <testcase name="notes_literal_adapter::desktop_recorded::recovery::tests::two_pending_operations_on_same_target_cannot_fit_one_helper" classname="codex-hepta-agentd" timestamp="2026-11-05T19:07:16.004+08:00" time="0.020">
+        </testcase>
+        <testcase name="notes_literal_adapter::ui_worker::tests::notes_ui_readback_failure_and_cancellation_cannot_renew_an_old_snapshot" classname="codex-hepta-agentd" timestamp="2026-11-05T19:07:16.011+08:00" time="0.018">
+        </testcase>
+        <testcase name="notes_literal_adapter::ui_worker::tests::notes_ui_invalid_navigation_cannot_publish_partial_readiness" classname="codex-hepta-agentd" timestamp="2026-11-05T19:07:16.009+08:00" time="0.022">
+        </testcase>
+        <testcase name="notes_thread_tool::human::tests::queue_reconciliation_must_observe_the_same_persisted_turn_without_new_admission" classname="codex-hepta-agentd" timestamp="2026-11-05T19:07:16.023+08:00" time="0.009">
+        </testcase>
+        <testcase name="notes_thread_execution::tests::persistent_profile_requires_no_environment_and_records_actual_file_bytes" classname="codex-hepta-agentd" timestamp="2026-11-05T19:07:16.018+08:00" time="0.015">
+        </testcase>
+        <testcase name="notes_recovery_selection::tests::startup_selector_and_legacy_exact_are_exclusive_and_strict" classname="codex-hepta-agentd" timestamp="2026-11-05T19:07:16.017+08:00" time="0.019">
+        </testcase>
+        <testcase name="notes_thread_tool::status::tests::absent_original_items_cannot_be_replaced_by_model_result_text" classname="codex-hepta-agentd" timestamp="2026-11-05T19:07:16.024+08:00" time="0.015">
+        </testcase>
+        <testcase name="notes_recovery_process::tests::notes_recovery_process_seals_bytes_and_refuses_effect_or_foreign_operation_without_spawn" classname="codex-hepta-agentd" timestamp="2026-11-05T19:07:16.017+08:00" time="0.022">
+        </testcase>
+        <testcase name="notes_thread_tool::status::tests::selector_and_exact_references_are_exclusive_and_cannot_supply_authority" classname="codex-hepta-agentd" timestamp="2026-11-05T19:07:16.033+08:00" time="0.009">
+        </testcase>
+        <testcase name="notes_thread_tool::human::tests::original_human_ingress_requires_exact_admitted_input_and_cannot_use_direct_turn_start" classname="codex-hepta-agentd" timestamp="2026-11-05T19:07:16.021+08:00" time="0.021">
+        </testcase>
+        <testcase name="notes_thread_execution::tests::finite_profile_rejects_enabled_builtins_agents_and_external_mcp" classname="codex-hepta-agentd" timestamp="2026-11-05T19:07:16.017+08:00" time="0.026">
+        </testcase>
+        <testcase name="notes_recovery_process::tests::notes_recovery_process_rejects_unsafe_or_mismatched_executable_before_start" classname="codex-hepta-agentd" timestamp="2026-11-05T19:07:16.013+08:00" time="0.031">
+        </testcase>
+        <testcase name="notes_thread_tool::status::tests::incomplete_core_with_committed_older_receipt_remains_unknown" classname="codex-hepta-agentd" timestamp="2026-11-05T19:07:16.032+08:00" time="0.015">
+        </testcase>
+        <testcase name="notes_thread_tool::status::tests::discovery_recovers_first_original_identity_without_tool_reply_or_model_context" classname="codex-hepta-agentd" timestamp="2026-11-05T19:07:16.030+08:00" time="0.018">
+        </testcase>
+        <testcase name="notes_literal_adapter::recorded::tests::recorded_source_requires_exact_raw_tuple_signed_commitments_and_operation" classname="codex-hepta-agentd" timestamp="2026-11-05T19:07:16.006+08:00" time="0.043">
+        </testcase>
+        <testcase name="notes_thread_tool::status::tests::incomplete_newer_turn_never_falls_back_to_an_older_write" classname="codex-hepta-agentd" timestamp="2026-11-05T19:07:16.032+08:00" time="0.017">
+        </testcase>
+        <testcase name="notes_thread_tool::tests::model_arguments_cannot_supply_identity_authority_or_a_new_tool_route" classname="codex-hepta-agentd" timestamp="2026-11-05T19:07:16.039+08:00" time="0.011">
+        </testcase>
+        <testcase name="notes_thread_tool::tests::retained_unknown_item_can_only_be_referenced_for_read_only_status" classname="codex-hepta-agentd" timestamp="2026-11-05T19:07:16.043+08:00" time="0.012">
+        </testcase>
+        <testcase name="notes_thread_seed::tests::persisted_seed_metadata_requires_exact_original_identity_and_catalog" classname="codex-hepta-agentd" timestamp="2026-11-05T19:07:16.020+08:00" time="0.035">
+        </testcase>
+        <testcase name="notes_thread_tool::tests::original_callback_requires_exact_in_progress_item_and_fixed_thread" classname="codex-hepta-agentd" timestamp="2026-11-05T19:07:16.042+08:00" time="0.015">
+        </testcase>
+        <testcase name="notes_ui_endpoint::tests::notes_ui_rejects_wrong_pidfd_and_non_listener_before_accepting_bytes" classname="codex-hepta-agentd" timestamp="2026-11-05T19:07:16.044+08:00" time="0.014">
+        </testcase>
+        <testcase name="notes_thread_tool::status::tests::slow_core_cannot_restart_the_recorded_lookup_budget" classname="codex-hepta-agentd" timestamp="2026-11-05T19:07:16.036+08:00" time="0.023">
+        </testcase>
+        <testcase name="notes_ui_queue::tests::bounded_actions_and_views_refuse_new_work_without_replacing_existing_state" classname="codex-hepta-agentd" timestamp="2026-11-05T19:07:16.048+08:00" time="0.013">
+        </testcase>
+        <testcase name="notes_ui_endpoint::tests::notes_ui_actual_session_gets_a_bounded_cached_view_and_only_queues_one_command" classname="codex-hepta-agentd" timestamp="2026-11-05T19:07:16.044+08:00" time="0.017">
+        </testcase>
+        <testcase name="notes_ui_wire::tests::notes_document_readback_matches_original_desktop_wire_without_terminal_claim" classname="codex-hepta-agentd" timestamp="2026-11-05T19:07:16.049+08:00" time="0.011">
+        </testcase>
+        <testcase name="notes_ui_endpoint::tests::shared_session_lifetime_rejects_wrong_birth_and_observes_actual_child_exit" classname="codex-hepta-agentd" timestamp="2026-11-05T19:07:16.046+08:00" time="0.015">
+        </testcase>
+        <testcase name="notes_thread_tool::tests::a_new_call_cannot_escape_the_original_turn_operation_fence" classname="codex-hepta-agentd" timestamp="2026-11-05T19:07:16.039+08:00" time="0.022">
+        </testcase>
+        <testcase name="notes_ui_queue::tests::expired_actions_never_reach_worker_and_do_not_erase_earlier_retention" classname="codex-hepta-agentd" timestamp="2026-11-05T19:07:16.049+08:00" time="0.013">
+        </testcase>
+        <testcase name="notes_ui_queue::tests::original_actions_remain_fifo_while_refresh_is_coalesced_and_cannot_fill_them" classname="codex-hepta-agentd" timestamp="2026-11-05T19:07:16.049+08:00" time="0.013">
+        </testcase>
+        <testcase name="objective_runtime::tests::history::expired_historical_request_matches_after_reopen_without_changing_journal" classname="codex-hepta-agentd" timestamp="2026-11-05T19:07:16.059+08:00" time="0.013">
+        </testcase>
+        <testcase name="objective_runtime::tests::durable_authentication_frontier_allows_only_exact_replay" classname="codex-hepta-agentd" timestamp="2026-11-05T19:07:16.057+08:00" time="0.018">
+        </testcase>
+        <testcase name="notes_ui_wire::tests::original_session_can_decode_private_fields_absent_observation" classname="codex-hepta-agentd" timestamp="2026-11-05T19:07:16.055+08:00" time="0.020">
+        </testcase>
+        <testcase name="notes_ui_wire::tests::original_session_wire_keeps_text_literal_and_rejects_authority_fields" classname="codex-hepta-agentd" timestamp="2026-11-05T19:07:16.055+08:00" time="0.020">
+        </testcase>
+        <testcase name="objective_runtime::tests::legacy_record_without_protocol_identity_is_rejected_at_final_use" classname="codex-hepta-agentd" timestamp="2026-11-05T19:07:16.061+08:00" time="0.014">
+        </testcase>
+        <testcase name="objective_runtime::tests::history::history_requires_every_retained_authentication_and_body_field" classname="codex-hepta-agentd" timestamp="2026-11-05T19:07:16.061+08:00" time="0.016">
+        </testcase>
+        <testcase name="objective_runtime::tests::history::abstention_and_conflict_remain_distinct_historical_publications" classname="codex-hepta-agentd" timestamp="2026-11-05T19:07:16.058+08:00" time="0.021">
+        </testcase>
+        <testcase name="objective_runtime::tests::runtime_consumes_compiled_record_but_not_explicit_abstain" classname="codex-hepta-agentd" timestamp="2026-11-05T19:07:16.061+08:00" time="0.018">
+        </testcase>
+        <testcase name="plasticity_anchor_journal::tests::journal_preserves_committed_anchor_across_reopen_and_generation_rollover" classname="codex-hepta-agentd" timestamp="2026-11-05T19:07:16.063+08:00" time="0.019">
+        </testcase>
+        <testcase name="plasticity_anchor_journal::tests::journal_never_discards_a_complete_invalid_frame" classname="codex-hepta-agentd" timestamp="2026-11-05T19:07:16.062+08:00" time="0.021">
+        </testcase>
+        <testcase name="objective_runtime::tests::history::trusted_anchor_must_exist_match_and_cover_publication" classname="codex-hepta-agentd" timestamp="2026-11-05T19:07:16.061+08:00" time="0.025">
+        </testcase>
+        <testcase name="plasticity_anchor_journal::tests::journal_repairs_only_an_incomplete_crash_tail" classname="codex-hepta-agentd" timestamp="2026-11-05T19:07:16.072+08:00" time="0.015">
+        </testcase>
+        <testcase name="plasticity_host::tests::owner_evidence_rejects_parameter_signal_value_substitution" classname="codex-hepta-agentd" timestamp="2026-11-05T19:07:16.077+08:00" time="0.013">
+        </testcase>
+        <testcase name="plasticity_host::tests::owner_evidence_policy_rejects_authenticated_wrong_owner" classname="codex-hepta-agentd" timestamp="2026-11-05T19:07:16.075+08:00" time="0.015">
+        </testcase>
+        <testcase name="plasticity_host::tests::owner_evidence_rejects_context_substitution" classname="codex-hepta-agentd" timestamp="2026-11-05T19:07:16.075+08:00" time="0.015">
+        </testcase>
+        <testcase name="plasticity_host::tests::owner_evidence_receipt_is_context_bound" classname="codex-hepta-agentd" timestamp="2026-11-05T19:07:16.075+08:00" time="0.017">
+        </testcase>
+        <testcase name="objective_runtime::tests::recovered_authentication_rejects_revoked_and_stale_owner_trust" classname="codex-hepta-agentd" timestamp="2026-11-05T19:07:16.061+08:00" time="0.034">
+        </testcase>
+        <testcase name="plasticity_owner_evidence::tests::concrete_dataset_and_policy_adapters_bind_live_frontiers" classname="codex-hepta-agentd" timestamp="2026-11-05T19:07:16.086+08:00" time="0.012">
+        </testcase>
+        <testcase name="plasticity_host::tests::retained_external_anchor_blocks_rolled_back_registry_reopen" classname="codex-hepta-agentd" timestamp="2026-11-05T19:07:16.082+08:00" time="0.017">
+        </testcase>
+        <testcase name="plasticity_host::tests::real_append_ack_crash_then_registry_rollback_is_rejected_on_restart" classname="codex-hepta-agentd" timestamp="2026-11-05T19:07:16.080+08:00" time="0.020">
+        </testcase>
+        <testcase name="plasticity_host::tests::anchor_store_fence_is_monotonic_and_reopen_preserves_acknowledged_state" classname="codex-hepta-agentd" timestamp="2026-11-05T19:07:16.075+08:00" time="0.025">
+        </testcase>
+        <testcase name="plasticity_host::tests::owner_evidence_set_includes_mutation_policy_and_canonical_kinds" classname="codex-hepta-agentd" timestamp="2026-11-05T19:07:16.079+08:00" time="0.025">
+        </testcase>
+        <testcase name="plasticity_process_bootstrap::tests::descriptor_digest_rejects_byte_substitution" classname="codex-hepta-agentd" timestamp="2026-11-05T19:07:16.090+08:00" time="0.015">
+        </testcase>
+        <testcase name="plasticity_owner_evidence::tests::concrete_adapters_reject_rollback_frontiers_and_missing_dynamic_owner" classname="codex-hepta-agentd" timestamp="2026-11-05T19:07:16.084+08:00" time="0.022">
+        </testcase>
+        <testcase name="plasticity_process_bootstrap::tests::mutable_owner_hardlink_alias_is_rejected" classname="codex-hepta-agentd" timestamp="2026-11-05T19:07:16.093+08:00" time="0.014">
+        </testcase>
+        <testcase name="plasticity_owner_evidence::tests::dynamic_owner_adapters_bind_ndu_neuron_broadcast_and_exact_signal_values" classname="codex-hepta-agentd" timestamp="2026-11-05T19:07:16.088+08:00" time="0.019">
+        </testcase>
+        <testcase name="plasticity_owner_evidence::tests::dynamic_owner_adapters_reject_stale_wrong_owner_and_value_substitution" classname="codex-hepta-agentd" timestamp="2026-11-05T19:07:16.090+08:00" time="0.019">
+        </testcase>
+        <testcase name="plasticity_owner_evidence::tests::dynamic_owner_adapters_reject_ndu_rollback_and_unavailable_neuron_owner" classname="codex-hepta-agentd" timestamp="2026-11-05T19:07:16.090+08:00" time="0.024">
+        </testcase>
+        <testcase name="production_authority::tests::external_frontier_mismatch_is_not_repaired_from_the_local_directory" classname="codex-hepta-agentd" timestamp="2026-11-05T19:07:16.100+08:00" time="0.015">
+        </testcase>
+        <testcase name="plasticity_runtime::tests::runtime_queue_capacity_is_bounded" classname="codex-hepta-agentd" timestamp="2026-11-05T19:07:16.098+08:00" time="0.019">
+        </testcase>
+        <testcase name="production_authority::tests::missing_clock_keyring_or_external_frontier_has_no_compatibility_fallback" classname="codex-hepta-agentd" timestamp="2026-11-05T19:07:16.101+08:00" time="0.016">
+        </testcase>
+        <testcase name="production_authority::tests::original_authority_uses_the_injected_clock_keyring_and_external_cas" classname="codex-hepta-agentd" timestamp="2026-11-05T19:07:16.104+08:00" time="0.037">
+        </testcase>
+        <testcase name="production_authority::tests::rejected_keyring_drift_preserves_original_durable_claims" classname="codex-hepta-agentd" timestamp="2026-11-05T19:07:16.105+08:00" time="0.044">
+        </testcase>
+        <testcase name="production_authority::tests::expired_revoked_and_wrong_epoch_grants_never_reach_nonce_admission" classname="codex-hepta-agentd" timestamp="2026-11-05T19:07:16.100+08:00" time="0.054">
+        </testcase>
+        <testcase name="authority_host_checkpoint::session_custody_tests::escaped_original_root_session_and_live_verifier_retain_same_registered_file" classname="codex-hepta-agentd" timestamp="2026-11-05T19:07:15.405+08:00" time="0.766">
+        </testcase>
+        <testcase name="plasticity_runtime::lifetime_tests::agentd_lifetime_owner_submits_restarts_and_reconciles_idempotently" classname="codex-hepta-agentd" timestamp="2026-11-05T19:07:16.095+08:00" time="0.144">
+        </testcase>
+        <testcase name="hos2_device::tests::cpu_policy_consumer::cpu_policy_consumer_preparation_event_loss_also_fences_later_admission" classname="codex-hepta-agentd" timestamp="2026-11-05T19:07:15.814+08:00" time="0.477">
+        </testcase>
+        <testcase name="intelligence_product::evaluation_tests::current_use_attestation_binds_the_exact_sealed_publication" classname="codex-hepta-agentd" timestamp="2026-11-05T19:07:15.828+08:00" time="0.464">
+        </testcase>
+        <testcase name="intelligence_product::tests::signed::canonical_runtime::canonical_body_does_not_alias_the_run_lifecycle_generation" classname="codex-hepta-agentd" timestamp="2026-11-05T19:07:15.836+08:00" time="0.464">
+        </testcase>
+        <testcase name="intelligence_product::tests::signed::signed_input_cannot_install_host_trust_or_change_actual_context" classname="codex-hepta-agentd" timestamp="2026-11-05T19:07:15.844+08:00" time="0.499">
+        </testcase>
+        <testcase name="intelligence_product::tests::signed::signed_evaluation_completes_existing_owner_preparation_and_run_admission" classname="codex-hepta-agentd" timestamp="2026-11-05T19:07:15.842+08:00" time="0.524">
+        </testcase>
+        <testcase name="production_composition::objective_sender_tests::retained_signed_body_hash_matches_original_agentd_wire_projection" classname="codex-hepta-agentd" timestamp="2026-11-05T19:07:16.149+08:00" time="0.255">
+        </testcase>
+        <testcase name="intelligence_product::tests::signed::canonical_runtime::canonical_recovery_rejects_old_generation_fence_and_signature_before_provider" classname="codex-hepta-agentd" timestamp="2026-11-05T19:07:15.836+08:00" time="0.589">
+        </testcase>
+        <testcase name="production_composition::tests::issuer_peer_refusal_leaves_neither_host_registered" classname="codex-hepta-agentd" timestamp="2026-11-05T19:07:16.300+08:00" time="0.252">
+        </testcase>
+        <testcase name="production_launcher::desktop_deployment::tests::joint_header_requires_matching_owner_generation_and_actual_target_pair" classname="codex-hepta-agentd" timestamp="2026-11-05T19:07:16.552+08:00" time="0.012">
+        </testcase>
+        <testcase name="production_launcher::desktop_deployment::tests::joint_wire_never_defaults_a_release_interaction_or_old_recovery" classname="codex-hepta-agentd" timestamp="2026-11-05T19:07:16.564+08:00" time="0.010">
+        </testcase>
+        <testcase name="production_launcher::desktop_deployment::tests::recovery_schema_requires_exact_typed_previous_pair_and_fresh_never_consumes_it" classname="codex-hepta-agentd" timestamp="2026-11-05T19:07:16.575+08:00" time="0.021">
+        </testcase>
+        <testcase name="production_composition::objective_sender_tests::uninstalled_original_objective_sender_refuses_without_a_new_owner" classname="codex-hepta-agentd" timestamp="2026-11-05T19:07:16.154+08:00" time="0.453">
+        </testcase>
+        <testcase name="production_launcher::inputs::tests::absolute_original_deadline_cannot_be_renewed" classname="codex-hepta-agentd" timestamp="2026-11-05T19:07:16.596+08:00" time="0.021">
+        </testcase>
+        <testcase name="production_launcher::inputs::tests::explicit_desktop_transfers_distinct_readonly_capabilities_without_notes_inputs" classname="codex-hepta-agentd" timestamp="2026-11-05T19:07:16.607+08:00" time="0.011">
+        </testcase>
+        <testcase name="production_launcher::inputs::tests::inherited_deployment_cannot_retain_the_root_producers_writable_description" classname="codex-hepta-agentd" timestamp="2026-11-05T19:07:16.618+08:00" time="0.010">
+        </testcase>
+        <testcase name="production_composition::notes_tests::unavailable_original_notes_ack_does_not_publish_or_return_identity" classname="codex-hepta-agentd" timestamp="2026-11-05T19:07:16.114+08:00" time="0.514">
+        </testcase>
+        <testcase name="production_launcher::inputs::tests::ordinary_daemon_arguments_remain_byte_exact" classname="codex-hepta-agentd" timestamp="2026-11-05T19:07:16.618+08:00" time="0.010">
+        </testcase>
+        <testcase name="production_launcher::inputs::tests::partial_and_duplicate_launch_flags_preserve_inherited_rights" classname="codex-hepta-agentd" timestamp="2026-11-05T19:07:16.628+08:00" time="0.009">
+        </testcase>
+        <testcase name="intelligence_product::tests::signed::canonical_runtime::owner_transition_during_canonical_preparation_never_refreshes_the_old_run" classname="codex-hepta-agentd" timestamp="2026-11-05T19:07:15.838+08:00" time="0.799">
+        </testcase>
+        <testcase name="production_launcher::inputs::tests::ordinary_payload_file_is_not_a_sealed_original_input" classname="codex-hepta-agentd" timestamp="2026-11-05T19:07:16.628+08:00" time="0.013">
+        </testcase>
+        <testcase name="intelligence_product::tests::signed::canonical_runtime::running_canonical_admission_preserves_the_recovered_run_start" classname="codex-hepta-agentd" timestamp="2026-11-05T19:07:15.842+08:00" time="0.800">
+        </testcase>
+        <testcase name="production_launcher::inputs::tests::partial_mixed_and_alias_desktop_inputs_refuse_before_taking_rights" classname="codex-hepta-agentd" timestamp="2026-11-05T19:07:16.628+08:00" time="0.017">
+        </testcase>
+        <testcase name="prompt_runtime::tests::final_delivered_terminal_releases_staged_turn" classname="codex-hepta-agentd" timestamp="2026-11-05T19:07:16.637+08:00" time="0.009">
+        </testcase>
+        <testcase name="prompt_runtime::tests::dispatch_without_terminal_reopens_as_unknown_and_blocks_blind_retry" classname="codex-hepta-agentd" timestamp="2026-11-05T19:07:16.637+08:00" time="0.015">
+        </testcase>
+        <testcase name="prompt_runtime::tests::indeterminate_terminal_reopens_blocked_and_reconciles_monotonically" classname="codex-hepta-agentd" timestamp="2026-11-05T19:07:16.640+08:00" time="0.015">
+        </testcase>
+        <testcase name="prompt_runtime::tests::non_dispatch_terminal_is_idempotent_and_retains_stage_for_retry" classname="codex-hepta-agentd" timestamp="2026-11-05T19:07:16.645+08:00" time="0.011">
+        </testcase>
+        <testcase name="prompt_runtime::tests::not_dispatched_retry_then_final_delivery_reopens_without_stale_stage_requirement" classname="codex-hepta-agentd" timestamp="2026-11-05T19:07:16.647+08:00" time="0.012">
+        </testcase>
+        <testcase name="prompt_runtime::tests::owner_remains_send_sync_with_fault_injection" classname="codex-hepta-agentd" timestamp="2026-11-05T19:07:16.652+08:00" time="0.008">
+        </testcase>
+        <testcase name="prompt_runtime::tests::post_rename_ack_loss_poison_reopens_to_dispatch_claim_not_absent" classname="codex-hepta-agentd" timestamp="2026-11-05T19:07:16.656+08:00" time="0.013">
+        </testcase>
+        <testcase name="prompt_runtime::tests::named_agentd_pipeline_stages_exact_registry_bytes_for_app_server_host" classname="codex-hepta-agentd" timestamp="2026-11-05T19:07:16.643+08:00" time="0.032">
+        </testcase>
+        <testcase name="prompt_runtime::tests::staged_attachment_is_bound_to_exact_thread_and_turn" classname="codex-hepta-agentd" timestamp="2026-11-05T19:07:16.656+08:00" time="0.027">
+        </testcase>
+        <testcase name="production_composition::notes_tests::notes_independent_frontier_refusal_does_not_publish_or_read_handoff" classname="codex-hepta-agentd" timestamp="2026-11-05T19:07:16.107+08:00" time="0.582">
+        </testcase>
+        <testcase name="intelligence_product::evaluation_tests::evaluator_key_epoch_expiry_and_signed_metrics_are_not_self_asserted" classname="codex-hepta-agentd" timestamp="2026-11-05T19:07:15.828+08:00" time="0.861">
+        </testcase>
+        <testcase name="root_bound_socket::tests::refuses_shared_or_aliased_parent_without_creating_a_rendezvous" classname="codex-hepta-agentd" timestamp="2026-11-05T19:07:16.689+08:00" time="0.009">
+        </testcase>
+        <testcase name="root_observation_cache::tests::fresh_unrelated_registry_updates_do_not_fence_fixed_lease" classname="codex-hepta-agentd" timestamp="2026-11-05T19:07:16.689+08:00" time="0.014">
+        </testcase>
+        <testcase name="root_authority_session::tests::resources::retired_original_session_releases_both_journals_and_live_root_after_worker_exit" classname="codex-hepta-agentd" timestamp="2026-11-05T19:07:16.675+08:00" time="0.028">
+        </testcase>
+        <testcase name="root_observation_cache::tests::request_start_bounds_age_and_ceiling_projection_rounds_conservatively" classname="codex-hepta-agentd" timestamp="2026-11-05T19:07:16.698+08:00" time="0.012">
+        </testcase>
+        <testcase name="root_authority_session::tests::exact_original_consumers_activate_writer_and_drop_fences_retained_clones" classname="codex-hepta-agentd" timestamp="2026-11-05T19:07:16.660+08:00" time="0.051">
+        </testcase>
+        <testcase name="production_composition::objective_sender_tests::notes_literal_control_tests::notes_literal_control_wrong_peer_sends_zero_bytes_and_never_rearms_original_ticket" classname="codex-hepta-agentd" timestamp="2026-11-05T19:07:16.117+08:00" time="0.596">
+        </testcase>
+        <testcase name="root_observation_cache::tests::revocations_only_accumulate_and_update_barrier_does_not_publish_early" classname="codex-hepta-agentd" timestamp="2026-11-05T19:07:16.703+08:00" time="0.011">
+        </testcase>
+        <testcase name="production_composition::notes_tests::original_notes_offer_ack_returns_identity_only_after_both_handles_install" classname="codex-hepta-agentd" timestamp="2026-11-05T19:07:16.109+08:00" time="0.607">
+        </testcase>
+        <testcase name="root_observation_stream::tests::concurrent_read_is_refused_without_discarding_the_original_inflight_exchange" classname="codex-hepta-agentd" timestamp="2026-11-05T19:07:16.711+08:00" time="0.008">
+        </testcase>
+        <testcase name="root_observation_stream::tests::original_fixed_stream_accepts_bounded_reads_without_reconnect" classname="codex-hepta-agentd" timestamp="2026-11-05T19:07:16.714+08:00" time="0.010">
+        </testcase>
+        <testcase name="root_observation_stream::tests::production_uid_and_boot_start_identity_are_pinned_before_any_frame" classname="codex-hepta-agentd" timestamp="2026-11-05T19:07:16.719+08:00" time="0.008">
+        </testcase>
+        <testcase name="root_observation_cache::tests::rollback_same_revision_equivocation_wrong_boot_and_late_clock_permanently_fence" classname="codex-hepta-agentd" timestamp="2026-11-05T19:07:16.704+08:00" time="0.026">
+        </testcase>
+        <testcase name="root_production_handoff::tests::malformed_marker_or_extra_right_closes_all_received_streams" classname="codex-hepta-agentd" timestamp="2026-11-05T19:07:16.725+08:00" time="0.009">
+        </testcase>
+        <testcase name="root_production_handoff::tests::named_socket_or_invalid_deadline_is_not_an_inherited_root_handoff" classname="codex-hepta-agentd" timestamp="2026-11-05T19:07:16.727+08:00" time="0.008">
+        </testcase>
+        <testcase name="root_production_handoff::tests::ordered_descriptor_frame_preserves_open_objects_and_sets_cloexec" classname="codex-hepta-agentd" timestamp="2026-11-05T19:07:16.730+08:00" time="0.008">
+        </testcase>
+        <testcase name="root_production_inputs::tests::invalid_timing_refuses_before_any_descriptor_or_connection_use" classname="codex-hepta-agentd" timestamp="2026-11-05T19:07:16.735+08:00" time="0.010">
+        </testcase>
+        <testcase name="root_production_inputs::tests::empty_or_oversized_handoff_is_refused_before_custody_or_parsing" classname="codex-hepta-agentd" timestamp="2026-11-05T19:07:16.734+08:00" time="0.012">
+        </testcase>
+        <testcase name="root_production_inputs::tests::ordinary_json_file_is_not_a_root_production_handoff" classname="codex-hepta-agentd" timestamp="2026-11-05T19:07:16.738+08:00" time="0.009">
+        </testcase>
+        <testcase name="root_observation_stream::tests::original_peer_death_refuses_before_inherited_socket_reaches_eof" classname="codex-hepta-agentd" timestamp="2026-11-05T19:07:16.716+08:00" time="0.031">
+        </testcase>
+        <testcase name="intelligence_product::evaluation_tests::signed_use_rejects_context_snapshot_candidate_set_and_run_substitution" classname="codex-hepta-agentd" timestamp="2026-11-05T19:07:15.829+08:00" time="0.923">
+        </testcase>
+        <testcase name="root_production_inputs::tests::unsealed_memfd_is_refused_before_parsing_or_connecting" classname="codex-hepta-agentd" timestamp="2026-11-05T19:07:16.745+08:00" time="0.009">
+        </testcase>
+        <testcase name="root_writer_proof::tests::correctly_signed_single_effect_lease_cannot_become_the_long_lived_writer" classname="codex-hepta-agentd" timestamp="2026-11-05T19:07:16.747+08:00" time="0.010">
+        </testcase>
+        <testcase name="root_writer_proof::tests::observation_requires_full_fixed_identity_but_allows_unrelated_store_advancement" classname="codex-hepta-agentd" timestamp="2026-11-05T19:07:16.747+08:00" time="0.017">
+        </testcase>
+        <testcase name="root_writer_proof::tests::verified_complete_proof_and_ascii_signature_create_exact_original_lease" classname="codex-hepta-agentd" timestamp="2026-11-05T19:07:16.753+08:00" time="0.018">
+        </testcase>
+        <testcase name="root_writer_proof::tests::original_signature_domain_key_spelling_and_static_registration_are_all_required" classname="codex-hepta-agentd" timestamp="2026-11-05T19:07:16.747+08:00" time="0.041">
+        </testcase>
+        <testcase name="root_authority_session::tests::file_custody::original_blocking_cas_keeps_file_after_session_and_worker_retire" classname="codex-hepta-agentd" timestamp="2026-11-05T19:07:16.669+08:00" time="0.131">
+        </testcase>
+        <testcase name="root_authority_session::tests::both_original_frontiers_finish_before_new_head_is_published" classname="codex-hepta-agentd" timestamp="2026-11-05T19:07:16.659+08:00" time="0.163">
+        </testcase>
+        <testcase name="root_observation_stream::tests::malformed_oversized_and_partial_frames_permanently_close_the_lane" classname="codex-hepta-agentd" timestamp="2026-11-05T19:07:16.713+08:00" time="0.109">
+        </testcase>
+        <testcase name="root_observation_stream::tests::cancelled_original_exchange_discards_late_reply_and_stays_closed" classname="codex-hepta-agentd" timestamp="2026-11-05T19:07:16.710+08:00" time="0.113">
+        </testcase>
+        <testcase name="production_composition::tests::installed_original_writer_keeps_the_protected_clock_and_original_verifier_live" classname="codex-hepta-agentd" timestamp="2026-11-05T19:07:16.292+08:00" time="0.539">
+        </testcase>
+        <testcase name="runtime::hos2_recovery_tests::notes_tests::literal_prepare_tests::notes_literal_protected_time_preserves_milliseconds_and_rejects_overflow" classname="codex-hepta-agentd" timestamp="2026-11-05T19:07:16.822+08:00" time="0.011">
+        </testcase>
+        <testcase name="production_composition::objective_sender_tests::installed_original_objective_sender_reuses_same_writer_and_live_verifier" classname="codex-hepta-agentd" timestamp="2026-11-05T19:07:16.115+08:00" time="0.733">
+        </testcase>
+        <testcase name="root_authority_session::tests::uncertain_original_consumer_update_fences_even_with_fresh_root_responses" classname="codex-hepta-agentd" timestamp="2026-11-05T19:07:16.685+08:00" time="0.176">
+        </testcase>
+        <testcase name="production_composition::tests::revoked_cut_and_initial_expiry_do_not_open_the_protected_owner" classname="codex-hepta-agentd" timestamp="2026-11-05T19:07:16.404+08:00" time="0.464">
+        </testcase>
+        <testcase name="production_composition::objective_sender_tests::notes_literal_control_tests::notes_literal_control_lost_reply_retains_one_exact_unknown_observation_without_resubmit" classname="codex-hepta-agentd" timestamp="2026-11-05T19:07:16.117+08:00" time="0.758">
+        </testcase>
+        <testcase name="runtime::tests::automation_generation_change_during_open_remains_fail_closed" classname="codex-hepta-agentd" timestamp="2026-11-05T19:07:16.868+08:00" time="0.015">
+        </testcase>
+        <testcase name="production_composition::tests::success_keeps_one_original_writer_and_repeat_assembly_touches_no_inputs" classname="codex-hepta-agentd" timestamp="2026-11-05T19:07:16.425+08:00" time="0.459">
+        </testcase>
+        <testcase name="runtime::tests::automation_owner_fence_still_terminates_the_runtime_monitor" classname="codex-hepta-agentd" timestamp="2026-11-05T19:07:16.875+08:00" time="0.011">
+        </testcase>
+        <testcase name="production_composition::tests::owner_custody::escaped_original_host_and_writer_retain_the_same_registered_owner_file" classname="codex-hepta-agentd" timestamp="2026-11-05T19:07:16.366+08:00" time="0.523">
+        </testcase>
+        <testcase name="authbus_dispatch::tests::lost_queue_reply_recovers_from_sqlite_using_lookup_only_and_exact_receipt" classname="codex-hepta-agentd" timestamp="2026-11-05T19:07:15.399+08:00" time="1.495">
+        </testcase>
+        <testcase name="runtime::tests::compatibility_retrieval_mode_rejects_hnmf_context_without_explicit_profile" classname="codex-hepta-agentd" timestamp="2026-11-05T19:07:16.887+08:00" time="0.010">
+        </testcase>
+        <testcase name="runtime::tests::automation_owner_mismatch_remains_fail_closed" classname="codex-hepta-agentd" timestamp="2026-11-05T19:07:16.883+08:00" time="0.013">
+        </testcase>
+        <testcase name="runtime::tests::compatibility_retrieval_mode_does_not_require_hnmf_context" classname="codex-hepta-agentd" timestamp="2026-11-05T19:07:16.884+08:00" time="0.013">
+        </testcase>
+        <testcase name="production_composition::objective_sender_tests::notes_literal_control_tests::receipt_tests::notes_literal_recovery_checks_identity_and_never_erases_first_publication" classname="codex-hepta-agentd" timestamp="2026-11-05T19:07:16.141+08:00" time="0.763">
+        </testcase>
+        <testcase name="runtime::tests::generation_change_during_open_is_fenced_before_serving" classname="codex-hepta-agentd" timestamp="2026-11-05T19:07:16.896+08:00" time="0.012">
+        </testcase>
+        <testcase name="runtime::tests::generation_monitor_honors_host_cancellation_during_readiness_probe" classname="codex-hepta-agentd" timestamp="2026-11-05T19:07:16.897+08:00" time="0.014">
+        </testcase>
+        <testcase name="runtime::tests::product_write_profile_fails_closed_when_cognitive_store_is_unavailable" classname="codex-hepta-agentd" timestamp="2026-11-05T19:07:16.908+08:00" time="0.012">
+        </testcase>
+        <testcase name="runtime::tests::hnmf_required_retrieval_mode_fails_closed_without_current_context" classname="codex-hepta-agentd" timestamp="2026-11-05T19:07:16.904+08:00" time="0.016">
+        </testcase>
+        <testcase name="runtime::tests::unavailable_automation_store_degrades_without_startup_failure" classname="codex-hepta-agentd" timestamp="2026-11-05T19:07:16.921+08:00" time="0.016">
+        </testcase>
+        <testcase name="runtime::tests::stale_generation_is_fenced_before_cognitive_store_open" classname="codex-hepta-agentd" timestamp="2026-11-05T19:07:16.921+08:00" time="0.021">
+        </testcase>
+        <testcase name="runtime::tests::dispatch_uncertain_tick_stays_live_for_durable_reconciliation" classname="codex-hepta-agentd" timestamp="2026-11-05T19:07:16.890+08:00" time="0.059">
+        </testcase>
+        <testcase name="runtime_tasks::failure_latch_tests::observed_required_failure_latches_stop_even_when_caller_handles_error" classname="codex-hepta-agentd" timestamp="2026-11-05T19:07:16.942+08:00" time="0.018">
+        </testcase>
+        <testcase name="runtime_tasks::failure_latch_tests::rejected_or_panicking_retirement_callback_latches_host_failure" classname="codex-hepta-agentd" timestamp="2026-11-05T19:07:16.949+08:00" time="0.012">
+        </testcase>
+        <testcase name="runtime::tests::unavailable_cognitive_store_degrades_without_leaking_open_error" classname="codex-hepta-agentd" timestamp="2026-11-05T19:07:16.937+08:00" time="0.025">
+        </testcase>
+        <testcase name="production_composition::tests::original_live_verifier_and_protected_clock_failures_during_recovery_do_not_install" classname="codex-hepta-agentd" timestamp="2026-11-05T19:07:16.343+08:00" time="0.628">
+        </testcase>
+        <testcase name="runtime_tasks::failure_latch_tests::retirement_writer_fence_cancels_siblings_and_blocks_fresh_names" classname="codex-hepta-agentd" timestamp="2026-11-05T19:07:16.962+08:00" time="0.015">
+        </testcase>
+        <testcase name="runtime_tasks::failure_latch_tests::successful_optional_quarantine_does_not_latch_host_failure" classname="codex-hepta-agentd" timestamp="2026-11-05T19:07:16.965+08:00" time="0.032">
+        </testcase>
+        <testcase name="runtime_tasks::failure_latch_tests::retirement_timeout_does_not_masquerade_as_a_shared_fence" classname="codex-hepta-agentd" timestamp="2026-11-05T19:07:16.959+08:00" time="0.057">
+        </testcase>
+        <testcase name="runtime_tasks::outcome_tests::observed_required_failure_cannot_become_cancelled_success" classname="codex-hepta-agentd" timestamp="2026-11-05T19:07:17.017+08:00" time="0.010">
+        </testcase>
+        <testcase name="runtime_tasks::outcome_tests::dropped_retirement_wait_does_not_erase_an_unacknowledged_abort" classname="codex-hepta-agentd" timestamp="2026-11-05T19:07:16.972+08:00" time="0.062">
+        </testcase>
+        <testcase name="hos2_device::tests::cpu_policy_consumer::cpu_policy_final_use_refuses_changed_identity_revision_age_and_missing_proposal" classname="codex-hepta-agentd" timestamp="2026-11-05T19:07:15.817+08:00" time="1.218">
+        </testcase>
+        <testcase name="runtime_tasks::outcome_tests::isolated_optional_failure_does_not_poison_healthy_host" classname="codex-hepta-agentd" timestamp="2026-11-05T19:07:16.976+08:00" time="0.062">
+        </testcase>
+        <testcase name="runtime_tasks::outcome_tests::rejected_quarantine_cannot_be_reclassified_as_normal_shutdown" classname="codex-hepta-agentd" timestamp="2026-11-05T19:07:17.034+08:00" time="0.009">
+        </testcase>
+        <testcase name="runtime_tasks::outcome_tests::rejected_retirement_remains_failed_after_cleanup" classname="codex-hepta-agentd" timestamp="2026-11-05T19:07:17.035+08:00" time="0.009">
+        </testcase>
+        <testcase name="runtime_tasks::outcome_tests::late_owner_acknowledgement_after_timeout_preserves_clean_shutdown" classname="codex-hepta-agentd" timestamp="2026-11-05T19:07:16.997+08:00" time="0.063">
+        </testcase>
+        <testcase name="runtime::tests::duplicate_automation_attachment_does_not_replace_the_live_store" classname="codex-hepta-agentd" timestamp="2026-11-05T19:07:16.896+08:00" time="0.171">
+        </testcase>
+        <testcase name="runtime_tasks::retirement_tests::a_writer_fence_during_retirement_still_propagates" classname="codex-hepta-agentd" timestamp="2026-11-05T19:07:17.060+08:00" time="0.012">
+        </testcase>
+        <testcase name="runtime_tasks::retirement_tests::failed_drain_is_quarantine_not_retirement" classname="codex-hepta-agentd" timestamp="2026-11-05T19:07:17.067+08:00" time="0.009">
+        </testcase>
+        <testcase name="runtime_tasks::retirement_tests::forty_first_running_service_retires_without_stopping_other_services" classname="codex-hepta-agentd" timestamp="2026-11-05T19:07:17.072+08:00" time="0.010">
+        </testcase>
+        <testcase name="runtime_tasks::retirement_tests::owner_retirement_rejection_or_panic_never_publishes_success" classname="codex-hepta-agentd" timestamp="2026-11-05T19:07:17.077+08:00" time="0.009">
+        </testcase>
+        <testcase name="runtime_tasks::outcome_tests::ordinary_host_abort_does_not_invent_a_retirement_request" classname="codex-hepta-agentd" timestamp="2026-11-05T19:07:17.027+08:00" time="0.060">
+        </testcase>
+        <testcase name="runtime_tasks::outcome_tests::shutdown_listener_failure_is_latched_across_reentry" classname="codex-hepta-agentd" timestamp="2026-11-05T19:07:17.039+08:00" time="0.060">
+        </testcase>
+        <testcase name="runtime_tasks::outcome_tests::successful_optional_retirement_preserves_clean_host_outcome" classname="codex-hepta-agentd" timestamp="2026-11-05T19:07:17.043+08:00" time="0.062">
+        </testcase>
+        <testcase name="production_composition::notes_tests::malformed_notes_descriptors_or_identity_publish_neither_host" classname="codex-hepta-agentd" timestamp="2026-11-05T19:07:16.107+08:00" time="1.001">
+        </testcase>
+        <testcase name="production_composition::tests::frontier_and_current_cut_refusals_leave_neither_host_registered" classname="codex-hepta-agentd" timestamp="2026-11-05T19:07:16.291+08:00" time="0.819">
+        </testcase>
+        <testcase name="runtime_tasks::retirement_tests::rejected_service_factory_is_never_invoked" classname="codex-hepta-agentd" timestamp="2026-11-05T19:07:17.082+08:00" time="0.032">
+        </testcase>
+        <testcase name="runtime_tasks::retirement_tests::retirement_cannot_stop_required_or_legacy_uncontracted_tasks" classname="codex-hepta-agentd" timestamp="2026-11-05T19:07:17.086+08:00" time="0.030">
+        </testcase>
+        <testcase name="runtime_tasks::service_generations::abi_tests::incompatible_abi_never_starts_factory_or_consumes_a_slot" classname="codex-hepta-agentd" timestamp="2026-11-05T19:07:17.108+08:00" time="0.009">
+        </testcase>
+        <testcase name="runtime_tasks::service_generations::tests::failed_retirement_callback_fences_host_without_releasing_identity" classname="codex-hepta-agentd" timestamp="2026-11-05T19:07:17.114+08:00" time="0.009">
+        </testcase>
+        <testcase name="runtime_tasks::service_generations::tests::rejected_registration_never_invokes_factory_or_advances_fence" classname="codex-hepta-agentd" timestamp="2026-11-05T19:07:17.117+08:00" time="0.009">
+        </testcase>
+        <testcase name="runtime_tasks::service_generations::tests::quarantined_failure_is_not_an_acknowledged_retirement" classname="codex-hepta-agentd" timestamp="2026-11-05T19:07:17.116+08:00" time="0.010">
+        </testcase>
+        <testcase name="runtime_tasks::service_generations::abi_tests::abi_bound_replacements_reuse_one_slot_and_reject_stale_retirement" classname="codex-hepta-agentd" timestamp="2026-11-05T19:07:17.105+08:00" time="0.023">
+        </testcase>
+        <testcase name="runtime::tests::drain_runtime_keeps_control_reconciliation_live_until_terminal_observation" classname="codex-hepta-agentd" timestamp="2026-11-05T19:07:16.894+08:00" time="0.237">
+        </testcase>
+        <testcase name="runtime_tasks::service_generations::tests::a_drain_timeout_does_not_free_the_slot_or_acknowledge_retirement" classname="codex-hepta-agentd" timestamp="2026-11-05T19:07:17.110+08:00" time="0.021">
+        </testcase>
+        <testcase name="runtime_tasks::retirement_tests::retirement_timeout_never_acknowledges_unfinished_drain" classname="codex-hepta-agentd" timestamp="2026-11-05T19:07:17.099+08:00" time="0.032">
+        </testcase>
+        <testcase name="runtime_tasks::service_generations::tests::stale_and_unversioned_requests_cannot_stop_or_resurrect_a_successor" classname="codex-hepta-agentd" timestamp="2026-11-05T19:07:17.126+08:00" time="0.008">
+        </testcase>
+        <testcase name="runtime_tasks::service_generations::tests::retired_legacy_name_cannot_bypass_its_single_use_contract" classname="codex-hepta-agentd" timestamp="2026-11-05T19:07:17.126+08:00" time="0.010">
+        </testcase>
+        <testcase name="runtime_tasks::tests::cooperative_shutdown_precedes_forced_abort" classname="codex-hepta-agentd" timestamp="2026-11-05T19:07:17.132+08:00" time="0.010">
+        </testcase>
+        <testcase name="runtime_tasks::tests::cancelled_observation_keeps_completion_identity" classname="codex-hepta-agentd" timestamp="2026-11-05T19:07:17.131+08:00" time="0.011">
+        </testcase>
+        <testcase name="runtime_tasks::tests::forty_first_service_executes_and_failure_preserves_required_services" classname="codex-hepta-agentd" timestamp="2026-11-05T19:07:17.134+08:00" time="0.010">
+        </testcase>
+        <testcase name="runtime_tasks::service_generations::tests::replacements_reuse_one_slot_even_at_full_identity_capacity" classname="codex-hepta-agentd" timestamp="2026-11-05T19:07:17.124+08:00" time="0.030">
+        </testcase>
+        <testcase name="production_composition::tests::android_runtime_bootstrap_preserves_original_writer_and_refuses_revoked_owner" classname="codex-hepta-agentd" timestamp="2026-11-05T19:07:16.171+08:00" time="0.983">
+        </testcase>
+        <testcase name="runtime_tasks::outcome_tests::timed_out_retirement_aborted_by_shutdown_remains_failed" classname="codex-hepta-agentd" timestamp="2026-11-05T19:07:17.044+08:00" time="0.112">
+        </testcase>
+        <testcase name="runtime_tasks::tests::admission_is_bounded_and_rejects_duplicate_or_invalid_names" classname="codex-hepta-agentd" timestamp="2026-11-05T19:07:17.131+08:00" time="0.031">
+        </testcase>
+        <testcase name="runtime_tasks::tests::shutdown_grace_cannot_be_zero_or_unbounded" classname="codex-hepta-agentd" timestamp="2026-11-05T19:07:17.154+08:00" time="0.008">
+        </testcase>
+        <testcase name="runtime_tasks::tests::required_clean_exit_is_not_misreported_as_success" classname="codex-hepta-agentd" timestamp="2026-11-05T19:07:17.154+08:00" time="0.009">
+        </testcase>
+        <testcase name="runtime_tasks::tests::generation_fence_cannot_be_downgraded_to_optional_availability" classname="codex-hepta-agentd" timestamp="2026-11-05T19:07:17.136+08:00" time="0.030">
+        </testcase>
+        <testcase name="runtime_tasks::tests::quarantine_rejection_is_fatal_and_reaps_other_tasks" classname="codex-hepta-agentd" timestamp="2026-11-05T19:07:17.143+08:00" time="0.030">
+        </testcase>
+        <testcase name="runtime_tasks::tests::quarantine_panic_is_fatal_and_still_drains" classname="codex-hepta-agentd" timestamp="2026-11-05T19:07:17.142+08:00" time="0.031">
+        </testcase>
+        <testcase name="runtime_tasks::tests::optional_panic_preserves_registered_identity_and_quarantines_once" classname="codex-hepta-agentd" timestamp="2026-11-05T19:07:17.141+08:00" time="0.033">
+        </testcase>
+        <testcase name="state::isolation_tests::configured_intelligence_runner_is_not_advertised_without_daemon_ingress" classname="codex-hepta-agentd" timestamp="2026-11-05T19:07:17.162+08:00" time="0.013">
+        </testcase>
+        <testcase name="state::isolation_tests::final_use_revalidation_rejects_stale_spawn_generation_before_store_access" classname="codex-hepta-agentd" timestamp="2026-11-05T19:07:17.167+08:00" time="0.010">
+        </testcase>
+        <testcase name="state::isolation_tests::daemon_control_owns_the_run_lifecycle_and_advertises_it" classname="codex-hepta-agentd" timestamp="2026-11-05T19:07:17.163+08:00" time="0.014">
+        </testcase>
+        <testcase name="state::isolation_tests::missing_local_record_immediately_fences_the_serving_agent" classname="codex-hepta-agentd" timestamp="2026-11-05T19:07:17.173+08:00" time="0.011">
+        </testcase>
+        <testcase name="runtime_tasks::tests::shutdown_listener_error_does_not_detach_live_tasks" classname="codex-hepta-agentd" timestamp="2026-11-05T19:07:17.156+08:00" time="0.028">
+        </testcase>
+        <testcase name="state::isolation_tests::serving_agent_survives_unrelated_registry_corruption" classname="codex-hepta-agentd" timestamp="2026-11-05T19:07:17.174+08:00" time="0.012">
+        </testcase>
+        <testcase name="state::isolation_tests::targeted_read_preserves_lifecycle_and_resource_fences" classname="codex-hepta-agentd" timestamp="2026-11-05T19:07:17.174+08:00" time="0.012">
+        </testcase>
+        <testcase name="state::notes_organ::tests::finite_notes_readiness_keeps_app_server_and_text_ingress_closed" classname="codex-hepta-agentd" timestamp="2026-11-05T19:07:17.177+08:00" time="0.010">
+        </testcase>
+        <testcase name="state::notes_organ::tests::missing_original_root_cannot_open_notes_organ_admission" classname="codex-hepta-agentd" timestamp="2026-11-05T19:07:17.185+08:00" time="0.011">
+        </testcase>
+        <testcase name="text_session::signer::tests::old_owner_receipt_does_not_gain_approval_permission_on_decode_or_reconnect" classname="codex-hepta-agentd" timestamp="2026-11-05T19:07:17.187+08:00" time="0.010">
+        </testcase>
+        <testcase name="text_session::signer::tests::recovery_pages_original_namespace_without_requesting_a_new_signature" classname="codex-hepta-agentd" timestamp="2026-11-05T19:07:17.187+08:00" time="0.010">
+        </testcase>
+        <testcase name="state::notes_organ::tests::original_fleet_draining_and_permanent_fence_close_finite_notes_readiness" classname="codex-hepta-agentd" timestamp="2026-11-05T19:07:17.185+08:00" time="0.014">
+        </testcase>
+        <testcase name="text_session::signer::tests::unsigned_protocol::only_prewrite_failures_prove_non_transmission" classname="codex-hepta-agentd" timestamp="2026-11-05T19:07:17.197+08:00" time="0.009">
+        </testcase>
+        <testcase name="text_session::provider::tests::provider_route_fifo_is_rejected_before_read" classname="codex-hepta-agentd" timestamp="2026-11-05T19:07:17.186+08:00" time="0.020">
+        </testcase>
+        <testcase name="text_session::signer::tests::recovery_rejects_another_namespace_or_a_number_above_hello_watermark" classname="codex-hepta-agentd" timestamp="2026-11-05T19:07:17.195+08:00" time="0.011">
+        </testcase>
+        <testcase name="text_session::signer::tests::unsigned_protocol::unsigned_closure_rejects_wrong_payload_watermark_and_preserves_a_retained_old_generation" classname="codex-hepta-agentd" timestamp="2026-11-05T19:07:17.199+08:00" time="0.010">
+        </testcase>
+        <testcase name="text_session::signer::tests::unsigned_protocol::lost_close_reply_stays_unknown_until_matching_original_closure_proof" classname="codex-hepta-agentd" timestamp="2026-11-05T19:07:17.197+08:00" time="0.012">
+        </testcase>
+        <testcase name="topology_plasticity_host::tests::topology_anchor_store_preserves_fence_and_anchor" classname="codex-hepta-agentd" timestamp="2026-11-05T19:07:17.206+08:00" time="0.009">
+        </testcase>
+        <testcase name="topology_plasticity_host::tests::topology_real_append_ack_crash_then_registry_rollback_is_rejected_on_restart" classname="codex-hepta-agentd" timestamp="2026-11-05T19:07:17.206+08:00" time="0.009">
+        </testcase>
+        <testcase name="production_composition::tests::final_metadata_callback_cannot_expire_authority_before_atomic_install" classname="codex-hepta-agentd" timestamp="2026-11-05T19:07:16.239+08:00" time="0.987">
+        </testcase>
+        <testcase name="text_session::worker::tests::missing_root_keeps_reconnect_alive_and_cannot_admit_input" classname="codex-hepta-agentd" timestamp="2026-11-05T19:07:17.206+08:00" time="0.035">
+        </testcase>
+        <testcase name="runtime::hos2_recovery_tests::notes_tests::previous_tests::notes_objective_previous_receipt_host_reconciles_without_registering_dispatch_or_issuer" classname="codex-hepta-agentd" timestamp="2026-11-05T19:07:16.861+08:00" time="0.437">
+        </testcase>
+        <testcase name="runtime::hos2_recovery_tests::notes_tests::desktop_prepare_deadline_tests::elapsed_desktop_budget_cannot_refresh_before_either_original_reservation" classname="codex-hepta-agentd" timestamp="2026-11-05T19:07:16.801+08:00" time="0.559">
+        </testcase>
+        <testcase name="state::isolation_tests::current_durable_run_start_requires_live_owner_trust" classname="codex-hepta-agentd" timestamp="2026-11-05T19:07:17.162+08:00" time="0.225">
+        </testcase>
+        <testcase name="runtime::hos2_recovery_tests::notes_tests::literal_prepare_tests::notes_literal_preparation_retains_exact_owner_payload_without_grant_or_effect" classname="codex-hepta-agentd" timestamp="2026-11-05T19:07:16.822+08:00" time="0.645">
+        </testcase>
+        <testcase name="production_composition::notes_tests::attached_ack_followed_by_live_refusal_returns_no_identity_and_closes_target" classname="codex-hepta-agentd" timestamp="2026-11-05T19:07:16.106+08:00" time="1.366">
+        </testcase>
+        <testcase name="automation::service_tests::production_constructor_keeps_retired_timer_absent_after_reopen" classname="codex-hepta-agentd" timestamp="2026-11-05T19:07:15.426+08:00" time="2.081">
+        </testcase>
+        <testcase name="automation::service_tests::production_service_retirement_drains_owner_then_unpublishes_only_automation" classname="codex-hepta-agentd" timestamp="2026-11-05T19:07:15.429+08:00" time="2.115">
+        </testcase>
+        <testcase name="automation::service_tests::unknown_owner_dispatch_prevents_retirement_and_replacement_after_reopen" classname="codex-hepta-agentd" timestamp="2026-11-05T19:07:15.429+08:00" time="2.137">
+        </testcase>
+        <testcase name="runtime::tests::runtime_automation_store_failure_stops_only_the_scheduler_plane" classname="codex-hepta-agentd" timestamp="2026-11-05T19:07:16.910+08:00" time="0.693">
+        </testcase>
+        <testcase name="state::notes_objective::lock_tests::notes_objective_unknown_reads_original_owner_without_renewing_expired_admission" classname="codex-hepta-agentd" timestamp="2026-11-05T19:07:17.176+08:00" time="0.519">
+        </testcase>
+        <testcase name="state::notes_objective::lock_tests::notes_objective_drain_does_not_reenter_run_mutex" classname="codex-hepta-agentd" timestamp="2026-11-05T19:07:17.175+08:00" time="0.547">
+        </testcase>
+        <testcase name="runtime::hos2_recovery_tests::notes_tests::composition_tests::notes_objective_protected_factory_checks_complete_binding_before_recovery_and_reuses_owner" classname="codex-hepta-agentd" timestamp="2026-11-05T19:07:16.770+08:00" time="1.050">
+        </testcase>
+        <testcase name="notes_channel::tests::lost_retirement_ack_can_retry_the_exact_datagram_and_cannot_send_effects" classname="codex-hepta-agentd" timestamp="2026-11-05T19:07:15.981+08:00" time="2.017">
+        </testcase>
+        <testcase name="runtime::hos2_recovery_tests::notes_tests::composition_tests::notes_objective_session_registration_returns_observer_for_the_same_private_target" classname="codex-hepta-agentd" timestamp="2026-11-05T19:07:16.788+08:00" time="1.337">
+        </testcase>
+        <testcase name="runtime::hos2_recovery_tests::notes_tests::objective_tests::finite_notes_static_execution_uses_original_publication_owner_and_recovers_lost_ack_fixture" classname="codex-hepta-agentd" timestamp="2026-11-05T19:07:16.831+08:00" time="1.371">
+        </testcase>
+        <testcase name="runtime::hos2_recovery_tests::notes_tests::objective_tests::signed_notes_objective_uses_original_run_and_operation_then_recovers_lost_ack_without_reentry" classname="codex-hepta-agentd" timestamp="2026-11-05T19:07:16.847+08:00" time="1.480">
+        </testcase>
+        <testcase name="runtime::hos2_recovery_tests::notes_tests::composition_tests::local_handoff_tests::notes_local_handoff_before_expiry_refuses_and_consumes_current_into_dirty" classname="codex-hepta-agentd" timestamp="2026-11-05T19:07:16.757+08:00" time="1.801">
+        </testcase>
+        <testcase name="native_g2_command_runtime::tests::completion_and_unwind_keep_the_original_drop_context" classname="codex-hepta-agentd" timestamp="2026-11-05T19:07:15.939+08:00" time="2.823">
+        </testcase>
+        <testcase name="native_g2_command_runtime::tests::runtime_entry_rejection_keeps_the_original_drop_context" classname="codex-hepta-agentd" timestamp="2026-11-05T19:07:15.940+08:00" time="2.832">
+        </testcase>
+        <testcase name="runtime_tasks::retirement_tests::retirement_keeps_observing_unrelated_failures" classname="codex-hepta-agentd" timestamp="2026-11-05T19:07:17.087+08:00" time="2.011">
+        </testcase>
+        <testcase name="runtime::hos2_recovery_tests::notes_tests::notes_recovered_writer_persists_lost_reply_and_retires_without_replay" classname="codex-hepta-agentd" timestamp="2026-11-05T19:07:16.823+08:00" time="2.642">
+        </testcase>
+        <testcase name="hos2_device::tests::cpu_policy_consumer::cpu_policy_final_use_retries_same_k_d_and_installs_once_with_a_fresh_proposal" classname="codex-hepta-agentd" timestamp="2026-11-05T19:07:15.817+08:00" time="5.223">
+        </testcase>
+        <testcase name="runtime::hos2_recovery_tests::notes_tests::objective_tests::reconciliation_scope_tests::finite_notes_reconciler_excludes_device_grants_dispatch_and_observation" classname="codex-hepta-agentd" timestamp="2026-11-05T19:07:16.833+08:00" time="5.601">
+        </testcase>
+        <testcase name="runtime_tasks::service_generations::writer_tests::sqlite_writer_rotates_256_times_without_consuming_new_service_identities" classname="codex-hepta-agentd" timestamp="2026-11-05T19:07:17.128+08:00" time="5.943">
+        </testcase>
+        <testcase name="runtime::hos2_recovery_tests::notes_tests::composition_tests::local_handoff_tests::notes_local_handoff_real_clock_preserves_unknown_with_distinct_spawn_and_lease_generations" classname="codex-hepta-agentd" timestamp="2026-11-05T19:07:16.764+08:00" time="9.840">
+        </testcase>
+        <testcase name="runtime::hos2_recovery_tests::actual_reconciler_asks_original_issuer_for_same_k_d_and_does_not_resend_unknown" classname="codex-hepta-agentd" timestamp="2026-11-05T19:07:16.754+08:00" time="35.686">
+        </testcase>
+    </testsuite>
+    <testsuite name="codex-hepta-agentd::cognitive_product_e2e" tests="9" disabled="0" errors="0" failures="0">
+        <testcase name="cognitive_store_unavailable_fails_closed_before_provider" classname="codex-hepta-agentd::cognitive_product_e2e" timestamp="2026-11-05T19:07:17.387+08:00" time="0.047">
+        </testcase>
+        <testcase name="real_agentd_final_use_revalidation_rejects_concurrent_tombstone" classname="codex-hepta-agentd::cognitive_product_e2e" timestamp="2026-11-05T19:07:17.471+08:00" time="0.951">
+        </testcase>
+        <testcase name="runtime_automation_store_failure_does_not_end_real_agentd_or_normal_turns" classname="codex-hepta-agentd::cognitive_product_e2e" timestamp="2026-11-05T19:07:17.604+08:00" time="1.211">
+        </testcase>
+        <testcase name="unavailable_automation_store_keeps_real_agentd_and_app_server_ready" classname="codex-hepta-agentd::cognitive_product_e2e" timestamp="2026-11-05T19:07:17.695+08:00" time="1.206">
+        </testcase>
+        <testcase name="five_running_agents_share_only_with_the_explicit_consumer" classname="codex-hepta-agentd::cognitive_product_e2e" timestamp="2026-11-05T19:07:17.467+08:00" time="3.890">
+        </testcase>
+        <testcase name="five_real_agents_survive_one_automation_store_failure_without_peer_stall" classname="codex-hepta-agentd::cognitive_product_e2e" timestamp="2026-11-05T19:07:17.434+08:00" time="3.930">
+        </testcase>
+        <testcase name="real_agentd_local_memory_review_is_read_only_and_replayable" classname="codex-hepta-agentd::cognitive_product_e2e" timestamp="2026-11-05T19:07:17.544+08:00" time="3.922">
+        </testcase>
+        <testcase name="running_consumer_observes_owner_control_grant_and_revoke_without_restart" classname="codex-hepta-agentd::cognitive_product_e2e" timestamp="2026-11-05T19:07:17.567+08:00" time="4.181">
+        </testcase>
+        <testcase name="real_agentd_local_memory_review_hides_host_tombstone_after_reopen" classname="codex-hepta-agentd::cognitive_product_e2e" timestamp="2026-11-05T19:07:17.508+08:00" time="4.376">
+        </testcase>
+    </testsuite>
+    <testsuite name="codex-hepta-agentd::authbus_text_product" tests="8" disabled="0" errors="0" failures="0">
+        <testcase name="real_agentd_without_explicit_trust_rejects_signed_text" classname="codex-hepta-agentd::authbus_text_product" timestamp="2026-11-05T19:07:17.209+08:00" time="0.791">
+        </testcase>
+        <testcase name="text_close_product::original_cancelled_binding_survives_owner_restart_and_late_original_rpc" classname="codex-hepta-agentd::authbus_text_product" timestamp="2026-11-05T19:07:17.216+08:00" time="1.734">
+        </testcase>
+        <testcase name="text_approval_product::original_pending_approval_survives_text_reattach_and_resolves_without_disconnect" classname="codex-hepta-agentd::authbus_text_product" timestamp="2026-11-05T19:07:17.215+08:00" time="1.859">
+        </testcase>
+        <testcase name="text_snapshot_boundary_product::queued_original_events_do_not_overwrite_history_or_survive_owner_fence" classname="codex-hepta-agentd::authbus_text_product" timestamp="2026-11-05T19:07:17.360+08:00" time="1.921">
+        </testcase>
+        <testcase name="text_large_history_product::large_original_item_keeps_history_navigable_and_exact_terminal_reconcilable" classname="codex-hepta-agentd::authbus_text_product" timestamp="2026-11-05T19:07:17.226+08:00" time="2.295">
+        </testcase>
+        <testcase name="signed_text_crosses_real_queue_once_and_current_trust_rejects_invalid_ingress" classname="codex-hepta-agentd::authbus_text_product" timestamp="2026-11-05T19:07:17.209+08:00" time="3.508">
+        </testcase>
+        <testcase name="text_slow_approval_product::slow_original_file_approval_preview_survives_repeated_select_cancellation" classname="codex-hepta-agentd::authbus_text_product" timestamp="2026-11-05T19:07:17.298+08:00" time="6.349">
+        </testcase>
+        <testcase name="text_slow_approval_product::original_file_preview_total_deadline_keeps_callback_declineable" classname="codex-hepta-agentd::authbus_text_product" timestamp="2026-11-05T19:07:17.241+08:00" time="7.333">
+        </testcase>
+    </testsuite>
+    <testsuite name="codex-hepta-agentd::fleet_harness_diagnostics" tests="1" disabled="0" errors="0" failures="0">
+        <testcase name="readiness_reports_exited_child_with_bounded_decoded_output" classname="codex-hepta-agentd::fleet_harness_diagnostics" timestamp="2026-11-05T19:07:18.000+08:00" time="0.078">
+        </testcase>
+    </testsuite>
+    <testsuite name="codex-hepta-agentd::intuition_policy_product" tests="1" disabled="0" errors="0" failures="0">
+        <testcase name="agentd_calls_authenticated_current_intuition_policy_with_owner_pins" classname="codex-hepta-agentd::intuition_policy_product" timestamp="2026-11-05T19:07:18.079+08:00" time="0.055">
+        </testcase>
+    </testsuite>
+    <testsuite name="codex-hepta-agentd::kernel_evidence_product" tests="3" disabled="0" errors="0" failures="0">
+        <testcase name="signed_recovery_frontier_rejects_valid_older_database_image" classname="codex-hepta-agentd::kernel_evidence_product" timestamp="2026-11-05T19:07:18.203+08:00" time="0.321">
+        </testcase>
+        <testcase name="signed_recovery_frontier_allows_exact_current_database" classname="codex-hepta-agentd::kernel_evidence_product" timestamp="2026-11-05T19:07:18.134+08:00" time="0.987">
+        </testcase>
+        <testcase name="real_agentd_composes_authenticated_evidence_writer_query_verifier_and_terminal_observer" classname="codex-hepta-agentd::kernel_evidence_product" timestamp="2026-11-05T19:07:18.125+08:00" time="1.085">
+        </testcase>
+    </testsuite>
+    <testsuite name="codex-hepta-agentd::runtime_shutdown_outcomes" tests="9" disabled="0" errors="0" failures="0">
+        <testcase name="already_ready_shutdown_cannot_hide_unobserved_required_failure" classname="codex-hepta-agentd::runtime_shutdown_outcomes" timestamp="2026-11-05T19:07:18.772+08:00" time="0.010">
+        </testcase>
+        <testcase name="normal_host_stop_is_not_permanent_module_retirement" classname="codex-hepta-agentd::runtime_shutdown_outcomes" timestamp="2026-11-05T19:07:18.814+08:00" time="0.010">
+        </testcase>
+        <testcase name="optional_failure_during_shutdown_is_quarantined_exactly_once" classname="codex-hepta-agentd::runtime_shutdown_outcomes" timestamp="2026-11-05T19:07:18.825+08:00" time="0.014">
+        </testcase>
+        <testcase name="optional_shared_fence_during_shutdown_still_stops_the_host" classname="codex-hepta-agentd::runtime_shutdown_outcomes" timestamp="2026-11-05T19:07:18.838+08:00" time="0.017">
+        </testcase>
+        <testcase name="owner_failure_after_cancellation_is_not_a_successful_shutdown" classname="codex-hepta-agentd::runtime_shutdown_outcomes" timestamp="2026-11-05T19:07:18.856+08:00" time="0.018">
+        </testcase>
+        <testcase name="quarantine_rejection_during_shutdown_is_latched" classname="codex-hepta-agentd::runtime_shutdown_outcomes" timestamp="2026-11-05T19:07:18.874+08:00" time="0.010">
+        </testcase>
+        <testcase name="required_panic_during_cleanup_is_not_discarded" classname="codex-hepta-agentd::runtime_shutdown_outcomes" timestamp="2026-11-05T19:07:18.884+08:00" time="0.012">
+        </testcase>
+        <testcase name="forced_abort_never_publishes_retirement_acknowledgement" classname="codex-hepta-agentd::runtime_shutdown_outcomes" timestamp="2026-11-05T19:07:18.782+08:00" time="0.115">
+        </testcase>
+        <testcase name="unfinished_retirement_callback_is_checked_during_final_cleanup" classname="codex-hepta-agentd::runtime_shutdown_outcomes" timestamp="2026-11-05T19:07:18.896+08:00" time="0.120">
+        </testcase>
+    </testsuite>
+    <testsuite name="codex-hepta-agentd::supervisord_product_e2e" tests="2" disabled="0" errors="0" failures="0">
+        <testcase name="supervisord_child_entry" classname="codex-hepta-agentd::supervisord_product_e2e" timestamp="2026-11-05T19:07:18.950+08:00" time="0.007">
+        </testcase>
+        <testcase name="five_real_agents_survive_daemon_restart_and_isolate_one_agent_release_changes" classname="codex-hepta-agentd::supervisord_product_e2e" timestamp="2026-11-05T19:07:18.901+08:00" time="6.175">
+        </testcase>
+    </testsuite>
+    <testsuite name="codex-hepta-agentd::two_agent_turn_recovery" tests="2" disabled="0" errors="0" failures="0">
+        <testcase name="poisoned_request_capture_is_reported_without_counting_a_send" classname="codex-hepta-agentd::two_agent_turn_recovery" timestamp="2026-11-05T19:07:19.099+08:00" time="0.014">
+        </testcase>
+        <testcase name="killed_agent_recovers_same_turn_then_dispatches_queue_once_while_peer_stays_live" classname="codex-hepta-agentd::two_agent_turn_recovery" timestamp="2026-11-05T19:07:19.074+08:00" time="18.085">
+        </testcase>
+    </testsuite>
+    <testsuite name="codex-hepta-infer-worker-host" tests="58" disabled="0" errors="0" failures="0">
+        <testcase name="final_use_authorizer::tests::connected_issuer_peer_uid_must_match_configured_owner" classname="codex-hepta-infer-worker-host" timestamp="2026-11-05T19:07:19.113+08:00" time="0.032">
+        </testcase>
+        <testcase name="final_use_authorizer::tests::endpoint_denial_updates_head_and_old_head_cannot_roll_back" classname="codex-hepta-infer-worker-host" timestamp="2026-11-05T19:07:19.121+08:00" time="0.027">
+        </testcase>
+        <testcase name="final_use_authorizer::tests::forged_grant_never_reaches_effect_entry" classname="codex-hepta-infer-worker-host" timestamp="2026-11-05T19:07:19.148+08:00" time="0.025">
+        </testcase>
+        <testcase name="model_worker::tests::loads_runs_and_unloads_exact_model_tuple" classname="codex-hepta-infer-worker-host" timestamp="2026-11-05T19:07:19.179+08:00" time="0.016">
+        </testcase>
+        <testcase name="model_worker::tests::executes_authenticated_neuron_feature_tuple_from_loaded_manifest" classname="codex-hepta-infer-worker-host" timestamp="2026-11-05T19:07:19.173+08:00" time="0.022">
+        </testcase>
+        <testcase name="final_use_authorizer::tests::exact_signed_grant_becomes_one_entry_verified_token" classname="codex-hepta-infer-worker-host" timestamp="2026-11-05T19:07:19.146+08:00" time="0.050">
+        </testcase>
+        <testcase name="model_worker::tests::lost_driver_terminality_is_indeterminate" classname="codex-hepta-infer-worker-host" timestamp="2026-11-05T19:07:19.190+08:00" time="0.025">
+        </testcase>
+        <testcase name="model_worker::tests::neuron_feature_path_rejects_payload_drift_and_driver_identity_drift" classname="codex-hepta-infer-worker-host" timestamp="2026-11-05T19:07:19.195+08:00" time="0.020">
+        </testcase>
+        <testcase name="model_worker::tests::rejects_changed_tokenizer_model_or_payload_tuple" classname="codex-hepta-infer-worker-host" timestamp="2026-11-05T19:07:19.196+08:00" time="0.019">
+        </testcase>
+        <testcase name="model_worker::tests::neuron_feature_worker_projects_exact_inference_control_receipt" classname="codex-hepta-infer-worker-host" timestamp="2026-11-05T19:07:19.196+08:00" time="0.021">
+        </testcase>
+        <testcase name="native_app_server::control::intelligence_recovery::tests::terminal_publication_preserves_local_boundary_and_authority_loss" classname="codex-hepta-infer-worker-host" timestamp="2026-11-05T19:07:19.215+08:00" time="0.023">
+        </testcase>
+        <testcase name="native_app_server::control::intelligence_recovery::tests::current_revision_does_not_relax_original_snapshot_binding" classname="codex-hepta-infer-worker-host" timestamp="2026-11-05T19:07:19.204+08:00" time="0.034">
+        </testcase>
+        <testcase name="native_app_server::control::tests::intelligence_handoff_is_committed_to_native_admission_identity" classname="codex-hepta-infer-worker-host" timestamp="2026-11-05T19:07:19.216+08:00" time="0.024">
+        </testcase>
+        <testcase name="native_app_server::control::tests::pre_dispatch_cancellation_and_connection_failure_release_without_usage_claims" classname="codex-hepta-infer-worker-host" timestamp="2026-11-05T19:07:19.217+08:00" time="0.032">
+        </testcase>
+        <testcase name="native_app_server::control::tests::reopened_dispatch_and_completed_duplicate_never_connect_to_provider" classname="codex-hepta-infer-worker-host" timestamp="2026-11-05T19:07:19.239+08:00" time="0.025">
+        </testcase>
+        <testcase name="native_app_server::control::tests::reopened_explicit_dispatch_rejection_never_connects_or_becomes_unknown" classname="codex-hepta-infer-worker-host" timestamp="2026-11-05T19:07:19.239+08:00" time="0.025">
+        </testcase>
+        <testcase name="native_app_server::native_output::tests::completed_items_replace_partial_text_once_in_item_order" classname="codex-hepta-infer-worker-host" timestamp="2026-11-05T19:07:19.249+08:00" time="0.022">
+        </testcase>
+        <testcase name="native_app_server::native_output::tests::full_message_without_deltas_preserves_terminal_usage_and_local_boundary" classname="codex-hepta-infer-worker-host" timestamp="2026-11-05T19:07:19.271+08:00" time="0.022">
+        </testcase>
+        <testcase name="native_app_server::native_output::tests::completed_text_and_deltas_share_an_atomic_byte_limit" classname="codex-hepta-infer-worker-host" timestamp="2026-11-05T19:07:19.264+08:00" time="0.043">
+        </testcase>
+        <testcase name="native_app_server::recovery::reconciliation_tests::reopened_cancellation_intent_never_upgrades_a_completed_turn_to_success" classname="codex-hepta-infer-worker-host" timestamp="2026-11-05T19:07:19.281+08:00" time="0.032">
+        </testcase>
+        <testcase name="native_app_server::native_output::tests::empty_messages_and_item_ids_cannot_grow_unbounded_metadata" classname="codex-hepta-infer-worker-host" timestamp="2026-11-05T19:07:19.264+08:00" time="0.064">
+        </testcase>
+        <testcase name="native_app_server::recovery::reconciliation_tests::reopened_terminal_reconciliation_preserves_usage_and_irreversible_boundaries" classname="codex-hepta-infer-worker-host" timestamp="2026-11-05T19:07:19.294+08:00" time="0.045">
+        </testcase>
+        <testcase name="native_app_server::recovery::reconciliation_tests::terminal_reconciliation_rejects_cross_request_and_cross_turn_usage" classname="codex-hepta-infer-worker-host" timestamp="2026-11-05T19:07:19.306+08:00" time="0.040">
+        </testcase>
+        <testcase name="native_app_server::tests::actual_usage_is_bound_monotonic_and_survives_terminal_failure" classname="codex-hepta-infer-worker-host" timestamp="2026-11-05T19:07:19.346+08:00" time="0.019">
+        </testcase>
+        <testcase name="native_app_server::tests::cognitive_final_use_revalidation_follows_durable_dispatch_and_precedes_turn_start" classname="codex-hepta-infer-worker-host" timestamp="2026-11-05T19:07:19.365+08:00" time="0.028">
+        </testcase>
+        <testcase name="native_app_server::tests::disconnect_event_lag_cancel_and_deadline_have_explicit_boundary_statuses" classname="codex-hepta-infer-worker-host" timestamp="2026-11-05T19:07:19.393+08:00" time="0.025">
+        </testcase>
+        <testcase name="native_app_server::tests::final_use_fence_rejects_owner_ingress_cancel_and_deadline_drift" classname="codex-hepta-infer-worker-host" timestamp="2026-11-05T19:07:19.406+08:00" time="0.024">
+        </testcase>
+        <testcase name="native_app_server::tests::late_completed_cannot_upgrade_cancelled_or_timed_out_boundary" classname="codex-hepta-infer-worker-host" timestamp="2026-11-05T19:07:19.430+08:00" time="0.022">
+        </testcase>
+        <testcase name="native_app_server::tests::in_progress_is_not_a_terminal_observation" classname="codex-hepta-infer-worker-host" timestamp="2026-11-05T19:07:19.419+08:00" time="0.041">
+        </testcase>
+        <testcase name="native_app_server::tests::message_output::complete_only_message_is_observed_only_for_the_bound_turn" classname="codex-hepta-infer-worker-host" timestamp="2026-11-05T19:07:19.460+08:00" time="0.027">
+        </testcase>
+        <testcase name="native_app_server::tests::lost_turn_start_ack_reconciles_only_the_exact_in_progress_thread" classname="codex-hepta-infer-worker-host" timestamp="2026-11-05T19:07:19.452+08:00" time="0.036">
+        </testcase>
+        <testcase name="native_app_server::tests::message_output::completed_snapshot_replaces_partial_text_without_double_counting" classname="codex-hepta-infer-worker-host" timestamp="2026-11-05T19:07:19.466+08:00" time="0.034">
+        </testcase>
+        <testcase name="native_app_server::tests::message_output::conflicting_completion_or_late_delta_cannot_change_a_completed_item" classname="codex-hepta-infer-worker-host" timestamp="2026-11-05T19:07:19.487+08:00" time="0.025">
+        </testcase>
+        <testcase name="native_app_server::tests::message_output::empty_items_cannot_retain_unbounded_metadata" classname="codex-hepta-infer-worker-host" timestamp="2026-11-05T19:07:19.500+08:00" time="0.020">
+        </testcase>
+        <testcase name="native_app_server::tests::message_output::distinct_item_ids_preserve_identical_message_text" classname="codex-hepta-infer-worker-host" timestamp="2026-11-05T19:07:19.488+08:00" time="0.038">
+        </testcase>
+        <testcase name="native_app_server::tests::message_output::item_start_order_survives_later_item_text_arriving_first" classname="codex-hepta-infer-worker-host" timestamp="2026-11-05T19:07:19.519+08:00" time="0.019">
+        </testcase>
+        <testcase name="native_app_server::tests::message_output::oversized_complete_item_preserves_previous_output_and_pending_state" classname="codex-hepta-infer-worker-host" timestamp="2026-11-05T19:07:19.520+08:00" time="0.019">
+        </testcase>
+        <testcase name="native_app_server::tests::message_output::interrupt_grace_keeps_item_identity_and_cannot_restore_cancelled_authority" classname="codex-hepta-infer-worker-host" timestamp="2026-11-05T19:07:19.513+08:00" time="0.031">
+        </testcase>
+        <testcase name="native_app_server::tests::message_output::terminal_summary_merges_last_message_without_dropping_earlier_messages" classname="codex-hepta-infer-worker-host" timestamp="2026-11-05T19:07:19.527+08:00" time="0.018">
+        </testcase>
+        <testcase name="native_app_server::tests::output_is_observed_bounded_and_never_predeclares_success" classname="codex-hepta-infer-worker-host" timestamp="2026-11-05T19:07:19.539+08:00" time="0.017">
+        </testcase>
+        <testcase name="native_app_server::tests::owner_timeout_and_terminal_first_selection_cannot_authorize_success" classname="codex-hepta-infer-worker-host" timestamp="2026-11-05T19:07:19.545+08:00" time="0.017">
+        </testcase>
+        <testcase name="native_app_server::tests::only_the_bound_turn_can_complete_the_native_request" classname="codex-hepta-infer-worker-host" timestamp="2026-11-05T19:07:19.539+08:00" time="0.027">
+        </testcase>
+        <testcase name="native_app_server::tests::owner_loss_stays_denied_after_interrupt_grace_observes_completed" classname="codex-hepta-infer-worker-host" timestamp="2026-11-05T19:07:19.544+08:00" time="0.023">
+        </testcase>
+        <testcase name="native_app_server::tests::success_requires_both_matching_completion_and_final_ready_owner" classname="codex-hepta-infer-worker-host" timestamp="2026-11-05T19:07:19.562+08:00" time="0.021">
+        </testcase>
+        <testcase name="tests::revoked_lease_is_rejected" classname="codex-hepta-infer-worker-host" timestamp="2026-11-05T19:07:19.566+08:00" time="0.017">
+        </testcase>
+        <testcase name="tests::payload_drift_is_rejected" classname="codex-hepta-infer-worker-host" timestamp="2026-11-05T19:07:19.566+08:00" time="0.019">
+        </testcase>
+        <testcase name="native_app_server::tests::message_output::oversized_terminal_snapshot_cannot_authorize_completion" classname="codex-hepta-infer-worker-host" timestamp="2026-11-05T19:07:19.521+08:00" time="0.078">
+        </testcase>
+        <testcase name="tests::terminal_success_requires_exact_authority_binding" classname="codex-hepta-infer-worker-host" timestamp="2026-11-05T19:07:19.584+08:00" time="0.018">
+        </testcase>
+        <testcase name="tests::timeout_never_becomes_success" classname="codex-hepta-infer-worker-host" timestamp="2026-11-05T19:07:19.584+08:00" time="0.019">
+        </testcase>
+        <testcase name="tests::token_limit_is_enforced" classname="codex-hepta-infer-worker-host" timestamp="2026-11-05T19:07:19.585+08:00" time="0.022">
+        </testcase>
+        <testcase name="tests::unobserved_terminal_state_is_indeterminate" classname="codex-hepta-infer-worker-host" timestamp="2026-11-05T19:07:19.599+08:00" time="0.027">
+        </testcase>
+        <testcase name="native_app_server::control::intelligence_recovery::tests::process::settled_terminal_survives_worker_loss_before_agentd_publication" classname="codex-hepta-infer-worker-host" timestamp="2026-11-05T19:07:19.214+08:00" time="1.054">
+        </testcase>
+        <testcase name="native_app_server::control::intelligence_recovery::tests::process::retained_app_server_terminal_reconciles_current_agentd_revision" classname="codex-hepta-infer-worker-host" timestamp="2026-11-05T19:07:19.210+08:00" time="1.220">
+        </testcase>
+        <testcase name="native_app_server::recovery::tests::real_agentd_reconciles_failed_terminal_without_replaying_provider" classname="codex-hepta-infer-worker-host" timestamp="2026-11-05T19:07:19.313+08:00" time="1.192">
+        </testcase>
+        <testcase name="native_app_server::recovery::tests::real_agentd_reconciles_interrupted_terminal_without_replaying_provider" classname="codex-hepta-infer-worker-host" timestamp="2026-11-05T19:07:19.328+08:00" time="1.194">
+        </testcase>
+        <testcase name="native_app_server::recovery::tests::real_agentd_reconciles_reopened_worker_without_replaying_provider" classname="codex-hepta-infer-worker-host" timestamp="2026-11-05T19:07:19.339+08:00" time="1.557">
+        </testcase>
+        <testcase name="native_app_server::tests::real_agentd_worker_accepts_fresh_context_and_rejects_final_use_tombstone" classname="codex-hepta-infer-worker-host" timestamp="2026-11-05T19:07:19.557+08:00" time="1.384">
+        </testcase>
+        <testcase name="native_app_server::failure_tests::worker_loss_before_cleanup_preserves_timeout_usage_and_owner_loss" classname="codex-hepta-infer-worker-host" timestamp="2026-11-05T19:07:19.240+08:00" time="17.553">
+        </testcase>
+    </testsuite>
+    <testsuite name="codex-hepta-agentd::queue_capacity_product" tests="2" disabled="0" errors="0" failures="0">
+        <testcase name="real_agentd_rejects_redirected_sqlite_and_in_memory_thread_stores" classname="codex-hepta-agentd::queue_capacity_product" timestamp="2026-11-05T19:07:18.558+08:00" time="0.620">
+        </testcase>
+        <testcase name="real_agentd_manifest_capacity_bounds_its_private_app_server_queue" classname="codex-hepta-agentd::queue_capacity_product" timestamp="2026-11-05T19:07:18.524+08:00" time="1.423">
+        </testcase>
+    </testsuite>
+    <testsuite name="codex-hepta-agentd::plasticity_process_e2e" tests="1" disabled="0" errors="0" failures="0">
+        <testcase name="supervisor_exec_reconstructs_named_plasticity_owner_from_durable_descriptor" classname="codex-hepta-agentd::plasticity_process_e2e" timestamp="2026-11-05T19:07:18.423+08:00" time="0.767">
+        </testcase>
+    </testsuite>
+    <testsuite name="codex-hepta-agentd::cognitive_store_product_writer" tests="1" disabled="0" errors="0" failures="0">
+        <testcase name="agentd_product_host_recovers_exact_cut_into_fenced_writer_generation" classname="codex-hepta-agentd::cognitive_store_product_writer" timestamp="2026-11-05T19:07:17.722+08:00" time="1.482">
+        </testcase>
+    </testsuite>
+    <testsuite name="codex-hepta-agentd::terminal_cell_owner" tests="2" disabled="0" errors="0" failures="0">
+        <testcase name="real_owner_decision_outcome_freeze_fit_registry_reload_and_withdrawal" classname="codex-hepta-agentd::terminal_cell_owner" timestamp="2026-11-05T19:07:19.016+08:00" time="0.390">
+        </testcase>
+        <testcase name="clean_agent_recall_replay_training_load_and_source_withdrawal" classname="codex-hepta-agentd::terminal_cell_owner" timestamp="2026-11-05T19:07:18.957+08:00" time="0.562">
+        </testcase>
+    </testsuite>
+    <testsuite name="codex-hepta-runtime" tests="16" disabled="0" errors="0" failures="0">
+        <testcase name="organs::tests::busy_or_stopped_hosts_never_bypass_dispatch" classname="codex-hepta-runtime" timestamp="2026-11-05T19:07:19.607+08:00" time="0.008">
+        </testcase>
+        <testcase name="organs::tests::live_status_request_traverses_the_initialized_graph" classname="codex-hepta-runtime" timestamp="2026-11-05T19:07:19.615+08:00" time="0.006">
+        </testcase>
+        <testcase name="organs::tests::authenticated_canary_forces_live_fault_then_rolls_forward_to_reconciled_predecessor_semantics" classname="codex-hepta-runtime" timestamp="2026-11-05T19:07:19.604+08:00" time="0.039">
+        </testcase>
+        <testcase name="organs::tests::revoked_final_use_never_mutates_the_live_topology" classname="codex-hepta-runtime" timestamp="2026-11-05T19:07:19.643+08:00" time="0.019">
+        </testcase>
+        <testcase name="organs::tests::status_consumer_checks_the_complete_hierarchy_without_direct_adapter_fallback" classname="codex-hepta-runtime" timestamp="2026-11-05T19:07:19.662+08:00" time="0.006">
+        </testcase>
+        <testcase name="organs::tests::governed_topology_requires_final_use_and_replaces_the_live_cns_generation" classname="codex-hepta-runtime" timestamp="2026-11-05T19:07:19.615+08:00" time="0.053">
+        </testcase>
+        <testcase name="organs::tests::topology_migration_owner_must_bind_exact_handoff_plan" classname="codex-hepta-runtime" timestamp="2026-11-05T19:07:19.668+08:00" time="0.007">
+        </testcase>
+        <testcase name="organs::tests::public_topology_recovery_denies_before_grant_consumption_or_callbacks" classname="codex-hepta-runtime" timestamp="2026-11-05T19:07:19.626+08:00" time="0.055">
+        </testcase>
+        <testcase name="organs::tests::public_governed_topology_denies_before_grant_consumption_or_callbacks" classname="codex-hepta-runtime" timestamp="2026-11-05T19:07:19.622+08:00" time="0.077">
+        </testcase>
+        <testcase name="tests::rejects_exposed_state_file" classname="codex-hepta-runtime" timestamp="2026-11-05T19:07:19.681+08:00" time="0.038">
+        </testcase>
+        <testcase name="tests::rejects_database_row_with_a_wrong_mac" classname="codex-hepta-runtime" timestamp="2026-11-05T19:07:19.675+08:00" time="0.047">
+        </testcase>
+        <testcase name="tests::runtime_status_wire_codec_rejects_effect_authority" classname="codex-hepta-runtime" timestamp="2026-11-05T19:07:19.722+08:00" time="0.011">
+        </testcase>
+        <testcase name="tests::runtime_status_wire_codec_rejects_unknown_critical_fields" classname="codex-hepta-runtime" timestamp="2026-11-05T19:07:19.732+08:00" time="0.007">
+        </testcase>
+        <testcase name="tests::opens_exact_schema_v5_without_mutation_authority" classname="codex-hepta-runtime" timestamp="2026-11-05T19:07:19.668+08:00" time="0.086">
+        </testcase>
+        <testcase name="tests::rejects_wrong_schema_without_creating_or_migrating" classname="codex-hepta-runtime" timestamp="2026-11-05T19:07:19.719+08:00" time="0.036">
+        </testcase>
+        <testcase name="tests::rejects_runtime_payload_with_a_valid_shape_but_wrong_mac" classname="codex-hepta-runtime" timestamp="2026-11-05T19:07:19.699+08:00" time="0.074">
+        </testcase>
+    </testsuite>
+    <testsuite name="codex-hepta-infer-worker-host::bin/hepta-infer-worker" tests="1" disabled="0" errors="0" failures="0">
+        <testcase name="tests::snapshot_input_roundtrips_and_never_fills_missing_identity" classname="codex-hepta-infer-worker-host::bin/hepta-infer-worker" timestamp="2026-11-05T19:07:19.602+08:00" time="0.013">
+        </testcase>
+    </testsuite>
+    <testsuite name="codex-hepta-agentd::optional_module_restart" tests="1" disabled="0" errors="0" failures="0">
+        <testcase name="forty_first_service_survives_faults_replacement_retirement_and_real_process_restart" classname="codex-hepta-agentd::optional_module_restart" timestamp="2026-11-05T19:07:18.327+08:00" time="1.472">
+        </testcase>
+    </testsuite>
+    <testsuite name="codex-hepta-agentd::runtime_codex_product_e2e" tests="1" disabled="0" errors="0" failures="0">
+        <testcase name="runtime_codex_product_caller_commits_one_authorized_terminal_turn" classname="codex-hepta-agentd::runtime_codex_product_e2e" timestamp="2026-11-05T19:07:18.762+08:00" time="1.290">
+        </testcase>
+    </testsuite>
+    <testsuite name="codex-hepta-agentd::supervised_two_agents" tests="1" disabled="0" errors="0" failures="0">
+        <testcase name="two_supervised_real_agentd_processes_are_fault_isolated" classname="codex-hepta-agentd::supervised_two_agents" timestamp="2026-11-05T19:07:18.897+08:00" time="2.087">
+        </testcase>
+    </testsuite>
+    <testsuite name="codex-hepta-agentd::five_agent_rolling_upgrade" tests="2" disabled="0" errors="0" failures="0">
+        <testcase name="six_agent_fleet_lifecycle_keeps_peers_fair_and_isolated" classname="codex-hepta-agentd::five_agent_rolling_upgrade" timestamp="2026-11-05T19:07:17.998+08:00" time="4.889">
+        </testcase>
+        <testcase name="five_real_agentd_processes_roll_one_agent_without_stopping_peers" classname="codex-hepta-agentd::five_agent_rolling_upgrade" timestamp="2026-11-05T19:07:17.820+08:00" time="5.108">
+        </testcase>
+    </testsuite>
+</testsuites>

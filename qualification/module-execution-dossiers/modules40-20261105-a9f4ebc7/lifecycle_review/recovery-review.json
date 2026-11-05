@@ -1,0 +1,75 @@
+{
+  "patch": "/workspace/scratch/a9f4ebc7dfa7/product_recovery/product-recovery-integration.patch",
+  "patch_sha256": "da1cc217f19b2c7a3d1b7961a154eaf20997dc529f7fb6a892ca13d0f19c3f38",
+  "base_commit": "f7a57e6f40e3e8220233f0d27b8cfbdf1f721c55",
+  "base_tree": "1f3d38ee52320bba1f345da2f2c54b23a36832ee",
+  "review_outcome": "source integration acceptable; native compilation and execution qualification not established by this review",
+  "independent_application": "/workspace/scratch/a9f4ebc7dfa7/lifecycle_review/recovery-independent-application.json",
+  "source_checks": [
+    {
+      "area": "lane_b_runtime.rs hand merge",
+      "finding": "Relative to unified only same-validation RunSnapshot extraction, bound module, and fault-test registration; original checked arithmetic, next_changed prechecks, closed-run accounting and lifecycle transitions retained."
+    },
+    {
+      "area": "native_recovery.rs",
+      "finding": "Unmodified bytes equal fixed unified blob. Strict retained request/dispatch/turn identity, duplicate turn rejection, event observation witness and owner-loss handling remain."
+    },
+    {
+      "area": "native_app_server.rs hand merge",
+      "finding": "Preserved durable observation before cancellation/cleanup, and existing test_process module. Exact bound dispatch and original-deadline clamp added; Agentd terminal publication moved after durable native settlement."
+    },
+    {
+      "area": "test_support.rs hand merge",
+      "finding": "Explicit same-build Arg0DispatchPaths replace guessed current executable. Real readiness monitor opens admission; owned task guard constructed before startup await. Startup failure and cancellation abort owned tasks."
+    },
+    {
+      "area": "process isolation",
+      "finding": "Both new process cases use worker-case env branch before isolate_host. Baseline helper checks exact test marker, absolute completion path, successful child exit and actual completion marker; fresh process group cleanup kills workers on host timeout. Completion marker follows all terminal/provider assertions and host shutdown."
+    },
+    {
+      "area": "helper dispatch",
+      "finding": "Fixed core_test_support startup constructor registers codex_arg0::arg0_dispatch and current-executable Linux sandbox fallback. Native worker test Cargo.toml links core_test_support. Explicit paths preserve same-build helper behavior."
+    },
+    {
+      "area": "bound lifecycle",
+      "finding": "Full immutable run snapshot, context digest, compilation digest and revision are checked under one run lock before any idempotent return. Reconciliation reads snapshot and receipt atomically; run-id/revision ABA cannot redirect new worker writes."
+    },
+    {
+      "area": "durable admission",
+      "finding": "Canonical daemon checks current authenticated RunStart before provider.build; retains admission generation/fence/digests/deadline throughout preparation and attachment; admission rechecks current authority and original record. Preparation budget is capped at original remaining deadline."
+    },
+    {
+      "area": "no redispatch on recovery",
+      "finding": "Only Reserved journal state reaches run_once. Cached terminal and retained thread/read paths settle/reconcile without final-use authorizer or turn/start. New process tests expect one physical provider request and retry identical recovery twice."
+    },
+    {
+      "area": "terminal boundary",
+      "finding": "Agentd publication uses normalized local boundary, preserves timeout/cancellation/quarantine, requires nonzero terminal correlation and ObservedReady authority, then exact current receipt revision CAS; conflicting terminals rejected."
+    },
+    {
+      "area": "output accumulation",
+      "finding": "Started/delta/completed messages scoped to exact thread and turn, completed text replaces fragments, duplicate completed text conflict/delta-after-complete rejected, total output <=1 MiB and metadata <=1024 items/1 MiB IDs. Output text cannot establish terminal or usage."
+    },
+    {
+      "area": "existing regression assertions",
+      "finding": "native_recovery_tests and native_failure_tests changed only host helper arguments; all original assertions preserved."
+    }
+  ],
+  "material_boundaries": [
+    "No Rust test or build was executed by this review agent. Parent owns exact-candidate native build and execution.",
+    "Intelligence fingerprint version changes from v2 to v3 with full snapshot. Existing v2 journals do not transparently migrate; request identity mismatch fails closed. Do not qualify old-version cross-upgrade recovery.",
+    "CLI changes from --intelligence-run-id to --intelligence-run-snapshot-json. External callers must supply original full snapshot; no current-owner lookup manufactures it.",
+    "Process recovery fixtures exercise one original Agentd spawn, changed lifecycle generation and current revision, with a fresh worker process. They do not establish Agentd process-restart durable coordinator recovery or full default seven-owner production composition.",
+    "Full-repository external call-site compilation remains a build gate; agent product_recovery asked to scan CognitiveTestHost::start and NativeIntelligenceRunBinding."
+  ],
+  "execution_targets": [
+    "native_app_server::control::intelligence_recovery::tests::process::settled_terminal_survives_worker_loss_before_agentd_publication",
+    "native_app_server::control::intelligence_recovery::tests::process::retained_app_server_terminal_reconciles_current_agentd_revision",
+    "lane_b_runtime bound/fault regressions",
+    "intelligence canonical runtime and run_start regressions",
+    "native_output tests",
+    "unchanged unified native_recovery and native_failure process regressions"
+  ],
+  "no_remote_mutations": true,
+  "native_tests_run": false
+}

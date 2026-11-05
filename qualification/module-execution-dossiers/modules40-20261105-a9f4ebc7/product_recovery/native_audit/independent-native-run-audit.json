@@ -1,0 +1,726 @@
+{
+  "audit_result": "VERIFIED_WITH_STATED_LIMITS",
+  "audit_utc": "2026-11-05T11:23:40.995120+00:00",
+  "candidate": {
+    "commit": "58c81ccdd25002ae0f481d434af067a56fa7ddb8",
+    "tree": "57809be09ef01c02389ef37a817f1447d13d167b"
+  },
+  "method": "Read-only local audit of raw runner receipts/stdout/native XML plus immutable GitHub commit/tree, independent source reconstruction and unchanged exact-name JUnit checker. No Rust command was run by this auditor.",
+  "checks_passed": 59,
+  "checks_total": 59,
+  "checks": [
+    {
+      "check": "reviewed tool/input remains byte-identical: product_recovery/required-tests.json",
+      "pass": true
+    },
+    {
+      "check": "reviewed tool/input remains byte-identical: product_recovery/required-tests.with-e65.json",
+      "pass": true
+    },
+    {
+      "check": "reviewed tool/input remains byte-identical: product_recovery/check_required_junit.py",
+      "pass": true
+    },
+    {
+      "check": "reviewed tool/input remains byte-identical: product_recovery/bind_required_tests_manifest.py",
+      "pass": true
+    },
+    {
+      "check": "run1 candidate and terminal source identities",
+      "pass": true
+    },
+    {
+      "check": "run1 terminal tracked status empty",
+      "pass": true
+    },
+    {
+      "check": "run1 raw stdout matches receipt hash and length",
+      "pass": true
+    },
+    {
+      "check": "run1 original recipe and local profile",
+      "pass": true
+    },
+    {
+      "check": "run2 candidate and terminal source identities",
+      "pass": true
+    },
+    {
+      "check": "run2 terminal tracked status empty",
+      "pass": true
+    },
+    {
+      "check": "run2 raw stdout matches receipt hash and length",
+      "pass": true
+    },
+    {
+      "check": "run2 original recipe and local profile",
+      "pass": true
+    },
+    {
+      "check": "Run2 preflight is unchanged in final receipt",
+      "pass": true
+    },
+    {
+      "check": "Run2 initial tracked status empty",
+      "pass": true
+    },
+    {
+      "check": "same invoked toolchain in both runs",
+      "pass": true
+    },
+    {
+      "check": "Run1 original exit100 and Run2 original exit0",
+      "pass": true
+    },
+    {
+      "check": "Run1 has no native JUnit or XML audit",
+      "pass": true
+    },
+    {
+      "check": "Run2 explicitly retains prior failure",
+      "pass": true
+    },
+    {
+      "check": "Run2 args equal original command plus explicit native reporting and metadata",
+      "pass": true
+    },
+    {
+      "check": "only recorded environment difference is private short TMPDIR",
+      "pass": true
+    },
+    {
+      "check": "report config hash and sole native JUnit path",
+      "pass": true
+    },
+    {
+      "check": "recorded metadata command is original scoped command",
+      "pass": true
+    },
+    {
+      "check": "raw metadata original hash and length match receipt",
+      "pass": true
+    },
+    {
+      "check": "native gzip original hash and exact decompressed bytes",
+      "pass": true
+    },
+    {
+      "check": "separate metadata original receipt equals Run2 embedded record",
+      "pass": true
+    },
+    {
+      "check": "metadata workspace and output directory equal recorded source/env",
+      "pass": true
+    },
+    {
+      "check": "metadata is format1 no-deps workspace with193 unique members",
+      "pass": true
+    },
+    {
+      "check": "all four selected packages are unique local members of tested workspace",
+      "pass": true
+    },
+    {
+      "check": "metadata four-package enabled targets exactly equal21 native suites",
+      "pass": true
+    },
+    {
+      "check": "all59 required binaries are enabled in exact original metadata",
+      "pass": true
+    },
+    {
+      "check": "report-only TOML original bytes equal recorded sole local.junit.path",
+      "pass": true
+    },
+    {
+      "check": "wrapper selects identical four packages and no expression filters",
+      "pass": true
+    },
+    {
+      "check": "recorded semantics unchanged",
+      "pass": true
+    },
+    {
+      "check": "immutable original49 preserved by additive59 review",
+      "pass": true
+    },
+    {
+      "check": "candidate execution manifest identity",
+      "pass": true
+    },
+    {
+      "check": "execution manifest hash agrees with both native receipts",
+      "pass": true
+    },
+    {
+      "check": "review manifest inclusion and source-binding provenance",
+      "pass": true
+    },
+    {
+      "check": "all59 exact identities and identity digest unchanged",
+      "pass": true
+    },
+    {
+      "check": "all59 retain prior review hashes and bind final source blob",
+      "pass": true
+    },
+    {
+      "check": "binder records full clean checkout and hidden-index rejection",
+      "pass": true
+    },
+    {
+      "check": "independent GitHub commit belongs to tested tree and real merge parents",
+      "pass": true
+    },
+    {
+      "check": "all28 source/runner blob IDs match immutable GitHub tree",
+      "pass": true
+    },
+    {
+      "check": "all17 reviewed source files independently reconstructed byte-for-byte",
+      "pass": true
+    },
+    {
+      "check": "downloaded runner context matches committed hash: codex-rs/.config/nextest.toml",
+      "pass": true
+    },
+    {
+      "check": "downloaded runner context matches committed hash: scripts/run-nextest.py",
+      "pass": true
+    },
+    {
+      "check": "Run1 exact native summary",
+      "pass": true
+    },
+    {
+      "check": "Run2 exact native summary",
+      "pass": true
+    },
+    {
+      "check": "both native runs select same697 case identities and retain66 skipped",
+      "pass": true
+    },
+    {
+      "check": "Run1 single failing case has original two failed attempts",
+      "pass": true
+    },
+    {
+      "check": "Run1 original errors are long control sockets before host admission",
+      "pass": true
+    },
+    {
+      "check": "Run2 has697 unique PASS events and no retry/failure event",
+      "pass": true
+    },
+    {
+      "check": "Run2 raw XML hash and byte length match receipt",
+      "pass": true
+    },
+    {
+      "check": "XML run UUID and test elapsed time equal original log",
+      "pass": true
+    },
+    {
+      "check": "XML timestamp and recorded fresh mtime fall inside Run2 interval",
+      "pass": true
+    },
+    {
+      "check": "XML has697 unique cases in21 suites, matching stdout PASS identities",
+      "pass": true
+    },
+    {
+      "check": "XML has no failed/error/skipped/flaky/rerun outcomes",
+      "pass": true
+    },
+    {
+      "check": "all XML case classes equal nearest executable suite",
+      "pass": true
+    },
+    {
+      "check": "independent checker agrees semantically with original checker",
+      "pass": true
+    },
+    {
+      "check": "all59 required tests pass once with no target ambiguity",
+      "pass": true
+    }
+  ],
+  "run1": {
+    "runner_exit": 100,
+    "run_id": "ec0d4c41-c964-433e-b3d1-f7c66a4ac083",
+    "summary": {
+      "test_seconds": 38.753,
+      "run": 697,
+      "passed": 696,
+      "slow": 1,
+      "failed": 1,
+      "skipped": 66
+    },
+    "native_junit": "ABSENT",
+    "required_junit_audit": "NOT_AVAILABLE",
+    "failing_test": "native_app_server::tests::real_agentd_worker_accepts_fresh_context_and_rejects_final_use_tombstone",
+    "failed_attempts": [
+      {
+        "line": 1161,
+        "attempt": 1,
+        "status": "FAIL",
+        "binary": "codex-hepta-infer-worker-host",
+        "test": "native_app_server::tests::real_agentd_worker_accepts_fresh_context_and_rejects_final_use_tombstone"
+      },
+      {
+        "line": 1189,
+        "attempt": 2,
+        "status": "FAIL",
+        "binary": "codex-hepta-infer-worker-host",
+        "test": "native_app_server::tests::real_agentd_worker_accepts_fresh_context_and_rejects_final_use_tombstone"
+      }
+    ],
+    "retry_event_lines": [
+      1177
+    ],
+    "socket_paths": [
+      "/home/qq/work/hepta-modules40-20261105-a9f4ebc7/tmp/hepta-cognitive-worker-e2e-1793876415794975156/fleet/run/aaghu64s7r56mdd2v36p3hkrmci.ctl",
+      "/home/qq/work/hepta-modules40-20261105-a9f4ebc7/tmp/hepta-cognitive-worker-e2e-1793876418680661422/fleet/run/aaghu64s7r56mdd2v36p3hkrmci.ctl"
+    ],
+    "socket_path_bytes": [
+      140,
+      140
+    ],
+    "receipt_scope": "Receipt records candidate and terminal clean status; it has no separate source_status_before field. Do not invent one."
+  },
+  "run2": {
+    "runner_exit": 0,
+    "run_id": "68d65468-d9d7-41fb-8089-b02ab0534b7c",
+    "summary": {
+      "test_seconds": 37.045,
+      "run": 697,
+      "passed": 697,
+      "slow": 1,
+      "failed": 0,
+      "skipped": 66
+    },
+    "native_xml_cases": 697,
+    "native_xml_suites": 21,
+    "native_xml_skipped_cases": 0,
+    "whole_suite_skipped": 66,
+    "failed_cases": 0,
+    "flaky_or_retried_cases": 0,
+    "required_clean_passes": 59,
+    "original_required_clean_passes": 49,
+    "upstream_additional_clean_passes": 10,
+    "suite_counts": [
+      {
+        "binary": "codex-hepta-agent-protocol",
+        "cases": 14
+      },
+      {
+        "binary": "codex-hepta-agentd",
+        "cases": 562
+      },
+      {
+        "binary": "codex-hepta-agentd::cognitive_product_e2e",
+        "cases": 9
+      },
+      {
+        "binary": "codex-hepta-agentd::authbus_text_product",
+        "cases": 8
+      },
+      {
+        "binary": "codex-hepta-agentd::fleet_harness_diagnostics",
+        "cases": 1
+      },
+      {
+        "binary": "codex-hepta-agentd::intuition_policy_product",
+        "cases": 1
+      },
+      {
+        "binary": "codex-hepta-agentd::kernel_evidence_product",
+        "cases": 3
+      },
+      {
+        "binary": "codex-hepta-agentd::runtime_shutdown_outcomes",
+        "cases": 9
+      },
+      {
+        "binary": "codex-hepta-agentd::supervisord_product_e2e",
+        "cases": 2
+      },
+      {
+        "binary": "codex-hepta-agentd::two_agent_turn_recovery",
+        "cases": 2
+      },
+      {
+        "binary": "codex-hepta-infer-worker-host",
+        "cases": 58
+      },
+      {
+        "binary": "codex-hepta-agentd::queue_capacity_product",
+        "cases": 2
+      },
+      {
+        "binary": "codex-hepta-agentd::plasticity_process_e2e",
+        "cases": 1
+      },
+      {
+        "binary": "codex-hepta-agentd::cognitive_store_product_writer",
+        "cases": 1
+      },
+      {
+        "binary": "codex-hepta-agentd::terminal_cell_owner",
+        "cases": 2
+      },
+      {
+        "binary": "codex-hepta-runtime",
+        "cases": 16
+      },
+      {
+        "binary": "codex-hepta-infer-worker-host::bin/hepta-infer-worker",
+        "cases": 1
+      },
+      {
+        "binary": "codex-hepta-agentd::optional_module_restart",
+        "cases": 1
+      },
+      {
+        "binary": "codex-hepta-agentd::runtime_codex_product_e2e",
+        "cases": 1
+      },
+      {
+        "binary": "codex-hepta-agentd::supervised_two_agents",
+        "cases": 1
+      },
+      {
+        "binary": "codex-hepta-agentd::five_agent_rolling_upgrade",
+        "cases": 2
+      }
+    ],
+    "required_package_counts": {
+      "codex-hepta-agent-protocol": 3,
+      "codex-hepta-agentd": 13,
+      "codex-hepta-runtime": 3,
+      "codex-hepta-infer-worker-host": 40
+    },
+    "command": [
+      "just",
+      "test",
+      "--locked",
+      "-p",
+      "codex-hepta-agent-protocol",
+      "-p",
+      "codex-hepta-agentd",
+      "-p",
+      "codex-hepta-infer-worker-host",
+      "-p",
+      "codex-hepta-runtime",
+      "--tool-config-file",
+      "hepta-evidence:/home/qq/work/hepta-modules40-20261105-a9f4ebc7/report-only.nextest.toml",
+      "--cargo-metadata",
+      "/home/qq/work/hepta-modules40-20261105-a9f4ebc7/evidence/run2-original-scoped-metadata.json"
+    ],
+    "reported_environment_difference": {
+      "TMPDIR": {
+        "before": "/home/qq/work/hepta-modules40-20261105-a9f4ebc7/tmp",
+        "after": "/tmp/a9f4ebc7"
+      }
+    },
+    "report_config": {
+      "path": "/home/qq/work/hepta-modules40-20261105-a9f4ebc7/report-only.nextest.toml",
+      "sha256": "c4d07a7949e5f9e54cb365812c71706cd04afcd4d1e8c1aab4e41e84a1813edd",
+      "content": "[profile.local.junit]\npath = \"/home/qq/work/hepta-modules40-20261105-a9f4ebc7/evidence/four-package-run2.junit.xml\"\n"
+    },
+    "metadata": {
+      "command": [
+        "cargo",
+        "metadata",
+        "--no-deps",
+        "--format-version=1",
+        "--locked"
+      ],
+      "cwd": "/home/qq/work/hepta-modules40-20261105-a9f4ebc7/source/codex-rs",
+      "exit": 0,
+      "elapsed_seconds": 0.10627774696331471,
+      "sha256": "46c44dc18560eee9f3ecc3ab72a4b7389b61a637b4c9b924210c377f61e3f988",
+      "method": "same --no-deps metadata command as original scripts/run-nextest.py; persisted outside temporary cleanup solely to combine with native report-only configuration"
+    }
+  },
+  "evidence_files": [
+    {
+      "path": "publication/native-evidence/four-package-original-test.json",
+      "bytes": 3801,
+      "sha256": "5413b019945688d2b51f85556573497ec05cd42945d07895cb042088b784f76b"
+    },
+    {
+      "path": "publication/native-evidence/four-package-original-test.log",
+      "bytes": 145690,
+      "sha256": "396f2f8b559dacf411599a1223be711157a4d7a912258c692e25c4b22f15385f"
+    },
+    {
+      "path": "publication/native-evidence/four-package-run2.preflight.json",
+      "bytes": 5068,
+      "sha256": "e736993e1248def5fb99879bc9dc9eae8d1d32afa3ea1a50e96c0123a5a65339"
+    },
+    {
+      "path": "publication/native-evidence/four-package-run2.json",
+      "bytes": 5705,
+      "sha256": "3c778511d56ee7b8181fe409bc9a31438473d7ec1c3d98580969fd0fa64df847"
+    },
+    {
+      "path": "publication/native-evidence/four-package-run2.log",
+      "bytes": 123316,
+      "sha256": "b4ee3475b054b631326d1270382a4833a2aab7a48b53dfe21d9145fbe0497cf4"
+    },
+    {
+      "path": "publication/native-evidence/four-package-run2.junit.xml",
+      "bytes": 163104,
+      "sha256": "fa9ec27a5df05be69464d2f96962fd6b33b4bc24fb5adc98ce798d9899183173"
+    },
+    {
+      "path": "publication/native-evidence/required-tests.execution-58c81ccdd25002ae0f481d434af067a56fa7ddb8.json",
+      "bytes": 62842,
+      "sha256": "5724cda7d57a9ad3fb9fcbe7c26ac1e59783099d97c47138378433c8ae5f2c03"
+    },
+    {
+      "path": "publication/native-evidence/required-tests.run2.report.json",
+      "bytes": 63297,
+      "sha256": "7cd2581bb6d00c9ec58422b673f06fcc171962e3d25ab4e28465bb3058c763c1"
+    },
+    {
+      "path": "publication/native-evidence/required-tests.run2.check.log",
+      "bytes": 106,
+      "sha256": "c9428d40aec9752805e120c17cac64c8aa06afd097abbfd1a38852abb68b9a07"
+    },
+    {
+      "path": "publication/native-evidence/actual-nextest.toml",
+      "bytes": 5786,
+      "sha256": "351cdfe17480eae1124145e32a0de6de2889a38f01b14036187bc42e2553fdde"
+    },
+    {
+      "path": "publication/native-evidence/actual-run-nextest.py",
+      "bytes": 10206,
+      "sha256": "45c4e35d1ff24840d9e1e05331af0b89475bfe1aec3231afc56fecb8cea66127"
+    },
+    {
+      "path": "publication/native-evidence/run2-original-scoped-metadata.json",
+      "bytes": 942439,
+      "sha256": "46c44dc18560eee9f3ecc3ab72a4b7389b61a637b4c9b924210c377f61e3f988"
+    },
+    {
+      "path": "publication/native-evidence/run2-original-scoped-metadata.json.gz",
+      "bytes": 39141,
+      "sha256": "8eb27b634b1f93bb059e45591cc8bb585abf7f06524679c161cf0417879da2b5"
+    },
+    {
+      "path": "publication/native-evidence/run2-original-scoped-metadata.json.receipt",
+      "bytes": 496,
+      "sha256": "b23fc91b10f4c8098c061002e80f3dbbca4320b8ea56363f144163e8db990548"
+    },
+    {
+      "path": "publication/native-evidence/report-only.nextest.toml",
+      "bytes": 116,
+      "sha256": "c4d07a7949e5f9e54cb365812c71706cd04afcd4d1e8c1aab4e41e84a1813edd"
+    },
+    {
+      "path": "product_recovery/native_audit/c58-git-commit.json",
+      "bytes": 2076,
+      "sha256": "05a4d79119bdc2df83dcf9e115e68d3239efca382740ebed640177d25ac76bb6"
+    },
+    {
+      "path": "product_recovery/native_audit/c58-selected-tree-entries.json",
+      "bytes": 16341,
+      "sha256": "d0f0ce7511d0fa480bf72486aa4d7c217ec7aa5ccd3112201b88e0212bdfcf96"
+    },
+    {
+      "path": "product_recovery/native_audit/selected-source-independent-reconstruction.json",
+      "bytes": 12683,
+      "sha256": "d9dbfbfdceb7bcea07641b986e536464821015cbed5cd608b0e1eb7e41af8465"
+    },
+    {
+      "path": "product_recovery/native_audit/run2-independent-junit.json",
+      "bytes": 63448,
+      "sha256": "bc9a49073b5942366d2863e1a5ed17726f760d140186312f601af77cefb01a20"
+    },
+    {
+      "path": "product_recovery/native_audit/run2-independent-junit.log",
+      "bytes": 106,
+      "sha256": "c9428d40aec9752805e120c17cac64c8aa06afd097abbfd1a38852abb68b9a07"
+    }
+  ],
+  "supplemental_original_metadata_review": {
+    "raw_and_native_gzip_byte_verified": true,
+    "separate_receipt_matches_run2": true,
+    "workspace_package_count": 193,
+    "package_selection": [
+      "codex-hepta-agent-protocol",
+      "codex-hepta-agentd",
+      "codex-hepta-infer-worker-host",
+      "codex-hepta-runtime"
+    ],
+    "enabled_selected_targets": [
+      {
+        "package": "codex-hepta-runtime",
+        "name": "codex_hepta_runtime",
+        "kind": "lib",
+        "binary": "codex-hepta-runtime",
+        "source": "/home/qq/work/hepta-modules40-20261105-a9f4ebc7/source/codex-rs/hepta-runtime/src/lib.rs"
+      },
+      {
+        "package": "codex-hepta-agent-protocol",
+        "name": "codex_hepta_agent_protocol",
+        "kind": "lib",
+        "binary": "codex-hepta-agent-protocol",
+        "source": "/home/qq/work/hepta-modules40-20261105-a9f4ebc7/source/codex-rs/hepta-agent-protocol/src/lib.rs"
+      },
+      {
+        "package": "codex-hepta-agentd",
+        "name": "codex_hepta_agentd",
+        "kind": "lib",
+        "binary": "codex-hepta-agentd",
+        "source": "/home/qq/work/hepta-modules40-20261105-a9f4ebc7/source/codex-rs/hepta-agentd/src/lib.rs"
+      },
+      {
+        "package": "codex-hepta-agentd",
+        "name": "authbus_text_product",
+        "kind": "test",
+        "binary": "codex-hepta-agentd::authbus_text_product",
+        "source": "/home/qq/work/hepta-modules40-20261105-a9f4ebc7/source/codex-rs/hepta-agentd/tests/authbus_text_product.rs"
+      },
+      {
+        "package": "codex-hepta-agentd",
+        "name": "cognitive_product_e2e",
+        "kind": "test",
+        "binary": "codex-hepta-agentd::cognitive_product_e2e",
+        "source": "/home/qq/work/hepta-modules40-20261105-a9f4ebc7/source/codex-rs/hepta-agentd/tests/cognitive_product_e2e.rs"
+      },
+      {
+        "package": "codex-hepta-agentd",
+        "name": "cognitive_store_product_writer",
+        "kind": "test",
+        "binary": "codex-hepta-agentd::cognitive_store_product_writer",
+        "source": "/home/qq/work/hepta-modules40-20261105-a9f4ebc7/source/codex-rs/hepta-agentd/tests/cognitive_store_product_writer.rs"
+      },
+      {
+        "package": "codex-hepta-agentd",
+        "name": "five_agent_rolling_upgrade",
+        "kind": "test",
+        "binary": "codex-hepta-agentd::five_agent_rolling_upgrade",
+        "source": "/home/qq/work/hepta-modules40-20261105-a9f4ebc7/source/codex-rs/hepta-agentd/tests/five_agent_rolling_upgrade.rs"
+      },
+      {
+        "package": "codex-hepta-agentd",
+        "name": "fleet_harness_diagnostics",
+        "kind": "test",
+        "binary": "codex-hepta-agentd::fleet_harness_diagnostics",
+        "source": "/home/qq/work/hepta-modules40-20261105-a9f4ebc7/source/codex-rs/hepta-agentd/tests/fleet_harness_diagnostics.rs"
+      },
+      {
+        "package": "codex-hepta-agentd",
+        "name": "intuition_policy_product",
+        "kind": "test",
+        "binary": "codex-hepta-agentd::intuition_policy_product",
+        "source": "/home/qq/work/hepta-modules40-20261105-a9f4ebc7/source/codex-rs/hepta-agentd/tests/intuition_policy_product.rs"
+      },
+      {
+        "package": "codex-hepta-agentd",
+        "name": "kernel_evidence_product",
+        "kind": "test",
+        "binary": "codex-hepta-agentd::kernel_evidence_product",
+        "source": "/home/qq/work/hepta-modules40-20261105-a9f4ebc7/source/codex-rs/hepta-agentd/tests/kernel_evidence_product.rs"
+      },
+      {
+        "package": "codex-hepta-agentd",
+        "name": "optional_module_restart",
+        "kind": "test",
+        "binary": "codex-hepta-agentd::optional_module_restart",
+        "source": "/home/qq/work/hepta-modules40-20261105-a9f4ebc7/source/codex-rs/hepta-agentd/tests/optional_module_restart.rs"
+      },
+      {
+        "package": "codex-hepta-agentd",
+        "name": "plasticity_process_e2e",
+        "kind": "test",
+        "binary": "codex-hepta-agentd::plasticity_process_e2e",
+        "source": "/home/qq/work/hepta-modules40-20261105-a9f4ebc7/source/codex-rs/hepta-agentd/tests/plasticity_process_e2e.rs"
+      },
+      {
+        "package": "codex-hepta-agentd",
+        "name": "queue_capacity_product",
+        "kind": "test",
+        "binary": "codex-hepta-agentd::queue_capacity_product",
+        "source": "/home/qq/work/hepta-modules40-20261105-a9f4ebc7/source/codex-rs/hepta-agentd/tests/queue_capacity_product.rs"
+      },
+      {
+        "package": "codex-hepta-agentd",
+        "name": "runtime_codex_product_e2e",
+        "kind": "test",
+        "binary": "codex-hepta-agentd::runtime_codex_product_e2e",
+        "source": "/home/qq/work/hepta-modules40-20261105-a9f4ebc7/source/codex-rs/hepta-agentd/tests/runtime_codex_product_e2e.rs"
+      },
+      {
+        "package": "codex-hepta-agentd",
+        "name": "runtime_shutdown_outcomes",
+        "kind": "test",
+        "binary": "codex-hepta-agentd::runtime_shutdown_outcomes",
+        "source": "/home/qq/work/hepta-modules40-20261105-a9f4ebc7/source/codex-rs/hepta-agentd/tests/runtime_shutdown_outcomes.rs"
+      },
+      {
+        "package": "codex-hepta-agentd",
+        "name": "supervised_two_agents",
+        "kind": "test",
+        "binary": "codex-hepta-agentd::supervised_two_agents",
+        "source": "/home/qq/work/hepta-modules40-20261105-a9f4ebc7/source/codex-rs/hepta-agentd/tests/supervised_two_agents.rs"
+      },
+      {
+        "package": "codex-hepta-agentd",
+        "name": "supervisord_product_e2e",
+        "kind": "test",
+        "binary": "codex-hepta-agentd::supervisord_product_e2e",
+        "source": "/home/qq/work/hepta-modules40-20261105-a9f4ebc7/source/codex-rs/hepta-agentd/tests/supervisord_product_e2e.rs"
+      },
+      {
+        "package": "codex-hepta-agentd",
+        "name": "terminal_cell_owner",
+        "kind": "test",
+        "binary": "codex-hepta-agentd::terminal_cell_owner",
+        "source": "/home/qq/work/hepta-modules40-20261105-a9f4ebc7/source/codex-rs/hepta-agentd/tests/terminal_cell_owner.rs"
+      },
+      {
+        "package": "codex-hepta-agentd",
+        "name": "two_agent_turn_recovery",
+        "kind": "test",
+        "binary": "codex-hepta-agentd::two_agent_turn_recovery",
+        "source": "/home/qq/work/hepta-modules40-20261105-a9f4ebc7/source/codex-rs/hepta-agentd/tests/two_agent_turn_recovery.rs"
+      },
+      {
+        "package": "codex-hepta-infer-worker-host",
+        "name": "codex_hepta_infer_worker_host",
+        "kind": "lib",
+        "binary": "codex-hepta-infer-worker-host",
+        "source": "/home/qq/work/hepta-modules40-20261105-a9f4ebc7/source/codex-rs/hepta-infer-worker-host/src/lib.rs"
+      },
+      {
+        "package": "codex-hepta-infer-worker-host",
+        "name": "hepta-infer-worker",
+        "kind": "bin",
+        "binary": "codex-hepta-infer-worker-host::bin/hepta-infer-worker",
+        "source": "/home/qq/work/hepta-modules40-20261105-a9f4ebc7/source/codex-rs/hepta-infer-worker-host/src/bin/hepta-infer-worker.rs"
+      }
+    ],
+    "report_only_config_exact_sole_field": "profile.local.junit.path",
+    "previous_audit_retained": {
+      "path": "product_recovery/native_audit/before-metadata-original/independent-native-run-audit.json",
+      "bytes": 16509,
+      "sha256": "33716a394bdd64825da2748f3df3a2243d5a0754678bfea02ac5d0c478bad584"
+    },
+    "scope": "Metadata describes the193-member workspace; the original -p flags select four packages. All21 enabled selected targets match native JUnit suites. Reading these originals did not run Cargo or Rust tests."
+  },
+  "compatibility_and_coverage_limits": [
+    "697 executed tests passed; 66 tests remain skipped under the original local suite selection. Native JUnit contains only the 697 executed cases and does not enumerate those 66 skipped identities or reasons.",
+    "Run1 remains a failed native run with an original retry and no native JUnit. Its stdout is not rewritten into XML; Run2 does not erase the failure.",
+    "Reported toolchain/environment, metadata execution command and clean-checkout observations come from runner receipts. The metadata raw and native-gzip bytes, workspace and selected targets, separate receipt and report-only TOML are independently checked against those records.",
+    "Exact XML, stdout, source identity and reviewed source bytes agree. These records are not a process-level cryptographic attestation, and XML alone cannot prove no early return inside a test; the reviewed native process completion markers remain necessary.",
+    "The native tested source is C58/tree57809. Later navigation/metadata-only commits must not be presented as the Rust execution identity.",
+    "Recovery process tests restart the worker while its original Agentd/App Server remains alive; they do not establish Agentd coordinator restart, owner takeover, real accelerator/provider capacity, or all 40 modules' production closure.",
+    "The v2-to-v3 intelligence request fingerprint rejects old incompatible journals; no transparent old-journal migration is established.",
+    "Build, fmt, Clippy and source-manifest binding are separate preconditions; this test-pass conclusion comes from the actual Run2 runner and native JUnit, not from those earlier steps."
+  ]
+}

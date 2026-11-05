@@ -1,0 +1,97 @@
+{
+  "command": [
+    "just",
+    "test",
+    "--locked",
+    "-p",
+    "codex-hepta-agent-protocol",
+    "-p",
+    "codex-hepta-agentd",
+    "-p",
+    "codex-hepta-infer-worker-host",
+    "-p",
+    "codex-hepta-runtime"
+  ],
+  "cwd": "/home/qq/work/hepta-modules40-20261105-a9f4ebc7/source",
+  "candidate_commit": "58c81ccdd25002ae0f481d434af067a56fa7ddb8",
+  "candidate_tree": "57809be09ef01c02389ef37a817f1447d13d167b",
+  "start_utc": "2026-11-05T10:57:01.551480+00:00",
+  "start_ns": 1793876221551474577,
+  "original_profile_from_justfile": "local",
+  "toolchain": {
+    "rustc": {
+      "command": [
+        "rustc",
+        "--version"
+      ],
+      "resolved_executable": "/home/qq/work/hepta-convergence-20261105-0c901b/rustup-home-1.96.0/toolchains/1.96.0-x86_64-unknown-linux-gnu/bin/rustc",
+      "version": "rustc 1.96.0 (ac68faa20 2026-05-25)"
+    },
+    "cargo": {
+      "command": [
+        "cargo",
+        "--version"
+      ],
+      "resolved_executable": "/home/qq/work/hepta-convergence-20261105-0c901b/rustup-home-1.96.0/toolchains/1.96.0-x86_64-unknown-linux-gnu/bin/cargo",
+      "version": "cargo 1.96.0 (30a34c682 2026-05-25)"
+    },
+    "rustfmt": {
+      "command": [
+        "rustfmt",
+        "--version"
+      ],
+      "resolved_executable": "/home/qq/work/hepta-convergence-20261105-0c901b/rustup-home-1.96.0/toolchains/1.96.0-x86_64-unknown-linux-gnu/bin/rustfmt",
+      "version": "rustfmt 1.9.0-stable (ac68faa20c 2026-05-25)"
+    },
+    "clippy": {
+      "command": [
+        "cargo",
+        "clippy",
+        "--version"
+      ],
+      "resolved_executable": "/home/qq/work/hepta-convergence-20261105-0c901b/rustup-home-1.96.0/toolchains/1.96.0-x86_64-unknown-linux-gnu/bin/cargo",
+      "version": "clippy 0.1.96 (ac68faa20c 2026-05-25)"
+    },
+    "just": {
+      "command": [
+        "just",
+        "--version"
+      ],
+      "resolved_executable": "/home/qq/work/hepta-worker-unified-20261105-4d868a11/tools/bin/just",
+      "version": "just 1.51.0"
+    },
+    "nextest": {
+      "command": [
+        "cargo",
+        "nextest",
+        "--version"
+      ],
+      "resolved_executable": "/home/qq/work/hepta-convergence-20261105-0c901b/rustup-home-1.96.0/toolchains/1.96.0-x86_64-unknown-linux-gnu/bin/cargo",
+      "version": "cargo-nextest 0.9.103 (d2e7b879f 2025-08-25)\nrelease: 0.9.103\ncommit-hash: d2e7b879fb79975e8b47a8e3ce569b651e6381c0\ncommit-date: 2025-08-25\nhost: x86_64-unknown-linux-gnu"
+    }
+  },
+  "selected_environment": {
+    "CARGO_HOME": "/home/qq/work/hepta-worker-unified-20261105-4d868a11/cargo-home",
+    "CARGO_TARGET_DIR": "/home/qq/work/hepta-modules40-20261105-a9f4ebc7/target",
+    "CARGO_BUILD_JOBS": "2",
+    "RUSTUP_HOME": "/home/qq/work/hepta-convergence-20261105-0c901b/rustup-home-1.96.0",
+    "TMPDIR": "/home/qq/work/hepta-modules40-20261105-a9f4ebc7/tmp",
+    "XDG_CACHE_HOME": "/home/qq/work/hepta-modules40-20261105-a9f4ebc7/xdg-cache",
+    "UV_CACHE_DIR": "/home/qq/work/hepta-modules40-20261105-a9f4ebc7/uv-cache"
+  },
+  "existing_junit_before": {},
+  "execution_manifest": "/home/qq/work/hepta-modules40-20261105-a9f4ebc7/evidence/required-tests.execution-58c81ccdd25002ae0f481d434af067a56fa7ddb8.json",
+  "execution_manifest_sha256": "5724cda7d57a9ad3fb9fcbe7c26ac1e59783099d97c47138378433c8ae5f2c03",
+  "required_cases": 59,
+  "selection": "full original suites for all four packages; no test filter",
+  "exit": 100,
+  "elapsed_seconds": 221.3836523690261,
+  "end_ns": 1793876442930159302,
+  "end_utc": "2026-11-05T11:00:42.935748+00:00",
+  "log_sha256": "396f2f8b559dacf411599a1223be711157a4d7a912258c692e25c4b22f15385f",
+  "log_bytes": 145690,
+  "source_after": "58c81ccdd25002ae0f481d434af067a56fa7ddb8",
+  "tree_after": "57809be09ef01c02389ef37a817f1447d13d167b",
+  "status_after": "",
+  "fresh_junit": []
+}

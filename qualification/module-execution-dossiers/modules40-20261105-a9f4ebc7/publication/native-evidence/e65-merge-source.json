@@ -1,0 +1,45 @@
+{
+  "native_merge_commit": "f29a30f5f9ba42d139659b80ec332e75ee0ccfb9",
+  "tree": "57809be09ef01c02389ef37a817f1447d13d167b",
+  "parents": [
+    "e9b84f242326e5280ee2b2de937f03f78bc1e907",
+    "e65a53ddfc872ef66edc63dff8f28d4414817c60"
+  ],
+  "normal_git_merge_exit": 1,
+  "merge_exit_basis": "CONFLICT records in retained original merge log",
+  "imported_original_base_stages": [
+    {
+      "commit": "608c7603088eb5e6964bc5755be1706f35f8b37f",
+      "tree": "5f65b93cdcf3f90b2d7c5084fbe6147e520ead6d"
+    },
+    {
+      "commit": "e06b76cd379a6e789ca149a6a6886bc066d8e5d2",
+      "tree": "1bdfbb58887556a2468611b4469145a1003182de"
+    },
+    {
+      "commit": "e65a53ddfc872ef66edc63dff8f28d4414817c60",
+      "tree": "93a323f016388426d4eb1dead99ac273963c9935"
+    }
+  ],
+  "resolved_paths": [
+    "codex-rs/hepta-agentd/src/deployment_desktop.rs",
+    "codex-rs/hepta-agentd/src/deployment_issuer_root.rs",
+    "codex-rs/hepta-agentd/src/deployment_writer.rs",
+    "codex-rs/hepta-agentd/src/test_support.rs",
+    "codex-rs/hepta-infer-worker-host/src/native_app_server.rs",
+    "codex-rs/hepta-infer-worker-host/src/native_app_server_tests.rs",
+    "codex-rs/hepta-infer-worker-host/src/native_message_output.rs",
+    "codex-rs/hepta-infer-worker-host/src/native_message_output_tests.rs",
+    "codex-rs/hepta-infer-worker-host/src/native_output.rs",
+    "codex-rs/hepta-infer-worker-host/src/native_output_tests.rs"
+  ],
+  "source_changes_relative_to_C0": [
+    "codex-rs/hepta-agentd/src/deployment_issuer_root.rs",
+    "codex-rs/hepta-infer-worker-host/src/native_app_server.rs",
+    "codex-rs/hepta-infer-worker-host/src/native_app_server_tests.rs",
+    "codex-rs/hepta-infer-worker-host/src/native_message_output_tests.rs",
+    "codex-rs/hepta-infer-worker-host/src/native_output.rs"
+  ],
+  "formatter_patch_sha256": "477a32239f0453cca0ad1313e9db550fde6e0703b143b9c47aab1d83514e926c",
+  "all_reviewed_final_preformat_blobs_matched": true
+}

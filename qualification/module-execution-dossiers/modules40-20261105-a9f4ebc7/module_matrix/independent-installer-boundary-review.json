@@ -1,0 +1,50 @@
+{
+  "scope": "Independent concrete RED/GREEN for installer object-store ownership in disposable private fixtures only",
+  "oldScriptSha256": "16c2f697d372dcd254489a4bfb9afdcbf2e42d8b7e0541cf371678019865988e",
+  "fixedScriptSha256": "a77712455a447e1ba725b31e0b2344bbdd99e07c6b3cb84602149fc1a908e6da",
+  "bundleSha256": "ea70dd4a37a281207211b87d433cf4fc1d60bd43956d18b0f70fbbf45f610a31",
+  "results": [
+    {
+      "case": "object_root",
+      "version": "old",
+      "exit": 0,
+      "externalObjectStoreChanged": true,
+      "refusal": null,
+      "fixture": "/workspace/scratch/a9f4ebc7dfa7/module_matrix/installer-boundary-object_root-old-h7084_w5/checkout"
+    },
+    {
+      "case": "object_root",
+      "version": "fixed",
+      "exit": 1,
+      "externalObjectStoreChanged": false,
+      "refusal": "ValueError: object store is redirected outside the independent Git directory",
+      "fixture": "/workspace/scratch/a9f4ebc7dfa7/module_matrix/installer-boundary-object_root-fixed-bfxj0924/checkout"
+    },
+    {
+      "case": "fanout",
+      "version": "old",
+      "exit": 0,
+      "externalObjectStoreChanged": true,
+      "refusal": null,
+      "fixture": "/workspace/scratch/a9f4ebc7dfa7/module_matrix/installer-boundary-fanout-old-ukxyf6s7/checkout"
+    },
+    {
+      "case": "fanout",
+      "version": "fixed",
+      "exit": 1,
+      "externalObjectStoreChanged": false,
+      "refusal": "ValueError: loose object fanout is redirected outside the independent object store",
+      "fixture": "/workspace/scratch/a9f4ebc7dfa7/module_matrix/installer-boundary-fanout-fixed-5wowd5ez/checkout"
+    },
+    {
+      "case": "leaf",
+      "version": "fixed",
+      "exit": 1,
+      "externalObjectStoreChanged": false,
+      "refusal": "ValueError: loose object path is redirected outside its owned fanout",
+      "fixture": "/workspace/scratch/a9f4ebc7dfa7/module_matrix/installer-boundary-leaf-fixed-7mmui9ol/checkout"
+    }
+  ],
+  "fixedNormalApplyReceipt": "independent-installer-normal-review.json",
+  "noAi395OrRemoteWrites": true
+}

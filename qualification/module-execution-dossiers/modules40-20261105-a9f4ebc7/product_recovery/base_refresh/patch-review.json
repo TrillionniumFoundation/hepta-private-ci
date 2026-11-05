@@ -1,0 +1,77 @@
+{
+  "baseline_ours_commit": "e9b84f242326e5280ee2b2de937f03f78bc1e907",
+  "baseline_ours_tree": "4d9de9f9d5eef537e5cee1c07b3d1875d30af56e",
+  "baseline_native_commit": "910a5373c786c3e180f5b4d743ad794d88df5cec",
+  "new_base_commit": "e65a53ddfc872ef66edc63dff8f28d4414817c60",
+  "patch": "/workspace/scratch/a9f4ebc7dfa7/product_recovery/base_refresh/e65-integration-on-c0.patch",
+  "patch_sha256": "43e9be990f7e5a8a91485ec93192ed52ca2b795a6cf0b5217824b9a5eaea861f",
+  "patch_bytes": 16666,
+  "files": [
+    {
+      "path": "codex-rs/hepta-agentd/src/deployment_issuer_root.rs",
+      "status": "modified",
+      "ours_blob": "13c813efd1d8b0b8c45b4ac093dcb0ef0dab2521",
+      "final_blob": "739653ea62c7c747e387bd3ba51f7e8ef05f6c68",
+      "final_sha256": "4ad834b10d2dc64816a1752b6e276d2c968a27225fc5faa23def268f14ebe065",
+      "additions": 10,
+      "deletions": 1
+    },
+    {
+      "path": "codex-rs/hepta-infer-worker-host/src/native_app_server.rs",
+      "status": "modified",
+      "ours_blob": "eaad40c5d667d2aa3d02078d0dffd17bd6a38271",
+      "final_blob": "fe6c45d94f2141b95bdff32a1347e8a2c1b25ab6",
+      "final_sha256": "deba378d5d0a413f8e7b0bcbe6887537c466458d21c4cf916b205f6190500f0c",
+      "additions": 3,
+      "deletions": 1
+    },
+    {
+      "path": "codex-rs/hepta-infer-worker-host/src/native_app_server_tests.rs",
+      "status": "modified",
+      "ours_blob": "457213b923d9ab851ec5aa1b29902e24e36ca8d3",
+      "final_blob": "c0bba5586a32095f25f3ee20784fd91ee7485575",
+      "final_sha256": "fd7ea4563b75640e65ec70d5a2032d3a3b4c2157c567501481227e5c31a638ee",
+      "additions": 13,
+      "deletions": 1
+    },
+    {
+      "path": "codex-rs/hepta-infer-worker-host/src/native_message_output_tests.rs",
+      "status": "added",
+      "ours_blob": null,
+      "final_blob": "ca2cca1f20e199b4074ed08df69cc034eb8a3fee",
+      "final_sha256": "e72edce0e1941c52f1564daa2e4c8f1aca54aa141c4c68f4a3008a3f5303bdfe",
+      "additions": 274,
+      "deletions": 0
+    },
+    {
+      "path": "codex-rs/hepta-infer-worker-host/src/native_output.rs",
+      "status": "modified",
+      "ours_blob": "bb1dc6f27a35559ca8cd55854c23d51fd1ba63a3",
+      "final_blob": "3cc279a9bfe85443c7a64f40d39898397a23618f",
+      "final_sha256": "3de0b8e9915a14cdc01329c06a8863ab97a620fd398f958d3eef0f9e349f7bde",
+      "additions": 31,
+      "deletions": 5
+    }
+  ],
+  "total_added_deleted": 339,
+  "textual_apply": "PASS: fresh exact C0 file snapshot, check then actual apply equals intended bytes",
+  "new_base_test_names_preserved": [
+    "complete_only_message_is_observed_only_for_the_bound_turn",
+    "completed_snapshot_replaces_partial_text_without_double_counting",
+    "distinct_item_ids_preserve_identical_message_text",
+    "item_start_order_survives_later_item_text_arriving_first",
+    "terminal_summary_merges_last_message_without_dropping_earlier_messages",
+    "interrupt_grace_keeps_item_identity_and_cannot_restore_cancelled_authority",
+    "oversized_complete_item_preserves_previous_output_and_pending_state",
+    "empty_items_cannot_retain_unbounded_metadata",
+    "conflicting_completion_or_late_delta_cannot_change_a_completed_item",
+    "oversized_terminal_snapshot_cannot_authorize_completion"
+  ],
+  "base_assertion_count": 30,
+  "final_assertion_count": 30,
+  "native_execution": "NOT_RUN; parent will use original fmt/fix/four-package test",
+  "e65_file_absorbed_not_retained": {
+    "path": "codex-rs/hepta-infer-worker-host/src/native_message_output.rs",
+    "reason": "Behavior consolidated into existing native_output.rs; do not retain a second unused accumulator during the real merge."
+  }
+}

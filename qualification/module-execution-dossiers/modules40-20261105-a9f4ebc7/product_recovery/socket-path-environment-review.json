@@ -1,0 +1,41 @@
+{
+  "status": "SOURCE_AND_ORIGINAL_LOG_DIAGNOSIS",
+  "source_commit": "58c81ccdd25002ae0f481d434af067a56fa7ddb8",
+  "test": "native_app_server::tests::real_agentd_worker_accepts_fresh_context_and_rejects_final_use_tombstone",
+  "old_control_path_bytes": 140,
+  "new_control_path_bytes": 102,
+  "new_app_server_path_bytes": 102,
+  "linux_sun_path_array_bytes": 108,
+  "rust_rule": "Path bytes must be strictly shorter than sun_path; current Rust standard library returns InvalidInput with the observed message before connect/bind.",
+  "source_chain": [
+    "test root = std::env::temp_dir()/hepta-cognitive-worker-e2e-<19digit nonce>",
+    "CognitiveTestHost canonicalizes root and constructs root/fleet",
+    "HeptaAgentLayout places agent control and App Server sockets under fleet/run/a<compact_id>.ctl and .app",
+    "prepare_socket probes UnixStream::connect before bind; InvalidInput is propagated as probe existing agentd control socket",
+    "isolate_host inherits environment; it adds only case/completion markers and preserves exact child assertions/completion marker"
+  ],
+  "scope_of_correction": "Only the process temp root is changed to a fresh owner-private directory. Source, test name, profile, test filters, budgets and assertions are unchanged. The real canonical directory must remain the recorded short path. This Linux path-length calculation is not a claim about other operating systems.",
+  "sources": [
+    {
+      "path": "codex-rs/hepta-paths/src/fleet.rs",
+      "git_blob": "30d3a88e199578ace3e2fb0387e86d0c467e3806",
+      "sha256": "b2e9e821ec1bfc76a959b1fbd2cc971b7c45c47539eb2db80b6a1b86f731b9b1"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/control.rs",
+      "git_blob": "c9ab8c876cf487755360dc385262fb3dbc052097",
+      "sha256": "eaec3c465f2509ccce4ab3b5787f33a50ce4b29efa97e9328627f05fd0e4ed3e"
+    },
+    {
+      "path": "codex-rs/hepta-infer-worker-host/src/native_test_process.rs",
+      "git_blob": "64543fb8a4d45b4fe97066ae1818b188eed08771",
+      "sha256": "dc9b75772156c94eff0197060675412c61b3cb5ac4ecaf07eac8570d483a9f09"
+    }
+  ],
+  "primary_references": [
+    "https://doc.rust-lang.org/src/std/os/unix/net/addr.rs.html",
+    "https://doc.rust-lang.org/std/env/fn.temp_dir.html",
+    "https://man7.org/linux/man-pages/man7/unix.7.html"
+  ],
+  "native_execution_performed_by_reviewer": false
+}

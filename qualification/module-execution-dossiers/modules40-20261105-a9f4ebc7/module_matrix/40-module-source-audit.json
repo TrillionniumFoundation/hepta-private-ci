@@ -1,0 +1,1048 @@
+{
+  "candidate": "f7a57e6f40e3e8220233f0d27b8cfbdf1f721c55",
+  "modules": [
+    {
+      "module": "auth.authbus",
+      "sourceRootPresent": true,
+      "productionImplementation": false,
+      "productCallerState": "not_composed",
+      "productionWriterState": "not_established",
+      "resolvedRoots": [
+        "codex-rs/hepta-authbus",
+        "codex-rs/hepta-authbus-p1-3-qualification"
+      ],
+      "rootMissing": [],
+      "operations": 3,
+      "mappedSourcesMissing": [],
+      "repositoryControlledGaps": [
+        "Bind every operation to an authenticated consumer callsite and owner store.",
+        "Run exact-head and deterministic synthetic-merge tests before changing the claim boundary."
+      ],
+      "externalEvidenceGates": [
+        "independent semantic review",
+        "product execution and target-host qualification",
+        "operator acceptance, canary, promotion and release"
+      ],
+      "staleSourceObjects": 0,
+      "mapBlob": "6a19185443e1bf2ecc943b425fecc1b898280c0b",
+      "reference": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/f7a57e6f40e3e8220233f0d27b8cfbdf1f721c55/docs/modules/auth.authbus/IMPLEMENTATION_MAP.json"
+    },
+    {
+      "module": "automation.taskflow",
+      "sourceRootPresent": true,
+      "productionImplementation": false,
+      "productCallerState": "agentd_app_server_and_capability_negotiated_calendar_v2_control_composed_external_effect_product_caller_pending",
+      "productionWriterState": "automation_store_durable_schedule_occurrence_taskflow_owner_established",
+      "resolvedRoots": [
+        "codex-rs/hepta-automation"
+      ],
+      "rootMissing": [],
+      "operations": 4,
+      "mappedSourcesMissing": [],
+      "repositoryControlledGaps": [],
+      "externalEvidenceGates": [
+        "selected-host Agentd/App Server execution receipt for the composed durable causal path",
+        "independently provisioned FinalUseAuthority signer/verifying-key/revocation-head configuration plus a concrete attested downstream effect provider and trusted terminal/reconciliation evidence for every activated external effect",
+        "real IANA timezone-profile provenance/tzdb refresh plus DST and multi-scheduler target qualification",
+        "independent acceptance, activation, promotion and release evidence"
+      ],
+      "staleSourceObjects": 0,
+      "mapBlob": "8a2ec5946e61756c173969a39f25b4ccd1f5df83",
+      "reference": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/f7a57e6f40e3e8220233f0d27b8cfbdf1f721c55/docs/modules/automation.taskflow/IMPLEMENTATION_MAP.json"
+    },
+    {
+      "module": "browser.servo",
+      "sourceRootPresent": true,
+      "productionImplementation": false,
+      "productCallerState": "not_composed",
+      "productionWriterState": "not_established",
+      "resolvedRoots": [
+        "apps/hepta-browser",
+        "third_party/servo-patches"
+      ],
+      "rootMissing": [],
+      "operations": 3,
+      "mappedSourcesMissing": [],
+      "repositoryControlledGaps": [],
+      "externalEvidenceGates": [
+        "reproducible Servo binary and patch digest",
+        "OS sandbox/profile/credential/network enforcement",
+        "real navigation/download/business terminal observation"
+      ],
+      "staleSourceObjects": 0,
+      "mapBlob": "95232cb60bc15e0787122e49b12f0a451c58f8e1",
+      "reference": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/f7a57e6f40e3e8220233f0d27b8cfbdf1f721c55/docs/modules/browser.servo/IMPLEMENTATION_MAP.json"
+    },
+    {
+      "module": "channel.matrix",
+      "sourceRootPresent": true,
+      "productionImplementation": false,
+      "productCallerState": "not_composed",
+      "productionWriterState": "not_established",
+      "resolvedRoots": [
+        "codex-rs/hepta-matrix-sdk",
+        "codex-rs/hepta-matrixd"
+      ],
+      "rootMissing": [],
+      "operations": 3,
+      "mappedSourcesMissing": [],
+      "repositoryControlledGaps": [
+        "Integrate any new send-observer state with the existing MatrixDurableStore transaction identity; the component alone is not a second durable sender."
+      ],
+      "externalEvidenceGates": [
+        "real enrolled homeserver/user/device/encryption identity",
+        "live sync and send transport callsites",
+        "rate-limit/reconnect/redaction/restore target qualification"
+      ],
+      "staleSourceObjects": 0,
+      "mapBlob": "004297c8a80305edabc4b0994b031b042b943436",
+      "reference": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/f7a57e6f40e3e8220233f0d27b8cfbdf1f721c55/docs/modules/channel.matrix/IMPLEMENTATION_MAP.json"
+    },
+    {
+      "module": "cognitive.read",
+      "sourceRootPresent": true,
+      "productionImplementation": false,
+      "productCallerState": "composed_local_host",
+      "productionWriterState": "not_applicable_read_only",
+      "resolvedRoots": [
+        "codex-rs/hepta-cognitive-read"
+      ],
+      "rootMissing": [],
+      "operations": 6,
+      "mappedSourcesMissing": [],
+      "repositoryControlledGaps": [
+        "Obtain exact-head and deterministic synthetic-merge execution receipts for the candidate.",
+        "Obtain exact-candidate execution receipts for the implemented real Agentd/native-worker fresh-context acceptance plus concurrent tombstone/correction rejection, owner-cut validity-expiry/rollback detection, and stale host-generation rejection; source presence is not a pass receipt.",
+        "Keep the current durable SQLite kind capability Fact-only until an explicit owner schema migration qualifies additional memory kinds.",
+        "Add target-host p50/p95/p99 CPU, RSS and SQLite measurements before performance qualification.",
+        "Qualify adapt_authoritative_read_to_canonical_shadow_v1 on exact source-head and deterministic synthetic merge.",
+        "Supply authoritative source-revision bindings before claiming full canonical provenance equivalence; legacy MemoryRecord citations do not carry source revisions.",
+        "Migrate named downstream callers from legacy ReadResultV2 only after exact record-to-event bridge ownership is established.",
+        "Revalidate the canonical shadow against the current final-use snapshot before physical model-request attachment; a historical read receipt grants no future-use authority.",
+        "Named source and product adapters remain present; current candidate requalification is required because mapped source/build inputs changed after the retained historical observation. Historical production proof is not rebound by navigation migration."
+      ],
+      "externalEvidenceGates": [
+        "independent semantic review",
+        "product execution and target-host qualification",
+        "operator acceptance, canary, promotion and release"
+      ],
+      "staleSourceObjects": 5,
+      "mapBlob": "f7503922a2066f30f77939b68f2ba7aa19cd891b",
+      "reference": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/f7a57e6f40e3e8220233f0d27b8cfbdf1f721c55/docs/modules/cognitive.read/IMPLEMENTATION_MAP.json"
+    },
+    {
+      "module": "cognitive.store",
+      "sourceRootPresent": true,
+      "productionImplementation": false,
+      "productCallerState": "normal_agentd_runtime_capability_composed_external_bootstrap_pending",
+      "productionWriterState": "sealed_same_transaction_provenance_writer_source_bound_qualification_pending",
+      "resolvedRoots": [
+        "codex-rs/hepta-cognitive-store"
+      ],
+      "rootMissing": [],
+      "operations": 12,
+      "mappedSourcesMissing": [],
+      "repositoryControlledGaps": [
+        "Obtain terminal-success exact-head and deterministic synthetic-merge receipts for this source baseline, including child-process crash/reopen and 256/16384 PERF-DURABLE artifacts.",
+        "Obtain terminal-success exact-candidate execution evidence for the same-transaction semantic-validation failure, response-loss/restart duplicate rejection, and live-authority revocation cases already present in source tests.",
+        "Define and qualify long-term ancestry-safe retention/pruning beyond bounded paging; logical tombstones must not be reported as physical erasure, backup deletion, derived-artifact revocation or model unlearning.",
+        "Keep productionImplementation false until the normal-runtime sealed capability path compiles/tests on the exact candidate and product execution evidence is current.",
+        "Standalone deployment must receive an independently authenticated current-cut witness and externally verified live production authority from its host; Agentd must not self-mint either."
+      ],
+      "externalEvidenceGates": [
+        "independent semantic review",
+        "trusted host bootstrap and target-host product qualification",
+        "operator acceptance, canary, promotion and release"
+      ],
+      "staleSourceObjects": 9,
+      "mapBlob": "d1203fed73f7e170038d90e4f789f2429ebfcb74",
+      "reference": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/f7a57e6f40e3e8220233f0d27b8cfbdf1f721c55/docs/modules/cognitive.store/IMPLEMENTATION_MAP.json"
+    },
+    {
+      "module": "cognitive.types",
+      "sourceRootPresent": true,
+      "productionImplementation": false,
+      "productCallerState": "not_composed",
+      "productionWriterState": "not_established",
+      "resolvedRoots": [
+        "codex-rs/hepta-cognitive-types"
+      ],
+      "rootMissing": [],
+      "operations": 15,
+      "mappedSourcesMissing": [],
+      "repositoryControlledGaps": [
+        "Run exact-head package/all-target/strict-clippy and deterministic synthetic-merge qualification for this exact candidate.",
+        "Migrate registered consumers through explicit canonical V1 adapters; registry projection alone is not native consumer convergence.",
+        "Bind authenticated production consumers to the exact registered V1 wire schemas before changing product-composition claims."
+      ],
+      "externalEvidenceGates": [
+        "independent semantic review",
+        "product execution and target-host qualification",
+        "operator acceptance, canary, promotion and release"
+      ],
+      "staleSourceObjects": 0,
+      "mapBlob": "a58d2d826998d3fc4a445774529a8f1a9770cc18",
+      "reference": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/f7a57e6f40e3e8220233f0d27b8cfbdf1f721c55/docs/modules/cognitive.types/IMPLEMENTATION_MAP.json"
+    },
+    {
+      "module": "compact.engine",
+      "sourceRootPresent": true,
+      "productionImplementation": false,
+      "productCallerState": "not_composed",
+      "productionWriterState": "not_established",
+      "resolvedRoots": [
+        "codex-rs/hepta-compact-engine"
+      ],
+      "rootMissing": [],
+      "operations": 3,
+      "mappedSourcesMissing": [],
+      "repositoryControlledGaps": [
+        "Bind every operation to an authenticated consumer callsite and owner store.",
+        "Run exact-head and deterministic synthetic-merge tests before changing the claim boundary."
+      ],
+      "externalEvidenceGates": [
+        "independent semantic review",
+        "product execution and target-host qualification",
+        "operator acceptance, canary, promotion and release"
+      ],
+      "staleSourceObjects": 0,
+      "mapBlob": "9f9c5e34ad955f899eb9256cb6b0640e03806ef0",
+      "reference": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/f7a57e6f40e3e8220233f0d27b8cfbdf1f721c55/docs/modules/compact.engine/IMPLEMENTATION_MAP.json"
+    },
+    {
+      "module": "context.compiler",
+      "sourceRootPresent": true,
+      "productionImplementation": false,
+      "productCallerState": "legacy_v1_read_only_source_composed_verified_v2_not_composed",
+      "productionWriterState": "not_established",
+      "resolvedRoots": [
+        "codex-rs/hepta-context-compiler"
+      ],
+      "rootMissing": [],
+      "operations": 12,
+      "mappedSourcesMissing": [],
+      "repositoryControlledGaps": [
+        "Compose the verified V2 operations into one authenticated named product caller with the authoritative admission verifier, exact tokenizer/serializer/template/tool-schema profile, and runtime provider owner.",
+        "At the real provider boundary consume current final-use authority in the same effect-bound ceremony that binds ContextDeliveryPreparationV2 to the exact serialized payload and canonical ProviderRequestBinding before physical send.",
+        "Persist and independently resolve provider attempt/terminal evidence, then exercise revoke race, adapter death, provider indeterminate, process death and retry reconciliation without converting uncertainty into success.",
+        "Run exact-head, deterministic synthetic-merge, capacity and target-host qualification before changing productExecutionProved, activation or release."
+      ],
+      "externalEvidenceGates": [
+        "independent semantic review",
+        "product execution and target-host qualification",
+        "operator acceptance, canary, promotion and release"
+      ],
+      "staleSourceObjects": 1,
+      "mapBlob": "b982d3e96ae12f35929e7c148d3d13cb74ab6b90",
+      "reference": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/f7a57e6f40e3e8220233f0d27b8cfbdf1f721c55/docs/modules/context.compiler/IMPLEMENTATION_MAP.json"
+    },
+    {
+      "module": "control.engineering",
+      "sourceRootPresent": true,
+      "productionImplementation": false,
+      "productCallerState": "repository_product_caller_dual_lane_defined_execution_pending",
+      "productionWriterState": "named_product_owner_composed_execution_pending",
+      "resolvedRoots": [
+        "tools/hepta-engineering-control"
+      ],
+      "rootMissing": [],
+      "operations": 25,
+      "mappedSourcesMissing": [],
+      "repositoryControlledGaps": [
+        "Observe successful exact-source and deterministic synthetic-merge runs of the repository product caller before changing the product-execution claim boundary.",
+        "Retain strong Linux/Bubblewrap, mutation-testing and sandbox-controller receipts for the exact candidate.",
+        "Product execution receipts prove the full composed path with explicit CI reference fixtures; external independent completion/review observations remain separate evidence and must not be inferred from those fixtures."
+      ],
+      "externalEvidenceGates": [
+        "independent semantic review and external key custody",
+        "distributed lease/fencing service and external immutable audit anchor",
+        "authorized target-host deployment, rollback rehearsal, operator acceptance and release"
+      ],
+      "staleSourceObjects": 0,
+      "mapBlob": "f81f0f0dc211a6e35d606ba9bda66c0b3da6e2a2",
+      "reference": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/f7a57e6f40e3e8220233f0d27b8cfbdf1f721c55/docs/modules/control.engineering/IMPLEMENTATION_MAP.json"
+    },
+    {
+      "module": "control.runtime",
+      "sourceRootPresent": true,
+      "productionImplementation": false,
+      "productCallerState": "not_composed",
+      "productionWriterState": "not_composed",
+      "resolvedRoots": [
+        "codex-rs/hepta-control-plane"
+      ],
+      "rootMissing": [],
+      "operations": 6,
+      "mappedSourcesMissing": [],
+      "repositoryControlledGaps": [
+        "Bind every operation to an authenticated consumer callsite and owner store.",
+        "Run exact-head and deterministic synthetic-merge tests before changing the claim boundary."
+      ],
+      "externalEvidenceGates": [
+        "independent semantic review",
+        "product execution and target-host qualification",
+        "operator acceptance, canary, promotion and release"
+      ],
+      "staleSourceObjects": 0,
+      "mapBlob": "b0183a3a3898c354d2fe18d43054b8cf3f341187",
+      "reference": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/f7a57e6f40e3e8220233f0d27b8cfbdf1f721c55/docs/modules/control.runtime/IMPLEMENTATION_MAP.json"
+    },
+    {
+      "module": "inference.control",
+      "sourceRootPresent": true,
+      "productionImplementation": false,
+      "productCallerState": "not_composed",
+      "productionWriterState": "not_established",
+      "resolvedRoots": [
+        "codex-rs/hepta-infer-core",
+        "codex-rs/hepta-inferd"
+      ],
+      "rootMissing": [],
+      "operations": 4,
+      "mappedSourcesMissing": [],
+      "repositoryControlledGaps": [
+        "Connect economically meaningful quota and hardware-capacity authorities; the shipped native policy reserves only local in-flight run slots.",
+        "Implement authenticated recovery of actual provider terminal/usage observations after process loss; reopening a dispatched run conservatively holds capacity and never replays it.",
+        "Add bounded archival/retention under the same journal owner; the current 64 MiB journal rejects further appends without truncating acknowledged history."
+      ],
+      "externalEvidenceGates": [
+        "real provider deployment and crash/cancellation acceptance",
+        "real economic quota/capacity authority integration",
+        "authenticated remote-worker transport if a separate process is introduced"
+      ],
+      "staleSourceObjects": 0,
+      "mapBlob": "2116d9359255f99a749dcdb92fa186310ceeb779",
+      "reference": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/f7a57e6f40e3e8220233f0d27b8cfbdf1f721c55/docs/modules/inference.control/IMPLEMENTATION_MAP.json"
+    },
+    {
+      "module": "inference.worker",
+      "sourceRootPresent": true,
+      "productionImplementation": false,
+      "productCallerState": "not_composed",
+      "productionWriterState": "not_established",
+      "resolvedRoots": [
+        "codex-rs/hepta-infer-worker-host"
+      ],
+      "rootMissing": [],
+      "operations": 3,
+      "mappedSourcesMissing": [],
+      "repositoryControlledGaps": [
+        "Implement a local model driver that acquires and proves actual weights, device and memory grants before claiming isolated local inference.",
+        "Implement trusted provider reconciliation for dispatch-unknown/reopened runs and later missing token usage; do not infer zero usage or safe replay from transport loss."
+      ],
+      "externalEvidenceGates": [
+        "identified real weights/tokenizer/runtime/device",
+        "isolated deployed worker process and authenticated control channel",
+        "OOM/device-reset/load-kill target qualification"
+      ],
+      "staleSourceObjects": 0,
+      "mapBlob": "94b5f3ff7195454c5c8107bd5c7bbdc9b35dab78",
+      "reference": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/f7a57e6f40e3e8220233f0d27b8cfbdf1f721c55/docs/modules/inference.worker/IMPLEMENTATION_MAP.json"
+    },
+    {
+      "module": "intelligence.control",
+      "sourceRootPresent": true,
+      "productionImplementation": false,
+      "productCallerState": "named_agentd_runner_present_daemon_route_not_composed",
+      "productionWriterState": "none_by_design_composition_facade",
+      "resolvedRoots": [
+        "codex-rs/hepta-intelligence"
+      ],
+      "rootMissing": [],
+      "operations": 35,
+      "mappedSourcesMissing": [],
+      "repositoryControlledGaps": [
+        "Complete durable product Decision/Outcome append and process-loss reconciliation, then exercise the daemon-prepared binding through the physical App Server caller; the authenticated ObjectiveStart-to-canonical-run route is now source-wired.",
+        "Make ambiguous Decision/Outcome append recovery survive Agentd process loss; PendingIntelligenceLedgerAppendV1 is currently only an in-memory replay object.",
+        "Obtain current exact-head and deterministic synthetic-merge green receipts for this candidate; prior candidate receipts are provenance only.",
+        "Run the real Agentd/App Server intelligence-bound product E2E, including turn/start lost-ack, dependency outage, restart and revocation races.",
+        "Qualify target-host hard resource termination; the pure in-process cognition worker discards late results but spawn_blocking cannot terminate a running blocking stage."
+      ],
+      "externalEvidenceGates": [
+        "independent semantic and security review",
+        "real-provider and target-host qualification",
+        "operator acceptance, canary, promotion and release"
+      ],
+      "staleSourceObjects": 7,
+      "mapBlob": "8464639f089ff6c7a4fcf2cfa46d9e7076827260",
+      "reference": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/f7a57e6f40e3e8220233f0d27b8cfbdf1f721c55/docs/modules/intelligence.control/IMPLEMENTATION_MAP.json"
+    },
+    {
+      "module": "intuition.policy",
+      "sourceRootPresent": true,
+      "productionImplementation": false,
+      "productCallerState": "not_composed",
+      "productionWriterState": "not_established",
+      "resolvedRoots": [
+        "codex-rs/hepta-intuition"
+      ],
+      "rootMissing": [],
+      "operations": 2,
+      "mappedSourcesMissing": [],
+      "repositoryControlledGaps": [
+        "Bind every operation to an authenticated consumer callsite and owner store.",
+        "Run exact-head and deterministic synthetic-merge tests before changing the claim boundary."
+      ],
+      "externalEvidenceGates": [
+        "independent semantic review",
+        "product execution and target-host qualification",
+        "operator acceptance, canary, promotion and release"
+      ],
+      "staleSourceObjects": 0,
+      "mapBlob": "12a89204b51165f6db3e3f6f34f42c20b048ae46",
+      "reference": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/f7a57e6f40e3e8220233f0d27b8cfbdf1f721c55/docs/modules/intuition.policy/IMPLEMENTATION_MAP.json"
+    },
+    {
+      "module": "kernel.authority",
+      "sourceRootPresent": true,
+      "productionImplementation": false,
+      "productCallerState": "source_composed_runtime_fleet_registered_bao_host_and_agentd_browser_not_product_activated",
+      "productionWriterState": "authority_owner_source_implemented_not_activated",
+      "resolvedRoots": [
+        "codex-rs/hepta-contracts"
+      ],
+      "rootMissing": [],
+      "operations": 9,
+      "mappedSourcesMissing": [],
+      "repositoryControlledGaps": [
+        "Select and qualify a named product-process caller for the registered Bao final-use host before activation.",
+        "Retain current exact-head and deterministic synthetic-merge execution receipts after the hardened authority changes.",
+        "Compose remaining target-only ModulePorts only when their real owner exposes one canonical authority reference/revision; do not create ad-hoc double-authority wrappers.",
+        "Obtain exact-head and deterministic synthetic-merge execution receipts for the current-main closure candidate.",
+        "Compose each remaining target kernel.authority ModulePort only at its real owner boundary; runtime.fleet is now source-composed, while the remaining target-only ports are enumerated in TRACEABILITY.md."
+      ],
+      "externalEvidenceGates": [
+        "deployed fleet revocation wire fanout and measured convergence/freshness latency qualification; repository admission/convergence semantics are implemented in runtime.fleet",
+        "protected production AuthorityFrontierStore backend qualification",
+        "attested or otherwise independently protected AuthorityClock qualification",
+        "HSM/KMS key custody, staged rotation and compromise-response ceremony",
+        "independent semantic review",
+        "operator acceptance, canary, promotion and release"
+      ],
+      "staleSourceObjects": 5,
+      "mapBlob": "4a5bb7b59fb10b674f4253407beb6171fbf5b8f4",
+      "reference": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/f7a57e6f40e3e8220233f0d27b8cfbdf1f721c55/docs/modules/kernel.authority/IMPLEMENTATION_MAP.json"
+    },
+    {
+      "module": "kernel.evidence",
+      "sourceRootPresent": true,
+      "productionImplementation": false,
+      "productCallerState": "agentd_composed_config_gated",
+      "productionWriterState": "agentd_authenticated_writer_established_config_gated",
+      "resolvedRoots": [
+        "codex-rs/hepta-evidence"
+      ],
+      "rootMissing": [],
+      "operations": 6,
+      "mappedSourcesMissing": [],
+      "repositoryControlledGaps": [
+        "Named source and product adapters remain present; current candidate requalification is required because mapped source/build inputs changed after the retained historical observation. Historical production proof is not rebound by navigation migration."
+      ],
+      "externalEvidenceGates": [
+        "independent exact-candidate acceptance",
+        "external monotonic CAS/latest-frontier backend and backup publication ceremony",
+        "operator acceptance, canary, promotion and release"
+      ],
+      "staleSourceObjects": 1,
+      "mapBlob": "3a7db28cf3774193080ecb15279fcffd7e8342bf",
+      "reference": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/f7a57e6f40e3e8220233f0d27b8cfbdf1f721c55/docs/modules/kernel.evidence/IMPLEMENTATION_MAP.json"
+    },
+    {
+      "module": "kernel.operations",
+      "sourceRootPresent": true,
+      "productionImplementation": false,
+      "productCallerState": "agentd_runtime_lifecycle_source_composed_external_authority_activation_pending",
+      "productionWriterState": "durable_cognitive_store_owner_implemented_not_activated",
+      "resolvedRoots": [
+        "codex-rs/hepta-operations"
+      ],
+      "rootMissing": [],
+      "operations": 10,
+      "mappedSourcesMissing": [],
+      "repositoryControlledGaps": [
+        "Run current exact-head and deterministic synthetic-merge qualification for this current-main convergence candidate and close every resulting finding.",
+        "Add destination-owned dedupe/apply/terminal observation before activating each remaining registered effect destination.",
+        "Design and qualify bounded segment/checkpoint compaction for append-only lease/event/outbox history before long-lived capacity qualification.",
+        "Named source and product adapters remain present; current candidate requalification is required because mapped source/build inputs changed after the retained historical observation. Historical production proof is not rebound by navigation migration."
+      ],
+      "externalEvidenceGates": [
+        "independent semantic review",
+        "enrolled production authority/grant source and target-host crash/power-loss/storage qualification",
+        "operator acceptance, canary, promotion and release"
+      ],
+      "staleSourceObjects": 9,
+      "mapBlob": "97685939417621d695c2897890050481f0215964",
+      "reference": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/f7a57e6f40e3e8220233f0d27b8cfbdf1f721c55/docs/modules/kernel.operations/IMPLEMENTATION_MAP.json"
+    },
+    {
+      "module": "knowledge.graph",
+      "sourceRootPresent": true,
+      "productionImplementation": false,
+      "productCallerState": "composed_cognitive_read_default_agentd_write_and_prompt_optimizer_pending_exact_head",
+      "productionWriterState": "candidate_agentd_default_fail_closed_pending_exact_head",
+      "resolvedRoots": [
+        "codex-rs/hepta-kg"
+      ],
+      "rootMissing": [],
+      "operations": 5,
+      "mappedSourcesMissing": [],
+      "repositoryControlledGaps": [
+        "Current exact-head and deterministic synthetic-merge knowledge.graph qualification receipts must both be green before productionImplementation or productExecutionProved can change.",
+        "The durable cognitive writer currently selects complete bounded generation rebuild per logical mutation. PERF-LIBRARY and target-host results decide whether the already-qualified incremental algorithm should become the runtime writer; no host-independent latency threshold is claimed.",
+        "The prompt-factor source/projection/optimizer chain is source-composed and owner-sealed here, but prompt.registry durability/activation remains that module's separate gate and is not self-certified by knowledge.graph."
+      ],
+      "externalEvidenceGates": [
+        "independent semantic review",
+        "product execution and target-host qualification",
+        "operator acceptance, canary, promotion and release"
+      ],
+      "staleSourceObjects": 1,
+      "mapBlob": "b39e574e3504ecf724ddf14406b6cd298e0da959",
+      "reference": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/f7a57e6f40e3e8220233f0d27b8cfbdf1f721c55/docs/modules/knowledge.graph/IMPLEMENTATION_MAP.json"
+    },
+    {
+      "module": "learning.artifacts",
+      "sourceRootPresent": true,
+      "productionImplementation": false,
+      "productCallerState": "explicit_read_and_writer_service_composed",
+      "productionWriterState": "named_owner_service_composed_source_qualification_pending",
+      "resolvedRoots": [
+        "codex-rs/hepta-learning-artifacts"
+      ],
+      "rootMissing": [],
+      "operations": 25,
+      "mappedSourcesMissing": [],
+      "repositoryControlledGaps": [
+        "Execute exact unified-candidate source binding, build and owner recovery qualification after cross-family composition."
+      ],
+      "externalEvidenceGates": [
+        "independent semantic review",
+        "target-host product execution and power-loss qualification",
+        "production owner/selector trust provisioning and independent operator acceptance",
+        "canary, promotion and release"
+      ],
+      "staleSourceObjects": 0,
+      "mapBlob": "9d826ffb7ed7fb96caf1f2d052b5fa66312a384b",
+      "reference": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/f7a57e6f40e3e8220233f0d27b8cfbdf1f721c55/docs/modules/learning.artifacts/IMPLEMENTATION_MAP.json"
+    },
+    {
+      "module": "learning.eval",
+      "sourceRootPresent": true,
+      "productionImplementation": false,
+      "productCallerState": "product_qualification_receipt_consumed_by_evaluated_shadow",
+      "productionWriterState": "qualification_evidence_sink_contract_composed_target_host_binding_unproved",
+      "resolvedRoots": [
+        "codex-rs/hepta-intelligence-eval"
+      ],
+      "rootMissing": [],
+      "operations": 12,
+      "mappedSourcesMissing": [],
+      "repositoryControlledGaps": [
+        "Obtain passing exact-head and ordered-parent synthetic-merge learning.eval qualification artifacts for the final immutable candidate."
+      ],
+      "externalEvidenceGates": [
+        "target-host authentication and durable binding for ProductQualificationEvidenceSinkV1 and final-holdout namespace",
+        "real future-calendar windows, independent snapshots, retention/change-point/privacy/power and unlearning evidence",
+        "cross-host storage qualification when LockedFileFinalHoldoutCasStoreV1 is used on a shared filesystem",
+        "independent semantic/operator acceptance, selection, canary, promotion and release"
+      ],
+      "staleSourceObjects": 4,
+      "mapBlob": "e6453a9df9c29fbbd3dcfdb970362aec6ae3823d",
+      "reference": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/f7a57e6f40e3e8220233f0d27b8cfbdf1f721c55/docs/modules/learning.eval/IMPLEMENTATION_MAP.json"
+    },
+    {
+      "module": "learning.ledger",
+      "sourceRootPresent": true,
+      "productionImplementation": false,
+      "productCallerState": "qualification_consumer_composed_live_product_not_established",
+      "productionWriterState": "source_implemented_host_not_established",
+      "resolvedRoots": [
+        "codex-rs/hepta-learning-ledger"
+      ],
+      "rootMissing": [],
+      "operations": 17,
+      "mappedSourcesMissing": [],
+      "repositoryControlledGaps": [
+        "Bind the durable run-start owner to the authenticated canonical objective/product producer and current-trust Agentd consumer; raw retained records are not self-authenticating current evidence.",
+        "Keep restart recovery non-redispatchable after possible external dispatch and reconcile terminal observations through the existing execution owner.",
+        "Run exact-head and deterministic synthetic-merge tests before changing the claim boundary."
+      ],
+      "externalEvidenceGates": [
+        "exclusive physical writer and directory ownership on the selected live host",
+        "production root provisioning/rotation ceremony, trust-distribution transport, key custody and independent witness placement",
+        "target-host latency, storage growth, reopen, sustained throughput, RSS and physical power-loss/filesystem qualification",
+        "live independent outcomes and genuine future-window longitudinal evidence",
+        "live learning.artifacts dataset-withdrawal fanout, descendant revocation and rebuild handoff",
+        "independent semantic review, operator acceptance, canary, promotion and release"
+      ],
+      "staleSourceObjects": 2,
+      "mapBlob": "4483f1597bfaf9eacfb3e02ea0385bda022ec986",
+      "reference": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/f7a57e6f40e3e8220233f0d27b8cfbdf1f721c55/docs/modules/learning.ledger/IMPLEMENTATION_MAP.json"
+    },
+    {
+      "module": "learning.operator",
+      "sourceRootPresent": true,
+      "productionImplementation": false,
+      "productCallerState": "explicit_read_consumer_composed_default_learning_loop_absent",
+      "productionWriterState": "not_established",
+      "resolvedRoots": [
+        "codex-rs/hepta-bellman-operator"
+      ],
+      "rootMissing": [],
+      "operations": 20,
+      "mappedSourcesMissing": [],
+      "repositoryControlledGaps": [
+        "Compose the default dataset freeze -> verified training -> independent evaluation -> selection -> new-process load shadow loop.",
+        "Obtain successful exact-head and deterministic synthetic-merge qualification receipts for this candidate.",
+        "Execute the verified training and independent evidence regressions on the unified candidate."
+      ],
+      "externalEvidenceGates": [
+        "independent scientific and semantic review",
+        "target-host training/inference measurements and real future-window efficacy",
+        "operator acceptance, canary, promotion and release"
+      ],
+      "staleSourceObjects": 1,
+      "mapBlob": "38c51d93c69fae593b80aacf5fdbef875d0352b4",
+      "reference": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/f7a57e6f40e3e8220233f0d27b8cfbdf1f721c55/docs/modules/learning.operator/IMPLEMENTATION_MAP.json"
+    },
+    {
+      "module": "learning.plasticity",
+      "sourceRootPresent": true,
+      "productionImplementation": false,
+      "productCallerState": "agentd_process_bootstrap_and_named_learning_producer_source_composed_self_iteration_trigger_not_product_composed_or_target_host_qualified",
+      "productionWriterState": "agentd_append_only_parameter_and_topology_anchor_fence_journal_plus_final_use_runtime_topology_executor_source_implemented_target_host_unproved",
+      "resolvedRoots": [
+        "codex-rs/hepta-plasticity"
+      ],
+      "rootMissing": [],
+      "operations": 27,
+      "mappedSourcesMissing": [],
+      "repositoryControlledGaps": [
+        "Compose a real non-test control.engineering/self-iteration coordinator that submits frozen, independently evaluated next-generation parameter/topology requests through AgentdLearningPlasticityProducerV1; the repository now has process bootstrap, the named producer and lifetime E2E, but IterationEnvelopeV1 still has no production caller.",
+        "Run exact-head and deterministic synthetic-merge compilation, tests, strict lint, document verification, Agentd process qualification, Lane F qualification and the live-runtime structural-canary regression for this final source/document head.",
+        "Execute exact unified-candidate descriptor recovery, proposal lifetime and independent live-topology canary tests."
+      ],
+      "externalEvidenceGates": [
+        "independent semantic and security review",
+        "target-host execution with the anchor/fence journal placed in a rollback domain physically independent from each proposal registry, plus crash/recovery telemetry",
+        "operator acceptance and incident-recovery exercise",
+        "target-host topology application with production telemetry and a forced-fault rollback/reconciliation canary; the repository now contains a live-runtime source qualification but not deployment evidence",
+        "promotion, activation and release"
+      ],
+      "staleSourceObjects": 6,
+      "mapBlob": "e34fac6d9eec6f94d61a31e62f9145b88a135235",
+      "reference": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/f7a57e6f40e3e8220233f0d27b8cfbdf1f721c55/docs/modules/learning.plasticity/IMPLEMENTATION_MAP.json"
+    },
+    {
+      "module": "memory.federation",
+      "sourceRootPresent": true,
+      "productionImplementation": false,
+      "productCallerState": "composed_candidate_pending_execution",
+      "productionWriterState": "not_applicable_read_only",
+      "resolvedRoots": [
+        "codex-rs/hepta-memory-federation"
+      ],
+      "rootMissing": [],
+      "operations": 2,
+      "mappedSourcesMissing": [],
+      "repositoryControlledGaps": [
+        "Run exact-current-head focused/package/product-composition/all-target/strict-lint checks and deterministic merge-candidate checks; fix any defect before changing productExecutionProved.",
+        "Product turn cancellation is currently enforced by host future-drop propagation; add explicit product cancellation attribution/receipt wiring if canonical cancellation observability is required."
+      ],
+      "externalEvidenceGates": [
+        "independent semantic and security review",
+        "multi-host authenticated transport qualification when federation crosses a process or host boundary",
+        "product execution and target-host qualification",
+        "operator acceptance, canary, promotion and release"
+      ],
+      "staleSourceObjects": 2,
+      "mapBlob": "8a382fcfaef65313c1288c11ab06a23ea82ef17b",
+      "reference": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/f7a57e6f40e3e8220233f0d27b8cfbdf1f721c55/docs/modules/memory.federation/IMPLEMENTATION_MAP.json"
+    },
+    {
+      "module": "memory.retrieval",
+      "sourceRootPresent": true,
+      "productionImplementation": false,
+      "productCallerState": "source_composed_explicit_profile_not_product_qualified",
+      "productionWriterState": "not_established",
+      "resolvedRoots": [
+        "codex-rs/hepta-memory-retrieval"
+      ],
+      "rootMissing": [],
+      "operations": 9,
+      "mappedSourcesMissing": [],
+      "repositoryControlledGaps": [
+        "Obtain green exact-head and ordered-parent synthetic-merge receipts for the exact observed source snapshot, including package tests, all-target Clippy, formatting and clean source.",
+        "Compose and independently qualify an authenticated CurrentMemoryRetrievalContext provider for the real Agentd hnmf-required process profile; the binary now selects the profile explicitly and fails startup when the provider is absent.",
+        "Retain a green exact-head qualification-host receipt and repeat the same checked-in SQLite/revalidation plus 512-candidate/4096-node/32768-synapse/four-step probes on an approved named target host before target-host performance claims.",
+        "Bind and qualify a real current encoder/vector-index owner before enabling the Vector policy channel; no lexical, generic-graph or learned-ranker score may be relabelled as vector evidence."
+      ],
+      "externalEvidenceGates": [
+        "independent semantic review and acceptance",
+        "approved named target-host p50/p95/p99 latency, throughput, CPU, RSS/peak-memory, allocation and SQLite/revalidation measurements",
+        "actual encoder/vector-index owner qualification before the Vector policy channel is enabled",
+        "independently observed learned-ranker propensity/outcome evidence for causal utility claims",
+        "operator acceptance, canary, promotion and release"
+      ],
+      "staleSourceObjects": 0,
+      "mapBlob": "18ab799265dd6c4ccce24da2ae880e78d15d18a8",
+      "reference": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/f7a57e6f40e3e8220233f0d27b8cfbdf1f721c55/docs/modules/memory.retrieval/IMPLEMENTATION_MAP.json"
+    },
+    {
+      "module": "neuron.runtime",
+      "sourceRootPresent": true,
+      "productionImplementation": false,
+      "productCallerState": "agentd_owner_source_compiled_not_daemon_lifecycle_composed",
+      "productionWriterState": "durable_v1_owner_external_witness_source_implemented_not_activated",
+      "resolvedRoots": [
+        "codex-rs/hepta-neuron"
+      ],
+      "rootMissing": [],
+      "operations": 9,
+      "mappedSourcesMissing": [],
+      "repositoryControlledGaps": [
+        "Stack/rebase the compiled AgentdNeuronOwner onto the daemon-owned runtime.agentd run lifecycle and bind a concrete current inference.control feature port plus selected-artifact/witness lifecycle; a compiled owner boundary is not daemon activation.",
+        "If PopulationSparseConfigV2 is promoted beyond qualification, implement a separately versioned durable journal/owner migration and recovery path; never reinterpret V1 journal bytes as V2 state.",
+        "Run current exact-head, deterministic synthetic-merge and product-host qualification before changing productionImplementation or productExecutionProved.",
+        "Execute unified-candidate rollover/anchor, learned feature host and lost-witness-ack reconciliation tests."
+      ],
+      "externalEvidenceGates": [
+        "target-host product execution with authenticated selected model/runtime/device evidence",
+        "measured calibration/OOD/resource acceptance plus future-window ablation, retention and deletion non-resurrection evidence",
+        "independent semantic/operator acceptance, canary, promotion and release"
+      ],
+      "staleSourceObjects": 0,
+      "mapBlob": "cdbd8fbf04c20713b1a856ad03c0f295c491a21d",
+      "reference": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/f7a57e6f40e3e8220233f0d27b8cfbdf1f721c55/docs/modules/neuron.runtime/IMPLEMENTATION_MAP.json"
+    },
+    {
+      "module": "objective.compiler",
+      "sourceRootPresent": true,
+      "productionImplementation": false,
+      "productCallerState": "source_composed_authenticated_agentd_not_activated",
+      "productionWriterState": "not_applicable_stateless",
+      "resolvedRoots": [
+        "codex-rs/hepta-objective"
+      ],
+      "rootMissing": [],
+      "operations": 10,
+      "mappedSourcesMissing": [],
+      "repositoryControlledGaps": [
+        "Obtain successful exact-head and deterministic synthetic-merge workflow receipts for one final canonical candidate checkout.",
+        "Run the named target-host objective measurement harness and qualify Agentd crash/restart/backpressure behavior on the selected deployment host."
+      ],
+      "externalEvidenceGates": [
+        "independent semantic review",
+        "product execution and target-host qualification",
+        "operator acceptance, canary, promotion and release"
+      ],
+      "staleSourceObjects": 3,
+      "mapBlob": "6c4e5f9c72f5b9670b4c3158ef0ec25e8d97d4d1",
+      "reference": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/f7a57e6f40e3e8220233f0d27b8cfbdf1f721c55/docs/modules/objective.compiler/IMPLEMENTATION_MAP.json"
+    },
+    {
+      "module": "platform.types",
+      "sourceRootPresent": true,
+      "productionImplementation": false,
+      "productCallerState": "not_composed",
+      "productionWriterState": "not_established",
+      "resolvedRoots": [
+        "codex-rs/hepta-types"
+      ],
+      "rootMissing": [],
+      "operations": 11,
+      "mappedSourcesMissing": [],
+      "repositoryControlledGaps": [
+        "Run exact-head and deterministic synthetic-merge Lane A qualification for this exact candidate.",
+        "Implement native source for RandomStreamManifestV1, ExternalSystemManifestV1 and SensorCalibrationManifestV1 before claiming full owned-target-protocol source completion."
+      ],
+      "externalEvidenceGates": [
+        "named authenticated product composition and full consumer compile matrix",
+        "independent semantic review and target-host/product qualification",
+        "operator acceptance, canary, promotion and release"
+      ],
+      "staleSourceObjects": 0,
+      "mapBlob": "16e3676ca895dac14efc993fbacbb8934c6853b6",
+      "reference": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/f7a57e6f40e3e8220233f0d27b8cfbdf1f721c55/docs/modules/platform.types/IMPLEMENTATION_MAP.json"
+    },
+    {
+      "module": "platform.wire",
+      "sourceRootPresent": true,
+      "productionImplementation": false,
+      "productCallerState": "source_composed_read_only_and_registered_port_adapters",
+      "productionWriterState": "not_established",
+      "resolvedRoots": [
+        "codex-rs/hepta-wire"
+      ],
+      "rootMissing": [],
+      "operations": 5,
+      "mappedSourcesMissing": [],
+      "repositoryControlledGaps": [
+        "Run exact-head and deterministic synthetic-merge tests for the versioned implementation and registered product source callers.",
+        "Bind HPTN negotiation and encoded HPTA frames to the selected authenticated production transport/session.",
+        "Register and qualify each additional product-domain schema codec before admitting it."
+      ],
+      "externalEvidenceGates": [
+        "independent semantic and security review",
+        "target-host product execution and authenticated transport qualification",
+        "operator acceptance, canary, promotion and release"
+      ],
+      "staleSourceObjects": 1,
+      "mapBlob": "8e8903bdc1992195a4471fd20100a46cba4f638b",
+      "reference": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/f7a57e6f40e3e8220233f0d27b8cfbdf1f721c55/docs/modules/platform.wire/IMPLEMENTATION_MAP.json"
+    },
+    {
+      "module": "prompt.optimizer",
+      "sourceRootPresent": true,
+      "productionImplementation": false,
+      "productCallerState": "not_composed",
+      "productionWriterState": "not_established",
+      "resolvedRoots": [
+        "codex-rs/hepta-prompt-optimizer"
+      ],
+      "rootMissing": [],
+      "operations": 2,
+      "mappedSourcesMissing": [],
+      "repositoryControlledGaps": [
+        "Bind every operation to an authenticated consumer callsite and owner store.",
+        "Run exact-head and deterministic synthetic-merge tests before changing the claim boundary."
+      ],
+      "externalEvidenceGates": [
+        "independent semantic review",
+        "product execution and target-host qualification",
+        "operator acceptance, canary, promotion and release"
+      ],
+      "staleSourceObjects": 0,
+      "mapBlob": "9c6221752bb7dbfd727db16bf2dd4dc9e21f5e1a",
+      "reference": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/f7a57e6f40e3e8220233f0d27b8cfbdf1f721c55/docs/modules/prompt.optimizer/IMPLEMENTATION_MAP.json"
+    },
+    {
+      "module": "prompt.registry",
+      "sourceRootPresent": true,
+      "productionImplementation": false,
+      "productCallerState": "not_composed",
+      "productionWriterState": "not_established",
+      "resolvedRoots": [
+        "codex-rs/hepta-prompt-registry"
+      ],
+      "rootMissing": [],
+      "operations": 3,
+      "mappedSourcesMissing": [],
+      "repositoryControlledGaps": [
+        "Bind every operation to an authenticated consumer callsite and owner store.",
+        "Run exact-head and deterministic synthetic-merge tests before changing the claim boundary."
+      ],
+      "externalEvidenceGates": [
+        "independent semantic review",
+        "product execution and target-host qualification",
+        "operator acceptance, canary, promotion and release"
+      ],
+      "staleSourceObjects": 0,
+      "mapBlob": "00c9926a7532e19a82c867ff821b5077da256d2c",
+      "reference": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/f7a57e6f40e3e8220233f0d27b8cfbdf1f721c55/docs/modules/prompt.registry/IMPLEMENTATION_MAP.json"
+    },
+    {
+      "module": "runtime.agentd",
+      "sourceRootPresent": true,
+      "productionImplementation": false,
+      "productCallerState": "daemon_lifecycle_and_durable_run_start_projection_composed_physical_codex_pending",
+      "productionWriterState": "not_established",
+      "resolvedRoots": [
+        "codex-rs/hepta-agentd"
+      ],
+      "rootMissing": [],
+      "operations": 10,
+      "mappedSourcesMissing": [],
+      "repositoryControlledGaps": [
+        "Compose the canonical caller through runtime.codex so physical turn start/interrupt and terminal observations are real invocation edges rather than design-only delegated targets.",
+        "Bind current AuthBus/trust revalidation to the durable RunStartRecordV1 before start_revalidated_run_start; raw journal records are not current authentication evidence. Post-dispatch recovery remains Indeterminate and non-redispatchable.",
+        "Compose AgentdNeuronOwner into the daemon-owned run lifecycle once the canonical runtime.agentd coordinator line converges, with selected-artifact/current inference.control/witness dependencies constructed by the registered owner composition rather than an ambient singleton."
+      ],
+      "externalEvidenceGates": [
+        "deployed Agentd process and authenticated socket identity",
+        "target-host drain/restart/backpressure measurements",
+        "independent acceptance, promotion and release"
+      ],
+      "staleSourceObjects": 7,
+      "mapBlob": "87a08e411991a2718a35a6b2590f0bfd1ad00942",
+      "reference": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/f7a57e6f40e3e8220233f0d27b8cfbdf1f721c55/docs/modules/runtime.agentd/IMPLEMENTATION_MAP.json"
+    },
+    {
+      "module": "runtime.codex",
+      "sourceRootPresent": true,
+      "productionImplementation": false,
+      "productCallerState": "composed_candidate_exact_head_qualification_pending",
+      "productionWriterState": "existing_app_server_owner",
+      "resolvedRoots": [
+        "codex-rs/app-server",
+        "codex-rs/hepta-codex-adapter"
+      ],
+      "rootMissing": [],
+      "operations": 4,
+      "mappedSourcesMissing": [],
+      "repositoryControlledGaps": [
+        "current runtime.codex exact-head, deterministic synthetic-merge, focused product fault-matrix, and product E2E evidence are pending for this composed candidate"
+      ],
+      "externalEvidenceGates": [
+        "independently operated final-use authority endpoint, signer-key custody, pathname plus connected-peer socket identity, trusted time/revocation distribution, and external anti-rollback recovery for replay/epoch state",
+        "authenticated target-host Agentd/App Server process, generation and socket identity",
+        "real model/provider terminal stream observation under the selected target deployment",
+        "delegated external-tool terminal observation and acknowledgement-loss qualification",
+        "independent policy/evidence for resolving or quarantining indeterminate effects when ephemeral App Server history is unavailable; no unauthenticated manual release",
+        "independent acceptance, activation/canary, promotion and release"
+      ],
+      "staleSourceObjects": 4,
+      "mapBlob": "fb092a82ccda46da7b7fc510954cad6351c677cf",
+      "reference": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/f7a57e6f40e3e8220233f0d27b8cfbdf1f721c55/docs/modules/runtime.codex/IMPLEMENTATION_MAP.json"
+    },
+    {
+      "module": "runtime.fleet",
+      "sourceRootPresent": true,
+      "productionImplementation": false,
+      "productCallerState": "not_composed",
+      "productionWriterState": "not_established",
+      "resolvedRoots": [
+        "codex-rs/hepta-fleet"
+      ],
+      "rootMissing": [],
+      "operations": 3,
+      "mappedSourcesMissing": [],
+      "repositoryControlledGaps": [
+        "Connect the in-memory lease component to supervisor-owned durable FleetRegistry grants, fences, and a real capacity observer."
+      ],
+      "externalEvidenceGates": [
+        "real enrolled host capacity observation",
+        "non-test local grant enforcement",
+        "partition and lease-expiry target qualification"
+      ],
+      "staleSourceObjects": 0,
+      "mapBlob": "238586672b9161cd9a91234e6d2071e886146125",
+      "reference": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/f7a57e6f40e3e8220233f0d27b8cfbdf1f721c55/docs/modules/runtime.fleet/IMPLEMENTATION_MAP.json"
+    },
+    {
+      "module": "runtime.supervisor",
+      "sourceRootPresent": true,
+      "productionImplementation": false,
+      "productCallerState": "not_composed",
+      "productionWriterState": "not_established",
+      "resolvedRoots": [
+        "codex-rs/hepta-supervisor"
+      ],
+      "rootMissing": [],
+      "operations": 11,
+      "mappedSourcesMissing": [],
+      "repositoryControlledGaps": [],
+      "externalEvidenceGates": [
+        "exact deployed hepta-supervisord binary, host identity and externally pinned production grant/H7 verifier configuration",
+        "target-host startup, watchdog, typed Agentd drain, bounded restart and signed-recovery crash/fault/latency measurements",
+        "deployment and independent verification of the external release-policy/authority distribution feeding Fleet allow/revoke state and signer rotation",
+        "independent operational acceptance of signed upgrade, rollback and recovery outcomes"
+      ],
+      "staleSourceObjects": 0,
+      "mapBlob": "0ebfc4d68fd9cc6c60b9e612d3003f55bb97b89c",
+      "reference": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/f7a57e6f40e3e8220233f0d27b8cfbdf1f721c55/docs/modules/runtime.supervisor/IMPLEMENTATION_MAP.json"
+    },
+    {
+      "module": "secrets.heptabao",
+      "sourceRootPresent": true,
+      "productionImplementation": false,
+      "productCallerState": "not_composed",
+      "productionWriterState": "not_established",
+      "resolvedRoots": [
+        "external/HeptaBao",
+        "codex-rs/hepta-bao-adapter"
+      ],
+      "rootMissing": [],
+      "operations": 4,
+      "mappedSourcesMissing": [],
+      "repositoryControlledGaps": [
+        "Bind the lease lifecycle owner to an authenticated product caller and durable host composition.",
+        "Add provider-native dynamic lease issue/renew/revoke dispatch only after the exact HeptaBao/OpenBao endpoint contract is qualified; current compatibility status is blocking partial.",
+        "Run exact-source package tests, crash/fault injection and deterministic synthetic-merge qualification for this candidate."
+      ],
+      "externalEvidenceGates": [
+        "independent semantic review",
+        "product execution and target-host qualification",
+        "operator acceptance, canary, promotion and release"
+      ],
+      "staleSourceObjects": 0,
+      "mapBlob": "1364f47a2dcef91e28e3e34637a4ff83417f0cb4",
+      "reference": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/f7a57e6f40e3e8220233f0d27b8cfbdf1f721c55/docs/modules/secrets.heptabao/IMPLEMENTATION_MAP.json"
+    },
+    {
+      "module": "ui.control",
+      "sourceRootPresent": true,
+      "productionImplementation": false,
+      "productCallerState": "not_composed",
+      "productionWriterState": "not_established",
+      "resolvedRoots": [
+        "apps/hepta-control-ui"
+      ],
+      "rootMissing": [],
+      "operations": 3,
+      "mappedSourcesMissing": [],
+      "repositoryControlledGaps": [],
+      "externalEvidenceGates": [
+        "selected Web framework/build artifact and browser support matrix",
+        "deployed authentication/CSP/CSRF/WebSocket topology",
+        "end-to-end accessibility and backend deployment qualification"
+      ],
+      "staleSourceObjects": 0,
+      "mapBlob": "69c29b168567252cb5f9d4c0a0892b6c6b8b4284",
+      "reference": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/f7a57e6f40e3e8220233f0d27b8cfbdf1f721c55/docs/modules/ui.control/IMPLEMENTATION_MAP.json"
+    },
+    {
+      "module": "ui.native",
+      "sourceRootPresent": true,
+      "productionImplementation": false,
+      "productCallerState": "not_composed",
+      "productionWriterState": "not_established",
+      "resolvedRoots": [
+        "apps/hepta-native"
+      ],
+      "rootMissing": [],
+      "operations": 4,
+      "mappedSourcesMissing": [],
+      "repositoryControlledGaps": [],
+      "externalEvidenceGates": [
+        "selected native framework and supported platform matrix",
+        "real code signing/notarization/keychain and updater trust roots",
+        "packaged crash/restart/accessibility/update rollback qualification"
+      ],
+      "staleSourceObjects": 0,
+      "mapBlob": "781dc2075b3f53e11a4160b51ca886af82dcc5ee",
+      "reference": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/f7a57e6f40e3e8220233f0d27b8cfbdf1f721c55/docs/modules/ui.native/IMPLEMENTATION_MAP.json"
+    },
+    {
+      "module": "utility.ndu",
+      "sourceRootPresent": true,
+      "productionImplementation": false,
+      "productCallerState": "request_local_read_only_established_authenticated_owner_source_candidate_not_product_composed",
+      "productionWriterState": "durable_writer_source_candidate_not_selected_or_activated",
+      "resolvedRoots": [
+        "codex-rs/hepta-ndu"
+      ],
+      "rootMissing": [],
+      "operations": 12,
+      "mappedSourcesMissing": [],
+      "repositoryControlledGaps": [
+        "Run the exact-current-head and deterministic synthetic-merge NDU workflow after the final documentation/source commit; workflow definitions and earlier heads are not receipts.",
+        "Compose NduAuthenticatedOwnerV1 in a named authenticated product bootstrap with a selected NduProjectionStoreV1 and host-managed current fence/revocation feed before changing authenticated production product execution or writer activation claims.",
+        "Execute the learning.eval signed convergence and well-posedness paths with real independently controlled producer/evaluator trust and retained evidence; source tests do not establish real independent acceptance.",
+        "Select a production stochastic coefficient artifact and exercise the intelligence stochastic admission path against real current artifact and withdrawal frontiers; source composition is not artifact selection or activation.",
+        "Retain passing named-host source-head and synthetic-merge receipts for durability/reopen/capacity/p50/p95/p99/CPU/RSS/filesystem; a GitHub-hosted runner is only the selected target host if separately designated."
+      ],
+      "externalEvidenceGates": [
+        "independent semantic/security review",
+        "named product composition and selected writer enrollment",
+        "real independent convergence/well-posedness evidence",
+        "conditional identification and longitudinal efficacy",
+        "operator acceptance, canary, promotion and release"
+      ],
+      "staleSourceObjects": 2,
+      "mapBlob": "e6bdd280f2fd4aab4d31de587ab543dac6f1c97c",
+      "reference": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/f7a57e6f40e3e8220233f0d27b8cfbdf1f721c55/docs/modules/utility.ndu/IMPLEMENTATION_MAP.json"
+    }
+  ],
+  "sourceTree": "1f3d38ee52320bba1f345da2f2c54b23a36832ee"
+}

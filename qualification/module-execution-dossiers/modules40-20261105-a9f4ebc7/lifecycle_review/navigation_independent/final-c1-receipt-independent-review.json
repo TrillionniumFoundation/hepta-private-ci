@@ -1,0 +1,127 @@
+{
+  "status": "FINAL_C1_NATIVE_RECEIPTS_INDEPENDENT_CONSISTENCY_REVIEW_PASS",
+  "candidate": {
+    "commit": "5e917b9f5fb3e841dbcaefcd5bbbf59b32f20411",
+    "tree": "5f02eb87cce34d40d6ddf21722305192b4fa00d7",
+    "parents": [
+      "58c81ccdd25002ae0f481d434af067a56fa7ddb8"
+    ]
+  },
+  "executed_source": {
+    "commit": "58c81ccdd25002ae0f481d434af067a56fa7ddb8",
+    "tree": "57809be09ef01c02389ef37a817f1447d13d167b"
+  },
+  "qualification_summary_sha256": "1ac2055295d3450fceb3ea48ef2258ed714ab9a6629eff8bf1dd828437d3fd8d",
+  "canonical_metadata_record_sha256": "2cd950cfdb8db3cd39028091bedb9bdf6424911f9de429c3db345dc19be91eb8",
+  "actual_precommit_review_sha256": "8cab7a57df306ee108516405d8d8b0766d974d335fa4edbab740d0041a3d33ac",
+  "actual_equivalence_stdout_sha256": "dc72975cb0ca6f0a5732198fdb0162f316b4f9cd59a4b18951235239915238a6",
+  "reviewed_equivalence_script_sha256": "291895851be8c1150c64c8666f29aebba591896467e7f0c02b9286f51b79f2ad",
+  "script_remote_identity_note": "Root reported exact upload/hash verification before native invocation; wrapper receipt records command path. This independent review verifies local reviewed script identity and actual output/receipt consistency.",
+  "checks": [
+    {
+      "name": "maps-qualification-c1",
+      "receipt_sha256": "aa7d00dabf845f1acff00e0f0ef7618259393c904bcde0d9a025913098b54dcc",
+      "log_sha256": "5764c87c8c0a14aa4040931975675bcb48a4008b2c0d5cbef13b571a7ca795c8",
+      "log_bytes": 691,
+      "exit": 0,
+      "candidate_clean_and_unchanged_after": true
+    },
+    {
+      "name": "module-status-facts-c1",
+      "receipt_sha256": "eed8c2ebe4f50a000d87a0b053a422c7b2243e182140db790dd9e1bcbfba4196",
+      "log_sha256": "24adda79e21044fef19cdc7f0606a9cd7770fc9a99c705a8622ee923c13bce5d",
+      "log_bytes": 100,
+      "exit": 0,
+      "candidate_clean_and_unchanged_after": true
+    },
+    {
+      "name": "module-registry-strict-c1",
+      "receipt_sha256": "fce03bb8b5288e3a090cb63266e94c2246a00dbda56d28ddcaa4c5a85708ffa1",
+      "log_sha256": "e856e4c966f130ea6d3f52ab8ca8bcf31ead62ccc173424ac57c809887e3b2e9",
+      "log_bytes": 896,
+      "exit": 0,
+      "candidate_clean_and_unchanged_after": true
+    },
+    {
+      "name": "module-docs-qualification-c1",
+      "receipt_sha256": "71c2c686d77baf43ca09a64061b747f9be8940c16c7297b214c13b265df27cca",
+      "log_sha256": "db8def5c9333745c8aa3af8688d7d9e2b67b9041e6b005a45d15db8eecbf3e10",
+      "log_bytes": 323,
+      "exit": 0,
+      "candidate_clean_and_unchanged_after": true
+    },
+    {
+      "name": "navigation-noop-c1",
+      "receipt_sha256": "d0dd634d4273b6ac9553e91c5b78db1fd527a4795dcff9209aeb60a69a5d3c96",
+      "log_sha256": "fe163834cea728da412251b9762a0d1e911f516e2b5f5332503f4c3445fd2f78",
+      "log_bytes": 363,
+      "exit": 0,
+      "candidate_clean_and_unchanged_after": true
+    },
+    {
+      "name": "navigation-execution-input-equivalence",
+      "receipt_sha256": "705496260708b8ce1674ca12988c0d82867ebc0d69e9ee12018c0e538ce3898a",
+      "log_sha256": "dc72975cb0ca6f0a5732198fdb0162f316b4f9cd59a4b18951235239915238a6",
+      "log_bytes": 26653,
+      "exit": 0,
+      "candidate_clean_and_unchanged_after": true
+    }
+  ],
+  "strict_result": {
+    "maps": 40,
+    "profile": "qualification",
+    "legacyProvenanceOnlyMaps": [],
+    "provenanceAnchoredExactBlobMaps": 27,
+    "exactObservedFallbackMaps": 13,
+    "validation_scope": "source_navigation_and_declared_evidence_not_build_or_execution",
+    "productionImplementationProved": false
+  },
+  "docs_result": {
+    "modules": 40,
+    "sourceBindings": 40,
+    "technicalDocuments": 40,
+    "profile": "qualification",
+    "authorityGranted": false,
+    "productExecutionProved": false
+  },
+  "registry_result": {
+    "status": "aligned",
+    "canonicalModuleCount": 40,
+    "boundCrateCount": 51,
+    "known_non_Cargo_roots_retained": [
+      "apps/hepta-browser",
+      "apps/hepta-control-ui",
+      "apps/hepta-native",
+      "codex-rs/codex-app-server",
+      "external/HeptaBao",
+      "third_party/servo-patches",
+      "tools/hepta-engineering-control"
+    ]
+  },
+  "module_status_tests": 2,
+  "navigation_noop": {
+    "changedMaps": 0,
+    "written": false,
+    "ledger": null
+  },
+  "input_equivalence": {
+    "unmodified_non_navigation_tracked_entries": 10795,
+    "projection_sha256": "4a9d64833cbb736ddec26d120f08cc8b472b3f980960c93f0c3a27827c248964",
+    "changed_paths": 27,
+    "changed_maps": 26,
+    "new_ledgers": 1,
+    "all_changed_blobs_equal_independently_reviewed_packet": true,
+    "all_40_map_original_blobs_match_fresh_C58_tree": true,
+    "claims_sourceBases_candidates_preserved": true,
+    "C58_native_log_and_XML_hashes_retained": true,
+    "tests_reexecuted_on_C1": false,
+    "execution_identity_transferred": false
+  },
+  "conclusion": "Final C1 source navigation/declared-evidence strict checks and tracked source/runner input equivalence are actually recorded PASS. Original native execution remains C58 Run2. These records do not grant product/production/activation/release or complete Control lifecycle qualification.",
+  "actions_not_performed": [
+    "No check rerun",
+    "No optional fixture/test",
+    "No ai395 access",
+    "No source or remote write"
+  ]
+}

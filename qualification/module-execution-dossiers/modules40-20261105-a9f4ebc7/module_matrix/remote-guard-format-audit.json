@@ -1,0 +1,25 @@
+{
+  "remoteDiffSha256": "4e826840a722dcefceccdf2b2b5ae6636504f7cb83898538f479705d4e4eed36",
+  "reconstruction": "/workspace/scratch/a9f4ebc7dfa7/module_matrix/remote-guard-diff-qh1st8qd",
+  "scope": "tracked files from remote working tree diff only; new untracked pin test not present in this diff",
+  "results": [
+    {
+      "path": "scripts/hepta-implementation-maps.py",
+      "expected_sha256": "a72b1aca62257154488ed2da6fa2378d7a4d65e0e6366fa1be9841db4c74fce3",
+      "actual_sha256": "7a66ce3c8a73b29771d16ccfc71b69f84b5c0cf01c991badad8dd8703d017832",
+      "expected_bytes": 70375,
+      "actual_bytes": 70432,
+      "same_ast": true,
+      "diff": "--- reviewed-final/hepta-implementation-maps.py\n+++ remote-working/hepta-implementation-maps.py\n@@ -513,7 +513,11 @@\n             or \"sourceBlob\" in operation\n         ):\n             pins.append(\n-                (\"source blob\", operation.get(\"sourcePath\"), operation.get(\"sourceBlob\"))\n+                (\n+                    \"source blob\",\n+                    operation.get(\"sourcePath\"),\n+                    operation.get(\"sourceBlob\"),\n+                )\n             )\n     for caller in row.get(\"productCallers\", []):\n         if not isinstance(caller, dict):\n@@ -758,9 +762,7 @@\n     if validate_claim_types(row):\n         # Rebinding navigation cannot transfer old executable evidence to new code.\n         candidate = current_source_base()\n-        verify_source_identity(\n-            row, resolve_source_roots(ROOT, module), candidate\n-        )\n+        verify_source_identity(row, resolve_source_roots(ROOT, module), candidate)\n         verify_explicit_source_pins(row, candidate)\n     roots = [x[\"path\"] for x in module[\"rootBindings\"]]\n     declared = row.get(\"declaredRoots\", row.get(\"sourceRoot\", roots))\n"
+    },
+    {
+      "path": "scripts/test_hepta_implementation_maps.py",
+      "expected_sha256": "1929e8065dea848dfab463d1d01a3d618698b3fe0825023e8484c68d5b268678",
+      "actual_sha256": "1929e8065dea848dfab463d1d01a3d618698b3fe0825023e8484c68d5b268678",
+      "expected_bytes": 44468,
+      "actual_bytes": 44468,
+      "same_ast": true,
+      "diff": ""
+    }
+  ]
+}

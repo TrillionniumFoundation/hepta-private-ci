@@ -1,0 +1,38 @@
+{
+  "helper_sha256": "790d124c85dc299f6254fcd0427461881023bf60fcc4943713867eacd3dba438",
+  "false_claim_refresh_expected": false,
+  "cases": [
+    {
+      "claim": null,
+      "source_identity_no_drift_passed": true,
+      "stale_operation_blob": "7793d2ec3c7b39b7ac456d89343245dd4ea6800c",
+      "current_source_object_blob": "d3e04c3f8a633d552f58b6fc8505aedaf070cec2",
+      "result": "REFUSED_WITHOUT_WRITES",
+      "error": "source blob drift: src/alpha/lib.rs"
+    },
+    {
+      "claim": [
+        "top",
+        "productionImplementation"
+      ],
+      "source_identity_no_drift_passed": true,
+      "stale_operation_blob": "7793d2ec3c7b39b7ac456d89343245dd4ea6800c",
+      "current_source_object_blob": "d3e04c3f8a633d552f58b6fc8505aedaf070cec2",
+      "result": "REFUSED_WITHOUT_WRITES",
+      "error": "source blob drift: src/alpha/lib.rs"
+    },
+    {
+      "claim": [
+        "boundary",
+        "productExecutionComplete"
+      ],
+      "source_identity_no_drift_passed": true,
+      "stale_operation_blob": "7793d2ec3c7b39b7ac456d89343245dd4ea6800c",
+      "current_source_object_blob": "d3e04c3f8a633d552f58b6fc8505aedaf070cec2",
+      "result": "REFUSED_WITHOUT_WRITES",
+      "error": "source blob drift: src/alpha/lib.rs"
+    }
+  ],
+  "native_execution_claimed": false,
+  "actual_ai395_or_remote_access": false
+}

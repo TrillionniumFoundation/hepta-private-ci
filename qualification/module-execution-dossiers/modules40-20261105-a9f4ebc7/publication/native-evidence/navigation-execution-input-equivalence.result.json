@@ -1,0 +1,783 @@
+{
+  "schema": "hepta.navigation-execution-input-equivalence.v1",
+  "status": "TRACKED_INPUT_EQUIVALENCE_VERIFIED",
+  "executed_source": {
+    "commit": "58c81ccdd25002ae0f481d434af067a56fa7ddb8",
+    "tree": "57809be09ef01c02389ef37a817f1447d13d167b"
+  },
+  "navigation_candidate": {
+    "commit": "5e917b9f5fb3e841dbcaefcd5bbbf59b32f20411",
+    "tree": "5f02eb87cce34d40d6ddf21722305192b4fa00d7"
+  },
+  "candidate_parents": [
+    "58c81ccdd25002ae0f481d434af067a56fa7ddb8"
+  ],
+  "tracked_projection_entries": 10795,
+  "before_projection_sha256": "4a9d64833cbb736ddec26d120f08cc8b472b3f980960c93f0c3a27827c248964",
+  "after_projection_sha256": "4a9d64833cbb736ddec26d120f08cc8b472b3f980960c93f0c3a27827c248964",
+  "projection_format": "UTF-8 canonical sorted JSON: path -> mode/type/oid; excludes only exact 40 Maps plus this one ledger",
+  "changed_paths": [
+    {
+      "path": "docs/modules/automation.taskflow/IMPLEMENTATION_MAP.json",
+      "before": {
+        "mode": "100644",
+        "type": "blob",
+        "oid": "8a2ec5946e61756c173969a39f25b4ccd1f5df83"
+      },
+      "after": {
+        "mode": "100644",
+        "type": "blob",
+        "oid": "49512618ef16b23ea8079aa550c45bcdbd04abd0"
+      }
+    },
+    {
+      "path": "docs/modules/cognitive.read/IMPLEMENTATION_MAP.json",
+      "before": {
+        "mode": "100644",
+        "type": "blob",
+        "oid": "f7503922a2066f30f77939b68f2ba7aa19cd891b"
+      },
+      "after": {
+        "mode": "100644",
+        "type": "blob",
+        "oid": "f1e72201d340f7cb956f193744f908d932d78ad6"
+      }
+    },
+    {
+      "path": "docs/modules/cognitive.store/IMPLEMENTATION_MAP.json",
+      "before": {
+        "mode": "100644",
+        "type": "blob",
+        "oid": "d1203fed73f7e170038d90e4f789f2429ebfcb74"
+      },
+      "after": {
+        "mode": "100644",
+        "type": "blob",
+        "oid": "4a4aecb8115a709c31a6483ff8c08a61585ec3f5"
+      }
+    },
+    {
+      "path": "docs/modules/context.compiler/IMPLEMENTATION_MAP.json",
+      "before": {
+        "mode": "100644",
+        "type": "blob",
+        "oid": "b982d3e96ae12f35929e7c148d3d13cb74ab6b90"
+      },
+      "after": {
+        "mode": "100644",
+        "type": "blob",
+        "oid": "4d06be9230e0b9b966739bce6769a55d4b992133"
+      }
+    },
+    {
+      "path": "docs/modules/inference.worker/IMPLEMENTATION_MAP.json",
+      "before": {
+        "mode": "100644",
+        "type": "blob",
+        "oid": "94b5f3ff7195454c5c8107bd5c7bbdc9b35dab78"
+      },
+      "after": {
+        "mode": "100644",
+        "type": "blob",
+        "oid": "cb0e97ad581963e80d125152aee2eab54921c12b"
+      }
+    },
+    {
+      "path": "docs/modules/intelligence.control/IMPLEMENTATION_MAP.json",
+      "before": {
+        "mode": "100644",
+        "type": "blob",
+        "oid": "8464639f089ff6c7a4fcf2cfa46d9e7076827260"
+      },
+      "after": {
+        "mode": "100644",
+        "type": "blob",
+        "oid": "a0692d09313b6a250219ee1a776303ca8bbb1bee"
+      }
+    },
+    {
+      "path": "docs/modules/kernel.authority/IMPLEMENTATION_MAP.json",
+      "before": {
+        "mode": "100644",
+        "type": "blob",
+        "oid": "4a5bb7b59fb10b674f4253407beb6171fbf5b8f4"
+      },
+      "after": {
+        "mode": "100644",
+        "type": "blob",
+        "oid": "8819597cca3909541b2d1b05e0824b20ecd0ac32"
+      }
+    },
+    {
+      "path": "docs/modules/kernel.evidence/IMPLEMENTATION_MAP.json",
+      "before": {
+        "mode": "100644",
+        "type": "blob",
+        "oid": "3a7db28cf3774193080ecb15279fcffd7e8342bf"
+      },
+      "after": {
+        "mode": "100644",
+        "type": "blob",
+        "oid": "b114bd30a0a8f2906604b089dcd802028dcdf55a"
+      }
+    },
+    {
+      "path": "docs/modules/kernel.operations/IMPLEMENTATION_MAP.json",
+      "before": {
+        "mode": "100644",
+        "type": "blob",
+        "oid": "97685939417621d695c2897890050481f0215964"
+      },
+      "after": {
+        "mode": "100644",
+        "type": "blob",
+        "oid": "f2f9d642bdeb2706b3782ff7b71a3b5d0e477729"
+      }
+    },
+    {
+      "path": "docs/modules/knowledge.graph/IMPLEMENTATION_MAP.json",
+      "before": {
+        "mode": "100644",
+        "type": "blob",
+        "oid": "b39e574e3504ecf724ddf14406b6cd298e0da959"
+      },
+      "after": {
+        "mode": "100644",
+        "type": "blob",
+        "oid": "21ce05004fffd7af67ee849d9180010c8870697c"
+      }
+    },
+    {
+      "path": "docs/modules/learning.artifacts/IMPLEMENTATION_MAP.json",
+      "before": {
+        "mode": "100644",
+        "type": "blob",
+        "oid": "9d826ffb7ed7fb96caf1f2d052b5fa66312a384b"
+      },
+      "after": {
+        "mode": "100644",
+        "type": "blob",
+        "oid": "faf4889729bd172bcdda255730c92f4abf439ab3"
+      }
+    },
+    {
+      "path": "docs/modules/learning.eval/IMPLEMENTATION_MAP.json",
+      "before": {
+        "mode": "100644",
+        "type": "blob",
+        "oid": "e6453a9df9c29fbbd3dcfdb970362aec6ae3823d"
+      },
+      "after": {
+        "mode": "100644",
+        "type": "blob",
+        "oid": "7e42d459a0cd7376475ecebc37d1370d0c2d9d61"
+      }
+    },
+    {
+      "path": "docs/modules/learning.ledger/IMPLEMENTATION_MAP.json",
+      "before": {
+        "mode": "100644",
+        "type": "blob",
+        "oid": "4483f1597bfaf9eacfb3e02ea0385bda022ec986"
+      },
+      "after": {
+        "mode": "100644",
+        "type": "blob",
+        "oid": "0b3aef170a5f482f44cbaf07ac5fb322fd6cf303"
+      }
+    },
+    {
+      "path": "docs/modules/learning.operator/IMPLEMENTATION_MAP.json",
+      "before": {
+        "mode": "100644",
+        "type": "blob",
+        "oid": "38c51d93c69fae593b80aacf5fdbef875d0352b4"
+      },
+      "after": {
+        "mode": "100644",
+        "type": "blob",
+        "oid": "aecd120c3b8f23e6d0ef5bbfd343c6410b4c3de0"
+      }
+    },
+    {
+      "path": "docs/modules/learning.plasticity/IMPLEMENTATION_MAP.json",
+      "before": {
+        "mode": "100644",
+        "type": "blob",
+        "oid": "e34fac6d9eec6f94d61a31e62f9145b88a135235"
+      },
+      "after": {
+        "mode": "100644",
+        "type": "blob",
+        "oid": "64f68cf9d0449f0e56938861cf7d37b6f6acbc78"
+      }
+    },
+    {
+      "path": "docs/modules/memory.federation/IMPLEMENTATION_MAP.json",
+      "before": {
+        "mode": "100644",
+        "type": "blob",
+        "oid": "8a382fcfaef65313c1288c11ab06a23ea82ef17b"
+      },
+      "after": {
+        "mode": "100644",
+        "type": "blob",
+        "oid": "2d7922dd6920cdfc70c5d7c6c62134be53d27c8f"
+      }
+    },
+    {
+      "path": "docs/modules/memory.retrieval/IMPLEMENTATION_MAP.json",
+      "before": {
+        "mode": "100644",
+        "type": "blob",
+        "oid": "18ab799265dd6c4ccce24da2ae880e78d15d18a8"
+      },
+      "after": {
+        "mode": "100644",
+        "type": "blob",
+        "oid": "2406652da81ffc3b2d6be8731f3566a1ef22fb96"
+      }
+    },
+    {
+      "path": "docs/modules/objective.compiler/IMPLEMENTATION_MAP.json",
+      "before": {
+        "mode": "100644",
+        "type": "blob",
+        "oid": "6c4e5f9c72f5b9670b4c3158ef0ec25e8d97d4d1"
+      },
+      "after": {
+        "mode": "100644",
+        "type": "blob",
+        "oid": "c6f3f8bd89c0d6f6d5754da0656782cc892c35d8"
+      }
+    },
+    {
+      "path": "docs/modules/platform.types/IMPLEMENTATION_MAP.json",
+      "before": {
+        "mode": "100644",
+        "type": "blob",
+        "oid": "16e3676ca895dac14efc993fbacbb8934c6853b6"
+      },
+      "after": {
+        "mode": "100644",
+        "type": "blob",
+        "oid": "d6f93d6c37caf0fbd8e25841d6ce7c4dd7828eef"
+      }
+    },
+    {
+      "path": "docs/modules/platform.wire/IMPLEMENTATION_MAP.json",
+      "before": {
+        "mode": "100644",
+        "type": "blob",
+        "oid": "8e8903bdc1992195a4471fd20100a46cba4f638b"
+      },
+      "after": {
+        "mode": "100644",
+        "type": "blob",
+        "oid": "344bfc407d6d23065b51f00fa557280d9d604f74"
+      }
+    },
+    {
+      "path": "docs/modules/runtime.agentd/IMPLEMENTATION_MAP.json",
+      "before": {
+        "mode": "100644",
+        "type": "blob",
+        "oid": "87a08e411991a2718a35a6b2590f0bfd1ad00942"
+      },
+      "after": {
+        "mode": "100644",
+        "type": "blob",
+        "oid": "ff8633b039523e15faf364b66d4ef03f14b48bcc"
+      }
+    },
+    {
+      "path": "docs/modules/runtime.codex/IMPLEMENTATION_MAP.json",
+      "before": {
+        "mode": "100644",
+        "type": "blob",
+        "oid": "fb092a82ccda46da7b7fc510954cad6351c677cf"
+      },
+      "after": {
+        "mode": "100644",
+        "type": "blob",
+        "oid": "12a2a359a5c3753e5e29b6863b00d2de24741ecd"
+      }
+    },
+    {
+      "path": "docs/modules/runtime.fleet/IMPLEMENTATION_MAP.json",
+      "before": {
+        "mode": "100644",
+        "type": "blob",
+        "oid": "238586672b9161cd9a91234e6d2071e886146125"
+      },
+      "after": {
+        "mode": "100644",
+        "type": "blob",
+        "oid": "c6dfea9f118d456b81e058155b3edc80851435b5"
+      }
+    },
+    {
+      "path": "docs/modules/runtime.supervisor/IMPLEMENTATION_MAP.json",
+      "before": {
+        "mode": "100644",
+        "type": "blob",
+        "oid": "0ebfc4d68fd9cc6c60b9e612d3003f55bb97b89c"
+      },
+      "after": {
+        "mode": "100644",
+        "type": "blob",
+        "oid": "c06434e7fd2707c5b286b9ca5c8b8fe876140367"
+      }
+    },
+    {
+      "path": "docs/modules/secrets.heptabao/IMPLEMENTATION_MAP.json",
+      "before": {
+        "mode": "100644",
+        "type": "blob",
+        "oid": "1364f47a2dcef91e28e3e34637a4ff83417f0cb4"
+      },
+      "after": {
+        "mode": "100644",
+        "type": "blob",
+        "oid": "fd043f3b38b6f9e72968a7eec5763ba157e33932"
+      }
+    },
+    {
+      "path": "docs/modules/utility.ndu/IMPLEMENTATION_MAP.json",
+      "before": {
+        "mode": "100644",
+        "type": "blob",
+        "oid": "e6bdd280f2fd4aab4d31de587ab543dac6f1c97c"
+      },
+      "after": {
+        "mode": "100644",
+        "type": "blob",
+        "oid": "b5ebc37366f011aff003d24253a8c44f1ed55a90"
+      }
+    },
+    {
+      "path": "qualification/module-execution-dossiers/SOURCE_NAVIGATION_REBIND_20261105_A9F4EBC7.json",
+      "before": null,
+      "after": {
+        "mode": "100644",
+        "type": "blob",
+        "oid": "ced46769e7b9f5bb7d3d6ee804e6e07721a4a3f5"
+      }
+    }
+  ],
+  "unchanged_key_inputs": {
+    "justfile": {
+      "mode": "100644",
+      "type": "blob",
+      "oid": "a215a76cf407ace9715bca39c20497014e7dd4dc"
+    },
+    "scripts/run-nextest.py": {
+      "mode": "100644",
+      "type": "blob",
+      "oid": "1ed63abe84267b320cbfb0123a70aac5507f4595"
+    },
+    "codex-rs/.config/nextest.toml": {
+      "mode": "100644",
+      "type": "blob",
+      "oid": "bad30f934f89b22c48d972c28d4b493fc10299bd"
+    },
+    "codex-rs/Cargo.toml": {
+      "mode": "100644",
+      "type": "blob",
+      "oid": "7e2ec509988e11cdf92130e385ffdf409bbcc15d"
+    },
+    "codex-rs/Cargo.lock": {
+      "mode": "100644",
+      "type": "blob",
+      "oid": "b7e710988d6a3377a7e0a1dc68aef49c68dda36e"
+    },
+    "codex-rs/rust-toolchain.toml": {
+      "mode": "100644",
+      "type": "blob",
+      "oid": "917d2492264a35bc9c0feaef41878d8825870866"
+    }
+  },
+  "modules": [
+    {
+      "module": "auth.authbus",
+      "path": "docs/modules/auth.authbus/IMPLEMENTATION_MAP.json",
+      "changed": false,
+      "previous_blob": "6a19185443e1bf2ecc943b425fecc1b898280c0b",
+      "current_blob": "6a19185443e1bf2ecc943b425fecc1b898280c0b",
+      "sourceBase_preserved": true,
+      "claims_and_candidates_preserved": true
+    },
+    {
+      "module": "automation.taskflow",
+      "path": "docs/modules/automation.taskflow/IMPLEMENTATION_MAP.json",
+      "changed": true,
+      "previous_blob": "8a2ec5946e61756c173969a39f25b4ccd1f5df83",
+      "current_blob": "49512618ef16b23ea8079aa550c45bcdbd04abd0",
+      "sourceBase_preserved": true,
+      "claims_and_candidates_preserved": true
+    },
+    {
+      "module": "browser.servo",
+      "path": "docs/modules/browser.servo/IMPLEMENTATION_MAP.json",
+      "changed": false,
+      "previous_blob": "95232cb60bc15e0787122e49b12f0a451c58f8e1",
+      "current_blob": "95232cb60bc15e0787122e49b12f0a451c58f8e1",
+      "sourceBase_preserved": true,
+      "claims_and_candidates_preserved": true
+    },
+    {
+      "module": "channel.matrix",
+      "path": "docs/modules/channel.matrix/IMPLEMENTATION_MAP.json",
+      "changed": false,
+      "previous_blob": "004297c8a80305edabc4b0994b031b042b943436",
+      "current_blob": "004297c8a80305edabc4b0994b031b042b943436",
+      "sourceBase_preserved": true,
+      "claims_and_candidates_preserved": true
+    },
+    {
+      "module": "cognitive.read",
+      "path": "docs/modules/cognitive.read/IMPLEMENTATION_MAP.json",
+      "changed": true,
+      "previous_blob": "f7503922a2066f30f77939b68f2ba7aa19cd891b",
+      "current_blob": "f1e72201d340f7cb956f193744f908d932d78ad6",
+      "sourceBase_preserved": true,
+      "claims_and_candidates_preserved": true
+    },
+    {
+      "module": "cognitive.store",
+      "path": "docs/modules/cognitive.store/IMPLEMENTATION_MAP.json",
+      "changed": true,
+      "previous_blob": "d1203fed73f7e170038d90e4f789f2429ebfcb74",
+      "current_blob": "4a4aecb8115a709c31a6483ff8c08a61585ec3f5",
+      "sourceBase_preserved": true,
+      "claims_and_candidates_preserved": true
+    },
+    {
+      "module": "cognitive.types",
+      "path": "docs/modules/cognitive.types/IMPLEMENTATION_MAP.json",
+      "changed": false,
+      "previous_blob": "a58d2d826998d3fc4a445774529a8f1a9770cc18",
+      "current_blob": "a58d2d826998d3fc4a445774529a8f1a9770cc18",
+      "sourceBase_preserved": true,
+      "claims_and_candidates_preserved": true
+    },
+    {
+      "module": "compact.engine",
+      "path": "docs/modules/compact.engine/IMPLEMENTATION_MAP.json",
+      "changed": false,
+      "previous_blob": "9f9c5e34ad955f899eb9256cb6b0640e03806ef0",
+      "current_blob": "9f9c5e34ad955f899eb9256cb6b0640e03806ef0",
+      "sourceBase_preserved": true,
+      "claims_and_candidates_preserved": true
+    },
+    {
+      "module": "context.compiler",
+      "path": "docs/modules/context.compiler/IMPLEMENTATION_MAP.json",
+      "changed": true,
+      "previous_blob": "b982d3e96ae12f35929e7c148d3d13cb74ab6b90",
+      "current_blob": "4d06be9230e0b9b966739bce6769a55d4b992133",
+      "sourceBase_preserved": true,
+      "claims_and_candidates_preserved": true
+    },
+    {
+      "module": "control.engineering",
+      "path": "docs/modules/control.engineering/IMPLEMENTATION_MAP.json",
+      "changed": false,
+      "previous_blob": "f81f0f0dc211a6e35d606ba9bda66c0b3da6e2a2",
+      "current_blob": "f81f0f0dc211a6e35d606ba9bda66c0b3da6e2a2",
+      "sourceBase_preserved": true,
+      "claims_and_candidates_preserved": true
+    },
+    {
+      "module": "control.runtime",
+      "path": "docs/modules/control.runtime/IMPLEMENTATION_MAP.json",
+      "changed": false,
+      "previous_blob": "b0183a3a3898c354d2fe18d43054b8cf3f341187",
+      "current_blob": "b0183a3a3898c354d2fe18d43054b8cf3f341187",
+      "sourceBase_preserved": true,
+      "claims_and_candidates_preserved": true
+    },
+    {
+      "module": "inference.control",
+      "path": "docs/modules/inference.control/IMPLEMENTATION_MAP.json",
+      "changed": false,
+      "previous_blob": "2116d9359255f99a749dcdb92fa186310ceeb779",
+      "current_blob": "2116d9359255f99a749dcdb92fa186310ceeb779",
+      "sourceBase_preserved": true,
+      "claims_and_candidates_preserved": true
+    },
+    {
+      "module": "inference.worker",
+      "path": "docs/modules/inference.worker/IMPLEMENTATION_MAP.json",
+      "changed": true,
+      "previous_blob": "94b5f3ff7195454c5c8107bd5c7bbdc9b35dab78",
+      "current_blob": "cb0e97ad581963e80d125152aee2eab54921c12b",
+      "sourceBase_preserved": true,
+      "claims_and_candidates_preserved": true
+    },
+    {
+      "module": "intelligence.control",
+      "path": "docs/modules/intelligence.control/IMPLEMENTATION_MAP.json",
+      "changed": true,
+      "previous_blob": "8464639f089ff6c7a4fcf2cfa46d9e7076827260",
+      "current_blob": "a0692d09313b6a250219ee1a776303ca8bbb1bee",
+      "sourceBase_preserved": true,
+      "claims_and_candidates_preserved": true
+    },
+    {
+      "module": "intuition.policy",
+      "path": "docs/modules/intuition.policy/IMPLEMENTATION_MAP.json",
+      "changed": false,
+      "previous_blob": "12a89204b51165f6db3e3f6f34f42c20b048ae46",
+      "current_blob": "12a89204b51165f6db3e3f6f34f42c20b048ae46",
+      "sourceBase_preserved": true,
+      "claims_and_candidates_preserved": true
+    },
+    {
+      "module": "kernel.authority",
+      "path": "docs/modules/kernel.authority/IMPLEMENTATION_MAP.json",
+      "changed": true,
+      "previous_blob": "4a5bb7b59fb10b674f4253407beb6171fbf5b8f4",
+      "current_blob": "8819597cca3909541b2d1b05e0824b20ecd0ac32",
+      "sourceBase_preserved": true,
+      "claims_and_candidates_preserved": true
+    },
+    {
+      "module": "kernel.evidence",
+      "path": "docs/modules/kernel.evidence/IMPLEMENTATION_MAP.json",
+      "changed": true,
+      "previous_blob": "3a7db28cf3774193080ecb15279fcffd7e8342bf",
+      "current_blob": "b114bd30a0a8f2906604b089dcd802028dcdf55a",
+      "sourceBase_preserved": true,
+      "claims_and_candidates_preserved": true
+    },
+    {
+      "module": "kernel.operations",
+      "path": "docs/modules/kernel.operations/IMPLEMENTATION_MAP.json",
+      "changed": true,
+      "previous_blob": "97685939417621d695c2897890050481f0215964",
+      "current_blob": "f2f9d642bdeb2706b3782ff7b71a3b5d0e477729",
+      "sourceBase_preserved": true,
+      "claims_and_candidates_preserved": true
+    },
+    {
+      "module": "knowledge.graph",
+      "path": "docs/modules/knowledge.graph/IMPLEMENTATION_MAP.json",
+      "changed": true,
+      "previous_blob": "b39e574e3504ecf724ddf14406b6cd298e0da959",
+      "current_blob": "21ce05004fffd7af67ee849d9180010c8870697c",
+      "sourceBase_preserved": true,
+      "claims_and_candidates_preserved": true
+    },
+    {
+      "module": "learning.artifacts",
+      "path": "docs/modules/learning.artifacts/IMPLEMENTATION_MAP.json",
+      "changed": true,
+      "previous_blob": "9d826ffb7ed7fb96caf1f2d052b5fa66312a384b",
+      "current_blob": "faf4889729bd172bcdda255730c92f4abf439ab3",
+      "sourceBase_preserved": true,
+      "claims_and_candidates_preserved": true
+    },
+    {
+      "module": "learning.eval",
+      "path": "docs/modules/learning.eval/IMPLEMENTATION_MAP.json",
+      "changed": true,
+      "previous_blob": "e6453a9df9c29fbbd3dcfdb970362aec6ae3823d",
+      "current_blob": "7e42d459a0cd7376475ecebc37d1370d0c2d9d61",
+      "sourceBase_preserved": true,
+      "claims_and_candidates_preserved": true
+    },
+    {
+      "module": "learning.ledger",
+      "path": "docs/modules/learning.ledger/IMPLEMENTATION_MAP.json",
+      "changed": true,
+      "previous_blob": "4483f1597bfaf9eacfb3e02ea0385bda022ec986",
+      "current_blob": "0b3aef170a5f482f44cbaf07ac5fb322fd6cf303",
+      "sourceBase_preserved": true,
+      "claims_and_candidates_preserved": true
+    },
+    {
+      "module": "learning.operator",
+      "path": "docs/modules/learning.operator/IMPLEMENTATION_MAP.json",
+      "changed": true,
+      "previous_blob": "38c51d93c69fae593b80aacf5fdbef875d0352b4",
+      "current_blob": "aecd120c3b8f23e6d0ef5bbfd343c6410b4c3de0",
+      "sourceBase_preserved": true,
+      "claims_and_candidates_preserved": true
+    },
+    {
+      "module": "learning.plasticity",
+      "path": "docs/modules/learning.plasticity/IMPLEMENTATION_MAP.json",
+      "changed": true,
+      "previous_blob": "e34fac6d9eec6f94d61a31e62f9145b88a135235",
+      "current_blob": "64f68cf9d0449f0e56938861cf7d37b6f6acbc78",
+      "sourceBase_preserved": true,
+      "claims_and_candidates_preserved": true
+    },
+    {
+      "module": "memory.federation",
+      "path": "docs/modules/memory.federation/IMPLEMENTATION_MAP.json",
+      "changed": true,
+      "previous_blob": "8a382fcfaef65313c1288c11ab06a23ea82ef17b",
+      "current_blob": "2d7922dd6920cdfc70c5d7c6c62134be53d27c8f",
+      "sourceBase_preserved": true,
+      "claims_and_candidates_preserved": true
+    },
+    {
+      "module": "memory.retrieval",
+      "path": "docs/modules/memory.retrieval/IMPLEMENTATION_MAP.json",
+      "changed": true,
+      "previous_blob": "18ab799265dd6c4ccce24da2ae880e78d15d18a8",
+      "current_blob": "2406652da81ffc3b2d6be8731f3566a1ef22fb96",
+      "sourceBase_preserved": true,
+      "claims_and_candidates_preserved": true
+    },
+    {
+      "module": "neuron.runtime",
+      "path": "docs/modules/neuron.runtime/IMPLEMENTATION_MAP.json",
+      "changed": false,
+      "previous_blob": "cdbd8fbf04c20713b1a856ad03c0f295c491a21d",
+      "current_blob": "cdbd8fbf04c20713b1a856ad03c0f295c491a21d",
+      "sourceBase_preserved": true,
+      "claims_and_candidates_preserved": true
+    },
+    {
+      "module": "objective.compiler",
+      "path": "docs/modules/objective.compiler/IMPLEMENTATION_MAP.json",
+      "changed": true,
+      "previous_blob": "6c4e5f9c72f5b9670b4c3158ef0ec25e8d97d4d1",
+      "current_blob": "c6f3f8bd89c0d6f6d5754da0656782cc892c35d8",
+      "sourceBase_preserved": true,
+      "claims_and_candidates_preserved": true
+    },
+    {
+      "module": "platform.types",
+      "path": "docs/modules/platform.types/IMPLEMENTATION_MAP.json",
+      "changed": true,
+      "previous_blob": "16e3676ca895dac14efc993fbacbb8934c6853b6",
+      "current_blob": "d6f93d6c37caf0fbd8e25841d6ce7c4dd7828eef",
+      "sourceBase_preserved": true,
+      "claims_and_candidates_preserved": true
+    },
+    {
+      "module": "platform.wire",
+      "path": "docs/modules/platform.wire/IMPLEMENTATION_MAP.json",
+      "changed": true,
+      "previous_blob": "8e8903bdc1992195a4471fd20100a46cba4f638b",
+      "current_blob": "344bfc407d6d23065b51f00fa557280d9d604f74",
+      "sourceBase_preserved": true,
+      "claims_and_candidates_preserved": true
+    },
+    {
+      "module": "prompt.optimizer",
+      "path": "docs/modules/prompt.optimizer/IMPLEMENTATION_MAP.json",
+      "changed": false,
+      "previous_blob": "9c6221752bb7dbfd727db16bf2dd4dc9e21f5e1a",
+      "current_blob": "9c6221752bb7dbfd727db16bf2dd4dc9e21f5e1a",
+      "sourceBase_preserved": true,
+      "claims_and_candidates_preserved": true
+    },
+    {
+      "module": "prompt.registry",
+      "path": "docs/modules/prompt.registry/IMPLEMENTATION_MAP.json",
+      "changed": false,
+      "previous_blob": "00c9926a7532e19a82c867ff821b5077da256d2c",
+      "current_blob": "00c9926a7532e19a82c867ff821b5077da256d2c",
+      "sourceBase_preserved": true,
+      "claims_and_candidates_preserved": true
+    },
+    {
+      "module": "runtime.agentd",
+      "path": "docs/modules/runtime.agentd/IMPLEMENTATION_MAP.json",
+      "changed": true,
+      "previous_blob": "87a08e411991a2718a35a6b2590f0bfd1ad00942",
+      "current_blob": "ff8633b039523e15faf364b66d4ef03f14b48bcc",
+      "sourceBase_preserved": true,
+      "claims_and_candidates_preserved": true
+    },
+    {
+      "module": "runtime.codex",
+      "path": "docs/modules/runtime.codex/IMPLEMENTATION_MAP.json",
+      "changed": true,
+      "previous_blob": "fb092a82ccda46da7b7fc510954cad6351c677cf",
+      "current_blob": "12a2a359a5c3753e5e29b6863b00d2de24741ecd",
+      "sourceBase_preserved": true,
+      "claims_and_candidates_preserved": true
+    },
+    {
+      "module": "runtime.fleet",
+      "path": "docs/modules/runtime.fleet/IMPLEMENTATION_MAP.json",
+      "changed": true,
+      "previous_blob": "238586672b9161cd9a91234e6d2071e886146125",
+      "current_blob": "c6dfea9f118d456b81e058155b3edc80851435b5",
+      "sourceBase_preserved": true,
+      "claims_and_candidates_preserved": true
+    },
+    {
+      "module": "runtime.supervisor",
+      "path": "docs/modules/runtime.supervisor/IMPLEMENTATION_MAP.json",
+      "changed": true,
+      "previous_blob": "0ebfc4d68fd9cc6c60b9e612d3003f55bb97b89c",
+      "current_blob": "c06434e7fd2707c5b286b9ca5c8b8fe876140367",
+      "sourceBase_preserved": true,
+      "claims_and_candidates_preserved": true
+    },
+    {
+      "module": "secrets.heptabao",
+      "path": "docs/modules/secrets.heptabao/IMPLEMENTATION_MAP.json",
+      "changed": true,
+      "previous_blob": "1364f47a2dcef91e28e3e34637a4ff83417f0cb4",
+      "current_blob": "fd043f3b38b6f9e72968a7eec5763ba157e33932",
+      "sourceBase_preserved": true,
+      "claims_and_candidates_preserved": true
+    },
+    {
+      "module": "ui.control",
+      "path": "docs/modules/ui.control/IMPLEMENTATION_MAP.json",
+      "changed": false,
+      "previous_blob": "69c29b168567252cb5f9d4c0a0892b6c6b8b4284",
+      "current_blob": "69c29b168567252cb5f9d4c0a0892b6c6b8b4284",
+      "sourceBase_preserved": true,
+      "claims_and_candidates_preserved": true
+    },
+    {
+      "module": "ui.native",
+      "path": "docs/modules/ui.native/IMPLEMENTATION_MAP.json",
+      "changed": false,
+      "previous_blob": "781dc2075b3f53e11a4160b51ca886af82dcc5ee",
+      "current_blob": "781dc2075b3f53e11a4160b51ca886af82dcc5ee",
+      "sourceBase_preserved": true,
+      "claims_and_candidates_preserved": true
+    },
+    {
+      "module": "utility.ndu",
+      "path": "docs/modules/utility.ndu/IMPLEMENTATION_MAP.json",
+      "changed": true,
+      "previous_blob": "e6bdd280f2fd4aab4d31de587ab543dac6f1c97c",
+      "current_blob": "b5ebc37366f011aff003d24253a8c44f1ed55a90",
+      "sourceBase_preserved": true,
+      "claims_and_candidates_preserved": true
+    }
+  ],
+  "ledger": {
+    "path": "qualification/module-execution-dossiers/SOURCE_NAVIGATION_REBIND_20261105_A9F4EBC7.json",
+    "blob": "ced46769e7b9f5bb7d3d6ee804e6e07721a4a3f5",
+    "sha256": "e75eece0ac9f32fdc21de44a8baee3a72fa85aae4a4d0988812e4852fb5b2895"
+  },
+  "execution_evidence": {
+    "original_commit_retained": "58c81ccdd25002ae0f481d434af067a56fa7ddb8",
+    "receipt_sha256": "3c778511d56ee7b8181fe409bc9a31438473d7ec1c3d98580969fd0fa64df847",
+    "log_sha256": "b4ee3475b054b631326d1270382a4833a2aab7a48b53dfe21d9145fbe0497cf4",
+    "junit_sha256": "fa9ec27a5df05be69464d2f96962fd6b33b4bc24fb5adc98ce798d9899183173"
+  },
+  "candidate_checkout_clean_before_and_after": true,
+  "tests_reexecuted_on_C1": false,
+  "execution_identity_transferred": false,
+  "qualification_verifier_required_separately": true,
+  "limits": [
+    "This verifies committed tracked inputs and navigation invariants, not a C1 execution.",
+    "The C58 Run2 environment/toolchain and result remain bound only to the original execution.",
+    "Native JUnit coverage and original strict Map qualification are separate receipts.",
+    "No product activation, production, release or external provider qualification is conferred."
+  ]
+}

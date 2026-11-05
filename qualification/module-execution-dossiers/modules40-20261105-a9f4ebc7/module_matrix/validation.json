@@ -1,0 +1,43 @@
+{
+  "baseline_returncode": 0,
+  "strengthened_before_fix_returncode": 1,
+  "fixed_returncode": 0,
+  "flag_changes": [
+    [
+      "docs/modules/MODULES.json",
+      "objective.compiler"
+    ],
+    [
+      "docs/modules/MODULES.json",
+      "cognitive.store"
+    ],
+    [
+      "docs/modules/SOURCE_BINDINGS.json",
+      "objective.compiler"
+    ],
+    [
+      "docs/modules/SOURCE_BINDINGS.json",
+      "cognitive.store"
+    ],
+    [
+      "docs/modules/MODULE_DOCS.json",
+      "objective.compiler"
+    ],
+    [
+      "docs/modules/MODULE_DOCS.json",
+      "cognitive.store"
+    ]
+  ],
+  "patch_lines": 110,
+  "files": [
+    "docs/modules/MODULES.json",
+    "docs/modules/SOURCE_BINDINGS.json",
+    "docs/modules/MODULE_DOCS.json",
+    "qualification/gap-closure/PLAN_AUDIT.json",
+    "scripts/test_hepta_module_status_facts.py"
+  ],
+  "scope": "metadata consistency only; no compilation or product execution claim",
+  "git_apply_check": true,
+  "patched_bytes_equal_expected": true,
+  "exact_source_blob_matches": 47
+}

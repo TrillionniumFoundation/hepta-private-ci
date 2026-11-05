@@ -1,0 +1,64 @@
+{
+  "fixed_commit": "f7a57e6f40e3e8220233f0d27b8cfbdf1f721c55",
+  "sources": [
+    {
+      "path": "justfile",
+      "git_blob": "a215a76cf407ace9715bca39c20497014e7dd4dc",
+      "sha256": "74f869224eba12fc4212b043428e7f5b35b551d26f5b06161c25d8aca525f124",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/f7a57e6f40e3e8220233f0d27b8cfbdf1f721c55/justfile"
+    },
+    {
+      "path": "scripts/run-nextest.py",
+      "git_blob": "1ed63abe84267b320cbfb0123a70aac5507f4595",
+      "sha256": "45c4e35d1ff24840d9e1e05331af0b89475bfe1aec3231afc56fecb8cea66127",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/f7a57e6f40e3e8220233f0d27b8cfbdf1f721c55/scripts/run-nextest.py"
+    },
+    {
+      "path": "codex-rs/.config/nextest.toml",
+      "git_blob": "bad30f934f89b22c48d972c28d4b493fc10299bd",
+      "sha256": "351cdfe17480eae1124145e32a0de6de2889a38f01b14036187bc42e2553fdde",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/f7a57e6f40e3e8220233f0d27b8cfbdf1f721c55/codex-rs/.config/nextest.toml"
+    }
+  ],
+  "root_justfile_cwd": "codex-rs",
+  "wrapper_env": {
+    "RUST_MIN_STACK": "8388608",
+    "NEXTEST_PROFILE": "local"
+  },
+  "wrapper_executable": "python3 ../scripts/run-nextest.py",
+  "native_command_prefix": [
+    "cargo",
+    "nextest",
+    "run",
+    "--no-fail-fast"
+  ],
+  "scoped_metadata_effect": "Only metadata acquisition changes. Original package selections and test args are preserved; workspace_root remains the original Rust workspace.",
+  "repository_junit_path": "junit.xml",
+  "local_profile_junit": "inherits profile.default.junit",
+  "default_store_dir": "target/nextest under workspace root",
+  "expected_native_junit": "/home/qq/work/hepta-modules40-20261105-a9f4ebc7/source/codex-rs/target/nextest/local/junit.xml",
+  "recommended_original_command": [
+    "just",
+    "test",
+    "--locked",
+    "-p",
+    "codex-hepta-agent-protocol",
+    "-p",
+    "codex-hepta-agentd",
+    "-p",
+    "codex-hepta-infer-worker-host",
+    "-p",
+    "codex-hepta-runtime"
+  ],
+  "changes_required": "NONE. No profile, retry, timeout, filter, wrapper or JUnit configuration changes.",
+  "limitations": [
+    "Confirm the actual emitted path/new file hash from this run; preserve any external effective configuration evidence.",
+    "Build/harness failure before execution may produce no new JUnit; do not substitute stale reports.",
+    "Default JUnit may omit skipped testcases; inspect original runner Summary for all-suite skipped totals. Required omitted cases are MISSING in the 49-name checker."
+  ],
+  "official_primary_references": [
+    "https://nexte.st/docs/machine-readable/junit/",
+    "https://nexte.st/docs/configuration/reference/"
+  ],
+  "ai395_commands_run_by_this_review": false
+}

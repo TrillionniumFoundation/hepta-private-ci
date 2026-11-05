@@ -1,0 +1,740 @@
+{
+  "native_head": "910a5373c786c3e180f5b4d743ad794d88df5cec",
+  "source_head": "e9b84f242326e5280ee2b2de937f03f78bc1e907",
+  "source_tree": "4d9de9f9d5eef537e5cee1c07b3d1875d30af56e",
+  "stages": [
+    {
+      "stage": 0,
+      "native_commit": "6af735c291ac6888b722161e773b10d6eacdb79d",
+      "published_commit": "7e40877d71db28fe265cb20650d66017f0a12c6f",
+      "published_parent": "f7a57e6f40e3e8220233f0d27b8cfbdf1f721c55",
+      "tree": "837c425ab7903c25568e897f012461390696e759",
+      "message": "fix(agentd): fence desktop succession with original issuer and writer\n\nThe unmodified four-package native run passed 812 of 813 tests. The existing\ndesktop successor test showed replacement still succeeded after revoking the\noriginal issuer, because the mutation held only the current writer lease.\n\nAdopt exactly the three source blobs from 65f0ad816ffa4724626db3f1c36a20eb7faab61f.\nBoth original leases now enter the existing same-owner joint boundary, with\ncurrent revision/revocation checks and issuer/writer epoch/time checks around\nthe durable policy CAS. Retain the current writer proof and policy CAS checks.\n\nDonor-parent and candidate base blobs, including the original failing test,\nmatch exactly. No test, signer requirement, budget, profile or workflow changes.\nNative confirmation of this repair remains required.\n\nSigned-off-by: Franksudoman <sunfocapital@gmail.com>\n(cherry picked from commit facba0d32c1cd0e8163a6186d7ba91fa311f2e2e)"
+    },
+    {
+      "stage": 1,
+      "native_commit": "7776c7a6444cfad1b79679325b586b2a742c607d",
+      "published_commit": "14d4fb984e1cf0a597ad1ad18197de1215fe1e76",
+      "published_parent": "7e40877d71db28fe265cb20650d66017f0a12c6f",
+      "tree": "91c9a6bbf948a3f6bc99d3b7a44cba0ff9d97e41",
+      "message": "fix(windows): convert ConPTY handle clone errors at native wait boundary\n\n(cherry picked from commit 345dd470a64783b54f45c522ac8675435d204738)"
+    },
+    {
+      "stage": 2,
+      "native_commit": "1773d3fa1d1c56805f6c1746c57caf0639a79555",
+      "published_commit": "7c0e5e487aeb96c3ac5a9451565119d68f06ffe1",
+      "published_parent": "14d4fb984e1cf0a597ad1ad18197de1215fe1e76",
+      "tree": "a99077125d6dfa9abfecf45f48048025dc248929",
+      "message": "fix(modules): reconcile production status with implementation evidence"
+    },
+    {
+      "stage": 3,
+      "native_commit": "cb086ef1c9d5cd498f6a3d37eabf07fb203749a6",
+      "published_commit": "900edded134f1d24e30e3d76b74bb671e912137a",
+      "published_parent": "7c0e5e487aeb96c3ac5a9451565119d68f06ffe1",
+      "tree": "af6f417c8294ce0a9963b5fea7a884e799168a47",
+      "message": "feat(agentd): expose immutable bound run reconciliation"
+    },
+    {
+      "stage": 4,
+      "native_commit": "b200d1a88bf812abd8af0ec8309e69f5f83464a2",
+      "published_commit": "f4a2f28f96e44b14cc3c4d34e77da6aabc4a0677",
+      "published_parent": "900edded134f1d24e30e3d76b74bb671e912137a",
+      "tree": "9545da8ba2ba7c614ba5f8d59e213ffa795e7b51",
+      "message": "test(agentd): reject bound ABA and exhausted run transitions"
+    },
+    {
+      "stage": 5,
+      "native_commit": "0b950a71a914cf8e873138aa9cc5bc9501b2ef9c",
+      "published_commit": "140defbbdfe541f89f573e4bfbbbeabbf99cb28e",
+      "published_parent": "f4a2f28f96e44b14cc3c4d34e77da6aabc4a0677",
+      "tree": "7cdae8e59bea21e2751ff4f935465c1df4deb9c1",
+      "message": "refactor(agentd): project durable RunStart identity once"
+    },
+    {
+      "stage": 6,
+      "native_commit": "638cd55340eede388ac39988a4cd26dece1e7b3f",
+      "published_commit": "1512deb176ab4f96814c57173a02d2ba4b426014",
+      "published_parent": "140defbbdfe541f89f573e4bfbbbeabbf99cb28e",
+      "tree": "5420dfde8542aeca0d433a069481f84675e73235",
+      "message": "fix(agentd): preserve original RunStart through canonical preparation"
+    },
+    {
+      "stage": 7,
+      "native_commit": "e70cd9d0825b60d5782ad624fdf2337d81b60c2b",
+      "published_commit": "4da16ad453315d43f28b3d714b8b485a89891663",
+      "published_parent": "1512deb176ab4f96814c57173a02d2ba4b426014",
+      "tree": "3ba4daa6b67e713027e3b1e5608c7e68bcb3b6db",
+      "message": "test(agentd): assemble canonical fixtures from durable owners"
+    },
+    {
+      "stage": 8,
+      "native_commit": "a73a147cc07ab15c701f83db5f88c45d230e44a9",
+      "published_commit": "cfae2ae71d1bd5dc4efc30262894ba3287afca7a",
+      "published_parent": "4da16ad453315d43f28b3d714b8b485a89891663",
+      "tree": "760b6d131a4d40e6bfa1801469d16e43cec45f50",
+      "message": "test(agentd): cover canonical lifecycle and recovered tuple boundaries"
+    },
+    {
+      "stage": 9,
+      "native_commit": "3b4065371f5277e861041f7f5f1963cf6526d7f3",
+      "published_commit": "c532378a9d62e1c73038385e992ad61bd52878ae",
+      "published_parent": "cfae2ae71d1bd5dc4efc30262894ba3287afca7a",
+      "tree": "e5ed4921869aedbfdb45e05684ef898a86b0e288",
+      "message": "test(agentd): reuse production readiness and explicit helper paths"
+    },
+    {
+      "stage": 10,
+      "native_commit": "6514d1cdb66972b50042c38f7d3c640c08115dca",
+      "published_commit": "453abeef0af8012853ce2372caef122b3b1e0758",
+      "published_parent": "c532378a9d62e1c73038385e992ad61bd52878ae",
+      "tree": "538b433257628a86396913a8e2decd2ef2e5c302",
+      "message": "fix(inference): retain complete App Server agent messages"
+    },
+    {
+      "stage": 11,
+      "native_commit": "023c44bb41485ee85eb2bae9c8204a899bff3103",
+      "published_commit": "e5dd045b04831be0892a99e9d00449aeac99e975",
+      "published_parent": "453abeef0af8012853ce2372caef122b3b1e0758",
+      "tree": "084f51cbdde388bff7c4eff3e3d4f47bd3c52894",
+      "message": "fix(inference): reconcile durable terminals against original Agentd runs"
+    },
+    {
+      "stage": 12,
+      "native_commit": "c2e16a37e477b4dfad38f4523c58e2f8f874d0e6",
+      "published_commit": "bb8427afb6aa05b1fbf9a88862c6cae4ebec9fad",
+      "published_parent": "e5dd045b04831be0892a99e9d00449aeac99e975",
+      "tree": "fbd4e03ac50bc8e0111e2c475332ca36ab130862",
+      "message": "test(inference): reject incomplete bindings and unqualified terminal success"
+    },
+    {
+      "stage": 13,
+      "native_commit": "715f7feee66c5bc49c10cbfba375902c36aa4ed8",
+      "published_commit": "4c053e0eb88ffcf077773c25e303695244e87610",
+      "published_parent": "bb8427afb6aa05b1fbf9a88862c6cae4ebec9fad",
+      "tree": "1f4a72d89182d1ab0480549a49dcfab9199853c6",
+      "message": "test(inference): recover terminal acknowledgement across worker loss"
+    },
+    {
+      "stage": 14,
+      "native_commit": "1986488379a5684c2afda133d4efc9121a7bd373",
+      "published_commit": "af61e0111f5f2a234c0fada76671dca19abcfefc",
+      "published_parent": "4c053e0eb88ffcf077773c25e303695244e87610",
+      "tree": "bcf794a3d144a9bd2a8c9e8b84a836048ab1883b",
+      "message": "style: apply original formatter to integrated recovery source"
+    },
+    {
+      "stage": 15,
+      "native_commit": "96fc33c4ae361162d1f8f67a958fd97885351564",
+      "published_commit": "046c11da79eed76c41de4f58087fb97c0e464361",
+      "published_parent": "af61e0111f5f2a234c0fada76671dca19abcfefc",
+      "tree": "e47c3564bcb553d7ed67ba58be92551400a00724",
+      "message": "chore(hepta): apply reviewed scoped clippy cleanup"
+    },
+    {
+      "stage": 16,
+      "native_commit": "910a5373c786c3e180f5b4d743ad794d88df5cec",
+      "published_commit": "e9b84f242326e5280ee2b2de937f03f78bc1e907",
+      "published_parent": "046c11da79eed76c41de4f58087fb97c0e464361",
+      "tree": "4d9de9f9d5eef537e5cee1c07b3d1875d30af56e",
+      "message": "fix(qualification): refuse stale original pins and legacy claim rebinding"
+    }
+  ],
+  "commits": [
+    {
+      "sha": "7e40877d71db28fe265cb20650d66017f0a12c6f",
+      "node_id": "C_kwDOTrgxoNoAKDdlNDA4NzdkNzFkYjI4ZmUyNjVjYjIwNjUwZDY2MDE3ZjBhMTJjNmY",
+      "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/git/commits/7e40877d71db28fe265cb20650d66017f0a12c6f",
+      "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/commit/7e40877d71db28fe265cb20650d66017f0a12c6f",
+      "author": {
+        "name": "Franksudoman",
+        "email": "273670192+Franksudoman@users.noreply.github.com",
+        "date": "2026-11-05T10:21:07Z"
+      },
+      "committer": {
+        "name": "Franksudoman",
+        "email": "273670192+Franksudoman@users.noreply.github.com",
+        "date": "2026-11-05T10:21:07Z"
+      },
+      "tree": {
+        "sha": "837c425ab7903c25568e897f012461390696e759",
+        "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/git/trees/837c425ab7903c25568e897f012461390696e759"
+      },
+      "message": "fix(agentd): fence desktop succession with original issuer and writer\n\nThe unmodified four-package native run passed 812 of 813 tests. The existing\ndesktop successor test showed replacement still succeeded after revoking the\noriginal issuer, because the mutation held only the current writer lease.\n\nAdopt exactly the three source blobs from 65f0ad816ffa4724626db3f1c36a20eb7faab61f.\nBoth original leases now enter the existing same-owner joint boundary, with\ncurrent revision/revocation checks and issuer/writer epoch/time checks around\nthe durable policy CAS. Retain the current writer proof and policy CAS checks.\n\nDonor-parent and candidate base blobs, including the original failing test,\nmatch exactly. No test, signer requirement, budget, profile or workflow changes.\nNative confirmation of this repair remains required.\n\nSigned-off-by: Franksudoman <sunfocapital@gmail.com>\n(cherry picked from commit facba0d32c1cd0e8163a6186d7ba91fa311f2e2e)",
+      "parents": [
+        {
+          "sha": "f7a57e6f40e3e8220233f0d27b8cfbdf1f721c55",
+          "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/git/commits/f7a57e6f40e3e8220233f0d27b8cfbdf1f721c55",
+          "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/commit/f7a57e6f40e3e8220233f0d27b8cfbdf1f721c55"
+        }
+      ],
+      "verification": {
+        "verified": false,
+        "reason": "unsigned",
+        "signature": null,
+        "payload": null,
+        "verified_at": null
+      }
+    },
+    {
+      "sha": "14d4fb984e1cf0a597ad1ad18197de1215fe1e76",
+      "node_id": "C_kwDOTrgxoNoAKDE0ZDRmYjk4NGUxY2YwYTU5N2FkMWFkMTgxOTdkZTEyMTVmZTFlNzY",
+      "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/git/commits/14d4fb984e1cf0a597ad1ad18197de1215fe1e76",
+      "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/commit/14d4fb984e1cf0a597ad1ad18197de1215fe1e76",
+      "author": {
+        "name": "Franksudoman",
+        "email": "273670192+Franksudoman@users.noreply.github.com",
+        "date": "2026-11-05T10:21:10Z"
+      },
+      "committer": {
+        "name": "Franksudoman",
+        "email": "273670192+Franksudoman@users.noreply.github.com",
+        "date": "2026-11-05T10:21:10Z"
+      },
+      "tree": {
+        "sha": "91c9a6bbf948a3f6bc99d3b7a44cba0ff9d97e41",
+        "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/git/trees/91c9a6bbf948a3f6bc99d3b7a44cba0ff9d97e41"
+      },
+      "message": "fix(windows): convert ConPTY handle clone errors at native wait boundary\n\n(cherry picked from commit 345dd470a64783b54f45c522ac8675435d204738)",
+      "parents": [
+        {
+          "sha": "7e40877d71db28fe265cb20650d66017f0a12c6f",
+          "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/git/commits/7e40877d71db28fe265cb20650d66017f0a12c6f",
+          "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/commit/7e40877d71db28fe265cb20650d66017f0a12c6f"
+        }
+      ],
+      "verification": {
+        "verified": false,
+        "reason": "unsigned",
+        "signature": null,
+        "payload": null,
+        "verified_at": null
+      }
+    },
+    {
+      "sha": "7c0e5e487aeb96c3ac5a9451565119d68f06ffe1",
+      "node_id": "C_kwDOTrgxoNoAKDdjMGU1ZTQ4N2FlYjk2YzNhYzVhOTQ1MTU2NTExOWQ2OGYwNmZmZTE",
+      "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/git/commits/7c0e5e487aeb96c3ac5a9451565119d68f06ffe1",
+      "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/commit/7c0e5e487aeb96c3ac5a9451565119d68f06ffe1",
+      "author": {
+        "name": "Franksudoman",
+        "email": "273670192+Franksudoman@users.noreply.github.com",
+        "date": "2026-11-05T10:21:12Z"
+      },
+      "committer": {
+        "name": "Franksudoman",
+        "email": "273670192+Franksudoman@users.noreply.github.com",
+        "date": "2026-11-05T10:21:12Z"
+      },
+      "tree": {
+        "sha": "a99077125d6dfa9abfecf45f48048025dc248929",
+        "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/git/trees/a99077125d6dfa9abfecf45f48048025dc248929"
+      },
+      "message": "fix(modules): reconcile production status with implementation evidence",
+      "parents": [
+        {
+          "sha": "14d4fb984e1cf0a597ad1ad18197de1215fe1e76",
+          "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/git/commits/14d4fb984e1cf0a597ad1ad18197de1215fe1e76",
+          "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/commit/14d4fb984e1cf0a597ad1ad18197de1215fe1e76"
+        }
+      ],
+      "verification": {
+        "verified": false,
+        "reason": "unsigned",
+        "signature": null,
+        "payload": null,
+        "verified_at": null
+      }
+    },
+    {
+      "sha": "900edded134f1d24e30e3d76b74bb671e912137a",
+      "node_id": "C_kwDOTrgxoNoAKDkwMGVkZGVkMTM0ZjFkMjRlMzBlM2Q3NmI3NGJiNjcxZTkxMjEzN2E",
+      "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/git/commits/900edded134f1d24e30e3d76b74bb671e912137a",
+      "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/commit/900edded134f1d24e30e3d76b74bb671e912137a",
+      "author": {
+        "name": "Franksudoman",
+        "email": "273670192+Franksudoman@users.noreply.github.com",
+        "date": "2026-11-05T10:21:14Z"
+      },
+      "committer": {
+        "name": "Franksudoman",
+        "email": "273670192+Franksudoman@users.noreply.github.com",
+        "date": "2026-11-05T10:21:14Z"
+      },
+      "tree": {
+        "sha": "af6f417c8294ce0a9963b5fea7a884e799168a47",
+        "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/git/trees/af6f417c8294ce0a9963b5fea7a884e799168a47"
+      },
+      "message": "feat(agentd): expose immutable bound run reconciliation",
+      "parents": [
+        {
+          "sha": "7c0e5e487aeb96c3ac5a9451565119d68f06ffe1",
+          "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/git/commits/7c0e5e487aeb96c3ac5a9451565119d68f06ffe1",
+          "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/commit/7c0e5e487aeb96c3ac5a9451565119d68f06ffe1"
+        }
+      ],
+      "verification": {
+        "verified": false,
+        "reason": "unsigned",
+        "signature": null,
+        "payload": null,
+        "verified_at": null
+      }
+    },
+    {
+      "sha": "f4a2f28f96e44b14cc3c4d34e77da6aabc4a0677",
+      "node_id": "C_kwDOTrgxoNoAKGY0YTJmMjhmOTZlNDRiMTRjYzNjNGQzNGU3N2RhNmFhYmM0YTA2Nzc",
+      "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/git/commits/f4a2f28f96e44b14cc3c4d34e77da6aabc4a0677",
+      "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/commit/f4a2f28f96e44b14cc3c4d34e77da6aabc4a0677",
+      "author": {
+        "name": "Franksudoman",
+        "email": "273670192+Franksudoman@users.noreply.github.com",
+        "date": "2026-11-05T10:21:16Z"
+      },
+      "committer": {
+        "name": "Franksudoman",
+        "email": "273670192+Franksudoman@users.noreply.github.com",
+        "date": "2026-11-05T10:21:16Z"
+      },
+      "tree": {
+        "sha": "9545da8ba2ba7c614ba5f8d59e213ffa795e7b51",
+        "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/git/trees/9545da8ba2ba7c614ba5f8d59e213ffa795e7b51"
+      },
+      "message": "test(agentd): reject bound ABA and exhausted run transitions",
+      "parents": [
+        {
+          "sha": "900edded134f1d24e30e3d76b74bb671e912137a",
+          "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/git/commits/900edded134f1d24e30e3d76b74bb671e912137a",
+          "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/commit/900edded134f1d24e30e3d76b74bb671e912137a"
+        }
+      ],
+      "verification": {
+        "verified": false,
+        "reason": "unsigned",
+        "signature": null,
+        "payload": null,
+        "verified_at": null
+      }
+    },
+    {
+      "sha": "140defbbdfe541f89f573e4bfbbbeabbf99cb28e",
+      "node_id": "C_kwDOTrgxoNoAKDE0MGRlZmJiZGZlNTQxZjg5ZjU3M2U0YmZiYmJlYWJiZjk5Y2IyOGU",
+      "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/git/commits/140defbbdfe541f89f573e4bfbbbeabbf99cb28e",
+      "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/commit/140defbbdfe541f89f573e4bfbbbeabbf99cb28e",
+      "author": {
+        "name": "Franksudoman",
+        "email": "273670192+Franksudoman@users.noreply.github.com",
+        "date": "2026-11-05T10:21:18Z"
+      },
+      "committer": {
+        "name": "Franksudoman",
+        "email": "273670192+Franksudoman@users.noreply.github.com",
+        "date": "2026-11-05T10:21:18Z"
+      },
+      "tree": {
+        "sha": "7cdae8e59bea21e2751ff4f935465c1df4deb9c1",
+        "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/git/trees/7cdae8e59bea21e2751ff4f935465c1df4deb9c1"
+      },
+      "message": "refactor(agentd): project durable RunStart identity once",
+      "parents": [
+        {
+          "sha": "f4a2f28f96e44b14cc3c4d34e77da6aabc4a0677",
+          "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/git/commits/f4a2f28f96e44b14cc3c4d34e77da6aabc4a0677",
+          "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/commit/f4a2f28f96e44b14cc3c4d34e77da6aabc4a0677"
+        }
+      ],
+      "verification": {
+        "verified": false,
+        "reason": "unsigned",
+        "signature": null,
+        "payload": null,
+        "verified_at": null
+      }
+    },
+    {
+      "sha": "1512deb176ab4f96814c57173a02d2ba4b426014",
+      "node_id": "C_kwDOTrgxoNoAKDE1MTJkZWIxNzZhYjRmOTY4MTRjNTcxNzNhMDJkMmJhNGI0MjYwMTQ",
+      "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/git/commits/1512deb176ab4f96814c57173a02d2ba4b426014",
+      "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/commit/1512deb176ab4f96814c57173a02d2ba4b426014",
+      "author": {
+        "name": "Franksudoman",
+        "email": "273670192+Franksudoman@users.noreply.github.com",
+        "date": "2026-11-05T10:21:20Z"
+      },
+      "committer": {
+        "name": "Franksudoman",
+        "email": "273670192+Franksudoman@users.noreply.github.com",
+        "date": "2026-11-05T10:21:20Z"
+      },
+      "tree": {
+        "sha": "5420dfde8542aeca0d433a069481f84675e73235",
+        "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/git/trees/5420dfde8542aeca0d433a069481f84675e73235"
+      },
+      "message": "fix(agentd): preserve original RunStart through canonical preparation",
+      "parents": [
+        {
+          "sha": "140defbbdfe541f89f573e4bfbbbeabbf99cb28e",
+          "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/git/commits/140defbbdfe541f89f573e4bfbbbeabbf99cb28e",
+          "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/commit/140defbbdfe541f89f573e4bfbbbeabbf99cb28e"
+        }
+      ],
+      "verification": {
+        "verified": false,
+        "reason": "unsigned",
+        "signature": null,
+        "payload": null,
+        "verified_at": null
+      }
+    },
+    {
+      "sha": "4da16ad453315d43f28b3d714b8b485a89891663",
+      "node_id": "C_kwDOTrgxoNoAKDRkYTE2YWQ0NTMzMTVkNDNmMjhiM2Q3MTRiOGI0ODVhODk4OTE2NjM",
+      "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/git/commits/4da16ad453315d43f28b3d714b8b485a89891663",
+      "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/commit/4da16ad453315d43f28b3d714b8b485a89891663",
+      "author": {
+        "name": "Franksudoman",
+        "email": "273670192+Franksudoman@users.noreply.github.com",
+        "date": "2026-11-05T10:21:22Z"
+      },
+      "committer": {
+        "name": "Franksudoman",
+        "email": "273670192+Franksudoman@users.noreply.github.com",
+        "date": "2026-11-05T10:21:22Z"
+      },
+      "tree": {
+        "sha": "3ba4daa6b67e713027e3b1e5608c7e68bcb3b6db",
+        "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/git/trees/3ba4daa6b67e713027e3b1e5608c7e68bcb3b6db"
+      },
+      "message": "test(agentd): assemble canonical fixtures from durable owners",
+      "parents": [
+        {
+          "sha": "1512deb176ab4f96814c57173a02d2ba4b426014",
+          "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/git/commits/1512deb176ab4f96814c57173a02d2ba4b426014",
+          "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/commit/1512deb176ab4f96814c57173a02d2ba4b426014"
+        }
+      ],
+      "verification": {
+        "verified": false,
+        "reason": "unsigned",
+        "signature": null,
+        "payload": null,
+        "verified_at": null
+      }
+    },
+    {
+      "sha": "cfae2ae71d1bd5dc4efc30262894ba3287afca7a",
+      "node_id": "C_kwDOTrgxoNoAKGNmYWUyYWU3MWQxYmQ1ZGM0ZWZjMzAyNjI4OTRiYTMyODdhZmNhN2E",
+      "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/git/commits/cfae2ae71d1bd5dc4efc30262894ba3287afca7a",
+      "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/commit/cfae2ae71d1bd5dc4efc30262894ba3287afca7a",
+      "author": {
+        "name": "Franksudoman",
+        "email": "273670192+Franksudoman@users.noreply.github.com",
+        "date": "2026-11-05T10:21:24Z"
+      },
+      "committer": {
+        "name": "Franksudoman",
+        "email": "273670192+Franksudoman@users.noreply.github.com",
+        "date": "2026-11-05T10:21:24Z"
+      },
+      "tree": {
+        "sha": "760b6d131a4d40e6bfa1801469d16e43cec45f50",
+        "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/git/trees/760b6d131a4d40e6bfa1801469d16e43cec45f50"
+      },
+      "message": "test(agentd): cover canonical lifecycle and recovered tuple boundaries",
+      "parents": [
+        {
+          "sha": "4da16ad453315d43f28b3d714b8b485a89891663",
+          "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/git/commits/4da16ad453315d43f28b3d714b8b485a89891663",
+          "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/commit/4da16ad453315d43f28b3d714b8b485a89891663"
+        }
+      ],
+      "verification": {
+        "verified": false,
+        "reason": "unsigned",
+        "signature": null,
+        "payload": null,
+        "verified_at": null
+      }
+    },
+    {
+      "sha": "c532378a9d62e1c73038385e992ad61bd52878ae",
+      "node_id": "C_kwDOTrgxoNoAKGM1MzIzNzhhOWQ2MmUxYzczMDM4Mzg1ZTk5MmFkNjFiZDUyODc4YWU",
+      "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/git/commits/c532378a9d62e1c73038385e992ad61bd52878ae",
+      "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/commit/c532378a9d62e1c73038385e992ad61bd52878ae",
+      "author": {
+        "name": "Franksudoman",
+        "email": "273670192+Franksudoman@users.noreply.github.com",
+        "date": "2026-11-05T10:21:26Z"
+      },
+      "committer": {
+        "name": "Franksudoman",
+        "email": "273670192+Franksudoman@users.noreply.github.com",
+        "date": "2026-11-05T10:21:26Z"
+      },
+      "tree": {
+        "sha": "e5ed4921869aedbfdb45e05684ef898a86b0e288",
+        "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/git/trees/e5ed4921869aedbfdb45e05684ef898a86b0e288"
+      },
+      "message": "test(agentd): reuse production readiness and explicit helper paths",
+      "parents": [
+        {
+          "sha": "cfae2ae71d1bd5dc4efc30262894ba3287afca7a",
+          "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/git/commits/cfae2ae71d1bd5dc4efc30262894ba3287afca7a",
+          "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/commit/cfae2ae71d1bd5dc4efc30262894ba3287afca7a"
+        }
+      ],
+      "verification": {
+        "verified": false,
+        "reason": "unsigned",
+        "signature": null,
+        "payload": null,
+        "verified_at": null
+      }
+    },
+    {
+      "sha": "453abeef0af8012853ce2372caef122b3b1e0758",
+      "node_id": "C_kwDOTrgxoNoAKDQ1M2FiZWVmMGFmODAxMjg1M2NlMjM3MmNhZWYxMjJiM2IxZTA3NTg",
+      "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/git/commits/453abeef0af8012853ce2372caef122b3b1e0758",
+      "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/commit/453abeef0af8012853ce2372caef122b3b1e0758",
+      "author": {
+        "name": "Franksudoman",
+        "email": "273670192+Franksudoman@users.noreply.github.com",
+        "date": "2026-11-05T10:21:28Z"
+      },
+      "committer": {
+        "name": "Franksudoman",
+        "email": "273670192+Franksudoman@users.noreply.github.com",
+        "date": "2026-11-05T10:21:28Z"
+      },
+      "tree": {
+        "sha": "538b433257628a86396913a8e2decd2ef2e5c302",
+        "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/git/trees/538b433257628a86396913a8e2decd2ef2e5c302"
+      },
+      "message": "fix(inference): retain complete App Server agent messages",
+      "parents": [
+        {
+          "sha": "c532378a9d62e1c73038385e992ad61bd52878ae",
+          "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/git/commits/c532378a9d62e1c73038385e992ad61bd52878ae",
+          "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/commit/c532378a9d62e1c73038385e992ad61bd52878ae"
+        }
+      ],
+      "verification": {
+        "verified": false,
+        "reason": "unsigned",
+        "signature": null,
+        "payload": null,
+        "verified_at": null
+      }
+    },
+    {
+      "sha": "e5dd045b04831be0892a99e9d00449aeac99e975",
+      "node_id": "C_kwDOTrgxoNoAKGU1ZGQwNDViMDQ4MzFiZTA4OTJhOTllOWQwMDQ0OWFlYWM5OWU5NzU",
+      "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/git/commits/e5dd045b04831be0892a99e9d00449aeac99e975",
+      "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/commit/e5dd045b04831be0892a99e9d00449aeac99e975",
+      "author": {
+        "name": "Franksudoman",
+        "email": "273670192+Franksudoman@users.noreply.github.com",
+        "date": "2026-11-05T10:21:30Z"
+      },
+      "committer": {
+        "name": "Franksudoman",
+        "email": "273670192+Franksudoman@users.noreply.github.com",
+        "date": "2026-11-05T10:21:30Z"
+      },
+      "tree": {
+        "sha": "084f51cbdde388bff7c4eff3e3d4f47bd3c52894",
+        "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/git/trees/084f51cbdde388bff7c4eff3e3d4f47bd3c52894"
+      },
+      "message": "fix(inference): reconcile durable terminals against original Agentd runs",
+      "parents": [
+        {
+          "sha": "453abeef0af8012853ce2372caef122b3b1e0758",
+          "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/git/commits/453abeef0af8012853ce2372caef122b3b1e0758",
+          "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/commit/453abeef0af8012853ce2372caef122b3b1e0758"
+        }
+      ],
+      "verification": {
+        "verified": false,
+        "reason": "unsigned",
+        "signature": null,
+        "payload": null,
+        "verified_at": null
+      }
+    },
+    {
+      "sha": "bb8427afb6aa05b1fbf9a88862c6cae4ebec9fad",
+      "node_id": "C_kwDOTrgxoNoAKGJiODQyN2FmYjZhYTA1YjFmYmY5YTg4ODYyYzZjYWU0ZWJlYzlmYWQ",
+      "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/git/commits/bb8427afb6aa05b1fbf9a88862c6cae4ebec9fad",
+      "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/commit/bb8427afb6aa05b1fbf9a88862c6cae4ebec9fad",
+      "author": {
+        "name": "Franksudoman",
+        "email": "273670192+Franksudoman@users.noreply.github.com",
+        "date": "2026-11-05T10:21:31Z"
+      },
+      "committer": {
+        "name": "Franksudoman",
+        "email": "273670192+Franksudoman@users.noreply.github.com",
+        "date": "2026-11-05T10:21:31Z"
+      },
+      "tree": {
+        "sha": "fbd4e03ac50bc8e0111e2c475332ca36ab130862",
+        "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/git/trees/fbd4e03ac50bc8e0111e2c475332ca36ab130862"
+      },
+      "message": "test(inference): reject incomplete bindings and unqualified terminal success",
+      "parents": [
+        {
+          "sha": "e5dd045b04831be0892a99e9d00449aeac99e975",
+          "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/git/commits/e5dd045b04831be0892a99e9d00449aeac99e975",
+          "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/commit/e5dd045b04831be0892a99e9d00449aeac99e975"
+        }
+      ],
+      "verification": {
+        "verified": false,
+        "reason": "unsigned",
+        "signature": null,
+        "payload": null,
+        "verified_at": null
+      }
+    },
+    {
+      "sha": "4c053e0eb88ffcf077773c25e303695244e87610",
+      "node_id": "C_kwDOTrgxoNoAKDRjMDUzZTBlYjg4ZmZjZjA3Nzc3M2MyNWUzMDM2OTUyNDRlODc2MTA",
+      "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/git/commits/4c053e0eb88ffcf077773c25e303695244e87610",
+      "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/commit/4c053e0eb88ffcf077773c25e303695244e87610",
+      "author": {
+        "name": "Franksudoman",
+        "email": "273670192+Franksudoman@users.noreply.github.com",
+        "date": "2026-11-05T10:21:33Z"
+      },
+      "committer": {
+        "name": "Franksudoman",
+        "email": "273670192+Franksudoman@users.noreply.github.com",
+        "date": "2026-11-05T10:21:33Z"
+      },
+      "tree": {
+        "sha": "1f4a72d89182d1ab0480549a49dcfab9199853c6",
+        "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/git/trees/1f4a72d89182d1ab0480549a49dcfab9199853c6"
+      },
+      "message": "test(inference): recover terminal acknowledgement across worker loss",
+      "parents": [
+        {
+          "sha": "bb8427afb6aa05b1fbf9a88862c6cae4ebec9fad",
+          "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/git/commits/bb8427afb6aa05b1fbf9a88862c6cae4ebec9fad",
+          "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/commit/bb8427afb6aa05b1fbf9a88862c6cae4ebec9fad"
+        }
+      ],
+      "verification": {
+        "verified": false,
+        "reason": "unsigned",
+        "signature": null,
+        "payload": null,
+        "verified_at": null
+      }
+    },
+    {
+      "sha": "af61e0111f5f2a234c0fada76671dca19abcfefc",
+      "node_id": "C_kwDOTrgxoNoAKGFmNjFlMDExMWY1ZjJhMjM0YzBmYWRhNzY2NzFkY2ExOWFiY2ZlZmM",
+      "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/git/commits/af61e0111f5f2a234c0fada76671dca19abcfefc",
+      "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/commit/af61e0111f5f2a234c0fada76671dca19abcfefc",
+      "author": {
+        "name": "Franksudoman",
+        "email": "273670192+Franksudoman@users.noreply.github.com",
+        "date": "2026-11-05T10:21:34Z"
+      },
+      "committer": {
+        "name": "Franksudoman",
+        "email": "273670192+Franksudoman@users.noreply.github.com",
+        "date": "2026-11-05T10:21:34Z"
+      },
+      "tree": {
+        "sha": "bcf794a3d144a9bd2a8c9e8b84a836048ab1883b",
+        "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/git/trees/bcf794a3d144a9bd2a8c9e8b84a836048ab1883b"
+      },
+      "message": "style: apply original formatter to integrated recovery source",
+      "parents": [
+        {
+          "sha": "4c053e0eb88ffcf077773c25e303695244e87610",
+          "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/git/commits/4c053e0eb88ffcf077773c25e303695244e87610",
+          "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/commit/4c053e0eb88ffcf077773c25e303695244e87610"
+        }
+      ],
+      "verification": {
+        "verified": false,
+        "reason": "unsigned",
+        "signature": null,
+        "payload": null,
+        "verified_at": null
+      }
+    },
+    {
+      "sha": "046c11da79eed76c41de4f58087fb97c0e464361",
+      "node_id": "C_kwDOTrgxoNoAKDA0NmMxMWRhNzllZWQ3NmM0MWRlNGY1ODA4N2ZiOTdjMGU0NjQzNjE",
+      "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/git/commits/046c11da79eed76c41de4f58087fb97c0e464361",
+      "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/commit/046c11da79eed76c41de4f58087fb97c0e464361",
+      "author": {
+        "name": "Franksudoman",
+        "email": "273670192+Franksudoman@users.noreply.github.com",
+        "date": "2026-11-05T10:21:36Z"
+      },
+      "committer": {
+        "name": "Franksudoman",
+        "email": "273670192+Franksudoman@users.noreply.github.com",
+        "date": "2026-11-05T10:21:36Z"
+      },
+      "tree": {
+        "sha": "e47c3564bcb553d7ed67ba58be92551400a00724",
+        "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/git/trees/e47c3564bcb553d7ed67ba58be92551400a00724"
+      },
+      "message": "chore(hepta): apply reviewed scoped clippy cleanup",
+      "parents": [
+        {
+          "sha": "af61e0111f5f2a234c0fada76671dca19abcfefc",
+          "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/git/commits/af61e0111f5f2a234c0fada76671dca19abcfefc",
+          "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/commit/af61e0111f5f2a234c0fada76671dca19abcfefc"
+        }
+      ],
+      "verification": {
+        "verified": false,
+        "reason": "unsigned",
+        "signature": null,
+        "payload": null,
+        "verified_at": null
+      }
+    },
+    {
+      "sha": "e9b84f242326e5280ee2b2de937f03f78bc1e907",
+      "node_id": "C_kwDOTrgxoNoAKGU5Yjg0ZjI0MjMyNmU1MjgwZWUyYjJkZTkzN2YwM2Y3OGJjMWU5MDc",
+      "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/git/commits/e9b84f242326e5280ee2b2de937f03f78bc1e907",
+      "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/commit/e9b84f242326e5280ee2b2de937f03f78bc1e907",
+      "author": {
+        "name": "Franksudoman",
+        "email": "273670192+Franksudoman@users.noreply.github.com",
+        "date": "2026-11-05T10:21:38Z"
+      },
+      "committer": {
+        "name": "Franksudoman",
+        "email": "273670192+Franksudoman@users.noreply.github.com",
+        "date": "2026-11-05T10:21:38Z"
+      },
+      "tree": {
+        "sha": "4d9de9f9d5eef537e5cee1c07b3d1875d30af56e",
+        "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/git/trees/4d9de9f9d5eef537e5cee1c07b3d1875d30af56e"
+      },
+      "message": "fix(qualification): refuse stale original pins and legacy claim rebinding",
+      "parents": [
+        {
+          "sha": "046c11da79eed76c41de4f58087fb97c0e464361",
+          "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/git/commits/046c11da79eed76c41de4f58087fb97c0e464361",
+          "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/commit/046c11da79eed76c41de4f58087fb97c0e464361"
+        }
+      ],
+      "verification": {
+        "verified": false,
+        "reason": "unsigned",
+        "signature": null,
+        "payload": null,
+        "verified_at": null
+      }
+    }
+  ]
+}

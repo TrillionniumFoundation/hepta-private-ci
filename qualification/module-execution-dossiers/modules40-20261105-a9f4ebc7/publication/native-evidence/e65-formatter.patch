@@ -1,0 +1,46 @@
+diff --git a/codex-rs/hepta-infer-worker-host/src/native_message_output_tests.rs b/codex-rs/hepta-infer-worker-host/src/native_message_output_tests.rs
+index ca2cca1f20..65b472a8de 100644
+--- a/codex-rs/hepta-infer-worker-host/src/native_message_output_tests.rs
++++ b/codex-rs/hepta-infer-worker-host/src/native_message_output_tests.rs
+@@ -1,6 +1,6 @@
+-use super::*;
+-use super::observe_for_test_with_messages as observe_for_test;
+ use super::AgentMessageOutput as NativeMessageOutput;
++use super::observe_for_test_with_messages as observe_for_test;
++use super::*;
+ use codex_app_server_protocol::ItemCompletedNotification;
+ use codex_app_server_protocol::ItemStartedNotification;
+ use codex_app_server_protocol::ThreadItem;
+@@ -49,7 +49,12 @@ fn complete_only_message_is_observed_only_for_the_bound_turn() {
+     observe_for_test(
+         &mut output,
+         &mut messages,
+-        completed("thread-a", "turn-a", "complete-only", "fresh context accepted"),
++        completed(
++            "thread-a",
++            "turn-a",
++            "complete-only",
++            "fresh context accepted",
++        ),
+     )
+     .unwrap();
+     assert_eq!(output.output, "fresh context accepted");
+@@ -189,7 +194,12 @@ fn oversized_complete_item_preserves_previous_output_and_pending_state() {
+         observe_for_test(
+             &mut output,
+             &mut messages,
+-            completed("thread-a", "turn-a", "one", &"x".repeat(MAX_OUTPUT_BYTES + 1)),
++            completed(
++                "thread-a",
++                "turn-a",
++                "one",
++                &"x".repeat(MAX_OUTPUT_BYTES + 1)
++            ),
+         )
+         .is_err()
+     );
+@@ -271,4 +281,3 @@ fn oversized_terminal_snapshot_cannot_authorize_completion() {
+     assert_eq!(output.status, NativeRunStatus::Indeterminate);
+     assert!(!output.terminal_observed);
+ }
+-

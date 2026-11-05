@@ -1,0 +1,177 @@
+{
+  "scope": "Local identity cross-check of captured native publication payload and canonical GitHub commit metadata; not execution on canonical SHA",
+  "baselineCommit": "f7a57e6f40e3e8220233f0d27b8cfbdf1f721c55",
+  "baselineTree": "1f3d38ee52320bba1f345da2f2c54b23a36832ee",
+  "nativeTestCandidate": {
+    "commit": "910a5373c786c3e180f5b4d743ad794d88df5cec",
+    "tree": "4d9de9f9d5eef537e5cee1c07b3d1875d30af56e"
+  },
+  "canonicalSourceCandidate": {
+    "commit": "e9b84f242326e5280ee2b2de937f03f78bc1e907",
+    "tree": "4d9de9f9d5eef537e5cee1c07b3d1875d30af56e",
+    "branch": "integration/modules40-source-recovery-20261105-a9f4ebc7"
+  },
+  "stageCount": 17,
+  "allStageTreesEqual": true,
+  "orderedCanonicalParentsMatch": true,
+  "sourceFiles": [
+    {
+      "path": "scripts/hepta-implementation-maps.py",
+      "bytes": 70432,
+      "sha256": "7a66ce3c8a73b29771d16ccfc71b69f84b5c0cf01c991badad8dd8703d017832",
+      "gitBlob": "154fba00c16da9902ae75df194f6dcdebe2931e2",
+      "expectedBlobMatches": true,
+      "reviewSnapshotSha256": "a72b1aca62257154488ed2da6fa2378d7a4d65e0e6366fa1be9841db4c74fce3",
+      "sameAstAsReview": true
+    },
+    {
+      "path": "scripts/test_hepta_implementation_claim_pins.py",
+      "bytes": 7279,
+      "sha256": "b4c2e63ace85ef0f32c5ded9b4014eb35e0de66dd1923f4a6664a859fcb778c2",
+      "gitBlob": "cd39187764dfe7a71e5111c2ab48bce738f36345",
+      "expectedBlobMatches": true,
+      "reviewSnapshotSha256": "0eff9d3aff275fd222c53bc5af8af16e602a5a24a4b9848fc1c7c1a834f23037",
+      "sameAstAsReview": true
+    },
+    {
+      "path": "scripts/test_hepta_implementation_maps.py",
+      "bytes": 44468,
+      "sha256": "1929e8065dea848dfab463d1d01a3d618698b3fe0825023e8484c68d5b268678",
+      "gitBlob": "134c51f4239bbc0b12ceada277f11a149b35becb",
+      "expectedBlobMatches": true,
+      "reviewSnapshotSha256": "1929e8065dea848dfab463d1d01a3d618698b3fe0825023e8484c68d5b268678",
+      "sameAstAsReview": true
+    }
+  ],
+  "stages": [
+    {
+      "stage": 0,
+      "nativeCommit": "6af735c291ac6888b722161e773b10d6eacdb79d",
+      "canonicalCommit": "7e40877d71db28fe265cb20650d66017f0a12c6f",
+      "tree": "837c425ab7903c25568e897f012461390696e759",
+      "parent": "f7a57e6f40e3e8220233f0d27b8cfbdf1f721c55"
+    },
+    {
+      "stage": 1,
+      "nativeCommit": "7776c7a6444cfad1b79679325b586b2a742c607d",
+      "canonicalCommit": "14d4fb984e1cf0a597ad1ad18197de1215fe1e76",
+      "tree": "91c9a6bbf948a3f6bc99d3b7a44cba0ff9d97e41",
+      "parent": "7e40877d71db28fe265cb20650d66017f0a12c6f"
+    },
+    {
+      "stage": 2,
+      "nativeCommit": "1773d3fa1d1c56805f6c1746c57caf0639a79555",
+      "canonicalCommit": "7c0e5e487aeb96c3ac5a9451565119d68f06ffe1",
+      "tree": "a99077125d6dfa9abfecf45f48048025dc248929",
+      "parent": "14d4fb984e1cf0a597ad1ad18197de1215fe1e76"
+    },
+    {
+      "stage": 3,
+      "nativeCommit": "cb086ef1c9d5cd498f6a3d37eabf07fb203749a6",
+      "canonicalCommit": "900edded134f1d24e30e3d76b74bb671e912137a",
+      "tree": "af6f417c8294ce0a9963b5fea7a884e799168a47",
+      "parent": "7c0e5e487aeb96c3ac5a9451565119d68f06ffe1"
+    },
+    {
+      "stage": 4,
+      "nativeCommit": "b200d1a88bf812abd8af0ec8309e69f5f83464a2",
+      "canonicalCommit": "f4a2f28f96e44b14cc3c4d34e77da6aabc4a0677",
+      "tree": "9545da8ba2ba7c614ba5f8d59e213ffa795e7b51",
+      "parent": "900edded134f1d24e30e3d76b74bb671e912137a"
+    },
+    {
+      "stage": 5,
+      "nativeCommit": "0b950a71a914cf8e873138aa9cc5bc9501b2ef9c",
+      "canonicalCommit": "140defbbdfe541f89f573e4bfbbbeabbf99cb28e",
+      "tree": "7cdae8e59bea21e2751ff4f935465c1df4deb9c1",
+      "parent": "f4a2f28f96e44b14cc3c4d34e77da6aabc4a0677"
+    },
+    {
+      "stage": 6,
+      "nativeCommit": "638cd55340eede388ac39988a4cd26dece1e7b3f",
+      "canonicalCommit": "1512deb176ab4f96814c57173a02d2ba4b426014",
+      "tree": "5420dfde8542aeca0d433a069481f84675e73235",
+      "parent": "140defbbdfe541f89f573e4bfbbbeabbf99cb28e"
+    },
+    {
+      "stage": 7,
+      "nativeCommit": "e70cd9d0825b60d5782ad624fdf2337d81b60c2b",
+      "canonicalCommit": "4da16ad453315d43f28b3d714b8b485a89891663",
+      "tree": "3ba4daa6b67e713027e3b1e5608c7e68bcb3b6db",
+      "parent": "1512deb176ab4f96814c57173a02d2ba4b426014"
+    },
+    {
+      "stage": 8,
+      "nativeCommit": "a73a147cc07ab15c701f83db5f88c45d230e44a9",
+      "canonicalCommit": "cfae2ae71d1bd5dc4efc30262894ba3287afca7a",
+      "tree": "760b6d131a4d40e6bfa1801469d16e43cec45f50",
+      "parent": "4da16ad453315d43f28b3d714b8b485a89891663"
+    },
+    {
+      "stage": 9,
+      "nativeCommit": "3b4065371f5277e861041f7f5f1963cf6526d7f3",
+      "canonicalCommit": "c532378a9d62e1c73038385e992ad61bd52878ae",
+      "tree": "e5ed4921869aedbfdb45e05684ef898a86b0e288",
+      "parent": "cfae2ae71d1bd5dc4efc30262894ba3287afca7a"
+    },
+    {
+      "stage": 10,
+      "nativeCommit": "6514d1cdb66972b50042c38f7d3c640c08115dca",
+      "canonicalCommit": "453abeef0af8012853ce2372caef122b3b1e0758",
+      "tree": "538b433257628a86396913a8e2decd2ef2e5c302",
+      "parent": "c532378a9d62e1c73038385e992ad61bd52878ae"
+    },
+    {
+      "stage": 11,
+      "nativeCommit": "023c44bb41485ee85eb2bae9c8204a899bff3103",
+      "canonicalCommit": "e5dd045b04831be0892a99e9d00449aeac99e975",
+      "tree": "084f51cbdde388bff7c4eff3e3d4f47bd3c52894",
+      "parent": "453abeef0af8012853ce2372caef122b3b1e0758"
+    },
+    {
+      "stage": 12,
+      "nativeCommit": "c2e16a37e477b4dfad38f4523c58e2f8f874d0e6",
+      "canonicalCommit": "bb8427afb6aa05b1fbf9a88862c6cae4ebec9fad",
+      "tree": "fbd4e03ac50bc8e0111e2c475332ca36ab130862",
+      "parent": "e5dd045b04831be0892a99e9d00449aeac99e975"
+    },
+    {
+      "stage": 13,
+      "nativeCommit": "715f7feee66c5bc49c10cbfba375902c36aa4ed8",
+      "canonicalCommit": "4c053e0eb88ffcf077773c25e303695244e87610",
+      "tree": "1f4a72d89182d1ab0480549a49dcfab9199853c6",
+      "parent": "bb8427afb6aa05b1fbf9a88862c6cae4ebec9fad"
+    },
+    {
+      "stage": 14,
+      "nativeCommit": "1986488379a5684c2afda133d4efc9121a7bd373",
+      "canonicalCommit": "af61e0111f5f2a234c0fada76671dca19abcfefc",
+      "tree": "bcf794a3d144a9bd2a8c9e8b84a836048ab1883b",
+      "parent": "4c053e0eb88ffcf077773c25e303695244e87610"
+    },
+    {
+      "stage": 15,
+      "nativeCommit": "96fc33c4ae361162d1f8f67a958fd97885351564",
+      "canonicalCommit": "046c11da79eed76c41de4f58087fb97c0e464361",
+      "tree": "e47c3564bcb553d7ed67ba58be92551400a00724",
+      "parent": "af61e0111f5f2a234c0fada76671dca19abcfefc"
+    },
+    {
+      "stage": 16,
+      "nativeCommit": "910a5373c786c3e180f5b4d743ad794d88df5cec",
+      "canonicalCommit": "e9b84f242326e5280ee2b2de937f03f78bc1e907",
+      "tree": "4d9de9f9d5eef537e5cee1c07b3d1875d30af56e",
+      "parent": "046c11da79eed76c41de4f58087fb97c0e464361"
+    }
+  ],
+  "inputs": [
+    {
+      "file": "publication/payload.json",
+      "sha256": "fe29fc5a1c7bca8a5b68ee0a86794706f6d7084f1a64f1a9d10f188b5d4770d1"
+    },
+    {
+      "file": "publication/canonical-source.json",
+      "sha256": "27ef89ef6c33b675e98f686da9320514ea007f8e4c16148b1a6a69ccd724022d"
+    }
+  ]
+}

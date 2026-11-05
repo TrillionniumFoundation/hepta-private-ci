@@ -1,0 +1,458 @@
+diff --git a/scripts/hepta-implementation-maps.py b/scripts/hepta-implementation-maps.py
+index e8ae0fd..88e0cd1 100644
+--- a/scripts/hepta-implementation-maps.py
++++ b/scripts/hepta-implementation-maps.py
+@@ -168,6 +168,24 @@ def evidence_paths(row: dict, resolved_roots: list[str]) -> list[str]:
+                             "Rust test identity does not name a source function"
+                         )
+                 paths.add(path)
++    # Explicit witnesses are part of the observation scope even when no native
++    # operation or caller refers to them. Omitting them would let a source-only
++    # rebind renew execution claims after those witnesses changed.
++    manifests = [row.get("sourceObjects", [])]
++    evidence = row.get("exactSourceEvidence")
++    if isinstance(evidence, dict) and evidence.get("kind") == "path_blob_manifest_v1":
++        manifests.append(evidence.get("entries"))
++    for entries in manifests:
++        if not isinstance(entries, list):
++            raise ValueError("invalid explicit source witness manifest")
++        for entry in entries:
++            if (
++                not isinstance(entry, dict)
++                or not isinstance(entry.get("path"), str)
++                or not entry["path"]
++            ):
++                raise ValueError("invalid explicit source witness path")
++            paths.add(entry["path"])
+     for path in paths:
+         local = checked_source_path(ROOT, path)
+         if not local.exists():
+@@ -441,6 +459,86 @@ def validate_path_blob_manifest(
+         failures.append(f"{mid}: exact source manifest omits mapped paths {missing}")
+ 
+ 
++def verify_explicit_source_pins(
++    row: dict,
++    candidate: dict[str, str],
++    *,
++    profile: str = "qualification",
++) -> None:
++    """Check original pins before rebinding any executable evidence.
++
++    A newer source observation cannot repair stale operation, caller or manifest
++    pins. Source objects may name trees as well as blobs; equality is against the
++    exact path object, not an assumed object kind.
++    """
++    if profile not in {"development", "qualification"}:
++        raise ValueError("unknown verification profile")
++    evidence = row.get("exactSourceEvidence")
++    if isinstance(evidence, dict) and evidence.get("kind") == "path_blob_manifest_v1":
++        failures: list[str] = []
++        validate_path_blob_manifest(
++            row, row.get("module", "<unknown>"), failures, profile=profile
++        )
++        if failures:
++            raise ValueError("; ".join(failures))
++    source_objects = row.get("sourceObjects")
++    if source_objects is not None:
++        if (
++            not isinstance(source_objects, list)
++            or not source_objects
++            or any(
++                not isinstance(entry, dict)
++                or set(entry) != {"path", "object"}
++                or not isinstance(entry["path"], str)
++                or not isinstance(entry["object"], str)
++                or re.fullmatch(r"[0-9a-f]{40}", entry["object"]) is None
++                for entry in source_objects
++            )
++        ):
++            raise ValueError("source objects")
++        if len({entry["path"] for entry in source_objects}) != len(source_objects):
++            raise ValueError("duplicate source object paths")
++        if profile == "qualification" and source_objects != current_source_objects(row):
++            raise ValueError("stale source objects")
++        if profile == "development" and {
++            entry["path"] for entry in source_objects
++        } != set(tracked_source_paths(row)):
++            raise ValueError("source object path coverage")
++    pins = []
++    for operation in row.get("operations", []):
++        if not isinstance(operation, dict):
++            raise ValueError("invalid operation record")
++        if (
++            row.get("mappingSourceIdentityMode") == "exact_blob"
++            or "sourceBlob" in operation
++        ):
++            pins.append(
++                ("source blob", operation.get("sourcePath"), operation.get("sourceBlob"))
++            )
++    for caller in row.get("productCallers", []):
++        if not isinstance(caller, dict):
++            raise ValueError("invalid product caller")
++        if "blobSha" in caller:
++            source = caller.get("sourcePath", caller.get("path"))
++            if "path" in caller and "sourcePath" in caller and caller["path"] != source:
++                raise ValueError("conflicting product caller sourcePath")
++            pins.append(("product caller blob", source, caller["blobSha"]))
++    for label, path, object_id in pins:
++        if (
++            not isinstance(path, str)
++            or not path
++            or not isinstance(object_id, str)
++            or re.fullmatch(r"[0-9a-f]{40}", object_id) is None
++        ):
++            raise ValueError(f"invalid exact {label}")
++        if not checked_source_path(ROOT, path).is_file():
++            raise ValueError(f"missing {label} source: {path}")
++        if profile == "qualification" and (
++            git("rev-parse", f"{candidate['commit']}:{path}") != object_id
++        ):
++            raise SourceDrift(f"{label} drift: {path}")
++
++
+ def _ephemeral_untracked_artifact(path: str) -> bool:
+     """Ignore interpreter cache bytes without ignoring hidden source files."""
+     parts = Path(path).parts
+@@ -578,6 +676,17 @@ EXECUTION_CLAIMS = frozenset(
+     {
+         "productionImplementation",
+         "productExecutionProved",
++        # Legacy and module-specific spellings retain executable evidence too.
++        # A navigation rebind must not carry them across changed source bytes.
++        "productExecutionComplete",
++        "deploymentQualificationComplete",
++        "independentAcceptanceComplete",
++        "targetHostQualified",
++        "requestLocalReadOnlyProductExecutionProved",
++        "authenticatedProductionProductExecutionProved",
++        "productionWriterActivated",
++        "independentDecisionEvidenceProved",
++        "namedHostQualificationReceiptProved",
+         "independentAcceptance",
+         "activation",
+         "release",
+@@ -648,9 +757,11 @@ def migrate_map(row: dict, module: dict, lanes: dict, source_base: dict) -> dict
+     """
+     if validate_claim_types(row):
+         # Rebinding navigation cannot transfer old executable evidence to new code.
++        candidate = current_source_base()
+         verify_source_identity(
+-            row, resolve_source_roots(ROOT, module), current_source_base()
++            row, resolve_source_roots(ROOT, module), candidate
+         )
++        verify_explicit_source_pins(row, candidate)
+     roots = [x["path"] for x in module["rootBindings"]]
+     declared = row.get("declaredRoots", row.get("sourceRoot", roots))
+     if isinstance(declared, str):
+@@ -795,10 +906,15 @@ def migrate_map(row: dict, module: dict, lanes: dict, source_base: dict) -> dict
+         migrated["sourceObjects"] = current_source_objects(migrated)
+     evidence = migrated.get("exactSourceEvidence")
+     if isinstance(evidence, dict) and evidence.get("kind") == "path_blob_manifest_v1":
+-        evidence["entries"] = [
+-            {**entry, "blobSha": git("rev-parse", f"HEAD:{entry['path']}")}
+-            for entry in evidence.get("entries", [])
+-        ]
++        # Keep the input record intact for both the no-op check and historical
++        # custody. Mutating its nested manifest could suppress the pending write.
++        migrated["exactSourceEvidence"] = {
++            **evidence,
++            "entries": [
++                {**entry, "blobSha": git("rev-parse", f"HEAD:{entry['path']}")}
++                for entry in evidence.get("entries", [])
++            ],
++        }
+     return migrated
+ 
+ 
+@@ -851,6 +967,7 @@ def migrate(selected_modules: list[str] | None = None):
+                 migrated, resolved, source_base, check_checkout=False
+             )
+         checked_paths.update(paths)
++        verify_explicit_source_pins(migrated, source_base)
+         # Preserve original formatting and anchors when nothing changed. Even a
+         # later prose commit must not trigger a global metadata refresh.
+         if migrated != row:
+@@ -1357,11 +1474,7 @@ def verify(
+                         raise ValueError(
+                             f"invalid exact source blob: {op['operation']}"
+                         )
+-                    if profile == "qualification" and (
+-                        git("rev-parse", f"{candidate['commit']}:{source}")
+-                        != source_blob
+-                    ):
+-                        raise ValueError(f"source blob drift: {op['operation']}")
++            verify_explicit_source_pins(row, candidate, profile=profile)
+             checked_paths.update(
+                 verify_source_identity(
+                     row,
+@@ -1419,44 +1532,7 @@ def verify(
+                     row.get("productCallerState") != "not_composed"
+                 ):
+                     raise ValueError("composition status disagreement")
+-            if (
+-                row.get("exactSourceEvidence", {}).get("kind")
+-                == "path_blob_manifest_v1"
+-            ):
+-                manifest_failures = []
+-                validate_path_blob_manifest(
+-                    row, mid, manifest_failures, profile=profile
+-                )
+-                if manifest_failures:
+-                    raise ValueError("; ".join(manifest_failures))
+             source_objects = row.get("sourceObjects")
+-            if source_objects is not None:
+-                if (
+-                    not isinstance(source_objects, list)
+-                    or not source_objects
+-                    or any(
+-                        not isinstance(entry, dict)
+-                        or set(entry) != {"path", "object"}
+-                        or not isinstance(entry["path"], str)
+-                        or not isinstance(entry["object"], str)
+-                        or re.fullmatch(r"[0-9a-f]{40}", entry["object"]) is None
+-                        for entry in source_objects
+-                    )
+-                ):
+-                    raise ValueError("source objects")
+-                if len({entry["path"] for entry in source_objects}) != len(
+-                    source_objects
+-                ):
+-                    raise ValueError("duplicate source object paths")
+-                if (
+-                    profile == "qualification"
+-                    and source_objects != current_source_objects(row)
+-                ):
+-                    raise ValueError("stale source objects")
+-                if profile == "development" and {
+-                    entry["path"] for entry in source_objects
+-                } != set(tracked_source_paths(row)):
+-                    raise ValueError("source object path coverage")
+             if row.get("productCallerState", "not_composed") != "not_composed":
+                 callers = row.get("productCallers")
+                 if not isinstance(callers, list) or not callers:
+diff --git a/scripts/test_hepta_implementation_maps.py b/scripts/test_hepta_implementation_maps.py
+index 21b7194..134c51f 100644
+--- a/scripts/test_hepta_implementation_maps.py
++++ b/scripts/test_hepta_implementation_maps.py
+@@ -204,6 +204,64 @@ class SourceIdentityTests(unittest.TestCase):
+             (self.root / "docs/modules/alpha/IMPLEMENTATION_MAP.json").read_bytes(),
+         )
+ 
++    def test_legacy_execution_claims_cannot_be_rebound_after_source_drift(self):
++        self.write("src/alpha/lib.rs", "pub fn calculate() { let _x = 1; }\n")
++        self.write("src/beta/lib.rs", "pub fn calculate() { let _x = 2; }\n")
++        self.commit("change both owners after historical execution claims")
++        original_rows = copy.deepcopy(self.rows)
++        legacy_claims = (
++            "productExecutionComplete",
++            "deploymentQualificationComplete",
++            "independentAcceptanceComplete",
++            "targetHostQualified",
++            "requestLocalReadOnlyProductExecutionProved",
++            "authenticatedProductionProductExecutionProved",
++            "productionWriterActivated",
++            "independentDecisionEvidenceProved",
++            "namedHostQualificationReceiptProved",
++        )
++        for location in (None, "claimBoundary", "completion"):
++            for claim in legacy_claims:
++                with self.subTest(location=location, claim=claim):
++                    self.rows = copy.deepcopy(original_rows)
++                    row = self.rows["beta"]
++                    claimed = row if location is None else row.setdefault(location, {})
++                    claimed[claim] = True
++                    self.change_maps()
++                    before = self.map_bytes()
++                    with self.assertRaises(maps.SourceDrift):
++                        self.migrate()
++                    self.assertEqual(before, self.map_bytes())
++
++    def test_navigation_rebind_preserves_historical_candidate_records(self):
++        row = self.rows["alpha"]
++        historical = {
++            "exactSourceCandidate": {
++                **self.anchor,
++                "roots": ["src/alpha"],
++                "role": "module_source_identity",
++            },
++            "productCompositionSourceCandidate": {
++                **self.anchor,
++                "paths": ["host/caller.rs"],
++                "role": "product_composition_source_identity",
++            },
++        }
++        row.update(copy.deepcopy(historical))
++        row["claimBoundary"]["productExecutionComplete"] = False
++        row["claimBoundary"]["targetHostQualified"] = False
++        self.change_maps()
++        self.write("src/alpha/lib.rs", "pub fn calculate() { let _x = 3; }\n")
++        current = self.commit("change navigated source only")
++        self.migrate(["alpha"])
++        migrated = maps.load("docs/modules/alpha/IMPLEMENTATION_MAP.json")
++        self.assertEqual({key: migrated[key] for key in historical}, historical)
++        self.assertEqual(migrated["sourceBase"], current)
++        self.assertFalse(migrated["claimBoundary"]["productExecutionComplete"])
++        self.assertFalse(migrated["claimBoundary"]["targetHostQualified"])
++        self.commit("navigation does not renew historical execution records")
++        self.verify()
++
+     def test_source_objects_keep_tests_delegates_callers_and_legacy_witnesses(self):
+         row = self.rows["alpha"]
+         row["operations"][0]["tests"] = ["tests/native.rs"]
+diff --git a/scripts/test_hepta_implementation_claim_pins.py b/scripts/test_hepta_implementation_claim_pins.py
+new file mode 100644
+index 0000000..42b2f56
+--- /dev/null
++++ b/scripts/test_hepta_implementation_claim_pins.py
+@@ -0,0 +1,150 @@
++"""Keep original executable pins bound across real-Git navigation migrations."""
++
++import copy
++import unittest
++
++import test_hepta_implementation_maps as fixtures
++
++
++maps = fixtures.maps
++
++
++class ExecutionClaimPinTests(unittest.TestCase):
++    def fixture(self):
++        fixture = fixtures.SourceIdentityTests()
++        fixture.setUp()
++        self.addCleanup(fixture.doCleanups)
++        fixture.normalize_maps()
++        return fixture
++
++    def changed_pin(self, kind, claim):
++        fixture = self.fixture()
++        row = fixture.rows["beta"]
++        row["claimBoundary"][claim] = True
++        source = row["operations"][0]["sourcePath"]
++        witness = "host/caller.rs"
++        witness_blob = fixture.git("rev-parse", f"HEAD:{witness}")
++        if kind == "source_objects":
++            row["sourceObjects"] = [{"path": witness, "object": witness_blob}]
++            row["sourceObjects"] = maps.current_source_objects(row)
++        elif kind == "exact_manifest":
++            row["exactSourceEvidence"] = {
++                "kind": "path_blob_manifest_v1",
++                "entries": [
++                    {"path": source, "blobSha": fixture.git("rev-parse", f"HEAD:{source}")},
++                    {"path": witness, "blobSha": witness_blob},
++                ],
++            }
++        else:
++            row["mappingSourceIdentityMode"] = "exact_blob"
++            row["observedAtHead"] = maps.current_source_base()
++            row["observedSourcePaths"] = ["src/beta"]
++            row["operations"][0]["sourceBlob"] = fixture.git("rev-parse", f"HEAD:{source}")
++            if kind == "caller":
++                row["productCallers"] = [
++                    {"sourcePath": witness, "nativeSymbol": "caller", "blobSha": witness_blob}
++                ]
++                row["sourceObjects"] = maps.current_source_objects(row)
++        fixture.change_maps()
++        fixture.verify()
++        changed = source if kind == "operation" else witness
++        code = "pub fn calculate() { let _x = 9; }\n" if kind == "operation" else "fn caller() { let _x = 9; }\n"
++        fixture.write(changed, code)
++        current = fixture.commit("change one original execution pin")
++        if kind in {"operation", "caller"}:
++            # A fresh observation cannot launder an explicitly old executed blob.
++            row["observedAtHead"] = current
++            if kind == "caller":
++                row["sourceObjects"] = maps.current_source_objects(row)
++            fixture.change_maps()
++        return fixture
++
++    def test_old_execution_pins_reject_before_any_rewrite(self):
++        for kind in ("source_objects", "exact_manifest", "operation", "caller"):
++            for claim in ("productExecutionProved", "productExecutionComplete"):
++                with self.subTest(kind=kind, claim=claim):
++                    fixture = self.changed_pin(kind, claim)
++                    before = fixture.map_bytes()
++                    fixture.reject()
++                    with self.assertRaises(ValueError):
++                        fixture.migrate()
++                    self.assertEqual(before, fixture.map_bytes())
++                    original = copy.deepcopy(fixture.rows["beta"])
++                    supplied = copy.deepcopy(original)
++                    with self.assertRaises(ValueError):
++                        maps.migrate_map(
++                            supplied,
++                            fixture.modules[1],
++                            {"beta": "test-lane"},
++                            supplied["sourceBase"],
++                        )
++                    self.assertEqual(original, supplied)
++                    fixture.doCleanups()
++
++    def test_unchanged_true_claim_with_all_explicit_pins_is_preserved(self):
++        fixture = self.fixture()
++        row = fixture.rows["beta"]
++        row["claimBoundary"]["productExecutionComplete"] = True
++        row["mappingSourceIdentityMode"] = "exact_blob"
++        row["observedAtHead"] = maps.current_source_base()
++        row["observedSourcePaths"] = ["src/beta"]
++        source = row["operations"][0]["sourcePath"]
++        source_blob = fixture.git("rev-parse", f"HEAD:{source}")
++        witness_blob = fixture.git("rev-parse", "HEAD:host/caller.rs")
++        row["operations"][0]["sourceBlob"] = source_blob
++        row["productCallers"] = [
++            {"sourcePath": "host/caller.rs", "nativeSymbol": "caller", "blobSha": witness_blob}
++        ]
++        row["exactSourceEvidence"] = {
++            "kind": "path_blob_manifest_v1",
++            "entries": [
++                {"path": source, "blobSha": source_blob},
++                {"path": "host/caller.rs", "blobSha": witness_blob},
++            ],
++        }
++        # The complete object manifest includes a source-root tree and file blobs.
++        row["sourceObjects"] = maps.current_source_objects(row)
++        fixture.change_maps()
++        fixture.verify()
++        before = fixture.map_bytes()
++        self.assertEqual(fixture.migrate()["migrated"], 0)
++        self.assertEqual(before, fixture.map_bytes())
++
++    def test_unqualified_navigation_can_refresh_without_removing_witnesses(self):
++        for kind in ("source_objects", "exact_manifest", "operation", "caller"):
++            with self.subTest(kind=kind):
++                fixture = self.changed_pin(kind, "productExecutionComplete")
++                row = fixture.rows["beta"]
++                row["claimBoundary"]["productExecutionComplete"] = False
++                fixture.change_maps()
++                original_paths = set(maps.evidence_paths(row, ["src/beta"]))
++                fixture.migrate()
++                fixture.commit("new navigation only; no execution claimed")
++                migrated = maps.load("docs/modules/beta/IMPLEMENTATION_MAP.json")
++                self.assertEqual(
++                    set(maps.evidence_paths(migrated, ["src/beta"])), original_paths
++                )
++                self.assertFalse(migrated["claimBoundary"]["productExecutionComplete"])
++                fixture.verify()
++                fixture.doCleanups()
++
++    def test_manifest_only_refresh_preserves_original_record_and_writes_result(self):
++        fixture = self.changed_pin("exact_manifest", "productExecutionComplete")
++        row = fixture.rows["beta"]
++        row["claimBoundary"]["productExecutionComplete"] = False
++        row["sourceBase"] = maps.current_source_base()
++        fixture.change_maps()
++        original = copy.deepcopy(row)
++        migrated = maps.migrate_map(
++            row, fixture.modules[1], {"beta": "test-lane"}, row["sourceBase"]
++        )
++        self.assertEqual(original, row)
++        self.assertNotEqual(migrated["exactSourceEvidence"], row["exactSourceEvidence"])
++        self.assertEqual(fixture.migrate(["beta"])["migrated"], 1)
++        fixture.commit("persist changed navigation manifest without changing claims")
++        self.assertEqual(maps.load("docs/modules/beta/IMPLEMENTATION_MAP.json"), migrated)
++        fixture.verify()
++
++
++if __name__ == "__main__":
++    unittest.main()

@@ -1,0 +1,26 @@
+{
+  "scope": "Independent read-only code review; no ai395 access or C1 execution performed",
+  "script": "lifecycle_review/verify_navigation_execution_equivalence.py",
+  "scriptSha256": "291895851be8c1150c64c8666f29aebba591896467e7f0c02b9286f51b79f2ad",
+  "result": "NO_BLOCKER_FOR_DECLARED_TRACKED_INPUT_EQUIVALENCE_SCOPE_FINAL_REVISION_REVIEWED",
+  "observations": [
+    "Git object raw hashes and fixed source/tree are verified; C1 requires exactly one original C58 parent.",
+    "Complete recursive tracked path/mode/type/object projection excludes only exact 40 Map paths and a fixed new ledger.",
+    "All Map non-navigation fields, historical sourceBase and claims/candidates are compared; changed Map ledger records bind complete before bytes and replacement digest.",
+    "Fixed Run2 receipt digest matches actual 5705-byte local receipt; log and XML size/digest are checked against it.",
+    "Git commands read objects/status/diff; optional locks are disabled; no source/ref/index write command appears.",
+    "Return explicitly retains C58 execution and says tests_reexecuted_on_C1=false; original strict qualifier and XML audit remain separate."
+  ],
+  "suggested_alignment": [
+    {
+      "priority": "Narrow navigation invariant",
+      "detail": "For each changed Map, require new observedAtHead exactly equals the C58 commit/tree pair; helper already enforces pure identity, while stable_map otherwise removes the entire field."
+    }
+  ],
+  "limitations": [
+    "No actual C1 tree was yet supplied at review time.",
+    "Does not qualify runtime execution, provider/host/production, or replace original qualification verifier."
+  ],
+  "reviewedPredecessorSha256": "39afd85b34198223645f8f44154191db11ac3316802eb43c4d938f0bc6e8a5fe",
+  "suggestedAlignmentResolution": "Final script adds exact C58 pure identity for every changed Map and fixes Supervisor historical observation canonical SHA256."
+}

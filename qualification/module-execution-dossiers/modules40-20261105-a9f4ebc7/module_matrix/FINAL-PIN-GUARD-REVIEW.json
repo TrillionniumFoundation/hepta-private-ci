@@ -1,0 +1,82 @@
+{
+  "status": "final_source_tests_passed_ready_for_root_integration",
+  "sourceBaseline": {
+    "commit": "f7a57e6f40e3e8220233f0d27b8cfbdf1f721c55",
+    "tree": "1f3d38ee52320bba1f345da2f2c54b23a36832ee"
+  },
+  "files": [
+    {
+      "path": "/workspace/scratch/a9f4ebc7dfa7/module_matrix/source-pin-qualification-guard.patch",
+      "sha256": "f38085188b4abc17aadb15a7e24fae31860a781be08e53ffef28a37a2a6e4f77",
+      "bytes": 21833
+    },
+    {
+      "path": "/workspace/scratch/a9f4ebc7dfa7/module_matrix/original-source-pin-guard.incremental.patch",
+      "sha256": "af0cf50cec9eec23041bf1c4583ca534af054dd7511dcb1e890b06cb74ec2b8c",
+      "bytes": 17592
+    },
+    {
+      "path": "/workspace/scratch/a9f4ebc7dfa7/module_matrix/refresh-navigation.py",
+      "sha256": "ab97182df14d727e7b38c4332ccb73fb7570ea9959a1dfe9b4e144ff578f0633",
+      "bytes": 10155
+    },
+    {
+      "path": "/workspace/scratch/a9f4ebc7dfa7/module_matrix/refresh_review/scripts/hepta-implementation-maps.py",
+      "sha256": "a72b1aca62257154488ed2da6fa2378d7a4d65e0e6366fa1be9841db4c74fce3",
+      "bytes": 70375
+    },
+    {
+      "path": "/workspace/scratch/a9f4ebc7dfa7/module_matrix/refresh_review/scripts/test_hepta_implementation_maps.py",
+      "sha256": "1929e8065dea848dfab463d1d01a3d618698b3fe0825023e8484c68d5b268678",
+      "bytes": 44468
+    },
+    {
+      "path": "/workspace/scratch/a9f4ebc7dfa7/module_matrix/refresh_review/scripts/test_hepta_implementation_claim_pins.py",
+      "sha256": "0eff9d3aff275fd222c53bc5af8af16e602a5a24a4b9848fc1c7c1a834f23037",
+      "bytes": 6950
+    }
+  ],
+  "patchApplyChecks": {
+    "combined": true,
+    "incremental": true
+  },
+  "mainVerifierSuite": {
+    "tests": 159,
+    "status": "PASS",
+    "log": "/workspace/scratch/a9f4ebc7dfa7/module_matrix/refresh_review/final-source-provenance-suite.log",
+    "receipt": "/workspace/scratch/a9f4ebc7dfa7/module_matrix/refresh_review/final-source-provenance-receipt.json",
+    "inputSha256": {
+      "hepta-implementation-maps.py": "a72b1aca62257154488ed2da6fa2378d7a4d65e0e6366fa1be9841db4c74fce3",
+      "test_hepta_implementation_maps.py": "1929e8065dea848dfab463d1d01a3d618698b3fe0825023e8484c68d5b268678",
+      "test_hepta_implementation_claim_pins.py": "0eff9d3aff275fd222c53bc5af8af16e602a5a24a4b9848fc1c7c1a834f23037"
+    },
+    "inputHashesUnchanged": true
+  },
+  "originalNegativeControls": {
+    "legacy_claim_aliases": 27,
+    "explicit_pin_drift": 8,
+    "manifest_input_mutation": 1
+  },
+  "fieldScope": [
+    "existing original verifier and behavioral tests only; no runtime module code",
+    "all original source bases and execution candidate records retained",
+    "explicit source witness paths join original observation scope",
+    "current source observation does not repair old operation/caller/manifest pins",
+    "sourceObjects retain both tree and blob support",
+    "declared true claims require original pins before any migration rewrite",
+    "helper requires original-pin verifier API and calls it before and after planning",
+    "manifest refresh leaves input record intact so pending writes are not suppressed"
+  ],
+  "helperTests": {
+    "tests": 4,
+    "status": "PASS",
+    "log": "/workspace/scratch/a9f4ebc7dfa7/module_matrix/navigation-helper-tests.log"
+  },
+  "independentReview": {
+    "verifierSha256": "a72b1aca62257154488ed2da6fa2378d7a4d65e0e6366fa1be9841db4c74fce3",
+    "helperSha256": "ab97182df14d727e7b38c4332ccb73fb7570ea9959a1dfe9b4e144ff578f0633",
+    "explicitPinNegativeCases": 8,
+    "unchangedTrueTreeAndBlobCase": "PASS",
+    "log": "/workspace/scratch/a9f4ebc7dfa7/lifecycle_review/navigation_independent/independent-extra-pins-GREEN.log"
+  }
+}

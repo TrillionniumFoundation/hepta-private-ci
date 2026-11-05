@@ -1,0 +1,91 @@
+diff --git a/scripts/hepta-implementation-maps.py b/scripts/hepta-implementation-maps.py
+index e8ae0fd..8a8d607 100644
+--- a/scripts/hepta-implementation-maps.py
++++ b/scripts/hepta-implementation-maps.py
+@@ -578,6 +578,17 @@ EXECUTION_CLAIMS = frozenset(
+     {
+         "productionImplementation",
+         "productExecutionProved",
++        # Legacy and module-specific spellings retain executable evidence too.
++        # A navigation rebind must not carry them across changed source bytes.
++        "productExecutionComplete",
++        "deploymentQualificationComplete",
++        "independentAcceptanceComplete",
++        "targetHostQualified",
++        "requestLocalReadOnlyProductExecutionProved",
++        "authenticatedProductionProductExecutionProved",
++        "productionWriterActivated",
++        "independentDecisionEvidenceProved",
++        "namedHostQualificationReceiptProved",
+         "independentAcceptance",
+         "activation",
+         "release",
+diff --git a/scripts/test_hepta_implementation_maps.py b/scripts/test_hepta_implementation_maps.py
+index 21b7194..134c51f 100644
+--- a/scripts/test_hepta_implementation_maps.py
++++ b/scripts/test_hepta_implementation_maps.py
+@@ -204,6 +204,64 @@ class SourceIdentityTests(unittest.TestCase):
+             (self.root / "docs/modules/alpha/IMPLEMENTATION_MAP.json").read_bytes(),
+         )
+ 
++    def test_legacy_execution_claims_cannot_be_rebound_after_source_drift(self):
++        self.write("src/alpha/lib.rs", "pub fn calculate() { let _x = 1; }\n")
++        self.write("src/beta/lib.rs", "pub fn calculate() { let _x = 2; }\n")
++        self.commit("change both owners after historical execution claims")
++        original_rows = copy.deepcopy(self.rows)
++        legacy_claims = (
++            "productExecutionComplete",
++            "deploymentQualificationComplete",
++            "independentAcceptanceComplete",
++            "targetHostQualified",
++            "requestLocalReadOnlyProductExecutionProved",
++            "authenticatedProductionProductExecutionProved",
++            "productionWriterActivated",
++            "independentDecisionEvidenceProved",
++            "namedHostQualificationReceiptProved",
++        )
++        for location in (None, "claimBoundary", "completion"):
++            for claim in legacy_claims:
++                with self.subTest(location=location, claim=claim):
++                    self.rows = copy.deepcopy(original_rows)
++                    row = self.rows["beta"]
++                    claimed = row if location is None else row.setdefault(location, {})
++                    claimed[claim] = True
++                    self.change_maps()
++                    before = self.map_bytes()
++                    with self.assertRaises(maps.SourceDrift):
++                        self.migrate()
++                    self.assertEqual(before, self.map_bytes())
++
++    def test_navigation_rebind_preserves_historical_candidate_records(self):
++        row = self.rows["alpha"]
++        historical = {
++            "exactSourceCandidate": {
++                **self.anchor,
++                "roots": ["src/alpha"],
++                "role": "module_source_identity",
++            },
++            "productCompositionSourceCandidate": {
++                **self.anchor,
++                "paths": ["host/caller.rs"],
++                "role": "product_composition_source_identity",
++            },
++        }
++        row.update(copy.deepcopy(historical))
++        row["claimBoundary"]["productExecutionComplete"] = False
++        row["claimBoundary"]["targetHostQualified"] = False
++        self.change_maps()
++        self.write("src/alpha/lib.rs", "pub fn calculate() { let _x = 3; }\n")
++        current = self.commit("change navigated source only")
++        self.migrate(["alpha"])
++        migrated = maps.load("docs/modules/alpha/IMPLEMENTATION_MAP.json")
++        self.assertEqual({key: migrated[key] for key in historical}, historical)
++        self.assertEqual(migrated["sourceBase"], current)
++        self.assertFalse(migrated["claimBoundary"]["productExecutionComplete"])
++        self.assertFalse(migrated["claimBoundary"]["targetHostQualified"])
++        self.commit("navigation does not renew historical execution records")
++        self.verify()
++
+     def test_source_objects_keep_tests_delegates_callers_and_legacy_witnesses(self):
+         row = self.rows["alpha"]
+         row["operations"][0]["tests"] = ["tests/native.rs"]

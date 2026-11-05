@@ -1,0 +1,55 @@
+{
+  "scope": "Independent installer execution in an isolated synthetic descendant checkout used only to test writes; canonical proof commits unmodified; no ai395/shared repo/remote changes",
+  "scriptSha256": "a77712455a447e1ba725b31e0b2344bbdd99e07c6b3cb84602149fc1a908e6da",
+  "bundleSha256": "ea70dd4a37a281207211b87d433cf4fc1d60bd43956d18b0f70fbbf45f610a31",
+  "repo": "/workspace/scratch/a9f4ebc7dfa7/module_matrix/installer-normal-review-3wy9f2yr",
+  "fixtureHead": "c81f99c87548c8c5630a3a617fad68adb7e974bc",
+  "fixtureTree": "4b825dc642cb6eb9a060e54bf8d69288fbee4904",
+  "defaultNoWrites": true,
+  "applyRefIndexHeadUnchanged": true,
+  "before": {
+    "head": "c81f99c87548c8c5630a3a617fad68adb7e974bc",
+    "refs": "002ae0295cc6f599b13e14d11e0b671f04e4f5c3b3ef25cb668dcb288f339706",
+    "index": "8a99f56bd3599f16165eb30aa3c8c626923a7d63855907a5b97b98b5c6cdea2b",
+    "shallow": "8611768421ce941f2b5c68a263c90214796411c644f1fe226c6d9a5cd3c481c3",
+    "objectFiles": 20
+  },
+  "after": {
+    "head": "c81f99c87548c8c5630a3a617fad68adb7e974bc",
+    "refs": "002ae0295cc6f599b13e14d11e0b671f04e4f5c3b3ef25cb668dcb288f339706",
+    "index": "8a99f56bd3599f16165eb30aa3c8c626923a7d63855907a5b97b98b5c6cdea2b",
+    "shallow": "5a1d0901112e9107cf5eac29e1b9ee2eb7cea9a1754823663f8d855176d38420",
+    "objectFiles": 225
+  },
+  "queries": [
+    {
+      "anchor": "de47d561266c97d8350de71ae710b650a3b61447",
+      "ancestorExit": 0,
+      "treeMatches": true
+    },
+    {
+      "anchor": "fd6d8d3fcd9aee36711381adf74b6ba7162cda1b",
+      "ancestorExit": 0,
+      "treeMatches": true
+    },
+    {
+      "anchor": "3659cee8f716511219547fd5f329dbd83faf324b",
+      "ancestorExit": 0,
+      "treeMatches": true
+    },
+    {
+      "anchor": "05b8bcdc02919ce10a8451d6402de8dd29d6e9ff",
+      "ancestorExit": 0,
+      "treeMatches": true
+    },
+    {
+      "anchor": "331b81d385a88837e252bd80fda8b8ac35ea4191",
+      "ancestorExit": 0,
+      "treeMatches": true
+    }
+  ],
+  "notes": [
+    "Target working tree is an empty test fixture descendant of actual C0, not a product candidate.",
+    "This does not yet cover shared-object symlink refusal; that separate requested guard remains pending."
+  ]
+}

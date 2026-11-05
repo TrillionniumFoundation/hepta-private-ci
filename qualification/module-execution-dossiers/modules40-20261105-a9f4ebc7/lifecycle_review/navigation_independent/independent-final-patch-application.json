@@ -1,0 +1,67 @@
+{
+  "base_commit": "f7a57e6f40e3e8220233f0d27b8cfbdf1f721c55",
+  "base_tree": "1f3d38ee52320bba1f345da2f2c54b23a36832ee",
+  "independent_application": [
+    {
+      "mode": "combined",
+      "directory": "/workspace/scratch/a9f4ebc7dfa7/lifecycle_review/navigation_independent/combined-apply-tz88_2xk",
+      "patches": [
+        {
+          "name": "source-pin-qualification-guard.patch",
+          "sha256": "f38085188b4abc17aadb15a7e24fae31860a781be08e53ffef28a37a2a6e4f77"
+        }
+      ],
+      "outputs": [
+        {
+          "path": "scripts/hepta-implementation-maps.py",
+          "sha256": "a72b1aca62257154488ed2da6fa2378d7a4d65e0e6366fa1be9841db4c74fce3",
+          "exact_final_bytes": true
+        },
+        {
+          "path": "scripts/test_hepta_implementation_maps.py",
+          "sha256": "1929e8065dea848dfab463d1d01a3d618698b3fe0825023e8484c68d5b268678",
+          "exact_final_bytes": true
+        },
+        {
+          "path": "scripts/test_hepta_implementation_claim_pins.py",
+          "sha256": "0eff9d3aff275fd222c53bc5af8af16e602a5a24a4b9848fc1c7c1a834f23037",
+          "exact_final_bytes": true
+        }
+      ]
+    },
+    {
+      "mode": "incremental",
+      "directory": "/workspace/scratch/a9f4ebc7dfa7/lifecycle_review/navigation_independent/incremental-apply-g5j21e79",
+      "patches": [
+        {
+          "name": "legacy-execution-claim-rebind.patch",
+          "sha256": "1b3d244181ea600cd6e1fc42dd04ea3f6d9d8365f8335e87485be36328a7aef4"
+        },
+        {
+          "name": "original-source-pin-guard.incremental.patch",
+          "sha256": "af0cf50cec9eec23041bf1c4583ca534af054dd7511dcb1e890b06cb74ec2b8c"
+        }
+      ],
+      "outputs": [
+        {
+          "path": "scripts/hepta-implementation-maps.py",
+          "sha256": "a72b1aca62257154488ed2da6fa2378d7a4d65e0e6366fa1be9841db4c74fce3",
+          "exact_final_bytes": true
+        },
+        {
+          "path": "scripts/test_hepta_implementation_maps.py",
+          "sha256": "1929e8065dea848dfab463d1d01a3d618698b3fe0825023e8484c68d5b268678",
+          "exact_final_bytes": true
+        },
+        {
+          "path": "scripts/test_hepta_implementation_claim_pins.py",
+          "sha256": "0eff9d3aff275fd222c53bc5af8af16e602a5a24a4b9848fc1c7c1a834f23037",
+          "exact_final_bytes": true
+        }
+      ]
+    }
+  ],
+  "combined_and_incremental_identical": true,
+  "reviewed_core_and_helper_unchanged": true,
+  "test_file_final_delta": "Only replaced imported TestCase class with module import to prevent duplicate unittest discovery; assertions and fixture behavior unchanged."
+}

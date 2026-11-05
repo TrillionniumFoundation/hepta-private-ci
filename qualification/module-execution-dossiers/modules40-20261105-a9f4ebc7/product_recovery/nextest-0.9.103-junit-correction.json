@@ -1,0 +1,89 @@
+{
+  "status": "CORRECTION_OF_PRIOR_JUNIT_INHERITANCE_ASSUMPTION",
+  "supersedes": "product_recovery/original-junit-wrapper-review.json",
+  "superseded_sha256": "a02394d2fe40a9ed1a0ba0e88c10d415b6428a1ad9c188fb242cce6ae45c533e",
+  "exact_version": "cargo-nextest-0.9.103",
+  "conclusion": "The local profile does NOT inherit default.junit.path; Run1 native JUnit reporting was disabled. No XML has been observed and no 59-case JUnit audit exists for Run1.",
+  "reason": "JunitConfig::new selects custom_data.map(|custom| &custom.path).unwrap_or(&default_data.path). Existing custom local with path=None shadows the default path. Other runner values still use their normal default fallback.",
+  "wrapper_cleanup": "The original wrapper only removes its TemporaryDirectory metadata.json; it does not relocate workspace_root or remove JUnit reports.",
+  "sources": [
+    {
+      "path": "nextest-runner/src/config/elements/junit.rs",
+      "git_blob": "abc86ad3e82f605a7365427ab79f7466c06a48c9",
+      "sha256": "fa8502ab901d2eedd1b4d7bbd8408bc23eadb72a71aad3a1f02bfca1ed2d5585",
+      "url": "https://github.com/nextest-rs/nextest/blob/cargo-nextest-0.9.103/nextest-runner/src/config/elements/junit.rs"
+    },
+    {
+      "path": "nextest-runner/src/config/core/imp.rs",
+      "git_blob": "98b92000c673b4baf061734b12d24c44279d72d8",
+      "sha256": "7c5bd619af8f09f0645231dcd8561450be58819a5ccc73bf9496809b20412f76",
+      "url": "https://github.com/nextest-rs/nextest/blob/cargo-nextest-0.9.103/nextest-runner/src/config/core/imp.rs"
+    },
+    {
+      "path": "cargo-nextest/src/dispatch.rs",
+      "git_blob": "17a38c772684d8a4c2c8b1a140b843c8695b6ee6",
+      "sha256": "167b135dab233098c13ef4e7bd5ffc7fe67c8bb45a27c10cc8fd4bfdfb0f5e95",
+      "url": "https://github.com/nextest-rs/nextest/blob/cargo-nextest-0.9.103/cargo-nextest/src/dispatch.rs"
+    },
+    {
+      "path": "nextest-runner/src/config/core/tool_config.rs",
+      "git_blob": "d0c24dc616fe3269e166e6bf0d0b5daabecedc1e",
+      "sha256": "29485b0b73d88fbc1d043ec3dc5ec0c6dbf18e26279b1742194c75e2cb68e5d5",
+      "url": "https://github.com/nextest-rs/nextest/blob/cargo-nextest-0.9.103/nextest-runner/src/config/core/tool_config.rs"
+    },
+    {
+      "path": "nextest-runner/default-config.toml",
+      "git_blob": "bb835297875869f0ec0c947a28dd07bea58dca6a",
+      "sha256": "21417d73e94c2e8b405e1505f235879dead55199a91b4454900de162b1b74f5d",
+      "url": "https://github.com/nextest-rs/nextest/blob/cargo-nextest-0.9.103/nextest-runner/default-config.toml"
+    },
+    {
+      "path": "site/src/docs/machine-readable/junit.md",
+      "git_blob": "b489d8b15060610b3a2538c38a6437aa38432b36",
+      "sha256": "e3501438cf1db5c8f6e4718ca6b596c5a9418b476f05577a9eae76c94f037c2d",
+      "url": "https://github.com/nextest-rs/nextest/blob/cargo-nextest-0.9.103/site/src/docs/machine-readable/junit.md"
+    }
+  ],
+  "actual_run_config_sha256": "351cdfe17480eae1124145e32a0de6de2889a38f01b14036187bc42e2553fdde",
+  "actual_wrapper_sha256": "45c4e35d1ff24840d9e1e05331af0b89475bfe1aec3231afc56fecb8cea66127",
+  "actual_files_equal_previously_reviewed_fixed_sources": true,
+  "run1": {
+    "source_commit": "58c81ccdd25002ae0f481d434af067a56fa7ddb8",
+    "source_tree": "57809be09ef01c02389ef37a817f1447d13d167b",
+    "run_id": "ec0d4c41-c964-433e-b3d1-f7c66a4ac083",
+    "original_runner_exit_reported_by_root": 100,
+    "stdout_log": "publication/native-evidence/four-package-original-test.log",
+    "stdout_sha256": "396f2f8b559dacf411599a1223be711157a4d7a912258c692e25c4b22f15385f",
+    "run_count": 697,
+    "passed": 696,
+    "failed": 1,
+    "slow": 1,
+    "skipped": 66,
+    "native_junit": "ABSENT; do not synthesize from stdout",
+    "junit_audit": "NOT_AVAILABLE"
+  },
+  "native_reporting_solution": {
+    "same_profile": "local",
+    "outside_repo_tool_config": "[profile.local.junit]\npath = \"/absolute/evidence/fourpkg-run2.junit.xml\"\n",
+    "extra_nextest_arguments": [
+      "--tool-config-file",
+      "hepta-evidence:/absolute/evidence/report-only.nextest.toml",
+      "--cargo-metadata",
+      "/absolute/evidence/scoped-metadata.json"
+    ],
+    "metadata_command": [
+      "cargo",
+      "metadata",
+      "--no-deps",
+      "--format-version=1",
+      "--locked"
+    ],
+    "metadata_working_directory": "same frozen source/codex-rs",
+    "selection_effect": "No package/filter/feature changes. Wrapper passthrough preserves all provided arguments; explicit metadata is produced by the exact original scoped-metadata command.",
+    "runner_condition_effect": "No changes to timeout, retry, test threads, failure policy or assertions. Report output enabled explicitly, and TMPDIR shortened as separately recorded.",
+    "config_precedence": "embedded < tool config < original repository config",
+    "absolute_path_effect": "JunitConfig uses store_dir.join(path), so an absolute output path selects the explicit native report destination.",
+    "scope": "Prepared and source-verified; actual Run2 command, config bytes and output must be preserved by root."
+  },
+  "no_native_or_ai395_commands_run_by_this_review": true
+}

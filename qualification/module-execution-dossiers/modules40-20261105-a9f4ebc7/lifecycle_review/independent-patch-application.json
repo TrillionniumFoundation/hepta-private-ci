@@ -1,0 +1,22 @@
+{
+  "baseline": "f7a57e6f40e3e8220233f0d27b8cfbdf1f721c55",
+  "workdir": "/workspace/scratch/a9f4ebc7dfa7/lifecycle_review/patch-independent-ev3itle4",
+  "patches": [
+    "facba0d32c1cd0e8163a6186d7ba91fa311f2e2e",
+    "345dd470a64783b54f45c522ac8675435d204738"
+  ],
+  "before": {
+    "codex-rs/hepta-agentd/src/deployment_desktop.rs": "7fd59781e1953b7686e59ddea3bfb59705952afb",
+    "codex-rs/hepta-agentd/src/deployment_issuer_root.rs": "a73f99071f284cc34264e39b85c5b372dfac1abf",
+    "codex-rs/hepta-agentd/src/deployment_writer.rs": "07f81c22b2694fc998660cafe2343812898a067d",
+    "codex-rs/utils/pty/src/win/mod.rs": "41eef9a7053ff2ac2f4aa23abd4fe9d5f25676bf"
+  },
+  "after": {
+    "codex-rs/hepta-agentd/src/deployment_desktop.rs": "4e6319f8d235b6cdb541b3c3edd77251bafc9a7f",
+    "codex-rs/hepta-agentd/src/deployment_issuer_root.rs": "13c813efd1d8b0b8c45b4ac093dcb0ef0dab2521",
+    "codex-rs/hepta-agentd/src/deployment_writer.rs": "6abc0d537236398477102339fa0744dc72ec43a4",
+    "codex-rs/utils/pty/src/win/mod.rs": "d244e22befecda19782f1fc2a696af1a534069b0"
+  },
+  "all_four_files_match_exact_donor_blobs": true,
+  "scope": "Independent real patch application, not Rust runtime validation"
+}

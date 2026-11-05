@@ -1,0 +1,23 @@
+{
+  "command": [
+    "python3",
+    "/home/qq/work/hepta-modules40-20261105-a9f4ebc7/refresh-navigation-explicit-pins.py",
+    "--root",
+    "/home/qq/work/hepta-modules40-20261105-a9f4ebc7/source",
+    "--expected-sha",
+    "58c81ccdd25002ae0f481d434af067a56fa7ddb8",
+    "--expected-tree",
+    "57809be09ef01c02389ef37a817f1447d13d167b",
+    "--ledger",
+    "qualification/module-execution-dossiers/SOURCE_NAVIGATION_REBIND_20261105_A9F4EBC7.json",
+    "--archive-reviewed-supervisor-observation",
+    "--apply"
+  ],
+  "start_utc": "2026-11-05T11:12:35.991748+00:00",
+  "elapsed_seconds": 2.8805810291087255,
+  "exit": 0,
+  "log_sha256": "1fb1684dd87da64e065b4a02548149350b8987a4d5636b2f39ef694cdbb1fa2b",
+  "candidate_commit": "58c81ccdd25002ae0f481d434af067a56fa7ddb8",
+  "candidate_tree": "57809be09ef01c02389ef37a817f1447d13d167b",
+  "status_after": " M docs/modules/automation.taskflow/IMPLEMENTATION_MAP.json\n M docs/modules/cognitive.read/IMPLEMENTATION_MAP.json\n M docs/modules/cognitive.store/IMPLEMENTATION_MAP.json\n M docs/modules/context.compiler/IMPLEMENTATION_MAP.json\n M docs/modules/inference.worker/IMPLEMENTATION_MAP.json\n M docs/modules/intelligence.control/IMPLEMENTATION_MAP.json\n M docs/modules/kernel.authority/IMPLEMENTATION_MAP.json\n M docs/modules/kernel.evidence/IMPLEMENTATION_MAP.json\n M docs/modules/kernel.operations/IMPLEMENTATION_MAP.json\n M docs/modules/knowledge.graph/IMPLEMENTATION_MAP.json\n M docs/modules/learning.artifacts/IMPLEMENTATION_MAP.json\n M docs/modules/learning.eval/IMPLEMENTATION_MAP.json\n M docs/modules/learning.ledger/IMPLEMENTATION_MAP.json\n M docs/modules/learning.operator/IMPLEMENTATION_MAP.json\n M docs/modules/learning.plasticity/IMPLEMENTATION_MAP.json\n M docs/modules/memory.federation/IMPLEMENTATION_MAP.json\n M docs/modules/memory.retrieval/IMPLEMENTATION_MAP.json\n M docs/modules/objective.compiler/IMPLEMENTATION_MAP.json\n M docs/modules/platform.types/IMPLEMENTATION_MAP.json\n M docs/modules/platform.wire/IMPLEMENTATION_MAP.json\n M docs/modules/runtime.agentd/IMPLEMENTATION_MAP.json\n M docs/modules/runtime.codex/IMPLEMENTATION_MAP.json\n M docs/modules/runtime.fleet/IMPLEMENTATION_MAP.json\n M docs/modules/runtime.supervisor/IMPLEMENTATION_MAP.json\n M docs/modules/secrets.heptabao/IMPLEMENTATION_MAP.json\n M docs/modules/utility.ndu/IMPLEMENTATION_MAP.json\n?? qualification/module-execution-dossiers/SOURCE_NAVIGATION_REBIND_20261105_A9F4EBC7.json\n"
+}
