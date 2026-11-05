@@ -1,0 +1,54 @@
+name: HIA R3 Windows ConPTY native regression (DENY_ALL)
+on:
+  pull_request:
+    branches:
+      - codex/4826-full-ci-repair-20261105
+      - fix/runtime-convergence-abc-20261105
+      - dot/hia-r3-winchild-clone-error-20261105
+      - dot/hia-r3-winchild-trait-ambiguity-20261105
+    paths:
+      - 'codex-rs/utils/pty/src/win/mod.rs'
+      - 'codex-rs/utils/pty/src/win/native_observation_tests.rs'
+      - '.github/workflows/hia-r3-winchild-native.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  windows-conpty-native:
+    runs-on: windows-2022
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+          persist-credentials: false
+      - name: Record exact source and host
+        shell: pwsh
+        run: |
+          git rev-parse HEAD
+          git rev-parse 'HEAD^{tree}'
+          rustc -vV
+          Get-CimInstance Win32_OperatingSystem | Select-Object Caption,Version,OSArchitecture
+      - name: Select pinned Rust 1.96.0
+        shell: pwsh
+        run: |
+          rustup toolchain install 1.96.0 --profile minimal
+          rustup run 1.96.0 rustc -vV
+      - name: Build real R3 Agentd Windows test binary (original E0277 route)
+        working-directory: codex-rs
+        shell: pwsh
+        run: |
+          cargo +1.96.0 test -p codex-hepta-agentd --lib --locked --no-run
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+      - name: Run native Windows PTY observation regressions
+        working-directory: codex-rs
+        shell: pwsh
+        run: |
+          cargo +1.96.0 test -p codex-utils-pty --lib --locked -- --nocapture
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+      - name: Require no source mutation
+        shell: pwsh
+        run: |
+          git diff --exit-code
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
