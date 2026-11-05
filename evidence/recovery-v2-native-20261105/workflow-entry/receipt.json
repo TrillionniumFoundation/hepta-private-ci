@@ -1,0 +1,294 @@
+{
+  "kind": "CI_SOURCE_AND_SELECTION_AUDIT_FIXTURES_ONLY",
+  "base_commit": "d206c3c787f6b67c771b67a8e1d46c8261810042",
+  "workflow_path": ".github/workflows/hepta-pq-policy-renewal.yml",
+  "workflow_git_blob": "c07b903bc589096f5927ee224abd10684d9a3c82",
+  "workflow_sha256": "2d4beae141331aebc8715ff8d4cb0e1513c436b60227e530b2abbaa94f4c53e9",
+  "preserved_original_workflow_configuration_and_17_controls": true,
+  "real_rust_source_names_checked": 9,
+  "selectors": {
+    "recovery-owner": {
+      "filter": "test(=recovery_effect_frontier_tests::recovery_snapshot_commits_intent_unknown_and_original_operation_receipt) | test(=recovery_effect_frontier_tests::recovery_snapshot_distinguishes_a_valid_effect_only_database_rollback) | test(=recovery_effect_frontier_tests::recovery_snapshot_commits_ack_provenance_and_cross_table_order) | test(=recovery_effect_frontier_tests::recovery_snapshot_commits_effect_history_after_the_first_page) | test(=recovery_effect_frontier_tests::recovery_snapshot_refuses_changed_json_with_retained_record_digests) | test(=provider_effect_recovery_provenance_tests::recovery_provenance_rejects_late_dispatch_after_status_without_uncertainty) | test(=provider_effect_recovery_provenance_tests::recovery_provenance_preserves_dispatch_then_authoritative_status)",
+      "names": [
+        "recovery_effect_frontier_tests::recovery_snapshot_commits_intent_unknown_and_original_operation_receipt",
+        "recovery_effect_frontier_tests::recovery_snapshot_distinguishes_a_valid_effect_only_database_rollback",
+        "recovery_effect_frontier_tests::recovery_snapshot_commits_ack_provenance_and_cross_table_order",
+        "recovery_effect_frontier_tests::recovery_snapshot_commits_effect_history_after_the_first_page",
+        "recovery_effect_frontier_tests::recovery_snapshot_refuses_changed_json_with_retained_record_digests",
+        "provider_effect_recovery_provenance_tests::recovery_provenance_rejects_late_dispatch_after_status_without_uncertainty",
+        "provider_effect_recovery_provenance_tests::recovery_provenance_preserves_dispatch_then_authoritative_status"
+      ]
+    },
+    "recovery-signed": {
+      "filter": "test(=evidence_frontier::tests::recovery_frontier_refuses_a_valid_old_v1_signature) | test(=evidence_frontier::tests::recovery_frontier_authenticates_both_effect_fields)",
+      "names": [
+        "evidence_frontier::tests::recovery_frontier_refuses_a_valid_old_v1_signature",
+        "evidence_frontier::tests::recovery_frontier_authenticates_both_effect_fields"
+      ]
+    }
+  },
+  "audit_fixture_results": [
+    {
+      "case": "all_26_named_controls",
+      "audit_exit_code": 0,
+      "expected_acceptance": true,
+      "matched": true
+    },
+    {
+      "case": "only_original_17",
+      "audit_exit_code": 1,
+      "expected_acceptance": false,
+      "matched": true
+    },
+    {
+      "case": "recovery-owner:provider_effect_recovery_provenance_tests::recovery_provenance_preserves_dispatch_then_authoritative_status:missing",
+      "audit_exit_code": 1,
+      "expected_acceptance": false,
+      "matched": true
+    },
+    {
+      "case": "recovery-owner:provider_effect_recovery_provenance_tests::recovery_provenance_preserves_dispatch_then_authoritative_status:ignored",
+      "audit_exit_code": 1,
+      "expected_acceptance": false,
+      "matched": true
+    },
+    {
+      "case": "recovery-owner:provider_effect_recovery_provenance_tests::recovery_provenance_preserves_dispatch_then_authoritative_status:duplicate",
+      "audit_exit_code": 1,
+      "expected_acceptance": false,
+      "matched": true
+    },
+    {
+      "case": "recovery-owner:provider_effect_recovery_provenance_tests::recovery_provenance_rejects_late_dispatch_after_status_without_uncertainty:missing",
+      "audit_exit_code": 1,
+      "expected_acceptance": false,
+      "matched": true
+    },
+    {
+      "case": "recovery-owner:provider_effect_recovery_provenance_tests::recovery_provenance_rejects_late_dispatch_after_status_without_uncertainty:ignored",
+      "audit_exit_code": 1,
+      "expected_acceptance": false,
+      "matched": true
+    },
+    {
+      "case": "recovery-owner:provider_effect_recovery_provenance_tests::recovery_provenance_rejects_late_dispatch_after_status_without_uncertainty:duplicate",
+      "audit_exit_code": 1,
+      "expected_acceptance": false,
+      "matched": true
+    },
+    {
+      "case": "recovery-owner:recovery_effect_frontier_tests::recovery_snapshot_commits_ack_provenance_and_cross_table_order:missing",
+      "audit_exit_code": 1,
+      "expected_acceptance": false,
+      "matched": true
+    },
+    {
+      "case": "recovery-owner:recovery_effect_frontier_tests::recovery_snapshot_commits_ack_provenance_and_cross_table_order:ignored",
+      "audit_exit_code": 1,
+      "expected_acceptance": false,
+      "matched": true
+    },
+    {
+      "case": "recovery-owner:recovery_effect_frontier_tests::recovery_snapshot_commits_ack_provenance_and_cross_table_order:duplicate",
+      "audit_exit_code": 1,
+      "expected_acceptance": false,
+      "matched": true
+    },
+    {
+      "case": "recovery-owner:recovery_effect_frontier_tests::recovery_snapshot_commits_effect_history_after_the_first_page:missing",
+      "audit_exit_code": 1,
+      "expected_acceptance": false,
+      "matched": true
+    },
+    {
+      "case": "recovery-owner:recovery_effect_frontier_tests::recovery_snapshot_commits_effect_history_after_the_first_page:ignored",
+      "audit_exit_code": 1,
+      "expected_acceptance": false,
+      "matched": true
+    },
+    {
+      "case": "recovery-owner:recovery_effect_frontier_tests::recovery_snapshot_commits_effect_history_after_the_first_page:duplicate",
+      "audit_exit_code": 1,
+      "expected_acceptance": false,
+      "matched": true
+    },
+    {
+      "case": "recovery-owner:recovery_effect_frontier_tests::recovery_snapshot_commits_intent_unknown_and_original_operation_receipt:missing",
+      "audit_exit_code": 1,
+      "expected_acceptance": false,
+      "matched": true
+    },
+    {
+      "case": "recovery-owner:recovery_effect_frontier_tests::recovery_snapshot_commits_intent_unknown_and_original_operation_receipt:ignored",
+      "audit_exit_code": 1,
+      "expected_acceptance": false,
+      "matched": true
+    },
+    {
+      "case": "recovery-owner:recovery_effect_frontier_tests::recovery_snapshot_commits_intent_unknown_and_original_operation_receipt:duplicate",
+      "audit_exit_code": 1,
+      "expected_acceptance": false,
+      "matched": true
+    },
+    {
+      "case": "recovery-owner:recovery_effect_frontier_tests::recovery_snapshot_distinguishes_a_valid_effect_only_database_rollback:missing",
+      "audit_exit_code": 1,
+      "expected_acceptance": false,
+      "matched": true
+    },
+    {
+      "case": "recovery-owner:recovery_effect_frontier_tests::recovery_snapshot_distinguishes_a_valid_effect_only_database_rollback:ignored",
+      "audit_exit_code": 1,
+      "expected_acceptance": false,
+      "matched": true
+    },
+    {
+      "case": "recovery-owner:recovery_effect_frontier_tests::recovery_snapshot_distinguishes_a_valid_effect_only_database_rollback:duplicate",
+      "audit_exit_code": 1,
+      "expected_acceptance": false,
+      "matched": true
+    },
+    {
+      "case": "recovery-owner:recovery_effect_frontier_tests::recovery_snapshot_refuses_changed_json_with_retained_record_digests:missing",
+      "audit_exit_code": 1,
+      "expected_acceptance": false,
+      "matched": true
+    },
+    {
+      "case": "recovery-owner:recovery_effect_frontier_tests::recovery_snapshot_refuses_changed_json_with_retained_record_digests:ignored",
+      "audit_exit_code": 1,
+      "expected_acceptance": false,
+      "matched": true
+    },
+    {
+      "case": "recovery-owner:recovery_effect_frontier_tests::recovery_snapshot_refuses_changed_json_with_retained_record_digests:duplicate",
+      "audit_exit_code": 1,
+      "expected_acceptance": false,
+      "matched": true
+    },
+    {
+      "case": "recovery-owner:zero",
+      "audit_exit_code": 1,
+      "expected_acceptance": false,
+      "matched": true
+    },
+    {
+      "case": "recovery-owner:digest",
+      "audit_exit_code": 1,
+      "expected_acceptance": false,
+      "matched": true
+    },
+    {
+      "case": "recovery-owner:exit",
+      "audit_exit_code": 1,
+      "expected_acceptance": false,
+      "matched": true
+    },
+    {
+      "case": "recovery-owner:status",
+      "audit_exit_code": 1,
+      "expected_acceptance": false,
+      "matched": true
+    },
+    {
+      "case": "recovery-owner:count",
+      "audit_exit_code": 1,
+      "expected_acceptance": false,
+      "matched": true
+    },
+    {
+      "case": "recovery-owner:failed_summary",
+      "audit_exit_code": 1,
+      "expected_acceptance": false,
+      "matched": true
+    },
+    {
+      "case": "recovery-owner:extra",
+      "audit_exit_code": 1,
+      "expected_acceptance": false,
+      "matched": true
+    },
+    {
+      "case": "recovery-signed:evidence_frontier::tests::recovery_frontier_authenticates_both_effect_fields:missing",
+      "audit_exit_code": 1,
+      "expected_acceptance": false,
+      "matched": true
+    },
+    {
+      "case": "recovery-signed:evidence_frontier::tests::recovery_frontier_authenticates_both_effect_fields:ignored",
+      "audit_exit_code": 1,
+      "expected_acceptance": false,
+      "matched": true
+    },
+    {
+      "case": "recovery-signed:evidence_frontier::tests::recovery_frontier_authenticates_both_effect_fields:duplicate",
+      "audit_exit_code": 1,
+      "expected_acceptance": false,
+      "matched": true
+    },
+    {
+      "case": "recovery-signed:evidence_frontier::tests::recovery_frontier_refuses_a_valid_old_v1_signature:missing",
+      "audit_exit_code": 1,
+      "expected_acceptance": false,
+      "matched": true
+    },
+    {
+      "case": "recovery-signed:evidence_frontier::tests::recovery_frontier_refuses_a_valid_old_v1_signature:ignored",
+      "audit_exit_code": 1,
+      "expected_acceptance": false,
+      "matched": true
+    },
+    {
+      "case": "recovery-signed:evidence_frontier::tests::recovery_frontier_refuses_a_valid_old_v1_signature:duplicate",
+      "audit_exit_code": 1,
+      "expected_acceptance": false,
+      "matched": true
+    },
+    {
+      "case": "recovery-signed:zero",
+      "audit_exit_code": 1,
+      "expected_acceptance": false,
+      "matched": true
+    },
+    {
+      "case": "recovery-signed:digest",
+      "audit_exit_code": 1,
+      "expected_acceptance": false,
+      "matched": true
+    },
+    {
+      "case": "recovery-signed:exit",
+      "audit_exit_code": 1,
+      "expected_acceptance": false,
+      "matched": true
+    },
+    {
+      "case": "recovery-signed:status",
+      "audit_exit_code": 1,
+      "expected_acceptance": false,
+      "matched": true
+    },
+    {
+      "case": "recovery-signed:count",
+      "audit_exit_code": 1,
+      "expected_acceptance": false,
+      "matched": true
+    },
+    {
+      "case": "recovery-signed:failed_summary",
+      "audit_exit_code": 1,
+      "expected_acceptance": false,
+      "matched": true
+    },
+    {
+      "case": "recovery-signed:extra",
+      "audit_exit_code": 1,
+      "expected_acceptance": false,
+      "matched": true
+    }
+  ],
+  "fixture_cases_passed": 43,
+  "native_tests_executed": 0,
+  "ci_triggered": false,
+  "qualification": "HOLD_NO_GO"
+}

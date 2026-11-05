@@ -1,0 +1,117 @@
+{
+  "schema_version": 1,
+  "recorded_at": "2026-11-05T04:23:59.124073+00:00",
+  "checkpoint": "corrected-red-e0463",
+  "source_commit": "d206c3c787f6b67c771b67a8e1d46c8261810042",
+  "source_tree": "00048be8564f7726716f78edbb37d79ab273167a",
+  "baseline_commit": "3a8e50ddd79ec3e52ca58157323726c37069202c",
+  "previous_checkpoint_blob": "1e4a4098c8ec59ff1f90260d453bd50eac26a177",
+  "historical_records_preserved": true,
+  "qualification": "HOLD_NO_GO",
+  "actual_result": {
+    "phase": "owner-red",
+    "script_exit": 1,
+    "just_exit": 101,
+    "named_tests_observed": 0,
+    "build_error": "E0463: cannot find crate for sqlx_macros_core while compiling sqlx-macros 0.9.0",
+    "classification": "BUILD_FAILED_NOT_ASSERTION_RED",
+    "owner_green": "NOT_RUN",
+    "signed_two": "NOT_RUN",
+    "scoped_lint": "NOT_RUN",
+    "ipc_product": "NOT_RUN: AF_UNIX EPERM remains observed"
+  },
+  "cache_diagnosis": {
+    "operation": "Read-only inspection of owned target artifacts and rlib metadata; no package cleanup performed.",
+    "observation": "rlib embedded metadata and standalone rmeta for sqlx_macros_core differ; this alone does not establish the E0463 root cause.",
+    "repair_status": "NOT_ATTEMPTED_PENDING_SERIAL_BUILD_WINDOW"
+  },
+  "cache_advice": {
+    "operation": "POSIX_FADV_DONTNEED under exclusive owned Cargo cache lock. No file bytes deleted or modified.",
+    "qualification": "Not a native test or guaranteed net memory reclamation; concurrent global file-cache measurements increased."
+  },
+  "ci_review": "Only existing workflow source was read. No workflow dispatch or configuration change performed.",
+  "files": [
+    {
+      "path": "evidence/recovery-v2-native-20261105/checkpoints/corrected-red-e0463/owner-red.log.gz",
+      "mode": "100644",
+      "git_blob": "e37301902b52e5fab6825f7e47ef2640ec7e77a6",
+      "sha256": "1d93a37941ceaa96686a9881105a7e4d887403bcf57d3ead255adc656e1dc47e",
+      "bytes": 2771,
+      "source_path": "receipts/corrected-owner/owner-red.log",
+      "uncompressed_sha256": "e9fbb23ae7274fb37f07e50f753a92a3c74cfef95cada2655b516338719ef1f5",
+      "uncompressed_bytes": 25810
+    },
+    {
+      "path": "evidence/recovery-v2-native-20261105/checkpoints/corrected-red-e0463/receipt.json",
+      "mode": "100644",
+      "git_blob": "bf52dc23aae6b5ac87d799ae0e1038de6cb59bc6",
+      "sha256": "8fe18ade23519d1e00db15f4aa07a43e2fb91466876405df6d5ac38fb0f1716c",
+      "bytes": 2524,
+      "source_path": "receipts/corrected-owner/receipt.json"
+    },
+    {
+      "path": "evidence/recovery-v2-native-20261105/checkpoints/corrected-red-e0463/create-red-worktree.log",
+      "mode": "100644",
+      "git_blob": "f053062df9570361a09404a1b3a4bd99d6ab6c5f",
+      "sha256": "420cfb79452557b76d394f3ba112ab7f071456e80843bdf755a89b08960134fb",
+      "bytes": 149,
+      "source_path": "receipts/corrected-owner/create-red-worktree.log"
+    },
+    {
+      "path": "evidence/recovery-v2-native-20261105/checkpoints/corrected-red-e0463/script-run.log.gz",
+      "mode": "100644",
+      "git_blob": "018e711379ca8efbbea65c6c6c1d571f29193a9d",
+      "sha256": "7ee8143f2e28e5dcf6517e3d47b2931d21081b295b6ffe506e53bc9349594f01",
+      "bytes": 382,
+      "source_path": "receipts/corrected-owner-run.log",
+      "uncompressed_sha256": "92ccef650ad0549aba6f264c6fcfff6d5e18a316ebfe4b0ec30107f7478ebe82",
+      "uncompressed_bytes": 865
+    },
+    {
+      "path": "evidence/recovery-v2-native-20261105/checkpoints/corrected-red-e0463/script-run.exit",
+      "mode": "100644",
+      "git_blob": "d00491fd7e5bb6fa28c517a0bb32b8b506539d4d",
+      "sha256": "4355a46b19d348dc2f57c046f8ef63d4538ebb936000f3c9ee954a27460dd865",
+      "bytes": 2,
+      "source_path": "receipts/corrected-owner-run.exit"
+    },
+    {
+      "path": "evidence/recovery-v2-native-20261105/checkpoints/corrected-red-e0463/cache-inspection.json",
+      "mode": "100644",
+      "git_blob": "d0ae83d2a00bcb3d3cd96ba1ac8c6a5de45fbbea",
+      "sha256": "c1b619aecb2e04b9dd897dd49ec1283360ba6739b30e3f4b7d137bd1b13769e1",
+      "bytes": 7583,
+      "source_path": "receipts/e0463-cache-inspection.json"
+    },
+    {
+      "path": "evidence/recovery-v2-native-20261105/checkpoints/corrected-red-e0463/metadata-readonly.json",
+      "mode": "100644",
+      "git_blob": "72b114ab586e2d67a6a5e5a99daee923e188a635",
+      "sha256": "d9d342062c54a83f475f1f19f2edee52163483d80279415148cfd1127df8b214",
+      "bytes": 537,
+      "source_path": "receipts/e0463-metadata-readonly.json"
+    },
+    {
+      "path": "evidence/recovery-v2-native-20261105/checkpoints/corrected-red-e0463/cache-advice.json",
+      "mode": "100644",
+      "git_blob": "b8b9054a205a485056c8b7a33fee8aaa3cbcb0a4",
+      "sha256": "6cdcdf30198ffdadc0a174931ef43d11d7463800f9b7b93325549412ea370948",
+      "bytes": 869,
+      "source_path": "receipts/target-cache-advice.json"
+    },
+    {
+      "path": "evidence/recovery-v2-native-20261105/checkpoints/corrected-red-e0463/state-observation.json",
+      "mode": "100644",
+      "git_blob": "36aba7f5f8800339bb743ac22258fce1992b2566",
+      "sha256": "e587b114f307be363aa470581134c33ba0bd1c1a09a28eb5bf187626797a1bbb",
+      "bytes": 2215
+    },
+    {
+      "path": "evidence/recovery-v2-native-20261105/checkpoints/corrected-red-e0463/workflow-readonly-observation.json",
+      "mode": "100644",
+      "git_blob": "4086928b9ac29f1b642dafd8aea5daf3b7fea0c7",
+      "sha256": "8e15d3905655fc22dd36ea61ab29deeaf26d0e98ec090a1597f634eb351971ef",
+      "bytes": 1665
+    }
+  ]
+}

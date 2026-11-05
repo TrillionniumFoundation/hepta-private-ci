@@ -132,6 +132,39 @@ jobs:
           just test --locked -p codex-hepta-agentd --test authbus_text_product
           --no-capture --retries 0 --test-threads=1
 
+      # The recovery frontier still uses Ed25519. These controls do not qualify
+      # a PQ recovery root or independent custody of the monotonic frontier.
+      - name: Run the seven recovery snapshot and ACK provenance controls
+        if: ${{ !cancelled() && steps.dependencies.outcome == 'success' }}
+        env:
+          CARGO_NET_OFFLINE: "true"
+        run: >-
+          python3 scripts/hepta_ci_exec.py
+          --output "$RUNNER_TEMP/pq-policy-renewal/recovery-owner.json"
+          --minimum-tests 7 --timeout-seconds 600 --
+          just test --locked -p codex-hepta-evidence --lib
+          -E 'test(=recovery_effect_frontier_tests::recovery_snapshot_commits_intent_unknown_and_original_operation_receipt)
+          | test(=recovery_effect_frontier_tests::recovery_snapshot_distinguishes_a_valid_effect_only_database_rollback)
+          | test(=recovery_effect_frontier_tests::recovery_snapshot_commits_ack_provenance_and_cross_table_order)
+          | test(=recovery_effect_frontier_tests::recovery_snapshot_commits_effect_history_after_the_first_page)
+          | test(=recovery_effect_frontier_tests::recovery_snapshot_refuses_changed_json_with_retained_record_digests)
+          | test(=provider_effect_recovery_provenance_tests::recovery_provenance_rejects_late_dispatch_after_status_without_uncertainty)
+          | test(=provider_effect_recovery_provenance_tests::recovery_provenance_preserves_dispatch_then_authoritative_status)'
+          --no-capture --retries 0 --test-threads=1
+
+      - name: Run the two signed recovery frontier controls
+        if: ${{ !cancelled() && steps.dependencies.outcome == 'success' }}
+        env:
+          CARGO_NET_OFFLINE: "true"
+        run: >-
+          python3 scripts/hepta_ci_exec.py
+          --output "$RUNNER_TEMP/pq-policy-renewal/recovery-signed.json"
+          --minimum-tests 2 --timeout-seconds 600 --
+          just test --locked -p codex-hepta-agentd --lib
+          -E 'test(=evidence_frontier::tests::recovery_frontier_refuses_a_valid_old_v1_signature)
+          | test(=evidence_frontier::tests::recovery_frontier_authenticates_both_effect_fields)'
+          --no-capture --retries 0 --test-threads=1
+
       - name: Require every selected test by name with no selected skip
         if: ${{ !cancelled() && steps.dependencies.outcome == 'success' }}
         run: |
@@ -165,6 +198,26 @@ jobs:
                   "signed_text_crosses_real_queue_once_and_current_trust_rejects_invalid_ingress",
                   "pq_signed_text_crosses_real_queue_after_rejection_without_downgrade",
                   "real_agentd_without_explicit_trust_rejects_signed_text",
+              },
+              "recovery-owner": {
+                  "recovery_effect_frontier_tests::" + name for name in (
+                      "recovery_snapshot_commits_intent_unknown_and_original_operation_receipt",
+                      "recovery_snapshot_distinguishes_a_valid_effect_only_database_rollback",
+                      "recovery_snapshot_commits_ack_provenance_and_cross_table_order",
+                      "recovery_snapshot_commits_effect_history_after_the_first_page",
+                      "recovery_snapshot_refuses_changed_json_with_retained_record_digests",
+                  )
+              } | {
+                  "provider_effect_recovery_provenance_tests::" + name for name in (
+                      "recovery_provenance_rejects_late_dispatch_after_status_without_uncertainty",
+                      "recovery_provenance_preserves_dispatch_then_authoritative_status",
+                  )
+              },
+              "recovery-signed": {
+                  "evidence_frontier::tests::" + name for name in (
+                      "recovery_frontier_refuses_a_valid_old_v1_signature",
+                      "recovery_frontier_authenticates_both_effect_fields",
+                  )
               },
           }
           observations = {}

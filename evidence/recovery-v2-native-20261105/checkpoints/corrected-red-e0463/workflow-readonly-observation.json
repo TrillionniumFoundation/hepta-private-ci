@@ -1,0 +1,33 @@
+{
+  "source_commit": "d206c3c787f6b67c771b67a8e1d46c8261810042",
+  "workflow_blobs": {
+    ".github/workflows/hepta-pq-policy-renewal.yml": "4833854841826eafe385cf242fb30e3eb6500aee",
+    ".github/workflows/hepta-final-use-pq.yml": "aea6cf474845bcabfc819b001189637b26b0273f",
+    ".github/workflows/hepta-gap-agentd-process.yml": "18a6d4e1108482653ff7560d9e64d91649e41236",
+    ".github/workflows/hepta-integration-diagnostics.yml": "aeaa8491af4dd677c43e0765d89fdc17a81895b3"
+  },
+  "triggered_or_modified": false,
+  "observations": [
+    {
+      "path": ".github/workflows/hepta-pq-policy-renewal.yml",
+      "dispatch": true,
+      "coverage": "Pinned checkout plus existing PQ 14 dispatcher and 3 authbus product controls; current selected tests do not include owner7 or signed2."
+    },
+    {
+      "path": ".github/workflows/hepta-final-use-pq.yml",
+      "dispatch": false,
+      "coverage": "Pull request branch guard excludes this runtime branch; no dedicated recovery selectors."
+    },
+    {
+      "path": ".github/workflows/hepta-gap-agentd-process.yml",
+      "dispatch": true,
+      "coverage": "Full Agentd lib can include signed2 on selected revision; no hepta-evidence owner7 or kernel_evidence_product selection in this workflow. Heavy unrelated native graph."
+    },
+    {
+      "path": ".github/workflows/hepta-integration-diagnostics.yml",
+      "dispatch": true,
+      "coverage": "Contract/automation source preflight; not the recovery owner7/signed2 controls."
+    }
+  ],
+  "conclusion": "No existing small combined owner7 RED/GREEN plus signed2 entry was found among these four workflows. This is a source review, not execution evidence."
+}
