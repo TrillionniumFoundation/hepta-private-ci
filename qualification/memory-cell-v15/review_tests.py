@@ -7,6 +7,7 @@ from tempfile import TemporaryDirectory
 from cryptography.hazmat.primitives.asymmetric.ed25519 import Ed25519PrivateKey
 
 from admission import COSTS, Case, MatchedEvaluator, Protocol, Run, digest as protocol_digest
+from admission_test_support import fixture_registration
 from authority import (Authority, COMPONENTS, GateDecision, Rejected, StructureDecision,
                        bundle, canonical, digest, public, sign)
 
@@ -20,7 +21,7 @@ def experiment(size=256):
 
 
 def model(bundle, predictor):
-    return Run(bundle, "memory-cut", "train-cut", "executor-v1", "budget-v1", predictor)
+    return Run(bundle, "memory-cut", "train-cut", "executor-v1", "budget-v1", predictor, "encoder-v1", "decoder-v1", "tools-v1")
 
 
 def costs(bundle, horizon):
@@ -39,7 +40,8 @@ def assess(evaluator, candidate, incumbent, horizon):
 class IndependentAdmissionReview(unittest.TestCase):
     def test_frozen_dataset_survives_callers_nested_mutation(self):
         cases, protocol = experiment()
-        evaluator = MatchedEvaluator(cases, lambda: (lambda choice, payload: [choice]), protocol)
+        evaluator = MatchedEvaluator(cases, lambda: (lambda choice, payload: [choice]), protocol, registration=fixture_registration(cases, protocol,
+                    model("new", None), model("old", None)))
         for case in cases:
             case.expected[0] = 2
             case.payload["after_freeze"] = "changed"
@@ -60,7 +62,8 @@ class IndependentAdmissionReview(unittest.TestCase):
                 self.remaining -= 1
                 return [1 if self.remaining >= 0 else 0]
 
-        evaluator = MatchedEvaluator(cases, FiniteExecutor, protocol)
+        evaluator = MatchedEvaluator(cases, FiniteExecutor, protocol, registration=fixture_registration(cases, protocol,
+                    model("new", None), model("old", None)))
         predictor = lambda query: 7
         result = assess(evaluator, model("new", predictor), model("old", predictor), len(cases))
         self.assertFalse(result["approved"],
@@ -71,7 +74,8 @@ class IndependentAdmissionReview(unittest.TestCase):
     def test_factory_reusing_one_executor_is_rejected(self):
         cases, protocol = experiment()
         executor = lambda choice, payload: [choice]
-        evaluator = MatchedEvaluator(cases, lambda: executor, protocol)
+        evaluator = MatchedEvaluator(cases, lambda: executor, protocol, registration=fixture_registration(cases, protocol,
+                    model("new", None), model("old", None)))
         with self.assertRaises(ValueError):
             assess(evaluator, model("new", lambda query: 1), model("old", lambda query: 0), len(cases))
 
