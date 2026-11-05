@@ -1,3 +1,5 @@
+experimental = ["wrapper-scripts"]
+
 [profile.default]
 # Retry once so one transient failure does not fail full-CI outright.
 # Fanout keeps the full-CI shards moving without treating every >30s test as
@@ -19,6 +21,25 @@ inherits = "local"
 slow-timeout = { period = "60s", terminate-after = 180 }
 retries = 0
 test-threads = 1
+
+# The real-model positive fixtures execute the production ambient-loader gate.
+# Nextest adds LD_LIBRARY_PATH itself; the workflows first reject original
+# loader overrides, then this wrapper execs the unchanged test binary/argv.
+# Keep the original profile deadlines, retries, concurrency and test selection.
+[scripts.wrapper.hepta-native-loader]
+command = ["/usr/bin/env", "-u", "LD_LIBRARY_PATH", "-u", "NEXTEST_LD_LIBRARY_PATH"]
+
+[[profile.hepta-public-initial-v2.scripts]]
+platform = 'cfg(target_os = "linux")'
+filter = '''
+package(=codex-hepta-infer-worker-host) & (
+    test(/::real_public_initial_reopens_same_ordinary_owners$/)
+    | test(/::real_selected_initial_serves_ordinary_context_then_refuses_revocation$/)
+    | test(/::real_public_initial_three_rounds_hold_and_read_original_current$/)
+    | test(/::real_trained_child_prospective_qualification_cell_install_next_ordinary_read$/)
+)
+'''
+run-wrapper = "hepta-native-loader"
 
 [test-groups.app_server_protocol_codegen]
 max-threads = 1

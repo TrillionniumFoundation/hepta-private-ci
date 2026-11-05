@@ -326,6 +326,15 @@ jobs:
         run: |
           set -euo pipefail
           unset PYTHONPATH PYTHONHOME PYTHONUSERBASE
+          python3 -I -B - <<'PY_LOADER'
+          import json, os
+          blocked = sorted(name for name in os.environ
+              if name.startswith(("LD_", "DYLD_")) or name == "GLIBC_TUNABLES")
+          print(json.dumps(dict(schema="hepta-native-loader-preflight-v1",
+              original_ambient_loader_variables=blocked), sort_keys=True))
+          if blocked:
+              raise SystemExit("original ambient loader overrides are not permitted")
+          PY_LOADER
           "$RUNNER_TEMP/hepta-public-env/bin/python" -I -B scripts/hepta_smollm_runtime_snapshot.py verify --snapshot "$HEPTA_PUBLIC_INITIAL_RUNTIME_SNAPSHOT"
           python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-public-initial-v2/ordinary-native.json" --timeout-seconds 900 --minimum-tests 2 -- just test --locked -p codex-hepta-infer-worker-host --lib --profile hepta-public-initial-v2 -E 'test(real_selected_initial_serves_ordinary_context_then_refuses_revocation) | test(real_public_initial_reopens_same_ordinary_owners)' --run-ignored only --no-capture
           "$RUNNER_TEMP/hepta-public-env/bin/python" -I -B scripts/hepta_smollm_runtime_snapshot.py verify --snapshot "$HEPTA_PUBLIC_INITIAL_RUNTIME_SNAPSHOT"
@@ -335,6 +344,15 @@ jobs:
         run: |
           set -euo pipefail
           unset PYTHONPATH PYTHONHOME PYTHONUSERBASE
+          python3 -I -B - <<'PY_LOADER'
+          import json, os
+          blocked = sorted(name for name in os.environ
+              if name.startswith(("LD_", "DYLD_")) or name == "GLIBC_TUNABLES")
+          print(json.dumps(dict(schema="hepta-native-loader-preflight-v1",
+              original_ambient_loader_variables=blocked), sort_keys=True))
+          if blocked:
+              raise SystemExit("original ambient loader overrides are not permitted")
+          PY_LOADER
           python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-public-initial-v2/three-rounds-native.json" --timeout-seconds 11100 --minimum-tests 1 -- just test --locked -p codex-hepta-infer-worker-host --lib --profile hepta-public-initial-v2 -E 'test(real_public_initial_three_rounds_hold_and_read_original_current)' --run-ignored only --no-capture
           "$RUNNER_TEMP/hepta-public-env/bin/python" -I -B scripts/hepta_smollm_runtime_snapshot.py verify --snapshot "$HEPTA_PUBLIC_INITIAL_RUNTIME_SNAPSHOT"
       - name: Execute six-arm candidate descendants and retain typed install blockers

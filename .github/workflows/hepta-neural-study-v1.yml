@@ -307,7 +307,9 @@ jobs:
           from pathlib import Path
           root = Path(os.environ["RUNNER_TEMP"])
           parent = root / "hepta-public-initial-v2/genesis/parent-material.json"
-          config = dict(schema="hepta-smollm-neural-native-check-v1",
+          config = dict(schema="hepta-smollm-neural-native-check-v2",
+              runtime_snapshot=os.environ["HEPTA_PUBLIC_INITIAL_RUNTIME_SNAPSHOT"],
+              runtime_snapshot_sha256=hashlib.sha256(Path(os.environ["HEPTA_PUBLIC_INITIAL_RUNTIME_SNAPSHOT"]).read_bytes()).hexdigest(),
               python=str(root / "hepta-public-env/bin/python"), chain=str(Path(os.environ["GITHUB_WORKSPACE"]) / "chain"),
               materials=str(root / "hepta-public-model"), parent=str(parent),
               parent_sha256=hashlib.sha256(parent.read_bytes()).hexdigest(),
@@ -326,6 +328,15 @@ jobs:
         run: |
           set -euo pipefail
           unset PYTHONPATH PYTHONHOME PYTHONUSERBASE
+          python3 -I -B - <<'PY_LOADER'
+          import json, os
+          blocked = sorted(name for name in os.environ
+              if name.startswith(("LD_", "DYLD_")) or name == "GLIBC_TUNABLES")
+          print(json.dumps(dict(schema="hepta-native-loader-preflight-v1",
+              original_ambient_loader_variables=blocked), sort_keys=True))
+          if blocked:
+              raise SystemExit("original ambient loader overrides are not permitted")
+          PY_LOADER
           "$RUNNER_TEMP/hepta-public-env/bin/python" -I -B scripts/hepta_smollm_runtime_snapshot.py verify --snapshot "$HEPTA_PUBLIC_INITIAL_RUNTIME_SNAPSHOT"
           python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-public-initial-v2/ordinary-native.json" --timeout-seconds 900 --minimum-tests 2 -- just test --locked -p codex-hepta-infer-worker-host --lib --profile hepta-public-initial-v2 -E 'test(real_selected_initial_serves_ordinary_context_then_refuses_revocation) | test(real_public_initial_reopens_same_ordinary_owners)' --run-ignored only --no-capture
           "$RUNNER_TEMP/hepta-public-env/bin/python" -I -B scripts/hepta_smollm_runtime_snapshot.py verify --snapshot "$HEPTA_PUBLIC_INITIAL_RUNTIME_SNAPSHOT"
@@ -360,6 +371,15 @@ jobs:
         run: |
           set -euo pipefail
           unset PYTHONPATH PYTHONHOME PYTHONUSERBASE
+          python3 -I -B - <<'PY_LOADER'
+          import json, os
+          blocked = sorted(name for name in os.environ
+              if name.startswith(("LD_", "DYLD_")) or name == "GLIBC_TUNABLES")
+          print(json.dumps(dict(schema="hepta-native-loader-preflight-v1",
+              original_ambient_loader_variables=blocked), sort_keys=True))
+          if blocked:
+              raise SystemExit("original ambient loader overrides are not permitted")
+          PY_LOADER
           "$RUNNER_TEMP/hepta-public-env/bin/python" -I -B scripts/hepta_smollm_runtime_snapshot.py verify --snapshot "$HEPTA_PUBLIC_INITIAL_RUNTIME_SNAPSHOT"
           python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-public-initial-v2/positive-native.json" --timeout-seconds 2700 --minimum-tests 1 -- just test --locked -p codex-hepta-infer-worker-host --lib --profile hepta-public-initial-v2 -E 'test(real_trained_child_prospective_qualification_cell_install_next_ordinary_read)' --run-ignored only --no-capture
           "$RUNNER_TEMP/hepta-public-env/bin/python" -I -B scripts/hepta_smollm_runtime_snapshot.py verify --snapshot "$HEPTA_PUBLIC_INITIAL_RUNTIME_SNAPSHOT"
