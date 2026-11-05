@@ -204,3 +204,7 @@ impl ParentLiveness {
         Ok(())
     }
 }
+
+#[cfg(test)]
+#[path = "parent_lifecycle_tests.rs"]
+mod tests;
