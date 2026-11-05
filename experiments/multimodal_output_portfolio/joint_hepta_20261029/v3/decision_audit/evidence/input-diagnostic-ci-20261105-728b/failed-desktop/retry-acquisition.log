@@ -1,0 +1,33 @@
+{"downloaded": "vlm/README.md", "bytes": 10856}
+{"downloaded": "vlm/added_tokens.json", "bytes": 4739}
+{"downloaded": "vlm/chat_template.json", "bytes": 430}
+{"downloaded": "vlm/config.json", "bytes": 3812}
+{"downloaded": "vlm/generation_config.json", "bytes": 136}
+{"downloaded": "vlm/merges.txt", "bytes": 466391}
+Traceback (most recent call last):
+  File "<frozen runpy>", line 198, in _run_module_as_main
+  File "<frozen runpy>", line 88, in _run_code
+  File "/home/qian-qi/work/hepta-sixline-ndu-728b0437-20261105/source/experiments/multimodal_output_portfolio/joint_hepta_20261029/v3/decision_audit/acquire_models.py", line 147, in <module>
+    print(json.dumps(acquire(args.root, preflight_only=args.preflight_only)), flush=True)
+                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/qian-qi/work/hepta-sixline-ndu-728b0437-20261105/source/experiments/multimodal_output_portfolio/joint_hepta_20261029/v3/decision_audit/acquire_models.py", line 115, in acquire
+    record = download(f"https://huggingface.co/{model}/resolve/{revision}/{name}", root / key / name, size, expected)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/qian-qi/work/hepta-sixline-ndu-728b0437-20261105/source/experiments/multimodal_output_portfolio/joint_hepta_20261029/v3/decision_audit/acquire_models.py", line 70, in download
+    for block in iter(lambda: response.read(1024 * 1024), b""):
+  File "/home/qian-qi/work/hepta-sixline-ndu-728b0437-20261105/source/experiments/multimodal_output_portfolio/joint_hepta_20261029/v3/decision_audit/acquire_models.py", line 70, in <lambda>
+    for block in iter(lambda: response.read(1024 * 1024), b""):
+                              ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/http/client.py", line 484, in read
+    s = self.fp.read(amt)
+        ^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/socket.py", line 707, in readinto
+    return self._sock.recv_into(b)
+           ^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/ssl.py", line 1252, in recv_into
+    return self.read(nbytes, buffer)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/ssl.py", line 1104, in read
+    return self._sslobj.read(len, buffer)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+TimeoutError: The read operation timed out

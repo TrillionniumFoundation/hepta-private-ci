@@ -1,0 +1,134 @@
+{
+  "actual_generate_calls": 6,
+  "archive": {
+    "bytes": 396825,
+    "members": 27,
+    "sha256": "d84b6451b4b70e2dcc25b01c72ed5553357c0a9081c96d2f8ebd5248a0cca7aa"
+  },
+  "artifact_id": 13393254163,
+  "cases": [
+    {
+      "cpu_seconds": 5.629145853,
+      "image": "original",
+      "input_tokens": 91,
+      "instruction": "caption",
+      "output": "a bee on a pink flower",
+      "output_tokens": 7,
+      "stop_reason": "eos",
+      "wall_seconds": 4.387101795000007
+    },
+    {
+      "cpu_seconds": 3.2693595119999994,
+      "image": "generated",
+      "input_tokens": 91,
+      "instruction": "caption",
+      "output": "A computer screen displays a 3D model of a flower.",
+      "output_tokens": 14,
+      "stop_reason": "eos",
+      "wall_seconds": 2.066059413000005
+    },
+    {
+      "cpu_seconds": 3.1860323210000008,
+      "image": "blank",
+      "input_tokens": 91,
+      "instruction": "caption",
+      "output": "The text is a simple, straightforward description of the content.",
+      "output_tokens": 13,
+      "stop_reason": "eos",
+      "wall_seconds": 2.013019267000004
+    },
+    {
+      "cpu_seconds": 3.1056352879999984,
+      "image": "blank",
+      "input_tokens": 91,
+      "instruction": "object",
+      "output": "A bird flying in the sky",
+      "output_tokens": 7,
+      "stop_reason": "eos",
+      "wall_seconds": 1.9852330470000084
+    },
+    {
+      "cpu_seconds": 2.830467616,
+      "image": "generated",
+      "input_tokens": 91,
+      "instruction": "object",
+      "output": "cat",
+      "output_tokens": 2,
+      "stop_reason": "eos",
+      "wall_seconds": 1.85847616800001
+    },
+    {
+      "cpu_seconds": 2.9093623599999994,
+      "image": "original",
+      "input_tokens": 91,
+      "instruction": "object",
+      "output": "bee on pink flower",
+      "output_tokens": 5,
+      "stop_reason": "eos",
+      "wall_seconds": 1.8797153119999734
+    }
+  ],
+  "comparisons": {
+    "by_image": {
+      "blank": 2,
+      "generated": 2,
+      "original": 2
+    },
+    "by_instruction": {
+      "caption": 3,
+      "object": 3
+    },
+    "distinct_outputs": 6,
+    "distinct_pixel_inputs": 3,
+    "distinct_token_inputs": 2,
+    "distinct_vision_outputs": 3
+  },
+  "costs": {
+    "cpu_seconds": {
+      "case_sum": 20.93000295,
+      "inclusive": 22.041747192
+    },
+    "wall_seconds": {
+      "case_sum": 14.189605002000008,
+      "inclusive": 15.303040409000005
+    }
+  },
+  "eos_stops": 6,
+  "model_manifest_sha256": "432a086810f32ba90ef34dc210fcb2f0f56fe8b27595266725d1846b5dad0e6c",
+  "model_revision": "067788b187b95ebe7b2e040b3e4299e342e5b8fd",
+  "model_weight_sha256": "dcc8f4c00d30d70bb3028a1bfc373e1b1972e25919f8788183cae4ae72431ce2",
+  "new_diffusion_execution": false,
+  "new_training": false,
+  "old_constant_output_root_cause_resolved": false,
+  "peak_rss_bytes": 2201509888,
+  "production_qualified": false,
+  "raw_input_hashes": {
+    "blank": "6c04fff04b3c72be7df55bad041c9173f29c056532af3075734d3a9bb2052cee",
+    "generated": "12fb2f9528cea05c213940d4579faa9fa657fcb4b19e38aec9661acf8483e0a9",
+    "original": "672f4e47b0e541cf66214e2dc41ec9c91315449b3df3dd0788523cb2a25bff71"
+  },
+  "run_id": 41973374316,
+  "runtime_sources": {
+    "acquire_models.py": "ec9d7dbc943ab029e51174fbf6065be4bd29ac23fb912d1aa3f14c065ad0e1cf",
+    "diagnostics.py": "e9ed1bd8205f9be8518b2ba6e0792e015ab28bfa0649e707bc19b124f1810db1",
+    "local_models.py": "70a119d2ac4297c31fe86b5c299b30b1f43bb128e3a72f06087a32162f3965e1"
+  },
+  "same_image_same_pixel_and_vision_hashes": true,
+  "same_instruction_same_template_and_token_hashes": true,
+  "schema": "hepta.ndu.input-diagnostic-byte-review.v1",
+  "semantic_acceptance": false,
+  "source_sha": "975e1a264c14ed3da02dcee23a64327825387e42",
+  "tensor_scope": "pixel and vision hashes are runtime traces; raw tensor arrays are not archived or recomputed here",
+  "token_limit_stops": 0,
+  "verification_passed": true,
+  "versions": {
+    "accelerate": "1.12.0",
+    "diffusers": "0.35.2",
+    "num2words": "0.5.14",
+    "safetensors": "0.7.0",
+    "torch": "2.8.0+cpu",
+    "torchvision": "0.23.0+cpu",
+    "transformers": "4.57.3"
+  },
+  "weights_scope": "manifest and source verification are checked; this review does not reload neural weights"
+}

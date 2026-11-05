@@ -1,0 +1,48 @@
+{
+  "attempts": [
+    {
+      "diagnostic_executed": false,
+      "job_id": "1a1aa5e93d4-fc05-41dd",
+      "semantic_output": false,
+      "status": "failed_during_dependency_install",
+      "total_wall_seconds": 176.91096329689026
+    },
+    {
+      "acquisition_exit_code": 1,
+      "acquisition_wall_seconds": 536.6132965789875,
+      "dependencies_exit_code": 0,
+      "dependencies_wall_seconds": 384.9716852660058,
+      "diagnostic_executed": false,
+      "job_id": "1a1aa62d3f7-fc05-4230",
+      "semantic_output": false,
+      "status": "failed_during_model_acquisition",
+      "total_wall_seconds": 922.2035848970991
+    }
+  ],
+  "cleanup_performed": false,
+  "cpu_cost": "not captured in these receipts",
+  "first_dependency_failure_detail": "original full dependency log remains on operator host; this package retains RUN receipt",
+  "host": "desktop",
+  "retained_receipts": [
+    {
+      "bytes": 1026,
+      "remote_path": "/home/qian-qi/work/hepta-sixline-ndu-728b0437-20261105/evidence/RUN.json",
+      "retained_file": "first-RUN.json",
+      "sha256": "1237e1d64f814cdb1269c32ac80dfe307029508b5d1fbea7e722deef77abf255"
+    },
+    {
+      "bytes": 1649,
+      "remote_path": "/home/qian-qi/work/hepta-sixline-ndu-728b0437-20261105/evidence-retry2/RUN.json",
+      "retained_file": "retry-RUN.json",
+      "sha256": "6ef2ff4ef629f5fef46dc57784bdb6d97ac65d198cb628423c98548a99982770"
+    },
+    {
+      "bytes": 2369,
+      "remote_path": "/home/qian-qi/work/hepta-sixline-ndu-728b0437-20261105/evidence-retry2/acquisition.log",
+      "retained_file": "retry-acquisition.log",
+      "sha256": "3ad573b4638443a8a42ce161726a3c3f8a71c9cb6d1542db612d27341fa70efd"
+    }
+  ],
+  "schema": "hepta.ndu.desktop-attempts.v1",
+  "success_run_is_separate": 41973374316
+}

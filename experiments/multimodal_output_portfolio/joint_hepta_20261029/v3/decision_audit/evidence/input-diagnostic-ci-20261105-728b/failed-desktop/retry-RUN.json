@@ -1,0 +1,61 @@
+{
+  "status": "failed",
+  "error": "acquisition failed",
+  "error_type": "RuntimeError",
+  "steps": [
+    {
+      "name": "dependencies",
+      "argv": [
+        "/home/qian-qi/work/hepta-sixline-ndu-728b0437-20261105/venv/bin/python",
+        "-m",
+        "pip",
+        "install",
+        "--timeout",
+        "90",
+        "--retries",
+        "2",
+        "--disable-pip-version-check",
+        "--extra-index-url",
+        "https://download.pytorch.org/whl/cpu",
+        "torch==2.8.0+cpu",
+        "torchvision==0.23.0+cpu",
+        "numpy==2.3.5",
+        "Pillow==13.0.0",
+        "transformers==4.57.3",
+        "diffusers==0.35.2",
+        "accelerate==1.12.0",
+        "safetensors==0.7.0",
+        "num2words==0.5.14"
+      ],
+      "exit_code": 0,
+      "wall_seconds": 384.9716852660058
+    },
+    {
+      "name": "environment",
+      "argv": [
+        "/home/qian-qi/work/hepta-sixline-ndu-728b0437-20261105/venv/bin/python",
+        "-m",
+        "pip",
+        "freeze"
+      ],
+      "exit_code": 0,
+      "wall_seconds": 0.6166406070115045
+    },
+    {
+      "name": "acquisition",
+      "argv": [
+        "/home/qian-qi/work/hepta-sixline-ndu-728b0437-20261105/venv/bin/python",
+        "-B",
+        "-m",
+        "experiments.multimodal_output_portfolio.joint_hepta_20261029.v3.decision_audit.acquire_models",
+        "--root",
+        "/home/qian-qi/work/hepta-sixline-ndu-728b0437-20261105/models"
+      ],
+      "exit_code": 1,
+      "wall_seconds": 536.6132965789875
+    }
+  ],
+  "total_wall_seconds": 922.2035848970991,
+  "source_sha": "975e1a264c14ed3da02dcee23a64327825387e42",
+  "semantic_acceptance": "not_inferred"
+}
