@@ -23,6 +23,7 @@ use crate::MetricContractV1;
 use crate::OpeAction;
 use crate::OpePlan;
 use crate::TemporalFoldPlan;
+use crate::revalidate_product_qualification_v1;
 
 fn id(value: &str) -> StableId {
     match StableId::new(value) {
@@ -363,6 +364,18 @@ fn signed_context(
     SignedEvaluationEvidenceV1,
     LearningEvidenceVerifierV1,
 ) {
+    signed_context_with_generator_controller(bundle, roles, "generator-controller")
+}
+
+fn signed_context_with_generator_controller(
+    bundle: &IndependentEvaluationBundleV1,
+    roles: &[MetricRoleContractV2],
+    generator_controller_id: &str,
+) -> (
+    ProductQualificationContextV1,
+    SignedEvaluationEvidenceV1,
+    LearningEvidenceVerifierV1,
+) {
     let generator_key = SigningKey::from_bytes(&[41; 32]);
     let evaluator_key = SigningKey::from_bytes(&[42; 32]);
     let scope = digest("product-eval-scope");
@@ -384,7 +397,7 @@ fn signed_context(
         signers: vec![
             TrustedLearningSignerV1 {
                 principal: generator.clone(),
-                controller_id: id("generator-controller"),
+                controller_id: id(generator_controller_id),
                 verifying_key: generator_key.verifying_key().to_bytes().into(),
                 roles: vec![LearningEvidenceRoleV1::Generator],
                 revoked_at: None,
@@ -546,6 +559,229 @@ fn product_runner_binds_estimator_receipts_and_persists_signed_decision() {
     assert_eq!(sink.persisted, vec![qualified.publication_digest]);
     assert!(!qualified.authority.grants_any());
 
+    let revalidate = |receipt: &ProductQualificationReceiptV1,
+                      bundle: &IndependentEvaluationBundleV1,
+                      roles: &[MetricRoleContractV2],
+                      evidence: &SignedEvaluationEvidenceV1,
+                      now: u64| {
+        revalidate_product_qualification_v1(
+            receipt,
+            bundle.clone(),
+            roles.to_vec(),
+            evidence,
+            ProductTimingEvidenceV1::Qualification,
+            &verifier,
+            now,
+        )
+    };
+    assert_eq!(
+        revalidate(
+            &qualified,
+            &bundle,
+            &fixture.roles,
+            &evidence,
+            /*now*/ 50
+        )
+        .unwrap(),
+        qualified.decision
+    );
+
+    // A legitimate current trust change can preserve every principal and the
+    // complete inner decision. Its newly signed evidence still cannot replace
+    // the trust/authentication identity of this already published receipt.
+    let (_, current_evidence, current_verifier) = signed_context_with_generator_controller(
+        &bundle,
+        &fixture.roles,
+        "rotated-generator-controller",
+    );
+    let current_decision = crate::decide_with_signed_evidence_v2(
+        bundle.clone(),
+        fixture.roles.clone(),
+        &current_evidence,
+        &current_verifier,
+        /*now*/ 50,
+    )
+    .unwrap();
+    assert_eq!(current_decision.decision, qualified.decision.decision);
+    assert_ne!(
+        current_decision.trust_digest,
+        qualified.decision.trust_digest
+    );
+    assert_ne!(
+        current_decision.authentication_digest,
+        qualified.decision.authentication_digest
+    );
+    assert!(
+        matches!(
+            revalidate_product_qualification_v1(
+                &qualified,
+                bundle.clone(),
+                fixture.roles.clone(),
+                &current_evidence,
+                ProductTimingEvidenceV1::Qualification,
+                &current_verifier,
+                /*now*/ 50,
+            ),
+            Err(ProductEvaluationError::Binding(
+                "qualification use evidence"
+            ))
+        ),
+        "reissued current trust must not rebind a published qualification"
+    );
+    assert_eq!(
+        revalidate(
+            &qualified,
+            &bundle,
+            &fixture.roles,
+            &evidence,
+            /*now*/ 50
+        )
+        .unwrap(),
+        qualified.decision
+    );
+    assert_eq!(sink.persisted, vec![qualified.publication_digest]);
+    assert_eq!(fixture.provider.release_count, 1);
+
+    // A second, valid evaluator signature with the same disposition is still
+    // not the estimator evidence that this terminal publication qualified.
+    let mut changed_bundle = bundle.clone();
+    changed_bundle.metrics[0].candidate.upper =
+        FixedQ32::from_raw(changed_bundle.metrics[0].candidate.upper.raw() + 1);
+    let (_, changed_evidence, _) = signed_context(&changed_bundle, &fixture.roles);
+    let independently_signed = crate::decide_with_signed_evidence_v2(
+        changed_bundle.clone(),
+        fixture.roles.clone(),
+        &changed_evidence,
+        &verifier,
+        /*now*/ 50,
+    )
+    .unwrap();
+    assert_eq!(
+        independently_signed.decision.disposition,
+        qualified.decision.decision.disposition
+    );
+    assert!(matches!(
+        revalidate(
+            &qualified,
+            &changed_bundle,
+            &fixture.roles,
+            &changed_evidence,
+            /*now*/ 50
+        ),
+        Err(ProductEvaluationError::Binding(
+            "qualification use evidence"
+        ))
+    ));
+
+    // Reissuing the exact same metric payload changes authenticated evidence
+    // identity even when the entire inner decision remains equal.
+    let mut reissued = evidence.clone();
+    reissued.evaluator_bundle.evidence_id = id("reissued-evaluator-evidence");
+    reissued.evaluator_bundle.signature = SigningKey::from_bytes(&[42; 32])
+        .sign(&reissued.evaluator_bundle.signing_bytes())
+        .to_bytes()
+        .into();
+    let reissued_decision = crate::decide_with_signed_evidence_v2(
+        bundle.clone(),
+        fixture.roles.clone(),
+        &reissued,
+        &verifier,
+        /*now*/ 50,
+    )
+    .unwrap();
+    assert_eq!(reissued_decision.decision, qualified.decision.decision);
+    assert!(matches!(
+        revalidate(
+            &qualified,
+            &bundle,
+            &fixture.roles,
+            &reissued,
+            /*now*/ 50
+        ),
+        Err(ProductEvaluationError::Binding(
+            "qualification use evidence"
+        ))
+    ));
+
+    let mut changed_roles = fixture.roles.clone();
+    changed_roles[0].role = MetricRoleV2::PrimarySuperiority {
+        minimum_improvement: FixedQ32::from_raw(1),
+    };
+    let (_, changed_role_evidence, _) = signed_context(&bundle, &changed_roles);
+    assert!(
+        revalidate(
+            &qualified,
+            &bundle,
+            &changed_roles,
+            &changed_role_evidence,
+            /*now*/ 50,
+        )
+        .is_err()
+    );
+    assert!(
+        revalidate(
+            &qualified,
+            &bundle,
+            &fixture.roles,
+            &evidence,
+            /*now*/ 91
+        )
+        .is_err()
+    );
+    let mut changed_publication = qualified.clone();
+    changed_publication.publication_digest = digest("different-publication");
+    assert!(
+        revalidate(
+            &changed_publication,
+            &bundle,
+            &fixture.roles,
+            &evidence,
+            /*now*/ 50,
+        )
+        .is_err()
+    );
+    assert_eq!(sink.persisted, vec![qualified.publication_digest]);
+    assert_eq!(fixture.provider.release_count, 1);
+
+    let decision_mutations: [fn(&mut ProductQualificationReceiptV1); 9] = [
+        |receipt| receipt.decision.decision.evaluation_id = id("substituted-evaluation"),
+        |receipt| receipt.decision.decision.candidate_id = id("substituted-candidate"),
+        |receipt| receipt.decision.decision.baseline_id = id("substituted-baseline"),
+        |receipt| {
+            receipt.decision.decision.disposition = match receipt.decision.decision.disposition {
+                IndependentEvaluationDispositionV1::EligibleForIndependentSelection => {
+                    IndependentEvaluationDispositionV1::Ineligible
+                }
+                IndependentEvaluationDispositionV1::Ineligible
+                | IndependentEvaluationDispositionV1::InsufficientEvidence => {
+                    IndependentEvaluationDispositionV1::EligibleForIndependentSelection
+                }
+            };
+        },
+        |receipt| {
+            receipt.decision.decision.disposition = match receipt.decision.decision.disposition {
+                IndependentEvaluationDispositionV1::InsufficientEvidence => {
+                    IndependentEvaluationDispositionV1::Ineligible
+                }
+                IndependentEvaluationDispositionV1::EligibleForIndependentSelection
+                | IndependentEvaluationDispositionV1::Ineligible => {
+                    IndependentEvaluationDispositionV1::InsufficientEvidence
+                }
+            };
+        },
+        |receipt| receipt.decision.decision.failed_metrics = vec![id("substituted-failed-metric")],
+        |receipt| {
+            receipt.decision.decision.evidence_digest = digest("substituted-decision-evidence")
+        },
+        |receipt| receipt.decision.trust_digest = digest("substituted-trust"),
+        |receipt| receipt.decision.authentication_digest = digest("substituted-authentication"),
+    ];
+    for mutate in decision_mutations {
+        let mut changed = qualified.clone();
+        mutate(&mut changed);
+        assert!(changed.validate_integrity().is_err());
+    }
+
     let mut changed_generator = qualified;
     changed_generator.generator.principal_id = id("substituted-generator");
     assert!(changed_generator.validate_integrity().is_err());
@@ -597,3 +833,71 @@ fn product_runner_never_releases_holdout_before_fenced_consumption() {
 
 #[path = "product_holdout_tests.rs"]
 mod product_holdout_tests;
+
+#[test]
+fn product_runner_rejects_changed_plans_before_consuming_or_releasing_holdout() {
+    let changes: [fn(&mut TemporalEvaluationPlan); 3] = [
+        |plan| plan.fold.training_watermark += 1,
+        |plan| plan.ope.outcome_watermark += 1,
+        |plan| plan.confidence.family_alpha_ppm += 1,
+    ];
+    for change in changes {
+        for change_candidate in [true, false] {
+            let mut fixture = fixture();
+            let frozen = match freeze_product_evaluation_plan_v1(
+                fixture.cross_fold.clone(),
+                fixture.roles.clone(),
+                fixture.sources.clone(),
+                &fixture.candidate_plan,
+                &fixture.baseline_plan,
+            ) {
+                Ok(value) => value,
+                Err(error) => panic!("freeze product plan: {error}"),
+            };
+            let owner = match FencedFinalHoldoutOwnerV1::initialize(
+                MemoryCas::default(),
+                digest("holdout-plan-integrity-binding"),
+                HoldoutWriterFenceV1 {
+                    owner_id: id("evaluation-owner"),
+                    generation: 1,
+                    lease_digest: digest("lease-1"),
+                },
+            ) {
+                Ok(value) => value,
+                Err(error) => panic!("fenced owner: {error}"),
+            };
+            let mut runner = ProductEvaluationRunnerV1::new(owner);
+            let original_anchor = runner.holdout_anchor();
+            let mut candidate = fixture.candidate_plan.clone();
+            let mut baseline = fixture.baseline_plan.clone();
+            change(if change_candidate {
+                &mut candidate
+            } else {
+                &mut baseline
+            });
+            let invalid = runner.evaluate_temporal_comparison(
+                &frozen,
+                &candidate,
+                &baseline,
+                &mut fixture.provider,
+            );
+            assert_eq!(
+                (runner.holdout_anchor(), fixture.provider.release_count),
+                (original_anchor, 0)
+            );
+            assert!(matches!(
+                invalid,
+                Err(ProductEvaluationError::Binding("temporal execution plan"))
+            ));
+
+            let valid = runner.evaluate_temporal_comparison(
+                &frozen,
+                &fixture.candidate_plan,
+                &fixture.baseline_plan,
+                &mut fixture.provider,
+            );
+            assert!(valid.is_ok(), "unchanged frozen plan: {valid:?}");
+            assert_eq!(fixture.provider.release_count, 1);
+        }
+    }
+}

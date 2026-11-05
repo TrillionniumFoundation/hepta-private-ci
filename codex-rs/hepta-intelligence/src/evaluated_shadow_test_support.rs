@@ -115,6 +115,20 @@ impl Fixture {
     }
 
     fn with_profile(profile: LearningAuthenticationProfile) -> Self {
+        Self::with_profile_and_minimum_improvement(profile, FixedQ32::ZERO)
+    }
+
+    pub fn with_minimum_improvement(minimum_improvement: FixedQ32) -> Self {
+        Self::with_profile_and_minimum_improvement(
+            LearningAuthenticationProfile::ClassicalV1,
+            minimum_improvement,
+        )
+    }
+
+    fn with_profile_and_minimum_improvement(
+        profile: LearningAuthenticationProfile,
+        minimum_improvement: FixedQ32,
+    ) -> Self {
         let keys = [
             FixtureSigner::from_seed(profile, /*seed*/ 11),
             FixtureSigner::from_seed(profile, /*seed*/ 22),
@@ -183,7 +197,7 @@ impl Fixture {
         let roles = vec![MetricRoleContractV2 {
             metric_id: id("qualification-metric"),
             role: MetricRoleV2::PrimarySuperiority {
-                minimum_improvement: FixedQ32::ZERO,
+                minimum_improvement,
             },
         }];
         let sources = vec![ProductMetricSourceContractV1 {
