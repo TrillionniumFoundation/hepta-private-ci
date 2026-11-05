@@ -1,0 +1,74 @@
+{
+  "schema_version": 1,
+  "baseline_commit": "28a61d14ea7d4c3b3c515ab57b29c98de22e5673",
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "receipt": {
+    "repository_path": "qualification/hcsn/evidence/cloud-20261105/attempt-safe/smoke.json",
+    "local_path": "smoke.json",
+    "encoding_requested": "utf-8",
+    "git_blob_sha": "37163fac9b439670a2a3d5d0ec753d8f67e72e67",
+    "sha256": "42d9224251fcee5e5a71f9da88542f72c06636fabd335986785b6fda7b412aae",
+    "bytes": 392306,
+    "projection_applied": false
+  },
+  "original_accounting": {
+    "requested": 48,
+    "unique_records": 48,
+    "completed": 45,
+    "failed": 0,
+    "unavailable": 3
+  },
+  "original_attempt_accounting": {
+    "total": 51,
+    "completed": 45,
+    "failed": 0,
+    "unavailable": 6,
+    "invalidated": 0,
+    "interrupted": 0,
+    "execution_failure_rate": 0,
+    "training_failure_rate": 0,
+    "known_training_examples": 5760,
+    "known_training_tokens": 46080,
+    "budget_unknown_attempts": 0,
+    "energy_measured_attempts": 0,
+    "energy_missing_attempts": 51,
+    "measured_joules_by_counter": {},
+    "energy_scope": "sum of available attempt device/package readings; missing attempts excluded, never zero-filled"
+  },
+  "checkpoint_scope": "Only the three originally completed B checkpoints are materialized; all 48 original run records remain in smoke.json unchanged.",
+  "checkpoints": [
+    {
+      "task": "delayed_recall",
+      "model": "population_flux",
+      "seed": 0,
+      "repository_path": "qualification/hcsn/evidence/cloud-20261105/attempt-safe/smoke.runs/87bbb2ae0e83b6d311dc58683517212df4f26855a0eb62d1aef53ac791521bb8.attempts/96295eb2a6b04435b27c26748c8eec64.pt",
+      "local_path": "smoke.runs/87bbb2ae0e83b6d311dc58683517212df4f26855a0eb62d1aef53ac791521bb8.attempts/96295eb2a6b04435b27c26748c8eec64.pt",
+      "encoding_requested": "base64",
+      "git_blob_sha": "1742ba9bd9a8e64af00fb808b53ba1bf8e8003fd",
+      "sha256": "400981bf6b6b266a0ac469cdd83a4ea834c66e2765237afc0f8ffd7a4313cfc8",
+      "bytes": 6072
+    },
+    {
+      "task": "delayed_recall",
+      "model": "population_flux",
+      "seed": 1,
+      "repository_path": "qualification/hcsn/evidence/cloud-20261105/attempt-safe/smoke.runs/835c7fc476fb80cd6c1702aa71452e0e83522040a44d49dea8d36d2a3192685c.attempts/742cd66852b048a99b16909d1e7e3075.pt",
+      "local_path": "smoke.runs/835c7fc476fb80cd6c1702aa71452e0e83522040a44d49dea8d36d2a3192685c.attempts/742cd66852b048a99b16909d1e7e3075.pt",
+      "encoding_requested": "base64",
+      "git_blob_sha": "d90fc851f4896b2f3c2cb0a082f344cab261b199",
+      "sha256": "e9088c5778049de93dc2afd5bb532c46c5583f02e9dcc5fcf58a5e1ce860d110",
+      "bytes": 6072
+    },
+    {
+      "task": "delayed_recall",
+      "model": "population_flux",
+      "seed": 2,
+      "repository_path": "qualification/hcsn/evidence/cloud-20261105/attempt-safe/smoke.runs/70537658fdcd50c83cee943c2e0e34ed1343d138e3ba252fe118879d2792d02a.attempts/99591914a4da49b4a4f843aeb039569e.pt",
+      "local_path": "smoke.runs/70537658fdcd50c83cee943c2e0e34ed1343d138e3ba252fe118879d2792d02a.attempts/99591914a4da49b4a4f843aeb039569e.pt",
+      "encoding_requested": "base64",
+      "git_blob_sha": "fc3b4200593b3ab1bf0127d08b3c8593147dffc3",
+      "sha256": "a5d0f1d9edba126f0c23c615494a83092da31219f71b570ce393ae8d1fcdcfb6",
+      "bytes": 6072
+    }
+  ]
+}
