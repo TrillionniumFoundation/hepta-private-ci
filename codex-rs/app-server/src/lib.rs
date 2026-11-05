@@ -128,6 +128,7 @@ mod image_url;
 pub mod in_process;
 mod mcp_refresh;
 mod message_processor;
+mod plugin_startup_owner;
 mod models;
 mod models_refresh_worker;
 mod otel_reloader;
