@@ -1,0 +1,138 @@
+{
+  "recorded_at": "2026-11-05T10:24:32.913862+00:00",
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "pr": 4812,
+  "base": "f55752abbf516febfa0db89cb833dcf1fd1a2221",
+  "head": "ff19c86b7190204e9172a1595a58d8eb9f897c6d",
+  "head_tree": "1c34e75019730bfdd238ebc612701d9f9583759d",
+  "merge_base": "f55752abbf516febfa0db89cb833dcf1fd1a2221",
+  "commits": [
+    {
+      "sha": "c90d13228514440e82d4bbb0da2bdaf13d145c8a",
+      "tree": "fe2433e5721b0f6dbbbe808d12e1f8055da5a518",
+      "parents": [
+        "f55752abbf516febfa0db89cb833dcf1fd1a2221"
+      ],
+      "subject": "docs(evidence): retain sealed qualification composition and exact-source limits"
+    },
+    {
+      "sha": "ff19c86b7190204e9172a1595a58d8eb9f897c6d",
+      "tree": "1c34e75019730bfdd238ebc612701d9f9583759d",
+      "parents": [
+        "c90d13228514440e82d4bbb0da2bdaf13d145c8a"
+      ],
+      "subject": "fix(recovery): audit owned SQL fixture inputs for SQLx 0.9"
+    }
+  ],
+  "changes": [
+    {
+      "path": "codex-rs/hepta-evidence/src/recovery_invocation_frontier_tests.rs",
+      "old": "e48afd344a542c055a4b1d2b3e9e53525444cfb2",
+      "new": "349abfabfe3988901235479b64c94a53ff1a21ec",
+      "status": "M"
+    },
+    {
+      "path": "codex-rs/hepta-evidence/src/recovery_invocation_schema_tests.rs",
+      "old": "1e5dc1c878d09e817066917d1089b1bbbf81f140",
+      "new": "097327b809e2777b211d0fc0fef0abc54f4647a6",
+      "status": "M"
+    },
+    {
+      "path": "evidence/pq-sealed-composition-20261105/INDEX.json",
+      "old": "0000000000000000000000000000000000000000",
+      "new": "bd13da21d752ff43afc7de5f8b17e6887fac6e51",
+      "status": "A"
+    },
+    {
+      "path": "evidence/pq-sealed-composition-20261105/README.md",
+      "old": "0000000000000000000000000000000000000000",
+      "new": "4e25119bb9cc94f9aa67c46e86c74d0a92861b90",
+      "status": "A"
+    },
+    {
+      "path": "evidence/pq-sealed-composition-20261105/evidence.zip",
+      "old": "0000000000000000000000000000000000000000",
+      "new": "eb1befcff31c8c267c6b76fbc247a8dfe560cf66",
+      "status": "A"
+    }
+  ],
+  "changed_files": 5,
+  "production_source_changes": [],
+  "cargo_manifest_or_lock_changes": [],
+  "own_runtime_frozen_files": 27,
+  "direct_overlap": [],
+  "frozen_file_drift": [],
+  "local_HEAD_after_import": "72fd6ad2d665489d64271b6c3146debbd201df4d",
+  "index_sha256_before": "bd1ddf34a37a7fe4b4fcf1d27f90b75c9a8440ccffe831a98b78d7373a4525cc",
+  "index_sha256_after": "3299ed4640023c261f34479d90e97f5c63a0abbe51f3fb77db32668dc87f50e7",
+  "index_unchanged": false,
+  "imported_objects": {
+    "commits": 2,
+    "trees": 7,
+    "blobs": 5,
+    "all_identity_checked_before_import": true
+  },
+  "missing_delta_objects": [],
+  "upstream_diff": "/workspace/scratch/42d46a663b73/verification/runtime-ff19-upstream.diff",
+  "diff_sha256": "15fce4c41cc9c2decab1d152aa84a7d9d4a0b2dbf610b8b5acad07c09c0149cd",
+  "v11_chain_source_commit": "cfa57cd04751427451302b5c10539b3984d7f8db",
+  "v11_chain_source_tree": "155213c2468edc411325f4f1853b471a6b25f355",
+  "worktree_head_index_mutations_performed": false,
+  "test_runs_performed": false,
+  "scope_note": "Only two SQLx recovery test files and three evidence files changed since f557. Existing native evidence still belongs to frozen7530+patch; no merged-source acceptance is claimed.",
+  "test_fixture_comparison": [
+    {
+      "path": "codex-rs/hepta-evidence/src/recovery_invocation_frontier_tests.rs",
+      "old_function_names": [
+        "sqlite_config",
+        "intent",
+        "recovery_snapshot_commits_pending_invocations_and_terminal_states",
+        "recovery_snapshot_commits_invocations_after_the_first_page",
+        "recovery_snapshot_refuses_duplicate_terminal_hidden_at_page_boundary",
+        "recovery_snapshot_revalidates_invocation_payloads_and_projected_columns",
+        "recovery_snapshot_requires_the_terminals_authoritative_intent",
+        "recovery_snapshot_refuses_invocation_column_type_corruption_without_panicking",
+        "recovery_snapshot_binds_invocation_sequence_and_recording_time"
+      ],
+      "new_function_names": [
+        "sqlite_config",
+        "intent",
+        "recovery_snapshot_commits_pending_invocations_and_terminal_states",
+        "recovery_snapshot_commits_invocations_after_the_first_page",
+        "recovery_snapshot_refuses_duplicate_terminal_hidden_at_page_boundary",
+        "recovery_snapshot_revalidates_invocation_payloads_and_projected_columns",
+        "recovery_snapshot_requires_the_terminals_authoritative_intent",
+        "recovery_snapshot_refuses_invocation_column_type_corruption_without_panicking",
+        "recovery_snapshot_binds_invocation_sequence_and_recording_time"
+      ],
+      "function_names_unchanged": true,
+      "assert_macro_counts_before": 21,
+      "assert_macro_counts_after": 21
+    },
+    {
+      "path": "codex-rs/hepta-evidence/src/recovery_invocation_schema_tests.rs",
+      "old_function_names": [
+        "key_connection",
+        "recovery_invocation_schema_accepts_current_migration_keys",
+        "recovery_invocation_schema_refuses_non_rowid_or_composite_sequences",
+        "recovery_invocation_schema_requires_exact_unconditional_column_uniqueness"
+      ],
+      "new_function_names": [
+        "key_connection",
+        "recovery_invocation_schema_accepts_current_migration_keys",
+        "recovery_invocation_schema_refuses_non_rowid_or_composite_sequences",
+        "recovery_invocation_schema_requires_exact_unconditional_column_uniqueness"
+      ],
+      "function_names_unchanged": true,
+      "assert_macro_counts_before": 2,
+      "assert_macro_counts_after": 2
+    }
+  ],
+  "observed_concurrent_local_change": {
+    "local_commit_subject": "fix(cell): bind ordinary runtime inputs and version host admission",
+    "local_commit_parents": [
+      "7530e4bc7aa61a0c23a5933fef4a65d86a586cf8"
+    ],
+    "note": "HEAD/index changed during this read-only import by another task. This task performed no checkout, merge, commit, update-ref, staging, or worktree source writes. Root notified. Frozen source bytes stayed identical."
+  }
+}

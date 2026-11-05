@@ -102,6 +102,15 @@
     }
   },
   "created_at": "2026-11-05T09:41:04.344493+00:00",
+  "integration_followup": {
+    "format": "PASS",
+    "new_native_assertions": 0,
+    "receipt": "receipts/integration-followup.json",
+    "scoped_just_fix": "PASS",
+    "source_commit": "3e96ece120cda5cbf75b84f05edc2edb15d41000",
+    "tree": "1b64fd14890e6db0e4a26ced0f151c94629f2ca7",
+    "whole_native_or_model_acceptance": false
+  },
   "native_test_runs": {
     "cell_cli_attempt1": {
       "distinct_from_library_tests": true,
@@ -228,6 +237,8 @@
     "frozen_file_drift_at_packaging": [],
     "frozen_receipt": "receipts/runtime-admission-frozen-files.json",
     "frozen_runtime_files": 27,
+    "github_source_commit": "72fd6ad2d665489d64271b6c3146debbd201df4d",
+    "github_source_tree": "3a4ef7e082bd64cdd8a73b857810992713909cef",
     "later_upstream_not_covered": "f55752abbf516febfa0db89cb833dcf1fd1a2221",
     "qualification_inherited_by_later_merge": false,
     "source_kind": "premerge working candidate reconstructed from base plus changed input rows",

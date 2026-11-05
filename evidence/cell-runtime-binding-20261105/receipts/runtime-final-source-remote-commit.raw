@@ -1,0 +1,9 @@
+tree 1b64fd14890e6db0e4a26ced0f151c94629f2ca7
+parent 9438a6c27a5e2f25169445f39499631db4e00529
+parent 944081590d815995f2210528c6d1fef99b6db191
+author Tomasrgbsf <273673612+Tomasrgbsf@users.noreply.github.com> 1793875283 -0500
+committer Tomasrgbsf <273673612+Tomasrgbsf@users.noreply.github.com> 1793875283 -0500
+
+merge(cell): preserve current agentd test cleanup
+
+Retain the latest removal of an unused test import together with the fixed ordinary runtime admission source. Preserve both previous source snapshots and their scoped evidence; no whole native or model qualification is inferred.

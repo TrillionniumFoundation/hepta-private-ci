@@ -1,0 +1,333 @@
+{
+  "recorded_at": "2026-11-05T10:00:59.306849+00:00",
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "pr": 4812,
+  "baseline": "7530e4bc7aa61a0c23a5933fef4a65d86a586cf8",
+  "upstream_head": "f55752abbf516febfa0db89cb833dcf1fd1a2221",
+  "upstream_tree": "039577d88899ddc1725f44dbf508e69d58506fe3",
+  "merge_base": "7530e4bc7aa61a0c23a5933fef4a65d86a586cf8",
+  "commits": [
+    {
+      "sha": "97ae5b4bf5e5f0d0589c1c653f1861e1d9c1242f",
+      "tree": "fdce3b8e854629315cea088f5d549aed3f8b2021",
+      "parents": [
+        "7530e4bc7aa61a0c23a5933fef4a65d86a586cf8"
+      ],
+      "subject": "fix(evidence): bind invocation history to the PQ recovery frontier"
+    },
+    {
+      "sha": "5375d7d2774f7422d6c7c352188273e678746376",
+      "tree": "7ad4a974496e587f0ce863ce565cb74a98149b2e",
+      "parents": [
+        "7530e4bc7aa61a0c23a5933fef4a65d86a586cf8"
+      ],
+      "subject": "fix(intelligence): bind PQ consumers to complete sealed qualification"
+    },
+    {
+      "sha": "f55752abbf516febfa0db89cb833dcf1fd1a2221",
+      "tree": "039577d88899ddc1725f44dbf508e69d58506fe3",
+      "parents": [
+        "97ae5b4bf5e5f0d0589c1c653f1861e1d9c1242f",
+        "5375d7d2774f7422d6c7c352188273e678746376"
+      ],
+      "subject": "merge(pq): preserve invocation recovery V4 with sealed qualification consumers"
+    }
+  ],
+  "changed_file_count": 46,
+  "changed_files": [
+    {
+      "path": ".github/workflows/hepta-pq-policy-renewal.yml",
+      "old": "392ad92cfdf63c6a1a8281683ec1074a845cff68",
+      "new": "c2af6c222075720750ec1130192a495ea6bb0548",
+      "status": "M"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/PQ_INSTALLATION.md",
+      "old": "37876ccf43fc00daf42af856779feed150508691",
+      "new": "482a29e88b42741c31ba5be323b30ad8a0d7ea27",
+      "status": "M"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cognitive_pq_install_materials.rs",
+      "old": "8098e356c75ae03e1b5ac91e0ea1dc9a265e7f2d",
+      "new": "a61f1cc6ac8ef0a7416219b6cb4c163a96f2f00e",
+      "status": "M"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cognitive_ranker_selection_tests.rs",
+      "old": "6e28368e7ac87e029f0cbe5ca92fbc50d9446a57",
+      "new": "53a879de89fb0fc52fa3667cd93acca00b331180",
+      "status": "M"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cognitive_three_generation_admission.rs",
+      "old": "c8048e2157502c331d28c279fd8b85678829020a",
+      "new": "9dbb178cc639b771f8c465767b5d4e03e1077e8c",
+      "status": "M"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cognitive_three_generation_controls.rs",
+      "old": "25fc813eed9818e6dd1c1bd72ac6dd820d0ec254",
+      "new": "c5b915de6de89c748cbecdc71f9084eccf35839c",
+      "status": "M"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cognitive_three_generation_tests.rs",
+      "old": "3d82f1088cb00ade97060cb28fde55b2095e48ec",
+      "new": "15115e81ddf5d71f8c855c4ae567007e63fc789e",
+      "status": "M"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/evidence_frontier.rs",
+      "old": "74a95d84f8bf1bc78eb372a50ffc03124f57e34e",
+      "new": "e17b055dc942cf2582911f03cec59695640e9950",
+      "status": "M"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/evidence_frontier_tests.rs",
+      "old": "4cc294ec045dbd737b8a5d4df0efd0502ece04fa",
+      "new": "2eb63fb2ed7fc84acc9092764342e78092196087",
+      "status": "M"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/intelligence_evaluation.rs",
+      "old": "f90a5f5a2d0b1d2c67804a90d63987a889fdb062",
+      "new": "c0948454257c3032f56381821747371cabee52ea",
+      "status": "M"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/intelligence_evaluation_tests.rs",
+      "old": "5ac59fb40a77c2d14ed7647970421c3f7b93137d",
+      "new": "ab02e47d7b4b0a52c987676f9804bbb35d5dcb0b",
+      "status": "M"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/intelligence_product.rs",
+      "old": "1481c519b13800706291cee47db24d7f8d5fbed5",
+      "new": "80c1959e30f82319a7f4c06d3a6bad67b80f3808",
+      "status": "M"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/intelligence_qualification_test_support.rs",
+      "old": "0000000000000000000000000000000000000000",
+      "new": "3fc3ca7d9653975e7da557b6ac2cf5b59fe4c998",
+      "status": "A"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/lib.rs",
+      "old": "0163c93fe252e2f73ed4c1870229204a1a9c6c3d",
+      "new": "9a1da10f04a0870e1922ffe6fdf521388ffae472",
+      "status": "M"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/tests/kernel_evidence_product.rs",
+      "old": "d87d97f193a6095e77a60fb3cb1894f77ebc6f95",
+      "new": "030e98c450a29570d13e2dae07d1a243baadb794",
+      "status": "M"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/tests/support/recovery.rs",
+      "old": "52f6805d7497b6e51a36fb2bf175299aec41bfd8",
+      "new": "4913b9c16006c4bdbc0975fa888151d655b0df3c",
+      "status": "M"
+    },
+    {
+      "path": "codex-rs/hepta-evidence/src/lib.rs",
+      "old": "8772f8709ec194030c00e61913e832ae719a0306",
+      "new": "f3fba61959127588643b5d0d51297257196c24aa",
+      "status": "M"
+    },
+    {
+      "path": "codex-rs/hepta-evidence/src/provider_record.rs",
+      "old": "cc75ce6cba16a072276dde0f3166c652dd276f46",
+      "new": "f5e0ba793cd919e0032f6c81db9c871d54cd73e3",
+      "status": "M"
+    },
+    {
+      "path": "codex-rs/hepta-evidence/src/recovery_frontier.rs",
+      "old": "202486445c3ae9a75e3eb63726313145332a8438",
+      "new": "f4bdd90f1681494f186e5765d1b04924997f93fb",
+      "status": "M"
+    },
+    {
+      "path": "codex-rs/hepta-evidence/src/recovery_invocation_frontier.rs",
+      "old": "0000000000000000000000000000000000000000",
+      "new": "4b577379892840f53fe56c050ea5517e0acb3e0e",
+      "status": "A"
+    },
+    {
+      "path": "codex-rs/hepta-evidence/src/recovery_invocation_frontier_tests.rs",
+      "old": "0000000000000000000000000000000000000000",
+      "new": "e48afd344a542c055a4b1d2b3e9e53525444cfb2",
+      "status": "A"
+    },
+    {
+      "path": "codex-rs/hepta-evidence/src/recovery_invocation_schema.rs",
+      "old": "0000000000000000000000000000000000000000",
+      "new": "ad8a27d6ff232f6846e2620c49b213da616b7489",
+      "status": "A"
+    },
+    {
+      "path": "codex-rs/hepta-evidence/src/recovery_invocation_schema_tests.rs",
+      "old": "0000000000000000000000000000000000000000",
+      "new": "1e5dc1c878d09e817066917d1089b1bbbf81f140",
+      "status": "A"
+    },
+    {
+      "path": "codex-rs/hepta-infer-worker-host/src/smollm_agentd_recovery_tests.rs",
+      "old": "443232c4298c1608f9abcb455371d3a04ced7052",
+      "new": "f84ac3d019db9a9fa54f2c5994a30bb24b772c91",
+      "status": "M"
+    },
+    {
+      "path": "codex-rs/hepta-infer-worker-host/src/smollm_study_install_tests.rs",
+      "old": "34a3e69751bf580fb40e19ef5e5e0fb74cb2913a",
+      "new": "ce152ba0a8ac81e8c176f68d5332b8ac577565df",
+      "status": "M"
+    },
+    {
+      "path": "codex-rs/hepta-intelligence-eval/src/lib.rs",
+      "old": "c4c4ba2d56e45e80e75f24f40d97229ab34174c9",
+      "new": "25577d1f513b7d71d030772ad184e5e0c745db75",
+      "status": "M"
+    },
+    {
+      "path": "codex-rs/hepta-intelligence-eval/src/product_qualification_use.rs",
+      "old": "0000000000000000000000000000000000000000",
+      "new": "f904dc721859f2d44f67b955c532298d03360e87",
+      "status": "A"
+    },
+    {
+      "path": "codex-rs/hepta-intelligence-eval/src/product_runner.rs",
+      "old": "e27e8001459328212e30053d3b6f8d7ba113755f",
+      "new": "fedda995b024634aa911b9f19320c65abf7ecf8f",
+      "status": "M"
+    },
+    {
+      "path": "codex-rs/hepta-intelligence-eval/src/product_runner_tests.rs",
+      "old": "fde246c1cad4ab6ca19b224cf68cc5c5fcdf09a4",
+      "new": "cf8e4a50c7aa36cb4213e67f42c829b26fb90ff7",
+      "status": "M"
+    },
+    {
+      "path": "codex-rs/hepta-intelligence-eval/src/self_evolution_ingress_tests.rs",
+      "old": "0000000000000000000000000000000000000000",
+      "new": "e169f8742df08d87a048a5984802f3f72c0c0214",
+      "status": "A"
+    },
+    {
+      "path": "codex-rs/hepta-intelligence-eval/src/self_evolution_product_selection.rs",
+      "old": "ff1309859903cb402c64ccb039772564e09ad1d6",
+      "new": "f92a556ca8d365f50f90564a765e32d41260e27d",
+      "status": "M"
+    },
+    {
+      "path": "codex-rs/hepta-intelligence-eval/src/self_evolution_qualification_test_support.rs",
+      "old": "0000000000000000000000000000000000000000",
+      "new": "29f0fd3268071f4f9dff7fd407e53747edec22f2",
+      "status": "A"
+    },
+    {
+      "path": "codex-rs/hepta-intelligence-eval/src/self_evolution_selection.rs",
+      "old": "7d5930c46b3c4a6440b20962e240c0012cde8005",
+      "new": "81651726fe7d3d625925c2cd7b229f32ee0d2d43",
+      "status": "M"
+    },
+    {
+      "path": "codex-rs/hepta-intelligence/src/evaluated_shadow_test_support.rs",
+      "old": "a6b45d4ae1174a5f2e275fefd23721ba5fa6bae1",
+      "new": "227e798c84f9a76f284b36d47707bf610bf082c8",
+      "status": "M"
+    },
+    {
+      "path": "codex-rs/hepta-intelligence/src/evaluated_shadow_tests.rs",
+      "old": "d00119e687a6f2826c4ec2bac63fb762ccdf2ccd",
+      "new": "7f3ab349e3214c6165b211ac5307370324f52d39",
+      "status": "M"
+    },
+    {
+      "path": "codex-rs/hepta-intelligence/src/plasticity_product.rs",
+      "old": "0b5a6a849f536cf8e50128fad63f18562279c395",
+      "new": "2611b28ccb33ece8e8f5d872a6729fdee4d558bf",
+      "status": "M"
+    },
+    {
+      "path": "codex-rs/hepta-intelligence/src/plasticity_product_tests.rs",
+      "old": "0c4d7c67429817f212f4738fa0ff66b012661c73",
+      "new": "e374af4c7a7df35e043178a7d8832fd9d6b6c823",
+      "status": "M"
+    },
+    {
+      "path": "codex-rs/hepta-intelligence/src/plasticity_qualification_test_support.rs",
+      "old": "0000000000000000000000000000000000000000",
+      "new": "3fc3ca7d9653975e7da557b6ac2cf5b59fe4c998",
+      "status": "A"
+    },
+    {
+      "path": "docs/lane-a-foundation/CAPABILITY_EVIDENCE_MAP.json",
+      "old": "bd9fe1c31b46f80e9266b815659fc6b1e07362ab",
+      "new": "bf32cab5b89d6267bdfe4bce74aa44a8faee0b51",
+      "status": "M"
+    },
+    {
+      "path": "docs/lane-a-foundation/MODULE_TRUTH_MATRIX.json",
+      "old": "6f5fc8a8ec580d156d112aadb2326b9dba88fb56",
+      "new": "9b4b087247a0188d8401c16b80b192287a91433e",
+      "status": "M"
+    },
+    {
+      "path": "docs/lane-a-foundation/kernel.evidence/CURRENT_IMPLEMENTATION.md",
+      "old": "f25d7989fae03da3adc44c572020b0e71f457b0d",
+      "new": "ad0bffccc53b69a9933cabbb6192fa2f47d3d26f",
+      "status": "M"
+    },
+    {
+      "path": "docs/lane-a-foundation/kernel.evidence/RECOVERY_FRONTIER_V1.md",
+      "old": "9674f1f086ecc0a680e864a71c4f4c3018c25873",
+      "new": "491452d2fc29dd83568bff6cc140f55dbda1677c",
+      "status": "M"
+    },
+    {
+      "path": "docs/lane-a-foundation/platform.types/CURRENT_IMPLEMENTATION.md",
+      "old": "8bb2c5d3acea736225749725974b5796f2f0f6fc",
+      "new": "ef8014f746d2635a997d94c1c058698ebe4668fd",
+      "status": "M"
+    },
+    {
+      "path": "qualification/module-execution-dossiers/NATIVE_BINDINGS_LANE_A.json",
+      "old": "f5e938bf643938cb9abbb3344a1d9b4184401250",
+      "new": "508c084d560ea60fa205f744ac03a4346e06d70d",
+      "status": "M"
+    },
+    {
+      "path": "scripts/lane_a_foundation_core.py",
+      "old": "bb8726903c18c49f75d28b36b5ce8295dcaa3fce",
+      "new": "87fec24672a151c5d8db535e8fa4fae4eaaef7f4",
+      "status": "M"
+    },
+    {
+      "path": "scripts/lane_a_foundation_lib.py",
+      "old": "dca49b46d462c5dfbfa6f02e6aae3f6ded821e3f",
+      "new": "ff09fd9e9114556897dbe9de1092b59a6116ab1d",
+      "status": "M"
+    }
+  ],
+  "frozen_file_count": 38,
+  "frozen_file_drift": [],
+  "direct_overlap": [],
+  "cargo_manifest_or_lock_changed": false,
+  "local_head_after_import": "7530e4bc7aa61a0c23a5933fef4a65d86a586cf8",
+  "imported_api_blobs": {
+    "count": 48,
+    "uncompressed_bytes": 850154,
+    "all_git_sha1_verified": true
+  },
+  "delta_missing_objects_after_import": [],
+  "diff_file": "/workspace/scratch/42d46a663b73/verification/runtime-f557-upstream.diff",
+  "diff_sha256": "e565f11acf61c6ca2307928b6bc6f459715a764cc54241f1722a5e5a2b4f7a85",
+  "v11_chain_source_commit": "cfa57cd04751427451302b5c10539b3984d7f8db",
+  "v11_chain_source_tree": "155213c2468edc411325f4f1853b471a6b25f355",
+  "source_worktree_mutations_performed": false,
+  "index_or_head_mutations_performed": false,
+  "test_evidence_scope": "Existing native build/test belongs to 7530 plus the 38 frozen files; not attributed to upstream f557 or a future merge."
+}

@@ -120,3 +120,40 @@ sha256sum -c SHA256SUMS
 The later concurrent Runtime source `f55752abbf516febfa0db89cb833dcf1fd1a2221` and a final merge with it are outside these premerge observations. This archive supplies the source base and patch manifest; it does not require an intrinsic self-reference to the commit that eventually carries these evidence files. A subsequent typecheck, test, or publication observation must identify its own source and be retained as a distinct follow-up. Earlier results must not be inherited as a full native or model qualification of that later merge.
 
 If the archive changes, its hash index must be regenerated so that the final checked files remain reviewable. The source manifest and overall development plan were not changed by evidence packaging.
+
+## Completed integration typecheck follow-up
+
+The premerge working source is preserved as GitHub commit
+[`72fd6ad2d665489d64271b6c3146debbd201df4d`](https://github.com/TrillionniumFoundation/hepta-private-ci/commit/72fd6ad2d665489d64271b6c3146debbd201df4d),
+tree `3a4ef7e082bd64cdd8a73b857810992713909cef`. Its commit was created after
+the native observations, with the frozen source bytes preserved. The original
+base plus patch/source projection remains the description of the executed
+working candidate.
+
+Two later merge-source snapshots completed the original scoped
+`just fix -p codex-hepta-infer-worker-host --locked --offline` recipe with exit 0:
+
+| Source snapshot | Identical locally checked tree | Actual result |
+| --- | --- | --- |
+| `944081590d815995f2210528c6d1fef99b6db191` | `d457fbe5797a54c7b73a94d3effd5b3806b83daa`, local `b8b6559e680f3e6eea2a4a89a31192f832d2527a` | Scoped Clippy/typecheck exit 0 after preserving recovery/sealed-qualification changes |
+| `3e96ece120cda5cbf75b84f05edc2edb15d41000` | `1b64fd14890e6db0e4a26ced0f151c94629f2ca7`, local `d1c851d06446d4127bfc37139635861a0b9d7eeb` | Scoped Clippy/typecheck exit 0; final `just fmt --check` exit 0; tracked source unchanged |
+
+The second snapshot also preserves upstream `9438a6c`, whose only change
+removed an unused `pretty_assertions::assert_eq` import from an agentd test
+file. [The follow-up receipt](receipts/integration-followup.json) identifies
+the commands, original toolchain/profile, actual exit observations, final raw
+project-input projection and unchanged 38-file freeze. Raw logs are retained
+[for the first merge](logs/hepta-host-fix-after-integration.log),
+[for the final source](logs/hepta-host-fix-final-source.log) and
+[for the final format check](logs/hepta-format-final-source.log).
+
+These are compile/lint/format observations with zero new test assertions. They
+do not replace the failed full-package or library gates, repeat the premerge
+161 passes, or qualify a model, device, installed host or ordinary FinalUse.
+The original 40 SQLx dependency warnings remain in the logs.
+
+The local and GitHub raw commit objects are retained under `receipts/` so the
+source hashes and tree equality can be verified independently.
+[integration-log-provenance.json](receipts/integration-log-provenance.json)
+records the additional exact raw copies. The final delivery adds this follow-up
+evidence while retaining the checked source snapshot as an ancestor.
