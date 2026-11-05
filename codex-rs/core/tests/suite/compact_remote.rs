@@ -1478,6 +1478,7 @@ async fn remote_compact_v2_reuses_compaction_trigger_for_followups() -> Result<(
 
     let harness = TestCodexHarness::with_builder(
         test_codex()
+            .with_internal_metadata_for_mock()
             .with_auth(CodexAuth::create_dummy_chatgpt_auth_for_testing())
             .with_config(|config| {
                 let _ = config.features.enable(Feature::RemoteCompactionV2);

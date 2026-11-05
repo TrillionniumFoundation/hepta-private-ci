@@ -307,7 +307,9 @@ async fn rollback_first_turn_model_change_removes_its_instructions(
 
     let initial_model = "gpt-5.2";
     let switched_model = "gpt-5.4";
-    let mut builder = test_codex().with_model(initial_model);
+    let mut builder = test_codex()
+        .with_internal_metadata_for_mock()
+        .with_model(initial_model);
     let test = builder.build_with_auto_env(&server).await?;
 
     submit_model_turn(

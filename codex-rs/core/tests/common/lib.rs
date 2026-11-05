@@ -4,6 +4,7 @@ use anyhow::Context as _;
 use anyhow::ensure;
 use codex_arg0::Arg0PathEntryGuard;
 use codex_utils_cargo_bin::CargoBinError;
+pub use codex_utils_cargo_bin::cargo_bin;
 use ctor::ctor;
 use std::sync::OnceLock;
 use tempfile::TempDir;
