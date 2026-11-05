@@ -4,10 +4,12 @@ on:
   push:
     branches:
       - research/memory-cell-v15-20261104
+      - research/memory-v15-native-transfer-20261105-728b
     paths:
       - 'qualification/memory-cell-v15/**.py'
       - 'qualification/memory-cell-v15/requirements.txt'
       - 'qualification/memory-cell-v15/device_qualification/**'
+      - 'qualification/memory-cell-v15/native-transfer/**'
       - '.github/workflows/memory-cell-v15-contracts.yml'
 
 permissions:
@@ -38,6 +40,20 @@ jobs:
         run: |
           /tmp/memory-v15-env/bin/python qualification/memory-cell-v15/device_qualification/verify_receipts.py \
             --output qualification/memory-cell-v15/device_qualification/review_checks.json
+      - name: Install the pinned native transition toolchain
+        run: rustup toolchain install 1.95.0 --profile minimal --component rustfmt
+      - name: Compare native migration transitions with signed reference requests
+        timeout-minutes: 3
+        run: |
+          native=qualification/memory-cell-v15/native-transfer
+          evidence=/tmp/memory-v15-native
+          mkdir -p "$evidence"
+          /tmp/memory-v15-env/bin/python "$native/differential.py" generate "$evidence"
+          rustfmt +1.95.0 --check --edition 2024 "$native/transfer.rs" "$native/runner.rs"
+          rustc +1.95.0 --version > "$evidence/rustc.txt"
+          rustc +1.95.0 --edition=2024 -Dwarnings -O "$native/runner.rs" -o "$evidence/runner"
+          "$evidence/runner" < "$evidence/commands.txt" > "$evidence/actual.txt"
+          /tmp/memory-v15-env/bin/python "$native/differential.py" compare "$evidence" --actual "$evidence/actual.txt"
       - name: Preserve exact-source check receipts
         if: always()
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
@@ -47,5 +63,7 @@ jobs:
             qualification/memory-cell-v15/evidence/checks.json
             qualification/memory-cell-v15/evidence/checks.log
             qualification/memory-cell-v15/device_qualification/review_checks.json
+            /tmp/memory-v15-native/*.txt
+            /tmp/memory-v15-native/*.json
           if-no-files-found: error
           retention-days: 30

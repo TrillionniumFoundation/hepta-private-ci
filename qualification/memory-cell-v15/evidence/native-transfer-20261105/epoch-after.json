@@ -1,0 +1,24 @@
+{
+  "initial_epoch": 9223372036854775807,
+  "stored": {
+    "epoch": 9223372036854775807,
+    "storage_type": "integer"
+  },
+  "attempts": [
+    {
+      "outcome": "rejected",
+      "error": "Rejected",
+      "reason": "monotone counter exhausted or invalid"
+    },
+    {
+      "outcome": "rejected",
+      "error": "Rejected",
+      "reason": "epoch or bundle CAS failed"
+    },
+    {
+      "outcome": "rejected",
+      "error": "Rejected",
+      "reason": "epoch or bundle CAS failed"
+    }
+  ]
+}

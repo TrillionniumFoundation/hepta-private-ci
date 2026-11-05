@@ -135,9 +135,9 @@ objects matched the local records. Original receipts are retained in
 host operations; it verified their preserved evidence. The later evidence-preservation
 commit does not change the executed Python source.
 
-The local environment lacks Rust/cargo/just and contains only a partial historical
-checkout. The required `just fmt` attempt exited 127 (`just: command not found`). No
-Rust source changed in this delta and no V15 Rust formatter/native test claim is made.
+The original V15 local qualification environment lacked Rust/cargo/just and used
+only a partial historical checkout. The required `just fmt` attempt exited 127 (`just: command not found`). No
+Rust source changed in that original delta; its evidence made no V15 native claim.
 The dedicated CI workflow checks the reference Python paths, not full-repository CI.
 
 ## Bounded two-host experiment
@@ -197,3 +197,18 @@ reproduction instructions are in [`device_qualification/`](device_qualification/
 Rust integration, true authority recovery, real-model multi-device qualification,
 matched-budget training, long-term updates and actual energy/full-cost measurement
 are the next acceptance stages in the research report.
+
+## Native transition increment, 2026-11-05
+
+The new [`native-transfer/`](native-transfer/README.md) increment fixes a reproduced
+SQLite counter-exhaustion defect, adds four regression cases (**57 total**), and
+ports the five migration transitions into a deterministic Rust kernel for later
+Control integration. Exact-source native executables on Mac arm64 and x230 x86_64
+matched all **1,536 operation outcomes and complete transfer histories** generated
+by the signed Python/SQLite reference in 64 stateful sequences.
+
+The original evidence above remains unchanged. The new kernel is not linked into
+the production runtime and does not implement authentication, persistence,
+idempotency or full authority rollback protection. These runs do not add a
+neural-memory benefit or real-model migration result. The detailed scope and raw
+receipts are retained in the linked increment and its qualification record.
