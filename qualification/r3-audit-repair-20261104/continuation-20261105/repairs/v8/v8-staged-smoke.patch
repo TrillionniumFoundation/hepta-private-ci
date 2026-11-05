@@ -1,0 +1,13 @@
+diff --git a/.github/workflows/v8-canary.yml b/.github/workflows/v8-canary.yml
+index 7bd9a55dcab283c743bd3a05f69c8c6c3e3ff2c4..648a83164c0dd1c28499eaa17f842a83bb2aab04 100644
+--- a/.github/workflows/v8-canary.yml
++++ b/.github/workflows/v8-canary.yml
+@@ -312,7 +312,7 @@
+             exit 1
+           fi
+ 
+-          cargo_args=(test -p codex-v8-poc)
++          cargo_args=(test -p codex-v8-poc --no-default-features)
+           if [[ "${SANDBOX}" == "true" ]]; then
+             cargo_args+=(--features sandbox)
+           fi

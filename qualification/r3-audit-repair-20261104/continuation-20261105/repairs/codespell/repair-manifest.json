@@ -1,0 +1,109 @@
+{
+  "schema": "hepta_codespell_evidence_boundary_repair_v1",
+  "status": "STATIC_CANDIDATE_UNEXECUTED",
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "base_commit": "0e139b599f0fe451f80fb7db4b2913bb9c679dce",
+  "base_tree": "091e659e0da6602299fd14cfa93889191405edd8",
+  "actual_ci_merge": "e93aefbbb33438f6ec67e995adcfe88657158487",
+  "original_job_id": 127072483681,
+  "original_codespell_version": "2.4.3",
+  "original_failure_retained": true,
+  "original_job_log": {
+    "bytes": 128041,
+    "sha256": "3e4b92fe98b3ace3dbe04563d778c2f98dac8af8262e5c238592f1ef41f55dbb",
+    "git_blob": "37d145538f3fb9a6b78cfe9b8369994a28db8c39"
+  },
+  "change": "Append exact paths for the 153 identity-verified frozen evidence files reported by the original Codespell run; no directory or wildcard exclusion is added.",
+  "file": {
+    "path": ".codespellrc",
+    "mode": "100644",
+    "preimage": {
+      "bytes": 528,
+      "sha256": "98cdba8494aee78c2f5158aa9f016282e5dc0806eed894e96f0c50ce53844c8d",
+      "git_blob": "3271b792a58284d0778ca753bc9bbda2c4b18b4b"
+    },
+    "postimage": {
+      "bytes": 18898,
+      "sha256": "c2251ec4babc046f186b7600660bbf2c26ca465af43b4b446c62c90e12cec8bc",
+      "git_blob": "65a515a423f52fcea3c0e6462b913d7d3abb6fa1"
+    }
+  },
+  "patch": {
+    "bytes": 19468,
+    "sha256": "b4fa2789e67864554a3e30d75fc22a4e3ffbef697fb8d0b91c951afa18eb56c9",
+    "git_blob": "c3fa8fa08f3e1f91c61a36ba54ee6e886133c032"
+  },
+  "classification": {
+    "bytes": 120199,
+    "sha256": "6917cf1d19aaee8cc6ce003638323d7d18f4854f126659441fd5d47f28997d94",
+    "git_blob": "a7a2a0c6d985d99f4a7d0469570582012a84f1f5"
+  },
+  "existing_precedent": "The unchanged repository configuration already excludes captured owner command log segments to preserve byte-identical evidence.",
+  "checks": {
+    "original_skip_patterns_retained_in_same_order": true,
+    "original_skip_pattern_count": 12,
+    "added_literal_paths": 153,
+    "added_wildcards": 0,
+    "all_572_original_findings_covered": true,
+    "added_match_set_exactly_153_of_989_registry_entries": true,
+    "other_registry_entries_matched_by_added_rules": 0,
+    "added_match_set_exact_in_996_publication_elements": true,
+    "overlap_with_original_skip_patterns": [],
+    "registered_markdown_or_readme_paths": 31,
+    "registered_markdown_or_readme_newly_excluded": [],
+    "no_product_source_path_newly_excluded": true,
+    "all_other_codespell_settings_byte_preserved": true,
+    "configuration_parses_and_action_splitlines_join_matches_expected_list": true,
+    "inverse_single_skip_block_substitution_byteequal": true,
+    "direct_codespell_comma_cleaning_equals_action_joined_list": true
+  },
+  "unchanged_files": {
+    "codespell_workflow": {
+      "bytes": 1513,
+      "sha256": "10ee518ee74e77f8e3a078aa22f546af36aca6306598830ae4905cbe263f756e",
+      "git_blob": "06ea9c7226d265405c73850c449b3d6b96d82514"
+    },
+    "ignore_words_file": {
+      "bytes": 75,
+      "sha256": "0cdbaadae5521f2a3b45cc7a8fa43e2960257ac23dcc1764038d3116bddb509f",
+      "git_blob": "f97cc66e6b2bffd0c52cb421d820f0bfefc97cf7"
+    },
+    "all_153_evidence_files": "Original bytes, Git blob identities, SHA-256 identities, payloads and source quotations remain unchanged."
+  },
+  "scope_limits": [
+    "No ignore word is added.",
+    "No broad qualification directory exclusion is added.",
+    "No future or unregistered path is excluded by the added literal entries.",
+    "Some mixed frozen JSON receipts include explanatory prose; the exact-file exclusion is explicitly limited to these identified immutable receipts.",
+    "The original job failure remains historical evidence.",
+    "No native execution, product test, Codespell rerun, shared-source mutation or ref update was performed.",
+    "A fresh unchanged complete Codespell workflow is still required on the future candidate."
+  ],
+  "codespell_matching_primary": {
+    "repository": "codespell-project/codespell",
+    "ref": "v2.4.3",
+    "path": "codespell_lib/_codespell.py",
+    "blob": "994c5c4a662950b9eaf51ae2fb1ca2831d7dc59d",
+    "url": "https://github.com/codespell-project/codespell/blob/v2.4.3/codespell_lib/_codespell.py",
+    "observed_semantics": [
+      "GlobMatch uses fnmatch.fnmatch on exact file paths, file basenames and directory paths.",
+      "The comma-separated option cleaner strips each entry, including newlines and surrounding whitespace.",
+      "The hosted action uses the original repository workflow to join configuration continuation lines before passing its skip argument."
+    ],
+    "source_lines": {
+      "glob_match": [
+        177,
+        182
+      ],
+      "comma_cleaning": [
+        1277,
+        1289
+      ],
+      "full_path_matching": [
+        1503,
+        1508
+      ]
+    },
+    "limitation": "The official tagged source was read; the installed hosted wheel source bytes were not separately compared. No Codespell command was executed for this candidate."
+  }
+}

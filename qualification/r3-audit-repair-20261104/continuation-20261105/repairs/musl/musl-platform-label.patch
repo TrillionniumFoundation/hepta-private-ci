@@ -1,0 +1,13 @@
+diff --git a/.github/workflows/hepta-musl-product-smoke.yml b/.github/workflows/hepta-musl-product-smoke.yml
+--- a/.github/workflows/hepta-musl-product-smoke.yml
++++ b/.github/workflows/hepta-musl-product-smoke.yml
+@@ -190,8 +190,9 @@
+               platform_raw = run("cquery-platform", [*wrapper, "cquery", *options,
+                                  "--output=starlark", "--starlark:expr=str(target.label)",
+                                  target_platform])
+               platform_rows = [line.strip() for line in platform_raw.decode().splitlines() if line.strip()]
++              platform_rows = sorted(set(platform_rows))
+               if len(platform_rows) != 1:
+                   raise RuntimeError("expected one resolved explicit musl platform")
+               resolved_platform = platform_rows[0]
+               receipt["resolved_target_platform"] = resolved_platform

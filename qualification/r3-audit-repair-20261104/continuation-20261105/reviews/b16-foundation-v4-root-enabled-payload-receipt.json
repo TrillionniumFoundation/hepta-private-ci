@@ -1,0 +1,34 @@
+{
+  "schema": "hepta-b16-foundation-root-enabled-payload-v1",
+  "guard": "44ea9a99dfc040b87b02a90268d1bd4f89359e1b",
+  "guard_created_and_GET_verified": true,
+  "original_candidate_preserved": true,
+  "binding_changed_fields": [
+    "execute",
+    "approval_reference",
+    "last_tested_A_to_final_A_review"
+  ],
+  "request_changed_fields": [
+    "binding",
+    "root_execution_guard"
+  ],
+  "records": {
+    "binding": {
+      "path": "/workspace/scratch/07dd58cc9630/hepta-audit-fourth/inputs/b16-foundation-binding-ROOT-APPROVED-v1.json",
+      "bytes": 11545,
+      "sha256": "cb7d4f88b3e5c212f2521d6310e21432b57cd15bb3d2a21dc3e8fd1a62b9d1b7",
+      "blob": "7684454864c13ffa09449ede541f9aee52cf563c"
+    },
+    "request": {
+      "path": "/workspace/scratch/07dd58cc9630/hepta-audit-fourth/inputs/b16-foundation-launch-request-ROOT-APPROVED-v1.json",
+      "bytes": 539776,
+      "sha256": "0fb59a13a7b46c396698c48c0af6a75bac79e275deaa56e6a928b8b08287a835",
+      "blob": "acf306e8fefc76a3133d2ee12e4f2a8ee7313c72"
+    }
+  },
+  "install_bundle_unchanged": true,
+  "only_epoch": "foundation",
+  "root_authorizes_one_launch": true,
+  "native_launched_by_this_file_creation": false,
+  "planned_native_key": "hepta-rog-b16-foundation-v4-20261105-v1"
+}

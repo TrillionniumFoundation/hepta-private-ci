@@ -1,0 +1,647 @@
+{
+  "schema": "hepta-ci-original-evidence-immutable-batch-v1",
+  "created_at_utc": "2026-11-05T07:28:16.536138+00:00",
+  "cutoff_api_snapshot_utc": "2026-11-05T07:14:11.165Z",
+  "scope": "Increment after batch01: completed original Intel PTY failure before cancellation, Supervisor formatting failure with completed selected test scopes, Codespell frozen-evidence failures, both Mac V8 release smoke failures, original Windows Queue source+merge complete ZIPs and named bodies, Mac ARM source exec success, cancelled Windows exec source+merge completed scopes and incomplete resume, Linux merge incomplete server archive; complete API snapshot25 and 142-name original scope projection. No new execution.",
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "pr": 4797,
+  "head": "0e139b599f0fe451f80fb7db4b2913bb9c679dce",
+  "tree": "091e659e0da6602299fd14cfa93889191405edd8",
+  "ordinary_merge": "e93aefbbb33438f6ec67e995adcfe88657158487",
+  "run_attempt": 1,
+  "terminal_directories": [
+    "terminal/main-intel-127089468985",
+    "terminal/supervisor-linux-127072484642",
+    "terminal/codespell-127072483681",
+    "terminal/v8-arm-release-127079699775",
+    "terminal/v8-intel-release-127079699806",
+    "terminal/windows-process-source-127072481923",
+    "terminal/windows-process-merge-127072481736",
+    "terminal/exec-mac-arm-source-127072479643",
+    "terminal/exec-windows-source-127072479573",
+    "terminal/exec-windows-merge-127072479612",
+    "terminal/exec-linux-merge-127072479763"
+  ],
+  "supplemental_directories": [
+    "snapshot-0025"
+  ],
+  "file_count": 101,
+  "total_original_bytes": 29126247,
+  "files": [
+    {
+      "member": "named-original-exit-scope-current-v1.json",
+      "bytes": 116460,
+      "sha256": "452419986d43b5f46181971dc8ee4b4f0b4123916deaca4b5e6b61e7e6bda6b6",
+      "computed_git_blob": "2850ea7566e9a9d41878b36baaffc26dfb1ac81b"
+    },
+    {
+      "member": "review-uploads-0720.json",
+      "bytes": 1843,
+      "sha256": "1a239eb22df66e312b5159962ea8fa9642a94c05f05b4f2da5f7b3ce7deb37ca",
+      "computed_git_blob": "e79ac12c03aed7a9bd6ebcc1b00f0967a3f2bf8c"
+    },
+    {
+      "member": "snapshot-0025/complete-api-snapshot.json",
+      "bytes": 553418,
+      "sha256": "6c6a28cec5dd0dff97e5ee72bd643ecafb06ae8fba470938beae90b7db1977dc",
+      "computed_git_blob": "e8384e5ca5dd34c6b3876c08b0bb7e94628e2f67"
+    },
+    {
+      "member": "terminal/codespell-127072483681/candidate-scope-independent-review.json",
+      "bytes": 1599,
+      "sha256": "454659412f45e9282a4332ce6ee597e4523a5607713cee57edf156104ddde370",
+      "computed_git_blob": "53c7e4b97cc761d7b6493c66ab9e204f93853559"
+    },
+    {
+      "member": "terminal/codespell-127072483681/failure-projection.json",
+      "bytes": 162918,
+      "sha256": "67e59053c2d36b80c79affcfa71f7e99f095ac384c093cda3ba26d6c286a9bf8",
+      "computed_git_blob": "f403bd3d43bb7affb87f55eeede10e50798f7e3a"
+    },
+    {
+      "member": "terminal/codespell-127072483681/job.log",
+      "bytes": 128041,
+      "sha256": "3e4b92fe98b3ace3dbe04563d778c2f98dac8af8262e5c238592f1ef41f55dbb",
+      "computed_git_blob": "37d145538f3fb9a6b78cfe9b8369994a28db8c39"
+    },
+    {
+      "member": "terminal/codespell-127072483681/raw-download-envelope.json",
+      "bytes": 129521,
+      "sha256": "3fce12191a2e25e91df96575f6b14893c48fe01bb9c959fcfebf553ea470b756",
+      "computed_git_blob": "9ed8690cc2b4db7dca95a32a65563882c6b78156"
+    },
+    {
+      "member": "terminal/exec-linux-merge-127072479763/artifact-13395435469/artifact-verification.json",
+      "bytes": 1207,
+      "sha256": "5bba0288a03177a4864b1df9d27d6d2587b3581b624e00d57c73eb8a9986d6c7",
+      "computed_git_blob": "1e4090cc3e778a75d1df5cc76276d40c8ef5d9df"
+    },
+    {
+      "member": "terminal/exec-linux-merge-127072479763/artifact-13395435469/artifact.zip",
+      "bytes": 10540,
+      "sha256": "8e4aa927b72b08d8bf4d3b91c3e287d89baf34f4c3f6e3e287f3f82eff5bd65b",
+      "computed_git_blob": "3875731813730aeb5ebfe3c3aceeb99727d33418"
+    },
+    {
+      "member": "terminal/exec-mac-arm-source-127072479643/artifact-13394412428/artifact-verification.json",
+      "bytes": 3865,
+      "sha256": "e1ef9d96dc23f4df147ba827ce06bfea60146f9d34c860a08f96765d8484a093",
+      "computed_git_blob": "bbde74883cd757509e78edabb17064c673a348c2"
+    },
+    {
+      "member": "terminal/exec-mac-arm-source-127072479643/artifact-13394412428/artifact.zip",
+      "bytes": 62997,
+      "sha256": "7124b22b690ba0bdff4f9078a9641deca155c3fbd11926099a4d69759a69a36e",
+      "computed_git_blob": "23c3a90ff236046e881bb5cdc72f40bacf72b0b7"
+    },
+    {
+      "member": "terminal/exec-mac-arm-source-127072479643/artifact-13394412428/case-projection.json",
+      "bytes": 143405,
+      "sha256": "3fd180e90523f31ed3355b6f7403dcf2a36b36ee09efd4d8d5c394dd3f73c785",
+      "computed_git_blob": "49666b37255dbdf15170f309dd56576a1517e922"
+    },
+    {
+      "member": "terminal/exec-mac-arm-source-127072479643/artifact-13394412428/members/resume-junit.xml",
+      "bytes": 2877,
+      "sha256": "d6b20ecd8d98a62fd8bce85a34e3e66dc3a83215ab76e911200a3b861429d427",
+      "computed_git_blob": "ccce056553304c91c64766225b67ca38e5cc6470"
+    },
+    {
+      "member": "terminal/exec-mac-arm-source-127072479643/artifact-13394412428/members/resume.json",
+      "bytes": 859,
+      "sha256": "28e1de103c03a6300fb4129ad2e21ef9221f09301bd25ac1a17d65b92896ea4e",
+      "computed_git_blob": "992a896945ebeeec27fa597b82380c6ca486539f"
+    },
+    {
+      "member": "terminal/exec-mac-arm-source-127072479643/artifact-13394412428/members/resume.log",
+      "bytes": 80229,
+      "sha256": "324fe5f993095316251904129b8cd88f866f7e664d0dfc5c17e5d52344dc48f5",
+      "computed_git_blob": "fec5e67e665e9bdee4c7eb35438be0025d5f8351"
+    },
+    {
+      "member": "terminal/exec-mac-arm-source-127072479643/artifact-13394412428/members/retained.json",
+      "bytes": 5063,
+      "sha256": "8b67b0c7582d813d885147d9c9122f32aea1fe8fae89a139a68d1425f67dc59a",
+      "computed_git_blob": "871c1b3a4e84759004ce5d8c5f8e88ed9dd54a18"
+    },
+    {
+      "member": "terminal/exec-mac-arm-source-127072479643/artifact-13394412428/members/rollout-junit.xml",
+      "bytes": 25059,
+      "sha256": "42352e11843af5137d66b3bb3396ad3b7214911818f918955081b4e1759c3b6a",
+      "computed_git_blob": "ab21c770106527add3b80f479735542036bfffc5"
+    },
+    {
+      "member": "terminal/exec-mac-arm-source-127072479643/artifact-13394412428/members/rollout.json",
+      "bytes": 833,
+      "sha256": "bd05801e4efd8440e35c78fe563e1eae51091863e81a3a645c977fdea92e8c18",
+      "computed_git_blob": "abe84caf48abd6357a32e09b0dcacff4649370e7"
+    },
+    {
+      "member": "terminal/exec-mac-arm-source-127072479643/artifact-13394412428/members/rollout.log",
+      "bytes": 47921,
+      "sha256": "0e909323cb5ebfc3f16324ed57065761e7fa4bf8456420bfaaf56d70c7e5f806",
+      "computed_git_blob": "fb481eaa47606c01dd2b70118cbabd89a4f9f3b0"
+    },
+    {
+      "member": "terminal/exec-mac-arm-source-127072479643/artifact-13394412428/members/server-junit.xml",
+      "bytes": 81982,
+      "sha256": "558962c17bc5407799df154a0d80750a99c5f751d3a1b69642f56a3c79f5556e",
+      "computed_git_blob": "4b6f22be6a8bd522551a14e50eed25dee2ea180c"
+    },
+    {
+      "member": "terminal/exec-mac-arm-source-127072479643/artifact-13394412428/members/server.json",
+      "bytes": 971,
+      "sha256": "f1f9899611f9edfc629276bec3314a0c8ce1d6e9a8ab328f98defcfe4ee6b2c6",
+      "computed_git_blob": "56c4b85a2acc0004e5cbc3e575fac16080e8377d"
+    },
+    {
+      "member": "terminal/exec-mac-arm-source-127072479643/artifact-13394412428/members/server.log",
+      "bytes": 152483,
+      "sha256": "0fcef439f78e8bd7cb43e615dcb076a67ef19f1607f94594c1a92d3d42cdf958",
+      "computed_git_blob": "72c1eebdfe4ac06428751281652cec7b2a8838c9"
+    },
+    {
+      "member": "terminal/exec-mac-arm-source-127072479643/artifact-13394412428/members/source.json",
+      "bytes": 3948,
+      "sha256": "6b451e6fcfbeb58c1bd4f4bf3668c24f2362b7a13ab72119f99a3371cb3cfcfb",
+      "computed_git_blob": "41ebb6d61720f1f876a8df611b28d25a250a2d6b"
+    },
+    {
+      "member": "terminal/exec-mac-arm-source-127072479643/independent-review.json",
+      "bytes": 40396,
+      "sha256": "77aac092fa0c0b5490342ab0fe3b670d8de76c7f1d8b2452f28e54ce9423f39b",
+      "computed_git_blob": "22e1656536acd84900d7ce42f03bca85e792d978"
+    },
+    {
+      "member": "terminal/exec-mac-arm-source-127072479643/job.log",
+      "bytes": 1445540,
+      "sha256": "ca1c9fabcb7c77e75492996b0e2e877337c3894795af2c099d6da9cee4f7a251",
+      "computed_git_blob": "05bf9403d3b6de4d6062589eb64b062f5cf95bc3"
+    },
+    {
+      "member": "terminal/exec-mac-arm-source-127072479643/raw-download-envelope.json",
+      "bytes": 1456404,
+      "sha256": "b5030d1497961331723bd5768476edbb237b2b60f6279f1cd349b1b710318f44",
+      "computed_git_blob": "86f8fec472e8639808a3e65deb67baf4fbce7f50"
+    },
+    {
+      "member": "terminal/exec-windows-merge-127072479612/artifact-13394472706/artifact-verification.json",
+      "bytes": 2979,
+      "sha256": "b21d8306cef6409c0fff68def6343d4e5cbe845059841e9514bbd10ee3392402",
+      "computed_git_blob": "7f3123c5fc402a29c2e91197c78c23553d82c4c8"
+    },
+    {
+      "member": "terminal/exec-windows-merge-127072479612/artifact-13394472706/artifact.zip",
+      "bytes": 40052,
+      "sha256": "1575271a121ad7f2a7874769ab60b62ff0601e1ebcd66ce0852fe103af6c69dd",
+      "computed_git_blob": "553fae5873cd998522925ef582ff7458fd606d8b"
+    },
+    {
+      "member": "terminal/exec-windows-merge-127072479612/artifact-13394472706/members/resume.log",
+      "bytes": 22866,
+      "sha256": "07c02f43376f2815a4dcff6a1978a40335c7a033bd02702381667776ee853a38",
+      "computed_git_blob": "a9e80064926f958f616d04554473ebd01457f8d7"
+    },
+    {
+      "member": "terminal/exec-windows-merge-127072479612/artifact-13394472706/members/rollout-junit.xml",
+      "bytes": 24243,
+      "sha256": "8ff3b7e809adeabb1c104eb07fc4cce97649b4080f52a27fdae13b8d7a12ad98",
+      "computed_git_blob": "33a22ee42a4e54853e78f0531d36ec438a0c316e"
+    },
+    {
+      "member": "terminal/exec-windows-merge-127072479612/artifact-13394472706/members/rollout.json",
+      "bytes": 766,
+      "sha256": "40878e03a77bf73a09a84921cd529de8b70906e43dfa4e569d84b343f6b2aabd",
+      "computed_git_blob": "5f077179725f8e9d70294194c818f5819fba1a70"
+    },
+    {
+      "member": "terminal/exec-windows-merge-127072479612/artifact-13394472706/members/rollout.log",
+      "bytes": 47279,
+      "sha256": "6859bcb5e55a48c40741edba5bec7bfe5d69be2164cd10cbccd367fe83b089b5",
+      "computed_git_blob": "68579cdb2fbae2ef3d7faae6914739a825393328"
+    },
+    {
+      "member": "terminal/exec-windows-merge-127072479612/artifact-13394472706/members/server-junit.xml",
+      "bytes": 53113,
+      "sha256": "1753652326afa4a2462f6f2a99bc06ff9b25994c2b8b24a3dee2c7f1c47b439a",
+      "computed_git_blob": "02d6efecac9939fc22cc6fda646e92d8fec4e9d1"
+    },
+    {
+      "member": "terminal/exec-windows-merge-127072479612/artifact-13394472706/members/server.json",
+      "bytes": 790,
+      "sha256": "53917a6e3b131b8b9a853de137b235ba2599f526918b6ce120138c6b64255847",
+      "computed_git_blob": "d832904995f8a5375934c6e54d880953da4e2e04"
+    },
+    {
+      "member": "terminal/exec-windows-merge-127072479612/artifact-13394472706/members/server.log",
+      "bytes": 99511,
+      "sha256": "f226fe7428e9500d871a78000ab58a292ac68b2fe0f3233d9a93e8eefc55970f",
+      "computed_git_blob": "f871d92a5d6b24c9cbf5a4405a0dcbd1e9709f86"
+    },
+    {
+      "member": "terminal/exec-windows-merge-127072479612/artifact-13394472706/members/source.json",
+      "bytes": 3976,
+      "sha256": "39ebfc7929b8a4300ebda72e5818a7bb741621d5f344eab2d0298146758ae8f8",
+      "computed_git_blob": "db6928a4bfb41c37b20feb4f03e45a426cb912d9"
+    },
+    {
+      "member": "terminal/exec-windows-merge-127072479612/independent-review.json",
+      "bytes": 99358,
+      "sha256": "2ee689e3766a6964e44097fc11550cc59b738da1f9bdba943ae2d0218efb607f",
+      "computed_git_blob": "85e513aa861d9ef8d6a5c06e1a28b5030b6e572a"
+    },
+    {
+      "member": "terminal/exec-windows-merge-127072479612/job.log",
+      "bytes": 1523109,
+      "sha256": "7131909139b4bf78cc7a0e551c77a354db51a32d3392ffd250a2b4446edf6fc1",
+      "computed_git_blob": "6305aa55572afcee2524573aeb972d40e9aef7bb"
+    },
+    {
+      "member": "terminal/exec-windows-merge-127072479612/raw-download-envelope.json",
+      "bytes": 1544956,
+      "sha256": "6ba84f58203de2ae7f74c71bc389d4c58822218ea3467695560cc0cb10818ece",
+      "computed_git_blob": "1189ecdfbcab8c45f460821d6de57e9722fef2c5"
+    },
+    {
+      "member": "terminal/exec-windows-source-127072479573/artifact-13394292675/artifact-verification.json",
+      "bytes": 2980,
+      "sha256": "a1bed7dd89f0ceaa00d0bc71702794d1de0c77e907c481e18b2c162364e1aa94",
+      "computed_git_blob": "d4caadef7ff8a81c8961ff6204995cb43ddbce25"
+    },
+    {
+      "member": "terminal/exec-windows-source-127072479573/artifact-13394292675/artifact.zip",
+      "bytes": 37953,
+      "sha256": "2249f55f017b3faf79ecd30911e67a7ac3cc390def679ed964162d16a3a68b3c",
+      "computed_git_blob": "439639d28479c9c7f5f83459b112ab5d8aa61c6d"
+    },
+    {
+      "member": "terminal/exec-windows-source-127072479573/artifact-13394292675/case-projection.json",
+      "bytes": 101651,
+      "sha256": "86338687324f2749d1d8deb31c187fbf95fe5b9a1af59c02ac714195e53e0f18",
+      "computed_git_blob": "08a358d1dc51b060fd295da64d5a45a355575fa8"
+    },
+    {
+      "member": "terminal/exec-windows-source-127072479573/artifact-13394292675/members/resume.log",
+      "bytes": 12919,
+      "sha256": "94e24e402272d648d65f246aff054d81ad384ad4eaa2bdfb570762b9eb21233f",
+      "computed_git_blob": "5cdb220ce8a3d962503ef7aa012b8810d7f1379d"
+    },
+    {
+      "member": "terminal/exec-windows-source-127072479573/artifact-13394292675/members/rollout-junit.xml",
+      "bytes": 24242,
+      "sha256": "0ca7f27d5fc0cdcb02d5320ff6e51aa9cb5488fb0595a3e967223439f8a9d723",
+      "computed_git_blob": "69229f55d01d2b7be27b0946f8e55bdd53f6361f"
+    },
+    {
+      "member": "terminal/exec-windows-source-127072479573/artifact-13394292675/members/rollout.json",
+      "bytes": 766,
+      "sha256": "528d78741c8ac13aa4e66b83d87e5bab818528d11d3580821278c4664781f03c",
+      "computed_git_blob": "a5f81a51795f95d79d6234c65a26e95eb6569968"
+    },
+    {
+      "member": "terminal/exec-windows-source-127072479573/artifact-13394292675/members/rollout.log",
+      "bytes": 47279,
+      "sha256": "dcd26c62f5ae1ee1aead42f658684bab4496d30269badaef040f1bc157283256",
+      "computed_git_blob": "cb19f33082b21a203b0731e4b04008ce2172dec2"
+    },
+    {
+      "member": "terminal/exec-windows-source-127072479573/artifact-13394292675/members/server-junit.xml",
+      "bytes": 53113,
+      "sha256": "b384bf38cb1838a97dafe5751732bcd8a3e6716eafec413895a813789fecec9e",
+      "computed_git_blob": "3cf93c1b502d64d4d26085fe7dbb2279a6747d53"
+    },
+    {
+      "member": "terminal/exec-windows-source-127072479573/artifact-13394292675/members/server.json",
+      "bytes": 780,
+      "sha256": "82272c073b1c6fb1c53ed558266486ea35767dc9f4b2bb3e2db7ef84dfee733e",
+      "computed_git_blob": "d84a3e9948c06c710ae4a13b98bc4a6e35e8e83c"
+    },
+    {
+      "member": "terminal/exec-windows-source-127072479573/artifact-13394292675/members/server.log",
+      "bytes": 99511,
+      "sha256": "062c3d2e58fc7b983eaa4f6093db706bfd89e38b8d8d4de48d8777fe620c74b9",
+      "computed_git_blob": "37f30eb222a38e716ef3809241d70d3fc10bb0c4"
+    },
+    {
+      "member": "terminal/exec-windows-source-127072479573/artifact-13394292675/members/source.json",
+      "bytes": 3976,
+      "sha256": "cae04cb2dfdc63465f9f224300c73a9a5dd7172f2c3972e120ff5bfa9a835ead",
+      "computed_git_blob": "594acef2d8e36c8534336b82fecc626c548f05b2"
+    },
+    {
+      "member": "terminal/exec-windows-source-127072479573/independent-review.json",
+      "bytes": 9745,
+      "sha256": "38c9347666d9a78d0191ea6e755cfd32132b2adff1a97286e932bf83ef514a74",
+      "computed_git_blob": "93ce163afb7138319b374030ed2d7ad91a2e3cc0"
+    },
+    {
+      "member": "terminal/exec-windows-source-127072479573/job.log",
+      "bytes": 1522352,
+      "sha256": "3b03d296e69e6f3830e7d60967ce1f980d3aeb46338bfd4fd79e3646be489ed7",
+      "computed_git_blob": "ec58dd9f283cbba83aa15300cbc018025351ca26"
+    },
+    {
+      "member": "terminal/exec-windows-source-127072479573/raw-download-envelope.json",
+      "bytes": 1544142,
+      "sha256": "a1f58583d1dcd3b3a1647a04006455f69cde67e4fd07dbeed67022626e90f2ae",
+      "computed_git_blob": "153060eb0ab77d5dd88dc42de32578f7371901cf"
+    },
+    {
+      "member": "terminal/main-intel-127089468985/job.log",
+      "bytes": 767416,
+      "sha256": "dc3b6664bc61ef353c4fe2d231efc198182536671a6297f2c89b0dfa0e57c49a",
+      "computed_git_blob": "656a22c4111f15f2371c0b80a01be2a5f168cd72"
+    },
+    {
+      "member": "terminal/main-intel-127089468985/observed-context.json",
+      "bytes": 2206,
+      "sha256": "841913b6bdbbaa2d9d514d98fe88d0fcf13cbc528dcfd88e362fa29a595e5480",
+      "computed_git_blob": "907f1132258cb598310a2060d97b6b76179f57b5"
+    },
+    {
+      "member": "terminal/main-intel-127089468985/pty-complete-original-block.log.txt",
+      "bytes": 4201,
+      "sha256": "65b4c2f87c1884ae35fae23c446a63bfd1759c6d71587bc9281d3ad8dabf1d2d",
+      "computed_git_blob": "250f40c525487766375be11391751fbfeb349c5c"
+    },
+    {
+      "member": "terminal/main-intel-127089468985/raw-download-envelope.json",
+      "bytes": 776520,
+      "sha256": "46aabdb130b1228b3226c1aa267f7d637d679ae94b56f86f2dafc044190ebcdb",
+      "computed_git_blob": "b268eae0b9b2a5a5c087bac0bf3bab3d9cac7179"
+    },
+    {
+      "member": "terminal/main-intel-127089468985/target-outcome-projection.json",
+      "bytes": 12497,
+      "sha256": "812e052e0bcd6a79bac75bb77ce4a6d232fee6fed5699af222843788c9bf9a04",
+      "computed_git_blob": "558413422aa913f7fa758d352ed715c657d13891"
+    },
+    {
+      "member": "terminal/supervisor-linux-127072484642/artifact-13393658983/artifact-verification.json",
+      "bytes": 909,
+      "sha256": "8eee812f2634502612f4fdd5ac3cdd76f9fb8eaf1a7636273328b54b160da8c5",
+      "computed_git_blob": "d74f39f0ab261a4a95392c72861f00e56aca2328"
+    },
+    {
+      "member": "terminal/supervisor-linux-127072484642/artifact-13393658983/artifact.zip",
+      "bytes": 532,
+      "sha256": "ba42f205d0db88fc737e58d6fb32bc3aa74f546a5f81ccc6eb1264e7932ba4bc",
+      "computed_git_blob": "09e7745bc95c268988290ec9f669559f6271a95a"
+    },
+    {
+      "member": "terminal/supervisor-linux-127072484642/artifact-13393658983/members/junit.xml",
+      "bytes": 1282,
+      "sha256": "cb1a03c312659c3056eea20e2a5a9538d720296ccbdba73419210960e8e6fb80",
+      "computed_git_blob": "8c0fcabb20dd0f613c7f8358fa8647eb7827224d"
+    },
+    {
+      "member": "terminal/supervisor-linux-127072484642/artifact-13394481128/artifact-verification.json",
+      "bytes": 909,
+      "sha256": "0e2dc146dd12f7b5f4172f5b332aaecd9baf5dfc6a2312a704f780dfa45f5c96",
+      "computed_git_blob": "b428192e61d94e8845023ff8342b0539873fc21c"
+    },
+    {
+      "member": "terminal/supervisor-linux-127072484642/artifact-13394481128/artifact.zip",
+      "bytes": 804,
+      "sha256": "de2d1c7773a98dada371fcf8754d13b6e6fb26aad0087cf6b0eef1d6cfcf23a9",
+      "computed_git_blob": "45522f62168043cfd300af4c915a018c2eca9841"
+    },
+    {
+      "member": "terminal/supervisor-linux-127072484642/artifact-13394481128/members/junit.xml",
+      "bytes": 3239,
+      "sha256": "6157a86edef90e3d707135ecd3a6f83342bb3ac09468d4ba8bd3740b4bd4e045",
+      "computed_git_blob": "ea58b320074344005da2e45edbd1eecfbc87a2e0"
+    },
+    {
+      "member": "terminal/supervisor-linux-127072484642/job.log",
+      "bytes": 1645489,
+      "sha256": "c3f1443d668d8441b45afd20a302ac8dad45e6b1cb00dd85401b59a47f9ca82c",
+      "computed_git_blob": "1c196e9825912858e2167bac1351305ddca03f5f"
+    },
+    {
+      "member": "terminal/supervisor-linux-127072484642/raw-download-envelope.json",
+      "bytes": 1657719,
+      "sha256": "cf82c775959263eb66b31b7e8f353b5eedfa8e889800785fd9d0cfc0513c3ed5",
+      "computed_git_blob": "dc4f690bfb667d8b89e15ecd47de1bc12ecc44e6"
+    },
+    {
+      "member": "terminal/v8-arm-release-127079699775/candidate-independent-review.json",
+      "bytes": 2378,
+      "sha256": "84fecd42639a5517f36eb101a699bf9a20b8dc08c02850d9f82a520c51e85323",
+      "computed_git_blob": "2671b636d152c88aba76308b6021413c6d9e628a"
+    },
+    {
+      "member": "terminal/v8-arm-release-127079699775/failure-context.json",
+      "bytes": 2876,
+      "sha256": "3ca8750d68137eca6bd7167996f1b815d7801680c33e4621e94b4271bc28d41d",
+      "computed_git_blob": "d98a7f4bca409dbf29ab68c04dc5b4d11308cab0"
+    },
+    {
+      "member": "terminal/v8-arm-release-127079699775/job.log",
+      "bytes": 529590,
+      "sha256": "7b8a2678b4567d27ed2d63eb452904376e8735ee90e80fcd7c2dc62d1f3b257d",
+      "computed_git_blob": "d114c765eaaa0b22ac1f9b91d8958f404d792cc3"
+    },
+    {
+      "member": "terminal/v8-arm-release-127079699775/raw-download-envelope.json",
+      "bytes": 540728,
+      "sha256": "3b56574b8ef8d5234045793dfef6c655afcf22330c2faca1aae9c1257ae1aab6",
+      "computed_git_blob": "0fe7dd537717632e2091b3a0f54ed9eab067bd7e"
+    },
+    {
+      "member": "terminal/v8-intel-release-127079699806/failure-context.json",
+      "bytes": 2878,
+      "sha256": "09d2dc65372bde1b05a5f7779d26f316f53582004cbe4215b1c8ab3bcdc93356",
+      "computed_git_blob": "8fb9bf8fe1e967a6938bdd9810a8175392e2aee5"
+    },
+    {
+      "member": "terminal/v8-intel-release-127079699806/job.log",
+      "bytes": 538730,
+      "sha256": "c0f6311813fa1eaf8fb8aec8911941934bb0cda26dc988b0643622f117e1af63",
+      "computed_git_blob": "bbdd1986755c97c83e4db6c94caef1da9ffaa371"
+    },
+    {
+      "member": "terminal/v8-intel-release-127079699806/raw-download-envelope.json",
+      "bytes": 549988,
+      "sha256": "5991740660efc30fc286bc81eb551659cbf9db9255e1a521acfd5933df2c37fb",
+      "computed_git_blob": "e7bda6f65b1111a7f675851078c9a2e2e0f21116"
+    },
+    {
+      "member": "terminal/windows-process-merge-127072481736/artifact-13395345593/artifact-verification.json",
+      "bytes": 4050,
+      "sha256": "049d9e0e023bf7c9a0d521cf0ffbc251ec12537346892644ff9d22ec72d2b559",
+      "computed_git_blob": "b7eba5cdfa0b6d2035192c0e90629dcd87b9b868"
+    },
+    {
+      "member": "terminal/windows-process-merge-127072481736/artifact-13395345593/artifact.zip",
+      "bytes": 4544797,
+      "sha256": "e3fb9973a53f7316883931faf9ca5a19ec2985d3c417c7b710ee8482868fc369",
+      "computed_git_blob": "9833699e6165214ee7a05e4d054562b27e0ce37b"
+    },
+    {
+      "member": "terminal/windows-process-merge-127072481736/artifact-13395345593/selected-extracted/bazel-execution-logs/selected-target-test-logs/invocation-xpaxodf0/manifest.json",
+      "bytes": 4550,
+      "sha256": "c1ef1f6bd10d040c85dce02a1e77ccf07ede91f60f41cc93ec5a87dfb9cbc061",
+      "computed_git_blob": "26a1fcaeee77448cb2a58e11d5427112b5682c07"
+    },
+    {
+      "member": "terminal/windows-process-merge-127072481736/artifact-13395345593/selected-extracted/bazel-execution-logs/selected-target-test-logs/invocation-xpaxodf0/targets/0000/test.log",
+      "bytes": 2852,
+      "sha256": "940897acc47070a93517b2fceb482c8da602f8359fdf5f7c207934c1ab024f5e",
+      "computed_git_blob": "af28bb0bf990a5f63e2f3a0f8197e4800c0c2a98"
+    },
+    {
+      "member": "terminal/windows-process-merge-127072481736/artifact-13395345593/selected-extracted/bazel-execution-logs/selected-target-test-logs/invocation-xpaxodf0/targets/0000/test.xml",
+      "bytes": 3197,
+      "sha256": "c72d9a21c7b10c2100c94fbb1acf93fb1061230343eee4b81f74c31ae95e8345",
+      "computed_git_blob": "678041452f4627a8a74e481f9ba8c3b311ecb11d"
+    },
+    {
+      "member": "terminal/windows-process-merge-127072481736/artifact-13395345593/selected-extracted/bazel-process-evidence/git-utils-unit-tests-test.log",
+      "bytes": 4328,
+      "sha256": "dcead6d0e3b16b3464ecb96180cbede260ee1bfabd9c361e794767892be2fd58",
+      "computed_git_blob": "55b37494a56a09cd6d1e4c657dc7f4e542880774"
+    },
+    {
+      "member": "terminal/windows-process-merge-127072481736/artifact-13395345593/selected-extracted/bazel-process-evidence/git-utils-unit-tests-test.xml",
+      "bytes": 4665,
+      "sha256": "2e04b89552f5c3583f9f534aa8b3330a45eaf200e28e8b218f1082a16bfec3f1",
+      "computed_git_blob": "8b026da897c7859b57226da1f83b527820d93875"
+    },
+    {
+      "member": "terminal/windows-process-merge-127072481736/artifact-13395345593/selected-extracted/bazel-process-evidence/queue-queue_service-test-test.log",
+      "bytes": 2852,
+      "sha256": "940897acc47070a93517b2fceb482c8da602f8359fdf5f7c207934c1ab024f5e",
+      "computed_git_blob": "af28bb0bf990a5f63e2f3a0f8197e4800c0c2a98"
+    },
+    {
+      "member": "terminal/windows-process-merge-127072481736/artifact-13395345593/selected-extracted/bazel-process-evidence/queue-queue_service-test-test.xml",
+      "bytes": 3197,
+      "sha256": "c72d9a21c7b10c2100c94fbb1acf93fb1061230343eee4b81f74c31ae95e8345",
+      "computed_git_blob": "678041452f4627a8a74e481f9ba8c3b311ecb11d"
+    },
+    {
+      "member": "terminal/windows-process-merge-127072481736/artifact-13395345593/selected-extracted/bazel-process-evidence/retained.json",
+      "bytes": 1338,
+      "sha256": "dee7dfd0b3655984df7cdeab00429ad21586c258b0e3a63938b897bd7921261c",
+      "computed_git_blob": "f771b6807ccde3c34a7c032876f233cb6dd33696"
+    },
+    {
+      "member": "terminal/windows-process-merge-127072481736/artifact-13395345593/selected-extracted/bazel-process-evidence/source.json",
+      "bytes": 2718,
+      "sha256": "f83b53b6dc0a011430a20f57380226c6a535e70693b63de22ebfd756ca430e89",
+      "computed_git_blob": "10ee85b565b5268da7e024ccb5c5f01a4e7d3af5"
+    },
+    {
+      "member": "terminal/windows-process-merge-127072481736/independent-review.json",
+      "bytes": 27516,
+      "sha256": "3d985bab43e1e24eaa0a25960fa1d33d9b13a6a6e132941c663a09f435053035",
+      "computed_git_blob": "7d009f9be8f0666b3a399cdcf6973f2205e3f1f9"
+    },
+    {
+      "member": "terminal/windows-process-merge-127072481736/job.log",
+      "bytes": 315316,
+      "sha256": "9f9ddbf1de6004fd93903301986b249b290a7dab56c27b1dbf98f68ae1f3d5df",
+      "computed_git_blob": "f39b31123dbc353a5a08be540bf8680ea83b2e95"
+    },
+    {
+      "member": "terminal/windows-process-merge-127072481736/raw-download-envelope.json",
+      "bytes": 333680,
+      "sha256": "01bdff7b3fc59347f5061c094cb0b41d4f1f734a5a8664fb732ca752d1d73db6",
+      "computed_git_blob": "e62d691ac2f7eba8690883b54a47e6ac0f5fcdf8"
+    },
+    {
+      "member": "terminal/windows-process-source-127072481923/artifact-13394583642/artifact-verification.json",
+      "bytes": 4051,
+      "sha256": "4f0f71f895ddfa1d898d9ccd0537197cff2f31c8a647ef13f426b2e4360d2cf1",
+      "computed_git_blob": "80b1cd14e920104897a406eebe65c6f5dabfceba"
+    },
+    {
+      "member": "terminal/windows-process-source-127072481923/artifact-13394583642/artifact.zip",
+      "bytes": 4540087,
+      "sha256": "00c60c6c902866a766e3b14738ae90bf9050249e28a2e7374628e8333441f93f",
+      "computed_git_blob": "b22f6f85d37563e734b5522428a8ba0c0d73d91e"
+    },
+    {
+      "member": "terminal/windows-process-source-127072481923/artifact-13394583642/selected-extracted/bazel-execution-logs/selected-target-test-logs/invocation-fwrqgz96/manifest.json",
+      "bytes": 4550,
+      "sha256": "c5129b3cbfc94261fda36cbfe4cd52a8914afa479fc43418db2362b871d242cb",
+      "computed_git_blob": "46ceb8cf45ba2faaa3888465c2a07665d581043e"
+    },
+    {
+      "member": "terminal/windows-process-source-127072481923/artifact-13394583642/selected-extracted/bazel-execution-logs/selected-target-test-logs/invocation-fwrqgz96/targets/0000/test.log",
+      "bytes": 2852,
+      "sha256": "d2aaa230f186e1ab89be9b2399f37f4e8b53e4b788808e4a13d69d1296e2d900",
+      "computed_git_blob": "e0023cd194f3d821f85ac5141fd57c278d693d06"
+    },
+    {
+      "member": "terminal/windows-process-source-127072481923/artifact-13394583642/selected-extracted/bazel-execution-logs/selected-target-test-logs/invocation-fwrqgz96/targets/0000/test.xml",
+      "bytes": 3197,
+      "sha256": "a668e6373d45ebd5548ec7b69ec3b7b9347598afd3d395b2e9a94118be6b181e",
+      "computed_git_blob": "aca335ecd5c0e3156965b0a0a4456a95c60ca554"
+    },
+    {
+      "member": "terminal/windows-process-source-127072481923/artifact-13394583642/selected-extracted/bazel-process-evidence/git-utils-unit-tests-test.log",
+      "bytes": 4328,
+      "sha256": "f88dcf8c93660fd238f4d68e8ec8e4c1bca30910454bc107755cf804313d2cb4",
+      "computed_git_blob": "069bf047bbde138e8622b0d1af85befb67b57713"
+    },
+    {
+      "member": "terminal/windows-process-source-127072481923/artifact-13394583642/selected-extracted/bazel-process-evidence/git-utils-unit-tests-test.xml",
+      "bytes": 4667,
+      "sha256": "51697a9fe962ba832a9253a8d14c145c20a0e76a78cf2c1ca77d123a8196fec3",
+      "computed_git_blob": "95fda17c74f942eff3680ed9bf9051cc07d79961"
+    },
+    {
+      "member": "terminal/windows-process-source-127072481923/artifact-13394583642/selected-extracted/bazel-process-evidence/queue-queue_service-test-test.log",
+      "bytes": 2852,
+      "sha256": "d2aaa230f186e1ab89be9b2399f37f4e8b53e4b788808e4a13d69d1296e2d900",
+      "computed_git_blob": "e0023cd194f3d821f85ac5141fd57c278d693d06"
+    },
+    {
+      "member": "terminal/windows-process-source-127072481923/artifact-13394583642/selected-extracted/bazel-process-evidence/queue-queue_service-test-test.xml",
+      "bytes": 3197,
+      "sha256": "a668e6373d45ebd5548ec7b69ec3b7b9347598afd3d395b2e9a94118be6b181e",
+      "computed_git_blob": "aca335ecd5c0e3156965b0a0a4456a95c60ca554"
+    },
+    {
+      "member": "terminal/windows-process-source-127072481923/artifact-13394583642/selected-extracted/bazel-process-evidence/retained.json",
+      "bytes": 1338,
+      "sha256": "76c274f010e6c8a86a07ccf6662d869d31cd9a417a265dcd6e5c861c74a1aa2b",
+      "computed_git_blob": "f0bdba807ff90d05fe426f79cfb8d1cc0033613e"
+    },
+    {
+      "member": "terminal/windows-process-source-127072481923/artifact-13394583642/selected-extracted/bazel-process-evidence/source.json",
+      "bytes": 2718,
+      "sha256": "41302a987a6294c3a10615552d72efd24e9269e0a5b9df0b8979cf368d87bbe4",
+      "computed_git_blob": "cdec261ec4301b7db4592d19083d06f4f36833bf"
+    },
+    {
+      "member": "terminal/windows-process-source-127072481923/independent-review.json",
+      "bytes": 27524,
+      "sha256": "6cc8b1657063a839f9c62f2f206e8fd228e28b2edac1d20a42bc6a4b1be53a61",
+      "computed_git_blob": "dd919129fac0aff06f18fee03c1c4ce6a973f798"
+    },
+    {
+      "member": "terminal/windows-process-source-127072481923/job.log",
+      "bytes": 312917,
+      "sha256": "2f222b76fd463489304fea67aaa56a14695098645f55ae484fb0ab5ffc2e4a44",
+      "computed_git_blob": "99330f0cd1d01722926af4235e8728313901c245"
+    },
+    {
+      "member": "terminal/windows-process-source-127072481923/raw-download-envelope.json",
+      "bytes": 331236,
+      "sha256": "c88e36bb9e9d42ddd935943387d221fac89f22c99ca2ac018ad2bb92f7d2d1ee",
+      "computed_git_blob": "789de26615b2159f4966aa98bb96b5277a27cfd5"
+    }
+  ],
+  "limits": [
+    "This is an immutable explicit cutoff; Objective Agentd still running at the API cutoff is not part of these terminal evidence folders.",
+    "A cancelled job may retain completed scoped results. Missing resume XML/receipt and missing final source-retained receipt are not inferred from other successful scopes.",
+    "No cancellation actor or cause is inferred. Intel actual PTY failed before generic cancellation.",
+    "ZIP original bytes and member receipts are both retained. Existing extracted files are byte-preserving read artifacts, not additional tests.",
+    "API snapshot fields are not a simultaneous atomic observation and no target total replaces named case bodies.",
+    "Static candidate reviews where present are unexecuted and do not alter original outcomes.",
+    "Member computed_git_blob values are identities only; actual reachability is through this transport."
+  ]
+}

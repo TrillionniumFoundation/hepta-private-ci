@@ -1,0 +1,166 @@
+{
+  "schema": "hepta-fifth-source-and-publication-state-v1",
+  "observed_utc": "2026-11-05 07:45:17 UTC",
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "product_PR": {
+    "number": 4797,
+    "branch": "fix/r3-original-product-contracts-20261104",
+    "head": "0e139b599f0fe451f80fb7db4b2913bb9c679dce",
+    "tree": "091e659e0da6602299fd14cfa93889191405edd8",
+    "base": "63652be658ebed8d3052eb789b951793384fd5e4",
+    "draft": true,
+    "state": "open",
+    "unchanged_this_batch": true
+  },
+  "reviewed_unpublished_product_candidate": {
+    "commit": "814dbd8a4b16be1b63303ab1455a8d9b43aa4e0a",
+    "tree": "64918386b5de73209da15250dbb3f378b97f43f8",
+    "commits": [
+      {
+        "sha": "15bc63cea4cfd439b857f12f2f73c1c0efc91d23",
+        "tree": "61be8c6ffbada7b6eaa345a844e956b8604d868d",
+        "parents": [
+          "0e139b599f0fe451f80fb7db4b2913bb9c679dce"
+        ]
+      },
+      {
+        "sha": "c70bedd9d2aa69eb6af4e6205a4c0a760db2b341",
+        "tree": "57ca89232ed8941f14fd4a9129ba601324032798",
+        "parents": [
+          "15bc63cea4cfd439b857f12f2f73c1c0efc91d23"
+        ]
+      },
+      {
+        "sha": "f1484b3b39eeb206aab66cad7f75eeb08b79d614",
+        "tree": "1478fcc50cf9f7c6efe316a9119522c87afc8f24",
+        "parents": [
+          "c70bedd9d2aa69eb6af4e6205a4c0a760db2b341"
+        ]
+      },
+      {
+        "sha": "26a651d8cbcf44ca9b7b2e0f70604bf7da742994",
+        "tree": "905d96976fb339d2935ffd0d8f0949fee3f9585d",
+        "parents": [
+          "f1484b3b39eeb206aab66cad7f75eeb08b79d614"
+        ]
+      },
+      {
+        "sha": "814dbd8a4b16be1b63303ab1455a8d9b43aa4e0a",
+        "tree": "64918386b5de73209da15250dbb3f378b97f43f8",
+        "parents": [
+          "26a651d8cbcf44ca9b7b2e0f70604bf7da742994"
+        ]
+      }
+    ],
+    "files": [
+      {
+        "path": ".codespellrc",
+        "blob": "65a515a423f52fcea3c0e6462b913d7d3abb6fa1",
+        "status": "modified",
+        "additions": 156,
+        "deletions": 1
+      },
+      {
+        "path": ".github/workflows/hepta-musl-product-smoke.yml",
+        "blob": "fb46a681b5c3cd47c76b20ef56048eae771d9e07",
+        "status": "modified",
+        "additions": 1,
+        "deletions": 0
+      },
+      {
+        "path": ".github/workflows/v8-canary.yml",
+        "blob": "648a83164c0dd1c28499eaa17f842a83bb2aab04",
+        "status": "modified",
+        "additions": 1,
+        "deletions": 1
+      },
+      {
+        "path": "codex-rs/utils/pty/src/process.rs",
+        "blob": "f0e9ccde6829f0d0fb6bd59e154360018856b7fc",
+        "status": "modified",
+        "additions": 30,
+        "deletions": 0
+      },
+      {
+        "path": "codex-rs/utils/pty/src/pty.rs",
+        "blob": "e2e294464a2db6b65370afd98b7d49250ddaae2f",
+        "status": "modified",
+        "additions": 11,
+        "deletions": 0
+      },
+      {
+        "path": "codex-rs/utils/pty/src/tests.rs",
+        "blob": "25836a08f9ff9a90b14204059d2544749a0f5461",
+        "status": "modified",
+        "additions": 4,
+        "deletions": 0
+      },
+      {
+        "path": "codex-rs/utils/pty/src/unix_io.rs",
+        "blob": "67168dab510c9fd400a1cbcf4b4a6bb905b73c59",
+        "status": "modified",
+        "additions": 53,
+        "deletions": 4
+      },
+      {
+        "path": "codex-rs/utils/pty/src/unix_io_diagnostics.rs",
+        "blob": "393cceaa6544e3de4f4ca41579bc48ebf95582fd",
+        "status": "added",
+        "additions": 143,
+        "deletions": 0
+      },
+      {
+        "path": "codex-rs/windows-sandbox-rs/src/delete_permission_matrix_tests.rs",
+        "blob": "6f05793ec6ee043a933073ada3a1bf9122de5a73",
+        "status": "modified",
+        "additions": 3,
+        "deletions": 2
+      }
+    ]
+  },
+  "native_scoped_candidate": {
+    "commit": "1ddadae2c1bcb3c48047d2692565606833e87909",
+    "tree": "73f4b30499524d6137bb8f4b40c3977de286d1a5",
+    "parent": "20fd174ded4e5ce01bda34e4f6d1d74803301f49",
+    "base_code_tree": "4a3374e22e16ce5c764288ad018cd9affadf94ea",
+    "same_exact_nine_code_CI_postimages": true,
+    "publication_evidence_excluded_from_native_formatting": true,
+    "existing_verified_evidence_overlay": {
+      "base_code_tree": "4a3374e22e16ce5c764288ad018cd9affadf94ea",
+      "expected_publication_tree": "091e659e0da6602299fd14cfa93889191405edd8",
+      "overlay_entries": 996,
+      "all_in_qualification_prefix": true
+    },
+    "bridge_argument": "The prior996 publication entries all lie under qualification/r3-audit-repair-20261104. Each of the nine new code/CI paths lies outside that prefix. The same nine overlays were actually applied to the verified4a native base and091e publication base, so the only remaining tree difference is the preserved publication evidence overlay. This is source-composition reasoning, not full-tree test qualification.",
+    "project_test_fix_format_pending": true
+  },
+  "audit_ref": {
+    "branch": "audit/r3-evidence-20261105",
+    "head": "2ca528f625f1d24de2909ced4f26fd05fe8fd767",
+    "tree": "64918386b5de73209da15250dbb3f378b97f43f8",
+    "parents": [
+      "814dbd8a4b16be1b63303ab1455a8d9b43aa4e0a",
+      "1ddadae2c1bcb3c48047d2692565606833e87909"
+    ],
+    "creation_via_create_branch_succeeded_and_GET_verified": true,
+    "initial_update_ref_on_absent_branch_returned_422_preserved": true,
+    "initial_failed_update_did_not_create_branch": true,
+    "bridge_update_used_expected_sha_and_force_false": true,
+    "no_PR_or_CI_dispatch_or_cancellation": true
+  },
+  "root_reviews": {
+    "first_two": "b6c2e8da0e9b258c6a161afa9ececff1de45494a",
+    "codespell": "a0f70e0b724f3e7b1abd96ad11ea2edd85b8d568",
+    "v8": "f1f4201598cd32e6e6d1fdb921afa72cef7816b3",
+    "pty_observation": "1eb147d1d358d48bb51172387c2e763df4d5b080",
+    "ai395_bootstrap_guard": "967ef896907e698a07e8028e049a47e934570b1d"
+  },
+  "B_native_baseline_unchanged": "4a3374e22e16ce5c764288ad018cd9affadf94ea",
+  "all_blockers_closed": false,
+  "original_blocker_counts": {
+    "closed_scoped": 8,
+    "open": 14,
+    "scientific_hold": 1
+  },
+  "no_original_exit_condition_or_status_class_changed": true
+}

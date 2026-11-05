@@ -1,0 +1,58 @@
+{
+  "schema": "hepta-ai395-cold-bootstrap-root-execution-guard-v1",
+  "observed_at_utc": "2026-11-05 07:20:33 UTC",
+  "execute": true,
+  "host": "ai395",
+  "approved_plan": {
+    "blob": "80e01271a43a894e35818715c70d55579c382eac",
+    "bytes": 14420,
+    "sha256": "8fffcd480b6708b16e6bf98182679de5f82f5e5c4567478258aaa37f704a85d8"
+  },
+  "authorized_stages": [
+    "P0",
+    "P1",
+    "P2",
+    "P3",
+    "P4"
+  ],
+  "purpose": "Create one new owned workspace and independently establish a BUILD_ONLY exact4a baseline for B16. This does not enable any B epoch or claim A test qualification.",
+  "owned_root": "/home/qq/work/hepta-audit-b16-20261105",
+  "required_absent_before_creation": true,
+  "source_commit": "20fd174ded4e5ce01bda34e4f6d1d74803301f49",
+  "source_tree": "4a3374e22e16ce5c764288ad018cd9affadf94ea",
+  "exact_plan_tools_and_hashes_required": true,
+  "cold_start_available_minimum_bytes": 200000000000,
+  "each_preparation_command_available_minimum_before_after_bytes": 64000000000,
+  "capacity_is_conditional_planning_not_peak_proof": true,
+  "allowed": [
+    "Exact Git init/fetch/checkout in the previously absent owned source",
+    "Official pinned tools and dependency artifacts in owned paths, with actual hashes and versions",
+    "Original six-helper normal build, full locked metadata and full unfiltered catalog",
+    "Own evidence, raw command receipts, source/index/lock/tool identity guards"
+  ],
+  "prohibited": [
+    "A Rust test execution",
+    "B source mutations or tests",
+    "Any later B epoch",
+    "Source/recipe/dependency lock edits",
+    "User/system toolchain default changes",
+    "sudo/system configuration changes",
+    "Credential content reads or copying",
+    "Existing host data or cache deletion",
+    "ROG file changes",
+    "Rewriting historical ROG test receipts or paths",
+    "Budgets, oracles, scopes or zero-retry weakening"
+  ],
+  "additional_execution_requirements": [
+    "Preserve the frozen proposal with execute=false; this separate exact guard authorizes its P0-P4 actions.",
+    "Use distinct idempotency keys for staged original jobs and preserve each failed or incomplete attempt. Do not hide controller transport errors or treat them as native conclusions.",
+    "P0 includes a bounded observation of existing compilation-injection environment variable names. Unexpected RUSTC_WRAPPER, RUSTC_WORKSPACE_WRAPPER, RUSTFLAGS or CARGO_ENCODED_RUSTFLAGS must be explicitly reviewed rather than silently inherited into the pinned build; do not print credential values.",
+    "No fallback source, version, checksum or credential route after a failed fixed fetch or supply check. Preserve the failure and return its concrete cause.",
+    "Source/index/locks/recipe guard comparisons must use this newly measured host baseline; the new HEAD is20fd and must not be relabelled as ROG cabc.",
+    "All pre/post guard, raw stdout/stderr, process exit, timeout/cancellation and capacity observations remain distinct. No A PASS is manufactured from a successful catalog.",
+    "Stop after frozen build-only receipts. A narrow explicit new-host build-only provenance branch in the B runtime still needs independent root review and a separate enabled foundation guard."
+  ],
+  "b_foundation_execute": false,
+  "driver_or_later_epochs_execute": false,
+  "original_rog_artifacts_preserved": true
+}

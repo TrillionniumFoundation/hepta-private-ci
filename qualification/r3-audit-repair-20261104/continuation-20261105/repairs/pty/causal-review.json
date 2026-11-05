@@ -1,0 +1,207 @@
+{
+  "schema": "hepta-intel-pty-remaining-drain-causal-review-v1",
+  "created_utc": "2026-11-05T07:15:06.407967+00:00",
+  "status": "EXACT_INTEL_CASE_FAILED_CAUSE_OPEN",
+  "source_head": "0e139b599f0fe451f80fb7db4b2913bb9c679dce",
+  "actual_merge": "e93aefbbb33438f6ec67e995adcfe88657158487",
+  "actual_tree": "091e659e0da6602299fd14cfa93889191405edd8",
+  "run_id": 41975255726,
+  "job_id": 127089468985,
+  "job_terminal": "cancelled",
+  "test_target": "//codex-rs/utils/pty:pty-unit-tests",
+  "case": "tests::pty_dropped_output_receiver_keeps_draining_child",
+  "original_evidence": [
+    {
+      "path": "research-audit/published-0e139-ci-20261105/terminal/main-intel-127089468985/job.log",
+      "bytes": 767416,
+      "sha256": "dc3b6664bc61ef353c4fe2d231efc198182536671a6297f2c89b0dfa0e57c49a",
+      "git_content_hash": "656a22c4111f15f2371c0b80a01be2a5f168cd72"
+    },
+    {
+      "path": "research-audit/published-0e139-ci-20261105/terminal/main-intel-127089468985/pty-complete-original-block.log.txt",
+      "bytes": 4201,
+      "sha256": "65b4c2f87c1884ae35fae23c446a63bfd1759c6d71587bc9281d3ad8dabf1d2d",
+      "git_content_hash": "250f40c525487766375be11391751fbfeb349c5c"
+    },
+    {
+      "path": "research-audit/published-0e139-ci-20261105/terminal/main-intel-127089468985/target-outcome-projection.json",
+      "bytes": 12497,
+      "sha256": "812e052e0bcd6a79bac75bb77ce4a6d232fee6fed5699af222843788c9bf9a04",
+      "git_content_hash": "558413422aa913f7fa758d352ed715c657d13891"
+    }
+  ],
+  "sources": [
+    {
+      "name": "pty.rs",
+      "kind": "fixed_product",
+      "git_blob": "1b848b33b716e952d4c96202e763faabd1692cb3",
+      "sha256": "25d04fce155c670bef1098d26d2940883ad784528dd0c796ef468d3a9a38a5f2",
+      "bytes": 17672,
+      "display_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/0e139b599f0fe451f80fb7db4b2913bb9c679dce/codex-rs/utils/pty/src/pty.rs"
+    },
+    {
+      "name": "unix_io.rs",
+      "kind": "fixed_product",
+      "git_blob": "9cb344021e40e43c7b3a6c3d76189d6b69508e37",
+      "sha256": "f97be1636f00336a4dbb3aa81483e4360453c8f547b19df0bcb8f26bf730d322",
+      "bytes": 4339,
+      "display_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/0e139b599f0fe451f80fb7db4b2913bb9c679dce/codex-rs/utils/pty/src/unix_io.rs"
+    },
+    {
+      "name": "process.rs",
+      "kind": "fixed_product",
+      "git_blob": "5593450b89d0578d59f3ab74cb5cfcf625c908f6",
+      "sha256": "f6dca08eec90266e43c7bebe9d1e651611d8d074614bae9df707c11c1c64d71c",
+      "bytes": 15105,
+      "display_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/0e139b599f0fe451f80fb7db4b2913bb9c679dce/codex-rs/utils/pty/src/process.rs"
+    },
+    {
+      "name": "tokio_async_fd.rs",
+      "kind": "fixed_upstream_tag_source",
+      "git_blob": "3463439c9987132b95eb218119e7fe1fa93199b3",
+      "sha256": "0d9365deaa40f8d069770308a105aad31fe527ea593acf95c40265407d9f143d",
+      "bytes": 62421,
+      "display_url": "https://github.com/tokio-rs/tokio/blob/tokio-1.53.3/tokio/src/io/async_fd.rs"
+    },
+    {
+      "name": "tokio_registration.rs",
+      "kind": "fixed_upstream_tag_source",
+      "git_blob": "63b6a6d78ee59da84c81e968308cf7bc59e118ab",
+      "sha256": "ea9eb6c671ddd5e82dc7b7126776d8a246f1dd25a961852d40f44c420a9d2a63",
+      "bytes": 9078,
+      "display_url": "https://github.com/tokio-rs/tokio/blob/tokio-1.53.3/tokio/src/runtime/io/registration.rs"
+    },
+    {
+      "name": "mio_kqueue.rs",
+      "kind": "fixed_upstream_tag_source",
+      "git_blob": "f05e676a9c48ec6eee993bf6af95fdbd760d8636",
+      "sha256": "ed6e69041a6d154843c5c9509541a311f7415879c6c845b750b6ba29e1f48e84",
+      "bytes": 29217,
+      "display_url": "https://github.com/tokio-rs/mio/blob/v1.2.4/src/sys/unix/selector/kqueue.rs"
+    },
+    {
+      "name": "tests.rs",
+      "kind": "fixed_product",
+      "git_blob": "42fc028d6e710dab9f9390ad7ee1b711ba1927d6",
+      "sha256": "36d38a4c629f82b0ebb880bd72d578291f6af2c1e80a49c897df2a0dc23d7648",
+      "bytes": 63433,
+      "display_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/0e139b599f0fe451f80fb7db4b2913bb9c679dce/codex-rs/utils/pty/src/tests.rs"
+    }
+  ],
+  "observed": {
+    "cases": 31,
+    "passed": 30,
+    "failed": 1,
+    "ignored": 0,
+    "filtered_out": 0,
+    "original_30_subset": {
+      "passed": 29,
+      "failed": 1
+    },
+    "added_collector_case": "PASS",
+    "failure_preceded_later_job_cancellation": true,
+    "backend": "portable",
+    "spawn_elapsed_ms": 5.331807,
+    "wait_elapsed_s": 2.023066511,
+    "timeout_budget_s": 2,
+    "outcome": "deadline_elapsed",
+    "has_exited": false,
+    "exit_code": null,
+    "child_phase": "python_started",
+    "next_preserved_fds_iteration_reached": false
+  },
+  "call_chain": [
+    {
+      "source": "tests.rs",
+      "lines": "1150-1235",
+      "finding": "The case drops stdout_rx, directly awaits timeout(2 seconds, exit_rx), and retains the session. It does not call the changed output collector."
+    },
+    {
+      "source": "pty.rs",
+      "lines": "128-286",
+      "finding": "The empty inherited-FD list selects portable. Unix uses the common PtyIo AsyncFd reader, not portable-pty blocking reader. The child is spawned before the reader/writer tasks. Portable child wait runs in spawn_blocking."
+    },
+    {
+      "source": "unix_io.rs",
+      "lines": "24-45,54-73",
+      "finding": "The duplicated master descriptor shares O_NONBLOCK. The reader continues after channel send failure. EOF and non-Interrupted read errors end the reader silently, so existing evidence cannot tell why or whether it ended."
+    },
+    {
+      "source": "process.rs",
+      "lines": "149,175-183,212-217,245-276",
+      "finding": "The session retains writer_tx, so dropping the output receiver does not close input or send VEOF. has_exited/exit_code are waiter-published observations, not an independent OS process liveness query. terminate happens only after timeout in this case."
+    },
+    {
+      "source": "tests.rs",
+      "lines": "1161-1168",
+      "finding": "The Python -c script records startup, performs a single 4 MiB buffered write of x bytes, then updates the side-channel file. It is noninteractive; the previous PyREPL probe backlog is not this execution path. The last visible marker does not identify the blocked syscall or bytes drained."
+    },
+    {
+      "source": "tokio_registration.rs",
+      "lines": "214-233",
+      "finding": "At the inspected fixed Tokio tag, async_io clears readiness only for actual WouldBlock; success returns without clearing. The product closure reads the real descriptor and uses only READABLE."
+    },
+    {
+      "source": "mio_kqueue.rs",
+      "lines": "126-162,395-441",
+      "finding": "The inspected fixed Mio tag registers read and write filters separately with EV_CLEAR. No unsupported combined interest or synthetic WouldBlock is introduced by the product source."
+    }
+  ],
+  "conclusions": {
+    "proven_production_root_cause": null,
+    "closed_receiver_stops_reader_hypothesis": "contradicted by the explicit continue-on-send-error source; not established by this log",
+    "collector_fix_explains_drain_failure": false,
+    "pyrepl_probe_backlog_explains_drain_failure": false,
+    "unknowns": [
+      "Whether the reader actually started and how many bytes it read/discarded.",
+      "Whether it exited early on EOF/error, or remains waiting/actively reading.",
+      "Whether 4 MiB was drained but the child is between output return/side-channel completion/exit, or the waiter was not scheduled.",
+      "At the deadline, whether the nonblocking PTY master reports queued bytes/read readiness.",
+      "Actual per-call progress on Intel; no throughput or load cause may be inferred from elapsed time alone."
+    ]
+  },
+  "minimal_diagnostic_proposal": {
+    "scope": "test-only, exact existing case and per-session private observer",
+    "state": [
+      "read task started; total actual read calls/success bytes; bytes discarded after receiver closure",
+      "last read result including EOF or raw errno, and task state before termination",
+      "reader/writer/waiter JoinHandle.is_finished and the existing waiter-published exit observations",
+      "one non-consuming FIONREAD/F_GETFL snapshot of the existing master at the original deadline; report ioctl errors rather than treating them as zero"
+    ],
+    "placement": "Original timeout returns, then snapshot is printed before the existing terminate path. No diagnostic timer or extra wait. Statistics are observation only, not product conditions.",
+    "unchanged": [
+      "original 4 MiB single Python write and side-channel sequence",
+      "original two-second deadline and signal.alarm(10)",
+      "portable then preserved-FD ordering",
+      "drop stdout receiver before waiting",
+      "exit code must be zero",
+      "no retry, skip, sleep, raw-mode change, fd close, readiness clear, or extra read"
+    ],
+    "interpretation": [
+      {
+        "observation": "reader ended with EOF/error before 4 MiB and child_phase unchanged",
+        "implication": "Early reader termination is supported; its concrete error and FD lifecycle must then determine the repair."
+      },
+      {
+        "observation": "reader pending with zero or partial bytes and master has queued readable bytes",
+        "implication": "Readiness/scheduling path becomes the targeted suspect; a single snapshot alone does not prove a lost wakeup."
+      },
+      {
+        "observation": "partial bytes and active recent reads",
+        "implication": "Drain is progressing; measure the actual path before changing implementation. The two-second gate remains authoritative."
+      },
+      {
+        "observation": "at least 4 MiB read/discarded but no exit observation",
+        "implication": "Output channel closure did not prevent all output drain; child post-write/exit or wait-task observation is the next narrow boundary."
+      }
+    ],
+    "fresh_native_execution": "NOT_RUN",
+    "root_review_required_before_adoption": true
+  },
+  "qualification_limits": [
+    "The original Intel exact case failed. Other original PTY successes are preserved individually, not transferred to this case.",
+    "The full job later cancelled; the complete PTY block is a finished local test result before that cancellation.",
+    "Fixed upstream Tokio/Mio tag bytes were read and hashed. They are not a newly inspected copy of the Intel linked crate archive/binary.",
+    "No native or cross-host test was executed in this review. No product source, CI budget, permissions, refs or original assertions were changed."
+  ]
+}

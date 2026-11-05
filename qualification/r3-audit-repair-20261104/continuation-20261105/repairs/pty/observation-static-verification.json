@@ -1,0 +1,79 @@
+{
+  "schema": "hepta-pty-diagnostic-static-reconstruction-v2",
+  "git_apply_commands": [
+    {
+      "argv": [
+        "git",
+        "init",
+        "--quiet"
+      ],
+      "returncode": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "git",
+        "apply",
+        "--check",
+        "/workspace/scratch/07dd58cc9630/architecture-audit/intel-pty-drain-remaining-20261105/observation-candidate.patch"
+      ],
+      "returncode": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "git",
+        "apply",
+        "/workspace/scratch/07dd58cc9630/architecture-audit/intel-pty-drain-remaining-20261105/observation-candidate.patch"
+      ],
+      "returncode": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "git",
+        "init",
+        "--quiet"
+      ],
+      "returncode": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "git",
+        "apply",
+        "--check",
+        "/workspace/scratch/07dd58cc9630/architecture-audit/intel-pty-drain-remaining-20261105/observation-v1-to-v2.patch"
+      ],
+      "returncode": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "git",
+        "apply",
+        "/workspace/scratch/07dd58cc9630/architecture-audit/intel-pty-drain-remaining-20261105/observation-v1-to-v2.patch"
+      ],
+      "returncode": 0,
+      "stdout": "",
+      "stderr": ""
+    }
+  ],
+  "full_and_delta_postimages_exact": 5,
+  "tests_only_exact_insertion": "        eprintln!(\n            \"PTY dropped receiver: backend={backend} io_snapshot={}\",\n            session.pty_io_diagnostic_snapshot(),\n        );\n",
+  "all_preexisting_test_file_bytes_after_removing_insertion_equal": true,
+  "all_original_test_file_function_names_equal": true,
+  "new_test_functions": 0,
+  "v1_to_v2_changed_paths": [
+    "codex-rs/utils/pty/src/unix_io.rs",
+    "codex-rs/utils/pty/src/unix_io_diagnostics.rs"
+  ],
+  "v1_to_v2_scope": "same observation operations via named ReaderEvent and one observe method; Atomic default initializers and literal val comments; no test/body/timeout/descriptor query change",
+  "isolated_cloud_only": true,
+  "native_or_rust_execution": false
+}

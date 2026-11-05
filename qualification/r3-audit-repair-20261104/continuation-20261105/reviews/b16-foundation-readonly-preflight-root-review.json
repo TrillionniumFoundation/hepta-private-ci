@@ -1,0 +1,997 @@
+{
+  "schema": "hepta-b16-readonly-preflight-root-review-v1",
+  "job_id": "1a1aa3de7df-fc05-3fc3",
+  "review": "COMPLETE_ORIGINALS_AND_READONLY_PREFLIGHT_VERIFIED",
+  "source": "4a3374e22e16ce5c764288ad018cd9affadf94ea",
+  "export_manifest": {
+    "bytes": 44715,
+    "sha256": "f1e0b4a8c44b0d218c1c6e6d1591368b413c339e64065744a44c9575dc32bd8b",
+    "blob": "ce9384cdecd055fab223ebdc20a519643a367d1c"
+  },
+  "original_count": 41,
+  "original_bytes": 11025379,
+  "transport_chunk_count": 72,
+  "complete_originals": [
+    {
+      "original": {
+        "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/b16-foundation-readonly-preflight-4a-20261105-v1/execution-request.json",
+        "bytes": 153131,
+        "sha256": "56b4b2e992df658ecf3b2b6822008db5ece76ef3cec74f012a7d89f17dddcc97"
+      },
+      "observed": {
+        "bytes": 153131,
+        "sha256": "56b4b2e992df658ecf3b2b6822008db5ece76ef3cec74f012a7d89f17dddcc97",
+        "blob": "1526113bbdc312b7a2daf42c152dd374000fde6f"
+      },
+      "chunks": 1
+    },
+    {
+      "original": {
+        "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/b16-foundation-readonly-preflight-4a-20261105-v1/native-host.json",
+        "bytes": 577,
+        "sha256": "be0e8206bf7c1b294be52b3819d1d67e2d4ea0a776c1a7e550989abcc0861167"
+      },
+      "observed": {
+        "bytes": 577,
+        "sha256": "be0e8206bf7c1b294be52b3819d1d67e2d4ea0a776c1a7e550989abcc0861167",
+        "blob": "45fe06ce1fda80368997d9cb5f7f73c795ed5f4b"
+      },
+      "chunks": 1
+    },
+    {
+      "original": {
+        "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/b16-foundation-readonly-preflight-4a-20261105-v1/ordinary-index-before.bin",
+        "bytes": 1222758,
+        "sha256": "c41b4d7645b2b88431ed024e9cc683e31d43fafe7290280eaf0bae656fd6a922"
+      },
+      "observed": {
+        "bytes": 1222758,
+        "sha256": "c41b4d7645b2b88431ed024e9cc683e31d43fafe7290280eaf0bae656fd6a922",
+        "blob": "3c14e2e43efb3d0fd75d9724d3bdd8cffeee7a94"
+      },
+      "chunks": 10
+    },
+    {
+      "original": {
+        "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/b16-foundation-readonly-preflight-4a-20261105-v1/before-source-guard.json",
+        "bytes": 3359,
+        "sha256": "9ac1cf6f80e96241f0abc924dadb6c181fcbaab05259a2ae3e8ae3005cc47597"
+      },
+      "observed": {
+        "bytes": 3359,
+        "sha256": "9ac1cf6f80e96241f0abc924dadb6c181fcbaab05259a2ae3e8ae3005cc47597",
+        "blob": "03eb0402a4b30e819085a11f079402db3255235b"
+      },
+      "chunks": 1
+    },
+    {
+      "original": {
+        "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/b16-foundation-readonly-preflight-4a-20261105-v1/foundation-sixteen-preimages.json",
+        "bytes": 3658,
+        "sha256": "5e576d8c2f554e5513775add5bdd73c1fa1a2696b526ebe0a74ad994e57658bd"
+      },
+      "observed": {
+        "bytes": 3658,
+        "sha256": "5e576d8c2f554e5513775add5bdd73c1fa1a2696b526ebe0a74ad994e57658bd",
+        "blob": "10b53d0a5c1a0bdd2de8621998d90622ea71f317"
+      },
+      "chunks": 1
+    },
+    {
+      "original": {
+        "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/b16-foundation-readonly-preflight-4a-20261105-v1/existing-output-family.json",
+        "bytes": 215724,
+        "sha256": "53ecdc8d8804c1bba0306db0f6f8704d46de0927ec2f6ada5bf38754229ff83b"
+      },
+      "observed": {
+        "bytes": 215724,
+        "sha256": "53ecdc8d8804c1bba0306db0f6f8704d46de0927ec2f6ada5bf38754229ff83b",
+        "blob": "39a1de60347948fbc0f157aab6b01078de5151a5"
+      },
+      "chunks": 1
+    },
+    {
+      "original": {
+        "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/b16-foundation-readonly-preflight-4a-20261105-v1/version-git-command.json",
+        "bytes": 251,
+        "sha256": "810bebb51635ed7ac93311f68c4d539d9883821d5c08f61d3af4543fb1aee51a"
+      },
+      "observed": {
+        "bytes": 251,
+        "sha256": "810bebb51635ed7ac93311f68c4d539d9883821d5c08f61d3af4543fb1aee51a",
+        "blob": "c1f20a429ec2806cf1b456058924764cf8a73866"
+      },
+      "chunks": 1
+    },
+    {
+      "original": {
+        "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/b16-foundation-readonly-preflight-4a-20261105-v1/version-git.stdout",
+        "bytes": 19,
+        "sha256": "97452bcde974ef512f9552791fc4f6a3219a724877671fba270baca1a6075b74"
+      },
+      "observed": {
+        "bytes": 19,
+        "sha256": "97452bcde974ef512f9552791fc4f6a3219a724877671fba270baca1a6075b74",
+        "blob": "dce5793dab257c5fd708eed1937ab76c67fb7d96"
+      },
+      "chunks": 1
+    },
+    {
+      "original": {
+        "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/b16-foundation-readonly-preflight-4a-20261105-v1/version-git.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "observed": {
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391"
+      },
+      "chunks": 1
+    },
+    {
+      "original": {
+        "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/b16-foundation-readonly-preflight-4a-20261105-v1/version-git-status.json",
+        "bytes": 1000,
+        "sha256": "73626c4f98fa6320a737000ce1a1f3d12f8e791d0bb9ac569b609276636240b4"
+      },
+      "observed": {
+        "bytes": 1000,
+        "sha256": "73626c4f98fa6320a737000ce1a1f3d12f8e791d0bb9ac569b609276636240b4",
+        "blob": "122971ce989049a161c776877361abd4230a8f2a"
+      },
+      "chunks": 1
+    },
+    {
+      "original": {
+        "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/b16-foundation-readonly-preflight-4a-20261105-v1/version-cargo-command.json",
+        "bytes": 253,
+        "sha256": "e8d0844d4bc9fee9d9daca5a2672a623069fb11686901c1b0f0e7ca4d47fa530"
+      },
+      "observed": {
+        "bytes": 253,
+        "sha256": "e8d0844d4bc9fee9d9daca5a2672a623069fb11686901c1b0f0e7ca4d47fa530",
+        "blob": "2e52b6fad69e5ee32b05d429f8c3ede45e829635"
+      },
+      "chunks": 1
+    },
+    {
+      "original": {
+        "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/b16-foundation-readonly-preflight-4a-20261105-v1/version-cargo.stdout",
+        "bytes": 36,
+        "sha256": "c10ec31b8c6e6e2693cf65fc1971b41edbc3da1ae7db6f9f3f36c4823f8dcab5"
+      },
+      "observed": {
+        "bytes": 36,
+        "sha256": "c10ec31b8c6e6e2693cf65fc1971b41edbc3da1ae7db6f9f3f36c4823f8dcab5",
+        "blob": "7bd2e87f6aad3217bce2f274a01d37a3b4b4e74a"
+      },
+      "chunks": 1
+    },
+    {
+      "original": {
+        "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/b16-foundation-readonly-preflight-4a-20261105-v1/version-cargo.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "observed": {
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391"
+      },
+      "chunks": 1
+    },
+    {
+      "original": {
+        "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/b16-foundation-readonly-preflight-4a-20261105-v1/version-cargo-status.json",
+        "bytes": 1006,
+        "sha256": "19344d0d77a20d0d31736ac492d01d0ca4198078300d67d87e7fe93c8f775201"
+      },
+      "observed": {
+        "bytes": 1006,
+        "sha256": "19344d0d77a20d0d31736ac492d01d0ca4198078300d67d87e7fe93c8f775201",
+        "blob": "4a848dedbf8d84c45fa982588f6fa08a9eb44bc0"
+      },
+      "chunks": 1
+    },
+    {
+      "original": {
+        "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/b16-foundation-readonly-preflight-4a-20261105-v1/version-rustc-command.json",
+        "bytes": 247,
+        "sha256": "fab223f9279e610acca17895be859570d68ac903ea8e1e276186a7359142959e"
+      },
+      "observed": {
+        "bytes": 247,
+        "sha256": "fab223f9279e610acca17895be859570d68ac903ea8e1e276186a7359142959e",
+        "blob": "241da1f42a98261a688074fa125cb39779e7bb00"
+      },
+      "chunks": 1
+    },
+    {
+      "original": {
+        "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/b16-foundation-readonly-preflight-4a-20261105-v1/version-rustc.stdout",
+        "bytes": 196,
+        "sha256": "4fdff2578428e9c5c08ddd7a0d3079c1a106b1cdaa46e73e46f7cd32b0fb9cad"
+      },
+      "observed": {
+        "bytes": 196,
+        "sha256": "4fdff2578428e9c5c08ddd7a0d3079c1a106b1cdaa46e73e46f7cd32b0fb9cad",
+        "blob": "b246e451c7cb89baf52e49a5c7995e70184fa73d"
+      },
+      "chunks": 1
+    },
+    {
+      "original": {
+        "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/b16-foundation-readonly-preflight-4a-20261105-v1/version-rustc.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "observed": {
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391"
+      },
+      "chunks": 1
+    },
+    {
+      "original": {
+        "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/b16-foundation-readonly-preflight-4a-20261105-v1/version-rustc-status.json",
+        "bytes": 1001,
+        "sha256": "05a78bddc981dded9bd4fdb10dac9800c515d5f4d8e508b5501a5dc0bdc51bc2"
+      },
+      "observed": {
+        "bytes": 1001,
+        "sha256": "05a78bddc981dded9bd4fdb10dac9800c515d5f4d8e508b5501a5dc0bdc51bc2",
+        "blob": "6bc997c2e5091290b42cd2e910c8c21180e7d392"
+      },
+      "chunks": 1
+    },
+    {
+      "original": {
+        "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/b16-foundation-readonly-preflight-4a-20261105-v1/version-just-command.json",
+        "bytes": 252,
+        "sha256": "5462ac95dde2931bd7c9954213064863eff660889b909c101a3e59b0a84b3f5f"
+      },
+      "observed": {
+        "bytes": 252,
+        "sha256": "5462ac95dde2931bd7c9954213064863eff660889b909c101a3e59b0a84b3f5f",
+        "blob": "a5cb8812b662ac23a33924a50490197db9ca537b"
+      },
+      "chunks": 1
+    },
+    {
+      "original": {
+        "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/b16-foundation-readonly-preflight-4a-20261105-v1/version-just.stdout",
+        "bytes": 12,
+        "sha256": "4e91345369534015fde1a3e2fed862ad938bcfda47b993eb02536f7b3f095b87"
+      },
+      "observed": {
+        "bytes": 12,
+        "sha256": "4e91345369534015fde1a3e2fed862ad938bcfda47b993eb02536f7b3f095b87",
+        "blob": "ed47f0841ee2955f1cbf9b1647695870567c694b"
+      },
+      "chunks": 1
+    },
+    {
+      "original": {
+        "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/b16-foundation-readonly-preflight-4a-20261105-v1/version-just.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "observed": {
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391"
+      },
+      "chunks": 1
+    },
+    {
+      "original": {
+        "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/b16-foundation-readonly-preflight-4a-20261105-v1/version-just-status.json",
+        "bytes": 1003,
+        "sha256": "7152053aff036e895ce5145e1acc5c43b01a35f0cf75e2d2e4748a2145941226"
+      },
+      "observed": {
+        "bytes": 1003,
+        "sha256": "7152053aff036e895ce5145e1acc5c43b01a35f0cf75e2d2e4748a2145941226",
+        "blob": "4a70769e9d1171d006d3e60aa3e05d8b67b245da"
+      },
+      "chunks": 1
+    },
+    {
+      "original": {
+        "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/b16-foundation-readonly-preflight-4a-20261105-v1/version-cargo-nextest-command.json",
+        "bytes": 268,
+        "sha256": "baf1ac7f9c2655b163c7ba1023460fabde89e048eae1021b718c58bccee4c37e"
+      },
+      "observed": {
+        "bytes": 268,
+        "sha256": "baf1ac7f9c2655b163c7ba1023460fabde89e048eae1021b718c58bccee4c37e",
+        "blob": "963d1d4f41f3b4cc0cffe8110a64266410505321"
+      },
+      "chunks": 1
+    },
+    {
+      "original": {
+        "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/b16-foundation-readonly-preflight-4a-20261105-v1/version-cargo-nextest.stdout",
+        "bytes": 171,
+        "sha256": "13fae229b3f8485e0d02d80bf3c77e6cd38a2a2f1227d3e70a880cfb49365f61"
+      },
+      "observed": {
+        "bytes": 171,
+        "sha256": "13fae229b3f8485e0d02d80bf3c77e6cd38a2a2f1227d3e70a880cfb49365f61",
+        "blob": "8e25d8fd0cdbcc81a28a32166ce57e303afc5edb"
+      },
+      "chunks": 1
+    },
+    {
+      "original": {
+        "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/b16-foundation-readonly-preflight-4a-20261105-v1/version-cargo-nextest.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "observed": {
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391"
+      },
+      "chunks": 1
+    },
+    {
+      "original": {
+        "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/b16-foundation-readonly-preflight-4a-20261105-v1/version-cargo-nextest-status.json",
+        "bytes": 1047,
+        "sha256": "cc015fdb2d8c1ac60852cb4ae6db9c4e7c11ae8f35e673801c29adc344d477fb"
+      },
+      "observed": {
+        "bytes": 1047,
+        "sha256": "cc015fdb2d8c1ac60852cb4ae6db9c4e7c11ae8f35e673801c29adc344d477fb",
+        "blob": "cf183818cbfaf6b43fa6beb02fc1f597379d3d17"
+      },
+      "chunks": 1
+    },
+    {
+      "original": {
+        "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/b16-foundation-readonly-preflight-4a-20261105-v1/version-bazel-command.json",
+        "bytes": 253,
+        "sha256": "46007e02057d2260c2964fcbca86fcc38cf1c79f8def77d25b063a681292296f"
+      },
+      "observed": {
+        "bytes": 253,
+        "sha256": "46007e02057d2260c2964fcbca86fcc38cf1c79f8def77d25b063a681292296f",
+        "blob": "dde792bf8334351de6df26a9c6dfbec6940673d4"
+      },
+      "chunks": 1
+    },
+    {
+      "original": {
+        "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/b16-foundation-readonly-preflight-4a-20261105-v1/version-bazel.stdout",
+        "bytes": 12,
+        "sha256": "975f11fdb2255b8f73742a67a3e471115f829095af0931945a505f8401740e21"
+      },
+      "observed": {
+        "bytes": 12,
+        "sha256": "975f11fdb2255b8f73742a67a3e471115f829095af0931945a505f8401740e21",
+        "blob": "21c7e63f0e02b4c976eb8b5d1f995c4d7c530e88"
+      },
+      "chunks": 1
+    },
+    {
+      "original": {
+        "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/b16-foundation-readonly-preflight-4a-20261105-v1/version-bazel.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "observed": {
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391"
+      },
+      "chunks": 1
+    },
+    {
+      "original": {
+        "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/b16-foundation-readonly-preflight-4a-20261105-v1/version-bazel-status.json",
+        "bytes": 1007,
+        "sha256": "69414d11c7276402df9d5261416bf8df8d55cad275e2298c3b16d0d792bc4368"
+      },
+      "observed": {
+        "bytes": 1007,
+        "sha256": "69414d11c7276402df9d5261416bf8df8d55cad275e2298c3b16d0d792bc4368",
+        "blob": "5013cd56d0483a08f80ff4ca86554575d52c98b5"
+      },
+      "chunks": 1
+    },
+    {
+      "original": {
+        "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/b16-foundation-readonly-preflight-4a-20261105-v1/current-tools.json",
+        "bytes": 9541,
+        "sha256": "972a9df4263aec73c7c9a78e014d536e8cd289839b563c8c8ed71de4c169d3a9"
+      },
+      "observed": {
+        "bytes": 9541,
+        "sha256": "972a9df4263aec73c7c9a78e014d536e8cd289839b563c8c8ed71de4c169d3a9",
+        "blob": "e213976354029cb97a11f9c4371b978112a94a86"
+      },
+      "chunks": 1
+    },
+    {
+      "original": {
+        "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/b16-foundation-readonly-preflight-4a-20261105-v1/before-metadata-source-guard.json",
+        "bytes": 3368,
+        "sha256": "1a8f493f73c75a1b85abf0bd6ee9332bc1358ee4655193ce06155e9e426242d9"
+      },
+      "observed": {
+        "bytes": 3368,
+        "sha256": "1a8f493f73c75a1b85abf0bd6ee9332bc1358ee4655193ce06155e9e426242d9",
+        "blob": "b99e33497d575af38aff2a9a96b831800472165e"
+      },
+      "chunks": 1
+    },
+    {
+      "original": {
+        "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/b16-foundation-readonly-preflight-4a-20261105-v1/full-metadata-command.json",
+        "bytes": 301,
+        "sha256": "1fe974b5369758eb38d5735d6243959818ecf484658ba668e7ed157c0f180579"
+      },
+      "observed": {
+        "bytes": 301,
+        "sha256": "1fe974b5369758eb38d5735d6243959818ecf484658ba668e7ed157c0f180579",
+        "blob": "ab79517ef5b8c6d7184bcc091ed404e6ae4d8fcd"
+      },
+      "chunks": 1
+    },
+    {
+      "original": {
+        "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/b16-foundation-readonly-preflight-4a-20261105-v1/full-metadata.stdout",
+        "bytes": 8163699,
+        "sha256": "3a53323eae920e2e53dcb3e334128a4aff63cfb51840793e9150d617d2c9ba18"
+      },
+      "observed": {
+        "bytes": 8163699,
+        "sha256": "3a53323eae920e2e53dcb3e334128a4aff63cfb51840793e9150d617d2c9ba18",
+        "blob": "3d2f7bfbd5fb2fc0fd219045444327e929820fdd"
+      },
+      "chunks": 14
+    },
+    {
+      "original": {
+        "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/b16-foundation-readonly-preflight-4a-20261105-v1/full-metadata.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "observed": {
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391"
+      },
+      "chunks": 1
+    },
+    {
+      "original": {
+        "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/b16-foundation-readonly-preflight-4a-20261105-v1/full-metadata-status.json",
+        "bytes": 1058,
+        "sha256": "617699cc338819d3ded98f8726f8ab56fadc686ec55bdcd6d471b2f5ec6ed126"
+      },
+      "observed": {
+        "bytes": 1058,
+        "sha256": "617699cc338819d3ded98f8726f8ab56fadc686ec55bdcd6d471b2f5ec6ed126",
+        "blob": "1c7fe9b3cebb29dc7a36be552aa511e7fcc7966d"
+      },
+      "chunks": 1
+    },
+    {
+      "original": {
+        "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/b16-foundation-readonly-preflight-4a-20261105-v1/after-metadata-source-guard.json",
+        "bytes": 3367,
+        "sha256": "e7374270869d81e480ac0ec5ea234a4ef3b096866454d1ade2a9bbaf4ab5edd2"
+      },
+      "observed": {
+        "bytes": 3367,
+        "sha256": "e7374270869d81e480ac0ec5ea234a4ef3b096866454d1ade2a9bbaf4ab5edd2",
+        "blob": "34162b28bc6c4c7f7e31cd7c5ccd9b67747d4554"
+      },
+      "chunks": 1
+    },
+    {
+      "original": {
+        "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/b16-foundation-readonly-preflight-4a-20261105-v1/actual-final-A-metadata-binding.json",
+        "bytes": 564,
+        "sha256": "ce1c0c429e18a6f8373ded6de43a8f04b6d1697ac76e73df751aa490a173d46a"
+      },
+      "observed": {
+        "bytes": 564,
+        "sha256": "ce1c0c429e18a6f8373ded6de43a8f04b6d1697ac76e73df751aa490a173d46a",
+        "blob": "2371e7d0f68170ded245de83c87693594e9c80a8"
+      },
+      "chunks": 1
+    },
+    {
+      "original": {
+        "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/b16-foundation-readonly-preflight-4a-20261105-v1/final-source-guard.json",
+        "bytes": 3358,
+        "sha256": "76d1f7cda3ab8873541865f0794f55836d1e78f8be521aeb9fb663aa9d63516b"
+      },
+      "observed": {
+        "bytes": 3358,
+        "sha256": "76d1f7cda3ab8873541865f0794f55836d1e78f8be521aeb9fb663aa9d63516b",
+        "blob": "904eeb04f73d346993e93dc53ad3b2f1ed4dcbe8"
+      },
+      "chunks": 1
+    },
+    {
+      "original": {
+        "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/b16-foundation-readonly-preflight-4a-20261105-v1/ordinary-index-after.bin",
+        "bytes": 1222758,
+        "sha256": "c41b4d7645b2b88431ed024e9cc683e31d43fafe7290280eaf0bae656fd6a922"
+      },
+      "observed": {
+        "bytes": 1222758,
+        "sha256": "c41b4d7645b2b88431ed024e9cc683e31d43fafe7290280eaf0bae656fd6a922",
+        "blob": "3c14e2e43efb3d0fd75d9724d3bdd8cffeee7a94"
+      },
+      "chunks": 10
+    },
+    {
+      "original": {
+        "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/b16-foundation-readonly-preflight-4a-20261105-v1/terminal.json",
+        "bytes": 10124,
+        "sha256": "7ddbc1392c3d5aba11380389d43b4c74486716cfc102417e3c27e474f7a7ac92"
+      },
+      "observed": {
+        "bytes": 10124,
+        "sha256": "7ddbc1392c3d5aba11380389d43b4c74486716cfc102417e3c27e474f7a7ac92",
+        "blob": "f584291b682f541f933e623db943e2666cfd081d"
+      },
+      "chunks": 1
+    }
+  ],
+  "source_guards": [
+    {
+      "label": "before",
+      "expected_source": "4a3374e22e16ce5c764288ad018cd9affadf94ea",
+      "actual_source": "4a3374e22e16ce5c764288ad018cd9affadf94ea",
+      "ordinary_head": "cabcb40d36e116beaa65750e1f674c52035da785",
+      "ordinary_index": {
+        "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/source/.git/index",
+        "bytes": 1222758,
+        "sha256": "c41b4d7645b2b88431ed024e9cc683e31d43fafe7290280eaf0bae656fd6a922"
+      },
+      "locks": {
+        "codex-rs/Cargo.lock": {
+          "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/source/codex-rs/Cargo.lock",
+          "bytes": 413768,
+          "sha256": "4a7a5535cf045089458468411e126b5f59bc6bbf34fc0deead9b0c1b8d84000a"
+        },
+        "MODULE.bazel.lock": {
+          "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/source/MODULE.bazel.lock",
+          "bytes": 1738619,
+          "sha256": "11f8a421224b9b05f32c4c14054e8868083d989fc497310c8d51e1156f189ca3"
+        }
+      },
+      "untracked_source_paths": [],
+      "recipes": [
+        {
+          "path": "justfile",
+          "mode": "100644",
+          "bytes": 7838,
+          "sha256": "74f869224eba12fc4212b043428e7f5b35b551d26f5b06161c25d8aca525f124",
+          "blob": "a215a76cf407ace9715bca39c20497014e7dd4dc"
+        },
+        {
+          "path": "scripts/run-nextest.py",
+          "mode": "100644",
+          "bytes": 10206,
+          "sha256": "45c4e35d1ff24840d9e1e05331af0b89475bfe1aec3231afc56fecb8cea66127",
+          "blob": "1ed63abe84267b320cbfb0123a70aac5507f4595"
+        },
+        {
+          "path": "scripts/check-module-bazel-lock.sh",
+          "mode": "100755",
+          "bytes": 328,
+          "sha256": "a6c3842bb9c884ebd31dd79b99949e7c66b0f82a594dda87797013db572dc180",
+          "blob": "49ddaaef2bfc9a3c568bcd2ab3818cd968ccf6dd"
+        },
+        {
+          "path": ".bazelrc",
+          "mode": "100644",
+          "bytes": 14926,
+          "sha256": "53a5fd4e65e4e9937b826174520fe1eb642adb79cfe7a6335c871d5fa9db57fa",
+          "blob": "3d5877b283b887091af507f3672003f84c500687"
+        },
+        {
+          "path": ".bazelversion",
+          "mode": "100644",
+          "bytes": 6,
+          "sha256": "14ebdd5f5d8dfccb0fc574ea9aabecc07d7cdd99d53e4fc01e58f9c3d23d18ef",
+          "blob": "b13d146a7b02b96e4c30340e69388d539c9721be"
+        },
+        {
+          "path": "defs.bzl",
+          "mode": "100644",
+          "bytes": 34630,
+          "sha256": "f5638a9189632c8d8524a438bbfc6b365bddf7f23dfd2df06a6de3a2ff3f2cfa",
+          "blob": "6f588ec3057fddfea35170e28e74036162ce6a23"
+        },
+        {
+          "path": "codex-rs/Cargo.toml",
+          "mode": "100644",
+          "bytes": 22548,
+          "sha256": "5e19cb310c4bcabc082619d64a028358d5d629e26c179fb38a00432be8f54a6a",
+          "blob": "4713741651affd053bb8ae5aa8b5d76831c15c0e"
+        },
+        {
+          "path": "codex-rs/rust-toolchain.toml",
+          "mode": "100644",
+          "bytes": 78,
+          "sha256": "570656042681cfd8795403a455baf9a33035331a07db0645e866bbcea89a3d64",
+          "blob": "910c65114ec128a8317ee8257428451f3cd28230"
+        }
+      ],
+      "disk": {
+        "total": 1005867986944,
+        "used": 972056231936,
+        "free": 23564181504
+      },
+      "private_index": {
+        "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/b16-foundation-readonly-preflight-4a-20261105-v1/source-1.index",
+        "bytes": 1224180,
+        "sha256": "3ffee18f633e5f91a5d07bf9a58cf691c018d9fde99b795e7e5d65918634db48"
+      },
+      "private_git_objects": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/b16-foundation-readonly-preflight-4a-20261105-v1/git-objects"
+    },
+    {
+      "label": "before-metadata",
+      "expected_source": "4a3374e22e16ce5c764288ad018cd9affadf94ea",
+      "actual_source": "4a3374e22e16ce5c764288ad018cd9affadf94ea",
+      "ordinary_head": "cabcb40d36e116beaa65750e1f674c52035da785",
+      "ordinary_index": {
+        "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/source/.git/index",
+        "bytes": 1222758,
+        "sha256": "c41b4d7645b2b88431ed024e9cc683e31d43fafe7290280eaf0bae656fd6a922"
+      },
+      "locks": {
+        "codex-rs/Cargo.lock": {
+          "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/source/codex-rs/Cargo.lock",
+          "bytes": 413768,
+          "sha256": "4a7a5535cf045089458468411e126b5f59bc6bbf34fc0deead9b0c1b8d84000a"
+        },
+        "MODULE.bazel.lock": {
+          "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/source/MODULE.bazel.lock",
+          "bytes": 1738619,
+          "sha256": "11f8a421224b9b05f32c4c14054e8868083d989fc497310c8d51e1156f189ca3"
+        }
+      },
+      "untracked_source_paths": [],
+      "recipes": [
+        {
+          "path": "justfile",
+          "mode": "100644",
+          "bytes": 7838,
+          "sha256": "74f869224eba12fc4212b043428e7f5b35b551d26f5b06161c25d8aca525f124",
+          "blob": "a215a76cf407ace9715bca39c20497014e7dd4dc"
+        },
+        {
+          "path": "scripts/run-nextest.py",
+          "mode": "100644",
+          "bytes": 10206,
+          "sha256": "45c4e35d1ff24840d9e1e05331af0b89475bfe1aec3231afc56fecb8cea66127",
+          "blob": "1ed63abe84267b320cbfb0123a70aac5507f4595"
+        },
+        {
+          "path": "scripts/check-module-bazel-lock.sh",
+          "mode": "100755",
+          "bytes": 328,
+          "sha256": "a6c3842bb9c884ebd31dd79b99949e7c66b0f82a594dda87797013db572dc180",
+          "blob": "49ddaaef2bfc9a3c568bcd2ab3818cd968ccf6dd"
+        },
+        {
+          "path": ".bazelrc",
+          "mode": "100644",
+          "bytes": 14926,
+          "sha256": "53a5fd4e65e4e9937b826174520fe1eb642adb79cfe7a6335c871d5fa9db57fa",
+          "blob": "3d5877b283b887091af507f3672003f84c500687"
+        },
+        {
+          "path": ".bazelversion",
+          "mode": "100644",
+          "bytes": 6,
+          "sha256": "14ebdd5f5d8dfccb0fc574ea9aabecc07d7cdd99d53e4fc01e58f9c3d23d18ef",
+          "blob": "b13d146a7b02b96e4c30340e69388d539c9721be"
+        },
+        {
+          "path": "defs.bzl",
+          "mode": "100644",
+          "bytes": 34630,
+          "sha256": "f5638a9189632c8d8524a438bbfc6b365bddf7f23dfd2df06a6de3a2ff3f2cfa",
+          "blob": "6f588ec3057fddfea35170e28e74036162ce6a23"
+        },
+        {
+          "path": "codex-rs/Cargo.toml",
+          "mode": "100644",
+          "bytes": 22548,
+          "sha256": "5e19cb310c4bcabc082619d64a028358d5d629e26c179fb38a00432be8f54a6a",
+          "blob": "4713741651affd053bb8ae5aa8b5d76831c15c0e"
+        },
+        {
+          "path": "codex-rs/rust-toolchain.toml",
+          "mode": "100644",
+          "bytes": 78,
+          "sha256": "570656042681cfd8795403a455baf9a33035331a07db0645e866bbcea89a3d64",
+          "blob": "910c65114ec128a8317ee8257428451f3cd28230"
+        }
+      ],
+      "disk": {
+        "total": 1005867986944,
+        "used": 972066111488,
+        "free": 23554301952
+      },
+      "private_index": {
+        "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/b16-foundation-readonly-preflight-4a-20261105-v1/source-2.index",
+        "bytes": 1224180,
+        "sha256": "3ffee18f633e5f91a5d07bf9a58cf691c018d9fde99b795e7e5d65918634db48"
+      },
+      "private_git_objects": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/b16-foundation-readonly-preflight-4a-20261105-v1/git-objects"
+    },
+    {
+      "label": "after-metadata",
+      "expected_source": "4a3374e22e16ce5c764288ad018cd9affadf94ea",
+      "actual_source": "4a3374e22e16ce5c764288ad018cd9affadf94ea",
+      "ordinary_head": "cabcb40d36e116beaa65750e1f674c52035da785",
+      "ordinary_index": {
+        "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/source/.git/index",
+        "bytes": 1222758,
+        "sha256": "c41b4d7645b2b88431ed024e9cc683e31d43fafe7290280eaf0bae656fd6a922"
+      },
+      "locks": {
+        "codex-rs/Cargo.lock": {
+          "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/source/codex-rs/Cargo.lock",
+          "bytes": 413768,
+          "sha256": "4a7a5535cf045089458468411e126b5f59bc6bbf34fc0deead9b0c1b8d84000a"
+        },
+        "MODULE.bazel.lock": {
+          "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/source/MODULE.bazel.lock",
+          "bytes": 1738619,
+          "sha256": "11f8a421224b9b05f32c4c14054e8868083d989fc497310c8d51e1156f189ca3"
+        }
+      },
+      "untracked_source_paths": [],
+      "recipes": [
+        {
+          "path": "justfile",
+          "mode": "100644",
+          "bytes": 7838,
+          "sha256": "74f869224eba12fc4212b043428e7f5b35b551d26f5b06161c25d8aca525f124",
+          "blob": "a215a76cf407ace9715bca39c20497014e7dd4dc"
+        },
+        {
+          "path": "scripts/run-nextest.py",
+          "mode": "100644",
+          "bytes": 10206,
+          "sha256": "45c4e35d1ff24840d9e1e05331af0b89475bfe1aec3231afc56fecb8cea66127",
+          "blob": "1ed63abe84267b320cbfb0123a70aac5507f4595"
+        },
+        {
+          "path": "scripts/check-module-bazel-lock.sh",
+          "mode": "100755",
+          "bytes": 328,
+          "sha256": "a6c3842bb9c884ebd31dd79b99949e7c66b0f82a594dda87797013db572dc180",
+          "blob": "49ddaaef2bfc9a3c568bcd2ab3818cd968ccf6dd"
+        },
+        {
+          "path": ".bazelrc",
+          "mode": "100644",
+          "bytes": 14926,
+          "sha256": "53a5fd4e65e4e9937b826174520fe1eb642adb79cfe7a6335c871d5fa9db57fa",
+          "blob": "3d5877b283b887091af507f3672003f84c500687"
+        },
+        {
+          "path": ".bazelversion",
+          "mode": "100644",
+          "bytes": 6,
+          "sha256": "14ebdd5f5d8dfccb0fc574ea9aabecc07d7cdd99d53e4fc01e58f9c3d23d18ef",
+          "blob": "b13d146a7b02b96e4c30340e69388d539c9721be"
+        },
+        {
+          "path": "defs.bzl",
+          "mode": "100644",
+          "bytes": 34630,
+          "sha256": "f5638a9189632c8d8524a438bbfc6b365bddf7f23dfd2df06a6de3a2ff3f2cfa",
+          "blob": "6f588ec3057fddfea35170e28e74036162ce6a23"
+        },
+        {
+          "path": "codex-rs/Cargo.toml",
+          "mode": "100644",
+          "bytes": 22548,
+          "sha256": "5e19cb310c4bcabc082619d64a028358d5d629e26c179fb38a00432be8f54a6a",
+          "blob": "4713741651affd053bb8ae5aa8b5d76831c15c0e"
+        },
+        {
+          "path": "codex-rs/rust-toolchain.toml",
+          "mode": "100644",
+          "bytes": 78,
+          "sha256": "570656042681cfd8795403a455baf9a33035331a07db0645e866bbcea89a3d64",
+          "blob": "910c65114ec128a8317ee8257428451f3cd28230"
+        }
+      ],
+      "disk": {
+        "total": 1005867986944,
+        "used": 972091715584,
+        "free": 23528697856
+      },
+      "private_index": {
+        "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/b16-foundation-readonly-preflight-4a-20261105-v1/source-3.index",
+        "bytes": 1224180,
+        "sha256": "3ffee18f633e5f91a5d07bf9a58cf691c018d9fde99b795e7e5d65918634db48"
+      },
+      "private_git_objects": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/b16-foundation-readonly-preflight-4a-20261105-v1/git-objects"
+    },
+    {
+      "label": "final",
+      "expected_source": "4a3374e22e16ce5c764288ad018cd9affadf94ea",
+      "actual_source": "4a3374e22e16ce5c764288ad018cd9affadf94ea",
+      "ordinary_head": "cabcb40d36e116beaa65750e1f674c52035da785",
+      "ordinary_index": {
+        "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/source/.git/index",
+        "bytes": 1222758,
+        "sha256": "c41b4d7645b2b88431ed024e9cc683e31d43fafe7290280eaf0bae656fd6a922"
+      },
+      "locks": {
+        "codex-rs/Cargo.lock": {
+          "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/source/codex-rs/Cargo.lock",
+          "bytes": 413768,
+          "sha256": "4a7a5535cf045089458468411e126b5f59bc6bbf34fc0deead9b0c1b8d84000a"
+        },
+        "MODULE.bazel.lock": {
+          "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/source/MODULE.bazel.lock",
+          "bytes": 1738619,
+          "sha256": "11f8a421224b9b05f32c4c14054e8868083d989fc497310c8d51e1156f189ca3"
+        }
+      },
+      "untracked_source_paths": [],
+      "recipes": [
+        {
+          "path": "justfile",
+          "mode": "100644",
+          "bytes": 7838,
+          "sha256": "74f869224eba12fc4212b043428e7f5b35b551d26f5b06161c25d8aca525f124",
+          "blob": "a215a76cf407ace9715bca39c20497014e7dd4dc"
+        },
+        {
+          "path": "scripts/run-nextest.py",
+          "mode": "100644",
+          "bytes": 10206,
+          "sha256": "45c4e35d1ff24840d9e1e05331af0b89475bfe1aec3231afc56fecb8cea66127",
+          "blob": "1ed63abe84267b320cbfb0123a70aac5507f4595"
+        },
+        {
+          "path": "scripts/check-module-bazel-lock.sh",
+          "mode": "100755",
+          "bytes": 328,
+          "sha256": "a6c3842bb9c884ebd31dd79b99949e7c66b0f82a594dda87797013db572dc180",
+          "blob": "49ddaaef2bfc9a3c568bcd2ab3818cd968ccf6dd"
+        },
+        {
+          "path": ".bazelrc",
+          "mode": "100644",
+          "bytes": 14926,
+          "sha256": "53a5fd4e65e4e9937b826174520fe1eb642adb79cfe7a6335c871d5fa9db57fa",
+          "blob": "3d5877b283b887091af507f3672003f84c500687"
+        },
+        {
+          "path": ".bazelversion",
+          "mode": "100644",
+          "bytes": 6,
+          "sha256": "14ebdd5f5d8dfccb0fc574ea9aabecc07d7cdd99d53e4fc01e58f9c3d23d18ef",
+          "blob": "b13d146a7b02b96e4c30340e69388d539c9721be"
+        },
+        {
+          "path": "defs.bzl",
+          "mode": "100644",
+          "bytes": 34630,
+          "sha256": "f5638a9189632c8d8524a438bbfc6b365bddf7f23dfd2df06a6de3a2ff3f2cfa",
+          "blob": "6f588ec3057fddfea35170e28e74036162ce6a23"
+        },
+        {
+          "path": "codex-rs/Cargo.toml",
+          "mode": "100644",
+          "bytes": 22548,
+          "sha256": "5e19cb310c4bcabc082619d64a028358d5d629e26c179fb38a00432be8f54a6a",
+          "blob": "4713741651affd053bb8ae5aa8b5d76831c15c0e"
+        },
+        {
+          "path": "codex-rs/rust-toolchain.toml",
+          "mode": "100644",
+          "bytes": 78,
+          "sha256": "570656042681cfd8795403a455baf9a33035331a07db0645e866bbcea89a3d64",
+          "blob": "910c65114ec128a8317ee8257428451f3cd28230"
+        }
+      ],
+      "disk": {
+        "total": 1005867986944,
+        "used": 972095533056,
+        "free": 23524880384
+      },
+      "private_index": {
+        "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/b16-foundation-readonly-preflight-4a-20261105-v1/source-4.index",
+        "bytes": 1224180,
+        "sha256": "3ffee18f633e5f91a5d07bf9a58cf691c018d9fde99b795e7e5d65918634db48"
+      },
+      "private_git_objects": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/b16-foundation-readonly-preflight-4a-20261105-v1/git-objects"
+    }
+  ],
+  "metadata_command": {
+    "label": "full-metadata",
+    "argv": [
+      "cargo",
+      "metadata",
+      "--locked",
+      "--format-version",
+      "1"
+    ],
+    "cwd": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/source/codex-rs",
+    "source": "4a3374e22e16ce5c764288ad018cd9affadf94ea",
+    "started_at": "2026-11-05T05:45:49.555450+00:00",
+    "completed_at": "2026-11-05T05:45:50.909087+00:00",
+    "duration_seconds": 1.3536497389723081,
+    "exit_code": 0,
+    "stdout": {
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/b16-foundation-readonly-preflight-4a-20261105-v1/full-metadata.stdout",
+      "bytes": 8163699,
+      "sha256": "3a53323eae920e2e53dcb3e334128a4aff63cfb51840793e9150d617d2c9ba18"
+    },
+    "stderr": {
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/b16-foundation-readonly-preflight-4a-20261105-v1/full-metadata.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "disk_after": {
+      "total": 1005867986944,
+      "used": 972090462208,
+      "free": 23529951232
+    }
+  },
+  "metadata_binding": {
+    "source_tree": "4a3374e22e16ce5c764288ad018cd9affadf94ea",
+    "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/b16-foundation-readonly-preflight-4a-20261105-v1/full-metadata.stdout",
+    "bytes": 8163699,
+    "sha256": "3a53323eae920e2e53dcb3e334128a4aff63cfb51840793e9150d617d2c9ba18",
+    "workspace_members": 193,
+    "resolve_nodes": 1501,
+    "full_projection_sha256": "9ba4c3235e578144fd13cb7b6513ebd8e56f61aa127053bc016b01bba5d15aff",
+    "actual_fresh_read": true,
+    "compile_or_test_run": false,
+    "package_filter": null,
+    "no_deps": false
+  },
+  "metadata_projection_sha256": "9ba4c3235e578144fd13cb7b6513ebd8e56f61aa127053bc016b01bba5d15aff",
+  "preimage_count": 16,
+  "existing_output_count": 396,
+  "tool_versions": {
+    "git": "git version 2.53.0\n",
+    "cargo": "cargo 1.95.0 (f2d3ce0bd 2026-03-21)\n",
+    "rustc": "rustc 1.95.0 (59807616e 2026-04-14)\nbinary: rustc\ncommit-hash: 59807616e1fa2540724bfbac14d7976d7e4a3860\ncommit-date: 2026-04-14\nhost: x86_64-unknown-linux-gnu\nrelease: 1.95.0\nLLVM version: 22.1.2\n",
+    "just": "just 1.51.0\n",
+    "cargo-nextest": "cargo-nextest 0.9.103 (d2e7b879f 2025-08-25)\nrelease: 0.9.103\ncommit-hash: d2e7b879fb79975e8b47a8e3ce569b651e6381c0\ncommit-date: 2025-08-25\nhost: x86_64-unknown-linux-gnu\n",
+    "bazel": "bazel 9.3.0\n"
+  },
+  "initial_disk": {
+    "total": 1005867986944,
+    "used": 972053778432,
+    "free": 23566635008
+  },
+  "terminal_disk": {
+    "total": 1005867986944,
+    "used": 972096761856,
+    "free": 23523651584
+  },
+  "compile_or_test_run": false,
+  "B_execution_started": false,
+  "foundation_launch_authorized_by_this_receipt": false,
+  "limits": [
+    "Fresh launch requires at least 22,000,000,000 free bytes.",
+    "Output-family reuse does not prove compiler peak space.",
+    "Only read-only preflight verified; no B product qualification.",
+    "Host job controller completion is recorded separately from these original files."
+  ]
+}

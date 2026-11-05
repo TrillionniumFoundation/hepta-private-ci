@@ -1,0 +1,364 @@
+diff --git a/codex-rs/utils/pty/src/process.rs b/codex-rs/utils/pty/src/process.rs
+index 5593450b89d0578d59f3ab74cb5cfcf625c908f6..f0e9ccde6829f0d0fb6bd59e154360018856b7fc 100644
+--- a/codex-rs/utils/pty/src/process.rs
++++ b/codex-rs/utils/pty/src/process.rs
+@@ -123,6 +123,8 @@
+     // Optional resize hook for driver-backed sessions that proxy PTY control to
+     // another backend instead of owning local PTY handles.
+     resizer: StdMutex<Option<ResizeFn>>,
++    #[cfg(all(test, unix))]
++    pty_io_diagnostics: Option<Arc<crate::unix_io::PtyIoDiagnostics>>,
+ }
+ 
+ impl fmt::Debug for ProcessHandle {
+@@ -156,6 +158,8 @@
+             exit_code,
+             _pty_handles: StdMutex::new(pty_handles),
+             resizer: StdMutex::new(resizer),
++            #[cfg(all(test, unix))]
++            pty_io_diagnostics: None,
+         }
+     }
+ 
+@@ -180,6 +184,32 @@
+     /// Returns the exit code if known.
+     pub fn exit_code(&self) -> Option<i32> {
+         self.exit_code.lock().ok().and_then(|guard| *guard)
++    }
++
++    #[cfg(all(test, unix))]
++    pub(crate) fn with_pty_io_diagnostics(
++        mut self,
++        diagnostics: Arc<crate::unix_io::PtyIoDiagnostics>,
++    ) -> Self {
++        self.pty_io_diagnostics = Some(diagnostics);
++        self
++    }
++
++    #[cfg(all(test, unix))]
++    pub(crate) fn pty_io_diagnostic_snapshot(&self) -> String {
++        let finished = |handle: &StdMutex<Option<JoinHandle<()>>>| {
++            handle
++                .lock()
++                .map(|handle| handle.as_ref().map(JoinHandle::is_finished))
++                .map_err(|_| "poisoned task handle")
++        };
++        format!(
++            "reader_finished={:?} writer_finished={:?} waiter_finished={:?} io={:?}",
++            finished(&self.reader_handle),
++            finished(&self.writer_handle),
++            finished(&self.wait_handle),
++            self.pty_io_diagnostics.as_ref().map(|value| value.snapshot()),
++        )
+     }
+ 
+     /// Resize the PTY in character cells.
+diff --git a/codex-rs/utils/pty/src/pty.rs b/codex-rs/utils/pty/src/pty.rs
+index 1b848b33b716e952d4c96202e763faabd1692cb3..e2e294464a2db6b65370afd98b7d49250ddaae2f 100644
+--- a/codex-rs/utils/pty/src/pty.rs
++++ b/codex-rs/utils/pty/src/pty.rs
+@@ -166,6 +166,9 @@
+             .as_raw_fd()
+             .ok_or_else(|| anyhow::anyhow!("PTY master has no file descriptor"))?,
+     )?;
++
++    #[cfg(all(test, unix))]
++    let io_diagnostics = io.diagnostics();
+ 
+     let mut command_builder = CommandBuilder::new(arg0.as_ref().unwrap_or(&program.to_string()));
+     command_builder.cwd(cwd);
+@@ -279,6 +282,9 @@
+         /*resizer*/ None,
+     );
+ 
++    #[cfg(all(test, unix))]
++    let handle = handle.with_pty_io_diagnostics(io_diagnostics);
++
+     Ok(SpawnedProcess {
+         session: handle,
+         stdout_rx,
+@@ -299,6 +305,8 @@
+ ) -> Result<SpawnedProcess> {
+     let (master, slave) = open_unix_pty(size)?;
+     let io = crate::unix_io::PtyIo::new(master.as_raw_fd())?;
++    #[cfg(test)]
++    let io_diagnostics = io.diagnostics();
+     let mut command = StdCommand::new(program);
+     if let Some(arg0) = arg0 {
+         command.arg0(arg0);
+@@ -407,6 +415,9 @@
+         Some(handles),
+         /*resizer*/ None,
+     );
++
++    #[cfg(all(test, unix))]
++    let handle = handle.with_pty_io_diagnostics(io_diagnostics);
+ 
+     Ok(SpawnedProcess {
+         session: handle,
+diff --git a/codex-rs/utils/pty/src/tests.rs b/codex-rs/utils/pty/src/tests.rs
+index 42fc028d6e710dab9f9390ad7ee1b711ba1927d6..25836a08f9ff9a90b14204059d2544749a0f5461 100644
+--- a/codex-rs/utils/pty/src/tests.rs
++++ b/codex-rs/utils/pty/src/tests.rs
+@@ -1222,6 +1222,10 @@
+             session.has_exited(),
+             session.exit_code(),
+         );
++        eprintln!(
++            "PTY dropped receiver: backend={backend} io_snapshot={}",
++            session.pty_io_diagnostic_snapshot(),
++        );
+         let progress = std::fs::read_to_string(&progress_path);
+         eprintln!("PTY dropped receiver: backend={backend} child_phase={progress:?}");
+         if result.is_err() {
+diff --git a/codex-rs/utils/pty/src/unix_io.rs b/codex-rs/utils/pty/src/unix_io.rs
+index 9cb344021e40e43c7b3a6c3d76189d6b69508e37..67168dab510c9fd400a1cbcf4b4a6bb905b73c59 100644
+--- a/codex-rs/utils/pty/src/unix_io.rs
++++ b/codex-rs/utils/pty/src/unix_io.rs
+@@ -12,6 +12,14 @@
+ use tokio::sync::mpsc;
+ use tokio::task::JoinHandle;
+ 
++#[cfg(test)]
++#[path = "unix_io_diagnostics.rs"]
++mod diagnostics;
++#[cfg(test)]
++pub(crate) use diagnostics::PtyIoDiagnostics;
++#[cfg(test)]
++use diagnostics::ReaderEvent;
++
+ pub(crate) enum StdinCloseBehavior {
+     SendEof,
+     NoEof,
+@@ -19,6 +27,8 @@
+ 
+ pub(crate) struct PtyIo {
+     fd: Arc<AsyncFd<File>>,
++    #[cfg(test)]
++    diagnostics: Arc<PtyIoDiagnostics>,
+ }
+ 
+ impl PtyIo {
+@@ -42,7 +52,17 @@
+             unsafe { AsyncFd::register(File::from(fd)) }
+         })
+         .map_err(|_| io::Error::other("PTY I/O requires a Tokio runtime with I/O enabled"))??;
+-        Ok(Self { fd: Arc::new(fd) })
++        let fd = Arc::new(fd);
++        Ok(Self {
++            #[cfg(test)]
++            diagnostics: Arc::new(PtyIoDiagnostics::new(Arc::downgrade(&fd))),
++            fd,
++        })
++    }
++
++    #[cfg(test)]
++    pub(crate) fn diagnostics(&self) -> Arc<PtyIoDiagnostics> {
++        Arc::clone(&self.diagnostics)
+     }
+ 
+     pub(crate) fn spawn(
+@@ -52,22 +72,51 @@
+         stdin_close: StdinCloseBehavior,
+     ) -> (JoinHandle<()>, JoinHandle<()>) {
+         let fd = self.fd;
++        #[cfg(test)]
++        let diagnostics = self.diagnostics;
+         let reader = Arc::clone(&fd);
+         let reader_handle = tokio::spawn(async move {
+             let mut buf = [0u8; 8_192];
+             loop {
++                #[cfg(test)]
++                diagnostics.observe(ReaderEvent::WaitingForRead);
+                 match reader
+-                    .async_io(Interest::READABLE, |mut file| file.read(&mut buf))
++                    .async_io(Interest::READABLE, |mut file| {
++                        #[cfg(test)]
++                        diagnostics.observe(ReaderEvent::ReadStarted);
++                        let result = file.read(&mut buf);
++                        #[cfg(test)]
++                        diagnostics.observe(ReaderEvent::ReadResult(&result));
++                        result
++                    })
+                     .await
+                 {
+-                    Ok(0) => break,
++                    Ok(0) => {
++                        #[cfg(test)]
++                        diagnostics.observe(ReaderEvent::Eof);
++                        break;
++                    }
+                     Ok(count) => {
+                         // Output caps may close the receiver before the child exits.
++                        #[cfg(test)]
++                        {
++                            diagnostics.observe(ReaderEvent::Sending);
++                            if stdout_tx.send(buf[..count].to_vec()).await.is_err() {
++                                diagnostics.observe(ReaderEvent::Discarded(count));
++                            }
++                        }
++                        #[cfg(not(test))]
+                         let _ = stdout_tx.send(buf[..count].to_vec()).await;
+                     }
+                     Err(err) if err.kind() == io::ErrorKind::Interrupted => continue,
+                     // Unix PTYs may report EIO rather than EOF when the slave closes.
+-                    Err(_) => break,
++                    Err(err) => {
++                        #[cfg(test)]
++                        diagnostics.observe(ReaderEvent::Failed(&err));
++                        #[cfg(not(test))]
++                        let _ = err;
++                        break;
++                    }
+                 }
+             }
+         });
+diff --git a/codex-rs/utils/pty/src/unix_io_diagnostics.rs b/codex-rs/utils/pty/src/unix_io_diagnostics.rs
+new file mode 100644
+index 0000000000000000000000000000000000000000..393cceaa6544e3de4f4ca41579bc48ebf95582fd
+--- /dev/null
++++ b/codex-rs/utils/pty/src/unix_io_diagnostics.rs
+@@ -0,0 +1,143 @@
++//! Unit-test observations only; no descriptor or child ownership is retained.
++
++use std::fs::File;
++use std::io;
++use std::os::fd::AsRawFd;
++use std::sync::Weak;
++use std::sync::atomic::AtomicU64;
++use std::sync::atomic::AtomicU8;
++use std::sync::atomic::Ordering;
++
++use tokio::io::unix::AsyncFd;
++
++pub(super) enum ReaderEvent<'a> {
++    WaitingForRead,
++    ReadStarted,
++    ReadResult(&'a io::Result<usize>),
++    Sending,
++    Discarded(usize),
++    Eof,
++    Failed(&'a io::Error),
++}
++
++pub(crate) struct PtyIoDiagnostics {
++    fd: Weak<AsyncFd<File>>,
++    read_calls: AtomicU64,
++    read_bytes: AtomicU64,
++    discarded_bytes: AtomicU64,
++    last_read: AtomicU64,
++    terminal_error: AtomicU64,
++    wait_state: AtomicU8,
++}
++
++impl PtyIoDiagnostics {
++    pub(crate) fn new(fd: Weak<AsyncFd<File>>) -> Self {
++        Self {
++            fd,
++            read_calls: AtomicU64::default(),
++            read_bytes: AtomicU64::default(),
++            discarded_bytes: AtomicU64::default(),
++            last_read: AtomicU64::default(),
++            terminal_error: AtomicU64::default(),
++            wait_state: AtomicU8::default(),
++        }
++    }
++
++    pub(super) fn observe(&self, event: ReaderEvent<'_>) {
++        match event {
++            ReaderEvent::WaitingForRead => self.wait_state.store(/*val*/ 1, Ordering::Relaxed),
++            ReaderEvent::ReadStarted => {
++                self.wait_state.store(/*val*/ 2, Ordering::Relaxed);
++                self.read_calls.fetch_add(/*val*/ 1, Ordering::Relaxed);
++            }
++            ReaderEvent::ReadResult(result) => {
++                let encoded = match result {
++                    Ok(count) => {
++                        self.read_bytes.fetch_add(*count as u64, Ordering::Relaxed);
++                        // Reads use an 8 KiB buffer, so the count fits below the tag.
++                        (1_u64 << 32) | *count as u64
++                    }
++                    Err(error) => {
++                        if error.kind() == io::ErrorKind::WouldBlock {
++                            self.wait_state.store(/*val*/ 1, Ordering::Relaxed);
++                        }
++                        encode_error(error)
++                    }
++                };
++                self.last_read.store(encoded, Ordering::Relaxed);
++            }
++            ReaderEvent::Sending => self.wait_state.store(/*val*/ 3, Ordering::Relaxed),
++            ReaderEvent::Discarded(count) => {
++                self.discarded_bytes.fetch_add(count as u64, Ordering::Relaxed);
++            }
++            ReaderEvent::Eof => self.wait_state.store(/*val*/ 4, Ordering::Relaxed),
++            ReaderEvent::Failed(error) => {
++                self.terminal_error
++                    .store(encode_error(error), Ordering::Relaxed);
++                self.wait_state.store(/*val*/ 5, Ordering::Relaxed);
++            }
++        }
++    }
++
++    pub(crate) fn snapshot(&self) -> String {
++        // These independent observations do not form an atomic protocol state.
++        let wait_state = match self.wait_state.load(Ordering::Relaxed) {
++            0 => "not_started",
++            1 => "waiting_for_read",
++            2 => "in_read",
++            3 => "sending",
++            4 => "eof",
++            5 => "read_error",
++            _ => "unknown",
++        };
++        let descriptor = match self.fd.upgrade() {
++            Some(fd) => {
++                // The temporary strong reference pins this exact AsyncFd only
++                // during the two non-consuming queries. No raw FD is cached.
++                let raw_fd = fd.get_ref().as_raw_fd();
++                // SAFETY: AsyncFd owns this unchanged open descriptor.
++                let flags = unsafe { libc::fcntl(raw_fd, libc::F_GETFL) };
++                let flags = if flags == -1 {
++                    Err(io::Error::last_os_error().raw_os_error())
++                } else {
++                    Ok(flags)
++                };
++                let mut queued_bytes: libc::c_int = 0;
++                // SAFETY: queued_bytes is a valid output buffer for FIONREAD.
++                let rc = unsafe { libc::ioctl(raw_fd, libc::FIONREAD, &mut queued_bytes) };
++                let queued_bytes = if rc == -1 {
++                    Err(io::Error::last_os_error().raw_os_error())
++                } else {
++                    Ok(queued_bytes)
++                };
++                format!("flags={flags:?} queued_bytes={queued_bytes:?}")
++            }
++            None => "descriptor_released".to_string(),
++        };
++        format!(
++            "state={wait_state} read_calls={} read_bytes={} discarded_bytes={} last_read={} terminal_error={} {descriptor}",
++            self.read_calls.load(Ordering::Relaxed),
++            self.read_bytes.load(Ordering::Relaxed),
++            self.discarded_bytes.load(Ordering::Relaxed),
++            describe_result(self.last_read.load(Ordering::Relaxed)),
++            describe_result(self.terminal_error.load(Ordering::Relaxed)),
++        )
++    }
++}
++
++fn encode_error(error: &io::Error) -> u64 {
++    match error.raw_os_error() {
++        Some(errno) => (2_u64 << 32) | u64::from(errno as u32),
++        None => 3_u64 << 32,
++    }
++}
++
++fn describe_result(encoded: u64) -> String {
++    match encoded >> 32 {
++        0 => "none".to_string(),
++        1 => format!("ok({})", encoded as u32),
++        2 => format!("errno({})", encoded as u32 as i32),
++        3 => "error_without_os_errno".to_string(),
++        _ => "unknown".to_string(),
++    }
++}

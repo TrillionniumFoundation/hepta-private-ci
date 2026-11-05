@@ -1,0 +1,170 @@
+{
+  "schema": "hepta-b16-foundation-v5-root-execution-guard-v1",
+  "decision": "AUTHORIZE_ONE_REPAIRED_FOUNDATION_ATTEMPT_AFTER_VERIFIED_RESTORE",
+  "decided_at_utc": "2026-11-05T06:29:13.189787+00:00",
+  "authorization_basis": "User requested audit and actual closure work; parent root authorizes the reviewed implementation and original validation in the existing isolated native lane. No new user confirmation is required.",
+  "host": "rog",
+  "sole_native_writer": "ci_audit",
+  "authorized_epoch": "foundation",
+  "candidate_binding": {
+    "bytes": 12316,
+    "sha256": "d3208ce6f356b04f1022ad02178813b00a0a3513fdf371deaf30b30373f05a81",
+    "blob": "d22c07b863e179b889ba286f960b278cb677f78c"
+  },
+  "candidate_request": {
+    "bytes": 540466,
+    "sha256": "94360331103641bd0ac99070c0ef043aaf14c35f52dd604199763274d97ba232",
+    "blob": "fd18b59c90f4165081392f0f6516b1f8ecd794c8"
+  },
+  "candidate_manifest": {
+    "bytes": 19376,
+    "sha256": "bed7d3fcaa1eb4899fc2506f0690f3c3702d2a2691dbcd5a323a05a927c86036",
+    "blob": "7513ad47c9ef9f9f105730fe8689bdcc5a6768e7"
+  },
+  "launcher": {
+    "bytes": 6114,
+    "sha256": "f773640b9cb097393729da2819a6c9a74dc6a3c67f4a830128112f2430581c8e",
+    "blob": "5e44a1b69c7f9173d48902f80c582097a78a3825"
+  },
+  "complete_payload_verification": {
+    "path": "/workspace/scratch/07dd58cc9630/hepta-audit-fourth/inputs/b16-foundation-v5-root-payload-and-restore-review.json",
+    "bytes": 8078,
+    "sha256": "9bc01003f39dd2aef56255f3ebedd7219d8c107f72c42704614e4e4608e98acb",
+    "blob": "523a755837a2de78c3852574950fd8db2b9d9799"
+  },
+  "actual_readonly_preflight_root_review": "c68debe42efd3707014bd5632b3f235d9ee01160",
+  "last_tested_to_final_source_review": "40bd8b7030931cae6573ec126f4afc13a1140d33",
+  "published_A_head": "0e139b599f0fe451f80fb7db4b2913bb9c679dce",
+  "published_complete_tree": "091e659e0da6602299fd14cfa93889191405edd8",
+  "native_initial_tree": "4a3374e22e16ce5c764288ad018cd9affadf94ea",
+  "source_commit": "20fd174ded4e5ce01bda34e4f6d1d74803301f49",
+  "last_full_test_tree": "fb9e131272f7e7a138d6c0d1af2b048b9a6ab7ff",
+  "ordinary_head": "cabcb40d36e116beaa65750e1f674c52035da785",
+  "ordinary_index": {
+    "bytes": 1222758,
+    "sha256": "c41b4d7645b2b88431ed024e9cc683e31d43fafe7290280eaf0bae656fd6a922"
+  },
+  "locks": {
+    "codex-rs/Cargo.lock": {
+      "bytes": 413768,
+      "sha256": "4a7a5535cf045089458468411e126b5f59bc6bbf34fc0deead9b0c1b8d84000a"
+    },
+    "MODULE.bazel.lock": {
+      "bytes": 1738619,
+      "sha256": "11f8a421224b9b05f32c4c14054e8868083d989fc497310c8d51e1156f189ca3"
+    }
+  },
+  "frozen_install_map": {
+    "bytes": 19757,
+    "sha256": "918aeb59fff9fa209f7d05d7d68727699cf164a523daa65f2e753ff6139fdbc5",
+    "blob": "6b039c73a3f5e718ef1ce8ba49bda806662c9601"
+  },
+  "runtime_integrity_sha256": "3e019a1bb9d8f56aef1765cb75592a971bfeb4b151e86de5cc216d3d0bd1a982",
+  "payload_sha256": "a34cd6c5400deff4fedfffcb1f4f170eecabbb6bbfab1916829ab3911e986237",
+  "family_sha256": "5f63fcb507e899cc19df88e86efe997a34929edd5f45c83e7f7197987149a204",
+  "install_compressed": {
+    "bytes": 395330,
+    "sha256": "a0527610c21f52062173e1ff9a5a593f19a36d4b3c5d6c6b89b8c6e153d34181",
+    "blob": "82577a9fbc7d3fab90619dca35c3131c014e1703"
+  },
+  "install_uncompressed": {
+    "bytes": 1952105,
+    "sha256": "c521e8275d16135367b9d911831b6292cdd85fb7bdd86c415e1ceedbcfa51a6a",
+    "blob": "041ae2eb1b7b619d5deebda2cc70d69ebd45b3e6"
+  },
+  "runtime_files": 25,
+  "source_objects": 112,
+  "foundation_scopes": 10,
+  "positive_distinct_cases": 24,
+  "positive_executions": 27,
+  "negative_executions": 10,
+  "permitted_binding_changes": [
+    {
+      "field": "execute",
+      "from": false,
+      "to": true
+    },
+    {
+      "field": "approval_reference",
+      "from": null,
+      "to": "The Git blob SHA of this exact root execution guard."
+    }
+  ],
+  "permitted_request_changes": [
+    "Replace request.binding with exactly the two-field-enabled binding.",
+    "Set request.root_execution_guard to the Git blob SHA of this exact guard."
+  ],
+  "all_other_candidate_bytes_semantics_unchanged": true,
+  "native_idempotency_key": "hepta-rog-b16-foundation-v5-20261105-v1",
+  "native_outer_timeout_seconds": 21600,
+  "owned_epoch_root": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/b16-foundation-v5-20261105-v1",
+  "actual_runtime_argv": [
+    "/usr/bin/python3",
+    "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/b16-foundation-v5-20261105-v1/runtime/b16_runner.py",
+    "--binding",
+    "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/b16-foundation-v5-20261105-v1/binding.json",
+    "--epoch",
+    "foundation"
+  ],
+  "capacity": {
+    "fresh_launch_min_bytes": 22000000000,
+    "before_after_command_min_bytes": 8000000000,
+    "cargo_growth_allowance_bytes": 12000000000,
+    "evidence_growth_allowance_bytes": 2000000000,
+    "measured_peak_guarantee": false,
+    "lower_budget_or_delete_cache_authorized": false
+  },
+  "independent_final_review": {
+    "reviewer": "architecture_audit",
+    "verdict": "PASS_FOR_ROOT_ENABLEMENT_AFTER_EXACT_RESTORE",
+    "basis": "Independent complete25-file request decode plus exact comparison of V5 binding/launcher/source/index/locks/tools/metadata/cacheowner/10scopes/budgets; only reviewed CLI repair and new attempt identity/evidence directories.",
+    "native_commands_executed_by_reviewer": false
+  },
+  "execution_requirements": [
+    "Launch only this one foundation epoch after exact enabled-payload hash verification.",
+    "Launcher fresh free >=22,000,000,000 bytes, then frozen runtime repeats the same conditional capacity gate before source mutation.",
+    "Keep 8,000,000,000 byte pre/post-command reserve, original no-retry commands and physical negative oracles.",
+    "Keep every original failure, skip, early return and exact restoration receipt; an unexpected failure stops the epoch.",
+    "After terminal, report actual source, ordinary index, locks, complete original statuses and raw/JUnit evidence before any later epoch."
+  ],
+  "capacity_limit": "The same12GB Cargo growth allowance is conditional, not a measured compiler/linker peak guarantee; past free-space observations never substitute for the fresh22GB launch checks.",
+  "other_epochs_authorized": false,
+  "cache_deletion_or_budget_lowering_authorized": false,
+  "host_security_policy_changes_authorized": false,
+  "CI_retry_cancel_dispatch_authorized": false,
+  "merge_release_or_runtime_activation_authorized": false,
+  "qualification_limits": [
+    "This authorization does not itself qualify any native case.",
+    "B16 internal phase IDs do not close original B01-B23 ledger entries.",
+    "The fb9 full result remains 16 FAIL and 25 observed early returns; no test is relabeled as final 4a or complete published 091e qualification.",
+    "B16 normal Root/Session/UI caller and real external acceptance remain open."
+  ],
+  "previous_failed_attempt": {
+    "job": "1a1aa50a87d-fc05-40d6",
+    "root_complete53_original_review": "7f24a180925195eb2f1c260fc51cf00ad8a1963c",
+    "actual_test_recipe_exit": 2,
+    "controller_exit": 1,
+    "cases_executed": 0,
+    "new_JUnit": false,
+    "cause": "Duplicate no-fail-fast in the harness and original recipe.",
+    "previous_evidence_preserved": true
+  },
+  "verified_restoration": {
+    "job": "1a1aa628b1b-fc05-4228",
+    "root_restore_guard": "10c1d5d60b693586720c0ee95e6a0c7fad01ef6f",
+    "complete_bundle": "7ef34c9673f71803d937b6ad8b664ce0a3de667f",
+    "files_independently_verified": 9,
+    "source_guards_independently_verified": 4,
+    "actual_final_tree": "4a3374e22e16ce5c764288ad018cd9affadf94ea",
+    "controller_exit": 0
+  },
+  "approved_minimal_runtime_repair": {
+    "repair_manifest": "bae862028119a76fdf2ae18278198f623a226802",
+    "single_source_delta": "c6774daf9608c6ed4886f82bc9fc454ccae9828f",
+    "runtime_integrity": "00d5e62ac363f4b427be5a598723fc903f2903f2",
+    "original_recipe_no_fail_fast_remains_once": true,
+    "other_runtime_code_payload_physical_oracles_and_budgets_unchanged": true
+  },
+  "harness_attempt_number": 2,
+  "test_case_retries": 0
+}

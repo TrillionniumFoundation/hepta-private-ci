@@ -1,0 +1,53 @@
+{
+  "schema": "hepta-b16-foundation-v4-harness-failure-durable-index-v1",
+  "host": "rog",
+  "job_id": "1a1aa50a87d-fc05-40d6",
+  "root_execution_guard": "44ea9a99dfc040b87b02a90268d1bd4f89359e1b",
+  "terminal_state": "failed",
+  "controller_exit_code": 1,
+  "test_recipe_exit_code": 2,
+  "tests_executed": 0,
+  "fresh_junit_created": false,
+  "failure_source_tree": "87e44120dc46e4751b74fb167269a6d85448ff4f",
+  "complete_original_count": 53,
+  "complete_original_bytes": 20487123,
+  "full_cached_transport": {
+    "bytes": 426416,
+    "sha256": "1ea36305010357c25558bb5bb62cf2ee49ec3c52f27aad15973bb88d0fac8598",
+    "blob": "0ab94182307d931b1955508ed8a5695cc100581b",
+    "GET_byte_equal": true
+  },
+  "complete_local_reconstruction_manifest": {
+    "bytes": 30731,
+    "sha256": "e92a8a27d620031103dc6d8ee9a42e7942ce8f0da04e76004715872f12153255",
+    "blob": "f92de354f615b9ac8c936f518fe7383878156acd",
+    "GET_byte_equal": true
+  },
+  "content_reuse": {
+    "files": [
+      "epoch-entry-metadata.log",
+      "B01_R2c_V3-metadata.log"
+    ],
+    "raw_bytes_each": 8163699,
+    "raw_sha256": "3a53323eae920e2e53dcb3e334128a4aff63cfb51840793e9150d617d2c9ba18",
+    "reuse_archive_index": "5f28cb0d0e01927bf067c6f8f7a0df769e65bf6d",
+    "actual_current_command_and_source_receipts_preserved": true,
+    "redundant_compressed_chunks_not_fetched_again": true
+  },
+  "exact_owned_restoration": {
+    "root_guard": "10c1d5d60b693586720c0ee95e6a0c7fad01ef6f",
+    "job_id": "1a1aa628b1b-fc05-4228",
+    "state": "succeeded",
+    "exit_code": 0,
+    "bundle": {
+      "path": "/workspace/scratch/07dd58cc9630/ci-audit/recovered-20261105/b16-foundation-v4-harness-failure-v1/restore-execution/complete-restoration-bundle.json",
+      "bytes": 41675,
+      "sha256": "22eca1282940c5dd9fafd841126771b75570f89e04a2c849a5d4a64290dfdd85",
+      "blob": "7ef34c9673f71803d937b6ad8b664ce0a3de667f",
+      "GET_byte_equal": true
+    },
+    "restored_tree": "4a3374e22e16ce5c764288ad018cd9affadf94ea",
+    "build_or_test": false
+  },
+  "classification": "Harness argument parsing failure before any case execution; not a product failure or valid causal negative."
+}

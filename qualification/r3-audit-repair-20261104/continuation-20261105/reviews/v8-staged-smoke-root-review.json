@@ -1,0 +1,66 @@
+{
+  "schema": "hepta-fifth-v8-staged-smoke-root-review-v1",
+  "published_head": "0e139b599f0fe451f80fb7db4b2913bb9c679dce",
+  "published_tree": "091e659e0da6602299fd14cfa93889191405edd8",
+  "verdict": "STATIC_REVIEW_PASS_REQUIRES_FRESH_HOSTED_ORIGINAL_MATRIX",
+  "author_manifest": "c28cbc195c87020bb8ef7a4f17e0cc31355e4acb",
+  "before": "7bd9a55dcab283c743bd3a05f69c8c6c3e3ff2c4",
+  "after": "648a83164c0dd1c28499eaa17f842a83bb2aab04",
+  "whole_workflow_unique_one_argument_verified": true,
+  "metadata_sha256": "3a53323eae920e2e53dcb3e334128a4aff63cfb51840793e9150d617d2c9ba18",
+  "upstream_features": {
+    "default": [
+      "use_custom_libcxx"
+    ],
+    "simdutf": [],
+    "use_custom_libcxx": [],
+    "v8_enable_pointer_compression": [],
+    "v8_enable_sandbox": [
+      "v8_enable_pointer_compression"
+    ],
+    "v8_enable_v8_checks": []
+  },
+  "poc_features": {
+    "default": [
+      "sandbox"
+    ],
+    "sandbox": [
+      "v8/v8_enable_sandbox"
+    ]
+  },
+  "conservative_closure_packages": 98,
+  "direct_v8_requesters": [
+    "codex-v8-poc"
+  ],
+  "static_only": true,
+  "original_failures": [
+    {
+      "job": 127079699775,
+      "platform": "aarch64-apple-darwin",
+      "passed": 5,
+      "failed": 1,
+      "ignored": 0,
+      "elapsed_seconds": 0.3,
+      "raw_sha256": "7b8a2678b4567d27ed2d63eb452904376e8735ee90e80fcd7c2dc62d1f3b257d"
+    },
+    {
+      "job": 127079699806,
+      "platform": "x86_64-apple-darwin",
+      "passed": 5,
+      "failed": 1,
+      "ignored": 0,
+      "elapsed_seconds": 0.04,
+      "raw_sha256": "c0f6311813fa1eaf8fb8aec8911941934bb0cda26dc988b0643622f117e1af63"
+    }
+  ],
+  "root_read_original_failure_and_command_context": true,
+  "root_read_original_fixed_manifest_and_strict_assertion": true,
+  "root_recomputed_conservative_selected_dependency_closure_from_complete_metadata": true,
+  "root_cause": "The release matrix builds a native V8 archive without sandbox. The smoke command inherited the selected POC package's default sandbox feature, making the unchanged runtime-versus-feature assertion compare false to true.",
+  "change": "Disable defaults for this selected-package variant smoke, then keep the original explicit --features sandbox only in the true matrix branch.",
+  "production_default_sandbox_unchanged": true,
+  "strict_six_tests_unchanged": true,
+  "staging_Bazel_Windows_scopes_locks_and_budgets_unchanged": true,
+  "native_Cargo_Bazel_or_hosted_execution_performed": false,
+  "ref_updated": false
+}

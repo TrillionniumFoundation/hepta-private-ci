@@ -1,0 +1,176 @@
+diff --git a/codex-rs/utils/pty/src/unix_io.rs b/codex-rs/utils/pty/src/unix_io.rs
+index c539f46d67758578d355ca6eedeed101089eeec0..67168dab510c9fd400a1cbcf4b4a6bb905b73c59 100644
+--- a/codex-rs/utils/pty/src/unix_io.rs
++++ b/codex-rs/utils/pty/src/unix_io.rs
+@@ -17,6 +17,8 @@
+ mod diagnostics;
+ #[cfg(test)]
+ pub(crate) use diagnostics::PtyIoDiagnostics;
++#[cfg(test)]
++use diagnostics::ReaderEvent;
+ 
+ pub(crate) enum StdinCloseBehavior {
+     SendEof,
+@@ -77,30 +79,30 @@
+             let mut buf = [0u8; 8_192];
+             loop {
+                 #[cfg(test)]
+-                diagnostics.waiting_for_read();
++                diagnostics.observe(ReaderEvent::WaitingForRead);
+                 match reader
+                     .async_io(Interest::READABLE, |mut file| {
+                         #[cfg(test)]
+-                        diagnostics.read_started();
++                        diagnostics.observe(ReaderEvent::ReadStarted);
+                         let result = file.read(&mut buf);
+                         #[cfg(test)]
+-                        diagnostics.read_result(&result);
++                        diagnostics.observe(ReaderEvent::ReadResult(&result));
+                         result
+                     })
+                     .await
+                 {
+                     Ok(0) => {
+                         #[cfg(test)]
+-                        diagnostics.eof();
++                        diagnostics.observe(ReaderEvent::Eof);
+                         break;
+                     }
+                     Ok(count) => {
+                         // Output caps may close the receiver before the child exits.
+                         #[cfg(test)]
+                         {
+-                            diagnostics.sending();
++                            diagnostics.observe(ReaderEvent::Sending);
+                             if stdout_tx.send(buf[..count].to_vec()).await.is_err() {
+-                                diagnostics.discarded(count);
++                                diagnostics.observe(ReaderEvent::Discarded(count));
+                             }
+                         }
+                         #[cfg(not(test))]
+@@ -110,7 +112,7 @@
+                     // Unix PTYs may report EIO rather than EOF when the slave closes.
+                     Err(err) => {
+                         #[cfg(test)]
+-                        diagnostics.failed(&err);
++                        diagnostics.observe(ReaderEvent::Failed(&err));
+                         #[cfg(not(test))]
+                         let _ = err;
+                         break;
+diff --git a/codex-rs/utils/pty/src/unix_io_diagnostics.rs b/codex-rs/utils/pty/src/unix_io_diagnostics.rs
+index 68f9b471b4a000563af79393b5d1d7da1024a4a7..393cceaa6544e3de4f4ca41579bc48ebf95582fd 100644
+--- a/codex-rs/utils/pty/src/unix_io_diagnostics.rs
++++ b/codex-rs/utils/pty/src/unix_io_diagnostics.rs
+@@ -9,6 +9,16 @@
+ use std::sync::atomic::Ordering;
+ 
+ use tokio::io::unix::AsyncFd;
++
++pub(super) enum ReaderEvent<'a> {
++    WaitingForRead,
++    ReadStarted,
++    ReadResult(&'a io::Result<usize>),
++    Sending,
++    Discarded(usize),
++    Eof,
++    Failed(&'a io::Error),
++}
+ 
+ pub(crate) struct PtyIoDiagnostics {
+     fd: Weak<AsyncFd<File>>,
+@@ -24,57 +34,49 @@
+     pub(crate) fn new(fd: Weak<AsyncFd<File>>) -> Self {
+         Self {
+             fd,
+-            read_calls: AtomicU64::new(0),
+-            read_bytes: AtomicU64::new(0),
+-            discarded_bytes: AtomicU64::new(0),
+-            last_read: AtomicU64::new(0),
+-            terminal_error: AtomicU64::new(0),
+-            wait_state: AtomicU8::new(0),
++            read_calls: AtomicU64::default(),
++            read_bytes: AtomicU64::default(),
++            discarded_bytes: AtomicU64::default(),
++            last_read: AtomicU64::default(),
++            terminal_error: AtomicU64::default(),
++            wait_state: AtomicU8::default(),
+         }
+     }
+ 
+-    pub(crate) fn waiting_for_read(&self) {
+-        self.wait_state.store(1, Ordering::Relaxed);
+-    }
+-
+-    pub(crate) fn read_started(&self) {
+-        self.wait_state.store(2, Ordering::Relaxed);
+-        self.read_calls.fetch_add(1, Ordering::Relaxed);
+-    }
+-
+-    pub(crate) fn read_result(&self, result: &io::Result<usize>) {
+-        let encoded = match result {
+-            Ok(count) => {
+-                self.read_bytes.fetch_add(*count as u64, Ordering::Relaxed);
+-                // Reads use an 8 KiB buffer, so the count fits below the tag.
+-                (1_u64 << 32) | *count as u64
++    pub(super) fn observe(&self, event: ReaderEvent<'_>) {
++        match event {
++            ReaderEvent::WaitingForRead => self.wait_state.store(/*val*/ 1, Ordering::Relaxed),
++            ReaderEvent::ReadStarted => {
++                self.wait_state.store(/*val*/ 2, Ordering::Relaxed);
++                self.read_calls.fetch_add(/*val*/ 1, Ordering::Relaxed);
+             }
+-            Err(error) => {
+-                if error.kind() == io::ErrorKind::WouldBlock {
+-                    self.waiting_for_read();
+-                }
+-                encode_error(error)
++            ReaderEvent::ReadResult(result) => {
++                let encoded = match result {
++                    Ok(count) => {
++                        self.read_bytes.fetch_add(*count as u64, Ordering::Relaxed);
++                        // Reads use an 8 KiB buffer, so the count fits below the tag.
++                        (1_u64 << 32) | *count as u64
++                    }
++                    Err(error) => {
++                        if error.kind() == io::ErrorKind::WouldBlock {
++                            self.wait_state.store(/*val*/ 1, Ordering::Relaxed);
++                        }
++                        encode_error(error)
++                    }
++                };
++                self.last_read.store(encoded, Ordering::Relaxed);
+             }
+-        };
+-        self.last_read.store(encoded, Ordering::Relaxed);
+-    }
+-
+-    pub(crate) fn sending(&self) {
+-        self.wait_state.store(3, Ordering::Relaxed);
+-    }
+-
+-    pub(crate) fn discarded(&self, count: usize) {
+-        self.discarded_bytes.fetch_add(count as u64, Ordering::Relaxed);
+-    }
+-
+-    pub(crate) fn eof(&self) {
+-        self.wait_state.store(4, Ordering::Relaxed);
+-    }
+-
+-    pub(crate) fn failed(&self, error: &io::Error) {
+-        self.terminal_error
+-            .store(encode_error(error), Ordering::Relaxed);
+-        self.wait_state.store(5, Ordering::Relaxed);
++            ReaderEvent::Sending => self.wait_state.store(/*val*/ 3, Ordering::Relaxed),
++            ReaderEvent::Discarded(count) => {
++                self.discarded_bytes.fetch_add(count as u64, Ordering::Relaxed);
++            }
++            ReaderEvent::Eof => self.wait_state.store(/*val*/ 4, Ordering::Relaxed),
++            ReaderEvent::Failed(error) => {
++                self.terminal_error
++                    .store(encode_error(error), Ordering::Relaxed);
++                self.wait_state.store(/*val*/ 5, Ordering::Relaxed);
++            }
++        }
+     }
+ 
+     pub(crate) fn snapshot(&self) -> String {

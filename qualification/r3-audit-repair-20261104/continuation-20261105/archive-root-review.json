@@ -1,0 +1,45 @@
+{
+  "schema": "hepta-continuation-archive-root-review-v1",
+  "recorded_utc": "2026-11-05T08:06:34.402111+00:00",
+  "actual_root_executed_reconstruction": [
+    {
+      "batch": "01",
+      "command": "python verify_archive.py",
+      "exit_code": 0,
+      "members": 201,
+      "original_bytes": 20678953,
+      "compressed_bytes": 8453934,
+      "compressed_sha256": "6ebff63fd58d1b5beb1bdbd05cbe386a0d8dabd8169cc6195444b8249bcf91e1",
+      "all_member_and_part_hashes_verified": true,
+      "project_commands_executed": false
+    },
+    {
+      "batch": "02",
+      "command": "python verify_archive.py",
+      "exit_code": 0,
+      "members": 101,
+      "original_bytes": 29126247,
+      "compressed_bytes": 11454207,
+      "compressed_sha256": "6f40fd620895fe231ab26dc62c06f7a8f5f81509d7bd75c09d1dd4f184709896",
+      "all_member_and_part_hashes_verified": true,
+      "project_commands_executed": false
+    },
+    {
+      "batch": "03",
+      "command": "python verify_archive.py",
+      "exit_code": 0,
+      "members": 178,
+      "original_bytes": 18206172,
+      "compressed_bytes": 3726895,
+      "compressed_sha256": "bc4746355913f7a244935470b8dca4b8f330229a525ade32499d1bb31226a362",
+      "all_member_and_part_hashes_verified": true,
+      "project_commands_executed": false
+    }
+  ],
+  "strict_base64": true,
+  "no_tar_extraction_or_project_execution": true,
+  "all_139_registry_item_local_identities_exact": true,
+  "total_archived_members": 480,
+  "total_original_bytes": 68011372,
+  "members_may_include_repeated_or_derived_observations": true
+}

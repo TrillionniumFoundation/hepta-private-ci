@@ -1,0 +1,64 @@
+{
+  "schema": "hepta-fifth-intel-pty-observation-root-review-v1",
+  "status": "STATIC_DIAGNOSTIC_CANDIDATE_REQUIRES_PROJECT_AND_ORIGINAL_INTEL_EXECUTION",
+  "published_head": "0e139b599f0fe451f80fb7db4b2913bb9c679dce",
+  "original_job": 127089468985,
+  "original_target_result": {
+    "cases": 31,
+    "pass": 30,
+    "fail": 1,
+    "ignored": 0
+  },
+  "original_failure_precedes_cancellation": true,
+  "author_causal_review": "e32e542f79e64262b3cb9d02fb0c061881919376",
+  "author_candidate_manifest": "c952992491f65472beff0818654114c47d9332c1",
+  "independent_review": "0e34dfc399fb3a64609b2e61369bccf317c84c4d",
+  "root_read_complete_patch_and_manifest": true,
+  "all_five_postimages_and_four_preimages_hashed": true,
+  "postimages": [
+    {
+      "path": "codex-rs/utils/pty/src/process.rs",
+      "blob": "f0e9ccde6829f0d0fb6bd59e154360018856b7fc",
+      "bytes": 16183
+    },
+    {
+      "path": "codex-rs/utils/pty/src/pty.rs",
+      "blob": "e2e294464a2db6b65370afd98b7d49250ddaae2f",
+      "bytes": 17992
+    },
+    {
+      "path": "codex-rs/utils/pty/src/tests.rs",
+      "blob": "25836a08f9ff9a90b14204059d2544749a0f5461",
+      "bytes": 63583
+    },
+    {
+      "path": "codex-rs/utils/pty/src/unix_io.rs",
+      "blob": "67168dab510c9fd400a1cbcf4b4a6bb905b73c59",
+      "bytes": 6097
+    },
+    {
+      "path": "codex-rs/utils/pty/src/unix_io_diagnostics.rs",
+      "blob": "393cceaa6544e3de4f4ca41579bc48ebf95582fd",
+      "bytes": 5388
+    }
+  ],
+  "exact_entire_original_test_after_removing_four_print_lines": true,
+  "original_function_roster_unchanged": true,
+  "root_review": [
+    "Only test builds contain observer, counters and methods. Non-test I/O retains the same one Arc allocation, read and send operations, buffer, EOF/Interrupted/error decisions and writer path.",
+    "Each observer retains only a Weak to the existing session AsyncFd. A temporary upgrade pins its actual descriptor during F_GETFL/FIONREAD and is released before return; no cached raw fd or extra long-lived fd ownership exists.",
+    "The added snapshot follows the original timeout decision and precedes original termination. It cannot revise that returned result. Independent relaxed atomic samples are not a simultaneous deadline-state proof.",
+    "Original code already drains after closed-channel send errors. Current evidence cannot establish whether Intel stopped at read, later side-channel I/O, or process-wait observation.",
+    "The complete test source is byte-identical after deleting four added printing lines; no timer, Python payload, backend ordering, exit-zero assertion, sleep, retry or skip is changed."
+  ],
+  "original_budget_seconds": 2,
+  "original_python_write_bytes": 4194304,
+  "production_fix_claimed": false,
+  "new_test_cases": 0,
+  "new_module_lines": 143,
+  "native_project_test": "PENDING: just test -p codex-utils-pty",
+  "scoped_clippy": "PENDING: just fix -p codex-utils-pty",
+  "final_format": "PENDING: just fmt; no test rerun after fix/fmt",
+  "original_hosted_Intel_target": "PENDING",
+  "B21_closed": false
+}

@@ -1,0 +1,577 @@
+{
+  "schema": "hepta-audit-ref-trigger-scope-review-v1",
+  "observed_utc": "2026-11-05 07:45:17 UTC",
+  "source_commit": "0e139b599f0fe451f80fb7db4b2913bb9c679dce",
+  "read_workflow_count": 93,
+  "read_failures": [],
+  "branch": "audit/r3-evidence-20261105",
+  "purpose": "Make exact native source and later receipts reachable without changing the product PR head.",
+  "matching_direct_push_triggers_for_this_branch": 0,
+  "actual_branch_actions_api_count_at_observation": 0,
+  "no_PR_created_for_audit_branch": true,
+  "changed_two_workflow_bodies_have_unchanged_event_and_concurrency_blocks": true,
+  "limits": [
+    "This is fixed-source trigger analysis and one actual API observation, not a promise about future external automation.",
+    "The independent audit ref is not a qualified product candidate and must not replace the PR head in test claims."
+  ],
+  "workflows": [
+    {
+      "path": ".github/workflows/automation-taskflow-focused.yml",
+      "blob": "43269479125e8e8b660cee1ad80666fe017205b8",
+      "on": "on:\n  push:\n    branches:\n      - work/automation-taskflow-durable-causal-chain\n    paths:\n      - codex-rs/hepta-automation/**\n      - codex-rs/hepta-agentd/**\n      - codex-rs/hepta-contracts/**\n      - codex-rs/hepta-operations/**\n      - codex-rs/hepta-types/**\n      - codex-rs/Cargo.lock\n      - .github/workflows/automation-taskflow-focused.yml\n  workflow_dispatch:",
+      "concurrency": "concurrency:\n  group: ${{ github.workflow }}::${{ github.event.pull_request.head.ref || github.ref_name }}\n  cancel-in-progress: true"
+    },
+    {
+      "path": ".github/workflows/bazel.yml",
+      "blob": "9eed8ed8fa46c88d9d89d1499f55cb8c303137af",
+      "on": "on:\n  workflow_call:\n  workflow_dispatch:",
+      "concurrency": "concurrency:\n  # Cancel previous actions from the same PR or branch except 'main' branch.\n  # See https://docs.github.com/en/actions/using-jobs/using-concurrency and https://docs.github.com/en/actions/learn-github-actions/contexts for more info.\n  group: concurrency-group::${{ github.workflow }}::${{ github.event.pull_request.number > 0 && format('pr-{0}', github.event.pull_request.number) || github.ref_name }}${{ github.ref_name == 'main' && format('::{0}', github.run_id) || ''}}\n  cancel-in-progress: ${{ github.ref_name != 'main' }}\n\n# These bounds include cold V8/toolchain compilation on hosted runners.\n# Test selection and each test's own deadline remain unchanged."
+    },
+    {
+      "path": ".github/workflows/blob-size-policy.yml",
+      "blob": "ac1e8f5ec3354017a76695e5a1f0e270cee440ba",
+      "on": "on:\n  workflow_call:",
+      "concurrency": null
+    },
+    {
+      "path": ".github/workflows/blocking-ci.yml",
+      "blob": "fd01ab5edac5d78c9bcfb78397a157a3d5ea7c71",
+      "on": "on:\n  pull_request: {}\n  push:\n    branches: [main]",
+      "concurrency": "concurrency:\n  group: blocking-ci-${{ github.event.pull_request.head.ref || github.ref_name }}\n  cancel-in-progress: true"
+    },
+    {
+      "path": ".github/workflows/cargo-deny.yml",
+      "blob": "88b6308899357e23b4a4058aecd4527b4edcee9b",
+      "on": "on:\n  workflow_call:",
+      "concurrency": null
+    },
+    {
+      "path": ".github/workflows/cla.yml",
+      "blob": "8316a3562fb2adeda5deb36a94d7aafa3fc5a8df",
+      "on": "on:\n  issue_comment:\n    types: [created]\n  pull_request_target:\n    types: [opened, closed, synchronize]",
+      "concurrency": null
+    },
+    {
+      "path": ".github/workflows/close-stale-contributor-prs.yml",
+      "blob": "cbda37e3105bd47fc22dcd46b3edc47db676162f",
+      "on": "on:\n  workflow_dispatch:\n  schedule:\n    - cron: \"0 6 * * *\"",
+      "concurrency": null
+    },
+    {
+      "path": ".github/workflows/codespell.yml",
+      "blob": "06ea9c7226d265405c73850c449b3d6b96d82514",
+      "on": "on:\n  workflow_call:",
+      "concurrency": null
+    },
+    {
+      "path": ".github/workflows/hepta-algorithm-docs.yml",
+      "blob": "c324bb5be80d978289ed54fb25d6cf4f2b594acd",
+      "on": "on:\n  # Automatic fan-out belongs to the existing aggregate checks.\n  workflow_call:\n  workflow_dispatch:",
+      "concurrency": "concurrency:\n  group: hepta-algorithm-docs-${{ github.event.pull_request.number || github.ref }}\n  cancel-in-progress: true"
+    },
+    {
+      "path": ".github/workflows/hepta-app-server-schema-refresh.yml",
+      "blob": "d0ed2fd1b14879ddf22c871bb6b36ed6bab5ef0d",
+      "on": "on:\n  pull_request:\n    types: [opened, synchronize, reopened]\n    paths:\n      - .github/workflows/hepta-app-server-schema-refresh.yml\n      - codex-rs/app-server-protocol/**\n      - codex-rs/Cargo.lock\n      - codex-rs/Cargo.toml\n      - codex-rs/rust-toolchain.toml\n      - justfile\n      - scripts/just-shell.py\n      - scripts/run-nextest.py",
+      "concurrency": "concurrency:\n  group: app-server-schema-refresh-${{ github.event.pull_request.number }}\n  cancel-in-progress: true"
+    },
+    {
+      "path": ".github/workflows/hepta-architecture-convergence.yml",
+      "blob": "fb2491dea531af8f2750d08c9010069065bc35fc",
+      "on": "on:\n  # Always report a terminal identity check; select expensive boundaries below.\n  # Workflow-level path skipping can leave a required check permanently pending.\n  pull_request:\n  workflow_dispatch:",
+      "concurrency": "concurrency:\n  group: hepta-architecture-convergence-${{ github.event.pull_request.head.ref || github.ref_name }}\n  cancel-in-progress: true"
+    },
+    {
+      "path": ".github/workflows/hepta-artifact-storage.yml",
+      "blob": "b6e05d76c3ee4b5e94994937bef77278bb6a1c22",
+      "on": "on:\n  # Automatic pull-request and main-branch fan-out is owned by the two\n  # aggregate checks. Deep qualifications remain reusable and manually runnable.\n  workflow_call:\n  workflow_dispatch:",
+      "concurrency": null
+    },
+    {
+      "path": ".github/workflows/hepta-assimilation-discovery.yml",
+      "blob": "12c4ffb399949abd6d0f2cf99fd68d7bbd7dfecf",
+      "on": "on:\n  # Automatic pull-request and main-branch fan-out is owned by the two\n  # aggregate checks. Deep qualifications remain reusable and manually runnable.\n  workflow_call:\n  workflow_dispatch:",
+      "concurrency": "concurrency:\n  group: hepta-scoped-discovery-${{ github.event.pull_request.number }}\n  cancel-in-progress: true"
+    },
+    {
+      "path": ".github/workflows/hepta-audit-remediation.yml",
+      "blob": "05b56cd3c6dfff68641a5c9b5e7036140ea760a7",
+      "on": "on:\n  # Automatic pull-request and main-branch fan-out is owned by the two\n  # aggregate checks. Deep qualifications remain reusable and manually runnable.\n  workflow_call:\n  workflow_dispatch:",
+      "concurrency": "concurrency:\n  group: hepta-audit-remediation-${{ github.event.pull_request.number || github.ref }}\n  cancel-in-progress: true"
+    },
+    {
+      "path": ".github/workflows/hepta-bazel-stable-lock-proposal.yml",
+      "blob": "9196345f6b3688ee3dcb55bde42404ea8b99aa12",
+      "on": "on:\n  pull_request:\n    paths:\n      - \".bazelversion\"\n      - \"MODULE.bazel\"\n      - \"MODULE.bazel.lock\"\n      - \".github/workflows/hepta-bazel-stable-lock-proposal.yml\"",
+      "concurrency": "concurrency:\n  group: bazel-stable-lock-proposal-${{ github.event.pull_request.head.ref }}\n  cancel-in-progress: true"
+    },
+    {
+      "path": ".github/workflows/hepta-browser-agentd-composition.yml",
+      "blob": "1c856bc9231633413cadb9b7f70e8fcfdb14d8d8",
+      "on": "on:\n  # Automatic pull-request and main-branch fan-out is owned by the two\n  # aggregate checks. Deep qualifications remain reusable and manually runnable.\n  workflow_call:\n  workflow_dispatch:",
+      "concurrency": "concurrency:\n  group: hepta-browser-agentd-composition-${{ github.ref }}\n  cancel-in-progress: true"
+    },
+    {
+      "path": ".github/workflows/hepta-browser-servo-deployment-qualification.yml",
+      "blob": "73db9f4a62ab3027c81363c33f1846f99f6dd8f9",
+      "on": "on:\n  # Deep qualification stays explicitly reusable and manually runnable.\n  workflow_call:\n    inputs:\n      build_run_id:\n        description: GitHub Actions run ID containing the exact worker evidence artifact\n        required: true\n        type: string\n      worker_sha256:\n        description: Expected SHA-256 of the worker binary from the reviewed build receipt\n        required: true\n        type: string\n\n  workflow_dispatch:\n    inputs:\n      build_run_id:\n        description: GitHub Actions run ID containing the exact worker evidence artifact\n        required: true\n        type: string\n      worker_sha256:\n        description: Expected SHA-256 of the worker binary from the reviewed build receipt\n        required: true\n        type: string",
+      "concurrency": "concurrency:\n  group: hepta-browser-servo-deployment-qualification\n  cancel-in-progress: false"
+    },
+    {
+      "path": ".github/workflows/hepta-browser-servo-worker-dev.yml",
+      "blob": "f36e53e91ca31b16d5e9202a433f1c7b2ed0a749",
+      "on": "on:\n  # Automatic pull-request and main-branch fan-out is owned by the two\n  # aggregate checks. Deep qualifications remain reusable and manually runnable.\n  workflow_call:\n  workflow_dispatch:",
+      "concurrency": "concurrency:\n  group: hepta-browser-servo-worker-dev-${{ github.ref }}\n  cancel-in-progress: true"
+    },
+    {
+      "path": ".github/workflows/hepta-cns-embodiment.yml",
+      "blob": "fdd4c690d2c46d858c93960a738fc72282a35d2e",
+      "on": "on:\n  # Automatic pull-request and main-branch fan-out is owned by the two\n  # aggregate checks. Deep qualifications remain reusable and manually runnable.\n  workflow_call:\n  workflow_dispatch:",
+      "concurrency": "concurrency:\n  group: hepta-cns-${{ github.event.pull_request.number || github.ref }}\n  cancel-in-progress: true"
+    },
+    {
+      "path": ".github/workflows/hepta-consolidated-source.yml",
+      "blob": "c812debd2c3d2909696e25fa0f84a85f48be6922",
+      "on": "on:\n  # Automatic pull-request and main-branch fan-out is owned by the two\n  # aggregate checks. Deep qualifications remain reusable and manually runnable.\n  workflow_call:\n    inputs:\n      full_qualification:\n        type: boolean\n        default: false\n  workflow_dispatch:\n    inputs:\n      full_qualification:\n        description: Execute all workspace owners and revalidate historical qualification gates.\n        type: boolean\n        default: true",
+      "concurrency": "concurrency:\n  group: hepta-consolidated-source-${{ github.event.pull_request.number || github.ref }}\n  cancel-in-progress: true"
+    },
+    {
+      "path": ".github/workflows/hepta-contract-gate.yml",
+      "blob": "0eb3d84801cc456b34fa1e33957400c1a00dcb68",
+      "on": "on:\n  workflow_call:\n    inputs:\n      profile:\n        type: string\n        default: qualification\n  workflow_dispatch:\n    inputs:\n      profile:\n        type: choice\n        options: [qualification, development]\n        default: qualification",
+      "concurrency": null
+    },
+    {
+      "path": ".github/workflows/hepta-converged-learning.yml",
+      "blob": "612b8821d7ff64fb547017845dbed540f838f868",
+      "on": "on:\n  # Automatic pull-request and main-branch fan-out is owned by the two\n  # aggregate checks. Deep qualifications remain reusable and manually runnable.\n  workflow_call:\n  workflow_dispatch:",
+      "concurrency": "concurrency:\n  group: hepta-converged-learning-${{ github.event.pull_request.number || github.ref }}\n  cancel-in-progress: true"
+    },
+    {
+      "path": ".github/workflows/hepta-deployment-handoff.yml",
+      "blob": "484ddf80b8547212f3bfab73cca8249599f9a772",
+      "on": "on:\n  # Automatic pull-request and main-branch fan-out is owned by the two\n  # aggregate checks. Deep qualifications remain reusable and manually runnable.\n  workflow_call:\n  workflow_dispatch:",
+      "concurrency": "concurrency:\n  group: hepta-deployment-handoff-${{ github.event.pull_request.number || github.ref }}\n  cancel-in-progress: true"
+    },
+    {
+      "path": ".github/workflows/hepta-development-docs.yml",
+      "blob": "7aab1401243b47d5cd08d91173e477dcc63647c3",
+      "on": "on:\n  # Automatic fan-out belongs to the existing aggregate checks.\n  workflow_call:\n    inputs:\n      profile:\n        type: string\n        default: development\n  workflow_dispatch:\n    inputs:\n      profile:\n        description: Qualification additionally renews historical source evidence and receipts.\n        type: choice\n        options: [qualification, development]\n        default: qualification",
+      "concurrency": "concurrency:\n  group: hepta-development-docs-${{ github.event.pull_request.number || github.ref }}\n  cancel-in-progress: true"
+    },
+    {
+      "path": ".github/workflows/hepta-diagnostic-source-export.yml",
+      "blob": "b55dfea959f9a289485f17596206a341bd3505f6",
+      "on": "on:\n  # Automatic pull-request and main-branch fan-out is owned by the two\n  # aggregate checks. Deep qualifications remain reusable and manually runnable.\n  workflow_call:\n  workflow_dispatch:",
+      "concurrency": "concurrency:\n  group: hepta-diagnostic-source-export-${{ github.ref }}\n  cancel-in-progress: true"
+    },
+    {
+      "path": ".github/workflows/hepta-durable-learning-roundtrip.yml",
+      "blob": "02d7d00321cf2531e3bd21f7cc0c69b15ba172ca",
+      "on": "on:\n  # Automatic pull-request and main-branch fan-out is owned by the two\n  # aggregate checks. Deep qualifications remain reusable and manually runnable.\n  workflow_call:\n  workflow_dispatch:",
+      "concurrency": null
+    },
+    {
+      "path": ".github/workflows/hepta-exec-authorized-read-compat.yml",
+      "blob": "6044fc72bc0b27a56445670ab9f11ea9375fd20e",
+      "on": "on:\n  pull_request:\n    paths:\n      - \"codex-rs/exec/**\"\n      - \"codex-rs/exec-server/**\"\n      - \"codex-rs/rollout/**\"\n      - \".github/workflows/hepta-exec-authorized-read-compat.yml\"\n      - \"codex-rs/Cargo.toml\"\n      - \"codex-rs/Cargo.lock\"\n      - \"codex-rs/rust-toolchain.toml\"\n      - \"codex-rs/.config/nextest.toml\"\n      - \"scripts/run-nextest.py\"\n      - \"justfile\"\n      - \".github/actions/setup-ci-tools/**\"\n  workflow_dispatch:",
+      "concurrency": "concurrency:\n  group: hepta-exec-authorized-read-${{ github.event.pull_request.number || github.ref }}\n  cancel-in-progress: true"
+    },
+    {
+      "path": ".github/workflows/hepta-gap-agentd-process.yml",
+      "blob": "18a6d4e1108482653ff7560d9e64d91649e41236",
+      "on": "on:\n  # Automatic pull-request and main-branch fan-out is owned by the two\n  # aggregate checks. Deep qualifications remain reusable and manually runnable.\n  workflow_call:\n  workflow_dispatch:",
+      "concurrency": "concurrency:\n  group: hepta-agentd-process-${{ github.event.pull_request.number || github.ref }}\n  cancel-in-progress: true"
+    },
+    {
+      "path": ".github/workflows/hepta-implementation-readiness.yml",
+      "blob": "d79bb1fb105a7ef5258a9c5735abd898845dbe40",
+      "on": "on:\n  # Automatic pull-request and main-branch fan-out is owned by the two\n  # aggregate checks. Deep qualifications remain reusable and manually runnable.\n  workflow_call:\n  workflow_dispatch:",
+      "concurrency": "concurrency:\n  group: hepta-implementation-readiness-${{ github.event.pull_request.number || github.ref }}\n  cancel-in-progress: true"
+    },
+    {
+      "path": ".github/workflows/hepta-inference-maintenance.yml",
+      "blob": "f260bd655d0efc9b67daebb3ab24541482caff68",
+      "on": "on:\n  # Automatic pull-request and main-branch fan-out is owned by the two\n  # aggregate checks. Deep qualifications remain reusable and manually runnable.\n  workflow_call:\n  workflow_dispatch:\n    inputs:\n      qualify_scale:\n        description: Run the shipped 32/256/1024 record filesystem history measurement\n        type: boolean\n        default: false",
+      "concurrency": "concurrency:\n  group: hepta-inference-maintenance-${{ github.event.pull_request.number || github.ref }}\n  cancel-in-progress: true"
+    },
+    {
+      "path": ".github/workflows/hepta-integration-diagnostics.yml",
+      "blob": "fa58a00ef075c620d8d3b682f0656dcc4e7fcd57",
+      "on": "on:\n  # Automatic pull-request and main-branch fan-out is owned by the two\n  # aggregate checks. Deep qualifications remain reusable and manually runnable.\n  workflow_call:\n  workflow_dispatch:",
+      "concurrency": "concurrency:\n  group: hepta-integration-diagnostics-${{ github.ref }}\n  cancel-in-progress: true"
+    },
+    {
+      "path": ".github/workflows/hepta-intuition-qualification.yml",
+      "blob": "be6988be378481a9c55c221d56e1816dd29ce2a5",
+      "on": "on:\n  # Automatic pull-request and main-branch fan-out is owned by the two\n  # aggregate checks. Deep qualifications remain reusable and manually runnable.\n  workflow_call:\n  workflow_dispatch:",
+      "concurrency": "concurrency:\n  group: hepta-intuition-qualification-${{ github.event.pull_request.number || github.ref }}\n  cancel-in-progress: true"
+    },
+    {
+      "path": ".github/workflows/hepta-kernel-evidence-qualification.yml",
+      "blob": "f9faf5a9f7d48b4e47ed292fa62284e1b37bc0f2",
+      "on": "on:\n  # Automatic pull-request and main-branch fan-out is owned by the two\n  # aggregate checks. Deep qualifications remain reusable and manually runnable.\n  workflow_call:\n  workflow_dispatch:",
+      "concurrency": "concurrency:\n  group: kernel-evidence-qualification-${{ github.event.pull_request.number || github.ref }}\n  cancel-in-progress: true"
+    },
+    {
+      "path": ".github/workflows/hepta-keyring-sync-advisory.yml",
+      "blob": "430f36f8dbfc01d569e80b18e3d49ebee192cbd2",
+      "on": "on:\n  pull_request:\n    paths:\n      - \"codex-rs/Cargo.toml\"\n      - \"codex-rs/keyring-store/Cargo.toml\"\n      - \"codex-rs/rmcp-client/Cargo.toml\"\n      - \"codex-rs/third_party/keyring-3.6.3/**\"\n      - \"codex-rs/Cargo.lock\"\n      - \"MODULE.bazel\"\n      - \"MODULE.bazel.lock\"\n      - \"third_party/dbus/**\"\n      - \".github/workflows/hepta-keyring-sync-advisory.yml\"\n  workflow_dispatch:",
+      "concurrency": null
+    },
+    {
+      "path": ".github/workflows/hepta-knowledge-graph-qualification.yml",
+      "blob": "0ff0899ba4440034a994072e853a1c42d4841ad7",
+      "on": "on:\n  # Automatic pull-request and main-branch fan-out is owned by the two\n  # aggregate checks. Deep qualifications remain reusable and manually runnable.\n  workflow_call:\n  workflow_dispatch:",
+      "concurrency": "concurrency:\n  group: hepta-knowledge-graph-${{ github.event.pull_request.number || github.ref }}\n  cancel-in-progress: true"
+    },
+    {
+      "path": ".github/workflows/hepta-lane-b-truth.yml",
+      "blob": "8e28fec00be67547ba1393462abffa810e0181fb",
+      "on": "on:\n  # Automatic pull-request and main-branch fan-out is owned by the two\n  # aggregate checks. Deep qualifications remain reusable and manually runnable.\n  workflow_call:\n  workflow_dispatch:",
+      "concurrency": "concurrency:\n  group: hepta-lane-b-source-closure-${{ github.event.pull_request.number || github.ref }}\n  cancel-in-progress: true"
+    },
+    {
+      "path": ".github/workflows/hepta-lane-d-semantic-conformance.yml",
+      "blob": "4756be76b745582520ff66d07fa103048fc6ec5c",
+      "on": "on:\n  # Automatic pull-request and main-branch fan-out is owned by the two\n  # aggregate checks. Deep qualifications remain reusable and manually runnable.\n  workflow_call:\n  workflow_dispatch:",
+      "concurrency": "concurrency:\n  group: hepta-lane-d-semantic-${{ github.event.pull_request.number || github.ref }}\n  cancel-in-progress: true"
+    },
+    {
+      "path": ".github/workflows/hepta-lane-e-gap-closure.yml",
+      "blob": "1962600a30be18c08e46c99aed0babb61c01361d",
+      "on": "on:\n  # Automatic pull-request and main-branch fan-out is owned by the two\n  # aggregate checks. Deep qualifications remain reusable and manually runnable.\n  workflow_call:\n  workflow_dispatch:",
+      "concurrency": "concurrency:\n  group: hepta-lane-e-gap-closure-${{ github.event.pull_request.number || github.ref }}\n  cancel-in-progress: true"
+    },
+    {
+      "path": ".github/workflows/hepta-lane-f-shadow-qualification.yml",
+      "blob": "f70c4a3a1f35b1e1e81956d066ff096c42b2e42e",
+      "on": "on:\n  # Automatic pull-request and main-branch fan-out is owned by the two\n  # aggregate checks. Deep qualifications remain reusable and manually runnable.\n  workflow_call:\n  workflow_dispatch:",
+      "concurrency": "concurrency:\n  group: lane-f-shadow-${{ github.event.pull_request.number || github.ref }}\n  cancel-in-progress: true"
+    },
+    {
+      "path": ".github/workflows/hepta-learning-ledger-durable.yml",
+      "blob": "30de1cf1befb1a16a412fa0ba91163db88040824",
+      "on": "on:\n  # Automatic pull-request and main-branch fan-out is owned by the two\n  # aggregate checks. Deep qualifications remain reusable and manually runnable.\n  workflow_call:\n  workflow_dispatch:",
+      "concurrency": "concurrency:\n  group: hepta-learning-ledger-durable-${{ github.event.pull_request.number }}\n  cancel-in-progress: true"
+    },
+    {
+      "path": ".github/workflows/hepta-memory-retrieval-qualification-host.yml",
+      "blob": "8d91832441db0cf8f064e27ed8193f9cadbbf462",
+      "on": "on:\n  # Automatic pull-request and main-branch fan-out is owned by the two\n  # aggregate checks. Deep qualifications remain reusable and manually runnable.\n  workflow_call:\n  workflow_dispatch:",
+      "concurrency": "concurrency:\n  group: hepta-memory-retrieval-qualification-host-${{ github.event.pull_request.number || github.ref }}\n  cancel-in-progress: true"
+    },
+    {
+      "path": ".github/workflows/hepta-musl-product-smoke.yml",
+      "blob": "a157c21a3e79460dc6f32147d952f3dacb4ed197",
+      "on": "on:\n  pull_request:\n    paths:\n      - \".github/workflows/hepta-musl-product-smoke.yml\"\n      - \".github/actions/prepare-bazel-ci/**\"\n      - \".github/actions/setup-bazel-ci/**\"\n      - \".github/actions/setup-ci/**\"\n      - \".github/scripts/run_bazel_with_buildbuddy.py\"\n      - \"codex-rs/**\"\n      - \"bazel/**\"\n      - \"third_party/**\"\n      - \"patches/**\"\n      - \"MODULE.bazel\"\n      - \"MODULE.bazel.lock\"\n      - \"BUILD.bazel\"\n      - \"defs.bzl\"\n      - \".bazelrc\"\n      - \".bazelversion\"\n  workflow_dispatch:",
+      "concurrency": "concurrency:\n  group: hepta-musl-product-smoke::${{ github.ref }}\n  cancel-in-progress: false"
+    },
+    {
+      "path": ".github/workflows/hepta-ndu-recursion.yml",
+      "blob": "2d4d44b3e920bc0e025704ddae82054103a8688f",
+      "on": "on:\n  # Automatic pull-request and main-branch fan-out is owned by the two\n  # aggregate checks. Deep qualifications remain reusable and manually runnable.\n  workflow_call:\n  workflow_dispatch:",
+      "concurrency": "concurrency:\n  group: hepta-ndu-recursion-${{ github.event.pull_request.number || github.ref }}\n  cancel-in-progress: true"
+    },
+    {
+      "path": ".github/workflows/hepta-objective-admission.yml",
+      "blob": "ef98ab5c6918c38949583ecdb4b089a31cb4ceac",
+      "on": "on:\n  # Automatic pull-request and main-branch fan-out is owned by the two\n  # aggregate checks. Deep qualifications remain reusable and manually runnable.\n  workflow_call:\n  workflow_dispatch:",
+      "concurrency": "concurrency:\n  group: hepta-objective-admission-${{ github.event.pull_request.number || github.ref }}\n  cancel-in-progress: true"
+    },
+    {
+      "path": ".github/workflows/hepta-objective-owner.yml",
+      "blob": "22b551a58fa9900560767a2b39da5d3f1d01aeea",
+      "on": "on:\n  pull_request:\n    types: [opened, synchronize, reopened, ready_for_review]\n    paths:\n      - .github/workflows/hepta-objective-owner.yml\n      - .github/actions/**\n      - .github/scripts/**\n      - codex-rs/**\n      - apps/hepta-control-ui/**\n      - scripts/**\n      - justfile\n      - MODULE.bazel\n      - MODULE.bazel.lock\n      - .bazelversion",
+      "concurrency": "concurrency:\n  group: original-objective-owner-${{ github.event.pull_request.number }}\n  cancel-in-progress: true"
+    },
+    {
+      "path": ".github/workflows/hepta-objective-product-composition.yml",
+      "blob": "755f775987c992aa4a6e7ef212d6fd7de7bfb75b",
+      "on": "on:\n  # Automatic pull-request and main-branch fan-out is owned by the two\n  # aggregate checks. Deep qualifications remain reusable and manually runnable.\n  workflow_call:\n  workflow_dispatch:",
+      "concurrency": "concurrency:\n  group: hepta-objective-product-composition-${{ github.event.pull_request.number || github.ref }}\n  cancel-in-progress: true"
+    },
+    {
+      "path": ".github/workflows/hepta-offline-build-inputs.yml",
+      "blob": "43980e2ef6870d20d1a3fedebcb04fbfd647c1c2",
+      "on": "on:\n  # Automatic pull-request and main-branch fan-out is owned by the two\n  # aggregate checks. Deep qualifications remain reusable and manually runnable.\n  workflow_call:\n  workflow_dispatch:",
+      "concurrency": "concurrency:\n  group: hepta-offline-build-inputs-${{ github.ref }}\n  cancel-in-progress: true"
+    },
+    {
+      "path": ".github/workflows/hepta-operator-acceptance-native.yml",
+      "blob": "bab92677a76682d21e6dacaa7b0c7c9424664773",
+      "on": "on:\n  pull_request:\n    paths:\n      - \"codex-rs/hepta-operator-acceptance/**\"\n      - \".bazelrc\"\n      - \"codex-rs/Cargo.lock\"\n      - \"codex-rs/rust-toolchain.toml\"\n      - \".github/workflows/hepta-operator-acceptance-native.yml\"\n  workflow_dispatch:",
+      "concurrency": "concurrency:\n  group: hepta-operator-native-${{ github.event.pull_request.number || github.ref }}\n  cancel-in-progress: true"
+    },
+    {
+      "path": ".github/workflows/hepta-organ-implementation.yml",
+      "blob": "8c9850af7a5816a1895dcaaa6ebfe848071569a6",
+      "on": "on:\n  # Automatic pull-request and main-branch fan-out is owned by the two\n  # aggregate checks. Deep qualifications remain reusable and manually runnable.\n  workflow_call:\n  workflow_dispatch:",
+      "concurrency": "concurrency:\n  group: hepta-organ-implementation-${{ github.event.pull_request.number }}\n  cancel-in-progress: true"
+    },
+    {
+      "path": ".github/workflows/hepta-owner-local-native.yml",
+      "blob": "02f820467201a77a8b58fdd9905dd720f1e46ffb",
+      "on": "on:\n  pull_request:\n    paths:\n      - \"codex-rs/uds/**\"\n      - \"codex-rs/hepta-matrixd/**\"\n      - \"codex-rs/hepta-agentd/**\"\n      - \"codex-rs/Cargo.lock\"\n      - \".github/workflows/hepta-owner-local-native.yml\"\n  workflow_dispatch:",
+      "concurrency": "concurrency:\n  group: hepta-owner-local-${{ github.event.pull_request.number || github.ref }}\n  cancel-in-progress: true"
+    },
+    {
+      "path": ".github/workflows/hepta-production-hos2-proposal.yml",
+      "blob": "c827659c00614c1f149ef62f4c1f03d13114751c",
+      "on": "on:\n  pull_request:\n    types: [opened, synchronize, reopened]\n    paths:\n      - .github/workflows/hepta-production-hos2-proposal.yml\n      - codex-rs/hepta-memory/**\n      - codex-rs/hepta-cognitive-store/**\n      - codex-rs/hepta-agentd/**\n      - codex-rs/Cargo.toml\n      - codex-rs/Cargo.lock\n      - codex-rs/rust-toolchain.toml\n      - MODULE.bazel\n      - MODULE.bazel.lock\n      - .bazelversion\n      - justfile\n      - scripts/format.py\n      - scripts/run-nextest.py",
+      "concurrency": "concurrency:\n  group: production-hos2-proposal-${{ github.event.pull_request.number }}\n  cancel-in-progress: true"
+    },
+    {
+      "path": ".github/workflows/hepta-repository-integrity.yml",
+      "blob": "0a2115eac94a7f25bead86e3859fd3a2b9ec90e8",
+      "on": "on:\n  # Automatic pull-request and main-branch fan-out is owned by the two\n  # aggregate checks. Deep qualifications remain reusable and manually runnable.\n  workflow_call:\n  workflow_dispatch:",
+      "concurrency": "concurrency:\n  group: hepta-repository-integrity-${{ github.event.pull_request.number || github.ref }}\n  cancel-in-progress: true"
+    },
+    {
+      "path": ".github/workflows/hepta-self-iteration-activation.yml",
+      "blob": "ef8fbdbbe33eb1da199df244a86d6a3708130839",
+      "on": "on:\n  workflow_call:\n  workflow_dispatch:",
+      "concurrency": null
+    },
+    {
+      "path": ".github/workflows/hepta-supervisor-p0-crossplatform.yml",
+      "blob": "fdeb340099f9f720a353aa8b69372e75a335387e",
+      "on": "on:\n  pull_request:\n    paths:\n      - \"codex-rs/hepta-supervisor/**\"\n      - \"codex-rs/hepta-agent-protocol/**\"\n      - \".github/workflows/hepta-supervisor-p0-crossplatform.yml\"\n      - \"codex-rs/Cargo.toml\"\n      - \"codex-rs/Cargo.lock\"\n      - \"codex-rs/rust-toolchain.toml\"\n      - \"codex-rs/.config/nextest.toml\"\n      - \"scripts/run-nextest.py\"\n      - \"justfile\"\n      - \".github/actions/setup-ci-tools/**\"\n  workflow_dispatch:",
+      "concurrency": null
+    },
+    {
+      "path": ".github/workflows/hepta-vnext-qualification.yml",
+      "blob": "948b9094ad7619317c02471ac57392bac0a46ad5",
+      "on": "on:\n  # Automatic pull-request and main-branch fan-out is owned by the two\n  # aggregate checks. Deep qualifications remain reusable and manually runnable.\n  workflow_call:\n  workflow_dispatch:",
+      "concurrency": null
+    },
+    {
+      "path": ".github/workflows/hepta-windows-federation-revoke.yml",
+      "blob": "392a4cbc6fc5ddd73d67edfa328648170e2f9bd6",
+      "on": "on:\n  pull_request:\n    paths:\n      - \"codex-rs/hepta-memory/**\"\n      - \"codex-rs/ext/hepta-memory/**\"\n      - \"codex-rs/hepta-memory-federation/**\"\n      - \"codex-rs/state/**\"\n      - \"codex-rs/utils/path-uri/**\"\n      - \"codex-rs/utils/absolute-path/**\"\n      - \"codex-rs/Cargo.toml\"\n      - \"codex-rs/Cargo.lock\"\n      - \"codex-rs/rust-toolchain.toml\"\n      - \"codex-rs/.config/nextest.toml\"\n      - \"scripts/run-nextest.py\"\n      - \"justfile\"\n      - \".github/actions/setup-ci-tools/**\"\n      - \".github/workflows/hepta-windows-federation-revoke.yml\"\n  workflow_dispatch:",
+      "concurrency": null
+    },
+    {
+      "path": ".github/workflows/hepta-windows-private-state-native.yml",
+      "blob": "3b3651595d169451067d5a932294417717ea422e",
+      "on": "on:\n  pull_request:\n    paths:\n      - \"codex-rs/utils/path-utils/**\"\n      - \"codex-rs/hepta-prompt-registry/**\"\n      - \"codex-rs/hepta-contracts/**\"\n      - \"codex-rs/hepta-agentd/**\"\n      - \"codex-rs/uds/**\"\n      - \"codex-rs/Cargo.toml\"\n      - \"codex-rs/Cargo.lock\"\n      - \"codex-rs/rust-toolchain.toml\"\n      - \".github/workflows/hepta-windows-private-state-native.yml\"\n      - \".github/scripts/check_windows_private_state_acquisition.py\"\n      - \".github/scripts/test_check_windows_private_state_acquisition.py\"\n      - \".github/fixtures/windows-private-state-acquisition/**\"\n  workflow_dispatch:",
+      "concurrency": "concurrency:\n  group: hepta-windows-private-state-${{ github.event.pull_request.number || github.ref }}\n  cancel-in-progress: true"
+    },
+    {
+      "path": ".github/workflows/hnmf-qualification.yml",
+      "blob": "178e47acc1f35b21bda334345f71e95e784481d3",
+      "on": "on:\n  # Automatic pull-request and main-branch fan-out is owned by the two\n  # aggregate checks. Deep qualifications remain reusable and manually runnable.\n  workflow_call:\n  workflow_dispatch:",
+      "concurrency": null
+    },
+    {
+      "path": ".github/workflows/issue-deduplicator.yml",
+      "blob": "05ef554988de56a6ecb9d033243d7df401227f24",
+      "on": "on:\n  issues:\n    types:\n      - opened\n      - labeled",
+      "concurrency": null
+    },
+    {
+      "path": ".github/workflows/issue-labeler.yml",
+      "blob": "c9f1a8f1281f9af1dc7998d5d47b604617f4bca9",
+      "on": "on:\n  issues:\n    types:\n      - opened\n      - labeled",
+      "concurrency": null
+    },
+    {
+      "path": ".github/workflows/issue-translator.yml",
+      "blob": "8fe85ba0d51bdea3e087f9ce874d82bde887fadd",
+      "on": "on:\n  issues:\n    types:\n      - opened",
+      "concurrency": null
+    },
+    {
+      "path": ".github/workflows/lane-a-foundation.yml",
+      "blob": "a3bd267880a6faf81f4b83af4bb5d54765074851",
+      "on": "on:\n  # Automatic pull-request and main-branch fan-out is owned by the two\n  # aggregate checks. Deep qualifications remain reusable and manually runnable.\n  workflow_call:\n  workflow_dispatch:",
+      "concurrency": "concurrency:\n  group: lane-a-foundation-${{ github.event.pull_request.number || github.ref }}\n  cancel-in-progress: true"
+    },
+    {
+      "path": ".github/workflows/memory-federation-v2-final-verify.yml",
+      "blob": "5e08c0d7d19c4df1e87b2cae7db83c8a1d4c236b",
+      "on": "on:\n  # Automatic pull-request and main-branch fan-out is owned by the two\n  # aggregate checks. Deep qualifications remain reusable and manually runnable.\n  workflow_call:\n  workflow_dispatch:",
+      "concurrency": "concurrency:\n  group: memory-federation-v2-final-${{ github.event.pull_request.number || github.ref }}\n  cancel-in-progress: true"
+    },
+    {
+      "path": ".github/workflows/openbao-compatibility.yml",
+      "blob": "bb6875c2a0213e6dfe3e8c73eaee4ed843bee9d4",
+      "on": "on:\n  # Automatic pull-request and main-branch fan-out is owned by the two\n  # aggregate checks. Deep qualifications remain reusable and manually runnable.\n  workflow_call:\n  workflow_dispatch:",
+      "concurrency": "concurrency:\n  group: openbao-compatibility-${{ github.event.pull_request.number || github.ref }}\n  cancel-in-progress: true"
+    },
+    {
+      "path": ".github/workflows/postmerge-ci.yml",
+      "blob": "2a7032e049df0efb8056211f96bc9b41174c10e2",
+      "on": "on:\n  push:\n    branches: [main]\n\n# Reusable workflows cannot elevate GITHUB_TOKEN permissions granted by their\n# caller. v8-canary's build job needs actions: read for the Bazel/BuildBuddy\n# path, so the postmerge caller must grant that read capability explicitly.",
+      "concurrency": "concurrency:\n  group: postmerge-ci-main\n  cancel-in-progress: true"
+    },
+    {
+      "path": ".github/workflows/python-runtime-build.yml",
+      "blob": "aa8d6d891daf76b5f13a03db92e2e2c8fc7ca1f4",
+      "on": "on:\n  workflow_call:\n    inputs:\n      runtime_version:\n        description: \"Runtime version to build, for example 0.136.0, 0.136.0a2, or 0.136.0a2.post1.\"\n        required: true\n        type: string",
+      "concurrency": null
+    },
+    {
+      "path": ".github/workflows/python-runtime-release.yml",
+      "blob": "8316bf911c3e383a54ec7417ec72b035cb32ec73",
+      "on": "on:\n  workflow_dispatch:\n    inputs:\n      runtime_version:\n        description: \"Runtime version to publish before updating the SDK pin, for example 0.136.0, 0.136.0a2, or 0.136.0a2.post1.\"\n        required: true\n        type: string",
+      "concurrency": "concurrency:\n  group: python-runtime-release-${{ inputs.runtime_version }}\n  cancel-in-progress: false"
+    },
+    {
+      "path": ".github/workflows/python-sdk-release.yml",
+      "blob": "a322c87c5bc250f7026e2700f92b6edfd45ef6be",
+      "on": "on:\n  push:\n    tags:\n      - \"python-v*\"",
+      "concurrency": "concurrency:\n  group: ${{ github.workflow }}\n  cancel-in-progress: false"
+    },
+    {
+      "path": ".github/workflows/r2-release.yml",
+      "blob": "96a07685cfc41a0383a14fc7bf99d8584d10f865",
+      "on": "on:\n  workflow_call:\n    inputs:\n      tag:\n        required: true\n        type: string\n      make_latest:\n        required: true\n        type: boolean\n      prerelease:\n        required: true\n        type: boolean\n      stage:\n        required: true\n        type: string",
+      "concurrency": null
+    },
+    {
+      "path": ".github/workflows/repo-checks.yml",
+      "blob": "72bd28da471f893a556c2acb689e52a28d73ff99",
+      "on": "on:\n  workflow_call:",
+      "concurrency": null
+    },
+    {
+      "path": ".github/workflows/rust-ci-full-nextest-platform.yml",
+      "blob": "0ea9d5dcd5ffd622c2d25f3d808ab5738142a851",
+      "on": "on:\n  workflow_call:\n    inputs:\n      runner:\n        required: true\n        type: string\n      runner_group:\n        required: false\n        default: \"\"\n        type: string\n      runner_labels:\n        required: false\n        default: \"\"\n        type: string\n      archive_runner:\n        required: false\n        default: \"\"\n        type: string\n      archive_runner_group:\n        required: false\n        default: \"\"\n        type: string\n      archive_runner_labels:\n        required: false\n        default: \"\"\n        type: string\n      target:\n        required: true\n        type: string\n      profile:\n        required: true\n        type: string\n      artifact_id:\n        required: true\n        type: string\n      remote_env:\n        required: false\n        default: false\n        type: boolean\n      test_threads:\n        required: false\n        default: 0\n        type: number\n      use_sccache:\n        required: false\n        default: false\n        type: boolean",
+      "concurrency": null
+    },
+    {
+      "path": ".github/workflows/rust-ci-full.yml",
+      "blob": "e02bd495a9aace4d789cd9a579c9c3b6ae4f5b40",
+      "on": "on:\n  workflow_call:\n  push:\n    branches:\n      # Main pushes enter through postmerge-ci. Keep this opt-in branch trigger\n      # for developers who want the full suite before merging.\n      - \"**full-ci**\"\n  workflow_dispatch:",
+      "concurrency": "concurrency:\n  group: rust-ci-full-${{ github.ref_name }}\n  cancel-in-progress: true"
+    },
+    {
+      "path": ".github/workflows/rust-ci.yml",
+      "blob": "81330bf3ed388e9deafa474516be437ac165cbb7",
+      "on": "on:\n  workflow_call:\n  workflow_dispatch:",
+      "concurrency": null
+    },
+    {
+      "path": ".github/workflows/rust-release-argument-comment-lint.yml",
+      "blob": "a4f3540b342b13015e26f3d0011c01b87686cbca",
+      "on": "on:\n  workflow_call:\n    inputs:\n      publish:\n        required: true\n        type: boolean\n\n# Cargo's libgit2 transport has been flaky when fetching git dependencies with\n# nested submodules. Prefer the system git CLI across every Cargo invocation.",
+      "concurrency": null
+    },
+    {
+      "path": ".github/workflows/rust-release-prepare.yml",
+      "blob": "fbdcb2e43f2bae3ce34645a6f5d1556069cd8756",
+      "on": "on:\n  workflow_dispatch:\n  schedule:\n    - cron: \"0 */4 * * *\"",
+      "concurrency": "concurrency:\n  group: ${{ github.workflow }}\n  cancel-in-progress: false"
+    },
+    {
+      "path": ".github/workflows/rust-release-windows.yml",
+      "blob": "2e723ea2d52817ea3b8e87d8787fdc63ff8fb724",
+      "on": "on:\n  workflow_call:",
+      "concurrency": null
+    },
+    {
+      "path": ".github/workflows/rust-release-zsh.yml",
+      "blob": "7c0eab9ee115e68be98202b845d19967fec45b93",
+      "on": "on:\n  push:\n    tags:\n      - \"codex-zsh-v*.*.*\"",
+      "concurrency": "concurrency:\n  group: ${{ github.workflow }}::${{ github.ref_name }}\n  cancel-in-progress: false"
+    },
+    {
+      "path": ".github/workflows/rust-release.yml",
+      "blob": "4f4eb28f9be4d399b89087c42f02d1be5693c176",
+      "on": "on:\n  push:\n    tags:\n      - \"rust-v*.*.*\"",
+      "concurrency": "concurrency:\n  group: ${{ github.workflow }}\n  cancel-in-progress: false"
+    },
+    {
+      "path": ".github/workflows/rusty-v8-release.yml",
+      "blob": "83d3b98c2359ec312cc5fbe560334598489e2e1e",
+      "on": "on:\n  push:\n    tags:\n      - \"rusty-v8-v*.*.*\"\n\n# Cargo's libgit2 transport has been flaky when fetching git dependencies with\n# nested submodules. Prefer the system git CLI for Cargo smoke tests.",
+      "concurrency": "concurrency:\n  group: ${{ github.workflow }}::${{ github.ref_name }}\n  cancel-in-progress: false"
+    },
+    {
+      "path": ".github/workflows/sdk.yml",
+      "blob": "8af39601ed7cf800e1449ca12141ac1fdb33937f",
+      "on": "on:\n  workflow_call:",
+      "concurrency": null
+    },
+    {
+      "path": ".github/workflows/self-hosted-desktop-availability.yml",
+      "blob": "54fef7f63726fd870974223b2205b73664995f24",
+      "on": "on:\n  workflow_dispatch:\n    inputs:\n      reason:\n        description: Why this bounded runner probe is being requested\n        required: false\n        default: operator-check\n        type: string\n\n# This probe does not check out repository code. It only proves that the\n# selected trusted manual lane can acquire the desktop runner.\n# `permissions: {}` is stricter than `contents: read`; no checkout is invoked,\n# so `persist-credentials: false` is not an applicable action input.",
+      "concurrency": null
+    },
+    {
+      "path": ".github/workflows/self-hosted-fleet-availability.yml",
+      "blob": "09d77076acd3a231a3b0245bc946349d7cff2188",
+      "on": "on:\n  workflow_dispatch:\n    inputs:\n      reason:\n        description: Why this bounded runner probe is being requested\n        required: false\n        default: operator-check\n        type: string\n\n# `permissions: {}` is stricter than `contents: read`; no checkout is invoked,\n# so `persist-credentials: false` is not an applicable action input.",
+      "concurrency": null
+    },
+    {
+      "path": ".github/workflows/single-main-consolidation.yml",
+      "blob": "69509c54da76eee1a6cb5a350f231117174c784d",
+      "on": "on:\n  push:\n    branches: [integration/single-main-20260922]\n    paths: [.github/workflows/single-main-consolidation.yml]",
+      "concurrency": "concurrency:\n  group: single-main-consolidation\n  cancel-in-progress: false"
+    },
+    {
+      "path": ".github/workflows/single-main-foundation.yml",
+      "blob": "7a4102412d01b6f63c4a7dceb490633733d8b0e5",
+      "on": "on:\n  push:\n    branches: [integration/single-main-20260922]\n    paths: [.github/workflows/single-main-foundation.yml]",
+      "concurrency": "concurrency:\n  group: single-main-foundation\n  cancel-in-progress: false"
+    },
+    {
+      "path": ".github/workflows/single-main-maintenance.yml",
+      "blob": "f75d05e226d2b6579c8f029d91490591839e0b54",
+      "on": "on:\n  push:\n    branches: [integration/single-main-20260922]\n    paths: [.github/workflows/single-main-maintenance.yml]",
+      "concurrency": "concurrency:\n  group: single-main-maintenance\n  cancel-in-progress: false"
+    },
+    {
+      "path": ".github/workflows/trillionnium-os-attestation-handoff-check.yml",
+      "blob": "811964e6d542e70b7dd4cae955f80af76e4f411c",
+      "on": "on:\n  pull_request:\n    types: [opened, reopened, synchronize, ready_for_review]\n    branches:\n      - main\n    paths:\n      - .g1/requests/trillionnium-os/**\n      - .github/workflows/self-hosted-desktop-availability.yml\n      - .github/workflows/self-hosted-fleet-availability.yml\n      - .github/workflows/trillionnium-os-attestation-handoff-check.yml",
+      "concurrency": "concurrency:\n  group: trillionnium-os-attestation-handoff-${{ github.event.pull_request.number }}\n  cancel-in-progress: true"
+    },
+    {
+      "path": ".github/workflows/ui-product-foundation.yml",
+      "blob": "748773dfa939194f5b8184406a261def15817904",
+      "on": "on:\n  pull_request:\n    paths:\n      - apps/hepta-control-ui/**\n      # Conservative gateway Cargo closure; drift-checked against the shared graph.\n      - codex-rs/hepta-contracts/**\n      - codex-rs/hepta-control-plane/**\n      - codex-rs/hepta-infer-core/**\n      - codex-rs/hepta-native-gateway/**\n      - codex-rs/hepta-ndu/**\n      - codex-rs/hepta-neuron/**\n      - codex-rs/hepta-paths/**\n      - codex-rs/hepta-plasticity/**\n      - codex-rs/hepta-runtime/**\n      - codex-rs/hepta-types/**\n      - codex-rs/hepta-wire/**\n      - codex-rs/utils/absolute-path/**\n      - codex-rs/utils/path-utils/**\n      - codex-rs/Cargo.toml\n      - codex-rs/Cargo.lock\n      - codex-rs/rust-toolchain.toml\n      - codex-rs/.cargo/**\n      - codex-rs/.config/nextest.toml\n      - justfile\n      - scripts/run-nextest.py\n      - scripts/just-shell.py\n      - scripts/hepta_ci_dependencies.py\n      - scripts/hepta_ci_exec.py\n      - scripts/hepta_ci_git_objects.py\n      - scripts/hepta_ci_module_paths.py\n      - scripts/test_hepta_ci_module_path_scopes.py\n      - apps/hepta-native/resources/NATIVE-ASSETS.json\n      - apps/hepta-native/resources/notices/Noto-Sans-CJK-2.004-OFL.txt\n      - apps/hepta-native/resources/**\n      - .github/workflows/ui-product-foundation.yml\n      - .github/actions/hepta-synthetic-merge/**\n      - scripts/test_ui_product_foundation_ci.py\n      - scripts/fetch_ui_ci_history.py",
+      "concurrency": "concurrency:\n  group: rust-ui-product-${{ github.event.pull_request.number }}\n  cancel-in-progress: false"
+    },
+    {
+      "path": ".github/workflows/ui-security-lock-proposal.yml",
+      "blob": "bb80893a8ada8e781360b8f1b13fc16c254456bc",
+      "on": "on:\n  push:\n    branches: [agents/20261021/ui-native-security-generation]",
+      "concurrency": "concurrency:\n  group: ui-native-security-generation\n  cancel-in-progress: true"
+    },
+    {
+      "path": ".github/workflows/v8-canary.yml",
+      "blob": "7bd9a55dcab283c743bd3a05f69c8c6c3e3ff2c4",
+      "on": "on:\n  workflow_call:\n  pull_request: {}\n  workflow_dispatch:",
+      "concurrency": "concurrency:\n  group: ${{ github.workflow }}::${{ github.event.pull_request.head.ref || github.ref_name }}\n  cancel-in-progress: ${{ github.ref_name != 'main' }}"
+    },
+    {
+      "path": ".github/workflows/windows-bazel-process-native.yml",
+      "blob": "0902ceaca163b9f32036029a1140c0b368ee3dfd",
+      "on": "on:\n  pull_request:\n    paths:\n      - \".bazelrc\"\n      - \"codex-rs/git-utils/**\"\n      - \"codex-rs/ext/queue/**\"\n      - \"codex-rs/utils/pty/**\"\n      - \".github/workflows/windows-bazel-process-native.yml\"\n  workflow_dispatch:",
+      "concurrency": "concurrency:\n  group: windows-bazel-process-${{ github.ref }}\n  cancel-in-progress: false"
+    },
+    {
+      "path": ".github/workflows/windows-core-lifecycle.yml",
+      "blob": "95371c3bcd383f5f2356fe4b10bd8ccc2fde6b88",
+      "on": "on:\n  push:\n    branches:\n      - fix/windows-core-lifecycle-order-20261103\n      - fix/windows-core-websocket-fork-20261104\n      - integration/unified-blocker-20261104-r2\n      - integration/unified-blocker-20261104-r3\n      - fix/r3-original-product-contracts-20261104\n      - fix/guardian-review-deadline-20261104\n      - fix/core-fork-observation-20261104\n  workflow_dispatch:",
+      "concurrency": "concurrency:\n  group: windows-core-lifecycle-${{ github.ref }}\n  cancel-in-progress: false"
+    },
+    {
+      "path": ".github/workflows/windows-ordinary-consumers.yml",
+      "blob": "6d3cbfe5532260cd8c6084b39d28f54916153484",
+      "on": "on:\n  pull_request:\n    paths:\n      - \"codex-rs/hepta-intelligence/**\"\n      - \"codex-rs/hepta-bao-adapter/**\"\n      - \"codex-rs/hepta-codex-adapter/**\"\n      - \".github/workflows/windows-ordinary-consumers.yml\"",
+      "concurrency": "concurrency:\n  group: windows-ordinary-consumers-${{ github.event.pull_request.number }}\n  cancel-in-progress: false"
+    },
+    {
+      "path": ".github/workflows/windows-retained-recovery.yml",
+      "blob": "dd4716a3540b752dc49e2ee193c90170187bf251",
+      "on": "on:\n  push:\n    branches:\n      - fix/windows-retained-sqlite-recovery-20261103\n      - integration/unified-blocker-20261104-r2\n      - integration/unified-blocker-20261104-r3\n      - fix/r3-original-product-contracts-20261104\n  workflow_dispatch:",
+      "concurrency": "concurrency:\n  group: windows-retained-recovery-${{ github.ref }}\n  cancel-in-progress: false"
+    }
+  ]
+}

@@ -1,0 +1,106 @@
+{
+  "schema": "hepta-b16-two-owned-path-restore-root-guard-v1",
+  "decision": "AUTHORIZE_EXACT_RESTORATION_ONLY",
+  "at_utc": "2026-11-05T06:24:48.066331+00:00",
+  "authorization_basis": "Existing user audit/repair task; parent explicitly authorizes reversal of the two source files written by its failed, zero-case harness attempt.",
+  "failed_job": "1a1aa50a87d-fc05-40d6",
+  "failure": "Original just recipe exit2 due to duplicate no-fail-fast argument; controller1, zero actual cases, no new JUnit.",
+  "runner": {
+    "path": "/workspace/scratch/07dd58cc9630/ci-audit/recovered-20261105/b16-foundation-v4-harness-failure-v1/restore-plan/restore_owned_r2c.py",
+    "bytes": 9736,
+    "sha256": "0b4dc2048c003ef44fb37d51131206627e292a66b08de9de99f9b6cec3df5e29",
+    "blob": "d60bf77157365ccdb97bde2afb0c4ec1a23bf3d1"
+  },
+  "candidate_request": {
+    "path": "/workspace/scratch/07dd58cc9630/ci-audit/recovered-20261105/b16-foundation-v4-harness-failure-v1/restore-plan/restore-request-CANDIDATE.json",
+    "bytes": 1039,
+    "sha256": "afcf7dce366b938b04cf7dfc2b9235495a0e3731f59e0654e6840fc350c76fec",
+    "blob": "0a3b1360aa26130152455d6c3ea8e3a50c20d116"
+  },
+  "plan_manifest": {
+    "path": "/workspace/scratch/07dd58cc9630/ci-audit/recovered-20261105/b16-foundation-v4-harness-failure-v1/restore-plan/restore-plan-manifest.json",
+    "bytes": 2450,
+    "sha256": "ed0dcfd1033899eb6c9c50b21b8c7f04e99b8d4e3ac49e9c55bbe7493012a558",
+    "blob": "f22f6ac11cf99a0ba2c74194067b89a1e03f51fb"
+  },
+  "before_tree": "87e44120dc46e4751b74fb167269a6d85448ff4f",
+  "after_tree": "4a3374e22e16ce5c764288ad018cd9affadf94ea",
+  "rows": [
+    {
+      "path": "codex-rs/state/src/sqlite.rs",
+      "mode": "100644",
+      "before_blob": "4a147f593ef580de5d79b1dd47b0234437c629ca",
+      "before_bytes": 15999,
+      "before_sha256": "27c9c58c8a8d1426a2bd026cbdacebd0083243dd4023f117e698149d25eaf057",
+      "after_blob": "9f5c491e1ba85d88cd03d8bfafc1671494b7ac96"
+    },
+    {
+      "path": "codex-rs/state/src/sqlite_commit_gate_tests.rs",
+      "mode": "100644",
+      "before_blob": "31b26a78bffe40815aa8a5b55e61b5139e7bca96",
+      "before_bytes": 10046,
+      "before_sha256": "07e66e695078f06768aa951dd5c4f2419fe99657cc90e2e263d111eeafa7ca90",
+      "after_blob": null
+    }
+  ],
+  "required_original_pins": [
+    [
+      "runtime/b16_guard.py",
+      10724,
+      "dfaa27e85dd1ee2843893af811484f7bc059583615a4234a716e3472d507bb3d"
+    ],
+    [
+      "binding.json",
+      11545,
+      "cb7d4f88b3e5c212f2521d6310e21432b57cd15bb3d2a21dc3e8fd1a62b9d1b7"
+    ],
+    [
+      "run/epoch-terminal.json",
+      2616131,
+      "708b8d8fafb8052656c002d6f56e269d04e934ae5366a88aea5beb28ee354a8d"
+    ],
+    [
+      "run/0019-epoch-final-guard.json",
+      931,
+      "b943b9f79827fe5de3af1e1601e31c5c3c315b8399da467cf0f7793838f3c237"
+    ],
+    [
+      "run/B01_R2c_V3-command-terminal.json",
+      1283,
+      "8516e780889fd4dbf82f47c252f28e2628407debf0ecec212c753a15581ad4cf"
+    ],
+    [
+      "run/B01_R2c_V3.log",
+      320,
+      "94a13165531f92b7446617855d826f81a1ff10b66d20dc1bb23864376425480c"
+    ],
+    [
+      "launcher-terminal.json",
+      900,
+      "e2e4610c460f62e63eabb7201b825748a62f6b41581283f0d3d48ddf1644dedf"
+    ]
+  ],
+  "original_full_epoch_terminal": {
+    "bytes": 2616131,
+    "sha256": "708b8d8fafb8052656c002d6f56e269d04e934ae5366a88aea5beb28ee354a8d"
+  },
+  "reviewed_controls": [
+    "Exact frozen SourceGuard import and original seven-file evidence pins before mutation.",
+    "Same original sole-mutator lock, whole current87 tree, ordinary HEAD/index and both locks.",
+    "Full tree diff contains only these two owned paths, regular mode0644 and nlink1, complete matching postimages backed up before mutation.",
+    "Original sqlite bytes fetched only from pinned finalA9f5 blob; private-index prediction must equal whole4a before any source write.",
+    "Immediately repeated whole-source guard, per-path postimage guard, atomic sqlite replacement and removal only of the known newly added test file.",
+    "Complete final4a guard and independent terminal snapshot; drift or partial failure remains failed with originals preserved."
+  ],
+  "enablement": {
+    "execute": true,
+    "root_execution_guard": "The exact Git blob SHA of this root guard; all other request fields unchanged."
+  },
+  "native_compile_or_test_authorized": false,
+  "additional_source_changes_authorized": false,
+  "ordinary_HEAD_index_ref_reset_authorized": false,
+  "cache_cleanup_authorized": false,
+  "previous_evidence_mutation_authorized": false,
+  "separate_V5_foundation_authorization_required_after_restore": true,
+  "complete_runner_read_by_root": true
+}

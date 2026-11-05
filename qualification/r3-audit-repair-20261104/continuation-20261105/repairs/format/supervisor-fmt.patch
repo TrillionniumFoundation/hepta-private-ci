@@ -1,0 +1,16 @@
+diff --git a/codex-rs/windows-sandbox-rs/src/delete_permission_matrix_tests.rs b/codex-rs/windows-sandbox-rs/src/delete_permission_matrix_tests.rs
+index d324b587bc298b84fea79239bbd74d2352fc7f39..6f05793ec6ee043a933073ada3a1bf9122de5a73 100644
+--- a/codex-rs/windows-sandbox-rs/src/delete_permission_matrix_tests.rs
++++ b/codex-rs/windows-sandbox-rs/src/delete_permission_matrix_tests.rs
+@@ -431,8 +431,9 @@
+                         deleted.push(true)
+                     }
+                     Err(error) => {
+-                        return Err(error)
+-                            .with_context(|| format!("readback after {label}: {}", path.display()));
++                        return Err(error).with_context(|| {
++                            format!("readback after {label}: {}", path.display())
++                        });
+                     }
+                 }
+             }

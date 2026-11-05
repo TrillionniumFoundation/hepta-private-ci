@@ -1,0 +1,322 @@
+{
+  "schema": "hepta_v8_staged_smoke_feature_repair_v1",
+  "status": "STATIC_CANDIDATE_UNEXECUTED",
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "base_commit": "0e139b599f0fe451f80fb7db4b2913bb9c679dce",
+  "base_tree": "091e659e0da6602299fd14cfa93889191405edd8",
+  "actual_original_merge": "e93aefbbb33438f6ec67e995adcfe88657158487",
+  "original_failures": [
+    {
+      "job_id": 127079699775,
+      "target": "aarch64-apple-darwin",
+      "log": {
+        "bytes": 529590,
+        "sha256": "7b8a2678b4567d27ed2d63eb452904376e8735ee90e80fcd7c2dc62d1f3b257d",
+        "git_blob": "d114c765eaaa0b22ac1f9b91d8958f404d792cc3"
+      },
+      "local_log": "research-audit/published-0e139-ci-20261105/terminal/v8-arm-release-127079699775/job.log",
+      "raw_evidence": [
+        {
+          "line": 1086,
+          "text": "2026-11-05T06:47:25.1426000Z   SANDBOX: false"
+        },
+        {
+          "line": 5247,
+          "text": "2026-11-05T06:50:17.0741070Z   SANDBOX: false"
+        },
+        {
+          "line": 5314,
+          "text": "2026-11-05T06:51:06.9554920Z cargo_args=(test -p codex-v8-poc)"
+        },
+        {
+          "line": 5349,
+          "text": "2026-11-05T06:51:07.0458890Z   SANDBOX: false"
+        },
+        {
+          "line": 5534,
+          "text": "2026-11-05T06:52:29.0773700Z test tests::sandbox_feature_matches_linked_v8 ... FAILED"
+        },
+        {
+          "line": 5542,
+          "text": "2026-11-05T06:52:29.3554540Z thread 'tests::sandbox_feature_matches_linked_v8' (36887) panicked at v8-poc/src/lib.rs:69:9:"
+        },
+        {
+          "line": 5546,
+          "text": "2026-11-05T06:52:29.3558130Z <false"
+        },
+        {
+          "line": 5547,
+          "text": "2026-11-05T06:52:29.3560680Z >true"
+        },
+        {
+          "line": 5556,
+          "text": "2026-11-05T06:52:29.3562700Z test result: FAILED. 5 passed; 1 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.30s"
+        },
+        {
+          "line": 5559,
+          "text": "2026-11-05T06:52:29.4525070Z ##[error]Process completed with exit code 101."
+        }
+      ],
+      "passed": 5,
+      "failed": 1,
+      "ignored": 0,
+      "filtered_out": 0
+    },
+    {
+      "job_id": 127079699806,
+      "target": "x86_64-apple-darwin",
+      "log": {
+        "bytes": 538730,
+        "sha256": "c0f6311813fa1eaf8fb8aec8911941934bb0cda26dc988b0643622f117e1af63",
+        "git_blob": "bbdd1986755c97c83e4db6c94caef1da9ffaa371"
+      },
+      "local_log": "research-audit/published-0e139-ci-20261105/terminal/v8-intel-release-127079699806/job.log",
+      "raw_evidence": [
+        {
+          "line": 1141,
+          "text": "2026-11-05T06:47:09.1463260Z   SANDBOX: false"
+        },
+        {
+          "line": 5357,
+          "text": "2026-11-05T06:51:19.4931430Z   SANDBOX: false"
+        },
+        {
+          "line": 5432,
+          "text": "2026-11-05T06:52:19.6405380Z cargo_args=(test -p codex-v8-poc)"
+        },
+        {
+          "line": 5467,
+          "text": "2026-11-05T06:52:19.6622170Z   SANDBOX: false"
+        },
+        {
+          "line": 5652,
+          "text": "2026-11-05T06:54:56.8857360Z test tests::sandbox_feature_matches_linked_v8 ... FAILED"
+        },
+        {
+          "line": 5660,
+          "text": "2026-11-05T06:54:56.9298450Z thread 'tests::sandbox_feature_matches_linked_v8' (42461) panicked at v8-poc/src/lib.rs:69:9:"
+        },
+        {
+          "line": 5664,
+          "text": "2026-11-05T06:54:56.9302400Z <false"
+        },
+        {
+          "line": 5665,
+          "text": "2026-11-05T06:54:56.9303630Z >true"
+        },
+        {
+          "line": 5674,
+          "text": "2026-11-05T06:54:56.9308890Z test result: FAILED. 5 passed; 1 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.04s"
+        },
+        {
+          "line": 5677,
+          "text": "2026-11-05T06:54:57.0026060Z ##[error]Process completed with exit code 101."
+        }
+      ],
+      "passed": 5,
+      "failed": 1,
+      "ignored": 0,
+      "filtered_out": 0
+    }
+  ],
+  "file": {
+    "path": ".github/workflows/v8-canary.yml",
+    "mode": "100644",
+    "preimage": {
+      "bytes": 17390,
+      "sha256": "efc9d1351968fde9ef4257d108025b6cc16bd323ed1d835abe254f3d0ab2873b",
+      "git_blob": "7bd9a55dcab283c743bd3a05f69c8c6c3e3ff2c4"
+    },
+    "postimage": {
+      "bytes": 17412,
+      "sha256": "98e3836a3ffceac8acedbf302882f54f8aadc835b9aa21ddbdf1c8ca29741bd8",
+      "git_blob": "648a83164c0dd1c28499eaa17f842a83bb2aab04"
+    }
+  },
+  "patch": {
+    "bytes": 528,
+    "sha256": "9a26ec9ca2b0f2d37e01aafe5e5dd3620b8be69f100d917e8af4e33db1d9e472",
+    "git_blob": "025b814a0a9b22e2ec56819fe9efead9ad5b0e02"
+  },
+  "change": {
+    "old": "cargo_args=(test -p codex-v8-poc)",
+    "new": "cargo_args=(test -p codex-v8-poc --no-default-features)",
+    "occurrences": 1,
+    "inverse_replacement_restores_entire_workflow": true
+  },
+  "root_cause": "The staged release variant disables the native V8 sandbox, while the existing Cargo smoke inherited the new default sandbox feature of codex-v8-poc. The strict runtime-versus-feature assertion observed false versus true on both macOS release jobs.",
+  "fixed_source_identities": [
+    {
+      "path": "codex-rs/Cargo.toml",
+      "bytes": 22548,
+      "sha256": "5e19cb310c4bcabc082619d64a028358d5d629e26c179fb38a00432be8f54a6a",
+      "git_blob": "4713741651affd053bb8ae5aa8b5d76831c15c0e"
+    },
+    {
+      "path": "codex-rs/v8-poc/Cargo.toml",
+      "bytes": 370,
+      "sha256": "c8fe672a43a8d02afe8ed2822462201bb87d526478c91dc2d2c9fff6dfad7f6a",
+      "git_blob": "a34a1306f1082b3347543749cbfd9a05eee7cb91"
+    },
+    {
+      "path": "codex-rs/v8-poc/src/lib.rs",
+      "bytes": 2752,
+      "sha256": "7121f241941ebc18758bbc9dbfb0848a9ea25a93a65eecd34c890fc86ccecfcc",
+      "git_blob": "5103cdeb39d5e7f28442c7adaef4969e5a008ea4"
+    }
+  ],
+  "dependency_evidence": {
+    "actual_metadata_source_tree": "4a3374e22e16ce5c764288ad018cd9affadf94ea",
+    "metadata": {
+      "bytes": 8163699,
+      "sha256": "3a53323eae920e2e53dcb3e334128a4aff63cfb51840793e9150d617d2c9ba18",
+      "git_blob": "3d2f7bfbd5fb2fc0fd219045444327e929820fdd"
+    },
+    "metadata_local_path": "ci-audit/recovered-20261105/b16-foundation-readonly-preflight-complete-v1/decoded-verified-v1/full-metadata.stdout",
+    "metadata_is_existing_complete_readonly_receipt": true,
+    "workspace_resolver": "2",
+    "workspace_v8_version": "=150.4.0",
+    "poc_features": {
+      "default": [
+        "sandbox"
+      ],
+      "sandbox": [
+        "v8/v8_enable_sandbox"
+      ]
+    },
+    "upstream_v8_features": {
+      "default": [
+        "use_custom_libcxx"
+      ],
+      "simdutf": [],
+      "use_custom_libcxx": [],
+      "v8_enable_pointer_compression": [],
+      "v8_enable_sandbox": [
+        "v8_enable_pointer_compression"
+      ],
+      "v8_enable_v8_checks": []
+    },
+    "poc_v8_dependency_uses_default_features": true,
+    "other_selected_closure_packages_directly_enabling_v8": [],
+    "selected_closure_direct_v8_dependents": [
+      "codex-v8-poc"
+    ],
+    "code_mode_runtime_outside_selected_closure": true,
+    "full_workspace_enabled_node_features_not_reused_as_selected_package_result": true,
+    "note": "The full metadata package feature definitions are used for static reasoning. No new selected-package Cargo feature resolution or compilation was performed.",
+    "conservative_selected_package_reachability_count": 98,
+    "reachability_scope": "Existing resolve graph with root development edges and transitive normal/build edges, including inactive platform edges; only codex-v8-poc directly depends on v8 within this conservative closure."
+  },
+  "branches": [
+    {
+      "version": "original",
+      "SANDBOX": "false",
+      "cargo_arguments": [
+        "test",
+        "-p",
+        "codex-v8-poc"
+      ],
+      "poc_features": [
+        "default",
+        "sandbox"
+      ],
+      "v8_features": [
+        "default",
+        "use_custom_libcxx",
+        "v8_enable_pointer_compression",
+        "v8_enable_sandbox"
+      ],
+      "local_expected_sandbox": true,
+      "v8_enable_sandbox_requested": true,
+      "evidence_level": "static argument and feature-table calculation; not a Cargo execution"
+    },
+    {
+      "version": "original",
+      "SANDBOX": "true",
+      "cargo_arguments": [
+        "test",
+        "-p",
+        "codex-v8-poc",
+        "--features",
+        "sandbox"
+      ],
+      "poc_features": [
+        "default",
+        "sandbox"
+      ],
+      "v8_features": [
+        "default",
+        "use_custom_libcxx",
+        "v8_enable_pointer_compression",
+        "v8_enable_sandbox"
+      ],
+      "local_expected_sandbox": true,
+      "v8_enable_sandbox_requested": true,
+      "evidence_level": "static argument and feature-table calculation; not a Cargo execution"
+    },
+    {
+      "version": "candidate",
+      "SANDBOX": "false",
+      "cargo_arguments": [
+        "test",
+        "-p",
+        "codex-v8-poc",
+        "--no-default-features"
+      ],
+      "poc_features": [],
+      "v8_features": [
+        "default",
+        "use_custom_libcxx"
+      ],
+      "local_expected_sandbox": false,
+      "v8_enable_sandbox_requested": false,
+      "evidence_level": "static argument and feature-table calculation; not a Cargo execution"
+    },
+    {
+      "version": "candidate",
+      "SANDBOX": "true",
+      "cargo_arguments": [
+        "test",
+        "-p",
+        "codex-v8-poc",
+        "--no-default-features",
+        "--features",
+        "sandbox"
+      ],
+      "poc_features": [
+        "sandbox"
+      ],
+      "v8_features": [
+        "default",
+        "use_custom_libcxx",
+        "v8_enable_pointer_compression",
+        "v8_enable_sandbox"
+      ],
+      "local_expected_sandbox": true,
+      "v8_enable_sandbox_requested": true,
+      "evidence_level": "static argument and feature-table calculation; not a Cargo execution"
+    }
+  ],
+  "unchanged": [
+    "Production default sandbox feature in codex-v8-poc Cargo.toml",
+    "The original unsafe runtime probe and strict sandbox equality assertion",
+    "All six original smoke tests and assertions",
+    "The true matrix branch explicitly adding --features sandbox",
+    "The separate Windows sandbox source-link smoke",
+    "All Bazel build, staging and release-compat flags",
+    "Archive and binding selection and existing environment",
+    "Host-target guard, matrix, job budget, retries and artifacts",
+    "Cargo.lock and MODULE.bazel.lock"
+  ],
+  "verification": {
+    "one_argument_only": true,
+    "original_false_branch_mismatch_explained": true,
+    "candidate_false_requests_no_sandbox": true,
+    "candidate_true_explicitly_requests_sandbox_and_pointer_compression": true,
+    "upstream_default_libcxx_remains_enabled_in_both_branches": true,
+    "no_dependency_changes": true,
+    "no_native_Cargo_Bazel_CI_execution": true,
+    "no_shared_source_or_ref_change": true
+  },
+  "remaining_gate": "Fresh original hosted matrix must execute the unchanged six smoke tests against each staged release and sandbox archive. No candidate runtime PASS or whole-platform closure is claimed."
+}

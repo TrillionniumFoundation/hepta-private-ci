@@ -1,0 +1,107 @@
+{
+  "schema": "hepta_static_repair_manifest_v1",
+  "status": "STATIC_CANDIDATE_UNEXECUTED",
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "base_commit": "0e139b599f0fe451f80fb7db4b2913bb9c679dce",
+  "base_tree": "091e659e0da6602299fd14cfa93889191405edd8",
+  "scope": "one formatting fragment in an existing test-only Windows deletion observation fixture",
+  "failure": {
+    "run_id": 41975255713,
+    "job_id": 127072484642,
+    "source_checkout": "0e139b599f0fe451f80fb7db4b2913bb9c679dce",
+    "command": "cargo +1.95.0 fmt --all -- --check",
+    "command_scope": "the original complete Cargo workspace",
+    "exit_code": 1,
+    "command_started_at": "2026-11-05T06:40:34.2139297Z",
+    "diff_observed_at": "2026-11-05T06:40:48.3701760Z",
+    "terminal_observed_at": "2026-11-05T06:40:48.4952159Z",
+    "complete_job_log": {
+      "path": "research-audit/published-0e139-ci-20261105/terminal/supervisor-linux-127072484642/job.log",
+      "bytes": 1645489,
+      "sha256": "c3f1443d668d8441b45afd20a302ac8dad45e6b1cb00dd85401b59a47f9ca82c",
+      "git_blob": "1c196e9825912858e2167bac1351305ddca03f5f"
+    },
+    "total_reported_format_diff_headers": 1,
+    "exact_original_diff_lines": [
+      "2026-11-05T06:40:48.3701760Z Diff in /home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/windows-sandbox-rs/src/delete_permission_matrix_tests.rs:431:",
+      "2026-11-05T06:40:48.3702593Z                          deleted.push(true)",
+      "2026-11-05T06:40:48.3702929Z                      }",
+      "2026-11-05T06:40:48.3703206Z                      Err(error) => {",
+      "2026-11-05T06:40:48.3703542Z -                        return Err(error)",
+      "2026-11-05T06:40:48.3704078Z -                            .with_context(|| format!(\"readback after {label}: {}\", path.display()));",
+      "2026-11-05T06:40:48.3704673Z +                        return Err(error).with_context(|| {",
+      "2026-11-05T06:40:48.3704976Z +                            format!(\"readback after {label}: {}\", path.display())",
+      "2026-11-05T06:40:48.3705247Z +                        });",
+      "2026-11-05T06:40:48.3705445Z                      }",
+      "2026-11-05T06:40:48.3705609Z                  }",
+      "2026-11-05T06:40:48.3705770Z              }"
+    ]
+  },
+  "files": [
+    {
+      "path": "codex-rs/windows-sandbox-rs/src/delete_permission_matrix_tests.rs",
+      "mode": "100644",
+      "preimage": {
+        "bytes": 16652,
+        "sha256": "a0954c32043c5d4a816cceed2d985d9b299755bd3c041834a9b5bae8ed1f58a9",
+        "git_blob": "d324b587bc298b84fea79239bbd74d2352fc7f39"
+      },
+      "postimage": {
+        "bytes": 16679,
+        "sha256": "b701ad01169eb9f64b62ad50099dfcda51b014a5c96dbc2080631fd2e6d7ee75",
+        "git_blob": "6f05793ec6ee043a933073ada3a1bf9122de5a73"
+      }
+    }
+  ],
+  "patch": {
+    "path": "supervisor-fmt.patch",
+    "bytes": 886,
+    "sha256": "c56435431169b572ba11db15f012e5b891ebe5871b778aaa0d014a41f16dec6b",
+    "git_blob": "20a4a18c9fe02a32ec3f5f108aa8b5168cf60dcb"
+  },
+  "exact_replacement": {
+    "occurrences": 1,
+    "original_source_lines": [
+      434,
+      435
+    ],
+    "before": "                        return Err(error)\n                            .with_context(|| format!(\"readback after {label}: {}\", path.display()));\n",
+    "after": "                        return Err(error).with_context(|| {\n                            format!(\"readback after {label}: {}\", path.display())\n                        });\n",
+    "reversing_only_this_replacement_restores_entire_preimage_bytes": true,
+    "replacement_removed_lines_equal_actual_rustfmt_minus_lines": true,
+    "replacement_added_lines_equal_actual_rustfmt_plus_lines": true
+  },
+  "semantic_review": {
+    "unchanged_expression": "Err(error).with_context(|| format!(\"readback after {label}: {}\", path.display()))",
+    "change": "The same closure expression is formatted as a block whose unchanged format! invocation is the sole tail expression; return and its terminating semicolon remain.",
+    "unchanged": [
+      "all source bytes outside this single replacement",
+      "Err(error) value and with_context method",
+      "zero-argument closure capture semantics",
+      "format! literal and both interpolation arguments",
+      "return control flow and terminating semicolon",
+      "all readback, object identity, deletion, ACL and error assertions",
+      "all production permission, token, ACL, loader and DLL code",
+      "timeouts, retry counts, test selectors and workspace formatting command",
+      "Cargo and Bazel dependency locks"
+    ],
+    "not_claimed": "The full token sequence is not literally equal: rustfmt adds the closure block braces. The original tail expression and behavior are preserved."
+  },
+  "verification": {
+    "local_preimage_equals_github_blob_readback": true,
+    "unique_fragment_replacement": true,
+    "actual_rustfmt_output_exact_match": true,
+    "inverse_replacement_entire_file_byteequal": true,
+    "local_cloud_only": true,
+    "no_native_execution": true,
+    "no_fmt_execution": true,
+    "no_tests_execution": true,
+    "no_shared_source_or_ref_change": true
+  },
+  "remaining_gate": "Run the unchanged original workspace cargo +1.95.0 fmt --all -- --check on the future candidate; no fresh post-fix fmt PASS is claimed.",
+  "scope_exclusions": [
+    "not a Windows product permission qualification",
+    "not a new Supervisor business test pass",
+    "does not change or waive original strict Windows failures"
+  ]
+}

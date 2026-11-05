@@ -1,0 +1,205 @@
+{
+  "schema": "hepta-musl-platform-canonical-label-repair-v1",
+  "status": "STATIC_CANDIDATE_NOT_HOSTED_QUALIFIED",
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "path": ".github/workflows/hepta-musl-product-smoke.yml",
+  "before": {
+    "bytes": 24659,
+    "sha256": "a96f31f7ee4ce8de9377faf24b0509dc0532590c76d4fac83cd6e7cfd243836a",
+    "blob": "a157c21a3e79460dc6f32147d952f3dacb4ed197"
+  },
+  "after": {
+    "bytes": 24716,
+    "sha256": "769a5edc8a956b1947e67d76d63f295b42b0008571e3d8e64ad6757327144cb5",
+    "blob": "fb46a681b5c3cd47c76b20ef56048eae771d9e07"
+  },
+  "patch": {
+    "bytes": 882,
+    "sha256": "c9c78bd475dfd9e83147abe9ea3e3ac5c6b6e32e99c182f5e3e789d6e8c68f67",
+    "blob": "74d5b27c3caf6a03cb728de410ccde2dbe57e018"
+  },
+  "added_lines": 1,
+  "removed_lines": 0,
+  "change": "Deduplicate identical canonical platform-label strings before requiring exactly one distinct label. Configured-target and Rust-action rows are not deduplicated.",
+  "failure_source": {
+    "run_id": 41975255695,
+    "job_id": 127072479491,
+    "run_attempt": 1,
+    "pr_head": "0e139b599f0fe451f80fb7db4b2913bb9c679dce",
+    "actual_checkout": "e93aefbbb33438f6ec67e995adcfe88657158487",
+    "actual_tree": "091e659e0da6602299fd14cfa93889191405edd8",
+    "job_log": {
+      "bytes": 104326,
+      "sha256": "7c193fdcd676c65c16c3464840de273288db344335ffbb454c873f1c7f6e73b7",
+      "blob": "a6fd5ebffd27adee78e2625e2319e09fe658b67c"
+    },
+    "artifact_id": 13394256252,
+    "artifact_zip": {
+      "bytes": 4201,
+      "sha256": "c680c498101e0bdc509af2a0c12923822eabbb381b91e0c24511b7c60d4f9d24",
+      "blob": "fefd2a04e1bb19f032742b44755b1b5a75178f84"
+    },
+    "archive_members": [
+      {
+        "name": "artifact-manifest.json",
+        "crc32": "59827177",
+        "bytes": 1008,
+        "sha256": "7d7a6e2bf983824465f8aa0a0bab2a495ef656f74530f07ad3a10147e927f7c4",
+        "blob": "dcb2d30b1846b5f1608deb89a08880b2932697d1"
+      },
+      {
+        "name": "bazel-version.stderr",
+        "crc32": "1f521e09",
+        "bytes": 103,
+        "sha256": "80ee5f6759592db2fae6f2dfae98d8c869d990bb4948053c56a783c92b8303f0",
+        "blob": "10375565db6aa882b81b124b0ce81f0f8a88be6c"
+      },
+      {
+        "name": "bazel-version.stdout",
+        "crc32": "23da049a",
+        "bytes": 12,
+        "sha256": "975f11fdb2255b8f73742a67a3e471115f829095af0931945a505f8401740e21",
+        "blob": "21c7e63f0e02b4c976eb8b5d1f995c4d7c530e88"
+      },
+      {
+        "name": "build-events-projection.json",
+        "crc32": "1ec7e652",
+        "bytes": 160,
+        "sha256": "07807eb23e3aab52e92117fc496f0f0d199bbd9f2d99c7338e5894cd5566f444",
+        "blob": "5fef2ccb711c66c5ea9d6e826b17ccb88e198faf"
+      },
+      {
+        "name": "cquery-platform.stderr",
+        "crc32": "462fba15",
+        "bytes": 2024,
+        "sha256": "c872ebec9fa6db7227b08d6465e7f01fb7bb2f0c6480eccc58bdda2596381d7e",
+        "blob": "2efeca3b0ac60f2e4a6a354df2573c48038f92a8"
+      },
+      {
+        "name": "cquery-platform.stdout",
+        "crc32": "860f361c",
+        "bytes": 104,
+        "sha256": "c107b71a63b6967892979ce418f750485a75e489838da6bbb9eff7075a4c0fcb",
+        "blob": "3ec12ffc87b8db1068f4c47365385073b9d55039"
+      },
+      {
+        "name": "receipt.json",
+        "crc32": "ee55790a",
+        "bytes": 1832,
+        "sha256": "ecf6e0e7c1d3dc01ed090bb2c617f8bbdb33ffb3d15d94f0f1c1de89da3ed461",
+        "blob": "ba0a2e7c8549a51f15bdace48341d8f8ee80f8b7"
+      },
+      {
+        "name": "source.json",
+        "crc32": "194cec80",
+        "bytes": 1995,
+        "sha256": "95710b27c420f299d1b3841f5a14c7d3dc9bac41dcf720b3bbe043bcf9f0adb5",
+        "blob": "23daa38b66966cf3d8a028e9c3a76cee991d8095"
+      }
+    ]
+  },
+  "actual_failure": {
+    "cquery_exit": 0,
+    "cquery_seconds": 16.147299226999998,
+    "stdout": {
+      "bytes": 104,
+      "sha256": "c107b71a63b6967892979ce418f750485a75e489838da6bbb9eff7075a4c0fcb",
+      "blob": "3ec12ffc87b8db1068f4c47365385073b9d55039"
+    },
+    "row_count": 2,
+    "distinct_label_count": 1,
+    "canonical_label": "@@rules_rs+//rs/platforms:x86_64-unknown-linux-musl",
+    "error": "RuntimeError: expected one resolved explicit musl platform",
+    "last_commands": [
+      "bazel-version",
+      "cquery-platform"
+    ],
+    "outer_inner_cquery_executed": false,
+    "Rust_action_qualification_executed": false,
+    "product_build_executed": false,
+    "ELF_and_cli_smoke_executed": false,
+    "failure_is_product_build_failure": false
+  },
+  "validation": {
+    "method": "Execute only the exact four/five-line pure Python resolver extracted from before/after workflow; no subprocess, YAML/job/Bazel/Cargo execution.",
+    "original_snippet": "platform_rows = [line.strip() for line in platform_raw.decode().splitlines() if line.strip()]\nif len(platform_rows) != 1:\n    raise RuntimeError(\"expected one resolved explicit musl platform\")\nresolved_platform = platform_rows[0]\n",
+    "candidate_snippet": "platform_rows = [line.strip() for line in platform_raw.decode().splitlines() if line.strip()]\nplatform_rows = sorted(set(platform_rows))\nif len(platform_rows) != 1:\n    raise RuntimeError(\"expected one resolved explicit musl platform\")\nresolved_platform = platform_rows[0]\n",
+    "cases": [
+      {
+        "name": "actual_two_identical_rows",
+        "input": {
+          "bytes": 104,
+          "sha256": "c107b71a63b6967892979ce418f750485a75e489838da6bbb9eff7075a4c0fcb",
+          "blob": "3ec12ffc87b8db1068f4c47365385073b9d55039"
+        },
+        "before": {
+          "accepted": false,
+          "error_type": "RuntimeError",
+          "message": "expected one resolved explicit musl platform"
+        },
+        "after": {
+          "accepted": true,
+          "resolved_platform": "@@rules_rs+//rs/platforms:x86_64-unknown-linux-musl",
+          "rows": [
+            "@@rules_rs+//rs/platforms:x86_64-unknown-linux-musl"
+          ]
+        }
+      },
+      {
+        "name": "empty_output",
+        "input": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391"
+        },
+        "before": {
+          "accepted": false,
+          "error_type": "RuntimeError",
+          "message": "expected one resolved explicit musl platform"
+        },
+        "after": {
+          "accepted": false,
+          "error_type": "RuntimeError",
+          "message": "expected one resolved explicit musl platform"
+        }
+      },
+      {
+        "name": "conflicting_labels",
+        "input": {
+          "bytes": 103,
+          "sha256": "602a0bc454097e40ec635f4f1e849d19194fd83600c354bc516e4d0313a9d833",
+          "blob": "201637dd4e2e8c94469d6d3cf66af6f1e20947d3"
+        },
+        "before": {
+          "accepted": false,
+          "error_type": "RuntimeError",
+          "message": "expected one resolved explicit musl platform"
+        },
+        "after": {
+          "accepted": false,
+          "error_type": "RuntimeError",
+          "message": "expected one resolved explicit musl platform"
+        }
+      }
+    ],
+    "source_remove_only_added_line_equals_original": true,
+    "zip_crc_and_all_member_bytes_verified": true
+  },
+  "unchanged": [
+    "exact configured outer/inner single-row checks",
+    "resolved platform equality",
+    "Rust target/linker/rustlib/compiler actions",
+    "actual explicit target and build argv",
+    "samefile and path boundaries",
+    "static ELF and actual binary hashes",
+    "version/help process assertions",
+    "original source/terminal fences",
+    "timeouts, retries, permissions and upload scope"
+  ],
+  "qualification_limits": [
+    "This fixes the observed canonical-label resolver rejection only.",
+    "No hosted rerun or product build was executed by this review.",
+    "The original run remains failed; platform qualification stays open until a new exact-source hosted run reaches and passes every original downstream gate.",
+    "The reason Bazel emitted this canonical label twice is not asserted to be independently diagnosed; identical output bytes and the rejecting line are directly observed."
+  ]
+}

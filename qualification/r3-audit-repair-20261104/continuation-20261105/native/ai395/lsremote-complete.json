@@ -1,0 +1,100 @@
+{
+  "schema": "hepta-ai395-lsremote-complete-native-receipt-v1",
+  "script": "import datetime, hashlib, json, os, pwd, subprocess, time\nfrom pathlib import Path\nrepo = \"https://github.com/TrillionniumFoundation/hepta-private-ci.git\"\nsource_commit = \"20fd174ded4e5ce01bda34e4f6d1d74803301f49\"\npublished_ref = \"refs/heads/fix/r3-original-product-contracts-20261104\"\nroot = Path(\"/home/qq/work/hepta-audit-b16-20261105\")\nuser = pwd.getpwuid(os.getuid())\nassert user.pw_name == \"qq\" and user.pw_dir == \"/home/qq\"\nargv = [\"/usr/bin/git\", \"ls-remote\", \"--refs\", \"--exit-code\", repo, source_commit, published_ref, \"refs/pull/4797/head\"]\nenv = dict(os.environ)\nenv.update({\"GIT_TERMINAL_PROMPT\":\"0\",\"GCM_INTERACTIVE\":\"never\",\"GIT_OPTIONAL_LOCKS\":\"0\"})\nstarted = datetime.datetime.now(datetime.timezone.utc).isoformat()\nclock = time.monotonic()\nresult = {\"schema\":\"hepta-ai395-fixed-repository-readonly-access-v1\",\"host\":\"ai395\",\"user\":{\"uid\":os.getuid(),\"name\":user.pw_name,\"home\":user.pw_dir},\"new_task_root\":{\"path\":str(root),\"lexists_before\":os.path.lexists(root)},\"argv\":argv,\"cwd\":\"/\",\"started_at\":started,\"fixed_code_tree\":\"4a3374e22e16ce5c764288ad018cd9affadf94ea\",\"expected_published_head\":\"0e139b599f0fe451f80fb7db4b2913bb9c679dce\",\"qualification_limit\":\"ls-remote lists refs; a SHA pattern with no match does not prove that commit cannot be fetched. This is access observation only, with no fetch, clone or source mutation.\"}\ndef content(data):\n    return {\"bytes\":len(data),\"sha256\":hashlib.sha256(data).hexdigest(),\"text\":data.decode(\"utf-8\"),\"hex\":data.hex()}\ntry:\n    p = subprocess.run(argv,cwd=\"/\",env=env,stdin=subprocess.DEVNULL,stdout=subprocess.PIPE,stderr=subprocess.PIPE,timeout=45,check=False)\n    result.update({\"command_exit_code\":p.returncode,\"timed_out\":False,\"stdout\":content(p.stdout),\"stderr\":content(p.stderr)})\nexcept subprocess.TimeoutExpired as exc:\n    result.update({\"command_exit_code\":None,\"timed_out\":True,\"stdout\":content(exc.stdout or b\"\"),\"stderr\":content(exc.stderr or b\"\")})\nresult[\"completed_at\"] = datetime.datetime.now(datetime.timezone.utc).isoformat()\nresult[\"duration_seconds\"] = time.monotonic()-clock\nresult[\"new_task_root\"][\"lexists_after\"] = os.path.lexists(root)\nst = os.statvfs(\"/home/qq/work\")\nresult[\"user_available_bytes_at_terminal\"] = st.f_bavail*st.f_frsize\nresult[\"changed_source_config_cache\"] = False\nprint(json.dumps(result,sort_keys=True))\n",
+  "request": {
+    "host": "ai395",
+    "executable": "/usr/bin/python3",
+    "args": [
+      "-c",
+      "import datetime, hashlib, json, os, pwd, subprocess, time\nfrom pathlib import Path\nrepo = \"https://github.com/TrillionniumFoundation/hepta-private-ci.git\"\nsource_commit = \"20fd174ded4e5ce01bda34e4f6d1d74803301f49\"\npublished_ref = \"refs/heads/fix/r3-original-product-contracts-20261104\"\nroot = Path(\"/home/qq/work/hepta-audit-b16-20261105\")\nuser = pwd.getpwuid(os.getuid())\nassert user.pw_name == \"qq\" and user.pw_dir == \"/home/qq\"\nargv = [\"/usr/bin/git\", \"ls-remote\", \"--refs\", \"--exit-code\", repo, source_commit, published_ref, \"refs/pull/4797/head\"]\nenv = dict(os.environ)\nenv.update({\"GIT_TERMINAL_PROMPT\":\"0\",\"GCM_INTERACTIVE\":\"never\",\"GIT_OPTIONAL_LOCKS\":\"0\"})\nstarted = datetime.datetime.now(datetime.timezone.utc).isoformat()\nclock = time.monotonic()\nresult = {\"schema\":\"hepta-ai395-fixed-repository-readonly-access-v1\",\"host\":\"ai395\",\"user\":{\"uid\":os.getuid(),\"name\":user.pw_name,\"home\":user.pw_dir},\"new_task_root\":{\"path\":str(root),\"lexists_before\":os.path.lexists(root)},\"argv\":argv,\"cwd\":\"/\",\"started_at\":started,\"fixed_code_tree\":\"4a3374e22e16ce5c764288ad018cd9affadf94ea\",\"expected_published_head\":\"0e139b599f0fe451f80fb7db4b2913bb9c679dce\",\"qualification_limit\":\"ls-remote lists refs; a SHA pattern with no match does not prove that commit cannot be fetched. This is access observation only, with no fetch, clone or source mutation.\"}\ndef content(data):\n    return {\"bytes\":len(data),\"sha256\":hashlib.sha256(data).hexdigest(),\"text\":data.decode(\"utf-8\"),\"hex\":data.hex()}\ntry:\n    p = subprocess.run(argv,cwd=\"/\",env=env,stdin=subprocess.DEVNULL,stdout=subprocess.PIPE,stderr=subprocess.PIPE,timeout=45,check=False)\n    result.update({\"command_exit_code\":p.returncode,\"timed_out\":False,\"stdout\":content(p.stdout),\"stderr\":content(p.stderr)})\nexcept subprocess.TimeoutExpired as exc:\n    result.update({\"command_exit_code\":None,\"timed_out\":True,\"stdout\":content(exc.stdout or b\"\"),\"stderr\":content(exc.stderr or b\"\")})\nresult[\"completed_at\"] = datetime.datetime.now(datetime.timezone.utc).isoformat()\nresult[\"duration_seconds\"] = time.monotonic()-clock\nresult[\"new_task_root\"][\"lexists_after\"] = os.path.lexists(root)\nst = os.statvfs(\"/home/qq/work\")\nresult[\"user_available_bytes_at_terminal\"] = st.f_bavail*st.f_frsize\nresult[\"changed_source_config_cache\"] = False\nprint(json.dumps(result,sort_keys=True))\n"
+    ],
+    "cwd": "/",
+    "timeout_seconds": 120,
+    "idempotency_key": "hepta-ai395-b16-lsremote-readonly-20261105-v1"
+  },
+  "start": {
+    "content": [
+      {
+        "type": "text",
+        "text": "{\n  \"audit_recorded\": true,\n  \"job\": {\n    \"args\": [\n      \"-c\",\n      \"import datetime, hashlib, json, os, pwd, subprocess, time\\nfrom pathlib import Path\\nrepo = \\\"https://github.com/TrillionniumFoundation/hepta-private-ci.git\\\"\\nsource_commit = \\\"20fd174ded4e5ce01bda34e4f6d1d74803301f49\\\"\\npublished_ref = \\\"refs/heads/fix/r3-original-product-contracts-20261104\\\"\\nroot = Path(\\\"/home/qq/work/hepta-audit-b16-20261105\\\")\\nuser = pwd.getpwuid(os.getuid())\\nassert user.pw_name == \\\"qq\\\" and user.pw_dir == \\\"/home/qq\\\"\\nargv = [\\\"/usr/bin/git\\\", \\\"ls-remote\\\", \\\"--refs\\\", \\\"--exit-code\\\", repo, source_commit, published_ref, \\\"refs/pull/4797/head\\\"]\\nenv = dict(os.environ)\\nenv.update({\\\"GIT_TERMINAL_PROMPT\\\":\\\"0\\\",\\\"GCM_INTERACTIVE\\\":\\\"never\\\",\\\"GIT_OPTIONAL_LOCKS\\\":\\\"0\\\"})\\nstarted = datetime.datetime.now(datetime.timezone.utc).isoformat()\\nclock = time.monotonic()\\nresult = {\\\"schema\\\":\\\"hepta-ai395-fixed-repository-readonly-access-v1\\\",\\\"host\\\":\\\"ai395\\\",\\\"user\\\":{\\\"uid\\\":os.getuid(),\\\"name\\\":user.pw_name,\\\"home\\\":user.pw_dir},\\\"new_task_root\\\":{\\\"path\\\":str(root),\\\"lexists_before\\\":os.path.lexists(root)},\\\"argv\\\":argv,\\\"cwd\\\":\\\"/\\\",\\\"started_at\\\":started,\\\"fixed_code_tree\\\":\\\"4a3374e22e16ce5c764288ad018cd9affadf94ea\\\",\\\"expected_published_head\\\":\\\"0e139b599f0fe451f80fb7db4b2913bb9c679dce\\\",\\\"qualification_limit\\\":\\\"ls-remote lists refs; a SHA pattern with no match does not prove that commit cannot be fetched. This is access observation only, with no fetch, clone or source mutation.\\\"}\\ndef content(data):\\n    return {\\\"bytes\\\":len(data),\\\"sha256\\\":hashlib.sha256(data).hexdigest(),\\\"text\\\":data.decode(\\\"utf-8\\\"),\\\"hex\\\":data.hex()}\\ntry:\\n    p = subprocess.run(argv,cwd=\\\"/\\\",env=env,stdin=subprocess.DEVNULL,stdout=subprocess.PIPE,stderr=subprocess.PIPE,timeout=45,check=False)\\n    result.update({\\\"command_exit_code\\\":p.returncode,\\\"timed_out\\\":False,\\\"stdout\\\":content(p.stdout),\\\"stderr\\\":content(p.stderr)})\\nexcept subprocess.TimeoutExpired as exc:\\n    result.update({\\\"command_exit_code\\\":None,\\\"timed_out\\\":True,\\\"stdout\\\":content(exc.stdout or b\\\"\\\"),\\\"stderr\\\":content(exc.stderr or b\\\"\\\")})\\nresult[\\\"completed_at\\\"] = datetime.datetime.now(datetime.timezone.utc).isoformat()\\nresult[\\\"duration_seconds\\\"] = time.monotonic()-clock\\nresult[\\\"new_task_root\\\"][\\\"lexists_after\\\"] = os.path.lexists(root)\\nst = os.statvfs(\\\"/home/qq/work\\\")\\nresult[\\\"user_available_bytes_at_terminal\\\"] = st.f_bavail*st.f_frsize\\nresult[\\\"changed_source_config_cache\\\"] = False\\nprint(json.dumps(result,sort_keys=True))\\n\"\n    ],\n    \"created_unix_ms\": 1793862477422,\n    \"cwd\": \"/\",\n    \"env_keys\": [],\n    \"executable\": \"/usr/bin/python3\",\n    \"execution_mode\": \"operator\",\n    \"host\": \"ai395\",\n    \"id\": \"1a1aa89266e-fc05-4418\",\n    \"idempotency_key\": \"hepta-ai395-b16-lsremote-readonly-20261105-v1\",\n    \"launch_error\": null,\n    \"launch_state\": \"launched\",\n    \"remote_job_dir\": \"/home/qq/.local/state/hepta-runtime-mac-worker/jobs/1a1aa89266e-fc05-4418\",\n    \"request_digest\": \"28ae126b021305acd3ed90d078b3cc4f060652824bb9d50fe14d314041f3fc38\",\n    \"request_fingerprint\": 2931300658270373292,\n    \"ssh_target\": \"ai395-lan\",\n    \"system_jobctl\": false,\n    \"unit\": \"hepta-runtime-job-1a1aa89266e-fc05-4418\"\n  },\n  \"launch\": {\n    \"backend\": \"systemd\",\n    \"launcher_pid\": null,\n    \"ok\": true,\n    \"unit\": \"hepta-runtime-job-1a1aa89266e-fc05-4418\"\n  },\n  \"local_record_pending\": false,\n  \"reused\": false\n}"
+      }
+    ],
+    "structuredContent": null,
+    "isError": false
+  },
+  "observed": [
+    {
+      "status": "fulfilled",
+      "value": {
+        "content": [
+          {
+            "type": "text",
+            "text": "{\n  \"at_unix_ms\": 1793862483507,\n  \"audit_recorded\": true,\n  \"automatic_retry\": false,\n  \"cancelled\": false,\n  \"exit_code\": 0,\n  \"job_id\": \"1a1aa89266e-fc05-4418\",\n  \"launch_nonce\": \"e282632df3efff9aedddb49906f81f3f\",\n  \"log_bytes\": {\n    \"stderr\": {\n      \"seen\": 0,\n      \"stored\": 0\n    },\n    \"stdout\": {\n      \"seen\": 1848,\n      \"stored\": 1848\n    }\n  },\n  \"log_errors\": {\n    \"stderr\": null,\n    \"stdout\": null\n  },\n  \"log_synced\": {\n    \"stderr\": true,\n    \"stdout\": true\n  },\n  \"log_truncated\": {\n    \"stderr\": false,\n    \"stdout\": false\n  },\n  \"output_complete\": true,\n  \"output_durable\": true,\n  \"state\": \"succeeded\",\n  \"terminal_publication_confirmed\": true,\n  \"terminal_publication_protocol\": 1,\n  \"timed_out\": false\n}"
+          }
+        ],
+        "structuredContent": null,
+        "isError": false
+      }
+    },
+    {
+      "status": "fulfilled",
+      "value": {
+        "content": [
+          {
+            "type": "text",
+            "text": "{\n  \"audit_recorded\": true,\n  \"job_id\": \"1a1aa89266e-fc05-4418\",\n  \"stderr\": {\n    \"bytes_hex\": \"\",\n    \"eof\": true,\n    \"next_offset\": 0,\n    \"offset\": 0,\n    \"size\": 0,\n    \"text\": \"\"\n  },\n  \"stdout\": {\n    \"bytes_hex\": \"7b2261726776223a205b222f7573722f62696e2f676974222c20226c732d72656d6f7465222c20222d2d72656673222c20222d2d657869742d636f6465222c202268747470733a2f2f6769746875622e636f6d2f5472696c6c696f6e6e69756d466f756e646174696f6e2f68657074612d707269766174652d63692e676974222c202232306664313734646564346535636530316264613334653466366431643734383033333031663439222c2022726566732f68656164732f6669782f72332d6f726967696e616c2d70726f647563742d636f6e7472616374732d3230323631313034222c2022726566732f70756c6c2f343739372f68656164225d2c20226368616e6765645f736f757263655f636f6e6669675f6361636865223a2066616c73652c2022636f6d6d616e645f657869745f636f6465223a20302c2022636f6d706c657465645f6174223a2022323032362d31312d30355430373a30383a30332e3530303238302b30303a3030222c2022637764223a20222f222c20226475726174696f6e5f7365636f6e6473223a20352e323134303234343637393735383332352c202265787065637465645f7075626c69736865645f68656164223a202230653133396235393966306665343531663830666237646234623239313362623963363739646365222c202266697865645f636f64655f74726565223a202234613333373465323265313663653563373634323838616430313863643961666661646639346561222c2022686f7374223a20226169333935222c20226e65775f7461736b5f726f6f74223a207b226c6578697374735f6166746572223a2066616c73652c20226c6578697374735f6265666f7265223a2066616c73652c202270617468223a20222f686f6d652f71712f776f726b2f68657074612d61756469742d6231362d3230323631313035227d2c20227175616c696669636174696f6e5f6c696d6974223a20226c732d72656d6f7465206c6973747320726566733b206120534841207061747465726e2077697468206e6f206d6174636820646f6573206e6f742070726f7665207468617420636f6d6d69742063616e6e6f7420626520666574636865642e205468697320697320616363657373206f62736572766174696f6e206f6e6c792c2077697468206e6f2066657463682c20636c6f6e65206f7220736f75726365206d75746174696f6e2e222c2022736368656d61223a202268657074612d61693339352d66697865642d7265706f7369746f72792d726561646f6e6c792d6163636573732d7631222c2022737461727465645f6174223a2022323032362d31312d30355430373a30373a35382e3238363236362b30303a3030222c2022737464657272223a207b226279746573223a20302c2022686578223a2022222c2022736861323536223a202265336230633434323938666331633134396166626634633839393666623932343237616534316534363439623933346361343935393931623738353262383535222c202274657874223a2022227d2c20227374646f7574223a207b226279746573223a203135362c2022686578223a2022333036353331333333393632333533393339363633303636363533343335333136363338333036363632333736343632333436323332333933313333363236323339363333363337333936343633363530393732363536363733326636383635363136343733326636363639373832663732333332643666373236393637363936653631366332643730373236663634373536333734326436333666366537343732363136333734373332643332333033323336333133313330333430613330363533313333333936323335333933393636333036363635333433353331363633383330363636323337363436323334363233323339333133333632363233393633333633373339363436333635303937323635363637333266373037353663366332663334333733393337326636383635363136343061222c2022736861323536223a202238336535396364323361636366313464643533336462656362626630323066653233646330346230383762633164616530633039383162306633303534386537222c202274657874223a2022306531333962353939663066653435316638306662376462346232393133626239633637396463655c74726566732f68656164732f6669782f72332d6f726967696e616c2d70726f647563742d636f6e7472616374732d32303236313130345c6e306531333962353939663066653435316638306662376462346232393133626239633637396463655c74726566732f70756c6c2f343739372f686561645c6e227d2c202274696d65645f6f7574223a2066616c73652c202275736572223a207b22686f6d65223a20222f686f6d652f7171222c20226e616d65223a20227171222c2022756964223a20313030307d2c2022757365725f617661696c61626c655f62797465735f61745f7465726d696e616c223a203937353432383130383238387d0a\",\n    \"eof\": true,\n    \"next_offset\": 1848,\n    \"offset\": 0,\n    \"size\": 1848,\n    \"text\": \"{\\\"argv\\\": [\\\"/usr/bin/git\\\", \\\"ls-remote\\\", \\\"--refs\\\", \\\"--exit-code\\\", \\\"https://github.com/TrillionniumFoundation/hepta-private-ci.git\\\", \\\"20fd174ded4e5ce01bda34e4f6d1d74803301f49\\\", \\\"refs/heads/fix/r3-original-product-contracts-20261104\\\", \\\"refs/pull/4797/head\\\"], \\\"changed_source_config_cache\\\": false, \\\"command_exit_code\\\": 0, \\\"completed_at\\\": \\\"2026-11-05T07:08:03.500280+00:00\\\", \\\"cwd\\\": \\\"/\\\", \\\"duration_seconds\\\": 5.2140244679758325, \\\"expected_published_head\\\": \\\"0e139b599f0fe451f80fb7db4b2913bb9c679dce\\\", \\\"fixed_code_tree\\\": \\\"4a3374e22e16ce5c764288ad018cd9affadf94ea\\\", \\\"host\\\": \\\"ai395\\\", \\\"new_task_root\\\": {\\\"lexists_after\\\": false, \\\"lexists_before\\\": false, \\\"path\\\": \\\"/home/qq/work/hepta-audit-b16-20261105\\\"}, \\\"qualification_limit\\\": \\\"ls-remote lists refs; a SHA pattern with no match does not prove that commit cannot be fetched. This is access observation only, with no fetch, clone or source mutation.\\\", \\\"schema\\\": \\\"hepta-ai395-fixed-repository-readonly-access-v1\\\", \\\"started_at\\\": \\\"2026-11-05T07:07:58.286266+00:00\\\", \\\"stderr\\\": {\\\"bytes\\\": 0, \\\"hex\\\": \\\"\\\", \\\"sha256\\\": \\\"e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855\\\", \\\"text\\\": \\\"\\\"}, \\\"stdout\\\": {\\\"bytes\\\": 156, \\\"hex\\\": \\\"3065313339623539396630666534353166383066623764623462323931336262396336373964636509726566732f68656164732f6669782f72332d6f726967696e616c2d70726f647563742d636f6e7472616374732d32303236313130340a3065313339623539396630666534353166383066623764623462323931336262396336373964636509726566732f70756c6c2f343739372f686561640a\\\", \\\"sha256\\\": \\\"83e59cd23accf14dd533dbecbbf020fe23dc04b087bc1dae0c0981b0f30548e7\\\", \\\"text\\\": \\\"0e139b599f0fe451f80fb7db4b2913bb9c679dce\\\\trefs/heads/fix/r3-original-product-contracts-20261104\\\\n0e139b599f0fe451f80fb7db4b2913bb9c679dce\\\\trefs/pull/4797/head\\\\n\\\"}, \\\"timed_out\\\": false, \\\"user\\\": {\\\"home\\\": \\\"/home/qq\\\", \\\"name\\\": \\\"qq\\\", \\\"uid\\\": 1000}, \\\"user_available_bytes_at_terminal\\\": 975428108288}\\n\"\n  }\n}"
+          }
+        ],
+        "structuredContent": null,
+        "isError": false
+      }
+    }
+  ],
+  "parsed_stdout": {
+    "argv": [
+      "/usr/bin/git",
+      "ls-remote",
+      "--refs",
+      "--exit-code",
+      "https://github.com/TrillionniumFoundation/hepta-private-ci.git",
+      "20fd174ded4e5ce01bda34e4f6d1d74803301f49",
+      "refs/heads/fix/r3-original-product-contracts-20261104",
+      "refs/pull/4797/head"
+    ],
+    "changed_source_config_cache": false,
+    "command_exit_code": 0,
+    "completed_at": "2026-11-05T07:08:03.500280+00:00",
+    "cwd": "/",
+    "duration_seconds": 5.2140244679758325,
+    "expected_published_head": "0e139b599f0fe451f80fb7db4b2913bb9c679dce",
+    "fixed_code_tree": "4a3374e22e16ce5c764288ad018cd9affadf94ea",
+    "host": "ai395",
+    "new_task_root": {
+      "lexists_after": false,
+      "lexists_before": false,
+      "path": "/home/qq/work/hepta-audit-b16-20261105"
+    },
+    "qualification_limit": "ls-remote lists refs; a SHA pattern with no match does not prove that commit cannot be fetched. This is access observation only, with no fetch, clone or source mutation.",
+    "schema": "hepta-ai395-fixed-repository-readonly-access-v1",
+    "started_at": "2026-11-05T07:07:58.286266+00:00",
+    "stderr": {
+      "bytes": 0,
+      "hex": "",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "text": ""
+    },
+    "stdout": {
+      "bytes": 156,
+      "hex": "3065313339623539396630666534353166383066623764623462323931336262396336373964636509726566732f68656164732f6669782f72332d6f726967696e616c2d70726f647563742d636f6e7472616374732d32303236313130340a3065313339623539396630666534353166383066623764623462323931336262396336373964636509726566732f70756c6c2f343739372f686561640a",
+      "sha256": "83e59cd23accf14dd533dbecbbf020fe23dc04b087bc1dae0c0981b0f30548e7",
+      "text": "0e139b599f0fe451f80fb7db4b2913bb9c679dce\trefs/heads/fix/r3-original-product-contracts-20261104\n0e139b599f0fe451f80fb7db4b2913bb9c679dce\trefs/pull/4797/head\n"
+    },
+    "timed_out": false,
+    "user": {
+      "home": "/home/qq",
+      "name": "qq",
+      "uid": 1000
+    },
+    "user_available_bytes_at_terminal": 975428108288
+  }
+}

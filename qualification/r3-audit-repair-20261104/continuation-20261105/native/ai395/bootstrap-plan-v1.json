@@ -1,0 +1,328 @@
+{
+  "schema": "hepta-b16-ai395-bootstrap-plan-v1",
+  "execute": false,
+  "host": "ai395",
+  "purpose": "Prepare an independently qualified exact-source A code baseline on a new host before any B16 source mutation or test. No native bootstrap is authorized by this document.",
+  "actual_readiness": {
+    "jobs": {
+      "readiness": "1a1aa7bd9d6-fc05-4392",
+      "git_access": "1a1aa89266e-fc05-4418"
+    },
+    "readiness_bundle": {
+      "blob": "3d3735fbf5cb5abba9fc55ca86878477ac564749",
+      "bytes": 359656,
+      "sha256": "d2883619458ca9620ed538ba67be18c99c781dc29e6168ff71668a66dc07538a"
+    },
+    "git_access_bundle": {
+      "blob": "bb22fc41ecea79981231c1f9445d0d7f69b1b0e9",
+      "bytes": 18940,
+      "sha256": "1c3a5497e7303f9ab86fc8f0c31a4fc456c2278980cb962142c728fcb460fd0e"
+    },
+    "user": "qq",
+    "uid": 1000,
+    "home": "/home/qq",
+    "architecture": "x86_64-unknown-linux-gnu",
+    "user_available_bytes": 975428108288,
+    "available_observed_at": "2026-11-05T07:08:03.500280+00:00",
+    "workspace_device": "259:2",
+    "git": "/usr/bin/git",
+    "git_version": "2.53.0",
+    "git_sha256": "ed8b2df973b28c0fb773b9c0dc0816d3ee2b3835bb932d9153c21417bb51b362",
+    "existing_rust": "stable 1.99.1",
+    "not_found_in_bounded_tool_search": [
+      "Rust 1.95.0",
+      "just",
+      "cargo-nextest",
+      "bazel"
+    ],
+    "no_qualification_transferred_from_rog": true
+  },
+  "owned_paths": {
+    "root": "/home/qq/work/hepta-audit-b16-20261105",
+    "source": "/home/qq/work/hepta-audit-b16-20261105/source",
+    "target": "/home/qq/work/hepta-audit-b16-20261105/target-dev-small",
+    "tools": "/home/qq/work/hepta-audit-b16-20261105/tools",
+    "evidence": "/home/qq/work/hepta-audit-b16-20261105/evidence",
+    "cargo_home": "/home/qq/work/hepta-audit-b16-20261105/cargo-home",
+    "rustup_home": "/home/qq/work/hepta-audit-b16-20261105/tools/rustup-home",
+    "root_must_not_exist_at_creation": true,
+    "root_observed_absent_before_and_after_lsremote": true
+  },
+  "capacity": {
+    "cold_bootstrap_start_minimum_bytes": 200000000000,
+    "cold_command_before_and_after_minimum_bytes": 64000000000,
+    "planning_allowances_bytes": {
+      "toolchains_and_tools": 8000000000,
+      "git_and_source": 2000000000,
+      "dependency_source_archives_and_git": 20000000000,
+      "cargo_target_and_link_intermediates": 80000000000,
+      "evidence": 10000000000,
+      "other_temporary_download_extract_work": 16000000000,
+      "reserve": 64000000000
+    },
+    "sum_bytes": 200000000000,
+    "known_rog_396_output_logical_bytes": 18501759440,
+    "known_rog_measurement_limit": "Sum of 396 named executable lengths only; does not measure unique allocation, library/object/registry/build state or compiler peak; not an ai395 claim.",
+    "limits": [
+      "These conservative allowances are planning bounds, not a measured cold-build peak or an assurance of success.",
+      "Fresh f_bavail is required before root creation and before/after every preparation command.",
+      "No deletion of any existing host data/cache, no source selection reduction and no budget lowering is allowed.",
+      "The existing B foundation 22,000,000,000-byte conditional gate and 8,000,000,000-byte per-command reserve remain; they are not used as cold-bootstrap sufficiency proof."
+    ]
+  },
+  "source": {
+    "repo": "https://github.com/TrillionniumFoundation/hepta-private-ci.git",
+    "commit": "20fd174ded4e5ce01bda34e4f6d1d74803301f49",
+    "tree": "4a3374e22e16ce5c764288ad018cd9affadf94ea",
+    "published_head": "0e139b599f0fe451f80fb7db4b2913bb9c679dce",
+    "published_complete_tree": "091e659e0da6602299fd14cfa93889191405edd8",
+    "published_branch": "refs/heads/fix/r3-original-product-contracts-20261104",
+    "lsremote_returned_both_branch_and_pr_head_exact": true,
+    "exact_commit_fetch_not_yet_executed": true,
+    "commands": [
+      [
+        "git",
+        "init",
+        "--initial-branch=b16-bootstrap",
+        "<owned-source>"
+      ],
+      [
+        "git",
+        "-C",
+        "<owned-source>",
+        "fetch",
+        "--no-tags",
+        "--depth=1",
+        "https://github.com/TrillionniumFoundation/hepta-private-ci.git",
+        "20fd174ded4e5ce01bda34e4f6d1d74803301f49"
+      ],
+      [
+        "git",
+        "-C",
+        "<owned-source>",
+        "checkout",
+        "--detach",
+        "20fd174ded4e5ce01bda34e4f6d1d74803301f49"
+      ],
+      [
+        "git",
+        "-C",
+        "<owned-source>",
+        "rev-parse",
+        "HEAD",
+        "HEAD^{tree}"
+      ]
+    ],
+    "limits": [
+      "Use only host-existing normal noninteractive Git credential machinery; no credential contents are read, copied or printed.",
+      "If the exact fetch fails, keep the error and stop; no automatic alternative URL, credential route or source substitution.",
+      "New ordinary HEAD is 20fd and new ordinary index bytes are observed, not copied from ROG cabc/c41.",
+      "The 091e publication tree includes reports; never relabel it as the code tree 4a.",
+      "No source, Cargo.lock, MODULE lock, recipe or test budget is edited in preparation."
+    ]
+  },
+  "fixed_recipe_sources": [
+    {
+      "path": "AGENTS.md",
+      "blob": "a22ff3bee70261f6061d598c31f0016e785a7a3c"
+    },
+    {
+      "path": "codex-rs/rust-toolchain.toml",
+      "blob": "910c65114ec128a8317ee8257428451f3cd28230"
+    },
+    {
+      "path": "codex-rs/.cargo/config.toml",
+      "blob": "8a6f2c11ee7afbb11f7033ef3390fb1c57b4cd44"
+    },
+    {
+      "path": "justfile",
+      "blob": "a215a76cf407ace9715bca39c20497014e7dd4dc"
+    },
+    {
+      "path": "scripts/run-nextest.py",
+      "blob": "1ed63abe84267b320cbfb0123a70aac5507f4595"
+    }
+  ],
+  "bootstrap_stages": [
+    {
+      "id": "P0",
+      "kind": "read_only_checks_before_writes",
+      "actions": [
+        "Recheck user/home/architecture, new root absent and fresh 200 GB available.",
+        "Probe only fixed required native tools (cc,c++,ar,ld,make,cmake,pkg-config,perl,python3 and bounded libclang locations); save paths/versions or exact absence.",
+        "If a required C/build dependency is absent, stop with its evidence before compilation and submit an official task-private prerequisite plan; do not change the system or use sudo."
+      ]
+    },
+    {
+      "id": "P1",
+      "kind": "source_and_owned_directories_only",
+      "actions": [
+        "Create only the previously absent root with mode0700 and listed owned children.",
+        "Execute the fixed Git init/fetch/checkout and verify whole code tree4a, exact Cargo/MODULE lock hashes, unchanged recipe blobs and empty untracked-build-input list.",
+        "Record the new ordinary index full bytes, logical stage roster and HEAD; preserve them throughout subsequent preparation."
+      ]
+    },
+    {
+      "id": "P2",
+      "kind": "official_task_private_tools_only",
+      "rustup_program": "/home/qq/.cargo/bin/rustup",
+      "rustup_program_observed_sha256": "5be191e8c70a5007074254cb74d78dbfdd25cd5a61c27de7b8e5410122ec24f4",
+      "rustup_command": [
+        "/home/qq/.cargo/bin/rustup",
+        "toolchain",
+        "install",
+        "1.95.0",
+        "--profile",
+        "minimal",
+        "--component",
+        "clippy",
+        "--component",
+        "rustfmt",
+        "--component",
+        "rust-src",
+        "--no-self-update"
+      ],
+      "rustup_scope": "Set task-only RUSTUP_HOME and CARGO_HOME; do not change user default/override or install into user/system paths.",
+      "fixed_tools": [
+        {
+          "name": "just",
+          "version": "1.51.0",
+          "official_release": "https://github.com/casey/just/releases/tag/1.51.0",
+          "candidate_asset": "just-1.51.0-x86_64-unknown-linux-musl.tar.gz",
+          "expected_installed_sha256_from_frozen_tool_contract": "4f864ee6df9b9f351c8b5f95bc9fe589c92080237c2a87c048218a635c3604f7"
+        },
+        {
+          "name": "cargo-nextest",
+          "version": "0.9.103",
+          "official_release": "https://github.com/nextest-rs/nextest/releases/tag/cargo-nextest-0.9.103",
+          "candidate_asset": "cargo-nextest-0.9.103-x86_64-unknown-linux-gnu.tar.gz",
+          "expected_installed_sha256_from_frozen_tool_contract": "e999c122a02c3fe74a1b66d254b6419a8a665e8bf540b1d31de7933a6d3753f1"
+        },
+        {
+          "name": "bazel",
+          "version": "9.3.0",
+          "official_url": "https://github.com/bazelbuild/bazel/releases/download/9.3.0/bazel-9.3.0-linux-x86_64",
+          "checksum_url": "https://github.com/bazelbuild/bazel/releases/download/9.3.0/bazel-9.3.0-linux-x86_64.sha256",
+          "bytes": 77023347,
+          "sha256": "d302d22ed77ee5658b87857249baa579db84300ecebe0a1e9a357b5b20f80eb8"
+        }
+      ],
+      "download_rules": [
+        "Validate official release/tag/asset identity and checksum/digest where published; preserve original metadata and download logs.",
+        "Only extract explicitly allowlisted binary members, reject traversal/symlink/archive surprises.",
+        "Verify actual installed bytes/version on ai395. Expected hashes are supply pins, not imported execution qualification.",
+        "If an asset name/hash differs, preserve the actual failure and stop for source/asset review; do not silently build a different tool or change pins.",
+        "Bazel installation does not authorize any Bazel build or lock command in this foundation preparation."
+      ]
+    },
+    {
+      "id": "P3",
+      "kind": "exact_build_prerequisites",
+      "actions": [
+        "Read the exact acquired source build manifests and Cargo.lock; keep locked graph and platform unchanged.",
+        "Prepare required v8 150.4.0 ptrcomp+sandbox x86_64 GNU archive and matching source binding from denoland/rusty_v8 official v150.4.0 release, record asset metadata/download hashes on this host.",
+        "Use own task DOTSLASH/RUSTY_V8 paths, no ROG binary/cache transfer and no source patch.",
+        "Any additional protobuf/clang prerequisite must come from the source's original mechanism or an independently approved official task-private install; do not substitute fake tools."
+      ]
+    },
+    {
+      "id": "P4",
+      "kind": "build_only_new_host_A_baseline",
+      "commands": [
+        [
+          "cargo",
+          "build",
+          "--locked",
+          "--profile",
+          "dev-small",
+          "--message-format=json-render-diagnostics",
+          "-p",
+          "codex-arg0",
+          "--bin",
+          "test_arg0_preflight",
+          "-p",
+          "codex-code-mode-host",
+          "--bin",
+          "codex-code-mode-host",
+          "-p",
+          "codex-shell-escalation",
+          "--bin",
+          "codex-execve-wrapper",
+          "-p",
+          "codex-rmcp-client",
+          "--bin",
+          "test_stdio_server",
+          "--bin",
+          "test_streamable_http_server",
+          "-p",
+          "codex-exec",
+          "--bin",
+          "codex-exec"
+        ],
+        [
+          "cargo",
+          "metadata",
+          "--locked",
+          "--format-version=1"
+        ],
+        [
+          "cargo",
+          "nextest",
+          "list",
+          "--locked",
+          "--cargo-profile",
+          "dev-small",
+          "--message-format=json"
+        ]
+      ],
+      "no_test_execution": true,
+      "guards": [
+        "Each command source/index/lock/tool/recipe guard before and after; full raw stderr/stdout/status persisted.",
+        "Normal six helper compiler-artifact rows and features/fresh flags actual; then rehash the outputs after catalog feature unification.",
+        "Normal full metadata has no -p or --no-deps/default-members narrowing; independently check 193 workspace members and 1501 resolved nodes, normalized portable graph against frozen A.",
+        "Full unfiltered catalog binds eligible/ignored exact names, all 363 program roles and 33 helper roles; any difference stops for review, not silently adjusted.",
+        "Actual baseline source is 4a and role is BUILD_ONLY; it is never labeled last-tested A, PASS, or ROG artifact identity.",
+        "No A Rust tests, B source patch, B test, fix, fmt or dependency generation during this preparation."
+      ]
+    }
+  ],
+  "environment_contract": {
+    "prepend_actual_private_tools_to_ai395_inherited_PATH": true,
+    "do_not_copy_rog_PATH": true,
+    "CARGO_TARGET_DIR": "<owned-target>",
+    "CARGO_HOME": "<owned-cargo-home>",
+    "RUSTUP_HOME": "<owned-rustup-home>",
+    "RUSTUP_TOOLCHAIN": "1.95.0",
+    "CARGO_INCREMENTAL": "0",
+    "CARGO_BUILD_JOBS": "4",
+    "CARGO_NET_GIT_FETCH_WITH_CLI": "true",
+    "PYTHONDONTWRITEBYTECODE": "1",
+    "NEXTEST_PROFILE": "local",
+    "GIT_TERMINAL_PROMPT": "0",
+    "GCM_INTERACTIVE": "never",
+    "DOTSLASH_CACHE": "<owned-tools>/dotslash-cache",
+    "RUSTY_V8_ARCHIVE": "<owned-tools>/rusty-v8/librusty_v8_ptrcomp_sandbox_release_x86_64-unknown-linux-gnu.a.gz",
+    "RUSTY_V8_SRC_BINDING_PATH": "<owned-tools>/rusty-v8/src_binding_ptrcomp_sandbox_release_x86_64-unknown-linux-gnu.rs",
+    "CODEX_SANDBOX_variables": "unchanged; no suppression or new test skip"
+  },
+  "b16_binding_issue": {
+    "frozen_runtime": "V5",
+    "found": true,
+    "locations": [
+      "b16_guard.py target_reuse_mode/last_tested_A_artifacts prerequisites",
+      "b16_capacity.py cache_and_capacity",
+      "b16_family.py last-tested artifact and family binding"
+    ],
+    "reason": "V5 currently requires the historical tested artifact paths to lie under the target. ROG's immutable fb9 artifact receipt cannot become an ai395 cache receipt by path substitution.",
+    "required_next_review": "Keep historical A test provenance untouched. Add a narrow explicit source-bound BUILD_ONLY bootstrap artifact input for the new target, with exact source/metadata/catalog/helper identities and the full-family checks; never manufacture A test qualification. Root/architecture review the minimal harness/binding delta before B is enabled.",
+    "unchanged": [
+      "Frozen B source payloads",
+      "All scopes and case names",
+      "Original oracles and causal failure requirements",
+      "0 retry and original nextest budgets",
+      "Exact guarded finally restoration",
+      "No later B epoch enablement"
+    ]
+  },
+  "stop_after_preparation": "Freeze complete receipts and newhost source/index/locks/tool/metadata/catalog/helper identities. Submit the bound foundation candidate to root. Do not launch B until exact enabled execution guard."
+}

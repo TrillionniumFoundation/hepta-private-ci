@@ -1,0 +1,149 @@
+{
+  "schema": "hepta-b16-foundation-v4-root-execution-guard-v1",
+  "decision": "AUTHORIZE_ONE_CONDITIONAL_FOUNDATION_ATTEMPT",
+  "decided_at_utc": "2026-11-05T06:04:16.958452+00:00",
+  "authorization_basis": "User requested audit and actual closure work; parent root authorizes the reviewed implementation and original validation in the existing isolated native lane. No new user confirmation is required.",
+  "host": "rog",
+  "sole_native_writer": "ci_audit",
+  "authorized_epoch": "foundation",
+  "candidate_binding": {
+    "bytes": 11508,
+    "sha256": "2392ae238b89d02f850c8d69421f68771cfd7dd6c344138904bb03b2d7e391d8",
+    "blob": "f1391cec4255774c10ab8f561d50cf3bf78b983a"
+  },
+  "candidate_request": {
+    "bytes": 539701,
+    "sha256": "f5d585e39953b231966e1258d337def5f2a46782a0cb4207d37c36b39cc2a4a9",
+    "blob": "aed9f3f052e85695450e5bba15826fa486985774"
+  },
+  "candidate_manifest": {
+    "bytes": 18331,
+    "sha256": "10a22ae29877b4a716a08f3806873e5fcd0217d69d6e418d934d79025055a777",
+    "blob": "91378ec9ecb978524e2bea09c84cf9ae9a3bee7e"
+  },
+  "launcher": {
+    "bytes": 6114,
+    "sha256": "f2e00423ebf2e2be9074018a158d278feea598d9ffadff6d8b5323447d00290a",
+    "blob": "e7cb2147d0d2a2173897aa03cff6612136a791cf"
+  },
+  "complete_payload_verification": {
+    "path": "/workspace/scratch/07dd58cc9630/hepta-audit-fourth/inputs/b16-foundation-v4-root-payload-verification.json",
+    "bytes": 7239,
+    "sha256": "225cbc32b9371289aee420c8da92466635b3636d39b6bb07611970fe795afead",
+    "blob": "a03a9adf9cf907f0f49e558253ebc9eadf1eb8fb",
+    "Git_object_created_and_GET_verified": true
+  },
+  "actual_readonly_preflight_root_review": "c68debe42efd3707014bd5632b3f235d9ee01160",
+  "last_tested_to_final_source_review": "40bd8b7030931cae6573ec126f4afc13a1140d33",
+  "published_A_head": "0e139b599f0fe451f80fb7db4b2913bb9c679dce",
+  "published_complete_tree": "091e659e0da6602299fd14cfa93889191405edd8",
+  "native_initial_tree": "4a3374e22e16ce5c764288ad018cd9affadf94ea",
+  "source_commit": "20fd174ded4e5ce01bda34e4f6d1d74803301f49",
+  "last_full_test_tree": "fb9e131272f7e7a138d6c0d1af2b048b9a6ab7ff",
+  "ordinary_head": "cabcb40d36e116beaa65750e1f674c52035da785",
+  "ordinary_index": {
+    "bytes": 1222758,
+    "sha256": "c41b4d7645b2b88431ed024e9cc683e31d43fafe7290280eaf0bae656fd6a922"
+  },
+  "locks": {
+    "codex-rs/Cargo.lock": {
+      "bytes": 413768,
+      "sha256": "4a7a5535cf045089458468411e126b5f59bc6bbf34fc0deead9b0c1b8d84000a"
+    },
+    "MODULE.bazel.lock": {
+      "bytes": 1738619,
+      "sha256": "11f8a421224b9b05f32c4c14054e8868083d989fc497310c8d51e1156f189ca3"
+    }
+  },
+  "frozen_install_map": {
+    "bytes": 20837,
+    "sha256": "0beec96fd84e032b06d1e67f80794df4e1e74192f56e8b6a74d9f7231e043d2d",
+    "blob": "c39295921f8c55e0bead7fbe4e295e7d3eef7d9c"
+  },
+  "runtime_integrity_sha256": "3f6dbe96e4035b94d8ed0abccd047b58efe7f6fe8d06a75af7d09dd788d3fc04",
+  "payload_sha256": "a34cd6c5400deff4fedfffcb1f4f170eecabbb6bbfab1916829ab3911e986237",
+  "family_sha256": "5f63fcb507e899cc19df88e86efe997a34929edd5f45c83e7f7197987149a204",
+  "install_compressed": {
+    "bytes": 395337,
+    "sha256": "a767514dce19ea19ad0363d0c80c1d9e5844984d45a99ac9f0af21d429039165",
+    "blob": "9cf19cbc420a0a0972c88c93749695cc027e3d08"
+  },
+  "install_uncompressed": {
+    "bytes": 1952127,
+    "sha256": "edede0c2b4dc847b98313ff7676b01ce1973b1a247b6109ece5bfbdab334e750",
+    "blob": "99c784c52fec7ba93117b895ebc275bd25981a27"
+  },
+  "runtime_files": 25,
+  "source_objects": 112,
+  "foundation_scopes": 10,
+  "positive_distinct_cases": 24,
+  "positive_executions": 27,
+  "negative_executions": 10,
+  "permitted_binding_changes": [
+    {
+      "field": "execute",
+      "from": false,
+      "to": true
+    },
+    {
+      "field": "approval_reference",
+      "from": null,
+      "to": "The Git blob SHA of this exact root execution guard."
+    },
+    {
+      "field": "last_tested_A_to_final_A_review",
+      "from": "c68debe42efd3707014bd5632b3f235d9ee01160",
+      "to": "40bd8b7030931cae6573ec126f4afc13a1140d33",
+      "reason": "The actual preflight is preserved separately; this field names the full fb9-to-4a final hygiene/source relation review."
+    }
+  ],
+  "permitted_request_changes": [
+    "Replace request.binding with exactly the three-field-enabled binding.",
+    "Set request.root_execution_guard to the Git blob SHA of this exact guard."
+  ],
+  "all_other_candidate_bytes_semantics_unchanged": true,
+  "native_idempotency_key": "hepta-rog-b16-foundation-v4-20261105-v1",
+  "native_outer_timeout_seconds": 21600,
+  "owned_epoch_root": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/b16-foundation-v4-20261105-v1",
+  "actual_runtime_argv": [
+    "/usr/bin/python3",
+    "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/b16-foundation-v4-20261105-v1/runtime/b16_runner.py",
+    "--binding",
+    "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/b16-foundation-v4-20261105-v1/binding.json",
+    "--epoch",
+    "foundation"
+  ],
+  "capacity": {
+    "fresh_launch_min_bytes": 22000000000,
+    "before_after_command_min_bytes": 8000000000,
+    "cargo_growth_allowance_bytes": 12000000000,
+    "evidence_growth_allowance_bytes": 2000000000,
+    "measured_peak_guarantee": false,
+    "lower_budget_or_delete_cache_authorized": false
+  },
+  "independent_final_review": {
+    "reviewer": "architecture_audit",
+    "verdict": "STATIC_ACCEPT_FOR_ROOT_ENABLED_FOUNDATION_ATTEMPT",
+    "basis": "Full candidate and launcher read, complete compressed request independently decoded, all 25 runtime/input files and 22 integrity members byte-equal; actual PATH stdout/hex, tools, recipes, index and locks verified. Only the source-review pointer correction was required.",
+    "native_commands_executed_by_reviewer": false
+  },
+  "execution_requirements": [
+    "Launch only this one foundation epoch after exact enabled-payload hash verification.",
+    "Launcher fresh free >=22,000,000,000 bytes, then frozen runtime repeats the same conditional capacity gate before source mutation.",
+    "Keep 8,000,000,000 byte pre/post-command reserve, original no-retry commands and physical negative oracles.",
+    "Keep every original failure, skip, early return and exact restoration receipt; an unexpected failure stops the epoch.",
+    "After terminal, report actual source, ordinary index, locks, complete original statuses and raw/JUnit evidence before any later epoch."
+  ],
+  "capacity_limit": "The 12GB Cargo growth allowance is an explicit conditional estimate, not a measured compiler/linker peak guarantee. The prior 23,521,247,232 byte observation is not a future launch read.",
+  "other_epochs_authorized": false,
+  "cache_deletion_or_budget_lowering_authorized": false,
+  "host_security_policy_changes_authorized": false,
+  "CI_retry_cancel_dispatch_authorized": false,
+  "merge_release_or_runtime_activation_authorized": false,
+  "qualification_limits": [
+    "This authorization does not itself qualify any native case.",
+    "B16 internal phase IDs do not close original B01-B23 ledger entries.",
+    "The fb9 full result remains 16 FAIL and 25 observed early returns; no test is relabeled as final 4a or complete published 091e qualification.",
+    "B16 normal Root/Session/UI caller and real external acceptance remain open."
+  ]
+}

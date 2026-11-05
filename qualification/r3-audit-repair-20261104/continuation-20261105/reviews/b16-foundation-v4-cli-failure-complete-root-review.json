@@ -1,0 +1,123 @@
+{
+  "schema": "hepta-b16-foundation-v4-cli-failure-complete-root-review-v1",
+  "job": "1a1aa50a87d-fc05-40d6",
+  "verdict": "HARNESS_CLI_FAILURE_BEFORE_ANY_TEST_CASE",
+  "complete_original_count": 53,
+  "complete_original_bytes": 20487123,
+  "complete_archive_manifest": {
+    "path": "/workspace/scratch/07dd58cc9630/ci-audit/recovered-20261105/b16-foundation-v4-harness-failure-v1/complete-local-archive-manifest.json",
+    "bytes": 30731,
+    "sha256": "e92a8a27d620031103dc6d8ee9a42e7942ce8f0da04e76004715872f12153255",
+    "blob": "f92de354f615b9ac8c936f518fe7383878156acd"
+  },
+  "original_native_export_index": {
+    "bytes": 26853,
+    "sha256": "aedda394183644a0a16a4b9bf1d12099b6d7ced110e20c0d63d1979801effa8b",
+    "blob": "b20390c856d8dacac9a092be964faa4e7d32040a"
+  },
+  "all_53_raw_bytes_SHA256_Git_hashes_and_native_index_pairs_equal": true,
+  "metadata_reconstruction": [
+    {
+      "native_path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/b16-foundation-v4-20261105-v1/run/B01_R2c_V3-metadata.log",
+      "path": "/workspace/scratch/07dd58cc9630/ci-audit/recovered-20261105/b16-foundation-v4-harness-failure-v1/decoded-complete-v1/B01_R2c_V3-metadata.log",
+      "bytes": 8163699,
+      "sha256": "3a53323eae920e2e53dcb3e334128a4aff63cfb51840793e9150d617d2c9ba18",
+      "blob": "3d2f7bfbd5fb2fc0fd219045444327e929820fdd",
+      "content_reconstruction": "deduplicated identical raw bytes from independently verified 4a preflight, matched to this attempt native complete index full SHA256 and current command/source binding; these redundant compressed chunks were not fetched again"
+    },
+    {
+      "native_path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/b16-foundation-v4-20261105-v1/run/epoch-entry-metadata.log",
+      "path": "/workspace/scratch/07dd58cc9630/ci-audit/recovered-20261105/b16-foundation-v4-harness-failure-v1/decoded-complete-v1/epoch-entry-metadata.log",
+      "bytes": 8163699,
+      "sha256": "3a53323eae920e2e53dcb3e334128a4aff63cfb51840793e9150d617d2c9ba18",
+      "blob": "3d2f7bfbd5fb2fc0fd219045444327e929820fdd",
+      "content_reconstruction": "deduplicated identical raw bytes from independently verified 4a preflight, matched to this attempt native complete index full SHA256 and current command/source binding; these redundant compressed chunks were not fetched again"
+    }
+  ],
+  "metadata_limit": "Both metadata commands were actually run in this attempt. The exact byte-identical body is reused from the already independently verified preflight copy; native original index hashes and new source/command receipts remain distinct. No old execution receipt is relabeled.",
+  "whole_source_guards_verified": 18,
+  "source_trees": [
+    "4a3374e22e16ce5c764288ad018cd9affadf94ea",
+    "87e44120dc46e4751b74fb167269a6d85448ff4f"
+  ],
+  "all_ordinary_HEAD_index_dual_locks_preserved": true,
+  "terminal": {
+    "bytes": 2616131,
+    "sha256": "708b8d8fafb8052656c002d6f56e269d04e934ae5366a88aea5beb28ee354a8d",
+    "blob": "3e315b50d7f006612d57029f22d815e838c7552e"
+  },
+  "final_guard": {
+    "bytes": 931,
+    "sha256": "b943b9f79827fe5de3af1e1601e31c5c3c315b8399da467cf0f7793838f3c237",
+    "blob": "b287915f004efbe1ac43772b5e90bd2ccf9889a8"
+  },
+  "selected_case_count": 4,
+  "selected_case_names": [
+    "sqlite::commit_gate_tests::cancelled_checkout_does_not_release_uncoordinated_connection",
+    "sqlite::commit_gate_tests::checkout_callback_blocks_initial_connect_and_reused_connection",
+    "sqlite::commit_gate_tests::commit_gate_covers_pool_growth_and_replacement",
+    "sqlite::commit_gate_tests::commit_gate_rejects_explicit_transaction_after_revocation"
+  ],
+  "selected_cases_executed": 0,
+  "new_JUnit": false,
+  "complete_helpers_after_catalog": 33,
+  "actual_commands": [
+    {
+      "name": "rustc-version",
+      "source": "4a3374e22e16ce5c764288ad018cd9affadf94ea",
+      "exit_code": 0,
+      "duration_seconds": 0.008416722004767507
+    },
+    {
+      "name": "bazel-version",
+      "source": "4a3374e22e16ce5c764288ad018cd9affadf94ea",
+      "exit_code": 0,
+      "duration_seconds": 0.0020996940147597343
+    },
+    {
+      "name": "epoch-entry-metadata",
+      "source": "4a3374e22e16ce5c764288ad018cd9affadf94ea",
+      "exit_code": 0,
+      "duration_seconds": 0.5650894959981088
+    },
+    {
+      "name": "B01_R2c_V3-normal-helpers",
+      "source": "87e44120dc46e4751b74fb167269a6d85448ff4f",
+      "exit_code": 0,
+      "duration_seconds": 67.94296933701844
+    },
+    {
+      "name": "B01_R2c_V3-metadata",
+      "source": "87e44120dc46e4751b74fb167269a6d85448ff4f",
+      "exit_code": 0,
+      "duration_seconds": 0.5586657389940228
+    },
+    {
+      "name": "B01_R2c_V3-catalog",
+      "source": "87e44120dc46e4751b74fb167269a6d85448ff4f",
+      "exit_code": 0,
+      "duration_seconds": 299.6398017379979
+    },
+    {
+      "name": "B01_R2c_V3",
+      "source": "87e44120dc46e4751b74fb167269a6d85448ff4f",
+      "exit_code": 2,
+      "duration_seconds": 0.16915930199320428
+    }
+  ],
+  "original_error_log": {
+    "identity": {
+      "bytes": 320,
+      "sha256": "94a13165531f92b7446617855d826f81a1ff10b66d20dc1bb23864376425480c",
+      "blob": "6ff3c6c96243f4ab085cee28dbfe180e9db96938"
+    },
+    "text": "RUST_MIN_STACK=8388608 NEXTEST_PROFILE=local python3 ../scripts/run-nextest.py \"$@\"\nerror: the argument '--no-fail-fast' cannot be used multiple times\n\nUsage: cargo nextest run [OPTIONS] [FILTERS]... [-- <FILTERS_AND_ARGS>...]\n\nFor more information, try '--help'.\nerror: recipe `test` failed on line 89 with exit code 2\n"
+  },
+  "native_error": "fresh JUnit missing after recipe exit2",
+  "controller_exit": 1,
+  "controller_timeout": false,
+  "automatic_retry": false,
+  "product_test_failure_claimed": false,
+  "negative_control_claimed_valid": false,
+  "next_action": "Guarded two-owned-path restore87e to4a; separately authorize frozen V5 single redundant argument removal and new-key attempt2 with zero test retries."
+}

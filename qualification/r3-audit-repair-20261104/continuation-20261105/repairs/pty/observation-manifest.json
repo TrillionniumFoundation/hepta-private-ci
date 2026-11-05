@@ -1,0 +1,175 @@
+{
+  "schema": "hepta-intel-pty-drain-test-observation-candidate-v2",
+  "created_utc": "2026-11-05T07:27:35.693800+00:00",
+  "status": "SOURCE_ONLY_DIAGNOSTIC_NOT_A_PRODUCT_FIX",
+  "base_head": "0e139b599f0fe451f80fb7db4b2913bb9c679dce",
+  "actual_original_merge": "e93aefbbb33438f6ec67e995adcfe88657158487",
+  "actual_original_tree": "091e659e0da6602299fd14cfa93889191405edd8",
+  "original_evidence_review_blob": "e32e542f79e64262b3cb9d02fb0c061881919376",
+  "original_case": "tests::pty_dropped_output_receiver_keeps_draining_child",
+  "original_job": 127089468985,
+  "original_case_result": "FAIL before later job cancellation",
+  "original_target_result": {
+    "tests": 31,
+    "passed": 30,
+    "failed": 1,
+    "ignored": 0,
+    "filtered_out": 0
+  },
+  "patch": {
+    "path": "observation-candidate.patch",
+    "bytes": 13629,
+    "sha256": "faa72ec5fbbe3e5ea4bf96a0c940a4a484f229c0b72607d18e306087bef0f175",
+    "git_blob": "b2e84915c362505e02a05de9554b3b78c39f51bd"
+  },
+  "sources": [
+    {
+      "path": "codex-rs/utils/pty/src/process.rs",
+      "pre_blob": "5593450b89d0578d59f3ab74cb5cfcf625c908f6",
+      "post_blob": "f0e9ccde6829f0d0fb6bd59e154360018856b7fc",
+      "post_bytes": 16183,
+      "post_sha256": "76d73b0f279e57dce8736fe282cb0f114b0699ac4eb3914350c272325c7b7bc0",
+      "mode": "100644"
+    },
+    {
+      "path": "codex-rs/utils/pty/src/pty.rs",
+      "pre_blob": "1b848b33b716e952d4c96202e763faabd1692cb3",
+      "post_blob": "e2e294464a2db6b65370afd98b7d49250ddaae2f",
+      "post_bytes": 17992,
+      "post_sha256": "226be8a400d404229973289bdb55320334c43500ddeeb1da230d16e9f95d60c6",
+      "mode": "100644"
+    },
+    {
+      "path": "codex-rs/utils/pty/src/tests.rs",
+      "pre_blob": "42fc028d6e710dab9f9390ad7ee1b711ba1927d6",
+      "post_blob": "25836a08f9ff9a90b14204059d2544749a0f5461",
+      "post_bytes": 63583,
+      "post_sha256": "c8bdfdad51c9f7ab5cddf3bc43c392e4eed2bb4e3516d037a4c78d19ac1c32d9",
+      "mode": "100644"
+    },
+    {
+      "path": "codex-rs/utils/pty/src/unix_io.rs",
+      "pre_blob": "9cb344021e40e43c7b3a6c3d76189d6b69508e37",
+      "post_blob": "67168dab510c9fd400a1cbcf4b4a6bb905b73c59",
+      "post_bytes": 6097,
+      "post_sha256": "b856364355d0e5e7091c8b40ffc686a665c798b9842965f72d0b29aa4740c7d9",
+      "mode": "100644"
+    },
+    {
+      "path": "codex-rs/utils/pty/src/unix_io_diagnostics.rs",
+      "pre_blob": null,
+      "post_blob": "393cceaa6544e3de4f4ca41579bc48ebf95582fd",
+      "post_bytes": 5388,
+      "post_sha256": "665835d66426f934102214be08219e7d5b71f89607bf5f5a928729ff79d734ed",
+      "mode": "100644"
+    }
+  ],
+  "diff_lines": {
+    "added": 241,
+    "removed": 4
+  },
+  "static_verification": {
+    "path": "observation-static-verification.json",
+    "bytes": 2232,
+    "sha256": "37c1e32610dafa6b27c5f42bf24978cd88fcbd69cc6fd459e4ef14ea462cdbb8",
+    "git_blob": "41d2ce7429377c7707194b00e9469c2ffee6d2ba"
+  },
+  "mechanism": {
+    "observer_cfg": "Entire new module is under cfg(test) in the Unix-only module. ProcessHandle attachment and snapshot methods are cfg(all(test, unix)).",
+    "statistics": [
+      "actual read closure calls",
+      "successful bytes read",
+      "bytes whose existing channel send returned error",
+      "last read result including zero-byte EOF, successful count, raw errno or error without OS errno",
+      "terminal read-loop error, distinct from an earlier transient WouldBlock",
+      "not_started/waiting_for_read/in_read/sending/eof/read_error state",
+      "existing reader/writer/waiter JoinHandle.is_finished observations"
+    ],
+    "descriptor_queries": "F_GETFL and FIONREAD only. No read, poll wait, write, termios update, readiness clear, duplication, or descriptor close.",
+    "association": "Each existing PtyIo creates its own observer. The reader and ProcessHandle share only Arc<observer>; observer stores Weak<AsyncFd<File>>, never a cached raw integer fd or long-lived strong fd reference.",
+    "snapshot_lifetime": "Weak upgrade temporarily pins the same already-owned AsyncFd during two non-consuming syscalls. The temporary Arc is dropped at the end of that match arm; no descriptor is retained by the returned String or observer. If upgrade fails, descriptor_released is reported.",
+    "timing": "The only print is immediately after the original timeout result and existing exit-state print, before the existing side-channel read/terminate block. It cannot change the already-returned timeout result. The sample is after that decision, not an atomic historical snapshot at the deadline.",
+    "errors": "F_GETFL/FIONREAD errors retain their raw errno as Err rather than being converted to zero. Task-handle poison and missing handles remain explicit.",
+    "atomic_limit": "Independent relaxed atomic samples are observations, not an atomic protocol state or admission conditions. The raw read-result tag+value itself occupies one AtomicU64. No diagnostic value drives I/O or test pass/fail.",
+    "statistics_api": "One named ReaderEvent/observe entry point; no single-call setter methods."
+  },
+  "non_test_behavior": {
+    "pty_rs": "Only cfg(all(test, unix)) attachments/getters are added; the ordinary spawn/handles/waiter/terminator path is unchanged.",
+    "process_rs": "Only cfg(all(test, unix)) observer field/init and methods are added; ordinary fields and lifecycle methods remain unchanged.",
+    "unix_io_rs": "No observer exists outside tests. The AsyncFd Arc gets an equivalent local binding; the real read result gets an equivalent local binding before return. EOF/error arms still break, Interrupted still continues, one unchanged send occurs after each positive read, the writer is untouched.",
+    "dependencies_or_locks_changed": false,
+    "windows_code_paths_changed": false
+  },
+  "throughput_source_findings": [
+    "PtyIo::new duplicates and registers AsyncFd exactly once per PTY session, before spawn tasks; the read loop does not create AsyncFd or kqueue registrations.",
+    "The read task creates one 8192-byte stack buffer outside its loop and reuses it.",
+    "Each positive read still copies a Vec and makes the original bounded mpsc send. A closed receiver produces a send error but the loop continues. This candidate neither optimizes nor bypasses that behavior.",
+    "These facts do not prove the actual Intel cause. The new per-read observation adds unit-test-only atomic operations, and may itself perturb scheduling; successful or failing future evidence must preserve that scope."
+  ],
+  "preserved": {
+    "exact_test_body_after_removing_only_four_inserted_lines": true,
+    "all_original_test_file_function_names": true,
+    "new_test_cases": 0,
+    "python_script_and_single_4_mib_write": true,
+    "python_started_and_output_write_returned_markers": true,
+    "alarm_10_seconds": true,
+    "timeout_2_seconds": true,
+    "portable_then_preserved_fds": true,
+    "drop_stdout_before_wait": true,
+    "code_zero_assert": true,
+    "existing_termination_and_cleanup_order": true,
+    "no_sleep_retry_skip_new_assertion": true
+  },
+  "bazel_registration": {
+    "crate_build": "codex-rs/utils/pty/BUILD.bazel uses codex_rust_crate(name=pty, crate_name=codex_utils_pty)",
+    "defs": {
+      "path": "research-audit/published-0e139-ci-20261105/source/defs.bzl",
+      "bytes": 34630,
+      "sha256": "f5638a9189632c8d8524a438bbfc6b365bddf7f23dfd2df06a6de3a2ff3f2cfa",
+      "git_blob": "6f588ec3057fddfea35170e28e74036162ce6a23"
+    },
+    "source_rule": "defs.bzl:319 lib_srcs = crate_srcs or native.glob([\"src/**/*.rs\"], exclude = binaries.values(), allow_empty = True)",
+    "new_module_path": "codex-rs/utils/pty/src/unix_io_diagnostics.rs",
+    "explicit_dependency_or_build_change_needed": false,
+    "not_yet_compiled": true
+  },
+  "qualification": {
+    "rust_compile": "NOT_RUN",
+    "just_fix": "NOT_RUN",
+    "just_fmt": "NOT_RUN",
+    "native_or_cross_host_tests": "NOT_RUN",
+    "fresh_hosted_intel_original_target": "PENDING_REQUIRED",
+    "configured_mac_and_main_hosts": "root observed both arm64; no native Intel inference from those hosts",
+    "original_31_roster": "must remain exactly unchanged on the original macOS Intel target",
+    "success_does_not_prove_prior_root_cause": true
+  },
+  "scope_exclusions": [
+    "No production I/O repair is claimed.",
+    "No altered read batch, new raw-mode setting, timeout extension, additional timer, retry, skip or assertion relaxation.",
+    "No native/shared worktree/ref/CI mutation was performed by the author.",
+    "The original failing log and prior collector-only history remain immutable."
+  ],
+  "version_history": {
+    "v1_frozen_directory": "observation-v1-frozen",
+    "v1_patch": {
+      "path": "observation-v1-frozen/observation-candidate.patch",
+      "bytes": 12949,
+      "sha256": "151b0020d748ebefaac4abfa27c7a69fd267d65a570bf2480b973ca271ffff3f",
+      "git_blob": "550395579de346af78fe85bbab3b130403e46209"
+    },
+    "v1_manifest": {
+      "path": "observation-v1-frozen/observation-manifest.json",
+      "bytes": 8578,
+      "sha256": "61cfe64f1ddcf1413360ad76926225e6b2ec176efdc57c9464dfc396568289bc",
+      "git_blob": "7c5b1d045d3baf3e852693686438e3724c72665d"
+    },
+    "v1_to_v2_patch": {
+      "path": "observation-v1-to-v2.patch",
+      "bytes": 7112,
+      "sha256": "88b13a431440edbd834812eb9b3501c7a1a41fcac2e88817b815fd6ca54e771d",
+      "git_blob": "34ad39b7e388fc7f07b793810d5ceff9dfba2601"
+    },
+    "reason": "independent review identified single-call small setters contrary to AGENTS; replaced with explicit ReaderEvent + one observe method, preserving observation semantics",
+    "other_three_postimages_byte_equal": true
+  }
+}
