@@ -32,10 +32,10 @@ pub(super) fn before_open() -> io::Result<()> {
     }
 }
 
-struct HookGuard;
+pub(super) struct HookGuard;
 
 impl HookGuard {
-    fn install(hook: impl FnOnce() -> io::Result<()> + 'static) -> Self {
+    pub(super) fn install(hook: impl FnOnce() -> io::Result<()> + 'static) -> Self {
         let previous = BEFORE_OPEN.with(|slot| slot.borrow_mut().replace(Box::new(hook)));
         assert!(previous.is_none(), "only one acquisition hook per thread");
         Self
@@ -66,7 +66,7 @@ fn junction(target: &Path, alias: &Path) -> io::Result<()> {
     Ok(())
 }
 
-fn private_directory_fixture(path: &Path) -> io::Result<File> {
+pub(super) fn private_directory_fixture(path: &Path) -> io::Result<File> {
     let wide = wide_path(path)?;
     with_private_security(|security| {
         if unsafe { CreateDirectoryW(wide.as_ptr(), security) } == 0 {
