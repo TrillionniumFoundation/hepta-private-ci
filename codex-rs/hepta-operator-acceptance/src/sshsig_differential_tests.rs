@@ -177,7 +177,12 @@ fn oracle(
 ) -> std::io::Result<bool> {
     let path = fixture.root.join(format!("oracle-{hash}-{label}"));
     write_private(&path, signature);
-    let mut child = Command::new("/usr/bin/ssh-keygen")
+    // Invalid signatures can make OpenSSH exit before reading stdin. Provide the
+    // complete original message before launch so rejection cannot race a pipe write.
+    let statement_path = fixture.root.join(format!("oracle-{hash}-{label}.message"));
+    write_private(&statement_path, statement);
+    let statement_file = std::fs::File::open(statement_path)?;
+    let status = Command::new("/usr/bin/ssh-keygen")
         .args(["-Y", "verify", "-f"])
         .arg(&fixture.allowed_signers)
         .args(["-I", principal, "-n", SSHSIG_NAMESPACE, "-s"])
@@ -185,16 +190,11 @@ fn oracle(
         .env_clear()
         .env("LANG", "C")
         .env("LC_ALL", "C")
-        .stdin(Stdio::piped())
+        .stdin(Stdio::from(statement_file))
         .stdout(Stdio::null())
         .stderr(Stdio::null())
-        .spawn()?;
-    child
-        .stdin
-        .take()
-        .ok_or_else(|| std::io::Error::other("original OpenSSH stdin"))?
-        .write_all(statement)?;
-    Ok(child.wait()?.success())
+        .status()?;
+    Ok(status.success())
 }
 
 fn packet(signature: &[u8]) -> std::io::Result<Vec<u8>> {
