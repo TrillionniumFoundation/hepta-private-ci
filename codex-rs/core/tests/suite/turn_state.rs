@@ -338,8 +338,6 @@ async fn websocket_turn_state_is_stable_within_turn() -> Result<()> {
 
 #[tokio::test(flavor = "multi_thread", worker_threads = 2)]
 async fn websocket_turn_state_survives_permission_change_by_reconnecting() -> Result<()> {
-    skip_if_no_network!(Ok(()));
-
     let mut responses = websocket_turn_state_responses().into_iter();
     let prewarm_response = responses.next().expect("prewarm response");
     let server = start_concurrent_websocket_server(vec![
