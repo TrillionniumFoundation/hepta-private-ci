@@ -1,0 +1,38 @@
+{
+  "formatted_source_sha256": {
+    "stop_policy.py": "09335c72f3552f44b7998e0d57591da85fa1ec7ac98bc041fe69638132bf6655",
+    "test_stop_policy.py": "49c20ffb2f216bd51d26b9e33b64185570169bdb9271a31423686b534c7c4ac3"
+  },
+  "formatter": {
+    "ast_unchanged": true,
+    "exit_code": 0,
+    "line_length": 110,
+    "tool": "ruff 0.15.13"
+  },
+  "lint_exit_code": 0,
+  "original_repository_formatter": {
+    "command": "just fmt --base 9c6ad78bd6643185ab788b1a9a534450716747a5",
+    "exit_code": 0,
+    "scope": "No owning language group for changed experimental paths; explicit Ruff and AST checks are recorded separately."
+  },
+  "parent_source": "9c6ad78bd6643185ab788b1a9a534450716747a5",
+  "python": "3.12.14",
+  "real_task_net_gain": false,
+  "runtime_qualification": false,
+  "schema": "hepta.stop-policy-control-checks.v1",
+  "source_scope": "pure research proposal; no durable authorization, model inference, payment, adoption or chainwork",
+  "tested_source_sha256": {
+    "stop_policy.py": "464c8f53fa6035356ebadfcc06039defa6a67d3462902e44a4221f52c438e5f6",
+    "test_stop_policy.py": "f2d6bdc1dd09e11b84b17c4bb4e900590b7c1d882e2f79f9dbe57394731cd335"
+  },
+  "tests": {
+    "normal": {
+      "count": 17,
+      "exit_code": 0
+    },
+    "optimized": {
+      "count": 17,
+      "exit_code": 0
+    }
+  }
+}
