@@ -33,7 +33,7 @@ impl AuthorityFrontierStore<FinalUseFrontier> for RetainedFrontier {
         if owner_id != SIGNER_ID {
             return Err(AuthorityTrustError::Invalid);
         }
-        Ok(self.0.lock().expect("frontier lock").clone())
+        Ok(*self.0.lock().expect("frontier lock"))
     }
 
     fn compare_and_set(
@@ -49,7 +49,7 @@ impl AuthorityFrontierStore<FinalUseFrontier> for RetainedFrontier {
         if &*current != expected {
             return Err(AuthorityTrustError::Conflict);
         }
-        *current = next.clone();
+        *current = *next;
         Ok(())
     }
 }
