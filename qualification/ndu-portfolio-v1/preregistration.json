@@ -1,0 +1,48 @@
+{
+  "schema": "hepta.ndu.portfolio.validation.v1",
+  "base_source_sha": "732e934ba496d90fbe042b8d41d479ef901643e5",
+  "profile": "nested-entropic-portfolio-v1",
+  "scope": "research reference; no production artifact selection",
+  "seeds": [11, 29, 47],
+  "shared_router_training_steps": 80,
+  "shared_router_training_tasks": ["train_text_image", "train_three_branch"],
+  "heldout_tasks": ["heldout_tight_budget", "heldout_cost_shift", "heldout_three_branch"],
+  "phase_1": {
+    "dp_enumeration_absolute_tolerance": 1e-12,
+    "gradient_absolute_tolerance": 1e-7,
+    "required_budget_violations": 0,
+    "required_missing_deliveries": 0,
+    "tabular_training_steps": 120,
+    "learned_optimality_gap": "report the actual gap, including failures; do not redefine success"
+  },
+  "phase_2": {
+    "required_backend": "immutable real text and image base revisions with artifact receipts",
+    "required_evaluator": "independent, frozen, external outcome evaluator",
+    "training_calibration_test_split": "disjoint task/source groups; no test-fitted thresholds",
+    "comparison": "paired task/seed/budget/deadline/model/data identities",
+    "cost_scope": ["generation", "reasoning", "repair", "verification", "controller", "planning", "failed_calls", "independent_evaluation"],
+    "minimum_independent_test_task_groups": 100,
+    "success_rule": "paired 95% lower confidence bound for independent joint-success gain above zero; all guardrails satisfied",
+    "guardrails": {
+      "weakest_modality_quality_regression_max": 0.01,
+      "failure_tail_probability_increase_max": 0.01,
+      "missing_deliveries_max": 0,
+      "budget_violations_max": 0
+    },
+    "threshold_status": "initial pilot engineering limits; fixed before any real experiment",
+    "internal_ndu_gain_is_success": false,
+    "numerical_residual_is_generation_evidence": false
+  },
+  "phase_3": {
+    "required_parameter_groups": ["cell_adapter", "control_head", "generator_adapter"],
+    "selected_parameters_immutable_within_run": true,
+    "required_real_evidence": ["joint_quality", "proper_scoring_calibration", "diversity", "old_task_retention", "training_compute"],
+    "synthetic_adapter_training_qualifies_real_model": false
+  },
+  "phase_4": {
+    "required_invariants": ["multirate_time_units", "av_sync", "immutable_delivered_prefix", "shared_compute_once", "controller_overhead", "bounded_horizon"],
+    "required_real_evidence": ["audio_quality", "video_quality", "synchronization", "streaming_latency", "long_horizon_failure_tail"],
+    "simulator_success_qualifies_real_media": false
+  },
+  "claim_policy": "A numerical/control PASS cannot turn an unexecuted real-generation stage into PASS. If the ordinary router matches NDU at matched total cost, report no demonstrated NDU necessity."
+}
