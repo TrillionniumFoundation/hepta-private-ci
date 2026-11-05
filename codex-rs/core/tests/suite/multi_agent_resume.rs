@@ -1,3 +1,4 @@
+use anyhow::Context;
 use anyhow::Result;
 use codex_core::TurnInputRequest;
 use codex_core::config::AgentRoleConfig;
@@ -243,7 +244,10 @@ async fn cold_root_resume_restores_agent_identity_and_role_on_followup() -> Resu
     let mut initial_builder = test_codex().with_config(move |config| {
         configure_multi_agent_v2_with_role(config, &initial_model_provider_base_url);
     });
-    let initial = initial_builder.build_with_auto_env(&server).await?;
+    let initial = initial_builder
+        .build_with_auto_env(&server)
+        .await
+        .context("multi-agent resume fixture: create initial root")?;
     let root_thread_id = initial.session_configured.thread_id;
     initial
         .codex
@@ -285,7 +289,11 @@ async fn cold_root_resume_restores_agent_identity_and_role_on_followup() -> Resu
         }
         sleep(Duration::from_millis(10)).await;
     };
-    let worker_thread = initial.thread_manager.get_thread(worker_thread_id).await?;
+    let worker_thread = initial
+        .thread_manager
+        .get_thread(worker_thread_id)
+        .await
+        .context("multi-agent resume fixture: initial worker lookup")?;
     wait_for_event(worker_thread.as_ref(), |event| {
         matches!(event, EventMsg::TurnComplete(_))
     })
@@ -346,7 +354,10 @@ async fn cold_root_resume_restores_agent_identity_and_role_on_followup() -> Resu
         ]),
     )
     .await;
-    initial.submit_turn(SIBLING_PROMPT).await?;
+    initial
+        .submit_turn(SIBLING_PROMPT)
+        .await
+        .context("multi-agent resume fixture: initial sibling turn")?;
 
     let grandchild = nested_mock.last_request().expect("grandchild").body_json();
     let nested_id = &grandchild["client_metadata"]["thread_id"];
@@ -357,16 +368,36 @@ async fn cold_root_resume_restores_agent_identity_and_role_on_followup() -> Resu
         .into_iter()
         .find(|id| ![root_thread_id, worker_thread_id].contains(id) && &json!(id) != nested_id)
         .ok_or_else(|| anyhow::anyhow!("spawned sibling should be registered"))?;
-    let sibling_thread = initial.thread_manager.get_thread(sibling_thread_id).await?;
+    let sibling_thread = initial
+        .thread_manager
+        .get_thread(sibling_thread_id)
+        .await
+        .context("multi-agent resume fixture: initial sibling lookup")?;
     wait_for_event(sibling_thread.as_ref(), |event| {
         matches!(event, EventMsg::TurnComplete(_))
     })
     .await;
-    sibling_thread.flush_rollout().await?;
-    worker_thread.flush_rollout().await?;
-    initial.codex.flush_rollout().await?;
-    sibling_thread.shutdown_and_wait().await?;
-    worker_thread.shutdown_and_wait().await?;
+    sibling_thread
+        .flush_rollout()
+        .await
+        .context("multi-agent resume fixture: flush sibling rollout")?;
+    worker_thread
+        .flush_rollout()
+        .await
+        .context("multi-agent resume fixture: flush worker rollout")?;
+    initial
+        .codex
+        .flush_rollout()
+        .await
+        .context("multi-agent resume fixture: flush root rollout")?;
+    sibling_thread
+        .shutdown_and_wait()
+        .await
+        .context("multi-agent resume fixture: shut down sibling")?;
+    worker_thread
+        .shutdown_and_wait()
+        .await
+        .context("multi-agent resume fixture: shut down worker")?;
     drop(sibling_thread);
     drop(worker_thread);
 
@@ -421,7 +452,10 @@ async fn cold_root_resume_restores_agent_identity_and_role_on_followup() -> Resu
     let mut resume_builder = test_codex().with_config(move |config| {
         configure_multi_agent_v2_with_role(config, &resumed_model_provider_base_url);
     });
-    let resumed = resume_builder.restart(&server, &initial).await?;
+    let resumed = resume_builder
+        .restart(&server, &initial)
+        .await
+        .context("multi-agent resume fixture: restart cold root")?;
     drop(initial);
     assert_eq!(
         resumed.thread_manager.list_thread_ids().await,
@@ -471,7 +505,10 @@ openai_base_url = "{redirected_base_url}"
         ]),
     )
     .await;
-    resumed.submit_turn(QUEUE_PROMPT).await?;
+    resumed
+        .submit_turn(QUEUE_PROMPT)
+        .await
+        .context("multi-agent resume fixture: queue-only turn after restart")?;
 
     let reloaded_worker = resumed
         .thread_manager
@@ -483,7 +520,10 @@ openai_base_url = "{redirected_base_url}"
         resumed.codex.config().await.model_provider,
         "cold reload must preserve the parent's complete model provider",
     );
-    resumed.submit_turn(FOLLOWUP_PROMPT).await?;
+    resumed
+        .submit_turn(FOLLOWUP_PROMPT)
+        .await
+        .context("multi-agent resume fixture: worker follow-up turn")?;
     wait_for_event(reloaded_worker.as_ref(), |event| {
         matches!(event, EventMsg::TurnComplete(_))
     })
@@ -568,7 +608,10 @@ openai_base_url = "{redirected_base_url}"
     );
     assert_eq!(reloaded_worker_role_config, initial_worker_role_config);
 
-    reloaded_worker.shutdown_and_wait().await?;
+    reloaded_worker
+        .shutdown_and_wait()
+        .await
+        .context("multi-agent resume fixture: shut down reloaded worker")?;
     assert!(
         resumed
             .thread_manager
@@ -588,7 +631,10 @@ openai_base_url = "{redirected_base_url}"
         &interrupt_args,
     )
     .await;
-    resumed.submit_turn(INTERRUPT_PROMPT).await?;
+    resumed
+        .submit_turn(INTERRUPT_PROMPT)
+        .await
+        .context("multi-agent resume fixture: interrupt worker turn")?;
     assert!(
         resumed
             .thread_manager
@@ -623,7 +669,10 @@ openai_base_url = "{redirected_base_url}"
         ]),
     )
     .await;
-    resumed.submit_turn(SIBLING_FOLLOWUP_PROMPT).await?;
+    resumed
+        .submit_turn(SIBLING_FOLLOWUP_PROMPT)
+        .await
+        .context("multi-agent resume fixture: surviving sibling follow-up turn")?;
 
     let surviving_sibling = resumed
         .thread_manager
