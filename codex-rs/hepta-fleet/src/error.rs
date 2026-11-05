@@ -13,6 +13,14 @@ pub enum FleetRegistryError {
     AlreadyRegistered(AgentId),
     #[error("unknown fleet release {0}")]
     UnknownRelease(String),
+    #[error("a configured PQ release authority is required")]
+    ReleaseAuthorityRequired,
+    #[error("release authority state does not match its independent frontier")]
+    ReleaseAuthorityRollback,
+    #[error("release authority has an unresolved external update")]
+    ReleaseAuthorityRecoveryRequired,
+    #[error("release {0} is absent from the current publisher set")]
+    ReleaseNotPublished(String),
     #[error("release {release_id} is not allowed for agent {agent_id}")]
     ReleaseNotAllowed {
         agent_id: AgentId,
