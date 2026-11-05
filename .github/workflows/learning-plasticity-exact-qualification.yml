@@ -1,0 +1,202 @@
+name: Learning plasticity one-shot source closure bootstrap
+
+# Transitional bootstrap only. This workflow restores the read-only exact
+# qualification definition from its parent before publishing the candidate.
+on:
+  push:
+    branches: [feat/learning-plasticity-product-closure-20260928]
+
+permissions:
+  contents: write
+  actions: write
+
+concurrency:
+  group: learning-plasticity-source-closure-bootstrap
+  cancel-in-progress: false
+
+jobs:
+  close:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 120
+    steps:
+      - name: Check out exact bootstrap commit
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.sha }}
+          fetch-depth: 0
+          persist-credentials: true
+          clean: true
+
+      - name: Freeze and decode migration inputs
+        shell: bash
+        env:
+          SOURCE_SHA: ${{ github.sha }}
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$SOURCE_SHA"
+          test -z "$(git status --porcelain)"
+          python3 - <<'PY'
+          import base64
+          import os
+          import pathlib
+          import zlib
+
+          source = pathlib.Path('.github/learning-plasticity-closure')
+          output = pathlib.Path(os.environ['RUNNER_TEMP'])
+          for stem, target in (
+              ('source', 'close_learning_plasticity_source.py'),
+              ('binder', 'bind_learning_plasticity_metadata.py'),
+          ):
+              payload = ''.join(
+                  part.read_text(encoding='utf-8').strip()
+                  for part in sorted(source.glob(f'{stem}.z64.part*'))
+              )
+              if not payload:
+                  raise SystemExit(f'missing closure payload: {stem}')
+              (output / target).write_bytes(zlib.decompress(base64.b64decode(payload)))
+          PY
+          python3 -m py_compile \
+            "$RUNNER_TEMP/close_learning_plasticity_source.py" \
+            "$RUNNER_TEMP/bind_learning_plasticity_metadata.py"
+
+      - name: Materialize ordinary source and restore read-only qualification
+        shell: bash
+        env:
+          SOURCE_SHA: ${{ github.sha }}
+        run: |
+          set -euo pipefail
+          python3 "$RUNNER_TEMP/close_learning_plasticity_source.py"
+          rm -rf \
+            .github/learning-plasticity-closure \
+            .github/workflows/learning-plasticity-p1-apply.yml
+          git checkout "${SOURCE_SHA}^" -- \
+            .github/workflows/learning-plasticity-exact-qualification.yml
+          test -z "$(find scripts -maxdepth 1 -type f -name '.learning_plasticity*' -print -quit)"
+          cargo fmt --manifest-path codex-rs/Cargo.toml \
+            --package codex-hepta-plasticity \
+            --package codex-hepta-intelligence \
+            --package codex-hepta-agentd
+          git diff --check
+
+      - name: Compile closed source
+        shell: bash
+        working-directory: codex-rs
+        run: |
+          set -euo pipefail
+          cargo check --locked \
+            -p codex-hepta-plasticity \
+            -p codex-hepta-intelligence \
+            -p codex-hepta-agentd
+
+      - name: Test proposal, product, runtime and process closure
+        shell: bash
+        working-directory: codex-rs
+        run: |
+          set -euo pipefail
+          cargo test --locked -p codex-hepta-plasticity
+          cargo test --locked -p codex-hepta-intelligence --lib
+          cargo test --locked -p codex-hepta-agentd --lib
+          cargo test --locked -p codex-hepta-agentd --test plasticity_process_e2e
+
+      - name: Commit immutable ordinary source base
+        id: source
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add -A
+          git diff --cached --check
+          test -n "$(git diff --cached --name-only)"
+          git commit -m 'feat(plasticity): close generation-bound self-iteration source'
+          test -z "$(git status --porcelain)"
+          {
+            echo "commit=$(git rev-parse HEAD)"
+            echo "tree=$(git rev-parse HEAD^{tree})"
+          } >> "$GITHUB_OUTPUT"
+
+      - name: Bind machine metadata to immutable source base
+        shell: bash
+        env:
+          AUTHORED_SHA: ${{ steps.source.outputs.commit }}
+          AUTHORED_TREE: ${{ steps.source.outputs.tree }}
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$AUTHORED_SHA"
+          test "$(git rev-parse HEAD^{tree})" = "$AUTHORED_TREE"
+          python3 "$RUNNER_TEMP/bind_learning_plasticity_metadata.py"
+          git diff --check
+          changed="$(git diff --name-only | sort)"
+          expected="$(printf '%s\n' \
+            docs/modules/learning.plasticity/CURRENT_IMPLEMENTATION.md \
+            docs/modules/learning.plasticity/CURRENT_STATE.json \
+            docs/modules/learning.plasticity/IMPLEMENTATION_MAP.json | sort)"
+          test "$changed" = "$expected"
+
+      - name: Commit exact source/test identity closure
+        id: candidate
+        shell: bash
+        run: |
+          set -euo pipefail
+          git add \
+            docs/modules/learning.plasticity/CURRENT_IMPLEMENTATION.md \
+            docs/modules/learning.plasticity/CURRENT_STATE.json \
+            docs/modules/learning.plasticity/IMPLEMENTATION_MAP.json
+          git diff --cached --check
+          git commit -m 'fix(plasticity): bind immutable source and exact test objects'
+          test -z "$(git status --porcelain)"
+          python3 scripts/verify_learning_plasticity_map.py
+          cargo fmt --manifest-path codex-rs/Cargo.toml --check \
+            --package codex-hepta-plasticity \
+            --package codex-hepta-intelligence \
+            --package codex-hepta-agentd
+          {
+            echo "commit=$(git rev-parse HEAD)"
+            echo "tree=$(git rev-parse HEAD^{tree})"
+          } >> "$GITHUB_OUTPUT"
+
+      - name: Publish exact candidate
+        shell: bash
+        env:
+          STAGING_SHA: ${{ github.sha }}
+          TARGET_BRANCH: feat/learning-plasticity-product-closure-20260928
+        run: |
+          set -euo pipefail
+          git fetch origin "$TARGET_BRANCH"
+          test "$(git rev-parse FETCH_HEAD)" = "$STAGING_SHA"
+          git push origin "HEAD:refs/heads/$TARGET_BRANCH"
+
+      - name: Record source closure identity
+        shell: bash
+        env:
+          AUTHORED_SHA: ${{ steps.source.outputs.commit }}
+          AUTHORED_TREE: ${{ steps.source.outputs.tree }}
+          CANDIDATE_SHA: ${{ steps.candidate.outputs.commit }}
+          CANDIDATE_TREE: ${{ steps.candidate.outputs.tree }}
+        run: |
+          set -euo pipefail
+          cat > "$RUNNER_TEMP/learning-plasticity-source-closure.json" <<EOF
+          {
+            "schema": "hepta.learning-plasticity-source-closure.v1",
+            "stagingCommit": "${{ github.sha }}",
+            "authoredSourceCommit": "$AUTHORED_SHA",
+            "authoredSourceTree": "$AUTHORED_TREE",
+            "candidateCommit": "$CANDIDATE_SHA",
+            "candidateTree": "$CANDIDATE_TREE",
+            "workflowRunId": "${{ github.run_id }}",
+            "attemptId": "${{ github.run_attempt }}",
+            "productionQualified": false,
+            "targetHostEvidence": false,
+            "independentAcceptance": false,
+            "activation": false,
+            "release": false
+          }
+          EOF
+
+      - name: Upload source closure receipt
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: learning-plasticity-source-closure-${{ steps.candidate.outputs.commit }}
+          path: ${{ runner.temp }}/learning-plasticity-source-closure.json
+          if-no-files-found: error
+          retention-days: 30

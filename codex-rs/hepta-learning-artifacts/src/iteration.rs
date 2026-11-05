@@ -55,6 +55,46 @@ impl IterationEnvelopeV1 {
         }
         Ok(())
     }
+
+    /// Validate the immutable envelope at the exact admission time. An expired
+    /// envelope can never be refreshed in place; control.engineering must issue a
+    /// new envelope with a new digest.
+    pub fn validate_at(&self, now_unix_seconds: u64) -> Result<(), String> {
+        self.validate()?;
+        if now_unix_seconds > self.expiry_unix_seconds {
+            return Err("iteration envelope has expired".to_string());
+        }
+        Ok(())
+    }
+}
+
+/// Canonical content identity for one control.engineering-owned iteration
+/// envelope. The digest binds every semantic field and is suitable for durable
+/// idempotency keys; it grants no execution, selection or release authority.
+pub fn iteration_envelope_digest_v1(
+    envelope: &IterationEnvelopeV1,
+) -> Result<Digest32, String> {
+    envelope.validate()?;
+    let mut bytes = b"hepta.learning-artifacts.iteration-envelope.v1\0".to_vec();
+    let id = envelope.envelope_id.as_str().as_bytes();
+    let id_len = u32::try_from(id.len())
+        .map_err(|_| "iteration envelope id exceeds canonical encoding".to_string())?;
+    bytes.extend_from_slice(&id_len.to_be_bytes());
+    bytes.extend_from_slice(id);
+    for digest in [
+        envelope.base_commit,
+        envelope.base_tree,
+        envelope.objective_digest,
+        envelope.grammar_digest,
+    ] {
+        bytes.extend_from_slice(digest.as_array());
+    }
+    bytes.extend_from_slice(&envelope.maximum_files.to_be_bytes());
+    bytes.extend_from_slice(&envelope.maximum_diff_bytes.to_be_bytes());
+    bytes.extend_from_slice(&envelope.maximum_candidates.to_be_bytes());
+    bytes.push(envelope.maximum_parallel_sandboxes);
+    bytes.extend_from_slice(&envelope.expiry_unix_seconds.to_be_bytes());
+    Ok(Digest32::of_bytes(&bytes))
 }
 
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
@@ -192,7 +232,7 @@ mod tests {
             maximum_diff_bytes: 1024,
             maximum_candidates: 4,
             maximum_parallel_sandboxes: 2,
-            expiry_unix_seconds: 1,
+            expiry_unix_seconds: 100,
         }
     }
 
@@ -209,6 +249,57 @@ mod tests {
             state: IterationCandidateStateV1::SandboxTested,
         };
         assert!(candidate.validate(&envelope()).is_err());
+    }
+
+    #[test]
+    fn envelope_digest_binds_every_semantic_field() {
+        let original = envelope();
+        let expected = iteration_envelope_digest_v1(&original).fixture("digest");
+        let mut variants = Vec::new();
+
+        let mut value = original.clone();
+        value.envelope_id = id("envelope-2");
+        variants.push(value);
+        let mut value = original.clone();
+        value.base_commit = digest(11);
+        variants.push(value);
+        let mut value = original.clone();
+        value.base_tree = digest(12);
+        variants.push(value);
+        let mut value = original.clone();
+        value.objective_digest = digest(13);
+        variants.push(value);
+        let mut value = original.clone();
+        value.grammar_digest = digest(14);
+        variants.push(value);
+        let mut value = original.clone();
+        value.maximum_files = 11;
+        variants.push(value);
+        let mut value = original.clone();
+        value.maximum_diff_bytes = 2048;
+        variants.push(value);
+        let mut value = original.clone();
+        value.maximum_candidates = 5;
+        variants.push(value);
+        let mut value = original.clone();
+        value.maximum_parallel_sandboxes = 3;
+        variants.push(value);
+        let mut value = original;
+        value.expiry_unix_seconds = 101;
+        variants.push(value);
+
+        for changed in variants {
+            assert_ne!(
+                iteration_envelope_digest_v1(&changed).fixture("changed digest"),
+                expected
+            );
+        }
+    }
+
+    #[test]
+    fn envelope_expiry_is_checked_at_admission_time() {
+        assert!(envelope().validate_at(100).is_ok());
+        assert!(envelope().validate_at(101).is_err());
     }
 
     #[test]
