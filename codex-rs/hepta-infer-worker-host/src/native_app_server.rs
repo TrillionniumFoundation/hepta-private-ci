@@ -68,10 +68,13 @@ use codex_utils_absolute_path::AbsolutePathBuf;
 
 #[path = "native_run_control.rs"]
 mod control;
+#[path = "native_output.rs"]
+mod native_output;
 #[path = "native_recovery.rs"]
 mod recovery;
 pub use control::NativeAdmission;
 pub use control::NativeIntelligenceRunBinding;
+use native_output::AgentMessageOutput;
 use tokio::time::Instant;
 use tokio::time::timeout;
 use tokio::time::timeout_at;
@@ -666,16 +669,17 @@ impl AppServerModelDriver {
         }
         let deadline =
             Instant::now() + observation_budget_from(unix_time_ms()?, binding.intent.deadline_ms);
-        let result = self
-            .observe(
-                &mut client,
-                &mut output,
-                deadline,
-                cancellation,
-                Some(&owner),
-                &binding,
-            )
-            .await;
+        let mut messages = AgentMessageOutput::default();
+        let result = Self::observe(
+            &mut client,
+            &mut output,
+            &mut messages,
+            deadline,
+            cancellation,
+            Some(&owner),
+            &binding,
+        )
+        .await;
         if let Err(reason) = result {
             output.boundary_status = classify_observation_failure(&reason);
             output.stop_reason = Some(reason.clone());
@@ -703,16 +707,16 @@ impl AppServerModelDriver {
             // retained error still fences settlement and later admission.
             interrupt(&mut client, &output).await;
             let grace = CancellationToken::new();
-            let _ = self
-                .observe(
-                    &mut client,
-                    &mut output,
-                    Instant::now() + INTERRUPT_GRACE,
-                    &grace,
-                    /*owner*/ None,
-                    &binding,
-                )
-                .await;
+            let _ = Self::observe(
+                &mut client,
+                &mut output,
+                &mut messages,
+                Instant::now() + INTERRUPT_GRACE,
+                &grace,
+                /*owner*/ None,
+                &binding,
+            )
+            .await;
             observation_recorded?;
             cancel_recorded?;
             if !output.terminal_observed
@@ -768,9 +772,9 @@ impl AppServerModelDriver {
     }
 
     async fn observe(
-        &self,
         client: &mut RemoteAppServerClient,
         output: &mut NativeRunOutput,
+        messages: &mut AgentMessageOutput,
         deadline: Instant,
         cancellation: &CancellationToken,
         owner: Option<&AgentdClient>,
@@ -791,7 +795,8 @@ impl AppServerModelDriver {
                     .ok_or_else(|| "provider event stream ended".to_string())?,
             };
             match event.event() {
-                AppServerEvent::ServerNotification(_) => {
+                AppServerEvent::ServerNotification(notification) => {
+                    messages.observe(notification, output)?;
                     if observe_event(output, &event, binding)? {
                         return Ok(());
                     }
@@ -1189,14 +1194,6 @@ fn observe_event(
         return Ok(false);
     };
     match notification.as_ref() {
-        ServerNotification::AgentMessageDelta(delta)
-            if delta.thread_id == output.thread_id && delta.turn_id == output.turn_id =>
-        {
-            if delta.delta.len() > MAX_OUTPUT_BYTES.saturating_sub(output.output.len()) {
-                return Err("output byte limit exceeded".to_string());
-            }
-            output.output.push_str(&delta.delta);
-        }
         ServerNotification::ThreadTokenUsageUpdated(usage)
             if usage.thread_id == output.thread_id && usage.turn_id == output.turn_id =>
         {
