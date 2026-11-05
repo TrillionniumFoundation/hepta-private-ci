@@ -6,6 +6,8 @@ on:
       - ".github/workflows/hepta-windows-current-ci.yml"
       - ".github/scripts/windows_current_ci.py"
       - ".github/scripts/test_windows_current_ci.py"
+      - ".github/scripts/test_windows_current_ci_shards.py"
+      - ".github/scripts/aggregate_windows_current_ci.py"
       - ".github/fixtures/windows-current-ci-scope.json"
       - "codex-rs/git-utils/src/git_process_tests.rs"
       - "codex-rs/state/**"
@@ -35,6 +37,11 @@ env:
 
 jobs:
   original-regressions:
+    name: Original regressions (${{ matrix.shard }})
+    strategy:
+      fail-fast: false
+      matrix:
+        shard: [owners, process]
     runs-on: windows-latest
     timeout-minutes: 65
     steps:
@@ -52,19 +59,55 @@ jobs:
       - name: Verify strict receipt rejection controls
         shell: pwsh
         run: |
-          python -m unittest discover -s .github/scripts -p test_windows_current_ci.py
+          python -m unittest discover -s .github/scripts -p "test_windows_current_ci*.py"
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
       - name: Run the original process, transport and backend regressions
         shell: pwsh
         run: |
           $env:CARGO_TARGET_DIR = Join-Path $env:RUNNER_TEMP "hepta-windows-current-target"
-          python .github/scripts/windows_current_ci.py --expected-head "${{ github.event.pull_request.head.sha || github.sha }}" --output "$env:RUNNER_TEMP/hepta-windows-current-ci"
+          python .github/scripts/windows_current_ci.py --expected-head "${{ github.event.pull_request.head.sha || github.sha }}" --shard "${{ matrix.shard }}" --output "$env:RUNNER_TEMP/hepta-windows-current-ci"
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
       - name: Retain every result with exact source identity
         if: always()
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         with:
-          name: windows-current-ci-${{ github.event.pull_request.head.sha || github.sha }}-${{ github.run_id }}-${{ github.run_attempt }}
+          name: windows-current-ci-${{ github.event.pull_request.head.sha || github.sha }}-${{ github.run_id }}-${{ github.run_attempt }}-${{ matrix.shard }}
           path: ${{ runner.temp }}/hepta-windows-current-ci/
+          if-no-files-found: error
+          retention-days: 14
+
+  original-regressions-complete:
+    name: Require all 19 original groups and 167 exact cases
+    needs: original-regressions
+    if: always()
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Checkout the same exact source head
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
+      - name: Read only this run and attempt's shard artifacts
+        uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093
+        with:
+          pattern: windows-current-ci-${{ github.event.pull_request.head.sha || github.sha }}-${{ github.run_id }}-${{ github.run_attempt }}-*
+          path: ${{ runner.temp }}/hepta-windows-shards/
+          merge-multiple: false
+      - name: Reject missing, failing, changed or incomplete original evidence
+        if: always()
+        run: >-
+          python3 .github/scripts/aggregate_windows_current_ci.py
+          --expected-head "${{ github.event.pull_request.head.sha || github.sha }}"
+          --run-id "${{ github.run_id }}" --run-attempt "${{ github.run_attempt }}"
+          --matrix-result "${{ needs.original-regressions.result }}"
+          --input "${{ runner.temp }}/hepta-windows-shards"
+          --output "${{ runner.temp }}/hepta-windows-aggregate"
+      - name: Retain the aggregate decision including failure
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: windows-current-ci-aggregate-${{ github.event.pull_request.head.sha || github.sha }}-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/hepta-windows-aggregate/
           if-no-files-found: error
           retention-days: 14
