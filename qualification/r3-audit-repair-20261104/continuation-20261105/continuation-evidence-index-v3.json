@@ -1,0 +1,105 @@
+{
+  "schema": "hepta-continuation-evidence-index-v3",
+  "parent_audit_commit": "c2668d6d0c60e1c79ee6665dfddc20e030541206",
+  "parent_audit_tree": "00b5349e980f8a8ecb88021531c5c9804a435165",
+  "published_product_head": "5b6331250ff459033bd44d1a95daec70131277cc",
+  "source_code_changed": false,
+  "scope": "Mac original57 completed, exact13-source projection; original23 statuses unchanged. New-head CI not qualified.",
+  "original_23_status_counts": {
+    "closed_scoped": 8,
+    "open": 14,
+    "scientific_hold": 1
+  },
+  "entry_count": 11,
+  "entries": [
+    {
+      "repository_path": "qualification/r3-audit-repair-20261104/continuation-20261105/MAC_WRAPPER_QUALIFICATION.zh-CN.md",
+      "local_file": "/workspace/scratch/07dd58cc9630/hepta-audit-fifth/MAC_WRAPPER_QUALIFICATION.zh-CN.md",
+      "role": "human_scope_qualification_and_current_entry",
+      "bytes": 4157,
+      "sha256": "0cfbbd62ec6edbc5b92ebdade624f84ad018b13c9ee928d51c601c14097df79a",
+      "blob": "368e2c73673879db3c6881f2de494f9eea18e303"
+    },
+    {
+      "repository_path": "qualification/r3-audit-repair-20261104/continuation-20261105/LATEST.zh-CN.md",
+      "local_file": "/workspace/scratch/07dd58cc9630/hepta-audit-fifth/LATEST.zh-CN.md",
+      "role": "human_scope_qualification_and_current_entry",
+      "bytes": 2306,
+      "sha256": "a7baecd1294ef3df0294a88e07869df44d0f1ef77838ad89bb9ac2dd7d57260c",
+      "blob": "2cddefa608f3ebec64e4e5b186b8309cbeccc67a"
+    },
+    {
+      "repository_path": "qualification/r3-audit-repair-20261104/continuation-20261105/native/mac57-complete/complete-native-bundle.json",
+      "local_file": "/workspace/scratch/07dd58cc9630/ci-audit/recovered-20261105/mac-bazel-wrapper-projection-v1/complete-native-bundle.json",
+      "role": "complete_native_original_mac57_cohort",
+      "bytes": 364469,
+      "sha256": "80b21f4081051553c2d8865bb12684167e827355c586b678dddc66467355c33f",
+      "blob": "693e3abc8b959983dfce70cd154bcec8092c3353"
+    },
+    {
+      "repository_path": "qualification/r3-audit-repair-20261104/continuation-20261105/native/mac57-complete/request.json",
+      "local_file": "/workspace/scratch/07dd58cc9630/ci-audit/recovered-20261105/mac-bazel-wrapper-projection-v1/request.json",
+      "role": "complete_native_original_mac57_cohort",
+      "bytes": 185817,
+      "sha256": "b9221e56a050bcb1d75ea368e2ade12953d72507a898ae6122def32ef6742807",
+      "blob": "b7a84dd35f7a8714435ef7dce5be53529df38b92"
+    },
+    {
+      "repository_path": "qualification/r3-audit-repair-20261104/continuation-20261105/native/mac57-complete/manifest.json",
+      "local_file": "/workspace/scratch/07dd58cc9630/ci-audit/recovered-20261105/mac-bazel-wrapper-projection-v1/manifest.json",
+      "role": "complete_native_original_mac57_cohort",
+      "bytes": 14671,
+      "sha256": "27960c0b7b8c8f21c0e03e3bd10c46a69d676dae75325e6bb7a914219b7665c4",
+      "blob": "423bd60d911f81ecdb98231649f90cdb92ddf73b"
+    },
+    {
+      "repository_path": "qualification/r3-audit-repair-20261104/continuation-20261105/native/mac57-complete/run_projection_controls.py",
+      "local_file": "/workspace/scratch/07dd58cc9630/ci-audit/recovered-20261105/mac-bazel-wrapper-projection-v1/run_projection_controls.py",
+      "role": "complete_native_original_mac57_cohort",
+      "bytes": 14959,
+      "sha256": "5b4f451c860e58737ffda6d33e1703c6e6bd8c0ca452f2afbee11c7739aac8bd",
+      "blob": "b7144213cdd93cb508d1b2dde2477c1b178cc32e"
+    },
+    {
+      "repository_path": "qualification/r3-audit-repair-20261104/continuation-20261105/native/mac57-complete/projection-from-fetch-runner.delta.patch",
+      "local_file": "/workspace/scratch/07dd58cc9630/ci-audit/recovered-20261105/mac-bazel-wrapper-projection-v1/projection-from-fetch-runner.delta.patch",
+      "role": "complete_native_original_mac57_cohort",
+      "bytes": 8820,
+      "sha256": "fdaf3eedcb38349920bdcfa28a5737779db8057971f5d428274109ea1dee16fd",
+      "blob": "8191916720fb41ebd96e39b16465e7aa4c97b50a"
+    },
+    {
+      "repository_path": "qualification/r3-audit-repair-20261104/continuation-20261105/reviews/mac57-complete-root-review.json",
+      "local_file": "/workspace/scratch/07dd58cc9630/hepta-audit-fifth/inputs/mac57-complete-root-review.json",
+      "role": "independent_complete74_originals_root_review",
+      "bytes": 2327,
+      "sha256": "2b2b2ca8dcaf9b8d53aa9ec0ddf6e613ce43dcf41aa584edc184803cb432dd45",
+      "blob": "4e54ab9dbfa07d60b6f461970bced48173ae8b5e"
+    },
+    {
+      "repository_path": "qualification/r3-audit-repair-20261104/continuation-20261105/reviews/mac57-projection-runner-static-review.json",
+      "local_file": "/workspace/scratch/07dd58cc9630/architecture-audit/mac57-projection-runner-static-20261105/static-review.json",
+      "role": "independent_static_runner_review",
+      "bytes": 3692,
+      "sha256": "ef9b36925e0f227d62e1d4e3f02f00dde5e7ef05de5007859f328377f758e47c",
+      "blob": "fefb64816cd02d408bde1a30bc30c8401c7fed18"
+    },
+    {
+      "repository_path": "qualification/r3-audit-repair-20261104/continuation-20261105/reviews/audit-publication-receipt-v2.json",
+      "local_file": "/workspace/scratch/07dd58cc9630/hepta-audit-fifth/audit-publication-receipt-v2.json",
+      "role": "actual_previous_audit_lease_readback",
+      "bytes": 1430,
+      "sha256": "a9b4da39a688459dbb4bf9c5c4db57539fa971a774338855c221b2b072fa94f0",
+      "blob": "47b446b2f49a1a909a6e123d428ca6fe2b45d6e6"
+    },
+    {
+      "repository_path": "qualification/r3-audit-repair-20261104/continuation-20261105/new-head-ci/queue-investigation/root-browser-wait-addendum.json",
+      "local_file": "/workspace/scratch/07dd58cc9630/research-audit/published-5b633-ci-20261105/queue-investigation/root-browser-wait-addendum.json",
+      "role": "root_observed_browser_single_workflow_concurrency_wait",
+      "bytes": 1925,
+      "sha256": "3132bf8b4cbe04dcda17c66215d0ff8bf5ab2c92a5713662acfc03d5252c148c",
+      "blob": "64789915b776197fc9c52e775965287a61a1d017"
+    }
+  ],
+  "self_excluded": true
+}

@@ -1,0 +1,37 @@
+{
+  "schema": "hepta-audit-continuation-publication-v2",
+  "commit": "c2668d6d0c60e1c79ee6665dfddc20e030541206",
+  "tree": "00b5349e980f8a8ecb88021531c5c9804a435165",
+  "parents": [
+    "5801001c488dcb3ea4c3e1a2e5f7cba7b9eef84b",
+    "5b6331250ff459033bd44d1a95daec70131277cc"
+  ],
+  "expected_previous_ref": "5801001c488dcb3ea4c3e1a2e5f7cba7b9eef84b",
+  "force": false,
+  "actual_ref_get_equal": true,
+  "product_head": "5b6331250ff459033bd44d1a95daec70131277cc",
+  "product_base": "63652be658ebed8d3052eb789b951793384fd5e4",
+  "product_draft": true,
+  "audit_actions_run_total": 0,
+  "whole_tree_review": {
+    "base_tree": "d530d05338d3d1eb293c394ae01d112f10366f9b",
+    "tree": "00b5349e980f8a8ecb88021531c5c9804a435165",
+    "base_leaves": 10842,
+    "final_leaves": 11011,
+    "added": 169,
+    "changed": [
+      ".github/scripts/run-bazel-ci.sh",
+      "codex-rs/utils/pty/src/process.rs",
+      "codex-rs/utils/pty/src/unix_io_diagnostics.rs"
+    ],
+    "removed": [],
+    "unchanged_previous_leaves": 10839,
+    "all_expected_elements_exact": 172,
+    "no_truncation": true,
+    "old_evidence_unchanged": true,
+    "product_code_overlays_match_published_candidate": true
+  },
+  "evidence_index_blob": "d5b5eda726f3e0ba9e1b503fd01abdb07619314c",
+  "human_report_path": "qualification/r3-audit-repair-20261104/continuation-20261105/CONTINUATION_PROGRESS_V2.zh-CN.md",
+  "human_report_cutoff_utc": "2026-11-05T09:12:00Z"
+}

@@ -1,0 +1,127 @@
+--- original-fetch/run_controls.py
++++ projection/run_projection_controls.py
+@@ -13,15 +13,16 @@
+ import traceback
+ from datetime import datetime, timezone
+ 
+-ROOT = Path('/Users/qianqi/hepta-audit-bazel-wrapper-20261105')
++ROOT = Path('/Users/qianqi/hepta-audit-bazel-wrapper-projection-20261105')
+ SOURCE = ROOT / 'source'
+ EVIDENCE = ROOT / 'evidence'
+-COMMIT = '20fd174ded4e5ce01bda34e4f6d1d74803301f49'
+-BASE = '4a3374e22e16ce5c764288ad018cd9affadf94ea'
+-FIXED = '890362b5a9c1ad57be55d7e5c8beb2033b2aa63a'
++ORIGINAL_COMMIT = '20fd174ded4e5ce01bda34e4f6d1d74803301f49'
++ORIGINAL_FULL_TREE = '4a3374e22e16ce5c764288ad018cd9affadf94ea'
++COMMIT = None
++BASE = '69f329acffb8aba965f6ad943335afeba379d074'
++FIXED = '93fe0fedfdfd90e6d38216e30ab2adafdd3cbe19'
+ WRAPPER = '.github/scripts/run-bazel-ci.sh'
+ PYTHON = '/opt/homebrew/opt/python@3.14/bin/python3'
+-REPO = 'https://github.com/TrillionniumFoundation/hepta-private-ci.git'
+ PATH_VALUE = '/opt/homebrew/opt/python@3.14/bin:/usr/bin:/bin:/usr/sbin:/sbin'
+ env = dict(os.environ)
+ env.update({'PATH': PATH_VALUE, 'PYTHONDONTWRITEBYTECODE': '1', 'GIT_OPTIONAL_LOCKS': '0',
+@@ -113,12 +114,10 @@
+         expected = request['fixed_wrapper'] if expected['path'] == WRAPPER and current_tree == FIXED else expected
+         row = file_id(SOURCE / expected['path'])
+         assert equal(row, expected) and row['git_blob'] == expected['git_blob'], expected['path']
+-        if expected['path'] == WRAPPER:
+-            assert stat.S_IMODE((SOURCE / WRAPPER).stat().st_mode) == 0o755
++        assert stat.S_IMODE((SOURCE / expected['path']).stat().st_mode) == int(expected['mode'], 8) & 0o777
+         checked.append(row)
+-    locks = [file_id(SOURCE / path) for path in ('codex-rs/Cargo.lock', 'MODULE.bazel.lock')]
+-    for row, expected in zip(locks, request['locks']):
+-        assert equal(row, expected)
++    assert not (SOURCE / 'codex-rs/Cargo.lock').exists() and not (SOURCE / 'MODULE.bazel.lock').exists()
++    locks = {'status': 'NOT_IN_THIRTEEN_FILE_PROJECTION', 'not_full_repository_qualification': True}
+     current_tools = [file_id(path, tool=True) for path in (PYTHON, '/bin/bash', '/usr/bin/git')]
+     assert current_tools == tools
+     assert shutil.which('python3', path=PATH_VALUE) == PYTHON
+@@ -171,12 +170,20 @@
+ 
+ raw = sys.stdin.buffer.read()
+ request = json.loads(raw)
+-terminal = {'schema': 'hepta-native-mac-bazel-wrapper-control-v1', 'host_alias': 'mac',
+-            'request': byte_id(raw), 'started_at': now(), 'source_commit': COMMIT,
++terminal = {'schema': 'hepta-native-mac-bazel-wrapper-projection-control-v1', 'host_alias': 'mac',
++            'request': byte_id(raw), 'started_at': now(), 'original_commit': ORIGINAL_COMMIT,
++            'original_full_tree': ORIGINAL_FULL_TREE, 'projection_commit': None, 'full_repository_checkout': False,
+             'before_tree': BASE, 'fixed_tree': FIXED, 'errors': [], 'real_bazel_product_builds': False}
+ success = False
+ try:
+     assert request['execute'] is True and request['root_review_blob'] == '17dd529a880045c2a6c9bb661d6d86553adf97b6'
++    assert request['projection_source_map_git'] == 'dc19c02ed49008ae0c98e41048a335e69a03ca20'
++    previous = request['previous_fetch_failure']
++    assert equal(file_id(previous['path']), previous)
++    failed = json.loads(Path(previous['path']).read_text())
++    assert failed['success'] is False and not failed.get('baseline_review') and not failed.get('fixed_review')
++    assert [c['exit_code'] for c in failed['commands'] if c['label'] == '04-fixed-fetch'] == [128]
++    assert len(request['source_files']) == 13 and sum(x['bytes'] for x in request['source_files']) == 146000
+     assert os.getuid() == os.geteuid() == 501 and Path.home() == ROOT.parent
+     assert platform.system() == 'Darwin' and platform.machine() == 'arm64'
+     assert not os.path.lexists(ROOT) and ROOT.parent.resolve() == ROOT.parent
+@@ -197,20 +204,39 @@
+     assert Path(version['stdout']['path']).read_text().strip() == 'Python 3.14.3'
+     run('01-bash-version', ['/bin/bash', '--version'], cwd=ROOT)
+     run('02-git-version', ['/usr/bin/git', '--version'], cwd=ROOT)
+-    run('03-init', ['/usr/bin/git', 'init', str(SOURCE)], cwd=ROOT)
+-    run('04-fixed-fetch', ['/usr/bin/git', '-C', str(SOURCE), 'fetch', '--no-tags', '--depth=1', REPO, COMMIT], cwd=ROOT)
+-    run('05-fixed-checkout', ['/usr/bin/git', '-C', str(SOURCE), '-c', 'advice.detachedHead=false', 'checkout', '--detach', COMMIT], cwd=ROOT)
++    installed = []
++    for expected in request['source_files']:
++        relative = Path(expected['path'])
++        assert not relative.is_absolute() and '..' not in relative.parts
++        data = expected['content'].encode()
++        assert equal(byte_id(data), expected) and byte_id(data)['git_blob'] == expected['git_blob']
++        destination = SOURCE / relative
++        destination.parent.mkdir(parents=True, exist_ok=True)
++        with destination.open('xb') as stream:
++            stream.write(data)
++        os.chmod(destination, int(expected['mode'], 8) & 0o777)
++        installed.append(file_id(destination))
++    save_json('installed-projection-files.json', installed)
++    run('03-init', ['/usr/bin/git', 'init', '--initial-branch=projection', str(SOURCE)], cwd=ROOT)
++    run('04-projection-stage', ['/usr/bin/git', '-C', str(SOURCE), 'add', '--', *[x['path'] for x in request['source_files']]], cwd=ROOT)
++    tree = run('05-projection-write-tree', ['/usr/bin/git', '-C', str(SOURCE), 'write-tree'], cwd=ROOT)
++    assert Path(tree['stdout']['path']).read_text().strip() == BASE
++    commit = run('06-projection-commit-tree', ['/usr/bin/git', '-C', str(SOURCE), '-c', 'user.name=Hepta Native Audit', '-c', 'user.email=hepta-audit@localhost', 'commit-tree', BASE, '-m', 'Exact thirteen-file projection from fixed 20fd for original Mac wrapper controls'], cwd=ROOT)
++    COMMIT = Path(commit['stdout']['path']).read_text().strip()
++    assert re.fullmatch(r'[0-9a-f]{40}', COMMIT) and COMMIT != ORIGINAL_COMMIT
++    run('07-projection-owned-head', ['/usr/bin/git', '-C', str(SOURCE), 'update-ref', 'refs/heads/projection', COMMIT], cwd=ROOT)
++    terminal['projection_commit'] = COMMIT
+     ordinary_index = file_id(SOURCE / '.git/index')
+     save('ordinary-index.original.bin', (SOURCE / '.git/index').read_bytes())
+     save_json('source-baseline.json', {'head': COMMIT, 'head_tree': BASE, 'ordinary_index': ordinary_index})
+     guard('initial-source')
+     inventory_code = "import json,unittest; s=unittest.defaultTestLoader.discover('.github/scripts',pattern='test_run_bazel*.py'); walk=lambda t: sum((walk(x) for x in t),[]) if isinstance(t,unittest.TestSuite) else [t.id()]; print(json.dumps(walk(s)))"
+-    inventory = run('06-original-discovery-inventory', ['python3', '-c', inventory_code], guarded=True)
++    inventory = run('08-original-discovery-inventory', ['python3', '-c', inventory_code], guarded=True)
+     names = json.loads(Path(inventory['stdout']['path']).read_text())
+     assert len(names) == 57 and collections.Counter(names) == collections.Counter(request['expected_test_ids']), names
+     save_json('selection.json', {'source_tree': BASE, 'test_ids': names, 'selected': len(names), 'retries': 0})
+     argv = ['python3', '-m', 'unittest', 'discover', '-s', '.github/scripts', '-p', 'test_run_bazel*.py']
+-    before = run('07-original-controls-baseline', argv, guarded=True, require_success=False)
++    before = run('09-original-controls-baseline', argv, guarded=True, require_success=False)
+     before_review = result_summary(before)
+     terminal['baseline_review'] = before_review
+     save_json('baseline-review.json', before_review)
+@@ -224,7 +250,7 @@
+     current_tree = FIXED
+     guard('single-wrapper-fixed')
+     save('single-wrapper-fixed.patch', git(['diff', '--binary', '--full-index', BASE, FIXED, '--']))
+-    after = run('08-original-controls-fixed', argv, guarded=True, require_success=False)
++    after = run('10-original-controls-fixed', argv, guarded=True, require_success=False)
+     after_review = result_summary(after)
+     terminal['fixed_review'] = after_review
+     save_json('fixed-review.json', after_review)
+@@ -234,7 +260,8 @@
+ except Exception as error:
+     terminal['errors'].append({'type': type(error).__name__, 'message': str(error), 'traceback': traceback.format_exc()})
+ finally:
+-    terminal.update({'completed_at': now(), 'success': success, 'source_tree': current_tree,
++    terminal.update({'completed_at': now(), 'success': success, 'source_tree': current_tree if ordinary_index is not None else None,
++                     'intended_projection_tree': current_tree, 'projection_commit': COMMIT,
+                      'commands': commands, 'source_guards': guards, 'records': list(records)})
+     if created:
+         receipt = save_json('terminal.json', terminal)

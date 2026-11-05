@@ -1,0 +1,62 @@
+{
+  "schema": "hepta-mac57-projection-runner-static-review-v1",
+  "verdict": "STATIC_ACCEPT_WITH_EXPLICIT_THIRTEEN_FILE_QUALIFICATION_SCOPE",
+  "inputs": {
+    "run_projection_controls.py": {
+      "path": "/workspace/scratch/07dd58cc9630/ci-audit/recovered-20261105/mac-bazel-wrapper-projection-v1/run_projection_controls.py",
+      "bytes": 14959,
+      "sha256": "5b4f451c860e58737ffda6d33e1703c6e6bd8c0ca452f2afbee11c7739aac8bd",
+      "git_blob": "b7144213cdd93cb508d1b2dde2477c1b178cc32e"
+    },
+    "request.json": {
+      "path": "/workspace/scratch/07dd58cc9630/ci-audit/recovered-20261105/mac-bazel-wrapper-projection-v1/request.json",
+      "bytes": 185817,
+      "sha256": "b9221e56a050bcb1d75ea368e2ade12953d72507a898ae6122def32ef6742807",
+      "git_blob": "b7a84dd35f7a8714435ef7dce5be53529df38b92"
+    },
+    "manifest.json": {
+      "path": "/workspace/scratch/07dd58cc9630/ci-audit/recovered-20261105/mac-bazel-wrapper-projection-v1/manifest.json",
+      "bytes": 14671,
+      "sha256": "27960c0b7b8c8f21c0e03e3bd10c46a69d676dae75325e6bb7a914219b7665c4",
+      "git_blob": "423bd60d911f81ecdb98231649f90cdb92ddf73b"
+    },
+    "projection-from-fetch-runner.delta.patch": {
+      "path": "/workspace/scratch/07dd58cc9630/ci-audit/recovered-20261105/mac-bazel-wrapper-projection-v1/projection-from-fetch-runner.delta.patch",
+      "bytes": 8820,
+      "sha256": "fdaf3eedcb38349920bdcfa28a5737779db8057971f5d428274109ea1dee16fd",
+      "git_blob": "8191916720fb41ebd96e39b16465e7aa4c97b50a"
+    }
+  },
+  "origin_map": {
+    "path": "/workspace/scratch/07dd58cc9630/architecture-audit/mac57-projection-fallback-static-20261105/source-map.json",
+    "bytes": 8476,
+    "sha256": "fb3a170d6ee7c148ac273feee4f55341ba46f774277c7b51c06ab48add3a91ba",
+    "git_blob": "dc19c02ed49008ae0c98e41048a335e69a03ca20"
+  },
+  "all_13_payload_bodies_modes_and_three_identity_fields_exact": true,
+  "all_57_original_ids_unchanged_from_original_runner": true,
+  "fixed_wrapper_change": "All old fixed_wrapper fields and full body are exact. New mode=100755 makes original physical mode explicit. An initial all-dictionary equality check rejected this metadata addition; precise old-field comparison plus original mode validation passed. No candidate content was changed.",
+  "unchanged_original_helper_functions": [
+    "now",
+    "byte_id",
+    "file_id",
+    "equal",
+    "save",
+    "save_json",
+    "capacity",
+    "git",
+    "run",
+    "result_summary"
+  ],
+  "findings": [
+    "The failed full fetch is checked by its actual terminal pin and exit128, and the old root is preserved. The new absent task-owned root contains only the thirteen exact files.",
+    "A real local Git projection commit is created with commit-tree and placed on its own refs/heads/projection. Its before69f and fixed93fe trees are distinct from provenance20fd/4a; no complete checkout is claimed.",
+    "Original inventory and original unittest discover run unmodified. Baseline and fixed logs/guards are separate; only wrapper204c to42b changes. Final success requires exact57, zero exit, OK, no failures or skips.",
+    "All thirteen modes/content hashes, real parent/child Python PATH, physical Bash/Git identities, ordinary index, own HEAD and private working-tree guards remain checked.",
+    "Absent Cargo/MODULE locks are explicitly NOT_IN_THIRTEEN_FILE_PROJECTION. This is not Rust/Bazel product or full-repository qualification."
+  ],
+  "limits": [
+    "Native success reported separately by CI is not independently requalified from this static runner review.",
+    "No new tests, shell simulations, native actions, existing source mutations or remote ref changes were performed by this reviewer."
+  ]
+}

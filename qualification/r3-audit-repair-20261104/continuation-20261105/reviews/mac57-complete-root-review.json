@@ -1,0 +1,55 @@
+{
+  "schema": "hepta-mac57-projection-root-complete-review-v1",
+  "job_id": "1a1aafc5f2d-fc05-4945",
+  "complete_bundle": {
+    "bytes": 364469,
+    "sha256": "80b21f4081051553c2d8865bb12684167e827355c586b678dddc66467355c33f",
+    "git_blob": "693e3abc8b959983dfce70cd154bcec8092c3353"
+  },
+  "native_originals": 74,
+  "native_original_bytes": 452930,
+  "all_bytes_sha256_git_hashes_verified": true,
+  "referenced_native_request_verified_local_and_matches_frozen_request": true,
+  "source_files": 13,
+  "source_bytes": 146000,
+  "original_source_commit": "20fd174ded4e5ce01bda34e4f6d1d74803301f49",
+  "native_projection_commit": "9c1baebd638c99a4f89c84b91b33f94207eaf449",
+  "independently_reconstructed_projection_trees": [
+    "69f329acffb8aba965f6ad943335afeba379d074",
+    "93fe0fedfdfd90e6d38216e30ab2adafdd3cbe19"
+  ],
+  "all_nine_source_guards_valid": true,
+  "ordinary_index_sha256": "6a4c1293e9aff60043aabf9e6976cb49f165b526090a07ebc9a3c1c2fb485d4f",
+  "original_test_ids_exactly_57": true,
+  "baseline": {
+    "exit": 1,
+    "failures": [
+      [
+        "FAIL",
+        "test_conflicting_selected_summaries_do_not_read_existing_logs (test_run_bazel_ci.RunBazelCiIntegrationTest.test_conflicting_selected_summaries_do_not_read_existing_logs)"
+      ],
+      [
+        "FAIL",
+        "test_missing_selected_logs_preserve_success_and_failure_status (test_run_bazel_ci.RunBazelCiIntegrationTest.test_missing_selected_logs_preserve_success_and_failure_status) (original_status=0)"
+      ],
+      [
+        "FAIL",
+        "test_success_retains_reported_targets_and_preserves_status_scope (test_run_bazel_ci.RunBazelCiIntegrationTest.test_success_retains_reported_targets_and_preserves_status_scope)"
+      ]
+    ],
+    "ran": 57,
+    "unbound_failed_targets_observed": true,
+    "command_seconds": 14.367715583182871
+  },
+  "fixed": {
+    "exit": 0,
+    "passed": 57,
+    "skipped": 0,
+    "retries": 0,
+    "command_seconds": 12.866935790982097
+  },
+  "controller_exit": 0,
+  "qualified_scope": "Original macOS Python/Bash wrapper 57 only, true13-file source projection using real Git and unchanged original tests/collector. Only wrapper differs; source origin is not the full native working tree.",
+  "does_not_qualify_full_repository_bazel_intel_pty_or_product_ci": true,
+  "original_fetch_failure_preserved": true
+}

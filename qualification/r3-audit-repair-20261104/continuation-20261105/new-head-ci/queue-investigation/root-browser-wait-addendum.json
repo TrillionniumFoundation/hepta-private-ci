@@ -1,0 +1,29 @@
+{
+  "schema": "hepta-queue-root-browser-observation-addendum-v1",
+  "recorded_at_utc": "2026-11-05T09:28:14.324Z",
+  "head": "5b6331250ff459033bd44d1a95daec70131277cc",
+  "tree": "b26598d0d97d8d51e723bb5582137315f2174d35",
+  "prior_frozen_findings_blob": "54e120f719916519a64f6893803109406ce940ce",
+  "prior_delivery_map_blob": "8c2de1ba8f93db668cd53a570a31ffddff7cf599",
+  "source_kind": "PARENT_ROOT_DIRECT_BROWSER_OBSERVATION_NOT_INDEPENDENTLY_RETRIEVED_BY_RESEARCH_AUDIT",
+  "reported_observation_time": "2026-11-05 around09:23UTC, approximate as reported by root",
+  "page_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/41999114842",
+  "reported_exact_page_text": "This workflow is waiting for blocking-ci #33534 to complete before running.",
+  "reported_link_target": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/41975255726",
+  "parent_reported_access_boundary": "Page status readable without sign-in; logs and operation controls require Sign in. Parent reported no login and no mutation.",
+  "primary_snapshot_or_receipt_from_parent": null,
+  "scope_update": {
+    "new_blocking_run_id": 41999114842,
+    "waiting_for_old_run_id": 41975255726,
+    "old_run_number": 33534,
+    "conclusion": "One workflow's serialization dependency is confirmed by the parent's direct page observation; retain provenance as parent evidence.",
+    "other16_queued_global_cause": "UNKNOWN",
+    "old_prepublication_cancellation_actor_or_cause": "UNKNOWN"
+  },
+  "limitations": [
+    "The prior frozen09:14–18 investigation is not rewritten; this is a later evidence addendum.",
+    "No independent browser verification by research_audit is claimed.",
+    "This does not show that cancelling the old run would resolve the other16 queued workflows.",
+    "No CI cancel/rerun/dispatch, credential operation, concurrency/ref/source change or native action by this agent."
+  ]
+}
