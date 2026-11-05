@@ -244,6 +244,34 @@ async fn prepare_socket(socket_path: &Path) -> Result<(), AgentdError> {
     codex_uds::prepare_private_socket_directory(parent)
         .await
         .map_err(|error| io_context("prepare agentd control socket directory", parent, error))?;
+    // Reject foreign entry types before connect's platform-specific errno.
+    // This check never authorizes cleanup: live probing and the final stale
+    // socket classification below remain mandatory.
+    #[cfg(unix)]
+    {
+        use std::os::unix::fs::FileTypeExt;
+
+        match tokio::fs::symlink_metadata(socket_path).await {
+            Ok(metadata) if !metadata.file_type().is_socket() => {
+                return Err(AgentdError::Io(std::io::Error::new(
+                    ErrorKind::AlreadyExists,
+                    format!(
+                        "agentd control socket path is not a stale socket: {}",
+                        socket_path.display()
+                    ),
+                )));
+            }
+            Ok(_) => {}
+            Err(error) if error.kind() == ErrorKind::NotFound => {}
+            Err(error) => {
+                return Err(io_context(
+                    "inspect agentd control socket entry",
+                    socket_path,
+                    error,
+                ));
+            }
+        }
+    }
     match UnixStream::connect(socket_path).await {
         Ok(_) => {
             return Err(AgentdError::Io(std::io::Error::new(
