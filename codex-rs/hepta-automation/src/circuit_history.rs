@@ -1,6 +1,7 @@
 //! Canonical events replay through the same reducer used for live admission.
 
 use codex_hepta_contracts::AgentId;
+use codex_hepta_contracts::Sha256Digest;
 use serde::Deserialize;
 use serde::Serialize;
 
@@ -13,6 +14,7 @@ use crate::CircuitStartV2;
 use crate::CircuitStopReasonV2;
 use crate::TaskFlowError;
 use crate::TaskFlowFence;
+use crate::circuit_profile::digest;
 use crate::circuit_profile::invalid;
 use crate::circuit_state::CircuitWriterV2;
 
@@ -36,7 +38,7 @@ impl CircuitFenceIdentityV2 {
         TaskFlowFence::new(owner.clone(), &self.owner_id, self.owner_epoch, self.generation, &self.fencing_token)
     }
 
-    fn matches(&self, writer: &CircuitWriterV2) -> bool {
+    pub(crate) fn matches(&self, writer: &CircuitWriterV2) -> bool {
         self.owner_id == writer.owner_id && self.owner_epoch == writer.owner_epoch
             && self.generation == writer.generation && self.fencing_token == writer.fencing_token
     }
@@ -48,6 +50,13 @@ pub(crate) enum CircuitLedgerEventV2 {
     Created { start: CircuitStartV2, fence: CircuitFenceIdentityV2 },
     Applied { fence: CircuitFenceIdentityV2, expected_revision: u64, now_ms: u64, event: CircuitEventV2 },
     Claimed { fence: CircuitFenceIdentityV2, expected_revision: u64, now_ms: u64, lease_duration_ms: u64 },
+    ComputationClaimed {
+        fence: CircuitFenceIdentityV2,
+        expected_revision: u64,
+        now_ms: u64,
+        activation_id: u64,
+        execution_request_digest: Sha256Digest,
+    },
 }
 
 impl CircuitLedgerEventV2 {
@@ -70,6 +79,34 @@ impl CircuitLedgerEventV2 {
                     return Err(TaskFlowError::StaleFence);
                 }
                 run.reduce(definition, event, *now_ms)
+            }
+            Self::ComputationClaimed { fence, expected_revision, now_ms, activation_id, execution_request_digest } => {
+                digest(execution_request_digest)?;
+                let run = previous.ok_or_else(|| invalid("computation claim before run creation"))?;
+                if run.revision != *expected_revision || run.outcome().is_some() {
+                    return Err(TaskFlowError::Conflict("computation claim revision or terminal state".to_string()));
+                }
+                if !fence.matches(&run.writer) || *now_ms >= run.writer.expires_at_ms
+                    || *now_ms < run.last_observed_ms
+                {
+                    return Err(TaskFlowError::StaleFence);
+                }
+                if *now_ms - run.created_at_ms >= definition.limits.max_elapsed_ms {
+                    return Err(invalid("computation claim is past circuit deadline"));
+                }
+                let activation = run.activations.get(activation_id).ok_or_else(|| invalid("unknown computation"))?;
+                if activation.status != CircuitActivationStatusV2::InFlight || activation.cancel_requested
+                    || activation.execution_request_digest.is_some()
+                {
+                    return Err(invalid("computation is not eligible for a first execution claim"));
+                }
+                run.dispatch(definition, *activation_id)?;
+                let mut next = run.clone();
+                next.revision = next.revision.checked_add(1).ok_or_else(|| invalid("claim revision overflow"))?;
+                next.last_observed_ms = *now_ms;
+                next.activations.get_mut(activation_id).ok_or_else(|| invalid("unknown computation"))?
+                    .execution_request_digest = Some(execution_request_digest.clone());
+                Ok((next, Vec::new()))
             }
             Self::Claimed { fence, expected_revision, now_ms, lease_duration_ms } => {
                 let run = previous.ok_or_else(|| invalid("circuit claim before creation"))?;

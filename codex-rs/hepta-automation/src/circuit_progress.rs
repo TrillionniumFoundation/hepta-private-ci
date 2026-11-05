@@ -68,6 +68,7 @@ impl CircuitRunV2 {
                     ready_at_ms, status: Status::Joining, cancel_requested: false,
                     output_digest: None, receipt_digest: None, selected_edges: Vec::new(),
                     arrivals: BTreeMap::new(), arrival_inputs: Vec::new(), continuation_parents: Vec::new(),
+                    execution_request_digest: None,
                     join_deadline_ms: Some(ready_at_ms.checked_add(timeout_ms)
                         .ok_or_else(|| invalid("join deadline overflow"))?),
                 });
@@ -114,7 +115,7 @@ impl CircuitRunV2 {
             causal_parents: parents, input_digest: input, ready_at_ms, status: Status::Ready,
             cancel_requested: false, output_digest: None, receipt_digest: None, selected_edges: Vec::new(),
             arrivals: BTreeMap::new(), arrival_inputs: Vec::new(), join_deadline_ms: None,
-            continuation_parents: Vec::new(),
+            continuation_parents: Vec::new(), execution_request_digest: None,
         });
         Ok(())
     }

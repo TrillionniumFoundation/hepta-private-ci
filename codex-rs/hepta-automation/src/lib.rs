@@ -14,6 +14,7 @@ mod effect_executor;
 
 mod authorized_effect;
 mod automation_taskflow;
+mod circuit_admission;
 mod circuit_budget;
 mod circuit_compute;
 mod circuit_history;
@@ -58,6 +59,8 @@ pub use authorized_effect::AuthorizedProviderEffectRequest;
 pub use authorized_effect::ProviderEffectTaskFlowDriver;
 pub use automation_taskflow::AutomationTaskFlowDispatch;
 pub use automation_taskflow::admission_receipt_digest;
+pub use circuit_admission::CircuitComputationAdmissionV2;
+pub use circuit_admission::CircuitComputationClaimV2;
 pub use circuit_budget::CircuitBudgetV2;
 pub use circuit_history::CircuitLeaseClaimV2;
 pub use circuit_profile::BoundedCircuitDefinitionV2;

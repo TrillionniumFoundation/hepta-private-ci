@@ -70,6 +70,10 @@ pub struct CircuitActivationV2 {
     /// parents on the continuation instead of introducing a cycle into the
     /// already-recorded subcircuit invocation activation.
     pub(crate) continuation_parents: Vec<u64>,
+    /// Set exactly once by the durable computation-claim owner. Pure reducer
+    /// dispatch DTOs cannot establish this admission.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub(crate) execution_request_digest: Option<Sha256Digest>,
 }
 
 #[derive(Clone, Debug, Eq, PartialEq, Serialize)]
@@ -144,8 +148,9 @@ impl CircuitRunV2 {
     }
 }
 
-/// A newly committed computation admission, consumed through the existing Cell
-/// or inference facilities. Reopening a run never reissues this dispatch.
+/// Canonical computation intent. This cloneable DTO is not an execution grant:
+/// callers must obtain the sealed durable CircuitComputationAdmissionV2 before
+/// entering the existing Cell facilities. Readback never reissues computation.
 #[derive(Clone, Debug, Eq, PartialEq, Serialize)]
 pub struct CircuitDispatchV2 {
     pub run_id: String,
