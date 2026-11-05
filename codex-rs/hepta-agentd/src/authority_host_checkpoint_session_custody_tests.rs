@@ -80,7 +80,12 @@ fn serve_checkpoint(
     };
     loop {
         let mut prefix = [0; 4];
+        let prefix_started = std::time::Instant::now();
         if let Err(error) = stream.read_exact(&mut prefix) {
+            eprintln!(
+                "custody checkpoint peer phase=read_prefix elapsed={:?} error={error:?}",
+                prefix_started.elapsed()
+            );
             return if matches!(
                 error.kind(),
                 std::io::ErrorKind::UnexpectedEof | std::io::ErrorKind::ConnectionReset
@@ -93,7 +98,13 @@ fn serve_checkpoint(
         let count = u32::from_be_bytes(prefix) as usize;
         assert!(count > 0 && count <= COGNITIVE_CHECKPOINT_FRAME_LIMIT);
         let mut bytes = vec![0; count];
-        stream.read_exact(&mut bytes)?;
+        let body_started = std::time::Instant::now();
+        stream.read_exact(&mut bytes).inspect_err(|error| {
+            eprintln!(
+                "custody checkpoint peer phase=read_body length={count} elapsed={:?} error={error:?}",
+                body_started.elapsed()
+            );
+        })?;
         let request: CognitiveCheckpointRequest = serde_json::from_slice(&bytes)?;
         eprintln!(
             "custody checkpoint peer command={:?} bytes={}",
