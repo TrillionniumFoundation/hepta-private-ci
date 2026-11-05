@@ -863,6 +863,7 @@ async fn complete_websocket_initialize(websocket: &mut WebSocketStream<TcpStream
         JSONRPCMessage::Response(JSONRPCResponse {
             id: request.id,
             result: serde_json::to_value(InitializeResponse {
+                process_exit_observation: true,
                 session_id: "session-1".to_string(),
                 environment_info: None,
             })

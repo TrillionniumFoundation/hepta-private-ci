@@ -265,6 +265,37 @@
         "elevated::runner_client::process::owner::custody_tests::cleanup_query_access_failures_fence_without_reclassifying_original_work"
       ],
       "filter": "test(=elevated::runner_client::process::owner::custody_tests::reservation_and_confirmed_exit_release_only_their_exact_slot) | test(=elevated::runner_client::process::owner::custody_tests::session_custody_survives_taken_terminator_and_driver_disconnect) | test(=elevated::runner_client::process::owner::custody_tests::dropped_sync_error_retains_owner_until_late_same_handle_observation) | test(=elevated::runner_client::process::owner::custody_tests::unarmed_startup_abort_keeps_custody_until_zero_wait_terminal_query) | test(=elevated::runner_client::process::owner::custody_tests::failure_fences_admission_before_native_abort_or_wait) | test(=elevated::runner_client::process::owner::custody_tests::cleanup_query_access_failures_fence_without_reclassifying_original_work)"
+    },
+    {
+      "id": "exec-server-observation-wire",
+      "package": "codex-exec-server",
+      "filter": "test(=client::observation_tests::legacy_server_is_rejected_before_process_admission) | test(=client::observation_tests::transport_failure_without_native_observation_is_not_closed) | test(=client::observation_tests::failure_preserves_observed_exit_with_or_without_numeric_code) | test(=client::observation_tests::unknown_notification_keeps_output_order_and_actual_exit_events) | test(=server::handler::tests::legacy_client_cannot_start_a_process_without_exit_observation) | test(=server::handler::tests::legacy_resume_refuses_before_attaching_to_original_session) | test(=local_process::observation_tests::cancelling_before_effect_releases_only_the_unused_reservation) | test(=local_process::observation_tests::cancelled_exit_watcher_retains_unknown_and_wakes_observers) | test(=local_process::observation_tests::lost_exit_observation_retains_owner_and_fences_other_sessions) | test(=local_process::observation_tests::actual_exit_releases_only_its_original_registry_reservation) | test(=local_process::observation_tests::actual_exit_fact_survives_cancelled_map_publication) | test(=local_process::observation_tests::blocked_stdin_reservation_wakes_for_retained_outcome)",
+      "expectedTestCount": 12,
+      "requiredTests": [
+        "client::observation_tests::legacy_server_is_rejected_before_process_admission",
+        "client::observation_tests::transport_failure_without_native_observation_is_not_closed",
+        "client::observation_tests::failure_preserves_observed_exit_with_or_without_numeric_code",
+        "client::observation_tests::unknown_notification_keeps_output_order_and_actual_exit_events",
+        "server::handler::tests::legacy_client_cannot_start_a_process_without_exit_observation",
+        "server::handler::tests::legacy_resume_refuses_before_attaching_to_original_session",
+        "local_process::observation_tests::cancelling_before_effect_releases_only_the_unused_reservation",
+        "local_process::observation_tests::cancelled_exit_watcher_retains_unknown_and_wakes_observers",
+        "local_process::observation_tests::lost_exit_observation_retains_owner_and_fences_other_sessions",
+        "local_process::observation_tests::actual_exit_releases_only_its_original_registry_reservation",
+        "local_process::observation_tests::actual_exit_fact_survives_cancelled_map_publication",
+        "local_process::observation_tests::blocked_stdin_reservation_wakes_for_retained_outcome"
+      ]
+    },
+    {
+      "id": "exec-server-protocol-observation-wire",
+      "package": "codex-exec-server-protocol",
+      "filter": "test(=protocol::observation_wire_tests::absent_capability_is_not_implicitly_negotiated) | test(=protocol::observation_wire_tests::observation_failure_has_no_numeric_exit_or_sequence) | test(=protocol::observation_wire_tests::unknown_observation_failure_reasons_are_rejected)",
+      "expectedTestCount": 3,
+      "requiredTests": [
+        "protocol::observation_wire_tests::absent_capability_is_not_implicitly_negotiated",
+        "protocol::observation_wire_tests::observation_failure_has_no_numeric_exit_or_sequence",
+        "protocol::observation_wire_tests::unknown_observation_failure_reasons_are_rejected"
+      ]
     }
   ]
 }
