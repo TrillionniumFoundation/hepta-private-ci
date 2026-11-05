@@ -43,12 +43,12 @@ impl FinalUseProductionOutboxTarget for Observer {
             }
         })
     }
-    fn retire_notes_receipt(&self, permit: &NotesRetirementPermit) -> Result<(), String> {
+    fn retire_notes_receipt(&self, permit: &NotesRetirementPermit) -> Result<crate::ProductionRetirementAck, String> {
         assert_eq!(permit.receipt(), self.receipt);
         assert_eq!(permit.request().operation_destination_id, self.destination);
         *self.retired_head.lock().unwrap() = Some(self.peer.receipt.lock().unwrap().clone());
         self.retirements.fetch_add(1, Ordering::SeqCst);
-        Ok(())
+        crate::ProductionRetirementAck::from_validated_target(permit.request(), permit.receipt())
     }
 }
 async fn prepared_notes(
@@ -299,7 +299,7 @@ impl FinalUseProductionOutboxTarget for BlockingRetirement {
     ) -> ProductionTerminalObservationFuture<'a> {
         self.observer.observe_terminal(request)
     }
-    fn retire_notes_receipt(&self, permit: &NotesRetirementPermit) -> Result<(), String> {
+    fn retire_notes_receipt(&self, permit: &NotesRetirementPermit) -> Result<crate::ProductionRetirementAck, String> {
         self.entered.notify_one();
         self.release
             .lock()

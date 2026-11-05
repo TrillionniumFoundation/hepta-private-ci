@@ -246,7 +246,7 @@ impl FinalUseProductionOutboxTarget for ProductionCalculatorTarget {
     fn retire_calculator_receipt(
         &self,
         permit: &crate::CalculatorRetirementPermit,
-    ) -> Result<(), String> {
+    ) -> Result<crate::ProductionRetirementAck, String> {
         retire::retire(self, permit)
     }
 

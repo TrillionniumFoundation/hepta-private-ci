@@ -36,7 +36,7 @@ enum Status {
 pub(super) fn retire(
     target: &ProductionCalculatorTarget,
     permit: &crate::CalculatorRetirementPermit,
-) -> Result<(), String> {
+) -> Result<crate::ProductionRetirementAck, String> {
     let request = permit.request();
     target.decode(request)?;
     let receipt = CalculatorTerminalReceipt::from_json(&request.payload_json, permit.receipt())?;
@@ -50,7 +50,7 @@ pub(super) fn retire(
         .try_lock()
         .map_err(|_| "Calculator retirement is busy")?;
     if retired.as_ref() == Some(&digest) {
-        return Ok(());
+        return crate::ProductionRetirementAck::from_validated_target(request, permit.receipt());
     }
     let request_bytes = serde_json::to_vec(&Acknowledge {
         schema_version: 1,
@@ -78,5 +78,5 @@ pub(super) fn retire(
         return Err("Calculator retirement differs from the original terminal".into());
     }
     *retired = Some(digest);
-    Ok(())
+    crate::ProductionRetirementAck::from_validated_target(request, permit.receipt())
 }

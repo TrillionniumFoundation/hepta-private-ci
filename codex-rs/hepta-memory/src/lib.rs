@@ -503,6 +503,7 @@ pub use production_writer::ProductionQueuedReceipt;
 pub use production_writer::ProductionRecoveryReceipt;
 pub use production_writer::ProductionRetainedHos2Terminal;
 pub use production_writer::ProductionRetainedOperation;
+pub use production_writer::ProductionRetirementAck;
 pub use production_writer::ProductionTargetOutcome;
 pub use production_writer::ProductionTerminalObservation;
 pub use production_writer::ProductionTerminalObservationFuture;

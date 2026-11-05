@@ -201,7 +201,9 @@ impl ProductionDurableWriter {
             .rollback()
             .await
             .map_err(|error| ProductionWriterError::Durability(error.to_string()))?;
-        retired
+        let acknowledgement = retired?;
+        acknowledgement.matches(permit.request(), permit.receipt())?;
+        Ok(())
     }
 
     pub(super) async fn retry_calculator_retirement<T: FinalUseProductionOutboxTarget + ?Sized>(

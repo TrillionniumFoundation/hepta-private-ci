@@ -99,6 +99,10 @@ mod effect_entry;
 #[path = "production_owner_publication.rs"]
 mod owner_publication;
 
+#[path = "production_retirement_ack.rs"]
+mod retirement_ack;
+pub use retirement_ack::ProductionRetirementAck;
+
 #[path = "production_notes_owner.rs"]
 mod notes_owner;
 pub(crate) use notes_owner::NotesPreDispatchRejection;
@@ -2655,7 +2659,10 @@ pub trait FinalUseProductionOutboxTarget: ProductionOutboxTarget {
 
     /// Notes-only metadata retirement. A caller cannot construct this permit;
     /// the original writer derives it from its existing durable terminal event.
-    fn retire_notes_receipt(&self, _permit: &NotesRetirementPermit) -> Result<(), String> {
+    fn retire_notes_receipt(
+        &self,
+        _permit: &NotesRetirementPermit,
+    ) -> Result<ProductionRetirementAck, String> {
         Err("target does not provide Notes receipt retirement".to_string())
     }
 
@@ -2664,7 +2671,7 @@ pub trait FinalUseProductionOutboxTarget: ProductionOutboxTarget {
     fn retire_calculator_receipt(
         &self,
         _permit: &CalculatorRetirementPermit,
-    ) -> Result<(), String> {
+    ) -> Result<ProductionRetirementAck, String> {
         Err("target does not provide Calculator receipt retirement".into())
     }
 

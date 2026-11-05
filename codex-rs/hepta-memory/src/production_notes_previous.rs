@@ -70,7 +70,10 @@ impl FinalUseProductionOutboxTarget for ProductionNotesRecoveryTarget {
     fn destination_id(&self) -> &str {
         self.inner.destination_id()
     }
-    fn retire_notes_receipt(&self, permit: &crate::NotesRetirementPermit) -> Result<(), String> {
+    fn retire_notes_receipt(
+        &self,
+        permit: &crate::NotesRetirementPermit,
+    ) -> Result<crate::ProductionRetirementAck, String> {
         if !self.matches(permit.request()) {
             return Err("Notes recovery receipt differs from the retained operation".into());
         }

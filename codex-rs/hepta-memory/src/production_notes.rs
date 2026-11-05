@@ -427,7 +427,10 @@ impl FinalUseProductionOutboxTarget for ProductionNotesTarget {
         &self.destination
     }
 
-    fn retire_notes_receipt(&self, permit: &crate::NotesRetirementPermit) -> Result<(), String> {
+    fn retire_notes_receipt(
+        &self,
+        permit: &crate::NotesRetirementPermit,
+    ) -> Result<crate::ProductionRetirementAck, String> {
         let request = permit.request();
         self.decode(request)?;
         let receipt = NotesTerminalReceipt::from_json(&request.payload_json, permit.receipt())?;
@@ -440,7 +443,10 @@ impl FinalUseProductionOutboxTarget for ProductionNotesTarget {
             .try_lock()
             .map_err(|_| "Notes retirement busy")?;
         if retired.as_ref() == Some(&digest) {
-            return Ok(());
+            return crate::ProductionRetirementAck::from_validated_target(
+                request,
+                permit.receipt(),
+            );
         }
         let raw = serde_json::to_vec(&NotesAcknowledge {
             schema_version: 1,
@@ -470,7 +476,7 @@ impl FinalUseProductionOutboxTarget for ProductionNotesTarget {
             return Err("Notes retirement does not match the durable receipt".to_string());
         }
         *retired = Some(digest);
-        Ok(())
+        crate::ProductionRetirementAck::from_validated_target(request, permit.receipt())
     }
 
     fn observe_terminal<'a>(

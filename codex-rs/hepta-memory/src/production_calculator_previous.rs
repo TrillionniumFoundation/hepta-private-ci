@@ -48,7 +48,7 @@ impl FinalUseProductionOutboxTarget for ProductionCalculatorRecoveryTarget {
     fn retire_calculator_receipt(
         &self,
         permit: &crate::CalculatorRetirementPermit,
-    ) -> Result<(), String> {
+    ) -> Result<crate::ProductionRetirementAck, String> {
         if !self.matches(permit.request()) {
             return Err("Calculator recovery receipt differs from the retained operation".into());
         }

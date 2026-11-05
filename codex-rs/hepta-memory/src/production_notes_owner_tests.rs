@@ -55,14 +55,17 @@ impl FinalUseProductionOutboxTarget for Observer {
             }
         })
     }
-    fn retire_notes_receipt(&self, permit: &NotesRetirementPermit) -> Result<(), String> {
+    fn retire_notes_receipt(
+        &self,
+        permit: &NotesRetirementPermit,
+    ) -> Result<crate::ProductionRetirementAck, String> {
         assert_eq!(permit.receipt(), self.receipt);
         assert_eq!(permit.request().operation_destination_id, self.destination);
         self.retirements.fetch_add(1, Ordering::SeqCst);
         if self.lose_first_ack.swap(false, Ordering::SeqCst) {
             return Err("explicit fixture lost retirement acknowledgement".to_string());
         }
-        Ok(())
+        crate::ProductionRetirementAck::from_validated_target(permit.request(), permit.receipt())
     }
 }
 
