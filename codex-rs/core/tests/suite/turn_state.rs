@@ -203,6 +203,7 @@ async fn websocket_turn_state_is_stable_within_turn() -> Result<()> {
 
     let server = start_websocket_server_with_headers(vec![WebSocketConnectionConfig {
         requests: vec![
+            vec![ev_response_created("warm-1"), ev_completed("warm-1")],
             vec![
                 json!({
                     "type": "response.metadata",
@@ -242,6 +243,21 @@ async fn websocket_turn_state_is_stable_within_turn() -> Result<()> {
 
     assert_eq!(server.handshakes().len(), 1);
     let requests = server.single_connection();
+    assert_eq!(requests.len(), 4);
+    let prewarm = requests[0].body_json();
+    assert_eq!(prewarm["generate"], json!(false));
+    let prewarm_metadata: Value = serde_json::from_str(
+        prewarm["client_metadata"]["x-codex-turn-metadata"]
+            .as_str()
+            .expect("prewarm turn metadata"),
+    )?;
+    assert_eq!(prewarm_metadata["request_kind"], json!("prewarm"));
+    let requests = &requests[1..];
+    assert!(
+        requests
+            .iter()
+            .all(|request| request.body_json()["generate"].is_null())
+    );
     assert_eq!(requests.len(), 3);
     assert_eq!(
         requests
