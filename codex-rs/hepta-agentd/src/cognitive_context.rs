@@ -629,6 +629,13 @@ pub(crate) async fn revalidate_with_retrieval_context(
             .map_err(|_| CognitiveContextError::RankerUnavailable)?;
     }
 
+    // External currentness callbacks may block while the SQLite owner changes.
+    // Reacquire its complete cut after both providers have returned, including
+    // corrections, tombstones, frontier changes and expiry observed meanwhile.
+    store
+        .revalidate_lane_c_snapshot(&access, &scope, &cut, now_seconds()?)
+        .await?;
+
     Ok(CognitiveContextRevalidation {
         snapshot_digest: expected_snapshot.to_string(),
         read_digest: current_read_binding.to_string(),

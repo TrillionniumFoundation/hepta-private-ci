@@ -38,7 +38,8 @@
       "operation": "load_model",
       "nativeSymbol": "pub fn load_model(",
       "sourcePath": "codex-rs/hepta-infer-worker-host/src/model_worker.rs",
-      "sourcePathExists": true
+      "sourcePathExists": true,
+      "sourceBlob": "26ee6559a9de6baf5846ea367d02e5ffb01a40d6"
     },
     {
       "designOperation": "run",
@@ -81,7 +82,8 @@
       "operation": "run",
       "nativeSymbol": "pub async fn run(",
       "sourcePath": "codex-rs/hepta-infer-worker-host/src/native_run_control.rs",
-      "sourcePathExists": true
+      "sourcePathExists": true,
+      "sourceBlob": "4327512c3729f77172267432809b0daaafd93e14"
     },
     {
       "designOperation": "unload",
@@ -104,7 +106,8 @@
       "operation": "unload",
       "nativeSymbol": "pub fn unload_model(",
       "sourcePath": "codex-rs/hepta-infer-worker-host/src/model_worker.rs",
-      "sourcePathExists": true
+      "sourcePathExists": true,
+      "sourceBlob": "26ee6559a9de6baf5846ea367d02e5ffb01a40d6"
     }
   ],
   "repositoryControlledGaps": [
@@ -140,6 +143,16 @@
   "deputy": "security-authority",
   "technicalGuide": "docs/modules/inference.worker/TECHNICAL.md",
   "sourceRoot": [
+    "codex-rs/hepta-infer-worker-host"
+  ],
+  "mappingSourceIdentityMode": "exact_blob",
+  "observedAtHead": {
+    "commit": "58c81ccdd25002ae0f481d434af067a56fa7ddb8",
+    "tree": "57809be09ef01c02389ef37a817f1447d13d167b"
+  },
+  "observedSourcePaths": [
+    "codex-rs/Cargo.lock",
+    "codex-rs/Cargo.toml",
     "codex-rs/hepta-infer-worker-host"
   ]
 }

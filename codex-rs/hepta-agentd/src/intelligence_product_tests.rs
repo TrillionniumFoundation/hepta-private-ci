@@ -379,6 +379,14 @@ fn fixture() -> Fixture {
     let profile = objective_profile();
     let envelope = objective_envelope();
     let objective_context = objective_context(&profile, &envelope);
+    fixture_from_objective(profile, envelope, objective_context)
+}
+
+fn fixture_from_objective(
+    profile: ObjectiveAdmissionProfileV1,
+    envelope: ObjectiveSourceEnvelopeV1,
+    objective_context: ObjectiveAdmissionContextV1,
+) -> Fixture {
     let objective = admit_and_compile_objective_v1(&envelope, &profile, &objective_context)
         .expect("objective admission")
         .compile_result

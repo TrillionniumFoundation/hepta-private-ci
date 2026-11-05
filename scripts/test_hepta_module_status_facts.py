@@ -29,7 +29,7 @@ class ModuleStatusFactsTests(unittest.TestCase):
         self.assertEqual(set(by_id), set(by_binding))
         self.assertEqual(set(by_id), set(by_document))
         for module_id, module in by_id.items():
-            implementation = json.loads(
+            implementation_map = json.loads(
                 (ROOT / f"docs/modules/{module_id}/IMPLEMENTATION_MAP.json").read_text()
             )
             projected = [
@@ -37,8 +37,10 @@ class ModuleStatusFactsTests(unittest.TestCase):
                 by_binding[module_id],
                 by_document[module_id],
                 {
-                    "source_root_present": implementation["sourceRootPresent"],
-                    "production_implementation": implementation["productionImplementation"],
+                    "source_root_present": implementation_map["sourceRootPresent"],
+                    "production_implementation": implementation_map[
+                        "productionImplementation"
+                    ],
                 },
             ]
             self.assertTrue(
@@ -49,7 +51,9 @@ class ModuleStatusFactsTests(unittest.TestCase):
             )
             self.assertEqual({row["source_root_present"] for row in projected}, {True})
             self.assertEqual(
-                len({row["production_implementation"] for row in projected}), 1
+                len({row["production_implementation"] for row in projected}),
+                1,
+                f"{module_id}: production implementation projections disagree",
             )
             self.assertFalse(
                 module["production_implementation"]

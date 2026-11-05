@@ -85,7 +85,7 @@ impl DeploymentFinalUseIssuer {
                 "Desktop succession requires a new writer and actual Session pair",
             ));
         }
-        self.with_live_issuer_and_writer(registration, |issuer_lease| {
+        self.with_live_writer(registration, |issuer_lease| {
             let proof = self.retained_writer_authorization(registration)?;
             let _guard = self
                 .request_lock
@@ -120,6 +120,18 @@ impl DeploymentFinalUseIssuer {
                 .signing_bytes()
                 .map_err(io::Error::other)?;
             }
+            // Waiting for the issuer lock and loading its durable state can
+            // consume either lease. Check again immediately before the CAS.
+            let validate_time = |now| {
+                if issuer_lease.authority_epoch != state.head.authority_epoch
+                    || now < issuer_lease.issued_at_unix_ms
+                    || now >= issuer_lease.expires_at_unix_ms
+                {
+                    return Err(denied("original issuer lease expired or epoch changed"));
+                }
+                writer::validate_writer_time(registration, state.head.authority_epoch, now)
+            };
+            validate_time(self.clock.now_unix_ms().map_err(io::Error::other)?)?;
             let current = [&state.policies[slots[0]], &state.policies[slots[1]]];
             if current != [&next_policies[0], &next_policies[1]] {
                 if current != [&previous_policies[0], &previous_policies[1]] {
@@ -134,13 +146,7 @@ impl DeploymentFinalUseIssuer {
                     .map_err(io::Error::other)?;
             }
             let after = self.clock.now_unix_ms().map_err(io::Error::other)?;
-            if issuer_lease.authority_epoch != state.head.authority_epoch
-                || after < issuer_lease.issued_at_unix_ms
-                || after >= issuer_lease.expires_at_unix_ms
-            {
-                return Err(denied("original issuer lease expired or epoch changed"));
-            }
-            writer::validate_writer_time(registration, state.head.authority_epoch, after)
+            validate_time(after)
         })
     }
 }

@@ -38,7 +38,8 @@
       "operation": "admit_host",
       "nativeSymbol": "pub fn admit_host(",
       "sourcePath": "codex-rs/hepta-fleet/src/lease_ledger.rs",
-      "sourcePathExists": true
+      "sourcePathExists": true,
+      "sourceBlob": "2b70c835242e817fd51ba6eba9d3f1b812483254"
     },
     {
       "designOperation": "allocate",
@@ -61,7 +62,8 @@
       "operation": "allocate",
       "nativeSymbol": "pub fn issue(",
       "sourcePath": "codex-rs/hepta-fleet/src/lease_ledger.rs",
-      "sourcePathExists": true
+      "sourcePathExists": true,
+      "sourceBlob": "2b70c835242e817fd51ba6eba9d3f1b812483254"
     },
     {
       "designOperation": "renew_or_revoke",
@@ -84,7 +86,8 @@
       "operation": "renew_or_revoke",
       "nativeSymbol": "pub fn renew_or_revoke(",
       "sourcePath": "codex-rs/hepta-fleet/src/lease_ledger.rs",
-      "sourcePathExists": true
+      "sourcePathExists": true,
+      "sourceBlob": "2b70c835242e817fd51ba6eba9d3f1b812483254"
     }
   ],
   "repositoryControlledGaps": [
@@ -119,6 +122,16 @@
   "deputy": "runtime-control",
   "technicalGuide": "docs/modules/runtime.fleet/TECHNICAL.md",
   "sourceRoot": [
+    "codex-rs/hepta-fleet"
+  ],
+  "mappingSourceIdentityMode": "exact_blob",
+  "observedAtHead": {
+    "commit": "58c81ccdd25002ae0f481d434af067a56fa7ddb8",
+    "tree": "57809be09ef01c02389ef37a817f1447d13d167b"
+  },
+  "observedSourcePaths": [
+    "codex-rs/Cargo.lock",
+    "codex-rs/Cargo.toml",
     "codex-rs/hepta-fleet"
   ]
 }

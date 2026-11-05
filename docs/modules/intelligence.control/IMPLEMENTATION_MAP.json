@@ -7,8 +7,8 @@
     "tree": "755e3264fb49a7fedf56a4d2a77befca7af8c384"
   },
   "observedAtHead": {
-    "commit": "fd6d8d3fcd9aee36711381adf74b6ba7162cda1b",
-    "tree": "755e3264fb49a7fedf56a4d2a77befca7af8c384"
+    "commit": "58c81ccdd25002ae0f481d434af067a56fa7ddb8",
+    "tree": "57809be09ef01c02389ef37a817f1447d13d167b"
   },
   "observedSourcePaths": [
     "codex-rs/Cargo.lock",
@@ -44,7 +44,8 @@
       "tests": [
         "codex-rs/hepta-intelligence/src/canonical_tests.rs"
       ],
-      "sourcePathExists": true
+      "sourcePathExists": true,
+      "sourceBlob": "c610f073b47939acf15e7e76aad59883ac13fad4"
     },
     {
       "operation": "prepare_intelligence_run",
@@ -95,7 +96,8 @@
         "codex-rs/hepta-intelligence/src/canonical_tests.rs",
         "codex-rs/hepta-agentd/src/intelligence_product_tests.rs"
       ],
-      "sourcePathExists": true
+      "sourcePathExists": true,
+      "sourceBlob": "c610f073b47939acf15e7e76aad59883ac13fad4"
     },
     {
       "operation": "decide_boundary",
@@ -109,7 +111,8 @@
       "tests": [
         "codex-rs/hepta-intelligence/src/canonical_tests.rs"
       ],
-      "sourcePathExists": true
+      "sourcePathExists": true,
+      "sourceBlob": "c610f073b47939acf15e7e76aad59883ac13fad4"
     },
     {
       "operation": "assemble_context",
@@ -123,7 +126,8 @@
       "tests": [
         "codex-rs/hepta-intelligence/src/canonical_tests.rs"
       ],
-      "sourcePathExists": true
+      "sourcePathExists": true,
+      "sourceBlob": "c610f073b47939acf15e7e76aad59883ac13fad4"
     },
     {
       "operation": "validate_current_snapshot",
@@ -138,7 +142,8 @@
         "codex-rs/hepta-intelligence/src/canonical_tests.rs",
         "codex-rs/hepta-agentd/src/intelligence_product_tests.rs"
       ],
-      "sourcePathExists": true
+      "sourcePathExists": true,
+      "sourceBlob": "c610f073b47939acf15e7e76aad59883ac13fad4"
     },
     {
       "operation": "compose",
@@ -152,7 +157,8 @@
       "tests": [
         "codex-rs/hepta-intelligence/src/lib_tests.rs"
       ],
-      "sourcePathExists": true
+      "sourcePathExists": true,
+      "sourceBlob": "ac161c19df7b828fbca02d39ebfdb6661982e6d4"
     },
     {
       "operation": "run_read_only_vertical",
@@ -166,7 +172,8 @@
       "tests": [
         "codex-rs/hepta-intelligence/src/vertical_tests.rs"
       ],
-      "sourcePathExists": true
+      "sourcePathExists": true,
+      "sourceBlob": "eb89f2f5324d861b7bab680c4c99b03a370402e6"
     },
     {
       "operation": "evaluated_candidate_signing_payload_v1",
@@ -180,7 +187,8 @@
       "tests": [
         "codex-rs/hepta-intelligence/src/evaluated_shadow_tests.rs"
       ],
-      "sourcePathExists": true
+      "sourcePathExists": true,
+      "sourceBlob": "51f32b736c9aa0bc067776b3b4ca9c80a3cb42aa"
     },
     {
       "operation": "run_evaluated_shadow_v1",
@@ -194,7 +202,8 @@
       "tests": [
         "codex-rs/hepta-intelligence/src/evaluated_shadow_tests.rs"
       ],
-      "sourcePathExists": true
+      "sourcePathExists": true,
+      "sourceBlob": "51f32b736c9aa0bc067776b3b4ca9c80a3cb42aa"
     },
     {
       "operation": "run_shadow_pipeline",
@@ -209,7 +218,8 @@
         "codex-rs/hepta-intelligence/src/pipeline_tests.rs",
         "codex-rs/hepta-intelligence/tests/lane_f_shadow_vertical.rs"
       ],
-      "sourcePathExists": true
+      "sourcePathExists": true,
+      "sourceBlob": "1230d9b7c5ce8882451eb4c04065534e987863c5"
     },
     {
       "operation": "run_shadow_pipeline_v2",
@@ -223,7 +233,8 @@
       "tests": [
         "codex-rs/hepta-intelligence/src/pipeline_v2_tests.rs"
       ],
-      "sourcePathExists": true
+      "sourcePathExists": true,
+      "sourceBlob": "0dbc20e5eb0dbee8775d8cc2a74577db13bf05b4"
     },
     {
       "operation": "admit_ndu_stochastic_candidate_v1",
@@ -235,7 +246,8 @@
       "state": "source_navigation_only_product_binding_not_proved",
       "delegatedCallees": [],
       "tests": [],
-      "authority": "none"
+      "authority": "none",
+      "sourceBlob": "64ce0c612f4212fa0465177a74036b1cf3667e22"
     },
     {
       "operation": "append_observed_outcome_v2",
@@ -247,7 +259,8 @@
       "state": "source_navigation_only_product_binding_not_proved",
       "delegatedCallees": [],
       "tests": [],
-      "authority": "none"
+      "authority": "none",
+      "sourceBlob": "3d21ce3fe1729dc32ac1b7579e72a5056b674788"
     },
     {
       "operation": "append_outcome_credit_v2",
@@ -259,7 +272,8 @@
       "state": "source_navigation_only_product_binding_not_proved",
       "delegatedCallees": [],
       "tests": [],
-      "authority": "none"
+      "authority": "none",
+      "sourceBlob": "3d21ce3fe1729dc32ac1b7579e72a5056b674788"
     },
     {
       "operation": "canonical_ndu_stochastic_solver_digest_v1",
@@ -271,7 +285,8 @@
       "state": "source_navigation_only_product_binding_not_proved",
       "delegatedCallees": [],
       "tests": [],
-      "authority": "none"
+      "authority": "none",
+      "sourceBlob": "64ce0c612f4212fa0465177a74036b1cf3667e22"
     },
     {
       "operation": "compile_and_publish_objective_run_v1",
@@ -283,7 +298,8 @@
       "state": "source_navigation_only_product_binding_not_proved",
       "delegatedCallees": [],
       "tests": [],
-      "authority": "none"
+      "authority": "none",
+      "sourceBlob": "a2f361edbf1e0f8fd1024d085edcd71b4f2396f0"
     },
     {
       "operation": "compile_exercised_prompt_context_v1",
@@ -295,7 +311,8 @@
       "state": "source_navigation_only_product_binding_not_proved",
       "delegatedCallees": [],
       "tests": [],
-      "authority": "none"
+      "authority": "none",
+      "sourceBlob": "1e247f40bb8156357cf6d6274891d09e8b88570e"
     },
     {
       "operation": "compile_prompt_registry_v2",
@@ -307,7 +324,8 @@
       "state": "source_navigation_only_product_binding_not_proved",
       "delegatedCallees": [],
       "tests": [],
-      "authority": "none"
+      "authority": "none",
+      "sourceBlob": "803989e30f19c8f6cce78cde09434925f4f0a522"
     },
     {
       "operation": "decide_authenticated_intuition_v1",
@@ -319,7 +337,8 @@
       "state": "source_navigation_only_product_binding_not_proved",
       "delegatedCallees": [],
       "tests": [],
-      "authority": "none"
+      "authority": "none",
+      "sourceBlob": "8ea881cf551be8e8e0ca7b34d94f6162bead8b47"
     },
     {
       "operation": "decide_authenticated_intuition_v2",
@@ -331,7 +350,8 @@
       "state": "source_navigation_only_product_binding_not_proved",
       "delegatedCallees": [],
       "tests": [],
-      "authority": "none"
+      "authority": "none",
+      "sourceBlob": "8ea881cf551be8e8e0ca7b34d94f6162bead8b47"
     },
     {
       "operation": "evaluated_candidate_signing_payload_v2",
@@ -343,7 +363,8 @@
       "state": "source_navigation_only_product_binding_not_proved",
       "delegatedCallees": [],
       "tests": [],
-      "authority": "none"
+      "authority": "none",
+      "sourceBlob": "51f32b736c9aa0bc067776b3b4ca9c80a3cb42aa"
     },
     {
       "operation": "evaluated_shadow_production_decision_v2",
@@ -355,7 +376,8 @@
       "state": "source_navigation_only_product_binding_not_proved",
       "delegatedCallees": [],
       "tests": [],
-      "authority": "none"
+      "authority": "none",
+      "sourceBlob": "51f32b736c9aa0bc067776b3b4ca9c80a3cb42aa"
     },
     {
       "operation": "no_change_disposition_signing_payload_v1",
@@ -367,7 +389,8 @@
       "state": "source_navigation_only_product_binding_not_proved",
       "delegatedCallees": [],
       "tests": [],
-      "authority": "none"
+      "authority": "none",
+      "sourceBlob": "7004ae2981587a63f9941376196af9435dbbdc6d"
     },
     {
       "operation": "observe_authenticated_structural_canary_v1",
@@ -379,7 +402,8 @@
       "state": "source_navigation_only_product_binding_not_proved",
       "delegatedCallees": [],
       "tests": [],
-      "authority": "none"
+      "authority": "none",
+      "sourceBlob": "52148b2b9968759782e76963eb16acc0b2e7c34d"
     },
     {
       "operation": "observe_prompt_delivery_v1",
@@ -391,7 +415,8 @@
       "state": "source_navigation_only_product_binding_not_proved",
       "delegatedCallees": [],
       "tests": [],
-      "authority": "none"
+      "authority": "none",
+      "sourceBlob": "1e247f40bb8156357cf6d6274891d09e8b88570e"
     },
     {
       "operation": "plasticity_admission_signing_payload_v1",
@@ -403,7 +428,8 @@
       "state": "source_navigation_only_product_binding_not_proved",
       "delegatedCallees": [],
       "tests": [],
-      "authority": "none"
+      "authority": "none",
+      "sourceBlob": "7004ae2981587a63f9941376196af9435dbbdc6d"
     },
     {
       "operation": "prepare_prompt_delivery_v1",
@@ -415,7 +441,8 @@
       "state": "source_navigation_only_product_binding_not_proved",
       "delegatedCallees": [],
       "tests": [],
-      "authority": "none"
+      "authority": "none",
+      "sourceBlob": "1e247f40bb8156357cf6d6274891d09e8b88570e"
     },
     {
       "operation": "propose_authenticated_parameter_plasticity_v1",
@@ -427,7 +454,8 @@
       "state": "source_navigation_only_product_binding_not_proved",
       "delegatedCallees": [],
       "tests": [],
-      "authority": "none"
+      "authority": "none",
+      "sourceBlob": "7004ae2981587a63f9941376196af9435dbbdc6d"
     },
     {
       "operation": "propose_authenticated_topology_plasticity_v1",
@@ -439,7 +467,8 @@
       "state": "source_navigation_only_product_binding_not_proved",
       "delegatedCallees": [],
       "tests": [],
-      "authority": "none"
+      "authority": "none",
+      "sourceBlob": "e4d71ed863344823e5dcf4522375ad4cf1f1dd38"
     },
     {
       "operation": "run_neuron_tick_v1",
@@ -451,7 +480,8 @@
       "state": "source_navigation_only_product_binding_not_proved",
       "delegatedCallees": [],
       "tests": [],
-      "authority": "none"
+      "authority": "none",
+      "sourceBlob": "1405c0ced8fa858a776ef980e5b76f4fe970a4b3"
     },
     {
       "operation": "run_qualified_evaluated_shadow_v2",
@@ -463,7 +493,8 @@
       "state": "source_navigation_only_product_binding_not_proved",
       "delegatedCallees": [],
       "tests": [],
-      "authority": "none"
+      "authority": "none",
+      "sourceBlob": "8ea881cf551be8e8e0ca7b34d94f6162bead8b47"
     },
     {
       "operation": "structural_canary_observation_signing_payload_v1",
@@ -475,7 +506,8 @@
       "state": "source_navigation_only_product_binding_not_proved",
       "delegatedCallees": [],
       "tests": [],
-      "authority": "none"
+      "authority": "none",
+      "sourceBlob": "52148b2b9968759782e76963eb16acc0b2e7c34d"
     },
     {
       "operation": "topology_admission_signing_payload_v1",
@@ -487,7 +519,8 @@
       "state": "source_navigation_only_product_binding_not_proved",
       "delegatedCallees": [],
       "tests": [],
-      "authority": "none"
+      "authority": "none",
+      "sourceBlob": "e4d71ed863344823e5dcf4522375ad4cf1f1dd38"
     },
     {
       "operation": "topology_evaluation_signing_payload_v1",
@@ -499,7 +532,8 @@
       "state": "source_navigation_only_product_binding_not_proved",
       "delegatedCallees": [],
       "tests": [],
-      "authority": "none"
+      "authority": "none",
+      "sourceBlob": "e4d71ed863344823e5dcf4522375ad4cf1f1dd38"
     },
     {
       "operation": "topology_generation_signing_payload_v1",
@@ -511,7 +545,8 @@
       "state": "source_navigation_only_product_binding_not_proved",
       "delegatedCallees": [],
       "tests": [],
-      "authority": "none"
+      "authority": "none",
+      "sourceBlob": "e4d71ed863344823e5dcf4522375ad4cf1f1dd38"
     }
   ],
   "productCallers": [
@@ -569,15 +604,15 @@
   "sourceObjects": [
     {
       "path": "codex-rs/hepta-agentd/src/intelligence_product.rs",
-      "object": "1781996175ec7f16f44b9f58ac3e2c2bd41358af"
+      "object": "84900183ca03f870f61bba1c1ca3b1ccfd1e56ae"
     },
     {
       "path": "codex-rs/hepta-agentd/src/intelligence_product_tests.rs",
-      "object": "4f25f9d81eef9931f46ebabc01778cec297f5dee"
+      "object": "1e2b1d9a31a30b7fe65d91d66236b626fafa0f31"
     },
     {
       "path": "codex-rs/hepta-agentd/src/state.rs",
-      "object": "57294c9e77cf95ed5e31f28abe74c3c66fe92907"
+      "object": "df7372299a9c6edce9d219f85493a617becc6213"
     },
     {
       "path": "codex-rs/hepta-context-compiler",
@@ -585,15 +620,15 @@
     },
     {
       "path": "codex-rs/hepta-infer-worker-host/src/native_run_control.rs",
-      "object": "d378670412d30caf71feac26064c5cd476f6f1ca"
+      "object": "4327512c3729f77172267432809b0daaafd93e14"
     },
     {
       "path": "codex-rs/hepta-intelligence",
-      "object": "a3ed24d2f41dcb22ff746e9028ca0ae9a5fef10e"
+      "object": "3f7ab2428e355577869b14fc3a6a5218a6d4fa01"
     },
     {
       "path": "codex-rs/hepta-intelligence-eval",
-      "object": "89ba9a6e43f48e64c0057ad99d7a47307d87e521"
+      "object": "4f4a63a8f824102b0dad8f9beb598b8286d0c3b1"
     },
     {
       "path": "codex-rs/hepta-intelligence/src/canonical.rs",
@@ -609,7 +644,7 @@
     },
     {
       "path": "codex-rs/hepta-intelligence/src/evaluated_shadow_tests.rs",
-      "object": "86761bed052e733871391e704875c2d73406b1c7"
+      "object": "9c813e16654cdba9b1ddcffc7a402e489e01b806"
     },
     {
       "path": "codex-rs/hepta-intelligence/src/intuition_qualification.rs",
@@ -657,7 +692,7 @@
     },
     {
       "path": "codex-rs/hepta-intelligence/src/plasticity_product.rs",
-      "object": "128016bddabb5bdb6a0262d07c7b9327ffb7a8ee"
+      "object": "7004ae2981587a63f9941376196af9435dbbdc6d"
     },
     {
       "path": "codex-rs/hepta-intelligence/src/prompt_delivery.rs",
@@ -701,7 +736,7 @@
     },
     {
       "path": "codex-rs/hepta-objective",
-      "object": "41cbc5d716e26c076a0d51cdf72a9133b61b5857"
+      "object": "5172fd19fe60ac5330c1176b98154ede13b3a570"
     },
     {
       "path": "codex-rs/hepta-prompt-optimizer",
@@ -717,5 +752,6 @@
     "record": "intelligence.control",
     "previousMapBlob": "a787ea0b2d6f09ad8b8615ccc19873ad371a1af8",
     "scope": "source_navigation_only_no_execution_evidence_transferred"
-  }
+  },
+  "mappingSourceIdentityMode": "exact_blob"
 }
