@@ -133,6 +133,7 @@ async fn environment_context_uses_external_current_time_on_each_turn() -> Result
     .await;
     let time_provider = Arc::new(TestTimeProvider::default());
     let test = test_codex()
+        .with_internal_metadata_for_mock()
         .with_config(|config| {
             enable_current_time_reminder(config, /*interval*/ 0, CurrentTimeSource::External);
             config.include_environment_context = true;
@@ -334,6 +335,7 @@ async fn system_time_source_adds_current_time_reminder() -> Result<()> {
     )
     .await;
     let test = test_codex()
+        .with_internal_metadata_for_mock()
         .with_config(|config| {
             enable_current_time_reminder(config, /*interval*/ 1, CurrentTimeSource::System)
         })

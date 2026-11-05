@@ -386,7 +386,9 @@ async fn model_change_appends_model_instructions_developer_message() -> Result<(
     )
     .await;
 
-    let mut builder = test_codex().with_model("gpt-5.2");
+    let mut builder = test_codex()
+        .with_internal_metadata_for_mock()
+        .with_model("gpt-5.2");
     let test = builder.build(&server).await?;
     let next_model = "gpt-5.4";
 
@@ -942,6 +944,7 @@ async fn model_change_from_multimodal_to_text_strips_prior_media_content() -> Re
     .await;
 
     let mut builder = test_codex()
+        .with_internal_metadata_for_mock()
         .with_auth(CodexAuth::create_dummy_chatgpt_auth_for_testing())
         .with_config(move |config| {
             config.model = Some(multimodal_model_slug.to_string());
