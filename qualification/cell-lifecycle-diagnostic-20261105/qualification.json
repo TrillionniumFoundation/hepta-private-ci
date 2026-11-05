@@ -1,0 +1,233 @@
+{
+  "schema_version": 1,
+  "scope": "Bounded public Cell lifecycle refusal port into diagnostic PR #4826",
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "diagnostic_base": {
+    "commit": "3419b6ac8adf5b47b140e553f5fff9e74c98d352",
+    "tree": "969b13aa7e7dbdf0ad4c33b0a380d8cfdabea535"
+  },
+  "safety_source": {
+    "pr": 4821,
+    "commit": "7ed5734a7545e2809f9c8e3014bd14f0eafdd80c",
+    "selection": "Only public runtime admission boundary and its behavior tests. Other contracts/operations changes are not integrated."
+  },
+  "source_readback": {
+    "verified": true,
+    "files": [
+      {
+        "path": "codex-rs/hepta-runtime/src/lib.rs",
+        "blob": "a58dfaa26fb8544530603f0c14ca0339514b17bf",
+        "exact_content_match": true
+      },
+      {
+        "path": "codex-rs/hepta-runtime/src/topology_execution.rs",
+        "blob": "768b0dd2a5c29a2eb0ac640228ccab5a6d5d8a35",
+        "exact_content_match": true
+      },
+      {
+        "path": "codex-rs/hepta-runtime/src/organs_tests.rs",
+        "blob": "06a42540a0d857b26d85e9fa4bbac83cba04f4c8",
+        "exact_content_match": true
+      }
+    ],
+    "manifest": "source-manifest.json",
+    "all_changed_files_verified": 6
+  },
+  "unchanged_internal_topology": {
+    "path": "codex-rs/hepta-runtime/src/organs.rs",
+    "blob": "0950be6088f669be5d00837646e624190efa0e5e"
+  },
+  "behavior_tests": [
+    "public_governed_topology_denies_before_grant_consumption_or_callbacks",
+    "public_topology_recovery_denies_before_grant_consumption_or_callbacks"
+  ],
+  "test_scenarios_per_entry": [
+    "control.runtime",
+    "cognitive.read",
+    "learning.plasticity",
+    "kernel.evidence"
+  ],
+  "source_review": {
+    "independent_reviews": 2,
+    "blocking_findings": 0,
+    "evidence_scope": "Read-only source inspection; not native execution or physical custody qualification."
+  },
+  "native_validation": {
+    "status": "PASS_PUBLIC_REFUSAL_AND_COMPLETE_RUNTIME_PACKAGE_ON_EXACT_LINUX_CANDIDATE",
+    "job_id": "1a1aa666e99-fc05-4279",
+    "authoritative_exit_code": 0,
+    "output_complete": true,
+    "output_durable": true,
+    "input_record": "native-inputs.json",
+    "phase_records": "native-results.json",
+    "final_record": "native-final.json",
+    "terminal_record": "native-authoritative-status.json",
+    "source_unchanged_after_final_formatting": true,
+    "retries": 0,
+    "negative_control": {
+      "status": "EXPECTED_BEHAVIORAL_FAILURE",
+      "change": "Remove only the two public require_control_lifecycle_admission_v1 call lines.",
+      "patch": "negative-control.patch",
+      "executed": 2,
+      "passed": 0,
+      "failed": 2,
+      "other_tests_excluded_by_filter": 14,
+      "exit_code": 100,
+      "observed_failure": "Both compiled tests received successful RuntimeTopologyApplyReceiptV1, generation 1 to 2, then failed the required-refusal assertion.",
+      "uses_valid_fixture_grants": true,
+      "unauthenticated_bypass_established": false
+    },
+    "restored_full_runtime_package": {
+      "executed": 16,
+      "passed": 16,
+      "failed": 0,
+      "skipped": 0,
+      "exit_code": 0,
+      "command": "just test --locked -p codex-hepta-runtime --retries 0"
+    },
+    "public_regressions": {
+      "tests": 2,
+      "scenarios_per_test": 4,
+      "total_scenarios": 8,
+      "included_in_package_test_count": true,
+      "assertions": [
+        "typed CellLifecycleAdmissionUnavailable downcast",
+        "complete topology snapshot unchanged",
+        "zero snapshot, migrate and rollback callbacks",
+        "zero state-adapter reads",
+        "nonce still claimable after refusal"
+      ]
+    },
+    "formatter": {
+      "command": "just fmt --base 3419b6ac8adf5b47b140e553f5fff9e74c98d352",
+      "exit_code": 0,
+      "selected_rust_files": 3,
+      "source_changed": false,
+      "tests_run_after_final_formatting": false,
+      "scope_record": "format-scope.json"
+    },
+    "source_materialization": {
+      "tracked_materialized": 9878,
+      "tracked_omitted": 888,
+      "full_index_tree": "99cc2b503f5e9825457066c0d7e2b935a795d234",
+      "raw_bytes_all_hashed": false,
+      "inventory": "materialization.json.gz",
+      "inventory_decompressed_sha256": "baa54dd53157adc3ca1db05913cd1bb21f6bf89bc1e4aa5ea618300f07003592",
+      "locked_offline_metadata_preflight": "PASS"
+    },
+    "preparation_failure_retained": {
+      "phase": "initial full checkout",
+      "command_timeout_seconds": 150,
+      "process_exit_code": 1,
+      "native_test_result_claimed": false,
+      "status": "native-full-checkout-status.json"
+    },
+    "platform_scope": "Linux x86_64; the new behavior tests are Unix-gated; local fixtures, no physical effects qualification"
+  },
+  "full_control_lifecycle_owner": "UNIMPLEMENTED_DENY_ALL",
+  "historical_results_transferred": false,
+  "documentation_validation": {
+    "status": "PASS_DOCUMENTATION_PROJECTION_AND_SCOPED_SOURCE_REFERENCES",
+    "generatorPath": "scripts/hepta-implementation-maps.py",
+    "generatorBlob": "e8ae0fd675b7e3ca2911b80af92cc21021789fbe",
+    "sourceBase": {
+      "commit": "43e79c9965816e43a6c339a3a291ab97153a92b8",
+      "tree": "e90cd3495c47033d6fab7f5dc9de8b5e1e735f7b"
+    },
+    "generatedProjectionsMatch": true,
+    "executionClaimsRemainFalse": true,
+    "unrelatedOperationsPreserved": true,
+    "oldRuntimeTestReferencesRetained": [
+      "codex-rs/hepta-runtime/src/organs_tests.rs::authenticated_canary_forces_live_fault_then_rolls_forward_to_reconciled_predecessor_semantics",
+      "codex-rs/hepta-runtime/src/organs_tests.rs::governed_topology_requires_final_use_and_replaces_the_live_cns_generation",
+      "codex-rs/hepta-runtime/src/organs_tests.rs::revoked_final_use_never_mutates_the_live_topology",
+      "codex-rs/hepta-runtime/src/organs_tests.rs::topology_migration_owner_must_bind_exact_handoff_plan"
+    ],
+    "runtimeTestReferencesValidated": [
+      "codex-rs/hepta-runtime/src/organs_tests.rs::authenticated_canary_forces_live_fault_then_rolls_forward_to_reconciled_predecessor_semantics",
+      "codex-rs/hepta-runtime/src/organs_tests.rs::governed_topology_requires_final_use_and_replaces_the_live_cns_generation",
+      "codex-rs/hepta-runtime/src/organs_tests.rs::public_governed_topology_denies_before_grant_consumption_or_callbacks",
+      "codex-rs/hepta-runtime/src/organs_tests.rs::public_topology_recovery_denies_before_grant_consumption_or_callbacks",
+      "codex-rs/hepta-runtime/src/organs_tests.rs::revoked_final_use_never_mutates_the_live_topology",
+      "codex-rs/hepta-runtime/src/organs_tests.rs::topology_migration_owner_must_bind_exact_handoff_plan"
+    ],
+    "sourceObjectsMatchedExactGitHubTree": 39,
+    "sourceFilesHashCheckedLocally": [
+      "codex-rs/hepta-runtime/src/lib.rs",
+      "codex-rs/hepta-runtime/src/organs_tests.rs",
+      "codex-rs/hepta-runtime/src/topology_execution.rs"
+    ],
+    "fullRepositoryQualificationRun": false,
+    "rustTestsRun": false,
+    "outputs": {
+      "docs/modules/learning.plasticity/CURRENT_IMPLEMENTATION.md": {
+        "sha256": "59c2ebecd09613738d04426b9a7fb1697cdb77279e505b546834c874dc234f2a",
+        "bytes": 32089
+      },
+      "docs/modules/learning.plasticity/CURRENT_STATE.json": {
+        "sha256": "f5680ed758d8afafe27f8b73d91ae3750b3b33ff053422655bb41c965c551cd1",
+        "bytes": 19477
+      },
+      "docs/modules/learning.plasticity/IMPLEMENTATION_MAP.json": {
+        "sha256": "2c5e9ba15839d85c5245c06302a4c12bdfd3aed13e1be188d43320095928e4fe",
+        "bytes": 39715
+      }
+    },
+    "root_operation_inventory_and_closed_world_validation": true
+  },
+  "ci": {
+    "observed_at_utc": "2026-11-05 06:49:32 UTC",
+    "run": {
+      "id": 41979312004,
+      "name": "blocking-ci",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/41979312004",
+      "event": "pull_request",
+      "head_sha": "3247636513f4cddaede6e9b45110925e9065d507",
+      "head_branch": "codex/organ-intermediate-diagnosis-20261105-r2",
+      "status": "queued",
+      "conclusion": null,
+      "run_attempt": 1
+    },
+    "source_head": "3247636513f4cddaede6e9b45110925e9065d507",
+    "source_tree": "99cc2b503f5e9825457066c0d7e2b935a795d234",
+    "prospective_merge": {
+      "sha": "1bc1c6e0d2878e6445022a3ddf776983406851d2",
+      "tree": "99cc2b503f5e9825457066c0d7e2b935a795d234",
+      "parents": [
+        "732e934ba496d90fbe042b8d41d479ef901643e5",
+        "3247636513f4cddaede6e9b45110925e9065d507"
+      ]
+    },
+    "runtime_ci_result_observed": false
+  },
+  "code_commit": {
+    "commit": "43e79c9965816e43a6c339a3a291ab97153a92b8",
+    "tree": "e90cd3495c47033d6fab7f5dc9de8b5e1e735f7b",
+    "parents": [
+      "3419b6ac8adf5b47b140e553f5fff9e74c98d352"
+    ]
+  },
+  "candidate": {
+    "commit": "3247636513f4cddaede6e9b45110925e9065d507",
+    "tree": "99cc2b503f5e9825457066c0d7e2b935a795d234",
+    "parent": "43e79c9965816e43a6c339a3a291ab97153a92b8",
+    "pr": 4826,
+    "branch": "codex/organ-intermediate-diagnosis-20261105-r2",
+    "publication": "non_force_fast_forward_expected_previous_head_3419b6ac8adf5b47b140e553f5fff9e74c98d352"
+  },
+  "closure": {
+    "public_admission_omission": "CLOSED_ON_CANDIDATE",
+    "complete_control_lifecycle_owner": "UNIMPLEMENTED_DENY_ALL",
+    "remote_ci_pass": false,
+    "main_merged": false,
+    "product_or_release_qualification": false,
+    "windows_or_macos_native_qualification": false,
+    "remaining_4821_contracts_operations_integrated": false
+  },
+  "evidence_publication": {
+    "mode": "evidence-only successor branch; diagnostic source ref remains unchanged",
+    "branch": "evidence/cell-lifecycle-admission-r2-20261105",
+    "parent_source_commit": "3247636513f4cddaede6e9b45110925e9065d507",
+    "manifest": "evidence-manifest.json"
+  }
+}

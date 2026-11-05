@@ -1,0 +1,45 @@
+RUST_MIN_STACK=8388608 NEXTEST_PROFILE=local python3 ../scripts/run-nextest.py "$@"
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#proc-macro2@1.0.107` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#quote@1.0.47` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#generic-array@0.14.7` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#serde_core@1.0.229` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#serde@1.0.229` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#zmij@1.0.23` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#serde_json@1.0.154` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#libc@0.2.191` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#curve25519-dalek@4.1.3` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#icu_normalizer_data@2.3.0` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#icu_properties_data@2.3.0` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#rustix@1.1.5` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#ring@0.17.14` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#parking_lot_core@0.9.12` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#num-traits@0.2.19` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#crossbeam-utils@0.8.23` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#thiserror@2.0.21` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#rustls@0.23.46` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#libsqlite3-sys@0.37.0` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#getrandom@0.3.4` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#anyhow@1.0.104` which wasn't produced by cargo metadata
+   Compiling codex-hepta-runtime v0.0.0 (/home/qian-qi/work/hepta-cell-admission-r2-20261105/source/codex-rs/hepta-runtime)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 4.87s
+────────────
+ Nextest run ID bc92d2ec-ce0d-44db-b6ed-6079bbb73b4b with nextest profile: local
+    Starting 16 tests across 1 binary
+        PASS [   0.010s] ( 1/16) codex-hepta-runtime organs::tests::live_status_request_traverses_the_initialized_graph
+        PASS [   0.011s] ( 2/16) codex-hepta-runtime organs::tests::busy_or_stopped_hosts_never_bypass_dispatch
+        PASS [   0.592s] ( 3/16) codex-hepta-runtime organs::tests::governed_topology_requires_final_use_and_replaces_the_live_cns_generation
+        PASS [   0.894s] ( 4/16) codex-hepta-runtime organs::tests::authenticated_canary_forces_live_fault_then_rolls_forward_to_reconciled_predecessor_semantics
+        PASS [   0.014s] ( 5/16) codex-hepta-runtime organs::tests::status_consumer_checks_the_complete_hierarchy_without_direct_adapter_fallback
+        PASS [   0.012s] ( 6/16) codex-hepta-runtime organs::tests::topology_migration_owner_must_bind_exact_handoff_plan
+        PASS [   0.360s] ( 7/16) codex-hepta-runtime organs::tests::revoked_final_use_never_mutates_the_live_topology
+        PASS [   1.050s] ( 8/16) codex-hepta-runtime organs::tests::public_governed_topology_denies_before_grant_consumption_or_callbacks
+        PASS [   1.081s] ( 9/16) codex-hepta-runtime organs::tests::public_topology_recovery_denies_before_grant_consumption_or_callbacks
+        PASS [   2.199s] (10/16) codex-hepta-runtime tests::rejects_database_row_with_a_wrong_mac
+        PASS [   2.271s] (11/16) codex-hepta-runtime tests::opens_exact_schema_v5_without_mutation_authority
+        PASS [   0.009s] (12/16) codex-hepta-runtime tests::runtime_status_wire_codec_rejects_effect_authority
+        PASS [   0.009s] (13/16) codex-hepta-runtime tests::runtime_status_wire_codec_rejects_unknown_critical_fields
+        PASS [   2.233s] (14/16) codex-hepta-runtime tests::rejects_exposed_state_file
+        PASS [   2.232s] (15/16) codex-hepta-runtime tests::rejects_runtime_payload_with_a_valid_shape_but_wrong_mac
+        PASS [   1.052s] (16/16) codex-hepta-runtime tests::rejects_wrong_schema_without_creating_or_migrating
+────────────
+     Summary [   4.205s] 16 tests run: 16 passed, 0 skipped
