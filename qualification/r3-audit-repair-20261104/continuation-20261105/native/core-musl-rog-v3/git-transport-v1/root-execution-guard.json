@@ -1,0 +1,158 @@
+{
+  "schema": "hepta-core-musl-root-execution-guard-v3",
+  "reviewed_at": "2026-11-05T13:28:18.165740+00:00",
+  "decision": "APPROVED_FOR_EXACT_STAGED_NATIVE_EXECUTION_NOT_QUALIFIED",
+  "native_execution_observed": false,
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "product_head": "5b6331250ff459033bd44d1a95daec70131277cc",
+  "product_tree": "b26598d0d97d8d51e723bb5582137315f2174d35",
+  "candidate_tree": "e78c819b8b1f435f8b37bea17b4ffdc724961aa2",
+  "source_changes": [
+    {
+      "path": "codex-rs/core/src/environment_selection.rs",
+      "before": "85d590f386ba81428e5ea3360d2e573d054cab4a",
+      "after": "3c08e1620e800c30c47d98cc775cb20d4650ac88",
+      "scope": "original exact test body delegated to verified owned child; original assertions and inner deadline remain"
+    },
+    {
+      "path": "codex-rs/linux-sandbox/src/parent_lifecycle.rs",
+      "before": "8f500e03938718820360ce2ad41f2286eb9071bd",
+      "after": "fe42212316589999fdfc0b1877c975bdafa4a8e7",
+      "scope": "lossless i128 comparison across signed GNU and unsigned musl f_type"
+    }
+  ],
+  "disabled_request": {
+    "path": "/workspace/scratch/07dd58cc9630/ci-audit/core-wait-span-20261105/native-project-request-DISABLED-v3.json",
+    "bytes": 1261589,
+    "sha256": "7c847558d78b0ec7c3128445be0a6969be384a71264148af0d114d4dbe6a441d",
+    "computed_git_blob": "b9b98905a2a323b5edb6f54148fbecc55c8ed34b"
+  },
+  "reviewed_files": [
+    {
+      "path": "/workspace/scratch/07dd58cc9630/ci-audit/core-wait-span-20261105/native-plan-v2.json",
+      "bytes": 23139,
+      "sha256": "88ea35cae2b64475db7deebf0307dbc360cf97538aa84428433ef4376336aef2",
+      "git_blob": "6b2dc811398e6e7f0c083911f16854068632cd12"
+    },
+    {
+      "path": "/workspace/scratch/07dd58cc9630/ci-audit/core-wait-span-20261105/native_project_runner_v3.py",
+      "bytes": 36195,
+      "sha256": "1201a4a2fec8d508f781f8f55f31ef1e60fb67747d08c7ff66794404128e9ed0",
+      "git_blob": "ecc9e19f2722dc6ee668ad5f42a10b6bfa2bfdde"
+    },
+    {
+      "path": "/workspace/scratch/07dd58cc9630/ci-audit/core-wait-span-20261105/runner-v2-to-v3.delta.patch",
+      "bytes": 9149,
+      "sha256": "598fa2ef338756c8df1a4ab0db7d45b757913049901d65e52aea27ad29cfcb0e",
+      "git_blob": "e4081cb501058edc19050bc76a1038de59d92ea7"
+    },
+    {
+      "path": "/workspace/scratch/07dd58cc9630/ci-audit/core-wait-span-20261105/plan-v1-to-v2.delta.patch",
+      "bytes": 4177,
+      "sha256": "dc28bf63b921c0984c951239c66867d5e83c985411aa5d2ca16d7ee0664ac54b",
+      "git_blob": "e06d74ac4bd36e72fd0931bd1665afa670a9d465"
+    },
+    {
+      "path": "/workspace/scratch/07dd58cc9630/ci-audit/core-wait-span-20261105/load_staged_native_project.py",
+      "bytes": 2884,
+      "sha256": "e5a696ab2c543babc38ca000f72014216e53334ce01ccacd456b1b74ce7ea8ef",
+      "git_blob": "03e4b4385765a74fc66547ba310d63a1f2ac1c0f"
+    },
+    {
+      "path": "/workspace/scratch/07dd58cc9630/ci-audit/core-wait-span-20261105/package_staged_request.py",
+      "bytes": 4704,
+      "sha256": "4c20a866efa4a2eab77c3a4bec91bf5256670092afb2e988e560207c97ff85c6",
+      "git_blob": "5476606db5dbe8c1f301a18e811cecbd4e820a7c"
+    },
+    {
+      "path": "/workspace/scratch/07dd58cc9630/ci-audit/core-wait-span-20261105/native-project-request-manifest-v3.json",
+      "bytes": 2166,
+      "sha256": "4f4522c27c04d07e3a47bc55742695015d37993723c81c3c17882220d537a366",
+      "git_blob": "a7f3d29c408458faddec2e246f7e0609ca4a170e"
+    },
+    {
+      "path": "/workspace/scratch/07dd58cc9630/ci-audit/core-wait-span-20261105/native-project-request-DISABLED-v3.json",
+      "bytes": 1261589,
+      "sha256": "7c847558d78b0ec7c3128445be0a6969be384a71264148af0d114d4dbe6a441d",
+      "git_blob": "b9b98905a2a323b5edb6f54148fbecc55c8ed34b"
+    },
+    {
+      "path": "/workspace/scratch/07dd58cc9630/ci-audit/core-wait-span-20261105/core-unit-timeout-reference-v1.json",
+      "bytes": 11224,
+      "sha256": "5dde1a126be85b87d14bc6f9e8e9b21fa17df43bb00f50531026c12b6730e142",
+      "git_blob": "98fce3e3fc2feddccdefed14bec093b60b590791"
+    },
+    {
+      "path": "/workspace/scratch/07dd58cc9630/ci-audit/core-wait-span-20261105/staged-transport-DISABLED-v3/transport-manifest.json",
+      "bytes": 8179,
+      "sha256": "05c73dc61fff3a45b7f64f1088925a6da0cbd59c572945884a2f6b9f27359a84",
+      "git_blob": "a85671c6e7ba64342c22f05150d1ef8fe855c78d"
+    }
+  ],
+  "request_decoded_input_identity": {
+    "bytes": 5555376,
+    "sha256": "4a51c7ecb2288ea403f3f79e221459b1d6b31329fb6fa4a09b5df1937847f43a",
+    "computed_git_blob": "eb836bd1521fd1017c20f4321a8f11b6c67dae48"
+  },
+  "allowed_enable_changes": [
+    "execute=false to true",
+    "root_execution_guard=null to this actual Git blob SHA",
+    "plan.execute=false to true",
+    "plan.root_execution_guard=null to this actual Git blob SHA"
+  ],
+  "native_scope": {
+    "host": "rog",
+    "sole_mutator": "/root/ci_audit",
+    "idempotency_key": "hepta-rog-core-musl-project-20261105-v1",
+    "timeout_seconds": 21600,
+    "staging_path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/core-musl-project-input-v3-20261105.json.gz",
+    "upload": "15 or actual bounded 64KiB ordered chunks; same hash-derived upload_id, expected_version=absent, final full size/SHA; no disabled request upload",
+    "start": "one exact small process_start only after complete committed file_info identity matches; preserve all original transport responses",
+    "phases": "P0 prerequisite/source guards, P1 pinned causal negative/positive, P2 full exact overlay, P3 helpers/full metadata/project catalog, P4 original project + additional unsharded Core, P5 conditional exact full workspace",
+    "project_roster": 3977,
+    "project_eligible": 3967,
+    "project_ignored": 10,
+    "full_roster": 19563,
+    "full_eligible": 19506,
+    "full_ignored": 57,
+    "normal_helpers": 7,
+    "project_initial_free_bytes": 25013160352,
+    "full_initial_free_bytes": 41222014440,
+    "per_command_floor_bytes": 8000000000,
+    "ordinary_head": "cabcb40d36e116beaa65750e1f674c52035da785",
+    "ordinary_index": {
+      "bytes": 1222758,
+      "sha256": "e959b5d2c6186ea1d188f905d82690c55576dd6b86450331babb54f0b83236c8"
+    },
+    "locks": {
+      "codex-rs/Cargo.lock": {
+        "bytes": 413768,
+        "sha256": "4a7a5535cf045089458468411e126b5f59bc6bbf34fc0deead9b0c1b8d84000a"
+      },
+      "MODULE.bazel.lock": {
+        "bytes": 1738619,
+        "sha256": "11f8a421224b9b05f32c4c14054e8868083d989fc497310c8d51e1156f189ca3"
+      }
+    },
+    "source_initial": "4a3374e22e16ce5c764288ad018cd9affadf94ea",
+    "owned_root_must_be_absent": "/home/qian-qi/work/hepta-core-wait-span-20261105"
+  },
+  "independent_root_review": [
+    "Read full v2 runner and entire v2-to-v3 delta; read full staged loader and packaging script and plan delta; all frozen file hashes revalidated.",
+    "Verified actual full Git candidate tree differs from b265 in only the two specified source leaves.",
+    "Verified PTY full before/after test source diff only adds diagnostic printing; no Linux original full-roster increment. Independent actual old catalog includes collector case.",
+    "Approved additional Linux unsharded default parallel scope with natural terminal and elapsed<=900s qualification bound; not original Windows eight shards/33 subcalls or an externally enforced Bazel timeout.",
+    "Global GIT_OPTIONAL_LOCKS=0, source new-path absence checks, original ordinary index/HEAD/locks, external V8 file pins and complete source guards retained.",
+    "Final source guard failure forces controller nonzero and qualification open while retaining observed original test results.",
+    "Whole inputs envelope is byte-identical to reviewed v2. Source maps and test rosters remain fixed."
+  ],
+  "stop_and_scope_limits": [
+    "No input drift, unsupported metadata/catalog change, invalid causal control, unexpected source/index drift or capacity failure may be masked by narrowing, retries or resetting.",
+    "No full build unless actual project and additional parallel scopes pass and fresh full capacity meets the fixed bound; insufficient capacity records RESOURCE_PENDING.",
+    "P6 hygiene is not authorized by this automatic runner. Root reviews actual terminal first; all tests precede fix/fmt; no tests after hygiene.",
+    "No ordinary index/ref mutation, cache deletion, system security changes, arbitrary PID kills, unrelated process management or credentials inspection.",
+    "No ai395 unknown B16 driver entry/request/source/target is touched and no inference about its three tool timeouts is made.",
+    "Native Linux scopes cannot establish Windows or actual musl platform qualification; scientific and external acceptance blockers remain open.",
+    "If process_start returns unknown, retain same exact request/key and reconcile only attributable read-only status; do not invent a successful start or create an alternate key replay."
+  ]
+}

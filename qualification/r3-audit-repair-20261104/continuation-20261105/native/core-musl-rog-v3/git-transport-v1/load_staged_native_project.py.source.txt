@@ -1,0 +1,56 @@
+"""Read one root-approved, create-only staged request; never fetch inputs."""
+import base64
+import gzip
+import hashlib
+import json
+import os
+from pathlib import Path
+import stat
+import sys
+
+control = json.loads(sys.stdin.buffer.read())
+path = Path(control["staged_path"])
+expected_path = Path("/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/core-musl-project-input-v3-20261105.json.gz")
+assert path == expected_path
+for parent in path.parents:
+    assert not parent.is_symlink(), "staged path has symlink parent"
+fd = os.open(path, os.O_RDONLY | os.O_NOFOLLOW)
+try:
+    before = os.fstat(fd)
+    assert stat.S_ISREG(before.st_mode) and before.st_nlink == 1
+    assert before.st_size == control["compressed"]["bytes"]
+    with os.fdopen(fd, "rb", closefd=False) as source:
+        packed = source.read(before.st_size + 1)
+    after = os.fstat(fd)
+    assert (before.st_dev, before.st_ino, before.st_size, before.st_mtime_ns, before.st_ctime_ns) == (after.st_dev, after.st_ino, after.st_size, after.st_mtime_ns, after.st_ctime_ns)
+finally:
+    os.close(fd)
+assert len(packed) == control["compressed"]["bytes"]
+assert hashlib.sha256(packed).hexdigest() == control["compressed"]["sha256"]
+raw = gzip.decompress(packed)
+assert len(raw) == control["uncompressed"]["bytes"]
+assert hashlib.sha256(raw).hexdigest() == control["uncompressed"]["sha256"]
+request = json.loads(raw)
+assert request["execute"] is True and request["root_execution_guard"] == control["root_execution_guard"]
+assert request["host"] == "rog"
+assert request["idempotency_key"] == control["idempotency_key"]
+assert request["idempotency_key"] == "hepta-rog-core-musl-project-20261105-v1"
+runner = request["runner"]
+assert len(runner["source"].encode()) == runner["bytes"] == control["runner"]["bytes"]
+assert hashlib.sha256(runner["source"].encode()).hexdigest() == runner["sha256"] == control["runner"]["sha256"]
+input_packed = base64.b64decode(request["inputs"]["gzip_base64"], validate=True)
+assert hashlib.sha256(input_packed).hexdigest() == request["inputs"]["gzip_sha256"]
+data = gzip.decompress(input_packed)
+assert len(data) == request["inputs"]["bytes"]
+assert hashlib.sha256(data).hexdigest() == request["inputs"]["sha256"]
+inputs = json.loads(data)
+assert not (inputs.keys() & request.keys())
+assert "_verified_transport" not in request and "_verified_transport" not in inputs
+request.update(inputs)
+transport = dict(control, actual_device=before.st_dev, actual_inode=before.st_ino,
+                 actual_mode=stat.S_IMODE(before.st_mode), descriptor_identity_stable=True,
+                 compressed_and_raw_hashes_verified=True)
+request["_verified_transport"] = transport
+print(json.dumps({"verified_staged_transport": transport}), flush=True)
+exec(compile(runner["source"], "approved-native-project-runner.py", "exec"),
+     {"__name__": "__main__", "REQUEST": request, "REQUEST_BYTES": raw})

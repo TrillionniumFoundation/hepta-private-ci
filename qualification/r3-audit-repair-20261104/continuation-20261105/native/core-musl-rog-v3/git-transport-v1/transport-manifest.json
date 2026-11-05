@@ -1,0 +1,76 @@
+{
+  "schema": "core-musl-fixed-git-input-transport-v1",
+  "request_enabled": true,
+  "native_executed": false,
+  "source_request": {
+    "bytes": 1261663,
+    "sha256": "148243830f8a8c36ae7fe85822160c4a7dfd19bf5a06d0d3daef7c5ccc8edaaa",
+    "git_blob": "94885a69f4cc5042fdb5b635cdd7455d684e2e7d"
+  },
+  "compressed_request": {
+    "bytes": 926608,
+    "sha256": "98f1c3e0e36d268659e2522e7d6a82ec71c2855950b815fbb35ae008cd8e5083",
+    "git_blob": "e09150f7d10e7f9ce8f395fcae0ced4a7b600b13"
+  },
+  "parts": [
+    {
+      "name": "request.json.gz.part000.b64.txt",
+      "offset": 0,
+      "encoded": {
+        "bytes": 480601,
+        "sha256": "933c172b41991941a106283ad21f092b5e9e6768cb913ac0d914024231d2367b",
+        "git_blob": "ad067c7ddd9a6416098b8314b2f9859ded5d5cd4"
+      },
+      "decoded": {
+        "bytes": 360450,
+        "sha256": "77662afbf335b3b3febcb1319d71be62147631bdb224fea443e9f7eb93f05ebe",
+        "git_blob": "6f2040981f4ecf38e9406f009ed90737a37ef956"
+      }
+    },
+    {
+      "name": "request.json.gz.part001.b64.txt",
+      "offset": 360450,
+      "encoded": {
+        "bytes": 480601,
+        "sha256": "f21469f49ea3172666a35cb8d6e5f26e283b82201f98918b000871fa49cad641",
+        "git_blob": "1ac6c1dcc838179e394de974740b06da35a384e1"
+      },
+      "decoded": {
+        "bytes": 360450,
+        "sha256": "2e5d6251a7917b120b7cc6bbdb40fe143d81c13df4870631827c44b3794858ac",
+        "git_blob": "cd02707d3ab4d8f8208086397f7f01ecae550962"
+      }
+    },
+    {
+      "name": "request.json.gz.part002.b64.txt",
+      "offset": 720900,
+      "encoded": {
+        "bytes": 274281,
+        "sha256": "6407d9ea895d2be67de3bc86405e9e2fa00887a615bdeb4f54cd5f765aa24a0b",
+        "git_blob": "d99c26bf49e8f2fcc0cfe44d420622e4b1e76ea6"
+      },
+      "decoded": {
+        "bytes": 205708,
+        "sha256": "2c5ce3fefa6737ef8a027fbadbf906175eb2910e34bd2f46f3d905b56d2d20e8",
+        "git_blob": "89b65afe4edf816bcc1ec96e6544497a4b104df8"
+      }
+    }
+  ],
+  "loader": {
+    "name": "load_staged_native_project.py.source.txt",
+    "bytes": 2884,
+    "sha256": "e5a696ab2c543babc38ca000f72014216e53334ce01ccacd456b1b74ce7ea8ef",
+    "git_blob": "03e4b4385765a74fc66547ba310d63a1f2ac1c0f"
+  },
+  "control": {
+    "name": "small-control.json",
+    "bytes": 776,
+    "sha256": "0ab430d641b80a4d33ab31609d5f912088c3e7ac2849b9f45aa3b79312cdb173",
+    "git_blob": "64938d43cb62be227f86a530d0f13394c24f3d5c"
+  },
+  "root_execution_guard": "d92b0ab0445382b266129c7f959e15497e0ac19e",
+  "idempotency_key": "hepta-rog-core-musl-project-20261105-v1",
+  "source_candidate_tree": "e78c819b8b1f435f8b37bea17b4ffdc724961aa2",
+  "target_staging_path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/core-musl-project-input-v3-20261105.json.gz",
+  "scope": "Replace only input transportation before the first Core process_start. Preserve unknown binary_upload fragments and every original response. The enabled request, V3 loader and original native execution key remain byte-identical."
+}
