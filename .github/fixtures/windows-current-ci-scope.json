@@ -317,6 +317,17 @@
         "production_writer::objective_sender::protected_checkpoint_tests::write_admission::queued_write_rejects_wrong_owner_dirty_ack_without_committing"
       ],
       "filter": "test(=production_writer::objective_sender::protected_checkpoint_tests::write_admission::queued_write_rechecks_dirty_after_a_later_current_publication) | test(=production_writer::objective_sender::protected_checkpoint_tests::write_admission::queued_write_rejects_wrong_owner_dirty_ack_without_committing)"
+    },
+    {
+      "id": "direct-pty-original-custody",
+      "package": "codex-utils-pty",
+      "filter": "test(=win::observation_tests::direct_wait_failure_keeps_unknown_and_fences_admission) | test(=win::observation_tests::direct_dropped_waiter_retains_same_child_for_late_cleanup) | test(=win::observation_tests::direct_native_success_publishes_exit_before_releasing_observer)",
+      "expectedTestCount": 3,
+      "requiredTests": [
+        "win::observation_tests::direct_wait_failure_keeps_unknown_and_fences_admission",
+        "win::observation_tests::direct_dropped_waiter_retains_same_child_for_late_cleanup",
+        "win::observation_tests::direct_native_success_publishes_exit_before_releasing_observer"
+      ]
     }
   ]
 }
