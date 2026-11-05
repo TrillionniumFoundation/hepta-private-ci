@@ -781,7 +781,10 @@ class OriginalNotesSourceGuardTests(unittest.TestCase):
     def test_new_read_only_apis_reject_an_unregistered_product_caller(self):
         manifest = tomllib.loads((ROOT / "CALLERS.toml").read_text())
         calls = {
-            "notes_original_retained_reference_projection": "verified.recorded_reference(&route);",
+            "notes_original_retained_reference_projection": (
+                "fn unregistered(verified: &VerifiedNotesThreadCall, route: &AgentdTextSessionConfig) {"
+                " verified.recorded_reference(route); }"
+            ),
             "memory_original_sender_read_only_cut": "sender.retained_owner_requests().await;",
             "notes_recorded_original_observation_proof": "adapter.latest_recorded_thread_operation(&route, end).await;",
             "notes_previous_recovery_typed_resolution": "config.with_original_notes_previous_recovery_request(request).await;",
@@ -889,7 +892,14 @@ class OriginalNotesSourceGuardTests(unittest.TestCase):
 
     def test_original_notes_producer_cannot_restore_general_cognitive_tools(self):
         for old, new in (
-            ("Self::OriginalNotes => false", "Self::OriginalNotes => true"),
+            (
+                "Self::OriginalNotes | Self::OriginalDesktop => false",
+                "Self::OriginalNotes => true, Self::OriginalDesktop => false",
+            ),
+            (
+                "Self::OriginalNotes | Self::OriginalDesktop => false",
+                "Self::OriginalNotes => false, Self::OriginalDesktop => true",
+            ),
             (
                 "production_cognitive_mutation.filter(|_| cognitive_tools_enabled)",
                 "production_cognitive_mutation",

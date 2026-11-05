@@ -49,8 +49,8 @@ class RootAdminSourceClosureTests(unittest.TestCase):
     def test_original_registry_cannot_drop_its_locked_deadline(self):
         self.rejects(
             "codex-rs/hepta-contracts/src/authority_lease_revoke.rs",
-            "deadline.check()?;\n    if let Some(existing)",
-            "if let Some(existing)",
+            "deadline.check()?;\n    // This comparison and the existing CAS/persistence below share one lock.",
+            "// This comparison and the existing CAS/persistence below share one lock.",
         )
 
     def test_two_cas_stages_cannot_skip_the_original_context_recheck(self):
