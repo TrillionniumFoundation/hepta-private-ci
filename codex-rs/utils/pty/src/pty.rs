@@ -29,6 +29,13 @@ use tokio::sync::mpsc;
 use tokio::sync::oneshot;
 use tokio::task::JoinHandle;
 
+#[cfg(unix)]
+use crate::direct_child::BlockingChild;
+use crate::direct_child::PortableChild;
+use crate::direct_custody;
+use crate::direct_custody::DirectWait;
+use crate::direct_custody::ObservedExit;
+use crate::direct_custody::before_launch;
 use crate::process::ChildTerminator;
 use crate::process::ProcessHandle;
 use crate::process::ProcessSignal;
@@ -36,8 +43,6 @@ use crate::process::PtyHandles;
 use crate::process::PtyMasterHandle;
 use crate::process::SpawnedProcess;
 use crate::process::TerminalSize;
-#[cfg(unix)]
-use crate::process::exit_code_from_status;
 
 /// Returns true when ConPTY support is available (Windows only).
 #[cfg(windows)]
@@ -135,7 +140,9 @@ pub async fn spawn_process(
     inherited_fds: &[i32],
 ) -> Result<SpawnedProcess> {
     if program.is_empty() {
-        anyhow::bail!("missing program for PTY spawn");
+        return Err(before_launch(anyhow::anyhow!(
+            "missing program for PTY spawn"
+        )));
     }
 
     #[cfg(not(unix))]
@@ -159,13 +166,14 @@ async fn spawn_process_portable(
     size: TerminalSize,
 ) -> Result<SpawnedProcess> {
     let pty_system = platform_native_pty_system();
-    let pair = pty_system.openpty(size.into())?;
+    let pair = pty_system.openpty(size.into()).map_err(before_launch)?;
     #[cfg(unix)]
     let io = crate::unix_io::PtyIo::new(
         pair.master
             .as_raw_fd()
-            .ok_or_else(|| anyhow::anyhow!("PTY master has no file descriptor"))?,
-    )?;
+            .ok_or_else(|| before_launch(anyhow::anyhow!("PTY master has no file descriptor")))?,
+    )
+    .map_err(before_launch)?;
 
     let mut command_builder = CommandBuilder::new(arg0.as_ref().unwrap_or(&program.to_string()));
     command_builder.cwd(cwd);
@@ -180,14 +188,46 @@ async fn spawn_process_portable(
     // These handles already exist after openpty. Keep both alive while spawning,
     // so a fallible clone/take cannot lose an already-created target process.
     #[cfg(not(unix))]
-    let (mut reader, writer) = (pair.master.try_clone_reader()?, pair.master.take_writer()?);
-    let mut child = pair.slave.spawn_command(command_builder)?;
+    let (mut reader, writer) = (
+        pair.master.try_clone_reader().map_err(before_launch)?,
+        pair.master.take_writer().map_err(before_launch)?,
+    );
+    let mut launch = direct_custody::reserve().map_err(before_launch)?;
+    launch.begin_attempt();
+    let child = pair
+        .slave
+        .spawn_command(command_builder)
+        .map_err(|error| launch.spawn_error(error))?;
+    let owner = Arc::new(PortableChild::new(child));
+    launch
+        .attach_owner(owner.clone())
+        .map_err(|error| launch.spawn_error(error))?;
+    let custody = launch.custody();
+    let child = owner.child.lock().map_err(|_| {
+        launch.spawn_error(std::io::Error::other(
+            "original portable child lock is poisoned",
+        ))
+    })?;
+    #[cfg(windows)]
+    {
+        use std::os::windows::io::BorrowedHandle;
+        let handle = child.as_raw_handle().ok_or_else(|| {
+            launch.spawn_error(std::io::Error::other(
+                "original portable process handle unavailable",
+            ))
+        })?;
+        // Keep the actual child locked while duplicating its kernel handle.
+        owner
+            .retain_original_handle(unsafe { BorrowedHandle::borrow_raw(handle) })
+            .map_err(|error| launch.spawn_error(error))?;
+    }
     #[cfg(unix)]
     // portable-pty establishes the spawned PTY child as a new session leader on
     // Unix, so PID == PGID and we can reuse the pipe backend's process-group
     // hard-kill semantics for descendants.
     let process_group_id = child.process_id();
     let killer = child.clone_killer();
+    drop(child);
 
     let (writer_tx, writer_rx) = mpsc::channel::<Vec<u8>>(128);
     let (stdout_tx, stdout_rx) = mpsc::channel::<Vec<u8>>(128);
@@ -243,16 +283,9 @@ async fn spawn_process_portable(
     let wait_exit_status = Arc::clone(&exit_status);
     let exit_code = Arc::new(StdMutex::new(None));
     let wait_exit_code = Arc::clone(&exit_code);
+    let observation = DirectWait::new(launch, wait_exit_status, wait_exit_code, exit_tx);
     let wait_handle: JoinHandle<()> = tokio::task::spawn_blocking(move || {
-        let code = match child.wait() {
-            Ok(status) => status.exit_code() as i32,
-            Err(_) => -1,
-        };
-        wait_exit_status.store(true, std::sync::atomic::Ordering::SeqCst);
-        if let Ok(mut guard) = wait_exit_code.lock() {
-            *guard = Some(code);
-        }
-        let _ = exit_tx.send(code);
+        observation.finish(owner.wait().map(ObservedExit::from_portable));
     });
 
     let handles = PtyHandles {
@@ -266,11 +299,11 @@ async fn spawn_process_portable(
 
     let handle = ProcessHandle::new(
         writer_tx,
-        Box::new(PtyChildTerminator {
+        custody.guard_terminator(Box::new(PtyChildTerminator {
             killer,
             #[cfg(unix)]
             process_group_id,
-        }),
+        })),
         reader_handle,
         Vec::new(),
         writer_handle,
@@ -280,6 +313,9 @@ async fn spawn_process_portable(
         Some(handles),
         /*resizer*/ None,
     );
+    handle
+        .retain_cleanup_custody(custody.clone())
+        .map_err(|error| custody.spawn_error(error))?;
 
     Ok(SpawnedProcess {
         session: handle,
@@ -299,8 +335,8 @@ async fn spawn_process_preserving_fds(
     size: TerminalSize,
     inherited_fds: &[RawFd],
 ) -> Result<SpawnedProcess> {
-    let (master, slave) = open_unix_pty(size)?;
-    let io = crate::unix_io::PtyIo::new(master.as_raw_fd())?;
+    let (master, slave) = open_unix_pty(size).map_err(before_launch)?;
+    let io = crate::unix_io::PtyIo::new(master.as_raw_fd()).map_err(before_launch)?;
     let mut command = StdCommand::new(program);
     if let Some(arg0) = arg0 {
         command.arg0(arg0);
@@ -317,9 +353,9 @@ async fn spawn_process_preserving_fds(
     // The child should see one terminal on all three stdio streams. Cloning
     // the slave fd gives us three owned handles to the same PTY slave device
     // so Command can wire them up independently as stdin/stdout/stderr.
-    let stdin = slave.try_clone()?;
-    let stdout = slave.try_clone()?;
-    let stderr = slave.try_clone()?;
+    let stdin = slave.try_clone().map_err(before_launch)?;
+    let stdout = slave.try_clone().map_err(before_launch)?;
+    let stderr = slave.try_clone().map_err(before_launch)?;
     let inherited_fds = inherited_fds.to_vec();
 
     unsafe {
@@ -359,9 +395,26 @@ async fn spawn_process_preserving_fds(
             });
     }
 
-    let mut child = command.spawn()?;
+    let mut launch = direct_custody::reserve().map_err(before_launch)?;
+    launch.begin_attempt();
+    let child = command
+        .spawn()
+        .map_err(|error| launch.reaped_std_spawn_error(error))?;
+    let owner = Arc::new(BlockingChild::new(child));
+    launch
+        .attach_owner(owner.clone())
+        .map_err(|error| launch.spawn_error(error))?;
+    let custody = launch.custody();
     drop(slave);
-    let process_group_id = child.id();
+    let process_group_id = owner
+        .child
+        .lock()
+        .map_err(|_| {
+            launch.spawn_error(std::io::Error::other(
+                "original blocking child lock is poisoned",
+            ))
+        })?
+        .id();
 
     let (writer_tx, writer_rx) = mpsc::channel::<Vec<u8>>(128);
     let (stdout_tx, stdout_rx) = mpsc::channel::<Vec<u8>>(128);
@@ -377,16 +430,9 @@ async fn spawn_process_preserving_fds(
     let wait_exit_status = Arc::clone(&exit_status);
     let exit_code = Arc::new(StdMutex::new(None));
     let wait_exit_code = Arc::clone(&exit_code);
+    let observation = DirectWait::new(launch, wait_exit_status, wait_exit_code, exit_tx);
     let wait_handle: JoinHandle<()> = tokio::task::spawn_blocking(move || {
-        let code = match child.wait() {
-            Ok(status) => exit_code_from_status(status),
-            Err(_) => -1,
-        };
-        wait_exit_status.store(true, std::sync::atomic::Ordering::SeqCst);
-        if let Ok(mut guard) = wait_exit_code.lock() {
-            *guard = Some(code);
-        }
-        let _ = exit_tx.send(code);
+        observation.finish(owner.wait().map(ObservedExit::from_status));
     });
 
     let handles = PtyHandles {
@@ -399,7 +445,7 @@ async fn spawn_process_preserving_fds(
 
     let handle = ProcessHandle::new(
         writer_tx,
-        Box::new(RawPidTerminator { process_group_id }),
+        custody.guard_terminator(Box::new(RawPidTerminator { process_group_id })),
         reader_handle,
         Vec::new(),
         writer_handle,
@@ -409,6 +455,9 @@ async fn spawn_process_preserving_fds(
         Some(handles),
         /*resizer*/ None,
     );
+    handle
+        .retain_cleanup_custody(custody.clone())
+        .map_err(|error| custody.spawn_error(error))?;
 
     Ok(SpawnedProcess {
         session: handle,

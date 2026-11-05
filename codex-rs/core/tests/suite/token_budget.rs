@@ -165,9 +165,15 @@ fn write_token_budget_compact_hooks(home: &Path) {
 async fn assert_context_compaction_item_lifecycle(codex: &std::sync::Arc<codex_core::CodexThread>) {
     let mut saw_compaction_started = false;
     let mut saw_compaction_completed = false;
+    // This private lifecycle reader previously had no deadline. Bound the
+    // events and their exact finish owner with one standard fixture window.
+    let deadline = tokio::time::Instant::now() + Duration::from_secs(10);
 
     loop {
-        let event = codex.next_event().await.expect("next event");
+        let event = tokio::time::timeout_at(deadline, codex.next_event())
+            .await
+            .expect("timeout waiting for compaction lifecycle")
+            .expect("next event");
         match event.msg {
             EventMsg::ItemStarted(ItemStartedEvent {
                 item: TurnItem::ContextCompaction(_),
@@ -177,7 +183,16 @@ async fn assert_context_compaction_item_lifecycle(codex: &std::sync::Arc<codex_c
                 item: TurnItem::ContextCompaction(_),
                 ..
             }) => saw_compaction_completed = true,
-            EventMsg::TurnComplete(_) => break,
+            EventMsg::TurnComplete(completed) => {
+                if let Some(completion) =
+                    codex.pending_normal_turn_finish_completion(&completed.turn_id)
+                {
+                    tokio::time::timeout_at(deadline, completion)
+                        .await
+                        .expect("timeout waiting for observed compaction finish owner");
+                }
+                break;
+            }
             _ => {}
         }
     }

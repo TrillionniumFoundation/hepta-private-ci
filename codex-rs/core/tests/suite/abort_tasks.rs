@@ -200,7 +200,9 @@ async fn root_turn_suspension_preserves_unfinished_turn_history() {
     )
     .await;
     let original_config = test.config.clone();
-    let mut resume_builder = test_codex().with_config(move |config| *config = original_config);
+    let mut resume_builder = test_codex()
+        .with_config(move |config| *config = original_config)
+        .with_resume_environments(original_environments.clone());
     if let Some(exec_server_url) = test.executor_environment().exec_server_url() {
         resume_builder = resume_builder.with_exec_server_url(exec_server_url);
     }
