@@ -15,9 +15,15 @@ pub(super) fn private_home() -> std::io::Result<tempfile::TempDir> {
     #[cfg(unix)]
     {
         use std::os::unix::fs::PermissionsExt;
-        tempfile::Builder::new()
-            .permissions(std::fs::Permissions::from_mode(0o700))
-            .tempdir()
+        let mut builder = tempfile::Builder::new();
+        builder.permissions(std::fs::Permissions::from_mode(0o700));
+        #[cfg(target_os = "macos")]
+        {
+            // Keep fresh fixture paths in the same physical namespace retained by State.
+            builder.tempdir_in(std::env::temp_dir().canonicalize()?)
+        }
+        #[cfg(not(target_os = "macos"))]
+        builder.tempdir()
     }
     #[cfg(not(unix))]
     tempfile::tempdir()
