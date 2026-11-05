@@ -1,0 +1,95 @@
+{
+  "schema": "hepta.wsp-literature-refresh.v1",
+  "checked_at_utc": "2026-11-05T05:13:12Z",
+  "user_timezone": "America/New_York",
+  "new_target_model_execution": false,
+  "new_checkpoint_edit": false,
+  "new_pocket4_observation": false,
+  "new_training": false,
+  "sources": [
+    {
+      "id": "mit_release",
+      "repo": "RikiyaT/lm_understand-logs",
+      "head": "4d09ba6d6a7e891dd8063974dfe81b3d78e3494f",
+      "head_change_since_previous_review": false
+    },
+    {
+      "id": "mit_exp8_readme",
+      "git_blob_sha": "9232f3da94a9fa6d6b9bc83eef7c8766e48120e5",
+      "url": "https://github.com/RikiyaT/lm_understand-logs/blob/4d09ba6d6a7e891dd8063974dfe81b3d78e3494f/exp8_math/README.md",
+      "content_read": true
+    },
+    {
+      "id": "apply_edit",
+      "git_blob_sha": "cc1d7c249ece802bd2e7b5907b082caeec716923",
+      "url": "https://github.com/RikiyaT/lm_understand-logs/blob/4d09ba6d6a7e891dd8063974dfe81b3d78e3494f/exp8_math/code/apply_edit.py",
+      "content_read": true
+    },
+    {
+      "id": "p50c_manifest",
+      "git_blob_sha": "d78897bbfc9d626682d4e42a9cefd95a93aed069",
+      "url": "https://github.com/RikiyaT/lm_understand-logs/blob/4d09ba6d6a7e891dd8063974dfe81b3d78e3494f/exp8_math/runs/p50c/edit/manifest.json",
+      "content_read": true
+    },
+    {
+      "id": "p50c_final_report",
+      "git_blob_sha": "568a8b52a9fddeaa1d71517eda83757e2ad83380",
+      "url": "https://github.com/RikiyaT/lm_understand-logs/blob/4d09ba6d6a7e891dd8063974dfe81b3d78e3494f/exp8_math/runs/p50c/work_notes/final_report.md",
+      "content_read": true
+    },
+    {
+      "id": "steer2edit_v3",
+      "url": "https://arxiv.org/abs/2602.09870v3",
+      "submitted_utc": "2026-11-04T03:41:39Z",
+      "older_local_review_version": "v2",
+      "repo": "Trustworthy-ML-Lab/Steer2Edit",
+      "head": "86382c2f44fdfda2bafe80faf09634e6d729562c",
+      "source_read": true,
+      "new_v3_records_executed": false
+    },
+    {
+      "id": "aixiv_practice_replication",
+      "url": "https://aixiv.science/pdf/aixiv.261103.000004v1.1.pdf",
+      "version": "v1.1",
+      "dated": "2026-11-04",
+      "source_read": true,
+      "raw_record_availability": "paper states new experiment records not yet released",
+      "role": "preliminary externally reported measurements, not rerun here"
+    },
+    {
+      "id": "turing",
+      "repo": "alan-turing-institute/weights_editing",
+      "head": "9b4a7f1b23a1cc2e1290e4c73ebcb77e87a285ca",
+      "head_change_since_previous_review": false,
+      "read_current_readme": true
+    },
+    {
+      "id": "clinical",
+      "repo": "hnusrat1/weightspace-rt",
+      "head": "19506e63f3ec859624ead33495469bc760e079ea",
+      "head_change_since_previous_review": false,
+      "read_current_paper": true,
+      "paper": "https://arxiv.org/html/2611.05341v1"
+    },
+    {
+      "id": "cert_machine",
+      "repo": "carlostoledo1891/cert-machine",
+      "head": "145f76c131d64966510f901f816074246642abd3",
+      "prior_head": "76805430d50e396cae81a704bd17dc68152414fc",
+      "path": "certs/wsp-baseline.json",
+      "git_blob_sha": "e3ce4652c2f3f152e582aefdd2db10c851264dac",
+      "blob_change_since_previous_review": false,
+      "content_read_this_refresh": false,
+      "observed_fetch_content_length": 0,
+      "interpretation": "same target record identity, no new result"
+    }
+  ],
+  "core_findings": [
+    "MIT original report is a research blog with released experiment logs; editor model is gpt-6-astra.",
+    "Qwen p50c uses 50 batched target requests, not 50 single examples; 158 editor turns and 80 Python runs, 20.3h includes 4.7h service waiting.",
+    "Exact alpha=6 intervention reverses and amplifies a selected projection; 131072 addressed weights versus 130188 bitwise BF16 changes.",
+    "Steer2Edit v3 is a real version update; exact local closed-form rules do not remove data collection or validation search.",
+    "New aiXiv report does not independently discover MIT layer/scale/column choices and does not release its new raw records.",
+    "Replaying a published diff, independently discovering an edit, and qualifying Hepta transfer remain different evidence levels."
+  ]
+}

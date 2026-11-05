@@ -1,0 +1,101 @@
+{
+  "schema": "hepta.wsp.metric_audit.execution_receipt.v1",
+  "job_id": "1a1aa2f292c-fc05-3ec8",
+  "driver_sha256": "941f976ef4354979cb68485bd19c56bf7a50092f6935f230006a8e0bef6d32bb",
+  "launch": {
+    "host": "pocket4",
+    "executable": "/usr/bin/python3",
+    "args": [
+      "-I",
+      "-B",
+      "-"
+    ],
+    "stdin": "OMITTED_SCRIPT_SHA256_941f976ef4354979cb68485bd19c56bf7a50092f6935f230006a8e0bef6d32bb",
+    "idempotency_key": "hepta-wsp-metric-audit-db06eb2f-20261105-v1",
+    "cpu_quota_percent": 20,
+    "memory_max_bytes": 268435456,
+    "nice": 19,
+    "timeout_seconds": 30
+  },
+  "status": {
+    "at_unix_ms": 1793856590470,
+    "audit_recorded": true,
+    "automatic_retry": false,
+    "cancelled": false,
+    "exit_code": 0,
+    "job_id": "1a1aa2f292c-fc05-3ec8",
+    "launch_nonce": "b3b4d9fe0ec6be1c6add2d553793b28b",
+    "log_bytes": {
+      "stderr": {
+        "seen": 0,
+        "stored": 0
+      },
+      "stdout": {
+        "seen": 5241,
+        "stored": 5241
+      }
+    },
+    "log_errors": {
+      "stderr": null,
+      "stdout": null
+    },
+    "log_synced": {
+      "stderr": true,
+      "stdout": true
+    },
+    "log_truncated": {
+      "stderr": false,
+      "stdout": false
+    },
+    "output_complete": true,
+    "output_durable": true,
+    "state": "succeeded",
+    "terminal_publication_confirmed": true,
+    "terminal_publication_protocol": 1,
+    "timed_out": false
+  },
+  "stdout": {
+    "bytes": 5241,
+    "offset": 0,
+    "next_offset": 5241,
+    "eof": true
+  },
+  "stderr": {
+    "bytes": 0,
+    "eof": true
+  },
+  "raw_row_ids_transferred": false,
+  "raw_probabilities_transferred": false,
+  "source_read_metadata": [
+    {
+      "name": "resident_train.py",
+      "sha256": "cfea96538a918048fa76e6e117f08e932968aca9cf0ef93f4139031bd2bb745d",
+      "size": 32959,
+      "version": "66306:70821744:32959:1793590432820125726:1793590432822713753"
+    },
+    {
+      "name": "resident_price_calibration_v3.py",
+      "sha256": "623e2e871644d6f68efaba91e331150da0a453b557155aec4665b21b28dd0a96",
+      "size": 10137,
+      "version": "66306:70821733:10137:1793590432800650405:1793590432802679991"
+    },
+    {
+      "name": "resident_price_input.py",
+      "sha256": "6f0f08807f00270da381e7fbc0add6f48d19636528de23382556e2c58f396d62",
+      "size": 8050,
+      "version": "66306:70821734:8050:1793590432802679991:1793590432804421189"
+    },
+    {
+      "name": "resident_price_calibration.py",
+      "sha256": "e4a83db996d36c5079691c6dc273de8097f58264f8b1b6c7f1361f49fa421bf1",
+      "size": 16582,
+      "version": "66306:70821731:16582:1793590432797127772:1793590432798820949"
+    },
+    {
+      "name": "resident_price_baselines.py",
+      "sha256": "e6b3938326db59804fe794034c6e632c823c91788c16c51710538c8bb687d06e",
+      "size": 22193,
+      "version": "66306:70821730:22193:1793590432795363701:1793590432797127772"
+    }
+  ]
+}
