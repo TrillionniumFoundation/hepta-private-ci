@@ -1,0 +1,44 @@
+{
+  "first_blocking_run": 41959718312,
+  "first_codespell_annotations": 3385,
+  "first_codespell_checkout_merge": "0a56c77542fb84d2c1faa9fd5070bb99dcef20d6",
+  "first_codespell_checkout_tree": "9dd282a2d645c495de8a94769f63b9349fd31c51",
+  "first_codespell_full_log_sha256": "bc641518c0ab6ab940166427233e748072427f8a2ad1c4aaad8ca3b06c56f3e8",
+  "first_codespell_full_log_utf8_bytes": 601929,
+  "first_codespell_job": 127022935017,
+  "merge_tree_equals_source_head_tree": true,
+  "new_package_annotation_source": "train_margin_certificate/execution_r1/run/producer/fit_11_WITNESS.json.gz.part0002",
+  "new_package_annotations": 44,
+  "new_package_nonbinary_annotations": 0,
+  "observed_source_head": "9f2d00f79bfe7abc334e51f52a0d16f685656e5d",
+  "other_observed_failures": [
+    {
+      "decoded_log_utf8_sha256": "1f80bf71f5a05b81a0d5515058de9dad706dcedfd3d6b0a7f15d676fe8a4c1d9",
+      "job": 127023882517,
+      "scope": "repo-checks / build-test",
+      "verified_detail": "Prettier reports only .github/workflows/hcsn-joint-distribution.yml; entire .github subtree unchanged from research parent."
+    },
+    {
+      "decoded_log_utf8_sha256": "c77d455404f4d872bc031c23e7258df0fa0938afdcc256ab980c1e0a3e199438",
+      "job": 127023882881,
+      "scope": "Linux Bazel release verification",
+      "verified_detail": "codex-rs/hepta-agentd/tests/plasticity_process_e2e.rs calls missing DurableLedger.append_qualification; codex-rs subtree unchanged from research parent."
+    },
+    {
+      "decoded_log_utf8_sha256": "17c0fd62c7456fe0a0444460e0fd959f0ee6c58c9c23fa8a39772cce083aca3a",
+      "job": 127023882958,
+      "scope": "Linux Bazel Clippy",
+      "verified_detail": "Missing DurableLedger method and test unwrap/expect lint failures in unchanged codex-rs sources."
+    },
+    {
+      "job": 127023882576,
+      "scope": "cargo-deny",
+      "verified_detail": "Failure status observed. Complete job-log retrieval returned transport errors; precise cause not qualified."
+    }
+  ],
+  "recorded_utc": "2026-11-05T03:24:17.459714+00:00",
+  "research_pr": 4823,
+  "schema": "hepta.wsp.first-research-ci-diagnosis.v1",
+  "scope": "A bounded diagnosis of already observed failures, not a final all-job status inventory. No CI failure is erased or converted to success; no scientific or production qualification follows from the narrow input fix.",
+  "unmodified_baseline_annotations": 3341
+}
