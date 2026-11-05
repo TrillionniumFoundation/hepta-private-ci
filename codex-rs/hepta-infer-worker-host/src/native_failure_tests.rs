@@ -177,6 +177,7 @@ async fn worker_loss_before_cleanup_retains_observed_timeout_and_usage() -> Resu
         AgentId::parse("018f4f72-5f8f-7cc1-8f55-df9fb3aa2c14")?,
         MODEL,
         &format!("{}/v1", server.uri()),
+        crate::native_app_server::tests::app_server_test_runtime_paths()?,
     )
     .await?;
     let mut case = FailureChildCase {

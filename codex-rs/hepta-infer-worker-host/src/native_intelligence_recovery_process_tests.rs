@@ -94,6 +94,7 @@ async fn recovery_case(from_thread_read: bool, test_name: &str) -> Result<()> {
         agent.clone(),
         MODEL,
         &format!("{}/v1", server.uri()),
+        crate::native_app_server::tests::app_server_test_runtime_paths()?,
     )
     .await?;
     let owner = AgentdClient::new(

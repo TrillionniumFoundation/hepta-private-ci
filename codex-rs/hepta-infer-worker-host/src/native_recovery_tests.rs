@@ -131,6 +131,7 @@ async fn real_agentd_reconciles_reopened_worker_without_replaying_provider() -> 
         agent_id,
         MODEL,
         &format!("{}/v1", server.uri()),
+        crate::native_app_server::tests::app_server_test_runtime_paths()?,
     )
     .await?;
     let authority_directory = tempfile::tempdir()?;
@@ -285,6 +286,7 @@ async fn recovered_cancellation_preserves_failed_and_interrupted_provider_termin
             AgentId::parse("018f4f72-5f8f-7cc1-8f55-df9fb3aa2c15")?,
             MODEL,
             &format!("{}/v1", server.uri()),
+            crate::native_app_server::tests::app_server_test_runtime_paths()?,
         )
         .await?;
         let authority_directory = tempfile::tempdir()?;
