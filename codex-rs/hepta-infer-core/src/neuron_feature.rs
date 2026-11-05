@@ -29,6 +29,42 @@ pub struct NeuronFeatureRequestV1 {
     pub expected_output_width: usize,
 }
 
+impl NeuronFeatureRequestV1 {
+    /// Validate borrowed payload fields before allocating or dispatching an
+    /// owned request. Identity and generation types already enforce their
+    /// construction invariants; this checks the digest and numeric payload.
+    pub fn validate_payload(
+        encoder_digest: Digest32,
+        head_digest: Digest32,
+        weights_digest: Digest32,
+        input_digest: Digest32,
+        feature_vector_q24: &[i64],
+        expected_output_width: usize,
+    ) -> Result<(), NeuronFeatureContractError> {
+        for (name, digest) in [
+            ("encoder", encoder_digest),
+            ("head", head_digest),
+            ("weights", weights_digest),
+            ("input", input_digest),
+        ] {
+            if digest.is_zero() {
+                return Err(NeuronFeatureContractError::EmptyDigest(name));
+            }
+        }
+        if feature_vector_q24.is_empty()
+            || feature_vector_q24.len() > MAX_FEATURES
+            || expected_output_width == 0
+            || expected_output_width > MAX_FEATURES
+            || feature_vector_q24
+                .iter()
+                .any(|value| !(-H..=H).contains(value))
+        {
+            return Err(NeuronFeatureContractError::FeatureLimit);
+        }
+        Ok(())
+    }
+}
+
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub struct NeuronModelRuntimeTupleV1 {
     pub model_id: StableId,
@@ -81,6 +117,53 @@ pub struct NeuronFeatureReceiptV1 {
     pub authority: AuthorityPosture,
 }
 
+// Borrow outputs until shape and value validation has established the contract
+// bounds. In particular, verifying a malformed receipt must not copy its vectors.
+#[derive(Clone, Copy)]
+struct ObservationRef<'a> {
+    encoder_digest: Digest32,
+    head_digest: Digest32,
+    drive_q24: &'a [i64],
+    prediction_q24: &'a [i64],
+    observed_memory_bytes: u64,
+    transient_allocation_bytes: u64,
+    queue_age_micros: u64,
+    latency_micros: u64,
+    status: NeuronFeatureTerminalStatusV1,
+}
+
+impl<'a> From<&'a NeuronFeatureObservationV1> for ObservationRef<'a> {
+    fn from(observation: &'a NeuronFeatureObservationV1) -> Self {
+        Self {
+            encoder_digest: observation.encoder_digest,
+            head_digest: observation.head_digest,
+            drive_q24: &observation.drive_q24,
+            prediction_q24: &observation.prediction_q24,
+            observed_memory_bytes: observation.observed_memory_bytes,
+            transient_allocation_bytes: observation.transient_allocation_bytes,
+            queue_age_micros: observation.queue_age_micros,
+            latency_micros: observation.latency_micros,
+            status: observation.status,
+        }
+    }
+}
+
+impl<'a> From<&'a NeuronFeatureReceiptV1> for ObservationRef<'a> {
+    fn from(receipt: &'a NeuronFeatureReceiptV1) -> Self {
+        Self {
+            encoder_digest: receipt.encoder_digest,
+            head_digest: receipt.head_digest,
+            drive_q24: &receipt.drive_q24,
+            prediction_q24: &receipt.prediction_q24,
+            observed_memory_bytes: receipt.observed_memory_bytes,
+            transient_allocation_bytes: receipt.transient_allocation_bytes,
+            queue_age_micros: receipt.queue_age_micros,
+            latency_micros: receipt.latency_micros,
+            status: receipt.status,
+        }
+    }
+}
+
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub enum NeuronFeatureContractError {
     EmptyDigest(&'static str),
@@ -130,9 +213,10 @@ pub fn build_neuron_feature_receipt_v1(
 ) -> Result<NeuronFeatureReceiptV1, NeuronFeatureContractError> {
     let request_digest = neuron_feature_request_digest_v1(request)?;
     validate_runtime_tuple(request, &runtime_tuple)?;
-    validate_observation(request, &observation)?;
+    let observation_ref = ObservationRef::from(&observation);
+    validate_observation(request, observation_ref)?;
     let runtime_tuple_digest = digest_runtime_tuple(&runtime_tuple)?;
-    let output_digest = digest_output(&runtime_tuple, &observation)?;
+    let output_digest = digest_output(&runtime_tuple, observation_ref)?;
     let mut receipt = NeuronFeatureReceiptV1 {
         request_digest,
         runtime_tuple,
@@ -170,19 +254,9 @@ pub fn verify_neuron_feature_receipt_v1(
     if receipt.runtime_tuple_digest != runtime_tuple_digest {
         return Err(NeuronFeatureContractError::RuntimeBindingMismatch);
     }
-    let observation = NeuronFeatureObservationV1 {
-        encoder_digest: receipt.encoder_digest,
-        head_digest: receipt.head_digest,
-        drive_q24: receipt.drive_q24.clone(),
-        prediction_q24: receipt.prediction_q24.clone(),
-        observed_memory_bytes: receipt.observed_memory_bytes,
-        transient_allocation_bytes: receipt.transient_allocation_bytes,
-        queue_age_micros: receipt.queue_age_micros,
-        latency_micros: receipt.latency_micros,
-        status: receipt.status,
-    };
-    validate_observation(request, &observation)?;
-    if receipt.output_digest != digest_output(&receipt.runtime_tuple, &observation)? {
+    let observation = ObservationRef::from(receipt);
+    validate_observation(request, observation)?;
+    if receipt.output_digest != digest_output(&receipt.runtime_tuple, observation)? {
         return Err(NeuronFeatureContractError::OutputIdentityMismatch);
     }
     if receipt.receipt_digest.is_zero() || receipt.receipt_digest != digest_receipt(receipt)? {
@@ -192,28 +266,14 @@ pub fn verify_neuron_feature_receipt_v1(
 }
 
 fn validate_request(request: &NeuronFeatureRequestV1) -> Result<(), NeuronFeatureContractError> {
-    for (name, digest) in [
-        ("encoder", request.encoder_digest),
-        ("head", request.head_digest),
-        ("weights", request.weights_digest),
-        ("input", request.input_digest),
-    ] {
-        if digest.is_zero() {
-            return Err(NeuronFeatureContractError::EmptyDigest(name));
-        }
-    }
-    if request.feature_vector_q24.is_empty()
-        || request.feature_vector_q24.len() > MAX_FEATURES
-        || request.expected_output_width == 0
-        || request.expected_output_width > MAX_FEATURES
-        || request
-            .feature_vector_q24
-            .iter()
-            .any(|value| !(-H..=H).contains(value))
-    {
-        return Err(NeuronFeatureContractError::FeatureLimit);
-    }
-    Ok(())
+    NeuronFeatureRequestV1::validate_payload(
+        request.encoder_digest,
+        request.head_digest,
+        request.weights_digest,
+        request.input_digest,
+        &request.feature_vector_q24,
+        request.expected_output_width,
+    )
 }
 
 fn validate_runtime_tuple(
@@ -241,7 +301,7 @@ fn validate_runtime_tuple(
 
 fn validate_observation(
     request: &NeuronFeatureRequestV1,
-    observation: &NeuronFeatureObservationV1,
+    observation: ObservationRef<'_>,
 ) -> Result<(), NeuronFeatureContractError> {
     match observation.status {
         NeuronFeatureTerminalStatusV1::Succeeded => {
@@ -255,7 +315,7 @@ fn validate_observation(
                 || observation
                     .drive_q24
                     .iter()
-                    .chain(&observation.prediction_q24)
+                    .chain(observation.prediction_q24)
                     .any(|value| !(-H..=H).contains(value))
             {
                 return Err(NeuronFeatureContractError::OutputLimit);
@@ -293,14 +353,14 @@ fn digest_runtime_tuple(
 
 fn digest_output(
     runtime: &NeuronModelRuntimeTupleV1,
-    observation: &NeuronFeatureObservationV1,
+    observation: ObservationRef<'_>,
 ) -> Result<Digest32, NeuronFeatureContractError> {
     let mut bytes = b"hepta.inference.neuron-feature-output.v1".to_vec();
     bytes.extend_from_slice(digest_runtime_tuple(runtime)?.as_array());
     bytes.extend_from_slice(observation.encoder_digest.as_array());
     bytes.extend_from_slice(observation.head_digest.as_array());
-    push_q24(&mut bytes, &observation.drive_q24)?;
-    push_q24(&mut bytes, &observation.prediction_q24)?;
+    push_q24(&mut bytes, observation.drive_q24)?;
+    push_q24(&mut bytes, observation.prediction_q24)?;
     bytes.extend_from_slice(&observation.observed_memory_bytes.to_be_bytes());
     bytes.extend_from_slice(&observation.transient_allocation_bytes.to_be_bytes());
     bytes.extend_from_slice(&observation.queue_age_micros.to_be_bytes());
