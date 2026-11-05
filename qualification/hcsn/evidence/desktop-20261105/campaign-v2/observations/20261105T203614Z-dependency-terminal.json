@@ -1,0 +1,117 @@
+{
+  "schema": "hcsn-desktop-dependency-terminal-readonly-observation-v1",
+  "observed_at_utc": "2026-11-05T20:36:14.381Z",
+  "observation_is_atomic": false,
+  "target_host": "desktop",
+  "task_relative_paths_only": true,
+  "source_identity": {
+    "research_source_commit": "f355cfe2ae96b2bc9a5409f8eeb857894f1b0c5b",
+    "python_26_source_map_sha256": "415f6a2f2d7a89ad0585f29bea0d91928898a11ec8a672de39ce6e22f04d39e9",
+    "campaign_claim_manifest_sha256": "dafb594b4d6af2ade6915b7767369f1c5c69c7b4a06232cae75855cf6be6f531",
+    "campaign_claim_file_sha256": "074b5449ca235a19608e8787208c6700bd618d2ccacb3b3574bca87ab750e6ab",
+    "original_full_json_expected_sha256": "7fa3d05b8c04a918043afdfa1c266a17beccb814351258d0555a753baf13777a",
+    "archive_expected_sha256": "a9d5d39155b0d93a89c246c69cb82960b5b9308b6150dd1809486e10791791f5",
+    "source_files_not_modified": true
+  },
+  "campaign": {
+    "job_id": "1a1acdd69f2-fc05-5757",
+    "process_state": "running",
+    "progress_file": "campaigns/full-v2/progress.json",
+    "progress_sha256": "8571d6cfe60d8153f22b559b07ebcfaba5f80b565ab330a8bc0905f7b6ac6100",
+    "progress_updated_utc": "2026-11-05T20:34:29.238951Z",
+    "progress_status": "waiting_for_pinned_runtime",
+    "stages": [],
+    "completed_cuda_runs": 0,
+    "requested_cuda_runs": 170,
+    "full_budget_B_audits_completed": 0,
+    "global_qualification": "open",
+    "training_retries_triggered_by_this_observation": 0
+  },
+  "torch": {
+    "job_id": "1a1aca78192-fc05-562f",
+    "job_state": "failed",
+    "terminal_exit_code": 1,
+    "finished_at": "2026-11-05T19:11:25.818954Z",
+    "status_file_sha256": "9c67cd2611b26e7ce3fc469bd5bb0878e7eb70b47d56e39dff2733486bc01f94",
+    "downloaded_artifacts": 25,
+    "downloaded_total_bytes": 3918339031,
+    "range_parts": 950,
+    "download_complete_but_runtime_not_ready": true,
+    "verified_torch_ready_marker_present": false,
+    "failed_check": "wheel METADATA identity is ambiguous",
+    "installer_script_sha256": "a01f4a9bed417e97fe9446b670d5ba40ca4fecda3cf6910d860f8258588f3da3",
+    "failed_source_check": "resume_torch_install_v4_data.py:725-728 accepts only one ZIP entry ending .dist-info/METADATA"
+  },
+  "root_cause_readonly_audit": {
+    "job_id": "1a1ad6d1e69-fc05-59d9",
+    "terminal_state": "succeeded",
+    "terminal_exit_code": 0,
+    "terminal_at_utc": "2026-11-05T20:36:14.381Z",
+    "operation": "read only wheel ZIP central-directory enumeration, no installation, no model computation",
+    "affected_wheel": "setuptools-78.1.0-py3-none-any.whl",
+    "wheel_sha256": "3e386e96793c8702ae83d17b853fb93d3e09ef82ec62722e61da5cd22376dcd8",
+    "wheel_size_bytes": 1256108,
+    "actual_matching_metadata_entries": 17,
+    "top_level_distribution_entry": "setuptools-78.1.0.dist-info/METADATA",
+    "additional_entries": "16 vendored dist-info/METADATA paths under setuptools/_vendor",
+    "implication": "The installer treats legitimate vendored metadata as ambiguous because its suffix-only ZIP scan does not constrain to the pinned wheel's top-level dist-info path; this is a validator mismatch, not evidence that the wheel SHA differs.",
+    "other_wheels_not_claimed_installed": true
+  },
+  "mamba": {
+    "wheel_download_job_id": "1a1aca7f6ba-fc05-5631",
+    "wheel_download_exit_code": 0,
+    "verified_wheels_only_marker_sha256": "f733f94818ea70056c52ef8ec7c5bd030f470482c3182d7642afa93d845cf384",
+    "offline_waiter_job_id": "1a1acadd69c-fc05-5654",
+    "offline_waiter_terminal_exit_code": 1,
+    "waiter_finished_at": "2026-11-05T19:11:27.039390Z",
+    "waiter_status_file_sha256": "8f355bbb5bbf09751757ea48ae7e5e7b94b675089a598bf4971327b2c1ce1627",
+    "waiter_state": "blocked_dependency_terminal",
+    "automatic_install_attempts": 0,
+    "mamba_runtime_ready_marker_present": false
+  },
+  "storage": {
+    "observer_job_id": "1a1acda2df4-fc05-5745",
+    "observer_state": "running",
+    "latest_observation_at": "2026-11-05T20:30:47.501543Z",
+    "latest_observation_sha256": "a17291fd77a694fc9b2c56d511e5e8d86d81b6627dee56933f69c8c5f6fde82f",
+    "data_free_bytes": 28623466496,
+    "control_free_bytes": 38833524736,
+    "below_observer_disk_threshold": false,
+    "deleted_old_roots_by_this_task": 0
+  },
+  "validation": {
+    "strict_baseline_95_of_95": null,
+    "strict_candidate_109_of_109": null,
+    "full_shape_cuda_parity": null,
+    "full_shape_cuda_memory_peak_bytes": null,
+    "physical_gpu_energy_joules": null,
+    "selected_B_policy": null,
+    "full_budget_B_audit_count": 0,
+    "no_legacy_smoke_counted": true
+  },
+  "github": {
+    "exact_source_ci_run": 42078258351,
+    "exact_source_ci_job": 127424159520,
+    "exact_source_ci_job_state": "queued",
+    "exact_source_ci_job_conclusion": null,
+    "trusted_main_probe_run": 39526325715,
+    "trusted_main_probe_job": 127299267982,
+    "trusted_main_probe_job_state": "queued",
+    "rerun_triggered": false
+  },
+  "corrective_gate": "Fix/read-only validate top-level dist-info METADATA selection in a new reviewed installer candidate, verify SHA/metadata and pinned runtime readiness, then explicitly authorize resumption under the single original campaign identity. Do not silently retry installers or any 170-run training budget.",
+  "actions_taken": [
+    "read existing process status and progress",
+    "read dependency status and immutable hashes",
+    "one-shot read-only ZIP directory audit",
+    "publish evidence on independent branch using head lease"
+  ],
+  "actions_not_taken": [
+    "no training launch",
+    "no training retry",
+    "no driver/service/trust changes",
+    "no model budget alteration",
+    "no research source branch edit",
+    "no PR/CI rerun"
+  ]
+}
