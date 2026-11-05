@@ -1,0 +1,11 @@
+{
+  "source_commit": "fc0c6f7430cc1cce9274d407536e7249f2290ccd",
+  "actual_exit_code": 101,
+  "elapsed_seconds": 526.9559211730957,
+  "classification": "BUILD_BLOCKED_SPARSE_COMPILE_INPUT",
+  "executed_tests": 0,
+  "missing_path": "docs/modules/MODULES.json",
+  "git_blob": "c1a2739f183742cd0ded297f4aa3fa7366d5e6ed",
+  "native_log_sha256": "fbe5a2266dae4e46d6f448b60e47c33727607c23c22b3268d82c06b3d223aae7",
+  "resolution": "Materialized the exact 60,274-byte blob from unchanged R; static scan of all codex-rs literal include_str!/include_bytes! references found 194 references, no other missing tracked or untracked literal target. This is a materialization repair, not a source patch or profile change."
+}

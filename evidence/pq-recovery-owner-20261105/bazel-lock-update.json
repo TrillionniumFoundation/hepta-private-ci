@@ -1,0 +1,37 @@
+{
+  "semantic_command": [
+    "just",
+    "bazel-lock-update"
+  ],
+  "cwd": "/workspace/scratch/aea25ba345a8/hepta-effects-agent/repo",
+  "bazel": "9.3.0",
+  "bazel_sha256": "d302d22ed77ee5658b87857249baa579db84300ecebe0a1e9a357b5b20f80eb8",
+  "startup_mode": "foreground batch with private pretrusted-system CA store",
+  "tls_verification_disabled": false,
+  "original_budget": {
+    "started_unix": 1793856665.0609672,
+    "deadline_unix": 1793857265.0609672,
+    "budget_seconds": 600
+  },
+  "remaining_seconds_at_start": 322,
+  "materialized_exact_local_packages": [
+    "bazel",
+    "patches",
+    "third_party/v8",
+    "third_party/wine",
+    "third_party/powershell",
+    "tools/argument-comment-lint"
+  ],
+  "start_unix": 1793856942.7943478,
+  "status": "passed",
+  "command": [
+    "timeout",
+    "--signal=TERM",
+    "--kill-after=15s",
+    "322s",
+    "just",
+    "bazel-lock-update"
+  ],
+  "exit_code": 0,
+  "elapsed_seconds": 72.1563572883606
+}

@@ -1,0 +1,36 @@
+{
+  "base": "3558ced0fd983603a3082a42359e8da63dfc8418",
+  "base_tree": "74366da4b0fe86e55f3c0c48cfb1484035181ba0",
+  "intermediate": "96e476cde2c4bf133f3665135ef7aea5dbc79198",
+  "intermediate_tree": "251ebd770c9811e1b5dad0d402284a6280d4c2e5",
+  "historical_native_source": "f04033d852ee9c1c9ba88a9fc48c21b798c39f97",
+  "historical_native_tree": "e6103f5f5fa3f6ba7938f78bc616ad2dd90e6e89",
+  "files": [
+    {
+      "path": "f04033d8-source.patch",
+      "bytes": 77110,
+      "sha256": "9774b0fb85af8eaf89b66e63b4372de9a220dc82815af17072e1c853c0d9e3e1"
+    },
+    {
+      "path": "96e476cd-source.patch",
+      "bytes": 58301,
+      "sha256": "a1e4a3a008671fe8ad1a7c1bfaf9df61a041d9829561dd0338af07173491383a"
+    },
+    {
+      "path": "f04033d8-from-96e476cd.patch",
+      "bytes": 26806,
+      "sha256": "7656d7f4a63455bba52cc73df43762a3f0978718b3adfbfe87dcbdfc797cb88e"
+    },
+    {
+      "path": "96e476cd-commit.raw",
+      "bytes": 327,
+      "sha256": "9e0abce00f8c3799d2ce24634f1ee9877e203de5728f154f9b3c60db0778247b"
+    },
+    {
+      "path": "f04033d8-commit.raw",
+      "bytes": 329,
+      "sha256": "7b236d433f4e55280f7470270b88877e9f39daba892c675cd534ce14b79e452e"
+    }
+  ],
+  "reconstruction": "Apply 96e476cd-source.patch to base, git write-tree must equal intermediate_tree; hash-object -t commit -w 96e476cd-commit.raw must equal intermediate. Apply f04033d8-from-96e476cd.patch, check historical_native_tree; hash-object -t commit -w f04033d8-commit.raw must equal historical_native_source. f04033d8-source.patch is the cumulative independent binary-capable patch."
+}

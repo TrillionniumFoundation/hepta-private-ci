@@ -1,0 +1,24 @@
+{
+  "kind": "CI_SOURCE_AND_SELECTION_AUDIT_FIXTURES_ONLY",
+  "reference_validator_git_blob": "f54bb28e39e648b15fbb6051d4139ba5e55006c2",
+  "baseline_workflow_git_blob": "c07b903bc589096f5927ee224abd10684d9a3c82",
+  "inspected_checkout_head": "70115620a7f540c8618a9b0d32ead20f8bc508f0",
+  "workflow_path": ".github/workflows/hepta-pq-policy-renewal.yml",
+  "workflow_git_blob": "392ad92cfdf63c6a1a8281683ec1074a845cff68",
+  "workflow_sha256": "4ddddcc5fb88cf182ab430fb898f55c34d3e5c06b14170b1be977751026091ae",
+  "validator_sha256": "85dda7f92d774db9ea0a5709b3bcfda6a50e8dfd396d9a6bc9353a2689bd470c",
+  "preserved_original_workflow_configuration_and_24_controls": true,
+  "mandatory_audit_logic_unchanged_except_selected_names": true,
+  "suite_counts": {
+    "dispatcher": 14,
+    "product": 3,
+    "recovery-owner": 7,
+    "recovery-signed": 9,
+    "recovery-product": 4
+  },
+  "real_rust_source_names_checked": 37,
+  "fixture_cases_passed": 154,
+  "native_tests_executed": 0,
+  "ci_triggered": false,
+  "qualification": "HOLD_NO_GO"
+}

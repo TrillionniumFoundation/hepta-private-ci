@@ -1,0 +1,16 @@
+{
+  "source_commit": "fc0c6f7430cc1cce9274d407536e7249f2290ccd",
+  "attempt": "R-fc0c6f74-agentd-frontier-attempt2",
+  "classification": "BUILD_BLOCKED_LINKER_SIGBUS",
+  "executed_tests": 0,
+  "cause_established_by_log": false,
+  "terminal_diagnostic": "collect2: fatal error: ld terminated with signal 7 [Bus error]",
+  "observation_time_unix": 1793858622.8542814,
+  "link_output_targets": [
+    {
+      "path": "/workspace/scratch/aea25ba345a8/hepta-effects-agent/target/debug/deps/codex_hepta_agentd-b1f0709e78245ce8",
+      "exists_after_terminal": false
+    }
+  ],
+  "scope": "No failed executable was available to retain or hash if exists_after_terminal is false. rcgu objects and dependency outputs are retained. Incremental cache cleanup already completed before this additional -o extraction."
+}

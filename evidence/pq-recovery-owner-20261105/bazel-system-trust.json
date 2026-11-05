@@ -1,0 +1,36 @@
+{
+  "truststore": "/workspace/scratch/aea25ba345a8/hepta-effects-agent/bazel-cacerts",
+  "truststore_sha256": "53471dec97f4b0d7ea7e89872e1e400b7efe78ed28b8d98fbb3e4cc20249b2bb",
+  "preserved_default_jdk_roots": true,
+  "tls_and_hostname_verification_disabled": false,
+  "imported": [
+    {
+      "source": "/usr/local/share/ca-certificates/chaussette.crt",
+      "already_trusted_by": "system ca-certificates.crt",
+      "certificate_sha256": "0948de2d6a7ac12189d231e62b8d36f7cc8e9c9950fe028b2b1fecd2e7c48ba3",
+      "exit_code": 0,
+      "output": "Certificate was added to keystore"
+    },
+    {
+      "source": "/usr/local/share/ca-certificates/mitmproxy-ca-cert.crt",
+      "already_trusted_by": "system ca-certificates.crt",
+      "certificate_sha256": "3dfd81e23035008ac48adcce5644726c468066bdc84d6cf76978faa1dba320f8",
+      "exit_code": 0,
+      "output": "Certificate was added to keystore"
+    },
+    {
+      "source": "/usr/local/share/ca-certificates/nebula-dns.crt",
+      "already_trusted_by": "configured SSL_CERT_FILE",
+      "certificate_sha256": "c71b4d1e9d7775c538c688ab10cea9ce417d7312e89838f9d15ff73256cd7fc3",
+      "exit_code": 0,
+      "output": "Certificate was added to keystore"
+    },
+    {
+      "source": "/usr/local/share/ca-certificates/nebula-mitmproxy.crt",
+      "already_trusted_by": "system ca-certificates.crt",
+      "certificate_sha256": "92ae3b5172d60eaf8edf47fce83cd9cbcea4599c3f90b8e67824d614ed17baa2",
+      "exit_code": 0,
+      "output": "Certificate was added to keystore"
+    }
+  ]
+}

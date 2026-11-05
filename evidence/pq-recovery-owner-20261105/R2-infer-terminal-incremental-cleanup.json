@@ -1,0 +1,118 @@
+{
+  "recorded_unix": 1793861192.8390326,
+  "source_commit": "70115620a7f540c8618a9b0d32ead20f8bc508f0",
+  "reason": "The inference lib-test build naturally terminated with linker SIGBUS; reclaim only this task inactive incremental cache before one original scoped just-fix retry. No linker root cause is asserted.",
+  "native_receipt": "R2-70115620-infer-worker-lib.json",
+  "failed_link_output": "/workspace/scratch/aea25ba345a8/hepta-effects-agent/target/debug/deps/codex_hepta_infer_worker_host-58358f3264ac2ce8",
+  "failed_link_output_exists": false,
+  "visible_own_target_compiler_processes": [],
+  "unreadable_cmdline_count": 0,
+  "visibility_scope": "Readable /proc cmdlines only; this task has no running native command after natural terminal. No claim of universal system visibility.",
+  "main_binary": "/workspace/scratch/aea25ba345a8/hepta-effects-agent/target/debug/codex-hepta-agentd",
+  "main_sha256_before": "1fda3237fa995431be7a909e69f938aa0e92ef1f10b80cd425dd2544b5b23d2f",
+  "directories": [
+    {
+      "path": "/workspace/scratch/aea25ba345a8/hepta-effects-agent/target/debug/incremental/build_script_build-1vlzdsw0bz16c",
+      "logical_bytes": 0,
+      "file_count": 0
+    },
+    {
+      "path": "/workspace/scratch/aea25ba345a8/hepta-effects-agent/target/debug/incremental/codex_app_server_client-0a4tyrmgb3olo",
+      "logical_bytes": 41146028,
+      "file_count": 98
+    },
+    {
+      "path": "/workspace/scratch/aea25ba345a8/hepta-effects-agent/target/debug/incremental/codex_hepta_agentd-12ggnyz1hqvo1",
+      "logical_bytes": 218578619,
+      "file_count": 261
+    },
+    {
+      "path": "/workspace/scratch/aea25ba345a8/hepta-effects-agent/target/debug/incremental/codex_hepta_bellman_operator-370q1az3q99ed",
+      "logical_bytes": 19400801,
+      "file_count": 103
+    },
+    {
+      "path": "/workspace/scratch/aea25ba345a8/hepta-effects-agent/target/debug/incremental/codex_hepta_codex_adapter-033tkdw7g6ofh",
+      "logical_bytes": 25869569,
+      "file_count": 46
+    },
+    {
+      "path": "/workspace/scratch/aea25ba345a8/hepta-effects-agent/target/debug/incremental/codex_hepta_infer_worker_host-3lhuwpsx0cz2w",
+      "logical_bytes": 209814792,
+      "file_count": 260
+    },
+    {
+      "path": "/workspace/scratch/aea25ba345a8/hepta-effects-agent/target/debug/incremental/codex_hepta_intelligence-0i614r2xl2wfs",
+      "logical_bytes": 27053741,
+      "file_count": 154
+    },
+    {
+      "path": "/workspace/scratch/aea25ba345a8/hepta-effects-agent/target/debug/incremental/codex_hepta_intelligence_eval-0dz3gr7yj3a1c",
+      "logical_bytes": 33934052,
+      "file_count": 146
+    },
+    {
+      "path": "/workspace/scratch/aea25ba345a8/hepta-effects-agent/target/debug/incremental/codex_hepta_learning_ledger-343o5isancp7b",
+      "logical_bytes": 38907420,
+      "file_count": 164
+    },
+    {
+      "path": "/workspace/scratch/aea25ba345a8/hepta-effects-agent/target/debug/incremental/codex_hepta_prompt_optimizer-3332cytnc2lmp",
+      "logical_bytes": 18559891,
+      "file_count": 92
+    },
+    {
+      "path": "/workspace/scratch/aea25ba345a8/hepta-effects-agent/target/debug/incremental/codex_http_client-2f0wfaywwxl19",
+      "logical_bytes": 0,
+      "file_count": 0
+    },
+    {
+      "path": "/workspace/scratch/aea25ba345a8/hepta-effects-agent/target/debug/incremental/codex_utils_absolute_path-3mtsb5zyg552t",
+      "logical_bytes": 0,
+      "file_count": 0
+    },
+    {
+      "path": "/workspace/scratch/aea25ba345a8/hepta-effects-agent/target/debug/incremental/codex_utils_home_dir-3v3bl9uyt8yj7",
+      "logical_bytes": 0,
+      "file_count": 0
+    },
+    {
+      "path": "/workspace/scratch/aea25ba345a8/hepta-effects-agent/target/debug/incremental/codex_utils_rustls_provider-2mw8lx4evhit8",
+      "logical_bytes": 0,
+      "file_count": 0
+    },
+    {
+      "path": "/workspace/scratch/aea25ba345a8/hepta-effects-agent/target/debug/incremental/rama_dns-2enu9jgb876i5",
+      "logical_bytes": 0,
+      "file_count": 0
+    },
+    {
+      "path": "/workspace/scratch/aea25ba345a8/hepta-effects-agent/target/debug/incremental/starlark-214ljyxvqhzfj",
+      "logical_bytes": 0,
+      "file_count": 0
+    }
+  ],
+  "total_logical_bytes": 633264913,
+  "space_before": {
+    "all_free_bytes": 1107808256,
+    "available_bytes": 0
+  },
+  "preserved": [
+    "source",
+    "Git objects",
+    "logs",
+    "deps",
+    "rlib",
+    "rmeta",
+    "rcgu",
+    "fingerprints",
+    "main Agentd binary"
+  ],
+  "profiles_or_flags_changed": false,
+  "deleted": true,
+  "main_sha256_after": "1fda3237fa995431be7a909e69f938aa0e92ef1f10b80cd425dd2544b5b23d2f",
+  "space_after": {
+    "all_free_bytes": 1661603840,
+    "available_bytes": 0
+  }
+}

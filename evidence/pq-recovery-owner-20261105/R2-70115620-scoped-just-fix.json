@@ -1,0 +1,38 @@
+{
+  "command": [
+    "just",
+    "fix",
+    "-p",
+    "codex-hepta-evidence",
+    "-p",
+    "codex-hepta-agentd",
+    "-p",
+    "codex-hepta-infer-worker-host",
+    "--locked"
+  ],
+  "cwd": "/workspace/scratch/aea25ba345a8/hepta-effects-agent/repo/codex-rs",
+  "source_commit": "70115620a7f540c8618a9b0d32ead20f8bc508f0",
+  "source_tree": "ebd1437475d71252786788f67d2911f5a6e6108d",
+  "git_status_before": "",
+  "cargo_lock_sha256": "0f458d7746a0ca0b95bedc5404fd3347c1b0a7508f1c387f3b1f3f71ced08663",
+  "environment": {
+    "CARGO_BUILD_JOBS": "1",
+    "CARGO_TARGET_DIR": "/workspace/scratch/aea25ba345a8/hepta-effects-agent/target",
+    "RUSTFLAGS": null,
+    "RUSTDOCFLAGS": null,
+    "CARGO_PROFILE_DEV_DEBUG": null,
+    "CARGO_PROFILE_TEST_DEBUG": null,
+    "CARGO_INCREMENTAL": null
+  },
+  "rustc": "rustc 1.96.0 (ac68faa20 2026-05-25)",
+  "pre_start_all_free_bytes": 1644879872,
+  "pre_start_available_bytes": 0,
+  "started_unix": 1793860093.3634086,
+  "wall_timeout_seconds": null,
+  "status": "failed",
+  "elapsed_seconds": 368.1885404586792,
+  "exit_code": 101,
+  "git_status_after": "",
+  "source_commit_after": "70115620a7f540c8618a9b0d32ead20f8bc508f0",
+  "log_sha256": "583307cfd4e4e4a7548a689255bd50b2e989dcb8b0885b2e1101d33c5eb1f998"
+}

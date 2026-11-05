@@ -1,0 +1,14 @@
+{
+  "source_commit": "70115620a7f540c8618a9b0d32ead20f8bc508f0",
+  "scope": "Environment capability observation only, not a product PASS; no policy/sandbox/permission change and no product rerun",
+  "operation": "socket.socket(socket.AF_UNIX, socket.SOCK_STREAM)",
+  "requested_location": "tmp",
+  "socket_creation_succeeded": false,
+  "bind_attempted": false,
+  "errno": 1,
+  "errno_name": "EPERM",
+  "observed_exception": "PermissionError: [Errno 1] Operation not permitted",
+  "initial_probe_wrapper_exit_code": 1,
+  "second_location_probe_executed": false,
+  "explanation": "The kernel denied socket creation before any pathname-dependent bind could execute; the initial wrapper propagated that actual exception. No further redundant capability attempt was made."
+}

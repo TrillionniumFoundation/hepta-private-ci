@@ -1,0 +1,27 @@
+{
+  "source_commit": "70115620a7f540c8618a9b0d32ead20f8bc508f0",
+  "source_tree": "ebd1437475d71252786788f67d2911f5a6e6108d",
+  "status": "BUILD_BLOCKED_LINKER_SIGBUS",
+  "exit_code": 101,
+  "elapsed_seconds": 107.71768498420715,
+  "tests_executed": 0,
+  "tests_passed": 0,
+  "tests_failed": 0,
+  "ignored_model_campaigns_activated": false,
+  "observed_error": "collect2: fatal error: ld terminated with signal 7 [Bus error]",
+  "enospc_text_in_log": false,
+  "root_cause_established": false,
+  "source_clean_before_and_after": true,
+  "command": [
+    "just",
+    "test",
+    "-p",
+    "codex-hepta-infer-worker-host",
+    "--locked",
+    "--lib"
+  ],
+  "receipt": "R2-70115620-infer-worker-lib.json",
+  "raw_log": "R2-70115620-infer-worker-lib.log",
+  "log_sha256": "3991dfbe87708a0486edbfdb3f07a4f7fb136946c66578855ad81107d3c2b90d",
+  "test_executable_exists_after_failure": false
+}

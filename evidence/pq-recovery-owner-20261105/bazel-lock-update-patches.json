@@ -1,0 +1,38 @@
+{
+  "command": [
+    "timeout",
+    "--signal=TERM",
+    "--kill-after=15s",
+    "600s",
+    "just",
+    "bazel-lock-update"
+  ],
+  "semantic_command": [
+    "just",
+    "bazel-lock-update"
+  ],
+  "cwd": "/workspace/scratch/aea25ba345a8/hepta-effects-agent/repo",
+  "head_before": "f04033d852ee9c1c9ba88a9fc48c21b798c39f97",
+  "scope": "four-domain source patch; exact bazel directory materialized; no Rust build started",
+  "bazel": "9.3.0",
+  "bazel_sha256": "d302d22ed77ee5658b87857249baa579db84300ecebe0a1e9a357b5b20f80eb8",
+  "startup_options": [
+    "--output_user_root=/workspace/scratch/aea25ba345a8/hepta-effects-agent/bazel-output",
+    "--batch",
+    "--host_jvm_args=-Djavax.net.ssl.trustStore=/workspace/scratch/aea25ba345a8/hepta-effects-agent/bazel-cacerts",
+    "--host_jvm_args=-Djavax.net.ssl.trustStorePassword=changeit"
+  ],
+  "tls_verification_disabled": false,
+  "system_trust_receipt": "bazel-system-trust.json",
+  "prior_attempts": [
+    "initial tool missing exit127",
+    "server PID visibility exit36",
+    "sparse bazel/modules missing exit37",
+    "JDK did not trust preconfigured network CA: PKIX exit37"
+  ],
+  "declared_wall_timeout_seconds": 600,
+  "start_unix": 1793856665.0609672,
+  "status": "failed",
+  "exit_code": 37,
+  "elapsed_seconds": 21.65840768814087
+}

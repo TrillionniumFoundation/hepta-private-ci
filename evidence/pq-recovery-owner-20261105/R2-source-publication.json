@@ -1,0 +1,37 @@
+{
+  "schema": "pq-owner-runtime-source-publication-v1",
+  "observed_utc": "2026-11-05T06:16:46.138Z",
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "pull_request": 4812,
+  "branch": "fix/hepta-ordinary-pq-effects-20261104",
+  "source_commit": "70115620a7f540c8618a9b0d32ead20f8bc508f0",
+  "tree": "ebd1437475d71252786788f67d2911f5a6e6108d",
+  "parents": [
+    "9e8faef449a4392b7b9aa6a9071f260a34d95ec9"
+  ],
+  "author": {
+    "name": "Tomasrgbsf",
+    "email": "273673612+Tomasrgbsf@users.noreply.github.com",
+    "date": "2026-11-05T06:15:55Z"
+  },
+  "committer": {
+    "name": "Tomasrgbsf",
+    "email": "273673612+Tomasrgbsf@users.noreply.github.com",
+    "date": "2026-11-05T06:15:55Z"
+  },
+  "expected_previous_head": "9e8faef449a4392b7b9aa6a9071f260a34d95ec9",
+  "force": false,
+  "update_success": true,
+  "remote_ref_readback": "70115620a7f540c8618a9b0d32ead20f8bc508f0",
+  "fixture_readback": {
+    "path": "codex-rs/hepta-agentd/tests/kernel_evidence_product.rs",
+    "bytes": 33165,
+    "git_blob_sha1": "d87d97f193a6095e77a60fb3cb1894f77ebc6f95",
+    "sha256": "5baaac0f3034422f28bdbd14379b2d8bb08a42eb84c8e174245aa171d3649b32"
+  },
+  "preserved_prior_runtime_source": "fc0c6f7430cc1cce9274d407536e7249f2290ccd",
+  "preserved_peer_evidence_commit": "9e8faef449a4392b7b9aa6a9071f260a34d95ec9",
+  "changed_source_scope": "Only the existing fixture converts ProviderEffectBindingError explicitly to anyhow; production sources, lockfiles, inputs and four product test assertions are unchanged from R1.",
+  "qualification": "HOLD_NO_GO",
+  "native_outcomes": "Separate receipts are required on this exact source; R1 outcomes are not relabelled."
+}

@@ -1,0 +1,46 @@
+{
+  "source_commit": "fc0c6f7430cc1cce9274d407536e7249f2290ccd",
+  "source_tree": "8403d5acabc83707e9b5fcb4e5250a4883c12293",
+  "command": [
+    "just",
+    "test",
+    "-p",
+    "codex-hepta-agentd",
+    "--locked",
+    "--lib",
+    "-E",
+    "test(evidence_frontier)"
+  ],
+  "actual_exit_code": 0,
+  "elapsed_seconds": 85.19342231750488,
+  "classification": "SCOPED_NATIVE_PASS",
+  "executed_tests": 9,
+  "passed_tests": 9,
+  "nextest_summary_skipped_tests": 239,
+  "selected_tests": [
+    "evidence_frontier::tests::recovery_frontier_cannot_be_omitted_at_the_ordinary_agentd_run_entry",
+    "evidence_frontier::tests::recovery_frontier_enforces_root_scope_epoch_revocation_and_generation_floor",
+    "evidence_frontier::tests::recovery_frontier_refuses_valid_classical_v1_and_v2_signatures",
+    "evidence_frontier::tests::recovery_frontier_rejects_wrong_key_pin_and_noncanonical_signature",
+    "evidence_frontier::tests::recovery_frontier_rejects_wrong_domain_and_profile",
+    "evidence_frontier::tests::recovery_frontier_authenticates_both_effect_fields",
+    "evidence_frontier::tests::recovery_frontier_pq_survives_store_close_and_reopen",
+    "evidence_frontier::tests::recovery_frontier_root_rotation_retires_the_old_key",
+    "evidence_frontier::tests::recovery_frontier_read_only_preflight_never_binds_or_changes_the_image"
+  ],
+  "nextest_run_id": "befa5d00-c254-467b-a8b6-8fada8bf54c4",
+  "log_sha256": "e83b7a70fe37efc50edbfde41f4e4ff84aa04c6e8a5c035a5ee43eba292d908e",
+  "test_executable": {
+    "path": "/workspace/scratch/aea25ba345a8/hepta-effects-agent/target/debug/deps/codex_hepta_agentd-b1f0709e78245ce8",
+    "bytes": 1281053752,
+    "sha256": "d900f680e6ad05ad098a45a37d1fe50ad04a8a6889afea145ae080500e025d9c",
+    "retained_after_this_gate": false,
+    "artifact_retained": false,
+    "cache_reclaimed": true,
+    "deployable_binary": false
+  },
+  "binary_retention_scope": "This completed unit-only test executable was removed after hashing to free space for remaining product gates. Production Agentd binary, all dependency outputs, source and raw logs are retained; no later claim assumes this test executable remains available.",
+  "test_executable_removal_time_unix": 1793858783.1354911,
+  "before_all_free_bytes": 3817144320,
+  "after_all_free_bytes": 5091868672
+}

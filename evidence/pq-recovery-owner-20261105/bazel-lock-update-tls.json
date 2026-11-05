@@ -1,0 +1,25 @@
+{
+  "command": [
+    "just",
+    "bazel-lock-update"
+  ],
+  "cwd": "/workspace/scratch/aea25ba345a8/hepta-effects-agent/repo",
+  "head_before": "f04033d852ee9c1c9ba88a9fc48c21b798c39f97",
+  "scope": "four-domain source patch; exact existing bazel directory materialized (16 blobs/44966 bytes); no Rust build started",
+  "bazel": "9.3.0",
+  "bazel_sha256": "d302d22ed77ee5658b87857249baa579db84300ecebe0a1e9a357b5b20f80eb8",
+  "startup_options": [
+    "--output_user_root=/workspace/scratch/aea25ba345a8/hepta-effects-agent/bazel-output",
+    "--batch"
+  ],
+  "prior_attempts": [
+    "initial tool missing exit127",
+    "server PID visibility exit36",
+    "sparse bazel/modules missing exit37"
+  ],
+  "declared_wall_timeout_seconds": 600,
+  "start_unix": 1793856345.023022,
+  "status": "failed",
+  "exit_code": 37,
+  "elapsed_seconds": 20.464726448059082
+}

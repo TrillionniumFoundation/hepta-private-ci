@@ -1,0 +1,77 @@
+{
+  "source_commit": "70115620a7f540c8618a9b0d32ead20f8bc508f0",
+  "source_tree": "ebd1437475d71252786788f67d2911f5a6e6108d",
+  "command": [
+    "just",
+    "test",
+    "-p",
+    "codex-hepta-agentd",
+    "--locked",
+    "--test",
+    "kernel_evidence_product"
+  ],
+  "actual_exit_code": 100,
+  "elapsed_seconds": 62.546286821365356,
+  "classification": "PRODUCT_GATE_OPEN_UNIX_SOCKET_EPERM",
+  "distinct_tests_run": 4,
+  "passed_tests": 2,
+  "failed_tests": 2,
+  "skipped_tests": 0,
+  "passed_names": [
+    "signed_recovery_frontier_rejects_valid_older_database_image",
+    "signed_recovery_frontier_rejects_effect_only_database_rollback"
+  ],
+  "failed_names": [
+    "real_agentd_composes_authenticated_evidence_writer_query_verifier_and_terminal_observer",
+    "signed_recovery_frontier_allows_exact_current_database"
+  ],
+  "failed_final_attempt": 2,
+  "retries_scope": "Original local nextest retry configuration produced TRY 2 FAIL for both positive cases; no test/filter/profile/timeout was changed or failure hidden",
+  "nextest_run_id": "bc070a88-0a5b-4153-8e45-af34a33a4a7b",
+  "log_sha256": "778c0d4b447451fd6f648b39ea10e6971a1d633a18780614b7ee9311cddaa379",
+  "failed_diagnostic": "Real child Agentd could not bind its AF_UNIX control socket: Operation not permitted (os error 1). Positive IPC assertions were not reached.",
+  "negative_scope": "Two real process rollback rejections passed the recovery_required and unchanged restored database byte oracles. This does not establish successful positive IPC or real external provider exactly-once effects.",
+  "binaries": [
+    {
+      "path": "/workspace/scratch/aea25ba345a8/hepta-effects-agent/target/debug/codex-hepta-agentd",
+      "bytes": 1232076656,
+      "sha256": "1fda3237fa995431be7a909e69f938aa0e92ef1f10b80cd425dd2544b5b23d2f",
+      "mtime_unix": 1793859751.5261316,
+      "artifact_retained": true,
+      "inode": 3053277,
+      "hardlink_count": 2,
+      "cache_reclaimed": false,
+      "qualified_release_binary": false
+    },
+    {
+      "path": "/workspace/scratch/aea25ba345a8/hepta-effects-agent/target/debug/hepta-agentd-browser",
+      "bytes": 807161872,
+      "sha256": "9222e342e048cbd497d09308c9347b4f3dc617dbef74e7a7471dafd542acb70f",
+      "mtime_unix": 1793859732.877845,
+      "artifact_retained": false,
+      "inode": 3053203,
+      "hardlink_count": 2,
+      "cache_reclaimed": true,
+      "qualified_release_binary": false,
+      "cleanup_receipt": "R2-browser-cache-cleanup.json"
+    },
+    {
+      "path": "/workspace/scratch/aea25ba345a8/hepta-effects-agent/target/debug/deps/kernel_evidence_product-457d52dad6a742f7",
+      "bytes": 862129840,
+      "sha256": "0027018299bf0f35f1d6b24cfe566b39953b641321f77a2aadeb6b1e571b6424",
+      "mtime_unix": 1793859718.3856294,
+      "artifact_retained": false,
+      "inode": 3025173,
+      "hardlink_count": 1,
+      "cache_reclaimed": true,
+      "test_only": true
+    }
+  ],
+  "binary_resolution": "FleetHarness::agentd_binary calls codex_utils_cargo_bin::cargo_bin(\"codex-hepta-agentd\"); the current Cargo/nextest target binary path is listed here. No syscall trace is claimed.",
+  "product_test_executable_cleanup": {
+    "time_unix": 1793860045.3596325,
+    "reason": "Completed native test gate executable only; actual Agentd and browser binaries, all dependency outputs and source are retained",
+    "before_all_free_bytes": 786821120,
+    "after_all_free_bytes": 1647812608
+  }
+}

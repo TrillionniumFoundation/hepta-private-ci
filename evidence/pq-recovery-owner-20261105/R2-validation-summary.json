@@ -1,0 +1,122 @@
+{
+  "schema_version": 1,
+  "source_commit": "70115620a7f540c8618a9b0d32ead20f8bc508f0",
+  "source_tree": "ebd1437475d71252786788f67d2911f5a6e6108d",
+  "recorded_unix": 1793861658.5036542,
+  "source_clean_after_all_native": true,
+  "native_commands_still_running": false,
+  "frontier_unit": {
+    "status": "SCOPED_NATIVE_PASS",
+    "passed": 9,
+    "executed": 9,
+    "other_library_cases_skipped": 239,
+    "receipt": "R2-70115620-agentd-frontier.json",
+    "summary": "R2-frontier-native-final.json"
+  },
+  "kernel_product": {
+    "status": "PRODUCT_GATE_OPEN_UNIX_SOCKET_EPERM",
+    "passed": 2,
+    "failed": 2,
+    "skipped": 0,
+    "distinct_executed": 4,
+    "actual_exit_code": 100,
+    "original_nextest_retry_final_attempt": 2,
+    "receipt": "R2-70115620-kernel-evidence-product.json",
+    "summary": "R2-product-native-final.json"
+  },
+  "inference_worker_lib": {
+    "status": "BUILD_BLOCKED_LINKER_SIGBUS",
+    "executed": 0,
+    "root_cause_established": false,
+    "receipt": "R2-70115620-infer-worker-lib.json",
+    "summary": "R2-infer-worker-lib-classification.json"
+  },
+  "required_scoped_lint": {
+    "status": "BUILD_BLOCKED_ENOSPC",
+    "passed": false,
+    "source_modified": false,
+    "packages": [
+      "codex-hepta-evidence",
+      "codex-hepta-agentd",
+      "codex-hepta-infer-worker-host"
+    ],
+    "attempt_receipts": [
+      "R2-70115620-scoped-just-fix.json",
+      "R2-70115620-scoped-just-fix-attempt2.json"
+    ],
+    "summaries": [
+      "R2-just-fix-attempt1-classification.json",
+      "R2-just-fix-attempt2-classification.json"
+    ]
+  },
+  "ci_selection_audit": {
+    "status": "PASS_SYNTHETIC_SOURCE_SCOPE_ONLY",
+    "expected_fixtures": 154,
+    "source_names": 37,
+    "native_tests": 0,
+    "audit_did_not_trigger_ci": true,
+    "provenance": "ci-selection-audit-r2-70115620-provenance.json"
+  },
+  "bazel_dependency_lock_tooling": {
+    "status": "PASS",
+    "actual_exit_code": 0,
+    "source_captured_at_command_boundaries": false,
+    "not_attributed_to_R2": true,
+    "scope_receipt": "bazel-source-scope.json"
+  },
+  "artifacts": [
+    {
+      "path": "/workspace/scratch/aea25ba345a8/hepta-effects-agent/target/debug/codex-hepta-agentd",
+      "bytes": 1232076656,
+      "sha256": "1fda3237fa995431be7a909e69f938aa0e92ef1f10b80cd425dd2544b5b23d2f",
+      "mtime_unix": 1793859751.5261316,
+      "artifact_retained": true,
+      "inode": 3053277,
+      "hardlink_count": 2,
+      "cache_reclaimed": false,
+      "qualified_release_binary": false
+    },
+    {
+      "path": "/workspace/scratch/aea25ba345a8/hepta-effects-agent/target/debug/hepta-agentd-browser",
+      "bytes": 807161872,
+      "sha256": "9222e342e048cbd497d09308c9347b4f3dc617dbef74e7a7471dafd542acb70f",
+      "mtime_unix": 1793859732.877845,
+      "artifact_retained": false,
+      "inode": 3053203,
+      "hardlink_count": 2,
+      "cache_reclaimed": true,
+      "qualified_release_binary": false,
+      "cleanup_receipt": "R2-browser-cache-cleanup.json"
+    },
+    {
+      "path": "/workspace/scratch/aea25ba345a8/hepta-effects-agent/target/debug/deps/kernel_evidence_product-457d52dad6a742f7",
+      "bytes": 862129840,
+      "sha256": "0027018299bf0f35f1d6b24cfe566b39953b641321f77a2aadeb6b1e571b6424",
+      "mtime_unix": 1793859718.3856294,
+      "artifact_retained": false,
+      "inode": 3025173,
+      "hardlink_count": 1,
+      "cache_reclaimed": true,
+      "test_only": true
+    }
+  ],
+  "unit_test_artifact": {
+    "path": "/workspace/scratch/aea25ba345a8/hepta-effects-agent/target/debug/deps/codex_hepta_agentd-b1f0709e78245ce8",
+    "bytes": 1281053752,
+    "sha256": "d900f680e6ad05ad098a45a37d1fe50ad04a8a6889afea145ae080500e025d9c",
+    "artifact_retained": false,
+    "cache_reclaimed": true,
+    "deployable_binary": false
+  },
+  "remaining_open": [
+    "All-live-owner PQ authorization",
+    "External monotonic freshness and independent root custody/deployment",
+    "Updater/installer deployment, retirement, cold-recovery/key-fault proof",
+    "Complete provider effects, concurrency and lost-reply reconciliation",
+    "Running-binary/source/config pins and activation responsibility",
+    "Unix-external-file parity on Windows",
+    "Original adversarial/WAN capacity and independent deployment"
+  ],
+  "qualification_closed": false,
+  "historical_results_promoted": false
+}

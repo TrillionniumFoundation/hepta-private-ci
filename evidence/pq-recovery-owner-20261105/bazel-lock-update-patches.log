@@ -1,0 +1,26 @@
+bazel mod deps --lockfile_mode=update
+OpenJDK 64-Bit Server VM warning: Options -Xverify:none and -noverify were deprecated in JDK 13 and will likely be removed in a future release.
+INFO: Invocation ID: 9f171308-c303-43ba-8b8c-cf75ad773ab5
+ no actions running
+ no actions running
+ no actions running
+ no actions running
+ no actions running
+ no actions running
+ no actions running
+ no actions running
+ no actions running
+ no actions running
+ no actions running
+INFO: Repo v8+ defined by rule http_archive in @@bazel_tools//tools/build_defs/repo:http.bzl
+ERROR: /workspace/scratch/aea25ba345a8/hepta-effects-agent/bazel-output/5fa91d2d4890187d48b8aa12e863ec68/external/bazel_tools/tools/build_defs/repo/utils.bzl:257:22: An error occurred during the fetch of repository 'v8+':
+   Traceback (most recent call last):
+	File "/workspace/scratch/aea25ba345a8/hepta-effects-agent/bazel-output/5fa91d2d4890187d48b8aa12e863ec68/external/bazel_tools/tools/build_defs/repo/http.bzl", line 217, column 32, in _http_archive_impl
+		remote_patches_info = patch(ctx)
+	File "/workspace/scratch/aea25ba345a8/hepta-effects-agent/bazel-output/5fa91d2d4890187d48b8aa12e863ec68/external/bazel_tools/tools/build_defs/repo/utils.bzl", line 257, column 22, in patch
+		ctx.patch(patchfile, strip, directory = patch_directory or "")
+Error in patch: Unable to load package for //patches:v8_module_deps.patch: BUILD file not found in any of the following directories. Add a BUILD file to a directory to mark it as a package.
+ - patches
+ERROR: in module dependency chain <root> -> llvm@0.8.11: unable to load package for single_version_override patch //patches:llvm_rusty_v8_custom_libcxx.patch: BUILD file not found in any of the following directories. Add a BUILD file to a directory to mark it as a package.
+ - patches
+error: recipe `bazel-lock-update` failed on line 150 with exit code 37

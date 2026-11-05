@@ -1,0 +1,674 @@
+cargo clippy --fix --tests --allow-dirty {args}
+    Checking codex-protocol v0.0.0 (/workspace/scratch/aea25ba345a8/hepta-effects-agent/repo/codex-rs/protocol)
+    Checking prodash v31.0.0
+    Checking zlib-rs v0.6.3
+    Checking gix-features v0.46.2
+   Compiling either v1.15.0
+    Checking hash32 v0.3.1
+    Checking heapless v0.8.0
+    Checking gix-error v0.2.1
+    Checking winnow v0.7.14
+   Compiling cfg-if v1.0.4
+    Checking faster-hex v0.10.0
+   Compiling zerovec v0.11.6
+    Checking sha1-checked v0.10.0
+    Checking gix-hash v0.23.0
+    Checking curve25519-dalek v4.1.3
+   Compiling tinystr v0.8.3
+    Checking jiff v0.2.23
+    Checking gix-date v0.15.1
+    Checking gix-actor v0.40.0
+    Checking gix-hashtable v0.13.0
+    Checking thiserror v1.0.69
+    Checking gix-object v0.58.0
+    Checking memmap2 v0.9.10
+    Checking parking v2.2.1
+    Checking event-listener v5.4.2
+    Checking gix-fs v0.19.2
+    Checking shell-words v1.1.1
+    Checking gix-chunk v0.7.0
+    Checking nonempty v0.12.0
+    Checking gix-tempfile v21.0.2
+    Checking gix-lock v21.0.2
+   Compiling block-buffer v0.10.4
+    Checking gix-commitgraph v0.35.0
+    Checking filedescriptor v0.8.3
+    Checking gix-quote v0.7.0
+   Compiling itertools v0.13.0
+   Compiling anyhow v1.0.103
+    Checking gix-sec v0.13.3
+    Checking serial2 v0.2.33
+    Checking downcast-rs v1.2.1
+    Checking portable-pty v0.9.0
+   Compiling prost-derive v0.14.4
+    Checking gix-revwalk v0.29.0
+   Compiling digest v0.10.7
+    Checking gix-ref v0.61.0
+    Checking arc-swap v1.9.0
+    Checking block-padding v0.3.3
+   Compiling cpufeatures v0.2.17
+    Checking const-oid v0.9.6
+    Checking der v0.7.10
+   Compiling sha2 v0.10.9
+    Checking inout v0.1.4
+    Checking codex-utils-pty v0.0.0 (/workspace/scratch/aea25ba345a8/hepta-effects-agent/repo/codex-rs/utils/pty)
+    Checking gix-command v0.8.0
+    Checking gix-packetline v0.21.5
+    Checking gix-glob v0.24.0
+    Checking gix-url v0.35.2
+    Checking clru v0.6.3
+   Compiling scopeguard v1.2.0
+   Compiling lock_api v0.4.14
+    Checking gix-pack v0.68.0
+    Checking gix-transport v0.55.1
+    Checking cipher v0.4.4
+    Checking spki v0.7.3
+    Checking gix-revision v0.43.0
+    Checking gix-shallow v0.10.0
+    Checking gix-config-value v0.17.1
+    Checking unicode-bom v2.0.3
+    Checking gix-config v0.54.0
+    Checking gix-protocol v0.59.0
+    Checking gix-refspec v0.39.0
+    Checking pkcs8 v0.10.2
+    Checking gix-odb v0.78.0
+    Checking gix-discover v0.49.0
+    Checking gix-traverse v0.55.0
+    Checking gix-diff v0.61.0
+    Checking codex-file-system v0.0.0 (/workspace/scratch/aea25ba345a8/hepta-effects-agent/repo/codex-rs/file-system)
+    Checking headers-core v0.3.0
+    Checking signature v2.2.0
+    Checking ed25519 v2.2.3
+    Checking pin-project v1.1.10
+    Checking headers v0.4.1
+    Checking gix v0.81.0
+   Compiling parking_lot_core v0.9.12
+    Checking utf-8 v0.7.6
+    Checking similar v2.7.0
+    Checking codex-git-utils v0.0.0 (/workspace/scratch/aea25ba345a8/hepta-effects-agent/repo/codex-rs/git-utils)
+    Checking tungstenite v0.27.0 (https://github.com/openai-oss-forks/tungstenite-rs?rev=4fffad30fe373adbdcffab9545e9e9bf4f2fc19f#4fffad30)
+   Compiling parking_lot v0.12.5
+    Checking ed25519-dalek v2.2.0
+    Checking tokio-tungstenite v0.28.0 (https://github.com/openai-oss-forks/tokio-tungstenite?rev=0e5b2d73aa18dd9f0a50ee9ff199d5aef7594186#0e5b2d73)
+    Checking hyper-timeout v0.5.2
+    Checking signature v3.0.0
+    Checking tonic v0.14.3
+    Checking prost v0.14.4
+   Compiling bytes v1.12.1
+    Checking tonic-prost v0.14.3
+    Checking codex-websocket-client v0.0.0 (/workspace/scratch/aea25ba345a8/hepta-effects-agent/repo/codex-rs/websocket-client)
+    Checking universal-hash v0.5.1
+    Checking opaque-debug v0.3.1
+    Checking event-listener-strategy v0.5.4
+    Checking eventsource-stream v0.2.3
+    Checking concurrent-queue v2.5.0
+    Checking keccak v0.2.2
+    Checking sponge-cursor v0.1.0
+    Checking shake v0.1.0
+    Checking async-channel v2.5.0
+    Checking codex-client v0.0.0 (/workspace/scratch/aea25ba345a8/hepta-effects-agent/repo/codex-rs/codex-client)
+    Checking nix v0.30.1
+    Checking module-lattice v0.2.3
+    Checking hmac v0.12.1
+    Checking ml-dsa v0.1.1
+    Checking codex-api v0.0.0 (/workspace/scratch/aea25ba345a8/hepta-effects-agent/repo/codex-rs/codex-api)
+    Checking opentelemetry_sdk v0.31.0
+    Checking rand_chacha v0.3.1
+    Checking const-hex v1.17.0
+    Checking aead v0.5.2
+    Checking opentelemetry-proto v0.31.0
+    Checking rand v0.8.6
+    Checking codex-hepta-contracts v0.0.0 (/workspace/scratch/aea25ba345a8/hepta-effects-agent/repo/codex-rs/hepta-contracts)
+    Checking opentelemetry-http v0.31.0
+    Checking num-complex v0.4.6
+    Checking winnow v1.0.4
+    Checking toml_parser v1.1.3+spec-1.1.0
+    Checking opentelemetry-otlp v0.31.0
+    Checking os_info v3.14.0
+    Checking opentelemetry-appender-tracing v0.31.1
+    Checking gethostname v1.1.0
+    Checking toml_datetime v0.7.5+spec-1.1.0
+    Checking opentelemetry-semantic-conventions v0.31.0
+    Checking toml_writer v1.0.6+spec-1.1.0
+    Checking codex-otel v0.0.0 (/workspace/scratch/aea25ba345a8/hepta-effects-agent/repo/codex-rs/otel)
+    Checking aes v0.8.4
+   Compiling unic-langid-impl v0.9.6
+    Checking serde_spanned v1.1.1
+    Checking toml v0.9.11+spec-1.1.0
+   Compiling unic-langid v0.9.6
+    Checking http v0.2.12
+    Checking serde_path_to_error v0.1.20
+    Checking outref v0.5.2
+    Checking vsimd v0.8.0
+    Checking base64-simd v0.8.0
+   Compiling icu_locale_core v2.2.0
+    Checking http-body v0.4.6
+    Checking tree-sitter-language v0.1.7
+    Checking x25519-dalek v2.0.1
+   Compiling potential_utf v0.1.4
+    Checking bytes-utils v0.1.4
+   Compiling same-file v1.0.6
+    Checking env_home v0.1.0
+   Compiling pin-project-lite v0.2.17
+   Compiling utf8_iter v1.0.4
+   Compiling futures-core v0.3.34
+   Compiling icu_collections v2.2.0
+    Checking which v8.0.0
+   Compiling walkdir v2.5.0
+    Checking aws-smithy-types v1.4.7
+   Compiling icu_provider v2.2.0
+    Checking codex-utils-path v0.0.0 (/workspace/scratch/aea25ba345a8/hepta-effects-agent/repo/codex-rs/utils/path-utils)
+   Compiling tree-sitter v0.25.10
+   Compiling ring v0.17.14
+   Compiling tree-sitter-powershell v0.26.4
+   Compiling tree-sitter-bash v0.25.1
+   Compiling rust-embed-utils v8.11.0
+    Checking windows_x86_64_gnu v0.52.6
+   Compiling icu_normalizer_data v2.2.0
+   Compiling icu_properties_data v2.2.0
+    Checking streaming-iterator v0.1.9
+   Compiling rustc-hash v2.1.1
+   Compiling rustls-pki-types v1.14.0
+   Compiling type-map v0.5.1
+   Compiling toml v1.1.4+spec-1.1.0
+   Compiling icu_properties v2.2.0
+   Compiling icu_normalizer v2.2.0
+    Checking windows-targets v0.52.6
+   Compiling rust-embed-impl v8.11.0
+    Checking poly1305 v0.8.0
+   Compiling getrandom v0.2.17
+   Compiling libsqlite3-sys v0.38.2
+   Compiling toml v0.5.11
+    Checking aws-smithy-async v1.2.14
+   Compiling libdbus-sys v0.2.7
+   Compiling untrusted v0.9.0
+   Compiling self_cell v1.2.2
+   Compiling self_cell v0.10.3
+    Checking aws-smithy-runtime-api v1.12.0
+   Compiling find-crate v0.6.3
+    Checking codex-shell-command v0.0.0 (/workspace/scratch/aea25ba345a8/hepta-effects-agent/repo/codex-rs/shell-command)
+    Checking windows-result v0.2.0
+   Compiling idna_adapter v1.2.1
+   Compiling i18n-config v0.4.8 (/workspace/scratch/aea25ba345a8/hepta-effects-agent/repo/codex-rs/third_party/i18n-config-0.4.8)
+   Compiling intl-memoizer v0.5.3
+   Compiling fluent-syntax v0.11.1
+   Compiling fluent-langneg v0.13.1
+   Compiling intl_pluralrules v7.0.2
+    Checking codex-features v0.0.0 (/workspace/scratch/aea25ba345a8/hepta-effects-agent/repo/codex-rs/features)
+    Checking toml_edit v0.24.0+spec-1.1.0
+    Checking codex-model-provider-info v0.0.0 (/workspace/scratch/aea25ba345a8/hepta-effects-agent/repo/codex-rs/model-provider-info)
+    Checking hkdf v0.12.4
+    Checking salsa20 v0.10.2
+    Checking dns-lookup v3.0.1
+   Compiling socket2 v0.6.3
+    Checking serde_ignored v0.1.14
+   Compiling percent-encoding v2.3.2
+   Compiling futures-io v0.3.34
+   Compiling foldhash v0.2.0
+   Compiling rustc-hash v1.1.0
+   Compiling allocator-api2 v0.2.21
+   Compiling futures-task v0.3.34
+   Compiling futures-util v0.3.34
+   Compiling hashbrown v0.16.1
+   Compiling rustls v0.23.46
+   Compiling fluent-bundle v0.15.3
+   Compiling form_urlencoded v1.2.2
+    Checking codex-config v0.0.0 (/workspace/scratch/aea25ba345a8/hepta-effects-agent/repo/codex-rs/config)
+   Compiling tokio v1.53.1
+   Compiling i18n-embed-impl v0.8.4
+   Compiling idna v1.1.0
+    Checking windows-strings v0.1.0
+   Compiling rustls-webpki v0.103.16
+    Checking num-rational v0.4.2
+    Checking num-iter v0.1.45
+   Compiling iana-time-zone v0.1.65
+   Compiling crc-catalog v2.4.0
+   Compiling deranged v0.5.8
+   Compiling powerfmt v0.2.0
+   Compiling time v0.3.55
+   Compiling crc v3.4.0
+   Compiling chrono v0.4.43
+    Checking windows-core v0.58.0
+    Checking num v0.4.3
+   Compiling tracing v0.1.44
+   Compiling crossbeam-queue v0.3.12
+    Checking dbus v0.9.10
+   Compiling url v2.5.8
+   Compiling tokio-stream v0.1.19
+   Compiling fluent v0.16.1
+   Compiling hashlink v0.11.0
+   Compiling rust-embed v8.11.0
+   Compiling webpki-roots v1.0.10
+   Compiling futures-intrusive v0.5.0
+    Checking cbc v0.1.2
+    Checking chacha20 v0.9.1
+   Compiling spin v0.9.8
+    Checking dirs-sys-next v0.1.2
+   Compiling codex-windows-sandbox v0.0.0 (/workspace/scratch/aea25ba345a8/hepta-effects-agent/repo/codex-rs/windows-sandbox-rs)
+    Checking cpubits v0.1.1
+   Compiling sqlx-core v0.9.0
+    Checking dirs-next v2.0.0
+   Compiling i18n-embed v0.15.4
+   Compiling flume v0.12.0
+    Checking chacha20poly1305 v0.10.1
+    Checking dbus-secret-service v4.1.0
+    Checking windows v0.58.0
+   Compiling futures-executor v0.3.34
+   Compiling atoi v2.0.0
+   Compiling futures-channel v0.3.34
+    Checking pbkdf2 v0.12.2
+    Checking polyval v0.6.2
+    Checking tracing-appender v0.2.4
+    Checking cookie-factory v0.3.3
+    Checking linux-keyutils v0.2.4
+    Checking secrecy v0.10.3
+    Checking keccak v0.1.6
+    Checking io_tee v0.1.1
+    Checking base64ct v1.8.3
+    Checking base64 v0.21.7
+    Checking glob v0.3.3
+    Checking age-core v0.11.0
+    Checking pem-rfc7468 v1.0.0
+    Checking sha3 v0.10.9
+    Checking keyring v3.6.3
+    Checking ghash v0.5.1
+    Checking scrypt v0.11.0
+   Compiling sqlx-sqlite v0.9.0 (/workspace/scratch/aea25ba345a8/hepta-effects-agent/repo/codex-rs/third_party/sqlx-sqlite-0.9.0)
+warning: use of deprecated tuple variant `time::format_description::BorrowedFormatItem::Literal`: use `StringLiteral` instead; raw bytes are not recommended
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:196:67
+    |
+196 |     use time::format_description::BorrowedFormatItem::{Component, Literal, Optional};
+    |                                                                   ^^^^^^^
+    |
+    = note: `#[warn(deprecated)]` on by default
+
+warning: use of deprecated tuple variant `time::format_description::Component::Year`: use one of the various `Year*` components instead
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:199:52
+    |
+199 |     const YEAR: BorrowedFormatItem<'_> = Component(Year({
+    |                                                    ^^^^
+
+warning: use of deprecated struct `time::format_description::modifier::Year`: use one of the various `Year*` components instead
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:200:35
+    |
+200 |         let mut value = modifier::Year::default();
+    |                                   ^^^^
+
+warning: use of deprecated unit variant `time::format_description::modifier::YearRepr::Full`: used only in the deprecated `Year` component
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:202:42
+    |
+202 |         value.repr = modifier::YearRepr::Full;
+    |                                          ^^^^
+
+warning: use of deprecated tuple variant `time::format_description::Component::Month`: use `MonthShort`, `MonthLong`, or `MonthNumeric` instead
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:208:53
+    |
+208 |     const MONTH: BorrowedFormatItem<'_> = Component(Month({
+    |                                                     ^^^^^
+
+warning: use of deprecated struct `time::format_description::modifier::Month`: use `MonthShort`, `MonthLong`, or `MonthNumeric` instead
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:209:35
+    |
+209 |         let mut value = modifier::Month::default();
+    |                                   ^^^^^
+
+warning: use of deprecated unit variant `time::format_description::modifier::MonthRepr::Numerical`: used only in the deprecated `Month` component
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:211:43
+    |
+211 |         value.repr = modifier::MonthRepr::Numerical;
+    |                                           ^^^^^^^^^
+
+warning: use of deprecated tuple variant `time::format_description::Component::Hour`: use `Hour12` or `Hour24` instead
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:222:52
+    |
+222 |     const HOUR: BorrowedFormatItem<'_> = Component(Hour({
+    |                                                    ^^^^
+
+warning: use of deprecated struct `time::format_description::modifier::Hour`: use `Hour12` or `Hour24` instead
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:223:35
+    |
+223 |         let mut value = modifier::Hour::default();
+    |                                   ^^^^
+
+warning: use of deprecated tuple variant `time::format_description::BorrowedFormatItem::Literal`: use `StringLiteral` instead; raw bytes are not recommended
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:263:13
+    |
+263 |             Literal(b"-"),
+    |             ^^^^^^^
+
+warning: use of deprecated tuple variant `time::format_description::BorrowedFormatItem::Literal`: use `StringLiteral` instead; raw bytes are not recommended
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:265:13
+    |
+265 |             Literal(b"-"),
+    |             ^^^^^^^
+
+warning: use of deprecated tuple variant `time::format_description::BorrowedFormatItem::Literal`: use `StringLiteral` instead; raw bytes are not recommended
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:267:23
+    |
+267 |             Optional(&Literal(b" ")),
+    |                       ^^^^^^^
+
+warning: use of deprecated tuple variant `time::format_description::BorrowedFormatItem::Literal`: use `StringLiteral` instead; raw bytes are not recommended
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:268:23
+    |
+268 |             Optional(&Literal(b"T")),
+    |                       ^^^^^^^
+
+warning: use of deprecated tuple variant `time::format_description::BorrowedFormatItem::Literal`: use `StringLiteral` instead; raw bytes are not recommended
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:270:13
+    |
+270 |             Literal(b":"),
+    |             ^^^^^^^
+
+warning: use of deprecated tuple variant `time::format_description::BorrowedFormatItem::Literal`: use `StringLiteral` instead; raw bytes are not recommended
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:272:23
+    |
+272 |             Optional(&Literal(b":")),
+    |                       ^^^^^^^
+
+warning: use of deprecated tuple variant `time::format_description::BorrowedFormatItem::Literal`: use `StringLiteral` instead; raw bytes are not recommended
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:274:23
+    |
+274 |             Optional(&Literal(b".")),
+    |                       ^^^^^^^
+
+warning: use of deprecated tuple variant `time::format_description::BorrowedFormatItem::Literal`: use `StringLiteral` instead; raw bytes are not recommended
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:277:23
+    |
+277 |             Optional(&Literal(b":")),
+    |                       ^^^^^^^
+
+warning: use of deprecated tuple variant `time::format_description::BorrowedFormatItem::Literal`: use `StringLiteral` instead; raw bytes are not recommended
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:285:13
+    |
+285 |             Literal(b"-"),
+    |             ^^^^^^^
+
+warning: use of deprecated tuple variant `time::format_description::BorrowedFormatItem::Literal`: use `StringLiteral` instead; raw bytes are not recommended
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:287:13
+    |
+287 |             Literal(b"-"),
+    |             ^^^^^^^
+
+warning: use of deprecated tuple variant `time::format_description::BorrowedFormatItem::Literal`: use `StringLiteral` instead; raw bytes are not recommended
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:289:13
+    |
+289 |             Literal(b" "),
+    |             ^^^^^^^
+
+warning: use of deprecated tuple variant `time::format_description::BorrowedFormatItem::Literal`: use `StringLiteral` instead; raw bytes are not recommended
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:291:13
+    |
+291 |             Literal(b":"),
+    |             ^^^^^^^
+
+warning: use of deprecated tuple variant `time::format_description::BorrowedFormatItem::Literal`: use `StringLiteral` instead; raw bytes are not recommended
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:293:23
+    |
+293 |             Optional(&Literal(b":")),
+    |                       ^^^^^^^
+
+warning: use of deprecated tuple variant `time::format_description::BorrowedFormatItem::Literal`: use `StringLiteral` instead; raw bytes are not recommended
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:295:23
+    |
+295 |             Optional(&Literal(b".")),
+    |                       ^^^^^^^
+
+warning: use of deprecated tuple variant `time::format_description::BorrowedFormatItem::Literal`: use `StringLiteral` instead; raw bytes are not recommended
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:297:23
+    |
+297 |             Optional(&Literal(b"Z")),
+    |                       ^^^^^^^
+
+warning: use of deprecated tuple variant `time::format_description::BorrowedFormatItem::Literal`: use `StringLiteral` instead; raw bytes are not recommended
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:304:13
+    |
+304 |             Literal(b"-"),
+    |             ^^^^^^^
+
+warning: use of deprecated tuple variant `time::format_description::BorrowedFormatItem::Literal`: use `StringLiteral` instead; raw bytes are not recommended
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:306:13
+    |
+306 |             Literal(b"-"),
+    |             ^^^^^^^
+
+warning: use of deprecated tuple variant `time::format_description::BorrowedFormatItem::Literal`: use `StringLiteral` instead; raw bytes are not recommended
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:308:13
+    |
+308 |             Literal(b"T"),
+    |             ^^^^^^^
+
+warning: use of deprecated tuple variant `time::format_description::BorrowedFormatItem::Literal`: use `StringLiteral` instead; raw bytes are not recommended
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:310:13
+    |
+310 |             Literal(b":"),
+    |             ^^^^^^^
+
+warning: use of deprecated tuple variant `time::format_description::BorrowedFormatItem::Literal`: use `StringLiteral` instead; raw bytes are not recommended
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:312:23
+    |
+312 |             Optional(&Literal(b":")),
+    |                       ^^^^^^^
+
+warning: use of deprecated tuple variant `time::format_description::BorrowedFormatItem::Literal`: use `StringLiteral` instead; raw bytes are not recommended
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:314:23
+    |
+314 |             Optional(&Literal(b".")),
+    |                       ^^^^^^^
+
+warning: use of deprecated tuple variant `time::format_description::BorrowedFormatItem::Literal`: use `StringLiteral` instead; raw bytes are not recommended
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:316:23
+    |
+316 |             Optional(&Literal(b"Z")),
+    |                       ^^^^^^^
+
+warning: use of deprecated field `time::format_description::modifier::Year::padding`: use one of the various `Year*` components instead
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:201:9
+    |
+201 |         value.padding = modifier::Padding::Zero;
+    |         ^^^^^^^^^^^^^
+
+warning: use of deprecated field `time::format_description::modifier::Year::repr`: use one of the various `Year*` components instead
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:202:9
+    |
+202 |         value.repr = modifier::YearRepr::Full;
+    |         ^^^^^^^^^^
+
+warning: use of deprecated field `time::format_description::modifier::Year::iso_week_based`: use one of the various `Year*` components instead
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:203:9
+    |
+203 |         value.iso_week_based = false;
+    |         ^^^^^^^^^^^^^^^^^^^^
+
+warning: use of deprecated field `time::format_description::modifier::Year::sign_is_mandatory`: use one of the various `Year*` components instead
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:204:9
+    |
+204 |         value.sign_is_mandatory = false;
+    |         ^^^^^^^^^^^^^^^^^^^^^^^
+
+warning: use of deprecated field `time::format_description::modifier::Month::padding`: use `MonthShort`, `MonthLong`, or `MonthNumeric` instead
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:210:9
+    |
+210 |         value.padding = modifier::Padding::Zero;
+    |         ^^^^^^^^^^^^^
+
+warning: use of deprecated field `time::format_description::modifier::Month::repr`: use `MonthShort`, `MonthLong`, or `MonthNumeric` instead
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:211:9
+    |
+211 |         value.repr = modifier::MonthRepr::Numerical;
+    |         ^^^^^^^^^^
+
+warning: use of deprecated field `time::format_description::modifier::Month::case_sensitive`: use `MonthShort`, `MonthLong`, or `MonthNumeric` instead
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:212:9
+    |
+212 |         value.case_sensitive = true;
+    |         ^^^^^^^^^^^^^^^^^^^^
+
+warning: use of deprecated field `time::format_description::modifier::Hour::padding`: use `Hour12` or `Hour24` instead
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:224:9
+    |
+224 |         value.padding = modifier::Padding::Zero;
+    |         ^^^^^^^^^^^^^
+
+warning: use of deprecated field `time::format_description::modifier::Hour::is_12_hour_clock`: use `Hour12` or `Hour24` instead
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:225:9
+    |
+225 |         value.is_12_hour_clock = false;
+    |         ^^^^^^^^^^^^^^^^^^^^^^
+
+warning: `sqlx-sqlite` (lib) generated 40 warnings
+   Compiling i18n-embed-fl v0.9.4
+    Checking ctr v0.9.2
+    Checking kem v0.3.0-pre.0
+    Checking hybrid-array v0.2.3
+    Checking bech32 v0.9.1
+   Compiling hex v0.4.3
+   Compiling dotenvy v0.15.7
+   Compiling sqlx-macros-core v0.9.0
+    Checking age v0.11.2
+    Checking ml-kem v0.2.3
+    Checking thiserror-no-std v2.0.2
+    Checking aes-gcm v0.10.3
+    Checking codex-keyring-store v0.0.0 (/workspace/scratch/aea25ba345a8/hepta-effects-agent/repo/codex-rs/keyring-store)
+    Checking der v0.8.3
+    Checking codex-sandboxing v0.0.0 (/workspace/scratch/aea25ba345a8/hepta-effects-agent/repo/codex-rs/sandboxing)
+    Checking crypto-bigint v0.7.10
+    Checking aws-smithy-http v0.62.6
+    Checking aws-credential-types v1.2.11
+    Checking axum-core v0.5.6
+    Checking ff v0.14.0
+    Checking matchit v0.8.4
+    Checking axum v0.8.8
+warning: `sqlx-sqlite` (lib) generated 40 warnings (40 duplicates)
+    Checking codex-secrets v0.0.0 (/workspace/scratch/aea25ba345a8/hepta-effects-agent/repo/codex-rs/secrets)
+    Checking clatter v2.2.0
+   Compiling sqlx-macros v0.9.0
+    Checking codex-exec-server-protocol v0.0.0 (/workspace/scratch/aea25ba345a8/hepta-effects-agent/repo/codex-rs/exec-server-protocol)
+    Checking aws-smithy-observability v0.1.5
+    Checking aws-smithy-http-client v1.1.12
+    Checking debugid v0.8.0
+    Checking sentry-types v0.46.1
+    Checking aws-smithy-runtime v1.9.5
+    Checking codex-exec-server v0.0.0 (/workspace/scratch/aea25ba345a8/hepta-effects-agent/repo/codex-rs/exec-server)
+    Checking sqlx v0.9.0
+    Checking aws-types v1.3.11
+    Checking group v0.14.0
+    Checking aws-sigv4 v1.3.7
+    Checking spki v0.8.1
+    Checking crypto_secretbox v0.1.1
+    Checking codex-history v0.0.0 (/workspace/scratch/aea25ba345a8/hepta-effects-agent/repo/codex-rs/history)
+    Checking simple_asn1 v0.6.4
+    Checking hmac v0.13.0
+    Checking blake2 v0.10.6
+    Checking base16ct v1.0.0
+    Checking chunked_transfer v1.5.0
+    Checking ascii v1.1.0
+    Checking tiny_http v0.12.0
+    Checking sec1 v0.8.1
+    Checking crypto_box v0.9.1
+    Checking jsonwebtoken v9.3.1
+    Checking codex-state v0.0.0 (/workspace/scratch/aea25ba345a8/hepta-effects-agent/repo/codex-rs/state)
+    Checking pkcs8 v0.11.0
+    Checking aws-runtime v1.5.17
+    Checking sentry-core v0.46.1
+    Checking aws-smithy-json v0.61.9 (/workspace/scratch/aea25ba345a8/hepta-effects-agent/repo/codex-rs/third_party/aws-smithy-json-0.61.9)
+   Compiling darling_core v0.24.0
+    Checking webbrowser v1.2.4
+   Compiling foldhash v0.1.5
+   Compiling bitflags v2.13.2
+    Checking base64 v0.23.1
+    Checking gimli v0.32.3
+    Checking codex-utils-template v0.0.0 (/workspace/scratch/aea25ba345a8/hepta-effects-agent/repo/codex-rs/utils/template)
+   Compiling rustix v1.1.4
+    Checking addr2line v0.25.1
+   Compiling hashbrown v0.15.5
+   Compiling darling_macro v0.24.0
+    Checking elliptic-curve v0.14.3
+    Checking codex-agent-identity v0.0.0 (/workspace/scratch/aea25ba345a8/hepta-effects-agent/repo/codex-rs/agent-identity)
+    Checking object v0.37.3
+   Compiling getrandom v0.4.3
+    Checking primefield v0.14.0
+    Checking codex-workload-identity v0.0.0 (/workspace/scratch/aea25ba345a8/hepta-effects-agent/repo/codex-rs/workload-identity)
+    Checking sha2 v0.11.0
+    Checking codex-terminal-detection v0.0.0 (/workspace/scratch/aea25ba345a8/hepta-effects-agent/repo/codex-rs/terminal-detection)
+   Compiling findshlibs v0.10.2
+    Checking rustc-demangle v0.1.27
+    Checking backtrace v0.3.76
+   Compiling petgraph v0.8.3
+   Compiling tempfile v3.27.0
+    Checking codex-login v0.0.0 (/workspace/scratch/aea25ba345a8/hepta-effects-agent/repo/codex-rs/login)
+   Compiling prost-types v0.14.3
+    Checking wnaf v0.14.1
+   Compiling darling v0.24.0
+    Checking rfc6979 v0.6.0
+    Checking xmlparser v0.13.6
+    Checking aws-smithy-xml v0.60.13
+   Compiling prost-build v0.14.3
+    Checking schemars v1.2.1
+    Checking ecdsa v0.17.0
+   Compiling rmcp-macros v3.1.3
+    Checking primeorder v0.14.0
+    Checking sentry-backtrace v0.46.1
+    Checking reqwest v0.13.5
+    Checking aws-smithy-query v0.60.9
+    Checking oauth2 v5.0.0
+    Checking process-wrap v9.0.1
+    Checking codex-utils-output-truncation v0.0.0 (/workspace/scratch/aea25ba345a8/hepta-effects-agent/repo/codex-rs/utils/output-truncation)
+    Checking sse-stream v0.2.5
+    Checking codex-hepta-types v0.0.0 (/workspace/scratch/aea25ba345a8/hepta-effects-agent/repo/codex-rs/hepta-types)
+    Checking semver v1.0.27
+    Checking hostname v0.4.2
+    Checking uname v0.1.1
+    Checking rmcp v3.1.3
+    Checking sentry-contexts v0.46.1
+    Checking codex-install-context v0.0.0 (/workspace/scratch/aea25ba345a8/hepta-effects-agent/repo/codex-rs/install-context)
+    Checking aws-sdk-sts v1.95.0
+   Compiling tonic-prost-build v0.14.3
+    Checking sentry-panic v0.46.1
+    Checking sentry-debug-images v0.46.1
+    Checking p256 v0.14.0
+    Checking aws-sdk-sso v1.91.0
+    Checking aws-sdk-ssooidc v1.93.0
+    Checking aws-sdk-signin v1.2.0
+    Checking codex-utils-plugins v0.0.0 (/workspace/scratch/aea25ba345a8/hepta-effects-agent/repo/codex-rs/utils/plugins)
+   Compiling codex-code-mode-protocol v0.0.0 (/workspace/scratch/aea25ba345a8/hepta-effects-agent/repo/codex-rs/code-mode-protocol)
+    Checking codex-plugin v0.0.0 (/workspace/scratch/aea25ba345a8/hepta-effects-agent/repo/codex-rs/plugin)
+    Checking aws-config v1.8.12 (/workspace/scratch/aea25ba345a8/hepta-effects-agent/repo/codex-rs/third_party/aws-config-1.8.12)
+    Checking sentry v0.46.1
+    Checking codex-collaboration-mode-templates v0.0.0 (/workspace/scratch/aea25ba345a8/hepta-effects-agent/repo/codex-rs/collaboration-mode-templates)
+    Checking codex-models-manager v0.0.0 (/workspace/scratch/aea25ba345a8/hepta-effects-agent/repo/codex-rs/models-manager)
+    Checking codex-feedback v0.0.0 (/workspace/scratch/aea25ba345a8/hepta-effects-agent/repo/codex-rs/feedback)
+    Checking codex-aws-auth v0.0.0 (/workspace/scratch/aea25ba345a8/hepta-effects-agent/repo/codex-rs/aws-auth)
+    Checking codex-response-debug-context v0.0.0 (/workspace/scratch/aea25ba345a8/hepta-effects-agent/repo/codex-rs/response-debug-context)
+    Checking codex-model-provider v0.0.0 (/workspace/scratch/aea25ba345a8/hepta-effects-agent/repo/codex-rs/model-provider)
+    Checking codex-code-mode v0.0.0 (/workspace/scratch/aea25ba345a8/hepta-effects-agent/repo/codex-rs/code-mode)
+    Checking codex-connectors v0.0.0 (/workspace/scratch/aea25ba345a8/hepta-effects-agent/repo/codex-rs/connectors)
+    Checking codex-rmcp-client v0.0.0 (/workspace/scratch/aea25ba345a8/hepta-effects-agent/repo/codex-rs/rmcp-client)
+    Checking codex-exec-server-test-support v0.0.0 (/workspace/scratch/aea25ba345a8/hepta-effects-agent/repo/codex-rs/exec-server/tests/support)
+    Checking codex-diagnostics v0.0.0 (/workspace/scratch/aea25ba345a8/hepta-effects-agent/repo/codex-rs/diagnostics)
+    Checking jsonptr v0.7.1
+    Checking predicates-core v1.0.9
+    Checking codex-tools v0.0.0 (/workspace/scratch/aea25ba345a8/hepta-effects-agent/repo/codex-rs/tools)
+    Checking codex-mcp v0.0.0 (/workspace/scratch/aea25ba345a8/hepta-effects-agent/repo/codex-rs/codex-mcp)
+    Checking symphonia-core v0.6.0
+    Checking nucleo-matcher v0.3.1 (https://github.com/helix-editor/nucleo.git?rev=4253de9faabb4e5c6d81d946a5e35a90f87347ee#4253de9f)
+    Checking rayon v1.11.0
+    Checking difflib v0.4.0
+    Checking termtree v0.5.1
+    Checking predicates-tree v1.0.12
+    Checking predicates v3.1.3
+    Checking nucleo v0.5.0 (https://github.com/helix-editor/nucleo.git?rev=4253de9faabb4e5c6d81d946a5e35a90f87347ee#4253de9f)
+    Checking codex-context-fragments v0.0.0 (/workspace/scratch/aea25ba345a8/hepta-effects-agent/repo/codex-rs/context-fragments)
+    Checking ignore v0.4.25
+    Checking wait-timeout v0.2.1
+    Checking assert_cmd v2.1.2
+    Checking codex-file-search v0.0.0 (/workspace/scratch/aea25ba345a8/hepta-effects-agent/repo/codex-rs/file-search)
+    Checking symphonia-metadata v0.6.0
+    Checking runfiles v0.1.0 (https://github.com/dzbarsky/rules_rust?rev=b56cbaa8465e74127f1ea216f813cd377295ad81#b56cbaa8)
+    Checking codex-utils-cargo-bin v0.0.0 (/workspace/scratch/aea25ba345a8/hepta-effects-agent/repo/codex-rs/utils/cargo-bin)
+    Checking codex-rollout v0.0.0 (/workspace/scratch/aea25ba345a8/hepta-effects-agent/repo/codex-rs/rollout)
+    Checking codex-extension-api v0.0.0 (/workspace/scratch/aea25ba345a8/hepta-effects-agent/repo/codex-rs/ext/extension-api)
+error: failed to write query cache to `/workspace/scratch/aea25ba345a8/hepta-effects-agent/target/debug/incremental/codex_extension_api-3esct5m33o7z7/s-hnvcm0omhk-1pejxaz-working/query-cache.bin`: No space left on device (os error 28)
+
+error: could not compile `codex-extension-api` (lib) due to 1 previous error
+error: recipe `fix` failed on line 58 with exit code 101
