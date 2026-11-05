@@ -1,0 +1,107 @@
+{
+  "child_maxrss_kib": 62572,
+  "child_system_seconds": 0.216136,
+  "child_user_seconds": 10.245667,
+  "command": [
+    "python",
+    "-m",
+    "experiments.multimodal_output_portfolio.joint_hepta_20261029.v3.rl_audit.structure",
+    "--out",
+    "NEW_DIRECTORY"
+  ],
+  "end_utc": "2026-11-05T09:10:55Z",
+  "exit_code": 0,
+  "limits": [
+    "synthetic supervised one-step study",
+    "not matched parameter or full resource budget",
+    "no new real future-window evidence",
+    "no model-adoption or production qualification",
+    "raw run files are reproducible from source; timing-dependent hashes change on rerun"
+  ],
+  "numpy": "2.3.5",
+  "original_repository_formatter": {
+    "command": "just fmt --base 9c6ad78bd6643185ab788b1a9a534450716747a5",
+    "exit_code": 0,
+    "scope": "No owning language group for changed experimental paths; explicit Ruff and AST checks are recorded separately."
+  },
+  "output": "",
+  "published_index_encoding": {
+    "format": "lossless minified JSON; original index bytes recovered by json.dumps(parsed,sort_keys=True,indent=2,allow_nan=False) plus newline",
+    "original_index_sha256": "50be23cf39f18e5d6adf96dd985142a35d4190f27fe861da4857aedbd55ed7fb",
+    "published_index_sha256": "d211e740706708c5f032880d4470c7d033feb7fa7b9b48887950e8e0e154a3ea",
+    "roundtrip_byte_identity": true
+  },
+  "python": "3.12.14",
+  "semantics": {
+    "inherited_oracle": {
+      "eta": 2.0,
+      "gradient_error": 1.5612511283791264e-17,
+      "inherited_policy_value": 0.1912086011817411,
+      "optimal_value_error": 0.0,
+      "value_error": 8.326672684688674e-17
+    },
+    "max_bellman_error": 2.220446049250313e-16,
+    "max_gradient_error": 4.163336342344337e-17,
+    "panels": 6
+  },
+  "source_commit": "9c6ad78bd6643185ab788b1a9a534450716747a5",
+  "source_sha256": {
+    "experiments/multimodal_output_portfolio/joint_hepta_20261029/v3/rl_audit/semantics.py": "7f6463ffae3a64e585c083f7ae05755e6e9c3ab4a3b254a1564e9dafee949e03",
+    "experiments/multimodal_output_portfolio/joint_hepta_20261029/v3/rl_audit/structure.py": "6a6f079711de113eee076be8441aca5150f32cfda9418cfedc8510fe92bb7205"
+  },
+  "start_utc": "2026-11-05T09:10:45Z",
+  "state": "completed",
+  "validation": {
+    "final_replay_review": {
+      "full_replay_summary_identical": true,
+      "normal_tests": {
+        "exit_code": 0,
+        "tests": 12
+      },
+      "optimized_tests": {
+        "exit_code": 0,
+        "tests": 12
+      },
+      "replay_sha256": "7ace7a1858a9b96ab91d9953e3e1a5d7725554e7f0d19b3f13de963988a1b2b2",
+      "scope": "Retained simulated one-decision model replay. Calibration fields are diagnostics on the same test states, without refitting. Timing positivity and arithmetic are checked, not physical timing authenticity.",
+      "source": {
+        "test_verify_structure.py": {
+          "ast_equivalent": true,
+          "final_sha256": "aab6ca0f826bf90eb0e3b4fbc0ad6c9f600bcd9243c3637a7869626ed8048682",
+          "tested_sha256": "0113134352531111a3463d130f3b582c9654bbce2967b77f8ec148cdcb059a0e"
+        },
+        "verify_structure.py": {
+          "ast_equivalent": true,
+          "final_sha256": "ef481913807c44ff4bb45ad1df7be4e2239176d3d3e1a8a5a210f8eae1f130ca",
+          "tested_sha256": "44335b6a450c938f2e507d6b9c271d3b2d2a5551632321f79b1bd3b81582fc1d"
+        }
+      },
+      "unchanged_structure_git_blob": "4fca88443a0d6f2dd05b4e84f199a1816eef60f6"
+    },
+    "inherited_exact_factorial_semantics": {
+      "count": 42,
+      "exit_code": 0
+    },
+    "initial_checkout_failure": {
+      "cause": "sparse checkout omitted existing unified_20261028/profile.py; original module materialized before rerun; no source changes or skipped cases",
+      "errors": 8
+    },
+    "initial_replay_tests": {
+      "count": 6,
+      "exit_code": 0
+    },
+    "optimized_structure_and_replay": {
+      "count": 17,
+      "exit_code": 0
+    },
+    "original_structure_tests_optimized": {
+      "count": 11,
+      "exit_code": 0
+    },
+    "structure_tests": {
+      "count": 11,
+      "exit_code": 0
+    }
+  },
+  "wall_seconds": 9.655269496994151
+}
