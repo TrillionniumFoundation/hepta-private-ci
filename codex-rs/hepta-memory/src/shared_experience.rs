@@ -168,11 +168,7 @@ impl CognitiveStore {
         }
         let key = policy_id(self.owner_agent_id(), request)?;
         let (purpose, scope, recipient) = request.purpose.parts()?;
-        let mut tx = self
-            .pool
-            .begin_with("BEGIN IMMEDIATE")
-            .await
-            .map_err(unavailable)?;
+        let mut tx = self.begin_owner_write().await?;
         let memory = self
             .latest_memory_tx(&mut tx, owner, &request.memory_id)
             .await?;
@@ -348,11 +344,7 @@ impl CognitiveStore {
         owner: &CognitiveAccess,
         receipt: &SharedExperienceUseV1,
     ) -> Result<(), CognitiveStoreError> {
-        let mut tx = self
-            .pool
-            .begin_with("BEGIN IMMEDIATE")
-            .await
-            .map_err(unavailable)?;
+        let mut tx = self.begin_owner_write().await?;
         self.latest_memory_tx(&mut tx, owner, &receipt.memory.id.memory_id)
             .await?;
         if receipt.owner_id != *self.owner_agent_id()

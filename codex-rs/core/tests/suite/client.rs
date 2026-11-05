@@ -400,6 +400,10 @@ async fn sends_audio_urls_to_responses() {
     )
     .await;
     let test = test_codex()
+        .with_config(|config| {
+            // Model a custom provider while preserving metadata in durable history.
+            config.model_provider.mock_internal_chat_metadata = None;
+        })
         .with_model_info_override("gpt-5.5", |model_info| {
             model_info.input_modalities.push(InputModality::Audio);
         })
@@ -461,6 +465,10 @@ async fn sends_local_audio_to_responses() -> anyhow::Result<()> {
     )
     .await;
     let test = test_codex()
+        .with_config(|config| {
+            // Model a custom provider while preserving metadata in durable history.
+            config.model_provider.mock_internal_chat_metadata = None;
+        })
         .with_model_info_override("gpt-5.5", |model_info| {
             model_info.input_modalities.push(InputModality::Audio);
         })

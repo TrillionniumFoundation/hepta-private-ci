@@ -4,6 +4,7 @@
 //! authorization and adopt the actual protected Current.
 
 use super::*;
+use codex_hepta_contracts::authority_lease::AuthorityLease;
 use codex_hepta_memory::CalculatorTargetIdentity;
 use codex_hepta_memory::NotesTargetIdentity;
 
@@ -85,12 +86,11 @@ impl DeploymentFinalUseIssuer {
                 "Desktop succession requires a new writer and actual Session pair",
             ));
         }
-        let verifier = &self
+        let pinned = self
             .lease
             .as_ref()
-            .ok_or_else(|| denied("protected canonical issuer required"))?
-            .verifier;
-        registration.with_live(verifier, |_| {
+            .ok_or_else(|| denied("protected canonical issuer required"))?;
+        pinned.with_registered_writer(registration, |issuer_lease| {
             let proof = self.retained_writer_authorization(registration)?;
             let _guard = self
                 .request_lock
@@ -125,6 +125,9 @@ impl DeploymentFinalUseIssuer {
                 .signing_bytes()
                 .map_err(io::Error::other)?;
             }
+            let before = self.clock.now_unix_ms().map_err(io::Error::other)?;
+            validate_issuer_time(issuer_lease, state.head.authority_epoch, before)?;
+            writer::validate_writer_time(registration, state.head.authority_epoch, before)?;
             let current = [&state.policies[slots[0]], &state.policies[slots[1]]];
             if current != [&next_policies[0], &next_policies[1]] {
                 if current != [&previous_policies[0], &previous_policies[1]] {
@@ -139,9 +142,23 @@ impl DeploymentFinalUseIssuer {
                     .map_err(io::Error::other)?;
             }
             let after = self.clock.now_unix_ms().map_err(io::Error::other)?;
+            if after < before {
+                return Err(io::Error::other("Desktop issuer clock regressed"));
+            }
+            validate_issuer_time(issuer_lease, state.head.authority_epoch, after)?;
             writer::validate_writer_time(registration, state.head.authority_epoch, after)
         })
     }
+}
+
+fn validate_issuer_time(lease: &AuthorityLease, epoch: u64, now: u64) -> io::Result<()> {
+    if lease.authority_epoch != epoch
+        || now < lease.issued_at_unix_ms
+        || now >= lease.expires_at_unix_ms
+    {
+        return Err(denied("original issuer lease is not live"));
+    }
+    Ok(())
 }
 
 fn denied(message: &'static str) -> io::Error {

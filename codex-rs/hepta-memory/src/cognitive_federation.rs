@@ -301,7 +301,7 @@ impl CognitiveStore {
             &request.consumer_agent_id,
             &request.scope,
         );
-        let mut transaction = self.pool.begin().await.map_err(unavailable)?;
+        let mut transaction = self.begin_owner_write().await?;
         let previous = sqlx::query(
             "SELECT e.*, e.owner_workspace_sha256 AS workspace_sha256
              FROM memory_federation_heads h JOIN memory_federation_events e
@@ -437,7 +437,7 @@ impl CognitiveStore {
                 "memory federation capability exhausted its revision bound".to_string(),
             ));
         }
-        let mut transaction = self.pool.begin().await.map_err(unavailable)?;
+        let mut transaction = self.begin_owner_write().await?;
         let current = sqlx::query(
             "SELECT e.*, e.owner_workspace_sha256 AS workspace_sha256
              FROM memory_federation_heads h JOIN memory_federation_events e

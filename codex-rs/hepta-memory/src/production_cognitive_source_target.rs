@@ -298,7 +298,7 @@ impl ProductionOutboxTarget for CognitiveSourceOutboxTarget {
                 Ok(value) => value,
                 Err(reason) => return ProductionTargetOutcome::Rejected { reason },
             };
-            let mut transaction = match self.store.pool.begin_with("BEGIN IMMEDIATE").await {
+            let mut transaction = match self.store.begin_owner_write().await {
                 Ok(transaction) => transaction,
                 Err(error) => {
                     return ProductionTargetOutcome::Indeterminate {
