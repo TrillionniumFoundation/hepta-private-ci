@@ -55,7 +55,7 @@ const WAIT_OBJECT_0: u32 = 0;
 
 #[path = "runner_process.rs"]
 mod process;
-pub(crate) use process::RunnerProcess;
+pub(crate) use process::RunnerProcessOwner;
 
 #[derive(Debug)]
 struct RunnerLogonError {
@@ -100,7 +100,7 @@ impl std::error::Error for RunnerStartupError {}
 pub(crate) struct RunnerTransport {
     pipe_write: File,
     pipe_read: File,
-    process: RunnerProcess,
+    process: RunnerProcessOwner,
 }
 
 fn is_refreshable_windows_error(code: u32) -> bool {
@@ -176,7 +176,7 @@ impl RunnerTransport {
         }
     }
 
-    pub(crate) fn into_parts(self) -> (File, File, RunnerProcess) {
+    pub(crate) fn into_parts(self) -> (File, File, RunnerProcessOwner) {
         (self.pipe_write, self.pipe_read, self.process)
     }
 }
@@ -417,7 +417,7 @@ pub(crate) fn spawn_runner_transport(
         pipe_read: unsafe { File::from_raw_handle(h_pipe_out as _) },
         // Retain the exact process returned by CreateProcessWithLogonW through
         // terminal observation; an IPC Exit frame is sent before process exit.
-        process: RunnerProcess::new(unsafe { OwnedHandle::from_raw_handle(pi.hProcess as _) }),
+        process: RunnerProcessOwner::new(unsafe { OwnedHandle::from_raw_handle(pi.hProcess as _) }),
     };
     let startup_result = (|| -> Result<()> {
         // Keep the runner process HANDLE alive until the *entire* startup handshake finishes.
@@ -428,13 +428,9 @@ pub(crate) fn spawn_runner_transport(
         Ok(())
     })();
     if let Err(err) = startup_result {
-        unsafe {
-            if pi.hProcess != 0 {
-                let _ = TerminateProcess(pi.hProcess, 1);
-            }
-        }
-        // The transport now owns the process HANDLE as well as both pipes.
-        // Dropping it closes each handle exactly once.
+        let err = transport.process.reconcile_failure(err);
+        // The transport owns both pipes and the exact native process. A failed
+        // reconciliation remains unknown; Drop does not retry the abort.
         drop(transport);
         return Err(err);
     }

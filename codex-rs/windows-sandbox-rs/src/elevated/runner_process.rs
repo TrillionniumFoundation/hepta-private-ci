@@ -18,6 +18,8 @@ const CANCEL_POLL: Duration = Duration::from_millis(50);
 pub(crate) struct RunnerProcess {
     handle: OwnedHandle,
     deadline: Option<Instant>,
+    observation_deadline: Option<Instant>,
+    native_exit_code: Option<u32>,
     armed: bool,
 }
 
@@ -26,6 +28,8 @@ impl RunnerProcess {
         Self {
             handle,
             deadline: None,
+            observation_deadline: None,
+            native_exit_code: None,
             armed: false,
         }
     }
@@ -58,20 +62,44 @@ impl RunnerProcess {
     /// that same grace, including for commands without an execution deadline.
     /// Cancellation or a missing native exit is an error, never IPC completion.
     pub(crate) fn wait_for_exit(
-        &self,
+        &mut self,
         expected_exit_code: i32,
         cancelled: impl Fn() -> bool,
     ) -> Result<()> {
         if !self.armed {
             bail!("runner command deadline was not armed");
         }
-        let handle = self.handle.as_raw_handle() as HANDLE;
+        let deadline = self.observation_end()?;
+        let actual = self.wait_native_until(deadline, &cancelled)?;
+        if actual != expected_exit_code as u32 {
+            bail!(
+                "runner native exit differs from reported exit: native={actual}, reported={expected_exit_code}"
+            );
+        }
+        Self::check_observation(deadline, &cancelled)?;
+        Ok(())
+    }
+
+    fn observation_end(&mut self) -> Result<Instant> {
+        if let Some(deadline) = self.observation_deadline {
+            return Ok(deadline);
+        }
         let observation_deadline = Instant::now()
             .checked_add(Duration::from_millis(u64::from(RUNNER_TERMINATION_WAIT_MS)))
             .context("runner observation deadline cannot be represented")?;
         let deadline = self.deadline.map_or(observation_deadline, |original| {
             original.min(observation_deadline)
         });
+        self.observation_deadline = Some(deadline);
+        Ok(deadline)
+    }
+
+    fn wait_native_until(
+        &mut self,
+        deadline: Instant,
+        cancelled: impl Fn() -> bool,
+    ) -> Result<u32> {
+        let handle = self.handle.as_raw_handle() as HANDLE;
         loop {
             Self::check_observation(deadline, &cancelled)?;
             let remaining = deadline.saturating_duration_since(Instant::now());
@@ -86,19 +114,24 @@ impl RunnerProcess {
                 }
             }
         }
-        Self::check_observation(deadline, &cancelled)?;
+        self.read_native_exit(deadline, &cancelled)
+    }
+
+    fn read_native_exit(
+        &mut self,
+        deadline: Instant,
+        cancelled: &impl Fn() -> bool,
+    ) -> Result<u32> {
+        Self::check_observation(deadline, cancelled)?;
+        let handle = self.handle.as_raw_handle() as HANDLE;
         let mut actual = 0_u32;
         if unsafe { GetExitCodeProcess(handle, &mut actual) } == 0 {
             return Err(std::io::Error::last_os_error())
                 .context("could not read the retained runner process exit code");
         }
-        if actual != expected_exit_code as u32 {
-            bail!(
-                "runner native exit differs from reported exit: native={actual}, reported={expected_exit_code}"
-            );
-        }
-        Self::check_observation(deadline, &cancelled)?;
-        Ok(())
+        Self::check_observation(deadline, cancelled)?;
+        self.native_exit_code = Some(actual);
+        Ok(actual)
     }
 
     fn check_observation(deadline: Instant, cancelled: &impl Fn() -> bool) -> Result<()> {
@@ -112,6 +145,17 @@ impl RunnerProcess {
     }
 }
 
+#[path = "runner_process_owner.rs"]
+mod owner;
+pub(crate) use owner::RunnerProcessOwner;
+
+#[path = "runner_pipe_read.rs"]
+mod pipe_read;
+
 #[cfg(test)]
 #[path = "runner_process_tests.rs"]
 mod tests;
+
+#[cfg(test)]
+#[path = "runner_test_support.rs"]
+mod test_support;

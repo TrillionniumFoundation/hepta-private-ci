@@ -527,6 +527,15 @@ fn spawn_input_loop(
                 Message::Error { .. } => {}
             }
         }
+        // Losing the owner's control transport is not CloseStdin. End only
+        // this runner's job; the existing normal-exit descendant policy still
+        // makes this a no-op after preserve_descendants has committed.
+        if let Err(error) = job.terminate() {
+            log_note(
+                &format!("runner control transport closed; owned job termination failed: {error}"),
+                log_dir.as_deref(),
+            );
+        }
         if let Some(handle) = stdin_handle {
             unsafe {
                 CloseHandle(handle);
