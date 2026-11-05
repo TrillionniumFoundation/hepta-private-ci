@@ -219,6 +219,7 @@ impl InProcessClientStartArgs {
     /// Builds initialize params from caller-provided metadata.
     pub fn initialize_params(&self) -> InitializeParams {
         let capabilities = InitializeCapabilities {
+            process_indeterminate: true,
             experimental_api: self.experimental_api,
             request_attestation: false,
             extensions: None,

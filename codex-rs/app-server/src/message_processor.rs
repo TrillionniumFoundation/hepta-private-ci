@@ -199,6 +199,7 @@ pub(crate) struct ConnectionSessionState {
 #[derive(Debug)]
 pub(crate) struct InitializedConnectionSessionState {
     pub(crate) experimental_api_enabled: bool,
+    pub(crate) process_indeterminate_enabled: bool,
     pub(crate) opted_out_notification_methods: HashSet<String>,
     pub(crate) app_server_client_name: String,
     pub(crate) client_version: String,
@@ -229,6 +230,12 @@ impl ConnectionSessionState {
         self.initialized
             .get()
             .is_some_and(|session| session.experimental_api_enabled)
+    }
+
+    pub(crate) fn process_indeterminate_enabled(&self) -> bool {
+        self.initialized
+            .get()
+            .is_some_and(|session| session.process_indeterminate_enabled)
     }
 
     pub(crate) fn opted_out_notification_methods(&self) -> HashSet<String> {
@@ -1737,11 +1744,18 @@ impl MessageProcessor {
                     .command_exec_terminate(request_id.clone(), params)
                     .await
             },
-            ClientRequest::ProcessSpawn { params, .. } => processor
-                .process_exec_processor
-                .process_spawn(request_id.clone(), params)
-                .await
-                .map(|()| None),
+            ClientRequest::ProcessSpawn { params, .. } => {
+                if !session.process_indeterminate_enabled() {
+                    return Err(invalid_request(
+                        "process/spawn requires negotiated processIndeterminate and both process/exited and process/indeterminate notifications",
+                    ));
+                }
+                processor
+                    .process_exec_processor
+                    .process_spawn(request_id.clone(), params)
+                    .await
+                    .map(|()| None)
+            },
             ClientRequest::ProcessWriteStdin { params, .. } => {
                 processor.process_exec_processor
                     .process_write_stdin(request_id.clone(), params)

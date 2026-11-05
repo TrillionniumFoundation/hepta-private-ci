@@ -270,6 +270,7 @@ Example with notification opt-out:
 - `process/kill` — experimental; terminate a running `process/spawn` session by `processHandle`; returns `{}`.
 - `process/outputDelta` — experimental; notification emitted for base64-encoded stdout/stderr chunks from a streaming `process/spawn` session.
 - `process/exited` — experimental; notification emitted when a `process/spawn` session exits.
+- `process/indeterminate` — experimental; native exit observation was lost, so the original owner is retained and new standalone spawns are fenced.
 - `fs/readFile` — read an absolute file path and return `{ dataBase64 }`.
 - `fs/writeFile` — write an absolute file path from base64-encoded `{ dataBase64 }`; returns `{}`.
 - `fs/createDirectory` — create an absolute directory path; `recursive` defaults to `true`.
@@ -1498,7 +1499,9 @@ Streaming stdin/stdout uses base64 so PTY sessions can carry arbitrary bytes:
 
 ### Example: Process lifecycle execution
 
-Use `process/spawn` to start a standalone argv-based process without the Codex sandbox on the host where the app server is running. The `process/*` API is experimental and requires `initialize.params.capabilities.experimentalApi: true`. The spawn response means the process has started and the `processHandle` is registered; completion is reported later through `process/exited`.
+Use `process/spawn` to start a standalone argv-based process without the Codex sandbox on the host where the app server is running. The `process/*` API is experimental. Before spawning, clients must set both `initialize.params.capabilities.experimentalApi: true` and `processIndeterminate: true`, keep `process/exited` and `process/indeterminate` notifications enabled, and require `initialize.result.processIndeterminate: true`. A missing or false confirmation does not permit spawning. The spawn response means the process has started and the `processHandle` is registered; a later `process/exited` reports an observed exit.
+
+If the server loses native exit observation, it emits `process/indeterminate` with `reason: "exitObservationLost"`, the same `processHandle`, and output observed during the original bounded drain. This event has no `exitCode`; neither a timeout nor an attempted termination makes the unknown exit a known result. The server retains the original process owner and fences new `process/spawn` requests across all connections. Existing processes can still finish. The unknown handle cannot be reused, written, or resized, and `process/kill` cannot report successful delivery through a lost control channel. No automatic retry or eviction resolves this state. Only reconciliation of the original owner can establish exit; disconnecting or restarting the server is not exit evidence.
 
 ```json
 { "method": "process/spawn", "id": 40, "params": {
@@ -1571,7 +1574,7 @@ For interactive or streaming processes, set `tty: true` or `streamStdoutStderr: 
 - `process/writeStdin` accepts either `deltaBase64`, `closeStdin`, or both.
 - When omitted, `timeoutMs` and `outputBytesCap` fall back to server defaults. Set either field to `null` to disable that limit for terminal-style sessions.
 - `outputBytesCap` applies independently to `stdout` and `stderr`; `process/exited.stdoutCapReached` and `stderrCapReached` report whether each stream reached the cap. Streamed bytes are not duplicated into `process/exited`.
-- `process/outputDelta` and `process/exited` notifications are connection-scoped. If the originating connection closes, the server terminates the process.
+- `process/outputDelta`, `process/exited`, and `process/indeterminate` notifications are connection-scoped. If the originating connection closes, the server requests termination through the original control path and keeps the owner until actual exit is observed. A lost control channel does not establish termination.
 
 ### Example: Filesystem utilities
 

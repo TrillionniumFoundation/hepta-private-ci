@@ -112,6 +112,8 @@ fn server_notification_requires_delivery(notification: &ServerNotification) -> b
     matches!(
         notification,
         ServerNotification::TurnCompleted(_)
+            | ServerNotification::ProcessExited(_)
+            | ServerNotification::ProcessIndeterminate(_)
             | ServerNotification::ThreadQueueChanged(_)
             | ServerNotification::ThreadSettingsUpdated(_)
             | ServerNotification::ExternalAgentConfigImportCompleted(_)
@@ -213,21 +215,41 @@ enum ProcessorCommand {
 #[derive(Clone)]
 pub struct InProcessClientSender {
     client_tx: mpsc::Sender<InProcessClientMessage>,
+    process_indeterminate_enabled: Arc<AtomicBool>,
 }
 
 impl InProcessClientSender {
     pub async fn request(&self, request: ClientRequest) -> IoResult<PendingClientRequestResponse> {
+        if matches!(&request, ClientRequest::ProcessSpawn { .. })
+            && !self.process_indeterminate_enabled.load(Ordering::Acquire)
+        {
+            return Err(IoError::new(
+                ErrorKind::Unsupported,
+                "process/spawn requires the server's processIndeterminate initialize confirmation",
+            ));
+        }
+        let initializing = matches!(&request, ClientRequest::Initialize { .. });
         let (response_tx, response_rx) = oneshot::channel();
         self.try_send_client_message(InProcessClientMessage::Request {
             request: Box::new(request),
             response_tx,
         })?;
-        response_rx.await.map_err(|err| {
+        let response = response_rx.await.map_err(|err| {
             IoError::new(
                 ErrorKind::BrokenPipe,
                 format!("in-process request response channel closed: {err}"),
             )
-        })
+        })?;
+        if initializing && let Ok(result) = &response {
+            self.process_indeterminate_enabled.store(
+                result
+                    .get("processIndeterminate")
+                    .and_then(serde_json::Value::as_bool)
+                    == Some(true),
+                Ordering::Release,
+            );
+        }
+        Ok(response)
     }
 
     pub fn notify(&self, notification: ClientNotification) -> IoResult<()> {
@@ -711,31 +733,10 @@ async fn start_uninitialized(args: InProcessStartArgs) -> IoResult<InProcessClie
                             }
                         }
                         OutgoingMessage::AppServerNotification(envelope) => {
-                            let notification = envelope.notification;
-                            if server_notification_requires_delivery(&notification) {
-                                if event_tx
-                                    .send(InProcessServerEvent::ServerNotification(Box::new(
-                                        notification,
-                                    )))
-                                    .await
-                                    .is_err()
-                                {
-                                    break;
-                                }
-                            } else if let Err(send_error) =
-                                event_tx.try_send(InProcessServerEvent::ServerNotification(
-                                    Box::new(notification),
-                                ))
-                            {
-                                match send_error {
-                                    mpsc::error::TrySendError::Full(_) => {
-                                        warn!("dropping in-process server notification (queue full)");
-                                        continue;
-                                    }
-                                    mpsc::error::TrySendError::Closed(_) => {
-                                        break;
-                                    }
-                                }
+                            match delivery::deliver_notification(&event_tx, envelope.notification).await {
+                                delivery::NotificationDelivery::Sent => {}
+                                delivery::NotificationDelivery::Dropped => continue,
+                                delivery::NotificationDelivery::Closed => break,
                             }
                         }
                     }
@@ -780,7 +781,10 @@ async fn start_uninitialized(args: InProcessStartArgs) -> IoResult<InProcessClie
     });
 
     Ok(InProcessClientHandle {
-        client: InProcessClientSender { client_tx },
+        client: InProcessClientSender {
+            client_tx,
+            process_indeterminate_enabled: Arc::new(AtomicBool::new(false)),
+        },
         event_rx,
         runtime_handle,
         #[cfg(test)]
@@ -1008,7 +1012,10 @@ mod tests {
             let _ = done_tx.send(());
         });
         let client = InProcessClientHandle {
-            client: InProcessClientSender { client_tx },
+            client: InProcessClientSender {
+                client_tx,
+                process_indeterminate_enabled: Arc::new(AtomicBool::new(false)),
+            },
             event_rx,
             runtime_handle,
             _test_codex_home: None,
@@ -1067,3 +1074,6 @@ mod tests {
         ));
     }
 }
+
+#[path = "in_process_delivery.rs"]
+mod delivery;

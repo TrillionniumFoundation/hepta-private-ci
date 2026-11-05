@@ -1654,6 +1654,7 @@ async fn logout_managed_bedrock_preserves_changed_provider_without_experimental_
                 version: "0.1.0".to_string(),
             },
             Some(InitializeCapabilities {
+                process_indeterminate: false,
                 experimental_api: false,
                 ..Default::default()
             }),
@@ -1712,6 +1713,7 @@ async fn managed_bedrock_login_requires_experimental_api() -> Result<()> {
                 version: "0.1.0".to_string(),
             },
             Some(InitializeCapabilities {
+                process_indeterminate: false,
                 experimental_api: false,
                 ..Default::default()
             }),
