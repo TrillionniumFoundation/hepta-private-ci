@@ -26,10 +26,12 @@ use serde::Serialize;
 use sqlx::Row;
 
 use crate::AutomationStore;
+use crate::TaskFlowCommand;
 use crate::TaskFlowError;
 use crate::TaskFlowFence;
 use crate::TaskFlowReconcileOutcome;
 use crate::TaskFlowRun;
+use crate::TaskFlowTransition;
 use crate::taskflow::load_taskflow_definition_tx;
 use crate::taskflow::load_taskflow_run_tx;
 
@@ -596,6 +598,106 @@ impl AutomationStore {
             .await
     }
 
+    /// Observe a cancelled step only when the same verified run history
+    /// contains its exact provider-absence requeue command. A newer run owner
+    /// does not erase this fact and gains no authority from reading it.
+    pub(crate) async fn read_settled_absent_taskflow_step(
+        &self,
+        run_id: &str,
+        step_id: &str,
+        attempt: u32,
+        proof_digest: &Sha256Digest,
+        requeue_command_id: &str,
+    ) -> Result<Option<TaskFlowStepReceipt>, TaskFlowError> {
+        validate_common_without_digests(run_id, step_id, attempt, requeue_command_id)?;
+        validate_digest(proof_digest, "settled provider absence proof")?;
+        ensure_step_schema(self).await?;
+        let mut tx = self
+            .taskflow_pool()
+            .begin()
+            .await
+            .map_err(|_| TaskFlowError::Unavailable)?;
+        let Some((_, receipt)) = self
+            .read_verified_step_chain_tx(&mut tx, run_id, step_id, attempt)
+            .await?
+        else {
+            return Ok(None);
+        };
+        if receipt.state != TaskFlowStepState::Reconciled
+            || receipt.final_outcome != Some(TaskFlowReconcileOutcome::Cancelled)
+        {
+            return Ok(None);
+        }
+        if receipt.receipt_digest.as_ref() != Some(proof_digest) {
+            return Err(TaskFlowError::Conflict(
+                "cancelled step differs from provider absence proof".to_string(),
+            ));
+        }
+        // load_run above has verified every event in this same snapshot. The
+        // original command may precede a later claim or attempt; do not use
+        // the current lease or assume that a Queued projection proves absence.
+        let events = sqlx::query(
+            "SELECT command_digest, transition, payload_json, revision, recorded_at_ms
+             FROM taskflow_events
+             WHERE owner_agent_id = ? AND run_id = ? AND command_id = ? LIMIT 2",
+        )
+        .bind(self.taskflow_owner_agent_id().as_str())
+        .bind(run_id)
+        .bind(requeue_command_id)
+        .fetch_all(&mut *tx)
+        .await
+        .map_err(|_| TaskFlowError::Unavailable)?;
+        let event = match events.as_slice() {
+            [] => return Ok(None),
+            [event] => event,
+            _ => return Err(corrupt("provider absence requeue command is duplicated")),
+        };
+        let transition: String = event
+            .try_get("transition")
+            .map_err(|_| corrupt("provider absence transition column"))?;
+        let payload: String = event
+            .try_get("payload_json")
+            .map_err(|_| corrupt("provider absence payload column"))?;
+        let expected_transition = TaskFlowTransition::RequeueProvenAbsent {
+            proof_digest: proof_digest.clone(),
+        };
+        let decoded: TaskFlowTransition = serde_json::from_str(&payload)
+            .map_err(|_| corrupt("provider absence transition payload"))?;
+        if transition != "requeued_proven_absent" || decoded != expected_transition {
+            return Err(corrupt("provider absence requeue differs from cancelled step"));
+        }
+        let revision = to_u64(
+            event
+                .try_get("revision")
+                .map_err(|_| corrupt("provider absence revision column"))?,
+        )?;
+        let now_ms = to_u64(
+            event
+                .try_get("recorded_at_ms")
+                .map_err(|_| corrupt("provider absence timestamp column"))?,
+        )?;
+        let command = TaskFlowCommand::new(
+            run_id,
+            requeue_command_id,
+            receipt.fence.clone(),
+            revision
+                .checked_sub(1)
+                .ok_or_else(|| corrupt("provider absence requeue has zero revision"))?,
+            expected_transition,
+            now_ms,
+        )?;
+        let bytes = serde_json::to_vec(&command)
+            .map_err(|_| corrupt("provider absence command serialization"))?;
+        let stored_digest: String = event
+            .try_get("command_digest")
+            .map_err(|_| corrupt("provider absence command digest column"))?;
+        if stored_digest != Sha256Digest::for_bytes(&bytes).as_str() {
+            return Err(corrupt("provider absence requeue differs from immutable step fence"));
+        }
+        tx.commit().await.map_err(|_| TaskFlowError::Unavailable)?;
+        Ok(Some(receipt))
+    }
+
     async fn read_verified_step(
         &self,
         run_id: &str,
@@ -634,20 +736,12 @@ impl AutomationStore {
         if let Some(fence) = fence {
             validate_fence(self, fence)?;
         }
-        let run = load_run(tx, self, run_id).await?;
-        let definition = load_definition(tx, self, &run).await?;
-        validate_step_node(&definition, step_id)?;
-        let events = load_step_events(tx, self, run_id, step_id, attempt).await?;
-        if events.is_empty() {
+        let Some((run, receipt)) = self
+            .read_verified_step_chain_tx(tx, run_id, step_id, attempt)
+            .await?
+        else {
             return Ok(None);
-        }
-        let receipt = reconstruct_step(
-            self.taskflow_owner_agent_id(),
-            run_id,
-            step_id,
-            attempt,
-            &events,
-        )?;
+        };
         if let Some(fence) = fence {
             if receipt.state == TaskFlowStepState::Reconciled {
                 // Recovery may legitimately re-fence a still-Running run projection
@@ -692,6 +786,32 @@ impl AutomationStore {
             }
         }
         Ok(Some(receipt))
+    }
+
+    // Shared immutable verification only. Callers must enforce their explicit
+    // fenced mutation, completed-run read, or settled-absence read boundary.
+    async fn read_verified_step_chain_tx(
+        &self,
+        tx: &mut sqlx::Transaction<'_, sqlx::Sqlite>,
+        run_id: &str,
+        step_id: &str,
+        attempt: u32,
+    ) -> Result<Option<(TaskFlowRun, TaskFlowStepReceipt)>, TaskFlowError> {
+        let run = load_run(tx, self, run_id).await?;
+        let definition = load_definition(tx, self, &run).await?;
+        validate_step_node(&definition, step_id)?;
+        let events = load_step_events(tx, self, run_id, step_id, attempt).await?;
+        if events.is_empty() {
+            return Ok(None);
+        }
+        let receipt = reconstruct_step(
+            self.taskflow_owner_agent_id(),
+            run_id,
+            step_id,
+            attempt,
+            &events,
+        )?;
+        Ok(Some((run, receipt)))
     }
 
     async fn append_step_operation(

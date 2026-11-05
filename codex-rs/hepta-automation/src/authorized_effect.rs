@@ -690,6 +690,65 @@ impl AutomationStore {
         self.read_terminal_effect_dispatch_receipt(&durable).await
     }
 
+    /// Read a previously settled absence under the automation owner's local
+    /// fact boundary, including after the run has acquired a newer owner.
+    /// The provider evidence, immutable cancelled step and original requeue
+    /// command must agree. This does not settle an in-flight observation,
+    /// renew a lease, consume a grant, or authorize another provider attempt.
+    pub async fn read_settled_authorized_taskflow_effect_absence(
+        &self,
+        run_id: &str,
+        step_id: &str,
+        attempt: u32,
+    ) -> Result<Option<TaskFlowStepReceipt>, AuthorizedEffectError> {
+        let Some(durable) = self
+            .effect_dispatch_attempt(run_id, step_id, attempt)
+            .await?
+        else {
+            return Ok(None);
+        };
+        let Some(observation) = &durable.observation else {
+            return Ok(None);
+        };
+        if observation.kind != EffectDispatchObservationKind::ProvenAbsent {
+            return Ok(None);
+        }
+        let Some(step) = self
+            .read_settled_absent_taskflow_step(
+                run_id,
+                step_id,
+                attempt,
+                &observation.evidence_digest,
+                &effect_command_id("requeue-absent", &durable),
+            )
+            .await?
+        else {
+            return Ok(None);
+        };
+        let expected_command = match step.observation {
+            None => provider_absence_step_command_id(&durable),
+            Some(TaskFlowStepObservation::Indeterminate) => {
+                effect_command_id("step-absent-reconcile", &durable)
+            }
+            Some(TaskFlowStepObservation::Succeeded | TaskFlowStepObservation::Failed) => {
+                return Err(TaskFlowError::Conflict(
+                    "settled absence has a terminal provider observation".to_string(),
+                )
+                .into());
+            }
+        };
+        if step.intent_digest != durable.intent_digest
+            || step.payload_digest != durable.payload_digest
+            || step.last_command_id != expected_command
+        {
+            return Err(TaskFlowError::Conflict(
+                "settled absence differs from durable provider evidence".to_string(),
+            )
+            .into());
+        }
+        Ok(Some(step))
+    }
+
     async fn read_terminal_effect_dispatch_receipt(
         &self,
         durable: &EffectDispatchAttempt,

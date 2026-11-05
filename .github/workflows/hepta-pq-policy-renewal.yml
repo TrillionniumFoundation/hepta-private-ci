@@ -247,6 +247,21 @@ jobs:
           -E 'test(provider_effect::pq_tests::)'
           --no-capture --retries 0 --test-threads=1
 
+      # These owner/store controls reuse the existing classical test fixture;
+      # the unchanged PQ owner controls above supply the PQ boundary coverage.
+      - name: Run the two settled absence history and corruption controls
+        if: ${{ !cancelled() && steps.dependencies.outcome == 'success' }}
+        env:
+          CARGO_NET_OFFLINE: "true"
+        run: >-
+          python3 scripts/hepta_ci_exec.py
+          --output "$RUNNER_TEMP/pq-policy-renewal/effect-settled-absence.json"
+          --minimum-tests 2 --timeout-seconds 600 --
+          just test --locked -p codex-hepta-automation --test authorized_effect
+          -E 'test(=owner_recovery_tests::settled_absence_fact_read_survives_reopen_and_new_owner_without_redispatch)
+          | test(=owner_recovery_tests::settled_absence_fact_read_rejects_unknown_unsettled_and_corrupt_evidence)'
+          --no-capture --retries 0 --test-threads=1
+
       - name: Run the ordinary Agentd process through provider ACK loss and owned kill
         if: ${{ !cancelled() && steps.dependencies.outcome == 'success' }}
         env:
@@ -296,6 +311,10 @@ jobs:
               },
               "effect-pq-contract": {
                   "provider_effect::pq_tests::pq_contract_binds_profile_root_epoch_and_complete_authority_scope",
+              },
+              "effect-settled-absence": {
+                  "owner_recovery_tests::settled_absence_fact_read_survives_reopen_and_new_owner_without_redispatch",
+                  "owner_recovery_tests::settled_absence_fact_read_rejects_unknown_unsettled_and_corrupt_evidence",
               },
               "dispatcher": {prefix + name for name in (
                   "lost_queue_reply_recovers_from_sqlite_using_lookup_only_and_exact_receipt",
@@ -405,7 +424,7 @@ jobs:
           python3 scripts/hepta_ci_exec.py
           --output "$RUNNER_TEMP/pq-policy-renewal/fix.json"
           --timeout-seconds 1200 --
-          just fix --locked -p codex-hepta-evidence -p codex-hepta-agentd -p codex-hepta-infer-worker-host -p codex-hepta-contracts -p codex-model-provider
+          just fix --locked -p codex-hepta-evidence -p codex-hepta-agentd -p codex-hepta-infer-worker-host -p codex-hepta-contracts -p codex-model-provider -p codex-hepta-automation
 
       - name: Run the original formatter after tests and lint
         if: ${{ !cancelled() && steps.dependencies.outcome == 'success' }}

@@ -1363,6 +1363,16 @@ impl AgentdAutomationEffectHost {
                 chain: chain.map(Box::new),
             });
         }
+        if store
+            .read_settled_authorized_taskflow_effect_absence(run_id, step_id, attempt)
+            .await
+            .map_err(|error| {
+                AgentdError::Protocol(format!("read settled provider absence: {error}"))
+            })?
+            .is_some()
+        {
+            return Ok(AgentdAutomationEffectReconcileOutcome::ProvenAbsent);
+        }
         let run = store
             .taskflow_run(run_id)
             .await
