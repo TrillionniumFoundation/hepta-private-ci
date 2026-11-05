@@ -22,8 +22,10 @@ import tempfile
 
 import numpy as np
 
+from . import attempts
 
-def atomic_json(path, value):
+
+def atomic_json(path, value, *, replace=True):
     """Publish one complete receipt, retaining the previous file on interruption."""
     path = Path(path)
     path.parent.mkdir(parents=True, exist_ok=True)
@@ -34,7 +36,10 @@ def atomic_json(path, value):
             stream.write("\n")
             stream.flush()
             os.fsync(stream.fileno())
-        os.replace(temporary, path)
+        if replace:
+            os.replace(temporary, path)
+        else:
+            os.link(temporary, path)
     finally:
         if os.path.exists(temporary):
             os.unlink(temporary)
@@ -188,6 +193,9 @@ def aggregate(runs):
                 "failed_seeds": len(failed),
                 "unavailable_seeds": sum(r["status"] == "unavailable" for r in records),
                 "execution_failure_rate": len(failed)/(len(failed)+len(good)) if failed or good else None}
+        all_attempts = [a for r in records for a in r.get("attempts", [{"result": r}])]
+        item["attempt_accounting"] = attempts.accounting(all_attempts)
+        item["failure_rate_scope"] = "top-level rates are final seed outcomes; attempt_accounting retains every retry"
         trained = [r for r in records if r.get("training_status") in {"completed", "failed"}]
         item["training_failure_rate"] = (sum(r["training_status"] == "failed" for r in trained)/len(trained)
                                          if trained else None)
@@ -205,7 +213,11 @@ def _run_one(config, task, name, seed, datasets, device, torch, checkpoint_path=
     from torch import nn
 
     record = {"task": task, "model": name, "seed": seed, "status": "failed",
-              "training_status": "not_started"}
+              "training_status": "not_started", "training_examples_seen": 0,
+              "training_tokens_seen": 0, "training_steps_completed": 0,
+              "budget_measurement_scope": "examples/tokens submitted to training forward; optimizer steps counted separately",
+              "energy": {"joules_by_physical_counter": None,
+                         "missing_reason": "attempt did not reach physical energy measurement"}}
     stage = "construction"
     meter = None
     try:
@@ -255,6 +267,8 @@ def _run_one(config, task, name, seed, datasets, device, torch, checkpoint_path=
         for step in range(config["train_steps"]):
             indices = torch.as_tensor(batch_rng.integers(0, len(train_x), config["batch_size"]), device=device)
             optimizer.zero_grad(set_to_none=True)
+            record["training_examples_seen"] += config["batch_size"]
+            record["training_tokens_seen"] += config["batch_size"]*config["length"]
             prediction = model(train_x[indices])
             loss = (prediction-train_y[indices]).square().mean()
             if not bool(torch.isfinite(loss)):
@@ -264,6 +278,7 @@ def _run_one(config, task, name, seed, datasets, device, torch, checkpoint_path=
                 raise FloatingPointError(f"nonfinite gradient at optimizer step {step}")
             torch.nn.utils.clip_grad_norm_(model.parameters(), 1.0)
             optimizer.step()
+            record["training_steps_completed"] = step+1
             losses.append(float(loss.detach()))
             if (step+1) % val_interval == 0 or step+1 == config["train_steps"]:
                 model.eval()
@@ -331,15 +346,14 @@ def run(config, checkpoint_dir=None):
     validate_config(config)
     root = Path(__file__).parent
     source = hashlib.sha256()
-    source_files = {str(p.relative_to(root)): hashlib.sha256(p.read_bytes()).hexdigest()
-                    for p in sorted(root.rglob("*.py"))}
+    source_files = attempts.source_snapshot(root)
     for path in sorted(root.rglob("*.py")):
         source.update(str(path.relative_to(root)).encode()+b"\0"+path.read_bytes())
     cpu_name = platform.processor()
     if not cpu_name and Path("/proc/cpuinfo").exists():
         cpu_name = next((line.partition(":")[2].strip() for line in Path("/proc/cpuinfo").read_text().splitlines()
                          if line.startswith("model name")), "unknown CPU")
-    report = {"schema_version": 1, "purpose": "synthetic research qualification", "config": config,
+    report = {"schema_version": 2, "purpose": "synthetic research qualification", "config": config,
               "source_sha256": source.hexdigest(), "source_files_sha256": source_files, "hardware": {"platform": platform.platform(),
               "machine": platform.machine(), "cpu_model": cpu_name, "logical_cpu_count": os.cpu_count(),
               "python": sys.version.split()[0], "numpy": np.__version__},
@@ -385,39 +399,63 @@ def run(config, checkpoint_dir=None):
             for seed in config["seeds"]:
                 key = receipt_key(report, task, name, seed)
                 saved = None
-                weights = None
+                prior_attempts = []
                 if checkpoint_dir is not None:
                     directory = Path(checkpoint_dir)
                     directory.mkdir(parents=True, exist_ok=True)
                     saved = directory/(key+".json")
-                    weights = directory/(key+".pt")
+                    prior_attempts = attempts.history(directory, key)
                 result = None
+                if attempts.source_snapshot(root) != source_files:
+                    raise RuntimeError("source changed before attempt; no cache published")
                 if saved is not None and saved.exists():
                     prior = json.loads(saved.read_text())
                     candidate = prior["result"]
                     if prior["key"] != key:
                         raise ValueError("checkpoint provenance mismatch")
+                    terminal = next((a for a in prior_attempts if a['attempt_id'] == prior['attempt_id']), None)
+                    if terminal is None or terminal['result'] != candidate:
+                        raise ValueError("cache has no matching immutable attempt receipt")
                     if candidate["status"] == "completed":
+                        weights = attempts.resolve_weights(directory, candidate)
                         if (not weights.exists() or hashlib.sha256(weights.read_bytes()).hexdigest()
                                 != candidate.get("best_checkpoint_sha256")):
                             raise ValueError("missing or corrupted best validation checkpoint")
-                        result = candidate
+                        result = candidate.copy()
+                        result['best_checkpoint'] = str(weights)
+                        prior['verified_weights'] = str(weights)
+                        atomic_json(saved, prior)
                 if result is None:
-                    if cuda_missing:
-                        result = dict(task=task, model=name, seed=seed, status="unavailable",
-                                      training_status="not_started",
-                                      reason="CUDA requested but unavailable; no CPU fallback")
-                    else:
-                        result = _run_one(config, task, name, seed, splits, device, torch, weights)
+                    def operation(weights):
+                        if cuda_missing:
+                            return dict(task=task, model=name, seed=seed, status="unavailable",
+                                        training_status="not_started", training_examples_seen=0,
+                                        training_tokens_seen=0, training_steps_completed=0,
+                                        energy={"joules_by_physical_counter": None,
+                                                "missing_reason": "CUDA unavailable; training not started"},
+                                        reason="CUDA requested but unavailable; no CPU fallback")
+                        return _run_one(config, task, name, seed, splits, device, torch, weights)
+                    provenance = dict(key=key, source_sha256=report["source_sha256"],
+                                      config=config, dataset=report["datasets"][task],
+                                      hardware=report["hardware"], software=report["software"],
+                                      task=task, model=name, seed=seed)
                     if saved is not None:
-                        atomic_json(saved, {"key": key, "source_sha256": report["source_sha256"],
-                                            "config": config, "dataset": report["datasets"][task],
-                                            "hardware": report["hardware"], "software": report["software"],
-                                            "result": result})
-                current_files = {str(p.relative_to(root)): hashlib.sha256(p.read_bytes()).hexdigest()
-                                 for p in sorted(root.rglob("*.py"))}
-                if current_files != source_files:
-                    raise RuntimeError("source changed during benchmark; discard mixed-source run")
+                        result, attempt_id = attempts.execute(
+                            directory, key, provenance, operation,
+                            lambda: attempts.source_snapshot(root) == source_files, atomic_json)
+                        # Only source-verified outcomes enter this replaceable index.
+                        # Terminal attempts and their weights are never overwritten.
+                        atomic_json(saved, dict(provenance, attempt_id=attempt_id, result=result))
+                        prior_attempts = attempts.history(directory, key)
+                    else:
+                        result = operation(None)
+                        if attempts.source_snapshot(root) != source_files:
+                            raise RuntimeError("source changed during benchmark; no receipt published")
+                        prior_attempts = [dict(provenance, result=result.copy())]
+                if saved is not None and result.get('best_checkpoint_relative'):
+                    result = dict(result, best_checkpoint=str(attempts.resolve_weights(directory, result)))
+                result = dict(result, attempts=prior_attempts,
+                              attempt_accounting=attempts.accounting(prior_attempts))
                 report["runs"].append(result)
                 print(f"{task} {name} seed={seed}: {result['status']}", file=sys.stderr, flush=True)
     expected = {(t, m, s) for t in config["tasks"] for m in config["models"] for s in config["seeds"]}
@@ -428,6 +466,7 @@ def run(config, checkpoint_dir=None):
                                completed=sum(r["status"] == "completed" for r in report["runs"]),
                                failed=sum(r["status"] == "failed" for r in report["runs"]),
                                unavailable=sum(r["status"] == "unavailable" for r in report["runs"]))
+    report["attempt_accounting"] = attempts.accounting([a for r in report["runs"] for a in r["attempts"]])
     report["summary"] = aggregate(report["runs"])
     statuses = {r["status"] for r in report["runs"]}
     report["status"] = "completed" if statuses == {"completed"} else "partial"
