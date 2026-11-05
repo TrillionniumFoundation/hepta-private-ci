@@ -75,7 +75,7 @@ impl ProductionDurableWriter {
         }
         let row: Option<(String, String, String)> = sqlx::query_as(
             "SELECT event_kind, payload_json, payload_sha256 FROM cognitive_local_events
-             WHERE lease_id = ? AND occurrence_key = ? ORDER BY event_sequence DESC LIMIT 1",
+             WHERE lease_id = ? AND occurrence_key = ? AND event_kind IN ('reconcile_committed', 'reconcile_rejected') ORDER BY event_sequence DESC LIMIT 1",
         )
         .bind(self.lease_id())
         .bind(operation_id)
@@ -162,7 +162,7 @@ impl ProductionDurableWriter {
             .map_err(|error| ProductionWriterError::Durability(error.to_string()))?;
         let (kind, receipt, digest): (String, String, String) = sqlx::query_as(
             "SELECT event_kind, payload_json, payload_sha256 FROM cognitive_local_events
-             WHERE lease_id = ? AND occurrence_key = ? ORDER BY event_sequence DESC LIMIT 1",
+             WHERE lease_id = ? AND occurrence_key = ? AND event_kind IN ('reconcile_committed', 'reconcile_rejected') ORDER BY event_sequence DESC LIMIT 1",
         )
         .bind(self.lease_id())
         .bind(operation_id)
@@ -186,6 +186,15 @@ impl ProductionDurableWriter {
                 "Notes terminal event is not applied".to_string(),
             ));
         }
+        let already_recorded = self
+            .lease
+            .retained_application_retirement_ack_transaction(
+                &mut transaction,
+                operation_id,
+                crate::NOTES_REPLACE_TOPIC_V1,
+            )
+            .await?
+            .is_some();
         self.acknowledge_bound_owner_transaction(&mut transaction)
             .await?;
         let permit = NotesRetirementPermit { request, receipt };
@@ -201,7 +210,8 @@ impl ProductionDurableWriter {
             .map_err(|error| ProductionWriterError::Durability(error.to_string()))?;
         let acknowledgement = retired?;
         acknowledgement.matches(permit.request(), permit.receipt())?;
-        Ok(())
+        self.finish_application_retirement(&acknowledgement, already_recorded)
+            .await
     }
 
     pub(super) async fn retry_notes_retirement<T: FinalUseProductionOutboxTarget + ?Sized>(

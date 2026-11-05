@@ -102,6 +102,7 @@ mod owner_publication;
 #[path = "production_retirement_ack.rs"]
 mod retirement_ack;
 pub use retirement_ack::ProductionRetirementAck;
+pub(crate) use retirement_ack::RecordedRetirementAck;
 
 #[path = "production_notes_owner.rs"]
 mod notes_owner;

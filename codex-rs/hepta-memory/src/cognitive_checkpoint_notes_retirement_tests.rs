@@ -43,7 +43,10 @@ impl FinalUseProductionOutboxTarget for Observer {
             }
         })
     }
-    fn retire_notes_receipt(&self, permit: &NotesRetirementPermit) -> Result<crate::ProductionRetirementAck, String> {
+    fn retire_notes_receipt(
+        &self,
+        permit: &NotesRetirementPermit,
+    ) -> Result<crate::ProductionRetirementAck, String> {
         assert_eq!(permit.receipt(), self.receipt);
         assert_eq!(permit.request().operation_destination_id, self.destination);
         *self.retired_head.lock().unwrap() = Some(self.peer.receipt.lock().unwrap().clone());
@@ -135,7 +138,20 @@ async fn notes_retirement_acknowledges_exact_terminal_cut_without_an_objective()
     let cut = fixture.store.recovery_anchor().await.unwrap();
     let acknowledged = target.retired_head.lock().unwrap().clone().unwrap();
     assert_eq!(acknowledged.head.phase, CognitiveCheckpointPhase::Current);
-    assert_eq!(acknowledged.head.last_current, cut);
+    assert_ne!(
+        acknowledged.head.last_current, cut,
+        "the target ACK follows its protected terminal and creates a later source event"
+    );
+    let recorded = fixture.peer.receipt.lock().unwrap().clone();
+    assert_eq!(recorded.head.phase, CognitiveCheckpointPhase::Current);
+    assert_eq!(recorded.head.last_current, cut);
+    assert!(
+        fixture
+            .writer
+            .retained_notes_retirement_ack(&operation)
+            .await
+            .unwrap()
+    );
     assert_eq!(target.retirements.load(Ordering::SeqCst), 1);
     let objective_count: i64 =
         sqlx::query_scalar("SELECT COUNT(*) FROM cognitive_objective_sender_requests")
@@ -158,7 +174,7 @@ async fn notes_retirement_acknowledges_exact_terminal_cut_without_an_objective()
     );
     assert_eq!(
         *fixture.peer.receipt.lock().unwrap(),
-        acknowledged,
+        recorded,
         "metadata retries and an empty reconciliation poll must not dirty Current or mutate its token"
     );
     assert_eq!(target.retirements.load(Ordering::SeqCst), 3);
@@ -210,11 +226,22 @@ async fn notes_retirement_cancelled_publication_retains_receipt_and_never_reopen
         .wrong_owner_reply
         .store(false, Ordering::SeqCst);
     let before = fixture.peer.receipt.lock().unwrap().clone();
-    fixture
-        .writer
-        .retire_notes_receipt(target.as_ref(), &operation)
-        .await
-        .unwrap();
+    // Independent readback may authorize the target metadata ACK, but a
+    // permanently fenced source cannot COMMIT a new durable ACK observation.
+    assert!(
+        fixture
+            .writer
+            .retire_notes_receipt(target.as_ref(), &operation)
+            .await
+            .is_err()
+    );
+    let recorded: i64 = sqlx::query_scalar(
+        "SELECT COUNT(*) FROM cognitive_local_events WHERE event_kind = 'retirement_acknowledged'",
+    )
+    .fetch_one(fixture.store.observation_pool())
+    .await
+    .unwrap();
+    assert_eq!(recorded, 0);
     assert_eq!(target.retirements.load(Ordering::SeqCst), 1);
     assert_eq!(*fixture.peer.receipt.lock().unwrap(), before);
     assert!(fixture.store.commit_gate.is_fenced());
@@ -299,7 +326,10 @@ impl FinalUseProductionOutboxTarget for BlockingRetirement {
     ) -> ProductionTerminalObservationFuture<'a> {
         self.observer.observe_terminal(request)
     }
-    fn retire_notes_receipt(&self, permit: &NotesRetirementPermit) -> Result<crate::ProductionRetirementAck, String> {
+    fn retire_notes_receipt(
+        &self,
+        permit: &NotesRetirementPermit,
+    ) -> Result<crate::ProductionRetirementAck, String> {
         self.entered.notify_one();
         self.release
             .lock()

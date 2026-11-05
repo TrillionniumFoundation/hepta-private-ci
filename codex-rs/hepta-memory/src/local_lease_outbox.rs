@@ -13,6 +13,8 @@ mod effect_entry;
 
 #[path = "local_retained_operation.rs"]
 mod retained_operation;
+#[path = "local_retirement_ack.rs"]
+mod retirement_ack;
 
 use std::collections::BTreeMap;
 use std::collections::BTreeSet;
@@ -4493,6 +4495,7 @@ async fn verify_event_chain(
             event_sha256,
         });
     }
+    retirement_ack::verify_retirement_lease(lease_id, &events)?;
     Ok(events)
 }
 
@@ -4568,6 +4571,9 @@ fn advance_outcome_state(
             ),
             "rolled_back",
         ) => LocalOutcomeState::RolledBack,
+        (Some(LocalOutcomeState::Committed), retirement_ack::RETIREMENT_ACK_KIND) => {
+            LocalOutcomeState::Committed
+        }
         (Some(state), _) => {
             return Err(corrupt(format!(
                 "occurrence {occurrence_key} has invalid {kind} transition from {}",
@@ -4616,6 +4622,12 @@ fn ensure_no_unresolved_outcomes_except(
         // outcome append).  Only the handle's current generation may block a
         // normal release/rollback; expiry is the explicit quarantine path
         // for an older generation.
+        // A successor may acknowledge a historical Committed occurrence.
+        // Its neutral metadata was checked against the full original chain;
+        // it introduces no current-generation admission or unresolved work.
+        if event.kind == retirement_ack::RETIREMENT_ACK_KIND {
+            continue;
+        }
         if event.generation != generation || event.fencing_token != fencing_token {
             continue;
         }
@@ -4816,6 +4828,7 @@ fn verify_event_outbox_pairing(
             outbox_rows.len()
         )));
     }
+    retirement_ack::verify_retirement_pairing(events, outbox_rows)?;
     Ok(())
 }
 
