@@ -187,3 +187,7 @@ impl Drop for TerminationReply {
         self.shared.expire();
     }
 }
+
+#[cfg(test)]
+#[path = "termination_observation_tests.rs"]
+mod tests;

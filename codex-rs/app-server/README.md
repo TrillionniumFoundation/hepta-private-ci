@@ -2759,3 +2759,32 @@ For server-initiated request payloads, annotate the field the same way so schema
    ```bash
    just test -p codex-app-server-protocol
    ```
+
+### Observe one background terminal's termination
+
+Experimental clients can call `thread/backgroundTerminals/terminateObserved`
+with `threadId`, `processId`, and a required positive `observationTimeoutMs`
+(integer milliseconds, at most `u32::MAX`). There is no default observation budget.
+Both JSON-RPC and in-process requests start the budget once on entry to the
+server's request processor. Queueing, loading the existing thread, requesting
+termination, observing the original process, and manager cleanup share that
+absolute deadline.
+
+The result is `{"status":"confirmed"}` only when Core observes the original
+process's native exit and completes its manager cleanup before the deadline.
+`{"status":"notConfirmed"}` does not establish that no effect occurred, that
+the process exited, or that its owner or handle may be reused. A queued request
+that expires cannot start when an earlier request later releases the queue.
+Dropping the running operation or its sole response owner cancels observation
+and preserves Core's unresolved owner. Closing a connection rejects queued work;
+under the existing gate contract it does not cancel an operation already running.
+The detached response task may continue until the same deadline even when its
+connection can no longer receive the result.
+
+This deadline bounds the operation's result, not network delivery or outbound
+backpressure. A transport failure or a client timeout is not a confirmation, and
+clients must not automatically retry or fall back to
+`thread/backgroundTerminals/terminate`. Servers without the new method reject
+it during request parsing. The older terminate and clean methods retain their
+existing contracts; this method does not migrate them or establish custody
+across a server restart.

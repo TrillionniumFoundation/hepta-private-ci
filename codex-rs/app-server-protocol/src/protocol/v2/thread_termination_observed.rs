@@ -46,3 +46,7 @@ pub enum ThreadBackgroundTerminalsTerminateObservedStatus {
 pub struct ThreadBackgroundTerminalsTerminateObservedResponse {
     pub status: ThreadBackgroundTerminalsTerminateObservedStatus,
 }
+
+#[cfg(test)]
+#[path = "thread_termination_observed_tests.rs"]
+mod tests;
