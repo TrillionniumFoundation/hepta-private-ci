@@ -2,6 +2,7 @@ use super::*;
 use crate::*;
 use crate::cell_test_support::*;
 use codex_hepta_types::Generation;
+use codex_hepta_types::StableId;
 use pretty_assertions::assert_eq;
 use std::fs;
 use std::fs::OpenOptions;
@@ -268,4 +269,120 @@ fn admission_reserves_room_for_its_eventual_atomic_state_commit() {
     assert!(matches!(infer_cell(prepared, &mut journal, &mut control, /*now_micros*/11), Err(CellExecutionError::CapacityExceeded)));
     assert_eq!(control.executions, 0);
     assert_eq!(checked(journal.pending_inference(&scope("run1"))), None);
+}
+
+struct AdvancingWitness<W> {
+    inner: W,
+    clock_micros: Arc<AtomicU64>,
+    elapsed_per_ack_micros: u64,
+}
+
+impl<W: AnchorWitnessStore> AnchorWitnessStore for AdvancingWitness<W> {
+    fn current(&self) -> Result<Option<JournalAnchor>, WitnessStoreError> {
+        self.inner.current()
+    }
+
+    fn compare_and_swap(
+        &mut self,
+        expected: Option<JournalAnchor>,
+        next: JournalAnchor,
+    ) -> Result<(), WitnessStoreError> {
+        self.inner.compare_and_swap(expected, next)?;
+        // Advance only after the real durable witness has acknowledged the
+        // journal frame, to model time consumed by that persistence boundary.
+        self.clock_micros.fetch_add(self.elapsed_per_ack_micros, Ordering::SeqCst);
+        Ok(())
+    }
+}
+
+struct RecordingBatch {
+    calls: usize,
+    request_ids: Vec<StableId>,
+}
+
+impl CellMicrobatchInferenceControlPortV1 for RecordingBatch {
+    fn execute_feature_batch(
+        &mut self,
+        requests: &[codex_hepta_infer_core::NeuronFeatureRequestV1],
+    ) -> Result<Vec<codex_hepta_infer_core::NeuronFeatureReceiptV1>, NeuronModelError> {
+        self.calls += 1;
+        self.request_ids.extend(requests.iter().map(|r| r.request_id.clone()));
+        Ok(requests.iter().map(|r| feature_receipt(r, /*latency*/20)).collect())
+    }
+}
+
+#[test]
+fn batch_admission_sync_crossing_deadline_never_dispatches_and_reopens_pending() {
+    let fixture = Fixture::new();
+    let clock = Arc::new(AtomicU64::new(90));
+    let witness = AdvancingWitness {
+        inner: fixture.witness(), clock_micros: Arc::clone(&clock), elapsed_per_ack_micros: 10,
+    };
+    let mut journal = checked(CellOwnerJournalV1::open(
+        fixture.file("journal"), witness, specs(), /*max_records*/64,
+    ));
+    let mut queue = checked(CellBatchQueueV1::new(/*max_queued*/2, /*max_batch*/2));
+    for run in ["run1", "run2"] {
+        let prepared = checked(prepare_cell_step(&definition(), &journal, &Encoder, input(run), /*now_micros*/10));
+        checked(queue.enqueue(prepared, /*now_micros*/11));
+    }
+    let mut batch = RecordingBatch { calls: 0, request_ids: Vec::new() };
+    let results = queue.dispatch_next(&mut journal, &mut batch, || clock.load(Ordering::SeqCst));
+    assert_eq!(clock.load(Ordering::SeqCst), 110);
+    assert_eq!(results.len(), 2);
+    assert!(results.into_iter().all(|r| matches!(r.result, Err(CellExecutionError::DeadlineExceeded))));
+    assert_eq!(batch.calls, 0);
+    assert!(batch.request_ids.is_empty());
+    drop(journal);
+    let journal = fixture.open();
+    let mut readback = RecordedControl::new();
+    for run in ["run1", "run2"] {
+        let pending = checked(journal.pending_inference(&scope(run)));
+        assert!(pending.is_some());
+        assert_eq!(checked(journal.snapshot(&scope(run))).revision, 0);
+        assert!(matches!(recover_cell_inference(
+            &definition(), &journal, &Encoder, input(run), &mut readback, /*now_micros*/111,
+        ), Err(CellExecutionError::InferencePending)));
+    }
+    assert_eq!((readback.executions, readback.reads), (0, 2));
+}
+
+#[test]
+fn batch_dispatch_filters_expired_members_and_counts_durable_admission_queue_time() {
+    let fixture = Fixture::new();
+    let clock = Arc::new(AtomicU64::new(90));
+    let witness = AdvancingWitness {
+        inner: fixture.witness(), clock_micros: Arc::clone(&clock), elapsed_per_ack_micros: 10,
+    };
+    let mut journal = checked(CellOwnerJournalV1::open(
+        fixture.file("journal"), witness, specs(), /*max_records*/64,
+    ));
+    let mut queue = checked(CellBatchQueueV1::new(/*max_queued*/2, /*max_batch*/2));
+    let first = checked(prepare_cell_step(&definition(), &journal, &Encoder, input("run1"), /*now_micros*/10));
+    let mut live = input("run2");
+    live.deadline_micros = 200;
+    let second = checked(prepare_cell_step(&definition(), &journal, &Encoder, live, /*now_micros*/10));
+    let expected_id = second.model_request.request_id.clone();
+    checked(queue.enqueue(first, /*now_micros*/11));
+    checked(queue.enqueue(second, /*now_micros*/11));
+    let mut batch = RecordingBatch { calls: 0, request_ids: Vec::new() };
+    let results = queue.dispatch_next(&mut journal, &mut batch, || clock.load(Ordering::SeqCst));
+    assert_eq!(batch.calls, 1);
+    assert_eq!(batch.request_ids, vec![expected_id]);
+    assert_eq!(results.len(), 2);
+    for result in results {
+        if result.scope == scope("run1") {
+            assert!(matches!(result.result, Err(CellExecutionError::DeadlineExceeded)));
+        } else {
+            assert_eq!(result.scope, scope("run2"));
+            let proposed = checked(decide_cell(checked(result.result), /*now_micros*/111));
+            assert_eq!(proposed.receipt().cost.queue_age_micros, 102);
+            assert_eq!(proposed.receipt().cost.model_latency_micros, 20);
+            assert!(!proposed.receipt().deadline_exceeded);
+        }
+    }
+    for run in ["run1", "run2"] {
+        assert!(checked(journal.pending_inference(&scope(run))).is_some());
+        assert_eq!(checked(journal.snapshot(&scope(run))).revision, 0);
+    }
 }

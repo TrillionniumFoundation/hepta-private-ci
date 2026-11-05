@@ -44,6 +44,11 @@ pub(crate) fn admission_for_step(
     })
 }
 
+/// Persist dispatch admission before contacting the shared control port.
+/// The supplied timestamp bounds admission. Because that durable write may
+/// block, the concrete control port must sample its clock and revalidate Cell
+/// and enclosing Circuit lease/deadline immediately before native dispatch.
+/// A refused dispatch retains pending state and permits only read-only recovery.
 pub fn infer_cell(
     prepared: PreparedCellStepV1,
     owner: &mut impl CellStateOwnerV1,

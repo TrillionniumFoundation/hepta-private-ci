@@ -124,7 +124,7 @@ fn shared_microbatch_matches_reordered_outputs_to_isolated_requests() {
         checked(queue.enqueue(prepared, /*now_micros*/11));
     }
     let mut model = Batch { calls: 0, omit: false };
-    let results = queue.dispatch_next(&mut owner, &mut model, /*now_micros*/12);
+    let results = queue.dispatch_next(&mut owner, &mut model, /*clock_micros*/|| 12);
     assert_eq!(model.calls, 1);
     assert_eq!(results.len(), 2);
     for result in results {
@@ -142,7 +142,7 @@ fn incomplete_microbatch_cannot_publish_any_state() {
         let prepared = checked(prepare_cell_step(&definition(), &owner, &Encoder, input(run), /*now_micros*/10));
         checked(queue.enqueue(prepared, /*now_micros*/11));
     }
-    let results = queue.dispatch_next(&mut owner, &mut Batch { calls: 0, omit: true }, /*now_micros*/12);
+    let results = queue.dispatch_next(&mut owner, &mut Batch { calls: 0, omit: true }, /*clock_micros*/|| 12);
     assert_eq!(results.len(), 2);
     assert!(results.into_iter().all(|r| matches!(r.result, Err(CellExecutionError::ModelBindingMismatch))));
     assert_eq!(checked(owner.snapshot(&scope("run1"))).checkpoint, None);
@@ -342,7 +342,7 @@ fn batch_routing_digest_cannot_relabel_a_receipt_for_another_cell() {
         let prepared = checked(prepare_cell_step(&definition(), &owner, &Encoder, input(run), /*now_micros*/10));
         checked(queue.enqueue(prepared, /*now_micros*/11));
     }
-    let results = queue.dispatch_next(&mut owner, &mut ForgedBatch, /*now_micros*/12);
+    let results = queue.dispatch_next(&mut owner, &mut ForgedBatch, /*clock_micros*/|| 12);
     assert_eq!(results.len(), 2);
     assert!(results.into_iter().all(|r| matches!(r.result, Err(CellExecutionError::Backend(NeuronModelError::Rejected)))));
     assert_eq!(checked(owner.snapshot(&scope("run1"))).revision, 0);
@@ -388,15 +388,40 @@ fn batch_error_retains_each_admission_and_does_not_repeat_dispatch() {
         checked(queue.enqueue(prepared, /*now_micros*/11));
     }
     let mut model = UncertainBatch { calls: 0 };
-    let results = queue.dispatch_next(&mut owner, &mut model, /*now_micros*/12);
+    let results = queue.dispatch_next(&mut owner, &mut model, /*clock_micros*/|| 12);
     assert_eq!(results.len(), 2);
     assert!(results.into_iter().all(|r| matches!(r.result, Err(CellExecutionError::Backend(NeuronModelError::Indeterminate)))));
     for run in ["run1", "run2"] {
         assert!(checked(owner.pending_inference(&scope(run))).is_some());
     }
     checked(queue.enqueue(duplicate, /*now_micros*/13));
-    let results = queue.dispatch_next(&mut owner, &mut model, /*now_micros*/14);
+    let results = queue.dispatch_next(&mut owner, &mut model, /*clock_micros*/|| 14);
     assert_eq!(results.len(), 1);
     assert!(results.into_iter().all(|r| matches!(r.result, Err(CellExecutionError::InferencePending))));
     assert_eq!(model.calls, 1);
+}
+
+#[test]
+fn batch_dispatch_rechecks_queue_age_and_rejects_clock_rollback_after_admission() {
+    for dispatch_at in [11, 17] {
+        let mut definition = definition();
+        definition.max_queue_age_micros = 5;
+        let mut owner = checked(CellPartitionOwnerV1::new(/*max_partitions*/1, /*max_receipts_per_partition*/8));
+        checked(owner.admit(scope("run1"), &definition, d("frontier"), /*writer_epoch*/1));
+        let prepared = checked(prepare_cell_step(&definition, &owner, &Encoder, input("run1"), /*now_micros*/10));
+        let mut queue = checked(CellBatchQueueV1::new(/*max_queued*/1, /*max_batch*/1));
+        checked(queue.enqueue(prepared, /*now_micros*/11));
+        let mut reads = 0;
+        let mut batch = Batch { calls: 0, omit: false };
+        let results = queue.dispatch_next(&mut owner, &mut batch, || {
+            reads += 1;
+            if reads == 1 { 12 } else { dispatch_at }
+        });
+        assert_eq!(reads, 2);
+        assert_eq!(batch.calls, 0);
+        assert_eq!(results.len(), 1);
+        assert!(results.into_iter().all(|r| matches!(r.result, Err(CellExecutionError::DeadlineExceeded))));
+        assert!(checked(owner.pending_inference(&scope("run1"))).is_some());
+        assert_eq!(checked(owner.snapshot(&scope("run1"))).revision, 0);
+    }
 }

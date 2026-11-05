@@ -75,11 +75,14 @@ impl CellBatchQueueV1 {
         Ok(())
     }
 
+    /// Read the owner's monotonic clock before admission and again after all
+    /// durable admissions. Expiry or clock rollback retains pending state and
+    /// never sends that request to the shared inference facility.
     pub fn dispatch_next(
         &mut self,
         owner: &mut impl CellStateOwnerV1,
         model: &mut impl CellMicrobatchInferenceControlPortV1,
-        now_micros: u64,
+        mut clock_micros: impl FnMut() -> u64,
     ) -> Vec<CellBatchResultV1> {
         let Some(first) = self.queue.pop_front() else {
             return Vec::new();
@@ -100,30 +103,44 @@ impl CellBatchQueueV1 {
             }
         }
         let mut completed = Vec::new();
-        let mut ready = Vec::new();
+        let mut admitted = Vec::new();
+        let admitted_at_micros = clock_micros();
         for queued in group {
             let prepared = queued.prepared;
-            let queue_age = now_micros.saturating_sub(queued.enqueued_at_micros);
-            if now_micros < queued.enqueued_at_micros
-                || now_micros >= prepared.input.deadline_micros
-                || queue_age > prepared.definition.max_queue_age_micros
-            {
-                completed.push(CellBatchResultV1 {
+            let result = queue_age_at(&prepared, queued.enqueued_at_micros, admitted_at_micros)
+                .and_then(|_| admission_for_step(&prepared, admitted_at_micros))
+                .and_then(|admission| owner.admit_inference(admission));
+            match result {
+                Ok(()) => admitted.push((prepared, queued.enqueued_at_micros)),
+                Err(error) => completed.push(CellBatchResultV1 {
                     scope: prepared.input.scope,
                     operation_id: prepared.input.operation_id,
-                    result: Err(CellExecutionError::DeadlineExceeded),
-                });
+                    result: Err(error),
+                }),
+            }
+        }
+        if admitted.is_empty() {
+            return completed;
+        }
+        // Admission can fsync a shared journal and its independent witness.
+        // This fresh sample includes that elapsed time. No durable I/O occurs
+        // between this check and the batch call. Rejected admissions stay held;
+        // a timeout does not prove that the original request made no contact.
+        let dispatch_at_micros = clock_micros();
+        let mut ready = Vec::new();
+        for (prepared, enqueued_at_micros) in admitted {
+            let result = if dispatch_at_micros < admitted_at_micros {
+                Err(CellExecutionError::DeadlineExceeded)
             } else {
-                let admitted = admission_for_step(&prepared, now_micros)
-                    .and_then(|admission| owner.admit_inference(admission));
-                match admitted {
-                    Ok(()) => ready.push((prepared, queue_age)),
-                    Err(error) => completed.push(CellBatchResultV1 {
-                        scope: prepared.input.scope,
-                        operation_id: prepared.input.operation_id,
-                        result: Err(error),
-                    }),
-                }
+                queue_age_at(&prepared, enqueued_at_micros, dispatch_at_micros)
+            };
+            match result {
+                Ok(queue_age) => ready.push((prepared, queue_age)),
+                Err(error) => completed.push(CellBatchResultV1 {
+                    scope: prepared.input.scope,
+                    operation_id: prepared.input.operation_id,
+                    result: Err(error),
+                }),
             }
         }
         if ready.is_empty() {
@@ -163,7 +180,7 @@ impl CellBatchQueueV1 {
                                 output.queue_age_micros = output.queue_age_micros.saturating_add(queue_age);
                                 validate_model_output(&prepared.definition.runtime, &output)
                                     .map_err(|_| CellExecutionError::ModelBindingMismatch)
-                                    .map(|()| InferredCellStepV1 { prepared, output, not_before_micros: now_micros })
+                                    .map(|()| InferredCellStepV1 { prepared, output, not_before_micros: dispatch_at_micros })
                             }
                         }
                     } else {
@@ -175,4 +192,20 @@ impl CellBatchQueueV1 {
         }
         completed
     }
+}
+
+fn queue_age_at(
+    prepared: &PreparedCellStepV1,
+    enqueued_at_micros: u64,
+    now_micros: u64,
+) -> Result<u64, CellExecutionError> {
+    let age = now_micros.checked_sub(enqueued_at_micros)
+        .ok_or(CellExecutionError::DeadlineExceeded)?;
+    if now_micros < prepared.input.monotonic_micros
+        || now_micros >= prepared.input.deadline_micros
+        || age > prepared.definition.max_queue_age_micros
+    {
+        return Err(CellExecutionError::DeadlineExceeded);
+    }
+    Ok(age)
 }
