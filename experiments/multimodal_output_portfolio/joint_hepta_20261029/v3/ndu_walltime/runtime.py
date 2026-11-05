@@ -11,6 +11,7 @@ import hashlib
 import json
 import math
 import os
+import selectors
 import signal
 import subprocess
 import time
@@ -87,6 +88,62 @@ def _unique_json_object(pairs):
     return result
 
 
+
+class _OutputBudgetExceeded(Exception):
+    def __init__(self, observed_bytes):
+        super().__init__("combined worker output budget exceeded")
+        self.observed_bytes = observed_bytes
+
+
+def _communicate_bounded(process, payload, timeout, output_limit):
+    """Exchange stdin while bounding stdout+stderr *during capture*.
+
+    The old communicate() buffered arbitrary child output in parent RAM and
+    checked stdout only after exit. This POSIX-only, single-threaded selector
+    loop never retains more than output_limit+1 bytes across both streams.
+    An overflow aborts the worker via the caller's existing killpg/finally.
+    """
+    deadline = time.monotonic() + timeout
+    stdout, stderr = bytearray(), bytearray()
+    sent = 0
+    with selectors.DefaultSelector() as watched:
+        for stream, role in ((process.stdout, "stdout"), (process.stderr, "stderr")):
+            os.set_blocking(stream.fileno(), False)
+            watched.register(stream, selectors.EVENT_READ, role)
+        os.set_blocking(process.stdin.fileno(), False)
+        if payload:
+            watched.register(process.stdin, selectors.EVENT_WRITE, "stdin")
+        else:
+            process.stdin.close()
+        while watched.get_map():
+            remaining = deadline - time.monotonic()
+            if remaining <= 0:
+                raise subprocess.TimeoutExpired(process.args, timeout)
+            for key, _ in watched.select(remaining):
+                stream, role = key.fileobj, key.data
+                if role == "stdin":
+                    try:
+                        sent += os.write(stream.fileno(), payload[sent:sent + 65536])
+                    except BrokenPipeError:
+                        sent = len(payload)
+                    if sent == len(payload):
+                        watched.unregister(stream)
+                        stream.close()
+                else:
+                    remaining_bytes = output_limit - len(stdout) - len(stderr)
+                    block = os.read(stream.fileno(), min(65536, remaining_bytes + 1))
+                    if not block:
+                        watched.unregister(stream)
+                        stream.close()
+                    else:
+                        (stdout if role == "stdout" else stderr).extend(block)
+                        total = len(stdout) + len(stderr)
+                        if total > output_limit:
+                            raise _OutputBudgetExceeded(total)
+    process.wait(timeout=max(0, deadline - time.monotonic()))
+    return bytes(stdout), bytes(stderr)
+
+
 def _invoke(worker, payload, timeout, output_limit):
     started = time.perf_counter_ns()
     record = {"argv_sha256": digest(worker.argv), "attempt_fee": worker.attempt_fee,
@@ -97,16 +154,17 @@ def _invoke(worker, payload, timeout, output_limit):
         record["input_sha256"] = hashlib.sha256(request.encode()).hexdigest()
         process = subprocess.Popen(worker.argv, stdin=subprocess.PIPE, stdout=subprocess.PIPE,
                                    stderr=subprocess.PIPE, start_new_session=True)
-        stdout, stderr = process.communicate(request.encode(), timeout=timeout)
+        stdout, stderr = _communicate_bounded(process, request.encode(), timeout,
+                                              output_limit)
         record.update(exit_code=process.returncode,
                       stdout_sha256=hashlib.sha256(stdout).hexdigest(),
                       stderr_sha256=hashlib.sha256(stderr).hexdigest(),
                       stdout_bytes=len(stdout), stderr_bytes=len(stderr))
-        # Limits apply before interpreting output. communicate captures the output;
-        # production adapters must add process/stream resource limits separately.
+        # The combined-stream budget is enforced while reading, not after
+        # unbounded buffering; other host CPU/RSS and escape limits remain open.
         if process.returncode != 0:
             record["status"] = "nonzero_exit"
-        elif record["stdout_bytes"] > output_limit:
+        elif record["stdout_bytes"] + record["stderr_bytes"] > output_limit:
             record["status"] = "oversized_output"
         else:
             result = json.loads(stdout.decode("utf-8"),
@@ -116,6 +174,10 @@ def _invoke(worker, payload, timeout, output_limit):
                 raise ValueError("Expected a JSON object")
             canonical(result)  # Reject nested nonfinite numbers, including 1e999.
             record.update(status="ok", result=result)
+    except _OutputBudgetExceeded as overflow:
+        record.update(status="oversized_output",
+                      capture_bytes_observed_at_abort=overflow.observed_bytes,
+                      capture_sha256_scope="unavailable: stream aborted before EOF")
     except subprocess.TimeoutExpired:
         record["status"] = "timeout"
     except (OSError, ValueError, UnicodeError, RecursionError) as error:
