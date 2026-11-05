@@ -153,3 +153,6 @@ async fn observed_driver_exit_keeps_its_actual_code() -> Result<()> {
     assert_eq!(process.failure_message(), None);
     Ok(())
 }
+
+#[path = "process_termination_deadline_tests.rs"]
+mod deadline_tests;

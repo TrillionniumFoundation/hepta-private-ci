@@ -302,3 +302,6 @@ async fn logical_failure_before_native_exit_preserves_first_failure() -> Result<
     );
     Ok(())
 }
+
+#[path = "process_remote_deadline_tests.rs"]
+mod deadline_tests;

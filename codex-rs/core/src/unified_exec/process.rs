@@ -703,6 +703,9 @@ impl Drop for UnifiedExecProcess {
     }
 }
 
+#[path = "process_termination.rs"]
+mod termination;
+
 #[cfg(test)]
 #[path = "process_observation_tests.rs"]
 mod observation_tests;

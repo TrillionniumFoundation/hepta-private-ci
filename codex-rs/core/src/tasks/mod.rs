@@ -3931,6 +3931,17 @@ impl Session {
             .await
     }
 
+    pub(crate) async fn terminate_background_terminal_until(
+        &self,
+        process_id: i32,
+        observation_deadline: tokio::time::Instant,
+    ) -> bool {
+        self.services
+            .unified_exec_manager
+            .terminate_process_until(process_id, observation_deadline)
+            .await
+    }
+
     /// Completes an abort accepted during the host-owned start transition.
     ///
     /// There is no physical `RunningTask` to detach yet, but the normal abort

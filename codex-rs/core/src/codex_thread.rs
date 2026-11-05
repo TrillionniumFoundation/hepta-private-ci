@@ -930,6 +930,24 @@ impl CodexThread {
         self.session.terminate_background_terminal(process_id).await
     }
 
+    /// Requests termination and observes the original process until the caller's
+    /// absolute deadline. The same deadline covers store access and cleanup.
+    ///
+    /// `true` requires an observed native exit, including an exit without a
+    /// numeric code. `false` does not prove that the process is still running:
+    /// an expired or cancelled observation keeps unresolved ownership intact.
+    /// This method supplies no default duration and does not extend a command's
+    /// own deadline or convert a previous failure into success.
+    pub async fn terminate_background_terminal_until(
+        &self,
+        process_id: i32,
+        observation_deadline: tokio::time::Instant,
+    ) -> bool {
+        self.session
+            .terminate_background_terminal_until(process_id, observation_deadline)
+            .await
+    }
+
     pub(crate) fn subscribe_status(&self) -> watch::Receiver<AgentStatus> {
         self.io.agent_status.clone()
     }
