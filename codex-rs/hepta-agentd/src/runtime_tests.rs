@@ -776,7 +776,12 @@ async fn qualification_prepare_quarantines_expired_registry_attempt_with_h7_evid
     let expired = store
         .inspect_local_lease_head(&attempt.lease_id)
         .await
-        .unwrap_or_else(|error| panic!("{}: {error:?}", expiry_stage("inspect expired fixture head")));
+        .unwrap_or_else(|error| {
+            panic!(
+                "{}: {error:?}",
+                expiry_stage("inspect expired fixture head")
+            )
+        });
     assert_eq!(
         expired.disposition,
         LocalLeaseHeadDisposition::ExpiredActive,

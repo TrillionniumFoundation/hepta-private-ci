@@ -308,7 +308,11 @@ fn desktop_policy_expired_or_revoked_issuer_keeps_both_original_slots() {
         let before = f.state();
         if revoked {
             f.registry
-                .revoke("desktop-issuer-authority", /*expected_revision*/ 1, [8; 32])
+                .revoke(
+                    "desktop-issuer-authority",
+                    /*expected_revision*/ 1,
+                    [8; 32],
+                )
                 .unwrap();
         } else {
             f.clock.0.store(15_000, Ordering::SeqCst);

@@ -93,12 +93,9 @@ impl DeploymentFinalUseIssuer {
         publish: impl FnOnce() -> io::Result<T>,
     ) -> io::Result<T> {
         registration.validate()?;
-        let pinned: &ProtectedLease = self
-            .lease
-            .as_ref()
-            .ok_or_else(|| {
-                io::Error::new(io::ErrorKind::PermissionDenied, "protected issuer required")
-            })?;
+        let pinned: &ProtectedLease = self.lease.as_ref().ok_or_else(|| {
+            io::Error::new(io::ErrorKind::PermissionDenied, "protected issuer required")
+        })?;
         let issuer = pinned
             .verifier
             .read_lease(&pinned.id)

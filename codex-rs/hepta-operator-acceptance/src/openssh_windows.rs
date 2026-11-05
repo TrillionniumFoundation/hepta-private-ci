@@ -351,7 +351,12 @@ pub(crate) fn program_data_directory() -> Result<PathBuf, AcceptanceError> {
     // SAFETY: the output is initialized to null and the API returns an allocated,
     // null-terminated UTF-16 string. It must be freed even on a failing HRESULT.
     let result = unsafe {
-        SHGetKnownFolderPath(&FOLDERID_ProgramData, flags, /*htoken*/ 0, &mut path_ptr)
+        SHGetKnownFolderPath(
+            &FOLDERID_ProgramData,
+            flags,
+            /*htoken*/ 0,
+            &mut path_ptr,
+        )
     };
     if result < 0 || path_ptr.is_null() {
         if !path_ptr.is_null() {

@@ -403,13 +403,14 @@ impl WebsocketConnectionIdentity {
         connection_metadata.node_repl_disabled = None;
         connection_metadata.workspaces.clear();
         connection_metadata.tool_namespaces_info = None;
-        let compatibility_projection_json =
-            serde_json::to_vec(&connection_metadata.websocket_connection_compatibility_projection())
-                .map_err(|error| {
-                    ApiError::Stream(format!(
-                        "failed to bind websocket compatibility identity: {error}"
-                    ))
-                })?;
+        let compatibility_projection_json = serde_json::to_vec(
+            &connection_metadata.websocket_connection_compatibility_projection(),
+        )
+        .map_err(|error| {
+            ApiError::Stream(format!(
+                "failed to bind websocket compatibility identity: {error}"
+            ))
+        })?;
         Ok(Self {
             provider_name: provider.name.clone(),
             base_url: provider.base_url.clone(),
