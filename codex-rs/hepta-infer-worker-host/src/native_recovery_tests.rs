@@ -1,3 +1,4 @@
+use std::path::Path;
 use std::path::PathBuf;
 use std::process::Command;
 use std::process::Stdio;
@@ -261,6 +262,188 @@ async fn real_agentd_reconciles_reopened_worker_without_replaying_provider() -> 
     }
     assert_eq!(response_mock.requests().len(), 1);
     host.shutdown().await;
+    host_completion.complete()?;
+    Ok(())
+}
+
+async fn reopen_in_child(
+    directory: &Path,
+    label: &str,
+    case: RecoveryChildCase,
+) -> Result<NativeRunOutput> {
+    let case_path = directory.join(format!("case-{label}.json"));
+    std::fs::write(&case_path, serde_json::to_vec(&case)?)?;
+    let log_path = directory.join(format!("child-{label}.log"));
+    let log = std::fs::File::create(&log_path)?;
+    // current_exe is the actual libtest binary under Cargo, Nextest and Bazel;
+    // the exact name selects only the environment-dispatched recovery branch.
+    let mut child = Command::new(std::env::current_exe()?)
+        .args([
+            "--exact",
+            "native_app_server::recovery::tests::real_agentd_reconciles_reopened_worker_without_replaying_provider",
+            "--nocapture",
+        ])
+        .env(CHILD_CASE_ENV, &case_path)
+        .stdout(Stdio::from(log.try_clone()?))
+        .stderr(Stdio::from(log))
+        .spawn()?;
+    let deadline = Instant::now() + Duration::from_secs(30);
+    let status = loop {
+        if let Some(status) = child.try_wait()? {
+            break status;
+        }
+        if Instant::now() >= deadline {
+            child.kill()?;
+            child.wait()?;
+            return Err("recovery child exceeded its bounded deadline".into());
+        }
+        tokio::time::sleep(Duration::from_millis(10)).await;
+    };
+    assert!(status.success(), "{}", std::fs::read_to_string(log_path)?);
+    Ok(serde_json::from_slice(&std::fs::read(case.output)?)?)
+}
+
+async fn recover_non_success_terminal(physical_status: NativeRunStatus) -> Result<()> {
+    let server = responses::start_mock_server().await;
+    let response = if physical_status == NativeRunStatus::Failed {
+        responses::sse_response(responses::sse_failed(
+            "recovery-failed",
+            "invalid_prompt",
+            "provider rejected this qualification prompt",
+        ))
+    } else {
+        responses::sse_response(responses::sse_completed("recovery-interrupted"))
+            .set_delay(Duration::from_secs(20))
+    };
+    let response_mock = responses::mount_response_once(&server, response).await;
+    let directory = tempfile::Builder::new().prefix("hnm-").tempdir_in("/tmp")?;
+    let host = CognitiveTestHost::start(
+        directory.path().join("host"),
+        std::env::current_exe()?,
+        AgentId::parse("018f4f72-5f8f-7cc1-8f55-df9fb3aa2c15")?,
+        MODEL,
+        &format!("{}/v1", server.uri()),
+    )
+    .await?;
+    let authority_directory = tempfile::tempdir()?;
+    let (authorizer, issuer) = crate::final_use_authorizer::tests::independent_test_authorizer(
+        authority_directory.path(),
+        1,
+    )
+    .await?;
+    let driver = AppServerModelDriver::new(NativeWorkerConfig {
+        agentd_socket: host.control_socket().to_path_buf(),
+        agent_id: host.agent_id().clone(),
+        generation: 1,
+        model: MODEL.to_string(),
+        timeout: Duration::from_secs(20),
+    })?
+    .with_turn_start_authorizer(Arc::new(authorizer));
+    let mut original = DurableInferenceControl::open(directory.path().join("original"), 8)?;
+    let cancellation = CancellationToken::new();
+    let run = driver.run(
+        &mut original,
+        NativeAdmission {
+            request_id: REQUEST_ID.to_string(),
+            maximum_in_flight: 1,
+        },
+        PROMPT.to_string(),
+        None,
+        &cancellation,
+    );
+    let cancel_after_dispatch = async {
+        if physical_status == NativeRunStatus::Interrupted {
+            let deadline = Instant::now() + Duration::from_secs(10);
+            while response_mock.requests().is_empty() {
+                if Instant::now() >= deadline {
+                    return Err("provider request was not observed before cancellation".into());
+                }
+                tokio::time::sleep(Duration::from_millis(10)).await;
+            }
+            cancellation.cancel();
+        }
+        Ok::<(), Box<dyn std::error::Error + Send + Sync>>(())
+    };
+    let (observed, cancelled) = tokio::join!(run, cancel_after_dispatch);
+    cancelled?;
+    let observed = observed?;
+    assert!(observed.terminal_observed);
+    assert_eq!(observed.status, physical_status);
+    let record = original
+        .native_record(REQUEST_ID)
+        .cloned()
+        .ok_or("original dispatch missing")?;
+    drop(original);
+    issuer.await??;
+
+    let journal = directory.path().join("cancelled-prefix");
+    let mut prefix = DurableInferenceControl::open(&journal, 8)?;
+    prefix.reserve_native(record.request, 1)?;
+    prefix.dispatch_native(
+        REQUEST_ID,
+        record.dispatch.ok_or("dispatch binding missing")?,
+    )?;
+    prefix.native_started(REQUEST_ID, observed.turn_id.clone())?;
+    prefix.cancel_native(REQUEST_ID)?;
+    drop(prefix);
+    let recovered = reopen_in_child(
+        directory.path(),
+        "cancelled-terminal",
+        RecoveryChildCase {
+            socket: host.control_socket().to_path_buf(),
+            agent: host.agent_id().to_string(),
+            journal,
+            output: directory.path().join("recovered.json"),
+        },
+    )
+    .await?;
+    assert!(recovered.terminal_observed);
+    assert_eq!(recovered.status, physical_status);
+    // The durable prefix contains cancellation intent without a stop cause.
+    // Exact thread/read still proves a physical non-success terminal; the
+    // intent alone must not fabricate a Cancelled boundary or promote success.
+    assert_eq!(
+        recovered.boundary_status,
+        match physical_status {
+            NativeRunStatus::Failed => NativeBoundaryStatus::Failed,
+            NativeRunStatus::Interrupted => NativeBoundaryStatus::Interrupted,
+            _ => return Err("non-success recovery fixture received an invalid status".into()),
+        },
+    );
+    assert_eq!(recovered.thread_id, observed.thread_id);
+    assert_eq!(recovered.turn_id, observed.turn_id);
+    assert_eq!(recovered.observed_output_tokens, None);
+    assert!(recovered.codex_terminal_correlation_digest.is_some());
+    assert!(!recovered.succeeded());
+    assert_eq!(response_mock.requests().len(), 1);
+    host.shutdown().await;
+    Ok(())
+}
+
+#[tokio::test(flavor = "multi_thread", worker_threads = 2)]
+async fn real_agentd_reconciles_failed_terminal_without_replaying_provider() -> Result<()> {
+    let Some(host_completion) = super::super::test_process::isolate_host(
+        "native_app_server::recovery::tests::real_agentd_reconciles_failed_terminal_without_replaying_provider",
+    )
+    .await?
+    else {
+        return Ok(());
+    };
+    recover_non_success_terminal(NativeRunStatus::Failed).await?;
+    host_completion.complete()?;
+    Ok(())
+}
+
+#[tokio::test(flavor = "multi_thread", worker_threads = 2)]
+async fn real_agentd_reconciles_interrupted_terminal_without_replaying_provider() -> Result<()> {
+    let Some(host_completion) = super::super::test_process::isolate_host(
+        "native_app_server::recovery::tests::real_agentd_reconciles_interrupted_terminal_without_replaying_provider",
+    )
+    .await?
+    else {
+        return Ok(());
+    };
+    recover_non_success_terminal(NativeRunStatus::Interrupted).await?;
     host_completion.complete()?;
     Ok(())
 }
