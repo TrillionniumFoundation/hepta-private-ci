@@ -17,7 +17,16 @@ import time
 ANSI = re.compile(r"\x1b\[[0-?]*[ -/]*[@-~]")
 
 
+def select_test_target(group: dict) -> tuple[list[str], str]:
+    if "testTarget" not in group:
+        return ["--lib"], group["package"]
+    if group["package"] == "codex-app-server" and group["testTarget"] == "all":
+        return ["--test", "all"], "codex-app-server::all"
+    raise ValueError("unsupported Windows test target or package")
+
+
 def assess(group: dict, returncode: int, log: str) -> dict:
+    _, expected_binary = select_test_target(group)
     text = ANSI.sub("", log)
     starts = re.findall(r"Starting (\d+) tests? across", text)
     selected = int(starts[-1]) if starts else None
@@ -34,7 +43,7 @@ def assess(group: dict, returncode: int, log: str) -> dict:
         selected == group["expectedTestCount"]
         and len(observed) == selected
         and not missing
-        and all(package == group["package"] for _, package, _ in terminal)
+        and all(binary == expected_binary for _, binary, _ in terminal)
     )
     return {
         "id": group["id"],
@@ -75,15 +84,16 @@ def valid_source(expected: str, before: dict, after: dict) -> bool:
 def execute_groups(
     root: Path, output: Path, groups: list[dict], invoke=None
 ) -> list[dict]:
+    targets = [select_test_target(group)[0] for group in groups]
     results = []
-    for group in groups:
+    for group, target in zip(groups, targets, strict=True):
         command = [
             "just",
             "test",
             "--locked",
             "-p",
             group["package"],
-            "--lib",
+            *target,
             "--cargo-profile",
             "dev-small",
             "-E",

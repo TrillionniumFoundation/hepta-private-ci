@@ -24,6 +24,9 @@ use codex_protocol::protocol::ThreadHistoryMode;
 #[path = "thread_items_legacy.rs"]
 mod thread_items_legacy;
 
+#[path = "thread_termination_observed.rs"]
+mod thread_termination_observed;
+
 pub(super) const THREAD_LIST_DEFAULT_LIMIT: usize = 25;
 pub(super) const THREAD_LIST_MAX_LIMIT: usize = 100;
 const CODEX_TUI_CLIENT_NAME: &str = "codex-tui";

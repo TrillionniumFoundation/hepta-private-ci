@@ -72,3 +72,18 @@ Use Python's standard `help(openai_codex)`, `help(Codex)`, or
 
 The package is licensed under the
 [repository Apache License 2.0](https://github.com/openai/codex/blob/main/LICENSE).
+
+## Development tests
+
+The schema evidence tests require the `zstd` command-line tool on `PATH` for
+real compression and decompression. Install that system dependency before
+running the development suite:
+
+```bash
+uv sync --group dev --frozen
+uv run --frozen --no-sync pytest
+```
+
+CI supplies `zstd` in its Python/glibc test image and runs the suite with the
+original caller UID/GID. Missing `zstd` is a setup failure; these evidence tests
+are not skipped or replaced by a mock compressor.

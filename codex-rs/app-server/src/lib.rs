@@ -137,6 +137,7 @@ mod request_serialization;
 mod server_request_error;
 mod shutdown_signals;
 mod skills_watcher;
+mod termination_observation;
 mod thread_state;
 mod thread_status;
 mod transport;

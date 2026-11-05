@@ -8,12 +8,64 @@ use crate::presentation::apply_action;
 use hepta_control_core::chat::ChatWorkspace;
 use makepad_widgets::*;
 
+/// A focused SDK preedit awaiting an explicit full-state commit.
+pub(crate) struct FullStateCommit {
+    widget: WidgetUid,
+    preview: String,
+}
+
 #[derive(Default)]
 pub(crate) struct ComposerTransaction {
     saved: Option<(RoomKey, TextInputState)>,
 }
 
 impl ComposerTransaction {
+    /// The pinned SDK emits Changed only when full-state text differs. Its
+    /// composition-only commit still needs to publish the previously ignored
+    /// preedit, but ordinary selection echoes and focus loss must not do so.
+    pub(crate) fn capture_full_state_commit(
+        cx: &Cx,
+        input: &TextInputRef,
+        event: &Event,
+    ) -> Option<FullStateCommit> {
+        let Event::TextInput(event) = event else {
+            return None;
+        };
+        let state = event.full_state_sync.as_ref()?;
+        if state.composition.is_some()
+            || !input.is_composing()
+            || !input.area().is_valid(cx)
+            || cx.key_focus() != input.area()
+        {
+            return None;
+        }
+        Some(FullStateCommit {
+            widget: input.widget_uid(),
+            preview: input.text(),
+        })
+    }
+
+    pub(crate) fn finish_full_state_commit(
+        &mut self,
+        cx: &mut Cx,
+        input: &TextInputRef,
+        workspace: &mut ChatWorkspace,
+        source: RoomKey,
+        commit: FullStateCommit,
+    ) -> ActionResult {
+        if input.widget_uid() != commit.widget
+            || !input.area().is_valid(cx)
+            || cx.key_focus() != input.area()
+            || input.is_composing()
+            || input.text() != commit.preview
+        {
+            // A text-changing commit/cancel already has the original Changed
+            // action. A detached/replaced/composing editor cannot publish here.
+            return ActionResult::Ignored;
+        }
+        self.edit(cx, input, workspace, source, commit.preview)
+    }
+
     /// Run before the widget consumes input. Actions are delivered later, so a
     /// snapshot is valid only while the editor still equals the sole draft.
     pub(crate) fn checkpoint(

@@ -62,7 +62,7 @@ For the native developer preview, run `npm run desktop` from
 `python3 tools/run-desktop.py --offline` uses the same resource-complete wrapper.
 It stages resources for the child lifetime and invokes the locked standalone
 workspace with Rust1.95.0. Direct unprepared `cargo run` is not the supported
-resource-complete entry. Linux requires the official Wayland/X11/ALSA development
+resource-complete entry. Linux requires the official Wayland, X11, ALSA and PulseAudio development
 libraries. Check the selected host's actual dependencies and retain its build
 and execution output; a dependency check or successful preview startup does not
 qualify an installed native product or authenticated owner composition.

@@ -74,6 +74,33 @@ preview/commit/cancel events. They verify this publication boundary and editor
 state preservation; physical IME and platform focus acceptance remain separate
 window tests.
 
+### Full-state composition completion
+
+The pinned Makepad full-state input path clears composition when the incoming
+`FullTextState` has no composition range. It emits `Changed` only if the text
+itself changes. A completed preedit can therefore keep identical editor text
+and emit no `Changed` action, even though that preview has not yet been committed
+to the workspace.
+
+`RoomScreen` captures this explicit completion before the original SDK consumes
+the event. The candidate retains the focused widget identity and its preview.
+After SDK dispatch, `ComposerTransaction::finish_full_state_commit` requires
+the same valid, focused widget, inactive composition and unchanged preview text.
+It then uses the existing room-fenced `edit` transaction. A text-changing commit
+or cancellation continues through the original `Changed` action; a duplicate
+completion does not create another edit. Rejected drafts restore the original
+SDK text, selection and undo checkpoint, while a stale room cannot restore or
+publish into a different room.
+
+The five cases in
+[`composer_full_state_tests.rs`](src/robrix/composer_full_state_tests.rs) exercise
+actual SDK full-state events, the complete Chinese/emoji draft, duplicate
+completion, changed commit/cancellation, over-limit rollback, stale rooms and
+focus loss. The four existing composer tests remain unchanged. These new Rust
+cases and the original browser acceptance cases still require execution on the
+fixed candidate. Browser assertions, their five-second deadline and zero retries
+remain unchanged; native and physical IME acceptance remain separate gates.
+
 The host's advertised chat availability is bound to the exact rendered room.
 Original Send/Stop widgets emit typed intents after IME dispatch; the receiver
 revalidates the room and capability before queuing host work. The host must still

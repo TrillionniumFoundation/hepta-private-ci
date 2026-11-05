@@ -332,7 +332,7 @@
     {
       "id": "core-explicit-termination-deadline",
       "package": "codex-core",
-      "expectedTestCount": 10,
+      "expectedTestCount": 13,
       "requiredTests": [
         "unified_exec::process::observation_tests::deadline_tests::explicit_deadline_waits_for_original_result_before_removing_entry",
         "unified_exec::process::observation_tests::deadline_tests::expired_deadline_never_requests_termination_or_releases_entry",
@@ -343,9 +343,62 @@
         "unified_exec::process::remote_observation_tests::deadline_tests::explicit_deadline_bounds_unacknowledged_remote_request",
         "unified_exec::process::remote_observation_tests::deadline_tests::cancelled_remote_deadline_observation_never_turns_ack_into_exit",
         "unified_exec::process::remote_observation_tests::deadline_tests::explicit_deadline_preserves_native_exit_without_numeric_code",
-        "unified_exec::process::observation_tests::deadline_tests::post_exit_store_lock_timeout_retains_entry_and_original_result"
+        "unified_exec::process::observation_tests::deadline_tests::post_exit_store_lock_timeout_retains_entry_and_original_result",
+        "unified_exec::process::observation_tests::deadline_tests::active_initial_owner_prevents_cleanup_confirmation",
+        "unified_exec::process::observation_tests::deadline_tests::removed_entry_does_not_prove_original_cleanup_complete",
+        "unified_exec::process::observation_tests::deadline_tests::replaced_entry_is_retained_without_confirming_original_cleanup"
       ],
-      "filter": "test(=unified_exec::process::observation_tests::deadline_tests::explicit_deadline_waits_for_original_result_before_removing_entry) | test(=unified_exec::process::observation_tests::deadline_tests::expired_deadline_never_requests_termination_or_releases_entry) | test(=unified_exec::process::observation_tests::deadline_tests::deadline_waiter_loss_retains_original_entry_without_fake_exit) | test(=unified_exec::process::observation_tests::deadline_tests::explicit_deadline_also_bounds_store_lock_before_effect) | test(=unified_exec::process::observation_tests::deadline_tests::cancelled_deadline_observation_keeps_owner_and_late_native_fact) | test(=unified_exec::process::remote_observation_tests::deadline_tests::explicit_deadline_waits_for_original_remote_exit_after_ack) | test(=unified_exec::process::remote_observation_tests::deadline_tests::explicit_deadline_bounds_unacknowledged_remote_request) | test(=unified_exec::process::remote_observation_tests::deadline_tests::cancelled_remote_deadline_observation_never_turns_ack_into_exit) | test(=unified_exec::process::remote_observation_tests::deadline_tests::explicit_deadline_preserves_native_exit_without_numeric_code) | test(=unified_exec::process::observation_tests::deadline_tests::post_exit_store_lock_timeout_retains_entry_and_original_result)"
+      "filter": "test(=unified_exec::process::observation_tests::deadline_tests::explicit_deadline_waits_for_original_result_before_removing_entry) | test(=unified_exec::process::observation_tests::deadline_tests::expired_deadline_never_requests_termination_or_releases_entry) | test(=unified_exec::process::observation_tests::deadline_tests::deadline_waiter_loss_retains_original_entry_without_fake_exit) | test(=unified_exec::process::observation_tests::deadline_tests::explicit_deadline_also_bounds_store_lock_before_effect) | test(=unified_exec::process::observation_tests::deadline_tests::cancelled_deadline_observation_keeps_owner_and_late_native_fact) | test(=unified_exec::process::remote_observation_tests::deadline_tests::explicit_deadline_waits_for_original_remote_exit_after_ack) | test(=unified_exec::process::remote_observation_tests::deadline_tests::explicit_deadline_bounds_unacknowledged_remote_request) | test(=unified_exec::process::remote_observation_tests::deadline_tests::cancelled_remote_deadline_observation_never_turns_ack_into_exit) | test(=unified_exec::process::remote_observation_tests::deadline_tests::explicit_deadline_preserves_native_exit_without_numeric_code) | test(=unified_exec::process::observation_tests::deadline_tests::post_exit_store_lock_timeout_retains_entry_and_original_result) | test(=unified_exec::process::observation_tests::deadline_tests::active_initial_owner_prevents_cleanup_confirmation) | test(=unified_exec::process::observation_tests::deadline_tests::removed_entry_does_not_prove_original_cleanup_complete) | test(=unified_exec::process::observation_tests::deadline_tests::replaced_entry_is_retained_without_confirming_original_cleanup)"
+    },
+    {
+      "id": "writer-handoff-lock-ownership",
+      "package": "codex-hepta-supervisor",
+      "expectedTestCount": 7,
+      "requiredTests": [
+        "writer_handoff::recovery_tests::writer_handoff_restarts_at_every_phase_and_retries_without_appending",
+        "writer_handoff::recovery_tests::writer_handoff_rejects_acknowledged_prefix_rollback_before_tail_repair",
+        "writer_handoff::recovery_tests::writer_handoff_excludes_competing_recovery_until_owner_exits",
+        "writer_handoff::recovery_tests::writer_handoff_rejects_oversized_sparse_history_and_releases_failed_lock",
+        "writer_handoff::recovery_tests::writer_handoff_minimum_is_bound_to_operation_and_exact_chain",
+        "writer_handoff::recovery_tests::writer_handoff_owner_drop_releases_lock_with_passive_duplicate",
+        "writer_handoff::recovery_tests::writer_handoff_failed_recovery_releases_acquired_lock_with_passive_duplicate"
+      ],
+      "filter": "test(=writer_handoff::recovery_tests::writer_handoff_restarts_at_every_phase_and_retries_without_appending) | test(=writer_handoff::recovery_tests::writer_handoff_rejects_acknowledged_prefix_rollback_before_tail_repair) | test(=writer_handoff::recovery_tests::writer_handoff_excludes_competing_recovery_until_owner_exits) | test(=writer_handoff::recovery_tests::writer_handoff_rejects_oversized_sparse_history_and_releases_failed_lock) | test(=writer_handoff::recovery_tests::writer_handoff_minimum_is_bound_to_operation_and_exact_chain) | test(=writer_handoff::recovery_tests::writer_handoff_owner_drop_releases_lock_with_passive_duplicate) | test(=writer_handoff::recovery_tests::writer_handoff_failed_recovery_releases_acquired_lock_with_passive_duplicate)"
+    },
+    {
+      "id": "app-protocol-termination-observation",
+      "package": "codex-app-server-protocol",
+      "expectedTestCount": 3,
+      "requiredTests": [
+        "protocol::v2::thread_termination_observed::tests::observed_termination_requires_a_positive_u32_budget",
+        "protocol::v2::thread_termination_observed::tests::observed_termination_keeps_experimental_thread_serialization",
+        "protocol::v2::thread_termination_observed::tests::not_confirmed_is_a_distinct_closed_wire_status"
+      ],
+      "filter": "test(=protocol::v2::thread_termination_observed::tests::observed_termination_requires_a_positive_u32_budget) | test(=protocol::v2::thread_termination_observed::tests::observed_termination_keeps_experimental_thread_serialization) | test(=protocol::v2::thread_termination_observed::tests::not_confirmed_is_a_distinct_closed_wire_status)"
+    },
+    {
+      "id": "app-queued-termination-observation",
+      "package": "codex-app-server",
+      "expectedTestCount": 6,
+      "requiredTests": [
+        "termination_observation::tests::expired_queued_request_never_runs_after_fifo_is_released",
+        "termination_observation::tests::closed_gate_drops_unpolled_request_and_completes_its_reply",
+        "termination_observation::tests::dropping_reply_cancels_running_future_without_confirming_it",
+        "termination_observation::tests::same_end_expires_running_work_and_drops_its_guard_once",
+        "termination_observation::tests::elapsed_ingress_budget_cannot_be_restarted_by_dispatch",
+        "termination_observation::tests::recorded_result_survives_delivery_delay_without_late_reclassification"
+      ],
+      "filter": "test(=termination_observation::tests::expired_queued_request_never_runs_after_fifo_is_released) | test(=termination_observation::tests::closed_gate_drops_unpolled_request_and_completes_its_reply) | test(=termination_observation::tests::dropping_reply_cancels_running_future_without_confirming_it) | test(=termination_observation::tests::same_end_expires_running_work_and_drops_its_guard_once) | test(=termination_observation::tests::elapsed_ingress_budget_cannot_be_restarted_by_dispatch) | test(=termination_observation::tests::recorded_result_survives_delivery_delay_without_late_reclassification)"
+    },
+    {
+      "id": "app-original-child-termination-observation",
+      "package": "codex-app-server",
+      "testTarget": "all",
+      "expectedTestCount": 1,
+      "requiredTests": [
+        "suite::v2::thread_termination_observed::observed_termination_jsonrpc_reaches_core_and_original_child"
+      ],
+      "filter": "test(=suite::v2::thread_termination_observed::observed_termination_jsonrpc_reaches_core_and_original_child)"
     }
   ]
 }

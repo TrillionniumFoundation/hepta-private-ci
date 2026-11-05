@@ -63,7 +63,7 @@ impl NativeChild {
         let duplicated = unsafe {
             DuplicateHandle(
                 GetCurrentProcess(),
-                self.child.as_raw_handle().cast(),
+                AsRawHandle::as_raw_handle(&self.child).cast(),
                 GetCurrentProcess(),
                 &mut duplicate,
                 access,
@@ -78,7 +78,7 @@ impl NativeChild {
     }
 
     fn is_running(&self) -> io::Result<bool> {
-        match unsafe { WaitForSingleObject(self.child.as_raw_handle().cast(), 0) } {
+        match unsafe { WaitForSingleObject(AsRawHandle::as_raw_handle(&self.child).cast(), 0) } {
             WAIT_TIMEOUT => Ok(true),
             WAIT_OBJECT_0 => Ok(false),
             WAIT_FAILED => Err(io::Error::last_os_error()),
@@ -101,7 +101,9 @@ impl NativeChild {
                 io::Error::new(io::ErrorKind::TimedOut, "fixture observation expired")
             })?;
         let wait_ms = remaining.as_millis().min(u128::from(u32::MAX)) as u32;
-        match unsafe { WaitForSingleObject(self.child.as_raw_handle().cast(), wait_ms) } {
+        match unsafe {
+            WaitForSingleObject(AsRawHandle::as_raw_handle(&self.child).cast(), wait_ms)
+        } {
             WAIT_OBJECT_0 => {}
             WAIT_TIMEOUT => {
                 return Err(io::Error::new(
