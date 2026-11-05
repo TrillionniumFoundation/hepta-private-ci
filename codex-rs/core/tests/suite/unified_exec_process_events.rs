@@ -938,7 +938,8 @@ timeout = 900
         // must count every earlier queued process/read before seeing this fence.
         let barrier_result = environment.force_info().await;
         let result = exec_server.await?;
-        finish_sent.map_err(|_| anyhow::anyhow!("fake exec-server stopped before normal finish"))?;
+        finish_sent
+            .map_err(|_| anyhow::anyhow!("fake exec-server stopped before normal finish"))?;
         barrier_result.context("the final info barrier should use the original connection")?;
         Ok::<_, anyhow::Error>(result)
     })
