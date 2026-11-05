@@ -1,0 +1,59 @@
+{
+  "schema": "hepta.post-fix-native-gate-independent-review.v1",
+  "decision": "ACCEPT_SOURCE_AND_PLANNED_GATES; NATIVE_EXECUTION_NOT_PERFORMED_BY_REVIEWER",
+  "runner_local_path": "adaptive/ingress-next/native-round2-gate-v2/run_native_round2.py",
+  "runner_sha256": "46552f047784d07b825cec59e0358cfbb02a010f448b7538bb0fadc15ea2f7df",
+  "plan_local_path": "adaptive/ingress-next/native-round2-gate-v2/plan.json",
+  "plan_sha256": "00b4d289a635ae36865dc70732a1a10a03a8fb81575be5b5eba0b21fce7027fe",
+  "scope": "Delta review of first-wave prerequisite receipts, explicit reviewed two-file fix adoption, exact source history checks and preservation of four mutation/restore phases.",
+  "reviewed_adoption_sha256": "1e74cb96735d026305f25cd5991d8e3dcedcd27644b063b8668503c0a6be3442",
+  "actual_alignment_receipt_sha256": "64be8b15396564e49ac3b6f4dd6ecd7b9c623a40c113e45d4f1b742779f6a42e",
+  "historically_tested_first_head": "facba0d32c1cd0e8163a6186d7ba91fa311f2e2e",
+  "current_first_head": "432421d0d9ca9d82c5e3401fe3425af29131505a",
+  "second_execution_head": "eed6541df0add428add8e2d9ab2cbd54a961abeb",
+  "resolved_findings": [
+    {
+      "finding": "The earlier first-wave gate did not validate receipt schema.",
+      "resolution": "Requires hepta.runtime-convergence-native-validation.v1 plus exact phase/state, source, tested commit, raw receipt hash, original command and exit codes."
+    },
+    {
+      "finding": "The earlier green gate trusted its own required_tests list and could accept a desktop-only success.",
+      "resolution": "The reviewed plan pins the exact full four-package command, 813 run and passed counts, all fourteen original required tests and complete observed passes; the named desktop gate pins one original test."
+    },
+    {
+      "finding": "Raw fix-blocked must not be converted into an invented fix-complete result.",
+      "resolution": "A separate hash-pinned root adoption authorizes only the exact two-file lint scope. The raw fix receipt must retain fix-blocked/exit1 with just-fix exit0, exact two unexpected paths, the full-tree path/patch digests, original thirteen controlled before/after hashes and successful original formatting step."
+    },
+    {
+      "finding": "git rev-list --parents hides parents at the actual depth-one checkout boundary.",
+      "resolution": "The runner reads git cat-file -p HEAD and parses ordered parent headers from the immutable commit object, without fetching, unshallowing or writing the first checkout."
+    }
+  ],
+  "source_checks_in_runner": [
+    "Current first and second HEAD/tree and exact ordered parents must match the reviewed adoption.",
+    "Each old-to-current full-tree delta must contain exactly the two adopted test paths; old and current blobs must match the review.",
+    "Both current worktrees must be clean; the first checks use git --no-optional-locks and never mutate it.",
+    "The first original thirteen controlled file identities and both adopted tests are checked. The second fixed fourteen ingress files and both adopted tests are checked.",
+    "Cargo.lock, original just/test profile contracts, pinned native toolchain and exclusive native lock remain enforced."
+  ],
+  "mutation_and_recovery_review": {
+    "execution_and_finally_suffix_byte_identical_to_original_runner": true,
+    "original_runner_sha256": "6e8646e6d0015423ca7e2d52071ec5e8ab219182dac8a5b0598ee7fac27aee7a",
+    "extra_protection": "check_positive now also verifies the two adopted test files.",
+    "restoration": "Restore only a production file whose bytes still equal the saved positive or explicitly permitted mutant; reject unexpected changes, recheck all protected files and lockfile, require a clean worktree and unchanged HEAD/tree. Restore/integrity failures keep the phase blocked."
+  },
+  "bounded_local_checks": [
+    "Parsed the final Python source without invoking main or Cargo.",
+    "Extracted only pure gate functions and accepted the actual named and 813-test facba receipts with their original states.",
+    "Accepted the original raw fix-blocked/exit1 receipt only with the exact separately reviewed adoption.",
+    "Verified prior hardened gate rejection of missing schema, desktop-only green, filtered green command and an unreviewed blocked fix.",
+    "Used a separate two-commit local Git fixture to confirm rev-list omits shallow parents while cat-file returns the true commit parent. No product checkout was used for that check."
+  ],
+  "limits": [
+    "This review does not authorize an unreviewed plan/head or silently advance a branch.",
+    "The earlier facba test results remain historical facts about facba; current F/E execution must be recorded under its actual source identity.",
+    "Original blocked receipts remain immutable.",
+    "Actual native phase preflight, four behavioral negative controls and exact restoration, full three-package green and scoped fix last remain to be executed and independently reviewed.",
+    "Original Windows, ordered merge, real provider/effect, durable restart and release gates remain separate."
+  ]
+}

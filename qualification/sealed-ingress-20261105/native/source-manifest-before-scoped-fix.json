@@ -1,0 +1,126 @@
+{
+  "schema": "hepta.sealed-ingress-native-source.v1",
+  "implementation_commit": "eed6541df0add428add8e2d9ab2cbd54a961abeb",
+  "implementation_tree": "b8ce8b96a759f522cb7db60027d4844f1b3ad974",
+  "base_commit": "432421d0d9ca9d82c5e3401fe3425af29131505a",
+  "merge_parents": [
+    "e0b522cd437af1362f8be23f601886b46ec1b063",
+    "432421d0d9ca9d82c5e3401fe3425af29131505a"
+  ],
+  "native_formatted_source_commit": "2516a2d5fe3f7a3778dba3cce4b146c78a84eb80",
+  "current_trust_regression_commit": "06ad4a9b48aa28ef6edfc537243f069e2d48eb40",
+  "verified_ingress_source_files": [
+    {
+      "label": "formatted-file",
+      "bytes": 7638,
+      "sha256": "5580a99f5742152d3b3ce2d01d8cc465fd8ba552786f662e7be7fe6921ab920e",
+      "path": "codex-rs/hepta-agentd/src/intelligence_evaluation.rs",
+      "git_blob": "6beca1272f990e00b388f99ef7e29cb626bc464c"
+    },
+    {
+      "label": "formatted-file",
+      "bytes": 16723,
+      "sha256": "14133d3ee9d8141048472a049e77284d722905c17dcd1f8d9a5f159d54a3e498",
+      "path": "codex-rs/hepta-agentd/src/intelligence_evaluation_tests.rs",
+      "git_blob": "4cca3352946815b03ba2049855c7af12a0418853"
+    },
+    {
+      "label": "formatted-file",
+      "bytes": 28456,
+      "sha256": "8cbef22fe134110fb343d37e7081bb2c03aac8257e33909146cc5a1ffc3322a0",
+      "path": "codex-rs/hepta-agentd/src/intelligence_product.rs",
+      "git_blob": "84900183ca03f870f61bba1c1ca3b1ccfd1e56ae"
+    },
+    {
+      "label": "formatted-file",
+      "bytes": 8750,
+      "sha256": "47473d2d81c5b7f01c2d92eb97b33bafe50acc961cd1904725105c2ff74b4f37",
+      "path": "codex-rs/hepta-agentd/src/intelligence_qualification_test_support.rs",
+      "git_blob": "74c8a6c03b8d90b39af05ccb5c8e9cf560a433da"
+    },
+    {
+      "label": "formatted-file",
+      "bytes": 30915,
+      "sha256": "48083c28fe1c863813abbb5068dc579059004baf412736ae4259814209349796",
+      "path": "codex-rs/hepta-agentd/src/lib.rs",
+      "git_blob": "5113e9a9d49b788b761febae8e27ea8226cc48dd"
+    },
+    {
+      "label": "formatted-file",
+      "bytes": 14594,
+      "sha256": "6224028235c583330c40a0bc2daf9e79d195c2c9700228def07eadae3c79a45d",
+      "path": "codex-rs/hepta-intelligence-eval/src/lib.rs",
+      "git_blob": "3fb8fe09947c342710f9cc982bd14f2015abb58c"
+    },
+    {
+      "label": "formatted-file",
+      "bytes": 3413,
+      "sha256": "7c6205f2e6af7987fb3123acc6922a3c8e57f9f442be57bc2cbb97ef3587c93d",
+      "path": "codex-rs/hepta-intelligence-eval/src/product_qualification_use.rs",
+      "git_blob": "f904dc721859f2d44f67b955c532298d03360e87"
+    },
+    {
+      "label": "formatted-file",
+      "bytes": 30886,
+      "sha256": "a61fd6f160b8eed033dce6d8c81871543b0e43d3bb2d61cafa6f71c6678cfbb3",
+      "path": "codex-rs/hepta-intelligence-eval/src/product_runner_tests.rs",
+      "git_blob": "fc084ad5d2f02709f663f95240737860a05a7c9f"
+    },
+    {
+      "label": "formatted-file",
+      "bytes": 18491,
+      "sha256": "a5bce084bc818dd99b699145cd950ba3f5d8e1d4864c09ba69d8c68309735c03",
+      "path": "codex-rs/hepta-intelligence-eval/src/self_evolution_ingress_tests.rs",
+      "git_blob": "549e33fbbc9160c55e5bfbcd1369a00076ae79dc"
+    },
+    {
+      "label": "formatted-file",
+      "bytes": 8726,
+      "sha256": "a25ad8cf5b1970f64e1da2169df6d0f14f2a64e5c4dd0ece3fbe0f56f6bfd98d",
+      "path": "codex-rs/hepta-intelligence-eval/src/self_evolution_qualification_test_support.rs",
+      "git_blob": "f34107486cd303ce1875dc790aeed1439fc0f8c1"
+    },
+    {
+      "label": "formatted-file",
+      "bytes": 28577,
+      "sha256": "2e63e67176879d232cec2de9f806917613324ae5356140fa8cce777254440910",
+      "path": "codex-rs/hepta-intelligence-eval/src/self_evolution_selection.rs",
+      "git_blob": "7d3da83abd8c200698a7d98adb46cacef79999d6"
+    },
+    {
+      "label": "formatted-file",
+      "bytes": 30817,
+      "sha256": "3087c92d11eb53676564e932379a1167d040777058571863a5f18822406849e2",
+      "path": "codex-rs/hepta-intelligence/src/plasticity_product.rs",
+      "git_blob": "7004ae2981587a63f9941376196af9435dbbdc6d"
+    },
+    {
+      "label": "formatted-file",
+      "bytes": 27088,
+      "sha256": "f235478313b93338931118c780afdae7c6875f46892b106dff2507a1d70953e3",
+      "path": "codex-rs/hepta-intelligence/src/plasticity_product_tests.rs",
+      "git_blob": "3eb615951f7f9a542455f1814eb58ca73859be90"
+    },
+    {
+      "label": "formatted-file",
+      "bytes": 8750,
+      "sha256": "47473d2d81c5b7f01c2d92eb97b33bafe50acc961cd1904725105c2ff74b4f37",
+      "path": "codex-rs/hepta-intelligence/src/plasticity_qualification_test_support.rs",
+      "git_blob": "74c8a6c03b8d90b39af05ccb5c8e9cf560a433da"
+    }
+  ],
+  "production_contract_blob": "e13e2d175d17594df957113dccc22c012d847b7e",
+  "format_receipt": "native/ai395-next-receipt.json",
+  "format_receipt_sha256": "b9f621339c82fd6a16f00fc50063b4a4d19301e27c7f0de382fe480ef8dbfdb7",
+  "head_alignment_receipt": "native/ai395-next-head-alignment-receipt.json",
+  "head_alignment_note": "This historical receipt aligns the 14 formatted ingress blobs to 06ad. The later e0b and eed merges add only the reviewed three desktop production fixes and two mechanical Clippy test changes. Actual later exact-source alignment has its own receipt.",
+  "source_blob_readback": "PASS: all 14 ingress blobs unchanged by e0b and eed merges",
+  "source_is_not_product_acceptance": true,
+  "post_fix_source_adoption": "../runtime-convergence-20261105/post-fix-source-adoption.json",
+  "current_exact_source_alignment_receipt": "native/ai395-reviewed-postfix-alignment-receipt.json",
+  "current_exact_source_alignment_sha256": "64be8b15396564e49ac3b6f4dd6ecd7b9c623a40c113e45d4f1b742779f6a42e",
+  "current_all_tracked_rust_blobs_verified": 5314,
+  "current_all_tracked_rust_bytes_verified": 80662751,
+  "current_source_clean": true,
+  "full_r3_format_check": "PASS"
+}

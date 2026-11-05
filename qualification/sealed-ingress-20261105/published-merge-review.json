@@ -1,0 +1,328 @@
+{
+  "schema": "hepta.sealed-ingress-published-merge-review.v1",
+  "recorded_at_utc": "2026-11-05 08:08:07 UTC",
+  "review_level": "independent source and Git object review; no native success inferred",
+  "first_pr": {
+    "number": 4848,
+    "head": "ebdf792c076c1d516ae9f96eec079921ccd1588f",
+    "tree": "fea6390866212ec263a867de7a45312e87e9c1a3",
+    "comparison_base": "a20a8191ec37375876a99b7c18bae053f9bc185d",
+    "changed_paths": 20,
+    "rust_paths": 4,
+    "changed_evidence_paths": 16,
+    "evidence_directory_entries": 17,
+    "evidence_count_note": "The existing source-manifest.json is unchanged; 17 directory entries means 16 changed evidence paths.",
+    "source_change_classification": "Three actual formatter-only test changes plus the exact existing Windows PTY error-conversion donor; no new workflow or dependency/feature configuration changes.",
+    "pty_donor_commit": "345dd470a64783b54f45c522ac8675435d204738",
+    "paths": [
+      {
+        "path": "codex-rs/hepta-agentd/src/lane_b_runtime_tests.rs",
+        "blob": "5c2601957ba753230b149b9291bd14b463a48957"
+      },
+      {
+        "path": "codex-rs/hepta-intelligence-eval/src/product_runner_tests.rs",
+        "blob": "bbead9a4627526ceb1a034732ecfb54051856352"
+      },
+      {
+        "path": "codex-rs/hepta-intelligence/src/evaluated_shadow_tests.rs",
+        "blob": "fa8259d9cfd1c1e244ba7522ea3379417cbb06ee"
+      },
+      {
+        "path": "codex-rs/utils/pty/src/win/mod.rs",
+        "blob": "d244e22befecda19782f1fc2a696af1a534069b0"
+      },
+      {
+        "path": "qualification/runtime-convergence-20261105/README.md",
+        "blob": "38b5abbce43acffc361cfa3a9220396fd7e486fe"
+      },
+      {
+        "path": "qualification/runtime-convergence-20261105/formatted-source-manifest.json",
+        "blob": "ad9f122a867fcfe8a34d8f02215107cc14b19c9b"
+      },
+      {
+        "path": "qualification/runtime-convergence-20261105/native-clang-environment-repair.json",
+        "blob": "07371815f6678d7ea24e606ceb854f62660b4065"
+      },
+      {
+        "path": "qualification/runtime-convergence-20261105/native-format.json",
+        "blob": "4b77e789133f0844b680e468845e4980ebabaea8"
+      },
+      {
+        "path": "qualification/runtime-convergence-20261105/native-format.patch",
+        "blob": "32ee0d7c15ac8203c52f420ee851636ce4c37672"
+      },
+      {
+        "path": "qualification/runtime-convergence-20261105/native-openssl-environment-repair.json",
+        "blob": "78b4c1b66aa3550223548170defc9367885d48bb"
+      },
+      {
+        "path": "qualification/runtime-convergence-20261105/native-preparation.json",
+        "blob": "f2b2f9892b1bc5d1b643559e1b5b3f8637c7a2b6"
+      },
+      {
+        "path": "qualification/runtime-convergence-20261105/original-ci-observation.json",
+        "blob": "e0e70d392762d7a62dd18ad7d0c8f925c248a57a"
+      },
+      {
+        "path": "qualification/runtime-convergence-20261105/product-recovery-review.md",
+        "blob": "9a5f916264298751d858e2d9339842e2df4e0275"
+      },
+      {
+        "path": "qualification/runtime-convergence-20261105/product-recovery-source-manifest.json",
+        "blob": "0e00eaaae23cd38dc18777bf5d111234f9933492"
+      },
+      {
+        "path": "qualification/runtime-convergence-20261105/validation.json",
+        "blob": "0b37f922a1b727a9c05cb175525599e5103cc6b1"
+      },
+      {
+        "path": "qualification/runtime-convergence-20261105/windows-compile-diagnosis.md",
+        "blob": "c88193e46937aee32fbd2f167549c0552403c9a4"
+      },
+      {
+        "path": "qualification/runtime-convergence-20261105/windows-job-127097094121.log",
+        "blob": "9e3bb40415af784fb3f733855f50f207f88d9d28"
+      },
+      {
+        "path": "qualification/runtime-convergence-20261105/windows-original-qualification.json",
+        "blob": "fbac516c052c5cff813a8f2a482f7236e30af05a"
+      },
+      {
+        "path": "qualification/runtime-convergence-20261105/windows-pty-clone-error.patch",
+        "blob": "fb9825ddf0f9a9ed9dbb245056d5fda4160641d3"
+      },
+      {
+        "path": "qualification/runtime-convergence-20261105/windows-pty-source-manifest.json",
+        "blob": "f45f6060f98b7d71f8c8e8e3d53358b068a7297f"
+      }
+    ]
+  },
+  "second_pr": {
+    "number": 4856,
+    "head": "9f010aae1ae7f7447adc0660748878f6cce9efd3",
+    "tree": "1183de36c51ca9ec561b0775a17d783414d60c0f",
+    "ordered_parents": [
+      "97c8e93584f55e2ac2955a9a22cc90d779c6bc69",
+      "ebdf792c076c1d516ae9f96eec079921ccd1588f"
+    ],
+    "comparison_base": "ebdf792c076c1d516ae9f96eec079921ccd1588f",
+    "merge_base": "ebdf792c076c1d516ae9f96eec079921ccd1588f",
+    "ahead_by": 6,
+    "behind_by": 0,
+    "changed_paths": 39,
+    "rust_paths": 14,
+    "contract_paths": 1,
+    "evidence_paths": 24,
+    "paths": [
+      {
+        "path": "codex-rs/hepta-agentd/src/intelligence_evaluation.rs",
+        "blob": "6beca1272f990e00b388f99ef7e29cb626bc464c"
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/intelligence_evaluation_tests.rs",
+        "blob": "7f617c17c5c9de423198b1d833cf8883fb041ac8"
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/intelligence_product.rs",
+        "blob": "84900183ca03f870f61bba1c1ca3b1ccfd1e56ae"
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/intelligence_qualification_test_support.rs",
+        "blob": "b28ac84dc1035ea14e498d6c404a0bd76dd67e61"
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/lib.rs",
+        "blob": "5113e9a9d49b788b761febae8e27ea8226cc48dd"
+      },
+      {
+        "path": "codex-rs/hepta-intelligence-eval/PRODUCTION_CONTRACT.md",
+        "blob": "e13e2d175d17594df957113dccc22c012d847b7e"
+      },
+      {
+        "path": "codex-rs/hepta-intelligence-eval/src/lib.rs",
+        "blob": "3fb8fe09947c342710f9cc982bd14f2015abb58c"
+      },
+      {
+        "path": "codex-rs/hepta-intelligence-eval/src/product_qualification_use.rs",
+        "blob": "17587b62466ab5073be7c1da6d52daf8c98e059a"
+      },
+      {
+        "path": "codex-rs/hepta-intelligence-eval/src/product_runner_tests.rs",
+        "blob": "e7814241655d8125f5d0f9761fd61272cd5bf0ca"
+      },
+      {
+        "path": "codex-rs/hepta-intelligence-eval/src/self_evolution_ingress_tests.rs",
+        "blob": "7d44929ab27a46025fcee8548f469720367f46af"
+      },
+      {
+        "path": "codex-rs/hepta-intelligence-eval/src/self_evolution_qualification_test_support.rs",
+        "blob": "f842cfed87666b560366a261d16747119192fca7"
+      },
+      {
+        "path": "codex-rs/hepta-intelligence-eval/src/self_evolution_selection.rs",
+        "blob": "7d3da83abd8c200698a7d98adb46cacef79999d6"
+      },
+      {
+        "path": "codex-rs/hepta-intelligence/src/plasticity_product.rs",
+        "blob": "7004ae2981587a63f9941376196af9435dbbdc6d"
+      },
+      {
+        "path": "codex-rs/hepta-intelligence/src/plasticity_product_tests.rs",
+        "blob": "b61982c966bd977d75d965205646d482d92c05fc"
+      },
+      {
+        "path": "codex-rs/hepta-intelligence/src/plasticity_qualification_test_support.rs",
+        "blob": "b28ac84dc1035ea14e498d6c404a0bd76dd67e61"
+      },
+      {
+        "path": "qualification/sealed-ingress-20261105/README.md",
+        "blob": "0aec8c4f183b5542db3eba6f9e6032d810f1c5c9"
+      },
+      {
+        "path": "qualification/sealed-ingress-20261105/caller-inventory-base.txt",
+        "blob": "ddba41a744f93f0d212ea637792f8afaa9f3b7fc"
+      },
+      {
+        "path": "qualification/sealed-ingress-20261105/caller-inventory-final-derived.txt",
+        "blob": "caeae5fecf2e09ba1c8ad36fa0651e8f2f05d2ae"
+      },
+      {
+        "path": "qualification/sealed-ingress-20261105/caller-inventory-review.json",
+        "blob": "2652a5c2da957163d29cd953d445b0033650b91e"
+      },
+      {
+        "path": "qualification/sealed-ingress-20261105/combined-manifest.json",
+        "blob": "9744f2bb5ff0952a1120e1f28fb2735a1814801f"
+      },
+      {
+        "path": "qualification/sealed-ingress-20261105/contract/manifest.json",
+        "blob": "a4f3046422b73cbbaf1d7e8d3461fc197b7d0bed"
+      },
+      {
+        "path": "qualification/sealed-ingress-20261105/contract/production-contract-sealed-ingress.patch",
+        "blob": "994efd5af026e8ec431ec92637fdb7f012f39472"
+      },
+      {
+        "path": "qualification/sealed-ingress-20261105/negative-controls/manifest.json",
+        "blob": "8fe2c7681177d5a29e1e886f7a1f78057b89853a"
+      },
+      {
+        "path": "qualification/sealed-ingress-20261105/negative-controls/negative-agentd-publication-signature.patch",
+        "blob": "9ecc71bb6ea6f2f1752e7c2cba5007034dc52975"
+      },
+      {
+        "path": "qualification/sealed-ingress-20261105/negative-controls/negative-complete-decision-binding.patch",
+        "blob": "0e912808c3dc856962d9156ebf613a64eb2205d7"
+      },
+      {
+        "path": "qualification/sealed-ingress-20261105/negative-controls/negative-plasticity-publication-commitment.patch",
+        "blob": "2dc25aa3a97b6bb3420f226f7a2779c7542371a3"
+      },
+      {
+        "path": "qualification/sealed-ingress-20261105/negative-controls/negative-selector-publication-signature.patch",
+        "blob": "3ffbced13340920246fae51ef66040af895b0d05"
+      },
+      {
+        "path": "qualification/sealed-ingress-20261105/sealed-ingress-combined.patch",
+        "blob": "5239e9e0c6f1587a6783ea4b26d5509c430bc720"
+      },
+      {
+        "path": "qualification/sealed-ingress-20261105/stacked-candidate-manifest.json",
+        "blob": "19b4062ff287c64eb365afda2a0d7b690bcbeea5"
+      },
+      {
+        "path": "qualification/sealed-ingress-20261105/stacked-candidate.patch",
+        "blob": "b810e42ab49a104299ef52e42ef8d1a9e9aeea0c"
+      },
+      {
+        "path": "qualification/sealed-ingress-20261105/stage-1-manifest.json",
+        "blob": "7aef78c79f5d6b0c4fd0a8eaccd60adff976ea4f"
+      },
+      {
+        "path": "qualification/sealed-ingress-20261105/stage-1-sealed-revalidation.patch",
+        "blob": "b595f75d5efde48464743bdad3accb9a14e70f30"
+      },
+      {
+        "path": "qualification/sealed-ingress-20261105/stage-2-agentd-sealed-ingress.patch",
+        "blob": "b39ae9e5d6a3d395147a343c62e81633822420a5"
+      },
+      {
+        "path": "qualification/sealed-ingress-20261105/stage-2-manifest.json",
+        "blob": "1e05101cf6fc9235ebe6224337f909e95e4fedf1"
+      },
+      {
+        "path": "qualification/sealed-ingress-20261105/stage-3-manifest.json",
+        "blob": "de7064ccfb9ffdd37233ab2ba59d33e9d23258aa"
+      },
+      {
+        "path": "qualification/sealed-ingress-20261105/stage-3-plasticity-sealed-ingress.patch",
+        "blob": "262a799042a7ade0b7a76c4c769d7c35d882b552"
+      },
+      {
+        "path": "qualification/sealed-ingress-20261105/stage-4-manifest.json",
+        "blob": "106a8ec2bcf8f0760916c2449519f062ee54caba"
+      },
+      {
+        "path": "qualification/sealed-ingress-20261105/stage-4-self-evolution-sealed-ingress.patch",
+        "blob": "1ea32e57037a3e45f2375a85f0f3fbc52bbb52e7"
+      },
+      {
+        "path": "qualification/sealed-ingress-20261105/validation.json",
+        "blob": "fcd2a157e977efbd7ca5e28ecae1bca8e3b30d0f"
+      }
+    ]
+  },
+  "regression_retention": {
+    "original_blob": "72babd39b7e0ad3491690d7b599cac03677c0b0b",
+    "merged_blob": "e7814241655d8125f5d0f9761fd61272cd5bf0ca",
+    "only_difference": "One assignment closure reformatted with a block; every stage1 regression byte otherwise preserved",
+    "merged_sha256": "651d413727d454614551bc174aaa3db654b51c3958849e7be8f6a56047e0a89d"
+  },
+  "source_checks": {
+    "published_heads_trees_and_parents": "PASS",
+    "first_exact_source_scope": "PASS",
+    "second_39_path_scope": "PASS",
+    "second_14_rust_and_contract_blobs": "PASS; 13 Rust blobs identical to frozen four-stage source, one exact formatter-only composition verified",
+    "stage1_regressions_preserved": "PASS; no regression lost in product_runner_tests merge",
+    "original_ci_and_dependency_configuration": "UNCHANGED",
+    "original_no_update_source": "UNCHANGED FROM REVIEWED FOUR-STAGE SOURCE"
+  },
+  "windows_original_workflow_observation": [
+    {
+      "run_id": 41990728343,
+      "jobs": [
+        {
+          "job_id": 127122066497,
+          "head": "ebdf792c076c1d516ae9f96eec079921ccd1588f",
+          "status": "queued",
+          "conclusion": null,
+          "reported_started_at": "2026-11-05T07:56:17Z",
+          "steps": []
+        }
+      ],
+      "interpretation": "Queued with no steps; actual compiler or test execution has not started. The reported started_at field is not treated as execution evidence."
+    },
+    {
+      "run_id": 41991102410,
+      "jobs": [
+        {
+          "job_id": 127123294594,
+          "head": "9f010aae1ae7f7447adc0660748878f6cce9efd3",
+          "status": "queued",
+          "conclusion": null,
+          "reported_started_at": "2026-11-05T07:59:34Z",
+          "steps": []
+        }
+      ],
+      "interpretation": "Queued with no steps; actual compiler or test execution has not started. The reported started_at field is not treated as execution evidence."
+    }
+  ],
+  "required_next_evidence": [
+    "Actual Windows job execution on each exact final head, including the previously blocked Agentd build and original directory-acquisition attacks.",
+    "Independent native formatting, Clippy and changed-package tests for the sealed-ingress candidate; the first-wave format result does not qualify all new second-wave source.",
+    "Behavioral negative controls must execute and fail at the intended assertion, not stop during dependency compilation.",
+    "Any later source correction must have its own exact manifest and result identities."
+  ],
+  "release_status": "HOLD; no P0 attack, native qualification, real effect/recovery, efficacy or release claim",
+  "review_constraints": "AI395 cold compilation remains owned by lifecycle; this review did not alter its checkout or any workflow, assertions, features, signatures, timeout or remote source."
+}

@@ -1,0 +1,319 @@
+{
+  "schema": "hepta.sealed-ingress-final-evidence-consistency-review.v1",
+  "recorded_at_utc": "2026-11-05T10:29:44.584976+00:00",
+  "reviewer": "adaptive independent final archive review",
+  "verdict": "ACCEPT",
+  "scope": "Exact frozen second-wave evidence package: complete payload/index/file identities, relative references, historical provenance, current versus tested source, original native result/log attribution and preserved release limits. This is archive acceptance, not source_qualified_exact_head or product release authorization.",
+  "accepted_payload": {
+    "local_path": "integration/final-second-evidence-payload.json",
+    "sha256": "a9efffacf0409231767b81ee7a86633e9a0037d508d4db9ed7720ab2c71e11e8",
+    "bytes": 3687470,
+    "characters": 3686928,
+    "unique_files": 172,
+    "repository_prefix": "qualification/sealed-ingress-20261105/",
+    "every_content_sha256_size_and_git_blob_matches": true,
+    "complete_local_archive_inventory_matches": true
+  },
+  "artifact_indexes_and_links": {
+    "main_index_entries": 171,
+    "all_main_index_hashes_and_sizes_match": true,
+    "only_unindexed_file": "native-artifact-manifest.json",
+    "relative_markdown_links": 61,
+    "all_relative_links_resolve": true,
+    "cross_archive_resolution": "The exact first 69-file payload supplies qualification/runtime-convergence-20261105 targets; no source/time identity is changed.",
+    "product_subindex_entries": 48,
+    "all_product_subindex_hashes_and_sizes_match": true,
+    "independent_review_artifact_references": 43,
+    "all_review_artifact_references_match": true
+  },
+  "bounded_delta_review": {
+    "preflight_files": 122,
+    "unchanged": 116,
+    "added": 50,
+    "changed": [
+      "README.md",
+      "native-artifact-manifest.json",
+      "native-source-manifest.json",
+      "native-validation.md",
+      "negative-controls/manifest.json",
+      "validation.json"
+    ],
+    "removed": [],
+    "both_frozen_native_round2_directories_byte_unchanged": true,
+    "original_receipts_and_preparation_NOT_RUN_records_retained": true,
+    "convergence_target_and_its_independent_review_unchanged": true,
+    "five_file_history_provenance_addition_matches_approved_manifest": true
+  },
+  "tested_source": {
+    "head": "eed6541df0add428add8e2d9ab2cbd54a961abeb",
+    "tree": "b8ce8b96a759f522cb7db60027d4844f1b3ad974"
+  },
+  "current_source": {
+    "head": "0766fc4d5feabea9569d48e7eca4e0a3431bd0f5",
+    "tree": "1cfb78c47f636a60dcfa9968ffd7e44a054d58cc",
+    "sole_parent": "eed6541df0add428add8e2d9ab2cbd54a961abeb"
+  },
+  "source_delta": {
+    "path": "codex-rs/hepta-intelligence/src/plasticity_product_tests.rs",
+    "before_blob": "3eb615951f7f9a542455f1814eb58ca73859be90",
+    "after_blob": "2b85adacb939c778b13f42177467b5959d16b50a",
+    "exact_change": "One final-use update_id.clone() -> update_id",
+    "other_thirteen_ingress_files_unchanged": true,
+    "source_bytes_delta": -8,
+    "after_bytes_equal_exact_single_replacement": true
+  },
+  "source_attribution": {
+    "full_native_805_result_applies_only_to": "eed6541df0add428add8e2d9ab2cbd54a961abeb",
+    "current_S_is_reviewed_mechanical_test_file_adoption": true,
+    "no_test_rerun_on_S": true,
+    "no_result_transfer_to_later_documentation_head": true,
+    "first_wave_813_passes_remain_at_facba": true,
+    "first_native_source_F_retained_clean": true
+  },
+  "current_inventory_and_alignment": {
+    "rust_files": 5314,
+    "full_inventory_sha256": "71b5fd4cf0616d79a10503798ef86ce5391c6c7aa8d3dfff76f1b522af4460b2",
+    "full_inventory_bytes": 1255601,
+    "all_fourteen_current_ingress_blob_and_sha256_entries_match": true,
+    "alignment_receipt_sha256": "72f596be257474eba63334968754a602d814ad0d18664941e003979f576812f5",
+    "all_alignment_steps_exit_zero": true,
+    "full_R3_fmt_check_on_S_exit_zero": true,
+    "clean_current_S_and_sole_E_parent": true,
+    "alignment_changes_no_working_source_byte": true,
+    "Cargo_lock_preserved": true,
+    "original_pinned_receipts": 11,
+    "all_eleven_have_exact_archived_originals": true,
+    "tests_rerun_after_fix": false,
+    "fix_rerun": false,
+    "verification_scope": "This audit verifies the actual recorded full-tree inventory and its transfer/hash chain plus all 14 controlled entries; it does not perform a new remote rehash."
+  },
+  "actual_native_results": {
+    "positive_source": "E before scoped fix; each negative variant is E plus its single frozen production mutation",
+    "controls": [
+      {
+        "control": "Q1",
+        "attempt": 1,
+        "receipt_sha256": "a7fc0b3cf48abeb3d66bd124c553d606c7555f9a63f4c9a679c9a269ed4d88b6",
+        "patch_sha256": "73dd589ff130e162de3209c67246bfbbbccec4e09d1b08e85e5cea11ddddb7bd",
+        "source_head": "eed6541df0add428add8e2d9ab2cbd54a961abeb",
+        "test_exit": 100,
+        "wrapper_exit": 0,
+        "run_count": 4,
+        "failed": 4,
+        "skipped": 867,
+        "first_panic_locations": [
+          "product_runner_tests.rs:581:5",
+          "intelligence_evaluation_tests.rs:428:5",
+          "plasticity_product_tests.rs:668:5",
+          "self_evolution_ingress_tests.rs:405:5"
+        ],
+        "attempts_per_case_inherited_retry": 2,
+        "all_fourteen_restored": true,
+        "original_command_exactly_matches_frozen_plan": true
+      },
+      {
+        "control": "Q2",
+        "attempt": 1,
+        "receipt_sha256": "6b3d09bac8a4e5cac69fd423a14fc2a19b7e0ba65139acd82c09c2ddf496c5e4",
+        "patch_sha256": "1094002c9a97ae4485e69487e5a9406c5e0e1ac91e53cabb19b57491d9c9fe90",
+        "source_head": "eed6541df0add428add8e2d9ab2cbd54a961abeb",
+        "test_exit": 100,
+        "wrapper_exit": 0,
+        "run_count": 1,
+        "failed": 1,
+        "skipped": 663,
+        "first_panic_locations": [
+          "intelligence_evaluation_tests.rs:460:5"
+        ],
+        "attempts_per_case_inherited_retry": 2,
+        "all_fourteen_restored": true,
+        "original_command_exactly_matches_frozen_plan": true
+      },
+      {
+        "control": "Q3",
+        "attempt": 2,
+        "receipt_sha256": "4cffc7cac9855131854689730fe1d9ead021b6ea45eaf2c12aebd77101b2a34e",
+        "patch_sha256": "4d21e5f1eabe993427850ea83dab628ed8ecdf07454f88ef8d72cfd19cd988b5",
+        "source_head": "eed6541df0add428add8e2d9ab2cbd54a961abeb",
+        "test_exit": 100,
+        "wrapper_exit": 0,
+        "run_count": 1,
+        "failed": 1,
+        "skipped": 84,
+        "first_panic_locations": [
+          "plasticity_product_tests.rs:713:5"
+        ],
+        "attempts_per_case_inherited_retry": 2,
+        "all_fourteen_restored": true,
+        "original_command_exactly_matches_frozen_plan": true
+      },
+      {
+        "control": "Q4",
+        "attempt": 1,
+        "receipt_sha256": "41c062e316dfd9f6f18bc0e129b8aebfa62d6211b715642e9284d0e6c6e57419",
+        "patch_sha256": "e74af6899e6941ee81ba944664153fb67157398220b0cc395847feb5c5ef95a0",
+        "source_head": "eed6541df0add428add8e2d9ab2cbd54a961abeb",
+        "test_exit": 100,
+        "wrapper_exit": 0,
+        "run_count": 1,
+        "failed": 1,
+        "skipped": 121,
+        "first_panic_locations": [
+          "self_evolution_ingress_tests.rs:474:5"
+        ],
+        "attempts_per_case_inherited_retry": 2,
+        "all_fourteen_restored": true,
+        "original_command_exactly_matches_frozen_plan": true
+      }
+    ],
+    "complete_positive": {
+      "command": [
+        "just",
+        "test",
+        "--locked",
+        "-p",
+        "codex-hepta-intelligence-eval",
+        "-p",
+        "codex-hepta-agentd",
+        "-p",
+        "codex-hepta-intelligence"
+      ],
+      "actual_command_exit": 0,
+      "tests_run": 805,
+      "actual_PASS_lines": 805,
+      "failed": 0,
+      "slow": 1,
+      "default_profile_skipped": 66,
+      "critical_named_regressions": 7,
+      "all_seven_actual_PASS_lines_once": true,
+      "retry_or_FAIL_lines": 0,
+      "stderr_sha256": "e2d5640765ed22e4b7b4def6ac2129a4d537e1f3373a098a162acdce3e1a195a"
+    },
+    "scoped_fix": {
+      "source_head_at_execution": "eed6541df0add428add8e2d9ab2cbd54a961abeb",
+      "command": [
+        "just",
+        "fix",
+        "--locked",
+        "-p",
+        "codex-hepta-intelligence-eval",
+        "-p",
+        "codex-hepta-agentd",
+        "-p",
+        "codex-hepta-intelligence"
+      ],
+      "command_exit": 0,
+      "state": "fix-complete",
+      "changed_paths": [
+        "codex-rs/hepta-intelligence/src/plasticity_product_tests.rs"
+      ],
+      "unexpected_changed_paths": [],
+      "tests_rerun_after_fix": false,
+      "resulting_source": "0766fc4d5feabea9569d48e7eca4e0a3431bd0f5",
+      "native_patch_sha256": "5e638cfe00ca4e1df56934c765a60089cb11e718e79c54800f2f5eda741d830c",
+      "E_green_not_reassigned_to_S": true
+    },
+    "sequence": {
+      "actual_tail_order": [
+        "red-q-plasticity",
+        "red-q-selector",
+        "green",
+        "fix"
+      ],
+      "state": "sequence-complete",
+      "raw_receipt_sha256": "df53252839fc2c66102b33614456b0648d2028ea8e85b839baee3fe9e67c5612"
+    }
+  },
+  "preserved_failed_attempts_and_repair": {
+    "Q3_attempt1": {
+      "attempt": 1,
+      "command_exit": 101,
+      "wrapper_exit": 1,
+      "error": "E0432 before test execution",
+      "behavioral_red": false,
+      "fourteen_positive_files_restored": true
+    },
+    "cache_repair": {
+      "first_guard_refusal_preserved": true,
+      "source_configuration_unchanged": true,
+      "sole_recorded_cache_mutation": [
+        "cargo",
+        "clean",
+        "-p",
+        "codex-hepta-intelligence-eval"
+      ],
+      "command_exit": 0,
+      "same_frozen_Q3_plan_command_and_patch_reused": true,
+      "fresh_eval_source_next_marker_and_depinfo_verified": true
+    },
+    "original_Q3_compile_failure_and_first_cache_guard_refusal_not_rewritten_as_success": true,
+    "cache_repair_changes_no_source_dependency_feature_profile_timeout_retry_or_test_assertion": true,
+    "accepted_Q3_attempt2_uses_same_frozen_control_command_and_patch": true
+  },
+  "observation_limits": [
+    "Four controls have 7 named failing cases and one inherited retry each; retries are not independent experimental samples.",
+    "Q1 first metrics/current-trust panics do not observe later time-policy, append or counter assertions.",
+    "Q3 unequal-digest panic does not observe later replay assertions; Q2/Q4 default panics do not print returned Result values.",
+    "The unmodified positive E run separately passes all seven complete named regression tests.",
+    "S is a reviewed mechanical test-source adoption, with formatter/source alignment only and no test rerun.",
+    "No remote source verification, native test, fix, model/tool action or product release was performed by this archive review."
+  ],
+  "history_provenance": {
+    "original_SOURCE_ACCEPTANCE_sha256": "136d466db2f89cccad2787f19c0e7e68e8456836c090c186ad29360fe7b6fc99",
+    "original_caller_review_sha256": "484bf9440c4ceab992f0d6f486f62507f2d93fb07227ac0ef0ec82a7eeadcbfe",
+    "relocated_caller_review_sha256": "ae5b9baa42a0a78f1eac44ebe15f37c3828efe95849b32e28287c70d80822574",
+    "only_descriptive_path_relocation_explained": true,
+    "unrecovered_early_plan_e8c151_ed6be9_inputs_explicitly_disclosed": true,
+    "no_pseudo_original_reconstructed": true,
+    "actual_runner_46552_and_plan_00b4_have_separate_current_gate_review": true
+  },
+  "first_frozen_payload": {
+    "sha256": "09b8fb64816e0465c44904095369cee2fdd9eaa8aa7c1a3637e80b40523a569e",
+    "files": 69,
+    "all_bytes_and_metadata_rechecked_unchanged": true
+  },
+  "remaining_gates": {
+    "original_Windows_platform_qualification": "OPEN",
+    "exact_head_and_ordered_merge_CI": "NOT_ESTABLISHED",
+    "physical_task_effect_restart_acceptance": "OPEN",
+    "production_holdout_provider_publication_sink_full_receipt_codec_and_readback": "OPEN",
+    "adaptive_efficacy": "NO_NEW_EVIDENCE; retain predecessor and no-update",
+    "public_Control_topology": "DENY_ALL pending complete owner and recovery acceptance",
+    "independent_product_release": "HOLD",
+    "CI_snapshot_scope": "The 09:39:17-18 UTC source F/E observation remains historical and explicitly does not describe later S or documentation HEAD runs."
+  },
+  "mechanical_verification_originals": [
+    {
+      "path": "verify_payload.py",
+      "sha256": "d99575e19a3d34a574296a35edf329f86add30136187602e3223eb137079251b",
+      "bytes": 7672
+    },
+    {
+      "path": "verify_source_results.py",
+      "sha256": "69136ec7b94879736d1f09655d8317b70a2563042dd2601be5c40ae447e86c1e",
+      "bytes": 23503
+    },
+    {
+      "path": "reviewed-payload-file-manifest.json",
+      "sha256": "06aa66ce9b8f311f86bd2b7f04cfecd80f5399c288d879894986257e087fb22c",
+      "bytes": 46804
+    },
+    {
+      "path": "payload-mechanical-check.json",
+      "sha256": "fb5f1395b141c7a2c2a20457789ec1367e1304293dc92168cedc59985a8f0b8a",
+      "bytes": 34404
+    },
+    {
+      "path": "source-results-check.json",
+      "sha256": "af79c3d75e556116530f109f650a8e42146e5a0b10c4ace5720e319bc9769bd9",
+      "bytes": 24005
+    }
+  ],
+  "issues": [],
+  "review_activity": {
+    "production_or_integration_files_modified": false,
+    "new_native_tests_or_fixes_executed": false,
+    "remote_jobs_started_or_polled": false,
+    "review_outputs_written_only_under_adaptive": true
+  }
+}

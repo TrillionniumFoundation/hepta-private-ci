@@ -1,0 +1,149 @@
+{
+  "schema": "hepta.sealed-ingress-negative-control-independent-review.v1",
+  "control": "Q3",
+  "phase": "red-q-plasticity",
+  "attempt": 2,
+  "reviewed_at_utc": "2026-11-05T10:13:28.549594+00:00",
+  "decision": "ACCEPT_EXPECTED_BEHAVIORAL_FAILURE_FRESH_COMPILATION_AND_EXACT_RESTORATION",
+  "source": {
+    "execution_head": "eed6541df0add428add8e2d9ab2cbd54a961abeb",
+    "execution_tree": "b8ce8b96a759f522cb7db60027d4844f1b3ad974",
+    "plan_sha256": "00b4d289a635ae36865dc70732a1a10a03a8fb81575be5b5eba0b21fce7027fe",
+    "native_runner_sha256": "46552f047784d07b825cec59e0358cfbb02a010f448b7538bb0fadc15ea2f7df",
+    "positive_manifest_sha256": "e652b430cf2af22ce8f421288bad0687cb6ba332fa31da696034f1ed9bf7c7da",
+    "production_path": "codex-rs/hepta-intelligence/src/plasticity_product.rs",
+    "positive_blob": "7004ae2981587a63f9941376196af9435dbbdc6d",
+    "mutated_blob": "d75a730c99779021795a536960adf44888c57fc1",
+    "test_path": "codex-rs/hepta-intelligence/src/plasticity_product_tests.rs",
+    "test_blob": "3eb615951f7f9a542455f1814eb58ca73859be90"
+  },
+  "mutation": {
+    "patch_sha256": "4d21e5f1eabe993427850ea83dab628ed8ecdf07454f88ef8d72cfd19cd988b5",
+    "scope": "Deletes only qualification evidence/publication digest appends from the per-candidate evaluation commitment; retains mandatory receipt and all admission checks.",
+    "tests_or_fixtures_changed": false,
+    "identical_to_attempt1_patch": true,
+    "actual_changed_path_digest_matches_single_production_path": true
+  },
+  "direct_log_observation": {
+    "compilation_completed": true,
+    "nextest_profile": "local",
+    "command": [
+      "just",
+      "test",
+      "--locked",
+      "-p",
+      "codex-hepta-intelligence",
+      "-E",
+      "test(/(^|::)(durable_proposal_identity_commits_the_exact_qualification_publication)$/)"
+    ],
+    "command_exit_code": 100,
+    "command_elapsed_seconds": 5.532675743103027,
+    "nextest_elapsed_seconds": 0.415,
+    "run": 1,
+    "passed": 0,
+    "failed": 1,
+    "skipped": 84,
+    "attempts": 2,
+    "independent_cases": 1,
+    "test_name": "durable_proposal_identity_commits_the_exact_qualification_publication",
+    "panic_location": "hepta-intelligence/src/plasticity_product_tests.rs:713:5",
+    "first_assertion": "assert_ne!(original.evaluation_digest, other.evaluation_digest)",
+    "assertion_result": "left and right compare equal on both attempts",
+    "printed_left_digest": "99db1f99ac333afe060ff3824407614216deeeedda4ec311c3804dba0f412bb4",
+    "printed_right_digest": "99db1f99ac333afe060ff3824407614216deeeedda4ec311c3804dba0f412bb4"
+  },
+  "source_and_panic_position_inference": {
+    "classification": "SEQUENTIAL_REACHABILITY_FROM_EXACT_SOURCE_PLUS_ACTUAL_PANIC_LOCATION",
+    "observations_supported": "Before the recorded panic, full signed qualification decisions compared equal, distinct publication digests were checked, and both calls to the real propose_authenticated_parameter_plasticity_v1 API completed their expect success checks. The raw log prints the two collapsed evaluation digests, not the complete proposal-return receipts.",
+    "fixture_boundary": "The real proposal/admission APIs are exercised with test trust, deterministic synthetic evaluation fixtures and in-process registry/anchor fixtures; this is not a physical parameter update or production provider result."
+  },
+  "unreached_in_this_negative_invocation": [
+    "The proposal_digest inequality at lines 714-717.",
+    "The qualifications receipt comparisons at lines 718-719.",
+    "The already-committed proposal replay refusal at lines 724-733.",
+    "The registry record_count and unchanged-anchor assertions at lines 734-735."
+  ],
+  "cache_repair_and_freshness": {
+    "original_attempt1_compile_failure_preserved": "q3-attempt1-compilation-review.json",
+    "original_repair_attempt1_guard_refusal_preserved": "q3-target-scope-independent-review.json",
+    "successful_repair_receipt_sha256": "c73e73d3803a57c368e77eb275e33d2eb71d36bb4852c96736838f12a4fc1792",
+    "same_frozen_inner_runner_plan_source_mutation_and_command": true,
+    "fresh_source_next_compile_marker_directly_seen": "Compiling codex-hepta-intelligence-eval v0.0.0 (/home/qq/work/hepta-convergence-20261105-0c901b/source-next/codex-rs/hepta-intelligence-eval)",
+    "old_unused_import_warning_absent": true,
+    "new_depinfo_sha256": "7c3484364d086c11b087ffe1a1d4eed7a027b522100354701366fe1dafd0b2a4",
+    "new_depinfo_contains_helper_verified_from_bytes": true,
+    "new_depinfo_mtime_ns": 1793872811875206929,
+    "clean_finished_unix_ns": 1793872694057030560,
+    "post_clean_timestamp_comparison_independently_checked": true,
+    "outer_final_receipt_sha256": "df53252839fc2c66102b33614456b0648d2028ea8e85b839baee3fe9e67c5612",
+    "clean_stdout_stderr_hashes_now_verified": true,
+    "clean_stderr": "Removed 1655 files, 472.9MiB total",
+    "scope": "Only the task-owned codex-hepta-intelligence-eval package was cleaned by the pinned command; no product source or assertions changed for the retry."
+  },
+  "restoration": {
+    "receipt_state_unchanged": "named-test-failures-observed-review-required",
+    "runner_exit_code": 0,
+    "restored_candidate": true,
+    "serialized_restored_files": 14,
+    "all_14_before_expected_restored_hashes_equal": true,
+    "adopted_lint_test_checks_preserved": true,
+    "clean_after_empty": true,
+    "head_after_hash_recomputed": true,
+    "tree_after_hash_recomputed": true,
+    "cargo_lock_sha256": "4165307bb6c41d08e6c1c362060f2a958c8200ea43fdab2b8b1e6220ad82b55c",
+    "cargo_lock_git_blob": "b7e710988d6a3377a7e0a1dc68aef49c68dda36e",
+    "all_auxiliary_steps_exit_zero": true
+  },
+  "later_positive_evidence_separate": {
+    "head": "eed6541df0add428add8e2d9ab2cbd54a961abeb",
+    "green_receipt_sha256": "ab6da7188d4354a088025ec0202533c025436d6f7fcf70196913ef24deb82488",
+    "target_test_actual_PASS": true,
+    "interpretation": "The later complete positive run passes this unmodified test, including its remaining sequential assertions. That positive result is separate from the negative first-assertion witness and is not attributed to the negative invocation."
+  },
+  "limits": [
+    "This deliberate mutation RED is not a passing ordinary product suite.",
+    "It establishes collapse of the evaluation commitment when the exact qualification identity is omitted. It does not directly log the later replay attempt, a physical effect, process-restart durability, Windows success, or release authorization."
+  ],
+  "artifacts": [
+    {
+      "path": "native/ai395-sealed-q3-attempt2-receipt.json",
+      "bytes": 32540,
+      "sha256": "4cffc7cac9855131854689730fe1d9ead021b6ea45eaf2c12aebd77101b2a34e"
+    },
+    {
+      "path": "native/ai395-sealed-q3-attempt2-just-test.stderr",
+      "bytes": 4664,
+      "sha256": "bb4977a3c743ba4744507b39fa4036618651192adfc13ff62bdbe782e3aba63e"
+    },
+    {
+      "path": "native/ai395-sealed-q3-attempt2-just-test.stdout",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "native/ai395-sealed-q3-attempt2-negative.patch",
+      "bytes": 696,
+      "sha256": "4d21e5f1eabe993427850ea83dab628ed8ecdf07454f88ef8d72cfd19cd988b5"
+    },
+    {
+      "path": "native/ai395-q3-fresh-eval-fcbed-depinfo.d",
+      "bytes": 4474,
+      "sha256": "7c3484364d086c11b087ffe1a1d4eed7a027b522100354701366fe1dafd0b2a4"
+    },
+    {
+      "path": "native/ai395-sealed-remaining-pipeline-v2-receipt.json",
+      "bytes": 5603,
+      "sha256": "df53252839fc2c66102b33614456b0648d2028ea8e85b839baee3fe9e67c5612"
+    },
+    {
+      "path": "native/ai395-eval-cache-repair-attempt2-clean-eval-package.stdout",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "native/ai395-eval-cache-repair-attempt2-clean-eval-package.stderr",
+      "bytes": 40,
+      "sha256": "bc101882259bf86a32b2695ef7d8bd2b3cca64074ea63822a2838f0c112219d9"
+    }
+  ]
+}

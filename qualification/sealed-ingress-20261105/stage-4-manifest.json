@@ -1,0 +1,28 @@
+{
+  "base_commit": "1d87082c0d5afd2b474a2c453ea98005fd540dea",
+  "stage": "4 longitudinal selection sealed ingress and final V2 export withdrawal; depends on stages 1-3",
+  "native_validation": "not run",
+  "files": [
+    {
+      "path": "codex-rs/hepta-intelligence-eval/src/lib.rs",
+      "base_blob": "3158743fd82bb4b05156c952f10467308800eac5",
+      "changed_blob": "3fb8fe09947c342710f9cc982bd14f2015abb58c"
+    },
+    {
+      "path": "codex-rs/hepta-intelligence-eval/src/self_evolution_selection.rs",
+      "base_blob": "39efe8c7583678df35ddd63ee98cfd5e0e6c17d4",
+      "changed_blob": "7d3da83abd8c200698a7d98adb46cacef79999d6"
+    },
+    {
+      "path": "codex-rs/hepta-intelligence-eval/src/self_evolution_ingress_tests.rs",
+      "base_blob": null,
+      "changed_blob": "7d44929ab27a46025fcee8548f469720367f46af"
+    },
+    {
+      "path": "codex-rs/hepta-intelligence-eval/src/self_evolution_qualification_test_support.rs",
+      "base_blob": null,
+      "changed_blob": "f842cfed87666b560366a261d16747119192fca7"
+    }
+  ],
+  "patch_sha256": "2271f0a11ebe1b151580556eafe6c590c0933e9d0a881eecc3a650f98bb8eb07"
+}

@@ -1,0 +1,101 @@
+{
+  "status": "LOCAL_PYTHON_VALIDATOR_REVIEW_ONLY; NO_SECOND_NATIVE_EXECUTION",
+  "runner_sha256": "46552f047784d07b825cec59e0358cfbb02a010f448b7538bb0fadc15ea2f7df",
+  "plan_sha256": "00b4d289a635ae36865dc70732a1a10a03a8fb81575be5b5eba0b21fce7027fe",
+  "adoption_sha256": "1e74cb96735d026305f25cd5991d8e3dcedcd27644b063b8668503c0a6be3442",
+  "python_compile": "PASS",
+  "checks": [
+    {
+      "case": "actual desktop_regression",
+      "result": "ACCEPTED_AS_ORIGINAL_STATE",
+      "original_state": "desktop-regression-complete",
+      "raw_receipt_sha256": "4b133f93c90f5e27910a8d729b9b89ffdffb01d0bb659e491406bde484f06c19"
+    },
+    {
+      "case": "actual green",
+      "result": "ACCEPTED_AS_ORIGINAL_STATE",
+      "original_state": "green-complete",
+      "raw_receipt_sha256": "f47d72c3930e2575b567fb8acaeb999f6696fab34bdcdd81ccd56b542fd81588"
+    },
+    {
+      "case": "actual fix",
+      "result": "ACCEPTED_AS_ORIGINAL_STATE",
+      "original_state": "fix-blocked",
+      "raw_receipt_sha256": "ae54b470fd20e079d33602f60abffc3f130816586974b297cebe2f6ea3704d3b"
+    },
+    {
+      "case": "relabelled_fix_success",
+      "result": "REJECTED",
+      "reason": "first-wave phase differs from its exact recorded outcome"
+    },
+    {
+      "case": "failed_clippy_command",
+      "result": "REJECTED",
+      "reason": "first-wave phase differs from its exact recorded outcome"
+    },
+    {
+      "case": "third_changed_path",
+      "result": "REJECTED",
+      "reason": "first-wave fix does not match the explicitly reviewed two-file scope blocker"
+    },
+    {
+      "case": "protected_source_changed",
+      "result": "REJECTED",
+      "reason": "first-wave fix changed an originally controlled source identity"
+    },
+    {
+      "case": "changed_native_patch_digest",
+      "result": "REJECTED",
+      "reason": "first-wave step output differs from the reviewed native artifact: fix-patch"
+    },
+    {
+      "case": "changed_fulltree_paths_digest",
+      "result": "REJECTED",
+      "reason": "first-wave step output differs from the reviewed native artifact: changed-after-fix"
+    },
+    {
+      "case": "protected_scope_change_reported",
+      "result": "REJECTED",
+      "reason": "first-wave fix does not match the explicitly reviewed two-file scope blocker"
+    },
+    {
+      "case": "wrong_schema",
+      "result": "REJECTED",
+      "reason": "first-wave receipt schema differs from the original native runner"
+    },
+    {
+      "case": "desktop_only_masquerading_as_green",
+      "result": "REJECTED",
+      "reason": "first-wave positive receipt lacks its exact required passing test observations"
+    },
+    {
+      "case": "filtered_full_suite_command",
+      "result": "REJECTED",
+      "reason": "first-wave receipt does not record the exact original command completing: just-green"
+    },
+    {
+      "case": "wrong_second_parent_order",
+      "result": "REJECTED",
+      "reason": "adopted source identities or ordered parents differ from the reviewed plan"
+    },
+    {
+      "case": "ingress_identity_drift",
+      "result": "REJECTED",
+      "reason": "adoption differs from the fourteen fixed ingress identities"
+    },
+    {
+      "case": "extra_fixed_file",
+      "result": "REJECTED",
+      "reason": "adoption is not limited to the exact two reviewed test files"
+    },
+    {
+      "case": "relabelled_old_green_head",
+      "result": "REJECTED",
+      "reason": "adoption lacks a required source-evidence boundary: original_813_result_is_not_relabelled_as_current_first_head"
+    }
+  ],
+  "parent_reader": "git cat-file -p HEAD, exact ordered parent lines in commit headers; no history traversal or checkout mutation",
+  "original_fix_state_preserved": true,
+  "old_frozen_runner_and_plan_preserved": true,
+  "native_test_execution": "NOT_RUN"
+}

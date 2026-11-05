@@ -1,0 +1,114 @@
+{
+  "schema": "hepta.sealed-ingress-native-sequence.v1",
+  "head": "eed6541df0add428add8e2d9ab2cbd54a961abeb",
+  "tree": "b8ce8b96a759f522cb7db60027d4844f1b3ad974",
+  "state": "sequence-complete",
+  "phases": [
+    {
+      "phase": "red-q-plasticity",
+      "returncode": 0,
+      "elapsed_seconds": 6.022978067398071,
+      "receipt": "/home/qq/work/hepta-convergence-20261105-0c901b/evidence/native-sealed-red-q-plasticity-v2/receipt.json",
+      "receipt_sha256": "4cffc7cac9855131854689730fe1d9ead021b6ea45eaf2c12aebd77101b2a34e",
+      "first_assertion_review": {
+        "required_name": "durable_proposal_identity_commits_the_exact_qualification_publication",
+        "panic_location": "hepta-intelligence/src/plasticity_product_tests.rs:713:5",
+        "attempts": 2,
+        "witness_scope": "first assertion only; later assertions are not observed",
+        "stderr_sha256": "bb4977a3c743ba4744507b39fa4036618651192adfc13ff62bdbe782e3aba63e",
+        "restored_positive_count": 14
+      },
+      "fresh_eval_compilation": {
+        "compile_marker": "Compiling codex-hepta-intelligence-eval v0.0.0 (/home/qq/work/hepta-convergence-20261105-0c901b/source-next/codex-rs/hepta-intelligence-eval)",
+        "obsolete_warning_absent": true,
+        "fresh_depinfo": [
+          {
+            "path": "/home/qq/work/hepta-convergence-20261105-0c901b/target/debug/deps/codex_hepta_intelligence_eval-fcbed105465cd5d7.d",
+            "size": 4474,
+            "sha256": "7c3484364d086c11b087ffe1a1d4eed7a027b522100354701366fe1dafd0b2a4",
+            "mtime_ns": 1793872811875206929,
+            "contains_qualification_use": true
+          }
+        ],
+        "cache_repair_receipt_sha256": "c73e73d3803a57c368e77eb275e33d2eb71d36bb4852c96736838f12a4fc1792"
+      },
+      "accepted_for_next_stage": true
+    },
+    {
+      "phase": "red-q-selector",
+      "returncode": 0,
+      "elapsed_seconds": 3.716754198074341,
+      "receipt": "/home/qq/work/hepta-convergence-20261105-0c901b/evidence/native-sealed-red-q-selector-v1/receipt.json",
+      "receipt_sha256": "41c062e316dfd9f6f18bc0e129b8aebfa62d6211b715642e9284d0e6c6e57419",
+      "first_assertion_review": {
+        "required_name": "selector_signature_commits_the_exact_qualification_publication",
+        "panic_location": "hepta-intelligence-eval/src/self_evolution_ingress_tests.rs:474:5",
+        "attempts": 2,
+        "witness_scope": "first assertion only; later assertions are not observed",
+        "stderr_sha256": "732a2808896c602c5bc202ec96838f5a73e92c7e8eefcd38573d317723376520",
+        "restored_positive_count": 14
+      },
+      "accepted_for_next_stage": true
+    },
+    {
+      "phase": "green",
+      "returncode": 0,
+      "elapsed_seconds": 131.85430669784546,
+      "receipt": "/home/qq/work/hepta-convergence-20261105-0c901b/evidence/native-sealed-green-v1/receipt.json",
+      "receipt_sha256": "ab6da7188d4354a088025ec0202533c025436d6f7fcf70196913ef24deb82488",
+      "test_summary": {
+        "summary": "Summary [  36.514s] 805 tests run: 805 passed (1 slow), 66 skipped",
+        "run_count": 805,
+        "failed_count": 0,
+        "passed_count": 805,
+        "observed_named_failures": [],
+        "final_failure_lines": [],
+        "complete_named_red": false,
+        "trust_witness_present": false,
+        "critical_passes": [
+          "current_use_attestation_binds_the_exact_sealed_publication",
+          "durable_proposal_identity_commits_the_exact_qualification_publication",
+          "independently_resigned_metrics_cannot_replace_the_qualified_estimator_evidence",
+          "product_runner_binds_estimator_receipts_and_persists_signed_decision",
+          "selector_signature_commits_the_exact_qualification_publication",
+          "signed_generic_metrics_cannot_replace_the_product_qualification_before_append",
+          "valid_v3_resignatures_cannot_replace_published_metrics_or_time_policy"
+        ]
+      },
+      "accepted_for_next_stage": true
+    },
+    {
+      "phase": "fix",
+      "returncode": 0,
+      "elapsed_seconds": 46.809329986572266,
+      "receipt": "/home/qq/work/hepta-convergence-20261105-0c901b/evidence/native-sealed-fix-v1/receipt.json",
+      "receipt_sha256": "cb1f12c6d7e4c09f3e5c6df4a9f9f337d28540bc4e81c7d5c2c9b45ee2b5504c",
+      "post_fix_source_changed": true,
+      "changed_paths": [
+        "codex-rs/hepta-intelligence/src/plasticity_product_tests.rs"
+      ],
+      "post_fix_diff_sha256": "5e638cfe00ca4e1df56934c765a60089cb11e718e79c54800f2f5eda741d830c",
+      "accepted_for_next_stage": true
+    }
+  ],
+  "runner_sha256": "46552f047784d07b825cec59e0358cfbb02a010f448b7538bb0fadc15ea2f7df",
+  "orchestrator_sha256": "55f787d330be7cf4165ca13f1eed6b2c3ba0932653c31ed4ebe2a9ffe781d49e",
+  "test_profile_features_timeouts_unchanged": true,
+  "automatic_retry": false,
+  "q2_predecessor_review": {
+    "required_name": "current_use_attestation_binds_the_exact_sealed_publication",
+    "panic_location": "hepta-agentd/src/intelligence_evaluation_tests.rs:460:5",
+    "attempts": 2,
+    "witness_scope": "first assertion only; later assertions are not observed",
+    "stderr_sha256": "3d62dc45c1556fb66e59a9cd054307888df83a9af5343d2497b8b75c5e58212a",
+    "restored_positive_count": 14
+  },
+  "cache_repair_prerequisite": {
+    "path": "/home/qq/work/hepta-convergence-20261105-0c901b/evidence/native-eval-cache-repair-v2/receipt.json",
+    "sha256": "c73e73d3803a57c368e77eb275e33d2eb71d36bb4852c96736838f12a4fc1792",
+    "clean_finished_unix_ns": 1793872694057030560,
+    "old_unit_backup_count": 8
+  },
+  "exit_code": 0,
+  "tests_rerun_after_fix": false
+}

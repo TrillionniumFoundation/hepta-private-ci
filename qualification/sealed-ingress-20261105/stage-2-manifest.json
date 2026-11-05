@@ -1,0 +1,33 @@
+{
+  "base_commit": "1d87082c0d5afd2b474a2c453ea98005fd540dea",
+  "stage": "2 Agentd sealed qualification consumption; depends on stage 1",
+  "native_validation": "not run",
+  "files": [
+    {
+      "path": "codex-rs/hepta-agentd/src/lib.rs",
+      "base_blob": "5a5a99ae773831777cafe14d81cf79538a3c092a",
+      "changed_blob": "5113e9a9d49b788b761febae8e27ea8226cc48dd"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/intelligence_product.rs",
+      "base_blob": "1781996175ec7f16f44b9f58ac3e2c2bd41358af",
+      "changed_blob": "84900183ca03f870f61bba1c1ca3b1ccfd1e56ae"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/intelligence_evaluation.rs",
+      "base_blob": "4f749517724ed408ee7b089f061f8e9224cbaef6",
+      "changed_blob": "6beca1272f990e00b388f99ef7e29cb626bc464c"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/intelligence_evaluation_tests.rs",
+      "base_blob": "0ce36aa9835e02fdb6d96860bf20252af1369283",
+      "changed_blob": "7f617c17c5c9de423198b1d833cf8883fb041ac8"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/intelligence_qualification_test_support.rs",
+      "base_blob": null,
+      "changed_blob": "b28ac84dc1035ea14e498d6c404a0bd76dd67e61"
+    }
+  ],
+  "patch_sha256": "f949ef57ded947e29f2c8bc9bc704fae761ba908b7231decbab9a5f8b0c9ecde"
+}

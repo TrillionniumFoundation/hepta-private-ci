@@ -1,0 +1,26 @@
+{
+  "schema": "hepta.sealed-ingress-scoped-fix-root-review.v1",
+  "tested_head": "eed6541df0add428add8e2d9ab2cbd54a961abeb",
+  "tested_tree": "b8ce8b96a759f522cb7db60027d4844f1b3ad974",
+  "file": "codex-rs/hepta-intelligence/src/plasticity_product_tests.rs",
+  "raw_fix_receipt_sha256": "cb1f12c6d7e4c09f3e5c6df4a9f9f337d28540bc4e81c7d5c2c9b45ee2b5504c",
+  "native_patch_sha256": "5e638cfe00ca4e1df56934c765a60089cb11e718e79c54800f2f5eda741d830c",
+  "before_blob": "3eb615951f7f9a542455f1814eb58ca73859be90",
+  "after_blob": "2b85adacb939c778b13f42177467b5959d16b50a",
+  "after_sha256": "63f80d787b8ea9e8daba48d8b0beacd25d146a17af4d7c828c622720e27ffc4f",
+  "independent_patch_apply_matches_actual_after": true,
+  "sole_change": "Remove clone from the final use of the same owned candidate StableId; all fixture values and assertions are unchanged.",
+  "actual_fix_exit": 0,
+  "raw_fix_state": "fix-complete",
+  "post_fix_source_changed": true,
+  "tests_rerun_after_fix": false,
+  "green_result_transfer_to_new_head": false,
+  "recorded_at_utc": "2026-11-05T10:13:41.232142+00:00",
+  "current_source_head": "0766fc4d5feabea9569d48e7eca4e0a3431bd0f5",
+  "current_source_tree": "1cfb78c47f636a60dcfa9968ffd7e44a054d58cc",
+  "parent": "eed6541df0add428add8e2d9ab2cbd54a961abeb",
+  "github_full_changed_paths_verified": [
+    "codex-rs/hepta-intelligence/src/plasticity_product_tests.rs"
+  ],
+  "github_after_blob_readback_verified": true
+}

@@ -1,0 +1,279 @@
+{
+  "schema": "hepta.sealed-ingress-q1-independent-native-review.v1",
+  "recorded_at_utc": "2026-11-05T09:33:28.965575+00:00",
+  "reviewer": "adaptive; direct read of original receipt and full test output, independently matched to frozen source and preflight mapping",
+  "verdict": "ACCEPTED_EXPECTED_BEHAVIORAL_NEGATIVE_AND_RESTORATION; RESTORED_FULL_POSITIVE_SUITE_REMAINS_SEPARATE",
+  "raw_receipt_state_preserved": "named-test-failures-observed-review-required",
+  "execution": {
+    "job": "1a1ab048bd4-fc05-497d",
+    "phase": "red-q-decision",
+    "attempt": 1,
+    "base_head": "eed6541df0add428add8e2d9ab2cbd54a961abeb",
+    "base_tree": "b8ce8b96a759f522cb7db60027d4844f1b3ad974",
+    "tested_source": "Exact E checkout plus the single declared Q1 production mutation; not the unmodified positive tree.",
+    "native_runner_sha256": "46552f047784d07b825cec59e0358cfbb02a010f448b7538bb0fadc15ea2f7df",
+    "plan_sha256": "00b4d289a635ae36865dc70732a1a10a03a8fb81575be5b5eba0b21fce7027fe",
+    "positive_manifest_sha256": "e652b430cf2af22ce8f421288bad0687cb6ba332fa31da696034f1ed9bf7c7da",
+    "negative_patch_sha256": "73dd589ff130e162de3209c67246bfbbbccec4e09d1b08e85e5cea11ddddb7bd",
+    "mutation_path": "codex-rs/hepta-intelligence-eval/src/product_qualification_use.rs",
+    "positive_production_git_blob": "f904dc721859f2d44f67b955c532298d03360e87",
+    "mutated_production_git_blob": "961a43b720e2a3f1e80a39860b461db8f8d38d7d",
+    "actual_command": [
+      "just",
+      "test",
+      "--locked",
+      "-p",
+      "codex-hepta-intelligence-eval",
+      "-p",
+      "codex-hepta-agentd",
+      "-p",
+      "codex-hepta-intelligence",
+      "-E",
+      "test(/(^|::)(product_runner_binds_estimator_receipts_and_persists_signed_decision|independently_resigned_metrics_cannot_replace_the_qualified_estimator_evidence|signed_generic_metrics_cannot_replace_the_product_qualification_before_append|valid_v3_resignatures_cannot_replace_published_metrics_or_time_policy)$/)"
+    ],
+    "actual_test_command_exit_code": 100,
+    "runner_receipt_exit_code": 0,
+    "command_elapsed_seconds": 257.5716097354889
+  },
+  "compile_and_execution_observed": {
+    "finished_compile_line": "Finished `test` profile [unoptimized + debuginfo] target(s) in 4m 15s",
+    "nextest_profile": "local",
+    "test_binaries": 21,
+    "selected_tests": 4,
+    "terminal_passed": 0,
+    "terminal_failed": 4,
+    "skipped": 867,
+    "summary": "Summary [   0.335s] 4 tests run: 0 passed, 4 failed, 867 skipped",
+    "nextest_summary_seconds": 0.335,
+    "observed_total_panic_attempts": 8,
+    "attempt_interpretation": "Each of four tests failed twice under the unchanged one-retry policy; four selected cases, not eight independent samples.",
+    "compiler_or_setup_failure": false,
+    "only_error_lines": [
+      "error: test run failed",
+      "error: recipe `test` failed on line 89 with exit code 100"
+    ],
+    "scope": "Actual mutated-source compilation and four selected failures. Does not report restored-positive compilation/test completion."
+  },
+  "cases": [
+    {
+      "test": "product_runner_binds_estimator_receipts_and_persists_signed_decision",
+      "package": "codex-hepta-intelligence-eval",
+      "source_path": "codex-rs/hepta-intelligence-eval/src/product_runner_tests.rs",
+      "source_sha256": "a61fd6f160b8eed033dce6d8c81871543b0e43d3bb2d61cafa6f71c6678cfbb3",
+      "source_git_blob": "fc084ad5d2f02709f663f95240737860a05a7c9f",
+      "observed_full_test_name": "product_runner::tests::product_runner_binds_estimator_receipts_and_persists_signed_decision",
+      "observed_panic_location": "hepta-intelligence-eval/src/product_runner_tests.rs:581:5",
+      "observed_attempts": 2,
+      "observed_panic_message": "reissued current trust must not rebind a published qualification",
+      "observed_terminal_result": "FAIL",
+      "inferred_from_reaching_this_site": [
+        "A real ProductEvaluationRunner fixture produced and published the sealed qualification.",
+        "Original verifier/evidence revalidation succeeded and equalled the sealed complete decision.",
+        "Reissued signatures under a legal distinct current generator-controller trust passed raw signed V2 admission.",
+        "The complete inner decision equalled the sealed inner decision; both trust_digest and authentication_digest differed."
+      ],
+      "source_sequential_inference_is_not_a_separate_log_of_each_precondition": true,
+      "not_observed_after_panic": [
+        "The following original-verifier revalidation and sink/release counter readback.",
+        "Later changed-metrics, reissued evidence-id, role, expiry, publication and seal subcases in this test."
+      ],
+      "interpretation_limit": "This isolates replacement of the combined current trust/authentication identity. Both digests change; it does not isolate only the trust_digest field."
+    },
+    {
+      "test": "independently_resigned_metrics_cannot_replace_the_qualified_estimator_evidence",
+      "package": "codex-hepta-agentd",
+      "source_path": "codex-rs/hepta-agentd/src/intelligence_evaluation_tests.rs",
+      "source_sha256": "14133d3ee9d8141048472a049e77284d722905c17dcd1f8d9a5f159d54a3e498",
+      "source_git_blob": "4cca3352946815b03ba2049855c7af12a0418853",
+      "observed_full_test_name": "intelligence_product::evaluation_tests::independently_resigned_metrics_cannot_replace_the_qualified_estimator_evidence",
+      "observed_panic_location": "hepta-agentd/src/intelligence_evaluation_tests.rs:428:5",
+      "observed_attempts": 2,
+      "observed_panic_message": "assertion failed: matches!(changed.evaluate(&input(&binding), &binding.selected_candidate_id,\n        1_000),\n        Err(AgentdIntelligenceEvaluationError::Qualification(codex_hepta_intelligence_eval::ProductEvaluationError::Binding(\"qualification use evidence\"))))",
+      "observed_terminal_result": "FAIL",
+      "inferred_from_reaching_this_site": [
+        "Fixture creates a canonical sealed qualification under independent trust.",
+        "Candidate upper bound is incremented by one raw Q32 unit.",
+        "Evaluator bundle signature and exact current-use attestation are regenerated; the original qualification is retained."
+      ],
+      "source_sequential_inference_is_not_a_separate_log_of_each_precondition": true,
+      "not_observed_after_panic": [],
+      "interpretation_limit": "The assert-matches panic proves the required qualified-evidence error was absent. Its default panic does not print the returned Result; do not invent an emitted receipt or physical effect."
+    },
+    {
+      "test": "signed_generic_metrics_cannot_replace_the_product_qualification_before_append",
+      "package": "codex-hepta-intelligence",
+      "source_path": "codex-rs/hepta-intelligence/src/plasticity_product_tests.rs",
+      "source_sha256": "f235478313b93338931118c780afdae7c6875f46892b106dff2507a1d70953e3",
+      "source_git_blob": "3eb615951f7f9a542455f1814eb58ca73859be90",
+      "observed_full_test_name": "plasticity_product_tests::signed_generic_metrics_cannot_replace_the_product_qualification_before_append",
+      "observed_panic_location": "hepta-intelligence/src/plasticity_product_tests.rs:668:5",
+      "observed_attempts": 2,
+      "observed_panic_message": "assertion failed: matches!(result,\n        Err(ParameterPlasticityProductErrorV1::Qualification(ProductEvaluationError::Binding(\"qualification use evidence\"))))",
+      "observed_terminal_result": "FAIL",
+      "inferred_from_reaching_this_site": [
+        "Fixture supplies a canonical sealed qualification and original independently signed request.",
+        "Candidate upper bound is incremented by one raw Q32 unit and the evaluator bundle is re-signed.",
+        "The real proposal entry point is invoked with the original qualified receipt and current verifier."
+      ],
+      "source_sequential_inference_is_not_a_separate_log_of_each_precondition": true,
+      "not_observed_after_panic": [
+        "writer.record_count()==0 assertion at source line674.",
+        "anchor_committer==before assertion at source line675."
+      ],
+      "interpretation_limit": "The first panic establishes absence of the required qualification-binding rejection. It does not by itself log the Result value, durable record count, anchor state or later no-append assertions."
+    },
+    {
+      "test": "valid_v3_resignatures_cannot_replace_published_metrics_or_time_policy",
+      "package": "codex-hepta-intelligence-eval",
+      "source_path": "codex-rs/hepta-intelligence-eval/src/self_evolution_ingress_tests.rs",
+      "source_sha256": "a5bce084bc818dd99b699145cd950ba3f5d8e1d4864c09ba69d8c68309735c03",
+      "source_git_blob": "549e33fbbc9160c55e5bfbcd1369a00076ae79dc",
+      "observed_full_test_name": "self_evolution_selection::ingress_tests::valid_v3_resignatures_cannot_replace_published_metrics_or_time_policy",
+      "observed_panic_location": "hepta-intelligence-eval/src/self_evolution_ingress_tests.rs:405:5",
+      "observed_attempts": 2,
+      "observed_panic_message": "assertion failed: matches!(fixture.prepare(),\n        Err(SelfEvolutionSelectionError::QualificationRejected))",
+      "observed_terminal_result": "FAIL",
+      "inferred_from_reaching_this_site": [
+        "Candidate upper bound is incremented by one raw Q32 unit and the evaluator evidence is re-signed.",
+        "Raw signed longitudinal V3 admission succeeds with current verifier/time and the original time policy.",
+        "The raw decision remains EligibleForIndependentSelection before public prepare is called."
+      ],
+      "source_sequential_inference_is_not_a_separate_log_of_each_precondition": true,
+      "not_observed_after_panic": [
+        "The separate fixture beginning at source line410.",
+        "The later legal minimum_future_window_micros change 5 to6, observer/evaluator re-signing, raw equal-inner assertion and second prepare assertion at line424."
+      ],
+      "interpretation_limit": "Only the first changed-metrics case is observed in this red invocation. A retry reruns the same test from the start; it does not reach or separately validate the later time-policy case."
+    }
+  ],
+  "restoration": {
+    "restored_candidate": true,
+    "all_fourteen_before_expected_after_identities_equal": true,
+    "restored_positive": [
+      {
+        "path": "codex-rs/hepta-agentd/src/intelligence_evaluation.rs",
+        "sha256": "5580a99f5742152d3b3ce2d01d8cc465fd8ba552786f662e7be7fe6921ab920e",
+        "git_blob": "6beca1272f990e00b388f99ef7e29cb626bc464c"
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/intelligence_evaluation_tests.rs",
+        "sha256": "14133d3ee9d8141048472a049e77284d722905c17dcd1f8d9a5f159d54a3e498",
+        "git_blob": "4cca3352946815b03ba2049855c7af12a0418853"
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/intelligence_product.rs",
+        "sha256": "8cbef22fe134110fb343d37e7081bb2c03aac8257e33909146cc5a1ffc3322a0",
+        "git_blob": "84900183ca03f870f61bba1c1ca3b1ccfd1e56ae"
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/intelligence_qualification_test_support.rs",
+        "sha256": "47473d2d81c5b7f01c2d92eb97b33bafe50acc961cd1904725105c2ff74b4f37",
+        "git_blob": "74c8a6c03b8d90b39af05ccb5c8e9cf560a433da"
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/lib.rs",
+        "sha256": "48083c28fe1c863813abbb5068dc579059004baf412736ae4259814209349796",
+        "git_blob": "5113e9a9d49b788b761febae8e27ea8226cc48dd"
+      },
+      {
+        "path": "codex-rs/hepta-intelligence-eval/src/lib.rs",
+        "sha256": "6224028235c583330c40a0bc2daf9e79d195c2c9700228def07eadae3c79a45d",
+        "git_blob": "3fb8fe09947c342710f9cc982bd14f2015abb58c"
+      },
+      {
+        "path": "codex-rs/hepta-intelligence-eval/src/product_qualification_use.rs",
+        "sha256": "7c6205f2e6af7987fb3123acc6922a3c8e57f9f442be57bc2cbb97ef3587c93d",
+        "git_blob": "f904dc721859f2d44f67b955c532298d03360e87"
+      },
+      {
+        "path": "codex-rs/hepta-intelligence-eval/src/product_runner_tests.rs",
+        "sha256": "a61fd6f160b8eed033dce6d8c81871543b0e43d3bb2d61cafa6f71c6678cfbb3",
+        "git_blob": "fc084ad5d2f02709f663f95240737860a05a7c9f"
+      },
+      {
+        "path": "codex-rs/hepta-intelligence-eval/src/self_evolution_ingress_tests.rs",
+        "sha256": "a5bce084bc818dd99b699145cd950ba3f5d8e1d4864c09ba69d8c68309735c03",
+        "git_blob": "549e33fbbc9160c55e5bfbcd1369a00076ae79dc"
+      },
+      {
+        "path": "codex-rs/hepta-intelligence-eval/src/self_evolution_qualification_test_support.rs",
+        "sha256": "a25ad8cf5b1970f64e1da2169df6d0f14f2a64e5c4dd0ece3fbe0f56f6bfd98d",
+        "git_blob": "f34107486cd303ce1875dc790aeed1439fc0f8c1"
+      },
+      {
+        "path": "codex-rs/hepta-intelligence-eval/src/self_evolution_selection.rs",
+        "sha256": "2e63e67176879d232cec2de9f806917613324ae5356140fa8cce777254440910",
+        "git_blob": "7d3da83abd8c200698a7d98adb46cacef79999d6"
+      },
+      {
+        "path": "codex-rs/hepta-intelligence/src/plasticity_product.rs",
+        "sha256": "3087c92d11eb53676564e932379a1167d040777058571863a5f18822406849e2",
+        "git_blob": "7004ae2981587a63f9941376196af9435dbbdc6d"
+      },
+      {
+        "path": "codex-rs/hepta-intelligence/src/plasticity_product_tests.rs",
+        "sha256": "f235478313b93338931118c780afdae7c6875f46892b106dff2507a1d70953e3",
+        "git_blob": "3eb615951f7f9a542455f1814eb58ca73859be90"
+      },
+      {
+        "path": "codex-rs/hepta-intelligence/src/plasticity_qualification_test_support.rs",
+        "sha256": "47473d2d81c5b7f01c2d92eb97b33bafe50acc961cd1904725105c2ff74b4f37",
+        "git_blob": "74c8a6c03b8d90b39af05ccb5c8e9cf560a433da"
+      }
+    ],
+    "restored_helper_git_blob": "f904dc721859f2d44f67b955c532298d03360e87",
+    "clean_after_exit_code": 0,
+    "clean_after_stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "head_after_stdout_sha256": "7917b975d01dd562bbd5022a18a7aece8318b997aa6328e2d16817a128b7f507",
+    "tree_after_stdout_sha256": "6be4efd4814da9a583ccf0a82e714feaf8f958c92bb66feb1d5646c217b541f2",
+    "head_and_tree_output_digests_independently_recomputed": true,
+    "cargo_lock_sha256": "4165307bb6c41d08e6c1c362060f2a958c8200ea43fdab2b8b1e6220ad82b55c",
+    "cargo_lock_git_blob": "b7e710988d6a3377a7e0a1dc68aef49c68dda36e",
+    "cargo_lock_evidence_scope": "The frozen runner validates the committed lock before running and checks unchanged bytes at phase completion and in finally; it completed those checks without integrity errors. This reviewer did not separately reread the remote lockfile.",
+    "two_adopted_test_files": "The inspected frozen check_positive also verifies the exact two adopted test files on restoration. The separately serialized restored_positive list contains the fourteen ingress files.",
+    "single_negative_changed_path_digest": "baaa0386556327b4a4685fe36439e152d912283c9a1c208532e0717a511a6033",
+    "source_changes_by_this_reviewer": false
+  },
+  "observed_vs_inferred": [
+    "The actual logs explicitly show four expected panic sites and messages, each on both attempts, after compilation. Reaching each site establishes prior straight-line unwrap/assert preconditions by source control flow; they are not individually logged measurements.",
+    "Product runner reaches the legal current-trust substitution assertion only after raw V2 succeeds, the complete inner decision matches, and both trust/authentication digests differ. This is combined identity binding, not isolation of trust_digest alone.",
+    "Agentd and plasticity default assert-matches messages do not print the returned Result. The observed claim is absence of the required qualification-binding rejection; no returned receipt, durable append or physical effect is invented.",
+    "Self-evolution fails in its first changed-metrics case at line405. The later time-policy fixture and its min-window5-to6 case never execute in either attempt.",
+    "Plasticity no-append and unchanged-anchor assertions after line668, and the product runner post-substitution counter/readback and later mutation cases, are not counted as observed red assertions.",
+    "The actual full restored three-package positive gate, other Q controls, final scoped fix, original platform/merge qualification, production recovery and independent release are separate evidence."
+  ],
+  "original_first_evidence": {
+    "tested_head": "facba0d32c1cd0e8163a6186d7ba91fa311f2e2e",
+    "current_first_head": "432421d0d9ca9d82c5e3401fe3425af29131505a",
+    "reviewed_adoption_sha256": "1e74cb96735d026305f25cd5991d8e3dcedcd27644b063b8668503c0a6be3442",
+    "old_scope_blocked_fix_receipt_unchanged": true,
+    "original_813_pass_result_remains_tested_facba_only": true
+  },
+  "artifacts": [
+    {
+      "path": "native/ai395-sealed-q1-receipt.json",
+      "sha256": "a7fc0b3cf48abeb3d66bd124c553d606c7555f9a63f4c9a679c9a269ed4d88b6",
+      "bytes": 33402
+    },
+    {
+      "path": "native/ai395-sealed-q1-just-test.stderr",
+      "sha256": "eb5ed0ded6dd107295efdc201e20eed43f23ddbb2e200c6c5696f9825556cfd5",
+      "bytes": 53229
+    },
+    {
+      "path": "native/ai395-sealed-q1-just-test.stdout",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": "native/ai395-sealed-q1-negative.patch",
+      "sha256": "73dd589ff130e162de3209c67246bfbbbccec4e09d1b08e85e5cea11ddddb7bd",
+      "bytes": 583
+    },
+    {
+      "path": "native/q1-preflight-mapping.json",
+      "sha256": "474543b0bef403e37555f0ec0c7c6cfeee3991c9f023b5d7107516d3881cde27",
+      "bytes": 8078
+    }
+  ]
+}

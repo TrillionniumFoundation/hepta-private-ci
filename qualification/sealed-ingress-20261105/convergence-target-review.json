@@ -1,0 +1,79 @@
+{
+  "schema": "hepta.product-convergence-target-review.v1",
+  "reviewed_at_utc": "2026-11-05 08:52:55 UTC",
+  "status": "accepted architecture and acceptance wording; no product completion or native gate inferred",
+  "reviewed_document": {
+    "local_path": "integration/sealed-qualification/convergence-target.md",
+    "proposed_repository_path": "qualification/sealed-ingress-20261105/convergence-target.md",
+    "sha256": "dff6252a8ba739e38b5c29433c7747ec150043e4acbb20aa9f330847a140258c"
+  },
+  "architecture_reference": {
+    "ref": "732e934ba496d90fbe042b8d41d479ef901643e5",
+    "path": "docs/architecture/ARCHITECTURE.json",
+    "git_blob": "b1e58e387ba3d9b2f72cf3df5623a1f553575029",
+    "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/732e934ba496d90fbe042b8d41d479ef901643e5/docs/architecture/ARCHITECTURE.json"
+  },
+  "existing_source_review": {
+    "reviewed_ref": "1d87082c0d5afd2b474a2c453ea98005fd540dea",
+    "canonical_review_local_path": "integration/qualification/product-recovery-review.md",
+    "canonical_review_repository_path": "qualification/runtime-convergence-20261105/product-recovery-review.md",
+    "canonical_review_sha256": "5bf1b5c19888ea252d5f238fc34772426bf6d9efc3e39750e194fcfe9b37f37a",
+    "source_manifest_local_path": "integration/qualification/product-recovery-source-manifest.json",
+    "source_manifest_sha256": "2d0d390a1abb7879005a6f9feda427a340ee0e09e5ca8727b830cbcaf857037d",
+    "note": "Use the corrected canonical review, which distinguishes storing original claims/signatures from current cryptographic authentication by Agentd. The earlier scratch RECOVERY_REVIEW.md is superseded for publication."
+  },
+  "accepted_semantics": [
+    {
+      "area": "architecture",
+      "result": "The target preserves App Server as the only model/session/tool execution spine, Agentd as composition/lifecycle host, and one authoritative schema owner/writer per durable domain. It grants no new execution, writer, selection, promotion or release authority."
+    },
+    {
+      "area": "A identity and owners",
+      "result": "RunStart stores immutable original claims/signatures. Agentd require_current_run_start performs current signature, epoch and fence validation. LedgerWriter retains typed authenticated Decision/Outcome append ownership."
+    },
+    {
+      "area": "A missing composition",
+      "result": "A post-preparation signed handoff requires an additional typed record and verified reader under the declared owner, with a binding to immutable RunStart. The target does not allow rewriting RunStart or adding an Agentd fact store."
+    },
+    {
+      "area": "A current capability",
+      "result": "Default canonical_ready is described as preparation/transient admission. The optional legacy in-memory pending carrier is distinguished from the missing default App Server handoff, authenticated Decision/Outcome composition and process-loss recovery."
+    },
+    {
+      "area": "A acceptance",
+      "result": "Kill points require recovery of the original signed request and original operation identity; uncertain effects are reconciled without redispatch. Real terminal evidence, witness recovery, expiry/revocation and corrupted-history cases remain explicit gates."
+    },
+    {
+      "area": "B evaluation",
+      "result": "Strong baselines, matched information/budget, controller-generator comparisons and interaction, complete chosen/unchosen/failed execution and training costs, new holdout evidence and valid no-update outcomes remain required."
+    },
+    {
+      "area": "B authority and persistence",
+      "result": "Sealed qualification and current-use source properties are not presented as efficacy or effect authority. Production providers, publication sink, complete receipt persistence/readback and current-owner signatures remain separate dependencies."
+    },
+    {
+      "area": "C owner handoff",
+      "result": "A complete handoff receipt must establish actual consumer cutover, new-writer readiness, fencing, migration, drain and rollback viability. A plan alone is not activation completion."
+    },
+    {
+      "area": "C distributed state",
+      "result": "Control owns its lifecycle records; each domain writer owns its handoff/outbox/acknowledgements. Shared lifecycle coordination does not assert one atomic distributed transaction or create a second Agentd writer."
+    },
+    {
+      "area": "release",
+      "result": "The document preserves exact-head and ordered merge-candidate CI, original Windows attacks, real provider/effect acceptance, restart trials, independent efficacy and release gates. Queued, skipped or compile-failed jobs cannot satisfy them."
+    }
+  ],
+  "changes_requested_and_verified": [
+    "Distinguish durable storage of claims/signatures from Agentd current cryptographic authorization.",
+    "Require a new owner typed record/reader for post-preparation handoff instead of rewriting immutable RunStart.",
+    "Require actual cutover and rollback viability in completed Control handoff evidence.",
+    "Keep source truth outside learned parameters and include actual execution costs."
+  ],
+  "verification_limits": [
+    "This is an independent semantic review of the exact document and previously read source/architecture evidence.",
+    "No production source or frozen patch was modified by this review.",
+    "No new native test, provider execution, physical effect, deployment or release was performed.",
+    "The document describes an intended convergence target and acceptance contract, not completion of the A/B/C product."
+  ]
+}

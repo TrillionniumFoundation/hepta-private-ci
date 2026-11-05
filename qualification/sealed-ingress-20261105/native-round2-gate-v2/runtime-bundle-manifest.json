@@ -1,0 +1,154 @@
+{
+  "schema": "hepta.sealed-ingress-native-runner-bundle.v2",
+  "runner_executed": false,
+  "root_supplied_execution_head": "eed6541df0add428add8e2d9ab2cbd54a961abeb",
+  "root_supplied_execution_tree": "b8ce8b96a759f522cb7db60027d4844f1b3ad974",
+  "first_wave_tested_head": "facba0d32c1cd0e8163a6186d7ba91fa311f2e2e",
+  "first_wave_current_head": "432421d0d9ca9d82c5e3401fe3425af29131505a",
+  "first_wave_current_tree": "d93136bb5e318ea4131bfb5cb0b9ac9310f27d1d",
+  "adoption_sha256": "1e74cb96735d026305f25cd5991d8e3dcedcd27644b063b8668503c0a6be3442",
+  "actual_alignment_sha256": "64be8b15396564e49ac3b6f4dd6ecd7b9c623a40c113e45d4f1b742779f6a42e",
+  "superseded_unmodified_bundle_sha256": "1dea6c40cd80466611f5afb70e9a7f8506e4b6979183c8228d0bffa3f57b1979",
+  "files": [
+    {
+      "path": "NATIVE_PLAN.md",
+      "sha256": "cbe048f02a94e563ac4702e33b852524447d7a7124d41fa9d8ad2dd494ced07e",
+      "bytes": 20810
+    },
+    {
+      "path": "current-trust-identity-after-native-format.patch",
+      "sha256": "cf7ff0f8bb48d9d3a939dee971f634add11e370e7190c2150ea8ebdcf62e3e01",
+      "bytes": 3146
+    },
+    {
+      "path": "current-trust-identity-final-format.patch",
+      "sha256": "d2a944692b42715f0465fbcb708f3fa3e0543638f6ef6488d49317aabba27caa",
+      "bytes": 3289
+    },
+    {
+      "path": "current-trust-identity-regression.patch",
+      "sha256": "d0d305632f7ba71ef88ad9b4f738617b58c5b3902dade922776c57676c731dcd",
+      "bytes": 3216
+    },
+    {
+      "path": "final-positive-manifest.json",
+      "sha256": "e652b430cf2af22ce8f421288bad0687cb6ba332fa31da696034f1ed9bf7c7da",
+      "bytes": 3608
+    },
+    {
+      "path": "first-wave/fix-receipt.json",
+      "sha256": "ae54b470fd20e079d33602f60abffc3f130816586974b297cebe2f6ea3704d3b",
+      "bytes": 12297
+    },
+    {
+      "path": "first-wave/green-receipt.json",
+      "sha256": "f47d72c3930e2575b567fb8acaeb999f6696fab34bdcdd81ccd56b542fd81588",
+      "bytes": 11057
+    },
+    {
+      "path": "first-wave/named-receipt.json",
+      "sha256": "4b133f93c90f5e27910a8d729b9b89ffdffb01d0bb659e491406bde484f06c19",
+      "bytes": 9169
+    },
+    {
+      "path": "first-wave/native-fix.patch",
+      "sha256": "8226534cf866dd0be0ed94099bef18ca7a1cd64d701ae4d48df0427f63248d07",
+      "bytes": 2108
+    },
+    {
+      "path": "first-wave/post-fix-source-adoption.json",
+      "sha256": "1e74cb96735d026305f25cd5991d8e3dcedcd27644b063b8668503c0a6be3442",
+      "bytes": 11458
+    },
+    {
+      "path": "native-format/extended-caller-scan.txt",
+      "sha256": "8ce3bb65c4e39a0e7dc3f310fb54564b26569579e4074595ac13348ebfc914c0",
+      "bytes": 10237
+    },
+    {
+      "path": "native-format/final-trust-format-receipt.json",
+      "sha256": "b9f621339c82fd6a16f00fc50063b4a4d19301e27c7f0de382fe480ef8dbfdb7",
+      "bytes": 30147
+    },
+    {
+      "path": "native-format/initial-format-receipt.json",
+      "sha256": "69c4d1f8e4ecad37c96aa085596678a4c5dcaf98bb05ce217beb1b7a626ef231",
+      "bytes": 25908
+    },
+    {
+      "path": "native-format/reviewed-postfix-alignment-receipt.json",
+      "sha256": "64be8b15396564e49ac3b6f4dd6ecd7b9c623a40c113e45d4f1b742779f6a42e",
+      "bytes": 11277
+    },
+    {
+      "path": "negative-controls/manifest.json",
+      "sha256": "48814aa45c0cbb4f2b775c5d5b18ccf5681359f7c5f0d54cf1333d22878b1d48",
+      "bytes": 4990
+    },
+    {
+      "path": "negative-controls/negative-agentd-publication-signature.patch",
+      "sha256": "1094002c9a97ae4485e69487e5a9406c5e0e1ac91e53cabb19b57491d9c9fe90",
+      "bytes": 591
+    },
+    {
+      "path": "negative-controls/negative-complete-decision-binding.patch",
+      "sha256": "73dd589ff130e162de3209c67246bfbbbccec4e09d1b08e85e5cea11ddddb7bd",
+      "bytes": 583
+    },
+    {
+      "path": "negative-controls/negative-plasticity-publication-commitment.patch",
+      "sha256": "4d21e5f1eabe993427850ea83dab628ed8ecdf07454f88ef8d72cfd19cd988b5",
+      "bytes": 696
+    },
+    {
+      "path": "negative-controls/negative-selector-publication-signature.patch",
+      "sha256": "e74af6899e6941ee81ba944664153fb67157398220b0cc395847feb5c5ef95a0",
+      "bytes": 479
+    },
+    {
+      "path": "plan.json",
+      "sha256": "00b4d289a635ae36865dc70732a1a10a03a8fb81575be5b5eba0b21fce7027fe",
+      "bytes": 23559
+    },
+    {
+      "path": "post-fix-gate-local-review.json",
+      "sha256": "a853c5391d02147ca20697b0fbb7082935f6d2af19afec11c5fbd530babcfbd5",
+      "bytes": 3786
+    },
+    {
+      "path": "run_native_round2.py",
+      "sha256": "46552f047784d07b825cec59e0358cfbb02a010f448b7538bb0fadc15ea2f7df",
+      "bytes": 37292
+    },
+    {
+      "path": "source-contracts/AGENTS.md",
+      "sha256": "c3f80e8386eb170b00af1e21de40d770c4941e464915687e728e2d14a7e79480",
+      "bytes": 22519
+    },
+    {
+      "path": "source-contracts/codex-rs/.config/nextest.toml",
+      "sha256": "a829e7ba9e72c44d3a8c5378a0ae595aee57cdb4265ed1f5ad1f7ef03a602a6a",
+      "bytes": 5676
+    },
+    {
+      "path": "source-contracts/justfile",
+      "sha256": "74f869224eba12fc4212b043428e7f5b35b551d26f5b06161c25d8aca525f124",
+      "bytes": 7838
+    },
+    {
+      "path": "source-contracts/manifest.json",
+      "sha256": "4580aebd626cc55d181abac10f7a670393364ab8f0ef061d122b7bd5ba820c9f",
+      "bytes": 496
+    },
+    {
+      "path": "source-contracts/scripts/run-nextest.py",
+      "sha256": "45c4e35d1ff24840d9e1e05331af0b89475bfe1aec3231afc56fecb8cea66127",
+      "bytes": 10206
+    },
+    {
+      "path": "trust-regression-manifest.json",
+      "sha256": "8553cb36afd50859dbb3f0c20b306845d199314efd2fc67f678c421736e7330a",
+      "bytes": 1307
+    }
+  ]
+}

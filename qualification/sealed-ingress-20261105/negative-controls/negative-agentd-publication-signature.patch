@@ -1,0 +1,11 @@
+--- a/codex-rs/hepta-agentd/src/intelligence_evaluation.rs
++++ b/codex-rs/hepta-agentd/src/intelligence_evaluation.rs
+@@ -75,8 +75,6 @@
+     for digest in digests {
+         bytes.extend_from_slice(digest.as_array());
+     }
+-    bytes.extend_from_slice(qualification.evidence_digest.as_array());
+-    bytes.extend_from_slice(qualification.publication_digest.as_array());
+     for signed in [&evidence.generator_plan, &evidence.evaluator_bundle] {
+         bytes.extend_from_slice(Digest32::of_bytes(&signed.signing_bytes()).as_array());
+         bytes.extend_from_slice(&signed.signature);

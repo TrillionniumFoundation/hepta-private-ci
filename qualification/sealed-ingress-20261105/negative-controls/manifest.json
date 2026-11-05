@@ -1,0 +1,51 @@
+[
+  {
+    "name": "negative-agentd-publication-signature",
+    "path": "codex-rs/hepta-agentd/src/intelligence_evaluation.rs",
+    "patch_sha256": "1094002c9a97ae4485e69487e5a9406c5e0e1ac91e53cabb19b57491d9c9fe90",
+    "tests": "identical to positive stack; one production binding removed",
+    "positive_source_head": "eed6541df0add428add8e2d9ab2cbd54a961abeb",
+    "native_observation": "ONE_NAMED_BEHAVIORAL_ASSERTION_FAILURE; positive bytes restored",
+    "native_receipt": "native/ai395-sealed-q2-receipt.json",
+    "native_receipt_sha256": "6b3d09bac8a4e5cac69fd423a14fc2a19b7e0ba65139acd82c09c2ddf496c5e4",
+    "actual_test_exit": 100,
+    "attempt": 1
+  },
+  {
+    "name": "negative-complete-decision-binding",
+    "path": "codex-rs/hepta-intelligence-eval/src/product_qualification_use.rs",
+    "patch_sha256": "73dd589ff130e162de3209c67246bfbbbccec4e09d1b08e85e5cea11ddddb7bd",
+    "tests": "identical to positive stack; one production binding removed",
+    "positive_source_head": "eed6541df0add428add8e2d9ab2cbd54a961abeb",
+    "native_observation": "FOUR_NAMED_BEHAVIORAL_ASSERTION_FAILURES; positive bytes restored",
+    "native_receipt": "native/ai395-sealed-q1-receipt.json",
+    "actual_test_exit": 100,
+    "native_receipt_sha256": "a7fc0b3cf48abeb3d66bd124c553d606c7555f9a63f4c9a679c9a269ed4d88b6",
+    "attempt": 1
+  },
+  {
+    "name": "negative-plasticity-publication-commitment",
+    "path": "codex-rs/hepta-intelligence/src/plasticity_product.rs",
+    "patch_sha256": "4d21e5f1eabe993427850ea83dab628ed8ecdf07454f88ef8d72cfd19cd988b5",
+    "tests": "identical to positive stack; one production binding removed",
+    "positive_source_head": "eed6541df0add428add8e2d9ab2cbd54a961abeb",
+    "native_observation": "ONE_NAMED_BEHAVIORAL_ASSERTION_FAILURE; positive bytes restored",
+    "native_receipt": "native/ai395-sealed-q3-attempt2-receipt.json",
+    "native_receipt_sha256": "4cffc7cac9855131854689730fe1d9ead021b6ea45eaf2c12aebd77101b2a34e",
+    "actual_test_exit": 100,
+    "attempt": 2,
+    "prior_compile_failure_not_behavioral_red": "native/ai395-sealed-q3-attempt1-receipt.json"
+  },
+  {
+    "name": "negative-selector-publication-signature",
+    "path": "codex-rs/hepta-intelligence-eval/src/self_evolution_selection.rs",
+    "patch_sha256": "e74af6899e6941ee81ba944664153fb67157398220b0cc395847feb5c5ef95a0",
+    "tests": "identical to positive stack; one production binding removed",
+    "positive_source_head": "eed6541df0add428add8e2d9ab2cbd54a961abeb",
+    "native_observation": "ONE_NAMED_BEHAVIORAL_ASSERTION_FAILURE; positive bytes restored",
+    "native_receipt": "native/ai395-sealed-q4-receipt.json",
+    "native_receipt_sha256": "41c062e316dfd9f6f18bc0e129b8aebfa62d6211b715642e9284d0e6c6e57419",
+    "actual_test_exit": 100,
+    "attempt": 1
+  }
+]

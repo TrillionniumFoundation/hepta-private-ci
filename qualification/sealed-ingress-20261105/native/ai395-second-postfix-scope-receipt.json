@@ -1,0 +1,216 @@
+{
+  "schema": "hepta.second-native-postfix-scope.v1",
+  "state": "reviewed-one-test-delta-only",
+  "source": "/home/qq/work/hepta-convergence-20261105-0c901b/source-next",
+  "tested_head": "eed6541df0add428add8e2d9ab2cbd54a961abeb",
+  "tested_tree": "b8ce8b96a759f522cb7db60027d4844f1b3ad974",
+  "steps": [
+    {
+      "name": "identity",
+      "argv": [
+        "git",
+        "--no-optional-locks",
+        "rev-parse",
+        "HEAD",
+        "HEAD^{tree}"
+      ],
+      "exit_code": 0,
+      "stdout_sha256": "c9a11f6d74d30fe03ad0748e73b3ae932ee9b8dcb4f974b2f4d6086a6b0c41b4",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "changed-paths",
+      "argv": [
+        "git",
+        "--no-optional-locks",
+        "diff",
+        "--name-only",
+        "-z",
+        "HEAD"
+      ],
+      "exit_code": 0,
+      "stdout_sha256": "fad1bea6f869b8c36feec93493cc7590c2f53d8a22d550c66803325e9efdda0d",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "staged-paths",
+      "argv": [
+        "git",
+        "--no-optional-locks",
+        "diff",
+        "--cached",
+        "--name-only",
+        "-z"
+      ],
+      "exit_code": 0,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "untracked-paths",
+      "argv": [
+        "git",
+        "--no-optional-locks",
+        "ls-files",
+        "--others",
+        "--exclude-standard",
+        "-z"
+      ],
+      "exit_code": 0,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "full-status",
+      "argv": [
+        "git",
+        "--no-optional-locks",
+        "status",
+        "--porcelain=v1",
+        "-z",
+        "--untracked-files=all"
+      ],
+      "exit_code": 0,
+      "stdout_sha256": "c2be43ef39daf3317bf7a2dab034637985c9ac659acb18e7db1c758b91095444",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "full-patch",
+      "argv": [
+        "git",
+        "--no-optional-locks",
+        "diff",
+        "--binary",
+        "--no-ext-diff",
+        "HEAD"
+      ],
+      "exit_code": 0,
+      "stdout_sha256": "5e638cfe00ca4e1df56934c765a60089cb11e718e79c54800f2f5eda741d830c",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "changed-before",
+      "argv": [
+        "git",
+        "--no-optional-locks",
+        "show",
+        "eed6541df0add428add8e2d9ab2cbd54a961abeb:codex-rs/hepta-intelligence/src/plasticity_product_tests.rs"
+      ],
+      "exit_code": 0,
+      "stdout_sha256": "f235478313b93338931118c780afdae7c6875f46892b106dff2507a1d70953e3",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "first-identity",
+      "argv": [
+        "git",
+        "--no-optional-locks",
+        "rev-parse",
+        "HEAD",
+        "HEAD^{tree}"
+      ],
+      "exit_code": 0,
+      "stdout_sha256": "bd6b79a6ee4d93135503dc4dee16908fa3d9efc2ffdc7bc5d3ab56cb0d426b6e",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "first-clean",
+      "argv": [
+        "git",
+        "--no-optional-locks",
+        "status",
+        "--porcelain=v1",
+        "--untracked-files=all"
+      ],
+      "exit_code": 0,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  ],
+  "readonly_source": true,
+  "tests_executed": false,
+  "exit_code": 0,
+  "changed_paths": [
+    "codex-rs/hepta-intelligence/src/plasticity_product_tests.rs"
+  ],
+  "untracked_paths": [],
+  "staged_paths": [],
+  "patch_sha256": "5e638cfe00ca4e1df56934c765a60089cb11e718e79c54800f2f5eda741d830c",
+  "after": [
+    {
+      "path": "codex-rs/hepta-agentd/src/intelligence_evaluation.rs",
+      "sha256": "5580a99f5742152d3b3ce2d01d8cc465fd8ba552786f662e7be7fe6921ab920e",
+      "git_blob": "6beca1272f990e00b388f99ef7e29cb626bc464c"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/intelligence_evaluation_tests.rs",
+      "sha256": "14133d3ee9d8141048472a049e77284d722905c17dcd1f8d9a5f159d54a3e498",
+      "git_blob": "4cca3352946815b03ba2049855c7af12a0418853"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/intelligence_product.rs",
+      "sha256": "8cbef22fe134110fb343d37e7081bb2c03aac8257e33909146cc5a1ffc3322a0",
+      "git_blob": "84900183ca03f870f61bba1c1ca3b1ccfd1e56ae"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/intelligence_qualification_test_support.rs",
+      "sha256": "47473d2d81c5b7f01c2d92eb97b33bafe50acc961cd1904725105c2ff74b4f37",
+      "git_blob": "74c8a6c03b8d90b39af05ccb5c8e9cf560a433da"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/lib.rs",
+      "sha256": "48083c28fe1c863813abbb5068dc579059004baf412736ae4259814209349796",
+      "git_blob": "5113e9a9d49b788b761febae8e27ea8226cc48dd"
+    },
+    {
+      "path": "codex-rs/hepta-intelligence-eval/src/lib.rs",
+      "sha256": "6224028235c583330c40a0bc2daf9e79d195c2c9700228def07eadae3c79a45d",
+      "git_blob": "3fb8fe09947c342710f9cc982bd14f2015abb58c"
+    },
+    {
+      "path": "codex-rs/hepta-intelligence-eval/src/product_qualification_use.rs",
+      "sha256": "7c6205f2e6af7987fb3123acc6922a3c8e57f9f442be57bc2cbb97ef3587c93d",
+      "git_blob": "f904dc721859f2d44f67b955c532298d03360e87"
+    },
+    {
+      "path": "codex-rs/hepta-intelligence-eval/src/product_runner_tests.rs",
+      "sha256": "a61fd6f160b8eed033dce6d8c81871543b0e43d3bb2d61cafa6f71c6678cfbb3",
+      "git_blob": "fc084ad5d2f02709f663f95240737860a05a7c9f"
+    },
+    {
+      "path": "codex-rs/hepta-intelligence-eval/src/self_evolution_ingress_tests.rs",
+      "sha256": "a5bce084bc818dd99b699145cd950ba3f5d8e1d4864c09ba69d8c68309735c03",
+      "git_blob": "549e33fbbc9160c55e5bfbcd1369a00076ae79dc"
+    },
+    {
+      "path": "codex-rs/hepta-intelligence-eval/src/self_evolution_qualification_test_support.rs",
+      "sha256": "a25ad8cf5b1970f64e1da2169df6d0f14f2a64e5c4dd0ece3fbe0f56f6bfd98d",
+      "git_blob": "f34107486cd303ce1875dc790aeed1439fc0f8c1"
+    },
+    {
+      "path": "codex-rs/hepta-intelligence-eval/src/self_evolution_selection.rs",
+      "sha256": "2e63e67176879d232cec2de9f806917613324ae5356140fa8cce777254440910",
+      "git_blob": "7d3da83abd8c200698a7d98adb46cacef79999d6"
+    },
+    {
+      "path": "codex-rs/hepta-intelligence/src/plasticity_product.rs",
+      "sha256": "3087c92d11eb53676564e932379a1167d040777058571863a5f18822406849e2",
+      "git_blob": "7004ae2981587a63f9941376196af9435dbbdc6d"
+    },
+    {
+      "path": "codex-rs/hepta-intelligence/src/plasticity_product_tests.rs",
+      "sha256": "63f80d787b8ea9e8daba48d8b0beacd25d146a17af4d7c828c622720e27ffc4f",
+      "git_blob": "2b85adacb939c778b13f42177467b5959d16b50a"
+    },
+    {
+      "path": "codex-rs/hepta-intelligence/src/plasticity_qualification_test_support.rs",
+      "sha256": "47473d2d81c5b7f01c2d92eb97b33bafe50acc961cd1904725105c2ff74b4f37",
+      "git_blob": "74c8a6c03b8d90b39af05ccb5c8e9cf560a433da"
+    }
+  ],
+  "cargo_lock_sha256": "4165307bb6c41d08e6c1c362060f2a958c8200ea43fdab2b8b1e6220ad82b55c",
+  "before_blob": "3eb615951f7f9a542455f1814eb58ca73859be90",
+  "after_blob": "2b85adacb939c778b13f42177467b5959d16b50a",
+  "first_source_unchanged_clean": true,
+  "green_result_still_applies_to_tested_E": true
+}

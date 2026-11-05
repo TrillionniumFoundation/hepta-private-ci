@@ -1,0 +1,70 @@
+{
+  "schema": "hepta.sealed-ingress-native-plan-review.v1",
+  "status": "ACCEPTED_PLAN_AND_SOURCE_ADAPTATION; NATIVE_TESTS_NOT_RUN_BY_REVIEWER",
+  "reviewed_plan_sha256": "e8c15141bd9bf28956551abf15e1f5020d7f4697f8a690f9840d248873ea8d57",
+  "reviewed_plan_doc_sha256": "ed6be9dcd849115b4f1510f5511cc91977103bfcef24bf5f8145e4a44310f21a",
+  "reviewed_initial_head": "9f010aae1ae7f7447adc0660748878f6cce9efd3",
+  "actual_formatted_trust_test_blob": "fc084ad5d2f02709f663f95240737860a05a7c9f",
+  "positive_composition": [
+    "Exactly 13 of the 14 final source exports equal the initial native formatter output.",
+    "The remaining product_runner_tests diff is the independently reviewed current-trust test and native formatting; the final full diff was read and contains no assertion weakening.",
+    "The trust patch relocated to native formatting has byte-identical added/deleted lines to the reviewed original patch."
+  ],
+  "contract_checks": [
+    "The four source-contract Git blobs match the captured exact9f source.",
+    "The root justfile selects codex-rs; just test supplies the original local profile and 8 MiB stack.",
+    "The seven targeted tests match none of the recorded overrides; 30s period, terminate-after 2, retries 1 remain inherited.",
+    "No direct cargo-test substitution, feature/target/backend/thread/retry/watchdog override, first-worktree mutation, or concurrent shared-target Cargo phase is planned."
+  ],
+  "mutation_checks": [
+    {
+      "phase": "red-q-decision",
+      "patch_sha256": "73dd589ff130e162de3209c67246bfbbbccec4e09d1b08e85e5cea11ddddb7bd",
+      "positive_blob": "f904dc721859f2d44f67b955c532298d03360e87",
+      "mutant_blob": "961a43b720e2a3f1e80a39860b461db8f8d38d7d",
+      "only_declared_production_changed": true,
+      "all_tests_and_fixtures_identical": true,
+      "apply_check": "PASS"
+    },
+    {
+      "phase": "red-q-agentd",
+      "patch_sha256": "1094002c9a97ae4485e69487e5a9406c5e0e1ac91e53cabb19b57491d9c9fe90",
+      "positive_blob": "6beca1272f990e00b388f99ef7e29cb626bc464c",
+      "mutant_blob": "8639b2cf78c7cb33ba4e8db0ccee8386f9ffe8dc",
+      "only_declared_production_changed": true,
+      "all_tests_and_fixtures_identical": true,
+      "apply_check": "PASS"
+    },
+    {
+      "phase": "red-q-plasticity",
+      "patch_sha256": "4d21e5f1eabe993427850ea83dab628ed8ecdf07454f88ef8d72cfd19cd988b5",
+      "positive_blob": "7004ae2981587a63f9941376196af9435dbbdc6d",
+      "mutant_blob": "d75a730c99779021795a536960adf44888c57fc1",
+      "only_declared_production_changed": true,
+      "all_tests_and_fixtures_identical": true,
+      "apply_check": "PASS"
+    },
+    {
+      "phase": "red-q-selector",
+      "patch_sha256": "e74af6899e6941ee81ba944664153fb67157398220b0cc395847feb5c5ef95a0",
+      "positive_blob": "7d3da83abd8c200698a7d98adb46cacef79999d6",
+      "mutant_blob": "3cef48e68880f7230f4071148a2d795b1016a561",
+      "only_declared_production_changed": true,
+      "all_tests_and_fixtures_identical": true,
+      "apply_check": "PASS"
+    }
+  ],
+  "witness_review": [
+    "Q1 requires four final named failures, including the new valid-current-trust assertion after successful raw V2 admission; a compiler or earlier setup error cannot qualify.",
+    "Q2 and Q4 require actual consumer rejection failures after legitimate alternate publications are supplied under the old signature.",
+    "Q3 only claims the first commitment inequality assertion failure after two real proposal calls; later replay assertions are not counted as executed.",
+    "Every mutation restores captured positive bytes and verifies all source/fixture and lock hashes before the next phase."
+  ],
+  "final_order": [
+    "format and freeze positive",
+    "four independent behavioral mutations with exact restoration",
+    "full unfiltered three-package green on the restored positive",
+    "scoped fix last; any post-fix source has distinct identity; no automatic attribution of earlier green"
+  ],
+  "qualification_limit": "This is plan/source review. Actual scripts, exact source hashes, full stdout/stderr, final named failures, green totals and guarded restoration receipts must still be checked. Original exact-head/merge/platform/effect/recovery/efficacy/release gates remain unchanged."
+}

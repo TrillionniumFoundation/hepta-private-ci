@@ -1,0 +1,122 @@
+{
+  "result": "accepted at source-review level; no missed migration or additional tracked-Rust consumer crate found",
+  "base_scan": {
+    "head": "1d87082c0d5afd2b474a2c453ea98005fd540dea",
+    "tree": "f6e6406653d45c8d6b19f2271183c42300f6d051",
+    "tracked_rust_files_verified": 5309,
+    "tracked_rust_bytes_verified": 80594298,
+    "blob_and_clean_checkout_evidence_owner": "lifecycle / AI395",
+    "inventory_sha256": "f434bcb1469ba9982db2205f92bfdc53b6964810aa9081b75f01a30c750ae4c5",
+    "matched_lines": 65,
+    "matched_paths": 17
+  },
+  "transition_to_candidate": {
+    "a20a8191ec37375876a99b7c18bae053f9bc185d": "directly verified documentation-only successor of exact1d",
+    "2ac5e02011e480dc39cd84bed655518db2d37a69": "directly verified four source commits, exactly 14 final source blobs equal frozen manifest"
+  },
+  "path_classification": [
+    {
+      "path": "codex-rs/hepta-agentd/src/intelligence_evaluation.rs",
+      "base_matches": 6,
+      "status": "migrated in reviewed 14-source patch"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/intelligence_evaluation_tests.rs",
+      "base_matches": 3,
+      "status": "migrated in reviewed 14-source patch"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/intelligence_product.rs",
+      "base_matches": 3,
+      "status": "migrated in reviewed 14-source patch"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/lib.rs",
+      "base_matches": 2,
+      "status": "migrated in reviewed 14-source patch"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/plasticity_host.rs",
+      "base_matches": 2,
+      "status": "unchanged and compatible: crate-internal function/test, public type re-export, or receipt return/forwarding only"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/plasticity_learning_producer.rs",
+      "base_matches": 2,
+      "status": "unchanged and compatible: crate-internal function/test, public type re-export, or receipt return/forwarding only"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/plasticity_runtime.rs",
+      "base_matches": 3,
+      "status": "unchanged and compatible: crate-internal function/test, public type re-export, or receipt return/forwarding only"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/state.rs",
+      "base_matches": 1,
+      "status": "unchanged and compatible: crate-internal function/test, public type re-export, or receipt return/forwarding only"
+    },
+    {
+      "path": "codex-rs/hepta-intelligence-eval/src/closure_tests.rs",
+      "base_matches": 4,
+      "status": "unchanged and compatible: crate-internal function/test, public type re-export, or receipt return/forwarding only"
+    },
+    {
+      "path": "codex-rs/hepta-intelligence-eval/src/lib.rs",
+      "base_matches": 4,
+      "status": "migrated in reviewed 14-source patch"
+    },
+    {
+      "path": "codex-rs/hepta-intelligence-eval/src/product_runner.rs",
+      "base_matches": 2,
+      "status": "unchanged and compatible: crate-internal function/test, public type re-export, or receipt return/forwarding only"
+    },
+    {
+      "path": "codex-rs/hepta-intelligence-eval/src/self_evolution_selection.rs",
+      "base_matches": 18,
+      "status": "migrated in reviewed 14-source patch"
+    },
+    {
+      "path": "codex-rs/hepta-intelligence-eval/src/signed_evaluation.rs",
+      "base_matches": 1,
+      "status": "unchanged and compatible: crate-internal function/test, public type re-export, or receipt return/forwarding only"
+    },
+    {
+      "path": "codex-rs/hepta-intelligence-eval/src/signed_qualification_e2e_tests.rs",
+      "base_matches": 3,
+      "status": "unchanged and compatible: crate-internal function/test, public type re-export, or receipt return/forwarding only"
+    },
+    {
+      "path": "codex-rs/hepta-intelligence/src/lib.rs",
+      "base_matches": 2,
+      "status": "unchanged and compatible: crate-internal function/test, public type re-export, or receipt return/forwarding only"
+    },
+    {
+      "path": "codex-rs/hepta-intelligence/src/plasticity_product.rs",
+      "base_matches": 8,
+      "status": "migrated in reviewed 14-source patch"
+    },
+    {
+      "path": "codex-rs/hepta-intelligence/src/plasticity_product_tests.rs",
+      "base_matches": 1,
+      "status": "migrated in reviewed 14-source patch"
+    }
+  ],
+  "derived_final_inventory": {
+    "path": "product/stack-review/final-rust-callers-derived.txt",
+    "matched_lines": 81,
+    "matched_paths": 20,
+    "sha256": "ce42f0e52110ef024e3304cc7400222c2db0dd070b9cc2a1098a861ab93804da",
+    "method": "Retain matching lines in unchanged baseline paths, replace all 14 changed source files with independent final manifested bytes and rescan identical symbol set plus new helper"
+  },
+  "conclusions": [
+    "Both external generic signed V2 users were migrated to sealed qualification revalidation; remaining V2 references are within eval crate.",
+    "No final tracked-Rust references to either renamed v1 signing payload API remain.",
+    "All preexisting construction/destructuring sites for newly extended request/receipt types are in the reviewed changed files.",
+    "Unchanged Agentd plasticity host/producer/runtime/state only pass or return ParameterPlasticityProductReceiptV1 and require no added receipt construction.",
+    "The eval private signed_evaluation module plus pub(crate) V2 re-export retain internal runner and unit/integration test calls."
+  ],
+  "limits": [
+    "Source inventory is a lexical tracked-Rust migration check; no native formatting, compilation, Clippy, or test execution is claimed.",
+    "No physical effect, product restart recovery, provider/sink implementation, or efficacy claim is made."
+  ]
+}

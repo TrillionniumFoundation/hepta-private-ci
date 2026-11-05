@@ -1,0 +1,259 @@
+{
+  "schema": "hepta.reviewed-native-fix-source-adoption.v1",
+  "recorded_at_utc": "2026-11-05T09:09:16.900368+00:00",
+  "scope": "Mechanical test-source adoption and native scheduling handoff only; no runtime authority or release qualification.",
+  "review_decision": "ACCEPT_EXACT_TWO_FILE_CLIPPY_DIFF",
+  "tested_first_head": "facba0d32c1cd0e8163a6186d7ba91fa311f2e2e",
+  "tested_first_tree": "38f3e6e9f2e3fa3605e720a4a287bbd75d25695b",
+  "current_first_head": "432421d0d9ca9d82c5e3401fe3425af29131505a",
+  "current_first_tree": "d93136bb5e318ea4131bfb5cb0b9ac9310f27d1d",
+  "current_first_parents": [
+    "facba0d32c1cd0e8163a6186d7ba91fa311f2e2e"
+  ],
+  "prior_second_head": "e0b522cd437af1362f8be23f601886b46ec1b063",
+  "current_second_head": "eed6541df0add428add8e2d9ab2cbd54a961abeb",
+  "current_second_tree": "b8ce8b96a759f522cb7db60027d4844f1b3ad974",
+  "current_second_parents": [
+    "e0b522cd437af1362f8be23f601886b46ec1b063",
+    "432421d0d9ca9d82c5e3401fe3425af29131505a"
+  ],
+  "original_receipts": {
+    "named": {
+      "sha256": "4b133f93c90f5e27910a8d729b9b89ffdffb01d0bb659e491406bde484f06c19",
+      "state": "desktop-regression-complete",
+      "run_count": 1,
+      "passed": 1
+    },
+    "green": {
+      "sha256": "f47d72c3930e2575b567fb8acaeb999f6696fab34bdcdd81ccd56b542fd81588",
+      "state": "green-complete",
+      "run_count": 813,
+      "passed": 813,
+      "skipped": 66
+    },
+    "fix": {
+      "sha256": "ae54b470fd20e079d33602f60abffc3f130816586974b297cebe2f6ea3704d3b",
+      "state": "fix-blocked",
+      "command_exit_code": 0,
+      "wrapper_exit_code": 1
+    }
+  },
+  "native_fix_patch_sha256": "8226534cf866dd0be0ed94099bef18ca7a1cd64d701ae4d48df0427f63248d07",
+  "full_tree_changed_paths_stdout_sha256": "d2791edc02a9dc3aad3602a5e55fc8a40e2909aa14048b067ce98c202738bda8",
+  "exact_fixed_test_files": [
+    {
+      "path": "codex-rs/hepta-agentd/src/authority_host_admin_issuer_tests.rs",
+      "base_blob": "9f1f043b9f55ecac764fa9ff6ab50ceb2cfada45",
+      "git_blob": "3f865200105061a2d47cd778293ea5680e9e0df5",
+      "sha256": "60bf227d6b4630a26078b18c7a7d294cbfe331c3b2afe2409c3b893dc9e51875",
+      "bytes": 4652
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/root_desktop_startup_tests.rs",
+      "base_blob": "bf0aeee0d3d1c6e89ca4f73214807ff43d7986aa",
+      "git_blob": "071273b873f95471e984cfe5bd3e975b068a86a7",
+      "sha256": "1bb3ffd780266128f4afa82f97ec7e6f4bcbba8e3399bcfc914f392a29559ccd",
+      "bytes": 6736
+    }
+  ],
+  "original_controlled_source_files": [
+    {
+      "path": "codex-rs/hepta-agentd/src/deployment_desktop.rs",
+      "sha256": "7a1744f1668a966ba39ad76bd5541ae8075d85eb22a9927d802370e840569eca",
+      "git_blob": "4e6319f8d235b6cdb541b3c3edd77251bafc9a7f",
+      "bytes": 7325
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/deployment_issuer_root.rs",
+      "sha256": "b1147e693f884afd9e0f0d0c0d172d9f690c71e3ae18bb678997bc353d4d6941",
+      "git_blob": "13c813efd1d8b0b8c45b4ac093dcb0ef0dab2521",
+      "bytes": 8180
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/deployment_writer.rs",
+      "sha256": "3925a3abbecfd2561640bb171bbbbcfa52cdd5648d5eadc2142550fae72f5b38",
+      "git_blob": "6abc0d537236398477102339fa0744dc72ec43a4",
+      "bytes": 11945
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/lane_b_runtime.rs",
+      "sha256": "18a606b9760f76971bf9e574b34998d54214dc28e44c295f5c3acd8d873813c7",
+      "git_blob": "cc04f811846522073a4918b6c918fe862206ce23",
+      "bytes": 26548
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/lane_b_runtime_tests.rs",
+      "sha256": "298eaf033ce9acc064c783afa1b2a598edc74eeca2e6a166d16e02ea1eaa5727",
+      "git_blob": "5c2601957ba753230b149b9291bd14b463a48957",
+      "bytes": 31378
+    },
+    {
+      "path": "codex-rs/hepta-intelligence-eval/src/product_runner.rs",
+      "sha256": "b00f4f3d0e73ed1f206a5387268a60c05372299eec238925ff2b54537be65f25",
+      "git_blob": "0c374acd8c5e25626c213c1ed9f6ba36d3fcbe42",
+      "bytes": 37054
+    },
+    {
+      "path": "codex-rs/hepta-intelligence-eval/src/product_runner_tests.rs",
+      "sha256": "5d725c7f941bef353945a6707b03424e0818913f36b36f3d3ca1312b6280911d",
+      "git_blob": "bbead9a4627526ceb1a034732ecfb54051856352",
+      "bytes": 24812
+    },
+    {
+      "path": "codex-rs/hepta-intelligence/src/evaluated_shadow_test_support.rs",
+      "sha256": "d2b94d7cb163c0ee83549efc54d1ced0ab00b2823d919c2d3e6d17c956caf3ae",
+      "git_blob": "af57c7bbd3bd2e2641c7ffad06c856b7303290de",
+      "bytes": 23101
+    },
+    {
+      "path": "codex-rs/hepta-intelligence/src/evaluated_shadow_tests.rs",
+      "sha256": "716ee503b6de4d81d9c89446cb502256890bf4d670dbf8a8a3ea83e54ccfc4f1",
+      "git_blob": "fa8259d9cfd1c1e244ba7522ea3379417cbb06ee",
+      "bytes": 20979
+    },
+    {
+      "path": "codex-rs/hepta-runtime/src/lib.rs",
+      "sha256": "2f9d7865417dc8db620dcd149c99e624310dd33a743d6545e94fa79c8b48bbd5",
+      "git_blob": "a58dfaa26fb8544530603f0c14ca0339514b17bf",
+      "bytes": 44919
+    },
+    {
+      "path": "codex-rs/hepta-runtime/src/organs_tests.rs",
+      "sha256": "8100a42fd789269b2444a443f3869592c575ebfb94946417c99a47e9d12f0733",
+      "git_blob": "06a42540a0d857b26d85e9fa4bbac83cba04f4c8",
+      "bytes": 34903
+    },
+    {
+      "path": "codex-rs/hepta-runtime/src/topology_execution.rs",
+      "sha256": "f1baa6c08cc72dabec84715a6a627cc0a8ca5dcc18f8f11081dd55f0ce7484db",
+      "git_blob": "768b0dd2a5c29a2eb0ac640228ccab5a6d5d8a35",
+      "bytes": 14599
+    },
+    {
+      "path": "codex-rs/utils/pty/src/win/mod.rs",
+      "sha256": "d9b5bb6c6eb485369c8810f7b30731cad53b2e221f0a841ef0d19f7c786c04ba",
+      "git_blob": "d244e22befecda19782f1fc2a696af1a534069b0",
+      "bytes": 6422
+    }
+  ],
+  "sealed_ingress_files": [
+    {
+      "label": "formatted-file",
+      "bytes": 7638,
+      "sha256": "5580a99f5742152d3b3ce2d01d8cc465fd8ba552786f662e7be7fe6921ab920e",
+      "path": "codex-rs/hepta-agentd/src/intelligence_evaluation.rs",
+      "git_blob": "6beca1272f990e00b388f99ef7e29cb626bc464c"
+    },
+    {
+      "label": "formatted-file",
+      "bytes": 16723,
+      "sha256": "14133d3ee9d8141048472a049e77284d722905c17dcd1f8d9a5f159d54a3e498",
+      "path": "codex-rs/hepta-agentd/src/intelligence_evaluation_tests.rs",
+      "git_blob": "4cca3352946815b03ba2049855c7af12a0418853"
+    },
+    {
+      "label": "formatted-file",
+      "bytes": 28456,
+      "sha256": "8cbef22fe134110fb343d37e7081bb2c03aac8257e33909146cc5a1ffc3322a0",
+      "path": "codex-rs/hepta-agentd/src/intelligence_product.rs",
+      "git_blob": "84900183ca03f870f61bba1c1ca3b1ccfd1e56ae"
+    },
+    {
+      "label": "formatted-file",
+      "bytes": 8750,
+      "sha256": "47473d2d81c5b7f01c2d92eb97b33bafe50acc961cd1904725105c2ff74b4f37",
+      "path": "codex-rs/hepta-agentd/src/intelligence_qualification_test_support.rs",
+      "git_blob": "74c8a6c03b8d90b39af05ccb5c8e9cf560a433da"
+    },
+    {
+      "label": "formatted-file",
+      "bytes": 30915,
+      "sha256": "48083c28fe1c863813abbb5068dc579059004baf412736ae4259814209349796",
+      "path": "codex-rs/hepta-agentd/src/lib.rs",
+      "git_blob": "5113e9a9d49b788b761febae8e27ea8226cc48dd"
+    },
+    {
+      "label": "formatted-file",
+      "bytes": 14594,
+      "sha256": "6224028235c583330c40a0bc2daf9e79d195c2c9700228def07eadae3c79a45d",
+      "path": "codex-rs/hepta-intelligence-eval/src/lib.rs",
+      "git_blob": "3fb8fe09947c342710f9cc982bd14f2015abb58c"
+    },
+    {
+      "label": "formatted-file",
+      "bytes": 3413,
+      "sha256": "7c6205f2e6af7987fb3123acc6922a3c8e57f9f442be57bc2cbb97ef3587c93d",
+      "path": "codex-rs/hepta-intelligence-eval/src/product_qualification_use.rs",
+      "git_blob": "f904dc721859f2d44f67b955c532298d03360e87"
+    },
+    {
+      "label": "formatted-file",
+      "bytes": 30886,
+      "sha256": "a61fd6f160b8eed033dce6d8c81871543b0e43d3bb2d61cafa6f71c6678cfbb3",
+      "path": "codex-rs/hepta-intelligence-eval/src/product_runner_tests.rs",
+      "git_blob": "fc084ad5d2f02709f663f95240737860a05a7c9f"
+    },
+    {
+      "label": "formatted-file",
+      "bytes": 18491,
+      "sha256": "a5bce084bc818dd99b699145cd950ba3f5d8e1d4864c09ba69d8c68309735c03",
+      "path": "codex-rs/hepta-intelligence-eval/src/self_evolution_ingress_tests.rs",
+      "git_blob": "549e33fbbc9160c55e5bfbcd1369a00076ae79dc"
+    },
+    {
+      "label": "formatted-file",
+      "bytes": 8726,
+      "sha256": "a25ad8cf5b1970f64e1da2169df6d0f14f2a64e5c4dd0ece3fbe0f56f6bfd98d",
+      "path": "codex-rs/hepta-intelligence-eval/src/self_evolution_qualification_test_support.rs",
+      "git_blob": "f34107486cd303ce1875dc790aeed1439fc0f8c1"
+    },
+    {
+      "label": "formatted-file",
+      "bytes": 28577,
+      "sha256": "2e63e67176879d232cec2de9f806917613324ae5356140fa8cce777254440910",
+      "path": "codex-rs/hepta-intelligence-eval/src/self_evolution_selection.rs",
+      "git_blob": "7d3da83abd8c200698a7d98adb46cacef79999d6"
+    },
+    {
+      "label": "formatted-file",
+      "bytes": 30817,
+      "sha256": "3087c92d11eb53676564e932379a1167d040777058571863a5f18822406849e2",
+      "path": "codex-rs/hepta-intelligence/src/plasticity_product.rs",
+      "git_blob": "7004ae2981587a63f9941376196af9435dbbdc6d"
+    },
+    {
+      "label": "formatted-file",
+      "bytes": 27088,
+      "sha256": "f235478313b93338931118c780afdae7c6875f46892b106dff2507a1d70953e3",
+      "path": "codex-rs/hepta-intelligence/src/plasticity_product_tests.rs",
+      "git_blob": "3eb615951f7f9a542455f1814eb58ca73859be90"
+    },
+    {
+      "label": "formatted-file",
+      "bytes": 8750,
+      "sha256": "47473d2d81c5b7f01c2d92eb97b33bafe50acc961cd1904725105c2ff74b4f37",
+      "path": "codex-rs/hepta-intelligence/src/plasticity_qualification_test_support.rs",
+      "git_blob": "74c8a6c03b8d90b39af05ccb5c8e9cf560a433da"
+    }
+  ],
+  "changes": [
+    "Remove two last-use clones of a plain derived-Clone AuthorityLease record; subsequent assertions use the same record values and registry state.",
+    "Replace match Ok(profile) => unchanged assertion / Err(_) => {} with if let Ok(profile) and the same assertion; parsing still occurs once and error behavior remains no-op."
+  ],
+  "assertion_or_fixture_values_changed": false,
+  "production_source_changed_by_fix": false,
+  "original_13_controlled_blobs_unchanged": true,
+  "all_14_sealed_ingress_blobs_unchanged": true,
+  "whole_tree_changed_by_fix": true,
+  "raw_source_changed_by_fix_false_scope": "Only the thirteen originally controlled files; it does not mean the whole tree was unchanged.",
+  "source_reviews": [
+    "Root independently fetched both complete facba base blobs, applied the actual native patch, and matched both actual native after files.",
+    "Product independently compared base/after bytes, last-use ownership, plain-record Clone/Drop behavior, assertion equivalence and exact full-tree changed-path digest."
+  ],
+  "remote_alignment": "Both new exact HEAD/tree and clean full source must be verified at execution; this review is not an assertion that alignment has already happened.",
+  "original_raw_fix_receipt_must_remain_unchanged": true,
+  "original_813_result_is_not_relabelled_as_current_first_head": true,
+  "first_tests_rerun_after_fix": false,
+  "next_required_native_gate": "Four sealed-ingress mutation controls with restoration, full three-package positive suite, scoped fix last, all on the explicit current second source.",
+  "original_release_and_ci_requirements": "UNCHANGED"
+}

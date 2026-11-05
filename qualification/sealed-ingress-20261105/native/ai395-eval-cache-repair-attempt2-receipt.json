@@ -1,0 +1,266 @@
+{
+  "schema": "hepta.task-eval-cache-repair.v1",
+  "state": "cache-repair-complete",
+  "source": "/home/qq/work/hepta-convergence-20261105-0c901b/source-next",
+  "head": "eed6541df0add428add8e2d9ab2cbd54a961abeb",
+  "tree": "b8ce8b96a759f522cb7db60027d4844f1b3ad974",
+  "target": "/home/qq/work/hepta-convergence-20261105-0c901b/target",
+  "steps": [
+    {
+      "name": "rustc-version",
+      "argv": [
+        "rustc",
+        "-Vv"
+      ],
+      "exit_code": 0,
+      "elapsed_seconds": 0.0701439380645752,
+      "stdout_sha256": "f64c55ed9f210d80a9b248206104a47175faf5ec94a093e4ad132549209089fc",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "source-identity-before",
+      "argv": [
+        "git",
+        "rev-parse",
+        "HEAD",
+        "HEAD^{tree}"
+      ],
+      "exit_code": 0,
+      "elapsed_seconds": 0.03190469741821289,
+      "stdout_sha256": "c9a11f6d74d30fe03ad0748e73b3ae932ee9b8dcb4f974b2f4d6086a6b0c41b4",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "source-clean-before",
+      "argv": [
+        "git",
+        "status",
+        "--porcelain=v1",
+        "--untracked-files=all"
+      ],
+      "exit_code": 0,
+      "elapsed_seconds": 0.24593019485473633,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "clean-eval-package",
+      "argv": [
+        "cargo",
+        "clean",
+        "-p",
+        "codex-hepta-intelligence-eval"
+      ],
+      "exit_code": 0,
+      "elapsed_seconds": 1.2341668605804443,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_sha256": "bc101882259bf86a32b2695ef7d8bd2b3cca64074ea63822a2838f0c112219d9"
+    },
+    {
+      "name": "source-identity-after",
+      "argv": [
+        "git",
+        "rev-parse",
+        "HEAD",
+        "HEAD^{tree}"
+      ],
+      "exit_code": 0,
+      "elapsed_seconds": 0.0014123916625976562,
+      "stdout_sha256": "c9a11f6d74d30fe03ad0748e73b3ae932ee9b8dcb4f974b2f4d6086a6b0c41b4",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "source-clean-after",
+      "argv": [
+        "git",
+        "status",
+        "--porcelain=v1",
+        "--untracked-files=all"
+      ],
+      "exit_code": 0,
+      "elapsed_seconds": 0.01276254653930664,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  ],
+  "backup": [
+    {
+      "original": "/home/qq/work/hepta-convergence-20261105-0c901b/target/debug/.fingerprint/codex-hepta-intelligence-eval-fcbed105465cd5d7/dep-lib-codex_hepta_intelligence_eval",
+      "backup": "/home/qq/work/hepta-convergence-20261105-0c901b/evidence/native-eval-cache-repair-v2/obsolete-unit/debug/.fingerprint/codex-hepta-intelligence-eval-fcbed105465cd5d7/dep-lib-codex_hepta_intelligence_eval",
+      "size": 580,
+      "sha256": "639a179160829ae680bdc881336d72e5ab6b01645be5c994a6fe80ca016dc21d"
+    },
+    {
+      "original": "/home/qq/work/hepta-convergence-20261105-0c901b/target/debug/.fingerprint/codex-hepta-intelligence-eval-fcbed105465cd5d7/invoked.timestamp",
+      "backup": "/home/qq/work/hepta-convergence-20261105-0c901b/evidence/native-eval-cache-repair-v2/obsolete-unit/debug/.fingerprint/codex-hepta-intelligence-eval-fcbed105465cd5d7/invoked.timestamp",
+      "size": 48,
+      "sha256": "5a109e6643e8d3e88642e3f35e85d2a83e639d07523aa6e99166c48178e965c3"
+    },
+    {
+      "original": "/home/qq/work/hepta-convergence-20261105-0c901b/target/debug/.fingerprint/codex-hepta-intelligence-eval-fcbed105465cd5d7/lib-codex_hepta_intelligence_eval",
+      "backup": "/home/qq/work/hepta-convergence-20261105-0c901b/evidence/native-eval-cache-repair-v2/obsolete-unit/debug/.fingerprint/codex-hepta-intelligence-eval-fcbed105465cd5d7/lib-codex_hepta_intelligence_eval",
+      "size": 16,
+      "sha256": "514f52b9136cd8406b811a99fc37a235348799664ccde9edb0eba920cdb247b8"
+    },
+    {
+      "original": "/home/qq/work/hepta-convergence-20261105-0c901b/target/debug/.fingerprint/codex-hepta-intelligence-eval-fcbed105465cd5d7/lib-codex_hepta_intelligence_eval.json",
+      "backup": "/home/qq/work/hepta-convergence-20261105-0c901b/evidence/native-eval-cache-repair-v2/obsolete-unit/debug/.fingerprint/codex-hepta-intelligence-eval-fcbed105465cd5d7/lib-codex_hepta_intelligence_eval.json",
+      "size": 588,
+      "sha256": "076dd8ad8c1c523de9402ce24141b64ddcb5c7915672700ef40106dd134c2b38"
+    },
+    {
+      "original": "/home/qq/work/hepta-convergence-20261105-0c901b/target/debug/.fingerprint/codex-hepta-intelligence-eval-fcbed105465cd5d7/output-lib-codex_hepta_intelligence_eval",
+      "backup": "/home/qq/work/hepta-convergence-20261105-0c901b/evidence/native-eval-cache-repair-v2/obsolete-unit/debug/.fingerprint/codex-hepta-intelligence-eval-fcbed105465cd5d7/output-lib-codex_hepta_intelligence_eval",
+      "size": 2136,
+      "sha256": "94479ccc4cb2150e34b274db121f9492fbf3d238ab4c73739b91d3f642f3ba35"
+    },
+    {
+      "original": "/home/qq/work/hepta-convergence-20261105-0c901b/target/debug/deps/codex_hepta_intelligence_eval-fcbed105465cd5d7.d",
+      "backup": "/home/qq/work/hepta-convergence-20261105-0c901b/evidence/native-eval-cache-repair-v2/obsolete-unit/debug/deps/codex_hepta_intelligence_eval-fcbed105465cd5d7.d",
+      "size": 4245,
+      "sha256": "dbd89bd3445c2e4872a1aae5fc645e077b46a63adc54c2c16173cca5e95cfd56"
+    },
+    {
+      "original": "/home/qq/work/hepta-convergence-20261105-0c901b/target/debug/deps/libcodex_hepta_intelligence_eval-fcbed105465cd5d7.rlib",
+      "backup": "/home/qq/work/hepta-convergence-20261105-0c901b/evidence/native-eval-cache-repair-v2/obsolete-unit/debug/deps/libcodex_hepta_intelligence_eval-fcbed105465cd5d7.rlib",
+      "size": 10145284,
+      "sha256": "31d022be6f76fce3da16b2257b5f7f5ab6ba2093517b7fcb0ebb4033a47ee033"
+    },
+    {
+      "original": "/home/qq/work/hepta-convergence-20261105-0c901b/target/debug/deps/libcodex_hepta_intelligence_eval-fcbed105465cd5d7.rmeta",
+      "backup": "/home/qq/work/hepta-convergence-20261105-0c901b/evidence/native-eval-cache-repair-v2/obsolete-unit/debug/deps/libcodex_hepta_intelligence_eval-fcbed105465cd5d7.rmeta",
+      "size": 1174978,
+      "sha256": "faf2771682fc004457b6f061bd7de56865fefc53b6503a920f6c6e0616d244e6"
+    }
+  ],
+  "script_sha256": "11437d6b582247f02a09b392dc7154f186025f0696d64fd9af7ee1bc300a4dd7",
+  "original_evidence": {
+    "native-eval-cache-repair-v1/receipt.json": "a82a65e07f6007cacaafe4d9673df766be65d85f43f34ed933a4c1008d95fc2e",
+    "native-q3-cache-diagnostic-v1.json": "843939f2a6ae4e35f8a330cd58d1e24fa2d0634532686952422344e407ceb93d",
+    "native-sealed-red-q-plasticity-v1/receipt.json": "b98653f5a06015cb71042b642ed1df3efb08e0384c9cc350294f7e86dfd70a49",
+    "native-sealed-remaining-pipeline-v1/receipt.json": "ea4e3ea5a557c3b8951a11263f03e5e25061deb2159be025ae105ed75e0ea68c"
+  },
+  "source_features_profiles_budgets_changed": false,
+  "tests_executed_by_repair": false,
+  "verified_environment": {
+    "toolchain_receipt_sha256": "c8e42ac85a36f0cb3f7f089013ac08f4e51f69d258e4e13ca4f5b12b3707a623",
+    "clang_receipt_sha256": "b33807074fafd12680d8d868069f1d76d5f41e2c4a1020b7a54b8890fad26740",
+    "openssl_receipt_sha256": "dfc3b19bd311df2d9f8376730845f5593df62396bfbe94a65318655c6bda4ba7",
+    "environment": {
+      "RUSTUP_HOME": "/home/qq/work/hepta-convergence-20261105-0c901b/rustup-home-1.96.0",
+      "RUSTUP_TOOLCHAIN": "1.96.0",
+      "CARGO_BUILD_JOBS": "2",
+      "CARGO_TARGET_DIR": "/home/qq/work/hepta-convergence-20261105-0c901b/target",
+      "BINDGEN_EXTRA_CLANG_ARGS": "-resource-dir=/home/qq/work/hepta-convergence-20261105-0c901b/native-headers/clang21-21.1.8-6ubuntu1/usr/lib/llvm-21/lib/clang/21",
+      "OPENSSL_LIB_DIR": "/home/qq/work/hepta-convergence-20261105-0c901b/native-headers/openssl-3.5.5-1ubuntu3.7/usr/lib/x86_64-linux-gnu",
+      "OPENSSL_INCLUDE_DIR": "/home/qq/work/hepta-convergence-20261105-0c901b/native-headers/openssl-3.5.5-1ubuntu3.7/usr/include",
+      "CPATH": "/home/qq/work/hepta-convergence-20261105-0c901b/native-headers/openssl-3.5.5-1ubuntu3.7/usr/include/x86_64-linux-gnu"
+    },
+    "inherited_compile_options": {},
+    "repository_features_profiles_budgets_or_backend_changed": false
+  },
+  "process_guard_scope": "exact-task-target",
+  "active_cargo_or_compiler_processes": [
+    {
+      "pid": 4121013,
+      "comm": "cargo",
+      "cwd": "/home/qq/work/hepta-notes-qualification-20261105-4d868a11/desktop",
+      "CARGO_TARGET_DIR": "/home/qq/work/hepta-notes-qualification-20261105-4d868a11/target-ui",
+      "selected_option": "--target-dir",
+      "selected_values": [],
+      "classification": "explicitly-different-target",
+      "resolved_effective_target": "/home/qq/work/hepta-notes-qualification-20261105-4d868a11/target-ui"
+    },
+    {
+      "pid": 4121554,
+      "comm": "cargo-nextest",
+      "cwd": "/home/qq/work/hepta-worker-unified-20261105-4d868a11/issuer-parent-negative/repo/codex-rs",
+      "CARGO_TARGET_DIR": "/home/qq/work/hepta-worker-unified-20261105-4d868a11/issuer-parent-negative/target-f7-tests-only",
+      "selected_option": "--target-dir",
+      "selected_values": [],
+      "classification": "explicitly-different-target",
+      "resolved_effective_target": "/home/qq/work/hepta-worker-unified-20261105-4d868a11/issuer-parent-negative/target-f7-tests-only"
+    },
+    {
+      "pid": 4121565,
+      "comm": "cargo",
+      "cwd": "/home/qq/work/hepta-worker-unified-20261105-4d868a11/issuer-parent-negative/repo/codex-rs",
+      "CARGO_TARGET_DIR": "/home/qq/work/hepta-worker-unified-20261105-4d868a11/issuer-parent-negative/target-f7-tests-only",
+      "selected_option": "--target-dir",
+      "selected_values": [],
+      "classification": "explicitly-different-target",
+      "resolved_effective_target": "/home/qq/work/hepta-worker-unified-20261105-4d868a11/issuer-parent-negative/target-f7-tests-only"
+    },
+    {
+      "pid": 4134799,
+      "comm": "cargo",
+      "cwd": "/home/qq/work/hepta-modules40-20261105-a9f4ebc7/source/codex-rs",
+      "CARGO_TARGET_DIR": "/home/qq/work/hepta-modules40-20261105-a9f4ebc7/target",
+      "selected_option": "--target-dir",
+      "selected_values": [],
+      "classification": "explicitly-different-target",
+      "resolved_effective_target": "/home/qq/work/hepta-modules40-20261105-a9f4ebc7/target"
+    },
+    {
+      "pid": 4142209,
+      "comm": "rustc",
+      "cwd": "/home/qq/work/hepta-worker-unified-20261105-4d868a11/cargo-home/registry/src/index.crates.io-1949cf8c6b5b557f/gix-0.83.0",
+      "CARGO_TARGET_DIR": "/home/qq/work/hepta-worker-unified-20261105-4d868a11/issuer-parent-negative/target-f7-tests-only",
+      "selected_option": "--out-dir",
+      "selected_values": [
+        "/home/qq/work/hepta-worker-unified-20261105-4d868a11/issuer-parent-negative/target-f7-tests-only/debug/deps"
+      ],
+      "classification": "explicitly-different-target",
+      "resolved_environment_target": "/home/qq/work/hepta-worker-unified-20261105-4d868a11/issuer-parent-negative/target-f7-tests-only",
+      "resolved_output_directory": "/home/qq/work/hepta-worker-unified-20261105-4d868a11/issuer-parent-negative/target-f7-tests-only/debug/deps"
+    },
+    {
+      "pid": 4142263,
+      "comm": "rustc",
+      "cwd": "/home/qq/work/hepta-worker-unified-20261105-4d868a11/cargo-home/registry/src/index.crates.io-1949cf8c6b5b557f/hyper-1.12.0",
+      "CARGO_TARGET_DIR": "/home/qq/work/hepta-modules40-20261105-a9f4ebc7/target",
+      "selected_option": "--out-dir",
+      "selected_values": [
+        "/home/qq/work/hepta-modules40-20261105-a9f4ebc7/target/debug/deps"
+      ],
+      "classification": "explicitly-different-target",
+      "resolved_environment_target": "/home/qq/work/hepta-modules40-20261105-a9f4ebc7/target",
+      "resolved_output_directory": "/home/qq/work/hepta-modules40-20261105-a9f4ebc7/target/debug/deps"
+    },
+    {
+      "pid": 4142334,
+      "comm": "rustc",
+      "cwd": "/home/qq/work/hepta-notes-qualification-20261105-4d868a11/cargo-home/registry/src/index.crates.io-1949cf8c6b5b557f/serde_repr-0.1.21",
+      "CARGO_TARGET_DIR": "/home/qq/work/hepta-notes-qualification-20261105-4d868a11/target-ui",
+      "selected_option": "--out-dir",
+      "selected_values": [
+        "/home/qq/work/hepta-notes-qualification-20261105-4d868a11/target-ui/debug/deps"
+      ],
+      "classification": "explicitly-different-target",
+      "resolved_environment_target": "/home/qq/work/hepta-notes-qualification-20261105-4d868a11/target-ui",
+      "resolved_output_directory": "/home/qq/work/hepta-notes-qualification-20261105-4d868a11/target-ui/debug/deps"
+    },
+    {
+      "pid": 4142344,
+      "comm": "rustc",
+      "cwd": "/home/qq/work/hepta-worker-unified-20261105-4d868a11/cargo-home/registry/src/index.crates.io-1949cf8c6b5b557f/inout-0.1.4",
+      "CARGO_TARGET_DIR": "/home/qq/work/hepta-worker-unified-20261105-4d868a11/issuer-parent-negative/target-f7-tests-only",
+      "selected_option": "--out-dir",
+      "selected_values": [
+        "/home/qq/work/hepta-worker-unified-20261105-4d868a11/issuer-parent-negative/target-f7-tests-only/debug/deps"
+      ],
+      "classification": "explicitly-different-target",
+      "resolved_environment_target": "/home/qq/work/hepta-worker-unified-20261105-4d868a11/issuer-parent-negative/target-f7-tests-only",
+      "resolved_output_directory": "/home/qq/work/hepta-worker-unified-20261105-4d868a11/issuer-parent-negative/target-f7-tests-only/debug/deps"
+    }
+  ],
+  "target_conflicting_or_unknown_processes": [],
+  "rustc_version": "rustc 1.96.0 (ac68faa20 2026-05-25)\nbinary: rustc\ncommit-hash: ac68faa20c58cbccd01ee7208bf3b6e93a7d7f96\ncommit-date: 2026-05-25\nhost: x86_64-unknown-linux-gnu\nrelease: 1.96.0\nLLVM version: 22.1.2\n",
+  "cargo_lock_sha256": "4165307bb6c41d08e6c1c362060f2a958c8200ea43fdab2b8b1e6220ad82b55c",
+  "clean_finished_unix_ns": 1793872694057030560,
+  "old_unit_paths_absent": true,
+  "exit_code": 0,
+  "source_clean": true,
+  "original_evidence_preserved": true,
+  "exact_task_target": true
+}
