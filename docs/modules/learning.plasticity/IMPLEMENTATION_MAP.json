@@ -2,8 +2,8 @@
   "schema": "hepta.module-implementation-map.v3",
   "schemaVersion": 3,
   "sourceBase": {
-    "commit": "fd6d8d3fcd9aee36711381adf74b6ba7162cda1b",
-    "tree": "755e3264fb49a7fedf56a4d2a77befca7af8c384"
+    "commit": "43e79c9965816e43a6c339a3a291ab97153a92b8",
+    "tree": "e90cd3495c47033d6fab7f5dc9de8b5e1e735f7b"
   },
   "laneId": "LANE-F-ADAPTIVE-POLICY",
   "module": "learning.plasticity",
@@ -19,7 +19,7 @@
   "sourceRootPresent": true,
   "productionImplementation": false,
   "productCallerState": "agentd_process_bootstrap_and_named_learning_producer_source_composed_self_iteration_trigger_not_product_composed_or_target_host_qualified",
-  "productionWriterState": "agentd_append_only_parameter_and_topology_anchor_fence_journal_plus_final_use_runtime_topology_executor_source_implemented_target_host_unproved",
+  "productionWriterState": "agentd_append_only_parameter_and_topology_anchor_fence_journal_source_implemented_public_runtime_topology_DENY_ALL_pending_single_durable_control_lifecycle_owner",
   "operations": [
     {
       "operation": "propose_v2",
@@ -541,8 +541,46 @@
       "operation": "runtime_topology_execution",
       "nativeSymbol": "apply_governed_topology",
       "sourcePath": "codex-rs/hepta-runtime/src/lib.rs",
-      "state": "source_implemented_external_final_use_exact_handoff_migration_owner_and_live_cns_replacement_not_target_host_qualified",
-      "authority": "external_final_use_required",
+      "state": "source_implemented_public_DENY_ALL_before_grant_consumption_or_callbacks_pending_control_lifecycle_owner",
+      "authority": "DENY_ALL",
+      "tests": [
+        "codex-rs/hepta-runtime/src/organs_tests.rs::public_governed_topology_denies_before_grant_consumption_or_callbacks"
+      ],
+      "sourcePathExists": true,
+      "designOperation": "runtime_topology_execution",
+      "mappingClass": "delegated_composition",
+      "delegatedCallees": [
+        {
+          "path": "codex-rs/hepta-runtime/src/topology_execution.rs",
+          "role": "mandatory_admission_returns_CellLifecycleAdmissionUnavailable_before_private_delegation"
+        }
+      ]
+    },
+    {
+      "operation": "runtime_topology_recovery",
+      "nativeSymbol": "recover_governed_topology",
+      "sourcePath": "codex-rs/hepta-runtime/src/lib.rs",
+      "state": "source_implemented_public_DENY_ALL_before_grant_consumption_or_callbacks_pending_control_lifecycle_owner",
+      "authority": "DENY_ALL",
+      "tests": [
+        "codex-rs/hepta-runtime/src/organs_tests.rs::public_topology_recovery_denies_before_grant_consumption_or_callbacks"
+      ],
+      "sourcePathExists": true,
+      "designOperation": "runtime_topology_recovery",
+      "mappingClass": "delegated_composition",
+      "delegatedCallees": [
+        {
+          "path": "codex-rs/hepta-runtime/src/topology_execution.rs",
+          "role": "mandatory_admission_returns_CellLifecycleAdmissionUnavailable_before_private_delegation"
+        }
+      ]
+    },
+    {
+      "operation": "runtime_private_topology_execution",
+      "nativeSymbol": "apply_governed_topology",
+      "sourcePath": "codex-rs/hepta-runtime/src/organs.rs",
+      "state": "private_process_local_final_use_exact_handoff_migration_and_cns_replacement_no_public_lifecycle_admission",
+      "authority": "final_use_required_for_private_process_local_mechanics_only",
       "tests": [
         "codex-rs/hepta-runtime/src/organs_tests.rs::governed_topology_requires_final_use_and_replaces_the_live_cns_generation",
         "codex-rs/hepta-runtime/src/organs_tests.rs::revoked_final_use_never_mutates_the_live_topology",
@@ -565,11 +603,11 @@
       ]
     },
     {
-      "operation": "runtime_topology_recovery",
+      "operation": "runtime_private_topology_recovery",
       "nativeSymbol": "recover_governed_topology",
-      "sourcePath": "codex-rs/hepta-runtime/src/lib.rs",
-      "state": "source_implemented_external_recovery_final_use_exact_handoff_migration_owner_and_stopped_quarantined_forward_recovery_not_target_host_qualified",
-      "authority": "external_recovery_final_use_required",
+      "sourcePath": "codex-rs/hepta-runtime/src/organs.rs",
+      "state": "private_process_local_final_use_exact_handoff_and_stopped_host_forward_recovery_no_public_lifecycle_admission",
+      "authority": "final_use_required_for_private_process_local_mechanics_only",
       "tests": [
         "codex-rs/hepta-runtime/src/organs_tests.rs::authenticated_canary_forces_live_fault_then_rolls_forward_to_reconciled_predecessor_semantics"
       ],
@@ -592,9 +630,9 @@
     {
       "operation": "runtime_structural_canary_fault_rollback",
       "nativeSymbol": "recover_governed_topology",
-      "sourcePath": "codex-rs/hepta-runtime/src/lib.rs",
-      "state": "qualification_composed_live_apply_with_migration_forced_stopped_host_fault_distinct_recovery_final_use_with_migration_rollforward_and_authenticated_observer_receipt_not_target_host_qualified",
-      "authority": "external_final_use_required_for_apply_and_rollback",
+      "sourcePath": "codex-rs/hepta-runtime/src/organs.rs",
+      "state": "private_process_local_canary_with_signed_observer_fixture_public_lifecycle_DENY_ALL_no_target_host_qualification",
+      "authority": "private_final_use_required_for_apply_and_recovery_no_public_lifecycle_activation",
       "tests": [
         "codex-rs/hepta-runtime/src/organs_tests.rs::authenticated_canary_forces_live_fault_then_rolls_forward_to_reconciled_predecessor_semantics"
       ],
@@ -621,15 +659,16 @@
     }
   ],
   "repositoryControlledGaps": [
+    "Implement the single durable Control Cell lifecycle owner with mandatory phase capabilities, durable CNS CAS/readback, generation fences, independently retained revocation/recovery floors and native receipts before enabling public topology apply or recovery; current public admission remains DENY_ALL.",
     "Compose a real non-test control.engineering/self-iteration coordinator that submits frozen, independently evaluated next-generation parameter/topology requests through AgentdLearningPlasticityProducerV1; the repository now has process bootstrap, the named producer and lifetime E2E, but IterationEnvelopeV1 still has no production caller.",
-    "Run exact-head and deterministic synthetic-merge compilation, tests, strict lint, document verification, Agentd process qualification, Lane F qualification and the live-runtime structural-canary regression for this final source/document head.",
-    "Execute exact unified-candidate descriptor recovery, proposal lifetime and independent live-topology canary tests."
+    "Run exact-head and deterministic synthetic-merge compilation, tests, strict lint, document verification, Agentd process qualification, Lane F qualification, public lifecycle refusal regressions and private process-local structural-canary controls for this final source/document head.",
+    "Execute exact unified-candidate descriptor recovery and proposal lifetime tests; run independent target-host topology canaries only after the mandatory Control lifecycle owner is implemented and qualified."
   ],
   "externalEvidenceGates": [
     "independent semantic and security review",
     "target-host execution with the anchor/fence journal placed in a rollback domain physically independent from each proposal registry, plus crash/recovery telemetry",
     "operator acceptance and incident-recovery exercise",
-    "target-host topology application with production telemetry and a forced-fault rollback/reconciliation canary; the repository now contains a live-runtime source qualification but not deployment evidence",
+    "target-host topology application with production telemetry and a forced-fault rollback/reconciliation canary after mandatory Control lifecycle admission is implemented; private process-local source controls are not deployment evidence",
     "promotion, activation and release"
   ],
   "claimBoundary": {
@@ -696,7 +735,7 @@
     },
     {
       "path": "codex-rs/hepta-contracts",
-      "object": "6ad43485c66625f8ef687562f8e2b5308c7f5917"
+      "object": "ae00a467594ea32923fd91fb7f2474e5af6c8641"
     },
     {
       "path": "codex-rs/hepta-control-plane",
@@ -792,11 +831,19 @@
     },
     {
       "path": "codex-rs/hepta-runtime/src/lib.rs",
-      "object": "145498ec9981af5ab490e45e1f2b647c406bf530"
+      "object": "a58dfaa26fb8544530603f0c14ca0339514b17bf"
+    },
+    {
+      "path": "codex-rs/hepta-runtime/src/organs.rs",
+      "object": "0950be6088f669be5d00837646e624190efa0e5e"
     },
     {
       "path": "codex-rs/hepta-runtime/src/organs_tests.rs",
-      "object": "8d9b121c9e3c703c8ebd0412ca7487b3748c441b"
+      "object": "06a42540a0d857b26d85e9fa4bbac83cba04f4c8"
+    },
+    {
+      "path": "codex-rs/hepta-runtime/src/topology_execution.rs",
+      "object": "768b0dd2a5c29a2eb0ac640228ccab5a6d5d8a35"
     },
     {
       "path": "docs/modules/learning.plasticity/TECHNICAL.md",
