@@ -31,7 +31,9 @@ fn calculator_independent_issuer_revocation_refuses_new_signed_effect() {
             &ed25519_dalek::Signature::from_slice(&positive.signature).unwrap(),
         )
         .unwrap();
-    registry.revoke("desktop-issuer-authority", 1, [8; 32]).unwrap();
+    registry
+        .revoke("desktop-issuer-authority", 1, [8; 32])
+        .unwrap();
     assert!(issuer.with_live_lease(|_| Ok(())).is_err());
     writer.with_live(&registry.verifier(), |_| Ok(())).unwrap();
     let before = serde_json::to_value(issuer.store.load(STATE_OWNER).unwrap()).unwrap();
@@ -43,6 +45,9 @@ fn calculator_independent_issuer_revocation_refuses_new_signed_effect() {
         matches!(result, Err(_) | Ok(None)),
         "Calculator must not create a new signed effect after its original issuer was revoked"
     );
-    assert_eq!(serde_json::to_value(issuer.store.load(STATE_OWNER).unwrap()).unwrap(), before);
+    assert_eq!(
+        serde_json::to_value(issuer.store.load(STATE_OWNER).unwrap()).unwrap(),
+        before
+    );
     assert_eq!(registry.frontier().unwrap(), frontier);
 }

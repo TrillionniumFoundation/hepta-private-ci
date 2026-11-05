@@ -262,7 +262,11 @@ impl DeploymentFinalUseIssuer {
         let parent = match parent {
             Some(parent) => Some(parent.map_err(root::lease_error)?),
             None if self.lease.is_none() => None,
-            None => return Err(io::Error::other("live original issuer required for new text")),
+            None => {
+                return Err(io::Error::other(
+                    "live original issuer required for new text",
+                ));
+            }
         };
         if let Some(parent) = parent {
             Self::validate_issuer_lease_time(parent, state.head.authority_epoch, now)?;
