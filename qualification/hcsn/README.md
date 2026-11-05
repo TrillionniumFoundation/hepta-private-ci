@@ -42,6 +42,51 @@ checks mass/escape on all held-out inputs and reports joint `(32,.1)`,
 Finite mass accounting does not establish resolution independence, and smoke
 weights do not qualify full-budget B.
 
+### Measured CPU smoke and remaining gates
+
+Final smoke has **48 unique requests: 45 completed, 0 failed, 3 unavailable**;
+all three official CfC seeds complete after correcting its timespan broadcasting.
+Mamba2 remains unavailable on CPU. The constant predictor test MSE is
+**0.36800548**. Means below use completed seeds, with the complete denominator
+retained in each row (completed / failed / unavailable). Throughput and latency
+are measurements on this CPU, not CUDA claims. Eight optimization steps do not
+establish convergence or superiority. Per-seed values and deviations are in the
+[summary](evidence/cloud-20261105/qualified-source/summary.json) and raw receipt.
+
+| Model | C/F/U (of 3) | Test MSE | Train examples/s | Inference examples/s | p50 ms | p95 ms |
+| --- | --- | ---: | ---: | ---: | ---: | ---: |
+| adaptive_lif | 3/0/0 | 0.410222 | 3644.68 | 18920.7 | 0.843418 | 0.968344 |
+| cfc | 3/0/0 | 0.368342 | 2967.96 | 16192.8 | 0.955246 | 1.28736 |
+| gru | 3/0/0 | 0.386832 | 7154.75 | 70594.9 | 0.20412 | 0.319278 |
+| hx_attention | 3/0/0 | 0.364493 | 48.0593 | 249.679 | 65.1215 | 68.4909 |
+| hx_call | 3/0/0 | 0.396069 | 50.9493 | 279.412 | 56.4526 | 62.4152 |
+| hx_dual | 3/0/0 | 0.396088 | 43.5987 | 240.663 | 67.4806 | 71.2929 |
+| hx_fixed | 3/0/0 | 0.396392 | 46.6956 | 254.001 | 64.0356 | 68.8281 |
+| hx_risk | 3/0/0 | 0.388596 | 767.019 | 3992.93 | 4.01358 | 4.35368 |
+| lif | 3/0/0 | 0.416321 | 3839.64 | 20091.5 | 0.783982 | 0.943149 |
+| mamba2 | 0/0/3 | — | — | — | — | — |
+| no_recovery | 3/0/0 | 0.39834 | 48.3548 | 253.11 | 64.1883 | 66.9419 |
+| no_rollover | 3/0/0 | 0.39844 | 622.804 | 3366.25 | 4.85696 | 5.28677 |
+| pif | 3/0/0 | 0.397737 | 1787.98 | 9132.68 | 1.75409 | 1.98655 |
+| population_flux | 3/0/0 | 0.370274 | 43.5495 | 112.251 | 139.667 | 160.842 |
+| softplus | 3/0/0 | 0.398426 | 1531.65 | 7328.3 | 2.09049 | 2.73665 |
+| transformer | 3/0/0 | 0.373921 | 4061.9 | 39708.7 | 0.406 | 0.470289 |
+
+All 45 completed runs have zero observed training/execution failures; the
+three unavailable requests remain separate. GPU allocation and measured energy
+are **null for all 45 runs**, with missing reasons; no physical energy counter
+is accessible. Full CUDA failure rates and quality are unmeasured, not zero.
+
+The [new-weight B audit](evidence/cloud-20261105/qualified-source/population-audit.json)
+covers all 64 held-out inputs for each of three seeds. Maximum mass error is
+**3.5763e-7** at the trained `(32,.1)` grid and **6.5566e-7** over refinements;
+observed escape is zero. Joint refinement to `(128,.025)` changes filtered
+outputs by RMS **0.1660–0.1977**, and test MSE ranges **0.37077–0.37908** there.
+The trained-grid mean MSE is **0.3702743**, above the constant predictor. These
+measured sensitivities leave resolution independence open; mass conservation
+and zero observed escape do not certify convergence. Full-budget trained B,
+CUDA memory, official Mamba2 execution and GPU energy gates remain open.
+
 ## Historical evidence and implementation scope
 
 | Evidence | What it supports | Current scope |
