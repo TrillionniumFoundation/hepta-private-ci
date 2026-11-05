@@ -1,0 +1,216 @@
+{
+  "schema": "hepta.runtime-convergence-native-validation.v1",
+  "phase": "desktop-regression",
+  "source": "/home/qq/work/hepta-convergence-20261105-0c901b/source",
+  "implementation_commit": "facba0d32c1cd0e8163a6186d7ba91fa311f2e2e",
+  "format_receipt_sha256": "4a447cf48bfb064ea46bb1068e85d926bd876ca0669b75daf88512a17a8d7c49",
+  "state": "desktop-regression-complete",
+  "steps": [
+    {
+      "name": "head",
+      "args": [
+        "git",
+        "rev-parse",
+        "HEAD"
+      ],
+      "exit_code": 0,
+      "elapsed_seconds": 0.0006718635559082031,
+      "stdout_sha256": "a58fce23a9012e1ca38a28b8a8fc73b45d0baf47911b5cf58770f9376cebff41",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "rustc",
+      "args": [
+        "rustc",
+        "-Vv"
+      ],
+      "exit_code": 0,
+      "elapsed_seconds": 0.008005857467651367,
+      "stdout_sha256": "f64c55ed9f210d80a9b248206104a47175faf5ec94a093e4ad132549209089fc",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "cargo",
+      "args": [
+        "cargo",
+        "-V"
+      ],
+      "exit_code": 0,
+      "elapsed_seconds": 0.014302730560302734,
+      "stdout_sha256": "b6ef6807dd96d18b833474ad68e7a23a29e562a29c67afa71a59fb9a73df0068",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "preflight-changed",
+      "args": [
+        "git",
+        "diff",
+        "--name-only",
+        "-z"
+      ],
+      "exit_code": 0,
+      "elapsed_seconds": 0.003016233444213867,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "just-desktop-regression",
+      "args": [
+        "just",
+        "test",
+        "--locked",
+        "-p",
+        "codex-hepta-agentd",
+        "-E",
+        "test(/(^|::)(desktop_policy_two_successors_keep_one_original_issuer_then_revocation_fences_the_pair)$/)"
+      ],
+      "exit_code": 0,
+      "elapsed_seconds": 62.47322201728821,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_sha256": "4e9dac0c9f1a432c6c5cbe82a3ee1d162473cc774c153caafe6b29bcb76d57da"
+    }
+  ],
+  "source_before": [
+    {
+      "path": "codex-rs/hepta-agentd/src/deployment_desktop.rs",
+      "sha256": "7a1744f1668a966ba39ad76bd5541ae8075d85eb22a9927d802370e840569eca",
+      "git_blob": "4e6319f8d235b6cdb541b3c3edd77251bafc9a7f",
+      "bytes": 7325
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/deployment_issuer_root.rs",
+      "sha256": "b1147e693f884afd9e0f0d0c0d172d9f690c71e3ae18bb678997bc353d4d6941",
+      "git_blob": "13c813efd1d8b0b8c45b4ac093dcb0ef0dab2521",
+      "bytes": 8180
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/deployment_writer.rs",
+      "sha256": "3925a3abbecfd2561640bb171bbbbcfa52cdd5648d5eadc2142550fae72f5b38",
+      "git_blob": "6abc0d537236398477102339fa0744dc72ec43a4",
+      "bytes": 11945
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/lane_b_runtime.rs",
+      "sha256": "18a606b9760f76971bf9e574b34998d54214dc28e44c295f5c3acd8d873813c7",
+      "git_blob": "cc04f811846522073a4918b6c918fe862206ce23",
+      "bytes": 26548
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/lane_b_runtime_tests.rs",
+      "sha256": "298eaf033ce9acc064c783afa1b2a598edc74eeca2e6a166d16e02ea1eaa5727",
+      "git_blob": "5c2601957ba753230b149b9291bd14b463a48957",
+      "bytes": 31378
+    },
+    {
+      "path": "codex-rs/hepta-intelligence-eval/src/product_runner.rs",
+      "sha256": "b00f4f3d0e73ed1f206a5387268a60c05372299eec238925ff2b54537be65f25",
+      "git_blob": "0c374acd8c5e25626c213c1ed9f6ba36d3fcbe42",
+      "bytes": 37054
+    },
+    {
+      "path": "codex-rs/hepta-intelligence-eval/src/product_runner_tests.rs",
+      "sha256": "5d725c7f941bef353945a6707b03424e0818913f36b36f3d3ca1312b6280911d",
+      "git_blob": "bbead9a4627526ceb1a034732ecfb54051856352",
+      "bytes": 24812
+    },
+    {
+      "path": "codex-rs/hepta-intelligence/src/evaluated_shadow_test_support.rs",
+      "sha256": "d2b94d7cb163c0ee83549efc54d1ced0ab00b2823d919c2d3e6d17c956caf3ae",
+      "git_blob": "af57c7bbd3bd2e2641c7ffad06c856b7303290de",
+      "bytes": 23101
+    },
+    {
+      "path": "codex-rs/hepta-intelligence/src/evaluated_shadow_tests.rs",
+      "sha256": "716ee503b6de4d81d9c89446cb502256890bf4d670dbf8a8a3ea83e54ccfc4f1",
+      "git_blob": "fa8259d9cfd1c1e244ba7522ea3379417cbb06ee",
+      "bytes": 20979
+    },
+    {
+      "path": "codex-rs/hepta-runtime/src/lib.rs",
+      "sha256": "2f9d7865417dc8db620dcd149c99e624310dd33a743d6545e94fa79c8b48bbd5",
+      "git_blob": "a58dfaa26fb8544530603f0c14ca0339514b17bf",
+      "bytes": 44919
+    },
+    {
+      "path": "codex-rs/hepta-runtime/src/organs_tests.rs",
+      "sha256": "8100a42fd789269b2444a443f3869592c575ebfb94946417c99a47e9d12f0733",
+      "git_blob": "06a42540a0d857b26d85e9fa4bbac83cba04f4c8",
+      "bytes": 34903
+    },
+    {
+      "path": "codex-rs/hepta-runtime/src/topology_execution.rs",
+      "sha256": "f1baa6c08cc72dabec84715a6a627cc0a8ca5dcc18f8f11081dd55f0ce7484db",
+      "git_blob": "768b0dd2a5c29a2eb0ac640228ccab5a6d5d8a35",
+      "bytes": 14599
+    },
+    {
+      "path": "codex-rs/utils/pty/src/win/mod.rs",
+      "sha256": "d9b5bb6c6eb485369c8810f7b30731cad53b2e221f0a841ef0d19f7c786c04ba",
+      "git_blob": "d244e22befecda19782f1fc2a696af1a534069b0",
+      "bytes": 6422
+    }
+  ],
+  "negative_loops": "A failed test does not separately observe every loop branch.",
+  "environment_repair": {
+    "receipt_sha256": "b33807074fafd12680d8d868069f1d76d5f41e2c4a1020b7a54b8890fad26740",
+    "package": "libclang-common-21-dev",
+    "version": "1:21.1.8-6ubuntu1",
+    "apt_expected_sha256": "c7188f593d77017a4ebb6fea76bb4b5180a3e5a1e7b9f0e3dbd5f5abf7e7183e",
+    "resource_directory": "/home/qq/work/hepta-convergence-20261105-0c901b/native-headers/clang21-21.1.8-6ubuntu1/usr/lib/llvm-21/lib/clang/21",
+    "BINDGEN_EXTRA_CLANG_ARGS": "-resource-dir=/home/qq/work/hepta-convergence-20261105-0c901b/native-headers/clang21-21.1.8-6ubuntu1/usr/lib/llvm-21/lib/clang/21",
+    "repository_source_or_features_changed": false
+  },
+  "openssl_environment_repair": {
+    "receipt_sha256": "dfc3b19bd311df2d9f8376730845f5593df62396bfbe94a65318655c6bda4ba7",
+    "version": "3.5.5-1ubuntu3.7",
+    "apt_expected_sha256": {
+      "libssl-dev": "d1cf6cafb141490b7020e392964b1f901835d60cb88c3a68ef0f95ef5e930de4",
+      "libssl3t64": "3ff73e121f6cd4f19e80ab4329dfd914108b3936c9db3708200203a9b245b34d"
+    },
+    "runtime_library_identity": [
+      {
+        "name": "libssl.so.3",
+        "sha256": "63b47f444efa588e291e9b650a5ba2ab02f856356f2d50f13a2e477db9119e09",
+        "matches_installed_bytes": true
+      },
+      {
+        "name": "libcrypto.so.3",
+        "sha256": "5385f0436ac2e284ba8c5fb1488874057c29c04be72dea32add832694f381e28",
+        "matches_installed_bytes": true
+      }
+    ],
+    "environment": {
+      "OPENSSL_INCLUDE_DIR": "/home/qq/work/hepta-convergence-20261105-0c901b/native-headers/openssl-3.5.5-1ubuntu3.7/usr/include",
+      "OPENSSL_LIB_DIR": "/home/qq/work/hepta-convergence-20261105-0c901b/native-headers/openssl-3.5.5-1ubuntu3.7/usr/lib/x86_64-linux-gnu",
+      "CPATH": "/home/qq/work/hepta-convergence-20261105-0c901b/native-headers/openssl-3.5.5-1ubuntu3.7/usr/include/x86_64-linux-gnu"
+    },
+    "repository_source_features_or_backend_changed": false
+  },
+  "environment": {
+    "RUSTUP_HOME": "/home/qq/work/hepta-convergence-20261105-0c901b/rustup-home-1.96.0",
+    "RUSTUP_TOOLCHAIN": "1.96.0",
+    "CARGO_BUILD_JOBS": "2",
+    "CARGO_TARGET_DIR": "/home/qq/work/hepta-convergence-20261105-0c901b/target",
+    "BINDGEN_EXTRA_CLANG_ARGS": "-resource-dir=/home/qq/work/hepta-convergence-20261105-0c901b/native-headers/clang21-21.1.8-6ubuntu1/usr/lib/llvm-21/lib/clang/21",
+    "OPENSSL_LIB_DIR": "/home/qq/work/hepta-convergence-20261105-0c901b/native-headers/openssl-3.5.5-1ubuntu3.7/usr/lib/x86_64-linux-gnu",
+    "OPENSSL_INCLUDE_DIR": "/home/qq/work/hepta-convergence-20261105-0c901b/native-headers/openssl-3.5.5-1ubuntu3.7/usr/include",
+    "CPATH": "/home/qq/work/hepta-convergence-20261105-0c901b/native-headers/openssl-3.5.5-1ubuntu3.7/usr/include/x86_64-linux-gnu"
+  },
+  "inherited_compile_options": {},
+  "versions": {
+    "rustc": "rustc 1.96.0 (ac68faa20 2026-05-25)\nbinary: rustc\ncommit-hash: ac68faa20c58cbccd01ee7208bf3b6e93a7d7f96\ncommit-date: 2026-05-25\nhost: x86_64-unknown-linux-gnu\nrelease: 1.96.0\nLLVM version: 22.1.2",
+    "cargo": "cargo 1.96.0 (30a34c682 2026-05-25)"
+  },
+  "command_exit_code": 0,
+  "positive_observation": {
+    "summary": "Summary [   0.065s] 1 test run: 1 passed, 661 skipped",
+    "run_count": 1,
+    "required_tests": [
+      "desktop_policy_two_successors_keep_one_original_issuer_then_revocation_fences_the_pair"
+    ],
+    "observed_passes": [
+      "desktop_policy_two_successors_keep_one_original_issuer_then_revocation_fences_the_pair"
+    ]
+  },
+  "exit_code": 0
+}

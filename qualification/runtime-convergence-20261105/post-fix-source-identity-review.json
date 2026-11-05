@@ -1,0 +1,109 @@
+{
+  "schema": "hepta.first-native-fix-review.v1",
+  "raw_fix_receipt_state": "fix-blocked",
+  "raw_fix_receipt_sha256": "ae54b470fd20e079d33602f60abffc3f130816586974b297cebe2f6ea3704d3b",
+  "clippy_exit_code": 0,
+  "exact_tested_head": "facba0d32c1cd0e8163a6186d7ba91fa311f2e2e",
+  "native_patch_sha256": "8226534cf866dd0be0ed94099bef18ca7a1cd64d701ae4d48df0427f63248d07",
+  "files": [
+    {
+      "path": "codex-rs/hepta-agentd/src/authority_host_admin_issuer_tests.rs",
+      "before_sha256": "12efc9975b17c10f05ac31e7cf89699509aca7af21501954c4afc8160dab46d3",
+      "before_git_blob": "9f1f043b9f55ecac764fa9ff6ab50ceb2cfada45",
+      "after_sha256": "60bf227d6b4630a26078b18c7a7d294cbfe331c3b2afe2409c3b893dc9e51875",
+      "after_git_blob": "3f865200105061a2d47cd778293ea5680e9e0df5",
+      "after_actual_native_version": "66306:65160531:4652:1793868998716218834:1793868998716218834",
+      "before_identity_method": "reverse of exact native diff; full facba Git blob to be independently checked"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/root_desktop_startup_tests.rs",
+      "before_sha256": "17f6d5b14c720b87afb46d28d97767feb138fa513ff04e0b3ef64eca25cfd617",
+      "before_git_blob": "bf0aeee0d3d1c6e89ca4f73214807ff43d7986aa",
+      "after_sha256": "1bb3ffd780266128f4afa82f97ec7e6f4bcbba8e3399bcfc914f392a29559ccd",
+      "after_git_blob": "071273b873f95471e984cfe5bd3e975b068a86a7",
+      "after_actual_native_version": "66306:65160861:6736:1793869007936891670:1793869007936891670",
+      "before_identity_method": "reverse of exact native diff; full facba Git blob to be independently checked"
+    }
+  ],
+  "controlled_source_unchanged": [
+    {
+      "path": "codex-rs/hepta-agentd/src/deployment_desktop.rs",
+      "before_sha256": "7a1744f1668a966ba39ad76bd5541ae8075d85eb22a9927d802370e840569eca",
+      "after_sha256": "7a1744f1668a966ba39ad76bd5541ae8075d85eb22a9927d802370e840569eca",
+      "unchanged": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/deployment_issuer_root.rs",
+      "before_sha256": "b1147e693f884afd9e0f0d0c0d172d9f690c71e3ae18bb678997bc353d4d6941",
+      "after_sha256": "b1147e693f884afd9e0f0d0c0d172d9f690c71e3ae18bb678997bc353d4d6941",
+      "unchanged": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/deployment_writer.rs",
+      "before_sha256": "3925a3abbecfd2561640bb171bbbbcfa52cdd5648d5eadc2142550fae72f5b38",
+      "after_sha256": "3925a3abbecfd2561640bb171bbbbcfa52cdd5648d5eadc2142550fae72f5b38",
+      "unchanged": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/lane_b_runtime.rs",
+      "before_sha256": "18a606b9760f76971bf9e574b34998d54214dc28e44c295f5c3acd8d873813c7",
+      "after_sha256": "18a606b9760f76971bf9e574b34998d54214dc28e44c295f5c3acd8d873813c7",
+      "unchanged": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/lane_b_runtime_tests.rs",
+      "before_sha256": "298eaf033ce9acc064c783afa1b2a598edc74eeca2e6a166d16e02ea1eaa5727",
+      "after_sha256": "298eaf033ce9acc064c783afa1b2a598edc74eeca2e6a166d16e02ea1eaa5727",
+      "unchanged": true
+    },
+    {
+      "path": "codex-rs/hepta-intelligence-eval/src/product_runner.rs",
+      "before_sha256": "b00f4f3d0e73ed1f206a5387268a60c05372299eec238925ff2b54537be65f25",
+      "after_sha256": "b00f4f3d0e73ed1f206a5387268a60c05372299eec238925ff2b54537be65f25",
+      "unchanged": true
+    },
+    {
+      "path": "codex-rs/hepta-intelligence-eval/src/product_runner_tests.rs",
+      "before_sha256": "5d725c7f941bef353945a6707b03424e0818913f36b36f3d3ca1312b6280911d",
+      "after_sha256": "5d725c7f941bef353945a6707b03424e0818913f36b36f3d3ca1312b6280911d",
+      "unchanged": true
+    },
+    {
+      "path": "codex-rs/hepta-intelligence/src/evaluated_shadow_test_support.rs",
+      "before_sha256": "d2b94d7cb163c0ee83549efc54d1ced0ab00b2823d919c2d3e6d17c956caf3ae",
+      "after_sha256": "d2b94d7cb163c0ee83549efc54d1ced0ab00b2823d919c2d3e6d17c956caf3ae",
+      "unchanged": true
+    },
+    {
+      "path": "codex-rs/hepta-intelligence/src/evaluated_shadow_tests.rs",
+      "before_sha256": "716ee503b6de4d81d9c89446cb502256890bf4d670dbf8a8a3ea83e54ccfc4f1",
+      "after_sha256": "716ee503b6de4d81d9c89446cb502256890bf4d670dbf8a8a3ea83e54ccfc4f1",
+      "unchanged": true
+    },
+    {
+      "path": "codex-rs/hepta-runtime/src/lib.rs",
+      "before_sha256": "2f9d7865417dc8db620dcd149c99e624310dd33a743d6545e94fa79c8b48bbd5",
+      "after_sha256": "2f9d7865417dc8db620dcd149c99e624310dd33a743d6545e94fa79c8b48bbd5",
+      "unchanged": true
+    },
+    {
+      "path": "codex-rs/hepta-runtime/src/organs_tests.rs",
+      "before_sha256": "8100a42fd789269b2444a443f3869592c575ebfb94946417c99a47e9d12f0733",
+      "after_sha256": "8100a42fd789269b2444a443f3869592c575ebfb94946417c99a47e9d12f0733",
+      "unchanged": true
+    },
+    {
+      "path": "codex-rs/hepta-runtime/src/topology_execution.rs",
+      "before_sha256": "f1baa6c08cc72dabec84715a6a627cc0a8ca5dcc18f8f11081dd55f0ce7484db",
+      "after_sha256": "f1baa6c08cc72dabec84715a6a627cc0a8ca5dcc18f8f11081dd55f0ce7484db",
+      "unchanged": true
+    },
+    {
+      "path": "codex-rs/utils/pty/src/win/mod.rs",
+      "before_sha256": "d9b5bb6c6eb485369c8810f7b30731cad53b2e221f0a841ef0d19f7c786c04ba",
+      "after_sha256": "d9b5bb6c6eb485369c8810f7b30731cad53b2e221f0a841ef0d19f7c786c04ba",
+      "unchanged": true
+    }
+  ],
+  "tests_rerun_after_fix": false
+}

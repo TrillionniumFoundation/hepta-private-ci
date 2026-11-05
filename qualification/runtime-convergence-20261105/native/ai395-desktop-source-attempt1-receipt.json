@@ -1,0 +1,193 @@
+{
+  "schema": "hepta.desktop-fixed-native-source.v1",
+  "source": "/home/qq/work/hepta-convergence-20261105-0c901b/source",
+  "old_head": "1d87082c0d5afd2b474a2c453ea98005fd540dea",
+  "implementation_commit": "facba0d32c1cd0e8163a6186d7ba91fa311f2e2e",
+  "implementation_tree": "38f3e6e9f2e3fa3605e720a4a287bbd75d25695b",
+  "comparison_base": "4e31abc907f09740d402d1ddef7a1d2fe0a366a6",
+  "prior_format_receipt_sha256": "30bea20ec319e66aa1fd21fbd4d3553eb0c3f01c56e80aa221a72935b3a3ece9",
+  "steps": [
+    {
+      "name": "old-head",
+      "args": [
+        "git",
+        "rev-parse",
+        "HEAD"
+      ],
+      "exit_code": 0,
+      "elapsed_seconds": 0.0026264190673828125,
+      "stdout_sha256": "182a3b53577f3679d5b4285538d6b1332c4706cc8bab53266f4148e23ab17be8",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "untracked",
+      "args": [
+        "git",
+        "ls-files",
+        "--others",
+        "--exclude-standard",
+        "-z"
+      ],
+      "exit_code": 0,
+      "elapsed_seconds": 0.07372546195983887,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "prior-changed-paths",
+      "args": [
+        "git",
+        "diff",
+        "--name-only",
+        "-z"
+      ],
+      "exit_code": 0,
+      "elapsed_seconds": 0.005641937255859375,
+      "stdout_sha256": "e8cfcb575d946641859b2f1a7689bf8c89569c3f13b4967d11059ac63f50377d",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "prior-format-patch",
+      "args": [
+        "git",
+        "diff",
+        "--binary",
+        "--no-ext-diff"
+      ],
+      "exit_code": 0,
+      "elapsed_seconds": 0.003583669662475586,
+      "stdout_sha256": "5cba91f580803a7ba8d005135fa341f1c49c46aa4a0ee80e8f87ccd0882c741c",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "fetch-exact-head",
+      "args": [
+        "git",
+        "-c",
+        "protocol.version=2",
+        "fetch",
+        "--filter=blob:none",
+        "--depth=1",
+        "--no-tags",
+        "origin",
+        "facba0d32c1cd0e8163a6186d7ba91fa311f2e2e"
+      ],
+      "exit_code": 0,
+      "elapsed_seconds": 4.55400824546814,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_sha256": "3873f865cdf1efeab2e47ad1882e5af669ccf697f0d0fde059fc5d6d310a124d"
+    },
+    {
+      "name": "target-tree",
+      "args": [
+        "git",
+        "rev-parse",
+        "facba0d32c1cd0e8163a6186d7ba91fa311f2e2e^{tree}"
+      ],
+      "exit_code": 0,
+      "elapsed_seconds": 0.0011112689971923828,
+      "stdout_sha256": "984791e1313d6db7fac382847351fa7a5192910d42ba980b8fea759aa595a2e4",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "target-dirty-0",
+      "args": [
+        "git",
+        "show",
+        "facba0d32c1cd0e8163a6186d7ba91fa311f2e2e:codex-rs/hepta-agentd/src/lane_b_runtime_tests.rs"
+      ],
+      "exit_code": 0,
+      "elapsed_seconds": 2.0688655376434326,
+      "stdout_sha256": "298eaf033ce9acc064c783afa1b2a598edc74eeca2e6a166d16e02ea1eaa5727",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "target-dirty-1",
+      "args": [
+        "git",
+        "show",
+        "facba0d32c1cd0e8163a6186d7ba91fa311f2e2e:codex-rs/hepta-intelligence-eval/src/product_runner_tests.rs"
+      ],
+      "exit_code": 0,
+      "elapsed_seconds": 2.1317288875579834,
+      "stdout_sha256": "5d725c7f941bef353945a6707b03424e0818913f36b36f3d3ca1312b6280911d",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "target-dirty-2",
+      "args": [
+        "git",
+        "show",
+        "facba0d32c1cd0e8163a6186d7ba91fa311f2e2e:codex-rs/hepta-intelligence/src/evaluated_shadow_tests.rs"
+      ],
+      "exit_code": 0,
+      "elapsed_seconds": 2.6662380695343018,
+      "stdout_sha256": "716ee503b6de4d81d9c89446cb502256890bf4d670dbf8a8a3ea83e54ccfc4f1",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "donor-blob-deployment_desktop",
+      "args": [
+        "git",
+        "rev-parse",
+        "facba0d32c1cd0e8163a6186d7ba91fa311f2e2e:codex-rs/hepta-agentd/src/deployment_desktop.rs"
+      ],
+      "exit_code": 0,
+      "elapsed_seconds": 0.0013530254364013672,
+      "stdout_sha256": "f03e89e28c86415089e6e6e218d8507beab37fb5eeb0f9ed570eb80af800b4fc",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "donor-blob-deployment_issuer_root",
+      "args": [
+        "git",
+        "rev-parse",
+        "facba0d32c1cd0e8163a6186d7ba91fa311f2e2e:codex-rs/hepta-agentd/src/deployment_issuer_root.rs"
+      ],
+      "exit_code": 0,
+      "elapsed_seconds": 0.0009915828704833984,
+      "stdout_sha256": "f027e219ae80d53a87c3c7f20b9fd49477c2835be639fe0d6c5aa0260824de8a",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "donor-blob-deployment_writer",
+      "args": [
+        "git",
+        "rev-parse",
+        "facba0d32c1cd0e8163a6186d7ba91fa311f2e2e:codex-rs/hepta-agentd/src/deployment_writer.rs"
+      ],
+      "exit_code": 0,
+      "elapsed_seconds": 0.001093149185180664,
+      "stdout_sha256": "d315290791d1f92638a9611516196b0f747a0f9ca4f06310b7a66520e3f6f0c7",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "unchanged-regression-blob",
+      "args": [
+        "git",
+        "rev-parse",
+        "facba0d32c1cd0e8163a6186d7ba91fa311f2e2e:codex-rs/hepta-agentd/src/deployment_desktop_tests.rs"
+      ],
+      "exit_code": 0,
+      "elapsed_seconds": 0.0008165836334228516,
+      "stdout_sha256": "8ae1f755f69c19fa95918db7f097adacf2d1b33b34febbff631004083674ef1c",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "checkout-root-designated-head",
+      "args": [
+        "git",
+        "checkout",
+        "--detach",
+        "facba0d32c1cd0e8163a6186d7ba91fa311f2e2e"
+      ],
+      "exit_code": 1,
+      "elapsed_seconds": 0.019602537155151367,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_sha256": "0259d3c3ec87869da7f28c5a7d21143e80e887b19ab88bcc390b7acd70af3150"
+    }
+  ],
+  "state": "desktop-source-preparation-blocked",
+  "error": "checkout-root-designated-head: error: Your local changes to the following files would be overwritten by checkout:\n\tcodex-rs/hepta-agentd/src/lane_b_runtime_tests.rs\n\tcodex-rs/hepta-intelligence-eval/src/product_runner_tests.rs\n\tcodex-rs/hepta-intelligence/src/evaluated_shadow_tests.rs\nPlease commit your changes or stash them before you switch branches.\nAborting\n",
+  "exit_code": 1
+}

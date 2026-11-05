@@ -1,0 +1,37 @@
+{
+  "patch": "desktop-issuer-joint-fence.patch",
+  "patch_sha256": "435e854c9604e43b72a767c4304e2bfbb1c1ce291b76c99601cd6b86bb77a895",
+  "patch_lines": 140,
+  "files": [
+    {
+      "path": "codex-rs/hepta-agentd/src/deployment_desktop.rs",
+      "base_blob": "7fd59781e1953b7686e59ddea3bfb59705952afb",
+      "changed_blob": "4e6319f8d235b6cdb541b3c3edd77251bafc9a7f",
+      "base_sha256": "817b58352b2c5a4551f43831a1df80a3f4ea6ef196f0ade884caea64c9ab0b6d",
+      "changed_sha256": "7a1744f1668a966ba39ad76bd5541ae8075d85eb22a9927d802370e840569eca"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/deployment_issuer_root.rs",
+      "base_blob": "a73f99071f284cc34264e39b85c5b372dfac1abf",
+      "changed_blob": "13c813efd1d8b0b8c45b4ac093dcb0ef0dab2521",
+      "base_sha256": "696445a230d335b181306130c9bafafc3304014ef0f579eb934b3e5cde50ccc0",
+      "changed_sha256": "b1147e693f884afd9e0f0d0c0d172d9f690c71e3ae18bb678997bc353d4d6941"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/deployment_writer.rs",
+      "base_blob": "07f81c22b2694fc998660cafe2343812898a067d",
+      "changed_blob": "6abc0d537236398477102339fa0744dc72ec43a4",
+      "base_sha256": "61e164311970e5dd43e0da0b8bcd85e0c95e54817600d3bdbd582615aa626222",
+      "changed_sha256": "3925a3abbecfd2561640bb171bbbbcfa52cdd5648d5eadc2142550fae72f5b38"
+    }
+  ],
+  "unchanged_regression_blob": "a8c7698a8bf6a58f35d6bcec57470df0efee6f55",
+  "log_sha256": "12c6f807607f5716935b70ba01b71a2d887c69733d406045afa8f0964c0b78dd",
+  "verification": [
+    "git apply --check on exact base files",
+    "git apply then exact changed-byte comparison for all 3 files",
+    "git diff --check",
+    "original regression bytes equal actual native exported source",
+    "actual native failing stderr SHA256 verified"
+  ]
+}

@@ -1,0 +1,319 @@
+{
+  "schema": "hepta.reviewed-postfix-source-alignment.v1",
+  "steps": [
+    {
+      "name": "first-old-head",
+      "args": [
+        "git",
+        "rev-parse",
+        "HEAD"
+      ],
+      "source": "/home/qq/work/hepta-convergence-20261105-0c901b/source",
+      "exit_code": 0,
+      "elapsed_seconds": 0.0015742778778076172,
+      "stdout_sha256": "a58fce23a9012e1ca38a28b8a8fc73b45d0baf47911b5cf58770f9376cebff41",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "first-untracked",
+      "args": [
+        "git",
+        "ls-files",
+        "--others",
+        "--exclude-standard",
+        "-z"
+      ],
+      "source": "/home/qq/work/hepta-convergence-20261105-0c901b/source",
+      "exit_code": 0,
+      "elapsed_seconds": 0.06433796882629395,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "first-fetch-published-postfix",
+      "args": [
+        "git",
+        "-c",
+        "protocol.version=2",
+        "fetch",
+        "--filter=blob:none",
+        "--depth=1",
+        "--no-tags",
+        "origin",
+        "432421d0d9ca9d82c5e3401fe3425af29131505a"
+      ],
+      "source": "/home/qq/work/hepta-convergence-20261105-0c901b/source",
+      "exit_code": 0,
+      "elapsed_seconds": 4.129444360733032,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_sha256": "fcd548e35c5d946b6c86c6959bbe20c81cf64de226cc3a637ae2322c6500cd79"
+    },
+    {
+      "name": "first-published-tree",
+      "args": [
+        "git",
+        "rev-parse",
+        "432421d0d9ca9d82c5e3401fe3425af29131505a^{tree}"
+      ],
+      "source": "/home/qq/work/hepta-convergence-20261105-0c901b/source",
+      "exit_code": 0,
+      "elapsed_seconds": 0.0009734630584716797,
+      "stdout_sha256": "b059bc88e87eedbbb19bce93fae9369b33784d4351c68d8c249ae9001d1e3a2e",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "first-all-tracked-equal-before-align",
+      "args": [
+        "git",
+        "diff",
+        "--exit-code",
+        "432421d0d9ca9d82c5e3401fe3425af29131505a",
+        "--"
+      ],
+      "source": "/home/qq/work/hepta-convergence-20261105-0c901b/source",
+      "exit_code": 0,
+      "elapsed_seconds": 2.310603618621826,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "first-align-index-head",
+      "args": [
+        "git",
+        "reset",
+        "--mixed",
+        "432421d0d9ca9d82c5e3401fe3425af29131505a"
+      ],
+      "source": "/home/qq/work/hepta-convergence-20261105-0c901b/source",
+      "exit_code": 0,
+      "elapsed_seconds": 0.007911443710327148,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "first-clean",
+      "args": [
+        "git",
+        "status",
+        "--porcelain=v1",
+        "--untracked-files=all"
+      ],
+      "source": "/home/qq/work/hepta-convergence-20261105-0c901b/source",
+      "exit_code": 0,
+      "elapsed_seconds": 0.01073455810546875,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "first-rust-inventory",
+      "args": [
+        "git",
+        "ls-tree",
+        "-r",
+        "-z",
+        "432421d0d9ca9d82c5e3401fe3425af29131505a"
+      ],
+      "source": "/home/qq/work/hepta-convergence-20261105-0c901b/source",
+      "exit_code": 0,
+      "elapsed_seconds": 0.004431724548339844,
+      "stdout_sha256": "e9e9972f09da559a22413de03cad7efbe76bbea04906d35d4ea74d268d468bb1",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "first-full-r3-format-check",
+      "args": [
+        "just",
+        "fmt",
+        "--base",
+        "4e31abc907f09740d402d1ddef7a1d2fe0a366a6",
+        "--check"
+      ],
+      "source": "/home/qq/work/hepta-convergence-20261105-0c901b/source",
+      "exit_code": 0,
+      "elapsed_seconds": 0.2830073833465576,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "first-clean-after-readonly-checks",
+      "args": [
+        "git",
+        "status",
+        "--porcelain=v1",
+        "--untracked-files=all"
+      ],
+      "source": "/home/qq/work/hepta-convergence-20261105-0c901b/source",
+      "exit_code": 0,
+      "elapsed_seconds": 0.011781454086303711,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "second-old-head",
+      "args": [
+        "git",
+        "rev-parse",
+        "HEAD"
+      ],
+      "source": "/home/qq/work/hepta-convergence-20261105-0c901b/source-next",
+      "exit_code": 0,
+      "elapsed_seconds": 0.00183868408203125,
+      "stdout_sha256": "fc8cf3e94fd299e155456b1e97233a1d98418be24323d71f7fb55a5f65ad219d",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "second-clean-before",
+      "args": [
+        "git",
+        "status",
+        "--porcelain=v1",
+        "--untracked-files=all"
+      ],
+      "source": "/home/qq/work/hepta-convergence-20261105-0c901b/source-next",
+      "exit_code": 0,
+      "elapsed_seconds": 0.07775998115539551,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "second-fetch-published-merge",
+      "args": [
+        "git",
+        "-c",
+        "protocol.version=2",
+        "fetch",
+        "--filter=blob:none",
+        "--depth=1",
+        "--no-tags",
+        "origin",
+        "eed6541df0add428add8e2d9ab2cbd54a961abeb",
+        "432421d0d9ca9d82c5e3401fe3425af29131505a"
+      ],
+      "source": "/home/qq/work/hepta-convergence-20261105-0c901b/source-next",
+      "exit_code": 0,
+      "elapsed_seconds": 3.317647933959961,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_sha256": "0736a43d8a242e2bede8a86cb44504ec0b9f6626d47847c1401f7f847afaa7bb"
+    },
+    {
+      "name": "second-published-tree",
+      "args": [
+        "git",
+        "rev-parse",
+        "eed6541df0add428add8e2d9ab2cbd54a961abeb^{tree}"
+      ],
+      "source": "/home/qq/work/hepta-convergence-20261105-0c901b/source-next",
+      "exit_code": 0,
+      "elapsed_seconds": 0.0014886856079101562,
+      "stdout_sha256": "6be4efd4814da9a583ccf0a82e714feaf8f958c92bb66feb1d5646c217b541f2",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "second-checkout-published-merge",
+      "args": [
+        "git",
+        "checkout",
+        "--detach",
+        "eed6541df0add428add8e2d9ab2cbd54a961abeb"
+      ],
+      "source": "/home/qq/work/hepta-convergence-20261105-0c901b/source-next",
+      "exit_code": 0,
+      "elapsed_seconds": 2.366060733795166,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_sha256": "d0497f25e75f1ee1864ae99e7d3d31af4c809b23b1fa9adb9d9e9a73ea4c5855"
+    },
+    {
+      "name": "second-clean",
+      "args": [
+        "git",
+        "status",
+        "--porcelain=v1",
+        "--untracked-files=all"
+      ],
+      "source": "/home/qq/work/hepta-convergence-20261105-0c901b/source-next",
+      "exit_code": 0,
+      "elapsed_seconds": 0.015240192413330078,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "second-rust-inventory",
+      "args": [
+        "git",
+        "ls-tree",
+        "-r",
+        "-z",
+        "eed6541df0add428add8e2d9ab2cbd54a961abeb"
+      ],
+      "source": "/home/qq/work/hepta-convergence-20261105-0c901b/source-next",
+      "exit_code": 0,
+      "elapsed_seconds": 0.004565238952636719,
+      "stdout_sha256": "52cfad40ee6a5f9f5a0c453eae8ae504f50472b80837d43dc49d72ddf9932377",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "second-ingress-format-check",
+      "args": [
+        "just",
+        "fmt",
+        "--base",
+        "432421d0d9ca9d82c5e3401fe3425af29131505a",
+        "--check"
+      ],
+      "source": "/home/qq/work/hepta-convergence-20261105-0c901b/source-next",
+      "exit_code": 0,
+      "elapsed_seconds": 0.22243285179138184,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "second-full-r3-format-check",
+      "args": [
+        "just",
+        "fmt",
+        "--base",
+        "4e31abc907f09740d402d1ddef7a1d2fe0a366a6",
+        "--check"
+      ],
+      "source": "/home/qq/work/hepta-convergence-20261105-0c901b/source-next",
+      "exit_code": 0,
+      "elapsed_seconds": 0.3804817199707031,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "second-clean-after-readonly-checks",
+      "args": [
+        "git",
+        "status",
+        "--porcelain=v1",
+        "--untracked-files=all"
+      ],
+      "source": "/home/qq/work/hepta-convergence-20261105-0c901b/source-next",
+      "exit_code": 0,
+      "elapsed_seconds": 0.014405488967895508,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  ],
+  "state": "reviewed-postfix-heads-aligned-and-byte-verified",
+  "first_tested_head": "facba0d32c1cd0e8163a6186d7ba91fa311f2e2e",
+  "first_postfix_head": "432421d0d9ca9d82c5e3401fe3425af29131505a",
+  "first_postfix_tree": "d93136bb5e318ea4131bfb5cb0b9ac9310f27d1d",
+  "second_execution_head": "eed6541df0add428add8e2d9ab2cbd54a961abeb",
+  "second_execution_tree": "b8ce8b96a759f522cb7db60027d4844f1b3ad974",
+  "first_tests_or_fix_rerun": false,
+  "raw_fix_receipt_rewritten": false,
+  "raw_fix_receipt_sha256": "ae54b470fd20e079d33602f60abffc3f130816586974b297cebe2f6ea3704d3b",
+  "first": {
+    "verified_rust_count": 5309,
+    "verified_rust_bytes": 80597087,
+    "thirteen_tested_sources_unchanged": true
+  },
+  "second": {
+    "verified_rust_count": 5314,
+    "verified_rust_bytes": 80662751,
+    "fourteen_ingress_sources_unchanged": true
+  },
+  "exit_code": 0
+}

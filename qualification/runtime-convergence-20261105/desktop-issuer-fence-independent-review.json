@@ -1,0 +1,76 @@
+{
+  "verdict": "SOURCE_REVIEW_ACCEPTED; no new authorization or writer-owner blocker identified",
+  "reviewer": "adaptive independent review",
+  "base_commit": "ebdf792c076c1d516ae9f96eec079921ccd1588f",
+  "donor_commit": "65f0ad816ffa4724626db3f1c36a20eb7faab61f",
+  "published_first_commit": "facba0d32c1cd0e8163a6186d7ba91fa311f2e2e",
+  "published_second_merge": "e0b522cd437af1362f8be23f601886b46ec1b063",
+  "patch_sha256": "435e854c9604e43b72a767c4304e2bfbb1c1ce291b76c99601cd6b86bb77a895",
+  "files": [
+    {
+      "path": "codex-rs/hepta-agentd/src/deployment_desktop.rs",
+      "base_blob": "7fd59781e1953b7686e59ddea3bfb59705952afb",
+      "donor_and_published_blob": "4e6319f8d235b6cdb541b3c3edd77251bafc9a7f",
+      "published_facba_fetched_independently": true,
+      "applied_sha256": "7a1744f1668a966ba39ad76bd5541ae8075d85eb22a9927d802370e840569eca"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/deployment_issuer_root.rs",
+      "base_blob": "a73f99071f284cc34264e39b85c5b372dfac1abf",
+      "donor_and_published_blob": "13c813efd1d8b0b8c45b4ac093dcb0ef0dab2521",
+      "published_facba_fetched_independently": true,
+      "applied_sha256": "b1147e693f884afd9e0f0d0c0d172d9f690c71e3ae18bb678997bc353d4d6941"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/deployment_writer.rs",
+      "base_blob": "07f81c22b2694fc998660cafe2343812898a067d",
+      "donor_and_published_blob": "6abc0d537236398477102339fa0744dc72ec43a4",
+      "published_facba_fetched_independently": true,
+      "applied_sha256": "3925a3abbecfd2561640bb171bbbbcfa52cdd5648d5eadc2142550fae72f5b38"
+    }
+  ],
+  "original_regression": {
+    "path": "codex-rs/hepta-agentd/src/deployment_desktop_tests.rs",
+    "blob": "a8c7698a8bf6a58f35d6bcec57470df0efee6f55",
+    "same_bytes_as_actual_original_native_failure_export": true,
+    "same_bytes_at_published_second_merge": true,
+    "test": "desktop_policy_two_successors_keep_one_original_issuer_then_revocation_fences_the_pair",
+    "original_stderr_sha256": "12c6f807607f5716935b70ba01b71a2d887c69733d406045afa8f0964c0b78dd",
+    "assertions_timeouts_and_fixture_unchanged": true
+  },
+  "underlying_primitives": [
+    {
+      "path": "codex-rs/hepta-contracts/src/authority_lease.rs",
+      "blob": "924e4552472038934f665f6acf7a95438294893f",
+      "ref": "e0b522cd437af1362f8be23f601886b46ec1b063"
+    },
+    {
+      "path": "codex-rs/hepta-contracts/src/authority_lease_pair_boundary.rs",
+      "blob": "ba58d84fc6a40a83009143ba9878c22c081de8b2",
+      "ref": "e0b522cd437af1362f8be23f601886b46ec1b063"
+    }
+  ],
+  "findings": [
+    "Original defect: Desktop policy replacement checked the registered writer lease but did not require the still-live original issuer lease. Revoking only the original issuer could leave the writer live and allow replacement.",
+    "Fresh original identity: with_live_writer reads the pinned original lease from the original verifier and requires exact pinned revision; it obtains a fresh issuer token and an exact writer token from the same verifier. There is no cached-old-issuer fallback.",
+    "Current joint fence: the existing primitive checks both tokens originate from the exact owner Arc, enforces distinct lease IDs, then validates full current lease equality, revocation, current registry epoch, binding and time for both under one mutex held through the local callback.",
+    "Epoch preservation: callback compares both issuer/writer epochs with the loaded original issuer-state epoch immediately before and after the policy CAS. It never resets or rewrites an epoch, revocation frontier, sequence, signer key or writer proof.",
+    "Retained writer proof remains authenticated and exact; it is rechecked against the state loaded under the original issuer request lock before policy mutation. The policy transition remains a single original store CAS for both slots.",
+    "Lock ordering remains registry fence -> original issuer request lock -> original store/clock. The callback performs no verifier/registry reentry, remote execution or terminal acknowledgement wait. The old writer-only boundary already held that same registry mutex through this callback.",
+    "Other writer callers preserve the exact lease comparison, current verify_use and dispatch_authority_lease_with_witness path. The extracted helper returns the existing opaque owner-bound token only within the parent module; no additional registration authority, writer, ledger or grant is created.",
+    "The public actual-Root check is unchanged. Missing, revoked, replaced, wrong-epoch, not-yet-valid or expired leases fail closed before the policy CAS whenever detected at entry/pre-CAS.",
+    "Durable ambiguity is preserved: a lease can expire during local durable I/O; the post-CAS check returns error without pretending the write was rolled back. The original contract requires reconciliation of the same complete successor pair."
+  ],
+  "nonblocking_error_shape_note": "For an unprotected issuer with lease=None, the old Desktop entry returned PermissionDenied and the shared helper now returns io::Error::other(\"no protected lease\"). Both paths reject before mutation; this is an error-kind compatibility difference, not an authority bypass. The actual Root public gate is unchanged.",
+  "verification": {
+    "direct_base_and_donor_and_published_blob_reads": true,
+    "independent_git_apply_check": 0,
+    "independent_applied_bytes_match_all_three": true,
+    "published_compare_ahead_by": 1,
+    "published_compare_behind_by": 0,
+    "published_compare_changed_paths": 3,
+    "tests_modified": false,
+    "native_execution_by_this_reviewer": false
+  },
+  "native_scope": "Only the original failing native log was used here. Corrected named regression, full package green and final scoped fix results remain owned by lifecycle/root; this review does not assert a patched native PASS."
+}

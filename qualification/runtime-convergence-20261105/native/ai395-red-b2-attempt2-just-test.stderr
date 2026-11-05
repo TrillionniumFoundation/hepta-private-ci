@@ -1,0 +1,109 @@
+RUST_MIN_STACK=8388608 NEXTEST_PROFILE=local python3 ../scripts/run-nextest.py "$@"
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#generic-array@0.14.7` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#proc-macro2@1.0.107` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#quote@1.0.47` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#serde_core@1.0.229` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#zmij@1.0.23` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#serde@1.0.229` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#serde_json@1.0.154` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#curve25519-dalek@4.1.3` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#rustix@1.1.5` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#libc@0.2.191` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#getrandom@0.3.4` which wasn't produced by cargo metadata
+   Compiling codex-hepta-intelligence-eval v0.0.0 (/home/qq/work/hepta-convergence-20261105-0c901b/source/codex-rs/hepta-intelligence-eval)
+warning: unused import: `crate::IndependentEvaluationDispositionV1`
+  --> hepta-intelligence-eval/src/product_runner.rs:31:5
+   |
+31 | use crate::IndependentEvaluationDispositionV1;
+   |     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+   |
+   = note: `#[warn(unused_imports)]` (part of `#[warn(unused)]`) on by default
+
+warning: `codex-hepta-intelligence-eval` (lib) generated 1 warning (run `cargo fix --lib -p codex-hepta-intelligence-eval` to apply 1 suggestion)
+   Compiling codex-hepta-intelligence v0.0.0 (/home/qq/work/hepta-convergence-20261105-0c901b/source/codex-rs/hepta-intelligence)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 2.77s
+────────────
+ Nextest run ID b67c4301-92f8-4fd0-a119-c69b6ba4b7a6 with nextest profile: local
+    Starting 2 tests across 4 binaries (199 tests skipped)
+  TRY 1 FAIL [   0.022s] (───) codex-hepta-intelligence-eval product_runner::tests::product_runner_binds_estimator_receipts_and_persists_signed_decision
+  stdout ───
+
+    running 1 test
+    test product_runner::tests::product_runner_binds_estimator_receipts_and_persists_signed_decision ... FAILED
+
+    failures:
+
+    failures:
+        product_runner::tests::product_runner_binds_estimator_receipts_and_persists_signed_decision
+
+    test result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 117 filtered out; finished in 0.02s
+
+  stderr ───
+
+    thread 'product_runner::tests::product_runner_binds_estimator_receipts_and_persists_signed_decision' (3484087) panicked at hepta-intelligence-eval/src/product_runner_tests.rs:552:9:
+    assertion failed: changed.validate_integrity().is_err()
+    note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+
+  TRY 2 FAIL [   0.022s] (1/2) codex-hepta-intelligence-eval product_runner::tests::product_runner_binds_estimator_receipts_and_persists_signed_decision
+  stdout ───
+
+    running 1 test
+    test product_runner::tests::product_runner_binds_estimator_receipts_and_persists_signed_decision ... FAILED
+
+    failures:
+
+    failures:
+        product_runner::tests::product_runner_binds_estimator_receipts_and_persists_signed_decision
+
+    test result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 117 filtered out; finished in 0.02s
+
+  stderr ───
+
+    thread 'product_runner::tests::product_runner_binds_estimator_receipts_and_persists_signed_decision' (3484090) panicked at hepta-intelligence-eval/src/product_runner_tests.rs:552:9:
+    assertion failed: changed.validate_integrity().is_err()
+    note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+
+  TRY 1 FAIL [   0.104s] (───) codex-hepta-intelligence evaluated_shadow::tests::ineligible_qualification_cannot_be_relabelled_to_enter_ports_or_record_a_decision
+  stdout ───
+
+    running 1 test
+    test evaluated_shadow::tests::ineligible_qualification_cannot_be_relabelled_to_enter_ports_or_record_a_decision ... FAILED
+
+    failures:
+
+    failures:
+        evaluated_shadow::tests::ineligible_qualification_cannot_be_relabelled_to_enter_ports_or_record_a_decision
+
+    test result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 80 filtered out; finished in 0.10s
+
+  stderr ───
+
+    thread 'evaluated_shadow::tests::ineligible_qualification_cannot_be_relabelled_to_enter_ports_or_record_a_decision' (3484088) panicked at hepta-intelligence/src/evaluated_shadow_tests.rs:547:5:
+    relabelled qualification reached ports: [ObjectiveValidated, LegalSetBuilt, NeuralSignalCollected, PromptPortfolioBuilt, IntuitionDecided, ContextCompiled, DispatchProposed]; result: Ok(EvaluatedShadowReceiptV1 { evaluation: SignedEvaluationDecisionV1 { decision: IndependentEvaluationDecisionV1 { evaluation_id: StableId(BoundedText("plan")), candidate_id: StableId(BoundedText("policy")), baseline_id: StableId(BoundedText("baseline")), disposition: EligibleForIndependentSelection, failed_metrics: [StableId(BoundedText("qualification-metric"))], evidence_digest: Digest32("165ed6d8c36121a15488a000359a09335f495dc600fb22512590a28cdff57b67"), authority: AuthorityPosture { _deny_all: () } }, trust_digest: Digest32("0562c1b0a0b352a1acfdd7ef4284706103c90a1bcec4c212b8152e09f598aaf6"), authentication_digest: Digest32("5aa96fb103143dbaceeffc1a5833fbecfe425f913188230497306d55d0d50014") }, pipeline: LaneFShadowPipelineReceiptV1 { run_id: StableId(BoundedText("shadow-run")), snapshot_digest: Digest32("93a88fb1bce2abfdf0203214918a8b2227429e4f39c89cec871e2e9e675b5f4a"), disposition: DispatchProposed, stages: [StageTraceV1 { stage: ObjectiveValidated, producer: StableId(BoundedText("objective.compiler")), predecessor_digest: Digest32("1134e2c890f037311432a0d64b8da6476c568b493865deaf739085543baca5d4"), output_digest: Digest32("a75e3621987b3c26758fb9c0b8ddf0f2c1f77a5d37fdb1284f862a8b9d64ead7"), outcome: Completed, evidence_digest: Digest32("a75e3621987b3c26758fb9c0b8ddf0f2c1f77a5d37fdb1284f862a8b9d64ead7") }, StageTraceV1 { stage: LegalSetBuilt, producer: StableId(BoundedText("intelligence.control")), predecessor_digest: Digest32("a75e3621987b3c26758fb9c0b8ddf0f2c1f77a5d37fdb1284f862a8b9d64ead7"), output_digest: Digest32("1964a4fad1805b0fd2770d5b7790ca6de8df372166c0d2db85f98556a9d33c72"), outcome: Completed, evidence_digest: Digest32("1964a4fad1805b0fd2770d5b7790ca6de8df372166c0d2db85f98556a9d33c72") }, StageTraceV1 { stage: NeuralSignalCollected, producer: StableId(BoundedText("neuron.runtime")), predecessor_digest: Digest32("1964a4fad1805b0fd2770d5b7790ca6de8df372166c0d2db85f98556a9d33c72"), output_digest: Digest32("dd87558fa8f19f2d7bbe1be6d4f5555a2cbc5dc29103e2620791640c48b9cab6"), outcome: Completed, evidence_digest: Digest32("dd87558fa8f19f2d7bbe1be6d4f5555a2cbc5dc29103e2620791640c48b9cab6") }, StageTraceV1 { stage: PromptPortfolioBuilt, producer: StableId(BoundedText("prompt.optimizer")), predecessor_digest: Digest32("dd87558fa8f19f2d7bbe1be6d4f5555a2cbc5dc29103e2620791640c48b9cab6"), output_digest: Digest32("ea7097afd53efef45a8ab2fc5d7813851666091cbf804047c80685096e75ee1a"), outcome: Completed, evidence_digest: Digest32("ea7097afd53efef45a8ab2fc5d7813851666091cbf804047c80685096e75ee1a") }, StageTraceV1 { stage: IntuitionDecided, producer: StableId(BoundedText("intuition.policy")), predecessor_digest: Digest32("ea7097afd53efef45a8ab2fc5d7813851666091cbf804047c80685096e75ee1a"), output_digest: Digest32("b586f9d3e6416f1cadb056a8d65b11333e92d3e9fdfd3dc37c6a0e2e3a33bf0e"), outcome: Completed, evidence_digest: Digest32("b586f9d3e6416f1cadb056a8d65b11333e92d3e9fdfd3dc37c6a0e2e3a33bf0e") }, StageTraceV1 { stage: ContextCompiled, producer: StableId(BoundedText("context.compiler")), predecessor_digest: Digest32("b586f9d3e6416f1cadb056a8d65b11333e92d3e9fdfd3dc37c6a0e2e3a33bf0e"), output_digest: Digest32("f20624c2917b9a6063ea69e69143df7c05b19a5f764e6c7cfc309ab488cffb39"), outcome: Completed, evidence_digest: Digest32("f20624c2917b9a6063ea69e69143df7c05b19a5f764e6c7cfc309ab488cffb39") }, StageTraceV1 { stage: DispatchProposed, producer: StableId(BoundedText("runtime.agentd")), predecessor_digest: Digest32("f20624c2917b9a6063ea69e69143df7c05b19a5f764e6c7cfc309ab488cffb39"), output_digest: Digest32("ce148233eea4dc740baf59e7290f168263d7b69ac9b5534ca4fae0bb684fff3f"), outcome: Completed, evidence_digest: Digest32("ce148233eea4dc740baf59e7290f168263d7b69ac9b5534ca4fae0bb684fff3f") }, StageTraceV1 { stage: LearningRecorded, producer: StableId(BoundedText("learning.ledger")), predecessor_digest: Digest32("ce148233eea4dc740baf59e7290f168263d7b69ac9b5534ca4fae0bb684fff3f"), output_digest: Digest32("13aa776c01c5aa5161616495e725c779a0b625df13de9c4cf0423557142d4a2b"), outcome: Completed, evidence_digest: Digest32("13aa776c01c5aa5161616495e725c779a0b625df13de9c4cf0423557142d4a2b") }], trace_digest: Digest32("2d794686fa6d7dba02a4039dc88b9ad0cffa07ab0d60498dbee7d21a65fcee7b"), authority: AuthorityPosture { _deny_all: () } }, learning: Some(AppendReceipt { disposition: Appended, sequence: LogicalSequence(1), event_digest: Digest32("b20f472e4bad9f3f5df637fad0d78af6b3d98f98460b7adc1100d0303a526320"), chain_digest: Digest32("13aa776c01c5aa5161616495e725c779a0b625df13de9c4cf0423557142d4a2b") }) })
+    note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+
+  TRY 2 FAIL [   0.107s] (2/2) codex-hepta-intelligence evaluated_shadow::tests::ineligible_qualification_cannot_be_relabelled_to_enter_ports_or_record_a_decision
+  stdout ───
+
+    running 1 test
+    test evaluated_shadow::tests::ineligible_qualification_cannot_be_relabelled_to_enter_ports_or_record_a_decision ... FAILED
+
+    failures:
+
+    failures:
+        evaluated_shadow::tests::ineligible_qualification_cannot_be_relabelled_to_enter_ports_or_record_a_decision
+
+    test result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 80 filtered out; finished in 0.10s
+
+  stderr ───
+
+    thread 'evaluated_shadow::tests::ineligible_qualification_cannot_be_relabelled_to_enter_ports_or_record_a_decision' (3484092) panicked at hepta-intelligence/src/evaluated_shadow_tests.rs:547:5:
+    relabelled qualification reached ports: [ObjectiveValidated, LegalSetBuilt, NeuralSignalCollected, PromptPortfolioBuilt, IntuitionDecided, ContextCompiled, DispatchProposed]; result: Ok(EvaluatedShadowReceiptV1 { evaluation: SignedEvaluationDecisionV1 { decision: IndependentEvaluationDecisionV1 { evaluation_id: StableId(BoundedText("plan")), candidate_id: StableId(BoundedText("policy")), baseline_id: StableId(BoundedText("baseline")), disposition: EligibleForIndependentSelection, failed_metrics: [StableId(BoundedText("qualification-metric"))], evidence_digest: Digest32("165ed6d8c36121a15488a000359a09335f495dc600fb22512590a28cdff57b67"), authority: AuthorityPosture { _deny_all: () } }, trust_digest: Digest32("0562c1b0a0b352a1acfdd7ef4284706103c90a1bcec4c212b8152e09f598aaf6"), authentication_digest: Digest32("5aa96fb103143dbaceeffc1a5833fbecfe425f913188230497306d55d0d50014") }, pipeline: LaneFShadowPipelineReceiptV1 { run_id: StableId(BoundedText("shadow-run")), snapshot_digest: Digest32("93a88fb1bce2abfdf0203214918a8b2227429e4f39c89cec871e2e9e675b5f4a"), disposition: DispatchProposed, stages: [StageTraceV1 { stage: ObjectiveValidated, producer: StableId(BoundedText("objective.compiler")), predecessor_digest: Digest32("1134e2c890f037311432a0d64b8da6476c568b493865deaf739085543baca5d4"), output_digest: Digest32("a75e3621987b3c26758fb9c0b8ddf0f2c1f77a5d37fdb1284f862a8b9d64ead7"), outcome: Completed, evidence_digest: Digest32("a75e3621987b3c26758fb9c0b8ddf0f2c1f77a5d37fdb1284f862a8b9d64ead7") }, StageTraceV1 { stage: LegalSetBuilt, producer: StableId(BoundedText("intelligence.control")), predecessor_digest: Digest32("a75e3621987b3c26758fb9c0b8ddf0f2c1f77a5d37fdb1284f862a8b9d64ead7"), output_digest: Digest32("1964a4fad1805b0fd2770d5b7790ca6de8df372166c0d2db85f98556a9d33c72"), outcome: Completed, evidence_digest: Digest32("1964a4fad1805b0fd2770d5b7790ca6de8df372166c0d2db85f98556a9d33c72") }, StageTraceV1 { stage: NeuralSignalCollected, producer: StableId(BoundedText("neuron.runtime")), predecessor_digest: Digest32("1964a4fad1805b0fd2770d5b7790ca6de8df372166c0d2db85f98556a9d33c72"), output_digest: Digest32("dd87558fa8f19f2d7bbe1be6d4f5555a2cbc5dc29103e2620791640c48b9cab6"), outcome: Completed, evidence_digest: Digest32("dd87558fa8f19f2d7bbe1be6d4f5555a2cbc5dc29103e2620791640c48b9cab6") }, StageTraceV1 { stage: PromptPortfolioBuilt, producer: StableId(BoundedText("prompt.optimizer")), predecessor_digest: Digest32("dd87558fa8f19f2d7bbe1be6d4f5555a2cbc5dc29103e2620791640c48b9cab6"), output_digest: Digest32("ea7097afd53efef45a8ab2fc5d7813851666091cbf804047c80685096e75ee1a"), outcome: Completed, evidence_digest: Digest32("ea7097afd53efef45a8ab2fc5d7813851666091cbf804047c80685096e75ee1a") }, StageTraceV1 { stage: IntuitionDecided, producer: StableId(BoundedText("intuition.policy")), predecessor_digest: Digest32("ea7097afd53efef45a8ab2fc5d7813851666091cbf804047c80685096e75ee1a"), output_digest: Digest32("b586f9d3e6416f1cadb056a8d65b11333e92d3e9fdfd3dc37c6a0e2e3a33bf0e"), outcome: Completed, evidence_digest: Digest32("b586f9d3e6416f1cadb056a8d65b11333e92d3e9fdfd3dc37c6a0e2e3a33bf0e") }, StageTraceV1 { stage: ContextCompiled, producer: StableId(BoundedText("context.compiler")), predecessor_digest: Digest32("b586f9d3e6416f1cadb056a8d65b11333e92d3e9fdfd3dc37c6a0e2e3a33bf0e"), output_digest: Digest32("f20624c2917b9a6063ea69e69143df7c05b19a5f764e6c7cfc309ab488cffb39"), outcome: Completed, evidence_digest: Digest32("f20624c2917b9a6063ea69e69143df7c05b19a5f764e6c7cfc309ab488cffb39") }, StageTraceV1 { stage: DispatchProposed, producer: StableId(BoundedText("runtime.agentd")), predecessor_digest: Digest32("f20624c2917b9a6063ea69e69143df7c05b19a5f764e6c7cfc309ab488cffb39"), output_digest: Digest32("ce148233eea4dc740baf59e7290f168263d7b69ac9b5534ca4fae0bb684fff3f"), outcome: Completed, evidence_digest: Digest32("ce148233eea4dc740baf59e7290f168263d7b69ac9b5534ca4fae0bb684fff3f") }, StageTraceV1 { stage: LearningRecorded, producer: StableId(BoundedText("learning.ledger")), predecessor_digest: Digest32("ce148233eea4dc740baf59e7290f168263d7b69ac9b5534ca4fae0bb684fff3f"), output_digest: Digest32("13aa776c01c5aa5161616495e725c779a0b625df13de9c4cf0423557142d4a2b"), outcome: Completed, evidence_digest: Digest32("13aa776c01c5aa5161616495e725c779a0b625df13de9c4cf0423557142d4a2b") }], trace_digest: Digest32("2d794686fa6d7dba02a4039dc88b9ad0cffa07ab0d60498dbee7d21a65fcee7b"), authority: AuthorityPosture { _deny_all: () } }, learning: Some(AppendReceipt { disposition: Appended, sequence: LogicalSequence(1), event_digest: Digest32("b20f472e4bad9f3f5df637fad0d78af6b3d98f98460b7adc1100d0303a526320"), chain_digest: Digest32("13aa776c01c5aa5161616495e725c779a0b625df13de9c4cf0423557142d4a2b") }) })
+    note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+
+────────────
+     Summary [   0.214s] 2 tests run: 0 passed, 2 failed, 199 skipped
+  TRY 2 FAIL [   0.022s] (1/2) codex-hepta-intelligence-eval product_runner::tests::product_runner_binds_estimator_receipts_and_persists_signed_decision
+  TRY 2 FAIL [   0.107s] (2/2) codex-hepta-intelligence evaluated_shadow::tests::ineligible_qualification_cannot_be_relabelled_to_enter_ports_or_record_a_decision
+error: test run failed
+error: recipe `test` failed on line 89 with exit code 100

@@ -5,6 +5,12 @@ model/session/tool execution spine, Agentd is the lifecycle/composition host,
 and durable facts remain with their declared domain writers. It does not add a
 second executor, a new authority issuer, or an adaptive release mechanism.
 
+Current native source identities, observed mutation controls, the full-suite
+failure and repaired sequence are recorded in [native-validation.md](native-validation.md),
+[native-source-manifest.json](native-source-manifest.json), and
+[validation.json](validation.json). Historical preparation records retain their
+original source and timestamp; they are not rewritten as later results.
+
 ## Source composition
 
 | Source | Exact commit |
@@ -121,17 +127,19 @@ candidate in merge `df46f9c35de74544d6f9fbd1a2e04d21b74c8cc6` (tree
 `9faf96c5cda4b04edbc1bf604425380e1f4b5cc5`). It only maps the descriptor clone
 error into the existing I/O error return; original native signal, wait,
 exit-status and descendant handling remain. The donor's later supplemental
-workflow is not part of this merge. The repair still requires native validation
-on the final source composition.
+workflow is not part of this merge. The original Windows gate still requires execution on the final source
+composition; Linux format and package results do not close it.
 
-Linux negative-control execution has begun through the original `just test`
-entry. The first two attempts stopped during dependency compilation because
-Clang resource headers and OpenSSL development files were absent; no test ran,
-so neither attempt is negative-control evidence. Matching development packages
-were verified and unpacked into task-owned directories. The OpenSSL shared
-libraries were compared byte-for-byte with the installed runtime; the TLS and
-bindgen backends, dependencies, features and test assertions are unchanged.
-Individual source and result identities are recorded in `validation.json`.
+Linux negative controls subsequently reached actual behavioral assertions in
+all four families. The initial complete positive run had 812 passes and one
+original desktop issuer-revocation failure. That defect was repaired without
+changing the original test; the tested repair is facba0d3. Current source
+432421 additionally records two reviewed mechanical Clippy test changes, with
+its identity kept separate from the facba test result. Detailed attempts,
+raw logs, repaired gate states and limitations are in `native-validation.md`.
+Earlier missing-header attempts ran no tests and remain setup failures. The
+task-local environment repairs retained the original dependency, backend,
+feature, profile, budget and assertion requirements.
 
 ## Qualification and remaining work
 
@@ -155,8 +163,9 @@ These changes do not close the following product requirements:
 - Process-loss recovery of the original signed append requests and exact
   execution identities, with current trust/provider reconciliation. The
   legacy PendingIntelligenceLedgerAppendV1 is only an in-memory carrier.
-- Complete sealed-receipt ingress across existing signed evaluation and
-  self-evolution callers, followed by independently evidenced selection.
+- The separate sealed-receipt ingress migration in #4856 requires its own
+  native qualification, production receipt readback and independently evidenced
+  selection; this first-wave evidence does not substitute for those results.
 - Same-information, comparable-budget strong baselines; complete failed-candidate,
   planner, critic, training and execution costs; and independent held-out outcomes.
   A source safety fix provides no NDU/Neuron net-benefit evidence. No-update and

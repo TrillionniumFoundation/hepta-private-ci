@@ -1,0 +1,140 @@
+--- a/codex-rs/hepta-agentd/src/deployment_desktop.rs
++++ b/codex-rs/hepta-agentd/src/deployment_desktop.rs
+@@ -85,12 +85,7 @@
+                 "Desktop succession requires a new writer and actual Session pair",
+             ));
+         }
+-        let verifier = &self
+-            .lease
+-            .as_ref()
+-            .ok_or_else(|| denied("protected canonical issuer required"))?
+-            .verifier;
+-        registration.with_live(verifier, |_| {
++        self.with_live_writer(registration, |issuer_lease| {
+             let proof = self.retained_writer_authorization(registration)?;
+             let _guard = self
+                 .request_lock
+@@ -125,6 +120,18 @@
+                 .signing_bytes()
+                 .map_err(io::Error::other)?;
+             }
++            // Waiting for the issuer lock and loading its durable state can
++            // consume either lease. Check again immediately before the CAS.
++            let validate_time = |now| {
++                if issuer_lease.authority_epoch != state.head.authority_epoch
++                    || now < issuer_lease.issued_at_unix_ms
++                    || now >= issuer_lease.expires_at_unix_ms
++                {
++                    return Err(denied("original issuer lease expired or epoch changed"));
++                }
++                writer::validate_writer_time(registration, state.head.authority_epoch, now)
++            };
++            validate_time(self.clock.now_unix_ms().map_err(io::Error::other)?)?;
+             let current = [&state.policies[slots[0]], &state.policies[slots[1]]];
+             if current != [&next_policies[0], &next_policies[1]] {
+                 if current != [&previous_policies[0], &previous_policies[1]] {
+@@ -139,7 +146,7 @@
+                     .map_err(io::Error::other)?;
+             }
+             let after = self.clock.now_unix_ms().map_err(io::Error::other)?;
+-            writer::validate_writer_time(registration, state.head.authority_epoch, after)
++            validate_time(after)
+         })
+     }
+ }
+--- a/codex-rs/hepta-agentd/src/deployment_issuer_root.rs
++++ b/codex-rs/hepta-agentd/src/deployment_issuer_root.rs
+@@ -120,6 +120,48 @@
+             .map_err(lease_error)?
+     }
+ 
++    /// Hold the pinned issuer and the exact registered writer under their
++    /// single owner fence for a bounded local policy mutation.
++    pub(super) fn with_live_writer<T>(
++        &self,
++        registration: &HostAuthorityWriterRegistration,
++        mutate: impl FnOnce(&AuthorityLease) -> io::Result<T>,
++    ) -> io::Result<T> {
++        let pinned = self
++            .lease
++            .as_ref()
++            .ok_or_else(|| io::Error::other("no protected lease"))?;
++        let lease = pinned
++            .verifier
++            .read_lease(&pinned.id)
++            .map_err(lease_error)?
++            .ok_or_else(|| {
++                io::Error::new(io::ErrorKind::PermissionDenied, "original lease missing")
++            })?
++            .lease;
++        if lease.revision != pinned.revision {
++            return Err(io::Error::new(
++                io::ErrorKind::PermissionDenied,
++                "original lease revision mismatch",
++            ));
++        }
++        let issuer_token = pinned
++            .verifier
++            .verify_use(&pinned.id, pinned.revision, &lease.binding)
++            .map_err(lease_error)?;
++        let writer_token = registration.verify_live_token(&pinned.verifier)?;
++        pinned
++            .verifier
++            .with_joint_dispatch_boundary(
++                issuer_token,
++                &lease.binding,
++                writer_token,
++                &registration.authority_lease.binding,
++                |issuer_lease, _, _| mutate(issuer_lease),
++            )
++            .map_err(lease_error)?
++    }
++
+     /// Explicitly create one new root-owned issuer. Existing/partial paths are
+     /// never reset. The supplied clock and lease verifier are original trusted
+     /// owners, not constructed from peer request fields.
+--- a/codex-rs/hepta-agentd/src/deployment_writer.rs
++++ b/codex-rs/hepta-agentd/src/deployment_writer.rs
+@@ -7,6 +7,7 @@
+ use codex_hepta_contracts::VerifiedUseAuthorityRefV1;
+ use codex_hepta_contracts::authority_lease::AuthorityLease;
+ use codex_hepta_contracts::authority_lease::AuthorityLeaseVerifier;
++use codex_hepta_contracts::authority_lease::LeaseVerifiedUseToken;
+ use codex_hepta_contracts::authority_lease::dispatch_authority_lease_with_witness;
+ use ed25519_dalek::Signature;
+ 
+@@ -42,11 +43,10 @@
+         Ok(())
+     }
+ 
+-    pub(crate) fn with_live<T>(
++    pub(super) fn verify_live_token(
+         &self,
+         verifier: &AuthorityLeaseVerifier,
+-        dispatch: impl FnOnce(u64) -> io::Result<T>,
+-    ) -> io::Result<T> {
++    ) -> io::Result<LeaseVerifiedUseToken> {
+         self.validate()?;
+         let lease = verifier
+             .read_lease(&self.authority_lease.lease_id)
+@@ -59,9 +59,18 @@
+                 "writer lease changed",
+             ));
+         }
+-        let token = verifier
++        verifier
+             .verify_use(&lease.lease_id, lease.revision, &lease.binding)
+-            .map_err(root::lease_error)?;
++            .map_err(root::lease_error)
++    }
++
++    pub(crate) fn with_live<T>(
++        &self,
++        verifier: &AuthorityLeaseVerifier,
++        dispatch: impl FnOnce(u64) -> io::Result<T>,
++    ) -> io::Result<T> {
++        let token = self.verify_live_token(verifier)?;
++        let lease = &self.authority_lease;
+         let (result, _) =
+             dispatch_authority_lease_with_witness(verifier, token, &lease.binding, |witness| {
+                 match &witness.authority_ref {
