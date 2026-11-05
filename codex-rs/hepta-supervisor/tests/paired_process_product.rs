@@ -17,6 +17,7 @@ use codex_hepta_fleet::AgentLifecycle;
 use codex_hepta_fleet::AgentLifecycleState;
 use codex_hepta_fleet::AgentManifest;
 use codex_hepta_fleet::FleetRegistry;
+use codex_hepta_fleet::PqReleaseQualification;
 use codex_hepta_fleet::ReleaseId;
 use codex_hepta_fleet::ResourceBudget;
 use codex_hepta_fleet::WorkspaceBinding;
@@ -189,6 +190,7 @@ fn five_real_pairs_adopt_all_ten_children_and_isolate_one_matrix_crash() -> Resu
 }
 
 struct PairFleet {
+    _publisher: PqReleaseQualification,
     _temp: tempfile::TempDir,
     registry: FleetRegistry,
     agents: Vec<AgentId>,
@@ -206,8 +208,11 @@ impl PairFleet {
         let temp = tempfile::Builder::new()
             .prefix("hsup-pairs-")
             .tempdir_in("/tmp")?;
-        let root = HeptaFleetRoot::parse(temp.path().join("fleet"))?;
-        let registry = FleetRegistry::initialize(root.clone())?;
+        let base = temp.path().canonicalize()?;
+        let root = HeptaFleetRoot::parse(base.join("fleet"))?;
+        let (mut publisher, registry) =
+            PqReleaseQualification::initialize(&base.join("publication"), root.clone())
+                .map_err(anyhow::Error::from_boxed)?;
         let mut agents = Vec::new();
         for (index, value) in IDS.iter().take(count).enumerate() {
             let workspace = temp.path().join(format!("workspace-{index}"));
@@ -228,13 +233,16 @@ impl PairFleet {
             "paired-stage before_full_release_install elapsed={:?}",
             started.elapsed()
         );
-        registry.install_release_bundle(
-            release_id.clone(),
-            &fixture_binary,
-            child_args.clone(),
-            Some(&fixture_binary),
-            child_args,
-        )?;
+        publisher
+            .install_release_bundle(
+                &registry,
+                release_id.clone(),
+                &fixture_binary,
+                child_args.clone(),
+                Some(&fixture_binary),
+                child_args,
+            )
+            .map_err(anyhow::Error::from_boxed)?;
         eprintln!(
             "paired-stage after_full_release_install elapsed={:?}",
             started.elapsed()
@@ -259,6 +267,7 @@ impl PairFleet {
         )?;
         assert!(report.faults.is_empty());
         Ok(Self {
+            _publisher: publisher,
             _temp: temp,
             registry,
             agents,
