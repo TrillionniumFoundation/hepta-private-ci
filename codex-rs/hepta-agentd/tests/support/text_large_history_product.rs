@@ -36,6 +36,7 @@ async fn large_original_item_keeps_history_navigable_and_exact_terminal_reconcil
     )?;
     let checkpoint_file = checkpoint_root
         .path()
+        .canonicalize()?
         .join("authbus-replay-checkpoint.json");
     let evidence = HeptaEvidenceStore::open(&SqliteConfig::from_sqlite_home(
         AbsolutePathBuf::from_absolute_path(agent.layout.home_root())?,
