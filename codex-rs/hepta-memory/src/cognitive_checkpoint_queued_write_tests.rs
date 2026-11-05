@@ -12,9 +12,8 @@ async fn queued_writer_reconfirms_dirty_after_intervening_current_publication() 
     tokio::pin!(dirty);
     let _ = dirty.as_mut().enable();
     let writer = fixture.writer.clone();
-    let mut mutation = tokio::spawn(async move {
-        writer.admit("queued-after-current", "fixture", "{}").await
-    });
+    let mut mutation =
+        tokio::spawn(async move { writer.admit("queued-after-current", "fixture", "{}").await });
     tokio::time::timeout(Duration::from_secs(/*secs*/ 5), &mut dirty)
         .await
         .unwrap();
@@ -67,9 +66,8 @@ async fn queued_writer_rejects_mismatched_dirty_ack_after_acquiring_sqlite_lock(
     tokio::pin!(dirty);
     let _ = dirty.as_mut().enable();
     let writer = fixture.writer.clone();
-    let mutation = tokio::spawn(async move {
-        writer.admit("queued-wrong-owner", "fixture", "{}").await
-    });
+    let mutation =
+        tokio::spawn(async move { writer.admit("queued-wrong-owner", "fixture", "{}").await });
     tokio::time::timeout(Duration::from_secs(/*secs*/ 5), &mut dirty)
         .await
         .unwrap();
@@ -123,9 +121,8 @@ async fn cancelled_queued_writer_fences_uncertain_dirty_and_releases_sqlite_lock
     tokio::pin!(first_dirty);
     let _ = first_dirty.as_mut().enable();
     let writer = fixture.writer.clone();
-    let mutation = tokio::spawn(async move {
-        writer.admit("queued-cancelled", "fixture", "{}").await
-    });
+    let mutation =
+        tokio::spawn(async move { writer.admit("queued-cancelled", "fixture", "{}").await });
     tokio::time::timeout(Duration::from_secs(/*secs*/ 5), &mut first_dirty)
         .await
         .unwrap();
