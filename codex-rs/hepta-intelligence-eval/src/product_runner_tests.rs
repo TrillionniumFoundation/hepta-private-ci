@@ -331,6 +331,18 @@ fn signed_context(
     SignedEvaluationEvidenceV1,
     LearningEvidenceVerifierV1,
 ) {
+    signed_context_with_generator_controller(bundle, roles, "generator-controller")
+}
+
+fn signed_context_with_generator_controller(
+    bundle: &IndependentEvaluationBundleV1,
+    roles: &[MetricRoleContractV2],
+    generator_controller_id: &str,
+) -> (
+    ProductQualificationContextV1,
+    SignedEvaluationEvidenceV1,
+    LearningEvidenceVerifierV1,
+) {
     let generator_key = SigningKey::from_bytes(&[41; 32]);
     let evaluator_key = SigningKey::from_bytes(&[42; 32]);
     let scope = digest("product-eval-scope");
@@ -352,7 +364,7 @@ fn signed_context(
         signers: vec![
             TrustedLearningSignerV1 {
                 principal: generator.clone(),
-                controller_id: id("generator-controller"),
+                controller_id: id(generator_controller_id),
                 verifying_key: generator_key.verifying_key().to_bytes(),
                 roles: vec![LearningEvidenceRoleV1::Generator],
                 revoked_at: None,
@@ -540,6 +552,62 @@ fn product_runner_binds_estimator_receipts_and_persists_signed_decision() {
         .unwrap(),
         qualified.decision
     );
+
+    // A legitimate current trust change can preserve every principal and the
+    // complete inner decision. Its newly signed evidence still cannot replace
+    // the trust/authentication identity of this already published receipt.
+    let (_, current_evidence, current_verifier) = signed_context_with_generator_controller(
+        &bundle,
+        &fixture.roles,
+        "rotated-generator-controller",
+    );
+    let current_decision = crate::decide_with_signed_evidence_v2(
+        bundle.clone(),
+        fixture.roles.clone(),
+        &current_evidence,
+        &current_verifier,
+        /*now*/ 50,
+    )
+    .unwrap();
+    assert_eq!(current_decision.decision, qualified.decision.decision);
+    assert_ne!(
+        current_decision.trust_digest,
+        qualified.decision.trust_digest
+    );
+    assert_ne!(
+        current_decision.authentication_digest,
+        qualified.decision.authentication_digest
+    );
+    assert!(
+        matches!(
+            revalidate_product_qualification_v1(
+                &qualified,
+                bundle.clone(),
+                fixture.roles.clone(),
+                &current_evidence,
+                ProductTimingEvidenceV1::Qualification,
+                &current_verifier,
+                /*now*/ 50,
+            ),
+            Err(ProductEvaluationError::Binding(
+                "qualification use evidence"
+            ))
+        ),
+        "reissued current trust must not rebind a published qualification"
+    );
+    assert_eq!(
+        revalidate(
+            &qualified,
+            &bundle,
+            &fixture.roles,
+            &evidence,
+            /*now*/ 50
+        )
+        .unwrap(),
+        qualified.decision
+    );
+    assert_eq!(sink.persisted, vec![qualified.publication_digest]);
+    assert_eq!(fixture.provider.release_count, 1);
 
     // A second, valid evaluator signature with the same disposition is still
     // not the estimator evidence that this terminal publication qualified.
