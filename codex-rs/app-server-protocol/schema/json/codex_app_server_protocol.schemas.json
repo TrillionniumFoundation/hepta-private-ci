@@ -20036,6 +20036,24 @@
         "title": "ThreadArchivedNotification",
         "type": "object"
       },
+      "ThreadBackgroundTerminalsTerminateObservedStatus": {
+        "oneOf": [
+          {
+            "description": "The original process exited and its manager cleanup finished in budget.",
+            "enum": [
+              "confirmed"
+            ],
+            "type": "string"
+          },
+          {
+            "description": "No such confirmation. This does not establish that no effect occurred, that the process exited, or that its owner or handle can be reused.",
+            "enum": [
+              "notConfirmed"
+            ],
+            "type": "string"
+          }
+        ]
+      },
       "ThreadClosedNotification": {
         "$schema": "http://json-schema.org/draft-07/schema#",
         "properties": {
