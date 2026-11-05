@@ -177,7 +177,15 @@ async fn assert_context_compaction_item_lifecycle(codex: &std::sync::Arc<codex_c
                 item: TurnItem::ContextCompaction(_),
                 ..
             }) => saw_compaction_completed = true,
-            EventMsg::TurnComplete(_) => break,
+            EventMsg::TurnComplete(turn) => {
+                // Observe this normal turn's existing finish owner before the
+                // fixture admits its next turn. Completion grants no authority.
+                if let Some(completion) = codex.pending_normal_turn_finish_completion(&turn.turn_id)
+                {
+                    completion.await;
+                }
+                break;
+            }
             _ => {}
         }
     }
