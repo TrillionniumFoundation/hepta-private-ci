@@ -17,9 +17,9 @@ use wiremock::matchers::path_regex;
 
 // Preserve the former product driver's key at the real owner + HTTP boundary.
 // The upgraded host only reads its resulting durable attempt and receipt.
-struct LegacyHttpDriver(AgentdAuthorizedEffectDriver);
+struct LegacyHttpDriver<'a>(AgentdAuthorizedEffectDriver<'a>);
 
-impl AuthorizedEffectDriver for LegacyHttpDriver {
+impl AuthorizedEffectDriver for LegacyHttpDriver<'_> {
     fn recovery_key(
         &self,
         _owner_agent_id: &AgentId,
@@ -82,6 +82,8 @@ async fn host_provider_identity_terminal_execute_uses_store_owner_not_shared_sub
             adapter: host.adapter.clone(),
             provider_scope: host.provider_scope.clone(),
             destination_id: host.destination_id.clone(),
+            // Explicit legacy qualification uses no ordinary PQ owner boundary.
+            before_dispatch: &|| Ok(()),
         };
         // The existing generic owner intentionally permits independent caller
         // subjects. Use its real dispatch so the foreign terminal is valid.
@@ -190,6 +192,8 @@ async fn host_provider_identity_legacy_http_queries_original_occurrence_and_reta
         adapter: host.adapter.clone(),
         provider_scope: host.provider_scope.clone(),
         destination_id: host.destination_id.clone(),
+        // Explicit legacy qualification uses no ordinary PQ owner boundary.
+        before_dispatch: &|| Ok(()),
     });
     fixture
         .store
