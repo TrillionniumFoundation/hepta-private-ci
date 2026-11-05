@@ -43,6 +43,8 @@ def audit_predictions(observation, batch, payload):
             raise ValueError("missing model cannot claim completed predictions")
         return
     model = Model.restore(payload)
+    if not any(row["status"] == "completed" for row in observation["records"]):
+        return
     if model.router == "shared":
         assignments = np.zeros(len(batch.ids), dtype=np.int64)
     elif model.router == "task":
@@ -114,7 +116,11 @@ def audit_migration(arm, validation):
     if migration["roundtrip_digest"] != digest(migration["roundtrip_model"]):
         raise ValueError("migration parameters do not match their digest")
     audit_predictions(migration["after"], validation, migration["roundtrip_model"])
-    matches = (migration["parameter_digest"] == migration["roundtrip_digest"]
+    planned = len(validation.ids)
+    complete = all(observation["summary"]["requested"] == planned
+                   and observation["summary"]["completed"] == planned
+                   for observation in (arm["validation"], migration["after"]))
+    matches = (complete and migration["parameter_digest"] == migration["roundtrip_digest"]
                and migration["after"]["records"] == arm["validation"]["records"])
     if migration["exact_validation_behavior"] != matches:
         raise ValueError("migration conclusion disagrees with actual post-migration behavior")

@@ -260,6 +260,57 @@ class StudyTests(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, "executed local files"):
             audit_study(report, self.plan)
 
+    def run_with_failed_feature_kernel(self, split):
+        original = study_model.features
+
+        def fail_split(batch, mode, rows=None):
+            if batch.split == split:
+                raise RuntimeError(f"injected {split} kernel failure")
+            return original(batch, mode, rows)
+
+        plan = replace(self.plan, seeds=(7,))
+        # Both execution and auditor replay use predict_routed's features global.
+        with patch.object(study_model, "features", side_effect=fail_split):
+            report = runner.run_study(plan)
+            audit_study(report, plan)
+        audit_study(report, plan)
+        return report, plan
+
+    def test_shared_monitor_kernel_failure_preserves_all_trials_and_requests(self):
+        report, plan = self.run_with_failed_feature_kernel("monitor")
+        self.assertEqual(len(report["runs"]), len(plan.scenarios) * len(plan.seeds))
+        for run in report["runs"]:
+            self.assertEqual(set(run["arms"]), set(ARMS))
+            for key in ("before", "probe"):
+                observation = run["demand_evidence"][key]
+                self.assertEqual([r["id"] for r in observation["records"]], run["data"]["monitor"]["ids"])
+                self.assertEqual(observation["summary"]["incomplete"], run["data"]["monitor"]["requests"])
+                self.assertEqual(observation["summary"]["completed"], 0)
+            self.assertFalse(run["demand_evidence"]["propose_child"])
+            for arm in run["arms"].values():
+                self.assertEqual(arm["test"]["summary"]["requested"], 2 * plan.test_per_task)
+                self.assertEqual(arm["test"]["summary"]["completed"], 2 * plan.test_per_task)
+            self.assertIsNone(run["arms"]["demand_specialization"]["cost"]["estimated_float_ops"])
+            self.assertEqual(run["decision"]["decision"], "HOLD")
+
+    def test_unknown_validation_before_and_after_is_not_successful_migration(self):
+        report, plan = self.run_with_failed_feature_kernel("validation")
+        self.assertEqual(len(report["runs"]), len(plan.scenarios) * len(plan.seeds))
+        for run in report["runs"]:
+            self.assertEqual(set(run["arms"]), set(ARMS))
+            for arm in run["arms"].values():
+                for observation in (arm["validation"], arm["migration"]["after"]):
+                    self.assertEqual([r["id"] for r in observation["records"]], run["data"]["validation"]["ids"])
+                    self.assertEqual(observation["summary"]["incomplete"], 2 * plan.validation_per_task)
+                    self.assertEqual(observation["summary"]["completed"], 0)
+                self.assertEqual(arm["validation"]["records"], arm["migration"]["after"]["records"])
+                self.assertFalse(arm["migration"]["exact_validation_behavior"])
+                self.assertFalse(arm["cost"]["complete"])
+                self.assertIsNone(arm["cost"]["estimated_float_ops"])
+                self.assertEqual(arm["test"]["summary"]["requested"], 2 * plan.test_per_task)
+                self.assertEqual(arm["test"]["summary"]["completed"], 2 * plan.test_per_task)
+            self.assertEqual(run["decision"]["decision"], "HOLD")
+
     @staticmethod
     def resummarize(observation):
         rows = observation["records"]

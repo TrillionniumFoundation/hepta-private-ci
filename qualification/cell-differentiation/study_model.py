@@ -194,7 +194,11 @@ def snapshot_and_check(model, validation, original_observation, ledger):
     charge(ledger, "migration", "deserialize_snapshot", started, parameter_bytes=restored.parameter_bytes(),
            serialized_bytes=len(wire), hash_bytes=2 * len(wire))
     after = evaluate(validation, restored, ledger, "migration_validation", phase="migration")
-    matches = after["records"] == original_observation["records"] and same_digest
+    planned = len(validation.ids)
+    complete = all(observation["summary"]["requested"] == planned
+                   and observation["summary"]["completed"] == planned
+                   for observation in (original_observation, after))
+    matches = complete and after["records"] == original_observation["records"] and same_digest
     return {"parameter_digest": snapshot_digest, "roundtrip_digest": restored.identity(),
             "roundtrip_model": restored.payload(), "after": after,
             "exact_validation_behavior": matches, "requests": len(validation.ids),
