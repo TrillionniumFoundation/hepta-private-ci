@@ -374,9 +374,16 @@ impl SqliteConfig {
                     Ok(())
                 })
             })
-            .before_acquire(move |_connection, _metadata| {
+            .before_acquire(move |connection, _metadata| {
                 let before_checkout = Arc::clone(&before_reuse);
                 Box::pin(async move {
+                    // A refused commit hook can make SQLite roll back before SQLx
+                    // processes its queued rollback, leaving a stale depth. The
+                    // pool has drained that queue before reuse; discard the handle
+                    // before any owner checkout work instead of retrying a write.
+                    if connection.is_in_transaction() {
+                        return Ok(false);
+                    }
                     before_checkout().await;
                     Ok(true)
                 })
