@@ -1,0 +1,34 @@
+{
+  "schema": "hcsn-v14-independent-engineering-tests.v1",
+  "mode": "optimized",
+  "command": [
+    "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python",
+    "-O",
+    "-m",
+    "unittest",
+    "experiments.hcsn_v14_causal_io_20261104.test_boundary",
+    "experiments.hcsn_v14_causal_io_20261104.test_runtime",
+    "-v"
+  ],
+  "exit_code": 0,
+  "tests": 23,
+  "wall_seconds": 81.01829233599983,
+  "child_cpu_seconds": 63.717515,
+  "source_sha256_before": {
+    "boundary.py": "a8ab4676be5ac3188043662d34c78f206b0adc08a1215bbdf3a547a27e8f2428",
+    "runtime.py": "406ab11a7cbffe788490c98d50e165bdcd86ae51b1a2ebbca9186d713d8603f9",
+    "test_boundary.py": "c81de304753b4508877252e70127f5750a1618a569de70d3f76dc794dfc34ff8",
+    "test_runtime.py": "4afed10b9ff44f5945f3306c5719f19f544ce66d88049ab8da0230bba1ef8a4c"
+  },
+  "source_sha256_after": {
+    "boundary.py": "a8ab4676be5ac3188043662d34c78f206b0adc08a1215bbdf3a547a27e8f2428",
+    "runtime.py": "406ab11a7cbffe788490c98d50e165bdcd86ae51b1a2ebbca9186d713d8603f9",
+    "test_boundary.py": "c81de304753b4508877252e70127f5750a1618a569de70d3f76dc794dfc34ff8",
+    "test_runtime.py": "4afed10b9ff44f5945f3306c5719f19f544ce66d88049ab8da0230bba1ef8a4c"
+  },
+  "source_stable": true,
+  "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "stderr_sha256": "121a9c1bc45de1c6b7dfa833fe09fe7766d1d4d0e4df9fc6292a1f82688bd013",
+  "scope": "Synthetic engineering fixtures; 1024 intervening reads; subprocess crash before SQLite acceptance COMMIT; no real recorded media, encoder execution, or neural quality claim",
+  "pass": true
+}

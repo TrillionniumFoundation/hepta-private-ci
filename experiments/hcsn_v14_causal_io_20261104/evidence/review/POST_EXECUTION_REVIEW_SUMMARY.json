@@ -1,0 +1,157 @@
+{
+  "schema": "hcsn-v14-independent-post-execution-review.v1",
+  "source_commit": "eee65cf3cdb99a165d0476a25a2426c3e7987006",
+  "baseline_commit": "3b9a136c56e9e743d7ecba852d621e1ecabf6bba",
+  "archive_sha256": "db01fe802631b021f8cbf450ed7a86090014e1a822e879459f94aefb1c0b635d",
+  "archive_bytes": 245951,
+  "archive_files": 27,
+  "manifest_entries": 26,
+  "archive_uncompressed_bytes": 1864975,
+  "summary_checks": 23,
+  "raw_evidence_checks": 1729,
+  "all_checks_pass": true,
+  "failed_checks": [],
+  "source_receipt_counts": {
+    "BASELINE_ACQUISITION.json": 54,
+    "V14_SOURCE_ACQUISITION.json": 11,
+    "FINAL_SOURCE_VERIFY.json": 65
+  },
+  "families": [
+    {
+      "family": "hx_full",
+      "trace_records": 128,
+      "databases": [
+        {
+          "kind": "long",
+          "integrity": [
+            [
+              "ok"
+            ]
+          ],
+          "snapshot_sha256": "0e91d09ac3e48418b52c06615a5c6b09d28a622c8feb146728ed6aba14a5d2bd",
+          "snapshot_json_bytes": 247959,
+          "sqlite_file_bytes": 499712,
+          "content_payload_bytes": 166273,
+          "operations": 128,
+          "charge_units": 128,
+          "core_steps": 128,
+          "content_items": 128
+        },
+        {
+          "kind": "restart",
+          "integrity": [
+            [
+              "ok"
+            ]
+          ],
+          "snapshot_sha256": "c13b6ee7bb050ef674eb6cce3a54af12d65207a17c5f3415eb577eeb2df138b6",
+          "snapshot_json_bytes": 16109,
+          "sqlite_file_bytes": 40960,
+          "content_payload_bytes": 9007,
+          "operations": 9,
+          "charge_units": 9,
+          "core_steps": 1,
+          "content_items": 7
+        }
+      ]
+    },
+    {
+      "family": "gru",
+      "trace_records": 128,
+      "databases": [
+        {
+          "kind": "long",
+          "integrity": [
+            [
+              "ok"
+            ]
+          ],
+          "snapshot_sha256": "ae69ff6826013e925bb6d6d013645cf6c0caf756042676c5f3cc4511cc9ac4a1",
+          "snapshot_json_bytes": 247873,
+          "sqlite_file_bytes": 499712,
+          "content_payload_bytes": 166273,
+          "operations": 128,
+          "charge_units": 128,
+          "core_steps": 128,
+          "content_items": 128
+        },
+        {
+          "kind": "restart",
+          "integrity": [
+            [
+              "ok"
+            ]
+          ],
+          "snapshot_sha256": "157b33eaff50aa7f8f475d085d1b5398148a7464c453c6afb626ea87e0daf2fc",
+          "snapshot_json_bytes": 16034,
+          "sqlite_file_bytes": 40960,
+          "content_payload_bytes": 9007,
+          "operations": 9,
+          "charge_units": 9,
+          "core_steps": 1,
+          "content_items": 7
+        }
+      ]
+    },
+    {
+      "family": "ssm",
+      "trace_records": 128,
+      "databases": [
+        {
+          "kind": "long",
+          "integrity": [
+            [
+              "ok"
+            ]
+          ],
+          "snapshot_sha256": "4380d657ef10e2f6bea23b5aa72a4832447c6fa4b0984058c01f9ebc06a7d617",
+          "snapshot_json_bytes": 247887,
+          "sqlite_file_bytes": 499712,
+          "content_payload_bytes": 166273,
+          "operations": 128,
+          "charge_units": 128,
+          "core_steps": 128,
+          "content_items": 128
+        },
+        {
+          "kind": "restart",
+          "integrity": [
+            [
+              "ok"
+            ]
+          ],
+          "snapshot_sha256": "95ff3b02ac93e5085e9b362c04fa8723d99b4668e61f999cc149344c912411b3",
+          "snapshot_json_bytes": 16033,
+          "sqlite_file_bytes": 40960,
+          "content_payload_bytes": 9007,
+          "operations": 9,
+          "charge_units": 9,
+          "core_steps": 1,
+          "content_items": 7
+        }
+      ]
+    }
+  ],
+  "cpu_seconds": 50.31778,
+  "wall_seconds": 78.69496741704643,
+  "self_peak_mib": 296.65625,
+  "largest_child_peak_mib": 301.8125,
+  "complete_process_family_peak_mib": null,
+  "sqlite_file_bytes_total": 1622016,
+  "media_frame_pts_seconds": "0.527000",
+  "media_prefix_samples": 44099,
+  "separate_png_verified": true,
+  "raw_pcm_present": false,
+  "raw_flv_present": false,
+  "accepted_waveform_hash_source": "Remote report from pinned media-audit code; equals pinned historical IDENTITY; raw PCM not retained in this archive, so not independently regenerated here",
+  "new_neural_execution_by_reviewer": false,
+  "quality_gain_or_independent_confirmation_established": false,
+  "target_gpu_benchmark_executed": false,
+  "parameter_budget_matched": false,
+  "training_time_matched": false,
+  "complete_device_energy_joules": null,
+  "actual_av_content_text_is_empty": true,
+  "production_activation": false,
+  "full_checks_archive": "POST_EXECUTION_REVIEW.json.gz",
+  "full_checks_uncompressed_sha256": "72e6736228b55fb20fde0183423f2b9de05fa6ecaa3c8fd33c40e3dea9f36bc9"
+}

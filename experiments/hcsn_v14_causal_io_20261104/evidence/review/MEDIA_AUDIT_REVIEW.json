@@ -1,0 +1,24 @@
+{
+  "schema": "hcsn-v14-independent-media-source-review.v1",
+  "source_sha256": "b9fec568921295c2bc5c6259483c0607e24b1f410f31d90f4f79cc2a18d280c9",
+  "review_kind": "read-only source review; AST parse; no new media execution or optional tests",
+  "scope_accepted": "One frozen historical TRAIN clip raw-media diagnostic",
+  "blocking_source_findings_remaining": [],
+  "checks": {
+    "cohort_identity_pinned": "Exact COHORT and IDENTITY hashes plus raw-media size/SHA before use",
+    "verified_bytes_consumed": "FrozenInput.read_bytes returns the hashed byte copy, passed on stdin",
+    "pcm_crop": "ceil lower sample index and floor exclusive upper sample index; clock/index must equal frozen prior; native diagnostics precede cropped-only resampling",
+    "frame_pts": "Eligible frame inside origin..origin+0.5s, decoded showinfo PTS independently checked within 1 microsecond, no selected frame past 1s prefix end",
+    "subprocess_safety": "Explicit argv arrays, no shell; integer-derived filter parameters; bounded subprocess timeout with partial logs",
+    "claim_scope": "Historical training reuse explicit; encoder execution and quality qualification absent; new_recording and production_activation false"
+  },
+  "limits": [
+    "Audio index-to-source-time relation assumes continuous decoded audio from stream start; physical synchronization not proved",
+    "ffprobe inspects full-file metadata; this is not a real-time causal encoder pipeline",
+    "HISTORICAL_DIAGNOSTIC_COMPLETE means diagnostic execution completed; accepted_hash_equal may remain false or null and must be reported separately",
+    "Frozen prior has resampled waveform SHA, not native PCM SHA; missing native reference remains null"
+  ],
+  "source1_source2_modified": false,
+  "actual_execution_by_this_review": false,
+  "production_activation": false
+}

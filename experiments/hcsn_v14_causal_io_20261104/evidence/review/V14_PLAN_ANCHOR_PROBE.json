@@ -1,0 +1,25 @@
+{
+  "schema": "hcsn-v14-independent-plan-anchor-probe.v1",
+  "scope": "Actual artifact verification plus actual replay context AST with dependency sentinels; no neural forward execution",
+  "bridge_sha256": "f000028355f4a2d936c650a32070dbfa936e21202b7e5ef1ebf20026dd9daa08",
+  "replay_sha256": "d28639dd028f43712d45ace29bc55465248e858049a8d5892dc7b438cd65e9b3",
+  "results": [
+    {
+      "case": "unchanged_original_candidate",
+      "result": "PASS",
+      "model_id": "001cdb65ea97cde38428de82ae03a7837cb886355930f6f4d595eefcca22ea68"
+    },
+    {
+      "case": "valid_json_plan_bytes_changed",
+      "result": "REJECTED",
+      "reason": "Original V13 training plan differs from the published roster"
+    },
+    {
+      "case": "changed_train_under_authentic_plan",
+      "result": "REJECTED",
+      "reason": "Original TRAIN tensor bytes changed",
+      "npz_parser_called": false
+    }
+  ],
+  "pass": true
+}
