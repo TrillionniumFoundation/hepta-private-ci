@@ -159,3 +159,7 @@ fn current_revision_does_not_relax_original_snapshot_binding() {
         assert!(binding.validate_current(&changed).is_err());
     }
 }
+
+#[cfg(unix)]
+#[path = "native_intelligence_recovery_process_tests.rs"]
+mod process;
