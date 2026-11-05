@@ -1619,6 +1619,9 @@ enum ProcessStatus {
     Unknown,
 }
 
+#[path = "process_manager_termination.rs"]
+mod termination;
+
 #[cfg(test)]
 #[path = "process_manager_tests.rs"]
 mod tests;
