@@ -1,5 +1,8 @@
 use std::collections::BTreeMap;
 
+#[path = "lane_b_bound.rs"]
+mod bound;
+
 use codex_hepta_learning_ledger::RunStartObjectiveDispositionV1;
 use codex_hepta_learning_ledger::RunStartRecordV1;
 
