@@ -33,7 +33,11 @@ async fn additional_context_is_model_visible_but_not_a_user_message_item() -> Re
     )
     .await;
     let test = test_codex()
-        .with_config(|config| config.include_environment_context = false)
+        .with_config(|config| {
+            config.include_environment_context = false;
+            // This negative endpoint has no instance-only mock metadata permit.
+            config.model_provider.mock_internal_chat_metadata = None;
+        })
         .build(&server)
         .await?;
 
