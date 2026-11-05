@@ -1,0 +1,88 @@
+{
+  "key": "e2e54671756bdead50696539d4eb3451970990c7796fbab51b2a428fded7fe19",
+  "source_sha256": "f6debd63e6ac6979144a923efdaad5d1f4a99ad2cd602b9174831bcebc6bb2ad",
+  "config": {
+    "profile": "research",
+    "device": "cuda:0",
+    "tasks": [
+      "delayed_recall",
+      "adding"
+    ],
+    "models": [
+      "hx_dual",
+      "hx_fixed",
+      "hx_call",
+      "hx_risk",
+      "no_rollover",
+      "softplus",
+      "no_recovery",
+      "hx_attention",
+      "population_flux",
+      "population_flux_no_recovery",
+      "gru",
+      "lif",
+      "adaptive_lif",
+      "pif",
+      "transformer",
+      "cfc",
+      "mamba2"
+    ],
+    "seeds": [
+      0,
+      1,
+      2,
+      3,
+      4
+    ],
+    "data_seed": 271828,
+    "train_count": 4096,
+    "validation_count": 512,
+    "test_count": 1024,
+    "length": 64,
+    "hidden_size": 64,
+    "batch_size": 64,
+    "train_steps": 400,
+    "learning_rate": 0.001,
+    "dt": 0.1,
+    "latency_repeats": 100,
+    "cpu_threads": 2
+  },
+  "dataset": {
+    "split_sha256": [
+      "967e91b0779e87b62f396e812dc25ebf395f8107104edea154a2ee1b06a440fb",
+      "922aed89819c90a27a75d264979e77afa27c207da2fa45d61830ecaa595a55d9",
+      "536bc7546964eec2744a6b6af5dd63a9a1648724cbce4f95e13e2ecd28667a7c"
+    ],
+    "constant_predictor_test_mse": 0.3302898406982422
+  },
+  "hardware": {
+    "platform": "Linux-6.18.57-x86_64-with-glibc2.41",
+    "machine": "x86_64",
+    "cpu_model": "AMD EPYC 9V74 80-Core Processor",
+    "logical_cpu_count": 5,
+    "python": "3.12.14",
+    "numpy": "2.3.5",
+    "torch": "2.8.0+cpu",
+    "device": "cuda:0",
+    "device_name": "AMD EPYC 9V74 80-Core Processor",
+    "cpu_threads": 2,
+    "deterministic_requested": true,
+    "cuda_runtime": null,
+    "cuda_available": false
+  },
+  "software": {
+    "numpy": "2.3.5",
+    "scipy": "1.17.0",
+    "torch": "2.8.0+cpu",
+    "ncps": "1.0.1",
+    "mamba-ssm": null,
+    "triton": null,
+    "causal-conv1d": null,
+    "nvidia-ml-py": null
+  },
+  "task": "delayed_recall",
+  "model": "hx_call",
+  "seed": 2,
+  "attempt_id": "443fa059c23144b4819773f9024ec8b3",
+  "started_utc": "2026-11-05T14:13:05.688806+00:00"
+}
