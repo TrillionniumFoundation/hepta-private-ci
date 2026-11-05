@@ -299,3 +299,6 @@ fn writer_proof_concurrent_registration_returns_one_exact_retained_signature() {
     assert_eq!(results.0, results.1);
     assert_eq!(fixture.sequence(), 1);
 }
+
+#[path = "deployment_writer_issuer_parent_tests.rs"]
+mod issuer_parent;
