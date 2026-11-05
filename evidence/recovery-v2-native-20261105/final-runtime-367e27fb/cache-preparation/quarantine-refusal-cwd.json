@@ -1,0 +1,20 @@
+{
+  "status": "CACHE_QUARANTINE_REFUSED",
+  "started_at": "2026-11-05T04:50:10.968546+00:00",
+  "selected_runtime_commit": "367e27fb6bf30443641b9e23a063d24e49eda9f7",
+  "selected_runtime_tree": "6a2465606f0270eeecec83c2b7d9dbef5dc96076",
+  "target": "/workspace/scratch/822cc50e24f0/authority-recovery/native-20261105/target",
+  "quarantine": "/workspace/scratch/822cc50e24f0/authority-recovery/native-20261105/receipts/cache-quarantine-367e27fb-20261105T045010Z-ab0d8704/retained-target-paths",
+  "script_sha256": "b69859b3b6e2951ba118f9aa5b9fb4a3cf0b70e01678d1a9ead2eb338f8770b9",
+  "cargo_or_test_invoked": false,
+  "test_count": 0,
+  "e0463_resolution": "UNKNOWN_REBUILD_NOT_RUN",
+  "before": {},
+  "after": {},
+  "moved": [],
+  "cargo_lock": "NONBLOCKING_EXCLUSIVE_ACQUIRED",
+  "error": "PermissionError: [Errno 13] Permission denied: '/proc/216505/cwd'",
+  "rollback": [],
+  "completed_at": "2026-11-05T04:50:10.969941+00:00",
+  "safe_manual_rollback": "Only under the same exclusive target lock and with no active target user: verify every retained SHA256/mode/size against before, refuse any existing original path, rename the exact seven entries back, and verify the restored identities. Never overwrite new rebuild output."
+}

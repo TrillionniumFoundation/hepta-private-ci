@@ -1,0 +1,896 @@
+{
+  "schema_version": 1,
+  "document_kind": "FINAL_RUNTIME_STATUS_AND_FUTURE_REPRODUCTION_PLAN",
+  "status": "HOLD_NO_GO",
+  "recorded_at": "2026-11-05T04:55:09.678118+00:00",
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "pull_request": 4812,
+  "selected_code_commit": "367e27fb6bf30443641b9e23a063d24e49eda9f7",
+  "selected_code_tree": "6a2465606f0270eeecec83c2b7d9dbef5dc96076",
+  "selected_code_parent": "3558ced0fd983603a3082a42359e8da63dfc8418",
+  "production_and_test_source_ancestor": {
+    "commit": "d206c3c787f6b67c771b67a8e1d46c8261810042",
+    "tree": "00048be8564f7726716f78edbb37d79ab273167a",
+    "relationship": "The later selected commit adds the existing workflow entry and evidence. The production and Rust test source entries remain the d206 entries."
+  },
+  "selected_integration_context": {
+    "chain_commit": "b5bb7bc8d7ffe79d46c6a58fd5189e2bb9e4550c",
+    "chain_tree": "8be28a72673ce318d60a464898ab610d9ba39216",
+    "provenance": "Read from the coordinating final report draft. This runtime document makes no additional Chain execution claim.",
+    "combined_native_pair_acceptance": "NOT_RUN"
+  },
+  "baseline_commit": "3a8e50ddd79ec3e52ca58157323726c37069202c",
+  "source_files": [
+    {
+      "path": "codex-rs/hepta-evidence/src/recovery_frontier.rs",
+      "mode": "100644",
+      "bytes": 9724,
+      "sha256": "aa04df00510000848bd1ddb316ecf7f2f0832ed9d1f178215492ad9ed266d70c",
+      "git_blob": "202486445c3ae9a75e3eb63726313145332a8438"
+    },
+    {
+      "path": "codex-rs/hepta-evidence/src/recovery_effect_frontier.rs",
+      "mode": "100644",
+      "bytes": 4395,
+      "sha256": "86f5e0c2fea6909bffa871775336d2dd82edcb7e33cfbf7700494fd2af7f44a2",
+      "git_blob": "9cd2cfb8e8409df19ae18ee9042641cb0e493837"
+    },
+    {
+      "path": "codex-rs/hepta-evidence/src/recovery_effect_frontier_tests.rs",
+      "mode": "100644",
+      "bytes": 10582,
+      "sha256": "f1b85c12e4a31927e4eac92be675a1cbd00162d8451fff35d79c8a492f5d4229",
+      "git_blob": "1b03f6f7975331088fd3cfa08839d51f7e736a29"
+    },
+    {
+      "path": "codex-rs/hepta-evidence/src/provider_effect_store.rs",
+      "mode": "100644",
+      "bytes": 58338,
+      "sha256": "90a763e505766d3e85f62e26af89e5e501c3ed8f8c4175ce407d7b3490f13f22",
+      "git_blob": "a1015a232d770b920bf814f3ed0eb0aa44b73891"
+    },
+    {
+      "path": "codex-rs/hepta-evidence/src/lib.rs",
+      "mode": "100644",
+      "bytes": 5262,
+      "sha256": "fcb7f7ed340233d05fb69bd184f58932cfe9ed1d57b61cedcf9e7d64e773a52b",
+      "git_blob": "2bf6230c9a8a615fde97eaabf5d1222c82093628"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/evidence_frontier.rs",
+      "mode": "100644",
+      "bytes": 10833,
+      "sha256": "ac8cb28362eb509b2b5cb18b1b45b5201d3e79a2ec8804b7d64c0facdeada24b",
+      "git_blob": "758a78047e2d5666cb2c839e5abee1bc3e424657"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/evidence_frontier_tests.rs",
+      "mode": "100644",
+      "bytes": 7231,
+      "sha256": "8a469e6db132aed35a58130047874f2e25c916ffaae75e4da709a6b6f0c5383a",
+      "git_blob": "2d3c263aaa447fce32e867f98c9ecad65aeb7f1c"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/lib.rs",
+      "mode": "100644",
+      "bytes": 14213,
+      "sha256": "99f43e9eaa31b4be7d7cf59e32f2c0c9a0e29650645e033bce16b056c8286265",
+      "git_blob": "e173a35b89d0bc79f68e35c4ee558c5b37998173"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/tests/kernel_evidence_product.rs",
+      "mode": "100644",
+      "bytes": 31625,
+      "sha256": "9f39733d5d275150f12fc29c0a23899f880b308ff182dff5aa45636e90cf732b",
+      "git_blob": "33df89f287b98e5b0dbbe2bd3305d2007812e613"
+    },
+    {
+      "path": "docs/lane-a-foundation/kernel.evidence/RECOVERY_FRONTIER_V1.md",
+      "mode": "100644",
+      "bytes": 9155,
+      "sha256": "c74ebc984f65df8290455bb5a736f14efb681020c45b035b9f75e3e80bcabdd5",
+      "git_blob": "9674f1f086ecc0a680e864a71c4f4c3018c25873"
+    },
+    {
+      "path": "codex-rs/hepta-evidence/src/provider_effect_recovery_provenance_tests.rs",
+      "mode": "100644",
+      "bytes": 5296,
+      "sha256": "afb1fafde1fbadb16377bee14367fa32f8e79fe482c29a6ee1e30642f92aa8c1",
+      "git_blob": "e5b4abbb143dd49b0f4eec37f09b7bf3c9efdc5d"
+    },
+    {
+      "path": "codex-rs/hepta-contracts/FINAL_USE.md",
+      "mode": "100644",
+      "bytes": 32860,
+      "sha256": "2ec9743f181c3adf927a414b2f8bb463fde320759aa54c69487be85a9969f5da",
+      "git_blob": "c74e2cecf9f56ee9a424f05ed7edd006729e05a3"
+    },
+    {
+      "path": "docs/lane-a-foundation/MODULE_TRUTH_MATRIX.json",
+      "mode": "100644",
+      "bytes": 25296,
+      "sha256": "bbeabddfb7c914d2a01c4cbdababd810fa1e9de84a875efc79283845f2cd72b4",
+      "git_blob": "6f5fc8a8ec580d156d112aadb2326b9dba88fb56"
+    },
+    {
+      "path": "docs/lane-a-foundation/CAPABILITY_EVIDENCE_MAP.json",
+      "mode": "100644",
+      "bytes": 73068,
+      "sha256": "f31fc5f71cebbb55926bee21f1074ecdc8f0377843df46d9cdb95b62325f48f9",
+      "git_blob": "bd9fe1c31b46f80e9266b815659fc6b1e07362ab"
+    }
+  ],
+  "unchanged_actual_caller": {
+    "path": "codex-rs/hepta-agentd/src/evidence_host.rs",
+    "ref": "3a8e50ddd79ec3e52ca58157323726c37069202c",
+    "bytes": 9084,
+    "sha256": "1dc2036d79d2e039ff28f7b7761e058d9cbb4dc27069fcf38d43eb36fe9c0962",
+    "git_blob": "8296fab73f1aa439e46b264ce33f12ec1ad0a737",
+    "unchanged": true
+  },
+  "workflow": {
+    "path": ".github/workflows/hepta-pq-policy-renewal.yml",
+    "mode": "100644",
+    "git_blob": "c07b903bc589096f5927ee224abd10684d9a3c82",
+    "sha256": "2d4beae141331aebc8715ff8d4cb0e1513c436b60227e530b2abbaa94f4c53e9",
+    "bytes": 14190
+  },
+  "publication_provenance": "The coordinator published and verified the selected commit, tree and expected-head update. This agent uploaded blobs only, and did not update a ref or manually dispatch CI.",
+  "code_change_summary": [
+    "Recovery snapshot V2 commits provider intents, uncertainty and ACK history with the existing recovery projections inside one SQLite read transaction.",
+    "Effect history is paged, capped at one million cumulative rows, and validates JSON record digests and sequence bounds before committing kind, seq, key, digest, timestamp and ACK source.",
+    "V2 schema and signing domain reject old V1 frontier input without a schema alias or implicit migration.",
+    "Cold-open ACK provenance rejects StatusLookup followed by DispatchResponse while retaining the valid opposite progression.",
+    "d206 changes four dynamic test SQL expressions to fixed SQLx-safe literals, preserving their corruption, restoration and refusal assertions.",
+    "367e adds seven owner and two signed-frontier controls to the existing PQ renewal workflow, retaining the original 14+3 and their execution/audit conditions."
+  ],
+  "actual_validation": {
+    "selected_367e_native_execution": "NOT_RUN_BY_THIS_AGENT; no new CI result is asserted",
+    "source_and_format": "Exact source-file and script preflights passed as recorded in their original receipts. Scoped just fmt completed; the workflow-only formatting run reported no applicable formatter groups.",
+    "workflow_audit": {
+      "kind": "Fixture tests of the actual inline audit, not Rust tests",
+      "passed": 43,
+      "accepted_cases": 1,
+      "refusal_cases": 42,
+      "actual_worktree_head": "d206c3c787f6b67c771b67a8e1d46c8261810042",
+      "tested_workflow_blob": "c07b903bc589096f5927ee224abd10684d9a3c82",
+      "published_same_blob_in_selected_commit": true,
+      "rust_function_names_checked": 9,
+      "shell_blocks_syntax_checked": 3
+    },
+    "original_29fcd_owner_green_attempt": {
+      "status": "BUILD_FAILED",
+      "reason": "Missing pkg-config during openssl-sys compilation",
+      "new_native_tests_executed": 0
+    },
+    "original_owner_red": {
+      "candidate": "f2bc730eb40faaf1937c5f5f5c6286e24cb2b4f7",
+      "production_and_test_source": "29fcd2e88654d5bec2bf30134cc030b5bfa7831b",
+      "baseline": "3a8e50ddd79ec3e52ca58157323726c37069202c",
+      "status": "BUILD_FAILED",
+      "reason": "Four E0277 errors from dynamic SQL test expressions at the SQLx 0.9 SqlSafeStr boundary",
+      "new_native_tests_executed": 0,
+      "expected_assertion_red_established": false
+    },
+    "corrected_owner_red": {
+      "candidate": "d206c3c787f6b67c771b67a8e1d46c8261810042",
+      "baseline": "3a8e50ddd79ec3e52ca58157323726c37069202c",
+      "status": "BUILD_FAILED",
+      "reason": "E0463: cannot find crate for sqlx_macros_core while compiling sqlx-macros 0.9.0",
+      "new_native_tests_executed": 0,
+      "expected_assertion_red_established": false,
+      "receipt": "../checkpoints/corrected-red-e0463/receipt.json"
+    },
+    "corrected_owner_green": "NOT_RUN",
+    "signed_frontier_two": "NOT_RUN",
+    "full_owner_package": "NOT_RUN",
+    "scoped_lint_after_fix": "NOT_RUN",
+    "ipc_product_three": "NOT_RUN; AF_UNIX EPERM was observed locally; no alternative transport or permission bypass was used.",
+    "historical_ci": {
+      "source_commit": "29fcd2e88654d5bec2bf30134cc030b5bfa7831b",
+      "source_tree": "9653293a81dfda7f17c12a54fd7bd5f4170ea867",
+      "run_id": 41962900659,
+      "job_id": 127033176702,
+      "inspected_lane": "ubuntu-24.04 source-head",
+      "existing_dispatcher_controls_passed": 14,
+      "existing_product_controls_passed": 3,
+      "new_recovery_control_credit": 0,
+      "job_outcome": "FAILED at scoped just fix due to original E0277",
+      "artifact_id": 13386597021,
+      "artifact_zip_bytes": 43499,
+      "artifact_zip_sha256": "1931320398293bb72357ffcb829de8f35e4df3956926ab576e4f2a00ba2a659b"
+    },
+    "cache_preparation": {
+      "status": "CACHE_QUARANTINED_REBUILD_NOT_RUN",
+      "completed_at": "2026-11-05T04:53:10.290613+00:00",
+      "regular_files_preserved": 14,
+      "bytes_preserved": 29091457,
+      "tests_executed": 0,
+      "e0463_resolution": "UNKNOWN_REBUILD_NOT_RUN"
+    }
+  },
+  "immutable_history": {
+    "original_not_run_evidence_commit": "f2bc730eb40faaf1937c5f5f5c6286e24cb2b4f7",
+    "initial_checkpoint_commit": "3558ced0fd983603a3082a42359e8da63dfc8418",
+    "initial_checkpoint_index_blob": "1e4a4098c8ec59ff1f90260d453bd50eac26a177",
+    "corrected_red_checkpoint_commit": "367e27fb6bf30443641b9e23a063d24e49eda9f7",
+    "corrected_red_checkpoint_index_blob": "7fbf9a73312ceb77362874867c08c82fd327ea1e",
+    "receipts_rewritten": false,
+    "policy": "Recorded NOT_RUN, RUNNING-at-snapshot, missing prerequisite, E0277, HEAD guard refusal and E0463 results remain unchanged. This document records the later status without backfilling any prior receipt."
+  },
+  "resource_observation": {
+    "recorded_at": "2026-11-05T04:55:09.678118+00:00",
+    "cgroup": {
+      "memory.current": 8526364672,
+      "memory.max": 8589934592,
+      "memory.events": {
+        "low": 0,
+        "high": 0,
+        "max": 7433406,
+        "oom": 5,
+        "oom_kill": 5,
+        "oom_group_kill": 0
+      },
+      "memory.stat": {
+        "anon": 4813594624,
+        "file": 2458333184,
+        "kernel": 1246908416,
+        "kernel_stack": 1867776,
+        "pagetables": 22695936,
+        "sec_pagetables": 0,
+        "percpu": 35420,
+        "sock": 5959680,
+        "vmalloc": 20480,
+        "shmem": 147456,
+        "file_mapped": 170496000,
+        "file_dirty": 25350144,
+        "file_writeback": 0,
+        "swapcached": 0,
+        "anon_thp": 0,
+        "file_thp": 27262976,
+        "shmem_thp": 0,
+        "inactive_anon": 4812836864,
+        "active_anon": 557056,
+        "inactive_file": 1257136128,
+        "active_file": 1201033216,
+        "unevictable": 0,
+        "slab_reclaimable": 1218761872,
+        "slab_unreclaimable": 3404736,
+        "slab": 1222166608,
+        "workingset_refault_anon": 0,
+        "workingset_refault_file": 318639817,
+        "workingset_activate_anon": 0,
+        "workingset_activate_file": 92979208,
+        "workingset_restore_anon": 0,
+        "workingset_restore_file": 46779857,
+        "workingset_nodereclaim": 104568,
+        "pgdemote_kswapd": 0,
+        "pgdemote_direct": 0,
+        "pgdemote_khugepaged": 0,
+        "pgdemote_proactive": 0,
+        "pgscan": 1610645906,
+        "pgsteal": 338593009,
+        "pswpin": 0,
+        "pswpout": 0,
+        "pgscan_kswapd": 1801658,
+        "pgscan_direct": 1608844248,
+        "pgscan_khugepaged": 0,
+        "pgscan_proactive": 0,
+        "pgsteal_kswapd": 1619980,
+        "pgsteal_direct": 336973029,
+        "pgsteal_khugepaged": 0,
+        "pgsteal_proactive": 0,
+        "pgfault": 346198902,
+        "pgmajfault": 517939,
+        "pgrefill": 129267993,
+        "pgactivate": 28143155,
+        "pgdeactivate": 119432309,
+        "pglazyfree": 40,
+        "pglazyfreed": 0,
+        "swpin_zero": 0,
+        "swpout_zero": 0,
+        "thp_fault_alloc": 0,
+        "thp_collapse_alloc": 0,
+        "thp_swpout": 0,
+        "thp_swpout_fallback": 0
+      }
+    },
+    "filesystem": {
+      "path": "/workspace/scratch/822cc50e24f0/authority-recovery/native-20261105",
+      "total_bytes": 67586535424,
+      "available_bytes": 253034496,
+      "free_bytes": 3705782272
+    },
+    "existing_production_checkout": {
+      "head": "d206c3c787f6b67c771b67a8e1d46c8261810042",
+      "status": ""
+    },
+    "kind": "Read-only post-quarantine resource/source observation; no Cargo or test execution."
+  },
+  "cache_diagnosis": {
+    "status": "INDICATION_ONLY_ROOT_CAUSE_NOT_PROVEN",
+    "observation": "Embedded rlib metadata and standalone rmeta differ for the same sqlx_macros_core artifact hash. The standalone rmeta is newer than the rlib.",
+    "embedded_metadata": {
+      "bytes": 701368,
+      "sha256": "5fe5b6b6fafc77975385103666dee13dfed4207fbe27ccfb62ccc07fbf03373b"
+    },
+    "standalone_metadata": {
+      "bytes": 700801,
+      "sha256": "1b7fc8357f2a53cc7364e6f1b069a51f952ce70f3468b80145fac125e4f06f93"
+    },
+    "dependency_source_check": "No changes between 3a8 and d206 in codex-rs/Cargo.toml, Cargo.lock, rust-toolchain.toml or the vendored sqlx-sqlite-0.9.0 source.",
+    "existing_owner_or_agentd_test_binaries": "NONE_OBSERVED; only the hepta-evidence dependency .d file exists.",
+    "resource_causation": "Global OOM counters are separate observations, not proof that OOM caused E0277 or E0463.",
+    "observed_before_cache_quarantine": true
+  },
+  "cache_repair_plan": {
+    "status": "PREPARATION_COMPLETED_REBUILD_NOT_RUN",
+    "target": "/workspace/scratch/822cc50e24f0/authority-recovery/native-20261105/target",
+    "artifacts": [
+      {
+        "path": "debug/deps/libsqlx_macros_core-67b73f8b5327a208.rlib",
+        "observed_bytes": 2920886
+      },
+      {
+        "path": "debug/deps/libsqlx_macros_core-67b73f8b5327a208.rmeta",
+        "observed_bytes": 700801
+      },
+      {
+        "path": "debug/deps/sqlx_macros_core-67b73f8b5327a208.d",
+        "observed_bytes": 8073
+      },
+      {
+        "path": "debug/deps/libsqlx_macros-de58ffc848cccd8c.so",
+        "observed_bytes": 25454832
+      },
+      {
+        "path": "debug/deps/sqlx_macros-de58ffc848cccd8c.d",
+        "observed_bytes": 505
+      }
+    ],
+    "fingerprint_directories": [
+      {
+        "path": "debug/.fingerprint/sqlx-macros-core-67b73f8b5327a208",
+        "observed_bytes": 2202
+      },
+      {
+        "path": "debug/.fingerprint/sqlx-macros-de58ffc848cccd8c",
+        "observed_bytes": 4158
+      }
+    ],
+    "preserved_artifact_bytes": 29085097,
+    "preserved_fingerprint_bytes": 6360,
+    "steps": [
+      "Wait for the coordinated serial Cargo window. Do not start while the resource admission condition fails.",
+      "Verify the target and allowlisted entries are owned ordinary files/directories, not symlinks or shared hardlinks; reject unexpected changes. Confirm there is no active compiler using this target and acquire its existing debug/.cargo-lock exclusively without blocking.",
+      "Record exact relative paths, bytes, modes and SHA256 values in a new attempt manifest. Create a new same-filesystem quarantine outside the target, under the owned receipts directory.",
+      "Atomically rename only the five allowlisted macro artifacts and two fingerprint directories into quarantine, preserving all original bytes and rechecking their identities. Do not delete or overwrite any source, binary or evidence file. Keep the quarantine for diagnosis and rollback.",
+      "Release the cache lock and run only the corrected owner RED selection through repository just test, using unchanged Rust 1.96, lockfile, features and profile, under the existing bounded runner.",
+      "Record the new actual exit and every selected test status in a new receipt. A repeated E0463 or any compilation failure means BUILD_FAILED with zero assertion credit; stop before GREEN or a wider rebuild.",
+      "If a coherent RED build completes, execute the candidate GREEN in a separately recorded, coordinated phase after exact source guards. Any additional cache repair requires its own preserved inventory. Do not automatically sweep other crates or switch to an unbounded clean build."
+    ],
+    "prohibited_actions": [
+      "cargo clean of the whole target or registry",
+      "deletion of source, binaries or evidence",
+      "changes to dependencies, Cargo.lock, features, Rust version or security/test conditions",
+      "changes to another task target or processes",
+      "Unix IPC permission bypass"
+    ],
+    "window": {
+      "cargo_jobs": 1,
+      "incremental": false,
+      "initial_effective_available_bytes_required": 2147483648,
+      "existing_available_stop_floor_bytes": 536870912,
+      "first_owner_attempt_seconds": 600,
+      "owner_minimum_free_disk_bytes_suggested": 2147483648,
+      "estimates_not_measured_guarantees": true,
+      "current_admission": "NOT_MET_FOR_REBUILD: both memory and disk are insufficient at the latest recorded observation; no native compilation starts.",
+      "host_signed_frontier": "Separate later window: Agentd test binary is absent and its dependency graph is larger. Do not start alongside owner or Chain work. No host compilation budget is claimed as verified."
+    },
+    "resume_from": "Do not repeat the quarantine. Resume only at the first bounded native rebuild after the source/resource guards. The original artifact bytes remain in the recorded quarantine.",
+    "completed_preparation": "Exclusive lock, explicit compiler writer-path check, exact allowlist inventory, seven atomic renames and retained identity/original-path-absence verification completed. No Cargo or tests invoked."
+  },
+  "future_reproduction": {
+    "status": "PLAN_ONLY_NOT_AN_EXECUTION_RECEIPT",
+    "selected_commit": "367e27fb6bf30443641b9e23a063d24e49eda9f7",
+    "selected_tree": "6a2465606f0270eeecec83c2b7d9dbef5dc96076",
+    "before_execution": [
+      "Check out the exact selected commit in an owned complete checkout and record actual HEAD/tree. Do not call a historical d206 receipt a 367e execution.",
+      "Verify clean source, all fourteen retained source identities, the unchanged actual caller and the selected workflow blob before and after each applicable execution.",
+      "For RED only, bind the baseline commit plus the exact three-path test overlay. Record overlay identities and require the seven named expected results; a dirty baseline overlay is not a clean candidate checkout.",
+      "Use a new output directory for every attempt. Retain all historical scripts and receipts.",
+      "The existing d206-bound local reproduction script correctly rejects the new workflow change. A later local automation must be a separately versioned 367e-bound entry retaining the source and selection guards, not an edit of the historical script.",
+      "Reject zero tests, ignored selections, duplicates, unexpected names, compile failures, unverified logs and changed source. Record actual tested SHA even if a later evidence-only checkout is proposed; do not silently relabel it as the selected code commit."
+    ],
+    "owner": {
+      "cwd": "<verified selected checkout>/codex-rs",
+      "argv": [
+        "just",
+        "test",
+        "--locked",
+        "-p",
+        "codex-hepta-evidence",
+        "--lib",
+        "-E",
+        "test(=recovery_effect_frontier_tests::recovery_snapshot_commits_intent_unknown_and_original_operation_receipt) | test(=recovery_effect_frontier_tests::recovery_snapshot_distinguishes_a_valid_effect_only_database_rollback) | test(=recovery_effect_frontier_tests::recovery_snapshot_commits_ack_provenance_and_cross_table_order) | test(=recovery_effect_frontier_tests::recovery_snapshot_commits_effect_history_after_the_first_page) | test(=recovery_effect_frontier_tests::recovery_snapshot_refuses_changed_json_with_retained_record_digests) | test(=provider_effect_recovery_provenance_tests::recovery_provenance_rejects_late_dispatch_after_status_without_uncertainty) | test(=provider_effect_recovery_provenance_tests::recovery_provenance_preserves_dispatch_then_authoritative_status)",
+        "--no-capture",
+        "--retries",
+        "0",
+        "--test-threads=1"
+      ],
+      "red_baseline": "3a8e50ddd79ec3e52ca58157323726c37069202c",
+      "red_expected": {
+        "recovery_effect_frontier_tests::recovery_snapshot_commits_intent_unknown_and_original_operation_receipt": "FAIL",
+        "recovery_effect_frontier_tests::recovery_snapshot_distinguishes_a_valid_effect_only_database_rollback": "FAIL",
+        "recovery_effect_frontier_tests::recovery_snapshot_commits_ack_provenance_and_cross_table_order": "FAIL",
+        "recovery_effect_frontier_tests::recovery_snapshot_commits_effect_history_after_the_first_page": "FAIL",
+        "recovery_effect_frontier_tests::recovery_snapshot_refuses_changed_json_with_retained_record_digests": "FAIL",
+        "provider_effect_recovery_provenance_tests::recovery_provenance_rejects_late_dispatch_after_status_without_uncertainty": "FAIL",
+        "provider_effect_recovery_provenance_tests::recovery_provenance_preserves_dispatch_then_authoritative_status": "PASS"
+      },
+      "green_expected": {
+        "recovery_effect_frontier_tests::recovery_snapshot_commits_intent_unknown_and_original_operation_receipt": "PASS",
+        "recovery_effect_frontier_tests::recovery_snapshot_distinguishes_a_valid_effect_only_database_rollback": "PASS",
+        "recovery_effect_frontier_tests::recovery_snapshot_commits_ack_provenance_and_cross_table_order": "PASS",
+        "recovery_effect_frontier_tests::recovery_snapshot_commits_effect_history_after_the_first_page": "PASS",
+        "recovery_effect_frontier_tests::recovery_snapshot_refuses_changed_json_with_retained_record_digests": "PASS",
+        "provider_effect_recovery_provenance_tests::recovery_provenance_rejects_late_dispatch_after_status_without_uncertainty": "PASS",
+        "provider_effect_recovery_provenance_tests::recovery_provenance_preserves_dispatch_then_authoritative_status": "PASS"
+      },
+      "expected_results_are_not_observations": true
+    },
+    "signed_frontier": {
+      "cwd": "<verified selected checkout>/codex-rs",
+      "argv": [
+        "just",
+        "test",
+        "--locked",
+        "-p",
+        "codex-hepta-agentd",
+        "--lib",
+        "-E",
+        "test(=evidence_frontier::tests::recovery_frontier_refuses_a_valid_old_v1_signature) | test(=evidence_frontier::tests::recovery_frontier_authenticates_both_effect_fields)",
+        "--no-capture",
+        "--retries",
+        "0",
+        "--test-threads=1"
+      ],
+      "expected": {
+        "evidence_frontier::tests::recovery_frontier_refuses_a_valid_old_v1_signature": "PASS",
+        "evidence_frontier::tests::recovery_frontier_authenticates_both_effect_fields": "PASS"
+      },
+      "expected_results_are_not_observations": true
+    },
+    "full_owner_after_selected_pass": [
+      "just",
+      "test",
+      "--locked",
+      "-p",
+      "codex-hepta-evidence"
+    ],
+    "scoped_lint": {
+      "status": "NOT_RUN",
+      "repository_fix": [
+        "just",
+        "fix",
+        "--locked",
+        "-p",
+        "codex-hepta-evidence",
+        "-p",
+        "codex-hepta-agentd"
+      ],
+      "condition": "Separate coordinated resource window; retain source mutation as failure and report the actual invoked gate. Clippy/check cannot be relabelled as a completed just fix."
+    },
+    "product": {
+      "status": "NOT_RUN_IPC_ENVIRONMENT_BLOCKED",
+      "argv": [
+        "just",
+        "test",
+        "--locked",
+        "-p",
+        "codex-hepta-agentd",
+        "--test",
+        "kernel_evidence_product",
+        "--retries",
+        "0",
+        "-E",
+        "test(signed_recovery_frontier_)"
+      ],
+      "expected_tests": [
+        "signed_recovery_frontier_allows_exact_current_database",
+        "signed_recovery_frontier_rejects_valid_older_database_image",
+        "signed_recovery_frontier_rejects_effect_only_database_rollback"
+      ],
+      "condition": "Requires a host where the original Unix IPC path is permitted; preserve original tests and permissions."
+    },
+    "workflow_qualification": "The published workflow adds candidate GREEN owner7 and signed2 to the original 14+3; it does not execute the baseline RED campaign.",
+    "manual_ci_dispatch_performed": false
+  },
+  "scope_limits": [
+    "Recovery remains conditional on the configured EvidenceHost::open frontier option.",
+    "The signature gate remains Ed25519 and the signer trust-file format remains V1; no PQ recovery root is established.",
+    "No independently fresh monotonic root, physical custody, full-host rollback protection or AutomationStore coverage is established.",
+    "FinalUse/frontier-to-clock-to-provider atomicity, provider exactly-once effects, unresolved-effect coordination, clone/crash/reorg campaigns and ordinary combined PQ paths remain open.",
+    "No overall A1/A2/A3, P0–E or independent integration acceptance gate is closed."
+  ],
+  "earlier_resource_observation": {
+    "recorded_at": "2026-11-05T04:43:25.885370+00:00",
+    "cgroup": {
+      "memory.current": 8589787136,
+      "memory.max": 8589934592,
+      "memory.events": {
+        "low": 0,
+        "high": 0,
+        "max": 5477324,
+        "oom": 4,
+        "oom_kill": 4,
+        "oom_group_kill": 0
+      },
+      "memory.stat": {
+        "anon": 5662568448,
+        "file": 1849319424,
+        "kernel": 1059508224,
+        "kernel_stack": 2867200,
+        "pagetables": 29147136,
+        "sec_pagetables": 0,
+        "percpu": 58916,
+        "sock": 17694720,
+        "vmalloc": 45056,
+        "shmem": 147456,
+        "file_mapped": 308129792,
+        "file_dirty": 720896,
+        "file_writeback": 0,
+        "swapcached": 0,
+        "anon_thp": 0,
+        "file_thp": 56623104,
+        "shmem_thp": 0,
+        "inactive_anon": 5661544448,
+        "active_anon": 868352,
+        "inactive_file": 575381504,
+        "active_file": 1273782272,
+        "unevictable": 0,
+        "slab_reclaimable": 1021800896,
+        "slab_unreclaimable": 5362080,
+        "slab": 1027162976,
+        "workingset_refault_anon": 0,
+        "workingset_refault_file": 230968188,
+        "workingset_activate_anon": 0,
+        "workingset_activate_file": 65070886,
+        "workingset_restore_anon": 0,
+        "workingset_restore_file": 31396510,
+        "workingset_nodereclaim": 72188,
+        "pgdemote_kswapd": 0,
+        "pgdemote_direct": 0,
+        "pgdemote_khugepaged": 0,
+        "pgdemote_proactive": 0,
+        "pgscan": 1112178734,
+        "pgsteal": 248759915,
+        "pswpin": 0,
+        "pswpout": 0,
+        "pgscan_kswapd": 1307555,
+        "pgscan_direct": 1110871179,
+        "pgscan_khugepaged": 0,
+        "pgscan_proactive": 0,
+        "pgsteal_kswapd": 1215326,
+        "pgsteal_direct": 247544589,
+        "pgsteal_khugepaged": 0,
+        "pgsteal_proactive": 0,
+        "pgfault": 282270095,
+        "pgmajfault": 309838,
+        "pgrefill": 91104885,
+        "pgactivate": 21648266,
+        "pgdeactivate": 84302617,
+        "pglazyfree": 34,
+        "pglazyfreed": 0,
+        "swpin_zero": 0,
+        "swpout_zero": 0,
+        "thp_fault_alloc": 0,
+        "thp_collapse_alloc": 0,
+        "thp_swpout": 0,
+        "thp_swpout_fallback": 0
+      }
+    },
+    "filesystem": {
+      "path": "/workspace/scratch/822cc50e24f0/authority-recovery/native-20261105",
+      "total_bytes": 67586535424,
+      "available_bytes": 3664916480,
+      "free_bytes": 7117664256
+    },
+    "kind": "Read-only global resource observation; counters are not attributed to any individual job."
+  },
+  "cache_preparation_operation": {
+    "status": "CACHE_QUARANTINED_REBUILD_NOT_RUN",
+    "started_at": "2026-11-05T04:53:10.099463+00:00",
+    "completed_at": "2026-11-05T04:53:10.290613+00:00",
+    "selected_runtime_commit": "367e27fb6bf30443641b9e23a063d24e49eda9f7",
+    "selected_runtime_tree": "6a2465606f0270eeecec83c2b7d9dbef5dc96076",
+    "target": "/workspace/scratch/822cc50e24f0/authority-recovery/native-20261105/target",
+    "quarantine": "/workspace/scratch/822cc50e24f0/authority-recovery/native-20261105/receipts/cache-quarantine-367e27fb-20261105T045310Z-63ff3b92/retained-target-paths",
+    "script_sha256": "a0059e1a5be00d1a398fb9f396d04f529efadc86f0d5f70a1002125c8911c7da",
+    "cargo_or_test_invoked": false,
+    "test_count": 0,
+    "e0463_resolution": "UNKNOWN_REBUILD_NOT_RUN",
+    "cargo_lock": "NONBLOCKING_EXCLUSIVE_ACQUIRED",
+    "active_owned_compilers": [],
+    "observed_cargo_frontends": [
+      {
+        "pid": 216505,
+        "name": "cargo",
+        "explicit_owned_argument": false,
+        "cwd_read": false
+      },
+      {
+        "pid": 217732,
+        "name": "cargo",
+        "explicit_owned_argument": false,
+        "cwd_read": false
+      },
+      {
+        "pid": 218444,
+        "name": "cargo",
+        "explicit_owned_argument": false,
+        "cwd_read": false
+      },
+      {
+        "pid": 236802,
+        "name": "cargo-nextest",
+        "explicit_owned_argument": false,
+        "cwd_read": false
+      },
+      {
+        "pid": 236846,
+        "name": "cargo",
+        "explicit_owned_argument": false,
+        "cwd_read": false
+      },
+      {
+        "pid": 250327,
+        "name": "cargo",
+        "explicit_owned_argument": false,
+        "cwd_read": false
+      },
+      {
+        "pid": 251359,
+        "name": "cargo",
+        "explicit_owned_argument": false,
+        "cwd_read": false
+      }
+    ],
+    "observed_foreign_compilers": [
+      {
+        "pid": 221218,
+        "name": "rustc",
+        "output_paths": [
+          "/workspace/scratch/48266f5bd43f/chain-target/debug/deps"
+        ],
+        "cwd_read": false
+      },
+      {
+        "pid": 251425,
+        "name": "rustc",
+        "output_paths": [
+          "/workspace/scratch/7318042bb6cb/target/debug/deps"
+        ],
+        "cwd_read": false
+      },
+      {
+        "pid": 261126,
+        "name": "rustc",
+        "output_paths": [
+          "/workspace/scratch/aea25ba345a8/hepta-effects-agent/target/debug/deps"
+        ],
+        "cwd_read": false
+      },
+      {
+        "pid": 261134,
+        "name": "rustc",
+        "output_paths": [
+          "/workspace/scratch/48266f5bd43f/hepta-effects-target/debug/deps"
+        ],
+        "cwd_read": false
+      }
+    ],
+    "frontend_protection": "Exclusive target Cargo lock held throughout inventory and rename; external frontend cwd is neither accessed nor inferred.",
+    "moved": [
+      "debug/deps/libsqlx_macros_core-67b73f8b5327a208.rlib",
+      "debug/deps/libsqlx_macros_core-67b73f8b5327a208.rmeta",
+      "debug/deps/sqlx_macros_core-67b73f8b5327a208.d",
+      "debug/deps/libsqlx_macros-de58ffc848cccd8c.so",
+      "debug/deps/sqlx_macros-de58ffc848cccd8c.d",
+      "debug/.fingerprint/sqlx-macros-core-67b73f8b5327a208",
+      "debug/.fingerprint/sqlx-macros-de58ffc848cccd8c"
+    ],
+    "original_paths_absent": true,
+    "retained_identities_match": true,
+    "regular_files_preserved": 14,
+    "bytes_preserved": 29091457,
+    "safe_manual_rollback": "Only under the same exclusive target lock and with no active target user: verify every retained SHA256/mode/size against before, refuse any existing original path, rename the exact seven entries back, and verify the restored identities. Never overwrite new rebuild output.",
+    "retained_files": [
+      {
+        "original_relative_path": "debug/deps/libsqlx_macros_core-67b73f8b5327a208.rlib",
+        "retained_path": "/workspace/scratch/822cc50e24f0/authority-recovery/native-20261105/receipts/cache-quarantine-367e27fb-20261105T045310Z-63ff3b92/retained-target-paths/debug/deps/libsqlx_macros_core-67b73f8b5327a208.rlib",
+        "bytes": 2920886,
+        "sha256": "3c31c1a306dd17972f2d077daa2c777bfc22df7c8bd2de529f61636dcc557ddf",
+        "mode": "0o644",
+        "device": "27",
+        "inode": "1481277"
+      },
+      {
+        "original_relative_path": "debug/deps/libsqlx_macros_core-67b73f8b5327a208.rmeta",
+        "retained_path": "/workspace/scratch/822cc50e24f0/authority-recovery/native-20261105/receipts/cache-quarantine-367e27fb-20261105T045310Z-63ff3b92/retained-target-paths/debug/deps/libsqlx_macros_core-67b73f8b5327a208.rmeta",
+        "bytes": 700801,
+        "sha256": "1b7fc8357f2a53cc7364e6f1b069a51f952ce70f3468b80145fac125e4f06f93",
+        "mode": "0o644",
+        "device": "27",
+        "inode": "1867816"
+      },
+      {
+        "original_relative_path": "debug/deps/sqlx_macros_core-67b73f8b5327a208.d",
+        "retained_path": "/workspace/scratch/822cc50e24f0/authority-recovery/native-20261105/receipts/cache-quarantine-367e27fb-20261105T045310Z-63ff3b92/retained-target-paths/debug/deps/sqlx_macros_core-67b73f8b5327a208.d",
+        "bytes": 8073,
+        "sha256": "ddf9d50b5b268c4796931f9a318403995c54ddec9bc66475add389cf6bacdd82",
+        "mode": "0o644",
+        "device": "27",
+        "inode": "1477424"
+      },
+      {
+        "original_relative_path": "debug/deps/libsqlx_macros-de58ffc848cccd8c.so",
+        "retained_path": "/workspace/scratch/822cc50e24f0/authority-recovery/native-20261105/receipts/cache-quarantine-367e27fb-20261105T045310Z-63ff3b92/retained-target-paths/debug/deps/libsqlx_macros-de58ffc848cccd8c.so",
+        "bytes": 25454832,
+        "sha256": "60caf35c566796e3a1725fa8a4c2081e53383965bb1d4db18ca29d20dbbd0aa3",
+        "mode": "0o755",
+        "device": "27",
+        "inode": "1477957"
+      },
+      {
+        "original_relative_path": "debug/deps/sqlx_macros-de58ffc848cccd8c.d",
+        "retained_path": "/workspace/scratch/822cc50e24f0/authority-recovery/native-20261105/receipts/cache-quarantine-367e27fb-20261105T045310Z-63ff3b92/retained-target-paths/debug/deps/sqlx_macros-de58ffc848cccd8c.d",
+        "bytes": 505,
+        "sha256": "3279814c89cb50a577afd6f6c821c3d6688ee906af9427d300a55db4dd857826",
+        "mode": "0o644",
+        "device": "27",
+        "inode": "1477947"
+      },
+      {
+        "original_relative_path": "debug/.fingerprint/sqlx-macros-core-67b73f8b5327a208/lib-sqlx_macros_core.json",
+        "retained_path": "/workspace/scratch/822cc50e24f0/authority-recovery/native-20261105/receipts/cache-quarantine-367e27fb-20261105T045310Z-63ff3b92/retained-target-paths/debug/.fingerprint/sqlx-macros-core-67b73f8b5327a208/lib-sqlx_macros_core.json",
+        "bytes": 2124,
+        "sha256": "5a4a84b5f478d24011b38083cb35a7ae3bb6182e9f51309f25d1af1770c9a671",
+        "mode": "0o644",
+        "device": "27",
+        "inode": "1477427"
+      },
+      {
+        "original_relative_path": "debug/.fingerprint/sqlx-macros-core-67b73f8b5327a208/invoked.timestamp",
+        "retained_path": "/workspace/scratch/822cc50e24f0/authority-recovery/native-20261105/receipts/cache-quarantine-367e27fb-20261105T045310Z-63ff3b92/retained-target-paths/debug/.fingerprint/sqlx-macros-core-67b73f8b5327a208/invoked.timestamp",
+        "bytes": 48,
+        "sha256": "5a109e6643e8d3e88642e3f35e85d2a83e639d07523aa6e99166c48178e965c3",
+        "mode": "0o644",
+        "device": "27",
+        "inode": "1477423"
+      },
+      {
+        "original_relative_path": "debug/.fingerprint/sqlx-macros-core-67b73f8b5327a208/dep-lib-sqlx_macros_core",
+        "retained_path": "/workspace/scratch/822cc50e24f0/authority-recovery/native-20261105/receipts/cache-quarantine-367e27fb-20261105T045310Z-63ff3b92/retained-target-paths/debug/.fingerprint/sqlx-macros-core-67b73f8b5327a208/dep-lib-sqlx_macros_core",
+        "bytes": 14,
+        "sha256": "93a4afc37518a1bf7830744017176e1d1946e5df993e47159069839f61fe49ab",
+        "mode": "0o644",
+        "device": "27",
+        "inode": "1477425"
+      },
+      {
+        "original_relative_path": "debug/.fingerprint/sqlx-macros-core-67b73f8b5327a208/lib-sqlx_macros_core",
+        "retained_path": "/workspace/scratch/822cc50e24f0/authority-recovery/native-20261105/receipts/cache-quarantine-367e27fb-20261105T045310Z-63ff3b92/retained-target-paths/debug/.fingerprint/sqlx-macros-core-67b73f8b5327a208/lib-sqlx_macros_core",
+        "bytes": 16,
+        "sha256": "a3395f1dfe89e0e424b5ab0435c0bac9bf5dc52906dacb32de5f3153230524aa",
+        "mode": "0o644",
+        "device": "27",
+        "inode": "1477426"
+      },
+      {
+        "original_relative_path": "debug/.fingerprint/sqlx-macros-de58ffc848cccd8c/output-lib-sqlx_macros",
+        "retained_path": "/workspace/scratch/822cc50e24f0/authority-recovery/native-20261105/receipts/cache-quarantine-367e27fb-20261105T045310Z-63ff3b92/retained-target-paths/debug/.fingerprint/sqlx-macros-de58ffc848cccd8c/output-lib-sqlx_macros",
+        "bytes": 2806,
+        "sha256": "e37d1ed6f456a58b446a4bc3973a56d7ee04baa95e81d352e53ac628c18d9ce8",
+        "mode": "0o644",
+        "device": "27",
+        "inode": "1476670"
+      },
+      {
+        "original_relative_path": "debug/.fingerprint/sqlx-macros-de58ffc848cccd8c/lib-sqlx_macros.json",
+        "retained_path": "/workspace/scratch/822cc50e24f0/authority-recovery/native-20261105/receipts/cache-quarantine-367e27fb-20261105T045310Z-63ff3b92/retained-target-paths/debug/.fingerprint/sqlx-macros-de58ffc848cccd8c/lib-sqlx_macros.json",
+        "bytes": 1290,
+        "sha256": "33d4fbef89824123da98f300610e54f4e655578e157b1f026734a23eabc5ee16",
+        "mode": "0o644",
+        "device": "27",
+        "inode": "1477950"
+      },
+      {
+        "original_relative_path": "debug/.fingerprint/sqlx-macros-de58ffc848cccd8c/invoked.timestamp",
+        "retained_path": "/workspace/scratch/822cc50e24f0/authority-recovery/native-20261105/receipts/cache-quarantine-367e27fb-20261105T045310Z-63ff3b92/retained-target-paths/debug/.fingerprint/sqlx-macros-de58ffc848cccd8c/invoked.timestamp",
+        "bytes": 48,
+        "sha256": "5a109e6643e8d3e88642e3f35e85d2a83e639d07523aa6e99166c48178e965c3",
+        "mode": "0o644",
+        "device": "27",
+        "inode": "1477946"
+      },
+      {
+        "original_relative_path": "debug/.fingerprint/sqlx-macros-de58ffc848cccd8c/dep-lib-sqlx_macros",
+        "retained_path": "/workspace/scratch/822cc50e24f0/authority-recovery/native-20261105/receipts/cache-quarantine-367e27fb-20261105T045310Z-63ff3b92/retained-target-paths/debug/.fingerprint/sqlx-macros-de58ffc848cccd8c/dep-lib-sqlx_macros",
+        "bytes": 14,
+        "sha256": "93a4afc37518a1bf7830744017176e1d1946e5df993e47159069839f61fe49ab",
+        "mode": "0o644",
+        "device": "27",
+        "inode": "1477948"
+      },
+      {
+        "original_relative_path": "debug/.fingerprint/sqlx-macros-de58ffc848cccd8c/lib-sqlx_macros",
+        "retained_path": "/workspace/scratch/822cc50e24f0/authority-recovery/native-20261105/receipts/cache-quarantine-367e27fb-20261105T045310Z-63ff3b92/retained-target-paths/debug/.fingerprint/sqlx-macros-de58ffc848cccd8c/lib-sqlx_macros",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "mode": "0o644",
+        "device": "27",
+        "inode": "1477949"
+      }
+    ],
+    "raw_receipt": "cache-preparation/quarantine-receipt.json",
+    "earlier_refusals": [
+      {
+        "receipt": "cache-preparation/quarantine-refusal-cwd.json",
+        "status": "CACHE_QUARANTINE_REFUSED",
+        "reason": "External Cargo cwd was not accessible; no file was moved. The later check did not access that cwd.",
+        "moved_count": 0
+      },
+      {
+        "receipt": "cache-preparation/quarantine-refusal-argv0.json",
+        "status": "CACHE_QUARANTINE_REFUSED",
+        "reason": "The shared nextest executable path in argv[0] was mistaken for an owned work argument. The separate next version excluded executable argv[0] from ownership classification; no file was moved by this attempt.",
+        "moved_count": 0
+      }
+    ]
+  },
+  "supporting_files": [
+    {
+      "path": "evidence/recovery-v2-native-20261105/final-runtime-367e27fb/cache-preparation/quarantine-refusal-cwd.json",
+      "mode": "100644",
+      "bytes": 1236,
+      "git_blob": "1b82bfc1f860289746dbe79ae02a176b15635dba",
+      "sha256": "888966ef6061e2d2842d8da32598c9e7145f52f112f5830d4b27f7044e6c0441"
+    },
+    {
+      "path": "evidence/recovery-v2-native-20261105/final-runtime-367e27fb/cache-preparation/quarantine-refusal-argv0.json",
+      "mode": "100644",
+      "bytes": 3183,
+      "git_blob": "76bc0cbede9337b7fedab7f1cd69fa6f2fb7a21e",
+      "sha256": "dfded1bb82adca4994264d068535f06992ae6b1802953f9e1d5b5152cfaee7bf"
+    },
+    {
+      "path": "evidence/recovery-v2-native-20261105/final-runtime-367e27fb/cache-preparation/quarantine-receipt.json",
+      "mode": "100644",
+      "bytes": 14982,
+      "git_blob": "2d89e1b7cf49cd83e51f1744ae17bd4b8894bf13",
+      "sha256": "2727504cee710a97b7e2e4df45245b5b883428b42f196f331a4857d24975eda8"
+    },
+    {
+      "path": "evidence/recovery-v2-native-20261105/final-runtime-367e27fb/cache-preparation/quarantine_sqlx_macros.py",
+      "mode": "100644",
+      "bytes": 10109,
+      "git_blob": "2597cb0717c8c46c6c96162b278ed98b752bb517",
+      "sha256": "b69859b3b6e2951ba118f9aa5b9fb4a3cf0b70e01678d1a9ead2eb338f8770b9"
+    },
+    {
+      "path": "evidence/recovery-v2-native-20261105/final-runtime-367e27fb/cache-preparation/quarantine_sqlx_macros_v2.py",
+      "mode": "100644",
+      "bytes": 11741,
+      "git_blob": "8babf8da4a1028c73e69062b6b824c7a2f52d8fb",
+      "sha256": "6457fe397b2f531a48695ac1857c8460ed250f0fae10d6ae04a2705b0c723854"
+    },
+    {
+      "path": "evidence/recovery-v2-native-20261105/final-runtime-367e27fb/cache-preparation/quarantine_sqlx_macros_v3.py",
+      "mode": "100644",
+      "bytes": 11745,
+      "git_blob": "dd95ee42d16595b5c84df2addbf739ce4a6c6e84",
+      "sha256": "a0059e1a5be00d1a398fb9f396d04f529efadc86f0d5f70a1002125c8911c7da"
+    }
+  ]
+}

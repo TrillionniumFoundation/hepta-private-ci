@@ -1,0 +1,486 @@
+{
+  "status": "CACHE_QUARANTINED_REBUILD_NOT_RUN",
+  "started_at": "2026-11-05T04:53:10.099463+00:00",
+  "selected_runtime_commit": "367e27fb6bf30443641b9e23a063d24e49eda9f7",
+  "selected_runtime_tree": "6a2465606f0270eeecec83c2b7d9dbef5dc96076",
+  "target": "/workspace/scratch/822cc50e24f0/authority-recovery/native-20261105/target",
+  "quarantine": "/workspace/scratch/822cc50e24f0/authority-recovery/native-20261105/receipts/cache-quarantine-367e27fb-20261105T045310Z-63ff3b92/retained-target-paths",
+  "script_sha256": "a0059e1a5be00d1a398fb9f396d04f529efadc86f0d5f70a1002125c8911c7da",
+  "cargo_or_test_invoked": false,
+  "test_count": 0,
+  "e0463_resolution": "UNKNOWN_REBUILD_NOT_RUN",
+  "before": {
+    "debug/deps/libsqlx_macros_core-67b73f8b5327a208.rlib": {
+      "kind": "file",
+      "file": {
+        "bytes": 2920886,
+        "mode": "0o644",
+        "uid": 0,
+        "device": 27,
+        "inode": 1481277,
+        "links": 1,
+        "mtime_ns": 1793851241541959114,
+        "ctime_ns": 1793851709808842418,
+        "sha256": "3c31c1a306dd17972f2d077daa2c777bfc22df7c8bd2de529f61636dcc557ddf"
+      }
+    },
+    "debug/deps/libsqlx_macros_core-67b73f8b5327a208.rmeta": {
+      "kind": "file",
+      "file": {
+        "bytes": 700801,
+        "mode": "0o644",
+        "uid": 0,
+        "device": 27,
+        "inode": 1867816,
+        "links": 1,
+        "mtime_ns": 1793851703788458021,
+        "ctime_ns": 1793851703788458021,
+        "sha256": "1b7fc8357f2a53cc7364e6f1b069a51f952ce70f3468b80145fac125e4f06f93"
+      }
+    },
+    "debug/deps/sqlx_macros_core-67b73f8b5327a208.d": {
+      "kind": "file",
+      "file": {
+        "bytes": 8073,
+        "mode": "0o644",
+        "uid": 0,
+        "device": 27,
+        "inode": 1477424,
+        "links": 1,
+        "mtime_ns": 1793851702916745392,
+        "ctime_ns": 1793851702916745392,
+        "sha256": "ddf9d50b5b268c4796931f9a318403995c54ddec9bc66475add389cf6bacdd82"
+      }
+    },
+    "debug/deps/libsqlx_macros-de58ffc848cccd8c.so": {
+      "kind": "file",
+      "file": {
+        "bytes": 25454832,
+        "mode": "0o755",
+        "uid": 0,
+        "device": 27,
+        "inode": 1477957,
+        "links": 1,
+        "mtime_ns": 1793851271743036144,
+        "ctime_ns": 1793851271747036217,
+        "sha256": "60caf35c566796e3a1725fa8a4c2081e53383965bb1d4db18ca29d20dbbd0aa3"
+      }
+    },
+    "debug/deps/sqlx_macros-de58ffc848cccd8c.d": {
+      "kind": "file",
+      "file": {
+        "bytes": 505,
+        "mode": "0o644",
+        "uid": 0,
+        "device": 27,
+        "inode": 1477947,
+        "links": 1,
+        "mtime_ns": 1793851270939609760,
+        "ctime_ns": 1793851270939609760,
+        "sha256": "3279814c89cb50a577afd6f6c821c3d6688ee906af9427d300a55db4dd857826"
+      }
+    },
+    "debug/.fingerprint/sqlx-macros-core-67b73f8b5327a208": {
+      "kind": "directory",
+      "device": 27,
+      "inode": 1461057,
+      "mode": "0o755",
+      "uid": 0,
+      "files": {
+        "lib-sqlx_macros_core.json": {
+          "bytes": 2124,
+          "mode": "0o644",
+          "uid": 0,
+          "device": 27,
+          "inode": 1477427,
+          "links": 1,
+          "mtime_ns": 1793851705028774787,
+          "ctime_ns": 1793851705028774787,
+          "sha256": "5a4a84b5f478d24011b38083cb35a7ae3bb6182e9f51309f25d1af1770c9a671"
+        },
+        "invoked.timestamp": {
+          "bytes": 48,
+          "mode": "0o644",
+          "uid": 0,
+          "device": 27,
+          "inode": 1477423,
+          "links": 1,
+          "mtime_ns": 1793851702672741995,
+          "ctime_ns": 1793851702672741995,
+          "sha256": "5a109e6643e8d3e88642e3f35e85d2a83e639d07523aa6e99166c48178e965c3"
+        },
+        "dep-lib-sqlx_macros_core": {
+          "bytes": 14,
+          "mode": "0o644",
+          "uid": 0,
+          "device": 27,
+          "inode": 1477425,
+          "links": 1,
+          "mtime_ns": 1793851702672741995,
+          "ctime_ns": 1793851705028774787,
+          "sha256": "93a4afc37518a1bf7830744017176e1d1946e5df993e47159069839f61fe49ab"
+        },
+        "lib-sqlx_macros_core": {
+          "bytes": 16,
+          "mode": "0o644",
+          "uid": 0,
+          "device": 27,
+          "inode": 1477426,
+          "links": 1,
+          "mtime_ns": 1793851705028774787,
+          "ctime_ns": 1793851705028774787,
+          "sha256": "a3395f1dfe89e0e424b5ab0435c0bac9bf5dc52906dacb32de5f3153230524aa"
+        }
+      }
+    },
+    "debug/.fingerprint/sqlx-macros-de58ffc848cccd8c": {
+      "kind": "directory",
+      "device": 27,
+      "inode": 1460815,
+      "mode": "0o755",
+      "uid": 0,
+      "files": {
+        "output-lib-sqlx_macros": {
+          "bytes": 2806,
+          "mode": "0o644",
+          "uid": 0,
+          "device": 27,
+          "inode": 1476670,
+          "links": 1,
+          "mtime_ns": 1793851862638932426,
+          "ctime_ns": 1793851862638932426,
+          "sha256": "e37d1ed6f456a58b446a4bc3973a56d7ee04baa95e81d352e53ac628c18d9ce8"
+        },
+        "lib-sqlx_macros.json": {
+          "bytes": 1290,
+          "mode": "0o644",
+          "uid": 0,
+          "device": 27,
+          "inode": 1477950,
+          "links": 1,
+          "mtime_ns": 1793851271771472765,
+          "ctime_ns": 1793851271771472765,
+          "sha256": "33d4fbef89824123da98f300610e54f4e655578e157b1f026734a23eabc5ee16"
+        },
+        "invoked.timestamp": {
+          "bytes": 48,
+          "mode": "0o644",
+          "uid": 0,
+          "device": 27,
+          "inode": 1477946,
+          "links": 1,
+          "mtime_ns": 1793851862386929356,
+          "ctime_ns": 1793851862386929356,
+          "sha256": "5a109e6643e8d3e88642e3f35e85d2a83e639d07523aa6e99166c48178e965c3"
+        },
+        "dep-lib-sqlx_macros": {
+          "bytes": 14,
+          "mode": "0o644",
+          "uid": 0,
+          "device": 27,
+          "inode": 1477948,
+          "links": 1,
+          "mtime_ns": 1793851270743017881,
+          "ctime_ns": 1793851271771472765,
+          "sha256": "93a4afc37518a1bf7830744017176e1d1946e5df993e47159069839f61fe49ab"
+        },
+        "lib-sqlx_macros": {
+          "bytes": 0,
+          "mode": "0o644",
+          "uid": 0,
+          "device": 27,
+          "inode": 1477949,
+          "links": 1,
+          "mtime_ns": 1793851714872914109,
+          "ctime_ns": 1793851714872914109,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    }
+  },
+  "after": {
+    "debug/deps/libsqlx_macros_core-67b73f8b5327a208.rlib": {
+      "kind": "file",
+      "file": {
+        "bytes": 2920886,
+        "mode": "0o644",
+        "uid": 0,
+        "device": 27,
+        "inode": 1481277,
+        "links": 1,
+        "mtime_ns": 1793851241541959114,
+        "ctime_ns": 1793854390225039039,
+        "sha256": "3c31c1a306dd17972f2d077daa2c777bfc22df7c8bd2de529f61636dcc557ddf"
+      }
+    },
+    "debug/deps/libsqlx_macros_core-67b73f8b5327a208.rmeta": {
+      "kind": "file",
+      "file": {
+        "bytes": 700801,
+        "mode": "0o644",
+        "uid": 0,
+        "device": 27,
+        "inode": 1867816,
+        "links": 1,
+        "mtime_ns": 1793851703788458021,
+        "ctime_ns": 1793854390230252370,
+        "sha256": "1b7fc8357f2a53cc7364e6f1b069a51f952ce70f3468b80145fac125e4f06f93"
+      }
+    },
+    "debug/deps/sqlx_macros_core-67b73f8b5327a208.d": {
+      "kind": "file",
+      "file": {
+        "bytes": 8073,
+        "mode": "0o644",
+        "uid": 0,
+        "device": 27,
+        "inode": 1477424,
+        "links": 1,
+        "mtime_ns": 1793851702916745392,
+        "ctime_ns": 1793854390230899263,
+        "sha256": "ddf9d50b5b268c4796931f9a318403995c54ddec9bc66475add389cf6bacdd82"
+      }
+    },
+    "debug/deps/libsqlx_macros-de58ffc848cccd8c.so": {
+      "kind": "file",
+      "file": {
+        "bytes": 25454832,
+        "mode": "0o755",
+        "uid": 0,
+        "device": 27,
+        "inode": 1477957,
+        "links": 1,
+        "mtime_ns": 1793851271743036144,
+        "ctime_ns": 1793854390242690876,
+        "sha256": "60caf35c566796e3a1725fa8a4c2081e53383965bb1d4db18ca29d20dbbd0aa3"
+      }
+    },
+    "debug/deps/sqlx_macros-de58ffc848cccd8c.d": {
+      "kind": "file",
+      "file": {
+        "bytes": 505,
+        "mode": "0o644",
+        "uid": 0,
+        "device": 27,
+        "inode": 1477947,
+        "links": 1,
+        "mtime_ns": 1793851270939609760,
+        "ctime_ns": 1793854390249880993,
+        "sha256": "3279814c89cb50a577afd6f6c821c3d6688ee906af9427d300a55db4dd857826"
+      }
+    },
+    "debug/.fingerprint/sqlx-macros-core-67b73f8b5327a208": {
+      "kind": "directory",
+      "device": 27,
+      "inode": 1461057,
+      "mode": "0o755",
+      "uid": 0,
+      "files": {
+        "lib-sqlx_macros_core.json": {
+          "bytes": 2124,
+          "mode": "0o644",
+          "uid": 0,
+          "device": 27,
+          "inode": 1477427,
+          "links": 1,
+          "mtime_ns": 1793851705028774787,
+          "ctime_ns": 1793851705028774787,
+          "sha256": "5a4a84b5f478d24011b38083cb35a7ae3bb6182e9f51309f25d1af1770c9a671"
+        },
+        "invoked.timestamp": {
+          "bytes": 48,
+          "mode": "0o644",
+          "uid": 0,
+          "device": 27,
+          "inode": 1477423,
+          "links": 1,
+          "mtime_ns": 1793851702672741995,
+          "ctime_ns": 1793851702672741995,
+          "sha256": "5a109e6643e8d3e88642e3f35e85d2a83e639d07523aa6e99166c48178e965c3"
+        },
+        "dep-lib-sqlx_macros_core": {
+          "bytes": 14,
+          "mode": "0o644",
+          "uid": 0,
+          "device": 27,
+          "inode": 1477425,
+          "links": 1,
+          "mtime_ns": 1793851702672741995,
+          "ctime_ns": 1793851705028774787,
+          "sha256": "93a4afc37518a1bf7830744017176e1d1946e5df993e47159069839f61fe49ab"
+        },
+        "lib-sqlx_macros_core": {
+          "bytes": 16,
+          "mode": "0o644",
+          "uid": 0,
+          "device": 27,
+          "inode": 1477426,
+          "links": 1,
+          "mtime_ns": 1793851705028774787,
+          "ctime_ns": 1793851705028774787,
+          "sha256": "a3395f1dfe89e0e424b5ab0435c0bac9bf5dc52906dacb32de5f3153230524aa"
+        }
+      }
+    },
+    "debug/.fingerprint/sqlx-macros-de58ffc848cccd8c": {
+      "kind": "directory",
+      "device": 27,
+      "inode": 1460815,
+      "mode": "0o755",
+      "uid": 0,
+      "files": {
+        "output-lib-sqlx_macros": {
+          "bytes": 2806,
+          "mode": "0o644",
+          "uid": 0,
+          "device": 27,
+          "inode": 1476670,
+          "links": 1,
+          "mtime_ns": 1793851862638932426,
+          "ctime_ns": 1793851862638932426,
+          "sha256": "e37d1ed6f456a58b446a4bc3973a56d7ee04baa95e81d352e53ac628c18d9ce8"
+        },
+        "lib-sqlx_macros.json": {
+          "bytes": 1290,
+          "mode": "0o644",
+          "uid": 0,
+          "device": 27,
+          "inode": 1477950,
+          "links": 1,
+          "mtime_ns": 1793851271771472765,
+          "ctime_ns": 1793851271771472765,
+          "sha256": "33d4fbef89824123da98f300610e54f4e655578e157b1f026734a23eabc5ee16"
+        },
+        "invoked.timestamp": {
+          "bytes": 48,
+          "mode": "0o644",
+          "uid": 0,
+          "device": 27,
+          "inode": 1477946,
+          "links": 1,
+          "mtime_ns": 1793851862386929356,
+          "ctime_ns": 1793851862386929356,
+          "sha256": "5a109e6643e8d3e88642e3f35e85d2a83e639d07523aa6e99166c48178e965c3"
+        },
+        "dep-lib-sqlx_macros": {
+          "bytes": 14,
+          "mode": "0o644",
+          "uid": 0,
+          "device": 27,
+          "inode": 1477948,
+          "links": 1,
+          "mtime_ns": 1793851270743017881,
+          "ctime_ns": 1793851271771472765,
+          "sha256": "93a4afc37518a1bf7830744017176e1d1946e5df993e47159069839f61fe49ab"
+        },
+        "lib-sqlx_macros": {
+          "bytes": 0,
+          "mode": "0o644",
+          "uid": 0,
+          "device": 27,
+          "inode": 1477949,
+          "links": 1,
+          "mtime_ns": 1793851714872914109,
+          "ctime_ns": 1793851714872914109,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    }
+  },
+  "moved": [
+    "debug/deps/libsqlx_macros_core-67b73f8b5327a208.rlib",
+    "debug/deps/libsqlx_macros_core-67b73f8b5327a208.rmeta",
+    "debug/deps/sqlx_macros_core-67b73f8b5327a208.d",
+    "debug/deps/libsqlx_macros-de58ffc848cccd8c.so",
+    "debug/deps/sqlx_macros-de58ffc848cccd8c.d",
+    "debug/.fingerprint/sqlx-macros-core-67b73f8b5327a208",
+    "debug/.fingerprint/sqlx-macros-de58ffc848cccd8c"
+  ],
+  "cargo_lock": "NONBLOCKING_EXCLUSIVE_ACQUIRED",
+  "active_owned_compilers": [],
+  "observed_cargo_frontends": [
+    {
+      "pid": 216505,
+      "name": "cargo",
+      "explicit_owned_argument": false,
+      "cwd_read": false
+    },
+    {
+      "pid": 217732,
+      "name": "cargo",
+      "explicit_owned_argument": false,
+      "cwd_read": false
+    },
+    {
+      "pid": 218444,
+      "name": "cargo",
+      "explicit_owned_argument": false,
+      "cwd_read": false
+    },
+    {
+      "pid": 236802,
+      "name": "cargo-nextest",
+      "explicit_owned_argument": false,
+      "cwd_read": false
+    },
+    {
+      "pid": 236846,
+      "name": "cargo",
+      "explicit_owned_argument": false,
+      "cwd_read": false
+    },
+    {
+      "pid": 250327,
+      "name": "cargo",
+      "explicit_owned_argument": false,
+      "cwd_read": false
+    },
+    {
+      "pid": 251359,
+      "name": "cargo",
+      "explicit_owned_argument": false,
+      "cwd_read": false
+    }
+  ],
+  "observed_foreign_compilers": [
+    {
+      "pid": 221218,
+      "name": "rustc",
+      "output_paths": [
+        "/workspace/scratch/48266f5bd43f/chain-target/debug/deps"
+      ],
+      "cwd_read": false
+    },
+    {
+      "pid": 251425,
+      "name": "rustc",
+      "output_paths": [
+        "/workspace/scratch/7318042bb6cb/target/debug/deps"
+      ],
+      "cwd_read": false
+    },
+    {
+      "pid": 261126,
+      "name": "rustc",
+      "output_paths": [
+        "/workspace/scratch/aea25ba345a8/hepta-effects-agent/target/debug/deps"
+      ],
+      "cwd_read": false
+    },
+    {
+      "pid": 261134,
+      "name": "rustc",
+      "output_paths": [
+        "/workspace/scratch/48266f5bd43f/hepta-effects-target/debug/deps"
+      ],
+      "cwd_read": false
+    }
+  ],
+  "frontend_protection": "Exclusive target Cargo lock held throughout inventory and rename; external frontend cwd is neither accessed nor inferred.",
+  "original_paths_absent": true,
+  "retained_identities_match": true,
+  "regular_files_preserved": 14,
+  "bytes_preserved": 29091457,
+  "completed_at": "2026-11-05T04:53:10.290613+00:00",
+  "safe_manual_rollback": "Only under the same exclusive target lock and with no active target user: verify every retained SHA256/mode/size against before, refuse any existing original path, rename the exact seven entries back, and verify the restored identities. Never overwrite new rebuild output."
+}
