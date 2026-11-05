@@ -1,0 +1,145 @@
+{
+  "annotations": {
+    "destructiveHint": false,
+    "idempotentHint": true,
+    "openWorldHint": false,
+    "readOnlyHint": true
+  },
+  "description": "Verify a fixed-representation continuation-ordering separation witness using exact binary64 integer arithmetic. Checks a caller-pinned joint-policy-v1 checkpoint, extracts its 147 continuation coefficients, verifies supplied hidden bytes and first-max labels, then checks ideal and conservative binary64-relaxed infeasibility separately. At most 8192 rows, 1 MiB checkpoint and 8 MiB request; bounded workers with cooperative deadlines. The SHA values bind supplied bytes, not authenticated provenance: hidden features and teacher programs are not reexecuted. No file access, weight edit, witness search, task-value improvement, whole-network impossibility or production eligibility.",
+  "inputSchema": {
+    "$defs": {
+      "CertificateRow": {
+        "additionalProperties": false,
+        "properties": {
+          "competitor_action": {
+            "maximum": 255,
+            "minimum": 0,
+            "type": "integer"
+          },
+          "hidden_f64_le_hex": {
+            "description": "Exactly 49 little-endian F64 values as 784 lowercase hex characters.\nCoordinates must be finite, bounded by one, with an exact final +1 bias.",
+            "type": "string"
+          },
+          "hidden_sha256": {
+            "type": "string"
+          },
+          "legal": {
+            "items": {
+              "type": "boolean"
+            },
+            "maxItems": 6,
+            "minItems": 6,
+            "type": "array"
+          },
+          "multiplier_f64_le_hex": {
+            "description": "One finite, nonnegative little-endian F64; zero supplies no separation.",
+            "type": "string"
+          },
+          "source_row": {
+            "minimum": 0,
+            "type": "integer"
+          },
+          "state_sha256": {
+            "type": "string"
+          },
+          "target_action": {
+            "description": "Fixed action IDs: 1 WAIT, 2 READ, 3 REPAIR.",
+            "maximum": 255,
+            "minimum": 0,
+            "type": "integer"
+          },
+          "teacher_q_f64_le_hex": {
+            "description": "Six finite supplied scores. Selection must be the first legal maximum.",
+            "type": "string"
+          },
+          "teacher_table_sha256": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "source_row",
+          "state_sha256",
+          "teacher_table_sha256",
+          "hidden_f64_le_hex",
+          "hidden_sha256",
+          "multiplier_f64_le_hex",
+          "teacher_q_f64_le_hex",
+          "legal",
+          "target_action",
+          "competitor_action"
+        ],
+        "type": "object"
+      },
+      "CertificateSource": {
+        "additionalProperties": false,
+        "properties": {
+          "feature_source_sha256": {
+            "type": "string"
+          },
+          "fit_id": {
+            "minimum": 0,
+            "type": "integer"
+          },
+          "original_witness_record_sha256": {
+            "description": "Binds the upstream record identity; that record is not read by this tool.",
+            "type": "string"
+          },
+          "protocol_sha256": {
+            "type": "string"
+          },
+          "teacher_source_sha256": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "fit_id",
+          "protocol_sha256",
+          "feature_source_sha256",
+          "teacher_source_sha256",
+          "original_witness_record_sha256"
+        ],
+        "type": "object"
+      }
+    },
+    "additionalProperties": false,
+    "properties": {
+      "checkpoint_json": {
+        "description": "Original, declared joint-policy-v1 JSON, at most 1 MiB. The first three\naffine output rows and biases are the center; no replacement center input.",
+        "type": "string"
+      },
+      "expected_checkpoint_sha256": {
+        "description": "SHA256 of the exact UTF-8 checkpoint_json bytes, supplied by the caller.",
+        "type": "string"
+      },
+      "expected_witness_sha256": {
+        "description": "Digest of the documented binary witness encoding, checked independently.",
+        "type": "string"
+      },
+      "rows": {
+        "description": "Complete supplied witness, at most 8192 rows and 8 MiB canonical request.",
+        "items": {
+          "$ref": "#/$defs/CertificateRow"
+        },
+        "type": "array"
+      },
+      "semantics": {
+        "description": "Exact declaration required; the verifier does not probe hardware semantics.",
+        "type": "string"
+      },
+      "source": {
+        "$ref": "#/$defs/CertificateSource"
+      }
+    },
+    "required": [
+      "semantics",
+      "checkpoint_json",
+      "expected_checkpoint_sha256",
+      "expected_witness_sha256",
+      "source",
+      "rows"
+    ],
+    "type": "object"
+  },
+  "name": "weight_continuation_certificate",
+  "title": "Verify an Exact Continuation Ordering Certificate"
+}

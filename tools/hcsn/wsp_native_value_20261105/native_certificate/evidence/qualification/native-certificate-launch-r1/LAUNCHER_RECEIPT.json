@@ -1,0 +1,64 @@
+{
+  "child_cpu_seconds": 7.020360999999999,
+  "completed": true,
+  "completed_utc": "2026-11-05T04:19:40.005035+00:00",
+  "launcher_sha256": "7c4e43b3a0e1e9b5433f4cd22fb24e1bd667ce63b9eb0e7840ffa4c72ed0101f",
+  "passed": true,
+  "phases": [
+    {
+      "child_cpu_seconds": 0.266793,
+      "command": [
+        "/usr/bin/python3",
+        "-B",
+        "/home/qian-qi/work/hepta-wsp-certificate-20261105-01/experiments/weight/native_certificate_20261105/freeze_protocol.py",
+        "--root",
+        "/home/qian-qi/work/hepta-wsp-certificate-20261105-01",
+        "--qualification",
+        "/home/qian-qi/work/hepta-wsp-certificate-20261105-01/qualification/native-certificate-attempt-1/RESULT.json",
+        "--inputs",
+        "/home/qian-qi/work/hepta-wsp-certificate-20261105-01/qualification/native-certificate-inputs-r1",
+        "--output",
+        "/home/qian-qi/work/hepta-wsp-certificate-20261105-01/qualification/native-certificate-execution-r1.json"
+      ],
+      "exit_code": 0,
+      "name": "freeze",
+      "wall_seconds": 0.3151450540171936
+    },
+    {
+      "child_cpu_seconds": 6.753568,
+      "command": [
+        "/usr/bin/python3",
+        "-B",
+        "/home/qian-qi/work/hepta-wsp-certificate-20261105-01/experiments/weight/native_certificate_20261105/supervise.py",
+        "--output",
+        "/home/qian-qi/work/hepta-wsp-certificate-20261105-01/qualification/native-certificate-corpus-r1-outer",
+        "--timeout",
+        "900",
+        "--",
+        "/usr/bin/python3",
+        "-B",
+        "/home/qian-qi/work/hepta-wsp-certificate-20261105-01/experiments/weight/native_certificate_20261105/run_corpus.py",
+        "--binary",
+        "/home/qian-qi/work/hepta-wsp-certificate-20261105-01-target/debug/hepta-runtime",
+        "--inputs",
+        "/home/qian-qi/work/hepta-wsp-certificate-20261105-01/qualification/native-certificate-inputs-r1",
+        "--protocol",
+        "/home/qian-qi/work/hepta-wsp-certificate-20261105-01/qualification/native-certificate-execution-r1.json",
+        "--protocol-sha256",
+        "7a361d5a451f9eba6b1d722e9596a4b30ba0b03fbf2aba057207c0a867b8dbd8",
+        "--output",
+        "/home/qian-qi/work/hepta-wsp-certificate-20261105-01/qualification/native-certificate-corpus-r1"
+      ],
+      "exit_code": 0,
+      "name": "corpus",
+      "wall_seconds": 19.569849080988206
+    }
+  ],
+  "protocol_sha256": "7a361d5a451f9eba6b1d722e9596a4b30ba0b03fbf2aba057207c0a867b8dbd8",
+  "qualification_wait_in_wall_cost": true,
+  "schema": "hepta-native-certificate-launch-v1",
+  "self_cpu_seconds": 0.06632086200000001,
+  "started_utc": "2026-11-05T04:10:00.075828+00:00",
+  "wait_wall_seconds": 560.0431970850332,
+  "wall_seconds": 579.9292171080597
+}

@@ -1,0 +1,152 @@
+{
+  "all_passed": true,
+  "base_sha": "990f85e46bedb8f49c0e6d0029ea6f9afbf6eac7",
+  "binary": {
+    "bytes": 382495848,
+    "sha256": "692ea01fa5dd3a6e33cb343aee4d7c41a6ae4f015a352b2d2c42afd4655532ec"
+  },
+  "child_cpu_seconds": 2909.2361940000005,
+  "commands": [
+    {
+      "child_cpu_seconds": 2.770065,
+      "command": [
+        "cargo",
+        "fmt",
+        "--all",
+        "--",
+        "--check"
+      ],
+      "exit_code": 0,
+      "log_bytes": 0,
+      "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "maximum_descendant_rss_kib": 138560,
+      "timed_out": false,
+      "wall_seconds": 2.772527755005285
+    },
+    {
+      "child_cpu_seconds": 1035.485611,
+      "command": [
+        "cargo",
+        "test",
+        "--locked",
+        "--offline",
+        "--all-features",
+        "--lib",
+        "weight_",
+        "--",
+        "--test-threads=1",
+        "--nocapture"
+      ],
+      "exit_code": 0,
+      "log_bytes": 13488,
+      "log_sha256": "6c6efd430524e24129e52c47001d2ad26e7b70656c0f0ea13f7881dbb267d91b",
+      "maximum_descendant_rss_kib": 4693712,
+      "timed_out": false,
+      "wall_seconds": 574.3905285299988
+    },
+    {
+      "child_cpu_seconds": 95.65339700000013,
+      "command": [
+        "cargo",
+        "clippy",
+        "--locked",
+        "--offline",
+        "--all-features",
+        "--all-targets",
+        "--",
+        "-D",
+        "warnings"
+      ],
+      "exit_code": 0,
+      "log_bytes": 160,
+      "log_sha256": "44f8631e92438653190a3d95239b541b5e204bd74444f610fc0e4dab63afd486",
+      "maximum_descendant_rss_kib": 4693712,
+      "timed_out": false,
+      "wall_seconds": 60.13288410298992
+    },
+    {
+      "child_cpu_seconds": 1133.055887,
+      "command": [
+        "cargo",
+        "test",
+        "--locked",
+        "--offline",
+        "--no-default-features",
+        "--lib",
+        "weight_",
+        "--",
+        "--test-threads=1",
+        "--nocapture"
+      ],
+      "exit_code": 0,
+      "log_bytes": 13600,
+      "log_sha256": "8252d0561763fbd170546459d078943ee194e64cf4a0c1e21d2047943805ff4a",
+      "maximum_descendant_rss_kib": 4693712,
+      "timed_out": false,
+      "wall_seconds": 627.1604768519755
+    },
+    {
+      "child_cpu_seconds": 145.318242,
+      "command": [
+        "cargo",
+        "clippy",
+        "--locked",
+        "--offline",
+        "--no-default-features",
+        "--all-targets",
+        "--",
+        "-D",
+        "warnings"
+      ],
+      "exit_code": 0,
+      "log_bytes": 1220,
+      "log_sha256": "414f1b4ba0c85a7a7b1c338e1721ad2b6952d5264d513daa6a62ea11e79c66fd",
+      "maximum_descendant_rss_kib": 4693712,
+      "timed_out": false,
+      "wall_seconds": 89.14227069204208
+    },
+    {
+      "child_cpu_seconds": 494.31925499999977,
+      "command": [
+        "cargo",
+        "build",
+        "--locked",
+        "--offline",
+        "--all-features",
+        "--bin",
+        "hepta-runtime"
+      ],
+      "exit_code": 0,
+      "log_bytes": 160,
+      "log_sha256": "98c83b8e92b74dab987a49a28091853a6f617da7ac452b5abfd161648b732e33",
+      "maximum_descendant_rss_kib": 4693712,
+      "timed_out": false,
+      "wall_seconds": 270.8713939230656
+    },
+    {
+      "child_cpu_seconds": 2.6337370000005933,
+      "command": [
+        "cargo",
+        "fmt",
+        "--all",
+        "--",
+        "--check"
+      ],
+      "exit_code": 0,
+      "log_bytes": 0,
+      "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "maximum_descendant_rss_kib": 4693712,
+      "timed_out": false,
+      "wall_seconds": 2.6703310769516975
+    }
+  ],
+  "complete_repository_tests_run": false,
+  "completed": true,
+  "rustc_version": "rustc 1.95.0 (59807616e 2026-04-14)",
+  "schema": "hepta-native-certificate-local-qualification-v1",
+  "scope": "Focused complete weight-library tests, both feature configurations, all-target strict Clippy, binary and format; not complete repository tests or efficacy.",
+  "self_cpu_seconds": 5.167041463,
+  "source_unchanged": true,
+  "started_utc": "2026-11-05T03:52:06.839051+00:00",
+  "wall_seconds": 1630.0772200989304
+}

@@ -1,0 +1,29 @@
+{
+  "child_peak_rss_bytes": 43089920,
+  "child_system_cpu_seconds": 0.055969,
+  "child_total_cpu_seconds": 2.0037570000000002,
+  "child_user_cpu_seconds": 1.947788,
+  "command": [
+    "python",
+    "prepare_inputs.py",
+    "--old-working",
+    "/workspace/scratch/ad8dc3f3c796/ndu_followup",
+    "--published",
+    "/workspace/scratch/ad8dc3f3c796/hepta-wsp-followup/tools/hcsn/wsp_followup_20261105",
+    "--package",
+    "/workspace/scratch/237419f85815/value_edit"
+  ],
+  "controller_cpu_seconds": 0.15309394999999992,
+  "controller_source": {
+    "bytes": 2753,
+    "sha256": "8d4b56e00216527fd0827f85183877af451ed142d6b1349400273c9570dca591"
+  },
+  "controller_timeout": false,
+  "elapsed_wall_seconds": 2.0334552570002415,
+  "ended_utc": "2026-11-05T03:42:45.893737+00:00",
+  "exit_code": 0,
+  "schema": "hepta-value-edit-complete-process-receipt-v1",
+  "scope": "worker startup/imports/final writes included; parent controller CPU separate; scientific caps belong to worker",
+  "started_utc": "2026-11-05T03:42:43.860328+00:00",
+  "threads_per_numeric_library": 1
+}

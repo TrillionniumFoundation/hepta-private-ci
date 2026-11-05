@@ -1,0 +1,52 @@
+{
+  "archive_bytes": 11939840,
+  "archive_sha256": "a74e5f03a0ce7dfea537e73ec6d80e333da3f5731b966ffa2229b92fde05d50d",
+  "created": [
+    "qualification/native-certificate-inputs-r1/INPUT_MANIFEST.json",
+    "qualification/native-certificate-inputs-r1/fit_11_REFERENCE.json.gz",
+    "qualification/native-certificate-inputs-r1/fit_11_REQUEST.json.gz",
+    "qualification/native-certificate-inputs-r1/fit_23_REFERENCE.json.gz",
+    "qualification/native-certificate-inputs-r1/fit_23_REQUEST.json.gz",
+    "qualification/native-certificate-inputs-r1/fit_37_REFERENCE.json.gz",
+    "qualification/native-certificate-inputs-r1/fit_37_REQUEST.json.gz",
+    "qualification/native-certificate-inputs-r1/fit_53_REFERENCE.json.gz",
+    "qualification/native-certificate-inputs-r1/fit_53_REQUEST.json.gz",
+    "qualification/native-certificate-inputs-r1/fit_71_REFERENCE.json.gz",
+    "qualification/native-certificate-inputs-r1/fit_71_REQUEST.json.gz",
+    "experiments/weight/native_certificate_20261105/freeze_protocol.py",
+    "experiments/weight/native_certificate_20261105/mcp_fixture_client.py",
+    "experiments/weight/native_certificate_20261105/prepare_inputs.py",
+    "experiments/weight/native_certificate_20261105/reference.py",
+    "experiments/weight/native_certificate_20261105/run_corpus.py"
+  ],
+  "matching_existing": [
+    "experiments/weight/native_certificate_20261105/run_local_qualification.py"
+  ],
+  "maximum_self_rss_kib": 52552,
+  "pre_freeze_extra_files": [
+    {
+      "path": "experiments/weight/native_certificate_20261105/README.md",
+      "sha256": "3fe475890748a6c97817b9d62ac9d60bce782eb8978628bbb44e32730ba23b3f"
+    },
+    {
+      "path": "experiments/weight/native_certificate_20261105/MATH.md",
+      "sha256": "77170926d89246f3821768fcbcb3df7e19838e28507dbe7e5a0d1a530d1c0225"
+    },
+    {
+      "path": "experiments/weight/native_certificate_20261105/SCHEMA.md",
+      "sha256": "58e4bbe524915473da8ee036931b516c0179108508a461d8545f63260dcbe08e"
+    },
+    {
+      "path": "experiments/weight/native_certificate_20261105/supervise.py",
+      "sha256": "e981992ec34cd814520013db2757c5abd5afd5909e72ec406bbb83e9327f6d99"
+    },
+    {
+      "path": "experiments/weight/native_certificate_20261105/freeze_protocol.py",
+      "sha256": "8e020659e70d04b356f1fca79877a3042e71e3adf80ed57258eb5e41fa6d8a87"
+    }
+  ],
+  "schema": "hepta-native-certificate-input-transfer-v1",
+  "self_cpu_seconds": 0.224127946,
+  "verified_parts": 23,
+  "wall_seconds": 0.2717607520753518
+}

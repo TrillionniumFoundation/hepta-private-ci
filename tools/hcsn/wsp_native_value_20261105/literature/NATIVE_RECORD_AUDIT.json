@@ -1,0 +1,224 @@
+{
+  "bundle_files_hashed": 112,
+  "controls": [
+    {
+      "case": "positive_toy",
+      "expected": "F64_NECESSARY_SYSTEM_INFEASIBLE",
+      "observed": "F64_NECESSARY_SYSTEM_INFEASIBLE"
+    },
+    {
+      "case": "exact_equality",
+      "expected": "NOT_CERTIFIED",
+      "observed": "NOT_CERTIFIED"
+    },
+    {
+      "case": "negative_d_squared",
+      "expected": "NOT_CERTIFIED",
+      "observed": "NOT_CERTIFIED"
+    },
+    {
+      "case": "larger_budget",
+      "expected": "NOT_CERTIFIED",
+      "observed": "NOT_CERTIFIED"
+    },
+    {
+      "case": "subnormal_ideal_only",
+      "expected": "IDEAL_REAL_ONLY_INFEASIBLE",
+      "observed": "IDEAL_REAL_ONLY_INFEASIBLE"
+    },
+    {
+      "case": "zero_y",
+      "expected": "NOT_CERTIFIED",
+      "observed": "NOT_CERTIFIED"
+    },
+    {
+      "case": "negative_zero_y",
+      "expected": "NOT_CERTIFIED",
+      "observed": "NOT_CERTIFIED"
+    },
+    {
+      "case": "negative_y",
+      "expected": "ERROR",
+      "observed": "certificate multiplier must be nonnegative"
+    },
+    {
+      "case": "nan_y",
+      "expected": "ERROR",
+      "observed": "certificate requires finite binary64 encodings"
+    },
+    {
+      "case": "infinity_y",
+      "expected": "ERROR",
+      "observed": "certificate requires finite binary64 encodings"
+    },
+    {
+      "case": "wrong_expected_checkpoint_sha256",
+      "expected": "ERROR",
+      "observed": "certificate checkpoint SHA256 mismatch"
+    },
+    {
+      "case": "wrong_expected_witness_sha256",
+      "expected": "ERROR",
+      "observed": "certificate binary witness SHA256 mismatch"
+    },
+    {
+      "case": "wrong_hidden_digest",
+      "expected": "ERROR",
+      "observed": "certificate hidden bytes SHA256 mismatch"
+    },
+    {
+      "case": "wrong_semantics",
+      "expected": "ERROR",
+      "observed": "certificate requires the fixed binary64 arithmetic declaration"
+    },
+    {
+      "case": "digest_matching_wrong_shape",
+      "expected": "ERROR",
+      "observed": "certificate requires matching renewal 85/48/4 metadata and a finite output head"
+    },
+    {
+      "case": "wrong_fit_binding",
+      "expected": "ERROR",
+      "observed": "certificate requires matching renewal 85/48/4 metadata and a finite output head"
+    },
+    {
+      "case": "wrong_teacher_target",
+      "expected": "ERROR",
+      "observed": "certificate needs distinct legal continuations and the supplied first-max target"
+    },
+    {
+      "case": "illegal_competitor",
+      "expected": "ERROR",
+      "observed": "certificate needs distinct legal continuations and the supplied first-max target"
+    },
+    {
+      "case": "duplicate_comparison",
+      "expected": "ERROR",
+      "observed": "certificate repeats a source-row/action comparison identity"
+    },
+    {
+      "case": "conflicting_source_row",
+      "expected": "ERROR",
+      "observed": "certificate source row has conflicting feature, state, table or target identities"
+    },
+    {
+      "case": "unknown_argument",
+      "expected": "ERROR",
+      "observed": "failed to deserialize parameters: unknown field `unknown_permission`, expected one of `semantics`, `checkpoint_json`, `expected_checkpoint_sha256`, `expected_witness_sha256`, `source`, `rows`"
+    }
+  ],
+  "corpus_whole_process_receipt": {
+    "child_cpu_scope": "direct child plus descendants it waited for",
+    "child_cpu_seconds": 6.656402999999999,
+    "child_system_cpu_seconds": 1.20309,
+    "child_user_cpu_seconds": 5.453313,
+    "command": [
+      "/usr/bin/python3",
+      "-B",
+      "/home/qian-qi/work/hepta-wsp-certificate-20261105-01/experiments/weight/native_certificate_20261105/run_corpus.py",
+      "--binary",
+      "/home/qian-qi/work/hepta-wsp-certificate-20261105-01-target/debug/hepta-runtime",
+      "--inputs",
+      "/home/qian-qi/work/hepta-wsp-certificate-20261105-01/qualification/native-certificate-inputs-r1",
+      "--protocol",
+      "/home/qian-qi/work/hepta-wsp-certificate-20261105-01/qualification/native-certificate-execution-r1.json",
+      "--protocol-sha256",
+      "7a361d5a451f9eba6b1d722e9596a4b30ba0b03fbf2aba057207c0a867b8dbd8",
+      "--output",
+      "/home/qian-qi/work/hepta-wsp-certificate-20261105-01/qualification/native-certificate-corpus-r1"
+    ],
+    "completed": true,
+    "completed_utc": "2026-11-05T04:19:39.958136+00:00",
+    "cost_scope_complete_if_child_waited_descendants": true,
+    "exit_code": 0,
+    "logs": {
+      "stderr.log": {
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stdout.log": {
+        "bytes": 1456,
+        "sha256": "ade49cbf85a2d6b4365905534c3a1d6c4283d905ef16b4dda24145be33ccd25b"
+      }
+    },
+    "maximum_waited_process_rss_kib": 426764,
+    "pid": 788051,
+    "rss_scope": "maximum reported RSS of a waited process, not concurrent aggregate",
+    "schema": "hepta-whole-process-cost-v1",
+    "started_utc": "2026-11-05T04:19:20.488945+00:00",
+    "supervisor_self_cpu_seconds": 0.029503344999999993,
+    "supervisor_sha256": "e981992ec34cd814520013db2757c5abd5afd5909e72ec406bbb83e9327f6d99",
+    "timed_out": false,
+    "timeout_seconds": 900,
+    "wall_seconds": 19.46919320395682
+  },
+  "fits": [
+    {
+      "all_exact_quantities_recomputed": true,
+      "center_f64_coefficients_exact": 147,
+      "fit": 11,
+      "rows": 4437,
+      "source_semantics_reexecuted": false
+    },
+    {
+      "all_exact_quantities_recomputed": true,
+      "center_f64_coefficients_exact": 147,
+      "fit": 23,
+      "rows": 4427,
+      "source_semantics_reexecuted": false
+    },
+    {
+      "all_exact_quantities_recomputed": true,
+      "center_f64_coefficients_exact": 147,
+      "fit": 37,
+      "rows": 4146,
+      "source_semantics_reexecuted": false
+    },
+    {
+      "all_exact_quantities_recomputed": true,
+      "center_f64_coefficients_exact": 147,
+      "fit": 53,
+      "rows": 3776,
+      "source_semantics_reexecuted": false
+    },
+    {
+      "all_exact_quantities_recomputed": true,
+      "center_f64_coefficients_exact": 147,
+      "fit": 71,
+      "rows": 4672,
+      "source_semantics_reexecuted": false
+    }
+  ],
+  "frozen_driver_files_hashed": 7,
+  "new_task_value_qualification": false,
+  "protocol_sha256": "7a361d5a451f9eba6b1d722e9596a4b30ba0b03fbf2aba057207c0a867b8dbd8",
+  "published_source_commit": "bc38fb82244b946907886704b3c677bf00761cb9",
+  "reviewed_native_source_files_matched": 7,
+  "reviewer_executed_native_or_model": false,
+  "reviewer_self_cpu_seconds": 5.17096905,
+  "reviewer_wall_seconds": 5.184653528998751,
+  "software_test_records": {
+    "2": {
+      "ignored": [
+        "test mcp::weight_guard_journal::tests::journal_crash_worker ... ignored, subprocess worker; invoked by owned crash-qualification parent only",
+        "test mcp::weight_ridge::tests::actual_head_fixture_matches_independent_numpy_weights ... ignored, requires HEPTA_WEIGHT_RIDGE_FIXTURE pointing to the separately authorized actual-head NumPy fixture"
+      ],
+      "result": "test result: ok. 87 passed; 0 failed; 2 ignored; 0 measured; 1696 filtered out; finished in 11.72s"
+    },
+    "4": {
+      "ignored": [
+        "test mcp::weight_guard_journal::tests::journal_crash_worker ... ignored, subprocess worker; invoked by owned crash-qualification parent only",
+        "test mcp::weight_ridge::tests::actual_head_fixture_matches_independent_numpy_weights ... ignored, requires HEPTA_WEIGHT_RIDGE_FIXTURE pointing to the separately authorized actual-head NumPy fixture"
+      ],
+      "result": "test result: ok. 87 passed; 0 failed; 2 ignored; 0 measured; 1681 filtered out; finished in 13.38s"
+    }
+  },
+  "software_whole_process_receipt": {
+    "exit_code": 0,
+    "maximum_descendant_rss_kib": 4693712,
+    "supervisor_self_cpu_seconds": 0.0006135810000000019,
+    "whole_child_and_descendants_cpu_seconds": 2914.767411,
+    "whole_child_wall_seconds": 1630.793001134065
+  },
+  "status": "PURE_RECORD_AUDIT_PASS"
+}

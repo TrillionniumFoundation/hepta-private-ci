@@ -1,0 +1,179 @@
+{
+  "blocking_mathematical_defect_identified": false,
+  "final_record_audit": {
+    "all_center_f64_coefficients": 735,
+    "all_complete_witness_rows": 21458,
+    "all_exact_quantities_independently_recomputed": true,
+    "all_five_native_proofs_equal_saved_fraction_and_reviewer_recomputation": true,
+    "all_hidden_digests_first_max_labels_nonnegative_multipliers_source_row_identities_and_witness_digests_checked": true,
+    "audit_record": "literature/NATIVE_RECORD_AUDIT.json",
+    "audit_record_sha256": "efd945f8ca24a71a6a8b0d4ead6d850446c5836051390e36892b8817db964d80",
+    "audit_script": "literature/verify_native_records.py",
+    "audit_script_sha256": "fd647e1fe77f1ea80031b749ba549d5bb7db2b2adc016dfa8ba9617086cc4d8d",
+    "binary_sha256": "692ea01fa5dd3a6e33cb343aee4d7c41a6ae4f015a352b2d2c42afd4655532ec",
+    "canonical_typed_request_bytes_and_digest_recomputed": true,
+    "corpus_maximum_waited_process_RSS_KiB": 426764,
+    "corpus_supervisor_self_CPU_seconds": 0.029503344999999993,
+    "corpus_whole_child_and_waited_descendants_CPU_seconds": 6.656402999999999,
+    "corpus_whole_child_wall_seconds": 19.46919320395682,
+    "files_hashed": 112,
+    "final_qualification_and_readme_claims_reviewed": true,
+    "native_protocol_sha256": "7a361d5a451f9eba6b1d722e9596a4b30ba0b03fbf2aba057207c0a867b8dbd8",
+    "new_certificate_tests_pass_per_feature_config": {
+      "2": 12,
+      "4": 12
+    },
+    "official_GitHub_CI_result_observed_by_this_reviewer": false,
+    "published_source_commit": "bc38fb82244b946907886704b3c677bf00761cb9",
+    "raw_control_responses_checked": 21,
+    "reviewer_record_arithmetic_self_CPU_seconds": 5.17096905,
+    "reviewer_record_arithmetic_wall_seconds": 5.184653528998751,
+    "software_test_records": {
+      "2": {
+        "ignored": [
+          "test mcp::weight_guard_journal::tests::journal_crash_worker ... ignored, subprocess worker; invoked by owned crash-qualification parent only",
+          "test mcp::weight_ridge::tests::actual_head_fixture_matches_independent_numpy_weights ... ignored, requires HEPTA_WEIGHT_RIDGE_FIXTURE pointing to the separately authorized actual-head NumPy fixture"
+        ],
+        "result": "test result: ok. 87 passed; 0 failed; 2 ignored; 0 measured; 1696 filtered out; finished in 11.72s"
+      },
+      "4": {
+        "ignored": [
+          "test mcp::weight_guard_journal::tests::journal_crash_worker ... ignored, subprocess worker; invoked by owned crash-qualification parent only",
+          "test mcp::weight_ridge::tests::actual_head_fixture_matches_independent_numpy_weights ... ignored, requires HEPTA_WEIGHT_RIDGE_FIXTURE pointing to the separately authorized actual-head NumPy fixture"
+        ],
+        "result": "test result: ok. 87 passed; 0 failed; 2 ignored; 0 measured; 1681 filtered out; finished in 13.38s"
+      }
+    },
+    "software_whole_process_receipt": {
+      "exit_code": 0,
+      "maximum_descendant_rss_kib": 4693712,
+      "supervisor_self_cpu_seconds": 0.0006135810000000019,
+      "whole_child_and_descendants_cpu_seconds": 2914.767411,
+      "whole_child_wall_seconds": 1630.793001134065
+    }
+  },
+  "formula_checks": {
+    "center": "147 actually parsed binary64 coefficients: first three w2 rows and b2 values of the SHA-bound original checkpoint JSON.",
+    "comparison_alignment": "Ideal squared numerator is shifted left by 2. The relaxed branch uses D=2^53-98, subtracts weighted_error shifted by 1074, and multiplies the right side by D^2.",
+    "exact_output": "Integer numerators, powers of two and positive denominators encode exact rationals; stripping numerator factors of two preserves negative and zero values.",
+    "f64_relaxation": "For RNE with gradual underflow and separately rounded 49 products plus at most 48 additions, each head error is bounded by gamma98*(sum|C_j|+49*ceil(R))+98*eta/(1-98u), u=2^-53, eta=2^-1074. Subtract y-weighted pairwise error before the same strict separation test.",
+    "ideal_problem": "A delta >= -A C, ||delta||^2 <= R^2, R^2=sum(C_i^2)/4.",
+    "integer_units": {
+      "center_norm_squared": -2148,
+      "d": -3222,
+      "d_squared": -6444,
+      "dual_vector": -2148,
+      "dual_vector_norm_squared": -4296,
+      "input": -1074,
+      "radius_squared": -2150,
+      "radius_squared_times_dual_norm_squared": -6446
+    },
+    "overflow_guard": "49*(max|C|+ceil(R)) < 2^1000 supplies room for all admitted dot-products; hardware semantics remain an assumption.",
+    "reference_independence": "Python reference uses Fraction arithmetic directly rather than Rust fixed-unit shifts; it shares the intended formulas and supplied inputs, not independent source-program semantics.",
+    "separation": "v=A^T y, d=-v dot C. d>0 AND d^2>R^2||v||^2 imply infeasibility; zero, negative d or equality do not.",
+    "witness": "Nonnegative finite binary64 y; rows A place h in a target continuation block and -h in the competitor block, with |h_i|<=1 and final bias coordinate exactly +1."
+  },
+  "identity_and_limits_checked": [
+    "SHA checks bind exact checkpoint UTF-8 bytes; native extraction supplies C rather than accepting a separate caller-provided center.",
+    "Hidden bytes have an independent SHA. Six supplied Q values, legal mask and first-max target are checked; state/table/program digests are caller bindings only.",
+    "Repeated row/action pairs fail. The same source_row across different competitors must retain identical state, table, hidden, Q, legal mask and target identities.",
+    "Declared output head is checked finite and 4x48 with four biases. The complete preceding neural computation and every checkpoint field are not interpreted.",
+    "Canonical request cap8MiB, checkpoint cap1MiB, witness cap8192 rows, result cap512KiB, cooperative30s compute deadline and two worker permits are present.",
+    "The blocking worker owns its permit even if its async caller is canceled. Transport parsing/allocation and indivisible arithmetic steps are not claimed to be hard real-time bounded.",
+    "The read-only operation has no model installation, network access, witness search or gradient step.",
+    "num-bigint0.5.1 is already in the base lockfile; the direct dependency and serde_json float_roundtrip are pinned in the reviewed source.",
+    "External_source_authentication, source-semantic/hardware replay, independent holdout, task value, whole-network impossibility, production and weights_modified flags remain false."
+  ],
+  "native_runtime_qualification_review_complete": true,
+  "new_model_value_improvement_qualified": false,
+  "observed_evidence": {
+    "initial_build_child_cpu_seconds": 45.923448,
+    "initial_build_fmt_exit": 0,
+    "initial_build_offline_all_features_check_exit": 0,
+    "initial_build_receipt": "evidence/remote/qualification/native-certificate-build-attempt-1/RESULT.json",
+    "input_manifest_claim_is_not_native_execution": true,
+    "input_manifest_complete_witness_rows": 21458,
+    "input_manifest_fits": [
+      11,
+      23,
+      37,
+      53,
+      71
+    ],
+    "input_manifest_sha256": "946cf867a362eb5bc3d25290b48bf94207849171eb2c2f4406a398bbfc26e7da"
+  },
+  "outstanding_before_acceptance": [],
+  "phase": "NATIVE_SOFTWARE_AND_RETAINED_ACTUAL_MCP_RECORDS_INDEPENDENTLY_VERIFIED",
+  "production_eligible": false,
+  "remaining_limits": [
+    "This review validates recorded local executions and recomputes their exact arithmetic; it does not itself rerun the native executable or the neural model.",
+    "The proof excludes satisfying all supplied weak continuation orderings within the original fixed representation and ball only. It does not exclude useful partial edits, a larger radius, changed hidden features, improved task utility or whole-network improvement.",
+    "The supplied source digests bind content but do not authenticate provenance or reexecute the feature/teacher program. Hardware F64 semantics remain declared assumptions.",
+    "The 21458 rows are reused TRAIN witnesses, not independent holdout samples. No task-quality, economic NDU improvement or production installation is qualified.",
+    "Both feature configurations ran focused weight library tests and all-target Clippy. Two pre-existing tests were ignored; complete repository tests are a separate official CI gate owned by root.",
+    "The source recovery was a partial checkout with 115 historical non-build artifacts absent; publication inherits the pinned parent tree. No complete local checkout or cold-build claim is made.",
+    "Whole-process cost includes only waited descendants; peak RSS is a maximum process measure, not concurrent aggregate. Build/setup/input preparation and execution are separate costs, while inner timers must not be added to encompassing receipts."
+  ],
+  "review_disposition": "Accept the bounded read-only Rust verifier and its retained native qualification for the explicitly stated mathematical scope. Scientific efficacy and production eligibility remain false. Official GitHub CI is assessed separately.",
+  "review_requested_corrections_resolved": [
+    "Source-row consistency now enforced across distinct competitor comparisons, with a negative unit fixture.",
+    "Scope describes a finite declared output head rather than claiming the whole checkpoint graph has been semantically validated.",
+    "Owner confirmed planned outer waited-process receipt includes the native MCP descendant CPU/RSS; driver self CPU alone will not be reported as total native cost."
+  ],
+  "reviewed_source_files": {
+    "Cargo.lock": {
+      "bytes": 69320,
+      "sha256": "91fd7a8a50e2cbd179b0f5bc3e6d6d9e71b95a94bce4e9eaa9fba67bbb877863"
+    },
+    "Cargo.toml": {
+      "bytes": 3417,
+      "sha256": "fdb5f653f9c3d858dc5d1e20b285a0141e3cbc40106b2f5619ff315a9bfe59f4"
+    },
+    "experiments/weight/native_certificate_20261105/freeze_protocol.py": {
+      "bytes": 2749,
+      "sha256": "8e020659e70d04b356f1fca79877a3042e71e3adf80ed57258eb5e41fa6d8a87"
+    },
+    "experiments/weight/native_certificate_20261105/mcp_fixture_client.py": {
+      "bytes": 3875,
+      "sha256": "9bd34b18470f361a6a8da57e63a53f5c2c688b2a4b4e2b1bb31545c673357bf8"
+    },
+    "experiments/weight/native_certificate_20261105/prepare_inputs.py": {
+      "bytes": 8011,
+      "sha256": "31e4bcb13e8318f9a4edf01db1fc7ae2819dd9e4c982ddaf41a66b71272de49f"
+    },
+    "experiments/weight/native_certificate_20261105/reference.py": {
+      "bytes": 7994,
+      "sha256": "2196d16a565177daaec1e1398e81167bae9fbaed260136d7c75f611df1f9bf44"
+    },
+    "experiments/weight/native_certificate_20261105/run_corpus.py": {
+      "bytes": 10332,
+      "sha256": "8819b590025a821f91fe24f088280fa14444979c80944f71134519e7fd726e61"
+    },
+    "src/mcp/mod.rs": {
+      "bytes": 2508,
+      "sha256": "0eb51b3b78086401c3ee1f49912dcf6c21fc84e655d809b6232c1bc1b876cb91"
+    },
+    "src/mcp/server.rs": {
+      "bytes": 141170,
+      "sha256": "6c69c5ec985f3f6c5b58bdae6e2c6edafe7079e4568c4bcc04167018daf0bbef"
+    },
+    "src/mcp/weight_certificate.rs": {
+      "bytes": 12789,
+      "sha256": "6079d9d845806ec6b1fc7bccfa50b3ec6b6b5b7ee22c2937580d957e00178f0c"
+    },
+    "src/mcp/weight_certificate_exact.rs": {
+      "bytes": 7093,
+      "sha256": "722b7c9402d79dfedabde3120307264376e9e04247cc52433f98101bf88e3e7f"
+    },
+    "src/mcp/weight_certificate_tests.rs": {
+      "bytes": 9592,
+      "sha256": "39da2d0a1736fac5cbf74247171164d5c40bc73298cddf4ce429f41e050fdb03"
+    }
+  },
+  "reviewed_utc": "2026-11-05T04:03:38.863204+00:00",
+  "reviewer": "/root/wsp_literature",
+  "reviewer_executed_native_corpus": false,
+  "reviewer_ran_training_or_forward": false,
+  "schema": "hepta.wsp.independent-native-certificate-review.v1",
+  "updated_utc": "2026-11-05T04:27:59.147589+00:00"
+}

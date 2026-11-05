@@ -1,0 +1,71 @@
+{
+  "schema": "hepta.wsp.execution_log_classification.v1",
+  "observed_unix": 1793849950.6951451,
+  "requested_tail_records": 120,
+  "command_exit": 0,
+  "observed_records": 120,
+  "first_timestamp_us": "1793849498139571",
+  "last_timestamp_us": "1793849929271224",
+  "message_substring_counts": {
+    "failed": 15
+  },
+  "unique_message_sha256": [
+    "09cc744d1c2251682586c8b20061e93d3ce17c528df747f5d83751e32a6b1838",
+    "0ede6a335a9e39eba402936e4b993cd45b87543c28e3bf723d718a0e892137dc",
+    "0ef5ec9a63d1cdd68363cd448ad98d07a3a9d63f844351a41eef6dafd05acb49",
+    "15c70519e034db0726bde52a28ed096ded098cbf222f3b5ddda041e15b6fcfa4",
+    "17cb2909aeb6d089b5a1f906b5bea984f170c3631c72553fdb97abe25095ac3a",
+    "17d51abf98a1e00c4a7c1f5c2a6ff984381c164c4d58de912a6d02d842650ee2",
+    "1ef30cc0f83800e859ca800926b663614d0b5021d7f223245b1e054b61616e88",
+    "243fb48af5bbd19bda59038adfbdc3cd639fecf349681417aabdfb157a6deb80",
+    "27531b0540cbdcc7954e9380e037a6c4f022f3f25c0fa9f37a614e0b1d5d21dd",
+    "28b1ab2d9b1275d84f6c709ef665db9b7d3c8626bb6ea497b9c2d872c8f8813c",
+    "2b26269cc6493ce613dfc23aa9d2f4091cdf6a7e49e7a381cc9815f705c9cf0b",
+    "2c85060929376637ad9ad2991195bbed4e0d4554779f2c108f8ab0318781ec56",
+    "51cf6e17894be881403c1fc06046eee5a2e5795b870c088245c60382dc1ff34f",
+    "56f4f4cef852be43228207e6aac32f624236e2a60b2e76ecdca625b8d70dc607",
+    "58be4198b22b561be8bbc8af33dbd0a339c57e84d0cde020ab40365d86778dec",
+    "6565a7202a2a672691ee2d27193049718ea1bcf8b8092370c9c25f56011691c7",
+    "6b527e16c146c56c74bd9c0880520fe1c43713e634c69dcc68794ab7509fa3e9",
+    "6ccda8d7ef7ce8a703ec22ed0147a79fdb830af4cbeebdc01ee43e0cf1e5f0aa",
+    "776bebaf334993688dc19f17b826732859120a467f9e036b2a32632c299aa31f",
+    "79d4d0825f8336946f9bc8c641f6777ac1d0025751081786182ae1caf9162569",
+    "a29396d08cfc7b59d240a803e30a9998eb0b5ff26fb6c5c521bfcda5b69a62b6",
+    "aa475507831ebb1c4809c8f8e943683407a077f8b8bbaff5c14eaca10a139201",
+    "b084ddc5b7c6154c42e2b69ad0403d6588fc39e8960d24b98b7765b91423c7b4",
+    "b680fbdcdac6da5c9f62085b97877ac73a06eb5b5235d06844681706d731c23c",
+    "b8cd8210ade1c01ab8afe961616864406ee03dc453a79e2fd45b8538abfb59da",
+    "bfb987dd6e77cbe06b9468adcb3e29b4d0349096907cc8e290ddc63b2c1cc205",
+    "c2ffd459cbbde45c629899f588de5fdda6ad429d6bd2b5f516da71a622858717",
+    "c963b7ab3657e59e90f9ca0797e3cceef5182af1f5f60c97f05523125373ce0b",
+    "d89abfe5d9321ba8092177821935160eacc5384f3d550eafc1024eb4eb6b0796",
+    "e16069572871e1ce6543bf57a2887bd119befaa8a3bdc34b042751da568d7c27",
+    "e85d72058b80f4c4e57fe5ae838c7954894c11d7afcc7748efd6815a4c307dae",
+    "e9ae331a75397697dd3e782d55ce79b4804309d63299b282618c20a3cbdf3408",
+    "eb2a0b700e6a75e3068dae9c349b882741eeca62f136f55564bbee656fa73181",
+    "ed345ff043bb9195e27db4e0289dead7a4eb60c01b1305ae3f6e631f33f0bae8",
+    "f8cc50192c2a632cab64044c757ab3d064f7bca04f345247c557da940efbe551",
+    "ffde6534593d28c3858b119287b8806714c4aec210ddf55385defc1ab391e3d1"
+  ],
+  "raw_log_sha256": "7df04c137ffd7ffce116cf1b4bcbaf924111a7cacbf291bc49babd8e56f54fc4",
+  "raw_logs_exported": false,
+  "service_status": {
+    "heptatrader-execution.service": {
+      "ActiveState": "activating",
+      "SubState": "auto-restart",
+      "Result": "exit-code",
+      "NRestarts": "3941",
+      "ExecMainStatus": "6"
+    },
+    "heptatrader-laya-trainer.service": {
+      "ActiveState": "active",
+      "SubState": "running",
+      "Result": "success",
+      "NRestarts": "0",
+      "ExecMainStatus": "0"
+    }
+  },
+  "binary_to_source_bound": false,
+  "root_cause_proven": false,
+  "state_mutated": false
+}

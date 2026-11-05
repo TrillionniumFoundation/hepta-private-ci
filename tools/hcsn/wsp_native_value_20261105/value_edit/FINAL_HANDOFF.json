@@ -1,0 +1,89 @@
+{
+  "TRAIN_utility_max_replay_difference": 0.0,
+  "TRAIN_world_path_replays": 6400,
+  "artifact_accepted_count": 2,
+  "artifact_rejected_restore_count": 8,
+  "eight_complete_child_phase_CPU_seconds": 875.4554360000001,
+  "entry_points": [
+    "README.md",
+    "reporting/REPORT.md",
+    "FINAL_COSTS.json",
+    "verify_records.py",
+    "posthoc/README.md",
+    "review/INDEPENDENT_EXPERIMENT_REVIEW.json"
+  ],
+  "finite_path_candidates": 100,
+  "frozen_utc": "2026-11-05T04:31:53.701822+00:00",
+  "git_push_performed_by_this_worker": false,
+  "gradient_subproblem_optimization_performed": true,
+  "heldout_eight_metric_max_replay_difference": 0.0,
+  "heldout_world_arm_replays": 4960,
+  "independent_review_files": {
+    "INDEPENDENT_EXPERIMENT_REVIEW.json": {
+      "bytes": 18827,
+      "sha256": "6d3ec9399664db552c8d15240f36b611c6461358a44bf518b2c1ef72c2b7c27c"
+    },
+    "POSTHOC_RECORD_AUDIT.json": {
+      "bytes": 3209,
+      "sha256": "a250d01e34a48aa29add35414c16f31c2ef01f15ddf100a6be8fab4407adefb0"
+    },
+    "verify_posthoc_records.py": {
+      "bytes": 10237,
+      "sha256": "ba079c998f447542b03decefb560d8285f342a53cefddac6fd8aa04eb8672bdc"
+    }
+  },
+  "independent_verification": {
+    "bytes": 1287,
+    "sha256": "4e2f99513f79c5b11cd0be8f7db7b3093f1bab718665805202b879bde8caf07d"
+  },
+  "main_protocol": {
+    "bytes": 12991,
+    "sha256": "226713c4ceab5ebf4da08e62d495a529ddb41a461bec1ce3f7f6ffbecab981dd"
+  },
+  "main_result": {
+    "bytes": 16545,
+    "sha256": "9c68c58c13e75df6839560c4bed03896989c2061207e59a4672e5dafc82e89bd"
+  },
+  "new_model_training_or_remote_execution_performed": false,
+  "new_training_fit_count": 0,
+  "original_five_phase_child_CPU_seconds": 871.7492390000001,
+  "posthoc_execution_CPU_seconds": 3.1301039999999998,
+  "posthoc_existing_worlds": 48,
+  "posthoc_freeze_CPU_seconds": 0.16507699999999997,
+  "posthoc_protocol": {
+    "bytes": 5373,
+    "sha256": "e5b50784baa48bee8e598ae99ef77216a5f8dc055eaf5718484bec44a81bfce6"
+  },
+  "primary": {
+    "E_gated_iid": {
+      "benefit_pass": false,
+      "delta": 0.004837651440044705,
+      "familywise_95_conditional_interval": [
+        -0.01207190410293426,
+        0.021747206983023668
+      ]
+    },
+    "E_gated_ood": {
+      "benefit_pass": false,
+      "delta": -0.0024837918612679115,
+      "familywise_95_conditional_interval": [
+        -0.011165652668279824,
+        0.006198068945744
+      ]
+    }
+  },
+  "production_installation_performed": false,
+  "reporting_CPU_seconds": 0.411016,
+  "research_execution_and_record_integrity_verified": true,
+  "reused_training_fit_count": 5,
+  "status": "FROZEN_RESEARCH_PACKAGE_NO_QUALIFIED_WEIGHT_GAIN",
+  "unresolved": [
+    "No qualified pure-weight cross-domain task-value gain",
+    "No new training-fit confirmation",
+    "No actual live Trader effect",
+    "No F32/native model-inference qualification",
+    "No full-weight global optimum",
+    "No complete economic/energy benefit"
+  ],
+  "weight_efficacy_qualified": false
+}

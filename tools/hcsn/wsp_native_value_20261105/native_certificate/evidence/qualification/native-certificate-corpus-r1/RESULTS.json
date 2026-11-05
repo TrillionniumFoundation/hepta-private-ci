@@ -1,0 +1,173 @@
+{
+  "all_735_center_F64_bytes_exact": true,
+  "all_complete_witness_rows": 21458,
+  "binary_sha256": "692ea01fa5dd3a6e33cb343aee4d7c41a6ae4f015a352b2d2c42afd4655532ec",
+  "completed": true,
+  "controls": [
+    {
+      "case": "positive_toy",
+      "expected": "F64_NECESSARY_SYSTEM_INFEASIBLE",
+      "passed": true
+    },
+    {
+      "case": "exact_equality",
+      "expected": "NOT_CERTIFIED",
+      "passed": true
+    },
+    {
+      "case": "negative_d_squared",
+      "expected": "NOT_CERTIFIED",
+      "passed": true
+    },
+    {
+      "case": "larger_budget",
+      "expected": "NOT_CERTIFIED",
+      "passed": true
+    },
+    {
+      "case": "subnormal_ideal_only",
+      "expected": "IDEAL_REAL_ONLY_INFEASIBLE",
+      "passed": true
+    },
+    {
+      "case": "zero_y",
+      "expected": "NOT_CERTIFIED",
+      "passed": true
+    },
+    {
+      "case": "negative_zero_y",
+      "expected": "NOT_CERTIFIED",
+      "passed": true
+    },
+    {
+      "case": "negative_y",
+      "expected": "ERROR",
+      "passed": true
+    },
+    {
+      "case": "nan_y",
+      "expected": "ERROR",
+      "passed": true
+    },
+    {
+      "case": "infinity_y",
+      "expected": "ERROR",
+      "passed": true
+    },
+    {
+      "case": "wrong_expected_checkpoint_sha256",
+      "expected": "ERROR",
+      "passed": true
+    },
+    {
+      "case": "wrong_expected_witness_sha256",
+      "expected": "ERROR",
+      "passed": true
+    },
+    {
+      "case": "wrong_hidden_digest",
+      "expected": "ERROR",
+      "passed": true
+    },
+    {
+      "case": "wrong_semantics",
+      "expected": "ERROR",
+      "passed": true
+    },
+    {
+      "case": "digest_matching_wrong_shape",
+      "expected": "ERROR",
+      "passed": true
+    },
+    {
+      "case": "wrong_fit_binding",
+      "expected": "ERROR",
+      "passed": true
+    },
+    {
+      "case": "wrong_teacher_target",
+      "expected": "ERROR",
+      "passed": true
+    },
+    {
+      "case": "illegal_competitor",
+      "expected": "ERROR",
+      "passed": true
+    },
+    {
+      "case": "duplicate_comparison",
+      "expected": "ERROR",
+      "passed": true
+    },
+    {
+      "case": "conflicting_source_row",
+      "expected": "ERROR",
+      "passed": true
+    },
+    {
+      "case": "unknown_argument",
+      "expected": "ERROR",
+      "passed": true
+    }
+  ],
+  "fits": [
+    {
+      "all_147_center_F64_bytes_exact": true,
+      "all_exact_rational_quantities_equal": true,
+      "fit": 11,
+      "native_operation_wall_seconds": 0.351808919,
+      "rpc_wall_seconds": 0.6841954700648785,
+      "scope_flags_preserved": true,
+      "verdict": "F64_NECESSARY_SYSTEM_INFEASIBLE",
+      "witness_rows": 4437
+    },
+    {
+      "all_147_center_F64_bytes_exact": true,
+      "all_exact_rational_quantities_equal": true,
+      "fit": 23,
+      "native_operation_wall_seconds": 0.375392064,
+      "rpc_wall_seconds": 0.6068350569112226,
+      "scope_flags_preserved": true,
+      "verdict": "F64_NECESSARY_SYSTEM_INFEASIBLE",
+      "witness_rows": 4427
+    },
+    {
+      "all_147_center_F64_bytes_exact": true,
+      "all_exact_rational_quantities_equal": true,
+      "fit": 37,
+      "native_operation_wall_seconds": 0.3690921,
+      "rpc_wall_seconds": 0.5752261619782075,
+      "scope_flags_preserved": true,
+      "verdict": "F64_NECESSARY_SYSTEM_INFEASIBLE",
+      "witness_rows": 4146
+    },
+    {
+      "all_147_center_F64_bytes_exact": true,
+      "all_exact_rational_quantities_equal": true,
+      "fit": 53,
+      "native_operation_wall_seconds": 0.351293641,
+      "rpc_wall_seconds": 0.5442353340331465,
+      "scope_flags_preserved": true,
+      "verdict": "F64_NECESSARY_SYSTEM_INFEASIBLE",
+      "witness_rows": 3776
+    },
+    {
+      "all_147_center_F64_bytes_exact": true,
+      "all_exact_rational_quantities_equal": true,
+      "fit": 71,
+      "native_operation_wall_seconds": 0.398302828,
+      "rpc_wall_seconds": 0.6245740900048986,
+      "scope_flags_preserved": true,
+      "verdict": "F64_NECESSARY_SYSTEM_INFEASIBLE",
+      "witness_rows": 4672
+    }
+  ],
+  "new_neural_training_or_forward": false,
+  "new_task_value_qualification": false,
+  "passed": true,
+  "protocol_sha256": "7a361d5a451f9eba6b1d722e9596a4b30ba0b03fbf2aba057207c0a867b8dbd8",
+  "schema": "hepta-native-certificate-corpus-v1",
+  "self_cpu_seconds": 4.021485374999999,
+  "source_semantics_reexecuted": false,
+  "wall_seconds": 19.329422084032558
+}

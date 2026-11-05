@@ -1,0 +1,585 @@
+{
+  "base_sha": "990f85e46bedb8f49c0e6d0029ea6f9afbf6eac7",
+  "tree_entries": 7728,
+  "matched_checkout": 7591,
+  "restored_from_hash_matched_prior_working_tree": 22,
+  "missing": [
+    {
+      "path": "experiments/weight/native_bellman_20261105/EXECUTION_PROTOCOL.json",
+      "sha": "68d147af51dc1f12f4ba740df6d17fde3edc9823",
+      "build_relevant": false
+    },
+    {
+      "path": "experiments/weight/native_bellman_20261105/MANIFEST.json",
+      "sha": "ba17fd6672f96ab8a02ce2a29c83294d20bfe251",
+      "build_relevant": false
+    },
+    {
+      "path": "experiments/weight/native_bellman_20261105/QUALIFICATION.md",
+      "sha": "70ba4234522d6db4e047f6d2aa9845bbdf5aadfe",
+      "build_relevant": false
+    },
+    {
+      "path": "experiments/weight/native_bellman_20261105/README.md",
+      "sha": "ff838c170068653cb10e97ba40cdac0b1d0d6df7",
+      "build_relevant": false
+    },
+    {
+      "path": "experiments/weight/native_bellman_20261105/SCHEMA.md",
+      "sha": "b7e1d7ecd39c190897826bffe4964223d89535cd",
+      "build_relevant": false
+    },
+    {
+      "path": "experiments/weight/native_bellman_20261105/fixtures/requests/REQUEST_HANDOFF.json",
+      "sha": "3ddd7de82882babd8c338b929fda36dadc51cfdc",
+      "build_relevant": false
+    },
+    {
+      "path": "experiments/weight/native_bellman_20261105/fixtures/requests/fit_11_iid.jsonl.gz",
+      "sha": "b5b78e1757cec27ad04966b675c0058463ba05c8",
+      "build_relevant": false
+    },
+    {
+      "path": "experiments/weight/native_bellman_20261105/fixtures/requests/fit_11_ood.jsonl.gz",
+      "sha": "9008db5b86dba98580e9489a117893a09309c3ae",
+      "build_relevant": false
+    },
+    {
+      "path": "experiments/weight/native_bellman_20261105/fixtures/requests/fit_23_iid.jsonl.gz",
+      "sha": "5a9978417adc1efe47a0523282bb4467f6f4043d",
+      "build_relevant": false
+    },
+    {
+      "path": "experiments/weight/native_bellman_20261105/fixtures/requests/fit_23_ood.jsonl.gz",
+      "sha": "a0cf08e9ddbbddc8939b3fb475349af32ebd5451",
+      "build_relevant": false
+    },
+    {
+      "path": "experiments/weight/native_bellman_20261105/fixtures/requests/fit_37_iid.jsonl.gz",
+      "sha": "af2c3e84c6aa8fd123cb36e894f735423bbcb004",
+      "build_relevant": false
+    },
+    {
+      "path": "experiments/weight/native_bellman_20261105/fixtures/requests/fit_37_ood.jsonl.gz",
+      "sha": "26504d03cc6d05ec3ece4b937a48d915ec99c758",
+      "build_relevant": false
+    },
+    {
+      "path": "experiments/weight/native_bellman_20261105/fixtures/requests/fit_53_iid.jsonl.gz",
+      "sha": "795896d331939b81d40bf04abee32324b792784a",
+      "build_relevant": false
+    },
+    {
+      "path": "experiments/weight/native_bellman_20261105/fixtures/requests/fit_53_ood.jsonl.gz",
+      "sha": "9ed60c0ec9b30311295ab6e9956b8b797a21f0b8",
+      "build_relevant": false
+    },
+    {
+      "path": "experiments/weight/native_bellman_20261105/fixtures/requests/fit_71_iid.jsonl.gz",
+      "sha": "785f58b412367969177333b0c7c0ebf7293d4f69",
+      "build_relevant": false
+    },
+    {
+      "path": "experiments/weight/native_bellman_20261105/fixtures/requests/fit_71_ood.jsonl.gz",
+      "sha": "f68631f497f95c070b7b4b969942bc3cbc2f2c85",
+      "build_relevant": false
+    },
+    {
+      "path": "experiments/weight/native_bellman_20261105/qualification/RECORDS_VERIFICATION.json",
+      "sha": "49595ed62ccc7bd72ea95199f4f5f1a7303d76ba",
+      "build_relevant": false
+    },
+    {
+      "path": "experiments/weight/native_bellman_20261105/qualification/independent_replay/ACCEPTANCE_PROTOCOL.json",
+      "sha": "e5914e108a3cb60489cebca638aae84293164d4e",
+      "build_relevant": false
+    },
+    {
+      "path": "experiments/weight/native_bellman_20261105/qualification/independent_replay/ENGINEERING_QUALIFICATION.json",
+      "sha": "583e94e25abee1f869d9772b32146c6d1c61f3c1",
+      "build_relevant": false
+    },
+    {
+      "path": "experiments/weight/native_bellman_20261105/qualification/independent_replay/EXPORT_PROCESS_RECEIPT.json",
+      "sha": "272c0ed011ad818ef832d4c323239a6fa69e7912",
+      "build_relevant": false
+    },
+    {
+      "path": "experiments/weight/native_bellman_20261105/qualification/independent_replay/PROCESS_RECEIPT.json",
+      "sha": "8101e4f1c8c28e54d160666e1b7ae8d8fc5694f4",
+      "build_relevant": false
+    },
+    {
+      "path": "experiments/weight/native_bellman_20261105/qualification/independent_replay/RESEARCH_PACKAGE_LINK.json",
+      "sha": "02ed6de54f78fbcccf8e4db970be7613ce74e121",
+      "build_relevant": false
+    },
+    {
+      "path": "experiments/weight/native_bellman_20261105/qualification/independent_replay/RESULTS.json",
+      "sha": "17794d89ba5f4c87528bd749e3e3e46449e7b355",
+      "build_relevant": false
+    },
+    {
+      "path": "experiments/weight/native_bellman_20261105/qualification/independent_replay/VERIFIER_FREEZE.json",
+      "sha": "ab96fbd6a3c2fb426e41b85f55702f2d77401f1a",
+      "build_relevant": false
+    },
+    {
+      "path": "experiments/weight/native_bellman_20261105/qualification/local_attempt_1.json",
+      "sha": "9bc1b695c6eac20558ef4b1cb31423cd868bfc24",
+      "build_relevant": false
+    },
+    {
+      "path": "experiments/weight/native_bellman_20261105/qualification/logs/LOG_REDACTION.json",
+      "sha": "e087c68a0a58be2823678e62c722a049b0cbd6ca",
+      "build_relevant": false
+    },
+    {
+      "path": "experiments/weight/native_bellman_20261105/qualification/logs/command-2.sanitized.log",
+      "sha": "a3774cc1ad60ec94f2f28f9da5fe945d1bfa258c",
+      "build_relevant": false
+    },
+    {
+      "path": "experiments/weight/native_bellman_20261105/qualification/logs/command-3.sanitized.log",
+      "sha": "56794f1a6fe07b2fff4535b48a9c28bb4ea93e8e",
+      "build_relevant": false
+    },
+    {
+      "path": "experiments/weight/native_bellman_20261105/qualification/logs/command-4.sanitized.log",
+      "sha": "c4c24c82efe294c413f6af280052214923fcdd27",
+      "build_relevant": false
+    },
+    {
+      "path": "experiments/weight/native_bellman_20261105/qualification/logs/command-5.sanitized.log",
+      "sha": "3cb76bee4f88f15642334abd81b27c17dde61816",
+      "build_relevant": false
+    },
+    {
+      "path": "experiments/weight/native_bellman_20261105/qualification/native_corpus/EXECUTION_PROTOCOL.json",
+      "sha": "68d147af51dc1f12f4ba740df6d17fde3edc9823",
+      "build_relevant": false
+    },
+    {
+      "path": "experiments/weight/native_bellman_20261105/qualification/native_corpus/INTERNAL_EXECUTION_RECEIPT.json",
+      "sha": "043753374028d2832ab227eeff37be807f16c348",
+      "build_relevant": false
+    },
+    {
+      "path": "experiments/weight/native_bellman_20261105/qualification/native_corpus/LOCAL_QUALIFICATION.json",
+      "sha": "9bc1b695c6eac20558ef4b1cb31423cd868bfc24",
+      "build_relevant": false
+    },
+    {
+      "path": "experiments/weight/native_bellman_20261105/qualification/native_corpus/NATIVE_CORPUS_INTERNAL_MANIFEST.json",
+      "sha": "ffdbb4e5471ca6445f5a9ed1a991f14f99431bb5",
+      "build_relevant": false
+    },
+    {
+      "path": "experiments/weight/native_bellman_20261105/qualification/native_corpus/NATIVE_CORPUS_MANIFEST.json",
+      "sha": "11fd9393fe4e04dd4b0df62a0a1c5ca96dc81987",
+      "build_relevant": false
+    },
+    {
+      "path": "experiments/weight/native_bellman_20261105/qualification/native_corpus/QUALIFIED_SOURCE_MANIFEST.json",
+      "sha": "4275af8edb5a896aa228f1fe0a017c101aab40a6",
+      "build_relevant": false
+    },
+    {
+      "path": "experiments/weight/native_bellman_20261105/qualification/native_corpus/WHOLE_PROCESS_RECEIPT.json",
+      "sha": "e980d492379a89a6d54ffa7df8a0a81d274c73e4",
+      "build_relevant": false
+    },
+    {
+      "path": "experiments/weight/native_bellman_20261105/qualification/native_corpus/fit_11_iid.jsonl.gz",
+      "sha": "2b6a5ca86f689ec1462fdbf55aedd4d4a307aa80",
+      "build_relevant": false
+    },
+    {
+      "path": "experiments/weight/native_bellman_20261105/qualification/native_corpus/fit_11_ood.jsonl.gz",
+      "sha": "a90aacac82fb767dea337866623028f5aefedcbf",
+      "build_relevant": false
+    },
+    {
+      "path": "experiments/weight/native_bellman_20261105/qualification/native_corpus/fit_23_iid.jsonl.gz",
+      "sha": "fb595c78b91fd2c1cd4ed6569fbaa455ae2ad776",
+      "build_relevant": false
+    },
+    {
+      "path": "experiments/weight/native_bellman_20261105/qualification/native_corpus/fit_23_ood.jsonl.gz",
+      "sha": "8bf5cb8363b8278c3a0068740cc2a1aacfeef667",
+      "build_relevant": false
+    },
+    {
+      "path": "experiments/weight/native_bellman_20261105/qualification/native_corpus/fit_37_iid.jsonl.gz",
+      "sha": "7279a8b5df1895cc106235767bcc53ab136aa853",
+      "build_relevant": false
+    },
+    {
+      "path": "experiments/weight/native_bellman_20261105/qualification/native_corpus/fit_37_ood.jsonl.gz",
+      "sha": "097069347942808cd6d8b180f3e93c9f0065f869",
+      "build_relevant": false
+    },
+    {
+      "path": "experiments/weight/native_bellman_20261105/qualification/native_corpus/fit_53_iid.jsonl.gz",
+      "sha": "7c9f196f8ca9866e10705b8e9bd7ecde806f7419",
+      "build_relevant": false
+    },
+    {
+      "path": "experiments/weight/native_bellman_20261105/qualification/native_corpus/fit_53_ood.jsonl.gz",
+      "sha": "ac4d59d6d789a6f6531bfed5ca760cf4de39ca45",
+      "build_relevant": false
+    },
+    {
+      "path": "experiments/weight/native_bellman_20261105/qualification/native_corpus/fit_71_iid.jsonl.gz",
+      "sha": "375db4a9a47847c8c248838c8a46d8cde4deec35",
+      "build_relevant": false
+    },
+    {
+      "path": "experiments/weight/native_bellman_20261105/qualification/native_corpus/fit_71_ood.jsonl.gz",
+      "sha": "cb0871c0e2798d8fc658a009c8a303cf4c8b0cf9",
+      "build_relevant": false
+    },
+    {
+      "path": "experiments/weight/native_bellman_20261105/qualification/native_outer_logs/stdout.log",
+      "sha": "5061e003affadb9d93ecd7feeb57f9bcd025a965",
+      "build_relevant": false
+    },
+    {
+      "path": "experiments/weight/native_bellman_20261105/qualification/post-bellman_corpus-source-health.json",
+      "sha": "b87a3ee7fe3fa34ae8c24d0583ee82d42d69e44f",
+      "build_relevant": false
+    },
+    {
+      "path": "experiments/weight/native_bellman_20261105/qualification/post-journal_contract-source-health.json",
+      "sha": "fadce4fd9af1c3670c4ef0a59deb8576c47e6500",
+      "build_relevant": false
+    },
+    {
+      "path": "experiments/weight/native_bellman_20261105/qualification/post-trust_regression-source-health.json",
+      "sha": "12fd6511e5c1dde1483bc133380c1be8921b7e80",
+      "build_relevant": false
+    },
+    {
+      "path": "experiments/weight/native_bellman_20261105/qualification/source_manifest.json",
+      "sha": "4275af8edb5a896aa228f1fe0a017c101aab40a6",
+      "build_relevant": false
+    },
+    {
+      "path": "experiments/weight/native_bellman_20261105/qualification/trust_regression_attempt_1.json",
+      "sha": "ef2f372db1f2bb9670353f718d2ef52b45a2df58",
+      "build_relevant": false
+    },
+    {
+      "path": "experiments/weight/native_bellman_20261105/qualification/trust_regression_outer_attempt_1.json",
+      "sha": "93373dc2acb0133fdcd3254b64ab9b9c6be4da48",
+      "build_relevant": false
+    },
+    {
+      "path": "experiments/weight/native_bellman_20261105/verify_records.py",
+      "sha": "f22387171651297d93ba91045de648e133a67e87",
+      "build_relevant": false
+    },
+    {
+      "path": "experiments/weight/native_guard_20261104/publication_manifest.json",
+      "sha": "afa7f8e8dc23e358fccc9b6194d79f627d63f738",
+      "build_relevant": false
+    },
+    {
+      "path": "experiments/weight/native_guard_journal_20261105/DESIGN.md",
+      "sha": "75d76d5d6f5b7624dedb22a3523665d8509b59e9",
+      "build_relevant": false
+    },
+    {
+      "path": "experiments/weight/native_guard_journal_20261105/MANIFEST.json",
+      "sha": "fa138edc443a0156d4334c3104344ed862d924f7",
+      "build_relevant": false
+    },
+    {
+      "path": "experiments/weight/native_guard_journal_20261105/MCP_OUTER_PROTOCOL.json",
+      "sha": "d8522e55492d43a351fce23890c34cb03183ffc7",
+      "build_relevant": false
+    },
+    {
+      "path": "experiments/weight/native_guard_journal_20261105/MCP_PROTOCOL_V2.json",
+      "sha": "d6bef50923197721986dc1af9e5fd02311212571",
+      "build_relevant": false
+    },
+    {
+      "path": "experiments/weight/native_guard_journal_20261105/QUALIFICATION.md",
+      "sha": "0fafe9334202e6a74a3a252bc8da64fbdf073a54",
+      "build_relevant": false
+    },
+    {
+      "path": "experiments/weight/native_guard_journal_20261105/README.md",
+      "sha": "e35fab731e7577d8e12adf3c3a19a30b55722a6a",
+      "build_relevant": false
+    },
+    {
+      "path": "experiments/weight/native_guard_journal_20261105/attempt_1_source/mod.rs",
+      "sha": "f2b9c8d3f8096dcb40aa4e0a27402b0c16e9ea72",
+      "build_relevant": false
+    },
+    {
+      "path": "experiments/weight/native_guard_journal_20261105/attempt_1_source/weight_guard.rs",
+      "sha": "82c4698a59600b08e1610e2df446767c6289f197",
+      "build_relevant": false
+    },
+    {
+      "path": "experiments/weight/native_guard_journal_20261105/attempt_1_source/weight_guard_journal.rs",
+      "sha": "f6f620efee4182ad8a35e421e273adb1b9a5a7f7",
+      "build_relevant": false
+    },
+    {
+      "path": "experiments/weight/native_guard_journal_20261105/attempt_1_source/weight_guard_journal_tests.rs",
+      "sha": "304a2ebb5936c843dde73b56672b8a6a87ef9015",
+      "build_relevant": false
+    },
+    {
+      "path": "experiments/weight/native_guard_journal_20261105/qualification/all_features_crash_records.json",
+      "sha": "d653b87819621777f352c59ac32a2960571294c8",
+      "build_relevant": false
+    },
+    {
+      "path": "experiments/weight/native_guard_journal_20261105/qualification/attempt_1/ABORTED.json",
+      "sha": "661daab20730666da66af26571a9b99e038f6671",
+      "build_relevant": false
+    },
+    {
+      "path": "experiments/weight/native_guard_journal_20261105/qualification/attempt_1/PROTOCOL.json",
+      "sha": "4a163c6ed4d32ee14c1147ecd3ab4f600383fe9d",
+      "build_relevant": false
+    },
+    {
+      "path": "experiments/weight/native_guard_journal_20261105/qualification/attempt_1/cancelled_unit_accounting.json",
+      "sha": "b395f36024745d24c6db2fc1b2dfc249cd491721",
+      "build_relevant": false
+    },
+    {
+      "path": "experiments/weight/native_guard_journal_20261105/qualification/attempt_1/command-2.sanitized.log",
+      "sha": "3ab095853ce039f7f7ba0c6940bf57d9f0335956",
+      "build_relevant": false
+    },
+    {
+      "path": "experiments/weight/native_guard_journal_20261105/qualification/attempt_1/mcp_driver_prerun_refinement.json",
+      "sha": "0a8a62ec7d8838120d9b23f060c970782815c73a",
+      "build_relevant": false
+    },
+    {
+      "path": "experiments/weight/native_guard_journal_20261105/qualification/attempt_1/qualification.json",
+      "sha": "810902369c9ed2767616dba2bb1a122757d26b3d",
+      "build_relevant": false
+    },
+    {
+      "path": "experiments/weight/native_guard_journal_20261105/qualification/attempt_1/run_qualification.py",
+      "sha": "26c29df9f35b39cb968aaca829b0b6040d3d4be7",
+      "build_relevant": false
+    },
+    {
+      "path": "experiments/weight/native_guard_journal_20261105/qualification/attempt_1/unexecuted_mcp_driver_initial.py",
+      "sha": "527aaa879ea1ee03b3b7942a06a3a46e20e29ca0",
+      "build_relevant": false
+    },
+    {
+      "path": "experiments/weight/native_guard_journal_20261105/qualification/combined_qualification.json",
+      "sha": "9bc1b695c6eac20558ef4b1cb31423cd868bfc24",
+      "build_relevant": false
+    },
+    {
+      "path": "experiments/weight/native_guard_journal_20261105/qualification/mcp_receipt.json",
+      "sha": "181d38e8bae4616b39075f34247ee3ebfa74f579",
+      "build_relevant": false
+    },
+    {
+      "path": "experiments/weight/native_guard_journal_20261105/qualification/no_default_features_crash_records.json",
+      "sha": "9c96851afff9656aab3fda643de90ef72cf0d9d3",
+      "build_relevant": false
+    },
+    {
+      "path": "experiments/weight/native_guard_journal_20261105/qualification/outer_receipt.json",
+      "sha": "d4c9a72a0e33d6e7a96f421d59b6f164a41027a1",
+      "build_relevant": false
+    },
+    {
+      "path": "experiments/weight/native_guard_journal_20261105/qualify_mcp_contract.py",
+      "sha": "a9f46bdc63d3a5dccc390eeccb644f90f45c27ed",
+      "build_relevant": false
+    },
+    {
+      "path": "experiments/weight/native_guard_journal_20261105/run_mcp_contract_outer.py",
+      "sha": "332b5165686cf002d69816cb79a730f9ca65333b",
+      "build_relevant": false
+    },
+    {
+      "path": "experiments/weight/native_guard_journal_20261105/verify_records.py",
+      "sha": "8ca214db404df969e53684c10c4c4e064353e0c7",
+      "build_relevant": false
+    },
+    {
+      "path": "experiments/weight/native_trust_region_20261105/PROTOCOL.json",
+      "sha": "cdd97e22fc8164b0ff955dba6c68649973d18ccf",
+      "build_relevant": false
+    },
+    {
+      "path": "experiments/weight/native_trust_region_20261105/QUALIFICATION.md",
+      "sha": "b0139b0ed6be9e26a65818f93902be318849ffa1",
+      "build_relevant": false
+    },
+    {
+      "path": "experiments/weight/native_trust_region_20261105/README.md",
+      "sha": "9069bd3ca51a5b1ff9995f205ec945708049b567",
+      "build_relevant": false
+    },
+    {
+      "path": "experiments/weight/native_trust_region_20261105/RPC_PROTOCOL.json",
+      "sha": "ae72bfad39d52c72333d7c7814ce74c624c8c395",
+      "build_relevant": false
+    },
+    {
+      "path": "experiments/weight/native_trust_region_20261105/collect_qualification.py",
+      "sha": "7e8a76a03924b6f58091dda872b7803974127fb0",
+      "build_relevant": false
+    },
+    {
+      "path": "experiments/weight/native_trust_region_20261105/fixtures/derived_public_fixture.json",
+      "sha": "3e41fa42bc5f6e4d0a153b4658f064ab88ff923f",
+      "build_relevant": false
+    },
+    {
+      "path": "experiments/weight/native_trust_region_20261105/fixtures/norm_cases.json",
+      "sha": "58a47d0abccaf422005755b487b4160ecfe98b61",
+      "build_relevant": false
+    },
+    {
+      "path": "experiments/weight/native_trust_region_20261105/fixtures/reference_cases.json",
+      "sha": "a262dfb642a083cd89e75eb007d1ec15774e545c",
+      "build_relevant": false
+    },
+    {
+      "path": "experiments/weight/native_trust_region_20261105/mcp_fixture_client.py",
+      "sha": "ebd37c68dad3c6648cd69c56fe3551c49aab6c55",
+      "build_relevant": false
+    },
+    {
+      "path": "experiments/weight/native_trust_region_20261105/prepare_reference.py",
+      "sha": "3017e27028d531cfc5302d29534b131d8e735030",
+      "build_relevant": false
+    },
+    {
+      "path": "experiments/weight/native_trust_region_20261105/qualification/evidence_manifest.json",
+      "sha": "a6dd7bbe72aba05cd99c7484a67dd52deb0dba22",
+      "build_relevant": false
+    },
+    {
+      "path": "experiments/weight/native_trust_region_20261105/qualification/guards/public_head_radius_fraction_0.05_forced_preserve_conflict.json",
+      "sha": "32f8867f30a5588ca4cc2de6a6e17748dc6338f4",
+      "build_relevant": false
+    },
+    {
+      "path": "experiments/weight/native_trust_region_20261105/qualification/guards/public_head_radius_fraction_0.05_primary.json",
+      "sha": "bc56c519d1af3645e5bfa70405e4b145c1170cd2",
+      "build_relevant": false
+    },
+    {
+      "path": "experiments/weight/native_trust_region_20261105/qualification/guards/public_head_radius_fraction_0.5_forced_preserve_conflict.json",
+      "sha": "3574ae61737095c4869b30e76fda6e0d0a3111d0",
+      "build_relevant": false
+    },
+    {
+      "path": "experiments/weight/native_trust_region_20261105/qualification/guards/public_head_radius_fraction_0.5_primary.json",
+      "sha": "fe5c54d640220aa8d1f7c9b5a837ae4ecca93af5",
+      "build_relevant": false
+    },
+    {
+      "path": "experiments/weight/native_trust_region_20261105/qualification/local_attempt_1.json",
+      "sha": "e66d44d53d998993ad536ea7d9dbfa2efad06261",
+      "build_relevant": false
+    },
+    {
+      "path": "experiments/weight/native_trust_region_20261105/qualification/logs/command-2.log",
+      "sha": "0014e9df4281721e852eb3267f733a967d96d7a7",
+      "build_relevant": false
+    },
+    {
+      "path": "experiments/weight/native_trust_region_20261105/qualification/logs/command-3.log",
+      "sha": "25f7f31619c86925f8832203994f9232dfc1b26f",
+      "build_relevant": false
+    },
+    {
+      "path": "experiments/weight/native_trust_region_20261105/qualification/logs/command-4.log",
+      "sha": "830cc02a6a1bb1db475e8b8802c9ee537ae6fc80",
+      "build_relevant": false
+    },
+    {
+      "path": "experiments/weight/native_trust_region_20261105/qualification/logs/command-5.log",
+      "sha": "41cc9e4dd6ae24443c4ef2ad25d2a317b90128fe",
+      "build_relevant": false
+    },
+    {
+      "path": "experiments/weight/native_trust_region_20261105/qualification/norm_receipts.json",
+      "sha": "cea1c7f5994b42b2d0da041d864b6442e3894757",
+      "build_relevant": false
+    },
+    {
+      "path": "experiments/weight/native_trust_region_20261105/qualification/planners/decimal_lowering.json",
+      "sha": "21a29494becb31adc08fbb6db45e0d34a1df865e",
+      "build_relevant": false
+    },
+    {
+      "path": "experiments/weight/native_trust_region_20261105/qualification/planners/public_head_radius_fraction_0.05.json",
+      "sha": "8c7cffa567524ba12ecb7fe0a715d684eee7f7bc",
+      "build_relevant": false
+    },
+    {
+      "path": "experiments/weight/native_trust_region_20261105/qualification/planners/public_head_radius_fraction_0.5.json",
+      "sha": "d3fdc7892c5ba76e1e700a133b2431d49d7cc3ac",
+      "build_relevant": false
+    },
+    {
+      "path": "experiments/weight/native_trust_region_20261105/qualification/planners/scalar_active.json",
+      "sha": "956a136c99215827555050faab2035ba29c87b3b",
+      "build_relevant": false
+    },
+    {
+      "path": "experiments/weight/native_trust_region_20261105/qualification/planners/scalar_inactive.json",
+      "sha": "7285fa112f8109bfc3dc4c7e378a7b025d081be3",
+      "build_relevant": false
+    },
+    {
+      "path": "experiments/weight/native_trust_region_20261105/qualification/planners/shared_multiplier.json",
+      "sha": "2e92df7ef71e242386132d127d62d2dedb1415cb",
+      "build_relevant": false
+    },
+    {
+      "path": "experiments/weight/native_trust_region_20261105/qualification/planners/singleton.json",
+      "sha": "04c0f4964c728113cb61aca6ea2395376cd5058d",
+      "build_relevant": false
+    },
+    {
+      "path": "experiments/weight/native_trust_region_20261105/qualification/rpc_attempt_1.json",
+      "sha": "04781a8536bf25a3912c2d41f6282c3a09a386b6",
+      "build_relevant": false
+    },
+    {
+      "path": "experiments/weight/native_trust_region_20261105/qualification/source_manifest.json",
+      "sha": "47126f6e7947cf4e0531d33987c5afb1cf329cad",
+      "build_relevant": false
+    },
+    {
+      "path": "experiments/weight/native_trust_region_20261105/run_local_qualification.py",
+      "sha": "414e6f4c4989265cacee56a937a3554a793ff1cd",
+      "build_relevant": false
+    },
+    {
+      "path": "experiments/weight/native_trust_region_20261105/run_native_qualification.py",
+      "sha": "c71854093f5cab5c49e5692e3408226e3ad5eb53",
+      "build_relevant": false
+    },
+    {
+      "path": "experiments/weight/native_trust_region_20261105/verify_evidence.py",
+      "sha": "805edf2449392f0157495cba2ae7919a4fa9860a",
+      "build_relevant": false
+    }
+  ],
+  "wall_seconds": 4.024231230956502,
+  "self_cpu_seconds": 2.390025888
+}
