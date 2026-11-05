@@ -263,6 +263,8 @@ mod cpu_policy_consumer;
 #[cfg(target_os = "linux")]
 mod desktop_launch;
 #[cfg(target_os = "linux")]
+pub(crate) mod desktop_previous_recovery;
+#[cfg(target_os = "linux")]
 mod desktop_root_composition;
 #[cfg(target_os = "linux")]
 mod desktop_startup;
