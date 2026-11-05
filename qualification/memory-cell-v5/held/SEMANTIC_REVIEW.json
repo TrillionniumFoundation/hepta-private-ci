@@ -1,0 +1,28 @@
+{
+  "authoring_source": "synthetic expressions authored separately by evaluation assistant /root/v3_capacity_codec",
+  "duplicate_query_ids": 0,
+  "independent_real_user_sample": false,
+  "independent_second_annotator": false,
+  "legacy_v3_exact_template_collisions": 0,
+  "legacy_v3_normalized_templates_compared": 148,
+  "manual_author_review_rows": 216,
+  "manual_review_criteria": [
+    "one-calendar-month predecessor versus anchor month",
+    "signed subtraction direction versus relative percentage or transformed difference",
+    "three-month inclusive calendar support",
+    "equal-weight arithmetic mean versus other statistics",
+    "maximum value versus maximum month",
+    "single-series scalar operation versus multi-series request",
+    "requested operator controls label even when answers could coincide"
+  ],
+  "model_based_selection_used": false,
+  "new_v5_training_or_development_data_read": false,
+  "normalized_duplicate_utterances": 0,
+  "numeric_answers_present": false,
+  "router_predictions_or_candidate_metrics_read": false,
+  "routing_models_executed": 0,
+  "schema": "hepta.memory.v5.held-semantic-review.v1",
+  "schema_and_balance_checks_passed": true,
+  "scope": "Author semantic review and literal/template/schema checks only; no model accuracy or natural-user generality is established.",
+  "within_corpus_token_set_jaccard_at_least_0_85": []
+}

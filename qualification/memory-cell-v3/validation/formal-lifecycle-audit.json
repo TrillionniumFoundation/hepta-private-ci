@@ -1,0 +1,2269 @@
+{
+  "auditor_sha256": "9fd2dd704a5c9718f24f8cf6dfe41a834566c02fcbb4116e8f82a0aff7e9affa",
+  "development_only": false,
+  "domain_seed_runs": 15,
+  "limits": [
+    "Saved model parsing and residual decoding reuse production format parsers; parameter inference arithmetic, source targets and metrics are independently recomputed.",
+    "Original fault execution and process isolation are retained receipts, not new fault executions by this auditor.",
+    "No historical elapsed-time proof, distributed consensus, production admission or weight-unlearning certification."
+  ],
+  "lossless_all_queries_exact": true,
+  "manifest_sha256": "5f52760eebc7407811b7778d09795e843bc73d1bbf9fe48cf27dfa5fad40af42",
+  "parameter_retention_all_runs": true,
+  "runs": [
+    {
+      "domain": "co2",
+      "faults_recorded_rejected": 5,
+      "fresh_parameter_and_codec_parity": true,
+      "lossless_all_queries_exact": true,
+      "maximum_old_exact_regression": 0.0125,
+      "parameter_retention_gate": true,
+      "raw_deleted_old_value_matches": 0,
+      "seed": 307,
+      "stages": [
+        {
+          "lossless_metrics": {
+            "coverage": 1.0,
+            "exact_accuracy": 1.0,
+            "mae_original_units": 0.0,
+            "queries": 480,
+            "revoked_queries": 0,
+            "revoked_refusals": 0,
+            "rmse_original_units": 0.0
+          },
+          "old_retention": null,
+          "parameter_metrics": {
+            "coverage": 1.0,
+            "exact_accuracy": 0.029166666666666667,
+            "mae_original_units": 0.12702083333333333,
+            "queries": 480,
+            "revoked_queries": 0,
+            "revoked_refusals": 0,
+            "rmse_original_units": 0.16000195311307924
+          },
+          "stage": "initial"
+        },
+        {
+          "lossless_metrics": {
+            "coverage": 1.0,
+            "exact_accuracy": 1.0,
+            "mae_original_units": 0.0,
+            "queries": 804,
+            "revoked_queries": 0,
+            "revoked_refusals": 0,
+            "rmse_original_units": 0.0
+          },
+          "old_retention": {
+            "lossless_old_retention": 1.0,
+            "parameter_old_exact_after": 0.016666666666666666,
+            "parameter_old_exact_before": 0.029166666666666667,
+            "parameter_old_mae_after": 0.1341875,
+            "parameter_old_mae_before": 0.12702083333333333,
+            "unmodified_valid_old_coordinates": 480
+          },
+          "parameter_metrics": {
+            "coverage": 1.0,
+            "exact_accuracy": 0.026119402985074626,
+            "mae_original_units": 0.13757462686567165,
+            "queries": 804,
+            "revoked_queries": 0,
+            "revoked_refusals": 0,
+            "rmse_original_units": 0.17253271374853188
+          },
+          "stage": "append"
+        },
+        {
+          "lossless_metrics": {
+            "coverage": 1.0,
+            "exact_accuracy": 1.0,
+            "mae_original_units": 0.0,
+            "queries": 804,
+            "revoked_queries": 0,
+            "revoked_refusals": 0,
+            "rmse_original_units": 0.0
+          },
+          "old_retention": {
+            "lossless_old_retention": 1.0,
+            "parameter_old_exact_after": 0.02135678391959799,
+            "parameter_old_exact_before": 0.02512562814070352,
+            "parameter_old_mae_after": 0.1747989949748744,
+            "parameter_old_mae_before": 0.13717336683417086,
+            "unmodified_valid_old_coordinates": 796
+          },
+          "parameter_metrics": {
+            "coverage": 1.0,
+            "exact_accuracy": 0.021144278606965175,
+            "mae_original_units": 0.18205223880597013,
+            "queries": 804,
+            "revoked_queries": 0,
+            "revoked_refusals": 0,
+            "rmse_original_units": 0.25572183464932735
+          },
+          "stage": "correct"
+        },
+        {
+          "lossless_metrics": {
+            "coverage": 1.0,
+            "exact_accuracy": 1.0,
+            "mae_original_units": 0.0,
+            "queries": 796,
+            "revoked_queries": 8,
+            "revoked_refusals": 8,
+            "rmse_original_units": 0.0
+          },
+          "old_retention": {
+            "lossless_old_retention": 1.0,
+            "parameter_old_exact_after": 0.114321608040201,
+            "parameter_old_exact_before": 0.020100502512562814,
+            "parameter_old_mae_after": 0.2329145728643216,
+            "parameter_old_mae_before": 0.18226130653266331,
+            "unmodified_valid_old_coordinates": 796
+          },
+          "parameter_metrics": {
+            "coverage": 1.0,
+            "exact_accuracy": 0.114321608040201,
+            "mae_original_units": 0.2329145728643216,
+            "queries": 796,
+            "revoked_queries": 8,
+            "revoked_refusals": 8,
+            "rmse_original_units": 0.39622306036857474
+          },
+          "stage": "withdraw"
+        },
+        {
+          "lossless_metrics": {
+            "coverage": 1.0,
+            "exact_accuracy": 1.0,
+            "mae_original_units": 0.0,
+            "queries": 796,
+            "revoked_queries": 8,
+            "revoked_refusals": 8,
+            "rmse_original_units": 0.0
+          },
+          "old_retention": {
+            "lossless_old_retention": 1.0,
+            "parameter_old_exact_after": 0.114321608040201,
+            "parameter_old_exact_before": 0.114321608040201,
+            "parameter_old_mae_after": 0.2329145728643216,
+            "parameter_old_mae_before": 0.2329145728643216,
+            "unmodified_valid_old_coordinates": 796
+          },
+          "parameter_metrics": {
+            "coverage": 1.0,
+            "exact_accuracy": 0.114321608040201,
+            "mae_original_units": 0.2329145728643216,
+            "queries": 796,
+            "revoked_queries": 8,
+            "revoked_refusals": 8,
+            "rmse_original_units": 0.39622306036857474
+          },
+          "stage": "clean_replay"
+        }
+      ]
+    },
+    {
+      "domain": "temperature",
+      "faults_recorded_rejected": 5,
+      "fresh_parameter_and_codec_parity": true,
+      "lossless_all_queries_exact": true,
+      "maximum_old_exact_regression": 0.0022935779816513624,
+      "parameter_retention_gate": true,
+      "raw_deleted_old_value_matches": 0,
+      "seed": 307,
+      "stages": [
+        {
+          "lossless_metrics": {
+            "coverage": 1.0,
+            "exact_accuracy": 1.0,
+            "mae_original_units": 0.0,
+            "queries": 1044,
+            "revoked_queries": 0,
+            "revoked_refusals": 0,
+            "rmse_original_units": 0.0
+          },
+          "old_retention": null,
+          "parameter_metrics": {
+            "coverage": 1.0,
+            "exact_accuracy": 0.05363984674329502,
+            "mae_original_units": 0.047078544061302685,
+            "queries": 1044,
+            "revoked_queries": 0,
+            "revoked_refusals": 0,
+            "rmse_original_units": 0.06042553442649862
+          },
+          "stage": "initial"
+        },
+        {
+          "lossless_metrics": {
+            "coverage": 1.0,
+            "exact_accuracy": 1.0,
+            "mae_original_units": 0.0,
+            "queries": 1752,
+            "revoked_queries": 0,
+            "revoked_refusals": 0,
+            "rmse_original_units": 0.0
+          },
+          "old_retention": {
+            "lossless_old_retention": 1.0,
+            "parameter_old_exact_after": 0.07088122605363985,
+            "parameter_old_exact_before": 0.05363984674329502,
+            "parameter_old_mae_after": 0.04807471264367816,
+            "parameter_old_mae_before": 0.047078544061302685,
+            "unmodified_valid_old_coordinates": 1044
+          },
+          "parameter_metrics": {
+            "coverage": 1.0,
+            "exact_accuracy": 0.0656392694063927,
+            "mae_original_units": 0.049885844748858446,
+            "queries": 1752,
+            "revoked_queries": 0,
+            "revoked_refusals": 0,
+            "rmse_original_units": 0.06320492871365832
+          },
+          "stage": "append"
+        },
+        {
+          "lossless_metrics": {
+            "coverage": 1.0,
+            "exact_accuracy": 1.0,
+            "mae_original_units": 0.0,
+            "queries": 1752,
+            "revoked_queries": 0,
+            "revoked_refusals": 0,
+            "rmse_original_units": 0.0
+          },
+          "old_retention": {
+            "lossless_old_retention": 1.0,
+            "parameter_old_exact_after": 0.13589449541284404,
+            "parameter_old_exact_before": 0.06536697247706422,
+            "parameter_old_mae_after": 0.06604357798165138,
+            "parameter_old_mae_before": 0.04995412844036697,
+            "unmodified_valid_old_coordinates": 1744
+          },
+          "parameter_metrics": {
+            "coverage": 1.0,
+            "exact_accuracy": 0.136986301369863,
+            "mae_original_units": 0.06733447488584475,
+            "queries": 1752,
+            "revoked_queries": 0,
+            "revoked_refusals": 0,
+            "rmse_original_units": 0.1056008574581211
+          },
+          "stage": "correct"
+        },
+        {
+          "lossless_metrics": {
+            "coverage": 1.0,
+            "exact_accuracy": 1.0,
+            "mae_original_units": 0.0,
+            "queries": 1744,
+            "revoked_queries": 8,
+            "revoked_refusals": 8,
+            "rmse_original_units": 0.0
+          },
+          "old_retention": {
+            "lossless_old_retention": 1.0,
+            "parameter_old_exact_after": 0.13474770642201836,
+            "parameter_old_exact_before": 0.13704128440366972,
+            "parameter_old_mae_after": 0.06724197247706422,
+            "parameter_old_mae_before": 0.06724197247706422,
+            "unmodified_valid_old_coordinates": 1744
+          },
+          "parameter_metrics": {
+            "coverage": 1.0,
+            "exact_accuracy": 0.13474770642201836,
+            "mae_original_units": 0.06724197247706422,
+            "queries": 1744,
+            "revoked_queries": 8,
+            "revoked_refusals": 8,
+            "rmse_original_units": 0.10562803657217028
+          },
+          "stage": "withdraw"
+        },
+        {
+          "lossless_metrics": {
+            "coverage": 1.0,
+            "exact_accuracy": 1.0,
+            "mae_original_units": 0.0,
+            "queries": 1744,
+            "revoked_queries": 8,
+            "revoked_refusals": 8,
+            "rmse_original_units": 0.0
+          },
+          "old_retention": {
+            "lossless_old_retention": 1.0,
+            "parameter_old_exact_after": 0.13474770642201836,
+            "parameter_old_exact_before": 0.13474770642201836,
+            "parameter_old_mae_after": 0.06724197247706422,
+            "parameter_old_mae_before": 0.06724197247706422,
+            "unmodified_valid_old_coordinates": 1744
+          },
+          "parameter_metrics": {
+            "coverage": 1.0,
+            "exact_accuracy": 0.13474770642201836,
+            "mae_original_units": 0.06724197247706422,
+            "queries": 1744,
+            "revoked_queries": 8,
+            "revoked_refusals": 8,
+            "rmse_original_units": 0.10562803657217028
+          },
+          "stage": "clean_replay"
+        }
+      ]
+    },
+    {
+      "domain": "sunspots",
+      "faults_recorded_rejected": 5,
+      "fresh_parameter_and_codec_parity": true,
+      "lossless_all_queries_exact": true,
+      "maximum_old_exact_regression": 0.000904704463208685,
+      "parameter_retention_gate": true,
+      "raw_deleted_old_value_matches": 0,
+      "seed": 307,
+      "stages": [
+        {
+          "lossless_metrics": {
+            "coverage": 1.0,
+            "exact_accuracy": 1.0,
+            "mae_original_units": 0.0,
+            "queries": 1992,
+            "revoked_queries": 0,
+            "revoked_refusals": 0,
+            "rmse_original_units": 0.0
+          },
+          "old_retention": null,
+          "parameter_metrics": {
+            "coverage": 1.0,
+            "exact_accuracy": 0.006024096385542169,
+            "mae_original_units": 11.337449799196786,
+            "queries": 1992,
+            "revoked_queries": 0,
+            "revoked_refusals": 0,
+            "rmse_original_units": 15.913851913692161
+          },
+          "stage": "initial"
+        },
+        {
+          "lossless_metrics": {
+            "coverage": 1.0,
+            "exact_accuracy": 1.0,
+            "mae_original_units": 0.0,
+            "queries": 3324,
+            "revoked_queries": 0,
+            "revoked_refusals": 0,
+            "rmse_original_units": 0.0
+          },
+          "old_retention": {
+            "lossless_old_retention": 1.0,
+            "parameter_old_exact_after": 0.006024096385542169,
+            "parameter_old_exact_before": 0.006024096385542169,
+            "parameter_old_mae_after": 11.41285140562249,
+            "parameter_old_mae_before": 11.337449799196786,
+            "unmodified_valid_old_coordinates": 1992
+          },
+          "parameter_metrics": {
+            "coverage": 1.0,
+            "exact_accuracy": 0.005415162454873646,
+            "mae_original_units": 11.316546329723225,
+            "queries": 3324,
+            "revoked_queries": 0,
+            "revoked_refusals": 0,
+            "rmse_original_units": 15.903640343433485
+          },
+          "stage": "append"
+        },
+        {
+          "lossless_metrics": {
+            "coverage": 1.0,
+            "exact_accuracy": 1.0,
+            "mae_original_units": 0.0,
+            "queries": 3324,
+            "revoked_queries": 0,
+            "revoked_refusals": 0,
+            "rmse_original_units": 0.0
+          },
+          "old_retention": {
+            "lossless_old_retention": 1.0,
+            "parameter_old_exact_after": 0.004523522316043426,
+            "parameter_old_exact_before": 0.005428226779252111,
+            "parameter_old_mae_after": 11.312032569360676,
+            "parameter_old_mae_before": 11.312213510253319,
+            "unmodified_valid_old_coordinates": 3316
+          },
+          "parameter_metrics": {
+            "coverage": 1.0,
+            "exact_accuracy": 0.004512635379061372,
+            "mae_original_units": 11.31765944645006,
+            "queries": 3324,
+            "revoked_queries": 0,
+            "revoked_refusals": 0,
+            "rmse_original_units": 15.904058488761887
+          },
+          "stage": "correct"
+        },
+        {
+          "lossless_metrics": {
+            "coverage": 1.0,
+            "exact_accuracy": 1.0,
+            "mae_original_units": 0.0,
+            "queries": 3316,
+            "revoked_queries": 8,
+            "revoked_refusals": 8,
+            "rmse_original_units": 0.0
+          },
+          "old_retention": {
+            "lossless_old_retention": 1.0,
+            "parameter_old_exact_after": 0.004523522316043426,
+            "parameter_old_exact_before": 0.004523522316043426,
+            "parameter_old_mae_after": 11.32195416164053,
+            "parameter_old_mae_before": 11.318003618817853,
+            "unmodified_valid_old_coordinates": 3316
+          },
+          "parameter_metrics": {
+            "coverage": 1.0,
+            "exact_accuracy": 0.004523522316043426,
+            "mae_original_units": 11.32195416164053,
+            "queries": 3316,
+            "revoked_queries": 8,
+            "revoked_refusals": 8,
+            "rmse_original_units": 15.9017326896528
+          },
+          "stage": "withdraw"
+        },
+        {
+          "lossless_metrics": {
+            "coverage": 1.0,
+            "exact_accuracy": 1.0,
+            "mae_original_units": 0.0,
+            "queries": 3316,
+            "revoked_queries": 8,
+            "revoked_refusals": 8,
+            "rmse_original_units": 0.0
+          },
+          "old_retention": {
+            "lossless_old_retention": 1.0,
+            "parameter_old_exact_after": 0.004523522316043426,
+            "parameter_old_exact_before": 0.004523522316043426,
+            "parameter_old_mae_after": 11.32195416164053,
+            "parameter_old_mae_before": 11.32195416164053,
+            "unmodified_valid_old_coordinates": 3316
+          },
+          "parameter_metrics": {
+            "coverage": 1.0,
+            "exact_accuracy": 0.004523522316043426,
+            "mae_original_units": 11.32195416164053,
+            "queries": 3316,
+            "revoked_queries": 8,
+            "revoked_refusals": 8,
+            "rmse_original_units": 15.9017326896528
+          },
+          "stage": "clean_replay"
+        }
+      ]
+    },
+    {
+      "domain": "co2",
+      "faults_recorded_rejected": 5,
+      "fresh_parameter_and_codec_parity": true,
+      "lossless_all_queries_exact": true,
+      "maximum_old_exact_regression": 0.0125,
+      "parameter_retention_gate": true,
+      "raw_deleted_old_value_matches": 0,
+      "seed": 311,
+      "stages": [
+        {
+          "lossless_metrics": {
+            "coverage": 1.0,
+            "exact_accuracy": 1.0,
+            "mae_original_units": 0.0,
+            "queries": 480,
+            "revoked_queries": 0,
+            "revoked_refusals": 0,
+            "rmse_original_units": 0.0
+          },
+          "old_retention": null,
+          "parameter_metrics": {
+            "coverage": 1.0,
+            "exact_accuracy": 0.029166666666666667,
+            "mae_original_units": 0.12702083333333333,
+            "queries": 480,
+            "revoked_queries": 0,
+            "revoked_refusals": 0,
+            "rmse_original_units": 0.16000195311307924
+          },
+          "stage": "initial"
+        },
+        {
+          "lossless_metrics": {
+            "coverage": 1.0,
+            "exact_accuracy": 1.0,
+            "mae_original_units": 0.0,
+            "queries": 804,
+            "revoked_queries": 0,
+            "revoked_refusals": 0,
+            "rmse_original_units": 0.0
+          },
+          "old_retention": {
+            "lossless_old_retention": 1.0,
+            "parameter_old_exact_after": 0.016666666666666666,
+            "parameter_old_exact_before": 0.029166666666666667,
+            "parameter_old_mae_after": 0.1341875,
+            "parameter_old_mae_before": 0.12702083333333333,
+            "unmodified_valid_old_coordinates": 480
+          },
+          "parameter_metrics": {
+            "coverage": 1.0,
+            "exact_accuracy": 0.026119402985074626,
+            "mae_original_units": 0.13757462686567165,
+            "queries": 804,
+            "revoked_queries": 0,
+            "revoked_refusals": 0,
+            "rmse_original_units": 0.17253271374853188
+          },
+          "stage": "append"
+        },
+        {
+          "lossless_metrics": {
+            "coverage": 1.0,
+            "exact_accuracy": 1.0,
+            "mae_original_units": 0.0,
+            "queries": 804,
+            "revoked_queries": 0,
+            "revoked_refusals": 0,
+            "rmse_original_units": 0.0
+          },
+          "old_retention": {
+            "lossless_old_retention": 1.0,
+            "parameter_old_exact_after": 0.016331658291457288,
+            "parameter_old_exact_before": 0.026381909547738693,
+            "parameter_old_mae_after": 0.16954773869346734,
+            "parameter_old_mae_before": 0.1378140703517588,
+            "unmodified_valid_old_coordinates": 796
+          },
+          "parameter_metrics": {
+            "coverage": 1.0,
+            "exact_accuracy": 0.01616915422885572,
+            "mae_original_units": 0.1757089552238806,
+            "queries": 804,
+            "revoked_queries": 0,
+            "revoked_refusals": 0,
+            "rmse_original_units": 0.2493710995156252
+          },
+          "stage": "correct"
+        },
+        {
+          "lossless_metrics": {
+            "coverage": 1.0,
+            "exact_accuracy": 1.0,
+            "mae_original_units": 0.0,
+            "queries": 796,
+            "revoked_queries": 8,
+            "revoked_refusals": 8,
+            "rmse_original_units": 0.0
+          },
+          "old_retention": {
+            "lossless_old_retention": 1.0,
+            "parameter_old_exact_after": 0.07035175879396985,
+            "parameter_old_exact_before": 0.016331658291457288,
+            "parameter_old_mae_after": 0.21939698492462312,
+            "parameter_old_mae_before": 0.176356783919598,
+            "unmodified_valid_old_coordinates": 796
+          },
+          "parameter_metrics": {
+            "coverage": 1.0,
+            "exact_accuracy": 0.07035175879396985,
+            "mae_original_units": 0.21939698492462312,
+            "queries": 796,
+            "revoked_queries": 8,
+            "revoked_refusals": 8,
+            "rmse_original_units": 0.33745276982015787
+          },
+          "stage": "withdraw"
+        },
+        {
+          "lossless_metrics": {
+            "coverage": 1.0,
+            "exact_accuracy": 1.0,
+            "mae_original_units": 0.0,
+            "queries": 796,
+            "revoked_queries": 8,
+            "revoked_refusals": 8,
+            "rmse_original_units": 0.0
+          },
+          "old_retention": {
+            "lossless_old_retention": 1.0,
+            "parameter_old_exact_after": 0.07035175879396985,
+            "parameter_old_exact_before": 0.07035175879396985,
+            "parameter_old_mae_after": 0.21939698492462312,
+            "parameter_old_mae_before": 0.21939698492462312,
+            "unmodified_valid_old_coordinates": 796
+          },
+          "parameter_metrics": {
+            "coverage": 1.0,
+            "exact_accuracy": 0.07035175879396985,
+            "mae_original_units": 0.21939698492462312,
+            "queries": 796,
+            "revoked_queries": 8,
+            "revoked_refusals": 8,
+            "rmse_original_units": 0.33745276982015787
+          },
+          "stage": "clean_replay"
+        }
+      ]
+    },
+    {
+      "domain": "temperature",
+      "faults_recorded_rejected": 5,
+      "fresh_parameter_and_codec_parity": true,
+      "lossless_all_queries_exact": true,
+      "maximum_old_exact_regression": 0.0,
+      "parameter_retention_gate": true,
+      "raw_deleted_old_value_matches": 0,
+      "seed": 311,
+      "stages": [
+        {
+          "lossless_metrics": {
+            "coverage": 1.0,
+            "exact_accuracy": 1.0,
+            "mae_original_units": 0.0,
+            "queries": 1044,
+            "revoked_queries": 0,
+            "revoked_refusals": 0,
+            "rmse_original_units": 0.0
+          },
+          "old_retention": null,
+          "parameter_metrics": {
+            "coverage": 1.0,
+            "exact_accuracy": 0.05363984674329502,
+            "mae_original_units": 0.047078544061302685,
+            "queries": 1044,
+            "revoked_queries": 0,
+            "revoked_refusals": 0,
+            "rmse_original_units": 0.06042553442649862
+          },
+          "stage": "initial"
+        },
+        {
+          "lossless_metrics": {
+            "coverage": 1.0,
+            "exact_accuracy": 1.0,
+            "mae_original_units": 0.0,
+            "queries": 1752,
+            "revoked_queries": 0,
+            "revoked_refusals": 0,
+            "rmse_original_units": 0.0
+          },
+          "old_retention": {
+            "lossless_old_retention": 1.0,
+            "parameter_old_exact_after": 0.07088122605363985,
+            "parameter_old_exact_before": 0.05363984674329502,
+            "parameter_old_mae_after": 0.04807471264367816,
+            "parameter_old_mae_before": 0.047078544061302685,
+            "unmodified_valid_old_coordinates": 1044
+          },
+          "parameter_metrics": {
+            "coverage": 1.0,
+            "exact_accuracy": 0.0656392694063927,
+            "mae_original_units": 0.049885844748858446,
+            "queries": 1752,
+            "revoked_queries": 0,
+            "revoked_refusals": 0,
+            "rmse_original_units": 0.06320492871365832
+          },
+          "stage": "append"
+        },
+        {
+          "lossless_metrics": {
+            "coverage": 1.0,
+            "exact_accuracy": 1.0,
+            "mae_original_units": 0.0,
+            "queries": 1752,
+            "revoked_queries": 0,
+            "revoked_refusals": 0,
+            "rmse_original_units": 0.0
+          },
+          "old_retention": {
+            "lossless_old_retention": 1.0,
+            "parameter_old_exact_after": 0.1003440366972477,
+            "parameter_old_exact_before": 0.06594036697247706,
+            "parameter_old_mae_after": 0.06279243119266055,
+            "parameter_old_mae_before": 0.0499598623853211,
+            "unmodified_valid_old_coordinates": 1744
+          },
+          "parameter_metrics": {
+            "coverage": 1.0,
+            "exact_accuracy": 0.09988584474885845,
+            "mae_original_units": 0.06544520547945205,
+            "queries": 1752,
+            "revoked_queries": 0,
+            "revoked_refusals": 0,
+            "rmse_original_units": 0.10804351820671158
+          },
+          "stage": "correct"
+        },
+        {
+          "lossless_metrics": {
+            "coverage": 1.0,
+            "exact_accuracy": 1.0,
+            "mae_original_units": 0.0,
+            "queries": 1744,
+            "revoked_queries": 8,
+            "revoked_refusals": 8,
+            "rmse_original_units": 0.0
+          },
+          "old_retention": {
+            "lossless_old_retention": 1.0,
+            "parameter_old_exact_after": 0.10321100917431193,
+            "parameter_old_exact_before": 0.09977064220183486,
+            "parameter_old_mae_after": 0.06549311926605504,
+            "parameter_old_mae_before": 0.06547018348623852,
+            "unmodified_valid_old_coordinates": 1744
+          },
+          "parameter_metrics": {
+            "coverage": 1.0,
+            "exact_accuracy": 0.10321100917431193,
+            "mae_original_units": 0.06549311926605504,
+            "queries": 1744,
+            "revoked_queries": 8,
+            "revoked_refusals": 8,
+            "rmse_original_units": 0.10817289931766177
+          },
+          "stage": "withdraw"
+        },
+        {
+          "lossless_metrics": {
+            "coverage": 1.0,
+            "exact_accuracy": 1.0,
+            "mae_original_units": 0.0,
+            "queries": 1744,
+            "revoked_queries": 8,
+            "revoked_refusals": 8,
+            "rmse_original_units": 0.0
+          },
+          "old_retention": {
+            "lossless_old_retention": 1.0,
+            "parameter_old_exact_after": 0.10321100917431193,
+            "parameter_old_exact_before": 0.10321100917431193,
+            "parameter_old_mae_after": 0.06549311926605504,
+            "parameter_old_mae_before": 0.06549311926605504,
+            "unmodified_valid_old_coordinates": 1744
+          },
+          "parameter_metrics": {
+            "coverage": 1.0,
+            "exact_accuracy": 0.10321100917431193,
+            "mae_original_units": 0.06549311926605504,
+            "queries": 1744,
+            "revoked_queries": 8,
+            "revoked_refusals": 8,
+            "rmse_original_units": 0.10817289931766177
+          },
+          "stage": "clean_replay"
+        }
+      ]
+    },
+    {
+      "domain": "sunspots",
+      "faults_recorded_rejected": 5,
+      "fresh_parameter_and_codec_parity": true,
+      "lossless_all_queries_exact": true,
+      "maximum_old_exact_regression": 0.000904704463208685,
+      "parameter_retention_gate": true,
+      "raw_deleted_old_value_matches": 0,
+      "seed": 311,
+      "stages": [
+        {
+          "lossless_metrics": {
+            "coverage": 1.0,
+            "exact_accuracy": 1.0,
+            "mae_original_units": 0.0,
+            "queries": 1992,
+            "revoked_queries": 0,
+            "revoked_refusals": 0,
+            "rmse_original_units": 0.0
+          },
+          "old_retention": null,
+          "parameter_metrics": {
+            "coverage": 1.0,
+            "exact_accuracy": 0.006024096385542169,
+            "mae_original_units": 11.337449799196786,
+            "queries": 1992,
+            "revoked_queries": 0,
+            "revoked_refusals": 0,
+            "rmse_original_units": 15.913851913692161
+          },
+          "stage": "initial"
+        },
+        {
+          "lossless_metrics": {
+            "coverage": 1.0,
+            "exact_accuracy": 1.0,
+            "mae_original_units": 0.0,
+            "queries": 3324,
+            "revoked_queries": 0,
+            "revoked_refusals": 0,
+            "rmse_original_units": 0.0
+          },
+          "old_retention": {
+            "lossless_old_retention": 1.0,
+            "parameter_old_exact_after": 0.006024096385542169,
+            "parameter_old_exact_before": 0.006024096385542169,
+            "parameter_old_mae_after": 11.41285140562249,
+            "parameter_old_mae_before": 11.337449799196786,
+            "unmodified_valid_old_coordinates": 1992
+          },
+          "parameter_metrics": {
+            "coverage": 1.0,
+            "exact_accuracy": 0.005415162454873646,
+            "mae_original_units": 11.316546329723225,
+            "queries": 3324,
+            "revoked_queries": 0,
+            "revoked_refusals": 0,
+            "rmse_original_units": 15.903640343433485
+          },
+          "stage": "append"
+        },
+        {
+          "lossless_metrics": {
+            "coverage": 1.0,
+            "exact_accuracy": 1.0,
+            "mae_original_units": 0.0,
+            "queries": 3324,
+            "revoked_queries": 0,
+            "revoked_refusals": 0,
+            "rmse_original_units": 0.0
+          },
+          "old_retention": {
+            "lossless_old_retention": 1.0,
+            "parameter_old_exact_after": 0.004523522316043426,
+            "parameter_old_exact_before": 0.005428226779252111,
+            "parameter_old_mae_after": 11.303377563329311,
+            "parameter_old_mae_before": 11.303558504221954,
+            "unmodified_valid_old_coordinates": 3316
+          },
+          "parameter_metrics": {
+            "coverage": 1.0,
+            "exact_accuracy": 0.004512635379061372,
+            "mae_original_units": 11.317839951865222,
+            "queries": 3324,
+            "revoked_queries": 0,
+            "revoked_refusals": 0,
+            "rmse_original_units": 15.903025637544559
+          },
+          "stage": "correct"
+        },
+        {
+          "lossless_metrics": {
+            "coverage": 1.0,
+            "exact_accuracy": 1.0,
+            "mae_original_units": 0.0,
+            "queries": 3316,
+            "revoked_queries": 8,
+            "revoked_refusals": 8,
+            "rmse_original_units": 0.0
+          },
+          "old_retention": {
+            "lossless_old_retention": 1.0,
+            "parameter_old_exact_after": 0.0066344993968636915,
+            "parameter_old_exact_before": 0.004523522316043426,
+            "parameter_old_mae_after": 11.309770808202654,
+            "parameter_old_mae_before": 11.299185765983113,
+            "unmodified_valid_old_coordinates": 3316
+          },
+          "parameter_metrics": {
+            "coverage": 1.0,
+            "exact_accuracy": 0.0066344993968636915,
+            "mae_original_units": 11.309770808202654,
+            "queries": 3316,
+            "revoked_queries": 8,
+            "revoked_refusals": 8,
+            "rmse_original_units": 15.828900824975179
+          },
+          "stage": "withdraw"
+        },
+        {
+          "lossless_metrics": {
+            "coverage": 1.0,
+            "exact_accuracy": 1.0,
+            "mae_original_units": 0.0,
+            "queries": 3316,
+            "revoked_queries": 8,
+            "revoked_refusals": 8,
+            "rmse_original_units": 0.0
+          },
+          "old_retention": {
+            "lossless_old_retention": 1.0,
+            "parameter_old_exact_after": 0.0066344993968636915,
+            "parameter_old_exact_before": 0.0066344993968636915,
+            "parameter_old_mae_after": 11.309770808202654,
+            "parameter_old_mae_before": 11.309770808202654,
+            "unmodified_valid_old_coordinates": 3316
+          },
+          "parameter_metrics": {
+            "coverage": 1.0,
+            "exact_accuracy": 0.0066344993968636915,
+            "mae_original_units": 11.309770808202654,
+            "queries": 3316,
+            "revoked_queries": 8,
+            "revoked_refusals": 8,
+            "rmse_original_units": 15.828900824975179
+          },
+          "stage": "clean_replay"
+        }
+      ]
+    },
+    {
+      "domain": "co2",
+      "faults_recorded_rejected": 5,
+      "fresh_parameter_and_codec_parity": true,
+      "lossless_all_queries_exact": true,
+      "maximum_old_exact_regression": 0.0125,
+      "parameter_retention_gate": true,
+      "raw_deleted_old_value_matches": 0,
+      "seed": 313,
+      "stages": [
+        {
+          "lossless_metrics": {
+            "coverage": 1.0,
+            "exact_accuracy": 1.0,
+            "mae_original_units": 0.0,
+            "queries": 480,
+            "revoked_queries": 0,
+            "revoked_refusals": 0,
+            "rmse_original_units": 0.0
+          },
+          "old_retention": null,
+          "parameter_metrics": {
+            "coverage": 1.0,
+            "exact_accuracy": 0.029166666666666667,
+            "mae_original_units": 0.12702083333333333,
+            "queries": 480,
+            "revoked_queries": 0,
+            "revoked_refusals": 0,
+            "rmse_original_units": 0.16000195311307924
+          },
+          "stage": "initial"
+        },
+        {
+          "lossless_metrics": {
+            "coverage": 1.0,
+            "exact_accuracy": 1.0,
+            "mae_original_units": 0.0,
+            "queries": 804,
+            "revoked_queries": 0,
+            "revoked_refusals": 0,
+            "rmse_original_units": 0.0
+          },
+          "old_retention": {
+            "lossless_old_retention": 1.0,
+            "parameter_old_exact_after": 0.016666666666666666,
+            "parameter_old_exact_before": 0.029166666666666667,
+            "parameter_old_mae_after": 0.1341875,
+            "parameter_old_mae_before": 0.12702083333333333,
+            "unmodified_valid_old_coordinates": 480
+          },
+          "parameter_metrics": {
+            "coverage": 1.0,
+            "exact_accuracy": 0.026119402985074626,
+            "mae_original_units": 0.13757462686567165,
+            "queries": 804,
+            "revoked_queries": 0,
+            "revoked_refusals": 0,
+            "rmse_original_units": 0.17253271374853188
+          },
+          "stage": "append"
+        },
+        {
+          "lossless_metrics": {
+            "coverage": 1.0,
+            "exact_accuracy": 1.0,
+            "mae_original_units": 0.0,
+            "queries": 804,
+            "revoked_queries": 0,
+            "revoked_refusals": 0,
+            "rmse_original_units": 0.0
+          },
+          "old_retention": {
+            "lossless_old_retention": 1.0,
+            "parameter_old_exact_after": 0.02763819095477387,
+            "parameter_old_exact_before": 0.02512562814070352,
+            "parameter_old_mae_after": 0.16469849246231155,
+            "parameter_old_mae_before": 0.13777638190954775,
+            "unmodified_valid_old_coordinates": 796
+          },
+          "parameter_metrics": {
+            "coverage": 1.0,
+            "exact_accuracy": 0.02736318407960199,
+            "mae_original_units": 0.16723880597014926,
+            "queries": 804,
+            "revoked_queries": 0,
+            "revoked_refusals": 0,
+            "rmse_original_units": 0.22753983851065013
+          },
+          "stage": "correct"
+        },
+        {
+          "lossless_metrics": {
+            "coverage": 1.0,
+            "exact_accuracy": 1.0,
+            "mae_original_units": 0.0,
+            "queries": 796,
+            "revoked_queries": 8,
+            "revoked_refusals": 8,
+            "rmse_original_units": 0.0
+          },
+          "old_retention": {
+            "lossless_old_retention": 1.0,
+            "parameter_old_exact_after": 0.09547738693467336,
+            "parameter_old_exact_before": 0.02763819095477387,
+            "parameter_old_mae_after": 0.2268718592964824,
+            "parameter_old_mae_before": 0.16702261306532662,
+            "unmodified_valid_old_coordinates": 796
+          },
+          "parameter_metrics": {
+            "coverage": 1.0,
+            "exact_accuracy": 0.09547738693467336,
+            "mae_original_units": 0.2268718592964824,
+            "queries": 796,
+            "revoked_queries": 8,
+            "revoked_refusals": 8,
+            "rmse_original_units": 0.38680871228489344
+          },
+          "stage": "withdraw"
+        },
+        {
+          "lossless_metrics": {
+            "coverage": 1.0,
+            "exact_accuracy": 1.0,
+            "mae_original_units": 0.0,
+            "queries": 796,
+            "revoked_queries": 8,
+            "revoked_refusals": 8,
+            "rmse_original_units": 0.0
+          },
+          "old_retention": {
+            "lossless_old_retention": 1.0,
+            "parameter_old_exact_after": 0.09547738693467336,
+            "parameter_old_exact_before": 0.09547738693467336,
+            "parameter_old_mae_after": 0.2268718592964824,
+            "parameter_old_mae_before": 0.2268718592964824,
+            "unmodified_valid_old_coordinates": 796
+          },
+          "parameter_metrics": {
+            "coverage": 1.0,
+            "exact_accuracy": 0.09547738693467336,
+            "mae_original_units": 0.2268718592964824,
+            "queries": 796,
+            "revoked_queries": 8,
+            "revoked_refusals": 8,
+            "rmse_original_units": 0.38680871228489344
+          },
+          "stage": "clean_replay"
+        }
+      ]
+    },
+    {
+      "domain": "temperature",
+      "faults_recorded_rejected": 5,
+      "fresh_parameter_and_codec_parity": true,
+      "lossless_all_queries_exact": true,
+      "maximum_old_exact_regression": 0.0,
+      "parameter_retention_gate": true,
+      "raw_deleted_old_value_matches": 0,
+      "seed": 313,
+      "stages": [
+        {
+          "lossless_metrics": {
+            "coverage": 1.0,
+            "exact_accuracy": 1.0,
+            "mae_original_units": 0.0,
+            "queries": 1044,
+            "revoked_queries": 0,
+            "revoked_refusals": 0,
+            "rmse_original_units": 0.0
+          },
+          "old_retention": null,
+          "parameter_metrics": {
+            "coverage": 1.0,
+            "exact_accuracy": 0.05363984674329502,
+            "mae_original_units": 0.047078544061302685,
+            "queries": 1044,
+            "revoked_queries": 0,
+            "revoked_refusals": 0,
+            "rmse_original_units": 0.06042553442649862
+          },
+          "stage": "initial"
+        },
+        {
+          "lossless_metrics": {
+            "coverage": 1.0,
+            "exact_accuracy": 1.0,
+            "mae_original_units": 0.0,
+            "queries": 1752,
+            "revoked_queries": 0,
+            "revoked_refusals": 0,
+            "rmse_original_units": 0.0
+          },
+          "old_retention": {
+            "lossless_old_retention": 1.0,
+            "parameter_old_exact_after": 0.07088122605363985,
+            "parameter_old_exact_before": 0.05363984674329502,
+            "parameter_old_mae_after": 0.04807471264367816,
+            "parameter_old_mae_before": 0.047078544061302685,
+            "unmodified_valid_old_coordinates": 1044
+          },
+          "parameter_metrics": {
+            "coverage": 1.0,
+            "exact_accuracy": 0.0656392694063927,
+            "mae_original_units": 0.049885844748858446,
+            "queries": 1752,
+            "revoked_queries": 0,
+            "revoked_refusals": 0,
+            "rmse_original_units": 0.06320492871365832
+          },
+          "stage": "append"
+        },
+        {
+          "lossless_metrics": {
+            "coverage": 1.0,
+            "exact_accuracy": 1.0,
+            "mae_original_units": 0.0,
+            "queries": 1752,
+            "revoked_queries": 0,
+            "revoked_refusals": 0,
+            "rmse_original_units": 0.0
+          },
+          "old_retention": {
+            "lossless_old_retention": 1.0,
+            "parameter_old_exact_after": 0.06594036697247706,
+            "parameter_old_exact_before": 0.06594036697247706,
+            "parameter_old_mae_after": 0.0686697247706422,
+            "parameter_old_mae_before": 0.04990825688073395,
+            "unmodified_valid_old_coordinates": 1744
+          },
+          "parameter_metrics": {
+            "coverage": 1.0,
+            "exact_accuracy": 0.0656392694063927,
+            "mae_original_units": 0.07149543378995434,
+            "queries": 1752,
+            "revoked_queries": 0,
+            "revoked_refusals": 0,
+            "rmse_original_units": 0.12173779743448998
+          },
+          "stage": "correct"
+        },
+        {
+          "lossless_metrics": {
+            "coverage": 1.0,
+            "exact_accuracy": 1.0,
+            "mae_original_units": 0.0,
+            "queries": 1744,
+            "revoked_queries": 8,
+            "revoked_refusals": 8,
+            "rmse_original_units": 0.0
+          },
+          "old_retention": {
+            "lossless_old_retention": 1.0,
+            "parameter_old_exact_after": 0.06594036697247706,
+            "parameter_old_exact_before": 0.06536697247706422,
+            "parameter_old_mae_after": 0.0714105504587156,
+            "parameter_old_mae_before": 0.07146215596330276,
+            "unmodified_valid_old_coordinates": 1744
+          },
+          "parameter_metrics": {
+            "coverage": 1.0,
+            "exact_accuracy": 0.06594036697247706,
+            "mae_original_units": 0.0714105504587156,
+            "queries": 1744,
+            "revoked_queries": 8,
+            "revoked_refusals": 8,
+            "rmse_original_units": 0.12187139785314231
+          },
+          "stage": "withdraw"
+        },
+        {
+          "lossless_metrics": {
+            "coverage": 1.0,
+            "exact_accuracy": 1.0,
+            "mae_original_units": 0.0,
+            "queries": 1744,
+            "revoked_queries": 8,
+            "revoked_refusals": 8,
+            "rmse_original_units": 0.0
+          },
+          "old_retention": {
+            "lossless_old_retention": 1.0,
+            "parameter_old_exact_after": 0.06594036697247706,
+            "parameter_old_exact_before": 0.06594036697247706,
+            "parameter_old_mae_after": 0.0714105504587156,
+            "parameter_old_mae_before": 0.0714105504587156,
+            "unmodified_valid_old_coordinates": 1744
+          },
+          "parameter_metrics": {
+            "coverage": 1.0,
+            "exact_accuracy": 0.06594036697247706,
+            "mae_original_units": 0.0714105504587156,
+            "queries": 1744,
+            "revoked_queries": 8,
+            "revoked_refusals": 8,
+            "rmse_original_units": 0.12187139785314231
+          },
+          "stage": "clean_replay"
+        }
+      ]
+    },
+    {
+      "domain": "sunspots",
+      "faults_recorded_rejected": 5,
+      "fresh_parameter_and_codec_parity": true,
+      "lossless_all_queries_exact": true,
+      "maximum_old_exact_regression": 0.0012062726176115804,
+      "parameter_retention_gate": true,
+      "raw_deleted_old_value_matches": 0,
+      "seed": 313,
+      "stages": [
+        {
+          "lossless_metrics": {
+            "coverage": 1.0,
+            "exact_accuracy": 1.0,
+            "mae_original_units": 0.0,
+            "queries": 1992,
+            "revoked_queries": 0,
+            "revoked_refusals": 0,
+            "rmse_original_units": 0.0
+          },
+          "old_retention": null,
+          "parameter_metrics": {
+            "coverage": 1.0,
+            "exact_accuracy": 0.006024096385542169,
+            "mae_original_units": 11.337449799196786,
+            "queries": 1992,
+            "revoked_queries": 0,
+            "revoked_refusals": 0,
+            "rmse_original_units": 15.913851913692161
+          },
+          "stage": "initial"
+        },
+        {
+          "lossless_metrics": {
+            "coverage": 1.0,
+            "exact_accuracy": 1.0,
+            "mae_original_units": 0.0,
+            "queries": 3324,
+            "revoked_queries": 0,
+            "revoked_refusals": 0,
+            "rmse_original_units": 0.0
+          },
+          "old_retention": {
+            "lossless_old_retention": 1.0,
+            "parameter_old_exact_after": 0.006024096385542169,
+            "parameter_old_exact_before": 0.006024096385542169,
+            "parameter_old_mae_after": 11.41285140562249,
+            "parameter_old_mae_before": 11.337449799196786,
+            "unmodified_valid_old_coordinates": 1992
+          },
+          "parameter_metrics": {
+            "coverage": 1.0,
+            "exact_accuracy": 0.005415162454873646,
+            "mae_original_units": 11.316546329723225,
+            "queries": 3324,
+            "revoked_queries": 0,
+            "revoked_refusals": 0,
+            "rmse_original_units": 15.903640343433485
+          },
+          "stage": "append"
+        },
+        {
+          "lossless_metrics": {
+            "coverage": 1.0,
+            "exact_accuracy": 1.0,
+            "mae_original_units": 0.0,
+            "queries": 3324,
+            "revoked_queries": 0,
+            "revoked_refusals": 0,
+            "rmse_original_units": 0.0
+          },
+          "old_retention": {
+            "lossless_old_retention": 1.0,
+            "parameter_old_exact_after": 0.004221954161640531,
+            "parameter_old_exact_before": 0.005428226779252111,
+            "parameter_old_mae_after": 11.319481302774427,
+            "parameter_old_mae_before": 11.320446320868516,
+            "unmodified_valid_old_coordinates": 3316
+          },
+          "parameter_metrics": {
+            "coverage": 1.0,
+            "exact_accuracy": 0.00421179302045728,
+            "mae_original_units": 11.316275571600482,
+            "queries": 3324,
+            "revoked_queries": 0,
+            "revoked_refusals": 0,
+            "rmse_original_units": 15.902504078941345
+          },
+          "stage": "correct"
+        },
+        {
+          "lossless_metrics": {
+            "coverage": 1.0,
+            "exact_accuracy": 1.0,
+            "mae_original_units": 0.0,
+            "queries": 3316,
+            "revoked_queries": 8,
+            "revoked_refusals": 8,
+            "rmse_original_units": 0.0
+          },
+          "old_retention": {
+            "lossless_old_retention": 1.0,
+            "parameter_old_exact_after": 0.005126658624849216,
+            "parameter_old_exact_before": 0.004221954161640531,
+            "parameter_old_mae_after": 11.247617611580218,
+            "parameter_old_mae_before": 11.280669481302775,
+            "unmodified_valid_old_coordinates": 3316
+          },
+          "parameter_metrics": {
+            "coverage": 1.0,
+            "exact_accuracy": 0.005126658624849216,
+            "mae_original_units": 11.247617611580218,
+            "queries": 3316,
+            "revoked_queries": 8,
+            "revoked_refusals": 8,
+            "rmse_original_units": 15.787648723974206
+          },
+          "stage": "withdraw"
+        },
+        {
+          "lossless_metrics": {
+            "coverage": 1.0,
+            "exact_accuracy": 1.0,
+            "mae_original_units": 0.0,
+            "queries": 3316,
+            "revoked_queries": 8,
+            "revoked_refusals": 8,
+            "rmse_original_units": 0.0
+          },
+          "old_retention": {
+            "lossless_old_retention": 1.0,
+            "parameter_old_exact_after": 0.005126658624849216,
+            "parameter_old_exact_before": 0.005126658624849216,
+            "parameter_old_mae_after": 11.247617611580218,
+            "parameter_old_mae_before": 11.247617611580218,
+            "unmodified_valid_old_coordinates": 3316
+          },
+          "parameter_metrics": {
+            "coverage": 1.0,
+            "exact_accuracy": 0.005126658624849216,
+            "mae_original_units": 11.247617611580218,
+            "queries": 3316,
+            "revoked_queries": 8,
+            "revoked_refusals": 8,
+            "rmse_original_units": 15.787648723974206
+          },
+          "stage": "clean_replay"
+        }
+      ]
+    },
+    {
+      "domain": "co2",
+      "faults_recorded_rejected": 5,
+      "fresh_parameter_and_codec_parity": true,
+      "lossless_all_queries_exact": true,
+      "maximum_old_exact_regression": 0.0125,
+      "parameter_retention_gate": true,
+      "raw_deleted_old_value_matches": 0,
+      "seed": 317,
+      "stages": [
+        {
+          "lossless_metrics": {
+            "coverage": 1.0,
+            "exact_accuracy": 1.0,
+            "mae_original_units": 0.0,
+            "queries": 480,
+            "revoked_queries": 0,
+            "revoked_refusals": 0,
+            "rmse_original_units": 0.0
+          },
+          "old_retention": null,
+          "parameter_metrics": {
+            "coverage": 1.0,
+            "exact_accuracy": 0.029166666666666667,
+            "mae_original_units": 0.12702083333333333,
+            "queries": 480,
+            "revoked_queries": 0,
+            "revoked_refusals": 0,
+            "rmse_original_units": 0.16000195311307924
+          },
+          "stage": "initial"
+        },
+        {
+          "lossless_metrics": {
+            "coverage": 1.0,
+            "exact_accuracy": 1.0,
+            "mae_original_units": 0.0,
+            "queries": 804,
+            "revoked_queries": 0,
+            "revoked_refusals": 0,
+            "rmse_original_units": 0.0
+          },
+          "old_retention": {
+            "lossless_old_retention": 1.0,
+            "parameter_old_exact_after": 0.016666666666666666,
+            "parameter_old_exact_before": 0.029166666666666667,
+            "parameter_old_mae_after": 0.1341875,
+            "parameter_old_mae_before": 0.12702083333333333,
+            "unmodified_valid_old_coordinates": 480
+          },
+          "parameter_metrics": {
+            "coverage": 1.0,
+            "exact_accuracy": 0.026119402985074626,
+            "mae_original_units": 0.13757462686567165,
+            "queries": 804,
+            "revoked_queries": 0,
+            "revoked_refusals": 0,
+            "rmse_original_units": 0.17253271374853188
+          },
+          "stage": "append"
+        },
+        {
+          "lossless_metrics": {
+            "coverage": 1.0,
+            "exact_accuracy": 1.0,
+            "mae_original_units": 0.0,
+            "queries": 804,
+            "revoked_queries": 0,
+            "revoked_refusals": 0,
+            "rmse_original_units": 0.0
+          },
+          "old_retention": {
+            "lossless_old_retention": 1.0,
+            "parameter_old_exact_after": 0.022613065326633167,
+            "parameter_old_exact_before": 0.026381909547738693,
+            "parameter_old_mae_after": 0.1691959798994975,
+            "parameter_old_mae_before": 0.1374246231155779,
+            "unmodified_valid_old_coordinates": 796
+          },
+          "parameter_metrics": {
+            "coverage": 1.0,
+            "exact_accuracy": 0.022388059701492536,
+            "mae_original_units": 0.17689054726368159,
+            "queries": 804,
+            "revoked_queries": 0,
+            "revoked_refusals": 0,
+            "rmse_original_units": 0.2564055012953649
+          },
+          "stage": "correct"
+        },
+        {
+          "lossless_metrics": {
+            "coverage": 1.0,
+            "exact_accuracy": 1.0,
+            "mae_original_units": 0.0,
+            "queries": 796,
+            "revoked_queries": 8,
+            "revoked_refusals": 8,
+            "rmse_original_units": 0.0
+          },
+          "old_retention": {
+            "lossless_old_retention": 1.0,
+            "parameter_old_exact_after": 0.07914572864321608,
+            "parameter_old_exact_before": 0.022613065326633167,
+            "parameter_old_mae_after": 0.2652010050251256,
+            "parameter_old_mae_before": 0.17678391959798995,
+            "unmodified_valid_old_coordinates": 796
+          },
+          "parameter_metrics": {
+            "coverage": 1.0,
+            "exact_accuracy": 0.07914572864321608,
+            "mae_original_units": 0.2652010050251256,
+            "queries": 796,
+            "revoked_queries": 8,
+            "revoked_refusals": 8,
+            "rmse_original_units": 0.4200433693808343
+          },
+          "stage": "withdraw"
+        },
+        {
+          "lossless_metrics": {
+            "coverage": 1.0,
+            "exact_accuracy": 1.0,
+            "mae_original_units": 0.0,
+            "queries": 796,
+            "revoked_queries": 8,
+            "revoked_refusals": 8,
+            "rmse_original_units": 0.0
+          },
+          "old_retention": {
+            "lossless_old_retention": 1.0,
+            "parameter_old_exact_after": 0.07914572864321608,
+            "parameter_old_exact_before": 0.07914572864321608,
+            "parameter_old_mae_after": 0.2652010050251256,
+            "parameter_old_mae_before": 0.2652010050251256,
+            "unmodified_valid_old_coordinates": 796
+          },
+          "parameter_metrics": {
+            "coverage": 1.0,
+            "exact_accuracy": 0.07914572864321608,
+            "mae_original_units": 0.2652010050251256,
+            "queries": 796,
+            "revoked_queries": 8,
+            "revoked_refusals": 8,
+            "rmse_original_units": 0.4200433693808343
+          },
+          "stage": "clean_replay"
+        }
+      ]
+    },
+    {
+      "domain": "temperature",
+      "faults_recorded_rejected": 5,
+      "fresh_parameter_and_codec_parity": true,
+      "lossless_all_queries_exact": true,
+      "maximum_old_exact_regression": 0.0045871559633027525,
+      "parameter_retention_gate": true,
+      "raw_deleted_old_value_matches": 1,
+      "seed": 317,
+      "stages": [
+        {
+          "lossless_metrics": {
+            "coverage": 1.0,
+            "exact_accuracy": 1.0,
+            "mae_original_units": 0.0,
+            "queries": 1044,
+            "revoked_queries": 0,
+            "revoked_refusals": 0,
+            "rmse_original_units": 0.0
+          },
+          "old_retention": null,
+          "parameter_metrics": {
+            "coverage": 1.0,
+            "exact_accuracy": 0.05363984674329502,
+            "mae_original_units": 0.047078544061302685,
+            "queries": 1044,
+            "revoked_queries": 0,
+            "revoked_refusals": 0,
+            "rmse_original_units": 0.06042553442649862
+          },
+          "stage": "initial"
+        },
+        {
+          "lossless_metrics": {
+            "coverage": 1.0,
+            "exact_accuracy": 1.0,
+            "mae_original_units": 0.0,
+            "queries": 1752,
+            "revoked_queries": 0,
+            "revoked_refusals": 0,
+            "rmse_original_units": 0.0
+          },
+          "old_retention": {
+            "lossless_old_retention": 1.0,
+            "parameter_old_exact_after": 0.07088122605363985,
+            "parameter_old_exact_before": 0.05363984674329502,
+            "parameter_old_mae_after": 0.04807471264367816,
+            "parameter_old_mae_before": 0.047078544061302685,
+            "unmodified_valid_old_coordinates": 1044
+          },
+          "parameter_metrics": {
+            "coverage": 1.0,
+            "exact_accuracy": 0.0656392694063927,
+            "mae_original_units": 0.049885844748858446,
+            "queries": 1752,
+            "revoked_queries": 0,
+            "revoked_refusals": 0,
+            "rmse_original_units": 0.06320492871365832
+          },
+          "stage": "append"
+        },
+        {
+          "lossless_metrics": {
+            "coverage": 1.0,
+            "exact_accuracy": 1.0,
+            "mae_original_units": 0.0,
+            "queries": 1752,
+            "revoked_queries": 0,
+            "revoked_refusals": 0,
+            "rmse_original_units": 0.0
+          },
+          "old_retention": {
+            "lossless_old_retention": 1.0,
+            "parameter_old_exact_after": 0.09919724770642202,
+            "parameter_old_exact_before": 0.06479357798165138,
+            "parameter_old_mae_after": 0.06486811926605504,
+            "parameter_old_mae_before": 0.04981651376146789,
+            "unmodified_valid_old_coordinates": 1744
+          },
+          "parameter_metrics": {
+            "coverage": 1.0,
+            "exact_accuracy": 0.09874429223744292,
+            "mae_original_units": 0.06615867579908676,
+            "queries": 1752,
+            "revoked_queries": 0,
+            "revoked_refusals": 0,
+            "rmse_original_units": 0.10412250205306225
+          },
+          "stage": "correct"
+        },
+        {
+          "lossless_metrics": {
+            "coverage": 1.0,
+            "exact_accuracy": 1.0,
+            "mae_original_units": 0.0,
+            "queries": 1744,
+            "revoked_queries": 8,
+            "revoked_refusals": 8,
+            "rmse_original_units": 0.0
+          },
+          "old_retention": {
+            "lossless_old_retention": 1.0,
+            "parameter_old_exact_after": 0.09403669724770643,
+            "parameter_old_exact_before": 0.09862385321100918,
+            "parameter_old_mae_after": 0.06649655963302753,
+            "parameter_old_mae_before": 0.06634747706422019,
+            "unmodified_valid_old_coordinates": 1744
+          },
+          "parameter_metrics": {
+            "coverage": 1.0,
+            "exact_accuracy": 0.09403669724770643,
+            "mae_original_units": 0.06649655963302753,
+            "queries": 1744,
+            "revoked_queries": 8,
+            "revoked_refusals": 8,
+            "rmse_original_units": 0.10437148060319329
+          },
+          "stage": "withdraw"
+        },
+        {
+          "lossless_metrics": {
+            "coverage": 1.0,
+            "exact_accuracy": 1.0,
+            "mae_original_units": 0.0,
+            "queries": 1744,
+            "revoked_queries": 8,
+            "revoked_refusals": 8,
+            "rmse_original_units": 0.0
+          },
+          "old_retention": {
+            "lossless_old_retention": 1.0,
+            "parameter_old_exact_after": 0.09403669724770643,
+            "parameter_old_exact_before": 0.09403669724770643,
+            "parameter_old_mae_after": 0.06649655963302753,
+            "parameter_old_mae_before": 0.06649655963302753,
+            "unmodified_valid_old_coordinates": 1744
+          },
+          "parameter_metrics": {
+            "coverage": 1.0,
+            "exact_accuracy": 0.09403669724770643,
+            "mae_original_units": 0.06649655963302753,
+            "queries": 1744,
+            "revoked_queries": 8,
+            "revoked_refusals": 8,
+            "rmse_original_units": 0.10437148060319329
+          },
+          "stage": "clean_replay"
+        }
+      ]
+    },
+    {
+      "domain": "sunspots",
+      "faults_recorded_rejected": 5,
+      "fresh_parameter_and_codec_parity": true,
+      "lossless_all_queries_exact": true,
+      "maximum_old_exact_regression": 0.0009047044632086855,
+      "parameter_retention_gate": true,
+      "raw_deleted_old_value_matches": 0,
+      "seed": 317,
+      "stages": [
+        {
+          "lossless_metrics": {
+            "coverage": 1.0,
+            "exact_accuracy": 1.0,
+            "mae_original_units": 0.0,
+            "queries": 1992,
+            "revoked_queries": 0,
+            "revoked_refusals": 0,
+            "rmse_original_units": 0.0
+          },
+          "old_retention": null,
+          "parameter_metrics": {
+            "coverage": 1.0,
+            "exact_accuracy": 0.006024096385542169,
+            "mae_original_units": 11.337449799196786,
+            "queries": 1992,
+            "revoked_queries": 0,
+            "revoked_refusals": 0,
+            "rmse_original_units": 15.913851913692161
+          },
+          "stage": "initial"
+        },
+        {
+          "lossless_metrics": {
+            "coverage": 1.0,
+            "exact_accuracy": 1.0,
+            "mae_original_units": 0.0,
+            "queries": 3324,
+            "revoked_queries": 0,
+            "revoked_refusals": 0,
+            "rmse_original_units": 0.0
+          },
+          "old_retention": {
+            "lossless_old_retention": 1.0,
+            "parameter_old_exact_after": 0.006024096385542169,
+            "parameter_old_exact_before": 0.006024096385542169,
+            "parameter_old_mae_after": 11.41285140562249,
+            "parameter_old_mae_before": 11.337449799196786,
+            "unmodified_valid_old_coordinates": 1992
+          },
+          "parameter_metrics": {
+            "coverage": 1.0,
+            "exact_accuracy": 0.005415162454873646,
+            "mae_original_units": 11.316546329723225,
+            "queries": 3324,
+            "revoked_queries": 0,
+            "revoked_refusals": 0,
+            "rmse_original_units": 15.903640343433485
+          },
+          "stage": "append"
+        },
+        {
+          "lossless_metrics": {
+            "coverage": 1.0,
+            "exact_accuracy": 1.0,
+            "mae_original_units": 0.0,
+            "queries": 3324,
+            "revoked_queries": 0,
+            "revoked_refusals": 0,
+            "rmse_original_units": 0.0
+          },
+          "old_retention": {
+            "lossless_old_retention": 1.0,
+            "parameter_old_exact_after": 0.004523522316043426,
+            "parameter_old_exact_before": 0.005428226779252111,
+            "parameter_old_mae_after": 11.32092882991556,
+            "parameter_old_mae_before": 11.319903498190591,
+            "unmodified_valid_old_coordinates": 3316
+          },
+          "parameter_metrics": {
+            "coverage": 1.0,
+            "exact_accuracy": 0.004512635379061372,
+            "mae_original_units": 11.316636582430807,
+            "queries": 3324,
+            "revoked_queries": 0,
+            "revoked_refusals": 0,
+            "rmse_original_units": 15.90507481698262
+          },
+          "stage": "correct"
+        },
+        {
+          "lossless_metrics": {
+            "coverage": 1.0,
+            "exact_accuracy": 1.0,
+            "mae_original_units": 0.0,
+            "queries": 3316,
+            "revoked_queries": 8,
+            "revoked_refusals": 8,
+            "rmse_original_units": 0.0
+          },
+          "old_retention": {
+            "lossless_old_retention": 1.0,
+            "parameter_old_exact_after": 0.0036188178528347406,
+            "parameter_old_exact_before": 0.004523522316043426,
+            "parameter_old_mae_after": 11.313449939686368,
+            "parameter_old_mae_before": 11.321471652593486,
+            "unmodified_valid_old_coordinates": 3316
+          },
+          "parameter_metrics": {
+            "coverage": 1.0,
+            "exact_accuracy": 0.0036188178528347406,
+            "mae_original_units": 11.313449939686368,
+            "queries": 3316,
+            "revoked_queries": 8,
+            "revoked_refusals": 8,
+            "rmse_original_units": 15.892695061975209
+          },
+          "stage": "withdraw"
+        },
+        {
+          "lossless_metrics": {
+            "coverage": 1.0,
+            "exact_accuracy": 1.0,
+            "mae_original_units": 0.0,
+            "queries": 3316,
+            "revoked_queries": 8,
+            "revoked_refusals": 8,
+            "rmse_original_units": 0.0
+          },
+          "old_retention": {
+            "lossless_old_retention": 1.0,
+            "parameter_old_exact_after": 0.0036188178528347406,
+            "parameter_old_exact_before": 0.0036188178528347406,
+            "parameter_old_mae_after": 11.313449939686368,
+            "parameter_old_mae_before": 11.313449939686368,
+            "unmodified_valid_old_coordinates": 3316
+          },
+          "parameter_metrics": {
+            "coverage": 1.0,
+            "exact_accuracy": 0.0036188178528347406,
+            "mae_original_units": 11.313449939686368,
+            "queries": 3316,
+            "revoked_queries": 8,
+            "revoked_refusals": 8,
+            "rmse_original_units": 15.892695061975209
+          },
+          "stage": "clean_replay"
+        }
+      ]
+    },
+    {
+      "domain": "co2",
+      "faults_recorded_rejected": 5,
+      "fresh_parameter_and_codec_parity": true,
+      "lossless_all_queries_exact": true,
+      "maximum_old_exact_regression": 0.0125,
+      "parameter_retention_gate": true,
+      "raw_deleted_old_value_matches": 0,
+      "seed": 331,
+      "stages": [
+        {
+          "lossless_metrics": {
+            "coverage": 1.0,
+            "exact_accuracy": 1.0,
+            "mae_original_units": 0.0,
+            "queries": 480,
+            "revoked_queries": 0,
+            "revoked_refusals": 0,
+            "rmse_original_units": 0.0
+          },
+          "old_retention": null,
+          "parameter_metrics": {
+            "coverage": 1.0,
+            "exact_accuracy": 0.029166666666666667,
+            "mae_original_units": 0.12702083333333333,
+            "queries": 480,
+            "revoked_queries": 0,
+            "revoked_refusals": 0,
+            "rmse_original_units": 0.16000195311307924
+          },
+          "stage": "initial"
+        },
+        {
+          "lossless_metrics": {
+            "coverage": 1.0,
+            "exact_accuracy": 1.0,
+            "mae_original_units": 0.0,
+            "queries": 804,
+            "revoked_queries": 0,
+            "revoked_refusals": 0,
+            "rmse_original_units": 0.0
+          },
+          "old_retention": {
+            "lossless_old_retention": 1.0,
+            "parameter_old_exact_after": 0.016666666666666666,
+            "parameter_old_exact_before": 0.029166666666666667,
+            "parameter_old_mae_after": 0.1341875,
+            "parameter_old_mae_before": 0.12702083333333333,
+            "unmodified_valid_old_coordinates": 480
+          },
+          "parameter_metrics": {
+            "coverage": 1.0,
+            "exact_accuracy": 0.026119402985074626,
+            "mae_original_units": 0.13757462686567165,
+            "queries": 804,
+            "revoked_queries": 0,
+            "revoked_refusals": 0,
+            "rmse_original_units": 0.17253271374853188
+          },
+          "stage": "append"
+        },
+        {
+          "lossless_metrics": {
+            "coverage": 1.0,
+            "exact_accuracy": 1.0,
+            "mae_original_units": 0.0,
+            "queries": 804,
+            "revoked_queries": 0,
+            "revoked_refusals": 0,
+            "rmse_original_units": 0.0
+          },
+          "old_retention": {
+            "lossless_old_retention": 1.0,
+            "parameter_old_exact_after": 0.020100502512562814,
+            "parameter_old_exact_before": 0.026381909547738693,
+            "parameter_old_mae_after": 0.1684547738693467,
+            "parameter_old_mae_before": 0.13714824120603017,
+            "unmodified_valid_old_coordinates": 796
+          },
+          "parameter_metrics": {
+            "coverage": 1.0,
+            "exact_accuracy": 0.01990049751243781,
+            "mae_original_units": 0.17629353233830844,
+            "queries": 804,
+            "revoked_queries": 0,
+            "revoked_refusals": 0,
+            "rmse_original_units": 0.24850798559698767
+          },
+          "stage": "correct"
+        },
+        {
+          "lossless_metrics": {
+            "coverage": 1.0,
+            "exact_accuracy": 1.0,
+            "mae_original_units": 0.0,
+            "queries": 796,
+            "revoked_queries": 8,
+            "revoked_refusals": 8,
+            "rmse_original_units": 0.0
+          },
+          "old_retention": {
+            "lossless_old_retention": 1.0,
+            "parameter_old_exact_after": 0.08668341708542714,
+            "parameter_old_exact_before": 0.020100502512562814,
+            "parameter_old_mae_after": 0.1932286432160804,
+            "parameter_old_mae_before": 0.17641959798994974,
+            "unmodified_valid_old_coordinates": 796
+          },
+          "parameter_metrics": {
+            "coverage": 1.0,
+            "exact_accuracy": 0.08668341708542714,
+            "mae_original_units": 0.1932286432160804,
+            "queries": 796,
+            "revoked_queries": 8,
+            "revoked_refusals": 8,
+            "rmse_original_units": 0.32704075169056784
+          },
+          "stage": "withdraw"
+        },
+        {
+          "lossless_metrics": {
+            "coverage": 1.0,
+            "exact_accuracy": 1.0,
+            "mae_original_units": 0.0,
+            "queries": 796,
+            "revoked_queries": 8,
+            "revoked_refusals": 8,
+            "rmse_original_units": 0.0
+          },
+          "old_retention": {
+            "lossless_old_retention": 1.0,
+            "parameter_old_exact_after": 0.08668341708542714,
+            "parameter_old_exact_before": 0.08668341708542714,
+            "parameter_old_mae_after": 0.1932286432160804,
+            "parameter_old_mae_before": 0.1932286432160804,
+            "unmodified_valid_old_coordinates": 796
+          },
+          "parameter_metrics": {
+            "coverage": 1.0,
+            "exact_accuracy": 0.08668341708542714,
+            "mae_original_units": 0.1932286432160804,
+            "queries": 796,
+            "revoked_queries": 8,
+            "revoked_refusals": 8,
+            "rmse_original_units": 0.32704075169056784
+          },
+          "stage": "clean_replay"
+        }
+      ]
+    },
+    {
+      "domain": "temperature",
+      "faults_recorded_rejected": 5,
+      "fresh_parameter_and_codec_parity": true,
+      "lossless_all_queries_exact": true,
+      "maximum_old_exact_regression": 0.0005733944954128406,
+      "parameter_retention_gate": true,
+      "raw_deleted_old_value_matches": 0,
+      "seed": 331,
+      "stages": [
+        {
+          "lossless_metrics": {
+            "coverage": 1.0,
+            "exact_accuracy": 1.0,
+            "mae_original_units": 0.0,
+            "queries": 1044,
+            "revoked_queries": 0,
+            "revoked_refusals": 0,
+            "rmse_original_units": 0.0
+          },
+          "old_retention": null,
+          "parameter_metrics": {
+            "coverage": 1.0,
+            "exact_accuracy": 0.05363984674329502,
+            "mae_original_units": 0.047078544061302685,
+            "queries": 1044,
+            "revoked_queries": 0,
+            "revoked_refusals": 0,
+            "rmse_original_units": 0.06042553442649862
+          },
+          "stage": "initial"
+        },
+        {
+          "lossless_metrics": {
+            "coverage": 1.0,
+            "exact_accuracy": 1.0,
+            "mae_original_units": 0.0,
+            "queries": 1752,
+            "revoked_queries": 0,
+            "revoked_refusals": 0,
+            "rmse_original_units": 0.0
+          },
+          "old_retention": {
+            "lossless_old_retention": 1.0,
+            "parameter_old_exact_after": 0.07088122605363985,
+            "parameter_old_exact_before": 0.05363984674329502,
+            "parameter_old_mae_after": 0.04807471264367816,
+            "parameter_old_mae_before": 0.047078544061302685,
+            "unmodified_valid_old_coordinates": 1044
+          },
+          "parameter_metrics": {
+            "coverage": 1.0,
+            "exact_accuracy": 0.0656392694063927,
+            "mae_original_units": 0.049885844748858446,
+            "queries": 1752,
+            "revoked_queries": 0,
+            "revoked_refusals": 0,
+            "rmse_original_units": 0.06320492871365832
+          },
+          "stage": "append"
+        },
+        {
+          "lossless_metrics": {
+            "coverage": 1.0,
+            "exact_accuracy": 1.0,
+            "mae_original_units": 0.0,
+            "queries": 1752,
+            "revoked_queries": 0,
+            "revoked_refusals": 0,
+            "rmse_original_units": 0.0
+          },
+          "old_retention": {
+            "lossless_old_retention": 1.0,
+            "parameter_old_exact_after": 0.08830275229357798,
+            "parameter_old_exact_before": 0.06536697247706422,
+            "parameter_old_mae_after": 0.0616743119266055,
+            "parameter_old_mae_before": 0.04992545871559633,
+            "unmodified_valid_old_coordinates": 1744
+          },
+          "parameter_metrics": {
+            "coverage": 1.0,
+            "exact_accuracy": 0.08789954337899543,
+            "mae_original_units": 0.06199771689497717,
+            "queries": 1752,
+            "revoked_queries": 0,
+            "revoked_refusals": 0,
+            "rmse_original_units": 0.08799387691441504
+          },
+          "stage": "correct"
+        },
+        {
+          "lossless_metrics": {
+            "coverage": 1.0,
+            "exact_accuracy": 1.0,
+            "mae_original_units": 0.0,
+            "queries": 1744,
+            "revoked_queries": 8,
+            "revoked_refusals": 8,
+            "rmse_original_units": 0.0
+          },
+          "old_retention": {
+            "lossless_old_retention": 1.0,
+            "parameter_old_exact_after": 0.08772935779816514,
+            "parameter_old_exact_before": 0.08830275229357798,
+            "parameter_old_mae_after": 0.06181192660550459,
+            "parameter_old_mae_before": 0.06202981651376147,
+            "unmodified_valid_old_coordinates": 1744
+          },
+          "parameter_metrics": {
+            "coverage": 1.0,
+            "exact_accuracy": 0.08772935779816514,
+            "mae_original_units": 0.06181192660550459,
+            "queries": 1744,
+            "revoked_queries": 8,
+            "revoked_refusals": 8,
+            "rmse_original_units": 0.08798456912248719
+          },
+          "stage": "withdraw"
+        },
+        {
+          "lossless_metrics": {
+            "coverage": 1.0,
+            "exact_accuracy": 1.0,
+            "mae_original_units": 0.0,
+            "queries": 1744,
+            "revoked_queries": 8,
+            "revoked_refusals": 8,
+            "rmse_original_units": 0.0
+          },
+          "old_retention": {
+            "lossless_old_retention": 1.0,
+            "parameter_old_exact_after": 0.08772935779816514,
+            "parameter_old_exact_before": 0.08772935779816514,
+            "parameter_old_mae_after": 0.06181192660550459,
+            "parameter_old_mae_before": 0.06181192660550459,
+            "unmodified_valid_old_coordinates": 1744
+          },
+          "parameter_metrics": {
+            "coverage": 1.0,
+            "exact_accuracy": 0.08772935779816514,
+            "mae_original_units": 0.06181192660550459,
+            "queries": 1744,
+            "revoked_queries": 8,
+            "revoked_refusals": 8,
+            "rmse_original_units": 0.08798456912248719
+          },
+          "stage": "clean_replay"
+        }
+      ]
+    },
+    {
+      "domain": "sunspots",
+      "faults_recorded_rejected": 5,
+      "fresh_parameter_and_codec_parity": true,
+      "lossless_all_queries_exact": true,
+      "maximum_old_exact_regression": 0.0018094089264173705,
+      "parameter_retention_gate": true,
+      "raw_deleted_old_value_matches": 0,
+      "seed": 331,
+      "stages": [
+        {
+          "lossless_metrics": {
+            "coverage": 1.0,
+            "exact_accuracy": 1.0,
+            "mae_original_units": 0.0,
+            "queries": 1992,
+            "revoked_queries": 0,
+            "revoked_refusals": 0,
+            "rmse_original_units": 0.0
+          },
+          "old_retention": null,
+          "parameter_metrics": {
+            "coverage": 1.0,
+            "exact_accuracy": 0.006024096385542169,
+            "mae_original_units": 11.337449799196786,
+            "queries": 1992,
+            "revoked_queries": 0,
+            "revoked_refusals": 0,
+            "rmse_original_units": 15.913851913692161
+          },
+          "stage": "initial"
+        },
+        {
+          "lossless_metrics": {
+            "coverage": 1.0,
+            "exact_accuracy": 1.0,
+            "mae_original_units": 0.0,
+            "queries": 3324,
+            "revoked_queries": 0,
+            "revoked_refusals": 0,
+            "rmse_original_units": 0.0
+          },
+          "old_retention": {
+            "lossless_old_retention": 1.0,
+            "parameter_old_exact_after": 0.006024096385542169,
+            "parameter_old_exact_before": 0.006024096385542169,
+            "parameter_old_mae_after": 11.41285140562249,
+            "parameter_old_mae_before": 11.337449799196786,
+            "unmodified_valid_old_coordinates": 1992
+          },
+          "parameter_metrics": {
+            "coverage": 1.0,
+            "exact_accuracy": 0.005415162454873646,
+            "mae_original_units": 11.316546329723225,
+            "queries": 3324,
+            "revoked_queries": 0,
+            "revoked_refusals": 0,
+            "rmse_original_units": 15.903640343433485
+          },
+          "stage": "append"
+        },
+        {
+          "lossless_metrics": {
+            "coverage": 1.0,
+            "exact_accuracy": 1.0,
+            "mae_original_units": 0.0,
+            "queries": 3324,
+            "revoked_queries": 0,
+            "revoked_refusals": 0,
+            "rmse_original_units": 0.0
+          },
+          "old_retention": {
+            "lossless_old_retention": 1.0,
+            "parameter_old_exact_after": 0.0036188178528347406,
+            "parameter_old_exact_before": 0.005428226779252111,
+            "parameter_old_mae_after": 11.328437876960193,
+            "parameter_old_mae_before": 11.326658624849216,
+            "unmodified_valid_old_coordinates": 3316
+          },
+          "parameter_metrics": {
+            "coverage": 1.0,
+            "exact_accuracy": 0.0036101083032490976,
+            "mae_original_units": 11.320457280385078,
+            "queries": 3324,
+            "revoked_queries": 0,
+            "revoked_refusals": 0,
+            "rmse_original_units": 15.906149996198462
+          },
+          "stage": "correct"
+        },
+        {
+          "lossless_metrics": {
+            "coverage": 1.0,
+            "exact_accuracy": 1.0,
+            "mae_original_units": 0.0,
+            "queries": 3316,
+            "revoked_queries": 8,
+            "revoked_refusals": 8,
+            "rmse_original_units": 0.0
+          },
+          "old_retention": {
+            "lossless_old_retention": 1.0,
+            "parameter_old_exact_after": 0.004523522316043426,
+            "parameter_old_exact_before": 0.0036188178528347406,
+            "parameter_old_mae_after": 11.32074788902292,
+            "parameter_old_mae_before": 11.321501809408925,
+            "unmodified_valid_old_coordinates": 3316
+          },
+          "parameter_metrics": {
+            "coverage": 1.0,
+            "exact_accuracy": 0.004523522316043426,
+            "mae_original_units": 11.32074788902292,
+            "queries": 3316,
+            "revoked_queries": 8,
+            "revoked_refusals": 8,
+            "rmse_original_units": 15.903918196242156
+          },
+          "stage": "withdraw"
+        },
+        {
+          "lossless_metrics": {
+            "coverage": 1.0,
+            "exact_accuracy": 1.0,
+            "mae_original_units": 0.0,
+            "queries": 3316,
+            "revoked_queries": 8,
+            "revoked_refusals": 8,
+            "rmse_original_units": 0.0
+          },
+          "old_retention": {
+            "lossless_old_retention": 1.0,
+            "parameter_old_exact_after": 0.004523522316043426,
+            "parameter_old_exact_before": 0.004523522316043426,
+            "parameter_old_mae_after": 11.32074788902292,
+            "parameter_old_mae_before": 11.32074788902292,
+            "unmodified_valid_old_coordinates": 3316
+          },
+          "parameter_metrics": {
+            "coverage": 1.0,
+            "exact_accuracy": 0.004523522316043426,
+            "mae_original_units": 11.32074788902292,
+            "queries": 3316,
+            "revoked_queries": 8,
+            "revoked_refusals": 8,
+            "rmse_original_units": 15.903918196242156
+          },
+          "stage": "clean_replay"
+        }
+      ]
+    }
+  ],
+  "schema": "memory-cell-v3.lifecycle-independent-audit.v1",
+  "source_commit": "66dc3a2ed500a60b8abb6c01eb6fe9d501dc8ea2",
+  "stage_prediction_rows_recomputed": 135180,
+  "verified": true
+}

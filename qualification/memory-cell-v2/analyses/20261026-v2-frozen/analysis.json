@@ -1,0 +1,1272 @@
+{
+  "external": {
+    "cost_means": {
+      "digits": {
+        "exact": 47351.6,
+        "knn": 50077.6,
+        "model_with_replay": 69390.4,
+        "model_without_replay": 22080.8
+      },
+      "iris": {
+        "exact": 1426.4,
+        "knn": 2029.8,
+        "model_with_replay": 19652.6,
+        "model_without_replay": 18262.2
+      },
+      "wine": {
+        "exact": 4280.6,
+        "knn": 5221.6,
+        "model_with_replay": 22837.4,
+        "model_without_replay": 18588.8
+      }
+    },
+    "datasets": {
+      "digits": {
+        "unseen_test": {
+          "1nn": {
+            "maximum": 0.978021978021978,
+            "mean": 0.9686813186813187,
+            "minimum": 0.9615384615384616
+          },
+          "5nn": {
+            "maximum": 0.9807692307692307,
+            "mean": 0.971978021978022,
+            "minimum": 0.9560439560439561
+          },
+          "exact": {
+            "maximum": 0.0,
+            "mean": 0.0,
+            "minimum": 0.0
+          },
+          "majority": {
+            "maximum": 0.10164835164835165,
+            "mean": 0.10164835164835165,
+            "minimum": 0.10164835164835165
+          },
+          "model": {
+            "maximum": 0.9807692307692307,
+            "mean": 0.9637362637362638,
+            "minimum": 0.9505494505494505
+          },
+          "selected_knn": {
+            "maximum": 0.9807692307692307,
+            "mean": 0.9692307692307692,
+            "minimum": 0.9560439560439561
+          }
+        },
+        "written_recovery": {
+          "1nn": {
+            "maximum": 1.0,
+            "mean": 1.0,
+            "minimum": 1.0
+          },
+          "5nn": {
+            "maximum": 0.9860335195530726,
+            "mean": 0.9832402234636871,
+            "minimum": 0.9804469273743017
+          },
+          "exact": {
+            "maximum": 1.0,
+            "mean": 1.0,
+            "minimum": 1.0
+          },
+          "majority": {
+            "maximum": 0.10148975791433892,
+            "mean": 0.10148975791433892,
+            "minimum": 0.10148975791433892
+          },
+          "model": {
+            "maximum": 1.0,
+            "mean": 1.0,
+            "minimum": 1.0
+          },
+          "selected_knn": {
+            "maximum": 1.0,
+            "mean": 0.9895716945996276,
+            "minimum": 0.9804469273743017
+          }
+        }
+      },
+      "iris": {
+        "unseen_test": {
+          "1nn": {
+            "maximum": 1.0,
+            "mean": 0.9346236559139784,
+            "minimum": 0.8709677419354839
+          },
+          "5nn": {
+            "maximum": 1.0,
+            "mean": 0.973763440860215,
+            "minimum": 0.9333333333333333
+          },
+          "exact": {
+            "maximum": 0.0,
+            "mean": 0.0,
+            "minimum": 0.0
+          },
+          "majority": {
+            "maximum": 0.3333333333333333,
+            "mean": 0.32903225806451614,
+            "minimum": 0.3225806451612903
+          },
+          "model": {
+            "maximum": 1.0,
+            "mean": 0.953763440860215,
+            "minimum": 0.9
+          },
+          "selected_knn": {
+            "maximum": 1.0,
+            "mean": 0.9541935483870968,
+            "minimum": 0.8709677419354839
+          }
+        },
+        "written_recovery": {
+          "1nn": {
+            "maximum": 1.0,
+            "mean": 1.0,
+            "minimum": 1.0
+          },
+          "5nn": {
+            "maximum": 0.9888888888888889,
+            "mean": 0.9686641697877653,
+            "minimum": 0.9550561797752809
+          },
+          "exact": {
+            "maximum": 1.0,
+            "mean": 1.0,
+            "minimum": 1.0
+          },
+          "majority": {
+            "maximum": 0.33707865168539325,
+            "mean": 0.33558052434456925,
+            "minimum": 0.3333333333333333
+          },
+          "model": {
+            "maximum": 1.0,
+            "mean": 1.0,
+            "minimum": 1.0
+          },
+          "selected_knn": {
+            "maximum": 1.0,
+            "mean": 0.9798751560549314,
+            "minimum": 0.9550561797752809
+          }
+        }
+      },
+      "wine": {
+        "unseen_test": {
+          "1nn": {
+            "maximum": 0.972972972972973,
+            "mean": 0.9351351351351351,
+            "minimum": 0.8918918918918919
+          },
+          "5nn": {
+            "maximum": 1.0,
+            "mean": 0.9567567567567568,
+            "minimum": 0.918918918918919
+          },
+          "exact": {
+            "maximum": 0.0,
+            "mean": 0.0,
+            "minimum": 0.0
+          },
+          "majority": {
+            "maximum": 0.40540540540540543,
+            "mean": 0.40540540540540543,
+            "minimum": 0.40540540540540543
+          },
+          "model": {
+            "maximum": 1.0,
+            "mean": 0.9783783783783784,
+            "minimum": 0.918918918918919
+          },
+          "selected_knn": {
+            "maximum": 0.972972972972973,
+            "mean": 0.9459459459459459,
+            "minimum": 0.918918918918919
+          }
+        },
+        "written_recovery": {
+          "1nn": {
+            "maximum": 1.0,
+            "mean": 1.0,
+            "minimum": 1.0
+          },
+          "5nn": {
+            "maximum": 1.0,
+            "mean": 0.9752380952380952,
+            "minimum": 0.9523809523809523
+          },
+          "exact": {
+            "maximum": 1.0,
+            "mean": 1.0,
+            "minimum": 1.0
+          },
+          "majority": {
+            "maximum": 0.4,
+            "mean": 0.4,
+            "minimum": 0.4
+          },
+          "model": {
+            "maximum": 1.0,
+            "mean": 1.0,
+            "minimum": 1.0
+          },
+          "selected_knn": {
+            "maximum": 1.0,
+            "mean": 0.9942857142857143,
+            "minimum": 0.9714285714285714
+          }
+        }
+      }
+    },
+    "independent_domains": 3,
+    "split_seeds_are_not_independent_domains": true
+  },
+  "general_memory_system_established": false,
+  "growth": {
+    "accuracy_means": {
+      "fixed-domain": 0.49782495101357016,
+      "fixed-hash": 0.5141896077040062,
+      "fixed-single": 0.5274746458042598,
+      "policy": 0.5518216701012507
+    },
+    "comparisons": {
+      "fixed-domain": {
+        "accuracy_interval": {
+          "cluster_differences": {
+            "211": 0.03460144956379663,
+            "223": 0.03102711052808904,
+            "227": 0.08809265997275939,
+            "229": 0.02260359867040085,
+            "233": 0.0936587767033572
+          },
+          "clusters": 5,
+          "confidence": 0.95,
+          "lower": 0.02837257359215528,
+          "method": "percentile bootstrap of equal-weight independent-cluster mean differences",
+          "observations": 5,
+          "paired_difference": 0.053996719087680625,
+          "status": "estimated",
+          "upper": 0.08001922012218401
+        },
+        "mean_net_gain_per_query": 0.05393324943467485,
+        "per_seed_break_even_queries_per_update": [
+          18.168897738339925,
+          20.131797560655755,
+          7.045512371121341,
+          27.97617472307668,
+          6.681923915892428
+        ]
+      },
+      "fixed-hash": {
+        "accuracy_interval": {
+          "cluster_differences": {
+            "211": 0.02078194512597631,
+            "223": 0.00965673037241388,
+            "227": 0.07556782516453564,
+            "229": 0.012749815272357856,
+            "233": 0.06940399605093872
+          },
+          "clusters": 5,
+          "confidence": 0.95,
+          "lower": 0.013119007283103955,
+          "method": "percentile bootstrap of equal-weight independent-cluster mean differences",
+          "observations": 5,
+          "paired_difference": 0.03763206239724448,
+          "status": "estimated",
+          "upper": 0.062145117511385004
+        },
+        "mean_net_gain_per_query": 0.03757107975420065,
+        "per_seed_break_even_queries_per_update": [
+          30.159413526504615,
+          64.40862942352989,
+          8.201668716460857,
+          49.68676045667338,
+          8.995517885275365
+        ]
+      },
+      "fixed-single": {
+        "accuracy_interval": {
+          "cluster_differences": {
+            "211": 0.0,
+            "223": 0.0,
+            "227": 0.05836338095326343,
+            "229": 0.0,
+            "233": 0.0633717405316917
+          },
+          "clusters": 5,
+          "confidence": 0.95,
+          "lower": 0.0,
+          "method": "percentile bootstrap of equal-weight independent-cluster mean differences",
+          "observations": 5,
+          "paired_difference": 0.024347024296991027,
+          "status": "estimated",
+          "upper": 0.04969572050966771
+        },
+        "mean_net_gain_per_query": 0.0242827892682067,
+        "per_seed_break_even_queries_per_update": [
+          null,
+          null,
+          10.665206678532028,
+          null,
+          9.904986676348281
+        ]
+      }
+    },
+    "cost_means": {
+      "fixed-domain": {
+        "amortized_resource_cost_per_query": 0.0001119299224952961,
+        "deployed_parameter_bytes": 24576.0,
+        "expected_resource_cost_at_protocol_h": 4.477196899811844,
+        "migration_restore_seconds": 0.03376792659692,
+        "other_maintenance_seconds_including_migrations": 0.07092082419840154,
+        "read_seconds_per_query": 3.8749156842230004e-05,
+        "retained_artifact_source_and_replay_bytes": 2843592.6,
+        "selection_read_seconds": 0.06570471380255186,
+        "write_seconds": 1.6115061670105206
+      },
+      "fixed-hash": {
+        "amortized_resource_cost_per_query": 0.00011441693245724451,
+        "deployed_parameter_bytes": 24576.0,
+        "expected_resource_cost_at_protocol_h": 4.57667729828978,
+        "migration_restore_seconds": 0.03362449660198763,
+        "other_maintenance_seconds_including_migrations": 0.0691247141949134,
+        "read_seconds_per_query": 4.1125990235510353e-05,
+        "retained_artifact_source_and_replay_bytes": 2843382.6,
+        "selection_read_seconds": 0.07099615939951036,
+        "write_seconds": 1.5458639919903363
+      },
+      "fixed-single": {
+        "amortized_resource_cost_per_query": 0.00011116454671675192,
+        "deployed_parameter_bytes": 24576.0,
+        "expected_resource_cost_at_protocol_h": 4.446581868670077,
+        "migration_restore_seconds": 0.03250146359205246,
+        "other_maintenance_seconds_including_migrations": 0.07004240379901602,
+        "read_seconds_per_query": 3.815582370777954e-05,
+        "retained_artifact_source_and_replay_bytes": 2831766.0,
+        "selection_read_seconds": 0.06637552379688713,
+        "write_seconds": 2.0397930116014322
+      },
+      "policy": {
+        "amortized_resource_cost_per_query": 0.00017539957550107753,
+        "deployed_parameter_bytes": 24576.0,
+        "expected_resource_cost_at_protocol_h": 7.015983020043102,
+        "migration_restore_seconds": 0.07688188139582053,
+        "other_maintenance_seconds_including_migrations": 0.13753937440633307,
+        "read_seconds_per_query": 3.9579914348565064e-05,
+        "retained_artifact_source_and_replay_bytes": 5191597.0,
+        "selection_read_seconds": 0.19892126479244326,
+        "write_seconds": 3.978374515598989
+      }
+    },
+    "maintenance_guards_all_passed": true,
+    "passing_seeds": 2,
+    "runs": [
+      {
+        "accuracy": {
+          "fixed-domain": 0.5009283073806368,
+          "fixed-hash": 0.5147478118184571,
+          "fixed-single": 0.5355297569444334,
+          "policy": 0.5355297569444334
+        },
+        "adopted": [],
+        "criterion_met": false,
+        "maintenance_guards_passed": true,
+        "seed": 211
+      },
+      {
+        "accuracy": {
+          "fixed-domain": 0.49389554858523266,
+          "fixed-hash": 0.5152659287409078,
+          "fixed-single": 0.5249226591133217,
+          "policy": 0.5249226591133217
+        },
+        "adopted": [],
+        "criterion_met": false,
+        "maintenance_guards_passed": true,
+        "seed": 223
+      },
+      {
+        "accuracy": {
+          "fixed-domain": 0.49823375877332576,
+          "fixed-hash": 0.5107585935815495,
+          "fixed-single": 0.5279630377928217,
+          "policy": 0.5863264187460852
+        },
+        "adopted": [
+          "split"
+        ],
+        "criterion_met": true,
+        "maintenance_guards_passed": true,
+        "seed": 227
+      },
+      {
+        "accuracy": {
+          "fixed-domain": 0.5049934007515923,
+          "fixed-hash": 0.5148471841496353,
+          "fixed-single": 0.5275969994219931,
+          "policy": 0.5275969994219931
+        },
+        "adopted": [],
+        "criterion_met": false,
+        "maintenance_guards_passed": true,
+        "seed": 229
+      },
+      {
+        "accuracy": {
+          "fixed-domain": 0.49107373957706324,
+          "fixed-hash": 0.5153285202294817,
+          "fixed-single": 0.5213607757487287,
+          "policy": 0.5847325162804204
+        },
+        "adopted": [
+          "split"
+        ],
+        "criterion_met": true,
+        "maintenance_guards_passed": true,
+        "seed": 233
+      }
+    ],
+    "strict_all_seed_gate_passed": false
+  },
+  "limitations": [
+    "bootstrap intervals are conditional on fixed workload designs",
+    "five trials cannot certify population-wide superiority",
+    "graph schemas and ports are supplied",
+    "classification transfer is not general episodic memory",
+    "full priced lifecycle cost does not isolate same-optimizer-work causality"
+  ],
+  "real": {
+    "all_fresh_reads_match": true,
+    "base_bytes": 23516451,
+    "common_preparation_mean_seconds": 0.03719924020115286,
+    "composition": {
+      "commit_owner_chain": {
+        "exact": 1.0,
+        "exact_no_edges": 0.0,
+        "exact_shuffled_edges": 0.0,
+        "multi_learned": 0.8,
+        "multi_no_edges": 0.0,
+        "multi_shuffled_edges": 0.0,
+        "parameter_edge_permutation_drop": 0.8,
+        "parameter_edge_removal_drop": 0.8,
+        "per_seed_queries": [
+          3,
+          3,
+          3,
+          3,
+          3
+        ],
+        "supplied_edge_gate_passed": true
+      },
+      "schema_chain": {
+        "exact": 1.0,
+        "exact_no_edges": 0.0,
+        "exact_shuffled_edges": 0.6951349842927399,
+        "multi_learned": 1.0,
+        "multi_no_edges": 0.0,
+        "multi_shuffled_edges": 0.6951349842927399,
+        "parameter_edge_permutation_drop": 0.3048650157072601,
+        "parameter_edge_removal_drop": 1.0,
+        "per_seed_queries": [
+          150,
+          150,
+          158,
+          154,
+          134
+        ],
+        "supplied_edge_gate_passed": true
+      }
+    },
+    "cost_means": {
+      "exact": {
+        "model_write_seconds": 0.0006183732009958475,
+        "parameter_bytes": 0.0,
+        "retained_bytes": 547507.0,
+        "validation_cold_seconds": 0.0,
+        "validation_in_process_seconds": 0.0
+      },
+      "multi": {
+        "model_write_seconds": 0.3972850161953829,
+        "parameter_bytes": 85248.0,
+        "retained_bytes": 24113859.8,
+        "validation_cold_seconds": 2.2686790909967387,
+        "validation_in_process_seconds": 1.3869331283931388
+      },
+      "single": {
+        "model_write_seconds": 0.7536113825975918,
+        "parameter_bytes": 85272.0,
+        "retained_bytes": 24108256.4,
+        "validation_cold_seconds": 0.7258181634009816,
+        "validation_in_process_seconds": 0.491809933600598
+      }
+    },
+    "fixed_multi_gate_passed": false,
+    "fresh_process_queries": 2685,
+    "fresh_process_reads": 20,
+    "learned_multi_minus_single_interval": {
+      "cluster_differences": {
+        "211": -0.048309178743961234,
+        "223": 0.0,
+        "227": 0.0,
+        "229": 0.0,
+        "233": -0.004444444444444362
+      },
+      "clusters": 5,
+      "confidence": 0.95,
+      "lower": -0.029874396135265612,
+      "method": "percentile bootstrap of equal-weight independent-cluster mean differences",
+      "observations": 5,
+      "paired_difference": -0.010550724637681119,
+      "status": "estimated",
+      "upper": 0.0
+    },
+    "matched_parameter_budget": true,
+    "primary_macro_means": {
+      "exact": 1.0,
+      "multi_learned": 0.9894492753623189,
+      "multi_literal": 0.9894492753623189,
+      "multi_typed": 0.9894492753623189,
+      "single_learned_route": 1.0,
+      "single_schema": 1.0,
+      "untrained_typed": 0.18211103525516836
+    },
+    "runs": [
+      {
+        "multi_parameters": 10656,
+        "oracle_route_gap": 0.0,
+        "primary_macro_accuracy": {
+          "exact": 1.0,
+          "multi_learned": 0.9516908212560388,
+          "multi_literal": 0.9516908212560388,
+          "multi_typed": 0.9516908212560388,
+          "single_learned_route": 1.0,
+          "single_schema": 1.0,
+          "untrained_typed": 0.1714975845410628
+        },
+        "seed": 211,
+        "single_parameters": 10659
+      },
+      {
+        "multi_parameters": 10656,
+        "oracle_route_gap": 0.0,
+        "primary_macro_accuracy": {
+          "exact": 1.0,
+          "multi_learned": 1.0,
+          "multi_literal": 1.0,
+          "multi_typed": 1.0,
+          "single_learned_route": 1.0,
+          "single_schema": 1.0,
+          "untrained_typed": 0.18297339593114245
+        },
+        "seed": 223,
+        "single_parameters": 10659
+      },
+      {
+        "multi_parameters": 10656,
+        "oracle_route_gap": 0.0,
+        "primary_macro_accuracy": {
+          "exact": 1.0,
+          "multi_learned": 1.0,
+          "multi_literal": 1.0,
+          "multi_typed": 1.0,
+          "single_learned_route": 1.0,
+          "single_schema": 1.0,
+          "untrained_typed": 0.1877637130801688
+        },
+        "seed": 227,
+        "single_parameters": 10659
+      },
+      {
+        "multi_parameters": 10656,
+        "oracle_route_gap": 0.0,
+        "primary_macro_accuracy": {
+          "exact": 1.0,
+          "multi_learned": 1.0,
+          "multi_literal": 1.0,
+          "multi_typed": 1.0,
+          "single_learned_route": 1.0,
+          "single_schema": 1.0,
+          "untrained_typed": 0.17778980278980275
+        },
+        "seed": 229,
+        "single_parameters": 10659
+      },
+      {
+        "multi_parameters": 10656,
+        "oracle_route_gap": 0.0,
+        "primary_macro_accuracy": {
+          "exact": 1.0,
+          "multi_learned": 0.9955555555555556,
+          "multi_literal": 0.9955555555555556,
+          "multi_typed": 0.9955555555555556,
+          "single_learned_route": 1.0,
+          "single_schema": 1.0,
+          "untrained_typed": 0.19053067993366501
+        },
+        "seed": 233,
+        "single_parameters": 10659
+      }
+    ],
+    "shared_base_load_seconds_once": 0.17935816699173301,
+    "shared_training_encoding_mean_seconds": 1.3482033712003614,
+    "single_record_identity_gate_passed": true,
+    "task_means": {
+      "exact": {
+        "commit_owner_chain": {
+          "per_seed_queries": [
+            3,
+            3,
+            3,
+            3,
+            3
+          ],
+          "queries_total": 15,
+          "seed_mean_event_value_identity": 1.0,
+          "seed_mean_final_accuracy": 1.0,
+          "seed_mean_routing_accuracy": 1.0
+        },
+        "latest_sampled_change": {
+          "per_seed_queries": [
+            69,
+            71,
+            71,
+            72,
+            75
+          ],
+          "queries_total": 358,
+          "seed_mean_event_value_identity": 1.0,
+          "seed_mean_final_accuracy": 1.0,
+          "seed_mean_routing_accuracy": 1.0
+        },
+        "module_attribute": {
+          "per_seed_queries": [
+            60,
+            60,
+            60,
+            60,
+            60
+          ],
+          "queries_total": 300,
+          "seed_mean_event_value_identity": 1.0,
+          "seed_mean_final_accuracy": 1.0,
+          "seed_mean_routing_accuracy": 1.0
+        },
+        "schema_chain": {
+          "per_seed_queries": [
+            150,
+            150,
+            158,
+            154,
+            134
+          ],
+          "queries_total": 746,
+          "seed_mean_event_value_identity": 1.0,
+          "seed_mean_final_accuracy": 1.0,
+          "seed_mean_routing_accuracy": 1.0
+        },
+        "schema_execution": {
+          "per_seed_queries": [
+            150,
+            150,
+            158,
+            154,
+            134
+          ],
+          "queries_total": 746,
+          "seed_mean_event_value_identity": 1.0,
+          "seed_mean_final_accuracy": 1.0,
+          "seed_mean_routing_accuracy": 1.0
+        }
+      },
+      "exact_no_edges": {
+        "commit_owner_chain": {
+          "per_seed_queries": [
+            3,
+            3,
+            3,
+            3,
+            3
+          ],
+          "queries_total": 15,
+          "seed_mean_event_value_identity": 0.5,
+          "seed_mean_final_accuracy": 0.0,
+          "seed_mean_routing_accuracy": 1.0
+        },
+        "schema_chain": {
+          "per_seed_queries": [
+            150,
+            150,
+            158,
+            154,
+            134
+          ],
+          "queries_total": 746,
+          "seed_mean_event_value_identity": 0.5,
+          "seed_mean_final_accuracy": 0.0,
+          "seed_mean_routing_accuracy": 1.0
+        }
+      },
+      "exact_shuffled_edges": {
+        "commit_owner_chain": {
+          "per_seed_queries": [
+            3,
+            3,
+            3,
+            3,
+            3
+          ],
+          "queries_total": 15,
+          "seed_mean_event_value_identity": 0.5,
+          "seed_mean_final_accuracy": 0.0,
+          "seed_mean_routing_accuracy": 1.0
+        },
+        "schema_chain": {
+          "per_seed_queries": [
+            150,
+            150,
+            158,
+            154,
+            134
+          ],
+          "queries_total": 746,
+          "seed_mean_event_value_identity": 0.5814071905800604,
+          "seed_mean_final_accuracy": 0.6951349842927399,
+          "seed_mean_routing_accuracy": 1.0
+        }
+      },
+      "multi_learned": {
+        "commit_owner_chain": {
+          "per_seed_queries": [
+            3,
+            3,
+            3,
+            3,
+            3
+          ],
+          "queries_total": 15,
+          "seed_mean_event_value_identity": 0.8,
+          "seed_mean_final_accuracy": 0.8,
+          "seed_mean_routing_accuracy": 1.0
+        },
+        "latest_sampled_change": {
+          "per_seed_queries": [
+            69,
+            71,
+            71,
+            72,
+            75
+          ],
+          "queries_total": 358,
+          "seed_mean_event_value_identity": 0.9683478260869565,
+          "seed_mean_final_accuracy": 0.9683478260869565,
+          "seed_mean_routing_accuracy": 1.0
+        },
+        "module_attribute": {
+          "per_seed_queries": [
+            60,
+            60,
+            60,
+            60,
+            60
+          ],
+          "queries_total": 300,
+          "seed_mean_event_value_identity": 1.0,
+          "seed_mean_final_accuracy": 1.0,
+          "seed_mean_routing_accuracy": 1.0
+        },
+        "schema_chain": {
+          "per_seed_queries": [
+            150,
+            150,
+            158,
+            154,
+            134
+          ],
+          "queries_total": 746,
+          "seed_mean_event_value_identity": 1.0,
+          "seed_mean_final_accuracy": 1.0,
+          "seed_mean_routing_accuracy": 1.0
+        },
+        "schema_execution": {
+          "per_seed_queries": [
+            150,
+            150,
+            158,
+            154,
+            134
+          ],
+          "queries_total": 746,
+          "seed_mean_event_value_identity": 1.0,
+          "seed_mean_final_accuracy": 1.0,
+          "seed_mean_routing_accuracy": 1.0
+        }
+      },
+      "multi_literal": {
+        "commit_owner_chain": {
+          "per_seed_queries": [
+            3,
+            3,
+            3,
+            3,
+            3
+          ],
+          "queries_total": 15,
+          "seed_mean_event_value_identity": 0.8,
+          "seed_mean_final_accuracy": 0.8,
+          "seed_mean_routing_accuracy": 1.0
+        },
+        "latest_sampled_change": {
+          "per_seed_queries": [
+            69,
+            71,
+            71,
+            72,
+            75
+          ],
+          "queries_total": 358,
+          "seed_mean_event_value_identity": 0.9683478260869565,
+          "seed_mean_final_accuracy": 0.9683478260869565,
+          "seed_mean_routing_accuracy": 1.0
+        },
+        "module_attribute": {
+          "per_seed_queries": [
+            60,
+            60,
+            60,
+            60,
+            60
+          ],
+          "queries_total": 300,
+          "seed_mean_event_value_identity": 1.0,
+          "seed_mean_final_accuracy": 1.0,
+          "seed_mean_routing_accuracy": 1.0
+        },
+        "schema_chain": {
+          "per_seed_queries": [
+            150,
+            150,
+            158,
+            154,
+            134
+          ],
+          "queries_total": 746,
+          "seed_mean_event_value_identity": 1.0,
+          "seed_mean_final_accuracy": 1.0,
+          "seed_mean_routing_accuracy": 1.0
+        },
+        "schema_execution": {
+          "per_seed_queries": [
+            150,
+            150,
+            158,
+            154,
+            134
+          ],
+          "queries_total": 746,
+          "seed_mean_event_value_identity": 1.0,
+          "seed_mean_final_accuracy": 1.0,
+          "seed_mean_routing_accuracy": 1.0
+        }
+      },
+      "multi_no_edges": {
+        "commit_owner_chain": {
+          "per_seed_queries": [
+            3,
+            3,
+            3,
+            3,
+            3
+          ],
+          "queries_total": 15,
+          "seed_mean_event_value_identity": 0.4,
+          "seed_mean_final_accuracy": 0.0,
+          "seed_mean_routing_accuracy": 1.0
+        },
+        "schema_chain": {
+          "per_seed_queries": [
+            150,
+            150,
+            158,
+            154,
+            134
+          ],
+          "queries_total": 746,
+          "seed_mean_event_value_identity": 0.5,
+          "seed_mean_final_accuracy": 0.0,
+          "seed_mean_routing_accuracy": 1.0
+        }
+      },
+      "multi_shuffled_edges": {
+        "commit_owner_chain": {
+          "per_seed_queries": [
+            3,
+            3,
+            3,
+            3,
+            3
+          ],
+          "queries_total": 15,
+          "seed_mean_event_value_identity": 0.4,
+          "seed_mean_final_accuracy": 0.0,
+          "seed_mean_routing_accuracy": 1.0
+        },
+        "schema_chain": {
+          "per_seed_queries": [
+            150,
+            150,
+            158,
+            154,
+            134
+          ],
+          "queries_total": 746,
+          "seed_mean_event_value_identity": 0.5814071905800604,
+          "seed_mean_final_accuracy": 0.6951349842927399,
+          "seed_mean_routing_accuracy": 1.0
+        }
+      },
+      "multi_typed": {
+        "commit_owner_chain": {
+          "per_seed_queries": [
+            3,
+            3,
+            3,
+            3,
+            3
+          ],
+          "queries_total": 15,
+          "seed_mean_event_value_identity": 0.8,
+          "seed_mean_final_accuracy": 0.8,
+          "seed_mean_routing_accuracy": 1.0
+        },
+        "latest_sampled_change": {
+          "per_seed_queries": [
+            69,
+            71,
+            71,
+            72,
+            75
+          ],
+          "queries_total": 358,
+          "seed_mean_event_value_identity": 0.9683478260869565,
+          "seed_mean_final_accuracy": 0.9683478260869565,
+          "seed_mean_routing_accuracy": 1.0
+        },
+        "module_attribute": {
+          "per_seed_queries": [
+            60,
+            60,
+            60,
+            60,
+            60
+          ],
+          "queries_total": 300,
+          "seed_mean_event_value_identity": 1.0,
+          "seed_mean_final_accuracy": 1.0,
+          "seed_mean_routing_accuracy": 1.0
+        },
+        "schema_chain": {
+          "per_seed_queries": [
+            150,
+            150,
+            158,
+            154,
+            134
+          ],
+          "queries_total": 746,
+          "seed_mean_event_value_identity": 1.0,
+          "seed_mean_final_accuracy": 1.0,
+          "seed_mean_routing_accuracy": 1.0
+        },
+        "schema_execution": {
+          "per_seed_queries": [
+            150,
+            150,
+            158,
+            154,
+            134
+          ],
+          "queries_total": 746,
+          "seed_mean_event_value_identity": 1.0,
+          "seed_mean_final_accuracy": 1.0,
+          "seed_mean_routing_accuracy": 1.0
+        }
+      },
+      "single_learned_route": {
+        "commit_owner_chain": {
+          "per_seed_queries": [
+            3,
+            3,
+            3,
+            3,
+            3
+          ],
+          "queries_total": 15,
+          "seed_mean_event_value_identity": 1.0,
+          "seed_mean_final_accuracy": 1.0,
+          "seed_mean_routing_accuracy": 1.0
+        },
+        "latest_sampled_change": {
+          "per_seed_queries": [
+            69,
+            71,
+            71,
+            72,
+            75
+          ],
+          "queries_total": 358,
+          "seed_mean_event_value_identity": 1.0,
+          "seed_mean_final_accuracy": 1.0,
+          "seed_mean_routing_accuracy": 1.0
+        },
+        "module_attribute": {
+          "per_seed_queries": [
+            60,
+            60,
+            60,
+            60,
+            60
+          ],
+          "queries_total": 300,
+          "seed_mean_event_value_identity": 1.0,
+          "seed_mean_final_accuracy": 1.0,
+          "seed_mean_routing_accuracy": 1.0
+        },
+        "schema_chain": {
+          "per_seed_queries": [
+            150,
+            150,
+            158,
+            154,
+            134
+          ],
+          "queries_total": 746,
+          "seed_mean_event_value_identity": 1.0,
+          "seed_mean_final_accuracy": 1.0,
+          "seed_mean_routing_accuracy": 1.0
+        },
+        "schema_execution": {
+          "per_seed_queries": [
+            150,
+            150,
+            158,
+            154,
+            134
+          ],
+          "queries_total": 746,
+          "seed_mean_event_value_identity": 1.0,
+          "seed_mean_final_accuracy": 1.0,
+          "seed_mean_routing_accuracy": 1.0
+        }
+      },
+      "single_schema": {
+        "commit_owner_chain": {
+          "per_seed_queries": [
+            3,
+            3,
+            3,
+            3,
+            3
+          ],
+          "queries_total": 15,
+          "seed_mean_event_value_identity": 1.0,
+          "seed_mean_final_accuracy": 1.0,
+          "seed_mean_routing_accuracy": 1.0
+        },
+        "latest_sampled_change": {
+          "per_seed_queries": [
+            69,
+            71,
+            71,
+            72,
+            75
+          ],
+          "queries_total": 358,
+          "seed_mean_event_value_identity": 1.0,
+          "seed_mean_final_accuracy": 1.0,
+          "seed_mean_routing_accuracy": 1.0
+        },
+        "module_attribute": {
+          "per_seed_queries": [
+            60,
+            60,
+            60,
+            60,
+            60
+          ],
+          "queries_total": 300,
+          "seed_mean_event_value_identity": 1.0,
+          "seed_mean_final_accuracy": 1.0,
+          "seed_mean_routing_accuracy": 1.0
+        },
+        "schema_chain": {
+          "per_seed_queries": [
+            150,
+            150,
+            158,
+            154,
+            134
+          ],
+          "queries_total": 746,
+          "seed_mean_event_value_identity": 1.0,
+          "seed_mean_final_accuracy": 1.0,
+          "seed_mean_routing_accuracy": 1.0
+        },
+        "schema_execution": {
+          "per_seed_queries": [
+            150,
+            150,
+            158,
+            154,
+            134
+          ],
+          "queries_total": 746,
+          "seed_mean_event_value_identity": 1.0,
+          "seed_mean_final_accuracy": 1.0,
+          "seed_mean_routing_accuracy": 1.0
+        }
+      },
+      "untrained_typed": {
+        "commit_owner_chain": {
+          "per_seed_queries": [
+            3,
+            3,
+            3,
+            3,
+            3
+          ],
+          "queries_total": 15,
+          "seed_mean_event_value_identity": 0.03333333333333333,
+          "seed_mean_final_accuracy": 0.0,
+          "seed_mean_routing_accuracy": 1.0
+        },
+        "latest_sampled_change": {
+          "per_seed_queries": [
+            69,
+            71,
+            71,
+            72,
+            75
+          ],
+          "queries_total": 358,
+          "seed_mean_event_value_identity": 0.02212703272776757,
+          "seed_mean_final_accuracy": 0.02212703272776757,
+          "seed_mean_routing_accuracy": 1.0
+        },
+        "module_attribute": {
+          "per_seed_queries": [
+            60,
+            60,
+            60,
+            60,
+            60
+          ],
+          "queries_total": 300,
+          "seed_mean_event_value_identity": 0.003333333333333333,
+          "seed_mean_final_accuracy": 0.003333333333333333,
+          "seed_mean_routing_accuracy": 1.0
+        },
+        "schema_chain": {
+          "per_seed_queries": [
+            150,
+            150,
+            158,
+            154,
+            134
+          ],
+          "queries_total": 746,
+          "seed_mean_event_value_identity": 0.00522943722943723,
+          "seed_mean_final_accuracy": 0.33460516258097966,
+          "seed_mean_routing_accuracy": 1.0
+        },
+        "schema_execution": {
+          "per_seed_queries": [
+            150,
+            150,
+            158,
+            154,
+            134
+          ],
+          "queries_total": 746,
+          "seed_mean_event_value_identity": 0.005651741293532338,
+          "seed_mean_final_accuracy": 0.5208727397044042,
+          "seed_mean_routing_accuracy": 1.0
+        }
+      }
+    },
+    "write_cost_scope": "model_write_seconds excludes the separately reported common preparation, base load and feature encoding; cold validation is also separate"
+  },
+  "routing": {
+    "learned_group_means": {
+      "ambiguous": {
+        "coverage": 0.0,
+        "decision_accuracy": 1.0,
+        "oracle_gap": 0.0
+      },
+      "conflict": {
+        "coverage": 0.0,
+        "decision_accuracy": 1.0,
+        "oracle_gap": 0.0
+      },
+      "known_cue_new_keys": {
+        "coverage": 1.0,
+        "decision_accuracy": 1.0,
+        "oracle_gap": 0.0
+      },
+      "public_type_alias": {
+        "coverage": 1.0,
+        "decision_accuracy": 1.0,
+        "oracle_gap": 0.0
+      },
+      "refusal": {
+        "coverage": 0.0,
+        "decision_accuracy": 1.0,
+        "oracle_gap": 0.0
+      },
+      "unknown_cue": {
+        "coverage": 0.0,
+        "decision_accuracy": 1.0,
+        "oracle_gap": 0.0
+      },
+      "unknown_scope": {
+        "coverage": 0.0,
+        "decision_accuracy": 1.0,
+        "oracle_gap": 0.0
+      },
+      "unseen_synonyms": {
+        "coverage": 0.0,
+        "decision_accuracy": 0.0,
+        "oracle_gap": 1.0
+      }
+    },
+    "means": {
+      "learned": {
+        "coverage": 0.38461538461538464,
+        "decision_accuracy": 0.7692307692307693,
+        "oracle_gap": 0.23076923076923075,
+        "wrong_accepted_rate": 0.0
+      },
+      "literal": {
+        "coverage": 0.23076923076923078,
+        "decision_accuracy": 0.46153846153846156,
+        "oracle_gap": 0.5384615384615384,
+        "wrong_accepted_rate": 0.07692307692307693
+      },
+      "typed": {
+        "coverage": 0.6923076923076923,
+        "decision_accuracy": 0.9230769230769231,
+        "oracle_gap": 0.07692307692307687,
+        "wrong_accepted_rate": 0.07692307692307693
+      }
+    }
+  },
+  "schema": "memory-cell-v2.analysis.v1",
+  "seeds": [
+    211,
+    223,
+    227,
+    229,
+    233
+  ]
+}

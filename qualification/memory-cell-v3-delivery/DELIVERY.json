@@ -1,0 +1,665 @@
+{
+  "all_blockers_closed": false,
+  "all_raw_evidence_and_development_attempts_inside_bundle": true,
+  "all_source_and_reviewable_report_bytes_unchanged": true,
+  "asset_policy": "Only seven fixed archive part paths are registered using the existing exact-path allowlist; threshold and checker unchanged.",
+  "delivery_kind": "API mirror plus exact original Git history; mirror commit is not experiment source",
+  "formal_evidence": {
+    "commit_binding": "exact-committed-bytes",
+    "development_only": false,
+    "execution": "completed",
+    "manifest": {
+      "bytes": 925934,
+      "sha256": "5f52760eebc7407811b7778d09795e843bc73d1bbf9fe48cf27dfa5fad40af42"
+    },
+    "output_bytes": 327220847,
+    "output_files": 4920,
+    "source_commit": "66dc3a2ed500a60b8abb6c01eb6fe9d501dc8ea2",
+    "source_files": 229,
+    "verified": true,
+    "verified_stages": [
+      "capacity",
+      "routing_graph",
+      "lifecycle",
+      "structure",
+      "native"
+    ]
+  },
+  "formal_source_commit": "66dc3a2ed500a60b8abb6c01eb6fe9d501dc8ea2",
+  "large_analysis_only_in_bundle": [
+    {
+      "path": "qualification/memory-cell-v3/analyses/routing-findings.json",
+      "reason": "Full analysis preserved in exact-history bundle; compact measured summary mirrored."
+    }
+  ],
+  "original_final_evidence_commit": "ddd2ec4f9167c5ccf22adb63f4ce7402ebd7ae19",
+  "original_v1_v2_bundle": {
+    "bytes": 36526176,
+    "existing_delivery_path": "qualification/memory-cell-delivery",
+    "required_repository_baseline": "f8c9419df6ddeb36ff8b522a50219981fb8d9345",
+    "required_research_commit_after_import": "57d2b9658839f11aa4685049f90cb7142d59026d",
+    "sha256": "283ed9c9c966417c9ac72388e8f22f1f03b46620130e3f193cb31024586fce7d"
+  },
+  "production_admitted": false,
+  "pull_request": 4004,
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "reviewable_files": {
+    "codex-rs/hepta-neuron/examples/memory_cell_read.rs": {
+      "bytes": 13865,
+      "git_blob_sha": "8abcb2b8666560e9f4e349432224623df92fe251",
+      "sha256": "7e12702f0544ffa155cef1c3c163361bd72dde561e2c425c525d5de5fff1d194",
+      "source": "exact original evidence checkout"
+    },
+    "codex-rs/hepta-neuron/src/lib.rs": {
+      "bytes": 9789,
+      "git_blob_sha": "cfef153c129e17e565bafa5103d63b27f93d4a3a",
+      "sha256": "210bdcc966054dbeda806041bab7553dd9627f4d03e7884137af0f3a67c1829d",
+      "source": "exact original evidence checkout"
+    },
+    "codex-rs/hepta-neuron/src/memory_model.rs": {
+      "bytes": 13769,
+      "git_blob_sha": "c56f0e472acdc7568bbb7776a7c528cddbc29997",
+      "sha256": "60f6a7be5f80ff60fa04e8433b29a395be4220f3cd3eebb8429a856690c8cc65",
+      "source": "exact original evidence checkout"
+    },
+    "codex-rs/hepta-neuron/src/memory_model_tests.rs": {
+      "bytes": 11447,
+      "git_blob_sha": "508e42b5cc1bbd312a04805b3ceb3fefc2df6b24",
+      "sha256": "f4f9c846aeec31662866c98a2d0a2993c875b2e11300a656fcab2be56209b24d",
+      "source": "exact original evidence checkout"
+    },
+    "qualification/memory-cell-v3/DEVELOPMENT_CAPACITY.md": {
+      "bytes": 9702,
+      "git_blob_sha": "8794c1ccec53dd136f4bce521a37aee2c101f4cb",
+      "sha256": "dbc2fd456d2716faafd2f1f2b1b057b69042a4b588f1499f13b612eec3a2c74d",
+      "source": "exact original evidence checkout"
+    },
+    "qualification/memory-cell-v3/DEVELOPMENT_ROUTING.md": {
+      "bytes": 8836,
+      "git_blob_sha": "ad29beaf8fd0b10424d230ecd7a03b213cdce292",
+      "sha256": "6b93e08bb3102afe84b6d80cc76187230d4337cd7e4551c9014393b36c38c33c",
+      "source": "exact original evidence checkout"
+    },
+    "qualification/memory-cell-v3/DEVELOPMENT_STRUCTURE.md": {
+      "bytes": 10832,
+      "git_blob_sha": "b14c203978e9a519cbdc0e70e24b295e041c87d7",
+      "sha256": "4d652d70a16ab0fa2aecc554d19cebaaf6b2fc64027e566527643a7958cca547",
+      "source": "exact original evidence checkout"
+    },
+    "qualification/memory-cell-v3/MEASURED_SUMMARY.json": {
+      "bytes": 153037,
+      "git_blob_sha": "554ec856fec8d6fc6b300848069bbfeffcc598c5",
+      "sha256": "50aa403171e47ee2e4814bd08101804b3040a7d97dd1bc712251f9d75797cf1b",
+      "source": "exact original evidence checkout"
+    },
+    "qualification/memory-cell-v3/PROTOCOL.json": {
+      "bytes": 9433,
+      "git_blob_sha": "5e4232674b6b23b8d286b814997a572237bad5b3",
+      "sha256": "269759bb94d0452946086cd46721d596d4afc6e1f7de63c0bd09d0ef87cfd08e",
+      "source": "exact original evidence checkout"
+    },
+    "qualification/memory-cell-v3/QUALIFICATION.json": {
+      "bytes": 6417,
+      "git_blob_sha": "3d2512b4126329f83ca12e787c46a41297b6dfe9",
+      "sha256": "5a86437fc6b8d121fbbfe7f93ae6216ba0e1142eae2a13c9710f41c620321b30",
+      "source": "exact original evidence checkout"
+    },
+    "qualification/memory-cell-v3/README.md": {
+      "bytes": 10800,
+      "git_blob_sha": "821c1dd6d82bec690a11528997fec32ce4ebf104",
+      "sha256": "c1420245f51d324f8c4e271e0cd4dcf973f8d5d41e0ddd228eeb00bd5b352630",
+      "source": "exact original evidence checkout"
+    },
+    "qualification/memory-cell-v3/RESULTS.md": {
+      "bytes": 19952,
+      "git_blob_sha": "f81a504a4985ed9fd5166e21271ef1715393da01",
+      "sha256": "c3093ede8bd778060ab2ca934ef2c017ea61534c6a1b42af09484a8dcb487d3a",
+      "source": "exact original evidence checkout"
+    },
+    "qualification/memory-cell-v3/analyses/audit_lifecycle.py": {
+      "bytes": 19968,
+      "git_blob_sha": "d4b18a2e1da02ffef1472540c78f7c274c67a80a",
+      "sha256": "9fd2dd704a5c9718f24f8cf6dfe41a834566c02fcbb4116e8f82a0aff7e9affa",
+      "source": "exact original evidence checkout"
+    },
+    "qualification/memory-cell-v3/analyses/build_report.py": {
+      "bytes": 34439,
+      "git_blob_sha": "e9a18e8df76a9afa853c4e1d6aedeb5ec07a3eec",
+      "sha256": "e38bc2f4e2b6fe2fee0dfd74bd676e9294dedffce422534d69c00149f34ba20e",
+      "source": "exact original evidence checkout"
+    },
+    "qualification/memory-cell-v3/analyses/capacity-findings.json": {
+      "bytes": 257536,
+      "git_blob_sha": "72a56bb5e94f3294372f444f58914e47d29b67e1",
+      "sha256": "79161439cee3c86e79f5f8420c6d08364135817af6ddba5cfcfbae7b3fc55c3a",
+      "source": "exact original evidence checkout"
+    },
+    "qualification/memory-cell-v3/analyses/formal-overview-data.json": {
+      "bytes": 3548,
+      "git_blob_sha": "12d6fc1636ddf7f5bb0b1e37647f0f0f5579b458",
+      "sha256": "fd8e91515873ef8e12f70f4b73bf5c49ed1aa9454fb147b08db2c99044596e90",
+      "source": "exact original evidence checkout"
+    },
+    "qualification/memory-cell-v3/analyses/formal-overview.png": {
+      "bytes": 246558,
+      "git_blob_sha": "f69db3478e9b2e31a680b6c8f2836f7754ed148c",
+      "sha256": "d187fdf7be6514e83f06a84fb2b41082ad305a4340950de801dcbe5320a3929a",
+      "source": "exact original evidence checkout"
+    },
+    "qualification/memory-cell-v3/analyses/formal-overview.svg": {
+      "bytes": 117310,
+      "git_blob_sha": "7d7fae344cd7cbc6bb23dfbb4cce85e9b13f36d3",
+      "sha256": "6c80dccf48bb4f9b682f057171f456227a65009c7e94ff4ec9aa67fc19a03637",
+      "source": "exact original evidence checkout"
+    },
+    "qualification/memory-cell-v3/analyses/lifecycle-findings.json": {
+      "bytes": 4963,
+      "git_blob_sha": "d392cc7b1d378622dd8b71109a42effb5af61285",
+      "sha256": "80d3676ef4dc30c06ef5546c610de8772d82409c4b03edb32d7df93ebe51233c",
+      "source": "exact original evidence checkout"
+    },
+    "qualification/memory-cell-v3/analyses/native-structure-findings.json": {
+      "bytes": 277577,
+      "git_blob_sha": "0bcb4168177d01708051c49e24a8a46d2a2bf71a",
+      "sha256": "9fc942b1b3a2cffa3be5506cb4a18b10e7a14af6eeaafef2078b82aa67211088",
+      "source": "exact original evidence checkout"
+    },
+    "qualification/memory-cell-v3/analyses/plot_results.py": {
+      "bytes": 7061,
+      "git_blob_sha": "fbf095432742fddc7f0b17dd995365bfc96e438f",
+      "sha256": "4ee3cfd02d083bbfc8350849e85318e7b16918846263233326a08f68e449ea92",
+      "source": "exact original evidence checkout"
+    },
+    "qualification/memory-cell-v3/analyses/report-inputs.json": {
+      "bytes": 1487,
+      "git_blob_sha": "4c96a6f8a7462307345df698df21dd5137892536",
+      "sha256": "22f3dd6bf129186f9653f8091692e8d515f7e8153d982f70a6df9fd40a4071a2",
+      "source": "exact original evidence checkout"
+    },
+    "qualification/memory-cell-v3/audit_capacity.py": {
+      "bytes": 29023,
+      "git_blob_sha": "5058380fc603a0043db4a8400b6a3060bf390320",
+      "sha256": "b71abc1a3e8333f8137704d0e6ef095d6269f4d7f19faa57fde7aa50aa3fd008",
+      "source": "exact original evidence checkout"
+    },
+    "qualification/memory-cell-v3/audit_native_structure.py": {
+      "bytes": 2281,
+      "git_blob_sha": "48a77db739e3a0aead9518489e9761f3239dbcc3",
+      "sha256": "ff96a68281ce9094dbc8f823c607fb90b1436b81a9f46389a7617dbe64839b9e",
+      "source": "exact original evidence checkout"
+    },
+    "qualification/memory-cell-v3/audit_routing.py": {
+      "bytes": 20936,
+      "git_blob_sha": "3cc6519caa3acab1377de8920e1e971e59412870",
+      "sha256": "5d34882eaed5541908487c5cd21b65cb77bb6043e9954c3ffda709b9f3894f06",
+      "source": "exact original evidence checkout"
+    },
+    "qualification/memory-cell-v3/native_study.py": {
+      "bytes": 16176,
+      "git_blob_sha": "290daa0d040daa319b0a65ff8124f9d34359653d",
+      "sha256": "60873ea931a8f86fe139170d525f1ac2abef4c4e82d9b964be7176fa80d34720",
+      "source": "exact original evidence checkout"
+    },
+    "qualification/memory-cell-v3/owner_reader.py": {
+      "bytes": 1934,
+      "git_blob_sha": "ba579665130486385cc1732366bc47a4d2e92acf",
+      "sha256": "bb2a74d93998e57b186c71a823a44a77970fc002986b4653564c7fa7ff4a7efb",
+      "source": "exact original evidence checkout"
+    },
+    "qualification/memory-cell-v3/prepare_holdout_source.py": {
+      "bytes": 5847,
+      "git_blob_sha": "c01655f0cefdc643ebb0f2a4cd811b32f2071968",
+      "sha256": "0fe06a678005ca4c81246cb465a033d0341de0e9b64047122337724ac737e298",
+      "source": "exact original evidence checkout"
+    },
+    "qualification/memory-cell-v3/prepare_native_workspace.py": {
+      "bytes": 11979,
+      "git_blob_sha": "fe3786cd170e68d08f14868d7496d50c6a3fd7ea",
+      "sha256": "80195d2dd621ea9f67ed0fa7ea704eabc43a5742907238755056627aa799c194",
+      "source": "exact original evidence checkout"
+    },
+    "qualification/memory-cell-v3/prepare_sources.py": {
+      "bytes": 8355,
+      "git_blob_sha": "f893e7be00dd151d31a180d3081074e5d9f3e04e",
+      "sha256": "2c819f9441a855fc42c42dcfe0a644146ee328055c16e6025d353bb3a16c592f",
+      "source": "exact original evidence checkout"
+    },
+    "qualification/memory-cell-v3/requirements.txt": {
+      "bytes": 73,
+      "git_blob_sha": "51604ae6a124352972bae0c058d1dcd595f80d9d",
+      "sha256": "bffaeff64544298bfbaa5bedd9461c02fcff2f1dbf8b7358828728ae0740da38",
+      "source": "exact original evidence checkout"
+    },
+    "qualification/memory-cell-v3/route_graph_study.py": {
+      "bytes": 21441,
+      "git_blob_sha": "20260c687ce1f0167f084cb4f7a2598958a84ca9",
+      "sha256": "65d3a2d1fc8ea488586155e7760c4c28ebd5679135d33fc67c0073e1a95230ee",
+      "source": "exact original evidence checkout"
+    },
+    "qualification/memory-cell-v3/run_study.py": {
+      "bytes": 8789,
+      "git_blob_sha": "e487417c0db93172d197302638b60e29a2c31d67",
+      "sha256": "9af4ee73f7d69dbe5c2993c09989e9333698419c1e873358924654910637eb44",
+      "source": "exact original evidence checkout"
+    },
+    "qualification/memory-cell-v3/sources/held-economy/SOURCES.json": {
+      "bytes": 1732,
+      "git_blob_sha": "37efeee20afd0f4d24d7c3901c8c6e7ab313f1c2",
+      "sha256": "62727c82560bc3cc778996957922db0fce014485e4dbac36cd32451c33b26fa0",
+      "source": "exact original evidence checkout"
+    },
+    "qualification/memory-cell-v3/sources/held-economy/bls-unemployment-1996-2005.json": {
+      "bytes": 10223,
+      "git_blob_sha": "1813ce5f6b8b84211da2a7daf2877adc2d33189a",
+      "sha256": "9b37f3e8a4b96e7b591d5706562f5ede259f9c2abf0f37f86556ba268f4f2fbb",
+      "source": "exact original evidence checkout"
+    },
+    "qualification/memory-cell-v3/sources/held-economy/bls-unemployment-2006-2015.json": {
+      "bytes": 10224,
+      "git_blob_sha": "089ae409e229dab77cb705dd58263a4557574146",
+      "sha256": "573b977483c8dee4291efaeb3b30edd34db641c401046dfb09eb0d4de4ccd03c",
+      "source": "exact original evidence checkout"
+    },
+    "qualification/memory-cell-v3/sources/held-economy/bls-unemployment-2016-2025.json": {
+      "bytes": 10302,
+      "git_blob_sha": "79de2b0377d282182c36be06ddf13828bea4095e",
+      "sha256": "0eae36bfec292670ce1bd33e7270be85c4c11a93fd0acdf851081ef1b4850775",
+      "source": "exact original evidence checkout"
+    },
+    "qualification/memory-cell-v3/sources/held-economy/unemployment.json": {
+      "bytes": 6778,
+      "git_blob_sha": "27d40cf81c0e2ddcf841f374107f24b608cbba3b",
+      "sha256": "5ee841d932a2afa9bdb38f5637bf74e3342ae1d5d71e2f1691fd9b30dd6af78e",
+      "source": "exact original evidence checkout"
+    },
+    "qualification/memory-cell-v3/sources/numeric/SOURCES.json": {
+      "bytes": 3447,
+      "git_blob_sha": "fd766aec2720fbea3a981703ea815b0d7c6bea07",
+      "sha256": "469564f414da996b474e51410db89cacc519798564689a83193b8d44c080bbb1",
+      "source": "exact original evidence checkout"
+    },
+    "qualification/memory-cell-v3/sources/numeric/co2.json": {
+      "bytes": 14378,
+      "git_blob_sha": "505a356ae1a48d932c8e008cdcb6efe212ea6f16",
+      "sha256": "6ada62f6c17586fe0269e02fed21193bff34b6bee4947d27f0e93ce706ad92bc",
+      "source": "exact original evidence checkout"
+    },
+    "qualification/memory-cell-v3/sources/numeric/co2_mm_mlo.txt": {
+      "bytes": 59678,
+      "git_blob_sha": "47f85f638ac41a7c079b863dda4aafd7e7b61d07",
+      "sha256": "0ce4e7749217b4af2cca8e0bdf263856ad59b0a2946d4e98c7b22ccfbff21cad",
+      "source": "exact original evidence checkout"
+    },
+    "qualification/memory-cell-v3/sources/numeric/gistemp_global.csv": {
+      "bytes": 12886,
+      "git_blob_sha": "1ea40018de00081d03f248fa2b535403ab28822f",
+      "sha256": "4c64eda288bce32b8d76926278f346ecea1e53506df8ee72a3d5accb0657c416",
+      "source": "exact original evidence checkout"
+    },
+    "qualification/memory-cell-v3/sources/numeric/sunspots.json": {
+      "bytes": 50506,
+      "git_blob_sha": "52f975759442079b8eaf81ed6a7811ee86eabeea",
+      "sha256": "dda81af2dd257f5370f2565e3abf5b7e0ec125b228cf4e2604fb095058d52884",
+      "source": "exact original evidence checkout"
+    },
+    "qualification/memory-cell-v3/sources/numeric/sunspots_monthly_v2.txt": {
+      "bytes": 126654,
+      "git_blob_sha": "eda85a83371134e4f2eeb0e9f4e0a55c9bf005a4",
+      "sha256": "9c1ffab9af28ac25a63eb5e4ddf64ca9bbe6f5d9c825525808419eb751dbad5d",
+      "source": "exact original evidence checkout"
+    },
+    "qualification/memory-cell-v3/sources/numeric/temperature.json": {
+      "bytes": 26218,
+      "git_blob_sha": "63b8353718e4896e01292924f466578e8ae1f843",
+      "sha256": "f269ca1a4c61c8d5de5567d589bef70c17bb347749198d45eae6ab58f6c1616e",
+      "source": "exact original evidence checkout"
+    },
+    "qualification/memory-cell-v3/structure_study.py": {
+      "bytes": 19115,
+      "git_blob_sha": "dddea8bff2de068a56804a9ee6a68644eaa2f800",
+      "sha256": "300a83c00085c4e70ec3eb3ea50eeae8876b6135476e5538246e319e27385aee",
+      "source": "exact original evidence checkout"
+    },
+    "qualification/memory-cell-v3/tests/test_bitcell.py": {
+      "bytes": 4755,
+      "git_blob_sha": "6b0f0962f0278b7220233b62b591af9cff612eb8",
+      "sha256": "387e162ef82fed6a0738c2a809d046be2795599fa9f4ea5d6246a8c8f9f22317",
+      "source": "exact original evidence checkout"
+    },
+    "qualification/memory-cell-v3/tests/test_capacity_audit.py": {
+      "bytes": 6259,
+      "git_blob_sha": "3149d6383917475974b0c574fa994c5c55573ea0",
+      "sha256": "a0df48c2c2e64f65388762b41ca8089c61d72e0461d7999f774319c94c3977dd",
+      "source": "exact original evidence checkout"
+    },
+    "qualification/memory-cell-v3/tests/test_capacity_models.py": {
+      "bytes": 2430,
+      "git_blob_sha": "b6df7fe8196e68b0a1609913d79f1daa43a2d5a0",
+      "sha256": "d60f4c1e0df5257d79c18103be1ecc9bd68ff2d05c73477c1743a4bcd1dd80ef",
+      "source": "exact original evidence checkout"
+    },
+    "qualification/memory-cell-v3/tests/test_capacity_study.py": {
+      "bytes": 2157,
+      "git_blob_sha": "4c0bc21b4f74f69fe29f92a10ee6788c87fa27ad",
+      "sha256": "41aab110130b52b47d0964f007ef9e781b2cb4087d0aa64fe5bcaabf9b272a06",
+      "source": "exact original evidence checkout"
+    },
+    "qualification/memory-cell-v3/tests/test_codec.py": {
+      "bytes": 4559,
+      "git_blob_sha": "af0187392435088e8bf9d6474228538c0a000b47",
+      "sha256": "76ff20fdc1bc80fb388cc7abcf494081240fe426375d271aca64195a1188654a",
+      "source": "exact original evidence checkout"
+    },
+    "qualification/memory-cell-v3/tests/test_evidence.py": {
+      "bytes": 4453,
+      "git_blob_sha": "682b2c9ee36341c6dee7bd3d8ec201395634997f",
+      "sha256": "1d39fc5a3c94da88a2e6e3d0f01391ed6c081cf5540232ccf018acf28390f2c9",
+      "source": "exact original evidence checkout"
+    },
+    "qualification/memory-cell-v3/tests/test_factor_cell.py": {
+      "bytes": 4874,
+      "git_blob_sha": "18f15c428dbcc2410ed2ef60758313076c19dcc6",
+      "sha256": "7899c54ecccf929fb5f2ac9460f75aa51ba994003d961f84a64fe50d36f62c40",
+      "source": "exact original evidence checkout"
+    },
+    "qualification/memory-cell-v3/tests/test_lifecycle.py": {
+      "bytes": 7253,
+      "git_blob_sha": "f5f9533844d13b78de98cf4037bebdcc84c23b29",
+      "sha256": "a40df9828803b246f72472f8406179fc606b032e5469412c86f9510801d3eb72",
+      "source": "exact original evidence checkout"
+    },
+    "qualification/memory-cell-v3/tests/test_semantic_graph.py": {
+      "bytes": 14025,
+      "git_blob_sha": "4b9cc931d0b674c7e60f4e57af49919df23d9cd5",
+      "sha256": "b7603c74b4aff71f57fba0e13d981d945c53b23517c3ee6201c44292f84b4790",
+      "source": "exact original evidence checkout"
+    },
+    "qualification/memory-cell-v3/tests/test_sources.py": {
+      "bytes": 2566,
+      "git_blob_sha": "9a5462c6257c9e06e65715ed03c6c47e7d7242bf",
+      "sha256": "ba52dd74bb2c1c35772a5c98706dede1300e819f878c21f88fa1143b59ae5b3e",
+      "source": "exact original evidence checkout"
+    },
+    "qualification/memory-cell-v3/tests/test_structure.py": {
+      "bytes": 7693,
+      "git_blob_sha": "d03d34d60bb732596a13b42b4b5918ef8e07026c",
+      "sha256": "0119a14cfd4f496ad8e8ce36af8d8b6a158b844c1d9779709a75e68a2cc36d30",
+      "source": "exact original evidence checkout"
+    },
+    "qualification/memory-cell-v3/v3/__init__.py": {
+      "bytes": 80,
+      "git_blob_sha": "d5b5c13204bed512f67bc4e309944542be2a63f4",
+      "sha256": "b19a6a99b5896cb6c10152693d63fc652690c79ff5b435f1a8da2479f1f4edb4",
+      "source": "exact original evidence checkout"
+    },
+    "qualification/memory-cell-v3/v3/bitcell.py": {
+      "bytes": 13378,
+      "git_blob_sha": "34742187363660f3dcaab5c3136612e99d67efd2",
+      "sha256": "85b8ffe1041e51bcb5f60fdd42557d947d1b1c6b614e3b129ac3b95087edf94a",
+      "source": "exact original evidence checkout"
+    },
+    "qualification/memory-cell-v3/v3/capacity_audit_core.py": {
+      "bytes": 12623,
+      "git_blob_sha": "4d9a410b6926c016b5c573bd01b0527f2f8457fb",
+      "sha256": "793756827b7b21d688a3946a8bdbe52880032a3b8b5771acc73a312bf723cbd0",
+      "source": "exact original evidence checkout"
+    },
+    "qualification/memory-cell-v3/v3/capacity_audit_extract.py": {
+      "bytes": 7243,
+      "git_blob_sha": "ef53eb29a27addfba42d1b84114244aea2911886",
+      "sha256": "70f4833e89857269e772ca90ae5ec7a8c0581219150c32018aa17fcf01946b22",
+      "source": "exact original evidence checkout"
+    },
+    "qualification/memory-cell-v3/v3/capacity_io.py": {
+      "bytes": 10608,
+      "git_blob_sha": "869fccfa93724a7d6019543b245bef7029849943",
+      "sha256": "afb5701621e40ae1ea9afb69e223fb419b78e0f605e2cea18bbd2dfae1e1a1fa",
+      "source": "exact original evidence checkout"
+    },
+    "qualification/memory-cell-v3/v3/capacity_models.py": {
+      "bytes": 9382,
+      "git_blob_sha": "91e83a5bb9d745ee4e63e0f1162556efc01e9fe8",
+      "sha256": "3ddf653913ab27d4eef2367055c9e505260203a48e20b9403e3e5fc9483910f0",
+      "source": "exact original evidence checkout"
+    },
+    "qualification/memory-cell-v3/v3/capacity_study.py": {
+      "bytes": 19969,
+      "git_blob_sha": "82d19ff301729b6a94cca5132a3728100791a08f",
+      "sha256": "11abdb258cb719412ba71eb1745bdd8c9379ff5cf84f7b969503502085b5caea",
+      "source": "exact original evidence checkout"
+    },
+    "qualification/memory-cell-v3/v3/codec.py": {
+      "bytes": 13685,
+      "git_blob_sha": "d64a3366e48b4d69fcdb61bf21054666833b7724",
+      "sha256": "b5eb1e37aa7bf63ebbc49f6c8732741f0f1bbbbd9465ec2b3780a4544b91c5b9",
+      "source": "exact original evidence checkout"
+    },
+    "qualification/memory-cell-v3/v3/codec_reader.py": {
+      "bytes": 4684,
+      "git_blob_sha": "867818b951491ad04faa89f8c0dfad49f97c8fdf",
+      "sha256": "81b87c18d752f304a0f7d4f0c42c593e67b9d0f6df4d2ed5ef161791161bb68c",
+      "source": "exact original evidence checkout"
+    },
+    "qualification/memory-cell-v3/v3/evidence.py": {
+      "bytes": 9475,
+      "git_blob_sha": "c8b2a1d7a0b35f65aa39e4e6cfc6669fe2bbb60e",
+      "sha256": "e5071fbc96690900c8030dd631f3376a029aa89bb4000e5003fc18b01ed25e6e",
+      "source": "exact original evidence checkout"
+    },
+    "qualification/memory-cell-v3/v3/evidence_checks.py": {
+      "bytes": 8686,
+      "git_blob_sha": "ee9fcafca0df94758d8bd2d43b44426d45ec47d5",
+      "sha256": "22e76f33f96ca4e2702e353e9206e3023bce3aad94c3073572ddd92ca4523a17",
+      "source": "exact original evidence checkout"
+    },
+    "qualification/memory-cell-v3/v3/factor_cell.py": {
+      "bytes": 18310,
+      "git_blob_sha": "cc0e560dcbd722858af57a11152c26bc0b117958",
+      "sha256": "78e85740662f4ef3454cc5c826b00621cf16c3a59a392edf40cffaeb1701706b",
+      "source": "exact original evidence checkout"
+    },
+    "qualification/memory-cell-v3/v3/learned_graph.py": {
+      "bytes": 20227,
+      "git_blob_sha": "98de26fa323085d1e912931f1df9738483319e09",
+      "sha256": "2d9c39261da798a7102f20e16c434372c3eade1a5fd92610e263f63b160ae33d",
+      "source": "exact original evidence checkout"
+    },
+    "qualification/memory-cell-v3/v3/lifecycle.py": {
+      "bytes": 17485,
+      "git_blob_sha": "24d42144da68514bbd01b23b798862eba0cab1b5",
+      "sha256": "f2273503314a7151487d4bc5690ec6852ecc3e83e3dffcf7513cdc053cab782b",
+      "source": "exact original evidence checkout"
+    },
+    "qualification/memory-cell-v3/v3/lifecycle_study.py": {
+      "bytes": 14479,
+      "git_blob_sha": "6ab51685165b36105c301733a8bc834ec6eb897f",
+      "sha256": "a8f53bfc5205eb876ea22acdcdfa761dc02d4b043724f78336f9ed42a8a4e637",
+      "source": "exact original evidence checkout"
+    },
+    "qualification/memory-cell-v3/v3/native_artifact_audit.py": {
+      "bytes": 13572,
+      "git_blob_sha": "01a2b0dfd151f0dfef6924a3d2b801481b24c50d",
+      "sha256": "0fd5296917472c5cdcbc82f83849d5d66007c3a2888eb8d9642a4b93560d56c0",
+      "source": "exact original evidence checkout"
+    },
+    "qualification/memory-cell-v3/v3/native_state_audit.py": {
+      "bytes": 5875,
+      "git_blob_sha": "95df67591708f42a7d3f39dbb8c864d04c143d50",
+      "sha256": "d33010db7efc6f363041533b9ad3645166002a3205c8fce3e755a3c0e2988fac",
+      "source": "exact original evidence checkout"
+    },
+    "qualification/memory-cell-v3/v3/native_structure_audit_core.py": {
+      "bytes": 3571,
+      "git_blob_sha": "5da63e0d8fe9ff1f20b16b16c738ec98ce897f8f",
+      "sha256": "aabc3f328cee66a4b7e128794f714d808e90036e41ea6a9bae37d5cdcbcefddf",
+      "source": "exact original evidence checkout"
+    },
+    "qualification/memory-cell-v3/v3/native_structure_audit_run.py": {
+      "bytes": 9770,
+      "git_blob_sha": "b5e9f2deb0fba2e3db40c3fc81513602068fbd21",
+      "sha256": "28c586b0202c767a330be28a00be28bdf16114801ac2e62813f71262c8299550",
+      "source": "exact original evidence checkout"
+    },
+    "qualification/memory-cell-v3/v3/numeric_graph.py": {
+      "bytes": 12131,
+      "git_blob_sha": "2932ca647af6f1d55a1f730bb322bda7cd9acf46",
+      "sha256": "445ce03b1ac48983de71b60b75fb7ea21b1300fc09e210d0dd2684bc891da765",
+      "source": "exact original evidence checkout"
+    },
+    "qualification/memory-cell-v3/v3/route_language.py": {
+      "bytes": 19345,
+      "git_blob_sha": "27ffbe13fc3aaa1c6471ff9633297f8a5b4aed10",
+      "sha256": "d59adafc03619bfa0dc1c81b7b832d0bf4ef634cde4f8452d3ab27907b4b226b",
+      "source": "exact original evidence checkout"
+    },
+    "qualification/memory-cell-v3/v3/route_metrics.py": {
+      "bytes": 9582,
+      "git_blob_sha": "24720eda43001dc4d3c992b3e8c0e523455996dd",
+      "sha256": "893f7f7a6f55cffada497624897a9d9954e838612460296a1e307b0d929d38cc",
+      "source": "exact original evidence checkout"
+    },
+    "qualification/memory-cell-v3/v3/routing_audit_core.py": {
+      "bytes": 17924,
+      "git_blob_sha": "bdb997c7ffe53ed1047e4bb45909f685520123ed",
+      "sha256": "768ad6abb70c2b48c37285212b09dd726b15af1c51c5d46764cfe2b7ea1b8bde",
+      "source": "exact original evidence checkout"
+    },
+    "qualification/memory-cell-v3/v3/routing_study.py": {
+      "bytes": 11608,
+      "git_blob_sha": "34e39141b78893a823f6c70011032ef24590498c",
+      "sha256": "bc2b89a487109c45f5153f77f4037472c35203b0d57617ebcfe155a8e121f00d",
+      "source": "exact original evidence checkout"
+    },
+    "qualification/memory-cell-v3/v3/semantic_router.py": {
+      "bytes": 16912,
+      "git_blob_sha": "6ea41bd82b647348b33410209622fbde75ef7cc6",
+      "sha256": "c8946993b67c5fbaebee48c117dc4014b68aebebf0f18b70927ce539fafe78a7",
+      "source": "exact original evidence checkout"
+    },
+    "qualification/memory-cell-v3/v3/structure.py": {
+      "bytes": 24451,
+      "git_blob_sha": "ee2654bf23add937f3d66691801b8b66fb51b952",
+      "sha256": "baad3617f4c0dcb9a45b67e3b8f351ed686ccc66042ec49161206ce26f7480a6",
+      "source": "exact original evidence checkout"
+    },
+    "qualification/memory-cell-v3/v3/structure_artifact_audit.py": {
+      "bytes": 16701,
+      "git_blob_sha": "fcf513e6352d3659c44f4867f1b0b6c7eb95e192",
+      "sha256": "a669c70a098c73d200cd7ad6aa6ca98d222974408246cea3cb37e5fe8ab17ee4",
+      "source": "exact original evidence checkout"
+    },
+    "qualification/memory-cell-v3/v3/structure_audit_models.py": {
+      "bytes": 7596,
+      "git_blob_sha": "5eb4963aeb50a97075b4354a529ded8b054bad6b",
+      "sha256": "4bd9ad76512a441af76435d27787b972d777e87f9adc3875f67f1ea43bfbc431",
+      "source": "exact original evidence checkout"
+    },
+    "qualification/memory-cell-v3/validation/development-retention.json": {
+      "bytes": 5821,
+      "git_blob_sha": "262adb3982f391514fb706401b9a04db3c054558",
+      "sha256": "0b87d4c866524a7b216a9bc1e9749b7473daa729e9c31b2978a2179f88c59652",
+      "source": "exact original evidence checkout"
+    },
+    "qualification/memory-cell-v3/validation/formal-evidence.json": {
+      "bytes": 499,
+      "git_blob_sha": "ca1da877c510a40d5ee0822a541c4d70347cc42f",
+      "sha256": "029e9fca840884901228b185c1f6a517d9125f23c4d6b87ef1eefd6d6842ee9c",
+      "source": "exact original evidence checkout"
+    },
+    "qualification/memory-cell-v3/validation/formal-lifecycle-audit.json": {
+      "bytes": 79767,
+      "git_blob_sha": "5aa392083473596ec6a16a371f9d38ff6ccf615d",
+      "sha256": "ebc010567a7f2aa4ada9d97cd178c154e1c17e0a872d7efa9af273917140e996",
+      "source": "exact original evidence checkout"
+    },
+    "qualification/memory-cell-v3/validation/formal-native-structure-audit.json": {
+      "bytes": 152272,
+      "git_blob_sha": "f9ab5dc7fd3cb0dd15096d30ff6feac35e1d94e1",
+      "sha256": "b62e29f19eb23a4e080bdbfba9115627cfb9b7133d4303f6d227c4dcaf6a2080",
+      "source": "exact original evidence checkout"
+    },
+    "qualification/memory-cell-v3/validation/native-clippy-test-only-changes.diff": {
+      "bytes": 1047,
+      "git_blob_sha": "4ae15345e5874a5adddff78b142948209e63028c",
+      "sha256": "364c9b8118e73263eba1bfe087b8bd55a18b10127af23c03055746a14390bb03",
+      "source": "exact original evidence checkout"
+    },
+    "qualification/memory-cell-v3/validation/prefreeze-validation.json": {
+      "bytes": 1707,
+      "git_blob_sha": "e0a1c40c99110bcf261e15206e1b7e40648ee014",
+      "sha256": "8926bfb26e400e5f4fadab04e584ae82d3213a2c81db5b9486855b5e08251dee",
+      "source": "exact original evidence checkout"
+    },
+    "qualification/memory-cell-v3/validation/python-final-format.json": {
+      "bytes": 14996,
+      "git_blob_sha": "1c991d1115533106f331f16484d317185d25c35b",
+      "sha256": "1e06350cdf4fd854875c5ed5d0e888a66a1ebb27b74b1980f2ef60777897d9a4",
+      "source": "exact original evidence checkout"
+    },
+    "qualification/memory-cell-v3/validation/report-review.json": {
+      "bytes": 1874,
+      "git_blob_sha": "de8b2c0553f803018eefcd06ec8ad05da83bc10e",
+      "sha256": "10a858a5aaef124d87aa78cd6e064bb0860a698e8862a248f4661e1f4b36053c",
+      "source": "exact original evidence checkout"
+    },
+    "qualification/memory-cell-v3/verify_evidence.py": {
+      "bytes": 795,
+      "git_blob_sha": "87f56b857d0809d5913521ebf6a7883d126cf6b7",
+      "sha256": "8785d54e2e0b4c35ad3a4682a33e89fad8be32b64f2c27b11f21ef06ab1b7728",
+      "source": "exact original evidence checkout"
+    }
+  },
+  "schema": "hepta.memory.v3.delivery.v1",
+  "v3_bundle": {
+    "advertised_ref": "refs/heads/research/memory-cell-v3-20261026",
+    "bytes": 54731928,
+    "filename": "hepta-memory-v3-history-20261026.bundle",
+    "parts": [
+      {
+        "bytes": 8000001,
+        "git_blob_sha": "df92d4f2181d428b0a200a994376d94b570c7b5c",
+        "path": "qualification/memory-cell-v3-delivery/bundle-parts/hepta-memory-v3-history-20261026.bundle.part001",
+        "sha256": "0f7509c5e76c36d4aa5e05174ffc675f51ae68b2756fbe807bfb8c7deb59c750"
+      },
+      {
+        "bytes": 8000001,
+        "git_blob_sha": "cee03ee2671988c86f196caead7e271720c68a47",
+        "path": "qualification/memory-cell-v3-delivery/bundle-parts/hepta-memory-v3-history-20261026.bundle.part002",
+        "sha256": "ccf347dbc0d167bff090e3596657f25d7d8caacac503c7deb35bc7e19681dbaf"
+      },
+      {
+        "bytes": 8000001,
+        "git_blob_sha": "5d60ea143c83eaf6c1c264c85b303bd3ad07e875",
+        "path": "qualification/memory-cell-v3-delivery/bundle-parts/hepta-memory-v3-history-20261026.bundle.part003",
+        "sha256": "0acff1ad13d83ce026360ecadb17d7732c4a45286ae81ae7135792fd131f00c4"
+      },
+      {
+        "bytes": 8000001,
+        "git_blob_sha": "c6aca68c6aa7f54f7f6d216efa82b8990587e1b5",
+        "path": "qualification/memory-cell-v3-delivery/bundle-parts/hepta-memory-v3-history-20261026.bundle.part004",
+        "sha256": "ea623a415d259186678a63c3ca66b96262fd650c0d1f0b2159d11396f5188209"
+      },
+      {
+        "bytes": 8000001,
+        "git_blob_sha": "632770b13ff8be0b580a852aa72bdebc51869745",
+        "path": "qualification/memory-cell-v3-delivery/bundle-parts/hepta-memory-v3-history-20261026.bundle.part005",
+        "sha256": "cdd6edea372142fa50859e102b5ce8114c5d3de97cdf2c4c653676f0978c244c"
+      },
+      {
+        "bytes": 8000001,
+        "git_blob_sha": "220c7e04f0d788761e83e27c3067d9c4dae61723",
+        "path": "qualification/memory-cell-v3-delivery/bundle-parts/hepta-memory-v3-history-20261026.bundle.part006",
+        "sha256": "5ba353001e8fee4db6a32871d4dffe06f3d8acd4ce26ee919ce94f09d8040a76"
+      },
+      {
+        "bytes": 6731922,
+        "git_blob_sha": "711f22e4562b02bdec2e192d97d3926646b28c60",
+        "path": "qualification/memory-cell-v3-delivery/bundle-parts/hepta-memory-v3-history-20261026.bundle.part007",
+        "sha256": "982bbfbaf428e1c540ef5f218b004211a7ef1a9766d59898e3b04f829ec8e57f"
+      }
+    ],
+    "required_commit": "57d2b9658839f11aa4685049f90cb7142d59026d",
+    "sha256": "ed9dc2f129051210b729e01281f16c6b863f17c71d5a474a7e3885509cd4cf3e"
+  },
+  "v3_original_commits": 38
+}

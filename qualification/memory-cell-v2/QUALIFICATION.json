@@ -1,0 +1,191 @@
+{
+  "all_blockers_closed": false,
+  "analysis": "analyses/20261026-v2-frozen/analysis.json",
+  "evidence": {
+    "exact_commit_binding": true,
+    "fresh_parity_is_not_accuracy": true,
+    "fresh_process_prediction_count": 2685,
+    "fresh_process_reads": 20,
+    "independent_artifact_audits": {
+      "external": "validation/external-artifact-audit.json",
+      "growth": "validation/growth-artifact-audit.json",
+      "real": "validation/real-artifact-audit.json"
+    },
+    "verified_output_files": 1641,
+    "verified_source_files": 72
+  },
+  "evidence_manifest_sha256": "a5cb0b3075a2aff203f88a2e97c8278a4014d5b2d9d229558312270f776529be",
+  "execution_completed": true,
+  "general_memory_system_established": false,
+  "implementation_scope": "research qualification package; native owner integration and production admission are not claimed",
+  "open_blockers": [
+    {
+      "finding": "actual-routed multi underperforms the near-exact-budget single on the preregistered real-task primary",
+      "id": "S2_SUPERIORITY"
+    },
+    {
+      "finding": "unseen synonym decision accuracy and coverage are zero",
+      "id": "UNSEEN_SEMANTIC_ADDRESSING"
+    },
+    {
+      "finding": "composition schemas and ports remain supplied",
+      "id": "AUTONOMOUS_TOPOLOGY"
+    },
+    {
+      "finding": "only 2 of 5 independent streams meet every frozen structural gate",
+      "id": "STRUCTURAL_ROBUSTNESS"
+    },
+    {
+      "finding": "no complete retained-storage advantage on real repository facts; digits advantage requires discarding replay",
+      "id": "FULL_COST_COMPRESSION"
+    },
+    {
+      "finding": "three classification sources do not establish new episodic/procedural task-stream addressing and composition",
+      "id": "GENERAL_MEMORY_TRANSFER"
+    }
+  ],
+  "report": "RESULTS.md",
+  "schema": "memory-cell-v2.qualification.v1",
+  "source_commit": "d1204d6108eef75de384c8c8e98304b68984ffd1",
+  "stages": {
+    "1_single_parameter_memory": {
+      "fresh_reloads": true,
+      "real_single_identity_gate": true,
+      "scope": "trained address-to-value-class associations with separately charged value catalogs and version metadata; v1 and v2 numerical capacity observations",
+      "status": "passed_with_bounded_scope"
+    },
+    "2_fixed_multi": {
+      "actual_route_gap": 0.0,
+      "comparison": {
+        "cluster_differences": {
+          "211": -0.048309178743961234,
+          "223": 0.0,
+          "227": 0.0,
+          "229": 0.0,
+          "233": -0.004444444444444362
+        },
+        "clusters": 5,
+        "confidence": 0.95,
+        "lower": -0.029874396135265612,
+        "method": "percentile bootstrap of equal-weight independent-cluster mean differences",
+        "observations": 5,
+        "paired_difference": -0.010550724637681119,
+        "status": "estimated",
+        "upper": 0.0
+      },
+      "gate_passed": false,
+      "status": "failed"
+    },
+    "3_typed_network": {
+      "edges_learned": false,
+      "status": "supplied_graph_mechanism_passed_autonomous_topology_open",
+      "tasks": {
+        "commit_owner_chain": {
+          "exact": 1.0,
+          "exact_no_edges": 0.0,
+          "exact_shuffled_edges": 0.0,
+          "multi_learned": 0.8,
+          "multi_no_edges": 0.0,
+          "multi_shuffled_edges": 0.0,
+          "parameter_edge_permutation_drop": 0.8,
+          "parameter_edge_removal_drop": 0.8,
+          "per_seed_queries": [
+            3,
+            3,
+            3,
+            3,
+            3
+          ],
+          "supplied_edge_gate_passed": true
+        },
+        "schema_chain": {
+          "exact": 1.0,
+          "exact_no_edges": 0.0,
+          "exact_shuffled_edges": 0.6951349842927399,
+          "multi_learned": 1.0,
+          "multi_no_edges": 0.0,
+          "multi_shuffled_edges": 0.6951349842927399,
+          "parameter_edge_permutation_drop": 0.3048650157072601,
+          "parameter_edge_removal_drop": 1.0,
+          "per_seed_queries": [
+            150,
+            150,
+            158,
+            154,
+            134
+          ],
+          "supplied_edge_gate_passed": true
+        }
+      }
+    },
+    "4_maintenance": {
+      "method": "full fresh retraining after tainted parameter inheritance",
+      "selective_weight_unlearning_or_production_deletion_certified": false,
+      "status": "local_mechanisms_verified",
+      "supplemental_deletion_readout": {
+        "all_original_aggregates_reproduced": true,
+        "manifest": "results/20261026-v2-deletion-readout-audit/MANIFEST.json",
+        "manifest_sha256": "a557e5266eaee5c76e8e9409b2b71b457c959ba2bec8a8bb4090fef2662624dd",
+        "mode": "post-formal supplemental saved-model inference",
+        "original_gate_and_timing_changed": false,
+        "raw_old_value_matches_per_80": {
+          "domain": 3,
+          "hash": 3,
+          "policy": 2,
+          "single": 1
+        },
+        "rows": 320,
+        "serving_refusals": 320,
+        "training_performed": false,
+        "unlearning_proven": false
+      },
+      "v1_replay_and_correction_evidence": "../memory-cell-research/results/20261025-six-stage",
+      "v2_revocation_guards_all_passed": true
+    },
+    "5_structural_evolution": {
+      "all_seed_gate_passed": false,
+      "passing_seeds": 2,
+      "primary_comparison": {
+        "accuracy_interval": {
+          "cluster_differences": {
+            "211": 0.0,
+            "223": 0.0,
+            "227": 0.05836338095326343,
+            "229": 0.0,
+            "233": 0.0633717405316917
+          },
+          "clusters": 5,
+          "confidence": 0.95,
+          "lower": 0.0,
+          "method": "percentile bootstrap of equal-weight independent-cluster mean differences",
+          "observations": 5,
+          "paired_difference": 0.024347024296991027,
+          "status": "estimated",
+          "upper": 0.04969572050966771
+        },
+        "mean_net_gain_per_query": 0.0242827892682067,
+        "per_seed_break_even_queries_per_update": [
+          null,
+          null,
+          10.665206678532028,
+          null,
+          9.904986676348281
+        ]
+      },
+      "status": "failed_strict_gate",
+      "total_seeds": 5
+    },
+    "6_transfer": {
+      "independent_source_datasets": 3,
+      "new_domain_memory_addressing_and_composition_established": false,
+      "repeated_splits_per_dataset": 5,
+      "status": "bounded_pattern_interface_reused_general_memory_transfer_open"
+    }
+  },
+  "unit_tests": {
+    "ast_preserved_by_format": true,
+    "passed": 65,
+    "ran_before_final_format": true,
+    "skipped": 0
+  }
+}

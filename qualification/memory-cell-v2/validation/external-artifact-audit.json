@@ -1,0 +1,743 @@
+{
+  "activities_not_performed": [
+    "unit tests",
+    "training",
+    "new model inference",
+    "full formal evidence verifier rerun",
+    "source edits",
+    "formal result edits",
+    "git commit"
+  ],
+  "aggregation": {
+    "accuracy_unit": "fraction",
+    "independent_domain_confidence_interval_computed": false,
+    "mean": "equal mean of five per-seed accuracies, not pooled sample accuracy",
+    "minimum_maximum": "descriptive variation across the five fixed-dataset splits"
+  },
+  "audit_method": "Read-only Python analysis of saved partitions, selection predictions, per-sample predictions, source arrays, normalizers, summaries, and actual deployment file sizes; no model execution.",
+  "auditor": "/root/cell_data_eval",
+  "blocking_findings": [],
+  "checked_counts": {
+    "cases": 15,
+    "deployment_component_files": 90,
+    "independent_source_datasets": 3,
+    "prediction_records": 8499,
+    "selection_sample_records": 2126
+  },
+  "completed_checks": [
+    {
+      "check": "partitions_cover_all_source_rows_and_have_disjoint_row_sets",
+      "status": "passed"
+    },
+    {
+      "check": "identical_float64_feature_vectors_do_not_cross_train_selection_test",
+      "status": "passed"
+    },
+    {
+      "check": "each_partition_contains_all_dataset_classes",
+      "status": "passed"
+    },
+    {
+      "check": "saved_normalizer_mean_and_scale_exactly_equal_train_only_mean_and_ddof0_std",
+      "status": "passed",
+      "zero_variance_scale": 1.0
+    },
+    {
+      "check": "saved_selection_indices_and_targets_match_partition_and_original_labels",
+      "status": "passed"
+    },
+    {
+      "check": "selection_scores_and_chosen_k_recompute_from_selection_predictions",
+      "status": "passed",
+      "tie_policy": "prefer smaller K"
+    },
+    {
+      "check": "saved_prediction_indices_and_targets_match_source_arrays",
+      "status": "passed"
+    },
+    {
+      "check": "all_reported_accuracy_correct_abstention_and_total_counts_recompute_from_saved_predictions",
+      "status": "passed"
+    },
+    {
+      "check": "selected_knn_predictions_equal_the_selected_fixed_knn_arm",
+      "status": "passed"
+    },
+    {
+      "check": "deployment_component_sizes_and_arm_totals_equal_actual_files",
+      "status": "passed"
+    },
+    {
+      "check": "time_only_break_even_minimum_reads_recompute_from_saved_write_and_read_measurements",
+      "status": "passed"
+    },
+    {
+      "check": "per_dataset_means_minima_maxima_and_mean_bytes_match_saved_summary_and_analysis",
+      "status": "passed"
+    }
+  ],
+  "count_units": {
+    "deployment_component_files": "For each case: model manifest, model tensor archive, normalizer, labels, written-record archive, and index recipe.",
+    "prediction_records": "One source-index/phase record containing predictions for all comparison arms; includes written recovery and unseen test.",
+    "selection_sample_records": "Selection rows counted across the 15 cases; not unique independent observations across repeated splits."
+  },
+  "datasets": {
+    "digits": {
+      "case_count": 5,
+      "deployment_bytes": {
+        "exact": {
+          "maximum": 47461,
+          "mean": 47351.6,
+          "minimum": 47265
+        },
+        "knn": {
+          "maximum": 50202,
+          "mean": 50077.6,
+          "minimum": 50007
+        },
+        "model_with_replay": {
+          "maximum": 69510,
+          "mean": 69390.4,
+          "minimum": 69335
+        },
+        "model_without_replay": {
+          "maximum": 22118,
+          "mean": 22080.8,
+          "minimum": 22056
+        }
+      },
+      "model_minus_selected_knn_mean_percentage_points": -0.5494505494505475,
+      "model_write_seconds": {
+        "maximum": 0.41024620800453704,
+        "mean": 0.39135362920351324,
+        "minimum": 0.3812087499827612
+      },
+      "partition_counts_by_seed": {
+        "211": {
+          "selection": 359,
+          "test": 364,
+          "train": 1074
+        },
+        "223": {
+          "selection": 359,
+          "test": 364,
+          "train": 1074
+        },
+        "227": {
+          "selection": 359,
+          "test": 364,
+          "train": 1074
+        },
+        "229": {
+          "selection": 359,
+          "test": 364,
+          "train": 1074
+        },
+        "233": {
+          "selection": 359,
+          "test": 364,
+          "train": 1074
+        }
+      },
+      "selected_k_by_seed": {
+        "211": 1,
+        "223": 1,
+        "227": 5,
+        "229": 5,
+        "233": 5
+      },
+      "selected_knn_time_only_break_even_reads_range": {
+        "maximum": 58354,
+        "minimum": 5513
+      },
+      "selected_knn_write_seconds": {
+        "maximum": 0.046003581024706364,
+        "mean": 0.040965803017024884,
+        "minimum": 0.039256230025785044
+      },
+      "source_scope": "sklearn 1797-row copy of original UCI test subset, re-split by sample; no writer-independent claim",
+      "source_shape": [
+        1797,
+        64
+      ],
+      "time_only_break_even_reads_by_seed": {
+        "211": {
+          "1nn": 62467,
+          "5nn": 6410,
+          "exact": 7571047,
+          "selected_knn": 58354
+        },
+        "223": {
+          "1nn": 50092,
+          "5nn": 5754,
+          "exact": 17659837,
+          "selected_knn": 45924
+        },
+        "227": {
+          "1nn": 61436,
+          "5nn": 5920,
+          "exact": null,
+          "selected_knn": 5513
+        },
+        "229": {
+          "1nn": 63084,
+          "5nn": 6237,
+          "exact": 16638871,
+          "selected_knn": 5815
+        },
+        "233": {
+          "1nn": 59405,
+          "5nn": 6185,
+          "exact": null,
+          "selected_knn": 5767
+        }
+      },
+      "training_seconds": {
+        "maximum": 0.394059299986111,
+        "mean": 0.37522172259632497,
+        "minimum": 0.3652170300047146
+      },
+      "unseen_read_microseconds_per_query": {
+        "1nn": {
+          "maximum": 8.61298902456618,
+          "mean": 7.338501106190321,
+          "minimum": 6.855958797661895
+        },
+        "5nn": {
+          "maximum": 67.08291482857102,
+          "mean": 62.79649725791507,
+          "minimum": 60.305093419239185
+        },
+        "model": {
+          "maximum": 1.089445084709531,
+          "mean": 0.9328774787398608,
+          "minimum": 0.76148625249606
+        },
+        "selected_knn": {
+          "maximum": 62.862703299078234,
+          "mean": 40.02041154468156,
+          "minimum": 7.097417567690302
+        }
+      },
+      "unseen_test_accuracy": {
+        "1nn": {
+          "maximum": 0.978021978021978,
+          "mean": 0.9686813186813187,
+          "minimum": 0.9615384615384616
+        },
+        "5nn": {
+          "maximum": 0.9807692307692307,
+          "mean": 0.971978021978022,
+          "minimum": 0.9560439560439561
+        },
+        "model": {
+          "maximum": 0.9807692307692307,
+          "mean": 0.9637362637362638,
+          "minimum": 0.9505494505494505
+        },
+        "selected_knn": {
+          "maximum": 0.9807692307692307,
+          "mean": 0.9692307692307692,
+          "minimum": 0.9560439560439561
+        }
+      },
+      "written_read_microseconds_per_query": {
+        "exact": {
+          "maximum": 0.7946135908073886,
+          "mean": 0.6028227164458615,
+          "minimum": 0.5178994382514829
+        },
+        "model": {
+          "maximum": 0.7730819320902783,
+          "mean": 0.6113886430831816,
+          "minimum": 0.5071573607620109
+        }
+      },
+      "written_recovery_accuracy": {
+        "1nn": {
+          "maximum": 1.0,
+          "mean": 1.0,
+          "minimum": 1.0
+        },
+        "5nn": {
+          "maximum": 0.9860335195530726,
+          "mean": 0.9832402234636871,
+          "minimum": 0.9804469273743017
+        },
+        "exact": {
+          "maximum": 1.0,
+          "mean": 1.0,
+          "minimum": 1.0
+        },
+        "model": {
+          "maximum": 1.0,
+          "mean": 1.0,
+          "minimum": 1.0
+        },
+        "selected_knn": {
+          "maximum": 1.0,
+          "mean": 0.9895716945996276,
+          "minimum": 0.9804469273743017
+        }
+      }
+    },
+    "iris": {
+      "case_count": 5,
+      "deployment_bytes": {
+        "exact": {
+          "maximum": 1434,
+          "mean": 1426.4,
+          "minimum": 1421
+        },
+        "knn": {
+          "maximum": 2036,
+          "mean": 2029.8,
+          "minimum": 2023
+        },
+        "model_with_replay": {
+          "maximum": 19676,
+          "mean": 19652.6,
+          "minimum": 19632
+        },
+        "model_without_replay": {
+          "maximum": 18284,
+          "mean": 18262.2,
+          "minimum": 18244
+        }
+      },
+      "model_minus_selected_knn_mean_percentage_points": -0.043010752688177334,
+      "model_write_seconds": {
+        "maximum": 0.08715672299149446,
+        "mean": 0.07037427140166982,
+        "minimum": 0.06149816601828206
+      },
+      "partition_counts_by_seed": {
+        "211": {
+          "selection": 31,
+          "test": 30,
+          "train": 89
+        },
+        "223": {
+          "selection": 30,
+          "test": 30,
+          "train": 90
+        },
+        "227": {
+          "selection": 30,
+          "test": 31,
+          "train": 89
+        },
+        "229": {
+          "selection": 30,
+          "test": 31,
+          "train": 89
+        },
+        "233": {
+          "selection": 30,
+          "test": 30,
+          "train": 90
+        }
+      },
+      "selected_k_by_seed": {
+        "211": 5,
+        "223": 1,
+        "227": 5,
+        "229": 1,
+        "233": 5
+      },
+      "selected_knn_time_only_break_even_reads_range": {
+        "maximum": 161126,
+        "minimum": 26347
+      },
+      "selected_knn_write_seconds": {
+        "maximum": 0.0014166500186547637,
+        "mean": 0.0011649474006844684,
+        "minimum": 0.0009949149971362203
+      },
+      "source_scope": "plant measurements; bundled corrected sklearn variant",
+      "source_shape": [
+        150,
+        4
+      ],
+      "time_only_break_even_reads_by_seed": {
+        "211": {
+          "1nn": null,
+          "5nn": 54980,
+          "exact": null,
+          "selected_knn": 54782
+        },
+        "223": {
+          "1nn": 161562,
+          "5nn": 38359,
+          "exact": 9049707,
+          "selected_knn": 161126
+        },
+        "227": {
+          "1nn": 122998,
+          "5nn": 32356,
+          "exact": null,
+          "selected_knn": 32264
+        },
+        "229": {
+          "1nn": 140717,
+          "5nn": 20447,
+          "exact": null,
+          "selected_knn": 140238
+        },
+        "233": {
+          "1nn": 117301,
+          "5nn": 26449,
+          "exact": null,
+          "selected_knn": 26347
+        }
+      },
+      "training_seconds": {
+        "maximum": 0.08437068099738099,
+        "mean": 0.06770715680031572,
+        "minimum": 0.058933963999152184
+      },
+      "unseen_read_microseconds_per_query": {
+        "1nn": {
+          "maximum": 2.110466690889249,
+          "mean": 2.0099760838083283,
+          "minimum": 1.9472334921980898
+        },
+        "5nn": {
+          "maximum": 4.536709785761852,
+          "mean": 3.8629300361599332,
+          "minimum": 3.665773904011134
+        },
+        "model": {
+          "maximum": 2.475666891162594,
+          "mean": 1.6687154520793708,
+          "minimum": 1.428225885085281
+        },
+        "selected_knn": {
+          "maximum": 3.7258665543049574,
+          "mean": 3.0126297246835003,
+          "minimum": 1.9756000256165864
+        }
+      },
+      "unseen_test_accuracy": {
+        "1nn": {
+          "maximum": 1.0,
+          "mean": 0.9346236559139784,
+          "minimum": 0.8709677419354839
+        },
+        "5nn": {
+          "maximum": 1.0,
+          "mean": 0.973763440860215,
+          "minimum": 0.9333333333333333
+        },
+        "model": {
+          "maximum": 1.0,
+          "mean": 0.953763440860215,
+          "minimum": 0.9
+        },
+        "selected_knn": {
+          "maximum": 1.0,
+          "mean": 0.9541935483870968,
+          "minimum": 0.8709677419354839
+        }
+      },
+      "written_read_microseconds_per_query": {
+        "exact": {
+          "maximum": 0.8263932920343587,
+          "mean": 0.583162785161254,
+          "minimum": 0.40983334959795076
+        },
+        "model": {
+          "maximum": 1.446179799693689,
+          "mean": 1.0149578299936135,
+          "minimum": 0.7845999789424241
+        }
+      },
+      "written_recovery_accuracy": {
+        "1nn": {
+          "maximum": 1.0,
+          "mean": 1.0,
+          "minimum": 1.0
+        },
+        "5nn": {
+          "maximum": 0.9888888888888889,
+          "mean": 0.9686641697877653,
+          "minimum": 0.9550561797752809
+        },
+        "exact": {
+          "maximum": 1.0,
+          "mean": 1.0,
+          "minimum": 1.0
+        },
+        "model": {
+          "maximum": 1.0,
+          "mean": 1.0,
+          "minimum": 1.0
+        },
+        "selected_knn": {
+          "maximum": 1.0,
+          "mean": 0.9798751560549314,
+          "minimum": 0.9550561797752809
+        }
+      }
+    },
+    "wine": {
+      "case_count": 5,
+      "deployment_bytes": {
+        "exact": {
+          "maximum": 4303,
+          "mean": 4280.6,
+          "minimum": 4268
+        },
+        "knn": {
+          "maximum": 5238,
+          "mean": 5221.6,
+          "minimum": 5211
+        },
+        "model_with_replay": {
+          "maximum": 22860,
+          "mean": 22837.4,
+          "minimum": 22825
+        },
+        "model_without_replay": {
+          "maximum": 18602,
+          "mean": 18588.8,
+          "minimum": 18576
+        }
+      },
+      "model_minus_selected_knn_mean_percentage_points": 3.2432432432432434,
+      "model_write_seconds": {
+        "maximum": 0.07285556200076826,
+        "mean": 0.06735654639778658,
+        "minimum": 0.06567403598455712
+      },
+      "partition_counts_by_seed": {
+        "211": {
+          "selection": 36,
+          "test": 37,
+          "train": 105
+        },
+        "223": {
+          "selection": 36,
+          "test": 37,
+          "train": 105
+        },
+        "227": {
+          "selection": 36,
+          "test": 37,
+          "train": 105
+        },
+        "229": {
+          "selection": 36,
+          "test": 37,
+          "train": 105
+        },
+        "233": {
+          "selection": 36,
+          "test": 37,
+          "train": 105
+        }
+      },
+      "selected_k_by_seed": {
+        "211": 1,
+        "223": 1,
+        "227": 1,
+        "229": 5,
+        "233": 5
+      },
+      "selected_knn_time_only_break_even_reads_range": {
+        "maximum": 425603,
+        "minimum": 17475
+      },
+      "selected_knn_write_seconds": {
+        "maximum": 0.0014256520080380142,
+        "mean": 0.001409647596301511,
+        "minimum": 0.0013831310061505064
+      },
+      "source_scope": "chemical measurements of wines from three cultivars",
+      "source_shape": [
+        178,
+        13
+      ],
+      "time_only_break_even_reads_by_seed": {
+        "211": {
+          "1nn": 147052,
+          "5nn": 26715,
+          "exact": null,
+          "selected_knn": 146391
+        },
+        "223": {
+          "1nn": 427368,
+          "5nn": 27280,
+          "exact": null,
+          "selected_knn": 425603
+        },
+        "227": {
+          "1nn": 96907,
+          "5nn": 17607,
+          "exact": 2507972,
+          "selected_knn": 96462
+        },
+        "229": {
+          "1nn": 100683,
+          "5nn": 17547,
+          "exact": 8518967,
+          "selected_knn": 17475
+        },
+        "233": {
+          "1nn": 102828,
+          "5nn": 21734,
+          "exact": null,
+          "selected_knn": 21645
+        }
+      },
+      "training_seconds": {
+        "maximum": 0.06988928500504699,
+        "mean": 0.0645087686018087,
+        "minimum": 0.06285027900594287
+      },
+      "unseen_read_microseconds_per_query": {
+        "1nn": {
+          "maximum": 2.175945917622664,
+          "mean": 2.0756217103602514,
+          "minimum": 1.9634596380480638
+        },
+        "5nn": {
+          "maximum": 5.106513649602798,
+          "mean": 4.642945871612913,
+          "minimum": 4.356459563447011
+        },
+        "model": {
+          "maximum": 1.9751082495408687,
+          "mean": 1.5596756900383815,
+          "minimum": 1.321162090863328
+        },
+        "selected_knn": {
+          "maximum": 5.0066214375751645,
+          "mean": 3.1546810704812005,
+          "minimum": 2.1063515796905032
+        }
+      },
+      "unseen_test_accuracy": {
+        "1nn": {
+          "maximum": 0.972972972972973,
+          "mean": 0.9351351351351351,
+          "minimum": 0.8918918918918919
+        },
+        "5nn": {
+          "maximum": 1.0,
+          "mean": 0.9567567567567568,
+          "minimum": 0.918918918918919
+        },
+        "model": {
+          "maximum": 1.0,
+          "mean": 0.9783783783783784,
+          "minimum": 0.918918918918919
+        },
+        "selected_knn": {
+          "maximum": 0.972972972972973,
+          "mean": 0.9459459459459459,
+          "minimum": 0.918918918918919
+        }
+      },
+      "written_read_microseconds_per_query": {
+        "exact": {
+          "maximum": 0.7988000842964366,
+          "mean": 0.5897333557229667,
+          "minimum": 0.44284762615071877
+        },
+        "model": {
+          "maximum": 1.1484666694221752,
+          "mean": 0.8495828868555171,
+          "minimum": 0.7636095341738491
+        }
+      },
+      "written_recovery_accuracy": {
+        "1nn": {
+          "maximum": 1.0,
+          "mean": 1.0,
+          "minimum": 1.0
+        },
+        "5nn": {
+          "maximum": 1.0,
+          "mean": 0.9752380952380952,
+          "minimum": 0.9523809523809523
+        },
+        "exact": {
+          "maximum": 1.0,
+          "mean": 1.0,
+          "minimum": 1.0
+        },
+        "model": {
+          "maximum": 1.0,
+          "mean": 1.0,
+          "minimum": 1.0
+        },
+        "selected_knn": {
+          "maximum": 1.0,
+          "mean": 0.9942857142857143,
+          "minimum": 0.9714285714285714
+        }
+      }
+    }
+  },
+  "executed_source_commit": "d1204d6108eef75de384c8c8e98304b68984ffd1",
+  "formal_external_summary_sha256": "34c4cfbcabde82d52dbfdd9ad121b4d02a40314c6b2075671c8e3e937e083c1d",
+  "formal_identity_fields_directly_matched_when_recording": true,
+  "formal_manifest_sha256": "a5cb0b3075a2aff203f88a2e97c8278a4014d5b2d9d229558312270f776529be",
+  "formal_run_directory": "results/20261026-v2-frozen",
+  "key_findings": [
+    "Model, exact lookup and fixed 1NN achieved 100 percent written recovery in all 15 cases.",
+    "Mean unseen-input model accuracy exceeded selection-chosen KNN on Wine, was nearly equal on Iris, and was lower on Digits.",
+    "Only Digits without retained replay had smaller model deployment artifacts than exact and KNN; retaining replay removed this size advantage.",
+    "Exact lookup abstained on genuinely unseen inputs as intended; this does not demonstrate a superior general memory system."
+  ],
+  "limitations": [
+    "There are three independent source datasets; the five seeds per dataset are repeated partitions and not fifteen independent domains.",
+    "Digits is the sklearn 1797-row copy of the original UCI test subset, re-split by sample, without a writer-independent generalization guarantee.",
+    "These tasks measure fixed-learner perceptual/semantic pattern classification and written-feature recovery, not episodic or general conversational memory.",
+    "Deployment bytes exclude separately reported evaluation provenance, evaluation logs, runtime dependency binaries, and Python object overhead.",
+    "The audit checks saved evidence consistency and does not independently reproduce training or prove scientific generality.",
+    "No significance or independent-domain population guarantee is inferred from descriptive five-split ranges."
+  ],
+  "record_kind": "saved summary of an already completed independent read-only artifact audit",
+  "recorded_at_utc": "2026-10-26T05:23:56.570192+00:00",
+  "results_md_external_review": {
+    "document_edited_by_auditor": false,
+    "numeric_corrections_required": false,
+    "review_scope": "Section 6 external dataset text and tables only",
+    "suggestions": [
+      "Explicitly label both external tables as equal means across the five seeds.",
+      "Link this audit record beside the independent-audit statement.",
+      "Optionally expose fixed 1NN/5NN means and split ranges, or link to this record, so selection-chosen KNN is not mistaken for the best test-time K.",
+      "Describe 8499 as per-sample prediction records containing all comparison arms."
+    ]
+  },
+  "schema": "memory-cell-v2.external-artifact-audit.v1",
+  "seeds": [
+    211,
+    223,
+    227,
+    229,
+    233
+  ],
+  "shared_evaluation_provenance_bytes": {
+    "included_in_deployment_table": false,
+    "raw_dataset_files": 153172,
+    "source_manifest": 6815,
+    "total": 159987
+  },
+  "status": "passed_saved_artifact_consistency_checks",
+  "timing_scope": {
+    "break_even": "Time only, separately per case, with accuracy equivalence explicitly not assumed; null indicates no positive measured per-read saving.",
+    "model_write": "Includes train-only normalization setup, training features, fitting, model save/reload, normalizer/label serialization, and replay serialization.",
+    "not_established": [
+      "single-request end-to-end latency",
+      "tail latency",
+      "production throughput",
+      "energy or hardware pricing",
+      "stable advantage over exact lookup"
+    ],
+    "read": "One warm CPU batch per case/phase/arm, divided by query count; normalization is included.",
+    "selected_knn_write": "Includes index/record preparation plus selection reads for both fixed K candidates."
+  }
+}

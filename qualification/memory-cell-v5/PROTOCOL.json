@@ -1,0 +1,129 @@
+{
+  "schema": "hepta.memory.v5.targeted-protocol.v1",
+  "study": "Independently authored language addressing over recovered parameter memories",
+  "formal_seeds": [
+    1019,
+    1021,
+    1031,
+    1033,
+    1039
+  ],
+  "development_seeds": [
+    8011,
+    8017
+  ],
+  "domains": [
+    "co2",
+    "temperature",
+    "sunspots",
+    "unemployment"
+  ],
+  "intents": [
+    "at",
+    "previous",
+    "change",
+    "mean3",
+    "range3",
+    "peak3"
+  ],
+  "main_held": {
+    "file": "held/queries.en.json",
+    "sha256": "d48195b3bc3a4f639db31a7a400a3e6eb79b3d879e7ba19ae96217224aeaacbf",
+    "seal_file": "held/SEAL.json",
+    "seal_sha256": "287762002bef1892f22e8672345354c61db142fe68f654767b0ff0bf90bcb75b",
+    "authored_utterances": 216,
+    "known_utterances": 144,
+    "known_per_intent": 24,
+    "ood_utterances": 72,
+    "ood_families": 12,
+    "source": "Separate evaluation assistant authored synthetic English; not real users or independent human annotation",
+    "independence_unit": "One authored utterance; repeated domains and seeds do not create new independent language examples"
+  },
+  "gates": {
+    "known_correct_accepted_rate_minimum": 0.8,
+    "ood_false_accept_rate_maximum": 0.05,
+    "pure_parameter_oracle_exact_rate_minimum": 1.0,
+    "composed_gain_over_removed_edges_minimum": 0.1,
+    "composed_gain_over_typed_permutation_minimum": 0.1,
+    "all_seeds_and_domains_required_for_scoped_joint_pass": true,
+    "language_known_denominator_per_domain": 144,
+    "language_ood_denominator_per_domain": 72,
+    "composition_denominator_per_domain": 120
+  },
+  "routing": {
+    "candidate_specification": "v5/config.py",
+    "candidates": [
+      "word-lr-c1",
+      "word-lr-c4",
+      "mixed-svm-c0.5",
+      "mixed-svm-c2",
+      "char4096-lr-c4",
+      "unigram2048-lr-c4",
+      "word-lr-c4-negative-families",
+      "mixed-svm-c2-negative-families"
+    ],
+    "primary_selection": "Train/selection partitions only, following the declared candidate and confidence/margin grids",
+    "no_new_candidates_after_formal_start": true,
+    "no_pretrained_encoder": true,
+    "learned_parameters": "Actual fitted TF-IDF state and linear classifier coefficients",
+    "inference_fields": [
+      "utterance",
+      "series_name",
+      "date"
+    ],
+    "explicit_entity_and_date_slots": true,
+    "keyword_dispatch_for_primary": false,
+    "new_held_training_or_selection": false,
+    "development_revision": {
+      "name": "V5b",
+      "predeclaration": "V5B_PREDECLARATION.md",
+      "additional_candidates": 2,
+      "reason": "V5a risk-feasible calibration collapsed known coverage on development; test heterogeneous negative decision boundaries.",
+      "negative_families_source": "Five pre-existing V5a training row groups, no held content",
+      "sample_weights": "Preserve original seven-class balanced per-example weights, including equal weights across all negative subgroups",
+      "training_corpus_changed": false,
+      "selection_or_development_corpus_changed": false,
+      "held_opened_before_revision": false,
+      "prior_v5a_results_retained": true,
+      "third_revision_before_formal": false
+    }
+  },
+  "graph_and_memory": {
+    "original_v3_code_commit": "ddd2ec4f9167c5ccf22adb63f4ce7402ebd7ae19",
+    "recovered_v4_artifact_commit": "3c509f9bb9a9724cddbe6a917c728e022582fefe",
+    "recovered_artifact_original_training_source": "6206dfba0a3219534dd1a0274431bf48fd23673c",
+    "artifact_seed": 401,
+    "fixed_previously_learned_layout": true,
+    "layout_or_memory_retraining_in_v5": false,
+    "new_type_or_primitive_invention_claimed": false,
+    "memory_reader": "Saved integer factors and value-free address metadata",
+    "parameter_arm_reads_residual_or_strong_codec": false,
+    "strong_comparator": "Separately loaded strong exact codec with supplied planner under the same frozen routing decisions",
+    "ablation_removed": "Remove transitions between different cell_type owners",
+    "ablation_permuted": "Permute only nodes with the same input and output port types",
+    "oracle": "Explicit grader control, not an inference access path",
+    "numeric_and_ordered_provenance_required": true,
+    "address_selection": "Deterministic label-free selection from all parameter-mask-valid three-month windows"
+  },
+  "execution": {
+    "freeze_before_formal_training_and_held_execution": true,
+    "fresh_model_loading_processes": true,
+    "gold_labels_or_numeric_targets_in_actual_reader_requests": false,
+    "process_isolation_is_not_os_or_filesystem_isolation": true,
+    "candidate_training_and_serialized_state_costs_retained": true,
+    "decoded_array_bytes_reported_separately_from_compressed_files": true,
+    "post_formal_tuning_or_reselection": false,
+    "training_requires_verified_source_freeze": true,
+    "selected_models_and_selection_receipts_sealed_before_held": true,
+    "source_and_selected_seals_committed_remotely_before_held": true
+  },
+  "interpretation": {
+    "historical_v4_results_are_not_paired_new_corpus_comparators": true,
+    "five_training_seeds_do_not_make_five_independent_language_corpora": true,
+    "passing_scoped_v5_gates_does_not_establish_all_six_user_stages": true,
+    "full_missing_v4_evidence_not_recreated": true,
+    "full_system_storage_advantage_not_presumed": true,
+    "general_memory_system_established": false,
+    "production_admitted": false
+  }
+}

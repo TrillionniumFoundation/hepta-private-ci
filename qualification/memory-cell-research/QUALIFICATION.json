@@ -1,0 +1,134 @@
+{
+  "capacity_points": [
+    {
+      "learned_routed_accuracy": 0.678125,
+      "oracle_routed_accuracy": 1.0,
+      "seed_count": 5,
+      "single_accuracy": 1.0,
+      "written_records": 32
+    },
+    {
+      "learned_routed_accuracy": 0.6052083333333333,
+      "oracle_routed_accuracy": 1.0,
+      "seed_count": 5,
+      "single_accuracy": 1.0,
+      "written_records": 96
+    },
+    {
+      "learned_routed_accuracy": 0.5484375,
+      "oracle_routed_accuracy": 1.0,
+      "seed_count": 5,
+      "single_accuracy": 1.0,
+      "written_records": 256
+    }
+  ],
+  "evidence_manifest_sha256": "cfa89c5b225b3925fd429fe62f51e9d9ec41c0f6e8f00b53b2f08a57b6aa7136",
+  "evidence_path": "results/20261025-six-stage",
+  "executed_source_commit": "81fbc94963447ecb0e4bf6956d144d77e5a16e13",
+  "graph_mean_accuracy": {
+    "exact_chained": 1.0,
+    "no_edges": 0.0,
+    "shuffled": 0.049999999999999996,
+    "typed": 1.0
+  },
+  "growth_cost_means": {
+    "fixed_comparator_cost": {
+      "priced_resource_cost": 0.20943533584333732,
+      "priced_retained_bytes": 206152.4,
+      "selected_deployment_bytes": 27464.8,
+      "total_read_seconds": 0.0019930058013414966,
+      "total_write_seconds": 0.1289930041995831
+    },
+    "policy_cost": {
+      "priced_resource_cost": 0.3285117024917796,
+      "priced_retained_bytes": 320321.2,
+      "selected_deployment_bytes": 26101.2,
+      "total_read_seconds": 0.004453970401664264,
+      "total_write_seconds": 0.3736532090115361
+    }
+  },
+  "primary_multi_deployed_artifact_bytes": 63841.6,
+  "primary_storage_means_bytes": {
+    "common_source_event_bytes": 30768,
+    "minimal_exact_lookup_gzip_bytes": 1245,
+    "minimal_exact_lookup_json_bytes": 6201.6,
+    "single_artifact_bytes_including_training_receipt": 55582.8
+  },
+  "publication": {
+    "pushed": false,
+    "remote_action_requires_explicit_authorization_after_automatic_review_rejection": true
+  },
+  "retained_mean_accuracy": {
+    "clean_retrain": 1.0,
+    "with_replay": 1.0,
+    "without_replay": 0.3666666666666667
+  },
+  "schema": "memory-cell-research.qualification-summary.v1",
+  "scope": "bounded CPU numerical written-key memory; no language-model or production claim",
+  "stage_criteria": {
+    "1_single": {
+      "every_primary_seed_accuracy": 1.0,
+      "met_in_bounded_profile": true
+    },
+    "2_fixed_multi": {
+      "met_in_bounded_profile": false,
+      "paired_comparison": {
+        "cluster_differences": {
+          "101": -0.43229166666666663,
+          "11": -0.453125,
+          "23": -0.27604166666666663,
+          "47": -0.41145833333333337,
+          "71": -0.40104166666666663
+        },
+        "clusters": 5,
+        "confidence": 0.95,
+        "lower": -0.4364583333333334,
+        "method": "percentile bootstrap of equal-weight independent-cluster mean differences",
+        "observations": 5,
+        "paired_difference": -0.3947916666666666,
+        "status": "estimated",
+        "upper": -0.3322916666666666
+      }
+    },
+    "3_typed_graph": {
+      "beats_exact_retrieval": false,
+      "learned_topology_established": false,
+      "met_in_bounded_profile": true,
+      "passed_seeds": 5
+    },
+    "4_maintenance": {
+      "long_term_continual_learning_established": false,
+      "met_in_bounded_profile": true,
+      "passed_seeds": 5,
+      "unlearning_proven": false
+    },
+    "5_growth": {
+      "met_in_bounded_profile": false,
+      "passed_seeds": 0,
+      "selected_structures": [
+        "parent",
+        "parent",
+        "parent",
+        "parent",
+        "parent"
+      ]
+    },
+    "6_transfer": {
+      "broad_transfer_criterion_met": false,
+      "diagnostics_executed": true,
+      "general_memory_system_established": false,
+      "independent_synthetic_streams": 3,
+      "real_source_facts": 40
+    }
+  },
+  "validation": {
+    "executed_source_files_verified": 27,
+    "formal_evidence_files_verified": 945,
+    "formal_fresh_reader_processes": 19,
+    "formal_trained_tensor_artifacts": 207,
+    "mechanism_tests_failed": 0,
+    "mechanism_tests_passed": 61,
+    "remote_ci_executed": false,
+    "tests_before_format": true
+  }
+}

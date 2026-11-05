@@ -1,0 +1,3612 @@
+{
+  "auditor_sources": {
+    "qualification/memory-cell-v3/audit_native_structure.py": "ff96a68281ce9094dbc8f823c607fb90b1436b81a9f46389a7617dbe64839b9e",
+    "qualification/memory-cell-v3/v3/bitcell.py": "85b8ffe1041e51bcb5f60fdd42557d947d1b1c6b614e3b129ac3b95087edf94a",
+    "qualification/memory-cell-v3/v3/factor_cell.py": "78e85740662f4ef3454cc5c826b00621cf16c3a59a392edf40cffaeb1701706b",
+    "qualification/memory-cell-v3/v3/native_artifact_audit.py": "0fd5296917472c5cdcbc82f83849d5d66007c3a2888eb8d9642a4b93560d56c0",
+    "qualification/memory-cell-v3/v3/native_state_audit.py": "d33010db7efc6f363041533b9ad3645166002a3205c8fce3e755a3c0e2988fac",
+    "qualification/memory-cell-v3/v3/native_structure_audit_core.py": "aabc3f328cee66a4b7e128794f714d808e90036e41ea6a9bae37d5cdcbcefddf",
+    "qualification/memory-cell-v3/v3/native_structure_audit_run.py": "28c586b0202c767a330be28a00be28bdf16114801ac2e62813f71262c8299550",
+    "qualification/memory-cell-v3/v3/structure_artifact_audit.py": "a669c70a098c73d200cd7ad6aa6ca98d222974408246cea3cb37e5fe8ab17ee4",
+    "qualification/memory-cell-v3/v3/structure_audit_models.py": "4bd9ad76512a441af76435d27787b972d777e87f9adc3875f67f1ea43bfbc431"
+  },
+  "consumed_file_identities_sha256": "051779b8d4039cd96a037dde9a73281766730fcbdb0121e6208c7a1f1ca6120d",
+  "consumed_files": 741,
+  "errors": [],
+  "qualification_mode": "formal-source-snapshot",
+  "read_only": true,
+  "run": "/workspace/scratch/3df12f9191cd/hepta-memory-work/qualification/memory-cell-v3/results/20261026-v3-frozen",
+  "run_manifest_sha256": "5f52760eebc7407811b7778d09795e843bc73d1bbf9fe48cf27dfa5fad40af42",
+  "schema": "memory-cell-v3.independent-native-structure-audit.v1",
+  "scope": "Consumed native/structural evidence and source snapshot verified; other stages and Git commit ownership require the separate full-run verifier.",
+  "source_commit_claim": "66dc3a2ed500a60b8abb6c01eb6fe9d501dc8ea2",
+  "stages": {
+    "native": {
+      "binary_sha256": "1146df2677646d57dab5914b5cc4f4024788aa505a842d027bc49c2fcf62084a",
+      "development": false,
+      "native_mechanism_gate": true,
+      "original_dependency_lock_tuples_checked": true,
+      "results": [
+        {
+          "accuracy": 1.0,
+          "artifact_bytes": 1128,
+          "durable_state": {
+            "final_checkpoint": "6e8e0329baa0d37d6e768cfa400918e4c8a4c0874390bb4daa6f95564d4a54a1",
+            "frames": 64,
+            "journal_bytes": 27784,
+            "tick_inputs_and_actual_model_drives_bound": true,
+            "witness_bytes": 7280
+          },
+          "logits_and_bits_exact": true,
+          "negative_cases": 6,
+          "process_ids": [
+            272,
+            273
+          ],
+          "queries": 64,
+          "seed": 307,
+          "source_fact_bytes": 1304
+        },
+        {
+          "accuracy": 1.0,
+          "artifact_bytes": 1128,
+          "durable_state": {
+            "final_checkpoint": "ddeabcab424d44347b827823feb1b0d4ac92e824e055df1a1668f0d89b289418",
+            "frames": 64,
+            "journal_bytes": 27784,
+            "tick_inputs_and_actual_model_drives_bound": true,
+            "witness_bytes": 7280
+          },
+          "logits_and_bits_exact": true,
+          "negative_cases": 6,
+          "process_ids": [
+            280,
+            281
+          ],
+          "queries": 64,
+          "seed": 311,
+          "source_fact_bytes": 1304
+        },
+        {
+          "accuracy": 1.0,
+          "artifact_bytes": 1128,
+          "durable_state": {
+            "final_checkpoint": "43ceb25a9e520d31f6e0531b2a6d5cf419ef640b956b4143ddae1c03dbf65ebf",
+            "frames": 64,
+            "journal_bytes": 27784,
+            "tick_inputs_and_actual_model_drives_bound": true,
+            "witness_bytes": 7280
+          },
+          "logits_and_bits_exact": true,
+          "negative_cases": 6,
+          "process_ids": [
+            288,
+            289
+          ],
+          "queries": 64,
+          "seed": 313,
+          "source_fact_bytes": 1304
+        },
+        {
+          "accuracy": 1.0,
+          "artifact_bytes": 1128,
+          "durable_state": {
+            "final_checkpoint": "c41351a9456bf0a59c841160c9028f3a2667bc84025c420f43c9b2f8c19497a3",
+            "frames": 64,
+            "journal_bytes": 27784,
+            "tick_inputs_and_actual_model_drives_bound": true,
+            "witness_bytes": 7280
+          },
+          "logits_and_bits_exact": true,
+          "negative_cases": 6,
+          "process_ids": [
+            296,
+            297
+          ],
+          "queries": 64,
+          "seed": 317,
+          "source_fact_bytes": 1304
+        },
+        {
+          "accuracy": 1.0,
+          "artifact_bytes": 1128,
+          "durable_state": {
+            "final_checkpoint": "2dcb179b111d2682c6c829a800c34f53557bb93c9a74e6146b0a8e9b51ed0b49",
+            "frames": 64,
+            "journal_bytes": 27784,
+            "tick_inputs_and_actual_model_drives_bound": true,
+            "witness_bytes": 7280
+          },
+          "logits_and_bits_exact": true,
+          "negative_cases": 6,
+          "process_ids": [
+            304,
+            305
+          ],
+          "queries": 64,
+          "seed": 331,
+          "source_fact_bytes": 1304
+        }
+      ],
+      "source_snapshot_binding_checked": true,
+      "verified": true,
+      "written_recall_95pct_gate": true
+    },
+    "structure": {
+      "all_flows_strict_gate": false,
+      "convergent_specific_gate": false,
+      "cost_audit_limitations": [
+        "SVD/reconstruction work and retained bytes are recomputed from saved artifacts and logs.",
+        "Aggregate diagnostic counters are checked in sums; clustering is not rerun and diagnostic operations were not individually traced.",
+        "Historical elapsed times and floating-point prequantization SVD errors cannot be independently remeasured by a read-only audit."
+      ],
+      "development": false,
+      "flows": [
+        {
+          "best_efficient_fixed": "efficient_fixed_4",
+          "best_matched_fixed": "fixed_4",
+          "flow": "heterogeneous",
+          "migrations": [
+            {
+              "address_contract": "stable global row/column identities; serialized route and local-row offsets change together",
+              "changed_row_routes": 64,
+              "hidden_coordinate_read_parity_after_reload": true,
+              "parent_artifact_sha256": null,
+              "queries": 6204,
+              "selected_artifact_sha256": "4ee52da7545b05ab1a83ce26b098ecd038457460780c62b37a44010163b62bb7"
+            }
+          ],
+          "normalized_gain_vs_efficient": -0.0008059316569954868,
+          "normalized_gain_vs_matched": -0.0008059316569954868,
+          "priced_regret_vs_efficient": 0.01980361748559767,
+          "priced_regret_vs_matched": -0.07190002698914577,
+          "retention_floors": true,
+          "seed": 307,
+          "strict_gate": false,
+          "totals": {
+            "adaptive": {
+              "common_replay_and_owner_bytes": 34539,
+              "fit_seconds": 0.00375046199769713,
+              "hidden_exact": 0.9961315280464217,
+              "hidden_mae": 0.0038684719535783366,
+              "hidden_mse": 0.0038684719535783366,
+              "horizon_work_proxy": {
+                "1": 2676776,
+                "10": 3011432,
+                "100": 6357992
+              },
+              "mean_deployed_bytes": 4036.0,
+              "owner_wall_seconds": 0.026544051001110347,
+              "priced_loss": 0.6825316999657008,
+              "query_factor_multiplications": 37184,
+              "retained_artifact_bytes": 48560,
+              "retained_audit_metadata_bytes": 3790,
+              "retained_state_bytes": 86889,
+              "selection_mse": 0.008048289738430584,
+              "work_proxy": 2639592
+            },
+            "efficient_fixed_1": {
+              "common_replay_and_owner_bytes": 34539,
+              "fit_seconds": 0.0009071770000446122,
+              "hidden_exact": 0.7688588007736944,
+              "hidden_mae": 2.6756931012250162,
+              "hidden_mse": 114.26434558349452,
+              "horizon_work_proxy": {
+                "1": 421528,
+                "10": 756544,
+                "100": 4106704
+              },
+              "mean_deployed_bytes": 3612.0,
+              "owner_wall_seconds": 0.0036962900012440514,
+              "priced_loss": 1.2465515190791978,
+              "query_factor_multiplications": 37224,
+              "retained_artifact_bytes": 3612,
+              "retained_audit_metadata_bytes": 1081,
+              "retained_state_bytes": 39232,
+              "selection_mse": 110.27012072434607,
+              "work_proxy": 384304
+            },
+            "efficient_fixed_2": {
+              "common_replay_and_owner_bytes": 34539,
+              "fit_seconds": 0.0023048930015647784,
+              "hidden_exact": 0.9961315280464217,
+              "hidden_mae": 0.0038684719535783366,
+              "hidden_mse": 0.0038684719535783366,
+              "horizon_work_proxy": {
+                "1": 1901738,
+                "10": 2236394,
+                "100": 5582954
+              },
+              "mean_deployed_bytes": 4036.0,
+              "owner_wall_seconds": 0.015336090997152496,
+              "priced_loss": 0.6162747473314154,
+              "query_factor_multiplications": 37184,
+              "retained_artifact_bytes": 48044,
+              "retained_audit_metadata_bytes": 3019,
+              "retained_state_bytes": 85602,
+              "selection_mse": 0.008048289738430584,
+              "work_proxy": 1864554
+            },
+            "efficient_fixed_4": {
+              "common_replay_and_owner_bytes": 34539,
+              "fit_seconds": 0.00395396699605044,
+              "hidden_exact": 0.9969374597034172,
+              "hidden_mae": 0.0030625402965828497,
+              "hidden_mse": 0.0030625402965828497,
+              "horizon_work_proxy": {
+                "1": 2023173,
+                "10": 2271915,
+                "100": 4759335
+              },
+              "mean_deployed_bytes": 4000.0,
+              "owner_wall_seconds": 0.024240459999418817,
+              "priced_loss": 0.6627280824801032,
+              "query_factor_multiplications": 27638,
+              "retained_artifact_bytes": 54006,
+              "retained_audit_metadata_bytes": 3643,
+              "retained_state_bytes": 92188,
+              "selection_mse": 0.004024144869215292,
+              "work_proxy": 1995535
+            },
+            "fixed_1": {
+              "common_replay_and_owner_bytes": 34539,
+              "fit_seconds": 0.00529189599910751,
+              "hidden_exact": 0.7688588007736944,
+              "hidden_mae": 2.6756931012250162,
+              "hidden_mse": 114.26434558349452,
+              "horizon_work_proxy": {
+                "1": 2739280,
+                "10": 3074296,
+                "100": 6424456
+              },
+              "mean_deployed_bytes": 3612.0,
+              "owner_wall_seconds": 0.022490793002361897,
+              "priced_loss": 1.465142760757328,
+              "query_factor_multiplications": 37224,
+              "retained_artifact_bytes": 3612,
+              "retained_audit_metadata_bytes": 8623,
+              "retained_state_bytes": 46774,
+              "selection_mse": 110.27012072434607,
+              "work_proxy": 2702056
+            },
+            "fixed_2": {
+              "common_replay_and_owner_bytes": 34539,
+              "fit_seconds": 0.0050323930008744355,
+              "hidden_exact": 0.9961315280464217,
+              "hidden_mae": 0.0038684719535783366,
+              "hidden_mse": 0.0038684719535783366,
+              "horizon_work_proxy": {
+                "1": 3066858,
+                "10": 3401514,
+                "100": 6748074
+              },
+              "mean_deployed_bytes": 4036.0,
+              "owner_wall_seconds": 0.025631014999817125,
+              "priced_loss": 0.7421707785727637,
+              "query_factor_multiplications": 37184,
+              "retained_artifact_bytes": 48044,
+              "retained_audit_metadata_bytes": 9702,
+              "retained_state_bytes": 92285,
+              "selection_mse": 0.008048289738430584,
+              "work_proxy": 3029674
+            },
+            "fixed_4": {
+              "common_replay_and_owner_bytes": 34539,
+              "fit_seconds": 0.007026145995041588,
+              "hidden_exact": 0.9969374597034172,
+              "hidden_mae": 0.0030625402965828497,
+              "hidden_mse": 0.0030625402965828497,
+              "horizon_work_proxy": {
+                "1": 2738167,
+                "10": 2986909,
+                "100": 5474329
+              },
+              "mean_deployed_bytes": 4000.0,
+              "owner_wall_seconds": 0.03790281900000991,
+              "priced_loss": 0.7544317269548466,
+              "query_factor_multiplications": 27638,
+              "retained_artifact_bytes": 54006,
+              "retained_audit_metadata_bytes": 10353,
+              "retained_state_bytes": 98898,
+              "selection_mse": 0.004024144869215292,
+              "work_proxy": 2710529
+            }
+          }
+        },
+        {
+          "best_efficient_fixed": "efficient_fixed_2",
+          "best_matched_fixed": "fixed_2",
+          "flow": "convergent",
+          "migrations": [
+            {
+              "address_contract": "stable global row/column identities; serialized route and local-row offsets change together",
+              "changed_row_routes": 64,
+              "hidden_coordinate_read_parity_after_reload": true,
+              "parent_artifact_sha256": null,
+              "queries": 6204,
+              "selected_artifact_sha256": "4ee52da7545b05ab1a83ce26b098ecd038457460780c62b37a44010163b62bb7"
+            },
+            {
+              "address_contract": "stable global row/column identities; serialized route and local-row offsets change together",
+              "changed_row_routes": 64,
+              "hidden_coordinate_read_parity_after_reload": true,
+              "parent_artifact_sha256": "4ee52da7545b05ab1a83ce26b098ecd038457460780c62b37a44010163b62bb7",
+              "queries": 6133,
+              "selected_artifact_sha256": "f2b406885508677e46b99e6d04403a479a62884ebd74cc7eb1e310c4c72e5db5"
+            }
+          ],
+          "normalized_gain_vs_efficient": 0.9876090921953368,
+          "normalized_gain_vs_matched": 0.9876090921953368,
+          "priced_regret_vs_efficient": -0.1859377779450594,
+          "priced_regret_vs_matched": -0.25766273804408635,
+          "retention_floors": true,
+          "seed": 307,
+          "strict_gate": true,
+          "totals": {
+            "adaptive": {
+              "common_replay_and_owner_bytes": 69078,
+              "fit_seconds": 0.005819869005790679,
+              "hidden_exact": 0.9043106686375921,
+              "hidden_mae": 0.09568933136240795,
+              "hidden_mse": 0.09568933136240795,
+              "horizon_work_proxy": {
+                "1": 4011802,
+                "10": 4677640,
+                "100": 11336020
+              },
+              "mean_deployed_bytes": 3824.0,
+              "owner_wall_seconds": 0.046337553998455405,
+              "priced_loss": 0.5750469590502244,
+              "query_factor_multiplications": 73982,
+              "retained_artifact_bytes": 76948,
+              "retained_audit_metadata_bytes": 6819,
+              "retained_state_bytes": 152845,
+              "selection_mse": 0.0929022410324013,
+              "work_proxy": 3937820
+            },
+            "efficient_fixed_1": {
+              "common_replay_and_owner_bytes": 69078,
+              "fit_seconds": 0.0019245500006945804,
+              "hidden_exact": 0.7906743050012284,
+              "hidden_mae": 1.431601645998127,
+              "hidden_mse": 57.225927887132876,
+              "horizon_work_proxy": {
+                "1": 843482,
+                "10": 1509680,
+                "100": 8171660
+              },
+              "mean_deployed_bytes": 3612.0,
+              "owner_wall_seconds": 0.008445796996966237,
+              "priced_loss": 1.2465618719056595,
+              "query_factor_multiplications": 74022,
+              "retained_artifact_bytes": 7224,
+              "retained_audit_metadata_bytes": 2154,
+              "retained_state_bytes": 78456,
+              "selection_mse": 55.22393845833622,
+              "work_proxy": 769460
+            },
+            "efficient_fixed_2": {
+              "common_replay_and_owner_bytes": 69078,
+              "fit_seconds": 0.005959560006886022,
+              "hidden_exact": 0.7954732318203737,
+              "hidden_mae": 0.7439039082415863,
+              "hidden_mse": 7.722544051727645,
+              "horizon_work_proxy": {
+                "1": 3962313,
+                "10": 4609044,
+                "100": 11076354
+              },
+              "mean_deployed_bytes": 3979.0,
+              "owner_wall_seconds": 0.04603492800379172,
+              "priced_loss": 0.7609847369952838,
+              "query_factor_multiplications": 71859,
+              "retained_artifact_bytes": 97408,
+              "retained_audit_metadata_bytes": 6033,
+              "retained_state_bytes": 172519,
+              "selection_mse": 7.883334489696802,
+              "work_proxy": 3890454
+            },
+            "efficient_fixed_4": {
+              "common_replay_and_owner_bytes": 69078,
+              "fit_seconds": 0.007615755999722751,
+              "hidden_exact": 0.5676844480972654,
+              "hidden_mae": 2.352419905400207,
+              "hidden_mse": 26.328777316129052,
+              "horizon_work_proxy": {
+                "1": 4348933,
+                "10": 4845004,
+                "100": 9805714
+              },
+              "mean_deployed_bytes": 4037.0,
+              "owner_wall_seconds": 0.05728321399874403,
+              "priced_loss": 1.1468735673424315,
+              "query_factor_multiplications": 55119,
+              "retained_artifact_bytes": 112534,
+              "retained_audit_metadata_bytes": 7293,
+              "retained_state_bytes": 188905,
+              "selection_mse": 24.291715812114063,
+              "work_proxy": 4293814
+            },
+            "fixed_1": {
+              "common_replay_and_owner_bytes": 69078,
+              "fit_seconds": 0.0106354889976501,
+              "hidden_exact": 0.7906743050012284,
+              "hidden_mae": 1.431601645998127,
+              "hidden_mse": 57.225927887132876,
+              "horizon_work_proxy": {
+                "1": 4329056,
+                "10": 4995254,
+                "100": 11657234
+              },
+              "mean_deployed_bytes": 3612.0,
+              "owner_wall_seconds": 0.048598689998470945,
+              "priced_loss": 1.4122779059594917,
+              "query_factor_multiplications": 74022,
+              "retained_artifact_bytes": 7224,
+              "retained_audit_metadata_bytes": 13984,
+              "retained_state_bytes": 90286,
+              "selection_mse": 55.22393845833622,
+              "work_proxy": 4255034
+            },
+            "fixed_2": {
+              "common_replay_and_owner_bytes": 69078,
+              "fit_seconds": 0.00953880400993512,
+              "hidden_exact": 0.7954732318203737,
+              "hidden_mae": 0.7439039082415863,
+              "hidden_mse": 7.722544051727645,
+              "horizon_work_proxy": {
+                "1": 5139062,
+                "10": 5785793,
+                "100": 12253103
+              },
+              "mean_deployed_bytes": 3979.0,
+              "owner_wall_seconds": 0.06724162200043793,
+              "priced_loss": 0.8327096970943108,
+              "query_factor_multiplications": 71859,
+              "retained_artifact_bytes": 97408,
+              "retained_audit_metadata_bytes": 15726,
+              "retained_state_bytes": 182212,
+              "selection_mse": 7.883334489696802,
+              "work_proxy": 5067203
+            },
+            "fixed_4": {
+              "common_replay_and_owner_bytes": 69078,
+              "fit_seconds": 0.010812413001985988,
+              "hidden_exact": 0.5676844480972654,
+              "hidden_mae": 2.352419905400207,
+              "hidden_mse": 26.328777316129052,
+              "horizon_work_proxy": {
+                "1": 5073150,
+                "10": 5569221,
+                "100": 10529931
+              },
+              "mean_deployed_bytes": 4037.0,
+              "owner_wall_seconds": 0.07060674199601635,
+              "priced_loss": 1.2031796554319782,
+              "query_factor_multiplications": 55119,
+              "retained_artifact_bytes": 112534,
+              "retained_audit_metadata_bytes": 17652,
+              "retained_state_bytes": 199264,
+              "selection_mse": 24.291715812114063,
+              "work_proxy": 5018031
+            }
+          }
+        },
+        {
+          "best_efficient_fixed": "efficient_fixed_4",
+          "best_matched_fixed": "fixed_4",
+          "flow": "stable_lowrank",
+          "migrations": [
+            {
+              "address_contract": "stable global row/column identities; serialized route and local-row offsets change together",
+              "changed_row_routes": 0,
+              "hidden_coordinate_read_parity_after_reload": true,
+              "parent_artifact_sha256": null,
+              "queries": 6204,
+              "selected_artifact_sha256": "00bd25aa4d616f3e2dfcbe4b3edbe7da572c9cffcfa3c8eb03549961c6758b92"
+            }
+          ],
+          "normalized_gain_vs_efficient": 0.00032237266279819266,
+          "normalized_gain_vs_matched": 0.00032237266279819266,
+          "priced_regret_vs_efficient": -0.4558833426946041,
+          "priced_regret_vs_matched": -0.47674378606330664,
+          "retention_floors": true,
+          "seed": 307,
+          "strict_gate": false,
+          "totals": {
+            "adaptive": {
+              "common_replay_and_owner_bytes": 34539,
+              "fit_seconds": 0.0008263950003311038,
+              "hidden_exact": 0.9730818826563508,
+              "hidden_mae": 0.02691811734364926,
+              "hidden_mse": 0.02691811734364926,
+              "horizon_work_proxy": {
+                "1": 433456,
+                "10": 768472,
+                "100": 4118632
+              },
+              "mean_deployed_bytes": 3612.0,
+              "owner_wall_seconds": 0.005074387001513969,
+              "priced_loss": 0.2743575222082932,
+              "query_factor_multiplications": 37224,
+              "retained_artifact_bytes": 3612,
+              "retained_audit_metadata_bytes": 1077,
+              "retained_state_bytes": 39228,
+              "selection_mse": 0.025653923541247486,
+              "work_proxy": 396232
+            },
+            "efficient_fixed_1": {
+              "common_replay_and_owner_bytes": 34539,
+              "fit_seconds": 0.0008280280017061159,
+              "hidden_exact": 0.9730818826563508,
+              "hidden_mae": 0.02691811734364926,
+              "hidden_mse": 0.02691811734364926,
+              "horizon_work_proxy": {
+                "1": 421528,
+                "10": 756544,
+                "100": 4106704
+              },
+              "mean_deployed_bytes": 3612.0,
+              "owner_wall_seconds": 0.003518932997394586,
+              "priced_loss": 0.2734640993242867,
+              "query_factor_multiplications": 37224,
+              "retained_artifact_bytes": 3612,
+              "retained_audit_metadata_bytes": 1080,
+              "retained_state_bytes": 39231,
+              "selection_mse": 0.025653923541247486,
+              "work_proxy": 384304
+            },
+            "efficient_fixed_2": {
+              "common_replay_and_owner_bytes": 34539,
+              "fit_seconds": 0.0028435259991965722,
+              "hidden_exact": 0.9713088330109607,
+              "hidden_mae": 0.02869116698903933,
+              "hidden_mse": 0.02869116698903933,
+              "horizon_work_proxy": {
+                "1": 2031626,
+                "10": 2309366,
+                "100": 5086766
+              },
+              "mean_deployed_bytes": 3512.0,
+              "owner_wall_seconds": 0.027766693998273695,
+              "priced_loss": 0.6593662916886626,
+              "query_factor_multiplications": 30860,
+              "retained_artifact_bytes": 48776,
+              "retained_audit_metadata_bytes": 3017,
+              "retained_state_bytes": 86332,
+              "selection_mse": 0.025653923541247486,
+              "work_proxy": 2000766
+            },
+            "efficient_fixed_4": {
+              "common_replay_and_owner_bytes": 34539,
+              "fit_seconds": 0.005179685998882633,
+              "hidden_exact": 0.9727595099935525,
+              "hidden_mae": 0.027240490006447453,
+              "hidden_mse": 0.027240490006447453,
+              "horizon_work_proxy": {
+                "1": 2230683,
+                "10": 2480208,
+                "100": 4975458
+              },
+              "mean_deployed_bytes": 4004.0,
+              "owner_wall_seconds": 0.04086142700180062,
+              "priced_loss": 0.7302408649028973,
+              "query_factor_multiplications": 27725,
+              "retained_artifact_bytes": 58424,
+              "retained_audit_metadata_bytes": 3645,
+              "retained_state_bytes": 96608,
+              "selection_mse": 0.023138832997987926,
+              "work_proxy": 2202958
+            },
+            "fixed_1": {
+              "common_replay_and_owner_bytes": 34539,
+              "fit_seconds": 0.0015749630001664627,
+              "hidden_exact": 0.9730818826563508,
+              "hidden_mae": 0.02691811734364926,
+              "hidden_mse": 0.02691811734364926,
+              "horizon_work_proxy": {
+                "1": 817760,
+                "10": 1152776,
+                "100": 4502936
+              },
+              "mean_deployed_bytes": 3612.0,
+              "owner_wall_seconds": 0.007471808999980567,
+              "priced_loss": 0.31563218635947327,
+              "query_factor_multiplications": 37224,
+              "retained_artifact_bytes": 3612,
+              "retained_audit_metadata_bytes": 3236,
+              "retained_state_bytes": 41387,
+              "selection_mse": 0.025653923541247486,
+              "work_proxy": 780536
+            },
+            "fixed_2": {
+              "common_replay_and_owner_bytes": 34539,
+              "fit_seconds": 0.0028435259991965722,
+              "hidden_exact": 0.9713088330109607,
+              "hidden_mae": 0.02869116698903933,
+              "hidden_mse": 0.02869116698903933,
+              "horizon_work_proxy": {
+                "1": 2041534,
+                "10": 2319274,
+                "100": 5096674
+              },
+              "mean_deployed_bytes": 3512.0,
+              "owner_wall_seconds": 0.02960975200039684,
+              "priced_loss": 0.6768276384554079,
+              "query_factor_multiplications": 30860,
+              "retained_artifact_bytes": 48776,
+              "retained_audit_metadata_bytes": 6034,
+              "retained_state_bytes": 89349,
+              "selection_mse": 0.025653923541247486,
+              "work_proxy": 2010674
+            },
+            "fixed_4": {
+              "common_replay_and_owner_bytes": 34539,
+              "fit_seconds": 0.005179685998882633,
+              "hidden_exact": 0.9727595099935525,
+              "hidden_mae": 0.027240490006447453,
+              "hidden_mse": 0.027240490006447453,
+              "horizon_work_proxy": {
+                "1": 2239566,
+                "10": 2489091,
+                "100": 4984341
+              },
+              "mean_deployed_bytes": 4004.0,
+              "owner_wall_seconds": 0.04295949900188134,
+              "priced_loss": 0.7511013082715998,
+              "query_factor_multiplications": 27725,
+              "retained_artifact_bytes": 58424,
+              "retained_audit_metadata_bytes": 7290,
+              "retained_state_bytes": 100253,
+              "selection_mse": 0.023138832997987926,
+              "work_proxy": 2211841
+            }
+          }
+        },
+        {
+          "best_efficient_fixed": "efficient_fixed_4",
+          "best_matched_fixed": "fixed_4",
+          "flow": "random",
+          "migrations": [
+            {
+              "address_contract": "stable global row/column identities; serialized route and local-row offsets change together",
+              "changed_row_routes": 0,
+              "hidden_coordinate_read_parity_after_reload": true,
+              "parent_artifact_sha256": null,
+              "queries": 6204,
+              "selected_artifact_sha256": "08d784427745e39dc37b16c0b923f89c93fc8c6ac4475422e61c0285be0e62aa"
+            }
+          ],
+          "normalized_gain_vs_efficient": -0.12315774032819676,
+          "normalized_gain_vs_matched": -0.12315774032819676,
+          "priced_regret_vs_efficient": -0.33205298471962386,
+          "priced_regret_vs_matched": -0.35290223366276274,
+          "retention_floors": true,
+          "seed": 307,
+          "strict_gate": false,
+          "totals": {
+            "adaptive": {
+              "common_replay_and_owner_bytes": 34539,
+              "fit_seconds": 0.0010843239979294594,
+              "hidden_exact": 0.007736943907156673,
+              "hidden_mae": 32.163765312701486,
+              "hidden_mse": 1505.6831076724693,
+              "horizon_work_proxy": {
+                "1": 630064,
+                "10": 965080,
+                "100": 4315240
+              },
+              "mean_deployed_bytes": 3612.0,
+              "owner_wall_seconds": 0.007026949999271892,
+              "priced_loss": 1.2624227935689627,
+              "query_factor_multiplications": 37224,
+              "retained_artifact_bytes": 3612,
+              "retained_audit_metadata_bytes": 1074,
+              "retained_state_bytes": 39225,
+              "selection_mse": 1545.8883299798792,
+              "work_proxy": 592840
+            },
+            "efficient_fixed_1": {
+              "common_replay_and_owner_bytes": 34539,
+              "fit_seconds": 0.00112387400076841,
+              "hidden_exact": 0.007736943907156673,
+              "hidden_mae": 32.163765312701486,
+              "hidden_mse": 1505.6831076724693,
+              "horizon_work_proxy": {
+                "1": 421528,
+                "10": 756544,
+                "100": 4106704
+              },
+              "mean_deployed_bytes": 3612.0,
+              "owner_wall_seconds": 0.0050519530013843905,
+              "priced_loss": 1.2465182964878356,
+              "query_factor_multiplications": 37224,
+              "retained_artifact_bytes": 3612,
+              "retained_audit_metadata_bytes": 1075,
+              "retained_state_bytes": 39226,
+              "selection_mse": 1545.8883299798792,
+              "work_proxy": 384304
+            },
+            "efficient_fixed_2": {
+              "common_replay_and_owner_bytes": 34539,
+              "fit_seconds": 0.0033022870011336636,
+              "hidden_exact": 0.010315925209542231,
+              "hidden_mae": 30.86234687298517,
+              "hidden_mse": 1413.260154738878,
+              "horizon_work_proxy": {
+                "1": 2168433,
+                "10": 2473614,
+                "100": 5525424
+              },
+              "mean_deployed_bytes": 3832.0,
+              "owner_wall_seconds": 0.026706657001341227,
+              "priced_loss": 1.5825870124202868,
+              "query_factor_multiplications": 33909,
+              "retained_artifact_bytes": 49330,
+              "retained_audit_metadata_bytes": 3021,
+              "retained_state_bytes": 86890,
+              "selection_mse": 1387.7540241448692,
+              "work_proxy": 2134524
+            },
+            "efficient_fixed_4": {
+              "common_replay_and_owner_bytes": 34539,
+              "fit_seconds": 0.004931572002533358,
+              "hidden_exact": 0.011444229529335912,
+              "hidden_mae": 30.007736943907158,
+              "hidden_mse": 1340.5802707930368,
+              "horizon_work_proxy": {
+                "1": 2335500,
+                "10": 2587266,
+                "100": 5104926
+              },
+              "mean_deployed_bytes": 4088.0,
+              "owner_wall_seconds": 0.039130298002419295,
+              "priced_loss": 1.5944757782885866,
+              "query_factor_multiplications": 27974,
+              "retained_artifact_bytes": 57190,
+              "retained_audit_metadata_bytes": 3642,
+              "retained_state_bytes": 95371,
+              "selection_mse": 1280.2560362173037,
+              "work_proxy": 2307526
+            },
+            "fixed_1": {
+              "common_replay_and_owner_bytes": 34539,
+              "fit_seconds": 0.0021471859981829766,
+              "hidden_exact": 0.007736943907156673,
+              "hidden_mae": 32.163765312701486,
+              "hidden_mse": 1505.6831076724693,
+              "horizon_work_proxy": {
+                "1": 817760,
+                "10": 1152776,
+                "100": 4502936
+              },
+              "mean_deployed_bytes": 3612.0,
+              "owner_wall_seconds": 0.010989950998919085,
+              "priced_loss": 1.2886420867345394,
+              "query_factor_multiplications": 37224,
+              "retained_artifact_bytes": 3612,
+              "retained_audit_metadata_bytes": 3223,
+              "retained_state_bytes": 41374,
+              "selection_mse": 1545.8883299798792,
+              "work_proxy": 780536
+            },
+            "fixed_2": {
+              "common_replay_and_owner_bytes": 34539,
+              "fit_seconds": 0.0033022870011336636,
+              "hidden_exact": 0.010315925209542231,
+              "hidden_mae": 30.86234687298517,
+              "hidden_mse": 1413.260154738878,
+              "horizon_work_proxy": {
+                "1": 2179388,
+                "10": 2484569,
+                "100": 5536379
+              },
+              "mean_deployed_bytes": 3832.0,
+              "owner_wall_seconds": 0.028617626001505414,
+              "priced_loss": 1.600150387342016,
+              "query_factor_multiplications": 33909,
+              "retained_artifact_bytes": 49330,
+              "retained_audit_metadata_bytes": 6042,
+              "retained_state_bytes": 89911,
+              "selection_mse": 1387.7540241448692,
+              "work_proxy": 2145479
+            },
+            "fixed_4": {
+              "common_replay_and_owner_bytes": 34539,
+              "fit_seconds": 0.004931572002533358,
+              "hidden_exact": 0.011444229529335912,
+              "hidden_mae": 30.007736943907158,
+              "hidden_mse": 1340.5802707930368,
+              "horizon_work_proxy": {
+                "1": 2344454,
+                "10": 2596220,
+                "100": 5113880
+              },
+              "mean_deployed_bytes": 4088.0,
+              "owner_wall_seconds": 0.041080417002376635,
+              "priced_loss": 1.6153250272317254,
+              "query_factor_multiplications": 27974,
+              "retained_artifact_bytes": 57190,
+              "retained_audit_metadata_bytes": 7284,
+              "retained_state_bytes": 99013,
+              "selection_mse": 1280.2560362173037,
+              "work_proxy": 2316480
+            }
+          }
+        },
+        {
+          "best_efficient_fixed": "efficient_fixed_4",
+          "best_matched_fixed": "fixed_4",
+          "flow": "heterogeneous",
+          "migrations": [
+            {
+              "address_contract": "stable global row/column identities; serialized route and local-row offsets change together",
+              "changed_row_routes": 64,
+              "hidden_coordinate_read_parity_after_reload": true,
+              "parent_artifact_sha256": null,
+              "queries": 6155,
+              "selected_artifact_sha256": "935c29c2ed3092d6b87aedb592041d7d8f92c606138e1b08ef41b9a2a4eb0ba4"
+            }
+          ],
+          "normalized_gain_vs_efficient": -0.0029244516653127535,
+          "normalized_gain_vs_matched": -0.0029244516653127535,
+          "priced_regret_vs_efficient": 0.018329331287094908,
+          "priced_regret_vs_matched": -0.07274547534028208,
+          "retention_floors": true,
+          "seed": 311,
+          "strict_gate": false,
+          "totals": {
+            "adaptive": {
+              "common_replay_and_owner_bytes": 34539,
+              "fit_seconds": 0.0037207679997663945,
+              "hidden_exact": 0.9956133225020308,
+              "hidden_mae": 0.004386677497969131,
+              "hidden_mse": 0.004386677497969131,
+              "horizon_work_proxy": {
+                "1": 2705141,
+                "10": 3037934,
+                "100": 6365864
+              },
+              "mean_deployed_bytes": 4036.0,
+              "owner_wall_seconds": 0.031971508000424365,
+              "priced_loss": 0.6811895378815824,
+              "query_factor_multiplications": 36977,
+              "retained_artifact_bytes": 47930,
+              "retained_audit_metadata_bytes": 3784,
+              "retained_state_bytes": 86253,
+              "selection_mse": 0.005400098183603338,
+              "work_proxy": 2668164
+            },
+            "efficient_fixed_1": {
+              "common_replay_and_owner_bytes": 34539,
+              "fit_seconds": 0.0010537279995332938,
+              "hidden_exact": 0.7831031681559708,
+              "hidden_mae": 2.732250203086921,
+              "hidden_mse": 131.26904955320876,
+              "horizon_work_proxy": {
+                "1": 421822,
+                "10": 754192,
+                "100": 4077892
+              },
+              "mean_deployed_bytes": 3612.0,
+              "owner_wall_seconds": 0.004803470001206733,
+              "priced_loss": 1.2465742315248003,
+              "query_factor_multiplications": 36930,
+              "retained_artifact_bytes": 3612,
+              "retained_audit_metadata_bytes": 1077,
+              "retained_state_bytes": 39228,
+              "selection_mse": 155.03534609720177,
+              "work_proxy": 384892
+            },
+            "efficient_fixed_2": {
+              "common_replay_and_owner_bytes": 34539,
+              "fit_seconds": 0.0027886130010301713,
+              "hidden_exact": 0.9956133225020308,
+              "hidden_mae": 0.004386677497969131,
+              "hidden_mse": 0.004386677497969131,
+              "horizon_work_proxy": {
+                "1": 1905959,
+                "10": 2238752,
+                "100": 5566682
+              },
+              "mean_deployed_bytes": 4036.0,
+              "owner_wall_seconds": 0.02156766800180776,
+              "priced_loss": 0.61696651322392,
+              "query_factor_multiplications": 36977,
+              "retained_artifact_bytes": 48108,
+              "retained_audit_metadata_bytes": 3019,
+              "retained_state_bytes": 85666,
+              "selection_mse": 0.005400098183603338,
+              "work_proxy": 1868982
+            },
+            "efficient_fixed_4": {
+              "common_replay_and_owner_bytes": 34539,
+              "fit_seconds": 0.0038722249955753796,
+              "hidden_exact": 0.9985377741673436,
+              "hidden_mae": 0.001462225832656377,
+              "hidden_mse": 0.001462225832656377,
+              "horizon_work_proxy": {
+                "1": 2034041,
+                "10": 2269103,
+                "100": 4619723
+              },
+              "mean_deployed_bytes": 3892.0,
+              "owner_wall_seconds": 0.028219843999977456,
+              "priced_loss": 0.6628602065944875,
+              "query_factor_multiplications": 26118,
+              "retained_artifact_bytes": 53858,
+              "retained_audit_metadata_bytes": 3647,
+              "retained_state_bytes": 92044,
+              "selection_mse": 0.0004909180166912126,
+              "work_proxy": 2007923
+            },
+            "fixed_1": {
+              "common_replay_and_owner_bytes": 34539,
+              "fit_seconds": 0.0065700520026439335,
+              "hidden_exact": 0.7831031681559708,
+              "hidden_mae": 2.732250203086921,
+              "hidden_mse": 131.26904955320876,
+              "horizon_work_proxy": {
+                "1": 2743396,
+                "10": 3075766,
+                "100": 6399466
+              },
+              "mean_deployed_bytes": 3612.0,
+              "owner_wall_seconds": 0.03099253199980012,
+              "priced_loss": 1.4652743444094232,
+              "query_factor_multiplications": 36930,
+              "retained_artifact_bytes": 3612,
+              "retained_audit_metadata_bytes": 8586,
+              "retained_state_bytes": 46737,
+              "selection_mse": 155.03534609720177,
+              "work_proxy": 2706466
+            },
+            "fixed_2": {
+              "common_replay_and_owner_bytes": 34539,
+              "fit_seconds": 0.006456380000599893,
+              "hidden_exact": 0.9956133225020308,
+              "hidden_mae": 0.004386677497969131,
+              "hidden_mse": 0.004386677497969131,
+              "horizon_work_proxy": {
+                "1": 3072528,
+                "10": 3405321,
+                "100": 6733251
+              },
+              "mean_deployed_bytes": 4036.0,
+              "owner_wall_seconds": 0.03690086900314782,
+              "priced_loss": 0.743094910560354,
+              "query_factor_multiplications": 36977,
+              "retained_artifact_bytes": 48108,
+              "retained_audit_metadata_bytes": 9724,
+              "retained_state_bytes": 92371,
+              "selection_mse": 0.005400098183603338,
+              "work_proxy": 3035551
+            },
+            "fixed_4": {
+              "common_replay_and_owner_bytes": 34539,
+              "fit_seconds": 0.007142301990825217,
+              "hidden_exact": 0.9985377741673436,
+              "hidden_mae": 0.001462225832656377,
+              "hidden_mse": 0.001462225832656377,
+              "horizon_work_proxy": {
+                "1": 2741083,
+                "10": 2976145,
+                "100": 5326765
+              },
+              "mean_deployed_bytes": 3892.0,
+              "owner_wall_seconds": 0.04020637999929022,
+              "priced_loss": 0.7539350132218645,
+              "query_factor_multiplications": 26118,
+              "retained_artifact_bytes": 53858,
+              "retained_audit_metadata_bytes": 10353,
+              "retained_state_bytes": 98750,
+              "selection_mse": 0.0004909180166912126,
+              "work_proxy": 2714965
+            }
+          }
+        },
+        {
+          "best_efficient_fixed": "efficient_fixed_2",
+          "best_matched_fixed": "fixed_2",
+          "flow": "convergent",
+          "migrations": [
+            {
+              "address_contract": "stable global row/column identities; serialized route and local-row offsets change together",
+              "changed_row_routes": 64,
+              "hidden_coordinate_read_parity_after_reload": true,
+              "parent_artifact_sha256": null,
+              "queries": 6155,
+              "selected_artifact_sha256": "935c29c2ed3092d6b87aedb592041d7d8f92c606138e1b08ef41b9a2a4eb0ba4"
+            },
+            {
+              "address_contract": "stable global row/column identities; serialized route and local-row offsets change together",
+              "changed_row_routes": 64,
+              "hidden_coordinate_read_parity_after_reload": true,
+              "parent_artifact_sha256": "935c29c2ed3092d6b87aedb592041d7d8f92c606138e1b08ef41b9a2a4eb0ba4",
+              "queries": 6200,
+              "selected_artifact_sha256": "6319bf88e063b952bc42f345d49e93349237b7da3c3e1f97ce708b0d7e4b0be1"
+            }
+          ],
+          "normalized_gain_vs_efficient": 0.976521514146334,
+          "normalized_gain_vs_matched": 0.976521514146334,
+          "priced_regret_vs_efficient": -0.12628104622381764,
+          "priced_regret_vs_matched": -0.19814846921272622,
+          "retention_floors": true,
+          "seed": 311,
+          "strict_gate": true,
+          "totals": {
+            "adaptive": {
+              "common_replay_and_owner_bytes": 69078,
+              "fit_seconds": 0.005925520992605016,
+              "hidden_exact": 0.8925647257671445,
+              "hidden_mae": 0.10743527423285554,
+              "hidden_mse": 0.10743527423285554,
+              "horizon_work_proxy": {
+                "1": 4035613,
+                "10": 4703206,
+                "100": 11379136
+              },
+              "mean_deployed_bytes": 3824.0,
+              "owner_wall_seconds": 0.04524583600141341,
+              "priced_loss": 0.5741546961765804,
+              "query_factor_multiplications": 74177,
+              "retained_artifact_bytes": 76318,
+              "retained_audit_metadata_bytes": 6815,
+              "retained_state_bytes": 152211,
+              "selection_mse": 0.10586269969421132,
+              "work_proxy": 3961436
+            },
+            "efficient_fixed_1": {
+              "common_replay_and_owner_bytes": 69078,
+              "fit_seconds": 0.0018853920046240091,
+              "hidden_exact": 0.7863096485941145,
+              "hidden_mae": 1.4713670370273315,
+              "hidden_mse": 65.73976671208825,
+              "horizon_work_proxy": {
+                "1": 843374,
+                "10": 1510544,
+                "100": 8182244
+              },
+              "mean_deployed_bytes": 3612.0,
+              "owner_wall_seconds": 0.0080897219995677,
+              "priced_loss": 1.2465536321595658,
+              "query_factor_multiplications": 74130,
+              "retained_artifact_bytes": 7224,
+              "retained_audit_metadata_bytes": 2154,
+              "retained_state_bytes": 78456,
+              "selection_mse": 77.6208356992033,
+              "work_proxy": 769244
+            },
+            "efficient_fixed_2": {
+              "common_replay_and_owner_bytes": 69078,
+              "fit_seconds": 0.005174550005904166,
+              "hidden_exact": 0.8128873064123057,
+              "hidden_mae": 0.5599352742328555,
+              "hidden_mse": 4.575903016168339,
+              "horizon_work_proxy": {
+                "1": 4077340,
+                "10": 4731046,
+                "100": 11268106
+              },
+              "mean_deployed_bytes": 4004.0,
+              "owner_wall_seconds": 0.038111392001155764,
+              "priced_loss": 0.7004357424003981,
+              "query_factor_multiplications": 72634,
+              "retained_artifact_bytes": 97558,
+              "retained_audit_metadata_bytes": 6040,
+              "retained_state_bytes": 172676,
+              "selection_mse": 4.696475149493408,
+              "work_proxy": 4004706
+            },
+            "efficient_fixed_4": {
+              "common_replay_and_owner_bytes": 69078,
+              "fit_seconds": 0.006128606000856962,
+              "hidden_exact": 0.5517688870836718,
+              "hidden_mae": 2.4849246613034253,
+              "hidden_mse": 26.881376274206648,
+              "horizon_work_proxy": {
+                "1": 4453932,
+                "10": 4937376,
+                "100": 9771816
+              },
+              "mean_deployed_bytes": 3975.0,
+              "owner_wall_seconds": 0.04559609400166664,
+              "priced_loss": 1.0990808302804638,
+              "query_factor_multiplications": 53716,
+              "retained_artifact_bytes": 112284,
+              "retained_audit_metadata_bytes": 7300,
+              "retained_state_bytes": 188662,
+              "selection_mse": 26.354412125675015,
+              "work_proxy": 4400216
+            },
+            "fixed_1": {
+              "common_replay_and_owner_bytes": 69078,
+              "fit_seconds": 0.00919302599868388,
+              "hidden_exact": 0.7863096485941145,
+              "hidden_mae": 1.4713670370273315,
+              "hidden_mse": 65.73976671208825,
+              "horizon_work_proxy": {
+                "1": 4329956,
+                "10": 4997126,
+                "100": 11668826
+              },
+              "mean_deployed_bytes": 3612.0,
+              "owner_wall_seconds": 0.04297589400084689,
+              "priced_loss": 1.4122582844747922,
+              "query_factor_multiplications": 74130,
+              "retained_artifact_bytes": 7224,
+              "retained_audit_metadata_bytes": 13966,
+              "retained_state_bytes": 90268,
+              "selection_mse": 77.6208356992033,
+              "work_proxy": 4255826
+            },
+            "fixed_2": {
+              "common_replay_and_owner_bytes": 69078,
+              "fit_seconds": 0.008395375010877615,
+              "hidden_exact": 0.8128873064123057,
+              "hidden_mae": 0.5599352742328555,
+              "hidden_mse": 4.575903016168339,
+              "horizon_work_proxy": {
+                "1": 5255356,
+                "10": 5909062,
+                "100": 12446122
+              },
+              "mean_deployed_bytes": 4004.0,
+              "owner_wall_seconds": 0.051934156002971577,
+              "priced_loss": 0.7723031653893067,
+              "query_factor_multiplications": 72634,
+              "retained_artifact_bytes": 97558,
+              "retained_audit_metadata_bytes": 15767,
+              "retained_state_bytes": 182403,
+              "selection_mse": 4.696475149493408,
+              "work_proxy": 5182722
+            },
+            "fixed_4": {
+              "common_replay_and_owner_bytes": 69078,
+              "fit_seconds": 0.008395681998081272,
+              "hidden_exact": 0.5517688870836718,
+              "hidden_mae": 2.4849246613034253,
+              "hidden_mse": 26.881376274206648,
+              "horizon_work_proxy": {
+                "1": 5169824,
+                "10": 5653268,
+                "100": 10487708
+              },
+              "mean_deployed_bytes": 3975.0,
+              "owner_wall_seconds": 0.05539505400156486,
+              "priced_loss": 1.155063807724087,
+              "query_factor_multiplications": 53716,
+              "retained_artifact_bytes": 112284,
+              "retained_audit_metadata_bytes": 17657,
+              "retained_state_bytes": 199019,
+              "selection_mse": 26.354412125675015,
+              "work_proxy": 5116108
+            }
+          }
+        },
+        {
+          "best_efficient_fixed": "efficient_fixed_4",
+          "best_matched_fixed": "fixed_4",
+          "flow": "stable_lowrank",
+          "migrations": [
+            {
+              "address_contract": "stable global row/column identities; serialized route and local-row offsets change together",
+              "changed_row_routes": 0,
+              "hidden_coordinate_read_parity_after_reload": true,
+              "parent_artifact_sha256": null,
+              "queries": 6155,
+              "selected_artifact_sha256": "a33897c061cbefb39c2e6ce2b791423f2b2061e2e4791bad5b5f15b266837355"
+            }
+          ],
+          "normalized_gain_vs_efficient": 0.0012997562956945583,
+          "normalized_gain_vs_matched": 0.0012997562956945583,
+          "priced_regret_vs_efficient": -0.4546794466919919,
+          "priced_regret_vs_matched": -0.475509132025683,
+          "retention_floors": true,
+          "seed": 311,
+          "strict_gate": false,
+          "totals": {
+            "adaptive": {
+              "common_replay_and_owner_bytes": 34539,
+              "fit_seconds": 0.0007859649995225482,
+              "hidden_exact": 0.9738424045491471,
+              "hidden_mae": 0.026157595450852965,
+              "hidden_mse": 0.026157595450852965,
+              "horizon_work_proxy": {
+                "1": 434044,
+                "10": 766414,
+                "100": 4090114
+              },
+              "mean_deployed_bytes": 3612.0,
+              "owner_wall_seconds": 0.004788696998730302,
+              "priced_loss": 0.2736642915752625,
+              "query_factor_multiplications": 36930,
+              "retained_artifact_bytes": 3612,
+              "retained_audit_metadata_bytes": 1077,
+              "retained_state_bytes": 39228,
+              "selection_mse": 0.026018654884634267,
+              "work_proxy": 397114
+            },
+            "efficient_fixed_1": {
+              "common_replay_and_owner_bytes": 34539,
+              "fit_seconds": 0.0008008769982552622,
+              "hidden_exact": 0.9738424045491471,
+              "hidden_mae": 0.026157595450852965,
+              "hidden_mse": 0.026157595450852965,
+              "horizon_work_proxy": {
+                "1": 421822,
+                "10": 754192,
+                "100": 4077892
+              },
+              "mean_deployed_bytes": 3612.0,
+              "owner_wall_seconds": 0.003628549002314685,
+              "priced_loss": 0.27274843827133416,
+              "query_factor_multiplications": 36930,
+              "retained_artifact_bytes": 3612,
+              "retained_audit_metadata_bytes": 1080,
+              "retained_state_bytes": 39231,
+              "selection_mse": 0.026018654884634267,
+              "work_proxy": 384892
+            },
+            "efficient_fixed_2": {
+              "common_replay_and_owner_bytes": 34539,
+              "fit_seconds": 0.002373195999098243,
+              "hidden_exact": 0.9743298131600325,
+              "hidden_mae": 0.025670186839967506,
+              "hidden_mse": 0.025670186839967506,
+              "horizon_work_proxy": {
+                "1": 1944098,
+                "10": 2252348,
+                "100": 5334848
+              },
+              "mean_deployed_bytes": 3894.0,
+              "owner_wall_seconds": 0.016448712998681003,
+              "priced_loss": 0.6528141342342868,
+              "query_factor_multiplications": 34250,
+              "retained_artifact_bytes": 49388,
+              "retained_audit_metadata_bytes": 3020,
+              "retained_state_bytes": 86947,
+              "selection_mse": 0.019636720667648502,
+              "work_proxy": 1909848
+            },
+            "efficient_fixed_4": {
+              "common_replay_and_owner_bytes": 34539,
+              "fit_seconds": 0.004763310000271304,
+              "hidden_exact": 0.9725426482534525,
+              "hidden_mae": 0.027457351746547523,
+              "hidden_mse": 0.027457351746547523,
+              "horizon_work_proxy": {
+                "1": 2211200,
+                "10": 2444615,
+                "100": 4778765
+              },
+              "mean_deployed_bytes": 3940.0,
+              "owner_wall_seconds": 0.037120523000339745,
+              "priced_loss": 0.7283437382672544,
+              "query_factor_multiplications": 25935,
+              "retained_artifact_bytes": 58288,
+              "retained_audit_metadata_bytes": 3643,
+              "retained_state_bytes": 96470,
+              "selection_mse": 0.01718213058419244,
+              "work_proxy": 2185265
+            },
+            "fixed_1": {
+              "common_replay_and_owner_bytes": 34539,
+              "fit_seconds": 0.0014983379987825174,
+              "hidden_exact": 0.9738424045491471,
+              "hidden_mae": 0.026157595450852965,
+              "hidden_mse": 0.026157595450852965,
+              "horizon_work_proxy": {
+                "1": 818936,
+                "10": 1151306,
+                "100": 4475006
+              },
+              "mean_deployed_bytes": 3612.0,
+              "owner_wall_seconds": 0.007759145002637524,
+              "priced_loss": 0.3149838165662863,
+              "query_factor_multiplications": 36930,
+              "retained_artifact_bytes": 3612,
+              "retained_audit_metadata_bytes": 3236,
+              "retained_state_bytes": 41387,
+              "selection_mse": 0.026018654884634267,
+              "work_proxy": 782006
+            },
+            "fixed_2": {
+              "common_replay_and_owner_bytes": 34539,
+              "fit_seconds": 0.002373195999098243,
+              "hidden_exact": 0.9743298131600325,
+              "hidden_mae": 0.025670186839967506,
+              "hidden_mse": 0.025670186839967506,
+              "horizon_work_proxy": {
+                "1": 1955704,
+                "10": 2263954,
+                "100": 5346454
+              },
+              "mean_deployed_bytes": 3894.0,
+              "owner_wall_seconds": 0.017755772998498287,
+              "priced_loss": 0.6704216394158539,
+              "query_factor_multiplications": 34250,
+              "retained_artifact_bytes": 49388,
+              "retained_audit_metadata_bytes": 6040,
+              "retained_state_bytes": 89967,
+              "selection_mse": 0.019636720667648502,
+              "work_proxy": 1921454
+            },
+            "fixed_4": {
+              "common_replay_and_owner_bytes": 34539,
+              "fit_seconds": 0.004763310000271304,
+              "hidden_exact": 0.9725426482534525,
+              "hidden_mae": 0.027457351746547523,
+              "hidden_mse": 0.027457351746547523,
+              "horizon_work_proxy": {
+                "1": 2219825,
+                "10": 2453240,
+                "100": 4787390
+              },
+              "mean_deployed_bytes": 3940.0,
+              "owner_wall_seconds": 0.038449406001745956,
+              "priced_loss": 0.7491734236009455,
+              "query_factor_multiplications": 25935,
+              "retained_artifact_bytes": 58288,
+              "retained_audit_metadata_bytes": 7286,
+              "retained_state_bytes": 100113,
+              "selection_mse": 0.01718213058419244,
+              "work_proxy": 2193890
+            }
+          }
+        },
+        {
+          "best_efficient_fixed": "efficient_fixed_4",
+          "best_matched_fixed": "fixed_4",
+          "flow": "random",
+          "migrations": [
+            {
+              "address_contract": "stable global row/column identities; serialized route and local-row offsets change together",
+              "changed_row_routes": 0,
+              "hidden_coordinate_read_parity_after_reload": true,
+              "parent_artifact_sha256": null,
+              "queries": 6155,
+              "selected_artifact_sha256": "028b247a71e667772fd58278f6275f8b3519c66868a9db8f47294defcfe9f132"
+            }
+          ],
+          "normalized_gain_vs_efficient": -0.09908310348477765,
+          "normalized_gain_vs_matched": -0.09908310348477765,
+          "priced_regret_vs_efficient": -0.36099360731998087,
+          "priced_regret_vs_matched": -0.38185712323089316,
+          "retention_floors": true,
+          "seed": 311,
+          "strict_gate": false,
+          "totals": {
+            "adaptive": {
+              "common_replay_and_owner_bytes": 34539,
+              "fit_seconds": 0.0011099120019935071,
+              "hidden_exact": 0.007636068237205524,
+              "hidden_mae": 32.08578391551584,
+              "hidden_mse": 1501.3439480097481,
+              "horizon_work_proxy": {
+                "1": 630652,
+                "10": 963022,
+                "100": 4286722
+              },
+              "mean_deployed_bytes": 3612.0,
+              "owner_wall_seconds": 0.006253315001231385,
+              "priced_loss": 1.26251223322297,
+              "query_factor_multiplications": 36930,
+              "retained_artifact_bytes": 3612,
+              "retained_audit_metadata_bytes": 1078,
+              "retained_state_bytes": 39229,
+              "selection_mse": 1501.3726067746686,
+              "work_proxy": 593722
+            },
+            "efficient_fixed_1": {
+              "common_replay_and_owner_bytes": 34539,
+              "fit_seconds": 0.0009886100015137345,
+              "hidden_exact": 0.007636068237205524,
+              "hidden_mae": 32.08578391551584,
+              "hidden_mse": 1501.3439480097481,
+              "horizon_work_proxy": {
+                "1": 421822,
+                "10": 754192,
+                "100": 4077892
+              },
+              "mean_deployed_bytes": 3612.0,
+              "owner_wall_seconds": 0.003694398001243826,
+              "priced_loss": 1.2465963799190416,
+              "query_factor_multiplications": 36930,
+              "retained_artifact_bytes": 3612,
+              "retained_audit_metadata_bytes": 1081,
+              "retained_state_bytes": 39232,
+              "selection_mse": 1501.3726067746686,
+              "work_proxy": 384892
+            },
+            "efficient_fixed_2": {
+              "common_replay_and_owner_bytes": 34539,
+              "fit_seconds": 0.0035827049978252035,
+              "hidden_exact": 0.01007311129163282,
+              "hidden_mae": 30.845166531275385,
+              "hidden_mse": 1399.931437855402,
+              "horizon_work_proxy": {
+                "1": 2106848,
+                "10": 2413667,
+                "100": 5481857
+              },
+              "mean_deployed_bytes": 3862.0,
+              "owner_wall_seconds": 0.0214255979990412,
+              "priced_loss": 1.571482462474562,
+              "query_factor_multiplications": 34091,
+              "retained_artifact_bytes": 49292,
+              "retained_audit_metadata_bytes": 3018,
+              "retained_state_bytes": 86849,
+              "selection_mse": 1403.5409916543938,
+              "work_proxy": 2072757
+            },
+            "efficient_fixed_4": {
+              "common_replay_and_owner_bytes": 34539,
+              "fit_seconds": 0.004420593999384437,
+              "hidden_exact": 0.010235580828594638,
+              "hidden_mae": 30.34183590576767,
+              "hidden_mse": 1365.9967506092607,
+              "horizon_work_proxy": {
+                "1": 2363781,
+                "10": 2613576,
+                "100": 5111526
+              },
+              "mean_deployed_bytes": 4022.0,
+              "owner_wall_seconds": 0.03343542500078911,
+              "priced_loss": 1.6235058405429508,
+              "query_factor_multiplications": 27755,
+              "retained_artifact_bytes": 58518,
+              "retained_audit_metadata_bytes": 3642,
+              "retained_state_bytes": 96699,
+              "selection_mse": 1327.5763377515955,
+              "work_proxy": 2336026
+            },
+            "fixed_1": {
+              "common_replay_and_owner_bytes": 34539,
+              "fit_seconds": 0.0017587010042916518,
+              "hidden_exact": 0.007636068237205524,
+              "hidden_mae": 32.08578391551584,
+              "hidden_mse": 1501.3439480097481,
+              "horizon_work_proxy": {
+                "1": 818936,
+                "10": 1151306,
+                "100": 4475006
+              },
+              "mean_deployed_bytes": 3612.0,
+              "owner_wall_seconds": 0.0084486330015352,
+              "priced_loss": 1.288837295312554,
+              "query_factor_multiplications": 36930,
+              "retained_artifact_bytes": 3612,
+              "retained_audit_metadata_bytes": 3238,
+              "retained_state_bytes": 41389,
+              "selection_mse": 1501.3726067746686,
+              "work_proxy": 782006
+            },
+            "fixed_2": {
+              "common_replay_and_owner_bytes": 34539,
+              "fit_seconds": 0.0035827049978252035,
+              "hidden_exact": 0.01007311129163282,
+              "hidden_mae": 30.845166531275385,
+              "hidden_mse": 1399.931437855402,
+              "horizon_work_proxy": {
+                "1": 2118101,
+                "10": 2424920,
+                "100": 5493110
+              },
+              "mean_deployed_bytes": 3862.0,
+              "owner_wall_seconds": 0.022735051999916323,
+              "priced_loss": 1.5890519616963132,
+              "query_factor_multiplications": 34091,
+              "retained_artifact_bytes": 49292,
+              "retained_audit_metadata_bytes": 6036,
+              "retained_state_bytes": 89867,
+              "selection_mse": 1403.5409916543938,
+              "work_proxy": 2084010
+            },
+            "fixed_4": {
+              "common_replay_and_owner_bytes": 34539,
+              "fit_seconds": 0.004420593999384437,
+              "hidden_exact": 0.010235580828594638,
+              "hidden_mae": 30.34183590576767,
+              "hidden_mse": 1365.9967506092607,
+              "horizon_work_proxy": {
+                "1": 2372922,
+                "10": 2622717,
+                "100": 5120667
+              },
+              "mean_deployed_bytes": 4022.0,
+              "owner_wall_seconds": 0.03501400399909471,
+              "priced_loss": 1.644369356453863,
+              "query_factor_multiplications": 27755,
+              "retained_artifact_bytes": 58518,
+              "retained_audit_metadata_bytes": 7284,
+              "retained_state_bytes": 100341,
+              "selection_mse": 1327.5763377515955,
+              "work_proxy": 2345167
+            }
+          }
+        },
+        {
+          "best_efficient_fixed": "efficient_fixed_4",
+          "best_matched_fixed": "fixed_4",
+          "flow": "heterogeneous",
+          "migrations": [
+            {
+              "address_contract": "stable global row/column identities; serialized route and local-row offsets change together",
+              "changed_row_routes": 65,
+              "hidden_coordinate_read_parity_after_reload": true,
+              "parent_artifact_sha256": null,
+              "queries": 6196,
+              "selected_artifact_sha256": "dac264539021cfb08ba4ff45845731d05f7d361150d6948598f933ca222e3602"
+            }
+          ],
+          "normalized_gain_vs_efficient": -0.0020981278244028407,
+          "normalized_gain_vs_matched": -0.0020981278244028407,
+          "priced_regret_vs_efficient": 0.01111931947999012,
+          "priced_regret_vs_matched": -0.07991031192241538,
+          "retention_floors": true,
+          "seed": 313,
+          "strict_gate": false,
+          "totals": {
+            "adaptive": {
+              "common_replay_and_owner_bytes": 34539,
+              "fit_seconds": 0.0032953579975583125,
+              "hidden_exact": 0.9958037443511943,
+              "hidden_mae": 0.004196255648805681,
+              "hidden_mse": 0.004196255648805681,
+              "horizon_work_proxy": {
+                "1": 2585779,
+                "10": 2920435,
+                "100": 6266995
+              },
+              "mean_deployed_bytes": 4028.0,
+              "owner_wall_seconds": 0.02349634400161449,
+              "priced_loss": 0.6699261139680102,
+              "query_factor_multiplications": 37184,
+              "retained_artifact_bytes": 47538,
+              "retained_audit_metadata_bytes": 3789,
+              "retained_state_bytes": 85866,
+              "selection_mse": 0.0045090180360721445,
+              "work_proxy": 2548595
+            },
+            "efficient_fixed_1": {
+              "common_replay_and_owner_bytes": 34539,
+              "fit_seconds": 0.0008240420029324014,
+              "hidden_exact": 0.6618786313750807,
+              "hidden_mae": 2.63557133634603,
+              "hidden_mse": 119.07165913492575,
+              "horizon_work_proxy": {
+                "1": 421576,
+                "10": 756160,
+                "100": 4102000
+              },
+              "mean_deployed_bytes": 3612.0,
+              "owner_wall_seconds": 0.0037779749982291833,
+              "priced_loss": 1.2465533061993874,
+              "query_factor_multiplications": 37176,
+              "retained_artifact_bytes": 3612,
+              "retained_audit_metadata_bytes": 1080,
+              "retained_state_bytes": 39231,
+              "selection_mse": 84.39579158316633,
+              "work_proxy": 384400
+            },
+            "efficient_fixed_2": {
+              "common_replay_and_owner_bytes": 34539,
+              "fit_seconds": 0.002112694000970805,
+              "hidden_exact": 0.9953195610071014,
+              "hidden_mae": 0.004680438992898645,
+              "hidden_mse": 0.004680438992898645,
+              "horizon_work_proxy": {
+                "1": 1904205,
+                "10": 2238393,
+                "100": 5580273
+              },
+              "mean_deployed_bytes": 4044.0,
+              "owner_wall_seconds": 0.01786393399743247,
+              "priced_loss": 0.6150659610354322,
+              "query_factor_multiplications": 37132,
+              "retained_artifact_bytes": 47792,
+              "retained_audit_metadata_bytes": 3017,
+              "retained_state_bytes": 85348,
+              "selection_mse": 0.0035070140280561123,
+              "work_proxy": 1867073
+            },
+            "efficient_fixed_4": {
+              "common_replay_and_owner_bytes": 34539,
+              "fit_seconds": 0.0036452040003496222,
+              "hidden_exact": 0.9979018721755971,
+              "hidden_mae": 0.0020981278244028407,
+              "hidden_mse": 0.0020981278244028407,
+              "horizon_work_proxy": {
+                "1": 1973688,
+                "10": 2210469,
+                "100": 4578279
+              },
+              "mean_deployed_bytes": 3892.0,
+              "owner_wall_seconds": 0.02192476599884685,
+              "priced_loss": 0.65880679448802,
+              "query_factor_multiplications": 26309,
+              "retained_artifact_bytes": 53956,
+              "retained_audit_metadata_bytes": 3650,
+              "retained_state_bytes": 92145,
+              "selection_mse": 0.00250501002004008,
+              "work_proxy": 1947379
+            },
+            "fixed_1": {
+              "common_replay_and_owner_bytes": 34539,
+              "fit_seconds": 0.0056515489995945245,
+              "hidden_exact": 0.6618786313750807,
+              "hidden_mae": 2.63557133634603,
+              "hidden_mse": 119.07165913492575,
+              "horizon_work_proxy": {
+                "1": 2739952,
+                "10": 3074536,
+                "100": 6420376
+              },
+              "mean_deployed_bytes": 3612.0,
+              "owner_wall_seconds": 0.022707816999172792,
+              "priced_loss": 1.4651589327080305,
+              "query_factor_multiplications": 37176,
+              "retained_artifact_bytes": 3612,
+              "retained_audit_metadata_bytes": 8616,
+              "retained_state_bytes": 46767,
+              "selection_mse": 84.39579158316633,
+              "work_proxy": 2702776
+            },
+            "fixed_2": {
+              "common_replay_and_owner_bytes": 34539,
+              "fit_seconds": 0.003889661998982774,
+              "hidden_exact": 0.9953195610071014,
+              "hidden_mae": 0.004680438992898645,
+              "hidden_mse": 0.004680438992898645,
+              "horizon_work_proxy": {
+                "1": 2686353,
+                "10": 3020541,
+                "100": 6362421
+              },
+              "mean_deployed_bytes": 4044.0,
+              "owner_wall_seconds": 0.025023304999194806,
+              "priced_loss": 0.7050104356031708,
+              "query_factor_multiplications": 37132,
+              "retained_artifact_bytes": 47792,
+              "retained_audit_metadata_bytes": 8484,
+              "retained_state_bytes": 90815,
+              "selection_mse": 0.0035070140280561123,
+              "work_proxy": 2649221
+            },
+            "fixed_4": {
+              "common_replay_and_owner_bytes": 34539,
+              "fit_seconds": 0.0060698779961967375,
+              "hidden_exact": 0.9979018721755971,
+              "hidden_mae": 0.0020981278244028407,
+              "hidden_mse": 0.0020981278244028407,
+              "horizon_work_proxy": {
+                "1": 2679775,
+                "10": 2916556,
+                "100": 5284366
+              },
+              "mean_deployed_bytes": 3892.0,
+              "owner_wall_seconds": 0.03037415200014948,
+              "priced_loss": 0.7498364258904255,
+              "query_factor_multiplications": 26309,
+              "retained_artifact_bytes": 53956,
+              "retained_audit_metadata_bytes": 10361,
+              "retained_state_bytes": 98856,
+              "selection_mse": 0.00250501002004008,
+              "work_proxy": 2653466
+            }
+          }
+        },
+        {
+          "best_efficient_fixed": "efficient_fixed_2",
+          "best_matched_fixed": "fixed_2",
+          "flow": "convergent",
+          "migrations": [
+            {
+              "address_contract": "stable global row/column identities; serialized route and local-row offsets change together",
+              "changed_row_routes": 65,
+              "hidden_coordinate_read_parity_after_reload": true,
+              "parent_artifact_sha256": null,
+              "queries": 6196,
+              "selected_artifact_sha256": "dac264539021cfb08ba4ff45845731d05f7d361150d6948598f933ca222e3602"
+            },
+            {
+              "address_contract": "stable global row/column identities; serialized route and local-row offsets change together",
+              "changed_row_routes": 65,
+              "hidden_coordinate_read_parity_after_reload": true,
+              "parent_artifact_sha256": "dac264539021cfb08ba4ff45845731d05f7d361150d6948598f933ca222e3602",
+              "queries": 6197,
+              "selected_artifact_sha256": "cef788a1ea628013f3305d4d10ed42009faa922ae2b58c85337ea0589cd3f931"
+            }
+          ],
+          "normalized_gain_vs_efficient": 0.9810487545691997,
+          "normalized_gain_vs_matched": 0.9810487545691997,
+          "priced_regret_vs_efficient": -0.15147500489067678,
+          "priced_regret_vs_matched": -0.20522877586466803,
+          "retention_floors": true,
+          "seed": 313,
+          "strict_gate": true,
+          "totals": {
+            "adaptive": {
+              "common_replay_and_owner_bytes": 69078,
+              "fit_seconds": 0.005832540991832502,
+              "hidden_exact": 0.8929317253303495,
+              "hidden_mae": 0.10706827466965055,
+              "hidden_mse": 0.10706827466965055,
+              "horizon_work_proxy": {
+                "1": 3916469,
+                "10": 4585763,
+                "100": 11278703
+              },
+              "mean_deployed_bytes": 3820.0,
+              "owner_wall_seconds": 0.03900051199889276,
+              "priced_loss": 0.5686975797242428,
+              "query_factor_multiplications": 74366,
+              "retained_artifact_bytes": 75924,
+              "retained_audit_metadata_bytes": 6824,
+              "retained_state_bytes": 151826,
+              "selection_mse": 0.10200388245162004,
+              "work_proxy": 3842103
+            },
+            "efficient_fixed_1": {
+              "common_replay_and_owner_bytes": 69078,
+              "fit_seconds": 0.0019402850011829287,
+              "hidden_exact": 0.7259691688422927,
+              "hidden_mae": 1.4227558150182626,
+              "hidden_mse": 59.64079971430812,
+              "horizon_work_proxy": {
+                "1": 843146,
+                "10": 1512368,
+                "100": 8204588
+              },
+              "mean_deployed_bytes": 3612.0,
+              "owner_wall_seconds": 0.007669545000680955,
+              "priced_loss": 1.246558385534276,
+              "query_factor_multiplications": 74358,
+              "retained_artifact_bytes": 7224,
+              "retained_audit_metadata_bytes": 2162,
+              "retained_state_bytes": 78464,
+              "selection_mse": 42.297645165016746,
+              "work_proxy": 768788
+            },
+            "efficient_fixed_2": {
+              "common_replay_and_owner_bytes": 69078,
+              "fit_seconds": 0.005530719994567335,
+              "hidden_exact": 0.825318324960546,
+              "hidden_mae": 0.6277234694561072,
+              "hidden_mse": 5.64966957240915,
+              "horizon_work_proxy": {
+                "1": 3961000,
+                "10": 4615417,
+                "100": 11159587
+              },
+              "mean_deployed_bytes": 4006.0,
+              "owner_wall_seconds": 0.07529746099680779,
+              "priced_loss": 0.7201725846149196,
+              "query_factor_multiplications": 72713,
+              "retained_artifact_bytes": 97222,
+              "retained_audit_metadata_bytes": 6035,
+              "retained_state_bytes": 172335,
+              "selection_mse": 5.371678319044103,
+              "work_proxy": 3888287
+            },
+            "efficient_fixed_4": {
+              "common_replay_and_owner_bytes": 69078,
+              "fit_seconds": 0.008248751997598447,
+              "hidden_exact": 0.5592220350066303,
+              "hidden_mae": 2.5043571161955644,
+              "hidden_mse": 27.46417638358301,
+              "horizon_work_proxy": {
+                "1": 4262962,
+                "10": 4752607,
+                "100": 9649057
+              },
+              "mean_deployed_bytes": 3964.0,
+              "owner_wall_seconds": 0.06749521500023548,
+              "priced_loss": 1.1435091172163654,
+              "query_factor_multiplications": 54405,
+              "retained_artifact_bytes": 112350,
+              "retained_audit_metadata_bytes": 7289,
+              "retained_state_bytes": 188717,
+              "selection_mse": 27.448119672929817,
+              "work_proxy": 4208557
+            },
+            "fixed_1": {
+              "common_replay_and_owner_bytes": 69078,
+              "fit_seconds": 0.009596094998414628,
+              "hidden_exact": 0.7259691688422927,
+              "hidden_mae": 1.4227558150182626,
+              "hidden_mse": 59.64079971430812,
+              "horizon_work_proxy": {
+                "1": 4326656,
+                "10": 4995878,
+                "100": 11688098
+              },
+              "mean_deployed_bytes": 3612.0,
+              "owner_wall_seconds": 0.041065401001105784,
+              "priced_loss": 1.4122593608699896,
+              "query_factor_multiplications": 74358,
+              "retained_artifact_bytes": 7224,
+              "retained_audit_metadata_bytes": 14015,
+              "retained_state_bytes": 90317,
+              "selection_mse": 42.297645165016746,
+              "work_proxy": 4252298
+            },
+            "fixed_2": {
+              "common_replay_and_owner_bytes": 69078,
+              "fit_seconds": 0.008693617994140368,
+              "hidden_exact": 0.825318324960546,
+              "hidden_mae": 0.6277234694561072,
+              "hidden_mse": 5.64966957240915,
+              "horizon_work_proxy": {
+                "1": 4754607,
+                "10": 5409024,
+                "100": 11953194
+              },
+              "mean_deployed_bytes": 4006.0,
+              "owner_wall_seconds": 0.09030552199692465,
+              "priced_loss": 0.7739263555889109,
+              "query_factor_multiplications": 72713,
+              "retained_artifact_bytes": 97222,
+              "retained_audit_metadata_bytes": 14516,
+              "retained_state_bytes": 180816,
+              "selection_mse": 5.371678319044103,
+              "work_proxy": 4681894
+            },
+            "fixed_4": {
+              "common_replay_and_owner_bytes": 69078,
+              "fit_seconds": 0.011049092998291599,
+              "hidden_exact": 0.5592220350066303,
+              "hidden_mae": 2.5043571161955644,
+              "hidden_mse": 27.46417638358301,
+              "horizon_work_proxy": {
+                "1": 4978073,
+                "10": 5467718,
+                "100": 10364168
+              },
+              "mean_deployed_bytes": 3964.0,
+              "owner_wall_seconds": 0.0790359590027947,
+              "priced_loss": 1.1994346163815424,
+              "query_factor_multiplications": 54405,
+              "retained_artifact_bytes": 112350,
+              "retained_audit_metadata_bytes": 17636,
+              "retained_state_bytes": 199064,
+              "selection_mse": 27.448119672929817,
+              "work_proxy": 4923668
+            }
+          }
+        },
+        {
+          "best_efficient_fixed": "efficient_fixed_2",
+          "best_matched_fixed": "fixed_2",
+          "flow": "stable_lowrank",
+          "migrations": [
+            {
+              "address_contract": "stable global row/column identities; serialized route and local-row offsets change together",
+              "changed_row_routes": 0,
+              "hidden_coordinate_read_parity_after_reload": true,
+              "parent_artifact_sha256": null,
+              "queries": 6196,
+              "selected_artifact_sha256": "a1f3b4e5f18310e48390e2fa9d4a9ff0d0f1ccd5f88ca89e44def8b3989ff303"
+            }
+          ],
+          "normalized_gain_vs_efficient": 0.0001613944480309895,
+          "normalized_gain_vs_matched": 0.0001613944480309895,
+          "priced_regret_vs_efficient": -0.38318289761347785,
+          "priced_regret_vs_matched": -0.40078745969062507,
+          "retention_floors": true,
+          "seed": 313,
+          "strict_gate": false,
+          "totals": {
+            "adaptive": {
+              "common_replay_and_owner_bytes": 34539,
+              "fit_seconds": 0.0011754010010918137,
+              "hidden_exact": 0.9754680438992899,
+              "hidden_mae": 0.024531956100710135,
+              "hidden_mse": 0.024531956100710135,
+              "horizon_work_proxy": {
+                "1": 433552,
+                "10": 768136,
+                "100": 4113976
+              },
+              "mean_deployed_bytes": 3612.0,
+              "owner_wall_seconds": 0.006731832003424643,
+              "priced_loss": 0.27199342149059974,
+              "query_factor_multiplications": 37176,
+              "retained_artifact_bytes": 3612,
+              "retained_audit_metadata_bytes": 1079,
+              "retained_state_bytes": 39230,
+              "selection_mse": 0.02555110220440882,
+              "work_proxy": 396376
+            },
+            "efficient_fixed_1": {
+              "common_replay_and_owner_bytes": 34539,
+              "fit_seconds": 0.003149225998640759,
+              "hidden_exact": 0.9754680438992899,
+              "hidden_mae": 0.024531956100710135,
+              "hidden_mse": 0.024531956100710135,
+              "horizon_work_proxy": {
+                "1": 421576,
+                "10": 756160,
+                "100": 4102000
+              },
+              "mean_deployed_bytes": 3612.0,
+              "owner_wall_seconds": 0.007865380001021549,
+              "priced_loss": 0.27109079939865793,
+              "query_factor_multiplications": 37176,
+              "retained_artifact_bytes": 3612,
+              "retained_audit_metadata_bytes": 1081,
+              "retained_state_bytes": 39232,
+              "selection_mse": 0.02555110220440882,
+              "work_proxy": 384400
+            },
+            "efficient_fixed_2": {
+              "common_replay_and_owner_bytes": 34539,
+              "fit_seconds": 0.0036303220003901515,
+              "hidden_exact": 0.9753066494512589,
+              "hidden_mae": 0.024693350548741125,
+              "hidden_mse": 0.024693350548741125,
+              "horizon_work_proxy": {
+                "1": 2006888,
+                "10": 2328944,
+                "100": 5549504
+              },
+              "mean_deployed_bytes": 4056.0,
+              "owner_wall_seconds": 0.0289144700000179,
+              "priced_loss": 0.6551763191040776,
+              "query_factor_multiplications": 35784,
+              "retained_artifact_bytes": 49148,
+              "retained_audit_metadata_bytes": 3019,
+              "retained_state_bytes": 86706,
+              "selection_mse": 0.023046092184368736,
+              "work_proxy": 1971104
+            },
+            "efficient_fixed_4": {
+              "common_replay_and_owner_bytes": 34539,
+              "fit_seconds": 0.007177948999014916,
+              "hidden_exact": 0.9724015493867011,
+              "hidden_mae": 0.0275984506132989,
+              "hidden_mse": 0.0275984506132989,
+              "horizon_work_proxy": {
+                "1": 2240953,
+                "10": 2488201,
+                "100": 4960681
+              },
+              "mean_deployed_bytes": 4046.0,
+              "owner_wall_seconds": 0.03897936599969398,
+              "priced_loss": 0.7311248117682544,
+              "query_factor_multiplications": 27472,
+              "retained_artifact_bytes": 58378,
+              "retained_audit_metadata_bytes": 3641,
+              "retained_state_bytes": 96558,
+              "selection_mse": 0.023046092184368736,
+              "work_proxy": 2213481
+            },
+            "fixed_1": {
+              "common_replay_and_owner_bytes": 34539,
+              "fit_seconds": 0.006356509999022819,
+              "hidden_exact": 0.9754680438992899,
+              "hidden_mae": 0.024531956100710135,
+              "hidden_mse": 0.024531956100710135,
+              "horizon_work_proxy": {
+                "1": 817952,
+                "10": 1152536,
+                "100": 4498376
+              },
+              "mean_deployed_bytes": 3612.0,
+              "owner_wall_seconds": 0.01570669400098268,
+              "priced_loss": 0.3132698727619695,
+              "query_factor_multiplications": 37176,
+              "retained_artifact_bytes": 3612,
+              "retained_audit_metadata_bytes": 3237,
+              "retained_state_bytes": 41388,
+              "selection_mse": 0.02555110220440882,
+              "work_proxy": 780776
+            },
+            "fixed_2": {
+              "common_replay_and_owner_bytes": 34539,
+              "fit_seconds": 0.0036303220003901515,
+              "hidden_exact": 0.9753066494512589,
+              "hidden_mae": 0.024693350548741125,
+              "hidden_mse": 0.024693350548741125,
+              "horizon_work_proxy": {
+                "1": 2018528,
+                "10": 2340584,
+                "100": 5561144
+              },
+              "mean_deployed_bytes": 4056.0,
+              "owner_wall_seconds": 0.0302255159986089,
+              "priced_loss": 0.6727808811812248,
+              "query_factor_multiplications": 35784,
+              "retained_artifact_bytes": 49148,
+              "retained_audit_metadata_bytes": 6038,
+              "retained_state_bytes": 89725,
+              "selection_mse": 0.023046092184368736,
+              "work_proxy": 1982744
+            },
+            "fixed_4": {
+              "common_replay_and_owner_bytes": 34539,
+              "fit_seconds": 0.007177948999014916,
+              "hidden_exact": 0.9724015493867011,
+              "hidden_mae": 0.0275984506132989,
+              "hidden_mse": 0.0275984506132989,
+              "horizon_work_proxy": {
+                "1": 2249737,
+                "10": 2496985,
+                "100": 4969465
+              },
+              "mean_deployed_bytes": 4046.0,
+              "owner_wall_seconds": 0.04051530099968659,
+              "priced_loss": 0.7519555536421296,
+              "query_factor_multiplications": 27472,
+              "retained_artifact_bytes": 58378,
+              "retained_audit_metadata_bytes": 7282,
+              "retained_state_bytes": 100199,
+              "selection_mse": 0.023046092184368736,
+              "work_proxy": 2222265
+            }
+          }
+        },
+        {
+          "best_efficient_fixed": "efficient_fixed_4",
+          "best_matched_fixed": "fixed_4",
+          "flow": "random",
+          "migrations": [
+            {
+              "address_contract": "stable global row/column identities; serialized route and local-row offsets change together",
+              "changed_row_routes": 0,
+              "hidden_coordinate_read_parity_after_reload": true,
+              "parent_artifact_sha256": null,
+              "queries": 6196,
+              "selected_artifact_sha256": "d893fc39bbb168cceb4f72062f71a519ae858b3332defc99a70eea7c1f743b64"
+            }
+          ],
+          "normalized_gain_vs_efficient": -0.12271783168367609,
+          "normalized_gain_vs_matched": -0.12271783168367609,
+          "priced_regret_vs_efficient": -0.3270339046619408,
+          "priced_regret_vs_matched": -0.34787760729717254,
+          "retention_floors": true,
+          "seed": 313,
+          "strict_gate": false,
+          "totals": {
+            "adaptive": {
+              "common_replay_and_owner_bytes": 34539,
+              "fit_seconds": 0.0007431699996232055,
+              "hidden_exact": 0.01065203357004519,
+              "hidden_mae": 32.38444157520981,
+              "hidden_mse": 1526.35409941898,
+              "horizon_work_proxy": {
+                "1": 630160,
+                "10": 964744,
+                "100": 4310584
+              },
+              "mean_deployed_bytes": 3612.0,
+              "owner_wall_seconds": 0.0045146650008973666,
+              "priced_loss": 1.2624780766855705,
+              "query_factor_multiplications": 37176,
+              "retained_artifact_bytes": 3612,
+              "retained_audit_metadata_bytes": 1082,
+              "retained_state_bytes": 39233,
+              "selection_mse": 1427.2289579158316,
+              "work_proxy": 592984
+            },
+            "efficient_fixed_1": {
+              "common_replay_and_owner_bytes": 34539,
+              "fit_seconds": 0.0008178630014299415,
+              "hidden_exact": 0.01065203357004519,
+              "hidden_mae": 32.38444157520981,
+              "hidden_mse": 1526.35409941898,
+              "horizon_work_proxy": {
+                "1": 421576,
+                "10": 756160,
+                "100": 4102000
+              },
+              "mean_deployed_bytes": 3612.0,
+              "owner_wall_seconds": 0.005382812996685971,
+              "priced_loss": 1.2465809916921893,
+              "query_factor_multiplications": 37176,
+              "retained_artifact_bytes": 3612,
+              "retained_audit_metadata_bytes": 1085,
+              "retained_state_bytes": 39236,
+              "selection_mse": 1427.2289579158316,
+              "work_proxy": 384400
+            },
+            "efficient_fixed_2": {
+              "common_replay_and_owner_bytes": 34539,
+              "fit_seconds": 0.002675382995221298,
+              "hidden_exact": 0.006778566817301485,
+              "hidden_mae": 31.154615881213687,
+              "hidden_mse": 1428.8979987088444,
+              "horizon_work_proxy": {
+                "1": 2074186,
+                "10": 2400238,
+                "100": 5660758
+              },
+              "mean_deployed_bytes": 4084.0,
+              "owner_wall_seconds": 0.019592510998336365,
+              "priced_loss": 1.5738552865669941,
+              "query_factor_multiplications": 36228,
+              "retained_artifact_bytes": 49532,
+              "retained_audit_metadata_bytes": 3018,
+              "retained_state_bytes": 87089,
+              "selection_mse": 1359.9854709418837,
+              "work_proxy": 2037958
+            },
+            "efficient_fixed_4": {
+              "common_replay_and_owner_bytes": 34539,
+              "fit_seconds": 0.0037440930027514696,
+              "hidden_exact": 0.009845061329890251,
+              "hidden_mae": 30.194964493221434,
+              "hidden_mse": 1359.5171078114913,
+              "horizon_work_proxy": {
+                "1": 2239744,
+                "10": 2479801,
+                "100": 4880371
+              },
+              "mean_deployed_bytes": 3920.0,
+              "owner_wall_seconds": 0.030148030000418657,
+              "priced_loss": 1.5895119813475114,
+              "query_factor_multiplications": 26673,
+              "retained_artifact_bytes": 57528,
+              "retained_audit_metadata_bytes": 3646,
+              "retained_state_bytes": 95713,
+              "selection_mse": 1298.3987975951904,
+              "work_proxy": 2213071
+            },
+            "fixed_1": {
+              "common_replay_and_owner_bytes": 34539,
+              "fit_seconds": 0.0022098810004536062,
+              "hidden_exact": 0.01065203357004519,
+              "hidden_mae": 32.38444157520981,
+              "hidden_mse": 1526.35409941898,
+              "horizon_work_proxy": {
+                "1": 817952,
+                "10": 1152536,
+                "100": 4498376
+              },
+              "mean_deployed_bytes": 3612.0,
+              "owner_wall_seconds": 0.010415588996693259,
+              "priced_loss": 1.2888209731396647,
+              "query_factor_multiplications": 37176,
+              "retained_artifact_bytes": 3612,
+              "retained_audit_metadata_bytes": 3252,
+              "retained_state_bytes": 41403,
+              "selection_mse": 1427.2289579158316,
+              "work_proxy": 780776
+            },
+            "fixed_2": {
+              "common_replay_and_owner_bytes": 34539,
+              "fit_seconds": 0.002675382995221298,
+              "hidden_exact": 0.006778566817301485,
+              "hidden_mae": 31.154615881213687,
+              "hidden_mse": 1428.8979987088444,
+              "horizon_work_proxy": {
+                "1": 2085830,
+                "10": 2411882,
+                "100": 5672402
+              },
+              "mean_deployed_bytes": 4084.0,
+              "owner_wall_seconds": 0.020762164000188932,
+              "priced_loss": 1.5914546167213621,
+              "query_factor_multiplications": 36228,
+              "retained_artifact_bytes": 49532,
+              "retained_audit_metadata_bytes": 6036,
+              "retained_state_bytes": 90107,
+              "selection_mse": 1359.9854709418837,
+              "work_proxy": 2049602
+            },
+            "fixed_4": {
+              "common_replay_and_owner_bytes": 34539,
+              "fit_seconds": 0.0037440930027514696,
+              "hidden_exact": 0.009845061329890251,
+              "hidden_mae": 30.194964493221434,
+              "hidden_mse": 1359.5171078114913,
+              "horizon_work_proxy": {
+                "1": 2248335,
+                "10": 2488392,
+                "100": 4888962
+              },
+              "mean_deployed_bytes": 3920.0,
+              "owner_wall_seconds": 0.03200264500264893,
+              "priced_loss": 1.610355683982743,
+              "query_factor_multiplications": 26673,
+              "retained_artifact_bytes": 57528,
+              "retained_audit_metadata_bytes": 7292,
+              "retained_state_bytes": 99359,
+              "selection_mse": 1298.3987975951904,
+              "work_proxy": 2221662
+            }
+          }
+        },
+        {
+          "best_efficient_fixed": "efficient_fixed_4",
+          "best_matched_fixed": "fixed_4",
+          "flow": "heterogeneous",
+          "migrations": [
+            {
+              "address_contract": "stable global row/column identities; serialized route and local-row offsets change together",
+              "changed_row_routes": 64,
+              "hidden_coordinate_read_parity_after_reload": true,
+              "parent_artifact_sha256": null,
+              "queries": 6095,
+              "selected_artifact_sha256": "7002140335b8e06f6bc2edd4f581c972c3b65455d39de3f7a679f3cdf1c567d3"
+            }
+          ],
+          "normalized_gain_vs_efficient": -0.0019688269073010662,
+          "normalized_gain_vs_matched": -0.0019688269073010662,
+          "priced_regret_vs_efficient": 0.010069535300660126,
+          "priced_regret_vs_matched": -0.08111936550011034,
+          "retention_floors": true,
+          "seed": 317,
+          "strict_gate": false,
+          "totals": {
+            "adaptive": {
+              "common_replay_and_owner_bytes": 34539,
+              "fit_seconds": 0.0037170719988353085,
+              "hidden_exact": 0.9972108285479901,
+              "hidden_mae": 0.002789171452009844,
+              "hidden_mse": 0.002789171452009844,
+              "horizon_work_proxy": {
+                "1": 2596273,
+                "10": 2924710,
+                "100": 6209080
+              },
+              "mean_deployed_bytes": 4036.0,
+              "owner_wall_seconds": 0.03262160899976152,
+              "priced_loss": 0.6717349458005712,
+              "query_factor_multiplications": 36493,
+              "retained_artifact_bytes": 47720,
+              "retained_audit_metadata_bytes": 3781,
+              "retained_state_bytes": 86040,
+              "selection_mse": 0.002861230329041488,
+              "work_proxy": 2559780
+            },
+            "efficient_fixed_1": {
+              "common_replay_and_owner_bytes": 34539,
+              "fit_seconds": 0.0011249059971305542,
+              "hidden_exact": 0.777194421657096,
+              "hidden_mae": 2.622805578342904,
+              "hidden_mse": 102.2785890073831,
+              "horizon_work_proxy": {
+                "1": 422182,
+                "10": 751312,
+                "100": 4042612
+              },
+              "mean_deployed_bytes": 3612.0,
+              "owner_wall_seconds": 0.004989989996829536,
+              "priced_loss": 1.2466070147711836,
+              "query_factor_multiplications": 36570,
+              "retained_artifact_bytes": 3612,
+              "retained_audit_metadata_bytes": 1073,
+              "retained_state_bytes": 39224,
+              "selection_mse": 107.97329518359561,
+              "work_proxy": 385612
+            },
+            "efficient_fixed_2": {
+              "common_replay_and_owner_bytes": 34539,
+              "fit_seconds": 0.002884716996049974,
+              "hidden_exact": 0.9972108285479901,
+              "hidden_mae": 0.002789171452009844,
+              "hidden_mse": 0.002789171452009844,
+              "horizon_work_proxy": {
+                "1": 1877489,
+                "10": 2205926,
+                "100": 5490296
+              },
+              "mean_deployed_bytes": 4036.0,
+              "owner_wall_seconds": 0.021055675999377854,
+              "priced_loss": 0.614127529332894,
+              "query_factor_multiplications": 36493,
+              "retained_artifact_bytes": 47984,
+              "retained_audit_metadata_bytes": 3017,
+              "retained_state_bytes": 85540,
+              "selection_mse": 0.002861230329041488,
+              "work_proxy": 1840996
+            },
+            "efficient_fixed_4": {
+              "common_replay_and_owner_bytes": 34539,
+              "fit_seconds": 0.00385686300433008,
+              "hidden_exact": 0.9991796554552912,
+              "hidden_mae": 0.0008203445447087777,
+              "hidden_mse": 0.0008203445447087777,
+              "horizon_work_proxy": {
+                "1": 1982865,
+                "10": 2216019,
+                "100": 4547559
+              },
+              "mean_deployed_bytes": 3892.0,
+              "owner_wall_seconds": 0.02880273100163322,
+              "priced_loss": 0.6616654104999111,
+              "query_factor_multiplications": 25906,
+              "retained_artifact_bytes": 54344,
+              "retained_audit_metadata_bytes": 3648,
+              "retained_state_bytes": 92531,
+              "selection_mse": 0.0,
+              "work_proxy": 1956959
+            },
+            "fixed_1": {
+              "common_replay_and_owner_bytes": 34539,
+              "fit_seconds": 0.0066009109978040215,
+              "hidden_exact": 0.777194421657096,
+              "hidden_mae": 2.622805578342904,
+              "hidden_mse": 102.2785890073831,
+              "horizon_work_proxy": {
+                "1": 2748436,
+                "10": 3077566,
+                "100": 6368866
+              },
+              "mean_deployed_bytes": 3612.0,
+              "owner_wall_seconds": 0.030575532997318078,
+              "priced_loss": 1.4655312929544206,
+              "query_factor_multiplications": 36570,
+              "retained_artifact_bytes": 3612,
+              "retained_audit_metadata_bytes": 8558,
+              "retained_state_bytes": 46709,
+              "selection_mse": 107.97329518359561,
+              "work_proxy": 2711866
+            },
+            "fixed_2": {
+              "common_replay_and_owner_bytes": 34539,
+              "fit_seconds": 0.005319456999131944,
+              "hidden_exact": 0.9972108285479901,
+              "hidden_mae": 0.002789171452009844,
+              "hidden_mse": 0.002789171452009844,
+              "horizon_work_proxy": {
+                "1": 2661680,
+                "10": 2990117,
+                "100": 6274487
+              },
+              "mean_deployed_bytes": 4036.0,
+              "owner_wall_seconds": 0.032069826000224566,
+              "priced_loss": 0.7042832434165098,
+              "query_factor_multiplications": 36493,
+              "retained_artifact_bytes": 47984,
+              "retained_audit_metadata_bytes": 8494,
+              "retained_state_bytes": 91017,
+              "selection_mse": 0.002861230329041488,
+              "work_proxy": 2625187
+            },
+            "fixed_4": {
+              "common_replay_and_owner_bytes": 34539,
+              "fit_seconds": 0.007058599003357813,
+              "hidden_exact": 0.9991796554552912,
+              "hidden_mae": 0.0008203445447087777,
+              "hidden_mse": 0.0008203445447087777,
+              "horizon_work_proxy": {
+                "1": 2690967,
+                "10": 2924121,
+                "100": 5255661
+              },
+              "mean_deployed_bytes": 3892.0,
+              "owner_wall_seconds": 0.041105986001639394,
+              "priced_loss": 0.7528543113006816,
+              "query_factor_multiplications": 25906,
+              "retained_artifact_bytes": 54344,
+              "retained_audit_metadata_bytes": 10360,
+              "retained_state_bytes": 99243,
+              "selection_mse": 0.0,
+              "work_proxy": 2665061
+            }
+          }
+        },
+        {
+          "best_efficient_fixed": "efficient_fixed_2",
+          "best_matched_fixed": "fixed_2",
+          "flow": "convergent",
+          "migrations": [
+            {
+              "address_contract": "stable global row/column identities; serialized route and local-row offsets change together",
+              "changed_row_routes": 64,
+              "hidden_coordinate_read_parity_after_reload": true,
+              "parent_artifact_sha256": null,
+              "queries": 6095,
+              "selected_artifact_sha256": "7002140335b8e06f6bc2edd4f581c972c3b65455d39de3f7a679f3cdf1c567d3"
+            },
+            {
+              "address_contract": "stable global row/column identities; serialized route and local-row offsets change together",
+              "changed_row_routes": 64,
+              "hidden_coordinate_read_parity_after_reload": true,
+              "parent_artifact_sha256": "7002140335b8e06f6bc2edd4f581c972c3b65455d39de3f7a679f3cdf1c567d3",
+              "queries": 6189,
+              "selected_artifact_sha256": "b21c887737ba0345ca5bb6655de60d3ce472849c00c0ee6cfffd5939184aae20"
+            }
+          ],
+          "normalized_gain_vs_efficient": 0.98237906395785,
+          "normalized_gain_vs_matched": 0.98237906395785,
+          "priced_regret_vs_efficient": -0.17486810647293316,
+          "priced_regret_vs_matched": -0.22873712181702277,
+          "retention_floors": true,
+          "seed": 317,
+          "strict_gate": true,
+          "totals": {
+            "adaptive": {
+              "common_replay_and_owner_bytes": 69078,
+              "fit_seconds": 0.006123478004155913,
+              "hidden_exact": 0.8941458893103499,
+              "hidden_mae": 0.1058541106896501,
+              "hidden_mse": 0.1058541106896501,
+              "horizon_work_proxy": {
+                "1": 3927525,
+                "10": 4590168,
+                "100": 11216598
+              },
+              "mean_deployed_bytes": 3824.0,
+              "owner_wall_seconds": 0.04498987999977544,
+              "priced_loss": 0.5698831187314524,
+              "query_factor_multiplications": 73627,
+              "retained_artifact_bytes": 76108,
+              "retained_audit_metadata_bytes": 6808,
+              "retained_state_bytes": 151994,
+              "selection_mse": 0.1080207299922791,
+              "work_proxy": 3853898
+            },
+            "efficient_fixed_1": {
+              "common_replay_and_owner_bytes": 69078,
+              "fit_seconds": 0.0018755969977064524,
+              "hidden_exact": 0.7841376858649027,
+              "hidden_mae": 1.415862314135097,
+              "hidden_mse": 51.2437540286552,
+              "horizon_work_proxy": {
+                "1": 843800,
+                "10": 1507136,
+                "100": 8140496
+              },
+              "mean_deployed_bytes": 3612.0,
+              "owner_wall_seconds": 0.008620482996775536,
+              "priced_loss": 1.2465612164367474,
+              "query_factor_multiplications": 73704,
+              "retained_artifact_bytes": 7224,
+              "retained_audit_metadata_bytes": 2145,
+              "retained_state_bytes": 78447,
+              "selection_mse": 54.093237706625565,
+              "work_proxy": 770096
+            },
+            "efficient_fixed_2": {
+              "common_replay_and_owner_bytes": 69078,
+              "fit_seconds": 0.0058790419934666716,
+              "hidden_exact": 0.8256372449413081,
+              "hidden_mae": 0.6548927275906035,
+              "hidden_mse": 6.007292145913434,
+              "horizon_work_proxy": {
+                "1": 4000088,
+                "10": 4646216,
+                "100": 11107496
+              },
+              "mean_deployed_bytes": 3992.0,
+              "owner_wall_seconds": 0.044011374997353414,
+              "priced_loss": 0.7447512252043855,
+              "query_factor_multiplications": 71792,
+              "retained_artifact_bytes": 97422,
+              "retained_audit_metadata_bytes": 6034,
+              "retained_state_bytes": 172534,
+              "selection_mse": 5.647711194295824,
+              "work_proxy": 3928296
+            },
+            "efficient_fixed_4": {
+              "common_replay_and_owner_bytes": 69078,
+              "fit_seconds": 0.007603842004755279,
+              "hidden_exact": 0.6821718280507996,
+              "hidden_mae": 2.147122080496623,
+              "hidden_mse": 27.10882833352619,
+              "horizon_work_proxy": {
+                "1": 4315348,
+                "10": 4805812,
+                "100": 9710452
+              },
+              "mean_deployed_bytes": 3987.0,
+              "owner_wall_seconds": 0.05683682699964265,
+              "priced_loss": 1.2156366670568208,
+              "query_factor_multiplications": 54496,
+              "retained_artifact_bytes": 112930,
+              "retained_audit_metadata_bytes": 7290,
+              "retained_state_bytes": 189298,
+              "selection_mse": 23.358961557663505,
+              "work_proxy": 4260852
+            },
+            "fixed_1": {
+              "common_replay_and_owner_bytes": 69078,
+              "fit_seconds": 0.008650899999338435,
+              "hidden_exact": 0.7841376858649027,
+              "hidden_mae": 1.415862314135097,
+              "hidden_mse": 51.2437540286552,
+              "horizon_work_proxy": {
+                "1": 4335524,
+                "10": 4998860,
+                "100": 11632220
+              },
+              "mean_deployed_bytes": 3612.0,
+              "owner_wall_seconds": 0.041458927997155115,
+              "priced_loss": 1.4123374357677643,
+              "query_factor_multiplications": 73704,
+              "retained_artifact_bytes": 7224,
+              "retained_audit_metadata_bytes": 13912,
+              "retained_state_bytes": 90214,
+              "selection_mse": 54.093237706625565,
+              "work_proxy": 4261820
+            },
+            "fixed_2": {
+              "common_replay_and_owner_bytes": 69078,
+              "fit_seconds": 0.008501935993990628,
+              "hidden_exact": 0.8256372449413081,
+              "hidden_mae": 0.6548927275906035,
+              "hidden_mse": 6.007292145913434,
+              "horizon_work_proxy": {
+                "1": 4795700,
+                "10": 5441828,
+                "100": 11903108
+              },
+              "mean_deployed_bytes": 3992.0,
+              "owner_wall_seconds": 0.05727303199819289,
+              "priced_loss": 0.7986202405484751,
+              "query_factor_multiplications": 71792,
+              "retained_artifact_bytes": 97422,
+              "retained_audit_metadata_bytes": 14529,
+              "retained_state_bytes": 181029,
+              "selection_mse": 5.647711194295824,
+              "work_proxy": 4723908
+            },
+            "fixed_4": {
+              "common_replay_and_owner_bytes": 69078,
+              "fit_seconds": 0.010962694006593665,
+              "hidden_exact": 0.6821718280507996,
+              "hidden_mae": 2.147122080496623,
+              "hidden_mse": 27.10882833352619,
+              "horizon_work_proxy": {
+                "1": 5032716,
+                "10": 5523180,
+                "100": 10427820
+              },
+              "mean_deployed_bytes": 3987.0,
+              "owner_wall_seconds": 0.07106585300061852,
+              "priced_loss": 1.2716731808828046,
+              "query_factor_multiplications": 54496,
+              "retained_artifact_bytes": 112930,
+              "retained_audit_metadata_bytes": 17646,
+              "retained_state_bytes": 199654,
+              "selection_mse": 23.358961557663505,
+              "work_proxy": 4978220
+            }
+          }
+        },
+        {
+          "best_efficient_fixed": "efficient_fixed_2",
+          "best_matched_fixed": "fixed_2",
+          "flow": "stable_lowrank",
+          "migrations": [
+            {
+              "address_contract": "stable global row/column identities; serialized route and local-row offsets change together",
+              "changed_row_routes": 0,
+              "hidden_coordinate_read_parity_after_reload": true,
+              "parent_artifact_sha256": null,
+              "queries": 6095,
+              "selected_artifact_sha256": "030574ae4e49d6a8e97c629d3acde0c1357abae69037268b39bbc976d6ef74c3"
+            }
+          ],
+          "normalized_gain_vs_efficient": 0.0011484823625922888,
+          "normalized_gain_vs_matched": 0.0011484823625922888,
+          "priced_regret_vs_efficient": -0.3958379246898445,
+          "priced_regret_vs_matched": -0.41343731956310775,
+          "retention_floors": true,
+          "seed": 317,
+          "strict_gate": false,
+          "totals": {
+            "adaptive": {
+              "common_replay_and_owner_bytes": 34539,
+              "fit_seconds": 0.0007849940011510625,
+              "hidden_exact": 0.9757178014766201,
+              "hidden_mae": 0.02428219852337982,
+              "hidden_mse": 0.02428219852337982,
+              "horizon_work_proxy": {
+                "1": 434764,
+                "10": 763894,
+                "100": 4055194
+              },
+              "mean_deployed_bytes": 3612.0,
+              "owner_wall_seconds": 0.0048036910011433065,
+              "priced_loss": 0.2718879034044079,
+              "query_factor_multiplications": 36570,
+              "retained_artifact_bytes": 3612,
+              "retained_audit_metadata_bytes": 1080,
+              "retained_state_bytes": 39231,
+              "selection_mse": 0.027181688125894134,
+              "work_proxy": 398194
+            },
+            "efficient_fixed_1": {
+              "common_replay_and_owner_bytes": 34539,
+              "fit_seconds": 0.0008454449998680502,
+              "hidden_exact": 0.9757178014766201,
+              "hidden_mae": 0.02428219852337982,
+              "hidden_mse": 0.02428219852337982,
+              "horizon_work_proxy": {
+                "1": 422182,
+                "10": 751312,
+                "100": 4042612
+              },
+              "mean_deployed_bytes": 3612.0,
+              "owner_wall_seconds": 0.003395918000023812,
+              "priced_loss": 0.2709445842801671,
+              "query_factor_multiplications": 36570,
+              "retained_artifact_bytes": 3612,
+              "retained_audit_metadata_bytes": 1083,
+              "retained_state_bytes": 39234,
+              "selection_mse": 0.027181688125894134,
+              "work_proxy": 385612
+            },
+            "efficient_fixed_2": {
+              "common_replay_and_owner_bytes": 34539,
+              "fit_seconds": 0.0026380269991932437,
+              "hidden_exact": 0.9745693191140279,
+              "hidden_mae": 0.02543068088597211,
+              "hidden_mse": 0.02543068088597211,
+              "horizon_work_proxy": {
+                "1": 2129359,
+                "10": 2436529,
+                "100": 5508229
+              },
+              "mean_deployed_bytes": 3898.0,
+              "owner_wall_seconds": 0.017476531000284012,
+              "priced_loss": 0.6677258280942524,
+              "query_factor_multiplications": 34130,
+              "retained_artifact_bytes": 49574,
+              "retained_audit_metadata_bytes": 3016,
+              "retained_state_bytes": 87129,
+              "selection_mse": 0.01859799713876967,
+              "work_proxy": 2095229
+            },
+            "efficient_fixed_4": {
+              "common_replay_and_owner_bytes": 34539,
+              "fit_seconds": 0.00406043000111822,
+              "hidden_exact": 0.9762100082034455,
+              "hidden_mae": 0.02378999179655455,
+              "hidden_mse": 0.02378999179655455,
+              "horizon_work_proxy": {
+                "1": 2349269,
+                "10": 2596355,
+                "100": 5067215
+              },
+              "mean_deployed_bytes": 4094.0,
+              "owner_wall_seconds": 0.026751702000183286,
+              "priced_loss": 0.73676098321635,
+              "query_factor_multiplications": 27454,
+              "retained_artifact_bytes": 58586,
+              "retained_audit_metadata_bytes": 3646,
+              "retained_state_bytes": 96771,
+              "selection_mse": 0.021936099189318072,
+              "work_proxy": 2321815
+            },
+            "fixed_1": {
+              "common_replay_and_owner_bytes": 34539,
+              "fit_seconds": 0.0015467319972231053,
+              "hidden_exact": 0.9757178014766201,
+              "hidden_mae": 0.02428219852337982,
+              "hidden_mse": 0.02428219852337982,
+              "horizon_work_proxy": {
+                "1": 820376,
+                "10": 1149506,
+                "100": 4440806
+              },
+              "mean_deployed_bytes": 3612.0,
+              "owner_wall_seconds": 0.007432372000039322,
+              "priced_loss": 0.3132955826274189,
+              "query_factor_multiplications": 36570,
+              "retained_artifact_bytes": 3612,
+              "retained_audit_metadata_bytes": 3245,
+              "retained_state_bytes": 41396,
+              "selection_mse": 0.027181688125894134,
+              "work_proxy": 783806
+            },
+            "fixed_2": {
+              "common_replay_and_owner_bytes": 34539,
+              "fit_seconds": 0.0026380269991932437,
+              "hidden_exact": 0.9745693191140279,
+              "hidden_mae": 0.02543068088597211,
+              "hidden_mse": 0.02543068088597211,
+              "horizon_work_proxy": {
+                "1": 2141149,
+                "10": 2448319,
+                "100": 5520019
+              },
+              "mean_deployed_bytes": 3898.0,
+              "owner_wall_seconds": 0.01870251899890718,
+              "priced_loss": 0.6853252229675156,
+              "query_factor_multiplications": 34130,
+              "retained_artifact_bytes": 49574,
+              "retained_audit_metadata_bytes": 6032,
+              "retained_state_bytes": 90145,
+              "selection_mse": 0.01859799713876967,
+              "work_proxy": 2107019
+            },
+            "fixed_4": {
+              "common_replay_and_owner_bytes": 34539,
+              "fit_seconds": 0.00406043000111822,
+              "hidden_exact": 0.9762100082034455,
+              "hidden_mae": 0.02378999179655455,
+              "hidden_mse": 0.02378999179655455,
+              "horizon_work_proxy": {
+                "1": 2358839,
+                "10": 2605925,
+                "100": 5076785
+              },
+              "mean_deployed_bytes": 4094.0,
+              "owner_wall_seconds": 0.02801770999940345,
+              "priced_loss": 0.7576793776240426,
+              "query_factor_multiplications": 27454,
+              "retained_artifact_bytes": 58586,
+              "retained_audit_metadata_bytes": 7292,
+              "retained_state_bytes": 100417,
+              "selection_mse": 0.021936099189318072,
+              "work_proxy": 2331385
+            }
+          }
+        },
+        {
+          "best_efficient_fixed": "efficient_fixed_4",
+          "best_matched_fixed": "fixed_4",
+          "flow": "random",
+          "migrations": [
+            {
+              "address_contract": "stable global row/column identities; serialized route and local-row offsets change together",
+              "changed_row_routes": 0,
+              "hidden_coordinate_read_parity_after_reload": true,
+              "parent_artifact_sha256": null,
+              "queries": 6095,
+              "selected_artifact_sha256": "2d5a28f16ba71e01d2bc4cdca4c7ccdcd8a4d702729824acf8f68dfdc30efa0a"
+            }
+          ],
+          "normalized_gain_vs_efficient": -0.10641562874902151,
+          "normalized_gain_vs_matched": -0.10641562874902151,
+          "priced_regret_vs_efficient": -0.3343987169677325,
+          "priced_regret_vs_matched": -0.3553217745154358,
+          "retention_floors": true,
+          "seed": 317,
+          "strict_gate": false,
+          "totals": {
+            "adaptive": {
+              "common_replay_and_owner_bytes": 34539,
+              "fit_seconds": 0.0007873559989093337,
+              "hidden_exact": 0.010992616899097621,
+              "hidden_mae": 32.455783429040196,
+              "hidden_mse": 1552.0190319934372,
+              "horizon_work_proxy": {
+                "1": 631372,
+                "10": 960502,
+                "100": 4251802
+              },
+              "mean_deployed_bytes": 3612.0,
+              "owner_wall_seconds": 0.004777941998327151,
+              "priced_loss": 1.2626167790781486,
+              "query_factor_multiplications": 36570,
+              "retained_artifact_bytes": 3612,
+              "retained_audit_metadata_bytes": 1082,
+              "retained_state_bytes": 39233,
+              "selection_mse": 1574.7835002384359,
+              "work_proxy": 594802
+            },
+            "efficient_fixed_1": {
+              "common_replay_and_owner_bytes": 34539,
+              "fit_seconds": 0.0008089700022537727,
+              "hidden_exact": 0.010992616899097621,
+              "hidden_mae": 32.455783429040196,
+              "hidden_mse": 1552.0190319934372,
+              "horizon_work_proxy": {
+                "1": 422182,
+                "10": 751312,
+                "100": 4042612
+              },
+              "mean_deployed_bytes": 3612.0,
+              "owner_wall_seconds": 0.0032738049994804896,
+              "priced_loss": 1.246673459953908,
+              "query_factor_multiplications": 36570,
+              "retained_artifact_bytes": 3612,
+              "retained_audit_metadata_bytes": 1085,
+              "retained_state_bytes": 39236,
+              "selection_mse": 1574.7835002384359,
+              "work_proxy": 385612
+            },
+            "efficient_fixed_2": {
+              "common_replay_and_owner_bytes": 34539,
+              "fit_seconds": 0.0023910930030979216,
+              "hidden_exact": 0.010172272354388842,
+              "hidden_mae": 31.29073010664479,
+              "hidden_mse": 1450.371944216571,
+              "horizon_work_proxy": {
+                "1": 2178122,
+                "10": 2484113,
+                "100": 5544023
+              },
+              "mean_deployed_bytes": 3886.0,
+              "owner_wall_seconds": 0.017767008001101203,
+              "priced_loss": 1.5804655637380063,
+              "query_factor_multiplications": 33999,
+              "retained_artifact_bytes": 49558,
+              "retained_audit_metadata_bytes": 3020,
+              "retained_state_bytes": 87117,
+              "selection_mse": 1429.4859322842156,
+              "work_proxy": 2144123
+            },
+            "efficient_fixed_4": {
+              "common_replay_and_owner_bytes": 34539,
+              "fit_seconds": 0.0033899090012710076,
+              "hidden_exact": 0.009351927809680066,
+              "hidden_mae": 30.697785069729285,
+              "hidden_mse": 1402.7450369155044,
+              "horizon_work_proxy": {
+                "1": 2311309,
+                "10": 2568403,
+                "100": 5139343
+              },
+              "mean_deployed_bytes": 4062.0,
+              "owner_wall_seconds": 0.02420971000174177,
+              "priced_loss": 1.5970154960458811,
+              "query_factor_multiplications": 28566,
+              "retained_artifact_bytes": 55558,
+              "retained_audit_metadata_bytes": 3641,
+              "retained_state_bytes": 93738,
+              "selection_mse": 1354.4625655698617,
+              "work_proxy": 2282743
+            },
+            "fixed_1": {
+              "common_replay_and_owner_bytes": 34539,
+              "fit_seconds": 0.0014768170003662817,
+              "hidden_exact": 0.010992616899097621,
+              "hidden_mae": 32.455783429040196,
+              "hidden_mse": 1552.0190319934372,
+              "horizon_work_proxy": {
+                "1": 820376,
+                "10": 1149506,
+                "100": 4440806
+              },
+              "mean_deployed_bytes": 3612.0,
+              "owner_wall_seconds": 0.007165970997448312,
+              "priced_loss": 1.2890410695968408,
+              "query_factor_multiplications": 36570,
+              "retained_artifact_bytes": 3612,
+              "retained_audit_metadata_bytes": 3250,
+              "retained_state_bytes": 41401,
+              "selection_mse": 1574.7835002384359,
+              "work_proxy": 783806
+            },
+            "fixed_2": {
+              "common_replay_and_owner_bytes": 34539,
+              "fit_seconds": 0.0023910930030979216,
+              "hidden_exact": 0.010172272354388842,
+              "hidden_mae": 31.29073010664479,
+              "hidden_mse": 1450.371944216571,
+              "horizon_work_proxy": {
+                "1": 2189851,
+                "10": 2495842,
+                "100": 5555752
+              },
+              "mean_deployed_bytes": 3886.0,
+              "owner_wall_seconds": 0.01905952599918237,
+              "priced_loss": 1.5980824530748468,
+              "query_factor_multiplications": 33999,
+              "retained_artifact_bytes": 49558,
+              "retained_audit_metadata_bytes": 6040,
+              "retained_state_bytes": 90137,
+              "selection_mse": 1429.4859322842156,
+              "work_proxy": 2155852
+            },
+            "fixed_4": {
+              "common_replay_and_owner_bytes": 34539,
+              "fit_seconds": 0.0033899090012710076,
+              "hidden_exact": 0.009351927809680066,
+              "hidden_mae": 30.697785069729285,
+              "hidden_mse": 1402.7450369155044,
+              "horizon_work_proxy": {
+                "1": 2321303,
+                "10": 2578397,
+                "100": 5149337
+              },
+              "mean_deployed_bytes": 4062.0,
+              "owner_wall_seconds": 0.0254544370000076,
+              "priced_loss": 1.6179385535935844,
+              "query_factor_multiplications": 28566,
+              "retained_artifact_bytes": 55558,
+              "retained_audit_metadata_bytes": 7282,
+              "retained_state_bytes": 97379,
+              "selection_mse": 1354.4625655698617,
+              "work_proxy": 2292737
+            }
+          }
+        },
+        {
+          "best_efficient_fixed": "efficient_fixed_4",
+          "best_matched_fixed": "fixed_4",
+          "flow": "heterogeneous",
+          "migrations": [
+            {
+              "address_contract": "stable global row/column identities; serialized route and local-row offsets change together",
+              "changed_row_routes": 8,
+              "hidden_coordinate_read_parity_after_reload": true,
+              "parent_artifact_sha256": null,
+              "queries": 6199,
+              "selected_artifact_sha256": "3aa306b3160c735eaea7f694f2445b0e415d7ac852dabe70b170edec42a86bb0"
+            }
+          ],
+          "normalized_gain_vs_efficient": -70.96918857880304,
+          "normalized_gain_vs_matched": -70.96918857880304,
+          "priced_regret_vs_efficient": 1.1620521304908324,
+          "priced_regret_vs_matched": 0.8590188159580847,
+          "retention_floors": true,
+          "seed": 331,
+          "strict_gate": false,
+          "totals": {
+            "adaptive": {
+              "common_replay_and_owner_bytes": 34539,
+              "fit_seconds": 0.004922018008073792,
+              "hidden_exact": 0.6767220519438619,
+              "hidden_mae": 1.8432005162122922,
+              "hidden_mse": 70.97144700758187,
+              "horizon_work_proxy": {
+                "1": 4712022,
+                "10": 5041584,
+                "100": 8337204
+              },
+              "mean_deployed_bytes": 3924.0,
+              "owner_wall_seconds": 0.0342231710019405,
+              "priced_loss": 1.8366082760099638,
+              "query_factor_multiplications": 36618,
+              "retained_artifact_bytes": 88434,
+              "retained_audit_metadata_bytes": 6504,
+              "retained_state_bytes": 129477,
+              "selection_mse": 74.3452082288008,
+              "work_proxy": 4675404
+            },
+            "efficient_fixed_1": {
+              "common_replay_and_owner_bytes": 34539,
+              "fit_seconds": 0.0007781830026942771,
+              "hidden_exact": 0.43571543797386675,
+              "hidden_mae": 2.991127601226004,
+              "hidden_mse": 93.0191966446201,
+              "horizon_work_proxy": {
+                "1": 421558,
+                "10": 756304,
+                "100": 4103764
+              },
+              "mean_deployed_bytes": 3612.0,
+              "owner_wall_seconds": 0.003415358001802815,
+              "priced_loss": 1.2465505596173563,
+              "query_factor_multiplications": 37194,
+              "retained_artifact_bytes": 3612,
+              "retained_audit_metadata_bytes": 1080,
+              "retained_state_bytes": 39231,
+              "selection_mse": 118.69091821374812,
+              "work_proxy": 384364
+            },
+            "efficient_fixed_2": {
+              "common_replay_and_owner_bytes": 34539,
+              "fit_seconds": 0.003213743995729601,
+              "hidden_exact": 0.9477335054040974,
+              "hidden_mae": 0.19777383448943378,
+              "hidden_mse": 5.709630585578319,
+              "horizon_work_proxy": {
+                "1": 1985491,
+                "10": 2328508,
+                "100": 5758678
+              },
+              "mean_deployed_bytes": 4044.0,
+              "owner_wall_seconds": 0.017750514998624567,
+              "priced_loss": 0.6839632172221051,
+              "query_factor_multiplications": 38113,
+              "retained_artifact_bytes": 48052,
+              "retained_audit_metadata_bytes": 3015,
+              "retained_state_bytes": 85606,
+              "selection_mse": 4.002007024586051,
+              "work_proxy": 1947378
+            },
+            "efficient_fixed_4": {
+              "common_replay_and_owner_bytes": 34539,
+              "fit_seconds": 0.0026699949994508643,
+              "hidden_exact": 0.9977415712211647,
+              "hidden_mae": 0.002258428778835296,
+              "hidden_mse": 0.002258428778835296,
+              "horizon_work_proxy": {
+                "1": 2170926,
+                "10": 2417211,
+                "100": 4880061
+              },
+              "mean_deployed_bytes": 3972.0,
+              "owner_wall_seconds": 0.018859836000046926,
+              "priced_loss": 0.6745561455191312,
+              "query_factor_multiplications": 27365,
+              "retained_artifact_bytes": 54094,
+              "retained_audit_metadata_bytes": 3652,
+              "retained_state_bytes": 92285,
+              "selection_mse": 0.0010035122930255895,
+              "work_proxy": 2143561
+            },
+            "fixed_1": {
+              "common_replay_and_owner_bytes": 34539,
+              "fit_seconds": 0.00851699700433528,
+              "hidden_exact": 0.43571543797386675,
+              "hidden_mae": 2.991127601226004,
+              "hidden_mse": 93.0191966446201,
+              "horizon_work_proxy": {
+                "1": 5045884,
+                "10": 5380630,
+                "100": 8728090
+              },
+              "mean_deployed_bytes": 3612.0,
+              "owner_wall_seconds": 0.03633791900210781,
+              "priced_loss": 1.6768614031178082,
+              "query_factor_multiplications": 37194,
+              "retained_artifact_bytes": 3612,
+              "retained_audit_metadata_bytes": 15077,
+              "retained_state_bytes": 53228,
+              "selection_mse": 118.69091821374812,
+              "work_proxy": 5008690
+            },
+            "fixed_2": {
+              "common_replay_and_owner_bytes": 34539,
+              "fit_seconds": 0.010329569995519705,
+              "hidden_exact": 0.9477335054040974,
+              "hidden_mae": 0.19777383448943378,
+              "hidden_mse": 5.709630585578319,
+              "horizon_work_proxy": {
+                "1": 5094754,
+                "10": 5437771,
+                "100": 8867941
+              },
+              "mean_deployed_bytes": 4044.0,
+              "owner_wall_seconds": 0.04404539700044552,
+              "priced_loss": 0.9922664298241142,
+              "query_factor_multiplications": 38113,
+              "retained_artifact_bytes": 48052,
+              "retained_audit_metadata_bytes": 15853,
+              "retained_state_bytes": 98444,
+              "selection_mse": 4.002007024586051,
+              "work_proxy": 5056641
+            },
+            "fixed_4": {
+              "common_replay_and_owner_bytes": 34539,
+              "fit_seconds": 0.011273070995230228,
+              "hidden_exact": 0.9977415712211647,
+              "hidden_mae": 0.002258428778835296,
+              "hidden_mse": 0.002258428778835296,
+              "horizon_work_proxy": {
+                "1": 4994041,
+                "10": 5240326,
+                "100": 7703176
+              },
+              "mean_deployed_bytes": 3972.0,
+              "owner_wall_seconds": 0.046202097000787035,
+              "priced_loss": 0.9775894600518791,
+              "query_factor_multiplications": 27365,
+              "retained_artifact_bytes": 54094,
+              "retained_audit_metadata_bytes": 19481,
+              "retained_state_bytes": 108114,
+              "selection_mse": 0.0010035122930255895,
+              "work_proxy": 4966676
+            }
+          }
+        },
+        {
+          "best_efficient_fixed": "efficient_fixed_2",
+          "best_matched_fixed": "fixed_2",
+          "flow": "convergent",
+          "migrations": [
+            {
+              "address_contract": "stable global row/column identities; serialized route and local-row offsets change together",
+              "changed_row_routes": 8,
+              "hidden_coordinate_read_parity_after_reload": true,
+              "parent_artifact_sha256": null,
+              "queries": 6199,
+              "selected_artifact_sha256": "3aa306b3160c735eaea7f694f2445b0e415d7ac852dabe70b170edec42a86bb0"
+            },
+            {
+              "address_contract": "stable global row/column identities; serialized route and local-row offsets change together",
+              "changed_row_routes": 8,
+              "hidden_coordinate_read_parity_after_reload": true,
+              "parent_artifact_sha256": "3aa306b3160c735eaea7f694f2445b0e415d7ac852dabe70b170edec42a86bb0",
+              "queries": 6153,
+              "selected_artifact_sha256": "682c5702b2924583c6cfa29fadc8cfa84e544579ec02c6d9d6c5e892654d7efe"
+            }
+          ],
+          "normalized_gain_vs_efficient": -3.2234737715184862,
+          "normalized_gain_vs_matched": -3.2234737715184862,
+          "priced_regret_vs_efficient": 0.715963376147321,
+          "priced_regret_vs_matched": 0.5530032269167018,
+          "retention_floors": true,
+          "seed": 331,
+          "strict_gate": false,
+          "totals": {
+            "adaptive": {
+              "common_replay_and_owner_bytes": 69078,
+              "fit_seconds": 0.007908398001745809,
+              "hidden_exact": 0.7281708748261484,
+              "hidden_mae": 1.0317904092519286,
+              "hidden_mse": 35.595913654936716,
+              "horizon_work_proxy": {
+                "1": 6026792,
+                "10": 6688616,
+                "100": 13306856
+              },
+              "mean_deployed_bytes": 3768.0,
+              "owner_wall_seconds": 0.0524002889978874,
+              "priced_loss": 1.5267011611075245,
+              "query_factor_multiplications": 73536,
+              "retained_artifact_bytes": 115014,
+              "retained_audit_metadata_bytes": 9535,
+              "retained_state_bytes": 193627,
+              "selection_mse": 37.279764487132134,
+              "work_proxy": 5953256
+            },
+            "efficient_fixed_1": {
+              "common_replay_and_owner_bytes": 69078,
+              "fit_seconds": 0.0015425150013470557,
+              "hidden_exact": 0.6076675678411508,
+              "hidden_mae": 1.6057539517587847,
+              "hidden_mse": 46.61978847345583,
+              "horizon_work_proxy": {
+                "1": 843392,
+                "10": 1510400,
+                "100": 8180480
+              },
+              "mean_deployed_bytes": 3612.0,
+              "owner_wall_seconds": 0.006513638003525557,
+              "priced_loss": 1.2465716167462624,
+              "query_factor_multiplications": 74112,
+              "retained_artifact_bytes": 7224,
+              "retained_audit_metadata_bytes": 2160,
+              "retained_state_bytes": 78462,
+              "selection_mse": 59.452619479605794,
+              "work_proxy": 769280
+            },
+            "efficient_fixed_2": {
+              "common_replay_and_owner_bytes": 69078,
+              "fit_seconds": 0.005021696997573599,
+              "hidden_exact": 0.7855033527345532,
+              "hidden_mae": 0.7157404846102297,
+              "hidden_mse": 8.428112871206192,
+              "horizon_work_proxy": {
+                "1": 4061666,
+                "10": 4720808,
+                "100": 11312228
+              },
+              "mean_deployed_bytes": 3998.0,
+              "owner_wall_seconds": 0.035953286998847034,
+              "priced_loss": 0.8107377849602035,
+              "query_factor_multiplications": 73238,
+              "retained_artifact_bytes": 97470,
+              "retained_audit_metadata_bytes": 6036,
+              "retained_state_bytes": 172584,
+              "selection_mse": 7.692028524553938,
+              "work_proxy": 3988428
+            },
+            "efficient_fixed_4": {
+              "common_replay_and_owner_bytes": 69078,
+              "fit_seconds": 0.007525172994064633,
+              "hidden_exact": 0.569649267651863,
+              "hidden_mae": 2.2072888113339975,
+              "hidden_mse": 23.498041289799787,
+              "horizon_work_proxy": {
+                "1": 4472968,
+                "10": 4971262,
+                "100": 9954202
+              },
+              "mean_deployed_bytes": 4008.0,
+              "owner_wall_seconds": 0.05028074300207663,
+              "priced_loss": 1.1957432881064327,
+              "query_factor_multiplications": 55366,
+              "retained_artifact_bytes": 112604,
+              "retained_audit_metadata_bytes": 7294,
+              "retained_state_bytes": 188976,
+              "selection_mse": 24.06131588071738,
+              "work_proxy": 4417602
+            },
+            "fixed_1": {
+              "common_replay_and_owner_bytes": 69078,
+              "fit_seconds": 0.012073304002115037,
+              "hidden_exact": 0.6076675678411508,
+              "hidden_mae": 1.6057539517587847,
+              "hidden_mse": 46.61978847345583,
+              "horizon_work_proxy": {
+                "1": 6634700,
+                "10": 7301708,
+                "100": 13971788
+              },
+              "mean_deployed_bytes": 3612.0,
+              "owner_wall_seconds": 0.05305713000052492,
+              "priced_loss": 1.5181818534369484,
+              "query_factor_multiplications": 74112,
+              "retained_artifact_bytes": 7224,
+              "retained_audit_metadata_bytes": 20469,
+              "retained_state_bytes": 96771,
+              "selection_mse": 59.452619479605794,
+              "work_proxy": 6560588
+            },
+            "fixed_2": {
+              "common_replay_and_owner_bytes": 69078,
+              "fit_seconds": 0.011762817000999348,
+              "hidden_exact": 0.7855033527345532,
+              "hidden_mae": 0.7157404846102297,
+              "hidden_mse": 8.428112871206192,
+              "horizon_work_proxy": {
+                "1": 7182588,
+                "10": 7841730,
+                "100": 14433150
+              },
+              "mean_deployed_bytes": 3998.0,
+              "owner_wall_seconds": 0.061899013999209274,
+              "priced_loss": 0.9736979341908227,
+              "query_factor_multiplications": 73238,
+              "retained_artifact_bytes": 97470,
+              "retained_audit_metadata_bytes": 21895,
+              "retained_state_bytes": 188443,
+              "selection_mse": 7.692028524553938,
+              "work_proxy": 7109350
+            },
+            "fixed_4": {
+              "common_replay_and_owner_bytes": 69078,
+              "fit_seconds": 0.017619379996176576,
+              "hidden_exact": 0.569649267651863,
+              "hidden_mae": 2.2072888113339975,
+              "hidden_mse": 23.498041289799787,
+              "horizon_work_proxy": {
+                "1": 7305330,
+                "10": 7803624,
+                "100": 12786564
+              },
+              "mean_deployed_bytes": 4008.0,
+              "owner_wall_seconds": 0.08297218900042935,
+              "priced_loss": 1.3576652928652821,
+              "query_factor_multiplications": 55366,
+              "retained_artifact_bytes": 112604,
+              "retained_audit_metadata_bytes": 26754,
+              "retained_state_bytes": 208436,
+              "selection_mse": 24.06131588071738,
+              "work_proxy": 7249964
+            }
+          }
+        },
+        {
+          "best_efficient_fixed": "efficient_fixed_2",
+          "best_matched_fixed": "fixed_2",
+          "flow": "stable_lowrank",
+          "migrations": [
+            {
+              "address_contract": "stable global row/column identities; serialized route and local-row offsets change together",
+              "changed_row_routes": 0,
+              "hidden_coordinate_read_parity_after_reload": true,
+              "parent_artifact_sha256": null,
+              "queries": 6199,
+              "selected_artifact_sha256": "a43a446dcde4e95b2c08e821f6b299e00c76b32b0e010c5b0227bd76f1df0729"
+            }
+          ],
+          "normalized_gain_vs_efficient": -0.004194224874979835,
+          "normalized_gain_vs_matched": -0.004194224874979835,
+          "priced_regret_vs_efficient": -0.3845785799175574,
+          "priced_regret_vs_matched": -0.40210790458957635,
+          "retention_floors": true,
+          "seed": 331,
+          "strict_gate": false,
+          "totals": {
+            "adaptive": {
+              "common_replay_and_owner_bytes": 34539,
+              "fit_seconds": 0.0009827920002862811,
+              "hidden_exact": 0.9743507017260848,
+              "hidden_mae": 0.02564929827391515,
+              "hidden_mse": 0.02564929827391515,
+              "horizon_work_proxy": {
+                "1": 433516,
+                "10": 768262,
+                "100": 4115722
+              },
+              "mean_deployed_bytes": 3612.0,
+              "owner_wall_seconds": 0.005302362002112204,
+              "priced_loss": 0.27308449539651647,
+              "query_factor_multiplications": 37194,
+              "retained_artifact_bytes": 3612,
+              "retained_audit_metadata_bytes": 1075,
+              "retained_state_bytes": 39226,
+              "selection_mse": 0.026593075765178123,
+              "work_proxy": 396322
+            },
+            "efficient_fixed_1": {
+              "common_replay_and_owner_bytes": 34539,
+              "fit_seconds": 0.0009799069994187448,
+              "hidden_exact": 0.9743507017260848,
+              "hidden_mae": 0.02564929827391515,
+              "hidden_mse": 0.02564929827391515,
+              "horizon_work_proxy": {
+                "1": 421558,
+                "10": 756304,
+                "100": 4103764
+              },
+              "mean_deployed_bytes": 3612.0,
+              "owner_wall_seconds": 0.0040028929979598615,
+              "priced_loss": 0.27218878369415067,
+              "query_factor_multiplications": 37194,
+              "retained_artifact_bytes": 3612,
+              "retained_audit_metadata_bytes": 1078,
+              "retained_state_bytes": 39229,
+              "selection_mse": 0.026593075765178123,
+              "work_proxy": 384364
+            },
+            "efficient_fixed_2": {
+              "common_replay_and_owner_bytes": 34539,
+              "fit_seconds": 0.002490494000085164,
+              "hidden_exact": 0.9785449266010647,
+              "hidden_mae": 0.021455073398935313,
+              "hidden_mse": 0.021455073398935313,
+              "horizon_work_proxy": {
+                "1": 2054418,
+                "10": 2362731,
+                "100": 5445861
+              },
+              "mean_deployed_bytes": 3844.0,
+              "owner_wall_seconds": 0.017889042999740923,
+              "priced_loss": 0.6576630753140739,
+              "query_factor_multiplications": 34257,
+              "retained_artifact_bytes": 49508,
+              "retained_audit_metadata_bytes": 3017,
+              "retained_state_bytes": 87064,
+              "selection_mse": 0.019568489713998997,
+              "work_proxy": 2020161
+            },
+            "efficient_fixed_4": {
+              "common_replay_and_owner_bytes": 34539,
+              "fit_seconds": 0.003570791999663925,
+              "hidden_exact": 0.9751572834328117,
+              "hidden_mae": 0.024842716567188255,
+              "hidden_mse": 0.024842716567188255,
+              "horizon_work_proxy": {
+                "1": 2237798,
+                "10": 2485424,
+                "100": 4961684
+              },
+              "mean_deployed_bytes": 4058.0,
+              "owner_wall_seconds": 0.02950726500057499,
+              "priced_loss": 0.7256722313167426,
+              "query_factor_multiplications": 27514,
+              "retained_artifact_bytes": 57930,
+              "retained_audit_metadata_bytes": 3646,
+              "retained_state_bytes": 96115,
+              "selection_mse": 0.021073758153537382,
+              "work_proxy": 2210284
+            },
+            "fixed_1": {
+              "common_replay_and_owner_bytes": 34539,
+              "fit_seconds": 0.0018157269987568725,
+              "hidden_exact": 0.9743507017260848,
+              "hidden_mae": 0.02564929827391515,
+              "hidden_mse": 0.02564929827391515,
+              "horizon_work_proxy": {
+                "1": 817880,
+                "10": 1152626,
+                "100": 4500086
+              },
+              "mean_deployed_bytes": 3612.0,
+              "owner_wall_seconds": 0.008121781000227202,
+              "priced_loss": 0.31434158879017393,
+              "query_factor_multiplications": 37194,
+              "retained_artifact_bytes": 3612,
+              "retained_audit_metadata_bytes": 3230,
+              "retained_state_bytes": 41381,
+              "selection_mse": 0.026593075765178123,
+              "work_proxy": 780686
+            },
+            "fixed_2": {
+              "common_replay_and_owner_bytes": 34539,
+              "fit_seconds": 0.002490494000085164,
+              "hidden_exact": 0.9785449266010647,
+              "hidden_mae": 0.021455073398935313,
+              "hidden_mse": 0.021455073398935313,
+              "horizon_work_proxy": {
+                "1": 2065217,
+                "10": 2373530,
+                "100": 5456660
+              },
+              "mean_deployed_bytes": 3844.0,
+              "owner_wall_seconds": 0.01926561799700721,
+              "priced_loss": 0.6751923999860928,
+              "query_factor_multiplications": 34257,
+              "retained_artifact_bytes": 49508,
+              "retained_audit_metadata_bytes": 6034,
+              "retained_state_bytes": 90081,
+              "selection_mse": 0.019568489713998997,
+              "work_proxy": 2030960
+            },
+            "fixed_4": {
+              "common_replay_and_owner_bytes": 34539,
+              "fit_seconds": 0.003570791999663925,
+              "hidden_exact": 0.9751572834328117,
+              "hidden_mae": 0.024842716567188255,
+              "hidden_mse": 0.024842716567188255,
+              "horizon_work_proxy": {
+                "1": 2246732,
+                "10": 2494358,
+                "100": 4970618
+              },
+              "mean_deployed_bytes": 4058.0,
+              "owner_wall_seconds": 0.03141705300004105,
+              "priced_loss": 0.7465421027752166,
+              "query_factor_multiplications": 27514,
+              "retained_artifact_bytes": 57930,
+              "retained_audit_metadata_bytes": 7292,
+              "retained_state_bytes": 99761,
+              "selection_mse": 0.021073758153537382,
+              "work_proxy": 2219218
+            }
+          }
+        },
+        {
+          "best_efficient_fixed": "efficient_fixed_4",
+          "best_matched_fixed": "fixed_4",
+          "flow": "random",
+          "migrations": [
+            {
+              "address_contract": "stable global row/column identities; serialized route and local-row offsets change together",
+              "changed_row_routes": 0,
+              "hidden_coordinate_read_parity_after_reload": true,
+              "parent_artifact_sha256": null,
+              "queries": 6199,
+              "selected_artifact_sha256": "c8bc01f2785f606f308a79b7688e7623f79ec89c75c47c615c519511282f2f51"
+            }
+          ],
+          "normalized_gain_vs_efficient": -0.11037903229412487,
+          "normalized_gain_vs_matched": -0.11037903229412487,
+          "priced_regret_vs_efficient": -0.35711869370954896,
+          "priced_regret_vs_matched": -0.37799198682051194,
+          "retention_floors": true,
+          "seed": 331,
+          "strict_gate": false,
+          "totals": {
+            "adaptive": {
+              "common_replay_and_owner_bytes": 34539,
+              "fit_seconds": 0.0008139269993989728,
+              "hidden_exact": 0.008549766091305049,
+              "hidden_mae": 32.074366833360216,
+              "hidden_mse": 1522.239554766898,
+              "horizon_work_proxy": {
+                "1": 630124,
+                "10": 964870,
+                "100": 4312330
+              },
+              "mean_deployed_bytes": 3612.0,
+              "owner_wall_seconds": 0.0044995719981670845,
+              "priced_loss": 1.2624739568125236,
+              "query_factor_multiplications": 37194,
+              "retained_artifact_bytes": 3612,
+              "retained_audit_metadata_bytes": 1082,
+              "retained_state_bytes": 39233,
+              "selection_mse": 1534.278976417461,
+              "work_proxy": 592930
+            },
+            "efficient_fixed_1": {
+              "common_replay_and_owner_bytes": 34539,
+              "fit_seconds": 0.0009504529989499133,
+              "hidden_exact": 0.008549766091305049,
+              "hidden_mae": 32.074366833360216,
+              "hidden_mse": 1522.239554766898,
+              "horizon_work_proxy": {
+                "1": 421558,
+                "10": 756304,
+                "100": 4103764
+              },
+              "mean_deployed_bytes": 3612.0,
+              "owner_wall_seconds": 0.003915171000699047,
+              "priced_loss": 1.2465782451101581,
+              "query_factor_multiplications": 37194,
+              "retained_artifact_bytes": 3612,
+              "retained_audit_metadata_bytes": 1085,
+              "retained_state_bytes": 39236,
+              "selection_mse": 1534.278976417461,
+              "work_proxy": 384364
+            },
+            "efficient_fixed_2": {
+              "common_replay_and_owner_bytes": 34539,
+              "fit_seconds": 0.0023167420004028827,
+              "hidden_exact": 0.010646878528794966,
+              "hidden_mae": 30.60138732053557,
+              "hidden_mse": 1395.8031940635587,
+              "horizon_work_proxy": {
+                "1": 2173252,
+                "10": 2502337,
+                "100": 5793187
+              },
+              "mean_deployed_bytes": 4048.0,
+              "owner_wall_seconds": 0.01743796299706446,
+              "priced_loss": 1.5628139867845325,
+              "query_factor_multiplications": 36565,
+              "retained_artifact_bytes": 49652,
+              "retained_audit_metadata_bytes": 3013,
+              "retained_state_bytes": 87204,
+              "selection_mse": 1415.4992473657803,
+              "work_proxy": 2136687
+            },
+            "efficient_fixed_4": {
+              "common_replay_and_owner_bytes": 34539,
+              "fit_seconds": 0.0035470859984343406,
+              "hidden_exact": 0.010808194870140345,
+              "hidden_mae": 30.164542668172285,
+              "hidden_mse": 1370.9188578803032,
+              "horizon_work_proxy": {
+                "1": 2502914,
+                "10": 2758046,
+                "100": 5309366
+              },
+              "mean_deployed_bytes": 4058.0,
+              "owner_wall_seconds": 0.027234990000579273,
+              "priced_loss": 1.6195926505220726,
+              "query_factor_multiplications": 28348,
+              "retained_artifact_bytes": 57572,
+              "retained_audit_metadata_bytes": 3644,
+              "retained_state_bytes": 95755,
+              "selection_mse": 1342.6989463120924,
+              "work_proxy": 2474566
+            },
+            "fixed_1": {
+              "common_replay_and_owner_bytes": 34539,
+              "fit_seconds": 0.0015842280008655507,
+              "hidden_exact": 0.008549766091305049,
+              "hidden_mae": 32.074366833360216,
+              "hidden_mse": 1522.239554766898,
+              "horizon_work_proxy": {
+                "1": 817880,
+                "10": 1152626,
+                "100": 4500086
+              },
+              "mean_deployed_bytes": 3612.0,
+              "owner_wall_seconds": 0.008039356998779112,
+              "priced_loss": 1.2888141066845864,
+              "query_factor_multiplications": 37194,
+              "retained_artifact_bytes": 3612,
+              "retained_audit_metadata_bytes": 3252,
+              "retained_state_bytes": 41403,
+              "selection_mse": 1534.278976417461,
+              "work_proxy": 780686
+            },
+            "fixed_2": {
+              "common_replay_and_owner_bytes": 34539,
+              "fit_seconds": 0.0023167420004028827,
+              "hidden_exact": 0.010646878528794966,
+              "hidden_mae": 30.60138732053557,
+              "hidden_mse": 1395.8031940635587,
+              "horizon_work_proxy": {
+                "1": 2185007,
+                "10": 2514092,
+                "100": 5804942
+              },
+              "mean_deployed_bytes": 4048.0,
+              "owner_wall_seconds": 0.018616237997775897,
+              "priced_loss": 1.5803941000740287,
+              "query_factor_multiplications": 36565,
+              "retained_artifact_bytes": 49652,
+              "retained_audit_metadata_bytes": 6026,
+              "retained_state_bytes": 90217,
+              "selection_mse": 1415.4992473657803,
+              "work_proxy": 2148442
+            },
+            "fixed_4": {
+              "common_replay_and_owner_bytes": 34539,
+              "fit_seconds": 0.0035470859984343406,
+              "hidden_exact": 0.010808194870140345,
+              "hidden_mae": 30.164542668172285,
+              "hidden_mse": 1370.9188578803032,
+              "horizon_work_proxy": {
+                "1": 2512038,
+                "10": 2767170,
+                "100": 5318490
+              },
+              "mean_deployed_bytes": 4058.0,
+              "owner_wall_seconds": 0.028429851001419593,
+              "priced_loss": 1.6404659436330356,
+              "query_factor_multiplications": 28348,
+              "retained_artifact_bytes": 57572,
+              "retained_audit_metadata_bytes": 7288,
+              "retained_state_bytes": 99399,
+              "selection_mse": 1342.6989463120924,
+              "work_proxy": 2483690
+            }
+          }
+        }
+      ],
+      "normalized_gain_denominator_floor_mse": 1.0,
+      "verified": true
+    }
+  },
+  "training_performed": false,
+  "verified": true
+}
