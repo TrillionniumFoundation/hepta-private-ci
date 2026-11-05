@@ -117,6 +117,9 @@ tokio-util = { workspace = true }
 [target.'cfg(windows)'.dependencies]
 codex-utils-path = { workspace = true }
 
+[target.'cfg(target_os = "linux")'.dependencies]
+rustix = { workspace = true, features = ["event", "fs", "process"] }
+
 [target.'cfg(unix)'.dependencies]
 libc = { workspace = true }
 
