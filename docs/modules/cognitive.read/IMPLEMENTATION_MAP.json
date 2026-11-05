@@ -116,7 +116,7 @@
           "symbol": "CognitiveStore::revalidate_lane_c_snapshot"
         }
       ],
-      "sourceBlob": "494043d2e03a7f738ad1de3a065766a4423cef0b"
+      "sourceBlob": "ec5a1fbcb297876d76fcd51569a26ba3f65b82d8"
     },
     {
       "operation": "adapt_authoritative_read_to_canonical_shadow_v1",
@@ -186,7 +186,7 @@
     },
     {
       "path": "codex-rs/hepta-agentd/src/cognitive_context.rs",
-      "object": "494043d2e03a7f738ad1de3a065766a4423cef0b"
+      "object": "ec5a1fbcb297876d76fcd51569a26ba3f65b82d8"
     },
     {
       "path": "codex-rs/hepta-agentd/src/cognitive_context_budget_tests.rs",
@@ -194,7 +194,7 @@
     },
     {
       "path": "codex-rs/hepta-agentd/src/cognitive_context_hnmf_tests.rs",
-      "object": "0caf38c7f9deb543a97a9c5d27bc1784d128c6d4"
+      "object": "14fada2d50796ddc596c92d3b4a0f02c3d9d780d"
     },
     {
       "path": "codex-rs/hepta-agentd/src/cognitive_context_tests.rs",
@@ -282,7 +282,7 @@
     },
     {
       "path": "docs/modules/cognitive.read/TECHNICAL.md",
-      "object": "20db7fccd7f41e3513f67dbfc8fe6a695689be81"
+      "object": "b6d1a19564f21c680cf0f01aa3761079f345e686"
     },
     {
       "path": "scripts/hepta-implementation-maps.py",
@@ -292,13 +292,13 @@
   "productCallers": [
     {
       "role": "owner_read_adapter",
-      "blobSha": "494043d2e03a7f738ad1de3a065766a4423cef0b",
+      "blobSha": "ec5a1fbcb297876d76fcd51569a26ba3f65b82d8",
       "sourcePath": "codex-rs/hepta-agentd/src/cognitive_context.rs",
       "nativeSymbol": "pub(crate) async fn read("
     },
     {
       "role": "owner_final_use_revalidation",
-      "blobSha": "494043d2e03a7f738ad1de3a065766a4423cef0b",
+      "blobSha": "ec5a1fbcb297876d76fcd51569a26ba3f65b82d8",
       "sourcePath": "codex-rs/hepta-agentd/src/cognitive_context.rs",
       "nativeSymbol": "pub(crate) async fn revalidate_with_retrieval_context("
     },
@@ -333,8 +333,8 @@
   },
   "sourceIdentityPolicy": "candidate_or_exact_observation_v1",
   "observedAtHead": {
-    "commit": "58c81ccdd25002ae0f481d434af067a56fa7ddb8",
-    "tree": "57809be09ef01c02389ef37a817f1447d13d167b"
+    "commit": "dd6a8cad33a9f351501b90bf1e0ae6e9bc902db8",
+    "tree": "57eae0abde46eae539ff36a96dda12048825f9be"
   },
   "canonicalMemoryEventReadMigration": {
     "state": "authoritative_shadow_adapter_source_candidate",
