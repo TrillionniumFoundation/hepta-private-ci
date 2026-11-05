@@ -1,5 +1,6 @@
 //! Lost target replies and failed original-source ACK COMMITs stay unknown.
 use super::*;
+use pretty_assertions::assert_eq;
 use crate::ProductionRetirementAck;
 use std::sync::atomic::AtomicBool;
 
