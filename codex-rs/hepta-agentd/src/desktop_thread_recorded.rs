@@ -6,6 +6,9 @@ use codex_hepta_memory::ProductionRetainedOperation;
 use codex_hepta_objective::decode_source_envelope_json_v1;
 use serde_json::Value;
 
+#[path = "desktop_thread_recovery.rs"]
+mod recovery;
+
 pub(crate) struct RecordedDesktopOperation {
     pub(crate) reference: OriginalDesktopThreadReference,
     pub(crate) run_id: String,
