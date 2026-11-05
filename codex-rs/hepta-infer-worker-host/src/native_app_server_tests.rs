@@ -5,6 +5,21 @@ use codex_app_server_protocol::Turn;
 use codex_app_server_protocol::TurnCompletedNotification;
 use codex_app_server_protocol::TurnItemsView;
 use codex_app_server_protocol::TurnStartedNotification;
+use codex_hepta_agentd::test_support::Arg0DispatchPaths;
+
+/// These test binaries link core_test_support, whose startup constructor
+/// installs the real same-build arg0, filesystem and process helper dispatch.
+pub(super) fn app_server_test_runtime_paths() -> Result<Arg0DispatchPaths> {
+    #[cfg(target_os = "linux")]
+    let codex_linux_sandbox_exe = Some(core_test_support::find_codex_linux_sandbox_exe()?);
+    #[cfg(not(target_os = "linux"))]
+    let codex_linux_sandbox_exe = None;
+    Ok(Arg0DispatchPaths {
+        codex_self_exe: Some(std::env::current_exe()?),
+        codex_linux_sandbox_exe,
+        ..Arg0DispatchPaths::default()
+    })
+}
 
 fn binding() -> CodexTurnBinding {
     let payload_digest = Digest32::of_bytes(b"test-turn-payload");
@@ -473,15 +488,12 @@ async fn real_agentd_worker_accepts_fresh_context_and_rejects_final_use_tombston
     let nonce = SystemTime::now().duration_since(UNIX_EPOCH)?.as_nanos();
     let root = std::env::temp_dir().join(format!("hepta-cognitive-worker-e2e-{nonce}"));
     let agent_id = codex_hepta_contracts::AgentId::parse(AGENT_ID)?;
-    // core_test_support registers the production arg0 helper dispatch before
-    // this test executable enters the harness.
-    let codex_self_exe = std::env::current_exe()?;
     let host = CognitiveTestHost::start(
         root,
-        codex_self_exe,
         agent_id,
         MODEL,
         &format!("{}/v1", server.uri()),
+        app_server_test_runtime_paths()?,
     )
     .await?;
     let _accepted_memory = host

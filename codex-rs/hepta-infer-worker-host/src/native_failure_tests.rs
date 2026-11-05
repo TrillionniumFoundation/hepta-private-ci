@@ -220,7 +220,6 @@ async fn worker_loss_before_cleanup_preserves_timeout_usage_and_owner_loss() -> 
         return Ok(());
     };
     // core_test_support registers the production arg0 helper dispatch.
-    let codex_self_exe = std::env::current_exe()?;
     let server = responses::start_mock_server().await;
     let mut sequence = Vec::new();
     for index in 0..2 {
@@ -255,10 +254,10 @@ async fn worker_loss_before_cleanup_preserves_timeout_usage_and_owner_loss() -> 
     // One parent host serves both cases; its immutable process home is never reset.
     let host = CognitiveTestHost::start(
         directory.path().join("host"),
-        codex_self_exe,
         AgentId::parse("018f4f72-5f8f-7cc1-8f55-df9fb3aa2c14")?,
         MODEL,
         &format!("{}/v1", server.uri()),
+        crate::native_app_server::tests::app_server_test_runtime_paths()?,
     )
     .await?;
 
