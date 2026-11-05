@@ -1,0 +1,330 @@
+{
+  "checkpoint_replay": {
+    "bytes": 2654820,
+    "encoder_outputs_bitwise_equal": {
+      "audio": true,
+      "image": true,
+      "text": true,
+      "video": true
+    },
+    "generated_outputs_bitwise_equal": {
+      "audio": true,
+      "image": true,
+      "text": true,
+      "video": true
+    },
+    "sha256": "145c8cf7b08da2c330aaf44fcb1342dc0d78327ab4780c38b05280d64e481e3b",
+    "temporary_file_deleted": true
+  },
+  "checks": {
+    "all_encoder_probe_accuracy_at_least_0_95": true,
+    "all_onehot_raw_outputs_resolved_correct": true,
+    "all_onehot_raw_outputs_semantically_correct": true,
+    "all_weight_groups_updated": true,
+    "mixtures_are_not_onehot_output_selection": true,
+    "save_load_encoder_outputs_bitwise_equal": true,
+    "save_load_generated_outputs_bitwise_equal": true,
+    "temporary_checkpoint_deleted": true
+  },
+  "claim_boundary_review": {
+    "actual_output_combination": "Continuous simplex inputs pass through learned shared refinement and neural modality decoders; generated raw outputs differ from every learned onehot output in this development check.",
+    "hepta_relation": "Architecture-level prototype with one shared refinement module and modality encoders/decoders. No native Neuron/SharedStem owner integration, production activation, or 150M/300M checkpoint is claimed.",
+    "ndu_control_scope": "NDU is external evidence acquisition and terminal portfolio allocation. The three generation refinement steps execute a fixed learned update and are not individually selected or optimized by NDU.",
+    "no_effect_claim": "These checks verify implementation and checkpoint replay only. They do not establish a policy advantage, empirical efficient frontier, or externally validated semantic safety.",
+    "training_scope": "Supervised encoder plus mixture reconstruction optimization; no NDU joint training and no diffusion noise/score objective.",
+    "training_target_scope": "The convex mixing semantics are explicitly supervised with eight canonical prototypes. This is not evidence of natural language, arbitrary multimedia composition, or unseen semantic classes."
+  },
+  "clean_nuisance_probe_examples": 512,
+  "data_construction": "One render(seed=5, nuisance=True) call over disjoint training and probe positions; no sample_worlds call, no named IID/OOD split. All eight semantic classes are seen in training; finite text nuisance patterns can repeat.",
+  "development_seed": 5,
+  "encoder_clean_nuisance_probe": {
+    "audio": {
+      "accuracy": 1.0,
+      "correct": 512,
+      "max_probability_sum_error": 2.384185791015625e-07,
+      "n": 512,
+      "probabilities_finite": true
+    },
+    "image": {
+      "accuracy": 1.0,
+      "correct": 512,
+      "max_probability_sum_error": 2.384185791015625e-07,
+      "n": 512,
+      "probabilities_finite": true
+    },
+    "text": {
+      "accuracy": 1.0,
+      "correct": 512,
+      "max_probability_sum_error": 1.1920928955078125e-07,
+      "n": 512,
+      "probabilities_finite": true
+    },
+    "video": {
+      "accuracy": 1.0,
+      "correct": 512,
+      "max_probability_sum_error": 2.384185791015625e-07,
+      "n": 512,
+      "probabilities_finite": true
+    }
+  },
+  "evidence_scope": "development implementation precheck; not protocol effect evaluation",
+  "formal_iid_or_ood_test_data_read_or_generated": false,
+  "formal_training_seeds_used": false,
+  "mixture_checks": {
+    "audio": {
+      "all_distinct_from_all_onehot_outputs_at_mse_1e_8": true,
+      "min_mse_to_any_learned_onehot_output_per_mixture": [
+        0.11447174847126007,
+        0.07041503489017487,
+        0.31473860144615173
+      ],
+      "mse_to_convex_mix_of_learned_onehot_outputs": 0.0006919998559169471,
+      "mse_to_training_canonical_convex_target": 0.0005075476947240531
+    },
+    "image": {
+      "all_distinct_from_all_onehot_outputs_at_mse_1e_8": true,
+      "min_mse_to_any_learned_onehot_output_per_mixture": [
+        0.011163105256855488,
+        0.0038342790212482214,
+        0.015642913058400154
+      ],
+      "mse_to_convex_mix_of_learned_onehot_outputs": 0.00011690377141349018,
+      "mse_to_training_canonical_convex_target": 9.289100853493437e-05
+    },
+    "text": {
+      "all_distinct_from_all_onehot_outputs_at_mse_1e_8": true,
+      "min_mse_to_any_learned_onehot_output_per_mixture": [
+        0.014095194637775421,
+        0.00915260799229145,
+        0.029670799151062965
+      ],
+      "mse_to_convex_mix_of_learned_onehot_outputs": 0.00016414475976489484,
+      "mse_to_training_canonical_convex_target": 0.00010720315185608342
+    },
+    "video": {
+      "all_distinct_from_all_onehot_outputs_at_mse_1e_8": true,
+      "min_mse_to_any_learned_onehot_output_per_mixture": [
+        0.009235055185854435,
+        0.0042320191860198975,
+        0.013995014131069183
+      ],
+      "mse_to_convex_mix_of_learned_onehot_outputs": 0.00011538499529706314,
+      "mse_to_training_canonical_convex_target": 9.651789150666445e-05
+    }
+  },
+  "mixture_portfolios": [
+    [
+      0.4000000059604645,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.6000000238418579
+    ],
+    [
+      0.0,
+      0.0,
+      0.699999988079071,
+      0.0,
+      0.0,
+      0.30000001192092896,
+      0.0,
+      0.0
+    ],
+    [
+      0.125,
+      0.125,
+      0.125,
+      0.125,
+      0.125,
+      0.125,
+      0.125,
+      0.125
+    ]
+  ],
+  "onehot_generation_per_modality_accuracy": {
+    "audio": 1.0,
+    "image": 1.0,
+    "text": 1.0,
+    "video": 1.0
+  },
+  "onehot_generation_scores": {
+    "cvar90": 0.0004299804234105485,
+    "mean_attribute_accuracy": 1.0,
+    "mean_class_error": 0.0,
+    "mean_color_accuracy": 1.0,
+    "mean_contradiction": 0.0,
+    "mean_correct_fraction": 1.0,
+    "mean_direction_accuracy": 1.0,
+    "mean_loss": 0.00035372248956244776,
+    "mean_omission": 0.0,
+    "mean_quality": 1.0,
+    "mean_raw_error": 0.00035372248956244776,
+    "mean_resolved_correct_fraction": 1.0,
+    "n": 8
+  },
+  "optimizer_steps": 100,
+  "schema": "hepta.multimodal-output-portfolio.development-model-smoke.v1",
+  "source_sha256": {
+    "metrics.py": "bf7661391fe133b1b97bfcac515cafe893dbc8fb4ff2ce00b37457c6611f87bd",
+    "model.py": "345c17f472758db755dad0c262bd40bc6fdcf5652f7e94ac34f1d84c06c6b748",
+    "world.py": "8231e81ff2eda916f46503ad1f97824ffef5237c2114e76c257c5dde8dda9c9c"
+  },
+  "status": "PASS",
+  "training_examples": 512,
+  "training_receipt": {
+    "batch_size": 128,
+    "diagnostic_forward_linear_macs": 420134912,
+    "dimensions": {
+      "audio": 1024,
+      "image": 768,
+      "text": 40,
+      "video": 3072
+    },
+    "final_diagnostics": {
+      "encoder_training_accuracy": {
+        "audio": 1.0,
+        "image": 1.0,
+        "text": 1.0,
+        "video": 1.0
+      },
+      "encoder_training_ce": {
+        "audio": 0.00027349128504283726,
+        "image": 0.0032733564730733633,
+        "text": 0.04683511704206467,
+        "video": 0.0007342949975281954
+      },
+      "generator_fixed_probe_mse": {
+        "audio": 0.00026015794719569385,
+        "image": 3.998004467575811e-05,
+        "text": 3.460227162577212e-05,
+        "video": 4.5643701014341787e-05
+      },
+      "probe_is_heldout_task_evidence": false
+    },
+    "final_weight_sha256": {
+      "all": "f63e424ccf88439d66cb4baec610b448c654a8f63196acc10e797d9c56a0c620",
+      "decoders": "2f4d22b8e8e19e5657aceeca099ab4dbdb8ec1df3293ede58fff41fb92001f0a",
+      "encoders": "16cb08b388628c61ad14ba1b31a43a304325e1437b7c2ed08ced3bd41e7cd985",
+      "shared_refinement": "bbc78cac916ee5c9214bdf236332a6dfb0c1119eede3f5d3144acaf03af9a70c"
+    },
+    "generator_curriculum": {
+      "dirichlet": 0.25,
+      "dirichlet_concentration": 0.6,
+      "edges": 0.25,
+      "vertices": 0.5
+    },
+    "generator_mse_normalizers": {
+      "audio": 0.36124998331069946,
+      "image": 0.05000000074505806,
+      "text": 0.10000000149011612,
+      "video": 0.05000000074505806
+    },
+    "inference_reads_renderer_or_targets": false,
+    "initial_diagnostics": {
+      "encoder_training_accuracy": {
+        "audio": 0.13671875,
+        "image": 0.056640625,
+        "text": 0.1796875,
+        "video": 0.033203125
+      },
+      "encoder_training_ce": {
+        "audio": 2.0937256813049316,
+        "image": 2.0810787677764893,
+        "text": 2.071774959564209,
+        "video": 2.0773262977600098
+      },
+      "generator_fixed_probe_mse": {
+        "audio": 0.2754579484462738,
+        "image": 0.029210694134235382,
+        "text": 0.08943016082048416,
+        "video": 0.02836400642991066
+      },
+      "probe_is_heldout_task_evidence": false
+    },
+    "initial_weight_sha256": {
+      "all": "2c0e45d8c9356f126d7d2fd2d998724b03e0038ea3418216e9af242fb0568ffe",
+      "decoders": "15cbd6a9f0a936ea79df6f47a8d73c2e6afe632dd1c819573ebc61ba28b93c46",
+      "encoders": "13966dc0c1cf2a838afb46848f5fb5d072ac09e5ce84cc8e28d1a8c9b932e621",
+      "shared_refinement": "e7cf155aee84d0024cb7e9426e997c61f8b81cf66fc7b2168273d95515bd8b05"
+    },
+    "loss_history": [
+      {
+        "encoder_ce": 2.078805446624756,
+        "generator_normalized_mse": 0.6901947259902954,
+        "step": 1
+      },
+      {
+        "encoder_ce": 0.19504714012145996,
+        "generator_normalized_mse": 0.012456992641091347,
+        "step": 50
+      },
+      {
+        "encoder_ce": 0.013222429901361465,
+        "generator_normalized_mse": 0.0006820752751082182,
+        "step": 100
+      }
+    ],
+    "mac_profile": {
+      "decoder": {
+        "audio": 69632,
+        "image": 53248,
+        "text": 6656,
+        "video": 200704
+      },
+      "encode_all_and_generate": 671232,
+      "encoder": {
+        "audio": 66048,
+        "image": 49664,
+        "text": 3072,
+        "video": 197120
+      },
+      "generate_all_modalities": 355328,
+      "hardware_flops_or_total_cost_measurement": false,
+      "shared_refinement": 25088,
+      "shared_refinement_counted_once": true,
+      "unit": "ideal_dense_linear_MAC_per_example"
+    },
+    "native_ndu_integration": false,
+    "ndu_joint_training": false,
+    "optimizer": {
+      "gradient_norm_cap": 5.0,
+      "lr": 0.003,
+      "name": "AdamW",
+      "weight_decay": 0.0001
+    },
+    "optimizer_steps": 100,
+    "parameter_counts": {
+      "all": 660488,
+      "decoders": 335400,
+      "encoders": 316192,
+      "shared_refinement": 8896
+    },
+    "parameter_groups_changed": {
+      "all": true,
+      "decoders": true,
+      "encoders": true,
+      "shared_refinement": true
+    },
+    "runtime": {
+      "device": "cpu",
+      "dtype": "float32",
+      "numpy": "1.26.4",
+      "threads": 4,
+      "torch": "2.5.1+cpu"
+    },
+    "schema": "hepta.multimodal-output-portfolio.tiny-model.v1",
+    "scope": "synthetic_tiny_learned_encoder_generator_mechanism_pilot",
+    "seed": 5,
+    "shared_refinement_steps": 3,
+    "steps": 100,
+    "train_examples": 512,
+    "training_forward_linear_macs": 8591769600,
+    "training_process_cpu_seconds": 8.198613389,
+    "training_uses_controller_or_heldout_outcomes": false,
+    "training_wall_seconds": 2.9106013890013855,
+    "width": 64
+  }
+}

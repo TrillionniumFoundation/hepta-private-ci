@@ -1,0 +1,148 @@
+{
+  "schema": "hepta-output-portfolio-cloud-execution-status-v1.1",
+  "observed_at_utc": "2026-10-21 11:12:14 UTC",
+  "evidence_written_at_utc": "2026-10-21 11:13:44 UTC",
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "requested_execution_tier": "dedicated-cloud",
+  "all_blockers_closed": false,
+  "dedicated_cloud_experiment_completed": false,
+  "latest_run_receipt": {
+    "id": 39589317563,
+    "run_number": 4,
+    "run_attempt": 1,
+    "name": "NDU output portfolio dedicated pilot",
+    "path": ".github/workflows/ndu-output-portfolio-pilot.yml",
+    "head_sha": "7cbe3b29842065fb7cedc33f8d9e5d3fa354752b",
+    "head_branch": "research/ndu-output-portfolio-20261021",
+    "event": "push",
+    "status": "queued",
+    "conclusion": null,
+    "created_at": "2026-10-21T11:05:08Z",
+    "updated_at": "2026-10-21T11:05:09Z",
+    "run_started_at": "2026-10-21T11:05:08Z",
+    "check_suite_id": 107284359277,
+    "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/39589317563"
+  },
+  "latest_run_api_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/actions/runs/39589317563",
+  "latest_jobs_api_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/actions/runs/39589317563/jobs",
+  "latest_raw_jobs_receipt": {
+    "total_count": 1,
+    "jobs": [
+      {
+        "id": 119186004831,
+        "run_id": 39589317563,
+        "workflow_name": "NDU output portfolio dedicated pilot",
+        "head_branch": "research/ndu-output-portfolio-20261021",
+        "run_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/actions/runs/39589317563",
+        "run_attempt": 1,
+        "node_id": "CR_kwDOTrgxoM8AAAAbwAobXw",
+        "head_sha": "7cbe3b29842065fb7cedc33f8d9e5d3fa354752b",
+        "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/actions/jobs/119186004831",
+        "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/39589317563/job/119186004831",
+        "status": "queued",
+        "conclusion": null,
+        "created_at": "2026-10-21T11:05:09Z",
+        "started_at": "2026-10-21T11:05:09Z",
+        "completed_at": null,
+        "name": "dedicated-pilot",
+        "steps": [],
+        "check_run_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/check-runs/119186004831",
+        "labels": [
+          "self-hosted",
+          "linux",
+          "x64"
+        ],
+        "runner_id": 0,
+        "runner_name": "",
+        "runner_group_id": 0,
+        "runner_group_name": ""
+      }
+    ]
+  },
+  "interpretation": {
+    "workflow_scheduling_phase_reached": true,
+    "basis": "The current workflow has its configured display name and one queued dedicated-pilot job. This establishes job creation, not runner assignment or experiment execution.",
+    "runner_assigned": false,
+    "job_steps_executed": false,
+    "queued_started_at_field_is_execution_evidence": false,
+    "timestamp_caveat": "The API supplies run_started_at/started_at even though status is queued, runner_id is 0, and steps is empty. Those timestamp fields alone do not show that execution began.",
+    "blocking_fact": "Job 119186004831 is queued with runner_id=0, runner_name='', runner_group_id=0, runner_group_name='', and steps=[].",
+    "precise_cause_known": false,
+    "cause_limit": "These receipts do not distinguish an offline or busy runner, runner-group/repository eligibility, label matching, or another scheduling restriction. No unobserved cause is asserted.",
+    "implication": "There is still no target-runner hardware/runtime receipt or completed dedicated-cloud experiment evidence from this job."
+  },
+  "declared_target_binding": {
+    "workflow_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/7cbe3b29842065fb7cedc33f8d9e5d3fa354752b/.github/workflows/ndu-output-portfolio-pilot.yml",
+    "source_sha": "7cbe3b29842065fb7cedc33f8d9e5d3fa354752b",
+    "runner_group_selector": "trillionnium-android-gpu",
+    "runner_label_selector": [
+      "self-hosted",
+      "linux",
+      "x64"
+    ],
+    "required_runner_name": "desktop",
+    "required_runner_environment": "self-hosted",
+    "selector_is_not_an_assigned_runner_receipt": true
+  },
+  "superseded_v1_run_receipt": {
+    "id": 39588362257,
+    "run_number": 3,
+    "run_attempt": 1,
+    "name": "NDU output portfolio dedicated pilot",
+    "path": ".github/workflows/ndu-output-portfolio-pilot.yml",
+    "head_sha": "321ec72bcfc5bff2f62b857c73953ffdf085fed3",
+    "head_branch": "research/ndu-output-portfolio-20261021",
+    "event": "push",
+    "status": "completed",
+    "conclusion": "cancelled",
+    "created_at": "2026-10-21T10:57:25Z",
+    "updated_at": "2026-10-21T11:05:16Z",
+    "run_started_at": "2026-10-21T10:57:25Z",
+    "check_suite_id": 107281708309,
+    "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/39588362257"
+  },
+  "superseded_v1_run_api_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/actions/runs/39588362257",
+  "superseded_v1_is_cancelled": true,
+  "accessible_execution_entry_check": {
+    "verified_direct_project_cloud_executor_available": false,
+    "current_known_entry": "The existing repository workflow and its already queued dedicated-pilot job are the only verified execution binding for this project found in the accessible context.",
+    "local_exec_command": {
+      "available": true,
+      "current_workspace": "/workspace/scratch/591eaffd7820",
+      "verified_binding_to_requested_dedicated_environment": false
+    },
+    "unrelated_capabilities_not_substituted": [
+      "Spaces artifact JavaScript execution",
+      "Sites hosting/environment-variable operations",
+      "Generic GitHub-hosted runners"
+    ],
+    "registry_check_scope": "Current callable tool metadata and previously established explicit project bindings only. No guessed host, account, credential, environment ID, or cloud provider was probed.",
+    "absence_claim_limit": "No usable dedicated-cloud execution binding is verified in this session; this does not assert that the user's configured environment does not exist."
+  },
+  "minimum_operator_action_or_technical_entry": [
+    {
+      "option": "Restore the existing verified runner route",
+      "needed": "Make the existing desktop self-hosted runner eligible and available to TrillionniumFoundation/hepta-private-ci in group trillionnium-android-gpu with self-hosted/linux/x64 labels.",
+      "evidence_that_closes_this_blocker": "The existing queued job receives a nonzero runner_id, the expected runner_name, and begins executing steps. Subsequent launcher/runtime receipts must then verify the target environment.",
+      "new_workflow_dispatch_required": false
+    },
+    {
+      "option": "Identify a different already configured project environment",
+      "needed": "Provide its exact project/environment or task ID plus a callable execution entry available to this session; for an already authorized SSH route, the exact host, port, and user with authentication already configured in the session.",
+      "credential_handling": "Do not put passwords, API tokens, or private keys into this receipt or chat.",
+      "verification_required": "Confirm the entry is the intended dedicated project environment, then collect source-pinned identity and hardware/runtime receipts before claiming dedicated-cloud completion."
+    }
+  ],
+  "actions_in_this_verification": {
+    "remote_operations": "Read-only retrieval of latest run, latest raw jobs, superseded run, and source-pinned workflow.",
+    "new_runs_triggered": 0,
+    "probes_repeated": 0,
+    "jobs_cancelled_or_modified": 0,
+    "frozen_source_modified": false,
+    "request_modified": false,
+    "workflow_modified": false,
+    "credentials_read": false,
+    "unverified_hosts_or_environment_ids_probed": false,
+    "artifact_written": "experiments/multimodal_output_portfolio/evidence/cloud_execution_status_v1_1.json"
+  }
+}

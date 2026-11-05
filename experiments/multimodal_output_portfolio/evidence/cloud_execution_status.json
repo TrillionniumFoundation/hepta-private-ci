@@ -1,0 +1,41 @@
+{
+  "checked_at_utc": "2026-10-21 11:01:48 UTC",
+  "scope": "Only the repository's existing desktop selector is evidenced. No executable connection to the user's separately configured project cloud was found in this session.",
+  "registered_protocol": "hepta-output-portfolio-pilot-v1-20261021",
+  "implementation_commit": "3a3e7ef2e3c0b73840d62ac5f816f9c4ec4d66db",
+  "workflow_fix_commit": "321ec72bcfc5bff2f62b857c73953ffdf085fed3",
+  "corrected_run": {
+    "id": 39588362257,
+    "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/39588362257",
+    "job_id": 119182807783,
+    "job_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/39588362257/job/119182807783",
+    "status": "queued",
+    "conclusion": null,
+    "runner_id": 0,
+    "runner_name": "",
+    "runner_group_id": 0,
+    "runner_group_name": "",
+    "steps": []
+  },
+  "retained_workflow_validation_failures": [
+    {
+      "run_id": 39587736972,
+      "source_sha": "3a3e7ef2e3c0b73840d62ac5f816f9c4ec4d66db",
+      "jobs": []
+    },
+    {
+      "run_id": 39587989207,
+      "source_sha": "9df42ed761aa616d9a153ba0106ca991a13905d2",
+      "jobs": []
+    }
+  ],
+  "execution_only_fix": "Moved runner.temp out of unsupported job.env context into shell steps / allowed step.with context; GitHub accepted the corrected workflow. Scientific source/protocol unchanged.",
+  "existing_availability_probe": {
+    "run_id": 39526325715,
+    "job_id": 118981704826,
+    "last_observed_status": "queued",
+    "assigned_runner": false
+  },
+  "remaining_execution_blocker": "No assigned dedicated runner or alternative verified executable project-cloud connection.",
+  "local_run_is_dedicated_cloud_evidence": false
+}
