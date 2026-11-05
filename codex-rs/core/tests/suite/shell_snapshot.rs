@@ -428,6 +428,16 @@ async fn unified_exec_snapshot_preserves_shell_environment_policy_set() -> Resul
             .enable(Feature::ShellSnapshot)
             .expect("test config should allow feature update");
         config.permissions.shell_environment_policy.r#set = policy_set_path_for_test();
+        // This fixture deliberately restricts PATH; keep host zsh startup scripts out of it.
+        let zdotdir = config.codex_home.join("snapshot-policy-zdotdir");
+        std::fs::create_dir_all(&zdotdir).expect("create fixture ZDOTDIR");
+        config.permissions.shell_environment_policy.r#set.insert(
+            "ZDOTDIR".to_string(),
+            zdotdir
+                .to_str()
+                .expect("fixture ZDOTDIR should be valid UTF-8")
+                .to_string(),
+        );
     });
     let harness = TestCodexHarness::with_builder(builder).await?;
     let codex_home = harness.test().home.path().to_path_buf();
