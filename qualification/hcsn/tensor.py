@@ -327,7 +327,10 @@ def hx_equity(x, par, boundary=None, *, validate=True):
         tolerance = 32 * torch.finfo(x.dtype).eps * cashflow_scale
         if bool((boundary_running > tolerance).any()):
             raise ValueError("Formal HX boundary is locally inadmissible: negative equity near default")
-    small = x * (1 + a.abs() + zq + 1 / s + eta) < 0.12
+    # Bound all exponential/CDF scales before using the order-eight ODE
+    # expansion. The former 0.12 cutoff left FP32 cancellation at x=.01
+    # for short maturities; the 0.5 interval is checked against quadrature.
+    small = x * (1 + a.abs() + zq + 1 / s + eta) < 0.5
     xr = torch.where(small, torch.full_like(x, 0.5), x)
 
     def resolvent(u):

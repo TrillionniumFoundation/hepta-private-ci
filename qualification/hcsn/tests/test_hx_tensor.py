@@ -108,6 +108,19 @@ class HXTorchTests(unittest.TestCase):
                 np.testing.assert_allclose(actual.detach().cpu().numpy(),expected,
                                            atol=tolerance,rtol=tolerance)
 
+    def test_fp32_short_maturity_expansion_and_switch_against_oracle(self):
+        par = replace(reference.HXParams(), sigma=0.2, maturity=0.05, ell=0.3)
+        vector = torch.tensor(list(asdict(par).values()), dtype=torch.float32)
+        params = _params_from_vector(vector)
+        # Probe both sides of the dimensionless expansion switch, retaining
+        # negative formal equity and the original absolute/relative tolerance.
+        a, z, zq, eta, gamma, scale, *_ = hx._components(params)
+        switch = float(0.5/(1+a.abs()+zq+1/scale+eta))
+        margins = np.r_[np.linspace(.002, .025, 20), switch*np.array([.99, 1.01])]
+        actual = hx.hx_equity(torch.tensor(margins, dtype=torch.float32), params, validate=False)
+        expected = reference.hx_equity(margins, par)
+        np.testing.assert_allclose(actual.detach().numpy(), expected, atol=5e-4, rtol=5e-4)
+
     def test_boundary_and_equity_parameter_gradcheck(self):
         values=list(asdict(reference.HXParams()).values())
         parameters=torch.tensor(values,dtype=torch.float64,requires_grad=True)
