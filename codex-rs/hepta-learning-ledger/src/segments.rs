@@ -109,19 +109,39 @@ impl SegmentedLedger {
         limits: LedgerSegmentLimits,
         minimum: LedgerSegmentCheckpoint,
     ) -> Result<Self, DurableLedgerError> {
+        let count = segments.len();
+        let mut segments = segments.into_iter();
+        Self::recover_with(owner_lock, count, binding, limits, minimum, |_| {
+            segments.next().ok_or(DurableLedgerError::MissingHeader)
+        })
+    }
+
+    /// Replay a host-authorized ordered history without opening every segment at
+    /// once. The opener is called at most once per index, in ascending order,
+    /// while the stable owner lock remains held. Each sealed predecessor is
+    /// released before the next opener call; only the final segment is retained.
+    /// The host still authorizes independently opened files and durable names.
+    /// Opener errors retain the original no-repair and owner-release behavior.
+    pub fn recover_with(
+        owner_lock: File,
+        count: usize,
+        binding: Digest32,
+        limits: LedgerSegmentLimits,
+        minimum: LedgerSegmentCheckpoint,
+        mut open_segment: impl FnMut(usize) -> Result<File, DurableLedgerError>,
+    ) -> Result<Self, DurableLedgerError> {
         validate(binding, limits)?;
-        if segments.is_empty() || segments.len() > MAX_LEDGER_SEGMENTS {
+        if count == 0 || count > MAX_LEDGER_SEGMENTS {
             return Err(DurableLedgerError::InvalidLimit);
         }
         let owner = LockedFile::acquire(owner_lock)?;
-        let count = segments.len();
         if minimum.segment >= count {
             return Err(DurableLedgerError::AcknowledgedHistoryMissing);
         }
         let mut core = LearningLedger::new();
         let mut final_file = None;
-        for (index, file) in segments.into_iter().enumerate() {
-            let mut file = LockedFile::acquire(file)?;
+        for index in 0..count {
+            let mut file = LockedFile::acquire(open_segment(index)?)?;
             let predecessor = current_anchor(&core);
             let parsed =
                 segment_codec::replay(&mut file, binding, limits, index, predecessor, &mut core)?;

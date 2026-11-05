@@ -413,12 +413,19 @@ fn history_exceeds_v1_record_capacity_without_resetting_chain_or_limits() {
     let snapshot = must(ledger.snapshot());
     assert_eq!(checkpoint.anchor.sequence, 8200);
     drop(ledger);
-    let reopened = must(SegmentedLedger::recover(
+    let reopened = must(SegmentedLedger::recover_with(
         f.file("owner"),
-        f.files(count),
+        count,
         binding(),
         configured,
         checkpoint,
+        |index| {
+            OpenOptions::new()
+                .read(true)
+                .write(true)
+                .open(f.root.join(index.to_string()))
+                .map_err(DurableLedgerError::from)
+        },
     ));
     assert_eq!(must(reopened.snapshot()), snapshot);
 }
@@ -484,4 +491,104 @@ fn process_exit_after_seal_or_successor_preserves_unknown_outcome_without_redisp
         assert_eq!(retry.disposition, AppendDisposition::IdempotentReplay);
         assert_eq!(must(recovered.anchor()).sequence, 2);
     }
+}
+
+#[test]
+fn sequential_recovery_keeps_owner_and_releases_each_sealed_predecessor() {
+    let f = Fixture::new();
+    let mut ledger = f.create();
+    append(&mut ledger, decision(/*number*/ 0));
+    let anchor = must(ledger.anchor());
+    must(ledger.rotate(f.new_file("1"), anchor));
+    append(&mut ledger, outcome());
+    let checkpoint = must(ledger.checkpoint());
+    let expected = must(ledger.snapshot());
+    drop(ledger);
+
+    let mut opened = Vec::new();
+    let recovered = must(SegmentedLedger::recover_with(
+        f.file("owner"),
+        /*count*/ 2,
+        binding(),
+        limits(),
+        checkpoint,
+        |index| {
+            assert!(matches!(
+                f.file("owner").try_lock(),
+                Err(std::fs::TryLockError::WouldBlock)
+            ));
+            if index != 0 {
+                let predecessor = f.file(&(index - 1).to_string());
+                must(predecessor.try_lock());
+                drop(predecessor);
+            }
+            opened.push(index);
+            OpenOptions::new()
+                .read(true)
+                .write(true)
+                .open(f.root.join(index.to_string()))
+                .map_err(DurableLedgerError::from)
+        },
+    ));
+    assert_eq!(opened, vec![0, 1]);
+    assert_eq!(must(recovered.snapshot()), expected);
+    assert_eq!(must(recovered.checkpoint()), checkpoint);
+    assert!(matches!(
+        f.file("owner").try_lock(),
+        Err(std::fs::TryLockError::WouldBlock)
+    ));
+    assert!(matches!(
+        f.file("1").try_lock(),
+        Err(std::fs::TryLockError::WouldBlock)
+    ));
+    must(f.file("0").try_lock());
+}
+
+#[test]
+fn sequential_recovery_open_error_releases_owner_without_repair() {
+    let f = Fixture::new();
+    let mut ledger = f.create();
+    append(&mut ledger, decision(/*number*/ 0));
+    let anchor = must(ledger.anchor());
+    must(ledger.rotate(f.new_file("1"), anchor));
+    append(&mut ledger, outcome());
+    let checkpoint = must(ledger.checkpoint());
+    drop(ledger);
+    let before = [
+        must(fs::read(f.root.join("0"))),
+        must(fs::read(f.root.join("1"))),
+    ];
+    let mut opened = Vec::new();
+    let result = SegmentedLedger::recover_with(
+        f.file("owner"),
+        /*count*/ 2,
+        binding(),
+        limits(),
+        checkpoint,
+        |index| {
+            opened.push(index);
+            assert!(matches!(
+                f.file("owner").try_lock(),
+                Err(std::fs::TryLockError::WouldBlock)
+            ));
+            if index == 1 {
+                return Err(DurableLedgerError::Io(std::io::ErrorKind::NotFound));
+            }
+            OpenOptions::new()
+                .read(true)
+                .write(true)
+                .open(f.root.join(index.to_string()))
+                .map_err(DurableLedgerError::from)
+        },
+    );
+    assert!(matches!(
+        result,
+        Err(DurableLedgerError::Io(std::io::ErrorKind::NotFound))
+    ));
+    assert_eq!(opened, vec![0, 1]);
+    assert_eq!(must(fs::read(f.root.join("0"))), before[0]);
+    assert_eq!(must(fs::read(f.root.join("1"))), before[1]);
+    must(f.file("owner").try_lock());
+    must(f.file("0").try_lock());
+    must(f.file("1").try_lock());
 }
