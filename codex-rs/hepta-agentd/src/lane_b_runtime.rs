@@ -64,6 +64,43 @@ pub struct RunSnapshot {
     pub deadline_ms: u64,
 }
 
+impl RunSnapshot {
+    /// Project the original durable admission without consulting current owner
+    /// state. The caller must separately authenticate and revalidate the record.
+    pub(crate) fn from_run_start(record: &RunStartRecordV1) -> Result<Self, AgentRunError> {
+        if record.objective_function_v1_digest.is_zero()
+            || record.objective_function_v1_bytes.is_empty()
+        {
+            return Err(AgentRunError::InvalidRunStart(
+                "canonical ObjectiveFunctionV1 identity",
+            ));
+        }
+        if record.disposition != RunStartObjectiveDispositionV1::Compiled {
+            return Err(AgentRunError::InvalidRunStart("objective disposition"));
+        }
+        if record.admission.authority.grants_any() {
+            return Err(AgentRunError::InvalidRunStart("authority"));
+        }
+        let deadline_ms = record
+            .admission
+            .deadline_unix_micros
+            .checked_add(999)
+            .map(|value| value / 1_000)
+            .ok_or(AgentRunError::ArithmeticOverflow)?;
+        Ok(Self {
+            run_id: record.snapshot.run_id.to_string(),
+            request_digest: record.admission.admitted_source_digest.to_string(),
+            objective_digest: record.snapshot.objective_digest.to_string(),
+            body_digest: record.runtime_body_digest.to_string(),
+            artifact_set_digest: record.snapshot.artifact_set_digest.to_string(),
+            authority_epoch: record.snapshot.authority_epoch,
+            generation: record.snapshot.generation,
+            fence_digest: record.snapshot.fence_digest.to_string(),
+            deadline_ms,
+        })
+    }
+}
+
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub struct ContextAttachment {
     pub run_id: String,
@@ -231,39 +268,7 @@ impl AgentRunCoordinator {
         now_ms: u64,
         record: &RunStartRecordV1,
     ) -> Result<RunReceipt, AgentRunError> {
-        if record.objective_function_v1_digest.is_zero()
-            || record.objective_function_v1_bytes.is_empty()
-        {
-            return Err(AgentRunError::InvalidRunStart(
-                "canonical ObjectiveFunctionV1 identity",
-            ));
-        }
-        if record.disposition != RunStartObjectiveDispositionV1::Compiled {
-            return Err(AgentRunError::InvalidRunStart("objective disposition"));
-        }
-        if record.admission.authority.grants_any() {
-            return Err(AgentRunError::InvalidRunStart("authority"));
-        }
-        let deadline_ms = record
-            .admission
-            .deadline_unix_micros
-            .checked_add(999)
-            .map(|value| value / 1_000)
-            .ok_or(AgentRunError::ArithmeticOverflow)?;
-        self.start_run(
-            now_ms,
-            RunSnapshot {
-                run_id: record.snapshot.run_id.to_string(),
-                request_digest: record.admission.admitted_source_digest.to_string(),
-                objective_digest: record.snapshot.objective_digest.to_string(),
-                body_digest: record.runtime_body_digest.to_string(),
-                artifact_set_digest: record.snapshot.artifact_set_digest.to_string(),
-                authority_epoch: record.snapshot.authority_epoch,
-                generation: record.snapshot.generation,
-                fence_digest: record.snapshot.fence_digest.to_string(),
-                deadline_ms,
-            },
-        )
+        self.start_run(now_ms, RunSnapshot::from_run_start(record)?)
     }
 
     pub fn attach_context(
