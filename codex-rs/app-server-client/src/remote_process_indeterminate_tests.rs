@@ -71,6 +71,7 @@ async fn process_spawn_checks_this_connection_echo_and_decodes_unknown_notificat
             let spawn = client.request_handle().request_json_rpc(JSONRPCRequest {
                 id: RequestId::Integer(1), method: "process/spawn".to_string(),
                 params: Some(serde_json::json!({"processHandle": "fixture", "command": ["not-executed"], "cwd": "/fixture"})),
+                trace: None,
             }).await;
             if echo == Some(true) {
                 assert_eq!(spawn?.map_err(|error| IoError::other(error.message))?, serde_json::json!({}));
@@ -91,6 +92,7 @@ async fn process_spawn_checks_this_connection_echo_and_decodes_unknown_notificat
                 // A real subsequent frame proves the rejected spawn was never written.
                 client.request_handle().request_json_rpc(JSONRPCRequest {
                     id: RequestId::Integer(2), method: "server/diagnostics".to_string(), params: None,
+                    trace: None,
                 }).await?.map_err(|error| IoError::other(error.message))?;
             }
             server.await.map_err(IoError::other)??;
