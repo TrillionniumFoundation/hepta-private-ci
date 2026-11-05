@@ -1,0 +1,81 @@
+name: NDU real generator adapter training
+
+on:
+  push:
+    branches:
+      - research/ndu-training-wiring-20261105
+    paths:
+      - experiments/multimodal_output_portfolio/joint_hepta_20261029/v3/decision_audit/**
+      - .github/workflows/ndu-adapter-training.yml
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+env:
+  PYTHONDONTWRITEBYTECODE: "1"
+  PYTHONNOUSERSITE: "1"
+  OMP_NUM_THREADS: "2"
+  MKL_NUM_THREADS: "2"
+  OPENBLAS_NUM_THREADS: "2"
+  HF_HUB_DISABLE_TELEMETRY: "1"
+
+jobs:
+  real-neural-updates:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+          sparse-checkout: |
+            experiments/multimodal_output_portfolio/joint_hepta_20261029
+            experiments/multimodal_output_portfolio/unified_20261028
+      - uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405
+        with:
+          python-version: "3.12.14"
+      - name: Bind source and prepare outer command receipts
+        run: |
+          set -euo pipefail
+          mkdir -p "$RUNNER_TEMP/training-evidence"
+          test "$(git rev-parse HEAD)" = "${{ github.sha }}"
+          git rev-parse HEAD > "$RUNNER_TEMP/training-evidence/SOURCE_SHA.txt"
+      - name: Install and meter declared CPU dependencies
+        run: |
+          set -euo pipefail
+          python -B -m experiments.multimodal_output_portfolio.joint_hepta_20261029.v3.decision_audit.meter --output "$RUNNER_TEMP/training-evidence/install_cost.json" -- python -m pip install --no-cache-dir --disable-pip-version-check --extra-index-url https://download.pytorch.org/whl/cpu torch==2.8.0+cpu torchvision==0.23.0+cpu numpy==2.3.5 Pillow==13.0.0 transformers==4.57.3 diffusers==0.35.2 accelerate==1.12.0 safetensors==0.7.0 num2words==0.5.14
+          python -m pip freeze > "$RUNNER_TEMP/training-evidence/environment.txt"
+      - name: Run focused scientific and lifecycle contracts
+        run: |
+          set -euo pipefail
+          python -B -m experiments.multimodal_output_portfolio.joint_hepta_20261029.v3.decision_audit.meter --output "$RUNNER_TEMP/training-evidence/tests_cost.json" -- python -B -m unittest experiments.multimodal_output_portfolio.joint_hepta_20261029.v3.decision_audit.test_exact experiments.multimodal_output_portfolio.joint_hepta_20261029.v3.decision_audit.test_factorial experiments.multimodal_output_portfolio.joint_hepta_20261029.v3.decision_audit.test_local_models experiments.multimodal_output_portfolio.joint_hepta_20261029.v3.decision_audit.test_dual_runtime experiments.multimodal_output_portfolio.joint_hepta_20261029.v3.decision_audit.test_train_adapter experiments.multimodal_output_portfolio.joint_hepta_20261029.v3.decision_audit.test_train_image_adapter experiments.multimodal_output_portfolio.joint_hepta_20261029.v3.decision_audit.test_adapted_models experiments.multimodal_output_portfolio.joint_hepta_20261029.v3.decision_audit.test_run_training experiments.multimodal_output_portfolio.joint_hepta_20261029.v3.decision_audit.test_meter -v 2>&1 | tee "$RUNNER_TEMP/training-evidence/tests.log"
+      - name: Acquire and meter exact pinned models
+        run: |
+          set -euo pipefail
+          python -B -m experiments.multimodal_output_portfolio.joint_hepta_20261029.v3.decision_audit.meter --output "$RUNNER_TEMP/training-evidence/acquisition_cost.json" -- python -B -m experiments.multimodal_output_portfolio.joint_hepta_20261029.v3.decision_audit.acquire_models --root "$RUNNER_TEMP/dual-models" 2>&1 | tee "$RUNNER_TEMP/training-evidence/acquisition.log"
+      - name: Train both adapters and run the adapted dual schedule
+        run: |
+          set -euo pipefail
+          python -B -m experiments.multimodal_output_portfolio.joint_hepta_20261029.v3.decision_audit.meter --output "$RUNNER_TEMP/training-evidence/training_process_cost.json" -- python -B -m experiments.multimodal_output_portfolio.joint_hepta_20261029.v3.decision_audit.run_training --models "$RUNNER_TEMP/dual-models" --output "$RUNNER_TEMP/training-evidence/real" --source-sha "${{ github.sha }}" --threads 2 2>&1 | tee "$RUNNER_TEMP/training-evidence/training.log"
+          git diff --check
+          git diff --exit-code
+      - name: Preserve acquisition attempts including failures
+        if: always()
+        run: |
+          python - <<'PY'
+          import os,pathlib,shutil
+          root=pathlib.Path(os.environ["RUNNER_TEMP"])
+          for name in ("ACQUISITION.json","ACQUISITION_ATTEMPTS.jsonl","vlm/MANIFEST.json","sd/MANIFEST.json","task/INPUT_MANIFEST.json"):
+              src=root/"dual-models"/name
+              if src.is_file():
+                  dst=root/"training-evidence"/"acquisition"/name
+                  dst.parent.mkdir(parents=True,exist_ok=True)
+                  shutil.copyfile(src,dst)
+          PY
+      - uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f
+        if: always()
+        with:
+          name: ndu-training-${{ github.sha }}
+          path: ${{ runner.temp }}/training-evidence/
+          retention-days: 30
