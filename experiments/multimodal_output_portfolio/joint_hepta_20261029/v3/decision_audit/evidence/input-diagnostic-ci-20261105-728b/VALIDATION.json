@@ -1,0 +1,25 @@
+{
+  "schema": "hepta.ndu.input-diagnostic-review-validation.v1",
+  "archive_checker": {
+    "command": "python -B verify.py --source-directory <pinned decision_audit source> --output ANALYSIS.json",
+    "exit_code": 0,
+    "scope": "archive, source, model manifest, raw inputs, text bytes, token hashes, case census, stopping and summary arithmetic"
+  },
+  "python_ast_parse": "passed",
+  "runtime_source_git_blobs": {
+    "acquire_models.py": "9ca4a48f9fb85e1d58223315b1ce4701f9e20629",
+    "diagnostics.py": "be772e797531f467ae9d93c3d4af4f48ceff3978",
+    "local_models.py": "48d533d353cdc92c01d69116098344d5d2caaf63"
+  },
+  "desktop_failure_receipts": "retained exact UTF-8 bytes and matched remote SHA-256",
+  "repository_format_attempt": {
+    "command": "just fmt",
+    "exit_code": 127,
+    "stderr": "just: command not found",
+    "scope": "local source subset; complete codex-rs checkout and just are unavailable"
+  },
+  "full_repository_ci_run_by_review": false,
+  "new_model_execution_by_review": false,
+  "new_training_by_review": false,
+  "production_qualification": false
+}

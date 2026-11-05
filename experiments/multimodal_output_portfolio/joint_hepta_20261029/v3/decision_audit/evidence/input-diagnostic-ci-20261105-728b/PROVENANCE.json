@@ -1,0 +1,36 @@
+{
+  "schema": "hepta.ndu.input-diagnostic-source-receipt.v1",
+  "run": {
+    "id": 41973374316,
+    "head_sha": "975e1a264c14ed3da02dcee23a64327825387e42",
+    "head_branch": "research/ndu-input-diagnostics-20261105",
+    "status": "completed",
+    "conclusion": "success",
+    "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/41973374316",
+    "event": "push",
+    "created_at": "2026-11-05T05:20:16Z",
+    "updated_at": "2026-11-05T06:35:39Z"
+  },
+  "artifact": {
+    "id": 13393254163,
+    "name": "ndu-input-975e1a264c14ed3da02dcee23a64327825387e42",
+    "size_in_bytes": 396825,
+    "digest": "sha256:d84b6451b4b70e2dcc25b01c72ed5553357c0a9081c96d2f8ebd5248a0cca7aa",
+    "created_at": "2026-11-05T06:35:35Z",
+    "expires_at": "2026-12-05T06:35:34Z",
+    "workflow_run": {
+      "id": 41973374316,
+      "repository_id": 1320694176,
+      "head_repository_id": 1320694176,
+      "head_branch": "research/ndu-input-diagnostics-20261105",
+      "head_sha": "975e1a264c14ed3da02dcee23a64327825387e42"
+    }
+  },
+  "unchanged_local_models_blob": {
+    "earlier_source": "4e3b8c3c242d7d6d83086e7375a354a30647e040",
+    "diagnostic_source": "975e1a264c14ed3da02dcee23a64327825387e42",
+    "git_blob_sha": "48d533d353cdc92c01d69116098344d5d2caaf63"
+  },
+  "retrieval": "GitHub connector GET workflow run and workflow artifacts; raw ZIP fetched and byte hash verified",
+  "review_did_not_execute_models": true
+}

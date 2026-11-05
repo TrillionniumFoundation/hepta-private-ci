@@ -1,0 +1,38 @@
+{
+  "status": "failed",
+  "error_type": "RuntimeError",
+  "error": "dependencies failed; original log retained",
+  "steps": [
+    {
+      "name": "create_venv",
+      "wall_seconds": 5.374339186004363
+    },
+    {
+      "name": "dependencies",
+      "command": [
+        "/home/qian-qi/work/hepta-sixline-ndu-728b0437-20261105/venv/bin/python",
+        "-m",
+        "pip",
+        "install",
+        "--no-cache-dir",
+        "--disable-pip-version-check",
+        "--extra-index-url",
+        "https://download.pytorch.org/whl/cpu",
+        "torch==2.8.0+cpu",
+        "torchvision==0.23.0+cpu",
+        "numpy==2.3.5",
+        "Pillow==13.0.0",
+        "transformers==4.57.3",
+        "diffusers==0.35.2",
+        "accelerate==1.12.0",
+        "safetensors==0.7.0",
+        "num2words==0.5.14"
+      ],
+      "exit_code": 2,
+      "wall_seconds": 171.52814572909847
+    }
+  ],
+  "source_sha": "975e1a264c14ed3da02dcee23a64327825387e42",
+  "total_wall_seconds": 176.91096329689026,
+  "semantic_acceptance": "not_inferred"
+}
