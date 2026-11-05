@@ -138,3 +138,60 @@ fn writer_handoff_minimum_is_bound_to_operation_and_exact_chain() {
         Err(WriterHandoffErrorV1::AcknowledgedCheckpointMissing)
     ));
 }
+
+#[test]
+fn writer_handoff_owner_exit_releases_lock_while_file_alias_survives() {
+    let root = TempDir::new().expect("temp");
+    let journal = DurableWriterHandoffJournalV1::create(file(&root), plan()).expect("create");
+    let checkpoint = journal.checkpoint().clone();
+    // A duplicate deterministically models a descriptor retained across fork.
+    let retained = journal.file.try_clone().expect("retain file description");
+    assert!(matches!(
+        DurableWriterHandoffJournalV1::recover_at_least(file(&root), &checkpoint),
+        Err(WriterHandoffErrorV1::Busy)
+    ));
+    drop(journal);
+    let recovered = DurableWriterHandoffJournalV1::recover_at_least(file(&root), &checkpoint)
+        .expect("original owner's explicit unlock must not depend on the alias closing");
+    assert_eq!(recovered.checkpoint(), &checkpoint);
+    drop(retained);
+}
+
+#[test]
+fn writer_handoff_failed_create_releases_lock_while_file_alias_survives() {
+    let root = TempDir::new().expect("temp");
+    let journal = DurableWriterHandoffJournalV1::create(file(&root), plan()).expect("create");
+    let checkpoint = journal.checkpoint().clone();
+    drop(journal);
+    let existing = file(&root);
+    let retained = existing.try_clone().expect("retain file description");
+    assert!(matches!(
+        DurableWriterHandoffJournalV1::create(existing, plan()),
+        Err(WriterHandoffErrorV1::AlreadyInitialized)
+    ));
+    let recovered = DurableWriterHandoffJournalV1::recover_at_least(file(&root), &checkpoint)
+        .expect("failed create must release its acquired lock before returning");
+    assert_eq!(recovered.checkpoint(), &checkpoint);
+    drop(retained);
+}
+
+#[test]
+fn writer_handoff_failed_recovery_releases_lock_while_file_alias_survives() {
+    let root = TempDir::new().expect("temp");
+    let journal = DurableWriterHandoffJournalV1::create(file(&root), plan()).expect("create");
+    let checkpoint = journal.checkpoint().clone();
+    let length = journal.durable_length;
+    drop(journal);
+    let oversized = file(&root);
+    oversized.set_len(MAX_JOURNAL_BYTES * 128).expect("sparse file");
+    let retained = oversized.try_clone().expect("retain file description");
+    assert!(matches!(
+        DurableWriterHandoffJournalV1::recover(oversized),
+        Err(WriterHandoffErrorV1::JournalTooLarge)
+    ));
+    retained.set_len(length).expect("restore original journal");
+    let recovered = DurableWriterHandoffJournalV1::recover_at_least(file(&root), &checkpoint)
+        .expect("failed recovery must release its acquired lock before returning");
+    assert_eq!(recovered.checkpoint(), &checkpoint);
+    drop(retained);
+}

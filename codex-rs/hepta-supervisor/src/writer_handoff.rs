@@ -218,9 +218,36 @@ impl From<std::io::Error> for WriterHandoffErrorV1 {
     }
 }
 
+/// Keeps the advisory lock's lifetime tied to this journal owner. Closing one
+/// descriptor does not release a Unix flock while a fork or duplicate still
+/// retains the same open file description. Unlock before closing our owner,
+/// including on create/recovery errors, without touching another owner's lock.
+#[derive(Debug)]
+struct LockedHandoffFile(File);
+
+impl std::ops::Deref for LockedHandoffFile {
+    type Target = File;
+
+    fn deref(&self) -> &Self::Target {
+        &self.0
+    }
+}
+
+impl std::ops::DerefMut for LockedHandoffFile {
+    fn deref_mut(&mut self) -> &mut Self::Target {
+        &mut self.0
+    }
+}
+
+impl Drop for LockedHandoffFile {
+    fn drop(&mut self) {
+        let _ = self.0.unlock();
+    }
+}
+
 #[derive(Debug)]
 pub struct DurableWriterHandoffJournalV1 {
-    file: File,
+    file: LockedHandoffFile,
     checkpoint: WriterHandoffCheckpointV1,
     durable_length: u64,
     poisoned: bool,
@@ -228,9 +255,9 @@ pub struct DurableWriterHandoffJournalV1 {
 
 impl DurableWriterHandoffJournalV1 {
     /// Create a new journal on an explicitly supplied, exclusively owned file.
-    pub fn create(mut file: File, plan: WriterHandoffPlanV1) -> Result<Self, WriterHandoffErrorV1> {
+    pub fn create(file: File, plan: WriterHandoffPlanV1) -> Result<Self, WriterHandoffErrorV1> {
         plan.validate()?;
-        acquire_handoff_lock(&file)?;
+        let mut file = acquire_handoff_lock(file)?;
         if file.metadata()?.len() != 0 {
             return Err(WriterHandoffErrorV1::AlreadyInitialized);
         }
@@ -283,10 +310,10 @@ impl DurableWriterHandoffJournalV1 {
     }
 
     fn recover_with_minimum(
-        mut file: File,
+        file: File,
         minimum: Option<&WriterHandoffCheckpointV1>,
     ) -> Result<Self, WriterHandoffErrorV1> {
-        acquire_handoff_lock(&file)?;
+        let mut file = acquire_handoff_lock(file)?;
         if file.metadata()?.len() > MAX_JOURNAL_BYTES {
             return Err(WriterHandoffErrorV1::JournalTooLarge);
         }
@@ -294,7 +321,7 @@ impl DurableWriterHandoffJournalV1 {
         let mut bytes = Vec::new();
         // Also bound the read itself: a metadata check alone is not an
         // allocation bound when a non-cooperating process changes the file.
-        Read::take(&mut file, MAX_JOURNAL_BYTES + 1).read_to_end(&mut bytes)?;
+        Read::take(&mut *file, MAX_JOURNAL_BYTES + 1).read_to_end(&mut bytes)?;
         if bytes.len() as u64 > MAX_JOURNAL_BYTES {
             return Err(WriterHandoffErrorV1::JournalTooLarge);
         }
@@ -389,12 +416,12 @@ impl DurableWriterHandoffJournalV1 {
 /// Only independently opened regular files are supported. Cloned/inherited
 /// descriptors and uncooperative writers are outside this advisory lock model;
 /// actual domain writers still require their own durable generation fence.
-fn acquire_handoff_lock(file: &File) -> Result<(), WriterHandoffErrorV1> {
+fn acquire_handoff_lock(file: File) -> Result<LockedHandoffFile, WriterHandoffErrorV1> {
     if !file.metadata()?.is_file() {
         return Err(WriterHandoffErrorV1::NotRegular);
     }
     match file.try_lock() {
-        Ok(()) => Ok(()),
+        Ok(()) => Ok(LockedHandoffFile(file)),
         Err(TryLockError::WouldBlock) => Err(WriterHandoffErrorV1::Busy),
         Err(TryLockError::Error(error)) => Err(error.into()),
     }
