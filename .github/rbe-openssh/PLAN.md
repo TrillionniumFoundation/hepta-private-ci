@@ -1,28 +1,34 @@
-# RBE OpenSSH image source candidate, review v4
+# RBE OpenSSH tool supply candidate
 
 ## Current status
 
-This directory is a source-only proposal. It has not been installed as a GitHub
-workflow. No image build, APT command, registry authentication/write, Docker
-container, original Bazel test, or digest-pin update has run during preparation.
-The new platform manifest digests and actual GHCR permissions remain unknown.
+This tool-only successor is source-only. The earlier PR4849 and the independent
+local amd64 diagnostic remain recorded failures; neither produced a qualified
+image. No successor image build, signer execution, registry write, original
+Operator test or digest-pin update has run during this preparation.
 
 The original GNU and musl remote TestRunner each reported eleven distinct
-Operator fixture failures because the platform OpenSSH signing executable was
-missing. Production verification also requires the fixed /usr/bin/ssh-keygen.
-The proposed repair adds the real openssh-client package to two derived images,
-while retaining the original platform images as immutable parents. It does not
-replace the signer, skip targets, change remote execution configuration, or
-change the original test profiles, timeouts, retries, assertions or dual verifier.
+Operator fixture failures because ssh-keygen was absent. The exact current
+production verifier keeps /usr/bin/ssh-keygen. This successor supplies only that
+unchanged distribution executable from the authenticated openssh-client archive.
+It does not install or configure that package, execute its maintainer scripts,
+supply ssh-agent, or replace the independent OpenSSH verifier.
 
-The two Windows valid-signature failures with OpenSSH exit 255 are a separate
-open problem. This Linux image proposal does not close them.
+The separate Windows OpenSSH255 failures remain open. R3 run41977281620 /
+job127078980419 and R4 run41980574894 / job127089480916 were cancelled during
+sandbox-helper compilation, before the original regression groups. Those runs
+therefore supply no new original Operator result or same-child255 diagnostic.
+A Linux image result cannot close this independent Windows blocker.
 
 ## Reviewable files
 
-- image_prepare.py: the v1 installer and actual UID1000 smoke operations, plus
+- image_prepare.py: the tool-only coordinator and original UID1000 smoke operations, plus
   full exception evidence. Completed command stdout/stderr are retained as both
   text and lossless base64. A timed-out command explicitly has partial capture.
+- tool_supply.py: bounded package data selection, exclusive creation and unchanged
+  original dependency closure. The original signed APT download-only acquisition
+  is retained; the package installation command is absent.
+- tool_supply_tests.py: offline rejection regressions using these actual functions.
 - Dockerfile: the same two exact platform parents and USER/workdir sequence
   reviewed in v1. No arbitrary base image override exists.
 - common.py: exact checkout/workflow identity, bounded command evidence, OCI
@@ -80,12 +86,23 @@ provenance. The uncompressed bytes of every layer are hashed against the OCI
 diff-id, and the original complete rootfs diff-id list must remain an exact
 prefix.
 
-The original v1 installer still rejects any upgrade/removal of an already
-installed package before installation. It verifies the original package map,
-critical executables, their real dynamic dependencies, resolved paths, bytes,
-owners and modes afterwards. New signed APT metadata and retained .deb files
-are recorded. Installer and protected receipts are extracted from the actual
-built OCI layers, not reconstructed from proposed values.
+The tool-only coordinator preserves the full original critical-file snapshot,
+including /etc/group, /etc/passwd and the CA bundle, with exact byte/identity
+equality. It requires the entire installed package map to remain equal. The
+signed APT simulation and download-only step retain the original archive evidence;
+no package installation or maintainer script runs. Only one bounded root-owned
+regular 0755 native ELF is selected and exclusively created at /usr/bin/ssh-keygen.
+Each architecture must actually resolve its complete ldd closure before deployment
+and retain identical dependency bytes, owner, mode and resolved paths afterwards.
+A missing dependency rejects this candidate; it is never installed automatically.
+
+Both Docker recipes use the same protected helper and coordinator paths. The
+repository-root Dockerfile.bazel context copies .github/rbe-openssh sources; the
+derived pinned-image context copies their local basenames. The original manual
+recipe first establishes its original ubuntu /workspace sequence, then performs
+the root-only supply and original UID1000 smoke, ending at the same User/Workdir.
+The image verifier checks both helper source bytes and the effective executable
+directly from OCI layers. It accepts only the distinct v2 tool-only receipt.
 
 The same image actually signs and verifies an 8213-byte message as UID/GID1000
 using both sha256 and sha512 SSHSIG, with namespace and appended-byte negatives.
@@ -205,3 +222,39 @@ test explicitly uses a fake child to check bounded calls and unknown-state
 fencing; it does not prove kernel termination, image execution, GHCR access, or
 any original product test. Synthetic overlay and upload inputs similarly do not
 claim to be qualified images or real registry responses.
+
+## Tool-only successor after the real package-install failure
+
+The actual local 9925 diagnostic kept 45 of 46 critical files identical, and
+rejected /etc/group changing from 503 to 515 bytes. The retained distribution
+postinst creates _ssh for the setgid ssh-agent program. Reconstructing the single
+line _ssh:x:101: from the original bytes reproduces the actual after-file SHA;
+this is labeled reconstruction, not a direct after-file read. No rollback,
+exception list or baseline edit is used to turn that failed installation green.
+
+The exact amd64 distribution ssh-keygen is 453056 bytes, SHA256
+f0b9e19ffa077d62ef6795a44d50c721f03456067a874395e015ec69c276dca6.
+Offline original-rootfs analysis found libselinux, libpcre2, libcrypto, libc and
+the dynamic loader already present. This is preparation evidence, not a substitute
+for candidate ldd, the six original tool-smoke outcomes, anonymous pull or the
+original remote GNU/musl Operator tests. ARM64 remains independently unmeasured.
+
+The original concurrency group and cancel-in-progress:false are unchanged.
+GitHub's default pending-run replacement still applies; only Root may decide
+when this reviewed successor replaces this PR's stale pending run. This source
+preparation neither updates a ref nor cancels another run.
+
+## Strict archive framing after actual distribution-data review
+
+The real retained Ubuntu archive has a directory root represented by TarInfo as
+a literal dot. The selector accepts only the exact dot or dot-slash directory
+root, while retaining all ordinary path and duplicate-name refusals. It uses
+normal tar end-of-archive parsing, verifies at least two zero end blocks and
+allows only zero padding after the final member. A second archive containing
+different nonzero members is refused even when no pathname is duplicated.
+An all-zero tail is standard padding, not evidence of another executable member.
+
+The v3 real-distribution selector rejection and the additional concatenation/end
+framing RED cases remain recorded. The corrected selector is checked against the
+same retained .deb bytes; this is read-only data parsing, with no installation or
+ELF execution, and does not grant either architecture image qualification.
