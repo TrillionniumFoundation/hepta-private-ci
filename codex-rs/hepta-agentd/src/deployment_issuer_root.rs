@@ -127,6 +127,7 @@ impl DeploymentFinalUseIssuer {
         registration: &HostAuthorityWriterRegistration,
         mutate: impl FnOnce(&AuthorityLease) -> io::Result<T>,
     ) -> io::Result<T> {
+        registration.validate()?;
         let pinned = self
             .lease
             .as_ref()
@@ -157,7 +158,15 @@ impl DeploymentFinalUseIssuer {
                 &lease.binding,
                 writer_token,
                 &registration.authority_lease.binding,
-                |issuer_lease, _, _| mutate(issuer_lease),
+                |issuer_lease, writer_lease, _| {
+                    if issuer_lease != &lease || writer_lease != &registration.authority_lease {
+                        return Err(io::Error::new(
+                            io::ErrorKind::PermissionDenied,
+                            "original issuer or registered writer lease changed",
+                        ));
+                    }
+                    mutate(issuer_lease)
+                },
             )
             .map_err(lease_error)?
     }

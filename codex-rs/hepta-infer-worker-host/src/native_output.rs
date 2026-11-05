@@ -24,7 +24,7 @@ enum Update<'a> {
 #[derive(Default)]
 pub(super) struct AgentMessageOutput {
     items: Vec<AgentMessage>,
-    id_bytes: usize,
+    metadata_bytes: usize,
     text_bytes: usize,
 }
 
@@ -68,7 +68,32 @@ impl AgentMessageOutput {
         if thread_id != &output.thread_id || turn_id != &output.turn_id {
             return Ok(());
         }
-        let index = self.items.iter().position(|item| &item.id == item_id);
+        self.apply_message(item_id, update, output)
+    }
+
+    /// Called only after validating the exact bound terminal witness. A summary
+    /// may contain just the final item, so merge by ID without dropping earlier
+    /// observed messages. Text alone never authorizes terminal or usage.
+    pub(super) fn complete_turn(
+        &mut self,
+        items: &[ThreadItem],
+        output: &mut NativeRunOutput,
+    ) -> Result<(), String> {
+        for item in items {
+            if let ThreadItem::AgentMessage { id, text, .. } = item {
+                self.apply_message(id, Update::Completed(text), output)?;
+            }
+        }
+        Ok(())
+    }
+
+    fn apply_message(
+        &mut self,
+        item_id: &str,
+        update: Update<'_>,
+        output: &mut NativeRunOutput,
+    ) -> Result<(), String> {
+        let index = self.items.iter().position(|item| item.id == item_id);
         let previous = index.map(|index| &self.items[index]);
         if matches!(update, Update::Started(_)) && previous.is_some() {
             return Ok(());
@@ -96,18 +121,19 @@ impl AgentMessageOutput {
         if replacement_len > MAX_OUTPUT_BYTES.saturating_sub(retained_bytes) {
             return Err("output byte limit exceeded".to_string());
         }
+        let metadata_cost = size_of::<AgentMessage>().saturating_add(item_id.len());
         if index.is_none()
             && (self.items.len() >= MAX_MESSAGE_ITEMS
-                || item_id.len() > MAX_OUTPUT_BYTES.saturating_sub(self.id_bytes))
+                || metadata_cost > MAX_OUTPUT_BYTES.saturating_sub(self.metadata_bytes))
         {
             return Err("output message metadata limit exceeded".to_string());
         }
         let index = match index {
             Some(index) => index,
             None => {
-                self.id_bytes += item_id.len();
+                self.metadata_bytes += metadata_cost;
                 self.items.push(AgentMessage {
-                    id: item_id.clone(),
+                    id: item_id.to_string(),
                     text: String::new(),
                     completed: false,
                 });

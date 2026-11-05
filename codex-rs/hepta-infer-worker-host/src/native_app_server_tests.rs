@@ -60,8 +60,17 @@ fn observe_for_test(
     output: &mut NativeRunOutput,
     notification: ServerNotification,
 ) -> std::result::Result<bool, String> {
+    observe_for_test_with_messages(output, &mut AgentMessageOutput::default(), notification)
+}
+
+fn observe_for_test_with_messages(
+    output: &mut NativeRunOutput,
+    messages: &mut AgentMessageOutput,
+    notification: ServerNotification,
+) -> std::result::Result<bool, String> {
     let binding = binding();
-    observe_event(output, &observed(notification), &binding)
+    messages.observe(&notification, output)?;
+    observe_event(output, messages, &observed(notification), &binding)
 }
 
 pub(super) fn output() -> NativeRunOutput {
@@ -819,3 +828,6 @@ fn final_use_fence_rejects_owner_ingress_cancel_and_deadline_drift() {
         .is_err()
     );
 }
+
+#[path = "native_message_output_tests.rs"]
+mod message_output;
