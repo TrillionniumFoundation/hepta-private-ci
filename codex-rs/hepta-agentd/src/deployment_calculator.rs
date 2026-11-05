@@ -259,3 +259,7 @@ pub(super) fn calculator_slot(
     }
     Ok(slot)
 }
+
+#[cfg(test)]
+#[path = "deployment_calculator_issuer_followup_tests.rs"]
+mod issuer_followup;

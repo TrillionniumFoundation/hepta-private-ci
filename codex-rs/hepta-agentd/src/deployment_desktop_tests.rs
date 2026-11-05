@@ -389,3 +389,16 @@ fn desktop_policy_two_successors_keep_one_original_issuer_then_revocation_fences
     );
     assert_eq!(serde_json::to_value(f.state()).unwrap(), preserved);
 }
+
+/// Reuse this exact disk/key/registry fixture in the sibling Calculator test.
+/// The existing writer rotation and independent issuer parent remain intact.
+pub(crate) fn original_calculator_issuer_fixture() -> (
+    tempfile::TempDir,
+    Arc<AuthorityLeaseRegistry>,
+    DeploymentFinalUseIssuer,
+    HostAuthorityWriterRegistration,
+    CalculatorTargetIdentity,
+) {
+    let f = Fixture::new();
+    (f._root, f.registry, f.issuer, f.writer, f.old.calculator)
+}
