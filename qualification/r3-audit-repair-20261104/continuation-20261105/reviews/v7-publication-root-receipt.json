@@ -1,0 +1,3465 @@
+{
+  "schema": "hepta-v7-publication-root-receipt-v1",
+  "published_utc": "2026-11-05 17:29:14 UTC",
+  "branch": "audit/r3-evidence-20261105",
+  "head": "e3cc8c09acd1feb3e1a79155cafc4b9779a765c7",
+  "tree": "059c79a3b6ae08f5e2d6ed9e1b2e19004d23aeb0",
+  "parent": "526aca0c1aba938d3dfea0f8dd29c51bfc00fcc9",
+  "entry_count": 488,
+  "index_blob": "aa418f3f697d1a0b37c99fe410a03485b336456a",
+  "leaf_count": 12230,
+  "diff_count": 489,
+  "evidence_only": true,
+  "source_outside_continuation_unchanged": true,
+  "ref_update_expected_sha_verified": true,
+  "actual_ref_readback_verified": true,
+  "counts": {
+    "CLOSED_SCOPED": 10,
+    "OPEN": 12,
+    "SCIENTIFIC_HOLD": 1
+  },
+  "all_blockers_closed": false,
+  "whole_product_qualified": false,
+  "verification": {
+    "method": "Actual complete continuation subtree and exact unchanged sibling maps at all three ancestors, composed with the previously verified full V6 tree",
+    "actual_ancestor_count": 3,
+    "actual_subtree": "d75c03b95f16f32d127135923474446a662126fe",
+    "actual_subtree_truncated": false,
+    "diff": [
+      {
+        "path": "qualification/r3-audit-repair-20261104/continuation-20261105/CONTINUATION_PROGRESS_V6.zh-CN.md",
+        "before": null,
+        "after": "4da151f4311de4e1f7e691fe4ee40a3429143676",
+        "mode": "100644",
+        "type": "blob"
+      },
+      {
+        "path": "qualification/r3-audit-repair-20261104/continuation-20261105/LATEST.zh-CN.md",
+        "before": "136ed98682865a76b7c693d3659f4c5648f7c0ae",
+        "after": "d7c5ea1ec4acbaba35a7410891bd62f873e86cc1",
+        "mode": "100644",
+        "type": "blob"
+      },
+      {
+        "path": "qualification/r3-audit-repair-20261104/continuation-20261105/PROJECT_DIRECTION_AND_EXECUTION_PLAN_V4.zh-CN.md",
+        "before": null,
+        "after": "00c0710737ca3b737babd443da416c7d838a48a4",
+        "mode": "100644",
+        "type": "blob"
+      },
+      {
+        "path": "qualification/r3-audit-repair-20261104/continuation-20261105/candidate-next/b11-delete-matrix-macro-import/delete_permission_tests.rs.source.txt",
+        "before": null,
+        "after": "d8511f92f9fbd9d58061238dbf3181152c74ccbc",
+        "mode": "100644",
+        "type": "blob"
+      },
+      {
+        "path": "qualification/r3-audit-repair-20261104/continuation-20261105/candidate-next/b11-delete-matrix-macro-import/manifest.json",
+        "before": null,
+        "after": "615c2abc65182aac2dc259c29961beed4d8e77e4",
+        "mode": "100644",
+        "type": "blob"
+      },
+      {
+        "path": "qualification/r3-audit-repair-20261104/continuation-20261105/candidate-next/b11-delete-matrix-macro-import/repair.patch",
+        "before": null,
+        "after": "a442366ae64689eb96a8a3aaf9b39bd166de986e",
+        "mode": "100644",
+        "type": "blob"
+      },
+      {
+        "path": "qualification/r3-audit-repair-20261104/continuation-20261105/candidate-next/b11-initial-label-observation/manifest.json",
+        "before": null,
+        "after": "61ae6a9893f3e0b539c780b1011f218edc43ff72",
+        "mode": "100644",
+        "type": "blob"
+      },
+      {
+        "path": "qualification/r3-audit-repair-20261104/continuation-20261105/candidate-next/b11-initial-label-observation/observation.patch",
+        "before": null,
+        "after": "69ffe2af03a6132d225b3ece2e9bb6a1c99ecf1e",
+        "mode": "100644",
+        "type": "blob"
+      },
+      {
+        "path": "qualification/r3-audit-repair-20261104/continuation-20261105/candidate-next/b11-initial-label-observation/token_integrity_probe_support.rs.source.txt",
+        "before": null,
+        "after": "47dddb48c727c1bcae89b613409a72bd7d1312ff",
+        "mode": "100644",
+        "type": "blob"
+      },
+      {
+        "path": "qualification/r3-audit-repair-20261104/continuation-20261105/candidate-next/b11-label-ace-semantics/manifest.json",
+        "before": null,
+        "after": "26631a3b242c5a14df89b22de4f6c1a84d3aa904",
+        "mode": "100644",
+        "type": "blob"
+      },
+      {
+        "path": "qualification/r3-audit-repair-20261104/continuation-20261105/candidate-next/b11-label-ace-semantics/primary/microsoft-docs-originals.json",
+        "before": null,
+        "after": "0c0934acd6aa2e8ce7235bce4c0d2e86808bccd1",
+        "mode": "100644",
+        "type": "blob"
+      },
+      {
+        "path": "qualification/r3-audit-repair-20261104/continuation-20261105/candidate-next/b11-label-ace-semantics/repair.patch",
+        "before": null,
+        "after": "03f5ee7e4122d22189b8056ef0137f820943c1ac",
+        "mode": "100644",
+        "type": "blob"
+      },
+      {
+        "path": "qualification/r3-audit-repair-20261104/continuation-20261105/candidate-next/b11-label-ace-semantics/static-verification.json",
+        "before": null,
+        "after": "2b7799557e8e1430066cf814dbac502232f44088",
+        "mode": "100644",
+        "type": "blob"
+      },
+      {
+        "path": "qualification/r3-audit-repair-20261104/continuation-20261105/candidate-next/b11-label-ace-semantics/token_integrity_probe_support.rs.source.txt",
+        "before": null,
+        "after": "7a7008f9becf09578ca953c849401eda93eb94b2",
+        "mode": "100644",
+        "type": "blob"
+      },
+      {
+        "path": "qualification/r3-audit-repair-20261104/continuation-20261105/candidate-published/b11-acl-v2/actual-delivery-map.json",
+        "before": null,
+        "after": "62bfc51d22d4c39e9b39e3beaa2f38a4285dcd64",
+        "mode": "100644",
+        "type": "blob"
+      },
+      {
+        "path": "qualification/r3-audit-repair-20261104/continuation-20261105/candidate-published/b11-acl-v2/candidate-v1/full.patch",
+        "before": null,
+        "after": "b1d6699327df65dfd0d41cbac591cadd20128590",
+        "mode": "100644",
+        "type": "blob"
+      },
+      {
+        "path": "qualification/r3-audit-repair-20261104/continuation-20261105/candidate-published/b11-acl-v2/candidate-v1/legacy-error-contract.patch",
+        "before": null,
+        "after": "391c3a97ab3d87ddaf249d8d178295e7ec6d7087",
+        "mode": "100644",
+        "type": "blob"
+      },
+      {
+        "path": "qualification/r3-audit-repair-20261104/continuation-20261105/candidate-published/b11-acl-v2/candidate-v1/native4-failure-classification.json",
+        "before": null,
+        "after": "60a43463c1d9f2cbc798e0da33dd762d3157139b",
+        "mode": "100644",
+        "type": "blob"
+      },
+      {
+        "path": "qualification/r3-audit-repair-20261104/continuation-20261105/candidate-published/b11-acl-v2/candidate-v1/official-api-docs-retrieval.json",
+        "before": null,
+        "after": "0d9d872caaeba7f47db99aecec71f2a1caea64e0",
+        "mode": "100644",
+        "type": "blob"
+      },
+      {
+        "path": "qualification/r3-audit-repair-20261104/continuation-20261105/candidate-published/b11-acl-v2/candidate-v1/repair-handle-rights.patch",
+        "before": null,
+        "after": "b718835f82045f5a47dc2020293cd0752f025fa7",
+        "mode": "100644",
+        "type": "blob"
+      },
+      {
+        "path": "qualification/r3-audit-repair-20261104/continuation-20261105/candidate-published/b11-acl-v2/candidate-v1/static-checks.json",
+        "before": null,
+        "after": "527d62bd167c7fe798a9672772dee4ea4e4f86e0",
+        "mode": "100644",
+        "type": "blob"
+      },
+      {
+        "path": "qualification/r3-audit-repair-20261104/continuation-20261105/candidate-published/b11-acl-v2/execution-candidate-v2/REVIEW.zh-CN.md",
+        "before": null,
+        "after": "ad3e0d971704edb2434e1cfda9db04b29981e329",
+        "mode": "100644",
+        "type": "blob"
+      },
+      {
+        "path": "qualification/r3-audit-repair-20261104/continuation-20261105/candidate-published/b11-acl-v2/execution-candidate-v2/candidate/.github/workflows/hepta-windows-token-mechanism-probe.yml.source.txt",
+        "before": null,
+        "after": "70f3145268e042ec04fbfe85eda83ccbbc4ff79c",
+        "mode": "100644",
+        "type": "blob"
+      },
+      {
+        "path": "qualification/r3-audit-repair-20261104/continuation-20261105/candidate-published/b11-acl-v2/execution-candidate-v2/candidate/codex-rs/windows-sandbox-rs/src/acl_deny.rs.source.txt",
+        "before": null,
+        "after": "1f4a78406d71c8fef5e764fa473a48b769a1606c",
+        "mode": "100644",
+        "type": "blob"
+      },
+      {
+        "path": "qualification/r3-audit-repair-20261104/continuation-20261105/candidate-published/b11-acl-v2/execution-candidate-v2/candidate/codex-rs/windows-sandbox-rs/src/acl_tests.rs.source.txt",
+        "before": null,
+        "after": "2afcc4e189fa8adfbe2a02c80fcc5c7554d1ef67",
+        "mode": "100644",
+        "type": "blob"
+      },
+      {
+        "path": "qualification/r3-audit-repair-20261104/continuation-20261105/candidate-published/b11-acl-v2/execution-candidate-v2/candidate/codex-rs/windows-sandbox-rs/src/unified_exec/acl_setup_tests.rs.source.txt",
+        "before": null,
+        "after": "5390daefe0f872866764cb567ad13f22c0675cf4",
+        "mode": "100644",
+        "type": "blob"
+      },
+      {
+        "path": "qualification/r3-audit-repair-20261104/continuation-20261105/candidate-published/b11-acl-v2/execution-candidate-v2/full.patch",
+        "before": null,
+        "after": "9b8eb5eab0b8676e54fe276672f83abddbf0bef8",
+        "mode": "100644",
+        "type": "blob"
+      },
+      {
+        "path": "qualification/r3-audit-repair-20261104/continuation-20261105/candidate-published/b11-acl-v2/execution-candidate-v2/manifest.json",
+        "before": null,
+        "after": "4d05bec145682ba22c94f64c249821fdd0865c38",
+        "mode": "100644",
+        "type": "blob"
+      },
+      {
+        "path": "qualification/r3-audit-repair-20261104/continuation-20261105/candidate-published/b11-acl-v2/execution-candidate-v2/source-map.json",
+        "before": null,
+        "after": "7d963d9e3052b3555a97068f43b3079a6c8c70a4",
+        "mode": "100644",
+        "type": "blob"
+      },
+      {
+        "path": "qualification/r3-audit-repair-20261104/continuation-20261105/candidate-published/b11-acl-v2/execution-candidate-v2/static-checks.json",
+        "before": null,
+        "after": "9aee932c2184bb2814247a4dec7a85e734b9c981",
+        "mode": "100644",
+        "type": "blob"
+      },
+      {
+        "path": "qualification/r3-audit-repair-20261104/continuation-20261105/candidate-published/b11-acl-v2/execution-candidate-v2/workflow-trigger.patch",
+        "before": null,
+        "after": "d5d50ad3cefa0e6dc699526ccecf89c5b088069f",
+        "mode": "100644",
+        "type": "blob"
+      },
+      {
+        "path": "qualification/r3-audit-repair-20261104/continuation-20261105/candidate-published/inventory-packaging-v1/actual-delivery-map.json",
+        "before": null,
+        "after": "4aa38a1b0d70b00502b34bd02e31f5f5d0d9a69a",
+        "mode": "100644",
+        "type": "blob"
+      },
+      {
+        "path": "qualification/r3-audit-repair-20261104/continuation-20261105/candidate-published/inventory-packaging-v1/candidate/qualification/r3-audit-repair-20261104/CURRENT_AUDIT_PROGRESS.zh-CN.md",
+        "before": null,
+        "after": "305094117c7efb9e25ee44df73e37b831b382fda",
+        "mode": "100644",
+        "type": "blob"
+      },
+      {
+        "path": "qualification/r3-audit-repair-20261104/continuation-20261105/candidate-published/inventory-packaging-v1/candidate/qualification/r3-audit-repair-20261104/FOURTH_BATCH_QUALIFICATION.md",
+        "before": null,
+        "after": "bed13a3f5bdde66d36dadbcc5d0233c6884f2d21",
+        "mode": "100644",
+        "type": "blob"
+      },
+      {
+        "path": "qualification/r3-audit-repair-20261104/continuation-20261105/candidate-published/inventory-packaging-v1/candidate/qualification/r3-audit-repair-20261104/PROJECT_DIRECTION_AND_PLAN.zh-CN.md",
+        "before": null,
+        "after": "7c06b7f3041a8e4b3df794f00166aa59b369f832",
+        "mode": "100644",
+        "type": "blob"
+      },
+      {
+        "path": "qualification/r3-audit-repair-20261104/continuation-20261105/candidate-published/inventory-packaging-v1/candidate/qualification/r3-audit-repair-20261104/fourth-evidence-index.json",
+        "before": null,
+        "after": "f9337e344c05cd788a14a0ebb95bbee3d53511d3",
+        "mode": "100644",
+        "type": "blob"
+      },
+      {
+        "path": "qualification/r3-audit-repair-20261104/continuation-20261105/candidate-published/inventory-packaging-v1/candidate/qualification/r3-audit-repair-20261104/fourth-repository-inventory-20261105.json",
+        "before": null,
+        "after": "9db84c745e7f31fd0781e25baa5d03a405aaf13c",
+        "mode": "100644",
+        "type": "blob"
+      },
+      {
+        "path": "qualification/r3-audit-repair-20261104/continuation-20261105/candidate-published/inventory-packaging-v1/candidate/qualification/r3-audit-repair-20261104/repository-inventory-20261105/RESTORE_INVENTORY.md",
+        "before": null,
+        "after": "2994e990903b7eb9eb51f1ae9ba191932f9efef7",
+        "mode": "100644",
+        "type": "blob"
+      },
+      {
+        "path": "qualification/r3-audit-repair-20261104/continuation-20261105/candidate-published/inventory-packaging-v1/candidate/qualification/r3-audit-repair-20261104/repository-inventory-20261105/restore_inventory.py",
+        "before": null,
+        "after": "5495be1a51b14a4a0642d7c09c6bd670f539ef77",
+        "mode": "100644",
+        "type": "blob"
+      },
+      {
+        "path": "qualification/r3-audit-repair-20261104/continuation-20261105/candidate-published/inventory-packaging-v1/compatibility-and-restoration.patch",
+        "before": null,
+        "after": "a6e863c6abb831e59adface7fd4b94d854addb09",
+        "mode": "100644",
+        "type": "blob"
+      },
+      {
+        "path": "qualification/r3-audit-repair-20261104/continuation-20261105/candidate-published/inventory-packaging-v1/consumer-review.json",
+        "before": null,
+        "after": "78e0add2a7d2adb74a0c9df4e5d0d28b3f79b60a",
+        "mode": "100644",
+        "type": "blob"
+      },
+      {
+        "path": "qualification/r3-audit-repair-20261104/continuation-20261105/candidate-published/inventory-packaging-v1/patch-transport-manifest.json",
+        "before": null,
+        "after": "cb2ffe0beb29e463591d09f97bd95eb32d47b671",
+        "mode": "100644",
+        "type": "blob"
+      },
+      {
+        "path": "qualification/r3-audit-repair-20261104/continuation-20261105/candidate-published/inventory-packaging-v1/patch-transport/part-000.txt",
+        "before": null,
+        "after": "124d8634bc3694e4267473e41909facfba88e84c",
+        "mode": "100644",
+        "type": "blob"
+      },
+      {
+        "path": "qualification/r3-audit-repair-20261104/continuation-20261105/candidate-published/inventory-packaging-v1/qualification-script-consumer-scan.json",
+        "before": null,
+        "after": "9e4677954cedd514e5435f4d31c239b82d85246f",
+        "mode": "100644",
+        "type": "blob"
+      },
+      {
+        "path": "qualification/r3-audit-repair-20261104/continuation-20261105/candidate-published/inventory-packaging-v1/repair-manifest.json",
+        "before": null,
+        "after": "0c1451e45f550590dd19042db5f11fe2f710a98d",
+        "mode": "100644",
+        "type": "blob"
+      },
+      {
+        "path": "qualification/r3-audit-repair-20261104/continuation-20261105/candidate-published/inventory-packaging-v1/source-map.json",
+        "before": null,
+        "after": "fcc459272cdf30c0d3d2c3f610422badcfb52ac9",
+        "mode": "100644",
+        "type": "blob"
+      },
+      {
+        "path": "qualification/r3-audit-repair-20261104/continuation-20261105/candidate-published/inventory-packaging-v1/static-verification.json",
+        "before": null,
+        "after": "f566a43af5abede41e87bffcfcb4983767e9800a",
+        "mode": "100644",
+        "type": "blob"
+      },
+      {
+        "path": "qualification/r3-audit-repair-20261104/continuation-20261105/candidate-published/inventory-packaging-v1/validation/no-overwrite.stderr",
+        "before": null,
+        "after": "cf98bcb2367227d10d1267710e12cc6490c415fc",
+        "mode": "100644",
+        "type": "blob"
+      },
+      {
+        "path": "qualification/r3-audit-repair-20261104/continuation-20261105/candidate-published/inventory-packaging-v1/validation/no-overwrite.stdout",
+        "before": null,
+        "after": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+        "mode": "100644",
+        "type": "blob"
+      },
+      {
+        "path": "qualification/r3-audit-repair-20261104/continuation-20261105/candidate-published/inventory-packaging-v1/validation/restoration-receipt.json",
+        "before": null,
+        "after": "f28db614772d37811dbd3fcae996d8e5fcba7cd2",
+        "mode": "100644",
+        "type": "blob"
+      },
+      {
+        "path": "qualification/r3-audit-repair-20261104/continuation-20261105/candidate-published/inventory-packaging-v1/validation/restore.stderr",
+        "before": null,
+        "after": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+        "mode": "100644",
+        "type": "blob"
+      },
+      {
+        "path": "qualification/r3-audit-repair-20261104/continuation-20261105/candidate-published/inventory-packaging-v1/validation/restore.stdout",
+        "before": null,
+        "after": "4dc3e439d115e9889b82a0a456a2e87c79810beb",
+        "mode": "100644",
+        "type": "blob"
+      },
+      {
+        "path": "qualification/r3-audit-repair-20261104/continuation-20261105/candidate-published/inventory-packaging-v1/validation/verify.stderr",
+        "before": null,
+        "after": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+        "mode": "100644",
+        "type": "blob"
+      },
+      {
+        "path": "qualification/r3-audit-repair-20261104/continuation-20261105/candidate-published/inventory-packaging-v1/validation/verify.stdout",
+        "before": null,
+        "after": "fdd4f8d2708cb40f0fdaa1b018e4b8a6d62e62fd",
+        "mode": "100644",
+        "type": "blob"
+      },
+      {
+        "path": "qualification/r3-audit-repair-20261104/continuation-20261105/candidate-published/memory-real-expiry-v2/REVIEW.zh-CN.md",
+        "before": null,
+        "after": "5ba8d5e29e9d298952718d4032f5b5d793b24067",
+        "mode": "100644",
+        "type": "blob"
+      },
+      {
+        "path": "qualification/r3-audit-repair-20261104/continuation-20261105/candidate-published/memory-real-expiry-v2/actual-delivery-map.json",
+        "before": null,
+        "after": "73f25d34e0b241f54799523df3cb6bdcbcbb9f9e",
+        "mode": "100644",
+        "type": "blob"
+      },
+      {
+        "path": "qualification/r3-audit-repair-20261104/continuation-20261105/candidate-published/memory-real-expiry-v2/candidate/codex-rs/ext/hepta-memory/src/local_development_owner_tests.rs.source.txt",
+        "before": null,
+        "after": "a47edda2a96a9d6a02a90e65af1ce071d9c81096",
+        "mode": "100644",
+        "type": "blob"
+      },
+      {
+        "path": "qualification/r3-audit-repair-20261104/continuation-20261105/candidate-published/memory-real-expiry-v2/manifest.json",
+        "before": null,
+        "after": "6424caba5e2c4782169d20a951b27373cd45a004",
+        "mode": "100644",
+        "type": "blob"
+      },
+      {
+        "path": "qualification/r3-audit-repair-20261104/continuation-20261105/candidate-published/memory-real-expiry-v2/real-clock-fixture.patch",
+        "before": null,
+        "after": "c095591fd8bcc33b2a146f3a99b520fd136e5362",
+        "mode": "100644",
+        "type": "blob"
+      },
+      {
+        "path": "qualification/r3-audit-repair-20261104/continuation-20261105/candidate-published/memory-real-expiry-v2/static-checks.json",
+        "before": null,
+        "after": "8be8fd63398a6d3918a493b8cbae0df3e1325a2d",
+        "mode": "100644",
+        "type": "blob"
+      },
+      {
+        "path": "qualification/r3-audit-repair-20261104/continuation-20261105/candidate-published/nonlogin-fixtures-v1/actual-delivery-map.json",
+        "before": null,
+        "after": "731454254efbbb14ce0e2846ecf3efe9f49e22da",
+        "mode": "100644",
+        "type": "blob"
+      },
+      {
+        "path": "qualification/r3-audit-repair-20261104/continuation-20261105/candidate-published/nonlogin-fixtures-v1/candidate/codex-rs/core/tests/suite/approvals.rs.source.txt",
+        "before": null,
+        "after": "10874f8ac6ef743ce1557f2251d0cc631795b0d6",
+        "mode": "100644",
+        "type": "blob"
+      },
+      {
+        "path": "qualification/r3-audit-repair-20261104/continuation-20261105/candidate-published/nonlogin-fixtures-v1/candidate/codex-rs/core/tests/suite/request_permissions.rs.source.txt",
+        "before": null,
+        "after": "18952e04bf41f021ec4c2c38a618b727454ecce1",
+        "mode": "100644",
+        "type": "blob"
+      },
+      {
+        "path": "qualification/r3-audit-repair-20261104/continuation-20261105/candidate-published/nonlogin-fixtures-v1/fixture.patch",
+        "before": null,
+        "after": "e57fab990b7ea55891ea85aa6a4b0796ee0a2589",
+        "mode": "100644",
+        "type": "blob"
+      },
+      {
+        "path": "qualification/r3-audit-repair-20261104/continuation-20261105/candidate-published/nonlogin-fixtures-v1/manifest.json",
+        "before": null,
+        "after": "3743f3151101f04e59ea8c19c53c79b927249b44",
+        "mode": "100644",
+        "type": "blob"
+      },
+      {
+        "path": "qualification/r3-audit-repair-20261104/continuation-20261105/candidate-published/tree-resume-fixture-v1/README.zh-CN.md",
+        "before": null,
+        "after": "e864abdfd4a66abf053cc7ae0a9ce2e19925a388",
+        "mode": "100644",
+        "type": "blob"
+      },
+      {
+        "path": "qualification/r3-audit-repair-20261104/continuation-20261105/candidate-published/tree-resume-fixture-v1/actual-delivery-map.json",
+        "before": null,
+        "after": "3378db1b6eb4083e5a92159322f9785389267cc5",
+        "mode": "100644",
+        "type": "blob"
+      },
+      {
+        "path": "qualification/r3-audit-repair-20261104/continuation-20261105/candidate-published/tree-resume-fixture-v1/candidate/codex-rs/core/src/agent/control_tests.rs.source.txt",
+        "before": null,
+        "after": "05054632b7cd82e5e7587dbcb7aee293788e00a2",
+        "mode": "100644",
+        "type": "blob"
+      },
+      {
+        "path": "qualification/r3-audit-repair-20261104/continuation-20261105/candidate-published/tree-resume-fixture-v1/repair-manifest.json",
+        "before": null,
+        "after": "4e00a0a4ff6c345701ce3f42367705f02bbe7041",
+        "mode": "100644",
+        "type": "blob"
+      },
+      {
+        "path": "qualification/r3-audit-repair-20261104/continuation-20261105/candidate-published/tree-resume-fixture-v1/repair.patch",
+        "before": null,
+        "after": "0fa9b277ea746d27bd9a788e4fa64be8a441b07a",
+        "mode": "100644",
+        "type": "blob"
+      },
+      {
+        "path": "qualification/r3-audit-repair-20261104/continuation-20261105/candidate-published/tree-resume-fixture-v1/static-reconstruction.json",
+        "before": null,
+        "after": "60343933f09cdceccd85fa2ee1bf20002f993b96",
+        "mode": "100644",
+        "type": "blob"
+      },
+      {
+        "path": "qualification/r3-audit-repair-20261104/continuation-20261105/ci/eed-success-increment-20261105/queue/queue-review.json",
+        "before": null,
+        "after": "60c97bf95f8556435fdb29573aa80c06f2d9666a",
+        "mode": "100644",
+        "type": "blob"
+      },
+      {
+        "path": "qualification/r3-audit-repair-20261104/continuation-20261105/ci/eed-success-increment-20261105/registry.actual-v1.json",
+        "before": null,
+        "after": "cd3bcc268c057e518a6e5949eeecd9341da5c04a",
+        "mode": "100644",
+        "type": "blob"
+      },
+      {
+        "path": "qualification/r3-audit-repair-20261104/continuation-20261105/ci/eed-success-increment-20261105/reviews/gitqueue-merge-complete-review.json",
+        "before": null,
+        "after": "ad1ca52c3bce4ce739395949c5f365bf94c76514",
+        "mode": "100644",
+        "type": "blob"
+      },
+      {
+        "path": "qualification/r3-audit-repair-20261104/continuation-20261105/ci/eed-success-increment-20261105/reviews/gitqueue-source-complete-review.json",
+        "before": null,
+        "after": "3ce9aacc77d4303cde440340ddef85ae4d4e7590",
+        "mode": "100644",
+        "type": "blob"
+      },
+      {
+        "path": "qualification/r3-audit-repair-20261104/continuation-20261105/ci/eed-success-increment-20261105/reviews/retained-complete-review.json",
+        "before": null,
+        "after": "1d750b596e167054a17c57f99f6bdcf731157fcc",
+        "mode": "100644",
+        "type": "blob"
+      },
+      {
+        "path": "qualification/r3-audit-repair-20261104/continuation-20261105/ci/eed-success-increment-20261105/reviews/review.json",
+        "before": null,
+        "after": "26ad22a0ddd503eb289a2d3f656e91f28eb1813c",
+        "mode": "100644",
+        "type": "blob"
+      },
+      {
+        "path": "qualification/r3-audit-repair-20261104/continuation-20261105/ci/eed-success-increment-20261105/reviews/source-and-api-binding-addendum.json",
+        "before": null,
+        "after": "73e9dba4452d19deb47366e04c3b72f1227159af",
+        "mode": "100644",
+        "type": "blob"
+      },
+      {
+        "path": "qualification/r3-audit-repair-20261104/continuation-20261105/ci/eed-success-increment-20261105/transport/original-evidence.tar.gz.part000.b64.txt",
+        "before": null,
+        "after": "6f0ae6f3cd65997ffca9ddf6afee95d4d4fe67fd",
+        "mode": "100644",
+        "type": "blob"
+      },
+      {
+        "path": "qualification/r3-audit-repair-20261104/continuation-20261105/ci/eed-success-increment-20261105/transport/original-evidence.tar.gz.part001.b64.txt",
+        "before": null,
+        "after": "b1b4194166682f47110d781442eb77a24ee13da5",
+        "mode": "100644",
+        "type": "blob"
+      },
+      {
+        "path": "qualification/r3-audit-repair-20261104/continuation-20261105/ci/eed-success-increment-20261105/transport/original-evidence.tar.gz.part002.b64.txt",
+        "before": null,
+        "after": "05a8fd35e4d0837ce2aac717c521d74d7f8b4d2e",
+        "mode": "100644",
+        "type": "blob"
+      },
+      {
+        "path": "qualification/r3-audit-repair-20261104/continuation-20261105/ci/eed-success-increment-20261105/transport/original-evidence.tar.gz.part003.b64.txt",
+        "before": null,
+        "after": "c8b13aae68988912e02b47f1473b22591b4919d6",
+        "mode": "100644",
+        "type": "blob"
+      },
+      {
+        "path": "qualification/r3-audit-repair-20261104/continuation-20261105/ci/eed-success-increment-20261105/transport/original-evidence.tar.gz.part004.b64.txt",
+        "before": null,
+        "after": "c693dc5a8f236e8acc431f18c687b273dc8a4364",
+        "mode": "100644",
+        "type": "blob"
+      },
+      {
+        "path": "qualification/r3-audit-repair-20261104/continuation-20261105/ci/eed-success-increment-20261105/transport/original-evidence.tar.gz.part005.b64.txt",
+        "before": null,
+        "after": "2ac1f8ae1de60cc538d1078843e439ae0ab5a018",
+        "mode": "100644",
+        "type": "blob"
+      },
+      {
+        "path": "qualification/r3-audit-repair-20261104/continuation-20261105/ci/eed-success-increment-20261105/transport/original-evidence.tar.gz.part006.b64.txt",
+        "before": null,
+        "after": "c9a1636ed1ed7f932f16443388a2a5076b6b52ff",
+        "mode": "100644",
+        "type": "blob"
+      },
+      {
+        "path": "qualification/r3-audit-repair-20261104/continuation-20261105/ci/eed-success-increment-20261105/transport/original-evidence.tar.gz.part007.b64.txt",
+        "before": null,
+        "after": "c1407f0c0b7e4917bc9f2c60ca75044f9a76dc87",
+        "mode": "100644",
+        "type": "blob"
+      },
+      {
+        "path": "qualification/r3-audit-repair-20261104/continuation-20261105/ci/eed-success-increment-20261105/transport/original-evidence.tar.gz.part008.b64.txt",
+        "before": null,
+        "after": "71c6910590a1079a9762bf92c57aaaec0e9fd877",
+        "mode": "100644",
+        "type": "blob"
+      },
+      {
+        "path": "qualification/r3-audit-repair-20261104/continuation-20261105/ci/eed-success-increment-20261105/transport/original-evidence.tar.gz.part009.b64.txt",
+        "before": null,
+        "after": "104a5b2d58d96c5652efc40ff3f64989862759ff",
+        "mode": "100644",
+        "type": "blob"
+      },
+      {
+        "path": "qualification/r3-audit-repair-20261104/continuation-20261105/ci/eed-success-increment-20261105/transport/original-evidence.tar.gz.part010.b64.txt",
+        "before": null,
+        "after": "609b129049a2ebfbffefcf7cb621d42c0138bc9b",
+        "mode": "100644",
+        "type": "blob"
+      },
+      {
+        "path": "qualification/r3-audit-repair-20261104/continuation-20261105/ci/eed-success-increment-20261105/transport/original-evidence.tar.gz.part011.b64.txt",
+        "before": null,
+        "after": "aaf1ab9814bfd251f10d9de74876cae9aa6e598e",
+        "mode": "100644",
+        "type": "blob"
+      },
+      {
+        "path": "qualification/r3-audit-repair-20261104/continuation-20261105/ci/eed-success-increment-20261105/transport/original-evidence.tar.gz.part012.b64.txt",
+        "before": null,
+        "after": "140b6094bdc874c9e7c41febf1fe256fc2924d2e",
+        "mode": "100644",
+        "type": "blob"
+      },
+      {
+        "path": "qualification/r3-audit-repair-20261104/continuation-20261105/ci/eed-success-increment-20261105/transport/original-evidence.tar.gz.part013.b64.txt",
+        "before": null,
+        "after": "0132f1ccbdfc847f1e318661d319219ce28b0a1f",
+        "mode": "100644",
+        "type": "blob"
+      },
+      {
+        "path": "qualification/r3-audit-repair-20261104/continuation-20261105/ci/eed-success-increment-20261105/transport/original-evidence.tar.gz.part014.b64.txt",
+        "before": null,
+        "after": "5740fcdc3a1f5e59f6ac7757b03890c27d72e311",
+        "mode": "100644",
+        "type": "blob"
+      },
+      {
+        "path": "qualification/r3-audit-repair-20261104/continuation-20261105/ci/eed-success-increment-20261105/transport/original-evidence.tar.gz.part015.b64.txt",
+        "before": null,
+        "after": "c0f591c84d4150e786bb11657b52f48a98b38959",
+        "mode": "100644",
+        "type": "blob"
+      },
+      {
+        "path": "qualification/r3-audit-repair-20261104/continuation-20261105/ci/eed-success-increment-20261105/transport/original-evidence.tar.gz.part016.b64.txt",
+        "before": null,
+        "after": "f9f6489ed14f63869bc495f2bff185686f6d6353",
+        "mode": "100644",
+        "type": "blob"
+      },
+      {
+        "path": "qualification/r3-audit-repair-20261104/continuation-20261105/ci/eed-success-increment-20261105/transport/original-evidence.tar.gz.part017.b64.txt",
+        "before": null,
+        "after": "d652f48621b589850be210fd9c660168c689135c",
+        "mode": "100644",
+        "type": "blob"
+      },
+      {
+        "path": "qualification/r3-audit-repair-20261104/continuation-20261105/ci/eed-success-increment-20261105/transport/original-evidence.tar.gz.part018.b64.txt",
+        "before": null,
+        "after": "73c0562d00b884d95ec0fd346dc268ca33f1f1c1",
+        "mode": "100644",
+        "type": "blob"
+      },
+      {
+        "path": "qualification/r3-audit-repair-20261104/continuation-20261105/ci/eed-success-increment-20261105/transport/original-evidence.tar.gz.part019.b64.txt",
+        "before": null,
+        "after": "38f90c220d97a0267da5370547ac5a800d038fa3",
+        "mode": "100644",
+        "type": "blob"
+      },
+      {
+        "path": "qualification/r3-audit-repair-20261104/continuation-20261105/ci/eed-success-increment-20261105/transport/original-evidence.tar.gz.part020.b64.txt",
+        "before": null,
+        "after": "7221ff57507d4a1b55af45df5a75c3984cb50f74",
+        "mode": "100644",
+        "type": "blob"
+      },
+      {
+        "path": "qualification/r3-audit-repair-20261104/continuation-20261105/ci/eed-success-increment-20261105/transport/original-evidence.tar.gz.part021.b64.txt",
+        "before": null,
+        "after": "8583a5a564cb76d52dbac554c7710c6b744eb516",
+        "mode": "100644",
+        "type": "blob"
+      },
+      {
+        "path": "qualification/r3-audit-repair-20261104/continuation-20261105/ci/eed-success-increment-20261105/transport/original-evidence.tar.gz.part022.b64.txt",
+        "before": null,
+        "after": "d883d7950a427d2d1002027d0aec5434cbabe4d7",
+        "mode": "100644",
+        "type": "blob"
+      },
+      {
+        "path": "qualification/r3-audit-repair-20261104/continuation-20261105/ci/eed-success-increment-20261105/transport/original-evidence.tar.gz.part023.b64.txt",
+        "before": null,
+        "after": "a3c0c86d6ab1630a424c0bb67ada4e9c9a2770f1",
+        "mode": "100644",
+        "type": "blob"
+      },
+      {
+        "path": "qualification/r3-audit-repair-20261104/continuation-20261105/ci/eed-success-increment-20261105/transport/original-evidence.tar.gz.part024.b64.txt",
+        "before": null,
+        "after": "9eec956a5548415e2d87a02271eb6da907e14341",
+        "mode": "100644",
+        "type": "blob"
+      },
+      {
+        "path": "qualification/r3-audit-repair-20261104/continuation-20261105/ci/eed-success-increment-20261105/transport/original-evidence.tar.gz.part025.b64.txt",
+        "before": null,
+        "after": "9df19c2d3b18310504604415795c8635896fedc8",
+        "mode": "100644",
+        "type": "blob"
+      },
+      {
+        "path": "qualification/r3-audit-repair-20261104/continuation-20261105/ci/eed-success-increment-20261105/transport/original-evidence.tar.gz.part026.b64.txt",
+        "before": null,
+        "after": "0568b9c7edfad30d4fbe1cdee48922d87b150760",
+        "mode": "100644",
+        "type": "blob"
+      },
+      {
+        "path": "qualification/r3-audit-repair-20261104/continuation-20261105/ci/eed-success-increment-20261105/transport/original-evidence.tar.gz.part027.b64.txt",
+        "before": null,
+        "after": "a053919fa9c4bcf6099a127365a017754fb5000a",
+        "mode": "100644",
+        "type": "blob"
+      },
+      {
+        "path": "qualification/r3-audit-repair-20261104/continuation-20261105/ci/eed-success-increment-20261105/transport/original-evidence.tar.gz.part028.b64.txt",
+        "before": null,
+        "after": "2f3f8b5075b719ba358cb901ff6ee8c029473eea",
+        "mode": "100644",
+        "type": "blob"
+      },
+      {
+        "path": "qualification/r3-audit-repair-20261104/continuation-20261105/ci/eed-success-increment-20261105/transport/transport-manifest.json",
+        "before": null,
+        "after": "4e10cd11d23fd014f41ebcd4235952d9d277cf38",
+        "mode": "100644",
+        "type": "blob"
+      },
+      {
+        "path": "qualification/r3-audit-repair-20261104/continuation-20261105/continuation-blocker-progress-v5.json",
+        "before": null,
+        "after": "0d4b4fe8f81c42de90d987041235c93247557c9f",
+        "mode": "100644",
+        "type": "blob"
+      },
+      {
+        "path": "qualification/r3-audit-repair-20261104/continuation-20261105/evidence-index-v7-registered.json",
+        "before": null,
+        "after": "aa418f3f697d1a0b37c99fe410a03485b336456a",
+        "mode": "100644",
+        "type": "blob"
+      },
+      {
+        "path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/ai395-c1-originals-v7/C1-authoritative-status-001.original.json",
+        "before": null,
+        "after": "484038a63589f53c58be6cb8555972d992ee5516",
+        "mode": "100644",
+        "type": "blob"
+      },
+      {
+        "path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/ai395-c1-originals-v7/C1-complete-small-originals-manifest.json",
+        "before": null,
+        "after": "7aac7e16fbb17a20fa6d5730eab6de208cb0595f",
+        "mode": "100644",
+        "type": "blob"
+      },
+      {
+        "path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/ai395-c1-originals-v7/C1-native-stderr.original",
+        "before": null,
+        "after": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+        "mode": "100644",
+        "type": "blob"
+      },
+      {
+        "path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/ai395-c1-originals-v7/C1-native-stdout.original",
+        "before": null,
+        "after": "3814d0bd13b6637839fd5a345945edac0118c5f9",
+        "mode": "100644",
+        "type": "blob"
+      },
+      {
+        "path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/ai395-c1-originals-v7/C1-resume-entry-source-guard.json",
+        "before": null,
+        "after": "b525817628fa23af88246b63b5f0b2e2a58ab127",
+        "mode": "100644",
+        "type": "blob"
+      },
+      {
+        "path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/ai395-c1-originals-v7/C1-resume-final-source-guard.json",
+        "before": null,
+        "after": "41f9be0b08024aace9bc50201debd6e0785e14d4",
+        "mode": "100644",
+        "type": "blob"
+      },
+      {
+        "path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/ai395-c1-originals-v7/C1-resume-terminal.json",
+        "before": null,
+        "after": "fd7d328f01a13d2393c8474672d3e4e1e79c7b84",
+        "mode": "100644",
+        "type": "blob"
+      },
+      {
+        "path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/ai395-c1-originals-v7/C1-terminal-guards-read-001.original.json",
+        "before": null,
+        "after": "0fa59d87edf57f58a5b719944f8d3277e0fc45db",
+        "mode": "100644",
+        "type": "blob"
+      },
+      {
+        "path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/ai395-c1-originals-v7/actual-delivery-map.json",
+        "before": null,
+        "after": "815fe88a0d60b62c511f4e53db344f00af5d99c7",
+        "mode": "100644",
+        "type": "blob"
+      },
+      {
+        "path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/ai395-c1-originals-v7/complete-prerequisites-addendum.json",
+        "before": null,
+        "after": "3bae15c3e84d3cd9f5c87e7f46c4b99c0ef1c913",
+        "mode": "100644",
+        "type": "blob"
+      },
+      {
+        "path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/ai395-c1-originals-v7/process-read-001.original.json",
+        "before": null,
+        "after": "f2023d738b1033489aaa948a2338cc7c7b72e823",
+        "mode": "100644",
+        "type": "blob"
+      },
+      {
+        "path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/ai395-c1-originals-v7/process-start.original-response.json",
+        "before": null,
+        "after": "9c995d1fed9c6f3770812f58812ac68df3132e54",
+        "mode": "100644",
+        "type": "blob"
+      },
+      {
+        "path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/b11-pr4884-ci/probe-127320081049/archive-parts-manifest.json",
+        "before": null,
+        "after": "abba106c9795b2260dc34cc4a172cafad5047e37",
+        "mode": "100644",
+        "type": "blob"
+      },
+      {
+        "path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/b11-pr4884-ci/probe-127320081049/archive-parts-readback.json",
+        "before": null,
+        "after": "3dbc2022700ba8ba542b4656692eff09628f5289",
+        "mode": "100644",
+        "type": "blob"
+      },
+      {
+        "path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/b11-pr4884-ci/probe-127320081049/archive-parts/artifact-13426651438-000.base64",
+        "before": null,
+        "after": "9c247429c5fc6943cde069be5b29431f4faf6355",
+        "mode": "100644",
+        "type": "blob"
+      },
+      {
+        "path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/b11-pr4884-ci/probe-127320081049/archive-parts/artifact-13426651438-001.base64",
+        "before": null,
+        "after": "d3c3f4a4ff3b366697629c23d62ba2616d9bd25b",
+        "mode": "100644",
+        "type": "blob"
+      },
+      {
+        "path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/b11-pr4884-ci/probe-127320081049/archive-parts/artifact-13426651438-002.base64",
+        "before": null,
+        "after": "350cbc352e1719908d3066b3de76b3903cdad93e",
+        "mode": "100644",
+        "type": "blob"
+      },
+      {
+        "path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/b11-pr4884-ci/probe-127320081049/archive-parts/artifact-13426651438-003.base64",
+        "before": null,
+        "after": "f4eeccc5256446f1b83aeec3cdea5e53d83c7ef0",
+        "mode": "100644",
+        "type": "blob"
+      },
+      {
+        "path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/b11-pr4884-ci/probe-127320081049/archive-parts/artifact-13426651438-004.base64",
+        "before": null,
+        "after": "073447728fccd204dc9fca3a67d694f57dc5813d",
+        "mode": "100644",
+        "type": "blob"
+      },
+      {
+        "path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/b11-pr4884-ci/probe-127320081049/archive-parts/artifact-13426651438-005.base64",
+        "before": null,
+        "after": "d771b92f2d957f807ecf1f9e28caaa575afb801b",
+        "mode": "100644",
+        "type": "blob"
+      },
+      {
+        "path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/b11-pr4884-ci/probe-127320081049/archive-parts/artifact-13426651438-006.base64",
+        "before": null,
+        "after": "04a0dede1ef0fe074cfbf6e9d7e0bf03aad357a5",
+        "mode": "100644",
+        "type": "blob"
+      },
+      {
+        "path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/b11-pr4884-ci/probe-127320081049/archive-parts/artifact-13426651438-007.base64",
+        "before": null,
+        "after": "5a16d287c9ac01b4d4d5e43250fcdd22aa938173",
+        "mode": "100644",
+        "type": "blob"
+      },
+      {
+        "path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/b11-pr4884-ci/probe-127320081049/archive-parts/artifact-13426651438-008.base64",
+        "before": null,
+        "after": "8107c8dd98b064e73405f73913193c45582fe59a",
+        "mode": "100644",
+        "type": "blob"
+      },
+      {
+        "path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/b11-pr4884-ci/probe-127320081049/archive-parts/artifact-13426651438-009.base64",
+        "before": null,
+        "after": "86bb145c078489c6bbfc0b2f65e9d190d8f513b4",
+        "mode": "100644",
+        "type": "blob"
+      },
+      {
+        "path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/b11-pr4884-ci/probe-127320081049/archive-parts/artifact-13426651438-010.base64",
+        "before": null,
+        "after": "6d8fb3a4547737d63d4f9de3264b15ee1f2830c4",
+        "mode": "100644",
+        "type": "blob"
+      },
+      {
+        "path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/b11-pr4884-ci/probe-127320081049/archive-parts/artifact-13426651438-011.base64",
+        "before": null,
+        "after": "c79dfa0638b618bc2d91a1cb79ebeb751d7188cc",
+        "mode": "100644",
+        "type": "blob"
+      },
+      {
+        "path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/b11-pr4884-ci/probe-127320081049/archive-parts/artifact-13426651438-012.base64",
+        "before": null,
+        "after": "e25538de01b5a24308a59b939a2f024e9428410b",
+        "mode": "100644",
+        "type": "blob"
+      },
+      {
+        "path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/b11-pr4884-ci/probe-127320081049/archive-parts/artifact-13426651438-013.base64",
+        "before": null,
+        "after": "2f3298011c7520d9de14070c45ac2d49edd3160b",
+        "mode": "100644",
+        "type": "blob"
+      },
+      {
+        "path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/b11-pr4884-ci/probe-127320081049/archive-parts/artifact-13426651438-014.base64",
+        "before": null,
+        "after": "b307bd9f4b467655b4f818b7c0d1f70007a34124",
+        "mode": "100644",
+        "type": "blob"
+      },
+      {
+        "path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/b11-pr4884-ci/probe-127320081049/archive-parts/artifact-13426651438-015.base64",
+        "before": null,
+        "after": "9acf099857ac1166792885343eeb31651dbefb9f",
+        "mode": "100644",
+        "type": "blob"
+      },
+      {
+        "path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/b11-pr4884-ci/probe-127320081049/artifact-verification.json",
+        "before": null,
+        "after": "801c9c26082d3fff8215ee9171f8bfa62dc3e644",
+        "mode": "100644",
+        "type": "blob"
+      },
+      {
+        "path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/b11-pr4884-ci/probe-127320081049/job.log",
+        "before": null,
+        "after": "31264e17a1f148bc464d91986fcc7446b5771b2b",
+        "mode": "100644",
+        "type": "blob"
+      },
+      {
+        "path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/b11-pr4884-ci/probe-127320081049/terminal-api-envelopes.json",
+        "before": null,
+        "after": "1856eb7d2a5bc620f3bd76218b642a3a85c0e367",
+        "mode": "100644",
+        "type": "blob"
+      },
+      {
+        "path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/b11-pr4884-ci/probe-127320081049/terminal-review.json",
+        "before": null,
+        "after": "742640648eb205f5ce66ab2dfdf0c7ee866ba1be",
+        "mode": "100644",
+        "type": "blob"
+      },
+      {
+        "path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/b11-pr4884-ci/probe-127327372905/archive-parts-manifest.json",
+        "before": null,
+        "after": "4b3285e91f2f852889469fb654a95493b44ea104",
+        "mode": "100644",
+        "type": "blob"
+      },
+      {
+        "path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/b11-pr4884-ci/probe-127327372905/archive-parts-readback.json",
+        "before": null,
+        "after": "0647bcadd1088e7ee594e8a675ce2587d674f0bd",
+        "mode": "100644",
+        "type": "blob"
+      },
+      {
+        "path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/b11-pr4884-ci/probe-127327372905/archive-parts/artifact-13427542488-000.base64",
+        "before": null,
+        "after": "2fc12118ff31ab0cc0040e40b948338dd4c5b581",
+        "mode": "100644",
+        "type": "blob"
+      },
+      {
+        "path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/b11-pr4884-ci/probe-127327372905/archive-parts/artifact-13427542488-001.base64",
+        "before": null,
+        "after": "54d9073862513550fe9b4e7047ba7b18da2c3014",
+        "mode": "100644",
+        "type": "blob"
+      },
+      {
+        "path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/b11-pr4884-ci/probe-127327372905/archive-parts/artifact-13427542488-002.base64",
+        "before": null,
+        "after": "904654abb007323fdca0cd77969017a4bd810ec5",
+        "mode": "100644",
+        "type": "blob"
+      },
+      {
+        "path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/b11-pr4884-ci/probe-127327372905/archive-parts/artifact-13427542488-003.base64",
+        "before": null,
+        "after": "cdaa6e4e47c885b012ae851fe00d9256b0511ca4",
+        "mode": "100644",
+        "type": "blob"
+      },
+      {
+        "path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/b11-pr4884-ci/probe-127327372905/archive-parts/artifact-13427542488-004.base64",
+        "before": null,
+        "after": "c09fe0b545412f746e63b0a37dcaf8f264a07206",
+        "mode": "100644",
+        "type": "blob"
+      },
+      {
+        "path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/b11-pr4884-ci/probe-127327372905/archive-parts/artifact-13427542488-005.base64",
+        "before": null,
+        "after": "1983f6433bb09b501e4f18fc68aace94b575c103",
+        "mode": "100644",
+        "type": "blob"
+      },
+      {
+        "path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/b11-pr4884-ci/probe-127327372905/archive-parts/artifact-13427542488-006.base64",
+        "before": null,
+        "after": "6fb016624e2b5763eefa9194a2ca4d6374947fbb",
+        "mode": "100644",
+        "type": "blob"
+      },
+      {
+        "path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/b11-pr4884-ci/probe-127327372905/archive-parts/artifact-13427542488-007.base64",
+        "before": null,
+        "after": "3db943e7d15b16dc8c2b5d39c2dcc6fb70a5d6d4",
+        "mode": "100644",
+        "type": "blob"
+      },
+      {
+        "path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/b11-pr4884-ci/probe-127327372905/archive-parts/artifact-13427542488-008.base64",
+        "before": null,
+        "after": "50d163c60509f9f60e49e839072748c6dff24f8c",
+        "mode": "100644",
+        "type": "blob"
+      },
+      {
+        "path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/b11-pr4884-ci/probe-127327372905/archive-parts/artifact-13427542488-009.base64",
+        "before": null,
+        "after": "98b85bd15f27fa30ebadee78ff5cfe3e5631e021",
+        "mode": "100644",
+        "type": "blob"
+      },
+      {
+        "path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/b11-pr4884-ci/probe-127327372905/archive-parts/artifact-13427542488-010.base64",
+        "before": null,
+        "after": "1910a735c6135a3597f173777f51b82dd8928801",
+        "mode": "100644",
+        "type": "blob"
+      },
+      {
+        "path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/b11-pr4884-ci/probe-127327372905/archive-parts/artifact-13427542488-011.base64",
+        "before": null,
+        "after": "a7d2f92aae8f664f166ea0f2766cf060140aa3b6",
+        "mode": "100644",
+        "type": "blob"
+      },
+      {
+        "path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/b11-pr4884-ci/probe-127327372905/archive-parts/artifact-13427542488-012.base64",
+        "before": null,
+        "after": "f768978bd58e1c58e08c5272cfdaee9f7d2fa674",
+        "mode": "100644",
+        "type": "blob"
+      },
+      {
+        "path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/b11-pr4884-ci/probe-127327372905/archive-parts/artifact-13427542488-013.base64",
+        "before": null,
+        "after": "6cce64055ee8875595f2e1129a20c23e0a46e7e6",
+        "mode": "100644",
+        "type": "blob"
+      },
+      {
+        "path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/b11-pr4884-ci/probe-127327372905/archive-parts/artifact-13427542488-014.base64",
+        "before": null,
+        "after": "96707ddf403f805c6479885b3a280a006f68ec6f",
+        "mode": "100644",
+        "type": "blob"
+      },
+      {
+        "path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/b11-pr4884-ci/probe-127327372905/archive-parts/artifact-13427542488-015.base64",
+        "before": null,
+        "after": "224bfab550ce9b9a9c2e9e58c90f08d7c5193503",
+        "mode": "100644",
+        "type": "blob"
+      },
+      {
+        "path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/b11-pr4884-ci/probe-127327372905/artifact-verification.json",
+        "before": null,
+        "after": "fe8427cfbf4ff481d4ea39c05ff32f020c15bdcf",
+        "mode": "100644",
+        "type": "blob"
+      },
+      {
+        "path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/b11-pr4884-ci/probe-127327372905/job.log",
+        "before": null,
+        "after": "fa749e89b15d1409fc8cbe637e9ee1f8629f1d39",
+        "mode": "100644",
+        "type": "blob"
+      },
+      {
+        "path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/b11-pr4884-ci/probe-127327372905/members/bazel-execution-logs/failed-test-logs/invocation-67xn0k2f/targets/0000/test.log",
+        "before": null,
+        "after": "6b650bd5003b47250125ebd71f291b7b186987c6",
+        "mode": "100644",
+        "type": "blob"
+      },
+      {
+        "path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/b11-pr4884-ci/probe-127327372905/members/bazel-execution-logs/failed-test-logs/invocation-67xn0k2f/targets/0000/test.xml",
+        "before": null,
+        "after": "f20c924fed823f453e85145425a3db691c8f6395",
+        "mode": "100644",
+        "type": "blob"
+      },
+      {
+        "path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/b11-pr4884-ci/probe-127327372905/terminal-api-envelopes.json",
+        "before": null,
+        "after": "517ab16eda5d10db0bd9a69ee9849a64fc1b7ee7",
+        "mode": "100644",
+        "type": "blob"
+      },
+      {
+        "path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/b11-pr4884-ci/probe-127327372905/terminal-review.json",
+        "before": null,
+        "after": "84df8d024986897f1b864b63d078ff5d5cbbd4cc",
+        "mode": "100644",
+        "type": "blob"
+      },
+      {
+        "path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/b11-pr4884-ci/probe-127336717141/archive-parts-manifest.json",
+        "before": null,
+        "after": "3c0d19196e8f8eddb10a6038a1e5de2cc6467a2c",
+        "mode": "100644",
+        "type": "blob"
+      },
+      {
+        "path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/b11-pr4884-ci/probe-127336717141/archive-parts-readback.json",
+        "before": null,
+        "after": "0cd11b14688b974c6c7b847242632bbc0cade88c",
+        "mode": "100644",
+        "type": "blob"
+      },
+      {
+        "path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/b11-pr4884-ci/probe-127336717141/archive-parts/artifact-13429330823-000.base64",
+        "before": null,
+        "after": "8db3248c17b6fc973588557b9f057640c9078a95",
+        "mode": "100644",
+        "type": "blob"
+      },
+      {
+        "path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/b11-pr4884-ci/probe-127336717141/archive-parts/artifact-13429330823-001.base64",
+        "before": null,
+        "after": "d61647f764b6366530911789a110a7d45994430b",
+        "mode": "100644",
+        "type": "blob"
+      },
+      {
+        "path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/b11-pr4884-ci/probe-127336717141/archive-parts/artifact-13429330823-002.base64",
+        "before": null,
+        "after": "3f9696659897989b0798d421d825d50c4cbe7c08",
+        "mode": "100644",
+        "type": "blob"
+      },
+      {
+        "path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/b11-pr4884-ci/probe-127336717141/archive-parts/artifact-13429330823-003.base64",
+        "before": null,
+        "after": "010f451f659bcb2eac89b769c65d8226171d856e",
+        "mode": "100644",
+        "type": "blob"
+      },
+      {
+        "path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/b11-pr4884-ci/probe-127336717141/archive-parts/artifact-13429330823-004.base64",
+        "before": null,
+        "after": "f0b72c2b3067d0c3877cb1c1929fa868adb9dee8",
+        "mode": "100644",
+        "type": "blob"
+      },
+      {
+        "path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/b11-pr4884-ci/probe-127336717141/archive-parts/artifact-13429330823-005.base64",
+        "before": null,
+        "after": "1717f80e82f48001318666ac0b577cb3f3aff59d",
+        "mode": "100644",
+        "type": "blob"
+      },
+      {
+        "path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/b11-pr4884-ci/probe-127336717141/archive-parts/artifact-13429330823-006.base64",
+        "before": null,
+        "after": "53a9a4a3b40a4d5898583fa2bb634b85f97d18f0",
+        "mode": "100644",
+        "type": "blob"
+      },
+      {
+        "path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/b11-pr4884-ci/probe-127336717141/archive-parts/artifact-13429330823-007.base64",
+        "before": null,
+        "after": "0228b82cb66ff7236f736e9a205c021b6b0916c1",
+        "mode": "100644",
+        "type": "blob"
+      },
+      {
+        "path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/b11-pr4884-ci/probe-127336717141/archive-parts/artifact-13429330823-008.base64",
+        "before": null,
+        "after": "1af3ff762fb57d2b724ee84fb73f2e63973ed935",
+        "mode": "100644",
+        "type": "blob"
+      },
+      {
+        "path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/b11-pr4884-ci/probe-127336717141/archive-parts/artifact-13429330823-009.base64",
+        "before": null,
+        "after": "b4684f7557ff44c3dc9de07455d6ba127bb0315c",
+        "mode": "100644",
+        "type": "blob"
+      },
+      {
+        "path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/b11-pr4884-ci/probe-127336717141/archive-parts/artifact-13429330823-010.base64",
+        "before": null,
+        "after": "dbe5b1e9d72a25fa2e44261ab534bac597996aeb",
+        "mode": "100644",
+        "type": "blob"
+      },
+      {
+        "path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/b11-pr4884-ci/probe-127336717141/archive-parts/artifact-13429330823-011.base64",
+        "before": null,
+        "after": "365cc58af1acd4402711103b91d1b3e6168e4fb5",
+        "mode": "100644",
+        "type": "blob"
+      },
+      {
+        "path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/b11-pr4884-ci/probe-127336717141/archive-parts/artifact-13429330823-012.base64",
+        "before": null,
+        "after": "ccfdfc00bedc65d3524bde3383a9e9cff225974b",
+        "mode": "100644",
+        "type": "blob"
+      },
+      {
+        "path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/b11-pr4884-ci/probe-127336717141/archive-parts/artifact-13429330823-013.base64",
+        "before": null,
+        "after": "fd5a8ffd8c6dab91e9261578a7ce28ce504aaac4",
+        "mode": "100644",
+        "type": "blob"
+      },
+      {
+        "path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/b11-pr4884-ci/probe-127336717141/archive-parts/artifact-13429330823-014.base64",
+        "before": null,
+        "after": "152b309f5e00657be1e32f8db34b5781b8a7e493",
+        "mode": "100644",
+        "type": "blob"
+      },
+      {
+        "path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/b11-pr4884-ci/probe-127336717141/archive-parts/artifact-13429330823-015.base64",
+        "before": null,
+        "after": "46009707af1713c7adca770a274ed232d67cdd39",
+        "mode": "100644",
+        "type": "blob"
+      },
+      {
+        "path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/b11-pr4884-ci/probe-127336717141/artifact-verification.json",
+        "before": null,
+        "after": "0c8dd6f17f206616d55159898b17e60fa4245b75",
+        "mode": "100644",
+        "type": "blob"
+      },
+      {
+        "path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/b11-pr4884-ci/probe-127336717141/job.log",
+        "before": null,
+        "after": "a5bad004d7d3c47b0a02049c9e797c9d62832869",
+        "mode": "100644",
+        "type": "blob"
+      },
+      {
+        "path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/b11-pr4884-ci/probe-127336717141/members/bazel-execution-logs/failed-test-logs/invocation-4ln_urq0/targets/0000/test.log",
+        "before": null,
+        "after": "0e6e864a6c9fbfb9684280b384d93e09df032226",
+        "mode": "100644",
+        "type": "blob"
+      },
+      {
+        "path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/b11-pr4884-ci/probe-127336717141/members/bazel-execution-logs/failed-test-logs/invocation-4ln_urq0/targets/0000/test.xml",
+        "before": null,
+        "after": "0ce079ac47beed0a8f4e6a165e4a97a31183d90b",
+        "mode": "100644",
+        "type": "blob"
+      },
+      {
+        "path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/b11-pr4884-ci/probe-127336717141/terminal-api-envelopes.json",
+        "before": null,
+        "after": "3721d45450095d8ee5c97dbbd78dcdb4be80cec3",
+        "mode": "100644",
+        "type": "blob"
+      },
+      {
+        "path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/b11-pr4884-ci/probe-127336717141/terminal-review.json",
+        "before": null,
+        "after": "44b5c4053f57babf58ed8ad9a3e1b5cd5734135e",
+        "mode": "100644",
+        "type": "blob"
+      },
+      {
+        "path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/b11-pr4884-ci/probe-127352234293/archive-parts-manifest.json",
+        "before": null,
+        "after": "4a311f26f0848b3e0a93c1f2b5dcaf94e16186aa",
+        "mode": "100644",
+        "type": "blob"
+      },
+      {
+        "path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/b11-pr4884-ci/probe-127352234293/archive-parts/artifact-13430755552-000.base64",
+        "before": null,
+        "after": "12c18e9c5aa237624a86445d134362d80af68720",
+        "mode": "100644",
+        "type": "blob"
+      },
+      {
+        "path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/b11-pr4884-ci/probe-127352234293/archive-parts/artifact-13430755552-001.base64",
+        "before": null,
+        "after": "b9bd07dbe9ab24155666afff6ff4b07cb5bab5e6",
+        "mode": "100644",
+        "type": "blob"
+      },
+      {
+        "path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/b11-pr4884-ci/probe-127352234293/archive-parts/artifact-13430755552-002.base64",
+        "before": null,
+        "after": "9c5fc1c821d7a7171627d5903aae552489adde49",
+        "mode": "100644",
+        "type": "blob"
+      },
+      {
+        "path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/b11-pr4884-ci/probe-127352234293/archive-parts/artifact-13430755552-003.base64",
+        "before": null,
+        "after": "ef9723ec846469a4d2f3c9196580385d19b8424b",
+        "mode": "100644",
+        "type": "blob"
+      },
+      {
+        "path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/b11-pr4884-ci/probe-127352234293/archive-parts/artifact-13430755552-004.base64",
+        "before": null,
+        "after": "d1cbd7d74d3b8aab2588531d320a933fca5935ea",
+        "mode": "100644",
+        "type": "blob"
+      },
+      {
+        "path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/b11-pr4884-ci/probe-127352234293/archive-parts/artifact-13430755552-005.base64",
+        "before": null,
+        "after": "95bc0f9682b47deb10499caf007e273e5f045784",
+        "mode": "100644",
+        "type": "blob"
+      },
+      {
+        "path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/b11-pr4884-ci/probe-127352234293/archive-parts/artifact-13430755552-006.base64",
+        "before": null,
+        "after": "eb61480bb92ecfd61536d3be99612651af9e214e",
+        "mode": "100644",
+        "type": "blob"
+      },
+      {
+        "path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/b11-pr4884-ci/probe-127352234293/archive-parts/artifact-13430755552-007.base64",
+        "before": null,
+        "after": "a0edb5396eb3d037cc91649549b9fc65823f67f1",
+        "mode": "100644",
+        "type": "blob"
+      },
+      {
+        "path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/b11-pr4884-ci/probe-127352234293/archive-parts/artifact-13430755552-008.base64",
+        "before": null,
+        "after": "7be221602757bde8fb99c813869ffa3e123dd671",
+        "mode": "100644",
+        "type": "blob"
+      },
+      {
+        "path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/b11-pr4884-ci/probe-127352234293/archive-parts/artifact-13430755552-009.base64",
+        "before": null,
+        "after": "212e00895f513533dc712e1bf685647b323ec7db",
+        "mode": "100644",
+        "type": "blob"
+      },
+      {
+        "path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/b11-pr4884-ci/probe-127352234293/archive-parts/artifact-13430755552-010.base64",
+        "before": null,
+        "after": "96aeb19729ffdf9221dddf1934cecbbd54ae1c2a",
+        "mode": "100644",
+        "type": "blob"
+      },
+      {
+        "path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/b11-pr4884-ci/probe-127352234293/archive-parts/artifact-13430755552-011.base64",
+        "before": null,
+        "after": "373cbd9444954fba61fbc17e9acb16956f209732",
+        "mode": "100644",
+        "type": "blob"
+      },
+      {
+        "path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/b11-pr4884-ci/probe-127352234293/archive-parts/artifact-13430755552-012.base64",
+        "before": null,
+        "after": "7738b12bce59c2d28fae3ea790fd6bb9060630b3",
+        "mode": "100644",
+        "type": "blob"
+      },
+      {
+        "path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/b11-pr4884-ci/probe-127352234293/archive-parts/artifact-13430755552-013.base64",
+        "before": null,
+        "after": "6689f195128d8b8f77060fef020e9dc51f3abaf4",
+        "mode": "100644",
+        "type": "blob"
+      },
+      {
+        "path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/b11-pr4884-ci/probe-127352234293/archive-parts/artifact-13430755552-014.base64",
+        "before": null,
+        "after": "5034bf887942f429a012cdf2c854f70fc59c5f72",
+        "mode": "100644",
+        "type": "blob"
+      },
+      {
+        "path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/b11-pr4884-ci/probe-127352234293/archive-parts/artifact-13430755552-015.base64",
+        "before": null,
+        "after": "50ceff3c96d70eade110863518885021136087ae",
+        "mode": "100644",
+        "type": "blob"
+      },
+      {
+        "path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/b11-pr4884-ci/probe-127352234293/artifact-verification.json",
+        "before": null,
+        "after": "e98cfd5b061251eb935f4b8309ab9707ebebceaa",
+        "mode": "100644",
+        "type": "blob"
+      },
+      {
+        "path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/b11-pr4884-ci/probe-127352234293/job.log",
+        "before": null,
+        "after": "54e682f0362f240d8fa6282985d1f04a444fd3aa",
+        "mode": "100644",
+        "type": "blob"
+      },
+      {
+        "path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/b11-pr4884-ci/probe-127352234293/members/bazel-execution-logs/failed-test-logs/invocation-1m84m15p/targets/0000/test.log",
+        "before": null,
+        "after": "af35e023f86c2a9216f0bb2ce787dc9e8226a405",
+        "mode": "100644",
+        "type": "blob"
+      },
+      {
+        "path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/b11-pr4884-ci/probe-127352234293/members/bazel-execution-logs/failed-test-logs/invocation-1m84m15p/targets/0000/test.xml",
+        "before": null,
+        "after": "ed522e2677fd3711d7a8e4f79d80290cfc4f8f69",
+        "mode": "100644",
+        "type": "blob"
+      },
+      {
+        "path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/b11-pr4884-ci/probe-127352234293/physical-observation-projection.json",
+        "before": null,
+        "after": "6a45b4c5b49e30aeaa566f96a7d827e3ea9e5b92",
+        "mode": "100644",
+        "type": "blob"
+      },
+      {
+        "path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/b11-pr4884-ci/probe-127352234293/terminal-api-envelopes.json",
+        "before": null,
+        "after": "a99e7087151b5e000349f8ccfdb2cb8e3aca2391",
+        "mode": "100644",
+        "type": "blob"
+      },
+      {
+        "path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/b11-pr4884-ci/probe-127352234293/terminal-review.json",
+        "before": null,
+        "after": "6abadbb91e39ca31097ac0df70d3e90c9a268f11",
+        "mode": "100644",
+        "type": "blob"
+      },
+      {
+        "path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/b11-pr4884-ci/probe-127383345954/archive-parts-manifest.json",
+        "before": null,
+        "after": "caa539b4a8e86ae3154e99fe1f100b639293d8b3",
+        "mode": "100644",
+        "type": "blob"
+      },
+      {
+        "path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/b11-pr4884-ci/probe-127383345954/archive-parts/artifact-13432969770-000.base64",
+        "before": null,
+        "after": "b7ec42eb98218fe31f7d52e818b13ada136e40e2",
+        "mode": "100644",
+        "type": "blob"
+      },
+      {
+        "path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/b11-pr4884-ci/probe-127383345954/archive-parts/artifact-13432969770-001.base64",
+        "before": null,
+        "after": "db01258029e0f6d4ef2abb20fd144729af101004",
+        "mode": "100644",
+        "type": "blob"
+      },
+      {
+        "path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/b11-pr4884-ci/probe-127383345954/archive-parts/artifact-13432969770-002.base64",
+        "before": null,
+        "after": "ac6a0dffffc3e44d7bda4788213351324bbc1e02",
+        "mode": "100644",
+        "type": "blob"
+      },
+      {
+        "path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/b11-pr4884-ci/probe-127383345954/archive-parts/artifact-13432969770-003.base64",
+        "before": null,
+        "after": "ee33da4884398f45723ea784c2b6bd59bbe980b1",
+        "mode": "100644",
+        "type": "blob"
+      },
+      {
+        "path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/b11-pr4884-ci/probe-127383345954/archive-parts/artifact-13432969770-004.base64",
+        "before": null,
+        "after": "075d3dfbfc7513d482bef06240337253b7cf8d0e",
+        "mode": "100644",
+        "type": "blob"
+      },
+      {
+        "path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/b11-pr4884-ci/probe-127383345954/archive-parts/artifact-13432969770-005.base64",
+        "before": null,
+        "after": "20fa3e32e9507b5fdeb5be9e581d9b3e62715dee",
+        "mode": "100644",
+        "type": "blob"
+      },
+      {
+        "path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/b11-pr4884-ci/probe-127383345954/archive-parts/artifact-13432969770-006.base64",
+        "before": null,
+        "after": "fbfc89febd30fef184f5f184436092487b8f0596",
+        "mode": "100644",
+        "type": "blob"
+      },
+      {
+        "path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/b11-pr4884-ci/probe-127383345954/archive-parts/artifact-13432969770-007.base64",
+        "before": null,
+        "after": "8bf8c3bc8ff46c09f8a61d14a404f71518fb3361",
+        "mode": "100644",
+        "type": "blob"
+      },
+      {
+        "path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/b11-pr4884-ci/probe-127383345954/archive-parts/artifact-13432969770-008.base64",
+        "before": null,
+        "after": "e8cc5d0e038eb75ea300b66dc5fbad46e420939e",
+        "mode": "100644",
+        "type": "blob"
+      },
+      {
+        "path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/b11-pr4884-ci/probe-127383345954/archive-parts/artifact-13432969770-009.base64",
+        "before": null,
+        "after": "e6df00b34cf8bc99a2071cde3e219ba7d6302bec",
+        "mode": "100644",
+        "type": "blob"
+      },
+      {
+        "path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/b11-pr4884-ci/probe-127383345954/archive-parts/artifact-13432969770-010.base64",
+        "before": null,
+        "after": "8273f0bdc9a5470306e2158082327044c7b6e766",
+        "mode": "100644",
+        "type": "blob"
+      },
+      {
+        "path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/b11-pr4884-ci/probe-127383345954/archive-parts/artifact-13432969770-011.base64",
+        "before": null,
+        "after": "620566cc40ea1df1fd5a0917d1867b6707e5cf47",
+        "mode": "100644",
+        "type": "blob"
+      },
+      {
+        "path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/b11-pr4884-ci/probe-127383345954/archive-parts/artifact-13432969770-012.base64",
+        "before": null,
+        "after": "a4498b2a742b84494b28b5116e7943700673f79f",
+        "mode": "100644",
+        "type": "blob"
+      },
+      {
+        "path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/b11-pr4884-ci/probe-127383345954/archive-parts/artifact-13432969770-013.base64",
+        "before": null,
+        "after": "fb8a0f087bfe24a02328c03d476ebad3b8ac3d3e",
+        "mode": "100644",
+        "type": "blob"
+      },
+      {
+        "path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/b11-pr4884-ci/probe-127383345954/archive-parts/artifact-13432969770-014.base64",
+        "before": null,
+        "after": "d4d7fd4a2d37808c5d743440369ba25748039efb",
+        "mode": "100644",
+        "type": "blob"
+      },
+      {
+        "path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/b11-pr4884-ci/probe-127383345954/archive-parts/artifact-13432969770-015.base64",
+        "before": null,
+        "after": "67a9428ab5c9d239a60db6696d5d80806df797b3",
+        "mode": "100644",
+        "type": "blob"
+      },
+      {
+        "path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/b11-pr4884-ci/probe-127383345954/artifact-verification.json",
+        "before": null,
+        "after": "ea78fd3a253df66628579bab5528a1c6249e022f",
+        "mode": "100644",
+        "type": "blob"
+      },
+      {
+        "path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/b11-pr4884-ci/probe-127383345954/failure-classification.json",
+        "before": null,
+        "after": "3db9648335d3c2b22b73adab096e513cc9c45d2a",
+        "mode": "100644",
+        "type": "blob"
+      },
+      {
+        "path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/b11-pr4884-ci/probe-127383345954/job.log",
+        "before": null,
+        "after": "e272f0775358fb23471b72033838dae91f23934d",
+        "mode": "100644",
+        "type": "blob"
+      },
+      {
+        "path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/b11-pr4884-ci/probe-127383345954/members/bazel-execution-logs/failed-test-logs/invocation-iloq9z78/targets/0000/test.log",
+        "before": null,
+        "after": "d4a9dcff6525450a9c5afaacaa531a56514aa5e9",
+        "mode": "100644",
+        "type": "blob"
+      },
+      {
+        "path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/b11-pr4884-ci/probe-127383345954/members/bazel-execution-logs/failed-test-logs/invocation-iloq9z78/targets/0000/test.xml",
+        "before": null,
+        "after": "da30b59327acd3e51ebb9e59512f77b52355e732",
+        "mode": "100644",
+        "type": "blob"
+      },
+      {
+        "path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/b11-pr4884-ci/probe-127383345954/physical-observation-projection.json",
+        "before": null,
+        "after": "fc47f2962ae1bcb48901e3f90601a2e4bc7f649e",
+        "mode": "100644",
+        "type": "blob"
+      },
+      {
+        "path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/b11-pr4884-ci/probe-127383345954/terminal-api-envelopes.json",
+        "before": null,
+        "after": "6fca8f53eae706263102d2fae6d665275d85e196",
+        "mode": "100644",
+        "type": "blob"
+      },
+      {
+        "path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/b11-pr4884-ci/probe-127383345954/terminal-review.json",
+        "before": null,
+        "after": "6d8006c53e1300fbae72e8ae1f93e03c7fcb26a3",
+        "mode": "100644",
+        "type": "blob"
+      },
+      {
+        "path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/b11-pr4884-ci/snapshot-0003/api-envelopes.json",
+        "before": null,
+        "after": "13d8b564958f5f260a0cc666de579fdd86d6677b",
+        "mode": "100644",
+        "type": "blob"
+      },
+      {
+        "path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/b11-pr4884-ci/snapshot-0003/snapshot-summary.json",
+        "before": null,
+        "after": "07d7f02fb806fff80a864ccebcf8ba58cc2ee834",
+        "mode": "100644",
+        "type": "blob"
+      },
+      {
+        "path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/ca1-full-resource-stop-v7/actual-delivery-map.json",
+        "before": null,
+        "after": "5a1a5006f39db00a8bdf8e3185a38e8850752874",
+        "mode": "100644",
+        "type": "blob"
+      },
+      {
+        "path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/ca1-full-resource-stop-v7/actual-resource-stop-reconstruction.json",
+        "before": null,
+        "after": "32b24133dff8475f8db70a641566027b07875022",
+        "mode": "100644",
+        "type": "blob"
+      },
+      {
+        "path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/ca1-full-resource-stop-v7/gzip-base64-part-000.txt",
+        "before": null,
+        "after": "79ee21066c77b872f6e18dbb0f7c0fad8a96859e",
+        "mode": "100644",
+        "type": "blob"
+      },
+      {
+        "path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/ca1-full-resource-stop-v7/gzip-base64-part-001.txt",
+        "before": null,
+        "after": "db9af389bdff2125bfdaca8e306f99c38e9d3928",
+        "mode": "100644",
+        "type": "blob"
+      },
+      {
+        "path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/ca1-full-resource-stop-v7/gzip-base64-part-002.txt",
+        "before": null,
+        "after": "5884b34b3d913ebe6097079ef3470a69959fd81d",
+        "mode": "100644",
+        "type": "blob"
+      },
+      {
+        "path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/ca1-full-resource-stop-v7/pocket4-hardware-snapshot.original.json",
+        "before": null,
+        "after": "f73eb8b11294f687d2b61a9af779aa3e8d2a0e14",
+        "mode": "100644",
+        "type": "blob"
+      },
+      {
+        "path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/ca1-full-resource-stop-v7/remaining-linux-capacity-conclusion.json",
+        "before": null,
+        "after": "f25c7e865f59116366e6badb22cf229c0a5f4fd9",
+        "mode": "100644",
+        "type": "blob"
+      },
+      {
+        "path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/ca1-full-resource-stop-v7/transport-manifest.json",
+        "before": null,
+        "after": "eefc19d3d6282c0a7bd27ded3719a003551b8eca",
+        "mode": "100644",
+        "type": "blob"
+      },
+      {
+        "path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/ca1-full-resource-stop-v7/x230-hardware-snapshot.original.json",
+        "before": null,
+        "after": "da1093a4e1ff18d71aeb6e27ed2da7589f7d2a14",
+        "mode": "100644",
+        "type": "blob"
+      },
+      {
+        "path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/concurrent-pr-increment-1644-v7/manifest.json",
+        "before": null,
+        "after": "9d6f78330b87ff5e3c275cebd9b7d66fdba92d63",
+        "mode": "100644",
+        "type": "blob"
+      },
+      {
+        "path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/concurrent-pr-increment-1644-v7/part-000.b64",
+        "before": null,
+        "after": "b9c2b533850ae71f8aee4e1d0c641e4a8d9a765b",
+        "mode": "100644",
+        "type": "blob"
+      },
+      {
+        "path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/concurrent-pr-increment-1644-v7/part-001.b64",
+        "before": null,
+        "after": "60743b35a826a785163fdb0ffb378d04b802463d",
+        "mode": "100644",
+        "type": "blob"
+      },
+      {
+        "path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/pr4855-refused-commit-reuse-20261105/archive-manifest.json",
+        "before": null,
+        "after": "cb0f384e5cffd2fee4c28d4c2667c2523fd75068",
+        "mode": "100644",
+        "type": "blob"
+      },
+      {
+        "path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/pr4855-refused-commit-reuse-20261105/independent-review.json",
+        "before": null,
+        "after": "1dcd801bcd0406b494a21b19124f0f1b5d518530",
+        "mode": "100644",
+        "type": "blob"
+      },
+      {
+        "path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/pr4855-refused-commit-reuse-20261105/native-case-projection.json",
+        "before": null,
+        "after": "2c8a60aa9350611ade704eb08a9422adfb1d1ecb",
+        "mode": "100644",
+        "type": "blob"
+      },
+      {
+        "path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/pr4855-refused-commit-reuse-20261105/parts/originals.part000.b64",
+        "before": null,
+        "after": "c25f849a63e773bf4241186020dc2095ae8befb0",
+        "mode": "100644",
+        "type": "blob"
+      },
+      {
+        "path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/pr4855-refused-commit-reuse-20261105/parts/originals.part001.b64",
+        "before": null,
+        "after": "027ddea4dc6ee442ed7ab73964cc3690cc1d3b22",
+        "mode": "100644",
+        "type": "blob"
+      },
+      {
+        "path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/pr4855-refused-commit-reuse-20261105/parts/originals.part002.b64",
+        "before": null,
+        "after": "ba5ec60c6b90d0dee1dba768f8b410d57b3e9c32",
+        "mode": "100644",
+        "type": "blob"
+      },
+      {
+        "path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/pr4855-refused-commit-reuse-20261105/parts/originals.part003.b64",
+        "before": null,
+        "after": "e5642cd724aef1279fb8e893d3347dc56e5e3a60",
+        "mode": "100644",
+        "type": "blob"
+      },
+      {
+        "path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/pr4855-refused-commit-reuse-20261105/parts/originals.part004.b64",
+        "before": null,
+        "after": "94c0ce6468a6787edee4713a5188ea0ed2f85547",
+        "mode": "100644",
+        "type": "blob"
+      },
+      {
+        "path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/pr4855-refused-commit-reuse-20261105/verification-result.json",
+        "before": null,
+        "after": "cf826b415f8d77e05760941775a735a000396958",
+        "mode": "100644",
+        "type": "blob"
+      },
+      {
+        "path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/pr4855-refused-commit-reuse-20261105/verify_and_review.py.source.txt",
+        "before": null,
+        "after": "dec661d8b85d1ca42bffd4e47fe54de53ac34f76",
+        "mode": "100644",
+        "type": "blob"
+      },
+      {
+        "path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/resource-feasibility-r1-r2-v7/complete-originals-bundle.json",
+        "before": null,
+        "after": "3011b3096e2a26c7474903356cb4b2430451ba62",
+        "mode": "100644",
+        "type": "blob"
+      },
+      {
+        "path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/rog-e78-complete-originals-v7/actual-delivery-map.json",
+        "before": null,
+        "after": "47403c6e7516a92557c874abbdda68281031ba37",
+        "mode": "100644",
+        "type": "blob"
+      },
+      {
+        "path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/rog-e78-complete-originals-v7/complete-content-reconciliation.json",
+        "before": null,
+        "after": "8614c42066c1aabd871100ada6cb3bea558090ec",
+        "mode": "100644",
+        "type": "blob"
+      },
+      {
+        "path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/rog-e78-complete-originals-v7/complete-verification.json",
+        "before": null,
+        "after": "4a43edf1cf183728cf0ede0c85ac9615794e0c1e",
+        "mode": "100644",
+        "type": "blob"
+      },
+      {
+        "path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/rog-e78-complete-originals-v7/export-manifest.json",
+        "before": null,
+        "after": "4fa8c17b473bd78d1caf04c0c9f4ca4d57c68ea1",
+        "mode": "100644",
+        "type": "blob"
+      },
+      {
+        "path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/rog-e78-complete-originals-v7/originals.part000.b64.txt",
+        "before": null,
+        "after": "89ede21b93151459bd707ddc9f1521710c92f4a4",
+        "mode": "100644",
+        "type": "blob"
+      },
+      {
+        "path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/rog-e78-complete-originals-v7/originals.part001.b64.txt",
+        "before": null,
+        "after": "1e2f5eebe1f3aa034c1cecd0b1124ee5a8d4a6a5",
+        "mode": "100644",
+        "type": "blob"
+      },
+      {
+        "path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/rog-e78-complete-originals-v7/originals.part002.b64.txt",
+        "before": null,
+        "after": "4320dfce4850b946b786f1c156ce97712c696108",
+        "mode": "100644",
+        "type": "blob"
+      },
+      {
+        "path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/rog-e78-complete-originals-v7/originals.part003.b64.txt",
+        "before": null,
+        "after": "f538cb609a7e9109de68fed52bef224d3b0a1ed5",
+        "mode": "100644",
+        "type": "blob"
+      },
+      {
+        "path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/rog-e78-complete-originals-v7/originals.part004.b64.txt",
+        "before": null,
+        "after": "811989a1bda8cbf7de60edd7a8d628a3735576a0",
+        "mode": "100644",
+        "type": "blob"
+      },
+      {
+        "path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/rog-e78-complete-originals-v7/originals.part005.b64.txt",
+        "before": null,
+        "after": "5e17b55d3337e1b7f3be8ea707045292cf0a3ab5",
+        "mode": "100644",
+        "type": "blob"
+      },
+      {
+        "path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/rog-e78-complete-originals-v7/originals.part006.b64.txt",
+        "before": null,
+        "after": "564cbb39996577bc863c9db8debb010051faa619",
+        "mode": "100644",
+        "type": "blob"
+      },
+      {
+        "path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/rog-e78-complete-originals-v7/originals.part007.b64.txt",
+        "before": null,
+        "after": "4464d97bdf193c68bc92693d91a233b03c0ee95a",
+        "mode": "100644",
+        "type": "blob"
+      },
+      {
+        "path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/rog-e78-complete-originals-v7/originals.part008.b64.txt",
+        "before": null,
+        "after": "5b1eea1ac930da9e44df2d09f03af0c899095ece",
+        "mode": "100644",
+        "type": "blob"
+      },
+      {
+        "path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/rog-e78-complete-originals-v7/originals.part009.b64.txt",
+        "before": null,
+        "after": "e46d6494e01287de23666b695fb4633a1b96ec14",
+        "mode": "100644",
+        "type": "blob"
+      },
+      {
+        "path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/rog-e78-complete-originals-v7/originals.part010.b64.txt",
+        "before": null,
+        "after": "585db1db388d454efe0cf3efcb2949b288338062",
+        "mode": "100644",
+        "type": "blob"
+      },
+      {
+        "path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/rog-e78-complete-originals-v7/originals.part011.b64.txt",
+        "before": null,
+        "after": "07ea927d602df69515b43dbbb4f3680b144c8b8a",
+        "mode": "100644",
+        "type": "blob"
+      },
+      {
+        "path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/rog-e78-complete-originals-v7/originals.part012.b64.txt",
+        "before": null,
+        "after": "1062005feba4b488cd29714a908903a10a6c8fb6",
+        "mode": "100644",
+        "type": "blob"
+      },
+      {
+        "path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/rog-e78-complete-originals-v7/originals.part013.b64.txt",
+        "before": null,
+        "after": "fb5715ab2f35f371aa11dee84a4728266a3f6633",
+        "mode": "100644",
+        "type": "blob"
+      },
+      {
+        "path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/rog-e78-complete-originals-v7/originals.part014.b64.txt",
+        "before": null,
+        "after": "0f0e2d94f464feb7f93b110a16e9b7d9c0eb5dea",
+        "mode": "100644",
+        "type": "blob"
+      },
+      {
+        "path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/rog-e78-complete-originals-v7/originals.part015.b64.txt",
+        "before": null,
+        "after": "0753f24c7346a6f2655816d64450956ea85666ca",
+        "mode": "100644",
+        "type": "blob"
+      },
+      {
+        "path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/rog-e78-complete-originals-v7/originals.part016.b64.txt",
+        "before": null,
+        "after": "155a050b23746233f1a32ea4a1d7154a24906fd6",
+        "mode": "100644",
+        "type": "blob"
+      },
+      {
+        "path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/rog-e78-complete-originals-v7/originals.part017.b64.txt",
+        "before": null,
+        "after": "6cdbd995138bb0f995a16b27a7e9f670745c56a8",
+        "mode": "100644",
+        "type": "blob"
+      },
+      {
+        "path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/rog-e78-complete-originals-v7/originals.part018.b64.txt",
+        "before": null,
+        "after": "cca05faa2fc2b9ce6391b3dd34f09148a5f9fa4b",
+        "mode": "100644",
+        "type": "blob"
+      },
+      {
+        "path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/rog-e78-complete-originals-v7/originals.part019.b64.txt",
+        "before": null,
+        "after": "95d9f8ae150f9be637edc046ae07ce938a179799",
+        "mode": "100644",
+        "type": "blob"
+      },
+      {
+        "path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/rog-e78-complete-originals-v7/originals.part020.b64.txt",
+        "before": null,
+        "after": "a4414a557312fa1bbd4e37f8b12d20fbded8f32f",
+        "mode": "100644",
+        "type": "blob"
+      },
+      {
+        "path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/rog-e78-complete-originals-v7/originals.part021.b64.txt",
+        "before": null,
+        "after": "91c7edd86b617f6f86ecf6626196faa46110732b",
+        "mode": "100644",
+        "type": "blob"
+      },
+      {
+        "path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/rog-e78-complete-originals-v7/originals.part022.b64.txt",
+        "before": null,
+        "after": "d437c29be1a9f66337b6e03a705eee50c55df5c5",
+        "mode": "100644",
+        "type": "blob"
+      },
+      {
+        "path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/rog-e78-complete-originals-v7/originals.part023.b64.txt",
+        "before": null,
+        "after": "6a12f2d2ce1c3210de658d73410bdede44945e48",
+        "mode": "100644",
+        "type": "blob"
+      },
+      {
+        "path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/rog-e78-complete-originals-v7/originals.part024.b64.txt",
+        "before": null,
+        "after": "f635a7e59afdc7ee9a6f5a7bde37ae657d661972",
+        "mode": "100644",
+        "type": "blob"
+      },
+      {
+        "path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/rog-e78-complete-originals-v7/originals.part025.b64.txt",
+        "before": null,
+        "after": "ea0207e00cf58955111ff2eee7bd4596a946313c",
+        "mode": "100644",
+        "type": "blob"
+      },
+      {
+        "path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/rog-e78-complete-originals-v7/originals.part026.b64.txt",
+        "before": null,
+        "after": "028aa25f33f4a5143d8a9b3d405d977596d659b6",
+        "mode": "100644",
+        "type": "blob"
+      },
+      {
+        "path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/rog-e78-complete-originals-v7/originals.part027.b64.txt",
+        "before": null,
+        "after": "a3bac1af43f6cd00e4f8b92618e94852a9dac6b7",
+        "mode": "100644",
+        "type": "blob"
+      },
+      {
+        "path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/rog-e78-complete-originals-v7/originals.part028.b64.txt",
+        "before": null,
+        "after": "b1af657059b5ffd18068f0a2ad8f3c9f9a99dea3",
+        "mode": "100644",
+        "type": "blob"
+      },
+      {
+        "path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/rog-e78-complete-originals-v7/originals.part029.b64.txt",
+        "before": null,
+        "after": "ed27570e68bd895ce897d7acace575db0e960f8f",
+        "mode": "100644",
+        "type": "blob"
+      },
+      {
+        "path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/rog-e78-complete-originals-v7/originals.part030.b64.txt",
+        "before": null,
+        "after": "cd1db3cdf855b6280eaf1ea33f4aa5cf68f8db6d",
+        "mode": "100644",
+        "type": "blob"
+      },
+      {
+        "path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/rog-e78-complete-originals-v7/originals.part031.b64.txt",
+        "before": null,
+        "after": "adf215e000e975c02468abd67542faa6ea51d130",
+        "mode": "100644",
+        "type": "blob"
+      },
+      {
+        "path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/rog-e78-complete-originals-v7/originals.part032.b64.txt",
+        "before": null,
+        "after": "ccec860bced5da847b78d5dbf8be399b052999fe",
+        "mode": "100644",
+        "type": "blob"
+      },
+      {
+        "path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/rog-e78-complete-originals-v7/originals.part033.b64.txt",
+        "before": null,
+        "after": "828312df17fbbf071a979a6f33e98277bdc4e7fe",
+        "mode": "100644",
+        "type": "blob"
+      },
+      {
+        "path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/rog-e78-complete-originals-v7/originals.part034.b64.txt",
+        "before": null,
+        "after": "0e8abe8455f2f0bab31f9784f29a0fed1c3a5515",
+        "mode": "100644",
+        "type": "blob"
+      },
+      {
+        "path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/rog-e78-complete-originals-v7/originals.part035.b64.txt",
+        "before": null,
+        "after": "c8b4c9e9045847663361553576e947ec81a3881a",
+        "mode": "100644",
+        "type": "blob"
+      },
+      {
+        "path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/rog-e78-complete-originals-v7/originals.part036.b64.txt",
+        "before": null,
+        "after": "9d031e540a38dd531981b3837c1bda777898f173",
+        "mode": "100644",
+        "type": "blob"
+      },
+      {
+        "path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/rog-e78-complete-originals-v7/originals.part037.b64.txt",
+        "before": null,
+        "after": "b984f5a5550766e91ea7fee1eccd84a7d7100bfb",
+        "mode": "100644",
+        "type": "blob"
+      },
+      {
+        "path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/rog-e78-complete-originals-v7/originals.part038.b64.txt",
+        "before": null,
+        "after": "7defed4a263d4956552c98a1507b5a14d5f26fa8",
+        "mode": "100644",
+        "type": "blob"
+      },
+      {
+        "path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/rog-e78-complete-originals-v7/originals.part039.b64.txt",
+        "before": null,
+        "after": "7f05b4523417ba69425c5518e2397c36601a5a22",
+        "mode": "100644",
+        "type": "blob"
+      },
+      {
+        "path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/rog-e78-complete-originals-v7/originals.part040.b64.txt",
+        "before": null,
+        "after": "ea848330e0835716d1f5706fa146ede2c000ca32",
+        "mode": "100644",
+        "type": "blob"
+      },
+      {
+        "path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/rog-e78-complete-originals-v7/originals.part041.b64.txt",
+        "before": null,
+        "after": "86f3421232922a5512ac598a67af8cf8018f3771",
+        "mode": "100644",
+        "type": "blob"
+      },
+      {
+        "path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/rog-e78-complete-originals-v7/originals.part042.b64.txt",
+        "before": null,
+        "after": "c52007d61987da7fe728d487cd40f6841ce4fb83",
+        "mode": "100644",
+        "type": "blob"
+      },
+      {
+        "path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/rog-e78-complete-originals-v7/originals.part043.b64.txt",
+        "before": null,
+        "after": "ba918006d1baddc78979826aa7d3fae23c55f3f4",
+        "mode": "100644",
+        "type": "blob"
+      },
+      {
+        "path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/rog-e78-complete-originals-v7/originals.part044.b64.txt",
+        "before": null,
+        "after": "3752019ee004e72b18c002e5ef7488c413676e4d",
+        "mode": "100644",
+        "type": "blob"
+      },
+      {
+        "path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/rog-e78-complete-originals-v7/originals.part045.b64.txt",
+        "before": null,
+        "after": "a74ed161f266a330d5ee9978211cb83e4626797f",
+        "mode": "100644",
+        "type": "blob"
+      },
+      {
+        "path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/rog-e78-complete-originals-v7/originals.part046.b64.txt",
+        "before": null,
+        "after": "d912ac3ee9b890b16dc22457e6f7ae6abd2efb09",
+        "mode": "100644",
+        "type": "blob"
+      },
+      {
+        "path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/rog-e78-complete-originals-v7/originals.part047.b64.txt",
+        "before": null,
+        "after": "94f15539caa3553e844d9352e3527fb78979f1de",
+        "mode": "100644",
+        "type": "blob"
+      },
+      {
+        "path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/rog-e78-complete-originals-v7/originals.part048.b64.txt",
+        "before": null,
+        "after": "6ea5e715b57c1f305a770b5240af010c80d3332f",
+        "mode": "100644",
+        "type": "blob"
+      },
+      {
+        "path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/rog-e78-complete-originals-v7/originals.part049.b64.txt",
+        "before": null,
+        "after": "685fac6ba1c25d05439c5e96732af5fca306d8e1",
+        "mode": "100644",
+        "type": "blob"
+      },
+      {
+        "path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/rog-e78-complete-originals-v7/originals.part050.b64.txt",
+        "before": null,
+        "after": "f87522fcc7275bb43064e78b86b8f07741f2a52e",
+        "mode": "100644",
+        "type": "blob"
+      },
+      {
+        "path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/rog-e78-complete-originals-v7/originals.part051.b64.txt",
+        "before": null,
+        "after": "12f77844a4d35e696b47c77dd66ce9d43f751c02",
+        "mode": "100644",
+        "type": "blob"
+      },
+      {
+        "path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/rog-e78-complete-originals-v7/originals.part052.b64.txt",
+        "before": null,
+        "after": "14aeb465be92c04416771dadfe251f4ab252dbe9",
+        "mode": "100644",
+        "type": "blob"
+      },
+      {
+        "path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/rog-e78-complete-originals-v7/originals.part053.b64.txt",
+        "before": null,
+        "after": "858de49a48b0d0801ef9c3473f7714b4bface258",
+        "mode": "100644",
+        "type": "blob"
+      },
+      {
+        "path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/rog-e78-complete-originals-v7/originals.part054.b64.txt",
+        "before": null,
+        "after": "7e20b37e8316bf881f854e05db2b420c47053341",
+        "mode": "100644",
+        "type": "blob"
+      },
+      {
+        "path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/rog-e78-complete-originals-v7/originals.part055.b64.txt",
+        "before": null,
+        "after": "a83ad5fd4cd4b86d7c1e0aed9a0300d1f9dfb2d0",
+        "mode": "100644",
+        "type": "blob"
+      },
+      {
+        "path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/rog-e78-complete-originals-v7/originals.part056.b64.txt",
+        "before": null,
+        "after": "e93e08d29a522cea032efb04ec6c3fbdcf94f897",
+        "mode": "100644",
+        "type": "blob"
+      },
+      {
+        "path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/rog-e78-complete-originals-v7/originals.part057.b64.txt",
+        "before": null,
+        "after": "c020a367579eeeb2e96a9127676c1cbcff9ad462",
+        "mode": "100644",
+        "type": "blob"
+      },
+      {
+        "path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/rog-e78-complete-originals-v7/originals.part058.b64.txt",
+        "before": null,
+        "after": "b52191347d792a2f75d5da897ca55aece6898bc4",
+        "mode": "100644",
+        "type": "blob"
+      },
+      {
+        "path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/rog-e78-complete-originals-v7/originals.part059.b64.txt",
+        "before": null,
+        "after": "1b94065b32b5e8e52f4c3b0ce57f9eb1f0415065",
+        "mode": "100644",
+        "type": "blob"
+      },
+      {
+        "path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/rog-e78-complete-originals-v7/originals.part060.b64.txt",
+        "before": null,
+        "after": "b6a4a04beccf9ff8de4f5b8891b72c541c9bcf0f",
+        "mode": "100644",
+        "type": "blob"
+      },
+      {
+        "path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/rog-e78-complete-originals-v7/originals.part061.b64.txt",
+        "before": null,
+        "after": "87dc8e46f19cb8248f10fd6fa96e86eafb992f5c",
+        "mode": "100644",
+        "type": "blob"
+      },
+      {
+        "path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/rog-e78-complete-originals-v7/originals.part062.b64.txt",
+        "before": null,
+        "after": "8cec8eca7160cf8bfdcb122c3a60951da57821c1",
+        "mode": "100644",
+        "type": "blob"
+      },
+      {
+        "path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/rog-e78-complete-originals-v7/originals.part063.b64.txt",
+        "before": null,
+        "after": "d9e7a9dda2c2166ea74cb22ded511a5e9b9043ac",
+        "mode": "100644",
+        "type": "blob"
+      },
+      {
+        "path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/rog-e78-complete-originals-v7/originals.part064.b64.txt",
+        "before": null,
+        "after": "4de20e3991f8933c307988a078f237bc02da0dd1",
+        "mode": "100644",
+        "type": "blob"
+      },
+      {
+        "path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/rog-e78-complete-originals-v7/originals.part065.b64.txt",
+        "before": null,
+        "after": "40c7955b9763fe9f035eabd7bb1b36966b909e04",
+        "mode": "100644",
+        "type": "blob"
+      },
+      {
+        "path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/rog-e78-complete-originals-v7/originals.part066.b64.txt",
+        "before": null,
+        "after": "07428fbde59bfcf993dbedf728f73499ea79bb8a",
+        "mode": "100644",
+        "type": "blob"
+      },
+      {
+        "path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/rog-e78-complete-originals-v7/originals.part067.b64.txt",
+        "before": null,
+        "after": "ebb93fb81160c6385c49e38c8f5dbd9d04e3ce9f",
+        "mode": "100644",
+        "type": "blob"
+      },
+      {
+        "path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/rog-e78-complete-originals-v7/originals.part068.b64.txt",
+        "before": null,
+        "after": "95b606115850579b2ccf108021617547df5c29f5",
+        "mode": "100644",
+        "type": "blob"
+      },
+      {
+        "path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/rog-e78-complete-originals-v7/originals.part069.b64.txt",
+        "before": null,
+        "after": "b947bbf1a970fc322925af9b4f0980c06fc28639",
+        "mode": "100644",
+        "type": "blob"
+      },
+      {
+        "path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/rog-e78-complete-originals-v7/verify_complete_archive.py",
+        "before": null,
+        "after": "1b5e77ab6bffb2c131e6674b60f985c61185a04f",
+        "mode": "100644",
+        "type": "blob"
+      },
+      {
+        "path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/v7-main-windows-publication-cut0004/b11-independent-review.original.json.source.txt",
+        "before": null,
+        "after": "d80874b92e5b8788f9b7b0ea1af829eae3dc39ba",
+        "mode": "100644",
+        "type": "blob"
+      },
+      {
+        "path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/v7-main-windows-publication-cut0004/complete-zip-member-manifest.json",
+        "before": null,
+        "after": "01ef414f1b00a9f721c4b4de0b66d260110a299e",
+        "mode": "100644",
+        "type": "blob"
+      },
+      {
+        "path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/v7-main-windows-publication-cut0004/github-readback-map.json",
+        "before": null,
+        "after": "1b606eed7cd9c3e99b33523f7bf3546d59f4e372",
+        "mode": "100644",
+        "type": "blob"
+      },
+      {
+        "path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/v7-main-windows-publication-cut0004/original-ci.tar.gz.part000.b64.txt",
+        "before": null,
+        "after": "d5b6980bbdd3b2db6b035d2cb7fcdb6f8785d079",
+        "mode": "100644",
+        "type": "blob"
+      },
+      {
+        "path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/v7-main-windows-publication-cut0004/original-ci.tar.gz.part001.b64.txt",
+        "before": null,
+        "after": "ae3a87586a003fe50ada30d4bf94e10783f7115d",
+        "mode": "100644",
+        "type": "blob"
+      },
+      {
+        "path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/v7-main-windows-publication-cut0004/original-ci.tar.gz.part002.b64.txt",
+        "before": null,
+        "after": "779c69d6aa6b0ecc598b8db6408e17bd4edbad49",
+        "mode": "100644",
+        "type": "blob"
+      },
+      {
+        "path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/v7-main-windows-publication-cut0004/original-ci.tar.gz.part003.b64.txt",
+        "before": null,
+        "after": "3a50afd92081e58aaa4f7cb3a0189bc2440f2a85",
+        "mode": "100644",
+        "type": "blob"
+      },
+      {
+        "path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/v7-main-windows-publication-cut0004/original-ci.tar.gz.part004.b64.txt",
+        "before": null,
+        "after": "cb9093b24370ca18d7b0f2dbaac1cd9b4cee49cc",
+        "mode": "100644",
+        "type": "blob"
+      },
+      {
+        "path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/v7-main-windows-publication-cut0004/original-ci.tar.gz.part005.b64.txt",
+        "before": null,
+        "after": "5a5d340b5015d83065676865c20821d37929fc17",
+        "mode": "100644",
+        "type": "blob"
+      },
+      {
+        "path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/v7-main-windows-publication-cut0004/original-ci.tar.gz.part006.b64.txt",
+        "before": null,
+        "after": "fc347bde174a91cf75f462504226f03595cea895",
+        "mode": "100644",
+        "type": "blob"
+      },
+      {
+        "path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/v7-main-windows-publication-cut0004/original-ci.tar.gz.part007.b64.txt",
+        "before": null,
+        "after": "aa48ccd6e54c69c5f6f7cf3b3184319610f24bc5",
+        "mode": "100644",
+        "type": "blob"
+      },
+      {
+        "path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/v7-main-windows-publication-cut0004/original-ci.tar.gz.part008.b64.txt",
+        "before": null,
+        "after": "890d30a44a9db910fa7c6168d115a4a7e920c861",
+        "mode": "100644",
+        "type": "blob"
+      },
+      {
+        "path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/v7-main-windows-publication-cut0004/original-ci.tar.gz.part009.b64.txt",
+        "before": null,
+        "after": "b0edb4df3d105789d787daf80be75b67647b3a80",
+        "mode": "100644",
+        "type": "blob"
+      },
+      {
+        "path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/v7-main-windows-publication-cut0004/original-ci.tar.gz.part010.b64.txt",
+        "before": null,
+        "after": "72029a1f1710a5a6de21fb86ea9f0b725fe2f80c",
+        "mode": "100644",
+        "type": "blob"
+      },
+      {
+        "path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/v7-main-windows-publication-cut0004/original-ci.tar.gz.part011.b64.txt",
+        "before": null,
+        "after": "4d5a0fdaa47263d7ed090f7464ab55e199492328",
+        "mode": "100644",
+        "type": "blob"
+      },
+      {
+        "path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/v7-main-windows-publication-cut0004/original-ci.tar.gz.part012.b64.txt",
+        "before": null,
+        "after": "37bb4526b5eaba94877c7bf96991b8a619857770",
+        "mode": "100644",
+        "type": "blob"
+      },
+      {
+        "path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/v7-main-windows-publication-cut0004/original-ci.tar.gz.part013.b64.txt",
+        "before": null,
+        "after": "af28c58b035a0f77a6a05d6379dddc16433b529e",
+        "mode": "100644",
+        "type": "blob"
+      },
+      {
+        "path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/v7-main-windows-publication-cut0004/original-ci.tar.gz.part014.b64.txt",
+        "before": null,
+        "after": "5726ecc4d31dbd26423967d292325c2c591143b2",
+        "mode": "100644",
+        "type": "blob"
+      },
+      {
+        "path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/v7-main-windows-publication-cut0004/original-ci.tar.gz.part015.b64.txt",
+        "before": null,
+        "after": "27f74eef20f7053aacf48d1b5d6272216356a2d0",
+        "mode": "100644",
+        "type": "blob"
+      },
+      {
+        "path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/v7-main-windows-publication-cut0004/original-ci.tar.gz.part016.b64.txt",
+        "before": null,
+        "after": "736eded6b92756e46376d3d02901cb60f02a60fa",
+        "mode": "100644",
+        "type": "blob"
+      },
+      {
+        "path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/v7-main-windows-publication-cut0004/original-ci.tar.gz.part017.b64.txt",
+        "before": null,
+        "after": "056654f71055120f69ae08ca1221eb2d5c4b4e59",
+        "mode": "100644",
+        "type": "blob"
+      },
+      {
+        "path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/v7-main-windows-publication-cut0004/original-ci.tar.gz.part018.b64.txt",
+        "before": null,
+        "after": "51f3f36ac19e374b760628b070146d2b61fbe6c5",
+        "mode": "100644",
+        "type": "blob"
+      },
+      {
+        "path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/v7-main-windows-publication-cut0004/original-ci.tar.gz.part019.b64.txt",
+        "before": null,
+        "after": "d4a6cc8c9cfc2e48cc0fb0b8c0e495d5a59521b5",
+        "mode": "100644",
+        "type": "blob"
+      },
+      {
+        "path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/v7-main-windows-publication-cut0004/original-ci.tar.gz.part020.b64.txt",
+        "before": null,
+        "after": "d20e1b4fca44a4e8dc81683305f2d79c3f7f04e8",
+        "mode": "100644",
+        "type": "blob"
+      },
+      {
+        "path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/v7-main-windows-publication-cut0004/original-ci.tar.gz.part021.b64.txt",
+        "before": null,
+        "after": "c7b8e5e0b65957ea9dd362142a9bd2285c15c0a5",
+        "mode": "100644",
+        "type": "blob"
+      },
+      {
+        "path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/v7-main-windows-publication-cut0004/original-ci.tar.gz.part022.b64.txt",
+        "before": null,
+        "after": "3c72ff841f5b232608b947e5598a0f5e668a5959",
+        "mode": "100644",
+        "type": "blob"
+      },
+      {
+        "path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/v7-main-windows-publication-cut0004/original-ci.tar.gz.part023.b64.txt",
+        "before": null,
+        "after": "8ccf4faf22247fd9090feb0a8159d231f3c4a358",
+        "mode": "100644",
+        "type": "blob"
+      },
+      {
+        "path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/v7-main-windows-publication-cut0004/original-ci.tar.gz.part024.b64.txt",
+        "before": null,
+        "after": "30eb08d87d38f3328bd31464f4d8c86d0cf12952",
+        "mode": "100644",
+        "type": "blob"
+      },
+      {
+        "path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/v7-main-windows-publication-cut0004/original-ci.tar.gz.part025.b64.txt",
+        "before": null,
+        "after": "bb7d829757dde476fd42d8d8bc2f50b9612c3882",
+        "mode": "100644",
+        "type": "blob"
+      },
+      {
+        "path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/v7-main-windows-publication-cut0004/original-ci.tar.gz.part026.b64.txt",
+        "before": null,
+        "after": "cf8d147e4384778ecd6a13f935801aa558b3b23f",
+        "mode": "100644",
+        "type": "blob"
+      },
+      {
+        "path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/v7-main-windows-publication-cut0004/original-ci.tar.gz.part027.b64.txt",
+        "before": null,
+        "after": "e21d3822444959d122eebc01dc3c5a5e0ac3c607",
+        "mode": "100644",
+        "type": "blob"
+      },
+      {
+        "path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/v7-main-windows-publication-cut0004/original-ci.tar.gz.part028.b64.txt",
+        "before": null,
+        "after": "b42aca260d21de589297053a19f50ccce3a251f9",
+        "mode": "100644",
+        "type": "blob"
+      },
+      {
+        "path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/v7-main-windows-publication-cut0004/original-ci.tar.gz.part029.b64.txt",
+        "before": null,
+        "after": "02dced4e97d6a8e39a096882fa4e772e4bd38934",
+        "mode": "100644",
+        "type": "blob"
+      },
+      {
+        "path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/v7-main-windows-publication-cut0004/original-ci.tar.gz.part030.b64.txt",
+        "before": null,
+        "after": "7a0f75afa1c72877d457505d14d7cba39691f45a",
+        "mode": "100644",
+        "type": "blob"
+      },
+      {
+        "path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/v7-main-windows-publication-cut0004/original-ci.tar.gz.part031.b64.txt",
+        "before": null,
+        "after": "90fa0bd215b99b0ea43b5aecf9684c7b5e89c17f",
+        "mode": "100644",
+        "type": "blob"
+      },
+      {
+        "path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/v7-main-windows-publication-cut0004/original-ci.tar.gz.part032.b64.txt",
+        "before": null,
+        "after": "bac86515339b0eb905fac9772efb69b0b6451ded",
+        "mode": "100644",
+        "type": "blob"
+      },
+      {
+        "path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/v7-main-windows-publication-cut0004/original-ci.tar.gz.part033.b64.txt",
+        "before": null,
+        "after": "c5ff10f5afa34ee25fbaa44c3cd715c803dae87f",
+        "mode": "100644",
+        "type": "blob"
+      },
+      {
+        "path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/v7-main-windows-publication-cut0004/original-ci.tar.gz.part034.b64.txt",
+        "before": null,
+        "after": "1a9988b7ce7b3b695f9729707b5ec9abff5e7376",
+        "mode": "100644",
+        "type": "blob"
+      },
+      {
+        "path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/v7-main-windows-publication-cut0004/original-ci.tar.gz.part035.b64.txt",
+        "before": null,
+        "after": "5071b6c4c8f331de3260e44fb45af41c3890222c",
+        "mode": "100644",
+        "type": "blob"
+      },
+      {
+        "path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/v7-main-windows-publication-cut0004/original-ci.tar.gz.part036.b64.txt",
+        "before": null,
+        "after": "162eee173e7a3490bd60580a2bdd5fe7596d3692",
+        "mode": "100644",
+        "type": "blob"
+      },
+      {
+        "path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/v7-main-windows-publication-cut0004/original-ci.tar.gz.part037.b64.txt",
+        "before": null,
+        "after": "18df24a39eff76878500a223a9fa5fe51a475dbe",
+        "mode": "100644",
+        "type": "blob"
+      },
+      {
+        "path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/v7-main-windows-publication-cut0004/original-ci.tar.gz.part038.b64.txt",
+        "before": null,
+        "after": "e8cb2a06232eaa25e59848f71ec0c2c642289892",
+        "mode": "100644",
+        "type": "blob"
+      },
+      {
+        "path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/v7-main-windows-publication-cut0004/original-ci.tar.gz.part039.b64.txt",
+        "before": null,
+        "after": "ebb7f018c4ee66d63c4cea7dca1f2f3002b5804d",
+        "mode": "100644",
+        "type": "blob"
+      },
+      {
+        "path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/v7-main-windows-publication-cut0004/original-ci.tar.gz.part040.b64.txt",
+        "before": null,
+        "after": "40bf503efc028690809512cf1123a5454d3035a6",
+        "mode": "100644",
+        "type": "blob"
+      },
+      {
+        "path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/v7-main-windows-publication-cut0004/original-ci.tar.gz.part041.b64.txt",
+        "before": null,
+        "after": "c4ce28c1a776b1e3c0a67dbc2656209f1abc5301",
+        "mode": "100644",
+        "type": "blob"
+      },
+      {
+        "path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/v7-main-windows-publication-cut0004/original-ci.tar.gz.part042.b64.txt",
+        "before": null,
+        "after": "723ec5026dcda5076c5cdaa0a6f7c173512fa301",
+        "mode": "100644",
+        "type": "blob"
+      },
+      {
+        "path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/v7-main-windows-publication-cut0004/original-ci.tar.gz.part043.b64.txt",
+        "before": null,
+        "after": "464ece4b26e5642417abdb75462f985c5a1d851f",
+        "mode": "100644",
+        "type": "blob"
+      },
+      {
+        "path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/v7-main-windows-publication-cut0004/original-ci.tar.gz.part044.b64.txt",
+        "before": null,
+        "after": "911acb8df16a96331621e726f928c477aed2e8cc",
+        "mode": "100644",
+        "type": "blob"
+      },
+      {
+        "path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/v7-main-windows-publication-cut0004/original-ci.tar.gz.part045.b64.txt",
+        "before": null,
+        "after": "8d25472ac69e2f0efda994cb65805a5229437be4",
+        "mode": "100644",
+        "type": "blob"
+      },
+      {
+        "path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/v7-main-windows-publication-cut0004/original-ci.tar.gz.part046.b64.txt",
+        "before": null,
+        "after": "171cf57ea1c878499a1297f814f12131c9dea855",
+        "mode": "100644",
+        "type": "blob"
+      },
+      {
+        "path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/v7-main-windows-publication-cut0004/original-ci.tar.gz.part047.b64.txt",
+        "before": null,
+        "after": "d2748b4c46802c6d8c5907995491ab359f6d597b",
+        "mode": "100644",
+        "type": "blob"
+      },
+      {
+        "path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/v7-main-windows-publication-cut0004/original-ci.tar.gz.part048.b64.txt",
+        "before": null,
+        "after": "73558c46f715fb89a261bdc1b5fc8b2d1eb622c5",
+        "mode": "100644",
+        "type": "blob"
+      },
+      {
+        "path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/v7-main-windows-publication-cut0004/original-ci.tar.gz.part049.b64.txt",
+        "before": null,
+        "after": "6fca649ea4901c1b8986526793dca43744074274",
+        "mode": "100644",
+        "type": "blob"
+      },
+      {
+        "path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/v7-main-windows-publication-cut0004/original-ci.tar.gz.part050.b64.txt",
+        "before": null,
+        "after": "675c5534ab5943e555b9186ccedc96c44c076d7a",
+        "mode": "100644",
+        "type": "blob"
+      },
+      {
+        "path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/v7-main-windows-publication-cut0004/original-ci.tar.gz.part051.b64.txt",
+        "before": null,
+        "after": "b4e8dc2b42cc1a65f36d81e0fed8cece5efb9135",
+        "mode": "100644",
+        "type": "blob"
+      },
+      {
+        "path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/v7-main-windows-publication-cut0004/original-ci.tar.gz.part052.b64.txt",
+        "before": null,
+        "after": "54652fcb1814e33017c7d9fc4c45e226637bb9bc",
+        "mode": "100644",
+        "type": "blob"
+      },
+      {
+        "path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/v7-main-windows-publication-cut0004/original-ci.tar.gz.part053.b64.txt",
+        "before": null,
+        "after": "eb1f5196e00d0fbeb06d914455e0fe23f053156d",
+        "mode": "100644",
+        "type": "blob"
+      },
+      {
+        "path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/v7-main-windows-publication-cut0004/original-ci.tar.gz.part054.b64.txt",
+        "before": null,
+        "after": "d862b3b790395d2d28cb69a1b49ede030f979d50",
+        "mode": "100644",
+        "type": "blob"
+      },
+      {
+        "path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/v7-main-windows-publication-cut0004/original-ci.tar.gz.part055.b64.txt",
+        "before": null,
+        "after": "96992e2ff2aadbcd7d4694b1ff7f7d87dd64e0d4",
+        "mode": "100644",
+        "type": "blob"
+      },
+      {
+        "path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/v7-main-windows-publication-cut0004/original-ci.tar.gz.part056.b64.txt",
+        "before": null,
+        "after": "c170663c6746e5cf56156dbd58bcbeab68e43fd7",
+        "mode": "100644",
+        "type": "blob"
+      },
+      {
+        "path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/v7-main-windows-publication-cut0004/original-ci.tar.gz.part057.b64.txt",
+        "before": null,
+        "after": "c9516de7ce54b0551b3da24f60d6f3deaefc4c32",
+        "mode": "100644",
+        "type": "blob"
+      },
+      {
+        "path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/v7-main-windows-publication-cut0004/original-ci.tar.gz.part058.b64.txt",
+        "before": null,
+        "after": "ecdc0024b691609865d5718c83e496cb1989a5f8",
+        "mode": "100644",
+        "type": "blob"
+      },
+      {
+        "path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/v7-main-windows-publication-cut0004/original-ci.tar.gz.part059.b64.txt",
+        "before": null,
+        "after": "4d8c142999523d33bcce43bc130100504e10dbb0",
+        "mode": "100644",
+        "type": "blob"
+      },
+      {
+        "path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/v7-main-windows-publication-cut0004/original-ci.tar.gz.part060.b64.txt",
+        "before": null,
+        "after": "bbac5f68cd186cd8860c551f7bee4b9fa6287230",
+        "mode": "100644",
+        "type": "blob"
+      },
+      {
+        "path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/v7-main-windows-publication-cut0004/original-ci.tar.gz.part061.b64.txt",
+        "before": null,
+        "after": "42909e796099231ee795596f6011cefe6555df93",
+        "mode": "100644",
+        "type": "blob"
+      },
+      {
+        "path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/v7-main-windows-publication-cut0004/original-ci.tar.gz.part062.b64.txt",
+        "before": null,
+        "after": "aeb76422c378734e4cd4b4c29ca9a086db957269",
+        "mode": "100644",
+        "type": "blob"
+      },
+      {
+        "path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/v7-main-windows-publication-cut0004/original-ci.tar.gz.part063.b64.txt",
+        "before": null,
+        "after": "60b404f7e5d9a9abffc4031235ebe1b82ac144d4",
+        "mode": "100644",
+        "type": "blob"
+      },
+      {
+        "path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/v7-main-windows-publication-cut0004/original-ci.tar.gz.part064.b64.txt",
+        "before": null,
+        "after": "eafa924e88e6527e2e0f28a0013694e153fa3aa0",
+        "mode": "100644",
+        "type": "blob"
+      },
+      {
+        "path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/v7-main-windows-publication-cut0004/original-ci.tar.gz.part065.b64.txt",
+        "before": null,
+        "after": "e793cac9f0a03e01ed27768cea77a16f5a8fd017",
+        "mode": "100644",
+        "type": "blob"
+      },
+      {
+        "path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/v7-main-windows-publication-cut0004/original-ci.tar.gz.part066.b64.txt",
+        "before": null,
+        "after": "b8a591ce6ba9e42ff94143b2dae8a5429c0b4ed2",
+        "mode": "100644",
+        "type": "blob"
+      },
+      {
+        "path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/v7-main-windows-publication-cut0004/original-ci.tar.gz.part067.b64.txt",
+        "before": null,
+        "after": "d777d8c326a54131755cf1dbf3c5aca97883bd3e",
+        "mode": "100644",
+        "type": "blob"
+      },
+      {
+        "path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/v7-main-windows-publication-cut0004/original-ci.tar.gz.part068.b64.txt",
+        "before": null,
+        "after": "da96a2509f4bb4de207df4a2c76217be0ea64a70",
+        "mode": "100644",
+        "type": "blob"
+      },
+      {
+        "path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/v7-main-windows-publication-cut0004/original-ci.tar.gz.part069.b64.txt",
+        "before": null,
+        "after": "bdc939d3915acde5f965c335760e9f6c288f71aa",
+        "mode": "100644",
+        "type": "blob"
+      },
+      {
+        "path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/v7-main-windows-publication-cut0004/original-ci.tar.gz.part070.b64.txt",
+        "before": null,
+        "after": "d6b67091b1e1063142cf2f67dc7503abeea092be",
+        "mode": "100644",
+        "type": "blob"
+      },
+      {
+        "path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/v7-main-windows-publication-cut0004/original-ci.tar.gz.part071.b64.txt",
+        "before": null,
+        "after": "317eec7aa1c8544f2a1784cb39e67f2c338ad138",
+        "mode": "100644",
+        "type": "blob"
+      },
+      {
+        "path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/v7-main-windows-publication-cut0004/original-ci.tar.gz.part072.b64.txt",
+        "before": null,
+        "after": "03d6e5550d4637e00aced66992ec4ad0ee01e37e",
+        "mode": "100644",
+        "type": "blob"
+      },
+      {
+        "path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/v7-main-windows-publication-cut0004/original-ci.tar.gz.part073.b64.txt",
+        "before": null,
+        "after": "0224fb1fa1f28c8a33330b5fae37caeb6150fd10",
+        "mode": "100644",
+        "type": "blob"
+      },
+      {
+        "path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/v7-main-windows-publication-cut0004/original-ci.tar.gz.part074.b64.txt",
+        "before": null,
+        "after": "dcb21025df37672d3d1902cc5ea4ca34c62284d6",
+        "mode": "100644",
+        "type": "blob"
+      },
+      {
+        "path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/v7-main-windows-publication-cut0004/original-ci.tar.gz.part075.b64.txt",
+        "before": null,
+        "after": "aba617409e16db47c6a4f3e6d6ded4e32900501b",
+        "mode": "100644",
+        "type": "blob"
+      },
+      {
+        "path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/v7-main-windows-publication-cut0004/original-ci.tar.gz.part076.b64.txt",
+        "before": null,
+        "after": "abaccde4fd2d81b2046a02a49f01c610cf0be244",
+        "mode": "100644",
+        "type": "blob"
+      },
+      {
+        "path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/v7-main-windows-publication-cut0004/original-ci.tar.gz.part077.b64.txt",
+        "before": null,
+        "after": "523dcde0f1fa0beefaa212edb5734cf4303380df",
+        "mode": "100644",
+        "type": "blob"
+      },
+      {
+        "path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/v7-main-windows-publication-cut0004/original-ci.tar.gz.part078.b64.txt",
+        "before": null,
+        "after": "a8c7c27799ee187d4c3781a273847324b4cca8c0",
+        "mode": "100644",
+        "type": "blob"
+      },
+      {
+        "path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/v7-main-windows-publication-cut0004/original-ci.tar.gz.part079.b64.txt",
+        "before": null,
+        "after": "1fc4f68a8e6c436739212247d03ca6f00f69a7ab",
+        "mode": "100644",
+        "type": "blob"
+      },
+      {
+        "path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/v7-main-windows-publication-cut0004/original-ci.tar.gz.part080.b64.txt",
+        "before": null,
+        "after": "d025b7ba0b1bfbd7b4610f9617e8384960877ead",
+        "mode": "100644",
+        "type": "blob"
+      },
+      {
+        "path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/v7-main-windows-publication-cut0004/original-ci.tar.gz.part081.b64.txt",
+        "before": null,
+        "after": "53b2e8694344d8de324607daa7986bedc5d5401c",
+        "mode": "100644",
+        "type": "blob"
+      },
+      {
+        "path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/v7-main-windows-publication-cut0004/original-ci.tar.gz.part082.b64.txt",
+        "before": null,
+        "after": "5bea6d565e59df41436abc2a3c9671042ccba061",
+        "mode": "100644",
+        "type": "blob"
+      },
+      {
+        "path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/v7-main-windows-publication-cut0004/original-ci.tar.gz.part083.b64.txt",
+        "before": null,
+        "after": "0b232ee7ac2e8d2a5486d4457b1e513067482c9c",
+        "mode": "100644",
+        "type": "blob"
+      },
+      {
+        "path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/v7-main-windows-publication-cut0004/original-ci.tar.gz.part084.b64.txt",
+        "before": null,
+        "after": "88202898d63f032d4706a8134af166ab0d7abc24",
+        "mode": "100644",
+        "type": "blob"
+      },
+      {
+        "path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/v7-main-windows-publication-cut0004/original-files-manifest.json",
+        "before": null,
+        "after": "37bcb3fec9fa03519f63d95392f08a57b124b856",
+        "mode": "100644",
+        "type": "blob"
+      },
+      {
+        "path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/v7-main-windows-publication-cut0004/planned-layout-verification.json",
+        "before": null,
+        "after": "0134ea608a4ddcadd9bdedc2f55af1cd7f29c0ee",
+        "mode": "100644",
+        "type": "blob"
+      },
+      {
+        "path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/v7-main-windows-publication-cut0004/scope-summary.json",
+        "before": null,
+        "after": "0a2c0a4b7d73a3ff70cdea378b3975667a9344d0",
+        "mode": "100644",
+        "type": "blob"
+      },
+      {
+        "path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/v7-main-windows-publication-cut0004/transport-manifest.json",
+        "before": null,
+        "after": "794e77f47e99823d3155f80c28ab61d4e066bf04",
+        "mode": "100644",
+        "type": "blob"
+      },
+      {
+        "path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/v7-main-windows-publication-cut0004/verification-receipt.json",
+        "before": null,
+        "after": "6f50ea547976484edd6148bf0a0d3ee26dd1675d",
+        "mode": "100644",
+        "type": "blob"
+      },
+      {
+        "path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/v7-main-windows-publication-cut0004/verify_archive.py",
+        "before": null,
+        "after": "1287dcc4fb0883b9f203724ff97c9554cd52a978",
+        "mode": "100644",
+        "type": "blob"
+      },
+      {
+        "path": "qualification/r3-audit-repair-20261104/continuation-20261105/native-plan/ca1-full-v1/C1-to-candidate-default-full.delta.patch",
+        "before": null,
+        "after": "4e3097aad8d0943f7e1204c01e6d31784484b853",
+        "mode": "100644",
+        "type": "blob"
+      },
+      {
+        "path": "qualification/r3-audit-repair-20261104/continuation-20261105/native-plan/ca1-full-v1/enabled-identities.json",
+        "before": null,
+        "after": "edadcf281b70af2e10f990f57cf04343bfa0d623",
+        "mode": "100644",
+        "type": "blob"
+      },
+      {
+        "path": "qualification/r3-audit-repair-20261104/continuation-20261105/native-plan/ca1-full-v1/freeze_runner.py",
+        "before": null,
+        "after": "dabee37d89b7c16d78e4b2f2d998e0f06f32027f",
+        "mode": "100644",
+        "type": "blob"
+      },
+      {
+        "path": "qualification/r3-audit-repair-20261104/continuation-20261105/native-plan/ca1-full-v1/manifest-DISABLED.json",
+        "before": null,
+        "after": "02879741f095329744589ec0e078e7b3e7e11d01",
+        "mode": "100644",
+        "type": "blob"
+      },
+      {
+        "path": "qualification/r3-audit-repair-20261104/continuation-20261105/native-plan/ca1-full-v1/new_stage_functions.py.txt",
+        "before": null,
+        "after": "e2a089b78622d52ba29f9ee283531120499d901f",
+        "mode": "100644",
+        "type": "blob"
+      },
+      {
+        "path": "qualification/r3-audit-repair-20261104/continuation-20261105/native-plan/ca1-full-v1/package_disabled_request.py",
+        "before": null,
+        "after": "872784e70d1a36ed6abda50e6fb66f656fd5deb1",
+        "mode": "100644",
+        "type": "blob"
+      },
+      {
+        "path": "qualification/r3-audit-repair-20261104/continuation-20261105/native-plan/ca1-full-v1/root-execution-guard.json",
+        "before": null,
+        "after": "4220d9e9d6d117e9d16073fa142dfddb9424b372",
+        "mode": "100644",
+        "type": "blob"
+      },
+      {
+        "path": "qualification/r3-audit-repair-20261104/continuation-20261105/native-plan/ca1-full-v1/run_candidate_default_full.py",
+        "before": null,
+        "after": "4b0b81abc8487f5f6c6b59b04ecfd2dd76c22abb",
+        "mode": "100644",
+        "type": "blob"
+      },
+      {
+        "path": "qualification/r3-audit-repair-20261104/continuation-20261105/native-plan/ca1-full-v1/runner-derivation.json",
+        "before": null,
+        "after": "fc141d73f0bf5d0bc0ee70d985e105f4cc2c6ab2",
+        "mode": "100644",
+        "type": "blob"
+      },
+      {
+        "path": "qualification/r3-audit-repair-20261104/continuation-20261105/reviews/approval-nonlogin-independent.json",
+        "before": null,
+        "after": "69bd7694efb85f3fd581af4305d5169382a093d5",
+        "mode": "100644",
+        "type": "blob"
+      },
+      {
+        "path": "qualification/r3-audit-repair-20261104/continuation-20261105/reviews/b11-ace-semantics-publication-v1.json",
+        "before": null,
+        "after": "f7cd15bae650a0bebe1e451bfcd1c696438f1a22",
+        "mode": "100644",
+        "type": "blob"
+      },
+      {
+        "path": "qualification/r3-audit-repair-20261104/continuation-20261105/reviews/b11-acl-four-path-publication-v1.json",
+        "before": null,
+        "after": "5ae93c2a22dde06c3d2a8f81a00631a73f88dcad",
+        "mode": "100644",
+        "type": "blob"
+      },
+      {
+        "path": "qualification/r3-audit-repair-20261104/continuation-20261105/reviews/b11-acl-v2-independent.json",
+        "before": null,
+        "after": "d80874b92e5b8788f9b7b0ea1af829eae3dc39ba",
+        "mode": "100644",
+        "type": "blob"
+      },
+      {
+        "path": "qualification/r3-audit-repair-20261104/continuation-20261105/reviews/b11-delete-matrix-macro-import/independent-review.json",
+        "before": null,
+        "after": "b4790a5e95ea609ac60fbbdc400b10abff3e0908",
+        "mode": "100644",
+        "type": "blob"
+      },
+      {
+        "path": "qualification/r3-audit-repair-20261104/continuation-20261105/reviews/b11-initial-label-observation/independent-review.json",
+        "before": null,
+        "after": "d43f23e18d1664504b807635cf0b2ec80d54182a",
+        "mode": "100644",
+        "type": "blob"
+      },
+      {
+        "path": "qualification/r3-audit-repair-20261104/continuation-20261105/reviews/b11-label-ace-semantics/independent-review.json",
+        "before": null,
+        "after": "c06ff63c83722832ce03840407c6aef3fd471b4c",
+        "mode": "100644",
+        "type": "blob"
+      },
+      {
+        "path": "qualification/r3-audit-repair-20261104/continuation-20261105/reviews/b11-native2-native3-root-archive-verification-v1.json",
+        "before": null,
+        "after": "b2b10799a3c30d2ef4611b3656d66f491a34c4e2",
+        "mode": "100644",
+        "type": "blob"
+      },
+      {
+        "path": "qualification/r3-audit-repair-20261104/continuation-20261105/reviews/b11-native4-root-original-verification-v1.json",
+        "before": null,
+        "after": "792b313224cbe5815c4b399209762617e8efb801",
+        "mode": "100644",
+        "type": "blob"
+      },
+      {
+        "path": "qualification/r3-audit-repair-20261104/continuation-20261105/reviews/b11-native5-artifacts-api.json",
+        "before": null,
+        "after": "578e264d73acc39d0ac52296828e30d01953cb50",
+        "mode": "100644",
+        "type": "blob"
+      },
+      {
+        "path": "qualification/r3-audit-repair-20261104/continuation-20261105/reviews/b11-native5-root-original-verification-v1.json",
+        "before": null,
+        "after": "d82fd0be157e3bac0ddbe96bb688269b978c8f55",
+        "mode": "100644",
+        "type": "blob"
+      },
+      {
+        "path": "qualification/r3-audit-repair-20261104/continuation-20261105/reviews/b13-artifact-list-api-bindings-v1.json",
+        "before": null,
+        "after": "b80bc8d0c4a5dd9ea0e9c298d0dfbea5bb025ed1",
+        "mode": "100644",
+        "type": "blob"
+      },
+      {
+        "path": "qualification/r3-audit-repair-20261104/continuation-20261105/reviews/b13-original-windows-closure-root-verification-v1.json",
+        "before": null,
+        "after": "1477f09e7d1d4fb8f73910252b4c91fa55193164",
+        "mode": "100644",
+        "type": "blob"
+      },
+      {
+        "path": "qualification/r3-audit-repair-20261104/continuation-20261105/reviews/b13-original-windows/REVIEW.zh-CN.md",
+        "before": null,
+        "after": "56a977fb61e14a2161333ae4e015ed1d503d202c",
+        "mode": "100644",
+        "type": "blob"
+      },
+      {
+        "path": "qualification/r3-audit-repair-20261104/continuation-20261105/reviews/b13-original-windows/closure-review.json",
+        "before": null,
+        "after": "b5d087e898ee173b8670477ebfd49e938f9f52e1",
+        "mode": "100644",
+        "type": "blob"
+      },
+      {
+        "path": "qualification/r3-audit-repair-20261104/continuation-20261105/reviews/b13-original-windows/source-map.json",
+        "before": null,
+        "after": "99f85d9e5793775c70e483cafacd57ac96c9901f",
+        "mode": "100644",
+        "type": "blob"
+      },
+      {
+        "path": "qualification/r3-audit-repair-20261104/continuation-20261105/reviews/b22-original-windows-closure-root-verification-v1.json",
+        "before": null,
+        "after": "0e60a44c0bd703461de322e80464f9969c71602c",
+        "mode": "100644",
+        "type": "blob"
+      },
+      {
+        "path": "qualification/r3-audit-repair-20261104/continuation-20261105/reviews/b22-original-windows/REVIEW.zh-CN.md",
+        "before": null,
+        "after": "3db40090620a14a2582e07886b79ccce3f34bd1b",
+        "mode": "100644",
+        "type": "blob"
+      },
+      {
+        "path": "qualification/r3-audit-repair-20261104/continuation-20261105/reviews/b22-original-windows/closure-review.json",
+        "before": null,
+        "after": "9893d1b070abad1e63bd2f57c7f35f81f7e4fea0",
+        "mode": "100644",
+        "type": "blob"
+      },
+      {
+        "path": "qualification/r3-audit-repair-20261104/continuation-20261105/reviews/ca1-native-transition-root-source-reference.json",
+        "before": null,
+        "after": "b29c704e1db93047d2b364cbd220fcae3ac23e69",
+        "mode": "100644",
+        "type": "blob"
+      },
+      {
+        "path": "qualification/r3-audit-repair-20261104/continuation-20261105/reviews/core-tree-resume-complete-output-correlation.json",
+        "before": null,
+        "after": "e393c565abd049b6f8b0544b4345920ed960c90f",
+        "mode": "100644",
+        "type": "blob"
+      },
+      {
+        "path": "qualification/r3-audit-repair-20261104/continuation-20261105/reviews/core-tree-resume-independent.json",
+        "before": null,
+        "after": "688369877a4bb92b1ce0facc0570d78b2b9b50be",
+        "mode": "100644",
+        "type": "blob"
+      },
+      {
+        "path": "qualification/r3-audit-repair-20261104/continuation-20261105/reviews/eed-windows-success-review-v2.json",
+        "before": null,
+        "after": "26ad22a0ddd503eb289a2d3f656e91f28eb1813c",
+        "mode": "100644",
+        "type": "blob"
+      },
+      {
+        "path": "qualification/r3-audit-repair-20261104/continuation-20261105/reviews/integrated-13-path-candidate-v1.json",
+        "before": null,
+        "after": "59930d16294411bcee400f89dccd15b1ebef34c8",
+        "mode": "100644",
+        "type": "blob"
+      },
+      {
+        "path": "qualification/r3-audit-repair-20261104/continuation-20261105/reviews/integrated-14-path-candidate-v2.json",
+        "before": null,
+        "after": "0592379433dfb360da232677002ea8345b489199",
+        "mode": "100644",
+        "type": "blob"
+      },
+      {
+        "path": "qualification/r3-audit-repair-20261104/continuation-20261105/reviews/inventory-packaging-root-verification-v1.json",
+        "before": null,
+        "after": "562310ce3d1909ad21a7f523d5c50a9794a4a74a",
+        "mode": "100644",
+        "type": "blob"
+      },
+      {
+        "path": "qualification/r3-audit-repair-20261104/continuation-20261105/reviews/memory-owner-expiry/independent-static-review.json",
+        "before": null,
+        "after": "11db46ed26206c35458e292c83713ff6329f741c",
+        "mode": "100644",
+        "type": "blob"
+      },
+      {
+        "path": "qualification/r3-audit-repair-20261104/continuation-20261105/reviews/memory-real-expiry-v2-independent.json",
+        "before": null,
+        "after": "11db46ed26206c35458e292c83713ff6329f741c",
+        "mode": "100644",
+        "type": "blob"
+      },
+      {
+        "path": "qualification/r3-audit-repair-20261104/continuation-20261105/reviews/pr4855-refused-commit-reuse/REVIEW.zh-CN.md",
+        "before": null,
+        "after": "96abf6006db9102fd1ef67e1e7ac088aa7089922",
+        "mode": "100644",
+        "type": "blob"
+      },
+      {
+        "path": "qualification/r3-audit-repair-20261104/continuation-20261105/reviews/primary-14-path-publication-v1.json",
+        "before": null,
+        "after": "7f7a86c41df2b3b4aa655cd5852e6406934b05a1",
+        "mode": "100644",
+        "type": "blob"
+      },
+      {
+        "path": "qualification/r3-audit-repair-20261104/continuation-20261105/reviews/registries/main-windows-and-publication-cut0004-v7/actual-delivery-map.json",
+        "before": null,
+        "after": "cd162f36a95d99468a2c4541273a8edf33d9a629",
+        "mode": "100644",
+        "type": "blob"
+      },
+      {
+        "path": "qualification/r3-audit-repair-20261104/continuation-20261105/reviews/registries/pr4855-refused-commit-reuse-v7/actual-delivery-map.json",
+        "before": null,
+        "after": "c3e54fc2b23f73870ab394f076c3fde14fa57327",
+        "mode": "100644",
+        "type": "blob"
+      },
+      {
+        "path": "qualification/r3-audit-repair-20261104/continuation-20261105/reviews/registries/registration-label-observation-ace-semantics-post-v6/actual-delivery-map.json",
+        "before": null,
+        "after": "d81917c014c8a6943466634235be26671b2829e3",
+        "mode": "100644",
+        "type": "blob"
+      },
+      {
+        "path": "qualification/r3-audit-repair-20261104/continuation-20261105/reviews/registries/registration-native2-native3-post-v6/actual-delivery-map.json",
+        "before": null,
+        "after": "53e237ce93f59e81fb250159d87581aa2ed15609",
+        "mode": "100644",
+        "type": "blob"
+      },
+      {
+        "path": "qualification/r3-audit-repair-20261104/continuation-20261105/reviews/registries/registration-native4-post-v6/actual-delivery-map.json",
+        "before": null,
+        "after": "8d89c61304672196dd04089a0dca29f162a49eb1",
+        "mode": "100644",
+        "type": "blob"
+      },
+      {
+        "path": "qualification/r3-audit-repair-20261104/continuation-20261105/reviews/registries/registration-native5-post-v7/actual-delivery-map.json",
+        "before": null,
+        "after": "95b558861e290caeff721b3460f84c47dbd8a8a1",
+        "mode": "100644",
+        "type": "blob"
+      },
+      {
+        "path": "qualification/r3-audit-repair-20261104/continuation-20261105/reviews/registries/registration-terminal-macro-repair-v6/actual-delivery-map.json",
+        "before": null,
+        "after": "08e18ee65d662c574a7ae9fc85ccadcf43535603",
+        "mode": "100644",
+        "type": "blob"
+      },
+      {
+        "path": "qualification/r3-audit-repair-20261104/continuation-20261105/reviews/reproduction/append_v7_postcut.py",
+        "before": null,
+        "after": "32300b93403c91634269ae2ed2c61d8b3f91da12",
+        "mode": "100644",
+        "type": "blob"
+      },
+      {
+        "path": "qualification/r3-audit-repair-20261104/continuation-20261105/reviews/reproduction/build_v7_deliverables.py",
+        "before": null,
+        "after": "84001606ae8cad740e7233de0db2176bb7bf0024",
+        "mode": "100644",
+        "type": "blob"
+      },
+      {
+        "path": "qualification/r3-audit-repair-20261104/continuation-20261105/reviews/reproduction/build_v7_index.py",
+        "before": null,
+        "after": "64a6392f6ed7fe54e62173a265720b12e4e66a81",
+        "mode": "100644",
+        "type": "blob"
+      },
+      {
+        "path": "qualification/r3-audit-repair-20261104/continuation-20261105/reviews/reproduction/build_v7_registration.py",
+        "before": null,
+        "after": "599ee7a520c94bd570c1cbc380252d488927ace3",
+        "mode": "100644",
+        "type": "blob"
+      },
+      {
+        "path": "qualification/r3-audit-repair-20261104/continuation-20261105/reviews/reproduction/verify_b11_native5_originals.py",
+        "before": null,
+        "after": "f9337afcc03938281cf8dd5b8ae9443335093cbc",
+        "mode": "100644",
+        "type": "blob"
+      },
+      {
+        "path": "qualification/r3-audit-repair-20261104/continuation-20261105/reviews/reproduction/verify_b13_original_windows.py",
+        "before": null,
+        "after": "bf6bccb932e4adb31b20b4a634264877fd98eb80",
+        "mode": "100644",
+        "type": "blob"
+      },
+      {
+        "path": "qualification/r3-audit-repair-20261104/continuation-20261105/reviews/rog-complete29-root-verification-v2.json",
+        "before": null,
+        "after": "eafa02ba7ff318f5d2539fa913ffab2dae364b69",
+        "mode": "100644",
+        "type": "blob"
+      },
+      {
+        "path": "qualification/r3-audit-repair-20261104/continuation-20261105/reviews/v7-main-windows-publication/REVIEW.zh-CN.md",
+        "before": null,
+        "after": "dbde5ca4b355b34b31576f705e407a2a7c136384",
+        "mode": "100644",
+        "type": "blob"
+      }
+    ]
+  },
+  "tool_errors_preserved": {
+    "initial_489_entry_create_tree": "ReadTimeout; no SHA returned; public ref unchanged. Four successful 160/160/160/9 path object batches composed the final independently verified tree.",
+    "first_local_link_check": "Two donor MD destinations corrected before any tree or ref publication.",
+    "artifact_registration": "Every listed blob had actual creation and complete byte-equal GET, then root local-byte rehash; content-only SHA claims inside originals remain scoped."
+  },
+  "primary_product": {
+    "head": "eed4d6bb61b789b19f60facc79f9e031765fa4c9",
+    "tree": "ca1c4671ef6b2773280d01b5d76c6166252f5856",
+    "changed_by_audit_commit": false
+  },
+  "observations": "Frozen16:39:48.921 archive plus separately recorded native5 terminal, eed17:07 scope and SQLx donor originals."
+}

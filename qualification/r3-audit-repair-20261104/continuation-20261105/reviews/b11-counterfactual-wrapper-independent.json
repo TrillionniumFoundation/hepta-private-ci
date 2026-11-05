@@ -1,0 +1,124 @@
+{
+  "schema": "acl-counterfactual-wrapper-independent-narrow-review-v1",
+  "decision": "STATIC_ACCEPT_OF_REVIEWED_V2_NO_NATIVE_QUALIFICATION",
+  "inputs": [
+    {
+      "path": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-acl-repair-20261105/counterfactual-workflow-v1/candidate/.github/scripts/run_b11_acl_identity_counterfactual.py",
+      "bytes": 17283,
+      "sha256": "cd8be497126971482b21ceb9e4407a0ff43df49d69ee2882a440b40c4bf19fdd",
+      "git_blob": "5e40053fb522fec8b829d991ea20ec5b70faf43f"
+    },
+    {
+      "path": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-acl-repair-20261105/counterfactual-workflow-v2/candidate/.github/scripts/run_b11_acl_identity_counterfactual.py",
+      "bytes": 17774,
+      "sha256": "6e199582d277e44f1796dcf64c39bb0fe3f263f060ab79da1bf682fff5866b1f",
+      "git_blob": "25def4386ea08bb72a7605cc113117f31fffcd1b"
+    },
+    {
+      "path": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-acl-repair-20261105/counterfactual-workflow-v2/candidate/.github/workflows/hepta-windows-token-mechanism-probe.yml",
+      "bytes": 5072,
+      "sha256": "2cd28bdbca3557a2294aa1f2edec49d4e8250b968b8bd1747fb1744750ea5de9",
+      "git_blob": "912e22789665b0081c83ae0fa632d2482e8b0eba"
+    },
+    {
+      "path": "/workspace/scratch/07dd58cc9630/hepta-audit-fourth/inputs/final-A-fmt-root-review/postimages/.github/scripts/collect_bazel_failed_test_logs.py.source.txt",
+      "bytes": 16260,
+      "sha256": "55353f094531a4af974c519fadca01dcd0c8be6ece1f8b10efb70d24ae2a44eb",
+      "git_blob": "2142eeb382664d95f77d83ac7ae3da4459601abf"
+    },
+    {
+      "path": "/workspace/scratch/07dd58cc9630/architecture-audit/macos-bash-empty-array-20261105/candidate/.github/scripts/run-bazel-ci.sh",
+      "bytes": 17448,
+      "sha256": "0136e087ddfac7c01bdacb03357d0353d328dea3b8cd86caf94e64bf10706482",
+      "git_blob": "42b59b6354b5933c8155b992519682c06d024ca1"
+    },
+    {
+      "path": "/workspace/scratch/07dd58cc9630/research-audit/b11-delete-matrix/source/workspace_root_test_launcher.bat.tpl",
+      "bytes": 7627,
+      "sha256": "4d509f1a57ffb4a890a96b775468af8e2d0d83538af76d358d10628d8b442dae",
+      "git_blob": "fa18c301dd22ca9023ba2f59801a8119dfbf8a69"
+    },
+    {
+      "path": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-acl-repair-20261105/identity-candidate-v3/candidate/codex-rs/windows-sandbox-rs/src/acl_deny.rs",
+      "bytes": 10188,
+      "sha256": "62869a02641d630921c84e1115f0c6240df257e5a041c3c5be9372781342d47e",
+      "git_blob": "da5346c220c41cf0c83f62b596132c74c02284d8"
+    },
+    {
+      "path": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-acl-repair-20261105/identity-candidate-v3/negative/codex-rs/windows-sandbox-rs/src/acl_deny.rs",
+      "bytes": 10076,
+      "sha256": "9c6d3134f9910487041acec0238cc0f2fe6066e698ca74f98b80218323931df4",
+      "git_blob": "0baeb6ec2f3bfd0964be6d014fc5d80d890ea3d7"
+    },
+    {
+      "path": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-acl-repair-20261105/identity-candidate-v3/candidate/codex-rs/windows-sandbox-rs/src/acl_tests.rs",
+      "bytes": 23247,
+      "sha256": "c13be65453bd3499ebd72e548390858133599b7f215e2ab91f6ea765f0066f35",
+      "git_blob": "ec0264a7615097bec1b554cb60918b4f4662eec2"
+    }
+  ],
+  "reviewed_delta": {
+    "path": "/workspace/scratch/07dd58cc9630/ci-audit/acl-counterfactual-wrapper-review-20261105/v1-to-v2-reviewed.delta.patch",
+    "bytes": 1138,
+    "sha256": "02638576bcca5e0072e45a1c289de39545ab17aa0a0a22dec5079cbcfeebd0ae",
+    "git_blob": "cee391d225fd6180b213894d55791096d47aa35a"
+  },
+  "actual_original_interface_checks": {
+    "method": "Executed only four extracted read-only parser helpers against existing cloud copies of an already completed original Windows job. No main, subprocess, source mutation, native test, or synthetic product output was executed.",
+    "job_id": 127383345954,
+    "retained_exact_target_manifest": {
+      "path": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-pr4884-ci-20261105/terminal/probe-127383345954/members/bazel-execution-logs/failed-test-logs/invocation-iloq9z78/manifest.json",
+      "bytes": 1273,
+      "sha256": "fcbbf587f6b8df2ebf5aaf66b551a2fda9c12a50c6f12a079c686f337958905e",
+      "git_blob": "d5c0d7f1ddf538ed97b776b3db83e13ad525b67c"
+    },
+    "full_original_log_xml": {
+      ".log": {
+        "path": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-pr4884-ci-20261105/terminal/probe-127383345954/members/bazel-execution-logs/failed-test-logs/invocation-iloq9z78/targets/0000/test.log",
+        "bytes": 131855,
+        "sha256": "fcea1fd7d4a059130a34b392f5171e5db76ddfd2d0a0a0f21ebd7414641f71fc",
+        "git_blob": "d4a9dcff6525450a9c5afaacaa531a56514aa5e9"
+      },
+      ".xml": {
+        "path": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-pr4884-ci-20261105/terminal/probe-127383345954/members/bazel-execution-logs/failed-test-logs/invocation-iloq9z78/targets/0000/test.xml",
+        "bytes": 132278,
+        "sha256": "d95a552bf494118386f5cc082226b9d7776f2ae245204d6f26b08a0298c6301b",
+        "git_blob": "da30b59327acd3e51ebb9e59512f77b52355e732"
+      }
+    },
+    "console": {
+      "path": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-pr4884-ci-20261105/terminal/probe-127383345954/members/b11-token-mechanism-probe/bazel-console.log",
+      "bytes": 205680,
+      "sha256": "dcf96676b15afb26f1cb5e328b1474f53304efeb7631552b2a98d32223c6ceec",
+      "git_blob": "0b9f3b8cca42daedbd5809791a6fe5ece0857d67"
+    },
+    "actual_target_terminal": "//codex-rs/windows-sandbox-rs:windows-sandbox-rs-unit-tests              FAILED in 37.7s",
+    "actual_old_outer_xml": "one wrapper testcase status=run, error=exited with error code1",
+    "new_negative_xml101": "Expected by actual bat47-49 direct-argument path, which returns the test binary ERRORLEVEL. It is not borrowed from the old bat batching path, whose old actual result was1. The new negative still requires actual Windows execution."
+  },
+  "source_and_argv_findings": [
+    "The real collector has exactly source{commit,tree,tracked_worktree_dirty}, selected_targets, files target/testlogs_relative_path/archive_relative_path/bytes/sha256 and complete_for_selected_targets fields consumed by V2.",
+    "The real wrapper sends FAILED to failed-test-logs. Its selected-target manifest for FAILED has no target, so scanning both roots does not double-count that original target.",
+    "The original Windows outer bat accepts nonempty explicit args and invokes the real libtest binary with the exact full case name and --exact. Existing sharding/skip dispatch does not discard those explicit args.",
+    "Mixed slash/backslash original panic paths match the new pattern. The approved negative keeps the original test source and its precise597:9 assertion; the marker is an independent line.",
+    "The original full-target command and exit are unchanged. The added step requires the four named positive rows and separately records the original0or3 target exit before mutation.",
+    "Counterfactual command uses the same outer target and platform, with exactly one new case, no cache reuse and one flaky attempt. It requires actual marker, owned panic, one failed case, no ignore and libtest101 XML; arbitrary compile/timeout/setup failure cannot qualify."
+  ],
+  "restore_findings": [
+    "V1 only checked owned file bytes before replacement. V2 now checks exact positive/negative current source via existing source_guard and verifies semantic ordinary-index entries plus both locks before the atomic restore.",
+    "Unknown tracked/source/index/lock drift therefore leaves source unoverwritten and records restore_error/INVALID. After restoration the entire saved guard must equal entry.",
+    "Original raw LF or CRLF bytes are separately preserved and restored, while canonical LF Git identities remain explicit.",
+    "Hard cancellation is explicitly not guaranteed to run finally. That boundary is not promoted to an exact-restore result."
+  ],
+  "limits": [
+    "This is source/interface review and existing-original parser compatibility, not execution of the new positive or counterfactual.",
+    "A cached or flaky original target summary conservatively rejects this counterfactual attempt; this review does not change the original full-target command to obtain freshness.",
+    "No assertion, timeout, production source, runtime policy, original target failure, or B11 closure status was changed."
+  ],
+  "actions": {
+    "new_native_jobs": 0,
+    "new_product_tests": 0,
+    "ci_mutations": 0,
+    "source_ref_changes": 0
+  }
+}

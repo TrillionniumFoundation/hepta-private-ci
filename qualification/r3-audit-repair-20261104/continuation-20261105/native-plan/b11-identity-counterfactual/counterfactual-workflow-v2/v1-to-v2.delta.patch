@@ -1,0 +1,19 @@
+diff --git a/.github/scripts/run_b11_acl_identity_counterfactual.py b/.github/scripts/run_b11_acl_identity_counterfactual.py
+index 5e40053fb522fec8b829d991ea20ec5b70faf43f..25def4386ea08bb72a7605cc113117f31fffcd1b 100644
+--- a/.github/scripts/run_b11_acl_identity_counterfactual.py
++++ b/.github/scripts/run_b11_acl_identity_counterfactual.py
+@@ -256,7 +256,13 @@
+     finally:
+         if mutation_attempted:
+             try:
+-                require(source.read_bytes() in {negative_bytes, original_bytes}, "refusing to overwrite an unexpected source during restore")
++                current = source.read_bytes()
++                require(current in {negative_bytes, original_bytes}, "refusing to overwrite an unexpected source during restore")
++                before_restore = source_guard(root, head, NEGATIVE if current == negative_bytes else POSITIVE,
++                                              current == negative_bytes)
++                save(evidence, "source-before-restore.json", before_restore)
++                require(before_restore["index_entries"] == entry["index_entries"]
++                        and before_restore["locks"] == entry["locks"], "refusing restore after index/lock drift")
+                 replace_owned_source(source, original_bytes)
+                 require(source.read_bytes() == original_bytes, "positive source did not restore byte-for-byte")
+                 final = source_guard(root, head, POSITIVE, False)

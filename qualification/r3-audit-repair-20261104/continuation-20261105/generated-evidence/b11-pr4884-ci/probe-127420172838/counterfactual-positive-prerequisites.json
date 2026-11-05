@@ -1,0 +1,116 @@
+{
+  "schema": "b11-counterfactual-positive-prerequisites-from-actual-native6",
+  "status": "FOUR_ORIGINAL_POSITIVE_PREREQUISITES_CONFIRMED_NEGATIVE_NOT_RUN",
+  "actual_checkout_commit": "69040075a846c7032a3bafc7a0b623e7c0257619",
+  "actual_checkout_tree": "75181bf7e4f119d08945003339b32aa0782ef41c",
+  "source_leaves": [
+    {
+      "path": ".github/workflows/hepta-windows-token-mechanism-probe.yml",
+      "mode": "100644",
+      "type": "blob",
+      "git_blob": "70f3145268e042ec04fbfe85eda83ccbbc4ff79c"
+    },
+    {
+      "path": "codex-rs/windows-sandbox-rs/src/acl_deny.rs",
+      "mode": "100644",
+      "type": "blob",
+      "git_blob": "da5346c220c41cf0c83f62b596132c74c02284d8"
+    },
+    {
+      "path": "codex-rs/windows-sandbox-rs/src/acl_tests.rs",
+      "mode": "100644",
+      "type": "blob",
+      "git_blob": "ec0264a7615097bec1b554cb60918b4f4662eec2"
+    },
+    {
+      "path": "codex-rs/windows-sandbox-rs/src/unified_exec/acl_setup_tests.rs",
+      "mode": "100644",
+      "type": "blob",
+      "git_blob": "5390daefe0f872866764cb567ad13f22c0675cf4"
+    },
+    {
+      "path": "codex-rs/windows-sandbox-rs/src/token.rs",
+      "mode": "100644",
+      "type": "blob",
+      "git_blob": "b22acb5556f6af3b4c250a2441f161ee448ea1c1"
+    },
+    {
+      "path": "codex-rs/windows-sandbox-rs/src/token_integrity_probe_support.rs",
+      "mode": "100644",
+      "type": "blob",
+      "git_blob": "7a7008f9becf09578ca953c849401eda93eb94b2"
+    },
+    {
+      "path": "codex-rs/windows-sandbox-rs/src/token_integrity_probe_tests.rs",
+      "mode": "100644",
+      "type": "blob",
+      "git_blob": "2a384792e8ba88518c26943716e8c3a39a523f9b"
+    },
+    {
+      "path": "codex-rs/windows-sandbox-rs/src/unified_exec/delete_permission_tests.rs",
+      "mode": "100644",
+      "type": "blob",
+      "git_blob": "d8511f92f9fbd9d58061238dbf3181152c74ccbc"
+    }
+  ],
+  "original_target_summary": "//codex-rs/windows-sandbox-rs:windows-sandbox-rs-unit-tests              FAILED in 55.3s",
+  "original_bazel_exit_code": 3,
+  "required_cases": [
+    {
+      "case": "acl::tests::deny_repair_rejects_a_replaced_path_before_mutating_either_object",
+      "result": "PASS",
+      "line": 16
+    },
+    {
+      "case": "acl::tests::existing_native_deny_does_not_require_write_dac",
+      "result": "PASS",
+      "line": 12
+    },
+    {
+      "case": "acl::tests::native_file_and_directory_repairs_are_idempotent_for_read_and_write",
+      "result": "PASS",
+      "line": 15
+    },
+    {
+      "case": "token::tests::partial_delete_deny_is_repaired_before_native_workspace_writes",
+      "result": "PASS",
+      "line": 297
+    }
+  ],
+  "file_and_directory_identity_markers": [
+    "deny_repair_identity: directory=false returned_ok=false replacement_changed=false original_changed=false",
+    "deny_repair_identity: directory=true returned_ok=false replacement_changed=false original_changed=false"
+  ],
+  "retained_manifest": {
+    "path": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-pr4884-ci-20261105/terminal/probe-127420172838/members/bazel-execution-logs/failed-test-logs/invocation-zojxmwj2/manifest.json",
+    "bytes": 1273,
+    "sha256": "dd832cd102cd3d6cafa78f74836b8e321bb996294edf10ebd901477a5efcd30f",
+    "git_blob": "01a68303f74b606d73561ea2c40278fd2c62cbda"
+  },
+  "retained_files": {
+    ".log": {
+      "path": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-pr4884-ci-20261105/terminal/probe-127420172838/members/bazel-execution-logs/failed-test-logs/invocation-zojxmwj2/targets/0000/test.log",
+      "bytes": 142871,
+      "sha256": "9de796739912193ca7c27c60991fc6d13824a3d2b1ca4e1fc69d1026d1a0f3a8",
+      "git_blob": "6e17a87f968f4cf430df282339250b5762c68b9a"
+    },
+    ".xml": {
+      "path": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-pr4884-ci-20261105/terminal/probe-127420172838/members/bazel-execution-logs/failed-test-logs/invocation-zojxmwj2/targets/0000/test.xml",
+      "bytes": 143294,
+      "sha256": "bdbeaddd88112a6d97ae0309505df8146dcf937692b65e2f479b7d707d82d71f",
+      "git_blob": "96f21de7a6daa16c8274d417e9ef302e4cfeb84c"
+    }
+  },
+  "reviewed_counterfactual_script": {
+    "local_path": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-acl-repair-20261105/counterfactual-workflow-v2/candidate/.github/scripts/run_b11_acl_identity_counterfactual.py",
+    "bytes": 17774,
+    "sha256": "6e199582d277e44f1796dcf64c39bb0fe3f263f060ab79da1bf682fff5866b1f",
+    "git_blob": "25def4386ea08bb72a7605cc113117f31fffcd1b"
+  },
+  "only_readonly_parsers_called": true,
+  "script_main_or_native_executed": false,
+  "qualification_limits": [
+    "This records a completed original full-target run. A future same-job negative must freshly establish its own original positive prerequisites.",
+    "No identity-removal source was installed or run. The counterfactual and strict B11 isolation remain unqualified."
+  ]
+}

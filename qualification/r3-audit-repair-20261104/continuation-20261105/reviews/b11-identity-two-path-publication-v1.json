@@ -1,0 +1,54 @@
+{
+  "schema": "hepta-b11-same-object-acl-publication-v1",
+  "published_utc": "2026-11-05 17:41:37 UTC",
+  "head": "19d2fdfcaefbb41cdf2a72754d695d4b47cb3f14",
+  "tree": "17ac791ce156d05d4d1cd13cddf9184e528293a1",
+  "parent": "7e0b2303ed0242d83bf56202e8ffb17f5c856186",
+  "branch": "diag/b11-token-mechanism-observations-20261105",
+  "pr": 4884,
+  "draft": true,
+  "head_leaves": 10583,
+  "exact_changes": [
+    {
+      "path": "codex-rs/windows-sandbox-rs/src/acl_deny.rs",
+      "before": "1f4a78406d71c8fef5e764fa473a48b769a1606c",
+      "after": "da5346c220c41cf0c83f62b596132c74c02284d8"
+    },
+    {
+      "path": "codex-rs/windows-sandbox-rs/src/acl_tests.rs",
+      "before": "2afcc4e189fa8adfbe2a02c80fcc5c7554d1ef67",
+      "after": "ec0264a7615097bec1b554cb60918b4f4662eec2"
+    }
+  ],
+  "additions": 265,
+  "deletions": 36,
+  "actual_merge": "69040075a846c7032a3bafc7a0b623e7c0257619",
+  "actual_merge_tree": "75181bf7e4f119d08945003339b32aa0782ef41c",
+  "actual_merge_parents": [
+    "eed4d6bb61b789b19f60facc79f9e031765fa4c9",
+    "19d2fdfcaefbb41cdf2a72754d695d4b47cb3f14"
+  ],
+  "merge_leaves": 10585,
+  "merge_full_leaf_map_verified": true,
+  "primary14_paths_preserved": true,
+  "author_manifest": "64b84c70930361580d65fe0d47e4b44733ef36b4",
+  "independent_review": "9eecc3a735653f73e72be9b64e9b055aca519fad",
+  "workflow_blob_unchanged": "70f3145268e042ec04fbfe85eda83ccbbc4ff79c",
+  "expected_whole_target_roster": 156,
+  "native6_first_observation": {
+    "run": 42077117788,
+    "job": 127420172838,
+    "attempt": 1,
+    "status": "queued",
+    "actual_job_checkout": "PENDING_ORIGINAL_JOB_EVIDENCE"
+  },
+  "negative_counterfactual": "NOT_RUN",
+  "B11": "OPEN",
+  "compatibility_limits": [
+    "Only actual repairs require READ_ATTRIBUTES",
+    "Nonzero supported128-bit file IDs required",
+    "Final reparse-point repairs refused",
+    "No ancestor/path-custody or concurrent DACL writer guarantee"
+  ],
+  "all_blockers_closed": false
+}

@@ -1,0 +1,192 @@
+{
+  "schema": "b21-eed-causal-and-exact-missing-evidence-review-v1",
+  "created_utc": "2026-11-05T17:27:03.321281+00:00",
+  "status": "OPEN_ORIGINAL_INTEL_DRAIN_CAUSE_AND_CURRENT_PLATFORM_RESULT",
+  "fixed_source": {
+    "head": "eed4d6bb61b789b19f60facc79f9e031765fa4c9",
+    "tree": "ca1c4671ef6b2773280d01b5d76c6166252f5856",
+    "merge": "3476a8c535f7090c4c868ac85148491b3fdfd983",
+    "merge_tree_equal": true,
+    "source_manifest": {
+      "local_file": "/workspace/scratch/07dd58cc9630/research-audit/b21-intel-current-followup-20261105/source-manifest.json",
+      "bytes": 6863,
+      "sha256": "8d762c2c81fa2f466b6621e1fbbb2e7d88be70f5842e7c359df873b726c028d7",
+      "git_blob": "c76686e5250d7ebda45425b89df1bff1c18bce34"
+    }
+  },
+  "original_exit_condition_zh": "保持原2秒/5秒预算、完整drain与child退出/FD断言；修复源在原macOS Intel的30例与相关原CI通过，并解释实际Intel drain失败原因。",
+  "original_evidence_projection": {
+    "local_file": "/workspace/scratch/07dd58cc9630/research-audit/b21-intel-current-followup-20261105/original-exact-case-projection.json",
+    "bytes": 19213,
+    "sha256": "c9216de339ed0e565c697999634b8cdaa9a731b40fa5607e3d75d05b6d58ff4e",
+    "git_blob": "5c85ea223cb056adab3f6b360abb14cdfd3089ab"
+  },
+  "observed_history": [
+    {
+      "source": "cabc",
+      "counts": {
+        "passed": 28,
+        "failed": 2
+      },
+      "failed": [
+        "tests::pty_dropped_output_receiver_keeps_draining_child",
+        "tests::pty_close_stdin_preserves_large_input_and_delivers_eof"
+      ],
+      "drain_endpoint": "portable,13.942087ms spawn,2.028399059s wait,deadline_elapsed,has_exited=false,exit_code=None,python_started",
+      "close_endpoint": "actual (-1,\"__complete__\") vs expected (0,\"__complete__\")"
+    },
+    {
+      "source": "0e139",
+      "counts": {
+        "passed": 30,
+        "failed": 1
+      },
+      "original30_subset": {
+        "passed": 29,
+        "failed": 1
+      },
+      "collector_added_control": "PASS",
+      "close_original_case": "PASS",
+      "drain_endpoint": "portable,5.331807ms spawn,2.023066511s wait,deadline_elapsed,has_exited=false,exit_code=None,python_started",
+      "job_id": 127089468985,
+      "artifact_limit": "Complete original console PTY block precedes later job cancellation. No new diagnostic io_snapshot existed at this source."
+    },
+    {
+      "source": "5b633",
+      "job_id": 127339256123,
+      "run_id": 41999114842,
+      "original_snapshot": "research-audit/published-5b633-ci-20261105/snapshot-0078/jobs-api-envelope.json",
+      "observed_api": "cancelled,runner_id=0,runner_name empty,steps empty",
+      "qualification": "No PTY execution original was retrieved; these API fields alone are not a proof of all historical internal work."
+    },
+    {
+      "source": "eed4d6",
+      "run_id": 42063948117,
+      "attempt": 1,
+      "original_snapshot": "research-audit/published-eed4d6-ci-20261105/snapshot-0005/jobs-api-envelope.json",
+      "observation_window": "2026-11-05T16:46:22.811Z..2026-11-05T16:46:24.311Z",
+      "observed_api": "blocking-ci pending; no expanded Intel main test job in this frozen snapshot. Later CI observations belong to ci_audit separate cuts."
+    }
+  ],
+  "causal_findings": [
+    {
+      "kind": "existing_fixture_repair",
+      "scope": "close_stdin collector",
+      "evidence": "The former collector repeatedly selected already-closed broadcast recv; current output_open=false disables that ready branch and still awaits the original exit receiver/deadline. Existing added control polls this actual collector pending, sends real exit37, and requires full output/37.",
+      "limit": "This fixes a concrete collector defect; it does not retrospectively distinguish deadline/channel-close/wait-error sources folded into the old -1. The original close_stdin case then passed on original 0e Intel."
+    },
+    {
+      "kind": "still_open_production_cause",
+      "scope": "dropped-output receiver",
+      "evidence": "This original case bypasses the output collector and directly waits the original exit_rx for2s. The fixed source keeps reading after mpsc send failure; PtyIo has one AsyncFd registration, one reused8192 buffer, and no per-read registration.",
+      "limit": "python_started does not identify the blocked syscall, actual byte progress, reader error, child post-write or waiter phase."
+    },
+    {
+      "kind": "upstream_primary_check",
+      "scope": "Tokio/Mio readiness",
+      "evidence": "Pinned tokio1.53.3 registration async_io214–233 awaits readiness plus cooperative budget, clears readiness only on actual WouldBlock and returns success without clearing; Mio1.2.4 registers separate EV_CLEAR read/write filters.",
+      "limit": "No statically demonstrated lost wakeup or unbounded ready-loop starvation; this is source analysis, not original Intel execution tracing."
+    },
+    {
+      "kind": "current_published_observation",
+      "scope": "cfg(test) only",
+      "evidence": "Original timeout decision happens before snapshot and before terminate. Per-session Weak<AsyncFd<File>> reports actual read_calls/read_bytes/discarded_bytes/EOF/raw errno, reader/writer/waiter finished, F_GETFL and non-consumingFIONREAD. Existing4-line test addition restores byte-exact0e test file when removed.",
+      "limit": "Relaxed atomic fields are not an atomic historical state; Weak upgrade pins FD only for after-decision queries. Observations add test-only atomics and may perturb scheduling. No new production repair is claimed."
+    }
+  ],
+  "next_original_intel_gate": {
+    "workflow": ".github/workflows/blocking-ci.yml -> .github/workflows/bazel.yml",
+    "run_id_at_frozen_cut": 42063948117,
+    "run_attempt": 1,
+    "matrix_os": "macos-15-intel",
+    "matrix_target": "x86_64-apple-darwin",
+    "job_name": "Bazel / Bazel test on macos-15-intel for x86_64-apple-darwin",
+    "target": "//codex-rs/utils/pty:pty-unit-tests",
+    "required_original_names": [
+      "tests::driver_backed_process_can_expose_split_stdout_and_stderr",
+      "tests::driver_backed_process_can_resize_via_resizer_hook",
+      "tests::driver_backed_process_drains_output_that_arrives_after_exit_signal",
+      "tests::pipe_and_pty_share_interface",
+      "tests::pipe_drains_stderr_without_stdout_activity",
+      "tests::pipe_drop_reaps_child",
+      "tests::pipe_process_can_expose_split_stdout_and_stderr",
+      "tests::pipe_process_detaches_from_parent_session",
+      "tests::pipe_process_round_trips_stdin",
+      "tests::pipe_spawn_no_stdin_can_preserve_inherited_fds",
+      "tests::pipe_terminate_aborts_detached_readers",
+      "tests::pipe_terminate_reaps_child",
+      "tests::pty_close_stdin_preserves_large_input_and_delivers_eof",
+      "tests::pty_drop_allows_runtime_shutdown_with_detached_child",
+      "tests::pty_dropped_output_receiver_keeps_draining_child",
+      "tests::pty_preserving_fds_drop_allows_runtime_shutdown_with_detached_child",
+      "tests::pty_preserving_fds_terminate_allows_runtime_shutdown_with_detached_child",
+      "tests::pty_preserving_inherited_fds_keeps_python_repl_running",
+      "tests::pty_python_repl_emits_output_and_exits",
+      "tests::pty_python_repl_readiness_waits_for_execution_after_input_echo",
+      "tests::pty_spawn_can_preserve_inherited_fds",
+      "tests::pty_spawn_with_inherited_fds_reports_exec_failures",
+      "tests::pty_spawn_with_inherited_fds_supports_resize",
+      "tests::pty_spawn_without_io_driver_returns_error",
+      "tests::pty_terminate_allows_runtime_shutdown_with_detached_child",
+      "tests::pty_terminate_allows_runtime_shutdown_with_full_output_channel",
+      "tests::pty_terminate_kills_background_children_in_same_process_group",
+      "tests::pty_terminate_reaps_child_when_waiter_is_queued",
+      "process_group::tests::denied_group_signal_terminates_owned_descendants_and_preserves_escalation",
+      "process_group::tests::denied_group_signal_rejects_unsafe_process_group_ids"
+    ],
+    "current_additional_name": "tests::output_collector_waits_for_exit_after_output_closes",
+    "required_original_names_count": 30,
+    "current_eligible_expected_count": 31,
+    "command": "Original workflow run-bazel-ci.sh test //... with its existing exclusions, tag filter, config, cache and retry settings; no additional test invocation requested.",
+    "testlog_logical_path": "bazel-testlogs/codex-rs/utils/pty/pty-unit-tests/test.log",
+    "xml_logical_path": "bazel-testlogs/codex-rs/utils/pty/pty-unit-tests/test.xml",
+    "attempt_logical_path": "bazel-testlogs/codex-rs/utils/pty/pty-unit-tests/test_attempts/",
+    "artifact_name": "bazel-execution-logs-test-x86_64-apple-darwin",
+    "source_requirements": [
+      "Actual checkout/merge parents/tree, command/config, runner Intel and Python helper availability must be retained.",
+      "All31 original exact names final rows; preserve available attempts and cache markers. Target-wrapper XML is not31 case XML.",
+      "Do not treat helper-not-found early return, filtered/ignored cases, ARM/Linux or operator-fixture outputs as Intel original qualification.",
+      "Read diagnostic io_snapshot and child_phase before cleanup if drain fails. Pure PASS with captured diagnostic stdout does not prove prior cause."
+    ]
+  },
+  "no_new_observation_proposed": {
+    "reason": "Already published snapshot covers the first concrete split needed after the next actual failure. Additional scheduling intervention, synthetic WouldBlock, sleep/yield, termios or waiter rewrite has no evidenced basis.",
+    "future_if_specific_endpoint": "If all4194304 bytes drained but waiter absent, inspect original child wait result/phase; if actual EIO/EOF precedes full drain, inspect descriptor lifetime; if queued bytes coexist with pending reader, target readiness chain but one sample alone does not prove lost wakeup."
+  },
+  "evidence_retention_candidate": {
+    "kind": "CI_ONLY_NOT_DRAIN_REPAIR",
+    "source_path": ".github/scripts/collect_bazel_failed_test_logs.py",
+    "preimage": {
+      "bytes": 16260,
+      "sha256": "55353f094531a4af974c519fadca01dcd0c8be6ece1f8b10efb70d24ae2a44eb",
+      "git_blob": "2142eeb382664d95f77d83ac7ae3da4459601abf"
+    },
+    "postimage": {
+      "bytes": 16303,
+      "sha256": "bb25a658988b77ef23517501afb4893a8a5f7960bd7930b6aef6041ba1274c1c",
+      "git_blob": "18701f51e4df1ef6b0fd390d2990114bf971331d"
+    },
+    "patch": {
+      "bytes": 462,
+      "sha256": "669bc1e596f7f77d7a7bdae224cc6485ab9a8e4f40bdb3d557fceac8de0d58ae",
+      "git_blob": "e0f94bd68a555a7ca4af773a26c4957215284dcf"
+    },
+    "scope": "Append existing PTY target after original11 entries; all GNU/macOS/Windows invocations can retain existing PASSED/FLAKY logs. No execution/config changes.",
+    "reason": "Current --test_output=errors plus absence from success allowlist can leave only target PASS summary.",
+    "workflow_cancel_limit": "Existing always() && !cancelled() upload guard remains; later cancelled job may have only console failure block.",
+    "static_verification": {
+      "local_file": "/workspace/scratch/07dd58cc9630/research-audit/b21-intel-current-followup-20261105/retention-candidate-v1/static-verification.json",
+      "bytes": 4454,
+      "sha256": "ea5110f131baf5d845f5869ece73fb9b61ea9ea5935c3cace4a149d19e526118",
+      "git_blob": "b252a7c306fb4611bbe3e61dc46efffef977805c"
+    },
+    "project_regression_gate": "python3 -m unittest discover -s .github/scripts -p test_run_bazel*.py -v",
+    "project_regression_status": "NOT_RUN_BY_THIS_REVIEW"
+  },
+  "boundaries": [
+    "No new native run, Rust/Python project test, shared source/index/target edit, ref update, dispatch, rerun or cancellation.",
+    "One independent retention candidate is cloud-only, not included in eed.",
+    "B21 stays OPEN; no count/exit changes; B15 remains separate.",
+    "Original30 contains two macOS-specific process-group controls; Linux29 cannot qualify them."
+  ]
+}

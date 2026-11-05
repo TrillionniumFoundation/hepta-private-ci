@@ -1,0 +1,121 @@
+{
+  "commands": [
+    {
+      "argv": [
+        "git",
+        "init",
+        "--quiet"
+      ],
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "git",
+        "add",
+        "--",
+        ".github/workflows/hepta-windows-token-mechanism-probe.yml"
+      ],
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "git",
+        "add",
+        "--intent-to-add",
+        "--",
+        ".github/scripts/run_b11_acl_identity_counterfactual.py"
+      ],
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "git",
+        "diff",
+        "--binary",
+        "--full-index",
+        "--no-ext-diff",
+        "--",
+        ".github/workflows/hepta-windows-token-mechanism-probe.yml",
+        ".github/scripts/run_b11_acl_identity_counterfactual.py"
+      ],
+      "exit_code": 0,
+      "stdout": "diff --git a/.github/scripts/run_b11_acl_identity_counterfactual.py b/.github/scripts/run_b11_acl_identity_counterfactual.py\nnew file mode 100644\nindex 0000000000000000000000000000000000000000..25def4386ea08bb72a7605cc113117f31fffcd1b\n--- /dev/null\n+++ b/.github/scripts/run_b11_acl_identity_counterfactual.py\n@@ -0,0 +1,288 @@\n+\"\"\"Run one owned ACL counterfactual after the unchanged Windows unit target.\n+\n+This script never converts the preceding target's failure into success. A valid\n+counterfactual is a physical replacement mutation followed by one exact failing\n+assertion, with the positive source restored in finally. It is not B11 closure.\n+\"\"\"\n+\n+import argparse\n+import hashlib\n+import json\n+import os\n+from pathlib import Path\n+import re\n+import subprocess\n+import tempfile\n+import time\n+import xml.etree.ElementTree as ET\n+\n+\n+TARGET = \"//codex-rs/windows-sandbox-rs:windows-sandbox-rs-unit-tests\"\n+CASE = \"acl::tests::deny_repair_rejects_a_replaced_path_before_mutating_either_object\"\n+SOURCE = \"codex-rs/windows-sandbox-rs/src/acl_deny.rs\"\n+TEST_SOURCE = \"codex-rs/windows-sandbox-rs/src/acl_tests.rs\"\n+POSITIVE = \"da5346c220c41cf0c83f62b596132c74c02284d8\"\n+NEGATIVE = \"0baeb6ec2f3bfd0964be6d014fc5d80d890ea3d7\"\n+TEST_BLOB = \"ec0264a7615097bec1b554cb60918b4f4662eec2\"\n+CHECK = b'''    ensure!(\n+        actual == expected,\n+        \"deny repair path no longer identifies the retained object: {}\",\n+        path.display()\n+    );'''\n+IGNORED_CHECK = b\"    let _ = actual == expected;\"\n+MARKER = \"deny_repair_identity: directory=false returned_ok=true replacement_changed=true original_changed=false\"\n+ASSERTION = \"a replacement object must not receive the queried object's deny\"\n+ANSI = re.compile(r\"\\x1b\\[[0-?]*[ -/]*[@-~]\")\n+\n+\n+def require(condition, message):\n+    if not condition:\n+        raise RuntimeError(message)\n+\n+\n+def digest(body):\n+    return {\"bytes\": len(body), \"sha256\": hashlib.sha256(body).hexdigest(),\n+            \"git_blob\": hashlib.sha1(b\"blob \" + str(len(body)).encode() + b\"\\0\" + body).hexdigest()}\n+\n+\n+def save(directory, name, value):\n+    (directory / name).write_text(json.dumps(value, indent=2, ensure_ascii=False) + \"\\n\", encoding=\"utf-8\")\n+\n+\n+def replace_owned_source(path, body):\n+    temporary = None\n+    try:\n+        with tempfile.NamedTemporaryFile(prefix=\"b11-identity-\", suffix=\".tmp\", dir=path.parent, delete=False) as output:\n+            temporary = Path(output.name)\n+            output.write(body)\n+            output.flush()\n+            os.fsync(output.fileno())\n+        os.chmod(temporary, path.stat().st_mode)\n+        os.replace(temporary, path)\n+    finally:\n+        if temporary is not None:\n+            temporary.unlink(missing_ok=True)\n+\n+\n+def git(root, *args):\n+    result = subprocess.run([\"git\", *args], cwd=root, capture_output=True, check=False)\n+    require(result.returncode == 0, f\"read-only git command failed: {args!r}: {result.stderr!r}\")\n+    return result.stdout\n+\n+\n+def canonical(body, expected, description):\n+    normalized = body.replace(b\"\\r\\n\", b\"\\n\")\n+    require(b\"\\r\" not in normalized, f\"unexpected newline representation: {description}\")\n+    require(body == normalized or body == normalized.replace(b\"\\n\", b\"\\r\\n\"),\n+            f\"mixed newline representation: {description}\")\n+    require(digest(normalized)[\"git_blob\"] == expected, f\"source blob mismatch: {description}\")\n+    return normalized\n+\n+\n+def source_guard(root, head, expected, dirty):\n+    require(git(root, \"rev-parse\", \"HEAD\").decode().strip() == head, \"HEAD changed\")\n+    require(not git(root, \"diff\", \"--cached\", \"--name-only\"), \"ordinary index has staged changes\")\n+    status = git(root, \"status\", \"--porcelain=v1\", \"--untracked-files=all\").decode().splitlines()\n+    require(status == ([f\" M {SOURCE}\"] if dirty else []), f\"unexpected worktree status: {status!r}\")\n+    canonical((root / SOURCE).read_bytes(), expected, SOURCE)\n+    canonical((root / TEST_SOURCE).read_bytes(), TEST_BLOB, TEST_SOURCE)\n+    return {\"head\": head, \"head_tree\": git(root, \"rev-parse\", \"HEAD^{tree}\").decode().strip(),\n+            \"source\": digest((root / SOURCE).read_bytes()), \"source_canonical_git_blob\": expected,\n+            \"tests\": digest((root / TEST_SOURCE).read_bytes()), \"status\": status,\n+            \"index_entries\": digest(git(root, \"ls-files\", \"--stage\")),\n+            \"locks\": {name: digest((root / name).read_bytes()) for name in (\"codex-rs/Cargo.lock\", \"MODULE.bazel.lock\")}}\n+\n+\n+def retained_log(root, head, tree, dirty):\n+    \"\"\"Use only exact-target copies from this step's wrapper-owned archive.\"\"\"\n+    records = []\n+    for kind in (\"failed-test-logs\", \"selected-target-test-logs\"):\n+        for path in (root / kind).glob(\"invocation-*/manifest.json\"):\n+            require(not path.is_symlink(), \"collector manifest is a symlink\")\n+            manifest = json.loads(path.read_text(encoding=\"utf-8\"))\n+            if TARGET not in manifest.get(\"selected_targets\", []):\n+                continue\n+            require(manifest.get(\"complete_for_selected_targets\") is True and not manifest.get(\"errors\"),\n+                    \"collector target copy is incomplete\")\n+            source = manifest.get(\"source\", {})\n+            require(source == {\"commit\": head, \"tree\": tree, \"tracked_worktree_dirty\": dirty},\n+                    \"collector source does not match this exact phase\")\n+            selected = {}\n+            for row in manifest.get(\"files\", []):\n+                if row.get(\"target\") != TARGET or row.get(\"testlogs_relative_path\") not in {\n+                    \"codex-rs/windows-sandbox-rs/windows-sandbox-rs-unit-tests/test.log\",\n+                    \"codex-rs/windows-sandbox-rs/windows-sandbox-rs-unit-tests/test.xml\",\n+                }:\n+                    continue\n+                relative = Path(row[\"archive_relative_path\"])\n+                require(not relative.is_absolute() and \"..\" not in relative.parts, \"unsafe collector member path\")\n+                file = path.parent / relative\n+                require(file.resolve().is_relative_to(path.parent.resolve()) and not file.is_symlink(),\n+                        \"collector member escapes its invocation\")\n+                body = file.read_bytes()\n+                require(len(body) == row[\"bytes\"] and hashlib.sha256(body).hexdigest() == row[\"sha256\"],\n+                        \"collector member bytes do not match manifest\")\n+                suffix = Path(row[\"testlogs_relative_path\"]).suffix\n+                require(suffix not in selected, \"duplicate target log or XML\")\n+                selected[suffix] = (body, {\"path\": str(file), **digest(body)})\n+            require(set(selected) == {\".log\", \".xml\"}, \"missing exact target log/XML\")\n+            records.append((selected, {\"path\": str(path), **digest(path.read_bytes())}))\n+    require(len(records) == 1, f\"expected one exact current target copy, found {len(records)}\")\n+    return records[0]\n+\n+\n+def target_terminal(console, expected):\n+    clean = ANSI.sub(\"\", console.decode(\"utf-8\", errors=\"strict\")).replace(\"\\r\", \"\")\n+    lines = [line.strip() for line in clean.splitlines() if line.startswith(TARGET + \" \")]\n+    require(len(lines) == 1, \"missing or ambiguous exact target summary\")\n+    require(\"cached\" not in lines[0].lower() and \"FLAKY\" not in lines[0], \"cached/retried target is not fresh evidence\")\n+    require(re.fullmatch(re.escape(TARGET) + r\"\\s+\" + expected + r\" in [0-9.]+s\", lines[0]) is not None,\n+            f\"unexpected target terminal: {lines[0]}\")\n+    return lines[0]\n+\n+\n+def main():\n+    parser = argparse.ArgumentParser()\n+    parser.add_argument(\"--evidence\", type=Path, required=True)\n+    args = parser.parse_args()\n+    root = Path(__file__).resolve().parents[2]\n+    original = args.evidence.resolve(strict=True)\n+    require(original.is_relative_to(Path(os.environ[\"RUNNER_TEMP\"]).resolve(strict=True)), \"evidence must be owned runner temp\")\n+    evidence = original / \"acl-identity-counterfactual\"\n+    evidence.mkdir(exist_ok=False)\n+    report = {\"status\": \"NOT_STARTED\", \"physical_counterfactual_qualified\": False,\n+              \"physical_oracle_reached\": False,\n+              \"product_B11\": \"OPEN\", \"restored_exact_original_bytes\": False}\n+    mutated = False\n+    mutation_attempted = False\n+    error = None\n+    restore_error = None\n+    source = root / SOURCE\n+    original_bytes = None\n+    negative_bytes = None\n+    entry = None\n+    head = git(root, \"rev-parse\", \"HEAD\").decode().strip()\n+    try:\n+        entry = source_guard(root, head, POSITIVE, False)\n+        save(evidence, \"source-entry.json\", entry)\n+        require(git(root, \"show\", f\"HEAD:{SOURCE}\") == canonical(source.read_bytes(), POSITIVE, SOURCE),\n+                \"positive source is not the checked-out commit's blob\")\n+        require(git(root, \"show\", \"HEAD:.github/scripts/run_b11_acl_identity_counterfactual.py\").replace(b\"\\r\\n\", b\"\\n\")\n+                == Path(__file__).read_bytes().replace(b\"\\r\\n\", b\"\\n\"), \"counterfactual script differs from checkout\")\n+        original_status = int((original / \"original-bazel-exit-code.txt\").read_text().strip())\n+        require(original_status in {0, 3}, \"original target did not reach ordinary test completion\")\n+        require(int((original / \"console-copy-exit-code.txt\").read_text().strip()) == 0,\n+                \"original full console copy failed\")\n+        require((original / \"source-head-tree.txt\").read_text().splitlines() == [head, entry[\"head_tree\"]],\n+                \"original target source identity differs from this checkout\")\n+        require(not (original / \"source-status-before.txt\").read_text().strip()\n+                and not (original / \"source-status-after.txt\").read_text().strip(),\n+                \"original target did not retain a clean tracked checkout\")\n+        original_console = (original / \"bazel-console.log\").read_bytes()\n+        original_summary = target_terminal(original_console, \"PASSED\" if original_status == 0 else \"FAILED\")\n+        archive = Path(os.environ[\"CODEX_BAZEL_EXECUTION_LOG_COMPACT_DIR\"]).resolve(strict=True)\n+        require(archive.is_relative_to(Path(os.environ[\"RUNNER_TEMP\"]).resolve(strict=True)), \"original archive is outside runner temp\")\n+        positive, positive_manifest = retained_log(archive, head, entry[\"head_tree\"], False)\n+        positive_text = ANSI.sub(\"\", positive[\".log\"][0].decode(\"utf-8\", errors=\"strict\")).replace(\"\\r\", \"\")\n+        for required in [CASE, \"acl::tests::existing_native_deny_does_not_require_write_dac\",\n+                         \"acl::tests::native_file_and_directory_repairs_are_idempotent_for_read_and_write\",\n+                         \"token::tests::partial_delete_deny_is_repaired_before_native_workspace_writes\"]:\n+            require(len(re.findall(r\"^test \" + re.escape(required) + r\" \\.\\.\\. ok$\", positive_text, re.MULTILINE)) == 1,\n+                    f\"original target lacks one exact positive result for {required}\")\n+        require(f\"---- {CASE} stdout ----\" not in positive_text, \"new case failed in original full target\")\n+        save(evidence, \"positive-prerequisites.json\", {\"original_exit_code\": original_status,\n+             \"original_summary\": original_summary, \"console\": digest(original_console),\n+             \"collector_manifest\": positive_manifest, \"files\": {k: v[1] for k, v in positive.items()}})\n+\n+        original_bytes = source.read_bytes()\n+        positive_body = canonical(original_bytes, POSITIVE, SOURCE)\n+        require(positive_body.count(CHECK) == 1, \"identity enforcement is not unique\")\n+        negative_body = positive_body.replace(CHECK, IGNORED_CHECK)\n+        require(digest(negative_body)[\"git_blob\"] == NEGATIVE, \"negative source is not the approved blob\")\n+        negative_bytes = negative_body if original_bytes == positive_body else negative_body.replace(b\"\\n\", b\"\\r\\n\")\n+        (evidence / \"positive-source.original\").write_bytes(original_bytes)\n+        (evidence / \"negative-source.original\").write_bytes(negative_bytes)\n+        mutation_attempted = True\n+        replace_owned_source(source, negative_bytes)\n+        mutated = True\n+        before = source_guard(root, head, NEGATIVE, True)\n+        require(before[\"index_entries\"] == entry[\"index_entries\"] and before[\"locks\"] == entry[\"locks\"], \"index/locks changed\")\n+        save(evidence, \"source-negative-before.json\", before)\n+        negative_archive = evidence / \"bazel-execution-logs\"\n+        negative_archive.mkdir()\n+        env = os.environ.copy()\n+        env[\"CODEX_BAZEL_EXECUTION_LOG_COMPACT_DIR\"] = str(negative_archive)\n+        argv = [\"bash\", \"./.github/scripts/run-bazel-ci.sh\", \"--print-failed-action-summary\",\n+                \"--print-failed-test-logs\", \"--windows-msvc-host-platform\", \"--remote-download-toplevel\", \"--\", \"test\",\n+                \"--platforms=//:windows_x86_64_msvc\", \"--skip_incompatible_explicit_targets\",\n+                \"--test_tag_filters=-argument-comment-lint\", \"--test_verbose_timeout_warnings\", \"--test_output=all\",\n+                f\"--build_metadata=COMMIT_SHA={os.environ['GITHUB_SHA']}\",\n+                \"--build_metadata=TAG_b11_observation_only=true\", \"--build_metadata=TAG_b11_identity_counterfactual=true\",\n+                \"--nocache_test_results\", \"--flaky_test_attempts=1\", f\"--test_arg={CASE}\", \"--test_arg=--exact\", \"--\", TARGET]\n+        save(evidence, \"negative-command.json\", {\"argv\": argv, \"cwd\": str(root), \"source\": before,\n+             \"scope\": \"One new physical case only; original full-target command and its exit remain unchanged.\"})\n+        started = time.monotonic()\n+        with (evidence / \"negative-console.log\").open(\"wb\") as console_file:\n+            result = subprocess.run(argv, cwd=root, env=env, stdout=console_file, stderr=subprocess.STDOUT, check=False)\n+        save(evidence, \"negative-command-terminal.json\", {\"exit_code\": result.returncode, \"elapsed_seconds\": time.monotonic() - started})\n+        after = source_guard(root, head, NEGATIVE, True)\n+        save(evidence, \"source-negative-after.json\", after)\n+        require(after == before, \"negative execution changed guarded source/index/locks\")\n+        require(result.returncode == 3, \"negative command must be an ordinary Bazel test failure\")\n+        target_terminal((evidence / \"negative-console.log\").read_bytes(), \"FAILED\")\n+        negative, negative_manifest = retained_log(negative_archive, head, entry[\"head_tree\"], True)\n+        log = ANSI.sub(\"\", negative[\".log\"][0].decode(\"utf-8\", errors=\"strict\")).replace(\"\\r\", \"\")\n+        require(log.splitlines().count(MARKER) == 1, \"missing unique physical replacement marker\")\n+        headers = re.findall(r\"^---- (.+) stdout ----$\", log, re.MULTILINE)\n+        require(headers == [CASE], \"wrong or additional failed test case\")\n+        require(re.search(r\"^thread '\" + re.escape(CASE) + r\"'(?: \\([0-9]+\\))? panicked at (?:codex-rs[\\\\/])?windows-sandbox-rs[\\\\/]src[\\\\/]acl_tests\\.rs:597:9:$\", log, re.MULTILINE) is not None,\n+                \"wrong physical assertion location\")\n+        require(ASSERTION in log, \"wrong assertion message\")\n+        summaries = re.findall(r\"^test result: (.+)$\", log, re.MULTILINE)\n+        require(len(summaries) == 1 and re.fullmatch(r\"FAILED\\. 0 passed; 1 failed; 0 ignored; 0 measured; 155 filtered out; finished in [0-9.]+s\", summaries[0]) is not None,\n+                \"negative must execute precisely one original new case without an ignored test or retry\")\n+        xml = ET.fromstring(negative[\".xml\"][0])\n+        cases = xml.findall(\".//testcase\")\n+        require(len(cases) == 1 and cases[0].get(\"status\") == \"run\", \"unexpected outer test XML\")\n+        failures = cases[0].findall(\"error\")\n+        require(len(failures) == 1 and failures[0].get(\"message\") == \"exited with error code 101\"\n+                and not cases[0].findall(\"failure\") and not cases[0].findall(\"skipped\"),\n+                \"negative must end at ordinary libtest assertion exit 101, not timeout/unknown exit\")\n+        report.update(status=\"PHYSICAL_ORACLE_REACHED_PENDING_RESTORE\", physical_counterfactual_qualified=True,\n+                      physical_oracle_reached=True,\n+                      negative_collector_manifest=negative_manifest, negative_files={k: v[1] for k, v in negative.items()})\n+    except Exception as exc:\n+        error = repr(exc)\n+    finally:\n+        if mutation_attempted:\n+            try:\n+                current = source.read_bytes()\n+                require(current in {negative_bytes, original_bytes}, \"refusing to overwrite an unexpected source during restore\")\n+                before_restore = source_guard(root, head, NEGATIVE if current == negative_bytes else POSITIVE,\n+                                              current == negative_bytes)\n+                save(evidence, \"source-before-restore.json\", before_restore)\n+                require(before_restore[\"index_entries\"] == entry[\"index_entries\"]\n+                        and before_restore[\"locks\"] == entry[\"locks\"], \"refusing restore after index/lock drift\")\n+                replace_owned_source(source, original_bytes)\n+                require(source.read_bytes() == original_bytes, \"positive source did not restore byte-for-byte\")\n+                final = source_guard(root, head, POSITIVE, False)\n+                save(evidence, \"source-restored.json\", final)\n+                require(final == entry, \"final source/index/locks differ from entry\")\n+                report[\"restored_exact_original_bytes\"] = True\n+            except Exception as exc:\n+                restore_error = repr(exc)\n+        report.update(error=error, restore_error=restore_error, source_mutated=mutated,\n+                      source_mutation_attempted=mutation_attempted,\n+                      original_target_exit_code_unchanged=True, hard_cancellation_restore_guaranteed=False)\n+        if error is None and restore_error is None and report[\"physical_counterfactual_qualified\"] and report[\"restored_exact_original_bytes\"]:\n+            report[\"status\"] = \"VALID_NEGATIVE_AND_EXACT_RESTORE\"\n+        else:\n+            report[\"status\"] = \"INVALID_OR_NOT_RUN\"\n+            report[\"physical_counterfactual_qualified\"] = False\n+        save(evidence, \"counterfactual-terminal.json\", report)\n+    print(json.dumps(report, indent=2))\n+    return 0 if report[\"status\"] == \"VALID_NEGATIVE_AND_EXACT_RESTORE\" else 1\n+\n+\n+if __name__ == \"__main__\":\n+    raise SystemExit(main())\ndiff --git a/.github/workflows/hepta-windows-token-mechanism-probe.yml b/.github/workflows/hepta-windows-token-mechanism-probe.yml\nindex 70f3145268e042ec04fbfe85eda83ccbbc4ff79c..912e22789665b0081c83ae0fa632d2482e8b0eba 100644\n--- a/.github/workflows/hepta-windows-token-mechanism-probe.yml\n+++ b/.github/workflows/hepta-windows-token-mechanism-probe.yml\n@@ -11,6 +11,7 @@ on:\n       - codex-rs/windows-sandbox-rs/src/token_integrity_probe_support.rs\n       - codex-rs/windows-sandbox-rs/src/unified_exec/delete_permission_tests.rs\n       - .github/workflows/hepta-windows-token-mechanism-probe.yml\n+      - .github/scripts/run_b11_acl_identity_counterfactual.py\n \n permissions:\n   contents: read\n@@ -35,6 +36,7 @@ jobs:\n           cache-scope: bazel-test\n \n       - name: Run the original outer Windows sandbox unit target\n+        id: original_unit_target\n         env:\n           BUILDBUDDY_API_KEY: ${{ secrets.BUILDBUDDY_API_KEY }}\n         shell: bash\n@@ -79,6 +81,17 @@ jobs:\n           git status --porcelain=v1 > \"$evidence/source-status-after.txt\"\n           exit \"${statuses[0]}\"\n \n+      - name: Check the ACL identity counterfactual and restore its source\n+        if: always() && !cancelled() && steps.original_unit_target.outcome != 'skipped'\n+        env:\n+          BUILDBUDDY_API_KEY: ${{ secrets.BUILDBUDDY_API_KEY }}\n+        shell: bash\n+        run: |\n+          set -euo pipefail\n+          evidence=\"$(cygpath -u \"${RUNNER_TEMP}\")/b11-token-mechanism-probe\"\n+          python3 .github/scripts/run_b11_acl_identity_counterfactual.py \\\n+            --evidence \"$(cygpath -w \"$evidence\")\"\n+\n       # The unchanged wrapper already retains this exact target on both failure\n       # and console-reported success, including cached/missing evidence limits.\n       - name: Upload complete observation and original failure evidence\n",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "git",
+        "init",
+        "--quiet"
+      ],
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "git",
+        "add",
+        "--",
+        ".github/workflows/hepta-windows-token-mechanism-probe.yml"
+      ],
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "git",
+        "apply",
+        "--check",
+        "/workspace/scratch/07dd58cc9630/architecture-audit/b11-acl-repair-20261105/counterfactual-workflow-v2/full.patch"
+      ],
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "git",
+        "apply",
+        "/workspace/scratch/07dd58cc9630/architecture-audit/b11-acl-repair-20261105/counterfactual-workflow-v2/full.patch"
+      ],
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "git",
+        "apply",
+        "--reverse",
+        "--check",
+        "/workspace/scratch/07dd58cc9630/architecture-audit/b11-acl-repair-20261105/counterfactual-workflow-v2/full.patch"
+      ],
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "git",
+        "apply",
+        "--reverse",
+        "/workspace/scratch/07dd58cc9630/architecture-audit/b11-acl-repair-20261105/counterfactual-workflow-v2/full.patch"
+      ],
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": ""
+    }
+  ],
+  "postimages_exact": true,
+  "reverse_exact": true,
+  "AST_parse_only": true,
+  "project_or_windows_commands_executed": false
+}

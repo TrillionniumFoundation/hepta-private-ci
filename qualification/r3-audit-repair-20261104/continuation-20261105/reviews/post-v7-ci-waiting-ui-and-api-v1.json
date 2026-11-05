@@ -1,0 +1,53 @@
+{
+  "schema": "root-post-v7-ci-waiting-ui-and-api-observation-v1",
+  "recorded_utc": "2026-11-05T17:53:52Z",
+  "browser_observation_window_utc": [
+    "2026-11-05T17:29:14Z",
+    "2026-11-05T17:35:42Z"
+  ],
+  "source": "Root direct browser accessibility-state observations during authorized CI queue management; selected observations transcribed, not a full HTML/AX archive.",
+  "observations": [
+    {
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/41999114842",
+      "visible_wait_target_run": 41975255726,
+      "visible_wait_target_label": "blocking-ci #33534"
+    },
+    {
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/42063948117",
+      "visible_wait_target_run": 41999114842,
+      "visible_wait_target_label": "blocking-ci #33590"
+    },
+    {
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/42063947919",
+      "visible_wait_target_run": 41999114801,
+      "visible_wait_target_label": "Hepta architecture convergence #20399"
+    }
+  ],
+  "independent_complete_REST_records": [
+    "ci/queue-followup-v2/older-blocking-run.original.json",
+    "ci/queue-followup-v2/older-blocking-jobs.original.json"
+  ],
+  "REST_facts": {
+    "id": 41975255726,
+    "head": "0e139b599f0fe451f80fb7db4b2913bb9c679dce",
+    "status": "completed",
+    "conclusion": "cancelled",
+    "updated_at": "2026-11-05T09:42:55Z",
+    "jobs_total": 37,
+    "terminal_jobs": 37,
+    "counts": {
+      "success": 8,
+      "failure": 5,
+      "cancelled": 20,
+      "skipped": 4
+    }
+  },
+  "interpretation": "Retain both the UI waiting links and REST terminal status. This is an observation mismatch, not proof of active older execution, stale-lock root cause, or sole runner capacity cause.",
+  "cancel_capability": "Installed connector exposed rerun but no cancel tool; browser signed out. This does not mean GitHub create/ref/PR write capabilities are unavailable.",
+  "mutations": {
+    "cancel": false,
+    "rerun": false,
+    "login_started": false,
+    "workflow_changed": false
+  }
+}

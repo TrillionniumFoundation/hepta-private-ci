@@ -1,0 +1,68 @@
+{
+  "schema": "b11-acl-identity-v3-independent-publication-v1",
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "objects": [
+    {
+      "local_file": "/workspace/scratch/07dd58cc9630/research-audit/b11-acl-identity-v3-independent-20261105/independent-review.json",
+      "bytes": 20867,
+      "sha256": "26b38602418b28d76b3cbafe36a7f2062cf81a4ba141596042080f0d2b3eb7ad",
+      "blob": "9eecc3a735653f73e72be9b64e9b055aca519fad",
+      "role": "independent_static_review",
+      "verification": {
+        "actual_create_sha": "9eecc3a735653f73e72be9b64e9b055aca519fad",
+        "actual_GET_bytes_equal": true,
+        "observed_at": "2026-11-05T17:40:35.413Z"
+      }
+    },
+    {
+      "local_file": "/workspace/scratch/07dd58cc9630/research-audit/b11-acl-identity-v3-independent-20261105/REVIEW.zh-CN.md",
+      "bytes": 3629,
+      "sha256": "584f53636fec05056054f161307fc1ba6baac4e56f58187f8c4be08331684cd2",
+      "blob": "6c1fe3686a45e3b8ee06b459b670f5a691993e23",
+      "role": "human_review",
+      "verification": {
+        "actual_create_sha": "6c1fe3686a45e3b8ee06b459b670f5a691993e23",
+        "actual_GET_bytes_equal": true,
+        "observed_at": "2026-11-05T17:40:37.483Z"
+      }
+    },
+    {
+      "local_file": "/workspace/scratch/07dd58cc9630/research-audit/b11-acl-identity-v3-independent-20261105/static-reconstruction.json",
+      "bytes": 15211,
+      "sha256": "68531a3812654c30e24b635101b601e6951700d936efc78e9bc7aacbce44d2f1",
+      "blob": "550ba8c4674d9527acfb91ef7681203a3773a5b6",
+      "role": "actual_cloud_git_reconstruction",
+      "verification": {
+        "actual_create_sha": "550ba8c4674d9527acfb91ef7681203a3773a5b6",
+        "actual_GET_bytes_equal": true,
+        "observed_at": "2026-11-05T17:40:40.736Z"
+      }
+    },
+    {
+      "local_file": "/workspace/scratch/07dd58cc9630/research-audit/b11-acl-identity-v3-independent-20261105/verify_static.py",
+      "bytes": 6731,
+      "sha256": "99bb5b0494afb8830cffbf87d3f11a638d578902220fcb40764c933d10278120",
+      "blob": "1fecefdcedc38eb3f5835486c42ff1575523fed5",
+      "role": "independent_reconstruction_verifier",
+      "verification": {
+        "actual_create_sha": "1fecefdcedc38eb3f5835486c42ff1575523fed5",
+        "actual_GET_bytes_equal": true,
+        "observed_at": "2026-11-05T17:40:43.142Z"
+      }
+    },
+    {
+      "local_file": "/workspace/scratch/07dd58cc9630/research-audit/b11-acl-identity-v3-independent-20261105/official-api.original.json",
+      "bytes": 52662,
+      "sha256": "5296d5d0d5ff3b7f658bd1136875ccb50b805d9b44d6270f5c78636c824907d5",
+      "blob": "cab6f1d10d68bb7090e803a790b7d90ae8835e91",
+      "role": "independent_official_api_retrieval",
+      "verification": {
+        "actual_create_sha": "cab6f1d10d68bb7090e803a790b7d90ae8835e91",
+        "actual_GET_bytes_equal": true,
+        "observed_at": "2026-11-05T17:40:49.798Z"
+      }
+    }
+  ],
+  "native_executed": false,
+  "ref_modified": false
+}

@@ -1,0 +1,96 @@
+{
+  "schema": "b08-original-exit-independent-review-v1",
+  "created_at": "2026-11-05T17:38:34.682080+00:00",
+  "recommendation": "CLOSED_SCOPED_ELIGIBLE_FOR_ROOT_DECISION",
+  "not_a_ledger_status_mutation": true,
+  "original_exit_source": {
+    "path": "/workspace/scratch/07dd58cc9630/hepta-audit-fourth/inputs/seven-pending-manifest.json",
+    "bytes": 145618,
+    "sha256": "626391a3932d1cafa2209d7a367bdb002b4beba652b5a006a45933e463b78059",
+    "git_blob": "6f8f5bbc43a627f280766457ccdae46cef93a9c9"
+  },
+  "original_exit": {
+    "id": "B08",
+    "name": "私有 attempted tool 元数据",
+    "frozen_ledger_exit_condition_zh": "实际 prompt 已附加的内部 retained calls 与真实 output 对应、原 exact calls 断言通过；非官方 wire 无私有字段；不改变生产持久化。",
+    "budget_contract": "Retain existing case and submit helper deadlines; no new timeout/retry or production persistence change."
+  },
+  "wire_contract_precision": {
+    "source_path": "codex-rs/core/src/client_tests.rs",
+    "blob": "ff91f479aa615f56ae26d910894598a4e51895ae",
+    "note": "The existing wire matrix distinguishes resolved endpoints: ChatGPT Codex strips local metadata; first-party OpenAI keeps it even under a custom friendly name; a non-standard endpoint strips it even when called OpenAI. Preserve this matrix; do not replace it with a blanket all-provider statement."
+  },
+  "evidence": {
+    "source_leaf_bridge": {
+      "path": "/workspace/scratch/07dd58cc9630/ci-audit/published-eed4d6-ci-20261105/b08-source-review-v1/review-v1/source-leaf-bridge.json",
+      "bytes": 16422,
+      "sha256": "7eaaccc36611aa4dd8cd98f17402045ced7384a48c69fd66a4511a7b7744b6b2",
+      "git_blob": "5702c6a0ddf3754171ba54b9f4fa00397c0cf99b"
+    },
+    "four_actual_cases": {
+      "path": "/workspace/scratch/07dd58cc9630/ci-audit/published-eed4d6-ci-20261105/b08-source-review-v1/review-v1/four-case-evidence.json",
+      "bytes": 18086,
+      "sha256": "358e22bf8d4204218e7c23de80fac5eb0981bf0e468c68cc98adaaaaf0776f79",
+      "git_blob": "b41337422a28f9209c58dbec46118a5decdb4d1b"
+    }
+  },
+  "exact_four_names": [
+    "tools::executed_tool_calls::tests::executed_tool_call_recorder_bounds_pending_calls_and_preserves_overflow",
+    "tools::executed_tool_calls::tests::executed_tool_call_recorder_bounds_retained_history_and_reports_omissions",
+    "client::tests::chatgpt_codex_wire_strips_local_content_metadata_but_openai_wire_keeps_it",
+    "suite::tools::namespaced_custom_tool_call_preserves_namespace_through_dispatch_and_replay"
+  ],
+  "requirements": [
+    {
+      "requirement": "实际 prompt 已附加的 retained calls 与真实 output 对应",
+      "assessment": "SATISFIED_WITH_ACTUAL_E78_GNU_EXECUTION_AND_UNCHANGED_RELEVANT_SOURCE",
+      "source": "session/turn.rs:1793-1823 constructs actual prompt input, calls attach_pending_to_prompt, then passes &prompt to try_run_sampling_request. test_support.rs:72-83 only reads retained_calls_for_output. Namespace integration uses the real mock request, actual flush_rollout/load_history and output call_id, not manufactured metadata.",
+      "original_assertions": [
+        "tools.rs:405-426 exact namespace/name/input/output wire tuple",
+        "tools.rs:450-483 exact persisted tuple and retained namespaced call",
+        "tools.rs:515-563 escaped serialized-byte overflow marker and preserved earlier retained calls",
+        "tools.rs:597-619 second replay plus exact direct exec retained arguments"
+      ]
+    },
+    {
+      "requirement": "原 exact calls 断言及边界负向语义保留",
+      "assessment": "SATISFIED_BY_EXISTING_IN_CASE_ASSERTIONS",
+      "source": "executed_tool_calls_tests.rs retains pending>256 overflow marker, observer None before attach, exact retained vector after attach, exact replay, compaction observer None, and 512-item retained history bound/omission accounting. These are actual assertions inside the two original passing tests.",
+      "mutation_negative_claim": "No separate mutation-negative run or manifest is claimed or required by the frozen B08 exit text."
+    },
+    {
+      "requirement": "非官方 wire 无私有字段且官方矩阵原语义不变",
+      "assessment": "SATISFIED",
+      "source": "client_tests.rs:154-331 exercises four resolved endpoint/name combinations with content_item_kinds true/false and Responses Lite true/false (16 combinations). ChatGPT Codex strips; first-party OpenAI keeps even under a custom friendly name; non-standard endpoint strips even if named OpenAI. Exact original prompt input is unchanged after each provider serialization. provider_accepts_internal_chat_message_metadata checks the resolved exact public URL, not display name."
+    },
+    {
+      "requirement": "不改变生产持久化",
+      "assessment": "SATISFIED_FOR_THIS_REPAIR_AND_SOURCE_BRIDGE",
+      "source": "All relevant production files are byte-identical between frozen cabc and 5b/e78/eed, including recorder, actual turn caller, client preparation, protocol models, session persistence, rollout recorder/policy and endpoint predicate. Recorder remains in-memory; test getter is read-only. durable_input reads actual persisted history after flush and asserts private metadata absent from captured wire. Only one of 15 relevant files differs since cabc: five unrelated test-helper module/export lines in common/responses.rs; all existing helper bodies remain unchanged."
+    }
+  ],
+  "platform_and_source_scope": {
+    "GNU_e78": "4 original cases actually passed at e78 under original project command, 0 retries. Overall project command still exit100 due to five other recorded failures.",
+    "Windows_5b": "3 applicable unit cases actually passed in original full Core shard logs.",
+    "Windows_eed": "Same 3 applicable unit cases actually passed in the current full Core lifecycle target (2340 passed, 3 original ignored overall).",
+    "namespace_on_Windows": "Original tools.rs module is cfg-not-Windows; no Windows run invented.",
+    "eed_GNU": "NOT_EXECUTED. Source equality is not relabelled execution."
+  },
+  "exit_condition_precision": [
+    "No original_failure_snapshot48 row names a B08-specific five-platform requirement.",
+    "Q02 four-Unix collection plan is an evidence collection plan, not an added original exit condition.",
+    "Current complete-workspace gate remains under B15; this review does not close B15 or the original platform/full-matrix gates.",
+    "All four GNU original blocks have no observed early return; the integration early-return branch would print a fixed network-disabled line, absent from its complete captured block."
+  ],
+  "actions_in_this_review": {
+    "native_commands": 0,
+    "tests": 0,
+    "retries": 0,
+    "source_changes": 0,
+    "ref_changes": 0
+  },
+  "limits": [
+    "Case qualification is attached to the recorded source/platform/command. Whole project exit100, direct parallel failures, resource refusals, 25 other early returns and old driver UNKNOWN remain unchanged.",
+    "This recommends scoped closure to root; it does not modify the 23-row ledger or declare the whole candidate green."
+  ]
+}

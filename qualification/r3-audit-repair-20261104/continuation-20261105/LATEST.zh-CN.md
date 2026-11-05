@@ -1,12 +1,12 @@
 # 当前审计与执行入口
 
-**当前23项：10项限定范围闭合、12项开放、1项科学验证保留。尚未全量闭合。**
+**当前23项：11项限定范围闭合、11项开放、B18科学验证暂缓。尚未全量闭合。**
 
-- [全量进度与实际修复 V6](CONTINUATION_PROGRESS_V6.zh-CN.md)：已发布14路径、B13/B22正式闭合、Windows原始失败、Linux资源门与新CI。
-- [项目方向及后续工作计划 V4](PROJECT_DIRECTION_AND_EXECUTION_PLAN_V4.zh-CN.md)：40模块/91工作包、逐项原退出条件、正常产品接线、最新16条外部工作分支与依赖。
-- [机器可读23项ledger V5](continuation-blocker-progress-v5.json)：原ID/退出条件不变；逐项状态、限定来源和下一门。
-- [本批证据索引 V7](evidence-index-v7-registered.json)：实际Git对象与无损原件运输；历史失败/缺失/取消均保留。
+- [当前进度 V7](CONTINUATION_PROGRESS_V7.zh-CN.md)：B08原条件正式闭合、Windows原156项147通过/7失败/2忽略、精确反事实已发布待执行、CI等待链与REST终态差异。
+- [项目方向及后续工作计划 V5](PROJECT_DIRECTION_AND_EXECUTION_PLAN_V5.zh-CN.md)：40模块/91工作包、23项原退出条件、正常产品接线与逐批交付。
+- [机器可读ledger V6](continuation-blocker-progress-v6.json)：仅B08本轮由OPEN转为CLOSED_SCOPED，原ID及退出条件不变。
+- [本批实际证据索引 V8](evidence-index-v8-registered.json)与[此前完整证据索引 V7](evidence-index-v7-registered.json)：实际Git对象、完整原件及失败/缺口历史。
 
-主产品[Draft #4797](https://github.com/TrillionniumFoundation/hepta-private-ci/pull/4797)当前head `eed4d6bb61b789b19f60facc79f9e031765fa4c9`、tree `ca1c4671ef6b2773280d01b5d76c6166252f5856`。B11 [Draft #4884](https://github.com/TrillionniumFoundation/hepta-private-ci/pull/4884)当前head `7e0b2303ed0242d83bf56202e8ffb17f5c856186`，四路径修复的原Windows完整目标现为143通过、10失败、2原忽略，B11仍开放。
+主产品[Draft #4797](https://github.com/TrillionniumFoundation/hepta-private-ci/pull/4797)保持head `eed4d6bb61b789b19f60facc79f9e031765fa4c9`、tree `ca1c4671ef6b2773280d01b5d76c6166252f5856`。B11 [Draft #4884](https://github.com/TrillionniumFoundation/hepta-private-ci/pull/4884)为head `0f6148ea3fbe9d1263354791d5cc63c7e66d4628`，前一19d2原156项为147通过/7失败/2忽略；精确反事实尚无结果，B11仍开放。
 
-固定新CI快照截至2026-11-05 16:39:48 UTC；B13根审、B11发布、资源终态及16:40:42–16:45:44分支观察各有独立时间。其后native5终态、17:07新CI快照与SQLx donor原件另列进度第7节，不倒改本快照。原全量人口统计仅属于03:16–03:24时点。
+本批保留17:53:52 UTC固定cut，并单列17:54–17:58后续原终态及发布增量，各原件保留独立观察时间；全库1103 PR / 5193分支只属于03:16–03:24原完整快照。此审计提交仅保存证据与计划，不改变产品源码或CI规则。

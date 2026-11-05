@@ -1,0 +1,348 @@
+{
+  "schema": "b08-four-actual-case-evidence-v1",
+  "command": {
+    "argv": [
+      "just",
+      "test",
+      "--locked",
+      "--cargo-profile",
+      "dev-small",
+      "--no-tests",
+      "fail",
+      "--retries",
+      "0",
+      "--success-output",
+      "immediate",
+      "-p",
+      "codex-core",
+      "-p",
+      "codex-linux-sandbox"
+    ],
+    "cwd": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/source/codex-rs",
+    "source_tree": "e78c819b8b1f435f8b37bea17b4ffdc724961aa2",
+    "started_at": "2026-11-05T14:07:58.749428+00:00",
+    "extra_environment": {},
+    "attempt": 1,
+    "cargo_profile": "dev-small",
+    "nextest_profile": "local",
+    "retries": 0
+  },
+  "overall_original_scope": {
+    "exit_code": 100,
+    "selected": 3967,
+    "passed": 3962,
+    "failed": 5,
+    "retries": 0,
+    "must_not_be_relabelled_suite_pass": true
+  },
+  "original_inputs": [
+    {
+      "path": "/workspace/scratch/07dd58cc9630/ci-audit/core-wait-span-20261105/project-nonpass-complete-v1/decoded-verified-v1/original-owning-projects-command.json",
+      "bytes": 575,
+      "sha256": "b985724f819c23de598ca8063bfa46c9a59e173ae6ebdb6faac3a31f1c164471",
+      "git_blob": "00671e4113db85f99f4f0a4a544e58c00a446878"
+    },
+    {
+      "path": "/workspace/scratch/07dd58cc9630/ci-audit/core-wait-span-20261105/project-nonpass-complete-v1/decoded-verified-v1/original-owning-projects-status.json",
+      "bytes": 1247,
+      "sha256": "d883fe7676b050bfcadded0b3a75db506ff9354058ac884382718dd2d971cdca",
+      "git_blob": "8faa4dea902b6c31d41ada7c46cd66b5f6b06692"
+    },
+    {
+      "path": "/workspace/scratch/07dd58cc9630/ci-audit/core-wait-span-20261105/project-nonpass-complete-v1/decoded-verified-v1/original-owning-projects-review.json",
+      "bytes": 881193,
+      "sha256": "6931a8ad888925471da6e8d03aa8ecafec46e152c20440972ce420604e8b47f4",
+      "git_blob": "f0a55073f44cab2ca4cd7013f28ed4341f9e68fc"
+    },
+    {
+      "path": "/workspace/scratch/07dd58cc9630/ci-audit/core-wait-span-20261105/project-nonpass-complete-v1/decoded-verified-v1/original-owning-projects-before-source-guard.json",
+      "bytes": 111405,
+      "sha256": "27915d1da4d100219044e27a45823eb1bacf05a8e09f3382df9a798715d17029",
+      "git_blob": "3533527795df6f5f2dbb874a8e162f21b87a2cc0"
+    },
+    {
+      "path": "/workspace/scratch/07dd58cc9630/ci-audit/core-wait-span-20261105/project-nonpass-complete-v1/decoded-verified-v1/original-owning-projects-after-source-guard.json",
+      "bytes": 111404,
+      "sha256": "ed5de4a70e67655724cbdd60e29bf1beea840ff88006ea3b461bf9f892e2a292",
+      "git_blob": "1df85a3e2ea1c38c1e0746d78d2116dc18d3daad"
+    },
+    {
+      "path": "/workspace/scratch/07dd58cc9630/ci-audit/core-wait-span-20261105/project-nonpass-complete-v1/decoded-verified-v1/project-catalog-selection.json",
+      "bytes": 694242,
+      "sha256": "8dbb2f04777e25467f8c5cee177a0ab8c4936ace156fb22f1a125c2a625137e4",
+      "git_blob": "8e93d34a9de7382ef1eff1c759fe283c10d81801"
+    },
+    {
+      "path": "/workspace/scratch/07dd58cc9630/ci-audit/core-wait-span-20261105/project-nonpass-complete-v1/decoded-verified-v1/metadata-binding.json",
+      "bytes": 1284,
+      "sha256": "efbfbb05e4f7e40670f6f7aaaac03f173af582f93ea17d13063440e6e3af0486",
+      "git_blob": "b0f06b589911fbe2e9e18ac1ba535f9a7d510278"
+    }
+  ],
+  "source_and_index_locks_before_after_equal": true,
+  "programs_helpers_stable_as_original_review": true,
+  "actual_selected_programs": [
+    {
+      "binary_id": "codex-core",
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/target-app-epoch2-20261105/dev-small/deps/codex_core-af661b73601d816a",
+      "bytes": 308350704,
+      "sha256": "60e7611e2438d6245ac4598a9f35a17bd486d183182b1e86c98d67670e1491ca",
+      "git_blob": "f5a5fdeac69ef67579fd794a9c38a291e28c9f38",
+      "mode": 448,
+      "executable": true
+    },
+    {
+      "binary_id": "codex-core::all",
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/target-app-epoch2-20261105/dev-small/deps/all-86d2a13ddb92a398",
+      "bytes": 284061712,
+      "sha256": "a90ad304bf6324a2f4bf81f01312d857c803ec313c8d5d9675291ee972102c19",
+      "git_blob": "dbc205f780b9dd8ef3dea25aa73196f713740f4f",
+      "mode": 448,
+      "executable": true
+    }
+  ],
+  "cases": [
+    {
+      "blocker": "B08",
+      "binary": "codex-core",
+      "test": "tools::executed_tool_calls::tests::executed_tool_call_recorder_bounds_pending_calls_and_preserves_overflow",
+      "bazel_target": "//codex-rs/core:core-unit-tests",
+      "original_windows_cfg": "NO_NEW_CFG_ASSUMPTION; ORIGINAL_TARGET_AND_FIXED_SOURCE_APPLY",
+      "original_failure_48_entries": [],
+      "original_failure_platforms": [],
+      "windows_5b_same_source_final_row": {
+        "job_id": 127339256007,
+        "main_shard": 1,
+        "target": "//codex-rs/core:core-unit-tests",
+        "member": "selected-target-test-logs/invocation-n7e42xj6/targets/0000/shard_1_of_8/test.log",
+        "member_sha256": "9b77d0c2134980cf0474a8ad4e111d07a31d1547fc21242cebcf4dcc8def1a7c",
+        "role": "final_test_log",
+        "attempt_number_from_filename": null,
+        "test_shard": 1,
+        "line": 260,
+        "case": "tools::executed_tool_calls::tests::executed_tool_call_recorder_bounds_pending_calls_and_preserves_overflow",
+        "result": "ok",
+        "physical_line": "test tools::executed_tool_calls::tests::executed_tool_call_recorder_bounds_pending_calls_and_preserves_overflow ... ok",
+        "normalized_prefix": ""
+      },
+      "linux_rog_e78_actual_scope": {
+        "result": "PASS",
+        "raw_start_line": 18674,
+        "raw_end_line": 18682,
+        "observed_early_returns": [],
+        "junit_seconds": "0.014"
+      },
+      "windows_eed_full_core_unit_result": "ok",
+      "qualification_limit": "These are separate source/platform observations. No union of them is represented as a current-head full-workspace pass.",
+      "raw_block": {
+        "path": "/workspace/scratch/07dd58cc9630/ci-audit/published-eed4d6-ci-20261105/b08-source-review-v1/review-v1/case-01.original-raw-block.txt",
+        "bytes": 409,
+        "sha256": "9cd5f0b5ad366bf6b648986ad80ceff328df5426601ec5f2aaf363bed5da4f62",
+        "git_blob": "d11fe6aef9ba4bcd3070987aea7b7c448e8be158"
+      },
+      "full_original_raw": {
+        "path": "/workspace/scratch/07dd58cc9630/ci-audit/core-wait-span-20261105/project-nonpass-complete-v1/decoded-verified-v1/original-owning-projects.stdout",
+        "bytes": 11059831,
+        "sha256": "a06d2a7c73589c76300a3a6886f37affcd8609f8cb41499e6704a9762a20aeb4",
+        "git_blob": "e611358b8bdcd77bb3eb7cb68c0067a0438368b7"
+      },
+      "raw_byte_start": 910347,
+      "raw_byte_end_exclusive": 910756,
+      "junit_attributes": {
+        "name": "tools::executed_tool_calls::tests::executed_tool_call_recorder_bounds_pending_calls_and_preserves_overflow",
+        "classname": "codex-core",
+        "timestamp": "2026-11-05T09:08:03.710-05:00",
+        "time": "0.014"
+      },
+      "junit_xml_fragment": "<testcase name=\"tools::executed_tool_calls::tests::executed_tool_call_recorder_bounds_pending_calls_and_preserves_overflow\" classname=\"codex-core\" timestamp=\"2026-11-05T09:08:03.710-05:00\" time=\"0.014\">\n        </testcase>\n        ",
+      "complete_original_junit": {
+        "path": "/workspace/scratch/07dd58cc9630/ci-audit/core-wait-span-20261105/project-nonpass-complete-v1/decoded-verified-v1/original-owning-projects.junit.xml",
+        "bytes": 839106,
+        "sha256": "dba2abf1ada37ea47ed8bb5910956094ad5519652df72256cce723e26d84d071",
+        "git_blob": "575da9b27fcf5e423b2fa23b9f872e0b07eacade"
+      },
+      "observation": "Actual one-case libtest PASS and fresh JUnit PASS. No observed network-skip text or other recorded early return."
+    },
+    {
+      "blocker": "B08",
+      "binary": "codex-core",
+      "test": "tools::executed_tool_calls::tests::executed_tool_call_recorder_bounds_retained_history_and_reports_omissions",
+      "bazel_target": "//codex-rs/core:core-unit-tests",
+      "original_windows_cfg": "NO_NEW_CFG_ASSUMPTION; ORIGINAL_TARGET_AND_FIXED_SOURCE_APPLY",
+      "original_failure_48_entries": [],
+      "original_failure_platforms": [],
+      "windows_5b_same_source_final_row": {
+        "job_id": 127339256007,
+        "main_shard": 1,
+        "target": "//codex-rs/core:core-unit-tests",
+        "member": "selected-target-test-logs/invocation-n7e42xj6/targets/0000/shard_1_of_8/test.log",
+        "member_sha256": "9b77d0c2134980cf0474a8ad4e111d07a31d1547fc21242cebcf4dcc8def1a7c",
+        "role": "final_test_log",
+        "attempt_number_from_filename": null,
+        "test_shard": 1,
+        "line": 263,
+        "case": "tools::executed_tool_calls::tests::executed_tool_call_recorder_bounds_retained_history_and_reports_omissions",
+        "result": "ok",
+        "physical_line": "test tools::executed_tool_calls::tests::executed_tool_call_recorder_bounds_retained_history_and_reports_omissions ... ok",
+        "normalized_prefix": ""
+      },
+      "linux_rog_e78_actual_scope": {
+        "result": "PASS",
+        "raw_start_line": 23353,
+        "raw_end_line": 23361,
+        "observed_early_returns": [],
+        "junit_seconds": "2.379"
+      },
+      "windows_eed_full_core_unit_result": "ok",
+      "qualification_limit": "These are separate source/platform observations. No union of them is represented as a current-head full-workspace pass.",
+      "raw_block": {
+        "path": "/workspace/scratch/07dd58cc9630/ci-audit/published-eed4d6-ci-20261105/b08-source-review-v1/review-v1/case-02.original-raw-block.txt",
+        "bytes": 413,
+        "sha256": "58a2b0008bdff0209a2a08b81c5158ad641f4c076f153fc5f42defcee134b324",
+        "git_blob": "b151ae8dbd5ada2a8a51e9ce55caa5feb4a9b518"
+      },
+      "full_original_raw": {
+        "path": "/workspace/scratch/07dd58cc9630/ci-audit/core-wait-span-20261105/project-nonpass-complete-v1/decoded-verified-v1/original-owning-projects.stdout",
+        "bytes": 11059831,
+        "sha256": "a06d2a7c73589c76300a3a6886f37affcd8609f8cb41499e6704a9762a20aeb4",
+        "git_blob": "e611358b8bdcd77bb3eb7cb68c0067a0438368b7"
+      },
+      "raw_byte_start": 1104816,
+      "raw_byte_end_exclusive": 1105229,
+      "junit_attributes": {
+        "name": "tools::executed_tool_calls::tests::executed_tool_call_recorder_bounds_retained_history_and_reports_omissions",
+        "classname": "codex-core",
+        "timestamp": "2026-11-05T09:08:03.710-05:00",
+        "time": "2.379"
+      },
+      "junit_xml_fragment": "<testcase name=\"tools::executed_tool_calls::tests::executed_tool_call_recorder_bounds_retained_history_and_reports_omissions\" classname=\"codex-core\" timestamp=\"2026-11-05T09:08:03.710-05:00\" time=\"2.379\">\n        </testcase>\n        ",
+      "complete_original_junit": {
+        "path": "/workspace/scratch/07dd58cc9630/ci-audit/core-wait-span-20261105/project-nonpass-complete-v1/decoded-verified-v1/original-owning-projects.junit.xml",
+        "bytes": 839106,
+        "sha256": "dba2abf1ada37ea47ed8bb5910956094ad5519652df72256cce723e26d84d071",
+        "git_blob": "575da9b27fcf5e423b2fa23b9f872e0b07eacade"
+      },
+      "observation": "Actual one-case libtest PASS and fresh JUnit PASS. No observed network-skip text or other recorded early return."
+    },
+    {
+      "blocker": "B08",
+      "binary": "codex-core",
+      "test": "client::tests::chatgpt_codex_wire_strips_local_content_metadata_but_openai_wire_keeps_it",
+      "bazel_target": "//codex-rs/core:core-unit-tests",
+      "original_windows_cfg": "NO_NEW_CFG_ASSUMPTION; ORIGINAL_TARGET_AND_FIXED_SOURCE_APPLY",
+      "original_failure_48_entries": [],
+      "original_failure_platforms": [],
+      "windows_5b_same_source_final_row": {
+        "job_id": 127339256007,
+        "main_shard": 1,
+        "target": "//codex-rs/core:core-unit-tests",
+        "member": "selected-target-test-logs/invocation-n7e42xj6/targets/0000/shard_3_of_8/test.log",
+        "member_sha256": "94478d5c9d00c089b2351895399bce61dcbc6ce1dc9e05e7e5ebed9731e39308",
+        "role": "final_test_log",
+        "attempt_number_from_filename": null,
+        "test_shard": 3,
+        "line": 18,
+        "case": "client::tests::chatgpt_codex_wire_strips_local_content_metadata_but_openai_wire_keeps_it",
+        "result": "ok",
+        "physical_line": "test client::tests::chatgpt_codex_wire_strips_local_content_metadata_but_openai_wire_keeps_it ... ok",
+        "normalized_prefix": ""
+      },
+      "linux_rog_e78_actual_scope": {
+        "result": "PASS",
+        "raw_start_line": 1417,
+        "raw_end_line": 1425,
+        "observed_early_returns": [],
+        "junit_seconds": "0.012"
+      },
+      "windows_eed_full_core_unit_result": "ok",
+      "qualification_limit": "These are separate source/platform observations. No union of them is represented as a current-head full-workspace pass.",
+      "raw_block": {
+        "path": "/workspace/scratch/07dd58cc9630/ci-audit/published-eed4d6-ci-20261105/b08-source-review-v1/review-v1/case-03.original-raw-block.txt",
+        "bytes": 373,
+        "sha256": "bd44e774a557130597b02199606d68a138756c795312e9cf3d4587e4d6d0c49a",
+        "git_blob": "0a018a76ec8826d7f6073b998fdcd5325e5d59be"
+      },
+      "full_original_raw": {
+        "path": "/workspace/scratch/07dd58cc9630/ci-audit/core-wait-span-20261105/project-nonpass-complete-v1/decoded-verified-v1/original-owning-projects.stdout",
+        "bytes": 11059831,
+        "sha256": "a06d2a7c73589c76300a3a6886f37affcd8609f8cb41499e6704a9762a20aeb4",
+        "git_blob": "e611358b8bdcd77bb3eb7cb68c0067a0438368b7"
+      },
+      "raw_byte_start": 64744,
+      "raw_byte_end_exclusive": 65117,
+      "junit_attributes": {
+        "name": "client::tests::chatgpt_codex_wire_strips_local_content_metadata_but_openai_wire_keeps_it",
+        "classname": "codex-core",
+        "timestamp": "2026-11-05T09:08:00.451-05:00",
+        "time": "0.012"
+      },
+      "junit_xml_fragment": "<testcase name=\"client::tests::chatgpt_codex_wire_strips_local_content_metadata_but_openai_wire_keeps_it\" classname=\"codex-core\" timestamp=\"2026-11-05T09:08:00.451-05:00\" time=\"0.012\">\n        </testcase>\n        ",
+      "complete_original_junit": {
+        "path": "/workspace/scratch/07dd58cc9630/ci-audit/core-wait-span-20261105/project-nonpass-complete-v1/decoded-verified-v1/original-owning-projects.junit.xml",
+        "bytes": 839106,
+        "sha256": "dba2abf1ada37ea47ed8bb5910956094ad5519652df72256cce723e26d84d071",
+        "git_blob": "575da9b27fcf5e423b2fa23b9f872e0b07eacade"
+      },
+      "observation": "Actual one-case libtest PASS and fresh JUnit PASS. No observed network-skip text or other recorded early return."
+    },
+    {
+      "blocker": "B08",
+      "binary": "codex-core::all",
+      "test": "suite::tools::namespaced_custom_tool_call_preserves_namespace_through_dispatch_and_replay",
+      "bazel_target": "//codex-rs/core:core-all-test",
+      "original_windows_cfg": "NOT_COMPILED_BY_ORIGINAL_CFG",
+      "original_failure_48_entries": [],
+      "original_failure_platforms": [],
+      "windows_5b_same_source_final_row": null,
+      "linux_rog_e78_actual_scope": {
+        "result": "PASS",
+        "raw_start_line": 48789,
+        "raw_end_line": 48797,
+        "observed_early_returns": [],
+        "junit_seconds": "0.602"
+      },
+      "windows_eed_full_core_unit_result": null,
+      "qualification_limit": "These are separate source/platform observations. No union of them is represented as a current-head full-workspace pass.",
+      "raw_block": {
+        "path": "/workspace/scratch/07dd58cc9630/ci-audit/published-eed4d6-ci-20261105/b08-source-review-v1/review-v1/case-04.original-raw-block.txt",
+        "bytes": 380,
+        "sha256": "dd6e46673fbe0caeb27c7827a24df884b4753564629bd4a55f4a3ce85c3e1297",
+        "git_blob": "305d236001e7d5b051f28fffd8a8a33f9839034d"
+      },
+      "full_original_raw": {
+        "path": "/workspace/scratch/07dd58cc9630/ci-audit/core-wait-span-20261105/project-nonpass-complete-v1/decoded-verified-v1/original-owning-projects.stdout",
+        "bytes": 11059831,
+        "sha256": "a06d2a7c73589c76300a3a6886f37affcd8609f8cb41499e6704a9762a20aeb4",
+        "git_blob": "e611358b8bdcd77bb3eb7cb68c0067a0438368b7"
+      },
+      "raw_byte_start": 10946362,
+      "raw_byte_end_exclusive": 10946742,
+      "junit_attributes": {
+        "name": "suite::tools::namespaced_custom_tool_call_preserves_namespace_through_dispatch_and_replay",
+        "classname": "codex-core::all",
+        "timestamp": "2026-11-05T09:08:30.229-05:00",
+        "time": "0.602"
+      },
+      "junit_xml_fragment": "<testcase name=\"suite::tools::namespaced_custom_tool_call_preserves_namespace_through_dispatch_and_replay\" classname=\"codex-core::all\" timestamp=\"2026-11-05T09:08:30.229-05:00\" time=\"0.602\">\n        </testcase>\n        ",
+      "complete_original_junit": {
+        "path": "/workspace/scratch/07dd58cc9630/ci-audit/core-wait-span-20261105/project-nonpass-complete-v1/decoded-verified-v1/original-owning-projects.junit.xml",
+        "bytes": 839106,
+        "sha256": "dba2abf1ada37ea47ed8bb5910956094ad5519652df72256cce723e26d84d071",
+        "git_blob": "575da9b27fcf5e423b2fa23b9f872e0b07eacade"
+      },
+      "observation": "Actual one-case libtest PASS and fresh JUnit PASS. No observed network-skip text or other recorded early return."
+    }
+  ],
+  "windows_eed_receipt": {
+    "path": "/workspace/scratch/07dd58cc9630/ci-audit/published-eed4d6-ci-20261105/success-review-v2/review.json",
+    "bytes": 23360,
+    "sha256": "3e9292dc3b10d3759e42cd1187e65e89fdb5149eae88db3a72c2890e1fa5f2ea",
+    "git_blob": "26ad22a0ddd503eb289a2d3f656e91f28eb1813c"
+  },
+  "windows_5b_projection": {
+    "path": "/workspace/scratch/07dd58cc9630/ci-audit/published-eed4d6-ci-20261105/six-exit-scope-review-v1/scope-projection.json",
+    "bytes": 164271,
+    "sha256": "9259036086d3b1e6b3d4d76019bac5c85e1a70260f3dd9e8b45a50a276cc6264",
+    "git_blob": "bccf80541a0ae5d620dccc672a2aed91739af4a4"
+  }
+}

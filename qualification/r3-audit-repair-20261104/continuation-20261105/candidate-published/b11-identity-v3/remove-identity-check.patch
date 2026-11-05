@@ -1,0 +1,17 @@
+diff --git a/codex-rs/windows-sandbox-rs/src/acl_deny.rs b/codex-rs/windows-sandbox-rs/src/acl_deny.rs
+index da5346c220c41cf0c83f62b596132c74c02284d8..0baeb6ec2f3bfd0964be6d014fc5d80d890ea3d7 100644
+--- a/codex-rs/windows-sandbox-rs/src/acl_deny.rs
++++ b/codex-rs/windows-sandbox-rs/src/acl_deny.rs
+@@ -169,11 +169,7 @@ pub(super) unsafe fn open_deny_repair_handle(path: &Path, queried: HANDLE) -> Re
+         path.display()
+     );
+     let actual = file_identity(raw, path)?;
+-    ensure!(
+-        actual == expected,
+-        "deny repair path no longer identifies the retained object: {}",
+-        path.display()
+-    );
++    let _ = actual == expected;
+     Ok(writable)
+ }
+ 

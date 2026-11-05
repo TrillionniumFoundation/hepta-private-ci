@@ -1,0 +1,1405 @@
+{
+  "schema": "hepta-continuation-blocker-progress-v6",
+  "recorded_utc": "2026-11-05T17:53:52Z",
+  "original_registry": "../current-blockers.json",
+  "original_23_status_exit_and_closure_class_unchanged": false,
+  "all_blockers_closed": false,
+  "whole_candidate_qualified": false,
+  "counts": {
+    "CLOSED_SCOPED": 11,
+    "OPEN": 11,
+    "SCIENTIFIC_HOLD": 1
+  },
+  "product": {
+    "pr": 4797,
+    "draft": true,
+    "head": "eed4d6bb61b789b19f60facc79f9e031765fa4c9",
+    "tree": "ca1c4671ef6b2773280d01b5d76c6166252f5856",
+    "base": "63652be658ebed8d3052eb789b951793384fd5e4",
+    "merge": "3476a8c535f7090c4c868ac85148491b3fdfd983",
+    "merge_tree": "ca1c4671ef6b2773280d01b5d76c6166252f5856",
+    "parent": "5b6331250ff459033bd44d1a95daec70131277cc",
+    "exact_changed_paths": 14,
+    "leaf_count": 10582,
+    "whole_candidate_qualified": false
+  },
+  "build_only_baseline": {
+    "blob": "31053a6179c016a9b5569cc6fb301e19aeb5c633",
+    "bytes": 265463,
+    "sha256": "16022204ade97bd6cdc78176e5dff2b8c19c536180aa9c5e7a5a219ddda7140f",
+    "scope": "BUILD_ONLY_CURRENT_HOST: this baseline did not execute tests; subsequent actual native Foundation qualification is separately recorded below.",
+    "git_tool_augmentation": {
+      "status": "COMPLETE_READONLY",
+      "blob": "5401ad25c5da11a6f37dc1d93a755070f927a396",
+      "bytes": 268075,
+      "sha256": "117ce27929135acfcf8445f23a53842271cad721ef22cf4aaec7024dac3a386a",
+      "git_version": "2.53.0",
+      "source_and_parent_fields_unchanged": true,
+      "tests_executed": false
+    }
+  },
+  "items": [
+    {
+      "id": "B01",
+      "name": "仓库与证据清单",
+      "priority": "P0",
+      "status": "CLOSED_SCOPED_INVENTORY",
+      "current_label_zh": "新固定全量快照完成；1103 PR / 5193 分支",
+      "evidence_scope_zh": "2026-11-05 03:16–03:24 UTC完整分页与终锚：1103 open PR（1079 Draft/24非Draft）、5193 branches、155 main-base/948 nonmain-base、0非PR open issue/0release；非原子快照及旧1088/5163历史分别保留，110原API正文与117归档成员已根审重建。",
+      "original_exit_condition_zh": "固定时间、固定 refs、无分页缺口、完整机器可读清单。",
+      "next_closure_gate_zh": "后续发布与新CI继续绑定各自观察时间；不把增量观察冒充全量当前总数。",
+      "closure_class": "CLOSED_SCOPED",
+      "latest_continuation_zh": "完整库存后的10:14/10:26 updated-desc增量跨原03:24边界，49条更新、45新Draft编号4824–4868，61完整原件归档；不据此改写原完整库存总数或观察时间。",
+      "prior_latest_continuation_v4_zh": "完整库存后的10:14/10:26 updated-desc增量跨原03:24边界，49条更新、45新Draft编号4824–4868，61完整原件归档；不据此改写原完整库存总数或观察时间。"
+    },
+    {
+      "id": "B02",
+      "name": "单一整合候选",
+      "priority": "P0",
+      "status": "OPEN_FINAL_PRODUCT_QUALIFICATION",
+      "current_label_zh": "单一候选确定；最终源码/CI资格开放",
+      "evidence_scope_zh": "PR#4797保持Draft，已发布cabc。保留第四批f825原25控制25PASS、所属七包5408 JUnit PASS/8FAIL与完整workspace19503 selected=19485 JUnit PASS/17FAIL/1TIMEOUT的原结果。随后Skills9、Migration166、V8及runtime76已在各自固定源通过，App原断连在c6限域通过；新fb9原full19506 selected=19490 JUnit PASS/16FAIL，57ignored、25早退、零retry。完整新旧原件均已独立重建核验；最终原fix/fmt及两项差异检查均实际exit0，自动改动独审完成，22个源提交的代码树为4a337；第四批按现有Draft提交，新head/base/merge原平台CI仍开放。",
+      "original_exit_condition_zh": "逐路径决定保留/合入/延期；manifest、vendor、Cargo 与 Bazel 锁同步；固定候选 head、目标 base 与执行 merge tree；原始必需 CI 全通过。",
+      "next_closure_gate_zh": "保r3 Guardian取消/截止及runtime-scoped Git缓存；最终同一次提交完整源码/锁/证据，验原required CI和合成merge树。",
+      "closure_class": "OPEN",
+      "latest_continuation_zh": "主Draft已实际推进5b→eed，完整10582leaf仅14path变化；实际merge3476与head同ca1tree。7Rust路径修复与7库存包装路径逐项审核，锁和原工作流不变。全部required及main接受仍OPEN。",
+      "prior_latest_continuation_v3_zh": "已发布单一Draft候选5b6331250ff459033bd44d1a95daec70131277cc，代码tree b26598d0d97d8d51e723bb5582137315f2174d35，base63652be不变，实际merge9063c52/tree同b265；本轮七个提交十个文件，完整最终原平台资格尚未通过。",
+      "prior_latest_continuation_v4_zh": "主候选仍为Draft #4797/head5b/treeb265。e78只含已审Core隔离与musl类型修复，原owning及同进程parallel实际非通过，未完成全量/hygiene；B11另发固定5b的诊断Draft #4884，不拼接资格。"
+    },
+    {
+      "id": "B03",
+      "name": "cwd 展示语义",
+      "priority": "P0",
+      "status": "CLOSED_ORIGINAL_CWD_SCOPE",
+      "current_label_zh": "cwd原始7例范围闭合",
+      "evidence_scope_zh": "保留原7/7、0重试/0选中跳过的固定源回执；不外推整个Core/main。",
+      "original_exit_condition_zh": "已满足该原始回归范围；不自动代表整个 Core 或 main 资格通过。",
+      "next_closure_gate_zh": "新整合树保留原语义，若改该代码才触发相应重验。",
+      "closure_class": "CLOSED_SCOPED",
+      "prior_latest_continuation_v4_zh": null
+    },
+    {
+      "id": "B04",
+      "name": "认知投影 oracle",
+      "priority": "P0",
+      "status": "CLOSED_ORIGINAL_PROJECTION_TARGET_SCOPE",
+      "current_label_zh": "认知投影oracle原目标范围闭合",
+      "evidence_scope_zh": "原适用平台目标与SQL边界验证已留档；未改生产投影协议。",
+      "original_exit_condition_zh": "已满足修复后的原产品目标；生产投影协议保持不变。",
+      "next_closure_gate_zh": "保不可变revision/当前指针、来源/更正/删除/重启等原断言；最终产品资格另归B15。",
+      "closure_class": "CLOSED_SCOPED",
+      "prior_latest_continuation_v4_zh": null
+    },
+    {
+      "id": "B05",
+      "name": "supervisord 子进程定位",
+      "priority": "P0",
+      "status": "CLOSED_EXECUTABLE_LOCATION_SCOPE",
+      "current_label_zh": "supervisord绝对可执行路径范围闭合",
+      "evidence_scope_zh": "新Intel daemon RPC超时与已关闭的runfile/cwd定位问题区分；当前诊断不倒退或继承旧闭合。",
+      "original_exit_condition_zh": "已满足原目标的子进程执行断言；不以脚本存在代替真实启动。",
+      "next_closure_gate_zh": "新RPC失败由独立诊断记录处理，保原daemon预算和控制fence。",
+      "closure_class": "CLOSED_SCOPED",
+      "prior_latest_continuation_v4_zh": null
+    },
+    {
+      "id": "B06",
+      "name": "正向私有路径夹具",
+      "priority": "P0",
+      "status": "CLOSED_FIRST_BATCH_TARGET_SCOPE_TUI_SEPARATE",
+      "current_label_zh": "首批正向路径原目标闭合；TUI另列",
+      "evidence_scope_zh": "已提交B06_ORIGINAL_PLATFORM_TARGETS：e729/6b280同树、3目标适用平台通过；Unix-only在Windows为N/A，既有ignore不算通过。",
+      "original_exit_condition_zh": "原 macOS / Windows 对应正向用例通过，原负控维持通过。",
+      "next_closure_gate_zh": "不得写逐case7/7或零skip/retry；TUI第二批仅按其真实原平台收据更新，不混B22。",
+      "closure_class": "CLOSED_SCOPED",
+      "prior_latest_continuation_v4_zh": null
+    },
+    {
+      "id": "B07",
+      "name": "Hook 元数据与工具可见性",
+      "priority": "P0",
+      "status": "IMPLEMENTED_SCOPED_NATIVE_PASS_PLATFORM_RECONCILIATION",
+      "current_label_zh": "原元数据控制有证据；新Hook两例通过，最终平台开放",
+      "evidence_scope_zh": "旧cabc Unix22例及WindowsTokenBudget3例有正文；Windows18Hook为cfg不适用，CodeMode原ignore。da60 active/idle两Hook实际PASS，原请求/顺序/预算保留。",
+      "original_exit_condition_zh": "binding、原 Hook executor、MCP、TokenBudget 用例通过；未配置 server、allow/deny list、环境错配和陈旧目录负控均拒绝。",
+      "next_closure_gate_zh": "最终候选原Hook/MCP/Executor/TokenBudget及allow/deny、环境错配、陈旧目录控制同源终态通过。",
+      "closure_class": "OPEN",
+      "latest_continuation_zh": "同源默认full仍需覆盖22个Core integration与6个MCP unit原名。新recovery、UI、Objective成功与这组原退出名不相交；e78 owning结果有5个审批输出失败，原断言保留。",
+      "prior_latest_continuation_v4_zh": "同源默认full仍需覆盖22个Core integration与6个MCP unit原名。新recovery、UI、Objective成功与这组原退出名不相交；e78 owning结果有5个审批输出失败，原断言保留。"
+    },
+    {
+      "id": "B08",
+      "name": "私有 attempted tool 元数据",
+      "priority": "P0",
+      "status": "CLOSED_ORIGINAL_RETAINED_WIRE_AND_REPLAY_SCOPE",
+      "current_label_zh": "B08原四例与真实prompt/重放/端点矩阵范围闭合",
+      "evidence_scope_zh": "完整ROG原始日志11,059,831B及JUnit839,106B逐名对应四个原PASS；本地源码树e78，普通HEAD为cabc；15个相关完整源码文件跨5b/e78/eed逐blob绑定。原完整所属范围仍3962PASS/5FAIL/exit100。",
+      "original_exit_condition_zh": "实际 prompt 已附加的内部 retained calls 与真实 output 对应、原 exact calls 断言通过；非官方 wire 无私有字段；不改变生产持久化。",
+      "next_closure_gate_zh": "维护已闭合的原四例范围；若相关源码改变则按影响重验。新eed全平台与完整工作区仍由B15验收，不把先前Q02收件计划追加为B08原退出条件。",
+      "closure_class": "CLOSED_SCOPED",
+      "latest_continuation_zh": "根审已实际执行退出0；验证实际prompt先附加、真实输出与exact calls、序列化字节上限、溢出/保留/重放/compaction和16格endpoint/name/format/feature矩阵。只读getter不制造附加，不改变生产持久化；first-party OpenAI合法保留元数据，非官方端点剥离。",
+      "prior_latest_continuation_v3_zh": "新5b Windows Core原正常8分片逐名实际覆盖B08两个recorder和一个wire控制，3个PASS；不是重放8次、不是24独立例。其余原replay/head/merge/platform条件开放；该Core任务另有一项原日志链失败，整体未成功。",
+      "prior_latest_continuation_v4_zh": "原5b Windows Core的3个具名PASS保留；remaining selection仍有1个Core integration原名。新跨平台recovery/UI/Objective不代替此门，e78尚未取得完整同源资格。",
+      "prior_v5_state": {
+        "id": "B08",
+        "name": "私有 attempted tool 元数据",
+        "priority": "P0",
+        "status": "OPEN_ADDITIONAL_REPLAY_ORACLE_QUALIFICATION",
+        "current_label_zh": "原retained/wire与Linux replay已有局部证据",
+        "evidence_scope_zh": "Windows三个原单元在8份unit日志产生24条观察，非24独立用例；Unixreplay有正文，Windowscfg不适用。新head/merge验收仍开放。",
+        "original_exit_condition_zh": "实际 prompt 已附加的内部 retained calls 与真实 output 对应、原 exact calls 断言通过；非官方 wire 无私有字段；不改变生产持久化。",
+        "next_closure_gate_zh": "在新固定head及merge的原平台执行新增namespaced原例与保留的wire/retained边界；不借B09/B10通过计数。",
+        "closure_class": "OPEN",
+        "latest_continuation_zh": "原5b Windows Core的3个具名PASS保留；remaining selection仍有1个Core integration原名。新跨平台recovery/UI/Objective不代替此门，e78尚未取得完整同源资格。",
+        "prior_latest_continuation_v3_zh": "新5b Windows Core原正常8分片逐名实际覆盖B08两个recorder和一个wire控制，3个PASS；不是重放8次、不是24独立例。其余原replay/head/merge/platform条件开放；该Core任务另有一项原日志链失败，整体未成功。",
+        "prior_latest_continuation_v4_zh": "原5b Windows Core的3个具名PASS保留；remaining selection仍有1个Core integration原名。新跨平台recovery/UI/Objective不代替此门，e78尚未取得完整同源资格。"
+      }
+    },
+    {
+      "id": "B09",
+      "name": "终态清理与恢复",
+      "priority": "P0",
+      "status": "IMPLEMENTED_WITH_WINDOWS_LIFECYCLE_SCOPED_PASS",
+      "current_label_zh": "原恢复与Windows指定范围有证据；最终CI开放",
+      "evidence_scope_zh": "旧GNU Wine8恢复+注入有正文；Windows7terminalizer+2steer在8份unit日志为72条观察。原平台失败和retry不被覆盖。",
+      "original_exit_condition_zh": "原注入、idle-steer、suspension、8 个 turn_recover 原用例（含特性门负控）和 panic/cancel/watchdog 负控通过。",
+      "next_closure_gate_zh": "保busy/lineage/exact实例/fence与恢复原负控；最终范围依独立原48映射和本候选原CI。",
+      "closure_class": "OPEN",
+      "latest_continuation_zh": "原5b Windows Core的7个terminalizer+2个steer具名PASS保留。新Windows/GNU/macOS ARM recovery各自完整原名通过，但与冻结142交集0；剩余1个Core integration和9个AppServer原名（含Unix turn_recover）仍按原选择验收。",
+      "prior_latest_continuation_v3_zh": "新5b Windows Core原正常8分片逐名覆盖7个terminalizer与2个steer，9个不同PASS；其余原恢复/负控/平台门仍按原条件。整体Core任务因另一原日志链断言失败，不能据9PASS关闭最终CI。",
+      "prior_latest_continuation_v4_zh": "原5b Windows Core的7个terminalizer+2个steer具名PASS保留。新Windows/GNU/macOS ARM recovery各自完整原名通过，但与冻结142交集0；剩余1个Core integration和9个AppServer原名（含Unix turn_recover）仍按原选择验收。"
+    },
+    {
+      "id": "B10",
+      "name": "WebSocket / prewarm / compact",
+      "priority": "P0",
+      "status": "OPEN_TURN_STATE_FIXTURE_AND_PLATFORM_QUALIFICATION",
+      "current_label_zh": "新Core六例通过；最终原平台开放",
+      "evidence_scope_zh": "5d8上选中6例PASS（含新增真实重连控制）/0retry：真实EOF/并发消费、启动前配置、身份重连、真实提示匹配。有意修正prewarm/request oracle：stable实际4请求=1无工具prewarm+3turn；保留turn-state、turn-id、真实工具结果、原预算和生产身份隔离，不宣称全部原请求/连接数或断言字节不变。",
+      "original_exit_condition_zh": "原连接数、请求数、工具/模型/工作区断言通过；身份变化的拒绝和重连边界保留。",
+      "next_closure_gate_zh": "用同源原turn_state与身份负控验收；不修改production身份或通过放宽请求数获取绿色。",
+      "closure_class": "OPEN",
+      "latest_continuation_zh": "默认full仍需14个原Core integration名字；原身份隔离、请求/连接/工具断言保持。新的并行agent恢复用例仅见TurnStarted后用户消息等待超时，静态发现默认provider/prewarm外部依赖；尚未证明该次运行卡在prewarm。",
+      "prior_latest_continuation_v4_zh": "默认full仍需14个原Core integration名字；原身份隔离、请求/连接/工具断言保持。新的并行agent恢复用例仅见TurnStarted后用户消息等待超时，静态发现默认provider/prewarm外部依赖；尚未证明该次运行卡在prewarm。"
+    },
+    {
+      "id": "B11",
+      "name": "Windows 原生 sandbox 与 helper",
+      "priority": "P0",
+      "status": "OPEN_WINDOWS_BOUNDARY_AND_DIAGNOSTIC_SCOPE",
+      "current_label_zh": "Windows helper原范围通过；三个严格权限失败仍开放",
+      "evidence_scope_zh": "cabc source/merge各254exec通过，13resume和121rollout分列。strict ACL/token/delete原3失败保留。保持原public query和token旗标的窄ACL幂等V2、DELETE与父DELETE_CHILD四格物理矩阵V2及原Windows成功日志保留均已静态审查并精确应用到fb9组合源，尚未在Windows原生编译或执行。历史助手所述审批限制的原decision/action/reason尚未恢复，不作为新审批事实或永久禁令。",
+      "original_exit_condition_zh": "在获准的修复范围内提供原生 helper 与原严格 token 契约，原攻击/权限/文件系统用例全部通过；需要超出已允许边界时明确升级审批。",
+      "next_closure_gate_zh": "取得0f原工作流完整终态；每次执行先重新验证四个原阳性，负控须固定物理marker+597原断言+XML101+精确恢复全守卫。继续正常有限read roots同步完成、严格外删、后代寿命和真实loader/合法I/O接受。",
+      "closure_class": "OPEN",
+      "latest_continuation_zh": "19d2原native6完整ZIP与原log/XML根审：实际merge6904/tree7518，原156=147PASS/7FAIL/2ignored；四阳性及文件/目录物理身份拒绝通过，严格外删1、ordinary-host Neither2与下游mutex poison4保留。其后仅追加workflow+script两路径为0f6148/treef717，actual mergeb5c23/tree29316父源eed+0f、10586叶逐一核。精确反事实已发布，尚未执行或取得资格；B11仍OPEN。",
+      "prior_latest_continuation_v3_zh": "两次独审核原15源和物理删除日志：现有生产token可外部read、拒绝overwrite/create，却允许实际外部文件/目录delete；同descriptor目标DELETE拒绝而parent DELETE_CHILD允许。原运行树与当前5b测试/运行身份分开；full-restricting对外部read拒绝仅AccessCheck，没有替代token物理I/O资格。未证明现有token-only接口的最小合格修复，blanket Err/相同token换elevated路由不能关闭原功能合同；下一方案必须明确读写能力与真实对象生命周期并原生验收。",
+      "prior_latest_continuation_v4_zh": "原严格删除缺口仍OPEN。固定5b上独立Draft #4884/headf02b9ae/treefc47759发布3commits/4paths/+605−0；test-only八行MIC/DELETE_CHILD/真实I/O探针及独立Windows原目标job已静审并实际触发，原5控制/生产token flags全保留。探针PASS仅证明观察fixture有效，不能当作隔离资格。 后续原Windows job实际compile失败（既有delete_permission_tests.rs八处E0659宏歧义，0测试），已只加显式pretty_assertions导入并补该文件workflow触发路径，发布第4commit0d65de9/tree f136809；原八断言不变，新源native待验。",
+      "prior_latest_continuation_v5_zh": "已发布7e在实际merge582f/tree1718原Windows完整目标143PASS/10FAIL/2ignored；partial-read和两个legacy预启动拒绝原例恢复。仍有2目录reopen错误5、1无WRITE_DAC控制前提未成立、1真实strict外删、2普通host前提及4mutex poison。六行JSON可解析，host/medium与strict/medium交织未补造；B11仍OPEN。"
+    },
+    {
+      "id": "B12",
+      "name": "Windows 私有目录冻结对照",
+      "priority": "P0",
+      "status": "CLOSED_ORIGINAL_WINDOWS_ATTACK_COUNTERFACTUAL_SCOPE",
+      "current_label_zh": "原Windows两正向与两冻结负控范围闭合",
+      "evidence_scope_zh": "原两个正向PASS；两个反事实各1FAIL+1PASS，真实文件系统与精确恢复有收据；不外推一般Windows权限。",
+      "original_exit_condition_zh": "不改生产代码和攻击断言；重建当前源的两个负控，正向 2/2、两负控各精确 1 fail + 1 pass、真实文件系统观察和干净恢复全部成立。",
+      "next_closure_gate_zh": "保留该scope闭合；不外推一般Windows权限或原strict delete三例。",
+      "closure_class": "CLOSED_SCOPED",
+      "latest_continuation_zh": "新5b Windows私有目录53原名PASS及两次真实冻结负控、精确恢复已留存，补充本项原scope；不扩张B11严格删除隔离。",
+      "prior_latest_continuation_v3_zh": "当前head5b633/treeb265的Windows retained实际532PASS中，祖先替换与junction两项原私有目录拒绝控制具名通过（0.024/0.021s）；原负控历史保留。这两项同head运行补证不扩大B11权限隔离资格。",
+      "prior_latest_continuation_v4_zh": "新5b Windows私有目录53原名PASS及两次真实冻结负控、精确恢复已留存，补充本项原scope；不扩张B11严格删除隔离。"
+    },
+    {
+      "id": "B13",
+      "name": "Lease / Queue 时序夹具",
+      "priority": "P0",
+      "status": "CLOSED_ORIGINAL_WINDOWS_LEASE_QUEUE_CONTRACT",
+      "current_label_zh": "原Windows九例合同已闭合；新整合树资格另验",
+      "evidence_scope_zh": "原负控和局部通过保留。旧成功target缺原名正文仍UNKNOWN；新的成功日志保留已有57Python PASS，待新原平台执行。",
+      "original_exit_condition_zh": "原过期、quarantine、guardian、release=0、单发送及重启不重放断言全保留并在原平台通过。",
+      "next_closure_gate_zh": "保留该原Windows固定源scope；新eed全平台/B15及真实产品入口分别验收，不重复旧三例凑数。",
+      "closure_class": "CLOSED_SCOPED",
+      "latest_continuation_zh": "根独核三个完整ZIP共74成员、7固定源、原九名完整正文和负控。Queue source/merge各8名PASS；原Bazel Agentd qualification目标3PASS，含精确第九quarantine原例。真实30秒lease/guardian/release0/单发送/恢复不重放不变。默认Cargo缺feature不否定显式Bazel原执行。",
+      "prior_latest_continuation_v3_zh": "macOS Bash3.2下原57 wrapper控制从3FAIL到57PASS，0skip/retry，完整13文件投影、74原件已审并登记。这修复成功日志保留链路；原Lease/Queue逐名跨平台资格仍须相应真实任务结果。",
+      "prior_latest_continuation_v4_zh": "5b Windows Git/Queue source与merge各35Gitutils+1重复嵌套执行+36Queue=72次/71不同名字；原B13 Queue八名实际PASS。第九个Agentd qualification需qualification-cognitive-write feature，默认full不包含。独立3qualification_原目标方案仍disabled，须经前置实际通过再执行，不重复1+3凑数。"
+    },
+    {
+      "id": "B14",
+      "name": "Windows exec 恢复清理开销",
+      "priority": "P0",
+      "status": "CLOSED_ORIGINAL_WINDOWS_SOURCE_MERGE_RESUME_SCOPE",
+      "current_label_zh": "原Windows source/merge各13恢复例闭合",
+      "evidence_scope_zh": "cabc source与merge各13resume/121rollout/254exec通过；原90秒和业务/清理断言未变。完整Windows required另归B15。",
+      "original_exit_condition_zh": "保持原 90 秒限制和业务/清理断言，解决真实临时 runtime 开销；原 source 与 merge 的 13 例全部通过。",
+      "next_closure_gate_zh": "保留已完成的原Windows helper前置、source/merge各13恢复例及原业务/清理断言；新最终head的整体平台资格归B15，不重复旧scope以凑通过数。",
+      "closure_class": "CLOSED_SCOPED",
+      "latest_continuation_zh": "新5b source与9063merge各13resume+121rollout+254exec-server=388原名PASS，resume35项原范围排除单列；保原90秒业务/清理语义。本项原scope闭合维持，未代替B15全平台。",
+      "prior_latest_continuation_v4_zh": "新5b source与9063merge各13resume+121rollout+254exec-server=388原名PASS，resume35项原范围排除单列；保原90秒业务/清理语义。本项原scope闭合维持，未代替B15全平台。"
+    },
+    {
+      "id": "B15",
+      "name": "最终 CI 与 main 资格",
+      "priority": "P0",
+      "status": "OPEN_REQUIRED_CI_AND_PRODUCT_ACCEPTANCE",
+      "current_label_zh": "原full16FAIL；最终hygiene完成，原平台CI开放",
+      "evidence_scope_zh": "cabc19workflow=14成功3失败2跳过；blocking37jobs=22成功11失败4跳过。f825原full19503=19485 JUnit PASS/17FAIL/1TIMEOUT，24remote和另1capability早退保留。Skills9/Migration166/V8+runtime76原范围已通过，App原断连0.606秒通过但capability门开放。新fb9原Python57/57通过，普通index9,575项语义只读核准；新原full19506=19490 JUnit PASS/16FAIL，57ignored、25早退、零retry；14旧同名失败和2新问题待闭合。完整新42件原件已独立重建复核；最终原fix0/fmt0和两项diffcheck0已完成并独审，最终代码树4a337的原平台CI仍待完成。",
+      "original_exit_condition_zh": "最新候选所有必需工作流终态成功；目标 main 基线重新核实；合成 merge 与发布 commit 树一致；保留原失败和修复回执。",
+      "next_closure_gate_zh": "最终精确head、base和merge tree、所有required门、原失败与有效负控齐全；保全部skip/retry/cache/unknown，原48映射独立维护。",
+      "closure_class": "OPEN",
+      "latest_continuation_zh": "原0004固定快照保留；17:07:23–24另读19runs/53jobs=17S2skip31Q2running1cancel，0F。新eed原Windows Core2340P3I、retained三库532P、GitQueue各source/merge35+36P由五完整ZIP和逐名原件复核。其他新success仅API未转资格；Linuxfull仍因原资源门停于编译前。",
+      "prior_latest_continuation_v3_zh": "新5b Core job127149546323在12:12:02实际failure，正常范围2343不同=2339PASS+1FAIL+3ignored，唯一blocking_snapshot原父子日志链断言失败；原isolated4PASS不能覆盖normal并行失败。本次登记冻结12:40:31 snapshot0040全部19workflow/44job=16Q/16running/9success/1failure/2skip（后继可继续展开，总数非固定），部分success仅诊断或业务skip不计资格。source业务118实际通过且独审；原base-merge118、retained532及33/40各原范围单独保留。Core与142原退出名交集12PASS(3B08+9B09)，其余130未由该scope覆盖。 Windows owner-local原3library217PASS/0skip，逐名与142交集0，不替代B13独立Agentd目标。",
+      "prior_latest_continuation_v4_zh": "最新冻结snapshot0063(14:55:04–05 UTC)19runs/59jobs=40S/2F/2skip/1cancel/14Q。5b原Windows Core日志链失败与musl类型编译失败保留；Windows ARM V8在上游build取消，stage/smoke/upload未执行、原因未知。e78 owning3962PASS/5FAIL/10ignored；同进程Core2432PASS/1FAIL/1ignored，full/hygiene未进入。32GiB前置使独立冷C1在编译前停止。"
+    },
+    {
+      "id": "B16",
+      "name": "可信产品入口及外部效果",
+      "priority": "P1",
+      "status": "OPEN_CODE_WIRING_AND_REAL_ACCEPTANCE",
+      "current_label_zh": "Foundation原范围QUALIFIED；driver启动未知；Current与真实接受开放",
+      "evidence_scope_zh": "实际ai395原Foundation完成24不同阳性/27次PASS、9不同负控/10次有效FAIL、4精确finally恢复；runner/launcher双0、final_guard=true，最终树e510f685，原metadata整图与普通HEAD/index/双锁及四SDK末态独立核验。driver已具体绑定并授权，process_start原请求及相同key协调均tool timeout，原生任务身份与结果未知。R2f1三路径386新增仅双重静审通过，未compile/run；Current、三池及真实Root/UI/provider接受继续开放。 全部352原路径110290778B无损回收，根审独立重建341内容对象及116源码守卫。driver三次完全同key请求均MCP timeout，无任务ID，停止重复启动；池模板disabled。另有Memory拒绝COMMIT后stale SQLx depth复用风险，两个显式入口11+/1−生产候选和两物理控制已静审，尚未编译/执行，未改frozen V7。",
+      "original_exit_condition_zh": "先完整迁移并验收Root handoff、Registry/arg0、protected checkpoint/verifier、FinalUse/issuer、listener custody和一个真实正常UI caller；再由同源实际Root/Session、原signed objective、provider/target完成任务/取消/丢ACK/重启，保留物理效果、authority、evidence、Memory一致性回执。",
+      "next_closure_gate_zh": "按独立R1–R6批次实现：arg0基础→trust/Current与inherited合同→Agentd装配→joint consumer→normal producer与paired pin→原真实接受。R0的102决策/474净差不等于编译最小闭包。",
+      "closure_class": "OPEN",
+      "latest_continuation_zh": "Foundation限定资格及旧driverUNKNOWN保持。#4855两个明确既存native任务只读回收完整原件，独审恢复SQLx同argv/profile真实红绿和九包1288P24ignored，可复用该donor机制。当前两个独立pool入口、TEMP物理replacement、精确531/回调及native custody仍需原控制；Current/FinalUse/normalUI仍开放。",
+      "prior_scope_as_of_progress_v2": "R1 arg010/Python54、R2a inherited FD15、R2b clock18已有有限域原生结果。R2c/d/e1/e2/e3、SQLx native-lifetime token及两个state pool的实际owner绑定均完成静态独审，尚未编译/执行。两个state新控制包含runtime shutdown与opening cancellation，不能外推runtime-alive取消。独立private recovery checkpoint连接的实际custody补丁（15增/3删）及runtime保持运行的跨进程物理取消控制（324增）已完成静态双审，未应用/执行。完整SQLx原包及明确license/mode覆盖已核验；真实依赖采用与生成锁、四项driver控制、24项基础控制、三个pool caller控制、一个checkpoint父控制、Current/FinalUse及真实Root/UI/provider接受仍开放。 后续5个epoch、24个精确源码迁移的执行草案已准备，尚未绑定最终A源或启动native；不以草案/内部解析器控制替代原生接受。",
+      "prior_latest_continuation_v3_zh": "实际ai395原Foundation完成24不同阳性/27次PASS、9不同负控/10次有效FAIL、4精确finally恢复；runner/launcher双0、final_guard=true，最终树e510f685，原metadata整图与普通HEAD/index/双锁及四SDK末态独立核验。driver已具体绑定并授权，process_start原请求及相同key协调均tool timeout，原生任务身份与结果未知。R2f1三路径386新增仅双重静审通过，未compile/run；Current、三池及真实Root/UI/provider接受继续开放。 全部352原路径110290778B无损回收，根审独立重建341内容对象及116源码守卫。driver三次完全同key请求均MCP timeout，无任务ID，停止重复启动；池模板disabled。另有Memory拒绝COMMIT后stale SQLx depth复用风险，两个显式入口11+/1−生产候选和两物理控制已静审，尚未编译/执行，未改frozen V7。",
+      "prior_latest_continuation_v4_zh": "Foundation原24不同正向/27执行PASS、9不同负控/10执行有效及4次恢复QUALIFIED保持。旧driver三次同key调用结果仍UNKNOWN、无第四次重放；新ai395 Core C0/C1是另一owned任务，C0通过/C1未开始，不解决旧driver身份。Root/Current/issuer/normal UI/provider/真实目标接受仍未取得。"
+    },
+    {
+      "id": "B17",
+      "name": "#4578 缺失确认终稿",
+      "priority": "P1",
+      "status": "CLOSED_RESEARCH_REPORT_COMPLETION",
+      "current_label_zh": "32-fit缺失终稿已补；报告范围闭合",
+      "evidence_scope_zh": "#4798固定77b244终稿保留。23:49–23:51 UTC刷新无源码/实验/rerun增量；研究blocking仍失败，科学采用不因此通过。",
+      "original_exit_condition_zh": "缺失报告与结果失真问题已完成；原研究分支全部工程 CI、科学采用门槛不因此闭合。",
+      "next_closure_gate_zh": "保77b244终稿与冻结903946源、全部失败与成本unknown；不为使结论变绿重训同一确认集。",
+      "closure_class": "CLOSED_SCOPED",
+      "prior_latest_continuation_v4_zh": null
+    },
+    {
+      "id": "B18",
+      "name": "解析核心 / 参数记忆科学采用",
+      "priority": "P1",
+      "status": "SCIENTIFIC_HOLD_NOT_ENGINEERING_DEFECT",
+      "current_label_zh": "科学HOLD",
+      "evidence_scope_zh": "原#4798固定77b244终稿及32fits/4主比较未过门保持。新#4823固定9f2d的452件原件39,426,104B已独立逐字核验和记录复算：5既有fit为单位，J−C IID均值0.105277、OOD0.202161，Bonferroni4区间下界各0.047767/0.120359超过0.005；D_gated两域0源于15验证候选均拒绝并恢复C，不是等效证明。5个条件式TRAIN分离证书和77项同实现重放一致性有精确保存记录证据；OOD分布已用于VAL、完整成本未齐，均不替代原D−B门。",
+      "original_exit_condition_zh": "新的事前冻结 2×2 比较，重点 D−B；独立数据、充分精度、全部失败尝试与完整成本；未通过就保留强普通默认而非追求事后绿色。",
+      "next_closure_gate_zh": "保留原D−B采用门与HOLD。J有限规划作为独立有证据的组件继续评估，权重编辑保强普通默认与验证回退；新实验先冻结独立数据、拟合单位、计算成本和全部失败保留，禁止以J−C、原记录重放或移植一致性换名关闭D−B。",
+      "closure_class": "SCIENTIFIC_HOLD",
+      "latest_continuation_zh": "原科学HOLD与D−B退出门保持；没有新事前冻结独立D−B fit。13:37增量观察到的新Draft只含已有源归档/有限域控制/显式HOLD，不能借J−C、重放、构建、拒绝后回退或bookkeeping关闭原门。",
+      "prior_latest_continuation_v3_zh": "原科学HOLD未改变。没有新fit或新的事前冻结独立D−B实验；不能把工程构建、J−C局部结果或拒绝后回退当作采用门通过。",
+      "prior_latest_continuation_v4_zh": "原科学HOLD与D−B退出门保持；没有新事前冻结独立D−B fit。13:37增量观察到的新Draft只含已有源归档/有限域控制/显式HOLD，不能借J−C、重放、构建、拒绝后回退或bookkeeping关闭原门。"
+    },
+    {
+      "id": "B19",
+      "name": "HeptaBao / Chain / HIA 外部接受",
+      "priority": "P1",
+      "status": "OPEN_EXTERNAL_COMPATIBILITY_AND_PRODUCT_CONSUMER",
+      "current_label_zh": "外部兼容及本产品独立接受开放",
+      "evidence_scope_zh": "Hepta内Bao13关键项11partial+2gap；外部固定源60surface/13限域实现是另一分母。真实consumer/签名/epoch/撤销与Chain/HIA接受未完成。",
+      "original_exit_condition_zh": "固定外部版本、接口与契约、兼容/故障/安全回执，以及本产品真实调用者的独立接受。",
+      "next_closure_gate_zh": "按B19-Bao/B19-Chain/B19-HIA分开取得同源实现与真实目标接受；advisory DENY_ALL/safety_certificate=false保持。",
+      "closure_class": "OPEN",
+      "latest_continuation_zh": "新5b普通业务、Bao adapter、operator等fixture通过均保原有限范围；Bao11partial/2gap、Chain HOLD_NO_GO、HIA DENY_ALL/certificate=false和真实外部consumer接受仍分立。",
+      "prior_latest_continuation_v3_zh": "新head Intel operator33、Windows operator40与base-merge Bao adapter19全部原fixture范围实际PASS；Windows同merge另外Intelligence78/Codex adapter21通过。均不能替代真实Bao/Chain/HIA外部版本、消费者、签名/epoch/撤销接受。",
+      "prior_latest_continuation_v4_zh": "新5b普通业务、Bao adapter、operator等fixture通过均保原有限范围；Bao11partial/2gap、Chain HOLD_NO_GO、HIA DENY_ALL/certificate=false和真实外部consumer接受仍分立。"
+    },
+    {
+      "id": "B20",
+      "name": "远程控制握手夹具",
+      "priority": "P0",
+      "status": "IMPLEMENTED_ORIGINAL_NATIVE_PASS_FINAL_PLATFORM_PENDING",
+      "current_label_zh": "旧原19例正文已核；新最终同源CI开放",
+      "evidence_scope_zh": "GNU Wine19例含2次额外attempt、Windows19含3次额外attempt分别记录。原握手/EOF边界与新最终source原CI仍必需。 新c6源原真实App断连例实际0.606秒PASS，三项父存活因果反例有效；同组原capability控制因宿主前置缺失早退，8 JUnit PASS仅7项行为实际执行，最终平台门仍开放。",
+      "original_exit_condition_zh": "确定性旧源同握手错误、新源对照及原真实AppServer关闭/断连断言全部通过。",
+      "next_closure_gate_zh": "最新候选原19例及原平台CI以精确收据关闭；不得跳过正常HTTP或替代真实握手。",
+      "closure_class": "OPEN",
+      "latest_continuation_zh": "新recovery selected成功不是原19握手/EOF名的替代。原c6实际App断连与父存活负控保持；同源最终原19名字和capability业务实际到达仍待齐全。",
+      "prior_latest_continuation_v4_zh": "新recovery selected成功不是原19握手/EOF名的替代。原c6实际App断连与父存活负控保持；同源最终原19名字和capability业务实际到达仍待齐全。"
+    },
+    {
+      "id": "B21",
+      "name": "macOS Intel PTY退出和输出",
+      "priority": "P0",
+      "status": "OPEN_ORIGINAL_INTEL_PTY_QUALIFICATION",
+      "current_label_zh": "ROG PTY29/转发/监督31例通过；Intel原门开放",
+      "evidence_scope_zh": "1c2原31例PASS/0retry不覆盖Intel30.603秒、drain2秒及close-stdin失败。Mac专属两例与真实因果尚需原平台。",
+      "original_exit_condition_zh": "保持原2秒/5秒预算、完整drain与child退出/FD断言；修复源在原macOS Intel的30例与相关原CI通过，并解释实际Intel drain失败原因。",
+      "next_closure_gate_zh": "原Intel30例、完整drain/child/FD原断言和2/5秒预算不变；同源因果与原平台结果齐全。",
+      "closure_class": "OPEN",
+      "latest_continuation_zh": "当前eed的PTY完整源码与原30例/新增1诊断收集例已独审；2/5秒预算和drain/child/FD断言保留。0e Intel drain仍2.023秒失败且无read字节/errno，不能归因为已证Tokio调度问题。成功日志保留脚本只增加原PTY目标的一行候选已静态验收，未应用、不扩测试范围；待下一必要产品发布一并处理。",
+      "prior_latest_continuation_v3_zh": "Linux原29PTY与原fix/fmt、两个diffcheck已过并进入5b。当前Intel原30仍待其CI。新donor4854/4868的真实编译回归发生在当前5b不存在的Windows测试文件，未将它并入或当作本产品修复；operator Intel33不替代PTY。",
+      "prior_latest_continuation_v4_zh": "GNU recovery517与macOS ARM recovery521各source/merge通过，后者不是Intel。Windows x86 V8只完成no-run链接，Intel原PTY30仍未被新结果覆盖；原2/5秒、完整drain/退出/FD条件不变。"
+    },
+    {
+      "id": "B22",
+      "name": "TUI 中断与退出顺序",
+      "priority": "P0",
+      "status": "CLOSED_ORIGINAL_WINDOWS_TUI_13_CONTRACT",
+      "current_label_zh": "原Windows13例TUI/interrupt/shutdown合同已闭合",
+      "evidence_scope_zh": "旧Windows TUI非缓存target PASS，没有独立成功原名正文。原单upload身份仅source+count推断；新原CI需补13原名平台观察。",
+      "original_exit_condition_zh": "定位真实turn/interrupt与关闭顺序，保留原断言和时间预算，以固定修复源的原用例/有效负控及原WindowsCI验收。",
+      "next_closure_gate_zh": "维护该已达scope；最终eed完整平台与main资格继续归B15。",
+      "closure_class": "CLOSED_SCOPED",
+      "latest_continuation_zh": "根独核原20成员ZIP、13名各一次PASS、6固定源、真实stdout就绪/同turn顺序/5秒与历史有效负控。完整TUI3775PASS6原ignored、Queue36PASS；B22所选13无ignore。原Bazel重试策略保留，不冒称retries0。",
+      "prior_latest_continuation_v4_zh": "旧13原TUI名字证据与当时源保留，最新5b原完整Windows平台门尚未完成；新UI native/browser suite不能替代终端interrupt/shutdown的原13名字。"
+    },
+    {
+      "id": "B23",
+      "name": "App Server Unix关闭信号生命周期",
+      "priority": "P0",
+      "status": "IMPLEMENTED_CAUSAL_NEGATIVE_AND_FIVE_NATIVE_PASS",
+      "current_label_zh": "Unix原因果负控及5例通过；最终原平台开放",
+      "evidence_scope_zh": "原3signal/2drain和真实丢订阅负控保留；成功target摘要不补逐casePASS。新source原UnixCI、stdio/disabled与原预算仍必需。",
+      "original_exit_condition_zh": "真实baseline丢信号窗口成立；修后3个单信号父测试与2个原drain用例通过；配置关闭/stdio及平台语义不变，最终原CI验收。",
+      "next_closure_gate_zh": "同最终source原Unix平台验收；原stdio/disabled语义和drain规则保持；首signal注册失败提前报错属已审兼容差异。",
+      "closure_class": "OPEN",
+      "latest_continuation_zh": "新GNU/macOS ARM recovery虽然含AppServer原selected范围通过，但与冻结142交集0，不替代原3signal/2drain及stdio/disabled同源最终门；原物理丢信号负控保持。",
+      "prior_latest_continuation_v4_zh": "新GNU/macOS ARM recovery虽然含AppServer原selected范围通过，但与冻结142交集0，不替代原3signal/2drain及stdio/disabled同源最终门；原物理丢信号负控保持。"
+    }
+  ],
+  "limits": [
+    "原23项ID与退出条件逐字不变；B13与B22按新完整原件正式由OPEN转CLOSED_SCOPED，其余closure_class不变。",
+    "API快照不原子；run顶层queued不证明其所有内部job均未运行，须看完整job列表和实际日志。",
+    "原失败、取消、skip、额外attempt、早退、缓存和缺失证据分别保留。",
+    "原生构建目录只供下一批测试使用；科学门、真实UI和外部接受分别验收。",
+    "原库存1103openPR/5193branches仅属于03:16–03:24固定时间，不由18条搜索增量改写实时总数。",
+    "历史最大211指标为ref名层级/stack-depth，不是已核实commit祖先跨度。",
+    "新原Memory真实时钟fixture明确改setup lease为10秒、到期等待上限12秒；不能称所有内部fixture时间预算未变。生产过期规则与原外层目标预算不变。"
+  ],
+  "native_foundation_progress": {
+    "status": "QUALIFIED",
+    "actual_job": "1a1ab493f2b-fc05-4bfe",
+    "completed_at": "2026-11-05T11:26:45.678211+00:00",
+    "final_tree": "e510f685d2aa7b9a7121a78f96af3569919e6f88",
+    "ordinary_head": "20fd174ded4e5ce01bda34e4f6d1d74803301f49",
+    "runner_exit_code": 0,
+    "launcher_exit_code": 0,
+    "source_final_guard": true,
+    "SDK_final_guard_error": null,
+    "positive_unique": 24,
+    "positive_occurrences": 27,
+    "valid_negative_unique": 9,
+    "valid_negative_occurrences": 10,
+    "exact_finally_restorations": 4,
+    "retries": 0,
+    "original_command_exit_counts": {
+      "0": 39,
+      "100_expected_negative_controls": 4
+    },
+    "complete_final_metadata_bytes": 8296096,
+    "complete_final_metadata_sha256": "b4090db792babde64575b11e7ae04df8245074b96a154048c4de08691e4a23e0",
+    "workspace_members": 193,
+    "resolve_nodes": 1501,
+    "root_phase_review": "c9da4defd63c6c63b22fdf731c37fa91a201f4c4",
+    "root_handoff_review": "819bdbcfd1fc1494b3718eea891f4bb490dbdd72",
+    "independent_handoff_review": "765e0e5194c72c9b44f1de052082cef2ff36b644",
+    "phase_catalogs_use_original_E_selections": true,
+    "unfiltered_full_original_suite_qualified": false,
+    "B16_closed": false,
+    "complete_original_archive": {
+      "native_paths": 352,
+      "native_bytes": 110290778,
+      "unique_native_contents": 328,
+      "unique_native_bytes": 26803647,
+      "all_assets": 341,
+      "transport_batches": 8,
+      "manifest": "4f65590b3d208854fa90ec5864f7b27fff61d31a",
+      "delivery_map": "ca2edaaf5b814885830bffbefa661245cc2dc6d2",
+      "root_reconstructed_source_guards": 116,
+      "all_original_paths_and_hashes_verified": true,
+      "native_commands_added": 0,
+      "root_reconstruction_review": "e2438ccaff51a1ed6a9978864373529f9ff591ee"
+    }
+  },
+  "prior_progress_record": "continuation-blocker-progress-v5.json",
+  "driver_progress": {
+    "status": "START_OUTCOME_UNKNOWN",
+    "root_execution_guard": "3dfca4e071b15b54dd2d9949a2f5f011ef0f468f",
+    "enabled_binding": "57e981e3a88f54c85d202afa5c2e48540efdbec0",
+    "request_bytes": 938052,
+    "request_sha256": "5f2fe280d8e4fb6aa54d751cc6475060d238b18638b4b6efe4be9a5d7e7152d2",
+    "idempotency_key": "hepta-ai395-b16-driver-v7-20261105-v1",
+    "two_original_start_tool_timeouts_preserved": true,
+    "native_job_id": null,
+    "native_exit_code": null,
+    "native_tests_executed": null,
+    "fresh_capacity_minimum_bytes": 48517479536,
+    "per_command_minimum_bytes": 8000000000,
+    "provider_observation": "native/b16-ai395-driver-v7-v1/provider-indeterminate-start-bundle-v2.json",
+    "known_prior_job_status_available_via_readonly_background_API": true,
+    "no_driver_success_or_failure_inferred": true,
+    "original_start_tool_timeout_count": 3,
+    "exact_same_key_reconciliation_call_count": 2
+  },
+  "r2f1_next_candidate": {
+    "status": "STATIC_PASS_NOT_NATIVE_QUALIFIED",
+    "manifest": "16e4c8e5ad178afe7e3351dbf7c3f5f99abd50c1",
+    "patch": "00e997f3ab4c1f5858121041ed1088adfd1f7a2c",
+    "independent_review": "e406fcf2eb7dc21491d98bab08c00fd28809bb7c",
+    "source_paths": 3,
+    "added_lines": 386,
+    "deleted_lines": 0,
+    "compiled": false,
+    "native_tests_run": false,
+    "independent_Root_issuer_acceptance": false,
+    "Current_authority_granted": false
+  },
+  "ci_latest_observation": {
+    "collected_from": "2026-11-05T16:39:47.895Z",
+    "collected_to": "2026-11-05T16:39:48.921Z",
+    "run_count": 19,
+    "run_status": {
+      "skipped": 2,
+      "queued": 10,
+      "pending": 2,
+      "success": 4,
+      "in_progress": 1
+    },
+    "job_count": 53,
+    "job_status": {
+      "skipped": 2,
+      "queued": 36,
+      "in_progress": 6,
+      "success": 9
+    },
+    "head": "eed4d6bb61b789b19f60facc79f9e031765fa4c9",
+    "base": "63652be658ebed8d3052eb789b951793384fd5e4",
+    "draft": true,
+    "snapshot": "0004",
+    "non_atomic": true,
+    "job_total_can_expand_after_predecessors": true,
+    "business_qualification_not_inferred_from_job_success": true,
+    "original_archive": "generated-evidence/v7-main-windows-publication-cut0004/transport-manifest.json"
+  },
+  "ci_core_terminal": {
+    "run_id": 41999104379,
+    "job_id": 127149546323,
+    "started_at": "2026-11-05T11:59:54Z",
+    "completed_at": "2026-11-05T12:12:02Z",
+    "conclusion": "failure",
+    "head": "5b6331250ff459033bd44d1a95daec70131277cc",
+    "tree": "b26598d0d97d8d51e723bb5582137315f2174d35",
+    "attempt": 1,
+    "job_log_bytes": 702243,
+    "job_log_sha256": "95e2beb757a2984141f5ca26a91ee44a949947e261a8643b611e97dc31141a3f",
+    "normal_sharding": {
+      "shards": 8,
+      "libtest_subcalls": 33,
+      "unique_cases": 2343,
+      "PASS": 2339,
+      "FAIL": 1,
+      "ignored": 3,
+      "XML_present": false
+    },
+    "failed_case": "environment_selection::tests::blocking_snapshot_waits_for_starting_environment",
+    "failure_endpoint": "original environment_selection.rs:1284 parent-child wait span assertion",
+    "earlier_original_isolated_lifecycle": {
+      "PASS": 4,
+      "same_case_passed": true,
+      "replaces_later_parallel_failure": false
+    },
+    "original_142_exact_match": {
+      "PASS": 12,
+      "B08": 3,
+      "B09": 9,
+      "not_covered_in_this_scope": 130
+    },
+    "review": "9d627385f05ee536482139dca3ddb55da58d237d",
+    "registry": "124436a5c24d33e6e8c66478d34d28edb588f609",
+    "production_or_test_fix_qualified": false,
+    "mechanism_status": "Pinned tracing single-Dispatch interest-cache mechanism is reachable; actual CI scheduling interleaving remains an inference.",
+    "incomplete_six_line_candidate": {
+      "status": "REJECTED_AS_INCOMPLETE_REPAIR",
+      "root_review": "0084ec633694ae8b939a65bd0939711fc047849b",
+      "old_JustOne_reader_can_overwrite_rebuilt_interest": true,
+      "promoted": false
+    },
+    "next_fixture_candidate": {
+      "status": "STATIC_REVIEW_PENDING_NATIVE",
+      "same_test_binary_exact_child": true,
+      "original_inner_snapshot_budget_seconds": 5,
+      "new_stricter_parent_end_to_end_budget_seconds": 5,
+      "original_three_parent_child_log_assertions_unchanged": true,
+      "source_and_full_parallel_native_qualification": false
+    }
+  },
+  "ci_ordinary_business_source_terminal": {
+    "job_id": 127149582480,
+    "completed_at": "2026-11-05T12:09:56Z",
+    "conclusion": "success",
+    "head": "5b6331250ff459033bd44d1a95daec70131277cc",
+    "tree": "b26598d0d97d8d51e723bb5582137315f2174d35",
+    "named_cases": {
+      "Intelligence": 78,
+      "Bao": 19,
+      "Adapter": 21
+    },
+    "PASS": 118,
+    "ignored": 0,
+    "filtered": 0,
+    "XML_wrapper_cases": 3,
+    "attempt": 1,
+    "test_result_cache_enabled": false,
+    "remote_build_cache_hits": 2045,
+    "matches_original_142": 0,
+    "independent_original_review": "ad2f9173d768d577d34b8ea8e3d995e09d89b696",
+    "not_borrowed_from_earlier_base_merge": true,
+    "external_Bao_Chain_HIA_acceptance": false
+  },
+  "memory_refused_commit_reuse_candidate": {
+    "status": "STATIC_CANDIDATE_UNEXECUTED",
+    "manifest": "28a0ccb97b740c6d18561c9bf2d63616db881189",
+    "patch": "6e0a36957f6f2976a06f3c91a968a33213a31b2d",
+    "production_only_patch": "7be8e1e90a78c90d00535961b90673d339d6e0d6",
+    "source_paths": 2,
+    "added_lines": 160,
+    "deleted_lines": 1,
+    "production_added_lines": 11,
+    "production_deleted_lines": 1,
+    "physical_controls": 2,
+    "compile_or_native_tests_run": false,
+    "original_foundation_raw_SQL_controls_do_not_cover_SQLx_Transaction_depth": true,
+    "frozen_driver_payload_unchanged": true,
+    "donor_native_raw_status": "RAW_NOT_RETRIEVED",
+    "independent_review": "f40037c9d91a6d5625b83750294db2d000823697"
+  },
+  "ci_owner_local_windows_terminal": {
+    "job_id": 127149582441,
+    "completed_at": "2026-11-05T12:31:09Z",
+    "conclusion": "success",
+    "head": "5b6331250ff459033bd44d1a95daec70131277cc",
+    "tree": "b26598d0d97d8d51e723bb5582137315f2174d35",
+    "scope": "original three complete package library scopes",
+    "PASS": 217,
+    "packages": {
+      "UDS": 14,
+      "Matrixd": 31,
+      "Agentd": 172
+    },
+    "skipped": 0,
+    "retries": 0,
+    "named_intersection_original_142": 0,
+    "Agentd_B13_independent_qualification_target_selected": false,
+    "independent_original_review": "e179315aa4b1657e0499cfb02adf313fdb34cb4e",
+    "registry": "f0353bcd7dcdccd2768f55037ee88ffa3c8ccc00"
+  },
+  "historical_ci_job_snapshot_utc": "2026-11-05T11:44:50.340Z",
+  "historical_ci_job_snapshot": {
+    "total": 44,
+    "queued": 38,
+    "skipped": 2,
+    "success": 4,
+    "running": 0,
+    "first_page_window": {
+      "started": "2026-11-05T11:44:50.340Z",
+      "finished": "2026-11-05T11:44:51.276Z"
+    },
+    "terminal_page_window": {
+      "started": "2026-11-05T11:46:22.808Z",
+      "finished": "2026-11-05T11:46:24.595Z"
+    },
+    "non_atomic": true,
+    "complete_pagination_through": "2026-11-05T11:46:24.595Z",
+    "original_snapshot": "generated-evidence/ci-5b633-snapshot0030-v5/snapshot-summary.json"
+  },
+  "historical_ci_running_increment": {
+    "observed_utc": "2026-11-05T12:03:03Z",
+    "run_id": 41999104379,
+    "job_id": 127149546323,
+    "started_at": "2026-11-05T11:59:54Z",
+    "runner_id": 1000000639,
+    "head": "5b6331250ff459033bd44d1a95daec70131277cc",
+    "base": "63652be658ebed8d3052eb789b951793384fd5e4",
+    "draft": true,
+    "all_jobs": {
+      "queued": 37,
+      "in_progress": 1,
+      "success": 4,
+      "skipped": 2
+    },
+    "native_test_qualification": false
+  },
+  "current_core_musl_candidate": {
+    "tree": "e78c819b8b1f435f8b37bea17b4ffdc724961aa2",
+    "published_to_primary_PR": false,
+    "actual_ROG_job": "1a1ac0281fa-fc05-519e",
+    "state": "PROJECT_NONPASS_REVIEW_REQUIRED",
+    "original_owning": {
+      "catalog": 3977,
+      "run": 3967,
+      "PASS": 3962,
+      "FAIL": 5,
+      "ignored": 10,
+      "exit_code": 100
+    },
+    "same_process_parallel": {
+      "passed": 2432,
+      "failed": 1,
+      "ignored": 1,
+      "measured": 0,
+      "filtered": 0,
+      "exit_code": 101
+    },
+    "isolated_original_wrapper": {
+      "binary_id": "codex-core",
+      "name": "environment_selection::tests::blocking_snapshot_waits_for_starting_environment",
+      "result": "PASS",
+      "seconds": "0.078",
+      "captured": ""
+    },
+    "wrapper_original_body_unchanged": true,
+    "original_inner_and_parent_seconds": 5,
+    "failures": [
+      {
+        "binary_id": "codex-core::all",
+        "name": "suite::approvals::approving_execpolicy_amendment_persists_policy_and_skips_future_prompts",
+        "result": "FAIL",
+        "seconds": "0.379"
+      },
+      {
+        "binary_id": "codex-core::all",
+        "name": "suite::request_permissions::partial_request_permissions_grants_do_not_preapprove_new_permissions",
+        "result": "FAIL",
+        "seconds": "0.449"
+      },
+      {
+        "binary_id": "codex-core::all",
+        "name": "suite::request_permissions::request_permissions_grants_apply_to_later_exec_command_calls",
+        "result": "FAIL",
+        "seconds": "0.437"
+      },
+      {
+        "binary_id": "codex-core::all",
+        "name": "suite::request_permissions::request_permissions_grants_apply_to_later_exec_command_calls_without_inline_permission_feature",
+        "result": "FAIL",
+        "seconds": "0.443"
+      },
+      {
+        "binary_id": "codex-core::all",
+        "name": "suite::request_permissions::request_permissions_preapprove_explicit_exec_permissions_outside_on_request",
+        "result": "FAIL",
+        "seconds": "0.436"
+      }
+    ],
+    "parallel_failure": "agent::control::tests::resume_agent_from_rollout_skips_descendants_when_parent_resume_fails",
+    "five_project_failures_have_three_extra_stream_fd_EPERM_lines": true,
+    "host_causal_chain_fresh_proof_complete": false,
+    "full_gate": "OPEN",
+    "hygiene": "NOT_STARTED",
+    "final_source_guard_error": null,
+    "final_expected_source_tree": "e78c819b8b1f435f8b37bea17b4ffdc724961aa2",
+    "final_free_bytes": 20609298432,
+    "projection_identity": {
+      "bytes": 145424,
+      "sha256": "9931149a3239406315e2b51e05b3a8c04f48fd9f97c37cbeb9d4145508e71cfb"
+    },
+    "full29_original_transfer_complete_at_cut": true,
+    "recorded_early_return_candidate_lines": 25,
+    "early_return_candidate_lines_are_not_unique_case_count": true,
+    "historical_source_scope_only": true,
+    "full29_original_bytes": 33420419,
+    "root_review": "reviews/rog-complete29-root-verification-v2.json",
+    "actual_early_return_cases": 25,
+    "actual_original_remaining54_pass": 38,
+    "38_pass_intersection_with_25_early_returns": 0
+  },
+  "independent_ai395_core_preparation": {
+    "actual_job": "1a1ac1b40d7-fc05-5242",
+    "state": "PREPARATION_STOPPED_AT_ACTUAL_FAILURE",
+    "exit_code": 1,
+    "C0_source_preparation_passed": true,
+    "C1_build_executed": false,
+    "tests_executed": 0,
+    "metadata_executed": 0,
+    "catalogs_executed": 0,
+    "hygiene_executed": 0,
+    "failure_kind": "PRE_BUILD_MEMORY_PREREQUISITE",
+    "available_before_C1_bytes": 29914468352,
+    "required_before_C1_bytes": 34359738368,
+    "free_before_C1_bytes": 237601075200,
+    "minimum_phase_free_bytes": 64000000000,
+    "source_tree": "e78c819b8b1f435f8b37bea17b4ffdc724961aa2",
+    "ordinary_head": "5b6331250ff459033bd44d1a95daec70131277cc",
+    "ordinary_index": {
+      "path": "/home/qq/work/hepta-core-musl-full-20261105/source/.git/index",
+      "bytes": 1401599,
+      "sha256": "b488256c0552f9ff6d6030b3a1738721dec54ffb5d2a2b56d99100943f04ed19",
+      "git_blob": "c96068a31d1b75d064d6764cc28db47fd73fec24",
+      "mode": 384,
+      "executable": false
+    },
+    "final_guard": true,
+    "next_C2_full_enabled": false,
+    "old_B16_driver_resolved": false
+  },
+  "b11_diagnostic_PR": {
+    "schema": "b11-identity-counterfactual-two-path-publication-root-v1",
+    "published_utc": "2026-11-05 17:58:50 UTC",
+    "head": "0f6148ea3fbe9d1263354791d5cc63c7e66d4628",
+    "tree": "f717a84a856413d87a3b718b0bcae3adbd16b643",
+    "parent": "19d2fdfcaefbb41cdf2a72754d695d4b47cb3f14",
+    "branch": "diag/b11-token-mechanism-observations-20261105",
+    "pr": 4884,
+    "draft": true,
+    "exact_changes": [
+      {
+        "path": ".github/workflows/hepta-windows-token-mechanism-probe.yml",
+        "before": "70f3145268e042ec04fbfe85eda83ccbbc4ff79c",
+        "after": "912e22789665b0081c83ae0fa632d2482e8b0eba"
+      },
+      {
+        "path": ".github/scripts/run_b11_acl_identity_counterfactual.py",
+        "before": null,
+        "after": "25def4386ea08bb72a7605cc113117f31fffcd1b"
+      }
+    ],
+    "head_leaves": 10584,
+    "additions": 301,
+    "deletions": 0,
+    "Rust_source_changes": 0,
+    "actual_merge": "b5c23d8943a0a36a14a962175cb2ec75d22d5553",
+    "actual_merge_tree": "29316e75554590382268dafa77869fab0394a264",
+    "actual_merge_parents": [
+      "eed4d6bb61b789b19f60facc79f9e031765fa4c9",
+      "0f6148ea3fbe9d1263354791d5cc63c7e66d4628"
+    ],
+    "actual_merge_leaves": 10586,
+    "full_actual_tree_verification": true,
+    "primary14_preserved": true,
+    "actual_ref_readback_verified": true,
+    "PR_REST_base_metadata": "Observed base.sha5b despite independently verified actual merge parents eed+0f; metadata is not substituted for actual Git object",
+    "source_manifest": "c7c62d453d10182942450c852edf8080005aca5d",
+    "independent_review": "7d5ef2f8e53b89524c0937f01d25a2cd3e83aef5",
+    "root_positive_prerequisite": "847bd07e56339e87484891e6f67273be2c97aefe",
+    "negative_executed": false,
+    "negative_qualified": false,
+    "original_target_failure_preserved": true,
+    "B11": "OPEN",
+    "limits": [
+      "One exact owned physical counterfactual only after four exact fresh positive PASS records on its own original full target.",
+      "Source/index/lock guards before atomic restoration; unknown drift is preserved, not overwritten.",
+      "The native6 original bat XML1 is not the new negative libtest101 endpoint; new invocation must independently prove it.",
+      "A successful counterfactual does not change the original whole target failure."
+    ]
+  },
+  "original_23_ids_and_exit_conditions_unchanged": true,
+  "prior_product_v6": {
+    "pr": 4797,
+    "draft": true,
+    "head": "5b6331250ff459033bd44d1a95daec70131277cc",
+    "tree": "b26598d0d97d8d51e723bb5582137315f2174d35",
+    "base": "63652be658ebed8d3052eb789b951793384fd5e4",
+    "merge": "9063c52a063b6f26c48e9418f6d8dbd14e9e06ff"
+  },
+  "closure_transitions_v7": [
+    {
+      "id": "B22",
+      "from": "OPEN",
+      "to": "CLOSED_SCOPED",
+      "scope": "Original Windows TUI13 on5b/merge9063",
+      "root_receipt": "reviews/b22-original-windows-closure-root-verification-v1.json",
+      "actual_git_blob": "0e60a44c0bd703461de322e80464f9969c71602c"
+    },
+    {
+      "id": "B13",
+      "from": "OPEN",
+      "to": "CLOSED_SCOPED",
+      "scope": "Original Windows Lease/Queue9 on5b/merge9063",
+      "root_receipt": "reviews/b13-original-windows-closure-root-verification-v1.json",
+      "content_git_blob": "1477f09e7d1d4fb8f73910252b4c91fa55193164"
+    }
+  ],
+  "historical_ci_latest_observation_v6": {
+    "collected_from": "2026-11-05T14:55:04.543Z",
+    "collected_to": "2026-11-05T14:55:05.519Z",
+    "run_count": 19,
+    "run_status": {
+      "skipped": 2,
+      "queued": 4,
+      "success": 11,
+      "failure": 2
+    },
+    "job_count": 59,
+    "job_status": {
+      "failure": 2,
+      "success": 40,
+      "skipped": 2,
+      "queued": 14,
+      "cancelled": 1
+    },
+    "head": "5b6331250ff459033bd44d1a95daec70131277cc",
+    "base": "63652be658ebed8d3052eb789b951793384fd5e4",
+    "draft": true,
+    "changes": [
+      {
+        "id": 127251874931,
+        "run_id": 41999115000,
+        "name": "Build ptrcomp-sandbox aarch64-pc-windows-msvc from source",
+        "status": "completed",
+        "conclusion": "cancelled",
+        "runner_id": 1000000884,
+        "runner_name": "GitHub Actions 1000000884",
+        "steps": [
+          {
+            "name": "Set up job",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 1,
+            "started_at": "2026-11-05T12:50:15Z",
+            "completed_at": "2026-11-05T12:50:16Z"
+          },
+          {
+            "name": "Run actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 2,
+            "started_at": "2026-11-05T12:50:16Z",
+            "completed_at": "2026-11-05T12:50:34Z"
+          },
+          {
+            "name": "Run ./.github/actions/setup-ci",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 3,
+            "started_at": "2026-11-05T12:50:34Z",
+            "completed_at": "2026-11-05T12:50:54Z"
+          },
+          {
+            "name": "Configure git for upstream checkout",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 4,
+            "started_at": "2026-11-05T12:50:54Z",
+            "completed_at": "2026-11-05T12:50:54Z"
+          },
+          {
+            "name": "Check out upstream rusty_v8",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 5,
+            "started_at": "2026-11-05T12:50:54Z",
+            "completed_at": "2026-11-05T12:52:34Z"
+          },
+          {
+            "name": "Set up Python",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 6,
+            "started_at": "2026-11-05T12:52:34Z",
+            "completed_at": "2026-11-05T12:52:35Z"
+          },
+          {
+            "name": "Set up Codex Rust toolchain for Cargo smoke",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 7,
+            "started_at": "2026-11-05T12:52:35Z",
+            "completed_at": "2026-11-05T12:52:49Z"
+          },
+          {
+            "name": "Install rusty_v8 Rust toolchain",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 8,
+            "started_at": "2026-11-05T12:52:49Z",
+            "completed_at": "2026-11-05T12:53:02Z"
+          },
+          {
+            "name": "Write upstream submodule status",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 9,
+            "started_at": "2026-11-05T12:53:02Z",
+            "completed_at": "2026-11-05T12:53:05Z"
+          },
+          {
+            "name": "Restore upstream source-build cache",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 10,
+            "started_at": "2026-11-05T12:53:05Z",
+            "completed_at": "2026-11-05T12:53:05Z"
+          },
+          {
+            "name": "Install and start sccache",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 11,
+            "started_at": "2026-11-05T12:53:05Z",
+            "completed_at": "2026-11-05T12:53:07Z"
+          },
+          {
+            "name": "Install Chromium clang for ARM64 MSVC cross build",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 12,
+            "started_at": "2026-11-05T12:53:07Z",
+            "completed_at": "2026-11-05T12:53:17Z"
+          },
+          {
+            "name": "Build upstream rusty_v8 sandbox release pair",
+            "status": "completed",
+            "conclusion": "cancelled",
+            "number": 13,
+            "started_at": "2026-11-05T12:53:17Z",
+            "completed_at": "2026-11-05T14:50:33Z"
+          },
+          {
+            "name": "Stage upstream sandbox release pair",
+            "status": "completed",
+            "conclusion": "skipped",
+            "number": 14,
+            "started_at": "2026-11-05T14:50:33Z",
+            "completed_at": "2026-11-05T14:50:33Z"
+          },
+          {
+            "name": "Smoke link staged artifact with Cargo",
+            "status": "completed",
+            "conclusion": "skipped",
+            "number": 15,
+            "started_at": "2026-11-05T14:50:33Z",
+            "completed_at": "2026-11-05T14:50:33Z"
+          },
+          {
+            "name": "Upload staged artifacts",
+            "status": "completed",
+            "conclusion": "skipped",
+            "number": 16,
+            "started_at": "2026-11-05T14:50:33Z",
+            "completed_at": "2026-11-05T14:50:33Z"
+          },
+          {
+            "name": "Check for a clean worktree",
+            "status": "completed",
+            "conclusion": "skipped",
+            "number": 17,
+            "started_at": "2026-11-05T14:50:33Z",
+            "completed_at": "2026-11-05T14:50:33Z"
+          },
+          {
+            "name": "Post Restore upstream source-build cache",
+            "status": "completed",
+            "conclusion": "skipped",
+            "number": 31,
+            "started_at": "2026-11-05T14:50:33Z",
+            "completed_at": "2026-11-05T14:50:33Z"
+          },
+          {
+            "name": "Post Set up Python",
+            "status": "completed",
+            "conclusion": "skipped",
+            "number": 32,
+            "started_at": "2026-11-05T14:50:33Z",
+            "completed_at": "2026-11-05T14:50:33Z"
+          },
+          {
+            "name": "Post Check out upstream rusty_v8",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 33,
+            "started_at": "2026-11-05T14:50:33Z",
+            "completed_at": "2026-11-05T14:50:51Z"
+          },
+          {
+            "name": "Post Run actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 34,
+            "started_at": "2026-11-05T14:50:51Z",
+            "completed_at": "2026-11-05T14:50:55Z"
+          },
+          {
+            "name": "Complete job",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 35,
+            "started_at": "2026-11-05T14:50:55Z",
+            "completed_at": "2026-11-05T14:50:55Z"
+          }
+        ]
+      }
+    ],
+    "snapshot": "0063",
+    "non_atomic": true,
+    "job_total_can_expand_after_predecessors": true,
+    "business_qualification_not_inferred_from_job_success": true,
+    "original_archive": "generated-evidence/current-outcomes-cut0063-v6/transport-manifest.json"
+  },
+  "historical_b11_diagnostic_PR_v6": {
+    "number": 4884,
+    "draft": true,
+    "base": "5b6331250ff459033bd44d1a95daec70131277cc",
+    "head": "0d65de9bf1e28a7b313a344ebba71ba8378d0f5a",
+    "tree": "f13680916b9a7f773dcc95e4ce6ee6785021ead4",
+    "commits": 4,
+    "changed_paths": 5,
+    "additions": 607,
+    "deletions": 0,
+    "production_permissions_changed": false,
+    "original_strict_and_matrix_controls_changed": false,
+    "actual_workflow_run": 42049112832,
+    "native_outcome": "INITIAL_NATIVE_COMPILE_FAILED_E0659_NEW_SOURCE_PENDING",
+    "probe_success_qualifies_isolation": false,
+    "initial_head": "f02b9ae98e8608210c92a3f53646147f5c7dc428",
+    "initial_tree": "fc47759c145d33122b3cab70235a617661556db8",
+    "initial_actual_failure": {
+      "run": 42049112832,
+      "job": 127320081049,
+      "source_tree": "fc47759c145d33122b3cab70235a617661556db8",
+      "kind": "8 E0659 macro ambiguities in existing delete_permission_tests.rs",
+      "tests_executed": 0,
+      "wrapper_exit": 1,
+      "retained": true
+    },
+    "correction": {
+      "source": "one explicit pretty_assertions::assert_eq import",
+      "workflow": "one added existing-module trigger path",
+      "all_eight_assertions_unchanged": true,
+      "old_source_failure_erased": false
+    }
+  },
+  "native_ca1_firststart": {
+    "key": "hepta-ai395-core-candidate-ca1-full-20261105-v1",
+    "job": "1a1ac90de70-fc05-5557",
+    "host": "ai395",
+    "launch_ok": true,
+    "reused": false,
+    "status": "failed",
+    "exit_code": 1,
+    "output_complete": true,
+    "entry_time": "2026-11-05T16:35:47Z",
+    "entry_free_bytes": 139231227904,
+    "entry_MemAvailable_bytes": 25061957632,
+    "minimum_free_bytes": 64000000000,
+    "minimum_MemAvailable_bytes": 34359738368,
+    "source_mutations": 0,
+    "build_commands": 0,
+    "tests": 0,
+    "hygiene": 0,
+    "source_before_and_after": "e78c819b8b1f435f8b37bea17b4ffdc724961aa2",
+    "ordinary_HEAD": "5b6331250ff459033bd44d1a95daec70131277cc",
+    "ordinary_index_sha256": "b488256c0552f9ff6d6030b3a1738721dec54ffb5d2a2b56d99100943f04ed19",
+    "sdk_complete_originals": {
+      "count": 3,
+      "bytes_each": 151134,
+      "files": 171,
+      "symlinks": 147,
+      "only_observation_time_differs": true
+    },
+    "result_scope": "RESOURCE_PREREQUISITE_REFUSAL_NOT_PRODUCT_TEST_RESULT",
+    "delivery_actual_git_map": "5a1a5006f39db00a8bdf8e3185a38e8850752874",
+    "next_trigger": "Fresh same-root memory>=32GiB and disk>=64GB plus all original source/index/locks/SDK guards; explicit new continuation identity, never replay the failed key or old unknown B16 driver."
+  },
+  "linux_capacity": {
+    "scope": "Five configured Linux hosts at distinct recorded times, not an atomic or permanent availability claim",
+    "desktop": "free27,535,761,408B<64GB",
+    "rog": "free18,676,203,520B<64GB",
+    "ai395": "latest entry MemAvailable25,061,957,632B<32GiB",
+    "pocket4": "MemTotal25,739,556kB<32GiB",
+    "x230": "MemTotal7,824,912kB<32GiB",
+    "available_host_passing_original_gate": null
+  },
+  "concurrent_project_increment": {
+    "search_cut": "2026-11-05T16:29:33Z",
+    "fresh_metadata_window": "2026-11-05T16:40:42Z..16:45:44Z",
+    "search_results": 18,
+    "own_prs": 2,
+    "other_prs_read": 16,
+    "scope": "bounded search discovery then exact-head metadata; PR-body claims are not independent native qualification",
+    "artifact": "generated-evidence/concurrent-pr-increment-1644-v7/manifest.json"
+  },
+  "postcut_appended_utc": "2026-11-05T17:16:26.182338+00:00",
+  "postcut_does_not_rewrite_fixed_cut0004_archive": true,
+  "postcut_ci_observation": {
+    "collected_from": "2026-11-05T17:07:23Z",
+    "collected_to": "2026-11-05T17:07:24Z",
+    "non_atomic": true,
+    "head": "eed4d6bb61b789b19f60facc79f9e031765fa4c9",
+    "run_count": 19,
+    "job_count": 53,
+    "job_status_counts": {
+      "success": 17,
+      "skipped": 2,
+      "queued": 31,
+      "in_progress": 2,
+      "cancelled": 1
+    },
+    "scope": "Later independent observation; cut0004 remains immutable",
+    "success_review": "reviews/eed-windows-success-review-v2.json",
+    "scope_results": {
+      "core": {
+        "outer_PASS": 2340,
+        "original_ignored": 3,
+        "unique_outer_names": 2343
+      },
+      "retained_three_libraries": {
+        "PASS": 532,
+        "suite_counts": [
+          299,
+          209,
+          24
+        ]
+      },
+      "gitqueue_source": {
+        "git_utils_outer_PASS": 35,
+        "queue_outer_PASS": 36
+      },
+      "gitqueue_merge": {
+        "git_utils_outer_PASS": 35,
+        "queue_outer_PASS": 36
+      }
+    },
+    "no_transfer_to_unexecuted_platforms_or_full_workspace": true,
+    "further_four_success_jobs": "API-only at this cut; no original-case acceptance inferred"
+  },
+  "postcut_pr4855_sqlx_donor": {
+    "source_head": "3a39c799a3f776b0aeedfce350341d865d3cc1c4",
+    "actual_registry_blob": "c3e54fc2b23f73870ab394f076c3fde14fa57327",
+    "review": "generated-evidence/pr4855-refused-commit-reuse-20261105/independent-review.json",
+    "native_commands_started": 0,
+    "original_zip_members": 20,
+    "red": "One distinct original State case failed in two attempts: InvalidSavePointStatement; recipe exit100",
+    "green": "Same case and exact argv/profile PASS;216 unselected",
+    "nine_package_scope": "1312 catalog identities=1288PASS+24original ignored; not a substitute for matched single-package red/green",
+    "reuse": "Donor stale-depth mechanism, connection-discard repair, exact unchanged donor source and original controls",
+    "remaining_original_current_candidate_gates": [
+      "two independent constructors",
+      "TEMP physical-connection replacement",
+      "precise SQLite531 and callback counts",
+      "autocommit and tracked-depth observations",
+      "checkout counts",
+      "native owner custody"
+    ],
+    "B16_status": "OPEN"
+  },
+  "closure_transitions_v8": [
+    {
+      "id": "B08",
+      "from": "OPEN",
+      "to": "CLOSED_SCOPED",
+      "scope": "Four original GNU e78 cases, unchanged relevant source through5b/eed; supplemental Windows three units retain their own exact source scopes. No eed GNU or full-workspace execution is inferred.",
+      "root_receipt": "reviews/b08-original-contract-root-closure-v1.json",
+      "content_git_blob": "652e5013c96b62c5fd3e0dc27b49e02af89afb00",
+      "original_exit_unchanged": true,
+      "overall_original_owning_scope": "3962 PASS / 5 FAIL / exit100, retained",
+      "not_an_eed_GNU_or_full_workspace_pass": true
+    }
+  ],
+  "historical_b11_diagnostic_PR_v7": {
+    "number": 4884,
+    "draft": true,
+    "head": "7e0b2303ed0242d83bf56202e8ffb17f5c856186",
+    "tree": "3de59a6aa185b13c8758bff3e8fbc530edcef307",
+    "actual_base": "eed4d6bb61b789b19f60facc79f9e031765fa4c9",
+    "actual_merge": "582f5315f4f632444ae3782d9381f69ed1ae555d",
+    "actual_merge_tree": "1718e3e2235b875320f366d03cf796e2a4e92281",
+    "parent": "3a407dde2727de2176b02d3cb2c3883fbb771f60",
+    "new_changed_paths": 4,
+    "additions": 15,
+    "deletions": 8,
+    "whole_target_run": 42066891449,
+    "whole_target_job": 127383345954,
+    "initial_status": "queued",
+    "status": "B11_OPEN_ORIGINAL_WINDOWS_TARGET_FAILED",
+    "source_receipt": "reviews/b11-acl-four-path-publication-v1.json",
+    "native4": {
+      "run": 42058186727,
+      "job": 127352234293,
+      "PASS": 140,
+      "FAIL": 13,
+      "ignored": 2,
+      "probe_rows": 8,
+      "classification": {
+        "ACL_API": 4,
+        "strict_outside_delete": 1,
+        "ordinary_host_prerequisite_before_token": 1,
+        "legacy_error_text": 1,
+        "mutex_poison_followons": 6
+      }
+    },
+    "native5": {
+      "run": 42066891449,
+      "job": 127383345954,
+      "actual_checkout": "582f5315f4f632444ae3782d9381f69ed1ae555d",
+      "actual_tree": "1718e3e2235b875320f366d03cf796e2a4e92281",
+      "PASS": 143,
+      "FAIL": 10,
+      "ignored": 2,
+      "disjoint_harnesses": 2,
+      "whole_target_retries_inferred": false,
+      "category_counts": {
+        "PRODUCTION_REPAIR_ENDPOINT_REOPEN_ACCESS_DENIED": 2,
+        "HOST_NEGATIVE_PRECONDITION_FAILED_REOPEN_SUCCEEDED": 1,
+        "ACTUAL_STRICT_TOKEN_OUTSIDE_DELETE_ESCAPE": 1,
+        "ORDINARY_HOST_NEITHER_PRECONDITION_FAILED_BEFORE_RESTRICTED_SUBJECT": 2,
+        "SHARED_TEST_MUTEX_POISON_NOT_INDEPENDENT_BUSINESS_ORACLE": 4
+      },
+      "root_receipt": "reviews/b11-native5-root-original-verification-v1.json",
+      "complete_JSON_rows": 6,
+      "interleaved_rows_unrepaired": [
+        "host/medium",
+        "current_strict/medium"
+      ],
+      "restore_rows": 8,
+      "finalized_rows": 8,
+      "objects": 80,
+      "restoration_errors": 0,
+      "descendants_spawned": 0
+    }
+  },
+  "ci_waiting_chain_v8": {
+    "root_observation": "reviews/post-v7-ci-waiting-ui-and-api-v1.json",
+    "api_review": "ci/queue-followup-v2/review.json",
+    "UI": "eed blocking42063948117 -> 5b41999114842 -> older41975255726; eed architecture42063947919 -> 5b41999114801",
+    "older_rest_result": "41975255726 completed/cancelled since09:42:55Z;37/37 jobs terminal",
+    "causal_limit": "The visible UI wait chain is not proof that the older terminal run consumes a runner. Underlying cause remains unresolved.",
+    "old_5b_remaining": "Three queued unassigned aggregate jobs only; no product test currently executing in these three jobs",
+    "cancel_performed": false,
+    "rerun_performed": false,
+    "browser_signed_in": false,
+    "failure_log_gap": "6/7 old failed job logs complete; cargo-deny log transport failed; no fabricated cause"
+  },
+  "b21_retention_candidate_v8": {
+    "review": "reviews/b21-intel-current-followup/independent-review.json",
+    "patch": "reviews/b21-intel-current-followup/retention-candidate-v1/retention.patch",
+    "applied": false,
+    "test_execution_expanded": false,
+    "purpose": "Retain the existing original PTY target success log on the next necessary product publication; original11 target order remains intact."
+  },
+  "postcut_appended_v8_utc": "2026-11-05T18:00:25Z",
+  "v8_fixed_cut_not_rewritten": "2026-11-05T17:53:52Z",
+  "historical_b11_diagnostic_at_v8_fixed_cut": {
+    "schema": "hepta-b11-same-object-acl-publication-v1",
+    "published_utc": "2026-11-05 17:41:37 UTC",
+    "head": "19d2fdfcaefbb41cdf2a72754d695d4b47cb3f14",
+    "tree": "17ac791ce156d05d4d1cd13cddf9184e528293a1",
+    "parent": "7e0b2303ed0242d83bf56202e8ffb17f5c856186",
+    "branch": "diag/b11-token-mechanism-observations-20261105",
+    "pr": 4884,
+    "draft": true,
+    "head_leaves": 10583,
+    "exact_changes": [
+      {
+        "path": "codex-rs/windows-sandbox-rs/src/acl_deny.rs",
+        "before": "1f4a78406d71c8fef5e764fa473a48b769a1606c",
+        "after": "da5346c220c41cf0c83f62b596132c74c02284d8"
+      },
+      {
+        "path": "codex-rs/windows-sandbox-rs/src/acl_tests.rs",
+        "before": "2afcc4e189fa8adfbe2a02c80fcc5c7554d1ef67",
+        "after": "ec0264a7615097bec1b554cb60918b4f4662eec2"
+      }
+    ],
+    "additions": 265,
+    "deletions": 36,
+    "actual_merge": "69040075a846c7032a3bafc7a0b623e7c0257619",
+    "actual_merge_tree": "75181bf7e4f119d08945003339b32aa0782ef41c",
+    "actual_merge_parents": [
+      "eed4d6bb61b789b19f60facc79f9e031765fa4c9",
+      "19d2fdfcaefbb41cdf2a72754d695d4b47cb3f14"
+    ],
+    "merge_leaves": 10585,
+    "merge_full_leaf_map_verified": true,
+    "primary14_paths_preserved": true,
+    "author_manifest": "64b84c70930361580d65fe0d47e4b44733ef36b4",
+    "independent_review": "9eecc3a735653f73e72be9b64e9b055aca519fad",
+    "workflow_blob_unchanged": "70f3145268e042ec04fbfe85eda83ccbbc4ff79c",
+    "expected_whole_target_roster": 156,
+    "native6_first_observation": {
+      "run": 42077117788,
+      "job": 127420172838,
+      "attempt": 1,
+      "status": "queued",
+      "actual_job_checkout": "PENDING_ORIGINAL_JOB_EVIDENCE"
+    },
+    "negative_counterfactual": "NOT_RUN",
+    "B11": "OPEN",
+    "compatibility_limits": [
+      "Only actual repairs require READ_ATTRIBUTES",
+      "Nonzero supported128-bit file IDs required",
+      "Final reparse-point repairs refused",
+      "No ancestor/path-custody or concurrent DACL writer guarantee"
+    ],
+    "all_blockers_closed": false,
+    "native6": {
+      "run_id": 42077117788,
+      "job_id": 127420172838,
+      "attempt": 1,
+      "last_observed_utc": "2026-11-05T17:49:33Z",
+      "status": "in_progress",
+      "test_result": "NOT_YET_OBSERVED",
+      "expected_original_roster": 156,
+      "original_first_snapshot": "ci/b11-native6/first-snapshot-1743.json",
+      "original_latest_snapshot": "ci/b11-native6/snapshot-1749.json"
+    }
+  },
+  "b11_native7_first_snapshot_v8": {
+    "head": "0f6148ea3fbe9d1263354791d5cc63c7e66d4628",
+    "run": 42079845181,
+    "job": 127429723742,
+    "attempt": 1,
+    "status": "queued",
+    "observation_window": "2026-11-05T18:00–18:01Z",
+    "original": "ci/b11-native7/first-snapshot-1800.json",
+    "actual_job_checkout": "NOT_YET_OBSERVED",
+    "counterfactual_result": "NOT_RUN"
+  },
+  "b11_native6_terminal_v8": {
+    "receipt": "reviews/b11-native6-root-original-verification-v1.json",
+    "content_git_blob": "847bd07e56339e87484891e6f67273be2c97aefe",
+    "head": "19d2fdfcaefbb41cdf2a72754d695d4b47cb3f14",
+    "actual_checkout": "69040075a846c7032a3bafc7a0b623e7c0257619",
+    "actual_tree": "75181bf7e4f119d08945003339b32aa0782ef41c",
+    "run": 42077117788,
+    "job": 127420172838,
+    "attempt": 1,
+    "decision": "ORIGINAL_FOUR_POSITIVES_REACHED; B11_REMAINS_OPEN",
+    "combined_disjoint_counts": {
+      "total": 156,
+      "passed": 147,
+      "failed": 7,
+      "ignored": 2
+    },
+    "four_required_positives_actual": true,
+    "file_and_directory_physical_rejection_actual": true,
+    "ordinary_exit_codes": {
+      "bazel": 3,
+      "tee": 0,
+      "original_batched_outer_XML": 1
+    },
+    "remaining_failure_classes": {
+      "strict_outside_delete": 1,
+      "ordinary_host_Neither_preconditions": 2,
+      "downstream_mutex_poison": 4
+    },
+    "whole_target": "FAILED",
+    "B11": "OPEN"
+  },
+  "postcut_ci_observation_v8": {
+    "from": "2026-11-05T17:53:59.956Z",
+    "to": "2026-11-05T17:54:00.870Z",
+    "runs": 19,
+    "jobs": 53,
+    "counts": {
+      "success": 18,
+      "queued": 31,
+      "running": 1,
+      "skipped": 2,
+      "cancelled": 1,
+      "failure": 0
+    },
+    "only_new_terminal_since1707": {
+      "id": 127378840922,
+      "result": "success",
+      "scope": "V8 x86_64 Windows ptrcomp-sandbox; API status only"
+    },
+    "blocking_and_architecture": "Still pending,0 jobs each; no cancellation or rerun",
+    "originals_registry": "ci/eed-status-1754-20261105/registry.actual-v1.json",
+    "original_records": 23,
+    "original_bytes": 1020501
+  }
+}

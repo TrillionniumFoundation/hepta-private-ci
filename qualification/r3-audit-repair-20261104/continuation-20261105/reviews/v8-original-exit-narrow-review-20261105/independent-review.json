@@ -1,0 +1,254 @@
+{
+  "schema": "v8-report-original-exit-and-scope-narrow-review-v1",
+  "recorded_utc": "2026-11-05T18:04:02.180078+00:00",
+  "decision": "ACCEPTED_FOR_REVIEWED_REPORT_BYTES",
+  "review_role": "Independent report/source-evidence scope review; not a native or product-test execution.",
+  "current_documents": [
+    {
+      "path": "hepta-audit-fifth/v8-deliverables/CONTINUATION_PROGRESS_V7.zh-CN.md",
+      "bytes": 11382,
+      "sha256": "e659ac604391cb5bbe59be3159969b784102164586a7269899780bf43d227325",
+      "computed_git_blob": "4746d629b851b57c8c21db50d79eb3f396338520"
+    },
+    {
+      "path": "hepta-audit-fifth/v8-deliverables/LATEST.zh-CN.md",
+      "bytes": 1547,
+      "sha256": "92a65768b0b413277032370cb7526c2e9a5c10b6719117661d2b37239987b4ab",
+      "computed_git_blob": "02a63f15e04b1b3f622abd0987c3323e55b4d6b2"
+    },
+    {
+      "path": "hepta-audit-fifth/v8-deliverables/PROJECT_DIRECTION_AND_EXECUTION_PLAN_V5.zh-CN.md",
+      "bytes": 28138,
+      "sha256": "17edb692465cb0dc178dcba8624444b8fdbea1104d4c89d825bb277627c6eaa8",
+      "computed_git_blob": "dd15f1f4811c2e49e7c627c4e1ae99efca97b3f4"
+    },
+    {
+      "path": "hepta-audit-fifth/v8-deliverables/continuation-blocker-progress-v6.json",
+      "bytes": 80889,
+      "sha256": "a92faebb5fc3a9b3e01ae5821961906bde831820d0e309e5db80ed64adfa1bc3",
+      "computed_git_blob": "494886ab8f1da9ad87cc778cfdd893ab3c70b798"
+    }
+  ],
+  "previous_ledger": {
+    "path": "hepta-audit-fifth/v7-deliverables/continuation-blocker-progress-v5.json",
+    "bytes": 69330,
+    "sha256": "31a8e11d94b5f758f0ab1f4b3b689ce0a1266686bb8d6c3faeead31d183e8bf5",
+    "computed_git_blob": "0d4b4fe8f81c42de90d987041235c93247557c9f"
+  },
+  "original_exit_ledger": {
+    "path": "hepta-audit-fourth/deliverables/current-blockers.json",
+    "bytes": 54757,
+    "sha256": "b294855308eae69ba8023980407639953f88316a0c4f30e65b474b495f85b354",
+    "computed_git_blob": "7deaec03e2517d6b0f06f26d4308b95d879485c2"
+  },
+  "verified_ids_in_order": [
+    "B01",
+    "B02",
+    "B03",
+    "B04",
+    "B05",
+    "B06",
+    "B07",
+    "B08",
+    "B09",
+    "B10",
+    "B11",
+    "B12",
+    "B13",
+    "B14",
+    "B15",
+    "B16",
+    "B17",
+    "B18",
+    "B19",
+    "B20",
+    "B21",
+    "B22",
+    "B23"
+  ],
+  "all_23_original_exit_conditions_utf8_equal": true,
+  "plan_table_all_23_ids_classes_and_exit_text_equal_to_ledger": true,
+  "classification_changes": [
+    {
+      "id": "B08",
+      "fields": {
+        "status": {
+          "before": "OPEN_ADDITIONAL_REPLAY_ORACLE_QUALIFICATION",
+          "after": "CLOSED_ORIGINAL_RETAINED_WIRE_AND_REPLAY_SCOPE"
+        },
+        "closure_class": {
+          "before": "OPEN",
+          "after": "CLOSED_SCOPED"
+        }
+      }
+    }
+  ],
+  "counts_before": {
+    "CLOSED_SCOPED": 10,
+    "OPEN": 12,
+    "SCIENTIFIC_HOLD": 1
+  },
+  "counts_after": {
+    "CLOSED_SCOPED": 11,
+    "OPEN": 11,
+    "SCIENTIFIC_HOLD": 1
+  },
+  "all_blockers_closed": false,
+  "whole_candidate_qualified": false,
+  "b08_evidence_pins": {
+    "root_closure": {
+      "path": "hepta-audit-fifth/inputs/b08-original-contract-root-closure-v1.json",
+      "bytes": 22135,
+      "sha256": "9034d6e417a48460572ca85915c2df569205aa014307d5891186b729608502fc",
+      "computed_git_blob": "652e5013c96b62c5fd3e0dc27b49e02af89afb00"
+    },
+    "independent_review": {
+      "path": "ci-audit/published-eed4d6-ci-20261105/b08-source-review-v1/review-v1/independent-review.json",
+      "bytes": 7116,
+      "sha256": "1fe3517d850f4c309710ab493ec402d5eea78f9cdcf516c2dd7363a987302a98",
+      "computed_git_blob": "98e9642f7ecfcd8baa71f97baa3db4f8cee051e4"
+    }
+  },
+  "b08_accepted_scope": {
+    "original_gnu_cases": 4,
+    "tested_working_tree": "e78c819b8b1f435f8b37bea17b4ffdc724961aa2",
+    "ordinary_head_remains": "cabc (the original full SHA is retained in the source receipts)",
+    "related_complete_sources": 15,
+    "source_bridge": "All 15 relevant leaves are identical through fixed 5b/e78/eed; the original persistence contract is unchanged.",
+    "owning_scope_result_not_relabelled": "3962 PASS / 5 FAIL / exit100",
+    "windows_supplement": "Three original unit cases retain their own fixed-source observations; the namespaced integration case is Unix-only.",
+    "no_eed_gnu_or_workspace_qualification_inferred": true,
+    "wire_precision": "ChatGPT Codex and nonstandard endpoints strip local metadata; first-party OpenAI keeps its permitted metadata, independent of friendly provider name.",
+    "q02_collection_plan_not_an_added_original_exit": true,
+    "new_mutation_negative_or_test_not_invented": true
+  },
+  "reviewer_attribution_correction": {
+    "resolved_in_reviewed_documents": true,
+    "pending_recorder": "Pending-count bounds/overflow, None/Some, exact replay and compaction cleanup.",
+    "retained_recorder": "512 actual record/attach operations, 32KiB retained bound and omission statistics.",
+    "namespaced_case": "The escaped-input serialized-byte bound belongs to this case, alongside actual request/output and rollout replay checks.",
+    "qualification_effect": "Corrects per-row explanation only; does not add a case, change evidence, or widen B08 closure."
+  },
+  "postcut_boundary": {
+    "fixed_cut": "2026-11-05T17:53:52Z",
+    "explicit_addendum_recorded_utc": "2026-11-05T18:00:25Z",
+    "snapshot_registry": {
+      "path": "ci-audit/published-eed4d6-ci-20261105/snapshot-0003/registry.actual-v1.json",
+      "bytes": 2493,
+      "sha256": "8d1d28d092c3f86ded1e9edb0d59067f16c1e80feb37acd8e06296d16a2d053f",
+      "computed_git_blob": "aaefec8db8c5f7874129f4143af71a96ac78b124"
+    },
+    "snapshot_scope": "19 workflows / 53 jobs; 18 success, 31 queued, 1 running, 2 skipped, 1 cancelled, 0 failure. The new success is API-only.",
+    "b11_native6_and_followup": "The document explicitly distinguishes 147 PASS / 7 FAIL / 2 ignored from the later counterfactual publication, whose result is not claimed.",
+    "b11_originals_limit": "This narrow report review checks that attribution and OPEN classification; it does not independently rerun or reverify the separate native6 ZIP."
+  },
+  "retained_open_boundaries": {
+    "B15": "Latest candidate required workflows, original platform scope, base/merge/source identity and full-workspace acceptance remain OPEN.",
+    "B11": "The whole target remains failed; positive controls or a counterfactual publication do not close the strict permission contract.",
+    "B18": "SCIENTIFIC_HOLD remains unchanged.",
+    "early_returns": "The original full-workspace 25 observed early returns are retained; B08 does not convert them to executed behavior.",
+    "native_resources": "RESOURCE_PENDING and unchanged capacity floors remain; no resource recovery is inferred from the new CI API success.",
+    "driver": "The unrelated B16 driver remains UNKNOWN."
+  },
+  "exit_condition_digests": [
+    {
+      "id": "B01",
+      "original_exit_utf8_sha256": "f8ca36f68fa742d7490400a4a56926c5061a5d2670f64ed4cda6aa4ffb5459e3"
+    },
+    {
+      "id": "B02",
+      "original_exit_utf8_sha256": "824089ca8a7c091430879771dbec192441a74d20d58efd66fc7aaa85f26dbe28"
+    },
+    {
+      "id": "B03",
+      "original_exit_utf8_sha256": "5bd3522f9637bd66002911022fe34ee1f50588dd6d586fbc73dbd608c971aa24"
+    },
+    {
+      "id": "B04",
+      "original_exit_utf8_sha256": "db8cc594061a904b71a0548fd7ebb5fd7f9385e3dfef61746e54fcb33ee9965c"
+    },
+    {
+      "id": "B05",
+      "original_exit_utf8_sha256": "031bd425552e80a85e7708a54c83b5fe623e57142141c2eeea0d155a0c610f43"
+    },
+    {
+      "id": "B06",
+      "original_exit_utf8_sha256": "b1cd0205f53330a8c40febdf0f493bfa9c3b35936d36989134f0b85734af6661"
+    },
+    {
+      "id": "B07",
+      "original_exit_utf8_sha256": "5b83deb470874ecf40c02a4b7d5c0c4639cfb735d7e3cc78699329cdd8b70e87"
+    },
+    {
+      "id": "B08",
+      "original_exit_utf8_sha256": "ccc705d6f571df765b2f77983e9163187f246310185d8d03cac686edae9054ec"
+    },
+    {
+      "id": "B09",
+      "original_exit_utf8_sha256": "bf21804fa03fa685d67d0373e84e87e1c7af26eb0d8d968a3e84d04348f6d454"
+    },
+    {
+      "id": "B10",
+      "original_exit_utf8_sha256": "ae792b66f23410d50c8f3b83676f2671ed2dd08be90318e1292d30ba7489210d"
+    },
+    {
+      "id": "B11",
+      "original_exit_utf8_sha256": "02a9875fdaaf8f50bd9105b94e359be05ff31a941934864ae134db2f4c198bc2"
+    },
+    {
+      "id": "B12",
+      "original_exit_utf8_sha256": "b4ece345d628ebe9d1b63960f9676fa3572c8abb7f865cb6487fd95c1ec7224e"
+    },
+    {
+      "id": "B13",
+      "original_exit_utf8_sha256": "33eed06e38d6486cc2ebcda25b5aa98234164720f9589927bc1258d022c77864"
+    },
+    {
+      "id": "B14",
+      "original_exit_utf8_sha256": "c4d0475df4e15227dcdab3b66dfe35cc051be0237f41f2a6e93d2eac71de3623"
+    },
+    {
+      "id": "B15",
+      "original_exit_utf8_sha256": "7f45b36d248bdc0209e2429ecb24c7f9774b64e61d75b8e6673a5934d86b0809"
+    },
+    {
+      "id": "B16",
+      "original_exit_utf8_sha256": "3d43dd39f434d7caadb2d2fad1cf1777a59ff7ce2affcccd3e1d8b4b6f2e2bde"
+    },
+    {
+      "id": "B17",
+      "original_exit_utf8_sha256": "db15c2c5569d3e8abb9d18c88b622fa03a7bdb475119dbbfe402e986b1632e90"
+    },
+    {
+      "id": "B18",
+      "original_exit_utf8_sha256": "557e94b01f2a36345005d13d83ea32de69df130872492848383e366d92b76b77"
+    },
+    {
+      "id": "B19",
+      "original_exit_utf8_sha256": "ff7b630cc910de81c3c38822c2ad37636183b5325c96c6b27284b71e8389065a"
+    },
+    {
+      "id": "B20",
+      "original_exit_utf8_sha256": "5628949adace10c1dc2f86f00d07b7ce96ebe5d2fbce4b3be49b93a020f665cc"
+    },
+    {
+      "id": "B21",
+      "original_exit_utf8_sha256": "9288613bcc556f922a3552189ef0705fd91786b828050daf2ef6474fc0710430"
+    },
+    {
+      "id": "B22",
+      "original_exit_utf8_sha256": "08798ca8a601231fba8f7bbc81c08d34c0b91513e8086bccaff86f2997f0cca7"
+    },
+    {
+      "id": "B23",
+      "original_exit_utf8_sha256": "c9ceea3e4ddcf143ba84009b7e6e522a8ed54b08f54d10d8b7a2c50960161a51"
+    }
+  ],
+  "actions": {
+    "cloud_readonly_report_comparison": true,
+    "native_commands": 0,
+    "product_test_runs": 0,
+    "ci_polls_or_mutations": 0,
+    "source_or_git_ref_changes": 0
+  }
+}

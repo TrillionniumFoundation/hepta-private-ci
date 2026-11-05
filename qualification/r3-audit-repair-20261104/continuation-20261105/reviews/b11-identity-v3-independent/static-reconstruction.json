@@ -1,0 +1,341 @@
+{
+  "schema": "independent-b11-acl-identity-v3-static-roundtrip-v1",
+  "observed_at_utc": "2026-11-05T17:37:21.527332+00:00",
+  "scope": "Cloud byte checks and isolated Git apply only. No Rust compilation, Windows, native execution or shared source/ref modification.",
+  "author_create_get_map": {
+    "path": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-acl-repair-20261105/identity-candidate-v3/github-readback-map.json",
+    "bytes": 5737,
+    "sha256": "78b1b1254e11e6507f6f6b409bf1adccb8af380a67da5c047550736dd506f9b5",
+    "git_blob": "8f37d0045c2fc139b46267d0f279a4f8a25b08bd"
+  },
+  "author_map_local_objects_verified": [
+    {
+      "path": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-acl-repair-20261105/identity-candidate-v3/candidate/codex-rs/windows-sandbox-rs/src/acl_deny.rs",
+      "bytes": 10188,
+      "sha256": "62869a02641d630921c84e1115f0c6240df257e5a041c3c5be9372781342d47e",
+      "git_blob": "da5346c220c41cf0c83f62b596132c74c02284d8"
+    },
+    {
+      "path": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-acl-repair-20261105/identity-candidate-v3/candidate/codex-rs/windows-sandbox-rs/src/acl_tests.rs",
+      "bytes": 23247,
+      "sha256": "c13be65453bd3499ebd72e548390858133599b7f215e2ab91f6ea765f0066f35",
+      "git_blob": "ec0264a7615097bec1b554cb60918b4f4662eec2"
+    },
+    {
+      "path": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-acl-repair-20261105/identity-candidate-v3/negative/codex-rs/windows-sandbox-rs/src/acl_deny.rs",
+      "bytes": 10076,
+      "sha256": "9c6d3134f9910487041acec0238cc0f2fe6066e698ca74f98b80218323931df4",
+      "git_blob": "0baeb6ec2f3bfd0964be6d014fc5d80d890ea3d7"
+    },
+    {
+      "path": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-acl-repair-20261105/identity-candidate-v3/full.patch",
+      "bytes": 16621,
+      "sha256": "75dfa3786686f94ce5dbc3351fc72420eb66c48abbee0963907062844e835199",
+      "git_blob": "a0784b109767396ddb452ca6d5798491b8ffeabe"
+    },
+    {
+      "path": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-acl-repair-20261105/identity-candidate-v3/remove-identity-check.patch",
+      "bytes": 683,
+      "sha256": "26fa073559f758a4530ac6994d1a9224cee37c19f20d94e1d7ab598cea0cd957",
+      "git_blob": "03f471fb24b371b5777a1d8c53e6b392c6a85ee7"
+    },
+    {
+      "path": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-acl-repair-20261105/identity-candidate-v3/restore-identity-check.patch",
+      "bytes": 683,
+      "sha256": "547a1b346fa57ec68ddf0e01c16609c567a6370000bfce18f793e05bfecf1804",
+      "git_blob": "593697b1d485592bf44744e089d55f0503586a52"
+    },
+    {
+      "path": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-acl-repair-20261105/identity-candidate-v3/source-map.json",
+      "bytes": 2223,
+      "sha256": "e3994c272118c7ab92806cb72302eb828ce46ce55c846fe7abe3aff7b707934e",
+      "git_blob": "c80b0071ab96c0708199ceb8c516eb447e5c4ac0"
+    },
+    {
+      "path": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-acl-repair-20261105/identity-candidate-v3/static-checks.json",
+      "bytes": 3234,
+      "sha256": "dcada1f2e806aa8dbac4ac0dc2b067b98813ab7757d72baec77c6c19ed075c82",
+      "git_blob": "b525a607ff799283a9498e70e41a7236163d6d99"
+    },
+    {
+      "path": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-acl-repair-20261105/identity-candidate-v3/roundtrip.json",
+      "bytes": 25563,
+      "sha256": "a864b1076346435bc85f6f45e7e76aff9835b14eea6f94f83dbe23831f5e370d",
+      "git_blob": "67303a94d9792d52a9eb5e9e851ee7fb39f55b31"
+    },
+    {
+      "path": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-acl-repair-20261105/identity-candidate-v3/primary-originals.json",
+      "bytes": 165864,
+      "sha256": "4256dee7392c6d3352f5a43580bd4e759ecc079055593c11a426ac78a67b39e0",
+      "git_blob": "a823d7e652727063e5fd423a0f15bf6b3e4e3e3c"
+    },
+    {
+      "path": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-acl-repair-20261105/identity-candidate-v3/freeze.py",
+      "bytes": 9243,
+      "sha256": "3939cc28564868b9d306200203c6593807b6480265e7775d395675f3cfd8b155",
+      "git_blob": "7c8884ad21cdfe7792faf078378bb2053de0e512"
+    },
+    {
+      "path": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-acl-repair-20261105/identity-candidate-v3/make_manifest.py",
+      "bytes": 14192,
+      "sha256": "6b9755dd64b51560db099796796dcc96d64693009390ec2823ea53f8b2ddae67",
+      "git_blob": "7e01c5993315dee3b158953eb78afa4ce1d52708"
+    },
+    {
+      "path": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-acl-repair-20261105/identity-candidate-v3/manifest.json",
+      "bytes": 21043,
+      "sha256": "124822ebfeca5df05d720d8bf1bcf135dd10833913bb4d1b92d92d65fbe67d05",
+      "git_blob": "64b84c70930361580d65fe0d47e4b44733ef36b4"
+    }
+  ],
+  "source_map": {
+    "path": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-acl-repair-20261105/identity-candidate-v3/source-map.json",
+    "bytes": 2223,
+    "sha256": "e3994c272118c7ab92806cb72302eb828ce46ce55c846fe7abe3aff7b707934e",
+    "git_blob": "c80b0071ab96c0708199ceb8c516eb447e5c4ac0"
+  },
+  "commands": [
+    {
+      "argv": [
+        "git",
+        "-C",
+        "/workspace/scratch/07dd58cc9630/research-audit/b11-acl-identity-v3-independent-20261105/independent-roundtrip-zyvm_vak",
+        "apply",
+        "--check",
+        "/workspace/scratch/07dd58cc9630/architecture-audit/b11-acl-repair-20261105/identity-candidate-v3/full.patch"
+      ],
+      "returncode": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "git",
+        "-C",
+        "/workspace/scratch/07dd58cc9630/research-audit/b11-acl-identity-v3-independent-20261105/independent-roundtrip-zyvm_vak",
+        "apply",
+        "/workspace/scratch/07dd58cc9630/architecture-audit/b11-acl-repair-20261105/identity-candidate-v3/full.patch"
+      ],
+      "returncode": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "git",
+        "-C",
+        "/workspace/scratch/07dd58cc9630/research-audit/b11-acl-identity-v3-independent-20261105/independent-roundtrip-zyvm_vak",
+        "apply",
+        "--check",
+        "/workspace/scratch/07dd58cc9630/architecture-audit/b11-acl-repair-20261105/identity-candidate-v3/remove-identity-check.patch"
+      ],
+      "returncode": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "git",
+        "-C",
+        "/workspace/scratch/07dd58cc9630/research-audit/b11-acl-identity-v3-independent-20261105/independent-roundtrip-zyvm_vak",
+        "apply",
+        "/workspace/scratch/07dd58cc9630/architecture-audit/b11-acl-repair-20261105/identity-candidate-v3/remove-identity-check.patch"
+      ],
+      "returncode": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "git",
+        "-C",
+        "/workspace/scratch/07dd58cc9630/research-audit/b11-acl-identity-v3-independent-20261105/independent-roundtrip-zyvm_vak",
+        "apply",
+        "--check",
+        "/workspace/scratch/07dd58cc9630/architecture-audit/b11-acl-repair-20261105/identity-candidate-v3/restore-identity-check.patch"
+      ],
+      "returncode": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "git",
+        "-C",
+        "/workspace/scratch/07dd58cc9630/research-audit/b11-acl-identity-v3-independent-20261105/independent-roundtrip-zyvm_vak",
+        "apply",
+        "/workspace/scratch/07dd58cc9630/architecture-audit/b11-acl-repair-20261105/identity-candidate-v3/restore-identity-check.patch"
+      ],
+      "returncode": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "git",
+        "-C",
+        "/workspace/scratch/07dd58cc9630/research-audit/b11-acl-identity-v3-independent-20261105/independent-roundtrip-zyvm_vak",
+        "apply",
+        "--reverse",
+        "--check",
+        "/workspace/scratch/07dd58cc9630/architecture-audit/b11-acl-repair-20261105/identity-candidate-v3/full.patch"
+      ],
+      "returncode": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "git",
+        "-C",
+        "/workspace/scratch/07dd58cc9630/research-audit/b11-acl-identity-v3-independent-20261105/independent-roundtrip-zyvm_vak",
+        "apply",
+        "--reverse",
+        "/workspace/scratch/07dd58cc9630/architecture-audit/b11-acl-repair-20261105/identity-candidate-v3/full.patch"
+      ],
+      "returncode": 0,
+      "stdout": "",
+      "stderr": ""
+    }
+  ],
+  "stages": [
+    {
+      "stage": "positive",
+      "paths": [
+        {
+          "repository_path": "codex-rs/windows-sandbox-rs/src/acl_deny.rs",
+          "path": "/workspace/scratch/07dd58cc9630/research-audit/b11-acl-identity-v3-independent-20261105/independent-roundtrip-zyvm_vak/codex-rs/windows-sandbox-rs/src/acl_deny.rs",
+          "bytes": 10188,
+          "sha256": "62869a02641d630921c84e1115f0c6240df257e5a041c3c5be9372781342d47e",
+          "git_blob": "da5346c220c41cf0c83f62b596132c74c02284d8",
+          "byte_equal": true
+        },
+        {
+          "repository_path": "codex-rs/windows-sandbox-rs/src/acl_tests.rs",
+          "path": "/workspace/scratch/07dd58cc9630/research-audit/b11-acl-identity-v3-independent-20261105/independent-roundtrip-zyvm_vak/codex-rs/windows-sandbox-rs/src/acl_tests.rs",
+          "bytes": 23247,
+          "sha256": "c13be65453bd3499ebd72e548390858133599b7f215e2ab91f6ea765f0066f35",
+          "git_blob": "ec0264a7615097bec1b554cb60918b4f4662eec2",
+          "byte_equal": true
+        }
+      ]
+    },
+    {
+      "stage": "negative",
+      "paths": [
+        {
+          "repository_path": "codex-rs/windows-sandbox-rs/src/acl_deny.rs",
+          "path": "/workspace/scratch/07dd58cc9630/research-audit/b11-acl-identity-v3-independent-20261105/independent-roundtrip-zyvm_vak/codex-rs/windows-sandbox-rs/src/acl_deny.rs",
+          "bytes": 10076,
+          "sha256": "9c6d3134f9910487041acec0238cc0f2fe6066e698ca74f98b80218323931df4",
+          "git_blob": "0baeb6ec2f3bfd0964be6d014fc5d80d890ea3d7",
+          "byte_equal": true
+        },
+        {
+          "repository_path": "codex-rs/windows-sandbox-rs/src/acl_tests.rs",
+          "path": "/workspace/scratch/07dd58cc9630/research-audit/b11-acl-identity-v3-independent-20261105/independent-roundtrip-zyvm_vak/codex-rs/windows-sandbox-rs/src/acl_tests.rs",
+          "bytes": 23247,
+          "sha256": "c13be65453bd3499ebd72e548390858133599b7f215e2ab91f6ea765f0066f35",
+          "git_blob": "ec0264a7615097bec1b554cb60918b4f4662eec2",
+          "byte_equal": true
+        }
+      ]
+    },
+    {
+      "stage": "restored-positive",
+      "paths": [
+        {
+          "repository_path": "codex-rs/windows-sandbox-rs/src/acl_deny.rs",
+          "path": "/workspace/scratch/07dd58cc9630/research-audit/b11-acl-identity-v3-independent-20261105/independent-roundtrip-zyvm_vak/codex-rs/windows-sandbox-rs/src/acl_deny.rs",
+          "bytes": 10188,
+          "sha256": "62869a02641d630921c84e1115f0c6240df257e5a041c3c5be9372781342d47e",
+          "git_blob": "da5346c220c41cf0c83f62b596132c74c02284d8",
+          "byte_equal": true
+        },
+        {
+          "repository_path": "codex-rs/windows-sandbox-rs/src/acl_tests.rs",
+          "path": "/workspace/scratch/07dd58cc9630/research-audit/b11-acl-identity-v3-independent-20261105/independent-roundtrip-zyvm_vak/codex-rs/windows-sandbox-rs/src/acl_tests.rs",
+          "bytes": 23247,
+          "sha256": "c13be65453bd3499ebd72e548390858133599b7f215e2ab91f6ea765f0066f35",
+          "git_blob": "ec0264a7615097bec1b554cb60918b4f4662eec2",
+          "byte_equal": true
+        }
+      ]
+    },
+    {
+      "stage": "inverse-original",
+      "paths": [
+        {
+          "repository_path": "codex-rs/windows-sandbox-rs/src/acl_deny.rs",
+          "path": "/workspace/scratch/07dd58cc9630/research-audit/b11-acl-identity-v3-independent-20261105/independent-roundtrip-zyvm_vak/codex-rs/windows-sandbox-rs/src/acl_deny.rs",
+          "bytes": 7075,
+          "sha256": "1131c2291e492c8ecd037dd19be76a9fa111f42e32e23013ca68d6291d16c423",
+          "git_blob": "1f4a78406d71c8fef5e764fa473a48b769a1606c",
+          "byte_equal": true
+        },
+        {
+          "repository_path": "codex-rs/windows-sandbox-rs/src/acl_tests.rs",
+          "path": "/workspace/scratch/07dd58cc9630/research-audit/b11-acl-identity-v3-independent-20261105/independent-roundtrip-zyvm_vak/codex-rs/windows-sandbox-rs/src/acl_tests.rs",
+          "bytes": 17033,
+          "sha256": "02bbdde1fdc5368f4cb1c884373add510e4577620e04d4539513d4faa4a37628",
+          "git_blob": "2afcc4e189fa8adfbe2a02c80fcc5c7554d1ef67",
+          "byte_equal": true
+        }
+      ]
+    }
+  ],
+  "original_test_names": [
+    "complete_denies_compare_mapped_masks_and_require_every_right",
+    "complete_denies_require_effective_recursive_scope_and_precede_allows",
+    "partial_read_deny_is_repaired_before_native_file_data_access",
+    "deny_ace_update_failure_is_an_error",
+    "normalized_denies_require_same_sid_complete_masks_and_both_directory_scopes",
+    "native_file_and_directory_repairs_are_idempotent_for_read_and_write",
+    "existing_native_deny_does_not_require_write_dac"
+  ],
+  "candidate_test_names": [
+    "complete_denies_compare_mapped_masks_and_require_every_right",
+    "complete_denies_require_effective_recursive_scope_and_precede_allows",
+    "partial_read_deny_is_repaired_before_native_file_data_access",
+    "deny_ace_update_failure_is_an_error",
+    "normalized_denies_require_same_sid_complete_masks_and_both_directory_scopes",
+    "native_file_and_directory_repairs_are_idempotent_for_read_and_write",
+    "existing_native_deny_does_not_require_write_dac",
+    "deny_repair_rejects_a_replaced_path_before_mutating_either_object"
+  ],
+  "first_six_tests_and_original_helpers_byte_equal_after_only_three_added_imports_removed": true,
+  "original_no_write_dac_six_assertions_present_in_order": [
+    "assert!(add_deny_write_ace(&path, sid.as_ptr())?);",
+    "assert!(add_deny_read_ace(&path, sid.as_ptr())?);",
+    "assert_eq!(\n        write_denied,\n        Some(ERROR_ACCESS_DENIED as i32),\n        \"host control must really lack WRITE_DAC\"\n    );",
+    "assert_eq!(noops, (false, false));",
+    "assert_eq!(native_dacl_bytes(&path)?, before);",
+    "assert_eq!(std::fs::read_to_string(&path)?, \"retained\");"
+  ],
+  "production_preserved_segments": {
+    "object_matcher": {
+      "byte_equal": true,
+      "bytes": 2355,
+      "sha256": "fcdf480cedb8541bc6b5366b17e6994d34aca4ab7ae6e0a469cfa7cf7ed18f31"
+    },
+    "initial_read_control_open": {
+      "byte_equal": true,
+      "bytes": 521,
+      "sha256": "b83ab182fbdf370ca7d639d8e93264e03b8f4de83dfeba72e16e97df6fab4807"
+    },
+    "query_and_complete_early_return": {
+      "byte_equal": true,
+      "bytes": 1060,
+      "sha256": "1c0d7b58da5868ebb5b12e8789629c12ddff3113ab65673df1e724fdfff99b3e"
+    },
+    "acl_mutation_tail": {
+      "byte_equal": true,
+      "bytes": 1058,
+      "sha256": "cd63f29ac02ac7a44d14721c2f594faeff56669852c6ecd9de2ecbfa8b0f2d7c"
+    }
+  },
+  "negative_expected_macro_start_line": 597,
+  "negative_runtime_result": "NOT_RUN",
+  "positive_runtime_result": "NOT_RUN",
+  "passed": true
+}

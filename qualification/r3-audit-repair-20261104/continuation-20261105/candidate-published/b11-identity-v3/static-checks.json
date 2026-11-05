@@ -1,0 +1,65 @@
+{
+  "production_preserved_segments": {
+    "object_matcher": {
+      "byte_equal": true,
+      "bytes": 2878,
+      "sha256": "3efab9014412a7a0998c3ecc0b408a1b9df97ea4f625b88d2dcc52e9639b1bd9"
+    },
+    "initial_read_control_open": {
+      "byte_equal": true,
+      "bytes": 464,
+      "sha256": "24177721f1939240e6cf5788b6fc50a628932bd58eef68b7b23874b372ce8888"
+    },
+    "query_and_complete_early_return": {
+      "byte_equal": true,
+      "bytes": 1061,
+      "sha256": "740771854be4eafb0bfd0e8b1aa48d9913d895f8500b572cdecacb7af7584059"
+    },
+    "acl_mutation_tail": {
+      "byte_equal": true,
+      "bytes": 1058,
+      "sha256": "cd63f29ac02ac7a44d14721c2f594faeff56669852c6ecd9de2ecbfa8b0f2d7c"
+    }
+  },
+  "other_original_test_bodies_and_surrounding_text_exact": true,
+  "original_six_no_write_dac_assertions_byte_equal_in_order": [
+    "assert!(add_deny_write_ace(&path, sid.as_ptr())?);",
+    "assert!(add_deny_read_ace(&path, sid.as_ptr())?);",
+    "assert_eq!(\n        write_denied,\n        Some(ERROR_ACCESS_DENIED as i32),\n        \"host control must really lack WRITE_DAC\"\n    );",
+    "assert_eq!(noops, (false, false));",
+    "assert_eq!(native_dacl_bytes(&path)?, before);",
+    "assert_eq!(std::fs::read_to_string(&path)?, \"retained\");"
+  ],
+  "original_test_names": [
+    "complete_denies_compare_mapped_masks_and_require_every_right",
+    "complete_denies_require_effective_recursive_scope_and_precede_allows",
+    "partial_read_deny_is_repaired_before_native_file_data_access",
+    "deny_ace_update_failure_is_an_error",
+    "normalized_denies_require_same_sid_complete_masks_and_both_directory_scopes",
+    "native_file_and_directory_repairs_are_idempotent_for_read_and_write",
+    "existing_native_deny_does_not_require_write_dac"
+  ],
+  "post_test_names": [
+    "complete_denies_compare_mapped_masks_and_require_every_right",
+    "complete_denies_require_effective_recursive_scope_and_precede_allows",
+    "partial_read_deny_is_repaired_before_native_file_data_access",
+    "deny_ace_update_failure_is_an_error",
+    "normalized_denies_require_same_sid_complete_masks_and_both_directory_scopes",
+    "native_file_and_directory_repairs_are_idempotent_for_read_and_write",
+    "existing_native_deny_does_not_require_write_dac",
+    "deny_repair_rejects_a_replaced_path_before_mutating_either_object"
+  ],
+  "change_counts": {
+    "paths": 2,
+    "additions": 265,
+    "deletions": 36
+  },
+  "negative_semantic_change": "Only enforce(actual==expected) becomes an ignored comparison; both actual ID queries and every other guard/mutation/test stay unchanged.",
+  "negative_required_marker": "deny_repair_identity: directory=false returned_ok=true replacement_changed=true original_changed=false",
+  "negative_expected_panic_macro_line": 597,
+  "negative_expected_assertion": "a replacement object must not receive the queried object's deny",
+  "negative_scope": "First file row must reach physical replacement and then this assertion. Early FFI errors, general timeout, wrong panic, or missing marker are invalid controls. Directory row is covered by positive execution, not reached after the negative file panic.",
+  "rust_compile_run": false,
+  "rustfmt_run": false,
+  "windows_native_run": false
+}

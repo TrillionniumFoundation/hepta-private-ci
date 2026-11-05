@@ -1,0 +1,77 @@
+{
+  "observed_at_utc": "2026-11-05T17:49:33Z",
+  "head": "19d2fdfcaefbb41cdf2a72754d695d4b47cb3f14",
+  "run_id": 42077117788,
+  "jobs": {
+    "content": [
+      {
+        "type": "text",
+        "text": "Action completed."
+      }
+    ],
+    "structuredContent": {
+      "jobs": [
+        {
+          "id": 127420172838,
+          "name": "Windows token observations with original strict assertions",
+          "status": "in_progress",
+          "conclusion": null,
+          "run_id": 42077117788,
+          "logs_url": null,
+          "steps": [
+            {
+              "name": "Set up job",
+              "status": "completed",
+              "conclusion": "success",
+              "number": 1
+            },
+            {
+              "name": "Run actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd",
+              "status": "completed",
+              "conclusion": "success",
+              "number": 2
+            },
+            {
+              "name": "Prepare original native MSVC Bazel environment",
+              "status": "completed",
+              "conclusion": "success",
+              "number": 3
+            },
+            {
+              "name": "Run the original outer Windows sandbox unit target",
+              "status": "in_progress",
+              "conclusion": null,
+              "number": 4
+            },
+            {
+              "name": "Upload complete observation and original failure evidence",
+              "status": "pending",
+              "conclusion": null,
+              "number": 5
+            },
+            {
+              "name": "Check for a clean worktree",
+              "status": "pending",
+              "conclusion": null,
+              "number": 6
+            },
+            {
+              "name": "Post Prepare original native MSVC Bazel environment",
+              "status": "pending",
+              "conclusion": null,
+              "number": 11
+            },
+            {
+              "name": "Post Run actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd",
+              "status": "pending",
+              "conclusion": null,
+              "number": 12
+            }
+          ]
+        }
+      ]
+    },
+    "isError": false
+  },
+  "scope": "Read-only existing run; no rerun or source/ref mutation."
+}

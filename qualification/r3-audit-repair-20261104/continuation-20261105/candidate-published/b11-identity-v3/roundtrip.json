@@ -1,0 +1,289 @@
+{
+  "scope": "Cloud text/Git checks only; no Rust/Windows execution.",
+  "commands": [
+    {
+      "argv": [
+        "git",
+        "init",
+        "--quiet"
+      ],
+      "returncode": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "git",
+        "add",
+        "--",
+        "codex-rs/windows-sandbox-rs/src/acl_deny.rs",
+        "codex-rs/windows-sandbox-rs/src/acl_tests.rs"
+      ],
+      "returncode": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "git",
+        "diff",
+        "--binary",
+        "--full-index",
+        "--no-ext-diff",
+        "--",
+        "codex-rs/windows-sandbox-rs/src/acl_deny.rs",
+        "codex-rs/windows-sandbox-rs/src/acl_tests.rs"
+      ],
+      "returncode": 0,
+      "stdout": "diff --git a/codex-rs/windows-sandbox-rs/src/acl_deny.rs b/codex-rs/windows-sandbox-rs/src/acl_deny.rs\nindex 1f4a78406d71c8fef5e764fa473a48b769a1606c..da5346c220c41cf0c83f62b596132c74c02284d8 100644\n--- a/codex-rs/windows-sandbox-rs/src/acl_deny.rs\n+++ b/codex-rs/windows-sandbox-rs/src/acl_deny.rs\n@@ -5,15 +5,22 @@\n \n use super::*;\n use anyhow::Context;\n+use anyhow::ensure;\n use std::os::windows::io::AsRawHandle;\n use std::os::windows::io::FromRawHandle;\n use std::os::windows::io::OwnedHandle;\n use windows_sys::Win32::Foundation::HANDLE;\n use windows_sys::Win32::Security::Authorization::SE_FILE_OBJECT;\n+use windows_sys::Win32::Storage::FileSystem::FILE_ATTRIBUTE_REPARSE_POINT;\n+use windows_sys::Win32::Storage::FileSystem::FILE_ATTRIBUTE_TAG_INFO;\n+use windows_sys::Win32::Storage::FileSystem::FILE_FLAG_OPEN_REPARSE_POINT;\n+use windows_sys::Win32::Storage::FileSystem::FILE_ID_INFO;\n+use windows_sys::Win32::Storage::FileSystem::FILE_READ_ATTRIBUTES;\n use windows_sys::Win32::Storage::FileSystem::FILE_STANDARD_INFO;\n+use windows_sys::Win32::Storage::FileSystem::FileAttributeTagInfo;\n+use windows_sys::Win32::Storage::FileSystem::FileIdInfo;\n use windows_sys::Win32::Storage::FileSystem::FileStandardInfo;\n use windows_sys::Win32::Storage::FileSystem::GetFileInformationByHandleEx;\n-use windows_sys::Win32::Storage::FileSystem::ReOpenFile;\n use windows_sys::Win32::Storage::FileSystem::WRITE_DAC;\n \n #[derive(Clone, Copy)]\n@@ -101,6 +108,75 @@ pub(super) unsafe fn dacl_has_complete_deny_for_object(\n     false\n }\n \n+// Both IDs come from live handles. Unsupported/zero IDs cannot prove that a\n+// new path open still names the queried object; never substitute a 64-bit ID.\n+unsafe fn file_identity(handle: HANDLE, path: &Path) -> Result<(u64, [u8; 16])> {\n+    let mut id: FILE_ID_INFO = std::mem::zeroed();\n+    if GetFileInformationByHandleEx(\n+        handle,\n+        FileIdInfo,\n+        &mut id as *mut _ as *mut c_void,\n+        std::mem::size_of::<FILE_ID_INFO>() as u32,\n+    ) == 0\n+    {\n+        return Err(std::io::Error::last_os_error())\n+            .with_context(|| format!(\"FileIdInfo for deny repair failed for {}\", path.display()));\n+    }\n+    ensure!(\n+        id.FileId.Identifier != [0; 16],\n+        \"deny repair requires a nonzero file ID for {}\",\n+        path.display()\n+    );\n+    Ok((id.VolumeSerialNumber, id.FileId.Identifier))\n+}\n+\n+// The caller retains the queried object until all DACL work has completed.\n+// This proves object identity, not pathname custody or exclusion of DACL writers.\n+pub(super) unsafe fn open_deny_repair_handle(path: &Path, queried: HANDLE) -> Result<OwnedHandle> {\n+    let expected = file_identity(queried, path)?;\n+    let raw = CreateFileW(\n+        to_wide(path).as_ptr(),\n+        READ_CONTROL | WRITE_DAC | FILE_READ_ATTRIBUTES,\n+        FILE_SHARE_READ | FILE_SHARE_WRITE | FILE_SHARE_DELETE,\n+        std::ptr::null_mut(),\n+        OPEN_EXISTING,\n+        FILE_FLAG_BACKUP_SEMANTICS | FILE_FLAG_OPEN_REPARSE_POINT,\n+        /*htemplatefile*/ 0,\n+    );\n+    if raw == INVALID_HANDLE_VALUE {\n+        return Err(std::io::Error::last_os_error())\n+            .with_context(|| format!(\"CreateFileW for deny repair failed for {}\", path.display()));\n+    }\n+    let writable = OwnedHandle::from_raw_handle(raw as _);\n+    let mut attributes: FILE_ATTRIBUTE_TAG_INFO = std::mem::zeroed();\n+    if GetFileInformationByHandleEx(\n+        raw,\n+        FileAttributeTagInfo,\n+        &mut attributes as *mut _ as *mut c_void,\n+        std::mem::size_of::<FILE_ATTRIBUTE_TAG_INFO>() as u32,\n+    ) == 0\n+    {\n+        return Err(std::io::Error::last_os_error()).with_context(|| {\n+            format!(\n+                \"FileAttributeTagInfo for deny repair failed for {}\",\n+                path.display()\n+            )\n+        });\n+    }\n+    ensure!(\n+        attributes.FileAttributes & FILE_ATTRIBUTE_REPARSE_POINT == 0,\n+        \"deny repair refuses a reparse point at {}\",\n+        path.display()\n+    );\n+    let actual = file_identity(raw, path)?;\n+    ensure!(\n+        actual == expected,\n+        \"deny repair path no longer identifies the retained object: {}\",\n+        path.display()\n+    );\n+    Ok(writable)\n+}\n+\n pub(super) unsafe fn add_deny_ace(\n     path: &Path,\n     psid: *mut c_void,\n@@ -120,7 +196,17 @@ pub(super) unsafe fn add_deny_ace(\n             .with_context(|| format!(\"CreateFileW for deny query failed for {}\", path.display()));\n     }\n     let object = OwnedHandle::from_raw_handle(raw as _);\n-    let handle = object.as_raw_handle() as HANDLE;\n+    add_deny_ace_on_object(path, object.as_raw_handle() as HANDLE, psid, kind)\n+}\n+\n+// Production and the physical replacement control share this exact mutation\n+// path. The caller must retain `handle` and the valid SID for the whole call.\n+pub(super) unsafe fn add_deny_ace_on_object(\n+    path: &Path,\n+    handle: HANDLE,\n+    psid: *mut c_void,\n+    kind: DenyAceKind,\n+) -> Result<bool> {\n     let mut info: FILE_STANDARD_INFO = std::mem::zeroed();\n     if GetFileInformationByHandleEx(\n         handle,\n@@ -155,19 +241,10 @@ pub(super) unsafe fn add_deny_ace(\n         return Ok(false);\n     }\n \n-    // Keep query and update access on the same object. No-op callers never\n-    // require WRITE_DAC.\n-    let raw_write = ReOpenFile(\n-        handle,\n-        READ_CONTROL | WRITE_DAC,\n-        FILE_SHARE_READ | FILE_SHARE_WRITE | FILE_SHARE_DELETE,\n-        FILE_FLAG_BACKUP_SEMANTICS,\n-    );\n-    if raw_write == INVALID_HANDLE_VALUE {\n-        return Err(std::io::Error::last_os_error())\n-            .with_context(|| format!(\"ReOpenFile for deny repair failed for {}\", path.display()));\n-    }\n-    let writable = OwnedHandle::from_raw_handle(raw_write as _);\n+    // Only repairs require WRITE_DAC and attributes to reject reparse points.\n+    // A fresh path handle is accepted only while its 128-bit ID and volume match\n+    // the retained query object. Complete denies return before this open.\n+    let writable = open_deny_repair_handle(path, handle)?;\n     let entry = EXPLICIT_ACCESS_W {\n         grfAccessPermissions: kind.mask(),\n         grfAccessMode: DENY_ACCESS,\ndiff --git a/codex-rs/windows-sandbox-rs/src/acl_tests.rs b/codex-rs/windows-sandbox-rs/src/acl_tests.rs\nindex 2afcc4e189fa8adfbe2a02c80fcc5c7554d1ef67..ec0264a7615097bec1b554cb60918b4f4662eec2 100644\n--- a/codex-rs/windows-sandbox-rs/src/acl_tests.rs\n+++ b/codex-rs/windows-sandbox-rs/src/acl_tests.rs\n@@ -4,8 +4,11 @@ use pretty_assertions::assert_eq;\n use std::fs::File;\n use std::fs::OpenOptions;\n use std::io::Read;\n+use std::io::Write;\n use std::os::windows::fs::OpenOptionsExt;\n use std::os::windows::io::AsRawHandle;\n+use std::os::windows::io::FromRawHandle;\n+use std::os::windows::io::OwnedHandle;\n use windows_sys::Win32::Foundation::ERROR_ACCESS_DENIED;\n use windows_sys::Win32::Foundation::HANDLE;\n use windows_sys::Win32::Security::ACL_REVISION;\n@@ -394,11 +397,14 @@ fn existing_native_deny_does_not_require_write_dac() -> Result<()> {\n     };\n     let sid = LocalSid::from_string(\"S-1-5-21-201-302-403-504\")?;\n     let owner_rights = LocalSid::from_string(\"S-1-3-4\")?;\n+    let everyone = LocalSid::from_string(\"S-1-1-0\")?;\n     unsafe {\n         assert!(add_deny_write_ace(&path, sid.as_ptr())?);\n         assert!(add_deny_read_ace(&path, sid.as_ptr())?);\n         let (current, current_descriptor) = fetch_dacl_handle(&path)?;\n-        let entry = EXPLICIT_ACCESS_W {\n+        // Owner Rights removes implicit owner access; Everyone also denies\n+        // WRITE_DAC otherwise available through enabled groups.\n+        let entries = [&owner_rights, &everyone].map(|denied| EXPLICIT_ACCESS_W {\n             grfAccessPermissions: WRITE_DAC,\n             grfAccessMode: DENY_ACCESS,\n             grfInheritance: 0,\n@@ -407,13 +413,13 @@ fn existing_native_deny_does_not_require_write_dac() -> Result<()> {\n                 MultipleTrusteeOperation: 0,\n                 TrusteeForm: TRUSTEE_IS_SID,\n                 TrusteeType: TRUSTEE_IS_UNKNOWN,\n-                ptstrName: owner_rights.as_ptr().cast(),\n+                ptstrName: denied.as_ptr().cast(),\n             },\n-        };\n+        });\n         let mut protected = std::ptr::null_mut();\n         let code = SetEntriesInAclW(\n-            /*ccountofexplicitentries*/ 1,\n-            &entry,\n+            entries.len() as u32,\n+            entries.as_ptr(),\n             current,\n             &mut protected,\n         );\n@@ -436,28 +442,98 @@ fn existing_native_deny_does_not_require_write_dac() -> Result<()> {\n         LocalFree(current_descriptor as HLOCAL);\n         acl_api_result(&path, \"seed owner WRITE_DAC denial\", code)?;\n     }\n-    let query = OpenOptions::new().access_mode(READ_CONTROL).open(&path)?;\n-    // Use the same rights/flags as a real repair; an unexpected granted handle\n-    // is closed before the host-control assertion fails.\n-    let write_denied = unsafe {\n-        let raw = windows_sys::Win32::Storage::FileSystem::ReOpenFile(\n-            query.as_raw_handle() as HANDLE,\n-            READ_CONTROL | WRITE_DAC,\n-            FILE_SHARE_READ | FILE_SHARE_WRITE | FILE_SHARE_DELETE,\n-            FILE_FLAG_BACKUP_SEMANTICS,\n-        );\n-        if raw == INVALID_HANDLE_VALUE {\n-            std::io::Error::last_os_error().raw_os_error()\n-        } else {\n-            CloseHandle(raw);\n-            None\n-        }\n+    use windows_sys::Win32::Security as security;\n+    use windows_sys::Win32::System::Threading;\n+    // The fixture must prove actual DACL denial, not rely on an elevated host's\n+    // backup/restore privileges. Only this owned token/thread is restricted.\n+    let mut previous = 0;\n+    // SAFETY: the output pointer is live; a successful owned handle is closed.\n+    if unsafe {\n+        Threading::OpenThreadToken(\n+            Threading::GetCurrentThread(),\n+            security::TOKEN_QUERY,\n+            /*openasself*/ 1,\n+            &mut previous,\n+        )\n+    } != 0\n+    {\n+        unsafe { CloseHandle(previous) };\n+        return Err(anyhow!(\n+            \"no-WRITE_DAC control requires an initially unimpersonated thread\"\n+        ));\n+    }\n+    let previous_error = std::io::Error::last_os_error();\n+    if previous_error.raw_os_error() != Some(windows_sys::Win32::Foundation::ERROR_NO_TOKEN as i32) {\n+        return Err(previous_error.into());\n+    }\n+    // SAFETY: these successful token constructors transfer one owned handle.\n+    let base = unsafe {\n+        OwnedHandle::from_raw_handle(crate::token::get_current_token_for_restriction()? as _)\n     };\n+    let mut raw_token = 0;\n+    if unsafe {\n+        security::CreateRestrictedToken(\n+            base.as_raw_handle() as HANDLE,\n+            security::DISABLE_MAX_PRIVILEGE,\n+            /*disablesidcount*/ 0,\n+            std::ptr::null(),\n+            /*deleteprivilegecount*/ 0,\n+            std::ptr::null(),\n+            /*restrictedsidcount*/ 0,\n+            std::ptr::null(),\n+            &mut raw_token,\n+        )\n+    } == 0\n+    {\n+        return Err(std::io::Error::last_os_error().into());\n+    }\n+    let token = unsafe { OwnedHandle::from_raw_handle(raw_token as _) };\n+    struct Revert;\n+    impl Drop for Revert {\n+        fn drop(&mut self) {\n+            // SAFETY: this guard exists only after this thread was impersonated.\n+            if unsafe { security::RevertToSelf() } == 0 {\n+                std::process::abort();\n+            }\n+        }\n+    }\n+    // SAFETY: the token is live; Revert restores the initially bare thread.\n+    if unsafe { security::ImpersonateLoggedOnUser(token.as_raw_handle() as HANDLE) } == 0 {\n+        return Err(std::io::Error::last_os_error().into());\n+    }\n+    let impersonation = Revert;\n+    let query = OpenOptions::new().access_mode(READ_CONTROL).open(&path)?;\n+    // The added repair attributes are available to this token; the following\n+    // exact acquisition failure must be at the WRITE_DAC open, not ID querying.\n+    let attributes = OpenOptions::new()\n+        .access_mode(READ_CONTROL | windows_sys::Win32::Storage::FileSystem::FILE_READ_ATTRIBUTES)\n+        .custom_flags(\n+            FILE_FLAG_BACKUP_SEMANTICS\n+                | windows_sys::Win32::Storage::FileSystem::FILE_FLAG_OPEN_REPARSE_POINT,\n+        )\n+        .open(&path)?;\n+    drop(attributes);\n+    // Execute the production acquisition/identity check on this same retained\n+    // object. A granted handle is dropped before the original assertion.\n+    // SAFETY: the query handle and owned fixture outlive the acquisition.\n+    let write_error = unsafe {\n+        super::deny::open_deny_repair_handle(&path, query.as_raw_handle() as HANDLE)\n+    }\n+    .err();\n+    let write_denied = write_error.as_ref().and_then(|error| {\n+        error\n+            .downcast_ref::<std::io::Error>()\n+            .and_then(std::io::Error::raw_os_error)\n+    });\n     assert_eq!(\n         write_denied,\n         Some(ERROR_ACCESS_DENIED as i32),\n         \"host control must really lack WRITE_DAC\"\n     );\n+    assert_eq!(\n+        write_error.expect(\"WRITE_DAC acquisition must fail\").to_string(),\n+        format!(\"CreateFileW for deny repair failed for {}\", path.display())\n+    );\n     let before = native_dacl_bytes(&path)?;\n     let noops = unsafe {\n         (\n@@ -467,7 +543,83 @@ fn existing_native_deny_does_not_require_write_dac() -> Result<()> {\n     };\n     assert_eq!(noops, (false, false));\n     assert_eq!(native_dacl_bytes(&path)?, before);\n+    drop(impersonation);\n     drop(restore);\n     assert_eq!(std::fs::read_to_string(&path)?, \"retained\");\n     Ok(())\n }\n+\n+#[test]\n+fn deny_repair_rejects_a_replaced_path_before_mutating_either_object() -> Result<()> {\n+    let fixture = tempfile::tempdir()?;\n+    let sid = LocalSid::from_string(\"S-1-5-21-211-312-413-514\")?;\n+    for directory in [false, true] {\n+        let row = tempfile::tempdir_in(fixture.path())?;\n+        let path = row.path().join(\"queried\");\n+        let retained_path = row.path().join(\"retained\");\n+        if directory {\n+            std::fs::create_dir(&path)?;\n+        } else {\n+            std::fs::write(&path, \"original\")?;\n+        }\n+        let query = OpenOptions::new()\n+            .access_mode(READ_CONTROL)\n+            .share_mode(FILE_SHARE_READ | FILE_SHARE_WRITE | FILE_SHARE_DELETE)\n+            .custom_flags(FILE_FLAG_BACKUP_SEMANTICS)\n+            .open(&path)?;\n+        let original_dacl = native_dacl_bytes(&path)?;\n+        std::fs::rename(&path, &retained_path)?;\n+        if directory {\n+            std::fs::create_dir(&path)?;\n+        } else {\n+            std::fs::write(&path, \"replacement\")?;\n+        }\n+        let replacement_dacl = native_dacl_bytes(&path)?;\n+        // SAFETY: the query handle still retains the renamed original object;\n+        // the valid SID and both owned filesystem objects outlive the call.\n+        let result = unsafe {\n+            super::deny::add_deny_ace_on_object(\n+                &path,\n+                query.as_raw_handle() as HANDLE,\n+                sid.as_ptr(),\n+                DenyAceKind::Write,\n+            )\n+        };\n+        let original_after = native_dacl_bytes(&retained_path)?;\n+        let replacement_after = native_dacl_bytes(&path)?;\n+        writeln!(\n+            std::io::stderr().lock(),\n+            \"\\ndeny_repair_identity: directory={directory} returned_ok={} replacement_changed={} original_changed={}\",\n+            result.is_ok(),\n+            replacement_after != replacement_dacl,\n+            original_after != original_dacl\n+        )?;\n+        assert_eq!(\n+            replacement_after,\n+            replacement_dacl,\n+            \"a replacement object must not receive the queried object's deny\"\n+        );\n+        assert_eq!(original_after, original_dacl);\n+        let error = result.expect_err(\"replaced path must be rejected before ACL mutation\");\n+        assert!(\n+            error\n+                .to_string()\n+                .contains(\"no longer identifies the retained object\")\n+        );\n+        // The same retained object remains repairable through its current name.\n+        // SAFETY: the retained handle and valid SID remain live as above.\n+        assert!(unsafe {\n+            super::deny::add_deny_ace_on_object(\n+                &retained_path,\n+                query.as_raw_handle() as HANDLE,\n+                sid.as_ptr(),\n+                DenyAceKind::Write,\n+            )?\n+        });\n+        if !directory {\n+            assert_eq!(std::fs::read_to_string(&retained_path)?, \"original\");\n+            assert_eq!(std::fs::read_to_string(&path)?, \"replacement\");\n+        }\n+    }\n+    Ok(())\n+}\n",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "git",
+        "apply",
+        "--check",
+        "/workspace/scratch/07dd58cc9630/architecture-audit/b11-acl-repair-20261105/identity-candidate-v3/full.patch"
+      ],
+      "returncode": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "git",
+        "apply",
+        "/workspace/scratch/07dd58cc9630/architecture-audit/b11-acl-repair-20261105/identity-candidate-v3/full.patch"
+      ],
+      "returncode": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "git",
+        "apply",
+        "--reverse",
+        "--check",
+        "/workspace/scratch/07dd58cc9630/architecture-audit/b11-acl-repair-20261105/identity-candidate-v3/full.patch"
+      ],
+      "returncode": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "git",
+        "apply",
+        "--reverse",
+        "/workspace/scratch/07dd58cc9630/architecture-audit/b11-acl-repair-20261105/identity-candidate-v3/full.patch"
+      ],
+      "returncode": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "git",
+        "init",
+        "--quiet"
+      ],
+      "returncode": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "git",
+        "add",
+        "--",
+        "codex-rs/windows-sandbox-rs/src/acl_deny.rs"
+      ],
+      "returncode": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "git",
+        "diff",
+        "--binary",
+        "--full-index",
+        "--no-ext-diff",
+        "--",
+        "codex-rs/windows-sandbox-rs/src/acl_deny.rs"
+      ],
+      "returncode": 0,
+      "stdout": "diff --git a/codex-rs/windows-sandbox-rs/src/acl_deny.rs b/codex-rs/windows-sandbox-rs/src/acl_deny.rs\nindex da5346c220c41cf0c83f62b596132c74c02284d8..0baeb6ec2f3bfd0964be6d014fc5d80d890ea3d7 100644\n--- a/codex-rs/windows-sandbox-rs/src/acl_deny.rs\n+++ b/codex-rs/windows-sandbox-rs/src/acl_deny.rs\n@@ -169,11 +169,7 @@ pub(super) unsafe fn open_deny_repair_handle(path: &Path, queried: HANDLE) -> Re\n         path.display()\n     );\n     let actual = file_identity(raw, path)?;\n-    ensure!(\n-        actual == expected,\n-        \"deny repair path no longer identifies the retained object: {}\",\n-        path.display()\n-    );\n+    let _ = actual == expected;\n     Ok(writable)\n }\n \n",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "git",
+        "apply",
+        "--check",
+        "/workspace/scratch/07dd58cc9630/architecture-audit/b11-acl-repair-20261105/identity-candidate-v3/remove-identity-check.patch"
+      ],
+      "returncode": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "git",
+        "apply",
+        "/workspace/scratch/07dd58cc9630/architecture-audit/b11-acl-repair-20261105/identity-candidate-v3/remove-identity-check.patch"
+      ],
+      "returncode": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "git",
+        "apply",
+        "--reverse",
+        "--check",
+        "/workspace/scratch/07dd58cc9630/architecture-audit/b11-acl-repair-20261105/identity-candidate-v3/remove-identity-check.patch"
+      ],
+      "returncode": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "git",
+        "apply",
+        "--reverse",
+        "/workspace/scratch/07dd58cc9630/architecture-audit/b11-acl-repair-20261105/identity-candidate-v3/remove-identity-check.patch"
+      ],
+      "returncode": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "git",
+        "init",
+        "--quiet"
+      ],
+      "returncode": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "git",
+        "add",
+        "--",
+        "codex-rs/windows-sandbox-rs/src/acl_deny.rs"
+      ],
+      "returncode": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "git",
+        "diff",
+        "--binary",
+        "--full-index",
+        "--no-ext-diff",
+        "--",
+        "codex-rs/windows-sandbox-rs/src/acl_deny.rs"
+      ],
+      "returncode": 0,
+      "stdout": "diff --git a/codex-rs/windows-sandbox-rs/src/acl_deny.rs b/codex-rs/windows-sandbox-rs/src/acl_deny.rs\nindex 0baeb6ec2f3bfd0964be6d014fc5d80d890ea3d7..da5346c220c41cf0c83f62b596132c74c02284d8 100644\n--- a/codex-rs/windows-sandbox-rs/src/acl_deny.rs\n+++ b/codex-rs/windows-sandbox-rs/src/acl_deny.rs\n@@ -169,7 +169,11 @@ pub(super) unsafe fn open_deny_repair_handle(path: &Path, queried: HANDLE) -> Re\n         path.display()\n     );\n     let actual = file_identity(raw, path)?;\n-    let _ = actual == expected;\n+    ensure!(\n+        actual == expected,\n+        \"deny repair path no longer identifies the retained object: {}\",\n+        path.display()\n+    );\n     Ok(writable)\n }\n \n",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "git",
+        "apply",
+        "--check",
+        "/workspace/scratch/07dd58cc9630/architecture-audit/b11-acl-repair-20261105/identity-candidate-v3/restore-identity-check.patch"
+      ],
+      "returncode": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "git",
+        "apply",
+        "/workspace/scratch/07dd58cc9630/architecture-audit/b11-acl-repair-20261105/identity-candidate-v3/restore-identity-check.patch"
+      ],
+      "returncode": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "git",
+        "apply",
+        "--reverse",
+        "--check",
+        "/workspace/scratch/07dd58cc9630/architecture-audit/b11-acl-repair-20261105/identity-candidate-v3/restore-identity-check.patch"
+      ],
+      "returncode": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "git",
+        "apply",
+        "--reverse",
+        "/workspace/scratch/07dd58cc9630/architecture-audit/b11-acl-repair-20261105/identity-candidate-v3/restore-identity-check.patch"
+      ],
+      "returncode": 0,
+      "stdout": "",
+      "stderr": ""
+    }
+  ],
+  "roundtrips": [
+    {
+      "label": "positive",
+      "patch": {
+        "path": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-acl-repair-20261105/identity-candidate-v3/full.patch",
+        "bytes": 16621,
+        "sha256": "75dfa3786686f94ce5dbc3351fc72420eb66c48abbee0963907062844e835199",
+        "git_blob": "a0784b109767396ddb452ca6d5798491b8ffeabe"
+      },
+      "postimages_exact": true,
+      "reverse_preimages_exact": true,
+      "paths": [
+        "codex-rs/windows-sandbox-rs/src/acl_deny.rs",
+        "codex-rs/windows-sandbox-rs/src/acl_tests.rs"
+      ]
+    },
+    {
+      "label": "negative",
+      "patch": {
+        "path": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-acl-repair-20261105/identity-candidate-v3/remove-identity-check.patch",
+        "bytes": 683,
+        "sha256": "26fa073559f758a4530ac6994d1a9224cee37c19f20d94e1d7ab598cea0cd957",
+        "git_blob": "03f471fb24b371b5777a1d8c53e6b392c6a85ee7"
+      },
+      "postimages_exact": true,
+      "reverse_preimages_exact": true,
+      "paths": [
+        "codex-rs/windows-sandbox-rs/src/acl_deny.rs"
+      ]
+    },
+    {
+      "label": "restore",
+      "patch": {
+        "path": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-acl-repair-20261105/identity-candidate-v3/restore-identity-check.patch",
+        "bytes": 683,
+        "sha256": "547a1b346fa57ec68ddf0e01c16609c567a6370000bfce18f793e05bfecf1804",
+        "git_blob": "593697b1d485592bf44744e089d55f0503586a52"
+      },
+      "postimages_exact": true,
+      "reverse_preimages_exact": true,
+      "paths": [
+        "codex-rs/windows-sandbox-rs/src/acl_deny.rs"
+      ]
+    }
+  ]
+}

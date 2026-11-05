@@ -1,0 +1,129 @@
+{
+  "kind": "B11_COUNTERFACTUAL_V2_REQUIRED_RESTORE_AND_ACTUAL_FORMAT_REVIEW",
+  "status": "STATIC_AND_PURE_FORMAT_ONLY_NOT_WINDOWS_EXECUTION",
+  "old_script": {
+    "path": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-acl-repair-20261105/counterfactual-workflow-v1/candidate/.github/scripts/run_b11_acl_identity_counterfactual.py",
+    "bytes": 17283,
+    "sha256": "cd8be497126971482b21ceb9e4407a0ff43df49d69ee2882a440b40c4bf19fdd",
+    "git_blob": "5e40053fb522fec8b829d991ea20ec5b70faf43f"
+  },
+  "new_script": {
+    "path": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-acl-repair-20261105/counterfactual-workflow-v2/candidate/.github/scripts/run_b11_acl_identity_counterfactual.py",
+    "bytes": 17774,
+    "sha256": "6e199582d277e44f1796dcf64c39bb0fe3f263f060ab79da1bf682fff5866b1f",
+    "git_blob": "25def4386ea08bb72a7605cc113117f31fffcd1b"
+  },
+  "delta": {
+    "path": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-acl-repair-20261105/counterfactual-workflow-v2/v1-to-v2.delta.patch",
+    "bytes": 1453,
+    "sha256": "28724bd2d17d25e97586295e02129f4167d4ee94773d95e60776e2c571d06c93",
+    "git_blob": "c933eb6b6e004ed048851a4306ae45e301fb72db"
+  },
+  "delta_git_commands": [
+    {
+      "argv": [
+        "git",
+        "init",
+        "--quiet"
+      ],
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "git",
+        "add",
+        "--",
+        ".github/scripts/run_b11_acl_identity_counterfactual.py"
+      ],
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "git",
+        "apply",
+        "--check",
+        "/workspace/scratch/07dd58cc9630/architecture-audit/b11-acl-repair-20261105/counterfactual-workflow-v2/v1-to-v2.delta.patch"
+      ],
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "git",
+        "apply",
+        "/workspace/scratch/07dd58cc9630/architecture-audit/b11-acl-repair-20261105/counterfactual-workflow-v2/v1-to-v2.delta.patch"
+      ],
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "git",
+        "apply",
+        "--reverse",
+        "--check",
+        "/workspace/scratch/07dd58cc9630/architecture-audit/b11-acl-repair-20261105/counterfactual-workflow-v2/v1-to-v2.delta.patch"
+      ],
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "git",
+        "apply",
+        "--reverse",
+        "/workspace/scratch/07dd58cc9630/architecture-audit/b11-acl-repair-20261105/counterfactual-workflow-v2/v1-to-v2.delta.patch"
+      ],
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": ""
+    }
+  ],
+  "forward_inverse_exact": true,
+  "workflow_unchanged_v1_to_v2": true,
+  "change": "Before any restoration write, require the whole source guard for known positive/negative current bytes and compare ordinary semantic index plus both locks with entry. Unknown drift is not overwritten. No argument/oracle/time-budget change.",
+  "real_original_format_check": {
+    "source": "native5 already frozen complete original artifact",
+    "console": {
+      "path": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-pr4884-ci-20261105/terminal/probe-127383345954/members/b11-token-mechanism-probe/bazel-console.log",
+      "bytes": 205680,
+      "sha256": "dcf96676b15afb26f1cb5e328b1474f53304efeb7631552b2a98d32223c6ceec",
+      "git_blob": "0b9f3b8cca42daedbd5809791a6fe5ece0857d67"
+    },
+    "target_summary": "//codex-rs/windows-sandbox-rs:windows-sandbox-rs-unit-tests              FAILED in 37.7s",
+    "retained_manifest": {
+      "path": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-pr4884-ci-20261105/terminal/probe-127383345954/members/bazel-execution-logs/failed-test-logs/invocation-iloq9z78/manifest.json",
+      "bytes": 1273,
+      "sha256": "fcbbf587f6b8df2ebf5aaf66b551a2fda9c12a50c6f12a079c686f337958905e",
+      "git_blob": "d5c0d7f1ddf538ed97b776b3db83e13ad525b67c"
+    },
+    "retained_files": {
+      ".log": {
+        "path": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-pr4884-ci-20261105/terminal/probe-127383345954/members/bazel-execution-logs/failed-test-logs/invocation-iloq9z78/targets/0000/test.log",
+        "bytes": 131855,
+        "sha256": "fcea1fd7d4a059130a34b392f5171e5db76ddfd2d0a0a0f21ebd7414641f71fc",
+        "git_blob": "d4a9dcff6525450a9c5afaacaa531a56514aa5e9"
+      },
+      ".xml": {
+        "path": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-pr4884-ci-20261105/terminal/probe-127383345954/members/bazel-execution-logs/failed-test-logs/invocation-iloq9z78/targets/0000/test.xml",
+        "bytes": 132278,
+        "sha256": "d95a552bf494118386f5cc082226b9d7776f2ae245204d6f26b08a0298c6301b",
+        "git_blob": "da30b59327acd3e51ebb9e59512f77b52355e732"
+      }
+    },
+    "new_script_main_executed": false,
+    "subprocess_or_project_or_windows_commands_executed_by_format_check": false
+  },
+  "limits": [
+    "Native5 predates the new case and is used only to confirm exact current collector and target-summary formats. It does not satisfy the new positive prerequisite.",
+    "New Windows direct-arguments route and XML101 still require native evidence. The preceding original full target may fail, but all four required positive test results must be exact PASS/noncached before the negative can start.",
+    "The physical negative and exact finally restore have not executed. B11 remains OPEN."
+  ]
+}

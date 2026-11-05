@@ -1,0 +1,114 @@
+{
+  "schema": "b21-pty-original-success-retention-static-v1",
+  "observed_at": "2026-11-05T17:24:43.905536+00:00",
+  "base_head": "eed4d6bb61b789b19f60facc79f9e031765fa4c9",
+  "base_tree": "ca1c4671ef6b2773280d01b5d76c6166252f5856",
+  "source_path": ".github/scripts/collect_bazel_failed_test_logs.py",
+  "preimage": {
+    "bytes": 16260,
+    "sha256": "55353f094531a4af974c519fadca01dcd0c8be6ece1f8b10efb70d24ae2a44eb",
+    "git_blob": "2142eeb382664d95f77d83ac7ae3da4459601abf"
+  },
+  "postimage": {
+    "bytes": 16303,
+    "sha256": "bb25a658988b77ef23517501afb4893a8a5f7960bd7930b6aef6041ba1274c1c",
+    "git_blob": "18701f51e4df1ef6b0fd390d2990114bf971331d"
+  },
+  "patch": {
+    "bytes": 462,
+    "sha256": "669bc1e596f7f77d7a7bdae224cc6485ab9a8e4f40bdb3d557fceac8de0d58ae",
+    "git_blob": "e0f94bd68a555a7ca4af773a26c4957215284dcf"
+  },
+  "diff_added": 1,
+  "diff_deleted": 0,
+  "original_targets": [
+    "//codex-rs/tui:tui-unit-tests",
+    "//codex-rs/windows-sandbox-rs:windows-sandbox-rs-unit-tests",
+    "//codex-rs/ext/queue:queue-queue_service-test",
+    "//codex-rs/app-server:app-server-all-test",
+    "//codex-rs/app-server:app-server-unit-tests",
+    "//codex-rs/app-server:app-server-all-wine-exec-test",
+    "//codex-rs/codex-mcp:codex-mcp-unit-tests",
+    "//codex-rs/core:core-unit-tests",
+    "//codex-rs/core:core-all-test",
+    "//codex-rs/core:core-all-wine-exec-test",
+    "//codex-rs/hepta-agentd:hepta-agentd-cognitive-write-qualification-test"
+  ],
+  "candidate_targets": [
+    "//codex-rs/tui:tui-unit-tests",
+    "//codex-rs/windows-sandbox-rs:windows-sandbox-rs-unit-tests",
+    "//codex-rs/ext/queue:queue-queue_service-test",
+    "//codex-rs/app-server:app-server-all-test",
+    "//codex-rs/app-server:app-server-unit-tests",
+    "//codex-rs/app-server:app-server-all-wine-exec-test",
+    "//codex-rs/codex-mcp:codex-mcp-unit-tests",
+    "//codex-rs/core:core-unit-tests",
+    "//codex-rs/core:core-all-test",
+    "//codex-rs/core:core-all-wine-exec-test",
+    "//codex-rs/hepta-agentd:hepta-agentd-cognitive-write-qualification-test",
+    "//codex-rs/utils/pty:pty-unit-tests"
+  ],
+  "old_eleven_order_and_bytes_preserved": true,
+  "inverse_delete_added_line_restores_entire_preimage": true,
+  "all_other_code_including_copy_policy_and_error_handling_byte_equal": true,
+  "python_ast_parse_both": true,
+  "isolated_git_commands": [
+    {
+      "argv": [
+        "git",
+        "apply",
+        "--check",
+        "/tmp/b21-retention-static-w5a4shkw/candidate.patch"
+      ],
+      "exit": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "git",
+        "apply",
+        "/tmp/b21-retention-static-w5a4shkw/candidate.patch"
+      ],
+      "exit": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "git",
+        "apply",
+        "--reverse",
+        "--check",
+        "/tmp/b21-retention-static-w5a4shkw/candidate.patch"
+      ],
+      "exit": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "git",
+        "apply",
+        "--reverse",
+        "/tmp/b21-retention-static-w5a4shkw/candidate.patch"
+      ],
+      "exit": 0,
+      "stdout": "",
+      "stderr": ""
+    }
+  ],
+  "native_or_project_tests_executed": false,
+  "original_regression_gate": "python3 -m unittest discover -s .github/scripts -p test_run_bazel*.py -v",
+  "test_source_body_changed": false,
+  "limits": [
+    "Evidence retention only; no PTY product or test execution changes.",
+    "All existing platforms whose current invocation reports this exact target PASSED or FLAKY may retain their already-existing local logs. This enlarges artifact scope on GNU, macOS and Windows without adding test execution.",
+    "A retained cached result remains cached; record current console, actual execution config/source and all attempts separately.",
+    "Missing local logs remain explicit evidence missing. NOT_REPORTED/SKIPPED/AMBIGUOUS do not select old directories.",
+    "The existing workflow upload is conditioned on !cancelled(); this one-line candidate does not guarantee an artifact for a later-cancelled job.",
+    "Libtest successful test stdout/stderr is captured by default. Retaining test.log preserves exact ok rows, but it does not guarantee successful diagnostic snapshots will be printed.",
+    "Not applied to published eed, no new branch/ref/workflow or dispatch.",
+    "This does not resolve the original two-second Intel drain failure."
+  ]
+}

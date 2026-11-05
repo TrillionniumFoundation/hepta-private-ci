@@ -1,0 +1,315 @@
+{
+  "schema": "b11-acl-identity-v3-independent-static-review-v1",
+  "observed_at_utc": "2026-11-05T17:40:26.516875+00:00",
+  "reviewer": "research_audit",
+  "verdict": "STATIC_ACCEPTED_PENDING_ORIGINAL_WINDOWS_EXECUTION",
+  "blocking_findings": [],
+  "reviewed_candidate_manifest": {
+    "path": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-acl-repair-20261105/identity-candidate-v3/manifest.json",
+    "bytes": 21043,
+    "sha256": "124822ebfeca5df05d720d8bf1bcf135dd10833913bb4d1b92d92d65fbe67d05",
+    "git_blob": "64b84c70930361580d65fe0d47e4b44733ef36b4"
+  },
+  "author_create_get_map": {
+    "path": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-acl-repair-20261105/identity-candidate-v3/github-readback-map.json",
+    "bytes": 5737,
+    "sha256": "78b1b1254e11e6507f6f6b409bf1adccb8af380a67da5c047550736dd506f9b5",
+    "git_blob": "8f37d0045c2fc139b46267d0f279a4f8a25b08bd"
+  },
+  "base_head": "7e0b2303ed0242d83bf56202e8ffb17f5c856186",
+  "base_tree": "3de59a6aa185b13c8758bff3e8fbc530edcef307",
+  "full_patch": {
+    "path": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-acl-repair-20261105/identity-candidate-v3/full.patch",
+    "bytes": 16621,
+    "sha256": "75dfa3786686f94ce5dbc3351fc72420eb66c48abbee0963907062844e835199",
+    "git_blob": "a0784b109767396ddb452ca6d5798491b8ffeabe"
+  },
+  "source_map": {
+    "base_head": "7e0b2303ed0242d83bf56202e8ffb17f5c856186",
+    "base_tree": "3de59a6aa185b13c8758bff3e8fbc530edcef307",
+    "paths": [
+      {
+        "repository_path": "codex-rs/windows-sandbox-rs/src/acl_deny.rs",
+        "preimage": {
+          "path": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-acl-repair-20261105/identity-candidate-v3/source/codex-rs/windows-sandbox-rs/src/acl_deny.rs",
+          "bytes": 7075,
+          "sha256": "1131c2291e492c8ecd037dd19be76a9fa111f42e32e23013ca68d6291d16c423",
+          "git_blob": "1f4a78406d71c8fef5e764fa473a48b769a1606c"
+        },
+        "postimage": {
+          "path": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-acl-repair-20261105/identity-candidate-v3/candidate/codex-rs/windows-sandbox-rs/src/acl_deny.rs",
+          "bytes": 10188,
+          "sha256": "62869a02641d630921c84e1115f0c6240df257e5a041c3c5be9372781342d47e",
+          "git_blob": "da5346c220c41cf0c83f62b596132c74c02284d8"
+        }
+      },
+      {
+        "repository_path": "codex-rs/windows-sandbox-rs/src/acl_tests.rs",
+        "preimage": {
+          "path": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-acl-repair-20261105/identity-candidate-v3/source/codex-rs/windows-sandbox-rs/src/acl_tests.rs",
+          "bytes": 17033,
+          "sha256": "02bbdde1fdc5368f4cb1c884373add510e4577620e04d4539513d4faa4a37628",
+          "git_blob": "2afcc4e189fa8adfbe2a02c80fcc5c7554d1ef67"
+        },
+        "postimage": {
+          "path": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-acl-repair-20261105/identity-candidate-v3/candidate/codex-rs/windows-sandbox-rs/src/acl_tests.rs",
+          "bytes": 23247,
+          "sha256": "c13be65453bd3499ebd72e548390858133599b7f215e2ab91f6ea765f0066f35",
+          "git_blob": "ec0264a7615097bec1b554cb60918b4f4662eec2"
+        }
+      }
+    ],
+    "counts": {
+      "paths": 2,
+      "additions": 265,
+      "deletions": 36
+    },
+    "negative_source": {
+      "path": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-acl-repair-20261105/identity-candidate-v3/negative/codex-rs/windows-sandbox-rs/src/acl_deny.rs",
+      "bytes": 10076,
+      "sha256": "9c6d3134f9910487041acec0238cc0f2fe6066e698ca74f98b80218323931df4",
+      "git_blob": "0baeb6ec2f3bfd0964be6d014fc5d80d890ea3d7"
+    }
+  },
+  "scope": "Two frozen Rust source paths only. No candidate, tests, build, native process, source/index/target, PR or ref was applied or run by this review.",
+  "independent_static_validation": {
+    "receipt": {
+      "path": "/workspace/scratch/07dd58cc9630/research-audit/b11-acl-identity-v3-independent-20261105/static-reconstruction.json",
+      "bytes": 15211,
+      "sha256": "68531a3812654c30e24b635101b601e6951700d936efc78e9bc7aacbce44d2f1",
+      "git_blob": "550ba8c4674d9527acfb91ef7681203a3773a5b6"
+    },
+    "verifier": {
+      "path": "/workspace/scratch/07dd58cc9630/research-audit/b11-acl-identity-v3-independent-20261105/verify_static.py",
+      "bytes": 6731,
+      "sha256": "99bb5b0494afb8830cffbf87d3f11a638d578902220fcb40764c933d10278120",
+      "git_blob": "1fecefdcedc38eb3f5835486c42ff1575523fed5"
+    },
+    "commands": 8,
+    "stages": [
+      "positive",
+      "negative",
+      "restored-positive",
+      "inverse-original"
+    ],
+    "two_paths_exact_at_every_stage": true,
+    "author_13_create_get_objects_locally_rehashed": true,
+    "original_six_other_tests_and_helpers_byte_equal_after_removing_only_three_imports": true,
+    "original_no_write_dac_six_assertions_preserved_in_order": true,
+    "original_7_definitions_retained_new_1_definition": true,
+    "production_four_preserved_segments": {
+      "object_matcher": {
+        "byte_equal": true,
+        "bytes": 2355,
+        "sha256": "fcdf480cedb8541bc6b5366b17e6994d34aca4ab7ae6e0a469cfa7cf7ed18f31"
+      },
+      "initial_read_control_open": {
+        "byte_equal": true,
+        "bytes": 521,
+        "sha256": "b83ab182fbdf370ca7d639d8e93264e03b8f4de83dfeba72e16e97df6fab4807"
+      },
+      "query_and_complete_early_return": {
+        "byte_equal": true,
+        "bytes": 1060,
+        "sha256": "1c0d7b58da5868ebb5b12e8789629c12ddff3113ab65673df1e724fdfff99b3e"
+      },
+      "acl_mutation_tail": {
+        "byte_equal": true,
+        "bytes": 1058,
+        "sha256": "cd63f29ac02ac7a44d14721c2f594faeff56669852c6ecd9de2ecbfa8b0f2d7c"
+      }
+    }
+  },
+  "ffi_review": {
+    "windows_sys": "0.52.0",
+    "bindings": [
+      {
+        "retrieval_envelope": {
+          "path": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-mic-physical-probe-20261105/primary/windows-security-0.52.0.json",
+          "bytes": 115482,
+          "sha256": "2434e1e74e07a9ec90a4170805778df762e52a873539c2d3e13ba370285824ac",
+          "git_blob": "1e0a99d8ea1c06203159f5960e5669e3fc1d19fd"
+        },
+        "source_git_blob": "e474d1dfc62b7be1443f2b59eda8370477fdfa74",
+        "source_bytes": 111353,
+        "source_sha256": "b35db507ad9380695f15b7ba798d0e677e08cc84b905577489d7e63994f00673",
+        "declarations": [
+          "::windows_targets::link!(\"advapi32.dll\" \"system\" #[doc = \"Required features: `\\\"Win32_Foundation\\\"`\"] fn CreateRestrictedToken(existingtokenhandle : super::Foundation:: HANDLE, flags : CREATE_RESTRICTED_TOKEN_FLAGS, disablesidcount : u32, sidstodisable : *const SID_AND_ATTRIBUTES, deleteprivilegecount : u32, privilegestodelete : *const LUID_AND_ATTRIBUTES, restrictedsidcount : u32, sidstorestrict : *const SID_AND_ATTRIBUTES, newtokenhandle : *mut super::Foundation:: HANDLE) -> super::Foundation:: BOOL);",
+          "::windows_targets::link!(\"advapi32.dll\" \"system\" #[doc = \"Required features: `\\\"Win32_Foundation\\\"`\"] fn ImpersonateLoggedOnUser(htoken : super::Foundation:: HANDLE) -> super::Foundation:: BOOL);",
+          "::windows_targets::link!(\"advapi32.dll\" \"system\" #[doc = \"Required features: `\\\"Win32_Foundation\\\"`\"] fn RevertToSelf() -> super::Foundation:: BOOL);",
+          "pub const DISABLE_MAX_PRIVILEGE: CREATE_RESTRICTED_TOKEN_FLAGS = 1u32;",
+          "pub const TOKEN_QUERY: TOKEN_ACCESS_MASK = 8u32;"
+        ]
+      },
+      {
+        "retrieval_envelope": {
+          "path": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-mic-physical-probe-20261105/primary/windows-threading-0.52.0.json",
+          "bytes": 142297,
+          "sha256": "ed5158fab2454621e96a31cf178894caf4683a07dd9bc056b825745dc88ca7a7",
+          "git_blob": "073c7d5e759171554673002a430693adf54fbeaf"
+        },
+        "source_git_blob": "6ee2c4ad6120e5a3ad34c87e67d6d9187304d9ac",
+        "source_bytes": 136501,
+        "source_sha256": "6258ef99d17078002020644540a608a89cdf20436daefa3970a65348e6793c1c",
+        "declarations": [
+          "::windows_targets::link!(\"kernel32.dll\" \"system\" #[doc = \"Required features: `\\\"Win32_Foundation\\\"`\"] fn GetCurrentThread() -> super::super::Foundation:: HANDLE);",
+          "::windows_targets::link!(\"advapi32.dll\" \"system\" #[doc = \"Required features: `\\\"Win32_Foundation\\\"`, `\\\"Win32_Security\\\"`\"] fn OpenThreadToken(threadhandle : super::super::Foundation:: HANDLE, desiredaccess : super::super::Security:: TOKEN_ACCESS_MASK, openasself : super::super::Foundation:: BOOL, tokenhandle : *mut super::super::Foundation:: HANDLE) -> super::super::Foundation:: BOOL);"
+        ]
+      },
+      {
+        "source": {
+          "path": "/workspace/scratch/07dd58cc9630/research-audit/b11-current-boundary-design/windows-sys-0.52-filesystem.rs.txt",
+          "bytes": 296470,
+          "sha256": "62de1e36d41b1efdb8651c887dae8fbfb0ca2dc34e4d3a789e716f50e424630d",
+          "git_blob": "5cb313fe5ba69cbec6eee56b86ec13608744dae4"
+        },
+        "checked_declarations": [
+          "CreateFileW(PCWSTR,u32,FILE_SHARE_MODE,*const SECURITY_ATTRIBUTES,FILE_CREATION_DISPOSITION,FILE_FLAGS_AND_ATTRIBUTES,HANDLE)->HANDLE",
+          "GetFileInformationByHandleEx(HANDLE,FILE_INFO_BY_HANDLE_CLASS,*mut c_void,u32)->BOOL",
+          "FILE_ID_INFO { VolumeSerialNumber:u64, FileId:FILE_ID_128 }",
+          "FILE_ID_128 { Identifier:[u8;16] }",
+          "FILE_ATTRIBUTE_TAG_INFO { FileAttributes:u32, ReparseTag:u32 }",
+          "FileIdInfo=18i32",
+          "FileAttributeTagInfo=9i32",
+          "FILE_FLAG_OPEN_REPARSE_POINT=2097152u32",
+          "FILE_READ_ATTRIBUTES=128u32"
+        ]
+      }
+    ],
+    "actual_current_cargo": {
+      "path": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-acl-repair-20261105/source/Cargo.toml",
+      "bytes": 2438,
+      "sha256": "183a3691be018640668dfb766f29651d8fd75ab08f7fd526f3d378ae2a86469d",
+      "git_blob": "aa41ed5f08608c0275785b2f5e27ec5db08f50dd"
+    },
+    "actual_current_token": {
+      "path": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-mic-physical-probe-20261105/candidate/codex-rs/windows-sandbox-rs/src/token.rs",
+      "bytes": 18437,
+      "sha256": "6d7ddb4a84561b28bc134139226f9be444cb0dc03c73038e7988e21e18339a77",
+      "git_blob": "b22acb5556f6af3b4c250a2441f161ee448ea1c1"
+    },
+    "fixed_native5_leaf_receipt": {
+      "path": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-pr4884-ci-20261105/terminal/probe-127383345954/members/b11-token-mechanism-probe/source-leaves.txt",
+      "bytes": 8195,
+      "sha256": "018705b298d6522c66508dcdd7c932cbf4b86b01ae021ec50417143f86c9d0f0",
+      "git_blob": "77d480760890dc424831b47b05f7571f22950c33"
+    },
+    "features_checked": [
+      "Win32_Foundation",
+      "Win32_Security",
+      "Win32_Security_Authorization",
+      "Win32_System_Threading",
+      "Win32_Storage_FileSystem"
+    ],
+    "types": "Pointers, u32 flags/counts/buffer sizes, isize HANDLE and BOOL returns agree with the fixed bindings. Zeroed native output structures are initialized storage of the proper size; outputs are consumed only after nonzero success.",
+    "primary_handle": "Current get_current_token_for_restriction opens the process primary token with TOKEN_DUPLICATE and TOKEN_QUERY and transfers ownership. CreateRestrictedToken preserves token type and handle rights. These suffice for ImpersonateLoggedOnUser on a primary token; no TOKEN_IMPERSONATE requirement is invented for this primary-token branch.",
+    "compile_result": "NOT_RUN; declaration/feature checks do not claim Rust or MSVC compilation."
+  },
+  "production_review": {
+    "query_noop": "Initial READ_CONTROL CreateFileW, FileStandardInfo/DACL query, strict object-aware matcher and complete-deny early return are byte-identical. Complete-deny no-op never enters new FileIdInfo/attributes/WRITE_DAC acquisition.",
+    "identity": "Original OwnedHandle remains live through the extracted shared mutation path. Both volume serial and all 16 ID bytes must match two live handles. A nonzero 128-bit ID is required and unsupported queries fail. The fresh handle is OPEN_EXISTING, with complete sharing and OPEN_REPARSE_POINT/BACKUP_SEMANTICS; attributes reject a final reparse-point object before comparison/setter.",
+    "write_order": "No SetEntriesInAclW or SetSecurityInfo is reached until all acquisition, attribute and identity checks return success. SetSecurityInfo uses the checked owned handle, never the pathname. The previous mutation tail, DACL masks, SID/ordering/inheritance rules are byte-identical.",
+    "resource_errors": "Fresh successful handle is immediately wrapped by OwnedHandle. All subsequent error/ensure returns drop it. The original descriptor and new ACL are separately LocalAllocation-owned. The query handle remains owned by the original wrapper across the call.",
+    "limits": [
+      "Fresh access remains subject to actual Windows ACL/filesystem behavior; native5 two directory ReOpenFile error5 endpoints do not uniquely establish a root cause that this source is already proven to fix.",
+      "Only repair compatibility narrows: READ_ATTRIBUTES is now required; unsupported/zero IDs and final reparse points are refused. A previously allowed WRITE_DAC-only caller may now fail closed.",
+      "Identity comparison does not serialize other DACL writers, prove ancestor/path custody or protect against trusted volume administration. Original no-op path-following behavior is retained.",
+      "Public token constructors, ambient reading, strict deletion or full restricting route are unchanged."
+    ]
+  },
+  "test_thread_and_restore_review": {
+    "owned_fixture": "Only the task-owned file gains Owner Rights and Everyone WRITE_DAC denial. The original restore handle acquired WRITE_DAC before the denial and retains its original descriptor. Original RestoreDacl code is byte-identical.",
+    "token": "CreateRestrictedToken has only DISABLE_MAX_PRIVILEGE and zero disabled/restricting SID counts. It creates a new owned token; it does not change the process token or insert a new restricting SID. Initial OpenThreadToken must return ERROR_NO_TOKEN, otherwise the case fails before impersonation.",
+    "guard_lifetime": "This is an ordinary synchronous #[test], with no await/task/thread transfer. Revert guard is constructed immediately after successful ImpersonateLoggedOnUser. On errors or panic, reverse local drop order reaches it before the earlier RestoreDacl. The normal path explicitly drops impersonation before restore. Revert failure aborts instead of allowing a still-impersonated libtest thread to continue.",
+    "validity": "Under the controlled token, READ_CONTROL and RC|READ_ATTRIBUTES opens must first succeed. The exact production acquisition must then return downcast io::Error OS5 with CreateFileW-for-deny-repair outer context; a FileIdInfo/attribute failure cannot satisfy this control. Original false,false and byte-equal DACL assertions remain, plus original post-revert retained-data assertion.",
+    "restore_scope": "Existing RestoreDacl asserts SetSecurityInfo success using its retained handle. This review does not upgrade it to an independent byte-equal whole-security-descriptor restoration oracle or claim teardown was executed.",
+    "actual_thread_impersonation_and_restore": "NOT_RUN"
+  },
+  "replacement_control_review": {
+    "positive": "For file then directory, the original READ_CONTROL handle is held with FILE_SHARE_DELETE, its object is physically renamed, and a real replacement is created at the old path. Both DACLs must remain unchanged after rejection. The error must identify mismatched retained identity, then the original object must be repairable through its current renamed path. File contents remain exact.",
+    "same_production_path": "The new test calls the extracted add_deny_ace_on_object used by the public wrapper; it does not supply fabricated IDs or mocked setters.",
+    "negative_patch": {
+      "path": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-acl-repair-20261105/identity-candidate-v3/remove-identity-check.patch",
+      "bytes": 683,
+      "sha256": "26fa073559f758a4530ac6994d1a9224cee37c19f20d94e1d7ab598cea0cd957",
+      "git_blob": "03f471fb24b371b5777a1d8c53e6b392c6a85ee7"
+    },
+    "restore_patch": {
+      "path": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-acl-repair-20261105/identity-candidate-v3/restore-identity-check.patch",
+      "bytes": 683,
+      "sha256": "547a1b346fa57ec68ddf0e01c16609c567a6370000bfce18f793e05bfecf1804",
+      "git_blob": "593697b1d485592bf44744e089d55f0503586a52"
+    },
+    "negative_mutation": "Only the actual==expected ensure becomes an ignored comparison; both live identity reads, all acquisition/reparse checks, setters and test body remain unchanged.",
+    "required_negative_endpoint": {
+      "marker": "deny_repair_identity: directory=false returned_ok=true replacement_changed=true original_changed=false",
+      "macro_line": 597,
+      "assertion": "a replacement object must not receive the queried object's deny",
+      "termination": "ordinary Rust assertion failure; compilation, FFI setup error, arbitrary panic/timeout or missing marker invalid"
+    },
+    "row_scope": "The first-file assertion stops a valid negative before the directory row. Positive execution must cover both rows; negative does not pretend to test a second directory mutation.",
+    "stdout_contract": "Direct stderr Write/writeln has a leading newline, so no dependency on libtest captured-success println or banner separation. A write failure propagates and cannot qualify as the physical endpoint.",
+    "runtime": "NOT_RUN; exact finally restoration is required by the existing plan."
+  },
+  "official_primary": {
+    "independent_readback": {
+      "path": "/workspace/scratch/07dd58cc9630/research-audit/b11-acl-identity-v3-independent-20261105/official-api.original.json",
+      "bytes": 52662,
+      "sha256": "5296d5d0d5ff3b7f658bd1136875ccb50b805d9b44d6270f5c78636c824907d5",
+      "git_blob": "cab6f1d10d68bb7090e803a790b7d90ae8835e91"
+    },
+    "references": [
+      {
+        "url": "https://learn.microsoft.com/en-us/openspecs/windows_protocols/ms-fsa/a00d78b9-5a5b-44cc-b389-6c67d53611ee",
+        "ref": "turn157view0",
+        "fact": "FileIdInformation returns open object volume/FileId128, without the FILE_READ_ATTRIBUTES check used by attribute-tag information. Actual host support remains to be tested."
+      },
+      {
+        "url": "https://learn.microsoft.com/en-us/openspecs/windows_protocols/ms-fsa/7ba4e65d-356b-43ca-a867-e897e5b9392a",
+        "ref": "turn157view1",
+        "fact": "Attribute-tag query explicitly requires FILE_READ_ATTRIBUTES."
+      },
+      {
+        "url": "https://learn.microsoft.com/en-us/windows/win32/api/winbase/ns-winbase-file_id_info",
+        "ref": "turn157view2",
+        "fact": "Volume and 128-bit ID are the documented open-handle comparison."
+      },
+      {
+        "url": "https://learn.microsoft.com/en-us/windows/win32/api/securitybaseapi/nf-securitybaseapi-createrestrictedtoken",
+        "ref": "turn157view3",
+        "fact": "New token ownership/type/handle-rights and DISABLE_MAX_PRIVILEGE contract."
+      },
+      {
+        "url": "https://learn.microsoft.com/en-us/windows/win32/api/securitybaseapi/nf-securitybaseapi-impersonateloggedonuser",
+        "ref": "turn158view0",
+        "fact": "Primary token requires QUERY|DUPLICATE; failure must not continue as success."
+      },
+      {
+        "url": "https://learn.microsoft.com/en-us/windows/win32/api/securitybaseapi/nf-securitybaseapi-reverttoself",
+        "ref": "turn158view1",
+        "fact": "Failed revert must stop the process."
+      },
+      {
+        "url": "https://learn.microsoft.com/en-us/windows/win32/api/fileapi/nf-fileapi-createfilew",
+        "ref": "turn158view2",
+        "fact": "Sharing, existing-only, reparse and directory flags."
+      },
+      {
+        "url": "https://learn.microsoft.com/en-us/openspecs/windows_protocols/ms-fscc/e4185a8a-ed8d-4f98-ab55-ca34dc8916e6",
+        "ref": "turn158view3",
+        "fact": "Unsupported 128-bit IDs are zero; no weaker fallback is justified."
+      }
+    ]
+  },
+  "next_original_gate": {
+    "workflow_git_blob": "70f3145268e042ec04fbfe85eda83ccbbc4ff79c",
+    "target": "//codex-rs/windows-sandbox-rs:windows-sandbox-rs-unit-tests",
+    "platform": "x86_64-pc-windows-msvc",
+    "expected_roster_if_other_sources_equal": 156,
+    "scope": "Original command/runner/budget/retry policy unchanged. Need actual noncached compilation/cases, source leaves and originals; retain every original strict failure. A positive target/repair does not close B11 strict delete containment."
+  },
+  "B11_status": "OPEN",
+  "native_executed": false,
+  "shared_source_modified": false,
+  "ref_modified": false
+}

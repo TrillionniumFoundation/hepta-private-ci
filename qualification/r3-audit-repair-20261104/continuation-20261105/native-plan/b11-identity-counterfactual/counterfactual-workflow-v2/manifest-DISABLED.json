@@ -1,0 +1,141 @@
+{
+  "schema": "b11-identity-counterfactual-windows-workflow-candidate-v2",
+  "status": "DISABLED_UNAPPLIED_PENDING_ROOT_AND_INDEPENDENT_REVIEW",
+  "product_source": {
+    "published_head": "19d2fdfcaefbb41cdf2a72754d695d4b47cb3f14",
+    "positive_blob": "da5346c220c41cf0c83f62b596132c74c02284d8",
+    "negative_blob": "0baeb6ec2f3bfd0964be6d014fc5d80d890ea3d7",
+    "test_blob_unchanged": "ec0264a7615097bec1b554cb60918b4f4662eec2",
+    "source_candidate_manifest": "64b84c70930361580d65fe0d47e4b44733ef36b4",
+    "frozen_Rust_source_changes": 0
+  },
+  "paths": [
+    {
+      "repository_path": ".github/workflows/hepta-windows-token-mechanism-probe.yml",
+      "mode": "100644",
+      "preimage": {
+        "path": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-acl-repair-20261105/counterfactual-workflow-v2/source/.github/workflows/hepta-windows-token-mechanism-probe.yml",
+        "bytes": 4468,
+        "sha256": "c74e9deb8da612c3e881805d20fcf19112043d3888386412e9d4a1aefc36a831",
+        "git_blob": "70f3145268e042ec04fbfe85eda83ccbbc4ff79c"
+      },
+      "postimage": {
+        "path": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-acl-repair-20261105/counterfactual-workflow-v2/candidate/.github/workflows/hepta-windows-token-mechanism-probe.yml",
+        "bytes": 5072,
+        "sha256": "2cd28bdbca3557a2294aa1f2edec49d4e8250b968b8bd1747fb1744750ea5de9",
+        "git_blob": "912e22789665b0081c83ae0fa632d2482e8b0eba"
+      }
+    },
+    {
+      "repository_path": ".github/scripts/run_b11_acl_identity_counterfactual.py",
+      "mode": "100644",
+      "preimage": null,
+      "postimage": {
+        "path": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-acl-repair-20261105/counterfactual-workflow-v2/candidate/.github/scripts/run_b11_acl_identity_counterfactual.py",
+        "bytes": 17774,
+        "sha256": "6e199582d277e44f1796dcf64c39bb0fe3f263f060ab79da1bf682fff5866b1f",
+        "git_blob": "25def4386ea08bb72a7605cc113117f31fffcd1b"
+      }
+    }
+  ],
+  "change_counts": {
+    "additions": 301,
+    "deletions": 0,
+    "paths": 2
+  },
+  "patch": {
+    "path": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-acl-repair-20261105/counterfactual-workflow-v2/full.patch",
+    "bytes": 20237,
+    "sha256": "80601c565a1499de360d367daf5c684f268060fc8483a097aa746c6ffa54b09d",
+    "git_blob": "bd39cbebb504f32707545f08e7a0fdd2db20d85e"
+  },
+  "original_target_preservation": {
+    "exact_original_workflow_after_removing_three_additions": true,
+    "three_additions": [
+      "New script exact path trigger",
+      "Step ID on original target",
+      "One subsequent conditional counterfactual step"
+    ],
+    "original_full_command_return_code_assertions_target_retry_budget_artifact_paths": "All byte-identical.",
+    "failure_remains_visible": "Original full-target step is never continue-on-error and still exits its original Bazel code. A successful counterfactual step cannot turn its failure into success.",
+    "runner": "Same existing windows-latest job and prepared MSVC environment, 120-minute whole-job budget unchanged.",
+    "new_permissions_or_secrets": false
+  },
+  "new_execution_protocol": [
+    "Read-only exact positive source/test Git-blob and clean checkout/index/lock guards; accept uniform LF or uniform CRLF worktree only, keep original raw bytes.",
+    "Require original whole-target ordinary exit 0/3, successful full console copy, clean source snapshots and noncached/nonflaky PASSED/FAILED target terminal. Read only the wrapper's exact source-bound target log/XML copies.",
+    "Require each of the two existing directory repair cases, existing no-WRITE_DAC case, and new replacement case to have one exact PASS in that complete original target log. Otherwise do not mutate or execute the negative.",
+    "Atomically install only the approved negative source; both ID queries remain and the sole enforcement becomes an ignored comparison. Preserve the ordinary index and both locks; allow exactly that one tracked modification.",
+    "Invoke the same outer Bazel target and wrapper/MSVC/selection flags, adding only full-case --test_arg plus --exact and fresh single-attempt controls. Negative artifacts use their own newly created compact-log directory inside this owned evidence root.",
+    "Require ordinary Bazel exit3, noncached FAILED target, unique exact physical marker, exactly this failure header and panic macro597:9, exact DACL assertion message, one failed/zero passed/zero ignored/155 filtered libtest summary, and outer XML error101. A build error, timeout, crash, wrong assertion, missing/cached record or extra case cannot qualify.",
+    "In finally, first require the known positive/negative bytes AND the complete corresponding source guard plus unchanged semantic ordinary index and both locks. Only then atomically restore original raw bytes and recheck exact clean entry state. Any unknown source/index/lock drift is preserved and reported, not overwritten.",
+    "Record physical_oracle_reached separately from final qualified status. Qualification requires successful exact restoration; original full-target exit remains unchanged. Upload through the original existing artifact path and run the original clean-worktree check."
+  ],
+  "exact_route_evidence": {
+    "defs": {
+      "path": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-mic-physical-probe-20261105/source/defs.bzl",
+      "bytes": 34630,
+      "sha256": "f5638a9189632c8d8524a438bbfc6b365bddf7f23dfd2df06a6de3a2ff3f2cfa",
+      "git_blob": "6f588ec3057fddfea35170e28e74036162ce6a23"
+    },
+    "Windows_launcher": {
+      "path": "/workspace/scratch/07dd58cc9630/architecture-audit/original-exit-selection-5b-20261105/source/workspace_root_test_launcher.bat.tpl",
+      "bytes": 7627,
+      "sha256": "4d509f1a57ffb4a890a96b775468af8e2d0d83538af76d358d10628d8b442dae",
+      "git_blob": "fa18c301dd22ca9023ba2f59801a8119dfbf8a69"
+    },
+    "collector": {
+      "path": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-mic-physical-probe-20261105/source/.github/scripts/collect_bazel_failed_test_logs.py",
+      "bytes": 16260,
+      "sha256": "55353f094531a4af974c519fadca01dcd0c8be6ece1f8b10efb70d24ae2a44eb",
+      "git_blob": "2142eeb382664d95f77d83ac7ae3da4459601abf"
+    },
+    "nonempty_args": "Windows template routes nonempty %* directly to its resolved test_bin and returns that exact ERRORLEVEL, including within run_selected_libtest. Full name plus --exact selects the one test; no reliance on TESTBRIDGE substring matching.",
+    "current_native5_manifest": {
+      "path": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-pr4884-ci-20261105/terminal/probe-127383345954/members/bazel-execution-logs/failed-test-logs/invocation-iloq9z78/manifest.json",
+      "bytes": 1273,
+      "sha256": "fcbbf587f6b8df2ebf5aaf66b551a2fda9c12a50c6f12a079c686f337958905e",
+      "git_blob": "d5c0d7f1ddf538ed97b776b3db83e13ad525b67c"
+    },
+    "current_native5_XML": {
+      "path": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-pr4884-ci-20261105/terminal/probe-127383345954/members/bazel-execution-logs/failed-test-logs/invocation-iloq9z78/targets/0000/test.xml",
+      "bytes": 132278,
+      "sha256": "d95a552bf494118386f5cc082226b9d7776f2ae245204d6f26b08a0298c6301b",
+      "git_blob": "da30b59327acd3e51ebb9e59512f77b52355e732"
+    },
+    "terminal_limit": "Native5's original bat runs multiple batches and records exit1. The new argument route statically returns libtest101 directly; that new XML endpoint remains to be verified on actual Windows. A mismatch is a harness failure, not a valid negative."
+  },
+  "negative_additions_only": [
+    "--build_metadata=TAG_b11_identity_counterfactual=true",
+    "--nocache_test_results",
+    "--flaky_test_attempts=1",
+    "--test_arg=acl::tests::deny_repair_rejects_a_replaced_path_before_mutating_either_object",
+    "--test_arg=--exact"
+  ],
+  "negative_oracle": {
+    "marker": "deny_repair_identity: directory=false returned_ok=true replacement_changed=true original_changed=false",
+    "assertion": "a replacement object must not receive the queried object's deny",
+    "macro_line": 597,
+    "executed": false,
+    "effective": false
+  },
+  "limits": [
+    "No actual Windows execution or CI dispatch/ref mutation performed during preparation.",
+    "B11 strict outside deletion remains OPEN even if this counterfactual validates.",
+    "Normal exceptions run finally; a hard runner/process cancellation is not an exact-restoration guarantee and never supplies qualification.",
+    "The original retained collector's recorded bytes and checkout are checked. Arbitrary remote test execution/authority is not inferred from a missing cached marker alone; this protocol is confined to the original hosted job and its owned evidence directory.",
+    "A future formatter/source/roster change requires a separately reviewed update of pinned blobs, line and count; no dynamic relaxation."
+  ],
+  "cloud_checks": {
+    "Python_AST_parse": true,
+    "Git_roundtrip": {
+      "path": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-acl-repair-20261105/counterfactual-workflow-v2/roundtrip.json",
+      "bytes": 23716,
+      "sha256": "c1b282a7c53e170863b874aea9dc97725025c24a04c355e25b792def1521c513",
+      "git_blob": "7a4d9dfbeee3bf585eb15cb530f3c8eff321259b"
+    },
+    "original_workflow_preserved": true,
+    "script_executed": false,
+    "native_executed": false
+  }
+}

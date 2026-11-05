@@ -1,0 +1,82 @@
+{
+  "schema": "b11-acl-identity-counterfactual-v2-github-readback-map",
+  "status": "STATIC_CANDIDATE_DISABLED_UNAPPLIED",
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "objects": [
+    {
+      "local_path": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-acl-repair-20261105/counterfactual-workflow-v1/candidate/.github/scripts/run_b11_acl_identity_counterfactual.py",
+      "bytes": 17283,
+      "sha256": "cd8be497126971482b21ceb9e4407a0ff43df49d69ee2882a440b40c4bf19fdd",
+      "git_blob": "5e40053fb522fec8b829d991ea20ec5b70faf43f",
+      "actual_create_sha": "5e40053fb522fec8b829d991ea20ec5b70faf43f",
+      "get_byte_equal": true
+    },
+    {
+      "local_path": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-acl-repair-20261105/counterfactual-workflow-v2/candidate/.github/scripts/run_b11_acl_identity_counterfactual.py",
+      "bytes": 17774,
+      "sha256": "6e199582d277e44f1796dcf64c39bb0fe3f263f060ab79da1bf682fff5866b1f",
+      "git_blob": "25def4386ea08bb72a7605cc113117f31fffcd1b",
+      "actual_create_sha": "25def4386ea08bb72a7605cc113117f31fffcd1b",
+      "get_byte_equal": true
+    },
+    {
+      "local_path": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-acl-repair-20261105/counterfactual-workflow-v2/candidate/.github/workflows/hepta-windows-token-mechanism-probe.yml",
+      "bytes": 5072,
+      "sha256": "2cd28bdbca3557a2294aa1f2edec49d4e8250b968b8bd1747fb1744750ea5de9",
+      "git_blob": "912e22789665b0081c83ae0fa632d2482e8b0eba",
+      "actual_create_sha": "912e22789665b0081c83ae0fa632d2482e8b0eba",
+      "get_byte_equal": true
+    },
+    {
+      "local_path": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-acl-repair-20261105/counterfactual-workflow-v2/full.patch",
+      "bytes": 20237,
+      "sha256": "80601c565a1499de360d367daf5c684f268060fc8483a097aa746c6ffa54b09d",
+      "git_blob": "bd39cbebb504f32707545f08e7a0fdd2db20d85e",
+      "actual_create_sha": "bd39cbebb504f32707545f08e7a0fdd2db20d85e",
+      "get_byte_equal": true
+    },
+    {
+      "local_path": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-acl-repair-20261105/counterfactual-workflow-v2/v1-to-v2.delta.patch",
+      "bytes": 1453,
+      "sha256": "28724bd2d17d25e97586295e02129f4167d4ee94773d95e60776e2c571d06c93",
+      "git_blob": "c933eb6b6e004ed048851a4306ae45e301fb72db",
+      "actual_create_sha": "c933eb6b6e004ed048851a4306ae45e301fb72db",
+      "get_byte_equal": true
+    },
+    {
+      "local_path": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-acl-repair-20261105/counterfactual-workflow-v2/manifest-DISABLED.json",
+      "bytes": 9431,
+      "sha256": "e52643f7a047909ac6d88597ecad1db5227443f2074af241a916444a2cafdb12",
+      "git_blob": "c7c62d453d10182942450c852edf8080005aca5d",
+      "actual_create_sha": "c7c62d453d10182942450c852edf8080005aca5d",
+      "get_byte_equal": true
+    },
+    {
+      "local_path": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-acl-repair-20261105/counterfactual-workflow-v2/roundtrip.json",
+      "bytes": 23716,
+      "sha256": "c1b282a7c53e170863b874aea9dc97725025c24a04c355e25b792def1521c513",
+      "git_blob": "7a4d9dfbeee3bf585eb15cb530f3c8eff321259b",
+      "actual_create_sha": "7a4d9dfbeee3bf585eb15cb530f3c8eff321259b",
+      "get_byte_equal": true
+    },
+    {
+      "local_path": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-acl-repair-20261105/counterfactual-workflow-v2/v2-pre-restore-review.json",
+      "bytes": 5500,
+      "sha256": "035200e525cfc593bab4b4ed0e4bfae1149191af7091080edb452556f28219a2",
+      "git_blob": "a1d50ebc783e687502c04852c33ef013a9721ba2",
+      "actual_create_sha": "a1d50ebc783e687502c04852c33ef013a9721ba2",
+      "get_byte_equal": true
+    },
+    {
+      "local_path": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-acl-repair-20261105/counterfactual-workflow-v2/freeze.py",
+      "bytes": 10654,
+      "sha256": "e26491c4343e9443bb7a6318c846938ba018223af7579fc1260d6ed2a91717d3",
+      "git_blob": "e3261b8c42668f63a1b5562c42ff171f5978a3d3",
+      "actual_create_sha": "e3261b8c42668f63a1b5562c42ff171f5978a3d3",
+      "get_byte_equal": true
+    }
+  ],
+  "scope": "Nine exact UTF-8 objects actual create+GET byte-equal; no branch, PR, workflow dispatch, native execution or source mutation.",
+  "prior_version_preserved": true,
+  "physical_negative_executed": false
+}

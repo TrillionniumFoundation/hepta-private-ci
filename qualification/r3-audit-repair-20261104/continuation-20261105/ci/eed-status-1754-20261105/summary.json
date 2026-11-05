@@ -1,0 +1,83 @@
+{
+  "schema": "eed-complete-status-increment-0003",
+  "collected_from": "2026-11-05T17:53:59.956Z",
+  "collected_to": "2026-11-05T17:54:00.870Z",
+  "source_head": "eed4d6bb61b789b19f60facc79f9e031765fa4c9",
+  "merge_commit": "3476a8c535f7090c4c868ac85148491b3fdfd983",
+  "base_head": "63652be658ebed8d3052eb789b951793384fd5e4",
+  "draft": true,
+  "state": "open",
+  "run_count": 19,
+  "job_count": 53,
+  "job_status_counts": {
+    "success": 18,
+    "queued": 31,
+    "cancelled": 1,
+    "in_progress": 1,
+    "skipped": 2
+  },
+  "run_status_counts": {
+    "success": 5,
+    "skipped": 2,
+    "queued": 10,
+    "pending": 2
+  },
+  "changes_since_snapshot0002": [
+    {
+      "job_id": 127378840922,
+      "name": "Build ptrcomp-sandbox x86_64-pc-windows-msvc from source",
+      "before": {
+        "status": "in_progress",
+        "conclusion": null,
+        "started_at": "2026-11-05T16:43:19Z",
+        "completed_at": null
+      },
+      "after": {
+        "status": "completed",
+        "conclusion": "success",
+        "started_at": "2026-11-05T16:43:19Z",
+        "completed_at": "2026-11-05T17:44:50Z",
+        "labels": [
+          "windows-2025"
+        ],
+        "runner_id": 1000002177,
+        "runner_name": "GitHub Actions 1000002177"
+      }
+    }
+  ],
+  "pending_runs": [
+    {
+      "id": 42063947919,
+      "name": "Hepta architecture convergence",
+      "status": "pending"
+    },
+    {
+      "id": 42063948117,
+      "name": "blocking-ci",
+      "status": "pending"
+    }
+  ],
+  "queued_job_labels": {
+    "ubuntu-24.04": 19,
+    "macos-15": 8,
+    "ubuntu-24.04-arm": 4
+  },
+  "queued_jobs_all_unallocated": true,
+  "running_jobs": [
+    {
+      "id": 127378840863,
+      "name": "Build ptrcomp-sandbox aarch64-pc-windows-msvc from source",
+      "labels": [
+        "windows-2025"
+      ],
+      "runner_id": 1000002159,
+      "runner_name": "GitHub Actions 1000002159",
+      "started_at": "2026-11-05T16:41:13Z"
+    }
+  ],
+  "limits": [
+    "API success alone is not named-case/native qualification.",
+    "No failure logs were refetched; no cancel/rerun/native-resource probe occurred.",
+    "Earlier snapshots and all terminal failure/ignored/early-return evidence remain unchanged."
+  ]
+}

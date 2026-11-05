@@ -1,0 +1,44 @@
+{
+  "schema": "eed-snapshot0003-actual-git-registry-v1",
+  "repo_prefix": "qualification/r3-audit-repair-20261104/continuation-20261105/ci/eed-status-1754-20261105/",
+  "observation_from": "2026-11-05T17:53:59.956Z",
+  "observation_to": "2026-11-05T17:54:00.870Z",
+  "objects": [
+    {
+      "path": "/workspace/scratch/07dd58cc9630/ci-audit/published-eed4d6-ci-20261105/snapshot-0003/immutable-transport-v1/manifest.json",
+      "bytes": 9426,
+      "sha256": "1945e975192f68d119a2ed03f2c83a75ba98c2ae92225b6478ccd51919dc8eba",
+      "git_blob": "145591e047b8ff7891cac81b8f1b4d8b288e3cd8",
+      "actual_create_and_full_GET_byteequal": true,
+      "repo_path": "qualification/r3-audit-repair-20261104/continuation-20261105/ci/eed-status-1754-20261105/immutable-transport-v1/manifest.json"
+    },
+    {
+      "path": "/workspace/scratch/07dd58cc9630/ci-audit/published-eed4d6-ci-20261105/snapshot-0003/immutable-transport-v1/part-000.base64.txt",
+      "bytes": 83000,
+      "sha256": "b32d5899c54bb129c31d83866af7437ea5e078de7e6a201f4818db585728bb92",
+      "git_blob": "115fce7103581f235c793b9c4108f3a9c398b4cd",
+      "actual_create_and_full_GET_byteequal": true,
+      "repo_path": "qualification/r3-audit-repair-20261104/continuation-20261105/ci/eed-status-1754-20261105/immutable-transport-v1/part-000.base64.txt"
+    },
+    {
+      "path": "/workspace/scratch/07dd58cc9630/ci-audit/published-eed4d6-ci-20261105/snapshot-0003/summary.json",
+      "bytes": 2218,
+      "sha256": "118df543e9fb658687f2463cf08f8e37adc949f087e96f05fd9b2029a2b9e990",
+      "git_blob": "1a3875ef3700d1ac78071531ec04e91e7f9b01b4",
+      "actual_create_and_full_GET_byteequal": true,
+      "repo_path": "qualification/r3-audit-repair-20261104/continuation-20261105/ci/eed-status-1754-20261105/summary.json"
+    },
+    {
+      "path": "/workspace/scratch/07dd58cc9630/ci-audit/published-eed4d6-ci-20261105/snapshot-0003/index.json",
+      "bytes": 12588,
+      "sha256": "9c5ba08776e714ba71babead2bf6656fdd41c195462acd0b8f75e48f299786ba",
+      "git_blob": "3c8c9a3cebf73360ee8592da987fe1ea42de7fc6",
+      "actual_create_and_full_GET_byteequal": true,
+      "repo_path": "qualification/r3-audit-repair-20261104/continuation-20261105/ci/eed-status-1754-20261105/index.json"
+    }
+  ],
+  "archive_original_records": 23,
+  "archive_original_bytes": 1020501,
+  "prior_cut_not_rewritten": "V8cut17:53:52 and originalresearchcut0004 remain frozen",
+  "qualification": "API status only; no native/test/CI mutation."
+}

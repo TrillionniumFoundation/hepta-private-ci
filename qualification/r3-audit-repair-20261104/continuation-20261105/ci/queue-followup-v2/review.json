@@ -1,0 +1,235 @@
+{
+  "schema": "eed-queue-followup-and-old-failure-preservation-v2",
+  "created_at": "2026-11-05T17:48:19.352274+00:00",
+  "historical_v1_not_overwritten": {
+    "path": "/workspace/scratch/07dd58cc9630/ci-audit/published-eed4d6-ci-20261105/queue-diagnostic-v1/queue-review.json",
+    "bytes": 7052,
+    "sha256": "4bab2e1c25dcafd8294a221f5bb6d77d79a25e858001477e88dcf8ee2122fe75",
+    "git_blob": "60c97bf95f8556435fdb29573aa80c06f2d9666a"
+  },
+  "exact_older_run": {
+    "id": 41975255726,
+    "name": "blocking-ci",
+    "head_branch": "fix/r3-original-product-contracts-20261104",
+    "head_sha": "0e139b599f0fe451f80fb7db4b2913bb9c679dce",
+    "run_number": 33534,
+    "run_attempt": 1,
+    "event": "pull_request",
+    "status": "completed",
+    "conclusion": "cancelled",
+    "created_at": "2026-11-05T05:38:12Z",
+    "updated_at": "2026-11-05T09:42:55Z",
+    "run_started_at": "2026-11-05T05:38:12Z",
+    "path": ".github/workflows/blocking-ci.yml"
+  },
+  "exact_older_run_originals": [
+    {
+      "path": "/workspace/scratch/07dd58cc9630/ci-audit/published-eed4d6-ci-20261105/queue-followup-v2/older-blocking-run.original.json",
+      "bytes": 37028,
+      "sha256": "9f068d89abe02b8cbb308647bbb952e921ebed3e01dfed8f2f3fa558ebe5c293",
+      "git_blob": "2736cd2f758609dded631d4ea1d0bd8e25fbf099"
+    },
+    {
+      "path": "/workspace/scratch/07dd58cc9630/ci-audit/published-eed4d6-ci-20261105/queue-followup-v2/older-blocking-jobs.original.json",
+      "bytes": 196887,
+      "sha256": "0129459431d6de7b96e16a4c13e6975595dc01070fb8341e7d86d04990013b48",
+      "git_blob": "a9e652449793cab4c631fc053884e919b7584469"
+    }
+  ],
+  "older_job_counts": {
+    "success": 8,
+    "cancelled": 20,
+    "failure": 5,
+    "skipped": 4
+  },
+  "older_jobs_all_terminal": true,
+  "ui_rest_boundary": "Root separately observed UI wait links eed42063948117 -> 5b41999114842 -> older41975255726. This review directly read REST for the last run: completed/cancelled since09:42:55 with37/37 terminal jobs. Preserve both observations; do not claim the older run is currently active or consuming a runner. This review did not directly inspect browser UI.",
+  "old_5b_three_unallocated_aggregate_jobs": [
+    {
+      "id": 127358110773,
+      "name": "Bazel / Bazel test on windows-latest for x86_64-pc-windows-msvc",
+      "status": "queued",
+      "conclusion": null,
+      "labels": [
+        "ubuntu-24.04"
+      ],
+      "runner_id": 0,
+      "runner_name": "",
+      "started_at": "2026-11-05T15:55:12Z",
+      "completed_at": null,
+      "steps": []
+    },
+    {
+      "id": 127372817972,
+      "name": "rust-ci / CI results (required)",
+      "status": "queued",
+      "conclusion": null,
+      "labels": [
+        "ubuntu-24.04"
+      ],
+      "runner_id": 0,
+      "runner_name": "",
+      "started_at": "2026-11-05T16:23:35Z",
+      "completed_at": null,
+      "steps": []
+    },
+    {
+      "id": 127262866167,
+      "name": "Architecture required",
+      "status": "queued",
+      "conclusion": null,
+      "labels": [
+        "ubuntu-24.04"
+      ],
+      "runner_id": 0,
+      "runner_name": "",
+      "started_at": "2026-11-05T13:05:39Z",
+      "completed_at": null,
+      "steps": []
+    }
+  ],
+  "aggregate_source_evidence": [
+    {
+      "job_id": 127358110773,
+      "source": {
+        "path": "/workspace/scratch/07dd58cc9630/ci-audit/published-eed4d6-ci-20261105/queue-followup-v2/old-bazel-workflow.source.txt",
+        "bytes": 20751,
+        "sha256": "a7bf703f31b14fd0925e3db892e4444d2ebd8db0033b69ec47ff44eae65104dd",
+        "git_blob": "9eed8ed8fa46c88d9d89d1499f55cb8c303137af"
+      },
+      "lines": [
+        248,
+        264
+      ],
+      "meaning": "test-windows is an Ubuntu fan-in requiring test-windows-shard and checks its result; it does not execute Windows tests."
+    },
+    {
+      "job_id": 127372817972,
+      "source": {
+        "path": "/workspace/scratch/07dd58cc9630/ci-audit/published-eed4d6-ci-20261105/queue-followup-v2/old-rust-ci-workflow.source.txt",
+        "bytes": 12233,
+        "sha256": "76ce84512f019867e9513c74e01877d47ba5e2b1ec554fa35175e9f0e9c6e373",
+        "git_blob": "81330bf3ed388e9deafa474516be437ac165cbb7"
+      },
+      "lines": [
+        232,
+        280
+      ],
+      "meaning": "CI results checks changed/workspace_manifest/general/benchmark/cargo_shear/argument-comment statuses; no product test invocation."
+    },
+    {
+      "job_id": 127262866167,
+      "source": {
+        "path": "/workspace/scratch/07dd58cc9630/ci-audit/published-eed4d6-ci-20261105/queue-diagnostic-v1/architecture-workflow.yml.source.txt",
+        "bytes": 19380,
+        "sha256": "445b3402be0dd393351b0f35a186646fd5548c4cab29e55ac04e2819e1466427",
+        "git_blob": "fb2491dea531af8f2750d08c9010069065bc35fc"
+      },
+      "lines": [
+        284,
+        296
+      ],
+      "meaning": "Architecture required is Ubuntu fan-in checking qualification result. eed did not change this workflow from5b."
+    }
+  ],
+  "old_5b_failed_job_preservation": [
+    {
+      "job_id": 127168221756,
+      "name": "Blob size policy / Blob size policy",
+      "status": "completed",
+      "conclusion": "failure",
+      "complete_job_log_available": true,
+      "original": {
+        "path": "/workspace/scratch/07dd58cc9630/research-audit/published-5b633-ci-20261105/terminal/main-blob-size-127168221756/job.log",
+        "bytes": 1627924,
+        "sha256": "da17519a31dce2cb01f0702bbf973eedb73491b5410a57927e93b033c7bbe7ae",
+        "git_blob": "56395414e0806373dcd4e49f82d2c0975e9e8fb3"
+      }
+    },
+    {
+      "job_id": 127339255449,
+      "name": "cargo-deny / cargo-deny",
+      "status": "completed",
+      "conclusion": "failure",
+      "complete_job_log_available": false,
+      "original": null
+    },
+    {
+      "job_id": 127339255880,
+      "name": "Bazel / Bazel test on windows-latest for x86_64-pc-windows-msvc shard 2/4",
+      "status": "completed",
+      "conclusion": "failure",
+      "complete_job_log_available": true,
+      "original": {
+        "path": "/workspace/scratch/07dd58cc9630/research-audit/published-5b633-ci-20261105/terminal/main-win-shard2-127339255880/job.log",
+        "bytes": 463383,
+        "sha256": "1b7114b1ff639cc2cd5d38e5d53326e16796ffb1516fef1e960d8df371c3de65",
+        "git_blob": "e5519cc76138d773f491c7ea42655448655c0dc9"
+      }
+    },
+    {
+      "job_id": 127339256007,
+      "name": "Bazel / Bazel test on windows-latest for x86_64-pc-windows-msvc shard 1/4",
+      "status": "completed",
+      "conclusion": "failure",
+      "complete_job_log_available": true,
+      "original": {
+        "path": "/workspace/scratch/07dd58cc9630/research-audit/published-5b633-ci-20261105/terminal/main-win-shard1-127339256007/job.log",
+        "bytes": 439112,
+        "sha256": "a18586d09674a0ea0a46eb4956e312e1fa47cd465be920340a32f24cb14673ad",
+        "git_blob": "d6419a04fdc93d9786ee8619cdcee9fd550bfb35"
+      }
+    },
+    {
+      "job_id": 127339256052,
+      "name": "Bazel / Bazel clippy on windows-latest for x86_64-pc-windows-msvc",
+      "status": "completed",
+      "conclusion": "failure",
+      "complete_job_log_available": true,
+      "original": {
+        "path": "/workspace/scratch/07dd58cc9630/research-audit/published-5b633-ci-20261105/terminal/main-win-clippy-127339256052/job.log",
+        "bytes": 653362,
+        "sha256": "5dfc74d81027356bbea20d3c4fa1b1f3d9aa6d39f3989b153ffc97fcf557c467",
+        "git_blob": "788880f6f5ad5b6fc84895898cb4165cc3b2c4a3"
+      }
+    },
+    {
+      "job_id": 127339256056,
+      "name": "Bazel / Bazel test on windows-latest for x86_64-pc-windows-msvc shard 4/4",
+      "status": "completed",
+      "conclusion": "failure",
+      "complete_job_log_available": true,
+      "original": {
+        "path": "/workspace/scratch/07dd58cc9630/research-audit/published-5b633-ci-20261105/terminal/main-win-shard4-127339256056/job.log",
+        "bytes": 1405851,
+        "sha256": "5586c4ac026a7ddae3d38dc6399e3b21003d797aef7ff9bb2174c7e7112c4a4d",
+        "git_blob": "b7daa5dbfbea29aa9f38b4593c5ebea525aa5ad7"
+      }
+    },
+    {
+      "job_id": 127339256195,
+      "name": "Bazel / Verify release build on windows-latest for x86_64-pc-windows-msvc",
+      "status": "completed",
+      "conclusion": "failure",
+      "complete_job_log_available": true,
+      "original": {
+        "path": "/workspace/scratch/07dd58cc9630/research-audit/published-5b633-ci-20261105/terminal/main-win-release-127339256195/job.log",
+        "bytes": 556085,
+        "sha256": "9a2cc1d4cb98034dd6a67c4807863e7fe00ba3952c7f7aaac299e9e1a8ae995d",
+        "git_blob": "6ca5022ed322403feec1347cb9658f098874abf9"
+      }
+    }
+  ],
+  "cargo_deny_gap": {
+    "job_id": 127339255449,
+    "single_additional_read_original": {
+      "path": "/workspace/scratch/07dd58cc9630/ci-audit/published-eed4d6-ci-20261105/queue-followup-v2/cargo-deny-127339255449.original-response.json",
+      "bytes": 289,
+      "sha256": "edcd09391aa983ff0dcfe0b285c42453c6149be6d9cbcb2a35e8393c90900a41",
+      "git_blob": "ec5dacb0c2936398e9a54d0dc33c06b6520e4b1d"
+    },
+    "result": "Transport closed; no log bytes returned. Earlier three failed fetch attempts and failed annotations query remain retained. No repeated loop."
+  },
+  "decision_limit": "Six of seven failed jobs have complete job logs; all four Windows shard ZIPs were independently archived, including all actual failures. Cannot claim all seven failure bodies retained. No cancellation/rerun/login/CI mutation was performed; old terminal failures are not changed by aggregate-job status.",
+  "no_more_queue_poll_to_infer_cause": true
+}

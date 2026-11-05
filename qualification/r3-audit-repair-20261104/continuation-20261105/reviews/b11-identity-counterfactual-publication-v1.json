@@ -1,0 +1,50 @@
+{
+  "schema": "b11-identity-counterfactual-two-path-publication-root-v1",
+  "published_utc": "2026-11-05 17:58:50 UTC",
+  "head": "0f6148ea3fbe9d1263354791d5cc63c7e66d4628",
+  "tree": "f717a84a856413d87a3b718b0bcae3adbd16b643",
+  "parent": "19d2fdfcaefbb41cdf2a72754d695d4b47cb3f14",
+  "branch": "diag/b11-token-mechanism-observations-20261105",
+  "pr": 4884,
+  "draft": true,
+  "exact_changes": [
+    {
+      "path": ".github/workflows/hepta-windows-token-mechanism-probe.yml",
+      "before": "70f3145268e042ec04fbfe85eda83ccbbc4ff79c",
+      "after": "912e22789665b0081c83ae0fa632d2482e8b0eba"
+    },
+    {
+      "path": ".github/scripts/run_b11_acl_identity_counterfactual.py",
+      "before": null,
+      "after": "25def4386ea08bb72a7605cc113117f31fffcd1b"
+    }
+  ],
+  "head_leaves": 10584,
+  "additions": 301,
+  "deletions": 0,
+  "Rust_source_changes": 0,
+  "actual_merge": "b5c23d8943a0a36a14a962175cb2ec75d22d5553",
+  "actual_merge_tree": "29316e75554590382268dafa77869fab0394a264",
+  "actual_merge_parents": [
+    "eed4d6bb61b789b19f60facc79f9e031765fa4c9",
+    "0f6148ea3fbe9d1263354791d5cc63c7e66d4628"
+  ],
+  "actual_merge_leaves": 10586,
+  "full_actual_tree_verification": true,
+  "primary14_preserved": true,
+  "actual_ref_readback_verified": true,
+  "PR_REST_base_metadata": "Observed base.sha5b despite independently verified actual merge parents eed+0f; metadata is not substituted for actual Git object",
+  "source_manifest": "c7c62d453d10182942450c852edf8080005aca5d",
+  "independent_review": "7d5ef2f8e53b89524c0937f01d25a2cd3e83aef5",
+  "root_positive_prerequisite": "847bd07e56339e87484891e6f67273be2c97aefe",
+  "negative_executed": false,
+  "negative_qualified": false,
+  "original_target_failure_preserved": true,
+  "B11": "OPEN",
+  "limits": [
+    "One exact owned physical counterfactual only after four exact fresh positive PASS records on its own original full target.",
+    "Source/index/lock guards before atomic restoration; unknown drift is preserved, not overwritten.",
+    "The native6 original bat XML1 is not the new negative libtest101 endpoint; new invocation must independently prove it.",
+    "A successful counterfactual does not change the original whole target failure."
+  ]
+}

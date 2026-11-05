@@ -1,0 +1,11 @@
+diff --git a/.github/scripts/collect_bazel_failed_test_logs.py b/.github/scripts/collect_bazel_failed_test_logs.py
+--- a/.github/scripts/collect_bazel_failed_test_logs.py
++++ b/.github/scripts/collect_bazel_failed_test_logs.py
+@@ -26,6 +26,7 @@
+     "//codex-rs/core:core-all-test",
+     "//codex-rs/core:core-all-wine-exec-test",
+     "//codex-rs/hepta-agentd:hepta-agentd-cognitive-write-qualification-test",
++    "//codex-rs/utils/pty:pty-unit-tests",
+ )
+ 
+ 

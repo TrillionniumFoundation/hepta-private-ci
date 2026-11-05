@@ -1,0 +1,209 @@
+--- a/tests.rs
++++ b/tests.rs
+@@ -1222,6 +1222,10 @@
+             session.has_exited(),
+             session.exit_code(),
+         );
++        eprintln!(
++            "PTY dropped receiver: backend={backend} io_snapshot={}",
++            session.pty_io_diagnostic_snapshot(),
++        );
+         let progress = std::fs::read_to_string(&progress_path);
+         eprintln!("PTY dropped receiver: backend={backend} child_phase={progress:?}");
+         if result.is_err() {
+--- a/pty.rs
++++ b/pty.rs
+@@ -166,6 +166,9 @@
+             .as_raw_fd()
+             .ok_or_else(|| anyhow::anyhow!("PTY master has no file descriptor"))?,
+     )?;
++
++    #[cfg(all(test, unix))]
++    let io_diagnostics = io.diagnostics();
+ 
+     let mut command_builder = CommandBuilder::new(arg0.as_ref().unwrap_or(&program.to_string()));
+     command_builder.cwd(cwd);
+@@ -279,6 +282,9 @@
+         /*resizer*/ None,
+     );
+ 
++    #[cfg(all(test, unix))]
++    let handle = handle.with_pty_io_diagnostics(io_diagnostics);
++
+     Ok(SpawnedProcess {
+         session: handle,
+         stdout_rx,
+@@ -299,6 +305,8 @@
+ ) -> Result<SpawnedProcess> {
+     let (master, slave) = open_unix_pty(size)?;
+     let io = crate::unix_io::PtyIo::new(master.as_raw_fd())?;
++    #[cfg(test)]
++    let io_diagnostics = io.diagnostics();
+     let mut command = StdCommand::new(program);
+     if let Some(arg0) = arg0 {
+         command.arg0(arg0);
+@@ -407,6 +415,9 @@
+         Some(handles),
+         /*resizer*/ None,
+     );
++
++    #[cfg(all(test, unix))]
++    let handle = handle.with_pty_io_diagnostics(io_diagnostics);
+ 
+     Ok(SpawnedProcess {
+         session: handle,
+--- a/process.rs
++++ b/process.rs
+@@ -123,6 +123,8 @@
+     // Optional resize hook for driver-backed sessions that proxy PTY control to
+     // another backend instead of owning local PTY handles.
+     resizer: StdMutex<Option<ResizeFn>>,
++    #[cfg(all(test, unix))]
++    pty_io_diagnostics: Option<Arc<crate::unix_io::PtyIoDiagnostics>>,
+ }
+ 
+ impl fmt::Debug for ProcessHandle {
+@@ -156,6 +158,8 @@
+             exit_code,
+             _pty_handles: StdMutex::new(pty_handles),
+             resizer: StdMutex::new(resizer),
++            #[cfg(all(test, unix))]
++            pty_io_diagnostics: None,
+         }
+     }
+ 
+@@ -180,6 +184,34 @@
+     /// Returns the exit code if known.
+     pub fn exit_code(&self) -> Option<i32> {
+         self.exit_code.lock().ok().and_then(|guard| *guard)
++    }
++
++    #[cfg(all(test, unix))]
++    pub(crate) fn with_pty_io_diagnostics(
++        mut self,
++        diagnostics: Arc<crate::unix_io::PtyIoDiagnostics>,
++    ) -> Self {
++        self.pty_io_diagnostics = Some(diagnostics);
++        self
++    }
++
++    #[cfg(all(test, unix))]
++    pub(crate) fn pty_io_diagnostic_snapshot(&self) -> String {
++        let finished = |handle: &StdMutex<Option<JoinHandle<()>>>| {
++            handle
++                .lock()
++                .map(|handle| handle.as_ref().map(JoinHandle::is_finished))
++                .map_err(|_| "poisoned task handle")
++        };
++        format!(
++            "reader_finished={:?} writer_finished={:?} waiter_finished={:?} io={:?}",
++            finished(&self.reader_handle),
++            finished(&self.writer_handle),
++            finished(&self.wait_handle),
++            self.pty_io_diagnostics
++                .as_ref()
++                .map(|value| value.snapshot()),
++        )
+     }
+ 
+     /// Resize the PTY in character cells.
+--- a/unix_io.rs
++++ b/unix_io.rs
+@@ -12,6 +12,14 @@
+ use tokio::sync::mpsc;
+ use tokio::task::JoinHandle;
+ 
++#[cfg(test)]
++#[path = "unix_io_diagnostics.rs"]
++mod diagnostics;
++#[cfg(test)]
++pub(crate) use diagnostics::PtyIoDiagnostics;
++#[cfg(test)]
++use diagnostics::ReaderEvent;
++
+ pub(crate) enum StdinCloseBehavior {
+     SendEof,
+     NoEof,
+@@ -19,6 +27,8 @@
+ 
+ pub(crate) struct PtyIo {
+     fd: Arc<AsyncFd<File>>,
++    #[cfg(test)]
++    diagnostics: Arc<PtyIoDiagnostics>,
+ }
+ 
+ impl PtyIo {
+@@ -42,7 +52,17 @@
+             unsafe { AsyncFd::register(File::from(fd)) }
+         })
+         .map_err(|_| io::Error::other("PTY I/O requires a Tokio runtime with I/O enabled"))??;
+-        Ok(Self { fd: Arc::new(fd) })
++        let fd = Arc::new(fd);
++        Ok(Self {
++            #[cfg(test)]
++            diagnostics: Arc::new(PtyIoDiagnostics::new(Arc::downgrade(&fd))),
++            fd,
++        })
++    }
++
++    #[cfg(test)]
++    pub(crate) fn diagnostics(&self) -> Arc<PtyIoDiagnostics> {
++        Arc::clone(&self.diagnostics)
+     }
+ 
+     pub(crate) fn spawn(
+@@ -52,22 +72,51 @@
+         stdin_close: StdinCloseBehavior,
+     ) -> (JoinHandle<()>, JoinHandle<()>) {
+         let fd = self.fd;
++        #[cfg(test)]
++        let diagnostics = self.diagnostics;
+         let reader = Arc::clone(&fd);
+         let reader_handle = tokio::spawn(async move {
+             let mut buf = [0u8; 8_192];
+             loop {
++                #[cfg(test)]
++                diagnostics.observe(ReaderEvent::WaitingForRead);
+                 match reader
+-                    .async_io(Interest::READABLE, |mut file| file.read(&mut buf))
++                    .async_io(Interest::READABLE, |mut file| {
++                        #[cfg(test)]
++                        diagnostics.observe(ReaderEvent::ReadStarted);
++                        let result = file.read(&mut buf);
++                        #[cfg(test)]
++                        diagnostics.observe(ReaderEvent::ReadResult(&result));
++                        result
++                    })
+                     .await
+                 {
+-                    Ok(0) => break,
++                    Ok(0) => {
++                        #[cfg(test)]
++                        diagnostics.observe(ReaderEvent::Eof);
++                        break;
++                    }
+                     Ok(count) => {
+                         // Output caps may close the receiver before the child exits.
++                        #[cfg(test)]
++                        {
++                            diagnostics.observe(ReaderEvent::Sending);
++                            if stdout_tx.send(buf[..count].to_vec()).await.is_err() {
++                                diagnostics.observe(ReaderEvent::Discarded(count));
++                            }
++                        }
++                        #[cfg(not(test))]
+                         let _ = stdout_tx.send(buf[..count].to_vec()).await;
+                     }
+                     Err(err) if err.kind() == io::ErrorKind::Interrupted => continue,
+                     // Unix PTYs may report EIO rather than EOF when the slave closes.
+-                    Err(_) => break,
++                    Err(err) => {
++                        #[cfg(test)]
++                        diagnostics.observe(ReaderEvent::Failed(&err));
++                        #[cfg(not(test))]
++                        let _ = err;
++                        break;
++                    }
+                 }
+             }
+         });
