@@ -191,7 +191,10 @@ class OfficialCfC(nn.Module):
         self.model = CfC(input_size, hidden_size, batch_first=True)
 
     def forward(self, x, dt=0.1):
-        return self.model(x, timespans=x.new_full(x.shape[:2], dt))[0]
+        # ncps 1.0.1 squeezes each timespan slice. Expand the identical
+        # physical dt across hidden units so batch != hidden broadcasts safely.
+        spans = x.new_full((*x.shape[:2], self.model.state_size), dt)
+        return self.model(x, timespans=spans)[0]
 
 
 class OfficialMamba2(nn.Module):

@@ -120,6 +120,21 @@ class CellTests(unittest.TestCase):
                 output.square().sum().backward()
                 self.assertTrue(all(p.grad is None or bool(torch.isfinite(p.grad).all()) for p in model.parameters()))
 
+    def test_official_cfc_batch_timespans_match_scalar_cell_steps(self):
+        encoder = make_encoder("cfc", 2, 8)
+        for batch in (1, 16):
+            inputs = torch.randn(batch, 5, 2)
+            state = inputs.new_zeros(batch, 8)
+            expected = []
+            for value in inputs.unbind(1):
+                output, state = encoder.model.rnn_cell(value, state, .1)
+                expected.append(output)
+            actual = encoder(inputs, dt=.1)
+            torch.testing.assert_close(actual, torch.stack(expected, 1))
+            actual.square().mean().backward()
+            self.assertTrue(all(p.grad is None or bool(torch.isfinite(p.grad).all())
+                                for p in encoder.parameters()))
+
     def test_attention_is_causal_and_optional_mamba_is_not_substituted(self):
         model = make_encoder("transformer", 2, 8)
         x = torch.randn(2, 5, 2)
