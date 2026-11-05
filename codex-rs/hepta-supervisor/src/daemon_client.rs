@@ -11,14 +11,19 @@ use tokio::io::AsyncBufReadExt;
 use tokio::io::AsyncReadExt;
 use tokio::io::AsyncWriteExt;
 use tokio::io::BufReader;
+use tokio::time::Instant;
 use tokio::time::timeout;
+use tokio::time::timeout_at;
 
 use crate::DurableReleaseTransaction;
 use crate::H7H89ProductionGrant;
 use crate::ProductionMutationState;
 use crate::ProductionRecoveryDecision;
 use crate::SupervisorError;
+use crate::daemon_protocol::MAX_PRODUCTION_MUTATION_PAGES;
 use crate::daemon_protocol::MAX_SUPERVISORD_CONTROL_FRAME_BYTES;
+use crate::daemon_protocol::ProductionMutationPageAssembler;
+use crate::daemon_protocol::ProductionMutationPageV1;
 use crate::daemon_protocol::SUPERVISORD_CONTROL_SCHEMA_VERSION;
 use crate::daemon_protocol::SupervisordAgentStatus;
 use crate::daemon_protocol::SupervisordControlFence;
@@ -87,13 +92,27 @@ impl SupervisordClient {
         &self,
         agent_id: AgentId,
     ) -> Result<Option<ProductionMutationState>, SupervisorError> {
-        match self
-            .send(SupervisordMethod::ProductionMutationStatus { agent_id })
-            .await?
-        {
-            SupervisordPayload::ProductionMutationStatus { state } => Ok(state),
-            payload => unexpected(payload),
-        }
+        let deadline = Instant::now() + self.timeout;
+        timeout_at(
+            deadline,
+            codex_uds::guard_future_before_deadline(deadline.into_std(), async {
+                let page = self
+                    .send(SupervisordMethod::ProductionMutationStatusPageV1 {
+                        agent_id: agent_id.clone(),
+                        cursor: None,
+                    })
+                    .await?;
+                self.collect_mutation_pages(agent_id, page, deadline).await
+            }),
+        )
+        .await
+        .ok()
+        .flatten()
+        .unwrap_or_else(|| {
+            Err(SupervisorError::Invalid(
+                "production mutation status exceeded the total page deadline".to_string(),
+            ))
+        })
     }
 
     pub async fn resolve_production_recovery(
@@ -101,13 +120,60 @@ impl SupervisordClient {
         fence: SupervisordControlFence,
         decision: ProductionRecoveryDecision,
     ) -> Result<ProductionMutationState, SupervisorError> {
-        match self
-            .send(SupervisordMethod::ResolveProductionRecovery { fence, decision })
-            .await?
-        {
-            SupervisordPayload::ProductionMutationStatus { state: Some(state) } => Ok(state),
-            payload => unexpected(payload),
+        let deadline = Instant::now() + self.timeout;
+        timeout_at(
+            deadline,
+            codex_uds::guard_future_before_deadline(deadline.into_std(), async {
+                let agent_id = fence.agent_id.clone();
+                // Send the mutation exactly once. Remaining requests only read the
+                // resulting observation; stale pages never replay the mutation.
+                let page = self
+                    .send(SupervisordMethod::ResolveProductionRecoveryPageV1 { fence, decision })
+                    .await?;
+                self.collect_mutation_pages(agent_id, page, deadline)
+                    .await?
+                    .ok_or_else(|| {
+                        SupervisorError::Invalid(
+                            "production recovery returned no durable mutation state".to_string(),
+                        )
+                    })
+            }),
+        )
+        .await
+        .ok()
+        .flatten()
+        .unwrap_or_else(|| {
+            Err(SupervisorError::Invalid(
+                "production recovery timed out; query status before any further mutation"
+                    .to_string(),
+            ))
+        })
+    }
+
+    async fn collect_mutation_pages(
+        &self,
+        agent_id: AgentId,
+        payload: SupervisordPayload,
+        deadline: Instant,
+    ) -> Result<Option<ProductionMutationState>, SupervisorError> {
+        let mut assembler =
+            ProductionMutationPageAssembler::new(mutation_page(payload)?, &agent_id)?;
+        for _ in 1..MAX_PRODUCTION_MUTATION_PAGES {
+            let Some(cursor) = assembler.next_cursor() else {
+                break;
+            };
+            require_page_deadline(deadline)?;
+            let payload = self
+                .send(SupervisordMethod::ProductionMutationStatusPageV1 {
+                    agent_id: agent_id.clone(),
+                    cursor: Some(cursor),
+                })
+                .await?;
+            assembler.push(mutation_page(payload)?)?;
         }
+        let state = assembler.finish()?;
+        require_page_deadline(deadline)?;
+        Ok(state)
     }
 
     pub async fn start(
@@ -282,4 +348,20 @@ fn unexpected<T>(payload: SupervisordPayload) -> Result<T, SupervisorError> {
     Err(SupervisorError::Invalid(format!(
         "supervisord returned unexpected payload {payload:?}"
     )))
+}
+
+fn mutation_page(payload: SupervisordPayload) -> Result<ProductionMutationPageV1, SupervisorError> {
+    match payload {
+        SupervisordPayload::ProductionMutationStatusPageV1 { page } => Ok(page),
+        payload => unexpected(payload),
+    }
+}
+
+fn require_page_deadline(deadline: Instant) -> Result<(), SupervisorError> {
+    if std::time::Instant::now() >= deadline.into_std() {
+        return Err(SupervisorError::Invalid(
+            "production mutation observation exceeded the total page deadline; query status before any further mutation".to_string(),
+        ));
+    }
+    Ok(())
 }
