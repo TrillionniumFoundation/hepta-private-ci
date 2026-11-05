@@ -13,6 +13,9 @@ use std::time::SystemTime;
 use std::time::UNIX_EPOCH;
 use tokio_util::sync::CancellationToken;
 
+#[path = "automation_effect_host_pq_packet_rollback_tests.rs"]
+mod rollback_tests;
+
 struct ControlFixture {
     client: crate::AgentdClient,
     cancellation: CancellationToken,

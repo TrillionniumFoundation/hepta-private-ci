@@ -721,6 +721,12 @@ jobs:
           # asserted before any consumption in the native owner control.
           python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/pon-pair/pon-pq-packet-v1-owner.json" --minimum-tests 1 -- just test --locked -p codex-hepta-agentd --lib -E 'test(real_chain_ordinary_pq_packet_v1_dispatches_once_and_reads_original_receipt)' --run-ignored only --no-capture
           python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/pon-pair/pon-pq-packet-v1-socket.json" --minimum-tests 1 -- just test --locked -p codex-hepta-agentd --lib -E 'test(real_chain_pq_packet_v1_control_socket_preserves_full_packet_and_offline_receipt)' --run-ignored only --no-capture
+      - name: Require cold local rollback refusal against retained PQ frontier
+        if: matrix.lane == 'source-head'
+        env:
+          CARGO_NET_OFFLINE: "true"
+        run: |
+          python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/pon-pair/pon-pq-packet-v1-cold-rollback.json" --minimum-tests 1 -- just test --locked -p codex-hepta-agentd --lib -E 'test(real_chain_pq_packet_v1_full_local_rollback_is_rejected_by_retained_frontier)' --run-ignored only --no-capture
       - name: Retain read-only source and prior Windows failure diagnostics
         if: always() && matrix.runner == 'ubuntu-24.04' && matrix.lane == 'source-head'
         env:
