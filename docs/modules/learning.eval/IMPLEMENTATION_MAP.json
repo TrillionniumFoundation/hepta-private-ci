@@ -33,7 +33,8 @@
       "sourcePathExists": true,
       "designOperation": "estimate_ope",
       "mappingClass": "owner_native",
-      "delegatedCallees": []
+      "delegatedCallees": [],
+      "sourceBlob": "52fb8b882012f2561c65a95639a63da8e2c12ff4"
     },
     {
       "operation": "estimate_cluster_intervals",
@@ -52,7 +53,8 @@
           "path": "codex-rs/hepta-intelligence-eval/src/ope.rs",
           "symbol": "estimate_ope"
         }
-      ]
+      ],
+      "sourceBlob": "1a6467723a7f1060178869f915b08286bcaeb502"
     },
     {
       "operation": "estimate_sequential",
@@ -66,7 +68,8 @@
       "sourcePathExists": true,
       "designOperation": "estimate_sequential",
       "mappingClass": "owner_native",
-      "delegatedCallees": []
+      "delegatedCallees": [],
+      "sourceBlob": "72d41fe1fd6c2710ba7873778d5b74140c89faa4"
     },
     {
       "operation": "evaluate_temporal_holdout",
@@ -89,7 +92,8 @@
           "path": "codex-rs/hepta-intelligence-eval/src/ope_confidence.rs",
           "symbol": "estimate_cluster_intervals"
         }
-      ]
+      ],
+      "sourceBlob": "1f6e4b9d675b235a91b4129fc27ff374fd796481"
     },
     {
       "operation": "freeze_product_evaluation_plan_v1",
@@ -108,7 +112,8 @@
           "path": "codex-rs/hepta-intelligence-eval/src/metric_roles.rs",
           "symbol": "freeze_cross_fold_plan_v2"
         }
-      ]
+      ],
+      "sourceBlob": "0c374acd8c5e25626c213c1ed9f6ba36d3fcbe42"
     },
     {
       "operation": "ProductEvaluationRunnerV1::evaluate_temporal_comparison",
@@ -135,7 +140,8 @@
           "path": "codex-rs/hepta-intelligence-eval/src/temporal_evaluation.rs",
           "symbol": "evaluate_temporal_holdout"
         }
-      ]
+      ],
+      "sourceBlob": "0c374acd8c5e25626c213c1ed9f6ba36d3fcbe42"
     },
     {
       "operation": "ProductEvaluationRunnerV1::qualify_and_persist",
@@ -162,7 +168,8 @@
           "path": "codex-rs/hepta-intelligence-eval/src/product_runner.rs",
           "symbol": "ProductQualificationEvidenceSinkV1::persist"
         }
-      ]
+      ],
+      "sourceBlob": "0c374acd8c5e25626c213c1ed9f6ba36d3fcbe42"
     },
     {
       "operation": "FencedFinalHoldoutOwnerV1::consume",
@@ -181,7 +188,8 @@
           "path": "codex-rs/hepta-intelligence-eval/src/fenced_holdout.rs",
           "symbol": "FinalHoldoutCasStoreV1::compare_and_swap"
         }
-      ]
+      ],
+      "sourceBlob": "b46cb572492afa8646b92e5213ce9c47a4feaf7d"
     },
     {
       "operation": "LockedFileFinalHoldoutCasStoreV1",
@@ -195,7 +203,8 @@
       "sourcePathExists": true,
       "designOperation": "locked_file_final_holdout_cas_store",
       "mappingClass": "owner_native",
-      "delegatedCallees": []
+      "delegatedCallees": [],
+      "sourceBlob": "b6a08ab16dfd972d293733fd34d798b024bf9403"
     },
     {
       "operation": "decide_with_signed_evidence_v2",
@@ -209,7 +218,8 @@
       "sourcePathExists": true,
       "designOperation": "signed_v2_admission",
       "mappingClass": "owner_native",
-      "delegatedCallees": []
+      "delegatedCallees": [],
+      "sourceBlob": "35237acc5fa429dcd0eb5e8641a2dad33fa77667"
     },
     {
       "operation": "decide_with_signed_longitudinal_evidence_v3",
@@ -223,7 +233,8 @@
       "sourcePathExists": true,
       "designOperation": "signed_v3_longitudinal_admission",
       "mappingClass": "owner_native",
-      "delegatedCallees": []
+      "delegatedCallees": [],
+      "sourceBlob": "a75053280ae55e6329eab4276034cbfebb8d23b3"
     },
     {
       "operation": "run_evaluated_shadow_v1",
@@ -243,7 +254,8 @@
           "path": "codex-rs/hepta-intelligence-eval/src/product_runner.rs",
           "symbol": "ProductQualificationReceiptV1::validate_integrity"
         }
-      ]
+      ],
+      "sourceBlob": "51f32b736c9aa0bc067776b3b4ca9c80a3cb42aa"
     }
   ],
   "repositoryControlledGaps": [
@@ -298,7 +310,7 @@
   "sourceObjects": [
     {
       "path": "codex-rs/hepta-intelligence-eval",
-      "object": "89ba9a6e43f48e64c0057ad99d7a47307d87e521"
+      "object": "4f4a63a8f824102b0dad8f9beb598b8286d0c3b1"
     },
     {
       "path": "codex-rs/hepta-intelligence-eval/src/closure_tests.rs",
@@ -350,11 +362,11 @@
     },
     {
       "path": "codex-rs/hepta-intelligence-eval/src/product_runner.rs",
-      "object": "d407375ed7a8f645523e58f0f9435b0359b6f25d"
+      "object": "0c374acd8c5e25626c213c1ed9f6ba36d3fcbe42"
     },
     {
       "path": "codex-rs/hepta-intelligence-eval/src/product_runner_tests.rs",
-      "object": "b308fb74ab586be2c9033eb1fa0ce3d0b80131c1"
+      "object": "72babd39b7e0ad3491690d7b599cac03677c0b0b"
     },
     {
       "path": "codex-rs/hepta-intelligence-eval/src/sequential.rs",
@@ -390,11 +402,21 @@
     },
     {
       "path": "codex-rs/hepta-intelligence/src/evaluated_shadow_tests.rs",
-      "object": "86761bed052e733871391e704875c2d73406b1c7"
+      "object": "9c813e16654cdba9b1ddcffc7a402e489e01b806"
     },
     {
       "path": "docs/modules/learning.eval/TECHNICAL.md",
       "object": "9cc96e05394f08aca263048ecdd40bfc112f7601"
     }
+  ],
+  "mappingSourceIdentityMode": "exact_blob",
+  "observedAtHead": {
+    "commit": "58c81ccdd25002ae0f481d434af067a56fa7ddb8",
+    "tree": "57809be09ef01c02389ef37a817f1447d13d167b"
+  },
+  "observedSourcePaths": [
+    "codex-rs/Cargo.lock",
+    "codex-rs/Cargo.toml",
+    "codex-rs/hepta-intelligence-eval"
   ]
 }

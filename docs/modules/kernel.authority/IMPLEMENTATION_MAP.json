@@ -34,7 +34,8 @@
       "sourcePathExists": true,
       "designOperation": "claim_deliver_dispatch_external_trust_and_epoch_issuer_rotation",
       "mappingClass": "owner_native",
-      "delegatedCallees": []
+      "delegatedCallees": [],
+      "sourceBlob": "e6e40ac106c6d1c07f8bfc17da1a0c5c763224cd"
     },
     {
       "operation": "store",
@@ -48,7 +49,8 @@
       "sourcePathExists": true,
       "designOperation": "store",
       "mappingClass": "owner_native",
-      "delegatedCallees": []
+      "delegatedCallees": [],
+      "sourceBlob": "d014fce0c1396b094d4497c58ef905c53e80669f"
     },
     {
       "operation": "authority_lease_registry",
@@ -62,7 +64,8 @@
       "sourcePathExists": true,
       "designOperation": "put_verify_revoke_prune_with_retired_revision_lineage_epoch_authority_lease",
       "mappingClass": "owner_native",
-      "delegatedCallees": []
+      "delegatedCallees": [],
+      "sourceBlob": "924e4552472038934f665f6acf7a95438294893f"
     },
     {
       "operation": "final_use_approval_verifier",
@@ -76,7 +79,8 @@
       "sourcePathExists": true,
       "designOperation": "independent_final_use_approval_with_epoch_key_rotation",
       "mappingClass": "owner_native",
-      "delegatedCallees": []
+      "delegatedCallees": [],
+      "sourceBlob": "41b1d83586fdab55b143471dab85679c3efebbe8"
     },
     {
       "operation": "final_use_revocation_feed_verifier",
@@ -90,7 +94,8 @@
       "sourcePathExists": true,
       "designOperation": "authenticated_fresh_revocation_ingestion_with_epoch_key_rotation",
       "mappingClass": "owner_native",
-      "delegatedCallees": []
+      "delegatedCallees": [],
+      "sourceBlob": "41b1d83586fdab55b143471dab85679c3efebbe8"
     },
     {
       "operation": "authority_external_trust",
@@ -105,7 +110,8 @@
       "sourcePathExists": true,
       "designOperation": "trusted_time_and_external_anti_rollback_frontier",
       "mappingClass": "owner_native_interface",
-      "delegatedCallees": []
+      "delegatedCallees": [],
+      "sourceBlob": "043ffd75a20c42935959a98d37f40e3d7229c407"
     },
     {
       "operation": "final_use_revocation_convergence",
@@ -119,7 +125,8 @@
       "sourcePathExists": true,
       "designOperation": "verify_enrolled_node_revocation_convergence",
       "mappingClass": "owner_native_verifier",
-      "delegatedCallees": []
+      "delegatedCallees": [],
+      "sourceBlob": "41b1d83586fdab55b143471dab85679c3efebbe8"
     },
     {
       "operation": "verified_use_witness_v1",
@@ -134,7 +141,8 @@
       "sourcePathExists": true,
       "designOperation": "serialize_consumer_entry_or_dispatch_linearization_evidence",
       "mappingClass": "owner_native_evidence",
-      "delegatedCallees": []
+      "delegatedCallees": [],
+      "sourceBlob": "bb5847d7f1beabab6e179f0beba349e3278efbf3"
     },
     {
       "operation": "verified_use_token_witness_v1",
@@ -148,7 +156,8 @@
       "sourcePathExists": true,
       "designOperation": "decision_and_audit_projection",
       "mappingClass": "owner_native",
-      "delegatedCallees": []
+      "delegatedCallees": [],
+      "sourceBlob": "bb5847d7f1beabab6e179f0beba349e3278efbf3"
     }
   ],
   "repositoryControlledGaps": [
@@ -234,11 +243,11 @@
     },
     {
       "path": "codex-rs/hepta-contracts",
-      "object": "6ad43485c66625f8ef687562f8e2b5308c7f5917"
+      "object": "e4a29f94e916cbcc93ab831a8e4ddd1d0f035bd5"
     },
     {
       "path": "codex-rs/hepta-contracts/src/authority_lease.rs",
-      "object": "5c4b00b63b7dd2f2620a64599098c8305b235b1a"
+      "object": "924e4552472038934f665f6acf7a95438294893f"
     },
     {
       "path": "codex-rs/hepta-contracts/src/authority_trust.rs",
@@ -246,7 +255,7 @@
     },
     {
       "path": "codex-rs/hepta-contracts/src/final_use.rs",
-      "object": "3cc75fab4185789514e4ecc7522e52f1ca59249f"
+      "object": "e6e40ac106c6d1c07f8bfc17da1a0c5c763224cd"
     },
     {
       "path": "codex-rs/hepta-contracts/src/final_use_control.rs",
@@ -254,11 +263,11 @@
     },
     {
       "path": "codex-rs/hepta-contracts/src/final_use_store.rs",
-      "object": "6e89a0eeb33102f6b5d285e8739570a7db6cf7f6"
+      "object": "d014fce0c1396b094d4497c58ef905c53e80669f"
     },
     {
       "path": "codex-rs/hepta-contracts/src/final_use_tests.rs",
-      "object": "4abe82b93130d0ae7efa4e704863eda766339c76"
+      "object": "a7124b83ffa15ac70066fb5084b12ee2def2dcf8"
     },
     {
       "path": "codex-rs/hepta-contracts/src/verified_use_witness.rs",
@@ -280,5 +289,15 @@
       "path": "docs/modules/kernel.authority/TECHNICAL.md",
       "object": "26694ea19236ed2260858c9c8ddd2bab8c420934"
     }
+  ],
+  "mappingSourceIdentityMode": "exact_blob",
+  "observedAtHead": {
+    "commit": "58c81ccdd25002ae0f481d434af067a56fa7ddb8",
+    "tree": "57809be09ef01c02389ef37a817f1447d13d167b"
+  },
+  "observedSourcePaths": [
+    "codex-rs/Cargo.lock",
+    "codex-rs/Cargo.toml",
+    "codex-rs/hepta-contracts"
   ]
 }

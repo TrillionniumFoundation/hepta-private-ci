@@ -33,7 +33,8 @@
       "sourcePathExists": true,
       "designOperation": "retrieve_v2",
       "mappingClass": "owner_native",
-      "delegatedCallees": []
+      "delegatedCallees": [],
+      "sourceBlob": "69e7c773f9ebaa777783a4965749a0051edf37eb"
     },
     {
       "operation": "compile_cue",
@@ -47,7 +48,8 @@
       "sourcePathExists": true,
       "designOperation": "compile_cue",
       "mappingClass": "owner_native",
-      "delegatedCallees": []
+      "delegatedCallees": [],
+      "sourceBlob": "dc5ccaee3ffa5fae36a62594627c293e9d7fbfec"
     },
     {
       "operation": "build_candidate_union_from_generated",
@@ -62,7 +64,8 @@
       "sourcePathExists": true,
       "designOperation": "retrieve",
       "mappingClass": "owner_native",
-      "delegatedCallees": []
+      "delegatedCallees": [],
+      "sourceBlob": "dc5ccaee3ffa5fae36a62594627c293e9d7fbfec"
     },
     {
       "operation": "settle_engram",
@@ -76,7 +79,8 @@
       "sourcePathExists": true,
       "designOperation": "engram_settle",
       "mappingClass": "owner_native",
-      "delegatedCallees": []
+      "delegatedCallees": [],
+      "sourceBlob": "2d2df3efb3cfcfe0c785c4e1369a68a8712258b0"
     },
     {
       "operation": "recall_generated_with_engram",
@@ -91,7 +95,8 @@
       "sourcePathExists": true,
       "designOperation": "recall",
       "mappingClass": "owner_native",
-      "delegatedCallees": []
+      "delegatedCallees": [],
+      "sourceBlob": "dc5ccaee3ffa5fae36a62594627c293e9d7fbfec"
     },
     {
       "operation": "observe_retrieval_assignment",
@@ -105,7 +110,8 @@
       "sourcePathExists": true,
       "designOperation": "assignment_observation",
       "mappingClass": "owner_native",
-      "delegatedCallees": []
+      "delegatedCallees": [],
+      "sourceBlob": "7d701b3a4db8820a962cd9174ffd6ce9e41f12e1"
     },
     {
       "operation": "build_candidate_union",
@@ -117,7 +123,8 @@
       "sourcePathExists": true,
       "designOperation": "build_candidate_union",
       "mappingClass": "owner_native",
-      "delegatedCallees": []
+      "delegatedCallees": [],
+      "sourceBlob": "79402db4a16e3b1255f7b926a879de34b28e42e4"
     },
     {
       "operation": "recall",
@@ -129,7 +136,8 @@
       "sourcePathExists": true,
       "designOperation": "recall",
       "mappingClass": "owner_native",
-      "delegatedCallees": []
+      "delegatedCallees": [],
+      "sourceBlob": "79402db4a16e3b1255f7b926a879de34b28e42e4"
     },
     {
       "operation": "adapt_generation_bound_recall_to_canonical_shadow_v1",
@@ -143,7 +151,8 @@
       "sourcePathExists": true,
       "designOperation": "canonical_recall_shadow_adapter",
       "mappingClass": "owner_native",
-      "delegatedCallees": []
+      "delegatedCallees": [],
+      "sourceBlob": "79402db4a16e3b1255f7b926a879de34b28e42e4"
     }
   ],
   "repositoryControlledGaps": [
@@ -191,8 +200,8 @@
   ],
   "sourceIdentityPolicy": "candidate_or_exact_observation_v1",
   "observedAtHead": {
-    "commit": "fd6d8d3fcd9aee36711381adf74b6ba7162cda1b",
-    "tree": "755e3264fb49a7fedf56a4d2a77befca7af8c384"
+    "commit": "58c81ccdd25002ae0f481d434af067a56fa7ddb8",
+    "tree": "57809be09ef01c02389ef37a817f1447d13d167b"
   },
   "observedSourcePaths": [
     ".github/workflows/hepta-memory-retrieval-qualification-host.yml",
@@ -304,5 +313,6 @@
     "record": "memory.retrieval",
     "previousMapBlob": "8fd94e7a29b72137a3cb73bdd5dda33804892877",
     "scope": "source_navigation_only_no_execution_evidence_transferred"
-  }
+  },
+  "mappingSourceIdentityMode": "exact_blob"
 }

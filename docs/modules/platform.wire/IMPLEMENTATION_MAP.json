@@ -34,7 +34,8 @@
       "sourcePathExists": true,
       "designOperation": "wire_v1",
       "mappingClass": "owner_native",
-      "delegatedCallees": []
+      "delegatedCallees": [],
+      "sourceBlob": "00e767ccc12e1703296f8f73ef1f53da6996922a"
     },
     {
       "operation": "wire_v2",
@@ -56,7 +57,8 @@
         "codex-rs/hepta-native-gateway/src/lib.rs",
         "codex-rs/hepta-context-compiler/src/wire.rs",
         "codex-rs/hepta-codex-adapter/src/wire.rs"
-      ]
+      ],
+      "sourceBlob": "0195d24fca437fd458fb880e80176e4d566baced"
     },
     {
       "operation": "negotiate",
@@ -71,7 +73,8 @@
       "sourcePathExists": true,
       "designOperation": "negotiate",
       "mappingClass": "owner_native",
-      "delegatedCallees": []
+      "delegatedCallees": [],
+      "sourceBlob": "d4e9388500f674e0e9b33cf37161549379223dda"
     },
     {
       "operation": "schema_admission",
@@ -88,7 +91,8 @@
       "sourcePathExists": true,
       "designOperation": "schema_admission",
       "mappingClass": "owner_native",
-      "delegatedCallees": []
+      "delegatedCallees": [],
+      "sourceBlob": "dc06ad7a692d87404ee8d3d2bcb76e9dea984717"
     },
     {
       "operation": "stream_decode",
@@ -104,7 +108,8 @@
       "sourcePathExists": true,
       "designOperation": "stream_decode",
       "mappingClass": "owner_native",
-      "delegatedCallees": []
+      "delegatedCallees": [],
+      "sourceBlob": "6e83762934b13bf6b6e2c8d1458633d0512fa543"
     }
   ],
   "repositoryControlledGaps": [
@@ -165,7 +170,7 @@
     },
     {
       "path": "codex-rs/hepta-runtime/src/lib.rs",
-      "object": "145498ec9981af5ab490e45e1f2b647c406bf530"
+      "object": "a58dfaa26fb8544530603f0c14ca0339514b17bf"
     },
     {
       "path": "codex-rs/hepta-shadow-qualification/tests/cross_runtime_wire_session.rs",
@@ -231,5 +236,15 @@
       "path": "docs/modules/platform.wire/TECHNICAL.md",
       "object": "c3a4a6fc43d5353de4dd419a2c92255947ce42ad"
     }
+  ],
+  "mappingSourceIdentityMode": "exact_blob",
+  "observedAtHead": {
+    "commit": "58c81ccdd25002ae0f481d434af067a56fa7ddb8",
+    "tree": "57809be09ef01c02389ef37a817f1447d13d167b"
+  },
+  "observedSourcePaths": [
+    "codex-rs/Cargo.lock",
+    "codex-rs/Cargo.toml",
+    "codex-rs/hepta-wire"
   ]
 }
