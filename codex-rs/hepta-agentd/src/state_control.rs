@@ -660,13 +660,13 @@ impl AgentdState {
                 };
                 let wire_payload = decode_effect_wire_hex(&wire_payload_hex)?;
                 let receipt = host
-                    .execute(
+                    .execute_ordinary(
+                        self,
                         store,
                         &intent,
                         &wire_payload,
                         &signed_grant,
                         &command_id,
-                        now_ms()?,
                     )
                     .await?;
                 self.fence_after_durable_change()?;
@@ -701,7 +701,7 @@ impl AgentdState {
                     );
                 };
                 let result = host
-                    .reconcile(store, &run_id, &step_id, attempt, now_ms()?)
+                    .reconcile_ordinary(self, store, &run_id, &step_id, attempt, now_ms()?)
                     .await?;
                 self.fence_after_durable_change()?;
                 let snapshot = match result {

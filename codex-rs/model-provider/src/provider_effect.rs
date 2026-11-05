@@ -11,6 +11,8 @@ use std::fmt;
 use std::net::IpAddr;
 use std::time::Duration;
 
+use codex_hepta_contracts::FinalUseAuthenticationProfile;
+use codex_hepta_contracts::PqAuthorityTrustKey;
 use codex_hepta_contracts::ProviderEffectAck;
 use codex_hepta_contracts::ProviderEffectAckStatus;
 use codex_hepta_contracts::ProviderEffectAdapter;
@@ -22,6 +24,7 @@ use codex_hepta_contracts::ProviderEffectIntent;
 use codex_hepta_contracts::ProviderEffectKey;
 use codex_hepta_contracts::ProviderEffectLookup;
 use codex_hepta_contracts::Sha256Digest;
+use codex_hepta_contracts::pq_auth::PqNativeVerifier;
 use codex_http_client::ClientRouteClass;
 use codex_http_client::HttpClient;
 use codex_http_client::HttpClientBuilder;
@@ -35,6 +38,10 @@ use http::HeaderName;
 use http::HeaderValue;
 use serde::Deserialize;
 use url::Url;
+
+#[cfg(test)]
+#[path = "provider_effect_pq_tests.rs"]
+mod pq_tests;
 
 /// Header carrying the stable occurrence identity to a provider adapter.
 pub const PROVIDER_EFFECT_IDEMPOTENCY_KEY_HEADER: &str = "idempotency-key";
@@ -182,6 +189,7 @@ pub struct HttpProviderEffectContractAttestation {
     contract_sha256: Sha256Digest,
     authority_epoch: u64,
     verified: bool,
+    authentication_profile: FinalUseAuthenticationProfile,
 }
 
 impl HttpProviderEffectContractAttestation {
@@ -236,7 +244,75 @@ impl HttpProviderEffectContractAttestation {
             contract_sha256,
             authority_epoch,
             verified: true,
+            authentication_profile: FinalUseAuthenticationProfile::ClassicalV1,
         })
+    }
+
+    /// Exact PQ statement for an independently supplied contract authority.
+    /// The binding covers the consumer, transport, scope and authority policy;
+    /// neither a classic signature nor another host's statement is reusable.
+    pub fn statement_for_pq(
+        contract_id: &str,
+        contract_sha256: &Sha256Digest,
+        authority_epoch: u64,
+        authority_binding: &Sha256Digest,
+    ) -> Vec<u8> {
+        format!(
+            "hepta-provider-effect-attestation-pq-v2\nrole=automation-provider-contract\ncontract_id={contract_id}\ncontract_sha256={}\nauthority_epoch={authority_epoch}\nauthority_binding={}\n",
+            contract_sha256.as_str(),
+            authority_binding.as_str(),
+        )
+        .into_bytes()
+    }
+
+    /// Verify the distinct PQ statement with a pinned root and epoch window.
+    pub fn verify_pq_signed(
+        contract_id: impl Into<String>,
+        contract_sha256: Sha256Digest,
+        authority_epoch: u64,
+        authority_binding: &Sha256Digest,
+        signature: &[u8],
+        pinned_key: &PqAuthorityTrustKey,
+    ) -> Result<Self, String> {
+        let contract_id = contract_id.into();
+        if !valid_contract_id(&contract_id)
+            || pinned_key.not_before_authority_epoch == 0
+            || pinned_key.not_after_authority_epoch < pinned_key.not_before_authority_epoch
+            || authority_epoch < pinned_key.not_before_authority_epoch
+            || authority_epoch > pinned_key.not_after_authority_epoch
+        {
+            return Err("PQ provider contract identity or authority epoch is invalid".into());
+        }
+        Sha256Digest::parse(contract_sha256.as_str().to_owned())
+            .map_err(|error| format!("invalid contract digest: {error}"))?;
+        Sha256Digest::parse(authority_binding.as_str().to_owned())
+            .map_err(|error| format!("invalid authority binding: {error}"))?;
+        let key = PqNativeVerifier::from_pinned_spki(
+            &pinned_key.public_key_spki,
+            pinned_key.public_key_id,
+        )
+        .map_err(|error| format!("invalid pinned PQ provider contract root: {error}"))?;
+        key.verify_exact_message(
+            &Self::statement_for_pq(
+                &contract_id,
+                &contract_sha256,
+                authority_epoch,
+                authority_binding,
+            ),
+            signature,
+        )
+        .map_err(|_| "PQ provider contract attestation signature mismatch".to_string())?;
+        Ok(Self {
+            contract_id,
+            contract_sha256,
+            authority_epoch,
+            verified: true,
+            authentication_profile: FinalUseAuthenticationProfile::MlDsa65V2,
+        })
+    }
+
+    pub fn authentication_profile(&self) -> FinalUseAuthenticationProfile {
+        self.authentication_profile
     }
 
     pub fn contract_id(&self) -> &str {

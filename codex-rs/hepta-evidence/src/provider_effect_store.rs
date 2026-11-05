@@ -963,36 +963,42 @@ async fn load_effect_intent_in_transaction(
     row.map(|row| decode_effect_intent_row(&row)).transpose()
 }
 
-fn decode_effect_intent_row(
+pub(super) fn decode_effect_intent_row(
     row: &sqlx::sqlite::SqliteRow,
 ) -> Result<StoredProviderEffectIntent, EvidenceError> {
-    let payload_json: String = row.get("payload_json");
-    let record_sha256: String = row.get("record_sha256");
+    let payload_json: String = row.try_get("payload_json").map_err(classify_sqlx_error)?;
+    let record_sha256: String = row.try_get("record_sha256").map_err(classify_sqlx_error)?;
     verify_record_digest(&payload_json, &record_sha256, "provider effect intent")?;
     let intent: ProviderEffectIntent = serde_json::from_str(&payload_json)
         .map_err(|error| EvidenceError::Corrupt(error.to_string()))?;
     intent.validate().map_err(binding_corrupt)?;
-    let payload_sha256: String = row.get("payload_sha256");
-    if row.get::<String, _>("effect_key") != intent.key.as_str()
+    let payload_sha256: String = row.try_get("payload_sha256").map_err(classify_sqlx_error)?;
+    if row
+        .try_get::<String, _>("effect_key")
+        .map_err(classify_sqlx_error)?
+        != intent.key.as_str()
         || payload_sha256 != intent.payload_sha256.as_str()
-        || row.get::<i64, _>("schema_version") != i64::from(intent.schema_version)
+        || row
+            .try_get::<i64, _>("schema_version")
+            .map_err(classify_sqlx_error)?
+            != i64::from(intent.schema_version)
     {
         return Err(EvidenceError::Corrupt(
             "provider effect intent columns do not match canonical payload".to_string(),
         ));
     }
     Ok(StoredProviderEffectIntent {
-        seq: row.get("seq"),
+        seq: row.try_get("seq").map_err(classify_sqlx_error)?,
         intent,
     })
 }
 
-fn decode_effect_ack_row(
+pub(super) fn decode_effect_ack_row(
     row: &sqlx::sqlite::SqliteRow,
     intent: &ProviderEffectIntent,
 ) -> Result<StoredProviderEffectAck, EvidenceError> {
-    let payload_json: String = row.get("payload_json");
-    let record_sha256: String = row.get("record_sha256");
+    let payload_json: String = row.try_get("payload_json").map_err(classify_sqlx_error)?;
+    let record_sha256: String = row.try_get("record_sha256").map_err(classify_sqlx_error)?;
     verify_record_digest(
         &payload_json,
         &record_sha256,
@@ -1001,7 +1007,7 @@ fn decode_effect_ack_row(
     let ack: ProviderEffectAck = serde_json::from_str(&payload_json)
         .map_err(|error| EvidenceError::Corrupt(error.to_string()))?;
     ack.validate_for(intent).map_err(binding_corrupt)?;
-    let status: String = row.get("status");
+    let status: String = row.try_get("status").map_err(classify_sqlx_error)?;
     let source: Option<String> = row.try_get("source").map_err(classify_sqlx_error)?;
     let source = source
         .ok_or_else(|| {
@@ -1010,48 +1016,71 @@ fn decode_effect_ack_row(
             )
         })
         .and_then(|source| ProviderEffectAckSource::parse(&source).map_err(binding_corrupt))?;
-    if row.get::<String, _>("effect_key") != ack.key.as_str()
-        || row.get::<String, _>("payload_sha256") != ack.payload_sha256.as_str()
-        || row.get::<String, _>("provider_operation_id_sha256")
+    if row
+        .try_get::<String, _>("effect_key")
+        .map_err(classify_sqlx_error)?
+        != ack.key.as_str()
+        || row
+            .try_get::<String, _>("payload_sha256")
+            .map_err(classify_sqlx_error)?
+            != ack.payload_sha256.as_str()
+        || row
+            .try_get::<String, _>("provider_operation_id_sha256")
+            .map_err(classify_sqlx_error)?
             != ack.provider_operation_id_sha256.as_str()
         || status != ack_status_as_str(ack.status)
-        || row.get::<i64, _>("schema_version") != i64::from(ack.schema_version)
+        || row
+            .try_get::<i64, _>("schema_version")
+            .map_err(classify_sqlx_error)?
+            != i64::from(ack.schema_version)
     {
         return Err(EvidenceError::Corrupt(
             "provider effect acknowledgement columns do not match canonical payload".to_string(),
         ));
     }
     Ok(StoredProviderEffectAck {
-        seq: row.get("seq"),
+        seq: row.try_get("seq").map_err(classify_sqlx_error)?,
         ack,
         source,
-        recorded_at_ms: row.get("recorded_at_ms"),
+        recorded_at_ms: row.try_get("recorded_at_ms").map_err(classify_sqlx_error)?,
     })
 }
 
-fn decode_effect_uncertainty_row(
+pub(super) fn decode_effect_uncertainty_row(
     row: &sqlx::sqlite::SqliteRow,
     intent: &ProviderEffectIntent,
 ) -> Result<StoredProviderEffectUncertainty, EvidenceError> {
-    let payload_json: String = row.get("payload_json");
-    let record_sha256: String = row.get("record_sha256");
+    let payload_json: String = row.try_get("payload_json").map_err(classify_sqlx_error)?;
+    let record_sha256: String = row.try_get("record_sha256").map_err(classify_sqlx_error)?;
     verify_record_digest(&payload_json, &record_sha256, "provider effect uncertainty")?;
     let uncertainty: ProviderEffectUncertainty = serde_json::from_str(&payload_json)
         .map_err(|error| EvidenceError::Corrupt(error.to_string()))?;
     uncertainty.validate_for(intent).map_err(binding_corrupt)?;
-    if row.get::<String, _>("effect_key") != uncertainty.key.as_str()
-        || row.get::<String, _>("payload_sha256") != uncertainty.payload_sha256.as_str()
-        || row.get::<String, _>("reason_code") != uncertainty.reason_code
-        || row.get::<i64, _>("schema_version") != i64::from(uncertainty.schema_version)
+    if row
+        .try_get::<String, _>("effect_key")
+        .map_err(classify_sqlx_error)?
+        != uncertainty.key.as_str()
+        || row
+            .try_get::<String, _>("payload_sha256")
+            .map_err(classify_sqlx_error)?
+            != uncertainty.payload_sha256.as_str()
+        || row
+            .try_get::<String, _>("reason_code")
+            .map_err(classify_sqlx_error)?
+            != uncertainty.reason_code
+        || row
+            .try_get::<i64, _>("schema_version")
+            .map_err(classify_sqlx_error)?
+            != i64::from(uncertainty.schema_version)
     {
         return Err(EvidenceError::Corrupt(
             "provider effect uncertainty columns do not match canonical payload".to_string(),
         ));
     }
     Ok(StoredProviderEffectUncertainty {
-        seq: row.get("seq"),
+        seq: row.try_get("seq").map_err(classify_sqlx_error)?,
         uncertainty,
-        recorded_at_ms: row.get("recorded_at_ms"),
+        recorded_at_ms: row.try_get("recorded_at_ms").map_err(classify_sqlx_error)?,
     })
 }
 

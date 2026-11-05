@@ -548,6 +548,102 @@ async fn evid_03_corrupted_canonical_payload_fails_reopen() {
 }
 
 #[tokio::test]
+async fn ordinary_append_rejects_historical_projection_drift_without_consuming_replay() {
+    let temp = TempDir::new().expect("temp");
+    let store = HeptaEvidenceStore::open(&config(&temp))
+        .await
+        .expect("open evidence");
+    let observed = now_ms();
+    let (source_issuer, key) = issuer("principal:append-integrity", 54);
+    let original = evidence(
+        "evidence:append-integrity-original",
+        candidate('b'),
+        EvidenceClaimClassV1::MandatoryTests,
+        EvidenceIssuerRoleV1::Evaluator,
+        observed,
+        None,
+        json!({"passed": true}),
+    );
+    append(&store, &source_issuer, &key, &original, 1)
+        .await
+        .expect("append original evidence");
+    let next = evidence(
+        "evidence:append-integrity-next",
+        candidate('b'),
+        EvidenceClaimClassV1::MandatoryTests,
+        EvidenceIssuerRoleV1::Evaluator,
+        observed,
+        None,
+        json!({"passed": true, "next": true}),
+    );
+    let message = signed(
+        &next,
+        &source_issuer,
+        &key,
+        2,
+        now_ms().saturating_add(60_000),
+    );
+    let original_projection: String = sqlx::query_scalar(
+        "SELECT payload_sha256 FROM qualification_evidence
+         WHERE evidence_id = 'evidence:append-integrity-original'",
+    )
+    .fetch_one(&store.pool)
+    .await
+    .expect("original payload projection");
+    let changed_projection = codex_hepta_contracts::Sha256Digest::for_bytes(b"changed projection");
+    let mut transaction = store.pool.begin().await.expect("import transaction");
+    sqlx::query("DROP TRIGGER qualification_evidence_no_update")
+        .execute(&mut *transaction)
+        .await
+        .expect("model imported historical projection");
+    sqlx::query(
+        "UPDATE qualification_evidence SET payload_sha256 = ?
+         WHERE evidence_id = 'evidence:append-integrity-original'",
+    )
+    .bind(changed_projection.as_str())
+    .execute(&mut *transaction)
+    .await
+    .expect("retain canonical envelope but change its projection");
+    transaction.commit().await.expect("commit imported drift");
+    assert!(matches!(
+        store
+            .qualification()
+            .append_receipt(&source_issuer, &message, &next)
+            .await,
+        Err(EvidenceError::Corrupt(detail))
+            if detail.contains("payload digest differs from canonical payload")
+    ));
+    let mut transaction = store.pool.begin().await.expect("repair transaction");
+    sqlx::query(
+        "UPDATE qualification_evidence SET payload_sha256 = ?
+         WHERE evidence_id = 'evidence:append-integrity-original'",
+    )
+    .bind(original_projection)
+    .execute(&mut *transaction)
+    .await
+    .expect("restore the exact historical projection");
+    sqlx::query(
+        "CREATE TRIGGER qualification_evidence_no_update
+         BEFORE UPDATE ON qualification_evidence
+         BEGIN
+             SELECT RAISE(ABORT, 'qualification evidence is immutable');
+         END",
+    )
+    .execute(&mut *transaction)
+    .await
+    .expect("restore immutable evidence schema");
+    transaction.commit().await.expect("commit exact repair");
+    assert_eq!(
+        store
+            .qualification()
+            .append_receipt(&source_issuer, &message, &next)
+            .await
+            .expect("the same signed attempt remains admissible after repair"),
+        next.evidence_id
+    );
+}
+
+#[tokio::test]
 async fn evid_03_broken_predecessor_fails_reopen() {
     let temp = TempDir::new().expect("temp");
     let sqlite = config(&temp);

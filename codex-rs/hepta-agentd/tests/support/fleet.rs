@@ -157,6 +157,25 @@ impl FleetHarness {
         Ok(())
     }
 
+    /// Ordinary CLI composition with the existing mandatory evidence recovery arguments.
+    #[allow(dead_code)]
+    pub(crate) fn start_with_automation_effect_host_file(
+        &mut self,
+        agent: &AgentFixture,
+        host_file: &Path,
+    ) -> Result<()> {
+        let mut args = agent.recovery_args();
+        args.extend([
+            "--automation-effect-host-file".into(),
+            host_file.as_os_str().to_owned(),
+        ]);
+        let command = AgentCommand::new(agentd_binary()?, args)?;
+        self.supervisor
+            .start(&agent.agent_id, command, Instant::now())?;
+        self.started = true;
+        Ok(())
+    }
+
     #[allow(dead_code)]
     pub(crate) fn start_with_authbus_trust_file(
         &mut self,
