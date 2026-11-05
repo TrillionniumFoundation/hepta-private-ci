@@ -5,8 +5,10 @@ migration, structural admission, and evidence-bound evaluation. It also independ
 audits the existing real-model V14 evidence. It is stacked on
 `6d2551388ed42355f02afbf528472ee2b4d8488b` / [#4687](https://github.com/TrillionniumFoundation/hepta-private-ci/pull/4687).
 
-**Status: research reference; no new neural-memory benefit, physical multi-node
+**Status: research reference; no new neural-memory benefit, complete distributed
 qualification, Rust runtime integration, or production activation is claimed.**
+A bounded, controller-relayed Mac-to-pocket4 persistence and ownership experiment
+is recorded separately from the 53-case automated suite.
 
 The complete Chinese research report is [RESEARCH.zh-CN.md](RESEARCH.zh-CN.md).
 Its architecture permits KV, retrieval, centroid/ridge, shared-encoder heads and
@@ -24,6 +26,7 @@ chosen numerical representation. More cells or parameters are not acceptance cri
 | `review_tests.py` | Independent adversarial tests, including frozen-input and executor-state counterexamples found during review |
 | `audit_v14.py` | Recomputes original Git identities, recorded outputs, costs and utility without rerunning or reselecting models |
 | `verify.py` | Runs scoped tests and records exact Python source hashes, test identities, failures, environment and limited process costs |
+| `device_qualification/` | Exact-source, controller-relayed Mac-to-pocket4 persistence, cold computation and signed ownership experiment; finite integer fixture only |
 
 The source changes are staged for review: historical audit; paired admission;
 authority plus integration; documentation, independent review and execution receipts.
@@ -127,17 +130,46 @@ checkout. The required `just fmt` attempt exited 127 (`just: command not found`)
 Rust source changed in this delta and no V15 Rust formatter/native test claim is made.
 The dedicated CI workflow checks the reference Python paths, not full-repository CI.
 
+## Bounded two-host experiment
+
+The configured, SSH-authenticated `mac` (Darwin/arm64, Python 3.9.6) and `pocket4`
+(Linux/x86_64, Python 3.14.4) executed the unchanged `authority.py` bytes in isolated
+0700 temporary directories. Both used their existing cryptography 46.0.5; no
+dependency or service configuration was changed. This validates the exercised
+authority subset, not the entire evaluator or Python 3.9 support for the full suite.
+
+The target saved and fsynced the bundle, terminated that process, then used a new
+process to load the actual model and memory bytes. Its integer calculation matched
+the source: `[[11,10],[1,-10],[14,22]]`. Separate fresh authority processes accepted
+`ready` and committed owner transfer at epoch 3. The former owner was rejected even
+with epoch 3. The target then signed a modified model publication, accepted at
+epoch 4, whose calculation matched the modified parameters.
+
+The fixture contains **408 component bytes**, a **2,276-byte bundle JSON**, and a
+**3,632-byte persist request**. These are application payload sizes, not network
+wire measurements. Encoder/optimizer/RNG/sampler slots are explicit untrained
+placeholders. The run is not a Transformer/LoRA continuation or an efficacy sample.
+Keys were generated and used on their owning hosts without export along this run's
+path; this is not hardware-backed proof that they cannot be exported.
+
+The controller relayed signed messages; the authority remained on the Mac. There
+was no direct peer-to-peer transport, distributed consensus, learned network router,
+power-loss experiment or authority-loss recovery. Each worker exited; no new
+listening service was installed. Raw phase receipts, independent checks, costs and
+reproduction instructions are in [`device_qualification/`](device_qualification/).
+
 ## Remaining qualification boundaries
 
-- All new coordinator process tests run on one Linux host and one authoritative
-  SQLite filesystem. There is no replicated consensus, independent monotone witness
-  or protection against rollback of the whole authority filesystem.
+- Each execution of the 53-case automated suite uses one Linux host and one
+  authoritative SQLite filesystem. The separate Mac-to-pocket4 experiment still
+  uses one Mac authority. Neither provides replicated consensus, an independent
+  monotone witness or protection against rollback of the whole authority filesystem.
 - Owner identity is an Ed25519 public key. This is not post-quantum authentication or
   proof of a hardware node identity; process-incarnation binding belongs in native
   service integration.
-- A receiver signature plus checked bytes is not proof of honest, lasting remote
-  storage. Physical-node network partitions, corrupt storage and remote final-use
-  fencing still require a real deployment campaign.
+- A receiver signature plus checked bytes, even with an observed later process
+  reading those bytes, is not proof of honest, lasting remote storage. Network
+  partitions, corrupt storage and remote final-use fencing require further qualification.
 - This authority's administrative source writes are not a replacement for a real
   multi-user ingestion policy. Full bundle reads assume a cell-wide ACL; fine-grained
   row ACLs require further partitioning or a separately validated read interface.
@@ -152,6 +184,6 @@ The dedicated CI workflow checks the reference Python paths, not full-repository
 - No new long-term language retention, strict full-budget superiority or positive
   learned split/merge result is established. Existing negative evidence remains valid.
 
-Rust integration, true authority recovery, physical multi-device qualification,
+Rust integration, true authority recovery, real-model multi-device qualification,
 matched-budget training, long-term updates and actual energy/full-cost measurement
 are the next acceptance stages in the research report.

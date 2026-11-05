@@ -1,0 +1,2358 @@
+{
+  "schema": "hepta-v15-controller-relay-v1",
+  "run_id": "hepta-v15-23f86845405a4bb8",
+  "authority_sha256": "7e5a2016347718e87df147f2ae96f2e56b9813d2c11e705bf88c8649a16bbe68",
+  "worker_sha256": "e71df378426d8eb6c7afd8e75938741943fbdb482ec15de17c45b3f74ca12160",
+  "initial_invalid_argument_attempts": [
+    {
+      "host": "mac",
+      "executable": "python3",
+      "idempotency_key": "hepta-v15-readonly-probe-20261105-mac-v1",
+      "error_code": "INVALID_ARGUMENT",
+      "message": "executable `python3` must be an absolute path without parent traversal",
+      "job_created": false,
+      "target_execution": false,
+      "cost_unknown": null
+    },
+    {
+      "host": "pocket4",
+      "executable": "python3",
+      "idempotency_key": "hepta-v15-readonly-probe-20261105-pocket4-v1",
+      "error_code": "INVALID_ARGUMENT",
+      "message": "executable `python3` must be an absolute path without parent traversal",
+      "job_created": false,
+      "target_execution": false,
+      "cost_unknown": null
+    },
+    {
+      "host": "x230",
+      "executable": "python3",
+      "idempotency_key": "hepta-v15-readonly-probe-20261105-x230-v1",
+      "error_code": "INVALID_ARGUMENT",
+      "message": "executable `python3` must be an absolute path without parent traversal",
+      "job_created": false,
+      "target_execution": false,
+      "cost_unknown": null
+    }
+  ],
+  "probe_jobs": [
+    {
+      "host": "mac",
+      "job_id": "1a1a94c4de8-fc05-33ea",
+      "status": {
+        "at_unix_ms": 1793841714782,
+        "audit_recorded": true,
+        "automatic_retry": false,
+        "cancelled": false,
+        "exit_code": 0,
+        "job_id": "1a1a94c4de8-fc05-33ea",
+        "launch_nonce": "6e66ce5059c2aeb6707f5076ca0c82b2",
+        "log_bytes": {
+          "stderr": {
+            "seen": 0,
+            "stored": 0
+          },
+          "stdout": {
+            "seen": 327,
+            "stored": 327
+          }
+        },
+        "log_errors": {
+          "stderr": null,
+          "stdout": null
+        },
+        "log_synced": {
+          "stderr": true,
+          "stdout": true
+        },
+        "log_truncated": {
+          "stderr": false,
+          "stdout": false
+        },
+        "output_complete": true,
+        "output_durable": true,
+        "state": "succeeded",
+        "terminal_publication_confirmed": true,
+        "terminal_publication_protocol": 1,
+        "timed_out": false
+      },
+      "stdout": "{\"arch\": \"arm64\", \"cryptography\": \"46.0.5\", \"ed25519\": true, \"node_digest\": \"7587a49c3993547c3edae2b9c17c4eaa22a14c3b9e05a116c9b17b294f81f099\", \"platform\": \"Darwin\", \"python\": \"3.9.6\", \"sqlite\": \"3.51.0\", \"workdirs\": [{\"is_dir\": true, \"path\": \"/tmp\", \"writable\": true}, {\"is_dir\": true, \"path\": \"/var/tmp\", \"writable\": true}]}\n",
+      "stderr": ""
+    },
+    {
+      "host": "pocket4",
+      "job_id": "1a1a94c8c87-fc05-33ed",
+      "status": {
+        "at_unix_ms": 1793841730051,
+        "audit_recorded": true,
+        "automatic_retry": false,
+        "cancelled": false,
+        "exit_code": 0,
+        "job_id": "1a1a94c8c87-fc05-33ed",
+        "launch_nonce": "71cc0f8e6e1d610a0cfa2f02f00d59c4",
+        "log_bytes": {
+          "stderr": {
+            "seen": 0,
+            "stored": 0
+          },
+          "stdout": {
+            "seen": 328,
+            "stored": 328
+          }
+        },
+        "log_errors": {
+          "stderr": null,
+          "stdout": null
+        },
+        "log_synced": {
+          "stderr": true,
+          "stdout": true
+        },
+        "log_truncated": {
+          "stderr": false,
+          "stdout": false
+        },
+        "output_complete": true,
+        "output_durable": true,
+        "state": "succeeded",
+        "terminal_publication_confirmed": true,
+        "terminal_publication_protocol": 1,
+        "timed_out": false
+      },
+      "stdout": "{\"arch\": \"x86_64\", \"cryptography\": \"46.0.5\", \"ed25519\": true, \"node_digest\": \"54d6a54e456bc672a4490b3695adb364566eef77976002732b47d78c3b9ee980\", \"platform\": \"Linux\", \"python\": \"3.14.4\", \"sqlite\": \"3.46.1\", \"workdirs\": [{\"is_dir\": true, \"path\": \"/tmp\", \"writable\": true}, {\"is_dir\": true, \"path\": \"/var/tmp\", \"writable\": true}]}\n",
+      "stderr": ""
+    },
+    {
+      "host": "x230",
+      "job_id": "1a1a94c6e45-fc05-33ec",
+      "status": {
+        "at_unix_ms": 1793841722680,
+        "audit_recorded": true,
+        "automatic_retry": false,
+        "cancelled": false,
+        "exit_code": 0,
+        "job_id": "1a1a94c6e45-fc05-33ec",
+        "launch_nonce": "6483e0092d8c9bd324de1bf14a0e84ec",
+        "log_bytes": {
+          "stderr": {
+            "seen": 0,
+            "stored": 0
+          },
+          "stdout": {
+            "seen": 328,
+            "stored": 328
+          }
+        },
+        "log_errors": {
+          "stderr": null,
+          "stdout": null
+        },
+        "log_synced": {
+          "stderr": true,
+          "stdout": true
+        },
+        "log_truncated": {
+          "stderr": false,
+          "stdout": false
+        },
+        "output_complete": true,
+        "output_durable": true,
+        "state": "succeeded",
+        "terminal_publication_confirmed": true,
+        "terminal_publication_protocol": 1,
+        "timed_out": false
+      },
+      "stdout": "{\"arch\": \"x86_64\", \"cryptography\": \"41.0.7\", \"ed25519\": true, \"node_digest\": \"e1355cb8f022c2a52f0293fe53508d684f0f766ffeb6248421bfb5fc73f272a5\", \"platform\": \"Linux\", \"python\": \"3.12.3\", \"sqlite\": \"3.45.1\", \"workdirs\": [{\"is_dir\": true, \"path\": \"/tmp\", \"writable\": true}, {\"is_dir\": true, \"path\": \"/var/tmp\", \"writable\": true}]}\n",
+      "stderr": ""
+    }
+  ],
+  "phases": [
+    {
+      "host": "mac",
+      "step": "setup",
+      "role": "source",
+      "controller_start_elapsed_ms": 6428,
+      "idempotency_key": "hepta-v15-23f86845405a4bb8-mac-setup",
+      "job_id": "1a1a9509e12-fc05-3425",
+      "launch_state": "launched",
+      "request_digest": "4a67c473bccb7a2da322c1858c8a8a15a01511717e50992672384f27ba05801f",
+      "launch": {
+        "backend": "detached",
+        "launcher_pid": 57171,
+        "ok": true,
+        "systemd_error": "systemd user units unavailable on this platform",
+        "unit": "hepta-runtime-job-1a1a9509e12-fc05-3425"
+      },
+      "error": null,
+      "status": {
+        "at_unix_ms": 1793841995987,
+        "audit_recorded": true,
+        "automatic_retry": false,
+        "cancelled": false,
+        "exit_code": 0,
+        "job_id": "1a1a9509e12-fc05-3425",
+        "launch_nonce": "3684d937f8b5e4ee951296305d10f51d",
+        "log_bytes": {
+          "stderr": {
+            "seen": 0,
+            "stored": 0
+          },
+          "stdout": {
+            "seen": 1418,
+            "stored": 1418
+          }
+        },
+        "log_errors": {
+          "stderr": null,
+          "stdout": null
+        },
+        "log_synced": {
+          "stderr": true,
+          "stdout": true
+        },
+        "log_truncated": {
+          "stderr": false,
+          "stdout": false
+        },
+        "output_complete": true,
+        "output_durable": true,
+        "state": "succeeded",
+        "terminal_publication_confirmed": true,
+        "terminal_publication_protocol": 1,
+        "timed_out": false
+      },
+      "stdout": "{\"authority_sha256\":\"7e5a2016347718e87df147f2ae96f2e56b9813d2c11e705bf88c8649a16bbe68\",\"environment\":{\"arch\":\"arm64\",\"crypto\":\"46.0.5\",\"node_digest\":\"7587a49c3993547c3edae2b9c17c4eaa22a14c3b9e05a116c9b17b294f81f099\",\"platform\":\"Darwin\",\"python\":\"3.9.6\",\"sqlite\":\"3.51.0\"},\"measured\":{\"process_elapsed_s\":0.008615458000000006,\"process_peak_rss_bytes\":27394048,\"system_cpu_s\":0.012291999999999999,\"user_cpu_s\":0.038632},\"ok\":true,\"pid\":57173,\"result\":{\"context\":{\"authority_sha256\":\"7e5a2016347718e87df147f2ae96f2e56b9813d2c11e705bf88c8649a16bbe68\",\"public\":{\"admin\":\"b58687220d39fa7740341d7db33af90010a4fd52f22d5d52423b1aeec5b58f01\",\"owner\":\"6c69a23925f43c8a7b40f5a6078e9aa7b30cb569cd6c3985a6aa698992f5f8b8\",\"service\":\"b488f4a901b147ddd9146d57b62da761f267f7119c4c9ea85792afd2c078c832\"},\"role\":\"source\",\"run_id\":\"hepta-v15-23f86845405a4bb8\",\"worker_sha256\":\"e71df378426d8eb6c7afd8e75938741943fbdb482ec15de17c45b3f74ca12160\"},\"directory_kind\":\"isolated-temporary\",\"directory_mode\":\"0o700\",\"key_modes\":{\"admin\":\"0o600\",\"owner\":\"0o600\",\"service\":\"0o600\"},\"private_keys_exported\":false},\"role\":\"source\",\"run_id\":\"hepta-v15-23f86845405a4bb8\",\"step\":\"setup\",\"unmeasured\":{\"amortized_training_cost\":null,\"energy_joules\":null,\"lifecycle_total_cost\":null,\"network_wire_bytes\":null,\"storage_physical_bytes\":null,\"total_device_memory_bytes\":null},\"worker_sha256\":\"e71df378426d8eb6c7afd8e75938741943fbdb482ec15de17c45b3f74ca12160\"}\n",
+      "stderr": "",
+      "output_complete": true,
+      "observed": {
+        "authority_sha256": "7e5a2016347718e87df147f2ae96f2e56b9813d2c11e705bf88c8649a16bbe68",
+        "environment": {
+          "arch": "arm64",
+          "crypto": "46.0.5",
+          "node_digest": "7587a49c3993547c3edae2b9c17c4eaa22a14c3b9e05a116c9b17b294f81f099",
+          "platform": "Darwin",
+          "python": "3.9.6",
+          "sqlite": "3.51.0"
+        },
+        "measured": {
+          "process_elapsed_s": 0.008615458000000006,
+          "process_peak_rss_bytes": 27394048,
+          "system_cpu_s": 0.012291999999999999,
+          "user_cpu_s": 0.038632
+        },
+        "ok": true,
+        "pid": 57173,
+        "result": {
+          "context": {
+            "authority_sha256": "7e5a2016347718e87df147f2ae96f2e56b9813d2c11e705bf88c8649a16bbe68",
+            "public": {
+              "admin": "b58687220d39fa7740341d7db33af90010a4fd52f22d5d52423b1aeec5b58f01",
+              "owner": "6c69a23925f43c8a7b40f5a6078e9aa7b30cb569cd6c3985a6aa698992f5f8b8",
+              "service": "b488f4a901b147ddd9146d57b62da761f267f7119c4c9ea85792afd2c078c832"
+            },
+            "role": "source",
+            "run_id": "hepta-v15-23f86845405a4bb8",
+            "worker_sha256": "e71df378426d8eb6c7afd8e75938741943fbdb482ec15de17c45b3f74ca12160"
+          },
+          "directory_kind": "isolated-temporary",
+          "directory_mode": "0o700",
+          "key_modes": {
+            "admin": "0o600",
+            "owner": "0o600",
+            "service": "0o600"
+          },
+          "private_keys_exported": false
+        },
+        "role": "source",
+        "run_id": "hepta-v15-23f86845405a4bb8",
+        "step": "setup",
+        "unmeasured": {
+          "amortized_training_cost": null,
+          "energy_joules": null,
+          "lifecycle_total_cost": null,
+          "network_wire_bytes": null,
+          "storage_physical_bytes": null,
+          "total_device_memory_bytes": null
+        },
+        "worker_sha256": "e71df378426d8eb6c7afd8e75938741943fbdb482ec15de17c45b3f74ca12160"
+      }
+    },
+    {
+      "host": "pocket4",
+      "step": "setup",
+      "role": "target",
+      "controller_start_elapsed_ms": 6983,
+      "idempotency_key": "hepta-v15-23f86845405a4bb8-pocket4-setup",
+      "job_id": "1a1a9511958-fc05-342d",
+      "launch_state": "launched",
+      "request_digest": "92dc8c1a5bc69b680ca0baac5183c99b1bd9d771eb02adaa0b90eee456d1e882",
+      "launch": {
+        "backend": "systemd",
+        "launcher_pid": null,
+        "ok": true,
+        "unit": "hepta-runtime-job-1a1a9511958-fc05-342d"
+      },
+      "error": null,
+      "status": {
+        "at_unix_ms": 1793842029584,
+        "audit_recorded": true,
+        "automatic_retry": false,
+        "cancelled": false,
+        "exit_code": 0,
+        "job_id": "1a1a9511958-fc05-342d",
+        "launch_nonce": "76c78bab8b3caeec11b1c6498001d657",
+        "log_bytes": {
+          "stderr": {
+            "seen": 0,
+            "stored": 0
+          },
+          "stdout": {
+            "seen": 1222,
+            "stored": 1222
+          }
+        },
+        "log_errors": {
+          "stderr": null,
+          "stdout": null
+        },
+        "log_synced": {
+          "stderr": true,
+          "stdout": true
+        },
+        "log_truncated": {
+          "stderr": false,
+          "stdout": false
+        },
+        "output_complete": true,
+        "output_durable": true,
+        "state": "succeeded",
+        "terminal_publication_confirmed": true,
+        "terminal_publication_protocol": 1,
+        "timed_out": false
+      },
+      "stdout": "{\"authority_sha256\":\"7e5a2016347718e87df147f2ae96f2e56b9813d2c11e705bf88c8649a16bbe68\",\"environment\":{\"arch\":\"x86_64\",\"crypto\":\"46.0.5\",\"node_digest\":\"54d6a54e456bc672a4490b3695adb364566eef77976002732b47d78c3b9ee980\",\"platform\":\"Linux\",\"python\":\"3.14.4\",\"sqlite\":\"3.46.1\"},\"measured\":{\"process_elapsed_s\":0.033788383938372135,\"process_peak_rss_bytes\":31096832,\"system_cpu_s\":0.014138,\"user_cpu_s\":0.047466},\"ok\":true,\"pid\":912117,\"result\":{\"context\":{\"authority_sha256\":\"7e5a2016347718e87df147f2ae96f2e56b9813d2c11e705bf88c8649a16bbe68\",\"public\":{\"owner\":\"db68ed72cba2d91fc83f5c75d7727dbf118b8770d0f1772f28fc56eb01f5f1a6\"},\"role\":\"target\",\"run_id\":\"hepta-v15-23f86845405a4bb8\",\"worker_sha256\":\"e71df378426d8eb6c7afd8e75938741943fbdb482ec15de17c45b3f74ca12160\"},\"directory_kind\":\"isolated-temporary\",\"directory_mode\":\"0o700\",\"key_modes\":{\"owner\":\"0o600\"},\"private_keys_exported\":false},\"role\":\"target\",\"run_id\":\"hepta-v15-23f86845405a4bb8\",\"step\":\"setup\",\"unmeasured\":{\"amortized_training_cost\":null,\"energy_joules\":null,\"lifecycle_total_cost\":null,\"network_wire_bytes\":null,\"storage_physical_bytes\":null,\"total_device_memory_bytes\":null},\"worker_sha256\":\"e71df378426d8eb6c7afd8e75938741943fbdb482ec15de17c45b3f74ca12160\"}\n",
+      "stderr": "",
+      "output_complete": true,
+      "observed": {
+        "authority_sha256": "7e5a2016347718e87df147f2ae96f2e56b9813d2c11e705bf88c8649a16bbe68",
+        "environment": {
+          "arch": "x86_64",
+          "crypto": "46.0.5",
+          "node_digest": "54d6a54e456bc672a4490b3695adb364566eef77976002732b47d78c3b9ee980",
+          "platform": "Linux",
+          "python": "3.14.4",
+          "sqlite": "3.46.1"
+        },
+        "measured": {
+          "process_elapsed_s": 0.033788383938372135,
+          "process_peak_rss_bytes": 31096832,
+          "system_cpu_s": 0.014138,
+          "user_cpu_s": 0.047466
+        },
+        "ok": true,
+        "pid": 912117,
+        "result": {
+          "context": {
+            "authority_sha256": "7e5a2016347718e87df147f2ae96f2e56b9813d2c11e705bf88c8649a16bbe68",
+            "public": {
+              "owner": "db68ed72cba2d91fc83f5c75d7727dbf118b8770d0f1772f28fc56eb01f5f1a6"
+            },
+            "role": "target",
+            "run_id": "hepta-v15-23f86845405a4bb8",
+            "worker_sha256": "e71df378426d8eb6c7afd8e75938741943fbdb482ec15de17c45b3f74ca12160"
+          },
+          "directory_kind": "isolated-temporary",
+          "directory_mode": "0o700",
+          "key_modes": {
+            "owner": "0o600"
+          },
+          "private_keys_exported": false
+        },
+        "role": "target",
+        "run_id": "hepta-v15-23f86845405a4bb8",
+        "step": "setup",
+        "unmeasured": {
+          "amortized_training_cost": null,
+          "energy_joules": null,
+          "lifecycle_total_cost": null,
+          "network_wire_bytes": null,
+          "storage_physical_bytes": null,
+          "total_device_memory_bytes": null
+        },
+        "worker_sha256": "e71df378426d8eb6c7afd8e75938741943fbdb482ec15de17c45b3f74ca12160"
+      }
+    },
+    {
+      "host": "mac",
+      "step": "bootstrap",
+      "role": "source",
+      "controller_start_elapsed_ms": 12394,
+      "job_id": "1a1a9529d94-fc05-3444",
+      "idempotency_key": "hepta-v15-23f86845405a4bb8-mac-bootstrap",
+      "request_digest": "35c6b0d011e48ad6d436a26beca91c6d0ae9d5e665fef09b636d8d83e240eedc",
+      "launch_state": "launched",
+      "launch": {
+        "backend": "detached",
+        "launcher_pid": 58606,
+        "ok": true,
+        "systemd_error": "systemd user units unavailable on this platform",
+        "unit": "hepta-runtime-job-1a1a9529d94-fc05-3444"
+      },
+      "input": {
+        "target_public": "db68ed72cba2d91fc83f5c75d7727dbf118b8770d0f1772f28fc56eb01f5f1a6"
+      },
+      "application_stdin_bytes": 84,
+      "error": null,
+      "status": {
+        "at_unix_ms": 1793842129470,
+        "audit_recorded": true,
+        "automatic_retry": false,
+        "cancelled": false,
+        "exit_code": 0,
+        "job_id": "1a1a9529d94-fc05-3444",
+        "launch_nonce": "76aaa191e704b7ad419b642510013ed2",
+        "log_bytes": {
+          "stderr": {
+            "seen": 0,
+            "stored": 0
+          },
+          "stdout": {
+            "seen": 5435,
+            "stored": 5435
+          }
+        },
+        "log_errors": {
+          "stderr": null,
+          "stdout": null
+        },
+        "log_synced": {
+          "stderr": true,
+          "stdout": true
+        },
+        "log_truncated": {
+          "stderr": false,
+          "stdout": false
+        },
+        "output_complete": true,
+        "output_durable": true,
+        "state": "succeeded",
+        "terminal_publication_confirmed": true,
+        "terminal_publication_protocol": 1,
+        "timed_out": false
+      },
+      "stdout": "{\"authority_sha256\":\"7e5a2016347718e87df147f2ae96f2e56b9813d2c11e705bf88c8649a16bbe68\",\"environment\":{\"arch\":\"arm64\",\"crypto\":\"46.0.5\",\"node_digest\":\"7587a49c3993547c3edae2b9c17c4eaa22a14c3b9e05a116c9b17b294f81f099\",\"platform\":\"Darwin\",\"python\":\"3.9.6\",\"sqlite\":\"3.51.0\"},\"measured\":{\"process_elapsed_s\":0.027734625,\"process_peak_rss_bytes\":27590656,\"system_cpu_s\":0.019961,\"user_cpu_s\":0.043354},\"ok\":true,\"pid\":58612,\"result\":{\"authority_public\":\"b488f4a901b147ddd9146d57b62da761f267f7119c4c9ea85792afd2c078c832\",\"bundle\":{\"id\":\"e6776564499a641af1dccf74f70ff6611443565e1af755437397ade99f183d43\",\"manifest\":{\"acl\":[\"6c69a23925f43c8a7b40f5a6078e9aa7b30cb569cd6c3985a6aa698992f5f8b8\",\"db68ed72cba2d91fc83f5c75d7727dbf118b8770d0f1772f28fc56eb01f5f1a6\"],\"addresses\":[\"fixture\"],\"components\":{\"calibration\":\"d7a3bb14f7f8fab74c244d9774ec5fa00835b415e14ca0f56d1395c6b01f1513\",\"encoder\":\"d7a3bb14f7f8fab74c244d9774ec5fa00835b415e14ca0f56d1395c6b01f1513\",\"memory\":\"2eb75331cae2783f52cf74ff5cf31434cc52b2ca6e43e642b94ed114f1ca698c\",\"model\":\"03837d7ad14fb977dd8ac9b7d02911f400beb16c6d8dba2c66709843391f6722\",\"optimizer\":\"d7a3bb14f7f8fab74c244d9774ec5fa00835b415e14ca0f56d1395c6b01f1513\",\"rng\":\"d7a3bb14f7f8fab74c244d9774ec5fa00835b415e14ca0f56d1395c6b01f1513\",\"routing\":\"e28b258942a91d6ab83310539630ab89c759bfe3c2330d488580f592099274aa\",\"runtime\":\"bfd7214c29a97babfc94db47c4654ebc15d46298d64135aedd59344324c1ddcd\",\"sampler\":\"d7a3bb14f7f8fab74c244d9774ec5fa00835b415e14ca0f56d1395c6b01f1513\",\"schema\":\"2d2a18fe632dee4f0f9e2189ef4763b17847b24b386ab0f8278576c525194a41\",\"tokenizer\":\"d7a3bb14f7f8fab74c244d9774ec5fa00835b415e14ca0f56d1395c6b01f1513\"},\"format\":\"hepta.memory-cell.v15\",\"scope\":\"hepta-v15-23f86845405a4bb8\",\"sources\":[{\"hash\":\"2eb75331cae2783f52cf74ff5cf31434cc52b2ca6e43e642b94ed114f1ca698c\",\"id\":\"memory-input\",\"revision\":1}]},\"objects\":{\"calibration\":\"6578706c696369742d6e6f742d747261696e65642d666978747572652d736c6f74\",\"encoder\":\"6578706c696369742d6e6f742d747261696e65642d666978747572652d736c6f74\",\"memory\":\"7b22696e70757473223a5b5b332c345d2c5b352c2d325d2c5b302c375d5d2c2273636f7065223a2273796e746865746963227d\",\"model\":\"7b2262696173223a5b302c315d2c226b696e64223a22696e74656765722d6d61747269782d7631222c2277656967687473223a5b5b312c325d2c5b2d312c335d5d7d\",\"optimizer\":\"6578706c696369742d6e6f742d747261696e65642d666978747572652d736c6f74\",\"rng\":\"6578706c696369742d6e6f742d747261696e65642d666978747572652d736c6f74\",\"routing\":\"7b2261646472657373223a2266697874757265222c226d6f6465223a226578616374227d\",\"runtime\":\"696e74656765722d6d61747269782d7631\",\"sampler\":\"6578706c696369742d6e6f742d747261696e65642d666978747572652d736c6f74\",\"schema\":\"7b22696e70757473223a22696e74656765722d766563746f7273222c2276657273696f6e223a317d\",\"tokenizer\":\"6578706c696369742d6e6f742d747261696e65642d666978747572652d736c6f74\"}},\"component_bytes\":408,\"create_receipt\":{\"authority\":\"b488f4a901b147ddd9146d57b62da761f267f7119c4c9ea85792afd2c078c832\",\"command_hash\":\"21ca654667a48c78035c2d6fd10b5c4dcb371eb79cf8d75c264979c2cdac31e4\",\"domain\":\"hepta.memory-cell.v15\",\"request_id\":\"hepta-v15-23f86845405a4bb8-create\",\"result\":{\"bundle\":\"e6776564499a641af1dccf74f70ff6611443565e1af755437397ade99f183d43\",\"cell\":\"cell\",\"epoch\":1,\"evidence\":\"0e05a1e70248e252f30a160004315432de12542d6739ddf6a91175fa961d55cb\",\"owner\":\"6c69a23925f43c8a7b40f5a6078e9aa7b30cb569cd6c3985a6aa698992f5f8b8\"},\"signature\":\"bfb41b60a1a99778f8d822c9d5d386796ee795cc8fbadfc0dd1073d5305b4216c7e5fc9f4c674941d5c9a332408fe5bd19ca2f34ad24073d5a2c5cd3ad803a0f\"},\"prepare_receipt\":{\"authority\":\"b488f4a901b147ddd9146d57b62da761f267f7119c4c9ea85792afd2c078c832\",\"command_hash\":\"5595cd1c582f06dc2b62da7328bb44d61460888d71ee01357cfef81bff142815\",\"domain\":\"hepta.memory-cell.v15\",\"request_id\":\"hepta-v15-23f86845405a4bb8-prepare\",\"result\":{\"bundle\":\"e6776564499a641af1dccf74f70ff6611443565e1af755437397ade99f183d43\",\"epoch\":2,\"state\":\"prepared\",\"transfer\":\"transfer\"},\"signature\":\"3a9d86cd8c83b596b180b1b145d247e28a218c9a497d81a6a1611c0bec11ac686f77bd0fe034cb979926289204df9349fbec7d86516bf747448c3f8b4f5fd509\"},\"prepare_request\":{\"actor\":\"6c69a23925f43c8a7b40f5a6078e9aa7b30cb569cd6c3985a6aa698992f5f8b8\",\"args\":{\"cell\":\"cell\",\"epoch\":1,\"expected\":\"e6776564499a641af1dccf74f70ff6611443565e1af755437397ade99f183d43\",\"target\":\"db68ed72cba2d91fc83f5c75d7727dbf118b8770d0f1772f28fc56eb01f5f1a6\",\"transfer\":\"transfer\"},\"authority\":\"b488f4a901b147ddd9146d57b62da761f267f7119c4c9ea85792afd2c078c832\",\"domain\":\"hepta.memory-cell.v15\",\"operation\":\"prepare\",\"request_id\":\"hepta-v15-23f86845405a4bb8-prepare\",\"signature\":\"9da9bf6b68087de23a7041ed89a0a8bc7d6afb1261567dd78b5ae44695d443ff0b30bdb6e83b40fd4545c1f4cdc15d15a6c3b8596739a946becc231d335c3503\"},\"source_public\":\"6c69a23925f43c8a7b40f5a6078e9aa7b30cb569cd6c3985a6aa698992f5f8b8\",\"source_result\":{\"kind\":\"finite-integer-matrix-not-language\",\"memory_hash\":\"2eb75331cae2783f52cf74ff5cf31434cc52b2ca6e43e642b94ed114f1ca698c\",\"model_hash\":\"03837d7ad14fb977dd8ac9b7d02911f400beb16c6d8dba2c66709843391f6722\",\"output_digest\":\"a4f11ca1323a40943a01ca37fac2c6e7b78040041f8b5393e26dd316fe9a2311\",\"outputs\":[[11,10],[1,-10],[14,22]]}},\"role\":\"source\",\"run_id\":\"hepta-v15-23f86845405a4bb8\",\"step\":\"bootstrap\",\"unmeasured\":{\"amortized_training_cost\":null,\"energy_joules\":null,\"lifecycle_total_cost\":null,\"network_wire_bytes\":null,\"storage_physical_bytes\":null,\"total_device_memory_bytes\":null},\"worker_sha256\":\"e71df378426d8eb6c7afd8e75938741943fbdb482ec15de17c45b3f74ca12160\"}\n",
+      "stderr": "",
+      "output_complete": true,
+      "observed": {
+        "authority_sha256": "7e5a2016347718e87df147f2ae96f2e56b9813d2c11e705bf88c8649a16bbe68",
+        "environment": {
+          "arch": "arm64",
+          "crypto": "46.0.5",
+          "node_digest": "7587a49c3993547c3edae2b9c17c4eaa22a14c3b9e05a116c9b17b294f81f099",
+          "platform": "Darwin",
+          "python": "3.9.6",
+          "sqlite": "3.51.0"
+        },
+        "measured": {
+          "process_elapsed_s": 0.027734625,
+          "process_peak_rss_bytes": 27590656,
+          "system_cpu_s": 0.019961,
+          "user_cpu_s": 0.043354
+        },
+        "ok": true,
+        "pid": 58612,
+        "result": {
+          "authority_public": "b488f4a901b147ddd9146d57b62da761f267f7119c4c9ea85792afd2c078c832",
+          "bundle": {
+            "id": "e6776564499a641af1dccf74f70ff6611443565e1af755437397ade99f183d43",
+            "manifest": {
+              "acl": [
+                "6c69a23925f43c8a7b40f5a6078e9aa7b30cb569cd6c3985a6aa698992f5f8b8",
+                "db68ed72cba2d91fc83f5c75d7727dbf118b8770d0f1772f28fc56eb01f5f1a6"
+              ],
+              "addresses": [
+                "fixture"
+              ],
+              "components": {
+                "calibration": "d7a3bb14f7f8fab74c244d9774ec5fa00835b415e14ca0f56d1395c6b01f1513",
+                "encoder": "d7a3bb14f7f8fab74c244d9774ec5fa00835b415e14ca0f56d1395c6b01f1513",
+                "memory": "2eb75331cae2783f52cf74ff5cf31434cc52b2ca6e43e642b94ed114f1ca698c",
+                "model": "03837d7ad14fb977dd8ac9b7d02911f400beb16c6d8dba2c66709843391f6722",
+                "optimizer": "d7a3bb14f7f8fab74c244d9774ec5fa00835b415e14ca0f56d1395c6b01f1513",
+                "rng": "d7a3bb14f7f8fab74c244d9774ec5fa00835b415e14ca0f56d1395c6b01f1513",
+                "routing": "e28b258942a91d6ab83310539630ab89c759bfe3c2330d488580f592099274aa",
+                "runtime": "bfd7214c29a97babfc94db47c4654ebc15d46298d64135aedd59344324c1ddcd",
+                "sampler": "d7a3bb14f7f8fab74c244d9774ec5fa00835b415e14ca0f56d1395c6b01f1513",
+                "schema": "2d2a18fe632dee4f0f9e2189ef4763b17847b24b386ab0f8278576c525194a41",
+                "tokenizer": "d7a3bb14f7f8fab74c244d9774ec5fa00835b415e14ca0f56d1395c6b01f1513"
+              },
+              "format": "hepta.memory-cell.v15",
+              "scope": "hepta-v15-23f86845405a4bb8",
+              "sources": [
+                {
+                  "hash": "2eb75331cae2783f52cf74ff5cf31434cc52b2ca6e43e642b94ed114f1ca698c",
+                  "id": "memory-input",
+                  "revision": 1
+                }
+              ]
+            },
+            "objects": {
+              "calibration": "6578706c696369742d6e6f742d747261696e65642d666978747572652d736c6f74",
+              "encoder": "6578706c696369742d6e6f742d747261696e65642d666978747572652d736c6f74",
+              "memory": "7b22696e70757473223a5b5b332c345d2c5b352c2d325d2c5b302c375d5d2c2273636f7065223a2273796e746865746963227d",
+              "model": "7b2262696173223a5b302c315d2c226b696e64223a22696e74656765722d6d61747269782d7631222c2277656967687473223a5b5b312c325d2c5b2d312c335d5d7d",
+              "optimizer": "6578706c696369742d6e6f742d747261696e65642d666978747572652d736c6f74",
+              "rng": "6578706c696369742d6e6f742d747261696e65642d666978747572652d736c6f74",
+              "routing": "7b2261646472657373223a2266697874757265222c226d6f6465223a226578616374227d",
+              "runtime": "696e74656765722d6d61747269782d7631",
+              "sampler": "6578706c696369742d6e6f742d747261696e65642d666978747572652d736c6f74",
+              "schema": "7b22696e70757473223a22696e74656765722d766563746f7273222c2276657273696f6e223a317d",
+              "tokenizer": "6578706c696369742d6e6f742d747261696e65642d666978747572652d736c6f74"
+            }
+          },
+          "component_bytes": 408,
+          "create_receipt": {
+            "authority": "b488f4a901b147ddd9146d57b62da761f267f7119c4c9ea85792afd2c078c832",
+            "command_hash": "21ca654667a48c78035c2d6fd10b5c4dcb371eb79cf8d75c264979c2cdac31e4",
+            "domain": "hepta.memory-cell.v15",
+            "request_id": "hepta-v15-23f86845405a4bb8-create",
+            "result": {
+              "bundle": "e6776564499a641af1dccf74f70ff6611443565e1af755437397ade99f183d43",
+              "cell": "cell",
+              "epoch": 1,
+              "evidence": "0e05a1e70248e252f30a160004315432de12542d6739ddf6a91175fa961d55cb",
+              "owner": "6c69a23925f43c8a7b40f5a6078e9aa7b30cb569cd6c3985a6aa698992f5f8b8"
+            },
+            "signature": "bfb41b60a1a99778f8d822c9d5d386796ee795cc8fbadfc0dd1073d5305b4216c7e5fc9f4c674941d5c9a332408fe5bd19ca2f34ad24073d5a2c5cd3ad803a0f"
+          },
+          "prepare_receipt": {
+            "authority": "b488f4a901b147ddd9146d57b62da761f267f7119c4c9ea85792afd2c078c832",
+            "command_hash": "5595cd1c582f06dc2b62da7328bb44d61460888d71ee01357cfef81bff142815",
+            "domain": "hepta.memory-cell.v15",
+            "request_id": "hepta-v15-23f86845405a4bb8-prepare",
+            "result": {
+              "bundle": "e6776564499a641af1dccf74f70ff6611443565e1af755437397ade99f183d43",
+              "epoch": 2,
+              "state": "prepared",
+              "transfer": "transfer"
+            },
+            "signature": "3a9d86cd8c83b596b180b1b145d247e28a218c9a497d81a6a1611c0bec11ac686f77bd0fe034cb979926289204df9349fbec7d86516bf747448c3f8b4f5fd509"
+          },
+          "prepare_request": {
+            "actor": "6c69a23925f43c8a7b40f5a6078e9aa7b30cb569cd6c3985a6aa698992f5f8b8",
+            "args": {
+              "cell": "cell",
+              "epoch": 1,
+              "expected": "e6776564499a641af1dccf74f70ff6611443565e1af755437397ade99f183d43",
+              "target": "db68ed72cba2d91fc83f5c75d7727dbf118b8770d0f1772f28fc56eb01f5f1a6",
+              "transfer": "transfer"
+            },
+            "authority": "b488f4a901b147ddd9146d57b62da761f267f7119c4c9ea85792afd2c078c832",
+            "domain": "hepta.memory-cell.v15",
+            "operation": "prepare",
+            "request_id": "hepta-v15-23f86845405a4bb8-prepare",
+            "signature": "9da9bf6b68087de23a7041ed89a0a8bc7d6afb1261567dd78b5ae44695d443ff0b30bdb6e83b40fd4545c1f4cdc15d15a6c3b8596739a946becc231d335c3503"
+          },
+          "source_public": "6c69a23925f43c8a7b40f5a6078e9aa7b30cb569cd6c3985a6aa698992f5f8b8",
+          "source_result": {
+            "kind": "finite-integer-matrix-not-language",
+            "memory_hash": "2eb75331cae2783f52cf74ff5cf31434cc52b2ca6e43e642b94ed114f1ca698c",
+            "model_hash": "03837d7ad14fb977dd8ac9b7d02911f400beb16c6d8dba2c66709843391f6722",
+            "output_digest": "a4f11ca1323a40943a01ca37fac2c6e7b78040041f8b5393e26dd316fe9a2311",
+            "outputs": [
+              [
+                11,
+                10
+              ],
+              [
+                1,
+                -10
+              ],
+              [
+                14,
+                22
+              ]
+            ]
+          }
+        },
+        "role": "source",
+        "run_id": "hepta-v15-23f86845405a4bb8",
+        "step": "bootstrap",
+        "unmeasured": {
+          "amortized_training_cost": null,
+          "energy_joules": null,
+          "lifecycle_total_cost": null,
+          "network_wire_bytes": null,
+          "storage_physical_bytes": null,
+          "total_device_memory_bytes": null
+        },
+        "worker_sha256": "e71df378426d8eb6c7afd8e75938741943fbdb482ec15de17c45b3f74ca12160"
+      }
+    },
+    {
+      "host": "pocket4",
+      "step": "persist",
+      "role": "target",
+      "job_id": "1a1a9533094-fc05-344a",
+      "idempotency_key": "hepta-v15-23f86845405a4bb8-pocket4-persist",
+      "request_digest": "1657ac7380ca6ce23ad5df6933a141c1ffd38522f289d6215a8011dbce8e9945",
+      "launch_state": "launched",
+      "launch": {
+        "backend": "systemd",
+        "launcher_pid": null,
+        "ok": true,
+        "unit": "hepta-runtime-job-1a1a9533094-fc05-344a"
+      },
+      "input": {
+        "bundle": {
+          "id": "e6776564499a641af1dccf74f70ff6611443565e1af755437397ade99f183d43",
+          "manifest": {
+            "acl": [
+              "6c69a23925f43c8a7b40f5a6078e9aa7b30cb569cd6c3985a6aa698992f5f8b8",
+              "db68ed72cba2d91fc83f5c75d7727dbf118b8770d0f1772f28fc56eb01f5f1a6"
+            ],
+            "addresses": [
+              "fixture"
+            ],
+            "components": {
+              "calibration": "d7a3bb14f7f8fab74c244d9774ec5fa00835b415e14ca0f56d1395c6b01f1513",
+              "encoder": "d7a3bb14f7f8fab74c244d9774ec5fa00835b415e14ca0f56d1395c6b01f1513",
+              "memory": "2eb75331cae2783f52cf74ff5cf31434cc52b2ca6e43e642b94ed114f1ca698c",
+              "model": "03837d7ad14fb977dd8ac9b7d02911f400beb16c6d8dba2c66709843391f6722",
+              "optimizer": "d7a3bb14f7f8fab74c244d9774ec5fa00835b415e14ca0f56d1395c6b01f1513",
+              "rng": "d7a3bb14f7f8fab74c244d9774ec5fa00835b415e14ca0f56d1395c6b01f1513",
+              "routing": "e28b258942a91d6ab83310539630ab89c759bfe3c2330d488580f592099274aa",
+              "runtime": "bfd7214c29a97babfc94db47c4654ebc15d46298d64135aedd59344324c1ddcd",
+              "sampler": "d7a3bb14f7f8fab74c244d9774ec5fa00835b415e14ca0f56d1395c6b01f1513",
+              "schema": "2d2a18fe632dee4f0f9e2189ef4763b17847b24b386ab0f8278576c525194a41",
+              "tokenizer": "d7a3bb14f7f8fab74c244d9774ec5fa00835b415e14ca0f56d1395c6b01f1513"
+            },
+            "format": "hepta.memory-cell.v15",
+            "scope": "hepta-v15-23f86845405a4bb8",
+            "sources": [
+              {
+                "hash": "2eb75331cae2783f52cf74ff5cf31434cc52b2ca6e43e642b94ed114f1ca698c",
+                "id": "memory-input",
+                "revision": 1
+              }
+            ]
+          },
+          "objects": {
+            "calibration": "6578706c696369742d6e6f742d747261696e65642d666978747572652d736c6f74",
+            "encoder": "6578706c696369742d6e6f742d747261696e65642d666978747572652d736c6f74",
+            "memory": "7b22696e70757473223a5b5b332c345d2c5b352c2d325d2c5b302c375d5d2c2273636f7065223a2273796e746865746963227d",
+            "model": "7b2262696173223a5b302c315d2c226b696e64223a22696e74656765722d6d61747269782d7631222c2277656967687473223a5b5b312c325d2c5b2d312c335d5d7d",
+            "optimizer": "6578706c696369742d6e6f742d747261696e65642d666978747572652d736c6f74",
+            "rng": "6578706c696369742d6e6f742d747261696e65642d666978747572652d736c6f74",
+            "routing": "7b2261646472657373223a2266697874757265222c226d6f6465223a226578616374227d",
+            "runtime": "696e74656765722d6d61747269782d7631",
+            "sampler": "6578706c696369742d6e6f742d747261696e65642d666978747572652d736c6f74",
+            "schema": "7b22696e70757473223a22696e74656765722d766563746f7273222c2276657273696f6e223a317d",
+            "tokenizer": "6578706c696369742d6e6f742d747261696e65642d666978747572652d736c6f74"
+          }
+        },
+        "prepare_request": {
+          "actor": "6c69a23925f43c8a7b40f5a6078e9aa7b30cb569cd6c3985a6aa698992f5f8b8",
+          "args": {
+            "cell": "cell",
+            "epoch": 1,
+            "expected": "e6776564499a641af1dccf74f70ff6611443565e1af755437397ade99f183d43",
+            "target": "db68ed72cba2d91fc83f5c75d7727dbf118b8770d0f1772f28fc56eb01f5f1a6",
+            "transfer": "transfer"
+          },
+          "authority": "b488f4a901b147ddd9146d57b62da761f267f7119c4c9ea85792afd2c078c832",
+          "domain": "hepta.memory-cell.v15",
+          "operation": "prepare",
+          "request_id": "hepta-v15-23f86845405a4bb8-prepare",
+          "signature": "9da9bf6b68087de23a7041ed89a0a8bc7d6afb1261567dd78b5ae44695d443ff0b30bdb6e83b40fd4545c1f4cdc15d15a6c3b8596739a946becc231d335c3503"
+        },
+        "prepare_receipt": {
+          "authority": "b488f4a901b147ddd9146d57b62da761f267f7119c4c9ea85792afd2c078c832",
+          "command_hash": "5595cd1c582f06dc2b62da7328bb44d61460888d71ee01357cfef81bff142815",
+          "domain": "hepta.memory-cell.v15",
+          "request_id": "hepta-v15-23f86845405a4bb8-prepare",
+          "result": {
+            "bundle": "e6776564499a641af1dccf74f70ff6611443565e1af755437397ade99f183d43",
+            "epoch": 2,
+            "state": "prepared",
+            "transfer": "transfer"
+          },
+          "signature": "3a9d86cd8c83b596b180b1b145d247e28a218c9a497d81a6a1611c0bec11ac686f77bd0fe034cb979926289204df9349fbec7d86516bf747448c3f8b4f5fd509"
+        },
+        "authority_public": "b488f4a901b147ddd9146d57b62da761f267f7119c4c9ea85792afd2c078c832",
+        "source_public": "6c69a23925f43c8a7b40f5a6078e9aa7b30cb569cd6c3985a6aa698992f5f8b8"
+      },
+      "application_stdin_bytes": 3632,
+      "controller_start_elapsed_ms": 11939,
+      "error": null,
+      "status": {
+        "at_unix_ms": 1793842165274,
+        "audit_recorded": true,
+        "automatic_retry": false,
+        "cancelled": false,
+        "exit_code": 0,
+        "job_id": "1a1a9533094-fc05-344a",
+        "launch_nonce": "42e2c76b4a09bf30226fb80b10c02767",
+        "log_bytes": {
+          "stderr": {
+            "seen": 0,
+            "stored": 0
+          },
+          "stdout": {
+            "seen": 2070,
+            "stored": 2070
+          }
+        },
+        "log_errors": {
+          "stderr": null,
+          "stdout": null
+        },
+        "log_synced": {
+          "stderr": true,
+          "stdout": true
+        },
+        "log_truncated": {
+          "stderr": false,
+          "stdout": false
+        },
+        "output_complete": true,
+        "output_durable": true,
+        "state": "succeeded",
+        "terminal_publication_confirmed": true,
+        "terminal_publication_protocol": 1,
+        "timed_out": false
+      },
+      "stdout": "{\"authority_sha256\":\"7e5a2016347718e87df147f2ae96f2e56b9813d2c11e705bf88c8649a16bbe68\",\"environment\":{\"arch\":\"x86_64\",\"crypto\":\"46.0.5\",\"node_digest\":\"54d6a54e456bc672a4490b3695adb364566eef77976002732b47d78c3b9ee980\",\"platform\":\"Linux\",\"python\":\"3.14.4\",\"sqlite\":\"3.46.1\"},\"measured\":{\"process_elapsed_s\":0.01131351396907121,\"process_peak_rss_bytes\":30175232,\"system_cpu_s\":0.008953,\"user_cpu_s\":0.037805},\"ok\":true,\"pid\":915954,\"result\":{\"stage_receipt\":{\"actor\":\"db68ed72cba2d91fc83f5c75d7727dbf118b8770d0f1772f28fc56eb01f5f1a6\",\"bundle\":\"e6776564499a641af1dccf74f70ff6611443565e1af755437397ade99f183d43\",\"component_bytes\":408,\"component_hashes\":{\"calibration\":\"d7a3bb14f7f8fab74c244d9774ec5fa00835b415e14ca0f56d1395c6b01f1513\",\"encoder\":\"d7a3bb14f7f8fab74c244d9774ec5fa00835b415e14ca0f56d1395c6b01f1513\",\"memory\":\"2eb75331cae2783f52cf74ff5cf31434cc52b2ca6e43e642b94ed114f1ca698c\",\"model\":\"03837d7ad14fb977dd8ac9b7d02911f400beb16c6d8dba2c66709843391f6722\",\"optimizer\":\"d7a3bb14f7f8fab74c244d9774ec5fa00835b415e14ca0f56d1395c6b01f1513\",\"rng\":\"d7a3bb14f7f8fab74c244d9774ec5fa00835b415e14ca0f56d1395c6b01f1513\",\"routing\":\"e28b258942a91d6ab83310539630ab89c759bfe3c2330d488580f592099274aa\",\"runtime\":\"bfd7214c29a97babfc94db47c4654ebc15d46298d64135aedd59344324c1ddcd\",\"sampler\":\"d7a3bb14f7f8fab74c244d9774ec5fa00835b415e14ca0f56d1395c6b01f1513\",\"schema\":\"2d2a18fe632dee4f0f9e2189ef4763b17847b24b386ab0f8278576c525194a41\",\"tokenizer\":\"d7a3bb14f7f8fab74c244d9774ec5fa00835b415e14ca0f56d1395c6b01f1513\"},\"directory_fsync\":true,\"file_fsync\":true,\"kind\":\"persisted-stage\",\"signature\":\"8a3520098552eb55c5ac805d604182ad783fc6fb4e6c5f908802d36b7609eb4554c5c820f76b931755a5abddb6500a067c58c831e2a5b7b99ab5d49413d13e0f\",\"transport_bytes\":2276}},\"role\":\"target\",\"run_id\":\"hepta-v15-23f86845405a4bb8\",\"step\":\"persist\",\"unmeasured\":{\"amortized_training_cost\":null,\"energy_joules\":null,\"lifecycle_total_cost\":null,\"network_wire_bytes\":null,\"storage_physical_bytes\":null,\"total_device_memory_bytes\":null},\"worker_sha256\":\"e71df378426d8eb6c7afd8e75938741943fbdb482ec15de17c45b3f74ca12160\"}\n",
+      "stderr": "",
+      "output_complete": true,
+      "observed": {
+        "authority_sha256": "7e5a2016347718e87df147f2ae96f2e56b9813d2c11e705bf88c8649a16bbe68",
+        "environment": {
+          "arch": "x86_64",
+          "crypto": "46.0.5",
+          "node_digest": "54d6a54e456bc672a4490b3695adb364566eef77976002732b47d78c3b9ee980",
+          "platform": "Linux",
+          "python": "3.14.4",
+          "sqlite": "3.46.1"
+        },
+        "measured": {
+          "process_elapsed_s": 0.01131351396907121,
+          "process_peak_rss_bytes": 30175232,
+          "system_cpu_s": 0.008953,
+          "user_cpu_s": 0.037805
+        },
+        "ok": true,
+        "pid": 915954,
+        "result": {
+          "stage_receipt": {
+            "actor": "db68ed72cba2d91fc83f5c75d7727dbf118b8770d0f1772f28fc56eb01f5f1a6",
+            "bundle": "e6776564499a641af1dccf74f70ff6611443565e1af755437397ade99f183d43",
+            "component_bytes": 408,
+            "component_hashes": {
+              "calibration": "d7a3bb14f7f8fab74c244d9774ec5fa00835b415e14ca0f56d1395c6b01f1513",
+              "encoder": "d7a3bb14f7f8fab74c244d9774ec5fa00835b415e14ca0f56d1395c6b01f1513",
+              "memory": "2eb75331cae2783f52cf74ff5cf31434cc52b2ca6e43e642b94ed114f1ca698c",
+              "model": "03837d7ad14fb977dd8ac9b7d02911f400beb16c6d8dba2c66709843391f6722",
+              "optimizer": "d7a3bb14f7f8fab74c244d9774ec5fa00835b415e14ca0f56d1395c6b01f1513",
+              "rng": "d7a3bb14f7f8fab74c244d9774ec5fa00835b415e14ca0f56d1395c6b01f1513",
+              "routing": "e28b258942a91d6ab83310539630ab89c759bfe3c2330d488580f592099274aa",
+              "runtime": "bfd7214c29a97babfc94db47c4654ebc15d46298d64135aedd59344324c1ddcd",
+              "sampler": "d7a3bb14f7f8fab74c244d9774ec5fa00835b415e14ca0f56d1395c6b01f1513",
+              "schema": "2d2a18fe632dee4f0f9e2189ef4763b17847b24b386ab0f8278576c525194a41",
+              "tokenizer": "d7a3bb14f7f8fab74c244d9774ec5fa00835b415e14ca0f56d1395c6b01f1513"
+            },
+            "directory_fsync": true,
+            "file_fsync": true,
+            "kind": "persisted-stage",
+            "signature": "8a3520098552eb55c5ac805d604182ad783fc6fb4e6c5f908802d36b7609eb4554c5c820f76b931755a5abddb6500a067c58c831e2a5b7b99ab5d49413d13e0f",
+            "transport_bytes": 2276
+          }
+        },
+        "role": "target",
+        "run_id": "hepta-v15-23f86845405a4bb8",
+        "step": "persist",
+        "unmeasured": {
+          "amortized_training_cost": null,
+          "energy_joules": null,
+          "lifecycle_total_cost": null,
+          "network_wire_bytes": null,
+          "storage_physical_bytes": null,
+          "total_device_memory_bytes": null
+        },
+        "worker_sha256": "e71df378426d8eb6c7afd8e75938741943fbdb482ec15de17c45b3f74ca12160"
+      }
+    },
+    {
+      "host": "pocket4",
+      "step": "cold_ready",
+      "role": "target",
+      "job_id": "1a1a9544fe3-fc05-3450",
+      "idempotency_key": "hepta-v15-23f86845405a4bb8-pocket4-cold-ready",
+      "request_digest": "bd634fd0d4dc6aa51692e61b141b56b17f4a676ce81dac6ac0231047818fcdfe",
+      "launch_state": "launched",
+      "launch": {
+        "backend": "systemd",
+        "launcher_pid": null,
+        "ok": true,
+        "unit": "hepta-runtime-job-1a1a9544fe3-fc05-3450"
+      },
+      "input": {},
+      "application_stdin_bytes": 2,
+      "controller_start_elapsed_ms": 4152,
+      "error": null,
+      "status": {
+        "at_unix_ms": 1793842238796,
+        "audit_recorded": true,
+        "automatic_retry": false,
+        "cancelled": false,
+        "exit_code": 0,
+        "job_id": "1a1a9544fe3-fc05-3450",
+        "launch_nonce": "bb223d310bfd88cbf637da49e8c43098",
+        "log_bytes": {
+          "stderr": {
+            "seen": 0,
+            "stored": 0
+          },
+          "stdout": {
+            "seen": 4939,
+            "stored": 4939
+          }
+        },
+        "log_errors": {
+          "stderr": null,
+          "stdout": null
+        },
+        "log_synced": {
+          "stderr": true,
+          "stdout": true
+        },
+        "log_truncated": {
+          "stderr": false,
+          "stdout": false
+        },
+        "output_complete": true,
+        "output_durable": true,
+        "state": "succeeded",
+        "terminal_publication_confirmed": true,
+        "terminal_publication_protocol": 1,
+        "timed_out": false
+      },
+      "stdout": "{\"authority_sha256\":\"7e5a2016347718e87df147f2ae96f2e56b9813d2c11e705bf88c8649a16bbe68\",\"environment\":{\"arch\":\"x86_64\",\"crypto\":\"46.0.5\",\"node_digest\":\"54d6a54e456bc672a4490b3695adb364566eef77976002732b47d78c3b9ee980\",\"platform\":\"Linux\",\"python\":\"3.14.4\",\"sqlite\":\"3.46.1\"},\"measured\":{\"process_elapsed_s\":0.009112587082199752,\"process_peak_rss_bytes\":30474240,\"system_cpu_s\":0.006875999999999999,\"user_cpu_s\":0.038314},\"ok\":true,\"pid\":917500,\"result\":{\"cold_result\":{\"actor\":\"db68ed72cba2d91fc83f5c75d7727dbf118b8770d0f1772f28fc56eb01f5f1a6\",\"authority_sha256\":\"7e5a2016347718e87df147f2ae96f2e56b9813d2c11e705bf88c8649a16bbe68\",\"bundle\":\"e6776564499a641af1dccf74f70ff6611443565e1af755437397ade99f183d43\",\"kind\":\"cold-computation\",\"result\":{\"kind\":\"finite-integer-matrix-not-language\",\"memory_hash\":\"2eb75331cae2783f52cf74ff5cf31434cc52b2ca6e43e642b94ed114f1ca698c\",\"model_hash\":\"03837d7ad14fb977dd8ac9b7d02911f400beb16c6d8dba2c66709843391f6722\",\"output_digest\":\"a4f11ca1323a40943a01ca37fac2c6e7b78040041f8b5393e26dd316fe9a2311\",\"outputs\":[[11,10],[1,-10],[14,22]]},\"signature\":\"87f6d0dc24ef625443b0de40bc1363c16d8babe37c14fbce938c2ce77d00b01633f8b5478e8897381dc626e6a8d1bd15dd1522b59f7c1543ddbfd2605d477f07\"},\"commit_request\":{\"actor\":\"db68ed72cba2d91fc83f5c75d7727dbf118b8770d0f1772f28fc56eb01f5f1a6\",\"args\":{\"cell\":\"cell\",\"epoch\":2,\"expected\":\"e6776564499a641af1dccf74f70ff6611443565e1af755437397ade99f183d43\",\"transfer\":\"transfer\"},\"authority\":\"b488f4a901b147ddd9146d57b62da761f267f7119c4c9ea85792afd2c078c832\",\"domain\":\"hepta.memory-cell.v15\",\"operation\":\"commit\",\"request_id\":\"hepta-v15-23f86845405a4bb8-commit\",\"signature\":\"e98ae05d02712742e160419c0dc3abe25984eaaebefa170917cfd8edb1a410f043e18108ba9d554607ac3fab1b936928fe71b2e200fadee9eaaf6aa1f0c64d04\"},\"ready_request\":{\"actor\":\"db68ed72cba2d91fc83f5c75d7727dbf118b8770d0f1772f28fc56eb01f5f1a6\",\"args\":{\"bundle\":{\"id\":\"e6776564499a641af1dccf74f70ff6611443565e1af755437397ade99f183d43\",\"manifest\":{\"acl\":[\"6c69a23925f43c8a7b40f5a6078e9aa7b30cb569cd6c3985a6aa698992f5f8b8\",\"db68ed72cba2d91fc83f5c75d7727dbf118b8770d0f1772f28fc56eb01f5f1a6\"],\"addresses\":[\"fixture\"],\"components\":{\"calibration\":\"d7a3bb14f7f8fab74c244d9774ec5fa00835b415e14ca0f56d1395c6b01f1513\",\"encoder\":\"d7a3bb14f7f8fab74c244d9774ec5fa00835b415e14ca0f56d1395c6b01f1513\",\"memory\":\"2eb75331cae2783f52cf74ff5cf31434cc52b2ca6e43e642b94ed114f1ca698c\",\"model\":\"03837d7ad14fb977dd8ac9b7d02911f400beb16c6d8dba2c66709843391f6722\",\"optimizer\":\"d7a3bb14f7f8fab74c244d9774ec5fa00835b415e14ca0f56d1395c6b01f1513\",\"rng\":\"d7a3bb14f7f8fab74c244d9774ec5fa00835b415e14ca0f56d1395c6b01f1513\",\"routing\":\"e28b258942a91d6ab83310539630ab89c759bfe3c2330d488580f592099274aa\",\"runtime\":\"bfd7214c29a97babfc94db47c4654ebc15d46298d64135aedd59344324c1ddcd\",\"sampler\":\"d7a3bb14f7f8fab74c244d9774ec5fa00835b415e14ca0f56d1395c6b01f1513\",\"schema\":\"2d2a18fe632dee4f0f9e2189ef4763b17847b24b386ab0f8278576c525194a41\",\"tokenizer\":\"d7a3bb14f7f8fab74c244d9774ec5fa00835b415e14ca0f56d1395c6b01f1513\"},\"format\":\"hepta.memory-cell.v15\",\"scope\":\"hepta-v15-23f86845405a4bb8\",\"sources\":[{\"hash\":\"2eb75331cae2783f52cf74ff5cf31434cc52b2ca6e43e642b94ed114f1ca698c\",\"id\":\"memory-input\",\"revision\":1}]},\"objects\":{\"calibration\":\"6578706c696369742d6e6f742d747261696e65642d666978747572652d736c6f74\",\"encoder\":\"6578706c696369742d6e6f742d747261696e65642d666978747572652d736c6f74\",\"memory\":\"7b22696e70757473223a5b5b332c345d2c5b352c2d325d2c5b302c375d5d2c2273636f7065223a2273796e746865746963227d\",\"model\":\"7b2262696173223a5b302c315d2c226b696e64223a22696e74656765722d6d61747269782d7631222c2277656967687473223a5b5b312c325d2c5b2d312c335d5d7d\",\"optimizer\":\"6578706c696369742d6e6f742d747261696e65642d666978747572652d736c6f74\",\"rng\":\"6578706c696369742d6e6f742d747261696e65642d666978747572652d736c6f74\",\"routing\":\"7b2261646472657373223a2266697874757265222c226d6f6465223a226578616374227d\",\"runtime\":\"696e74656765722d6d61747269782d7631\",\"sampler\":\"6578706c696369742d6e6f742d747261696e65642d666978747572652d736c6f74\",\"schema\":\"7b22696e70757473223a22696e74656765722d766563746f7273222c2276657273696f6e223a317d\",\"tokenizer\":\"6578706c696369742d6e6f742d747261696e65642d666978747572652d736c6f74\"}},\"cell\":\"cell\",\"epoch\":2,\"expected\":\"e6776564499a641af1dccf74f70ff6611443565e1af755437397ade99f183d43\",\"transfer\":\"transfer\"},\"authority\":\"b488f4a901b147ddd9146d57b62da761f267f7119c4c9ea85792afd2c078c832\",\"domain\":\"hepta.memory-cell.v15\",\"operation\":\"ready\",\"request_id\":\"hepta-v15-23f86845405a4bb8-ready\",\"signature\":\"215da38d3c17aeb164018ebabae1a6dab9f7fb2720fadb49a1a9ce2a7c3a5999e9c35ed1e2d45a0d40006192f5b9dd4a8c84210e223c71d0cdfd93abfd87f60d\"}},\"role\":\"target\",\"run_id\":\"hepta-v15-23f86845405a4bb8\",\"step\":\"cold_ready\",\"unmeasured\":{\"amortized_training_cost\":null,\"energy_joules\":null,\"lifecycle_total_cost\":null,\"network_wire_bytes\":null,\"storage_physical_bytes\":null,\"total_device_memory_bytes\":null},\"worker_sha256\":\"e71df378426d8eb6c7afd8e75938741943fbdb482ec15de17c45b3f74ca12160\"}\n",
+      "stderr": "",
+      "output_complete": true,
+      "observed": {
+        "authority_sha256": "7e5a2016347718e87df147f2ae96f2e56b9813d2c11e705bf88c8649a16bbe68",
+        "environment": {
+          "arch": "x86_64",
+          "crypto": "46.0.5",
+          "node_digest": "54d6a54e456bc672a4490b3695adb364566eef77976002732b47d78c3b9ee980",
+          "platform": "Linux",
+          "python": "3.14.4",
+          "sqlite": "3.46.1"
+        },
+        "measured": {
+          "process_elapsed_s": 0.009112587082199752,
+          "process_peak_rss_bytes": 30474240,
+          "system_cpu_s": 0.006875999999999999,
+          "user_cpu_s": 0.038314
+        },
+        "ok": true,
+        "pid": 917500,
+        "result": {
+          "cold_result": {
+            "actor": "db68ed72cba2d91fc83f5c75d7727dbf118b8770d0f1772f28fc56eb01f5f1a6",
+            "authority_sha256": "7e5a2016347718e87df147f2ae96f2e56b9813d2c11e705bf88c8649a16bbe68",
+            "bundle": "e6776564499a641af1dccf74f70ff6611443565e1af755437397ade99f183d43",
+            "kind": "cold-computation",
+            "result": {
+              "kind": "finite-integer-matrix-not-language",
+              "memory_hash": "2eb75331cae2783f52cf74ff5cf31434cc52b2ca6e43e642b94ed114f1ca698c",
+              "model_hash": "03837d7ad14fb977dd8ac9b7d02911f400beb16c6d8dba2c66709843391f6722",
+              "output_digest": "a4f11ca1323a40943a01ca37fac2c6e7b78040041f8b5393e26dd316fe9a2311",
+              "outputs": [
+                [
+                  11,
+                  10
+                ],
+                [
+                  1,
+                  -10
+                ],
+                [
+                  14,
+                  22
+                ]
+              ]
+            },
+            "signature": "87f6d0dc24ef625443b0de40bc1363c16d8babe37c14fbce938c2ce77d00b01633f8b5478e8897381dc626e6a8d1bd15dd1522b59f7c1543ddbfd2605d477f07"
+          },
+          "commit_request": {
+            "actor": "db68ed72cba2d91fc83f5c75d7727dbf118b8770d0f1772f28fc56eb01f5f1a6",
+            "args": {
+              "cell": "cell",
+              "epoch": 2,
+              "expected": "e6776564499a641af1dccf74f70ff6611443565e1af755437397ade99f183d43",
+              "transfer": "transfer"
+            },
+            "authority": "b488f4a901b147ddd9146d57b62da761f267f7119c4c9ea85792afd2c078c832",
+            "domain": "hepta.memory-cell.v15",
+            "operation": "commit",
+            "request_id": "hepta-v15-23f86845405a4bb8-commit",
+            "signature": "e98ae05d02712742e160419c0dc3abe25984eaaebefa170917cfd8edb1a410f043e18108ba9d554607ac3fab1b936928fe71b2e200fadee9eaaf6aa1f0c64d04"
+          },
+          "ready_request": {
+            "actor": "db68ed72cba2d91fc83f5c75d7727dbf118b8770d0f1772f28fc56eb01f5f1a6",
+            "args": {
+              "bundle": {
+                "id": "e6776564499a641af1dccf74f70ff6611443565e1af755437397ade99f183d43",
+                "manifest": {
+                  "acl": [
+                    "6c69a23925f43c8a7b40f5a6078e9aa7b30cb569cd6c3985a6aa698992f5f8b8",
+                    "db68ed72cba2d91fc83f5c75d7727dbf118b8770d0f1772f28fc56eb01f5f1a6"
+                  ],
+                  "addresses": [
+                    "fixture"
+                  ],
+                  "components": {
+                    "calibration": "d7a3bb14f7f8fab74c244d9774ec5fa00835b415e14ca0f56d1395c6b01f1513",
+                    "encoder": "d7a3bb14f7f8fab74c244d9774ec5fa00835b415e14ca0f56d1395c6b01f1513",
+                    "memory": "2eb75331cae2783f52cf74ff5cf31434cc52b2ca6e43e642b94ed114f1ca698c",
+                    "model": "03837d7ad14fb977dd8ac9b7d02911f400beb16c6d8dba2c66709843391f6722",
+                    "optimizer": "d7a3bb14f7f8fab74c244d9774ec5fa00835b415e14ca0f56d1395c6b01f1513",
+                    "rng": "d7a3bb14f7f8fab74c244d9774ec5fa00835b415e14ca0f56d1395c6b01f1513",
+                    "routing": "e28b258942a91d6ab83310539630ab89c759bfe3c2330d488580f592099274aa",
+                    "runtime": "bfd7214c29a97babfc94db47c4654ebc15d46298d64135aedd59344324c1ddcd",
+                    "sampler": "d7a3bb14f7f8fab74c244d9774ec5fa00835b415e14ca0f56d1395c6b01f1513",
+                    "schema": "2d2a18fe632dee4f0f9e2189ef4763b17847b24b386ab0f8278576c525194a41",
+                    "tokenizer": "d7a3bb14f7f8fab74c244d9774ec5fa00835b415e14ca0f56d1395c6b01f1513"
+                  },
+                  "format": "hepta.memory-cell.v15",
+                  "scope": "hepta-v15-23f86845405a4bb8",
+                  "sources": [
+                    {
+                      "hash": "2eb75331cae2783f52cf74ff5cf31434cc52b2ca6e43e642b94ed114f1ca698c",
+                      "id": "memory-input",
+                      "revision": 1
+                    }
+                  ]
+                },
+                "objects": {
+                  "calibration": "6578706c696369742d6e6f742d747261696e65642d666978747572652d736c6f74",
+                  "encoder": "6578706c696369742d6e6f742d747261696e65642d666978747572652d736c6f74",
+                  "memory": "7b22696e70757473223a5b5b332c345d2c5b352c2d325d2c5b302c375d5d2c2273636f7065223a2273796e746865746963227d",
+                  "model": "7b2262696173223a5b302c315d2c226b696e64223a22696e74656765722d6d61747269782d7631222c2277656967687473223a5b5b312c325d2c5b2d312c335d5d7d",
+                  "optimizer": "6578706c696369742d6e6f742d747261696e65642d666978747572652d736c6f74",
+                  "rng": "6578706c696369742d6e6f742d747261696e65642d666978747572652d736c6f74",
+                  "routing": "7b2261646472657373223a2266697874757265222c226d6f6465223a226578616374227d",
+                  "runtime": "696e74656765722d6d61747269782d7631",
+                  "sampler": "6578706c696369742d6e6f742d747261696e65642d666978747572652d736c6f74",
+                  "schema": "7b22696e70757473223a22696e74656765722d766563746f7273222c2276657273696f6e223a317d",
+                  "tokenizer": "6578706c696369742d6e6f742d747261696e65642d666978747572652d736c6f74"
+                }
+              },
+              "cell": "cell",
+              "epoch": 2,
+              "expected": "e6776564499a641af1dccf74f70ff6611443565e1af755437397ade99f183d43",
+              "transfer": "transfer"
+            },
+            "authority": "b488f4a901b147ddd9146d57b62da761f267f7119c4c9ea85792afd2c078c832",
+            "domain": "hepta.memory-cell.v15",
+            "operation": "ready",
+            "request_id": "hepta-v15-23f86845405a4bb8-ready",
+            "signature": "215da38d3c17aeb164018ebabae1a6dab9f7fb2720fadb49a1a9ce2a7c3a5999e9c35ed1e2d45a0d40006192f5b9dd4a8c84210e223c71d0cdfd93abfd87f60d"
+          }
+        },
+        "role": "target",
+        "run_id": "hepta-v15-23f86845405a4bb8",
+        "step": "cold_ready",
+        "unmeasured": {
+          "amortized_training_cost": null,
+          "energy_joules": null,
+          "lifecycle_total_cost": null,
+          "network_wire_bytes": null,
+          "storage_physical_bytes": null,
+          "total_device_memory_bytes": null
+        },
+        "worker_sha256": "e71df378426d8eb6c7afd8e75938741943fbdb482ec15de17c45b3f74ca12160"
+      },
+      "cold_matches_source": true,
+      "distinct_receiver_process": true
+    },
+    {
+      "host": "mac",
+      "step": "accept_ready",
+      "role": "source",
+      "job_id": "1a1a9550f1a-fc05-3458",
+      "idempotency_key": "hepta-v15-23f86845405a4bb8-mac-accept-ready",
+      "request_digest": "3c81b5d305565135a39453ea2b3744aaef23d604e439858222a0582b21ac1d09",
+      "launch_state": "launched",
+      "launch": {
+        "backend": "detached",
+        "launcher_pid": 60113,
+        "ok": true,
+        "systemd_error": "systemd user units unavailable on this platform",
+        "unit": "hepta-runtime-job-1a1a9550f1a-fc05-3458"
+      },
+      "input": {
+        "request": {
+          "actor": "db68ed72cba2d91fc83f5c75d7727dbf118b8770d0f1772f28fc56eb01f5f1a6",
+          "args": {
+            "bundle": {
+              "id": "e6776564499a641af1dccf74f70ff6611443565e1af755437397ade99f183d43",
+              "manifest": {
+                "acl": [
+                  "6c69a23925f43c8a7b40f5a6078e9aa7b30cb569cd6c3985a6aa698992f5f8b8",
+                  "db68ed72cba2d91fc83f5c75d7727dbf118b8770d0f1772f28fc56eb01f5f1a6"
+                ],
+                "addresses": [
+                  "fixture"
+                ],
+                "components": {
+                  "calibration": "d7a3bb14f7f8fab74c244d9774ec5fa00835b415e14ca0f56d1395c6b01f1513",
+                  "encoder": "d7a3bb14f7f8fab74c244d9774ec5fa00835b415e14ca0f56d1395c6b01f1513",
+                  "memory": "2eb75331cae2783f52cf74ff5cf31434cc52b2ca6e43e642b94ed114f1ca698c",
+                  "model": "03837d7ad14fb977dd8ac9b7d02911f400beb16c6d8dba2c66709843391f6722",
+                  "optimizer": "d7a3bb14f7f8fab74c244d9774ec5fa00835b415e14ca0f56d1395c6b01f1513",
+                  "rng": "d7a3bb14f7f8fab74c244d9774ec5fa00835b415e14ca0f56d1395c6b01f1513",
+                  "routing": "e28b258942a91d6ab83310539630ab89c759bfe3c2330d488580f592099274aa",
+                  "runtime": "bfd7214c29a97babfc94db47c4654ebc15d46298d64135aedd59344324c1ddcd",
+                  "sampler": "d7a3bb14f7f8fab74c244d9774ec5fa00835b415e14ca0f56d1395c6b01f1513",
+                  "schema": "2d2a18fe632dee4f0f9e2189ef4763b17847b24b386ab0f8278576c525194a41",
+                  "tokenizer": "d7a3bb14f7f8fab74c244d9774ec5fa00835b415e14ca0f56d1395c6b01f1513"
+                },
+                "format": "hepta.memory-cell.v15",
+                "scope": "hepta-v15-23f86845405a4bb8",
+                "sources": [
+                  {
+                    "hash": "2eb75331cae2783f52cf74ff5cf31434cc52b2ca6e43e642b94ed114f1ca698c",
+                    "id": "memory-input",
+                    "revision": 1
+                  }
+                ]
+              },
+              "objects": {
+                "calibration": "6578706c696369742d6e6f742d747261696e65642d666978747572652d736c6f74",
+                "encoder": "6578706c696369742d6e6f742d747261696e65642d666978747572652d736c6f74",
+                "memory": "7b22696e70757473223a5b5b332c345d2c5b352c2d325d2c5b302c375d5d2c2273636f7065223a2273796e746865746963227d",
+                "model": "7b2262696173223a5b302c315d2c226b696e64223a22696e74656765722d6d61747269782d7631222c2277656967687473223a5b5b312c325d2c5b2d312c335d5d7d",
+                "optimizer": "6578706c696369742d6e6f742d747261696e65642d666978747572652d736c6f74",
+                "rng": "6578706c696369742d6e6f742d747261696e65642d666978747572652d736c6f74",
+                "routing": "7b2261646472657373223a2266697874757265222c226d6f6465223a226578616374227d",
+                "runtime": "696e74656765722d6d61747269782d7631",
+                "sampler": "6578706c696369742d6e6f742d747261696e65642d666978747572652d736c6f74",
+                "schema": "7b22696e70757473223a22696e74656765722d766563746f7273222c2276657273696f6e223a317d",
+                "tokenizer": "6578706c696369742d6e6f742d747261696e65642d666978747572652d736c6f74"
+              }
+            },
+            "cell": "cell",
+            "epoch": 2,
+            "expected": "e6776564499a641af1dccf74f70ff6611443565e1af755437397ade99f183d43",
+            "transfer": "transfer"
+          },
+          "authority": "b488f4a901b147ddd9146d57b62da761f267f7119c4c9ea85792afd2c078c832",
+          "domain": "hepta.memory-cell.v15",
+          "operation": "ready",
+          "request_id": "hepta-v15-23f86845405a4bb8-ready",
+          "signature": "215da38d3c17aeb164018ebabae1a6dab9f7fb2720fadb49a1a9ce2a7c3a5999e9c35ed1e2d45a0d40006192f5b9dd4a8c84210e223c71d0cdfd93abfd87f60d"
+        }
+      },
+      "application_stdin_bytes": 2830,
+      "controller_start_elapsed_ms": 6235,
+      "error": null,
+      "status": {
+        "at_unix_ms": 1793842286641,
+        "audit_recorded": true,
+        "automatic_retry": false,
+        "cancelled": false,
+        "exit_code": 0,
+        "job_id": "1a1a9550f1a-fc05-3458",
+        "launch_nonce": "c4dc427221c8d9f1dd5499ef6a245468",
+        "log_bytes": {
+          "stderr": {
+            "seen": 0,
+            "stored": 0
+          },
+          "stdout": {
+            "seen": 2827,
+            "stored": 2827
+          }
+        },
+        "log_errors": {
+          "stderr": null,
+          "stdout": null
+        },
+        "log_synced": {
+          "stderr": true,
+          "stdout": true
+        },
+        "log_truncated": {
+          "stderr": false,
+          "stdout": false
+        },
+        "output_complete": true,
+        "output_durable": true,
+        "state": "succeeded",
+        "terminal_publication_confirmed": true,
+        "terminal_publication_protocol": 1,
+        "timed_out": false
+      },
+      "stdout": "{\"authority_sha256\":\"7e5a2016347718e87df147f2ae96f2e56b9813d2c11e705bf88c8649a16bbe68\",\"environment\":{\"arch\":\"arm64\",\"crypto\":\"46.0.5\",\"node_digest\":\"7587a49c3993547c3edae2b9c17c4eaa22a14c3b9e05a116c9b17b294f81f099\",\"platform\":\"Darwin\",\"python\":\"3.9.6\",\"sqlite\":\"3.51.0\"},\"measured\":{\"process_elapsed_s\":0.014041416000000001,\"process_peak_rss_bytes\":27344896,\"system_cpu_s\":0.010700999999999999,\"user_cpu_s\":0.038699},\"ok\":true,\"pid\":60115,\"result\":{\"after\":{\"cell\":{\"acl\":\"[\\\"6c69a23925f43c8a7b40f5a6078e9aa7b30cb569cd6c3985a6aa698992f5f8b8\\\",\\\"db68ed72cba2d91fc83f5c75d7727dbf118b8770d0f1772f28fc56eb01f5f1a6\\\"]\",\"bundle\":\"e6776564499a641af1dccf74f70ff6611443565e1af755437397ade99f183d43\",\"epoch\":2,\"id\":\"cell\",\"owner\":\"6c69a23925f43c8a7b40f5a6078e9aa7b30cb569cd6c3985a6aa698992f5f8b8\",\"scope\":\"hepta-v15-23f86845405a4bb8\",\"state\":\"prepared\"},\"transfers\":[{\"bundle\":\"e6776564499a641af1dccf74f70ff6611443565e1af755437397ade99f183d43\",\"cell\":\"cell\",\"epoch\":2,\"id\":\"transfer\",\"ready_request\":\"369b4d967bb1e80ef0288a6484f5ebc4410879a83bdceb903a69379637f6ed76\",\"source\":\"6c69a23925f43c8a7b40f5a6078e9aa7b30cb569cd6c3985a6aa698992f5f8b8\",\"state\":\"ready\",\"target\":\"db68ed72cba2d91fc83f5c75d7727dbf118b8770d0f1772f28fc56eb01f5f1a6\"}]},\"before\":{\"cell\":{\"acl\":\"[\\\"6c69a23925f43c8a7b40f5a6078e9aa7b30cb569cd6c3985a6aa698992f5f8b8\\\",\\\"db68ed72cba2d91fc83f5c75d7727dbf118b8770d0f1772f28fc56eb01f5f1a6\\\"]\",\"bundle\":\"e6776564499a641af1dccf74f70ff6611443565e1af755437397ade99f183d43\",\"epoch\":2,\"id\":\"cell\",\"owner\":\"6c69a23925f43c8a7b40f5a6078e9aa7b30cb569cd6c3985a6aa698992f5f8b8\",\"scope\":\"hepta-v15-23f86845405a4bb8\",\"state\":\"prepared\"},\"transfers\":[{\"bundle\":\"e6776564499a641af1dccf74f70ff6611443565e1af755437397ade99f183d43\",\"cell\":\"cell\",\"epoch\":2,\"id\":\"transfer\",\"ready_request\":null,\"source\":\"6c69a23925f43c8a7b40f5a6078e9aa7b30cb569cd6c3985a6aa698992f5f8b8\",\"state\":\"prepared\",\"target\":\"db68ed72cba2d91fc83f5c75d7727dbf118b8770d0f1772f28fc56eb01f5f1a6\"}]},\"receipt\":{\"authority\":\"b488f4a901b147ddd9146d57b62da761f267f7119c4c9ea85792afd2c078c832\",\"command_hash\":\"17beedbf6dd2d37708136c3ac3ee5f4849d771788a1b2d62d185b0f9120d2fd2\",\"domain\":\"hepta.memory-cell.v15\",\"request_id\":\"hepta-v15-23f86845405a4bb8-ready\",\"result\":{\"bundle\":\"e6776564499a641af1dccf74f70ff6611443565e1af755437397ade99f183d43\",\"epoch\":2,\"state\":\"ready\",\"transfer\":\"transfer\"},\"signature\":\"5648dda5d06f498e88ecf387ca3ba34b7f785e862cc69183795cf619886aebe8cbcf2e5d5185e40a798b2ea385926abb8e8ff9151747dabcd1e9226bb207ab04\"}},\"role\":\"source\",\"run_id\":\"hepta-v15-23f86845405a4bb8\",\"step\":\"accept_ready\",\"unmeasured\":{\"amortized_training_cost\":null,\"energy_joules\":null,\"lifecycle_total_cost\":null,\"network_wire_bytes\":null,\"storage_physical_bytes\":null,\"total_device_memory_bytes\":null},\"worker_sha256\":\"e71df378426d8eb6c7afd8e75938741943fbdb482ec15de17c45b3f74ca12160\"}\n",
+      "stderr": "",
+      "output_complete": true,
+      "observed": {
+        "authority_sha256": "7e5a2016347718e87df147f2ae96f2e56b9813d2c11e705bf88c8649a16bbe68",
+        "environment": {
+          "arch": "arm64",
+          "crypto": "46.0.5",
+          "node_digest": "7587a49c3993547c3edae2b9c17c4eaa22a14c3b9e05a116c9b17b294f81f099",
+          "platform": "Darwin",
+          "python": "3.9.6",
+          "sqlite": "3.51.0"
+        },
+        "measured": {
+          "process_elapsed_s": 0.014041416000000001,
+          "process_peak_rss_bytes": 27344896,
+          "system_cpu_s": 0.010700999999999999,
+          "user_cpu_s": 0.038699
+        },
+        "ok": true,
+        "pid": 60115,
+        "result": {
+          "after": {
+            "cell": {
+              "acl": "[\"6c69a23925f43c8a7b40f5a6078e9aa7b30cb569cd6c3985a6aa698992f5f8b8\",\"db68ed72cba2d91fc83f5c75d7727dbf118b8770d0f1772f28fc56eb01f5f1a6\"]",
+              "bundle": "e6776564499a641af1dccf74f70ff6611443565e1af755437397ade99f183d43",
+              "epoch": 2,
+              "id": "cell",
+              "owner": "6c69a23925f43c8a7b40f5a6078e9aa7b30cb569cd6c3985a6aa698992f5f8b8",
+              "scope": "hepta-v15-23f86845405a4bb8",
+              "state": "prepared"
+            },
+            "transfers": [
+              {
+                "bundle": "e6776564499a641af1dccf74f70ff6611443565e1af755437397ade99f183d43",
+                "cell": "cell",
+                "epoch": 2,
+                "id": "transfer",
+                "ready_request": "369b4d967bb1e80ef0288a6484f5ebc4410879a83bdceb903a69379637f6ed76",
+                "source": "6c69a23925f43c8a7b40f5a6078e9aa7b30cb569cd6c3985a6aa698992f5f8b8",
+                "state": "ready",
+                "target": "db68ed72cba2d91fc83f5c75d7727dbf118b8770d0f1772f28fc56eb01f5f1a6"
+              }
+            ]
+          },
+          "before": {
+            "cell": {
+              "acl": "[\"6c69a23925f43c8a7b40f5a6078e9aa7b30cb569cd6c3985a6aa698992f5f8b8\",\"db68ed72cba2d91fc83f5c75d7727dbf118b8770d0f1772f28fc56eb01f5f1a6\"]",
+              "bundle": "e6776564499a641af1dccf74f70ff6611443565e1af755437397ade99f183d43",
+              "epoch": 2,
+              "id": "cell",
+              "owner": "6c69a23925f43c8a7b40f5a6078e9aa7b30cb569cd6c3985a6aa698992f5f8b8",
+              "scope": "hepta-v15-23f86845405a4bb8",
+              "state": "prepared"
+            },
+            "transfers": [
+              {
+                "bundle": "e6776564499a641af1dccf74f70ff6611443565e1af755437397ade99f183d43",
+                "cell": "cell",
+                "epoch": 2,
+                "id": "transfer",
+                "ready_request": null,
+                "source": "6c69a23925f43c8a7b40f5a6078e9aa7b30cb569cd6c3985a6aa698992f5f8b8",
+                "state": "prepared",
+                "target": "db68ed72cba2d91fc83f5c75d7727dbf118b8770d0f1772f28fc56eb01f5f1a6"
+              }
+            ]
+          },
+          "receipt": {
+            "authority": "b488f4a901b147ddd9146d57b62da761f267f7119c4c9ea85792afd2c078c832",
+            "command_hash": "17beedbf6dd2d37708136c3ac3ee5f4849d771788a1b2d62d185b0f9120d2fd2",
+            "domain": "hepta.memory-cell.v15",
+            "request_id": "hepta-v15-23f86845405a4bb8-ready",
+            "result": {
+              "bundle": "e6776564499a641af1dccf74f70ff6611443565e1af755437397ade99f183d43",
+              "epoch": 2,
+              "state": "ready",
+              "transfer": "transfer"
+            },
+            "signature": "5648dda5d06f498e88ecf387ca3ba34b7f785e862cc69183795cf619886aebe8cbcf2e5d5185e40a798b2ea385926abb8e8ff9151747dabcd1e9226bb207ab04"
+          }
+        },
+        "role": "source",
+        "run_id": "hepta-v15-23f86845405a4bb8",
+        "step": "accept_ready",
+        "unmeasured": {
+          "amortized_training_cost": null,
+          "energy_joules": null,
+          "lifecycle_total_cost": null,
+          "network_wire_bytes": null,
+          "storage_physical_bytes": null,
+          "total_device_memory_bytes": null
+        },
+        "worker_sha256": "e71df378426d8eb6c7afd8e75938741943fbdb482ec15de17c45b3f74ca12160"
+      }
+    },
+    {
+      "host": "mac",
+      "step": "commit",
+      "role": "source",
+      "job_id": "1a1a9557d90-fc05-345c",
+      "idempotency_key": "hepta-v15-23f86845405a4bb8-mac-commit",
+      "request_digest": "1a32f94e83b8e88682cca5d132521c8a5937c8a01745c1b96e1a4e850a10310c",
+      "launch_state": "launched",
+      "launch": {
+        "backend": "detached",
+        "launcher_pid": 60350,
+        "ok": true,
+        "systemd_error": "systemd user units unavailable on this platform",
+        "unit": "hepta-runtime-job-1a1a9557d90-fc05-345c"
+      },
+      "input": {
+        "request": {
+          "actor": "db68ed72cba2d91fc83f5c75d7727dbf118b8770d0f1772f28fc56eb01f5f1a6",
+          "args": {
+            "cell": "cell",
+            "epoch": 2,
+            "expected": "e6776564499a641af1dccf74f70ff6611443565e1af755437397ade99f183d43",
+            "transfer": "transfer"
+          },
+          "authority": "b488f4a901b147ddd9146d57b62da761f267f7119c4c9ea85792afd2c078c832",
+          "domain": "hepta.memory-cell.v15",
+          "operation": "commit",
+          "request_id": "hepta-v15-23f86845405a4bb8-commit",
+          "signature": "e98ae05d02712742e160419c0dc3abe25984eaaebefa170917cfd8edb1a410f043e18108ba9d554607ac3fab1b936928fe71b2e200fadee9eaaf6aa1f0c64d04"
+        }
+      },
+      "application_stdin_bytes": 546,
+      "controller_start_elapsed_ms": 4492,
+      "error": null,
+      "status": {
+        "at_unix_ms": 1793842314901,
+        "audit_recorded": true,
+        "automatic_retry": false,
+        "cancelled": false,
+        "exit_code": 0,
+        "job_id": "1a1a9557d90-fc05-345c",
+        "launch_nonce": "2d2d6efb0185be3f77687bc034ec1171",
+        "log_bytes": {
+          "stderr": {
+            "seen": 0,
+            "stored": 0
+          },
+          "stdout": {
+            "seen": 3451,
+            "stored": 3451
+          }
+        },
+        "log_errors": {
+          "stderr": null,
+          "stdout": null
+        },
+        "log_synced": {
+          "stderr": true,
+          "stdout": true
+        },
+        "log_truncated": {
+          "stderr": false,
+          "stdout": false
+        },
+        "output_complete": true,
+        "output_durable": true,
+        "state": "succeeded",
+        "terminal_publication_confirmed": true,
+        "terminal_publication_protocol": 1,
+        "timed_out": false
+      },
+      "stdout": "{\"authority_sha256\":\"7e5a2016347718e87df147f2ae96f2e56b9813d2c11e705bf88c8649a16bbe68\",\"environment\":{\"arch\":\"arm64\",\"crypto\":\"46.0.5\",\"node_digest\":\"7587a49c3993547c3edae2b9c17c4eaa22a14c3b9e05a116c9b17b294f81f099\",\"platform\":\"Darwin\",\"python\":\"3.9.6\",\"sqlite\":\"3.51.0\"},\"measured\":{\"process_elapsed_s\":0.013294874999999998,\"process_peak_rss_bytes\":27344896,\"system_cpu_s\":0.012485999999999999,\"user_cpu_s\":0.03863},\"ok\":true,\"pid\":60352,\"result\":{\"after\":{\"cell\":{\"acl\":\"[\\\"6c69a23925f43c8a7b40f5a6078e9aa7b30cb569cd6c3985a6aa698992f5f8b8\\\",\\\"db68ed72cba2d91fc83f5c75d7727dbf118b8770d0f1772f28fc56eb01f5f1a6\\\"]\",\"bundle\":\"e6776564499a641af1dccf74f70ff6611443565e1af755437397ade99f183d43\",\"epoch\":3,\"id\":\"cell\",\"owner\":\"db68ed72cba2d91fc83f5c75d7727dbf118b8770d0f1772f28fc56eb01f5f1a6\",\"scope\":\"hepta-v15-23f86845405a4bb8\",\"state\":\"active\"},\"transfers\":[{\"bundle\":\"e6776564499a641af1dccf74f70ff6611443565e1af755437397ade99f183d43\",\"cell\":\"cell\",\"epoch\":2,\"id\":\"transfer\",\"ready_request\":\"369b4d967bb1e80ef0288a6484f5ebc4410879a83bdceb903a69379637f6ed76\",\"source\":\"6c69a23925f43c8a7b40f5a6078e9aa7b30cb569cd6c3985a6aa698992f5f8b8\",\"state\":\"committed\",\"target\":\"db68ed72cba2d91fc83f5c75d7727dbf118b8770d0f1772f28fc56eb01f5f1a6\"}]},\"before\":{\"cell\":{\"acl\":\"[\\\"6c69a23925f43c8a7b40f5a6078e9aa7b30cb569cd6c3985a6aa698992f5f8b8\\\",\\\"db68ed72cba2d91fc83f5c75d7727dbf118b8770d0f1772f28fc56eb01f5f1a6\\\"]\",\"bundle\":\"e6776564499a641af1dccf74f70ff6611443565e1af755437397ade99f183d43\",\"epoch\":2,\"id\":\"cell\",\"owner\":\"6c69a23925f43c8a7b40f5a6078e9aa7b30cb569cd6c3985a6aa698992f5f8b8\",\"scope\":\"hepta-v15-23f86845405a4bb8\",\"state\":\"prepared\"},\"transfers\":[{\"bundle\":\"e6776564499a641af1dccf74f70ff6611443565e1af755437397ade99f183d43\",\"cell\":\"cell\",\"epoch\":2,\"id\":\"transfer\",\"ready_request\":\"369b4d967bb1e80ef0288a6484f5ebc4410879a83bdceb903a69379637f6ed76\",\"source\":\"6c69a23925f43c8a7b40f5a6078e9aa7b30cb569cd6c3985a6aa698992f5f8b8\",\"state\":\"ready\",\"target\":\"db68ed72cba2d91fc83f5c75d7727dbf118b8770d0f1772f28fc56eb01f5f1a6\"}]},\"old_owner_rejection\":{\"authority\":\"b488f4a901b147ddd9146d57b62da761f267f7119c4c9ea85792afd2c078c832\",\"command_hash\":\"444ac87211dc917efbb52f2bd7ff077bb11dcab2be87b154ee41feee6122b5ef\",\"domain\":\"hepta.memory-cell.v15\",\"outcome\":\"rejected\",\"reason\":\"not current owner\",\"request_id\":\"hepta-v15-23f86845405a4bb8-old-owner-after-commit\",\"signature\":\"a952cc25c5572d460460386026ce4d7352d0374daa00908dd3f5fdc19d70a234d902be6a06326f612338a9e5a0602e30183a3ba02d53e5cd38e82ff5cd90b900\"},\"receipt\":{\"authority\":\"b488f4a901b147ddd9146d57b62da761f267f7119c4c9ea85792afd2c078c832\",\"command_hash\":\"436c72e599375483ed6aeb291da631fd0050330846a1d2e4fc0a5a2562fe5efd\",\"domain\":\"hepta.memory-cell.v15\",\"request_id\":\"hepta-v15-23f86845405a4bb8-commit\",\"result\":{\"bundle\":\"e6776564499a641af1dccf74f70ff6611443565e1af755437397ade99f183d43\",\"cell\":\"cell\",\"epoch\":3,\"owner\":\"db68ed72cba2d91fc83f5c75d7727dbf118b8770d0f1772f28fc56eb01f5f1a6\",\"state\":\"committed\",\"transfer\":\"transfer\"},\"signature\":\"d04243c979902a3f9700e186c1d09eb0c42133311980a082984304b348ab0264a2a63e692e1cc743375f88cf0ef4d65b813b0e6e6d4943d2520f1131b4bc120d\"}},\"role\":\"source\",\"run_id\":\"hepta-v15-23f86845405a4bb8\",\"step\":\"commit\",\"unmeasured\":{\"amortized_training_cost\":null,\"energy_joules\":null,\"lifecycle_total_cost\":null,\"network_wire_bytes\":null,\"storage_physical_bytes\":null,\"total_device_memory_bytes\":null},\"worker_sha256\":\"e71df378426d8eb6c7afd8e75938741943fbdb482ec15de17c45b3f74ca12160\"}\n",
+      "stderr": "",
+      "output_complete": true,
+      "observed": {
+        "authority_sha256": "7e5a2016347718e87df147f2ae96f2e56b9813d2c11e705bf88c8649a16bbe68",
+        "environment": {
+          "arch": "arm64",
+          "crypto": "46.0.5",
+          "node_digest": "7587a49c3993547c3edae2b9c17c4eaa22a14c3b9e05a116c9b17b294f81f099",
+          "platform": "Darwin",
+          "python": "3.9.6",
+          "sqlite": "3.51.0"
+        },
+        "measured": {
+          "process_elapsed_s": 0.013294874999999998,
+          "process_peak_rss_bytes": 27344896,
+          "system_cpu_s": 0.012485999999999999,
+          "user_cpu_s": 0.03863
+        },
+        "ok": true,
+        "pid": 60352,
+        "result": {
+          "after": {
+            "cell": {
+              "acl": "[\"6c69a23925f43c8a7b40f5a6078e9aa7b30cb569cd6c3985a6aa698992f5f8b8\",\"db68ed72cba2d91fc83f5c75d7727dbf118b8770d0f1772f28fc56eb01f5f1a6\"]",
+              "bundle": "e6776564499a641af1dccf74f70ff6611443565e1af755437397ade99f183d43",
+              "epoch": 3,
+              "id": "cell",
+              "owner": "db68ed72cba2d91fc83f5c75d7727dbf118b8770d0f1772f28fc56eb01f5f1a6",
+              "scope": "hepta-v15-23f86845405a4bb8",
+              "state": "active"
+            },
+            "transfers": [
+              {
+                "bundle": "e6776564499a641af1dccf74f70ff6611443565e1af755437397ade99f183d43",
+                "cell": "cell",
+                "epoch": 2,
+                "id": "transfer",
+                "ready_request": "369b4d967bb1e80ef0288a6484f5ebc4410879a83bdceb903a69379637f6ed76",
+                "source": "6c69a23925f43c8a7b40f5a6078e9aa7b30cb569cd6c3985a6aa698992f5f8b8",
+                "state": "committed",
+                "target": "db68ed72cba2d91fc83f5c75d7727dbf118b8770d0f1772f28fc56eb01f5f1a6"
+              }
+            ]
+          },
+          "before": {
+            "cell": {
+              "acl": "[\"6c69a23925f43c8a7b40f5a6078e9aa7b30cb569cd6c3985a6aa698992f5f8b8\",\"db68ed72cba2d91fc83f5c75d7727dbf118b8770d0f1772f28fc56eb01f5f1a6\"]",
+              "bundle": "e6776564499a641af1dccf74f70ff6611443565e1af755437397ade99f183d43",
+              "epoch": 2,
+              "id": "cell",
+              "owner": "6c69a23925f43c8a7b40f5a6078e9aa7b30cb569cd6c3985a6aa698992f5f8b8",
+              "scope": "hepta-v15-23f86845405a4bb8",
+              "state": "prepared"
+            },
+            "transfers": [
+              {
+                "bundle": "e6776564499a641af1dccf74f70ff6611443565e1af755437397ade99f183d43",
+                "cell": "cell",
+                "epoch": 2,
+                "id": "transfer",
+                "ready_request": "369b4d967bb1e80ef0288a6484f5ebc4410879a83bdceb903a69379637f6ed76",
+                "source": "6c69a23925f43c8a7b40f5a6078e9aa7b30cb569cd6c3985a6aa698992f5f8b8",
+                "state": "ready",
+                "target": "db68ed72cba2d91fc83f5c75d7727dbf118b8770d0f1772f28fc56eb01f5f1a6"
+              }
+            ]
+          },
+          "old_owner_rejection": {
+            "authority": "b488f4a901b147ddd9146d57b62da761f267f7119c4c9ea85792afd2c078c832",
+            "command_hash": "444ac87211dc917efbb52f2bd7ff077bb11dcab2be87b154ee41feee6122b5ef",
+            "domain": "hepta.memory-cell.v15",
+            "outcome": "rejected",
+            "reason": "not current owner",
+            "request_id": "hepta-v15-23f86845405a4bb8-old-owner-after-commit",
+            "signature": "a952cc25c5572d460460386026ce4d7352d0374daa00908dd3f5fdc19d70a234d902be6a06326f612338a9e5a0602e30183a3ba02d53e5cd38e82ff5cd90b900"
+          },
+          "receipt": {
+            "authority": "b488f4a901b147ddd9146d57b62da761f267f7119c4c9ea85792afd2c078c832",
+            "command_hash": "436c72e599375483ed6aeb291da631fd0050330846a1d2e4fc0a5a2562fe5efd",
+            "domain": "hepta.memory-cell.v15",
+            "request_id": "hepta-v15-23f86845405a4bb8-commit",
+            "result": {
+              "bundle": "e6776564499a641af1dccf74f70ff6611443565e1af755437397ade99f183d43",
+              "cell": "cell",
+              "epoch": 3,
+              "owner": "db68ed72cba2d91fc83f5c75d7727dbf118b8770d0f1772f28fc56eb01f5f1a6",
+              "state": "committed",
+              "transfer": "transfer"
+            },
+            "signature": "d04243c979902a3f9700e186c1d09eb0c42133311980a082984304b348ab0264a2a63e692e1cc743375f88cf0ef4d65b813b0e6e6d4943d2520f1131b4bc120d"
+          }
+        },
+        "role": "source",
+        "run_id": "hepta-v15-23f86845405a4bb8",
+        "step": "commit",
+        "unmeasured": {
+          "amortized_training_cost": null,
+          "energy_joules": null,
+          "lifecycle_total_cost": null,
+          "network_wire_bytes": null,
+          "storage_physical_bytes": null,
+          "total_device_memory_bytes": null
+        },
+        "worker_sha256": "e71df378426d8eb6c7afd8e75938741943fbdb482ec15de17c45b3f74ca12160"
+      }
+    },
+    {
+      "host": "pocket4",
+      "step": "sign_publish",
+      "role": "target",
+      "job_id": "1a1a955f5d3-fc05-345f",
+      "idempotency_key": "hepta-v15-23f86845405a4bb8-pocket4-sign-publish",
+      "request_digest": "c21bfb61e9482fb0553d7bedf26894965de2099ff65ab4de51d242f024093a62",
+      "launch_state": "launched",
+      "launch": {
+        "backend": "systemd",
+        "launcher_pid": null,
+        "ok": true,
+        "unit": "hepta-runtime-job-1a1a955f5d3-fc05-345f"
+      },
+      "input": {
+        "commit_receipt": {
+          "authority": "b488f4a901b147ddd9146d57b62da761f267f7119c4c9ea85792afd2c078c832",
+          "command_hash": "436c72e599375483ed6aeb291da631fd0050330846a1d2e4fc0a5a2562fe5efd",
+          "domain": "hepta.memory-cell.v15",
+          "request_id": "hepta-v15-23f86845405a4bb8-commit",
+          "result": {
+            "bundle": "e6776564499a641af1dccf74f70ff6611443565e1af755437397ade99f183d43",
+            "cell": "cell",
+            "epoch": 3,
+            "owner": "db68ed72cba2d91fc83f5c75d7727dbf118b8770d0f1772f28fc56eb01f5f1a6",
+            "state": "committed",
+            "transfer": "transfer"
+          },
+          "signature": "d04243c979902a3f9700e186c1d09eb0c42133311980a082984304b348ab0264a2a63e692e1cc743375f88cf0ef4d65b813b0e6e6d4943d2520f1131b4bc120d"
+        }
+      },
+      "application_stdin_bytes": 634,
+      "controller_start_elapsed_ms": 6312,
+      "error": null,
+      "status": {
+        "at_unix_ms": 1793842346824,
+        "audit_recorded": true,
+        "automatic_retry": false,
+        "cancelled": false,
+        "exit_code": 0,
+        "job_id": "1a1a955f5d3-fc05-345f",
+        "launch_nonce": "8576563ea2b04cfd8fb5ca39c699c758",
+        "log_bytes": {
+          "stderr": {
+            "seen": 0,
+            "stored": 0
+          },
+          "stdout": {
+            "seen": 3979,
+            "stored": 3979
+          }
+        },
+        "log_errors": {
+          "stderr": null,
+          "stdout": null
+        },
+        "log_synced": {
+          "stderr": true,
+          "stdout": true
+        },
+        "log_truncated": {
+          "stderr": false,
+          "stdout": false
+        },
+        "output_complete": true,
+        "output_durable": true,
+        "state": "succeeded",
+        "terminal_publication_confirmed": true,
+        "terminal_publication_protocol": 1,
+        "timed_out": false
+      },
+      "stdout": "{\"authority_sha256\":\"7e5a2016347718e87df147f2ae96f2e56b9813d2c11e705bf88c8649a16bbe68\",\"environment\":{\"arch\":\"x86_64\",\"crypto\":\"46.0.5\",\"node_digest\":\"54d6a54e456bc672a4490b3695adb364566eef77976002732b47d78c3b9ee980\",\"platform\":\"Linux\",\"python\":\"3.14.4\",\"sqlite\":\"3.46.1\"},\"measured\":{\"process_elapsed_s\":0.00905460596550256,\"process_peak_rss_bytes\":29949952,\"system_cpu_s\":0.005836999999999999,\"user_cpu_s\":0.036968},\"ok\":true,\"pid\":919645,\"result\":{\"component_bytes\":408,\"request\":{\"actor\":\"db68ed72cba2d91fc83f5c75d7727dbf118b8770d0f1772f28fc56eb01f5f1a6\",\"args\":{\"bundle\":{\"id\":\"11a05eeb09c217a4115c3b22aaeff714c3a7efd433bea00d52d06352b6b3371c\",\"manifest\":{\"acl\":[\"6c69a23925f43c8a7b40f5a6078e9aa7b30cb569cd6c3985a6aa698992f5f8b8\",\"db68ed72cba2d91fc83f5c75d7727dbf118b8770d0f1772f28fc56eb01f5f1a6\"],\"addresses\":[\"fixture\"],\"components\":{\"calibration\":\"d7a3bb14f7f8fab74c244d9774ec5fa00835b415e14ca0f56d1395c6b01f1513\",\"encoder\":\"d7a3bb14f7f8fab74c244d9774ec5fa00835b415e14ca0f56d1395c6b01f1513\",\"memory\":\"2eb75331cae2783f52cf74ff5cf31434cc52b2ca6e43e642b94ed114f1ca698c\",\"model\":\"ecb25bc874ba72a4baf6365a1e1182a72e8cca03be81757d4f991c3db13029da\",\"optimizer\":\"d7a3bb14f7f8fab74c244d9774ec5fa00835b415e14ca0f56d1395c6b01f1513\",\"rng\":\"d7a3bb14f7f8fab74c244d9774ec5fa00835b415e14ca0f56d1395c6b01f1513\",\"routing\":\"e28b258942a91d6ab83310539630ab89c759bfe3c2330d488580f592099274aa\",\"runtime\":\"bfd7214c29a97babfc94db47c4654ebc15d46298d64135aedd59344324c1ddcd\",\"sampler\":\"d7a3bb14f7f8fab74c244d9774ec5fa00835b415e14ca0f56d1395c6b01f1513\",\"schema\":\"2d2a18fe632dee4f0f9e2189ef4763b17847b24b386ab0f8278576c525194a41\",\"tokenizer\":\"d7a3bb14f7f8fab74c244d9774ec5fa00835b415e14ca0f56d1395c6b01f1513\"},\"format\":\"hepta.memory-cell.v15\",\"scope\":\"hepta-v15-23f86845405a4bb8\",\"sources\":[{\"hash\":\"2eb75331cae2783f52cf74ff5cf31434cc52b2ca6e43e642b94ed114f1ca698c\",\"id\":\"memory-input\",\"revision\":1}]},\"objects\":{\"calibration\":\"6578706c696369742d6e6f742d747261696e65642d666978747572652d736c6f74\",\"encoder\":\"6578706c696369742d6e6f742d747261696e65642d666978747572652d736c6f74\",\"memory\":\"7b22696e70757473223a5b5b332c345d2c5b352c2d325d2c5b302c375d5d2c2273636f7065223a2273796e746865746963227d\",\"model\":\"7b2262696173223a5b322c315d2c226b696e64223a22696e74656765722d6d61747269782d7631222c2277656967687473223a5b5b312c325d2c5b2d312c335d5d7d\",\"optimizer\":\"6578706c696369742d6e6f742d747261696e65642d666978747572652d736c6f74\",\"rng\":\"6578706c696369742d6e6f742d747261696e65642d666978747572652d736c6f74\",\"routing\":\"7b2261646472657373223a2266697874757265222c226d6f6465223a226578616374227d\",\"runtime\":\"696e74656765722d6d61747269782d7631\",\"sampler\":\"6578706c696369742d6e6f742d747261696e65642d666978747572652d736c6f74\",\"schema\":\"7b22696e70757473223a22696e74656765722d766563746f7273222c2276657273696f6e223a317d\",\"tokenizer\":\"6578706c696369742d6e6f742d747261696e65642d666978747572652d736c6f74\"}},\"cell\":\"cell\",\"epoch\":3,\"expected\":\"e6776564499a641af1dccf74f70ff6611443565e1af755437397ade99f183d43\"},\"authority\":\"b488f4a901b147ddd9146d57b62da761f267f7119c4c9ea85792afd2c078c832\",\"domain\":\"hepta.memory-cell.v15\",\"operation\":\"publish\",\"request_id\":\"hepta-v15-23f86845405a4bb8-publish\",\"signature\":\"08b1885cca9213caa970ccfebb81739df065dee566b37f0e408760fb778a0df27ad522c1f54f16be57b6fabf2e41b68f10bccf086b2a48a1b55b70286e621f0e\"},\"target_updated_result\":{\"kind\":\"finite-integer-matrix-not-language\",\"memory_hash\":\"2eb75331cae2783f52cf74ff5cf31434cc52b2ca6e43e642b94ed114f1ca698c\",\"model_hash\":\"ecb25bc874ba72a4baf6365a1e1182a72e8cca03be81757d4f991c3db13029da\",\"output_digest\":\"fbf64923ca2d53b6528a99053d14b6d6a7fed444d53e34ea345c98ffc538b480\",\"outputs\":[[13,10],[3,-10],[16,22]]}},\"role\":\"target\",\"run_id\":\"hepta-v15-23f86845405a4bb8\",\"step\":\"sign_publish\",\"unmeasured\":{\"amortized_training_cost\":null,\"energy_joules\":null,\"lifecycle_total_cost\":null,\"network_wire_bytes\":null,\"storage_physical_bytes\":null,\"total_device_memory_bytes\":null},\"worker_sha256\":\"e71df378426d8eb6c7afd8e75938741943fbdb482ec15de17c45b3f74ca12160\"}\n",
+      "stderr": "",
+      "output_complete": true,
+      "observed": {
+        "authority_sha256": "7e5a2016347718e87df147f2ae96f2e56b9813d2c11e705bf88c8649a16bbe68",
+        "environment": {
+          "arch": "x86_64",
+          "crypto": "46.0.5",
+          "node_digest": "54d6a54e456bc672a4490b3695adb364566eef77976002732b47d78c3b9ee980",
+          "platform": "Linux",
+          "python": "3.14.4",
+          "sqlite": "3.46.1"
+        },
+        "measured": {
+          "process_elapsed_s": 0.00905460596550256,
+          "process_peak_rss_bytes": 29949952,
+          "system_cpu_s": 0.005836999999999999,
+          "user_cpu_s": 0.036968
+        },
+        "ok": true,
+        "pid": 919645,
+        "result": {
+          "component_bytes": 408,
+          "request": {
+            "actor": "db68ed72cba2d91fc83f5c75d7727dbf118b8770d0f1772f28fc56eb01f5f1a6",
+            "args": {
+              "bundle": {
+                "id": "11a05eeb09c217a4115c3b22aaeff714c3a7efd433bea00d52d06352b6b3371c",
+                "manifest": {
+                  "acl": [
+                    "6c69a23925f43c8a7b40f5a6078e9aa7b30cb569cd6c3985a6aa698992f5f8b8",
+                    "db68ed72cba2d91fc83f5c75d7727dbf118b8770d0f1772f28fc56eb01f5f1a6"
+                  ],
+                  "addresses": [
+                    "fixture"
+                  ],
+                  "components": {
+                    "calibration": "d7a3bb14f7f8fab74c244d9774ec5fa00835b415e14ca0f56d1395c6b01f1513",
+                    "encoder": "d7a3bb14f7f8fab74c244d9774ec5fa00835b415e14ca0f56d1395c6b01f1513",
+                    "memory": "2eb75331cae2783f52cf74ff5cf31434cc52b2ca6e43e642b94ed114f1ca698c",
+                    "model": "ecb25bc874ba72a4baf6365a1e1182a72e8cca03be81757d4f991c3db13029da",
+                    "optimizer": "d7a3bb14f7f8fab74c244d9774ec5fa00835b415e14ca0f56d1395c6b01f1513",
+                    "rng": "d7a3bb14f7f8fab74c244d9774ec5fa00835b415e14ca0f56d1395c6b01f1513",
+                    "routing": "e28b258942a91d6ab83310539630ab89c759bfe3c2330d488580f592099274aa",
+                    "runtime": "bfd7214c29a97babfc94db47c4654ebc15d46298d64135aedd59344324c1ddcd",
+                    "sampler": "d7a3bb14f7f8fab74c244d9774ec5fa00835b415e14ca0f56d1395c6b01f1513",
+                    "schema": "2d2a18fe632dee4f0f9e2189ef4763b17847b24b386ab0f8278576c525194a41",
+                    "tokenizer": "d7a3bb14f7f8fab74c244d9774ec5fa00835b415e14ca0f56d1395c6b01f1513"
+                  },
+                  "format": "hepta.memory-cell.v15",
+                  "scope": "hepta-v15-23f86845405a4bb8",
+                  "sources": [
+                    {
+                      "hash": "2eb75331cae2783f52cf74ff5cf31434cc52b2ca6e43e642b94ed114f1ca698c",
+                      "id": "memory-input",
+                      "revision": 1
+                    }
+                  ]
+                },
+                "objects": {
+                  "calibration": "6578706c696369742d6e6f742d747261696e65642d666978747572652d736c6f74",
+                  "encoder": "6578706c696369742d6e6f742d747261696e65642d666978747572652d736c6f74",
+                  "memory": "7b22696e70757473223a5b5b332c345d2c5b352c2d325d2c5b302c375d5d2c2273636f7065223a2273796e746865746963227d",
+                  "model": "7b2262696173223a5b322c315d2c226b696e64223a22696e74656765722d6d61747269782d7631222c2277656967687473223a5b5b312c325d2c5b2d312c335d5d7d",
+                  "optimizer": "6578706c696369742d6e6f742d747261696e65642d666978747572652d736c6f74",
+                  "rng": "6578706c696369742d6e6f742d747261696e65642d666978747572652d736c6f74",
+                  "routing": "7b2261646472657373223a2266697874757265222c226d6f6465223a226578616374227d",
+                  "runtime": "696e74656765722d6d61747269782d7631",
+                  "sampler": "6578706c696369742d6e6f742d747261696e65642d666978747572652d736c6f74",
+                  "schema": "7b22696e70757473223a22696e74656765722d766563746f7273222c2276657273696f6e223a317d",
+                  "tokenizer": "6578706c696369742d6e6f742d747261696e65642d666978747572652d736c6f74"
+                }
+              },
+              "cell": "cell",
+              "epoch": 3,
+              "expected": "e6776564499a641af1dccf74f70ff6611443565e1af755437397ade99f183d43"
+            },
+            "authority": "b488f4a901b147ddd9146d57b62da761f267f7119c4c9ea85792afd2c078c832",
+            "domain": "hepta.memory-cell.v15",
+            "operation": "publish",
+            "request_id": "hepta-v15-23f86845405a4bb8-publish",
+            "signature": "08b1885cca9213caa970ccfebb81739df065dee566b37f0e408760fb778a0df27ad522c1f54f16be57b6fabf2e41b68f10bccf086b2a48a1b55b70286e621f0e"
+          },
+          "target_updated_result": {
+            "kind": "finite-integer-matrix-not-language",
+            "memory_hash": "2eb75331cae2783f52cf74ff5cf31434cc52b2ca6e43e642b94ed114f1ca698c",
+            "model_hash": "ecb25bc874ba72a4baf6365a1e1182a72e8cca03be81757d4f991c3db13029da",
+            "output_digest": "fbf64923ca2d53b6528a99053d14b6d6a7fed444d53e34ea345c98ffc538b480",
+            "outputs": [
+              [
+                13,
+                10
+              ],
+              [
+                3,
+                -10
+              ],
+              [
+                16,
+                22
+              ]
+            ]
+          }
+        },
+        "role": "target",
+        "run_id": "hepta-v15-23f86845405a4bb8",
+        "step": "sign_publish",
+        "unmeasured": {
+          "amortized_training_cost": null,
+          "energy_joules": null,
+          "lifecycle_total_cost": null,
+          "network_wire_bytes": null,
+          "storage_physical_bytes": null,
+          "total_device_memory_bytes": null
+        },
+        "worker_sha256": "e71df378426d8eb6c7afd8e75938741943fbdb482ec15de17c45b3f74ca12160"
+      }
+    },
+    {
+      "host": "mac",
+      "step": "accept_publish",
+      "role": "source",
+      "job_id": "1a1a956892e-fc05-3466",
+      "idempotency_key": "hepta-v15-23f86845405a4bb8-mac-accept-publish",
+      "request_digest": "fe0767f5137dae34e34aace04ce579cfaec83f1b5c14eb40c787eacac2b370e0",
+      "launch_state": "launched",
+      "launch": {
+        "backend": "detached",
+        "launcher_pid": 61088,
+        "ok": true,
+        "systemd_error": "systemd user units unavailable on this platform",
+        "unit": "hepta-runtime-job-1a1a956892e-fc05-3466"
+      },
+      "input": {
+        "request": {
+          "actor": "db68ed72cba2d91fc83f5c75d7727dbf118b8770d0f1772f28fc56eb01f5f1a6",
+          "args": {
+            "bundle": {
+              "id": "11a05eeb09c217a4115c3b22aaeff714c3a7efd433bea00d52d06352b6b3371c",
+              "manifest": {
+                "acl": [
+                  "6c69a23925f43c8a7b40f5a6078e9aa7b30cb569cd6c3985a6aa698992f5f8b8",
+                  "db68ed72cba2d91fc83f5c75d7727dbf118b8770d0f1772f28fc56eb01f5f1a6"
+                ],
+                "addresses": [
+                  "fixture"
+                ],
+                "components": {
+                  "calibration": "d7a3bb14f7f8fab74c244d9774ec5fa00835b415e14ca0f56d1395c6b01f1513",
+                  "encoder": "d7a3bb14f7f8fab74c244d9774ec5fa00835b415e14ca0f56d1395c6b01f1513",
+                  "memory": "2eb75331cae2783f52cf74ff5cf31434cc52b2ca6e43e642b94ed114f1ca698c",
+                  "model": "ecb25bc874ba72a4baf6365a1e1182a72e8cca03be81757d4f991c3db13029da",
+                  "optimizer": "d7a3bb14f7f8fab74c244d9774ec5fa00835b415e14ca0f56d1395c6b01f1513",
+                  "rng": "d7a3bb14f7f8fab74c244d9774ec5fa00835b415e14ca0f56d1395c6b01f1513",
+                  "routing": "e28b258942a91d6ab83310539630ab89c759bfe3c2330d488580f592099274aa",
+                  "runtime": "bfd7214c29a97babfc94db47c4654ebc15d46298d64135aedd59344324c1ddcd",
+                  "sampler": "d7a3bb14f7f8fab74c244d9774ec5fa00835b415e14ca0f56d1395c6b01f1513",
+                  "schema": "2d2a18fe632dee4f0f9e2189ef4763b17847b24b386ab0f8278576c525194a41",
+                  "tokenizer": "d7a3bb14f7f8fab74c244d9774ec5fa00835b415e14ca0f56d1395c6b01f1513"
+                },
+                "format": "hepta.memory-cell.v15",
+                "scope": "hepta-v15-23f86845405a4bb8",
+                "sources": [
+                  {
+                    "hash": "2eb75331cae2783f52cf74ff5cf31434cc52b2ca6e43e642b94ed114f1ca698c",
+                    "id": "memory-input",
+                    "revision": 1
+                  }
+                ]
+              },
+              "objects": {
+                "calibration": "6578706c696369742d6e6f742d747261696e65642d666978747572652d736c6f74",
+                "encoder": "6578706c696369742d6e6f742d747261696e65642d666978747572652d736c6f74",
+                "memory": "7b22696e70757473223a5b5b332c345d2c5b352c2d325d2c5b302c375d5d2c2273636f7065223a2273796e746865746963227d",
+                "model": "7b2262696173223a5b322c315d2c226b696e64223a22696e74656765722d6d61747269782d7631222c2277656967687473223a5b5b312c325d2c5b2d312c335d5d7d",
+                "optimizer": "6578706c696369742d6e6f742d747261696e65642d666978747572652d736c6f74",
+                "rng": "6578706c696369742d6e6f742d747261696e65642d666978747572652d736c6f74",
+                "routing": "7b2261646472657373223a2266697874757265222c226d6f6465223a226578616374227d",
+                "runtime": "696e74656765722d6d61747269782d7631",
+                "sampler": "6578706c696369742d6e6f742d747261696e65642d666978747572652d736c6f74",
+                "schema": "7b22696e70757473223a22696e74656765722d766563746f7273222c2276657273696f6e223a317d",
+                "tokenizer": "6578706c696369742d6e6f742d747261696e65642d666978747572652d736c6f74"
+              }
+            },
+            "cell": "cell",
+            "epoch": 3,
+            "expected": "e6776564499a641af1dccf74f70ff6611443565e1af755437397ade99f183d43"
+          },
+          "authority": "b488f4a901b147ddd9146d57b62da761f267f7119c4c9ea85792afd2c078c832",
+          "domain": "hepta.memory-cell.v15",
+          "operation": "publish",
+          "request_id": "hepta-v15-23f86845405a4bb8-publish",
+          "signature": "08b1885cca9213caa970ccfebb81739df065dee566b37f0e408760fb778a0df27ad522c1f54f16be57b6fabf2e41b68f10bccf086b2a48a1b55b70286e621f0e"
+        }
+      },
+      "application_stdin_bytes": 2812,
+      "controller_start_elapsed_ms": 4642,
+      "error": null,
+      "status": {
+        "at_unix_ms": 1793842383419,
+        "audit_recorded": true,
+        "automatic_retry": false,
+        "cancelled": false,
+        "exit_code": 0,
+        "job_id": "1a1a956892e-fc05-3466",
+        "launch_nonce": "850f3ebce9af8d026f8d62cf94b5c732",
+        "log_bytes": {
+          "stderr": {
+            "seen": 0,
+            "stored": 0
+          },
+          "stdout": {
+            "seen": 3266,
+            "stored": 3266
+          }
+        },
+        "log_errors": {
+          "stderr": null,
+          "stdout": null
+        },
+        "log_synced": {
+          "stderr": true,
+          "stdout": true
+        },
+        "log_truncated": {
+          "stderr": false,
+          "stdout": false
+        },
+        "output_complete": true,
+        "output_durable": true,
+        "state": "succeeded",
+        "terminal_publication_confirmed": true,
+        "terminal_publication_protocol": 1,
+        "timed_out": false
+      },
+      "stdout": "{\"authority_sha256\":\"7e5a2016347718e87df147f2ae96f2e56b9813d2c11e705bf88c8649a16bbe68\",\"environment\":{\"arch\":\"arm64\",\"crypto\":\"46.0.5\",\"node_digest\":\"7587a49c3993547c3edae2b9c17c4eaa22a14c3b9e05a116c9b17b294f81f099\",\"platform\":\"Darwin\",\"python\":\"3.9.6\",\"sqlite\":\"3.51.0\"},\"measured\":{\"process_elapsed_s\":0.014183833,\"process_peak_rss_bytes\":27426816,\"system_cpu_s\":0.0109,\"user_cpu_s\":0.03861},\"ok\":true,\"pid\":61093,\"result\":{\"actual_result\":{\"kind\":\"finite-integer-matrix-not-language\",\"memory_hash\":\"2eb75331cae2783f52cf74ff5cf31434cc52b2ca6e43e642b94ed114f1ca698c\",\"model_hash\":\"ecb25bc874ba72a4baf6365a1e1182a72e8cca03be81757d4f991c3db13029da\",\"output_digest\":\"fbf64923ca2d53b6528a99053d14b6d6a7fed444d53e34ea345c98ffc538b480\",\"outputs\":[[13,10],[3,-10],[16,22]]},\"after\":{\"cell\":{\"acl\":\"[\\\"6c69a23925f43c8a7b40f5a6078e9aa7b30cb569cd6c3985a6aa698992f5f8b8\\\",\\\"db68ed72cba2d91fc83f5c75d7727dbf118b8770d0f1772f28fc56eb01f5f1a6\\\"]\",\"bundle\":\"11a05eeb09c217a4115c3b22aaeff714c3a7efd433bea00d52d06352b6b3371c\",\"epoch\":4,\"id\":\"cell\",\"owner\":\"db68ed72cba2d91fc83f5c75d7727dbf118b8770d0f1772f28fc56eb01f5f1a6\",\"scope\":\"hepta-v15-23f86845405a4bb8\",\"state\":\"active\"},\"transfers\":[{\"bundle\":\"e6776564499a641af1dccf74f70ff6611443565e1af755437397ade99f183d43\",\"cell\":\"cell\",\"epoch\":2,\"id\":\"transfer\",\"ready_request\":\"369b4d967bb1e80ef0288a6484f5ebc4410879a83bdceb903a69379637f6ed76\",\"source\":\"6c69a23925f43c8a7b40f5a6078e9aa7b30cb569cd6c3985a6aa698992f5f8b8\",\"state\":\"committed\",\"target\":\"db68ed72cba2d91fc83f5c75d7727dbf118b8770d0f1772f28fc56eb01f5f1a6\"}]},\"before\":{\"cell\":{\"acl\":\"[\\\"6c69a23925f43c8a7b40f5a6078e9aa7b30cb569cd6c3985a6aa698992f5f8b8\\\",\\\"db68ed72cba2d91fc83f5c75d7727dbf118b8770d0f1772f28fc56eb01f5f1a6\\\"]\",\"bundle\":\"e6776564499a641af1dccf74f70ff6611443565e1af755437397ade99f183d43\",\"epoch\":3,\"id\":\"cell\",\"owner\":\"db68ed72cba2d91fc83f5c75d7727dbf118b8770d0f1772f28fc56eb01f5f1a6\",\"scope\":\"hepta-v15-23f86845405a4bb8\",\"state\":\"active\"},\"transfers\":[{\"bundle\":\"e6776564499a641af1dccf74f70ff6611443565e1af755437397ade99f183d43\",\"cell\":\"cell\",\"epoch\":2,\"id\":\"transfer\",\"ready_request\":\"369b4d967bb1e80ef0288a6484f5ebc4410879a83bdceb903a69379637f6ed76\",\"source\":\"6c69a23925f43c8a7b40f5a6078e9aa7b30cb569cd6c3985a6aa698992f5f8b8\",\"state\":\"committed\",\"target\":\"db68ed72cba2d91fc83f5c75d7727dbf118b8770d0f1772f28fc56eb01f5f1a6\"}]},\"receipt\":{\"authority\":\"b488f4a901b147ddd9146d57b62da761f267f7119c4c9ea85792afd2c078c832\",\"command_hash\":\"ab3aab4ad858fcd66f476e8f1507954aa2f2220c5dca9cecbde5329c58ee7eb9\",\"domain\":\"hepta.memory-cell.v15\",\"request_id\":\"hepta-v15-23f86845405a4bb8-publish\",\"result\":{\"bundle\":\"11a05eeb09c217a4115c3b22aaeff714c3a7efd433bea00d52d06352b6b3371c\",\"cell\":\"cell\",\"epoch\":4,\"evidence\":\"0e05a1e70248e252f30a160004315432de12542d6739ddf6a91175fa961d55cb\"},\"signature\":\"3b39238acfbb3caf6022342f114e320b796bc038d102bab536dc326b46d813b8737ab2c9a9438777c152d0cb1d0098a94c5410297974ebb3842ef8401b339a0b\"}},\"role\":\"source\",\"run_id\":\"hepta-v15-23f86845405a4bb8\",\"step\":\"accept_publish\",\"unmeasured\":{\"amortized_training_cost\":null,\"energy_joules\":null,\"lifecycle_total_cost\":null,\"network_wire_bytes\":null,\"storage_physical_bytes\":null,\"total_device_memory_bytes\":null},\"worker_sha256\":\"e71df378426d8eb6c7afd8e75938741943fbdb482ec15de17c45b3f74ca12160\"}\n",
+      "stderr": "",
+      "output_complete": true,
+      "observed": {
+        "authority_sha256": "7e5a2016347718e87df147f2ae96f2e56b9813d2c11e705bf88c8649a16bbe68",
+        "environment": {
+          "arch": "arm64",
+          "crypto": "46.0.5",
+          "node_digest": "7587a49c3993547c3edae2b9c17c4eaa22a14c3b9e05a116c9b17b294f81f099",
+          "platform": "Darwin",
+          "python": "3.9.6",
+          "sqlite": "3.51.0"
+        },
+        "measured": {
+          "process_elapsed_s": 0.014183833,
+          "process_peak_rss_bytes": 27426816,
+          "system_cpu_s": 0.0109,
+          "user_cpu_s": 0.03861
+        },
+        "ok": true,
+        "pid": 61093,
+        "result": {
+          "actual_result": {
+            "kind": "finite-integer-matrix-not-language",
+            "memory_hash": "2eb75331cae2783f52cf74ff5cf31434cc52b2ca6e43e642b94ed114f1ca698c",
+            "model_hash": "ecb25bc874ba72a4baf6365a1e1182a72e8cca03be81757d4f991c3db13029da",
+            "output_digest": "fbf64923ca2d53b6528a99053d14b6d6a7fed444d53e34ea345c98ffc538b480",
+            "outputs": [
+              [
+                13,
+                10
+              ],
+              [
+                3,
+                -10
+              ],
+              [
+                16,
+                22
+              ]
+            ]
+          },
+          "after": {
+            "cell": {
+              "acl": "[\"6c69a23925f43c8a7b40f5a6078e9aa7b30cb569cd6c3985a6aa698992f5f8b8\",\"db68ed72cba2d91fc83f5c75d7727dbf118b8770d0f1772f28fc56eb01f5f1a6\"]",
+              "bundle": "11a05eeb09c217a4115c3b22aaeff714c3a7efd433bea00d52d06352b6b3371c",
+              "epoch": 4,
+              "id": "cell",
+              "owner": "db68ed72cba2d91fc83f5c75d7727dbf118b8770d0f1772f28fc56eb01f5f1a6",
+              "scope": "hepta-v15-23f86845405a4bb8",
+              "state": "active"
+            },
+            "transfers": [
+              {
+                "bundle": "e6776564499a641af1dccf74f70ff6611443565e1af755437397ade99f183d43",
+                "cell": "cell",
+                "epoch": 2,
+                "id": "transfer",
+                "ready_request": "369b4d967bb1e80ef0288a6484f5ebc4410879a83bdceb903a69379637f6ed76",
+                "source": "6c69a23925f43c8a7b40f5a6078e9aa7b30cb569cd6c3985a6aa698992f5f8b8",
+                "state": "committed",
+                "target": "db68ed72cba2d91fc83f5c75d7727dbf118b8770d0f1772f28fc56eb01f5f1a6"
+              }
+            ]
+          },
+          "before": {
+            "cell": {
+              "acl": "[\"6c69a23925f43c8a7b40f5a6078e9aa7b30cb569cd6c3985a6aa698992f5f8b8\",\"db68ed72cba2d91fc83f5c75d7727dbf118b8770d0f1772f28fc56eb01f5f1a6\"]",
+              "bundle": "e6776564499a641af1dccf74f70ff6611443565e1af755437397ade99f183d43",
+              "epoch": 3,
+              "id": "cell",
+              "owner": "db68ed72cba2d91fc83f5c75d7727dbf118b8770d0f1772f28fc56eb01f5f1a6",
+              "scope": "hepta-v15-23f86845405a4bb8",
+              "state": "active"
+            },
+            "transfers": [
+              {
+                "bundle": "e6776564499a641af1dccf74f70ff6611443565e1af755437397ade99f183d43",
+                "cell": "cell",
+                "epoch": 2,
+                "id": "transfer",
+                "ready_request": "369b4d967bb1e80ef0288a6484f5ebc4410879a83bdceb903a69379637f6ed76",
+                "source": "6c69a23925f43c8a7b40f5a6078e9aa7b30cb569cd6c3985a6aa698992f5f8b8",
+                "state": "committed",
+                "target": "db68ed72cba2d91fc83f5c75d7727dbf118b8770d0f1772f28fc56eb01f5f1a6"
+              }
+            ]
+          },
+          "receipt": {
+            "authority": "b488f4a901b147ddd9146d57b62da761f267f7119c4c9ea85792afd2c078c832",
+            "command_hash": "ab3aab4ad858fcd66f476e8f1507954aa2f2220c5dca9cecbde5329c58ee7eb9",
+            "domain": "hepta.memory-cell.v15",
+            "request_id": "hepta-v15-23f86845405a4bb8-publish",
+            "result": {
+              "bundle": "11a05eeb09c217a4115c3b22aaeff714c3a7efd433bea00d52d06352b6b3371c",
+              "cell": "cell",
+              "epoch": 4,
+              "evidence": "0e05a1e70248e252f30a160004315432de12542d6739ddf6a91175fa961d55cb"
+            },
+            "signature": "3b39238acfbb3caf6022342f114e320b796bc038d102bab536dc326b46d813b8737ab2c9a9438777c152d0cb1d0098a94c5410297974ebb3842ef8401b339a0b"
+          }
+        },
+        "role": "source",
+        "run_id": "hepta-v15-23f86845405a4bb8",
+        "step": "accept_publish",
+        "unmeasured": {
+          "amortized_training_cost": null,
+          "energy_joules": null,
+          "lifecycle_total_cost": null,
+          "network_wire_bytes": null,
+          "storage_physical_bytes": null,
+          "total_device_memory_bytes": null
+        },
+        "worker_sha256": "e71df378426d8eb6c7afd8e75938741943fbdb482ec15de17c45b3f74ca12160"
+      },
+      "updated_result_equal": true
+    },
+    {
+      "host": "mac",
+      "step": "export_requests",
+      "role": "source-readonly",
+      "job_id": "1a1a957366f-fc05-346c",
+      "idempotency_key": "hepta-v15-23f86845405a4bb8-mac-readonly-export",
+      "request_digest": "49e31071e3054b5d98869887e1e2e4175c0d701abebb780f3aea4b1cd6391070",
+      "launch_state": "launched",
+      "launch": {
+        "backend": "detached",
+        "launcher_pid": 61906,
+        "ok": true,
+        "systemd_error": "systemd user units unavailable on this platform",
+        "unit": "hepta-runtime-job-1a1a957366f-fc05-346c"
+      },
+      "controller_start_elapsed_ms": 6011,
+      "application_stdin_bytes": 0,
+      "error": null,
+      "status": {
+        "at_unix_ms": 1793842427760,
+        "audit_recorded": true,
+        "automatic_retry": false,
+        "cancelled": false,
+        "exit_code": 0,
+        "job_id": "1a1a957366f-fc05-346c",
+        "launch_nonce": "8ecc69970774805d59514a74805f5b35",
+        "log_bytes": {
+          "stderr": {
+            "seen": 0,
+            "stored": 0
+          },
+          "stdout": {
+            "seen": 17335,
+            "stored": 17335
+          }
+        },
+        "log_errors": {
+          "stderr": null,
+          "stdout": null
+        },
+        "log_synced": {
+          "stderr": true,
+          "stdout": true
+        },
+        "log_truncated": {
+          "stderr": false,
+          "stdout": false
+        },
+        "output_complete": true,
+        "output_durable": true,
+        "state": "succeeded",
+        "terminal_publication_confirmed": true,
+        "terminal_publication_protocol": 1,
+        "timed_out": false
+      },
+      "stdout": "{\"access\":\"sqlite-readonly\",\"authority_sha256\":\"7e5a2016347718e87df147f2ae96f2e56b9813d2c11e705bf88c8649a16bbe68\",\"keys_accessed\":false,\"measured\":{\"body_elapsed_s\":0.0015270829999999985,\"system_cpu_s\":0.006516999999999999,\"user_cpu_s\":0.012608999999999999},\"ok\":true,\"result\":{\"receipts\":[{\"receipt\":{\"authority\":\"b488f4a901b147ddd9146d57b62da761f267f7119c4c9ea85792afd2c078c832\",\"command_hash\":\"cad9c09d7776dc37a2730138459f755bd1b82decbadb643c08c34b5268ed2818\",\"domain\":\"hepta.memory-cell.v15\",\"request_id\":\"hepta-v15-23f86845405a4bb8-source\",\"result\":{\"active\":true,\"hash\":\"2eb75331cae2783f52cf74ff5cf31434cc52b2ca6e43e642b94ed114f1ca698c\",\"id\":\"memory-input\",\"revision\":1},\"signature\":\"75ad6d82098ff2a325a7ae1ed54e202ef2eb8afa38baf9d5e449ffca88f7593408994431874e51a80fc1cab6e4d29e5d8bb5a5054aa12a66d4cf6414b342940b\"},\"request\":{\"actor\":\"b58687220d39fa7740341d7db33af90010a4fd52f22d5d52423b1aeec5b58f01\",\"args\":{\"active\":true,\"body\":\"{\\\"inputs\\\":[[3,4],[5,-2],[0,7]],\\\"scope\\\":\\\"synthetic\\\"}\",\"expected_revision\":0,\"id\":\"memory-input\",\"scope\":\"hepta-v15-23f86845405a4bb8\"},\"authority\":\"b488f4a901b147ddd9146d57b62da761f267f7119c4c9ea85792afd2c078c832\",\"domain\":\"hepta.memory-cell.v15\",\"operation\":\"source\",\"request_id\":\"hepta-v15-23f86845405a4bb8-source\",\"signature\":\"07f97252928682dcdb688e635a65c1c68fb5199e0c42fd76ff67f76e99ff132039cb6de19f8d0b3e6d8c2b22095a4168615e2d2e2444ceac4fac255c735b1701\"}},{\"receipt\":{\"authority\":\"b488f4a901b147ddd9146d57b62da761f267f7119c4c9ea85792afd2c078c832\",\"command_hash\":\"21ca654667a48c78035c2d6fd10b5c4dcb371eb79cf8d75c264979c2cdac31e4\",\"domain\":\"hepta.memory-cell.v15\",\"request_id\":\"hepta-v15-23f86845405a4bb8-create\",\"result\":{\"bundle\":\"e6776564499a641af1dccf74f70ff6611443565e1af755437397ade99f183d43\",\"cell\":\"cell\",\"epoch\":1,\"evidence\":\"0e05a1e70248e252f30a160004315432de12542d6739ddf6a91175fa961d55cb\",\"owner\":\"6c69a23925f43c8a7b40f5a6078e9aa7b30cb569cd6c3985a6aa698992f5f8b8\"},\"signature\":\"bfb41b60a1a99778f8d822c9d5d386796ee795cc8fbadfc0dd1073d5305b4216c7e5fc9f4c674941d5c9a332408fe5bd19ca2f34ad24073d5a2c5cd3ad803a0f\"},\"request\":{\"actor\":\"b58687220d39fa7740341d7db33af90010a4fd52f22d5d52423b1aeec5b58f01\",\"args\":{\"bundle\":{\"id\":\"e6776564499a641af1dccf74f70ff6611443565e1af755437397ade99f183d43\",\"manifest\":{\"acl\":[\"6c69a23925f43c8a7b40f5a6078e9aa7b30cb569cd6c3985a6aa698992f5f8b8\",\"db68ed72cba2d91fc83f5c75d7727dbf118b8770d0f1772f28fc56eb01f5f1a6\"],\"addresses\":[\"fixture\"],\"components\":{\"calibration\":\"d7a3bb14f7f8fab74c244d9774ec5fa00835b415e14ca0f56d1395c6b01f1513\",\"encoder\":\"d7a3bb14f7f8fab74c244d9774ec5fa00835b415e14ca0f56d1395c6b01f1513\",\"memory\":\"2eb75331cae2783f52cf74ff5cf31434cc52b2ca6e43e642b94ed114f1ca698c\",\"model\":\"03837d7ad14fb977dd8ac9b7d02911f400beb16c6d8dba2c66709843391f6722\",\"optimizer\":\"d7a3bb14f7f8fab74c244d9774ec5fa00835b415e14ca0f56d1395c6b01f1513\",\"rng\":\"d7a3bb14f7f8fab74c244d9774ec5fa00835b415e14ca0f56d1395c6b01f1513\",\"routing\":\"e28b258942a91d6ab83310539630ab89c759bfe3c2330d488580f592099274aa\",\"runtime\":\"bfd7214c29a97babfc94db47c4654ebc15d46298d64135aedd59344324c1ddcd\",\"sampler\":\"d7a3bb14f7f8fab74c244d9774ec5fa00835b415e14ca0f56d1395c6b01f1513\",\"schema\":\"2d2a18fe632dee4f0f9e2189ef4763b17847b24b386ab0f8278576c525194a41\",\"tokenizer\":\"d7a3bb14f7f8fab74c244d9774ec5fa00835b415e14ca0f56d1395c6b01f1513\"},\"format\":\"hepta.memory-cell.v15\",\"scope\":\"hepta-v15-23f86845405a4bb8\",\"sources\":[{\"hash\":\"2eb75331cae2783f52cf74ff5cf31434cc52b2ca6e43e642b94ed114f1ca698c\",\"id\":\"memory-input\",\"revision\":1}]},\"objects\":{\"calibration\":\"6578706c696369742d6e6f742d747261696e65642d666978747572652d736c6f74\",\"encoder\":\"6578706c696369742d6e6f742d747261696e65642d666978747572652d736c6f74\",\"memory\":\"7b22696e70757473223a5b5b332c345d2c5b352c2d325d2c5b302c375d5d2c2273636f7065223a2273796e746865746963227d\",\"model\":\"7b2262696173223a5b302c315d2c226b696e64223a22696e74656765722d6d61747269782d7631222c2277656967687473223a5b5b312c325d2c5b2d312c335d5d7d\",\"optimizer\":\"6578706c696369742d6e6f742d747261696e65642d666978747572652d736c6f74\",\"rng\":\"6578706c696369742d6e6f742d747261696e65642d666978747572652d736c6f74\",\"routing\":\"7b2261646472657373223a2266697874757265222c226d6f6465223a226578616374227d\",\"runtime\":\"696e74656765722d6d61747269782d7631\",\"sampler\":\"6578706c696369742d6e6f742d747261696e65642d666978747572652d736c6f74\",\"schema\":\"7b22696e70757473223a22696e74656765722d766563746f7273222c2276657273696f6e223a317d\",\"tokenizer\":\"6578706c696369742d6e6f742d747261696e65642d666978747572652d736c6f74\"}},\"cell\":\"cell\",\"owner\":\"6c69a23925f43c8a7b40f5a6078e9aa7b30cb569cd6c3985a6aa698992f5f8b8\"},\"authority\":\"b488f4a901b147ddd9146d57b62da761f267f7119c4c9ea85792afd2c078c832\",\"domain\":\"hepta.memory-cell.v15\",\"operation\":\"create\",\"request_id\":\"hepta-v15-23f86845405a4bb8-create\",\"signature\":\"6114e6fa666f036bb9e46b1b69a5edc58d6858df3b0d992c078f17fede1c92f9fd2db7e17032e2aeadece005dcfff2acbd804653b152c09fc82741f171bef60b\"}},{\"receipt\":{\"authority\":\"b488f4a901b147ddd9146d57b62da761f267f7119c4c9ea85792afd2c078c832\",\"command_hash\":\"5595cd1c582f06dc2b62da7328bb44d61460888d71ee01357cfef81bff142815\",\"domain\":\"hepta.memory-cell.v15\",\"request_id\":\"hepta-v15-23f86845405a4bb8-prepare\",\"result\":{\"bundle\":\"e6776564499a641af1dccf74f70ff6611443565e1af755437397ade99f183d43\",\"epoch\":2,\"state\":\"prepared\",\"transfer\":\"transfer\"},\"signature\":\"3a9d86cd8c83b596b180b1b145d247e28a218c9a497d81a6a1611c0bec11ac686f77bd0fe034cb979926289204df9349fbec7d86516bf747448c3f8b4f5fd509\"},\"request\":{\"actor\":\"6c69a23925f43c8a7b40f5a6078e9aa7b30cb569cd6c3985a6aa698992f5f8b8\",\"args\":{\"cell\":\"cell\",\"epoch\":1,\"expected\":\"e6776564499a641af1dccf74f70ff6611443565e1af755437397ade99f183d43\",\"target\":\"db68ed72cba2d91fc83f5c75d7727dbf118b8770d0f1772f28fc56eb01f5f1a6\",\"transfer\":\"transfer\"},\"authority\":\"b488f4a901b147ddd9146d57b62da761f267f7119c4c9ea85792afd2c078c832\",\"domain\":\"hepta.memory-cell.v15\",\"operation\":\"prepare\",\"request_id\":\"hepta-v15-23f86845405a4bb8-prepare\",\"signature\":\"9da9bf6b68087de23a7041ed89a0a8bc7d6afb1261567dd78b5ae44695d443ff0b30bdb6e83b40fd4545c1f4cdc15d15a6c3b8596739a946becc231d335c3503\"}},{\"receipt\":{\"authority\":\"b488f4a901b147ddd9146d57b62da761f267f7119c4c9ea85792afd2c078c832\",\"command_hash\":\"17beedbf6dd2d37708136c3ac3ee5f4849d771788a1b2d62d185b0f9120d2fd2\",\"domain\":\"hepta.memory-cell.v15\",\"request_id\":\"hepta-v15-23f86845405a4bb8-ready\",\"result\":{\"bundle\":\"e6776564499a641af1dccf74f70ff6611443565e1af755437397ade99f183d43\",\"epoch\":2,\"state\":\"ready\",\"transfer\":\"transfer\"},\"signature\":\"5648dda5d06f498e88ecf387ca3ba34b7f785e862cc69183795cf619886aebe8cbcf2e5d5185e40a798b2ea385926abb8e8ff9151747dabcd1e9226bb207ab04\"},\"request\":{\"actor\":\"db68ed72cba2d91fc83f5c75d7727dbf118b8770d0f1772f28fc56eb01f5f1a6\",\"args\":{\"bundle\":{\"id\":\"e6776564499a641af1dccf74f70ff6611443565e1af755437397ade99f183d43\",\"manifest\":{\"acl\":[\"6c69a23925f43c8a7b40f5a6078e9aa7b30cb569cd6c3985a6aa698992f5f8b8\",\"db68ed72cba2d91fc83f5c75d7727dbf118b8770d0f1772f28fc56eb01f5f1a6\"],\"addresses\":[\"fixture\"],\"components\":{\"calibration\":\"d7a3bb14f7f8fab74c244d9774ec5fa00835b415e14ca0f56d1395c6b01f1513\",\"encoder\":\"d7a3bb14f7f8fab74c244d9774ec5fa00835b415e14ca0f56d1395c6b01f1513\",\"memory\":\"2eb75331cae2783f52cf74ff5cf31434cc52b2ca6e43e642b94ed114f1ca698c\",\"model\":\"03837d7ad14fb977dd8ac9b7d02911f400beb16c6d8dba2c66709843391f6722\",\"optimizer\":\"d7a3bb14f7f8fab74c244d9774ec5fa00835b415e14ca0f56d1395c6b01f1513\",\"rng\":\"d7a3bb14f7f8fab74c244d9774ec5fa00835b415e14ca0f56d1395c6b01f1513\",\"routing\":\"e28b258942a91d6ab83310539630ab89c759bfe3c2330d488580f592099274aa\",\"runtime\":\"bfd7214c29a97babfc94db47c4654ebc15d46298d64135aedd59344324c1ddcd\",\"sampler\":\"d7a3bb14f7f8fab74c244d9774ec5fa00835b415e14ca0f56d1395c6b01f1513\",\"schema\":\"2d2a18fe632dee4f0f9e2189ef4763b17847b24b386ab0f8278576c525194a41\",\"tokenizer\":\"d7a3bb14f7f8fab74c244d9774ec5fa00835b415e14ca0f56d1395c6b01f1513\"},\"format\":\"hepta.memory-cell.v15\",\"scope\":\"hepta-v15-23f86845405a4bb8\",\"sources\":[{\"hash\":\"2eb75331cae2783f52cf74ff5cf31434cc52b2ca6e43e642b94ed114f1ca698c\",\"id\":\"memory-input\",\"revision\":1}]},\"objects\":{\"calibration\":\"6578706c696369742d6e6f742d747261696e65642d666978747572652d736c6f74\",\"encoder\":\"6578706c696369742d6e6f742d747261696e65642d666978747572652d736c6f74\",\"memory\":\"7b22696e70757473223a5b5b332c345d2c5b352c2d325d2c5b302c375d5d2c2273636f7065223a2273796e746865746963227d\",\"model\":\"7b2262696173223a5b302c315d2c226b696e64223a22696e74656765722d6d61747269782d7631222c2277656967687473223a5b5b312c325d2c5b2d312c335d5d7d\",\"optimizer\":\"6578706c696369742d6e6f742d747261696e65642d666978747572652d736c6f74\",\"rng\":\"6578706c696369742d6e6f742d747261696e65642d666978747572652d736c6f74\",\"routing\":\"7b2261646472657373223a2266697874757265222c226d6f6465223a226578616374227d\",\"runtime\":\"696e74656765722d6d61747269782d7631\",\"sampler\":\"6578706c696369742d6e6f742d747261696e65642d666978747572652d736c6f74\",\"schema\":\"7b22696e70757473223a22696e74656765722d766563746f7273222c2276657273696f6e223a317d\",\"tokenizer\":\"6578706c696369742d6e6f742d747261696e65642d666978747572652d736c6f74\"}},\"cell\":\"cell\",\"epoch\":2,\"expected\":\"e6776564499a641af1dccf74f70ff6611443565e1af755437397ade99f183d43\",\"transfer\":\"transfer\"},\"authority\":\"b488f4a901b147ddd9146d57b62da761f267f7119c4c9ea85792afd2c078c832\",\"domain\":\"hepta.memory-cell.v15\",\"operation\":\"ready\",\"request_id\":\"hepta-v15-23f86845405a4bb8-ready\",\"signature\":\"215da38d3c17aeb164018ebabae1a6dab9f7fb2720fadb49a1a9ce2a7c3a5999e9c35ed1e2d45a0d40006192f5b9dd4a8c84210e223c71d0cdfd93abfd87f60d\"}},{\"receipt\":{\"authority\":\"b488f4a901b147ddd9146d57b62da761f267f7119c4c9ea85792afd2c078c832\",\"command_hash\":\"436c72e599375483ed6aeb291da631fd0050330846a1d2e4fc0a5a2562fe5efd\",\"domain\":\"hepta.memory-cell.v15\",\"request_id\":\"hepta-v15-23f86845405a4bb8-commit\",\"result\":{\"bundle\":\"e6776564499a641af1dccf74f70ff6611443565e1af755437397ade99f183d43\",\"cell\":\"cell\",\"epoch\":3,\"owner\":\"db68ed72cba2d91fc83f5c75d7727dbf118b8770d0f1772f28fc56eb01f5f1a6\",\"state\":\"committed\",\"transfer\":\"transfer\"},\"signature\":\"d04243c979902a3f9700e186c1d09eb0c42133311980a082984304b348ab0264a2a63e692e1cc743375f88cf0ef4d65b813b0e6e6d4943d2520f1131b4bc120d\"},\"request\":{\"actor\":\"db68ed72cba2d91fc83f5c75d7727dbf118b8770d0f1772f28fc56eb01f5f1a6\",\"args\":{\"cell\":\"cell\",\"epoch\":2,\"expected\":\"e6776564499a641af1dccf74f70ff6611443565e1af755437397ade99f183d43\",\"transfer\":\"transfer\"},\"authority\":\"b488f4a901b147ddd9146d57b62da761f267f7119c4c9ea85792afd2c078c832\",\"domain\":\"hepta.memory-cell.v15\",\"operation\":\"commit\",\"request_id\":\"hepta-v15-23f86845405a4bb8-commit\",\"signature\":\"e98ae05d02712742e160419c0dc3abe25984eaaebefa170917cfd8edb1a410f043e18108ba9d554607ac3fab1b936928fe71b2e200fadee9eaaf6aa1f0c64d04\"}},{\"receipt\":{\"authority\":\"b488f4a901b147ddd9146d57b62da761f267f7119c4c9ea85792afd2c078c832\",\"command_hash\":\"ab3aab4ad858fcd66f476e8f1507954aa2f2220c5dca9cecbde5329c58ee7eb9\",\"domain\":\"hepta.memory-cell.v15\",\"request_id\":\"hepta-v15-23f86845405a4bb8-publish\",\"result\":{\"bundle\":\"11a05eeb09c217a4115c3b22aaeff714c3a7efd433bea00d52d06352b6b3371c\",\"cell\":\"cell\",\"epoch\":4,\"evidence\":\"0e05a1e70248e252f30a160004315432de12542d6739ddf6a91175fa961d55cb\"},\"signature\":\"3b39238acfbb3caf6022342f114e320b796bc038d102bab536dc326b46d813b8737ab2c9a9438777c152d0cb1d0098a94c5410297974ebb3842ef8401b339a0b\"},\"request\":{\"actor\":\"db68ed72cba2d91fc83f5c75d7727dbf118b8770d0f1772f28fc56eb01f5f1a6\",\"args\":{\"bundle\":{\"id\":\"11a05eeb09c217a4115c3b22aaeff714c3a7efd433bea00d52d06352b6b3371c\",\"manifest\":{\"acl\":[\"6c69a23925f43c8a7b40f5a6078e9aa7b30cb569cd6c3985a6aa698992f5f8b8\",\"db68ed72cba2d91fc83f5c75d7727dbf118b8770d0f1772f28fc56eb01f5f1a6\"],\"addresses\":[\"fixture\"],\"components\":{\"calibration\":\"d7a3bb14f7f8fab74c244d9774ec5fa00835b415e14ca0f56d1395c6b01f1513\",\"encoder\":\"d7a3bb14f7f8fab74c244d9774ec5fa00835b415e14ca0f56d1395c6b01f1513\",\"memory\":\"2eb75331cae2783f52cf74ff5cf31434cc52b2ca6e43e642b94ed114f1ca698c\",\"model\":\"ecb25bc874ba72a4baf6365a1e1182a72e8cca03be81757d4f991c3db13029da\",\"optimizer\":\"d7a3bb14f7f8fab74c244d9774ec5fa00835b415e14ca0f56d1395c6b01f1513\",\"rng\":\"d7a3bb14f7f8fab74c244d9774ec5fa00835b415e14ca0f56d1395c6b01f1513\",\"routing\":\"e28b258942a91d6ab83310539630ab89c759bfe3c2330d488580f592099274aa\",\"runtime\":\"bfd7214c29a97babfc94db47c4654ebc15d46298d64135aedd59344324c1ddcd\",\"sampler\":\"d7a3bb14f7f8fab74c244d9774ec5fa00835b415e14ca0f56d1395c6b01f1513\",\"schema\":\"2d2a18fe632dee4f0f9e2189ef4763b17847b24b386ab0f8278576c525194a41\",\"tokenizer\":\"d7a3bb14f7f8fab74c244d9774ec5fa00835b415e14ca0f56d1395c6b01f1513\"},\"format\":\"hepta.memory-cell.v15\",\"scope\":\"hepta-v15-23f86845405a4bb8\",\"sources\":[{\"hash\":\"2eb75331cae2783f52cf74ff5cf31434cc52b2ca6e43e642b94ed114f1ca698c\",\"id\":\"memory-input\",\"revision\":1}]},\"objects\":{\"calibration\":\"6578706c696369742d6e6f742d747261696e65642d666978747572652d736c6f74\",\"encoder\":\"6578706c696369742d6e6f742d747261696e65642d666978747572652d736c6f74\",\"memory\":\"7b22696e70757473223a5b5b332c345d2c5b352c2d325d2c5b302c375d5d2c2273636f7065223a2273796e746865746963227d\",\"model\":\"7b2262696173223a5b322c315d2c226b696e64223a22696e74656765722d6d61747269782d7631222c2277656967687473223a5b5b312c325d2c5b2d312c335d5d7d\",\"optimizer\":\"6578706c696369742d6e6f742d747261696e65642d666978747572652d736c6f74\",\"rng\":\"6578706c696369742d6e6f742d747261696e65642d666978747572652d736c6f74\",\"routing\":\"7b2261646472657373223a2266697874757265222c226d6f6465223a226578616374227d\",\"runtime\":\"696e74656765722d6d61747269782d7631\",\"sampler\":\"6578706c696369742d6e6f742d747261696e65642d666978747572652d736c6f74\",\"schema\":\"7b22696e70757473223a22696e74656765722d766563746f7273222c2276657273696f6e223a317d\",\"tokenizer\":\"6578706c696369742d6e6f742d747261696e65642d666978747572652d736c6f74\"}},\"cell\":\"cell\",\"epoch\":3,\"expected\":\"e6776564499a641af1dccf74f70ff6611443565e1af755437397ade99f183d43\"},\"authority\":\"b488f4a901b147ddd9146d57b62da761f267f7119c4c9ea85792afd2c078c832\",\"domain\":\"hepta.memory-cell.v15\",\"operation\":\"publish\",\"request_id\":\"hepta-v15-23f86845405a4bb8-publish\",\"signature\":\"08b1885cca9213caa970ccfebb81739df065dee566b37f0e408760fb778a0df27ad522c1f54f16be57b6fabf2e41b68f10bccf086b2a48a1b55b70286e621f0e\"}}],\"rejections\":[{\"receipt\":{\"authority\":\"b488f4a901b147ddd9146d57b62da761f267f7119c4c9ea85792afd2c078c832\",\"command_hash\":\"444ac87211dc917efbb52f2bd7ff077bb11dcab2be87b154ee41feee6122b5ef\",\"domain\":\"hepta.memory-cell.v15\",\"outcome\":\"rejected\",\"reason\":\"not current owner\",\"request_id\":\"hepta-v15-23f86845405a4bb8-old-owner-after-commit\",\"signature\":\"a952cc25c5572d460460386026ce4d7352d0374daa00908dd3f5fdc19d70a234d902be6a06326f612338a9e5a0602e30183a3ba02d53e5cd38e82ff5cd90b900\"},\"request\":{\"actor\":\"6c69a23925f43c8a7b40f5a6078e9aa7b30cb569cd6c3985a6aa698992f5f8b8\",\"args\":{\"bundle\":{\"id\":\"e6776564499a641af1dccf74f70ff6611443565e1af755437397ade99f183d43\",\"manifest\":{\"acl\":[\"6c69a23925f43c8a7b40f5a6078e9aa7b30cb569cd6c3985a6aa698992f5f8b8\",\"db68ed72cba2d91fc83f5c75d7727dbf118b8770d0f1772f28fc56eb01f5f1a6\"],\"addresses\":[\"fixture\"],\"components\":{\"calibration\":\"d7a3bb14f7f8fab74c244d9774ec5fa00835b415e14ca0f56d1395c6b01f1513\",\"encoder\":\"d7a3bb14f7f8fab74c244d9774ec5fa00835b415e14ca0f56d1395c6b01f1513\",\"memory\":\"2eb75331cae2783f52cf74ff5cf31434cc52b2ca6e43e642b94ed114f1ca698c\",\"model\":\"03837d7ad14fb977dd8ac9b7d02911f400beb16c6d8dba2c66709843391f6722\",\"optimizer\":\"d7a3bb14f7f8fab74c244d9774ec5fa00835b415e14ca0f56d1395c6b01f1513\",\"rng\":\"d7a3bb14f7f8fab74c244d9774ec5fa00835b415e14ca0f56d1395c6b01f1513\",\"routing\":\"e28b258942a91d6ab83310539630ab89c759bfe3c2330d488580f592099274aa\",\"runtime\":\"bfd7214c29a97babfc94db47c4654ebc15d46298d64135aedd59344324c1ddcd\",\"sampler\":\"d7a3bb14f7f8fab74c244d9774ec5fa00835b415e14ca0f56d1395c6b01f1513\",\"schema\":\"2d2a18fe632dee4f0f9e2189ef4763b17847b24b386ab0f8278576c525194a41\",\"tokenizer\":\"d7a3bb14f7f8fab74c244d9774ec5fa00835b415e14ca0f56d1395c6b01f1513\"},\"format\":\"hepta.memory-cell.v15\",\"scope\":\"hepta-v15-23f86845405a4bb8\",\"sources\":[{\"hash\":\"2eb75331cae2783f52cf74ff5cf31434cc52b2ca6e43e642b94ed114f1ca698c\",\"id\":\"memory-input\",\"revision\":1}]},\"objects\":{\"calibration\":\"6578706c696369742d6e6f742d747261696e65642d666978747572652d736c6f74\",\"encoder\":\"6578706c696369742d6e6f742d747261696e65642d666978747572652d736c6f74\",\"memory\":\"7b22696e70757473223a5b5b332c345d2c5b352c2d325d2c5b302c375d5d2c2273636f7065223a2273796e746865746963227d\",\"model\":\"7b2262696173223a5b302c315d2c226b696e64223a22696e74656765722d6d61747269782d7631222c2277656967687473223a5b5b312c325d2c5b2d312c335d5d7d\",\"optimizer\":\"6578706c696369742d6e6f742d747261696e65642d666978747572652d736c6f74\",\"rng\":\"6578706c696369742d6e6f742d747261696e65642d666978747572652d736c6f74\",\"routing\":\"7b2261646472657373223a2266697874757265222c226d6f6465223a226578616374227d\",\"runtime\":\"696e74656765722d6d61747269782d7631\",\"sampler\":\"6578706c696369742d6e6f742d747261696e65642d666978747572652d736c6f74\",\"schema\":\"7b22696e70757473223a22696e74656765722d766563746f7273222c2276657273696f6e223a317d\",\"tokenizer\":\"6578706c696369742d6e6f742d747261696e65642d666978747572652d736c6f74\"}},\"cell\":\"cell\",\"epoch\":3,\"expected\":\"e6776564499a641af1dccf74f70ff6611443565e1af755437397ade99f183d43\"},\"authority\":\"b488f4a901b147ddd9146d57b62da761f267f7119c4c9ea85792afd2c078c832\",\"domain\":\"hepta.memory-cell.v15\",\"operation\":\"publish\",\"request_id\":\"hepta-v15-23f86845405a4bb8-old-owner-after-commit\",\"signature\":\"f75bb33db1b508e5143c6d56aacf7d44f1026d36687a4df96c070a0c3d2e289b432e9a25ddf5f181b877beb185598e8101cb1b744c7c3d78c0a3498055549506\"}}]},\"run_id\":\"hepta-v15-23f86845405a4bb8\",\"step\":\"export_requests\"}\n",
+      "stderr": "",
+      "log_pages": [
+        {
+          "stdout_offset": 0,
+          "stdout_next": 16000,
+          "stderr_offset": 0,
+          "stderr_next": 0,
+          "stdout_eof": false,
+          "stderr_eof": true
+        },
+        {
+          "stdout_offset": 16000,
+          "stdout_next": 17335,
+          "stderr_offset": 0,
+          "stderr_next": 0,
+          "stdout_eof": true,
+          "stderr_eof": true
+        }
+      ],
+      "output_complete": true,
+      "observed": {
+        "access": "sqlite-readonly",
+        "authority_sha256": "7e5a2016347718e87df147f2ae96f2e56b9813d2c11e705bf88c8649a16bbe68",
+        "keys_accessed": false,
+        "measured": {
+          "body_elapsed_s": 0.0015270829999999985,
+          "system_cpu_s": 0.006516999999999999,
+          "user_cpu_s": 0.012608999999999999
+        },
+        "ok": true,
+        "result": {
+          "receipts": [
+            {
+              "receipt": {
+                "authority": "b488f4a901b147ddd9146d57b62da761f267f7119c4c9ea85792afd2c078c832",
+                "command_hash": "cad9c09d7776dc37a2730138459f755bd1b82decbadb643c08c34b5268ed2818",
+                "domain": "hepta.memory-cell.v15",
+                "request_id": "hepta-v15-23f86845405a4bb8-source",
+                "result": {
+                  "active": true,
+                  "hash": "2eb75331cae2783f52cf74ff5cf31434cc52b2ca6e43e642b94ed114f1ca698c",
+                  "id": "memory-input",
+                  "revision": 1
+                },
+                "signature": "75ad6d82098ff2a325a7ae1ed54e202ef2eb8afa38baf9d5e449ffca88f7593408994431874e51a80fc1cab6e4d29e5d8bb5a5054aa12a66d4cf6414b342940b"
+              },
+              "request": {
+                "actor": "b58687220d39fa7740341d7db33af90010a4fd52f22d5d52423b1aeec5b58f01",
+                "args": {
+                  "active": true,
+                  "body": "{\"inputs\":[[3,4],[5,-2],[0,7]],\"scope\":\"synthetic\"}",
+                  "expected_revision": 0,
+                  "id": "memory-input",
+                  "scope": "hepta-v15-23f86845405a4bb8"
+                },
+                "authority": "b488f4a901b147ddd9146d57b62da761f267f7119c4c9ea85792afd2c078c832",
+                "domain": "hepta.memory-cell.v15",
+                "operation": "source",
+                "request_id": "hepta-v15-23f86845405a4bb8-source",
+                "signature": "07f97252928682dcdb688e635a65c1c68fb5199e0c42fd76ff67f76e99ff132039cb6de19f8d0b3e6d8c2b22095a4168615e2d2e2444ceac4fac255c735b1701"
+              }
+            },
+            {
+              "receipt": {
+                "authority": "b488f4a901b147ddd9146d57b62da761f267f7119c4c9ea85792afd2c078c832",
+                "command_hash": "21ca654667a48c78035c2d6fd10b5c4dcb371eb79cf8d75c264979c2cdac31e4",
+                "domain": "hepta.memory-cell.v15",
+                "request_id": "hepta-v15-23f86845405a4bb8-create",
+                "result": {
+                  "bundle": "e6776564499a641af1dccf74f70ff6611443565e1af755437397ade99f183d43",
+                  "cell": "cell",
+                  "epoch": 1,
+                  "evidence": "0e05a1e70248e252f30a160004315432de12542d6739ddf6a91175fa961d55cb",
+                  "owner": "6c69a23925f43c8a7b40f5a6078e9aa7b30cb569cd6c3985a6aa698992f5f8b8"
+                },
+                "signature": "bfb41b60a1a99778f8d822c9d5d386796ee795cc8fbadfc0dd1073d5305b4216c7e5fc9f4c674941d5c9a332408fe5bd19ca2f34ad24073d5a2c5cd3ad803a0f"
+              },
+              "request": {
+                "actor": "b58687220d39fa7740341d7db33af90010a4fd52f22d5d52423b1aeec5b58f01",
+                "args": {
+                  "bundle": {
+                    "id": "e6776564499a641af1dccf74f70ff6611443565e1af755437397ade99f183d43",
+                    "manifest": {
+                      "acl": [
+                        "6c69a23925f43c8a7b40f5a6078e9aa7b30cb569cd6c3985a6aa698992f5f8b8",
+                        "db68ed72cba2d91fc83f5c75d7727dbf118b8770d0f1772f28fc56eb01f5f1a6"
+                      ],
+                      "addresses": [
+                        "fixture"
+                      ],
+                      "components": {
+                        "calibration": "d7a3bb14f7f8fab74c244d9774ec5fa00835b415e14ca0f56d1395c6b01f1513",
+                        "encoder": "d7a3bb14f7f8fab74c244d9774ec5fa00835b415e14ca0f56d1395c6b01f1513",
+                        "memory": "2eb75331cae2783f52cf74ff5cf31434cc52b2ca6e43e642b94ed114f1ca698c",
+                        "model": "03837d7ad14fb977dd8ac9b7d02911f400beb16c6d8dba2c66709843391f6722",
+                        "optimizer": "d7a3bb14f7f8fab74c244d9774ec5fa00835b415e14ca0f56d1395c6b01f1513",
+                        "rng": "d7a3bb14f7f8fab74c244d9774ec5fa00835b415e14ca0f56d1395c6b01f1513",
+                        "routing": "e28b258942a91d6ab83310539630ab89c759bfe3c2330d488580f592099274aa",
+                        "runtime": "bfd7214c29a97babfc94db47c4654ebc15d46298d64135aedd59344324c1ddcd",
+                        "sampler": "d7a3bb14f7f8fab74c244d9774ec5fa00835b415e14ca0f56d1395c6b01f1513",
+                        "schema": "2d2a18fe632dee4f0f9e2189ef4763b17847b24b386ab0f8278576c525194a41",
+                        "tokenizer": "d7a3bb14f7f8fab74c244d9774ec5fa00835b415e14ca0f56d1395c6b01f1513"
+                      },
+                      "format": "hepta.memory-cell.v15",
+                      "scope": "hepta-v15-23f86845405a4bb8",
+                      "sources": [
+                        {
+                          "hash": "2eb75331cae2783f52cf74ff5cf31434cc52b2ca6e43e642b94ed114f1ca698c",
+                          "id": "memory-input",
+                          "revision": 1
+                        }
+                      ]
+                    },
+                    "objects": {
+                      "calibration": "6578706c696369742d6e6f742d747261696e65642d666978747572652d736c6f74",
+                      "encoder": "6578706c696369742d6e6f742d747261696e65642d666978747572652d736c6f74",
+                      "memory": "7b22696e70757473223a5b5b332c345d2c5b352c2d325d2c5b302c375d5d2c2273636f7065223a2273796e746865746963227d",
+                      "model": "7b2262696173223a5b302c315d2c226b696e64223a22696e74656765722d6d61747269782d7631222c2277656967687473223a5b5b312c325d2c5b2d312c335d5d7d",
+                      "optimizer": "6578706c696369742d6e6f742d747261696e65642d666978747572652d736c6f74",
+                      "rng": "6578706c696369742d6e6f742d747261696e65642d666978747572652d736c6f74",
+                      "routing": "7b2261646472657373223a2266697874757265222c226d6f6465223a226578616374227d",
+                      "runtime": "696e74656765722d6d61747269782d7631",
+                      "sampler": "6578706c696369742d6e6f742d747261696e65642d666978747572652d736c6f74",
+                      "schema": "7b22696e70757473223a22696e74656765722d766563746f7273222c2276657273696f6e223a317d",
+                      "tokenizer": "6578706c696369742d6e6f742d747261696e65642d666978747572652d736c6f74"
+                    }
+                  },
+                  "cell": "cell",
+                  "owner": "6c69a23925f43c8a7b40f5a6078e9aa7b30cb569cd6c3985a6aa698992f5f8b8"
+                },
+                "authority": "b488f4a901b147ddd9146d57b62da761f267f7119c4c9ea85792afd2c078c832",
+                "domain": "hepta.memory-cell.v15",
+                "operation": "create",
+                "request_id": "hepta-v15-23f86845405a4bb8-create",
+                "signature": "6114e6fa666f036bb9e46b1b69a5edc58d6858df3b0d992c078f17fede1c92f9fd2db7e17032e2aeadece005dcfff2acbd804653b152c09fc82741f171bef60b"
+              }
+            },
+            {
+              "receipt": {
+                "authority": "b488f4a901b147ddd9146d57b62da761f267f7119c4c9ea85792afd2c078c832",
+                "command_hash": "5595cd1c582f06dc2b62da7328bb44d61460888d71ee01357cfef81bff142815",
+                "domain": "hepta.memory-cell.v15",
+                "request_id": "hepta-v15-23f86845405a4bb8-prepare",
+                "result": {
+                  "bundle": "e6776564499a641af1dccf74f70ff6611443565e1af755437397ade99f183d43",
+                  "epoch": 2,
+                  "state": "prepared",
+                  "transfer": "transfer"
+                },
+                "signature": "3a9d86cd8c83b596b180b1b145d247e28a218c9a497d81a6a1611c0bec11ac686f77bd0fe034cb979926289204df9349fbec7d86516bf747448c3f8b4f5fd509"
+              },
+              "request": {
+                "actor": "6c69a23925f43c8a7b40f5a6078e9aa7b30cb569cd6c3985a6aa698992f5f8b8",
+                "args": {
+                  "cell": "cell",
+                  "epoch": 1,
+                  "expected": "e6776564499a641af1dccf74f70ff6611443565e1af755437397ade99f183d43",
+                  "target": "db68ed72cba2d91fc83f5c75d7727dbf118b8770d0f1772f28fc56eb01f5f1a6",
+                  "transfer": "transfer"
+                },
+                "authority": "b488f4a901b147ddd9146d57b62da761f267f7119c4c9ea85792afd2c078c832",
+                "domain": "hepta.memory-cell.v15",
+                "operation": "prepare",
+                "request_id": "hepta-v15-23f86845405a4bb8-prepare",
+                "signature": "9da9bf6b68087de23a7041ed89a0a8bc7d6afb1261567dd78b5ae44695d443ff0b30bdb6e83b40fd4545c1f4cdc15d15a6c3b8596739a946becc231d335c3503"
+              }
+            },
+            {
+              "receipt": {
+                "authority": "b488f4a901b147ddd9146d57b62da761f267f7119c4c9ea85792afd2c078c832",
+                "command_hash": "17beedbf6dd2d37708136c3ac3ee5f4849d771788a1b2d62d185b0f9120d2fd2",
+                "domain": "hepta.memory-cell.v15",
+                "request_id": "hepta-v15-23f86845405a4bb8-ready",
+                "result": {
+                  "bundle": "e6776564499a641af1dccf74f70ff6611443565e1af755437397ade99f183d43",
+                  "epoch": 2,
+                  "state": "ready",
+                  "transfer": "transfer"
+                },
+                "signature": "5648dda5d06f498e88ecf387ca3ba34b7f785e862cc69183795cf619886aebe8cbcf2e5d5185e40a798b2ea385926abb8e8ff9151747dabcd1e9226bb207ab04"
+              },
+              "request": {
+                "actor": "db68ed72cba2d91fc83f5c75d7727dbf118b8770d0f1772f28fc56eb01f5f1a6",
+                "args": {
+                  "bundle": {
+                    "id": "e6776564499a641af1dccf74f70ff6611443565e1af755437397ade99f183d43",
+                    "manifest": {
+                      "acl": [
+                        "6c69a23925f43c8a7b40f5a6078e9aa7b30cb569cd6c3985a6aa698992f5f8b8",
+                        "db68ed72cba2d91fc83f5c75d7727dbf118b8770d0f1772f28fc56eb01f5f1a6"
+                      ],
+                      "addresses": [
+                        "fixture"
+                      ],
+                      "components": {
+                        "calibration": "d7a3bb14f7f8fab74c244d9774ec5fa00835b415e14ca0f56d1395c6b01f1513",
+                        "encoder": "d7a3bb14f7f8fab74c244d9774ec5fa00835b415e14ca0f56d1395c6b01f1513",
+                        "memory": "2eb75331cae2783f52cf74ff5cf31434cc52b2ca6e43e642b94ed114f1ca698c",
+                        "model": "03837d7ad14fb977dd8ac9b7d02911f400beb16c6d8dba2c66709843391f6722",
+                        "optimizer": "d7a3bb14f7f8fab74c244d9774ec5fa00835b415e14ca0f56d1395c6b01f1513",
+                        "rng": "d7a3bb14f7f8fab74c244d9774ec5fa00835b415e14ca0f56d1395c6b01f1513",
+                        "routing": "e28b258942a91d6ab83310539630ab89c759bfe3c2330d488580f592099274aa",
+                        "runtime": "bfd7214c29a97babfc94db47c4654ebc15d46298d64135aedd59344324c1ddcd",
+                        "sampler": "d7a3bb14f7f8fab74c244d9774ec5fa00835b415e14ca0f56d1395c6b01f1513",
+                        "schema": "2d2a18fe632dee4f0f9e2189ef4763b17847b24b386ab0f8278576c525194a41",
+                        "tokenizer": "d7a3bb14f7f8fab74c244d9774ec5fa00835b415e14ca0f56d1395c6b01f1513"
+                      },
+                      "format": "hepta.memory-cell.v15",
+                      "scope": "hepta-v15-23f86845405a4bb8",
+                      "sources": [
+                        {
+                          "hash": "2eb75331cae2783f52cf74ff5cf31434cc52b2ca6e43e642b94ed114f1ca698c",
+                          "id": "memory-input",
+                          "revision": 1
+                        }
+                      ]
+                    },
+                    "objects": {
+                      "calibration": "6578706c696369742d6e6f742d747261696e65642d666978747572652d736c6f74",
+                      "encoder": "6578706c696369742d6e6f742d747261696e65642d666978747572652d736c6f74",
+                      "memory": "7b22696e70757473223a5b5b332c345d2c5b352c2d325d2c5b302c375d5d2c2273636f7065223a2273796e746865746963227d",
+                      "model": "7b2262696173223a5b302c315d2c226b696e64223a22696e74656765722d6d61747269782d7631222c2277656967687473223a5b5b312c325d2c5b2d312c335d5d7d",
+                      "optimizer": "6578706c696369742d6e6f742d747261696e65642d666978747572652d736c6f74",
+                      "rng": "6578706c696369742d6e6f742d747261696e65642d666978747572652d736c6f74",
+                      "routing": "7b2261646472657373223a2266697874757265222c226d6f6465223a226578616374227d",
+                      "runtime": "696e74656765722d6d61747269782d7631",
+                      "sampler": "6578706c696369742d6e6f742d747261696e65642d666978747572652d736c6f74",
+                      "schema": "7b22696e70757473223a22696e74656765722d766563746f7273222c2276657273696f6e223a317d",
+                      "tokenizer": "6578706c696369742d6e6f742d747261696e65642d666978747572652d736c6f74"
+                    }
+                  },
+                  "cell": "cell",
+                  "epoch": 2,
+                  "expected": "e6776564499a641af1dccf74f70ff6611443565e1af755437397ade99f183d43",
+                  "transfer": "transfer"
+                },
+                "authority": "b488f4a901b147ddd9146d57b62da761f267f7119c4c9ea85792afd2c078c832",
+                "domain": "hepta.memory-cell.v15",
+                "operation": "ready",
+                "request_id": "hepta-v15-23f86845405a4bb8-ready",
+                "signature": "215da38d3c17aeb164018ebabae1a6dab9f7fb2720fadb49a1a9ce2a7c3a5999e9c35ed1e2d45a0d40006192f5b9dd4a8c84210e223c71d0cdfd93abfd87f60d"
+              }
+            },
+            {
+              "receipt": {
+                "authority": "b488f4a901b147ddd9146d57b62da761f267f7119c4c9ea85792afd2c078c832",
+                "command_hash": "436c72e599375483ed6aeb291da631fd0050330846a1d2e4fc0a5a2562fe5efd",
+                "domain": "hepta.memory-cell.v15",
+                "request_id": "hepta-v15-23f86845405a4bb8-commit",
+                "result": {
+                  "bundle": "e6776564499a641af1dccf74f70ff6611443565e1af755437397ade99f183d43",
+                  "cell": "cell",
+                  "epoch": 3,
+                  "owner": "db68ed72cba2d91fc83f5c75d7727dbf118b8770d0f1772f28fc56eb01f5f1a6",
+                  "state": "committed",
+                  "transfer": "transfer"
+                },
+                "signature": "d04243c979902a3f9700e186c1d09eb0c42133311980a082984304b348ab0264a2a63e692e1cc743375f88cf0ef4d65b813b0e6e6d4943d2520f1131b4bc120d"
+              },
+              "request": {
+                "actor": "db68ed72cba2d91fc83f5c75d7727dbf118b8770d0f1772f28fc56eb01f5f1a6",
+                "args": {
+                  "cell": "cell",
+                  "epoch": 2,
+                  "expected": "e6776564499a641af1dccf74f70ff6611443565e1af755437397ade99f183d43",
+                  "transfer": "transfer"
+                },
+                "authority": "b488f4a901b147ddd9146d57b62da761f267f7119c4c9ea85792afd2c078c832",
+                "domain": "hepta.memory-cell.v15",
+                "operation": "commit",
+                "request_id": "hepta-v15-23f86845405a4bb8-commit",
+                "signature": "e98ae05d02712742e160419c0dc3abe25984eaaebefa170917cfd8edb1a410f043e18108ba9d554607ac3fab1b936928fe71b2e200fadee9eaaf6aa1f0c64d04"
+              }
+            },
+            {
+              "receipt": {
+                "authority": "b488f4a901b147ddd9146d57b62da761f267f7119c4c9ea85792afd2c078c832",
+                "command_hash": "ab3aab4ad858fcd66f476e8f1507954aa2f2220c5dca9cecbde5329c58ee7eb9",
+                "domain": "hepta.memory-cell.v15",
+                "request_id": "hepta-v15-23f86845405a4bb8-publish",
+                "result": {
+                  "bundle": "11a05eeb09c217a4115c3b22aaeff714c3a7efd433bea00d52d06352b6b3371c",
+                  "cell": "cell",
+                  "epoch": 4,
+                  "evidence": "0e05a1e70248e252f30a160004315432de12542d6739ddf6a91175fa961d55cb"
+                },
+                "signature": "3b39238acfbb3caf6022342f114e320b796bc038d102bab536dc326b46d813b8737ab2c9a9438777c152d0cb1d0098a94c5410297974ebb3842ef8401b339a0b"
+              },
+              "request": {
+                "actor": "db68ed72cba2d91fc83f5c75d7727dbf118b8770d0f1772f28fc56eb01f5f1a6",
+                "args": {
+                  "bundle": {
+                    "id": "11a05eeb09c217a4115c3b22aaeff714c3a7efd433bea00d52d06352b6b3371c",
+                    "manifest": {
+                      "acl": [
+                        "6c69a23925f43c8a7b40f5a6078e9aa7b30cb569cd6c3985a6aa698992f5f8b8",
+                        "db68ed72cba2d91fc83f5c75d7727dbf118b8770d0f1772f28fc56eb01f5f1a6"
+                      ],
+                      "addresses": [
+                        "fixture"
+                      ],
+                      "components": {
+                        "calibration": "d7a3bb14f7f8fab74c244d9774ec5fa00835b415e14ca0f56d1395c6b01f1513",
+                        "encoder": "d7a3bb14f7f8fab74c244d9774ec5fa00835b415e14ca0f56d1395c6b01f1513",
+                        "memory": "2eb75331cae2783f52cf74ff5cf31434cc52b2ca6e43e642b94ed114f1ca698c",
+                        "model": "ecb25bc874ba72a4baf6365a1e1182a72e8cca03be81757d4f991c3db13029da",
+                        "optimizer": "d7a3bb14f7f8fab74c244d9774ec5fa00835b415e14ca0f56d1395c6b01f1513",
+                        "rng": "d7a3bb14f7f8fab74c244d9774ec5fa00835b415e14ca0f56d1395c6b01f1513",
+                        "routing": "e28b258942a91d6ab83310539630ab89c759bfe3c2330d488580f592099274aa",
+                        "runtime": "bfd7214c29a97babfc94db47c4654ebc15d46298d64135aedd59344324c1ddcd",
+                        "sampler": "d7a3bb14f7f8fab74c244d9774ec5fa00835b415e14ca0f56d1395c6b01f1513",
+                        "schema": "2d2a18fe632dee4f0f9e2189ef4763b17847b24b386ab0f8278576c525194a41",
+                        "tokenizer": "d7a3bb14f7f8fab74c244d9774ec5fa00835b415e14ca0f56d1395c6b01f1513"
+                      },
+                      "format": "hepta.memory-cell.v15",
+                      "scope": "hepta-v15-23f86845405a4bb8",
+                      "sources": [
+                        {
+                          "hash": "2eb75331cae2783f52cf74ff5cf31434cc52b2ca6e43e642b94ed114f1ca698c",
+                          "id": "memory-input",
+                          "revision": 1
+                        }
+                      ]
+                    },
+                    "objects": {
+                      "calibration": "6578706c696369742d6e6f742d747261696e65642d666978747572652d736c6f74",
+                      "encoder": "6578706c696369742d6e6f742d747261696e65642d666978747572652d736c6f74",
+                      "memory": "7b22696e70757473223a5b5b332c345d2c5b352c2d325d2c5b302c375d5d2c2273636f7065223a2273796e746865746963227d",
+                      "model": "7b2262696173223a5b322c315d2c226b696e64223a22696e74656765722d6d61747269782d7631222c2277656967687473223a5b5b312c325d2c5b2d312c335d5d7d",
+                      "optimizer": "6578706c696369742d6e6f742d747261696e65642d666978747572652d736c6f74",
+                      "rng": "6578706c696369742d6e6f742d747261696e65642d666978747572652d736c6f74",
+                      "routing": "7b2261646472657373223a2266697874757265222c226d6f6465223a226578616374227d",
+                      "runtime": "696e74656765722d6d61747269782d7631",
+                      "sampler": "6578706c696369742d6e6f742d747261696e65642d666978747572652d736c6f74",
+                      "schema": "7b22696e70757473223a22696e74656765722d766563746f7273222c2276657273696f6e223a317d",
+                      "tokenizer": "6578706c696369742d6e6f742d747261696e65642d666978747572652d736c6f74"
+                    }
+                  },
+                  "cell": "cell",
+                  "epoch": 3,
+                  "expected": "e6776564499a641af1dccf74f70ff6611443565e1af755437397ade99f183d43"
+                },
+                "authority": "b488f4a901b147ddd9146d57b62da761f267f7119c4c9ea85792afd2c078c832",
+                "domain": "hepta.memory-cell.v15",
+                "operation": "publish",
+                "request_id": "hepta-v15-23f86845405a4bb8-publish",
+                "signature": "08b1885cca9213caa970ccfebb81739df065dee566b37f0e408760fb778a0df27ad522c1f54f16be57b6fabf2e41b68f10bccf086b2a48a1b55b70286e621f0e"
+              }
+            }
+          ],
+          "rejections": [
+            {
+              "receipt": {
+                "authority": "b488f4a901b147ddd9146d57b62da761f267f7119c4c9ea85792afd2c078c832",
+                "command_hash": "444ac87211dc917efbb52f2bd7ff077bb11dcab2be87b154ee41feee6122b5ef",
+                "domain": "hepta.memory-cell.v15",
+                "outcome": "rejected",
+                "reason": "not current owner",
+                "request_id": "hepta-v15-23f86845405a4bb8-old-owner-after-commit",
+                "signature": "a952cc25c5572d460460386026ce4d7352d0374daa00908dd3f5fdc19d70a234d902be6a06326f612338a9e5a0602e30183a3ba02d53e5cd38e82ff5cd90b900"
+              },
+              "request": {
+                "actor": "6c69a23925f43c8a7b40f5a6078e9aa7b30cb569cd6c3985a6aa698992f5f8b8",
+                "args": {
+                  "bundle": {
+                    "id": "e6776564499a641af1dccf74f70ff6611443565e1af755437397ade99f183d43",
+                    "manifest": {
+                      "acl": [
+                        "6c69a23925f43c8a7b40f5a6078e9aa7b30cb569cd6c3985a6aa698992f5f8b8",
+                        "db68ed72cba2d91fc83f5c75d7727dbf118b8770d0f1772f28fc56eb01f5f1a6"
+                      ],
+                      "addresses": [
+                        "fixture"
+                      ],
+                      "components": {
+                        "calibration": "d7a3bb14f7f8fab74c244d9774ec5fa00835b415e14ca0f56d1395c6b01f1513",
+                        "encoder": "d7a3bb14f7f8fab74c244d9774ec5fa00835b415e14ca0f56d1395c6b01f1513",
+                        "memory": "2eb75331cae2783f52cf74ff5cf31434cc52b2ca6e43e642b94ed114f1ca698c",
+                        "model": "03837d7ad14fb977dd8ac9b7d02911f400beb16c6d8dba2c66709843391f6722",
+                        "optimizer": "d7a3bb14f7f8fab74c244d9774ec5fa00835b415e14ca0f56d1395c6b01f1513",
+                        "rng": "d7a3bb14f7f8fab74c244d9774ec5fa00835b415e14ca0f56d1395c6b01f1513",
+                        "routing": "e28b258942a91d6ab83310539630ab89c759bfe3c2330d488580f592099274aa",
+                        "runtime": "bfd7214c29a97babfc94db47c4654ebc15d46298d64135aedd59344324c1ddcd",
+                        "sampler": "d7a3bb14f7f8fab74c244d9774ec5fa00835b415e14ca0f56d1395c6b01f1513",
+                        "schema": "2d2a18fe632dee4f0f9e2189ef4763b17847b24b386ab0f8278576c525194a41",
+                        "tokenizer": "d7a3bb14f7f8fab74c244d9774ec5fa00835b415e14ca0f56d1395c6b01f1513"
+                      },
+                      "format": "hepta.memory-cell.v15",
+                      "scope": "hepta-v15-23f86845405a4bb8",
+                      "sources": [
+                        {
+                          "hash": "2eb75331cae2783f52cf74ff5cf31434cc52b2ca6e43e642b94ed114f1ca698c",
+                          "id": "memory-input",
+                          "revision": 1
+                        }
+                      ]
+                    },
+                    "objects": {
+                      "calibration": "6578706c696369742d6e6f742d747261696e65642d666978747572652d736c6f74",
+                      "encoder": "6578706c696369742d6e6f742d747261696e65642d666978747572652d736c6f74",
+                      "memory": "7b22696e70757473223a5b5b332c345d2c5b352c2d325d2c5b302c375d5d2c2273636f7065223a2273796e746865746963227d",
+                      "model": "7b2262696173223a5b302c315d2c226b696e64223a22696e74656765722d6d61747269782d7631222c2277656967687473223a5b5b312c325d2c5b2d312c335d5d7d",
+                      "optimizer": "6578706c696369742d6e6f742d747261696e65642d666978747572652d736c6f74",
+                      "rng": "6578706c696369742d6e6f742d747261696e65642d666978747572652d736c6f74",
+                      "routing": "7b2261646472657373223a2266697874757265222c226d6f6465223a226578616374227d",
+                      "runtime": "696e74656765722d6d61747269782d7631",
+                      "sampler": "6578706c696369742d6e6f742d747261696e65642d666978747572652d736c6f74",
+                      "schema": "7b22696e70757473223a22696e74656765722d766563746f7273222c2276657273696f6e223a317d",
+                      "tokenizer": "6578706c696369742d6e6f742d747261696e65642d666978747572652d736c6f74"
+                    }
+                  },
+                  "cell": "cell",
+                  "epoch": 3,
+                  "expected": "e6776564499a641af1dccf74f70ff6611443565e1af755437397ade99f183d43"
+                },
+                "authority": "b488f4a901b147ddd9146d57b62da761f267f7119c4c9ea85792afd2c078c832",
+                "domain": "hepta.memory-cell.v15",
+                "operation": "publish",
+                "request_id": "hepta-v15-23f86845405a4bb8-old-owner-after-commit",
+                "signature": "f75bb33db1b508e5143c6d56aacf7d44f1026d36687a4df96c070a0c3d2e289b432e9a25ddf5f181b877beb185598e8101cb1b744c7c3d78c0a3498055549506"
+              }
+            }
+          ]
+        },
+        "run_id": "hepta-v15-23f86845405a4bb8",
+        "step": "export_requests"
+      }
+    }
+  ],
+  "transport": "controller-relayed JSON; no direct peer connection",
+  "hardware_attestation": false,
+  "private_keys_exported": false,
+  "local_tool_errors": [
+    {
+      "stage": "checkpoint-after-persist-launch",
+      "error": "apply_patch rejected delete-plus-add for same existing file",
+      "remote_action_repeated": false,
+      "protocol_effect": false
+    }
+  ],
+  "finished": true,
+  "result_summary": {
+    "source_and_receiver_cold_outputs": [
+      [
+        11,
+        10
+      ],
+      [
+        1,
+        -10
+      ],
+      [
+        14,
+        22
+      ]
+    ],
+    "target_updated_outputs": [
+      [
+        13,
+        10
+      ],
+      [
+        3,
+        -10
+      ],
+      [
+        16,
+        22
+      ]
+    ],
+    "prepared_epoch": 2,
+    "committed_epoch": 3,
+    "final_epoch": 4,
+    "final_owner": "db68ed72cba2d91fc83f5c75d7727dbf118b8770d0f1772f28fc56eb01f5f1a6",
+    "old_owner_rejection": "not current owner",
+    "component_payload_bytes": 408,
+    "bundle_transport_bytes": 2276,
+    "all_jobs_terminal": true,
+    "protocol_failures": 0,
+    "direct_peer_to_peer": false,
+    "authority_replicated": false,
+    "language_quality_tested": false,
+    "net_benefit_established": false
+  },
+  "measurement_caveats": [
+    "process_elapsed_s begins after imports at START; excludes interpreter/import/controller startup.",
+    "user_cpu_s and system_cpu_s are process lifetime counters; per-process RSS maxima cannot be summed as total device RAM.",
+    "controller_start_elapsed_ms measures process_start API roundtrip, not pure network latency or application end-to-end latency.",
+    "Application payload bytes are not network wire bytes. Unknown full lifecycle costs remain null.",
+    "Configured aliases plus authenticated SSH and node_digest identify this run; node_digest is not hardware attestation."
+  ],
+  "lifecycle_cost_unknown": {
+    "energy_joules": null,
+    "network_wire_bytes": null,
+    "storage_physical_bytes": null,
+    "total_device_memory_bytes": null,
+    "amortized_training_cost": null,
+    "failed_preflight_cost": null,
+    "complete_storage_inference_training_total": null
+  },
+  "preservation": {
+    "temporary_workspaces_retained": true,
+    "keys_remain_on_original_hosts": true,
+    "persistent_listeners_created": false,
+    "existing_repository_or_service_modified": false
+  }
+}

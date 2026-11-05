@@ -1,0 +1,316 @@
+{
+  "bundle_json_bytes": 2276,
+  "complete_cost": {
+    "amortized_training_cost": null,
+    "complete_storage_inference_training_total": null,
+    "energy_joules": null,
+    "failed_preflight_cost": null,
+    "network_wire_bytes": null,
+    "storage_physical_bytes": null,
+    "total_device_memory_bytes": null
+  },
+  "full_cost_comparison_complete": false,
+  "local_artifact_tool_errors": [
+    {
+      "error": "apply_patch rejected delete-plus-add for same existing file",
+      "protocol_effect": false,
+      "remote_action_repeated": false,
+      "stage": "checkpoint-after-persist-launch"
+    }
+  ],
+  "logical_component_bytes": 408,
+  "measurement_caveats": [
+    "process_elapsed_s begins after imports at START; excludes interpreter/import/controller startup.",
+    "user_cpu_s and system_cpu_s are process lifetime counters; per-process RSS maxima cannot be summed as total device RAM.",
+    "controller_start_elapsed_ms measures process_start API roundtrip, not pure network latency or application end-to-end latency.",
+    "Application payload bytes are not network wire bytes. Unknown full lifecycle costs remain null.",
+    "Configured aliases plus authenticated SSH and node_digest identify this run; node_digest is not hardware attestation."
+  ],
+  "persist_request_json_bytes": 3632,
+  "phase_observations": [
+    {
+      "application_stdin_bytes": null,
+      "controller_start_roundtrip_ms": 6428,
+      "exit_code": 0,
+      "host": "mac",
+      "job_id": "1a1a9509e12-fc05-3425",
+      "measured": {
+        "process_elapsed_s": 0.008615458000000006,
+        "process_peak_rss_bytes": 27394048,
+        "system_cpu_s": 0.012291999999999999,
+        "user_cpu_s": 0.038632
+      },
+      "phase": "setup",
+      "unmeasured": {
+        "amortized_training_cost": null,
+        "energy_joules": null,
+        "lifecycle_total_cost": null,
+        "network_wire_bytes": null,
+        "storage_physical_bytes": null,
+        "total_device_memory_bytes": null
+      }
+    },
+    {
+      "application_stdin_bytes": null,
+      "controller_start_roundtrip_ms": 6983,
+      "exit_code": 0,
+      "host": "pocket4",
+      "job_id": "1a1a9511958-fc05-342d",
+      "measured": {
+        "process_elapsed_s": 0.033788383938372135,
+        "process_peak_rss_bytes": 31096832,
+        "system_cpu_s": 0.014138,
+        "user_cpu_s": 0.047466
+      },
+      "phase": "setup",
+      "unmeasured": {
+        "amortized_training_cost": null,
+        "energy_joules": null,
+        "lifecycle_total_cost": null,
+        "network_wire_bytes": null,
+        "storage_physical_bytes": null,
+        "total_device_memory_bytes": null
+      }
+    },
+    {
+      "application_stdin_bytes": 84,
+      "controller_start_roundtrip_ms": 12394,
+      "exit_code": 0,
+      "host": "mac",
+      "job_id": "1a1a9529d94-fc05-3444",
+      "measured": {
+        "process_elapsed_s": 0.027734625,
+        "process_peak_rss_bytes": 27590656,
+        "system_cpu_s": 0.019961,
+        "user_cpu_s": 0.043354
+      },
+      "phase": "bootstrap",
+      "unmeasured": {
+        "amortized_training_cost": null,
+        "energy_joules": null,
+        "lifecycle_total_cost": null,
+        "network_wire_bytes": null,
+        "storage_physical_bytes": null,
+        "total_device_memory_bytes": null
+      }
+    },
+    {
+      "application_stdin_bytes": 3632,
+      "controller_start_roundtrip_ms": 11939,
+      "exit_code": 0,
+      "host": "pocket4",
+      "job_id": "1a1a9533094-fc05-344a",
+      "measured": {
+        "process_elapsed_s": 0.01131351396907121,
+        "process_peak_rss_bytes": 30175232,
+        "system_cpu_s": 0.008953,
+        "user_cpu_s": 0.037805
+      },
+      "phase": "persist",
+      "unmeasured": {
+        "amortized_training_cost": null,
+        "energy_joules": null,
+        "lifecycle_total_cost": null,
+        "network_wire_bytes": null,
+        "storage_physical_bytes": null,
+        "total_device_memory_bytes": null
+      }
+    },
+    {
+      "application_stdin_bytes": 2,
+      "controller_start_roundtrip_ms": 4152,
+      "exit_code": 0,
+      "host": "pocket4",
+      "job_id": "1a1a9544fe3-fc05-3450",
+      "measured": {
+        "process_elapsed_s": 0.009112587082199752,
+        "process_peak_rss_bytes": 30474240,
+        "system_cpu_s": 0.006875999999999999,
+        "user_cpu_s": 0.038314
+      },
+      "phase": "cold_ready",
+      "unmeasured": {
+        "amortized_training_cost": null,
+        "energy_joules": null,
+        "lifecycle_total_cost": null,
+        "network_wire_bytes": null,
+        "storage_physical_bytes": null,
+        "total_device_memory_bytes": null
+      }
+    },
+    {
+      "application_stdin_bytes": 2830,
+      "controller_start_roundtrip_ms": 6235,
+      "exit_code": 0,
+      "host": "mac",
+      "job_id": "1a1a9550f1a-fc05-3458",
+      "measured": {
+        "process_elapsed_s": 0.014041416000000001,
+        "process_peak_rss_bytes": 27344896,
+        "system_cpu_s": 0.010700999999999999,
+        "user_cpu_s": 0.038699
+      },
+      "phase": "accept_ready",
+      "unmeasured": {
+        "amortized_training_cost": null,
+        "energy_joules": null,
+        "lifecycle_total_cost": null,
+        "network_wire_bytes": null,
+        "storage_physical_bytes": null,
+        "total_device_memory_bytes": null
+      }
+    },
+    {
+      "application_stdin_bytes": 546,
+      "controller_start_roundtrip_ms": 4492,
+      "exit_code": 0,
+      "host": "mac",
+      "job_id": "1a1a9557d90-fc05-345c",
+      "measured": {
+        "process_elapsed_s": 0.013294874999999998,
+        "process_peak_rss_bytes": 27344896,
+        "system_cpu_s": 0.012485999999999999,
+        "user_cpu_s": 0.03863
+      },
+      "phase": "commit",
+      "unmeasured": {
+        "amortized_training_cost": null,
+        "energy_joules": null,
+        "lifecycle_total_cost": null,
+        "network_wire_bytes": null,
+        "storage_physical_bytes": null,
+        "total_device_memory_bytes": null
+      }
+    },
+    {
+      "application_stdin_bytes": 634,
+      "controller_start_roundtrip_ms": 6312,
+      "exit_code": 0,
+      "host": "pocket4",
+      "job_id": "1a1a955f5d3-fc05-345f",
+      "measured": {
+        "process_elapsed_s": 0.00905460596550256,
+        "process_peak_rss_bytes": 29949952,
+        "system_cpu_s": 0.005836999999999999,
+        "user_cpu_s": 0.036968
+      },
+      "phase": "sign_publish",
+      "unmeasured": {
+        "amortized_training_cost": null,
+        "energy_joules": null,
+        "lifecycle_total_cost": null,
+        "network_wire_bytes": null,
+        "storage_physical_bytes": null,
+        "total_device_memory_bytes": null
+      }
+    },
+    {
+      "application_stdin_bytes": 2812,
+      "controller_start_roundtrip_ms": 4642,
+      "exit_code": 0,
+      "host": "mac",
+      "job_id": "1a1a956892e-fc05-3466",
+      "measured": {
+        "process_elapsed_s": 0.014183833,
+        "process_peak_rss_bytes": 27426816,
+        "system_cpu_s": 0.0109,
+        "user_cpu_s": 0.03861
+      },
+      "phase": "accept_publish",
+      "unmeasured": {
+        "amortized_training_cost": null,
+        "energy_joules": null,
+        "lifecycle_total_cost": null,
+        "network_wire_bytes": null,
+        "storage_physical_bytes": null,
+        "total_device_memory_bytes": null
+      }
+    },
+    {
+      "application_stdin_bytes": 0,
+      "controller_start_roundtrip_ms": 6011,
+      "exit_code": 0,
+      "host": "mac",
+      "job_id": "1a1a957366f-fc05-346c",
+      "measured": {
+        "body_elapsed_s": 0.0015270829999999985,
+        "system_cpu_s": 0.006516999999999999,
+        "user_cpu_s": 0.012608999999999999
+      },
+      "phase": "export_requests",
+      "unmeasured": {
+        "amortized_training_cost": null,
+        "complete_storage_inference_training_total": null,
+        "energy_joules": null,
+        "failed_preflight_cost": null,
+        "network_wire_bytes": null,
+        "storage_physical_bytes": null,
+        "total_device_memory_bytes": null
+      }
+    }
+  ],
+  "probe_jobs": [
+    {
+      "cpu_seconds": null,
+      "energy_joules": null,
+      "exit_code": 0,
+      "host": "mac",
+      "job_id": "1a1a94c4de8-fc05-33ea",
+      "memory_bytes": null
+    },
+    {
+      "cpu_seconds": null,
+      "energy_joules": null,
+      "exit_code": 0,
+      "host": "pocket4",
+      "job_id": "1a1a94c8c87-fc05-33ed",
+      "memory_bytes": null
+    },
+    {
+      "cpu_seconds": null,
+      "energy_joules": null,
+      "exit_code": 0,
+      "host": "x230",
+      "job_id": "1a1a94c6e45-fc05-33ec",
+      "memory_bytes": null
+    }
+  ],
+  "product_net_benefit_qualified": false,
+  "receipt_sha256": "8412c030ed18f95e4e2b97939beebb35570881d981550390223b7b2e0cd9f17b",
+  "rejected_preflight_attempts": [
+    {
+      "cost_unknown": null,
+      "error_code": "INVALID_ARGUMENT",
+      "executable": "python3",
+      "host": "mac",
+      "idempotency_key": "hepta-v15-readonly-probe-20261105-mac-v1",
+      "job_created": false,
+      "message": "executable `python3` must be an absolute path without parent traversal",
+      "target_execution": false
+    },
+    {
+      "cost_unknown": null,
+      "error_code": "INVALID_ARGUMENT",
+      "executable": "python3",
+      "host": "pocket4",
+      "idempotency_key": "hepta-v15-readonly-probe-20261105-pocket4-v1",
+      "job_created": false,
+      "message": "executable `python3` must be an absolute path without parent traversal",
+      "target_execution": false
+    },
+    {
+      "cost_unknown": null,
+      "error_code": "INVALID_ARGUMENT",
+      "executable": "python3",
+      "host": "x230",
+      "idempotency_key": "hepta-v15-readonly-probe-20261105-x230-v1",
+      "job_created": false,
+      "message": "executable `python3` must be an absolute path without parent traversal",
+      "target_execution": false
+    }
+  ],
+  "run_id": "hepta-v15-23f86845405a4bb8",
+  "schema": "hepta-v15-device-cost-observation-v1",
+  "source_sha256": "7e5a2016347718e87df147f2ae96f2e56b9813d2c11e705bf88c8649a16bbe68",
+  "worker_sha256": "e71df378426d8eb6c7afd8e75938741943fbdb482ec15de17c45b3f74ca12160"
+}

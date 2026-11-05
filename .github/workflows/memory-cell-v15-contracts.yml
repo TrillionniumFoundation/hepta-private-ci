@@ -7,6 +7,7 @@ on:
     paths:
       - 'qualification/memory-cell-v15/**.py'
       - 'qualification/memory-cell-v15/requirements.txt'
+      - 'qualification/memory-cell-v15/device_qualification/**'
       - '.github/workflows/memory-cell-v15-contracts.yml'
 
 permissions:
@@ -33,6 +34,10 @@ jobs:
       - name: Run actual bounded protocol checks
         timeout-minutes: 3
         run: /tmp/memory-v15-env/bin/python qualification/memory-cell-v15/verify.py
+      - name: Independently verify the preserved two-host signatures and results
+        run: |
+          /tmp/memory-v15-env/bin/python qualification/memory-cell-v15/device_qualification/verify_receipts.py \
+            --output qualification/memory-cell-v15/device_qualification/review_checks.json
       - name: Preserve exact-source check receipts
         if: always()
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
@@ -41,5 +46,6 @@ jobs:
           path: |
             qualification/memory-cell-v15/evidence/checks.json
             qualification/memory-cell-v15/evidence/checks.log
+            qualification/memory-cell-v15/device_qualification/review_checks.json
           if-no-files-found: error
           retention-days: 30
