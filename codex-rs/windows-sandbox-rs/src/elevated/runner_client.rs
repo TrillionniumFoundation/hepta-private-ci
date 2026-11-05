@@ -44,7 +44,6 @@ use windows_sys::Win32::System::Threading::GetCurrentProcess;
 use windows_sys::Win32::System::Threading::GetCurrentThread;
 use windows_sys::Win32::System::Threading::PROCESS_INFORMATION;
 use windows_sys::Win32::System::Threading::STARTUPINFOW;
-use windows_sys::Win32::System::Threading::TerminateProcess;
 use windows_sys::Win32::System::Threading::WaitForSingleObject;
 
 const RUNNER_SPAWN_READY_TIMEOUT: Duration = Duration::from_secs(15);
@@ -55,7 +54,9 @@ const WAIT_OBJECT_0: u32 = 0;
 
 #[path = "runner_process.rs"]
 mod process;
+pub use process::RunnerCleanupReconciliation;
 pub(crate) use process::RunnerProcessOwner;
+pub use process::reconcile_runner_cleanup;
 
 #[derive(Debug)]
 struct RunnerLogonError {
@@ -321,6 +322,7 @@ pub(crate) fn spawn_runner_transport(
     log_dir: Option<&Path>,
     spawn_request: SpawnRequest,
 ) -> Result<RunnerTransport> {
+    let admission = process::admit_runner()?;
     let (pipe_in_name, pipe_out_name) = pipe_pair();
     let h_pipe_in =
         create_named_pipe(&pipe_in_name, PIPE_ACCESS_OUTBOUND, &sandbox_creds.username)?;
@@ -382,6 +384,12 @@ pub(crate) fn spawn_runner_transport(
         return Err(RunnerLogonError { code: err }.into());
     }
     let expected_runner_pid = pi.dwProcessId;
+    // Custody begins at the successful native launch, including pipe-connect
+    // failures. No later worker or error value is its sole owner.
+    let mut runner_process = RunnerProcessOwner::from_admission(
+        unsafe { OwnedHandle::from_raw_handle(pi.hProcess as _) },
+        admission,
+    );
 
     let connect_result = (|| -> Result<()> {
         connect_pipe_with_timeout(h_pipe_in, expected_runner_pid, "pipe-in")?;
@@ -397,17 +405,10 @@ pub(crate) fn spawn_runner_transport(
 
     if let Err(err) = connect_result {
         unsafe {
-            // Keep the process handle alive until the pipe handshake finishes. If the handshake
-            // fails after the runner process has already launched, we still need a way to stop
-            // that child instead of leaking a stray `codex-command-runner.exe`.
-            if pi.hProcess != 0 {
-                let _ = TerminateProcess(pi.hProcess, 1);
-                CloseHandle(pi.hProcess);
-            }
             CloseHandle(h_pipe_in);
             CloseHandle(h_pipe_out);
         }
-        return Err(err);
+        return Err(runner_process.reconcile_failure(err));
     }
 
     let mut transport = RunnerTransport {
@@ -417,7 +418,7 @@ pub(crate) fn spawn_runner_transport(
         pipe_read: unsafe { File::from_raw_handle(h_pipe_out as _) },
         // Retain the exact process returned by CreateProcessWithLogonW through
         // terminal observation; an IPC Exit frame is sent before process exit.
-        process: RunnerProcessOwner::new(unsafe { OwnedHandle::from_raw_handle(pi.hProcess as _) }),
+        process: runner_process,
     };
     let startup_result = (|| -> Result<()> {
         // Keep the runner process HANDLE alive until the *entire* startup handshake finishes.

@@ -251,6 +251,20 @@
         "unified_exec::process::remote_observation_tests::logical_failure_before_native_exit_preserves_first_failure"
       ],
       "filter": "test(=unified_exec::process::observation_tests::early_driver_sender_loss_returns_process_failure) | test(=unified_exec::process::observation_tests::late_driver_sender_loss_cannot_be_upgraded_by_write_or_termination) | test(=unified_exec::process::observation_tests::observed_driver_exit_keeps_its_actual_code) | test(=unified_exec::process::remote_observation_tests::remote_stdin_or_handle_errors_do_not_establish_exit) | test(=unified_exec::process::remote_observation_tests::termination_ack_without_exit_is_indeterminate) | test(=unified_exec::process::remote_observation_tests::termination_ack_after_observation_loss_stays_indeterminate) | test(=unified_exec::process::remote_observation_tests::observed_exit_survives_concurrent_control_failure) | test(=unified_exec::process::remote_observation_tests::observed_exit_without_code_is_terminal) | test(=unified_exec::process::remote_observation_tests::logical_failure_before_native_exit_preserves_first_failure)"
+    },
+    {
+      "id": "runner-native-custody",
+      "package": "codex-windows-sandbox",
+      "expectedTestCount": 6,
+      "requiredTests": [
+        "elevated::runner_client::process::owner::custody_tests::reservation_and_confirmed_exit_release_only_their_exact_slot",
+        "elevated::runner_client::process::owner::custody_tests::session_custody_survives_taken_terminator_and_driver_disconnect",
+        "elevated::runner_client::process::owner::custody_tests::dropped_sync_error_retains_owner_until_late_same_handle_observation",
+        "elevated::runner_client::process::owner::custody_tests::unarmed_startup_abort_keeps_custody_until_zero_wait_terminal_query",
+        "elevated::runner_client::process::owner::custody_tests::failure_fences_admission_before_native_abort_or_wait",
+        "elevated::runner_client::process::owner::custody_tests::cleanup_query_access_failures_fence_without_reclassifying_original_work"
+      ],
+      "filter": "test(=elevated::runner_client::process::owner::custody_tests::reservation_and_confirmed_exit_release_only_their_exact_slot) | test(=elevated::runner_client::process::owner::custody_tests::session_custody_survives_taken_terminator_and_driver_disconnect) | test(=elevated::runner_client::process::owner::custody_tests::dropped_sync_error_retains_owner_until_late_same_handle_observation) | test(=elevated::runner_client::process::owner::custody_tests::unarmed_startup_abort_keeps_custody_until_zero_wait_terminal_query) | test(=elevated::runner_client::process::owner::custody_tests::failure_fences_admission_before_native_abort_or_wait) | test(=elevated::runner_client::process::owner::custody_tests::cleanup_query_access_failures_fence_without_reclassifying_original_work)"
     }
   ]
 }

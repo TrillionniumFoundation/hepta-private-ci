@@ -134,6 +134,11 @@ pub(crate) use elevated::ipc_framed;
 pub(crate) use elevated::runner_client;
 
 #[cfg(target_os = "windows")]
+pub use elevated::runner_client::RunnerCleanupReconciliation;
+#[cfg(target_os = "windows")]
+pub use elevated::runner_client::reconcile_runner_cleanup;
+
+#[cfg(target_os = "windows")]
 pub(crate) use elevated::runner_pipe;
 
 #[cfg(target_os = "windows")]

@@ -191,6 +191,7 @@ pub(crate) async fn spawn_windows_sandbox_session_elevated_for_permission_profil
     };
     let transport = spawn_runner_transport_task(sandbox_creds, request).await?;
     let (pipe_write, pipe_read, runner_process) = transport.into_parts();
+    let cleanup_custody = runner_process.cleanup_custody()?;
 
     let (writer_tx, writer_rx) = mpsc::channel::<Vec<u8>>(128);
     let (stdout_tx, stdout_rx) = broadcast::channel::<Vec<u8>>(256);
@@ -227,7 +228,7 @@ pub(crate) async fn spawn_windows_sandbox_session_elevated_for_permission_profil
         exit_tx,
     );
 
-    Ok(finish_driver_spawn(
+    let spawned = finish_driver_spawn(
         ProcessDriver {
             writer_tx,
             stdout_rx,
@@ -243,7 +244,9 @@ pub(crate) async fn spawn_windows_sandbox_session_elevated_for_permission_profil
             tty,
         },
         stdin_open,
-    ))
+    );
+    spawned.session.retain_cleanup_custody(cleanup_custody)?;
+    Ok(spawned)
 }
 
 #[cfg(test)]
