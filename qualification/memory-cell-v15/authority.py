@@ -29,6 +29,8 @@ COMPONENTS = frozenset(('model', 'memory', 'encoder', 'tokenizer', 'schema', 'ro
                         'calibration', 'optimizer', 'rng', 'sampler', 'runtime'))
 DOMAIN = 'hepta.memory-cell.v15'
 MAX_COUNTER = (1 << 63) - 1
+# Exact, non-normalized UTF-8 identifiers, shared with the native transition core.
+IDENTIFIER_BYTES = {'cell': 256, 'transfer': 128}
 
 
 def next_counter(value, reserve=1):
@@ -42,6 +44,15 @@ class Rejected(Exception):
     def __init__(self, reason, receipt=None):
         super().__init__(reason)
         self.receipt = receipt
+
+
+def _identifier(value, kind):
+    try:
+        if type(value) is str and 0 < len(value.encode('utf-8')) <= IDENTIFIER_BYTES[kind]:
+            return value
+    except UnicodeEncodeError:
+        pass
+    raise Rejected('invalid ' + kind + ' identifier')
 
 
 def canonical(value):
@@ -153,9 +164,23 @@ class Authority:
                 self.db.execute('INSERT OR IGNORE INTO meta VALUES (?,?)', (name, expected))
                 if self.db.execute('SELECT v FROM meta WHERE k=?', (name,)).fetchone()[0] != expected:
                     raise Rejected('authority or admin identity changed')
+            # Old SQLite TEXT PRIMARY KEY tables can contain NULL. Never serve a
+            # poisoned snapshot or silently reset an unaddressable prepared cell.
+            try:
+                for query, kinds in (
+                        ('SELECT id FROM cells', ('cell',)),
+                        ('SELECT cell FROM addresses', ('cell',)),
+                        ('SELECT id,cell FROM transfers', ('transfer', 'cell')),
+                        ('SELECT id FROM recovery_transfers', ('transfer',))):
+                    for row in self.db.execute(query):
+                        for value, kind in zip(row, kinds):
+                            _identifier(value, kind)
+            except Rejected as exc:
+                raise Rejected('recovery required: invalid persisted cell/transfer identifier') from exc
             self.db.commit()
         except BaseException:
             self.db.rollback()
+            self.db.close()
             raise
 
     def close(self):
@@ -290,6 +315,19 @@ class Authority:
         return dict(cell=name, owner=owner, epoch=epoch, bundle=item['id'])
 
     def _dispatch(self, op, a, actor):
+        if not isinstance(a, dict):
+            raise Rejected('invalid operation arguments')
+        if op in ('create', 'publish', 'prepare', 'recover_prepare', 'restrict',
+                  'ready', 'commit', 'abort', 'status'):
+            _identifier(a.get('cell'), 'cell')
+        if op in ('prepare', 'recover_prepare', 'ready', 'commit', 'abort'):
+            _identifier(a.get('transfer'), 'transfer')
+        if op == 'reshape':
+            for side in ('parents', 'children'):
+                if not isinstance(a.get(side), list) or any(not isinstance(row, dict) for row in a[side]):
+                    raise Rejected('invalid reshape participants')
+                for row in a[side]:
+                    _identifier(row.get('cell'), 'cell')
         if op == 'source':
             self._admin(actor)
             if any(not isinstance(a.get(field), str) or not a[field] for field in ('scope', 'id', 'body')):

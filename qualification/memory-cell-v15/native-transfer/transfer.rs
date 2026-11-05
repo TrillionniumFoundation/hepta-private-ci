@@ -10,6 +10,10 @@ use std::collections::BTreeMap;
 pub type Identity = [u8; 32];
 pub type Digest = [u8; 32];
 
+// Exact UTF-8 bytes; no normalization or trimming. Match authority.py admission.
+const MAX_CELL_IDENTIFIER_BYTES: usize = 256;
+const MAX_TRANSFER_IDENTIFIER_BYTES: usize = 128;
+
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
 pub enum CellPhase {
     Active,
@@ -106,7 +110,11 @@ fn next_epoch(epoch: u64) -> Result<u64, Rejection> {
 /// Validate one transition against a complete current cut without modifying it.
 /// The caller persists both returned cell and transfer rows in one transaction.
 pub fn transition(state: &State, request: &Request, sources: Sources) -> Result<State, Rejection> {
-    if request.cell.is_empty() || request.transfer.is_empty() || request.transfer.len() > 128 {
+    if request.cell.is_empty()
+        || request.cell.len() > MAX_CELL_IDENTIFIER_BYTES
+        || request.transfer.is_empty()
+        || request.transfer.len() > MAX_TRANSFER_IDENTIFIER_BYTES
+    {
         return Err(Rejection::InvalidIdentifier);
     }
     if request.cell != state.cell.id {
@@ -243,3 +251,7 @@ pub fn transition(state: &State, request: &Request, sources: Sources) -> Result<
     }
     Ok(proposed)
 }
+
+#[cfg(test)]
+#[path = "identifier_tests.rs"]
+mod identifier_tests;

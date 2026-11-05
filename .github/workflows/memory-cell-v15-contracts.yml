@@ -6,6 +6,9 @@ on:
       - research/memory-cell-v15-20261104
       - research/memory-v15-native-transfer-20261105-728b
       - fix/memory-v15-admission-identity-20261105-b5d58
+      - fix/memory-v15-identifiers-20261105-659d
+      - feat/memory-v15-durable-evaluation-20261105-659d
+      - research/memory-v15-routing-attribution-20261105-659d
     paths:
       - 'qualification/memory-cell-v15/**.py'
       - 'qualification/memory-cell-v15/requirements.txt'
@@ -61,8 +64,10 @@ jobs:
           evidence=/tmp/memory-v15-native
           mkdir -p "$evidence"
           /tmp/memory-v15-env/bin/python "$native/differential.py" generate "$evidence"
-          rustfmt +1.95.0 --check --edition 2024 "$native/transfer.rs" "$native/runner.rs"
+          rustfmt +1.95.0 --check --edition 2024 "$native/transfer.rs" "$native/runner.rs" "$native/identifier_tests.rs"
           rustc +1.95.0 --version > "$evidence/rustc.txt"
+          rustc +1.95.0 --edition=2024 -Dwarnings --test "$native/transfer.rs" -o "$evidence/identifier-tests"
+          "$evidence/identifier-tests" > "$evidence/identifier-tests.txt"
           rustc +1.95.0 --edition=2024 -Dwarnings -O "$native/runner.rs" -o "$evidence/runner"
           "$evidence/runner" < "$evidence/commands.txt" > "$evidence/actual.txt"
           /tmp/memory-v15-env/bin/python "$native/differential.py" compare "$evidence" --actual "$evidence/actual.txt"
@@ -82,4 +87,5 @@ jobs:
             /tmp/memory-v15-native/*.json
           if-no-files-found: error
           retention-days: 30
+
 
