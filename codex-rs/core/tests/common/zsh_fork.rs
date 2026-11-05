@@ -33,6 +33,16 @@ impl ZshForkRuntime {
         config.main_execve_wrapper_exe = Some(self.main_execve_wrapper_exe.clone());
         config.permissions.allow_login_shell = false;
         config.permissions.approval_policy = Constrained::allow_any(approval_policy);
+        // Non-login zsh still reads .zshenv. Use the fixture's retained home for startup files.
+        let zdotdir = config.codex_home.join("zsh-dotdir");
+        std::fs::create_dir_all(&zdotdir).expect("create fixture ZDOTDIR");
+        config.permissions.shell_environment_policy.r#set.insert(
+            "ZDOTDIR".to_string(),
+            zdotdir
+                .to_str()
+                .expect("fixture ZDOTDIR should be valid UTF-8")
+                .to_string(),
+        );
     }
 }
 
