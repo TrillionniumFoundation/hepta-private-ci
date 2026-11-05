@@ -22,6 +22,10 @@ use crate::cognitive_store::CognitiveCommitGate;
 mod publication;
 pub(crate) use publication::BoundOwnerPublication;
 
+#[cfg(test)]
+#[path = "cognitive_checkpoint_fixture_tests.rs"]
+mod fixture_tests;
+
 /// Fixed-peer, bounded asynchronous transport for the private protected-host
 /// protocol. The caller supplies exact UTF-8 JSON bytes. Implementations frame
 /// them with a four-byte big-endian length, enforce the 32-KiB response limit,
