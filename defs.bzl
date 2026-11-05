@@ -203,6 +203,7 @@ def codex_rust_crate(
         unit_test_features = [],
         binary_test_target_compatible_with = [],
         integration_test_timeout = None,
+        integration_test_features = [],
         integration_test_use_unit_test_dependencies = False,
         test_data_extra = [],
         test_shard_counts = {},
@@ -229,6 +230,8 @@ def codex_rust_crate(
             Crates are only compiled in a single configuration across the workspace, i.e.
             with all features in this list enabled. So use sparingly, and prefer to refactor
             optional functionality to a separate crate.
+        integration_test_features: Features explicitly enabled on integration harnesses.
+            Match the profile of the library and product binaries they exercise.
         integration_test_use_unit_test_dependencies: Keep integration harnesses and
             their local library on the already-declared test-only dependency graph.
             Product library and binary dependencies are never replaced.
@@ -599,6 +602,7 @@ def codex_rust_crate(
             # materialization, sharding, and flaky retry behavior.
             rust_test(
                 name = integration_test_binary,
+                crate_features = integration_test_features,
                 crate_name = test_crate_name,
                 crate_root = test,
                 srcs = [test],
@@ -639,6 +643,7 @@ def codex_rust_crate(
             # Bazel's normal test environment.
             rust_test(
                 name = test_name,
+                crate_features = integration_test_features,
                 crate_name = test_crate_name,
                 crate_root = test,
                 srcs = [test],
@@ -714,6 +719,7 @@ def codex_rust_crate(
 
         rust_test(
             name = windows_cross_test_binary,
+            crate_features = integration_test_features,
             crate_name = test_crate_name,
             crate_root = test,
             srcs = [test],
