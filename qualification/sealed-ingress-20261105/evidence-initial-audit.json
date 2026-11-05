@@ -1,0 +1,54 @@
+{
+  "schema": "hepta.integration-evidence-consistency-review.v1",
+  "phase": "INITIAL_REVIEW_PENDING_ROOT_FINAL_ASSEMBLY_DELTA",
+  "scope": [
+    "integration/qualification",
+    "integration/sealed-qualification"
+  ],
+  "production_edits": false,
+  "new_native_tests_by_reviewer": false,
+  "snapshot": {
+    "files": 124,
+    "bytes": 1605912,
+    "manifest": "initial/snapshot-manifest.json",
+    "manifest_sha256": "eadafa7997f4389d87ded76d07f3082b72a814c4ea631a7c0451c9135056dda9"
+  },
+  "checks": {
+    "indexed_artifact_hashes_and_sizes": {
+      "count": 65,
+      "all_match": true
+    },
+    "current_markdown_relative_links": {
+      "count": 39,
+      "all_exist": true,
+      "excluded": "Exact archived source-contracts/AGENTS.md contains origin-relative source instructions; it is historical source evidence, not the current navigation document."
+    },
+    "outer_and_native_round2_negative_patches": "All 4 pairs byte-identical; all 8 manifest SHA256 entries match, including Q1 73dd589f after native format.",
+    "current_first_validation_receipt_references": "All 7 state/head/exit/positive-observation/SHA references match actual receipts.",
+    "first_source_manifest": "All 13 protected entries match actual facba native source receipt.",
+    "second_source_manifest": "All 14 entries match the final native-formatted manifest; linked format receipt digest matches.",
+    "historical_validation_preservation": "Both native/validation-before-native.json files are byte-identical to initial top-level validation snapshots.",
+    "historical_source_only_readme_sections": "Explicitly labelled Original handoff and redirected to current native-validation/current source manifests."
+  },
+  "issues_resolved_during_review": [
+    {
+      "issue": "Both top-level validation.json initially retained obsolete source identities/NOT_RUN states while README linked them as current.",
+      "resolution": "Root replaced current records with schema-v2 facba/e0b states and preserved the originals under native/validation-before-native.json. Re-read and actual receipt comparison passed."
+    }
+  ],
+  "pending_final_delta": [
+    "Update current source identities to F432421 and Eeed654 while retaining tested facba on native named/full-positive receipts.",
+    "Preserve raw fix-blocked/exit1 and Clippy command0. Explain source_changed_by_fix=false covers only13; the exact2-file diff changed the whole tree.",
+    "Link and hash final reviewed adoption1e74 and actual F/E alignment64be; current execution plan should select gate-v2, retaining old6e/1a bundle as historical.",
+    "Index newly exported named/full/fix raw logs and receipts in native-artifact manifests; keep setup and failed attempt evidence separate.",
+    "Update second actual execution states only when terminal receipts arrive; do not transfer first-wave 813 pass to the two new heads.",
+    "Recheck current relative links and artifact hashes after root announces final assembly."
+  ],
+  "current_gate_v2_handoff": {
+    "runner_sha256": "46552f047784d07b825cec59e0358cfbb02a010f448b7538bb0fadc15ea2f7df",
+    "plan_sha256": "00b4d289a635ae36865dc70732a1a10a03a8fb81575be5b5eba0b21fce7027fe",
+    "bundle_sha256": "1f0301d0c78a9d0d20703c09bf8d2f4cf1591af307cb3faf5f75da50809927f0",
+    "independent_review": "Product source delta accepted; Lifecycle owns actual execution."
+  },
+  "native_product_claims": "This audit is evidence consistency review. It does not grant product activation, efficacy, exact-head platform/merge qualification or release."
+}

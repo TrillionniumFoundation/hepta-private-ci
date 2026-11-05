@@ -1,0 +1,72 @@
+{
+  "schema": "hepta.sealed-ingress-historical-provenance-map.v1",
+  "recorded_at_utc": "2026-11-05T10:08:37.013666+00:00",
+  "scope": "Additive mapping of historical names and unavailable exact inputs. It changes neither original reviews nor the frozen native transport bundle nor current execution qualification.",
+  "original_source_handoff": {
+    "historical_reference": "source-combination-review.md: SOURCE_ACCEPTANCE.md",
+    "source_local_path": "adaptive/ingress-next/SOURCE_ACCEPTANCE.md",
+    "archived_path": "history/SOURCE_ACCEPTANCE.md",
+    "sha256": "136d466db2f89cccad2787f19c0e7e68e8456836c090c186ad29360fe7b6fc99",
+    "bytes": 15288,
+    "copied_byte_exact": true,
+    "scope": "Original a20-based four-stage source handoff, before subsequent native formatting, current-trust regression and execution."
+  },
+  "caller_review": {
+    "historical_reference": "source-combination-review.md: final-caller-inventory-review.json",
+    "original_source_local_path": "product/stack-review/final-caller-inventory-review.json",
+    "original_archived_path": "history/final-caller-inventory-review.json",
+    "original_sha256": "484bf9440c4ceab992f0d6f486f62507f2d93fb07227ac0ef0ec82a7eeadcbfe",
+    "original_bytes": 5678,
+    "current_archive_alias": "caller-inventory-review.json",
+    "alias_sha256": "ae5b9baa42a0a78f1eac44ebe15f37c3828efe95849b32e28287c70d80822574",
+    "alias_bytes": 5661,
+    "exact_only_transformation": {
+      "json_field": "derived_final_inventory.path",
+      "old": "product/stack-review/final-rust-callers-derived.txt",
+      "new": "caller-inventory-final-derived.txt"
+    },
+    "raw_original_after_one_exact_string_substitution_equals_alias": true,
+    "semantic_verdict_source_digests_and_inventory_unchanged": true
+  },
+  "derived_caller_scan": {
+    "historical_reference": "source-combination-review.md: final-rust-callers-derived.txt",
+    "original_local_path": "product/stack-review/final-rust-callers-derived.txt",
+    "archived_path": "caller-inventory-final-derived.txt",
+    "sha256": "ce42f0e52110ef024e3304cc7400222c2db0dd070b9cc2a1098a861ab93804da",
+    "bytes": 10059,
+    "copied_byte_exact": true
+  },
+  "early_plan_review": {
+    "review_path": "native-plan-independent-review.json",
+    "review_sha256": "1f4dc5f5b1aabb638fe95e8dff273fec07d25f5777d1ed12b005cee398f89412",
+    "reviewed_initial_head": "9f010aae1ae7f7447adc0660748878f6cce9efd3",
+    "referenced_original_plan_sha256": "e8c15141bd9bf28956551abf15e1f5020d7f4697f8a690f9840d248873ea8d57",
+    "referenced_original_plan_document_sha256": "ed6be9dcd849115b4f1510f5511cc91977103bfcef24bf5f8145e4a44310f21a",
+    "exact_original_inputs_available_in_this_package": false,
+    "search_record": "history/initial-plan-exact-search.json",
+    "search_record_sha256": "0ac9851852be9f1863f5fde449c69dad5b75a3e54a059457594b9ea5575a106b",
+    "search_scope": "Read-only rg inventory of adaptive/product/lifecycle/integration, hashing 580 text/JSON candidates, matching verbatim JSON strings, and examining candidate text/JSON members of both native transport tar archives. No matching byte sequence was found. This is not a claim that no original exists elsewhere.",
+    "permitted_use": "Historical semantic/source-adaptation review only; cannot prove identity or execution of either later frozen bundle.",
+    "no_reconstruction_or_normalization_to_create_pseudo_originals": true
+  },
+  "actual_executed_gate_identity": {
+    "plan": {
+      "path": "native-round2-gate-v2/plan.json",
+      "sha256": "00b4d289a635ae36865dc70732a1a10a03a8fb81575be5b5eba0b21fce7027fe"
+    },
+    "runner": {
+      "path": "native-round2-gate-v2/run_native_round2.py",
+      "sha256": "46552f047784d07b825cec59e0358cfbb02a010f448b7538bb0fadc15ea2f7df"
+    },
+    "independent_gate_review": {
+      "path": "post-fix-native-gate-review.json",
+      "sha256": "cf8c1b758245f57b22800fdcc54832ec84fd86a3b83f866e88fbbb0aff26ab08"
+    }
+  },
+  "historical_status_rule": "Keep original source-only and NOT_RUN statements, 06ad manifest identities, both native-round2 directories and every old review unchanged. Frozen bundle fields describe preparation-time state. Current execution source/phase/result/restoration evidence is recorded separately in native-validation.md, validation.json and raw native receipts.",
+  "qualification_limits": [
+    "This provenance package performs no native test or remote operation.",
+    "It grants no source_qualified_exact_head, original Windows, full product, recovery, efficacy, effect, promotion or release qualification.",
+    "The original first-wave 813/813 remains on facba; no result is transferred to a new source identity."
+  ]
+}

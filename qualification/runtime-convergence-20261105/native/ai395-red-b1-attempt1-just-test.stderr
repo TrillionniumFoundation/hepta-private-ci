@@ -1,0 +1,121 @@
+RUST_MIN_STACK=8388608 NEXTEST_PROFILE=local python3 ../scripts/run-nextest.py "$@"
+   Compiling proc-macro2 v1.0.107
+   Compiling generic-array v0.14.7
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#generic-array@0.14.7` which wasn't produced by cargo metadata
+   Compiling unicode-ident v1.0.27
+   Compiling typenum v1.20.1
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#proc-macro2@1.0.107` which wasn't produced by cargo metadata
+   Compiling quote v1.0.47
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#quote@1.0.47` which wasn't produced by cargo metadata
+   Compiling serde_core v1.0.229
+   Compiling zeroize v1.9.1
+   Compiling crypto-common v0.1.7
+   Compiling block-buffer v0.10.4
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#serde_core@1.0.229` which wasn't produced by cargo metadata
+   Compiling der v0.7.10
+   Compiling digest v0.10.7
+   Compiling sha2 v0.10.9
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#zmij@1.0.23` which wasn't produced by cargo metadata
+   Compiling syn v3.0.9
+   Compiling serde v1.0.229
+   Compiling serde_json v1.0.154
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#serde_json@1.0.154` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#serde@1.0.229` which wasn't produced by cargo metadata
+   Compiling spki v0.7.3
+   Compiling codex-hepta-types v0.0.0 (/home/qq/work/hepta-convergence-20261105-0c901b/source/codex-rs/hepta-types)
+   Compiling serde_derive v1.0.229
+   Compiling syn v2.0.119
+   Compiling memchr v2.8.3
+   Compiling curve25519-dalek-derive v0.1.1
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#curve25519-dalek@4.1.3` which wasn't produced by cargo metadata
+   Compiling pkcs8 v0.10.2
+   Compiling subtle v2.6.1
+   Compiling curve25519-dalek v4.1.3
+   Compiling codex-hepta-cognitive-types v0.0.0 (/home/qq/work/hepta-convergence-20261105-0c901b/source/codex-rs/hepta-cognitive-types)
+   Compiling ed25519 v2.2.3
+   Compiling ed25519-dalek v2.2.0
+   Compiling codex-hepta-intuition v0.0.0 (/home/qq/work/hepta-convergence-20261105-0c901b/source/codex-rs/hepta-intuition)
+   Compiling codex-hepta-memory-retrieval v0.0.0 (/home/qq/work/hepta-convergence-20261105-0c901b/source/codex-rs/hepta-memory-retrieval)
+   Compiling codex-hepta-learning-ledger v0.0.0 (/home/qq/work/hepta-convergence-20261105-0c901b/source/codex-rs/hepta-learning-ledger)
+   Compiling codex-hepta-intelligence-eval v0.0.0 (/home/qq/work/hepta-convergence-20261105-0c901b/source/codex-rs/hepta-intelligence-eval)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 20.15s
+────────────
+ Nextest run ID ee80ab25-d7a2-418d-a311-cac10d6b377b with nextest profile: local
+    Starting 1 test across 1 binary (117 tests skipped)
+  TRY 1 FAIL [   0.009s] (───) codex-hepta-intelligence-eval product_runner::tests::product_runner_rejects_changed_plans_before_consuming_or_releasing_holdout
+  stdout ───
+
+    running 1 test
+    test product_runner::tests::product_runner_rejects_changed_plans_before_consuming_or_releasing_holdout ... FAILED
+
+    failures:
+
+    failures:
+        product_runner::tests::product_runner_rejects_changed_plans_before_consuming_or_releasing_holdout
+
+    test result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 117 filtered out; finished in 0.00s
+
+  stderr ───
+
+    thread 'product_runner::tests::product_runner_rejects_changed_plans_before_consuming_or_releasing_holdout' (3435816) panicked at hepta-intelligence-eval/src/product_runner_tests.rs:651:13:
+    assertion failed: `(left == right)`
+
+    Diff < left / right > :
+     (
+         FinalHoldoutCasAnchorV1 {
+             fence_generation: 1,
+    <        record_count: 1,
+    >        record_count: 0,
+             state_digest: Digest32(
+    <            "78299b511e8e27440f44deadf335ea5688d0cc43e541e24b2b7c5562fad47f95",
+    >            "729270f01c41568ceae5b18c624d86b64eb0cbc13d257766dda2b55c25f7a8b1",
+             ),
+         },
+    <    1,
+    >    0,
+     )
+
+
+    note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+
+  TRY 2 FAIL [   0.010s] (1/1) codex-hepta-intelligence-eval product_runner::tests::product_runner_rejects_changed_plans_before_consuming_or_releasing_holdout
+  stdout ───
+
+    running 1 test
+    test product_runner::tests::product_runner_rejects_changed_plans_before_consuming_or_releasing_holdout ... FAILED
+
+    failures:
+
+    failures:
+        product_runner::tests::product_runner_rejects_changed_plans_before_consuming_or_releasing_holdout
+
+    test result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 117 filtered out; finished in 0.01s
+
+  stderr ───
+
+    thread 'product_runner::tests::product_runner_rejects_changed_plans_before_consuming_or_releasing_holdout' (3435822) panicked at hepta-intelligence-eval/src/product_runner_tests.rs:651:13:
+    assertion failed: `(left == right)`
+
+    Diff < left / right > :
+     (
+         FinalHoldoutCasAnchorV1 {
+             fence_generation: 1,
+    <        record_count: 1,
+    >        record_count: 0,
+             state_digest: Digest32(
+    <            "78299b511e8e27440f44deadf335ea5688d0cc43e541e24b2b7c5562fad47f95",
+    >            "729270f01c41568ceae5b18c624d86b64eb0cbc13d257766dda2b55c25f7a8b1",
+             ),
+         },
+    <    1,
+    >    0,
+     )
+
+
+    note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+
+────────────
+     Summary [   0.022s] 1 test run: 0 passed, 1 failed, 117 skipped
+  TRY 2 FAIL [   0.010s] (1/1) codex-hepta-intelligence-eval product_runner::tests::product_runner_rejects_changed_plans_before_consuming_or_releasing_holdout
+error: test run failed
+error: recipe `test` failed on line 89 with exit code 100

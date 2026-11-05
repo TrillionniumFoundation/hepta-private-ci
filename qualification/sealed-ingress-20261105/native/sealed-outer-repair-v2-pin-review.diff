@@ -1,0 +1,30 @@
+--- outer-v2-before-scope
++++ outer-v2-target-scoped
+@@ -20,7 +20,7 @@
+ EMPTY_SHA = hashlib.sha256(b'').hexdigest()
+ PHASES = ['red-q-plasticity', 'red-q-selector', 'green', 'fix']
+ ATTEMPTS = {'red-q-plasticity': 2}
+-REPAIR_SCRIPT_SHA = '6aac58b0ea2ccbd0f9b9fffc9100aedb19283dc67e420b682680cd41ef24f3ec'
++REPAIR_SCRIPT_SHA = '11437d6b582247f02a09b392dc7154f186025f0696d64fd9af7ee1bc300a4dd7'
+ WITNESSES = {
+     'red-q-agentd': {
+         'name': 'current_use_attestation_binds_the_exact_sealed_publication',
+@@ -128,7 +128,7 @@
+ 
+ 
+ def verify_cache_repair():
+-    folder = TASK / 'evidence/native-eval-cache-repair-v1'
++    folder = TASK / 'evidence/native-eval-cache-repair-v2'
+     path = folder / 'receipt.json'
+     r = read_json(path)
+     need(r['schema'] == 'hepta.task-eval-cache-repair.v1' and r['state'] == 'cache-repair-complete'
+@@ -137,7 +137,8 @@
+          and r['target'] == str(TASK / 'target') and r['exact_task_target'] is True,
+          'Cache repair source/target identity differs')
+     need(r['old_unit_paths_absent'] is True and r['original_evidence_preserved'] is True
+-         and r['active_cargo_or_compiler_processes'] == [], 'Cache repair did not safely invalidate old unit')
++         and r['process_guard_scope'] == 'exact-task-target'
++         and r['target_conflicting_or_unknown_processes'] == [], 'Cache repair did not safely invalidate old unit')
+     clean, _ = step(r, 'clean-eval-package', folder)
+     need(clean['exit_code'] == 0 and clean['argv'] == ['cargo', 'clean', '-p', 'codex-hepta-intelligence-eval'],
+          'Cache repair scope changed')

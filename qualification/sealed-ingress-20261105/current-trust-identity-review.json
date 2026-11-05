@@ -1,0 +1,38 @@
+{
+  "schema": "hepta.sealed-ingress-current-trust-regression-review.v1",
+  "result": "ACCEPTED_AT_SOURCE_REVIEW_LEVEL",
+  "base_head": "9f010aae1ae7f7447adc0660748878f6cce9efd3",
+  "path": "codex-rs/hepta-intelligence-eval/src/product_runner_tests.rs",
+  "base_blob": "e7814241655d8125f5d0f9761fd61272cd5bf0ca",
+  "reviewed_preformat_blob": "1f11c06312619e974d6a5cd45a22140468dec933",
+  "patch_sha256": "d0d305632f7ba71ef88ad9b4f738617b58c5b3902dade922776c57676c731dcd",
+  "scope": "Tests only; existing default fixture delegates to the same implementation with its original generator controller ID. No public API or production change.",
+  "premise_validation": [
+    "The exact signed_evidence.rs source binds controller_id into the host trust digest (blob61d8f2b30d97b6134b17f604d67f5940391ba0e5).",
+    "The new generator controller remains distinct from evaluator-controller; original principals, signing keys, scope, epoch, roles, times and raw bundle are unchanged.",
+    "Fresh G/E attestations use the new verifier trust digest and actual Ed25519 signatures over the same payloads; old evidence is not mutated.",
+    "The test first requires raw V2 admission to succeed, complete inner decision equality, and changed trust/authentication identities.",
+    "The existing sealed receipt retains its original valid seal and original principals/context; no pre-equality rejection is expected.",
+    "The helper must return precisely Binding(qualification use evidence), followed by another successful old-verifier revalidation and unchanged publish/release counters."
+  ],
+  "mutation_review": {
+    "patch": "negative-complete-decision-binding.patch",
+    "apply_check": "PASS",
+    "reachability": "The new assertion is the first negative case in the existing product-runner binding test. The mutation removes only complete SignedDecision equality; identical context plus demonstrated raw-V2 success then returns Ok, so the new named assertion is expected to fail.",
+    "expected_failure_message": "reissued current trust must not rebind a published qualification",
+    "native_execution": "NOT_RUN"
+  },
+  "verification": {
+    "exact_base_and_changed_blobs": "PASS",
+    "independent_patch_application": "PASS",
+    "whitespace": "PASS",
+    "native_format": "NOT_RUN",
+    "compile": "NOT_RUN",
+    "positive_and_negative_native_tests": "NOT_RUN"
+  },
+  "coverage_limits": [
+    "Both trust_digest and authentication_digest change, so this is a complete current trust/authentication identity-substitution regression; it does not isolate trust_digest equality alone.",
+    "The fixture tests valid host-owned trust changes. It does not provide production trust-distribution, revocation, provider, physical effect or restart evidence.",
+    "Formatting or later edits produce a new blob and require exact final-byte review."
+  ]
+}

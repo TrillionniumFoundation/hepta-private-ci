@@ -1,0 +1,42 @@
+diff --git a/codex-rs/hepta-agentd/src/authority_host_admin_issuer_tests.rs b/codex-rs/hepta-agentd/src/authority_host_admin_issuer_tests.rs
+index 9f1f043..3f86520 100644
+--- a/codex-rs/hepta-agentd/src/authority_host_admin_issuer_tests.rs
++++ b/codex-rs/hepta-agentd/src/authority_host_admin_issuer_tests.rs
+@@ -70,7 +70,7 @@ fn actual_issuer_receipt_matches_exact_retained_canonical_postimage()
+         assert!(confirm_committed(&registry, &original, &changed, end).is_err());
+         assert_eq!(registry.frontier()?, frontier);
+     }
+-    let mut changed_original = original.clone();
++    let mut changed_original = original;
+     changed_original.binding.destination_id.push('x');
+     assert!(confirm_committed(&registry, &changed_original, &receipt, end).is_err());
+     assert_eq!(registry.frontier()?, frontier);
+@@ -95,7 +95,7 @@ fn late_client_confirmation_preserves_committed_revoke_and_refuses_renewal()
+         .read_revocation(&original.lease_id)?
+         .ok_or("revocation absent")?;
+     assert_eq!(retained.revocation.reason_sha256, [7; 32]);
+-    let mut renewed = original.clone();
++    let mut renewed = original;
+     renewed.revision = receipt
+         .lease_revision
+         .checked_add(1)
+diff --git a/codex-rs/hepta-agentd/src/root_desktop_startup_tests.rs b/codex-rs/hepta-agentd/src/root_desktop_startup_tests.rs
+index bf0aeee..071273b 100644
+--- a/codex-rs/hepta-agentd/src/root_desktop_startup_tests.rs
++++ b/codex-rs/hepta-agentd/src/root_desktop_startup_tests.rs
+@@ -149,12 +149,11 @@ fn joint_root_bounds_every_saved_selector_and_original_helper_path() {
+             }
+             _ => value["previous_recovery"]["grant"] = true.into(),
+         }
+-        match serde_json::from_value::<Profile>(value) {
+-            Ok(profile) => assert!(
++        if let Ok(profile) = serde_json::from_value::<Profile>(value) {
++            assert!(
+                 validate_profile(&profile, "fixture-root", true).is_err(),
+                 "accepted {change}"
+-            ),
+-            Err(_) => {}
++            )
+         }
+     }
+     let mut value = recovered_wire();

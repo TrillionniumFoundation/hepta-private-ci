@@ -1,0 +1,60 @@
+{
+  "schema": "hepta.native-cache-repair-independent-readback.v1",
+  "reviewed_at_utc": "2026-11-05T10:01:42.260613+00:00",
+  "decision": "ACCEPT_COMPLETED_TASK_PACKAGE_CACHE_REPAIR",
+  "receipt": {
+    "path": "native/ai395-eval-cache-repair-attempt2-receipt.json",
+    "sha256": "c73e73d3803a57c368e77eb275e33d2eb71d36bb4852c96736838f12a4fc1792",
+    "bytes": 14379,
+    "state": "cache-repair-complete",
+    "exit_code": 0
+  },
+  "source_head": "eed6541df0add428add8e2d9ab2cbd54a961abeb",
+  "source_tree": "b8ce8b96a759f522cb7db60027d4844f1b3ad974",
+  "script_sha256": "11437d6b582247f02a09b392dc7154f186025f0696d64fd9af7ee1bc300a4dd7",
+  "command": {
+    "argv": [
+      "cargo",
+      "clean",
+      "-p",
+      "codex-hepta-intelligence-eval"
+    ],
+    "exit_code": 0,
+    "elapsed_seconds": 1.2341668605804443,
+    "target": "/home/qq/work/hepta-convergence-20261105-0c901b/target",
+    "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "stderr_sha256": "bc101882259bf86a32b2695ef7d8bd2b3cca64074ea63822a2838f0c112219d9",
+    "output_scope": "Hashes and successful exit are from the immutable actual native receipt. The nonempty clean stderr bytes have been requested for companion archival; this review does not quote unseen output."
+  },
+  "verified": {
+    "toolchain": "rustc 1.96.0",
+    "exact_target_matches_native_environment": true,
+    "before_after_E_head_tree_stdout_hashes_recomputed": true,
+    "before_after_clean_stdout_empty_hashes_recomputed": true,
+    "cargo_lock_sha256": "4165307bb6c41d08e6c1c362060f2a958c8200ea43fdab2b8b1e6220ad82b55c",
+    "all_native_steps_exit_zero": true,
+    "old_artifact_backup_count": 8,
+    "backup_path_sha_map_equals_readonly_diagnostic": true,
+    "remote_backup_files_hash_checked_by_pinned_repair_code": true,
+    "backup_binary_bytes_not_downloaded_by_independent_reviewer": true,
+    "old_paths_absent": true,
+    "original_four_evidence_hashes_preserved": {
+      "native-eval-cache-repair-v1/receipt.json": "a82a65e07f6007cacaafe4d9673df766be65d85f43f34ed933a4c1008d95fc2e",
+      "native-q3-cache-diagnostic-v1.json": "843939f2a6ae4e35f8a330cd58d1e24fa2d0634532686952422344e407ceb93d",
+      "native-sealed-red-q-plasticity-v1/receipt.json": "b98653f5a06015cb71042b642ed1df3efb08e0384c9cc350294f7e86dfd70a49",
+      "native-sealed-remaining-pipeline-v1/receipt.json": "ea4e3ea5a557c3b8951a11263f03e5e25061deb2159be025ae105ed75e0ea68c"
+    },
+    "other_processes": {
+      "observed": 8,
+      "all_explicitly_different_resolved_targets_independently_compared": true,
+      "unknown_or_conflicting": 0,
+      "stopped_or_modified_by_repair": false
+    }
+  },
+  "clean_finished_unix_ns": 1793872694057030560,
+  "limits": [
+    "No product test was executed by this cache repair.",
+    "Q3 attempt1 compile101 and repair attempt1 guard rejection remain historical failures with original byte identities.",
+    "Fresh Q3 compilation and the original line713 behavioral witness remain a separate pending gate at this review time."
+  ]
+}

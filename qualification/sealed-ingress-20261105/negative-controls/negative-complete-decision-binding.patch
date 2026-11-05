@@ -1,11 +1,13 @@
 --- a/codex-rs/hepta-intelligence-eval/src/product_qualification_use.rs
 +++ b/codex-rs/hepta-intelligence-eval/src/product_qualification_use.rs
-@@ -71,8 +71,5 @@
+@@ -71,10 +71,5 @@
      // The decision digest commits the complete bundle. Authentication commits
      // the exact signing bytes and signatures (including roles and V3 timing)
      // under the current verifier. Equal dispositions alone are insufficient.
 -    if decision != qualification.decision {
--        return Err(ProductEvaluationError::Binding("qualification use evidence"));
+-        return Err(ProductEvaluationError::Binding(
+-            "qualification use evidence",
+-        ));
 -    }
      Ok(decision)
  }

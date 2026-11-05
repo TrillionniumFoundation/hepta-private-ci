@@ -1,0 +1,11 @@
+--- a/codex-rs/hepta-intelligence/src/plasticity_product.rs
++++ b/codex-rs/hepta-intelligence/src/plasticity_product.rs
+@@ -523,8 +523,6 @@
+         evaluation_binding.extend_from_slice(decision.decision.evidence_digest.as_array());
+         evaluation_binding.extend_from_slice(decision.authentication_digest.as_array());
+         evaluation_binding.extend_from_slice(decision.trust_digest.as_array());
+-        evaluation_binding.extend_from_slice(qualification.evidence_digest.as_array());
+-        evaluation_binding.extend_from_slice(qualification.publication_digest.as_array());
+         qualifications.push(qualification);
+     }
+     if let Some(unexpected) = evaluations.keys().next() {

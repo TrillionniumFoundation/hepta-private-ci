@@ -1,0 +1,431 @@
+{
+  "schema": "hepta.windows-runner-queue-observation.v1",
+  "observed_at_utc": "2026-11-05T08:41:42Z",
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "status": "original workflow exists for both current heads; no runner assigned and no steps executed",
+  "latest": [
+    {
+      "pull_request": 4848,
+      "head_sha": "facba0d32c1cd0e8163a6186d7ba91fa311f2e2e",
+      "run_id": 41996207772,
+      "job_id": 127139894570,
+      "run_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/41996207772",
+      "job": {
+        "id": 127139894570,
+        "run_id": 41996207772,
+        "workflow_name": "Hepta Windows private-state native (security qualification only)",
+        "head_branch": "fix/runtime-convergence-abc-20261105",
+        "run_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/actions/runs/41996207772",
+        "run_attempt": 1,
+        "node_id": "CR_kwDOTrgxoM8AAAAdmiDVKg",
+        "head_sha": "facba0d32c1cd0e8163a6186d7ba91fa311f2e2e",
+        "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/actions/jobs/127139894570",
+        "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/41996207772/job/127139894570",
+        "status": "queued",
+        "conclusion": null,
+        "created_at": "2026-11-05T08:39:51Z",
+        "started_at": "2026-11-05T08:39:51Z",
+        "completed_at": null,
+        "name": "ACL, anti-reparse, signed-owner durability and recovery on Windows",
+        "steps": [],
+        "check_run_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/check-runs/127139894570",
+        "labels": [
+          "windows-latest"
+        ],
+        "runner_id": 0,
+        "runner_name": "",
+        "runner_group_id": 0,
+        "runner_group_name": ""
+      }
+    },
+    {
+      "pull_request": 4856,
+      "head_sha": "e0b522cd437af1362f8be23f601886b46ec1b063",
+      "run_id": 41996253575,
+      "job_id": 127140046209,
+      "run_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/41996253575",
+      "job": {
+        "id": 127140046209,
+        "run_id": 41996253575,
+        "workflow_name": "Hepta Windows private-state native (security qualification only)",
+        "head_branch": "fix/sealed-qualification-ingress-20261105",
+        "run_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/actions/runs/41996253575",
+        "run_attempt": 1,
+        "node_id": "CR_kwDOTrgxoM8AAAAdmiMlgQ",
+        "head_sha": "e0b522cd437af1362f8be23f601886b46ec1b063",
+        "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/actions/jobs/127140046209",
+        "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/41996253575/job/127140046209",
+        "status": "queued",
+        "conclusion": null,
+        "created_at": "2026-11-05T08:40:13Z",
+        "started_at": "2026-11-05T08:40:13Z",
+        "completed_at": null,
+        "name": "ACL, anti-reparse, signed-owner durability and recovery on Windows",
+        "steps": [],
+        "check_run_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/check-runs/127140046209",
+        "labels": [
+          "windows-latest"
+        ],
+        "runner_id": 0,
+        "runner_name": "",
+        "runner_group_id": 0,
+        "runner_group_name": ""
+      }
+    }
+  ],
+  "workflow": {
+    "path": ".github/workflows/hepta-windows-private-state-native.yml",
+    "exact_blob": "bfafb3f118f3681389a932b5f347be93cb2db144",
+    "independently_read_refs": [
+      "facba0d32c1cd0e8163a6186d7ba91fa311f2e2e",
+      "e0b522cd437af1362f8be23f601886b46ec1b063"
+    ],
+    "identical_bytes": true,
+    "runs_on": "windows-latest",
+    "timeout_minutes": 65,
+    "concurrency_group_expression": "hepta-windows-private-state-${{ github.event.pull_request.number || github.ref }}",
+    "cancel_in_progress": true,
+    "expected_current_pr_groups": [
+      "hepta-windows-private-state-4848",
+      "hepta-windows-private-state-4856"
+    ],
+    "environment_gate_present": false,
+    "source_change_performed": false
+  },
+  "observations": [
+    "Both current jobs report queued, labels [windows-latest], runner_id 0, empty runner_name and runner_group_name, and an empty steps array.",
+    "The API supplies started_at equal to created_at for these queued jobs. This timestamp alone is not evidence of runner execution; runner assignment and step execution are absent.",
+    "The two pull requests use different workflow concurrency groups. This workflow does not impose a shared cross-PR concurrency group.",
+    "Superseded ebdf and 06ad jobs were cancelled with runner_id 0 and no steps when their successor heads triggered; those runs supply no test result.",
+    "The same original workflow previously assigned a GitHub Actions runner for a20 and executed until the separately recorded PTY compile failure.",
+    "An independent windows-2022 ConPTY job is executing on a GitHub Actions runner. Its different label/workflow does not establish availability or quotas for windows-latest."
+  ],
+  "queue_cause": {
+    "observed_proximate_state": "The jobs have been created but have not been assigned a runner.",
+    "unproven_explanations": [
+      "Windows runner capacity or provisioning delay",
+      "Account or organization job concurrency quota",
+      "Billing or entitlement limits",
+      "Service-level scheduling conditions"
+    ],
+    "limitation": "The returned workflow/job records do not expose a scheduler reason or account/organization quota. No root cause among these explanations is established.",
+    "actions": "Read-only inspection only. No workflow edits, reruns, cancellation, runner start/stop or changes to other experiments."
+  },
+  "historical_comparison": [
+    {
+      "kind": "same original workflow, prior failed a20 run",
+      "run_id": 41982971524,
+      "total_count": 1,
+      "jobs": [
+        {
+          "id": 127097094121,
+          "run_id": 41982971524,
+          "workflow_name": "Hepta Windows private-state native (security qualification only)",
+          "head_branch": "fix/runtime-convergence-abc-20261105",
+          "run_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/actions/runs/41982971524",
+          "run_attempt": 1,
+          "node_id": "CR_kwDOTrgxoM8AAAAdl5O_6Q",
+          "head_sha": "a20a8191ec37375876a99b7c18bae053f9bc185d",
+          "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/actions/jobs/127097094121",
+          "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/41982971524/job/127097094121",
+          "status": "completed",
+          "conclusion": "failure",
+          "created_at": "2026-11-05T06:49:12Z",
+          "started_at": "2026-11-05T07:17:52Z",
+          "completed_at": "2026-11-05T07:27:56Z",
+          "name": "ACL, anti-reparse, signed-owner durability and recovery on Windows",
+          "steps": [
+            {
+              "name": "Set up job",
+              "status": "completed",
+              "conclusion": "success",
+              "number": 1,
+              "started_at": "2026-11-05T07:17:53Z",
+              "completed_at": "2026-11-05T07:17:54Z"
+            },
+            {
+              "name": "Checkout immutable PR head without saved credentials",
+              "status": "completed",
+              "conclusion": "success",
+              "number": 2,
+              "started_at": "2026-11-05T07:17:54Z",
+              "completed_at": "2026-11-05T07:18:11Z"
+            },
+            {
+              "name": "Install repository test runners",
+              "status": "completed",
+              "conclusion": "success",
+              "number": 3,
+              "started_at": "2026-11-05T07:18:11Z",
+              "completed_at": "2026-11-05T07:18:21Z"
+            },
+            {
+              "name": "Verify exact source identity and pinned native compiler",
+              "status": "completed",
+              "conclusion": "success",
+              "number": 4,
+              "started_at": "2026-11-05T07:18:21Z",
+              "completed_at": "2026-11-05T07:18:37Z"
+            },
+            {
+              "name": "Exercise private file handles, ACL, reparse and hardlink invariants",
+              "status": "completed",
+              "conclusion": "success",
+              "number": 5,
+              "started_at": "2026-11-05T07:18:37Z",
+              "completed_at": "2026-11-05T07:19:25Z"
+            },
+            {
+              "name": "Exercise actual Prompt Registry Windows durable owner",
+              "status": "completed",
+              "conclusion": "success",
+              "number": 6,
+              "started_at": "2026-11-05T07:19:25Z",
+              "completed_at": "2026-11-05T07:19:44Z"
+            },
+            {
+              "name": "Exercise signed final-use and authority-lease durable stores",
+              "status": "completed",
+              "conclusion": "success",
+              "number": 7,
+              "started_at": "2026-11-05T07:19:44Z",
+              "completed_at": "2026-11-05T07:20:14Z"
+            },
+            {
+              "name": "Validate Agentd Prompt Runtime integration and reopened state",
+              "status": "completed",
+              "conclusion": "failure",
+              "number": 8,
+              "started_at": "2026-11-05T07:20:14Z",
+              "completed_at": "2026-11-05T07:27:51Z"
+            },
+            {
+              "name": "Enforce source-level Rust formatting for durable owners",
+              "status": "completed",
+              "conclusion": "skipped",
+              "number": 9,
+              "started_at": "2026-11-05T07:27:51Z",
+              "completed_at": "2026-11-05T07:27:51Z"
+            },
+            {
+              "name": "Prove directory acquisition rejects both original native attacks",
+              "status": "completed",
+              "conclusion": "skipped",
+              "number": 10,
+              "started_at": "2026-11-05T07:27:51Z",
+              "completed_at": "2026-11-05T07:27:51Z"
+            },
+            {
+              "name": "Confirm no generated or modified tracked source",
+              "status": "completed",
+              "conclusion": "success",
+              "number": 11,
+              "started_at": "2026-11-05T07:27:51Z",
+              "completed_at": "2026-11-05T07:27:52Z"
+            },
+            {
+              "name": "Preserve exact source and all acquisition qualification logs",
+              "status": "completed",
+              "conclusion": "success",
+              "number": 12,
+              "started_at": "2026-11-05T07:27:52Z",
+              "completed_at": "2026-11-05T07:27:53Z"
+            },
+            {
+              "name": "Post Checkout immutable PR head without saved credentials",
+              "status": "completed",
+              "conclusion": "success",
+              "number": 24,
+              "started_at": "2026-11-05T07:27:53Z",
+              "completed_at": "2026-11-05T07:27:55Z"
+            },
+            {
+              "name": "Complete job",
+              "status": "completed",
+              "conclusion": "success",
+              "number": 25,
+              "started_at": "2026-11-05T07:27:55Z",
+              "completed_at": "2026-11-05T07:27:55Z"
+            }
+          ],
+          "check_run_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/check-runs/127097094121",
+          "labels": [
+            "windows-latest"
+          ],
+          "runner_id": 1000000026,
+          "runner_name": "GitHub Actions 1000000026",
+          "runner_group_id": 0,
+          "runner_group_name": "GitHub Actions"
+        }
+      ]
+    },
+    {
+      "kind": "superseded first-wave run; no execution",
+      "run_id": 41990728343,
+      "total_count": 1,
+      "jobs": [
+        {
+          "id": 127122066497,
+          "run_id": 41990728343,
+          "workflow_name": "Hepta Windows private-state native (security qualification only)",
+          "head_branch": "fix/runtime-convergence-abc-20261105",
+          "run_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/actions/runs/41990728343",
+          "run_attempt": 1,
+          "node_id": "CR_kwDOTrgxoM8AAAAdmRDMQQ",
+          "head_sha": "ebdf792c076c1d516ae9f96eec079921ccd1588f",
+          "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/actions/jobs/127122066497",
+          "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/41990728343/job/127122066497",
+          "status": "completed",
+          "conclusion": "cancelled",
+          "created_at": "2026-11-05T07:56:17Z",
+          "started_at": "2026-11-05T07:56:17Z",
+          "completed_at": "2026-11-05T08:39:50Z",
+          "name": "ACL, anti-reparse, signed-owner durability and recovery on Windows",
+          "steps": [],
+          "check_run_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/check-runs/127122066497",
+          "labels": [
+            "windows-latest"
+          ],
+          "runner_id": 0,
+          "runner_name": "",
+          "runner_group_id": 0,
+          "runner_group_name": ""
+        }
+      ]
+    },
+    {
+      "kind": "superseded second-wave run; no execution",
+      "run_id": 41994185883,
+      "total_count": 1,
+      "jobs": [
+        {
+          "id": 127133274919,
+          "run_id": 41994185883,
+          "workflow_name": "Hepta Windows private-state native (security qualification only)",
+          "head_branch": "fix/sealed-qualification-ingress-20261105",
+          "run_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/actions/runs/41994185883",
+          "run_attempt": 1,
+          "node_id": "CR_kwDOTrgxoM8AAAAdmbvTJw",
+          "head_sha": "06ad4a9b48aa28ef6edfc537243f069e2d48eb40",
+          "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/actions/jobs/127133274919",
+          "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/41994185883/job/127133274919",
+          "status": "completed",
+          "conclusion": "cancelled",
+          "created_at": "2026-11-05T08:24:16Z",
+          "started_at": "2026-11-05T08:24:16Z",
+          "completed_at": "2026-11-05T08:40:12Z",
+          "name": "ACL, anti-reparse, signed-owner durability and recovery on Windows",
+          "steps": [],
+          "check_run_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/check-runs/127133274919",
+          "labels": [
+            "windows-latest"
+          ],
+          "runner_id": 0,
+          "runner_name": "",
+          "runner_group_id": 0,
+          "runner_group_name": ""
+        }
+      ]
+    },
+    {
+      "kind": "independent ConPTY workflow; not the original acquisition-attack gate",
+      "run_id": 41988311741,
+      "total_count": 1,
+      "jobs": [
+        {
+          "id": 127114229343,
+          "run_id": 41988311741,
+          "workflow_name": "HIA R3 Windows ConPTY native regression (DENY_ALL)",
+          "head_branch": "dot/hia-r3-winchild-clone-error-20261105",
+          "run_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/actions/runs/41988311741",
+          "run_attempt": 1,
+          "node_id": "CR_kwDOTrgxoM8AAAAdmJk2Xw",
+          "head_sha": "0856b142808f102c75e1182cd4dfb5e798938d84",
+          "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/actions/jobs/127114229343",
+          "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/41988311741/job/127114229343",
+          "status": "in_progress",
+          "conclusion": null,
+          "created_at": "2026-11-05T07:35:31Z",
+          "started_at": "2026-11-05T08:34:14Z",
+          "completed_at": null,
+          "name": "windows-conpty-native",
+          "steps": [
+            {
+              "name": "Set up job",
+              "status": "completed",
+              "conclusion": "success",
+              "number": 1,
+              "started_at": "2026-11-05T08:34:15Z",
+              "completed_at": "2026-11-05T08:34:15Z"
+            },
+            {
+              "name": "Run actions/checkout@v4",
+              "status": "completed",
+              "conclusion": "success",
+              "number": 2,
+              "started_at": "2026-11-05T08:34:15Z",
+              "completed_at": "2026-11-05T08:34:28Z"
+            },
+            {
+              "name": "Record exact source and host",
+              "status": "completed",
+              "conclusion": "success",
+              "number": 3,
+              "started_at": "2026-11-05T08:34:28Z",
+              "completed_at": "2026-11-05T08:34:33Z"
+            },
+            {
+              "name": "Select pinned Rust 1.96.0",
+              "status": "completed",
+              "conclusion": "success",
+              "number": 4,
+              "started_at": "2026-11-05T08:34:33Z",
+              "completed_at": "2026-11-05T08:34:43Z"
+            },
+            {
+              "name": "Build real R3 Agentd Windows test binary (original E0277 route)",
+              "status": "in_progress",
+              "conclusion": null,
+              "number": 5,
+              "started_at": "2026-11-05T08:34:43Z",
+              "completed_at": null
+            },
+            {
+              "name": "Run native Windows PTY observation regressions",
+              "status": "pending",
+              "conclusion": null,
+              "number": 6,
+              "started_at": null,
+              "completed_at": null
+            },
+            {
+              "name": "Require no source mutation",
+              "status": "pending",
+              "conclusion": null,
+              "number": 7,
+              "started_at": null,
+              "completed_at": null
+            },
+            {
+              "name": "Post Run actions/checkout@v4",
+              "status": "pending",
+              "conclusion": null,
+              "number": 14,
+              "started_at": null,
+              "completed_at": null
+            }
+          ],
+          "check_run_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/check-runs/127114229343",
+          "labels": [
+            "windows-2022"
+          ],
+          "runner_id": 1000000141,
+          "runner_name": "GitHub Actions 1000000141",
+          "runner_group_id": 0,
+          "runner_group_name": "GitHub Actions"
+        }
+      ]
+    }
+  ],
+  "acceptance": "Queued or cancelled runs are not passes. Original Windows acquisition-attack qualification remains unclosed; Linux package tests and the independent ConPTY workflow cannot substitute for it."
+}

@@ -1,0 +1,109 @@
+--- run_sealed_remaining_pipeline.py
++++ run_sealed_remaining_pipeline_v2.py
+@@ -19,6 +19,8 @@
+ Q2_RECEIPT_SHA = '6b3d09bac8a4e5cac69fd423a14fc2a19b7e0ba65139acd82c09c2ddf496c5e4'
+ EMPTY_SHA = hashlib.sha256(b'').hexdigest()
+ PHASES = ['red-q-plasticity', 'red-q-selector', 'green', 'fix']
++ATTEMPTS = {'red-q-plasticity': 2}
++REPAIR_SCRIPT_SHA = '6aac58b0ea2ccbd0f9b9fffc9100aedb19283dc67e420b682680cd41ef24f3ec'
+ WITNESSES = {
+     'red-q-agentd': {
+         'name': 'current_use_attestation_binds_the_exact_sealed_publication',
+@@ -72,10 +74,10 @@
+ 
+ 
+ def read_phase(phase, positive, expected_sha=None):
+-    folder = TASK / 'evidence' / ('native-sealed-' + phase + '-v1')
++    folder = TASK / 'evidence' / ('native-sealed-' + phase + '-v' + str(ATTEMPTS.get(phase, 1)))
+     receipt = read_json(folder / 'receipt.json', expected_sha)
+     need(receipt['schema'] == 'hepta.sealed-ingress-native-phase.v2', 'Wrong phase schema')
+-    need(receipt['phase'] == phase and receipt['attempt'] == 1, 'Wrong phase/attempt')
++    need(receipt['phase'] == phase and receipt['attempt'] == ATTEMPTS.get(phase, 1), 'Wrong phase/attempt')
+     need(receipt['execution_head'] == HEAD and receipt['execution_tree'] == TREE, 'Wrong source identity')
+     need(receipt['plan_sha256'] == PLAN_SHA and receipt['positive_manifest_sha256'] == MANIFEST_SHA,
+          'Wrong plan/manifest identity')
+@@ -125,8 +127,53 @@
+             'stderr_sha256': item['stderr_sha256'], 'restored_positive_count': len(positive)}
+ 
+ 
++def verify_cache_repair():
++    folder = TASK / 'evidence/native-eval-cache-repair-v1'
++    path = folder / 'receipt.json'
++    r = read_json(path)
++    need(r['schema'] == 'hepta.task-eval-cache-repair.v1' and r['state'] == 'cache-repair-complete'
++         and r['exit_code'] == 0 and r['script_sha256'] == REPAIR_SCRIPT_SHA, 'Cache repair is not complete')
++    need(r['head'] == HEAD and r['tree'] == TREE and r['source_clean'] is True
++         and r['target'] == str(TASK / 'target') and r['exact_task_target'] is True,
++         'Cache repair source/target identity differs')
++    need(r['old_unit_paths_absent'] is True and r['original_evidence_preserved'] is True
++         and r['active_cargo_or_compiler_processes'] == [], 'Cache repair did not safely invalidate old unit')
++    clean, _ = step(r, 'clean-eval-package', folder)
++    need(clean['exit_code'] == 0 and clean['argv'] == ['cargo', 'clean', '-p', 'codex-hepta-intelligence-eval'],
++         'Cache repair scope changed')
++    need(r['backup'] and any(x['original'].endswith('.rmeta') for x in r['backup'])
++         and any(x['original'].endswith('.rlib') for x in r['backup']), 'Old unit archive missing')
++    for item in r['backup']:
++        need(sha(pathlib.Path(item['backup']).read_bytes()) == item['sha256'], 'Old unit archive hash differs')
++    for rel, expected in r['original_evidence'].items():
++        need(sha((TASK / 'evidence' / rel).read_bytes()) == expected, 'Historical failure evidence differs')
++    return {'path': str(path), 'sha256': sha(path.read_bytes()),
++            'clean_finished_unix_ns': r['clean_finished_unix_ns'], 'old_unit_backup_count': len(r['backup'])}
++
++
++def verify_fresh_eval(receipt, folder, repair):
++    _, streams = step(receipt, 'just-test', folder)
++    raw = (streams['stdout'] + b'\n' + streams['stderr']).decode()
++    marker = 'Compiling codex-hepta-intelligence-eval v0.0.0 (' + str(SOURCE / 'codex-rs/hepta-intelligence-eval') + ')'
++    need(marker in raw, 'Q3 retry did not freshly compile eval from source-next')
++    need('unused import: `crate::IndependentEvaluationDispositionV1`' not in raw,
++         'Obsolete eval warning was replayed after cache repair')
++    items = []
++    for path in sorted((TASK / 'target/debug/deps').glob('codex_hepta_intelligence_eval-*.d')):
++        data = path.read_bytes()
++        stat = path.stat()
++        need(stat.st_mtime_ns >= repair['clean_finished_unix_ns'], 'Old eval dep-info survived package clean')
++        need(b'hepta-intelligence-eval/src/product_qualification_use.rs' in data,
++             'Fresh eval dependency information lacks the helper module')
++        items.append({'path': str(path), 'size': len(data), 'sha256': sha(data), 'mtime_ns': stat.st_mtime_ns,
++                      'contains_qualification_use': True})
++    need(items, 'Fresh eval dep-info is absent')
++    return {'compile_marker': marker, 'obsolete_warning_absent': True, 'fresh_depinfo': items,
++            'cache_repair_receipt_sha256': repair['sha256']}
++
++
+ def main():
+-    evidence = TASK / 'evidence/native-sealed-remaining-pipeline-v1'
++    evidence = TASK / 'evidence/native-sealed-remaining-pipeline-v2'
+     evidence.mkdir(exist_ok=False)
+     receipt = {'schema': 'hepta.sealed-ingress-native-sequence.v1', 'head': HEAD, 'tree': TREE,
+                'state': 'preflight', 'phases': [], 'runner_sha256': RUNNER_SHA,
+@@ -146,16 +193,18 @@
+         controls = {x['phase']: x for x in plan['controls']}
+         q2, q2folder = read_phase('red-q-agentd', positive, Q2_RECEIPT_SHA)
+         receipt['q2_predecessor_review'] = verify_red('red-q-agentd', q2, q2folder, positive, controls)
++        repair = verify_cache_repair()
++        receipt['cache_repair_prerequisite'] = repair
+         save()
+         common = ['--head', HEAD, '--tree', TREE, '--bundle', str(BUNDLE), '--plan-sha256', PLAN_SHA,
+                   '--positive-manifest-sha256', MANIFEST_SHA,
+                   '--first-wave-head', 'facba0d32c1cd0e8163a6186d7ba91fa311f2e2e',
+                   '--first-wave-desktop-receipt', str(TASK / 'evidence/native-desktop-regression-v1/receipt.json'),
+                   '--first-wave-green-receipt', str(TASK / 'evidence/native-green-v2/receipt.json'),
+-                  '--first-wave-fix-receipt', str(TASK / 'evidence/native-fix-v1/receipt.json'), '--attempt', '1']
++                  '--first-wave-fix-receipt', str(TASK / 'evidence/native-fix-v1/receipt.json')]
+         for phase in PHASES:
+             need(sha((BUNDLE / 'run_native_round2.py').read_bytes()) == RUNNER_SHA, 'Frozen runner drift')
+-            argv = [sys.executable, str(BUNDLE / 'run_native_round2.py'), phase] + common
++            argv = [sys.executable, str(BUNDLE / 'run_native_round2.py'), phase] + common + ['--attempt', str(ATTEMPTS.get(phase, 1))]
+             receipt['state'] = 'running-' + phase
+             save()
+             print(json.dumps({'pipeline_stage': 'start', 'phase': phase, 'argv': argv}), flush=True)
+@@ -170,6 +219,8 @@
+             row['receipt_sha256'] = sha((folder / 'receipt.json').read_bytes())
+             if phase in WITNESSES:
+                 row['first_assertion_review'] = verify_red(phase, actual, folder, positive, controls)
++                if phase == 'red-q-plasticity':
++                    row['fresh_eval_compilation'] = verify_fresh_eval(actual, folder, repair)
+             elif phase == 'green':
+                 item, _ = step(actual, 'just-green', folder)
+                 need(actual['state'] == 'green-complete' and actual['command_exit_code'] == 0

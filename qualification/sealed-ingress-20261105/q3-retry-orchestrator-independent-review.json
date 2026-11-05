@@ -1,0 +1,70 @@
+{
+  "schema": "hepta.native-orchestrator-delta-independent-review.v1",
+  "reviewed_at_utc": "2026-11-05T09:53:40.087418+00:00",
+  "decision": "ACCEPT_FOR_ALREADY_AUTHORIZED_CACHE_REPAIR_AND_ORIGINAL_ORDERED_PHASES",
+  "authorization": "Root explicitly authorized task-owned package cache repair, exact Q3 attempt2, then the unchanged Q4/green/fix sequence with fail-stop gates. This review does not create new product or deployment authority.",
+  "source_head": "eed6541df0add428add8e2d9ab2cbd54a961abeb",
+  "source_tree": "b8ce8b96a759f522cb7db60027d4844f1b3ad974",
+  "old_outer_sha256": "19079b9ff332cc40b6e5e2eafa7c008aa91027d51eb0f0271fb7f81bd44cded2",
+  "original_failed_q3_receipt_sha256": "b98653f5a06015cb71042b642ed1df3efb08e0384c9cc350294f7e86dfd70a49",
+  "frozen_native_runner_sha256": "46552f047784d07b825cec59e0358cfbb02a010f448b7538bb0fadc15ea2f7df",
+  "frozen_plan_sha256": "00b4d289a635ae36865dc70732a1a10a03a8fb81575be5b5eba0b21fce7027fe",
+  "delta": {
+    "attempt_map": {
+      "red-q-plasticity": 2,
+      "all_other_phases": 1
+    },
+    "new_sequence_evidence_directory": "native-sealed-remaining-pipeline-v2",
+    "old_evidence_preserved": true,
+    "repair_prerequisite": [
+      "Exact repair schema/state/exit/script hash and E source head/tree.",
+      "Exact task target with no active native compiler process and verified old artifact archive.",
+      "Exact cargo clean -p codex-hepta-intelligence-eval command exit zero with stdout/stderr hashes.",
+      "Original diagnostic and failed Q3/outer evidence hashes preserved."
+    ],
+    "fresh_q3_prerequisite": [
+      "The raw original test command must report Compiling eval from source-next.",
+      "The old unused enum import warning must be absent.",
+      "Every remaining eval dep-info file must have a post-clean timestamp and include product_qualification_use.rs; at least one file is required."
+    ],
+    "order": [
+      "Q3 attempt2 original digest assertion at line 713 and exact restore",
+      "fresh eval provenance checks",
+      "Q4 original Evidence assertion at line 474 and exact restore",
+      "original complete three-package green",
+      "original scoped fix last, no tests rerun after fix"
+    ]
+  },
+  "independent_checks": {
+    "both_scripts_ast_parse": "PASS",
+    "verify_red_ast_identical_to_v1": "PASS",
+    "all_original_witnesses_and_source_hash_pins_ast_identical": "PASS",
+    "green_fix_exception_stop_tail_byte_identical": "PASS",
+    "frozen_inner_runner_and_plan_unmodified": "PASS",
+    "prior_phase_lookup": "The frozen runner searches successful same-source receipts and chooses the greatest successful attempt. The failed Q3 v1 receipt does not qualify; Q4 can consume successful Q3 v2 without rewriting history.",
+    "repair_scope": "The task-exclusive flock and exact resolved target guard surround the package-only cleanup. Old fcbed files are hash-checked before and after copying. Clean source and Cargo.lock are checked before/after. No first source or test content writes."
+  },
+  "limits": [
+    "This is source/delta review, not a statement that cache repair or Q3 retry has completed.",
+    "Actual phase stderr, first panic, summary, restore receipts, and fresh dependency provenance still need readback.",
+    "No production source, assertion, feature, profile, timeout, retry policy, or release gate was relaxed.",
+    "No Cargo command was executed by the independent reviewer."
+  ],
+  "artifacts": [
+    {
+      "path": "native/run_sealed_remaining_pipeline_v2.py",
+      "sha256": "22fa106fc0f9f8429ae63a0c3a2400abe1582a50a2d9fa8c1f21597d779fefbe",
+      "bytes": 14856
+    },
+    {
+      "path": "native/repair_eval_package_cache.py",
+      "sha256": "6aac58b0ea2ccbd0f9b9fffc9100aedb19283dc67e420b682680cd41ef24f3ec",
+      "bytes": 7457
+    },
+    {
+      "path": "native/sealed-remaining-pipeline-v2-review.diff",
+      "sha256": "d7e87baeaaea2b683043dab1cd406e3a44cde4d9dddec618d2f9634a8ba20753",
+      "bytes": 7069
+    }
+  ]
+}

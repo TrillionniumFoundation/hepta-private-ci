@@ -1,0 +1,83 @@
+codex-rs/hepta-agentd/src/intelligence_evaluation.rs:21:use codex_hepta_intelligence_eval::revalidate_product_qualification_v1;
+codex-rs/hepta-agentd/src/intelligence_evaluation.rs:31:pub struct AgentdSignedEvaluationV1 {
+codex-rs/hepta-agentd/src/intelligence_evaluation.rs:51:pub fn intelligence_evaluation_binding_payload_v2(
+codex-rs/hepta-agentd/src/intelligence_evaluation.rs:91:    pub signed: AgentdSignedEvaluationV1,
+codex-rs/hepta-agentd/src/intelligence_evaluation.rs:118:        let payload = intelligence_evaluation_binding_payload_v2(
+codex-rs/hepta-agentd/src/intelligence_evaluation.rs:138:        let result = revalidate_product_qualification_v1(
+codex-rs/hepta-agentd/src/intelligence_evaluation_tests.rs:136:) -> (ActivatedLearningTrustV1, AgentdSignedEvaluationV1) {
+codex-rs/hepta-agentd/src/intelligence_evaluation_tests.rs:144:) -> (ActivatedLearningTrustV1, AgentdSignedEvaluationV1) {
+codex-rs/hepta-agentd/src/intelligence_evaluation_tests.rs:265:        intelligence_evaluation_binding_payload_v2(binding, &evidence, &qualification).unwrap();
+codex-rs/hepta-agentd/src/intelligence_evaluation_tests.rs:276:        AgentdSignedEvaluationV1 {
+codex-rs/hepta-agentd/src/intelligence_evaluation_tests.rs:414:    let use_payload = intelligence_evaluation_binding_payload_v2(
+codex-rs/hepta-agentd/src/intelligence_product.rs:34:pub use evaluation::AgentdSignedEvaluationV1;
+codex-rs/hepta-agentd/src/intelligence_product.rs:35:pub use evaluation::intelligence_evaluation_binding_payload_v2;
+codex-rs/hepta-agentd/src/intelligence_product.rs:230:    pub signed_evaluation: Option<AgentdSignedEvaluationV1>,
+codex-rs/hepta-agentd/src/lib.rs:570:pub use intelligence_product::AgentdSignedEvaluationV1;
+codex-rs/hepta-agentd/src/lib.rs:576:pub use intelligence_product::intelligence_evaluation_binding_payload_v2;
+codex-rs/hepta-agentd/src/plasticity_host.rs:17:use codex_hepta_intelligence::ParameterPlasticityProductReceiptV1;
+codex-rs/hepta-agentd/src/plasticity_host.rs:714:) -> Result<ParameterPlasticityProductReceiptV1, AgentdPlasticityHostErrorV1> {
+codex-rs/hepta-agentd/src/plasticity_learning_producer.rs:10:use codex_hepta_intelligence::ParameterPlasticityProductReceiptV1;
+codex-rs/hepta-agentd/src/plasticity_learning_producer.rs:36:    ) -> Result<ParameterPlasticityProductReceiptV1, PlasticityRuntimeCallErrorV1> {
+codex-rs/hepta-agentd/src/plasticity_runtime.rs:14:use codex_hepta_intelligence::ParameterPlasticityProductReceiptV1;
+codex-rs/hepta-agentd/src/plasticity_runtime.rs:59:            Result<ParameterPlasticityProductReceiptV1, PlasticityRuntimeCallErrorV1>,
+codex-rs/hepta-agentd/src/plasticity_runtime.rs:83:    ) -> Result<ParameterPlasticityProductReceiptV1, PlasticityRuntimeCallErrorV1> {
+codex-rs/hepta-agentd/src/state.rs:208:        codex_hepta_intelligence::ParameterPlasticityProductReceiptV1,
+codex-rs/hepta-intelligence-eval/src/closure_tests.rs:692:    use crate::decide_with_signed_evidence_v2;
+codex-rs/hepta-intelligence-eval/src/closure_tests.rs:785:        decide_with_signed_evidence_v2(value.clone(), roles.clone(), &evidence, &verifier, 50),
+codex-rs/hepta-intelligence-eval/src/closure_tests.rs:791:        decide_with_signed_evidence_v2(edited, roles, &evidence, &verifier, 50),
+codex-rs/hepta-intelligence-eval/src/closure_tests.rs:803:        decide_with_signed_evidence_v2(value.clone(), edited_roles, &evidence, &verifier, 50),
+codex-rs/hepta-intelligence-eval/src/lib.rs:138:pub use product_qualification_use::revalidate_product_qualification_v1;
+codex-rs/hepta-intelligence-eval/src/lib.rs:157:pub use self_evolution_selection::SelfEvolutionSelectionReceiptV1;
+codex-rs/hepta-intelligence-eval/src/lib.rs:163:pub use self_evolution_selection::prepare_self_evolution_selection_v1;
+codex-rs/hepta-intelligence-eval/src/lib.rs:165:pub use self_evolution_selection::selection_signing_payload_v2;
+codex-rs/hepta-intelligence-eval/src/lib.rs:185:pub(crate) use signed_evaluation::decide_with_signed_evidence_v2;
+codex-rs/hepta-intelligence-eval/src/product_qualification_use.rs:16:use crate::decide_with_signed_evidence_v2;
+codex-rs/hepta-intelligence-eval/src/product_qualification_use.rs:24:pub fn revalidate_product_qualification_v1(
+codex-rs/hepta-intelligence-eval/src/product_qualification_use.rs:51:            decide_with_signed_evidence_v2(bundle, roles, evidence, verifier, now)?
+codex-rs/hepta-intelligence-eval/src/product_runner.rs:46:use crate::decide_with_signed_evidence_v2;
+codex-rs/hepta-intelligence-eval/src/product_runner.rs:507:                decide_with_signed_evidence_v2(bundle, roles, evidence, verifier, now)?
+codex-rs/hepta-intelligence-eval/src/product_runner_tests.rs:24:use crate::revalidate_product_qualification_v1;
+codex-rs/hepta-intelligence-eval/src/product_runner_tests.rs:534:        revalidate_product_qualification_v1(
+codex-rs/hepta-intelligence-eval/src/product_runner_tests.rs:564:    let current_decision = crate::decide_with_signed_evidence_v2(
+codex-rs/hepta-intelligence-eval/src/product_runner_tests.rs:583:            revalidate_product_qualification_v1(
+codex-rs/hepta-intelligence-eval/src/product_runner_tests.rs:618:    let independently_signed = crate::decide_with_signed_evidence_v2(
+codex-rs/hepta-intelligence-eval/src/product_runner_tests.rs:650:    let reissued_decision = crate::decide_with_signed_evidence_v2(
+codex-rs/hepta-intelligence-eval/src/self_evolution_ingress_tests.rs:292:        prepare_self_evolution_selection_v1(
+codex-rs/hepta-intelligence-eval/src/self_evolution_ingress_tests.rs:354:        &selection_signing_payload_v2(prepared.receipt()).unwrap(),
+codex-rs/hepta-intelligence-eval/src/self_evolution_ingress_tests.rs:466:    let first_payload = selection_signing_payload_v2(first_prepared.receipt()).unwrap();
+codex-rs/hepta-intelligence-eval/src/self_evolution_ingress_tests.rs:467:    let second_payload = selection_signing_payload_v2(second_prepared.receipt()).unwrap();
+codex-rs/hepta-intelligence-eval/src/self_evolution_selection.rs:40:use crate::revalidate_product_qualification_v1;
+codex-rs/hepta-intelligence-eval/src/self_evolution_selection.rs:64:pub struct SelfEvolutionSelectionReceiptV1 {
+codex-rs/hepta-intelligence-eval/src/self_evolution_selection.rs:94:    receipt: SelfEvolutionSelectionReceiptV1,
+codex-rs/hepta-intelligence-eval/src/self_evolution_selection.rs:102:    pub fn receipt(&self) -> &SelfEvolutionSelectionReceiptV1 {
+codex-rs/hepta-intelligence-eval/src/self_evolution_selection.rs:112:    receipt: SelfEvolutionSelectionReceiptV1,
+codex-rs/hepta-intelligence-eval/src/self_evolution_selection.rs:120:    pub fn receipt(&self) -> &SelfEvolutionSelectionReceiptV1 {
+codex-rs/hepta-intelligence-eval/src/self_evolution_selection.rs:173:pub fn prepare_self_evolution_selection_v1(
+codex-rs/hepta-intelligence-eval/src/self_evolution_selection.rs:202:    let evaluation = revalidate_product_qualification_v1(
+codex-rs/hepta-intelligence-eval/src/self_evolution_selection.rs:268:    let receipt = SelfEvolutionSelectionReceiptV1 {
+codex-rs/hepta-intelligence-eval/src/self_evolution_selection.rs:299:pub fn selection_signing_payload_v2(
+codex-rs/hepta-intelligence-eval/src/self_evolution_selection.rs:300:    receipt: &SelfEvolutionSelectionReceiptV1,
+codex-rs/hepta-intelligence-eval/src/self_evolution_selection.rs:345:    let payload = selection_signing_payload_v2(&prepared.receipt)?;
+codex-rs/hepta-intelligence-eval/src/self_evolution_selection.rs:446:    receipt: &SelfEvolutionSelectionReceiptV1,
+codex-rs/hepta-intelligence-eval/src/self_evolution_selection.rs:540:    fn receipt() -> SelfEvolutionSelectionReceiptV1 {
+codex-rs/hepta-intelligence-eval/src/self_evolution_selection.rs:541:        SelfEvolutionSelectionReceiptV1 {
+codex-rs/hepta-intelligence-eval/src/self_evolution_selection.rs:568:        let first = selection_signing_payload_v2(&receipt()).expect("payload");
+codex-rs/hepta-intelligence-eval/src/self_evolution_selection.rs:572:        let second = selection_signing_payload_v2(&changed).expect("payload");
+codex-rs/hepta-intelligence-eval/src/self_evolution_selection.rs:724:            selection_signing_payload_v2(prepared.receipt()).expect("selection payload");
+codex-rs/hepta-intelligence-eval/src/self_evolution_selection.rs:764:            selection_signing_payload_v2(&changed),
+codex-rs/hepta-intelligence-eval/src/self_evolution_selection.rs:770:            selection_signing_payload_v2(&changed),
+codex-rs/hepta-intelligence-eval/src/signed_evaluation.rs:85:pub fn decide_with_signed_evidence_v2(
+codex-rs/hepta-intelligence-eval/src/signed_qualification_e2e_tests.rs:14:use crate::decide_with_signed_evidence_v2;
+codex-rs/hepta-intelligence-eval/src/signed_qualification_e2e_tests.rs:226:        decide_with_signed_evidence_v2(bundle.clone(), roles.clone(), &evidence, &verifier, 50)
+codex-rs/hepta-intelligence-eval/src/signed_qualification_e2e_tests.rs:236:    assert!(decide_with_signed_evidence_v2(tampered, roles, &evidence, &verifier, 50).is_err());
+codex-rs/hepta-intelligence/src/lib.rs:77:pub use plasticity_product::CandidateEvaluationAdmissionV1;
+codex-rs/hepta-intelligence/src/lib.rs:80:pub use plasticity_product::ParameterPlasticityProductReceiptV1;
+codex-rs/hepta-intelligence/src/plasticity_product.rs:24:use codex_hepta_intelligence_eval::revalidate_product_qualification_v1;
+codex-rs/hepta-intelligence/src/plasticity_product.rs:71:pub struct CandidateEvaluationAdmissionV1 {
+codex-rs/hepta-intelligence/src/plasticity_product.rs:90:    pub evaluations: Vec<CandidateEvaluationAdmissionV1>,
+codex-rs/hepta-intelligence/src/plasticity_product.rs:101:pub struct ParameterPlasticityProductReceiptV1 {
+codex-rs/hepta-intelligence/src/plasticity_product.rs:359:) -> Result<ParameterPlasticityProductReceiptV1, ParameterPlasticityProductErrorV1> {
+codex-rs/hepta-intelligence/src/plasticity_product.rs:463:        let CandidateEvaluationAdmissionV1 {
+codex-rs/hepta-intelligence/src/plasticity_product.rs:504:        let decision = revalidate_product_qualification_v1(
+codex-rs/hepta-intelligence/src/plasticity_product.rs:630:    Ok(ParameterPlasticityProductReceiptV1 {
+codex-rs/hepta-intelligence/src/plasticity_product_tests.rs:332:            evaluations: vec![CandidateEvaluationAdmissionV1 {

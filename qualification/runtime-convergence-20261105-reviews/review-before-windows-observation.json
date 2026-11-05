@@ -1,0 +1,126 @@
+{
+  "schema": "hepta.first-wave-final-evidence-consistency-review.v1",
+  "recorded_at_utc": "2026-11-05T09:40:02.934833+00:00",
+  "scope": "Only integration/qualification and its exact 68-file final payload. Second-wave assembly is excluded.",
+  "verdict": "ALL_NATIVE_SOURCE_INDEX_AND_LINK_CHECKS_ACCEPTED; ONE_CURRENT_WINDOWS_OBSERVATION_CITATION_PENDING",
+  "payload": {
+    "path": "integration/final-first-evidence-payload.json",
+    "sha256": "e5221053bf8da53543226aee8e539f8bfbda24a9a79b2c75b23e6d342ad43d0a",
+    "bytes": 1178698,
+    "unique_files": 68,
+    "exact_allowed_prefix": "qualification/runtime-convergence-20261105/",
+    "all_content_sha256_size_gitblob_metadata_match_current_files": true,
+    "all_local_files_represented": true,
+    "reviewed_file_manifest": "reviewed-payload-file-manifest.json",
+    "reviewed_file_manifest_sha256": "15cf29afd4e32030a51ee12db2472ac65bffc4ec0ba4c8d1ae0bf7b2e44c9b4f"
+  },
+  "artifact_index": {
+    "path": "native-artifact-manifest.json",
+    "sha256": "fc5e92efd0f5f39323dc8fd2e01b5fc432884a2a015342b5892b920824850f46",
+    "indexed_files": 67,
+    "all_hashes_and_sizes_match": true,
+    "only_unindexed_file": "native-artifact-manifest.json"
+  },
+  "relative_markdown_links": {
+    "checked": 31,
+    "all_exist": true,
+    "note": "Link existence is distinct from whether the linked historical observation supports a current-source statement; the sole issue below concerns attribution."
+  },
+  "source_identity_checks": {
+    "current_first_head": "432421d0d9ca9d82c5e3401fe3425af29131505a",
+    "current_first_tree": "d93136bb5e318ea4131bfb5cb0b9ac9310f27d1d",
+    "tested_head": "facba0d32c1cd0e8163a6186d7ba91fa311f2e2e",
+    "tested_tree": "38f3e6e9f2e3fa3605e720a4a287bbd75d25695b",
+    "current_source_entries": 15,
+    "composition": "13 original controlled source entries unchanged + exact2 reviewed test files",
+    "all_manifest_fields_match_adoption": true,
+    "test_results_remain_at_original_tested_heads": true,
+    "earlier_four_negative_families_remain_at_initial1d_plus_recorded_formatter": true
+  },
+  "preserved_fix_and_alignment": {
+    "raw_fix_receipt_sha256": "ae54b470fd20e079d33602f60abffc3f130816586974b297cebe2f6ea3704d3b",
+    "raw_fix_state": "fix-blocked",
+    "raw_wrapper_exit_code": 1,
+    "raw_clippy_command_exit_code": 0,
+    "source_changed_by_fix_false_scope": "Only13 controlled files, not whole-tree unchanged; narrative explicitly states this.",
+    "native_fix_patch_sha256": "8226534cf866dd0be0ed94099bef18ca7a1cd64d701ae4d48df0427f63248d07",
+    "adoption_sha256": "1e74cb96735d026305f25cd5991d8e3dcedcd27644b063b8668503c0a6be3442",
+    "actual_alignment_sha256": "64be8b15396564e49ac3b6f4dd6ecd7b9c623a40c113e45d4f1b742779f6a42e",
+    "actual_first_rust_files": 5309,
+    "no_first_tests_or_fix_rerun": true,
+    "all_referenced_artifact_digests_match": true
+  },
+  "native_observations_checked_against_original_log_hashes": [
+    {
+      "case": "A",
+      "source_commit": "1d87082c0d5afd2b474a2c453ea98005fd540dea",
+      "summary": "Summary [   0.040s] 8 tests run: 2 passed, 6 failed, 654 skipped",
+      "actual_command_exit": 100,
+      "restored_candidate": true
+    },
+    {
+      "case": "B1",
+      "source_commit": "1d87082c0d5afd2b474a2c453ea98005fd540dea",
+      "summary": "Summary [   0.022s] 1 test run: 0 passed, 1 failed, 117 skipped",
+      "actual_command_exit": 100,
+      "restored_candidate": true
+    },
+    {
+      "case": "B2",
+      "source_commit": "1d87082c0d5afd2b474a2c453ea98005fd540dea",
+      "summary": "Summary [   0.214s] 2 tests run: 0 passed, 2 failed, 199 skipped",
+      "actual_command_exit": 100,
+      "restored_candidate": true
+    },
+    {
+      "case": "C",
+      "source_commit": "1d87082c0d5afd2b474a2c453ea98005fd540dea",
+      "summary": "Summary [   0.058s] 2 tests run: 0 passed, 2 failed, 14 skipped",
+      "actual_command_exit": 100,
+      "restored_candidate": true
+    },
+    {
+      "case": "initial-full",
+      "source_commit": "1d87082c0d5afd2b474a2c453ea98005fd540dea",
+      "summary": "Summary [  36.312s] 813 tests run: 812 passed (1 slow), 1 failed, 66 skipped",
+      "actual_command_exit": 100,
+      "restored_candidate": null
+    },
+    {
+      "case": "named-desktop",
+      "source_commit": "facba0d32c1cd0e8163a6186d7ba91fa311f2e2e",
+      "summary": "Summary [   0.065s] 1 test run: 1 passed, 661 skipped",
+      "actual_command_exit": 0,
+      "restored_candidate": null
+    },
+    {
+      "case": "repaired-full",
+      "source_commit": "facba0d32c1cd0e8163a6186d7ba91fa311f2e2e",
+      "summary": "Summary [  36.320s] 813 tests run: 813 passed (1 slow), 66 skipped",
+      "actual_command_exit": 0,
+      "restored_candidate": null
+    }
+  ],
+  "historical_records": "Original source-only validation remains native/validation-before-native.json; initial failing full suite, setup failures, old queue observation and raw blocked fix remain unchanged and scoped to their source/time.",
+  "windows_and_product_status": {
+    "qualification": "OPEN",
+    "current_first_run_claimed": 41999779676,
+    "no_native_linux_substitution": "Retained",
+    "product_release": "HOLD",
+    "public_topology_execution": "DENY_ALL",
+    "new_adaptive_efficacy_admission": false
+  },
+  "sole_pending_issue": {
+    "affected_statement": "native-validation.md says current432421/run41999779676 latest queue has no assigned runner and no executed steps.",
+    "linked_artifact": "windows-runner-queue-review.json",
+    "actual_linked_artifact_scope": "Timestamp2026-11-05T08:41:42Z; facba/run41996207772 and e0b/run41996253575.",
+    "finding": "No archived current-F observation in the68-file payload supports that current-source queue assertion. The OPEN gate remains correct.",
+    "root_action_acknowledged": "Preserve old review unchanged; add a separate exact F/E current-source CI snapshot and update current narrative/entry links.",
+    "required_recheck": "Only new observation, changed entry statements, refreshed index and rebuilt payload metadata; no need to repeat unchanged native review."
+  },
+  "review_activity": {
+    "production_or_archive_files_modified": false,
+    "new_native_tests_executed": false,
+    "remote_jobs_started_or_polled": false
+  }
+}

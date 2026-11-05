@@ -1,0 +1,659 @@
+{
+  "schema": "hepta.sealed-ingress-final-payload-mechanical-check.v1",
+  "recorded_at_utc": "2026-11-05T10:24:56.071267+00:00",
+  "payload": {
+    "sha256": "a9efffacf0409231767b81ee7a86633e9a0037d508d4db9ed7720ab2c71e11e8",
+    "bytes": 3687470,
+    "characters": 3686928,
+    "files": 172,
+    "all_content_sha_size_gitblob_match": true,
+    "complete_local_inventory_matches": true
+  },
+  "first_payload": {
+    "sha256": "09b8fb64816e0465c44904095369cee2fdd9eaa8aa7c1a3637e80b40523a569e",
+    "files": 69,
+    "unchanged": true
+  },
+  "artifact_index": {
+    "sha256": "05edababfb6ff5a9ab702a55292bc4bb142dd774fe612f0668a12608c4f318f8",
+    "entries": 171,
+    "only_unindexed": "native-artifact-manifest.json"
+  },
+  "delta_from_preflight": {
+    "prior_manifest_sha256": "00d528dfd121af0f8c0bbf474d4f13dae056bcfaa9602006c5c64d063a0b816f",
+    "added": [
+      "historical-provenance.md",
+      "history/SOURCE_ACCEPTANCE.md",
+      "history/final-caller-inventory-review.json",
+      "history/initial-plan-exact-search.json",
+      "history/provenance-map.json",
+      "native/ai395-eval-cache-repair-attempt1-receipt.json",
+      "native/ai395-eval-cache-repair-attempt2-clean-eval-package.stderr",
+      "native/ai395-eval-cache-repair-attempt2-clean-eval-package.stdout",
+      "native/ai395-eval-cache-repair-attempt2-receipt.json",
+      "native/ai395-eval-cache-repair-backup-manifest.json",
+      "native/ai395-final-S-inventory-transfer-proof.json",
+      "native/ai395-q3-fresh-eval-fcbed-depinfo.d",
+      "native/ai395-sealed-fix-changed-after-fix.stdout",
+      "native/ai395-sealed-fix-just-fix.stderr",
+      "native/ai395-sealed-fix-just-fix.stdout",
+      "native/ai395-sealed-fix-receipt.json",
+      "native/ai395-sealed-green-just-green.stderr",
+      "native/ai395-sealed-green-just-green.stdout",
+      "native/ai395-sealed-green-receipt.json",
+      "native/ai395-sealed-native-fix.patch",
+      "native/ai395-sealed-q3-attempt2-just-test.stderr",
+      "native/ai395-sealed-q3-attempt2-just-test.stdout",
+      "native/ai395-sealed-q3-attempt2-negative.patch",
+      "native/ai395-sealed-q3-attempt2-receipt.json",
+      "native/ai395-sealed-q4-just-test.stderr",
+      "native/ai395-sealed-q4-just-test.stdout",
+      "native/ai395-sealed-q4-negative.patch",
+      "native/ai395-sealed-q4-receipt.json",
+      "native/ai395-sealed-remaining-pipeline-v2-receipt.json",
+      "native/ai395-second-postfix-alignment-receipt.json",
+      "native/ai395-second-postfix-scope-receipt.json",
+      "native/ai395-second-postfix-verified-rust-blobs.json",
+      "native/align_second_reviewed_fix.py",
+      "native/eval-cache-repair-v2-review.diff",
+      "native/repair_eval_package_cache.py",
+      "native/repair_eval_package_cache_v2.py",
+      "native/run_sealed_remaining_pipeline_v2.py",
+      "native/run_sealed_remaining_pipeline_v2_target_scope.py",
+      "native/scoped-fix/plasticity_product_tests.after.rs",
+      "native/sealed-outer-repair-v2-pin-review.diff",
+      "native/sealed-remaining-pipeline-v2-review.diff",
+      "native/source-manifest-before-scoped-fix.json",
+      "product-independent-evidence-index.json",
+      "q3-cache-repair-attempt2-independent-review.json",
+      "q3-native-independent-review.json",
+      "q3-retry-orchestrator-independent-review.json",
+      "q3-target-scope-independent-review.json",
+      "q4-native-independent-review.json",
+      "second-native-positive-and-fix-review.json",
+      "second-scoped-fix-root-review.json"
+    ],
+    "changed": [
+      "README.md",
+      "native-artifact-manifest.json",
+      "native-source-manifest.json",
+      "native-validation.md",
+      "negative-controls/manifest.json",
+      "validation.json"
+    ],
+    "removed": [],
+    "unchanged": [
+      "caller-inventory-base.txt",
+      "caller-inventory-final-derived.txt",
+      "caller-inventory-review.json",
+      "combined-manifest.json",
+      "contract/manifest.json",
+      "contract/production-contract-sealed-ingress.patch",
+      "convergence-target-review.json",
+      "convergence-target.md",
+      "current-trust-identity-review.json",
+      "evidence-initial-audit.json",
+      "native-plan-independent-review.json",
+      "native-round2-gate-v2/NATIVE_PLAN.md",
+      "native-round2-gate-v2/current-trust-identity-after-native-format.patch",
+      "native-round2-gate-v2/current-trust-identity-final-format.patch",
+      "native-round2-gate-v2/current-trust-identity-regression.patch",
+      "native-round2-gate-v2/final-positive-manifest.json",
+      "native-round2-gate-v2/first-wave/fix-receipt.json",
+      "native-round2-gate-v2/first-wave/green-receipt.json",
+      "native-round2-gate-v2/first-wave/named-receipt.json",
+      "native-round2-gate-v2/first-wave/native-fix.patch",
+      "native-round2-gate-v2/first-wave/post-fix-source-adoption.json",
+      "native-round2-gate-v2/native-format/extended-caller-scan.txt",
+      "native-round2-gate-v2/native-format/final-trust-format-receipt.json",
+      "native-round2-gate-v2/native-format/initial-format-receipt.json",
+      "native-round2-gate-v2/native-format/reviewed-postfix-alignment-receipt.json",
+      "native-round2-gate-v2/negative-controls/manifest.json",
+      "native-round2-gate-v2/negative-controls/negative-agentd-publication-signature.patch",
+      "native-round2-gate-v2/negative-controls/negative-complete-decision-binding.patch",
+      "native-round2-gate-v2/negative-controls/negative-plasticity-publication-commitment.patch",
+      "native-round2-gate-v2/negative-controls/negative-selector-publication-signature.patch",
+      "native-round2-gate-v2/plan.json",
+      "native-round2-gate-v2/post-fix-gate-local-review.json",
+      "native-round2-gate-v2/run_native_round2.py",
+      "native-round2-gate-v2/runtime-bundle-manifest.json",
+      "native-round2-gate-v2/source-contracts/AGENTS.md",
+      "native-round2-gate-v2/source-contracts/codex-rs/.config/nextest.toml",
+      "native-round2-gate-v2/source-contracts/justfile",
+      "native-round2-gate-v2/source-contracts/manifest.json",
+      "native-round2-gate-v2/source-contracts/scripts/run-nextest.py",
+      "native-round2-gate-v2/trust-regression-manifest.json",
+      "native-round2/NATIVE_PLAN.md",
+      "native-round2/current-trust-identity-after-native-format.patch",
+      "native-round2/current-trust-identity-final-format.patch",
+      "native-round2/current-trust-identity-regression.patch",
+      "native-round2/final-positive-manifest.json",
+      "native-round2/native-format/extended-caller-scan.txt",
+      "native-round2/native-format/final-trust-format-receipt.json",
+      "native-round2/native-format/initial-format-receipt.json",
+      "native-round2/negative-controls/manifest.json",
+      "native-round2/negative-controls/negative-agentd-publication-signature.patch",
+      "native-round2/negative-controls/negative-complete-decision-binding.patch",
+      "native-round2/negative-controls/negative-plasticity-publication-commitment.patch",
+      "native-round2/negative-controls/negative-selector-publication-signature.patch",
+      "native-round2/plan.json",
+      "native-round2/run_native_round2.py",
+      "native-round2/runner-local-review.json",
+      "native-round2/runtime-bundle-manifest.json",
+      "native-round2/source-contracts/AGENTS.md",
+      "native-round2/source-contracts/codex-rs/.config/nextest.toml",
+      "native-round2/source-contracts/justfile",
+      "native-round2/source-contracts/manifest.json",
+      "native-round2/source-contracts/scripts/run-nextest.py",
+      "native-round2/trust-regression-manifest.json",
+      "native/ai395-next-caller-extended.stdout",
+      "native/ai395-next-caller-original.stdout",
+      "native/ai395-next-full-stack-format-only.patch",
+      "native/ai395-next-head-alignment-receipt.json",
+      "native/ai395-next-native-next-with-trust-fmt.patch",
+      "native/ai395-next-native-trust-tests-only.patch",
+      "native/ai395-next-receipt.json",
+      "native/ai395-next-source-receipt.json",
+      "native/ai395-q3-attempt1-restoration-readback.json",
+      "native/ai395-q3-cache-diagnostic-v1.json",
+      "native/ai395-reviewed-postfix-alignment-receipt.json",
+      "native/ai395-sealed-q1-just-test.stderr",
+      "native/ai395-sealed-q1-just-test.stdout",
+      "native/ai395-sealed-q1-negative.patch",
+      "native/ai395-sealed-q1-receipt.json",
+      "native/ai395-sealed-q2-just-test.stderr",
+      "native/ai395-sealed-q2-just-test.stdout",
+      "native/ai395-sealed-q2-negative.patch",
+      "native/ai395-sealed-q2-receipt.json",
+      "native/ai395-sealed-q3-attempt1-just-test.stderr",
+      "native/ai395-sealed-q3-attempt1-just-test.stdout",
+      "native/ai395-sealed-q3-attempt1-negative.patch",
+      "native/ai395-sealed-q3-attempt1-receipt.json",
+      "native/ai395-sealed-remaining-pipeline-attempt1-receipt.json",
+      "native/current-trust-identity-after-native-format.patch",
+      "native/current-trust-identity-final-format.patch",
+      "native/current-trust-identity-regression.patch",
+      "native/q1-preflight-mapping.json",
+      "native/run_sealed_remaining_pipeline.py",
+      "native/trust-regression-manifest.json",
+      "native/validation-before-native.json",
+      "negative-controls/negative-agentd-publication-signature.patch",
+      "negative-controls/negative-complete-decision-binding.patch",
+      "negative-controls/negative-plasticity-publication-commitment.patch",
+      "negative-controls/negative-selector-publication-signature.patch",
+      "post-fix-native-gate-review.json",
+      "published-merge-review.json",
+      "q1-native-independent-review.json",
+      "q2-native-independent-review.json",
+      "q3-attempt1-compilation-review.json",
+      "q3-cache-independent-review.json",
+      "sealed-ingress-combined.patch",
+      "source-combination-review.md",
+      "stacked-candidate-manifest.json",
+      "stacked-candidate.patch",
+      "stage-1-manifest.json",
+      "stage-1-sealed-revalidation.patch",
+      "stage-2-agentd-sealed-ingress.patch",
+      "stage-2-manifest.json",
+      "stage-3-manifest.json",
+      "stage-3-plasticity-sealed-ingress.patch",
+      "stage-4-manifest.json",
+      "stage-4-self-evolution-sealed-ingress.patch"
+    ]
+  },
+  "relative_markdown_links": {
+    "count": 61,
+    "all_resolve": true,
+    "layout": "Published qualification/* namespaces from both exact payloads",
+    "links": [
+      {
+        "source": "qualification/sealed-ingress-20261105/README.md",
+        "line": 6,
+        "target": "native-validation.md",
+        "resolved_repository_path": "qualification/sealed-ingress-20261105/native-validation.md",
+        "target_sha256": "db040484b34a3edf9634b1b7d9694035e26aab06b71cca8b582d9dbc5efd1b39"
+      },
+      {
+        "source": "qualification/sealed-ingress-20261105/README.md",
+        "line": 6,
+        "target": "native-source-manifest.json",
+        "resolved_repository_path": "qualification/sealed-ingress-20261105/native-source-manifest.json",
+        "target_sha256": "5ccea389f7358043ccf0a7ed5089a4da78df265aa68b92142c5393dbededd2a1"
+      },
+      {
+        "source": "qualification/sealed-ingress-20261105/README.md",
+        "line": 7,
+        "target": "validation.json",
+        "resolved_repository_path": "qualification/sealed-ingress-20261105/validation.json",
+        "target_sha256": "420d191c263073ee7d9355621d350a15c88ed013808d9e2fd93ad3606834f4e0"
+      },
+      {
+        "source": "qualification/sealed-ingress-20261105/README.md",
+        "line": 7,
+        "target": "convergence-target.md",
+        "resolved_repository_path": "qualification/sealed-ingress-20261105/convergence-target.md",
+        "target_sha256": "dff6252a8ba739e38b5c29433c7747ec150043e4acbb20aa9f330847a140258c"
+      },
+      {
+        "source": "qualification/sealed-ingress-20261105/historical-provenance.md",
+        "line": 6,
+        "target": "native-validation.md",
+        "resolved_repository_path": "qualification/sealed-ingress-20261105/native-validation.md",
+        "target_sha256": "db040484b34a3edf9634b1b7d9694035e26aab06b71cca8b582d9dbc5efd1b39"
+      },
+      {
+        "source": "qualification/sealed-ingress-20261105/historical-provenance.md",
+        "line": 6,
+        "target": "validation.json",
+        "resolved_repository_path": "qualification/sealed-ingress-20261105/validation.json",
+        "target_sha256": "420d191c263073ee7d9355621d350a15c88ed013808d9e2fd93ad3606834f4e0"
+      },
+      {
+        "source": "qualification/sealed-ingress-20261105/historical-provenance.md",
+        "line": 7,
+        "target": "history/provenance-map.json",
+        "resolved_repository_path": "qualification/sealed-ingress-20261105/history/provenance-map.json",
+        "target_sha256": "ff3472bfeefe77009cfc8b579e4a81f1f905fa767aeb184e172a34ad7aad4ee4"
+      },
+      {
+        "source": "qualification/sealed-ingress-20261105/historical-provenance.md",
+        "line": 12,
+        "target": "source-combination-review.md",
+        "resolved_repository_path": "qualification/sealed-ingress-20261105/source-combination-review.md",
+        "target_sha256": "07ca43bad273ad11223c213be9b7b461e107aab9d6e84d7b5477f5efeb590e0c"
+      },
+      {
+        "source": "qualification/sealed-ingress-20261105/historical-provenance.md",
+        "line": 17,
+        "target": "history/SOURCE_ACCEPTANCE.md",
+        "resolved_repository_path": "qualification/sealed-ingress-20261105/history/SOURCE_ACCEPTANCE.md",
+        "target_sha256": "136d466db2f89cccad2787f19c0e7e68e8456836c090c186ad29360fe7b6fc99"
+      },
+      {
+        "source": "qualification/sealed-ingress-20261105/historical-provenance.md",
+        "line": 18,
+        "target": "history/final-caller-inventory-review.json",
+        "resolved_repository_path": "qualification/sealed-ingress-20261105/history/final-caller-inventory-review.json",
+        "target_sha256": "484bf9440c4ceab992f0d6f486f62507f2d93fb07227ac0ef0ec82a7eeadcbfe"
+      },
+      {
+        "source": "qualification/sealed-ingress-20261105/historical-provenance.md",
+        "line": 19,
+        "target": "caller-inventory-final-derived.txt",
+        "resolved_repository_path": "qualification/sealed-ingress-20261105/caller-inventory-final-derived.txt",
+        "target_sha256": "ce42f0e52110ef024e3304cc7400222c2db0dd070b9cc2a1098a861ab93804da"
+      },
+      {
+        "source": "qualification/sealed-ingress-20261105/historical-provenance.md",
+        "line": 21,
+        "target": "caller-inventory-review.json",
+        "resolved_repository_path": "qualification/sealed-ingress-20261105/caller-inventory-review.json",
+        "target_sha256": "ae5b9baa42a0a78f1eac44ebe15f37c3828efe95849b32e28287c70d80822574"
+      },
+      {
+        "source": "qualification/sealed-ingress-20261105/historical-provenance.md",
+        "line": 32,
+        "target": "native-plan-independent-review.json",
+        "resolved_repository_path": "qualification/sealed-ingress-20261105/native-plan-independent-review.json",
+        "target_sha256": "1f4dc5f5b1aabb638fe95e8dff273fec07d25f5777d1ed12b005cee398f89412"
+      },
+      {
+        "source": "qualification/sealed-ingress-20261105/historical-provenance.md",
+        "line": 37,
+        "target": "history/initial-plan-exact-search.json",
+        "resolved_repository_path": "qualification/sealed-ingress-20261105/history/initial-plan-exact-search.json",
+        "target_sha256": "0ac9851852be9f1863f5fde449c69dad5b75a3e54a059457594b9ea5575a106b"
+      },
+      {
+        "source": "qualification/sealed-ingress-20261105/historical-provenance.md",
+        "line": 45,
+        "target": "post-fix-native-gate-review.json",
+        "resolved_repository_path": "qualification/sealed-ingress-20261105/post-fix-native-gate-review.json",
+        "target_sha256": "cf8c1b758245f57b22800fdcc54832ec84fd86a3b83f866e88fbbb0aff26ab08"
+      },
+      {
+        "source": "qualification/sealed-ingress-20261105/historical-provenance.md",
+        "line": 49,
+        "target": "native-round2-gate-v2/plan.json",
+        "resolved_repository_path": "qualification/sealed-ingress-20261105/native-round2-gate-v2/plan.json",
+        "target_sha256": "00b4d289a635ae36865dc70732a1a10a03a8fb81575be5b5eba0b21fce7027fe"
+      },
+      {
+        "source": "qualification/sealed-ingress-20261105/historical-provenance.md",
+        "line": 50,
+        "target": "native-round2-gate-v2/run_native_round2.py",
+        "resolved_repository_path": "qualification/sealed-ingress-20261105/native-round2-gate-v2/run_native_round2.py",
+        "target_sha256": "46552f047784d07b825cec59e0358cfbb02a010f448b7538bb0fadc15ea2f7df"
+      },
+      {
+        "source": "qualification/sealed-ingress-20261105/historical-provenance.md",
+        "line": 51,
+        "target": "post-fix-native-gate-review.json",
+        "resolved_repository_path": "qualification/sealed-ingress-20261105/post-fix-native-gate-review.json",
+        "target_sha256": "cf8c1b758245f57b22800fdcc54832ec84fd86a3b83f866e88fbbb0aff26ab08"
+      },
+      {
+        "source": "qualification/sealed-ingress-20261105/native-round2-gate-v2/NATIVE_PLAN.md",
+        "line": 28,
+        "target": "first-wave/post-fix-source-adoption.json",
+        "resolved_repository_path": "qualification/sealed-ingress-20261105/native-round2-gate-v2/first-wave/post-fix-source-adoption.json",
+        "target_sha256": "1e74cb96735d026305f25cd5991d8e3dcedcd27644b063b8668503c0a6be3442"
+      },
+      {
+        "source": "qualification/sealed-ingress-20261105/native-round2-gate-v2/NATIVE_PLAN.md",
+        "line": 30,
+        "target": "native-format/reviewed-postfix-alignment-receipt.json",
+        "resolved_repository_path": "qualification/sealed-ingress-20261105/native-round2-gate-v2/native-format/reviewed-postfix-alignment-receipt.json",
+        "target_sha256": "64be8b15396564e49ac3b6f4dd6ecd7b9c623a40c113e45d4f1b742779f6a42e"
+      },
+      {
+        "source": "qualification/sealed-ingress-20261105/native-round2-gate-v2/NATIVE_PLAN.md",
+        "line": 342,
+        "target": "first-wave/native-fix.patch",
+        "resolved_repository_path": "qualification/sealed-ingress-20261105/native-round2-gate-v2/first-wave/native-fix.patch",
+        "target_sha256": "8226534cf866dd0be0ed94099bef18ca7a1cd64d701ae4d48df0427f63248d07"
+      },
+      {
+        "source": "qualification/sealed-ingress-20261105/native-validation.md",
+        "line": 24,
+        "target": "native-source-manifest.json",
+        "resolved_repository_path": "qualification/sealed-ingress-20261105/native-source-manifest.json",
+        "target_sha256": "5ccea389f7358043ccf0a7ed5089a4da78df265aa68b92142c5393dbededd2a1"
+      },
+      {
+        "source": "qualification/sealed-ingress-20261105/native-validation.md",
+        "line": 26,
+        "target": "native/source-manifest-before-scoped-fix.json",
+        "resolved_repository_path": "qualification/sealed-ingress-20261105/native/source-manifest-before-scoped-fix.json",
+        "target_sha256": "d96b69ee4913728f5167a6b4f23b122f59568269cb26dc0b1b34aa63d24b5e25"
+      },
+      {
+        "source": "qualification/sealed-ingress-20261105/native-validation.md",
+        "line": 28,
+        "target": "second-scoped-fix-root-review.json",
+        "resolved_repository_path": "qualification/sealed-ingress-20261105/second-scoped-fix-root-review.json",
+        "target_sha256": "6e9519cebfcb68c80ea30d51f57d7fb08fa5249e68ba7b6dab23b62f4760ff48"
+      },
+      {
+        "source": "qualification/sealed-ingress-20261105/native-validation.md",
+        "line": 53,
+        "target": "native/ai395-next-source-receipt.json",
+        "resolved_repository_path": "qualification/sealed-ingress-20261105/native/ai395-next-source-receipt.json",
+        "target_sha256": "69c4d1f8e4ecad37c96aa085596678a4c5dcaf98bb05ce217beb1b7a626ef231"
+      },
+      {
+        "source": "qualification/sealed-ingress-20261105/native-validation.md",
+        "line": 54,
+        "target": "native/ai395-next-receipt.json",
+        "resolved_repository_path": "qualification/sealed-ingress-20261105/native/ai395-next-receipt.json",
+        "target_sha256": "b9f621339c82fd6a16f00fc50063b4a4d19301e27c7f0de382fe480ef8dbfdb7"
+      },
+      {
+        "source": "qualification/sealed-ingress-20261105/native-validation.md",
+        "line": 55,
+        "target": "native/ai395-next-head-alignment-receipt.json",
+        "resolved_repository_path": "qualification/sealed-ingress-20261105/native/ai395-next-head-alignment-receipt.json",
+        "target_sha256": "cf6f3b938b586779c81abba7f66003038eaf6d8e3f135650063ad97885bf782f"
+      },
+      {
+        "source": "qualification/sealed-ingress-20261105/native-validation.md",
+        "line": 67,
+        "target": "native/ai395-next-caller-original.stdout",
+        "resolved_repository_path": "qualification/sealed-ingress-20261105/native/ai395-next-caller-original.stdout",
+        "target_sha256": "2720b3adb2d7d06d4b6ccb0b88c29c34dd17cb5a1faa3606892f3aabcd2820da"
+      },
+      {
+        "source": "qualification/sealed-ingress-20261105/native-validation.md",
+        "line": 68,
+        "target": "native/ai395-next-caller-extended.stdout",
+        "resolved_repository_path": "qualification/sealed-ingress-20261105/native/ai395-next-caller-extended.stdout",
+        "target_sha256": "8ce3bb65c4e39a0e7dc3f310fb54564b26569579e4074595ac13348ebfc914c0"
+      },
+      {
+        "source": "qualification/sealed-ingress-20261105/native-validation.md",
+        "line": 73,
+        "target": "native/ai395-reviewed-postfix-alignment-receipt.json",
+        "resolved_repository_path": "qualification/sealed-ingress-20261105/native/ai395-reviewed-postfix-alignment-receipt.json",
+        "target_sha256": "64be8b15396564e49ac3b6f4dd6ecd7b9c623a40c113e45d4f1b742779f6a42e"
+      },
+      {
+        "source": "qualification/sealed-ingress-20261105/native-validation.md",
+        "line": 94,
+        "target": "current-trust-identity-review.json",
+        "resolved_repository_path": "qualification/sealed-ingress-20261105/current-trust-identity-review.json",
+        "target_sha256": "42804a6c4efe31e64d7d3c22bc4a253c6631b6ad6b0b97cad5058d88dae49af9"
+      },
+      {
+        "source": "qualification/sealed-ingress-20261105/native-validation.md",
+        "line": 98,
+        "target": "native-round2-gate-v2/plan.json",
+        "resolved_repository_path": "qualification/sealed-ingress-20261105/native-round2-gate-v2/plan.json",
+        "target_sha256": "00b4d289a635ae36865dc70732a1a10a03a8fb81575be5b5eba0b21fce7027fe"
+      },
+      {
+        "source": "qualification/sealed-ingress-20261105/native-validation.md",
+        "line": 99,
+        "target": "native-round2-gate-v2/run_native_round2.py",
+        "resolved_repository_path": "qualification/sealed-ingress-20261105/native-round2-gate-v2/run_native_round2.py",
+        "target_sha256": "46552f047784d07b825cec59e0358cfbb02a010f448b7538bb0fadc15ea2f7df"
+      },
+      {
+        "source": "qualification/sealed-ingress-20261105/native-validation.md",
+        "line": 115,
+        "target": "post-fix-native-gate-review.json",
+        "resolved_repository_path": "qualification/sealed-ingress-20261105/post-fix-native-gate-review.json",
+        "target_sha256": "cf8c1b758245f57b22800fdcc54832ec84fd86a3b83f866e88fbbb0aff26ab08"
+      },
+      {
+        "source": "qualification/sealed-ingress-20261105/native-validation.md",
+        "line": 122,
+        "target": "historical-provenance.md",
+        "resolved_repository_path": "qualification/sealed-ingress-20261105/historical-provenance.md",
+        "target_sha256": "fa089ba8287eca56154589e2f068852f018eec478b6a5bd4cef9377de8cd9fe6"
+      },
+      {
+        "source": "qualification/sealed-ingress-20261105/native-validation.md",
+        "line": 135,
+        "target": "negative-controls/manifest.json",
+        "resolved_repository_path": "qualification/sealed-ingress-20261105/negative-controls/manifest.json",
+        "target_sha256": "d11c2d9b8b13e79fce5dada80ebd0a655e30c82115391e7dcc4dbf4734483a36"
+      },
+      {
+        "source": "qualification/sealed-ingress-20261105/native-validation.md",
+        "line": 159,
+        "target": "native/ai395-sealed-q1-receipt.json",
+        "resolved_repository_path": "qualification/sealed-ingress-20261105/native/ai395-sealed-q1-receipt.json",
+        "target_sha256": "a7fc0b3cf48abeb3d66bd124c553d606c7555f9a63f4c9a679c9a269ed4d88b6"
+      },
+      {
+        "source": "qualification/sealed-ingress-20261105/native-validation.md",
+        "line": 164,
+        "target": "native/ai395-sealed-q1-just-test.stderr",
+        "resolved_repository_path": "qualification/sealed-ingress-20261105/native/ai395-sealed-q1-just-test.stderr",
+        "target_sha256": "eb5ed0ded6dd107295efdc201e20eed43f23ddbb2e200c6c5696f9825556cfd5"
+      },
+      {
+        "source": "qualification/sealed-ingress-20261105/native-validation.md",
+        "line": 175,
+        "target": "q1-native-independent-review.json",
+        "resolved_repository_path": "qualification/sealed-ingress-20261105/q1-native-independent-review.json",
+        "target_sha256": "4a04d35b19cb5ee48b6f60a4ba1bf9756757f5374a09edb9378e2b406f51d903"
+      },
+      {
+        "source": "qualification/sealed-ingress-20261105/native-validation.md",
+        "line": 189,
+        "target": "native/ai395-sealed-q2-receipt.json",
+        "resolved_repository_path": "qualification/sealed-ingress-20261105/native/ai395-sealed-q2-receipt.json",
+        "target_sha256": "6b3d09bac8a4e5cac69fd423a14fc2a19b7e0ba65139acd82c09c2ddf496c5e4"
+      },
+      {
+        "source": "qualification/sealed-ingress-20261105/native-validation.md",
+        "line": 190,
+        "target": "native/ai395-sealed-q3-attempt2-receipt.json",
+        "resolved_repository_path": "qualification/sealed-ingress-20261105/native/ai395-sealed-q3-attempt2-receipt.json",
+        "target_sha256": "4cffc7cac9855131854689730fe1d9ead021b6ea45eaf2c12aebd77101b2a34e"
+      },
+      {
+        "source": "qualification/sealed-ingress-20261105/native-validation.md",
+        "line": 191,
+        "target": "native/ai395-sealed-q4-receipt.json",
+        "resolved_repository_path": "qualification/sealed-ingress-20261105/native/ai395-sealed-q4-receipt.json",
+        "target_sha256": "41c062e316dfd9f6f18bc0e129b8aebfa62d6211b715642e9284d0e6c6e57419"
+      },
+      {
+        "source": "qualification/sealed-ingress-20261105/native-validation.md",
+        "line": 207,
+        "target": "q2-native-independent-review.json",
+        "resolved_repository_path": "qualification/sealed-ingress-20261105/q2-native-independent-review.json",
+        "target_sha256": "ed07c0810ed66e036799b711d0b87d3fa69805364bca2094ee51b7826b53a088"
+      },
+      {
+        "source": "qualification/sealed-ingress-20261105/native-validation.md",
+        "line": 208,
+        "target": "q3-native-independent-review.json",
+        "resolved_repository_path": "qualification/sealed-ingress-20261105/q3-native-independent-review.json",
+        "target_sha256": "23a56d7a6bd14e7dad2e2c0cb1d23ba7f56749405289b64d8e59b16addd015c5"
+      },
+      {
+        "source": "qualification/sealed-ingress-20261105/native-validation.md",
+        "line": 208,
+        "target": "q4-native-independent-review.json",
+        "resolved_repository_path": "qualification/sealed-ingress-20261105/q4-native-independent-review.json",
+        "target_sha256": "416c53715a9edad626860b56a51570c58ae4e84162f8679f3f0588071159cf97"
+      },
+      {
+        "source": "qualification/sealed-ingress-20261105/native-validation.md",
+        "line": 212,
+        "target": "native/ai395-sealed-q3-attempt1-receipt.json",
+        "resolved_repository_path": "qualification/sealed-ingress-20261105/native/ai395-sealed-q3-attempt1-receipt.json",
+        "target_sha256": "b98653f5a06015cb71042b642ed1df3efb08e0384c9cc350294f7e86dfd70a49"
+      },
+      {
+        "source": "qualification/sealed-ingress-20261105/native-validation.md",
+        "line": 215,
+        "target": "native/ai395-q3-cache-diagnostic-v1.json",
+        "resolved_repository_path": "qualification/sealed-ingress-20261105/native/ai395-q3-cache-diagnostic-v1.json",
+        "target_sha256": "843939f2a6ae4e35f8a330cd58d1e24fa2d0634532686952422344e407ceb93d"
+      },
+      {
+        "source": "qualification/sealed-ingress-20261105/native-validation.md",
+        "line": 224,
+        "target": "native/ai395-eval-cache-repair-attempt1-receipt.json",
+        "resolved_repository_path": "qualification/sealed-ingress-20261105/native/ai395-eval-cache-repair-attempt1-receipt.json",
+        "target_sha256": "a82a65e07f6007cacaafe4d9673df766be65d85f43f34ed933a4c1008d95fc2e"
+      },
+      {
+        "source": "qualification/sealed-ingress-20261105/native-validation.md",
+        "line": 230,
+        "target": "native/ai395-eval-cache-repair-attempt2-receipt.json",
+        "resolved_repository_path": "qualification/sealed-ingress-20261105/native/ai395-eval-cache-repair-attempt2-receipt.json",
+        "target_sha256": "c73e73d3803a57c368e77eb275e33d2eb71d36bb4852c96736838f12a4fc1792"
+      },
+      {
+        "source": "qualification/sealed-ingress-20261105/native-validation.md",
+        "line": 242,
+        "target": "native/ai395-q3-fresh-eval-fcbed-depinfo.d",
+        "resolved_repository_path": "qualification/sealed-ingress-20261105/native/ai395-q3-fresh-eval-fcbed-depinfo.d",
+        "target_sha256": "7c3484364d086c11b087ffe1a1d4eed7a027b522100354701366fe1dafd0b2a4"
+      },
+      {
+        "source": "qualification/sealed-ingress-20261105/native-validation.md",
+        "line": 256,
+        "target": "native/ai395-sealed-green-receipt.json",
+        "resolved_repository_path": "qualification/sealed-ingress-20261105/native/ai395-sealed-green-receipt.json",
+        "target_sha256": "ab6da7188d4354a088025ec0202533c025436d6f7fcf70196913ef24deb82488"
+      },
+      {
+        "source": "qualification/sealed-ingress-20261105/native-validation.md",
+        "line": 261,
+        "target": "native/ai395-sealed-green-just-green.stderr",
+        "resolved_repository_path": "qualification/sealed-ingress-20261105/native/ai395-sealed-green-just-green.stderr",
+        "target_sha256": "e2d5640765ed22e4b7b4def6ac2129a4d537e1f3373a098a162acdce3e1a195a"
+      },
+      {
+        "source": "qualification/sealed-ingress-20261105/native-validation.md",
+        "line": 273,
+        "target": "native/ai395-sealed-fix-receipt.json",
+        "resolved_repository_path": "qualification/sealed-ingress-20261105/native/ai395-sealed-fix-receipt.json",
+        "target_sha256": "cb1f12c6d7e4c09f3e5c6df4a9f9f337d28540bc4e81c7d5c2c9b45ee2b5504c"
+      },
+      {
+        "source": "qualification/sealed-ingress-20261105/native-validation.md",
+        "line": 281,
+        "target": "native/ai395-sealed-native-fix.patch",
+        "resolved_repository_path": "qualification/sealed-ingress-20261105/native/ai395-sealed-native-fix.patch",
+        "target_sha256": "5e638cfe00ca4e1df56934c765a60089cb11e718e79c54800f2f5eda741d830c"
+      },
+      {
+        "source": "qualification/sealed-ingress-20261105/native-validation.md",
+        "line": 289,
+        "target": "second-native-positive-and-fix-review.json",
+        "resolved_repository_path": "qualification/sealed-ingress-20261105/second-native-positive-and-fix-review.json",
+        "target_sha256": "68152c6ee834fddbb0be89e0c83865c6341f4733dbee361df769b601d8d46d3a"
+      },
+      {
+        "source": "qualification/sealed-ingress-20261105/native-validation.md",
+        "line": 293,
+        "target": "native/ai395-sealed-remaining-pipeline-v2-receipt.json",
+        "resolved_repository_path": "qualification/sealed-ingress-20261105/native/ai395-sealed-remaining-pipeline-v2-receipt.json",
+        "target_sha256": "df53252839fc2c66102b33614456b0648d2028ea8e85b839baee3fe9e67c5612"
+      },
+      {
+        "source": "qualification/sealed-ingress-20261105/native-validation.md",
+        "line": 302,
+        "target": "native/ai395-second-postfix-alignment-receipt.json",
+        "resolved_repository_path": "qualification/sealed-ingress-20261105/native/ai395-second-postfix-alignment-receipt.json",
+        "target_sha256": "72f596be257474eba63334968754a602d814ad0d18664941e003979f576812f5"
+      },
+      {
+        "source": "qualification/sealed-ingress-20261105/native-validation.md",
+        "line": 308,
+        "target": "native/ai395-second-postfix-verified-rust-blobs.json",
+        "resolved_repository_path": "qualification/sealed-ingress-20261105/native/ai395-second-postfix-verified-rust-blobs.json",
+        "target_sha256": "71b5fd4cf0616d79a10503798ef86ce5391c6c7aa8d3dfff76f1b522af4460b2"
+      },
+      {
+        "source": "qualification/sealed-ingress-20261105/native-validation.md",
+        "line": 315,
+        "target": "native/align_second_reviewed_fix.py",
+        "resolved_repository_path": "qualification/sealed-ingress-20261105/native/align_second_reviewed_fix.py",
+        "target_sha256": "b95b4e1be935701a47f650824c580cd9fac5ef2890b43f1d229bfd4d7e6d7974"
+      },
+      {
+        "source": "qualification/sealed-ingress-20261105/native-validation.md",
+        "line": 331,
+        "target": "convergence-target.md",
+        "resolved_repository_path": "qualification/sealed-ingress-20261105/convergence-target.md",
+        "target_sha256": "dff6252a8ba739e38b5c29433c7747ec150043e4acbb20aa9f330847a140258c"
+      },
+      {
+        "source": "qualification/sealed-ingress-20261105/native-validation.md",
+        "line": 337,
+        "target": "../runtime-convergence-20261105/current-source-ci-observation.json",
+        "resolved_repository_path": "qualification/runtime-convergence-20261105/current-source-ci-observation.json",
+        "target_sha256": "2ffdce01ae272e64e78fd847beffb9935322224c237022d09a2edea0bfe218ea"
+      }
+    ]
+  },
+  "frozen_bundle_checks": [
+    {
+      "directory": "native-round2",
+      "indexed_files": 22,
+      "all_hashes_sizes_match": true,
+      "preflight_bytes_unchanged": true
+    },
+    {
+      "directory": "native-round2-gate-v2",
+      "indexed_files": 28,
+      "all_hashes_sizes_match": true,
+      "preflight_bytes_unchanged": true
+    }
+  ],
+  "history_provenance_package": {
+    "files": 5,
+    "all_original_digests_preserved": true
+  },
+  "convergence_target_and_canonical_source_references_match": true,
+  "issues": [],
+  "activity": "Read-only local archive verification; only sibling review outputs written."
+}

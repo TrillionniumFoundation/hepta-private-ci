@@ -1,0 +1,27 @@
+{
+  "schema": "hepta.sealed-ingress-native-sequence.v1",
+  "head": "eed6541df0add428add8e2d9ab2cbd54a961abeb",
+  "tree": "b8ce8b96a759f522cb7db60027d4844f1b3ad974",
+  "state": "sequence-blocked",
+  "phases": [
+    {
+      "phase": "red-q-plasticity",
+      "returncode": 1,
+      "elapsed_seconds": 2.874666452407837
+    }
+  ],
+  "runner_sha256": "46552f047784d07b825cec59e0358cfbb02a010f448b7538bb0fadc15ea2f7df",
+  "orchestrator_sha256": "19079b9ff332cc40b6e5e2eafa7c008aa91027d51eb0f0271fb7f81bd44cded2",
+  "test_profile_features_timeouts_unchanged": true,
+  "automatic_retry": false,
+  "q2_predecessor_review": {
+    "required_name": "current_use_attestation_binds_the_exact_sealed_publication",
+    "panic_location": "hepta-agentd/src/intelligence_evaluation_tests.rs:460:5",
+    "attempts": 2,
+    "witness_scope": "first assertion only; later assertions are not observed",
+    "stderr_sha256": "3d62dc45c1556fb66e59a9cd054307888df83a9af5343d2497b8b75c5e58212a",
+    "restored_positive_count": 14
+  },
+  "exit_code": 1,
+  "error": "Native phase returned nonzero: red-q-plasticity"
+}

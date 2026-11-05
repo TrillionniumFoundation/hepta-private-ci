@@ -1,0 +1,112 @@
+{
+  "schema": "hepta.sealed-ingress-negative-control-independent-review.v1",
+  "control": "Q4",
+  "phase": "red-q-selector",
+  "attempt": 1,
+  "reviewed_at_utc": "2026-11-05T10:04:23.651169+00:00",
+  "decision": "ACCEPT_EXPECTED_BEHAVIORAL_FAILURE_AND_EXACT_RESTORATION",
+  "source": {
+    "execution_head": "eed6541df0add428add8e2d9ab2cbd54a961abeb",
+    "execution_tree": "b8ce8b96a759f522cb7db60027d4844f1b3ad974",
+    "plan_sha256": "00b4d289a635ae36865dc70732a1a10a03a8fb81575be5b5eba0b21fce7027fe",
+    "native_runner_sha256": "46552f047784d07b825cec59e0358cfbb02a010f448b7538bb0fadc15ea2f7df",
+    "positive_manifest_sha256": "e652b430cf2af22ce8f421288bad0687cb6ba332fa31da696034f1ed9bf7c7da",
+    "production_path": "codex-rs/hepta-intelligence-eval/src/self_evolution_selection.rs",
+    "positive_blob": "7d3da83abd8c200698a7d98adb46cacef79999d6",
+    "mutated_blob": "3cef48e68880f7230f4071148a2d795b1016a561",
+    "test_path": "codex-rs/hepta-intelligence-eval/src/self_evolution_ingress_tests.rs",
+    "test_blob": "549e33fbbc9160c55e5bfbcd1369a00076ae79dc"
+  },
+  "mutation": {
+    "patch_sha256": "e74af6899e6941ee81ba944664153fb67157398220b0cc395847feb5c5ef95a0",
+    "scope": "Deletes only qualification identity fields from the v2 selector signing encoding; retains required fields/nonzero checks, sealed admission and receipt binding.",
+    "tests_or_fixtures_changed": false,
+    "actual_changed_path_digest_matches_single_production_path": true
+  },
+  "direct_log_observation": {
+    "fresh_eval_compilation_from_source_next": true,
+    "compilation_completed": true,
+    "nextest_profile": "local",
+    "command": [
+      "just",
+      "test",
+      "--locked",
+      "-p",
+      "codex-hepta-intelligence-eval",
+      "-E",
+      "test(/(^|::)(selector_signature_commits_the_exact_qualification_publication)$/)"
+    ],
+    "command_exit_code": 100,
+    "command_elapsed_seconds": 3.14294695854187,
+    "nextest_elapsed_seconds": 0.543,
+    "run": 1,
+    "passed": 0,
+    "failed": 1,
+    "skipped": 121,
+    "attempts": 2,
+    "independent_cases": 1,
+    "test_name": "selector_signature_commits_the_exact_qualification_publication",
+    "panic_location": "hepta-intelligence-eval/src/self_evolution_ingress_tests.rs:474:5",
+    "first_assertion": "matches!(admit_self_evolution_selection_v1(second_prepared, &wrong_use, &second.signers.verifier, 70), Err(SelfEvolutionSelectionError::Evidence(_)))",
+    "assertion_result": "false on both attempts",
+    "actual_result_value_printed": false,
+    "interpretation": "The original selector-admission assertion expecting Evidence refusal failed; the raw panic does not print an Ok value or VerifiedSelection receipt."
+  },
+  "source_inference": {
+    "classification": "INFERENCE_FROM_EXACT_SOURCE_AND_SOLE_MUTATION_NOT_A_PRINTED_RETURN_VALUE",
+    "prerequisites_reached_by_sequential_code": "Before the recorded panic, complete signed qualification decisions compared equal, both real ProductRunner fixture preparations succeeded, both signing payloads were constructed, and the first selector signed its payload. This is supported by the exact source and observed panic position, not separate printed return values.",
+    "reasoning": [
+      "The two unchanged fixture constructors differ in the publication digest while preserving source ledger data, request/policy/time, evaluation evidence and the signing roster.",
+      "The sole mutation removes the qualification evidence/publication bytes from the v2 selector payload. The remaining signing fields are equal for these two preparations, so the first valid Selector signature is valid for the second preparation under the same verifier.",
+      "The original Generator/Evaluator/Observer/Selector identity separation, current verification and all other checks remain intact and are satisfied by the unchanged fixture.",
+      "Under these exact fixture conditions, selector admission reaches its VerifiedSelfEvolutionSelectionV1 success branch. This is a source-derived conclusion, not a returned value printed by the raw panic."
+    ]
+  },
+  "unreached_tail": [
+    "The signing payload inequality at line 483 is not reached after the first panic.",
+    "The correctly signed second publication positive admission at lines 484-498 is not reached in this negative invocation."
+  ],
+  "restoration": {
+    "receipt_state_unchanged": "named-test-failures-observed-review-required",
+    "runner_exit_code": 0,
+    "restored_candidate": true,
+    "serialized_restored_files": 14,
+    "all_14_before_expected_restored_hashes_equal": true,
+    "adopted_lint_tests": "The frozen runner also checks the two adopted lint-test blobs; clean-after is empty, while the serialized restored_positive array lists the 14 ingress files.",
+    "clean_after_empty": true,
+    "head_after_hash_recomputed": true,
+    "tree_after_hash_recomputed": true,
+    "cargo_lock_sha256": "4165307bb6c41d08e6c1c362060f2a958c8200ea43fdab2b8b1e6220ad82b55c",
+    "cargo_lock_git_blob": "b7e710988d6a3377a7e0a1dc68aef49c68dda36e",
+    "all_auxiliary_steps_exit_zero": true,
+    "prior_successful_Q3_attempt2_receipt_sha256_verified": "4cffc7cac9855131854689730fe1d9ead021b6ea45eaf2c12aebd77101b2a34e",
+    "failed_Q3_attempt1_not_used_as_gate": true
+  },
+  "limits": [
+    "This deliberately mutated-code RED is not a passing ordinary product suite.",
+    "No production provider/holdout qualification, physical effect, production selection authority, durable task terminal recovery, Windows success or merge/release permission is established.",
+    "The restored-source full three-package positive run and scoped fix remain separate gates at this review time."
+  ],
+  "artifacts": [
+    {
+      "path": "native/ai395-sealed-q4-receipt.json",
+      "bytes": 32796,
+      "sha256": "41c062e316dfd9f6f18bc0e129b8aebfa62d6211b715642e9284d0e6c6e57419"
+    },
+    {
+      "path": "native/ai395-sealed-q4-just-test.stderr",
+      "bytes": 4153,
+      "sha256": "732a2808896c602c5bc202ec96838f5a73e92c7e8eefcd38573d317723376520"
+    },
+    {
+      "path": "native/ai395-sealed-q4-just-test.stdout",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "native/ai395-sealed-q4-negative.patch",
+      "bytes": 479,
+      "sha256": "e74af6899e6941ee81ba944664153fb67157398220b0cc395847feb5c5ef95a0"
+    }
+  ]
+}

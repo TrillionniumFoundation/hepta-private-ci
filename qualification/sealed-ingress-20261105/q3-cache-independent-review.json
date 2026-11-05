@@ -1,0 +1,148 @@
+{
+  "schema": "hepta.native-build-cache-independent-review.v1",
+  "reviewed_at_utc": "2026-11-05T09:48:20.546417+00:00",
+  "decision": "ACCEPT_TASK_CACHE_INVALIDATION_AND_SAME_CONTROL_RETRY_NO_SOURCE_WORKAROUND",
+  "source_head": "eed6541df0add428add8e2d9ab2cbd54a961abeb",
+  "source_tree": "b8ce8b96a759f522cb7db60027d4844f1b3ad974",
+  "original_attempt": {
+    "review": "q3-attempt1-compilation-review.json",
+    "sha256": "2184154798e269d3c8abe0d38eb6200faafad6bf7b0f33f6ee2a694af3ad1958",
+    "classification": "COMPILE_BLOCKED_NOT_BEHAVIORAL_RED",
+    "raw_receipt_preserved": true
+  },
+  "observed_target_evidence": {
+    "diagnostic": {
+      "path": "native/ai395-q3-cache-diagnostic-v1.json",
+      "sha256": "843939f2a6ae4e35f8a330cd58d1e24fa2d0634532686952422344e407ceb93d",
+      "bytes": 187627,
+      "observed_utc": "2026-11-05T09:43:27.611517+00:00",
+      "read_only": true
+    },
+    "failing_consumer": {
+      "fingerprint_directory": "/home/qq/work/hepta-convergence-20261105-0c901b/target/debug/.fingerprint/codex-hepta-intelligence-353c02ea8f35e8be",
+      "current_error_file_sha256": "9f700035c29c61cc6eab398c0f015b8e43581136fdf206a87552c2a82a9aa114",
+      "current_error_mtime_utc": "2026-11-05T09:39:46.814675+00:00",
+      "current_invoked_mtime_utc": "2026-11-05T09:39:46.011705+00:00",
+      "error": "E0432 unresolved helper import",
+      "fingerprint_text_bytes": 0,
+      "retained_dependency_json_sha256": "510af780f6a23d0d692a84666ef8b6bf74f2c64c89b5252eccecb89566002867",
+      "retained_dependency_json_mtime_utc": "2026-11-05T08:21:09.689245+00:00",
+      "retained_eval_dependency_fingerprint_integer": 3888014227650355741
+    },
+    "old_eval_variant": {
+      "fingerprint_directory": "/home/qq/work/hepta-convergence-20261105-0c901b/target/debug/.fingerprint/codex-hepta-intelligence-eval-fcbed105465cd5d7",
+      "fingerprint_text": "1da2c3285700f535",
+      "little_endian_integer_independently_recomputed": 3888014227650355741,
+      "fingerprint_mtime_utc": "2026-11-05T08:21:09.443253+00:00",
+      "dependency_file_sha256": "dbd89bd3445c2e4872a1aae5fc645e077b46a63adc54c2c16173cca5e95cfd56",
+      "depinfo_contains_new_helper": false,
+      "cached_diagnostic_sha256": "94479ccc4cb2150e34b274db121f9492fbf3d238ab4c73739b91d3f642f3ba35",
+      "cached_diagnostic": "unused import crate::IndependentEvaluationDispositionV1 at product_runner.rs:31",
+      "features": "[\"default\"]",
+      "profile": 7792962805499760383,
+      "dependency_fingerprints": [
+        [
+          9813227221266182632,
+          "codex_hepta_learning_ledger",
+          false,
+          5566075517048108143
+        ],
+        [
+          15300758679299875469,
+          "codex_hepta_types",
+          false,
+          4780196415195438655
+        ]
+      ],
+      "artifacts": [
+        {
+          "path": "/home/qq/work/hepta-convergence-20261105-0c901b/target/debug/deps/libcodex_hepta_intelligence_eval-fcbed105465cd5d7.rlib",
+          "size": 10145284,
+          "mtime_ns": 1793866869431253724,
+          "sha256": "31d022be6f76fce3da16b2257b5f7f5ab6ba2093517b7fcb0ebb4033a47ee033"
+        },
+        {
+          "path": "/home/qq/work/hepta-convergence-20261105-0c901b/target/debug/deps/libcodex_hepta_intelligence_eval-fcbed105465cd5d7.rmeta",
+          "size": 1174978,
+          "mtime_ns": 1793866869301615604,
+          "sha256": "faf2771682fc004457b6f061bd7de56865fefc53b6503a920f6c6e0616d244e6"
+        }
+      ]
+    },
+    "current_eval_variant": {
+      "fingerprint_directory": "/home/qq/work/hepta-convergence-20261105-0c901b/target/debug/.fingerprint/codex-hepta-intelligence-eval-12ee985d0b0e45b1",
+      "depinfo_contains_new_helper": true,
+      "dependency_file_sha256": "6ed2f7c18d13383b1cf4884913de79a496bee1d74e1c70dd5d023261566a78b7",
+      "features": "[\"default\"]",
+      "profile": 7792962805499760383,
+      "dependency_fingerprints": [
+        [
+          9813227221266182632,
+          "codex_hepta_learning_ledger",
+          false,
+          15227768867144780672
+        ],
+        [
+          15300758679299875469,
+          "codex_hepta_types",
+          false,
+          18183214015053875645
+        ]
+      ],
+      "artifacts": [
+        {
+          "path": "/home/qq/work/hepta-convergence-20261105-0c901b/target/debug/deps/libcodex_hepta_intelligence_eval-12ee985d0b0e45b1.rlib",
+          "size": 10261226,
+          "mtime_ns": 1793871040182747111,
+          "sha256": "14decbb38a5ed19b2d443f761575c82865fb4fe1cca4e80f8f7f35eceab4e15b"
+        },
+        {
+          "path": "/home/qq/work/hepta-convergence-20261105-0c901b/target/debug/deps/libcodex_hepta_intelligence_eval-12ee985d0b0e45b1.rmeta",
+          "size": 1181778,
+          "mtime_ns": 1793871039990730568,
+          "sha256": "49e40db644d934afe3851b1d8deb287ad7cd5e7c3eba382253be7c0d52e1b02c"
+        }
+      ]
+    },
+    "actual_source_next_lib": {
+      "sha256": "6224028235c583330c40a0bc2daf9e79d195c2c9700228def07eadae3c79a45d",
+      "mtime_utc": "2026-11-05T08:06:24.844181+00:00",
+      "helper_export": [
+        "138:pub use product_qualification_use::revalidate_product_qualification_v1;"
+      ]
+    }
+  },
+  "causal_assessment": {
+    "classification": "STRONGLY_SUPPORTED_SOURCE_AND_TARGET_INFERENCE_WITH_SAME_COMMAND_RETRY_STILL_PENDING",
+    "reasoning": [
+      "The Q3 error belongs to a newly invoked consumer unit whose prior successful dependency fingerprint identifies the old eval artifact. The cached warning from that old artifact is the warning replayed immediately before the Q3 import failure.",
+      "The old eval dependency inventory lacks product_qualification_use.rs. Its artifacts predate the second-stage tests and match the first-tree B2-era warning. A newer eval variant includes the module, but has different transitive dependency fingerprints. Both eval variants themselves use default features.",
+      "Source-next lib.rs has the correct unconditional export, but its file mtime predates the old shared-target artifact. The stale dep-info inventory does not include the later helper file, so that helper file timestamp cannot invalidate that old dependency inventory by itself.",
+      "These facts explain cross-worktree stale artifact reuse under the shared task target. They do not justify changing source imports, adding features, broadening the test package selection, or weakening the target assertion."
+    ],
+    "precision_limits": [
+      "The consumer dependency JSON is retained from the older successful build; the failed Q3 attempt wrote a new error output and cleared its fingerprint, not a complete new success JSON. This review does not relabel that old JSON as a captured current rustc --extern command.",
+      "The diagnostic metadata command reports its own default source-next/codex-rs/target location, while the native runner records an explicit shared CARGO_TARGET_DIR. Metadata.target_directory is not evidence that the original Q3 command used that default directory.",
+      "A same-source, same-control recompile after targeted invalidation is still required to establish the repaired build and behavioral witness."
+    ]
+  },
+  "recommended_action": {
+    "scope": "Only task-owned stale eval build artifacts and necessary dependent outputs, under the existing exclusive native target lock; an isolated second target is an alternative if broad cache ambiguity remains.",
+    "preserve": [
+      "exact E source and source hashes",
+      "Q3 frozen mutation patch",
+      "original target test and all assertions",
+      "just test entrypoint and original -p codex-hepta-intelligence command",
+      "locked dependencies",
+      "default features and local profile",
+      "Rust 1.96.0 and 2 build jobs",
+      "original timeouts/retry policy",
+      "attempt1 raw error receipt and stopped gate state"
+    ],
+    "retry": "Use a new Q3 attempt artifact directory. Accept RED only if compilation completes and the original digest inequality at line 713 fails, then restore and verify source/HEAD/tree/lock. Do not advance Q4/green/fix on this attempt1 failure."
+  },
+  "actions_performed_by_this_review": [
+    "Read-only local inspection and hash arithmetic.",
+    "No Cargo build, cache mutation, source edit, or remote job launched."
+  ]
+}

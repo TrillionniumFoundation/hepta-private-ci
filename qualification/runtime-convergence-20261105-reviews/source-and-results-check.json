@@ -1,0 +1,57 @@
+{
+  "current_head": "432421d0d9ca9d82c5e3401fe3425af29131505a",
+  "tested_head": "facba0d32c1cd0e8163a6186d7ba91fa311f2e2e",
+  "source_count": 15,
+  "adoption_and_alignment_verified": true,
+  "native_summaries": [
+    {
+      "case": "A",
+      "source_commit": "1d87082c0d5afd2b474a2c453ea98005fd540dea",
+      "summary": "Summary [   0.040s] 8 tests run: 2 passed, 6 failed, 654 skipped",
+      "actual_command_exit": 100,
+      "restored_candidate": true
+    },
+    {
+      "case": "B1",
+      "source_commit": "1d87082c0d5afd2b474a2c453ea98005fd540dea",
+      "summary": "Summary [   0.022s] 1 test run: 0 passed, 1 failed, 117 skipped",
+      "actual_command_exit": 100,
+      "restored_candidate": true
+    },
+    {
+      "case": "B2",
+      "source_commit": "1d87082c0d5afd2b474a2c453ea98005fd540dea",
+      "summary": "Summary [   0.214s] 2 tests run: 0 passed, 2 failed, 199 skipped",
+      "actual_command_exit": 100,
+      "restored_candidate": true
+    },
+    {
+      "case": "C",
+      "source_commit": "1d87082c0d5afd2b474a2c453ea98005fd540dea",
+      "summary": "Summary [   0.058s] 2 tests run: 0 passed, 2 failed, 14 skipped",
+      "actual_command_exit": 100,
+      "restored_candidate": true
+    },
+    {
+      "case": "initial-full",
+      "source_commit": "1d87082c0d5afd2b474a2c453ea98005fd540dea",
+      "summary": "Summary [  36.312s] 813 tests run: 812 passed (1 slow), 1 failed, 66 skipped",
+      "actual_command_exit": 100,
+      "restored_candidate": null
+    },
+    {
+      "case": "named-desktop",
+      "source_commit": "facba0d32c1cd0e8163a6186d7ba91fa311f2e2e",
+      "summary": "Summary [   0.065s] 1 test run: 1 passed, 661 skipped",
+      "actual_command_exit": 0,
+      "restored_candidate": null
+    },
+    {
+      "case": "repaired-full",
+      "source_commit": "facba0d32c1cd0e8163a6186d7ba91fa311f2e2e",
+      "summary": "Summary [  36.320s] 813 tests run: 813 passed (1 slow), 66 skipped",
+      "actual_command_exit": 0,
+      "restored_candidate": null
+    }
+  ]
+}

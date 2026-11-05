@@ -1,0 +1,54 @@
+{
+  "schema": "hepta.task-eval-cache-repair.v1",
+  "state": "cache-repair-blocked",
+  "source": "/home/qq/work/hepta-convergence-20261105-0c901b/source-next",
+  "head": "eed6541df0add428add8e2d9ab2cbd54a961abeb",
+  "tree": "b8ce8b96a759f522cb7db60027d4844f1b3ad974",
+  "target": "/home/qq/work/hepta-convergence-20261105-0c901b/target",
+  "steps": [],
+  "backup": [],
+  "script_sha256": "6aac58b0ea2ccbd0f9b9fffc9100aedb19283dc67e420b682680cd41ef24f3ec",
+  "original_evidence": {
+    "native-q3-cache-diagnostic-v1.json": "843939f2a6ae4e35f8a330cd58d1e24fa2d0634532686952422344e407ceb93d",
+    "native-sealed-red-q-plasticity-v1/receipt.json": "b98653f5a06015cb71042b642ed1df3efb08e0384c9cc350294f7e86dfd70a49",
+    "native-sealed-remaining-pipeline-v1/receipt.json": "ea4e3ea5a557c3b8951a11263f03e5e25061deb2159be025ae105ed75e0ea68c"
+  },
+  "source_features_profiles_budgets_changed": false,
+  "tests_executed_by_repair": false,
+  "verified_environment": {
+    "toolchain_receipt_sha256": "c8e42ac85a36f0cb3f7f089013ac08f4e51f69d258e4e13ca4f5b12b3707a623",
+    "clang_receipt_sha256": "b33807074fafd12680d8d868069f1d76d5f41e2c4a1020b7a54b8890fad26740",
+    "openssl_receipt_sha256": "dfc3b19bd311df2d9f8376730845f5593df62396bfbe94a65318655c6bda4ba7",
+    "environment": {
+      "RUSTUP_HOME": "/home/qq/work/hepta-convergence-20261105-0c901b/rustup-home-1.96.0",
+      "RUSTUP_TOOLCHAIN": "1.96.0",
+      "CARGO_BUILD_JOBS": "2",
+      "CARGO_TARGET_DIR": "/home/qq/work/hepta-convergence-20261105-0c901b/target",
+      "BINDGEN_EXTRA_CLANG_ARGS": "-resource-dir=/home/qq/work/hepta-convergence-20261105-0c901b/native-headers/clang21-21.1.8-6ubuntu1/usr/lib/llvm-21/lib/clang/21",
+      "OPENSSL_LIB_DIR": "/home/qq/work/hepta-convergence-20261105-0c901b/native-headers/openssl-3.5.5-1ubuntu3.7/usr/lib/x86_64-linux-gnu",
+      "OPENSSL_INCLUDE_DIR": "/home/qq/work/hepta-convergence-20261105-0c901b/native-headers/openssl-3.5.5-1ubuntu3.7/usr/include",
+      "CPATH": "/home/qq/work/hepta-convergence-20261105-0c901b/native-headers/openssl-3.5.5-1ubuntu3.7/usr/include/x86_64-linux-gnu"
+    },
+    "inherited_compile_options": {},
+    "repository_features_profiles_budgets_or_backend_changed": false
+  },
+  "active_cargo_or_compiler_processes": [
+    {
+      "pid": 4086149,
+      "comm": "cargo",
+      "cwd": "/home/qq/work/hepta-modules40-20261105-a9f4ebc7/source/codex-rs"
+    },
+    {
+      "pid": 4112093,
+      "comm": "rustc",
+      "cwd": "/home/qq/work/hepta-modules40-20261105-a9f4ebc7/source/codex-rs"
+    },
+    {
+      "pid": 4112340,
+      "comm": "rustc",
+      "cwd": "/home/qq/work/hepta-modules40-20261105-a9f4ebc7/source/codex-rs"
+    }
+  ],
+  "exit_code": 1,
+  "error": "A Cargo/compiler process is active; package cleanup refused"
+}

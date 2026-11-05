@@ -1,0 +1,38 @@
+{
+  "schema": "hepta.sealed-ingress-source-evidence.v1",
+  "source_head": "2ac5e02011e480dc39cd84bed655518db2d37a69",
+  "source_tree": "9c4e0b985d0693d27d24bca5cc3da4491969da80",
+  "base_head": "a20a8191ec37375876a99b7c18bae053f9bc185d",
+  "ordered_source_commits": [
+    "75670fa10204f941e6d34a83282a06453c678308",
+    "2925932f22d81aeff8b29f1be41febc6ab73f711",
+    "37ad8694e19879d4e68f7f66519bd1f44e720719",
+    "2ac5e02011e480dc39cd84bed655518db2d37a69"
+  ],
+  "checks": {
+    "four_stage_and_combined_patch_equivalence": "PASS",
+    "exact_base_existing_and_new_paths": "PASS",
+    "published_14_source_blobs": "PASS",
+    "separate_agent_source_reviews": "PASS",
+    "original_no_update_bytes": "PASS",
+    "original_contract_ci_requirements": "UNCHANGED",
+    "exact_baseline_caller_inventory_plus_verified_source_delta": "PASS",
+    "native_format_this_candidate": "NOT_RUN",
+    "native_compilation_this_candidate": "NOT_RUN",
+    "native_negative_controls_this_candidate": "NOT_RUN",
+    "native_package_tests_this_candidate": "NOT_RUN",
+    "scoped_clippy_this_candidate": "NOT_RUN",
+    "exact_head_and_synthetic_merge_ci": "NOT_ESTABLISHED"
+  },
+  "source_inventory_scope": "5,309 baseline tracked Rust blobs plus the exactly verified 14-file candidate delta; lexical migration coverage, not compilation.",
+  "required_packages": [
+    "codex-hepta-intelligence-eval",
+    "codex-hepta-agentd",
+    "codex-hepta-intelligence"
+  ],
+  "full_runtime_convergence_is_separate": true,
+  "qualification_release": "HOLD",
+  "adaptive_efficacy_admission": "NO_NEW_EVIDENCE; retain no-update and accepted predecessor",
+  "physical_effect_authority": "NO_NEW_AUTHORITY",
+  "recorded_at_utc": "2026-11-05T07:39:31.813732+00:00"
+}

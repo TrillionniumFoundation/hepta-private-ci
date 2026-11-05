@@ -1,0 +1,4167 @@
+{
+  "observed_utc": "2026-11-05T09:43:27.611517+00:00",
+  "readonly_source_and_target": true,
+  "sources": [
+    {
+      "path": "/home/qq/work/hepta-convergence-20261105-0c901b/source",
+      "git_exit": 0,
+      "git_stdout": "432421d0d9ca9d82c5e3401fe3425af29131505a\nd93136bb5e318ea4131bfb5cb0b9ac9310f27d1d\n",
+      "files": [
+        {
+          "path": "/home/qq/work/hepta-convergence-20261105-0c901b/source/codex-rs/hepta-intelligence-eval/src/lib.rs",
+          "size": 14484,
+          "mtime_ns": 1793863605536214838,
+          "sha256": "7961892a8f3a5a3941b8d57669a0248b3e202f9b53b3643f080869ca78e7517e",
+          "helper_lines": []
+        },
+        {
+          "path": "/home/qq/work/hepta-convergence-20261105-0c901b/source/codex-rs/hepta-intelligence-eval/src/product_runner.rs",
+          "size": 37054,
+          "mtime_ns": 1793866871565618854,
+          "sha256": "b00f4f3d0e73ed1f206a5387268a60c05372299eec238925ff2b54537be65f25",
+          "helper_lines": []
+        },
+        {
+          "path": "/home/qq/work/hepta-convergence-20261105-0c901b/source/codex-rs/hepta-intelligence-eval/src/product_qualification_use.rs",
+          "missing": true
+        },
+        {
+          "path": "/home/qq/work/hepta-convergence-20261105-0c901b/source/codex-rs/hepta-intelligence/src/plasticity_product.rs",
+          "size": 29471,
+          "mtime_ns": 1793863605537529550,
+          "sha256": "0a24b7a09ccfdc646c6f7626f143e0d4877fb3a6c002a6cfd62f1b4ec828b0f3",
+          "helper_lines": []
+        }
+      ]
+    },
+    {
+      "path": "/home/qq/work/hepta-convergence-20261105-0c901b/source-next",
+      "git_exit": 0,
+      "git_stdout": "eed6541df0add428add8e2d9ab2cbd54a961abeb\nb8ce8b96a759f522cb7db60027d4844f1b3ad974\n",
+      "files": [
+        {
+          "path": "/home/qq/work/hepta-convergence-20261105-0c901b/source-next/codex-rs/hepta-intelligence-eval/src/lib.rs",
+          "size": 14594,
+          "mtime_ns": 1793865984844181053,
+          "sha256": "6224028235c583330c40a0bc2daf9e79d195c2c9700228def07eadae3c79a45d",
+          "helper_lines": [
+            "138:pub use product_qualification_use::revalidate_product_qualification_v1;"
+          ]
+        },
+        {
+          "path": "/home/qq/work/hepta-convergence-20261105-0c901b/source-next/codex-rs/hepta-intelligence-eval/src/product_runner.rs",
+          "size": 37054,
+          "mtime_ns": 1793865984845181018,
+          "sha256": "b00f4f3d0e73ed1f206a5387268a60c05372299eec238925ff2b54537be65f25",
+          "helper_lines": []
+        },
+        {
+          "path": "/home/qq/work/hepta-convergence-20261105-0c901b/source-next/codex-rs/hepta-intelligence-eval/src/product_qualification_use.rs",
+          "size": 3413,
+          "mtime_ns": 1793870823720030626,
+          "sha256": "7c6205f2e6af7987fb3123acc6922a3c8e57f9f442be57bc2cbb97ef3587c93d",
+          "helper_lines": [
+            "24:pub fn revalidate_product_qualification_v1("
+          ]
+        },
+        {
+          "path": "/home/qq/work/hepta-convergence-20261105-0c901b/source-next/codex-rs/hepta-intelligence/src/plasticity_product.rs",
+          "size": 30817,
+          "mtime_ns": 1793871587189163430,
+          "sha256": "3087c92d11eb53676564e932379a1167d040777058571863a5f18822406849e2",
+          "helper_lines": [
+            "24:use codex_hepta_intelligence_eval::revalidate_product_qualification_v1;",
+            "504:        let decision = revalidate_product_qualification_v1("
+          ]
+        }
+      ]
+    }
+  ],
+  "fingerprints": [
+    {
+      "path": "/home/qq/work/hepta-convergence-20261105-0c901b/target/debug/.fingerprint/codex-hepta-intelligence-eval-06ab8db2dd1d02ee",
+      "files": [
+        {
+          "path": "/home/qq/work/hepta-convergence-20261105-0c901b/target/debug/.fingerprint/codex-hepta-intelligence-eval-06ab8db2dd1d02ee/dep-test-lib-codex_hepta_intelligence_eval",
+          "size": 1203,
+          "mtime_ns": 1793870745023216364,
+          "sha256": "88ffd20284b471360f423f59fc4911b6045f6d30d5bc6fe002eed93d3df338dc"
+        },
+        {
+          "path": "/home/qq/work/hepta-convergence-20261105-0c901b/target/debug/.fingerprint/codex-hepta-intelligence-eval-06ab8db2dd1d02ee/invoked.timestamp",
+          "size": 48,
+          "mtime_ns": 1793870745023216364,
+          "sha256": "5a109e6643e8d3e88642e3f35e85d2a83e639d07523aa6e99166c48178e965c3"
+        },
+        {
+          "path": "/home/qq/work/hepta-convergence-20261105-0c901b/target/debug/.fingerprint/codex-hepta-intelligence-eval-06ab8db2dd1d02ee/test-lib-codex_hepta_intelligence_eval",
+          "size": 16,
+          "mtime_ns": 1793870747459129960,
+          "sha256": "4b06832c4b2260b7845379ab8f2f143747b19ba92d010592ea49bdbea9d80fd3",
+          "text": "d4dd2231f342190a"
+        },
+        {
+          "path": "/home/qq/work/hepta-convergence-20261105-0c901b/target/debug/.fingerprint/codex-hepta-intelligence-eval-06ab8db2dd1d02ee/test-lib-codex_hepta_intelligence_eval.json",
+          "size": 730,
+          "mtime_ns": 1793870747459129960,
+          "sha256": "fdecf990af29c61e132af94aa39333566607012859e0ebe8d43e76829845bd62",
+          "json": {
+            "rustc": 16696009966390864400,
+            "features": "[\"default\"]",
+            "declared_features": "[\"default\", \"trusted-inprocess-eval\"]",
+            "target": 1626869957579083618,
+            "profile": 1933147946653136821,
+            "path": 17650404080242638643,
+            "deps": [
+              [
+                5306016253860807931,
+                "ed25519_dalek",
+                false,
+                11002581837143173930
+              ],
+              [
+                9813227221266182632,
+                "codex_hepta_learning_ledger",
+                false,
+                15227768867144780672
+              ],
+              [
+                15300758679299875469,
+                "codex_hepta_types",
+                false,
+                18183214015053875645
+              ],
+              [
+                17811409749869794184,
+                "pretty_assertions",
+                false,
+                11245197705999694565
+              ]
+            ],
+            "local": [
+              {
+                "CheckDepInfo": {
+                  "dep_info": "debug/.fingerprint/codex-hepta-intelligence-eval-06ab8db2dd1d02ee/dep-test-lib-codex_hepta_intelligence_eval",
+                  "checksum": false
+                }
+              }
+            ],
+            "rustflags": [],
+            "config": 8247474407144887393,
+            "compile_kind": 0
+          }
+        }
+      ]
+    },
+    {
+      "path": "/home/qq/work/hepta-convergence-20261105-0c901b/target/debug/.fingerprint/codex-hepta-intelligence-eval-12ee985d0b0e45b1",
+      "files": [
+        {
+          "path": "/home/qq/work/hepta-convergence-20261105-0c901b/target/debug/.fingerprint/codex-hepta-intelligence-eval-12ee985d0b0e45b1/dep-lib-codex_hepta_intelligence_eval",
+          "size": 618,
+          "mtime_ns": 1793871039605767576,
+          "sha256": "45c8f230b9569fe9e889fe403de22c5593d86648b3801e31b88b6d714ead900e"
+        },
+        {
+          "path": "/home/qq/work/hepta-convergence-20261105-0c901b/target/debug/.fingerprint/codex-hepta-intelligence-eval-12ee985d0b0e45b1/invoked.timestamp",
+          "size": 48,
+          "mtime_ns": 1793871039605767576,
+          "sha256": "5a109e6643e8d3e88642e3f35e85d2a83e639d07523aa6e99166c48178e965c3"
+        },
+        {
+          "path": "/home/qq/work/hepta-convergence-20261105-0c901b/target/debug/.fingerprint/codex-hepta-intelligence-eval-12ee985d0b0e45b1/lib-codex_hepta_intelligence_eval",
+          "size": 16,
+          "mtime_ns": 1793871040196746615,
+          "sha256": "50e198d48cae80ee1234622360b4ecea5c6105d183a7a0c16922d371d8bdf122",
+          "text": "5d0930de066a2d1a"
+        },
+        {
+          "path": "/home/qq/work/hepta-convergence-20261105-0c901b/target/debug/.fingerprint/codex-hepta-intelligence-eval-12ee985d0b0e45b1/lib-codex_hepta_intelligence_eval.json",
+          "size": 590,
+          "mtime_ns": 1793871040196746615,
+          "sha256": "b04289f73de34192458f5666fdaa9f950f198fa47bb0f55b39c888f1421e0e18",
+          "json": {
+            "rustc": 16696009966390864400,
+            "features": "[\"default\"]",
+            "declared_features": "[\"default\", \"trusted-inprocess-eval\"]",
+            "target": 1626869957579083618,
+            "profile": 7792962805499760383,
+            "path": 17650404080242638643,
+            "deps": [
+              [
+                9813227221266182632,
+                "codex_hepta_learning_ledger",
+                false,
+                15227768867144780672
+              ],
+              [
+                15300758679299875469,
+                "codex_hepta_types",
+                false,
+                18183214015053875645
+              ]
+            ],
+            "local": [
+              {
+                "CheckDepInfo": {
+                  "dep_info": "debug/.fingerprint/codex-hepta-intelligence-eval-12ee985d0b0e45b1/dep-lib-codex_hepta_intelligence_eval",
+                  "checksum": false
+                }
+              }
+            ],
+            "rustflags": [],
+            "config": 8247474407144887393,
+            "compile_kind": 0
+          }
+        }
+      ]
+    },
+    {
+      "path": "/home/qq/work/hepta-convergence-20261105-0c901b/target/debug/.fingerprint/codex-hepta-intelligence-eval-6880576971373706",
+      "files": [
+        {
+          "path": "/home/qq/work/hepta-convergence-20261105-0c901b/target/debug/.fingerprint/codex-hepta-intelligence-eval-6880576971373706/dep-lib-codex_hepta_intelligence_eval",
+          "size": 808,
+          "mtime_ns": 1793868943794167678,
+          "sha256": "55cc2a38c523bfd3d061f7e1551abd7b784b1973e1d15b5a2661f220c56376bd"
+        },
+        {
+          "path": "/home/qq/work/hepta-convergence-20261105-0c901b/target/debug/.fingerprint/codex-hepta-intelligence-eval-6880576971373706/invoked.timestamp",
+          "size": 48,
+          "mtime_ns": 1793868943794167678,
+          "sha256": "5a109e6643e8d3e88642e3f35e85d2a83e639d07523aa6e99166c48178e965c3"
+        },
+        {
+          "path": "/home/qq/work/hepta-convergence-20261105-0c901b/target/debug/.fingerprint/codex-hepta-intelligence-eval-6880576971373706/lib-codex_hepta_intelligence_eval",
+          "size": 16,
+          "mtime_ns": 1793868944493142875,
+          "sha256": "2a68a192141ce3e4c0d2136d85a34ccea6cc9bcb1de80b0c9c4c430264ebfde5",
+          "text": "fa5871e41d55e25a"
+        },
+        {
+          "path": "/home/qq/work/hepta-convergence-20261105-0c901b/target/debug/.fingerprint/codex-hepta-intelligence-eval-6880576971373706/lib-codex_hepta_intelligence_eval.json",
+          "size": 589,
+          "mtime_ns": 1793868944493142875,
+          "sha256": "98aa0ebe02b0daead7cf8d2dc0bb764eeea013dd12ab1109a891c3ca65d3fb0b",
+          "json": {
+            "rustc": 16696009966390864400,
+            "features": "[\"default\"]",
+            "declared_features": "[\"default\", \"trusted-inprocess-eval\"]",
+            "target": 1626869957579083618,
+            "profile": 18425621165844343223,
+            "path": 17650404080242638643,
+            "deps": [
+              [
+                9813227221266182632,
+                "codex_hepta_learning_ledger",
+                false,
+                13618926167946193692
+              ],
+              [
+                15300758679299875469,
+                "codex_hepta_types",
+                false,
+                370670186029889123
+              ]
+            ],
+            "local": [
+              {
+                "CheckDepInfo": {
+                  "dep_info": "debug/.fingerprint/codex-hepta-intelligence-eval-6880576971373706/dep-lib-codex_hepta_intelligence_eval",
+                  "checksum": false
+                }
+              }
+            ],
+            "rustflags": [],
+            "config": 8247474407144887393,
+            "compile_kind": 0
+          }
+        }
+      ]
+    },
+    {
+      "path": "/home/qq/work/hepta-convergence-20261105-0c901b/target/debug/.fingerprint/codex-hepta-intelligence-eval-6d4bef5174cca9f1",
+      "files": [
+        {
+          "path": "/home/qq/work/hepta-convergence-20261105-0c901b/target/debug/.fingerprint/codex-hepta-intelligence-eval-6d4bef5174cca9f1/dep-lib-codex_hepta_intelligence_eval",
+          "size": 580,
+          "mtime_ns": 1793866735145967374,
+          "sha256": "d53f9502c03f11f0e4d8d870599c4b9d038130127ec55fa4526bdd4df5625c96"
+        },
+        {
+          "path": "/home/qq/work/hepta-convergence-20261105-0c901b/target/debug/.fingerprint/codex-hepta-intelligence-eval-6d4bef5174cca9f1/invoked.timestamp",
+          "size": 48,
+          "mtime_ns": 1793866735145967374,
+          "sha256": "5a109e6643e8d3e88642e3f35e85d2a83e639d07523aa6e99166c48178e965c3"
+        },
+        {
+          "path": "/home/qq/work/hepta-convergence-20261105-0c901b/target/debug/.fingerprint/codex-hepta-intelligence-eval-6d4bef5174cca9f1/lib-codex_hepta_intelligence_eval",
+          "size": 16,
+          "mtime_ns": 1793866738464850921,
+          "sha256": "0ad307761901ac94e34dce81cde8884b0ffb10579f0d7c669cbe97d8c9d0199d",
+          "text": "b41dfb7eb32b4651"
+        },
+        {
+          "path": "/home/qq/work/hepta-convergence-20261105-0c901b/target/debug/.fingerprint/codex-hepta-intelligence-eval-6d4bef5174cca9f1/lib-codex_hepta_intelligence_eval.json",
+          "size": 589,
+          "mtime_ns": 1793866738464850921,
+          "sha256": "8e55024b49f0936cb5ead5be475129f5fbfb077df8cadda35a44dcf4f0bc63ba",
+          "json": {
+            "rustc": 16696009966390864400,
+            "features": "[\"default\"]",
+            "declared_features": "[\"default\", \"trusted-inprocess-eval\"]",
+            "target": 1626869957579083618,
+            "profile": 7792962805499760383,
+            "path": 17650404080242638643,
+            "deps": [
+              [
+                9813227221266182632,
+                "codex_hepta_learning_ledger",
+                false,
+                15728513395026336713
+              ],
+              [
+                15300758679299875469,
+                "codex_hepta_types",
+                false,
+                9129533647149305527
+              ]
+            ],
+            "local": [
+              {
+                "CheckDepInfo": {
+                  "dep_info": "debug/.fingerprint/codex-hepta-intelligence-eval-6d4bef5174cca9f1/dep-lib-codex_hepta_intelligence_eval",
+                  "checksum": false
+                }
+              }
+            ],
+            "rustflags": [],
+            "config": 8247474407144887393,
+            "compile_kind": 0
+          }
+        }
+      ]
+    },
+    {
+      "path": "/home/qq/work/hepta-convergence-20261105-0c901b/target/debug/.fingerprint/codex-hepta-intelligence-eval-6e918c1d0a5735c5",
+      "files": [
+        {
+          "path": "/home/qq/work/hepta-convergence-20261105-0c901b/target/debug/.fingerprint/codex-hepta-intelligence-eval-6e918c1d0a5735c5/dep-test-lib-codex_hepta_intelligence_eval",
+          "size": 1070,
+          "mtime_ns": 1793866127087236743,
+          "sha256": "93a4ec3e03a670a889a9528a81bf308baaadd7662639926353c3afb87c481252"
+        },
+        {
+          "path": "/home/qq/work/hepta-convergence-20261105-0c901b/target/debug/.fingerprint/codex-hepta-intelligence-eval-6e918c1d0a5735c5/invoked.timestamp",
+          "size": 48,
+          "mtime_ns": 1793866127087236743,
+          "sha256": "5a109e6643e8d3e88642e3f35e85d2a83e639d07523aa6e99166c48178e965c3"
+        },
+        {
+          "path": "/home/qq/work/hepta-convergence-20261105-0c901b/target/debug/.fingerprint/codex-hepta-intelligence-eval-6e918c1d0a5735c5/test-lib-codex_hepta_intelligence_eval",
+          "size": 16,
+          "mtime_ns": 1793866131066098199,
+          "sha256": "99eeac984510dc5dac5f38f3a905ecb1e88bb471ac1f1fc0ebbbb54e062e19cf",
+          "text": "9ddd462a9f56c741"
+        },
+        {
+          "path": "/home/qq/work/hepta-convergence-20261105-0c901b/target/debug/.fingerprint/codex-hepta-intelligence-eval-6e918c1d0a5735c5/test-lib-codex_hepta_intelligence_eval.json",
+          "size": 728,
+          "mtime_ns": 1793866131066098199,
+          "sha256": "b31f22b09c7a90675e8a3849a8619c0c4af70589d5e335f2ff5eba896bd08838",
+          "json": {
+            "rustc": 16696009966390864400,
+            "features": "[\"default\"]",
+            "declared_features": "[\"default\", \"trusted-inprocess-eval\"]",
+            "target": 1626869957579083618,
+            "profile": 1933147946653136821,
+            "path": 17650404080242638643,
+            "deps": [
+              [
+                5306016253860807931,
+                "ed25519_dalek",
+                false,
+                3181785665752825515
+              ],
+              [
+                9813227221266182632,
+                "codex_hepta_learning_ledger",
+                false,
+                16518774673589356638
+              ],
+              [
+                15300758679299875469,
+                "codex_hepta_types",
+                false,
+                4780196415195438655
+              ],
+              [
+                17811409749869794184,
+                "pretty_assertions",
+                false,
+                11245197705999694565
+              ]
+            ],
+            "local": [
+              {
+                "CheckDepInfo": {
+                  "dep_info": "debug/.fingerprint/codex-hepta-intelligence-eval-6e918c1d0a5735c5/dep-test-lib-codex_hepta_intelligence_eval",
+                  "checksum": false
+                }
+              }
+            ],
+            "rustflags": [],
+            "config": 8247474407144887393,
+            "compile_kind": 0
+          }
+        }
+      ]
+    },
+    {
+      "path": "/home/qq/work/hepta-convergence-20261105-0c901b/target/debug/.fingerprint/codex-hepta-intelligence-eval-d3de85ef98ab2e6e",
+      "files": [
+        {
+          "path": "/home/qq/work/hepta-convergence-20261105-0c901b/target/debug/.fingerprint/codex-hepta-intelligence-eval-d3de85ef98ab2e6e/dep-test-lib-codex_hepta_intelligence_eval",
+          "size": 1298,
+          "mtime_ns": 1793868976407010424,
+          "sha256": "b778a6dd2db8296a202dc32c614eef3d13fdd855defaad1755f37c7f9d32d865"
+        },
+        {
+          "path": "/home/qq/work/hepta-convergence-20261105-0c901b/target/debug/.fingerprint/codex-hepta-intelligence-eval-d3de85ef98ab2e6e/invoked.timestamp",
+          "size": 48,
+          "mtime_ns": 1793868976407010424,
+          "sha256": "5a109e6643e8d3e88642e3f35e85d2a83e639d07523aa6e99166c48178e965c3"
+        },
+        {
+          "path": "/home/qq/work/hepta-convergence-20261105-0c901b/target/debug/.fingerprint/codex-hepta-intelligence-eval-d3de85ef98ab2e6e/test-lib-codex_hepta_intelligence_eval",
+          "size": 16,
+          "mtime_ns": 1793868977576968910,
+          "sha256": "9312c07f35645efacab5ede46dc97f8819f92000e866f53e472ecb00b1e7a4e2",
+          "text": "615b1cc271df5ee4"
+        },
+        {
+          "path": "/home/qq/work/hepta-convergence-20261105-0c901b/target/debug/.fingerprint/codex-hepta-intelligence-eval-d3de85ef98ab2e6e/test-lib-codex_hepta_intelligence_eval.json",
+          "size": 728,
+          "mtime_ns": 1793868977576968910,
+          "sha256": "5c1d136df4c5e388671e6a1eb68535b848f24f30133550007d3c70099bdb5c34",
+          "json": {
+            "rustc": 16696009966390864400,
+            "features": "[\"default\"]",
+            "declared_features": "[\"default\", \"trusted-inprocess-eval\"]",
+            "target": 1626869957579083618,
+            "profile": 16183242212785553745,
+            "path": 17650404080242638643,
+            "deps": [
+              [
+                5306016253860807931,
+                "ed25519_dalek",
+                false,
+                7566767075958630261
+              ],
+              [
+                9813227221266182632,
+                "codex_hepta_learning_ledger",
+                false,
+                13618926167946193692
+              ],
+              [
+                15300758679299875469,
+                "codex_hepta_types",
+                false,
+                370670186029889123
+              ],
+              [
+                17811409749869794184,
+                "pretty_assertions",
+                false,
+                16924004716320179317
+              ]
+            ],
+            "local": [
+              {
+                "CheckDepInfo": {
+                  "dep_info": "debug/.fingerprint/codex-hepta-intelligence-eval-d3de85ef98ab2e6e/dep-test-lib-codex_hepta_intelligence_eval",
+                  "checksum": false
+                }
+              }
+            ],
+            "rustflags": [],
+            "config": 8247474407144887393,
+            "compile_kind": 0
+          }
+        }
+      ]
+    },
+    {
+      "path": "/home/qq/work/hepta-convergence-20261105-0c901b/target/debug/.fingerprint/codex-hepta-intelligence-eval-e4456bb0d0ccba26",
+      "files": [
+        {
+          "path": "/home/qq/work/hepta-convergence-20261105-0c901b/target/debug/.fingerprint/codex-hepta-intelligence-eval-e4456bb0d0ccba26/dep-test-lib-codex_hepta_intelligence_eval",
+          "size": 1070,
+          "mtime_ns": 1793866869059266787,
+          "sha256": "9629e0540e07ea1dd6c154bb37937ff4d773b30162a090a54b981828582ecbaa"
+        },
+        {
+          "path": "/home/qq/work/hepta-convergence-20261105-0c901b/target/debug/.fingerprint/codex-hepta-intelligence-eval-e4456bb0d0ccba26/invoked.timestamp",
+          "size": 48,
+          "mtime_ns": 1793866869059266787,
+          "sha256": "5a109e6643e8d3e88642e3f35e85d2a83e639d07523aa6e99166c48178e965c3"
+        },
+        {
+          "path": "/home/qq/work/hepta-convergence-20261105-0c901b/target/debug/.fingerprint/codex-hepta-intelligence-eval-e4456bb0d0ccba26/test-lib-codex_hepta_intelligence_eval",
+          "size": 16,
+          "mtime_ns": 1793866871310187746,
+          "sha256": "b6f58869d58a93bc0454ccf826db78b9ff90fca5b3ecfdf4976bcf5ac7f5a019",
+          "text": "71b9559db28ea47d"
+        },
+        {
+          "path": "/home/qq/work/hepta-convergence-20261105-0c901b/target/debug/.fingerprint/codex-hepta-intelligence-eval-e4456bb0d0ccba26/test-lib-codex_hepta_intelligence_eval.json",
+          "size": 728,
+          "mtime_ns": 1793866871310187746,
+          "sha256": "b691608cbd46ed006c2a4f2c3fcc1566fa21d9e8ac18fce2cd6f3b921a3dca47",
+          "json": {
+            "rustc": 16696009966390864400,
+            "features": "[\"default\"]",
+            "declared_features": "[\"default\", \"trusted-inprocess-eval\"]",
+            "target": 1626869957579083618,
+            "profile": 1933147946653136821,
+            "path": 17650404080242638643,
+            "deps": [
+              [
+                5306016253860807931,
+                "ed25519_dalek",
+                false,
+                17267381839052136246
+              ],
+              [
+                9813227221266182632,
+                "codex_hepta_learning_ledger",
+                false,
+                5566075517048108143
+              ],
+              [
+                15300758679299875469,
+                "codex_hepta_types",
+                false,
+                4780196415195438655
+              ],
+              [
+                17811409749869794184,
+                "pretty_assertions",
+                false,
+                11245197705999694565
+              ]
+            ],
+            "local": [
+              {
+                "CheckDepInfo": {
+                  "dep_info": "debug/.fingerprint/codex-hepta-intelligence-eval-e4456bb0d0ccba26/dep-test-lib-codex_hepta_intelligence_eval",
+                  "checksum": false
+                }
+              }
+            ],
+            "rustflags": [],
+            "config": 8247474407144887393,
+            "compile_kind": 0
+          }
+        }
+      ]
+    },
+    {
+      "path": "/home/qq/work/hepta-convergence-20261105-0c901b/target/debug/.fingerprint/codex-hepta-intelligence-eval-fcbed105465cd5d7",
+      "files": [
+        {
+          "path": "/home/qq/work/hepta-convergence-20261105-0c901b/target/debug/.fingerprint/codex-hepta-intelligence-eval-fcbed105465cd5d7/dep-lib-codex_hepta_intelligence_eval",
+          "size": 580,
+          "mtime_ns": 1793866869062266682,
+          "sha256": "639a179160829ae680bdc881336d72e5ab6b01645be5c994a6fe80ca016dc21d"
+        },
+        {
+          "path": "/home/qq/work/hepta-convergence-20261105-0c901b/target/debug/.fingerprint/codex-hepta-intelligence-eval-fcbed105465cd5d7/invoked.timestamp",
+          "size": 48,
+          "mtime_ns": 1793866869062266682,
+          "sha256": "5a109e6643e8d3e88642e3f35e85d2a83e639d07523aa6e99166c48178e965c3"
+        },
+        {
+          "path": "/home/qq/work/hepta-convergence-20261105-0c901b/target/debug/.fingerprint/codex-hepta-intelligence-eval-fcbed105465cd5d7/lib-codex_hepta_intelligence_eval",
+          "size": 16,
+          "mtime_ns": 1793866869443253303,
+          "sha256": "514f52b9136cd8406b811a99fc37a235348799664ccde9edb0eba920cdb247b8",
+          "text": "1da2c3285700f535"
+        },
+        {
+          "path": "/home/qq/work/hepta-convergence-20261105-0c901b/target/debug/.fingerprint/codex-hepta-intelligence-eval-fcbed105465cd5d7/lib-codex_hepta_intelligence_eval.json",
+          "size": 588,
+          "mtime_ns": 1793866869443253303,
+          "sha256": "076dd8ad8c1c523de9402ce24141b64ddcb5c7915672700ef40106dd134c2b38",
+          "json": {
+            "rustc": 16696009966390864400,
+            "features": "[\"default\"]",
+            "declared_features": "[\"default\", \"trusted-inprocess-eval\"]",
+            "target": 1626869957579083618,
+            "profile": 7792962805499760383,
+            "path": 17650404080242638643,
+            "deps": [
+              [
+                9813227221266182632,
+                "codex_hepta_learning_ledger",
+                false,
+                5566075517048108143
+              ],
+              [
+                15300758679299875469,
+                "codex_hepta_types",
+                false,
+                4780196415195438655
+              ]
+            ],
+            "local": [
+              {
+                "CheckDepInfo": {
+                  "dep_info": "debug/.fingerprint/codex-hepta-intelligence-eval-fcbed105465cd5d7/dep-lib-codex_hepta_intelligence_eval",
+                  "checksum": false
+                }
+              }
+            ],
+            "rustflags": [],
+            "config": 8247474407144887393,
+            "compile_kind": 0
+          }
+        },
+        {
+          "path": "/home/qq/work/hepta-convergence-20261105-0c901b/target/debug/.fingerprint/codex-hepta-intelligence-eval-fcbed105465cd5d7/output-lib-codex_hepta_intelligence_eval",
+          "size": 2136,
+          "mtime_ns": 1793866869433848509,
+          "sha256": "94479ccc4cb2150e34b274db121f9492fbf3d238ab4c73739b91d3f642f3ba35",
+          "text": "{\"$message_type\":\"diagnostic\",\"message\":\"unused import: `crate::IndependentEvaluationDispositionV1`\",\"code\":{\"code\":\"unused_imports\",\"explanation\":null},\"level\":\"warning\",\"spans\":[{\"file_name\":\"hepta-intelligence-eval/src/product_runner.rs\",\"byte_start\":1135,\"byte_end\":1176,\"line_start\":31,\"line_end\":31,\"column_start\":5,\"column_end\":46,\"is_primary\":true,\"text\":[{\"text\":\"use crate::IndependentEvaluationDispositionV1;\",\"highlight_start\":5,\"highlight_end\":46}],\"label\":null,\"suggested_replacement\":null,\"suggestion_applicability\":null,\"expansion\":null}],\"children\":[{\"message\":\"`#[warn(unused_imports)]` (part of `#[warn(unused)]`) on by default\",\"code\":null,\"level\":\"note\",\"spans\":[],\"children\":[],\"rendered\":null},{\"message\":\"remove the whole `use` item\",\"code\":null,\"level\":\"help\",\"spans\":[{\"file_name\":\"hepta-intelligence-eval/src/product_runner.rs\",\"byte_start\":1131,\"byte_end\":1178,\"line_start\":31,\"line_end\":32,\"column_start\":1,\"column_end\":1,\"is_primary\":true,\"text\":[{\"text\":\"use crate::IndependentEvaluationDispositionV1;\",\"highlight_start\":1,\"highlight_end\":47},{\"text\":\"use crate::LongitudinalTimeEvidenceV1;\",\"highlight_start\":1,\"highlight_end\":1}],\"label\":null,\"suggested_replacement\":\"\",\"suggestion_applicability\":\"MachineApplicable\",\"expansion\":null}],\"children\":[],\"rendered\":null}],\"rendered\":\"\\u001b[1m\\u001b[33mwarning\\u001b[0m\\u001b[1m: unused import: `crate::IndependentEvaluationDispositionV1`\\u001b[0m\\n  \\u001b[1m\\u001b[94m--> \\u001b[0mhepta-intelligence-eval/src/product_runner.rs:31:5\\n   \\u001b[1m\\u001b[94m|\\u001b[0m\\n\\u001b[1m\\u001b[94m31\\u001b[0m \\u001b[1m\\u001b[94m|\\u001b[0m use crate::IndependentEvaluationDispositionV1;\\n   \\u001b[1m\\u001b[94m|\\u001b[0m     \\u001b[1m\\u001b[33m^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\\u001b[0m\\n   \\u001b[1m\\u001b[94m|\\u001b[0m\\n   \\u001b[1m\\u001b[94m= \\u001b[0m\\u001b[1mnote\\u001b[0m: `#[warn(unused_imports)]` (part of `#[warn(unused)]`) on by default\\n\\n\"}\n{\"$message_type\":\"diagnostic\",\"message\":\"1 warning emitted\",\"code\":null,\"level\":\"warning\",\"spans\":[],\"children\":[],\"rendered\":\"\\u001b[1m\\u001b[33mwarning\\u001b[0m\\u001b[1m: 1 warning emitted\\u001b[0m\\n\\n\"}\n"
+        }
+      ]
+    },
+    {
+      "path": "/home/qq/work/hepta-convergence-20261105-0c901b/target/debug/.fingerprint/codex-hepta-intelligence-20c03d511bb6a88f",
+      "files": [
+        {
+          "path": "/home/qq/work/hepta-convergence-20261105-0c901b/target/debug/.fingerprint/codex-hepta-intelligence-20c03d511bb6a88f/dep-test-integration-test-lane_f_shadow_vertical",
+          "size": 279,
+          "mtime_ns": 1793868966207372345,
+          "sha256": "f77a947563ec6866567529f65407337dc1670334b85d01a837d74ddb9e693dfb"
+        },
+        {
+          "path": "/home/qq/work/hepta-convergence-20261105-0c901b/target/debug/.fingerprint/codex-hepta-intelligence-20c03d511bb6a88f/invoked.timestamp",
+          "size": 48,
+          "mtime_ns": 1793868966207372345,
+          "sha256": "5a109e6643e8d3e88642e3f35e85d2a83e639d07523aa6e99166c48178e965c3"
+        },
+        {
+          "path": "/home/qq/work/hepta-convergence-20261105-0c901b/target/debug/.fingerprint/codex-hepta-intelligence-20c03d511bb6a88f/test-integration-test-lane_f_shadow_vertical",
+          "size": 16,
+          "mtime_ns": 1793868976308013937,
+          "sha256": "f0bb641b0d21151ef9ff32b442c584868a276fa14854da351f598e54e8d6adf4"
+        },
+        {
+          "path": "/home/qq/work/hepta-convergence-20261105-0c901b/target/debug/.fingerprint/codex-hepta-intelligence-20c03d511bb6a88f/test-integration-test-lane_f_shadow_vertical.json",
+          "size": 1802,
+          "mtime_ns": 1793868976308013937,
+          "sha256": "8636edd84c74d42a3859545eb6f57fdd7c44ea475d500eae4a70b5f49627637d",
+          "json": {
+            "rustc": 16696009966390864400,
+            "features": "[]",
+            "declared_features": "[]",
+            "target": 13252067274489712779,
+            "profile": 16183242212785553745,
+            "path": 8382102426800115362,
+            "deps": [
+              [
+                1144853239540885788,
+                "codex_hepta_prompt_optimizer",
+                false,
+                6784467697228803558
+              ],
+              [
+                2979671245335477805,
+                "codex_hepta_intelligence",
+                false,
+                9862175968621012956
+              ],
+              [
+                3471596094616301715,
+                "codex_hepta_intuition",
+                false,
+                16949401497044704483
+              ],
+              [
+                3885478763533142594,
+                "codex_hepta_cognitive_types",
+                false,
+                15014060356533733380
+              ],
+              [
+                5306016253860807931,
+                "ed25519_dalek",
+                false,
+                7566767075958630261
+              ],
+              [
+                8074089437171026926,
+                "codex_hepta_intelligence_eval",
+                false,
+                6548890395025168634
+              ],
+              [
+                9723370144619655183,
+                "tempfile",
+                false,
+                16386581773577572965
+              ],
+              [
+                9786462393023901524,
+                "codex_hepta_cognitive_read",
+                false,
+                933423692485118681
+              ],
+              [
+                9813227221266182632,
+                "codex_hepta_learning_ledger",
+                false,
+                13618926167946193692
+              ],
+              [
+                10233467208505861004,
+                "codex_hepta_objective",
+                false,
+                16082867903734459951
+              ],
+              [
+                12404878236311788193,
+                "codex_hepta_prompt_registry",
+                false,
+                11117959252962615323
+              ],
+              [
+                13772761323954489810,
+                "codex_hepta_context_compiler",
+                false,
+                4632618174466278674
+              ],
+              [
+                14646146981094793184,
+                "codex_hepta_learning_artifacts",
+                false,
+                2492460811930570211
+              ],
+              [
+                15300758679299875469,
+                "codex_hepta_types",
+                false,
+                370670186029889123
+              ],
+              [
+                15412779023465221432,
+                "codex_hepta_plasticity",
+                false,
+                7911356905092452198
+              ],
+              [
+                16470889250805711130,
+                "codex_hepta_ndu",
+                false,
+                17275832696054117400
+              ],
+              [
+                17707274307970471666,
+                "codex_hepta_contracts",
+                false,
+                7538824151649717722
+              ],
+              [
+                17811409749869794184,
+                "pretty_assertions",
+                false,
+                16924004716320179317
+              ],
+              [
+                18107272800121610327,
+                "codex_hepta_neuron",
+                false,
+                6575096796066420253
+              ]
+            ],
+            "local": [
+              {
+                "CheckDepInfo": {
+                  "dep_info": "debug/.fingerprint/codex-hepta-intelligence-20c03d511bb6a88f/dep-test-integration-test-lane_f_shadow_vertical",
+                  "checksum": false
+                }
+              }
+            ],
+            "rustflags": [],
+            "config": 8247474407144887393,
+            "compile_kind": 0
+          }
+        }
+      ]
+    },
+    {
+      "path": "/home/qq/work/hepta-convergence-20261105-0c901b/target/debug/.fingerprint/codex-hepta-intelligence-31e305c14cd1eb3b",
+      "files": [
+        {
+          "path": "/home/qq/work/hepta-convergence-20261105-0c901b/target/debug/.fingerprint/codex-hepta-intelligence-31e305c14cd1eb3b/dep-test-integration-test-intuition_frozen_qualification",
+          "size": 237,
+          "mtime_ns": 1793870747775118751,
+          "sha256": "f81173d29c3da5fc4966c2b2bc2b931a964a394cafc3420665cb2bd3323a1ddc"
+        },
+        {
+          "path": "/home/qq/work/hepta-convergence-20261105-0c901b/target/debug/.fingerprint/codex-hepta-intelligence-31e305c14cd1eb3b/invoked.timestamp",
+          "size": 48,
+          "mtime_ns": 1793870747775118751,
+          "sha256": "5a109e6643e8d3e88642e3f35e85d2a83e639d07523aa6e99166c48178e965c3"
+        },
+        {
+          "path": "/home/qq/work/hepta-convergence-20261105-0c901b/target/debug/.fingerprint/codex-hepta-intelligence-31e305c14cd1eb3b/test-integration-test-intuition_frozen_qualification",
+          "size": 16,
+          "mtime_ns": 1793870748135105982,
+          "sha256": "4210abde2c39de5d1bd599f8f3dea4517eb72913c92e9e15da6a8333160da144"
+        },
+        {
+          "path": "/home/qq/work/hepta-convergence-20261105-0c901b/target/debug/.fingerprint/codex-hepta-intelligence-31e305c14cd1eb3b/test-integration-test-intuition_frozen_qualification.json",
+          "size": 1816,
+          "mtime_ns": 1793870748135105982,
+          "sha256": "a20d5e0a0362b255242b7482527e65c7018c69c7e919d6f13eebb0cc75a8b817",
+          "json": {
+            "rustc": 16696009966390864400,
+            "features": "[]",
+            "declared_features": "[]",
+            "target": 11130832653019443485,
+            "profile": 1933147946653136821,
+            "path": 5282974935508569398,
+            "deps": [
+              [
+                1144853239540885788,
+                "codex_hepta_prompt_optimizer",
+                false,
+                15044899456869536801
+              ],
+              [
+                2979671245335477805,
+                "codex_hepta_intelligence",
+                false,
+                17338171588659943250
+              ],
+              [
+                3471596094616301715,
+                "codex_hepta_intuition",
+                false,
+                7237941431695679105
+              ],
+              [
+                3885478763533142594,
+                "codex_hepta_cognitive_types",
+                false,
+                15074005260390329115
+              ],
+              [
+                5306016253860807931,
+                "ed25519_dalek",
+                false,
+                11002581837143173930
+              ],
+              [
+                8074089437171026926,
+                "codex_hepta_intelligence_eval",
+                false,
+                1886280396668143965
+              ],
+              [
+                9723370144619655183,
+                "tempfile",
+                false,
+                15469993757070347763
+              ],
+              [
+                9786462393023901524,
+                "codex_hepta_cognitive_read",
+                false,
+                14034616776105016920
+              ],
+              [
+                9813227221266182632,
+                "codex_hepta_learning_ledger",
+                false,
+                15227768867144780672
+              ],
+              [
+                10233467208505861004,
+                "codex_hepta_objective",
+                false,
+                12329554373542123859
+              ],
+              [
+                12404878236311788193,
+                "codex_hepta_prompt_registry",
+                false,
+                18442561347110299239
+              ],
+              [
+                13772761323954489810,
+                "codex_hepta_context_compiler",
+                false,
+                9004177612985767804
+              ],
+              [
+                14646146981094793184,
+                "codex_hepta_learning_artifacts",
+                false,
+                9532307958279133601
+              ],
+              [
+                15300758679299875469,
+                "codex_hepta_types",
+                false,
+                18183214015053875645
+              ],
+              [
+                15412779023465221432,
+                "codex_hepta_plasticity",
+                false,
+                2656687387138548747
+              ],
+              [
+                16470889250805711130,
+                "codex_hepta_ndu",
+                false,
+                10976575656345413893
+              ],
+              [
+                17707274307970471666,
+                "codex_hepta_contracts",
+                false,
+                16631499730240406492
+              ],
+              [
+                17811409749869794184,
+                "pretty_assertions",
+                false,
+                11245197705999694565
+              ],
+              [
+                18107272800121610327,
+                "codex_hepta_neuron",
+                false,
+                9233969590694453327
+              ]
+            ],
+            "local": [
+              {
+                "CheckDepInfo": {
+                  "dep_info": "debug/.fingerprint/codex-hepta-intelligence-31e305c14cd1eb3b/dep-test-integration-test-intuition_frozen_qualification",
+                  "checksum": false
+                }
+              }
+            ],
+            "rustflags": [],
+            "config": 8247474407144887393,
+            "compile_kind": 0
+          }
+        }
+      ]
+    },
+    {
+      "path": "/home/qq/work/hepta-convergence-20261105-0c901b/target/debug/.fingerprint/codex-hepta-intelligence-353c02ea8f35e8be",
+      "files": [
+        {
+          "path": "/home/qq/work/hepta-convergence-20261105-0c901b/target/debug/.fingerprint/codex-hepta-intelligence-353c02ea8f35e8be/dep-lib-codex_hepta_intelligence",
+          "size": 487,
+          "mtime_ns": 1793866869443253303,
+          "sha256": "4430b35eae63b005a0ba64dc629e2f352d64581df3a569e7c5240168045417d4"
+        },
+        {
+          "path": "/home/qq/work/hepta-convergence-20261105-0c901b/target/debug/.fingerprint/codex-hepta-intelligence-353c02ea8f35e8be/invoked.timestamp",
+          "size": 48,
+          "mtime_ns": 1793871586011705081,
+          "sha256": "5a109e6643e8d3e88642e3f35e85d2a83e639d07523aa6e99166c48178e965c3"
+        },
+        {
+          "path": "/home/qq/work/hepta-convergence-20261105-0c901b/target/debug/.fingerprint/codex-hepta-intelligence-353c02ea8f35e8be/lib-codex_hepta_intelligence",
+          "size": 0,
+          "mtime_ns": 1793871585992705784,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "text": ""
+        },
+        {
+          "path": "/home/qq/work/hepta-convergence-20261105-0c901b/target/debug/.fingerprint/codex-hepta-intelligence-353c02ea8f35e8be/lib-codex_hepta_intelligence.json",
+          "size": 1443,
+          "mtime_ns": 1793866869689244665,
+          "sha256": "510af780f6a23d0d692a84666ef8b6bf74f2c64c89b5252eccecb89566002867",
+          "json": {
+            "rustc": 16696009966390864400,
+            "features": "[]",
+            "declared_features": "[]",
+            "target": 11310866866341687169,
+            "profile": 7792962805499760383,
+            "path": 2477762485400158561,
+            "deps": [
+              [
+                1144853239540885788,
+                "codex_hepta_prompt_optimizer",
+                false,
+                2003363402036651043
+              ],
+              [
+                3471596094616301715,
+                "codex_hepta_intuition",
+                false,
+                5526744952562191796
+              ],
+              [
+                3885478763533142594,
+                "codex_hepta_cognitive_types",
+                false,
+                15692063306783523733
+              ],
+              [
+                8074089437171026926,
+                "codex_hepta_intelligence_eval",
+                false,
+                3888014227650355741
+              ],
+              [
+                9786462393023901524,
+                "codex_hepta_cognitive_read",
+                false,
+                5542708851518313952
+              ],
+              [
+                9813227221266182632,
+                "codex_hepta_learning_ledger",
+                false,
+                5566075517048108143
+              ],
+              [
+                10233467208505861004,
+                "codex_hepta_objective",
+                false,
+                14648474590848404390
+              ],
+              [
+                12404878236311788193,
+                "codex_hepta_prompt_registry",
+                false,
+                128160921900225156
+              ],
+              [
+                13772761323954489810,
+                "codex_hepta_context_compiler",
+                false,
+                2980737825263858365
+              ],
+              [
+                14646146981094793184,
+                "codex_hepta_learning_artifacts",
+                false,
+                16614975218241228390
+              ],
+              [
+                15300758679299875469,
+                "codex_hepta_types",
+                false,
+                4780196415195438655
+              ],
+              [
+                15412779023465221432,
+                "codex_hepta_plasticity",
+                false,
+                10797937107683830323
+              ],
+              [
+                16470889250805711130,
+                "codex_hepta_ndu",
+                false,
+                8042784307682319226
+              ],
+              [
+                18107272800121610327,
+                "codex_hepta_neuron",
+                false,
+                10577906771607020076
+              ]
+            ],
+            "local": [
+              {
+                "CheckDepInfo": {
+                  "dep_info": "debug/.fingerprint/codex-hepta-intelligence-353c02ea8f35e8be/dep-lib-codex_hepta_intelligence",
+                  "checksum": false
+                }
+              }
+            ],
+            "rustflags": [],
+            "config": 8247474407144887393,
+            "compile_kind": 0
+          }
+        },
+        {
+          "path": "/home/qq/work/hepta-convergence-20261105-0c901b/target/debug/.fingerprint/codex-hepta-intelligence-353c02ea8f35e8be/output-lib-codex_hepta_intelligence",
+          "size": 3203,
+          "mtime_ns": 1793871586814675375,
+          "sha256": "9f700035c29c61cc6eab398c0f015b8e43581136fdf206a87552c2a82a9aa114",
+          "text": "{\"$message_type\":\"diagnostic\",\"message\":\"unresolved import `codex_hepta_intelligence_eval::revalidate_product_qualification_v1`\",\"code\":{\"code\":\"E0432\",\"explanation\":\"An import was unresolved.\\n\\nErroneous code example:\\n\\n```compile_fail,E0432\\nuse something::Foo; // error: unresolved import `something::Foo`.\\n```\\n\\nIn Rust 2015, paths in `use` statements are relative to the crate root. To\\nimport items relative to the current and parent modules, use the `self::` and\\n`super::` prefixes, respectively.\\n\\nIn Rust 2018 or later, paths in `use` statements are relative to the current\\nmodule unless they begin with the name of a crate or a literal `crate::`, in\\nwhich case they start from the crate root. As in Rust 2015 code, the `self::`\\nand `super::` prefixes refer to the current and parent modules respectively.\\n\\nAlso verify that you didn't misspell the import name and that the import exists\\nin the module from where you tried to import it. Example:\\n\\n```\\nuse self::something::Foo; // Ok.\\n\\nmod something {\\n    pub struct Foo;\\n}\\n# fn main() {}\\n```\\n\\nIf you tried to use a module from an external crate and are using Rust 2015,\\nyou may have missed the `extern crate` declaration (which is usually placed in\\nthe crate root):\\n\\n```edition2015\\nextern crate core; // Required to use the `core` crate in Rust 2015.\\n\\nuse core::any;\\n# fn main() {}\\n```\\n\\nSince Rust 2018 the `extern crate` declaration is not required and\\nyou can instead just `use` it:\\n\\n```edition2018\\nuse core::any; // No extern crate required in Rust 2018.\\n# fn main() {}\\n```\\n\"},\"level\":\"error\",\"spans\":[{\"file_name\":\"hepta-intelligence/src/plasticity_product.rs\",\"byte_start\":1201,\"byte_end\":1267,\"line_start\":24,\"line_end\":24,\"column_start\":5,\"column_end\":71,\"is_primary\":true,\"text\":[{\"text\":\"use codex_hepta_intelligence_eval::revalidate_product_qualification_v1;\",\"highlight_start\":5,\"highlight_end\":71}],\"label\":\"no `revalidate_product_qualification_v1` in the root\",\"suggested_replacement\":null,\"suggestion_applicability\":null,\"expansion\":null}],\"children\":[],\"rendered\":\"\\u001b[1m\\u001b[91merror[E0432]\\u001b[0m\\u001b[1m: unresolved import `codex_hepta_intelligence_eval::revalidate_product_qualification_v1`\\u001b[0m\\n  \\u001b[1m\\u001b[94m--> \\u001b[0mhepta-intelligence/src/plasticity_product.rs:24:5\\n   \\u001b[1m\\u001b[94m|\\u001b[0m\\n\\u001b[1m\\u001b[94m24\\u001b[0m \\u001b[1m\\u001b[94m|\\u001b[0m use codex_hepta_intelligence_eval::revalidate_product_qualification_v1;\\n   \\u001b[1m\\u001b[94m|\\u001b[0m     \\u001b[1m\\u001b[91m^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\\u001b[0m \\u001b[1m\\u001b[91mno `revalidate_product_qualification_v1` in the root\\u001b[0m\\n\\n\"}\n{\"$message_type\":\"diagnostic\",\"message\":\"aborting due to 1 previous error\",\"code\":null,\"level\":\"error\",\"spans\":[],\"children\":[],\"rendered\":\"\\u001b[1m\\u001b[91merror\\u001b[0m\\u001b[1m: aborting due to 1 previous error\\u001b[0m\\n\\n\"}\n{\"$message_type\":\"diagnostic\",\"message\":\"For more information about this error, try `rustc --explain E0432`.\",\"code\":null,\"level\":\"failure-note\",\"spans\":[],\"children\":[],\"rendered\":\"\\u001b[1mFor more information about this error, try `rustc --explain E0432`.\\u001b[0m\\n\"}\n"
+        }
+      ]
+    },
+    {
+      "path": "/home/qq/work/hepta-convergence-20261105-0c901b/target/debug/.fingerprint/codex-hepta-intelligence-551578beece5da39",
+      "files": [
+        {
+          "path": "/home/qq/work/hepta-convergence-20261105-0c901b/target/debug/.fingerprint/codex-hepta-intelligence-551578beece5da39/dep-example-intuition_authenticated_fast_gate",
+          "size": 65,
+          "mtime_ns": 1793866870231225634,
+          "sha256": "1908fe6b6c480a4bdb0da547535c163922419a4dd3e4441b78b4dc77365f6fd9"
+        },
+        {
+          "path": "/home/qq/work/hepta-convergence-20261105-0c901b/target/debug/.fingerprint/codex-hepta-intelligence-551578beece5da39/example-intuition_authenticated_fast_gate",
+          "size": 0,
+          "mtime_ns": 1793871585993705747,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "path": "/home/qq/work/hepta-convergence-20261105-0c901b/target/debug/.fingerprint/codex-hepta-intelligence-551578beece5da39/example-intuition_authenticated_fast_gate.json",
+          "size": 1799,
+          "mtime_ns": 1793866870434218505,
+          "sha256": "1a2efcf5f57190609d6fd4b6642c78359dc1fe7b7dd421f49395be99777a3fc1",
+          "json": {
+            "rustc": 16696009966390864400,
+            "features": "[]",
+            "declared_features": "[]",
+            "target": 8216645836779288994,
+            "profile": 7792962805499760383,
+            "path": 14704947079662468298,
+            "deps": [
+              [
+                1144853239540885788,
+                "codex_hepta_prompt_optimizer",
+                false,
+                2003363402036651043
+              ],
+              [
+                2979671245335477805,
+                "codex_hepta_intelligence",
+                false,
+                9645052883056090493
+              ],
+              [
+                3471596094616301715,
+                "codex_hepta_intuition",
+                false,
+                5526744952562191796
+              ],
+              [
+                3885478763533142594,
+                "codex_hepta_cognitive_types",
+                false,
+                15692063306783523733
+              ],
+              [
+                5306016253860807931,
+                "ed25519_dalek",
+                false,
+                17267381839052136246
+              ],
+              [
+                8074089437171026926,
+                "codex_hepta_intelligence_eval",
+                false,
+                3888014227650355741
+              ],
+              [
+                9723370144619655183,
+                "tempfile",
+                false,
+                18262738669202104160
+              ],
+              [
+                9786462393023901524,
+                "codex_hepta_cognitive_read",
+                false,
+                5542708851518313952
+              ],
+              [
+                9813227221266182632,
+                "codex_hepta_learning_ledger",
+                false,
+                5566075517048108143
+              ],
+              [
+                10233467208505861004,
+                "codex_hepta_objective",
+                false,
+                14648474590848404390
+              ],
+              [
+                12404878236311788193,
+                "codex_hepta_prompt_registry",
+                false,
+                128160921900225156
+              ],
+              [
+                13772761323954489810,
+                "codex_hepta_context_compiler",
+                false,
+                2980737825263858365
+              ],
+              [
+                14646146981094793184,
+                "codex_hepta_learning_artifacts",
+                false,
+                16614975218241228390
+              ],
+              [
+                15300758679299875469,
+                "codex_hepta_types",
+                false,
+                4780196415195438655
+              ],
+              [
+                15412779023465221432,
+                "codex_hepta_plasticity",
+                false,
+                10797937107683830323
+              ],
+              [
+                16470889250805711130,
+                "codex_hepta_ndu",
+                false,
+                8042784307682319226
+              ],
+              [
+                17707274307970471666,
+                "codex_hepta_contracts",
+                false,
+                8293053895708878949
+              ],
+              [
+                17811409749869794184,
+                "pretty_assertions",
+                false,
+                11245197705999694565
+              ],
+              [
+                18107272800121610327,
+                "codex_hepta_neuron",
+                false,
+                10577906771607020076
+              ]
+            ],
+            "local": [
+              {
+                "CheckDepInfo": {
+                  "dep_info": "debug/.fingerprint/codex-hepta-intelligence-551578beece5da39/dep-example-intuition_authenticated_fast_gate",
+                  "checksum": false
+                }
+              }
+            ],
+            "rustflags": [],
+            "config": 8247474407144887393,
+            "compile_kind": 0
+          }
+        },
+        {
+          "path": "/home/qq/work/hepta-convergence-20261105-0c901b/target/debug/.fingerprint/codex-hepta-intelligence-551578beece5da39/invoked.timestamp",
+          "size": 48,
+          "mtime_ns": 1793866870231225634,
+          "sha256": "5a109e6643e8d3e88642e3f35e85d2a83e639d07523aa6e99166c48178e965c3"
+        }
+      ]
+    },
+    {
+      "path": "/home/qq/work/hepta-convergence-20261105-0c901b/target/debug/.fingerprint/codex-hepta-intelligence-5ab5523a4d0b13c7",
+      "files": [
+        {
+          "path": "/home/qq/work/hepta-convergence-20261105-0c901b/target/debug/.fingerprint/codex-hepta-intelligence-5ab5523a4d0b13c7/dep-test-lib-codex_hepta_intelligence",
+          "size": 1042,
+          "mtime_ns": 1793870748136105946,
+          "sha256": "13fc844213e288217f0eb3ccd89b4c68a0e1687627e07b79c7b650063e291aaf"
+        },
+        {
+          "path": "/home/qq/work/hepta-convergence-20261105-0c901b/target/debug/.fingerprint/codex-hepta-intelligence-5ab5523a4d0b13c7/invoked.timestamp",
+          "size": 48,
+          "mtime_ns": 1793870748136105946,
+          "sha256": "5a109e6643e8d3e88642e3f35e85d2a83e639d07523aa6e99166c48178e965c3"
+        },
+        {
+          "path": "/home/qq/work/hepta-convergence-20261105-0c901b/target/debug/.fingerprint/codex-hepta-intelligence-5ab5523a4d0b13c7/test-lib-codex_hepta_intelligence",
+          "size": 16,
+          "mtime_ns": 1793870750434024436,
+          "sha256": "adf529f7c483ad96573a4bbd52373ac7b63cc3d982b3269f4dc4b1328debb1fe",
+          "text": "16d2416e05726f93"
+        },
+        {
+          "path": "/home/qq/work/hepta-convergence-20261105-0c901b/target/debug/.fingerprint/codex-hepta-intelligence-5ab5523a4d0b13c7/test-lib-codex_hepta_intelligence.json",
+          "size": 1721,
+          "mtime_ns": 1793870750434024436,
+          "sha256": "303936e6552cca281f21d301ee92dea2a9e18fc1c0ae3faa97ed691abe3f2fc0",
+          "json": {
+            "rustc": 16696009966390864400,
+            "features": "[]",
+            "declared_features": "[]",
+            "target": 11310866866341687169,
+            "profile": 1933147946653136821,
+            "path": 2477762485400158561,
+            "deps": [
+              [
+                1144853239540885788,
+                "codex_hepta_prompt_optimizer",
+                false,
+                15044899456869536801
+              ],
+              [
+                3471596094616301715,
+                "codex_hepta_intuition",
+                false,
+                7237941431695679105
+              ],
+              [
+                3885478763533142594,
+                "codex_hepta_cognitive_types",
+                false,
+                15074005260390329115
+              ],
+              [
+                5306016253860807931,
+                "ed25519_dalek",
+                false,
+                11002581837143173930
+              ],
+              [
+                8074089437171026926,
+                "codex_hepta_intelligence_eval",
+                false,
+                1886280396668143965
+              ],
+              [
+                9723370144619655183,
+                "tempfile",
+                false,
+                15469993757070347763
+              ],
+              [
+                9786462393023901524,
+                "codex_hepta_cognitive_read",
+                false,
+                14034616776105016920
+              ],
+              [
+                9813227221266182632,
+                "codex_hepta_learning_ledger",
+                false,
+                15227768867144780672
+              ],
+              [
+                10233467208505861004,
+                "codex_hepta_objective",
+                false,
+                12329554373542123859
+              ],
+              [
+                12404878236311788193,
+                "codex_hepta_prompt_registry",
+                false,
+                18442561347110299239
+              ],
+              [
+                13772761323954489810,
+                "codex_hepta_context_compiler",
+                false,
+                9004177612985767804
+              ],
+              [
+                14646146981094793184,
+                "codex_hepta_learning_artifacts",
+                false,
+                9532307958279133601
+              ],
+              [
+                15300758679299875469,
+                "codex_hepta_types",
+                false,
+                18183214015053875645
+              ],
+              [
+                15412779023465221432,
+                "codex_hepta_plasticity",
+                false,
+                2656687387138548747
+              ],
+              [
+                16470889250805711130,
+                "codex_hepta_ndu",
+                false,
+                10976575656345413893
+              ],
+              [
+                17707274307970471666,
+                "codex_hepta_contracts",
+                false,
+                16631499730240406492
+              ],
+              [
+                17811409749869794184,
+                "pretty_assertions",
+                false,
+                11245197705999694565
+              ],
+              [
+                18107272800121610327,
+                "codex_hepta_neuron",
+                false,
+                9233969590694453327
+              ]
+            ],
+            "local": [
+              {
+                "CheckDepInfo": {
+                  "dep_info": "debug/.fingerprint/codex-hepta-intelligence-5ab5523a4d0b13c7/dep-test-lib-codex_hepta_intelligence",
+                  "checksum": false
+                }
+              }
+            ],
+            "rustflags": [],
+            "config": 8247474407144887393,
+            "compile_kind": 0
+          }
+        }
+      ]
+    },
+    {
+      "path": "/home/qq/work/hepta-convergence-20261105-0c901b/target/debug/.fingerprint/codex-hepta-intelligence-60ce2bebba09082b",
+      "files": [
+        {
+          "path": "/home/qq/work/hepta-convergence-20261105-0c901b/target/debug/.fingerprint/codex-hepta-intelligence-60ce2bebba09082b/dep-example-intuition_authenticated_fast_gate",
+          "size": 65,
+          "mtime_ns": 1793870747460129924,
+          "sha256": "1908fe6b6c480a4bdb0da547535c163922419a4dd3e4441b78b4dc77365f6fd9"
+        },
+        {
+          "path": "/home/qq/work/hepta-convergence-20261105-0c901b/target/debug/.fingerprint/codex-hepta-intelligence-60ce2bebba09082b/example-intuition_authenticated_fast_gate",
+          "size": 16,
+          "mtime_ns": 1793870747775118751,
+          "sha256": "160ef9970bf4362c2ccfdb17e1385e50bfa72469e31267a73e23b040bc6ce782"
+        },
+        {
+          "path": "/home/qq/work/hepta-convergence-20261105-0c901b/target/debug/.fingerprint/codex-hepta-intelligence-60ce2bebba09082b/example-intuition_authenticated_fast_gate.json",
+          "size": 1805,
+          "mtime_ns": 1793870747775118751,
+          "sha256": "2ae168dbed56ade19a4a64b0c941808cd34a7afb13c57b12af862fdd4d648b90",
+          "json": {
+            "rustc": 16696009966390864400,
+            "features": "[]",
+            "declared_features": "[]",
+            "target": 8216645836779288994,
+            "profile": 7792962805499760383,
+            "path": 14704947079662468298,
+            "deps": [
+              [
+                1144853239540885788,
+                "codex_hepta_prompt_optimizer",
+                false,
+                15044899456869536801
+              ],
+              [
+                2979671245335477805,
+                "codex_hepta_intelligence",
+                false,
+                17338171588659943250
+              ],
+              [
+                3471596094616301715,
+                "codex_hepta_intuition",
+                false,
+                7237941431695679105
+              ],
+              [
+                3885478763533142594,
+                "codex_hepta_cognitive_types",
+                false,
+                15074005260390329115
+              ],
+              [
+                5306016253860807931,
+                "ed25519_dalek",
+                false,
+                11002581837143173930
+              ],
+              [
+                8074089437171026926,
+                "codex_hepta_intelligence_eval",
+                false,
+                1886280396668143965
+              ],
+              [
+                9723370144619655183,
+                "tempfile",
+                false,
+                15469993757070347763
+              ],
+              [
+                9786462393023901524,
+                "codex_hepta_cognitive_read",
+                false,
+                14034616776105016920
+              ],
+              [
+                9813227221266182632,
+                "codex_hepta_learning_ledger",
+                false,
+                15227768867144780672
+              ],
+              [
+                10233467208505861004,
+                "codex_hepta_objective",
+                false,
+                12329554373542123859
+              ],
+              [
+                12404878236311788193,
+                "codex_hepta_prompt_registry",
+                false,
+                18442561347110299239
+              ],
+              [
+                13772761323954489810,
+                "codex_hepta_context_compiler",
+                false,
+                9004177612985767804
+              ],
+              [
+                14646146981094793184,
+                "codex_hepta_learning_artifacts",
+                false,
+                9532307958279133601
+              ],
+              [
+                15300758679299875469,
+                "codex_hepta_types",
+                false,
+                18183214015053875645
+              ],
+              [
+                15412779023465221432,
+                "codex_hepta_plasticity",
+                false,
+                2656687387138548747
+              ],
+              [
+                16470889250805711130,
+                "codex_hepta_ndu",
+                false,
+                10976575656345413893
+              ],
+              [
+                17707274307970471666,
+                "codex_hepta_contracts",
+                false,
+                16631499730240406492
+              ],
+              [
+                17811409749869794184,
+                "pretty_assertions",
+                false,
+                11245197705999694565
+              ],
+              [
+                18107272800121610327,
+                "codex_hepta_neuron",
+                false,
+                9233969590694453327
+              ]
+            ],
+            "local": [
+              {
+                "CheckDepInfo": {
+                  "dep_info": "debug/.fingerprint/codex-hepta-intelligence-60ce2bebba09082b/dep-example-intuition_authenticated_fast_gate",
+                  "checksum": false
+                }
+              }
+            ],
+            "rustflags": [],
+            "config": 8247474407144887393,
+            "compile_kind": 0
+          }
+        },
+        {
+          "path": "/home/qq/work/hepta-convergence-20261105-0c901b/target/debug/.fingerprint/codex-hepta-intelligence-60ce2bebba09082b/invoked.timestamp",
+          "size": 48,
+          "mtime_ns": 1793870747460129924,
+          "sha256": "5a109e6643e8d3e88642e3f35e85d2a83e639d07523aa6e99166c48178e965c3"
+        }
+      ]
+    },
+    {
+      "path": "/home/qq/work/hepta-convergence-20261105-0c901b/target/debug/.fingerprint/codex-hepta-intelligence-69fcc0336a1fdd2d",
+      "files": [
+        {
+          "path": "/home/qq/work/hepta-convergence-20261105-0c901b/target/debug/.fingerprint/codex-hepta-intelligence-69fcc0336a1fdd2d/dep-lib-codex_hepta_intelligence",
+          "size": 487,
+          "mtime_ns": 1793866744594635833,
+          "sha256": "dc1829cf5c7795ccec176a00909a185108af33cd42f47a0aa4ff035b0a592a85"
+        },
+        {
+          "path": "/home/qq/work/hepta-convergence-20261105-0c901b/target/debug/.fingerprint/codex-hepta-intelligence-69fcc0336a1fdd2d/invoked.timestamp",
+          "size": 48,
+          "mtime_ns": 1793866744594635833,
+          "sha256": "5a109e6643e8d3e88642e3f35e85d2a83e639d07523aa6e99166c48178e965c3"
+        },
+        {
+          "path": "/home/qq/work/hepta-convergence-20261105-0c901b/target/debug/.fingerprint/codex-hepta-intelligence-69fcc0336a1fdd2d/lib-codex_hepta_intelligence",
+          "size": 16,
+          "mtime_ns": 1793866746707561691,
+          "sha256": "4b1255dce655a0b1897492b2bce5b5c4637f1001cc056ee5e4e8c6d5b72a104b",
+          "text": "1243f93c3ea73bbb"
+        },
+        {
+          "path": "/home/qq/work/hepta-convergence-20261105-0c901b/target/debug/.fingerprint/codex-hepta-intelligence-69fcc0336a1fdd2d/lib-codex_hepta_intelligence.json",
+          "size": 1441,
+          "mtime_ns": 1793866746707561691,
+          "sha256": "8af11da0311c7e0f2edde0a253885ee5d37e8dfe48de1155d455e794138fc946",
+          "json": {
+            "rustc": 16696009966390864400,
+            "features": "[]",
+            "declared_features": "[]",
+            "target": 11310866866341687169,
+            "profile": 7792962805499760383,
+            "path": 2477762485400158561,
+            "deps": [
+              [
+                1144853239540885788,
+                "codex_hepta_prompt_optimizer",
+                false,
+                5846599385743220126
+              ],
+              [
+                3471596094616301715,
+                "codex_hepta_intuition",
+                false,
+                16903183602216681259
+              ],
+              [
+                3885478763533142594,
+                "codex_hepta_cognitive_types",
+                false,
+                10954182982071123688
+              ],
+              [
+                8074089437171026926,
+                "codex_hepta_intelligence_eval",
+                false,
+                5856416415371435444
+              ],
+              [
+                9786462393023901524,
+                "codex_hepta_cognitive_read",
+                false,
+                8157372050473518101
+              ],
+              [
+                9813227221266182632,
+                "codex_hepta_learning_ledger",
+                false,
+                15728513395026336713
+              ],
+              [
+                10233467208505861004,
+                "codex_hepta_objective",
+                false,
+                2417248173744958239
+              ],
+              [
+                12404878236311788193,
+                "codex_hepta_prompt_registry",
+                false,
+                914987033974559039
+              ],
+              [
+                13772761323954489810,
+                "codex_hepta_context_compiler",
+                false,
+                727644755202573980
+              ],
+              [
+                14646146981094793184,
+                "codex_hepta_learning_artifacts",
+                false,
+                16593043065174104958
+              ],
+              [
+                15300758679299875469,
+                "codex_hepta_types",
+                false,
+                9129533647149305527
+              ],
+              [
+                15412779023465221432,
+                "codex_hepta_plasticity",
+                false,
+                3868314986231947591
+              ],
+              [
+                16470889250805711130,
+                "codex_hepta_ndu",
+                false,
+                3426783871499399703
+              ],
+              [
+                18107272800121610327,
+                "codex_hepta_neuron",
+                false,
+                6913205879795355022
+              ]
+            ],
+            "local": [
+              {
+                "CheckDepInfo": {
+                  "dep_info": "debug/.fingerprint/codex-hepta-intelligence-69fcc0336a1fdd2d/dep-lib-codex_hepta_intelligence",
+                  "checksum": false
+                }
+              }
+            ],
+            "rustflags": [],
+            "config": 8247474407144887393,
+            "compile_kind": 0
+          }
+        }
+      ]
+    },
+    {
+      "path": "/home/qq/work/hepta-convergence-20261105-0c901b/target/debug/.fingerprint/codex-hepta-intelligence-6bc1da159aa0aae5",
+      "files": [
+        {
+          "path": "/home/qq/work/hepta-convergence-20261105-0c901b/target/debug/.fingerprint/codex-hepta-intelligence-6bc1da159aa0aae5/dep-test-integration-test-lane_f_shadow_vertical",
+          "size": 51,
+          "mtime_ns": 1793870742914291172,
+          "sha256": "3d06381603c8f31d8f6833a8462c213485fc5b107b532fdf62bc171c0364ad59"
+        },
+        {
+          "path": "/home/qq/work/hepta-convergence-20261105-0c901b/target/debug/.fingerprint/codex-hepta-intelligence-6bc1da159aa0aae5/invoked.timestamp",
+          "size": 48,
+          "mtime_ns": 1793870742914291172,
+          "sha256": "5a109e6643e8d3e88642e3f35e85d2a83e639d07523aa6e99166c48178e965c3"
+        },
+        {
+          "path": "/home/qq/work/hepta-convergence-20261105-0c901b/target/debug/.fingerprint/codex-hepta-intelligence-6bc1da159aa0aae5/test-integration-test-lane_f_shadow_vertical",
+          "size": 16,
+          "mtime_ns": 1793870743363275245,
+          "sha256": "de7ac39de6ce636e77c9986dbf65db9e6a5fa44b45546707ef7d962ce3fead21"
+        },
+        {
+          "path": "/home/qq/work/hepta-convergence-20261105-0c901b/target/debug/.fingerprint/codex-hepta-intelligence-6bc1da159aa0aae5/test-integration-test-lane_f_shadow_vertical.json",
+          "size": 1808,
+          "mtime_ns": 1793870743363275245,
+          "sha256": "a1ade01e16b6b67970754b1f3f447125a37983784ba7a056a5386fc39e557776",
+          "json": {
+            "rustc": 16696009966390864400,
+            "features": "[]",
+            "declared_features": "[]",
+            "target": 13252067274489712779,
+            "profile": 1933147946653136821,
+            "path": 8382102426800115362,
+            "deps": [
+              [
+                1144853239540885788,
+                "codex_hepta_prompt_optimizer",
+                false,
+                15044899456869536801
+              ],
+              [
+                2979671245335477805,
+                "codex_hepta_intelligence",
+                false,
+                17338171588659943250
+              ],
+              [
+                3471596094616301715,
+                "codex_hepta_intuition",
+                false,
+                7237941431695679105
+              ],
+              [
+                3885478763533142594,
+                "codex_hepta_cognitive_types",
+                false,
+                15074005260390329115
+              ],
+              [
+                5306016253860807931,
+                "ed25519_dalek",
+                false,
+                11002581837143173930
+              ],
+              [
+                8074089437171026926,
+                "codex_hepta_intelligence_eval",
+                false,
+                1886280396668143965
+              ],
+              [
+                9723370144619655183,
+                "tempfile",
+                false,
+                15469993757070347763
+              ],
+              [
+                9786462393023901524,
+                "codex_hepta_cognitive_read",
+                false,
+                14034616776105016920
+              ],
+              [
+                9813227221266182632,
+                "codex_hepta_learning_ledger",
+                false,
+                15227768867144780672
+              ],
+              [
+                10233467208505861004,
+                "codex_hepta_objective",
+                false,
+                12329554373542123859
+              ],
+              [
+                12404878236311788193,
+                "codex_hepta_prompt_registry",
+                false,
+                18442561347110299239
+              ],
+              [
+                13772761323954489810,
+                "codex_hepta_context_compiler",
+                false,
+                9004177612985767804
+              ],
+              [
+                14646146981094793184,
+                "codex_hepta_learning_artifacts",
+                false,
+                9532307958279133601
+              ],
+              [
+                15300758679299875469,
+                "codex_hepta_types",
+                false,
+                18183214015053875645
+              ],
+              [
+                15412779023465221432,
+                "codex_hepta_plasticity",
+                false,
+                2656687387138548747
+              ],
+              [
+                16470889250805711130,
+                "codex_hepta_ndu",
+                false,
+                10976575656345413893
+              ],
+              [
+                17707274307970471666,
+                "codex_hepta_contracts",
+                false,
+                16631499730240406492
+              ],
+              [
+                17811409749869794184,
+                "pretty_assertions",
+                false,
+                11245197705999694565
+              ],
+              [
+                18107272800121610327,
+                "codex_hepta_neuron",
+                false,
+                9233969590694453327
+              ]
+            ],
+            "local": [
+              {
+                "CheckDepInfo": {
+                  "dep_info": "debug/.fingerprint/codex-hepta-intelligence-6bc1da159aa0aae5/dep-test-integration-test-lane_f_shadow_vertical",
+                  "checksum": false
+                }
+              }
+            ],
+            "rustflags": [],
+            "config": 8247474407144887393,
+            "compile_kind": 0
+          }
+        }
+      ]
+    },
+    {
+      "path": "/home/qq/work/hepta-convergence-20261105-0c901b/target/debug/.fingerprint/codex-hepta-intelligence-8d822a4a029ede0a",
+      "files": [
+        {
+          "path": "/home/qq/work/hepta-convergence-20261105-0c901b/target/debug/.fingerprint/codex-hepta-intelligence-8d822a4a029ede0a/dep-test-lib-codex_hepta_intelligence",
+          "size": 992,
+          "mtime_ns": 1793866870434218505,
+          "sha256": "d131f612f282b1f005028a74134d994ef63651d9d705adaf55bf6ba65107b43f"
+        },
+        {
+          "path": "/home/qq/work/hepta-convergence-20261105-0c901b/target/debug/.fingerprint/codex-hepta-intelligence-8d822a4a029ede0a/invoked.timestamp",
+          "size": 48,
+          "mtime_ns": 1793871586007705229,
+          "sha256": "5a109e6643e8d3e88642e3f35e85d2a83e639d07523aa6e99166c48178e965c3"
+        },
+        {
+          "path": "/home/qq/work/hepta-convergence-20261105-0c901b/target/debug/.fingerprint/codex-hepta-intelligence-8d822a4a029ede0a/output-test-lib-codex_hepta_intelligence",
+          "size": 3203,
+          "mtime_ns": 1793871587135663501,
+          "sha256": "9f700035c29c61cc6eab398c0f015b8e43581136fdf206a87552c2a82a9aa114",
+          "text": "{\"$message_type\":\"diagnostic\",\"message\":\"unresolved import `codex_hepta_intelligence_eval::revalidate_product_qualification_v1`\",\"code\":{\"code\":\"E0432\",\"explanation\":\"An import was unresolved.\\n\\nErroneous code example:\\n\\n```compile_fail,E0432\\nuse something::Foo; // error: unresolved import `something::Foo`.\\n```\\n\\nIn Rust 2015, paths in `use` statements are relative to the crate root. To\\nimport items relative to the current and parent modules, use the `self::` and\\n`super::` prefixes, respectively.\\n\\nIn Rust 2018 or later, paths in `use` statements are relative to the current\\nmodule unless they begin with the name of a crate or a literal `crate::`, in\\nwhich case they start from the crate root. As in Rust 2015 code, the `self::`\\nand `super::` prefixes refer to the current and parent modules respectively.\\n\\nAlso verify that you didn't misspell the import name and that the import exists\\nin the module from where you tried to import it. Example:\\n\\n```\\nuse self::something::Foo; // Ok.\\n\\nmod something {\\n    pub struct Foo;\\n}\\n# fn main() {}\\n```\\n\\nIf you tried to use a module from an external crate and are using Rust 2015,\\nyou may have missed the `extern crate` declaration (which is usually placed in\\nthe crate root):\\n\\n```edition2015\\nextern crate core; // Required to use the `core` crate in Rust 2015.\\n\\nuse core::any;\\n# fn main() {}\\n```\\n\\nSince Rust 2018 the `extern crate` declaration is not required and\\nyou can instead just `use` it:\\n\\n```edition2018\\nuse core::any; // No extern crate required in Rust 2018.\\n# fn main() {}\\n```\\n\"},\"level\":\"error\",\"spans\":[{\"file_name\":\"hepta-intelligence/src/plasticity_product.rs\",\"byte_start\":1201,\"byte_end\":1267,\"line_start\":24,\"line_end\":24,\"column_start\":5,\"column_end\":71,\"is_primary\":true,\"text\":[{\"text\":\"use codex_hepta_intelligence_eval::revalidate_product_qualification_v1;\",\"highlight_start\":5,\"highlight_end\":71}],\"label\":\"no `revalidate_product_qualification_v1` in the root\",\"suggested_replacement\":null,\"suggestion_applicability\":null,\"expansion\":null}],\"children\":[],\"rendered\":\"\\u001b[1m\\u001b[91merror[E0432]\\u001b[0m\\u001b[1m: unresolved import `codex_hepta_intelligence_eval::revalidate_product_qualification_v1`\\u001b[0m\\n  \\u001b[1m\\u001b[94m--> \\u001b[0mhepta-intelligence/src/plasticity_product.rs:24:5\\n   \\u001b[1m\\u001b[94m|\\u001b[0m\\n\\u001b[1m\\u001b[94m24\\u001b[0m \\u001b[1m\\u001b[94m|\\u001b[0m use codex_hepta_intelligence_eval::revalidate_product_qualification_v1;\\n   \\u001b[1m\\u001b[94m|\\u001b[0m     \\u001b[1m\\u001b[91m^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\\u001b[0m \\u001b[1m\\u001b[91mno `revalidate_product_qualification_v1` in the root\\u001b[0m\\n\\n\"}\n{\"$message_type\":\"diagnostic\",\"message\":\"aborting due to 1 previous error\",\"code\":null,\"level\":\"error\",\"spans\":[],\"children\":[],\"rendered\":\"\\u001b[1m\\u001b[91merror\\u001b[0m\\u001b[1m: aborting due to 1 previous error\\u001b[0m\\n\\n\"}\n{\"$message_type\":\"diagnostic\",\"message\":\"For more information about this error, try `rustc --explain E0432`.\",\"code\":null,\"level\":\"failure-note\",\"spans\":[],\"children\":[],\"rendered\":\"\\u001b[1mFor more information about this error, try `rustc --explain E0432`.\\u001b[0m\\n\"}\n"
+        },
+        {
+          "path": "/home/qq/work/hepta-convergence-20261105-0c901b/target/debug/.fingerprint/codex-hepta-intelligence-8d822a4a029ede0a/test-lib-codex_hepta_intelligence",
+          "size": 0,
+          "mtime_ns": 1793871585979706265,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "text": ""
+        },
+        {
+          "path": "/home/qq/work/hepta-convergence-20261105-0c901b/target/debug/.fingerprint/codex-hepta-intelligence-8d822a4a029ede0a/test-lib-codex_hepta_intelligence.json",
+          "size": 1716,
+          "mtime_ns": 1793866871002198561,
+          "sha256": "ada94cac6707a183b9c4a90034e6056d798132a421cee5cb626f496321dc1fdc",
+          "json": {
+            "rustc": 16696009966390864400,
+            "features": "[]",
+            "declared_features": "[]",
+            "target": 11310866866341687169,
+            "profile": 1933147946653136821,
+            "path": 2477762485400158561,
+            "deps": [
+              [
+                1144853239540885788,
+                "codex_hepta_prompt_optimizer",
+                false,
+                2003363402036651043
+              ],
+              [
+                3471596094616301715,
+                "codex_hepta_intuition",
+                false,
+                5526744952562191796
+              ],
+              [
+                3885478763533142594,
+                "codex_hepta_cognitive_types",
+                false,
+                15692063306783523733
+              ],
+              [
+                5306016253860807931,
+                "ed25519_dalek",
+                false,
+                17267381839052136246
+              ],
+              [
+                8074089437171026926,
+                "codex_hepta_intelligence_eval",
+                false,
+                3888014227650355741
+              ],
+              [
+                9723370144619655183,
+                "tempfile",
+                false,
+                18262738669202104160
+              ],
+              [
+                9786462393023901524,
+                "codex_hepta_cognitive_read",
+                false,
+                5542708851518313952
+              ],
+              [
+                9813227221266182632,
+                "codex_hepta_learning_ledger",
+                false,
+                5566075517048108143
+              ],
+              [
+                10233467208505861004,
+                "codex_hepta_objective",
+                false,
+                14648474590848404390
+              ],
+              [
+                12404878236311788193,
+                "codex_hepta_prompt_registry",
+                false,
+                128160921900225156
+              ],
+              [
+                13772761323954489810,
+                "codex_hepta_context_compiler",
+                false,
+                2980737825263858365
+              ],
+              [
+                14646146981094793184,
+                "codex_hepta_learning_artifacts",
+                false,
+                16614975218241228390
+              ],
+              [
+                15300758679299875469,
+                "codex_hepta_types",
+                false,
+                4780196415195438655
+              ],
+              [
+                15412779023465221432,
+                "codex_hepta_plasticity",
+                false,
+                10797937107683830323
+              ],
+              [
+                16470889250805711130,
+                "codex_hepta_ndu",
+                false,
+                8042784307682319226
+              ],
+              [
+                17707274307970471666,
+                "codex_hepta_contracts",
+                false,
+                8293053895708878949
+              ],
+              [
+                17811409749869794184,
+                "pretty_assertions",
+                false,
+                11245197705999694565
+              ],
+              [
+                18107272800121610327,
+                "codex_hepta_neuron",
+                false,
+                10577906771607020076
+              ]
+            ],
+            "local": [
+              {
+                "CheckDepInfo": {
+                  "dep_info": "debug/.fingerprint/codex-hepta-intelligence-8d822a4a029ede0a/dep-test-lib-codex_hepta_intelligence",
+                  "checksum": false
+                }
+              }
+            ],
+            "rustflags": [],
+            "config": 8247474407144887393,
+            "compile_kind": 0
+          }
+        }
+      ]
+    },
+    {
+      "path": "/home/qq/work/hepta-convergence-20261105-0c901b/target/debug/.fingerprint/codex-hepta-intelligence-9f65bc932998e2ec",
+      "files": [
+        {
+          "path": "/home/qq/work/hepta-convergence-20261105-0c901b/target/debug/.fingerprint/codex-hepta-intelligence-9f65bc932998e2ec/dep-lib-codex_hepta_intelligence",
+          "size": 715,
+          "mtime_ns": 1793868954456789311,
+          "sha256": "4e3038bd3ba2b0daa32d8f147716df3a8111428e1155415c479d09e5a2ea6156"
+        },
+        {
+          "path": "/home/qq/work/hepta-convergence-20261105-0c901b/target/debug/.fingerprint/codex-hepta-intelligence-9f65bc932998e2ec/invoked.timestamp",
+          "size": 48,
+          "mtime_ns": 1793868954456789311,
+          "sha256": "5a109e6643e8d3e88642e3f35e85d2a83e639d07523aa6e99166c48178e965c3"
+        },
+        {
+          "path": "/home/qq/work/hepta-convergence-20261105-0c901b/target/debug/.fingerprint/codex-hepta-intelligence-9f65bc932998e2ec/lib-codex_hepta_intelligence",
+          "size": 16,
+          "mtime_ns": 1793868955053768127,
+          "sha256": "505ab7ce4a844c94cb3ea8ea7880c5a0da91108ac612b7dc8d66527b25d3d3f8",
+          "text": "dca70c9aca7cdd88"
+        },
+        {
+          "path": "/home/qq/work/hepta-convergence-20261105-0c901b/target/debug/.fingerprint/codex-hepta-intelligence-9f65bc932998e2ec/lib-codex_hepta_intelligence.json",
+          "size": 1444,
+          "mtime_ns": 1793868955053768127,
+          "sha256": "ca6c339c969cf624da603cfe631b314a1b8eeb55558304bc1064db79db798abb",
+          "json": {
+            "rustc": 16696009966390864400,
+            "features": "[]",
+            "declared_features": "[]",
+            "target": 11310866866341687169,
+            "profile": 18425621165844343223,
+            "path": 2477762485400158561,
+            "deps": [
+              [
+                1144853239540885788,
+                "codex_hepta_prompt_optimizer",
+                false,
+                6784467697228803558
+              ],
+              [
+                3471596094616301715,
+                "codex_hepta_intuition",
+                false,
+                16949401497044704483
+              ],
+              [
+                3885478763533142594,
+                "codex_hepta_cognitive_types",
+                false,
+                15014060356533733380
+              ],
+              [
+                8074089437171026926,
+                "codex_hepta_intelligence_eval",
+                false,
+                6548890395025168634
+              ],
+              [
+                9786462393023901524,
+                "codex_hepta_cognitive_read",
+                false,
+                933423692485118681
+              ],
+              [
+                9813227221266182632,
+                "codex_hepta_learning_ledger",
+                false,
+                13618926167946193692
+              ],
+              [
+                10233467208505861004,
+                "codex_hepta_objective",
+                false,
+                16082867903734459951
+              ],
+              [
+                12404878236311788193,
+                "codex_hepta_prompt_registry",
+                false,
+                11117959252962615323
+              ],
+              [
+                13772761323954489810,
+                "codex_hepta_context_compiler",
+                false,
+                4632618174466278674
+              ],
+              [
+                14646146981094793184,
+                "codex_hepta_learning_artifacts",
+                false,
+                2492460811930570211
+              ],
+              [
+                15300758679299875469,
+                "codex_hepta_types",
+                false,
+                370670186029889123
+              ],
+              [
+                15412779023465221432,
+                "codex_hepta_plasticity",
+                false,
+                7911356905092452198
+              ],
+              [
+                16470889250805711130,
+                "codex_hepta_ndu",
+                false,
+                17275832696054117400
+              ],
+              [
+                18107272800121610327,
+                "codex_hepta_neuron",
+                false,
+                6575096796066420253
+              ]
+            ],
+            "local": [
+              {
+                "CheckDepInfo": {
+                  "dep_info": "debug/.fingerprint/codex-hepta-intelligence-9f65bc932998e2ec/dep-lib-codex_hepta_intelligence",
+                  "checksum": false
+                }
+              }
+            ],
+            "rustflags": [],
+            "config": 8247474407144887393,
+            "compile_kind": 0
+          }
+        },
+        {
+          "path": "/home/qq/work/hepta-convergence-20261105-0c901b/target/debug/.fingerprint/codex-hepta-intelligence-9f65bc932998e2ec/output-lib-codex_hepta_intelligence",
+          "size": 5028,
+          "mtime_ns": 1793868955053768127,
+          "sha256": "314f59d9f3f3c3f458142d8748e6f840f92a2d7f4896ef1f098458ab5ffeb62a",
+          "text": "{\"$message_type\":\"diagnostic\",\"message\":\"large size difference between variants\",\"code\":{\"code\":\"clippy::large_enum_variant\",\"explanation\":null},\"level\":\"warning\",\"spans\":[{\"file_name\":\"hepta-intelligence/src/canonical.rs\",\"byte_start\":14650,\"byte_end\":14808,\"line_start\":463,\"line_end\":467,\"column_start\":1,\"column_end\":2,\"is_primary\":true,\"text\":[{\"text\":\"pub enum CanonicalRunOutcomeV1 {\",\"highlight_start\":1,\"highlight_end\":33},{\"text\":\"    Ready(IntelligenceHostEnvelopeV1),\",\"highlight_start\":1,\"highlight_end\":39},{\"text\":\"    Abstained(CanonicalTerminalReceiptV1),\",\"highlight_start\":1,\"highlight_end\":43},{\"text\":\"    SlowPath(CanonicalTerminalReceiptV1),\",\"highlight_start\":1,\"highlight_end\":42},{\"text\":\"}\",\"highlight_start\":1,\"highlight_end\":2}],\"label\":\"the entire enum is at least 528 bytes\",\"suggested_replacement\":null,\"suggestion_applicability\":null,\"expansion\":null},{\"file_name\":\"hepta-intelligence/src/canonical.rs\",\"byte_start\":14687,\"byte_end\":14720,\"line_start\":464,\"line_end\":464,\"column_start\":5,\"column_end\":38,\"is_primary\":false,\"text\":[{\"text\":\"    Ready(IntelligenceHostEnvelopeV1),\",\"highlight_start\":5,\"highlight_end\":38}],\"label\":\"the largest variant contains at least 528 bytes\",\"suggested_replacement\":null,\"suggestion_applicability\":null,\"expansion\":null},{\"file_name\":\"hepta-intelligence/src/canonical.rs\",\"byte_start\":14726,\"byte_end\":14763,\"line_start\":465,\"line_end\":465,\"column_start\":5,\"column_end\":42,\"is_primary\":false,\"text\":[{\"text\":\"    Abstained(CanonicalTerminalReceiptV1),\",\"highlight_start\":5,\"highlight_end\":42}],\"label\":\"the second-largest variant contains at least 272 bytes\",\"suggested_replacement\":null,\"suggestion_applicability\":null,\"expansion\":null}],\"children\":[{\"message\":\"for further information visit https://rust-lang.github.io/rust-clippy/rust-1.96.0/index.html#large_enum_variant\",\"code\":null,\"level\":\"help\",\"spans\":[],\"children\":[],\"rendered\":null},{\"message\":\"`#[warn(clippy::large_enum_variant)]` on by default\",\"code\":null,\"level\":\"note\",\"spans\":[],\"children\":[],\"rendered\":null},{\"message\":\"consider boxing the large fields or introducing indirection in some other way to reduce the total size of the enum\",\"code\":null,\"level\":\"help\",\"spans\":[{\"file_name\":\"hepta-intelligence/src/canonical.rs\",\"byte_start\":14693,\"byte_end\":14719,\"line_start\":464,\"line_end\":464,\"column_start\":11,\"column_end\":37,\"is_primary\":true,\"text\":[{\"text\":\"    Ready(IntelligenceHostEnvelopeV1),\",\"highlight_start\":11,\"highlight_end\":37}],\"label\":null,\"suggested_replacement\":\"Box<IntelligenceHostEnvelopeV1>\",\"suggestion_applicability\":\"MaybeIncorrect\",\"expansion\":null}],\"children\":[],\"rendered\":null}],\"rendered\":\"\\u001b[1m\\u001b[33mwarning\\u001b[0m\\u001b[1m: large size difference between variants\\u001b[0m\\n   \\u001b[1m\\u001b[94m--> \\u001b[0mhepta-intelligence/src/canonical.rs:463:1\\n    \\u001b[1m\\u001b[94m|\\u001b[0m\\n\\u001b[1m\\u001b[94m463\\u001b[0m \\u001b[1m\\u001b[94m|\\u001b[0m \\u001b[1m\\u001b[33m/\\u001b[0m pub enum CanonicalRunOutcomeV1 {\\n\\u001b[1m\\u001b[94m464\\u001b[0m \\u001b[1m\\u001b[94m|\\u001b[0m \\u001b[1m\\u001b[33m|\\u001b[0m     Ready(IntelligenceHostEnvelopeV1),\\n    \\u001b[1m\\u001b[94m|\\u001b[0m \\u001b[1m\\u001b[33m|\\u001b[0m     \\u001b[1m\\u001b[94m---------------------------------\\u001b[0m \\u001b[1m\\u001b[94mthe largest variant contains at least 528 bytes\\u001b[0m\\n\\u001b[1m\\u001b[94m465\\u001b[0m \\u001b[1m\\u001b[94m|\\u001b[0m \\u001b[1m\\u001b[33m|\\u001b[0m     Abstained(CanonicalTerminalReceiptV1),\\n    \\u001b[1m\\u001b[94m|\\u001b[0m \\u001b[1m\\u001b[33m|\\u001b[0m     \\u001b[1m\\u001b[94m-------------------------------------\\u001b[0m \\u001b[1m\\u001b[94mthe second-largest variant contains at least 272 bytes\\u001b[0m\\n\\u001b[1m\\u001b[94m466\\u001b[0m \\u001b[1m\\u001b[94m|\\u001b[0m \\u001b[1m\\u001b[33m|\\u001b[0m     SlowPath(CanonicalTerminalReceiptV1),\\n\\u001b[1m\\u001b[94m467\\u001b[0m \\u001b[1m\\u001b[94m|\\u001b[0m \\u001b[1m\\u001b[33m|\\u001b[0m }\\n    \\u001b[1m\\u001b[94m|\\u001b[0m \\u001b[1m\\u001b[33m|_^\\u001b[0m \\u001b[1m\\u001b[33mthe entire enum is at least 528 bytes\\u001b[0m\\n    \\u001b[1m\\u001b[94m|\\u001b[0m\\n    \\u001b[1m\\u001b[94m= \\u001b[0m\\u001b[1mhelp\\u001b[0m: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.96.0/index.html#large_enum_variant\\n    \\u001b[1m\\u001b[94m= \\u001b[0m\\u001b[1mnote\\u001b[0m: `#[warn(clippy::large_enum_variant)]` on by default\\n\\u001b[1m\\u001b[96mhelp\\u001b[0m: consider boxing the large fields or introducing indirection in some other way to reduce the total size of the enum\\n    \\u001b[1m\\u001b[94m|\\u001b[0m\\n\\u001b[1m\\u001b[94m464\\u001b[0m \\u001b[91m- \\u001b[0m    Ready(\\u001b[91mIntelligenceHostEnvelopeV1\\u001b[0m),\\n\\u001b[1m\\u001b[94m464\\u001b[0m \\u001b[92m+ \\u001b[0m    Ready(\\u001b[92mBox<IntelligenceHostEnvelopeV1>\\u001b[0m),\\n    \\u001b[1m\\u001b[94m|\\u001b[0m\\n\\n\"}\n{\"$message_type\":\"diagnostic\",\"message\":\"1 warning emitted\",\"code\":null,\"level\":\"warning\",\"spans\":[],\"children\":[],\"rendered\":\"\\u001b[1m\\u001b[33mwarning\\u001b[0m\\u001b[1m: 1 warning emitted\\u001b[0m\\n\\n\"}\n"
+        }
+      ]
+    },
+    {
+      "path": "/home/qq/work/hepta-convergence-20261105-0c901b/target/debug/.fingerprint/codex-hepta-intelligence-9f6f069bd063b615",
+      "files": [
+        {
+          "path": "/home/qq/work/hepta-convergence-20261105-0c901b/target/debug/.fingerprint/codex-hepta-intelligence-9f6f069bd063b615/dep-test-lib-codex_hepta_intelligence",
+          "size": 1220,
+          "mtime_ns": 1793868965166409283,
+          "sha256": "5319ecefb28954f87db2434779f03ae16a78e475694a2132e5cda22934aaed28"
+        },
+        {
+          "path": "/home/qq/work/hepta-convergence-20261105-0c901b/target/debug/.fingerprint/codex-hepta-intelligence-9f6f069bd063b615/invoked.timestamp",
+          "size": 48,
+          "mtime_ns": 1793868965166409283,
+          "sha256": "5a109e6643e8d3e88642e3f35e85d2a83e639d07523aa6e99166c48178e965c3"
+        },
+        {
+          "path": "/home/qq/work/hepta-convergence-20261105-0c901b/target/debug/.fingerprint/codex-hepta-intelligence-9f6f069bd063b615/output-test-lib-codex_hepta_intelligence",
+          "size": 5028,
+          "mtime_ns": 1793868966206372381,
+          "sha256": "314f59d9f3f3c3f458142d8748e6f840f92a2d7f4896ef1f098458ab5ffeb62a",
+          "text": "{\"$message_type\":\"diagnostic\",\"message\":\"large size difference between variants\",\"code\":{\"code\":\"clippy::large_enum_variant\",\"explanation\":null},\"level\":\"warning\",\"spans\":[{\"file_name\":\"hepta-intelligence/src/canonical.rs\",\"byte_start\":14650,\"byte_end\":14808,\"line_start\":463,\"line_end\":467,\"column_start\":1,\"column_end\":2,\"is_primary\":true,\"text\":[{\"text\":\"pub enum CanonicalRunOutcomeV1 {\",\"highlight_start\":1,\"highlight_end\":33},{\"text\":\"    Ready(IntelligenceHostEnvelopeV1),\",\"highlight_start\":1,\"highlight_end\":39},{\"text\":\"    Abstained(CanonicalTerminalReceiptV1),\",\"highlight_start\":1,\"highlight_end\":43},{\"text\":\"    SlowPath(CanonicalTerminalReceiptV1),\",\"highlight_start\":1,\"highlight_end\":42},{\"text\":\"}\",\"highlight_start\":1,\"highlight_end\":2}],\"label\":\"the entire enum is at least 528 bytes\",\"suggested_replacement\":null,\"suggestion_applicability\":null,\"expansion\":null},{\"file_name\":\"hepta-intelligence/src/canonical.rs\",\"byte_start\":14687,\"byte_end\":14720,\"line_start\":464,\"line_end\":464,\"column_start\":5,\"column_end\":38,\"is_primary\":false,\"text\":[{\"text\":\"    Ready(IntelligenceHostEnvelopeV1),\",\"highlight_start\":5,\"highlight_end\":38}],\"label\":\"the largest variant contains at least 528 bytes\",\"suggested_replacement\":null,\"suggestion_applicability\":null,\"expansion\":null},{\"file_name\":\"hepta-intelligence/src/canonical.rs\",\"byte_start\":14726,\"byte_end\":14763,\"line_start\":465,\"line_end\":465,\"column_start\":5,\"column_end\":42,\"is_primary\":false,\"text\":[{\"text\":\"    Abstained(CanonicalTerminalReceiptV1),\",\"highlight_start\":5,\"highlight_end\":42}],\"label\":\"the second-largest variant contains at least 272 bytes\",\"suggested_replacement\":null,\"suggestion_applicability\":null,\"expansion\":null}],\"children\":[{\"message\":\"for further information visit https://rust-lang.github.io/rust-clippy/rust-1.96.0/index.html#large_enum_variant\",\"code\":null,\"level\":\"help\",\"spans\":[],\"children\":[],\"rendered\":null},{\"message\":\"`#[warn(clippy::large_enum_variant)]` on by default\",\"code\":null,\"level\":\"note\",\"spans\":[],\"children\":[],\"rendered\":null},{\"message\":\"consider boxing the large fields or introducing indirection in some other way to reduce the total size of the enum\",\"code\":null,\"level\":\"help\",\"spans\":[{\"file_name\":\"hepta-intelligence/src/canonical.rs\",\"byte_start\":14693,\"byte_end\":14719,\"line_start\":464,\"line_end\":464,\"column_start\":11,\"column_end\":37,\"is_primary\":true,\"text\":[{\"text\":\"    Ready(IntelligenceHostEnvelopeV1),\",\"highlight_start\":11,\"highlight_end\":37}],\"label\":null,\"suggested_replacement\":\"Box<IntelligenceHostEnvelopeV1>\",\"suggestion_applicability\":\"MaybeIncorrect\",\"expansion\":null}],\"children\":[],\"rendered\":null}],\"rendered\":\"\\u001b[1m\\u001b[33mwarning\\u001b[0m\\u001b[1m: large size difference between variants\\u001b[0m\\n   \\u001b[1m\\u001b[94m--> \\u001b[0mhepta-intelligence/src/canonical.rs:463:1\\n    \\u001b[1m\\u001b[94m|\\u001b[0m\\n\\u001b[1m\\u001b[94m463\\u001b[0m \\u001b[1m\\u001b[94m|\\u001b[0m \\u001b[1m\\u001b[33m/\\u001b[0m pub enum CanonicalRunOutcomeV1 {\\n\\u001b[1m\\u001b[94m464\\u001b[0m \\u001b[1m\\u001b[94m|\\u001b[0m \\u001b[1m\\u001b[33m|\\u001b[0m     Ready(IntelligenceHostEnvelopeV1),\\n    \\u001b[1m\\u001b[94m|\\u001b[0m \\u001b[1m\\u001b[33m|\\u001b[0m     \\u001b[1m\\u001b[94m---------------------------------\\u001b[0m \\u001b[1m\\u001b[94mthe largest variant contains at least 528 bytes\\u001b[0m\\n\\u001b[1m\\u001b[94m465\\u001b[0m \\u001b[1m\\u001b[94m|\\u001b[0m \\u001b[1m\\u001b[33m|\\u001b[0m     Abstained(CanonicalTerminalReceiptV1),\\n    \\u001b[1m\\u001b[94m|\\u001b[0m \\u001b[1m\\u001b[33m|\\u001b[0m     \\u001b[1m\\u001b[94m-------------------------------------\\u001b[0m \\u001b[1m\\u001b[94mthe second-largest variant contains at least 272 bytes\\u001b[0m\\n\\u001b[1m\\u001b[94m466\\u001b[0m \\u001b[1m\\u001b[94m|\\u001b[0m \\u001b[1m\\u001b[33m|\\u001b[0m     SlowPath(CanonicalTerminalReceiptV1),\\n\\u001b[1m\\u001b[94m467\\u001b[0m \\u001b[1m\\u001b[94m|\\u001b[0m \\u001b[1m\\u001b[33m|\\u001b[0m }\\n    \\u001b[1m\\u001b[94m|\\u001b[0m \\u001b[1m\\u001b[33m|_^\\u001b[0m \\u001b[1m\\u001b[33mthe entire enum is at least 528 bytes\\u001b[0m\\n    \\u001b[1m\\u001b[94m|\\u001b[0m\\n    \\u001b[1m\\u001b[94m= \\u001b[0m\\u001b[1mhelp\\u001b[0m: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.96.0/index.html#large_enum_variant\\n    \\u001b[1m\\u001b[94m= \\u001b[0m\\u001b[1mnote\\u001b[0m: `#[warn(clippy::large_enum_variant)]` on by default\\n\\u001b[1m\\u001b[96mhelp\\u001b[0m: consider boxing the large fields or introducing indirection in some other way to reduce the total size of the enum\\n    \\u001b[1m\\u001b[94m|\\u001b[0m\\n\\u001b[1m\\u001b[94m464\\u001b[0m \\u001b[91m- \\u001b[0m    Ready(\\u001b[91mIntelligenceHostEnvelopeV1\\u001b[0m),\\n\\u001b[1m\\u001b[94m464\\u001b[0m \\u001b[92m+ \\u001b[0m    Ready(\\u001b[92mBox<IntelligenceHostEnvelopeV1>\\u001b[0m),\\n    \\u001b[1m\\u001b[94m|\\u001b[0m\\n\\n\"}\n{\"$message_type\":\"diagnostic\",\"message\":\"1 warning emitted\",\"code\":null,\"level\":\"warning\",\"spans\":[],\"children\":[],\"rendered\":\"\\u001b[1m\\u001b[33mwarning\\u001b[0m\\u001b[1m: 1 warning emitted\\u001b[0m\\n\\n\"}\n"
+        },
+        {
+          "path": "/home/qq/work/hepta-convergence-20261105-0c901b/target/debug/.fingerprint/codex-hepta-intelligence-9f6f069bd063b615/test-lib-codex_hepta_intelligence",
+          "size": 16,
+          "mtime_ns": 1793868966207372345,
+          "sha256": "4a3ddb8b4986379b3c532b89c1ba05c5e91ee87a2c21a94b5ab1e5b113cdf3b1",
+          "text": "e4a7352e8c8910eb"
+        },
+        {
+          "path": "/home/qq/work/hepta-convergence-20261105-0c901b/target/debug/.fingerprint/codex-hepta-intelligence-9f6f069bd063b615/test-lib-codex_hepta_intelligence.json",
+          "size": 1716,
+          "mtime_ns": 1793868966207372345,
+          "sha256": "9b2b05cc2489c91041dc4cfcddbc2ec7b38476b58a2bb5dd10d1a8b7134b8667",
+          "json": {
+            "rustc": 16696009966390864400,
+            "features": "[]",
+            "declared_features": "[]",
+            "target": 11310866866341687169,
+            "profile": 16183242212785553745,
+            "path": 2477762485400158561,
+            "deps": [
+              [
+                1144853239540885788,
+                "codex_hepta_prompt_optimizer",
+                false,
+                6784467697228803558
+              ],
+              [
+                3471596094616301715,
+                "codex_hepta_intuition",
+                false,
+                16949401497044704483
+              ],
+              [
+                3885478763533142594,
+                "codex_hepta_cognitive_types",
+                false,
+                15014060356533733380
+              ],
+              [
+                5306016253860807931,
+                "ed25519_dalek",
+                false,
+                7566767075958630261
+              ],
+              [
+                8074089437171026926,
+                "codex_hepta_intelligence_eval",
+                false,
+                6548890395025168634
+              ],
+              [
+                9723370144619655183,
+                "tempfile",
+                false,
+                16386581773577572965
+              ],
+              [
+                9786462393023901524,
+                "codex_hepta_cognitive_read",
+                false,
+                933423692485118681
+              ],
+              [
+                9813227221266182632,
+                "codex_hepta_learning_ledger",
+                false,
+                13618926167946193692
+              ],
+              [
+                10233467208505861004,
+                "codex_hepta_objective",
+                false,
+                16082867903734459951
+              ],
+              [
+                12404878236311788193,
+                "codex_hepta_prompt_registry",
+                false,
+                11117959252962615323
+              ],
+              [
+                13772761323954489810,
+                "codex_hepta_context_compiler",
+                false,
+                4632618174466278674
+              ],
+              [
+                14646146981094793184,
+                "codex_hepta_learning_artifacts",
+                false,
+                2492460811930570211
+              ],
+              [
+                15300758679299875469,
+                "codex_hepta_types",
+                false,
+                370670186029889123
+              ],
+              [
+                15412779023465221432,
+                "codex_hepta_plasticity",
+                false,
+                7911356905092452198
+              ],
+              [
+                16470889250805711130,
+                "codex_hepta_ndu",
+                false,
+                17275832696054117400
+              ],
+              [
+                17707274307970471666,
+                "codex_hepta_contracts",
+                false,
+                7538824151649717722
+              ],
+              [
+                17811409749869794184,
+                "pretty_assertions",
+                false,
+                16924004716320179317
+              ],
+              [
+                18107272800121610327,
+                "codex_hepta_neuron",
+                false,
+                6575096796066420253
+              ]
+            ],
+            "local": [
+              {
+                "CheckDepInfo": {
+                  "dep_info": "debug/.fingerprint/codex-hepta-intelligence-9f6f069bd063b615/dep-test-lib-codex_hepta_intelligence",
+                  "checksum": false
+                }
+              }
+            ],
+            "rustflags": [],
+            "config": 8247474407144887393,
+            "compile_kind": 0
+          }
+        }
+      ]
+    },
+    {
+      "path": "/home/qq/work/hepta-convergence-20261105-0c901b/target/debug/.fingerprint/codex-hepta-intelligence-a8e356c77d481125",
+      "files": [
+        {
+          "path": "/home/qq/work/hepta-convergence-20261105-0c901b/target/debug/.fingerprint/codex-hepta-intelligence-a8e356c77d481125/dep-test-integration-test-intuition_frozen_qualification",
+          "size": 237,
+          "mtime_ns": 1793866869690244630,
+          "sha256": "403e5767b3f4a25a1d31fce57acee7e97c44e701a385b6c1c97de5a9667ea7e5"
+        },
+        {
+          "path": "/home/qq/work/hepta-convergence-20261105-0c901b/target/debug/.fingerprint/codex-hepta-intelligence-a8e356c77d481125/invoked.timestamp",
+          "size": 48,
+          "mtime_ns": 1793866869690244630,
+          "sha256": "5a109e6643e8d3e88642e3f35e85d2a83e639d07523aa6e99166c48178e965c3"
+        },
+        {
+          "path": "/home/qq/work/hepta-convergence-20261105-0c901b/target/debug/.fingerprint/codex-hepta-intelligence-a8e356c77d481125/test-integration-test-intuition_frozen_qualification",
+          "size": 0,
+          "mtime_ns": 1793871585992705784,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "path": "/home/qq/work/hepta-convergence-20261105-0c901b/target/debug/.fingerprint/codex-hepta-intelligence-a8e356c77d481125/test-integration-test-intuition_frozen_qualification.json",
+          "size": 1810,
+          "mtime_ns": 1793866870015233218,
+          "sha256": "2bd2a580adfff98ad917101d098769bdda93c7f5b0f75d4e8046b764499d708c",
+          "json": {
+            "rustc": 16696009966390864400,
+            "features": "[]",
+            "declared_features": "[]",
+            "target": 11130832653019443485,
+            "profile": 1933147946653136821,
+            "path": 5282974935508569398,
+            "deps": [
+              [
+                1144853239540885788,
+                "codex_hepta_prompt_optimizer",
+                false,
+                2003363402036651043
+              ],
+              [
+                2979671245335477805,
+                "codex_hepta_intelligence",
+                false,
+                9645052883056090493
+              ],
+              [
+                3471596094616301715,
+                "codex_hepta_intuition",
+                false,
+                5526744952562191796
+              ],
+              [
+                3885478763533142594,
+                "codex_hepta_cognitive_types",
+                false,
+                15692063306783523733
+              ],
+              [
+                5306016253860807931,
+                "ed25519_dalek",
+                false,
+                17267381839052136246
+              ],
+              [
+                8074089437171026926,
+                "codex_hepta_intelligence_eval",
+                false,
+                3888014227650355741
+              ],
+              [
+                9723370144619655183,
+                "tempfile",
+                false,
+                18262738669202104160
+              ],
+              [
+                9786462393023901524,
+                "codex_hepta_cognitive_read",
+                false,
+                5542708851518313952
+              ],
+              [
+                9813227221266182632,
+                "codex_hepta_learning_ledger",
+                false,
+                5566075517048108143
+              ],
+              [
+                10233467208505861004,
+                "codex_hepta_objective",
+                false,
+                14648474590848404390
+              ],
+              [
+                12404878236311788193,
+                "codex_hepta_prompt_registry",
+                false,
+                128160921900225156
+              ],
+              [
+                13772761323954489810,
+                "codex_hepta_context_compiler",
+                false,
+                2980737825263858365
+              ],
+              [
+                14646146981094793184,
+                "codex_hepta_learning_artifacts",
+                false,
+                16614975218241228390
+              ],
+              [
+                15300758679299875469,
+                "codex_hepta_types",
+                false,
+                4780196415195438655
+              ],
+              [
+                15412779023465221432,
+                "codex_hepta_plasticity",
+                false,
+                10797937107683830323
+              ],
+              [
+                16470889250805711130,
+                "codex_hepta_ndu",
+                false,
+                8042784307682319226
+              ],
+              [
+                17707274307970471666,
+                "codex_hepta_contracts",
+                false,
+                8293053895708878949
+              ],
+              [
+                17811409749869794184,
+                "pretty_assertions",
+                false,
+                11245197705999694565
+              ],
+              [
+                18107272800121610327,
+                "codex_hepta_neuron",
+                false,
+                10577906771607020076
+              ]
+            ],
+            "local": [
+              {
+                "CheckDepInfo": {
+                  "dep_info": "debug/.fingerprint/codex-hepta-intelligence-a8e356c77d481125/dep-test-integration-test-intuition_frozen_qualification",
+                  "checksum": false
+                }
+              }
+            ],
+            "rustflags": [],
+            "config": 8247474407144887393,
+            "compile_kind": 0
+          }
+        }
+      ]
+    },
+    {
+      "path": "/home/qq/work/hepta-convergence-20261105-0c901b/target/debug/.fingerprint/codex-hepta-intelligence-bf369ee4e3c8e9cd",
+      "files": [
+        {
+          "path": "/home/qq/work/hepta-convergence-20261105-0c901b/target/debug/.fingerprint/codex-hepta-intelligence-bf369ee4e3c8e9cd/dep-test-integration-test-lane_f_shadow_vertical",
+          "size": 51,
+          "mtime_ns": 1793866870016233183,
+          "sha256": "3d06381603c8f31d8f6833a8462c213485fc5b107b532fdf62bc171c0364ad59"
+        },
+        {
+          "path": "/home/qq/work/hepta-convergence-20261105-0c901b/target/debug/.fingerprint/codex-hepta-intelligence-bf369ee4e3c8e9cd/invoked.timestamp",
+          "size": 48,
+          "mtime_ns": 1793866870016233183,
+          "sha256": "5a109e6643e8d3e88642e3f35e85d2a83e639d07523aa6e99166c48178e965c3"
+        },
+        {
+          "path": "/home/qq/work/hepta-convergence-20261105-0c901b/target/debug/.fingerprint/codex-hepta-intelligence-bf369ee4e3c8e9cd/test-integration-test-lane_f_shadow_vertical",
+          "size": 0,
+          "mtime_ns": 1793871585993705747,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "path": "/home/qq/work/hepta-convergence-20261105-0c901b/target/debug/.fingerprint/codex-hepta-intelligence-bf369ee4e3c8e9cd/test-integration-test-lane_f_shadow_vertical.json",
+          "size": 1802,
+          "mtime_ns": 1793866870231225634,
+          "sha256": "3197ca2d19f910e993f3087eccc0137a0839cae89b2464d1687bd7bd009ada7d",
+          "json": {
+            "rustc": 16696009966390864400,
+            "features": "[]",
+            "declared_features": "[]",
+            "target": 13252067274489712779,
+            "profile": 1933147946653136821,
+            "path": 8382102426800115362,
+            "deps": [
+              [
+                1144853239540885788,
+                "codex_hepta_prompt_optimizer",
+                false,
+                2003363402036651043
+              ],
+              [
+                2979671245335477805,
+                "codex_hepta_intelligence",
+                false,
+                9645052883056090493
+              ],
+              [
+                3471596094616301715,
+                "codex_hepta_intuition",
+                false,
+                5526744952562191796
+              ],
+              [
+                3885478763533142594,
+                "codex_hepta_cognitive_types",
+                false,
+                15692063306783523733
+              ],
+              [
+                5306016253860807931,
+                "ed25519_dalek",
+                false,
+                17267381839052136246
+              ],
+              [
+                8074089437171026926,
+                "codex_hepta_intelligence_eval",
+                false,
+                3888014227650355741
+              ],
+              [
+                9723370144619655183,
+                "tempfile",
+                false,
+                18262738669202104160
+              ],
+              [
+                9786462393023901524,
+                "codex_hepta_cognitive_read",
+                false,
+                5542708851518313952
+              ],
+              [
+                9813227221266182632,
+                "codex_hepta_learning_ledger",
+                false,
+                5566075517048108143
+              ],
+              [
+                10233467208505861004,
+                "codex_hepta_objective",
+                false,
+                14648474590848404390
+              ],
+              [
+                12404878236311788193,
+                "codex_hepta_prompt_registry",
+                false,
+                128160921900225156
+              ],
+              [
+                13772761323954489810,
+                "codex_hepta_context_compiler",
+                false,
+                2980737825263858365
+              ],
+              [
+                14646146981094793184,
+                "codex_hepta_learning_artifacts",
+                false,
+                16614975218241228390
+              ],
+              [
+                15300758679299875469,
+                "codex_hepta_types",
+                false,
+                4780196415195438655
+              ],
+              [
+                15412779023465221432,
+                "codex_hepta_plasticity",
+                false,
+                10797937107683830323
+              ],
+              [
+                16470889250805711130,
+                "codex_hepta_ndu",
+                false,
+                8042784307682319226
+              ],
+              [
+                17707274307970471666,
+                "codex_hepta_contracts",
+                false,
+                8293053895708878949
+              ],
+              [
+                17811409749869794184,
+                "pretty_assertions",
+                false,
+                11245197705999694565
+              ],
+              [
+                18107272800121610327,
+                "codex_hepta_neuron",
+                false,
+                10577906771607020076
+              ]
+            ],
+            "local": [
+              {
+                "CheckDepInfo": {
+                  "dep_info": "debug/.fingerprint/codex-hepta-intelligence-bf369ee4e3c8e9cd/dep-test-integration-test-lane_f_shadow_vertical",
+                  "checksum": false
+                }
+              }
+            ],
+            "rustflags": [],
+            "config": 8247474407144887393,
+            "compile_kind": 0
+          }
+        }
+      ]
+    },
+    {
+      "path": "/home/qq/work/hepta-convergence-20261105-0c901b/target/debug/.fingerprint/codex-hepta-intelligence-d2c29ee35b79dda4",
+      "files": [
+        {
+          "path": "/home/qq/work/hepta-convergence-20261105-0c901b/target/debug/.fingerprint/codex-hepta-intelligence-d2c29ee35b79dda4/dep-lib-codex_hepta_intelligence",
+          "size": 487,
+          "mtime_ns": 1793871039991753886,
+          "sha256": "8e194f3ae8565cb5f46ed8d83df5bdc0cc265216c8cb5ae65969bd7d038e98d4"
+        },
+        {
+          "path": "/home/qq/work/hepta-convergence-20261105-0c901b/target/debug/.fingerprint/codex-hepta-intelligence-d2c29ee35b79dda4/invoked.timestamp",
+          "size": 48,
+          "mtime_ns": 1793871039991753886,
+          "sha256": "5a109e6643e8d3e88642e3f35e85d2a83e639d07523aa6e99166c48178e965c3"
+        },
+        {
+          "path": "/home/qq/work/hepta-convergence-20261105-0c901b/target/debug/.fingerprint/codex-hepta-intelligence-d2c29ee35b79dda4/lib-codex_hepta_intelligence",
+          "size": 16,
+          "mtime_ns": 1793871040897721752,
+          "sha256": "bbc4c6484f3e14d3e274b6b979e792ca10f9defea4fd5907eaebe78e14fc1815",
+          "text": "5297d8c4328f9df0"
+        },
+        {
+          "path": "/home/qq/work/hepta-convergence-20261105-0c901b/target/debug/.fingerprint/codex-hepta-intelligence-d2c29ee35b79dda4/lib-codex_hepta_intelligence.json",
+          "size": 1447,
+          "mtime_ns": 1793871040897721752,
+          "sha256": "138cecf46319c226124d701e8c60d4fe7af4684b4034afcb37ca8677da4afb6b",
+          "json": {
+            "rustc": 16696009966390864400,
+            "features": "[]",
+            "declared_features": "[]",
+            "target": 11310866866341687169,
+            "profile": 7792962805499760383,
+            "path": 2477762485400158561,
+            "deps": [
+              [
+                1144853239540885788,
+                "codex_hepta_prompt_optimizer",
+                false,
+                15044899456869536801
+              ],
+              [
+                3471596094616301715,
+                "codex_hepta_intuition",
+                false,
+                7237941431695679105
+              ],
+              [
+                3885478763533142594,
+                "codex_hepta_cognitive_types",
+                false,
+                15074005260390329115
+              ],
+              [
+                8074089437171026926,
+                "codex_hepta_intelligence_eval",
+                false,
+                1886280396668143965
+              ],
+              [
+                9786462393023901524,
+                "codex_hepta_cognitive_read",
+                false,
+                14034616776105016920
+              ],
+              [
+                9813227221266182632,
+                "codex_hepta_learning_ledger",
+                false,
+                15227768867144780672
+              ],
+              [
+                10233467208505861004,
+                "codex_hepta_objective",
+                false,
+                12329554373542123859
+              ],
+              [
+                12404878236311788193,
+                "codex_hepta_prompt_registry",
+                false,
+                18442561347110299239
+              ],
+              [
+                13772761323954489810,
+                "codex_hepta_context_compiler",
+                false,
+                9004177612985767804
+              ],
+              [
+                14646146981094793184,
+                "codex_hepta_learning_artifacts",
+                false,
+                9532307958279133601
+              ],
+              [
+                15300758679299875469,
+                "codex_hepta_types",
+                false,
+                18183214015053875645
+              ],
+              [
+                15412779023465221432,
+                "codex_hepta_plasticity",
+                false,
+                2656687387138548747
+              ],
+              [
+                16470889250805711130,
+                "codex_hepta_ndu",
+                false,
+                10976575656345413893
+              ],
+              [
+                18107272800121610327,
+                "codex_hepta_neuron",
+                false,
+                9233969590694453327
+              ]
+            ],
+            "local": [
+              {
+                "CheckDepInfo": {
+                  "dep_info": "debug/.fingerprint/codex-hepta-intelligence-d2c29ee35b79dda4/dep-lib-codex_hepta_intelligence",
+                  "checksum": false
+                }
+              }
+            ],
+            "rustflags": [],
+            "config": 8247474407144887393,
+            "compile_kind": 0
+          }
+        }
+      ]
+    },
+    {
+      "path": "/home/qq/work/hepta-convergence-20261105-0c901b/target/debug/.fingerprint/codex-hepta-intelligence-d3e7dc15f69a32dd",
+      "files": [
+        {
+          "path": "/home/qq/work/hepta-convergence-20261105-0c901b/target/debug/.fingerprint/codex-hepta-intelligence-d3e7dc15f69a32dd/dep-test-integration-test-intuition_frozen_qualification",
+          "size": 465,
+          "mtime_ns": 1793868976309013902,
+          "sha256": "47d36fddd080726a876dc1521535b5555b7118348b0591fbc4a594378363f9b5"
+        },
+        {
+          "path": "/home/qq/work/hepta-convergence-20261105-0c901b/target/debug/.fingerprint/codex-hepta-intelligence-d3e7dc15f69a32dd/invoked.timestamp",
+          "size": 48,
+          "mtime_ns": 1793868976309013902,
+          "sha256": "5a109e6643e8d3e88642e3f35e85d2a83e639d07523aa6e99166c48178e965c3"
+        },
+        {
+          "path": "/home/qq/work/hepta-convergence-20261105-0c901b/target/debug/.fingerprint/codex-hepta-intelligence-d3e7dc15f69a32dd/test-integration-test-intuition_frozen_qualification",
+          "size": 16,
+          "mtime_ns": 1793868976407010424,
+          "sha256": "8432199e3853d401abb08640b9ef18e7ebd3b9adb01a5f5fddce1dce1b715787"
+        },
+        {
+          "path": "/home/qq/work/hepta-convergence-20261105-0c901b/target/debug/.fingerprint/codex-hepta-intelligence-d3e7dc15f69a32dd/test-integration-test-intuition_frozen_qualification.json",
+          "size": 1810,
+          "mtime_ns": 1793868976407010424,
+          "sha256": "8c2e0519a9fc6f4313156bc193e0fa13d8d59aadf735b557449f774f4d62c880",
+          "json": {
+            "rustc": 16696009966390864400,
+            "features": "[]",
+            "declared_features": "[]",
+            "target": 11130832653019443485,
+            "profile": 16183242212785553745,
+            "path": 5282974935508569398,
+            "deps": [
+              [
+                1144853239540885788,
+                "codex_hepta_prompt_optimizer",
+                false,
+                6784467697228803558
+              ],
+              [
+                2979671245335477805,
+                "codex_hepta_intelligence",
+                false,
+                9862175968621012956
+              ],
+              [
+                3471596094616301715,
+                "codex_hepta_intuition",
+                false,
+                16949401497044704483
+              ],
+              [
+                3885478763533142594,
+                "codex_hepta_cognitive_types",
+                false,
+                15014060356533733380
+              ],
+              [
+                5306016253860807931,
+                "ed25519_dalek",
+                false,
+                7566767075958630261
+              ],
+              [
+                8074089437171026926,
+                "codex_hepta_intelligence_eval",
+                false,
+                6548890395025168634
+              ],
+              [
+                9723370144619655183,
+                "tempfile",
+                false,
+                16386581773577572965
+              ],
+              [
+                9786462393023901524,
+                "codex_hepta_cognitive_read",
+                false,
+                933423692485118681
+              ],
+              [
+                9813227221266182632,
+                "codex_hepta_learning_ledger",
+                false,
+                13618926167946193692
+              ],
+              [
+                10233467208505861004,
+                "codex_hepta_objective",
+                false,
+                16082867903734459951
+              ],
+              [
+                12404878236311788193,
+                "codex_hepta_prompt_registry",
+                false,
+                11117959252962615323
+              ],
+              [
+                13772761323954489810,
+                "codex_hepta_context_compiler",
+                false,
+                4632618174466278674
+              ],
+              [
+                14646146981094793184,
+                "codex_hepta_learning_artifacts",
+                false,
+                2492460811930570211
+              ],
+              [
+                15300758679299875469,
+                "codex_hepta_types",
+                false,
+                370670186029889123
+              ],
+              [
+                15412779023465221432,
+                "codex_hepta_plasticity",
+                false,
+                7911356905092452198
+              ],
+              [
+                16470889250805711130,
+                "codex_hepta_ndu",
+                false,
+                17275832696054117400
+              ],
+              [
+                17707274307970471666,
+                "codex_hepta_contracts",
+                false,
+                7538824151649717722
+              ],
+              [
+                17811409749869794184,
+                "pretty_assertions",
+                false,
+                16924004716320179317
+              ],
+              [
+                18107272800121610327,
+                "codex_hepta_neuron",
+                false,
+                6575096796066420253
+              ]
+            ],
+            "local": [
+              {
+                "CheckDepInfo": {
+                  "dep_info": "debug/.fingerprint/codex-hepta-intelligence-d3e7dc15f69a32dd/dep-test-integration-test-intuition_frozen_qualification",
+                  "checksum": false
+                }
+              }
+            ],
+            "rustflags": [],
+            "config": 8247474407144887393,
+            "compile_kind": 0
+          }
+        }
+      ]
+    },
+    {
+      "path": "/home/qq/work/hepta-convergence-20261105-0c901b/target/debug/.fingerprint/codex-hepta-intelligence-eval-06ab8db2dd1d02ee",
+      "files": [
+        {
+          "path": "/home/qq/work/hepta-convergence-20261105-0c901b/target/debug/.fingerprint/codex-hepta-intelligence-eval-06ab8db2dd1d02ee/dep-test-lib-codex_hepta_intelligence_eval",
+          "size": 1203,
+          "mtime_ns": 1793870745023216364,
+          "sha256": "88ffd20284b471360f423f59fc4911b6045f6d30d5bc6fe002eed93d3df338dc"
+        },
+        {
+          "path": "/home/qq/work/hepta-convergence-20261105-0c901b/target/debug/.fingerprint/codex-hepta-intelligence-eval-06ab8db2dd1d02ee/invoked.timestamp",
+          "size": 48,
+          "mtime_ns": 1793870745023216364,
+          "sha256": "5a109e6643e8d3e88642e3f35e85d2a83e639d07523aa6e99166c48178e965c3"
+        },
+        {
+          "path": "/home/qq/work/hepta-convergence-20261105-0c901b/target/debug/.fingerprint/codex-hepta-intelligence-eval-06ab8db2dd1d02ee/test-lib-codex_hepta_intelligence_eval",
+          "size": 16,
+          "mtime_ns": 1793870747459129960,
+          "sha256": "4b06832c4b2260b7845379ab8f2f143747b19ba92d010592ea49bdbea9d80fd3",
+          "text": "d4dd2231f342190a"
+        },
+        {
+          "path": "/home/qq/work/hepta-convergence-20261105-0c901b/target/debug/.fingerprint/codex-hepta-intelligence-eval-06ab8db2dd1d02ee/test-lib-codex_hepta_intelligence_eval.json",
+          "size": 730,
+          "mtime_ns": 1793870747459129960,
+          "sha256": "fdecf990af29c61e132af94aa39333566607012859e0ebe8d43e76829845bd62",
+          "json": {
+            "rustc": 16696009966390864400,
+            "features": "[\"default\"]",
+            "declared_features": "[\"default\", \"trusted-inprocess-eval\"]",
+            "target": 1626869957579083618,
+            "profile": 1933147946653136821,
+            "path": 17650404080242638643,
+            "deps": [
+              [
+                5306016253860807931,
+                "ed25519_dalek",
+                false,
+                11002581837143173930
+              ],
+              [
+                9813227221266182632,
+                "codex_hepta_learning_ledger",
+                false,
+                15227768867144780672
+              ],
+              [
+                15300758679299875469,
+                "codex_hepta_types",
+                false,
+                18183214015053875645
+              ],
+              [
+                17811409749869794184,
+                "pretty_assertions",
+                false,
+                11245197705999694565
+              ]
+            ],
+            "local": [
+              {
+                "CheckDepInfo": {
+                  "dep_info": "debug/.fingerprint/codex-hepta-intelligence-eval-06ab8db2dd1d02ee/dep-test-lib-codex_hepta_intelligence_eval",
+                  "checksum": false
+                }
+              }
+            ],
+            "rustflags": [],
+            "config": 8247474407144887393,
+            "compile_kind": 0
+          }
+        }
+      ]
+    },
+    {
+      "path": "/home/qq/work/hepta-convergence-20261105-0c901b/target/debug/.fingerprint/codex-hepta-intelligence-eval-12ee985d0b0e45b1",
+      "files": [
+        {
+          "path": "/home/qq/work/hepta-convergence-20261105-0c901b/target/debug/.fingerprint/codex-hepta-intelligence-eval-12ee985d0b0e45b1/dep-lib-codex_hepta_intelligence_eval",
+          "size": 618,
+          "mtime_ns": 1793871039605767576,
+          "sha256": "45c8f230b9569fe9e889fe403de22c5593d86648b3801e31b88b6d714ead900e"
+        },
+        {
+          "path": "/home/qq/work/hepta-convergence-20261105-0c901b/target/debug/.fingerprint/codex-hepta-intelligence-eval-12ee985d0b0e45b1/invoked.timestamp",
+          "size": 48,
+          "mtime_ns": 1793871039605767576,
+          "sha256": "5a109e6643e8d3e88642e3f35e85d2a83e639d07523aa6e99166c48178e965c3"
+        },
+        {
+          "path": "/home/qq/work/hepta-convergence-20261105-0c901b/target/debug/.fingerprint/codex-hepta-intelligence-eval-12ee985d0b0e45b1/lib-codex_hepta_intelligence_eval",
+          "size": 16,
+          "mtime_ns": 1793871040196746615,
+          "sha256": "50e198d48cae80ee1234622360b4ecea5c6105d183a7a0c16922d371d8bdf122",
+          "text": "5d0930de066a2d1a"
+        },
+        {
+          "path": "/home/qq/work/hepta-convergence-20261105-0c901b/target/debug/.fingerprint/codex-hepta-intelligence-eval-12ee985d0b0e45b1/lib-codex_hepta_intelligence_eval.json",
+          "size": 590,
+          "mtime_ns": 1793871040196746615,
+          "sha256": "b04289f73de34192458f5666fdaa9f950f198fa47bb0f55b39c888f1421e0e18",
+          "json": {
+            "rustc": 16696009966390864400,
+            "features": "[\"default\"]",
+            "declared_features": "[\"default\", \"trusted-inprocess-eval\"]",
+            "target": 1626869957579083618,
+            "profile": 7792962805499760383,
+            "path": 17650404080242638643,
+            "deps": [
+              [
+                9813227221266182632,
+                "codex_hepta_learning_ledger",
+                false,
+                15227768867144780672
+              ],
+              [
+                15300758679299875469,
+                "codex_hepta_types",
+                false,
+                18183214015053875645
+              ]
+            ],
+            "local": [
+              {
+                "CheckDepInfo": {
+                  "dep_info": "debug/.fingerprint/codex-hepta-intelligence-eval-12ee985d0b0e45b1/dep-lib-codex_hepta_intelligence_eval",
+                  "checksum": false
+                }
+              }
+            ],
+            "rustflags": [],
+            "config": 8247474407144887393,
+            "compile_kind": 0
+          }
+        }
+      ]
+    },
+    {
+      "path": "/home/qq/work/hepta-convergence-20261105-0c901b/target/debug/.fingerprint/codex-hepta-intelligence-eval-6880576971373706",
+      "files": [
+        {
+          "path": "/home/qq/work/hepta-convergence-20261105-0c901b/target/debug/.fingerprint/codex-hepta-intelligence-eval-6880576971373706/dep-lib-codex_hepta_intelligence_eval",
+          "size": 808,
+          "mtime_ns": 1793868943794167678,
+          "sha256": "55cc2a38c523bfd3d061f7e1551abd7b784b1973e1d15b5a2661f220c56376bd"
+        },
+        {
+          "path": "/home/qq/work/hepta-convergence-20261105-0c901b/target/debug/.fingerprint/codex-hepta-intelligence-eval-6880576971373706/invoked.timestamp",
+          "size": 48,
+          "mtime_ns": 1793868943794167678,
+          "sha256": "5a109e6643e8d3e88642e3f35e85d2a83e639d07523aa6e99166c48178e965c3"
+        },
+        {
+          "path": "/home/qq/work/hepta-convergence-20261105-0c901b/target/debug/.fingerprint/codex-hepta-intelligence-eval-6880576971373706/lib-codex_hepta_intelligence_eval",
+          "size": 16,
+          "mtime_ns": 1793868944493142875,
+          "sha256": "2a68a192141ce3e4c0d2136d85a34ccea6cc9bcb1de80b0c9c4c430264ebfde5",
+          "text": "fa5871e41d55e25a"
+        },
+        {
+          "path": "/home/qq/work/hepta-convergence-20261105-0c901b/target/debug/.fingerprint/codex-hepta-intelligence-eval-6880576971373706/lib-codex_hepta_intelligence_eval.json",
+          "size": 589,
+          "mtime_ns": 1793868944493142875,
+          "sha256": "98aa0ebe02b0daead7cf8d2dc0bb764eeea013dd12ab1109a891c3ca65d3fb0b",
+          "json": {
+            "rustc": 16696009966390864400,
+            "features": "[\"default\"]",
+            "declared_features": "[\"default\", \"trusted-inprocess-eval\"]",
+            "target": 1626869957579083618,
+            "profile": 18425621165844343223,
+            "path": 17650404080242638643,
+            "deps": [
+              [
+                9813227221266182632,
+                "codex_hepta_learning_ledger",
+                false,
+                13618926167946193692
+              ],
+              [
+                15300758679299875469,
+                "codex_hepta_types",
+                false,
+                370670186029889123
+              ]
+            ],
+            "local": [
+              {
+                "CheckDepInfo": {
+                  "dep_info": "debug/.fingerprint/codex-hepta-intelligence-eval-6880576971373706/dep-lib-codex_hepta_intelligence_eval",
+                  "checksum": false
+                }
+              }
+            ],
+            "rustflags": [],
+            "config": 8247474407144887393,
+            "compile_kind": 0
+          }
+        }
+      ]
+    },
+    {
+      "path": "/home/qq/work/hepta-convergence-20261105-0c901b/target/debug/.fingerprint/codex-hepta-intelligence-eval-6d4bef5174cca9f1",
+      "files": [
+        {
+          "path": "/home/qq/work/hepta-convergence-20261105-0c901b/target/debug/.fingerprint/codex-hepta-intelligence-eval-6d4bef5174cca9f1/dep-lib-codex_hepta_intelligence_eval",
+          "size": 580,
+          "mtime_ns": 1793866735145967374,
+          "sha256": "d53f9502c03f11f0e4d8d870599c4b9d038130127ec55fa4526bdd4df5625c96"
+        },
+        {
+          "path": "/home/qq/work/hepta-convergence-20261105-0c901b/target/debug/.fingerprint/codex-hepta-intelligence-eval-6d4bef5174cca9f1/invoked.timestamp",
+          "size": 48,
+          "mtime_ns": 1793866735145967374,
+          "sha256": "5a109e6643e8d3e88642e3f35e85d2a83e639d07523aa6e99166c48178e965c3"
+        },
+        {
+          "path": "/home/qq/work/hepta-convergence-20261105-0c901b/target/debug/.fingerprint/codex-hepta-intelligence-eval-6d4bef5174cca9f1/lib-codex_hepta_intelligence_eval",
+          "size": 16,
+          "mtime_ns": 1793866738464850921,
+          "sha256": "0ad307761901ac94e34dce81cde8884b0ffb10579f0d7c669cbe97d8c9d0199d",
+          "text": "b41dfb7eb32b4651"
+        },
+        {
+          "path": "/home/qq/work/hepta-convergence-20261105-0c901b/target/debug/.fingerprint/codex-hepta-intelligence-eval-6d4bef5174cca9f1/lib-codex_hepta_intelligence_eval.json",
+          "size": 589,
+          "mtime_ns": 1793866738464850921,
+          "sha256": "8e55024b49f0936cb5ead5be475129f5fbfb077df8cadda35a44dcf4f0bc63ba",
+          "json": {
+            "rustc": 16696009966390864400,
+            "features": "[\"default\"]",
+            "declared_features": "[\"default\", \"trusted-inprocess-eval\"]",
+            "target": 1626869957579083618,
+            "profile": 7792962805499760383,
+            "path": 17650404080242638643,
+            "deps": [
+              [
+                9813227221266182632,
+                "codex_hepta_learning_ledger",
+                false,
+                15728513395026336713
+              ],
+              [
+                15300758679299875469,
+                "codex_hepta_types",
+                false,
+                9129533647149305527
+              ]
+            ],
+            "local": [
+              {
+                "CheckDepInfo": {
+                  "dep_info": "debug/.fingerprint/codex-hepta-intelligence-eval-6d4bef5174cca9f1/dep-lib-codex_hepta_intelligence_eval",
+                  "checksum": false
+                }
+              }
+            ],
+            "rustflags": [],
+            "config": 8247474407144887393,
+            "compile_kind": 0
+          }
+        }
+      ]
+    },
+    {
+      "path": "/home/qq/work/hepta-convergence-20261105-0c901b/target/debug/.fingerprint/codex-hepta-intelligence-eval-6e918c1d0a5735c5",
+      "files": [
+        {
+          "path": "/home/qq/work/hepta-convergence-20261105-0c901b/target/debug/.fingerprint/codex-hepta-intelligence-eval-6e918c1d0a5735c5/dep-test-lib-codex_hepta_intelligence_eval",
+          "size": 1070,
+          "mtime_ns": 1793866127087236743,
+          "sha256": "93a4ec3e03a670a889a9528a81bf308baaadd7662639926353c3afb87c481252"
+        },
+        {
+          "path": "/home/qq/work/hepta-convergence-20261105-0c901b/target/debug/.fingerprint/codex-hepta-intelligence-eval-6e918c1d0a5735c5/invoked.timestamp",
+          "size": 48,
+          "mtime_ns": 1793866127087236743,
+          "sha256": "5a109e6643e8d3e88642e3f35e85d2a83e639d07523aa6e99166c48178e965c3"
+        },
+        {
+          "path": "/home/qq/work/hepta-convergence-20261105-0c901b/target/debug/.fingerprint/codex-hepta-intelligence-eval-6e918c1d0a5735c5/test-lib-codex_hepta_intelligence_eval",
+          "size": 16,
+          "mtime_ns": 1793866131066098199,
+          "sha256": "99eeac984510dc5dac5f38f3a905ecb1e88bb471ac1f1fc0ebbbb54e062e19cf",
+          "text": "9ddd462a9f56c741"
+        },
+        {
+          "path": "/home/qq/work/hepta-convergence-20261105-0c901b/target/debug/.fingerprint/codex-hepta-intelligence-eval-6e918c1d0a5735c5/test-lib-codex_hepta_intelligence_eval.json",
+          "size": 728,
+          "mtime_ns": 1793866131066098199,
+          "sha256": "b31f22b09c7a90675e8a3849a8619c0c4af70589d5e335f2ff5eba896bd08838",
+          "json": {
+            "rustc": 16696009966390864400,
+            "features": "[\"default\"]",
+            "declared_features": "[\"default\", \"trusted-inprocess-eval\"]",
+            "target": 1626869957579083618,
+            "profile": 1933147946653136821,
+            "path": 17650404080242638643,
+            "deps": [
+              [
+                5306016253860807931,
+                "ed25519_dalek",
+                false,
+                3181785665752825515
+              ],
+              [
+                9813227221266182632,
+                "codex_hepta_learning_ledger",
+                false,
+                16518774673589356638
+              ],
+              [
+                15300758679299875469,
+                "codex_hepta_types",
+                false,
+                4780196415195438655
+              ],
+              [
+                17811409749869794184,
+                "pretty_assertions",
+                false,
+                11245197705999694565
+              ]
+            ],
+            "local": [
+              {
+                "CheckDepInfo": {
+                  "dep_info": "debug/.fingerprint/codex-hepta-intelligence-eval-6e918c1d0a5735c5/dep-test-lib-codex_hepta_intelligence_eval",
+                  "checksum": false
+                }
+              }
+            ],
+            "rustflags": [],
+            "config": 8247474407144887393,
+            "compile_kind": 0
+          }
+        }
+      ]
+    },
+    {
+      "path": "/home/qq/work/hepta-convergence-20261105-0c901b/target/debug/.fingerprint/codex-hepta-intelligence-eval-d3de85ef98ab2e6e",
+      "files": [
+        {
+          "path": "/home/qq/work/hepta-convergence-20261105-0c901b/target/debug/.fingerprint/codex-hepta-intelligence-eval-d3de85ef98ab2e6e/dep-test-lib-codex_hepta_intelligence_eval",
+          "size": 1298,
+          "mtime_ns": 1793868976407010424,
+          "sha256": "b778a6dd2db8296a202dc32c614eef3d13fdd855defaad1755f37c7f9d32d865"
+        },
+        {
+          "path": "/home/qq/work/hepta-convergence-20261105-0c901b/target/debug/.fingerprint/codex-hepta-intelligence-eval-d3de85ef98ab2e6e/invoked.timestamp",
+          "size": 48,
+          "mtime_ns": 1793868976407010424,
+          "sha256": "5a109e6643e8d3e88642e3f35e85d2a83e639d07523aa6e99166c48178e965c3"
+        },
+        {
+          "path": "/home/qq/work/hepta-convergence-20261105-0c901b/target/debug/.fingerprint/codex-hepta-intelligence-eval-d3de85ef98ab2e6e/test-lib-codex_hepta_intelligence_eval",
+          "size": 16,
+          "mtime_ns": 1793868977576968910,
+          "sha256": "9312c07f35645efacab5ede46dc97f8819f92000e866f53e472ecb00b1e7a4e2",
+          "text": "615b1cc271df5ee4"
+        },
+        {
+          "path": "/home/qq/work/hepta-convergence-20261105-0c901b/target/debug/.fingerprint/codex-hepta-intelligence-eval-d3de85ef98ab2e6e/test-lib-codex_hepta_intelligence_eval.json",
+          "size": 728,
+          "mtime_ns": 1793868977576968910,
+          "sha256": "5c1d136df4c5e388671e6a1eb68535b848f24f30133550007d3c70099bdb5c34",
+          "json": {
+            "rustc": 16696009966390864400,
+            "features": "[\"default\"]",
+            "declared_features": "[\"default\", \"trusted-inprocess-eval\"]",
+            "target": 1626869957579083618,
+            "profile": 16183242212785553745,
+            "path": 17650404080242638643,
+            "deps": [
+              [
+                5306016253860807931,
+                "ed25519_dalek",
+                false,
+                7566767075958630261
+              ],
+              [
+                9813227221266182632,
+                "codex_hepta_learning_ledger",
+                false,
+                13618926167946193692
+              ],
+              [
+                15300758679299875469,
+                "codex_hepta_types",
+                false,
+                370670186029889123
+              ],
+              [
+                17811409749869794184,
+                "pretty_assertions",
+                false,
+                16924004716320179317
+              ]
+            ],
+            "local": [
+              {
+                "CheckDepInfo": {
+                  "dep_info": "debug/.fingerprint/codex-hepta-intelligence-eval-d3de85ef98ab2e6e/dep-test-lib-codex_hepta_intelligence_eval",
+                  "checksum": false
+                }
+              }
+            ],
+            "rustflags": [],
+            "config": 8247474407144887393,
+            "compile_kind": 0
+          }
+        }
+      ]
+    },
+    {
+      "path": "/home/qq/work/hepta-convergence-20261105-0c901b/target/debug/.fingerprint/codex-hepta-intelligence-eval-e4456bb0d0ccba26",
+      "files": [
+        {
+          "path": "/home/qq/work/hepta-convergence-20261105-0c901b/target/debug/.fingerprint/codex-hepta-intelligence-eval-e4456bb0d0ccba26/dep-test-lib-codex_hepta_intelligence_eval",
+          "size": 1070,
+          "mtime_ns": 1793866869059266787,
+          "sha256": "9629e0540e07ea1dd6c154bb37937ff4d773b30162a090a54b981828582ecbaa"
+        },
+        {
+          "path": "/home/qq/work/hepta-convergence-20261105-0c901b/target/debug/.fingerprint/codex-hepta-intelligence-eval-e4456bb0d0ccba26/invoked.timestamp",
+          "size": 48,
+          "mtime_ns": 1793866869059266787,
+          "sha256": "5a109e6643e8d3e88642e3f35e85d2a83e639d07523aa6e99166c48178e965c3"
+        },
+        {
+          "path": "/home/qq/work/hepta-convergence-20261105-0c901b/target/debug/.fingerprint/codex-hepta-intelligence-eval-e4456bb0d0ccba26/test-lib-codex_hepta_intelligence_eval",
+          "size": 16,
+          "mtime_ns": 1793866871310187746,
+          "sha256": "b6f58869d58a93bc0454ccf826db78b9ff90fca5b3ecfdf4976bcf5ac7f5a019",
+          "text": "71b9559db28ea47d"
+        },
+        {
+          "path": "/home/qq/work/hepta-convergence-20261105-0c901b/target/debug/.fingerprint/codex-hepta-intelligence-eval-e4456bb0d0ccba26/test-lib-codex_hepta_intelligence_eval.json",
+          "size": 728,
+          "mtime_ns": 1793866871310187746,
+          "sha256": "b691608cbd46ed006c2a4f2c3fcc1566fa21d9e8ac18fce2cd6f3b921a3dca47",
+          "json": {
+            "rustc": 16696009966390864400,
+            "features": "[\"default\"]",
+            "declared_features": "[\"default\", \"trusted-inprocess-eval\"]",
+            "target": 1626869957579083618,
+            "profile": 1933147946653136821,
+            "path": 17650404080242638643,
+            "deps": [
+              [
+                5306016253860807931,
+                "ed25519_dalek",
+                false,
+                17267381839052136246
+              ],
+              [
+                9813227221266182632,
+                "codex_hepta_learning_ledger",
+                false,
+                5566075517048108143
+              ],
+              [
+                15300758679299875469,
+                "codex_hepta_types",
+                false,
+                4780196415195438655
+              ],
+              [
+                17811409749869794184,
+                "pretty_assertions",
+                false,
+                11245197705999694565
+              ]
+            ],
+            "local": [
+              {
+                "CheckDepInfo": {
+                  "dep_info": "debug/.fingerprint/codex-hepta-intelligence-eval-e4456bb0d0ccba26/dep-test-lib-codex_hepta_intelligence_eval",
+                  "checksum": false
+                }
+              }
+            ],
+            "rustflags": [],
+            "config": 8247474407144887393,
+            "compile_kind": 0
+          }
+        }
+      ]
+    },
+    {
+      "path": "/home/qq/work/hepta-convergence-20261105-0c901b/target/debug/.fingerprint/codex-hepta-intelligence-eval-fcbed105465cd5d7",
+      "files": [
+        {
+          "path": "/home/qq/work/hepta-convergence-20261105-0c901b/target/debug/.fingerprint/codex-hepta-intelligence-eval-fcbed105465cd5d7/dep-lib-codex_hepta_intelligence_eval",
+          "size": 580,
+          "mtime_ns": 1793866869062266682,
+          "sha256": "639a179160829ae680bdc881336d72e5ab6b01645be5c994a6fe80ca016dc21d"
+        },
+        {
+          "path": "/home/qq/work/hepta-convergence-20261105-0c901b/target/debug/.fingerprint/codex-hepta-intelligence-eval-fcbed105465cd5d7/invoked.timestamp",
+          "size": 48,
+          "mtime_ns": 1793866869062266682,
+          "sha256": "5a109e6643e8d3e88642e3f35e85d2a83e639d07523aa6e99166c48178e965c3"
+        },
+        {
+          "path": "/home/qq/work/hepta-convergence-20261105-0c901b/target/debug/.fingerprint/codex-hepta-intelligence-eval-fcbed105465cd5d7/lib-codex_hepta_intelligence_eval",
+          "size": 16,
+          "mtime_ns": 1793866869443253303,
+          "sha256": "514f52b9136cd8406b811a99fc37a235348799664ccde9edb0eba920cdb247b8",
+          "text": "1da2c3285700f535"
+        },
+        {
+          "path": "/home/qq/work/hepta-convergence-20261105-0c901b/target/debug/.fingerprint/codex-hepta-intelligence-eval-fcbed105465cd5d7/lib-codex_hepta_intelligence_eval.json",
+          "size": 588,
+          "mtime_ns": 1793866869443253303,
+          "sha256": "076dd8ad8c1c523de9402ce24141b64ddcb5c7915672700ef40106dd134c2b38",
+          "json": {
+            "rustc": 16696009966390864400,
+            "features": "[\"default\"]",
+            "declared_features": "[\"default\", \"trusted-inprocess-eval\"]",
+            "target": 1626869957579083618,
+            "profile": 7792962805499760383,
+            "path": 17650404080242638643,
+            "deps": [
+              [
+                9813227221266182632,
+                "codex_hepta_learning_ledger",
+                false,
+                5566075517048108143
+              ],
+              [
+                15300758679299875469,
+                "codex_hepta_types",
+                false,
+                4780196415195438655
+              ]
+            ],
+            "local": [
+              {
+                "CheckDepInfo": {
+                  "dep_info": "debug/.fingerprint/codex-hepta-intelligence-eval-fcbed105465cd5d7/dep-lib-codex_hepta_intelligence_eval",
+                  "checksum": false
+                }
+              }
+            ],
+            "rustflags": [],
+            "config": 8247474407144887393,
+            "compile_kind": 0
+          }
+        },
+        {
+          "path": "/home/qq/work/hepta-convergence-20261105-0c901b/target/debug/.fingerprint/codex-hepta-intelligence-eval-fcbed105465cd5d7/output-lib-codex_hepta_intelligence_eval",
+          "size": 2136,
+          "mtime_ns": 1793866869433848509,
+          "sha256": "94479ccc4cb2150e34b274db121f9492fbf3d238ab4c73739b91d3f642f3ba35",
+          "text": "{\"$message_type\":\"diagnostic\",\"message\":\"unused import: `crate::IndependentEvaluationDispositionV1`\",\"code\":{\"code\":\"unused_imports\",\"explanation\":null},\"level\":\"warning\",\"spans\":[{\"file_name\":\"hepta-intelligence-eval/src/product_runner.rs\",\"byte_start\":1135,\"byte_end\":1176,\"line_start\":31,\"line_end\":31,\"column_start\":5,\"column_end\":46,\"is_primary\":true,\"text\":[{\"text\":\"use crate::IndependentEvaluationDispositionV1;\",\"highlight_start\":5,\"highlight_end\":46}],\"label\":null,\"suggested_replacement\":null,\"suggestion_applicability\":null,\"expansion\":null}],\"children\":[{\"message\":\"`#[warn(unused_imports)]` (part of `#[warn(unused)]`) on by default\",\"code\":null,\"level\":\"note\",\"spans\":[],\"children\":[],\"rendered\":null},{\"message\":\"remove the whole `use` item\",\"code\":null,\"level\":\"help\",\"spans\":[{\"file_name\":\"hepta-intelligence-eval/src/product_runner.rs\",\"byte_start\":1131,\"byte_end\":1178,\"line_start\":31,\"line_end\":32,\"column_start\":1,\"column_end\":1,\"is_primary\":true,\"text\":[{\"text\":\"use crate::IndependentEvaluationDispositionV1;\",\"highlight_start\":1,\"highlight_end\":47},{\"text\":\"use crate::LongitudinalTimeEvidenceV1;\",\"highlight_start\":1,\"highlight_end\":1}],\"label\":null,\"suggested_replacement\":\"\",\"suggestion_applicability\":\"MachineApplicable\",\"expansion\":null}],\"children\":[],\"rendered\":null}],\"rendered\":\"\\u001b[1m\\u001b[33mwarning\\u001b[0m\\u001b[1m: unused import: `crate::IndependentEvaluationDispositionV1`\\u001b[0m\\n  \\u001b[1m\\u001b[94m--> \\u001b[0mhepta-intelligence-eval/src/product_runner.rs:31:5\\n   \\u001b[1m\\u001b[94m|\\u001b[0m\\n\\u001b[1m\\u001b[94m31\\u001b[0m \\u001b[1m\\u001b[94m|\\u001b[0m use crate::IndependentEvaluationDispositionV1;\\n   \\u001b[1m\\u001b[94m|\\u001b[0m     \\u001b[1m\\u001b[33m^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\\u001b[0m\\n   \\u001b[1m\\u001b[94m|\\u001b[0m\\n   \\u001b[1m\\u001b[94m= \\u001b[0m\\u001b[1mnote\\u001b[0m: `#[warn(unused_imports)]` (part of `#[warn(unused)]`) on by default\\n\\n\"}\n{\"$message_type\":\"diagnostic\",\"message\":\"1 warning emitted\",\"code\":null,\"level\":\"warning\",\"spans\":[],\"children\":[],\"rendered\":\"\\u001b[1m\\u001b[33mwarning\\u001b[0m\\u001b[1m: 1 warning emitted\\u001b[0m\\n\\n\"}\n"
+        }
+      ]
+    }
+  ],
+  "depinfo": [
+    {
+      "path": "/home/qq/work/hepta-convergence-20261105-0c901b/target/debug/deps/codex_hepta_intelligence_eval-06ab8db2dd1d02ee.d",
+      "size": 6061,
+      "mtime_ns": 1793870745109213314,
+      "sha256": "498c57819ba8902c0f740ebe5ce9c8e392bef0283c11441c52800343a5555fd8",
+      "first_line": "/home/qq/work/hepta-convergence-20261105-0c901b/target/debug/deps/codex_hepta_intelligence_eval-06ab8db2dd1d02ee.d: hepta-intelligence-eval/src/lib.rs hepta-intelligence-eval/src/closure.rs hepta-intelligence-eval/src/metric_roles.rs hepta-intelligence-eval/src/holdout_codec.rs hepta-intelligence-eval/src/closure_tests.rs hepta-intelligence-eval/src/longitudinal_time_tests.rs hepta-intelligence-eval/src/durable_holdout.rs hepta-intelligence-eval/src/durable_holdout_tests.rs hepta-intelligence-eval/src/fenced_holdout.rs hepta-intelligence-eval/src/fenced_holdout_tests.rs hepta-intelligence-eval/src/fenced_holdout_file.rs hepta-intelligence-eval/src/fenced_holdout_file_tests.rs hepta-intelligence-eval/src/holdout_journal.rs hepta-intelligence-eval/src/ndu_convergence.rs hepta-intelligence-eval/src/ndu_convergence_tests.rs hepta-intelligence-eval/src/ndu_well_posedness.rs hepta-intelligence-eval/src/ndu_well_posedness_tests.rs hepta-intelligence-eval/src/ope.rs hepta-intelligence-eval/src/ope_confidence.rs hepta-intelligence-eval/src/ope_confidence_tests.rs hepta-intelligence-eval/src/ope_tests.rs hepta-intelligence-eval/src/product_qualification_use.rs hepta-intelligence-eval/src/product_runner.rs hepta-intelligence-eval/src/product_runner_tests.rs hepta-intelligence-eval/src/self_evolution_selection.rs hepta-intelligence-eval/src/self_evolution_ingress_tests.rs hepta-intelligence-eval/src/self_evolution_qualification_test_support.rs hepta-intelligence-eval/src/sequential.rs hepta-intelligence-eval/src/sequential_model.rs hepta-intelligence-eval/src/sequential_step.rs hepta-intelligence-eval/src/sequential_tests.rs hepta-intelligence-eval/src/signed_evaluation.rs hepta-intelligence-eval/src/temporal_evaluation.rs hepta-intelligence-eval/src/temporal_evaluation_tests.rs hepta-intelligence-eval/src/temporal_fold.rs hepta-intelligence-eval/src/temporal_fold_tests.rs hepta-intelligence-eval/src/lib_tests.rs hepta-intelligence-eval/src/longitudinal_time.rs hepta-intelligence-eval/src/signed_qualification_e2e_tests.rs",
+      "first_source_mentions": 0,
+      "second_source_mentions": 0,
+      "contains_qualification_use": true
+    },
+    {
+      "path": "/home/qq/work/hepta-convergence-20261105-0c901b/target/debug/deps/codex_hepta_intelligence_eval-12ee985d0b0e45b1.d",
+      "size": 4474,
+      "mtime_ns": 1793871039743762681,
+      "sha256": "6ed2f7c18d13383b1cf4884913de79a496bee1d74e1c70dd5d023261566a78b7",
+      "first_line": "/home/qq/work/hepta-convergence-20261105-0c901b/target/debug/deps/codex_hepta_intelligence_eval-12ee985d0b0e45b1.d: hepta-intelligence-eval/src/lib.rs hepta-intelligence-eval/src/closure.rs hepta-intelligence-eval/src/metric_roles.rs hepta-intelligence-eval/src/holdout_codec.rs hepta-intelligence-eval/src/durable_holdout.rs hepta-intelligence-eval/src/fenced_holdout.rs hepta-intelligence-eval/src/fenced_holdout_file.rs hepta-intelligence-eval/src/holdout_journal.rs hepta-intelligence-eval/src/ndu_convergence.rs hepta-intelligence-eval/src/ndu_well_posedness.rs hepta-intelligence-eval/src/ope.rs hepta-intelligence-eval/src/ope_confidence.rs hepta-intelligence-eval/src/product_qualification_use.rs hepta-intelligence-eval/src/product_runner.rs hepta-intelligence-eval/src/self_evolution_selection.rs hepta-intelligence-eval/src/sequential.rs hepta-intelligence-eval/src/sequential_model.rs hepta-intelligence-eval/src/sequential_step.rs hepta-intelligence-eval/src/signed_evaluation.rs hepta-intelligence-eval/src/temporal_evaluation.rs hepta-intelligence-eval/src/temporal_fold.rs hepta-intelligence-eval/src/longitudinal_time.rs",
+      "first_source_mentions": 0,
+      "second_source_mentions": 0,
+      "contains_qualification_use": true
+    },
+    {
+      "path": "/home/qq/work/hepta-convergence-20261105-0c901b/target/debug/deps/codex_hepta_intelligence_eval-6880576971373706.d",
+      "size": 3497,
+      "mtime_ns": 1793868943854165549,
+      "sha256": "179b0aa63daebf732a66f46aca9a9f9e709c5381202a6002142c71348db87f23",
+      "first_line": "/home/qq/work/hepta-convergence-20261105-0c901b/target/debug/deps/codex_hepta_intelligence_eval-6880576971373706.d: /home/qq/work/hepta-convergence-20261105-0c901b/source/codex-rs/clippy.toml hepta-intelligence-eval/src/lib.rs hepta-intelligence-eval/src/closure.rs hepta-intelligence-eval/src/metric_roles.rs hepta-intelligence-eval/src/holdout_codec.rs hepta-intelligence-eval/src/durable_holdout.rs hepta-intelligence-eval/src/fenced_holdout.rs hepta-intelligence-eval/src/fenced_holdout_file.rs hepta-intelligence-eval/src/holdout_journal.rs hepta-intelligence-eval/src/ndu_convergence.rs hepta-intelligence-eval/src/ndu_well_posedness.rs hepta-intelligence-eval/src/ope.rs hepta-intelligence-eval/src/ope_confidence.rs hepta-intelligence-eval/src/product_runner.rs hepta-intelligence-eval/src/self_evolution_selection.rs hepta-intelligence-eval/src/sequential.rs hepta-intelligence-eval/src/sequential_model.rs hepta-intelligence-eval/src/sequential_step.rs hepta-intelligence-eval/src/signed_evaluation.rs hepta-intelligence-eval/src/temporal_evaluation.rs hepta-intelligence-eval/src/temporal_fold.rs hepta-intelligence-eval/src/longitudinal_time.rs Cargo.toml",
+      "first_source_mentions": 3,
+      "second_source_mentions": 0,
+      "contains_qualification_use": false
+    },
+    {
+      "path": "/home/qq/work/hepta-convergence-20261105-0c901b/target/debug/deps/codex_hepta_intelligence_eval-6d4bef5174cca9f1.d",
+      "size": 4245,
+      "mtime_ns": 1793866735226964532,
+      "sha256": "2415c0522b2e65fb8a9c047351dc59622907ef87a6469ef1fd9aed1668e9ebbb",
+      "first_line": "/home/qq/work/hepta-convergence-20261105-0c901b/target/debug/deps/codex_hepta_intelligence_eval-6d4bef5174cca9f1.d: hepta-intelligence-eval/src/lib.rs hepta-intelligence-eval/src/closure.rs hepta-intelligence-eval/src/metric_roles.rs hepta-intelligence-eval/src/holdout_codec.rs hepta-intelligence-eval/src/durable_holdout.rs hepta-intelligence-eval/src/fenced_holdout.rs hepta-intelligence-eval/src/fenced_holdout_file.rs hepta-intelligence-eval/src/holdout_journal.rs hepta-intelligence-eval/src/ndu_convergence.rs hepta-intelligence-eval/src/ndu_well_posedness.rs hepta-intelligence-eval/src/ope.rs hepta-intelligence-eval/src/ope_confidence.rs hepta-intelligence-eval/src/product_runner.rs hepta-intelligence-eval/src/self_evolution_selection.rs hepta-intelligence-eval/src/sequential.rs hepta-intelligence-eval/src/sequential_model.rs hepta-intelligence-eval/src/sequential_step.rs hepta-intelligence-eval/src/signed_evaluation.rs hepta-intelligence-eval/src/temporal_evaluation.rs hepta-intelligence-eval/src/temporal_fold.rs hepta-intelligence-eval/src/longitudinal_time.rs",
+      "first_source_mentions": 0,
+      "second_source_mentions": 0,
+      "contains_qualification_use": false
+    },
+    {
+      "path": "/home/qq/work/hepta-convergence-20261105-0c901b/target/debug/deps/codex_hepta_intelligence_eval-6e918c1d0a5735c5.d",
+      "size": 5488,
+      "mtime_ns": 1793866127262230650,
+      "sha256": "aec25960fb732c4351af9e6b623ec5074e46fa14cad134b6695d9cbd43bc2c3a",
+      "first_line": "/home/qq/work/hepta-convergence-20261105-0c901b/target/debug/deps/codex_hepta_intelligence_eval-6e918c1d0a5735c5.d: hepta-intelligence-eval/src/lib.rs hepta-intelligence-eval/src/closure.rs hepta-intelligence-eval/src/metric_roles.rs hepta-intelligence-eval/src/holdout_codec.rs hepta-intelligence-eval/src/closure_tests.rs hepta-intelligence-eval/src/longitudinal_time_tests.rs hepta-intelligence-eval/src/durable_holdout.rs hepta-intelligence-eval/src/durable_holdout_tests.rs hepta-intelligence-eval/src/fenced_holdout.rs hepta-intelligence-eval/src/fenced_holdout_tests.rs hepta-intelligence-eval/src/fenced_holdout_file.rs hepta-intelligence-eval/src/fenced_holdout_file_tests.rs hepta-intelligence-eval/src/holdout_journal.rs hepta-intelligence-eval/src/ndu_convergence.rs hepta-intelligence-eval/src/ndu_convergence_tests.rs hepta-intelligence-eval/src/ndu_well_posedness.rs hepta-intelligence-eval/src/ndu_well_posedness_tests.rs hepta-intelligence-eval/src/ope.rs hepta-intelligence-eval/src/ope_confidence.rs hepta-intelligence-eval/src/ope_confidence_tests.rs hepta-intelligence-eval/src/ope_tests.rs hepta-intelligence-eval/src/product_runner.rs hepta-intelligence-eval/src/product_runner_tests.rs hepta-intelligence-eval/src/self_evolution_selection.rs hepta-intelligence-eval/src/sequential.rs hepta-intelligence-eval/src/sequential_model.rs hepta-intelligence-eval/src/sequential_step.rs hepta-intelligence-eval/src/sequential_tests.rs hepta-intelligence-eval/src/signed_evaluation.rs hepta-intelligence-eval/src/temporal_evaluation.rs hepta-intelligence-eval/src/temporal_evaluation_tests.rs hepta-intelligence-eval/src/temporal_fold.rs hepta-intelligence-eval/src/temporal_fold_tests.rs hepta-intelligence-eval/src/lib_tests.rs hepta-intelligence-eval/src/longitudinal_time.rs hepta-intelligence-eval/src/signed_qualification_e2e_tests.rs",
+      "first_source_mentions": 0,
+      "second_source_mentions": 0,
+      "contains_qualification_use": false
+    },
+    {
+      "path": "/home/qq/work/hepta-convergence-20261105-0c901b/target/debug/deps/codex_hepta_intelligence_eval-d3de85ef98ab2e6e.d",
+      "size": 5837,
+      "mtime_ns": 1793868976486007621,
+      "sha256": "223747f1a434d71c150924eb9086f31cce42afb98cece1f7cdad29da2a6a3bb5",
+      "first_line": "/home/qq/work/hepta-convergence-20261105-0c901b/target/debug/deps/codex_hepta_intelligence_eval-d3de85ef98ab2e6e.d: /home/qq/work/hepta-convergence-20261105-0c901b/source/codex-rs/clippy.toml hepta-intelligence-eval/src/lib.rs hepta-intelligence-eval/src/closure.rs hepta-intelligence-eval/src/metric_roles.rs hepta-intelligence-eval/src/holdout_codec.rs hepta-intelligence-eval/src/closure_tests.rs hepta-intelligence-eval/src/longitudinal_time_tests.rs hepta-intelligence-eval/src/durable_holdout.rs hepta-intelligence-eval/src/durable_holdout_tests.rs hepta-intelligence-eval/src/fenced_holdout.rs hepta-intelligence-eval/src/fenced_holdout_tests.rs hepta-intelligence-eval/src/fenced_holdout_file.rs hepta-intelligence-eval/src/fenced_holdout_file_tests.rs hepta-intelligence-eval/src/holdout_journal.rs hepta-intelligence-eval/src/ndu_convergence.rs hepta-intelligence-eval/src/ndu_convergence_tests.rs hepta-intelligence-eval/src/ndu_well_posedness.rs hepta-intelligence-eval/src/ndu_well_posedness_tests.rs hepta-intelligence-eval/src/ope.rs hepta-intelligence-eval/src/ope_confidence.rs hepta-intelligence-eval/src/ope_confidence_tests.rs hepta-intelligence-eval/src/ope_tests.rs hepta-intelligence-eval/src/product_runner.rs hepta-intelligence-eval/src/product_runner_tests.rs hepta-intelligence-eval/src/self_evolution_selection.rs hepta-intelligence-eval/src/sequential.rs hepta-intelligence-eval/src/sequential_model.rs hepta-intelligence-eval/src/sequential_step.rs hepta-intelligence-eval/src/sequential_tests.rs hepta-intelligence-eval/src/signed_evaluation.rs hepta-intelligence-eval/src/temporal_evaluation.rs hepta-intelligence-eval/src/temporal_evaluation_tests.rs hepta-intelligence-eval/src/temporal_fold.rs hepta-intelligence-eval/src/temporal_fold_tests.rs hepta-intelligence-eval/src/lib_tests.rs hepta-intelligence-eval/src/longitudinal_time.rs hepta-intelligence-eval/src/signed_qualification_e2e_tests.rs Cargo.toml",
+      "first_source_mentions": 3,
+      "second_source_mentions": 0,
+      "contains_qualification_use": false
+    },
+    {
+      "path": "/home/qq/work/hepta-convergence-20261105-0c901b/target/debug/deps/codex_hepta_intelligence_eval-e4456bb0d0ccba26.d",
+      "size": 5488,
+      "mtime_ns": 1793866869148263662,
+      "sha256": "5a45edd8305bc72eaf848070fe3820033b59f24560d55e29627157d16bf43ca8",
+      "first_line": "/home/qq/work/hepta-convergence-20261105-0c901b/target/debug/deps/codex_hepta_intelligence_eval-e4456bb0d0ccba26.d: hepta-intelligence-eval/src/lib.rs hepta-intelligence-eval/src/closure.rs hepta-intelligence-eval/src/metric_roles.rs hepta-intelligence-eval/src/holdout_codec.rs hepta-intelligence-eval/src/closure_tests.rs hepta-intelligence-eval/src/longitudinal_time_tests.rs hepta-intelligence-eval/src/durable_holdout.rs hepta-intelligence-eval/src/durable_holdout_tests.rs hepta-intelligence-eval/src/fenced_holdout.rs hepta-intelligence-eval/src/fenced_holdout_tests.rs hepta-intelligence-eval/src/fenced_holdout_file.rs hepta-intelligence-eval/src/fenced_holdout_file_tests.rs hepta-intelligence-eval/src/holdout_journal.rs hepta-intelligence-eval/src/ndu_convergence.rs hepta-intelligence-eval/src/ndu_convergence_tests.rs hepta-intelligence-eval/src/ndu_well_posedness.rs hepta-intelligence-eval/src/ndu_well_posedness_tests.rs hepta-intelligence-eval/src/ope.rs hepta-intelligence-eval/src/ope_confidence.rs hepta-intelligence-eval/src/ope_confidence_tests.rs hepta-intelligence-eval/src/ope_tests.rs hepta-intelligence-eval/src/product_runner.rs hepta-intelligence-eval/src/product_runner_tests.rs hepta-intelligence-eval/src/self_evolution_selection.rs hepta-intelligence-eval/src/sequential.rs hepta-intelligence-eval/src/sequential_model.rs hepta-intelligence-eval/src/sequential_step.rs hepta-intelligence-eval/src/sequential_tests.rs hepta-intelligence-eval/src/signed_evaluation.rs hepta-intelligence-eval/src/temporal_evaluation.rs hepta-intelligence-eval/src/temporal_evaluation_tests.rs hepta-intelligence-eval/src/temporal_fold.rs hepta-intelligence-eval/src/temporal_fold_tests.rs hepta-intelligence-eval/src/lib_tests.rs hepta-intelligence-eval/src/longitudinal_time.rs hepta-intelligence-eval/src/signed_qualification_e2e_tests.rs",
+      "first_source_mentions": 0,
+      "second_source_mentions": 0,
+      "contains_qualification_use": false
+    },
+    {
+      "path": "/home/qq/work/hepta-convergence-20261105-0c901b/target/debug/deps/codex_hepta_intelligence_eval-fcbed105465cd5d7.d",
+      "size": 4245,
+      "mtime_ns": 1793866869117264750,
+      "sha256": "dbd89bd3445c2e4872a1aae5fc645e077b46a63adc54c2c16173cca5e95cfd56",
+      "first_line": "/home/qq/work/hepta-convergence-20261105-0c901b/target/debug/deps/codex_hepta_intelligence_eval-fcbed105465cd5d7.d: hepta-intelligence-eval/src/lib.rs hepta-intelligence-eval/src/closure.rs hepta-intelligence-eval/src/metric_roles.rs hepta-intelligence-eval/src/holdout_codec.rs hepta-intelligence-eval/src/durable_holdout.rs hepta-intelligence-eval/src/fenced_holdout.rs hepta-intelligence-eval/src/fenced_holdout_file.rs hepta-intelligence-eval/src/holdout_journal.rs hepta-intelligence-eval/src/ndu_convergence.rs hepta-intelligence-eval/src/ndu_well_posedness.rs hepta-intelligence-eval/src/ope.rs hepta-intelligence-eval/src/ope_confidence.rs hepta-intelligence-eval/src/product_runner.rs hepta-intelligence-eval/src/self_evolution_selection.rs hepta-intelligence-eval/src/sequential.rs hepta-intelligence-eval/src/sequential_model.rs hepta-intelligence-eval/src/sequential_step.rs hepta-intelligence-eval/src/signed_evaluation.rs hepta-intelligence-eval/src/temporal_evaluation.rs hepta-intelligence-eval/src/temporal_fold.rs hepta-intelligence-eval/src/longitudinal_time.rs",
+      "first_source_mentions": 0,
+      "second_source_mentions": 0,
+      "contains_qualification_use": false
+    }
+  ],
+  "artifacts": [
+    {
+      "path": "/home/qq/work/hepta-convergence-20261105-0c901b/target/debug/deps/libcodex_hepta_intelligence_eval-12ee985d0b0e45b1.rlib",
+      "size": 10261226,
+      "mtime_ns": 1793871040182747111,
+      "sha256": "14decbb38a5ed19b2d443f761575c82865fb4fe1cca4e80f8f7f35eceab4e15b"
+    },
+    {
+      "path": "/home/qq/work/hepta-convergence-20261105-0c901b/target/debug/deps/libcodex_hepta_intelligence_eval-6d4bef5174cca9f1.rlib",
+      "size": 10151008,
+      "mtime_ns": 1793866738444851623,
+      "sha256": "d59b11bdb80df58033ddbbd761191f943ca6a4ad53e0a22bc2a10ddcf9f53ec5"
+    },
+    {
+      "path": "/home/qq/work/hepta-convergence-20261105-0c901b/target/debug/deps/libcodex_hepta_intelligence_eval-fcbed105465cd5d7.rlib",
+      "size": 10145284,
+      "mtime_ns": 1793866869431253724,
+      "sha256": "31d022be6f76fce3da16b2257b5f7f5ab6ba2093517b7fcb0ebb4033a47ee033"
+    },
+    {
+      "path": "/home/qq/work/hepta-convergence-20261105-0c901b/target/debug/deps/libcodex_hepta_intelligence_eval-12ee985d0b0e45b1.rmeta",
+      "size": 1181778,
+      "mtime_ns": 1793871039990730568,
+      "sha256": "49e40db644d934afe3851b1d8deb287ad7cd5e7c3eba382253be7c0d52e1b02c"
+    },
+    {
+      "path": "/home/qq/work/hepta-convergence-20261105-0c901b/target/debug/deps/libcodex_hepta_intelligence_eval-6880576971373706.rmeta",
+      "size": 776811,
+      "mtime_ns": 1793868943794167678,
+      "sha256": "f9046c84f58052a66d068301585c0b6cfa9fadfb64e23c29ceac5b3d063ad730"
+    },
+    {
+      "path": "/home/qq/work/hepta-convergence-20261105-0c901b/target/debug/deps/libcodex_hepta_intelligence_eval-6d4bef5174cca9f1.rmeta",
+      "size": 1174482,
+      "mtime_ns": 1793866736658738390,
+      "sha256": "02df1256021ba7c799b80a70c23c7cb6488fa0af939b31ad7a7a181a79e85c63"
+    },
+    {
+      "path": "/home/qq/work/hepta-convergence-20261105-0c901b/target/debug/deps/libcodex_hepta_intelligence_eval-d3de85ef98ab2e6e.rmeta",
+      "size": 0,
+      "mtime_ns": 1793868976407010424,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "/home/qq/work/hepta-convergence-20261105-0c901b/target/debug/deps/libcodex_hepta_intelligence_eval-fcbed105465cd5d7.rmeta",
+      "size": 1174978,
+      "mtime_ns": 1793866869301615604,
+      "sha256": "faf2771682fc004457b6f061bd7de56865fefc53b6503a920f6c6e0616d244e6"
+    }
+  ],
+  "metadata": {
+    "exit_code": 0,
+    "stderr": "",
+    "workspace_root": "/home/qq/work/hepta-convergence-20261105-0c901b/source-next/codex-rs",
+    "target_directory": "/home/qq/work/hepta-convergence-20261105-0c901b/source-next/codex-rs/target",
+    "packages": [
+      {
+        "name": "codex-hepta-intelligence",
+        "version": "0.0.0",
+        "id": "path+file:///home/qq/work/hepta-convergence-20261105-0c901b/source-next/codex-rs/hepta-intelligence#codex-hepta-intelligence@0.0.0",
+        "license": "Apache-2.0",
+        "license_file": null,
+        "description": null,
+        "source": null,
+        "dependencies": [
+          {
+            "name": "codex-hepta-cognitive-read",
+            "source": null,
+            "req": "*",
+            "kind": null,
+            "rename": null,
+            "optional": false,
+            "uses_default_features": true,
+            "features": [],
+            "target": null,
+            "registry": null,
+            "path": "/home/qq/work/hepta-convergence-20261105-0c901b/source-next/codex-rs/hepta-cognitive-read"
+          },
+          {
+            "name": "codex-hepta-cognitive-types",
+            "source": null,
+            "req": "*",
+            "kind": null,
+            "rename": null,
+            "optional": false,
+            "uses_default_features": true,
+            "features": [],
+            "target": null,
+            "registry": null,
+            "path": "/home/qq/work/hepta-convergence-20261105-0c901b/source-next/codex-rs/hepta-cognitive-types"
+          },
+          {
+            "name": "codex-hepta-context-compiler",
+            "source": null,
+            "req": "*",
+            "kind": null,
+            "rename": null,
+            "optional": false,
+            "uses_default_features": true,
+            "features": [],
+            "target": null,
+            "registry": null,
+            "path": "/home/qq/work/hepta-convergence-20261105-0c901b/source-next/codex-rs/hepta-context-compiler"
+          },
+          {
+            "name": "codex-hepta-intelligence-eval",
+            "source": null,
+            "req": "*",
+            "kind": null,
+            "rename": null,
+            "optional": false,
+            "uses_default_features": true,
+            "features": [],
+            "target": null,
+            "registry": null,
+            "path": "/home/qq/work/hepta-convergence-20261105-0c901b/source-next/codex-rs/hepta-intelligence-eval"
+          },
+          {
+            "name": "codex-hepta-intuition",
+            "source": null,
+            "req": "*",
+            "kind": null,
+            "rename": null,
+            "optional": false,
+            "uses_default_features": true,
+            "features": [],
+            "target": null,
+            "registry": null,
+            "path": "/home/qq/work/hepta-convergence-20261105-0c901b/source-next/codex-rs/hepta-intuition"
+          },
+          {
+            "name": "codex-hepta-learning-artifacts",
+            "source": null,
+            "req": "*",
+            "kind": null,
+            "rename": null,
+            "optional": false,
+            "uses_default_features": true,
+            "features": [],
+            "target": null,
+            "registry": null,
+            "path": "/home/qq/work/hepta-convergence-20261105-0c901b/source-next/codex-rs/hepta-learning-artifacts"
+          },
+          {
+            "name": "codex-hepta-learning-ledger",
+            "source": null,
+            "req": "*",
+            "kind": null,
+            "rename": null,
+            "optional": false,
+            "uses_default_features": true,
+            "features": [],
+            "target": null,
+            "registry": null,
+            "path": "/home/qq/work/hepta-convergence-20261105-0c901b/source-next/codex-rs/hepta-learning-ledger"
+          },
+          {
+            "name": "codex-hepta-ndu",
+            "source": null,
+            "req": "*",
+            "kind": null,
+            "rename": null,
+            "optional": false,
+            "uses_default_features": true,
+            "features": [],
+            "target": null,
+            "registry": null,
+            "path": "/home/qq/work/hepta-convergence-20261105-0c901b/source-next/codex-rs/hepta-ndu"
+          },
+          {
+            "name": "codex-hepta-neuron",
+            "source": null,
+            "req": "*",
+            "kind": null,
+            "rename": null,
+            "optional": false,
+            "uses_default_features": true,
+            "features": [],
+            "target": null,
+            "registry": null,
+            "path": "/home/qq/work/hepta-convergence-20261105-0c901b/source-next/codex-rs/hepta-neuron"
+          },
+          {
+            "name": "codex-hepta-objective",
+            "source": null,
+            "req": "*",
+            "kind": null,
+            "rename": null,
+            "optional": false,
+            "uses_default_features": true,
+            "features": [],
+            "target": null,
+            "registry": null,
+            "path": "/home/qq/work/hepta-convergence-20261105-0c901b/source-next/codex-rs/hepta-objective"
+          },
+          {
+            "name": "codex-hepta-plasticity",
+            "source": null,
+            "req": "*",
+            "kind": null,
+            "rename": null,
+            "optional": false,
+            "uses_default_features": true,
+            "features": [],
+            "target": null,
+            "registry": null,
+            "path": "/home/qq/work/hepta-convergence-20261105-0c901b/source-next/codex-rs/hepta-plasticity"
+          },
+          {
+            "name": "codex-hepta-prompt-optimizer",
+            "source": null,
+            "req": "*",
+            "kind": null,
+            "rename": null,
+            "optional": false,
+            "uses_default_features": true,
+            "features": [],
+            "target": null,
+            "registry": null,
+            "path": "/home/qq/work/hepta-convergence-20261105-0c901b/source-next/codex-rs/hepta-prompt-optimizer"
+          },
+          {
+            "name": "codex-hepta-prompt-registry",
+            "source": null,
+            "req": "*",
+            "kind": null,
+            "rename": null,
+            "optional": false,
+            "uses_default_features": true,
+            "features": [],
+            "target": null,
+            "registry": null,
+            "path": "/home/qq/work/hepta-convergence-20261105-0c901b/source-next/codex-rs/hepta-prompt-registry"
+          },
+          {
+            "name": "codex-hepta-types",
+            "source": null,
+            "req": "*",
+            "kind": null,
+            "rename": null,
+            "optional": false,
+            "uses_default_features": true,
+            "features": [],
+            "target": null,
+            "registry": null,
+            "path": "/home/qq/work/hepta-convergence-20261105-0c901b/source-next/codex-rs/hepta-types"
+          },
+          {
+            "name": "codex-hepta-contracts",
+            "source": null,
+            "req": "*",
+            "kind": "dev",
+            "rename": null,
+            "optional": false,
+            "uses_default_features": true,
+            "features": [],
+            "target": null,
+            "registry": null,
+            "path": "/home/qq/work/hepta-convergence-20261105-0c901b/source-next/codex-rs/hepta-contracts"
+          },
+          {
+            "name": "codex-hepta-neuron",
+            "source": null,
+            "req": "*",
+            "kind": "dev",
+            "rename": null,
+            "optional": false,
+            "uses_default_features": true,
+            "features": [],
+            "target": null,
+            "registry": null,
+            "path": "/home/qq/work/hepta-convergence-20261105-0c901b/source-next/codex-rs/hepta-neuron"
+          },
+          {
+            "name": "codex-hepta-plasticity",
+            "source": null,
+            "req": "*",
+            "kind": "dev",
+            "rename": null,
+            "optional": false,
+            "uses_default_features": true,
+            "features": [],
+            "target": null,
+            "registry": null,
+            "path": "/home/qq/work/hepta-convergence-20261105-0c901b/source-next/codex-rs/hepta-plasticity"
+          },
+          {
+            "name": "codex-hepta-prompt-optimizer",
+            "source": null,
+            "req": "*",
+            "kind": "dev",
+            "rename": null,
+            "optional": false,
+            "uses_default_features": true,
+            "features": [],
+            "target": null,
+            "registry": null,
+            "path": "/home/qq/work/hepta-convergence-20261105-0c901b/source-next/codex-rs/hepta-prompt-optimizer"
+          },
+          {
+            "name": "ed25519-dalek",
+            "source": "registry+https://github.com/rust-lang/crates.io-index",
+            "req": "^2.2.0",
+            "kind": "dev",
+            "rename": null,
+            "optional": false,
+            "uses_default_features": true,
+            "features": [
+              "pkcs8"
+            ],
+            "target": null,
+            "registry": null
+          },
+          {
+            "name": "pretty_assertions",
+            "source": "registry+https://github.com/rust-lang/crates.io-index",
+            "req": "^1.4.1",
+            "kind": "dev",
+            "rename": null,
+            "optional": false,
+            "uses_default_features": true,
+            "features": [],
+            "target": null,
+            "registry": null
+          },
+          {
+            "name": "tempfile",
+            "source": "registry+https://github.com/rust-lang/crates.io-index",
+            "req": "^3.23.0",
+            "kind": "dev",
+            "rename": null,
+            "optional": false,
+            "uses_default_features": true,
+            "features": [],
+            "target": null,
+            "registry": null
+          }
+        ],
+        "targets": [
+          {
+            "kind": [
+              "lib"
+            ],
+            "crate_types": [
+              "lib"
+            ],
+            "name": "codex_hepta_intelligence",
+            "src_path": "/home/qq/work/hepta-convergence-20261105-0c901b/source-next/codex-rs/hepta-intelligence/src/lib.rs",
+            "edition": "2024",
+            "doc": true,
+            "doctest": false,
+            "test": true
+          },
+          {
+            "kind": [
+              "example"
+            ],
+            "crate_types": [
+              "bin"
+            ],
+            "name": "intuition_authenticated_fast_gate",
+            "src_path": "/home/qq/work/hepta-convergence-20261105-0c901b/source-next/codex-rs/hepta-intelligence/examples/intuition_authenticated_fast_gate.rs",
+            "edition": "2024",
+            "doc": false,
+            "doctest": false,
+            "test": false
+          },
+          {
+            "kind": [
+              "test"
+            ],
+            "crate_types": [
+              "bin"
+            ],
+            "name": "intuition_frozen_qualification",
+            "src_path": "/home/qq/work/hepta-convergence-20261105-0c901b/source-next/codex-rs/hepta-intelligence/tests/intuition_frozen_qualification.rs",
+            "edition": "2024",
+            "doc": false,
+            "doctest": false,
+            "test": true
+          },
+          {
+            "kind": [
+              "test"
+            ],
+            "crate_types": [
+              "bin"
+            ],
+            "name": "lane_f_shadow_vertical",
+            "src_path": "/home/qq/work/hepta-convergence-20261105-0c901b/source-next/codex-rs/hepta-intelligence/tests/lane_f_shadow_vertical.rs",
+            "edition": "2024",
+            "doc": false,
+            "doctest": false,
+            "test": true
+          }
+        ],
+        "features": {},
+        "manifest_path": "/home/qq/work/hepta-convergence-20261105-0c901b/source-next/codex-rs/hepta-intelligence/Cargo.toml",
+        "metadata": null,
+        "publish": [],
+        "authors": [],
+        "categories": [],
+        "keywords": [],
+        "readme": null,
+        "repository": null,
+        "homepage": null,
+        "documentation": null,
+        "edition": "2024",
+        "links": null,
+        "default_run": null,
+        "rust_version": null
+      },
+      {
+        "name": "codex-hepta-intelligence-eval",
+        "version": "0.0.0",
+        "id": "path+file:///home/qq/work/hepta-convergence-20261105-0c901b/source-next/codex-rs/hepta-intelligence-eval#codex-hepta-intelligence-eval@0.0.0",
+        "license": "Apache-2.0",
+        "license_file": null,
+        "description": null,
+        "source": null,
+        "dependencies": [
+          {
+            "name": "codex-hepta-learning-ledger",
+            "source": null,
+            "req": "*",
+            "kind": null,
+            "rename": null,
+            "optional": false,
+            "uses_default_features": true,
+            "features": [],
+            "target": null,
+            "registry": null,
+            "path": "/home/qq/work/hepta-convergence-20261105-0c901b/source-next/codex-rs/hepta-learning-ledger"
+          },
+          {
+            "name": "codex-hepta-types",
+            "source": null,
+            "req": "*",
+            "kind": null,
+            "rename": null,
+            "optional": false,
+            "uses_default_features": true,
+            "features": [],
+            "target": null,
+            "registry": null,
+            "path": "/home/qq/work/hepta-convergence-20261105-0c901b/source-next/codex-rs/hepta-types"
+          },
+          {
+            "name": "ed25519-dalek",
+            "source": "registry+https://github.com/rust-lang/crates.io-index",
+            "req": "^2.2.0",
+            "kind": "dev",
+            "rename": null,
+            "optional": false,
+            "uses_default_features": true,
+            "features": [
+              "pkcs8"
+            ],
+            "target": null,
+            "registry": null
+          },
+          {
+            "name": "pretty_assertions",
+            "source": "registry+https://github.com/rust-lang/crates.io-index",
+            "req": "^1.4.1",
+            "kind": "dev",
+            "rename": null,
+            "optional": false,
+            "uses_default_features": true,
+            "features": [],
+            "target": null,
+            "registry": null
+          }
+        ],
+        "targets": [
+          {
+            "kind": [
+              "lib"
+            ],
+            "crate_types": [
+              "lib"
+            ],
+            "name": "codex_hepta_intelligence_eval",
+            "src_path": "/home/qq/work/hepta-convergence-20261105-0c901b/source-next/codex-rs/hepta-intelligence-eval/src/lib.rs",
+            "edition": "2024",
+            "doc": true,
+            "doctest": false,
+            "test": true
+          },
+          {
+            "kind": [
+              "test"
+            ],
+            "crate_types": [
+              "bin"
+            ],
+            "name": "operator_claim",
+            "src_path": "/home/qq/work/hepta-convergence-20261105-0c901b/source-next/codex-rs/hepta-intelligence-eval/tests/operator_claim.rs",
+            "edition": "2024",
+            "required-features": [
+              "trusted-inprocess-eval"
+            ],
+            "doc": false,
+            "doctest": false,
+            "test": true
+          }
+        ],
+        "features": {
+          "default": [],
+          "trusted-inprocess-eval": []
+        },
+        "manifest_path": "/home/qq/work/hepta-convergence-20261105-0c901b/source-next/codex-rs/hepta-intelligence-eval/Cargo.toml",
+        "metadata": null,
+        "publish": [],
+        "authors": [],
+        "categories": [],
+        "keywords": [],
+        "readme": null,
+        "repository": null,
+        "homepage": null,
+        "documentation": null,
+        "edition": "2024",
+        "links": null,
+        "default_run": null,
+        "rust_version": null
+      }
+    ]
+  }
+}

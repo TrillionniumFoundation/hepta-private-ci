@@ -1,0 +1,106 @@
+{
+  "schema": "hepta.native-cache-target-guard-independent-review.v1",
+  "reviewed_at_utc": "2026-11-05T09:58:37.202759+00:00",
+  "decision": "ACCEPT_TARGET_SCOPED_GUARD_AND_ALREADY_AUTHORIZED_CONTINUATION",
+  "authorization": "Root explicitly scoped the cleanup exclusion to this task target, allowed only positively identified different targets, required unknown targets to remain blocked, and prohibited changing or stopping other tasks.",
+  "source_head": "eed6541df0add428add8e2d9ab2cbd54a961abeb",
+  "frozen_native_runner_sha256": "46552f047784d07b825cec59e0358cfbb02a010f448b7538bb0fadc15ea2f7df",
+  "frozen_plan_sha256": "00b4d289a635ae36865dc70732a1a10a03a8fb81575be5b5eba0b21fce7027fe",
+  "previous_attempt": {
+    "receipt_sha256": "a82a65e07f6007cacaafe4d9673df766be65d85f43f34ed933a4c1008d95fc2e",
+    "state": "cache-repair-blocked",
+    "exit_code": 1,
+    "steps": 0,
+    "backup_entries": 0,
+    "interpretation": "The host-wide guard refused before any native command or cache archive. This failed receipt remains immutable and is a pinned prerequisite in repair v2."
+  },
+  "guard_review": {
+    "selected_data_only": [
+      "PID and process name",
+      "cwd",
+      "CARGO_TARGET_DIR value only",
+      "argv target-dir for Cargo",
+      "argv out-dir for rustc/clippy"
+    ],
+    "allow": "An explicitly resolved different target with no ambiguity or overlap.",
+    "refuse": [
+      "Exact task target, ancestor or descendant overlap.",
+      "Missing effective Cargo target.",
+      "Multiple env or selected-option values.",
+      "rustc output or inherited target overlapping the task target.",
+      "Unreadable or undecodable relevant process data."
+    ],
+    "cargo_argv_overrides_environment": true,
+    "unknown_target_remains_blocked": true,
+    "complete_argv_or_environment_printed": false,
+    "other_processes_stopped_or_modified": false,
+    "local_meaningful_cases": {
+      "count": 10,
+      "result": "PASS",
+      "scope": "Pure Python calls against temporary fake /proc entries; no real process or Cargo/native command.",
+      "cases": [
+        "foreign Cargo env allowed",
+        "Cargo argv own target blocks",
+        "Cargo explicit foreign argv overrides own env",
+        "rustc own child output blocks",
+        "rustc explicit foreign output allowed",
+        "missing Cargo target blocks",
+        "duplicate CARGO_TARGET_DIR blocks",
+        "ancestor target blocks",
+        "rustc own env with foreign output blocks",
+        "duplicate target-dir options block"
+      ]
+    }
+  },
+  "unchanged_boundaries": {
+    "repair_archive_clean_source_lock_history_tail_byte_identical": true,
+    "all_other_outer_functions_ast_identical_to_reviewed_22fa": true,
+    "Q3_attempt": 2,
+    "other_phase_attempts": 1,
+    "Q3_fresh_compile_old_warning_absence_depinfo_gates_retained": true,
+    "original_Q3_713_Q4_474_first_assertions_retained": true,
+    "full_three_package_green_and_scoped_fix_last_retained": true,
+    "no_post_fix_tests": true,
+    "old_outer_and_failed_phase_artifacts_preserved": true
+  },
+  "final_scripts": {
+    "repair_v2_sha256": "11437d6b582247f02a09b392dc7154f186025f0696d64fd9af7ee1bc300a4dd7",
+    "outer_v2_sha256": "55f787d330be7cf4165ca13f1eed6b2c3ba0932653c31ed4ebe2a9ffe781d49e"
+  },
+  "limits": [
+    "This acceptance is code/delta review; no completed repair or behavioral retry is claimed here.",
+    "The original native runner, plan, source, assertions, features, profile, timeout and retry policy remain unchanged.",
+    "The earlier reviewed outer 22fa file is retained under its existing archive path; the newly pinned outer is archived with a target_scope suffix to preserve both byte identities."
+  ],
+  "artifacts": [
+    {
+      "path": "native/ai395-eval-cache-repair-attempt1-receipt.json",
+      "sha256": "a82a65e07f6007cacaafe4d9673df766be65d85f43f34ed933a4c1008d95fc2e",
+      "bytes": 2757
+    },
+    {
+      "path": "native/repair_eval_package_cache_v2.py",
+      "original_file_name": "repair_eval_package_cache_v2.py",
+      "sha256": "11437d6b582247f02a09b392dc7154f186025f0696d64fd9af7ee1bc300a4dd7",
+      "bytes": 10542
+    },
+    {
+      "path": "native/run_sealed_remaining_pipeline_v2_target_scope.py",
+      "original_file_name": "run_sealed_remaining_pipeline_v2.py",
+      "sha256": "55f787d330be7cf4165ca13f1eed6b2c3ba0932653c31ed4ebe2a9ffe781d49e",
+      "bytes": 14922
+    },
+    {
+      "path": "native/eval-cache-repair-v2-review.diff",
+      "original_file_name": "eval-cache-repair-v2-review.diff",
+      "sha256": "745ec709d7b17e36d13aa985e050039f423f7d96764857a7cb8d4735509546e3",
+      "bytes": 6172
+    },
+    {
+      "path": "native/sealed-outer-repair-v2-pin-review.diff",
+      "original_file_name": "sealed-outer-repair-v2-pin-review.diff",
+      "sha256": "17c784f21a18212e5895ce249285cccdef879afd893af5dd38ea2ce7b74bbe2c",
+      "bytes": 1596
+    }
+  ]
+}

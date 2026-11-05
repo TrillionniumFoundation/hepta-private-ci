@@ -1,0 +1,120 @@
+{
+  "schema": "hepta.runtime-convergence-evidence.v1",
+  "implementation_commit": "df46f9c35de74544d6f9fbd1a2e04d21b74c8cc6",
+  "implementation_tree": "9faf96c5cda4b04edbc1bf604425380e1f4b5cc5",
+  "lifecycle_merge_commit": "12f793efff9d701b4ea781e5990ac434067e20ff",
+  "lifecycle_merge_parents": [
+    "4e31abc907f09740d402d1ddef7a1d2fe0a366a6",
+    "3247636513f4cddaede6e9b45110925e9065d507"
+  ],
+  "rust_toolchain_required": "1.96.0",
+  "review_scope": "Independent source reviews of Agentd arithmetic ordering, complete qualification decision binding, public lifecycle refusal and current caller documentation.",
+  "checks": {
+    "source_blob_tree_parent_readback": "PASS",
+    "patch_applicability": "PASS",
+    "patch_whitespace": "PASS",
+    "native_format": "PASS_ON_RECORDED_NINE_RUST_PATHS; later Windows donor separately requires final check",
+    "native_negative_controls": "ATTEMPTED; first two attempts stopped during dependency builds, no behavioral red result",
+    "native_changed_package_tests": "NOT_RUN_TO_TEST_EXECUTION",
+    "scoped_clippy": "NOT_RUN",
+    "original_platform_ci": "WINDOWS_FAILURE_BEFORE_AGENTD_TEST_EXECUTION; other original CI incomplete",
+    "real_product_acceptance": "NOT_ESTABLISHED",
+    "native_environment_preparation": "EXACT_LINUX_RUST_READY; missing development headers repaired in task directory"
+  },
+  "source_readback": {
+    "all_expected_blobs_match": true,
+    "merge_has_both_expected_ordered_parents": true,
+    "latest_code_changes_vs_a20": 4,
+    "latest_code_blobs_and_both_repair_parents_match": true,
+    "initial_changed_paths_vs_r3": 12
+  },
+  "required_packages": [
+    "codex-hepta-agentd",
+    "codex-hepta-runtime",
+    "codex-hepta-intelligence-eval",
+    "codex-hepta-intelligence"
+  ],
+  "original_blocking_ci_run": 41981375133,
+  "preparation": {
+    "host": "mac",
+    "source_partial_fetch_job": "1a1aa6f6bb1-fc05-430f",
+    "source_partial_fetch_exit_code": 0,
+    "source_checkout": "Mac exact fetch succeeded but checkout timed out with exit124; Linux exact source later completed",
+    "original_unfiltered_fetch_job": "1a1aa6408cc-fc05-4249",
+    "original_unfiltered_fetch_state": "CANCELLED",
+    "rust_install_job": "1a1aa663584-fc05-4275",
+    "rust_install": "FAILED",
+    "rust_install_exit_code": 1,
+    "rust_install_terminal_at_utc": "2026-11-05T06:50:26.742Z",
+    "rust_install_error": "Cargo component cache .partial rename failed with ENOENT; precise cause not established.",
+    "readiness_job": "1a1aa83d0a8-fc05-43e0",
+    "linux_host": "ai395",
+    "linux_source_job": "1a1aa9a0f30-fc05-44fd",
+    "linux_tools_job": "1a1aa974563-fc05-44dc",
+    "linux_toolchain": "Verified rustc/cargo1.96.0, rustfmt/clippy/rust-src; just1.58.0 and cargo-nextest0.9.143 installed",
+    "tracked_rust_files_verified": 5309,
+    "tracked_rust_bytes_verified": 80594298
+  },
+  "negative_controls": {
+    "A": "Restore only lane_b_runtime.rs from R3 and retain the new tests.",
+    "B1": "Remove only the two canonical plan checks; retain the complete decision seal.",
+    "B2": "Restore only the old decision digest/seal encoding; retain the canonical plan checks and real consumer test.",
+    "C": "Remove only the two public admission calls; retain typed error and refusal tests."
+  },
+  "interpretation": "Exact source, formatting and lexical inventory evidence are distinct from compilation, test execution, original platform CI and real product qualification. Dependency build failures do not prove negative-control behavior. Later result receipts must retain their own source identities.",
+  "product_release": "HOLD",
+  "adaptive_promotion": "NO_NEW_EFFICACY_ADMISSION",
+  "public_topology_execution": "DENY_ALL",
+  "known_unclosed": [
+    "real provider goal-to-effect-to-terminal-to-restart task chain",
+    "default canonical seven-owner handoff and authenticated Decision/Outcome composition through existing App Server and LedgerWriter",
+    "process-loss recovery of original signed append requests and exact execution identities",
+    "all signed evaluation and self-evolution callers require sealed receipt",
+    "same-information complete-cost independent efficacy qualification",
+    "single durable Control lifecycle owner and physical recovery",
+    "original Windows isolation and remaining original platform failures",
+    "independent acceptance and release"
+  ],
+  "recorded_at_utc": "2026-11-05 07:54:09 UTC",
+  "documentation_head": "a20a8191ec37375876a99b7c18bae053f9bc185d",
+  "documentation_blocking_ci_run": 41982971499,
+  "documentation_blocking_ci_status": "PENDING",
+  "initial_implementation_commit": "1d87082c0d5afd2b474a2c453ea98005fd540dea",
+  "initial_implementation_tree": "f6e6406653d45c8d6b19f2271183c42300f6d051",
+  "native_format_commit": "cbe0208dea6448f632899eecdf2baefaa2645874",
+  "windows_source_repair_commit": "345dd470a64783b54f45c522ac8675435d204738",
+  "repair_merge_parents": [
+    "cbe0208dea6448f632899eecdf2baefaa2645874",
+    "345dd470a64783b54f45c522ac8675435d204738"
+  ],
+  "native_test_attempts": [
+    {
+      "attempt": "A1",
+      "job": "1a1aa9ec65a-fc05-453a",
+      "just_test_exit": 101,
+      "elapsed_seconds": 116.23,
+      "tests_executed": false,
+      "reason": "aws-lc-sys bindgen cannot find stddef.h in the missing Clang21 resource headers",
+      "stderr_sha256": "17dfc6355d1f928f4c85c3b7834aeec272337002e8727afe6361720d50244e20",
+      "candidate_restored": true
+    },
+    {
+      "attempt": "A2",
+      "job": "1a1aaa86003-fc05-45bc",
+      "just_test_exit": 101,
+      "elapsed_seconds": 68.3949522972107,
+      "tests_executed": false,
+      "reason": "openssl-sys cannot find the OpenSSL development headers/pkg-config metadata",
+      "stderr_sha256": "9e57d2eb1a040a74dfec5a0a1a02966e9685fcd09dbc7031a4db6cda944aaa27",
+      "candidate_restored": true
+    },
+    {
+      "attempt": "A3",
+      "job": "1a1aab05e30-fc05-461c",
+      "state_at_record_creation": "RUNNING; no result inferred"
+    }
+  ],
+  "original_blocking_ci_state_at_prior_observation": "Earlier source run has cancelled/skipped jobs and a queued final job after normal concurrency cancellation; no pass.",
+  "original_ci_observation": "original-ci-observation.json",
+  "native_format_receipt_sha256": "30bea20ec319e66aa1fd21fbd4d3553eb0c3f01c56e80aa221a72935b3a3ece9"
+}

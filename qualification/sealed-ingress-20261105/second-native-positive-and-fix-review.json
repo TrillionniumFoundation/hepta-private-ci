@@ -1,0 +1,235 @@
+{
+  "schema": "hepta.sealed-ingress-positive-fix-independent-review.v1",
+  "reviewed_at_utc": "2026-11-05T10:15:50.157392+00:00",
+  "decision": "ACCEPT_EXACT_E_NATIVE_POSITIVE_AND_SCOPED_FIX_WITH_SEPARATE_S_SOURCE_ADOPTION",
+  "tested_source": {
+    "head": "eed6541df0add428add8e2d9ab2cbd54a961abeb",
+    "tree": "b8ce8b96a759f522cb7db60027d4844f1b3ad974",
+    "runner_sha256": "46552f047784d07b825cec59e0358cfbb02a010f448b7538bb0fadc15ea2f7df",
+    "plan_sha256": "00b4d289a635ae36865dc70732a1a10a03a8fb81575be5b5eba0b21fce7027fe",
+    "positive_manifest_sha256": "e652b430cf2af22ce8f421288bad0687cb6ba332fa31da696034f1ed9bf7c7da"
+  },
+  "native_positive": {
+    "receipt_sha256": "ab6da7188d4354a088025ec0202533c025436d6f7fcf70196913ef24deb82488",
+    "state": "green-complete",
+    "command": [
+      "just",
+      "test",
+      "--locked",
+      "-p",
+      "codex-hepta-intelligence-eval",
+      "-p",
+      "codex-hepta-agentd",
+      "-p",
+      "codex-hepta-intelligence"
+    ],
+    "command_exit_code": 0,
+    "runner_exit_code": 0,
+    "command_elapsed_seconds": 131.69272875785828,
+    "nextest_elapsed_seconds": 36.514,
+    "nextest_profile": "local",
+    "tests_run": 805,
+    "passed": 805,
+    "failed": 0,
+    "slow": 1,
+    "skipped": 66,
+    "actual_PASS_lines_independently_counted": 805,
+    "retry_or_FAIL_lines_observed": 0,
+    "critical_names": [
+      "current_use_attestation_binds_the_exact_sealed_publication",
+      "durable_proposal_identity_commits_the_exact_qualification_publication",
+      "independently_resigned_metrics_cannot_replace_the_qualified_estimator_evidence",
+      "product_runner_binds_estimator_receipts_and_persists_signed_decision",
+      "selector_signature_commits_the_exact_qualification_publication",
+      "signed_generic_metrics_cannot_replace_the_product_qualification_before_append",
+      "valid_v3_resignatures_cannot_replace_published_metrics_or_time_policy"
+    ],
+    "critical_actual_PASS_lines": {
+      "current_use_attestation_binds_the_exact_sealed_publication": "        PASS [   0.380s] (380/805) codex-hepta-agentd intelligence_product::evaluation_tests::current_use_attestation_binds_the_exact_sealed_publication",
+      "durable_proposal_identity_commits_the_exact_qualification_publication": "        PASS [   0.416s] (756/805) codex-hepta-intelligence plasticity_product_tests::durable_proposal_identity_commits_the_exact_qualification_publication",
+      "independently_resigned_metrics_cannot_replace_the_qualified_estimator_evidence": "        PASS [   0.142s] (348/805) codex-hepta-agentd intelligence_product::evaluation_tests::independently_resigned_metrics_cannot_replace_the_qualified_estimator_evidence",
+      "product_runner_binds_estimator_receipts_and_persists_signed_decision": "        PASS [   0.183s] (781/805) codex-hepta-intelligence-eval product_runner::tests::product_runner_binds_estimator_receipts_and_persists_signed_decision",
+      "selector_signature_commits_the_exact_qualification_publication": "        PASS [   0.509s] (787/805) codex-hepta-intelligence-eval self_evolution_selection::ingress_tests::selector_signature_commits_the_exact_qualification_publication",
+      "signed_generic_metrics_cannot_replace_the_product_qualification_before_append": "        PASS [   0.203s] (669/805) codex-hepta-intelligence plasticity_product_tests::signed_generic_metrics_cannot_replace_the_product_qualification_before_append",
+      "valid_v3_resignatures_cannot_replace_published_metrics_or_time_policy": "        PASS [   0.470s] (785/805) codex-hepta-intelligence-eval self_evolution_selection::ingress_tests::valid_v3_resignatures_cannot_replace_published_metrics_or_time_policy"
+    },
+    "all_14_expected_source_before_hashes_match": true,
+    "head_tree_before_after_verified": true,
+    "clean_after_empty": true,
+    "all_steps_exit_zero": true,
+    "cargo_lock_sha256": "4165307bb6c41d08e6c1c362060f2a958c8200ea43fdab2b8b1e6220ad82b55c",
+    "source_identity_limit": "805/805 applies only to E before the scoped fix. It is not reassigned to a later source or documentation commit."
+  },
+  "native_fix": {
+    "receipt_sha256": "cb1f12c6d7e4c09f3e5c6df4a9f9f337d28540bc4e81c7d5c2c9b45ee2b5504c",
+    "state": "fix-complete",
+    "command": [
+      "just",
+      "fix",
+      "--locked",
+      "-p",
+      "codex-hepta-intelligence-eval",
+      "-p",
+      "codex-hepta-agentd",
+      "-p",
+      "codex-hepta-intelligence"
+    ],
+    "command_exit_code": 0,
+    "runner_exit_code": 0,
+    "command_elapsed_seconds": 46.187445878982544,
+    "format_command": [
+      "just",
+      "fmt",
+      "--base",
+      "ebdf792c076c1d516ae9f96eec079921ccd1588f"
+    ],
+    "format_exit_code": 0,
+    "post_fix_source_changed": true,
+    "tests_rerun_after_fix": false,
+    "changed_paths": [
+      "codex-rs/hepta-intelligence/src/plasticity_product_tests.rs"
+    ],
+    "unexpected_changed_paths": [],
+    "patch_sha256": "5e638cfe00ca4e1df56934c765a60089cb11e718e79c54800f2f5eda741d830c",
+    "full_tracked_path_digest": "fad1bea6f869b8c36feec93493cc7590c2f53d8a22d550c66803325e9efdda0d",
+    "full_tracked_path_digest_independently_recomputed": true,
+    "other_13_source_manifest_entries_unchanged": true,
+    "raw_fix_stdout_stderr_hashes_verified": true
+  },
+  "additional_readonly_scope": {
+    "receipt_sha256": "2d139a714003f0e0f0e1960c499969f82872f40326a6abc23af86e01dbbec24f",
+    "state": "reviewed-one-test-delta-only",
+    "full_status_exactly_one_unstaged_modified_test_hash_recomputed": true,
+    "untracked_paths": [],
+    "staged_paths": [],
+    "all_source_and_lock_hashes_match_native_fix_receipt": true,
+    "first_F_checkout_still_clean_unchanged": true,
+    "no_tests_executed_by_scope_check": true
+  },
+  "source_delta_review": {
+    "classification": "MECHANICAL_LAST_USE_CLONE_REMOVAL",
+    "path": "codex-rs/hepta-intelligence/src/plasticity_product_tests.rs",
+    "line": 178,
+    "before": "candidate_id: update_id.clone(),",
+    "after": "candidate_id: update_id,",
+    "before_blob": "3eb615951f7f9a542455f1814eb58ca73859be90",
+    "before_sha256": "f235478313b93338931118c780afdae7c6875f46892b106dff2507a1d70953e3",
+    "after_blob": "2b85adacb939c778b13f42177467b5959d16b50a",
+    "after_sha256": "63f80d787b8ea9e8daba48d8b0beacd25d146a17af4d7c828c622720e27ffc4f",
+    "exact_GitHub_E_base_readback": true,
+    "independent_git_apply_matches_actual_after_bytes": true,
+    "reasoning": [
+      "update_id has exactly two uses in the file: its binding at line 141 and this final consumption at line 178.",
+      "The binding was already cloned from the generated candidate ID. Moving that owned value into the plan leaves the generated candidate collection and all plan ID bytes unchanged.",
+      "StableId derives Clone over BoundedText; BoundedText derives Clone over String. There is no custom Clone or Drop in these exact definitions, so removing this second, last-use clone changes no signer, authority, fixture data, branch, or assertion.",
+      "All assertions, qualification evidence, candidate generation, signatures, holdout contents and budgets are byte unchanged."
+    ],
+    "type_source_evidence": [
+      {
+        "path": "codex-rs/hepta-types/src/lib.rs",
+        "blob": "80039df26ca8d1a4fc74d715e2b73423c6806365",
+        "finding": "StableId re-exports identity::StableId."
+      },
+      {
+        "path": "codex-rs/hepta-types/src/identity.rs",
+        "blob": "d57e5c9d0ebe8dced59c096a3586830d52e3df4f",
+        "finding": "Line54 StableId(BoundedText<MAX_STABLE_ID_BYTES>), derived Clone."
+      },
+      {
+        "path": "codex-rs/hepta-types/src/bounded.rs",
+        "blob": "5b8afd7be362d5383283d03b785b57b6128fa28d",
+        "finding": "Line6 BoundedText<const MAX_BYTES: usize>(String), derived Clone."
+      }
+    ]
+  },
+  "published_source_adoption": {
+    "commit": "0766fc4d5feabea9569d48e7eca4e0a3431bd0f5",
+    "tree": "1cfb78c47f636a60dcfa9968ffd7e44a054d58cc",
+    "ordered_parents": [
+      "eed6541df0add428add8e2d9ab2cbd54a961abeb"
+    ],
+    "changed_paths": [
+      "codex-rs/hepta-intelligence/src/plasticity_product_tests.rs"
+    ],
+    "additions": 1,
+    "deletions": 1,
+    "after_blob": "2b85adacb939c778b13f42177467b5959d16b50a",
+    "independent_GitHub_commit_readback": true,
+    "api_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/commits/0766fc4d5feabea9569d48e7eca4e0a3431bd0f5",
+    "tests_reexecuted_on_S": false,
+    "interpretation": "S adopts the reviewed exact lint output; it is not labeled as the source on which the preceding 805 tests ran."
+  },
+  "sequence": {
+    "outer_receipt_sha256": "df53252839fc2c66102b33614456b0648d2028ea8e85b839baee3fe9e67c5612",
+    "orchestrator_sha256": "55f787d330be7cf4165ca13f1eed6b2c3ba0932653c31ed4ebe2a9ffe781d49e",
+    "state": "sequence-complete",
+    "exit_code": 0,
+    "order": [
+      "Q3 attempt2 RED and restore/freshness",
+      "Q4 attempt1 RED and restore",
+      "E full three-package green",
+      "scoped fix last"
+    ],
+    "no_tests_after_fix": true,
+    "failed_Q3_attempt1_and_first_repair_guard_refusal_retained": true
+  },
+  "limits": [
+    "The 66 skips are those of the unchanged original profile, not counted as passes.",
+    "The negative Q2/Q4 raw assertions do not print their returned Result; their success-branch discussion remains source inference. The complete positive run separately passes all seven target tests.",
+    "In-memory/synthetic qualification and owner fixtures remain qualification evidence, not production providers, real longitudinal improvement, App Server physical effects or a completed process-loss recovery chain.",
+    "Linux native evidence does not close original Windows native checks, required hosted CI, merge or release gates.",
+    "No native tests or fixes were run by this independent reviewer."
+  ],
+  "artifacts": [
+    {
+      "path": "native/ai395-sealed-green-receipt.json",
+      "sha256": "ab6da7188d4354a088025ec0202533c025436d6f7fcf70196913ef24deb82488",
+      "bytes": 28470
+    },
+    {
+      "path": "native/ai395-sealed-green-just-green.stderr",
+      "sha256": "e2d5640765ed22e4b7b4def6ac2129a4d537e1f3373a098a162acdce3e1a195a",
+      "bytes": 145782
+    },
+    {
+      "path": "native/ai395-sealed-green-just-green.stdout",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": "native/ai395-sealed-fix-receipt.json",
+      "sha256": "cb1f12c6d7e4c09f3e5c6df4a9f9f337d28540bc4e81c7d5c2c9b45ee2b5504c",
+      "bytes": 32213
+    },
+    {
+      "path": "native/ai395-sealed-fix-just-fix.stderr",
+      "sha256": "64c2a21b20a3029ca1152fbcfa175a1edecd0d83918aad26c46660b816c21165",
+      "bytes": 37234
+    },
+    {
+      "path": "native/ai395-sealed-fix-just-fix.stdout",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": "native/ai395-sealed-fix-changed-after-fix.stdout",
+      "sha256": "fad1bea6f869b8c36feec93493cc7590c2f53d8a22d550c66803325e9efdda0d",
+      "bytes": 60
+    },
+    {
+      "path": "native/ai395-sealed-native-fix.patch",
+      "sha256": "5e638cfe00ca4e1df56934c765a60089cb11e718e79c54800f2f5eda741d830c",
+      "bytes": 732
+    },
+    {
+      "path": "native/ai395-second-postfix-scope-receipt.json",
+      "sha256": "2d139a714003f0e0f0e1960c499969f82872f40326a6abc23af86e01dbbec24f",
+      "bytes": 7779
+    },
+    {
+      "path": "native/ai395-sealed-remaining-pipeline-v2-receipt.json",
+      "sha256": "df53252839fc2c66102b33614456b0648d2028ea8e85b839baee3fe9e67c5612",
+      "bytes": 5603
+    }
+  ]
+}

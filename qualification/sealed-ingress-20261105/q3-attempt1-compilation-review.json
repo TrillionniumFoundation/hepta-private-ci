@@ -1,0 +1,123 @@
+{
+  "schema": "hepta.sealed-ingress-negative-control-independent-review.v1",
+  "control": "Q3",
+  "attempt": 1,
+  "phase": "red-q-plasticity",
+  "reviewed_at_utc": "2026-11-05T09:45:21.381232+00:00",
+  "decision": "COMPILE_BLOCKED_NOT_BEHAVIORAL_RED",
+  "source": {
+    "execution_head": "eed6541df0add428add8e2d9ab2cbd54a961abeb",
+    "execution_tree": "b8ce8b96a759f522cb7db60027d4844f1b3ad974",
+    "runner_sha256": "46552f047784d07b825cec59e0358cfbb02a010f448b7538bb0fadc15ea2f7df",
+    "plan_sha256": "00b4d289a635ae36865dc70732a1a10a03a8fb81575be5b5eba0b21fce7027fe",
+    "production_path": "codex-rs/hepta-intelligence/src/plasticity_product.rs",
+    "positive_blob": "7004ae2981587a63f9941376196af9435dbbdc6d",
+    "mutated_blob": "d75a730c99779021795a536960adf44888c57fc1",
+    "patch_sha256": "4d21e5f1eabe993427850ea83dab628ed8ecdf07454f88ef8d72cfd19cd988b5",
+    "tests_or_fixtures_changed": false
+  },
+  "direct_observation": {
+    "command": [
+      "just",
+      "test",
+      "--locked",
+      "-p",
+      "codex-hepta-intelligence",
+      "-E",
+      "test(/(^|::)(durable_proposal_identity_commits_the_exact_qualification_publication)$/)"
+    ],
+    "command_exit_code": 101,
+    "command_elapsed_seconds": 2.287996768951416,
+    "runner_exit_code": 1,
+    "state": "negative-control-did-not-prove-required-test-failures",
+    "compiler_diagnostic": "E0432 unresolved import codex_hepta_intelligence_eval::revalidate_product_qualification_v1",
+    "compiler_location": "hepta-intelligence/src/plasticity_product.rs:24:5",
+    "nextest_started": false,
+    "target_tests_executed": 0,
+    "behavioral_red": false,
+    "assertion_failure_observed": false,
+    "compiler_diagnostic_is_not_a_runtime_witness": true
+  },
+  "source_inspection": [
+    {
+      "path": "codex-rs/hepta-intelligence-eval/src/lib.rs",
+      "git_blob": "3fb8fe09947c342710f9cc982bd14f2015abb58c",
+      "finding": "mod product_qualification_use at line 35 and pub use product_qualification_use::revalidate_product_qualification_v1 at line 138 are unconditional; no surrounding cfg gate."
+    },
+    {
+      "path": "codex-rs/hepta-intelligence-eval/src/product_qualification_use.rs",
+      "git_blob": "f904dc721859f2d44f67b955c532298d03360e87",
+      "finding": "The public helper definition is unconditional; its complete SignedEvaluationDecisionV1 equality guard remains in the Q3 source."
+    },
+    {
+      "path": "codex-rs/hepta-intelligence/Cargo.toml",
+      "git_blob": "162205d6bc62834e1b04fed33dd67f5955f218d1",
+      "finding": "The dependency is the direct sibling path ../hepta-intelligence-eval, with no alternative helper feature gate."
+    },
+    {
+      "path": "codex-rs/hepta-intelligence-eval/Cargo.toml",
+      "git_blob": "c9096b1f1c77b27b7b94d7be86e4679212960295",
+      "finding": "default=[]; the only optional crate feature is trusted-inprocess-eval, unrelated to the unconditional helper export."
+    },
+    {
+      "path": "codex-rs/hepta-agentd/Cargo.toml",
+      "git_blob": "a32f7eb893fd529692fd2005ca02ac9e8f853b95",
+      "finding": "Agentd directly depends on the same eval path. Its dev dependency enables the learning-ledger qualification-legacy-write feature, so package selections can select different transitive artifact variants."
+    },
+    {
+      "path": "codex-rs/hepta-intelligence-eval/src/product_runner.rs",
+      "git_blob": "0c374acd8c5e25626c213c1ed9f6ba36d3fcbe42",
+      "finding": "The enum import at line 31 is used unconditionally at lines 578-580 in the current evidence digest. The Q3 replayed unused-import warning does not match this current positive source."
+    }
+  ],
+  "cache_hypothesis_status": {
+    "status": "SUSPECTED_AWAITING_TARGET_FINGERPRINT_DEP_INFO_EVIDENCE",
+    "observations": [
+      "Q1 and Q2 raw logs explicitly compile codex-hepta-intelligence-eval from source-next before their test executions. Q3 logs no such eval compilation and instead replays an unused enum import warning.",
+      "The Q3 unused-import warning text and location exactly match the earlier first-tree B2 attempt2 negative build, whose patch retained that import solely for test compilation.",
+      "The first and second task worktrees share a task-owned CARGO_TARGET_DIR."
+    ],
+    "limits": "Source and warning evidence excludes a missing current source export or a helper cfg gate. It does not by itself prove which exact cached artifact rustc loaded; target fingerprint and dep-info inspection is still required.",
+    "permitted_next_direction": "After the wrong artifact is identified, invalidate only task-owned stale build products or isolate the second task target and rerun the same exact source, mutation, original package/test command, features, profile, timeouts and retries. No production source or assertion workaround is justified by the evidence so far."
+  },
+  "restoration": {
+    "restored_candidate": true,
+    "all_14_before_expected_restored_hashes_equal": true,
+    "adopted_lint_checks_preserved": true,
+    "clean_after_empty": true,
+    "head_after_hash_recomputed": true,
+    "tree_after_hash_recomputed": true,
+    "cargo_lock_sha256": "4165307bb6c41d08e6c1c362060f2a958c8200ea43fdab2b8b1e6220ad82b55c",
+    "cargo_lock_git_blob": "b7e710988d6a3377a7e0a1dc68aef49c68dda36e",
+    "all_auxiliary_steps_exit_zero": true
+  },
+  "unobserved": [
+    "Both real proposal calls in the target test.",
+    "The evaluation_digest inequality at line 713.",
+    "The later proposal_digest and qualification receipt comparisons.",
+    "The later registry replay refusal, record count, and anchor preservation.",
+    "Q4, restored-source full three-package positive tests, and final scoped fix."
+  ],
+  "artifacts": [
+    {
+      "path": "native/ai395-sealed-q3-attempt1-receipt.json",
+      "sha256": "b98653f5a06015cb71042b642ed1df3efb08e0384c9cc350294f7e86dfd70a49",
+      "bytes": 32111
+    },
+    {
+      "path": "native/ai395-sealed-q3-attempt1-just-test.stderr",
+      "sha256": "4e1320dc9ab932fd3e9c23532328c0672b79eb239c8f9a78332c20f2f587ef4f",
+      "bytes": 3265
+    },
+    {
+      "path": "native/ai395-sealed-q3-attempt1-just-test.stdout",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": "native/ai395-sealed-q3-attempt1-negative.patch",
+      "sha256": "4d21e5f1eabe993427850ea83dab628ed8ecdf07454f88ef8d72cfd19cd988b5",
+      "bytes": 696
+    }
+  ]
+}

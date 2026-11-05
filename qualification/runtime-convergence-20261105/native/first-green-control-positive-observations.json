@@ -1,0 +1,50 @@
+{
+  "schema": "hepta.control-positive-observations.v1",
+  "full_run_status": "FAILED: one other desktop issuer revocation test failed; this is not a whole-suite PASS",
+  "source": "1d87082c0d5afd2b474a2c453ea98005fd540dea + native fmt",
+  "stderr_sha256": "12c6f807607f5716935b70ba01b71a2d887c69733d406045afa8f0964c0b78dd",
+  "requested_control_tests": 13,
+  "exact_one_pass_each": true,
+  "missing_or_ambiguous": [],
+  "pass_lines": {
+    "rejected_terminal_observation_preserves_recovered_uncertainty": [
+      "PASS [   0.007s] (261/813) codex-hepta-agentd lane_b_runtime::tests::rejected_terminal_observation_preserves_recovered_uncertainty"
+    ],
+    "last_available_revision_accepts_terminal_observation_once": [
+      "PASS [   0.007s] (256/813) codex-hepta-agentd lane_b_runtime::tests::last_available_revision_accepts_terminal_observation_once"
+    ],
+    "cancellation_deadline_overflow_preserves_dispatched_run": [
+      "PASS [   0.007s] (250/813) codex-hepta-agentd lane_b_runtime::tests::cancellation_deadline_overflow_preserves_dispatched_run"
+    ],
+    "last_representable_cancel_deadline_remains_reconcilable": [
+      "PASS [   0.007s] (260/813) codex-hepta-agentd lane_b_runtime::tests::last_representable_cancel_deadline_remains_reconcilable"
+    ],
+    "revision_overflow_preserves_pre_dispatch_state": [
+      "PASS [   0.007s] (267/813) codex-hepta-agentd lane_b_runtime::tests::revision_overflow_preserves_pre_dispatch_state"
+    ],
+    "revision_overflow_preserves_dispatched_and_cancelling_state": [
+      "PASS [   0.007s] (266/813) codex-hepta-agentd lane_b_runtime::tests::revision_overflow_preserves_dispatched_and_cancelling_state"
+    ],
+    "bulk_deadline_error_retains_completed_prefix_and_failed_record": [
+      "PASS [   0.006s] (246/813) codex-hepta-agentd lane_b_runtime::tests::bulk_deadline_error_retains_completed_prefix_and_failed_record"
+    ],
+    "bulk_unknown_error_retains_completed_prefix_and_failed_record": [
+      "PASS [   0.006s] (247/813) codex-hepta-agentd lane_b_runtime::tests::bulk_unknown_error_retains_completed_prefix_and_failed_record"
+    ],
+    "product_runner_rejects_changed_plans_before_consuming_or_releasing_holdout": [
+      "PASS [   0.080s] (781/813) codex-hepta-intelligence-eval product_runner::tests::product_runner_rejects_changed_plans_before_consuming_or_releasing_holdout"
+    ],
+    "product_runner_binds_estimator_receipts_and_persists_signed_decision": [
+      "PASS [   0.037s] (747/813) codex-hepta-intelligence-eval product_runner::tests::product_runner_binds_estimator_receipts_and_persists_signed_decision"
+    ],
+    "ineligible_qualification_cannot_be_relabelled_to_enter_ports_or_record_a_decision": [
+      "PASS [   0.162s] (585/813) codex-hepta-intelligence evaluated_shadow::tests::ineligible_qualification_cannot_be_relabelled_to_enter_ports_or_record_a_decision"
+    ],
+    "public_governed_topology_denies_before_grant_consumption_or_callbacks": [
+      "PASS [   0.040s] (791/813) codex-hepta-runtime organs::tests::public_governed_topology_denies_before_grant_consumption_or_callbacks"
+    ],
+    "public_topology_recovery_denies_before_grant_consumption_or_callbacks": [
+      "PASS [   0.039s] (790/813) codex-hepta-runtime organs::tests::public_topology_recovery_denies_before_grant_consumption_or_callbacks"
+    ]
+  }
+}

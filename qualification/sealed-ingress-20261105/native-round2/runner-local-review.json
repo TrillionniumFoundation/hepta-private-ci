@@ -1,0 +1,119 @@
+{
+  "schema": "hepta.sealed-ingress-native-runner-local-review.v1",
+  "status": "LOCAL_REVIEW_ONLY_NATIVE_NOT_RUN",
+  "execution_head": "e0b522cd437af1362f8be23f601886b46ec1b063",
+  "execution_tree": "a8ea4ecd454055a2f00a7cad21105dd1cec1e395",
+  "first_wave_expected_head": "facba0d32c1cd0e8163a6186d7ba91fa311f2e2e",
+  "runner_sha256": "6e8646e6d0015423ca7e2d52071ec5e8ab219182dac8a5b0598ee7fac27aee7a",
+  "plan_sha256": "1a2110f7b655cb9aa5de7fabee2a8d7bbbd25d892958331b917439b814d474b1",
+  "python_compile": "PASS",
+  "fourteen_positive_file_identities": "PASS",
+  "negative_apply_checks": [
+    {
+      "phase": "red-q-decision",
+      "patch_sha256": "73dd589ff130e162de3209c67246bfbbbccec4e09d1b08e85e5cea11ddddb7bd",
+      "apply_check_exit_code": 0,
+      "apply_exit_code": 0,
+      "changed_paths": [
+        "codex-rs/hepta-intelligence-eval/src/product_qualification_use.rs"
+      ],
+      "all_other_source_tests_and_fixtures_identical": true
+    },
+    {
+      "phase": "red-q-agentd",
+      "patch_sha256": "1094002c9a97ae4485e69487e5a9406c5e0e1ac91e53cabb19b57491d9c9fe90",
+      "apply_check_exit_code": 0,
+      "apply_exit_code": 0,
+      "changed_paths": [
+        "codex-rs/hepta-agentd/src/intelligence_evaluation.rs"
+      ],
+      "all_other_source_tests_and_fixtures_identical": true
+    },
+    {
+      "phase": "red-q-plasticity",
+      "patch_sha256": "4d21e5f1eabe993427850ea83dab628ed8ecdf07454f88ef8d72cfd19cd988b5",
+      "apply_check_exit_code": 0,
+      "apply_exit_code": 0,
+      "changed_paths": [
+        "codex-rs/hepta-intelligence/src/plasticity_product.rs"
+      ],
+      "all_other_source_tests_and_fixtures_identical": true
+    },
+    {
+      "phase": "red-q-selector",
+      "patch_sha256": "e74af6899e6941ee81ba944664153fb67157398220b0cc395847feb5c5ef95a0",
+      "apply_check_exit_code": 0,
+      "apply_exit_code": 0,
+      "changed_paths": [
+        "codex-rs/hepta-intelligence-eval/src/self_evolution_selection.rs"
+      ],
+      "all_other_source_tests_and_fixtures_identical": true
+    }
+  ],
+  "actual_historical_log_parser_checks": [
+    {
+      "historical_first_wave_phase": "C",
+      "input_sha256": "e9446087826bbc7b1b0fa0962fe43655d511770c2b28b54051c1fff9274b02d0",
+      "summary": "Summary [   0.058s] 2 tests run: 0 passed, 2 failed, 14 skipped",
+      "all_expected_final_failures_recognized": true
+    },
+    {
+      "historical_first_wave_phase": "B2",
+      "input_sha256": "add29f24914b4ab72a585f5e3fa2dac6787982f9483eb58ab01a148288edca25",
+      "summary": "Summary [   0.214s] 2 tests run: 0 passed, 2 failed, 199 skipped",
+      "all_expected_final_failures_recognized": true
+    }
+  ],
+  "synthetic_parser_rejections": [
+    "compiler failure",
+    "timeout",
+    "failed retry followed by pass",
+    "empty filtered selection"
+  ],
+  "old_first_green": {
+    "state": "green-failed",
+    "exit_code": 1,
+    "can_satisfy_repaired_first_gate": false
+  },
+  "first_gates": {
+    "source": "/home/qq/work/hepta-convergence-20261105-0c901b/source",
+    "desktop_regression": {
+      "receipt": "/home/qq/work/hepta-convergence-20261105-0c901b/evidence/native-desktop-regression-v1/receipt.json",
+      "phase": "desktop-regression",
+      "state": "desktop-regression-complete"
+    },
+    "green": {
+      "receipt": "/home/qq/work/hepta-convergence-20261105-0c901b/evidence/native-green-v2/receipt.json",
+      "phase": "green",
+      "state": "green-complete"
+    },
+    "fix": {
+      "receipt": "/home/qq/work/hepta-convergence-20261105-0c901b/evidence/native-fix-v1/receipt.json",
+      "phase": "fix",
+      "state": "fix-complete"
+    },
+    "required_implementation_commit": "facba0d32c1cd0e8163a6186d7ba91fa311f2e2e",
+    "positive_observation_required": "Named desktop regression must run exactly its one original test; both positive phases must show all required named passes and a nonempty successful nextest summary.",
+    "clean_source_required": "All receipts bind the exact facba source; the runner reads HEAD and clean status without optional Git locks on the first tree. Final first-wave fix must report no source change. Second source must independently be clean and exact e0b/tree a8ea.",
+    "execution_state": "SUCCESS_RECEIPTS_PENDING_AT_PLAN_FREEZE",
+    "old_failure_preserved": "native-green-v1 is original failing evidence and cannot satisfy any gate."
+  },
+  "readonly_and_restoration_review": [
+    "All source mutation is confined to the explicit SOURCE=source-next. The first source is addressed only by git --no-optional-locks rev-parse and status.",
+    "The current runner requires all three exact first receipt paths, exact phase/success state, both zero exit fields, the same explicit facba head and actual passing positive observations. Final first fix must report no source change.",
+    "Every second phase independently verifies explicit e0b/tree a8ea, clean source, pinned 14 source/test/fixture identities, four original entry-contract blobs and committed Cargo.lock before executing the original just recipe.",
+    "No current receipt, HEAD or branch is accepted implicitly. A replacement head or first receipt attempt requires a revised root-authorized plan hash.",
+    "Each red mutates only its reviewed production path, preserves all tests and restores saved bytes only if the current production still matches the known original or mutant. Unknown intervening changes are never overwritten.",
+    "After a normal red/green completion all 14 bytes, Cargo.lock, clean status and HEAD/tree are rechecked. A forced process kill requires explicit guarded restoration before another phase.",
+    "A nonblocking second-runner lock, successful first pipeline receipts and lifecycle serial ownership prevent intentional concurrent Cargo. The second lock does not claim to lock a separately implemented first runner.",
+    "Only exact named final failures count as observed red; Q1 additionally requires its current-trust assertion witness. The state remains review-required so actual assertion locations must be inspected.",
+    "The order is four restored red phases, complete unfiltered three-package green, final original scoped fix. Testing after a successful final fix is rejected. Fix differences are retained and cannot inherit the old green source identity."
+  ],
+  "not_claimed": [
+    "second-wave Rust compilation or test success",
+    "automatic behavioral approval of negative controls",
+    "original exact-head or synthetic-merge CI qualification",
+    "production durable provider/sink or receipt recovery",
+    "adaptive efficacy or physical-effect/release authority"
+  ]
+}

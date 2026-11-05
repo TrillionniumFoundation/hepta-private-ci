@@ -1,0 +1,109 @@
+{
+  "schema": "hepta.sealed-ingress-negative-control-independent-review.v1",
+  "control": "Q2",
+  "phase": "red-q-agentd",
+  "decision": "ACCEPT_EXPECTED_BEHAVIORAL_FAILURE_AND_EXACT_RESTORATION",
+  "reviewed_at_utc": "2026-11-05T09:40:28.732291+00:00",
+  "reviewer": "product independent source and raw-log review",
+  "source": {
+    "execution_head": "eed6541df0add428add8e2d9ab2cbd54a961abeb",
+    "execution_tree": "b8ce8b96a759f522cb7db60027d4844f1b3ad974",
+    "plan_sha256": "00b4d289a635ae36865dc70732a1a10a03a8fb81575be5b5eba0b21fce7027fe",
+    "native_runner_sha256": "46552f047784d07b825cec59e0358cfbb02a010f448b7538bb0fadc15ea2f7df",
+    "positive_manifest_sha256": "e652b430cf2af22ce8f421288bad0687cb6ba332fa31da696034f1ed9bf7c7da",
+    "production_path": "codex-rs/hepta-agentd/src/intelligence_evaluation.rs",
+    "positive_blob": "6beca1272f990e00b388f99ef7e29cb626bc464c",
+    "mutated_blob": "8639b2cf78c7cb33ba4e8db0ccee8386f9ffe8dc",
+    "test_path": "codex-rs/hepta-agentd/src/intelligence_evaluation_tests.rs",
+    "test_blob": "4cca3352946815b03ba2049855c7af12a0418853"
+  },
+  "mutation": {
+    "patch_sha256": "1094002c9a97ae4485e69487e5a9406c5e0e1ac91e53cabb19b57491d9c9fe90",
+    "scope": "Deletes only qualification evidence/publication digest appends from the v2 use-signing payload; retains q fields, shared revalidation and the v2 consumption digest.",
+    "tests_or_fixtures_changed": false,
+    "actual_changed_path_digest_matches_single_production_path": true
+  },
+  "direct_log_observation": {
+    "compilation_completed": true,
+    "nextest_profile": "local",
+    "command": [
+      "just",
+      "test",
+      "--locked",
+      "-p",
+      "codex-hepta-agentd",
+      "-E",
+      "test(/(^|::)(current_use_attestation_binds_the_exact_sealed_publication)$/)"
+    ],
+    "command_exit_code": 100,
+    "command_elapsed_seconds": 137.2297601699829,
+    "nextest_elapsed_seconds": 0.401,
+    "run": 1,
+    "passed": 0,
+    "failed": 1,
+    "skipped": 663,
+    "attempts": 2,
+    "independent_cases": 1,
+    "test_name": "current_use_attestation_binds_the_exact_sealed_publication",
+    "panic_location": "hepta-agentd/src/intelligence_evaluation_tests.rs:460:5",
+    "first_assertion": "matches!(original.evaluate(...), Err(AgentdIntelligenceEvaluationError::Evidence(_)))",
+    "assertion_result": "false on both attempts",
+    "actual_result_value_printed": false,
+    "interpretation": "The original assertion expecting Evidence refusal failed. The log does not itself print an Ok value or a returned consumption receipt."
+  },
+  "source_inference": {
+    "classification": "INFERENCE_FROM_EXACT_SOURCE_AND_SOLE_MUTATION_NOT_A_PRINTED_RETURN_VALUE",
+    "prerequisites_reached_by_sequential_code": "Before the recorded panic, fixture construction, full SignedEvaluationDecisionV1 equality, distinct publication-digest checks, and replacement of only the sealed qualification completed. These are supported jointly by the panic position and unchanged source, not separately printed measurements.",
+    "reasoning": [
+      "The original and other publication fixtures preserve run/context/candidate, signed generator/evaluator evidence, issuer owner/key/epoch, current verifier and evaluation time. Only the required valid qualification publication is substituted.",
+      "Deleting only the two qualification digest appends makes the v2 current-use signing bytes identical across those two legitimate publications. Existing use evidence therefore verifies under the same current trust.",
+      "The unchanged shared helper revalidates the valid substituted qualification against equal complete signed evaluation evidence; authority/disposition checks remain satisfied.",
+      "Under these unchanged trusted fixture conditions, evaluate reaches its Ok(Digest32) branch at production line 166. This is a source-derived result, not a returned value displayed in the raw panic."
+    ]
+  },
+  "unreached_tail": [
+    "Correctly bound publication positive evaluation at test lines 469-480 is not reached after the negative assertion panic."
+  ],
+  "restoration": {
+    "receipt_state_unchanged": "named-test-failures-observed-review-required",
+    "runner_exit_code": 0,
+    "restored_candidate": true,
+    "serialized_restored_files": 14,
+    "all_14_before_expected_restored_and_local_frozen_hashes_equal": true,
+    "adopted_lint_tests": "Both fixed lint-test blobs were checked by the frozen runner; its restore check includes those two tests, while the serialized restored_positive array lists the 14 ingress files. clean-after is empty.",
+    "clean_after_empty": true,
+    "head_after_hash_recomputed": true,
+    "tree_after_hash_recomputed": true,
+    "cargo_lock_sha256": "4165307bb6c41d08e6c1c362060f2a958c8200ea43fdab2b8b1e6220ad82b55c",
+    "cargo_lock_git_blob": "b7e710988d6a3377a7e0a1dc68aef49c68dda36e",
+    "all_auxiliary_steps_exit_zero": true,
+    "prior_q1_receipt_hash_verified": "a7fc0b3cf48abeb3d66bd124c553d606c7555f9a63f4c9a679c9a269ed4d88b6"
+  },
+  "limits": [
+    "This is a deliberately mutated-code negative control, not a passing ordinary product test.",
+    "No physical execution effect, persisted task outcome, production provider/sink completion, process-loss recovery, Windows-native success, or merge/release authorization is established.",
+    "A restored-source full three-package positive run remains a separate gate."
+  ],
+  "artifacts": [
+    {
+      "path": "native/ai395-sealed-q2-receipt.json",
+      "bytes": 32245,
+      "sha256": "6b3d09bac8a4e5cac69fd423a14fc2a19b7e0ba65139acd82c09c2ddf496c5e4"
+    },
+    {
+      "path": "native/ai395-sealed-q2-just-test.stderr",
+      "bytes": 27243,
+      "sha256": "3d62dc45c1556fb66e59a9cd054307888df83a9af5343d2497b8b75c5e58212a"
+    },
+    {
+      "path": "native/ai395-sealed-q2-just-test.stdout",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "native/ai395-sealed-q2-negative.patch",
+      "bytes": 591,
+      "sha256": "1094002c9a97ae4485e69487e5a9406c5e0e1ac91e53cabb19b57491d9c9fe90"
+    }
+  ]
+}

@@ -1,0 +1,161 @@
+{
+  "schema": "hepta.runtime-convergence-native-validation.v1",
+  "phase": "red-a",
+  "source": "/home/qq/work/hepta-convergence-20261105-0c901b/source",
+  "implementation_commit": "1d87082c0d5afd2b474a2c453ea98005fd540dea",
+  "format_receipt_sha256": "30bea20ec319e66aa1fd21fbd4d3553eb0c3f01c56e80aa221a72935b3a3ece9",
+  "state": "negative-control-did-not-prove-test-failure",
+  "steps": [
+    {
+      "name": "head",
+      "args": [
+        "git",
+        "rev-parse",
+        "HEAD"
+      ],
+      "exit_code": 0,
+      "elapsed_seconds": 0.0019898414611816406,
+      "stdout_sha256": "182a3b53577f3679d5b4285538d6b1332c4706cc8bab53266f4148e23ab17be8",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "rustc",
+      "args": [
+        "rustc",
+        "-Vv"
+      ],
+      "exit_code": 0,
+      "elapsed_seconds": 0.04659581184387207,
+      "stdout_sha256": "f64c55ed9f210d80a9b248206104a47175faf5ec94a093e4ad132549209089fc",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "cargo",
+      "args": [
+        "cargo",
+        "-V"
+      ],
+      "exit_code": 0,
+      "elapsed_seconds": 0.022880077362060547,
+      "stdout_sha256": "b6ef6807dd96d18b833474ad68e7a23a29e562a29c67afa71a59fb9a73df0068",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "preflight-changed",
+      "args": [
+        "git",
+        "diff",
+        "--name-only",
+        "-z"
+      ],
+      "exit_code": 0,
+      "elapsed_seconds": 0.008691787719726562,
+      "stdout_sha256": "e8cfcb575d946641859b2f1a7689bf8c89569c3f13b4967d11059ac63f50377d",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "original-production",
+      "args": [
+        "git",
+        "show",
+        "4e31abc907f09740d402d1ddef7a1d2fe0a366a6:codex-rs/hepta-agentd/src/lane_b_runtime.rs"
+      ],
+      "exit_code": 0,
+      "elapsed_seconds": 0.0031228065490722656,
+      "stdout_sha256": "3f5fe2640e6ffaa08ac09f7bc4e386b6976d07103b42c9def17409ae3a459b31",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "just-test",
+      "args": [
+        "just",
+        "test",
+        "--locked",
+        "-p",
+        "codex-hepta-agentd",
+        "-E",
+        "test(/(^|::)(rejected_terminal_observation_preserves_recovered_uncertainty|last_available_revision_accepts_terminal_observation_once|cancellation_deadline_overflow_preserves_dispatched_run|last_representable_cancel_deadline_remains_reconcilable|revision_overflow_preserves_pre_dispatch_state|revision_overflow_preserves_dispatched_and_cancelling_state|bulk_deadline_error_retains_completed_prefix_and_failed_record|bulk_unknown_error_retains_completed_prefix_and_failed_record)$/)"
+      ],
+      "exit_code": 101,
+      "elapsed_seconds": 116.23099160194397,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_sha256": "17dfc6355d1f928f4c85c3b7834aeec272337002e8727afe6361720d50244e20"
+    }
+  ],
+  "source_before": [
+    {
+      "path": "codex-rs/hepta-agentd/src/lane_b_runtime.rs",
+      "sha256": "18a606b9760f76971bf9e574b34998d54214dc28e44c295f5c3acd8d873813c7",
+      "git_blob": "cc04f811846522073a4918b6c918fe862206ce23"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/lane_b_runtime_tests.rs",
+      "sha256": "298eaf033ce9acc064c783afa1b2a598edc74eeca2e6a166d16e02ea1eaa5727",
+      "git_blob": "5c2601957ba753230b149b9291bd14b463a48957"
+    },
+    {
+      "path": "codex-rs/hepta-intelligence-eval/src/product_runner.rs",
+      "sha256": "b00f4f3d0e73ed1f206a5387268a60c05372299eec238925ff2b54537be65f25",
+      "git_blob": "0c374acd8c5e25626c213c1ed9f6ba36d3fcbe42"
+    },
+    {
+      "path": "codex-rs/hepta-intelligence-eval/src/product_runner_tests.rs",
+      "sha256": "5d725c7f941bef353945a6707b03424e0818913f36b36f3d3ca1312b6280911d",
+      "git_blob": "bbead9a4627526ceb1a034732ecfb54051856352"
+    },
+    {
+      "path": "codex-rs/hepta-intelligence/src/evaluated_shadow_test_support.rs",
+      "sha256": "d2b94d7cb163c0ee83549efc54d1ced0ab00b2823d919c2d3e6d17c956caf3ae",
+      "git_blob": "af57c7bbd3bd2e2641c7ffad06c856b7303290de"
+    },
+    {
+      "path": "codex-rs/hepta-intelligence/src/evaluated_shadow_tests.rs",
+      "sha256": "716ee503b6de4d81d9c89446cb502256890bf4d670dbf8a8a3ea83e54ccfc4f1",
+      "git_blob": "fa8259d9cfd1c1e244ba7522ea3379417cbb06ee"
+    },
+    {
+      "path": "codex-rs/hepta-runtime/src/lib.rs",
+      "sha256": "2f9d7865417dc8db620dcd149c99e624310dd33a743d6545e94fa79c8b48bbd5",
+      "git_blob": "a58dfaa26fb8544530603f0c14ca0339514b17bf"
+    },
+    {
+      "path": "codex-rs/hepta-runtime/src/topology_execution.rs",
+      "sha256": "f1baa6c08cc72dabec84715a6a627cc0a8ca5dcc18f8f11081dd55f0ce7484db",
+      "git_blob": "768b0dd2a5c29a2eb0ac640228ccab5a6d5d8a35"
+    },
+    {
+      "path": "codex-rs/hepta-runtime/src/organs_tests.rs",
+      "sha256": "8100a42fd789269b2444a443f3869592c575ebfb94946417c99a47e9d12f0733",
+      "git_blob": "06a42540a0d857b26d85e9fa4bbac83cba04f4c8"
+    }
+  ],
+  "negative_loops": "A failed test does not separately observe every loop branch.",
+  "environment": {
+    "RUSTUP_HOME": "/home/qq/work/hepta-convergence-20261105-0c901b/rustup-home-1.96.0",
+    "RUSTUP_TOOLCHAIN": "1.96.0",
+    "CARGO_BUILD_JOBS": "2",
+    "CARGO_TARGET_DIR": "/home/qq/work/hepta-convergence-20261105-0c901b/target"
+  },
+  "inherited_compile_options": {},
+  "versions": {
+    "rustc": "rustc 1.96.0 (ac68faa20 2026-05-25)\nbinary: rustc\ncommit-hash: ac68faa20c58cbccd01ee7208bf3b6e93a7d7f96\ncommit-date: 2026-05-25\nhost: x86_64-unknown-linux-gnu\nrelease: 1.96.0\nLLVM version: 22.1.2",
+    "cargo": "cargo 1.96.0 (30a34c682 2026-05-25)"
+  },
+  "production_path": "codex-rs/hepta-agentd/src/lane_b_runtime.rs",
+  "negative_production_sha256": "3f5fe2640e6ffaa08ac09f7bc4e386b6976d07103b42c9def17409ae3a459b31",
+  "requested_tests": [
+    "rejected_terminal_observation_preserves_recovered_uncertainty",
+    "last_available_revision_accepts_terminal_observation_once",
+    "cancellation_deadline_overflow_preserves_dispatched_run",
+    "last_representable_cancel_deadline_remains_reconcilable",
+    "revision_overflow_preserves_pre_dispatch_state",
+    "revision_overflow_preserves_dispatched_and_cancelling_state",
+    "bulk_deadline_error_retains_completed_prefix_and_failed_record",
+    "bulk_unknown_error_retains_completed_prefix_and_failed_record"
+  ],
+  "test_exit_code": 101,
+  "observed_named_failures": [],
+  "failure_lines": [],
+  "exit_code": 1,
+  "restored_candidate": true
+}

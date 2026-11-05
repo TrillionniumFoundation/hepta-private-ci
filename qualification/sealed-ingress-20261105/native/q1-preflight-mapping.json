@@ -1,0 +1,111 @@
+{
+  "schema": "hepta.q1-independent-native-review-preparation.v1",
+  "status": "PREPARED_ONLY_AWAITING_ACTUAL_RAW_RECEIPT_AND_LOGS",
+  "native_red_observed": false,
+  "execution_head": "eed6541df0add428add8e2d9ab2cbd54a961abeb",
+  "execution_tree": "b8ce8b96a759f522cb7db60027d4844f1b3ad974",
+  "actual_job_reported_by_root": "1a1ab048bd4-fc05-497d",
+  "runner_sha256": "46552f047784d07b825cec59e0358cfbb02a010f448b7538bb0fadc15ea2f7df",
+  "plan_sha256": "00b4d289a635ae36865dc70732a1a10a03a8fb81575be5b5eba0b21fce7027fe",
+  "native_bundle_sha256": "1f0301d0c78a9d0d20703c09bf8d2f4cf1591af307cb3faf5f75da50809927f0",
+  "positive_production_blob": "f904dc721859f2d44f67b955c532298d03360e87",
+  "mutated_production_blob": "961a43b720e2a3f1e80a39860b461db8f8d38d7d",
+  "patch_sha256": "73dd589ff130e162de3209c67246bfbbbccec4e09d1b08e85e5cea11ddddb7bd",
+  "sole_mutation": "Remove only the complete SignedEvaluationDecisionV1 equality guard. Receipt integrity, context, independent signature/current verifier, roles and V3 timing checks remain.",
+  "all_14_final_ingress_blobs_locally_reverified": true,
+  "cases": [
+    {
+      "test": "product_runner_binds_estimator_receipts_and_persists_signed_decision",
+      "package": "codex-hepta-intelligence-eval",
+      "path": "codex-rs/hepta-intelligence-eval/src/product_runner_tests.rs",
+      "first_expected_assertion_line": 581,
+      "expected_panic_witness": "reissued current trust must not rebind a published qualification",
+      "expected_rejection": "ProductEvaluationError::Binding(\"qualification use evidence\")",
+      "preconditions_before_assertion": [
+        "A real ProductEvaluationRunner fixture produced and published the sealed qualification.",
+        "Original verifier/evidence revalidation succeeded and equalled the sealed complete decision.",
+        "Reissued signatures under a legal distinct current generator-controller trust passed raw signed V2 admission.",
+        "The complete inner decision equalled the sealed inner decision; both trust_digest and authentication_digest differed."
+      ],
+      "not_observed_after_expected_panic": [
+        "The following original-verifier revalidation and sink/release counter readback.",
+        "Later changed-metrics, reissued evidence-id, role, expiry, publication and seal subcases in this test."
+      ],
+      "interpretation_limit": "This isolates replacement of the combined current trust/authentication identity. Both digests change; it does not isolate only the trust_digest field.",
+      "source_sha256": "a61fd6f160b8eed033dce6d8c81871543b0e43d3bb2d61cafa6f71c6678cfbb3",
+      "source_git_blob": "fc084ad5d2f02709f663f95240737860a05a7c9f"
+    },
+    {
+      "test": "independently_resigned_metrics_cannot_replace_the_qualified_estimator_evidence",
+      "package": "codex-hepta-agentd",
+      "path": "codex-rs/hepta-agentd/src/intelligence_evaluation_tests.rs",
+      "first_expected_assertion_line": 428,
+      "expected_panic_witness": "assertion failed: matches!(changed.evaluate",
+      "expected_rejection": "AgentdIntelligenceEvaluationError::Qualification(ProductEvaluationError::Binding(\"qualification use evidence\"))",
+      "preconditions_before_assertion": [
+        "Fixture creates a canonical sealed qualification under independent trust.",
+        "Candidate upper bound is incremented by one raw Q32 unit.",
+        "Evaluator bundle signature and exact current-use attestation are regenerated; the original qualification is retained."
+      ],
+      "not_observed_after_expected_panic": [],
+      "interpretation_limit": "The assert-matches panic proves the required qualified-evidence error was absent. Its default panic does not print the returned Result; do not invent an emitted receipt or physical effect.",
+      "source_sha256": "14133d3ee9d8141048472a049e77284d722905c17dcd1f8d9a5f159d54a3e498",
+      "source_git_blob": "4cca3352946815b03ba2049855c7af12a0418853"
+    },
+    {
+      "test": "signed_generic_metrics_cannot_replace_the_product_qualification_before_append",
+      "package": "codex-hepta-intelligence",
+      "path": "codex-rs/hepta-intelligence/src/plasticity_product_tests.rs",
+      "first_expected_assertion_line": 668,
+      "expected_panic_witness": "assertion failed: matches!(result,",
+      "expected_rejection": "ParameterPlasticityProductErrorV1::Qualification(ProductEvaluationError::Binding(\"qualification use evidence\"))",
+      "preconditions_before_assertion": [
+        "Fixture supplies a canonical sealed qualification and original independently signed request.",
+        "Candidate upper bound is incremented by one raw Q32 unit and the evaluator bundle is re-signed.",
+        "The real proposal entry point is invoked with the original qualified receipt and current verifier."
+      ],
+      "not_observed_after_expected_panic": [
+        "writer.record_count()==0 assertion at source line674.",
+        "anchor_committer==before assertion at source line675."
+      ],
+      "interpretation_limit": "The first panic establishes absence of the required qualification-binding rejection. It does not by itself log the Result value, durable record count, anchor state or later no-append assertions.",
+      "source_sha256": "f235478313b93338931118c780afdae7c6875f46892b106dff2507a1d70953e3",
+      "source_git_blob": "3eb615951f7f9a542455f1814eb58ca73859be90"
+    },
+    {
+      "test": "valid_v3_resignatures_cannot_replace_published_metrics_or_time_policy",
+      "package": "codex-hepta-intelligence-eval",
+      "path": "codex-rs/hepta-intelligence-eval/src/self_evolution_ingress_tests.rs",
+      "first_expected_assertion_line": 405,
+      "expected_panic_witness": "assertion failed: matches!(fixture.prepare(),",
+      "expected_rejection": "SelfEvolutionSelectionError::QualificationRejected",
+      "preconditions_before_assertion": [
+        "Candidate upper bound is incremented by one raw Q32 unit and the evaluator evidence is re-signed.",
+        "Raw signed longitudinal V3 admission succeeds with current verifier/time and the original time policy.",
+        "The raw decision remains EligibleForIndependentSelection before public prepare is called."
+      ],
+      "not_observed_after_expected_panic": [
+        "The separate fixture beginning at source line410.",
+        "The later legal minimum_future_window_micros change 5 to6, observer/evaluator re-signing, raw equal-inner assertion and second prepare assertion at line424."
+      ],
+      "interpretation_limit": "Only the first changed-metrics case is observed in this red invocation. A retry reruns the same test from the start; it does not reach or separately validate the later time-policy case.",
+      "source_sha256": "a5bce084bc818dd99b699145cd950ba3f5d8e1d4864c09ba69d8c68309735c03",
+      "source_git_blob": "549e33fbbc9160c55e5bfbcd1369a00076ae79dc"
+    }
+  ],
+  "actual_acceptance_requirements": [
+    "Raw receipt/log hash matches original just-test step; no truncation or reconstructed log.",
+    "Exact current E head/tree and pinned runner/plan/positive manifest/negative patch identities.",
+    "Four selected tests actually execute, four final named assertion failures, zero passes; compile failures, setup panics, timeouts and empty filters do not qualify.",
+    "For each test, its actual panic site and message match its first planned behavior assertion above, not an earlier prerequisite.",
+    "Product-runner custom current-trust witness occurs at its first negative assertion.",
+    "Receipt records restoration to all 14 exact positive hashes, original production blob, unchanged Cargo.lock and clean final source/HEAD/tree.",
+    "Original features, profile, budgets and retry count remain; duplicate retry executions are not independent cases.",
+    "Full restored three-package positive gate remains a separate subsequent requirement."
+  ],
+  "not_claimed": [
+    "Any actual Q1 RED before receiving original logs.",
+    "Later subcases or post-panic assertions.",
+    "External physical effects, production provider/sink, durable host recovery or adaptive efficacy."
+  ]
+}

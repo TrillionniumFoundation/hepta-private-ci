@@ -1,0 +1,21 @@
+{
+  "schema": "hepta.full-tree-native-fix-path-proof.v1",
+  "head": "facba0d32c1cd0e8163a6186d7ba91fa311f2e2e",
+  "command": [
+    "git",
+    "diff",
+    "--name-only",
+    "-z"
+  ],
+  "command_exit_code": 0,
+  "raw_stdout_sha256": "d2791edc02a9dc3aad3602a5e55fc8a40e2909aa14048b067ce98c202738bda8",
+  "changed_paths": [
+    "codex-rs/hepta-agentd/src/authority_host_admin_issuer_tests.rs",
+    "codex-rs/hepta-agentd/src/root_desktop_startup_tests.rs"
+  ],
+  "scope": "Complete git diff --name-only -z, no path filter",
+  "source_before_and_after": "source-identity-review.json",
+  "raw_fix_receipt_preserved_state": "fix-blocked",
+  "clippy_exit_code": 0,
+  "tests_rerun_after_fix": false
+}

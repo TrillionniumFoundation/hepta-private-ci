@@ -1,0 +1,567 @@
+{
+  "schema": "hepta.sealed-ingress-final-source-result-check.v1",
+  "recorded_at_utc": "2026-11-05T10:28:24.943038+00:00",
+  "tested": {
+    "head": "eed6541df0add428add8e2d9ab2cbd54a961abeb",
+    "tree": "b8ce8b96a759f522cb7db60027d4844f1b3ad974"
+  },
+  "current": {
+    "head": "0766fc4d5feabea9569d48e7eca4e0a3431bd0f5",
+    "tree": "1cfb78c47f636a60dcfa9968ffd7e44a054d58cc",
+    "sole_parent": "eed6541df0add428add8e2d9ab2cbd54a961abeb"
+  },
+  "source_delta": {
+    "path": "codex-rs/hepta-intelligence/src/plasticity_product_tests.rs",
+    "before_blob": "3eb615951f7f9a542455f1814eb58ca73859be90",
+    "after_blob": "2b85adacb939c778b13f42177467b5959d16b50a",
+    "exact_change": "One final-use update_id.clone() -> update_id",
+    "other_thirteen_ingress_files_unchanged": true,
+    "source_bytes_delta": -8,
+    "after_bytes_equal_exact_single_replacement": true
+  },
+  "full_current_rust_inventory": {
+    "count": 5314,
+    "sha256": "71b5fd4cf0616d79a10503798ef86ce5391c6c7aa8d3dfff76f1b522af4460b2",
+    "bytes": 1255601,
+    "all_fourteen_current_entries_match": true,
+    "scope": "Archived native full-tree blob verification; reviewer checks inventory integrity and all 14 controlled source entries, not a second remote rehash."
+  },
+  "current_alignment": {
+    "sha256": "72f596be257474eba63334968754a602d814ad0d18664941e003979f576812f5",
+    "all_steps_exit_zero": true,
+    "clean": true,
+    "full_r3_fmt_check": true,
+    "no_working_byte_change_by_alignment": true,
+    "tests_rerun": false,
+    "fix_rerun": false,
+    "original_receipts": [
+      {
+        "original_path": "native-desktop-regression-v1/receipt.json",
+        "sha256": "4b133f93c90f5e27910a8d729b9b89ffdffb01d0bb659e491406bde484f06c19",
+        "exact_archived_originals": [
+          "qualification/sealed-ingress-20261105/native-round2-gate-v2/first-wave/named-receipt.json",
+          "qualification/runtime-convergence-20261105/native/ai395-desktop-regression-attempt1-receipt.json"
+        ]
+      },
+      {
+        "original_path": "native-green-v2/receipt.json",
+        "sha256": "f47d72c3930e2575b567fb8acaeb999f6696fab34bdcdd81ccd56b542fd81588",
+        "exact_archived_originals": [
+          "qualification/sealed-ingress-20261105/native-round2-gate-v2/first-wave/green-receipt.json",
+          "qualification/runtime-convergence-20261105/native/ai395-green-attempt2-receipt.json"
+        ]
+      },
+      {
+        "original_path": "native-fix-v1/receipt.json",
+        "sha256": "ae54b470fd20e079d33602f60abffc3f130816586974b297cebe2f6ea3704d3b",
+        "exact_archived_originals": [
+          "qualification/sealed-ingress-20261105/native-round2-gate-v2/first-wave/fix-receipt.json",
+          "qualification/runtime-convergence-20261105/native/ai395-first-scoped-fix-receipt.json"
+        ]
+      },
+      {
+        "original_path": "native-sealed-red-q-decision-v1/receipt.json",
+        "sha256": "a7fc0b3cf48abeb3d66bd124c553d606c7555f9a63f4c9a679c9a269ed4d88b6",
+        "exact_archived_originals": [
+          "qualification/sealed-ingress-20261105/native/ai395-sealed-q1-receipt.json"
+        ]
+      },
+      {
+        "original_path": "native-sealed-red-q-agentd-v1/receipt.json",
+        "sha256": "6b3d09bac8a4e5cac69fd423a14fc2a19b7e0ba65139acd82c09c2ddf496c5e4",
+        "exact_archived_originals": [
+          "qualification/sealed-ingress-20261105/native/ai395-sealed-q2-receipt.json"
+        ]
+      },
+      {
+        "original_path": "native-sealed-red-q-plasticity-v2/receipt.json",
+        "sha256": "4cffc7cac9855131854689730fe1d9ead021b6ea45eaf2c12aebd77101b2a34e",
+        "exact_archived_originals": [
+          "qualification/sealed-ingress-20261105/native/ai395-sealed-q3-attempt2-receipt.json"
+        ]
+      },
+      {
+        "original_path": "native-sealed-red-q-selector-v1/receipt.json",
+        "sha256": "41c062e316dfd9f6f18bc0e129b8aebfa62d6211b715642e9284d0e6c6e57419",
+        "exact_archived_originals": [
+          "qualification/sealed-ingress-20261105/native/ai395-sealed-q4-receipt.json"
+        ]
+      },
+      {
+        "original_path": "native-sealed-green-v1/receipt.json",
+        "sha256": "ab6da7188d4354a088025ec0202533c025436d6f7fcf70196913ef24deb82488",
+        "exact_archived_originals": [
+          "qualification/sealed-ingress-20261105/native/ai395-sealed-green-receipt.json"
+        ]
+      },
+      {
+        "original_path": "native-sealed-fix-v1/receipt.json",
+        "sha256": "cb1f12c6d7e4c09f3e5c6df4a9f9f337d28540bc4e81c7d5c2c9b45ee2b5504c",
+        "exact_archived_originals": [
+          "qualification/sealed-ingress-20261105/native/ai395-sealed-fix-receipt.json"
+        ]
+      },
+      {
+        "original_path": "native-sealed-remaining-pipeline-v2/receipt.json",
+        "sha256": "df53252839fc2c66102b33614456b0648d2028ea8e85b839baee3fe9e67c5612",
+        "exact_archived_originals": [
+          "qualification/sealed-ingress-20261105/native/ai395-sealed-remaining-pipeline-v2-receipt.json"
+        ]
+      },
+      {
+        "original_path": "native-second-postfix-scope-v1/receipt.json",
+        "sha256": "2d139a714003f0e0f0e1960c499969f82872f40326a6abc23af86e01dbbec24f",
+        "exact_archived_originals": [
+          "qualification/sealed-ingress-20261105/native/ai395-second-postfix-scope-receipt.json"
+        ]
+      }
+    ]
+  },
+  "negative_observations": [
+    {
+      "control": "Q1",
+      "attempt": 1,
+      "receipt_sha256": "a7fc0b3cf48abeb3d66bd124c553d606c7555f9a63f4c9a679c9a269ed4d88b6",
+      "patch_sha256": "73dd589ff130e162de3209c67246bfbbbccec4e09d1b08e85e5cea11ddddb7bd",
+      "source_head": "eed6541df0add428add8e2d9ab2cbd54a961abeb",
+      "test_exit": 100,
+      "wrapper_exit": 0,
+      "run_count": 4,
+      "failed": 4,
+      "skipped": 867,
+      "first_panic_locations": [
+        "product_runner_tests.rs:581:5",
+        "intelligence_evaluation_tests.rs:428:5",
+        "plasticity_product_tests.rs:668:5",
+        "self_evolution_ingress_tests.rs:405:5"
+      ],
+      "attempts_per_case_inherited_retry": 2,
+      "all_fourteen_restored": true,
+      "original_command_exactly_matches_frozen_plan": true
+    },
+    {
+      "control": "Q2",
+      "attempt": 1,
+      "receipt_sha256": "6b3d09bac8a4e5cac69fd423a14fc2a19b7e0ba65139acd82c09c2ddf496c5e4",
+      "patch_sha256": "1094002c9a97ae4485e69487e5a9406c5e0e1ac91e53cabb19b57491d9c9fe90",
+      "source_head": "eed6541df0add428add8e2d9ab2cbd54a961abeb",
+      "test_exit": 100,
+      "wrapper_exit": 0,
+      "run_count": 1,
+      "failed": 1,
+      "skipped": 663,
+      "first_panic_locations": [
+        "intelligence_evaluation_tests.rs:460:5"
+      ],
+      "attempts_per_case_inherited_retry": 2,
+      "all_fourteen_restored": true,
+      "original_command_exactly_matches_frozen_plan": true
+    },
+    {
+      "control": "Q3",
+      "attempt": 2,
+      "receipt_sha256": "4cffc7cac9855131854689730fe1d9ead021b6ea45eaf2c12aebd77101b2a34e",
+      "patch_sha256": "4d21e5f1eabe993427850ea83dab628ed8ecdf07454f88ef8d72cfd19cd988b5",
+      "source_head": "eed6541df0add428add8e2d9ab2cbd54a961abeb",
+      "test_exit": 100,
+      "wrapper_exit": 0,
+      "run_count": 1,
+      "failed": 1,
+      "skipped": 84,
+      "first_panic_locations": [
+        "plasticity_product_tests.rs:713:5"
+      ],
+      "attempts_per_case_inherited_retry": 2,
+      "all_fourteen_restored": true,
+      "original_command_exactly_matches_frozen_plan": true
+    },
+    {
+      "control": "Q4",
+      "attempt": 1,
+      "receipt_sha256": "41c062e316dfd9f6f18bc0e129b8aebfa62d6211b715642e9284d0e6c6e57419",
+      "patch_sha256": "e74af6899e6941ee81ba944664153fb67157398220b0cc395847feb5c5ef95a0",
+      "source_head": "eed6541df0add428add8e2d9ab2cbd54a961abeb",
+      "test_exit": 100,
+      "wrapper_exit": 0,
+      "run_count": 1,
+      "failed": 1,
+      "skipped": 121,
+      "first_panic_locations": [
+        "self_evolution_ingress_tests.rs:474:5"
+      ],
+      "attempts_per_case_inherited_retry": 2,
+      "all_fourteen_restored": true,
+      "original_command_exactly_matches_frozen_plan": true
+    }
+  ],
+  "preserved_failed_q3": {
+    "attempt": 1,
+    "command_exit": 101,
+    "wrapper_exit": 1,
+    "error": "E0432 before test execution",
+    "behavioral_red": false,
+    "fourteen_positive_files_restored": true
+  },
+  "cache_repair": {
+    "first_guard_refusal_preserved": true,
+    "source_configuration_unchanged": true,
+    "sole_recorded_cache_mutation": [
+      "cargo",
+      "clean",
+      "-p",
+      "codex-hepta-intelligence-eval"
+    ],
+    "command_exit": 0,
+    "same_frozen_Q3_plan_command_and_patch_reused": true,
+    "fresh_eval_source_next_marker_and_depinfo_verified": true
+  },
+  "positive": {
+    "source_head": "eed6541df0add428add8e2d9ab2cbd54a961abeb",
+    "command": [
+      "just",
+      "test",
+      "--locked",
+      "-p",
+      "codex-hepta-intelligence-eval",
+      "-p",
+      "codex-hepta-agentd",
+      "-p",
+      "codex-hepta-intelligence"
+    ],
+    "command_exit": 0,
+    "actual_PASS_lines": 805,
+    "failed": 0,
+    "skipped": 66,
+    "slow": 1,
+    "critical_actual_PASS_lines": {
+      "current_use_attestation_binds_the_exact_sealed_publication": "PASS [   0.380s] (380/805) codex-hepta-agentd intelligence_product::evaluation_tests::current_use_attestation_binds_the_exact_sealed_publication",
+      "durable_proposal_identity_commits_the_exact_qualification_publication": "PASS [   0.416s] (756/805) codex-hepta-intelligence plasticity_product_tests::durable_proposal_identity_commits_the_exact_qualification_publication",
+      "independently_resigned_metrics_cannot_replace_the_qualified_estimator_evidence": "PASS [   0.142s] (348/805) codex-hepta-agentd intelligence_product::evaluation_tests::independently_resigned_metrics_cannot_replace_the_qualified_estimator_evidence",
+      "product_runner_binds_estimator_receipts_and_persists_signed_decision": "PASS [   0.183s] (781/805) codex-hepta-intelligence-eval product_runner::tests::product_runner_binds_estimator_receipts_and_persists_signed_decision",
+      "selector_signature_commits_the_exact_qualification_publication": "PASS [   0.509s] (787/805) codex-hepta-intelligence-eval self_evolution_selection::ingress_tests::selector_signature_commits_the_exact_qualification_publication",
+      "signed_generic_metrics_cannot_replace_the_product_qualification_before_append": "PASS [   0.203s] (669/805) codex-hepta-intelligence plasticity_product_tests::signed_generic_metrics_cannot_replace_the_product_qualification_before_append",
+      "valid_v3_resignatures_cannot_replace_published_metrics_or_time_policy": "PASS [   0.470s] (785/805) codex-hepta-intelligence-eval self_evolution_selection::ingress_tests::valid_v3_resignatures_cannot_replace_published_metrics_or_time_policy"
+    },
+    "all_four_required_control_receipts_precede_green": true,
+    "command_elapsed_seconds": 131.69272875785828,
+    "stderr_sha256": "e2d5640765ed22e4b7b4def6ac2129a4d537e1f3373a098a162acdce3e1a195a"
+  },
+  "fix": {
+    "source_head_at_execution": "eed6541df0add428add8e2d9ab2cbd54a961abeb",
+    "command": [
+      "just",
+      "fix",
+      "--locked",
+      "-p",
+      "codex-hepta-intelligence-eval",
+      "-p",
+      "codex-hepta-agentd",
+      "-p",
+      "codex-hepta-intelligence"
+    ],
+    "command_exit": 0,
+    "state": "fix-complete",
+    "changed_paths": [
+      "codex-rs/hepta-intelligence/src/plasticity_product_tests.rs"
+    ],
+    "unexpected_changed_paths": [],
+    "tests_rerun_after_fix": false,
+    "resulting_source": "0766fc4d5feabea9569d48e7eca4e0a3431bd0f5",
+    "native_patch_sha256": "5e638cfe00ca4e1df56934c765a60089cb11e718e79c54800f2f5eda741d830c",
+    "E_green_not_reassigned_to_S": true
+  },
+  "sequence": {
+    "actual_tail_order": [
+      "red-q-plasticity",
+      "red-q-selector",
+      "green",
+      "fix"
+    ],
+    "state": "sequence-complete",
+    "raw_receipt_sha256": "df53252839fc2c66102b33614456b0648d2028ea8e85b839baee3fe9e67c5612"
+  },
+  "independent_review_artifact_references": {
+    "checked": 43,
+    "all_match": true,
+    "references": [
+      {
+        "review": "q1-native-independent-review.json",
+        "path": "native/ai395-sealed-q1-receipt.json",
+        "sha256": "a7fc0b3cf48abeb3d66bd124c553d606c7555f9a63f4c9a679c9a269ed4d88b6",
+        "bytes": 33402
+      },
+      {
+        "review": "q1-native-independent-review.json",
+        "path": "native/ai395-sealed-q1-just-test.stderr",
+        "sha256": "eb5ed0ded6dd107295efdc201e20eed43f23ddbb2e200c6c5696f9825556cfd5",
+        "bytes": 53229
+      },
+      {
+        "review": "q1-native-independent-review.json",
+        "path": "native/ai395-sealed-q1-just-test.stdout",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "bytes": 0
+      },
+      {
+        "review": "q1-native-independent-review.json",
+        "path": "native/ai395-sealed-q1-negative.patch",
+        "sha256": "73dd589ff130e162de3209c67246bfbbbccec4e09d1b08e85e5cea11ddddb7bd",
+        "bytes": 583
+      },
+      {
+        "review": "q1-native-independent-review.json",
+        "path": "native/q1-preflight-mapping.json",
+        "sha256": "474543b0bef403e37555f0ec0c7c6cfeee3991c9f023b5d7107516d3881cde27",
+        "bytes": 8078
+      },
+      {
+        "review": "q2-native-independent-review.json",
+        "path": "native/ai395-sealed-q2-receipt.json",
+        "bytes": 32245,
+        "sha256": "6b3d09bac8a4e5cac69fd423a14fc2a19b7e0ba65139acd82c09c2ddf496c5e4"
+      },
+      {
+        "review": "q2-native-independent-review.json",
+        "path": "native/ai395-sealed-q2-just-test.stderr",
+        "bytes": 27243,
+        "sha256": "3d62dc45c1556fb66e59a9cd054307888df83a9af5343d2497b8b75c5e58212a"
+      },
+      {
+        "review": "q2-native-independent-review.json",
+        "path": "native/ai395-sealed-q2-just-test.stdout",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "review": "q2-native-independent-review.json",
+        "path": "native/ai395-sealed-q2-negative.patch",
+        "bytes": 591,
+        "sha256": "1094002c9a97ae4485e69487e5a9406c5e0e1ac91e53cabb19b57491d9c9fe90"
+      },
+      {
+        "review": "q3-attempt1-compilation-review.json",
+        "path": "native/ai395-sealed-q3-attempt1-receipt.json",
+        "sha256": "b98653f5a06015cb71042b642ed1df3efb08e0384c9cc350294f7e86dfd70a49",
+        "bytes": 32111
+      },
+      {
+        "review": "q3-attempt1-compilation-review.json",
+        "path": "native/ai395-sealed-q3-attempt1-just-test.stderr",
+        "sha256": "4e1320dc9ab932fd3e9c23532328c0672b79eb239c8f9a78332c20f2f587ef4f",
+        "bytes": 3265
+      },
+      {
+        "review": "q3-attempt1-compilation-review.json",
+        "path": "native/ai395-sealed-q3-attempt1-just-test.stdout",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "bytes": 0
+      },
+      {
+        "review": "q3-attempt1-compilation-review.json",
+        "path": "native/ai395-sealed-q3-attempt1-negative.patch",
+        "sha256": "4d21e5f1eabe993427850ea83dab628ed8ecdf07454f88ef8d72cfd19cd988b5",
+        "bytes": 696
+      },
+      {
+        "review": "q3-native-independent-review.json",
+        "path": "native/ai395-sealed-q3-attempt2-receipt.json",
+        "bytes": 32540,
+        "sha256": "4cffc7cac9855131854689730fe1d9ead021b6ea45eaf2c12aebd77101b2a34e"
+      },
+      {
+        "review": "q3-native-independent-review.json",
+        "path": "native/ai395-sealed-q3-attempt2-just-test.stderr",
+        "bytes": 4664,
+        "sha256": "bb4977a3c743ba4744507b39fa4036618651192adfc13ff62bdbe782e3aba63e"
+      },
+      {
+        "review": "q3-native-independent-review.json",
+        "path": "native/ai395-sealed-q3-attempt2-just-test.stdout",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "review": "q3-native-independent-review.json",
+        "path": "native/ai395-sealed-q3-attempt2-negative.patch",
+        "bytes": 696,
+        "sha256": "4d21e5f1eabe993427850ea83dab628ed8ecdf07454f88ef8d72cfd19cd988b5"
+      },
+      {
+        "review": "q3-native-independent-review.json",
+        "path": "native/ai395-q3-fresh-eval-fcbed-depinfo.d",
+        "bytes": 4474,
+        "sha256": "7c3484364d086c11b087ffe1a1d4eed7a027b522100354701366fe1dafd0b2a4"
+      },
+      {
+        "review": "q3-native-independent-review.json",
+        "path": "native/ai395-sealed-remaining-pipeline-v2-receipt.json",
+        "bytes": 5603,
+        "sha256": "df53252839fc2c66102b33614456b0648d2028ea8e85b839baee3fe9e67c5612"
+      },
+      {
+        "review": "q3-native-independent-review.json",
+        "path": "native/ai395-eval-cache-repair-attempt2-clean-eval-package.stdout",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "review": "q3-native-independent-review.json",
+        "path": "native/ai395-eval-cache-repair-attempt2-clean-eval-package.stderr",
+        "bytes": 40,
+        "sha256": "bc101882259bf86a32b2695ef7d8bd2b3cca64074ea63822a2838f0c112219d9"
+      },
+      {
+        "review": "q3-retry-orchestrator-independent-review.json",
+        "path": "native/run_sealed_remaining_pipeline_v2.py",
+        "sha256": "22fa106fc0f9f8429ae63a0c3a2400abe1582a50a2d9fa8c1f21597d779fefbe",
+        "bytes": 14856
+      },
+      {
+        "review": "q3-retry-orchestrator-independent-review.json",
+        "path": "native/repair_eval_package_cache.py",
+        "sha256": "6aac58b0ea2ccbd0f9b9fffc9100aedb19283dc67e420b682680cd41ef24f3ec",
+        "bytes": 7457
+      },
+      {
+        "review": "q3-retry-orchestrator-independent-review.json",
+        "path": "native/sealed-remaining-pipeline-v2-review.diff",
+        "sha256": "d7e87baeaaea2b683043dab1cd406e3a44cde4d9dddec618d2f9634a8ba20753",
+        "bytes": 7069
+      },
+      {
+        "review": "q3-target-scope-independent-review.json",
+        "path": "native/ai395-eval-cache-repair-attempt1-receipt.json",
+        "sha256": "a82a65e07f6007cacaafe4d9673df766be65d85f43f34ed933a4c1008d95fc2e",
+        "bytes": 2757
+      },
+      {
+        "review": "q3-target-scope-independent-review.json",
+        "path": "native/repair_eval_package_cache_v2.py",
+        "original_file_name": "repair_eval_package_cache_v2.py",
+        "sha256": "11437d6b582247f02a09b392dc7154f186025f0696d64fd9af7ee1bc300a4dd7",
+        "bytes": 10542
+      },
+      {
+        "review": "q3-target-scope-independent-review.json",
+        "path": "native/run_sealed_remaining_pipeline_v2_target_scope.py",
+        "original_file_name": "run_sealed_remaining_pipeline_v2.py",
+        "sha256": "55f787d330be7cf4165ca13f1eed6b2c3ba0932653c31ed4ebe2a9ffe781d49e",
+        "bytes": 14922
+      },
+      {
+        "review": "q3-target-scope-independent-review.json",
+        "path": "native/eval-cache-repair-v2-review.diff",
+        "original_file_name": "eval-cache-repair-v2-review.diff",
+        "sha256": "745ec709d7b17e36d13aa985e050039f423f7d96764857a7cb8d4735509546e3",
+        "bytes": 6172
+      },
+      {
+        "review": "q3-target-scope-independent-review.json",
+        "path": "native/sealed-outer-repair-v2-pin-review.diff",
+        "original_file_name": "sealed-outer-repair-v2-pin-review.diff",
+        "sha256": "17c784f21a18212e5895ce249285cccdef879afd893af5dd38ea2ce7b74bbe2c",
+        "bytes": 1596
+      },
+      {
+        "review": "q4-native-independent-review.json",
+        "path": "native/ai395-sealed-q4-receipt.json",
+        "bytes": 32796,
+        "sha256": "41c062e316dfd9f6f18bc0e129b8aebfa62d6211b715642e9284d0e6c6e57419"
+      },
+      {
+        "review": "q4-native-independent-review.json",
+        "path": "native/ai395-sealed-q4-just-test.stderr",
+        "bytes": 4153,
+        "sha256": "732a2808896c602c5bc202ec96838f5a73e92c7e8eefcd38573d317723376520"
+      },
+      {
+        "review": "q4-native-independent-review.json",
+        "path": "native/ai395-sealed-q4-just-test.stdout",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "review": "q4-native-independent-review.json",
+        "path": "native/ai395-sealed-q4-negative.patch",
+        "bytes": 479,
+        "sha256": "e74af6899e6941ee81ba944664153fb67157398220b0cc395847feb5c5ef95a0"
+      },
+      {
+        "review": "second-native-positive-and-fix-review.json",
+        "path": "native/ai395-sealed-green-receipt.json",
+        "sha256": "ab6da7188d4354a088025ec0202533c025436d6f7fcf70196913ef24deb82488",
+        "bytes": 28470
+      },
+      {
+        "review": "second-native-positive-and-fix-review.json",
+        "path": "native/ai395-sealed-green-just-green.stderr",
+        "sha256": "e2d5640765ed22e4b7b4def6ac2129a4d537e1f3373a098a162acdce3e1a195a",
+        "bytes": 145782
+      },
+      {
+        "review": "second-native-positive-and-fix-review.json",
+        "path": "native/ai395-sealed-green-just-green.stdout",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "bytes": 0
+      },
+      {
+        "review": "second-native-positive-and-fix-review.json",
+        "path": "native/ai395-sealed-fix-receipt.json",
+        "sha256": "cb1f12c6d7e4c09f3e5c6df4a9f9f337d28540bc4e81c7d5c2c9b45ee2b5504c",
+        "bytes": 32213
+      },
+      {
+        "review": "second-native-positive-and-fix-review.json",
+        "path": "native/ai395-sealed-fix-just-fix.stderr",
+        "sha256": "64c2a21b20a3029ca1152fbcfa175a1edecd0d83918aad26c46660b816c21165",
+        "bytes": 37234
+      },
+      {
+        "review": "second-native-positive-and-fix-review.json",
+        "path": "native/ai395-sealed-fix-just-fix.stdout",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "bytes": 0
+      },
+      {
+        "review": "second-native-positive-and-fix-review.json",
+        "path": "native/ai395-sealed-fix-changed-after-fix.stdout",
+        "sha256": "fad1bea6f869b8c36feec93493cc7590c2f53d8a22d550c66803325e9efdda0d",
+        "bytes": 60
+      },
+      {
+        "review": "second-native-positive-and-fix-review.json",
+        "path": "native/ai395-sealed-native-fix.patch",
+        "sha256": "5e638cfe00ca4e1df56934c765a60089cb11e718e79c54800f2f5eda741d830c",
+        "bytes": 732
+      },
+      {
+        "review": "second-native-positive-and-fix-review.json",
+        "path": "native/ai395-second-postfix-scope-receipt.json",
+        "sha256": "2d139a714003f0e0f0e1960c499969f82872f40326a6abc23af86e01dbbec24f",
+        "bytes": 7779
+      },
+      {
+        "review": "second-native-positive-and-fix-review.json",
+        "path": "native/ai395-sealed-remaining-pipeline-v2-receipt.json",
+        "sha256": "df53252839fc2c66102b33614456b0648d2028ea8e85b839baee3fe9e67c5612",
+        "bytes": 5603
+      }
+    ]
+  },
+  "product_independent_subindex": {
+    "entries": 48,
+    "all_hashes_sizes_match": true,
+    "tested_E_and_current_S_identity_correct": true
+  },
+  "current_negative_manifest_receipts_attempts_patch_hashes_match": true,
+  "full_inventory_transfer_proof_matches_archived_json_and_alignment": true,
+  "observation_limits": [
+    "Four controls have 7 named failing cases and one inherited retry each; retries are not independent experimental samples.",
+    "Q1 first metrics/current-trust panics do not observe later time-policy, append or counter assertions.",
+    "Q3 unequal-digest panic does not observe later replay assertions; Q2/Q4 default panics do not print returned Result values.",
+    "The unmodified positive E run separately passes all seven complete named regression tests.",
+    "S is a reviewed mechanical test-source adoption, with formatter/source alignment only and no test rerun.",
+    "No remote source verification, native test, fix, model/tool action or product release was performed by this archive review."
+  ],
+  "issues": []
+}

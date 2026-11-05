@@ -1,8 +1,8 @@
 {
-  "schema": "hepta.sealed-ingress-source-evidence.v1",
-  "source_head": "2ac5e02011e480dc39cd84bed655518db2d37a69",
-  "source_tree": "9c4e0b985d0693d27d24bca5cc3da4491969da80",
-  "base_head": "a20a8191ec37375876a99b7c18bae053f9bc185d",
+  "schema": "hepta.sealed-ingress-source-evidence.v2",
+  "source_head": "0766fc4d5feabea9569d48e7eca4e0a3431bd0f5",
+  "source_tree": "1cfb78c47f636a60dcfa9968ffd7e44a054d58cc",
+  "base_head": "432421d0d9ca9d82c5e3401fe3425af29131505a",
   "ordered_source_commits": [
     "75670fa10204f941e6d34a83282a06453c678308",
     "2925932f22d81aeff8b29f1be41febc6ab73f711",
@@ -16,15 +16,15 @@
     "separate_agent_source_reviews": "PASS",
     "original_no_update_bytes": "PASS",
     "original_contract_ci_requirements": "UNCHANGED",
-    "exact_baseline_caller_inventory_plus_verified_source_delta": "PASS",
-    "native_format_this_candidate": "NOT_RUN",
-    "native_compilation_this_candidate": "NOT_RUN",
-    "native_negative_controls_this_candidate": "NOT_RUN",
-    "native_package_tests_this_candidate": "NOT_RUN",
-    "scoped_clippy_this_candidate": "NOT_RUN",
+    "exact_baseline_caller_inventory_plus_verified_source_delta": "PASS_ACTUAL_TRACKED_RUST_FINAL_SCAN",
+    "native_format_this_candidate": "PASS_EXACT_EED_FULL_R3_DELTA; all 14 ingress blobs retained",
+    "native_compilation_this_candidate": "PASS_EXACT_E_AND_ALL_FOUR_NEGATIVE_VARIANTS; S is the separately reviewed final scoped-fix source",
+    "native_negative_controls_this_candidate": "Q1_Q2_Q3_ATTEMPT2_Q4_REQUIRED_BEHAVIORAL_ASSERTIONS_CONFIRMED_AND_RESTORED_AT_E",
+    "native_package_tests_this_candidate": "PASS_EXACT_E_805_OF_805_66_SKIPPED; no test rerun after scoped fix",
+    "scoped_clippy_this_candidate": "EXIT_ZERO; one reviewed last-use clone removal committed separately as S",
     "exact_head_and_synthetic_merge_ci": "NOT_ESTABLISHED"
   },
-  "source_inventory_scope": "5,309 baseline tracked Rust blobs plus the exactly verified 14-file candidate delta; lexical migration coverage, not compilation.",
+  "source_inventory_scope": "5,314 exact tracked Rust blobs at the native source-next preparation; all 14 final ingress blobs independently verified, final extended scan 83 lines/20 paths. Lexical inventory is not compilation.",
   "required_packages": [
     "codex-hepta-intelligence-eval",
     "codex-hepta-agentd",
@@ -34,5 +34,291 @@
   "qualification_release": "HOLD",
   "adaptive_efficacy_admission": "NO_NEW_EVIDENCE; retain no-update and accepted predecessor",
   "physical_effect_authority": "NO_NEW_AUTHORITY",
-  "recorded_at_utc": "2026-11-05T07:39:31.813732+00:00"
+  "recorded_at_utc": "2026-11-05T10:21:12.835760+00:00",
+  "historical_validation": "native/validation-before-native.json",
+  "current_source_manifest": "native-source-manifest.json",
+  "native_plan": "native-round2-gate-v2/plan.json",
+  "narrative": "native-validation.md",
+  "current_trust_regression_commit": "06ad4a9b48aa28ef6edfc537243f069e2d48eb40",
+  "current_trust_regression_blob": "fc084ad5d2f02709f663f95240737860a05a7c9f",
+  "current_merge_parents": [
+    "eed6541df0add428add8e2d9ab2cbd54a961abeb"
+  ],
+  "first_wave_gate": {
+    "required_exact_commit": "facba0d32c1cd0e8163a6186d7ba91fa311f2e2e",
+    "named_regression": "PASS_1_OF_1",
+    "full_four_package": "PASS_813_OF_813_66_SKIPPED",
+    "scoped_fix": "CLIPPY_EXIT_ZERO_RAW_SCOPE_BLOCK_RETAINED; EXACT_TWO_FILE_REVIEWED_ADOPTION_REQUIRED",
+    "old_failed_green_is_not_accepted": true,
+    "current_first_head": "432421d0d9ca9d82c5e3401fe3425af29131505a",
+    "original_813_result_remains_facba": true
+  },
+  "native_runner_sha256": "46552f047784d07b825cec59e0358cfbb02a010f448b7538bb0fadc15ea2f7df",
+  "native_runtime_bundle_sha256": "1f0301d0c78a9d0d20703c09bf8d2f4cf1591af307cb3faf5f75da50809927f0",
+  "execution_job": {
+    "host": "ai395",
+    "job_id": "1a1ab26cdef-fc05-4afb",
+    "phase": "Q3_attempt2_then_Q4_then_full_green_then_fix",
+    "head": "eed6541df0add428add8e2d9ab2cbd54a961abeb",
+    "state": "sequence-complete",
+    "exit_code": 0,
+    "receipt": "native/ai395-sealed-remaining-pipeline-v2-receipt.json",
+    "receipt_sha256": "df53252839fc2c66102b33614456b0648d2028ea8e85b839baee3fe9e67c5612",
+    "tests_rerun_after_fix": false
+  },
+  "native_results": {
+    "Q1": {
+      "receipt": "native/ai395-sealed-q1-receipt.json",
+      "sha256": "a7fc0b3cf48abeb3d66bd124c553d606c7555f9a63f4c9a679c9a269ed4d88b6",
+      "state": "named-test-failures-observed-review-required",
+      "positive_base_head": "eed6541df0add428add8e2d9ab2cbd54a961abeb",
+      "actual_test_exit": 100,
+      "wrapper_exit": 0,
+      "observed": {
+        "summary": "Summary [   0.335s] 4 tests run: 0 passed, 4 failed, 867 skipped",
+        "run_count": 4,
+        "failed_count": 4,
+        "passed_count": 0,
+        "observed_named_failures": [
+          "product_runner_binds_estimator_receipts_and_persists_signed_decision",
+          "independently_resigned_metrics_cannot_replace_the_qualified_estimator_evidence",
+          "signed_generic_metrics_cannot_replace_the_product_qualification_before_append",
+          "valid_v3_resignatures_cannot_replace_published_metrics_or_time_policy"
+        ],
+        "final_failure_lines": [
+          "  TRY 2 FAIL [   0.060s] (1/4) codex-hepta-intelligence-eval product_runner::tests::product_runner_binds_estimator_receipts_and_persists_signed_decision",
+          "  TRY 2 FAIL [   0.096s] (2/4) codex-hepta-agentd intelligence_product::evaluation_tests::independently_resigned_metrics_cannot_replace_the_qualified_estimator_evidence",
+          "  TRY 2 FAIL [   0.101s] (3/4) codex-hepta-intelligence plasticity_product_tests::signed_generic_metrics_cannot_replace_the_product_qualification_before_append",
+          "  TRY 2 FAIL [   0.162s] (4/4) codex-hepta-intelligence-eval self_evolution_selection::ingress_tests::valid_v3_resignatures_cannot_replace_published_metrics_or_time_policy"
+        ],
+        "complete_named_red": true,
+        "trust_witness_present": true
+      },
+      "restored_candidate": true,
+      "independent_behavior_review": "q1-native-independent-review.json",
+      "independent_behavior_review_sha256": "4a04d35b19cb5ee48b6f60a4ba1bf9756757f5374a09edb9378e2b406f51d903"
+    },
+    "Q2": {
+      "receipt": "native/ai395-sealed-q2-receipt.json",
+      "sha256": "6b3d09bac8a4e5cac69fd423a14fc2a19b7e0ba65139acd82c09c2ddf496c5e4",
+      "state": "named-test-failures-observed-review-required",
+      "positive_base_head": "eed6541df0add428add8e2d9ab2cbd54a961abeb",
+      "attempt": 1,
+      "actual_test_exit": 100,
+      "wrapper_exit": 0,
+      "observed": {
+        "summary": "Summary [   0.401s] 1 test run: 0 passed, 1 failed, 663 skipped",
+        "run_count": 1,
+        "failed_count": 1,
+        "passed_count": 0,
+        "observed_named_failures": [
+          "current_use_attestation_binds_the_exact_sealed_publication"
+        ],
+        "final_failure_lines": [
+          "  TRY 2 FAIL [   0.177s] (1/1) codex-hepta-agentd intelligence_product::evaluation_tests::current_use_attestation_binds_the_exact_sealed_publication"
+        ],
+        "complete_named_red": true,
+        "trust_witness_present": false
+      },
+      "restored_candidate": true,
+      "independent_behavior_review": "q2-native-independent-review.json",
+      "independent_behavior_review_sha256": "ed07c0810ed66e036799b711d0b87d3fa69805364bca2094ee51b7826b53a088"
+    },
+    "Q3": {
+      "receipt": "native/ai395-sealed-q3-attempt2-receipt.json",
+      "sha256": "4cffc7cac9855131854689730fe1d9ead021b6ea45eaf2c12aebd77101b2a34e",
+      "state": "named-test-failures-observed-review-required",
+      "positive_base_head": "eed6541df0add428add8e2d9ab2cbd54a961abeb",
+      "attempt": 2,
+      "actual_test_exit": 100,
+      "wrapper_exit": 0,
+      "observed": {
+        "summary": "Summary [   0.415s] 1 test run: 0 passed, 1 failed, 84 skipped",
+        "run_count": 1,
+        "failed_count": 1,
+        "passed_count": 0,
+        "observed_named_failures": [
+          "durable_proposal_identity_commits_the_exact_qualification_publication"
+        ],
+        "final_failure_lines": [
+          "  TRY 2 FAIL [   0.200s] (1/1) codex-hepta-intelligence plasticity_product_tests::durable_proposal_identity_commits_the_exact_qualification_publication"
+        ],
+        "complete_named_red": true,
+        "trust_witness_present": false
+      },
+      "restored_candidate": true,
+      "independent_behavior_review": "q3-native-independent-review.json",
+      "independent_behavior_review_sha256": "23a56d7a6bd14e7dad2e2c0cb1d23ba7f56749405289b64d8e59b16addd015c5"
+    },
+    "Q4": {
+      "receipt": "native/ai395-sealed-q4-receipt.json",
+      "sha256": "41c062e316dfd9f6f18bc0e129b8aebfa62d6211b715642e9284d0e6c6e57419",
+      "state": "named-test-failures-observed-review-required",
+      "positive_base_head": "eed6541df0add428add8e2d9ab2cbd54a961abeb",
+      "attempt": 1,
+      "actual_test_exit": 100,
+      "wrapper_exit": 0,
+      "observed": {
+        "summary": "Summary [   0.543s] 1 test run: 0 passed, 1 failed, 121 skipped",
+        "run_count": 1,
+        "failed_count": 1,
+        "passed_count": 0,
+        "observed_named_failures": [
+          "selector_signature_commits_the_exact_qualification_publication"
+        ],
+        "final_failure_lines": [
+          "  TRY 2 FAIL [   0.272s] (1/1) codex-hepta-intelligence-eval self_evolution_selection::ingress_tests::selector_signature_commits_the_exact_qualification_publication"
+        ],
+        "complete_named_red": true,
+        "trust_witness_present": false
+      },
+      "restored_candidate": true,
+      "independent_behavior_review": "q4-native-independent-review.json",
+      "independent_behavior_review_sha256": "416c53715a9edad626860b56a51570c58ae4e84162f8679f3f0588071159cf97"
+    },
+    "green": {
+      "receipt": "native/ai395-sealed-green-receipt.json",
+      "sha256": "ab6da7188d4354a088025ec0202533c025436d6f7fcf70196913ef24deb82488",
+      "state": "green-complete",
+      "execution_head": "eed6541df0add428add8e2d9ab2cbd54a961abeb",
+      "execution_tree": "b8ce8b96a759f522cb7db60027d4844f1b3ad974",
+      "command": [
+        "just",
+        "test",
+        "--locked",
+        "-p",
+        "codex-hepta-intelligence-eval",
+        "-p",
+        "codex-hepta-agentd",
+        "-p",
+        "codex-hepta-intelligence"
+      ],
+      "command_exit": 0,
+      "wrapper_exit": 0,
+      "elapsed_seconds": 131.69272875785828,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_sha256": "e2d5640765ed22e4b7b4def6ac2129a4d537e1f3373a098a162acdce3e1a195a",
+      "observed": {
+        "summary": "Summary [  36.514s] 805 tests run: 805 passed (1 slow), 66 skipped",
+        "run_count": 805,
+        "failed_count": 0,
+        "passed_count": 805,
+        "observed_named_failures": [],
+        "final_failure_lines": [],
+        "complete_named_red": false,
+        "trust_witness_present": false,
+        "critical_passes": [
+          "current_use_attestation_binds_the_exact_sealed_publication",
+          "durable_proposal_identity_commits_the_exact_qualification_publication",
+          "independently_resigned_metrics_cannot_replace_the_qualified_estimator_evidence",
+          "product_runner_binds_estimator_receipts_and_persists_signed_decision",
+          "selector_signature_commits_the_exact_qualification_publication",
+          "signed_generic_metrics_cannot_replace_the_product_qualification_before_append",
+          "valid_v3_resignatures_cannot_replace_published_metrics_or_time_policy"
+        ]
+      },
+      "independent_review": "second-native-positive-and-fix-review.json",
+      "independent_review_sha256": "68152c6ee834fddbb0be89e0c83865c6341f4733dbee361df769b601d8d46d3a"
+    },
+    "fix": {
+      "receipt": "native/ai395-sealed-fix-receipt.json",
+      "sha256": "cb1f12c6d7e4c09f3e5c6df4a9f9f337d28540bc4e81c7d5c2c9b45ee2b5504c",
+      "state": "fix-complete",
+      "execution_head": "eed6541df0add428add8e2d9ab2cbd54a961abeb",
+      "execution_tree": "b8ce8b96a759f522cb7db60027d4844f1b3ad974",
+      "command": [
+        "just",
+        "fix",
+        "--locked",
+        "-p",
+        "codex-hepta-intelligence-eval",
+        "-p",
+        "codex-hepta-agentd",
+        "-p",
+        "codex-hepta-intelligence"
+      ],
+      "command_exit": 0,
+      "wrapper_exit": 0,
+      "elapsed_seconds": 46.187445878982544,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_sha256": "64c2a21b20a3029ca1152fbcfa175a1edecd0d83918aad26c46660b816c21165",
+      "changed_paths": [
+        "codex-rs/hepta-intelligence/src/plasticity_product_tests.rs"
+      ],
+      "unexpected_changed_paths": [],
+      "post_fix_source_changed": true,
+      "tests_rerun_after_fix": false,
+      "review": "second-scoped-fix-root-review.json",
+      "resulting_source_head": "0766fc4d5feabea9569d48e7eca4e0a3431bd0f5",
+      "resulting_source_tree": "1cfb78c47f636a60dcfa9968ffd7e44a054d58cc",
+      "independent_review": "second-native-positive-and-fix-review.json",
+      "independent_review_sha256": "68152c6ee834fddbb0be89e0c83865c6341f4733dbee361df769b601d8d46d3a"
+    }
+  },
+  "current_code_source_ci_snapshot": {
+    "path": "../runtime-convergence-20261105/current-source-ci-observation.json",
+    "sha256": "2ffdce01ae272e64e78fd847beffb9935322224c237022d09a2edea0bfe218ea",
+    "observed_utc_window": [
+      "2026-11-05T09:39:17Z",
+      "2026-11-05T09:39:18Z"
+    ],
+    "atomic": false,
+    "result": "WINDOWS_JOB_QUEUED_NO_RUNNER_NO_STEPS; ARCHITECTURE_AND_BLOCKING_PENDING_NO_JOBS",
+    "scope": "Historical source F/E observation at the stated timestamp; does not describe later S or documentation HEAD runs."
+  },
+  "failed_native_attempts": [
+    {
+      "receipt": "native/ai395-sealed-q3-attempt1-receipt.json",
+      "sha256": "b98653f5a06015cb71042b642ed1df3efb08e0384c9cc350294f7e86dfd70a49",
+      "phase": "red-q-plasticity",
+      "attempt": 1,
+      "actual_test_exit": 101,
+      "wrapper_exit": 1,
+      "state": "negative-control-did-not-prove-required-test-failures",
+      "test_execution_observed": false,
+      "restored_candidate": true,
+      "counts_as_behavioral_red": false
+    }
+  ],
+  "cache_repair": {
+    "receipt": "native/ai395-eval-cache-repair-attempt2-receipt.json",
+    "sha256": "c73e73d3803a57c368e77eb275e33d2eb71d36bb4852c96736838f12a4fc1792",
+    "state": "cache-repair-complete",
+    "source_or_test_configuration_changed": false,
+    "prior_guard_stop_preserved": "native/ai395-eval-cache-repair-attempt1-receipt.json",
+    "repair_independent_review": "q3-cache-repair-attempt2-independent-review.json",
+    "fresh_q3_depinfo": "native/ai395-q3-fresh-eval-fcbed-depinfo.d"
+  },
+  "tested_source_head": "eed6541df0add428add8e2d9ab2cbd54a961abeb",
+  "tested_source_tree": "b8ce8b96a759f522cb7db60027d4844f1b3ad974",
+  "tested_source_merge_parents": [
+    "e0b522cd437af1362f8be23f601886b46ec1b063",
+    "432421d0d9ca9d82c5e3401fe3425af29131505a"
+  ],
+  "post_fix_test_result_attribution": "805/805 applies only to E; S contains one independently reviewed mechanical test-file change and has no new test execution claim.",
+  "original_windows_tested_source_run": 41999788950,
+  "pre_native_exact_source_alignment": {
+    "receipt": "native/ai395-reviewed-postfix-alignment-receipt.json",
+    "sha256": "64be8b15396564e49ac3b6f4dd6ecd7b9c623a40c113e45d4f1b742779f6a42e",
+    "state": "reviewed-postfix-heads-aligned-and-byte-verified",
+    "rust_files_verified": 5314,
+    "rust_bytes_verified": 80662751,
+    "scope": "Pre-native exact E alignment. Final S alignment has a separate record."
+  },
+  "current_exact_source_alignment": {
+    "receipt": "native/ai395-second-postfix-alignment-receipt.json",
+    "sha256": "72f596be257474eba63334968754a602d814ad0d18664941e003979f576812f5",
+    "state": "reviewed-postfix-exact-source-aligned",
+    "head": "0766fc4d5feabea9569d48e7eca4e0a3431bd0f5",
+    "tree": "1cfb78c47f636a60dcfa9968ffd7e44a054d58cc",
+    "rust_files_verified": 5314,
+    "full_rust_inventory_sha256": "71b5fd4cf0616d79a10503798ef86ce5391c6c7aa8d3dfff76f1b522af4460b2",
+    "clean": true,
+    "original_receipts_preserved": true,
+    "all_11_original_receipt_digests_have_archived_exact_originals": true,
+    "tests_rerun_after_fix": false,
+    "fix_rerun": false,
+    "full_rust_inventory": "native/ai395-second-postfix-verified-rust-blobs.json",
+    "all_14_current_ingress_blob_and_sha256_values_match_full_inventory": true
+  }
 }

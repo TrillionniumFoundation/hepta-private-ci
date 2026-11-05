@@ -1,0 +1,396 @@
+{
+  "schema": "hepta.sealed-ingress-native-validation-plan.v1",
+  "status": "REVIEWED_FIX_SOURCE_ADOPTION_PREPARED_NOT_EXECUTED",
+  "initial_published_head": "9f010aae1ae7f7447adc0660748878f6cce9efd3",
+  "initial_published_tree": "1183de36c51ca9ec561b0775a17d783414d60c0f",
+  "format_base": "ebdf792c076c1d516ae9f96eec079921ccd1588f",
+  "execution_head": "eed6541df0add428add8e2d9ab2cbd54a961abeb",
+  "worktree": "/home/qq/work/hepta-convergence-20261105-0c901b/source-next",
+  "forbidden_worktree": "/home/qq/work/hepta-convergence-20261105-0c901b/source",
+  "serialization": "Do not launch any cargo, just fix, or just test phase until the current first-wave native job has completed and root/lifecycle has assigned this phase. Never mutate the first-wave tree or run concurrent cargo jobs against the shared target.",
+  "toolchain_environment": {
+    "RUSTUP_HOME": "/home/qq/work/hepta-convergence-20261105-0c901b/rustup-home-1.96.0",
+    "RUSTUP_TOOLCHAIN": "1.96.0",
+    "CARGO_BUILD_JOBS": "2",
+    "CARGO_TARGET_DIR": "/home/qq/work/hepta-convergence-20261105-0c901b/target",
+    "PATH_prefix": [
+      "/home/qq/work/hepta-convergence-20261105-0c901b/tools/bin",
+      "/home/qq/.cargo/bin"
+    ],
+    "BINDGEN_EXTRA_CLANG_ARGS": "Reuse and hash-verify the existing task-local Clang repair receipt and header.",
+    "OPENSSL_LIB_DIR_OPENSSL_INCLUDE_DIR_CPATH": "Reuse and hash-verify the existing matched OpenSSL repair receipt/library identity exactly.",
+    "inherited_compile_options": "Record existing RUSTFLAGS, CARGO_ENCODED_RUSTFLAGS, wrappers and CARGO_PROFILE_*; do not alter them."
+  },
+  "entry_contracts": {
+    "justfile_blob": "a215a76cf407ace9715bca39c20497014e7dd4dc",
+    "run_nextest_blob": "1ed63abe84267b320cbfb0123a70aac5507f4595",
+    "nextest_config_blob": "5e43111fc8a7a79848f00c1838582edde60bd680",
+    "AGENTS_blob": "faa57cc0db48123e1011f1eb47692cd3bbbcfc3a",
+    "recipe_cwd": "Root justfile sets working-directory=codex-rs; invoke from the source-next repository root.",
+    "RUST_MIN_STACK": "8388608 via unchanged just test recipe",
+    "NEXTEST_PROFILE": "local via unchanged just test recipe",
+    "no_fail_fast": "Provided by unchanged run-nextest.py",
+    "default_slow_timeout": {
+      "period": "30s",
+      "terminate_after": 2
+    },
+    "default_retries": 1,
+    "existing_overrides": "Keep all existing profile/local/default overrides intact.",
+    "cargo_features": "No features/profile/target/backend flags added or removed.",
+    "outer_job_timeout_seconds": 21600,
+    "outer_timeout_semantics": "Existing durable-job upper bound; does not replace or extend any test watchdog."
+  },
+  "trust_regression": {
+    "patch": "current-trust-identity-after-native-format.patch",
+    "patch_sha256": "cf7ff0f8bb48d9d3a939dee971f634add11e370e7190c2150ea8ebdcf62e3e01",
+    "base_blob": "12e1abd78e87444f3e4982d525a96cd141a54a00",
+    "source_review": "independently accepted by product; not yet native",
+    "after_format_apply_check": "PASS (exit 0); all added and removed source lines are byte-identical to the original reviewed patch; only context was relocated.",
+    "meaning": "Tests valid noncolliding current trust/authentication identity replacement. Both digests change; not a proof isolating trust_digest equality alone.",
+    "reviewed_original_patch": "current-trust-identity-regression.patch",
+    "reviewed_original_patch_sha256": "d0d305632f7ba71ef88ad9b4f738617b58c5b3902dade922776c57676c731dcd",
+    "pre_second_format_changed_blob": "2bd0f26401ceca53a567317e88446cc7836078e3",
+    "final_native_formatted_blob": "fc084ad5d2f02709f663f95240737860a05a7c9f",
+    "final_formatted_patch": "current-trust-identity-final-format.patch",
+    "final_formatted_patch_sha256": "d2a944692b42715f0465fbcb708f3fa3e0543638f6ef6488d49317aabba27caa"
+  },
+  "commands": {
+    "format": [
+      "just",
+      "fmt",
+      "--base",
+      "ebdf792c076c1d516ae9f96eec079921ccd1588f"
+    ],
+    "format_check": [
+      "just",
+      "fmt",
+      "--base",
+      "ebdf792c076c1d516ae9f96eec079921ccd1588f",
+      "--check"
+    ],
+    "scoped_fix": [
+      "just",
+      "fix",
+      "--locked",
+      "-p",
+      "codex-hepta-intelligence-eval",
+      "-p",
+      "codex-hepta-agentd",
+      "-p",
+      "codex-hepta-intelligence"
+    ],
+    "positive_full": [
+      "just",
+      "test",
+      "--locked",
+      "-p",
+      "codex-hepta-intelligence-eval",
+      "-p",
+      "codex-hepta-agentd",
+      "-p",
+      "codex-hepta-intelligence"
+    ]
+  },
+  "order": [
+    "initial exact-head preflight and native formatter receipt",
+    "apply reviewed trust-only regression to actual formatter output; format/check again and freeze the exact pre-fix positive source/fixture hashes",
+    "wait for exclusive cargo execution ownership; verify historical named/full-green success and the immutable blocked-fix receipt plus exact reviewed adoption; require current first/second sources clean and verify all source identities before any mutation",
+    "red-q-decision; restore exact positive bytes and verify",
+    "red-q-agentd; restore exact positive bytes and verify",
+    "red-q-plasticity; restore exact positive bytes and verify",
+    "red-q-selector; restore exact positive bytes and verify",
+    "positive_full for all three packages, unfiltered, on the fully restored positive source",
+    "scoped_fix last; record before/after hashes and diff; format any resulting edits if required; do not rerun tests after fix or format",
+    "record final source identity, explicitly distinguish any post-fix source from the source that passed green, and keep original exact-head/merge CI qualification pending"
+  ],
+  "controls": [
+    {
+      "phase": "red-q-decision",
+      "patch_name": "negative-complete-decision-binding.patch",
+      "patch_sha256": "73dd589ff130e162de3209c67246bfbbbccec4e09d1b08e85e5cea11ddddb7bd",
+      "production_path": "codex-rs/hepta-intelligence-eval/src/product_qualification_use.rs",
+      "mutation": "Deletes only the full SignedEvaluationDecisionV1 equality guard; preserves receipt seal, context, current verifier/time, all signatures and role checks.",
+      "command": [
+        "just",
+        "test",
+        "--locked",
+        "-p",
+        "codex-hepta-intelligence-eval",
+        "-p",
+        "codex-hepta-agentd",
+        "-p",
+        "codex-hepta-intelligence",
+        "-E",
+        "test(/(^|::)(product_runner_binds_estimator_receipts_and_persists_signed_decision|independently_resigned_metrics_cannot_replace_the_qualified_estimator_evidence|signed_generic_metrics_cannot_replace_the_product_qualification_before_append|valid_v3_resignatures_cannot_replace_published_metrics_or_time_policy)$/)"
+      ],
+      "required_named_failures": [
+        "product_runner_binds_estimator_receipts_and_persists_signed_decision",
+        "independently_resigned_metrics_cannot_replace_the_qualified_estimator_evidence",
+        "signed_generic_metrics_cannot_replace_the_product_qualification_before_append",
+        "valid_v3_resignatures_cannot_replace_published_metrics_or_time_policy"
+      ],
+      "required_failure_count": 4,
+      "behavioral_witnesses": [
+        "Product runner: first negative assertion must fail with `reissued current trust must not rebind a published qualification` after raw V2 succeeded and inner decision matched.",
+        "Agentd: expected Qualification(Binding(\"qualification use evidence\")) is not returned for re-signed changed metrics.",
+        "Plasticity: expected Qualification(Binding(\"qualification use evidence\")) is not returned for re-signed changed metrics. Later no-append assertions may be unreachable after this first panic.",
+        "Self-evolution: first changed-metrics case no longer returns QualificationRejected. The later legal minimum-window substitution is not independently observed in this red invocation."
+      ],
+      "tests_changed": false,
+      "post_native_format_apply_check": "PASS (exit 0): independently checked and applied against final native-formatted 06ad source; all other source/tests/fixtures and inline test sections are unchanged.",
+      "restore": "Restore the pre-control production bytes, then verify full positive source/fixture hashes and Cargo.lock before the next control.",
+      "patch_path": "negative-controls/negative-complete-decision-binding.patch",
+      "original_pre_format_patch_sha256": "64a62ec8b320fbe48edf765d9d5621bac57dfb362982886dd9de7c0202573bb3",
+      "patch_bytes_rebased_for_native_format": true,
+      "positive_production_git_blob": "f904dc721859f2d44f67b955c532298d03360e87",
+      "mutated_production_git_blob": "961a43b720e2a3f1e80a39860b461db8f8d38d7d",
+      "all_other_source_tests_and_fixtures_identical": true
+    },
+    {
+      "phase": "red-q-agentd",
+      "patch_name": "negative-agentd-publication-signature.patch",
+      "patch_sha256": "1094002c9a97ae4485e69487e5a9406c5e0e1ac91e53cabb19b57491d9c9fe90",
+      "production_path": "codex-rs/hepta-agentd/src/intelligence_evaluation.rs",
+      "mutation": "Deletes only qualification evidence/publication digest appends from the v2 use-signing payload; retains q fields, shared revalidation and the v2 consumption digest.",
+      "command": [
+        "just",
+        "test",
+        "--locked",
+        "-p",
+        "codex-hepta-agentd",
+        "-E",
+        "test(/(^|::)(current_use_attestation_binds_the_exact_sealed_publication)$/)"
+      ],
+      "required_named_failures": [
+        "current_use_attestation_binds_the_exact_sealed_publication"
+      ],
+      "required_failure_count": 1,
+      "behavioral_witnesses": [
+        "Actual evaluate accepts the second legitimate publication under the first use signature; expected AgentdIntelligenceEvaluationError::Evidence is absent."
+      ],
+      "tests_changed": false,
+      "post_native_format_apply_check": "PASS (exit 0): independently checked and applied against final native-formatted 06ad source; all other source/tests/fixtures and inline test sections are unchanged.",
+      "restore": "Restore the pre-control production bytes, then verify full positive source/fixture hashes and Cargo.lock before the next control.",
+      "patch_path": "negative-controls/negative-agentd-publication-signature.patch",
+      "original_pre_format_patch_sha256": "1094002c9a97ae4485e69487e5a9406c5e0e1ac91e53cabb19b57491d9c9fe90",
+      "patch_bytes_rebased_for_native_format": false,
+      "positive_production_git_blob": "6beca1272f990e00b388f99ef7e29cb626bc464c",
+      "mutated_production_git_blob": "8639b2cf78c7cb33ba4e8db0ccee8386f9ffe8dc",
+      "all_other_source_tests_and_fixtures_identical": true
+    },
+    {
+      "phase": "red-q-plasticity",
+      "patch_name": "negative-plasticity-publication-commitment.patch",
+      "patch_sha256": "4d21e5f1eabe993427850ea83dab628ed8ecdf07454f88ef8d72cfd19cd988b5",
+      "production_path": "codex-rs/hepta-intelligence/src/plasticity_product.rs",
+      "mutation": "Deletes only qualification evidence/publication digest appends from the per-candidate evaluation commitment; retains mandatory receipt and all admission checks.",
+      "command": [
+        "just",
+        "test",
+        "--locked",
+        "-p",
+        "codex-hepta-intelligence",
+        "-E",
+        "test(/(^|::)(durable_proposal_identity_commits_the_exact_qualification_publication)$/)"
+      ],
+      "required_named_failures": [
+        "durable_proposal_identity_commits_the_exact_qualification_publication"
+      ],
+      "required_failure_count": 1,
+      "behavioral_witnesses": [
+        "The first assert_ne!(original.evaluation_digest, other.evaluation_digest) fails after both real proposal calls succeeded. This red proves collapsed commitments; the later old-proposal replay rejection assertion is not reached."
+      ],
+      "tests_changed": false,
+      "post_native_format_apply_check": "PASS (exit 0): independently checked and applied against final native-formatted 06ad source; all other source/tests/fixtures and inline test sections are unchanged.",
+      "restore": "Restore the pre-control production bytes, then verify full positive source/fixture hashes and Cargo.lock before the next control.",
+      "patch_path": "negative-controls/negative-plasticity-publication-commitment.patch",
+      "original_pre_format_patch_sha256": "4d21e5f1eabe993427850ea83dab628ed8ecdf07454f88ef8d72cfd19cd988b5",
+      "patch_bytes_rebased_for_native_format": false,
+      "positive_production_git_blob": "7004ae2981587a63f9941376196af9435dbbdc6d",
+      "mutated_production_git_blob": "d75a730c99779021795a536960adf44888c57fc1",
+      "all_other_source_tests_and_fixtures_identical": true
+    },
+    {
+      "phase": "red-q-selector",
+      "patch_name": "negative-selector-publication-signature.patch",
+      "patch_sha256": "e74af6899e6941ee81ba944664153fb67157398220b0cc395847feb5c5ef95a0",
+      "production_path": "codex-rs/hepta-intelligence-eval/src/self_evolution_selection.rs",
+      "mutation": "Deletes only qualification identity fields from the v2 selector signing encoding; retains required fields/nonzero checks, sealed admission and receipt binding.",
+      "command": [
+        "just",
+        "test",
+        "--locked",
+        "-p",
+        "codex-hepta-intelligence-eval",
+        "-E",
+        "test(/(^|::)(selector_signature_commits_the_exact_qualification_publication)$/)"
+      ],
+      "required_named_failures": [
+        "selector_signature_commits_the_exact_qualification_publication"
+      ],
+      "required_failure_count": 1,
+      "behavioral_witnesses": [
+        "Actual admit_self_evolution_selection_v1 accepts another publication under the original selector signature; expected SelfEvolutionSelectionError::Evidence is absent."
+      ],
+      "tests_changed": false,
+      "post_native_format_apply_check": "PASS (exit 0): independently checked and applied against final native-formatted 06ad source; all other source/tests/fixtures and inline test sections are unchanged.",
+      "restore": "Restore the pre-control production bytes, then verify full positive source/fixture hashes and Cargo.lock before the next control.",
+      "patch_path": "negative-controls/negative-selector-publication-signature.patch",
+      "original_pre_format_patch_sha256": "e74af6899e6941ee81ba944664153fb67157398220b0cc395847feb5c5ef95a0",
+      "patch_bytes_rebased_for_native_format": false,
+      "positive_production_git_blob": "7d3da83abd8c200698a7d98adb46cacef79999d6",
+      "mutated_production_git_blob": "3cef48e68880f7230f4071148a2d795b1016a561",
+      "all_other_source_tests_and_fixtures_identical": true
+    }
+  ],
+  "success_criteria": {
+    "positive": "Exit zero with requested tests actually executed; a compile-only or empty filter run is not a pass.",
+    "negative": "Compile and run the exact named tests; each listed test must end as a named behavioral failure at the described assertion. Compiler errors, timeouts, missing tests, setup panics or dependency failures do not count.",
+    "restoration": "After every negative, all production and test/fixture bytes equal the pre-fix positive snapshot and Cargo.lock is unchanged. The subsequent unfiltered three-package green run must execute and pass the restored tests.",
+    "limits": "No result here self-issues source_qualified_exact_head, real production provider/sink, durable receipt recovery, future-calendar efficacy, physical-effect authority or release.",
+    "post_fix_identity": "Scoped fix is last per AGENTS. If it changes source, preserve and report the diff/new hashes; do not claim the earlier green run tested those new bytes and do not rerun tests merely after fix/format."
+  },
+  "root_order_correction": "Supersedes any earlier fix-before-tests ordering in archived README/native planning. Required order: fmt/check -> four restored negative controls -> full three-package green -> scoped fix.",
+  "actual_initial_native_format": {
+    "receipt": "native-format/initial-format-receipt.json",
+    "patch_sha256": "b3c2fc27a769c8c24b173aececd883aafb8b04822ee53aa1a230858c36a10e3b",
+    "files_verified": 14,
+    "status": "Initial format/check passed; final trust insertion format and full R3-difference format check also passed.",
+    "receipt_sha256": "69c4d1f8e4ecad37c96aa085596678a4c5dcaf98bb05ce217beb1b7a626ef231"
+  },
+  "execution_tree": "b8ce8b96a759f522cb7db60027d4844f1b3ad974",
+  "positive_manifest": "final-positive-manifest.json",
+  "execution_identity_note": "Root explicitly authorized source adoption F432421 (sole parent facba) and true merge Eeed654 (ordered parents e0b + F432421). All native positive evidence remains at tested facba; the immutable original fix-blocked receipt is accepted only with the pinned reviewed adoption and exact runtime source checks. No old green is relabelled as testing F or E. Explicit CLI HEAD/tree must match this reviewed plan.",
+  "actual_final_native_format": {
+    "receipt_sha256": "b9f621339c82fd6a16f00fc50063b4a4d19301e27c7f0de382fe480ef8dbfdb7",
+    "runner_test_blob": "fc084ad5d2f02709f663f95240737860a05a7c9f",
+    "files_verified": 14,
+    "head": "06ad4a9b48aa28ef6edfc537243f069e2d48eb40",
+    "expanded_caller_scan_sha256": "8ce3bb65c4e39a0e7dc3f310fb54564b26569579e4074595ac13348ebfc914c0",
+    "expanded_caller_scan_lines": 83,
+    "expanded_caller_scan_paths": 20,
+    "test_execution": "NOT_RUN",
+    "receipt": "native-format/final-trust-format-receipt.json",
+    "expanded_caller_scan": "native-format/extended-caller-scan.txt"
+  },
+  "prior_pre_repair_execution_head": "06ad4a9b48aa28ef6edfc537243f069e2d48eb40",
+  "first_wave_expected_implementation_commit": "facba0d32c1cd0e8163a6186d7ba91fa311f2e2e",
+  "first_wave_completion_gates": {
+    "source": "/home/qq/work/hepta-convergence-20261105-0c901b/source",
+    "desktop_regression": {
+      "receipt": "/home/qq/work/hepta-convergence-20261105-0c901b/evidence/native-desktop-regression-v1/receipt.json",
+      "phase": "desktop-regression",
+      "state": "desktop-regression-complete",
+      "expected_test_count": 1,
+      "required_tests": [
+        "desktop_policy_two_successors_keep_one_original_issuer_then_revocation_fences_the_pair"
+      ],
+      "command": [
+        "just",
+        "test",
+        "--locked",
+        "-p",
+        "codex-hepta-agentd",
+        "-E",
+        "test(/(^|::)(desktop_policy_two_successors_keep_one_original_issuer_then_revocation_fences_the_pair)$/)"
+      ],
+      "sha256": "4b133f93c90f5e27910a8d729b9b89ffdffb01d0bb659e491406bde484f06c19",
+      "archived_copy": "first-wave/named-receipt.json",
+      "wrapper_exit_code": 0,
+      "command_exit_code": 0
+    },
+    "green": {
+      "receipt": "/home/qq/work/hepta-convergence-20261105-0c901b/evidence/native-green-v2/receipt.json",
+      "phase": "green",
+      "state": "green-complete",
+      "expected_test_count": 813,
+      "required_tests": [
+        "rejected_terminal_observation_preserves_recovered_uncertainty",
+        "last_available_revision_accepts_terminal_observation_once",
+        "cancellation_deadline_overflow_preserves_dispatched_run",
+        "last_representable_cancel_deadline_remains_reconcilable",
+        "revision_overflow_preserves_pre_dispatch_state",
+        "revision_overflow_preserves_dispatched_and_cancelling_state",
+        "bulk_deadline_error_retains_completed_prefix_and_failed_record",
+        "bulk_unknown_error_retains_completed_prefix_and_failed_record",
+        "product_runner_rejects_changed_plans_before_consuming_or_releasing_holdout",
+        "product_runner_binds_estimator_receipts_and_persists_signed_decision",
+        "ineligible_qualification_cannot_be_relabelled_to_enter_ports_or_record_a_decision",
+        "public_governed_topology_denies_before_grant_consumption_or_callbacks",
+        "public_topology_recovery_denies_before_grant_consumption_or_callbacks",
+        "desktop_policy_two_successors_keep_one_original_issuer_then_revocation_fences_the_pair"
+      ],
+      "command": [
+        "just",
+        "test",
+        "--locked",
+        "-p",
+        "codex-hepta-agentd",
+        "-p",
+        "codex-hepta-runtime",
+        "-p",
+        "codex-hepta-intelligence-eval",
+        "-p",
+        "codex-hepta-intelligence"
+      ],
+      "sha256": "f47d72c3930e2575b567fb8acaeb999f6696fab34bdcdd81ccd56b542fd81588",
+      "archived_copy": "first-wave/green-receipt.json",
+      "wrapper_exit_code": 0,
+      "command_exit_code": 0
+    },
+    "fix": {
+      "receipt": "/home/qq/work/hepta-convergence-20261105-0c901b/evidence/native-fix-v1/receipt.json",
+      "phase": "fix",
+      "state": "fix-blocked",
+      "command": [
+        "just",
+        "fix",
+        "--locked",
+        "-p",
+        "codex-hepta-agentd",
+        "-p",
+        "codex-hepta-runtime",
+        "-p",
+        "codex-hepta-intelligence-eval",
+        "-p",
+        "codex-hepta-intelligence"
+      ],
+      "sha256": "ae54b470fd20e079d33602f60abffc3f130816586974b297cebe2f6ea3704d3b",
+      "archived_copy": "first-wave/fix-receipt.json",
+      "wrapper_exit_code": 1,
+      "command_exit_code": 0
+    },
+    "required_implementation_commit": "facba0d32c1cd0e8163a6186d7ba91fa311f2e2e",
+    "positive_observation_required": "Exact receipt schema, original full command and execution step, exact named count1 or full count813, all exact14 critical names and passed_count equal run_count are required. Receipt self-declared subsets do not reduce the gate.",
+    "clean_source_required": "At execution verify current first F432421 and second Eeed654 exact HEAD/tree/parents and clean status. Original named/green/fix receipts remain tested facba. Original13 files and final14 ingress files remain pinned; only exact2 adopted test files differ.",
+    "execution_state": "HISTORICAL_NAMED_AND_GREEN_PASS; ORIGINAL_FIX_BLOCKED; SEPARATE_EXACT_SOURCE_ADOPTION_REQUIRED",
+    "old_failure_preserved": "native-green-v1 is original failing evidence and cannot satisfy any gate.",
+    "schema": "hepta.runtime-convergence-native-validation.v1"
+  },
+  "prior_pre_fix_execution_head": "e0b522cd437af1362f8be23f601886b46ec1b063",
+  "first_wave_current_head": "432421d0d9ca9d82c5e3401fe3425af29131505a",
+  "first_wave_current_tree": "d93136bb5e318ea4131bfb5cb0b9ac9310f27d1d",
+  "first_wave_tested_head": "facba0d32c1cd0e8163a6186d7ba91fa311f2e2e",
+  "reviewed_first_fix_adoption": {
+    "path": "first-wave/post-fix-source-adoption.json",
+    "sha256": "1e74cb96735d026305f25cd5991d8e3dcedcd27644b063b8668503c0a6be3442",
+    "native_patch_path": "first-wave/native-fix.patch",
+    "native_patch_sha256": "8226534cf866dd0be0ed94099bef18ca7a1cd64d701ae4d48df0427f63248d07",
+    "scope": "Accept only the independently reviewed exact two-file scope blocker. Raw fix-blocked remains unchanged; the historical 813-pass result remains facba-only."
+  },
+  "actual_reviewed_postfix_alignment": {
+    "receipt": "native-format/reviewed-postfix-alignment-receipt.json",
+    "receipt_sha256": "64be8b15396564e49ac3b6f4dd6ecd7b9c623a40c113e45d4f1b742779f6a42e",
+    "state": "reviewed-postfix-heads-aligned-and-byte-verified",
+    "first_current_head": "432421d0d9ca9d82c5e3401fe3425af29131505a",
+    "second_execution_head": "eed6541df0add428add8e2d9ab2cbd54a961abeb",
+    "first_verified_rust_files": 5309,
+    "second_verified_rust_files": 5314,
+    "original_thirteen_unchanged": true,
+    "sealed_fourteen_unchanged": true,
+    "raw_fix_receipt_rewritten": false,
+    "first_tests_or_fix_rerun": false,
+    "second_native_test_execution": "NOT_RUN_AT_BUNDLE_FREEZE",
+    "live_source_identity_and_clean_checks_remain_mandatory": true
+  }
+}

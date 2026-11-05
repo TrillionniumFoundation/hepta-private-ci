@@ -1,0 +1,38 @@
+{
+  "schema": "hepta.qualification-negative-control-repair-review.v1",
+  "control": "First-wave B2 decision-seal mutation",
+  "original_attempt": {
+    "positive_source_head": "1d87082c0d5afd2b474a2c453ea98005fd540dea",
+    "state": "negative-control-did-not-prove-test-failure",
+    "just_test_exit_code": 101,
+    "duration_seconds": 37.39757466316223,
+    "tests_executed": false,
+    "stderr_sha256": "1359b5fe3306272283e5fab36d51f866ec6f75d507347e57329dc2a2e0d2c8ae",
+    "error_class": "10 E0433 errors in product_runner_tests.rs because the production mutant removed IndependentEvaluationDispositionV1 imported through super::*",
+    "behavioral_red_established": false
+  },
+  "repair": {
+    "result": "ACCEPTED_AT_SOURCE_REVIEW_LEVEL",
+    "original_patch_sha256": "d6eede3615783ba79a11ae1829818a669e137b4b7e27ec4479aa39e4a0cabb88",
+    "revised_patch": "negative-decision-seal-keep-test-import.patch",
+    "revised_patch_sha256": "c8d75e29b1bec33c06a7db470ed1d6da507fb9012155e57823cafb8ee767d66d",
+    "sole_path": "codex-rs/hepta-intelligence-eval/src/product_runner.rs",
+    "positive_blob": "0c374acd8c5e25626c213c1ed9f6ba36d3fcbe42",
+    "positive_sha256": "b00f4f3d0e73ed1f206a5387268a60c05372299eec238925ff2b54537be65f25",
+    "mutant_blob": "525d37989ddb18ed1908fec61b40cac01cea070b",
+    "mutant_sha256": "112e43212b70f1be698c250fa9abe58d20837ab703144ad759f43c5ee3bcc051",
+    "difference_from_original_mutant": "Exactly retain the single IndependentEvaluationDispositionV1 import; all other bytes identical. No test byte or positive production byte changes.",
+    "retained_mutation": "The same decision-field omission and v4-to-v3 evidence / v2-to-v1 seal domain regression remains active."
+  },
+  "independent_checks": [
+    "Original full stderr hash and ten actual compiler errors confirmed.",
+    "Revised patch added/deleted lines exactly equal original mutation excluding its import deletion.",
+    "Independent git apply --check, apply, and git diff --check succeeded.",
+    "Applied mutant bytes match lifecycle artifact and equal the original mutant plus only its required test import."
+  ],
+  "limits": [
+    "This repairs a malformed negative-control input; no positive product-source fix is warranted by this failure.",
+    "No behavioral result is inferred until the corrected mutant compiles and executes the two original named regression tests at their intended failure assertions.",
+    "The lifecycle runner owns serial execution and guarded restoration; this reviewer did not mutate either AI395 source checkout."
+  ]
+}

@@ -1,6 +1,28 @@
-# Sealed qualification ingress: source handoff
+# Sealed qualification ingress: source and native evidence
 
-## Candidate and validation state
+The original source handoff below records the four-stage migration before
+native formatting and the additional trust-identity regression. Current source
+identities, actual native results and limitations are recorded in
+[native-validation.md](native-validation.md), [native-source-manifest.json](native-source-manifest.json)
+and [validation.json](validation.json). The [convergence target](convergence-target.md)
+sets the A/B/C product acceptance boundaries without granting runtime authority.
+
+## Current native result
+
+Exact source `eed6541df0add428add8e2d9ab2cbd54a961abeb` passed the original
+unfiltered three-package command: **805/805 tests passed, one slow, 66 skipped**.
+All seven critical ingress regressions passed. Four isolated mutation controls
+first produced their required behavioral failures and restored the positive
+source; Q3's earlier compilation failure remains a separate failed attempt.
+
+The final scoped fix returned zero and produced only one mechanical last-use
+clone removal in a plasticity test fixture. Current source
+`0766fc4d5feabea9569d48e7eca4e0a3431bd0f5` records that change separately.
+No test was rerun after fix, and the E result is not assigned to the later
+source. Original CI, production receipt recovery, the real task/effect/restart
+chain and independently measured adaptive benefit remain separate requirements.
+
+## Original handoff: candidate and validation state
 
 This is a source migration for the three identified generic signed-evaluation
 consumers. It requires the canonical sealed product receipt, revalidates its
@@ -21,8 +43,9 @@ native qualification, full receipt recovery, or measured adaptive benefit.
   closure evidence section is byte-for-byte unchanged.
 - Root reviewed stage 1; product independently reviewed stages 2–4 and the
   combined source, including exact no-update branch/signing-byte preservation.
-- Rust formatting, compilation, Clippy and native tests have **not run** for
-  this candidate. Static review and patch application are not native evidence.
+- At this original handoff, Rust formatting, compilation, Clippy and native
+  tests had **not run**. Later observations are recorded separately above.
+  Static review and patch application are not native evidence.
 
 Root created and read back the four source commits below on the intended
 `a20a819` base. The compare is four commits ahead, zero behind, and all 14
@@ -145,24 +168,27 @@ existing owner-controlled durable proposal. No new signing authority is
 invented. Revalidation and a new use signature never consume a final holdout
 again or authorize bypassing the authoritative one-use owner.
 
-## Native acceptance to run on the final candidate
+## Native acceptance protocol
 
 Follow repository AGENTS and the existing toolchain. From `codex-rs`, run:
 
 ```sh
-just fmt --base a20a8191ec37375876a99b7c18bae053f9bc185d
-just fix -p codex-hepta-intelligence-eval
-just fix -p codex-hepta-agentd
-just fix -p codex-hepta-intelligence
-just test -p codex-hepta-intelligence-eval
-just test -p codex-hepta-agentd
-just test -p codex-hepta-intelligence
+just fmt --base 432421d0d9ca9d82c5e3401fe3425af29131505a
+just fmt --base 4e31abc907f09740d402d1ddef7a1d2fe0a366a6 --check
+# Run each isolated mutation control and restore the positive source.
+just test --locked -p codex-hepta-intelligence-eval -p codex-hepta-agentd -p codex-hepta-intelligence
+just fix --locked -p codex-hepta-intelligence-eval -p codex-hepta-agentd -p codex-hepta-intelligence
 ```
+
+Use the explicit source identity and order in the native validation plan.
+Scoped fix is last; preserve and review any resulting diff and distinguish its
+new source identity from the tested source. Do not rerun tests merely after fix
+or formatting. A concrete new defect or a required gate needs its own record.
 
 The formatter needs the explicit comparison base: a clean published checkout
 has no uncommitted source changes, so bare `just fmt` would skip this candidate.
 Use the repository `just test` interface, not a substitute direct test command.
-The three complete package runs compile the identified construction sites and
+The complete three-package run compiles the identified construction sites and
 shared signed-integration fixtures; the exact-tree inventory may require
 additional consumer builds. Also search the exact assembled checkout for old
 cross-crate V2 and v1 payload callers; GitHub code search indexes the default
@@ -176,7 +202,7 @@ holdout stress and signed cross-crate E2E evidence are still required before
 
 | Test | Required behavior |
 |---|---|
-| `product_runner_binds_estimator_receipts_and_persists_signed_decision` | Exact runner receipt revalidates; valid re-signed different metrics, new evaluator attestation metadata, roles, expired evidence and modified publication are rejected without another publish/release |
+| `product_runner_binds_estimator_receipts_and_persists_signed_decision` | Exact runner receipt revalidates; legal current-trust re-signing with the same inner decision, valid re-signed different metrics, new evaluator attestation metadata, roles, expired evidence and modified publication are rejected without another publish/release |
 | `independently_resigned_metrics_cannot_replace_the_qualified_estimator_evidence` | Agentd rejects a valid new bundle/use signature paired with the old qualification |
 | `current_use_attestation_binds_the_exact_sealed_publication` | Agentd rejects an old use signature for a different legitimate publication; a correct new signature succeeds |
 | `signed_generic_metrics_cannot_replace_the_product_qualification_before_append` | Plasticity rejects substituted validly signed metrics before registry or anchor changes |
@@ -208,8 +234,12 @@ accepted. Restore the positive candidate between controls.
 | `negative-plasticity-publication-commitment.patch` | Qualification identities in the per-candidate durable commitment | `durable_proposal_identity_commits_the_exact_qualification_publication` |
 | `negative-selector-publication-signature.patch` | Qualification identities in selector signing bytes | `selector_signature_commits_the_exact_qualification_publication` |
 
-All negative patches pass local application checks. Their SHA-256 values are
-in `negative-controls/manifest.json`. None has executed natively yet.
+The original negative patches passed local application checks at the source
+handoff. Native formatting changed the shared-helper guard layout; its control
+was regenerated with identical mutation semantics and unchanged tests. Current
+patch hashes and execution observations are in `negative-controls/manifest.json`
+and `native-validation.md`. Compiler or setup failures never count as a
+behavioral negative result.
 
 ## Remaining production obligations
 
@@ -236,6 +266,8 @@ in `negative-controls/manifest.json`. None has executed natively yet.
    shadow Decision or selection token is not a physical effect. No stronger
    baseline result or measured adaptive improvement is asserted by this patch.
 
-The source work is ready for native qualification and stacked review with the
-above limitations kept explicit. It is not a declaration of complete product
-readiness.
+The exact-source native observations and independently reviewed mutation
+results are recorded in `native-validation.md` and `validation.json`. The
+historical source handoff, frozen plans and failed attempts retain their
+original states. The production obligations above remain open after package
+validation; this is not a declaration of complete product readiness.
