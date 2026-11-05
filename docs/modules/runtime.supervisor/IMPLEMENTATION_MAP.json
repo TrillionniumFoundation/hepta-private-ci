@@ -335,9 +335,33 @@
       "sourcePath": "codex-rs/hepta-supervisor/src/supervisor.rs",
       "sourcePathExists": true,
       "sourceBlob": "f854f1a0c40024a5fe01ea42b5139d8c77bfc778"
+    },
+    {
+      "operation": "recover_writer_handoff",
+      "nativeSymbol": "DurableWriterHandoffJournalV1::recover_at_least",
+      "sourcePath": "codex-rs/hepta-supervisor/src/writer_handoff.rs",
+      "state": "source_implemented_logical_lock_owner_lifetime",
+      "authority": "none",
+      "tests": [
+        "codex-rs/hepta-supervisor/src/writer_handoff_recovery_tests.rs",
+        "codex-rs/hepta-supervisor/src/writer_handoff_lock_tests.rs"
+      ],
+      "sourcePathExists": true,
+      "designOperation": "recover_writer_handoff",
+      "mappingClass": "owner_native",
+      "delegatedCallees": [
+        {
+          "path": "codex-rs/hepta-supervisor/src/writer_handoff_lock.rs",
+          "symbol": "LockedHandoffFile::acquire"
+        }
+      ],
+      "sourceBlob": "9d00b02419cb76f1647ed1741981763cb78f3970"
     }
   ],
-  "repositoryControlledGaps": [],
+  "repositoryControlledGaps": [
+    "Retain candidate-bound native RED/GREEN receipts for logical-owner drop and failed recovery while a passive duplicated descriptor remains open, then qualify the actual Unix fork-copy drop case and the full supervisor suite on the recorded candidate.",
+    "Keep fork-child terminal observation and cleanup outcomes explicit: the donor fixture has a fixed two-second window, and deadline expiry does not prove successful cleanup or authorize a broader process-management claim."
+  ],
   "externalEvidenceGates": [
     "exact deployed hepta-supervisord binary, host identity and externally pinned production grant/H7 verifier configuration",
     "target-host startup, watchdog, typed Agentd drain, bounded restart and signed-recovery crash/fault/latency measurements",
@@ -393,5 +417,47 @@
     "previousMapBlob": "7e6f5145baacbc1c63079eb9ee96b8ac56c3d41e",
     "scope": "source_navigation_only_no_execution_evidence_transferred"
   },
-  "mappingSourceIdentityMode": "exact_blob"
+  "mappingSourceIdentityMode": "exact_blob",
+  "sourceReviewAddendum": {
+    "kind": "local_source_review",
+    "reviewDate": "2026-11-05",
+    "integrationBase": {
+      "parentCommits": [
+        "5e917b9f5fb3e841dbcaefcd5bbbf59b32f20411",
+        "f6905bf16e0b6395648e377c6fa444e026c4d3a1"
+      ],
+      "tree": "af6b28fa3dc026f1c31077ee569a647969817e8b",
+      "meaning": "integration_owner_provided_merge_baseline_not_execution_identity"
+    },
+    "reviewedPostimages": [
+      {
+        "sourcePath": "codex-rs/hepta-supervisor/src/writer_handoff.rs",
+        "gitBlob": "9d00b02419cb76f1647ed1741981763cb78f3970",
+        "sha256": "769f8402fdc9c5cf66a5922a93a22d1fb1970ba0e4ef734dfa6a464d873c2f3e",
+        "bytes": 32706
+      },
+      {
+        "sourcePath": "codex-rs/hepta-supervisor/src/writer_handoff_lock.rs",
+        "gitBlob": "1d1c827f3e4183b92e900dbc2d8b8dc31419bd49",
+        "sha256": "92211928df13beec08adda03a98ff3a3ce448eb4345fbf1a4d748a22e0496f32",
+        "bytes": 1923
+      },
+      {
+        "sourcePath": "codex-rs/hepta-supervisor/src/writer_handoff_lock_tests.rs",
+        "gitBlob": "12fd8065eacc726f2ac4284bc6b02b4816442323",
+        "sha256": "76edfc7812f012d72e7d6be87ac51e4edd0e719ed02ccc9136f2108568fc134f",
+        "bytes": 5379
+      },
+      {
+        "sourcePath": "codex-rs/hepta-supervisor/src/writer_handoff_recovery_tests.rs",
+        "gitBlob": "304d0fb7d7a5185d84dc78ec5aa9b39fbdd724f2",
+        "sha256": "c9b7fba60a7fec31e9e65e0d7caeb0843137844e816f192f284a4c50927cd8e3",
+        "bytes": 7447
+      }
+    ],
+    "historicalEvidenceRebound": false,
+    "productionQualificationGranted": false,
+    "nativeExecutionEvidence": "separate_candidate_bound_receipts_required",
+    "donorCommit": "eac9ca08f2414c619a5058868ebbedf683b18685"
+  }
 }

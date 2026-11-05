@@ -86,7 +86,7 @@
     },
     {
       "operation": "final_use_revalidate",
-      "nativeSymbol": "revalidate",
+      "nativeSymbol": "revalidate_with_retrieval_context",
       "sourcePath": "codex-rs/hepta-agentd/src/cognitive_context.rs",
       "state": "source_implemented_product_composed",
       "authority": "none",
@@ -97,7 +97,10 @@
         "codex-rs/hepta-infer-worker-host/src/native_app_server_tests.rs",
         "codex-rs/hepta-agentd/tests/cognitive_product_e2e.rs",
         "codex-rs/hepta-agentd/src/cognitive_context_budget_tests.rs",
-        "codex-rs/hepta-agentd/src/state_isolation_tests.rs"
+        "codex-rs/hepta-agentd/src/state_isolation_tests.rs",
+        "codex-rs/hepta-agentd/src/cognitive_context_hnmf_tests.rs::final_use_revalidation_rejects_tombstone_during_provider_callback",
+        "codex-rs/hepta-agentd/src/cognitive_context_hnmf_tests.rs::final_use_revalidation_rejects_source_drift_during_provider_callback",
+        "codex-rs/hepta-agentd/src/cognitive_context_hnmf_tests.rs::final_use_revalidation_rejects_changed_hnmf_context"
       ],
       "sourcePathExists": true,
       "designOperation": "revalidate",
@@ -107,7 +110,11 @@
         "codex-rs/hepta-agentd/src/client.rs",
         "codex-rs/hepta-infer-core/src/native_control.rs",
         "codex-rs/hepta-infer-worker-host/src/native_app_server.rs",
-        "codex-rs/hepta-agentd/src/cognitive_ranker.rs"
+        "codex-rs/hepta-agentd/src/cognitive_ranker.rs",
+        {
+          "path": "codex-rs/hepta-memory/src/lane_c_snapshot.rs",
+          "symbol": "CognitiveStore::revalidate_lane_c_snapshot"
+        }
       ],
       "sourceBlob": "494043d2e03a7f738ad1de3a065766a4423cef0b"
     },
@@ -141,7 +148,9 @@
     "Supply authoritative source-revision bindings before claiming full canonical provenance equivalence; legacy MemoryRecord citations do not carry source revisions.",
     "Migrate named downstream callers from legacy ReadResultV2 only after exact record-to-event bridge ownership is established.",
     "Revalidate the canonical shadow against the current final-use snapshot before physical model-request attachment; a historical read receipt grants no future-use authority.",
-    "Named source and product adapters remain present; current candidate requalification is required because mapped source/build inputs changed after the retained historical observation. Historical production proof is not rebound by navigation migration."
+    "Named source and product adapters remain present; current candidate requalification is required because mapped source/build inputs changed after the retained historical observation. Historical production proof is not rebound by navigation migration.",
+    "Retain candidate-bound native RED/GREEN receipts for the final SQLite owner-cut reread after retrieval and ranker callbacks: committed tombstones and source-frontier-only drift during the retrieval callback must reject final use, while unchanged context still succeeds.",
+    "Keep the added owner-currentness guard separate from real retrieval-provider activation, physical model-request attachment, process-restart qualification and any claim of atomic authority across different owners."
   ],
   "externalEvidenceGates": [
     "independent semantic review",
@@ -182,6 +191,10 @@
     {
       "path": "codex-rs/hepta-agentd/src/cognitive_context_budget_tests.rs",
       "object": "d6347cc9be5255e2b64dc07558f8efa31a87266d"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cognitive_context_hnmf_tests.rs",
+      "object": "0caf38c7f9deb543a97a9c5d27bc1784d128c6d4"
     },
     {
       "path": "codex-rs/hepta-agentd/src/cognitive_context_tests.rs",
@@ -287,7 +300,7 @@
       "role": "owner_final_use_revalidation",
       "blobSha": "494043d2e03a7f738ad1de3a065766a4423cef0b",
       "sourcePath": "codex-rs/hepta-agentd/src/cognitive_context.rs",
-      "nativeSymbol": "pub(crate) async fn revalidate("
+      "nativeSymbol": "pub(crate) async fn revalidate_with_retrieval_context("
     },
     {
       "role": "control_protocol",
@@ -348,5 +361,34 @@
     "previousMapBlob": "757935cc9c1a034a3b4ee55104ae813687012c63",
     "scope": "source_navigation_only_no_execution_evidence_transferred"
   },
-  "mappingSourceIdentityMode": "exact_blob"
+  "mappingSourceIdentityMode": "exact_blob",
+  "sourceReviewAddendum": {
+    "kind": "local_source_review",
+    "reviewDate": "2026-11-05",
+    "integrationBase": {
+      "parentCommits": [
+        "5e917b9f5fb3e841dbcaefcd5bbbf59b32f20411",
+        "f6905bf16e0b6395648e377c6fa444e026c4d3a1"
+      ],
+      "tree": "af6b28fa3dc026f1c31077ee569a647969817e8b",
+      "meaning": "integration_owner_provided_merge_baseline_not_execution_identity"
+    },
+    "reviewedPostimages": [
+      {
+        "sourcePath": "codex-rs/hepta-agentd/src/cognitive_context.rs",
+        "gitBlob": "ec5a1fbcb297876d76fcd51569a26ba3f65b82d8",
+        "sha256": "c3fda686b2a84b38762ab648e9c70c10b97a13bcca52922cd080935d19b72e10",
+        "bytes": 28151
+      },
+      {
+        "sourcePath": "codex-rs/hepta-agentd/src/cognitive_context_hnmf_tests.rs",
+        "gitBlob": "0caf38c7f9deb543a97a9c5d27bc1784d128c6d4",
+        "sha256": "0fd308417f12a1061407989eec115bb190f0cbb2a2b5b9030bfe802b3ac4f3e8",
+        "bytes": 16573
+      }
+    ],
+    "historicalEvidenceRebound": false,
+    "productionQualificationGranted": false,
+    "nativeExecutionEvidence": "separate_candidate_bound_receipts_required"
+  }
 }
