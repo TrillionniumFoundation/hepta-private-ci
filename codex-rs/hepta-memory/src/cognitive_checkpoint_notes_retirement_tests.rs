@@ -401,3 +401,9 @@ async fn notes_retirement_holds_original_sqlite_lock_through_synchronous_metadat
         acknowledged_cut
     );
 }
+
+#[path = "cognitive_checkpoint_retirement_ack_tests.rs"]
+mod durable_ack;
+
+#[path = "cognitive_checkpoint_owner_readback_tests.rs"]
+mod owner_readback;
