@@ -111,6 +111,86 @@ async fn initialized_handler() -> Arc<ExecServerHandler> {
 }
 
 #[tokio::test]
+async fn legacy_client_cannot_start_a_process_without_exit_observation() {
+    let (tx, _rx) = mpsc::channel(16);
+    let registry = SessionRegistry::new(crate::ExecServerTelemetry::default());
+    let handler = ExecServerHandler::new(
+        registry,
+        RpcNotificationSender::new(tx),
+        test_runtime_paths(),
+        test_http_client_factory(),
+    );
+    let response = handler
+        .initialize(InitializeParams {
+            client_name: "legacy-peer".to_string(),
+            resume_session_id: None,
+            process_exit_observation: false,
+        })
+        .await
+        .expect("metadata-only initialization");
+    assert!(response.process_exit_observation);
+    handler
+        .initialized()
+        .expect("initialized metadata-only peer");
+    let error = handler
+        .exec(exec_params("must-not-spawn"))
+        .await
+        .err()
+        .expect("start must refuse");
+    assert_eq!(
+        error.message,
+        "process/start requires negotiated exit observation support"
+    );
+    assert!(handler.environment_info().is_ok());
+    handler.shutdown().await;
+}
+
+#[tokio::test]
+async fn legacy_resume_refuses_before_attaching_to_original_session() {
+    let registry = SessionRegistry::new(crate::ExecServerTelemetry::default());
+    let (first_tx, _first_rx) = mpsc::channel(16);
+    let first = ExecServerHandler::new(
+        Arc::clone(&registry),
+        RpcNotificationSender::new(first_tx),
+        test_runtime_paths(),
+        test_http_client_factory(),
+    );
+    let response = first
+        .initialize(InitializeParams {
+            client_name: "capable-peer".to_string(),
+            resume_session_id: None,
+            process_exit_observation: true,
+        })
+        .await
+        .expect("original initialize");
+    first.initialized().expect("original initialized");
+    let (second_tx, _second_rx) = mpsc::channel(16);
+    let second = ExecServerHandler::new(
+        registry,
+        RpcNotificationSender::new(second_tx),
+        test_runtime_paths(),
+        test_http_client_factory(),
+    );
+    let error = second
+        .initialize(InitializeParams {
+            client_name: "legacy-peer".to_string(),
+            resume_session_id: Some(response.session_id),
+            process_exit_observation: false,
+        })
+        .await
+        .err()
+        .expect("legacy resume refusal");
+    assert_eq!(
+        error.message,
+        "session resumption requires process exit observation support"
+    );
+    assert!(first.is_session_attached());
+    assert!(first.environment_info().is_ok());
+    second.shutdown().await;
+    first.shutdown().await;
+}
+
+#[tokio::test]
 async fn duplicate_process_ids_allow_only_one_successful_start() {
     let handler = initialized_handler().await;
     let first_handler = Arc::clone(&handler);
