@@ -116,6 +116,15 @@
         "elevated::runner_client::process::tests::native_wait_cancellation_does_not_report_live_process_as_terminal"
       ],
       "filter": "test(=elevated::runner_client::process::tests::native_wait_observes_release_and_exact_exit) | test(=elevated::runner_client::process::tests::native_wait_rejects_conflicting_exit_message) | test(=elevated::runner_client::process::tests::native_wait_does_not_reset_expired_command_budget) | test(=elevated::runner_client::process::tests::native_wait_cancellation_does_not_report_live_process_as_terminal)"
+    },
+    {
+      "id": "driver-exit-unknown",
+      "package": "codex-utils-pty",
+      "expectedTestCount": 1,
+      "requiredTests": [
+        "tests::driver_terminal_tests::driver_sender_drop_keeps_unknown_exit_and_drains_output"
+      ],
+      "filter": "test(=tests::driver_terminal_tests::driver_sender_drop_keeps_unknown_exit_and_drains_output)"
     }
   ]
 }
