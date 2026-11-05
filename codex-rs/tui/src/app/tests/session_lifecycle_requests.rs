@@ -86,8 +86,9 @@ async fn start_recording_app_server_with_history(
     mut blocked_thread_list: Option<(ThreadId, oneshot::Sender<()>, oneshot::Receiver<()>)>,
     failed_thread_name: Option<&'static str>,
 ) -> Result<RecordingAppServer> {
+    let mut config = config.clone();
     let state_db =
-        crate::init_state_db_for_app_server_target(config, &crate::AppServerTarget::Embedded)
+        crate::init_state_db_for_app_server_target(&mut config, &crate::AppServerTarget::Embedded)
             .await?;
     let embedded = crate::start_embedded_app_server(
         codex_arg0::Arg0DispatchPaths::default(),
@@ -428,12 +429,16 @@ async fn external_transport_registers_dynamic_tools_and_finds_task_mentions() ->
     app_server
         .thread_inject_items(target_id, vec![App::side_boundary_prompt_item()])
         .await?;
-    crate::init_state_db_for_app_server_target(&app.config, &crate::AppServerTarget::Embedded)
-        .await?
-        .expect("state database")
-        .set_thread_preview_if_empty(target_id, "Review database migration")
-        .await
-        .expect("seed searchable thread preview");
+    let mut state_config = app.config.clone();
+    crate::init_state_db_for_app_server_target(
+        &mut state_config,
+        &crate::AppServerTarget::Embedded,
+    )
+    .await?
+    .expect("state database")
+    .set_thread_preview_if_empty(target_id, "Review database migration")
+    .await
+    .expect("seed searchable thread preview");
     app_server.shutdown().await?;
     proxy.await??;
     let (mut restarted_app_server, _restarted_requests, restarted_proxy) =

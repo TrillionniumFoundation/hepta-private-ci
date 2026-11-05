@@ -744,7 +744,7 @@ async fn run_main_with_transport_options_inner(
         }
     };
     let mut config_warnings = Vec::new();
-    let config = match config_manager
+    let mut config = match config_manager
         .load_latest_config(/*fallback_cwd*/ None)
         .await
     {
@@ -844,7 +844,8 @@ async fn run_main_with_transport_options_inner(
         }
         _ => None,
     };
-    let state_db_init = match init_sqlite_state_db_with_fresh_start_on_corruption(&config).await {
+    let state_db_init = match init_sqlite_state_db_with_fresh_start_on_corruption(&mut config).await
+    {
         Ok(state_db_init) => state_db_init,
         Err(err) => {
             return Err(std::io::Error::other(format!(
@@ -1550,13 +1551,14 @@ struct StateDbInitResult {
 }
 
 async fn init_sqlite_state_db_with_fresh_start_on_corruption(
-    config: &Config,
+    config: &mut Config,
 ) -> anyhow::Result<StateDbInitResult> {
     let mut attempted_backups = HashSet::new();
     let mut recovered_databases = Vec::new();
     loop {
-        let err = match rollout_state_db::try_init(config).await {
+        let err = match rollout_state_db::try_init(&*config).await {
             Ok(state_db) => {
+                config.sqlite = state_db.sqlite().clone();
                 let recovery_notice = sqlite_recovery_notice(&recovered_databases);
                 if recovery_notice.is_some() {
                     emit_state_db_backup_warning(SQLITE_RECOVERY_CONFIG_WARNING_SUMMARY);
