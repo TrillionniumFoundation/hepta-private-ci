@@ -167,20 +167,34 @@ impl CognitiveStore {
         let sqlite_home = AbsolutePathBuf::try_from(canonical_root.clone())
             .map_err(|error| CognitiveRecoveryError::Invalid(error.to_string()))?;
         let config = SqliteConfig::from_sqlite_home(sqlite_home);
+        // AbsolutePathBuf normalizes Windows device prefixes. Keep the
+        // canonical spelling for Memory's fence and active-generation checks,
+        // and derive every State child from this exact SqliteConfig home.
+        let source_name = source_path
+            .file_name()
+            .filter(|_| source_path.parent() == Some(canonical_root.as_path()))
+            .ok_or_else(|| {
+                CognitiveRecoveryError::Indeterminate(
+                    "retained cognitive source is not a child of the canonical root".to_string(),
+                )
+            })?;
+        let sqlite_source = config.home().join(source_name);
         let source_guard = config
-            .bind_existing_recovery_database(&source_path)
-            .map_err(recovery_error)?;
+            .bind_existing_recovery_database(&sqlite_source)
+            .map_err(|error| recovery_error_at("retained_source_bind", error))?;
 
-        let candidate = canonical_root.join(recovered_database_filename(expected, &writer_fence));
+        let candidate_name = recovered_database_filename(expected, &writer_fence);
+        let candidate = canonical_root.join(&candidate_name);
+        let sqlite_candidate = config.home().join(&candidate_name);
         config
-            .materialize_identity_bound_recovery_copy(&source_guard, &candidate)
-            .map_err(recovery_error)?;
+            .materialize_identity_bound_recovery_copy(&source_guard, &sqlite_candidate)
+            .map_err(|error| recovery_error_at("candidate_materialization", error))?;
 
         let result = async {
             let commit_gate = CognitiveCommitGate::default();
             let connection_gate = commit_gate.clone();
             let pool = config
-                .open_durable_evidence_pool_guarded(&candidate, move || {
+                .open_durable_evidence_pool_guarded(&sqlite_candidate, move || {
                     connection_gate.commit_allowed()
                 })
                 .await
@@ -226,7 +240,7 @@ impl CognitiveStore {
             pool.close().await;
 
             config
-                .checkpoint_private_recovery_database(&candidate)
+                .checkpoint_private_recovery_database(&sqlite_candidate)
                 .await
                 .map_err(|error| CognitiveRecoveryError::Unavailable(error.to_string()))?;
 
@@ -254,7 +268,7 @@ impl CognitiveStore {
 
             let connection_gate = commit_gate.clone();
             let pool = config
-                .open_durable_evidence_pool_guarded(&candidate, move || {
+                .open_durable_evidence_pool_guarded(&sqlite_candidate, move || {
                     connection_gate.commit_allowed()
                 })
                 .await
@@ -383,6 +397,15 @@ fn validate_requirement<'a>(
         ));
     }
     Ok(expected)
+}
+
+fn recovery_error_at(stage: &'static str, error: SqliteRecoveryError) -> CognitiveRecoveryError {
+    let message = format!("{stage}: {error}");
+    match error {
+        SqliteRecoveryError::Unavailable => CognitiveRecoveryError::Unavailable(message),
+        SqliteRecoveryError::Indeterminate => CognitiveRecoveryError::Indeterminate(message),
+        _ => CognitiveRecoveryError::Indeterminate(message),
+    }
 }
 
 fn recovery_error(error: SqliteRecoveryError) -> CognitiveRecoveryError {

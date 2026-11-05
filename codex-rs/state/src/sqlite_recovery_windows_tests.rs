@@ -546,3 +546,6 @@ fn basic_tuple(value: &FILE_BASIC_INFO) -> (i64, i64, i64, i64, u32) {
         value.FileAttributes,
     )
 }
+
+#[path = "sqlite_recovery_windows_materialize_tests.rs"]
+mod materialize_tests;

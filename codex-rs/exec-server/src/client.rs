@@ -2076,13 +2076,30 @@ mod tests {
     #[cfg(windows)]
     #[tokio::test]
     async fn connect_stdio_command_initializes_json_rpc_client_on_windows() {
+        let fixture = tempfile::tempdir().expect("stdio fixture directory");
+        let server = fixture.path().join("stdio-server.cmd");
+        // CMD builtins exercise the same child stdio handshake without charging
+        // a cold PowerShell runtime to the client's one-second protocol budget.
+        // The last read keeps the child alive until the client closes its stdin.
+        std::fs::write(
+            &server,
+            concat!(
+                "@echo off\r\n",
+                "set /p initialize=\r\n",
+                "echo {\"id\":1,\"result\":{\"sessionId\":\"stdio-test\"}}\r\n",
+                "set /p initialized=\r\n",
+                "set /p client_eof=\r\n",
+            ),
+        )
+        .expect("write stdio server fixture");
         let client = ExecServerClient::connect_stdio_command(StdioExecServerConnectArgs {
             command: StdioExecServerCommand {
-                program: "powershell".to_string(),
+                program: "cmd.exe".to_string(),
                 args: vec![
-                    "-NoProfile".to_string(),
-                    "-Command".to_string(),
-                    "$null = [Console]::In.ReadLine(); [Console]::Out.WriteLine('{\"id\":1,\"result\":{\"sessionId\":\"stdio-test\"}}'); $null = [Console]::In.ReadLine(); Start-Sleep -Seconds 60".to_string(),
+                    "/d".to_string(),
+                    "/q".to_string(),
+                    "/c".to_string(),
+                    server.to_string_lossy().into_owned(),
                 ],
                 env: HashMap::new(),
                 cwd: None,
