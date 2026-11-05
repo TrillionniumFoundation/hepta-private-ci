@@ -79,7 +79,7 @@ fn completed_items_replace_partial_text_once_in_item_order() {
         started("first"),
         started("second"),
         delta("second", " later"),
-        delta("first", "hel"),
+        delta("first", "he\x6c"),
         completed("thread-a", "turn-a", "first", "hello"),
         completed("thread-a", "turn-a", "second", " later"),
         completed("thread-a", "turn-a", "second", " later"),
