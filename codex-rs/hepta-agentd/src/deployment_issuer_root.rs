@@ -120,6 +120,63 @@ impl DeploymentFinalUseIssuer {
             .map_err(lease_error)?
     }
 
+    /// Hold the canonical issuer and exact registered writer under one
+    /// original registry boundary. Nesting their separate boundaries would
+    /// reenter that same owner mutex. The callback must check both lease
+    /// expiries after its own I/O before publishing a time-limited result.
+    pub(crate) fn with_live_issuer_and_writer<T>(
+        &self,
+        registration: &HostAuthorityWriterRegistration,
+        dispatch: impl FnOnce(&AuthorityLease) -> io::Result<T>,
+    ) -> io::Result<T> {
+        registration.validate()?;
+        let pinned = self
+            .lease
+            .as_ref()
+            .ok_or_else(|| io::Error::other("no protected lease"))?;
+        let issuer = pinned
+            .verifier
+            .read_lease(&pinned.id)
+            .map_err(lease_error)?
+            .ok_or_else(|| {
+                io::Error::new(io::ErrorKind::PermissionDenied, "original issuer lease missing")
+            })?
+            .lease;
+        if issuer.revision != pinned.revision {
+            return Err(io::Error::new(
+                io::ErrorKind::PermissionDenied,
+                "original issuer lease revision mismatch",
+            ));
+        }
+        let writer = &registration.authority_lease;
+        let issuer_token = pinned
+            .verifier
+            .verify_use(&pinned.id, pinned.revision, &issuer.binding)
+            .map_err(lease_error)?;
+        let writer_token = pinned
+            .verifier
+            .verify_use(&writer.lease_id, writer.revision, &writer.binding)
+            .map_err(lease_error)?;
+        pinned
+            .verifier
+            .with_joint_dispatch_boundary(
+                issuer_token,
+                &issuer.binding,
+                writer_token,
+                &writer.binding,
+                |actual_issuer, actual_writer, _| {
+                    if actual_issuer != &issuer || actual_writer != writer {
+                        return Err(io::Error::new(
+                            io::ErrorKind::PermissionDenied,
+                            "original issuer or registered writer lease changed",
+                        ));
+                    }
+                    dispatch(actual_issuer)
+                },
+            )
+            .map_err(lease_error)?
+    }
+
     /// Explicitly create one new root-owned issuer. Existing/partial paths are
     /// never reset. The supplied clock and lease verifier are original trusted
     /// owners, not constructed from peer request fields.
