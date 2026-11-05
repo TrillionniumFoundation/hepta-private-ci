@@ -346,6 +346,21 @@
         "unified_exec::process::observation_tests::deadline_tests::post_exit_store_lock_timeout_retains_entry_and_original_result"
       ],
       "filter": "test(=unified_exec::process::observation_tests::deadline_tests::explicit_deadline_waits_for_original_result_before_removing_entry) | test(=unified_exec::process::observation_tests::deadline_tests::expired_deadline_never_requests_termination_or_releases_entry) | test(=unified_exec::process::observation_tests::deadline_tests::deadline_waiter_loss_retains_original_entry_without_fake_exit) | test(=unified_exec::process::observation_tests::deadline_tests::explicit_deadline_also_bounds_store_lock_before_effect) | test(=unified_exec::process::observation_tests::deadline_tests::cancelled_deadline_observation_keeps_owner_and_late_native_fact) | test(=unified_exec::process::remote_observation_tests::deadline_tests::explicit_deadline_waits_for_original_remote_exit_after_ack) | test(=unified_exec::process::remote_observation_tests::deadline_tests::explicit_deadline_bounds_unacknowledged_remote_request) | test(=unified_exec::process::remote_observation_tests::deadline_tests::cancelled_remote_deadline_observation_never_turns_ack_into_exit) | test(=unified_exec::process::remote_observation_tests::deadline_tests::explicit_deadline_preserves_native_exit_without_numeric_code) | test(=unified_exec::process::observation_tests::deadline_tests::post_exit_store_lock_timeout_retains_entry_and_original_result)"
+    },
+    {
+      "id": "writer-handoff-lock-ownership",
+      "package": "codex-hepta-supervisor",
+      "expectedTestCount": 7,
+      "requiredTests": [
+        "writer_handoff::recovery_tests::writer_handoff_restarts_at_every_phase_and_retries_without_appending",
+        "writer_handoff::recovery_tests::writer_handoff_rejects_acknowledged_prefix_rollback_before_tail_repair",
+        "writer_handoff::recovery_tests::writer_handoff_excludes_competing_recovery_until_owner_exits",
+        "writer_handoff::recovery_tests::writer_handoff_rejects_oversized_sparse_history_and_releases_failed_lock",
+        "writer_handoff::recovery_tests::writer_handoff_minimum_is_bound_to_operation_and_exact_chain",
+        "writer_handoff::recovery_tests::writer_handoff_owner_drop_releases_lock_with_passive_duplicate",
+        "writer_handoff::recovery_tests::writer_handoff_failed_recovery_releases_acquired_lock_with_passive_duplicate"
+      ],
+      "filter": "test(=writer_handoff::recovery_tests::writer_handoff_restarts_at_every_phase_and_retries_without_appending) | test(=writer_handoff::recovery_tests::writer_handoff_rejects_acknowledged_prefix_rollback_before_tail_repair) | test(=writer_handoff::recovery_tests::writer_handoff_excludes_competing_recovery_until_owner_exits) | test(=writer_handoff::recovery_tests::writer_handoff_rejects_oversized_sparse_history_and_releases_failed_lock) | test(=writer_handoff::recovery_tests::writer_handoff_minimum_is_bound_to_operation_and_exact_chain) | test(=writer_handoff::recovery_tests::writer_handoff_owner_drop_releases_lock_with_passive_duplicate) | test(=writer_handoff::recovery_tests::writer_handoff_failed_recovery_releases_acquired_lock_with_passive_duplicate)"
     }
   ]
 }
