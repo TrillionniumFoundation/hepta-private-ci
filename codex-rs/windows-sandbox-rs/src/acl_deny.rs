@@ -5,15 +5,22 @@
 
 use super::*;
 use anyhow::Context;
+use anyhow::ensure;
 use std::os::windows::io::AsRawHandle;
 use std::os::windows::io::FromRawHandle;
 use std::os::windows::io::OwnedHandle;
 use windows_sys::Win32::Foundation::HANDLE;
 use windows_sys::Win32::Security::Authorization::SE_FILE_OBJECT;
+use windows_sys::Win32::Storage::FileSystem::FILE_ATTRIBUTE_REPARSE_POINT;
+use windows_sys::Win32::Storage::FileSystem::FILE_ATTRIBUTE_TAG_INFO;
+use windows_sys::Win32::Storage::FileSystem::FILE_FLAG_OPEN_REPARSE_POINT;
+use windows_sys::Win32::Storage::FileSystem::FILE_ID_INFO;
+use windows_sys::Win32::Storage::FileSystem::FILE_READ_ATTRIBUTES;
 use windows_sys::Win32::Storage::FileSystem::FILE_STANDARD_INFO;
+use windows_sys::Win32::Storage::FileSystem::FileAttributeTagInfo;
+use windows_sys::Win32::Storage::FileSystem::FileIdInfo;
 use windows_sys::Win32::Storage::FileSystem::FileStandardInfo;
 use windows_sys::Win32::Storage::FileSystem::GetFileInformationByHandleEx;
-use windows_sys::Win32::Storage::FileSystem::ReOpenFile;
 use windows_sys::Win32::Storage::FileSystem::WRITE_DAC;
 
 #[derive(Clone, Copy)]
@@ -101,6 +108,75 @@ pub(super) unsafe fn dacl_has_complete_deny_for_object(
     false
 }
 
+// Both IDs come from live handles. Unsupported/zero IDs cannot prove that a
+// new path open still names the queried object; never substitute a 64-bit ID.
+unsafe fn file_identity(handle: HANDLE, path: &Path) -> Result<(u64, [u8; 16])> {
+    let mut id: FILE_ID_INFO = std::mem::zeroed();
+    if GetFileInformationByHandleEx(
+        handle,
+        FileIdInfo,
+        &mut id as *mut _ as *mut c_void,
+        std::mem::size_of::<FILE_ID_INFO>() as u32,
+    ) == 0
+    {
+        return Err(std::io::Error::last_os_error())
+            .with_context(|| format!("FileIdInfo for deny repair failed for {}", path.display()));
+    }
+    ensure!(
+        id.FileId.Identifier != [0; 16],
+        "deny repair requires a nonzero file ID for {}",
+        path.display()
+    );
+    Ok((id.VolumeSerialNumber, id.FileId.Identifier))
+}
+
+// The caller retains the queried object until all DACL work has completed.
+// This proves object identity, not pathname custody or exclusion of DACL writers.
+pub(super) unsafe fn open_deny_repair_handle(path: &Path, queried: HANDLE) -> Result<OwnedHandle> {
+    let expected = file_identity(queried, path)?;
+    let raw = CreateFileW(
+        to_wide(path).as_ptr(),
+        READ_CONTROL | WRITE_DAC | FILE_READ_ATTRIBUTES,
+        FILE_SHARE_READ | FILE_SHARE_WRITE | FILE_SHARE_DELETE,
+        std::ptr::null_mut(),
+        OPEN_EXISTING,
+        FILE_FLAG_BACKUP_SEMANTICS | FILE_FLAG_OPEN_REPARSE_POINT,
+        /*htemplatefile*/ 0,
+    );
+    if raw == INVALID_HANDLE_VALUE {
+        return Err(std::io::Error::last_os_error())
+            .with_context(|| format!("CreateFileW for deny repair failed for {}", path.display()));
+    }
+    let writable = OwnedHandle::from_raw_handle(raw as _);
+    let mut attributes: FILE_ATTRIBUTE_TAG_INFO = std::mem::zeroed();
+    if GetFileInformationByHandleEx(
+        raw,
+        FileAttributeTagInfo,
+        &mut attributes as *mut _ as *mut c_void,
+        std::mem::size_of::<FILE_ATTRIBUTE_TAG_INFO>() as u32,
+    ) == 0
+    {
+        return Err(std::io::Error::last_os_error()).with_context(|| {
+            format!(
+                "FileAttributeTagInfo for deny repair failed for {}",
+                path.display()
+            )
+        });
+    }
+    ensure!(
+        attributes.FileAttributes & FILE_ATTRIBUTE_REPARSE_POINT == 0,
+        "deny repair refuses a reparse point at {}",
+        path.display()
+    );
+    let actual = file_identity(raw, path)?;
+    ensure!(
+        actual == expected,
+        "deny repair path no longer identifies the retained object: {}",
+        path.display()
+    );
+    Ok(writable)
+}
+
 pub(super) unsafe fn add_deny_ace(
     path: &Path,
     psid: *mut c_void,
@@ -120,7 +196,17 @@ pub(super) unsafe fn add_deny_ace(
             .with_context(|| format!("CreateFileW for deny query failed for {}", path.display()));
     }
     let object = OwnedHandle::from_raw_handle(raw as _);
-    let handle = object.as_raw_handle() as HANDLE;
+    add_deny_ace_on_object(path, object.as_raw_handle() as HANDLE, psid, kind)
+}
+
+// Production and the physical replacement control share this exact mutation
+// path. The caller must retain `handle` and the valid SID for the whole call.
+pub(super) unsafe fn add_deny_ace_on_object(
+    path: &Path,
+    handle: HANDLE,
+    psid: *mut c_void,
+    kind: DenyAceKind,
+) -> Result<bool> {
     let mut info: FILE_STANDARD_INFO = std::mem::zeroed();
     if GetFileInformationByHandleEx(
         handle,
@@ -155,19 +241,10 @@ pub(super) unsafe fn add_deny_ace(
         return Ok(false);
     }
 
-    // Keep query and update access on the same object. No-op callers never
-    // require WRITE_DAC.
-    let raw_write = ReOpenFile(
-        handle,
-        READ_CONTROL | WRITE_DAC,
-        FILE_SHARE_READ | FILE_SHARE_WRITE | FILE_SHARE_DELETE,
-        FILE_FLAG_BACKUP_SEMANTICS,
-    );
-    if raw_write == INVALID_HANDLE_VALUE {
-        return Err(std::io::Error::last_os_error())
-            .with_context(|| format!("ReOpenFile for deny repair failed for {}", path.display()));
-    }
-    let writable = OwnedHandle::from_raw_handle(raw_write as _);
+    // Only repairs require WRITE_DAC and attributes to reject reparse points.
+    // A fresh path handle is accepted only while its 128-bit ID and volume match
+    // the retained query object. Complete denies return before this open.
+    let writable = open_deny_repair_handle(path, handle)?;
     let entry = EXPLICIT_ACCESS_W {
         grfAccessPermissions: kind.mask(),
         grfAccessMode: DENY_ACCESS,
