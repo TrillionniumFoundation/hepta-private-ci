@@ -374,6 +374,8 @@ pub use notes_recovery_selection::AgentdNotesPreviousRecoveryRequest;
 pub use notes_recovery_selection::AgentdNotesRecoverySelector;
 mod runtime_tasks;
 mod shared_terminal_cell;
+mod terminal_learning;
+mod terminal_learning_types;
 mod state;
 pub mod text_session;
 #[cfg(target_os = "linux")]
@@ -384,6 +386,12 @@ pub use shared_terminal_cell::AgentdSharedReplayHostV1;
 pub use shared_terminal_cell::SharedTerminalCandidateV1;
 pub use shared_terminal_cell::SharedTerminalCellError;
 pub use shared_terminal_cell::SharedTerminalModelV1;
+pub use terminal_learning::AgentdTerminalLearningOwnerV1;
+pub use terminal_learning_types::TerminalLearningBudgetV1;
+pub use terminal_learning_types::TerminalLearningErrorV1;
+pub use terminal_learning_types::TerminalLearningReceiptV1;
+pub use terminal_learning_types::TerminalLearningRequestV1;
+pub use terminal_learning_types::TerminalLearningSourceLineageV1;
 #[doc(hidden)]
 pub mod test_support;
 mod topology_plasticity_host;
