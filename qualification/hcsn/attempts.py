@@ -77,6 +77,14 @@ def accounting(attempts):
                and r.get('training_status') in {'completed', 'failed'}]
     measured = [r.get('energy', {}).get('joules_by_physical_counter') for r in results]
     measured = [v for v in measured if v is not None]
+    by_completion = dict(complete=[], incomplete=[], unknown=[])
+    for result in results:
+        energy = result.get('energy', {})
+        counters = energy.get('joules_by_physical_counter')
+        if counters is not None:
+            complete = energy.get('interval_complete')
+            category = 'complete' if complete is True else 'incomplete' if complete is False else 'unknown'
+            by_completion[category].append(counters)
     return dict(total=len(results), completed=completed, failed=failed,
                 unavailable=sum(r['status'] == 'unavailable' for r in results),
                 invalidated=sum(r['status'] == 'invalidated' for r in results),
@@ -88,6 +96,16 @@ def accounting(attempts):
                 known_training_tokens=sum(r.get('training_tokens_seen') or 0 for r in results),
                 budget_unknown_attempts=sum(r.get('training_examples_seen') is None for r in results),
                 energy_measured_attempts=len(measured), energy_missing_attempts=len(results)-len(measured),
+                energy_measured_complete_interval_attempts=len(by_completion['complete']),
+                energy_measured_incomplete_interval_attempts=len(by_completion['incomplete']),
+                energy_measured_unknown_interval_attempts=len(by_completion['unknown']),
                 measured_joules_by_counter={name: sum(v.get(name, 0) for v in measured)
                                            for name in {k for v in measured for k in v}},
+                measured_joules_by_counter_by_interval_completion={
+                    category: {name: sum(v[name] for v in values if name in v)
+                               for name in {k for v in values for k in v}}
+                    for category, values in by_completion.items()},
+                energy_interval_completion_scope='Only explicit boolean interval_complete flags classify observed intervals; '
+                'legacy/missing/nonboolean flags remain unknown. Complete interval does not mean complete training budget. '
+                'Any-reading totals retain incomplete and unknown costs; missing counter values are excluded, never zero-filled.',
                 energy_scope='sum of available attempt device/package readings; missing attempts excluded, never zero-filled')

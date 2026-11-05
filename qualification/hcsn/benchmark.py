@@ -23,6 +23,8 @@ import tempfile
 import numpy as np
 
 from . import attempts
+from .execution import (close_energy_interval, configure_cuda, execution_policy,
+                        implementation_record, training_memory_peak)
 
 
 def atomic_json(path, value, *, replace=True):
@@ -162,6 +164,7 @@ class EnergyCounter:
 
 
 def validate_config(config):
+    execution_policy(config)
     for key in ("train_count", "validation_count", "test_count", "length", "hidden_size",
                 "batch_size", "train_steps", "latency_repeats", "cpu_threads"):
         if not isinstance(config.get(key), int) or config[key] <= 0:
@@ -212,20 +215,26 @@ def _run_one(config, task, name, seed, datasets, device, torch, checkpoint_path=
     from .baselines import UnavailableBaseline, make_encoder
     from torch import nn
 
+    policy = execution_policy(config)
     record = {"task": task, "model": name, "seed": seed, "status": "failed",
+              "execution_policy": policy, "encoder_class": None, "implementation": None,
               "training_status": "not_started", "training_examples_seen": 0,
               "training_tokens_seen": 0, "training_steps_completed": 0,
               "budget_measurement_scope": "examples/tokens submitted to training forward; optimizer steps counted separately",
               "energy": {"joules_by_physical_counter": None,
+                         "interval_complete": False, "interval_completion": "not_started",
                          "missing_reason": "attempt did not reach physical energy measurement"}}
     stage = "construction"
     meter = None
+    energy_started, peak_reset, peak_captured = False, False, False
     try:
         torch.manual_seed(seed)
         if device.type == "cuda":
             torch.cuda.manual_seed_all(seed)
-        encoder = make_encoder(name, 2, config["hidden_size"], device=device, dt=config["dt"])
+        encoder = make_encoder(name, 2, config["hidden_size"], device=device, dt=config["dt"],
+                               population_checkpoint_steps=policy["population_checkpoint_steps"])
         record["encoder_class"] = type(encoder).__name__
+        record["implementation"] = implementation_record(encoder)
         if hasattr(encoder, "population"):
             from dataclasses import asdict
             cfg = encoder.population.config
@@ -255,6 +264,7 @@ def _run_one(config, task, name, seed, datasets, device, torch, checkpoint_path=
             return float(total/targets.numel())
         if device.type == "cuda":
             torch.cuda.reset_peak_memory_stats(device)
+            peak_reset = True
         model.train()
         batch_rng = np.random.default_rng(seed+1729)
         losses, best_val, best_state = [], math.inf, None
@@ -262,6 +272,7 @@ def _run_one(config, task, name, seed, datasets, device, torch, checkpoint_path=
         sync()
         meter = EnergyCounter(str(device))
         meter.start()
+        energy_started = True
         start = time.perf_counter()
         stage, record["training_status"] = "training", "running"
         for step in range(config["train_steps"]):
@@ -274,11 +285,19 @@ def _run_one(config, task, name, seed, datasets, device, torch, checkpoint_path=
             if not bool(torch.isfinite(loss)):
                 raise FloatingPointError(f"nonfinite loss at optimizer step {step}")
             loss.backward()
+            missing = [n for n, p in model.named_parameters() if p.requires_grad and p.grad is None]
+            if missing:
+                record["missing_trainable_gradients"] = missing
+                raise FloatingPointError(f"missing trainable gradients at optimizer step {step}: {missing}")
             if any(p.grad is not None and not bool(torch.isfinite(p.grad).all()) for p in model.parameters()):
                 raise FloatingPointError(f"nonfinite gradient at optimizer step {step}")
-            torch.nn.utils.clip_grad_norm_(model.parameters(), 1.0)
+            norm = torch.nn.utils.clip_grad_norm_(model.parameters(), 1.0)
+            if not bool(torch.isfinite(norm)):
+                raise FloatingPointError(f"nonfinite gradient norm at optimizer step {step}")
             optimizer.step()
             record["training_steps_completed"] = step+1
+            if any(not bool(torch.isfinite(p).all()) for p in model.parameters()):
+                raise FloatingPointError(f"nonfinite updated parameter at optimizer step {step}")
             losses.append(float(loss.detach()))
             if (step+1) % val_interval == 0 or step+1 == config["train_steps"]:
                 model.eval()
@@ -292,10 +311,14 @@ def _run_one(config, task, name, seed, datasets, device, torch, checkpoint_path=
         sync()
         elapsed = time.perf_counter()-start
         stage, record["training_status"] = "evaluation", "completed"
-        record["energy"] = meter.stop()
+        record["energy"] = close_energy_interval(meter, torch, device, started=energy_started)
         meter = None
-        record["peak_gpu_allocated_bytes"] = torch.cuda.max_memory_allocated(device) if device.type == "cuda" else None
-        record["peak_gpu_missing_reason"] = None if device.type == "cuda" else "CPU execution has no GPU allocation"
+        if not record["energy"]["interval_complete"]:
+            raise RuntimeError("CUDA training energy interval did not synchronize completely")
+        record.update(training_memory_peak(torch, device, reset_completed=peak_reset))
+        record["peak_gpu_interval_complete"] = (
+            record["peak_gpu_measurement_status"] == "measured" if device.type == "cuda" else None)
+        peak_captured = True
         record["training_wall_seconds_including_validation"] = elapsed
         record["training_examples_seen"] = config["train_steps"]*config["batch_size"]
         record["training_tokens_seen"] = record["training_examples_seen"]*config["length"]
@@ -338,7 +361,22 @@ def _run_one(config, task, name, seed, datasets, device, torch, checkpoint_path=
             record["training_status"] = "failed"
     finally:
         if meter is not None:
-            record["energy"] = meter.stop()
+            record["energy"] = close_energy_interval(meter, torch, device, started=energy_started)
+            record["terminal_cuda_synchronized"] = record["energy"]["terminal_cuda_synchronized"]
+            record["terminal_cuda_sync_error"] = record["energy"]["terminal_cuda_sync_error"]
+        elif device.type == "cuda":
+            try:
+                torch.cuda.synchronize(device)
+                record["terminal_cuda_synchronized"] = True
+            except Exception as exc:
+                record["terminal_cuda_synchronized"] = False
+                record["terminal_cuda_sync_error"] = f"{type(exc).__name__}: {exc}"
+                if record["status"] == "completed":
+                    record.update(status="failed", failure_stage="terminal_synchronization",
+                                  reason=record["terminal_cuda_sync_error"])
+        if not peak_captured:
+            record.update(training_memory_peak(torch, device, reset_completed=peak_reset))
+            record["peak_gpu_interval_complete"] = False if device.type == "cuda" else None
     return record
 
 
@@ -354,6 +392,7 @@ def run(config, checkpoint_dir=None):
         cpu_name = next((line.partition(":")[2].strip() for line in Path("/proc/cpuinfo").read_text().splitlines()
                          if line.startswith("model name")), "unknown CPU")
     report = {"schema_version": 2, "purpose": "synthetic research qualification", "config": config,
+              "execution_policy": execution_policy(config),
               "source_sha256": source.hexdigest(), "source_files_sha256": source_files, "hardware": {"platform": platform.platform(),
               "machine": platform.machine(), "cpu_model": cpu_name, "logical_cpu_count": os.cpu_count(),
               "python": sys.version.split()[0], "numpy": np.__version__},
@@ -371,11 +410,13 @@ def run(config, checkpoint_dir=None):
             for name in config["models"]:
                 for seed in config["seeds"]:
                     report["runs"].append({"task": task, "model": name, "seed": seed,
+                                           "implementation": None, "execution_policy": report["execution_policy"],
                                            "status": "unavailable", "reason": "PyTorch is not installed"})
         report.update(status="unavailable", summary=aggregate(report["runs"]))
         return report
     device = torch.device(config.get("device", "cpu"))
-    cuda_missing = device.type == "cuda" and not torch.cuda.is_available()
+    cuda_execution = configure_cuda(torch, device, config.get("cuda_memory_fraction"))
+    cuda_unavailable_reason = cuda_execution["setup_error"]
     torch.set_num_threads(config["cpu_threads"])
     torch.use_deterministic_algorithms(True, warn_only=True)
     report["software"] = {}
@@ -385,7 +426,9 @@ def run(config, checkpoint_dir=None):
         except metadata.PackageNotFoundError:
             report["software"][package] = None
     report["hardware"].update(torch=torch.__version__, device=str(device),
-                              device_name=torch.cuda.get_device_name(device) if device.type == "cuda" and not cuda_missing else cpu_name,
+                              device_name=(cuda_execution["name"] or "unavailable CUDA device")
+                              if device.type == "cuda" else cpu_name,
+                              cuda_execution=cuda_execution,
                               cpu_threads=torch.get_num_threads(), deterministic_requested=True)
     report["hardware"].update(cuda_runtime=torch.version.cuda, cuda_available=torch.cuda.is_available())
     for task in config["tasks"]:
@@ -427,13 +470,16 @@ def run(config, checkpoint_dir=None):
                         atomic_json(saved, prior)
                 if result is None:
                     def operation(weights):
-                        if cuda_missing:
+                        if cuda_unavailable_reason:
                             return dict(task=task, model=name, seed=seed, status="unavailable",
                                         training_status="not_started", training_examples_seen=0,
                                         training_tokens_seen=0, training_steps_completed=0,
                                         energy={"joules_by_physical_counter": None,
-                                                "missing_reason": "CUDA unavailable; training not started"},
-                                        reason="CUDA requested but unavailable; no CPU fallback")
+                                                "interval_complete": False, "interval_completion": "not_started",
+                                                "missing_reason": "CUDA execution setup unavailable; training not started"},
+                                        implementation=None,
+                                        execution_policy=report["execution_policy"],
+                                        reason=cuda_unavailable_reason)
                         return _run_one(config, task, name, seed, splits, device, torch, weights)
                     provenance = dict(key=key, source_sha256=report["source_sha256"],
                                       config=config, dataset=report["datasets"][task],

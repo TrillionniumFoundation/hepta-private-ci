@@ -109,7 +109,8 @@ class CellTests(unittest.TestCase):
 
     def test_each_native_ablation_and_baseline_trains_one_step(self):
         names = ["hx_dual", "hx_fixed", "hx_call", "hx_risk", "no_rollover", "softplus",
-                 "no_recovery", "hx_attention", "population_flux", "gru", "lif", "adaptive_lif", "pif", "transformer"]
+                 "no_recovery", "hx_attention", "population_flux", "population_flux_no_recovery",
+                 "gru", "lif", "adaptive_lif", "pif", "transformer"]
         x = torch.randn(2, 4, 2)
         for name in names:
             with self.subTest(model=name):
@@ -118,6 +119,7 @@ class CellTests(unittest.TestCase):
                 self.assertEqual(tuple(output.shape), (2, 4, 8))
                 self.assertTrue(bool(torch.isfinite(output).all()))
                 output.square().sum().backward()
+                self.assertEqual([n for n, p in model.named_parameters() if p.requires_grad and p.grad is None], [])
                 self.assertTrue(all(p.grad is None or bool(torch.isfinite(p.grad).all()) for p in model.parameters()))
 
     def test_official_cfc_batch_timespans_match_scalar_cell_steps(self):
@@ -132,6 +134,7 @@ class CellTests(unittest.TestCase):
             actual = encoder(inputs, dt=.1)
             torch.testing.assert_close(actual, torch.stack(expected, 1))
             actual.square().mean().backward()
+            self.assertEqual([n for n, p in encoder.named_parameters() if p.requires_grad and p.grad is None], [])
             self.assertTrue(all(p.grad is None or bool(torch.isfinite(p.grad).all())
                                 for p in encoder.parameters()))
 

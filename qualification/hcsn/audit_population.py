@@ -20,6 +20,7 @@ from .baselines import make_encoder
 from .benchmark import atomic_json, make_dataset
 from .population_torch import TorchPopulation
 from .attempts import resolve_weights
+from .execution import execution_policy, implementation_record
 
 
 def trace(encoder, readout, inputs, factor):
@@ -68,7 +69,14 @@ def _audit_completed(run, report, report_path):
         raise ValueError('checkpoint best_validation_mse mismatch')
     if saved['training_steps_completed'] != config['train_steps']:
         raise ValueError('checkpoint training budget mismatch')
-    encoder = make_encoder(run['model'], 2, config['hidden_size'], dt=config['dt'])
+    policy = execution_policy(config)
+    encoder = make_encoder(run['model'], 2, config['hidden_size'], dt=config['dt'],
+                           population_checkpoint_steps=policy['population_checkpoint_steps'])
+    implementation = implementation_record(encoder)
+    if run.get('encoder_class', implementation['encoder_class']) != implementation['encoder_class']:
+        raise ValueError('encoder_class differs from declared execution policy')
+    if run.get('implementation', implementation if not policy['population_checkpoint_steps'] else None) != implementation:
+        raise ValueError('implementation differs from declared execution policy')
     encoder.load_state_dict({k.removeprefix('encoder.'): v for k, v in saved['state_dict'].items()
                              if k.startswith('encoder.')})
     expected_grid = dict(asdict(encoder.population.config),
@@ -86,6 +94,7 @@ def _audit_completed(run, report, report_path):
     if test_hash != report['datasets'][run['task']]['split_sha256'][2]:
         raise ValueError('held-out test split hash mismatch')
     row = dict(task=run['task'], model=run['model'], seed=run['seed'], status='audited',
+               implementation=implementation,
                checkpoint_sha256=run['best_checkpoint_sha256'], test_split_sha256=test_hash,
                resolutions=[], factor_one_forward_exact=True)
     baseline_outputs = None

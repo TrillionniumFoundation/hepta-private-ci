@@ -7,6 +7,7 @@ from torch import nn
 from torch.nn import functional as F
 
 from .cells import ValueKernelCell
+from .execution import execution_policy
 
 
 class UnavailableBaseline(RuntimeError):
@@ -215,8 +216,9 @@ class OfficialMamba2(nn.Module):
         return self.model(self.input(x))
 
 
-def make_encoder(name, input_size, hidden_size, device="cpu", dt=0.1):
+def make_encoder(name, input_size, hidden_size, device="cpu", dt=0.1, *, population_checkpoint_steps=0):
     """Return the requested implementation, never a substituted optional baseline."""
+    execution_policy(dict(population_checkpoint_steps=population_checkpoint_steps))
     variants = {"hx_dual": {}, "hx_fixed": {"boundary": "fixed"},
                 "hx_call": {"channel": "call"}, "hx_risk": {"channel": "risk"},
                 "no_rollover": {"kernel": "no_rollover"}, "softplus": {"kernel": "softplus"},
@@ -227,6 +229,10 @@ def make_encoder(name, input_size, hidden_size, device="cpu", dt=0.1):
         return TransformerEncoder(input_size, hidden_size,
                                   preceding=ValueKernelCell(input_size, hidden_size))
     if name in {"population_flux", "population_flux_no_recovery"}:
+        if population_checkpoint_steps == 1:
+            from .rematerialization import RematerializedPopulationFluxEncoder
+            return RematerializedPopulationFluxEncoder(
+                input_size, hidden_size, dt=dt, recovery=name == "population_flux", segment_steps=1)
         return PopulationFluxEncoder(input_size, hidden_size, dt=dt, recovery=name == "population_flux")
     if name == "gru":
         return GRUEncoder(input_size, hidden_size)
