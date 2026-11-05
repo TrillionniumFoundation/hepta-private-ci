@@ -4,9 +4,6 @@
 use codex_hepta_types::AuthorityPosture;
 use codex_hepta_types::Digest32;
 
-use crate::InferenceControlModelPort;
-use crate::NeuronInferenceControlPort;
-use crate::NeuronModelPort;
 use crate::NeuronModelRequestV1;
 use crate::SparseCheckpoint;
 use crate::SparseTick;
@@ -15,7 +12,6 @@ use crate::cell_binding::operation_digest;
 use crate::cell_binding::semantic_request_digest;
 use crate::cell_types::*;
 use crate::runtime_types::calibrate;
-use crate::runtime_types::validate_model_output;
 use crate::sparse_tick;
 
 pub fn prepare_cell_step(
@@ -30,12 +26,31 @@ pub fn prepare_cell_step(
     if owner.lookup(&input.scope, &input.operation_id, request_digest)?.is_some() {
         return Err(CellExecutionError::OperationAlreadyCommitted);
     }
+    let snapshot = owner.snapshot(&input.scope)?;
+    prepare_from_snapshot(definition, snapshot, encoder, input, now_micros, CellPreparationModeV1::Fresh)
+}
+
+pub(crate) enum CellPreparationModeV1 {
+    Fresh,
+    AdmittedRecovery,
+}
+
+pub(crate) fn prepare_from_snapshot(
+    definition: &CellDefinitionV1,
+    snapshot: CellOwnerSnapshotV1,
+    encoder: &impl CellInputEncoderV1,
+    input: CellStepInputV1,
+    now_micros: u64,
+    mode: CellPreparationModeV1,
+) -> Result<PreparedCellStepV1, CellExecutionError> {
+    let definition_digest = definition.semantic_digest()?;
     if input.scope.cell_id != definition.cell_id || input.scope.principal_digest.is_zero() {
         return Err(CellExecutionError::ScopeMismatch);
     }
     if input.monotonic_micros == 0
         || input.monotonic_micros > now_micros
-        || input.deadline_micros <= now_micros
+        || input.deadline_micros <= input.monotonic_micros
+        || (matches!(mode, CellPreparationModeV1::Fresh) && input.deadline_micros <= now_micros)
     {
         return Err(CellExecutionError::DeadlineExceeded);
     }
@@ -45,7 +60,6 @@ pub fn prepare_cell_step(
     if input.objective_digest.is_zero() || input.ndu_snapshot_digest.is_zero() {
         return Err(CellExecutionError::InvalidInput);
     }
-    let snapshot = owner.snapshot(&input.scope)?;
     if snapshot.scope != input.scope || snapshot.writer_epoch == 0 {
         return Err(CellExecutionError::ScopeMismatch);
     }
@@ -79,7 +93,7 @@ pub fn prepare_cell_step(
     }
     let r = &definition.runtime;
     let model_request = NeuronModelRequestV1 {
-        request_id: inference_request_id(&input)?,
+        request_id: inference_request_id(&input.scope, &input.operation_id)?,
         config_id: r.config_id.clone(),
         generation: r.generation,
         model_id: r.model_id.clone(),
@@ -115,29 +129,13 @@ pub fn enter_cell_step(
     prepare_cell_step(definition, owner, encoder, input, now_micros).map(CellStepEntryV1::Ready)
 }
 
-pub fn infer_cell(
-    prepared: PreparedCellStepV1,
-    control: &mut impl NeuronInferenceControlPort,
-    now_micros: u64,
-) -> Result<InferredCellStepV1, CellExecutionError> {
-    if now_micros < prepared.input.monotonic_micros || now_micros >= prepared.input.deadline_micros {
-        return Err(CellExecutionError::DeadlineExceeded);
-    }
-    let output = InferenceControlModelPort::new(control)
-        .execute(&prepared.model_request)
-        .map_err(CellExecutionError::Backend)?;
-    validate_model_output(&prepared.definition.runtime, &output)
-        .map_err(|_| CellExecutionError::ModelBindingMismatch)?;
-    Ok(InferredCellStepV1 { prepared, output })
-}
-
 pub fn decide_cell(
     inferred: InferredCellStepV1,
     now_micros: u64,
 ) -> Result<CellStateProposalV1, CellExecutionError> {
     let InferredCellStepV1 { prepared, output } = inferred;
     let PreparedCellStepV1 { definition, snapshot, input, encoded, model_request } = prepared;
-    if now_micros < input.monotonic_micros || now_micros >= input.deadline_micros {
+    if now_micros < input.monotonic_micros {
         return Err(CellExecutionError::DeadlineExceeded);
     }
     let sequence = snapshot.checkpoint.as_ref().map_or(0, SparseCheckpoint::sequence)
@@ -161,7 +159,9 @@ pub fn decide_cell(
             .map_err(|_| CellExecutionError::StateTransitionRejected)?;
     let checkpoint_bytes = checkpoint.bounded_encoded_bytes() as u64;
     let resource = &definition.runtime.resource_envelope;
-    let over_budget = output.runtime_receipt.latency_micros > resource.p99_latency_micros
+    let deadline_exceeded = now_micros >= input.deadline_micros;
+    let over_budget = deadline_exceeded
+        || output.runtime_receipt.latency_micros > resource.p99_latency_micros
         || output.runtime_receipt.resident_bytes > definition.max_resident_bytes
         || output.queue_age_micros > definition.max_queue_age_micros
         || output.transient_allocation_bytes > resource.transient_allocation_bytes
@@ -169,6 +169,7 @@ pub fn decide_cell(
     let mut selected = definition.candidates.iter()
         .position(|c| c.kind == CellCandidateKindV1::Abstain)
         .ok_or(CellExecutionError::InvalidDefinition)?;
+    let abstain_candidate = definition.candidates[selected].candidate_id.clone();
     if !calibrated_abstain && !over_budget {
         // Canonical order breaks ties. The mask prevents any masked output
         // from being selected; no positive legal signal results in abstention.
@@ -201,6 +202,7 @@ pub fn decide_cell(
         selected_candidate: definition.candidates[selected].candidate_id.clone(),
         confidence_ppm,
         ood_ppm,
+        deadline_exceeded,
         cost: CellExecutionCostV1 {
             model_latency_micros: output.runtime_receipt.latency_micros,
             queue_age_micros: output.queue_age_micros,
@@ -218,6 +220,7 @@ pub fn decide_cell(
         receipt,
         deadline_micros: input.deadline_micros,
         tick,
+        abstain_candidate,
     })
 }
 

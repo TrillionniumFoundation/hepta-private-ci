@@ -65,8 +65,8 @@ fn specs() -> Vec<CellJournalPartitionV1> {
 fn shared_file_recovers_independent_checkpoints_and_exact_policy_receipts() {
     let fixture = Fixture::new();
     let mut journal = fixture.open();
-    let a = proposal(&journal, input("run1"));
-    let b = proposal(&journal, input("run2"));
+    let a = proposal(&mut journal, input("run1"));
+    let b = proposal(&mut journal, input("run2"));
     let first = checked(commit_cell_step(&mut journal, a, /*now_micros*/13));
     let second = checked(commit_cell_step(&mut journal, b, /*now_micros*/14));
     let snapshots = [
@@ -122,7 +122,7 @@ fn lost_witness_ack_fences_new_work_until_original_log_is_read_back() {
     let mut journal = checked(CellOwnerJournalV1::open(
         fixture.file("journal"), witness, specs(), /*max_records*/64,
     ));
-    let proposed = proposal(&journal, input("run1"));
+    let proposed = proposal(&mut journal, input("run1"));
     let expected = proposed.receipt().clone();
     fail.store(true, Ordering::SeqCst);
     assert_eq!(commit_cell_step(&mut journal, proposed, /*now_micros*/13), Err(CellExecutionError::CommitUncertain));
@@ -148,7 +148,7 @@ fn lost_witness_ack_fences_new_work_until_original_log_is_read_back() {
 fn acknowledged_rollback_is_rejected_before_any_tail_repair() {
     let fixture = Fixture::new();
     let mut journal = fixture.open();
-    let proposed = proposal(&journal, input("run1"));
+    let proposed = proposal(&mut journal, input("run1"));
     checked(commit_cell_step(&mut journal, proposed, /*now_micros*/13));
     drop(journal);
     let file = fixture.file("journal");
@@ -164,7 +164,7 @@ fn acknowledged_rollback_is_rejected_before_any_tail_repair() {
 fn incomplete_unacknowledged_tail_is_trimmed_after_witness_validation() {
     let fixture = Fixture::new();
     let mut journal = fixture.open();
-    let proposed = proposal(&journal, input("run1"));
+    let proposed = proposal(&mut journal, input("run1"));
     let receipt = checked(commit_cell_step(&mut journal, proposed, /*now_micros*/13));
     drop(journal);
     let mut file = fixture.file("journal");
@@ -183,9 +183,11 @@ fn incomplete_unacknowledged_tail_is_trimmed_after_witness_validation() {
 fn persisted_frontier_fence_resets_state_and_rejects_prepared_writer() {
     let fixture = Fixture::new();
     let mut journal = fixture.open();
-    let stale = proposal(&journal, input("run1"));
+    let stale = checked(prepare_cell_step(&definition(), &journal, &Encoder, input("run1"), /*now_micros*/10));
     checked(journal.reset_at_frontier(&scope("run1"), d("new-source"), /*writer_epoch*/2));
-    assert_eq!(commit_cell_step(&mut journal, stale, /*now_micros*/13), Err(CellExecutionError::CommitConflict));
+    let mut model = Model { calls: 0, latency: 20 };
+    assert!(matches!(infer_cell(stale, &mut journal, &mut model, /*now_micros*/11), Err(CellExecutionError::CommitConflict)));
+    assert_eq!(model.calls, 0);
     let expected = checked(journal.snapshot(&scope("run1")));
     assert_eq!(expected.checkpoint, None);
     drop(journal);
@@ -212,4 +214,58 @@ fn journal_lock_excludes_a_second_owner_before_it_reads_or_repairs() {
         fixture.file("journal"), competitor_witness, specs(), /*max_records*/64,
     ), Err(CellExecutionError::OwnerUnavailable)));
     assert_eq!(checked(journal.snapshot(&scope("run1"))).revision, 0);
+}
+
+#[test]
+fn pending_dispatch_survives_reopen_and_recovery_only_reads_original_model_result() {
+    let fixture = Fixture::new();
+    let mut journal = fixture.open();
+    let prepared = checked(prepare_cell_step(&definition(), &journal, &Encoder, input("run1"), /*now_micros*/10));
+    let mut control = RecordedControl::new();
+    drop(checked(infer_cell(prepared, &mut journal, &mut control, /*now_micros*/11)));
+    let pending = checked(journal.pending_inference(&scope("run1")));
+    drop(journal);
+    let mut journal = fixture.open();
+    assert_eq!(checked(journal.pending_inference(&scope("run1"))), pending);
+    assert!(matches!(enter_cell_step(&definition(), &journal, &Encoder, input("run1"), /*now_micros*/12), Err(CellExecutionError::InferencePending)));
+    let inferred = checked(recover_cell_inference(&definition(), &journal, &Encoder, input("run1"), &mut control, /*now_micros*/101));
+    let proposed = checked(decide_cell(inferred, /*now_micros*/102));
+    let receipt = checked(commit_cell_step(&mut journal, proposed, /*now_micros*/103));
+    assert_eq!((control.executions, control.reads), (1, 1));
+    assert!(receipt.deadline_exceeded);
+    assert_eq!(receipt.selected_candidate, id("abstain"));
+    assert_eq!(receipt.cost.model_latency_micros, 20);
+    assert_eq!(checked(journal.pending_inference(&scope("run1"))), None);
+    drop(journal);
+    let journal = fixture.open();
+    assert_eq!(checked(journal.reconcile(&receipt.scope, &receipt.operation_id, receipt.operation_digest)), Some(receipt));
+    assert_eq!(checked(journal.pending_inference(&scope("run1"))), None);
+}
+
+#[test]
+fn uncertain_admission_never_dispatches_and_recovery_does_not_assume_no_contact() {
+    let fixture = Fixture::new();
+    let fail = Arc::new(AtomicBool::new(false));
+    let witness = FailOnce { inner: fixture.witness(), fail: Arc::clone(&fail) };
+    let mut journal = checked(CellOwnerJournalV1::open(fixture.file("journal"), witness, specs(), /*max_records*/64));
+    let prepared = checked(prepare_cell_step(&definition(), &journal, &Encoder, input("run1"), /*now_micros*/10));
+    let mut control = RecordedControl::new();
+    fail.store(true, Ordering::SeqCst);
+    assert!(matches!(infer_cell(prepared, &mut journal, &mut control, /*now_micros*/11), Err(CellExecutionError::CommitUncertain)));
+    assert_eq!(control.executions, 0);
+    checked(journal.recover());
+    assert!(checked(journal.pending_inference(&scope("run1"))).is_some());
+    assert!(matches!(recover_cell_inference(&definition(), &journal, &Encoder, input("run1"), &mut control, /*now_micros*/12), Err(CellExecutionError::InferencePending)));
+    assert_eq!((control.executions, control.reads), (0, 1));
+}
+
+#[test]
+fn admission_reserves_room_for_its_eventual_atomic_state_commit() {
+    let fixture = Fixture::new();
+    let mut journal = checked(CellOwnerJournalV1::open(fixture.file("journal"), fixture.witness(), specs(), /*max_records*/1));
+    let prepared = checked(prepare_cell_step(&definition(), &journal, &Encoder, input("run1"), /*now_micros*/10));
+    let mut control = RecordedControl::new();
+    assert!(matches!(infer_cell(prepared, &mut journal, &mut control, /*now_micros*/11), Err(CellExecutionError::CapacityExceeded)));
+    assert_eq!(control.executions, 0);
+    assert_eq!(checked(journal.pending_inference(&scope("run1"))), None);
 }

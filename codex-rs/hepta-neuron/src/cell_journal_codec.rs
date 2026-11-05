@@ -3,6 +3,8 @@
 use codex_hepta_types::AuthorityPosture;
 use codex_hepta_types::Digest32;
 use codex_hepta_types::StableId;
+use codex_hepta_types::Generation;
+use crate::NeuronModelRequestV1;
 
 use crate::SparseCheckpoint;
 use crate::SparseTick;
@@ -45,6 +47,7 @@ pub(crate) fn encode_commit(index: usize, proposal: &CellStateProposalV1) -> Vec
     put_id(&mut bytes, &r.selected_candidate);
     put_u64(&mut bytes, u64::from(r.confidence_ppm));
     put_u64(&mut bytes, u64::from(r.ood_ppm));
+    bytes.push(u8::from(r.deadline_exceeded));
     put_u64(&mut bytes, r.policy.len() as u64);
     for entry in &r.policy {
         put_id(&mut bytes, &entry.candidate_id);
@@ -59,6 +62,37 @@ pub(crate) fn encode_commit(index: usize, proposal: &CellStateProposalV1) -> Vec
     ] {
         put_u64(&mut bytes, number);
     }
+    bytes
+}
+
+pub(crate) fn encode_admission(index: usize, admission: &CellInferenceAdmissionV1) -> Vec<u8> {
+    let mut bytes = vec![2];
+    put_u64(&mut bytes, index as u64);
+    put_u64(&mut bytes, admission.snapshot.revision);
+    put_u64(&mut bytes, admission.snapshot.writer_epoch);
+    for digest in [
+        admission.snapshot.scope.digest(), admission.snapshot.definition_digest, admission.snapshot.source_frontier,
+        admission.snapshot.checkpoint.as_ref().map_or(Digest32::ZERO, SparseCheckpoint::digest),
+    ] {
+        put_digest(&mut bytes, digest);
+    }
+    put_id(&mut bytes, &admission.operation_id);
+    put_digest(&mut bytes, admission.semantic_request_digest);
+    put_u64(&mut bytes, admission.deadline_micros);
+    put_u64(&mut bytes, admission.admitted_at_micros);
+    let r = &admission.model_request;
+    for id in [&r.request_id, &r.config_id, &r.model_id] {
+        put_id(&mut bytes, id);
+    }
+    put_u64(&mut bytes, r.generation.get());
+    for digest in [r.encoder_digest, r.head_digest, r.weights_digest, r.input_digest] {
+        put_digest(&mut bytes, digest);
+    }
+    put_u64(&mut bytes, r.feature_vector_q24.len() as u64);
+    for value in &r.feature_vector_q24 {
+        bytes.extend_from_slice(&value.to_be_bytes());
+    }
+    put_u64(&mut bytes, r.expected_output_width as u64);
     bytes
 }
 
@@ -85,6 +119,41 @@ pub(crate) fn apply_record(
         read.finish()?;
         return owner.reset_at_frontier(&spec.scope, frontier, epoch);
     }
+    if tag == 2 {
+        let snapshot = owner.snapshot(&spec.scope)?;
+        if read.u64()? != snapshot.revision || read.u64()? != snapshot.writer_epoch
+            || read.digest()? != snapshot.scope.digest()
+            || read.digest()? != snapshot.definition_digest
+            || read.digest()? != snapshot.source_frontier
+            || read.digest()? != snapshot.checkpoint.as_ref().map_or(Digest32::ZERO, SparseCheckpoint::digest)
+        {
+            return Err(CellExecutionError::JournalCorrupt);
+        }
+        let operation_id = read.id()?;
+        let semantic_request_digest = read.digest()?;
+        let deadline_micros = read.u64()?;
+        let admitted_at_micros = read.u64()?;
+        let model_request = NeuronModelRequestV1 {
+            request_id: read.id()?, config_id: read.id()?, model_id: read.id()?,
+            generation: Generation::new(read.u64()?).map_err(|_| CellExecutionError::JournalCorrupt)?,
+            encoder_digest: read.digest()?, head_digest: read.digest()?,
+            weights_digest: read.digest()?, input_digest: read.digest()?,
+            feature_vector_q24: read.q24(/*bound*/512)?, expected_output_width: read.usize()?,
+        };
+        read.finish()?;
+        let config = &spec.definition.runtime;
+        if model_request.config_id != config.config_id || model_request.model_id != config.model_id
+            || model_request.generation != config.generation || model_request.encoder_digest != config.encoder_digest
+            || model_request.head_digest != config.head_digest || model_request.weights_digest != config.weights_digest
+            || model_request.feature_vector_q24.len() != config.input_feature_dimension
+            || model_request.expected_output_width != config.state_width
+        {
+            return Err(CellExecutionError::JournalCorrupt);
+        }
+        return owner.admit_inference(CellInferenceAdmissionV1 {
+            snapshot, operation_id, semantic_request_digest, model_request, deadline_micros, admitted_at_micros,
+        });
+    }
     if tag != 0 {
         return Err(CellExecutionError::JournalCorrupt);
     }
@@ -101,8 +170,8 @@ pub(crate) fn apply_record(
         input_digest: read.digest()?,
         sequence: read.u64()?,
         monotonic_micros: read.u64()?,
-        drive_q24: read.q24()?,
-        prediction_q24: read.q24()?,
+        drive_q24: read.q24(/*bound*/256)?,
+        prediction_q24: read.q24(/*bound*/256)?,
     };
     let operation_id = read.id()?;
     let operation_digest = read.digest()?;
@@ -115,6 +184,7 @@ pub(crate) fn apply_record(
     let selected_candidate = read.id()?;
     let confidence_ppm = read.ppm()?;
     let ood_ppm = read.ppm()?;
+    let deadline_exceeded = read.boolean()?;
     let count = read.count(/*bound*/256)?;
     let mut policy = Vec::with_capacity(count);
     for _ in 0..count {
@@ -160,8 +230,13 @@ pub(crate) fn apply_record(
             p.probability_ppm == 1_000_000 && p.candidate_id == selected_candidate
         }).count() != 1
         || policy.iter().map(|p| u64::from(p.probability_ppm)).sum::<u64>() != 1_000_000
-        || owner.lookup(&spec.scope, &operation_id, semantic_request_digest)?.is_some()
     {
+        return Err(CellExecutionError::JournalCorrupt);
+    }
+    let abstain_candidate = spec.definition.candidates.iter()
+        .find(|c| c.kind == CellCandidateKindV1::Abstain)
+        .ok_or(CellExecutionError::JournalCorrupt)?.candidate_id.clone();
+    if deadline_exceeded && selected_candidate != abstain_candidate {
         return Err(CellExecutionError::JournalCorrupt);
     }
     let receipt = CellDecisionReceiptV1 {
@@ -178,11 +253,12 @@ pub(crate) fn apply_record(
         selected_candidate,
         confidence_ppm,
         ood_ppm,
+        deadline_exceeded,
         cost,
         authority: AuthorityPosture::DENY_ALL,
     };
     owner.commit(
-        CellStateProposalV1 { snapshot, checkpoint, receipt, deadline_micros, tick },
+        CellStateProposalV1 { snapshot, checkpoint, receipt, deadline_micros, tick, abstain_candidate },
         deadline_micros - 1,
     )?;
     Ok(())
@@ -265,8 +341,8 @@ impl Reader<'_> {
             .map_err(|_| CellExecutionError::JournalCorrupt)
     }
 
-    fn q24(&mut self) -> Result<Vec<i64>, CellExecutionError> {
-        let n = self.count(/*bound*/256)?;
+    fn q24(&mut self, bound: usize) -> Result<Vec<i64>, CellExecutionError> {
+        let n = self.count(bound)?;
         (0..n).map(|_| Ok(i64::from_be_bytes(self.take()?))).collect()
     }
 

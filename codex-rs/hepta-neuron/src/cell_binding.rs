@@ -197,10 +197,10 @@ pub(crate) fn semantic_request_digest(
 /// Inference.control owns a shared request ledger. The same operation label in
 /// different Cell partitions must not collide; a changed snapshot within one
 /// operation must not mint a second request ID to bypass that ledger.
-pub(crate) fn inference_request_id(input: &CellStepInputV1) -> Result<StableId, CellExecutionError> {
+pub(crate) fn inference_request_id(scope: &CellScopeV1, operation_id: &StableId) -> Result<StableId, CellExecutionError> {
     let mut bytes = b"hepta.cell.inference-request-id.v1".to_vec();
-    bytes.extend_from_slice(input.scope.digest().as_array());
-    push_id(&mut bytes, &input.operation_id);
+    bytes.extend_from_slice(scope.digest().as_array());
+    push_id(&mut bytes, operation_id);
     let digest = Digest32::of_bytes(&bytes);
     StableId::new(format!("cell-infer:{digest}")).map_err(|_| CellExecutionError::InvalidInput)
 }

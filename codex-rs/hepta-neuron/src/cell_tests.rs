@@ -9,7 +9,7 @@ use pretty_assertions::assert_eq;
 fn complete_native_path_commits_policy_and_state_only_at_owner_boundary() {
     let mut owner = owner(&["run1"]);
     let before = checked(owner.snapshot(&scope("run1")));
-    let proposed = proposal(&owner, input("run1"));
+    let proposed = proposal(&mut owner, input("run1"));
     assert_eq!(checked(owner.snapshot(&scope("run1"))), before);
     let expected = proposed.receipt().clone();
     let receipt = checked(commit_cell_step(&mut owner, proposed, /*now_micros*/13));
@@ -24,13 +24,13 @@ fn complete_native_path_commits_policy_and_state_only_at_owner_boundary() {
 
 #[test]
 fn complete_mask_is_checked_and_masked_maximum_cannot_win() {
-    let owner = owner(&["run1"]);
+    let mut owner = owner(&["run1"]);
     let mut incomplete = input("run1");
     incomplete.candidates.pop();
     assert!(matches!(prepare_cell_step(&definition(), &owner, &Encoder, incomplete, /*now_micros*/10), Err(CellExecutionError::IncompleteCandidates)));
     let mut masked = input("run1");
     masked.candidates[0].allowed = false;
-    let proposed = proposal(&owner, masked);
+    let proposed = proposal(&mut owner, masked);
     assert_eq!(proposed.receipt().selected_candidate, id("abstain"));
     assert_eq!(proposed.receipt().policy[0], CellPolicyEntryV1 {
         candidate_id: id("a"), allowed: false, probability_ppm: 0,
@@ -40,11 +40,11 @@ fn complete_mask_is_checked_and_masked_maximum_cannot_win() {
 #[test]
 fn state_and_exact_operation_identity_are_partitioned_by_run() {
     let mut owner = owner(&["run1", "run2"]);
-    let first = proposal(&owner, input("run1"));
-    let sibling = proposal(&owner, input("run1"));
-    let other = proposal(&owner, input("run2"));
+    let first = proposal(&mut owner, input("run1"));
+    assert!(matches!(prepare_cell_step(&definition(), &owner, &Encoder, input("run1"), /*now_micros*/11), Err(CellExecutionError::InferencePending)));
+    let other = proposal(&mut owner, input("run2"));
     let receipt = checked(commit_cell_step(&mut owner, first, /*now_micros*/13));
-    assert_eq!(checked(commit_cell_step(&mut owner, sibling, /*now_micros*/14)), receipt);
+    assert_eq!(checked(owner.lookup(&scope("run1"), &receipt.operation_id, receipt.semantic_request_digest)), Some(receipt.clone()));
     assert_ne!(checked(commit_cell_step(&mut owner, other, /*now_micros*/14)).checkpoint_after, receipt.checkpoint_after);
     assert!(matches!(owner.reconcile(&scope("run1"), &receipt.operation_id, d("different")), Err(CellExecutionError::OperationConflict)));
 }
@@ -52,40 +52,44 @@ fn state_and_exact_operation_identity_are_partitioned_by_run() {
 #[test]
 fn competing_prepared_writers_and_frontier_reset_are_fenced() {
     let mut owner = owner(&["run1"]);
-    let first = proposal(&owner, input("run1"));
+    let first = checked(prepare_cell_step(&definition(), &owner, &Encoder, input("run1"), /*now_micros*/10));
     let mut other_input = input("run1");
     other_input.operation_id = id("other");
-    let competitor = proposal(&owner, other_input);
+    let competitor = checked(prepare_cell_step(&definition(), &owner, &Encoder, other_input, /*now_micros*/10));
+    let first = checked(infer_cell(first, &mut owner, &mut Model { calls: 0, latency: 20 }, /*now_micros*/11));
+    assert_eq!(owner.reset_at_frontier(&scope("run1"), d("new-frontier"), /*writer_epoch*/2), Err(CellExecutionError::InferencePending));
+    let first = checked(decide_cell(first, /*now_micros*/12));
     checked(commit_cell_step(&mut owner, first, /*now_micros*/13));
-    assert!(matches!(commit_cell_step(&mut owner, competitor, /*now_micros*/14), Err(CellExecutionError::CommitConflict)));
+    let mut model = Model { calls: 0, latency: 20 };
+    assert!(matches!(infer_cell(competitor, &mut owner, &mut model, /*now_micros*/14), Err(CellExecutionError::CommitConflict)));
+    assert_eq!(model.calls, 0);
     let mut next = input("run1");
     next.operation_id = id("next");
-    next.monotonic_micros = 11;
-    let prepared = checked(prepare_cell_step(&definition(), &owner, &Encoder, next, /*now_micros*/11));
-    let inferred = checked(infer_cell(prepared, &mut Model { calls: 0, latency: 20 }, /*now_micros*/12));
-    let stale = checked(decide_cell(inferred, /*now_micros*/13));
+    next.monotonic_micros = 15;
+    let prepared = checked(prepare_cell_step(&definition(), &owner, &Encoder, next, /*now_micros*/15));
     checked(owner.reset_at_frontier(&scope("run1"), d("new-frontier"), /*writer_epoch*/2));
-    assert!(matches!(commit_cell_step(&mut owner, stale, /*now_micros*/14), Err(CellExecutionError::CommitConflict)));
+    assert!(matches!(infer_cell(prepared, &mut owner, &mut model, /*now_micros*/16), Err(CellExecutionError::CommitConflict)));
+    assert_eq!(model.calls, 0);
     assert_eq!(checked(owner.snapshot(&scope("run1"))).checkpoint, None);
 }
 
 #[test]
 fn deadlines_and_changed_bundle_reject_before_backend_dispatch() {
-    let owner = owner(&["run1"]);
+    let mut owner = owner(&["run1"]);
     let mut changed = definition();
     changed.bundle_digest = d("new-bundle");
     assert!(matches!(prepare_cell_step(&changed, &owner, &Encoder, input("run1"), /*now_micros*/10), Err(CellExecutionError::IncompatibleBundle)));
     let prepared = checked(prepare_cell_step(&definition(), &owner, &Encoder, input("run1"), /*now_micros*/10));
     let mut model = Model { calls: 0, latency: 20 };
-    assert!(matches!(infer_cell(prepared, &mut model, /*now_micros*/100), Err(CellExecutionError::DeadlineExceeded)));
+    assert!(matches!(infer_cell(prepared, &mut owner, &mut model, /*now_micros*/100), Err(CellExecutionError::DeadlineExceeded)));
     assert_eq!(model.calls, 0);
 }
 
 #[test]
 fn actual_over_budget_inference_is_recorded_and_abstains() {
-    let owner = owner(&["run1"]);
+    let mut owner = owner(&["run1"]);
     let prepared = checked(prepare_cell_step(&definition(), &owner, &Encoder, input("run1"), /*now_micros*/10));
-    let inferred = checked(infer_cell(prepared, &mut Model { calls: 0, latency: 3000 }, /*now_micros*/11));
+    let inferred = checked(infer_cell(prepared, &mut owner, &mut Model { calls: 0, latency: 3000 }, /*now_micros*/11));
     let proposed = checked(decide_cell(inferred, /*now_micros*/12));
     assert_eq!(proposed.receipt().selected_candidate, id("abstain"));
     assert_eq!(proposed.receipt().cost.model_latency_micros, 3000);
@@ -120,7 +124,7 @@ fn shared_microbatch_matches_reordered_outputs_to_isolated_requests() {
         checked(queue.enqueue(prepared, /*now_micros*/11));
     }
     let mut model = Batch { calls: 0, omit: false };
-    let results = queue.dispatch_next(&mut model, /*now_micros*/12);
+    let results = queue.dispatch_next(&mut owner, &mut model, /*now_micros*/12);
     assert_eq!(model.calls, 1);
     assert_eq!(results.len(), 2);
     for result in results {
@@ -132,13 +136,13 @@ fn shared_microbatch_matches_reordered_outputs_to_isolated_requests() {
 
 #[test]
 fn incomplete_microbatch_cannot_publish_any_state() {
-    let owner = owner(&["run1", "run2"]);
+    let mut owner = owner(&["run1", "run2"]);
     let mut queue = checked(CellBatchQueueV1::new(/*max_queued*/2, /*max_batch*/2));
     for run in ["run1", "run2"] {
         let prepared = checked(prepare_cell_step(&definition(), &owner, &Encoder, input(run), /*now_micros*/10));
         checked(queue.enqueue(prepared, /*now_micros*/11));
     }
-    let results = queue.dispatch_next(&mut Batch { calls: 0, omit: true }, /*now_micros*/12);
+    let results = queue.dispatch_next(&mut owner, &mut Batch { calls: 0, omit: true }, /*now_micros*/12);
     assert_eq!(results.len(), 2);
     assert!(results.into_iter().all(|r| matches!(r.result, Err(CellExecutionError::ModelBindingMismatch))));
     assert_eq!(checked(owner.snapshot(&scope("run1"))).checkpoint, None);
@@ -149,6 +153,12 @@ struct UncertainOwner {
 }
 
 impl CellStateOwnerV1 for UncertainOwner {
+    fn admit_inference(&mut self, admission: CellInferenceAdmissionV1) -> Result<(), CellExecutionError> {
+        self.inner.admit_inference(admission)
+    }
+    fn pending_inference(&self, scope: &CellScopeV1) -> Result<Option<CellInferenceAdmissionV1>, CellExecutionError> {
+        self.inner.pending_inference(scope)
+    }
     fn lookup(&self, scope: &CellScopeV1, operation_id: &StableId, digest: Digest32)
         -> Result<Option<CellDecisionReceiptV1>, CellExecutionError> {
         self.inner.lookup(scope, operation_id, digest)
@@ -170,7 +180,7 @@ impl CellStateOwnerV1 for UncertainOwner {
 #[test]
 fn uncertain_commit_reconciles_exact_persisted_decision_without_new_inference() {
     let mut owner = UncertainOwner { inner: owner(&["run1"]) };
-    let proposed = proposal(&owner, input("run1"));
+    let proposed = proposal(&mut owner, input("run1"));
     let expected = proposed.receipt().clone();
     assert!(matches!(commit_cell_step(&mut owner, proposed, /*now_micros*/13), Err(CellExecutionError::CommitUncertain)));
     assert_eq!(checked(owner.reconcile(&expected.scope, &expected.operation_id, expected.operation_digest)), Some(expected));
@@ -217,7 +227,7 @@ impl CellUpdatePortV1 for Learner {
 
 #[test]
 fn updates_are_next_generation_bounded_candidates_and_do_not_mutate_live_state() {
-    let owner = owner(&["run1"]);
+    let mut owner = owner(&["run1"]);
     let before = checked(owner.snapshot(&scope("run1")));
     let result = checked(propose_cell_update(&definition(), &owner, &mut Learner {
         wrong_parameter: false, steps: 2,
@@ -243,7 +253,7 @@ impl CellInputEncoderV1 for ForbiddenEncoder {
 #[test]
 fn entry_replays_before_encoding_and_new_snapshot_cannot_reidentify_an_operation() {
     let mut owner = owner(&["run1"]);
-    let proposed = proposal(&owner, input("run1"));
+    let proposed = proposal(&mut owner, input("run1"));
     let receipt = checked(commit_cell_step(&mut owner, proposed, /*now_micros*/13));
     assert_eq!(checked(canonical_cell_step_request_digest_v1(&definition(), &input("run1"))), receipt.semantic_request_digest);
     match checked(enter_cell_step(&definition(), &owner, &ForbiddenEncoder, input("run1"), /*now_micros*/500)) {
@@ -276,12 +286,13 @@ impl NeuronInferenceControlPort for WrongRequestControl {
 
 #[test]
 fn inference_control_rejects_receipts_from_a_different_source_or_request() {
-    let owner = owner(&["run1"]);
     for wrong_source in [true, false] {
+        let mut owner = owner(&["run1"]);
         let prepared = checked(prepare_cell_step(&definition(), &owner, &Encoder, input("run1"), /*now_micros*/10));
-        assert!(matches!(infer_cell(prepared, &mut WrongRequestControl { wrong_source }, /*now_micros*/11), Err(CellExecutionError::Backend(NeuronModelError::Rejected))));
+        assert!(matches!(infer_cell(prepared, &mut owner, &mut WrongRequestControl { wrong_source }, /*now_micros*/11), Err(CellExecutionError::Backend(NeuronModelError::Rejected))));
+        assert_eq!(checked(owner.snapshot(&scope("run1"))).checkpoint, None);
+        assert!(checked(owner.pending_inference(&scope("run1"))).is_some());
     }
-    assert_eq!(checked(owner.snapshot(&scope("run1"))).checkpoint, None);
 }
 
 struct WrongModelControl;
@@ -305,9 +316,9 @@ impl NeuronInferenceControlPort for WrongModelControl {
 
 #[test]
 fn a_request_valid_receipt_must_still_match_the_entire_frozen_runtime_tuple() {
-    let owner = owner(&["run1"]);
+    let mut owner = owner(&["run1"]);
     let prepared = checked(prepare_cell_step(&definition(), &owner, &Encoder, input("run1"), /*now_micros*/10));
-    assert!(matches!(infer_cell(prepared, &mut WrongModelControl, /*now_micros*/11), Err(CellExecutionError::ModelBindingMismatch)));
+    assert!(matches!(infer_cell(prepared, &mut owner, &mut WrongModelControl, /*now_micros*/11), Err(CellExecutionError::ModelBindingMismatch)));
 }
 
 struct ForgedBatch;
@@ -325,13 +336,13 @@ impl CellMicrobatchInferenceControlPortV1 for ForgedBatch {
 
 #[test]
 fn batch_routing_digest_cannot_relabel_a_receipt_for_another_cell() {
-    let owner = owner(&["run1", "run2"]);
+    let mut owner = owner(&["run1", "run2"]);
     let mut queue = checked(CellBatchQueueV1::new(/*max_queued*/2, /*max_batch*/2));
     for run in ["run1", "run2"] {
         let prepared = checked(prepare_cell_step(&definition(), &owner, &Encoder, input(run), /*now_micros*/10));
         checked(queue.enqueue(prepared, /*now_micros*/11));
     }
-    let results = queue.dispatch_next(&mut ForgedBatch, /*now_micros*/12);
+    let results = queue.dispatch_next(&mut owner, &mut ForgedBatch, /*now_micros*/12);
     assert_eq!(results.len(), 2);
     assert!(results.into_iter().all(|r| matches!(r.result, Err(CellExecutionError::Backend(NeuronModelError::Rejected)))));
     assert_eq!(checked(owner.snapshot(&scope("run1"))).revision, 0);
@@ -346,11 +357,46 @@ fn shared_inference_ids_are_partitioned_but_do_not_change_with_owner_revision() 
     assert_ne!(first.model_request.request_id, second.model_request.request_id);
     let mut competing = input("run1");
     competing.operation_id = id("other");
-    let competing_proposal = proposal(&owner, competing);
+    let competing_proposal = proposal(&mut owner, competing);
     checked(commit_cell_step(&mut owner, competing_proposal, /*now_micros*/13));
     let mut later = input("run1");
     later.monotonic_micros = 15;
     let reparsed = checked(prepare_cell_step(&definition(), &owner, &Encoder, later, /*now_micros*/15));
     assert_eq!(first.model_request.request_id, reparsed.model_request.request_id);
     assert_ne!(first.model_request.input_digest, reparsed.model_request.input_digest);
+}
+
+struct UncertainBatch {
+    calls: usize,
+}
+
+impl CellMicrobatchInferenceControlPortV1 for UncertainBatch {
+    fn execute_feature_batch(&mut self, _: &[codex_hepta_infer_core::NeuronFeatureRequestV1])
+        -> Result<Vec<codex_hepta_infer_core::NeuronFeatureReceiptV1>, NeuronModelError> {
+        self.calls += 1;
+        Err(NeuronModelError::Indeterminate)
+    }
+}
+
+#[test]
+fn batch_error_retains_each_admission_and_does_not_repeat_dispatch() {
+    let mut owner = owner(&["run1", "run2"]);
+    let mut queue = checked(CellBatchQueueV1::new(/*max_queued*/2, /*max_batch*/2));
+    let duplicate = checked(prepare_cell_step(&definition(), &owner, &Encoder, input("run1"), /*now_micros*/10));
+    for run in ["run1", "run2"] {
+        let prepared = checked(prepare_cell_step(&definition(), &owner, &Encoder, input(run), /*now_micros*/10));
+        checked(queue.enqueue(prepared, /*now_micros*/11));
+    }
+    let mut model = UncertainBatch { calls: 0 };
+    let results = queue.dispatch_next(&mut owner, &mut model, /*now_micros*/12);
+    assert_eq!(results.len(), 2);
+    assert!(results.into_iter().all(|r| matches!(r.result, Err(CellExecutionError::Backend(NeuronModelError::Indeterminate)))));
+    for run in ["run1", "run2"] {
+        assert!(checked(owner.pending_inference(&scope(run))).is_some());
+    }
+    checked(queue.enqueue(duplicate, /*now_micros*/13));
+    let results = queue.dispatch_next(&mut owner, &mut model, /*now_micros*/14);
+    assert_eq!(results.len(), 1);
+    assert!(results.into_iter().all(|r| matches!(r.result, Err(CellExecutionError::InferencePending))));
+    assert_eq!(model.calls, 1);
 }
