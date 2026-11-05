@@ -26,6 +26,7 @@ RETAINED_TARGETS = (
     "//codex-rs/core:core-all-test",
     "//codex-rs/core:core-all-wine-exec-test",
     "//codex-rs/hepta-agentd:hepta-agentd-cognitive-write-qualification-test",
+    "//codex-rs/windows-sandbox-rs:codex-windows-sandbox-setup-bin-unit-tests",
 )
 
 

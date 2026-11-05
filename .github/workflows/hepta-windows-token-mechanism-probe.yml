@@ -12,6 +12,10 @@ on:
       - codex-rs/windows-sandbox-rs/src/unified_exec/delete_permission_tests.rs
       - .github/workflows/hepta-windows-token-mechanism-probe.yml
       - .github/scripts/run_b11_acl_identity_counterfactual.py
+      - codex-rs/windows-sandbox-rs/src/bin/setup_main/win.rs
+      - codex-rs/windows-sandbox-rs/src/bin/setup_main/win/read_acl_mutex.rs
+      - codex-rs/windows-sandbox-rs/src/bin/setup_main/win/read_acl_mutex_tests.rs
+      - .github/scripts/run_b11_read_acl_readiness.py
 
 permissions:
   contents: read
@@ -82,6 +86,7 @@ jobs:
           exit "${statuses[0]}"
 
       - name: Check the ACL identity counterfactual and restore its source
+        id: acl_identity_counterfactual
         if: always() && !cancelled() && steps.original_unit_target.outcome != 'skipped'
         env:
           BUILDBUDDY_API_KEY: ${{ secrets.BUILDBUDDY_API_KEY }}
@@ -90,6 +95,18 @@ jobs:
           set -euo pipefail
           evidence="$(cygpath -u "${RUNNER_TEMP}")/b11-token-mechanism-probe"
           python3 .github/scripts/run_b11_acl_identity_counterfactual.py \
+            --evidence "$(cygpath -w "$evidence")"
+
+      - name: Run the original setup helper target after exact restoration
+        id: read_acl_helper_target
+        if: always() && !cancelled() && steps.acl_identity_counterfactual.outcome == 'success'
+        env:
+          BUILDBUDDY_API_KEY: ${{ secrets.BUILDBUDDY_API_KEY }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          evidence="$(cygpath -u "${RUNNER_TEMP}")/b11-token-mechanism-probe"
+          python3 .github/scripts/run_b11_read_acl_readiness.py \
             --evidence "$(cygpath -w "$evidence")"
 
       # The unchanged wrapper already retains this exact target on both failure
