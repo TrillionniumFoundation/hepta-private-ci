@@ -257,7 +257,28 @@ impl UnifiedExecProcess {
             return Err(UnifiedExecError::process_failed(message));
         }
         match &self.process_handle {
-            ProcessHandle::Local(process_handle) => process_handle.terminate(),
+            ProcessHandle::Local(process_handle) => {
+                process_handle.terminate();
+                // The original native waiter publishes through this observer.
+                // Cloning its receiver neither consumes nor cancels that owner
+                // when this awaiter is dropped. I/O closure is not an exit.
+                let mut state_rx = self.state_rx.clone();
+                loop {
+                    let state = state_rx.borrow_and_update().clone();
+                    if state.has_exited {
+                        break;
+                    }
+                    if let Some(message) = state.failure_message {
+                        return Err(UnifiedExecError::process_failed(message));
+                    }
+                    if state_rx.changed().await.is_err() {
+                        self.signal_observation_failure(EXIT_OBSERVATION_LOST.to_string());
+                        return Err(UnifiedExecError::process_failed(
+                            EXIT_OBSERVATION_LOST.to_string(),
+                        ));
+                    }
+                }
+            }
             ProcessHandle::ExecServer(process_handle) => {
                 process_handle
                     .terminate()
@@ -265,8 +286,8 @@ impl UnifiedExecProcess {
                     .map_err(|err| UnifiedExecError::process_failed(err.to_string()))?;
             }
         }
-        // The existing callers provide no deadline for an additional read RPC
-        // or wait. An ACK confirms the request, not a native process exit.
+        // Remote callers provide no deadline for an additional read RPC or
+        // wait. Their ACK confirms the request, not a native process exit.
         if self.observe_current_exit() {
             self.finish_termination();
             Ok(())
