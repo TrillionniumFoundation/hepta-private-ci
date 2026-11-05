@@ -247,7 +247,7 @@
     "original_full16_failures_and25_early_returns_preserved": true,
     "latest_actual_free_bytes": 23893377024
   },
-  "artifact_count": 989,
+  "artifact_count": 991,
   "artifacts": [
     {
       "path": "fourth-cabc-ci-terminal.json",
@@ -4706,11 +4706,18 @@
     },
     {
       "path": "fourth-repository-inventory-20261105.json",
-      "bytes": 1846885,
-      "sha256": "4adb3a73f03226fd73daba8c5ae2a5644fb84cde7702ddc892abb72d75a810f9",
-      "blob": "5fac62f2526a56ebc0cdaa8cfe66531c9a33f912",
+      "bytes": 4366,
+      "sha256": "0bfe1d00ba090d18d7b7604f26887cebfb50784bbcfcb9ec4973863eb541483a",
+      "blob": "9db84c745e7f31fd0781e25baa5d03a405aaf13c",
       "mode": "100644",
-      "scope": "Complete non-atomic observed repository inventory; all pages and ending anchors preserved."
+      "scope": "Typed frozen inventory index. Restore the unchanged full JSON from the existing archive before parsing original fields.",
+      "original_payload": {
+        "bytes": 1846885,
+        "sha256": "4adb3a73f03226fd73daba8c5ae2a5644fb84cde7702ddc892abb72d75a810f9",
+        "blob": "5fac62f2526a56ebc0cdaa8cfe66531c9a33f912",
+        "archive_member": "complete-inventory.json",
+        "archive_manifest": "repository-inventory-20261105/archive-manifest.json"
+      }
     },
     {
       "path": "repository-inventory-20261105/archive-manifest.json",
@@ -8045,6 +8052,22 @@
       "bytes": 60728,
       "sha256": "5759f2b257f21ce50ce2d20999096805f990208b25329d3d65e9fb07bbb55032",
       "scope": "Independent new59 archived-body identity and25activeMD/JSON literal workflow scan;15paths/79occurrences valid. Static check, not whole docs gate."
+    },
+    {
+      "path": "repository-inventory-20261105/restore_inventory.py",
+      "bytes": 5232,
+      "sha256": "9754c5f64731ec188c8c9d32752fb40d7756c679803d826aef74db01b18e60ae",
+      "blob": "5495be1a51b14a4a0642d7c09c6bd670f539ef77",
+      "mode": "100644",
+      "scope": "Frozen inventory verification and exact create-only JSON restoration; no project or native tests."
+    },
+    {
+      "path": "repository-inventory-20261105/RESTORE_INVENTORY.md",
+      "bytes": 2584,
+      "sha256": "6f1b0a15845e412152382ed2fbe0bef3177c94ceac23917111865787c4054141",
+      "blob": "2994e990903b7eb9eb51f1ae9ba191932f9efef7",
+      "mode": "100644",
+      "scope": "Frozen inventory verification and exact create-only JSON restoration; no project or native tests."
     }
   ],
   "interpretation": [
@@ -8514,5 +8537,15 @@
     "causes_closed": false,
     "diagnostic_candidates_executed": false
   },
-  "additional_passive_source_evidence_rule": "Original formatter postimages and diagnostic Rust source snapshots use passive .source.txt with logical path mapping; frozen report postimages likewise avoid active relative-link interpretation."
+  "additional_passive_source_evidence_rule": "Original formatter postimages and diagnostic Rust source snapshots use passive .source.txt with logical path mapping; frozen report postimages likewise avoid active relative-link interpretation.",
+  "inventory_transport_update": {
+    "original_payload_unchanged": {
+      "bytes": 1846885,
+      "sha256": "4adb3a73f03226fd73daba8c5ae2a5644fb84cde7702ddc892abb72d75a810f9",
+      "blob": "5fac62f2526a56ebc0cdaa8cfe66531c9a33f912"
+    },
+    "typed_index": "fourth-repository-inventory-20261105.json",
+    "existing_archive_manifest": "repository-inventory-20261105/archive-manifest.json",
+    "counts_or_blocker_status_changed": false
+  }
 }

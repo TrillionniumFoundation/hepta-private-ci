@@ -53,6 +53,27 @@ def git_bash_record(path):
     return {"path": str(path), **digest(path.read_bytes())}
 
 
+def bazel_environment(archive):
+    # Native Python uppercases environment keys. Git Bash needs the original
+    # MSVC spellings used by run-bazel-ci.sh; keep the actual inherited values.
+    env = os.environ.copy()
+    for name in ("UCRTVersion", "UniversalCRTSdkDir", "VCToolsInstallDir", "WindowsLibPath",
+                 "WindowsSdkBinPath", "WindowsSdkDir", "WindowsSDKLibVersion", "WindowsSDKVersion"):
+        aliases = [key for key in env if key.casefold() == name.casefold()]
+        values = {env[key] for key in aliases}
+        require(len(values) <= 1, f"conflicting inherited Windows toolchain environment: {name}")
+        if name in ("UniversalCRTSdkDir", "VCToolsInstallDir", "WindowsSdkDir"):
+            require(len(values) == 1 and next(iter(values)),
+                    f"missing required inherited Windows toolchain environment: {name}")
+        if aliases:
+            value = env[aliases[0]]
+            for key in aliases:
+                del env[key]
+            env[name] = value
+    env["CODEX_BAZEL_EXECUTION_LOG_COMPACT_DIR"] = str(archive)
+    return env
+
+
 def save(directory, name, value):
     (directory / name).write_text(json.dumps(value, indent=2, ensure_ascii=False) + "\n", encoding="utf-8")
 
@@ -212,8 +233,7 @@ def main():
             save(scope, "source-before.json", positive_before)
             positive_archive = scope / "bazel-execution-logs"
             positive_archive.mkdir()
-            positive_env = os.environ.copy()
-            positive_env["CODEX_BAZEL_EXECUTION_LOG_COMPACT_DIR"] = str(positive_archive)
+            positive_env = bazel_environment(positive_archive)
             positive_argv = [bash["path"], "./.github/scripts/run-bazel-ci.sh", "--print-failed-action-summary",
                              "--print-failed-test-logs", "--windows-msvc-host-platform", "--remote-download-toplevel", "--", "test",
                              "--platforms=//:windows_x86_64_msvc", "--skip_incompatible_explicit_targets",
@@ -274,8 +294,7 @@ def main():
         save(evidence, "source-negative-before.json", before)
         negative_archive = evidence / "bazel-execution-logs"
         negative_archive.mkdir()
-        env = os.environ.copy()
-        env["CODEX_BAZEL_EXECUTION_LOG_COMPACT_DIR"] = str(negative_archive)
+        env = bazel_environment(negative_archive)
         argv = [bash["path"], "./.github/scripts/run-bazel-ci.sh", "--print-failed-action-summary",
                 "--print-failed-test-logs", "--windows-msvc-host-platform", "--remote-download-toplevel", "--", "test",
                 "--platforms=//:windows_x86_64_msvc", "--skip_incompatible_explicit_targets",

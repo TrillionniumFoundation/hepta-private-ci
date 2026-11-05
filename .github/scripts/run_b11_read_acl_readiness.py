@@ -19,7 +19,7 @@ import xml.etree.ElementTree as ET
 TARGET = "//codex-rs/windows-sandbox-rs:codex-windows-sandbox-setup-bin-unit-tests"
 TARGET_PATH = "codex-rs/windows-sandbox-rs/codex-windows-sandbox-setup-bin-unit-tests"
 CONTROL_SCRIPT = ".github/scripts/run_b11_acl_identity_counterfactual.py"
-CONTROL_BLOB = "e6a191a2d3c66c740aa3cb2ccd42c3e4fdb6880e"
+CONTROL_BLOB = "90ae8f030ee405706217d7cb2cdc12f1a7cda443"
 PINS = {
     "codex-rs/windows-sandbox-rs/src/bin/setup_main/win.rs": "c39b298b7889dc3669e1ee7e2816f7e77568e955",
     "codex-rs/windows-sandbox-rs/src/bin/setup_main/win/read_acl_mutex.rs": "9f9e1aa5a83e72d3ff34eaf7f98f58cc66f7b6b6",
@@ -30,7 +30,7 @@ PINS = {
     "codex-rs/windows-sandbox-rs/BUILD.bazel": "8531cb4d664c25de6fbf200c71cb8042d1d8d865",
     "defs.bzl": "6f588ec3057fddfea35170e28e74036162ce6a23",
     ".github/scripts/run-bazel-ci.sh": "42b59b6354b5933c8155b992519682c06d024ca1",
-    ".github/scripts/collect_bazel_failed_test_logs.py": "e15bfb8a75678ff7d4bab4b82b2e54e80b8b61c9",
+    ".github/scripts/collect_bazel_failed_test_logs.py": "76a183d6a45e4a6c1493de194f8a1f6c422f0892",
     CONTROL_SCRIPT: CONTROL_BLOB,
 }
 REQUIRED_CASES = {
@@ -176,8 +176,7 @@ def main():
         control.save(evidence, "source-before.json", entry)
         archive = evidence / "bazel-execution-logs"
         archive.mkdir()
-        env = os.environ.copy()
-        env["CODEX_BAZEL_EXECUTION_LOG_COMPACT_DIR"] = str(archive)
+        env = control.bazel_environment(archive)
         argv = [bash["path"], "./.github/scripts/run-bazel-ci.sh", "--print-failed-action-summary",
                 "--print-failed-test-logs", "--windows-msvc-host-platform", "--remote-download-toplevel", "--", "test",
                 "--platforms=//:windows_x86_64_msvc", "--skip_incompatible_explicit_targets",
