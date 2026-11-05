@@ -49,8 +49,11 @@ fn explicit_external_signer_emits_bound_unknown_decision_and_refuses_implicit_si
         std::fs::set_permissions(&key_path, std::fs::Permissions::from_mode(/*mode*/ 0o600))
             .unwrap();
     }
-    let mut command = Command::new(env!("CARGO_BIN_EXE_hepta-authority-signer"));
+    let mut command =
+        Command::new(codex_utils_cargo_bin::cargo_bin("hepta-authority-signer").unwrap());
     command
+        .arg("--profile")
+        .arg("ed25519_v1_qualification")
         .arg("--key-file")
         .arg(&key_path)
         .arg("--request")

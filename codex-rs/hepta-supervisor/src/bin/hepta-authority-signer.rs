@@ -14,7 +14,7 @@ use codex_hepta_supervisor::load_signing_key_from_path;
 use codex_hepta_supervisor::read_request;
 use codex_hepta_supervisor::sign_request;
 
-const USAGE: &str = "usage: hepta-authority-signer --sign [--key-file ABSOLUTE_PATH | --key-fd FD] [--request ABSOLUTE_PATH|-]";
+const USAGE: &str = "usage: hepta-authority-signer --sign --profile ml_dsa65_v2 --policy ABSOLUTE_PATH [--key-file ABSOLUTE_PATH | --key-fd FD] [--request ABSOLUTE_PATH|-]; legacy qualification: --profile ed25519_v1_qualification without --policy";
 
 fn main() -> anyhow::Result<()> {
     let options = parse_options()?;
@@ -38,13 +38,42 @@ fn main() -> anyhow::Result<()> {
     }
 
     let request = read_request(options.request.as_deref()).context("read signing request")?;
-    let key = match (options.key_file, options.key_fd) {
-        (Some(path), None) => load_signing_key_from_path(&path),
-        (None, Some(fd)) => load_signing_key_from_fd(fd),
-        _ => anyhow::bail!("exactly one external key source is required"),
-    }
-    .context("load external signing key")?;
-    let response = sign_request(&request, &key).context("sign request")?;
+    let response = match options.profile.as_deref() {
+        Some("ml_dsa65_v2") => {
+            let policy_path = options
+                .policy
+                .as_deref()
+                .ok_or_else(|| anyhow::anyhow!("PQ profile requires --policy"))?;
+            let policy = codex_hepta_supervisor::read_pq_signing_policy(policy_path)
+                .context("read explicit PQ policy")?;
+            let role = codex_hepta_supervisor::pq_signing_role(&request, &policy)
+                .context("check explicit signing role")?;
+            let key = match (options.key_file, options.key_fd) {
+                (Some(path), None) => {
+                    codex_hepta_supervisor::load_pq_signing_key_from_path(&path, role.public_key_id)
+                }
+                (None, Some(fd)) => {
+                    codex_hepta_supervisor::load_pq_signing_key_from_fd(fd, role.public_key_id)
+                }
+                _ => anyhow::bail!("exactly one external key source is required"),
+            }
+            .context("load owned PQ role key")?;
+            codex_hepta_supervisor::sign_request_pq(&request, key, &policy)
+                .context("sign explicit PQ request")?
+        }
+        Some("ed25519_v1_qualification") if options.policy.is_none() => {
+            let key = match (options.key_file, options.key_fd) {
+                (Some(path), None) => load_signing_key_from_path(&path),
+                (None, Some(fd)) => load_signing_key_from_fd(fd),
+                _ => anyhow::bail!("exactly one external key source is required"),
+            }
+            .context("load explicit legacy qualification key")?;
+            sign_request(&request, &key).context("sign legacy qualification request")?
+        }
+        _ => anyhow::bail!(
+            "explicit supported --profile is required; legacy qualification refuses --policy\n{USAGE}"
+        ),
+    };
 
     let stdout = std::io::stdout();
     let mut locked = stdout.lock();
@@ -56,6 +85,8 @@ fn main() -> anyhow::Result<()> {
 
 struct Options {
     sign: bool,
+    profile: Option<String>,
+    policy: Option<PathBuf>,
     key_file: Option<PathBuf>,
     key_fd: Option<i32>,
     request: Option<PathBuf>,
@@ -65,6 +96,8 @@ fn parse_options() -> anyhow::Result<Options> {
     let mut arguments = std::env::args_os().skip(1);
     let mut options = Options {
         sign: false,
+        profile: None,
+        policy: None,
         key_file: None,
         key_fd: None,
         request: None,
@@ -72,6 +105,21 @@ fn parse_options() -> anyhow::Result<Options> {
     while let Some(argument) = arguments.next() {
         match argument.to_str() {
             Some("--sign") if !options.sign => options.sign = true,
+            Some("--profile") if options.profile.is_none() => {
+                options.profile = Some(
+                    arguments
+                        .next()
+                        .ok_or_else(|| anyhow::anyhow!("--profile requires a value"))?
+                        .into_string()
+                        .map_err(|_| anyhow::anyhow!("--profile must be UTF-8"))?,
+                );
+            }
+            Some("--policy") if options.policy.is_none() => {
+                options.policy =
+                    Some(PathBuf::from(arguments.next().ok_or_else(|| {
+                        anyhow::anyhow!("--policy requires a value")
+                    })?));
+            }
             Some("--key-file") if options.key_file.is_none() => {
                 let value = arguments
                     .next()
