@@ -231,7 +231,14 @@ async fn stateless_responses_preserve_durable_item_turn_metadata_across_turns() 
         ],
     )
     .await;
-    let test = test_codex().build(&server).await.unwrap();
+    let test = test_codex()
+        .with_config(|config| {
+            // Exercise the custom-provider boundary without a mock metadata permit.
+            config.model_provider.mock_internal_chat_metadata = None;
+        })
+        .build(&server)
+        .await
+        .unwrap();
 
     test.submit_turn("turn one").await.unwrap();
     let first_history = persisted_response_items(&test).await.unwrap();
