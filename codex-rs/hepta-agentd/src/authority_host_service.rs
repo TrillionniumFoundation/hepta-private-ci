@@ -22,6 +22,9 @@ use crate::AuthBusObjectiveBody;
 use crate::AuthBusObjectiveIngress;
 use crate::DeploymentFinalUseIssuer;
 
+#[path = "authority_host_worker_registration.rs"]
+mod worker_registration;
+
 #[path = "authority_host_writer.rs"]
 mod writer;
 pub use writer::FreshHostCognitiveState;
