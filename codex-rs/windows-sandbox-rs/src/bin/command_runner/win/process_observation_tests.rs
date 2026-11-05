@@ -23,6 +23,7 @@ use windows_sys::Win32::Foundation::DuplicateHandle;
 use windows_sys::Win32::Foundation::ERROR_ACCESS_DENIED;
 use windows_sys::Win32::Foundation::HANDLE;
 use windows_sys::Win32::System::Pipes::PeekNamedPipe;
+use windows_sys::Win32::System::Threading::CREATE_NO_WINDOW;
 use windows_sys::Win32::System::Threading::GetCurrentProcess;
 use windows_sys::Win32::System::Threading::PROCESS_NAME_WIN32;
 use windows_sys::Win32::System::Threading::PROCESS_QUERY_LIMITED_INFORMATION;
@@ -39,6 +40,9 @@ fn command(script: &str) -> Result<Command> {
     // fixed scripts; never pass user-controlled text to raw_arg.
     command.args(["/D", "/C"]);
     command.raw_arg(script);
+    // Run the original real cmd.exe child in a redirected headless test worker.
+    // Keep its actual exit-status, owned-handle and pending-state assertions.
+    command.creation_flags(CREATE_NO_WINDOW);
     command
         .stdin(Stdio::piped())
         .stdout(Stdio::null())
