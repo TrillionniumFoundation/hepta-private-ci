@@ -16,6 +16,7 @@ from pathlib import Path
 # A deliberately small acceptance-evidence scope, not an extra test selection.
 RETAINED_TARGETS = (
     "//codex-rs/tui:tui-unit-tests",
+    "//codex-rs/windows-sandbox-rs:windows-sandbox-rs-unit-tests",
     "//codex-rs/ext/queue:queue-queue_service-test",
     "//codex-rs/app-server:app-server-all-test",
     "//codex-rs/app-server:app-server-unit-tests",
