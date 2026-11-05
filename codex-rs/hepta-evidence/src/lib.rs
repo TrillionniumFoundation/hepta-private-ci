@@ -136,3 +136,7 @@ mod authbus_outbox_quarantine_tests;
 #[cfg(test)]
 #[path = "qualification_tests.rs"]
 mod qualification_tests;
+
+#[cfg(test)]
+#[path = "recovery_snapshot_transaction_tests.rs"]
+mod recovery_snapshot_transaction_tests;
