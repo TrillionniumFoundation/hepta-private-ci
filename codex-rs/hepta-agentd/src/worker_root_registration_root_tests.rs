@@ -11,6 +11,9 @@ use fixture::Fixture;
 use fixture::QualificationChild;
 use fixture::ChildIdentity;
 
+#[path = "worker_root_lanes_root_tests.rs"]
+mod lanes;
+
 #[test]
 #[ignore = "actual UID0, private data bind and frozen dedicated child example required"]
 fn root_worker_receives_exact_sealed_registration_with_independent_namespace() {

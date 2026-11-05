@@ -1,5 +1,9 @@
 //! Explicit no-effect child for privileged Worker registration qualification.
-//! It cannot serve a provider, open a FinalUse floor or activate a Cell.
+//! It cannot serve a provider, create a local FinalUse owner or activate a Cell.
+
+#[cfg(target_os = "linux")]
+#[path = "worker_registration_qualification/lanes.rs"]
+mod lanes;
 
 #[cfg(target_os = "linux")]
 fn main() -> Result<(), Box<dyn std::error::Error>> {
@@ -30,6 +34,10 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     // anonymous socket at 198. It adopts it once; no path or numeric PID is
     // accepted as production authority by the receiver called below.
     let socket = unsafe { UnixDatagram::from_raw_fd(198) };
+    if mode.starts_with("lanes-") {
+        drop(stdout);
+        return lanes::run(mode, socket, &agent, generation);
+    }
     let mut receipt = None;
     let message = match mode {
         "receive" | "wrong-agent" => {
