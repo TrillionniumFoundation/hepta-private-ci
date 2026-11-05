@@ -185,11 +185,13 @@ fresh lookup provenance or a complete history of every observation.
 
 That facade is not a registered production caller and does not compose the
 FinalUse frontier, a budget owner and the effect journal into one externally
-durable transaction. The evidence recovery snapshot does not cover its provider
-effect tables. Chain's three-table `PqWitnessV4` cannot supply that missing
-coverage. A production composition still needs an append-consistent effect
-checkpoint, expected-old advancement and atomic durable witness state before
-co-signing. A signed counter by itself is insufficient.
+durable transaction. The V2 evidence recovery snapshot covers these facade
+provider-effect tables, including uncertainty and acknowledgement provenance,
+when compared with an independently retained checkpoint. It does not cover the
+separate AutomationStore effect owner. Chain's three-table `PqWitnessV4` cannot
+supply that coverage or freshness. A production composition still needs an
+append-consistent effect checkpoint, expected-old advancement and atomic durable
+witness state before co-signing. A signed counter by itself is insufficient.
 
 If a provider lacks durable idempotency and authoritative status lookup, keep
 the effect unresolved; local logs cannot promise arbitrary external exactly-once
@@ -449,3 +451,25 @@ used by automation. It and `with_verified_use_async` reject concurrent trusted
 revocation commits with `DispatchInProgress` until completion or cancellation.
 Both use the same authority owner, clock and persisted revocation state.
 The local `with_dispatch_boundary` witness APIs retain their short mutex fence.
+
+### Evidence recovery checkpoint V2
+
+Agentd's signed evidence recovery checkpoint now uses the V2 snapshot and
+`hepta.kernel.evidence.recovery-frontier.v2` signing domain. In addition to
+qualification evidence and AuthBus replay, it commits every `hepta-evidence`
+provider-effect intent, uncertainty and receipt. Table identity, sequence, record
+digest, ACK provenance and cross-table ordering timestamp are all bound. The
+snapshot reads every component in one SQLite transaction and rechecks each
+record digest against its actual JSON bytes; effect rows use primary-key pages.
+A self-consistent old database containing fewer effect rows
+therefore cannot equal a retained current V2 checkpoint.
+
+V1 evidence recovery files are refused and require a newly reviewed and signed
+V2 checkpoint from the existing recovery authority. They must not be silently
+upgraded using the database being recovered. The recovery trust key remains
+Ed25519 in this interface; this change does not qualify that interface as PQ.
+An external checkpoint file is not a freshness oracle or a live atomic consume
+service. A deployment still needs independent fresh state and an atomic
+consumption/receipt contract for each effect owner. This snapshot does not
+consume FinalUse rights, issue business permission, turn preparation into an
+execution receipt, or resolve an unknown result by allocating a new nonce.

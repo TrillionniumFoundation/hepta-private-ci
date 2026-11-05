@@ -1339,7 +1339,7 @@ async fn next_effect_recorded_at_ms(
     Ok(now.max(previous.saturating_add(1)))
 }
 
-fn verify_record_digest(
+pub(super) fn verify_record_digest(
     payload_json: &str,
     expected: &str,
     description: &str,
