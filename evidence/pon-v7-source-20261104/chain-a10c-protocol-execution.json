@@ -1,0 +1,158 @@
+{
+  "corpus_384_checked": true,
+  "full_node_tests_executed_in_this_run": false,
+  "metadata_guard_6_passed_2_ignored_verified": true,
+  "native_and_scripts_subtrees_identical_to_44d": {
+    "scripts": "29dbb8acf8ba28b39501a4058219ef69a36f6439",
+    "trillionnium": "243e97a00434168ecc04e4213b760a2ceb066d72"
+  },
+  "original_profiles_and_business_budgets_changed": false,
+  "protocol_binary": {
+    "bytes": 20272816,
+    "path": "/workspace/scratch/66671f1fe103/target-candidate/debug/deps/trnm_protocol-c527de42bcd5301e",
+    "sha256": "82f9f5499c49394d152a07af8357efea10e483bfd9e130377dc1aa4cc1ad4c93"
+  },
+  "protocol_binary_unchanged": true,
+  "release_decision": "HOLD_NO_GO",
+  "results": [
+    {
+      "argv": [
+        "bash",
+        "scripts/project-preflight.sh"
+      ],
+      "cwd": "/workspace/scratch/8a53368149fe/chain-integration",
+      "elapsed_ns": 46077154,
+      "files": {
+        "stderr.log": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "stdout.log": {
+          "bytes": 170,
+          "sha256": "f4596f7a46726a8fe6b0b4a0e55488d1b12203c29e5470c6de30f61efc109069"
+        }
+      },
+      "label": "preflight",
+      "outcome": "PASS",
+      "returncode": 0,
+      "source_sha": "a10c39025cdc03d3265b031d6547b11e0350da2c"
+    },
+    {
+      "argv": [
+        "rustc",
+        "+1.95.0",
+        "-Vv"
+      ],
+      "cwd": "/workspace/scratch/8a53368149fe/chain-integration",
+      "elapsed_ns": 30911278,
+      "files": {
+        "stderr.log": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "stdout.log": {
+          "bytes": 196,
+          "sha256": "4fdff2578428e9c5c08ddd7a0d3079c1a106b1cdaa46e73e46f7cd32b0fb9cad"
+        }
+      },
+      "label": "compiler",
+      "outcome": "PASS",
+      "returncode": 0,
+      "source_sha": "a10c39025cdc03d3265b031d6547b11e0350da2c"
+    },
+    {
+      "argv": [
+        "cargo",
+        "+1.95.0",
+        "-V"
+      ],
+      "cwd": "/workspace/scratch/8a53368149fe/chain-integration",
+      "elapsed_ns": 10620458,
+      "files": {
+        "stderr.log": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "stdout.log": {
+          "bytes": 36,
+          "sha256": "c10ec31b8c6e6e2693cf65fc1971b41edbc3da1ae7db6f9f3f36c4823f8dcab5"
+        }
+      },
+      "label": "cargo-version",
+      "outcome": "PASS",
+      "returncode": 0,
+      "source_sha": "a10c39025cdc03d3265b031d6547b11e0350da2c"
+    },
+    {
+      "argv": [
+        "cargo",
+        "+1.95.0",
+        "test",
+        "--locked",
+        "--offline",
+        "--manifest-path",
+        "trillionnium/Cargo.toml",
+        "-p",
+        "trnm-protocol",
+        "--lib",
+        "--",
+        "--show-output",
+        "--test-threads=1"
+      ],
+      "cwd": "/workspace/scratch/8a53368149fe/chain-integration",
+      "elapsed_ns": 23780454890,
+      "execution_check": {
+        "failed": 0,
+        "filtered": 0,
+        "ignored": 2,
+        "ignored_tests": [
+          "pon_state::bulk_tests::bulk_complete_construction_cost_observation",
+          "pon_wire::streamed_state_root_tests::state_node_and_complete_root_paired_cost_observation"
+        ],
+        "measured": 0,
+        "passed": 60
+      },
+      "files": {
+        "stderr.log": {
+          "bytes": 321,
+          "sha256": "f21f28b681a6869dbc209478818db6d9a7ef5aba2b364b26fa506baafddaa2df"
+        },
+        "stdout.log": {
+          "bytes": 11859,
+          "sha256": "23f137f0a46894956385a79893d9afff11661b39707e22e25ed40ad1fb057c6f"
+        }
+      },
+      "label": "protocol",
+      "outcome": "PASS",
+      "returncode": 0,
+      "source_sha": "a10c39025cdc03d3265b031d6547b11e0350da2c"
+    },
+    {
+      "argv": [
+        "python3",
+        "scripts/ci/check_pq_research_integration.py"
+      ],
+      "cwd": "/workspace/scratch/8a53368149fe/chain-integration",
+      "elapsed_ns": 127542905,
+      "files": {
+        "stderr.log": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "stdout.log": {
+          "bytes": 557,
+          "sha256": "35974fdfa262be15cf1e2c5e5b1ebe93434943172f973663ee186746fc0691fa"
+        }
+      },
+      "label": "pq-corpus",
+      "outcome": "PASS",
+      "returncode": 0,
+      "source_sha": "a10c39025cdc03d3265b031d6547b11e0350da2c"
+    }
+  ],
+  "schema": "trnm-a10c-narrow-validation-v1",
+  "source_sha": "a10c39025cdc03d3265b031d6547b11e0350da2c",
+  "source_tree": "f82a65891b8c5d094ad9a67450751253ec150910",
+  "source_unchanged": true,
+  "whole_system_qualified": false
+}

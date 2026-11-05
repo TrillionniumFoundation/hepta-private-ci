@@ -13,6 +13,7 @@ mod governance_store;
 mod governance_validation;
 mod historical;
 mod provider_claim;
+mod provider_effect_observation_schema;
 mod provider_effect_store;
 mod provider_insert;
 mod provider_record;

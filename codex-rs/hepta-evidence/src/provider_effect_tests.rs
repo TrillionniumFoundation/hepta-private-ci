@@ -358,8 +358,22 @@ async fn duplicate_dispatch_ack_after_quarantine_requires_status_lookup_source()
                 ProviderEffectAckSource::StatusLookup
             )
             .await
-            .expect("status lookup duplicate is idempotent"),
-        AppendDisposition::AlreadyPresent
+            .expect("fresh status lookup must retain its later observation"),
+        AppendDisposition::Inserted
+    );
+    let reconciled = store
+        .get_provider_effect(&intent.key)
+        .await
+        .expect("reconciled effect")
+        .expect("effect");
+    assert_eq!(reconciled.state(), ProviderEffectState::Accepted);
+    assert_eq!(
+        reconciled
+            .acknowledgements
+            .last()
+            .expect("status observation")
+            .source,
+        ProviderEffectAckSource::StatusLookup
     );
 }
 
@@ -1447,8 +1461,40 @@ async fn terminal_lookup_replay_is_idempotent_without_late_uncertainty() {
         .expect("read terminal effect")
         .expect("effect");
     assert_eq!(effect.state(), ProviderEffectState::Completed);
-    assert_eq!(effect.acknowledgements.len(), 1);
+    assert_eq!(
+        effect
+            .acknowledgements
+            .iter()
+            .map(|ack| ack.source)
+            .collect::<Vec<_>>(),
+        vec![
+            ProviderEffectAckSource::DispatchResponse,
+            ProviderEffectAckSource::StatusLookup
+        ]
+    );
     assert!(effect.uncertainties.is_empty());
+    assert_eq!(
+        store
+            .append_provider_effect_ack_from_source(
+                &completion,
+                ProviderEffectAckSource::StatusLookup
+            )
+            .await
+            .expect("latest terminal observation replay"),
+        AppendDisposition::AlreadyPresent
+    );
+    store.close().await;
+    let reopened = HeptaEvidenceStore::open(&sqlite_config(&temp))
+        .await
+        .expect("reopen terminal provenance");
+    assert_eq!(
+        reopened
+            .get_provider_effect(&key)
+            .await
+            .expect("read terminal history")
+            .expect("effect"),
+        effect
+    );
 }
 
 #[tokio::test]

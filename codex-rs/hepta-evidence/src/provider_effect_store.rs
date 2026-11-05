@@ -92,6 +92,11 @@ struct DispatchBoundaryClaim {
     recorded_at_ms: i64,
 }
 
+enum AckObservationWrite {
+    Append,
+    Replay { seq: i64 },
+}
+
 impl StoredProviderEffect {
     pub fn state(&self) -> ProviderEffectState {
         let latest_ack = self.acknowledgements.last();
@@ -454,7 +459,7 @@ impl HeptaEvidenceStore {
             ));
         };
         ack.validate_for(&intent.intent).map_err(binding_invalid)?;
-        validate_ack_transition_in_transaction(
+        let write = validate_ack_transition_in_transaction(
             &mut transaction,
             &intent.intent,
             ack,
@@ -462,33 +467,38 @@ impl HeptaEvidenceStore {
             boundary_claim,
         )
         .await?;
-        let recorded_at_ms = next_effect_recorded_at_ms(&mut transaction, &ack.key).await?;
-        let insert = sqlx::query(
-            "INSERT INTO provider_effect_acknowledgements (
+        let (seq, disposition) = match write {
+            AckObservationWrite::Replay { seq } => (seq, AppendDisposition::AlreadyPresent),
+            AckObservationWrite::Append => {
+                let recorded_at_ms = next_effect_recorded_at_ms(&mut transaction, &ack.key).await?;
+                let insert = sqlx::query(
+                    "INSERT INTO provider_effect_acknowledgements (
                 effect_key, payload_sha256, provider_operation_id_sha256,
                 status, source, schema_version, payload_json, record_sha256, recorded_at_ms
-             ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
-             ON CONFLICT DO NOTHING",
-        )
-        .bind(ack.key.as_str())
-        .bind(ack.payload_sha256.as_str())
-        .bind(ack.provider_operation_id_sha256.as_str())
-        .bind(ack_status_as_str(ack.status))
-        .bind(source.as_str())
-        .bind(i64::from(ack.schema_version))
-        .bind(&payload_json)
-        .bind(record_sha256.as_str())
-        .bind(recorded_at_ms)
-        .execute(&mut *transaction)
-        .await
-        .map_err(classify_sqlx_error)?;
-        let disposition = verify_effect_ack(
+             ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)",
+                )
+                .bind(ack.key.as_str())
+                .bind(ack.payload_sha256.as_str())
+                .bind(ack.provider_operation_id_sha256.as_str())
+                .bind(ack_status_as_str(ack.status))
+                .bind(source.as_str())
+                .bind(i64::from(ack.schema_version))
+                .bind(&payload_json)
+                .bind(record_sha256.as_str())
+                .bind(recorded_at_ms)
+                .execute(&mut *transaction)
+                .await
+                .map_err(classify_sqlx_error)?;
+                (insert.last_insert_rowid(), AppendDisposition::Inserted)
+            }
+        };
+        verify_effect_ack(
             &mut transaction,
             ack,
             source,
             &payload_json,
             record_sha256.as_str(),
-            insert.rows_affected() == 1,
+            seq,
         )
         .await?;
         transaction.commit().await.map_err(classify_sqlx_error)?;
@@ -587,13 +597,47 @@ impl HeptaEvidenceStore {
         let payload_json = String::from_utf8(payload.clone())
             .map_err(|error| EvidenceError::Serialization(error.to_string()))?;
         let record_sha256 = Sha256Digest::for_bytes(&payload);
+        let latest = sqlx::query(
+            "SELECT seq, effect_key, payload_sha256, reason_code,
+                    schema_version, payload_json, record_sha256, recorded_at_ms
+             FROM provider_effect_uncertainties
+             WHERE effect_key = ? ORDER BY recorded_at_ms DESC, seq DESC LIMIT 1",
+        )
+        .bind(key.as_str())
+        .fetch_optional(&mut *transaction)
+        .await
+        .map_err(classify_sqlx_error)?
+        .map(|row| decode_effect_uncertainty_row(&row, &intent.intent))
+        .transpose()?;
+        let latest_ack_at: Option<i64> = sqlx::query_scalar(
+            "SELECT MAX(recorded_at_ms) FROM provider_effect_acknowledgements
+             WHERE effect_key = ?",
+        )
+        .bind(key.as_str())
+        .fetch_one(&mut *transaction)
+        .await
+        .map_err(classify_sqlx_error)?;
+        if let Some(latest) = latest
+            && latest.uncertainty == uncertainty
+            && latest_ack_at.is_none_or(|recorded_at| recorded_at < latest.recorded_at_ms)
+        {
+            verify_effect_uncertainty(
+                &mut transaction,
+                &uncertainty,
+                &payload_json,
+                record_sha256.as_str(),
+                latest.seq,
+            )
+            .await?;
+            transaction.commit().await.map_err(classify_sqlx_error)?;
+            return Ok((AppendDisposition::AlreadyPresent, latest.recorded_at_ms));
+        }
         let recorded_at_ms = next_effect_recorded_at_ms(&mut transaction, key).await?;
         let insert = sqlx::query(
             "INSERT INTO provider_effect_uncertainties (
                 effect_key, payload_sha256, reason_code, schema_version,
                 payload_json, record_sha256, recorded_at_ms
-             ) VALUES (?, ?, ?, ?, ?, ?, ?)
-             ON CONFLICT DO NOTHING",
+             ) VALUES (?, ?, ?, ?, ?, ?, ?)",
         )
         .bind(key.as_str())
         .bind(uncertainty.payload_sha256.as_str())
@@ -605,16 +649,16 @@ impl HeptaEvidenceStore {
         .execute(&mut *transaction)
         .await
         .map_err(classify_sqlx_error)?;
-        let disposition = verify_effect_uncertainty(
+        verify_effect_uncertainty(
             &mut transaction,
             &uncertainty,
             &payload_json,
             record_sha256.as_str(),
-            insert.rows_affected() == 1,
+            insert.last_insert_rowid(),
         )
         .await?;
         transaction.commit().await.map_err(classify_sqlx_error)?;
-        Ok((disposition, recorded_at_ms))
+        Ok((AppendDisposition::Inserted, recorded_at_ms))
     }
 
     pub async fn get_provider_effect(
@@ -838,21 +882,27 @@ pub(crate) async fn verify_provider_effect_rows(pool: &SqlitePool) -> Result<(),
                     let recorded_at_ms = uncertainty_row.get::<i64, _>("recorded_at_ms");
                     recorded_at_ms > previous.recorded_at_ms && recorded_at_ms < ack.recorded_at_ms
                 });
-                if previous.ack.state().is_terminal() {
+                // A lookup may confirm the exact terminal result first seen
+                // at dispatch. This records provenance, never a new effect.
+                let terminal_reobservation = previous.ack == ack.ack
+                    && previous.source == ProviderEffectAckSource::DispatchResponse
+                    && ack.source == ProviderEffectAckSource::StatusLookup;
+                if previous.ack.state().is_terminal() && !terminal_reobservation {
                     return Err(EvidenceError::Corrupt(
                         "provider effect terminal ACK has a later ACK".to_string(),
                     ));
                 }
-                let legal_status_transition = matches!(
-                    (previous.ack.status, ack.ack.status),
-                    (
-                        ProviderEffectAckStatus::Accepted,
-                        ProviderEffectAckStatus::Accepted
-                    ) | (
-                        ProviderEffectAckStatus::Accepted,
-                        ProviderEffectAckStatus::Completed
-                    )
-                );
+                let legal_status_transition = terminal_reobservation
+                    || matches!(
+                        (previous.ack.status, ack.ack.status),
+                        (
+                            ProviderEffectAckStatus::Accepted,
+                            ProviderEffectAckStatus::Accepted
+                        ) | (
+                            ProviderEffectAckStatus::Accepted,
+                            ProviderEffectAckStatus::Completed
+                        )
+                    );
                 let operation_rebound = previous.ack.provider_operation_id_sha256
                     != ack.ack.provider_operation_id_sha256;
                 let legal = legal_status_transition
@@ -866,7 +916,10 @@ pub(crate) async fn verify_provider_effect_rows(pool: &SqlitePool) -> Result<(),
                 }
             }
             if ack.ack.state().is_terminal() {
-                terminal_ack = Some(ack.clone());
+                // The first terminal result permanently closes uncertainty
+                // admission. A later lookup of the same result must not move
+                // that boundary forward and hide an intervening quarantine.
+                terminal_ack.get_or_insert_with(|| ack.clone());
             }
             previous_ack = Some(ack);
         }
@@ -1041,47 +1094,34 @@ async fn verify_effect_ack(
     source: ProviderEffectAckSource,
     payload_json: &str,
     record_sha256: &str,
-    inserted: bool,
-) -> Result<AppendDisposition, EvidenceError> {
-    let rows = sqlx::query(
+    seq: i64,
+) -> Result<(), EvidenceError> {
+    let row = sqlx::query(
         "SELECT seq, effect_key, payload_sha256,
                 provider_operation_id_sha256, status, source, schema_version,
                 payload_json, record_sha256, recorded_at_ms
          FROM provider_effect_acknowledgements
-         WHERE effect_key = ? AND provider_operation_id_sha256 = ?
-           AND status = ? AND payload_sha256 = ?",
+         WHERE seq = ?",
     )
-    .bind(ack.key.as_str())
-    .bind(ack.provider_operation_id_sha256.as_str())
-    .bind(ack_status_as_str(ack.status))
-    .bind(ack.payload_sha256.as_str())
-    .fetch_all(&mut **transaction)
+    .bind(seq)
+    .fetch_optional(&mut **transaction)
     .await
-    .map_err(classify_sqlx_error)?;
-    if rows.len() != 1 {
-        return Err(EvidenceError::Corrupt(format!(
-            "expected one provider effect acknowledgement row but found {}",
-            rows.len()
-        )));
-    }
+    .map_err(classify_sqlx_error)?
+    .ok_or_else(|| EvidenceError::Corrupt("provider effect acknowledgement disappeared".into()))?;
     let intent = load_effect_intent_in_transaction(transaction, &ack.key)
         .await?
         .ok_or_else(|| EvidenceError::Corrupt("provider effect ACK lost its intent".to_string()))?;
-    let stored = decode_effect_ack_row(&rows[0], &intent.intent)?;
+    let stored = decode_effect_ack_row(&row, &intent.intent)?;
     if stored.ack != *ack
-        || (inserted && stored.source != source)
-        || rows[0].get::<String, _>("payload_json") != payload_json
-        || rows[0].get::<String, _>("record_sha256") != record_sha256
+        || stored.source != source
+        || row.get::<String, _>("payload_json") != payload_json
+        || row.get::<String, _>("record_sha256") != record_sha256
     {
         return Err(EvidenceError::IdempotencyConflict {
             record_id: ack.key.as_str().to_string(),
         });
     }
-    Ok(if inserted {
-        AppendDisposition::Inserted
-    } else {
-        AppendDisposition::AlreadyPresent
-    })
+    Ok(())
 }
 
 async fn verify_effect_uncertainty(
@@ -1089,45 +1129,34 @@ async fn verify_effect_uncertainty(
     uncertainty: &ProviderEffectUncertainty,
     payload_json: &str,
     record_sha256: &str,
-    inserted: bool,
-) -> Result<AppendDisposition, EvidenceError> {
-    let rows = sqlx::query(
+    seq: i64,
+) -> Result<(), EvidenceError> {
+    let row = sqlx::query(
         "SELECT seq, effect_key, payload_sha256, reason_code,
                 schema_version, payload_json, record_sha256, recorded_at_ms
          FROM provider_effect_uncertainties
-         WHERE effect_key = ? AND payload_sha256 = ? AND reason_code = ?",
+         WHERE seq = ?",
     )
-    .bind(uncertainty.key.as_str())
-    .bind(uncertainty.payload_sha256.as_str())
-    .bind(&uncertainty.reason_code)
-    .fetch_all(&mut **transaction)
+    .bind(seq)
+    .fetch_optional(&mut **transaction)
     .await
-    .map_err(classify_sqlx_error)?;
-    if rows.len() != 1 {
-        return Err(EvidenceError::Corrupt(format!(
-            "expected one provider effect uncertainty row but found {}",
-            rows.len()
-        )));
-    }
+    .map_err(classify_sqlx_error)?
+    .ok_or_else(|| EvidenceError::Corrupt("provider effect uncertainty disappeared".into()))?;
     let intent = load_effect_intent_in_transaction(transaction, &uncertainty.key)
         .await?
         .ok_or_else(|| {
             EvidenceError::Corrupt("provider effect uncertainty lost its intent".to_string())
         })?;
-    let stored = decode_effect_uncertainty_row(&rows[0], &intent.intent)?;
+    let stored = decode_effect_uncertainty_row(&row, &intent.intent)?;
     if stored.uncertainty != *uncertainty
-        || rows[0].get::<String, _>("payload_json") != payload_json
-        || rows[0].get::<String, _>("record_sha256") != record_sha256
+        || row.get::<String, _>("payload_json") != payload_json
+        || row.get::<String, _>("record_sha256") != record_sha256
     {
         return Err(EvidenceError::IdempotencyConflict {
             record_id: uncertainty.key.as_str().to_string(),
         });
     }
-    Ok(if inserted {
-        AppendDisposition::Inserted
-    } else {
-        AppendDisposition::AlreadyPresent
-    })
+    Ok(())
 }
 
 async fn validate_ack_transition_in_transaction(
@@ -1136,7 +1165,7 @@ async fn validate_ack_transition_in_transaction(
     next: &ProviderEffectAck,
     source: ProviderEffectAckSource,
     boundary_claim: Option<&DispatchBoundaryClaim>,
-) -> Result<(), EvidenceError> {
+) -> Result<AckObservationWrite, EvidenceError> {
     let ack_rows = sqlx::query(
         "SELECT seq, effect_key, payload_sha256,
                 provider_operation_id_sha256, status, source, schema_version,
@@ -1207,7 +1236,18 @@ async fn validate_ack_transition_in_transaction(
         // uncertainty is still forbidden.  A status lookup is an
         // authoritative observation and may repeat the same ACK.
         if uncertainties.is_empty() || source == ProviderEffectAckSource::StatusLookup {
-            return Ok(());
+            // Identical bytes from a new source, or after a later unknown
+            // outcome, are a fresh observation. Content deduplication must
+            // not discard that new provenance or leave an old quarantine
+            // effective after an authoritative status lookup.
+            let later_uncertainty = uncertainties
+                .iter()
+                .any(|uncertainty| uncertainty.recorded_at_ms > previous.recorded_at_ms);
+            return Ok(if previous.source == source && !later_uncertainty {
+                AckObservationWrite::Replay { seq: previous.seq }
+            } else {
+                AckObservationWrite::Append
+            });
         }
         return Err(EvidenceError::IdempotencyConflict {
             record_id: next.key.as_str().to_string(),
@@ -1235,7 +1275,7 @@ async fn validate_ack_transition_in_transaction(
         });
     }
     let Some(previous) = previous else {
-        return Ok(());
+        return Ok(AckObservationWrite::Append);
     };
     if previous.ack.provider_operation_id_sha256 != next.provider_operation_id_sha256 {
         return Err(EvidenceError::IdempotencyConflict {
@@ -1268,7 +1308,7 @@ async fn validate_ack_transition_in_transaction(
             )
         );
         if source == ProviderEffectAckSource::StatusLookup && legal_after_uncertainty {
-            return Ok(());
+            return Ok(AckObservationWrite::Append);
         }
         return Err(EvidenceError::IdempotencyConflict {
             record_id: next.key.as_str().to_string(),
@@ -1285,7 +1325,7 @@ async fn validate_ack_transition_in_transaction(
         )
     );
     if legal {
-        Ok(())
+        Ok(AckObservationWrite::Append)
     } else {
         Err(EvidenceError::IdempotencyConflict {
             record_id: next.key.as_str().to_string(),
@@ -1336,7 +1376,10 @@ async fn next_effect_recorded_at_ms(
     .map_err(classify_sqlx_error)?;
     let now = now_millis()?;
     let previous = latest_ack.unwrap_or(0).max(latest_uncertainty.unwrap_or(0));
-    Ok(now.max(previous.saturating_add(1)))
+    let next = previous.checked_add(1).ok_or_else(|| {
+        EvidenceError::Corrupt("provider effect observation clock is exhausted".into())
+    })?;
+    Ok(now.max(next))
 }
 
 pub(super) fn verify_record_digest(

@@ -1,0 +1,3889 @@
+{
+  "schema": "trnm-chain-a10c-business-projection-v1",
+  "head": "a10c39025cdc03d3265b031d6547b11e0350da2c",
+  "tree": "f82a65891b8c5d094ad9a67450751253ec150910",
+  "qualification_changed": false,
+  "scope": "New a10c source-only results; old 44d results untouched. Stage intervals are nested, not additive. Importer thread CPU excludes scoped workers; Host CPU sums actual invoking threads. Stage summaries cover the whole phase, including any partial second round.",
+  "artifacts": {
+    "f0": {
+      "artifact_id": 13299741945,
+      "zip_bytes": 16684466,
+      "zip_sha256": "bae757232bfc701ce95c3d973e582d3faa189e1f9f7ebfaa09c808b590311b52",
+      "run_id": 41780586086,
+      "metadata_path": "/workspace/scratch/8a53368149fe/readback/chain-a10c-f0.metadata.json"
+    },
+    "campaign": {
+      "artifact_id": 13299882435,
+      "zip_bytes": 66215838,
+      "zip_sha256": "2194f443c48ce579d84ffd2b91c6b0e9b9e99dfc9c6994bee5d2d8fce0631996",
+      "run_id": 41780585984,
+      "metadata_path": "/workspace/scratch/8a53368149fe/readback/chain-a10c-campaign.metadata.json"
+    }
+  },
+  "f0": {
+    "failure": "NATIVE_F0_FAILED",
+    "complete_success": false,
+    "planned_confirmations": 6,
+    "four_second_slo_successes": 0,
+    "all_planned_rounds": [
+      {
+        "actual_ended_ns": 24000231223,
+        "actual_started_ns": 1000584002,
+        "confirmed_inside_original_window": true,
+        "elapsed_from_scheduled_ns": 23000231223,
+        "end_lateness_from_four_second_deadline_ns": 19000231223,
+        "four_second_slo_met": false,
+        "observed_exactly_once": true,
+        "phase": "baseline",
+        "round": 0,
+        "scheduled_offset_ns": 1000000000,
+        "start_lateness_from_schedule_ns": 584002
+      },
+      {
+        "actual_ended_ns": 30001681501,
+        "actual_started_ns": 24000244483,
+        "confirmed_inside_original_window": false,
+        "elapsed_from_scheduled_ns": 25001681501,
+        "end_lateness_from_four_second_deadline_ns": 21001681501,
+        "four_second_slo_met": false,
+        "observed_exactly_once": true,
+        "phase": "baseline",
+        "round": 1,
+        "scheduled_offset_ns": 5000000000,
+        "start_lateness_from_schedule_ns": 19000244483
+      },
+      {
+        "actual_ended_ns": null,
+        "actual_started_ns": null,
+        "confirmed_inside_original_window": false,
+        "elapsed_from_scheduled_ns": null,
+        "end_lateness_from_four_second_deadline_ns": null,
+        "four_second_slo_met": false,
+        "observed_exactly_once": false,
+        "phase": "baseline",
+        "round": 2,
+        "scheduled_offset_ns": 9000000000,
+        "start_lateness_from_schedule_ns": null
+      },
+      {
+        "actual_ended_ns": 30041382470,
+        "actual_started_ns": 1041089334,
+        "confirmed_inside_original_window": false,
+        "elapsed_from_scheduled_ns": 29041382470,
+        "end_lateness_from_four_second_deadline_ns": 25041382470,
+        "four_second_slo_met": false,
+        "observed_exactly_once": true,
+        "phase": "valid-work-root",
+        "round": 0,
+        "scheduled_offset_ns": 1000000000,
+        "start_lateness_from_schedule_ns": 41089334
+      },
+      {
+        "actual_ended_ns": null,
+        "actual_started_ns": null,
+        "confirmed_inside_original_window": false,
+        "elapsed_from_scheduled_ns": null,
+        "end_lateness_from_four_second_deadline_ns": null,
+        "four_second_slo_met": false,
+        "observed_exactly_once": false,
+        "phase": "valid-work-root",
+        "round": 1,
+        "scheduled_offset_ns": 5000000000,
+        "start_lateness_from_schedule_ns": null
+      },
+      {
+        "actual_ended_ns": null,
+        "actual_started_ns": null,
+        "confirmed_inside_original_window": false,
+        "elapsed_from_scheduled_ns": null,
+        "end_lateness_from_four_second_deadline_ns": null,
+        "four_second_slo_met": false,
+        "observed_exactly_once": false,
+        "phase": "valid-work-root",
+        "round": 2,
+        "scheduled_offset_ns": 9000000000,
+        "start_lateness_from_schedule_ns": null
+      }
+    ],
+    "report_sha256": "8c10e1bb1f0bd92befcc4c2f73587aa52bd52006ecfad36fc0eb40296f63ae2e",
+    "inputs": {
+      "actor_call_cap": 480,
+      "attackers": 24,
+      "business_blocks": 21,
+      "confirmation_depth": 6,
+      "controller_resource_boundary_samples": 6,
+      "controller_resource_schema": "fixed-host-root-controller-resources-v1",
+      "cpu_burst_ns": 2000000000,
+      "cpu_refill_ns_per_second": 250000000,
+      "f1_implemented": false,
+      "four_second_slo_ns": 4000000000,
+      "legacy_four_second_from_zero_epoch_changed": false,
+      "m06_workers": 1,
+      "phase_profile": "fixed-public-root-phase-external-actors-v1",
+      "phase_seconds": 30,
+      "planned_business_packets": 42,
+      "planned_complete_runs": 1,
+      "planned_confirmations": 6,
+      "planned_phases": [
+        "baseline",
+        "valid-work-root"
+      ],
+      "round_start_seconds": [
+        1,
+        5,
+        9
+      ],
+      "seed_blocks": 4,
+      "seed_transfers": 1024,
+      "slo_starts_at_scheduled_offset": true,
+      "start_reserve_ns": 100000000
+    },
+    "controller_resources_complete": true,
+    "binary": {
+      "build_artifact": "/home/runner/work/_temp/target-fixed-host-root-f0/release/deps/public_v3_multiprocess-407806f7087de5f8",
+      "bytes": 11568304,
+      "compiler_profile": {
+        "debug_assertions": false,
+        "debuginfo": 0,
+        "opt_level": "3",
+        "overflow_checks": false,
+        "test": true
+      },
+      "path": "/home/runner/work/_temp/pon-fixed-host-root-f0-41780586086-1/prepared/public_v3_multiprocess.bin",
+      "sha256": "14eaa86606866aeff30f5ec0256405d93612c3eaff086fb2f4d4ca2f78a87626"
+    },
+    "report_validation_failure": "BASELINE_MUST_PASS",
+    "native_result_failure": "NATIVE_F0_FAILED",
+    "denominator": {
+      "planned": 6,
+      "confirmed": 1,
+      "observed_unconfirmed": 2,
+      "unobserved": 3
+    },
+    "phases": [
+      {
+        "run": 1,
+        "mode": "baseline",
+        "rounds": [
+          {
+            "round": 0,
+            "observed": true,
+            "confirmed": true,
+            "started_ns": 1000584002,
+            "ended_ns": 24000231223,
+            "actual_latency_ns": 22999647221,
+            "observation": {
+              "active_generation": 5,
+              "confirmed": true,
+              "depth": 6,
+              "execution_authority": false,
+              "finalized": false,
+              "genesis": "e71802f181974de1181f82f4249d1db542714247623e889d3dfedb263e1c2866",
+              "included_block": "1bbddf43d04bb6512e9f4fd84e394ca9a2f9c9ff5d1ef5ea54e525a2098c19ee",
+              "included_height": 5,
+              "network": "62b92044b29c6275931920860de4dd74a666ad03f140f07b107a2e2ac06e62d4",
+              "observed_height": 11,
+              "observed_now": 1793771737,
+              "observed_tip": "d8ab3f3b54ca5ba37e04fe9d7efbd508982474eeea86b37db8fe77181c6eca96",
+              "parameters": "5f6e99013f8750989889403b3928a7915c006296c9cae4b184c3d0c88a0053a4",
+              "policy": "installed-depth-and-required-work",
+              "reorged": false,
+              "required_work_delta": "0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000c",
+              "transaction": "c6ee62ac00fdec64b6823d4ddeece3106dc969616053730e52750ecdfb4ebf21",
+              "work_delta": "0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000c"
+            }
+          },
+          {
+            "round": 1,
+            "observed": true,
+            "confirmed": false,
+            "started_ns": 24000244483,
+            "ended_ns": 30001681501,
+            "actual_latency_ns": 6001437018,
+            "observation": null
+          },
+          {
+            "round": 2,
+            "observed": false,
+            "confirmed": false,
+            "started_ns": null,
+            "ended_ns": null,
+            "actual_latency_ns": null,
+            "observation": null
+          }
+        ],
+        "duration_seconds": 30,
+        "actors_requested": 0,
+        "actors_ready": 0,
+        "submission_attempts": 14,
+        "business_ack_count": 14,
+        "submission_errors": {},
+        "seventh_packet_ack_ns": 2985568533,
+        "history_pages": [
+          {
+            "network_started_ns": 2985759647,
+            "network_ended_ns": 2997709065,
+            "network_wall_ns": 11959663,
+            "status": "ok",
+            "error": null,
+            "replay": {
+              "started_ns": 2997735214,
+              "ended_ns": 5583563499,
+              "wall_ns": 2585828275,
+              "thread_cpu_ns": 515960211,
+              "succeeded": true,
+              "error": null
+            }
+          },
+          {
+            "network_started_ns": 5583677438,
+            "network_ended_ns": 5594450256,
+            "network_wall_ns": 10780890,
+            "status": "ok",
+            "error": null,
+            "replay": {
+              "started_ns": 5594474703,
+              "ended_ns": 7689278537,
+              "wall_ns": 2094803834,
+              "thread_cpu_ns": 483320856,
+              "succeeded": true,
+              "error": null
+            }
+          },
+          {
+            "network_started_ns": 7689367909,
+            "network_ended_ns": 7700959364,
+            "network_wall_ns": 11602571,
+            "status": "ok",
+            "error": null,
+            "replay": {
+              "started_ns": 7700985903,
+              "ended_ns": 9791965448,
+              "wall_ns": 2090979545,
+              "thread_cpu_ns": 485346991,
+              "succeeded": true,
+              "error": null
+            }
+          },
+          {
+            "network_started_ns": 9792072868,
+            "network_ended_ns": 9804143323,
+            "network_wall_ns": 12080832,
+            "status": "ok",
+            "error": null,
+            "replay": {
+              "started_ns": 9804166598,
+              "ended_ns": 11894593016,
+              "wall_ns": 2090426408,
+              "thread_cpu_ns": 485733095,
+              "succeeded": true,
+              "error": null
+            }
+          },
+          {
+            "network_started_ns": 11894677582,
+            "network_ended_ns": 11906138592,
+            "network_wall_ns": 11469012,
+            "status": "ok",
+            "error": null,
+            "replay": {
+              "started_ns": 11906157821,
+              "ended_ns": 14001332310,
+              "wall_ns": 2095174499,
+              "thread_cpu_ns": 486417201,
+              "succeeded": true,
+              "error": null
+            }
+          },
+          {
+            "network_started_ns": 14001432008,
+            "network_ended_ns": 14013849475,
+            "network_wall_ns": 12428503,
+            "status": "ok",
+            "error": null,
+            "replay": {
+              "started_ns": 14013873841,
+              "ended_ns": 16298948478,
+              "wall_ns": 2285074647,
+              "thread_cpu_ns": 495865462,
+              "succeeded": true,
+              "error": null
+            }
+          },
+          {
+            "network_started_ns": 16299085442,
+            "network_ended_ns": 16311348815,
+            "network_wall_ns": 12271184,
+            "status": "ok",
+            "error": null,
+            "replay": {
+              "started_ns": 16311370166,
+              "ended_ns": 23805648321,
+              "wall_ns": 7494278145,
+              "thread_cpu_ns": 1748786062,
+              "succeeded": true,
+              "error": null
+            }
+          },
+          {
+            "network_started_ns": 26095385442,
+            "network_ended_ns": 26107367023,
+            "network_wall_ns": 11993579,
+            "status": "ok",
+            "error": null,
+            "replay": {
+              "started_ns": 26107394564,
+              "ended_ns": 28299745147,
+              "wall_ns": 2192350583,
+              "thread_cpu_ns": 506241196,
+              "succeeded": true,
+              "error": null
+            }
+          },
+          {
+            "network_started_ns": 28299861730,
+            "network_ended_ns": 28311279174,
+            "network_wall_ns": 11428410,
+            "status": "ok",
+            "error": null,
+            "replay": {
+              "started_ns": 28311304611,
+              "ended_ns": 30001519462,
+              "wall_ns": 1690214860,
+              "thread_cpu_ns": 392140659,
+              "succeeded": false,
+              "error": "PUBLIC_REQUEST_DEADLINE"
+            }
+          }
+        ],
+        "network_wall_ns_sum": 106014644,
+        "replay_wall_ns_sum": 24619130796,
+        "successful_replay_pages": 8,
+        "verifier_errors": [
+          "PUBLIC_REQUEST_DEADLINE"
+        ],
+        "full_work_accepted": 14,
+        "full_work_failed": 0,
+        "genuine_budget_depletion_observed": false,
+        "final_actual_flow": {
+          "balance_identity_verified": true,
+          "booked_reservation_ns": 0,
+          "credited_refill_ns": 919302641,
+          "discarded_refill_ns": 5604433141,
+          "initial_credit_ns": 2000000000,
+          "live_debited_cpu_ns": 928543435,
+          "live_owners": 0,
+          "paid_cpu_debit_ns": 928559737,
+          "remaining_paid_credit_ns": 1990742904,
+          "schema": "public-v3-local-actual-cpu-flow-v1",
+          "settled_full_cpu_ns": 928559737,
+          "settlement_discard_ns": 0,
+          "settlement_residual_cpu_ns": 16302,
+          "stored_credit_ns": 1990742904,
+          "unsettled_known_live_cpu_ns": 0
+        },
+        "public_resource_policy": {
+          "lifetime_ms": 2000,
+          "policy_id": "6d04725d8e7a84560baf69440b1becd79f47c9f1fb5e63b85f1447400c85d43f",
+          "schema": "public-protected-resource-policy-observation-v1",
+          "ticket_bits": 8,
+          "transport_profile": "public-protected-development-v3"
+        },
+        "phase_process_context": {
+          "attackers_launched_by_external_controller": true,
+          "controller_identity": {
+            "cgroup": {
+              "device": 31,
+              "gid": 0,
+              "inode": 7219,
+              "mode": 493,
+              "uid": 0
+            },
+            "process": {
+              "boot_id": "01e369b8-c201-40fe-bf04-88c2952fd420",
+              "cgroup": "/system.slice/trnm-fixed-root-f0-41780586086-1-fixed-host-root-f0.service",
+              "executable": {
+                "bytes": 11568304,
+                "device": 66305,
+                "inode": 9439016,
+                "modified_nanoseconds": 684159943,
+                "modified_seconds": 1793771704
+              },
+              "parent_pid": 5155,
+              "pid": 5244,
+              "start_ticks": 42310
+            }
+          },
+          "controller_live_identity_after_verified": true,
+          "host_after": {
+            "cpu_nr_periods": 344,
+            "cpu_nr_throttled": 329,
+            "cpu_throttled_usec": 38091474,
+            "cpu_usage_usec": 8312365,
+            "memory_current_bytes": 87818240,
+            "pids_current": 3
+          },
+          "host_before": {
+            "cpu_nr_periods": 4,
+            "cpu_nr_throttled": 4,
+            "cpu_throttled_usec": 259061,
+            "cpu_usage_usec": 107396,
+            "memory_current_bytes": 20426752,
+            "pids_current": 3
+          },
+          "independent_administration": false,
+          "phase_cgroup": "/trnmponpublic.slice/trnm-fixed-root-41780586086-1-fixed-host-root-f0-baseline-5247.service",
+          "phase_pid": 5320,
+          "runtime_business_deadline_changed": false,
+          "same_original_receiver_and_verifier_owners": true,
+          "scalar_policy_changed": false,
+          "schema": "fixed-public-root-phase-external-actors-v1",
+          "wan_qualified": false
+        },
+        "native_client_stage_deltas": {
+          "verify_state": {
+            "calls": 95,
+            "wall_ns": 18359449770,
+            "cpu_ns": 4265913919
+          },
+          "publish": {
+            "calls": 9,
+            "wall_ns": 8610128041,
+            "cpu_ns": 1985575895
+          },
+          "state_at": {
+            "calls": 25,
+            "wall_ns": 5046774142,
+            "cpu_ns": 1121086867
+          },
+          "execute": {
+            "calls": 9,
+            "wall_ns": 19402849,
+            "cpu_ns": 19390070
+          },
+          "admission": {
+            "calls": 9,
+            "wall_ns": 16790211373,
+            "cpu_ns": 3820221816
+          },
+          "activation": {
+            "calls": 1,
+            "wall_ns": 5416240068,
+            "cpu_ns": 1258160268
+          },
+          "complete_commitment": {
+            "calls": 104,
+            "wall_ns": 395651792,
+            "cpu_ns": 91548154
+          },
+          "account_graph": {
+            "calls": 71,
+            "wall_ns": 18002805082,
+            "cpu_ns": 4137511637
+          }
+        },
+        "native_receiver_stage_deltas": {
+          "verify_state": {
+            "calls": 140,
+            "wall_ns": 1870557093,
+            "cpu_ns": 494372909
+          },
+          "publish": {
+            "calls": 14,
+            "wall_ns": 1213374554,
+            "cpu_ns": 266332936
+          },
+          "state_at": {
+            "calls": 42,
+            "wall_ns": 1092543996,
+            "cpu_ns": 251795233
+          },
+          "execute": {
+            "calls": 14,
+            "wall_ns": 18808914,
+            "cpu_ns": 18795704
+          },
+          "admission": {
+            "calls": 14,
+            "wall_ns": 2866838167,
+            "cpu_ns": 680207248
+          },
+          "activation": {
+            "calls": 14,
+            "wall_ns": 742233046,
+            "cpu_ns": 207005165
+          },
+          "complete_commitment": {
+            "calls": 154,
+            "wall_ns": 132999229,
+            "cpu_ns": 57515050
+          },
+          "account_graph": {
+            "calls": 88,
+            "wall_ns": 1594573940,
+            "cpu_ns": 447396119
+          }
+        },
+        "host_checkpoint": {
+          "calls_started": 99312,
+          "thread_cpu_ns": 4735526909,
+          "wall_ns": 6036102734
+        },
+        "receiver_client_state_equal": false,
+        "observer_complete": true,
+        "finite_phase_criteria_met": false
+      },
+      {
+        "run": 1,
+        "mode": "valid-work-root",
+        "rounds": [
+          {
+            "round": 0,
+            "observed": true,
+            "confirmed": false,
+            "started_ns": 1041089334,
+            "ended_ns": 30041382470,
+            "actual_latency_ns": 29000293136,
+            "observation": null
+          },
+          {
+            "round": 1,
+            "observed": false,
+            "confirmed": false,
+            "started_ns": null,
+            "ended_ns": null,
+            "actual_latency_ns": null,
+            "observation": null
+          },
+          {
+            "round": 2,
+            "observed": false,
+            "confirmed": false,
+            "started_ns": null,
+            "ended_ns": null,
+            "actual_latency_ns": null,
+            "observation": null
+          }
+        ],
+        "duration_seconds": 30,
+        "actors_requested": 24,
+        "actors_ready": 24,
+        "submission_attempts": 15,
+        "business_ack_count": 6,
+        "submission_errors": {
+          "IO: Resource temporarily unavailable (os error 11)": 7,
+          "FRAME_DEADLINE": 2
+        },
+        "seventh_packet_ack_ns": null,
+        "history_pages": [],
+        "network_wall_ns_sum": 0,
+        "replay_wall_ns_sum": 0,
+        "successful_replay_pages": 0,
+        "verifier_errors": [],
+        "full_work_accepted": 371,
+        "full_work_failed": 2,
+        "genuine_budget_depletion_observed": false,
+        "final_actual_flow": {
+          "balance_identity_verified": true,
+          "booked_reservation_ns": 0,
+          "credited_refill_ns": 6572269815,
+          "discarded_refill_ns": 976724375,
+          "initial_credit_ns": 2000000000,
+          "live_debited_cpu_ns": 6572141790,
+          "live_owners": 0,
+          "paid_cpu_debit_ns": 6572574186,
+          "remaining_paid_credit_ns": 1999695629,
+          "schema": "public-v3-local-actual-cpu-flow-v1",
+          "settled_full_cpu_ns": 6572574186,
+          "settlement_discard_ns": 0,
+          "settlement_residual_cpu_ns": 432396,
+          "stored_credit_ns": 1999695629,
+          "unsettled_known_live_cpu_ns": 0
+        },
+        "public_resource_policy": {
+          "lifetime_ms": 2000,
+          "policy_id": "6d04725d8e7a84560baf69440b1becd79f47c9f1fb5e63b85f1447400c85d43f",
+          "schema": "public-protected-resource-policy-observation-v1",
+          "ticket_bits": 8,
+          "transport_profile": "public-protected-development-v3"
+        },
+        "phase_process_context": {
+          "attackers_launched_by_external_controller": true,
+          "controller_identity": {
+            "cgroup": {
+              "device": 31,
+              "gid": 0,
+              "inode": 7219,
+              "mode": 493,
+              "uid": 0
+            },
+            "process": {
+              "boot_id": "01e369b8-c201-40fe-bf04-88c2952fd420",
+              "cgroup": "/system.slice/trnm-fixed-root-f0-41780586086-1-fixed-host-root-f0.service",
+              "executable": {
+                "bytes": 11568304,
+                "device": 66305,
+                "inode": 9439016,
+                "modified_nanoseconds": 684159943,
+                "modified_seconds": 1793771704
+              },
+              "parent_pid": 5155,
+              "pid": 5244,
+              "start_ticks": 42310
+            }
+          },
+          "controller_live_identity_after_verified": true,
+          "host_after": {
+            "cpu_nr_periods": 705,
+            "cpu_nr_throttled": 683,
+            "cpu_throttled_usec": 94265597,
+            "cpu_usage_usec": 17243049,
+            "memory_current_bytes": 135753728,
+            "pids_current": 3
+          },
+          "host_before": {
+            "cpu_nr_periods": 351,
+            "cpu_nr_throttled": 333,
+            "cpu_throttled_usec": 38427747,
+            "cpu_usage_usec": 8449314,
+            "memory_current_bytes": 30765056,
+            "pids_current": 3
+          },
+          "independent_administration": false,
+          "phase_cgroup": "/trnmponpublic.slice/trnm-fixed-root-41780586086-1-fixed-host-root-f0-valid-work-root-5337.service",
+          "phase_pid": 5343,
+          "runtime_business_deadline_changed": false,
+          "same_original_receiver_and_verifier_owners": true,
+          "scalar_policy_changed": false,
+          "schema": "fixed-public-root-phase-external-actors-v1",
+          "wan_qualified": false
+        },
+        "native_client_stage_deltas": {
+          "verify_state": {
+            "calls": 0,
+            "wall_ns": 0,
+            "cpu_ns": 0
+          },
+          "publish": {
+            "calls": 0,
+            "wall_ns": 0,
+            "cpu_ns": 0
+          },
+          "state_at": {
+            "calls": 0,
+            "wall_ns": 0,
+            "cpu_ns": 0
+          },
+          "execute": {
+            "calls": 0,
+            "wall_ns": 0,
+            "cpu_ns": 0
+          },
+          "admission": {
+            "calls": 0,
+            "wall_ns": 0,
+            "cpu_ns": 0
+          },
+          "activation": {
+            "calls": 0,
+            "wall_ns": 0,
+            "cpu_ns": 0
+          },
+          "complete_commitment": {
+            "calls": 0,
+            "wall_ns": 0,
+            "cpu_ns": 0
+          },
+          "account_graph": {
+            "calls": 0,
+            "wall_ns": 0,
+            "cpu_ns": 0
+          }
+        },
+        "native_receiver_stage_deltas": {
+          "verify_state": {
+            "calls": 416,
+            "wall_ns": 20864616897,
+            "cpu_ns": 4025240961
+          },
+          "publish": {
+            "calls": 10,
+            "wall_ns": 790163557,
+            "cpu_ns": 163528797
+          },
+          "state_at": {
+            "calls": 368,
+            "wall_ns": 23437749024,
+            "cpu_ns": 4370226760
+          },
+          "execute": {
+            "calls": 318,
+            "wall_ns": 2169909460,
+            "cpu_ns": 493403949
+          },
+          "admission": {
+            "calls": 354,
+            "wall_ns": 27479111533,
+            "cpu_ns": 5372176489
+          },
+          "activation": {
+            "calls": 9,
+            "wall_ns": 546424050,
+            "cpu_ns": 89911575
+          },
+          "complete_commitment": {
+            "calls": 421,
+            "wall_ns": 435984534,
+            "cpu_ns": 120305034
+          },
+          "account_graph": {
+            "calls": 388,
+            "wall_ns": 18516235243,
+            "cpu_ns": 3764042309
+          }
+        },
+        "host_checkpoint": {},
+        "receiver_client_state_equal": false,
+        "observer_complete": true,
+        "finite_phase_criteria_met": false
+      }
+    ],
+    "native_command": [
+      "/home/runner/work/_temp/pon-fixed-host-root-f0-41780586086-1/prepared/public_v3_multiprocess.bin",
+      "--exact",
+      "fixed_public_host_root_rejection_and_signed_confirmation_diagnostic",
+      "--ignored",
+      "--nocapture",
+      "--test-threads=1"
+    ],
+    "native_returncode": 101,
+    "all_services_known_empty": true,
+    "finalization_complete_success": false,
+    "source_after": {
+      "base": null,
+      "candidate": "a10c39025cdc03d3265b031d6547b11e0350da2c",
+      "kind": "head",
+      "prospective_merge": null,
+      "schema": "trnm-ci-source-v1",
+      "tested_commit": "a10c39025cdc03d3265b031d6547b11e0350da2c",
+      "tested_tree": "f82a65891b8c5d094ad9a67450751253ec150910",
+      "tests_executed_by_identity_check": false,
+      "tracked_bytes": 932581466,
+      "tracked_entries": 8095,
+      "tracked_worktree_verified": true
+    },
+    "execution_source_after": {
+      "base": null,
+      "candidate": "a10c39025cdc03d3265b031d6547b11e0350da2c",
+      "kind": "head",
+      "prospective_merge": null,
+      "schema": "trnm-ci-source-v1",
+      "tested_commit": "a10c39025cdc03d3265b031d6547b11e0350da2c",
+      "tested_tree": "f82a65891b8c5d094ad9a67450751253ec150910",
+      "tests_executed_by_identity_check": false,
+      "tracked_bytes": 932581466,
+      "tracked_entries": 8095,
+      "tracked_worktree_verified": true
+    }
+  },
+  "campaign": {
+    "failure": "ORIGINAL_THREE_RUN_CAMPAIGN_FAILED",
+    "complete_success": false,
+    "planned_complete_runs": 3,
+    "binary": {
+      "actual_compiler_artifact_profile": {
+        "debug_assertions": false,
+        "debuginfo": 0,
+        "opt_level": "3",
+        "overflow_checks": false,
+        "test": true
+      },
+      "build_artifact": "/home/runner/work/_temp/target-native-campaign/release/deps/public_v3_multiprocess-407806f7087de5f8",
+      "build_separate_from_measured_campaign": true,
+      "bytes": 11568472,
+      "execution": "original cargo test command using the checked build artifact",
+      "retained": "public_v3_multiprocess.bin",
+      "sha256_after": "00b26296f3af968f97b73dda08ef7c369ffd8cc1e2218db4ef6889be9f482296",
+      "sha256_before": "00b26296f3af968f97b73dda08ef7c369ffd8cc1e2218db4ef6889be9f482296"
+    },
+    "original_inputs": {
+      "attacker_processes": [
+        0,
+        24,
+        24
+      ],
+      "business_blocks": 21,
+      "modes": [
+        "baseline",
+        "from-zero",
+        "late-product"
+      ],
+      "phase_seconds": 30,
+      "seed_blocks": 4,
+      "seed_transfers": 1024
+    },
+    "expected_resources": {
+      "cpu_max": "400000 100000",
+      "memory_max": "17179869184",
+      "nice": 10
+    },
+    "public_phase_placement": {
+      "attacker_processes_remain_in_original_controller_domain": true,
+      "fixed_parent": "/sys/fs/cgroup/trnmponpublic.slice",
+      "original_3x3_workload_and_depletion_predicates_changed": false,
+      "profile": "fixed-public-phase-external-actors-v1",
+      "receiver_and_verifier_cpu_max": "25000 100000",
+      "receiver_and_verifier_memory_max": "2147483648"
+    },
+    "finalization_failures": [],
+    "build": {
+      "command": [
+        "/home/runner/.cargo/bin/cargo",
+        "+1.95.0",
+        "test",
+        "--locked",
+        "--offline",
+        "--release",
+        "--manifest-path",
+        "trillionnium/Cargo.toml",
+        "-p",
+        "trnm-pon-node",
+        "--test",
+        "public_v3_multiprocess",
+        "--no-run",
+        "--message-format=json"
+      ],
+      "complete_success": true,
+      "cwd": "/home/runner/work/Trillionnium-Chain/Trillionnium-Chain",
+      "elapsed_ns": 122409682839,
+      "elapsed_seconds": 122.409682839,
+      "error": null,
+      "name": "build",
+      "outer_stage_timeout_seconds": 1800,
+      "returncode": 0,
+      "stderr": "build.stderr.log",
+      "stderr_bytes": 4021,
+      "stderr_sha256": "59d7e38c3c673ba6042536c4c5d6a73ddd5bfb58c92f26b021ac9584b5f29f4d",
+      "stderr_truncated": false,
+      "stdout": "build.stdout.log",
+      "stdout_bytes": 111538,
+      "stdout_sha256": "913fee7613dfba3568ff79f2da4ec74a45e54a0b04d1b1c8b76a22319a74dd4f",
+      "stdout_truncated": false
+    },
+    "profile": "release",
+    "toolchain": "1.95.0",
+    "original_campaign_outer_timeout_seconds": 600,
+    "planned_confirmations": 27,
+    "denominator": {
+      "planned": 27,
+      "confirmed": 3,
+      "observed_unconfirmed": 9,
+      "unobserved": 15
+    },
+    "attempts": [
+      {
+        "complete_success": false,
+        "number": 1,
+        "original_criteria_met": false,
+        "phase_startup_errors": [],
+        "report_directory": "run-1-raw",
+        "report_sha256": "c2f46812ae8f9fd68e4a0c8add8a77e3a851e3834063c6f7898cd36d2ddb24ff",
+        "report_validation_failure": null,
+        "step": {
+          "command": [
+            "/home/runner/.cargo/bin/cargo",
+            "+1.95.0",
+            "test",
+            "--locked",
+            "--offline",
+            "--release",
+            "--manifest-path",
+            "trillionnium/Cargo.toml",
+            "-p",
+            "trnm-pon-node",
+            "--test",
+            "public_v3_multiprocess",
+            "separate_process_work_and_signed_confirmation_campaign",
+            "--",
+            "--exact",
+            "--ignored",
+            "--nocapture",
+            "--test-threads=1"
+          ],
+          "complete_success": false,
+          "cwd": "/home/runner/work/Trillionnium-Chain/Trillionnium-Chain",
+          "elapsed_ns": 107112675989,
+          "elapsed_seconds": 107.112675989,
+          "error": null,
+          "name": "run-1",
+          "outer_stage_timeout_seconds": 600,
+          "returncode": 101,
+          "stderr": "run-1.stderr.log",
+          "stderr_bytes": 1615,
+          "stderr_sha256": "9088f22f1602cf066ae31cf1388a73d5b65cd4e241068696756ccfb1d0569927",
+          "stderr_truncated": false,
+          "stdout": "run-1.stdout.log",
+          "stdout_bytes": 271,
+          "stdout_sha256": "148cca77e74bfe89786968d2098265c8ff92afd46267daa70ce0236c750bda67",
+          "stdout_truncated": false
+        }
+      },
+      {
+        "complete_success": false,
+        "number": 2,
+        "original_criteria_met": false,
+        "phase_startup_errors": [],
+        "report_directory": "run-2-raw",
+        "report_sha256": "4d3d29ed9c95efd2c317780ac87a11aff0accb51d01531bf10705568960b6110",
+        "report_validation_failure": null,
+        "step": {
+          "command": [
+            "/home/runner/.cargo/bin/cargo",
+            "+1.95.0",
+            "test",
+            "--locked",
+            "--offline",
+            "--release",
+            "--manifest-path",
+            "trillionnium/Cargo.toml",
+            "-p",
+            "trnm-pon-node",
+            "--test",
+            "public_v3_multiprocess",
+            "separate_process_work_and_signed_confirmation_campaign",
+            "--",
+            "--exact",
+            "--ignored",
+            "--nocapture",
+            "--test-threads=1"
+          ],
+          "complete_success": false,
+          "cwd": "/home/runner/work/Trillionnium-Chain/Trillionnium-Chain",
+          "elapsed_ns": 105832565254,
+          "elapsed_seconds": 105.832565254,
+          "error": null,
+          "name": "run-2",
+          "outer_stage_timeout_seconds": 600,
+          "returncode": 101,
+          "stderr": "run-2.stderr.log",
+          "stderr_bytes": 1615,
+          "stderr_sha256": "680c9d8bce43be71365cc586d1bfe089fbe0294b295baad8813b30f2da476fb0",
+          "stderr_truncated": false,
+          "stdout": "run-2.stdout.log",
+          "stdout_bytes": 271,
+          "stdout_sha256": "a3018d85944b1d528319eaf4e9bce00c569ab4bbb5126d2ad04d787b91f26150",
+          "stdout_truncated": false
+        }
+      },
+      {
+        "complete_success": false,
+        "number": 3,
+        "original_criteria_met": false,
+        "phase_startup_errors": [],
+        "report_directory": "run-3-raw",
+        "report_sha256": "34191c14628ede09e884d10c097425997a8cbef247c1ef09bb8a0d7ddb581aae",
+        "report_validation_failure": null,
+        "step": {
+          "command": [
+            "/home/runner/.cargo/bin/cargo",
+            "+1.95.0",
+            "test",
+            "--locked",
+            "--offline",
+            "--release",
+            "--manifest-path",
+            "trillionnium/Cargo.toml",
+            "-p",
+            "trnm-pon-node",
+            "--test",
+            "public_v3_multiprocess",
+            "separate_process_work_and_signed_confirmation_campaign",
+            "--",
+            "--exact",
+            "--ignored",
+            "--nocapture",
+            "--test-threads=1"
+          ],
+          "complete_success": false,
+          "cwd": "/home/runner/work/Trillionnium-Chain/Trillionnium-Chain",
+          "elapsed_ns": 105828439025,
+          "elapsed_seconds": 105.828439025,
+          "error": null,
+          "name": "run-3",
+          "outer_stage_timeout_seconds": 600,
+          "returncode": 101,
+          "stderr": "run-3.stderr.log",
+          "stderr_bytes": 1615,
+          "stderr_sha256": "e56776e0f5d1f92efb482f5422bf2a351f83adaa5cd74f4a170c02aa1fbb74f8",
+          "stderr_truncated": false,
+          "stdout": "run-3.stdout.log",
+          "stdout_bytes": 271,
+          "stdout_sha256": "9b997d09843e1370b27d04170fa3b2454848cab2e8ecbd4d03ec92198c5a0c77",
+          "stdout_truncated": false
+        }
+      }
+    ],
+    "phases": [
+      {
+        "run": 1,
+        "mode": "baseline",
+        "rounds": [
+          {
+            "round": 0,
+            "observed": true,
+            "confirmed": true,
+            "started_ns": 1000931506,
+            "ended_ns": 21598892068,
+            "actual_latency_ns": 20597960562,
+            "observation": {
+              "active_generation": 5,
+              "confirmed": true,
+              "depth": 6,
+              "execution_authority": false,
+              "finalized": false,
+              "genesis": "e71802f181974de1181f82f4249d1db542714247623e889d3dfedb263e1c2866",
+              "included_block": "1bbddf43d04bb6512e9f4fd84e394ca9a2f9c9ff5d1ef5ea54e525a2098c19ee",
+              "included_height": 5,
+              "network": "62b92044b29c6275931920860de4dd74a666ad03f140f07b107a2e2ac06e62d4",
+              "observed_height": 11,
+              "observed_now": 1793771859,
+              "observed_tip": "d8ab3f3b54ca5ba37e04fe9d7efbd508982474eeea86b37db8fe77181c6eca96",
+              "parameters": "5f6e99013f8750989889403b3928a7915c006296c9cae4b184c3d0c88a0053a4",
+              "policy": "installed-depth-and-required-work",
+              "reorged": false,
+              "required_work_delta": "0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000c",
+              "transaction": "c6ee62ac00fdec64b6823d4ddeece3106dc969616053730e52750ecdfb4ebf21",
+              "work_delta": "0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000c"
+            }
+          },
+          {
+            "round": 1,
+            "observed": true,
+            "confirmed": false,
+            "started_ns": 21598935273,
+            "ended_ns": 30001379302,
+            "actual_latency_ns": 8402444029,
+            "observation": null
+          },
+          {
+            "round": 2,
+            "observed": false,
+            "confirmed": false,
+            "started_ns": null,
+            "ended_ns": null,
+            "actual_latency_ns": null,
+            "observation": null
+          }
+        ],
+        "duration_seconds": 30,
+        "actors_requested": 0,
+        "actors_ready": 0,
+        "submission_attempts": 14,
+        "business_ack_count": 14,
+        "submission_errors": {},
+        "seventh_packet_ack_ns": 2596801192,
+        "history_pages": [
+          {
+            "network_started_ns": 2596959522,
+            "network_ended_ns": 2608826409,
+            "network_wall_ns": 11878706,
+            "status": "ok",
+            "error": null,
+            "replay": {
+              "started_ns": 2608853460,
+              "ended_ns": 4905166586,
+              "wall_ns": 2296313105,
+              "thread_cpu_ns": 472952123,
+              "succeeded": true,
+              "error": null
+            }
+          },
+          {
+            "network_started_ns": 4905268801,
+            "network_ended_ns": 4984234518,
+            "network_wall_ns": 78974641,
+            "status": "ok",
+            "error": null,
+            "replay": {
+              "started_ns": 4984258604,
+              "ended_ns": 6891587360,
+              "wall_ns": 1907328726,
+              "thread_cpu_ns": 446526935,
+              "succeeded": true,
+              "error": null
+            }
+          },
+          {
+            "network_started_ns": 6891666369,
+            "network_ended_ns": 6903107403,
+            "network_wall_ns": 11449697,
+            "status": "ok",
+            "error": null,
+            "replay": {
+              "started_ns": 6903126782,
+              "ended_ns": 8790184020,
+              "wall_ns": 1887057208,
+              "thread_cpu_ns": 439123219,
+              "succeeded": true,
+              "error": null
+            }
+          },
+          {
+            "network_started_ns": 8790262889,
+            "network_ended_ns": 8802027913,
+            "network_wall_ns": 11772194,
+            "status": "ok",
+            "error": null,
+            "replay": {
+              "started_ns": 8802063327,
+              "ended_ns": 10704287447,
+              "wall_ns": 1902224080,
+              "thread_cpu_ns": 452837658,
+              "succeeded": true,
+              "error": null
+            }
+          },
+          {
+            "network_started_ns": 10704363031,
+            "network_ended_ns": 10716322404,
+            "network_wall_ns": 11969138,
+            "status": "ok",
+            "error": null,
+            "replay": {
+              "started_ns": 10716344508,
+              "ended_ns": 12689377576,
+              "wall_ns": 1973033048,
+              "thread_cpu_ns": 449353606,
+              "succeeded": true,
+              "error": null
+            }
+          },
+          {
+            "network_started_ns": 12689462565,
+            "network_ended_ns": 12701356168,
+            "network_wall_ns": 11904831,
+            "status": "ok",
+            "error": null,
+            "replay": {
+              "started_ns": 12701380885,
+              "ended_ns": 14603373901,
+              "wall_ns": 1901992995,
+              "thread_cpu_ns": 446246872,
+              "succeeded": true,
+              "error": null
+            }
+          },
+          {
+            "network_started_ns": 14603498930,
+            "network_ended_ns": 14614127388,
+            "network_wall_ns": 10637011,
+            "status": "ok",
+            "error": null,
+            "replay": {
+              "started_ns": 14614148100,
+              "ended_ns": 21486152894,
+              "wall_ns": 6872004774,
+              "thread_cpu_ns": 1592546265,
+              "succeeded": true,
+              "error": null
+            }
+          },
+          {
+            "network_started_ns": 23298908077,
+            "network_ended_ns": 23310741856,
+            "network_wall_ns": 11842281,
+            "status": "ok",
+            "error": null,
+            "replay": {
+              "started_ns": 23310762687,
+              "ended_ns": 25305437699,
+              "wall_ns": 1994674992,
+              "thread_cpu_ns": 470388903,
+              "succeeded": true,
+              "error": null
+            }
+          },
+          {
+            "network_started_ns": 25305569248,
+            "network_ended_ns": 25385447712,
+            "network_wall_ns": 79892225,
+            "status": "ok",
+            "error": null,
+            "replay": {
+              "started_ns": 25385478498,
+              "ended_ns": 27286816675,
+              "wall_ns": 1901338146,
+              "thread_cpu_ns": 445028513,
+              "succeeded": true,
+              "error": null
+            }
+          },
+          {
+            "network_started_ns": 27286928024,
+            "network_ended_ns": 27297887631,
+            "network_wall_ns": 10968211,
+            "status": "ok",
+            "error": null,
+            "replay": {
+              "started_ns": 27297909925,
+              "ended_ns": 29195415327,
+              "wall_ns": 1897505372,
+              "thread_cpu_ns": 449020567,
+              "succeeded": true,
+              "error": null
+            }
+          },
+          {
+            "network_started_ns": 29195517352,
+            "network_ended_ns": 29206427034,
+            "network_wall_ns": 10919808,
+            "status": "ok",
+            "error": null,
+            "replay": {
+              "started_ns": 29206451100,
+              "ended_ns": 30001280292,
+              "wall_ns": 794829162,
+              "thread_cpu_ns": 189917812,
+              "succeeded": false,
+              "error": "PUBLIC_REQUEST_DEADLINE"
+            }
+          }
+        ],
+        "network_wall_ns_sum": 262208743,
+        "replay_wall_ns_sum": 25328301608,
+        "successful_replay_pages": 10,
+        "verifier_errors": [
+          "PUBLIC_REQUEST_DEADLINE"
+        ],
+        "full_work_accepted": 14,
+        "full_work_failed": 0,
+        "genuine_budget_depletion_observed": false,
+        "final_actual_flow": {
+          "balance_identity_verified": true,
+          "booked_reservation_ns": 0,
+          "credited_refill_ns": 750158855,
+          "discarded_refill_ns": 5074229041,
+          "initial_credit_ns": 2000000000,
+          "live_debited_cpu_ns": 760945684,
+          "live_owners": 0,
+          "paid_cpu_debit_ns": 760962208,
+          "remaining_paid_credit_ns": 1989196647,
+          "schema": "public-v3-local-actual-cpu-flow-v1",
+          "settled_full_cpu_ns": 760962208,
+          "settlement_discard_ns": 0,
+          "settlement_residual_cpu_ns": 16524,
+          "stored_credit_ns": 1989196647,
+          "unsettled_known_live_cpu_ns": 0
+        },
+        "public_resource_policy": {
+          "lifetime_ms": 2000,
+          "policy_id": "6d04725d8e7a84560baf69440b1becd79f47c9f1fb5e63b85f1447400c85d43f",
+          "schema": "public-protected-resource-policy-observation-v1",
+          "ticket_bits": 8,
+          "transport_profile": "public-protected-development-v3"
+        },
+        "phase_process_context": {
+          "attackers_launched_by_external_controller": true,
+          "controller_cgroup": "/system.slice/trnm-native-campaign-41780585984-1.service",
+          "host_after": {
+            "cpu_nr_periods": 338,
+            "cpu_nr_throttled": 323,
+            "cpu_throttled_usec": 37441975,
+            "cpu_usage_usec": 8172003,
+            "memory_current_bytes": 89194496,
+            "pids_current": 3
+          },
+          "host_before": {
+            "cpu_nr_periods": 4,
+            "cpu_nr_throttled": 3,
+            "cpu_throttled_usec": 218281,
+            "cpu_usage_usec": 78564,
+            "memory_current_bytes": 19591168,
+            "pids_current": 3
+          },
+          "independent_administration": false,
+          "phase_cgroup": "/trnmponpublic.slice/trnm-phase-41780585984-1-original-campaign-4518.service",
+          "phase_pid": 4591,
+          "runtime_business_deadline_changed": false,
+          "same_original_receiver_and_verifier_owners": true,
+          "scalar_policy_changed": false,
+          "schema": "fixed-public-phase-external-actors-v1",
+          "wan_qualified": false
+        },
+        "native_client_stage_deltas": {
+          "verify_state": {
+            "calls": 109,
+            "wall_ns": 19281110310,
+            "cpu_ns": 4407123598
+          },
+          "publish": {
+            "calls": 10,
+            "wall_ns": 8980180711,
+            "cpu_ns": 2078261092
+          },
+          "state_at": {
+            "calls": 31,
+            "wall_ns": 5323083153,
+            "cpu_ns": 1252784826
+          },
+          "execute": {
+            "calls": 11,
+            "wall_ns": 98365385,
+            "cpu_ns": 22191858
+          },
+          "admission": {
+            "calls": 11,
+            "wall_ns": 17736882778,
+            "cpu_ns": 4119920469
+          },
+          "activation": {
+            "calls": 1,
+            "wall_ns": 4973112994,
+            "cpu_ns": 1150310263
+          },
+          "complete_commitment": {
+            "calls": 119,
+            "wall_ns": 242892924,
+            "cpu_ns": 89193986
+          },
+          "account_graph": {
+            "calls": 79,
+            "wall_ns": 18698910623,
+            "cpu_ns": 4285741518
+          }
+        },
+        "native_receiver_stage_deltas": {
+          "verify_state": {
+            "calls": 140,
+            "wall_ns": 1695131991,
+            "cpu_ns": 407488326
+          },
+          "publish": {
+            "calls": 14,
+            "wall_ns": 784392363,
+            "cpu_ns": 220272087
+          },
+          "state_at": {
+            "calls": 42,
+            "wall_ns": 754456071,
+            "cpu_ns": 202619000
+          },
+          "execute": {
+            "calls": 14,
+            "wall_ns": 15692239,
+            "cpu_ns": 15682116
+          },
+          "admission": {
+            "calls": 14,
+            "wall_ns": 2124142539,
+            "cpu_ns": 553394740
+          },
+          "activation": {
+            "calls": 14,
+            "wall_ns": 701674482,
+            "cpu_ns": 173980721
+          },
+          "complete_commitment": {
+            "calls": 154,
+            "wall_ns": 122037019,
+            "cpu_ns": 46129005
+          },
+          "account_graph": {
+            "calls": 88,
+            "wall_ns": 1509574334,
+            "cpu_ns": 374636138
+          }
+        },
+        "host_checkpoint": {
+          "calls_started": 113531,
+          "thread_cpu_ns": 5037937089,
+          "wall_ns": 6092004014
+        },
+        "receiver_client_state_equal": false,
+        "observer_complete": true,
+        "finite_phase_criteria_met": false
+      },
+      {
+        "run": 1,
+        "mode": "from-zero",
+        "rounds": [
+          {
+            "round": 0,
+            "observed": true,
+            "confirmed": false,
+            "started_ns": 1001295529,
+            "ended_ns": 30091673279,
+            "actual_latency_ns": 29090377750,
+            "observation": null
+          },
+          {
+            "round": 1,
+            "observed": false,
+            "confirmed": false,
+            "started_ns": null,
+            "ended_ns": null,
+            "actual_latency_ns": null,
+            "observation": null
+          },
+          {
+            "round": 2,
+            "observed": false,
+            "confirmed": false,
+            "started_ns": null,
+            "ended_ns": null,
+            "actual_latency_ns": null,
+            "observation": null
+          }
+        ],
+        "duration_seconds": 30,
+        "actors_requested": 24,
+        "actors_ready": 24,
+        "submission_attempts": 7,
+        "business_ack_count": 7,
+        "submission_errors": {},
+        "seventh_packet_ack_ns": 4294859529,
+        "history_pages": [
+          {
+            "network_started_ns": 4295047734,
+            "network_ended_ns": 4400965694,
+            "network_wall_ns": 105929127,
+            "status": "ok",
+            "error": null,
+            "replay": {
+              "started_ns": 4400994778,
+              "ended_ns": 10397607266,
+              "wall_ns": 5996612448,
+              "thread_cpu_ns": 533543122,
+              "succeeded": true,
+              "error": null
+            }
+          },
+          {
+            "network_started_ns": 10397677482,
+            "network_ended_ns": 10500847380,
+            "network_wall_ns": 103180956,
+            "status": "ok",
+            "error": null,
+            "replay": {
+              "started_ns": 10500875323,
+              "ended_ns": 15791683319,
+              "wall_ns": 5290807996,
+              "thread_cpu_ns": 516650859,
+              "succeeded": true,
+              "error": null
+            }
+          },
+          {
+            "network_started_ns": 15791819245,
+            "network_ended_ns": 15892857865,
+            "network_wall_ns": 101048666,
+            "status": "ok",
+            "error": null,
+            "replay": {
+              "started_ns": 15892885156,
+              "ended_ns": 21098792734,
+              "wall_ns": 5205907559,
+              "thread_cpu_ns": 519364237,
+              "succeeded": true,
+              "error": null
+            }
+          },
+          {
+            "network_started_ns": 21098878224,
+            "network_ended_ns": 21196365128,
+            "network_wall_ns": 97496338,
+            "status": "ok",
+            "error": null,
+            "replay": {
+              "started_ns": 21196391257,
+              "ended_ns": 26102424019,
+              "wall_ns": 4906032722,
+              "thread_cpu_ns": 510683380,
+              "succeeded": true,
+              "error": null
+            }
+          },
+          {
+            "network_started_ns": 26102515889,
+            "network_ended_ns": 26207810210,
+            "network_wall_ns": 105303765,
+            "status": "ok",
+            "error": null,
+            "replay": {
+              "started_ns": 26207834176,
+              "ended_ns": 30091531424,
+              "wall_ns": 3883697218,
+              "thread_cpu_ns": 382675619,
+              "succeeded": false,
+              "error": "PUBLIC_REQUEST_DEADLINE"
+            }
+          }
+        ],
+        "network_wall_ns_sum": 512958852,
+        "replay_wall_ns_sum": 25283057943,
+        "successful_replay_pages": 4,
+        "verifier_errors": [
+          "PUBLIC_REQUEST_DEADLINE"
+        ],
+        "full_work_accepted": 7,
+        "full_work_failed": 1844,
+        "genuine_budget_depletion_observed": false,
+        "final_actual_flow": {
+          "balance_identity_verified": true,
+          "booked_reservation_ns": 0,
+          "credited_refill_ns": 4064895474,
+          "discarded_refill_ns": 3480756816,
+          "initial_credit_ns": 2000000000,
+          "live_debited_cpu_ns": 4065887882,
+          "live_owners": 0,
+          "paid_cpu_debit_ns": 4067625096,
+          "remaining_paid_credit_ns": 1997270378,
+          "schema": "public-v3-local-actual-cpu-flow-v1",
+          "settled_full_cpu_ns": 4067625096,
+          "settlement_discard_ns": 0,
+          "settlement_residual_cpu_ns": 1737214,
+          "stored_credit_ns": 1997270378,
+          "unsettled_known_live_cpu_ns": 0
+        },
+        "public_resource_policy": {
+          "lifetime_ms": 2000,
+          "policy_id": "6d04725d8e7a84560baf69440b1becd79f47c9f1fb5e63b85f1447400c85d43f",
+          "schema": "public-protected-resource-policy-observation-v1",
+          "ticket_bits": 8,
+          "transport_profile": "public-protected-development-v3"
+        },
+        "phase_process_context": {
+          "attackers_launched_by_external_controller": true,
+          "controller_cgroup": "/system.slice/trnm-native-campaign-41780585984-1.service",
+          "host_after": {
+            "cpu_nr_periods": 685,
+            "cpu_nr_throttled": 667,
+            "cpu_throttled_usec": 123724339,
+            "cpu_usage_usec": 16793413,
+            "memory_current_bytes": 209358848,
+            "pids_current": 3
+          },
+          "host_before": {
+            "cpu_nr_periods": 344,
+            "cpu_nr_throttled": 327,
+            "cpu_throttled_usec": 37675870,
+            "cpu_usage_usec": 8278629,
+            "memory_current_bytes": 30519296,
+            "pids_current": 3
+          },
+          "independent_administration": false,
+          "phase_cgroup": "/trnmponpublic.slice/trnm-phase-41780585984-1-original-campaign-4608.service",
+          "phase_pid": 4613,
+          "runtime_business_deadline_changed": false,
+          "same_original_receiver_and_verifier_owners": true,
+          "scalar_policy_changed": false,
+          "schema": "fixed-public-phase-external-actors-v1",
+          "wan_qualified": false
+        },
+        "native_client_stage_deltas": {
+          "verify_state": {
+            "calls": 35,
+            "wall_ns": 17785565242,
+            "cpu_ns": 1765027975
+          },
+          "publish": {
+            "calls": 5,
+            "wall_ns": 11194926495,
+            "cpu_ns": 1110758407
+          },
+          "state_at": {
+            "calls": 13,
+            "wall_ns": 6584418197,
+            "cpu_ns": 646446035
+          },
+          "execute": {
+            "calls": 5,
+            "wall_ns": 102985384,
+            "cpu_ns": 11715428
+          },
+          "admission": {
+            "calls": 5,
+            "wall_ns": 21609092828,
+            "cpu_ns": 2161412827
+          },
+          "activation": {
+            "calls": 0,
+            "wall_ns": 0,
+            "cpu_ns": 0
+          },
+          "complete_commitment": {
+            "calls": 40,
+            "wall_ns": 396622451,
+            "cpu_ns": 34235358
+          },
+          "account_graph": {
+            "calls": 24,
+            "wall_ns": 17201243538,
+            "cpu_ns": 1721410293
+          }
+        },
+        "native_receiver_stage_deltas": {
+          "verify_state": {
+            "calls": 70,
+            "wall_ns": 1241891048,
+            "cpu_ns": 206316128
+          },
+          "publish": {
+            "calls": 7,
+            "wall_ns": 582939915,
+            "cpu_ns": 109403479
+          },
+          "state_at": {
+            "calls": 21,
+            "wall_ns": 682574502,
+            "cpu_ns": 107109086
+          },
+          "execute": {
+            "calls": 7,
+            "wall_ns": 8853438,
+            "cpu_ns": 8848331
+          },
+          "admission": {
+            "calls": 7,
+            "wall_ns": 1341478856,
+            "cpu_ns": 280937599
+          },
+          "activation": {
+            "calls": 7,
+            "wall_ns": 467929134,
+            "cpu_ns": 84265589
+          },
+          "complete_commitment": {
+            "calls": 77,
+            "wall_ns": 338107707,
+            "cpu_ns": 22617216
+          },
+          "account_graph": {
+            "calls": 44,
+            "wall_ns": 1062716444,
+            "cpu_ns": 189064919
+          }
+        },
+        "host_checkpoint": {
+          "calls_started": 42068,
+          "thread_cpu_ns": 2111815954,
+          "wall_ns": 3968372468
+        },
+        "receiver_client_state_equal": false,
+        "observer_complete": true,
+        "finite_phase_criteria_met": false
+      },
+      {
+        "run": 1,
+        "mode": "late-product",
+        "rounds": [
+          {
+            "round": 0,
+            "observed": true,
+            "confirmed": false,
+            "started_ns": 1000769579,
+            "ended_ns": 30057417679,
+            "actual_latency_ns": 29056648100,
+            "observation": null
+          },
+          {
+            "round": 1,
+            "observed": false,
+            "confirmed": false,
+            "started_ns": null,
+            "ended_ns": null,
+            "actual_latency_ns": null,
+            "observation": null
+          },
+          {
+            "round": 2,
+            "observed": false,
+            "confirmed": false,
+            "started_ns": null,
+            "ended_ns": null,
+            "actual_latency_ns": null,
+            "observation": null
+          }
+        ],
+        "duration_seconds": 30,
+        "actors_requested": 24,
+        "actors_ready": 24,
+        "submission_attempts": 7,
+        "business_ack_count": 7,
+        "submission_errors": {},
+        "seventh_packet_ack_ns": 4472060820,
+        "history_pages": [
+          {
+            "network_started_ns": 4472245920,
+            "network_ended_ns": 4558177425,
+            "network_wall_ns": 85942242,
+            "status": "ok",
+            "error": null,
+            "replay": {
+              "started_ns": 4558207070,
+              "ended_ns": 10155648593,
+              "wall_ns": 5597441493,
+              "thread_cpu_ns": 516597703,
+              "succeeded": true,
+              "error": null
+            }
+          },
+          {
+            "network_started_ns": 10155803036,
+            "network_ended_ns": 10257066657,
+            "network_wall_ns": 101273275,
+            "status": "ok",
+            "error": null,
+            "replay": {
+              "started_ns": 10257092536,
+              "ended_ns": 15162302306,
+              "wall_ns": 4905209760,
+              "thread_cpu_ns": 488333227,
+              "succeeded": true,
+              "error": null
+            }
+          },
+          {
+            "network_started_ns": 15162390139,
+            "network_ended_ns": 15261886546,
+            "network_wall_ns": 99506032,
+            "status": "ok",
+            "error": null,
+            "replay": {
+              "started_ns": 15261912575,
+              "ended_ns": 20459050791,
+              "wall_ns": 5197138176,
+              "thread_cpu_ns": 506119529,
+              "succeeded": true,
+              "error": null
+            }
+          },
+          {
+            "network_started_ns": 20459117392,
+            "network_ended_ns": 20558698729,
+            "network_wall_ns": 99589700,
+            "status": "ok",
+            "error": null,
+            "replay": {
+              "started_ns": 20558722545,
+              "ended_ns": 25453414063,
+              "wall_ns": 4894691488,
+              "thread_cpu_ns": 480112289,
+              "succeeded": true,
+              "error": null
+            }
+          },
+          {
+            "network_started_ns": 25453691653,
+            "network_ended_ns": 25558392699,
+            "network_wall_ns": 104707926,
+            "status": "ok",
+            "error": null,
+            "replay": {
+              "started_ns": 25558414301,
+              "ended_ns": 30057324638,
+              "wall_ns": 4498910306,
+              "thread_cpu_ns": 449459678,
+              "succeeded": false,
+              "error": "PUBLIC_REQUEST_DEADLINE"
+            }
+          }
+        ],
+        "network_wall_ns_sum": 491019175,
+        "replay_wall_ns_sum": 25093391223,
+        "successful_replay_pages": 4,
+        "verifier_errors": [
+          "PUBLIC_REQUEST_DEADLINE"
+        ],
+        "full_work_accepted": 7,
+        "full_work_failed": 1719,
+        "genuine_budget_depletion_observed": false,
+        "final_actual_flow": {
+          "balance_identity_verified": true,
+          "booked_reservation_ns": 0,
+          "credited_refill_ns": 4138512851,
+          "discarded_refill_ns": 3406056324,
+          "initial_credit_ns": 2000000000,
+          "live_debited_cpu_ns": 4137166916,
+          "live_owners": 0,
+          "paid_cpu_debit_ns": 4138726411,
+          "remaining_paid_credit_ns": 1999786440,
+          "schema": "public-v3-local-actual-cpu-flow-v1",
+          "settled_full_cpu_ns": 4138726411,
+          "settlement_discard_ns": 0,
+          "settlement_residual_cpu_ns": 1559495,
+          "stored_credit_ns": 1999786440,
+          "unsettled_known_live_cpu_ns": 0
+        },
+        "public_resource_policy": {
+          "lifetime_ms": 2000,
+          "policy_id": "6d04725d8e7a84560baf69440b1becd79f47c9f1fb5e63b85f1447400c85d43f",
+          "schema": "public-protected-resource-policy-observation-v1",
+          "ticket_bits": 8,
+          "transport_profile": "public-protected-development-v3"
+        },
+        "phase_process_context": {
+          "attackers_launched_by_external_controller": true,
+          "controller_cgroup": "/system.slice/trnm-native-campaign-41780585984-1.service",
+          "host_after": {
+            "cpu_nr_periods": 1034,
+            "cpu_nr_throttled": 1013,
+            "cpu_throttled_usec": 210093429,
+            "cpu_usage_usec": 25479386,
+            "memory_current_bytes": 224468992,
+            "pids_current": 3
+          },
+          "host_before": {
+            "cpu_nr_periods": 694,
+            "cpu_nr_throttled": 674,
+            "cpu_throttled_usec": 124093665,
+            "cpu_usage_usec": 16977623,
+            "memory_current_bytes": 51478528,
+            "pids_current": 3
+          },
+          "independent_administration": false,
+          "phase_cgroup": "/trnmponpublic.slice/trnm-phase-41780585984-1-original-campaign-4680.service",
+          "phase_pid": 4685,
+          "runtime_business_deadline_changed": false,
+          "same_original_receiver_and_verifier_owners": true,
+          "scalar_policy_changed": false,
+          "schema": "fixed-public-phase-external-actors-v1",
+          "wan_qualified": false
+        },
+        "native_client_stage_deltas": {
+          "verify_state": {
+            "calls": 39,
+            "wall_ns": 17715080991,
+            "cpu_ns": 1768009789
+          },
+          "publish": {
+            "calls": 5,
+            "wall_ns": 11499177080,
+            "cpu_ns": 1138661876
+          },
+          "state_at": {
+            "calls": 15,
+            "wall_ns": 6205397487,
+            "cpu_ns": 622650167
+          },
+          "execute": {
+            "calls": 5,
+            "wall_ns": 10201941,
+            "cpu_ns": 10168239
+          },
+          "admission": {
+            "calls": 5,
+            "wall_ns": 21895025680,
+            "cpu_ns": 2152201305
+          },
+          "activation": {
+            "calls": 0,
+            "wall_ns": 0,
+            "cpu_ns": 0
+          },
+          "complete_commitment": {
+            "calls": 44,
+            "wall_ns": 669156802,
+            "cpu_ns": 34112716
+          },
+          "account_graph": {
+            "calls": 26,
+            "wall_ns": 17128046887,
+            "cpu_ns": 1722704930
+          }
+        },
+        "native_receiver_stage_deltas": {
+          "verify_state": {
+            "calls": 70,
+            "wall_ns": 768051265,
+            "cpu_ns": 214286909
+          },
+          "publish": {
+            "calls": 7,
+            "wall_ns": 344285617,
+            "cpu_ns": 108395717
+          },
+          "state_at": {
+            "calls": 21,
+            "wall_ns": 682502159,
+            "cpu_ns": 117661931
+          },
+          "execute": {
+            "calls": 7,
+            "wall_ns": 89626648,
+            "cpu_ns": 9240957
+          },
+          "admission": {
+            "calls": 7,
+            "wall_ns": 1428760514,
+            "cpu_ns": 293130941
+          },
+          "activation": {
+            "calls": 7,
+            "wall_ns": 318249754,
+            "cpu_ns": 84036187
+          },
+          "complete_commitment": {
+            "calls": 77,
+            "wall_ns": 22700153,
+            "cpu_ns": 22639092
+          },
+          "account_graph": {
+            "calls": 44,
+            "wall_ns": 592507867,
+            "cpu_ns": 196189136
+          }
+        },
+        "host_checkpoint": {
+          "calls_started": 43809,
+          "thread_cpu_ns": 2091570423,
+          "wall_ns": 4187877624
+        },
+        "receiver_client_state_equal": false,
+        "observer_complete": true,
+        "finite_phase_criteria_met": false
+      },
+      {
+        "run": 2,
+        "mode": "baseline",
+        "rounds": [
+          {
+            "round": 0,
+            "observed": true,
+            "confirmed": true,
+            "started_ns": 1000230605,
+            "ended_ns": 20397049030,
+            "actual_latency_ns": 19396818425,
+            "observation": {
+              "active_generation": 5,
+              "confirmed": true,
+              "depth": 6,
+              "execution_authority": false,
+              "finalized": false,
+              "genesis": "e71802f181974de1181f82f4249d1db542714247623e889d3dfedb263e1c2866",
+              "included_block": "1bbddf43d04bb6512e9f4fd84e394ca9a2f9c9ff5d1ef5ea54e525a2098c19ee",
+              "included_height": 5,
+              "network": "62b92044b29c6275931920860de4dd74a666ad03f140f07b107a2e2ac06e62d4",
+              "observed_height": 11,
+              "observed_now": 1793771966,
+              "observed_tip": "d8ab3f3b54ca5ba37e04fe9d7efbd508982474eeea86b37db8fe77181c6eca96",
+              "parameters": "5f6e99013f8750989889403b3928a7915c006296c9cae4b184c3d0c88a0053a4",
+              "policy": "installed-depth-and-required-work",
+              "reorged": false,
+              "required_work_delta": "0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000c",
+              "transaction": "c6ee62ac00fdec64b6823d4ddeece3106dc969616053730e52750ecdfb4ebf21",
+              "work_delta": "0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000c"
+            }
+          },
+          {
+            "round": 1,
+            "observed": true,
+            "confirmed": false,
+            "started_ns": 20397084964,
+            "ended_ns": 30000983220,
+            "actual_latency_ns": 9603898256,
+            "observation": null
+          },
+          {
+            "round": 2,
+            "observed": false,
+            "confirmed": false,
+            "started_ns": null,
+            "ended_ns": null,
+            "actual_latency_ns": null,
+            "observation": null
+          }
+        ],
+        "duration_seconds": 30,
+        "actors_requested": 0,
+        "actors_ready": 0,
+        "submission_attempts": 14,
+        "business_ack_count": 14,
+        "submission_errors": {},
+        "seventh_packet_ack_ns": 2486117400,
+        "history_pages": [
+          {
+            "network_started_ns": 2486262479,
+            "network_ended_ns": 2498067515,
+            "network_wall_ns": 11812587,
+            "status": "ok",
+            "error": null,
+            "replay": {
+              "started_ns": 2498087285,
+              "ended_ns": 4695038653,
+              "wall_ns": 2196951348,
+              "thread_cpu_ns": 443223262,
+              "succeeded": true,
+              "error": null
+            }
+          },
+          {
+            "network_started_ns": 4695125775,
+            "network_ended_ns": 4707157063,
+            "network_wall_ns": 12039580,
+            "status": "ok",
+            "error": null,
+            "replay": {
+              "started_ns": 4707178155,
+              "ended_ns": 6500105008,
+              "wall_ns": 1792926843,
+              "thread_cpu_ns": 422654790,
+              "succeeded": true,
+              "error": null
+            }
+          },
+          {
+            "network_started_ns": 6500182595,
+            "network_ended_ns": 6511480163,
+            "network_wall_ns": 11306622,
+            "status": "ok",
+            "error": null,
+            "replay": {
+              "started_ns": 6511500304,
+              "ended_ns": 8302988645,
+              "wall_ns": 1791488321,
+              "thread_cpu_ns": 420726701,
+              "succeeded": true,
+              "error": null
+            }
+          },
+          {
+            "network_started_ns": 8303075867,
+            "network_ended_ns": 8314504112,
+            "network_wall_ns": 11438491,
+            "status": "ok",
+            "error": null,
+            "replay": {
+              "started_ns": 8314527778,
+              "ended_ns": 10103908920,
+              "wall_ns": 1789381142,
+              "thread_cpu_ns": 421198982,
+              "succeeded": true,
+              "error": null
+            }
+          },
+          {
+            "network_started_ns": 10103996973,
+            "network_ended_ns": 10114587000,
+            "network_wall_ns": 10597658,
+            "status": "ok",
+            "error": null,
+            "replay": {
+              "started_ns": 10114604307,
+              "ended_ns": 11902613202,
+              "wall_ns": 1788008865,
+              "thread_cpu_ns": 417831093,
+              "succeeded": true,
+              "error": null
+            }
+          },
+          {
+            "network_started_ns": 11902685000,
+            "network_ended_ns": 11914091052,
+            "network_wall_ns": 11413313,
+            "status": "ok",
+            "error": null,
+            "replay": {
+              "started_ns": 11914108218,
+              "ended_ns": 13800589000,
+              "wall_ns": 1886480751,
+              "thread_cpu_ns": 431959413,
+              "succeeded": true,
+              "error": null
+            }
+          },
+          {
+            "network_started_ns": 13800682772,
+            "network_ended_ns": 13812907112,
+            "network_wall_ns": 12231220,
+            "status": "ok",
+            "error": null,
+            "replay": {
+              "started_ns": 13812926982,
+              "ended_ns": 20287437495,
+              "wall_ns": 6474510503,
+              "thread_cpu_ns": 1513173090,
+              "succeeded": true,
+              "error": null
+            }
+          },
+          {
+            "network_started_ns": 21799728646,
+            "network_ended_ns": 21811549740,
+            "network_wall_ns": 11826393,
+            "status": "ok",
+            "error": null,
+            "replay": {
+              "started_ns": 21811567187,
+              "ended_ns": 23692337347,
+              "wall_ns": 1880770130,
+              "thread_cpu_ns": 436577820,
+              "succeeded": true,
+              "error": null
+            }
+          },
+          {
+            "network_started_ns": 23692433493,
+            "network_ended_ns": 23704433438,
+            "network_wall_ns": 12006425,
+            "status": "ok",
+            "error": null,
+            "replay": {
+              "started_ns": 23704450664,
+              "ended_ns": 25484773949,
+              "wall_ns": 1780323244,
+              "thread_cpu_ns": 414638498,
+              "succeeded": true,
+              "error": null
+            }
+          },
+          {
+            "network_started_ns": 25484864185,
+            "network_ended_ns": 25496958614,
+            "network_wall_ns": 12101519,
+            "status": "ok",
+            "error": null,
+            "replay": {
+              "started_ns": 25496974688,
+              "ended_ns": 27202843844,
+              "wall_ns": 1705869146,
+              "thread_cpu_ns": 413066254,
+              "succeeded": true,
+              "error": null
+            }
+          },
+          {
+            "network_started_ns": 27202935853,
+            "network_ended_ns": 27213973422,
+            "network_wall_ns": 11044109,
+            "status": "ok",
+            "error": null,
+            "replay": {
+              "started_ns": 27213990027,
+              "ended_ns": 28998176530,
+              "wall_ns": 1784186473,
+              "thread_cpu_ns": 416224545,
+              "succeeded": true,
+              "error": null
+            }
+          },
+          {
+            "network_started_ns": 28998296872,
+            "network_ended_ns": 29009702718,
+            "network_wall_ns": 11414239,
+            "status": "ok",
+            "error": null,
+            "replay": {
+              "started_ns": 29009722268,
+              "ended_ns": 30000881225,
+              "wall_ns": 991158937,
+              "thread_cpu_ns": 234617641,
+              "succeeded": false,
+              "error": "PUBLIC_REQUEST_DEADLINE"
+            }
+          }
+        ],
+        "network_wall_ns_sum": 139232156,
+        "replay_wall_ns_sum": 25862055703,
+        "successful_replay_pages": 11,
+        "verifier_errors": [
+          "PUBLIC_REQUEST_DEADLINE"
+        ],
+        "full_work_accepted": 14,
+        "full_work_failed": 0,
+        "genuine_budget_depletion_observed": false,
+        "final_actual_flow": {
+          "balance_identity_verified": true,
+          "booked_reservation_ns": 0,
+          "credited_refill_ns": 657664965,
+          "discarded_refill_ns": 4792044568,
+          "initial_credit_ns": 2000000000,
+          "live_debited_cpu_ns": 669526122,
+          "live_owners": 0,
+          "paid_cpu_debit_ns": 669543045,
+          "remaining_paid_credit_ns": 1988121920,
+          "schema": "public-v3-local-actual-cpu-flow-v1",
+          "settled_full_cpu_ns": 669543045,
+          "settlement_discard_ns": 0,
+          "settlement_residual_cpu_ns": 16923,
+          "stored_credit_ns": 1988121920,
+          "unsettled_known_live_cpu_ns": 0
+        },
+        "public_resource_policy": {
+          "lifetime_ms": 2000,
+          "policy_id": "6d04725d8e7a84560baf69440b1becd79f47c9f1fb5e63b85f1447400c85d43f",
+          "schema": "public-protected-resource-policy-observation-v1",
+          "ticket_bits": 8,
+          "transport_profile": "public-protected-development-v3"
+        },
+        "phase_process_context": {
+          "attackers_launched_by_external_controller": true,
+          "controller_cgroup": "/system.slice/trnm-native-campaign-41780585984-1.service",
+          "host_after": {
+            "cpu_nr_periods": 1375,
+            "cpu_nr_throttled": 1338,
+            "cpu_throttled_usec": 248612912,
+            "cpu_usage_usec": 33674645,
+            "memory_current_bytes": 142823424,
+            "pids_current": 3
+          },
+          "host_before": {
+            "cpu_nr_periods": 1042,
+            "cpu_nr_throttled": 1019,
+            "cpu_throttled_usec": 210434967,
+            "cpu_usage_usec": 25647084,
+            "memory_current_bytes": 71716864,
+            "pids_current": 3
+          },
+          "independent_administration": false,
+          "phase_cgroup": "/trnmponpublic.slice/trnm-phase-41780585984-1-original-campaign-4845.service",
+          "phase_pid": 4850,
+          "runtime_business_deadline_changed": false,
+          "same_original_receiver_and_verifier_owners": true,
+          "scalar_policy_changed": false,
+          "schema": "fixed-public-phase-external-actors-v1",
+          "wan_qualified": false
+        },
+        "native_client_stage_deltas": {
+          "verify_state": {
+            "calls": 118,
+            "wall_ns": 19280516107,
+            "cpu_ns": 4497047347
+          },
+          "publish": {
+            "calls": 12,
+            "wall_ns": 9092279671,
+            "cpu_ns": 2198268639
+          },
+          "state_at": {
+            "calls": 34,
+            "wall_ns": 5635878430,
+            "cpu_ns": 1274475191
+          },
+          "execute": {
+            "calls": 12,
+            "wall_ns": 98564170,
+            "cpu_ns": 22775299
+          },
+          "admission": {
+            "calls": 12,
+            "wall_ns": 18402525646,
+            "cpu_ns": 4297347422
+          },
+          "activation": {
+            "calls": 1,
+            "wall_ns": 4689978743,
+            "cpu_ns": 1086622070
+          },
+          "complete_commitment": {
+            "calls": 129,
+            "wall_ns": 319447712,
+            "cpu_ns": 90674898
+          },
+          "account_graph": {
+            "calls": 85,
+            "wall_ns": 18702592568,
+            "cpu_ns": 4376875689
+          }
+        },
+        "native_receiver_stage_deltas": {
+          "verify_state": {
+            "calls": 140,
+            "wall_ns": 1448032962,
+            "cpu_ns": 358495670
+          },
+          "publish": {
+            "calls": 14,
+            "wall_ns": 395874461,
+            "cpu_ns": 191880080
+          },
+          "state_at": {
+            "calls": 42,
+            "wall_ns": 1374891066,
+            "cpu_ns": 181870393
+          },
+          "execute": {
+            "calls": 14,
+            "wall_ns": 81265681,
+            "cpu_ns": 14586110
+          },
+          "admission": {
+            "calls": 14,
+            "wall_ns": 2192110315,
+            "cpu_ns": 487080836
+          },
+          "activation": {
+            "calls": 14,
+            "wall_ns": 455452258,
+            "cpu_ns": 150312215
+          },
+          "complete_commitment": {
+            "calls": 154,
+            "wall_ns": 107983760,
+            "cpu_ns": 42145240
+          },
+          "account_graph": {
+            "calls": 88,
+            "wall_ns": 1123943169,
+            "cpu_ns": 329159420
+          }
+        },
+        "host_checkpoint": {
+          "calls_started": 123523,
+          "thread_cpu_ns": 5201810750,
+          "wall_ns": 6950044558
+        },
+        "receiver_client_state_equal": false,
+        "observer_complete": true,
+        "finite_phase_criteria_met": false
+      },
+      {
+        "run": 2,
+        "mode": "from-zero",
+        "rounds": [
+          {
+            "round": 0,
+            "observed": true,
+            "confirmed": false,
+            "started_ns": 1002599375,
+            "ended_ns": 30003055693,
+            "actual_latency_ns": 29000456318,
+            "observation": null
+          },
+          {
+            "round": 1,
+            "observed": false,
+            "confirmed": false,
+            "started_ns": null,
+            "ended_ns": null,
+            "actual_latency_ns": null,
+            "observation": null
+          },
+          {
+            "round": 2,
+            "observed": false,
+            "confirmed": false,
+            "started_ns": null,
+            "ended_ns": null,
+            "actual_latency_ns": null,
+            "observation": null
+          }
+        ],
+        "duration_seconds": 30,
+        "actors_requested": 24,
+        "actors_ready": 24,
+        "submission_attempts": 7,
+        "business_ack_count": 7,
+        "submission_errors": {},
+        "seventh_packet_ack_ns": 3911592381,
+        "history_pages": [
+          {
+            "network_started_ns": 3911759635,
+            "network_ended_ns": 4008430223,
+            "network_wall_ns": 96681855,
+            "status": "ok",
+            "error": null,
+            "replay": {
+              "started_ns": 4008458335,
+              "ended_ns": 9604103744,
+              "wall_ns": 5595645389,
+              "thread_cpu_ns": 499320201,
+              "succeeded": true,
+              "error": null
+            }
+          },
+          {
+            "network_started_ns": 9604172147,
+            "network_ended_ns": 9701705802,
+            "network_wall_ns": 97543991,
+            "status": "ok",
+            "error": null,
+            "replay": {
+              "started_ns": 9701732673,
+              "ended_ns": 14407417757,
+              "wall_ns": 4705685064,
+              "thread_cpu_ns": 473066162,
+              "succeeded": true,
+              "error": null
+            }
+          },
+          {
+            "network_started_ns": 14407485279,
+            "network_ended_ns": 14505321701,
+            "network_wall_ns": 97844554,
+            "status": "ok",
+            "error": null,
+            "replay": {
+              "started_ns": 14505346738,
+              "ended_ns": 19304139294,
+              "wall_ns": 4798792525,
+              "thread_cpu_ns": 470157571,
+              "succeeded": true,
+              "error": null
+            }
+          },
+          {
+            "network_started_ns": 19304238964,
+            "network_ended_ns": 19408205774,
+            "network_wall_ns": 103976604,
+            "status": "ok",
+            "error": null,
+            "replay": {
+              "started_ns": 19408230431,
+              "ended_ns": 24202912909,
+              "wall_ns": 4794682458,
+              "thread_cpu_ns": 475923440,
+              "succeeded": true,
+              "error": null
+            }
+          },
+          {
+            "network_started_ns": 24203018699,
+            "network_ended_ns": 24299944544,
+            "network_wall_ns": 96937693,
+            "status": "ok",
+            "error": null,
+            "replay": {
+              "started_ns": 24299974109,
+              "ended_ns": 29209468957,
+              "wall_ns": 4909494808,
+              "thread_cpu_ns": 479904256,
+              "succeeded": true,
+              "error": null
+            }
+          },
+          {
+            "network_started_ns": 29209546133,
+            "network_ended_ns": 29311730202,
+            "network_wall_ns": 12327738,
+            "status": "ok",
+            "error": null,
+            "replay": {
+              "started_ns": 29311754118,
+              "ended_ns": 30002955591,
+              "wall_ns": 691201473,
+              "thread_cpu_ns": 58156263,
+              "succeeded": false,
+              "error": "PUBLIC_REQUEST_DEADLINE"
+            }
+          }
+        ],
+        "network_wall_ns_sum": 505312435,
+        "replay_wall_ns_sum": 25495501717,
+        "successful_replay_pages": 5,
+        "verifier_errors": [
+          "PUBLIC_REQUEST_DEADLINE"
+        ],
+        "full_work_accepted": 7,
+        "full_work_failed": 2046,
+        "genuine_budget_depletion_observed": false,
+        "final_actual_flow": {
+          "balance_identity_verified": true,
+          "booked_reservation_ns": 0,
+          "credited_refill_ns": 4093040551,
+          "discarded_refill_ns": 3429852956,
+          "initial_credit_ns": 2000000000,
+          "live_debited_cpu_ns": 4100914031,
+          "live_owners": 0,
+          "paid_cpu_debit_ns": 4102661184,
+          "remaining_paid_credit_ns": 1990379367,
+          "schema": "public-v3-local-actual-cpu-flow-v1",
+          "settled_full_cpu_ns": 4102661184,
+          "settlement_discard_ns": 0,
+          "settlement_residual_cpu_ns": 1747153,
+          "stored_credit_ns": 1990379367,
+          "unsettled_known_live_cpu_ns": 0
+        },
+        "public_resource_policy": {
+          "lifetime_ms": 2000,
+          "policy_id": "6d04725d8e7a84560baf69440b1becd79f47c9f1fb5e63b85f1447400c85d43f",
+          "schema": "public-protected-resource-policy-observation-v1",
+          "ticket_bits": 8,
+          "transport_profile": "public-protected-development-v3"
+        },
+        "phase_process_context": {
+          "attackers_launched_by_external_controller": true,
+          "controller_cgroup": "/system.slice/trnm-native-campaign-41780585984-1.service",
+          "host_after": {
+            "cpu_nr_periods": 1718,
+            "cpu_nr_throttled": 1678,
+            "cpu_throttled_usec": 333480289,
+            "cpu_usage_usec": 42193934,
+            "memory_current_bytes": 273797120,
+            "pids_current": 3
+          },
+          "host_before": {
+            "cpu_nr_periods": 1381,
+            "cpu_nr_throttled": 1342,
+            "cpu_throttled_usec": 248887059,
+            "cpu_usage_usec": 33775575,
+            "memory_current_bytes": 82989056,
+            "pids_current": 3
+          },
+          "independent_administration": false,
+          "phase_cgroup": "/trnmponpublic.slice/trnm-phase-41780585984-1-original-campaign-4866.service",
+          "phase_pid": 4871,
+          "runtime_business_deadline_changed": false,
+          "same_original_receiver_and_verifier_owners": true,
+          "scalar_policy_changed": false,
+          "schema": "fixed-public-phase-external-actors-v1",
+          "wan_qualified": false
+        },
+        "native_client_stage_deltas": {
+          "verify_state": {
+            "calls": 41,
+            "wall_ns": 17254567434,
+            "cpu_ns": 1740838759
+          },
+          "publish": {
+            "calls": 5,
+            "wall_ns": 11013763033,
+            "cpu_ns": 1107108498
+          },
+          "state_at": {
+            "calls": 16,
+            "wall_ns": 6405514362,
+            "cpu_ns": 615243782
+          },
+          "execute": {
+            "calls": 5,
+            "wall_ns": 276620263,
+            "cpu_ns": 10855936
+          },
+          "admission": {
+            "calls": 6,
+            "wall_ns": 21788004560,
+            "cpu_ns": 2122641139
+          },
+          "activation": {
+            "calls": 0,
+            "wall_ns": 0,
+            "cpu_ns": 0
+          },
+          "complete_commitment": {
+            "calls": 46,
+            "wall_ns": 301481140,
+            "cpu_ns": 33693109
+          },
+          "account_graph": {
+            "calls": 27,
+            "wall_ns": 17030512954,
+            "cpu_ns": 1694873601
+          }
+        },
+        "native_receiver_stage_deltas": {
+          "verify_state": {
+            "calls": 70,
+            "wall_ns": 827125021,
+            "cpu_ns": 183101948
+          },
+          "publish": {
+            "calls": 7,
+            "wall_ns": 494935743,
+            "cpu_ns": 96578598
+          },
+          "state_at": {
+            "calls": 21,
+            "wall_ns": 427483647,
+            "cpu_ns": 94991841
+          },
+          "execute": {
+            "calls": 7,
+            "wall_ns": 7779114,
+            "cpu_ns": 7771207
+          },
+          "admission": {
+            "calls": 7,
+            "wall_ns": 1136780390,
+            "cpu_ns": 247335977
+          },
+          "activation": {
+            "calls": 7,
+            "wall_ns": 385305067,
+            "cpu_ns": 76117645
+          },
+          "complete_commitment": {
+            "calls": 77,
+            "wall_ns": 20138709,
+            "cpu_ns": 20082221
+          },
+          "account_graph": {
+            "calls": 44,
+            "wall_ns": 812150889,
+            "cpu_ns": 168147329
+          }
+        },
+        "host_checkpoint": {
+          "calls_started": 45235,
+          "thread_cpu_ns": 2111521816,
+          "wall_ns": 4317363117
+        },
+        "receiver_client_state_equal": false,
+        "observer_complete": true,
+        "finite_phase_criteria_met": false
+      },
+      {
+        "run": 2,
+        "mode": "late-product",
+        "rounds": [
+          {
+            "round": 0,
+            "observed": true,
+            "confirmed": false,
+            "started_ns": 1005849697,
+            "ended_ns": 30012471752,
+            "actual_latency_ns": 29006622055,
+            "observation": null
+          },
+          {
+            "round": 1,
+            "observed": false,
+            "confirmed": false,
+            "started_ns": null,
+            "ended_ns": null,
+            "actual_latency_ns": null,
+            "observation": null
+          },
+          {
+            "round": 2,
+            "observed": false,
+            "confirmed": false,
+            "started_ns": null,
+            "ended_ns": null,
+            "actual_latency_ns": null,
+            "observation": null
+          }
+        ],
+        "duration_seconds": 30,
+        "actors_requested": 24,
+        "actors_ready": 24,
+        "submission_attempts": 7,
+        "business_ack_count": 7,
+        "submission_errors": {},
+        "seventh_packet_ack_ns": 4212478848,
+        "history_pages": [
+          {
+            "network_started_ns": 4212668896,
+            "network_ended_ns": 4310378274,
+            "network_wall_ns": 97720344,
+            "status": "ok",
+            "error": null,
+            "replay": {
+              "started_ns": 4310410963,
+              "ended_ns": 9614060588,
+              "wall_ns": 5303649615,
+              "thread_cpu_ns": 488393297,
+              "succeeded": true,
+              "error": null
+            }
+          },
+          {
+            "network_started_ns": 9614148181,
+            "network_ended_ns": 9717262434,
+            "network_wall_ns": 103124568,
+            "status": "ok",
+            "error": null,
+            "replay": {
+              "started_ns": 9717288954,
+              "ended_ns": 14512240458,
+              "wall_ns": 4794951474,
+              "thread_cpu_ns": 473196678,
+              "succeeded": true,
+              "error": null
+            }
+          },
+          {
+            "network_started_ns": 14512330654,
+            "network_ended_ns": 14610960280,
+            "network_wall_ns": 98641684,
+            "status": "ok",
+            "error": null,
+            "replay": {
+              "started_ns": 14610988493,
+              "ended_ns": 19315143363,
+              "wall_ns": 4704154820,
+              "thread_cpu_ns": 463340844,
+              "succeeded": true,
+              "error": null
+            }
+          },
+          {
+            "network_started_ns": 19315214681,
+            "network_ended_ns": 19409494333,
+            "network_wall_ns": 94288004,
+            "status": "ok",
+            "error": null,
+            "replay": {
+              "started_ns": 19409517188,
+              "ended_ns": 24011454255,
+              "wall_ns": 4601937047,
+              "thread_cpu_ns": 467601114,
+              "succeeded": true,
+              "error": null
+            }
+          },
+          {
+            "network_started_ns": 24011532323,
+            "network_ended_ns": 24113862500,
+            "network_wall_ns": 102339371,
+            "status": "ok",
+            "error": null,
+            "replay": {
+              "started_ns": 24113883992,
+              "ended_ns": 28709746697,
+              "wall_ns": 4595862695,
+              "thread_cpu_ns": 466760652,
+              "succeeded": true,
+              "error": null
+            }
+          },
+          {
+            "network_started_ns": 28709834140,
+            "network_ended_ns": 28810335055,
+            "network_wall_ns": 100508597,
+            "status": "ok",
+            "error": null,
+            "replay": {
+              "started_ns": 28810358190,
+              "ended_ns": 30012349667,
+              "wall_ns": 1201991467,
+              "thread_cpu_ns": 119790166,
+              "succeeded": false,
+              "error": "PUBLIC_REQUEST_DEADLINE"
+            }
+          }
+        ],
+        "network_wall_ns_sum": 596622568,
+        "replay_wall_ns_sum": 25202547118,
+        "successful_replay_pages": 5,
+        "verifier_errors": [
+          "PUBLIC_REQUEST_DEADLINE"
+        ],
+        "full_work_accepted": 7,
+        "full_work_failed": 1811,
+        "genuine_budget_depletion_observed": false,
+        "final_actual_flow": {
+          "balance_identity_verified": true,
+          "booked_reservation_ns": 0,
+          "credited_refill_ns": 4126685735,
+          "discarded_refill_ns": 3397250221,
+          "initial_credit_ns": 2000000000,
+          "live_debited_cpu_ns": 4127828120,
+          "live_owners": 0,
+          "paid_cpu_debit_ns": 4129408183,
+          "remaining_paid_credit_ns": 1997277552,
+          "schema": "public-v3-local-actual-cpu-flow-v1",
+          "settled_full_cpu_ns": 4129408183,
+          "settlement_discard_ns": 0,
+          "settlement_residual_cpu_ns": 1580063,
+          "stored_credit_ns": 1997277552,
+          "unsettled_known_live_cpu_ns": 0
+        },
+        "public_resource_policy": {
+          "lifetime_ms": 2000,
+          "policy_id": "6d04725d8e7a84560baf69440b1becd79f47c9f1fb5e63b85f1447400c85d43f",
+          "schema": "public-protected-resource-policy-observation-v1",
+          "ticket_bits": 8,
+          "transport_profile": "public-protected-development-v3"
+        },
+        "phase_process_context": {
+          "attackers_launched_by_external_controller": true,
+          "controller_cgroup": "/system.slice/trnm-native-campaign-41780585984-1.service",
+          "host_after": {
+            "cpu_nr_periods": 2064,
+            "cpu_nr_throttled": 2020,
+            "cpu_throttled_usec": 421673447,
+            "cpu_usage_usec": 50791122,
+            "memory_current_bytes": 283467776,
+            "pids_current": 3
+          },
+          "host_before": {
+            "cpu_nr_periods": 1726,
+            "cpu_nr_throttled": 1684,
+            "cpu_throttled_usec": 333768852,
+            "cpu_usage_usec": 42370352,
+            "memory_current_bytes": 105783296,
+            "pids_current": 3
+          },
+          "independent_administration": false,
+          "phase_cgroup": "/trnmponpublic.slice/trnm-phase-41780585984-1-original-campaign-4936.service",
+          "phase_pid": 4941,
+          "runtime_business_deadline_changed": false,
+          "same_original_receiver_and_verifier_owners": true,
+          "scalar_policy_changed": false,
+          "schema": "fixed-public-phase-external-actors-v1",
+          "wan_qualified": false
+        },
+        "native_client_stage_deltas": {
+          "verify_state": {
+            "calls": 41,
+            "wall_ns": 17890246757,
+            "cpu_ns": 1775964604
+          },
+          "publish": {
+            "calls": 5,
+            "wall_ns": 11004966369,
+            "cpu_ns": 1096455529
+          },
+          "state_at": {
+            "calls": 16,
+            "wall_ns": 6765092257,
+            "cpu_ns": 661863095
+          },
+          "execute": {
+            "calls": 5,
+            "wall_ns": 11308246,
+            "cpu_ns": 10513936
+          },
+          "admission": {
+            "calls": 6,
+            "wall_ns": 21686027508,
+            "cpu_ns": 2149475820
+          },
+          "activation": {
+            "calls": 0,
+            "wall_ns": 0,
+            "cpu_ns": 0
+          },
+          "complete_commitment": {
+            "calls": 46,
+            "wall_ns": 483536164,
+            "cpu_ns": 34110649
+          },
+          "account_graph": {
+            "calls": 27,
+            "wall_ns": 17126211903,
+            "cpu_ns": 1729076646
+          }
+        },
+        "native_receiver_stage_deltas": {
+          "verify_state": {
+            "calls": 70,
+            "wall_ns": 823034827,
+            "cpu_ns": 186232885
+          },
+          "publish": {
+            "calls": 7,
+            "wall_ns": 417526572,
+            "cpu_ns": 99079843
+          },
+          "state_at": {
+            "calls": 21,
+            "wall_ns": 424993962,
+            "cpu_ns": 96093173
+          },
+          "execute": {
+            "calls": 7,
+            "wall_ns": 7673183,
+            "cpu_ns": 7668481
+          },
+          "admission": {
+            "calls": 7,
+            "wall_ns": 1225549006,
+            "cpu_ns": 253225706
+          },
+          "activation": {
+            "calls": 7,
+            "wall_ns": 311746719,
+            "cpu_ns": 76137372
+          },
+          "complete_commitment": {
+            "calls": 77,
+            "wall_ns": 100405106,
+            "cpu_ns": 20662488
+          },
+          "account_graph": {
+            "calls": 44,
+            "wall_ns": 650429178,
+            "cpu_ns": 170222167
+          }
+        },
+        "host_checkpoint": {
+          "calls_started": 46425,
+          "thread_cpu_ns": 2129435548,
+          "wall_ns": 5030171140
+        },
+        "receiver_client_state_equal": false,
+        "observer_complete": true,
+        "finite_phase_criteria_met": false
+      },
+      {
+        "run": 3,
+        "mode": "baseline",
+        "rounds": [
+          {
+            "round": 0,
+            "observed": true,
+            "confirmed": true,
+            "started_ns": 1001446789,
+            "ended_ns": 20097659035,
+            "actual_latency_ns": 19096212246,
+            "observation": {
+              "active_generation": 5,
+              "confirmed": true,
+              "depth": 6,
+              "execution_authority": false,
+              "finalized": false,
+              "genesis": "e71802f181974de1181f82f4249d1db542714247623e889d3dfedb263e1c2866",
+              "included_block": "1bbddf43d04bb6512e9f4fd84e394ca9a2f9c9ff5d1ef5ea54e525a2098c19ee",
+              "included_height": 5,
+              "network": "62b92044b29c6275931920860de4dd74a666ad03f140f07b107a2e2ac06e62d4",
+              "observed_height": 11,
+              "observed_now": 1793772073,
+              "observed_tip": "d8ab3f3b54ca5ba37e04fe9d7efbd508982474eeea86b37db8fe77181c6eca96",
+              "parameters": "5f6e99013f8750989889403b3928a7915c006296c9cae4b184c3d0c88a0053a4",
+              "policy": "installed-depth-and-required-work",
+              "reorged": false,
+              "required_work_delta": "0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000c",
+              "transaction": "c6ee62ac00fdec64b6823d4ddeece3106dc969616053730e52750ecdfb4ebf21",
+              "work_delta": "0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000c"
+            }
+          },
+          {
+            "round": 1,
+            "observed": true,
+            "confirmed": false,
+            "started_ns": 20097700898,
+            "ended_ns": 30077378886,
+            "actual_latency_ns": 9979677988,
+            "observation": null
+          },
+          {
+            "round": 2,
+            "observed": false,
+            "confirmed": false,
+            "started_ns": null,
+            "ended_ns": null,
+            "actual_latency_ns": null,
+            "observation": null
+          }
+        ],
+        "duration_seconds": 30,
+        "actors_requested": 0,
+        "actors_ready": 0,
+        "submission_attempts": 14,
+        "business_ack_count": 14,
+        "submission_errors": {},
+        "seventh_packet_ack_ns": 2482250552,
+        "history_pages": [
+          {
+            "network_started_ns": 2482395051,
+            "network_ended_ns": 2494203124,
+            "network_wall_ns": 11817297,
+            "status": "ok",
+            "error": null,
+            "replay": {
+              "started_ns": 2494226960,
+              "ended_ns": 4681443641,
+              "wall_ns": 2187216651,
+              "thread_cpu_ns": 437098148,
+              "succeeded": true,
+              "error": null
+            }
+          },
+          {
+            "network_started_ns": 4681537073,
+            "network_ended_ns": 4693183681,
+            "network_wall_ns": 11655682,
+            "status": "ok",
+            "error": null,
+            "replay": {
+              "started_ns": 4693205874,
+              "ended_ns": 6391873653,
+              "wall_ns": 1698667699,
+              "thread_cpu_ns": 407274105,
+              "succeeded": true,
+              "error": null
+            }
+          },
+          {
+            "network_started_ns": 6391973143,
+            "network_ended_ns": 6403792373,
+            "network_wall_ns": 11829074,
+            "status": "ok",
+            "error": null,
+            "replay": {
+              "started_ns": 6403813825,
+              "ended_ns": 8193074332,
+              "wall_ns": 1789260486,
+              "thread_cpu_ns": 419219202,
+              "succeeded": true,
+              "error": null
+            }
+          },
+          {
+            "network_started_ns": 8193153712,
+            "network_ended_ns": 8204435398,
+            "network_wall_ns": 11290529,
+            "status": "ok",
+            "error": null,
+            "replay": {
+              "started_ns": 8204455639,
+              "ended_ns": 9991217614,
+              "wall_ns": 1786761945,
+              "thread_cpu_ns": 418072701,
+              "succeeded": true,
+              "error": null
+            }
+          },
+          {
+            "network_started_ns": 9991299508,
+            "network_ended_ns": 10002830611,
+            "network_wall_ns": 11539195,
+            "status": "ok",
+            "error": null,
+            "replay": {
+              "started_ns": 10002851803,
+              "ended_ns": 11793417049,
+              "wall_ns": 1790565227,
+              "thread_cpu_ns": 421749550,
+              "succeeded": true,
+              "error": null
+            }
+          },
+          {
+            "network_started_ns": 11793501377,
+            "network_ended_ns": 11804801623,
+            "network_wall_ns": 11308488,
+            "status": "ok",
+            "error": null,
+            "replay": {
+              "started_ns": 11804821483,
+              "ended_ns": 13676978720,
+              "wall_ns": 1872157217,
+              "thread_cpu_ns": 427261467,
+              "succeeded": true,
+              "error": null
+            }
+          },
+          {
+            "network_started_ns": 13677129298,
+            "network_ended_ns": 13687429069,
+            "network_wall_ns": 10307903,
+            "status": "ok",
+            "error": null,
+            "replay": {
+              "started_ns": 13687448448,
+              "ended_ns": 19988683443,
+              "wall_ns": 6301234965,
+              "thread_cpu_ns": 1480105069,
+              "succeeded": true,
+              "error": null
+            }
+          },
+          {
+            "network_started_ns": 21685540031,
+            "network_ended_ns": 21697347482,
+            "network_wall_ns": 11816545,
+            "status": "ok",
+            "error": null,
+            "replay": {
+              "started_ns": 21697369805,
+              "ended_ns": 23580223150,
+              "wall_ns": 1882853315,
+              "thread_cpu_ns": 435254760,
+              "succeeded": true,
+              "error": null
+            }
+          },
+          {
+            "network_started_ns": 23580327027,
+            "network_ended_ns": 23591034563,
+            "network_wall_ns": 10715879,
+            "status": "ok",
+            "error": null,
+            "replay": {
+              "started_ns": 23591055255,
+              "ended_ns": 25376907211,
+              "wall_ns": 1785851936,
+              "thread_cpu_ns": 416509764,
+              "succeeded": true,
+              "error": null
+            }
+          },
+          {
+            "network_started_ns": 25377050087,
+            "network_ended_ns": 25388903018,
+            "network_wall_ns": 11862023,
+            "status": "ok",
+            "error": null,
+            "replay": {
+              "started_ns": 25388925281,
+              "ended_ns": 27177063173,
+              "wall_ns": 1788137822,
+              "thread_cpu_ns": 415398565,
+              "succeeded": true,
+              "error": null
+            }
+          },
+          {
+            "network_started_ns": 27177205389,
+            "network_ended_ns": 27188917516,
+            "network_wall_ns": 11720350,
+            "status": "ok",
+            "error": null,
+            "replay": {
+              "started_ns": 27188953601,
+              "ended_ns": 28977248078,
+              "wall_ns": 1788294427,
+              "thread_cpu_ns": 418203980,
+              "succeeded": true,
+              "error": null
+            }
+          },
+          {
+            "network_started_ns": 28977360018,
+            "network_ended_ns": 28987852428,
+            "network_wall_ns": 10500493,
+            "status": "ok",
+            "error": null,
+            "replay": {
+              "started_ns": 28987871747,
+              "ended_ns": 30077272274,
+              "wall_ns": 1089400347,
+              "thread_cpu_ns": 257082604,
+              "succeeded": false,
+              "error": "PUBLIC_REQUEST_DEADLINE"
+            }
+          }
+        ],
+        "network_wall_ns_sum": 136363458,
+        "replay_wall_ns_sum": 25760402037,
+        "successful_replay_pages": 11,
+        "verifier_errors": [
+          "PUBLIC_REQUEST_DEADLINE"
+        ],
+        "full_work_accepted": 14,
+        "full_work_failed": 0,
+        "genuine_budget_depletion_observed": false,
+        "final_actual_flow": {
+          "balance_identity_verified": true,
+          "booked_reservation_ns": 0,
+          "credited_refill_ns": 693374041,
+          "discarded_refill_ns": 4727749466,
+          "initial_credit_ns": 2000000000,
+          "live_debited_cpu_ns": 700097047,
+          "live_owners": 0,
+          "paid_cpu_debit_ns": 700113142,
+          "remaining_paid_credit_ns": 1993260899,
+          "schema": "public-v3-local-actual-cpu-flow-v1",
+          "settled_full_cpu_ns": 700113142,
+          "settlement_discard_ns": 0,
+          "settlement_residual_cpu_ns": 16095,
+          "stored_credit_ns": 1993260899,
+          "unsettled_known_live_cpu_ns": 0
+        },
+        "public_resource_policy": {
+          "lifetime_ms": 2000,
+          "policy_id": "6d04725d8e7a84560baf69440b1becd79f47c9f1fb5e63b85f1447400c85d43f",
+          "schema": "public-protected-resource-policy-observation-v1",
+          "ticket_bits": 8,
+          "transport_profile": "public-protected-development-v3"
+        },
+        "phase_process_context": {
+          "attackers_launched_by_external_controller": true,
+          "controller_cgroup": "/system.slice/trnm-native-campaign-41780585984-1.service",
+          "host_after": {
+            "cpu_nr_periods": 2405,
+            "cpu_nr_throttled": 2346,
+            "cpu_throttled_usec": 459059363,
+            "cpu_usage_usec": 58982899,
+            "memory_current_bytes": 198000640,
+            "pids_current": 3
+          },
+          "host_before": {
+            "cpu_nr_periods": 2072,
+            "cpu_nr_throttled": 2026,
+            "cpu_throttled_usec": 421965888,
+            "cpu_usage_usec": 50957133,
+            "memory_current_bytes": 126812160,
+            "pids_current": 3
+          },
+          "independent_administration": false,
+          "phase_cgroup": "/trnmponpublic.slice/trnm-phase-41780585984-1-original-campaign-5071.service",
+          "phase_pid": 5076,
+          "runtime_business_deadline_changed": false,
+          "same_original_receiver_and_verifier_owners": true,
+          "scalar_policy_changed": false,
+          "schema": "fixed-public-phase-external-actors-v1",
+          "wan_qualified": false
+        },
+        "native_client_stage_deltas": {
+          "verify_state": {
+            "calls": 118,
+            "wall_ns": 19256953396,
+            "cpu_ns": 4464148752
+          },
+          "publish": {
+            "calls": 12,
+            "wall_ns": 9255836043,
+            "cpu_ns": 2203808050
+          },
+          "state_at": {
+            "calls": 34,
+            "wall_ns": 5558469722,
+            "cpu_ns": 1260695974
+          },
+          "execute": {
+            "calls": 12,
+            "wall_ns": 22597238,
+            "cpu_ns": 22587993
+          },
+          "admission": {
+            "calls": 12,
+            "wall_ns": 18472873760,
+            "cpu_ns": 4290204508
+          },
+          "activation": {
+            "calls": 1,
+            "wall_ns": 4590763116,
+            "cpu_ns": 1064334120
+          },
+          "complete_commitment": {
+            "calls": 129,
+            "wall_ns": 401384076,
+            "cpu_ns": 93558415
+          },
+          "account_graph": {
+            "calls": 85,
+            "wall_ns": 18825767540,
+            "cpu_ns": 4338983317
+          }
+        },
+        "native_receiver_stage_deltas": {
+          "verify_state": {
+            "calls": 140,
+            "wall_ns": 1494760669,
+            "cpu_ns": 373241421
+          },
+          "publish": {
+            "calls": 14,
+            "wall_ns": 817839324,
+            "cpu_ns": 204064909
+          },
+          "state_at": {
+            "calls": 42,
+            "wall_ns": 667796558,
+            "cpu_ns": 187623831
+          },
+          "execute": {
+            "calls": 14,
+            "wall_ns": 14581201,
+            "cpu_ns": 14571221
+          },
+          "admission": {
+            "calls": 14,
+            "wall_ns": 2040032302,
+            "cpu_ns": 511247268
+          },
+          "activation": {
+            "calls": 14,
+            "wall_ns": 768810283,
+            "cpu_ns": 157738150
+          },
+          "complete_commitment": {
+            "calls": 154,
+            "wall_ns": 329637936,
+            "cpu_ns": 42992756
+          },
+          "account_graph": {
+            "calls": 88,
+            "wall_ns": 1236566258,
+            "cpu_ns": 343110085
+          }
+        },
+        "host_checkpoint": {
+          "calls_started": 124006,
+          "thread_cpu_ns": 5131798382,
+          "wall_ns": 6358885041
+        },
+        "receiver_client_state_equal": false,
+        "observer_complete": true,
+        "finite_phase_criteria_met": false
+      },
+      {
+        "run": 3,
+        "mode": "from-zero",
+        "rounds": [
+          {
+            "round": 0,
+            "observed": true,
+            "confirmed": false,
+            "started_ns": 1001123496,
+            "ended_ns": 30002943507,
+            "actual_latency_ns": 29001820011,
+            "observation": null
+          },
+          {
+            "round": 1,
+            "observed": false,
+            "confirmed": false,
+            "started_ns": null,
+            "ended_ns": null,
+            "actual_latency_ns": null,
+            "observation": null
+          },
+          {
+            "round": 2,
+            "observed": false,
+            "confirmed": false,
+            "started_ns": null,
+            "ended_ns": null,
+            "actual_latency_ns": null,
+            "observation": null
+          }
+        ],
+        "duration_seconds": 30,
+        "actors_requested": 24,
+        "actors_ready": 24,
+        "submission_attempts": 7,
+        "business_ack_count": 7,
+        "submission_errors": {},
+        "seventh_packet_ack_ns": 4005457127,
+        "history_pages": [
+          {
+            "network_started_ns": 4005629738,
+            "network_ended_ns": 4104760405,
+            "network_wall_ns": 99140501,
+            "status": "ok",
+            "error": null,
+            "replay": {
+              "started_ns": 4104785623,
+              "ended_ns": 9610462330,
+              "wall_ns": 5505676697,
+              "thread_cpu_ns": 494549102,
+              "succeeded": true,
+              "error": null
+            }
+          },
+          {
+            "network_started_ns": 9610537443,
+            "network_ended_ns": 9714081413,
+            "network_wall_ns": 103562738,
+            "status": "ok",
+            "error": null,
+            "replay": {
+              "started_ns": 9714116927,
+              "ended_ns": 14402634416,
+              "wall_ns": 4688517469,
+              "thread_cpu_ns": 468494479,
+              "succeeded": true,
+              "error": null
+            }
+          },
+          {
+            "network_started_ns": 14402737852,
+            "network_ended_ns": 14505710969,
+            "network_wall_ns": 102982932,
+            "status": "ok",
+            "error": null,
+            "replay": {
+              "started_ns": 14505736939,
+              "ended_ns": 19311232509,
+              "wall_ns": 4805495550,
+              "thread_cpu_ns": 468560505,
+              "succeeded": true,
+              "error": null
+            }
+          },
+          {
+            "network_started_ns": 19311310437,
+            "network_ended_ns": 19412928627,
+            "network_wall_ns": 101627094,
+            "status": "ok",
+            "error": null,
+            "replay": {
+              "started_ns": 19412950350,
+              "ended_ns": 24305613131,
+              "wall_ns": 4892662771,
+              "thread_cpu_ns": 482406265,
+              "succeeded": true,
+              "error": null
+            }
+          },
+          {
+            "network_started_ns": 24305703738,
+            "network_ended_ns": 24404638176,
+            "network_wall_ns": 98943822,
+            "status": "ok",
+            "error": null,
+            "replay": {
+              "started_ns": 24404663234,
+              "ended_ns": 29212051984,
+              "wall_ns": 4807388709,
+              "thread_cpu_ns": 480194154,
+              "succeeded": true,
+              "error": null
+            }
+          },
+          {
+            "network_started_ns": 29212154789,
+            "network_ended_ns": 29313777883,
+            "network_wall_ns": 101635583,
+            "status": "ok",
+            "error": null,
+            "replay": {
+              "started_ns": 29313807198,
+              "ended_ns": 30002840481,
+              "wall_ns": 689033273,
+              "thread_cpu_ns": 65234896,
+              "succeeded": false,
+              "error": "PUBLIC_REQUEST_DEADLINE"
+            }
+          }
+        ],
+        "network_wall_ns_sum": 607892670,
+        "replay_wall_ns_sum": 25388774469,
+        "successful_replay_pages": 5,
+        "verifier_errors": [
+          "PUBLIC_REQUEST_DEADLINE"
+        ],
+        "full_work_accepted": 7,
+        "full_work_failed": 2023,
+        "genuine_budget_depletion_observed": false,
+        "final_actual_flow": {
+          "balance_identity_verified": true,
+          "booked_reservation_ns": 0,
+          "credited_refill_ns": 4080395039,
+          "discarded_refill_ns": 3445547925,
+          "initial_credit_ns": 2000000000,
+          "live_debited_cpu_ns": 4082636744,
+          "live_owners": 0,
+          "paid_cpu_debit_ns": 4084402569,
+          "remaining_paid_credit_ns": 1995992470,
+          "schema": "public-v3-local-actual-cpu-flow-v1",
+          "settled_full_cpu_ns": 4084402569,
+          "settlement_discard_ns": 0,
+          "settlement_residual_cpu_ns": 1765825,
+          "stored_credit_ns": 1995992470,
+          "unsettled_known_live_cpu_ns": 0
+        },
+        "public_resource_policy": {
+          "lifetime_ms": 2000,
+          "policy_id": "6d04725d8e7a84560baf69440b1becd79f47c9f1fb5e63b85f1447400c85d43f",
+          "schema": "public-protected-resource-policy-observation-v1",
+          "ticket_bits": 8,
+          "transport_profile": "public-protected-development-v3"
+        },
+        "phase_process_context": {
+          "attackers_launched_by_external_controller": true,
+          "controller_cgroup": "/system.slice/trnm-native-campaign-41780585984-1.service",
+          "host_after": {
+            "cpu_nr_periods": 2748,
+            "cpu_nr_throttled": 2687,
+            "cpu_throttled_usec": 544647535,
+            "cpu_usage_usec": 67518550,
+            "memory_current_bytes": 325562368,
+            "pids_current": 3
+          },
+          "host_before": {
+            "cpu_nr_periods": 2409,
+            "cpu_nr_throttled": 2349,
+            "cpu_throttled_usec": 459187656,
+            "cpu_usage_usec": 59083309,
+            "memory_current_bytes": 138289152,
+            "pids_current": 3
+          },
+          "independent_administration": false,
+          "phase_cgroup": "/trnmponpublic.slice/trnm-phase-41780585984-1-original-campaign-5093.service",
+          "phase_pid": 5098,
+          "runtime_business_deadline_changed": false,
+          "same_original_receiver_and_verifier_owners": true,
+          "scalar_policy_changed": false,
+          "schema": "fixed-public-phase-external-actors-v1",
+          "wan_qualified": false
+        },
+        "native_client_stage_deltas": {
+          "verify_state": {
+            "calls": 41,
+            "wall_ns": 18228982888,
+            "cpu_ns": 1743034207
+          },
+          "publish": {
+            "calls": 5,
+            "wall_ns": 11202606040,
+            "cpu_ns": 1112309494
+          },
+          "state_at": {
+            "calls": 16,
+            "wall_ns": 6388695926,
+            "cpu_ns": 614049220
+          },
+          "execute": {
+            "calls": 5,
+            "wall_ns": 190684642,
+            "cpu_ns": 11502922
+          },
+          "admission": {
+            "calls": 6,
+            "wall_ns": 21499860119,
+            "cpu_ns": 2121942492
+          },
+          "activation": {
+            "calls": 0,
+            "wall_ns": 0,
+            "cpu_ns": 0
+          },
+          "complete_commitment": {
+            "calls": 46,
+            "wall_ns": 482302511,
+            "cpu_ns": 34352950
+          },
+          "account_graph": {
+            "calls": 27,
+            "wall_ns": 17464804768,
+            "cpu_ns": 1698040354
+          }
+        },
+        "native_receiver_stage_deltas": {
+          "verify_state": {
+            "calls": 70,
+            "wall_ns": 824166802,
+            "cpu_ns": 189557817
+          },
+          "publish": {
+            "calls": 7,
+            "wall_ns": 499125539,
+            "cpu_ns": 103063913
+          },
+          "state_at": {
+            "calls": 21,
+            "wall_ns": 431499007,
+            "cpu_ns": 96540300
+          },
+          "execute": {
+            "calls": 7,
+            "wall_ns": 88569048,
+            "cpu_ns": 8280376
+          },
+          "admission": {
+            "calls": 7,
+            "wall_ns": 1241342638,
+            "cpu_ns": 260590471
+          },
+          "activation": {
+            "calls": 7,
+            "wall_ns": 464570008,
+            "cpu_ns": 78452140
+          },
+          "complete_commitment": {
+            "calls": 77,
+            "wall_ns": 178122179,
+            "cpu_ns": 20561474
+          },
+          "account_graph": {
+            "calls": 44,
+            "wall_ns": 808669867,
+            "cpu_ns": 174080868
+          }
+        },
+        "host_checkpoint": {
+          "calls_started": 45293,
+          "thread_cpu_ns": 2107493927,
+          "wall_ns": 4404449021
+        },
+        "receiver_client_state_equal": false,
+        "observer_complete": true,
+        "finite_phase_criteria_met": false
+      },
+      {
+        "run": 3,
+        "mode": "late-product",
+        "rounds": [
+          {
+            "round": 0,
+            "observed": true,
+            "confirmed": false,
+            "started_ns": 1001964238,
+            "ended_ns": 30000742716,
+            "actual_latency_ns": 28998778478,
+            "observation": null
+          },
+          {
+            "round": 1,
+            "observed": false,
+            "confirmed": false,
+            "started_ns": null,
+            "ended_ns": null,
+            "actual_latency_ns": null,
+            "observation": null
+          },
+          {
+            "round": 2,
+            "observed": false,
+            "confirmed": false,
+            "started_ns": null,
+            "ended_ns": null,
+            "actual_latency_ns": null,
+            "observation": null
+          }
+        ],
+        "duration_seconds": 30,
+        "actors_requested": 24,
+        "actors_ready": 24,
+        "submission_attempts": 7,
+        "business_ack_count": 7,
+        "submission_errors": {},
+        "seventh_packet_ack_ns": 4490636852,
+        "history_pages": [
+          {
+            "network_started_ns": 4490840190,
+            "network_ended_ns": 4598005978,
+            "network_wall_ns": 107175684,
+            "status": "ok",
+            "error": null,
+            "replay": {
+              "started_ns": 4598034291,
+              "ended_ns": 10199087208,
+              "wall_ns": 5601052897,
+              "thread_cpu_ns": 500562915,
+              "succeeded": true,
+              "error": null
+            }
+          },
+          {
+            "network_started_ns": 10199169763,
+            "network_ended_ns": 10393819338,
+            "network_wall_ns": 194670617,
+            "status": "ok",
+            "error": null,
+            "replay": {
+              "started_ns": 10393856774,
+              "ended_ns": 15099050917,
+              "wall_ns": 4705194132,
+              "thread_cpu_ns": 471562959,
+              "succeeded": true,
+              "error": null
+            }
+          },
+          {
+            "network_started_ns": 15099134423,
+            "network_ended_ns": 15294548869,
+            "network_wall_ns": 103941519,
+            "status": "ok",
+            "error": null,
+            "replay": {
+              "started_ns": 15294573166,
+              "ended_ns": 20000421685,
+              "wall_ns": 4705848499,
+              "thread_cpu_ns": 471189189,
+              "succeeded": true,
+              "error": null
+            }
+          },
+          {
+            "network_started_ns": 20000504470,
+            "network_ended_ns": 20099535387,
+            "network_wall_ns": 99050978,
+            "status": "ok",
+            "error": null,
+            "replay": {
+              "started_ns": 20100759119,
+              "ended_ns": 24992180143,
+              "wall_ns": 4891421003,
+              "thread_cpu_ns": 466888868,
+              "succeeded": true,
+              "error": null
+            }
+          },
+          {
+            "network_started_ns": 24992260365,
+            "network_ended_ns": 25094925628,
+            "network_wall_ns": 102671003,
+            "status": "ok",
+            "error": null,
+            "replay": {
+              "started_ns": 25094944367,
+              "ended_ns": 29796837847,
+              "wall_ns": 4701893490,
+              "thread_cpu_ns": 466137918,
+              "succeeded": true,
+              "error": null
+            }
+          },
+          {
+            "network_started_ns": 29796923587,
+            "network_ended_ns": 29898342905,
+            "network_wall_ns": 101429454,
+            "status": "ok",
+            "error": null,
+            "replay": {
+              "started_ns": 29898367442,
+              "ended_ns": 30000650487,
+              "wall_ns": 102283035,
+              "thread_cpu_ns": 10268731,
+              "succeeded": false,
+              "error": "PUBLIC_REQUEST_DEADLINE"
+            }
+          }
+        ],
+        "network_wall_ns_sum": 708939255,
+        "replay_wall_ns_sum": 24707693056,
+        "successful_replay_pages": 5,
+        "verifier_errors": [
+          "PUBLIC_REQUEST_DEADLINE"
+        ],
+        "full_work_accepted": 7,
+        "full_work_failed": 1799,
+        "genuine_budget_depletion_observed": false,
+        "final_actual_flow": {
+          "balance_identity_verified": true,
+          "booked_reservation_ns": 0,
+          "credited_refill_ns": 4201252042,
+          "discarded_refill_ns": 3343969505,
+          "initial_credit_ns": 2000000000,
+          "live_debited_cpu_ns": 4200756791,
+          "live_owners": 0,
+          "paid_cpu_debit_ns": 4202345970,
+          "remaining_paid_credit_ns": 1998906072,
+          "schema": "public-v3-local-actual-cpu-flow-v1",
+          "settled_full_cpu_ns": 4202345970,
+          "settlement_discard_ns": 0,
+          "settlement_residual_cpu_ns": 1589179,
+          "stored_credit_ns": 1998906072,
+          "unsettled_known_live_cpu_ns": 0
+        },
+        "public_resource_policy": {
+          "lifetime_ms": 2000,
+          "policy_id": "6d04725d8e7a84560baf69440b1becd79f47c9f1fb5e63b85f1447400c85d43f",
+          "schema": "public-protected-resource-policy-observation-v1",
+          "ticket_bits": 8,
+          "transport_profile": "public-protected-development-v3"
+        },
+        "phase_process_context": {
+          "attackers_launched_by_external_controller": true,
+          "controller_cgroup": "/system.slice/trnm-native-campaign-41780585984-1.service",
+          "host_after": {
+            "cpu_nr_periods": 3095,
+            "cpu_nr_throttled": 3031,
+            "cpu_throttled_usec": 634026518,
+            "cpu_usage_usec": 76141032,
+            "memory_current_bytes": 337170432,
+            "pids_current": 3
+          },
+          "host_before": {
+            "cpu_nr_periods": 2756,
+            "cpu_nr_throttled": 2693,
+            "cpu_throttled_usec": 544939011,
+            "cpu_usage_usec": 67697647,
+            "memory_current_bytes": 160903168,
+            "pids_current": 3
+          },
+          "independent_administration": false,
+          "phase_cgroup": "/trnmponpublic.slice/trnm-phase-41780585984-1-original-campaign-5161.service",
+          "phase_pid": 5166,
+          "runtime_business_deadline_changed": false,
+          "same_original_receiver_and_verifier_owners": true,
+          "scalar_policy_changed": false,
+          "schema": "fixed-public-phase-external-actors-v1",
+          "wan_qualified": false
+        },
+        "native_client_stage_deltas": {
+          "verify_state": {
+            "calls": 40,
+            "wall_ns": 17874822200,
+            "cpu_ns": 1722505972
+          },
+          "publish": {
+            "calls": 5,
+            "wall_ns": 11300091348,
+            "cpu_ns": 1096207269
+          },
+          "state_at": {
+            "calls": 15,
+            "wall_ns": 6377999810,
+            "cpu_ns": 606829614
+          },
+          "execute": {
+            "calls": 5,
+            "wall_ns": 11102646,
+            "cpu_ns": 11031949
+          },
+          "admission": {
+            "calls": 5,
+            "wall_ns": 21405135475,
+            "cpu_ns": 2099265964
+          },
+          "activation": {
+            "calls": 0,
+            "wall_ns": 0,
+            "cpu_ns": 0
+          },
+          "complete_commitment": {
+            "calls": 45,
+            "wall_ns": 394239369,
+            "cpu_ns": 32821987
+          },
+          "account_graph": {
+            "calls": 26,
+            "wall_ns": 17377173941,
+            "cpu_ns": 1678053791
+          }
+        },
+        "native_receiver_stage_deltas": {
+          "verify_state": {
+            "calls": 70,
+            "wall_ns": 1315690324,
+            "cpu_ns": 193773050
+          },
+          "publish": {
+            "calls": 7,
+            "wall_ns": 498035878,
+            "cpu_ns": 104998659
+          },
+          "state_at": {
+            "calls": 21,
+            "wall_ns": 606614034,
+            "cpu_ns": 100059168
+          },
+          "execute": {
+            "calls": 7,
+            "wall_ns": 8661548,
+            "cpu_ns": 8656323
+          },
+          "admission": {
+            "calls": 7,
+            "wall_ns": 1337096781,
+            "cpu_ns": 268820691
+          },
+          "activation": {
+            "calls": 7,
+            "wall_ns": 385536597,
+            "cpu_ns": 80930671
+          },
+          "complete_commitment": {
+            "calls": 77,
+            "wall_ns": 276763675,
+            "cpu_ns": 21278626
+          },
+          "account_graph": {
+            "calls": 44,
+            "wall_ns": 1044209439,
+            "cpu_ns": 177053035
+          }
+        },
+        "host_checkpoint": {
+          "calls_started": 44294,
+          "thread_cpu_ns": 2042421893,
+          "wall_ns": 4338734092
+        },
+        "receiver_client_state_equal": false,
+        "observer_complete": true,
+        "finite_phase_criteria_met": false
+      }
+    ],
+    "source_after": {
+      "base": null,
+      "candidate": "a10c39025cdc03d3265b031d6547b11e0350da2c",
+      "kind": "head",
+      "prospective_merge": null,
+      "schema": "trnm-ci-source-v1",
+      "tested_commit": "a10c39025cdc03d3265b031d6547b11e0350da2c",
+      "tested_tree": "f82a65891b8c5d094ad9a67450751253ec150910",
+      "tests_executed_by_identity_check": false,
+      "tracked_bytes": 932581466,
+      "tracked_entries": 8095,
+      "tracked_worktree_verified": true
+    }
+  }
+}

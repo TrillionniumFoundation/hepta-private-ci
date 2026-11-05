@@ -689,6 +689,8 @@ impl AutomationStore {
         definition.validate()?;
         self.validate_taskflow_fence(fence)?;
         let json = definition.canonical_json()?;
+        // Mutations reserve SQLite's writer before auditing the original
+        // state; a deferred snapshot cannot be upgraded past another writer.
         let mut tx = self
             .taskflow_pool()
             .begin_with("BEGIN IMMEDIATE")

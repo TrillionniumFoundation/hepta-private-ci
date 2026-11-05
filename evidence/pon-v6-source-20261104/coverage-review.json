@@ -1,0 +1,271 @@
+{
+  "schema": "hepta-v6-pair-source-and-coverage-review-v1",
+  "hepta_source": {
+    "repository": "TrillionniumFoundation/hepta-private-ci",
+    "pr": 4696,
+    "head": "5b00b3aac4d4fd0d26d07436886748c0425e33e5",
+    "base": "4c6b1f0cc9ec50689d86a83bed0433ea0bd4c168"
+  },
+  "chain_base": {
+    "repository": "TrillionniumFoundation/Trillionnium-Chain",
+    "pr": 688,
+    "branch": "main",
+    "sha": "dd6e1c3cbeacbdc532b0679297835b3a0aac78f0",
+    "protected": true,
+    "confirmed_by": [
+      "GitHub PR688 base_sha",
+      "GitHub branches/main commit.sha and protected=true",
+      "local git commit object and ancestor check"
+    ],
+    "old_691_base_is_not_this_base": "1d11f875493f8125e36b9adceacb342df108e5e5",
+    "required_ordered_parents": [
+      "dd6e1c3cbeacbdc532b0679297835b3a0aac78f0",
+      "44d3def32f515b98fc41f074fe1b88e97f046191"
+    ]
+  },
+  "source_guard_review": {
+    "profile": "hepta-integrated-chain-execution-v6",
+    "requirements": [
+      "Source-head must pass the existing exact HEAD commit and tree guard",
+      "All 42 bounded regular execution files are rehashed from the final Git objects; historical identities stay immutable",
+      "Actual merge object has exactly ordered [base,source] parents",
+      "Actual merge tree equals deterministic git merge-tree output AND the registered source tree",
+      "Both native-pair lanes assert actual tested HEAD tree equals manifest.chain_tree before emitting the profile record",
+      "Old V5/current-run evidence labels cannot be reused for V6",
+      "The helper validates local Git objects; root must independently publish/import the actual API objects and retain final native evidence"
+    ],
+    "installation_authorized": false,
+    "product_qualification": false,
+    "new_negative_control": {
+      "source": "ea94a7293c7dd382547b1cc84d4ed1058a2545be",
+      "tree": "59e3498b05a79a71a50c87dae77590ee46186aca",
+      "base": "dd6e1c3cbeacbdc532b0679297835b3a0aac78f0",
+      "merge": "9ae4f32af9f44d57ab4920f10fd4874dba751011",
+      "merged_tree": "5ff3c9778aa86cee479523772e73e2a85a734704",
+      "changed_paths": [
+        "README.md"
+      ],
+      "result": "Finalizer rejects before any write; workflow emits no profile record and rejects the changed tree; same-tree source and merge controls pass",
+      "scope": "local actual Git controls only, never the final published pair",
+      "finalizer_receipt": "merge-tree-controls.json: finalizer",
+      "workflow_receipt": "merge-tree-controls.json: workflow"
+    }
+  },
+  "active_profile_test_defect": {
+    "reproduction": "HEPTA_PAIRED_EXECUTION_PROFILE=hepta-integrated-chain-execution-v6, complete63 source controls: one V5 error plus one V6 failure",
+    "cause": "Two legacy-fallback assertions assumed the ambient profile was None; the real ordinary CLI job selects V6 globally",
+    "fix": "Explicit profile=None only around the intended legacy-fallback assertions in V5/V6 tests; all V5/V6 strict mixed-role assertions remain unchanged",
+    "result": "After the two explicit legacy fixture corrections:63/63 with active V6,32/32 in the original installed-job context, on the final44d3def source tuple and frozen files listed in binding-and-local-controls.json",
+    "red_log": "Prior local reproduction retained by source owner; not counted as new-source native evidence",
+    "green_report": "binding-and-local-controls.json",
+    "scope": "Final tuple source controls only; all native/model/pressure/install qualification remains pending"
+  },
+  "existing_workflow_lanes": [
+    {
+      "job": "pair",
+      "matrix": "ubuntu-24.04 and ubuntu-24.04-arm x source-head and base-merge",
+      "paths": [
+        "sealed Chain submission, deliberately lost ACK, reopen/lookup, confirmation, reorg, exact packet mismatch refusal",
+        "actual signed task acceptance through confirmation and reorganization",
+        "provider operation identity74, AutomationStore134, four late-ack selectors, two expired-lease recovery selectors",
+        "signed-intent recovery4, signed-intent owner2, signed-admission owner1",
+        "original4s/25% pressure and network-only full-state/reopen observations"
+      ],
+      "actual_selectors": [
+        "real_chain_sealed_submit_reconcile_confirm_reorg",
+        "real_chain_signed_task_acceptance_confirm_and_reorg",
+        "host_provider_receipt_survives_unknown_and_rejects_operation_substitution",
+        "taskflow_provider_receipt_late_dispatch_cannot_replace_or_reject_accepted_operation",
+        "host_provider_recovery_observes_original_ack_after_lease_expiry_and_restart",
+        "host_provider_recovery_does_not_authorize_new_dispatch_with_an_expired_lease"
+      ],
+      "limits": "Default native trnm-pon-node build, separate from installed pq-native-openssl build; these paths do not establish one current PQ authority over every real effect"
+    },
+    {
+      "job": "effect-recovery",
+      "matrix": "ubuntu-24.04 and ubuntu-24.04-arm x source-head and base-merge",
+      "paths": [
+        "complete AutomationStore134",
+        "six exact HTTP owner/identity/recovery selectors"
+      ],
+      "limits": "Current#4696 branch condition is true. This independent job binds the actual Hepta source; it does not execute Chain. Future branches outside the current allowlist can skip this independent job, although pair contains corresponding controls later in its step order"
+    },
+    {
+      "job": "cell-host-v2",
+      "matrix": "ubuntu-24.04 and ubuntu-24.04-arm x source-head and base-merge",
+      "paths": [
+        "Cell material+ordinary host23",
+        "actual CLI subprocess3",
+        "original FinalUse/physical-owner40",
+        "canonical PQ contracts195",
+        "initial material/PQ clock/startup controls",
+        "actual built Codex native PQ turn-start"
+      ],
+      "actual_selectors": [
+        "native_app_server::tests::pq_final_use::real_agentd_turn_start_consumes_explicit_pq_config_and_external_mldsa_grant"
+      ],
+      "limits": "Actual native PQ turn-start is a distinct route, not proof that legacy automation or every RunStart route has migrated"
+    },
+    {
+      "job": "cell-installed-host-v3",
+      "matrix": "ubuntu-24.04 source-head only",
+      "paths": [
+        "source-bound image from this run",
+        "original handoff14 and protected installed8 with zero skips",
+        "PQ startup14",
+        "History import15 plus parent-driven real SIGKILL child cut points",
+        "growth CLI7",
+        "original current-source five-case pressure wrapper"
+      ],
+      "limits": "No ARM installed lane or installed base-merge lane. Same source, separate pq-native-openssl build. Unsupported growth/PQ composition is explicitly not qualified"
+    },
+    {
+      "job": "cold-ordinary-three-rounds",
+      "workflow": "hepta-public-initial-v2.yml",
+      "matrix": "ubuntu-26.04 source-head only",
+      "paths": [
+        "ordinary initial inference with independent revocation",
+        "same-owner reopen",
+        "three real rounds retaining no-update and rereading original CURRENT"
+      ],
+      "actual_selectors": [
+        "real_selected_initial_serves_ordinary_context_then_refuses_revocation",
+        "real_public_initial_reopens_same_ordinary_owners",
+        "real_public_initial_three_rounds_hold_and_read_original_current"
+      ],
+      "limits": "No ordinary model ARM/base-merge observations. Public historical tasks and three rounds do not prove prospective unseen future-task efficacy"
+    },
+    {
+      "job": "windows-ledger",
+      "matrix": "windows-2025 x source-head and base-merge",
+      "paths": [
+        "witness recovery6",
+        "evaluated ownership7"
+      ],
+      "limits": "These are native ledger controls, not Chain/PQ effect integration or installed-model qualification"
+    }
+  ],
+  "actual_owner_findings": [
+    {
+      "files": [
+        "codex-rs/hepta-agentd/src/automation_effect_host.rs",
+        "codex-rs/hepta-contracts/src/final_use.rs"
+      ],
+      "functions": [
+        "AgentdAutomationEffectHost::open",
+        "AgentdAutomationEffectHost::open_pon",
+        "FinalUseAuthority::open_state_dir"
+      ],
+      "finding": "HTTP and PoN hosts decode contract signature[64], contract key[32] and FinalUse key[32], then call the compatibility FinalUse constructor. That constructor documents SystemAuthorityClock and no external rollback oracle. The new source profile must not label these current-PQ effects"
+    },
+    {
+      "files": [
+        "codex-rs/hepta-agentd/src/objective_ingress.rs",
+        "codex-rs/hepta-authbus/src/crypto.rs"
+      ],
+      "functions": [
+        "submit",
+        "ObjectiveIngressHost::process_delivery",
+        "recover_active_runs"
+      ],
+      "finding": "Objective submission constructs SignedMessage from hex_bytes::<64>(...).into(); AuthBusSignature From<[u8;64]> is Ed25519. Successful publication re-reads trust/issuer and authenticates after ledger/witness fsync; conflict returns the durable conflict identity; recovery reconstructs generation/deadline-matching host envelopes. This exact flow still needs a current-PQ normal/retry/conflict/recovery acceptance, not an inferred upgrade from the separate PQ turn-start selector"
+    },
+    {
+      "files": [
+        "codex-rs/hepta-agentd/src/state_control.rs",
+        "codex-rs/hepta-agent-protocol/src/lib.rs"
+      ],
+      "functions": [
+        "AgentdMethod::RunStart arm",
+        "require_run_admission_ready",
+        "require_current_run_identity"
+      ],
+      "finding": "The local RunStart branch checks lifecycle/readiness/fence and current generation, then calls start_run. This read does not establish an end-to-end current-PQ trust chain; do not call it unauthenticated or claim an exploit without tracing the outer owner"
+    },
+    {
+      "files": [
+        "codex-rs/hepta-learning-ledger/src/run_start.rs"
+      ],
+      "functions": [
+        "RunStartAuthenticationV1",
+        "DurableRunStartJournal::recover"
+      ],
+      "finding": "The reviewed durable authentication record carries a64-byte signature and a separate host-supplied authentication contract; journal recovery is not itself a PQ effect grant. Literal standalone RunStartV1 type was not established in these reads; name only the concrete types/functions observed"
+    }
+  ],
+  "missing_acceptance_checklist": [
+    {
+      "id": "PQ_EFFECT_ALL_PATHS",
+      "status": "HOLD",
+      "required": "One chosen current PQ root/profile at every actual run/start, Objective, HTTP/PoN automation, release/install, CURRENT and FinalUse owner; execute normal, exact retry, conflicting identity and recovery. Explicitly reject legacy/classical downgrade only under that chosen current-PQ profile. Existing classical compatibility paths must not be blocked and advertised as completed migration",
+      "existing_selector": "No existing full-owner closure selector established by this review"
+    },
+    {
+      "id": "PQ_ROTATION_AT_EFFECT",
+      "status": "HOLD",
+      "required": "Rotate/revoke between verification and irreversible effect, including after durable publication and before dispatch/install; exercise actual journal/fence and current generation. Existing local revalidation/fence tests do not prove cross-owner external-root consistency",
+      "existing_selector": "No existing unified end-to-end selector established"
+    },
+    {
+      "id": "ALL_STATE_EXTERNAL_MONOTONIC_ROOT",
+      "status": "HOLD",
+      "required": "Restore CURRENT, consumed FinalUse nonce journal, installed generation and trust/revocation state both together and independently, plus balances/settlement/task/History state; compare before effect with a root retained independently from the restored local data. PNQ2 peer/request/resource checkpoint covers only its own three tables",
+      "existing_selector": "No full-state cross-owner monotonic-root selector established"
+    },
+    {
+      "id": "UNCERTAIN_CAS_MULTIWRITER",
+      "status": "HOLD",
+      "required": "Lost/uncertain external CAS and concurrent authorized writers across CURRENT/FinalUse/install/task/settlement must retain operation identity, monotonic generation and effect fencing. The new Cell ACK SQLite tests and three-table resource CAS cannot substitute for this",
+      "existing_selector": "No full cross-owner external CAS/multiwriter effect selector established"
+    },
+    {
+      "id": "DEPLOYED_MIGRATION",
+      "status": "HOLD",
+      "required": "Prove historical ownership, precommitted PQ-owner timing, source retirement/locking/finality, complete assets/liabilities/settlement conservation and fresh revocation. Chain handoff library has no actual durable roster/deployment owner consumer; new-genesis import is not full deployed migration",
+      "existing_selector": "Existing Chain hepta_handoff_pq tests are library controls only"
+    },
+    {
+      "id": "FINAL_SOURCE_NATIVE_MATRIX",
+      "status": "PENDING_ACTUAL_CI",
+      "required": "Run all four pair lanes and four effect-recovery lanes on final immutable Hepta/Chain objects, original4s/25% original hardware, with no-attack baseline; old#691 ARM or V5 records cannot be inherited"
+    },
+    {
+      "id": "INSTALLED_PLATFORM_SCOPE",
+      "status": "COVERAGE_BOUNDARY",
+      "required": "Do not claim ARM or base-merge installed behavior from the sole x64 source-head installed job; add those actual lanes if those platform/merge claims are required"
+    },
+    {
+      "id": "ORDINARY_MODEL_SCOPE",
+      "status": "COVERAGE_BOUNDARY",
+      "required": "Do not claim ARM or base-merge ordinary-model execution from Ubuntu26 source-head only; retain original budgets and distinguish this from the four-lane native Chain pair"
+    },
+    {
+      "id": "CELL_FAILURE_DOMAINS",
+      "status": "HOLD",
+      "required": "Independent administration/physical failure domains, publisher and provider outage, complete model load, accountable repair/reclamation/storage obligations; no such independent deployment is exercised by the inspected local native/workflow controls"
+    },
+    {
+      "id": "PROSPECTIVE_EVOLUTION",
+      "status": "HOLD",
+      "required": "Independent retained unseen tasks, same full cumulative budgets, regression/resource metrics and real future windows; keep no-update legitimate. Existing public32/synthetic generations/three rounds cannot be relabelled as future efficacy"
+    },
+    {
+      "id": "FUTURE_WORKFLOW_BRANCH_SCOPE",
+      "status": "COVERAGE_BOUNDARY",
+      "required": "effect-recovery has a branch allowlist and CHAIN_NATIVE_SQL_MINIMUM still has77/37 branch fallback; current#4696 takes all four recovery lanes and77. Do not infer the independent recovery job or77 floor for other future branches without reviewing these conditions"
+    }
+  ],
+  "final_validation_command": "python3 validate-hepta-v6.py --hepta FINAL_HEPTA_CHECKOUT --chain FINAL_CHAIN_CHECKOUT --binding FINALIZATION_JSON --output NEW_CONTROLS_DIRECTORY (preparation helper retained by publishing owner)",
+  "final_validation_scope": "Checks reviewed dd6 base, exact source/merge/tree/profile pins; runs63 source controls with active V6 and32 diverse controls in the original installed-job context; parses both YAML and123 Bash steps; produces raw logs and hashes. It does not run native/model/pressure/install lanes.",
+  "qualification": false,
+  "installation_authorized": false,
+  "whole_pq_migration_closed": false,
+  "all_effects_recovery_closed": false,
+  "final_frozen_chain_tuple": {
+    "chain_source": "44d3def32f515b98fc41f074fe1b88e97f046191",
+    "chain_tree": "f3e07fc21a74e9a4367610ba10f5883213609320",
+    "chain_base": "dd6e1c3cbeacbdc532b0679297835b3a0aac78f0",
+    "chain_ordered_merge": "914dffbf7d0a1fb11d3f8b5fc3e4854146913c0b",
+    "profile_manifest_sha256": "2ed9941e5e2051f4773364b2e379c9e8866a0fde0a3a5afd6f5b5357244d5dc8"
+  }
+}
