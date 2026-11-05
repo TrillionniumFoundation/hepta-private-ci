@@ -1,0 +1,11 @@
+--- a/codex-rs/hepta-intelligence-eval/src/self_evolution_selection.rs
++++ b/codex-rs/hepta-intelligence-eval/src/self_evolution_selection.rs
+@@ -321,8 +321,6 @@
+         receipt.evaluation_evidence_digest,
+         receipt.evaluation_authentication_digest,
+         receipt.evaluation_trust_digest,
+-        receipt.qualification_evidence_digest,
+-        receipt.qualification_publication_digest,
+         receipt.frozen_plan_digest,
+     ] {
+         require_digest(digest)?;

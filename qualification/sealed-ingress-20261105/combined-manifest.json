@@ -1,0 +1,109 @@
+{
+  "base_commit": "1d87082c0d5afd2b474a2c453ea98005fd540dea",
+  "native_validation": "not run; formatting and native tests required before source qualification",
+  "files": [
+    {
+      "path": "codex-rs/hepta-agentd/src/intelligence_evaluation.rs",
+      "base_blob": "4f749517724ed408ee7b089f061f8e9224cbaef6",
+      "changed_blob": "6beca1272f990e00b388f99ef7e29cb626bc464c",
+      "sha256": "5580a99f5742152d3b3ce2d01d8cc465fd8ba552786f662e7be7fe6921ab920e"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/intelligence_evaluation_tests.rs",
+      "base_blob": "0ce36aa9835e02fdb6d96860bf20252af1369283",
+      "changed_blob": "7f617c17c5c9de423198b1d833cf8883fb041ac8",
+      "sha256": "3ea7fd2d26394cdde98d7fa78d61bb323cfb4aea16fb9ff0d4ebbffb6b6611ec"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/intelligence_product.rs",
+      "base_blob": "1781996175ec7f16f44b9f58ac3e2c2bd41358af",
+      "changed_blob": "84900183ca03f870f61bba1c1ca3b1ccfd1e56ae",
+      "sha256": "8cbef22fe134110fb343d37e7081bb2c03aac8257e33909146cc5a1ffc3322a0"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/intelligence_qualification_test_support.rs",
+      "base_blob": null,
+      "changed_blob": "b28ac84dc1035ea14e498d6c404a0bd76dd67e61",
+      "sha256": "130936893a9818a12f44b4b4d95e286c942c1a273f81d3e4ac686217622afe1c"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/lib.rs",
+      "base_blob": "5a5a99ae773831777cafe14d81cf79538a3c092a",
+      "changed_blob": "5113e9a9d49b788b761febae8e27ea8226cc48dd",
+      "sha256": "48083c28fe1c863813abbb5068dc579059004baf412736ae4259814209349796"
+    },
+    {
+      "path": "codex-rs/hepta-intelligence/src/plasticity_product.rs",
+      "base_blob": "128016bddabb5bdb6a0262d07c7b9327ffb7a8ee",
+      "changed_blob": "7004ae2981587a63f9941376196af9435dbbdc6d",
+      "sha256": "3087c92d11eb53676564e932379a1167d040777058571863a5f18822406849e2"
+    },
+    {
+      "path": "codex-rs/hepta-intelligence/src/plasticity_product_tests.rs",
+      "base_blob": "3054c943e60078d9fdf682d5f75e8137de220f28",
+      "changed_blob": "b61982c966bd977d75d965205646d482d92c05fc",
+      "sha256": "540ff8221bbf986f7c92dc90473131d2ff718fb2ab1e7e027c5a307342ec81cd"
+    },
+    {
+      "path": "codex-rs/hepta-intelligence/src/plasticity_qualification_test_support.rs",
+      "base_blob": null,
+      "changed_blob": "b28ac84dc1035ea14e498d6c404a0bd76dd67e61",
+      "sha256": "130936893a9818a12f44b4b4d95e286c942c1a273f81d3e4ac686217622afe1c"
+    },
+    {
+      "path": "codex-rs/hepta-intelligence-eval/src/lib.rs",
+      "base_blob": "f412acad686168bb1b5faf535d28f655fb5254a8",
+      "changed_blob": "3fb8fe09947c342710f9cc982bd14f2015abb58c",
+      "sha256": "6224028235c583330c40a0bc2daf9e79d195c2c9700228def07eadae3c79a45d"
+    },
+    {
+      "path": "codex-rs/hepta-intelligence-eval/src/product_qualification_use.rs",
+      "base_blob": null,
+      "changed_blob": "17587b62466ab5073be7c1da6d52daf8c98e059a",
+      "sha256": "97d9148ea85e9d1658eb576ee014bc55673abca595f729f80d90b3ef497b4a26"
+    },
+    {
+      "path": "codex-rs/hepta-intelligence-eval/src/product_runner_tests.rs",
+      "base_blob": "c90610c44367cb025eb4a430a19aff8bc7f0a068",
+      "changed_blob": "72babd39b7e0ad3491690d7b599cac03677c0b0b",
+      "sha256": "0ae556724316583a093398f9bd0cc6f6f68756cbd2fb12a24ad4546bc0d21c6d"
+    },
+    {
+      "path": "codex-rs/hepta-intelligence-eval/src/self_evolution_ingress_tests.rs",
+      "base_blob": null,
+      "changed_blob": "7d44929ab27a46025fcee8548f469720367f46af",
+      "sha256": "2ab4815a3e5aa1f74859a033d95ed9c19c7910d050834fa4dbc3f0d4ff53887f"
+    },
+    {
+      "path": "codex-rs/hepta-intelligence-eval/src/self_evolution_qualification_test_support.rs",
+      "base_blob": null,
+      "changed_blob": "f842cfed87666b560366a261d16747119192fca7",
+      "sha256": "bb039ae0deb4849abd44b8aba199bd78e02fa6bef2575d7590a6a71f164b7a23"
+    },
+    {
+      "path": "codex-rs/hepta-intelligence-eval/src/self_evolution_selection.rs",
+      "base_blob": "39efe8c7583678df35ddd63ee98cfd5e0e6c17d4",
+      "changed_blob": "7d3da83abd8c200698a7d98adb46cacef79999d6",
+      "sha256": "2e63e67176879d232cec2de9f806917613324ae5356140fa8cce777254440910"
+    }
+  ],
+  "patch_sha256": "18310badac441b743572144b57808cddf0da6863b24b076eb848bb4d11e85c59",
+  "stages": [
+    {
+      "stage": 1,
+      "patch_sha256": "3602605a0c3655d1a0da8f09c942d91efaef78d0352886f42f47af3b569388bc"
+    },
+    {
+      "stage": 2,
+      "patch_sha256": "f949ef57ded947e29f2c8bc9bc704fae761ba908b7231decbab9a5f8b0c9ecde"
+    },
+    {
+      "stage": 3,
+      "patch_sha256": "433bb1b5276fdbcaa2b9203c9df635647b15be48d50dccd7f0cfb6fd9b5e49e5"
+    },
+    {
+      "stage": 4,
+      "patch_sha256": "2271f0a11ebe1b151580556eafe6c590c0933e9d0a881eecc3a650f98bb8eb07"
+    }
+  ]
+}

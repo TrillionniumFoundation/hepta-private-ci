@@ -1,0 +1,129 @@
+--- a/codex-rs/hepta-intelligence-eval/PRODUCTION_CONTRACT.md
++++ b/codex-rs/hepta-intelligence-eval/PRODUCTION_CONTRACT.md
+@@ -10,12 +10,13 @@
+ never selects, activates, promotes or releases a candidate. Every evaluation
+ decision remains `AuthorityPosture::DENY_ALL`.
+ 
+-All external or product qualification must converge on `ProductEvaluationRunnerV1`
++All external or product qualification must originate from `ProductEvaluationRunnerV1`
+ and its sealed `ProductQualificationReceiptV1`. The runner invokes
+-signature-verified V2/V3 admission internally. This is the required production
+-boundary; the current caller gaps below remain implementation debt and prevent
+-a claim of sole sealed ingress. Asserted `AuthenticatedPrincipalV1` values are
+-not external authentication.
++signature-verified V2/V3 admission internally. The product consumers below now
++require that sealed receipt in their source APIs. Native qualification, the
++named production provider/sink integration and durable host handoff remain
++separate acceptance obligations. Asserted `AuthenticatedPrincipalV1` values
++are not external authentication.
+ 
+ ## API status
+ 
+@@ -23,8 +24,8 @@
+ |---|---|---|
+ | `ProductEvaluationRunnerV1::qualify_and_persist` | **Production ingress** | Builds the exact bound bundle internally, runs signed V2/V3 verification and requires durable evidence publication |
+ | `evaluation_signing_payload_v2` / `longitudinal_evaluation_signing_payload_v3` | **Public signer contracts** | External signers attest exactly the runner-derived bundle/timing bytes |
+-| `decide_with_signed_evidence_v2` | **Currently public; caller migration outstanding** | Used directly by Agentd evaluation consumption and parameter plasticity proposal admission; these callers do not yet require the sealed product receipt |
+-| `decide_with_signed_longitudinal_evidence_v3` | **Crate-internal verification primitive** | Used by the product runner and the public self-evolution preparation path; the latter does not yet require the sealed product receipt |
++| `revalidate_product_qualification_v1` | **Public sealed-receipt consumption check** | Validates the receipt and context, reauthenticates the exact evidence under current host trust/time, and compares the complete signed decision; does not consume a holdout or publish evidence |
++| `decide_with_signed_evidence_v2` / `decide_with_signed_longitudinal_evidence_v3` | **Crate-internal verification primitives** | Invoked by the product runner and sealed-receipt revalidation; absent from the default cross-crate surface |
+ | `freeze_product_evaluation_plan_v1` | **Production plan freeze** | Freezes V2 metric roles, metric-to-estimator mapping and candidate/baseline temporal plan identities before holdout release |
+ | `FencedFinalHoldoutOwnerV1` + `FinalHoldoutCasStoreV1` | **Production-required when multiple writers/hosts can contend** | Linearizable CAS, monotonic writer fencing and accepted-or-unknown reconciliation |
+ | `DurableFinalHoldoutJournalV1` | Single-host/cooperative-owner only | Local file durability when the host can guarantee exclusive namespace ownership |
+@@ -102,7 +103,7 @@
+ and `ClusterOpeEstimate` receipts; a caller cannot submit replacement
+ `MetricGateV1` intervals. The runner builds the signed qualification bundle itself and returns success only after `ProductQualificationEvidenceSinkV1` returns a nonzero durable publication digest. The resulting `ProductQualificationReceiptV1` has a private integrity seal and binds the candidate, evaluator, objective, dataset, snapshot set, claim scope, signed decision and durable publication.
+ 
+-## Canonical product consumer
++## Canonical product consumers
+ 
+ The sealed product consumer is
+ `codex-rs/hepta-intelligence/src/evaluated_shadow.rs::run_evaluated_shadow_v1`.
+@@ -111,21 +112,59 @@
+ requires the same evaluator to sign the candidate bytes against that terminal
+ receipt. It does not re-run low-level V2 admission. It invokes the shadow ports
+ and owns the durable shadow `Decision` append; it does not execute dispatch or
+-activate an artifact. This establishes that consumer's receipt boundary, while
+-the following source paths still accept generic signed bundles:
+-
+-| Current caller | Admission and result | Remaining sealed-receipt gap |
++activate an artifact.
++
++The other three source consumers require the same sealed qualification together
++with the original signed bundle and roles. They use
++`revalidate_product_qualification_v1` to retain the current signature, scope,
++role-separation and lifetime checks. Equality covers the entire
++`SignedEvaluationDecisionV1`, including evidence, trust and authentication
++digests; a newly signed bundle with the same Eligible label is insufficient.
++
++| Current caller | Required source admission | Downstream qualification binding |
+ |---|---|---|
+-| [`AgentdEvaluationSessionV1::evaluate`](../hepta-agentd/src/intelligence_evaluation.rs) | Direct V2 plus a current-owner, request-bound evaluator attestation; returns an evaluation-consumption digest to canonical preparation | `AgentdSignedEvaluationV1` carries a bundle, roles and signatures, without a `ProductQualificationReceiptV1` |
+-| [`propose_authenticated_parameter_plasticity_v1`](../hepta-intelligence/src/plasticity_product.rs) | Direct V2 for every update candidate, with independent generator/evaluator/observer checks; writes a governed proposal only | `CandidateEvaluationAdmissionV1` carries a bundle, roles and signatures, without a `ProductQualificationReceiptV1`; the separate signed `NoAdmissibleUpdate` path must remain intact |
+-| [`prepare_self_evolution_selection_v1`](src/self_evolution_selection.rs) | Public preparation API invokes internal V3 with longitudinal time evidence and ledger-bound dataset checks; later selector admission is separate | Accepts an `IndependentEvaluationBundleV1`, without a `ProductQualificationReceiptV1` |
+-
+-These source paths are not gated by `trusted-inprocess-eval`. Their presence is
+-not evidence of deployed activation or target-host qualification. The remaining
+-gap is proof that each consumed product qualification came through bound
+-estimators, authoritative holdout consumption and durable evidence publication.
+-Existing independent signatures, current trust, no-update behavior and later
+-authorization for physical effects by their current owners remain required.
++| [`AgentdEvaluationSessionV1::evaluate`](../hepta-agentd/src/intelligence_evaluation.rs) | Mandatory product receipt plus Qualification-scoped revalidation and the current-owner, request-bound evaluator attestation | `intelligence_evaluation_binding_payload_v2` and the v2 consumption digest bind both qualification evidence and publication identities into canonical preparation |
++| [`propose_authenticated_parameter_plasticity_v1`](../hepta-intelligence/src/plasticity_product.rs) | Every update candidate requires a product receipt and Qualification-scoped revalidation; generator/evaluator/observer checks remain | The v2 candidate-evaluation commitment includes both qualification identities and feeds the existing governed admission, durable proposal and composition digests; returned `qualifications` retain the sealed receipts in memory |
++| [`prepare_self_evolution_selection_v1`](src/self_evolution_selection.rs) | Mandatory SystemLongitudinal product receipt, original time evidence, policy and authoritative ledger/dataset checks, with current generator/evaluator/observer verification | `SelfEvolutionSelectionReceiptV1` retains both qualification identities; `selection_signing_payload_v2` binds them for the separate independent selector, and rollback remains bound to that selection digest |
++
++`NoAdmissibleUpdate` retains its separate independent evaluator attestation,
++empty candidate evaluations and original v1 commitment domain. It does not
++require a fabricated candidate qualification. These source entrypoints are
++not gated by `trusted-inprocess-eval`; source availability does not establish
++deployed activation, real longitudinal efficacy or physical-effect authority.
++
++The mandatory receipt fields and v2 Agentd-use/selector signing payloads require
++caller migration and new signatures. There is no zero-digest default or old
++signing-payload fallback. Existing proposal-registry bytes remain readable, but
++an old proposal is not upgraded into a newly qualified candidate: a changed
++qualification commitment cannot replay as the old proposal identity. Issuing a
++new use signature does not authorize another consumption of a used final holdout.
++
++## Remaining host and recovery obligations
++
++The named production `FinalHoldoutProviderV1` and
++`ProductQualificationEvidenceSinkV1` are not yet connected to this product
++path. The concrete fenced CAS backend does not supply authenticated observations
++or a production publication owner. Host integration must bind both providers to
++their declared owners, current namespace and durable publication/recovery rules.
++
++A complete persisted `ProductQualificationReceiptV1` codec and qualified
++readback/handoff are still missing. The proposal registry retains a digest
++commitment to qualification evidence/publication; its new `qualifications`
++return field is in memory, not an additional durable record. The default
++canonical Agentd host still lacks a durable seven-owner/App Server handoff and
++authenticated `Decision`/`Outcome` composition through the existing
++`LedgerWriter`. The optional legacy `PendingIntelligenceLedgerAppendV1` is only
++an in-memory qualification carrier. The existing publication sink contract
++receives temporal execution identity and a signed decision; this migration
++does not turn it into a full-receipt recovery format.
++
++The new regressions use explicitly test-only Memory CAS/publication doubles and,
++for self-evolution dataset membership, synthetic facts in the ledger core.
++They test source admission and commitment binding, not production durability,
++real future-calendar observations or measured adaptive benefit. Independent
++selection, current-owner physical-effect authorization and release evidence
++remain separate requirements.
+ 
+ ## CI closure evidence
+ 
+@@ -156,7 +195,9 @@
+ mandatory learning-eval qualification artifact. External evidence gates remain
+ open independently and must not be collapsed into source qualification.
+ 
+-A claim of sole sealed product-qualification ingress additionally requires every
+-candidate-qualification path above to consume and validate the canonical product receipt, with tests
+-that reject missing or mismatched receipts before candidate use or downstream
+-writes. The current caller gaps do not satisfy that acceptance condition.
++The listed candidate-qualification paths now require the canonical sealed receipt
++in source. Acceptance of sole sealed ingress still requires actual native
++regressions that reject mismatched receipts before candidate use or downstream
++writes, plus the unchanged exact-head and synthetic-merge CI evidence above.
++This source migration does not satisfy the remaining host provider/publication,
++full-receipt recovery, durable handoff or independent release obligations.

@@ -1,0 +1,578 @@
+--- a/codex-rs/hepta-agentd/src/lib.rs
++++ b/codex-rs/hepta-agentd/src/lib.rs
+@@ -573,7 +573,7 @@
+ pub use intelligence_product::IntelligenceAuthorityVerifierV1;
+ pub use intelligence_product::PendingIntelligenceLedgerAppendV1;
+ pub use intelligence_product::PreparedAgentdIntelligenceRunV1;
+-pub use intelligence_product::intelligence_evaluation_binding_payload_v1;
++pub use intelligence_product::intelligence_evaluation_binding_payload_v2;
+ pub use intuition_policy::AgentdIntuitionDecisionReceiptV1;
+ pub use intuition_policy::AgentdIntuitionPolicyError;
+ pub use intuition_policy::AgentdIntuitionPolicyHostV1;
+--- a/codex-rs/hepta-agentd/src/intelligence_product.rs
++++ b/codex-rs/hepta-agentd/src/intelligence_product.rs
+@@ -32,7 +32,7 @@
+ use evaluation::AgentdEvaluationSessionV1;
+ pub use evaluation::AgentdIntelligenceEvaluationError;
+ pub use evaluation::AgentdSignedEvaluationV1;
+-pub use evaluation::intelligence_evaluation_binding_payload_v1;
++pub use evaluation::intelligence_evaluation_binding_payload_v2;
+ 
+ use std::collections::BTreeMap;
+ use std::error::Error as StdError;
+--- a/codex-rs/hepta-agentd/src/intelligence_evaluation.rs
++++ b/codex-rs/hepta-agentd/src/intelligence_evaluation.rs
+@@ -13,9 +13,12 @@
+ use codex_hepta_intelligence_eval::IndependentEvaluationBundleV1;
+ use codex_hepta_intelligence_eval::IndependentEvaluationDispositionV1;
+ use codex_hepta_intelligence_eval::MetricRoleContractV2;
++use codex_hepta_intelligence_eval::ProductEvaluationError;
++use codex_hepta_intelligence_eval::ProductQualificationReceiptV1;
++use codex_hepta_intelligence_eval::ProductTimingEvidenceV1;
+ use codex_hepta_intelligence_eval::SignedEvaluationError;
+ use codex_hepta_intelligence_eval::SignedEvaluationEvidenceV1;
+-use codex_hepta_intelligence_eval::decide_with_signed_evidence_v2;
++use codex_hepta_intelligence_eval::revalidate_product_qualification_v1;
+ use codex_hepta_learning_ledger::ActivatedLearningTrustV1;
+ use codex_hepta_learning_ledger::LearningEvidenceRoleV1;
+ use codex_hepta_learning_ledger::SignedEvidenceError;
+@@ -26,6 +29,7 @@
+ /// Data supplied by the evaluator. Every field is checked again at its use site.
+ #[derive(Clone, Debug)]
+ pub struct AgentdSignedEvaluationV1 {
++    pub qualification: ProductQualificationReceiptV1,
+     pub bundle: IndependentEvaluationBundleV1,
+     pub roles: Vec<MetricRoleContractV2>,
+     pub evidence: SignedEvaluationEvidenceV1,
+@@ -44,10 +48,14 @@
+ 
+ /// Canonical bytes the existing evaluator signs for this one actual prepared use.
+ /// A generic qualification signature cannot be replayed for a different context.
+-pub fn intelligence_evaluation_binding_payload_v1(
++pub fn intelligence_evaluation_binding_payload_v2(
+     binding: &AgentdEvaluationBindingV1,
+     evidence: &SignedEvaluationEvidenceV1,
++    qualification: &ProductQualificationReceiptV1,
+ ) -> Result<Vec<u8>, AgentdIntelligenceEvaluationError> {
++    qualification
++        .validate_integrity()
++        .map_err(AgentdIntelligenceEvaluationError::Qualification)?;
+     let digests = [
+         binding.objective_digest,
+         binding.snapshot_digest,
+@@ -57,7 +65,7 @@
+     if digests.iter().any(|digest| digest.is_zero()) {
+         return Err(AgentdIntelligenceEvaluationError::Binding);
+     }
+-    let mut bytes = b"hepta.agentd.evaluation-use.v1\0".to_vec();
++    let mut bytes = b"hepta.agentd.evaluation-use.v2\0".to_vec();
+     for id in [&binding.run_id, &binding.selected_candidate_id] {
+         let length = u64::try_from(id.as_str().len())
+             .map_err(|_| AgentdIntelligenceEvaluationError::Binding)?;
+@@ -67,6 +75,8 @@
+     for digest in digests {
+         bytes.extend_from_slice(digest.as_array());
+     }
++    bytes.extend_from_slice(qualification.evidence_digest.as_array());
++    bytes.extend_from_slice(qualification.publication_digest.as_array());
+     for signed in [&evidence.generator_plan, &evidence.evaluator_bundle] {
+         bytes.extend_from_slice(Digest32::of_bytes(&signed.signing_bytes()).as_array());
+         bytes.extend_from_slice(&signed.signature);
+@@ -105,7 +115,11 @@
+             candidate_set_digest: input.candidate_set_digest,
+             selected_candidate_id: candidate.clone(),
+         };
+-        let payload = intelligence_evaluation_binding_payload_v1(&binding, &self.signed.evidence)?;
++        let payload = intelligence_evaluation_binding_payload_v2(
++            &binding,
++            &self.signed.evidence,
++            &self.signed.qualification,
++        )?;
+         let verified = self
+             .trust
+             .verifier()
+@@ -121,22 +135,31 @@
+         {
+             return Err(AgentdIntelligenceEvaluationError::Binding);
+         }
+-        let result = decide_with_signed_evidence_v2(
++        let result = revalidate_product_qualification_v1(
++            &self.signed.qualification,
+             self.signed.bundle,
+             self.signed.roles,
+             &self.signed.evidence,
++            ProductTimingEvidenceV1::Qualification,
+             self.trust.verifier(),
+             now,
+         )
+-        .map_err(AgentdIntelligenceEvaluationError::Evaluation)?;
++        .map_err(|error| match error {
++            ProductEvaluationError::Signed(error) => {
++                AgentdIntelligenceEvaluationError::Evaluation(error)
++            }
++            error => AgentdIntelligenceEvaluationError::Qualification(error),
++        })?;
+         if result.decision.authority.grants_any()
+             || result.decision.disposition
+                 != IndependentEvaluationDispositionV1::EligibleForIndependentSelection
+         {
+             return Err(AgentdIntelligenceEvaluationError::Ineligible);
+         }
+-        let mut receipt = b"hepta.agentd.evaluation-consumption.v1\0".to_vec();
++        let mut receipt = b"hepta.agentd.evaluation-consumption.v2\0".to_vec();
+         receipt.extend_from_slice(Digest32::of_bytes(&payload).as_array());
++        receipt.extend_from_slice(self.signed.qualification.evidence_digest.as_array());
++        receipt.extend_from_slice(self.signed.qualification.publication_digest.as_array());
+         receipt.extend_from_slice(result.authentication_digest.as_array());
+         receipt.extend_from_slice(self.trust.distribution_digest().as_array());
+         receipt.extend_from_slice(&self.signed.use_attestation.signature);
+@@ -150,6 +173,7 @@
+     Ineligible,
+     Evidence(SignedEvidenceError),
+     Evaluation(SignedEvaluationError),
++    Qualification(ProductEvaluationError),
+ }
+ 
+ impl fmt::Display for AgentdIntelligenceEvaluationError {
+--- a/codex-rs/hepta-agentd/src/intelligence_evaluation_tests.rs
++++ b/codex-rs/hepta-agentd/src/intelligence_evaluation_tests.rs
+@@ -2,16 +2,17 @@
+ use codex_hepta_intelligence_eval::CrossFoldPlanV1;
+ use codex_hepta_intelligence_eval::EvaluationClaimScopeV1;
+ use codex_hepta_intelligence_eval::EvaluationDirectionV1;
+-use codex_hepta_intelligence_eval::EvaluationIntervalV1;
+-use codex_hepta_intelligence_eval::FinalHoldoutRegistry;
+-use codex_hepta_intelligence_eval::IndependentEvaluationBundleV1;
+ use codex_hepta_intelligence_eval::MetricContractV1;
+-use codex_hepta_intelligence_eval::MetricGateV1;
+ use codex_hepta_intelligence_eval::MetricRoleContractV2;
+ use codex_hepta_intelligence_eval::MetricRoleV2;
+ use codex_hepta_intelligence_eval::SignedEvaluationEvidenceV1;
++use codex_hepta_intelligence_eval::ProductQualificationContextV1;
++use codex_hepta_intelligence_eval::ProductTimingEvidenceV1;
++use pretty_assertions::assert_eq;
++
++#[path = "intelligence_qualification_test_support.rs"]
++mod qualification_support;
+ use codex_hepta_intelligence_eval::evaluation_signing_payload_v2;
+-use codex_hepta_intelligence_eval::freeze_cross_fold_plan_v2;
+ use codex_hepta_learning_ledger::AuthenticatedPrincipalV1;
+ use codex_hepta_learning_ledger::LearningEvidenceRoleV1;
+ use codex_hepta_learning_ledger::LearningEvidenceTrustV1;
+@@ -133,6 +134,14 @@
+     binding: &AgentdEvaluationBindingV1,
+     now: u64,
+ ) -> (ActivatedLearningTrustV1, AgentdSignedEvaluationV1) {
++    evidence_fixture_with_publication(binding, now, digest("agentd-evaluation-publication"))
++}
++
++fn evidence_fixture_with_publication(
++    binding: &AgentdEvaluationBindingV1,
++    now: u64,
++    publication_namespace: Digest32,
++) -> (ActivatedLearningTrustV1, AgentdSignedEvaluationV1) {
+     let objective_digest = binding.objective_digest;
+     let dataset_digest = digest("dataset");
+     let estimand_digest = digest("qualification-estimand");
+@@ -160,7 +169,7 @@
+             minimum_improvement: FixedQ32::from_raw(5),
+         },
+     }];
+-    let frozen_plan = freeze_cross_fold_plan_v2(
++    let (runner, temporal) = qualification_support::evaluate(
+         CrossFoldPlanV1 {
+             plan_id: id("qualification-plan"),
+             claim_scope: EvaluationClaimScopeV1::Qualification,
+@@ -181,46 +190,17 @@
+             final_holdout_digest: digest("final-holdout"),
+         },
+         roles.clone(),
+-    )
+-    .unwrap();
+-    let holdout_use = FinalHoldoutRegistry::new().consume(&frozen_plan).unwrap();
+-
+-    let bundle = IndependentEvaluationBundleV1 {
+-        evaluation_id: id("evaluation"),
+-        candidate_id: binding.selected_candidate_id.clone(),
+-        baseline_id: id("baseline"),
+-        claim_scope: EvaluationClaimScopeV1::Qualification,
++        vec![id("snapshot-1")],
++        vec![id("holdout-window-2")],
++    );
++
++    let context = ProductQualificationContextV1 {
+         generator: generator.clone(),
+         evaluator: evaluator.clone(),
+-        frozen_plan,
+-        holdout_use,
+-        objective_digest,
+-        dataset_digest,
+-        estimand_digest,
+-        estimate_receipt_digest: digest("estimate"),
+-        support_audit_digest: digest("support-audit"),
+-        confidence_receipt_digest: digest("confidence"),
+         retention_receipt_digests: Vec::new(),
+         unlearning_receipt_digest: Digest32::ZERO,
+-        snapshot_ids: vec![id("snapshot-1")],
+-        future_window_ids: vec![id("future-window-1")],
+-        family_alpha_ppm: 50_000,
+-        simultaneous_comparisons: 1,
+-        metrics: vec![MetricGateV1 {
+-            metric_id: id("task-utility"),
+-            direction: EvaluationDirectionV1::Maximize,
+-            candidate: EvaluationIntervalV1 {
+-                lower: FixedQ32::from_raw(100),
+-                upper: FixedQ32::from_raw(110),
+-            },
+-            baseline: EvaluationIntervalV1 {
+-                lower: FixedQ32::from_raw(80),
+-                upper: FixedQ32::from_raw(90),
+-            },
+-            safety_floor: Some(FixedQ32::from_raw(80)),
+-            support_digest: digest("metric-support"),
+-        }],
+-    };
++    };
++    let bundle = runner.qualification_bundle(&temporal, &context).unwrap();
+ 
+     let trust_definition = LearningEvidenceTrustV1 {
+         scope_digest,
+@@ -266,7 +246,20 @@
+         ),
+     };
+ 
+-    let payload = intelligence_evaluation_binding_payload_v1(binding, &evidence).unwrap();
++    let qualification = runner.qualify_and_persist(
++        &temporal,
++        &context,
++        &evidence,
++        ProductTimingEvidenceV1::Qualification,
++        verifier,
++        now,
++        &mut qualification_support::Sink(publication_namespace),
++    ).unwrap();
++    assert_eq!(
++        qualification.decision.decision.disposition,
++        codex_hepta_intelligence_eval::IndependentEvaluationDispositionV1::EligibleForIndependentSelection,
++    );
++    let payload = intelligence_evaluation_binding_payload_v2(binding, &evidence, &qualification).unwrap();
+     let use_attestation = sign(
+         verifier,
+         &evaluator,
+@@ -278,6 +271,7 @@
+     (
+         trust,
+         AgentdSignedEvaluationV1 {
++            qualification,
+             bundle,
+             roles,
+             evidence,
+@@ -398,3 +392,66 @@
+             .is_err()
+     );
+ }
++
++#[test]
++fn independently_resigned_metrics_cannot_replace_the_qualified_estimator_evidence() {
++    let binding = binding();
++    let mut changed = session(&binding, /*now*/ 1_000);
++    changed.signed.bundle.metrics[0].candidate.upper = FixedQ32::from_raw(
++        changed.signed.bundle.metrics[0].candidate.upper.raw() + 1,
++    );
++    let key = SigningKey::from_bytes(&[47; 32]);
++    changed.signed.evidence.evaluator_bundle = sign(
++        changed.trust.verifier(),
++        &changed.signed.bundle.evaluator,
++        &key,
++        LearningEvidenceRoleV1::Evaluator,
++        binding.objective_digest,
++        &evaluation_signing_payload_v2(&changed.signed.bundle, &changed.signed.roles).unwrap(),
++    );
++    let use_payload = intelligence_evaluation_binding_payload_v2(
++        &binding,
++        &changed.signed.evidence,
++        &changed.signed.qualification,
++    ).unwrap();
++    changed.signed.use_attestation = sign(
++        changed.trust.verifier(),
++        &changed.signed.bundle.evaluator,
++        &key,
++        LearningEvidenceRoleV1::Evaluator,
++        binding.objective_digest,
++        &use_payload,
++    );
++    assert!(matches!(
++        changed.evaluate(&input(&binding), &binding.selected_candidate_id, /*now*/ 1_000),
++        Err(AgentdIntelligenceEvaluationError::Qualification(
++            codex_hepta_intelligence_eval::ProductEvaluationError::Binding("qualification use evidence")
++        ))
++    ));
++}
++
++#[test]
++fn current_use_attestation_binds_the_exact_sealed_publication() {
++    let binding = binding();
++    let mut original = session(&binding, /*now*/ 1_000);
++    let (_, other_publication) = evidence_fixture_with_publication(
++        &binding, /*now*/ 1_000, digest("another-publication"),
++    );
++    assert_eq!(original.signed.qualification.decision, other_publication.qualification.decision);
++    assert_ne!(
++        original.signed.qualification.publication_digest,
++        other_publication.qualification.publication_digest,
++    );
++    original.signed.qualification = other_publication.qualification.clone();
++    assert!(matches!(
++        original.evaluate(&input(&binding), &binding.selected_candidate_id, /*now*/ 1_000),
++        Err(AgentdIntelligenceEvaluationError::Evidence(_))
++    ));
++
++    // The same publication is usable with its own exact current-use signature.
++    let mut correctly_bound = session(&binding, /*now*/ 1_000);
++    correctly_bound.signed = other_publication;
++    assert!(correctly_bound.evaluate(
++        &input(&binding), &binding.selected_candidate_id, /*now*/ 1_000,
++    ).is_ok());
++}
+--- /dev/null
++++ b/codex-rs/hepta-agentd/src/intelligence_qualification_test_support.rs
+@@ -0,0 +1,239 @@
++//! Synthetic observation fixtures for source admission tests only.
++//! Memory CAS and publication sink are test doubles, never production owners.
++
++use std::sync::Arc;
++use std::sync::Mutex;
++use codex_hepta_intelligence_eval::*;
++use codex_hepta_types::Digest32;
++use codex_hepta_types::FixedQ32;
++use codex_hepta_types::ProbabilityQ32;
++use codex_hepta_types::StableId;
++use super::digest;
++use super::id;
++
++#[derive(Clone, Default)]
++pub(super) struct MemoryCas(Arc<Mutex<Option<FinalHoldoutCasRecordV1>>>);
++
++impl FinalHoldoutCasStoreV1 for MemoryCas {
++    fn load(
++        &mut self,
++        binding: Digest32,
++    ) -> Result<Option<FinalHoldoutCasRecordV1>, FinalHoldoutCasStoreError> {
++        let state = self
++            .0
++            .lock()
++            .map_err(|_| FinalHoldoutCasStoreError::Indeterminate)?;
++        if state
++            .as_ref()
++            .is_some_and(|record| record.binding != binding)
++        {
++            return Err(FinalHoldoutCasStoreError::Conflict);
++        }
++        Ok(state.clone())
++    }
++
++    fn compare_and_swap(
++        &mut self,
++        binding: Digest32,
++        expected: Option<Digest32>,
++        next: &FinalHoldoutCasRecordV1,
++    ) -> Result<(), FinalHoldoutCasStoreError> {
++        let mut state = self
++            .0
++            .lock()
++            .map_err(|_| FinalHoldoutCasStoreError::Indeterminate)?;
++        if next.binding != binding || state.as_ref().map(|record| record.state_digest) != expected {
++            return Err(FinalHoldoutCasStoreError::Conflict);
++        }
++        *state = Some(next.clone());
++        Ok(())
++    }
++}
++
++struct Provider {
++    manifest: Digest32,
++    inputs: Option<TemporalComparisonInputsV1>,
++}
++
++impl FinalHoldoutProviderV1 for Provider {
++    fn manifest_digest(&mut self) -> Result<Digest32, ProductProviderErrorV1> {
++        Ok(self.manifest)
++    }
++
++    fn release_after_consumption(
++        &mut self,
++        _receipt: &FinalHoldoutJournalReceiptV1,
++    ) -> Result<TemporalComparisonInputsV1, ProductProviderErrorV1> {
++        self.inputs.take().ok_or(ProductProviderErrorV1::Rejected)
++    }
++}
++
++pub(super) struct Sink(pub(super) Digest32);
++
++impl ProductQualificationEvidenceSinkV1 for Sink {
++    fn persist(
++        &mut self,
++        execution_digest: Digest32,
++        decision: &SignedEvaluationDecisionV1,
++    ) -> Result<Digest32, ProductEvidenceSinkErrorV1> {
++        let mut bytes = b"test.only.sealed-ingress-publication".to_vec();
++        bytes.extend_from_slice(self.0.as_array());
++        bytes.extend_from_slice(execution_digest.as_array());
++        bytes.extend_from_slice(decision.decision.evidence_digest.as_array());
++        bytes.extend_from_slice(decision.authentication_digest.as_array());
++        bytes.extend_from_slice(decision.trust_digest.as_array());
++        Ok(Digest32::of_bytes(&bytes))
++    }
++}
++
++
++pub(super) fn evaluate(
++    plan: CrossFoldPlanV1,
++    roles: Vec<MetricRoleContractV2>,
++    snapshot_ids: Vec<StableId>,
++    future_window_ids: Vec<StableId>,
++) -> (ProductEvaluationRunnerV1<MemoryCas>, ProductTemporalEvaluationReceiptV1) {
++    let candidate_plan = temporal_plan("candidate", plan.objective_digest);
++    let baseline_plan = temporal_plan("baseline", plan.objective_digest);
++    let sources = plan.metric_contracts.iter().map(|metric| ProductMetricSourceContractV1 {
++        metric_id: metric.metric_id.clone(),
++        source: ProductMetricSourceV1::DoublyRobust,
++    }).collect();
++    let mut provider = provider_inputs(
++        snapshot_ids,
++        future_window_ids,
++        plan.final_holdout_digest,
++        plan.final_holdout_window_id.clone(),
++    );
++    let frozen = freeze_product_evaluation_plan_v1(
++        plan, roles, sources, &candidate_plan, &baseline_plan,
++    ).unwrap();
++    let owner = FencedFinalHoldoutOwnerV1::initialize(
++        MemoryCas::default(),
++        digest("test-only-holdout-binding"),
++        HoldoutWriterFenceV1 {
++            owner_id: id("test-only-evaluation-owner"),
++            generation: 1,
++            lease_digest: digest("test-only-evaluation-lease"),
++        },
++    ).unwrap();
++    let mut runner = ProductEvaluationRunnerV1::new(owner);
++    let temporal = runner.evaluate_temporal_comparison(
++        &frozen, &candidate_plan, &baseline_plan, &mut provider,
++    ).unwrap();
++    (runner, temporal)
++}
++fn temporal_plan(name: &str, objective_digest: Digest32) -> TemporalEvaluationPlan {
++    let mut plan = TemporalEvaluationPlan {
++        plan_digest: Digest32::ZERO,
++        evaluation_id: id(&format!("{name}-evaluation")),
++        objective_digest,
++        fold: TemporalFoldPlan {
++            plan_digest: digest(&format!("{name}-fold-plan")),
++            fold_id: id(&format!("{name}-fold")),
++            training_watermark: 10,
++            evaluation_start: 20,
++            minimum_per_action: 2,
++        },
++        ope: OpePlan {
++            plan_digest: digest(&format!("{name}-ope-plan")),
++            outcome_watermark: 100,
++            minimum_rows: 2,
++            minimum_ess: FixedQ32::ONE,
++            maximum_weight: FixedQ32::from_raw(3_i64 << 31),
++        },
++        confidence: ClusterConfidencePlan {
++            plan_digest: digest(&format!("{name}-confidence-plan")),
++            assumptions_digest: digest("independent-clusters"),
++            family_alpha_ppm: 50_000,
++            simultaneous_comparisons: 1,
++            minimum_clusters: 2,
++        },
++    };
++    plan.plan_digest = plan.canonical_digest().unwrap();
++    plan
++}
++
++fn provider_inputs(
++    snapshot_ids: Vec<StableId>,
++    future_window_ids: Vec<StableId>,
++    manifest: Digest32,
++    final_window_id: StableId,
++) -> Provider {
++    let mut training = Vec::new();
++    for action in ["a", "b"] {
++        for index in 0..2 {
++            training.push(OutcomeTrainingSample {
++                decision_id: id(&format!("training-{action}-{index}")),
++                principal_lineage: id(&format!("training-principal-{action}-{index}")),
++                episode_lineage: id(&format!("training-episode-{action}-{index}")),
++                window_id: id(&format!("training-window-{action}-{index}")),
++                action_id: id(action),
++                outcome: if action == "a" {
++                    FixedQ32::ONE
++                } else {
++                    FixedQ32::ZERO
++                },
++                observed_at: 5,
++                evidence_digest: digest("training-outcome"),
++            });
++        }
++    }
++
++    let mut targets = Vec::new();
++    let mut candidate_observations = Vec::new();
++    let mut baseline_observations = Vec::new();
++    let mut assignments = Vec::new();
++    for index in 0..1024 {
++        let decision_id = id(&format!("decision-{index}"));
++        targets.push(HeldOutTarget {
++            decision_id: decision_id.clone(),
++            principal_lineage: id(&format!("held-principal-{index}")),
++            episode_lineage: id(&format!("held-episode-{index}")),
++            window_id: final_window_id.clone(),
++            decision_at: 20,
++            actions: vec![id("a"), id("b")],
++        });
++        let observation = |a_probability: u64, b_probability: u64| OpeRow {
++            decision_id: decision_id.clone(),
++            chosen_action: id("a"),
++            complete_candidates: true,
++            actions: vec![
++                OpeAction {
++                    action_id: id("a"),
++                    behavior_probability: ProbabilityQ32::from_raw(1 << 31).unwrap(),
++                    evaluation_probability: ProbabilityQ32::from_raw(a_probability).unwrap(),
++                    predicted_outcome: FixedQ32::ZERO,
++                },
++                OpeAction {
++                    action_id: id("b"),
++                    behavior_probability: ProbabilityQ32::from_raw(1 << 31).unwrap(),
++                    evaluation_probability: ProbabilityQ32::from_raw(b_probability).unwrap(),
++                    predicted_outcome: FixedQ32::ZERO,
++                },
++            ],
++            finalized_outcome: Some(FixedQ32::ONE),
++            outcome_observed_at: 50,
++            outcome_evidence: digest("held-out-outcome"),
++            outcome_model_evidence: digest("ignored-caller-model"),
++        };
++        candidate_observations.push(observation(3 << 30, 1 << 30));
++        baseline_observations.push(observation(1 << 30, 3 << 30));
++        assignments.push(ClusterAssignment {
++            decision_id,
++            cluster_id: id(&format!("cluster-{index}")),
++        });
++    }
++    Provider {
++        manifest,
++        inputs: Some(TemporalComparisonInputsV1 {
++            training,
++            targets,
++            candidate_observations,
++            baseline_observations,
++            assignments,
++            snapshot_ids,
++            future_window_ids,
++        }),
++    }
++}
