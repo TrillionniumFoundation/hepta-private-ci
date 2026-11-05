@@ -1,0 +1,45 @@
+{
+  "schema": "hepta.memory.v15.identifier-liveness.v1",
+  "source_sha256": {
+    "authority.py": "cb66f793698dbe2ec8aba8eaf9e10a6a2ea783c31f17ca3bddb19ac5e87fd57b",
+    "identifier_tests.py": "7054811869bef2e0b215929a57a84026f230a1dac63fcd807eb78a5eaa710c32",
+    "native-transfer/transfer.rs": "691f218f6275d43774047437a494b8aaf44fe362ecf0f62302af12d1eac30dcc",
+    "native-transfer/identifier_tests.rs": "9002b61ca22913a966b284d2dec8c7fd0a496a08fea2146277fe297488880fca",
+    "native-transfer/runner.rs": "572baa0cf599f0aa304fd1f79ff4b2d5d9c6ffead4b678dbec4851687859cdf0"
+  },
+  "native_exact_source_match": {
+    "transfer.rs": true,
+    "runner.rs": true,
+    "identifier_tests.rs": true
+  },
+  "python_scoped_normal": {
+    "tests": 33,
+    "passed": true,
+    "log": "python-scoped-normal.log"
+  },
+  "python_scoped_optimized": {
+    "tests": 33,
+    "passed": true,
+    "log": "python-scoped-optimized.log"
+  },
+  "native": {
+    "host": "x230",
+    "job_id": "1a1ac7792ad-fc05-5485",
+    "tests": 3,
+    "differential_lines": 1600,
+    "passed": true,
+    "receipt": "x230-result.json",
+    "status": "x230-status.json"
+  },
+  "old_unqualified_dependency_attempt": {
+    "log": "python-normal.log",
+    "outcome": "7 import errors because cloudpickle absent from default Python path; superseded scoped runs use recorded python-deps"
+  },
+  "limits_utf8_bytes": {
+    "cell": 256,
+    "transfer": 128
+  },
+  "identity_semantics": "Exact UTF-8 string, nonempty, no normalization or trimming",
+  "open_fail_closed": "recovery required: invalid persisted cell/transfer identifier",
+  "scope": "Reference input validation and native transition boundary only; not production owner or full-store rollback fencing."
+}

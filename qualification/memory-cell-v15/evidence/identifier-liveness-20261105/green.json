@@ -1,0 +1,61 @@
+{
+  "authority_sha256": "cb66f793698dbe2ec8aba8eaf9e10a6a2ea783c31f17ca3bddb19ac5e87fd57b",
+  "probe_sha256": "c3f3b9696bedc9d943bc7404a45a49546a5d0df13c8077bb43b980a1123eabff",
+  "scope": "Disposable signed SQLite fixture; no model quality or production claim.",
+  "null_prepare": {
+    "accepted": false,
+    "reason": "invalid transfer identifier"
+  },
+  "next_prepare": {
+    "accepted": true,
+    "result": {
+      "transfer": "valid",
+      "epoch": 2,
+      "bundle": "eb62b6b29aa5112b0076872c8b3fe15379e9a156dce26acfe9e7e59221f5d463",
+      "state": "prepared"
+    }
+  },
+  "next_ready": {
+    "accepted": true,
+    "result": {
+      "transfer": "valid",
+      "state": "ready",
+      "epoch": 2,
+      "bundle": "eb62b6b29aa5112b0076872c8b3fe15379e9a156dce26acfe9e7e59221f5d463"
+    }
+  },
+  "next_commit": {
+    "accepted": true,
+    "result": {
+      "transfer": "valid",
+      "cell": "cell",
+      "state": "committed",
+      "owner": "ca93ac1705187071d67b83c7ff0efe8108e8ec4530575d7726879333dbdabe7c",
+      "epoch": 3,
+      "bundle": "eb62b6b29aa5112b0076872c8b3fe15379e9a156dce26acfe9e7e59221f5d463"
+    }
+  },
+  "final_state": {
+    "cell": {
+      "id": "cell",
+      "scope": "scope",
+      "owner": "ca93ac1705187071d67b83c7ff0efe8108e8ec4530575d7726879333dbdabe7c",
+      "epoch": 3,
+      "bundle": "eb62b6b29aa5112b0076872c8b3fe15379e9a156dce26acfe9e7e59221f5d463",
+      "state": "active",
+      "acl": "[\"6e7a1cdd29b0b78fd13af4c5598feff4ef2a97166e3ca6f2e4fbfccd80505bf1\",\"ca93ac1705187071d67b83c7ff0efe8108e8ec4530575d7726879333dbdabe7c\",\"ed4928c628d1c2c6eae90338905995612959273a5c63f93636c14614ac8737d1\"]"
+    },
+    "transfers": [
+      {
+        "id": "valid",
+        "cell": "cell",
+        "epoch": 2,
+        "source": "ed4928c628d1c2c6eae90338905995612959273a5c63f93636c14614ac8737d1",
+        "target": "ca93ac1705187071d67b83c7ff0efe8108e8ec4530575d7726879333dbdabe7c",
+        "bundle": "eb62b6b29aa5112b0076872c8b3fe15379e9a156dce26acfe9e7e59221f5d463",
+        "state": "committed",
+        "ready_request": "bdbdc9ee0509124f5fb67a58a2b5a421a94536af31173dc41fe692ec0a205194"
+      }
+    ]
+  }
+}
