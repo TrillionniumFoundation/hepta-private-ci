@@ -1106,6 +1106,9 @@ async fn multiple_auto_compact_per_task_runs_after_token_limit_hit() {
         .with_pre_build_hook(allow_echo_commands)
         .with_config(move |config| {
             config.model_provider.name = non_openai_provider_name;
+            // Exercise the ordinary third-party endpoint, without the default
+            // mock fixture's explicit internal-metadata authorization.
+            config.model_provider.mock_internal_chat_metadata = None;
         })
         .build(&server)
         .await
