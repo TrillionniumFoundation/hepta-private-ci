@@ -2,6 +2,7 @@
 mod activation;
 mod boot;
 mod boundary;
+mod command_runtime;
 mod cycle;
 mod evidence;
 mod ipc;
@@ -13,6 +14,8 @@ mod recovery;
 mod recovery_process;
 mod recovery_registration;
 mod root;
+mod socket_publication;
+mod startup_error;
 mod supervisor;
 mod workload;
 
