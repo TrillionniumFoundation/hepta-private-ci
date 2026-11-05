@@ -749,3 +749,6 @@ async fn attributed_blocked_request_targets_one_of_multiple_active_calls() {
         )
     );
 }
+
+#[path = "network_approval_cleanup_tests.rs"]
+mod cleanup_tests;

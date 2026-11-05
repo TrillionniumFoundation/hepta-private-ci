@@ -408,6 +408,19 @@
         "setup_background::tests::background_setup_inherits_only_dedicated_null_handles"
       ],
       "filter": "test(=setup_background::tests::background_setup_inherits_only_dedicated_null_handles)"
+    },
+    {
+      "id": "core-network-approval-nonblocking-cleanup",
+      "package": "codex-core",
+      "expectedTestCount": 5,
+      "requiredTests": [
+        "tools::network_approval::tests::cleanup_tests::held_call_lock_returns_unconfirmed_without_deferred_cleanup",
+        "tools::network_approval::tests::cleanup_tests::expired_cleanup_deadline_preserves_exact_registration_and_outcome",
+        "tools::network_approval::tests::cleanup_tests::cleanup_removes_only_original_registration_and_its_outcome",
+        "tools::network_approval::tests::cleanup_tests::missing_registration_cleanup_does_not_remove_replacement",
+        "tools::network_approval::tests::cleanup_tests::poisoned_call_lock_keeps_existing_recovery_semantics"
+      ],
+      "filter": "test(=tools::network_approval::tests::cleanup_tests::held_call_lock_returns_unconfirmed_without_deferred_cleanup) | test(=tools::network_approval::tests::cleanup_tests::expired_cleanup_deadline_preserves_exact_registration_and_outcome) | test(=tools::network_approval::tests::cleanup_tests::cleanup_removes_only_original_registration_and_its_outcome) | test(=tools::network_approval::tests::cleanup_tests::missing_registration_cleanup_does_not_remove_replacement) | test(=tools::network_approval::tests::cleanup_tests::poisoned_call_lock_keeps_existing_recovery_semantics)"
     }
   ]
 }

@@ -47,20 +47,15 @@ impl UnifiedExecProcessManager {
             (entry.session.upgrade(), entry.network_approval.clone())
         };
 
-        // Keep the exact entry in the store across asynchronous cleanup. A
-        // cancelled or expired control future must not discard its owner or
-        // leave cleanup work dependent on a removed local entry.
+        // Keep the exact entry while cleanup is unresolved. The approval
+        // service uses a synchronous lock: timeout_at cannot preempt its lock()
+        // call, so this path must try once without waiting or detached cleanup.
         if let Some(session) = session
             && let Some(approval) = approval
-            && tokio::time::timeout_at(
-                deadline,
-                session
-                    .services
-                    .network_approval
-                    .unregister_call(approval.registration_id()),
-            )
-            .await
-            .is_err()
+            && !session
+                .services
+                .network_approval
+                .try_unregister_call_until(approval.registration_id(), deadline)
         {
             return false;
         }
