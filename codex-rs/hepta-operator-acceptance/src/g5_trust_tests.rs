@@ -274,9 +274,16 @@ impl TrustFixture {
         let status = Command::new(openssh_keygen())
             .args(["-q", "-t", "ed25519", "-N", "", "-f"])
             .arg(&key)
-            .status()
+            .stdin(std::process::Stdio::inherit())
+            .output()
             .expect("start test key generation");
-        assert!(status.success());
+        assert!(
+            status.status.success(),
+            "generate test-only Ed25519 key at {}: status={:?}, stderr={}",
+            key.display(),
+            status.status,
+            String::from_utf8_lossy(&status.stderr),
+        );
         let public = std::fs::read_to_string(key.with_extension("pub")).expect("public key");
         let fields = public.split_ascii_whitespace().collect::<Vec<_>>();
         assert_eq!(fields.first().copied(), Some("ssh-ed25519"));
@@ -379,11 +386,15 @@ impl TrustFixture {
             .expect("start SSHSIG signer");
         assert!(status.success());
         let signature = PathBuf::from(format!("{}.sig", challenge.display()));
+        #[cfg(unix)]
         set_private_permissions(&signature);
+        #[cfg(windows)]
+        let signature = crate::test_support::private_generated_signature(&signature);
         signature
     }
 }
 
+#[cfg(unix)]
 fn set_private_permissions(path: &Path) {
     #[cfg(unix)]
     {

@@ -8,7 +8,7 @@ use crate::durable::secure_read;
 fn hardlinked_artifacts_are_rejected_before_reading_or_hashing() {
     let temporary = crate::test_support::private_tempdir("temporary artifact directory");
     let artifact = temporary.path().join("artifact");
-    std::fs::write(&artifact, b"sealed").expect("write artifact");
+    crate::durable::write_private_new(&artifact, b"sealed").expect("write private artifact");
     assert!(secure_read(&artifact, /*max_bytes*/ 64).is_ok());
     std::fs::hard_link(&artifact, temporary.path().join("alias")).expect("create hardlink");
 

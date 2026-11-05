@@ -5,6 +5,8 @@ use std::path::Path;
 use std::path::PathBuf;
 use std::sync::OnceLock;
 
+#[cfg(windows)]
+use pretty_assertions::assert_eq;
 use tempfile::TempDir;
 
 /// Resolve one installed OpenSSH executable for fixture generation only.
@@ -80,4 +82,95 @@ pub(crate) fn private_tempdir(label: &str) -> PrivateTempDir {
     }
     #[cfg(not(windows))]
     temporary
+}
+
+#[cfg(windows)]
+pub(crate) fn private_generated_signature(path: &Path) -> PathBuf {
+    use std::fs::File;
+    use std::fs::OpenOptions;
+    use std::io::Read as _;
+    use std::os::windows::fs::OpenOptionsExt;
+
+    use windows_sys::Win32::Storage::FileSystem::FILE_ATTRIBUTE_DIRECTORY;
+    use windows_sys::Win32::Storage::FileSystem::FILE_ATTRIBUTE_REPARSE_POINT;
+    use windows_sys::Win32::Storage::FileSystem::FILE_FLAG_OPEN_REPARSE_POINT;
+    use windows_sys::Win32::Storage::FileSystem::FILE_SHARE_READ;
+
+    // Preserve the external signer's original output. Its default owner/ACL
+    // need not satisfy private-state policy. Pin its directory and exact file
+    // against replacement and writes before publishing the same signature bytes.
+    let parent = path
+        .parent()
+        .unwrap_or_else(|| panic!("external test signature has no parent"));
+    let _directory = codex_utils_path::open_existing_private_state_directory(parent)
+        .unwrap_or_else(|error| panic!("pin external test signature directory: {error}"));
+    let mut options = OpenOptions::new();
+    options
+        .read(true)
+        .share_mode(FILE_SHARE_READ)
+        .custom_flags(FILE_FLAG_OPEN_REPARSE_POINT);
+    let file = options
+        .open(path)
+        .unwrap_or_else(|error| panic!("pin external test signature: {error}"));
+    let observe = |file: &File| {
+        let info = winapi_util::file::information(file)
+            .unwrap_or_else(|error| panic!("observe external test signature: {error}"));
+        assert_eq!(
+            info.file_attributes()
+                & u64::from(FILE_ATTRIBUTE_DIRECTORY | FILE_ATTRIBUTE_REPARSE_POINT),
+            0,
+            "external test signature must be a regular non-reparse file"
+        );
+        assert_eq!(
+            info.number_of_links(),
+            1,
+            "external signature must have one link"
+        );
+        assert!(
+            info.file_size() <= 4 * 1024,
+            "signature exceeds the original bound"
+        );
+        (
+            info.volume_serial_number(),
+            info.file_index(),
+            info.number_of_links(),
+            info.file_size(),
+            info.file_attributes(),
+            info.creation_time(),
+            info.last_write_time(),
+        )
+    };
+    let expected_identity = observe(&file);
+    let mut bytes = Vec::new();
+    (&file)
+        .take(4 * 1024 + 1)
+        .read_to_end(&mut bytes)
+        .unwrap_or_else(|error| panic!("read bounded test signature: {error}"));
+    assert!(
+        bytes.len() <= 4 * 1024,
+        "test signature exceeds the original bound"
+    );
+    assert_eq!(bytes.len() as u64, expected_identity.3);
+    let current_path = options
+        .open(path)
+        .unwrap_or_else(|error| panic!("reopen external test signature: {error}"));
+    assert_eq!(observe(&file), expected_identity);
+    assert_eq!(observe(&current_path), expected_identity);
+
+    let mut destination = path.as_os_str().to_os_string();
+    destination.push(".private");
+    let destination = PathBuf::from(destination);
+    crate::durable::write_private_new(&destination, &bytes)
+        .unwrap_or_else(|error| panic!("retain private test signature: {error}"));
+    let retained = crate::durable::secure_read(&destination, bytes.len())
+        .unwrap_or_else(|error| panic!("read back private test signature: {error}"));
+    assert!(
+        retained == bytes,
+        "private signature must preserve the external bytes"
+    );
+    assert_eq!(observe(&file), expected_identity);
+    assert_eq!(observe(&current_path), expected_identity);
+    // Both original file pins remain held through the copy and readback. The
+    // original signature is never rewritten, chmodded, renamed, or removed.
+    destination
 }
