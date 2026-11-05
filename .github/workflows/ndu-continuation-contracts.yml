@@ -1,0 +1,62 @@
+name: NDU continuation engineering contracts
+
+on:
+  push:
+    branches: [research/ndu-continuation-admission-20261104]
+    paths:
+      - experiments/multimodal_output_portfolio/v6/continuation_*.py
+      - experiments/multimodal_output_portfolio/v6/continuation_native.rs
+      - experiments/multimodal_output_portfolio/v6/continuation_requirements.txt
+      - experiments/multimodal_output_portfolio/v6/measured_cost.py
+      - experiments/multimodal_output_portfolio/v6/safe_update.py
+      - experiments/multimodal_output_portfolio/v6/test_safe_update.py
+      - .github/workflows/ndu-continuation-contracts.yml
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ndu-continuation-${{ github.sha }}
+  cancel-in-progress: false
+
+jobs:
+  cpu-contracts:
+    # Hosted engineering validation is explicitly not the dedicated Codex environment.
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    env:
+      PYTHONDONTWRITEBYTECODE: "1"
+      OMP_NUM_THREADS: "1"
+      MKL_NUM_THREADS: "1"
+      OPENBLAS_NUM_THREADS: "1"
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+          sparse-checkout: |
+            experiments/multimodal_output_portfolio/v6
+      - uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405
+        with:
+          python-version: "3.12.14"
+      - name: Prepare declared preflight runtime
+        run: |
+          python -m pip install --disable-pip-version-check --only-binary=:all: -r experiments/multimodal_output_portfolio/v6/continuation_requirements.txt
+          rustup toolchain install 1.95.0 --profile minimal --component rustfmt
+      - name: Compile and execute the actual fitted Torch and Rust heads
+        run: |
+          set -euo pipefail
+          mkdir -p "$RUNNER_TEMP/continuation"
+          rustup run 1.95.0 rustfmt --check --edition 2021 experiments/multimodal_output_portfolio/v6/continuation_native.rs
+          rustup run 1.95.0 rustc --edition 2021 -C opt-level=2 experiments/multimodal_output_portfolio/v6/continuation_native.rs -o "$RUNNER_TEMP/continuation/native"
+          export HEPTA_CONTINUATION_NATIVE="$RUNNER_TEMP/continuation/native"
+          python -B -m unittest experiments.multimodal_output_portfolio.v6.test_safe_update experiments.multimodal_output_portfolio.v6.continuation_head_tests experiments.multimodal_output_portfolio.v6.neural_tests experiments.multimodal_output_portfolio.v6.plan_training_tests experiments.multimodal_output_portfolio.v6.test_control -v 2>&1 | tee "$RUNNER_TEMP/continuation/tests.log"
+          python -B -m experiments.multimodal_output_portfolio.v6.continuation_fixture --output "$RUNNER_TEMP/continuation/fixture" --native-binary "$HEPTA_CONTINUATION_NATIVE"
+          git diff --exit-code
+      - uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f
+        if: always()
+        with:
+          name: continuation-contracts-${{ github.sha }}
+          path: ${{ runner.temp }}/continuation/
+          retention-days: 30

@@ -1,0 +1,149 @@
+{
+  "schema": "hepta-ndu-environment-review-v1",
+  "observed_at_utc": "2026-11-05 01:07:34 UTC",
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "purpose": "Read-only execution-location audit; no training or scientific efficacy evidence.",
+  "requested_execution": "Existing project-specific Codex Cloud environment",
+  "requested_cloud_execution_status": "BLOCKED_UNVERIFIED_ENVIRONMENT_ID",
+  "scratch": {
+    "python": "3.12.14",
+    "numpy_available": true,
+    "torch_import_available": false,
+    "rustc_on_path": false,
+    "cargo_on_path": false,
+    "network_policy_snapshot_present": false,
+    "cloud_environment_status_tool_available": false
+  },
+  "desktop_preflight": {
+    "host_alias": "desktop",
+    "reachability": "Authenticated HeptaRuntime SSH challenge succeeded",
+    "execution_tier": "direct-host-preflight-only",
+    "toolchains": {
+      "python_relative_to_login_home": "work/hepta-weight-runtime-20261103-venv/bin/python",
+      "python_version": "3.12.3",
+      "torch_version": "2.6.0+cpu",
+      "numpy_version": "2.2.6",
+      "cpu_tensor_smoke": {
+        "expression": "sum([1.0, 2.0] ** 2)",
+        "result": 5
+      },
+      "cuda_available_in_selected_torch": false,
+      "rustc_relative_to_login_home": ".cargo/bin/rustc",
+      "rustc_version": "1.95.0 (59807616e 2026-04-14)",
+      "cargo_relative_to_login_home": ".cargo/bin/cargo",
+      "cargo_version": "1.95.0 (f2d3ce0bd 2026-03-21)"
+    },
+    "resources_snapshot": {
+      "observed_unix_seconds": 1793840306.2150805,
+      "total_memory_bytes": 134923063296,
+      "available_memory_bytes": 92216770560,
+      "root_available_disk_bytes": 79123197952,
+      "swap_total_bytes": 8589930496,
+      "swap_used_bytes": 8566018048,
+      "gpu_name": "NVIDIA GeForce RTX 4060",
+      "gpu_memory_total_mib": 8188,
+      "gpu_memory_used_mib": 1336,
+      "gpu_utilization_percent": 30,
+      "gpu_power_reading": "N/A",
+      "limitation": "Single point-in-time observations; no exclusive reservation or performance qualification."
+    },
+    "selected_toolchain_differs_from_legacy_protocol": true,
+    "legacy_protocol_versions": {
+      "torch": "2.5.1",
+      "numpy": "1.26.4"
+    }
+  },
+  "legacy_actions": {
+    "source_commit": "9da3c2b98bf427c5812cdc332d4adda1fc23bac6",
+    "source_workflow_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/9da3c2b98bf427c5812cdc332d4adda1fc23bac6/.github/workflows/ndu-output-portfolio-pilot.yml",
+    "source_request_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/9da3c2b98bf427c5812cdc332d4adda1fc23bac6/experiments/multimodal_output_portfolio/CLOUD_RUN_REQUEST.json",
+    "source_run_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/39589317563",
+    "run_id": 39589317563,
+    "workflow_id": 391595448,
+    "job_id": 119186004831,
+    "run_status": "completed",
+    "conclusion": "cancelled",
+    "execution_steps_available": false,
+    "configured_group": "trillionnium-android-gpu",
+    "configured_labels": [
+      "self-hosted",
+      "linux",
+      "x64"
+    ],
+    "required_runner_name": "desktop",
+    "runner_identity_currently_verified": false,
+    "local_runner_service_observation": "Matching historical system service is not-found/inactive/dead; no active matching Actions user service found.",
+    "legacy_branch_newer_successful_dedicated_runs_found": false
+  },
+  "configured_desktop_github_cli": {
+    "version": "2.45.0",
+    "readonly_api_result": "HTTP 403: Sorry. Your account was suspended",
+    "affected_reads": [
+      "repository Actions runners",
+      "organization runner groups",
+      "legacy workflow metadata"
+    ],
+    "dispatch_attempted": false,
+    "account_or_credentials_changed": false,
+    "limitation": "This is the current desktop CLI credential result; no inference about independent connector identities."
+  },
+  "configured_desktop_codex_cli": {
+    "version": "0.144.1",
+    "cloud_command_available": true,
+    "cloud_list_exit_code": 0,
+    "cloud_list_tasks_count": 0,
+    "cloud_list_cursor": null,
+    "environment_picker_loaded": true,
+    "environment_picker_observed_entries": [
+      "All Environments (Global)"
+    ],
+    "project_environment_id_observed": false,
+    "task_submitted": false,
+    "environment_browser_closed": true,
+    "environment_browser_exit_code": 0,
+    "limitation": "The current CLI identity exposes no project environment; this does not prove deletion of previously configured environments."
+  },
+  "limited_existing_asset_scan": {
+    "observed_unix_seconds": 1793840766.1895854,
+    "requested_checkout": "workspace/hepta-private-ci-kg-converge",
+    "explicit_requested_checkout_experiment_data_directories_observed": 0,
+    "candidate_root_count": 7,
+    "roots_relative_to_login_home": [
+      "work/hia-ndu-native-20261103",
+      "work/hia-ndu-convergence-20261103",
+      "work/hia-ndu-pin-8e52-object-mirror-r6.git",
+      "work/hepta-ndu-input-recovery-20261105",
+      "work/hia-seven-ndu-20261104",
+      "work/hia-ndu-offline-source-preparation-r6",
+      "worktrees/hepta-ndu-format-20261103"
+    ],
+    "scanned_directory_count": 1090,
+    "maximum_depth": 6,
+    "mnist_or_model_weight_files_found": 0,
+    "conclusion": "No reusable MNIST raw files or .pt/.pth/.ckpt/.safetensors checkpoint found in the bounded scope; no wider scan performed.",
+    "model_pickle_loaded": false,
+    "read_scope": "Filename/stat checks and limited JSON key-only metadata; no secret/credential files."
+  },
+  "receipts": {
+    "initial_host_toolchain_probe": "1a1a9359b2e-fc05-32bd",
+    "resources_and_rust_probe": "1a1a936c926-fc05-32cb",
+    "shallow_venv_and_readonly_api_probe": "1a1a938516d-fc05-32e6",
+    "selected_torch_smoke_and_codex_help": "1a1a938e6c9-fc05-32f2",
+    "cloud_cli_help": "1a1a93957a7-fc05-32fc",
+    "cloud_list": "1a1a9399d9f-fc05-3303",
+    "cloud_environment_browser_pty": "dpty-e7b6d9891a78ff31b18962ea0f83a66aea31cec89624dbe7fa5b85246fbc3f79",
+    "bounded_mnist_checkpoint_scan": "1a1a93dd029-fc05-332f",
+    "interrupted_inventory_probe": {
+      "job_id": "1a1a937ebc8-fc05-32e3",
+      "result": "PermissionError; protected directory skipped in subsequent bounded probe. No permissions changed."
+    }
+  },
+  "claims_not_established": [
+    "Requested Codex Cloud deployment",
+    "Same identity between direct-host alias and active Actions runner",
+    "GPU Torch execution",
+    "Model training completion",
+    "End-to-end benefit",
+    "Production qualification"
+  ]
+}

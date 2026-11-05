@@ -1,0 +1,103 @@
+{
+  "schema": "hepta.ndu-v6.independent-review.v1",
+  "reviewer": "/root/research_design",
+  "prepared_at_utc": "2026-11-05T01:17:30.693371+00:00",
+  "status": "NO_CURRENT_BLOCKING_CODE_FINDING_IN_REVIEWED_SCOPE",
+  "scope": "Independent source review of cost/admission/recovery and continuation-target mathematics; local contract fixtures only.",
+  "reviewed_source_sha256": {
+    "experiments/multimodal_output_portfolio/v6/measured_cost.py": "50c58506c5c923dc30a910e14ed2348949e45755f56e6b6d8e9e003d8bf4f2cd",
+    "experiments/multimodal_output_portfolio/v6/safe_update.py": "e1093e1c1e04f1c068932f51f1a29567dc88bec05525112320e443273228279c",
+    "experiments/multimodal_output_portfolio/v6/test_safe_update.py": "4729b551006b70ef818770dac9c1356a8e37aeddc3a5e707acbb405a027bf626",
+    "experiments/multimodal_output_portfolio/v6/continuation_head.py": "524f69b11767274299f0aa144c38b8bfe0847a449c91e71e93b35da2012461fa"
+  },
+  "resolved_findings": [
+    {
+      "id": "R1",
+      "issue": "A process death left an exclusive-create lock permanently blocking selection and rollback.",
+      "resolution": "Held OS lock on a persistent inode; process death releases ownership.",
+      "verification": "Local process-death and concurrent-writer contract test passed."
+    },
+    {
+      "id": "R2",
+      "issue": "Negative owned-memory peaks and negative stage measurements could pass receipt validation.",
+      "resolution": "Receipt validation checks finite nonnegative metrics, integral peaks/counters, known stages, and attribution bounded by total time.",
+      "verification": "Malformed receipt rejection checked; local test suite passed."
+    },
+    {
+      "id": "R3",
+      "issue": "Invalid GPU/energy telemetry consumed the meter before failure.",
+      "resolution": "Validate external telemetry before releasing residents or marking the meter finished.",
+      "verification": "Invalid telemetry preserves a reusable open meter."
+    },
+    {
+      "id": "R4",
+      "issue": "String exclusion lists, invalid resource budgets and boolean information identities bypassed structural checks.",
+      "resolution": "Explicit source lists, valid measured budget bounds, actual budget consumption, and SHA-256 information identities are required.",
+      "verification": "Adversarial cases rejected after changes; local suite passed."
+    },
+    {
+      "id": "R5",
+      "issue": "Cancellation in exponential subtraction falsely admitted an exact margin tie at a large common reward offset.",
+      "resolution": "Common-offset scaling, stable sign-dependent expm1, and finite test-range checks.",
+      "verification": "gamma=5e-16, returns=[1e16,1e16+2], margin=2 now yields exactly zero test mean and no-update."
+    },
+    {
+      "id": "R6",
+      "issue": "Mutable external model paths and missing parent-directory fsync weakened rollback custody.",
+      "resolution": "Content-addressed retained bytes, verified loads/rollback, file and directory fsync, atomic active-manifest replacement.",
+      "verification": "Rollback survives mutation of the original source file; retained-file corruption fails closed."
+    },
+    {
+      "id": "R7",
+      "issue": "Renaming source IDs could reuse confirmation evidence.",
+      "resolution": "Frozen original-content manifest, training-content exclusion, within-panel content disjointness, and consumption keyed by both raw-content and visible-information hashes.",
+      "verification": "Current regression rejects rename-only reuse and permits a fixture only after changing both original-content and input identities."
+    },
+    {
+      "id": "R8",
+      "issue": "Continuation target subtraction could overflow for an accepted nonrepresentable return width.",
+      "resolution": "Reject nonfinite upper-minus-lower return width; stable expm1 branches preserve the original moment-difference target.",
+      "verification": "gamma=1e-309 with bounds [-1e308,1e308] is now rejected; standard bounds remain accepted."
+    }
+  ],
+  "validation": {
+    "final_local_contract_suite": {
+      "command": "python3 -m unittest experiments.multimodal_output_portfolio.v6.test_safe_update -q",
+      "tests": 12,
+      "failures": 0,
+      "errors": 0,
+      "result": "PASS",
+      "scope": "Contract fixtures; not model efficacy evidence"
+    },
+    "continuation_target_math": {
+      "method": "Executed the actual target expression extracted from source AST and compared with 100-digit Decimal arithmetic.",
+      "passed_cases": [
+        "risk-neutral mean difference",
+        "positive entropic improvement",
+        "negative entropic improvement",
+        "equal-return zero",
+        "large common offset with small gamma"
+      ],
+      "overflowing_width": "Rejected by the actual final _contract function extracted from source AST.",
+      "torch_execution_claimed": false
+    },
+    "rust_torch_hardware_run": "Parent reported the separate desktop run was starting; its results were not available to this review."
+  },
+  "assumptions": [
+    "Candidate, baseline, objective, tariff, risk profile, sampling rules and bounds are frozen before confirmation.",
+    "The statistical bound requires independent source clusters including the relevant outcome/cost sampling; distinct image IDs alone do not prove hardware-load independence.",
+    "The external collector truthfully verifies source-content hashes and original collection times; a checksum and timestamp field are not independent authenticity evidence.",
+    "Qualification evidence is externally established. Hash binding and boolean completeness checks do not themselves measure coverage, calibration, unknown rejection, recovery or matched training budgets.",
+    "Measured residency covers explicit owned candidate/cache objects. Unregistered allocations, device memory and unavailable energy are not implicitly measured.",
+    "Confirmation consumption and artifact selection are local mechanisms; this review does not establish a distributed holdout owner or production authority."
+  ],
+  "not_qualified_by_this_review": {
+    "project_dedicated_codex_environment": true,
+    "positive_same_information_same_budget_net_benefit": true,
+    "real_temporally_future_or_natural_multimodal_data": true,
+    "full_encoder_decoder_torch_rust_equivalence": true,
+    "production_owner_and_device_lifecycle": true,
+    "general_merton_or_ndu_global_optimality": true
+  },
+  "source_changes_by_reviewer": "None to the reviewed implementation files; findings were sent to their authors."
+}

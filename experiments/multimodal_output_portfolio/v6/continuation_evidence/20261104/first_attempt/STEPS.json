@@ -1,0 +1,23 @@
+{
+  "scope": "first direct-host engineering attempt; tests failed on missing Pillow",
+  "job_id": "1a1a946ea6d-fc05-339e",
+  "steps": [
+    {
+      "name": "rustfmt",
+      "exit_code": 0,
+      "wall_seconds": 0.02990077796857804
+    },
+    {
+      "name": "rustc",
+      "exit_code": 0,
+      "wall_seconds": 0.43461231398396194
+    },
+    {
+      "name": "tests",
+      "exit_code": 1,
+      "wall_seconds": 3.627266687923111
+    }
+  ],
+  "compiler_binary_sha256": "ede5337ba80d147bf0d1f1b84454ee6abb3fe69ffb10cef2ba5d1aa73620cf19",
+  "dependency_fix": "Pillow 11.3.0 installed only in the isolated task dependency directory; shared virtual environment unchanged"
+}
