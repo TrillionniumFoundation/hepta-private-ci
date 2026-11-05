@@ -9200,6 +9200,10 @@
             "null"
           ]
         },
+        "processIndeterminate": {
+          "description": "Accept `process/indeterminate` and its retained-owner, no-handle-reuse semantics. Required together with experimentalApi for `process/spawn`.",
+          "type": "boolean"
+        },
         "requestAttestation": {
           "default": false,
           "description": "Opt into `attestation/generate` requests for upstream `x-oai-attestation`.",
@@ -12948,6 +12952,48 @@
       "title": "ProcessExitedNotification",
       "type": "object"
     },
+    "ProcessIndeterminateNotification": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "description": "Terminal observation failed for an acknowledged `process/spawn`.\n\nThe original owner remains retained and new `process/spawn` requests are fenced server-wide, including on new connections. The handle is not reusable. Only reconciliation of the original owner can establish exit; reconnecting or restarting the server is not exit evidence.",
+      "properties": {
+        "processHandle": {
+          "type": "string"
+        },
+        "reason": {
+          "$ref": "#/definitions/ProcessIndeterminateReason"
+        },
+        "stderr": {
+          "type": "string"
+        },
+        "stderrCapReached": {
+          "type": "boolean"
+        },
+        "stdout": {
+          "description": "Output observed before the original bounded drain ended; not a complete-exit claim.",
+          "type": "string"
+        },
+        "stdoutCapReached": {
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "processHandle",
+        "reason",
+        "stderr",
+        "stderrCapReached",
+        "stdout",
+        "stdoutCapReached"
+      ],
+      "title": "ProcessIndeterminateNotification",
+      "type": "object"
+    },
+    "ProcessIndeterminateReason": {
+      "description": "The server cannot confirm the native process's exit. This is not an exit code or evidence that a cleanup request reached the process.",
+      "enum": [
+        "exitObservationLost"
+      ],
+      "type": "string"
+    },
     "ProcessOutputDeltaNotification": {
       "$schema": "http://json-schema.org/draft-07/schema#",
       "description": "Base64-encoded output chunk emitted for a streaming `process/spawn` request.",
@@ -15916,6 +15962,26 @@
             "params"
           ],
           "title": "Process/exitedNotification",
+          "type": "object"
+        },
+        {
+          "properties": {
+            "method": {
+              "enum": [
+                "process/indeterminate"
+              ],
+              "title": "Process/indeterminateNotificationMethod",
+              "type": "string"
+            },
+            "params": {
+              "$ref": "#/definitions/ProcessIndeterminateNotification"
+            }
+          },
+          "required": [
+            "method",
+            "params"
+          ],
+          "title": "Process/indeterminateNotification",
           "type": "object"
         },
         {
