@@ -1,6 +1,7 @@
 //! Explicit recovery-channel fixture over the original SQLite source owner.
 //! This proves owner binding and durable ordering, not a real helper execution.
 use super::*;
+use pretty_assertions::assert_eq;
 use crate::CalculatorRecoveryChannel;
 use serde_json::Value;
 use serde_json::json;

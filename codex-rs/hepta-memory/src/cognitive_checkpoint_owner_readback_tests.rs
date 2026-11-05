@@ -1,5 +1,6 @@
 //! Read-only whole-owner Current checks use the original protected peer.
 use super::*;
+use pretty_assertions::assert_eq;
 
 #[tokio::test]
 async fn owner_current_readback_is_exact_without_publishing_or_new_source_events() {
@@ -91,7 +92,10 @@ async fn owner_current_readback_refuses_current_for_a_different_actual_local_cut
     let mut stale = current.clone();
     stale.head.last_current = earlier_cut;
     stale.token = token_for(&stale.head);
-    *fixture.checkpoint.receipt.lock().await = stale.clone();
+    fixture
+        .checkpoint
+        .fixture_replace_receipt_for_stale_current_test(stale.clone())
+        .await;
     *fixture.peer.receipt.lock().unwrap() = stale;
     assert!(
         fixture

@@ -50,6 +50,16 @@ pub struct ProtectedCognitiveCheckpoint<T: CognitiveCheckpointTransport> {
 }
 
 impl<T: CognitiveCheckpointTransport> ProtectedCognitiveCheckpoint<T> {
+    // Test-only corruption injection for the negative stale-Current proof.
+    // This capability is not compiled into production code.
+    #[cfg(test)]
+    pub(crate) async fn fixture_replace_receipt_for_stale_current_test(
+        &self,
+        receipt: CognitiveCheckpointReceipt,
+    ) {
+        *self.receipt.lock().await = receipt;
+    }
+
     pub(crate) fn new(
         transport: Arc<T>,
         receipt: CognitiveCheckpointReceipt,
