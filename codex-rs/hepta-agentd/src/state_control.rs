@@ -672,6 +672,11 @@ impl AgentdState {
                 self.fence_after_durable_change()?;
                 AgentdPayload::AutomationEffect(effect_snapshot(receipt)?)
             }
+            crate::AgentdMethod::AutomationExecuteEffectPacketV1 { .. } => {
+                return Err(AgentdError::Protocol(
+                    "automation packet v1 is not enabled in this composition".to_string(),
+                ));
+            }
             crate::AgentdMethod::AutomationReconcileEffect {
                 run_id,
                 step_id,

@@ -20,6 +20,7 @@ pub use automation_chain_observation::AutomationEffectTaskAcceptanceV1;
 pub use automation_chain_observation::ExpectedAutomationTaskAcceptanceV1;
 pub use capabilities::AGENTD_CAPABILITY_AUTOMATION_CALENDAR_V2;
 pub use capabilities::AGENTD_CAPABILITY_AUTOMATION_EXTERNAL_EFFECT;
+pub use capabilities::AGENTD_CAPABILITY_AUTOMATION_EXTERNAL_EFFECT_PACKET_V1;
 pub use capabilities::AGENTD_CAPABILITY_CANONICAL_INTELLIGENCE_V1;
 pub use capabilities::AGENTD_CAPABILITY_SCHEMA_VERSION;
 pub use capabilities::AgentdCapability;
@@ -61,6 +62,9 @@ pub const AGENTD_CONTROL_SCHEMA_VERSION: u32 = 2;
 pub const HOST_TURN_AUTHORITY_BINDING_SCHEMA_VERSION: u32 = 1;
 pub const MAX_CONTROL_FRAME_BYTES: u64 = 65_536;
 pub const MAX_AUTOMATION_EFFECT_WIRE_BYTES: usize = 24 * 1024;
+/// Body bound for the separately negotiated raw packet transport. The JSON
+/// header keeps the existing control-frame bound and the legacy hex limit.
+pub const MAX_AUTOMATION_EFFECT_PACKET_V1_BYTES: usize = 1024 * 1024;
 /// Maximum serialized cognitive context accepted by both Agentd and the final model consumer.
 pub const MAX_COGNITIVE_CONTEXT_BYTES: usize = 8 * 1024;
 pub const COGNITIVE_CONTEXT_REVALIDATION_CAPABILITY: &str = "cognitive.context.revalidate";
@@ -347,6 +351,29 @@ impl AgentdRequest {
             method: AgentdMethod::AutomationExecuteEffect {
                 intent,
                 wire_payload_hex,
+                signed_grant: Box::new(signed_grant),
+                command_id,
+            },
+        }
+    }
+
+    /// Construct the bounded JSON header for one separately framed raw packet.
+    /// The transport must admit the complete body before dispatching this method.
+    pub fn automation_execute_effect_packet_v1(
+        request_id: u64,
+        spawn_generation: u64,
+        intent: AuthorizedEffectIntent,
+        wire_len: u32,
+        signed_grant: SignedFinalUseGrant,
+        command_id: String,
+    ) -> Self {
+        Self {
+            schema_version: AGENTD_CONTROL_SCHEMA_VERSION,
+            request_id,
+            spawn_generation,
+            method: AgentdMethod::AutomationExecuteEffectPacketV1 {
+                intent,
+                wire_len,
                 signed_grant: Box::new(signed_grant),
                 command_id,
             },
@@ -664,6 +691,13 @@ pub enum AgentdMethod {
     AutomationExecuteEffect {
         intent: AuthorizedEffectIntent,
         wire_payload_hex: String,
+        signed_grant: Box<SignedFinalUseGrant>,
+        command_id: String,
+    },
+    /// Header only: exactly `wire_len` raw bytes and EOF must follow this frame.
+    AutomationExecuteEffectPacketV1 {
+        intent: AuthorizedEffectIntent,
+        wire_len: u32,
         signed_grant: Box<SignedFinalUseGrant>,
         command_id: String,
     },
@@ -1466,3 +1500,7 @@ mod tests {
 #[cfg(test)]
 #[path = "objective_tests.rs"]
 mod objective_tests;
+
+#[cfg(test)]
+#[path = "automation_effect_packet_tests.rs"]
+mod automation_effect_packet_tests;

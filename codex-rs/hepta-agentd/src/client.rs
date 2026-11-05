@@ -46,6 +46,9 @@ use crate::MemoryFederationScopeKind;
 use crate::ObjectiveStartOutcome;
 use crate::SessionIngress;
 
+#[path = "client_effect_packet.rs"]
+mod effect_packet;
+
 pub struct AgentdClient {
     socket_path: PathBuf,
     expected_agent_id: AgentId,
@@ -784,21 +787,31 @@ impl AgentdClient {
             .map_err(|_| AgentdError::Protocol("agentd control write timed out".to_string()))??;
         let mut reader = BufReader::new(reader).take(MAX_CONTROL_FRAME_BYTES + 1);
         let mut response_bytes = Vec::new();
-        let count = timeout(self.timeout, reader.read_until(b'\n', &mut response_bytes))
+        timeout(self.timeout, reader.read_until(b'\n', &mut response_bytes))
             .await
             .map_err(|_| AgentdError::Protocol("agentd control read timed out".to_string()))??;
-        if count == 0 || count as u64 > MAX_CONTROL_FRAME_BYTES || !response_bytes.ends_with(b"\n")
+        self.decode_response(expected_request_id, &response_bytes)
+    }
+
+    fn decode_response(
+        &self,
+        expected_request_id: u64,
+        response_bytes: &[u8],
+    ) -> Result<AgentdResponse, AgentdError> {
+        if response_bytes.is_empty()
+            || response_bytes.len() as u64 > MAX_CONTROL_FRAME_BYTES
+            || !response_bytes.ends_with(b"\n")
         {
             return Err(AgentdError::Protocol(
                 "agentd returned an invalid bounded response frame".to_string(),
             ));
         }
-        if response_bytes.as_slice() == AGENTD_CONTROL_OVERLOAD_FRAME {
+        if response_bytes == AGENTD_CONTROL_OVERLOAD_FRAME {
             return Err(AgentdError::Overloaded {
                 retry_after_ms: AGENTD_OVERLOAD_RETRY_AFTER_MS,
             });
         }
-        let response: AgentdResponse = serde_json::from_slice(&response_bytes)?;
+        let response: AgentdResponse = serde_json::from_slice(response_bytes)?;
         if response.schema_version != AGENTD_CONTROL_SCHEMA_VERSION
             || response.request_id != expected_request_id
             || response.agent_id != self.expected_agent_id
