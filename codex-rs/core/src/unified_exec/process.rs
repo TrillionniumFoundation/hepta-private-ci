@@ -706,3 +706,7 @@ impl Drop for UnifiedExecProcess {
 #[cfg(test)]
 #[path = "process_observation_tests.rs"]
 mod observation_tests;
+
+#[cfg(test)]
+#[path = "process_remote_observation_tests.rs"]
+mod remote_observation_tests;
