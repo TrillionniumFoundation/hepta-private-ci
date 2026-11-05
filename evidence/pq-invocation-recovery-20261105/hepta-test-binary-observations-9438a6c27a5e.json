@@ -1,0 +1,487 @@
+{
+  "deployment_release_binary": false,
+  "excluded_target_files_inspected": false,
+  "excluded_target_kinds": [
+    "bin",
+    "test-integration-test"
+  ],
+  "filesystem_observation": {
+    "f_bavail_bytes": 0,
+    "f_bfree_bytes": 854052864
+  },
+  "finished_at": "2026-11-05T10:26:24.044178+00:00",
+  "independent_build_or_deployment": false,
+  "limits": [
+    "Fingerprints and mtimes are local association evidence, not signed build provenance.",
+    "Relative .d source paths are not absolute worktree attribution.",
+    "A later stable binary hash is not its hash at the earlier test execution.",
+    "Missing Running paths stay missing; nextest lists are not inferred.",
+    "The reused target may contain multiple source trees and cached dependencies.",
+    "Zero f_bavail is not zero physical free space; f_bfree is recorded separately.",
+    "Exit zero means an observation file was written, not that native tests passed."
+  ],
+  "native_test_pass_proof": false,
+  "observer_sha256": "bbb07241e1262e6e993b6c3650488bccaaa27c76cd9a761c4a794bab758a732c",
+  "obsolete_runtime_cache_backup_record": "/workspace/scratch/768fd621f7e2/obsolete-runtime-cache-backup.json",
+  "packages": [
+    {
+      "candidates": [
+        {
+          "artifact": {
+            "is_symlink": false,
+            "mtime_utc": "2026-11-05T10:20:44.297050+00:00",
+            "observed_at": "2026-11-05T10:26:23.437881+00:00",
+            "path": "/workspace/scratch/aea25ba345a8/hepta-effects-agent/target/debug/deps/codex_hepta_agentd-13943d509610e217",
+            "profile_classification": "local debug test artifact",
+            "sha256": "d818e4f5227342c78a05179fe383dd8082b3c1f95462478a8ad7a6717ddcf8aa",
+            "st_ctime_ns": 1793874044317050086,
+            "st_dev": 27,
+            "st_ino": 3071035,
+            "st_mode": 33261,
+            "st_mtime_ns": 1793874044297049759,
+            "st_size": 502972432,
+            "stable_during_read": true
+          },
+          "binary_path": "/workspace/scratch/aea25ba345a8/hepta-effects-agent/target/debug/deps/codex_hepta_agentd-13943d509610e217",
+          "cargo_fingerprint_fields": {
+            "compile_kind": 0,
+            "features": "[\"default\", \"production-cognitive-write\"]",
+            "path": 3957647359933774907,
+            "profile": 9456776979220066091,
+            "rustc": 16696009966390864400,
+            "rustflags": [],
+            "target": 7779576624478146987
+          },
+          "cargo_fingerprint_hex": "1b4a11657f9487ab",
+          "compile_commit_attested": null,
+          "dep_info": {
+            "absolute_codex_source_roots": [],
+            "current_worktree_absolute_examples": [],
+            "file": {
+              "is_symlink": false,
+              "mtime_utc": "2026-11-05T10:19:53.864323+00:00",
+              "path": "/workspace/scratch/aea25ba345a8/hepta-effects-agent/target/debug/deps/codex_hepta_agentd-13943d509610e217.d",
+              "sha256": "3f4d0deea9107d95f2808688250ae3043a5877a9f9b92e32aba3a13e11188956",
+              "st_ctime_ns": 1793873993864323244,
+              "st_dev": 27,
+              "st_ino": 3070602,
+              "st_mode": 33188,
+              "st_mtime_ns": 1793873993864323244,
+              "st_size": 18189
+            },
+            "relative_paths_are_not_absolute_provenance": true
+          },
+          "evidence_library_dependency": [
+            [
+              17783133187967995812,
+              "codex_hepta_evidence",
+              false,
+              15488101685594022541
+            ]
+          ],
+          "evidence_library_links": [
+            {
+              "comparison": "dependency integer equals marker bytes interpreted little-endian",
+              "dep_info": {
+                "absolute_codex_source_roots": [
+                  "/workspace/scratch/768fd621f7e2/hepta/codex-rs/"
+                ],
+                "current_worktree_absolute_examples": [
+                  "/workspace/scratch/768fd621f7e2/hepta/codex-rs/hepta-evidence/migrations/0001_governance.sql",
+                  "/workspace/scratch/768fd621f7e2/hepta/codex-rs/hepta-evidence/migrations/0002_provider_evidence.sql",
+                  "/workspace/scratch/768fd621f7e2/hepta/codex-rs/hepta-evidence/migrations/0003_provider_host_binding.sql",
+                  "/workspace/scratch/768fd621f7e2/hepta/codex-rs/hepta-evidence/migrations/0004_memory_mutation_shadow.sql",
+                  "/workspace/scratch/768fd621f7e2/hepta/codex-rs/hepta-evidence/migrations/0005_channel_ingress_evidence.sql",
+                  "/workspace/scratch/768fd621f7e2/hepta/codex-rs/hepta-evidence/migrations/0006_provider_ephemeral_input.sql"
+                ],
+                "file": {
+                  "is_symlink": false,
+                  "mtime_utc": "2026-11-05T09:41:27.919204+00:00",
+                  "path": "/workspace/scratch/aea25ba345a8/hepta-effects-agent/target/debug/deps/codex_hepta_evidence-d8f8593716d4fb11.d",
+                  "sha256": "f95b2021cce5a16ad99e2d8c963abc00061fab8d7f719053efa17c9d85089e8b",
+                  "st_ctime_ns": 1793871687919203727,
+                  "st_dev": 27,
+                  "st_ino": 3070589,
+                  "st_mode": 33188,
+                  "st_mtime_ns": 1793871687919203727,
+                  "st_size": 11686
+                },
+                "relative_paths_are_not_absolute_provenance": true
+              },
+              "dependency_rows": [
+                [
+                  17783133187967995812,
+                  "codex_hepta_evidence",
+                  false,
+                  15488101685594022541
+                ]
+              ],
+              "library_fingerprint": {
+                "is_symlink": false,
+                "mtime_utc": "2026-11-05T09:41:32.453709+00:00",
+                "path": "/workspace/scratch/aea25ba345a8/hepta-effects-agent/target/debug/.fingerprint/codex-hepta-evidence-d8f8593716d4fb11/lib-codex_hepta_evidence.json",
+                "sha256": "bee46c93ef3bc8094a9c7f68731efb6cd47b4f9f6bacb912dcdff31f3102967b",
+                "st_ctime_ns": 1793871692453708908,
+                "st_dev": 27,
+                "st_ino": 3070592,
+                "st_mode": 33188,
+                "st_mtime_ns": 1793871692453708908,
+                "st_size": 939
+              },
+              "marker": {
+                "is_symlink": false,
+                "mtime_utc": "2026-11-05T09:41:32.453709+00:00",
+                "path": "/workspace/scratch/aea25ba345a8/hepta-effects-agent/target/debug/.fingerprint/codex-hepta-evidence-d8f8593716d4fb11/lib-codex_hepta_evidence",
+                "sha256": "830ea60fb4e648af646038fb19c6b26a31bad6a796a0212d16c2c2d6529b3d53",
+                "st_ctime_ns": 1793871692453708908,
+                "st_dev": 27,
+                "st_ino": 3070591,
+                "st_mode": 33188,
+                "st_mtime_ns": 1793871692453708908,
+                "st_size": 16
+              },
+              "marker_hex": "8de2f56e6ccaf0d6",
+              "strength": "indirect Cargo dependency/path association; not compile-commit attestation"
+            }
+          ],
+          "exact_execution_binding_established": false,
+          "fingerprint": {
+            "is_symlink": false,
+            "mtime_utc": "2026-11-05T10:20:44.641055+00:00",
+            "path": "/workspace/scratch/aea25ba345a8/hepta-effects-agent/target/debug/.fingerprint/codex-hepta-agentd-13943d509610e217/test-lib-codex_hepta_agentd.json",
+            "sha256": "226ee6015b36992973759d59fac1b354c7e0dea41a4f94d05d29ccac25e53f6f",
+            "st_ctime_ns": 1793874044641055393,
+            "st_dev": 27,
+            "st_ino": 3070198,
+            "st_mode": 33188,
+            "st_mtime_ns": 1793874044641055393,
+            "st_size": 4824
+          },
+          "receipt_associations": [
+            {
+              "association_strength": "same package/target candidate only; no exact Running path",
+              "basename_running_lines": [],
+              "exact_path_running_lines": [],
+              "mtime_within_receipt_interval": true,
+              "predates_receipt_possible_cache_reuse": false,
+              "receipt": "hepta-receipts/hepta-final-dispatcher.json",
+              "receipt_matches_requested_current_source": true,
+              "source_sha_recorded": "9438a6c27a5e2f25169445f39499631db4e00529"
+            },
+            {
+              "association_strength": "same package/target candidate only; no exact Running path",
+              "basename_running_lines": [],
+              "exact_path_running_lines": [],
+              "mtime_within_receipt_interval": false,
+              "predates_receipt_possible_cache_reuse": true,
+              "receipt": "hepta-receipts/hepta-final-recovery-signed.json",
+              "receipt_matches_requested_current_source": true,
+              "source_sha_recorded": "9438a6c27a5e2f25169445f39499631db4e00529"
+            }
+          ],
+          "sha256": "d818e4f5227342c78a05179fe383dd8082b3c1f95462478a8ad7a6717ddcf8aa",
+          "state": "stable completed test artifact observed"
+        },
+        {
+          "binary_path": "/workspace/scratch/aea25ba345a8/hepta-effects-agent/target/debug/deps/codex_hepta_agentd-b1f0709e78245ce8",
+          "compile_commit_attested": null,
+          "exact_execution_binding_established": false,
+          "reason": "test executable or completed test-lib fingerprint absent; not hashed",
+          "sha256": null,
+          "state": "pending"
+        }
+      ],
+      "package": "codex-hepta-agentd",
+      "state": "candidates observed",
+      "successful_current_source_receipt_supplied": true
+    },
+    {
+      "candidates": [
+        {
+          "artifact": {
+            "is_symlink": false,
+            "mtime_utc": "2026-11-05T10:13:26.978853+00:00",
+            "observed_at": "2026-11-05T10:26:23.496595+00:00",
+            "path": "/workspace/scratch/aea25ba345a8/hepta-effects-agent/target/debug/deps/codex_hepta_evidence-0f5076227f347d3a",
+            "profile_classification": "local debug test artifact",
+            "sha256": "d74fd5a8153ecc0d7fc3b52ad7b17e541e1217aec37fab39c0a6e95f629915b3",
+            "st_ctime_ns": 1793873606988456166,
+            "st_dev": 27,
+            "st_ino": 3071329,
+            "st_mode": 33261,
+            "st_mtime_ns": 1793873606978852748,
+            "st_size": 53161504,
+            "stable_during_read": true
+          },
+          "binary_path": "/workspace/scratch/aea25ba345a8/hepta-effects-agent/target/debug/deps/codex_hepta_evidence-0f5076227f347d3a",
+          "cargo_fingerprint_fields": {
+            "compile_kind": 0,
+            "features": "[]",
+            "path": 7568444308473620593,
+            "profile": 9456776979220066091,
+            "rustc": 16696009966390864400,
+            "rustflags": [],
+            "target": 6154548380874825605
+          },
+          "cargo_fingerprint_hex": "0ac5befd97bcf790",
+          "compile_commit_attested": null,
+          "dep_info": {
+            "absolute_codex_source_roots": [
+              "/workspace/scratch/768fd621f7e2/hepta/codex-rs/"
+            ],
+            "current_worktree_absolute_examples": [
+              "/workspace/scratch/768fd621f7e2/hepta/codex-rs/hepta-evidence/migrations/0001_governance.sql",
+              "/workspace/scratch/768fd621f7e2/hepta/codex-rs/hepta-evidence/migrations/0002_provider_evidence.sql",
+              "/workspace/scratch/768fd621f7e2/hepta/codex-rs/hepta-evidence/migrations/0003_provider_host_binding.sql",
+              "/workspace/scratch/768fd621f7e2/hepta/codex-rs/hepta-evidence/migrations/0004_memory_mutation_shadow.sql",
+              "/workspace/scratch/768fd621f7e2/hepta/codex-rs/hepta-evidence/migrations/0005_channel_ingress_evidence.sql",
+              "/workspace/scratch/768fd621f7e2/hepta/codex-rs/hepta-evidence/migrations/0006_provider_ephemeral_input.sql"
+            ],
+            "file": {
+              "is_symlink": false,
+              "mtime_utc": "2026-11-05T10:13:14.902665+00:00",
+              "path": "/workspace/scratch/aea25ba345a8/hepta-effects-agent/target/debug/deps/codex_hepta_evidence-0f5076227f347d3a.d",
+              "sha256": "4186d85ae71c5be5fa279db8bc54f1a3de581ab4313c05d67f1196223eea1e1d",
+              "st_ctime_ns": 1793873594902664996,
+              "st_dev": 27,
+              "st_ino": 3071571,
+              "st_mode": 33188,
+              "st_mtime_ns": 1793873594902664996,
+              "st_size": 11748
+            },
+            "relative_paths_are_not_absolute_provenance": true
+          },
+          "evidence_library_dependency": [],
+          "evidence_library_links": [],
+          "exact_execution_binding_established": false,
+          "fingerprint": {
+            "is_symlink": false,
+            "mtime_utc": "2026-11-05T10:13:27.086854+00:00",
+            "path": "/workspace/scratch/aea25ba345a8/hepta-effects-agent/target/debug/.fingerprint/codex-hepta-evidence-0f5076227f347d3a/test-lib-codex_hepta_evidence.json",
+            "sha256": "35a8feb45e151b91455b928e88b5d3ee1f2f04419847cac830306bb351e0104e",
+            "st_ctime_ns": 1793873607086854314,
+            "st_dev": 27,
+            "st_ino": 3071173,
+            "st_mode": 33188,
+            "st_mtime_ns": 1793873607086854314,
+            "st_size": 1141
+          },
+          "receipt_associations": [
+            {
+              "association_strength": "same package/target candidate only; no exact Running path",
+              "basename_running_lines": [],
+              "exact_path_running_lines": [],
+              "mtime_within_receipt_interval": false,
+              "predates_receipt_possible_cache_reuse": true,
+              "receipt": "hepta-receipts/hepta-final-recovery-owner.json",
+              "receipt_matches_requested_current_source": true,
+              "source_sha_recorded": "9438a6c27a5e2f25169445f39499631db4e00529"
+            },
+            {
+              "association_strength": "same package/target candidate only; no exact Running path",
+              "basename_running_lines": [],
+              "exact_path_running_lines": [],
+              "mtime_within_receipt_interval": false,
+              "predates_receipt_possible_cache_reuse": true,
+              "receipt": "hepta-receipts/hepta-final-evidence-all-lib.json",
+              "receipt_matches_requested_current_source": true,
+              "source_sha_recorded": "9438a6c27a5e2f25169445f39499631db4e00529"
+            }
+          ],
+          "sha256": "d74fd5a8153ecc0d7fc3b52ad7b17e541e1217aec37fab39c0a6e95f629915b3",
+          "state": "stable completed test artifact observed"
+        }
+      ],
+      "package": "codex-hepta-evidence",
+      "state": "candidates observed",
+      "successful_current_source_receipt_supplied": true
+    }
+  ],
+  "receipts": [
+    {
+      "file": {
+        "is_symlink": false,
+        "mtime_utc": "2026-11-05T10:19:47.586524+00:00",
+        "path": "hepta-receipts/hepta-final-recovery-owner.json",
+        "sha256": "790a3a3d7e4c28c201b72259d688be4ee44c4d59769dd9cbd749db67cc964254",
+        "st_ctime_ns": 1793873987586524073,
+        "st_dev": 27,
+        "st_ino": 3673836,
+        "st_mode": 33152,
+        "st_mtime_ns": 1793873987586524073,
+        "st_size": 3413
+      },
+      "finished_at": "2026-11-05T10:19:47.586116+00:00",
+      "log": {
+        "is_symlink": false,
+        "mtime_utc": "2026-11-05T10:19:46.969956+00:00",
+        "path": "hepta-receipts/hepta-final-recovery-owner.json.f8c148a73bcb483b86b13cbf81924736.log",
+        "sha256": "1588557c6b50c4e1d43d17979d0f99747b03253d5d0e761a2b4d13ea11b975a7",
+        "st_ctime_ns": 1793873986969956112,
+        "st_dev": 27,
+        "st_ino": 3673806,
+        "st_mode": 33188,
+        "st_mtime_ns": 1793873986969956112,
+        "st_size": 31603
+      },
+      "matches_requested_current_source": true,
+      "nextest_starting_lines": [
+        "    Starting 17 tests across 1 binary (139 tests skipped)"
+      ],
+      "observed_passed_tests_recorded": 17,
+      "package": "codex-hepta-evidence",
+      "path": "hepta-receipts/hepta-final-recovery-owner.json",
+      "recorded_status": "passed",
+      "running_lines": [],
+      "source_sha": "9438a6c27a5e2f25169445f39499631db4e00529",
+      "started_at": "2026-11-05T10:19:35.989597+00:00",
+      "state": "completed receipt and log observed",
+      "test_roster_revalidated": false,
+      "tested_sha": "9438a6c27a5e2f25169445f39499631db4e00529",
+      "usable_for_association": true
+    },
+    {
+      "file": {
+        "is_symlink": false,
+        "mtime_utc": "2026-11-05T10:21:09.556232+00:00",
+        "path": "hepta-receipts/hepta-final-dispatcher.json",
+        "sha256": "f3de9b9183003d5a2fd3a2163c80b5a0389bcce9724ce0876eab489c15a110d3",
+        "st_ctime_ns": 1793874069556232150,
+        "st_dev": 27,
+        "st_ino": 3672038,
+        "st_mode": 33152,
+        "st_mtime_ns": 1793874069556232150,
+        "st_size": 1543
+      },
+      "finished_at": "2026-11-05T10:21:09.554268+00:00",
+      "log": {
+        "is_symlink": false,
+        "mtime_utc": "2026-11-05T10:21:05.909747+00:00",
+        "path": "hepta-receipts/hepta-final-dispatcher.json.85cf9a4704b54604bff6e23aa63a7fc2.log",
+        "sha256": "c8f1b83e5ab5eb403ca7d5719cfd8bea6e29eea0c71ff24d0c5ff690b592baee",
+        "st_ctime_ns": 1793874065909747119,
+        "st_dev": 27,
+        "st_ino": 3672041,
+        "st_mode": 33188,
+        "st_mtime_ns": 1793874065909747119,
+        "st_size": 33590
+      },
+      "matches_requested_current_source": true,
+      "nextest_starting_lines": [
+        "    Starting 14 tests across 1 binary (238 tests skipped)"
+      ],
+      "observed_passed_tests_recorded": 14,
+      "package": "codex-hepta-agentd",
+      "path": "hepta-receipts/hepta-final-dispatcher.json",
+      "recorded_status": "passed",
+      "running_lines": [],
+      "source_sha": "9438a6c27a5e2f25169445f39499631db4e00529",
+      "started_at": "2026-11-05T10:19:47.650073+00:00",
+      "state": "completed receipt and log observed",
+      "test_roster_revalidated": false,
+      "tested_sha": "9438a6c27a5e2f25169445f39499631db4e00529",
+      "usable_for_association": true
+    },
+    {
+      "file": {
+        "is_symlink": false,
+        "mtime_utc": "2026-11-05T10:23:53.150352+00:00",
+        "path": "hepta-receipts/hepta-final-evidence-all-lib.json",
+        "sha256": "9a91cdcc167807adf7ae560a480cf75540b925c7ac47077e46f7489f4ba98cae",
+        "st_ctime_ns": 1793874233150351498,
+        "st_dev": 27,
+        "st_ino": 3692585,
+        "st_mode": 33152,
+        "st_mtime_ns": 1793874233150351498,
+        "st_size": 1503
+      },
+      "finished_at": "2026-11-05T10:23:53.149628+00:00",
+      "log": {
+        "is_symlink": false,
+        "mtime_utc": "2026-11-05T10:23:52.155752+00:00",
+        "path": "hepta-receipts/hepta-final-evidence-all-lib.json.87fb01727a694674a032fb0a41392bba.log",
+        "sha256": "ec605f959a63eb50de4459f451b74040190fbc23b14f996c4e4bc09fbdfed5f8",
+        "st_ctime_ns": 1793874232155751697,
+        "st_dev": 27,
+        "st_ino": 3673969,
+        "st_mode": 33188,
+        "st_mtime_ns": 1793874232155751697,
+        "st_size": 98540
+      },
+      "matches_requested_current_source": true,
+      "nextest_starting_lines": [
+        "    Starting 155 tests across 1 binary (1 test skipped)"
+      ],
+      "observed_passed_tests_recorded": 155,
+      "package": "codex-hepta-evidence",
+      "path": "hepta-receipts/hepta-final-evidence-all-lib.json",
+      "recorded_status": "passed",
+      "running_lines": [],
+      "source_sha": "9438a6c27a5e2f25169445f39499631db4e00529",
+      "started_at": "2026-11-05T10:22:34.153910+00:00",
+      "state": "completed receipt and log observed",
+      "test_roster_revalidated": false,
+      "tested_sha": "9438a6c27a5e2f25169445f39499631db4e00529",
+      "usable_for_association": true
+    },
+    {
+      "file": {
+        "is_symlink": false,
+        "mtime_utc": "2026-11-05T10:24:01.488816+00:00",
+        "path": "hepta-receipts/hepta-final-recovery-signed.json",
+        "sha256": "beca1f69f55caeb5c7b066ae442daa3cab4fcf395a49d02d0758fe93f745bda4",
+        "st_ctime_ns": 1793874241488816289,
+        "st_dev": 27,
+        "st_ino": 3692578,
+        "st_mode": 33152,
+        "st_mtime_ns": 1793874241488816289,
+        "st_size": 2582
+      },
+      "finished_at": "2026-11-05T10:24:01.485833+00:00",
+      "log": {
+        "is_symlink": false,
+        "mtime_utc": "2026-11-05T10:24:00.491863+00:00",
+        "path": "hepta-receipts/hepta-final-recovery-signed.json.02f4394aa7b74d95920c19ad550ad6ba.log",
+        "sha256": "88dd6d57042320f41cc9758166761bcf14049a098beb74f6c38a55055e9ff440",
+        "st_ctime_ns": 1793874240491863498,
+        "st_dev": 27,
+        "st_ino": 3692584,
+        "st_mode": 33188,
+        "st_mtime_ns": 1793874240491863498,
+        "st_size": 31238
+      },
+      "matches_requested_current_source": true,
+      "nextest_starting_lines": [
+        "    Starting 11 tests across 1 binary (241 tests skipped)"
+      ],
+      "observed_passed_tests_recorded": 11,
+      "package": "codex-hepta-agentd",
+      "path": "hepta-receipts/hepta-final-recovery-signed.json",
+      "recorded_status": "passed",
+      "running_lines": [],
+      "source_sha": "9438a6c27a5e2f25169445f39499631db4e00529",
+      "started_at": "2026-11-05T10:23:53.229535+00:00",
+      "state": "completed receipt and log observed",
+      "test_roster_revalidated": false,
+      "tested_sha": "9438a6c27a5e2f25169445f39499631db4e00529",
+      "usable_for_association": true
+    }
+  ],
+  "requested_current_source_sha": "9438a6c27a5e2f25169445f39499631db4e00529",
+  "schema": "hepta-local-test-binary-observations-v1",
+  "source_after": {
+    "commit": "9438a6c27a5e2f25169445f39499631db4e00529",
+    "dirty": false,
+    "tree": "a9cba014de26164f0285c6c886fb071b19a04845"
+  },
+  "source_before": {
+    "commit": "9438a6c27a5e2f25169445f39499631db4e00529",
+    "dirty": false,
+    "tree": "a9cba014de26164f0285c6c886fb071b19a04845"
+  },
+  "source_root": "/workspace/scratch/768fd621f7e2/hepta",
+  "source_stable": true,
+  "started_at": "2026-11-05T10:26:22.919538+00:00",
+  "static_cache_relocation_record": "/workspace/scratch/768fd621f7e2/native-static-cache-relocation.json",
+  "target_dir": "/workspace/scratch/aea25ba345a8/hepta-effects-agent/target"
+}

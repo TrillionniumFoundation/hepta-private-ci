@@ -1,0 +1,78 @@
+{
+  "contract": {
+    "official_reader_sha256": "e55f5ca1200b2c9fc5af4158c42f460e71f3815166a962a5b892acfe9477b1d1",
+    "source_sha": "97ae5b4bf5e5f0d0589c1c653f1861e1d9c1242f",
+    "tree": "fdce3b8e854629315cea088f5d549aed3f8b2021",
+    "workflow": ".github/workflows/hepta-pq-policy-renewal.yml",
+    "workflow_sha256": "2582f09165785e42803699b62c0155201501a00eaa2cb7b87151b326fcd75d75",
+    "workflow_tools": {
+      "just": "1.51.0",
+      "nextest": "0.9.103"
+    }
+  },
+  "hosted_qualification": false,
+  "limits": "Receipt lacks configured timeout and binary hashes; neither is inferred. Tool probes describe this local environment, not attested receipt provenance.",
+  "local_tools": {
+    "just": {
+      "matches_pin": false,
+      "path": "/workspace/scratch/822cc50e24f0/authority-recovery/native-20261105/bin/just",
+      "version": "1.59.0",
+      "workflow_pin": "1.51.0"
+    },
+    "nextest": {
+      "matches_pin": false,
+      "path": "/workspace/scratch/822cc50e24f0/authority-recovery/native-20261105/bin/cargo-nextest",
+      "version": "0.9.151",
+      "workflow_pin": "0.9.103"
+    }
+  },
+  "rosters": {
+    "owner": {
+      "passed": false,
+      "reason": "receipt is not passed",
+      "receipt": "/workspace/scratch/768fd621f7e2/hepta-receipts/hepta-evidence-all-lib.json",
+      "receipt_sha256": "50387d37e3ae067061ec7204b755e6355f57a2f6af60c1643417b5a943dd8668",
+      "recorded_status": "failed",
+      "required_tests": [
+        "provider_effect_recovery_provenance_tests::recovery_provenance_preserves_dispatch_then_authoritative_status",
+        "provider_effect_recovery_provenance_tests::recovery_provenance_rejects_late_dispatch_after_status_without_uncertainty",
+        "recovery_effect_frontier_tests::recovery_snapshot_commits_ack_provenance_and_cross_table_order",
+        "recovery_effect_frontier_tests::recovery_snapshot_commits_effect_history_after_the_first_page",
+        "recovery_effect_frontier_tests::recovery_snapshot_commits_intent_unknown_and_original_operation_receipt",
+        "recovery_effect_frontier_tests::recovery_snapshot_distinguishes_a_valid_effect_only_database_rollback",
+        "recovery_effect_frontier_tests::recovery_snapshot_refuses_changed_json_with_retained_record_digests",
+        "recovery_invocation_frontier_tests::recovery_snapshot_binds_invocation_sequence_and_recording_time",
+        "recovery_invocation_frontier_tests::recovery_snapshot_commits_invocations_after_the_first_page",
+        "recovery_invocation_frontier_tests::recovery_snapshot_commits_pending_invocations_and_terminal_states",
+        "recovery_invocation_frontier_tests::recovery_snapshot_refuses_duplicate_terminal_hidden_at_page_boundary",
+        "recovery_invocation_frontier_tests::recovery_snapshot_refuses_invocation_column_type_corruption_without_panicking",
+        "recovery_invocation_frontier_tests::recovery_snapshot_requires_the_terminals_authoritative_intent",
+        "recovery_invocation_frontier_tests::recovery_snapshot_revalidates_invocation_payloads_and_projected_columns",
+        "recovery_invocation_schema_tests::recovery_invocation_schema_accepts_current_migration_keys",
+        "recovery_invocation_schema_tests::recovery_invocation_schema_refuses_non_rowid_or_composite_sequences",
+        "recovery_invocation_schema_tests::recovery_invocation_schema_requires_exact_unconditional_column_uniqueness"
+      ],
+      "status": "FAIL"
+    },
+    "signed": {
+      "passed": false,
+      "reason": "receipt not supplied or missing",
+      "receipt": null,
+      "required_tests": [
+        "evidence_frontier::tests::recovery_frontier_authenticates_both_effect_fields",
+        "evidence_frontier::tests::recovery_frontier_cannot_be_omitted_at_the_ordinary_agentd_run_entry",
+        "evidence_frontier::tests::recovery_frontier_enforces_root_scope_epoch_revocation_and_generation_floor",
+        "evidence_frontier::tests::recovery_frontier_pq_rejects_invocation_only_database_rollbacks",
+        "evidence_frontier::tests::recovery_frontier_pq_survives_store_close_and_reopen",
+        "evidence_frontier::tests::recovery_frontier_read_only_preflight_never_binds_or_changes_the_image",
+        "evidence_frontier::tests::recovery_frontier_refuses_valid_classical_v1_and_v2_signatures",
+        "evidence_frontier::tests::recovery_frontier_refuses_valid_pq_v3_and_relabelled_v2_snapshots",
+        "evidence_frontier::tests::recovery_frontier_rejects_wrong_domain_and_profile",
+        "evidence_frontier::tests::recovery_frontier_rejects_wrong_key_pin_and_noncanonical_signature",
+        "evidence_frontier::tests::recovery_frontier_root_rotation_retires_the_old_key"
+      ],
+      "status": "PENDING"
+    }
+  },
+  "status": "NOT_PASSED"
+}

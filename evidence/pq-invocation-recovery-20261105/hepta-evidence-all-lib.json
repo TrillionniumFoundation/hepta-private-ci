@@ -1,0 +1,54 @@
+{
+  "after": {
+    "commit": "97ae5b4bf5e5f0d0589c1c653f1861e1d9c1242f",
+    "dirty": false,
+    "parents": [
+      "7530e4bc7aa61a0c23a5933fef4a65d86a586cf8"
+    ],
+    "tree": "fdce3b8e854629315cea088f5d549aed3f8b2021"
+  },
+  "base_sha": "",
+  "before": {
+    "commit": "97ae5b4bf5e5f0d0589c1c653f1861e1d9c1242f",
+    "dirty": false,
+    "parents": [
+      "7530e4bc7aa61a0c23a5933fef4a65d86a586cf8"
+    ],
+    "tree": "fdce3b8e854629315cea088f5d549aed3f8b2021"
+  },
+  "command": [
+    "just",
+    "test",
+    "--locked",
+    "-p",
+    "codex-hepta-evidence",
+    "--lib",
+    "--no-capture",
+    "--retries",
+    "0",
+    "--test-threads=1"
+  ],
+  "command_exit_code": -9,
+  "elapsed_seconds": 608.8951037570005,
+  "exit_code": 124,
+  "finished_at": "2026-11-05T09:21:25.431901+00:00",
+  "job": null,
+  "lane": "source-head",
+  "log_bytes": 25006,
+  "log_file": "hepta-evidence-all-lib.json.e1ddb53bb2af40ad99d7513feec0ee32.log",
+  "log_sha256": "c0ac5e455dff2d69d1b0bdde30365ed143935fb5f7a01b5449ba16b7283de7dc",
+  "minimum_tests": 17,
+  "observed_failed_tests": 0,
+  "observed_passed_tests": 0,
+  "output_limit_exceeded": false,
+  "returncode": -9,
+  "run_attempt": null,
+  "run_id": null,
+  "schema_version": 1,
+  "source_sha": "97ae5b4bf5e5f0d0589c1c653f1861e1d9c1242f",
+  "started_at": "2026-11-05T09:11:16.536019+00:00",
+  "status": "failed",
+  "tested_sha": "97ae5b4bf5e5f0d0589c1c653f1861e1d9c1242f",
+  "timed_out": true,
+  "working_directory": "/workspace/scratch/768fd621f7e2/hepta"
+}

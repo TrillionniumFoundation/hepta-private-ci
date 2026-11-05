@@ -1,0 +1,66 @@
+{
+  "schema": "native-static-cache-relocation-v1",
+  "created_utc": "2026-11-05T09:49:59.989669+00:00",
+  "reason": "The shared disk is full. Preserve exact compiled static archive bytes in bounded temporary memory storage so the original native controls can execute; source, executable and database storage and test budgets remain unchanged.",
+  "limit_bytes": 734003200,
+  "bytes": 732135238,
+  "files": [
+    {
+      "original_path": "/workspace/scratch/aea25ba345a8/hepta-effects-agent/target/debug/deps/libcodex_core-cc58d221270bbc00.rlib",
+      "temporary_path": "/dev/shm/768fd621f7e2-runtime-static-cache/libcodex_core-cc58d221270bbc00.rlib",
+      "bytes": 168883974,
+      "sha256": "4e63f2105419f6d2b1d59083f56afdb106ce174d8930c2e32b1e715e89fca62c"
+    },
+    {
+      "original_path": "/workspace/scratch/aea25ba345a8/hepta-effects-agent/target/debug/deps/libcodex_app_server_protocol-b43603918ad578f0.rlib",
+      "temporary_path": "/dev/shm/768fd621f7e2-runtime-static-cache/libcodex_app_server_protocol-b43603918ad578f0.rlib",
+      "bytes": 100495474,
+      "sha256": "d1692f204f70b6d96e9f18bb2c34e04fd5d771483122d6963bda2fffb2fdc7ce"
+    },
+    {
+      "original_path": "/workspace/scratch/aea25ba345a8/hepta-effects-agent/target/debug/deps/libstarlark-3201374df7e725f0.rlib",
+      "temporary_path": "/dev/shm/768fd621f7e2-runtime-static-cache/libstarlark-3201374df7e725f0.rlib",
+      "bytes": 89510948,
+      "sha256": "17c3a21ba4178cc446761be483f4ff84582bdb7d8cdc106e9a8ae458ad2f3dbb"
+    },
+    {
+      "original_path": "/workspace/scratch/aea25ba345a8/hepta-effects-agent/target/debug/deps/libstarlark-f3156ecc5f9624f0.rlib",
+      "temporary_path": "/dev/shm/768fd621f7e2-runtime-static-cache/libstarlark-f3156ecc5f9624f0.rlib",
+      "bytes": 89478498,
+      "sha256": "6e383490488cc66e69c55dff029dec65ce8e49e834275ce5a0322aa24cdd9527"
+    },
+    {
+      "original_path": "/workspace/scratch/aea25ba345a8/hepta-effects-agent/target/debug/deps/libcodex_app_server-3bddaba562efa9dc.rlib",
+      "temporary_path": "/dev/shm/768fd621f7e2-runtime-static-cache/libcodex_app_server-3bddaba562efa9dc.rlib",
+      "bytes": 80718020,
+      "sha256": "b8717810030d200634c8e7415b275e41aed5e7062e6ce2eb1380845b04fcc1a4"
+    },
+    {
+      "original_path": "/workspace/scratch/aea25ba345a8/hepta-effects-agent/target/debug/deps/libcodex_config-0a713932c956fcdb.rlib",
+      "temporary_path": "/dev/shm/768fd621f7e2-runtime-static-cache/libcodex_config-0a713932c956fcdb.rlib",
+      "bytes": 79084066,
+      "sha256": "08269743e834315a5e008b836ea79dfd4c305a6a343257910f0a3893e8730687"
+    },
+    {
+      "original_path": "/workspace/scratch/aea25ba345a8/hepta-effects-agent/target/debug/deps/libcodex_exec_server-bb75bc11a21590e6.rlib",
+      "temporary_path": "/dev/shm/768fd621f7e2-runtime-static-cache/libcodex_exec_server-bb75bc11a21590e6.rlib",
+      "bytes": 54730626,
+      "sha256": "0d958267b1fbdb8cb84675d58dc41321d4c200fb597b8a430aeaabf9d55cf28c"
+    },
+    {
+      "original_path": "/workspace/scratch/aea25ba345a8/hepta-effects-agent/target/debug/deps/libcodex_hepta_agentd-b3bf7bec5fd84137.rlib",
+      "temporary_path": "/dev/shm/768fd621f7e2-runtime-static-cache/libcodex_hepta_agentd-b3bf7bec5fd84137.rlib",
+      "bytes": 47471236,
+      "sha256": "d1afdd4e3f8334f483b347eb85ec483143ce2748ed43865f6457529f384202b0"
+    },
+    {
+      "original_path": "/workspace/scratch/aea25ba345a8/hepta-effects-agent/target/debug/deps/librama_net-805a6a1709b3d86d.rlib",
+      "temporary_path": "/dev/shm/768fd621f7e2-runtime-static-cache/librama_net-805a6a1709b3d86d.rlib",
+      "bytes": 21762396,
+      "sha256": "c352ddfdda2dc4db08c6a4caf1c9d933eb8bd980aae191243bf3d69a53d7410a"
+    }
+  ],
+  "disk_free_bytes": 0,
+  "shared_memory_free_bytes": 4406091776,
+  "independent_deployment_qualified": false
+}
