@@ -3519,6 +3519,7 @@ dependencies = [
  "core_test_support",
  "ed25519-dalek 2.2.0",
  "http 1.5.0",
+ "rustix 1.1.4",
  "serde",
  "serde_json",
  "sha2 0.10.9",
@@ -3729,6 +3730,7 @@ dependencies = [
  "codex-hepta-contracts",
  "codex-hepta-paths",
  "ed25519-dalek 2.2.0",
+ "libc",
  "pretty_assertions",
  "serde",
  "serde_json",
@@ -3736,6 +3738,7 @@ dependencies = [
  "tempfile",
  "thiserror 2.0.21",
  "toml 0.9.11+spec-1.1.0",
+ "trnm-release-bundle",
 ]
 
 [[package]]
@@ -15146,6 +15149,7 @@ dependencies = [
  "cfg-if",
  "cpufeatures 0.2.17",
  "digest 0.10.7",
+ "sha2-asm",
 ]
 
 [[package]]
@@ -15157,6 +15161,15 @@ dependencies = [
  "cfg-if",
  "cpufeatures 0.3.0",
  "digest 0.11.3",
+]
+
+[[package]]
+name = "sha2-asm"
+version = "0.6.4"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "b845214d6175804686b2bd482bcffe96651bb2d1200742b712003504a2dac1ab"
+dependencies = [
+ "cc",
 ]
 
 [[package]]
@@ -17051,6 +17064,41 @@ dependencies = [
 ]
 
 [[package]]
+name = "trnm-crypto-primitives"
+version = "0.1.0"
+source = "git+https://github.com/TrillionniumFoundation/Trillionnium-Chain.git?rev=254033da23faf10f24a62249f40ce2ddb542645a#254033da23faf10f24a62249f40ce2ddb542645a"
+dependencies = [
+ "anyhow",
+ "ed25519-dalek 2.2.0",
+ "hex",
+ "ml-dsa",
+ "serde_json",
+ "sha2 0.10.9",
+ "trnm-protocol",
+ "zeroize",
+]
+
+[[package]]
+name = "trnm-protocol"
+version = "0.1.0"
+source = "git+https://github.com/TrillionniumFoundation/Trillionnium-Chain.git?rev=254033da23faf10f24a62249f40ce2ddb542645a#254033da23faf10f24a62249f40ce2ddb542645a"
+dependencies = [
+ "hex",
+ "serde",
+ "sha2 0.10.9",
+ "thiserror 1.0.69",
+]
+
+[[package]]
+name = "trnm-release-bundle"
+version = "0.1.0"
+source = "git+https://github.com/TrillionniumFoundation/Trillionnium-Chain.git?rev=254033da23faf10f24a62249f40ce2ddb542645a#254033da23faf10f24a62249f40ce2ddb542645a"
+dependencies = [
+ "sha2 0.10.9",
+ "trnm-crypto-primitives",
+]
+
+[[package]]
 name = "try-lock"
 version = "0.2.5"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -18732,9 +18780,9 @@ dependencies = [
 
 [[package]]
 name = "zeroize"
-version = "1.9.0"
+version = "1.9.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "e13c156562582aa81c60cb29407084cdb54c4164760106ab78e6c5b0858cf64e"
+checksum = "e13084392c5e4bc371903e2935a5eaeed24905a7511356b883835e18a78f6879"
 dependencies = [
  "serde",
  "zeroize_derive",

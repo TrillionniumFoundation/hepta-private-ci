@@ -100,6 +100,7 @@ uuid = { workspace = true, features = ["v4"] }
 zeroize = { workspace = true }
 
 [dev-dependencies]
+codex-hepta-fleet = { workspace = true, features = ["qualification"] }
 codex-hepta-agentd = { workspace = true }
 codex-hepta-infer-worker-host = { path = "../hepta-infer-worker-host" }
 codex-state = { workspace = true }

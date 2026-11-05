@@ -57,6 +57,7 @@ tokio = { workspace = true, features = [
 tokio-util = { workspace = true, features = ["rt"] }
 
 [dev-dependencies]
+codex-hepta-fleet = { workspace = true, features = ["qualification"] }
 anyhow = { workspace = true }
 app_test_support = { workspace = true }
 codex-hepta-paths = { workspace = true }
