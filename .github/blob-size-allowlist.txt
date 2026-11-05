@@ -1,5 +1,6 @@
 # Paths are matched exactly, relative to the repository root.
 # Keep this list short and limited to intentional large checked-in assets.
+# sha256:<64 lowercase hex digits> PATH permits only those exact blob bytes.
 
 .github/codex-cli-splash.png
 MODULE.bazel.lock
@@ -8,3 +9,47 @@ codex-rs/app-server-protocol/schema/json/codex_app_server_protocol.v2.schemas.js
 codex-rs/tui/tests/fixtures/oss-story.jsonl
 codex-rs/tui_app_server/tests/fixtures/oss-story.jsonl
 codex-rs/tui/src/app.rs
+
+# Historical 2026-10-23 acceptance source inventories (before/after evidence).
+# These exact gzip bytes already exist at 830bc5603856294cba59c8be15e2fc7395c9a501.
+# Preserve their original hashes and failure records; changed bytes regain the size limit.
+sha256:ffe231b36d51e35f4e67d5029ccd999ddbe6b32ab006ea1b65df2545582baa32 codex-rs/hepta-agentd/acceptance/2026-10-23-checkpoint-adoption/root-checkpoint-adoption-qualification-01-source-after.json.gz
+sha256:ffe231b36d51e35f4e67d5029ccd999ddbe6b32ab006ea1b65df2545582baa32 codex-rs/hepta-agentd/acceptance/2026-10-23-checkpoint-adoption/root-checkpoint-adoption-qualification-01-source-before.json.gz
+sha256:5addab16c4b5ddf9d75c8b33c9474b3b56b4a99bd69607fa58b7e4ad820e69f9 codex-rs/hepta-agentd/acceptance/2026-10-23-checkpoint-adoption/root-checkpoint-adoption-qualification-02-source-after.json.gz
+sha256:5addab16c4b5ddf9d75c8b33c9474b3b56b4a99bd69607fa58b7e4ad820e69f9 codex-rs/hepta-agentd/acceptance/2026-10-23-checkpoint-adoption/root-checkpoint-adoption-qualification-02-source-before.json.gz
+sha256:594ef953a509f41ffc031e1fe3aca87471a66f5343bde6f3f9ee6b1ab501e140 codex-rs/hepta-agentd/acceptance/2026-10-23-consumer-frontier/root-final-use-frontier-qualification-01-source-after.json.gz
+sha256:594ef953a509f41ffc031e1fe3aca87471a66f5343bde6f3f9ee6b1ab501e140 codex-rs/hepta-agentd/acceptance/2026-10-23-consumer-frontier/root-final-use-frontier-qualification-01-source-before.json.gz
+sha256:802dda63e94dba207f7011bb1f90fd27d810060882518068f01bda2daf6460a6 codex-rs/hepta-agentd/acceptance/2026-10-23-dynamic-notes-admission/root-notes-admission-finish-01/source-after.json.gz
+sha256:e41de1a9fa172c2f2d4f4476dff85701eec21081279b69972214a6f6f3853b8e codex-rs/hepta-agentd/acceptance/2026-10-23-dynamic-notes-admission/root-notes-admission-finish-01/source-before.json.gz
+sha256:9ccb939616a81a4e9367f82ac5b256e2fd7239e7a5a56184edef50c67c038f72 codex-rs/hepta-agentd/acceptance/2026-10-23-dynamic-notes-admission/root-notes-admission-negative-01/source-after.json.gz
+sha256:9ccb939616a81a4e9367f82ac5b256e2fd7239e7a5a56184edef50c67c038f72 codex-rs/hepta-agentd/acceptance/2026-10-23-dynamic-notes-admission/root-notes-admission-negative-01/source-before.json.gz
+sha256:eca75ac1914d89d1e545b66937ed61bbb2dbf2ed04d8ca93698c651eeeed19ea codex-rs/hepta-agentd/acceptance/2026-10-23-dynamic-notes-admission/root-notes-admission-positive-01/source-after.json.gz
+sha256:eca75ac1914d89d1e545b66937ed61bbb2dbf2ed04d8ca93698c651eeeed19ea codex-rs/hepta-agentd/acceptance/2026-10-23-dynamic-notes-admission/root-notes-admission-positive-01/source-before.json.gz
+sha256:6de47e244724fc9111fe639aaeaa9e77eab4d329d9562d19937505e06b2812b9 codex-rs/hepta-agentd/acceptance/2026-10-23-dynamic-notes-admission/root-notes-admission-positive-02/source-after.json.gz
+sha256:6de47e244724fc9111fe639aaeaa9e77eab4d329d9562d19937505e06b2812b9 codex-rs/hepta-agentd/acceptance/2026-10-23-dynamic-notes-admission/root-notes-admission-positive-02/source-before.json.gz
+sha256:5a9f70feefb698354b63689924c4c9a0e593d5328a5053823da1a357fd85c193 codex-rs/hepta-agentd/acceptance/2026-10-23-native-clock-window/native-authority-static-5a2-clock-03-source-after.json.gz
+sha256:5a9f70feefb698354b63689924c4c9a0e593d5328a5053823da1a357fd85c193 codex-rs/hepta-agentd/acceptance/2026-10-23-native-clock-window/native-authority-static-5a2-clock-03-source-before.json.gz
+sha256:a8786ac7b89102cbea5def8d816210ccc7f882464400de30c2824368149ffdf0 codex-rs/hepta-agentd/acceptance/2026-10-23-retired-publisher/root-retired-publisher-qualification-01-source-after.json.gz
+sha256:a8786ac7b89102cbea5def8d816210ccc7f882464400de30c2824368149ffdf0 codex-rs/hepta-agentd/acceptance/2026-10-23-retired-publisher/root-retired-publisher-qualification-01-source-before.json.gz
+sha256:f892d36000cc2616e4d01aef511b32e440271fd9e4cab64b046e78a6a07647b0 codex-rs/hepta-agentd/acceptance/2026-10-23-root-authority/checkpoint-01/source-after.json.gz
+sha256:f892d36000cc2616e4d01aef511b32e440271fd9e4cab64b046e78a6a07647b0 codex-rs/hepta-agentd/acceptance/2026-10-23-root-authority/checkpoint-01/source-before.json.gz
+sha256:3b2c0cfddc947039c6d7bfe583d51a6237b3106a8547b17658e15a69cea40ddb codex-rs/hepta-agentd/acceptance/2026-10-23-root-authority/checkpoint-02/source-after.json.gz
+sha256:3b2c0cfddc947039c6d7bfe583d51a6237b3106a8547b17658e15a69cea40ddb codex-rs/hepta-agentd/acceptance/2026-10-23-root-authority/checkpoint-02/source-before.json.gz
+sha256:eac31f10b8e4427bbad40ca3b8945504a8cd44ed873e2800c8c8dd33991f3926 codex-rs/hepta-agentd/acceptance/2026-10-23-root-authority/checkpoint-03/source-after.json.gz
+sha256:eac31f10b8e4427bbad40ca3b8945504a8cd44ed873e2800c8c8dd33991f3926 codex-rs/hepta-agentd/acceptance/2026-10-23-root-authority/checkpoint-03/source-before.json.gz
+sha256:dc55775365c03fccaa144de92d37fecc5759159eb105625a7a8d15d047177093 codex-rs/hepta-agentd/acceptance/2026-10-23-root-authority/owning-aggregate-03fc-failed/source-after.json.gz
+sha256:dc55775365c03fccaa144de92d37fecc5759159eb105625a7a8d15d047177093 codex-rs/hepta-agentd/acceptance/2026-10-23-root-authority/owning-aggregate-03fc-failed/source-before.json.gz
+sha256:68c1886c39c629c7a9c9b8d5b51a14cb01321ddfb5dbf67c7ed62190d2fbda8e codex-rs/hepta-agentd/acceptance/2026-10-23-static-authority-v2/native-authority-static-3a50-02-source-after.json.gz
+sha256:68c1886c39c629c7a9c9b8d5b51a14cb01321ddfb5dbf67c7ed62190d2fbda8e codex-rs/hepta-agentd/acceptance/2026-10-23-static-authority-v2/native-authority-static-3a50-02-source-before.json.gz
+sha256:a00ac1029518bd93083cfa04cc577dc296f04206a04effd80207cc585ec75352 codex-rs/hepta-agentd/acceptance/2026-10-23-static-five-lane-shape-failure-05/source-after.json.gz
+sha256:a00ac1029518bd93083cfa04cc577dc296f04206a04effd80207cc585ec75352 codex-rs/hepta-agentd/acceptance/2026-10-23-static-five-lane-shape-failure-05/source-before.json.gz
+sha256:06fe3960f3866932a9486b58dcd6ba402b4354b3af040795109ebc2bf54030c1 codex-rs/hepta-agentd/acceptance/2026-10-23-static-five-lane-shape-failure-06/source-after.json.gz
+sha256:06fe3960f3866932a9486b58dcd6ba402b4354b3af040795109ebc2bf54030c1 codex-rs/hepta-agentd/acceptance/2026-10-23-static-five-lane-shape-failure-06/source-before.json.gz
+sha256:19652e14eb9ede1fdff39a556fdead9e9f4238f348a11993c6c35b4627747ad1 codex-rs/hepta-agentd/acceptance/2026-10-23-static-five-lane-shape-failure-07/source-after.json.gz
+sha256:19652e14eb9ede1fdff39a556fdead9e9f4238f348a11993c6c35b4627747ad1 codex-rs/hepta-agentd/acceptance/2026-10-23-static-five-lane-shape-failure-07/source-before.json.gz
+sha256:5b9f5b30b6debeb6513e92974b7ffd9c2e6bfb96a8c2cd0216db10de03ed08ab codex-rs/hepta-agentd/acceptance/2026-10-23-static-five-lane-shape-failure-08/source-after.json.gz
+sha256:5b9f5b30b6debeb6513e92974b7ffd9c2e6bfb96a8c2cd0216db10de03ed08ab codex-rs/hepta-agentd/acceptance/2026-10-23-static-five-lane-shape-failure-08/source-before.json.gz
+sha256:be8b533eab915b2e76a4a2841e2f90e10b7fe33692417171149f3beddd5589ed codex-rs/hepta-agentd/acceptance/2026-10-23-static-five-lane-shape-failure/source-after.json.gz
+sha256:be8b533eab915b2e76a4a2841e2f90e10b7fe33692417171149f3beddd5589ed codex-rs/hepta-agentd/acceptance/2026-10-23-static-five-lane-shape-failure/source-before.json.gz
+sha256:7920896a48e39c656916e7c0a06609308a9a0a117ec82fb7f36def5b8156979e codex-rs/hepta-contracts/acceptance/2026-10-23-clock-window/root-clock-window-qualification-01-source-after.json.gz
+sha256:7920896a48e39c656916e7c0a06609308a9a0a117ec82fb7f36def5b8156979e codex-rs/hepta-contracts/acceptance/2026-10-23-clock-window/root-clock-window-qualification-01-source-before.json.gz
