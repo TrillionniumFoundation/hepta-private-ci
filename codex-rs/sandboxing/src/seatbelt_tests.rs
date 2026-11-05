@@ -1619,6 +1619,7 @@ fn create_seatbelt_args_with_read_only_git_and_codex_subpaths() {
     // Seatbelt policy.
     let config_toml = dot_codex_canonical.join("config.toml");
     let output = Command::new(MACOS_PATH_TO_SEATBELT_EXECUTABLE)
+        .env("LC_ALL", "C")
         .args(&args)
         .current_dir(&cwd)
         .output()
@@ -1657,6 +1658,7 @@ fn create_seatbelt_args_with_read_only_git_and_codex_subpaths() {
     )
     .unwrap();
     let output = Command::new(MACOS_PATH_TO_SEATBELT_EXECUTABLE)
+        .env("LC_ALL", "C")
         .args(&write_hooks_file_args)
         .current_dir(&cwd)
         .output()
@@ -1694,6 +1696,7 @@ fn create_seatbelt_args_with_read_only_git_and_codex_subpaths() {
     )
     .unwrap();
     let output = Command::new(MACOS_PATH_TO_SEATBELT_EXECUTABLE)
+        .env("LC_ALL", "C")
         .args(&write_allowed_file_args)
         .current_dir(&cwd)
         .output()
@@ -2290,6 +2293,7 @@ fn create_seatbelt_args_with_read_only_git_pointer_file() {
     .unwrap();
 
     let output = Command::new(MACOS_PATH_TO_SEATBELT_EXECUTABLE)
+        .env("LC_ALL", "C")
         .args(&args)
         .current_dir(&cwd)
         .output()
@@ -2326,6 +2330,7 @@ fn create_seatbelt_args_with_read_only_git_pointer_file() {
     )
     .unwrap();
     let output = Command::new(MACOS_PATH_TO_SEATBELT_EXECUTABLE)
+        .env("LC_ALL", "C")
         .args(&gitdir_args)
         .current_dir(&cwd)
         .output()

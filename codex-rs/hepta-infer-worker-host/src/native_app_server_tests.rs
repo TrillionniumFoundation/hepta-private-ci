@@ -470,7 +470,12 @@ async fn real_agentd_worker_accepts_fresh_context_and_rejects_final_use_tombston
     let response_mock = responses::mount_sse_once(&server, response).await;
 
     let nonce = SystemTime::now().duration_since(UNIX_EPOCH)?.as_nanos();
-    let root = std::env::temp_dir().join(format!("hepta-cognitive-worker-e2e-{nonce}"));
+    // Keep the real control-socket layout below Darwin's SUN_LEN even when
+    // the harness TMPDIR has a long canonical /private/var/folders prefix.
+    let root_directory = tempfile::Builder::new()
+        .prefix("hepta-cognitive-worker-")
+        .tempdir_in("/tmp")?;
+    let root = root_directory.path().to_path_buf();
     let agent_id = codex_hepta_contracts::AgentId::parse(AGENT_ID)?;
     // core_test_support registers the production arg0 helper dispatch before
     // this test executable enters the harness.

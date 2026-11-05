@@ -2,6 +2,7 @@
 //! provider login, production authority or preexisting configuration is used.
 
 use anyhow::Context;
+#[cfg(target_os = "linux")]
 use pretty_assertions::assert_eq;
 use std::ffi::CString;
 use std::os::unix::ffi::OsStrExt;
