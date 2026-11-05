@@ -630,8 +630,19 @@ async fn qualification_prepare_quarantines_expired_registry_attempt_with_h7_evid
         Sha256Digest::for_bytes(format!("qualification:logical-binding:v1:{turn_id}").as_bytes()),
     )
     .expect("logical request");
+    // The expiry is stored in whole Unix seconds. Start the original one-second
+    // lease in a new second instead of spending most of it before this fixture
+    // is minted. Align before acquisition; never renew or retry an expired head.
+    let mint_phase = SystemTime::now().duration_since(UNIX_EPOCH).expect("clock");
+    let mint_second = mint_phase.as_secs().checked_add(1).expect("mint second");
+    tokio::time::sleep(Duration::from_secs(mint_second) - mint_phase).await;
     let fixture_started = std::time::Instant::now();
     let minted_at = SystemTime::now().duration_since(UNIX_EPOCH).expect("clock");
+    assert_eq!(
+        minted_at.as_secs(),
+        mint_second,
+        "one-second lease mint window was missed"
+    );
     let expires_at = minted_at.as_secs() + 1;
     let expiry_stage = |stage: &str| {
         let observed_at = SystemTime::now()
@@ -754,10 +765,23 @@ async fn qualification_prepare_quarantines_expired_registry_attempt_with_h7_evid
     append_h7_trajectory_event_bound(&lease, &executor, &binding, &terminal)
         .await
         .unwrap_or_else(|error| panic!("{}: {error:?}", expiry_stage("append H7 terminal")));
+    lease
+        .verify_current()
+        .await
+        .unwrap_or_else(|error| panic!("{}: {error:?}", expiry_stage("verify live H7 setup")));
     drop(binding);
     drop(executor);
     drop(lease);
     tokio::time::sleep(Duration::from_secs(2)).await;
+    let expired = store
+        .inspect_local_lease_head(&attempt.lease_id)
+        .await
+        .unwrap_or_else(|error| panic!("{}: {error:?}", expiry_stage("inspect expired fixture head")));
+    assert_eq!(
+        expired.disposition,
+        LocalLeaseHeadDisposition::ExpiredActive,
+        "qualification prepare must observe an already-expired active head"
+    );
 
     let result = prepare_qualification_turn_writer_input(
         Arc::clone(&fixture.state),
@@ -779,6 +803,10 @@ async fn qualification_prepare_quarantines_expired_registry_attempt_with_h7_evid
         inspected.disposition,
         LocalLeaseHeadDisposition::ExpiredActive,
         "registry-backed H7 quarantine must not mutate the active registry head"
+    );
+    assert_eq!(
+        inspected, expired,
+        "quarantine must preserve the exact head"
     );
 }
 
