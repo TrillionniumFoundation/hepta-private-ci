@@ -499,11 +499,7 @@ impl LocalLeaseOutbox {
                 "host-bound lease requires an explicit authority/owner/expiry binding".to_string(),
             ));
         }
-        let mut transaction = store
-            .pool
-            .begin_with("BEGIN IMMEDIATE")
-            .await
-            .map_err(crate::cognitive_store::unavailable)?;
+        let mut transaction = store.begin_owner_write().await?;
         let (latest, _) =
             load_lease_chain(&mut transaction, &lease_id, store.owner_agent_id()).await?;
         let (state, replay) = match latest {
@@ -785,11 +781,7 @@ impl LocalLeaseOutbox {
             ));
         }
 
-        let mut transaction = store
-            .pool
-            .begin_with("BEGIN IMMEDIATE")
-            .await
-            .map_err(crate::cognitive_store::unavailable)?;
+        let mut transaction = store.begin_owner_write().await?;
         let (latest, _) =
             load_lease_chain(&mut transaction, &lease_id, store.owner_agent_id()).await?;
         let Some(previous) = latest else {
@@ -1221,12 +1213,7 @@ impl LocalLeaseOutbox {
         })?;
         validate_lease_binding(&handle_binding)?;
 
-        let mut transaction = self
-            .store
-            .pool
-            .begin_with("BEGIN IMMEDIATE")
-            .await
-            .map_err(crate::cognitive_store::unavailable)?;
+        let mut transaction = self.store.begin_owner_write().await?;
         let (latest, _) =
             load_lease_chain(&mut transaction, &self.lease_id, &self.owner_agent_id).await?;
         let Some(previous) = latest else {
@@ -1313,12 +1300,7 @@ impl LocalLeaseOutbox {
         &self,
         state: LocalLeaseState,
     ) -> Result<LocalLease, LocalLeaseOutboxError> {
-        let mut transaction = self
-            .store
-            .pool
-            .begin_with("BEGIN IMMEDIATE")
-            .await
-            .map_err(crate::cognitive_store::unavailable)?;
+        let mut transaction = self.store.begin_owner_write().await?;
         let (latest, _) =
             load_lease_chain(&mut transaction, &self.lease_id, &self.owner_agent_id).await?;
         let Some(previous) = latest else {
@@ -1450,12 +1432,7 @@ impl LocalLeaseOutbox {
         operation: Option<OperationIntentV1>,
         fault: Option<LocalAdmissionFault>,
     ) -> Result<LocalAdmission, LocalLeaseOutboxError> {
-        let mut transaction = self
-            .store
-            .pool
-            .begin_with("BEGIN IMMEDIATE")
-            .await
-            .map_err(crate::cognitive_store::unavailable)?;
+        let mut transaction = self.store.begin_owner_write().await?;
         let admission = self
             .admit_in_transaction_inner(
                 &mut transaction,
@@ -2001,12 +1978,7 @@ impl LocalLeaseOutbox {
                 "inherited queued payload digest mismatch".to_string(),
             ));
         }
-        let mut transaction = self
-            .store
-            .pool
-            .begin_with("BEGIN IMMEDIATE")
-            .await
-            .map_err(crate::cognitive_store::unavailable)?;
+        let mut transaction = self.store.begin_owner_write().await?;
         let lease = self.current_lease(&mut transaction).await?;
         ensure_current_active(&lease, self)?;
         let admission = find_admission(
@@ -2519,12 +2491,7 @@ impl LocalLeaseOutbox {
         )?;
         let payload_sha256 = Sha256Digest::for_bytes(payload.as_bytes());
 
-        let mut transaction = self
-            .store
-            .pool
-            .begin_with("BEGIN IMMEDIATE")
-            .await
-            .map_err(crate::cognitive_store::unavailable)?;
+        let mut transaction = self.store.begin_owner_write().await?;
         let lease = self.current_lease(&mut transaction).await?;
         ensure_current_active(&lease, self)?;
         let admission = find_admission(
@@ -2842,12 +2809,7 @@ impl LocalLeaseOutbox {
         resulting_state: LocalOutcomeState,
         allow_exact_replay: bool,
     ) -> Result<LocalOutcomeReceipt, LocalLeaseOutboxError> {
-        let mut transaction = self
-            .store
-            .pool
-            .begin_with("BEGIN IMMEDIATE")
-            .await
-            .map_err(crate::cognitive_store::unavailable)?;
+        let mut transaction = self.store.begin_owner_write().await?;
         let outcome = self
             .append_outcome_in_transaction(
                 &mut transaction,
@@ -3231,12 +3193,7 @@ impl LocalLeaseOutbox {
     ) -> Result<LocalReplayFinalization, LocalLeaseOutboxError> {
         let occurrence_key = occurrence_key.into();
         validate_text(&occurrence_key, "occurrence key", /*max_bytes*/ 512)?;
-        let mut transaction = self
-            .store
-            .pool
-            .begin_with("BEGIN IMMEDIATE")
-            .await
-            .map_err(crate::cognitive_store::unavailable)?;
+        let mut transaction = self.store.begin_owner_write().await?;
         let lease = self.current_lease(&mut transaction).await?;
         ensure_current_active(&lease, self)?;
         let events =

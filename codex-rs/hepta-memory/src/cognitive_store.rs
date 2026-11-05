@@ -51,6 +51,9 @@ use crate::framing::frame_part;
 mod sync;
 use sync::sync_cognitive_directory;
 
+#[path = "cognitive_store_write.rs"]
+mod write;
+
 #[path = "cognitive_store_barrier.rs"]
 mod barrier;
 #[path = "cognitive_store_gate.rs"]
@@ -450,11 +453,7 @@ impl CognitiveStore {
         access: &CognitiveAccess,
         draft: &SourceDraft,
     ) -> Result<SourceRevisionId, CognitiveStoreError> {
-        let mut transaction = self
-            .pool
-            .begin_with("BEGIN IMMEDIATE")
-            .await
-            .map_err(unavailable)?;
+        let mut transaction = self.begin_owner_write().await?;
         let source = self
             .append_source_tx(&mut transaction, access, draft)
             .await?;

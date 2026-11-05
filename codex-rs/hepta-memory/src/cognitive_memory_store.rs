@@ -80,11 +80,7 @@ impl CognitiveStore {
         access: &CognitiveAccess,
         draft: &MemoryDraft,
     ) -> Result<MemoryRevisionRecord, CognitiveStoreError> {
-        let mut transaction = self
-            .pool
-            .begin_with("BEGIN IMMEDIATE")
-            .await
-            .map_err(unavailable)?;
+        let mut transaction = self.begin_owner_write().await?;
         let record = self
             .create_memory_revision_tx(&mut transaction, access, draft)
             .await?;
@@ -144,11 +140,7 @@ impl CognitiveStore {
         expected_revision: u64,
         draft: &MemoryRevisionDraft,
     ) -> Result<MemoryRevisionRecord, CognitiveStoreError> {
-        let mut transaction = self
-            .pool
-            .begin_with("BEGIN IMMEDIATE")
-            .await
-            .map_err(unavailable)?;
+        let mut transaction = self.begin_owner_write().await?;
         let record = self
             .revise_memory_revision_tx(
                 &mut transaction,

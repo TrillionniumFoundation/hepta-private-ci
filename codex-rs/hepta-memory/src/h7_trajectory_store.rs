@@ -427,11 +427,7 @@ pub async fn append_h7_trajectory_event_bound(
     }
     binding.verify_current(lease, executor).await?;
     let store = executor.store();
-    let mut transaction = store
-        .pool
-        .begin_with("BEGIN IMMEDIATE")
-        .await
-        .map_err(crate::cognitive_store::unavailable)?;
+    let mut transaction = store.begin_owner_write().await?;
     let current = lease
         .verify_current_in_transaction(&mut transaction)
         .await
