@@ -100,8 +100,9 @@ async fn paginated_history_without_state_db_does_not_initialize_sqlite() {
 #[tokio::test]
 async fn split_homes_support_backfill_listing_and_paginated_history() {
     let root = TempDir::new().expect("temp dir");
-    let codex_home = root.path().join("codex");
-    let sqlite_home = root.path().join("sqlite");
+    let root_path = root.path().canonicalize().expect("canonical fixture root");
+    let codex_home = root_path.join("codex");
+    let sqlite_home = root_path.join("sqlite");
     let thread_id = ThreadId::new();
     let sqlite = codex_state::SqliteConfig::new_for_testing(sqlite_home.as_path().abs());
     let rollout_config = RolloutConfig {
