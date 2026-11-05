@@ -90,10 +90,13 @@ same exact update does not demonstrate a new learning algorithm.
 The next efficacy experiment must consume a genuinely distinct, mathematically
 specified update under equal information, lawful actions and external objective.
 It must compare the existing Hepta learner, an appropriate ordinary actor–critic,
-and a faithfully pinned rsEAC baseline with matched capacity and compute. Both
-inference columns must consume the learned component if the training contrast is
-to be identified. A separate implementation and an independent evaluation task
-are needed before claiming gains from an approximate internal sensitivity.
+and a faithfully pinned rsEAC baseline with matched capacity and compute. To test
+whether a learned component helps fixed inference, that column must consume it.
+If only the dynamic controller is trained, its training effect can still be
+estimated within the dynamic column, while the fixed column's structural zero
+addresses a different estimand. A separate implementation and an independent
+evaluation task are needed before claiming gains from an approximate internal
+sensitivity.
 
 Still open: sampled multi-step RL, general nonlinear recursive utility, learned
 state sufficiency, full-rank/noise-subspace identification in an actual BSDE,
