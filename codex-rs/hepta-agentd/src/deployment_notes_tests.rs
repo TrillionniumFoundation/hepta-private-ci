@@ -716,3 +716,9 @@ fn deployment_notes_actual_root_clock_registry_and_canonical_issuer_issue_distin
     );
     assert_eq!(reopened.store.load(STATE_OWNER).unwrap().sequence, 3);
 }
+
+#[path = "deployment_notes_issuer_parent_tests.rs"]
+mod issuer_parent;
+
+#[path = "deployment_notes_issuer_deadline_tests.rs"]
+mod issuer_deadline;

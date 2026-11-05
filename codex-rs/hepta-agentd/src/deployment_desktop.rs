@@ -158,3 +158,6 @@ fn denied(message: &'static str) -> io::Error {
 #[cfg(test)]
 #[path = "deployment_desktop_tests.rs"]
 mod tests;
+
+#[cfg(test)]
+pub(super) use tests::original_calculator_issuer_fixture;

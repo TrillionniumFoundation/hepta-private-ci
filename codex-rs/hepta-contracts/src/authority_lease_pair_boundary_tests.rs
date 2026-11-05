@@ -325,3 +325,6 @@ fn retired_predecessor_still_requires_live_successor_from_same_owner() {
         Err(AuthorityLeaseError::Revoked)
     );
 }
+
+#[path = "authority_lease_issuer_boundary_tests.rs"]
+mod pinned_issuer;

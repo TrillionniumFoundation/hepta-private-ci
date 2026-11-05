@@ -41,7 +41,10 @@ impl DeploymentFinalUseIssuer {
         identity: &AgentdIdentity,
         body: AuthBusObjectiveBody,
     ) -> io::Result<AuthBusObjectiveIngress> {
-        self.sign_objective_until(identity, body, /*lease*/ None)
+        if self.lease.is_some() {
+            return Err(io::Error::other("registered writer entry required"));
+        }
+        self.sign_objective_until(identity, body, /*lease*/ None, /*issuer*/ None)
     }
 
     /// Root service entry: the actual original writer lease fence covers the
@@ -60,11 +63,16 @@ impl DeploymentFinalUseIssuer {
         {
             return Err(io::Error::other("protected registered writer required"));
         }
-        registration.with_live(leases, |_| {
+        self.with_live_issuer_writer_registration(registration, leases, |parent| {
             if self.retained_writer_authorization(registration)? != *expected_proof {
                 return Err(io::Error::other("retained writer proof changed"));
             }
-            self.sign_objective_until(identity, body, Some(&registration.authority_lease))
+            self.sign_objective_until(
+                identity,
+                body,
+                Some(&registration.authority_lease),
+                Some(parent),
+            )
         })
     }
 
@@ -73,6 +81,7 @@ impl DeploymentFinalUseIssuer {
         identity: &AgentdIdentity,
         body: AuthBusObjectiveBody,
         lease: Option<&AuthorityLease>,
+        parent: Option<&AuthorityLease>,
     ) -> io::Result<AuthBusObjectiveIngress> {
         objective_payload(identity, &body, identity.spawn_generation).map_err(io::Error::other)?;
         if identity.spawn_generation == 0 {
@@ -100,6 +109,9 @@ impl DeploymentFinalUseIssuer {
             return Err(io::Error::other("invalid Objective lifetime"));
         }
         let now = self.clock.now_unix_ms().map_err(io::Error::other)?;
+        if let Some(parent) = parent {
+            Self::validate_issuer_lease_time(parent, state.head.authority_epoch, now)?;
+        }
         if lease.is_some_and(|lease| {
             lease.authority_epoch != state.head.authority_epoch
                 || now < lease.issued_at_unix_ms
@@ -123,7 +135,8 @@ impl DeploymentFinalUseIssuer {
             expires_at_ms: now
                 .checked_add(policy.lifetime_ms)
                 .ok_or_else(|| io::Error::other("issuer clock overflow"))?
-                .min(lease.map_or(u64::MAX, |lease| lease.expires_at_unix_ms)),
+                .min(lease.map_or(u64::MAX, |lease| lease.expires_at_unix_ms))
+                .min(parent.map_or(u64::MAX, |parent| parent.expires_at_unix_ms)),
             signature_hex: String::new(),
             body,
         };

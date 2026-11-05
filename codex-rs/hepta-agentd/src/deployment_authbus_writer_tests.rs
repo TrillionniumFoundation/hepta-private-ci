@@ -157,3 +157,9 @@ fn deployment_writer_objective_refuses_wrong_proof_or_spawn_before_sequence() {
     assert!(fixture.sign().is_err());
     assert_eq!(fixture.base.sequence(), 1);
 }
+
+#[path = "deployment_authbus_issuer_followup_tests.rs"]
+mod issuer_followup;
+
+#[path = "deployment_authbus_issuer_final_tests.rs"]
+mod issuer_final_tests;
