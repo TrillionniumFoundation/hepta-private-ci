@@ -296,6 +296,17 @@
         "protocol::observation_wire_tests::observation_failure_has_no_numeric_exit_or_sequence",
         "protocol::observation_wire_tests::unknown_observation_failure_reasons_are_rejected"
       ]
+    },
+    {
+      "id": "direct-pty-native-observation",
+      "package": "codex-utils-pty",
+      "filter": "test(=win::observation_tests::wait_without_synchronize_is_an_error_not_an_exit) | test(=win::observation_tests::query_failure_after_native_signal_is_not_pending) | test(=win::observation_tests::signaled_process_can_have_exit_code_259)",
+      "expectedTestCount": 3,
+      "requiredTests": [
+        "win::observation_tests::wait_without_synchronize_is_an_error_not_an_exit",
+        "win::observation_tests::query_failure_after_native_signal_is_not_pending",
+        "win::observation_tests::signaled_process_can_have_exit_code_259"
+      ]
     }
   ]
 }
