@@ -44,6 +44,77 @@ fn save(path: &Path, value: &serde_json::Value) -> native::Result<()> {
 }
 
 #[test]
+fn native_comparison_input_requires_v2_and_independently_pinned_snapshot() -> native::Result<()> {
+    let directory = tempfile::tempdir()?;
+    let root = directory.path().canonicalize()?;
+    // A structurally complete, controlled v2 input. These regular bytes are
+    // never executed and do not certify a Python runtime or model installation.
+    let base = root.join("base");
+    let prefix = root.join("venv");
+    let stdlib = root.join("canonical/lib/python3.12");
+    fs::create_dir_all(base.join("bin"))?;
+    fs::create_dir_all(base.join("lib"))?;
+    fs::create_dir_all(prefix.join("lib/python3.12/site-packages"))?;
+    fs::create_dir_all(&stdlib)?;
+    let python = base.join("bin/python3.12");
+    fs::write(&python, b"not an executed interpreter")?;
+    std::os::unix::fs::symlink(&stdlib, base.join("lib/python3.12"))?;
+    let cfg = prefix.join("pyvenv.cfg");
+    fs::write(&cfg, format!("home = {}\n", base.join("bin").display()))?;
+    let dependency = prefix.join("lib/python3.12/site-packages/fixture.py");
+    fs::write(&dependency, b"# never imported\n")?;
+    let bootstrap = stdlib.join("hashlib.py");
+    fs::write(&bootstrap, b"# never imported stdlib fixture\n")?;
+    let inventory = std::collections::BTreeSet::from([cfg, dependency, bootstrap]);
+    let mut files = serde_json::Map::new();
+    for path in inventory.iter().chain(std::iter::once(&python)) {
+        files.insert(
+            path.to_str().ok_or("snapshot fixture path")?.to_owned(),
+            serde_json::json!(Digest32::of_bytes(&fs::read(path)?).to_string()),
+        );
+    }
+    let snapshot = serde_json::to_vec(&serde_json::json!({
+        "schema":"hepta-controlled-cold-runtime-snapshot-v2",
+        "python":{"executable":python}, "prefix":prefix, "stdlib_root":stdlib,
+        "files":files, "managed_inventory":inventory,
+    }))?;
+    let path = root.join("operator-pinned-runtime.json");
+    fs::write(&path, &snapshot)?;
+    let value = serde_json::json!({
+        "schema":"hepta-smollm-neural-comparison-native-v2", "python":python,
+        "runtime_snapshot":path, "runtime_snapshot_sha256":Digest32::of_bytes(&snapshot).to_string(),
+        "chain":root.join("unopened-chain"), "materials":root.join("unopened-model"),
+        "baseline_parent":root.join("unopened-baseline"), "baseline_parent_sha256":Digest32::from_array([1;32]).to_string(),
+        "candidate_parent":root.join("unopened-candidate"), "candidate_parent_sha256":Digest32::from_array([2;32]).to_string(),
+        "output":root.join("must-not-create-comparison"),
+    });
+    let read = |value: serde_json::Value| -> native::Result<Vec<u8>> {
+        let input: native::Input = serde_json::from_value(value)?;
+        input.read_runtime_snapshot()
+    };
+    assert_eq!(read(value.clone())?, snapshot);
+    let mut legacy = value.clone();
+    legacy["schema"] = serde_json::json!("hepta-smollm-neural-comparison-native-v1");
+    assert!(read(legacy).unwrap_err().to_string().contains("requires v2"));
+    for field in ["runtime_snapshot", "runtime_snapshot_sha256"] {
+        let mut missing = value.clone();
+        missing.as_object_mut().unwrap().remove(field);
+        assert!(serde_json::from_value::<native::Input>(missing).is_err());
+    }
+    let mut relative = value.clone();
+    relative["runtime_snapshot"] = serde_json::json!("relative-runtime.json");
+    assert!(read(relative).unwrap_err().to_string().contains("absolute"));
+    let mut changed = value.clone();
+    changed["runtime_snapshot_sha256"] = serde_json::json!(Digest32::from_array([3;32]).to_string());
+    assert!(read(changed).unwrap_err().to_string().contains("snapshot mismatch"));
+    OpenOptions::new().write(true).open(&path)?.set_len(16 * 1024 * 1024 + 1)?;
+    assert!(read(value).unwrap_err().to_string().contains("byte bound"));
+    assert!(!root.join("must-not-create-comparison").exists());
+    assert!(!root.join("unopened-model").exists());
+    Ok(())
+}
+
+#[test]
 #[ignore = "requires HEPTA_PN3_NEURAL_COMPARISON_CONFIG with actual pinned gen2/gen3 CPU material"]
 fn real_gen2_gen3_forwards_score_only_after_original_holdout_consumption() -> native::Result<()> {
     let path = std::env::var_os("HEPTA_PN3_NEURAL_COMPARISON_CONFIG")
@@ -53,25 +124,13 @@ fn real_gen2_gen3_forwards_score_only_after_original_holdout_consumption() -> na
         return Err("native configuration bound".into());
     }
     let input: native::Input = serde_json::from_slice(&raw)?;
-    if input.schema != "hepta-smollm-neural-comparison-native-v1"
-        || [
-            &input.python,
-            &input.chain,
-            &input.materials,
-            &input.baseline_parent,
-            &input.candidate_parent,
-            &input.output,
-        ]
-        .iter()
-        .any(|path| !path.is_absolute())
-    {
-        return Err("native comparison requires explicit absolute project paths".into());
-    }
+    let runtime_snapshot = input.read_runtime_snapshot()?;
     fs::DirBuilder::new().mode(0o700).create(&input.output)?;
     let mut roles = ControlledRoles::new();
     let (dataset, ledger) = roles.dataset(&input.output.join("original-estimator-ledger"));
     let candidate_model = native::model(
         &input,
+        &runtime_snapshot,
         &input.candidate_parent,
         &input.candidate_parent_sha256,
         "candidate",
@@ -79,6 +138,7 @@ fn real_gen2_gen3_forwards_score_only_after_original_holdout_consumption() -> na
     )?;
     let baseline_model = native::model(
         &input,
+        &runtime_snapshot,
         &input.baseline_parent,
         &input.baseline_parent_sha256,
         "baseline",

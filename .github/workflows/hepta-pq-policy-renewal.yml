@@ -271,9 +271,24 @@ jobs:
         run: >-
           python3 scripts/hepta_ci_exec.py
           --output "$RUNNER_TEMP/pq-policy-renewal/effect-pq-product.json"
-          --minimum-tests 1 --timeout-seconds 1800 --
+          --minimum-tests 2 --timeout-seconds 1800 --
           just test --locked -p codex-hepta-agentd --test automation_effect_pq_product
-          -E 'test(=pq_effect_survives_owned_agentd_kill_after_provider_fsync_without_resend)'
+          -E 'test(=pq_effect_survives_owned_agentd_kill_after_provider_fsync_without_resend)
+          | test(=binary::held_daemon_image_reuse_refuses_wrong_changed_or_missing_files)'
+          --no-capture --retries 0 --test-threads=1
+
+      - name: Run explicit runtime input and qualification-before-runtime controls
+        if: ${{ !cancelled() && steps.dependencies.outcome == 'success' }}
+        env:
+          CARGO_NET_OFFLINE: "true"
+        run: >-
+          python3 scripts/hepta_ci_exec.py
+          --output "$RUNNER_TEMP/pq-policy-renewal/neural-runtime-input.json"
+          --minimum-tests 2 --timeout-seconds 600 --
+          just test --locked -p codex-hepta-agentd
+          --test neural_comparison_native --test neural_cognitive_bootstrap
+          -E 'test(=native_comparison_input_requires_v2_and_independently_pinned_snapshot)
+          | test(=ordinary_native_composition_rejects_untrusted_qualification_before_inference_owners)'
           --no-capture --retries 0 --test-threads=1
 
       - name: Require every selected test by name with no selected skip
@@ -289,12 +304,17 @@ jobs:
           root = Path(sys.argv[1])
           prefix = "authbus_dispatch::tests::"
           expected = {
+              "neural-runtime-input": {
+                  "native_comparison_input_requires_v2_and_independently_pinned_snapshot",
+                  "ordinary_native_composition_rejects_untrusted_qualification_before_inference_owners",
+              },
               "qualification-growth": {
                   "qualification_tests::claim_query_rejects_more_than_512_references",
                   "qualification_tests::ordinary_append_rejects_historical_projection_drift_without_consuming_replay",
               },
               "effect-pq-product": {
                   "pq_effect_survives_owned_agentd_kill_after_provider_fsync_without_resend",
+                  "binary::held_daemon_image_reuse_refuses_wrong_changed_or_missing_files",
               },
               "effect-pq-owner": {
                   "automation_effect_host::pq::tests::ordinary_loader_denies_classical_schema_and_contract_or_policy_substitution",

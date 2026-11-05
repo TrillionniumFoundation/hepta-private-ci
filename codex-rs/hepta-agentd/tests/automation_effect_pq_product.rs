@@ -239,13 +239,15 @@ async fn pq_effect_survives_owned_agentd_kill_after_provider_fsync_without_resen
     fleet.start_with_automation_effect_host_file(&agent, &owner.path)?;
     let (first, health) = fleet.wait_new_spawn(&agent, 0).await?;
     live_identity(&fleet, &agent, first_generation, health.process_id)?;
-    let first_binary = binary::retain_live_daemon(
+    let first_capture = binary::retain_live_daemon(
         health.process_id,
         first_generation,
         &agent,
         &evidence,
         &source,
+        None,
     )?;
+    let first_binary = first_capture.record().clone();
     checkpoint(&evidence, "first-process.json", &first_binary)?;
     let first = Arc::new(first);
     let dispatch_client = Arc::clone(&first);
@@ -314,13 +316,15 @@ async fn pq_effect_survives_owned_agentd_kill_after_provider_fsync_without_resen
     fleet.start_with_automation_effect_host_file(&agent, &owner.path)?;
     let (second, health2) = fleet.wait_new_spawn(&agent, first_generation).await?;
     live_identity(&fleet, &agent, second_generation, health2.process_id)?;
-    let second_binary = binary::retain_live_daemon(
+    let second_capture = binary::retain_live_daemon(
         health2.process_id,
         second_generation,
         &agent,
         &evidence,
         &source,
+        Some(&first_capture),
     )?;
+    let second_binary = second_capture.record().clone();
     ensure!(
         (
             second_binary["pid"].clone(),

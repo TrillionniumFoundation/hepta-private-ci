@@ -388,6 +388,9 @@ async fn ordinary_native_composition_rejects_untrusted_qualification_before_infe
             materials: unavailable.clone(),
             run_directory: worker_directory.clone(),
             source_pins: BTreeMap::new(),
+            // Deliberately unavailable: qualification must reject this input
+            // before the original runtime snapshot validator or worker opens.
+            runtime_snapshot: Vec::new(),
             target_contract: Vec::new(),
             wrapped_adapter: Vec::new(),
             contract_digest: digest,

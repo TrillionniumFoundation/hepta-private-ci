@@ -4,6 +4,7 @@
 use std::collections::BTreeMap;
 use std::collections::BTreeSet;
 use std::fs;
+use std::io::Read;
 use std::path::Path;
 use std::path::PathBuf;
 use std::sync::Arc;
@@ -42,6 +43,8 @@ pub type Result<T> = std::result::Result<T, Box<dyn std::error::Error>>;
 pub struct Input {
     pub schema: String,
     pub python: PathBuf,
+    pub runtime_snapshot: PathBuf,
+    pub runtime_snapshot_sha256: String,
     pub chain: PathBuf,
     pub materials: PathBuf,
     pub baseline_parent: PathBuf,
@@ -49,6 +52,57 @@ pub struct Input {
     pub candidate_parent: PathBuf,
     pub candidate_parent_sha256: String,
     pub output: PathBuf,
+}
+
+impl Input {
+    /// Read the independently pinned input once, before creating any comparison
+    /// ledger or worker. The original worker admission still validates the
+    /// complete v2 runtime inventory before invoking the interpreter.
+    pub fn read_runtime_snapshot(&self) -> Result<Vec<u8>> {
+        if self.schema != "hepta-smollm-neural-comparison-native-v2"
+            || [
+                &self.python,
+                &self.runtime_snapshot,
+                &self.chain,
+                &self.materials,
+                &self.baseline_parent,
+                &self.candidate_parent,
+                &self.output,
+            ]
+            .iter()
+            .any(|path| !path.is_absolute())
+        {
+            return Err("native comparison requires v2 and explicit absolute project paths".into());
+        }
+        let expected: Digest32 = self.runtime_snapshot_sha256.parse()?;
+        let metadata = fs::symlink_metadata(&self.runtime_snapshot)?;
+        let limit = 16 * 1024 * 1024;
+        if expected.is_zero()
+            || !metadata.is_file()
+            || metadata.len() == 0
+            || metadata.len() > limit
+            || self.runtime_snapshot.canonicalize()? != self.runtime_snapshot
+        {
+            return Err("runtime snapshot requires a canonical regular file within its byte bound".into());
+        }
+        let file = fs::File::open(&self.runtime_snapshot)?;
+        if !file.metadata()?.is_file() || file.metadata()?.len() != metadata.len() {
+            return Err("runtime snapshot changed before bounded read".into());
+        }
+        let mut raw = Vec::new();
+        file.take(limit + 1).read_to_end(&mut raw)?;
+        if raw.is_empty()
+            || raw.len() as u64 > limit
+            || Digest32::of_bytes(&raw) != expected
+        {
+            return Err("independently pinned runtime snapshot mismatch or byte bound".into());
+        }
+        let value: serde_json::Value = serde_json::from_slice(&raw)?;
+        if value["schema"] != "hepta-controlled-cold-runtime-snapshot-v2" {
+            return Err("native comparison requires an explicit v2 runtime snapshot".into());
+        }
+        Ok(raw)
+    }
 }
 
 pub struct Model {
@@ -60,6 +114,7 @@ pub struct Model {
 
 pub fn model(
     input: &Input,
+    runtime_snapshot: &[u8],
     parent_path: &Path,
     expected: &str,
     name: &str,
@@ -81,10 +136,17 @@ pub fn model(
     let wrapped_adapter = fs::read(directory.join("wrapped-adapter.json"))?;
     let mut source_pins = BTreeMap::new();
     for relative in [
+        "formal/pon-nakamoto-v1/contract_wire.py",
+        "config/pon/devnet-v1.json",
+        "config/pon/ledger-v1.json",
+        "config/pon/model-family-v1.json",
+        "config/pon/work-profile-v1.json",
         "formal/pon-nakamoto-v1/llm_adapter_contract.py",
+        "scripts/llm_base_material.py",
         "scripts/llm_inherited_runtime.py",
         "scripts/llm_neural_read_worker.py",
         "scripts/llm_parent_material.py",
+        "scripts/llm_python_runtime_contract.py",
         "scripts/llm_runtime_pilot.py",
         "config/pon/model-family-smollm2-135m-v1.json",
     ] {
@@ -100,6 +162,7 @@ pub fn model(
         materials: input.materials.clone(),
         run_directory: input.output.join(format!("original-{name}-model-session")),
         source_pins,
+        runtime_snapshot: runtime_snapshot.to_vec(),
         target_contract,
         wrapped_adapter,
         contract_digest: parent["contract"]
