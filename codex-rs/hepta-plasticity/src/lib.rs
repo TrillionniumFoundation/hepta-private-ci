@@ -9,6 +9,7 @@
 #![forbid(unsafe_code)]
 
 mod differentiation_demand;
+mod differentiation_observations;
 mod differentiation_plan;
 mod differentiation_types;
 mod durable_registry;
@@ -27,6 +28,14 @@ pub use differentiation_demand::DifferentiationDemandAssessmentV1;
 pub use differentiation_demand::DifferentiationDemandCaseV1;
 pub use differentiation_demand::DifferentiationDemandWindowV1;
 pub use differentiation_demand::assess_differentiation_demand_v1;
+pub use differentiation_observations::DifferentiationArmObservationV1;
+pub use differentiation_observations::DifferentiationCandidateV1;
+pub use differentiation_observations::DifferentiationCostReadingV1;
+pub use differentiation_observations::DifferentiationCostsV1;
+pub use differentiation_observations::DifferentiationMigrationObservationV1;
+pub use differentiation_observations::DifferentiationStudyObservationV1;
+pub use differentiation_observations::DifferentiationTaskObservationV1;
+pub use differentiation_observations::DifferentiationTaskStatusV1;
 pub use differentiation_plan::freeze_differentiation_plan_v1;
 pub use differentiation_types::DifferentiationActorV1;
 pub use differentiation_types::DifferentiationActorsV1;
