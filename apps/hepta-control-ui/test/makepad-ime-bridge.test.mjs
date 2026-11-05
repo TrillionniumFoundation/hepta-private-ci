@@ -97,6 +97,23 @@ test('IME preview, commit and both duplicate end/input orders are idempotent',()
  f.ime.input({inputType:'insertText',data:'你',isComposing:false});
  assert.equal(f.packets.length,count);assert.equal(f.model.text,'say 你');
 });
+test('late composition input preserves the owner rollback and the next edit',()=>{
+ const f=fixture('retained ',9);
+ f.ime.start();f.ime.update('rejected');f.ime.end('rejected');
+ // Mirror the Rust transaction rejecting the final commit and restoring its
+ // checkpoint before the browser delivers the trailing composition input.
+ f.ownerEdit({text:'retained ',selection_start:2,selection_end:5,selection_backward:true});
+ f.ime.flush();assert.equal(f.ta.value,'retained ');
+ const count=f.packets.length;
+ for(const inputType of ['insertFromComposition','insertCompositionText']){
+  f.ime.input({inputType,data:'rejected',isComposing:false});
+  assert.equal(f.ta.value,'retained ');assert.equal(f.model.text,'retained ');
+  assert.deepEqual([f.ta.selectionStart,f.ta.selectionEnd,f.ta.selectionDirection],[2,5,'backward']);
+  assert.equal(f.packets.length,count);
+ }
+ f.nativeInput('reXned ',3,3,'insertText','X');
+ assert.equal(f.model.text,'reXned ');assert.equal(f.packets.length,count+1);
+});
 test('a subsequent identical composition is a new edit, never text-based deduplication',()=>{
  const f=fixture();
  for(let i=0;i<2;i++){f.ime.start();f.ime.update('你');f.ime.end('你');}
