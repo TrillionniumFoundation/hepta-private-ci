@@ -1,0 +1,84 @@
+{
+  "artifact_sha256": {
+    "critic.json": "f95730782f732c30c99777aad7201559d2233f78f06ff2125bc59aa966ac516f",
+    "finite.json": "1773c101e7ee220a780cbee44f05c7841425adcac393f05c99ca0942dc20760c",
+    "followup-tests-optimized.log": "2ca9c5d954670b946d47f118e8a50fdb8dc3d3c5eed48a20a3549a4e70d4073c",
+    "followup-tests.log": "8f9ab32200f0cc3651f6682a94f008457f1a9c28d954d5d3347d8d73c0fb3345",
+    "paid.json": "c62a4aa4ddccc6d1184259bb197f5d2e4650516795d5a6a60302ef0f586714f8",
+    "paid.lock.json": "e8502eb1138c056a10779e88495928fa4b1b4199fae9b87a13a8c69e69fe07fb",
+    "paid.protocol.json": "16c2a8fba923f9b98ad847f7ba22a61a6a3ec91cb0467a1792c5b83e465f576f",
+    "tests-optimized.log": "065bbe742e8f19bcbd56cc4aae6df11313daf6b65ac96b1c0c9a01358c852b6a",
+    "tests.log": "4903f1581f684886731f596277c500a6d9ea91c92b5ff1baeef741d6f35594f1",
+    "validation.json": "04a43b81c19315e5ae5fbe8c33957525b283a0ab0564724fc55d62d554b145c2",
+    "variance_followup.json": "2fdc9c1c951ffa210abac5b24151a1696770fbc6fd46ae9f386767ffe4e740c0",
+    "variance_followup.protocol.json": "50546deaf2b647cbfcc0a51df3af69114ea53c3b942c91200ec49e82bea0b48a"
+  },
+  "base_commit": "bde82cc66099ccdfe198d2c02f4536b70c91731c",
+  "commands": [
+    {
+      "argv": [
+        "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python",
+        "-m",
+        "unittest",
+        "experiments.multimodal_output_portfolio.joint_hepta_20261029.v3.ndu_jac.test_core",
+        "experiments.multimodal_output_portfolio.joint_hepta_20261029.v3.ndu_jac.test_critic_study",
+        "experiments.multimodal_output_portfolio.joint_hepta_20261029.v3.ndu_jac.test_finite_study",
+        "experiments.multimodal_output_portfolio.joint_hepta_20261029.v3.ndu_jac.test_paid_audit",
+        "experiments.multimodal_output_portfolio.joint_hepta_20261029.v3.ndu_jac.test_paid_study",
+        "experiments.multimodal_output_portfolio.joint_hepta_20261029.v3.ndu_jac.test_policy_gate",
+        "experiments.multimodal_output_portfolio.joint_hepta_20261029.v3.ndu_jac.test_theory",
+        "experiments.multimodal_output_portfolio.joint_hepta_20261029.v3.ndu_jac.test_variance_audit",
+        "experiments.multimodal_output_portfolio.joint_hepta_20261029.v3.decision_audit.test_exact",
+        "-v"
+      ],
+      "exit_code": 0,
+      "log": "followup-tests.log",
+      "wall_seconds": 1.2906111669981328
+    },
+    {
+      "argv": [
+        "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python",
+        "-O",
+        "-m",
+        "unittest",
+        "experiments.multimodal_output_portfolio.joint_hepta_20261029.v3.ndu_jac.test_core",
+        "experiments.multimodal_output_portfolio.joint_hepta_20261029.v3.ndu_jac.test_critic_study",
+        "experiments.multimodal_output_portfolio.joint_hepta_20261029.v3.ndu_jac.test_finite_study",
+        "experiments.multimodal_output_portfolio.joint_hepta_20261029.v3.ndu_jac.test_paid_audit",
+        "experiments.multimodal_output_portfolio.joint_hepta_20261029.v3.ndu_jac.test_paid_study",
+        "experiments.multimodal_output_portfolio.joint_hepta_20261029.v3.ndu_jac.test_policy_gate",
+        "experiments.multimodal_output_portfolio.joint_hepta_20261029.v3.ndu_jac.test_theory",
+        "experiments.multimodal_output_portfolio.joint_hepta_20261029.v3.ndu_jac.test_variance_audit",
+        "experiments.multimodal_output_portfolio.joint_hepta_20261029.v3.decision_audit.test_exact",
+        "-v"
+      ],
+      "exit_code": 0,
+      "log": "followup-tests-optimized.log",
+      "wall_seconds": 2.8067325849988265
+    }
+  ],
+  "original_evidence_preserved": true,
+  "python": "3.12.14 (main, Aug 25 2026, 14:00:49) [Clang 22.1.3 ]",
+  "schema": "ndu-jac.followup-validation.v1",
+  "scope": "48 new and 14 inherited tests in normal and optimized Python. Repeated modes are not independent replications; no native/full-repository CI run.",
+  "source_sha256": {
+    "experiments/multimodal_output_portfolio/joint_hepta_20261029/v3/ndu_jac/__init__.py": "ca706d9d05cc4dc717219392eaaf8f11949bf08bc9662b7e061f460fba391b73",
+    "experiments/multimodal_output_portfolio/joint_hepta_20261029/v3/ndu_jac/core.py": "a04d3a1cc038448e9a2f7fc5f5336c60a80f06171833517f045e90cf7a1b6578",
+    "experiments/multimodal_output_portfolio/joint_hepta_20261029/v3/ndu_jac/critic_study.py": "eabbcb3a9dc178add6481ecfe383a43b2481bb4c47feec0d10175ccf846518b3",
+    "experiments/multimodal_output_portfolio/joint_hepta_20261029/v3/ndu_jac/finite_study.py": "949047331a616e638dc71ff6ddd167a1a63f0234cfaf4524f0d727ce641a2887",
+    "experiments/multimodal_output_portfolio/joint_hepta_20261029/v3/ndu_jac/paid_audit.py": "9fa5b681d952f7b7698494bffa668d592be7063b4c2c63101f6916e5a040216c",
+    "experiments/multimodal_output_portfolio/joint_hepta_20261029/v3/ndu_jac/paid_study.py": "b03ccf3f2ba73820aba9a6d241449dada4ec3cdb543b4b8105ae7fb5d172d492",
+    "experiments/multimodal_output_portfolio/joint_hepta_20261029/v3/ndu_jac/policy_gate.py": "589c2464cd803397c4c42f77341414b83897cfe174c63e14e16ac3e0098c3645",
+    "experiments/multimodal_output_portfolio/joint_hepta_20261029/v3/ndu_jac/reproduce.py": "78f3d30f82ae1079b96d62ac876f3265498ac0953106f11a04acb37e972e796f",
+    "experiments/multimodal_output_portfolio/joint_hepta_20261029/v3/ndu_jac/test_core.py": "9fd7ddaff1b0324a472e711c94e042aad3a347d9cdf1d2277af3eb5a53575fbf",
+    "experiments/multimodal_output_portfolio/joint_hepta_20261029/v3/ndu_jac/test_critic_study.py": "4b5b48dc566c94c7eda26c8a7b18514e3de4fe6e346c9ba21e614071505a9df3",
+    "experiments/multimodal_output_portfolio/joint_hepta_20261029/v3/ndu_jac/test_finite_study.py": "3e46843eeab8da9223043421acd221e68b75c05bc6e94a3275454bff5162d961",
+    "experiments/multimodal_output_portfolio/joint_hepta_20261029/v3/ndu_jac/test_paid_audit.py": "857ec079361956d274c6a2ab55dca5e4680b60c7c11e6a101d16750c980f8ef6",
+    "experiments/multimodal_output_portfolio/joint_hepta_20261029/v3/ndu_jac/test_paid_study.py": "a397461fa4639e31505f11a6a822f7405db1c739253f12ccdc874974861462ba",
+    "experiments/multimodal_output_portfolio/joint_hepta_20261029/v3/ndu_jac/test_policy_gate.py": "78da789665326e7988d0ab8fd513cbca69df700f849eddd6006708689f43b988",
+    "experiments/multimodal_output_portfolio/joint_hepta_20261029/v3/ndu_jac/test_theory.py": "00ebb7630fb91c72f0dcccad16a272ed85201f9a48f8579f05327b3cde3eac37",
+    "experiments/multimodal_output_portfolio/joint_hepta_20261029/v3/ndu_jac/test_variance_audit.py": "b80ae96d604ba6b504906ea4cec82d6abb7ca2d0ee1e6daa55d327884d3683b9",
+    "experiments/multimodal_output_portfolio/joint_hepta_20261029/v3/ndu_jac/variance_audit.py": "6b7cd9cc7685ee0fb2d3a456eaea7694c2fbf2244aa2a8991cb0f6e7a9ada10a",
+    "experiments/multimodal_output_portfolio/joint_hepta_20261029/v3/ndu_jac/variance_followup.py": "cdd3b5dcb908e300308bd9d5f5d905afc20caac095cb11b51c6f120434d8c9be"
+  }
+}
