@@ -1,7 +1,6 @@
 use super::JobObject;
 use super::WinChild;
 use filedescriptor::OwnedHandle;
-use portable_pty::Child as _;
 use pretty_assertions::assert_eq;
 use std::io;
 use std::io::Read as _;
