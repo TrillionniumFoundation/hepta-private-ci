@@ -8,7 +8,7 @@ FROM ubuntu:24.04
 
 RUN apt-get update && \
     apt-get install -y --no-install-recommends \
-    curl git openssh-client python3 ca-certificates && \
+    curl git python3 ca-certificates && \
     rm -rf /var/lib/apt/lists/*
 
 # Install dotslash.
@@ -17,4 +17,17 @@ RUN curl -LSfs "https://github.com/facebook/dotslash/releases/download/v0.5.8/do
 # Ubuntu 24.04 ships with user 'ubuntu' already created with UID 1000.
 USER ubuntu
 
+WORKDIR /workspace
+
+# Supply only the authenticated distribution ssh-keygen file. The complete client
+# package's postinst changes /etc/group for ssh-agent and is intentionally not run.
+USER root
+COPY --chmod=0444 .github/rbe-openssh/image_prepare.py .github/rbe-openssh/tool_supply.py /usr/local/lib/hepta-rbe-openssh/
+RUN ["/usr/bin/python3", "-I", "-B", "/usr/local/lib/hepta-rbe-openssh/image_prepare.py", "install"]
+USER ubuntu
+RUN ["/usr/bin/python3", "-I", "-B", "/usr/local/lib/hepta-rbe-openssh/image_prepare.py", "qualify"]
+USER root
+RUN ["/usr/bin/install", "-o", "0", "-g", "0", "-m", "0444", "/tmp/hepta-rbe-openssh-tool-test.json", "/usr/local/share/hepta-rbe-openssh/tool-test.json"]
+RUN ["/usr/bin/rm", "--", "/tmp/hepta-rbe-openssh-tool-test.json"]
+USER ubuntu
 WORKDIR /workspace

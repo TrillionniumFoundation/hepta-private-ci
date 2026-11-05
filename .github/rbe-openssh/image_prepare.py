@@ -3,6 +3,7 @@
 
 import base64
 import hashlib
+import importlib.util
 import json
 import os
 from pathlib import Path
@@ -188,123 +189,53 @@ def identity():
     return arch, user
 
 
+def tool_supply():
+    path = SCRIPT.parent / "tool_supply.py"
+    metadata = path.lstat()
+    require(
+        stat.S_ISREG(metadata.st_mode)
+        and metadata.st_nlink == 1
+        and metadata.st_uid == metadata.st_gid == 0
+        and stat.S_IMODE(metadata.st_mode) == 0o444,
+        "tool-only helper must be the protected image source",
+    )
+    spec = importlib.util.spec_from_file_location("hepta_rbe_tool_supply", path)
+    module = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(module)
+    return module
+
+
 def install():
     global DEADLINE
     DEADLINE = time.monotonic() + 900
-    require(os.geteuid() == 0, "image installation requires the Dockerfile root stage")
+    require(
+        os.geteuid() == os.getegid() == 0,
+        "image supply requires the Dockerfile root stage",
+    )
+    supply = tool_supply()
     arch, user = identity()
     require(
-        not Path("/usr/bin/ssh-keygen").exists(),
+        not os.path.lexists("/usr/bin/ssh-keygen"),
         "base image already has ssh-keygen; reconcile the missing-tool diagnosis",
     )
     ROOT.mkdir(mode=0o755, parents=True, exist_ok=False)
     before_packages = packages()
     before_files = critical_files()
-    apt = [
-        "/usr/bin/apt-get",
-        "-o",
-        "APT::Get::AllowUnauthenticated=false",
-        "-o",
-        "Acquire::AllowInsecureRepositories=false",
-        "-o",
-        "Acquire::AllowDowngradeToInsecureRepositories=false",
-        "-o",
-        "APT::Update::Error-Mode=any",
-    ]
-    command(apt + ["update"])
-    policy = command(["/usr/bin/apt-cache", "policy", "openssh-client"]).stdout.decode()
-    candidates = re.findall(r"^\s*Candidate:\s+(\S+)\s*$", policy, re.M)
-    require(
-        len(candidates) == 1 and candidates[0] != "(none)",
-        "missing signed package candidate",
+    before_directories = supply.directory_identities()
+    debs, selected, before_dependencies, after_dependencies, tool = supply.supply_tool(
+        ROOT, arch, before_packages, command, snapshot, remaining, LOGS
     )
-    package_spec = "openssh-client=" + candidates[0]
-    simulation = command(
-        apt
-        + [
-            "--simulate",
-            "--no-remove",
-            "--no-install-recommends",
-            "install",
-            package_spec,
-        ]
-    ).stdout.decode()
-    require(
-        not re.search(r"^(?:Remv|Purg) ", simulation, re.M), "package removal requested"
-    )
-    debs = []
-    with tempfile.TemporaryDirectory(prefix="hepta-rbe-openssh-apt-") as directory:
-        archive = Path(directory)
-        archive.chmod(0o755)
-        cache = ["-o", "Dir::Cache::archives=" + str(archive)]
-        command(
-            apt
-            + cache
-            + [
-                "--yes",
-                "--download-only",
-                "--no-remove",
-                "--no-install-recommends",
-                "install",
-                package_spec,
-            ]
-        )
-        keep = ROOT / "debs"
-        keep.mkdir(mode=0o755)
-        for path in sorted(archive.glob("*.deb")):
-            raw = path.read_bytes()
-            control = command(
-                ["/usr/bin/dpkg-deb", "--field", str(path)]
-            ).stdout.decode()
-            fields = dict(
-                line.split(": ", 1)
-                for line in control.splitlines()
-                if line and not line[0].isspace() and ": " in line
-            )
-            name, version, package_arch = (
-                fields[k] for k in ("Package", "Version", "Architecture")
-            )
-            require(package_arch in (arch, "all"), "cross-architecture dependency")
-            key = name + ":" + package_arch
-            require(
-                key not in before_packages or before_packages[key] == version,
-                "existing installed package would change: " + key,
-            )
-            destination = keep / path.name
-            with destination.open("xb") as handle:
-                handle.write(raw)
-            destination.chmod(0o444)
-            debs.append(
-                {
-                    "package": key,
-                    "version": version,
-                    "bytes": len(raw),
-                    "sha256": digest(raw),
-                    "file": path.name,
-                }
-            )
-        require(
-            any(item["package"] == "openssh-client:" + arch for item in debs),
-            "OpenSSH candidate archive was not retained",
-        )
-        command(
-            apt
-            + cache
-            + [
-                "--yes",
-                "--no-download",
-                "--no-remove",
-                "--no-install-recommends",
-                "install",
-                package_spec,
-            ]
-        )
     after_packages = packages()
     require(
-        all(after_packages.get(key) == value for key, value in before_packages.items()),
-        "a previously installed package was removed or changed",
+        after_packages == before_packages,
+        "the installed package inventory changed during tool-only supply",
     )
     after_files = critical_files()
+    after_directories = supply.directory_identities()
+    require(
+        after_directories == before_directories,
+        "original image directory metadata changed",
+    )
     if after_files != before_files:
         print(
             json.dumps(
@@ -330,27 +261,34 @@ def install():
     require(signed_metadata, "signed APT release metadata missing")
     executable = snapshot("/usr/bin/ssh-keygen")
     require(
-        executable["uid"] == 0 and executable["mode"] & 0o022 == 0,
-        "OpenSSH executable is not root owned and protected",
+        executable["uid"] == executable["gid"] == 0
+        and executable["mode"] == 0o755
+        and executable["sha256"] == digest(tool)
+        and executable["bytes"] == len(tool),
+        "OpenSSH executable differs from the selected protected distribution file",
     )
     remaining()
     write_json(
         ROOT / "install.json",
         {
-            "schema": "hepta.rbe-openssh-image.install.v1",
-            "status": "installed-not-original-tests-qualified",
+            "schema": "hepta.rbe-openssh-image.install.v2",
+            "status": "tool-only-not-original-tests-qualified",
+            "deployment_mode": "single-distribution-tool",
+            "dpkg_install_executed": False,
             "architecture": arch,
             "uid": user.pw_uid,
             "gid": user.pw_gid,
             "before_packages": before_packages,
             "after_packages": after_packages,
-            "added_packages": {
-                key: value
-                for key, value in after_packages.items()
-                if key not in before_packages
-            },
+            "added_packages": {},
+            "selected_package": selected,
+            "selected_member": supply.TOOL_MEMBER,
+            "before_tool_dependencies": before_dependencies,
+            "after_tool_dependencies": after_dependencies,
             "before_critical_files": before_files,
             "after_critical_files": after_files,
+            "before_directories": before_directories,
+            "after_directories": after_directories,
             "openssh_executable": executable,
             "retained_debs": debs,
             "apt_signed_release_metadata": signed_metadata,
@@ -368,13 +306,36 @@ def qualify():
         "tool smoke test must use original nonroot image identity",
     )
     installed = json.loads((ROOT / "install.json").read_text())
-    require(installed["architecture"] == arch, "installed image architecture mismatch")
+    require(
+        installed["schema"] == "hepta.rbe-openssh-image.install.v2"
+        and installed["status"] == "tool-only-not-original-tests-qualified"
+        and installed["deployment_mode"] == "single-distribution-tool"
+        and installed["dpkg_install_executed"] is False
+        and installed["architecture"] == arch,
+        "tool-only image receipt mismatch",
+    )
+    require(
+        packages() == installed["before_packages"],
+        "installed package inventory changed",
+    )
+    require(
+        tool_supply().dependency_files(Path("/usr/bin/ssh-keygen"), command, snapshot)
+        == installed["before_tool_dependencies"]
+        == installed["after_tool_dependencies"],
+        "original tool dependency closure changed",
+    )
     require(
         critical_files() == installed["after_critical_files"], "baseline tools changed"
     )
     require(
         snapshot("/usr/bin/ssh-keygen") == installed["openssh_executable"],
         "OpenSSH executable identity changed",
+    )
+    require(
+        tool_supply().directory_identities()
+        == installed["before_directories"]
+        == installed["after_directories"],
+        "original image directory metadata changed",
     )
     executable = "/usr/bin/ssh-keygen"
     cases = []

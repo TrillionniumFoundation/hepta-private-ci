@@ -7,7 +7,7 @@ FROM original-${TARGETARCH}
 
 USER root
 WORKDIR /workspace
-COPY --chmod=0444 image_prepare.py /usr/local/lib/hepta-rbe-openssh/image_prepare.py
+COPY --chmod=0444 image_prepare.py tool_supply.py /usr/local/lib/hepta-rbe-openssh/
 RUN ["/usr/bin/python3", "-I", "-B", "/usr/local/lib/hepta-rbe-openssh/image_prepare.py", "install"]
 
 USER ubuntu

@@ -24,6 +24,8 @@ WANTED = (
     "usr/local/lib/hepta-rbe-openssh/image_prepare.py",
     "usr/local/share/hepta-rbe-openssh/install.json",
     "usr/local/share/hepta-rbe-openssh/tool-test.json",
+    "usr/local/lib/hepta-rbe-openssh/tool_supply.py",
+    "usr/bin/ssh-keygen",
 )
 
 

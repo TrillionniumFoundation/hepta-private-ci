@@ -136,6 +136,9 @@ class Evidence:
         files = {}
         for name in (
             "image_prepare.py",
+            "tool_supply.py",
+            "tool_supply_tests.py",
+            "helper_regressions.py",
             "build_image.py",
             "publish_image.py",
             "common.py",

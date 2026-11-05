@@ -25,6 +25,8 @@ from common import (
 def retained_files(directory, manifest):
     wanted = {
         "usr/local/lib/hepta-rbe-openssh/image_prepare.py",
+        "usr/local/lib/hepta-rbe-openssh/tool_supply.py",
+        "usr/bin/ssh-keygen",
         "usr/local/share/hepta-rbe-openssh/install.json",
         "usr/local/share/hepta-rbe-openssh/tool-test.json",
     }
@@ -135,6 +137,8 @@ def retained_files(directory, manifest):
 def build(evidence):
     arch, identity = evidence.arch, evidence.identity
     baseline_ref = BASES[arch]
+    for test in ("helper_regressions.py", "tool_supply_tests.py"):
+        evidence.command([sys.executable, "-I", "-B", PACKAGE + "/" + test, PACKAGE])
     evidence.command(["docker", "version"])
     evidence.command(["docker", "buildx", "version"])
     evidence.command(
@@ -249,14 +253,13 @@ def build(evidence):
         image_checks(identity, arch, config, baseline)
         verify_diff_ids(directory, manifest, config)
         retained = retained_files(directory, manifest)
-        script, script_mode = retained[
-            "usr/local/lib/hepta-rbe-openssh/image_prepare.py"
-        ]
-        require(
-            script == (Path(PACKAGE) / "image_prepare.py").read_bytes()
-            and script_mode == {"uid": 0, "gid": 0, "mode": 0o444},
-            "image installer source changed",
-        )
+        for name in ("image_prepare.py", "tool_supply.py"):
+            script, script_mode = retained["usr/local/lib/hepta-rbe-openssh/" + name]
+            require(
+                script == (Path(PACKAGE) / name).read_bytes()
+                and script_mode == {"uid": 0, "gid": 0, "mode": 0o444},
+                "image tool-supply source changed",
+            )
         installed_raw, installed_mode = retained[
             "usr/local/share/hepta-rbe-openssh/install.json"
         ]
@@ -272,16 +275,17 @@ def build(evidence):
         )
         installed, smoke = json.loads(installed_raw), json.loads(smoke_raw)
         require(
-            installed["schema"] == "hepta.rbe-openssh-image.install.v1"
+            installed["schema"] == "hepta.rbe-openssh-image.install.v2"
+            and installed["status"] == "tool-only-not-original-tests-qualified"
+            and installed["deployment_mode"] == "single-distribution-tool"
+            and installed["dpkg_install_executed"] is False
             and installed["architecture"] == arch
             and installed["uid"] == installed["gid"] == 1000,
             "installer receipt identity mismatch",
         )
         require(
-            all(
-                installed["after_packages"].get(k) == v
-                for k, v in installed["before_packages"].items()
-            ),
+            installed["after_packages"] == installed["before_packages"]
+            and installed["added_packages"] == {},
             "baseline installed package changed",
         )
         require(
@@ -294,6 +298,29 @@ def build(evidence):
             and smoke["uid"] == smoke["gid"] == 1000
             and smoke["executable"] == installed["openssh_executable"],
             "smoke identity mismatch",
+        )
+        tool, tool_mode = retained["usr/bin/ssh-keygen"]
+        executable = installed["openssh_executable"]
+        require(
+            tool_mode == {"uid": 0, "gid": 0, "mode": 0o755}
+            and executable["uid"] == executable["gid"] == 0
+            and executable["mode"] == 0o755
+            and executable["logical"] == executable["resolved"] == "/usr/bin/ssh-keygen"
+            and hashlib.sha256(tool).hexdigest() == executable["sha256"]
+            and len(tool) == executable["bytes"]
+            and installed["selected_member"] == "usr/bin/ssh-keygen"
+            and installed["selected_package"] in installed["retained_debs"],
+            "effective distribution tool does not match its retained source receipt",
+        )
+        require(
+            installed["before_tool_dependencies"]
+            == installed["after_tool_dependencies"]
+            and installed["before_tool_dependencies"],
+            "original tool dependency closure changed",
+        )
+        require(
+            installed["before_directories"] == installed["after_directories"],
+            "original image directory metadata changed",
         )
         expected = [
             (algorithm, namespace, accepted)
