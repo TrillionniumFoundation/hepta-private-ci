@@ -1,0 +1,139 @@
+{
+  "schema": "hepta-b16-driver-v7-launcher-template-v1",
+  "status": "DISABLED_PENDING_ACTUAL_FOUNDATION_QUALIFIED_AND_ROOT_GUARD",
+  "author": "architecture_audit",
+  "internal_stage_ids_are_not_original_blocker_ids": true,
+  "base_launcher": {
+    "path": "ci-audit/recovered-20261105/b16-ai395-foundation-v7-v2/launch_foundation_v7.py",
+    "bytes": 18440,
+    "sha256": "6822afbdc2b9e738fe16801a2eb7ee7865a8cb0880f7578d40813fe42ff24dc5",
+    "blob": "75623f2ed4c5e8f0dd6009df542dae462d5a847b"
+  },
+  "candidate": {
+    "path": "architecture-audit/b16-driver-launcher-template-20261105/launch_driver_v7.py",
+    "bytes": 24697,
+    "sha256": "473af7a8d03188d43a1d88c594dfd4c0049ace13c671933c7ffb5fa4b600b175",
+    "blob": "bee66f1ff8ab5f3e4442b2dd14fc4aaa59b7a19d"
+  },
+  "full_delta": {
+    "path": "architecture-audit/b16-driver-launcher-template-20261105/foundation-v2-to-driver-v1.delta.patch",
+    "bytes": 12970,
+    "sha256": "5d7311a1b0d509751cc3ae5e78badceffc83cdb9bf63e2244ac28caf31b2c8f8",
+    "blob": "fcf9f3157744d504eceb62ba205340a6fbe91581"
+  },
+  "delta_application": "Place the exact foundation V2 source as launch_driver_v7.py, then apply this review delta. This is only a cloud source candidate, never executed on native.",
+  "binding_template": {
+    "path": "architecture-audit/b16-driver-launcher-template-20261105/driver-binding-DISABLED.json",
+    "bytes": 18527,
+    "sha256": "1a4003cd9e8560ff8fb2a47c94330fb695942f0059288b7f8b85ba185aca4e6e",
+    "blob": "bd9bbb43680ae96318d7d78d1770afc4cf59ca93"
+  },
+  "request_template": {
+    "path": "architecture-audit/b16-driver-launcher-template-20261105/launch-request-DISABLED.json",
+    "bytes": 934003,
+    "sha256": "9daa9749705596aa82f664120d6fa592194ab1fdc4bd82a6dac58756754dcfd8",
+    "blob": "4a0fca3751622da7dee775686b46316d2f9ce765"
+  },
+  "static_verification": {
+    "path": "architecture-audit/b16-driver-launcher-template-20261105/static-verification.json",
+    "bytes": 8646,
+    "sha256": "0b27e879659e7f5e3f76643fead92c99b7e312f6fcb393b8d0b4805679930546",
+    "blob": "55f3400f361b518dc73f2cb3c33b1bfca77a9de0"
+  },
+  "frozen_runtime": {
+    "version": "V7-original-ignored-catalog",
+    "integrity_blob": "18f27fbb488777d621b4f37aa0cf70956cdbe7d9",
+    "integrity_sha256": "96bbff3180620d841b90b65ea1e159d04931c47fd2de1c270ba0f6c059ac5202",
+    "payload_sha256": "a34cd6c5400deff4fedfffcb1f4f170eecabbb6bbfab1916829ab3911e986237",
+    "runtime_file_count": 29,
+    "integrity_file_count": 25,
+    "all_bytes_unchanged": true
+  },
+  "original_functions_preserved": [
+    "need",
+    "identity",
+    "bytes_id",
+    "file_id",
+    "equal_content",
+    "save",
+    "save_json",
+    "verify_openssl_sdk",
+    "verify_libcap_sdk",
+    "verify_all_external"
+  ],
+  "new_source_gate": {
+    "function": "verify_foundation_continuity",
+    "must_be_actual_prior_status": "QUALIFIED",
+    "prior_epoch": "foundation",
+    "prior_error": null,
+    "prior_final_guard": true,
+    "original_runner_and_launcher_exit_codes": 0,
+    "prior_external_final_guard_error": null,
+    "actual_prior_binding_pinned": true,
+    "same_finalA_payload_runtime_host_tools_environment_recipes_SDK_V8_cache_and_roster": true,
+    "initial_tree_from_actual_prior_final_tree_only": true,
+    "baseline_metadata": "A prior successful full no-p locked cargo metadata command whose source_before, two distinct original whole-source guards and actual final foundation tree coincide; frozen runner separately checks full graph against prior terminal.",
+    "ordinary_HEAD_and_index_unchanged": true,
+    "both_locks_must_equal_prior_qualified_terminal": true
+  },
+  "required_actual_pins_not_supplied": [
+    "initial_tree",
+    "previous_epoch_receipt",
+    "previous_epoch_binding",
+    "previous_epoch_launch_terminal",
+    "baseline_metadata",
+    "baseline_metadata_source_guards",
+    "locks.codex-rs/Cargo.lock",
+    "locks.MODULE.bazel.lock"
+  ],
+  "planned_scope": {
+    "epoch": "driver",
+    "operations": [
+      "driver-adoption",
+      "B11_driver_adoption_and_first_locks",
+      "B12_driver_no_worker_token",
+      "B13_driver_unwind_releases",
+      "B14_driver_twelve",
+      "B15_driver_bazel_registration"
+    ],
+    "positive_case_count": 12,
+    "negative_case_occurrences": 3,
+    "ignored_support": "options::connection_lifetime::tests::owned_scenario",
+    "raw_scope_manifest_unchanged": true,
+    "source_path_count": 61,
+    "existing_root_Cargo_preimage": "4713741651affd053bb8ae5aa8b5d76831c15c0e",
+    "existing_root_Cargo_postimage": "ef34e2f3926055d868a00ceafb3ac4694d7156ed",
+    "generated_Cargo_and_Bazel_locks": "Original actual generator outputs, no hand edits or expected lock bytes fabricated.",
+    "negative_finally": "Unmodified frozen negative_with_finally exact source restoration; no whole-worktree reset.",
+    "not_authorized": [
+      "pool",
+      "checkpoint",
+      "owning",
+      "production Root activation",
+      "product ref changes"
+    ]
+  },
+  "capacity": {
+    "fresh_entry_minimum_bytes": 48517479536,
+    "observed_P4_artifact_family_bytes": 18517479536,
+    "additional_executable_families": 1,
+    "other_Cargo_growth_bytes": 12000000000,
+    "Bazel_growth_bytes": 8000000000,
+    "evidence_growth_bytes": 2000000000,
+    "per_command_reserve_bytes": 8000000000,
+    "entry_check_before_install_or_subprocess": true,
+    "runtime_recomputes_budget": true,
+    "is_peak_memory_or_disk_proof": false,
+    "cache_cleanup_authorized": false
+  },
+  "limits": [
+    "No foundation terminal outcome is predicted or populated.",
+    "No native process, source write, build, test, lock generation or ref operation was run for this candidate.",
+    "P4 remains BUILD_ONLY on final A 4a; historical ROG fb9 evidence is unchanged. Foundation evidence is a distinct qualified predecessor only after actual completion.",
+    "Runtime handles complete case/negative/oracle qualification; launcher does not replace or loosen it.",
+    "The 934KB request is a native transport file, not a product repository artifact."
+  ],
+  "native_commands_run": false,
+  "new_tests_run": false,
+  "python_AST_only": true
+}

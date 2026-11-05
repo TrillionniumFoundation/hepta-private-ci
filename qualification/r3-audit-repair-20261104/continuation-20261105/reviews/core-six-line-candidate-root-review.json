@@ -1,0 +1,62 @@
+{
+  "schema": "hepta-root-core-scoped-tracing-candidate-review-v1",
+  "candidate_status": "REJECTED_AS_INCOMPLETE_REPAIR",
+  "original_failure_job": 127149546323,
+  "original_failure_review": "9d627385f05ee536482139dca3ddb55da58d237d",
+  "pinned_tracing_core": "0.1.36",
+  "source_identities": [
+    {
+      "path": "/workspace/scratch/07dd58cc9630/ci-audit/core-wait-span-20261105/original/environment_selection.rs.source.txt",
+      "bytes": 73500,
+      "sha256": "04bdcec5996e2bae7187622fc7bc8a82784b70b916cb9c54618febd9f0101ca6",
+      "computed_git_blob": "85d590f386ba81428e5ea3360d2e573d054cab4a"
+    },
+    {
+      "path": "/workspace/scratch/07dd58cc9630/ci-audit/core-wait-span-20261105/candidate/environment_selection.rs.source.txt",
+      "bytes": 73851,
+      "sha256": "226eaeb10d1f6641265e87348e88a66f53c9719f3c4d15967a42e40e4d0fb844",
+      "computed_git_blob": "d19986ee9c5f1067c302f139ee6163ad695c9429"
+    },
+    {
+      "path": "/workspace/scratch/07dd58cc9630/ci-audit/core-wait-span-20261105/repair.patch",
+      "bytes": 746,
+      "sha256": "629362d9ae13ecdf766148db07628341385613f3997f581cf247546578b9574e",
+      "computed_git_blob": "ab5a622c46fd2ed8006985ff359deda98b9fe291"
+    },
+    {
+      "path": "/workspace/scratch/07dd58cc9630/ci-audit/core-wait-span-20261105/upstream/tracing-core-0.1.36/callsite.rs.source.txt",
+      "bytes": 23168,
+      "sha256": "5379f10b434562dc431488b5206b291d5770337cc932b0dc4ee28c2901c53903",
+      "computed_git_blob": "66bd0d349b946b5cc8120bbd736662b2d15767e7"
+    },
+    {
+      "path": "/workspace/scratch/07dd58cc9630/ci-audit/core-wait-span-20261105/upstream/tracing-core-0.1.36/dispatcher.rs.source.txt",
+      "bytes": 36090,
+      "sha256": "d2a0584196c7e053006490baebfa61c6b3145138e3209f82f44d1afbe066acb6",
+      "computed_git_blob": "535df4a4238550eb1b6ae7ac84639fe7c873474b"
+    },
+    {
+      "path": "/workspace/scratch/07dd58cc9630/ci-audit/core-wait-span-20261105/upstream/tracing-core-0.1.36/subscriber.rs.source.txt",
+      "bytes": 35588,
+      "sha256": "399c300e2d55711928ccfac76254ffbbc02d618095b4d06814d87ff7189f6d74",
+      "computed_git_blob": "1a8d7aff79903703c24874a167550216837dca56"
+    }
+  ],
+  "candidate_changes_only_six_test_setup_lines": true,
+  "original_three_log_chain_assertions_unchanged": true,
+  "original_five_second_snapshot_budget_unchanged": true,
+  "public_API_review": "Dispatch::new stores a scoped Arc and calls register_dispatch; NoSubscriber implements Default and returns never. The named local Dispatch is retained and never installed as a default.",
+  "reachable_failure_mechanism": "The JustOne path consults the current calling thread instead of enumerating all registered scoped dispatchers; a first encounter on a no-default thread may cache never for a shared callsite.",
+  "reason_candidate_not_sufficient": [
+    "An existing first-use registration can capture Rebuilder::JustOne before the second Dispatch is registered.",
+    "That JustOne operation does not hold the multi-dispatch registry read lock.",
+    "The candidate can register both dispatchers and rebuild the callsite interest while the older operation remains in flight.",
+    "The older operation may then read its own no-subscriber default and call set_interest(never) after the rebuild.",
+    "The cached-interest write has no registration epoch comparison; another rebuild or yield inside the test does not prove all older operations have drained."
+  ],
+  "actual_CI_thread_interleaving_proven": false,
+  "native_tests_started_by_this_review": 0,
+  "repair_candidate_promoted": false,
+  "next_candidate": "Owned subprocess execution of the same original exact test, with original assertions, wait budget, full ordinary parent sharding, exact-one-child execution proof and failure/output/cleanup controls. This is fixture isolation, not an upstream tracing synchronization fix.",
+  "original_blocker_statuses_unchanged": true
+}

@@ -1,0 +1,98 @@
+{
+  "schema": "hepta-b16-pool-continuity-independent-review-v1",
+  "reviewer": "/root/research_audit",
+  "reviewed_at_utc": "2026-11-05T12:08:03.673020+00:00",
+  "verdict": "STATIC_PASS_DISABLED_TEMPLATE_ONLY",
+  "review_scope": "Only the foundation-to-driver-to-pool continuity adapter and its compatibility with the unchanged frozen runner record schemas. This is not native execution, enablement or a new review of all frozen Rust controls.",
+  "candidate": {
+    "launcher": {
+      "path": "/workspace/scratch/07dd58cc9630/architecture-audit/b16-pool-launcher-template-20261105/launch_pool_v7.py",
+      "bytes": 27997,
+      "sha256": "a59a7551bfa5fae7f1eb0f8a221c70588cffaec2dfc659f4a357777cbfde8b14",
+      "blob": "057a2fc77788da13f46bdd32951eb3c8e0bae550"
+    },
+    "disabled_binding": {
+      "path": "/workspace/scratch/07dd58cc9630/architecture-audit/b16-pool-launcher-template-20261105/pool-binding-DISABLED.json",
+      "bytes": 20752,
+      "sha256": "e353c6408bdadf9ba4c631ce36b61d4fd33672dedf2127fbcec9bc54c948f566",
+      "blob": "fb4bfa837433f4077b4630a37e219bbf08fb04c3"
+    },
+    "manifest": {
+      "path": "/workspace/scratch/07dd58cc9630/architecture-audit/b16-pool-launcher-template-20261105/manifest.json",
+      "bytes": 15161,
+      "sha256": "eec224199fed4ffe70479e2d654de8e53d07e6887fd307be7d9981ef8d50b9ea",
+      "blob": "14d8f092ec7aa9b59ed8f2e887cea178d4670fba"
+    },
+    "delta": {
+      "path": "/workspace/scratch/07dd58cc9630/architecture-audit/b16-pool-launcher-template-20261105/driver-v7-to-pool-v1.delta.patch",
+      "bytes": 17672,
+      "sha256": "abada2c74c43340991c5bb87f1f1a006dfe06c82558362d51e06bfbd3192ea5d",
+      "blob": "7792f2faff36922475413d0f085a30d3f2683296"
+    },
+    "author_actual_create_get_map": {
+      "path": "/workspace/scratch/07dd58cc9630/architecture-audit/b16-pool-launcher-template-20261105/github-readback-map.json",
+      "bytes": 4878,
+      "sha256": "2859fc5decdec7fd69828daa82b1925cf35bf6e4e79ab61615ba81cc3d2f1491",
+      "blob": "63f35b2bcca87d57e3a1f0f7873d88f1ca860d72"
+    }
+  },
+  "checks": [
+    {
+      "subject": "Real driver terminal required",
+      "evidence": "launch_pool_v7.py:197-238",
+      "result": "Pinned bytes/SHA of the actual driver epoch, enabled binding, launcher terminal and original metadata are read before source execution. Requires driver QUALIFIED, error null, final_guard true; both runner and launcher exit zero and no final external guard error. The original terminal path, approval guard and evidence directory must correspond."
+    },
+    {
+      "subject": "Pre-generation and post-generation identities remain distinct",
+      "evidence": "launch_pool_v7.py:240-268",
+      "result": "The foundation receipt pinned by the actual driver binding supplies the driver initial tree and initial locks. The actual driver final tree/generated Cargo and MODULE locks supply pool initial state. No comparison falsely requires pre-generation lock bytes to equal generated final lock bytes."
+    },
+    {
+      "subject": "Driver entry and final source guards",
+      "evidence": "launch_pool_v7.py:269-289; frozen b16_guard.py:118-141",
+      "result": "Each original guard is independently hash pinned, resides in the prior evidence directory, has the exact epoch-entry or epoch-final label, matches both expected and actual trees for that stage, and preserves ordinary HEAD/index, empty untracked set and the corresponding stage-specific lock bytes. SourceGuard emits exactly those keys."
+    },
+    {
+      "subject": "Original metadata and guard pair",
+      "evidence": "launch_pool_v7.py:290-315; frozen b16_native.py:79-124,148-155; b16_runner.py:validate_previous",
+      "result": "Exactly one driver command must have the pinned stdout path and bytes, argv cargo metadata --format-version=1 --locked, exit zero and the actual final driver tree. Both original source guards must match that command name, final tree/index and generated locks. Workspace/target paths are exact. The unchanged runner additionally compares the complete prior metadata graph to the new baseline."
+    },
+    {
+      "subject": "External provenance and capacity preserved",
+      "evidence": "launch_pool_v7.py:verify_driver_continuity and top-level guards; independent static-verification.json",
+      "result": "Source/target, current-host BUILD_ONLY baseline, historical tested A evidence, environment/tools/SDK/V8, all 33 helper names, payload/runtime integrity and ordinary index remain bound. Ten existing external/file guard function bodies are byte identical; no reduction of the 48,517,479,536-byte launch estimate or 8,000,000,000-byte reserve, no cache deletion, and no historical test qualification borrowed from the build-only baseline."
+    },
+    {
+      "subject": "Frozen controls and disabled state",
+      "evidence": "epoch-pool.json and launch-request-DISABLED.json",
+      "result": "All 29 installer files match frozen V7 byte-for-byte; native/oracles/finally/source payload and budgets remain unchanged. Pool keeps three positive cases and the same three negative occurrences across two package scopes, one negative source variant, and one exact restore. Its ignored support subprocess is not another PASS. execute=false, approval_reference/root guard and all actual driver result/tree/lock/metadata guard pins are null."
+    }
+  ],
+  "required_source_changes": [],
+  "open_gates": [
+    "The actual driver result, all driver/launcher/source/metadata artifacts and explicit root enablement must exist and be independently accepted before filling this template. Unknown provider state does not supply those facts.",
+    "The native pool stage has not been run by this review. No negative causal endpoint or positive test result is added.",
+    "This adapter reads host-owned evidence and hash pins; it does not turn those records into an independent Root/Current/FinalUse authority.",
+    "Original B16 whole-product and cross-platform exit conditions are unchanged. Internal pool stage labels are not original blocker closures."
+  ],
+  "verification": {
+    "path": "/workspace/scratch/07dd58cc9630/research-audit/b16-pool-continuity-independent-20261105/static-verification.json",
+    "bytes": 5444,
+    "sha256": "95ed1b5f43ca58c481c0bbb67e43d0312d36237fe82862046223cf3a6f2eb102",
+    "blob": "de572e36d561e71a34953a8b69a8681ac890f98a"
+  },
+  "repro": {
+    "path": "/workspace/scratch/07dd58cc9630/research-audit/b16-pool-continuity-independent-20261105/verify_static.py",
+    "bytes": 4796,
+    "sha256": "b7acbff97f7c90817c0dd0fbb67b78d242eb0c018bef14112dc2fb016e9c344a",
+    "blob": "a40d35f4fa5cace8bced30a17ed1efcb9613351c"
+  },
+  "execution_limits": {
+    "cloud_file_hash_AST_and_JSON_comparisons_only": true,
+    "launcher_or_frozen_runtime_imported": false,
+    "launcher_executed": false,
+    "new_guard_tests_executed": false,
+    "native_or_Cargo_or_project_tests": false,
+    "source_index_target_ref_changes": false
+  }
+}

@@ -1,0 +1,58 @@
+{
+  "scope": "source-only; neither donor native raw nor this candidate was executed here",
+  "fixed_refs": {
+    "donor_tests_only": "3466a3074ab2df88bfae3519f453aa4672c536e5",
+    "donor_tests_only_tree": "5ba499258fd738f0a848bf289c68ba67f76102bf",
+    "donor_green": "f7a57e6f40e3e8220233f0d27b8cfbdf1f721c55",
+    "donor_green_tree": "1f3d38ee52320bba1f345da2f2c54b23a36832ee",
+    "donor_observed_current": "f6905bf16e0b6395648e377c6fa444e026c4d3a1",
+    "donor_current_tree": "8658aecef663debd315fba9e582a5cf5593a182a"
+  },
+  "green_to_current": {
+    "ahead": 13,
+    "behind": 0,
+    "merge_base": "f7a57e6f40e3e8220233f0d27b8cfbdf1f721c55",
+    "returned_changed_files": 43,
+    "state_paths_changed": [],
+    "green_and_current_sqlite_blob": "ec847b1c29b46ce74e7043fab8bac1c00eb8dbda",
+    "green_and_current_regression_blob": "20fe71be06d34c6b962d07450d21dcaf72cbbb96"
+  },
+  "donor_native_raw_status": "RAW_NOT_RETRIEVED",
+  "donor_native_claims_not_qualification": {
+    "full_nine_packages": "PR body reports 1288 passed / 24 skipped at f7a, job 1a1aafb05fe-fc05-4936; no original raw was retrieved",
+    "matched_control": "PR body reports RED both original default attempts at InvalidSavePointStatement, then same filtered GREEN 1 pass; job 1a1ab20eb00-fc05-4aba; no original raw was retrieved",
+    "raw_pointer_scope": "Complete observed f690 recursive tree and four PR discussion API collections did not expose the native raw receipt. This is a bounded retrieval limit, not a claim that no raw exists."
+  },
+  "independent_source_findings": [
+    {
+      "id": "sqlite_hook",
+      "finding": "A nonzero commit-hook result converts COMMIT into ROLLBACK. This is the SQLite documented API contract.",
+      "source": "https://sqlite.org/c3ref/commit_hook.html",
+      "citation_ref": "turn117view0"
+    },
+    {
+      "id": "sqlx_depth",
+      "finding": "SQLite worker decrements tracked depth only after successful COMMIT/ROLLBACK. Transaction::commit returns early on error, then Drop queues a rollback. The subsequent rollback can fail because SQLite already rolled back; Ping acknowledges prior queue work without repairing tracked depth.",
+      "sqlite_worker_blob": "2585dc1312210d9eb18c15f6df1158656d3c6b2c",
+      "sqlite_transaction_blob": "1c57d0163f3505dc048be18c5d47bfee4360cf96",
+      "core_transaction_fixed_vcs_blob": "46f89d25b2be6a04d7ab80347f22e21f16cd0731",
+      "core_pool_connection_fixed_vcs_blob": "7912b12aa14f763e8928bf8ac9466a97a81f681a"
+    },
+    {
+      "id": "pool_reuse",
+      "finding": "Return-to-pool and default checkout ping complete before before_acquire; Ok(false) closes this handle. is_in_transaction is exactly tracked depth != 0, not a new SQLite authority decision."
+    },
+    {
+      "id": "frozen_b_overlap",
+      "finding": "Frozen B vendor worker and transaction.rs are byte-identical to the verified published sqlite package. Guarded-only has no reuse hook; coordinated has an unconditional successful return after the owner callback. Both expose the same stale-depth risk."
+    },
+    {
+      "id": "prior_foundation_scope",
+      "finding": "The four frozen Memory interlock controls still prove physical COMMIT veto. Their explicit waiting/read-transaction probes issue BEGIN/COMMIT as raw SQL, bypassing SQLx Transaction depth bookkeeping; they do not exhaust this new Transaction API reuse path. No prior PASS is relabeled as FAIL."
+    }
+  ],
+  "dependency_provenance": {
+    "sqlite": "Complete original sqlx-sqlite 0.9.0 archive and selected actual registry receipt already verified; worker and transaction.rs equal frozen vendor",
+    "sqlx_core": "Actual registry selected connection.rs/inner.rs bytes reverified. Additional Transaction/PoolConnection bodies fetched from transact-rs/sqlx fixed VCS 003b698e99e024f3621b8043a2426fde5b741171 identified by actual .cargo_vcs_info; this turn did not re-extract the full core archive."
+  }
+}

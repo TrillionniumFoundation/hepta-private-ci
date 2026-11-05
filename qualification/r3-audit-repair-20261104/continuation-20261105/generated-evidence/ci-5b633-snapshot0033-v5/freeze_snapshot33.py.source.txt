@@ -1,0 +1,107 @@
+#!/usr/bin/env python3
+"""Freeze already-fetched snapshot 0033 without network or project execution."""
+from collections import Counter
+from pathlib import Path
+import base64
+import gzip
+import hashlib
+import io
+import json
+import tarfile
+
+ROOT = Path(__file__).resolve().parent
+OUT = ROOT / 'immutable-v5-snapshot0033'
+OUT.mkdir(exist_ok=False)
+
+
+def ident(raw):
+    return {'bytes': len(raw), 'sha256': hashlib.sha256(raw).hexdigest(),
+            'computed_git_blob': hashlib.sha1(f'blob {len(raw)}\0'.encode() + raw).hexdigest()}
+
+
+def save(name, value):
+    raw = (json.dumps(value, ensure_ascii=False, indent=2) + '\n').encode()
+    (OUT / name).write_bytes(raw)
+    return raw
+
+
+original = ROOT / 'snapshot-0033/jobs-api-envelope.json'
+records = json.loads(original.read_bytes())['records']
+assert len(records) == len({r['label'] for r in records}) == 21
+bodies = {r['label']: json.loads(r['response']['structuredContent']['content']) for r in records}
+runs = bodies['runs']['workflow_runs']
+assert bodies['runs']['total_count'] == len(runs) == len({r['id'] for r in runs}) == 19
+head = '5b6331250ff459033bd44d1a95daec70131277cc'
+assert all(r['head_sha'] == head and r['run_attempt'] == 1 for r in runs)
+pr = bodies['pr']
+assert pr['head']['sha'] == head and pr['base']['sha'] == '63652be658ebed8d3052eb789b951793384fd5e4'
+assert pr['state'] == 'open' and pr['draft']
+jobs = []
+for run in runs:
+    body = bodies[f"jobs-{run['id']}"]
+    assert body['total_count'] == len(body['jobs'])
+    for job in body['jobs']:
+        assert job['run_id'] == run['id'] and job['head_sha'] == head and job['run_attempt'] == 1
+        jobs.append(job)
+assert len(jobs) == len({j['id'] for j in jobs}) == 44
+core = next(j for j in jobs if j['id'] == 127149546323)
+assert core['run_id'] == 41999104379 and core['status'] == 'in_progress'
+assert core['started_at'] == '2026-11-05T11:59:54Z' and core['runner_id'] == 1000000639
+assert core['steps'][4]['status'] == 'in_progress'
+
+
+def counts(items):
+    return dict(Counter(x['conclusion'] if x['status'] == 'completed' else x['status'] for x in items))
+
+
+summary = {'schema': 'hepta-exact-head-ci-running-delta-v1', 'snapshot': '0033',
+    'observed_window': {'started': min(r['requested_at'] for r in records),
+                        'finished': max(r['observed_at'] for r in records)},
+    'head': head, 'tree': 'b26598d0d97d8d51e723bb5582137315f2174d35',
+    'base': pr['base']['sha'], 'open': True, 'draft': True,
+    'run_attempt': 1, 'runs': 19, 'jobs': 44,
+    'run_status_counts': counts(runs), 'job_status_counts': counts(jobs),
+    'all_api_first_pages_complete_by_total_count': True, 'duplicate_runs_or_jobs': 0,
+    'new_terminal_page_requests': False,
+    'historical_terminal_pages': {'snapshot': '0030', 'registry_blob': '1a88a14ea90e28ad297dcbba1fd90e7e8760d3ea',
+        'scope': 'Twenty empty page-2 responses were observed at 11:46:22-23 UTC; they are historical, not new pagination responses for this snapshot.'},
+    'new_actual_running_job': core,
+    'delta_from_snapshot0030': {'new_runner_assigned_job': 127149546323,
+        'previous_job_status': 'queued', 'new_job_status': 'in_progress',
+        'runner_id': 1000000639, 'started_at': '2026-11-05T11:59:54Z'},
+    'run_projection': [{k:r.get(k) for k in ['id','name','head_sha','status','conclusion','run_attempt','created_at','updated_at','html_url']} for r in runs],
+    'job_projection': [{k:j.get(k) for k in ['id','run_id','name','head_sha','status','conclusion','runner_id','runner_name','started_at','completed_at','html_url','check_run_url']} for j in jobs],
+    'limits': ['The API confirms an assigned runner and completed checkout/provenance steps, with the original resume/fork-prefix/environment step running. No completed test count or actual checkout log is claimed yet.',
+        'The product Git tree is independently frozen; individual source/merge checkout and working bytes still require the original job provenance artifacts.',
+        'Top-level queued is not zero internal execution. Four earlier successful jobs remain distinct frozen scopes.',
+        'No terminal log or artifact was downloaded again for this running-state delta; the original 142 named acceptance conditions are not closed from API states.',
+        'The twenty-one API requests are non-atomic and may observe concurrent changes. No actor/cause of queuing or historical cancellation is inferred.',
+        'No dispatch, rerun, cancellation, native command, ref or shared-source mutation.'],
+    'original_api': {'member':'snapshot-0033/jobs-api-envelope.json', **ident(original.read_bytes())}}
+summary_raw = save('snapshot-summary.json', summary)
+files = [('snapshot-0033/jobs-api-envelope.json', original.read_bytes()), ('snapshot-summary.json', summary_raw)]
+manifest_raw = save('original-files-manifest.json', {'schema':'hepta-immutable-original-file-index-v1',
+    'file_count':len(files), 'total_original_bytes':sum(len(b) for _,b in files),
+    'files':[{'member':n, **ident(b)} for n,b in files]})
+buffer = io.BytesIO()
+with tarfile.open(fileobj=buffer, mode='w') as tar:
+    for name, raw in files:
+        info = tarfile.TarInfo(name); info.size = len(raw); info.mode = 0o644; info.mtime = 0
+        tar.addfile(info, io.BytesIO(raw))
+compressed = gzip.compress(buffer.getvalue(), mtime=0)
+assert gzip.decompress(compressed) == buffer.getvalue()
+parts = []
+for index, offset in enumerate(range(0, len(compressed), 196608)):
+    chunk = compressed[offset:offset + 196608]
+    encoded = base64.b64encode(chunk) + b'\n'
+    name = f'original-ci.tar.gz.part{index:03d}.b64.txt'
+    (OUT / name).write_bytes(encoded)
+    parts.append({'index':index, 'name':name, 'compressed_offset':offset,
+                  'file':ident(encoded), 'decoded_chunk':ident(chunk)})
+save('transport-manifest.json', {'schema':'hepta-immutable-ci-transport-v1',
+    'archive':{'name':'original-ci.tar.gz', **ident(compressed)},
+    'original_files_manifest':{'name':'original-files-manifest.json', **ident(manifest_raw)},
+    'part_count':len(parts), 'parts':parts, 'complete_original_file_count':len(files)})
+(OUT / 'verify_archive.py').write_bytes((ROOT / 'immutable-v5-snapshot0030/verify_archive.py').read_bytes())
+print(json.dumps({'directory':str(OUT), 'archive':ident(compressed), 'files':len(files),
+                  'parts':len(parts), 'counts':summary['job_status_counts']}))

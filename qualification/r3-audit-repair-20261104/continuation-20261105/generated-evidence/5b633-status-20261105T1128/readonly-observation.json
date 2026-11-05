@@ -1,0 +1,87 @@
+{
+  "schema": "hepta.github-status-readonly-observation.v1",
+  "observed_at": "2026-11-05T11:28:03Z",
+  "method": "Official GitHub Status pages and JSON endpoints read through web open; endpoint JSON below is the exact L0 JSON text rendered by that retrieval, not an independently downloaded HTTP byte stream.",
+  "product": {
+    "head": "5b6331250ff459033bd44d1a95daec70131277cc",
+    "published_at": "2026-11-05T09:02:20Z",
+    "latest_local_jobs_snapshot": "snapshot-0026/jobs-api-envelope.json",
+    "last_jobs_observed_at": "2026-11-05T11:24:57.323Z",
+    "expanded_jobs": {
+      "queued": 38,
+      "success": 4,
+      "skipped": 2,
+      "in_progress": 0
+    }
+  },
+  "official_observation": {
+    "page": {
+      "id": "kctbh9vrtdwd",
+      "name": "GitHub",
+      "url": "https://www.githubstatus.com",
+      "time_zone": "Etc/UTC",
+      "updated_at": "2026-11-05T08:19:24.849Z"
+    },
+    "status": {
+      "indicator": "none",
+      "description": "All Systems Operational"
+    },
+    "actions_component": {
+      "id": "br0l2tvcx85d",
+      "name": "Actions",
+      "status": "operational",
+      "created_at": "2019-11-13T18:02:19.432Z",
+      "updated_at": "2026-11-04T18:07:51.071Z",
+      "position": 7,
+      "description": "Workflows, Compute and Orchestration for GitHub Actions",
+      "showcase": true,
+      "start_date": null,
+      "group_id": null,
+      "page_id": "kctbh9vrtdwd",
+      "group": false,
+      "only_show_if_degraded": false
+    },
+    "unresolved_incidents": [],
+    "summary_incidents": [],
+    "scheduled_maintenances": [],
+    "homepage_day": "2026-11-05",
+    "homepage_day_incident_count": 0,
+    "most_recent_relevant_previous_incident": {
+      "name": "Incident with Actions",
+      "started_at": "2026-11-04T17:40:00Z",
+      "resolved_at": "2026-11-04T18:16:00Z",
+      "monitoring_at": "2026-11-04T18:07:00Z",
+      "overlaps_new_product_window": false
+    }
+  },
+  "sources": [
+    {
+      "url": "https://www.githubstatus.com/",
+      "retrieved_ref": "turn113view0",
+      "relevant_lines": [
+        65,
+        87,
+        121,
+        137
+      ]
+    },
+    {
+      "url": "https://www.githubstatus.com/api/v2/summary.json",
+      "retrieved_ref": "turn113view1",
+      "rendered_json": "{\"page\":{\"id\":\"kctbh9vrtdwd\",\"name\":\"GitHub\",\"url\":\"https://www.githubstatus.com\",\"time_zone\":\"Etc/UTC\",\"updated_at\":\"2026-11-05T08:19:24.849Z\"},\"components\":[{\"id\":\"8l4ygp009s5s\",\"name\":\"Git Operations\",\"status\":\"operational\",\"created_at\":\"2017-01-31T20:05:05.370Z\",\"updated_at\":\"2026-11-04T11:30:42.148Z\",\"position\":1,\"description\":\"Performance of git clones, pulls, pushes, and associated operations\",\"showcase\":true,\"start_date\":null,\"group_id\":null,\"page_id\":\"kctbh9vrtdwd\",\"group\":false,\"only_show_if_degraded\":false},{\"id\":\"4230lsnqdsld\",\"name\":\"Webhooks\",\"status\":\"operational\",\"created_at\":\"2019-11-13T18:00:24.256Z\",\"updated_at\":\"2026-11-04T16:45:48.169Z\",\"position\":2,\"description\":\"Real time HTTP callbacks of user-generated and system events\",\"showcase\":true,\"start_date\":null,\"group_id\":null,\"page_id\":\"kctbh9vrtdwd\",\"group\":false,\"only_show_if_degraded\":false},{\"id\":\"0l2p9nhqnxpd\",\"name\":\"Visit www.githubstatus.com for more information\",\"status\":\"operational\",\"created_at\":\"2018-12-05T19:39:40.838Z\",\"updated_at\":\"2025-03-19T05:00:21.309Z\",\"position\":3,\"description\":null,\"showcase\":false,\"start_date\":null,\"group_id\":null,\"page_id\":\"kctbh9vrtdwd\",\"group\":false,\"only_show_if_degraded\":false},{\"id\":\"brv1bkgrwx7q\",\"name\":\"API Requests\",\"status\":\"operational\",\"created_at\":\"2017-01-31T20:01:46.621Z\",\"updated_at\":\"2026-11-04T11:30:42.176Z\",\"position\":4,\"description\":\"Requests for GitHub APIs\",\"showcase\":true,\"start_date\":null,\"group_id\":null,\"page_id\":\"kctbh9vrtdwd\",\"group\":false,\"only_show_if_degraded\":false},{\"id\":\"kr09ddfgbfsf\",\"name\":\"Issues\",\"status\":\"operational\",\"created_at\":\"2017-01-31T20:01:46.638Z\",\"updated_at\":\"2026-11-04T11:30:42.209Z\",\"position\":5,\"description\":\"Requests for Issues on GitHub.com\",\"showcase\":true,\"start_date\":null,\"group_id\":null,\"page_id\":\"kctbh9vrtdwd\",\"group\":false,\"only_show_if_degraded\":false},{\"id\":\"hhtssxt0f5v2\",\"name\":\"Pull Requests\",\"status\":\"operational\",\"created_at\":\"2020-09-02T15:39:06.329Z\",\"updated_at\":\"2026-11-04T11:30:42.240Z\",\"position\":6,\"description\":\"Requests for Pull Requests on GitHub.com\",\"showcase\":true,\"start_date\":null,\"group_id\":null,\"page_id\":\"kctbh9vrtdwd\",\"group\":false,\"only_show_if_degraded\":false},{\"id\":\"br0l2tvcx85d\",\"name\":\"Actions\",\"status\":\"operational\",\"created_at\":\"2019-11-13T18:02:19.432Z\",\"updated_at\":\"2026-11-04T18:07:51.071Z\",\"position\":7,\"description\":\"Workflows, Compute and Orchestration for GitHub Actions\",\"showcase\":true,\"start_date\":null,\"group_id\":null,\"page_id\":\"kctbh9vrtdwd\",\"group\":false,\"only_show_if_degraded\":false},{\"id\":\"st3j38cctv9l\",\"name\":\"Packages\",\"status\":\"operational\",\"created_at\":\"2019-11-13T18:02:40.064Z\",\"updated_at\":\"2026-10-22T17:41:38.649Z\",\"position\":8,\"description\":\"API requests and webhook delivery for GitHub Packages\",\"showcase\":true,\"start_date\":null,\"group_id\":null,\"page_id\":\"kctbh9vrtdwd\",\"group\":false,\"only_show_if_degraded\":false},{\"id\":\"vg70hn9s2tyj\",\"name\":\"Pages\",\"status\":\"operational\",\"created_at\":\"2017-01-31T20:04:33.923Z\",\"updated_at\":\"2026-11-04T16:48:03.098Z\",\"position\":9,\"description\":\"Frontend application and API servers for Pages builds\",\"showcase\":true,\"start_date\":null,\"group_id\":null,\"page_id\":\"kctbh9vrtdwd\",\"group\":false,\"only_show_if_degraded\":false},{\"id\":\"pjmpxvq2cmr2\",\"name\":\"Copilot\",\"status\":\"operational\",\"created_at\":\"2022-06-21T16:04:33.017Z\",\"updated_at\":\"2026-11-03T13:51:46.173Z\",\"position\":10,\"description\":null,\"showcase\":true,\"start_date\":\"2022-06-21\",\"group_id\":null,\"page_id\":\"kctbh9vrtdwd\",\"group\":false,\"only_show_if_degraded\":false},{\"id\":\"h2ftsgbw7kmk\",\"name\":\"Codespaces\",\"status\":\"operational\",\"created_at\":\"2021-08-11T16:02:09.505Z\",\"updated_at\":\"2026-07-14T09:51:08.862Z\",\"position\":11,\"description\":\"Orchestration and Compute for GitHub Codespaces\",\"showcase\":true,\"start_date\":\"2021-08-11\",\"group_id\":null,\"page_id\":\"kctbh9vrtdwd\",\"group\":false,\"only_show_if_degraded\":false},{\"id\":\"cnnb39dkkk82\",\"name\":\"Copilot AI Model Providers\",\"status\":\"operational\",\"created_at\":\"2026-04-17T12:33:08.827Z\",\"updated_at\":\"2026-11-02T18:10:34.849Z\",\"position\":12,\"description\":null,\"showcase\":true,\"start_date\":\"2026-04-17\",\"group_id\":null,\"page_id\":\"kctbh9vrtdwd\",\"group\":false,\"only_show_if_degraded\":false}],\"incidents\":[],\"scheduled_maintenances\":[],\"status\":{\"indicator\":\"none\",\"description\":\"All Systems Operational\"}}"
+    },
+    {
+      "url": "https://www.githubstatus.com/api/v2/incidents/unresolved.json",
+      "retrieved_ref": "turn113view2",
+      "rendered_json": "{\"page\":{\"id\":\"kctbh9vrtdwd\",\"name\":\"GitHub\",\"url\":\"https://www.githubstatus.com\",\"time_zone\":\"Etc/UTC\",\"updated_at\":\"2026-11-05T08:19:24.849Z\"},\"incidents\":[]}"
+    }
+  ],
+  "conclusion": "NO_PUBLISHED_CORRESPONDING_ACTIONS_INCIDENT_FOUND; REPOSITORY_QUEUE_CAUSE_UNKNOWN",
+  "limits": [
+    "Operational is the public aggregate service report; it does not exclude an unreported, local or delayed condition and does not explain this repository's queue.",
+    "The API page updated_at is 08:19:24.849Z, preserved separately from the 11:28 retrieval time.",
+    "The resolved November 4 incident is not transferred to the November 5 09:02–11:28 queue window.",
+    "Stale search snippets and the /api documentation example were not treated as current incident evidence.",
+    "No billing, organization permissions, runner administration, secrets or authenticated UI endpoints were queried; no workflow dispatch/retry/cancel or ref/source mutation occurred."
+  ]
+}

@@ -1,0 +1,447 @@
+{
+  "schema": "hepta-b16-explicit-native-binding-v7-original-ignored-catalog",
+  "internal_stage_ids_are_not_original_blocker_ids": true,
+  "execute": false,
+  "approval_reference": null,
+  "authorized_epoch": "pool",
+  "final_A_tree": "4a3374e22e16ce5c764288ad018cd9affadf94ea",
+  "last_tested_A_tree": "fb9e131272f7e7a138d6c0d1af2b048b9a6ab7ff",
+  "last_tested_A_to_final_A_review": "40bd8b7030931cae6573ec126f4afc13a1140d33",
+  "initial_tree": null,
+  "ordinary_head": "20fd174ded4e5ce01bda34e4f6d1d74803301f49",
+  "ordinary_index": {
+    "bytes": 1224180,
+    "dev": 66306,
+    "git_blob": "69adeb086eccf95645c8a580bf82fa85eef8fb7a",
+    "inode": 65176547,
+    "mode": "0o600",
+    "nlink": 1,
+    "path": "/home/qq/work/hepta-audit-b16-20261105/source/.git/index",
+    "sha256": "6b39b6b27d164001c9b130487d0d7879be5f80e22a4579d06fd472c2bb8d7ac0"
+  },
+  "approved_payload_sha256": "a34cd6c5400deff4fedfffcb1f4f170eecabbb6bbfab1916829ab3911e986237",
+  "approved_runner_integrity_sha256": "96bbff3180620d841b90b65ea1e159d04931c47fd2de1c270ba0f6c059ac5202",
+  "source_directory": "/home/qq/work/hepta-audit-b16-20261105/source",
+  "target_directory": "/home/qq/work/hepta-audit-b16-20261105/target-dev-small",
+  "target_reuse_mode": "BUILD_ONLY_CURRENT_HOST",
+  "final_A_target_directory": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/target-app-epoch2-20261105",
+  "last_tested_A_artifacts": {
+    "path": "/home/qq/work/hepta-audit-b16-20261105/evidence/b16-historical-fb9-input-v1/full-fb9-workspace-selection.original.json",
+    "bytes": 5364870,
+    "sha256": "48dcb2b104793c7dac9699803e4746d6d8145bcc66701de167de57cbf6bd3c6c"
+  },
+  "A_helper_basename_roster": [
+    "apply_patch",
+    "codex",
+    "codex-app-server",
+    "codex-app-server-test-notify-capture",
+    "codex-code-mode-host",
+    "codex-command-runner",
+    "codex-exec",
+    "codex-execpolicy",
+    "codex-execve-wrapper",
+    "codex-hepta-agentd",
+    "codex-linux-sandbox",
+    "codex-mcp-server",
+    "codex-stdio-to-uds",
+    "codex-tui",
+    "codex-windows-sandbox-setup",
+    "codex-write-config-schema",
+    "custom_ca_probe",
+    "exec-server",
+    "hepta",
+    "hepta-agentd-browser",
+    "hepta-shadow-live-trial",
+    "hepta-supervisor-intent-recovery",
+    "hepta-supervisord",
+    "hepta-taskflow-runtime",
+    "logs_client",
+    "md-events",
+    "rmcp_test_server",
+    "test_arg0_preflight",
+    "test_mcp_2026_discovery_stdio_server",
+    "test_mcp_2026_stdio_server",
+    "test_notify_capture",
+    "test_stdio_server",
+    "test_streamable_http_server"
+  ],
+  "evidence_directory": "/home/qq/work/hepta-audit-b16-20261105/evidence/b16-pool-v7-ai395-20261105-v1/run",
+  "bazel_cache_directory": "/home/qq/work/hepta-audit-b16-20261105/b16-native-bazel-cache-20261105-v1",
+  "bazel_cache_owner": "ci_audit_ai395_b16_20261105_v7",
+  "capacity_plan": {
+    "additional_executable_families": 1,
+    "other_cargo_growth_bytes": 12000000000,
+    "bazel_growth_bytes": 8000000000,
+    "evidence_growth_bytes": 2000000000,
+    "estimate_review_reference": "f4ec44ad131dd8a59d83011de221899e808a3171: actual P4 396-file family 18,517,479,536 B plus Cargo12GB/Bazel8GB/evidence2GB/reserve8GB yields 48,517,479,536 B initial planning gate. Fresh native check required; this is not a compilation peak guarantee; no cache deletion or lowered budget."
+  },
+  "previous_epoch_receipt": null,
+  "baseline_metadata": null,
+  "allowed_untracked_source_paths": [],
+  "locks": null,
+  "cargo_profile": "dev-small",
+  "nextest_profile": "local",
+  "junit_relative_path": "codex-rs/target/nextest/local/junit.xml",
+  "min_free_bytes": 8000000000,
+  "tools": [
+    {
+      "bytes": 644784,
+      "dev": 66306,
+      "git_blob": "d2d5434a06d69fdd4982b4ed3e41cba1d138cd4e",
+      "inode": 65436480,
+      "mode": "0o700",
+      "name": "rustc",
+      "nlink": 1,
+      "path": "/home/qq/work/hepta-audit-b16-20261105/tools/rustup-home/toolchains/1.95.0-x86_64-unknown-linux-gnu/bin/rustc",
+      "sha256": "bff349e72704ff70bc08a234a3847338e797065bbedde5e556808bc87b7bf7c6",
+      "version_output": "rustc 1.95.0 (59807616e 2026-04-14)\nbinary: rustc\ncommit-hash: 59807616e1fa2540724bfbac14d7976d7e4a3860\ncommit-date: 2026-04-14\nhost: x86_64-unknown-linux-gnu\nrelease: 1.95.0\nLLVM version: 22.1.2\n"
+    },
+    {
+      "bytes": 42185192,
+      "dev": 66306,
+      "git_blob": "dbc25264b05124bf8b4cabb637e73229f52c138f",
+      "inode": 65436393,
+      "mode": "0o700",
+      "name": "cargo",
+      "nlink": 1,
+      "path": "/home/qq/work/hepta-audit-b16-20261105/tools/rustup-home/toolchains/1.95.0-x86_64-unknown-linux-gnu/bin/cargo",
+      "sha256": "841072d1d92f9e841d9ba5b0814182a0adf064acf4527cd120967b7bc49dcb66",
+      "version_output": "cargo 1.95.0 (f2d3ce0bd 2026-03-21)\n"
+    },
+    {
+      "bytes": 1263912,
+      "dev": 66306,
+      "git_blob": "dbf54b2ab4a561ada99f2bbfb47c1e9fbd0b013d",
+      "inode": 65436331,
+      "mode": "0o700",
+      "name": "cargo-clippy",
+      "nlink": 1,
+      "path": "/home/qq/work/hepta-audit-b16-20261105/tools/rustup-home/toolchains/1.95.0-x86_64-unknown-linux-gnu/bin/cargo-clippy",
+      "sha256": "b71b1263063707608daa1e9b231ad9d87507c11d6aa178ede2b01d8372d5effb",
+      "version_output": "clippy 0.1.95 (59807616e1 2026-04-14)\n"
+    },
+    {
+      "bytes": 5295560,
+      "dev": 66306,
+      "git_blob": "9cd0dd53f44f9fe85f52b0d0b59f5008aed4f501",
+      "inode": 65436471,
+      "mode": "0o700",
+      "name": "rustfmt",
+      "nlink": 1,
+      "path": "/home/qq/work/hepta-audit-b16-20261105/tools/rustup-home/toolchains/1.95.0-x86_64-unknown-linux-gnu/bin/rustfmt",
+      "sha256": "56b31ad3ec8fe0277a2884a189e243b8f04e9b48e5fd22e547c1516c5f8fd34c",
+      "version_output": "rustfmt 1.9.0-stable (59807616e1 2026-04-14)\n"
+    },
+    {
+      "bytes": 5452040,
+      "dev": 66306,
+      "git_blob": "1da163996dca7176901b8e5b2514a4ff9fae8a01",
+      "inode": 65436562,
+      "mode": "0o700",
+      "name": "just",
+      "nlink": 1,
+      "path": "/home/qq/work/hepta-audit-b16-20261105/tools/bin/just",
+      "sha256": "4f864ee6df9b9f351c8b5f95bc9fe589c92080237c2a87c048218a635c3604f7",
+      "version_output": "just 1.51.0\n"
+    },
+    {
+      "bytes": 24038232,
+      "dev": 66306,
+      "git_blob": "b15125abb7e82cfbe52f7d2a1b6dfb90b914e990",
+      "inode": 65436586,
+      "mode": "0o700",
+      "name": "cargo-nextest",
+      "nlink": 1,
+      "path": "/home/qq/work/hepta-audit-b16-20261105/tools/bin/cargo-nextest",
+      "sha256": "e999c122a02c3fe74a1b66d254b6419a8a665e8bf540b1d31de7933a6d3753f1",
+      "version_output": "cargo-nextest 0.9.103 (d2e7b879f 2025-08-25)\nrelease: 0.9.103\ncommit-hash: d2e7b879fb79975e8b47a8e3ce569b651e6381c0\ncommit-date: 2025-08-25\nhost: x86_64-unknown-linux-gnu\n"
+    },
+    {
+      "bytes": 77023347,
+      "dev": 66306,
+      "git_blob": "b5eed055bd801723ce22ab16114d4adbc0ffa43e",
+      "inode": 65436613,
+      "mode": "0o700",
+      "name": "bazel",
+      "nlink": 1,
+      "path": "/home/qq/work/hepta-audit-b16-20261105/tools/bin/bazel",
+      "sha256": "d302d22ed77ee5658b87857249baa579db84300ecebe0a1e9a357b5b20f80eb8",
+      "version_output": "bazel 9.3.0\n"
+    },
+    {
+      "bytes": 4547768,
+      "dev": 66306,
+      "git_blob": "4639a1005ff733f8a6a6ed0fea50cbc633d15c79",
+      "inode": 82183527,
+      "mode": "0o755",
+      "name": "git",
+      "nlink": 1,
+      "observation_scope": "Current read-only completion; not claimed as original P4 pre-build capture.",
+      "observed_at": "2026-11-05T10:06:59.926753+00:00",
+      "path": "/usr/bin/git",
+      "sha256": "ed8b2df973b28c0fb773b9c0dc0816d3ee2b3835bb932d9153c21417bb51b362",
+      "version_output": "git version 2.53.0\n"
+    }
+  ],
+  "recipe_sources": [
+    {
+      "bytes": 23303,
+      "dev": 66306,
+      "git_blob": "a22ff3bee70261f6061d598c31f0016e785a7a3c",
+      "inode": 64654414,
+      "mode": "0o600",
+      "nlink": 1,
+      "path": "AGENTS.md",
+      "sha256": "228165a9ff57b98f101917c4c8086ca76a755bec6c726bb29a4ce74408e2d7f8"
+    },
+    {
+      "bytes": 78,
+      "dev": 66306,
+      "git_blob": "910c65114ec128a8317ee8257428451f3cd28230",
+      "inode": 65178699,
+      "mode": "0o600",
+      "nlink": 1,
+      "path": "codex-rs/rust-toolchain.toml",
+      "sha256": "570656042681cfd8795403a455baf9a33035331a07db0645e866bbcea89a3d64"
+    },
+    {
+      "bytes": 634,
+      "dev": 66306,
+      "git_blob": "8a6f2c11ee7afbb11f7033ef3390fb1c57b4cd44",
+      "inode": 65177169,
+      "mode": "0o600",
+      "nlink": 1,
+      "path": "codex-rs/.cargo/config.toml",
+      "sha256": "b8ae1cea341beb2d4a3c8fb81f97a96f4aee1fd53f769c57f140dfe949806a80"
+    },
+    {
+      "bytes": 7838,
+      "dev": 66306,
+      "git_blob": "a215a76cf407ace9715bca39c20497014e7dd4dc",
+      "inode": 64654428,
+      "mode": "0o600",
+      "nlink": 1,
+      "path": "justfile",
+      "sha256": "74f869224eba12fc4212b043428e7f5b35b551d26f5b06161c25d8aca525f124"
+    },
+    {
+      "bytes": 10206,
+      "dev": 66306,
+      "git_blob": "1ed63abe84267b320cbfb0123a70aac5507f4595",
+      "inode": 65282158,
+      "mode": "0o600",
+      "nlink": 1,
+      "path": "scripts/run-nextest.py",
+      "sha256": "45c4e35d1ff24840d9e1e05331af0b89475bfe1aec3231afc56fecb8cea66127"
+    },
+    {
+      "bytes": 328,
+      "dev": 66306,
+      "git_blob": "49ddaaef2bfc9a3c568bcd2ab3818cd968ccf6dd",
+      "inode": 65282050,
+      "mode": "0o700",
+      "nlink": 1,
+      "path": "scripts/check-module-bazel-lock.sh",
+      "sha256": "a6c3842bb9c884ebd31dd79b99949e7c66b0f82a594dda87797013db572dc180"
+    },
+    {
+      "bytes": 14926,
+      "dev": 66306,
+      "git_blob": "3d5877b283b887091af507f3672003f84c500687",
+      "inode": 64654403,
+      "mode": "0o600",
+      "nlink": 1,
+      "path": ".bazelrc",
+      "sha256": "53a5fd4e65e4e9937b826174520fe1eb642adb79cfe7a6335c871d5fa9db57fa"
+    },
+    {
+      "bytes": 34630,
+      "dev": 66306,
+      "git_blob": "6f588ec3057fddfea35170e28e74036162ce6a23",
+      "inode": 64654425,
+      "mode": "0o600",
+      "nlink": 1,
+      "path": "defs.bzl",
+      "sha256": "f5638a9189632c8d8524a438bbfc6b365bddf7f23dfd2df06a6de3a2ff3f2cfa"
+    }
+  ],
+  "environment": {
+    "CARGO_BUILD_JOBS": "4",
+    "CARGO_HOME": "/home/qq/work/hepta-audit-b16-20261105/cargo-home",
+    "CARGO_INCREMENTAL": "0",
+    "CARGO_NET_GIT_FETCH_WITH_CLI": "true",
+    "CARGO_TARGET_DIR": "/home/qq/work/hepta-audit-b16-20261105/target-dev-small",
+    "DOTSLASH_CACHE": "/home/qq/work/hepta-audit-b16-20261105/tools/dotslash-cache",
+    "GCM_INTERACTIVE": "never",
+    "GIT_TERMINAL_PROMPT": "0",
+    "NEXTEST_PROFILE": "local",
+    "OPENSSL_INCLUDE_DIR": "/home/qq/work/hepta-audit-b16-20261105/tools/openssl-3.5.5-1ubuntu3.7/include",
+    "OPENSSL_LIB_DIR": "/home/qq/work/hepta-audit-b16-20261105/tools/openssl-3.5.5-1ubuntu3.7/sysroot/usr/lib/x86_64-linux-gnu",
+    "PATH": "/home/qq/work/hepta-audit-b16-20261105/tools/bin:/home/qq/work/hepta-audit-b16-20261105/tools/rustup-home/toolchains/1.95.0-x86_64-unknown-linux-gnu/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/snap/bin:/snap/bin",
+    "PKG_CONFIG_PATH": "/home/qq/work/hepta-audit-b16-20261105/tools/libcap-2.75-10ubuntu2/pkgconfig",
+    "PYTHONDONTWRITEBYTECODE": "1",
+    "RUSTUP_HOME": "/home/qq/work/hepta-audit-b16-20261105/tools/rustup-home",
+    "RUSTUP_TOOLCHAIN": "1.95.0",
+    "RUSTY_V8_ARCHIVE": "/home/qq/work/hepta-audit-b16-20261105/tools/rusty-v8/librusty_v8_ptrcomp_sandbox_release_x86_64-unknown-linux-gnu.a.gz",
+    "RUSTY_V8_SRC_BINDING_PATH": "/home/qq/work/hepta-audit-b16-20261105/tools/rusty-v8/src_binding_ptrcomp_sandbox_release_x86_64-unknown-linux-gnu.rs"
+  },
+  "approved_foundation_output_family_sha256": "5f63fcb507e899cc19df88e86efe997a34929edd5f45c83e7f7197987149a204",
+  "current_host_build_only_baseline": {
+    "path": "/home/qq/work/hepta-audit-b16-20261105/evidence/bootstrap-P4-git-tool-augmentation-v1/new-host-build-only-baseline-with-git.json",
+    "bytes": 268075,
+    "sha256": "117ce27929135acfcf8445f23a53842271cad721ef22cf4aaec7024dac3a386a"
+  },
+  "build_only_host": {
+    "alias": "ai395",
+    "euid": 1000,
+    "uid": 1000,
+    "uname": [
+      "Linux",
+      "ai395",
+      "7.0.0-38-generic",
+      "#38-Ubuntu SMP PREEMPT_DYNAMIC Fri Sep  4 09:10:14 UTC 2026",
+      "x86_64",
+      ""
+    ]
+  },
+  "build_only_cache_owner": {
+    "euid": 1000,
+    "host_alias": "ai395",
+    "owned_root": "/home/qq/work/hepta-audit-b16-20261105",
+    "root_creation_guard": "967ef896907e698a07e8028e049a47e934570b1d",
+    "uid": 1000
+  },
+  "build_only_binding_limit": "Current ai395 4a baseline remains BUILD_ONLY_CURRENT_HOST, tests_executed=false and test_qualification=false; historical ROG fb9 qualification and paths remain unchanged. Pool requires the actual driver QUALIFIED receipt and successful original launcher/finally, the driver entry/final guards with different legitimate pre/post locks, and original full locked metadata plus both source guards at the actual driver final tree. A fresh minimum 48,517,479,536 B conservative planning allowance and original per-command 8 GB reserve apply. No peak guarantee, no cache deletion, no lower pool budget, no driver result is predicted.",
+  "source_identity_bridge": {
+    "native_code_tree": "4a3374e22e16ce5c764288ad018cd9affadf94ea",
+    "same_code_source_commit": "20fd174ded4e5ce01bda34e4f6d1d74803301f49",
+    "native_ordinary_HEAD": "20fd174ded4e5ce01bda34e4f6d1d74803301f49",
+    "native_ordinary_index_sha256": "6b39b6b27d164001c9b130487d0d7879be5f80e22a4579d06fd472c2bb8d7ac0",
+    "historical_published_A_head": "0e139b599f0fe451f80fb7db4b2913bb9c679dce",
+    "historical_published_A_complete_tree": "091e659e0da6602299fd14cfa93889191405edd8",
+    "last_tested_A_tree": "fb9e131272f7e7a138d6c0d1af2b048b9a6ab7ff",
+    "last_tested_A_host": "rog",
+    "current_host": "ai395",
+    "current_host_test_qualification": false,
+    "historical_full_artifact_inner_paths_unchanged": true,
+    "limit": "The native ordinary commit20fd/tree4a is the authorized B source. Publication091e includes evidence overlay, and current product branch5b633 does not change this fixed native basis. Historical ROG results remain historical; ai395 baseline is BUILD_ONLY."
+  },
+  "historical_evidence_transfer": {
+    "job": "1a1ab325bc6-fc05-4b55",
+    "terminal": {
+      "path": "/home/qq/work/hepta-audit-b16-20261105/evidence/b16-historical-fb9-input-v1/terminal.json",
+      "bytes": 2531,
+      "sha256": "6c8283ce7a028a8a6a72141519c870535d718a4b43de2c2fab2251ba3e9ec0f2"
+    },
+    "original_native_path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/windows-full-after-index-continuation-20261105-v1/full-workspace-selection.json",
+    "exact_original_bytes_and_internal_paths_preserved": true
+  },
+  "external_build_prerequisites": {
+    "openssl": {
+      "receipt": {
+        "bytes": 114477,
+        "dev": 66306,
+        "git_blob": "cd94077d9281c979faad884e1f57e07f30c74956",
+        "inode": 66869533,
+        "mode": "0o600",
+        "nlink": 1,
+        "path": "/home/qq/work/hepta-audit-b16-20261105/evidence/bootstrap-P4-openssl-sdk-v1/openssl-sdk.json",
+        "sha256": "48e973cac721615cf30b937ff20bf7f47cc951265aa5030b194dec971e1e2bc3"
+      },
+      "environment": {
+        "OPENSSL_INCLUDE_DIR": "/home/qq/work/hepta-audit-b16-20261105/tools/openssl-3.5.5-1ubuntu3.7/include",
+        "OPENSSL_LIB_DIR": "/home/qq/work/hepta-audit-b16-20261105/tools/openssl-3.5.5-1ubuntu3.7/sysroot/usr/lib/x86_64-linux-gnu"
+      }
+    },
+    "libcap": {
+      "receipt": {
+        "bytes": 21821,
+        "dev": 66306,
+        "git_blob": "86c0f8f58e339106f0606c507848d8ca344480c6",
+        "inode": 67663424,
+        "mode": "0o600",
+        "nlink": 1,
+        "path": "/home/qq/work/hepta-audit-b16-20261105/evidence/bootstrap-P4-libcap-sdk-continuation-v2/libcap-sdk.json",
+        "sha256": "91a00c1b04650fe67d60af6573b60f5d4a2e50414262157cc6a636ba52b7c88b"
+      },
+      "environment": {
+        "PKG_CONFIG_PATH": "/home/qq/work/hepta-audit-b16-20261105/tools/libcap-2.75-10ubuntu2/pkgconfig"
+      }
+    },
+    "v8": {
+      "receipt": {
+        "bytes": 5101,
+        "dev": 66306,
+        "git_blob": "cd5c45c0cf03593644a80315186f1ebae2b9e07b",
+        "inode": 65965533,
+        "mode": "0o600",
+        "path": "/home/qq/work/hepta-audit-b16-20261105/evidence/bootstrap-P3-supplier-correction-v1/v8-prerequisites.json",
+        "sha256": "4872133bd7e4d2afdf9a33fc472202c545793dcf2c55f8c918d3f3ee47075f15"
+      },
+      "official_source": "https://github.com/openai/codex/releases/download/rusty-v8-v150.4.0/",
+      "variant": "ptrcomp_sandbox_release_x86_64-unknown-linux-gnu",
+      "source_and_checksum_validated_by_original_P3": true
+    }
+  },
+  "external_build_prerequisite_guard_limit": "The pool launcher preserves the exact driver launcher OpenSSL/libcap/V8 receipts, physical file checks, and all eight tool checks at entry and finally. V7 SourceGuard does not claim coverage of these external SDK files.",
+  "preflight_evidence": {
+    "actual_P4_job": "1a1ab11e5d6-fc05-49ec",
+    "original_P4_commands_exit_codes": [
+      0,
+      0,
+      0
+    ],
+    "original_P4_controller_exit_code": 1,
+    "readonly_completion_job": "1a1ab2523f5-fc05-4aec",
+    "readonly_completion_exit_code": 0,
+    "git_tool_augmentation_job": "1a1ab2d0d99-fc05-4b1d",
+    "git_tool_augmentation_exit_code": 0,
+    "P4_parser_failure_preserved": true,
+    "original_commands_not_repeated_by_completion": true,
+    "normal_helper_before_and_after_hashes_preserved": false,
+    "programs": 363,
+    "helpers": 33,
+    "eligible_cases": 19506,
+    "ignored_cases": 57,
+    "tests_executed": false,
+    "actual_completed_free_bytes": 727434289152,
+    "recorded_free_is_not_future_launch_read": true,
+    "P4_root_review": "19568f88f040affdd660adb84a96570bffd07f6b",
+    "completion_root_review": "78eb0266532c8487edcc9bbc6441792c62d05e17",
+    "git_augmentation_root_review": "713daabb95946a3ced6e32699225f4a763710911",
+    "libcap_complete_root_review": "2da1bd12b4da41936e0354fc5f6e29b291661536"
+  },
+  "harness_attempt_context": {
+    "kind": "DISABLED_POOL_TEMPLATE_PENDING_ACTUAL_DRIVER_QUALIFICATION",
+    "driver_job_id": null,
+    "driver_root_execution_guard": null,
+    "driver_execution_or_completion_observed_at_template_creation": false,
+    "driver_provider_start_and_same_key_reconciliation_timeouts_are_not_product_results": true,
+    "current_pool_execution_authorized": false,
+    "foundation_qualification_is_not_driver_or_pool_qualification": true
+  },
+  "previous_epoch_binding": null,
+  "previous_epoch_launch_terminal": null,
+  "baseline_metadata_source_guards": {
+    "before": null,
+    "after": null
+  },
+  "previous_epoch_source_guards": {
+    "before": null,
+    "after": null
+  },
+  "pool_required_actual_bindings": {
+    "previous_epoch_receipt": "Actual current-host driver QUALIFIED epoch-terminal, never install success or a predicted receipt.",
+    "previous_epoch_binding": "Exact enabled driver binding that started from its actual qualified foundation final tree and pre-generation locks.",
+    "previous_epoch_launch_terminal": "Actual driver launcher zero exit plus original runner zero and successful final external SDK/tool guards.",
+    "previous_epoch_source_guards": "Original driver epoch-entry and epoch-final guards, each bound to its own actual tree and lock bytes; no new native probe is requested.",
+    "initial_tree": "Actual driver final_tree. It is not final_A_tree or a projected tree assembled before lock generation.",
+    "locks": "Exact actual driver terminal Cargo.lock and MODULE.bazel.lock, allowed to differ from the driver's initial locks and immutable P4 baseline locks.",
+    "baseline_metadata": "An original successful full locked no-p driver metadata command at the exact driver final source, normally B14_driver_twelve-metadata, plus its original before/after whole-source guards.",
+    "ordinary_head_and_index": "Exact current 20fd HEAD/index6b39 continuity through foundation, driver entry/final and pool; no reset/stat rewriting.",
+    "external_prerequisites": "Preserve actual eight tools and environment plus OpenSSL/libcap/V8 physical entry/finally guards.",
+    "capacity": "Fresh initial free >=48,517,479,536 B, unchanged conservative 1-family+12GB Cargo+8GB Bazel+2GB evidence+8GB reserve; pool runs no new lock/Bazel stage.",
+    "scope": "Only frozen epoch-pool: one negative source variant across two package scopes (three expected assertion failures), one exact restore, then the same three positive cases. The ignored support child is not another PASS.",
+    "enablement": "Root fills all actual pins and explicitly enables after driver acceptance. This template cannot execute."
+  }
+}

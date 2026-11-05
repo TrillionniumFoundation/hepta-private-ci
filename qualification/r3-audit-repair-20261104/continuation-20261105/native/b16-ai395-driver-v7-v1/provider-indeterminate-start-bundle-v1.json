@@ -1,0 +1,57 @@
+{
+  "schema": "hepta-driver-indeterminate-start-provider-receipts-v1",
+  "host": "ai395",
+  "idempotency_key": "hepta-ai395-b16-driver-v7-20261105-v1",
+  "request": {
+    "local_path": "/workspace/scratch/07dd58cc9630/hepta-audit-fifth/driver-launch-request-ENABLED.json",
+    "bytes": 938052,
+    "sha256": "5f2fe280d8e4fb6aa54d751cc6475060d238b18638b4b6efe4be9a5d7e7152d2"
+  },
+  "native_outcome": "UNKNOWN",
+  "exact_same_args_reconciliation_attempts": 1,
+  "third_start": false,
+  "unattributed_job_logs_read": false,
+  "originals": [
+    {
+      "name": "first-start-provider-timeout.json",
+      "local_path": "/workspace/scratch/07dd58cc9630/ci-audit/recovered-20261105/b16-ai395-driver-v7-bound-candidate-v1/first-start-provider-timeout.json",
+      "bytes": 704,
+      "sha256": "b8b4b2bcf33fd2369f0fb9d3d14296e9920d3f03c7e914571f592d02c9fb6b9d",
+      "git_blob": "958d79f24703ff72e382da32572717d8c5442253",
+      "gzip_base64": "H4sIAAAAAAACA11Swa6bMBC85ysszqW1AWPI9amn6qW9VD00FW+x1w0q2NQ2UaKn/HttSF6rXkDM7s7szvC6IyTz8oQTZHuSnXAOkMNQtjxXbjijy/XgfMh9ABfy2dnzoCIYhgntEvIzy94lhpP1Ic2vkxsU+6bZBjTy2v3C6//sPasfCmeRF7SoGaP8jdDh7wV96PwJCl6nYa4LjUVDVYOV7msAXinBmZR1JTitqSrKpmdNHZ9VX6PGqscWuBIoGC9UsfGOsJh4rfuHuBIlaAGNoiVrGlWVwFTTSN5WSqtKUlq1IJGVshasLUsptO65hihCac/E/Vzrhp+DgbFz6GdrPEbq11iIJWlNtCH5830FyL2wFsN1Tq1ZwEtYmR54+k64tSORMI4EnbNuT/4CGoYRFdHWkRdpFV46mGf/YXXZLSZl1E0gu6Tv7Diiex8DlOh9t8b5cjRH8wSLjyT9dX80SfhZzg+lvCxqWu7J89MXcs+DJFJFYvTZfdXb+v6xbZ4N/mOajYsHt2DEbqs5BkJMOlmzjOtVXw+fDp+/HTbrYAl2ih0yNgSX/hQNo8ctLxtP7WZwHju8yHjaYM2jY3fb/QFZ3lQcwAIAAA==",
+      "gzip_sha256": "b4cc7ed29f8d3762c3e8258f9d7c3516cd9e2f04526c5595bbbdb78acfe2a723",
+      "gzip_bytes": 460
+    },
+    {
+      "name": "same-key-reconciliation-timeout.json",
+      "local_path": "/workspace/scratch/07dd58cc9630/ci-audit/recovered-20261105/b16-ai395-driver-v7-bound-candidate-v1/same-key-reconciliation-timeout.json",
+      "bytes": 957,
+      "sha256": "d5c5418c106dd86572169b4d378338fca3337f111407c93e2fca04bf40c5aa0c",
+      "git_blob": "61b8f3de36d48739ece0c5bf1dd650cfa8c4cb41",
+      "gzip_base64": "H4sIAAAAAAACA+1SwY6bMBC95ysszksLBEg219Weqk17qXpoKu9gD4tbY9OxQYlW+ffaQLZq1U/oBYs3M+/NvJnXDWOJEx32kBxY0uHgIQW1va9SSWpCSvEMwqeEwhqhtAKvrEkHspOSIepVj3b06ZQnd5Gqs85HopligX7g5W/qJq9v9NMuLbKizvOseiMh/Dmi89x1UFR1LK7aosVin8k9lm1TA1Sl3FW5EHW5q7I6k8V23+T7OnzLpsYWywbvoZI73OVVIYuF10GP3JJ6UQY0B3px3DbfUcSOPY04J7WKorQH8pzQDdY4DPHXEAvR4IJHEwu+zgBbA3PQX4aYmng8+1nxhsf/iFurmQCtGRJZCqJvQAtKo2StJfYsrMQzh2Fw72fTaDTRZt6D4FGfrNZI78IOBDq3tPp8MifzAKMLJM3lcDJR+EkMN6V0W9TZ9sCeHj6x1V4WSSUL20vWVq/z+23pPFHuMdau3gTs+tvEsFP+50n89+ofXplgzRRObvTC9vO4n48fjh+/HJd79J0iuZ4aeI/9EEdvQbvlFLUN8/IByCHHswjzBaNvGZvr5hepQYeevQMAAA==",
+      "gzip_sha256": "33ff571f3d86345f594a4f95225693b15a66b29b4671b7c1412b5fecdad192d3",
+      "gzip_bytes": 442
+    },
+    {
+      "name": "provider-reconciliation-readonly-outcome.json",
+      "local_path": "/workspace/scratch/07dd58cc9630/ci-audit/recovered-20261105/b16-ai395-driver-v7-bound-candidate-v1/provider-reconciliation-readonly-outcome.json",
+      "bytes": 3753,
+      "sha256": "aefb2da5c83d91233c041c5fe66887f67ea4f105a49a13996b63c8b703108eb5",
+      "git_blob": "fa026317a94ac0351dfdb7a2098e53ec6218338a",
+      "gzip_base64": "H4sIAAAAAAACA+2XTW/bOBCG7/0VhC+9VFtRsizKtyB1F8Fu3CLrtIcmYGmKgrilSS9FOjEK//cdypasfqILrIAeerHFITUzz8uhNPr4BKFJw2uxYZM5mtRi61hUWrkTNtpas5MlXFjBjeZSSeak0TBkpdFqHxnvuNmIaIcnz4KfStrG0cYx68DZRzCBEW51QgfDu9aAThPtpNtvRYjrxKNrfXT2MA52YxTiTCkkrDV2js6GikklSlQZi95zU4pHyrbb5nlLYL12ciPohnEa4lujlLC/ARAXTXPM8P2dvtOXzDfgZL2f3+kQ+Jpvu0hRmszidI6uL18jK/7xonEoOC0RYE9OqR7a//tj5hPZLMK9kLizXoDt0MrSMEjlg9jTT3X8JdFZIvOgRUmlhrBKterAQDrJ1FklmHO+CciVV5WEdMuTHpMdU170K7+q6FDTb6s60NWKjXEC1UJthUVGIybTIosU052uD9LVCN9B0iXwzoNYcAnawOVLWLE07qXxulwc1XoH/9qg5B4tDWo8rxFACASbU0qoDGfsfo6ervGsO3+7PDrGTOJkhnGcwUF7OulzPZyu7rv0QSHrufNWlJc9/6CS2l2joRAC39XyzcWfVy/oxc3vt9eL5arfr97dF3t1jPnNHWOVE/Z/quqfXP1Pi/p7uv+Q6ofvn46tgccqV4Z/GKjrrYVINJy34DhkGWEcxRnCeD4l82mCbleXk96J1DtYD5hnH8649oBhkuddBt0qyHizVcKJUzLPhoeQMu9qYyUMQCtYUTHVdEsepC7NAwU3Vorm69vP4R3ioH68lo90ExbhvEhJTkgSp0kyKAjxKLhvy2tzktBARTBIcVg2NSgU5todG07IMpgxw2xNEpKJJKo4bOVUzJLhMsW85nV46rXApzE8YD4/FD/GUMSzfCQGRuJ1zzAdjyHN02IsBk7gWHUMxZgM0zQZjWFNegY2GkNB8pik4zBkGE/7WspHq6UiJtk0y8ZhmBWYVD3DaPtQJPCMLIpxGEjBZmcGPh5DgnGGR2JgaXFmqMZjIHGRkXEYClKmomMgsxEZsmSs90NRCJz2DPl/Yjj2NH3DYEXjVRvx9c2rN1cvFjf0r9XFzSr8rhb0dvnH8tXb5fHLTxtH4dOhhDaIhv4MeqFB3wDT1NXSlv234XDGa+agVVj7INbfZk2PHR0Nn5ldJ3R48i8pw00jqQ4AAA==",
+      "gzip_sha256": "bc0c0ea263abda62499518987d293200bbce9a30422f7f1cfdcb6a62b24bbae5",
+      "gzip_bytes": 907
+    },
+    {
+      "name": "start-inventory-time-window.json",
+      "local_path": "/workspace/scratch/07dd58cc9630/ci-audit/recovered-20261105/b16-ai395-driver-v7-bound-candidate-v1/start-inventory-time-window.json",
+      "bytes": 1424,
+      "sha256": "0940a4cf735236ff97b3354c4f23e70e77537399a763366f914a672798dfe85c",
+      "git_blob": "4fe1c33320a39c79a9f4ccfa66fe5b3504334c7f",
+      "gzip_base64": "H4sIAAAAAAACA7WUz2rkMAzG7/MUJudxsfNnYs8+wZ620D3tUoLGUTaGxB5sZdpS+u7rJDSFnnpILwb5+yz9JIxeD4xl0fQ4QnZmWY9XAt4Ge8PAB5ic6bl1N3TkwwsnOyJ/sq71T/wms+P8NiBE7+a398HfbIuBTREjM0kgbJvJ2edmjEfmPDFw7OfDr00DYpGCdf9+MDNAjLZ7YQEJrMOWbWVTvmRhYGiCgXUWh/Zurb2iNJEgUDORmSlykZ+4lFxUv6U8l+IsxJ/VnbIFizGZ/qaQsdflTMIn1GSQtS5UrVQuijw/vvvwGc1E1rtm9C3OxfwVAyTGbPP0PtKsgC109XFt2/lSgoSLylWFOe+MqHiJp/zDtM57boeW7GuMbbYY3o5fptbiVO9ODUpcNupyf+qiLvT+1EbpaqPW30FdFvk3UF/URg27U2tVC1XsTV1JWW4/pN79h2ihqrKq9qY+aam6jfrrs07n47JWtj3VGD9eB1zcFCZcVPIEw9yDqpeBZ3O+KTYwUe+DTUFatUnvYIh4eDv8BwoJF5OQBQAA",
+      "gzip_sha256": "f5fc8bb5f0609b7f248ad992579f58daa661ad614d1928a13e292f2b4714a252",
+      "gzip_bytes": 417
+    }
+  ],
+  "inventory_limit": "Inventory exposes ids, host, created_unix_ms and launch_state, not the original idempotency key or request fingerprint. Entries cannot be assigned to this launch from time alone."
+}

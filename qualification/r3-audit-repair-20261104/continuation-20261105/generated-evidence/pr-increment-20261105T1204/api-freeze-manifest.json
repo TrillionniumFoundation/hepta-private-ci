@@ -1,0 +1,380 @@
+{
+  "schema": "bounded-pr-increment-api-freeze-v1",
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "window_cutoff_utc": "2026-11-05T10:26:00Z",
+  "last_anchor_observed_utc": "2026-11-05T10:26:15.688Z",
+  "observation_window_utc": [
+    "2026-11-05T12:04:06.718Z",
+    "2026-11-05T12:04:43.854Z"
+  ],
+  "query": {
+    "state": "all",
+    "sort": "updated",
+    "direction": "desc",
+    "per_page": 30,
+    "pages": [
+      1,
+      2
+    ]
+  },
+  "records_examined": 60,
+  "updated_in_window": 13,
+  "new_numbers_since_prior_observation": [
+    4869,
+    4870,
+    4871,
+    4872
+  ],
+  "is_new_repository_total": false,
+  "non_atomic_pagination": true,
+  "ordering_note": "API order within the recent window was not perfectly monotonic; all 13 observed in-window rows occurred in page 1; page 2 had none. Coverage is the bounded response set, not an atomic exhaustive snapshot of concurrent updates.",
+  "oldest_observed_updated_at": "2026-11-05T01:39:02Z",
+  "rows": [
+    {
+      "number": 4872,
+      "title": "research(ndu): publish bounded joint-control source and falsifying evidence [HOLD]",
+      "state": "open",
+      "draft": true,
+      "created_at": "2026-11-05T11:57:39Z",
+      "updated_at": "2026-11-05T12:04:00Z",
+      "head": {
+        "sha": "cea77b5e6ff25b05bad7e9fbf88578fd84f198e9",
+        "ref": "research/ndu-jac-source-publication-20261105-gpt6-01"
+      },
+      "base": {
+        "sha": "bde82cc66099ccdfe198d2c02f4536b70c91731c",
+        "ref": "research/ndu-decision-exact-20261104"
+      },
+      "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/pull/4872"
+    },
+    {
+      "number": 4855,
+      "title": "W0–W7: unify R3 safety, CI and recovery candidate with explicit qualification gates",
+      "state": "open",
+      "draft": true,
+      "created_at": "2026-11-05T07:42:31Z",
+      "updated_at": "2026-11-05T12:01:22Z",
+      "head": {
+        "sha": "f6905bf16e0b6395648e377c6fa444e026c4d3a1",
+        "ref": "integration/unified-w0-w7-20261105-4d868a11"
+      },
+      "base": {
+        "sha": "732e934ba496d90fbe042b8d41d479ef901643e5",
+        "ref": "main"
+      },
+      "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/pull/4855"
+    },
+    {
+      "number": 4830,
+      "title": "research(ndu): exact online decision references and clairvoyant bounds",
+      "state": "open",
+      "draft": true,
+      "created_at": "2026-11-05T05:03:30Z",
+      "updated_at": "2026-11-05T11:42:00Z",
+      "head": {
+        "sha": "bde82cc66099ccdfe198d2c02f4536b70c91731c",
+        "ref": "research/ndu-decision-exact-20261104"
+      },
+      "base": {
+        "sha": "c6773fcc3fe0520f58e0d5234713d60ecf246f31",
+        "ref": "fix/joint-hepta-v3-prefix-cost-20261103"
+      },
+      "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/pull/4830"
+    },
+    {
+      "number": 4871,
+      "title": "[DRAFT][DENY_ALL] Scope Windows PTY Child methods after native E0599 compile failure",
+      "state": "open",
+      "draft": true,
+      "created_at": "2026-11-05T11:36:52Z",
+      "updated_at": "2026-11-05T11:36:52Z",
+      "head": {
+        "sha": "0d6e5bd0a4fa91837b83fdbae9ec037762b4642f",
+        "ref": "dot/hia-r3-winchild-local-trait-scope-20261105"
+      },
+      "base": {
+        "sha": "fe923968bd739d0c0b981ee24ba6ddfd8f547d13",
+        "ref": "dot/hia-r3-winchild-trait-ambiguity-20261105"
+      },
+      "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/pull/4871"
+    },
+    {
+      "number": 4869,
+      "title": "Integrate bound run recovery and exact source qualification for 40 modules",
+      "state": "open",
+      "draft": true,
+      "created_at": "2026-11-05T10:33:03Z",
+      "updated_at": "2026-11-05T11:43:52Z",
+      "head": {
+        "sha": "5e917b9f5fb3e841dbcaefcd5bbbf59b32f20411",
+        "ref": "integration/modules40-source-recovery-20261105-a9f4ebc7"
+      },
+      "base": {
+        "sha": "e65a53ddfc872ef66edc63dff8f28d4414817c60",
+        "ref": "integration/unified-w0-w7-20261105-4d868a11"
+      },
+      "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/pull/4869"
+    },
+    {
+      "number": 4843,
+      "title": "Fix original P1 CI failures while preserving qualification gates",
+      "state": "open",
+      "draft": true,
+      "created_at": "2026-11-05T06:21:17Z",
+      "updated_at": "2026-11-05T11:27:48Z",
+      "head": {
+        "sha": "7504ab322f229321b6e06a16895ebaabe9b3d32a",
+        "ref": "fix/p1-original-ci-closure-20261105"
+      },
+      "base": {
+        "sha": "732e934ba496d90fbe042b8d41d479ef901643e5",
+        "ref": "main"
+      },
+      "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/pull/4843"
+    },
+    {
+      "number": 4853,
+      "title": "P0/P1: repair original #4826 CI failures on exact R3",
+      "state": "open",
+      "draft": true,
+      "created_at": "2026-11-05T06:54:05Z",
+      "updated_at": "2026-11-05T11:23:23Z",
+      "head": {
+        "sha": "5583d7e2ca13a23ea88d52c47809bc35b9c1af89",
+        "ref": "codex/4826-full-ci-repair-20261105"
+      },
+      "base": {
+        "sha": "4e31abc907f09740d402d1ddef7a1d2fe0a366a6",
+        "ref": "codex/organ-intermediate-diagnosis-20261105-r3"
+      },
+      "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/pull/4853"
+    },
+    {
+      "number": 4870,
+      "title": "fix: qualify R6 observed termination and original CI prerequisites",
+      "state": "open",
+      "draft": true,
+      "created_at": "2026-11-05T10:44:11Z",
+      "updated_at": "2026-11-05T11:01:47Z",
+      "head": {
+        "sha": "eac9ca08f2414c619a5058868ebbedf683b18685",
+        "ref": "codex/organ-intermediate-diagnosis-20261105-r6"
+      },
+      "base": {
+        "sha": "14578203ab537c73a1a2604a58b845bdd4579cee",
+        "ref": "codex/organ-intermediate-diagnosis-20261105-r5"
+      },
+      "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/pull/4870"
+    },
+    {
+      "number": 4797,
+      "title": "fix: restore r3 product contracts and preserve exact-source qualification",
+      "state": "open",
+      "draft": true,
+      "created_at": "2026-11-04T12:16:38Z",
+      "updated_at": "2026-11-05T10:58:13Z",
+      "head": {
+        "sha": "5b6331250ff459033bd44d1a95daec70131277cc",
+        "ref": "fix/r3-original-product-contracts-20261104"
+      },
+      "base": {
+        "sha": "63652be658ebed8d3052eb789b951793384fd5e4",
+        "ref": "integration/ui-objective-20261103-product"
+      },
+      "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/pull/4797"
+    },
+    {
+      "number": 4812,
+      "title": "fix(hepta): require PQ at ordinary runtime and revalidate FinalUse effects",
+      "state": "open",
+      "draft": true,
+      "created_at": "2026-11-05T00:03:10Z",
+      "updated_at": "2026-11-05T10:57:45Z",
+      "head": {
+        "sha": "1556a4df6e279055fd8196f81a4ca2fe0f19384a",
+        "ref": "fix/hepta-ordinary-pq-effects-20261104"
+      },
+      "base": {
+        "sha": "4c93a641945044f904a656cbf1d23e358a074d52",
+        "ref": "fix/hepta-pn-cell-closure-20261031"
+      },
+      "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/pull/4812"
+    },
+    {
+      "number": 4849,
+      "title": "Prepare source-bound RBE OpenSSH images with original test profiles",
+      "state": "open",
+      "draft": true,
+      "created_at": "2026-11-05T06:43:16Z",
+      "updated_at": "2026-11-05T10:57:08Z",
+      "head": {
+        "sha": "ea6be2568dabe3f1f4297b13d20d61c8e8e34498",
+        "ref": "codex/rbe-openssh-image-r2-20261105"
+      },
+      "base": {
+        "sha": "4e31abc907f09740d402d1ddef7a1d2fe0a366a6",
+        "ref": "codex/organ-intermediate-diagnosis-20261105-r3"
+      },
+      "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/pull/4849"
+    },
+    {
+      "number": 4856,
+      "title": "fix(evaluation): require sealed qualification across product consumers",
+      "state": "open",
+      "draft": true,
+      "created_at": "2026-11-05T07:42:31Z",
+      "updated_at": "2026-11-05T10:35:09Z",
+      "head": {
+        "sha": "9a624ce9b82bce419f78f7aace22a16eeb3d4a4c",
+        "ref": "fix/sealed-qualification-ingress-20261105"
+      },
+      "base": {
+        "sha": "14950087a3c5881b2f7f57ebfafe2825019fb74a",
+        "ref": "fix/runtime-convergence-abc-20261105"
+      },
+      "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/pull/4856"
+    },
+    {
+      "number": 4848,
+      "title": "fix(hepta): converge recovery, evaluation integrity and lifecycle refusal on R3",
+      "state": "open",
+      "draft": true,
+      "created_at": "2026-11-05T06:34:56Z",
+      "updated_at": "2026-11-05T10:35:08Z",
+      "head": {
+        "sha": "14950087a3c5881b2f7f57ebfafe2825019fb74a",
+        "ref": "fix/runtime-convergence-abc-20261105"
+      },
+      "base": {
+        "sha": "4e31abc907f09740d402d1ddef7a1d2fe0a366a6",
+        "ref": "codex/organ-intermediate-diagnosis-20261105-r3"
+      },
+      "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/pull/4848"
+    }
+  ],
+  "original_archives": [
+    {
+      "path": "architecture-audit/pr-increment-20261105T1204/frozen/compare-4812-api-envelope.compressed.json",
+      "bytes": 278871,
+      "sha256": "09bfdcdcab71017947786a5f930fcbd1da36e1f726f6de594c78322864616e50",
+      "git_blob": "506eeb7bf17123291980b2acf6277ec327944124",
+      "raw_path": "architecture-audit/pr-increment-20261105T1204/originals/compare-4812-api-envelope.json",
+      "raw": {
+        "bytes": 1258463,
+        "sha256": "4122e6c43565e9260055c671b74dadb3a03f8c15225d1530ee2182b6d778fed7",
+        "git_blob": "fceac54f3837d979e8ac2b7b58076b4c645f918f"
+      }
+    },
+    {
+      "path": "architecture-audit/pr-increment-20261105T1204/frozen/compare-4853-api-envelope.compressed.json",
+      "bytes": 25525,
+      "sha256": "5b61ee7bf400b777e75c112087aa486ea9a8e4820df39a7823f431de22d8dad4",
+      "git_blob": "9534f7e5d8cf7d3631bc07f2c0bae14eb530fab5",
+      "raw_path": "architecture-audit/pr-increment-20261105T1204/originals/compare-4853-api-envelope.json",
+      "raw": {
+        "bytes": 123301,
+        "sha256": "234548dfd8ddb0e6a25d69f78c9c39766f11941b3fcc5a2081bbd7bd980384c2",
+        "git_blob": "d2136023995f7e6c97933ce0eafcaa27655873cf"
+      }
+    },
+    {
+      "path": "architecture-audit/pr-increment-20261105T1204/frozen/compare-4855-api-envelope.compressed.json",
+      "bytes": 36081,
+      "sha256": "70639793f51baa98ada5671f2d68c638e6edb638ffbcc8f6892656bbdd9856a5",
+      "git_blob": "61efe7f80121fb417fe15666b7fc437fe6d3f95d",
+      "raw_path": "architecture-audit/pr-increment-20261105T1204/originals/compare-4855-api-envelope.json",
+      "raw": {
+        "bytes": 181152,
+        "sha256": "da40976fd9fea6ec3f02853b4da64544a570954ffa52db5edf9ce85345f8a7d9",
+        "git_blob": "c22643f70de8424354c051c923f04c4f64f7b17b"
+      }
+    },
+    {
+      "path": "architecture-audit/pr-increment-20261105T1204/frozen/compare-4856-api-envelope.compressed.json",
+      "bytes": 304239,
+      "sha256": "64653e7d287191a780850490327ab2e34ea8d687585aef8baab15716532c108c",
+      "git_blob": "71ceb42f84c353e03fff9c58eee2cea1dda5b3b2",
+      "raw_path": "architecture-audit/pr-increment-20261105T1204/originals/compare-4856-api-envelope.json",
+      "raw": {
+        "bytes": 1347133,
+        "sha256": "7e9ecfde4cdf523798182ccdeaef45e55870edffe2f0fb1e0b4f2c60d7d7f4c7",
+        "git_blob": "550cfb722373f7a3eaa472f10480bf3829f0b55f"
+      }
+    },
+    {
+      "path": "architecture-audit/pr-increment-20261105T1204/frozen/page-001-api-envelope.compressed.json",
+      "bytes": 152086,
+      "sha256": "436a7336d5683e97e6e02eb5c35a5ff183973f43650d4169fb8b62ccfbdad2cc",
+      "git_blob": "8b3978464f3bdd790acfde276c79c48e0b4ea59f",
+      "raw_path": "architecture-audit/pr-increment-20261105T1204/originals/page-001-api-envelope.json",
+      "raw": {
+        "bytes": 824231,
+        "sha256": "34e03650a6b8a1832a12344318d57a54f452585e5231661d17769d12852aef55",
+        "git_blob": "383348d7a14ce811557578cc3102d66d4edb0e66"
+      }
+    },
+    {
+      "path": "architecture-audit/pr-increment-20261105T1204/frozen/page-002-api-envelope.compressed.json",
+      "bytes": 83425,
+      "sha256": "e81bc8d001a8b36744afcba6f11ec10b10ffc70a19ba5758473b26996ce3a8f7",
+      "git_blob": "47f23ed5acf8fda05fb6161ed9194f6d742cd5ac",
+      "raw_path": "architecture-audit/pr-increment-20261105T1204/originals/page-002-api-envelope.json",
+      "raw": {
+        "bytes": 695392,
+        "sha256": "1200e155411b7871b7a04c3b530658662e090bbd75dacfffd4f517d7593720d5",
+        "git_blob": "8d387a42db98e8104571ec9c6790f79fdd3e674a"
+      }
+    }
+  ],
+  "secondary_compares": [
+    {
+      "pr": 4812,
+      "base": "9438a6c27a5e2f25169445f39499631db4e00529",
+      "head": "1556a4df6e279055fd8196f81a4ca2fe0f19384a",
+      "ahead": 6,
+      "behind": 0,
+      "returned_commits": 6,
+      "returned_files": 134,
+      "github_300_file_cap_hit": false,
+      "api_source": "architecture-audit/pr-increment-20261105T1204/originals/compare-4812-api-envelope.json"
+    },
+    {
+      "pr": 4853,
+      "base": "4363eb1c7131073500e28d82a7dbec03faa7214a",
+      "head": "5583d7e2ca13a23ea88d52c47809bc35b9c1af89",
+      "ahead": 13,
+      "behind": 0,
+      "returned_commits": 13,
+      "returned_files": 19,
+      "github_300_file_cap_hit": false,
+      "api_source": "architecture-audit/pr-increment-20261105T1204/originals/compare-4853-api-envelope.json"
+    },
+    {
+      "pr": 4855,
+      "base": "e65a53ddfc872ef66edc63dff8f28d4414817c60",
+      "head": "f6905bf16e0b6395648e377c6fa444e026c4d3a1",
+      "ahead": 10,
+      "behind": 0,
+      "returned_commits": 10,
+      "returned_files": 38,
+      "github_300_file_cap_hit": false,
+      "api_source": "architecture-audit/pr-increment-20261105T1204/originals/compare-4855-api-envelope.json"
+    },
+    {
+      "pr": 4856,
+      "base": "0766fc4d5feabea9569d48e7eca4e0a3431bd0f5",
+      "head": "9a624ce9b82bce419f78f7aace22a16eeb3d4a4c",
+      "ahead": 2,
+      "behind": 0,
+      "returned_commits": 2,
+      "returned_files": 219,
+      "github_300_file_cap_hit": false,
+      "api_source": "architecture-audit/pr-increment-20261105T1204/originals/compare-4856-api-envelope.json"
+    }
+  ],
+  "limits": [
+    "PR bodies are author claims until independently checked against source and original raw evidence.",
+    "No donor source imported, no native command, no workflow or reference mutation.",
+    "Root prioritized #4855 causal review after freezing this API window; other body-only status updates remain unqualified."
+  ]
+}

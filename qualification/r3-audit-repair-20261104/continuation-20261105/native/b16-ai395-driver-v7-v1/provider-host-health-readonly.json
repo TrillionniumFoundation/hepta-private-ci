@@ -1,0 +1,16 @@
+{
+  "schema": "hepta-driver-provider-host-health-readonly-v1",
+  "scope": "Documented fixed bounded SSH authentication/command reachability challenge only; no process-start outcome inferred.",
+  "host": "ai395",
+  "original_response": {
+    "content": [
+      {
+        "type": "text",
+        "text": "{\n  \"authenticated\": true,\n  \"diagnostics_redacted\": true,\n  \"host\": \"ai395\",\n  \"measurement\": \"SSH invocation roundtrip including connection setup or reuse, authentication, remote shell startup and fixed response; not ICMP RTT.\",\n  \"platform\": \"linux\",\n  \"reachable\": true,\n  \"schema\": \"hepta-host-health-v1\",\n  \"ssh_roundtrip_ms\": 514.472625,\n  \"status\": \"healthy\",\n  \"timeout_ms\": 10000,\n  \"transport\": \"ssh\"\n}"
+      }
+    ],
+    "structuredContent": null,
+    "isError": false
+  },
+  "runtime_service_check": "Not invoked: no exact configured process-runtime systemd unit was provided; no service-name guess."
+}

@@ -1,0 +1,58 @@
+#!/usr/bin/env python3
+"""Archive the already-verified source-head job without additional network or tests."""
+from pathlib import Path
+import base64
+import gzip
+import hashlib
+import io
+import json
+import tarfile
+
+ROOT = Path(__file__).resolve().parent
+HERE = ROOT / 'terminal/windows-business-source-127149582480'
+OUT = ROOT / 'immutable-v5-windows-business-source'
+OUT.mkdir(exist_ok=False)
+
+
+def identity(raw):
+    return {'bytes':len(raw), 'sha256':hashlib.sha256(raw).hexdigest(),
+            'computed_git_blob':hashlib.sha1(f'blob {len(raw)}\0'.encode() + raw).hexdigest()}
+
+
+def save(name, value):
+    (OUT/name).write_text(json.dumps(value,ensure_ascii=False,indent=2) + '\n')
+
+
+review = json.loads((HERE/'original-case-review.json').read_bytes())
+assert review['actual_named_pass'] == 118 and review['original_142_map']['matched_names'] == 0
+assert review['artifact']['github_size_and_digest_match'] and review['artifact']['all_members_crc_ok']
+(OUT/'original-case-review.json').write_bytes((HERE/'original-case-review.json').read_bytes())
+excluded = [p for p in HERE.rglob('*') if p.is_file() and p.suffix == '.zst']
+assert len(excluded) == 1
+files = [Path(__file__),ROOT/'project_business_source.py', *sorted(p for p in HERE.rglob('*') if p.is_file() and p not in excluded)]
+assert len(files) == len(set(files))
+buffer = io.BytesIO(); rows = []
+with tarfile.open(fileobj=buffer,mode='w') as archive:
+    for file in files:
+        body = file.read_bytes(); name = str(file.relative_to(ROOT))
+        rows.append({'member':name, **identity(body)})
+        info = tarfile.TarInfo(name);info.size = len(body);info.mode = 0o644;info.mtime = 0
+        archive.addfile(info,io.BytesIO(body))
+compressed = gzip.compress(buffer.getvalue(),mtime=0)
+assert gzip.decompress(compressed) == buffer.getvalue()
+save('original-files-manifest.json', {'schema':'hepta-immutable-original-file-index-v1',
+    'file_count':len(rows),'total_original_bytes':sum(r['bytes'] for r in rows),'files':rows,
+    'not_duplicated_as_loose_member':[{'path':str(excluded[0]), **identity(excluded[0].read_bytes()),
+        'reason':'This exact .zst member remains inside the complete original artifact ZIP, whose all-member CRC and hashes were verified. It is not omitted from original evidence.'}]})
+parts = []
+for index,offset in enumerate(range(0,len(compressed),360448)):
+    chunk=compressed[offset:offset+360448]; encoded=base64.b64encode(chunk)+b'\n'
+    name=f'original-ci.tar.gz.part{index:03d}.b64.txt'; (OUT/name).write_bytes(encoded)
+    assert len(encoded) < 500000
+    parts.append({'index':index,'name':name,'compressed_offset':offset,'file':identity(encoded),'decoded_chunk':identity(chunk)})
+save('transport-manifest.json', {'schema':'hepta-immutable-ci-transport-v1',
+    'archive':{'name':'original-ci.tar.gz',**identity(compressed)},
+    'original_files_manifest':{'name':'original-files-manifest.json',**identity((OUT/'original-files-manifest.json').read_bytes())},
+    'part_count':len(parts),'parts':parts})
+(OUT/'verify_archive.py').write_bytes((ROOT/'immutable-v5-snapshot0030/verify_archive.py').read_bytes())
+print(json.dumps({'files':len(rows),'original_bytes':sum(r['bytes'] for r in rows),'parts':len(parts),'archive':identity(compressed)}))

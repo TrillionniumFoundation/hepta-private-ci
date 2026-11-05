@@ -1,0 +1,152 @@
+{
+  "schema": "hepta-root-ai395-driver-V7-execution-guard-v1",
+  "recorded_utc": "2026-11-05T11:40:43.607913+00:00",
+  "execute": true,
+  "authorization": "User requested the full project audit and continued repair of all remaining blockers. This root authorizes the concrete reviewed next native driver epoch after actual foundation qualification.",
+  "host_alias": "ai395",
+  "executor_owner": "ci_audit",
+  "authorized_epoch": "driver",
+  "all_other_epochs_authorized": false,
+  "launcher": {
+    "bytes": 24697,
+    "sha256": "473af7a8d03188d43a1d88c594dfd4c0049ace13c671933c7ffb5fa4b600b175",
+    "blob": "bee66f1ff8ab5f3e4442b2dd14fc4aaa59b7a19d"
+  },
+  "disabled_candidate_binding": {
+    "bytes": 22389,
+    "sha256": "6db812a2d7d5c381a8a6c130f3bea27a43f05c07c0cd3cbc48576b6c3760dcb6",
+    "blob": "bf4f5a9e31d2e779ea3020a177e98ebb2f79de41"
+  },
+  "disabled_candidate_request": {
+    "bytes": 937979,
+    "sha256": "6084394482b5e11d7bb8ec47c5e43b59fcb4811ff816115ff71e8b290e49267a",
+    "blob": "be7c196eaecf780e23f0f7ad504d3a4753a4be95"
+  },
+  "root_concrete_review": {
+    "bytes": 4985,
+    "sha256": "cf1ccbcf771595b3c36afaa69051ad82fd3998ad75163da3063d41f683e04872",
+    "blob": "819bdbcfd1fc1494b3718eea891f4bb490dbdd72"
+  },
+  "foundation_phase_review": {
+    "bytes": 12596,
+    "sha256": "b94717cdc5a98b820a9831f39e83f1e43ccc4349499d927928d554d19f7d393c",
+    "blob": "c9da4defd63c6c63b22fdf731c37fa91a201f4c4"
+  },
+  "foundation_job": "1a1ab493f2b-fc05-4bfe",
+  "foundation_originals": {
+    "previous_epoch_receipt": {
+      "bytes": 3023590,
+      "sha256": "480f166c3985d0e2afd838a0977391d259fc6255a5fc3d8ce2f45741beba3b56",
+      "blob": "7846e787748900b3732bb01c532d04add763e2bf"
+    },
+    "previous_epoch_binding": {
+      "bytes": 19313,
+      "sha256": "59b1a7791a34fa753c8a12e683ebd48631e920b35f42863cebbd8fd28679b083",
+      "blob": "29bb5e643fddc7fc571f6e4631ac3a9074f247a2"
+    },
+    "previous_epoch_launch_terminal": {
+      "bytes": 8176,
+      "sha256": "209c3b2bfd0031aba00a765da7e66b54bd6fa23e882a7307bb337801d2123bc5",
+      "blob": "d0d0ed580b0fc724caf393f630ef2c212e9c1fa4"
+    }
+  },
+  "foundation_status": "QUALIFIED",
+  "original_foundation_runner_exit_code": 0,
+  "original_foundation_launcher_exit_code": 0,
+  "foundation_final_source_guard": {
+    "bytes": 892,
+    "sha256": "04c1bd9b66494087e23044aaf5aa36fb4be5ebeff868b285086e364a4fd6207d",
+    "blob": "8bd579f6602e2f81284ff3d4d26cf35f40d1cf57"
+  },
+  "baseline_metadata": {
+    "path": "/home/qq/work/hepta-audit-b16-20261105/evidence/b16-foundation-v7-ai395-20261105-v1/run/B10_R2e3_final-metadata.log",
+    "bytes": 8296096,
+    "sha256": "b4090db792babde64575b11e7ae04df8245074b96a154048c4de08691e4a23e0",
+    "source_tree": "e510f685d2aa7b9a7121a78f96af3569919e6f88"
+  },
+  "baseline_metadata_source_guards": {
+    "before": {
+      "path": "/home/qq/work/hepta-audit-b16-20261105/evidence/b16-foundation-v7-ai395-20261105-v1/run/0122-B10_R2e3_final-metadata-before-guard.json",
+      "bytes": 911,
+      "sha256": "743aa10a21af56d61f0e171ab3b24c9acda1c12df9b8e1e6f4d846d5d784b040",
+      "git_blob": "f24ab5c6380e2e30a246ddeec993a1ae17c4da29"
+    },
+    "after": {
+      "path": "/home/qq/work/hepta-audit-b16-20261105/evidence/b16-foundation-v7-ai395-20261105-v1/run/0123-B10_R2e3_final-metadata-after-guard.json",
+      "bytes": 910,
+      "sha256": "006b4c68b7ff68310ea74b4d85453f6927bd96f6d9bfebd2f2c8aae0ed0093c2",
+      "git_blob": "8368e08b9a44a392c5732161e87a93bbe8d45ed0"
+    }
+  },
+  "full_original_metadata_bytes_and_complete_graph_independently_verified": true,
+  "foundation_final_sdk_tools_originals_independently_received_and_verified": true,
+  "source_directory": "/home/qq/work/hepta-audit-b16-20261105/source",
+  "target_directory": "/home/qq/work/hepta-audit-b16-20261105/target-dev-small",
+  "ordinary_head": "20fd174ded4e5ce01bda34e4f6d1d74803301f49",
+  "initial_tree": "e510f685d2aa7b9a7121a78f96af3569919e6f88",
+  "ordinary_index": {
+    "bytes": 1224180,
+    "dev": 66306,
+    "git_blob": "69adeb086eccf95645c8a580bf82fa85eef8fb7a",
+    "inode": 65176547,
+    "mode": "0o600",
+    "nlink": 1,
+    "path": "/home/qq/work/hepta-audit-b16-20261105/source/.git/index",
+    "sha256": "6b39b6b27d164001c9b130487d0d7879be5f80e22a4579d06fd472c2bb8d7ac0"
+  },
+  "locks": {
+    "MODULE.bazel.lock": {
+      "bytes": 1738619,
+      "dev": 66306,
+      "git_blob": "1904db189003cb0b559f71958518e33a45fb6bb7",
+      "inode": 64654420,
+      "mode": "0o600",
+      "nlink": 1,
+      "path": "/home/qq/work/hepta-audit-b16-20261105/source/MODULE.bazel.lock",
+      "sha256": "11f8a421224b9b05f32c4c14054e8868083d989fc497310c8d51e1156f189ca3"
+    },
+    "codex-rs/Cargo.lock": {
+      "bytes": 413768,
+      "dev": 66306,
+      "git_blob": "71fc8fa78b5afa076835b29790a5e6b0bd772558",
+      "inode": 65177174,
+      "mode": "0o600",
+      "nlink": 1,
+      "path": "/home/qq/work/hepta-audit-b16-20261105/source/codex-rs/Cargo.lock",
+      "sha256": "4a7a5535cf045089458468411e126b5f59bc6bbf34fc0deead9b0c1b8d84000a"
+    }
+  },
+  "payload_sha256": "a34cd6c5400deff4fedfffcb1f4f170eecabbb6bbfab1916829ab3911e986237",
+  "runner_integrity_sha256": "96bbff3180620d841b90b65ea1e159d04931c47fd2de1c270ba0f6c059ac5202",
+  "exact_unchanged_runtime_files": 29,
+  "integrity_entries": 25,
+  "evidence_directory": "/home/qq/work/hepta-audit-b16-20261105/evidence/b16-driver-v7-ai395-20261105-v1/run",
+  "allowed_enable_delta": [
+    "binding.execute false to true",
+    "binding.approval_reference null to this guard Git blob",
+    "root_execution_guard null to this guard Git blob",
+    "binding.harness_attempt_context.kind DISABLED to ENABLED for this candidate",
+    "binding.harness_attempt_context.current_driver_execution_authorized false to true"
+  ],
+  "execution_bounds": {
+    "positive_parent_cases": 12,
+    "negative_parent_case_occurrences": 3,
+    "negative_finally_restore_scopes": 2,
+    "retries": 0,
+    "fresh_free_bytes_before_driver_minimum": 48517479536,
+    "fresh_free_bytes_before_each_original_command_minimum": 8000000000,
+    "timeout_seconds": 21600,
+    "idempotency_key": "hepta-ai395-b16-driver-v7-20261105-v1",
+    "original_scope_names_oracles_timeouts_ignored_and_support_policy_unchanged": true,
+    "fresh_native_source_metadata_SDK_V8_tool_guards_required": true,
+    "no_cache_cleanup_or_system_security_change": true,
+    "no_other_native_Cargo_lane_on_this_source_or_target": true
+  },
+  "on_failure": "Preserve original command output, exact exit, scope and guards. Use only frozen negative finally recovery. Inspect the concrete cause before a separately bound continuation.",
+  "limits": [
+    "Foundation qualification covers its actual selected phases, not the original complete platform matrix or B16 closure.",
+    "Historical A and current-host build-only provenance remain separate and are not relabelled.",
+    "The recorded foundation free space does not replace a fresh native launcher measurement.",
+    "This task execution record does not grant product Root, Current, FinalUse, release, main merge, or production authority."
+  ]
+}

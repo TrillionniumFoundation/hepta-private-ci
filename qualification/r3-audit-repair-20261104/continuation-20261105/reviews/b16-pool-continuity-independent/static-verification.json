@@ -1,0 +1,120 @@
+{
+  "schema": "pool-continuity-independent-static-comparisons-v1",
+  "checked_local_files": [
+    {
+      "path": "/workspace/scratch/07dd58cc9630/architecture-audit/b16-pool-launcher-template-20261105/launch_pool_v7.py",
+      "bytes": 27997,
+      "sha256": "a59a7551bfa5fae7f1eb0f8a221c70588cffaec2dfc659f4a357777cbfde8b14",
+      "blob": "057a2fc77788da13f46bdd32951eb3c8e0bae550"
+    },
+    {
+      "path": "/workspace/scratch/07dd58cc9630/architecture-audit/b16-pool-launcher-template-20261105/pool-binding-DISABLED.json",
+      "bytes": 20752,
+      "sha256": "e353c6408bdadf9ba4c631ce36b61d4fd33672dedf2127fbcec9bc54c948f566",
+      "blob": "fb4bfa837433f4077b4630a37e219bbf08fb04c3"
+    },
+    {
+      "path": "/workspace/scratch/07dd58cc9630/architecture-audit/b16-pool-launcher-template-20261105/driver-v7-to-pool-v1.delta.patch",
+      "bytes": 17672,
+      "sha256": "abada2c74c43340991c5bb87f1f1a006dfe06c82558362d51e06bfbd3192ea5d",
+      "blob": "7792f2faff36922475413d0f085a30d3f2683296"
+    },
+    {
+      "path": "/workspace/scratch/07dd58cc9630/architecture-audit/b16-pool-launcher-template-20261105/driver-bound-to-pool-disabled.delta.patch",
+      "bytes": 11354,
+      "sha256": "ab704dd107d4e3116f2ea98cd3acbffb1dd3ab19b3ee32d253d3cc97d75435cf",
+      "blob": "400cea7aa35abc68bb5dbd92e570f2616f8e1fbe"
+    },
+    {
+      "path": "/workspace/scratch/07dd58cc9630/architecture-audit/b16-pool-launcher-template-20261105/pool-input-scope-oracle-review.json",
+      "bytes": 22562,
+      "sha256": "2704fb920b4ce226e2306b22327368759a8013dc62f970df3dfbcdbe0c8f2769",
+      "blob": "fe908ee872ae19c661ed93e3dd74bfae5a32129e"
+    },
+    {
+      "path": "/workspace/scratch/07dd58cc9630/architecture-audit/b16-pool-launcher-template-20261105/static-verification.json",
+      "bytes": 2149,
+      "sha256": "b37002f8dd3f78649853968cf8d93cfa7b5651c45c37a873c35f821842e02fd6",
+      "blob": "c7bdf25cb86b42ff691e0f0909c6d7da3d1258be"
+    },
+    {
+      "path": "/workspace/scratch/07dd58cc9630/architecture-audit/b16-pool-launcher-template-20261105/README.zh-CN.md",
+      "bytes": 4685,
+      "sha256": "0c4b0bace2a353acfe4b5fc3cb22825a8659187418be216bd112aeddc7bb89a9",
+      "blob": "f1a43bdfac2f072d1200d2e6a6a755a78834aa40"
+    }
+  ],
+  "ten_external_guard_function_bodies_byte_equal": [
+    "need",
+    "identity",
+    "bytes_id",
+    "file_id",
+    "equal_content",
+    "save",
+    "save_json",
+    "verify_openssl_sdk",
+    "verify_libcap_sdk",
+    "verify_all_external"
+  ],
+  "unchanged_installer_files": 29,
+  "installer_compressed_identity": {
+    "bytes": 685301,
+    "sha256": "3c944d66d0401badda75d74b367569e064507cd94e87eba4fdd6f7b6189055a6",
+    "blob": "7b5d1ae2246a792e6a663beff6ecdf24d5a4452f"
+  },
+  "installer_uncompressed_identity": {
+    "bytes": 2362570,
+    "sha256": "5f1bf089b909c9e9fd28e45423c7f9c21051f369f8a1679ee3eab7d79302eb72",
+    "blob": "ed1db0257c355a17ade6995b8e38a6d9be1a8fe2"
+  },
+  "three_original_positive_and_negative_names": [
+    "sqlite::native_custody_tests::guarded_pool_retains_custody_when_native_open_is_cancelled",
+    "sqlite::native_custody_tests::coordinated_pool_retains_custody_when_initial_pragma_is_cancelled",
+    "production_writer::objective_sender::connection_custody_tests::native_custody_survives_removal_of_both_registered_anchors"
+  ],
+  "one_frozen_negative_variant_and_one_restore": true,
+  "disabled_actual_driver_pins": [
+    "initial_tree",
+    "locks",
+    "previous_epoch_receipt",
+    "previous_epoch_binding",
+    "previous_epoch_launch_terminal",
+    "baseline_metadata"
+  ],
+  "actual_source_schema_files_read": [
+    {
+      "path": "/workspace/scratch/07dd58cc9630/architecture-audit/b16-guarded-native-runner-20261105/original-ignored-catalog-v7/v7-candidate/b16_guard.py",
+      "bytes": 10896,
+      "sha256": "d0ba5a5746711a322438200498786044c8d561d9a256f7280a2c4791c6bd0389",
+      "blob": "a9a38d14c220be4c44336a6fefac08a168e52dcf"
+    },
+    {
+      "path": "/workspace/scratch/07dd58cc9630/architecture-audit/b16-guarded-native-runner-20261105/original-ignored-catalog-v7/v7-candidate/b16_native.py",
+      "bytes": 17595,
+      "sha256": "10620e1688ba208db22e22b6ecd727657b18967ca0d749be8ff0fd348fd1c92d",
+      "blob": "7596d6a32f4066cc72336767bcc71313d68675f8"
+    },
+    {
+      "path": "/workspace/scratch/07dd58cc9630/architecture-audit/b16-guarded-native-runner-20261105/original-ignored-catalog-v7/v7-candidate/b16_runner.py",
+      "bytes": 16005,
+      "sha256": "f419dfa8e4cd98fc729c8b9851d8ea8ae3413a0fb1906358f8556920200b6944",
+      "blob": "4c8c2477189b84c6fe7b19c09fd27255bc7d1b66"
+    },
+    {
+      "path": "/workspace/scratch/07dd58cc9630/architecture-audit/b16-guarded-native-runner-20261105/original-ignored-catalog-v7/v7-candidate/epoch-driver.json",
+      "bytes": 4348,
+      "sha256": "d28c2e9faa1cc0e3272d6aba88bfc3a49b062a484b6df530cca2ef2cf95a189f",
+      "blob": "5bd1014173766cb3599439e6a202514916286a5e"
+    },
+    {
+      "path": "/workspace/scratch/07dd58cc9630/architecture-audit/b16-guarded-native-runner-20261105/original-ignored-catalog-v7/v7-candidate/epoch-pool.json",
+      "bytes": 3807,
+      "sha256": "19e1a06c6c97e20d1f1ef097222f6f7c2877850502223f16ed939848e228bf64",
+      "blob": "6d686ead86ef2c83f3b32f8bbd1b73e662d26093"
+    }
+  ],
+  "launcher_imported_or_executed": false,
+  "project_or_native_commands_run": false,
+  "guard_test_suite_run": false,
+  "ref_or_shared_source_modified": false
+}

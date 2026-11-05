@@ -1,0 +1,2230 @@
+{
+  "schema": "hepta-exact-source-windows-ordinary-consumers-review-v1",
+  "job_id": 127149582480,
+  "run_id": 41999114539,
+  "run_attempt": 1,
+  "source": {
+    "head": "5b6331250ff459033bd44d1a95daec70131277cc",
+    "tree": "b26598d0d97d8d51e723bb5582137315f2174d35",
+    "parents": [
+      "755374e93dba69214622f91c71a3ccac708d6a76"
+    ],
+    "checkout_kind": "source-head",
+    "run_id": "41999114539",
+    "run_attempt": "1",
+    "inputs": {
+      ".bazelrc": "0a5924ef90c0df166fb23744c650e1721106a7af0717c4f693f814208657c822",
+      "MODULE.bazel.lock": "97f844724549757398c7834f5818d6244819b129658bdaa8453008dc694bbfc4",
+      "codex-rs/Cargo.lock": "e0d6c75b8e46cbf3c8df62ca98d653144b796238be165155e1a2796cf372a49e",
+      "codex-rs/hepta-intelligence/src/evaluated_shadow_tests.rs": "0f13782689c4bca856b81854ea1a69fa919fe02def4d2a38c402f8cc353cce47",
+      "codex-rs/hepta-bao-adapter/src/lease_lifecycle.rs": "405cbe3fdb2494a3e0bd74f77d89f23f2a13836b396664c1c4b6651fabcbae3d",
+      "codex-rs/hepta-bao-adapter/src/lease_lifecycle_tests.rs": "ca028a1ea7d845a727a9114854326673fd83812e7e5ba23b5fd9a96c07d1a3bf",
+      "codex-rs/hepta-codex-adapter/src/lib_tests.rs": "00d13167b1eae5393c6fc20f567c4fa199d54f20e0f07038200d4e9e2089f012",
+      "codex-rs/utils/path-utils/src/private_state_windows.rs": "90046ec8e865bbc17cce7d64b7bfd9ee4881b02056103eb04950c73052a40b0b",
+      ".github/workflows/windows-ordinary-consumers.yml": "774afa27d472d70c43f9c0d79fecb88d6967262a8355666f7501b92ad5605005"
+    }
+  },
+  "source_json_identity": {
+    "bytes": 1336,
+    "sha256": "849db805521be8a1cfc409f83f683a8cbfba50f504bd8bbf741702ab121ae1b7",
+    "computed_git_blob": "883f5a4bfc2d07fb851404144a048b8e304d81eb"
+  },
+  "actual_command": [
+    "C:\\Program Files\\Git\\usr\\bin\\bash.exe",
+    ".github/scripts/run-bazel-ci.sh",
+    "--print-failed-action-summary",
+    "--print-failed-test-logs",
+    "--windows-msvc-host-platform",
+    "--",
+    "test",
+    "--platforms=//:windows_x86_64_msvc",
+    "--nocache_test_results",
+    "--flaky_test_attempts=1",
+    "--test_output=all",
+    "--build_metadata=COMMIT_SHA=5b6331250ff459033bd44d1a95daec70131277cc",
+    "--",
+    "//codex-rs/hepta-intelligence:hepta-intelligence-unit-tests",
+    "//codex-rs/hepta-bao-adapter:hepta-bao-adapter-unit-tests",
+    "//codex-rs/hepta-codex-adapter:hepta-codex-adapter-unit-tests"
+  ],
+  "original_exit_code": 0,
+  "unchanged_input_hashes": true,
+  "targets": [
+    {
+      "target": "//codex-rs/hepta-bao-adapter:hepta-bao-adapter-unit-tests",
+      "cases": [
+        {
+          "name": "lease_lifecycle::tests::issue_unknown_reconciles_without_duplicate_issue",
+          "status": "ok",
+          "suffix": "",
+          "original_line": 5
+        },
+        {
+          "name": "lease_lifecycle::tests::provider_not_applied_restores_active_lease_after_unknown",
+          "status": "ok",
+          "suffix": "",
+          "original_line": 6
+        },
+        {
+          "name": "lease_lifecycle::tests::expiry_is_durable_and_terminal_for_renewal",
+          "status": "ok",
+          "suffix": "",
+          "original_line": 7
+        },
+        {
+          "name": "lease_lifecycle::tests::issue_rejects_non_active_provider_observations_without_durable_mutation",
+          "status": "ok",
+          "suffix": "",
+          "original_line": 8
+        },
+        {
+          "name": "lease_lifecycle::tests::unavailable_storage_never_publishes_a_prepared_operation",
+          "status": "ok",
+          "suffix": "",
+          "original_line": 9
+        },
+        {
+          "name": "lease_lifecycle::tests::reused_operation_id_with_changed_semantics_conflicts",
+          "status": "ok",
+          "suffix": "",
+          "original_line": 10
+        },
+        {
+          "name": "lease_lifecycle::tests::revoke_unknown_stays_nonterminal_until_provider_observation",
+          "status": "ok",
+          "suffix": "",
+          "original_line": 11
+        },
+        {
+          "name": "lease_lifecycle::tests::renew_unknown_blocks_fabricated_success_until_reconciled",
+          "status": "ok",
+          "suffix": "",
+          "original_line": 12
+        },
+        {
+          "name": "tests::current_permission_still_cannot_self_mint_provider_authority",
+          "status": "ok",
+          "suffix": "",
+          "original_line": 13
+        },
+        {
+          "name": "tests::denied_unavailable_and_indeterminate_remain_distinct",
+          "status": "ok",
+          "suffix": "",
+          "original_line": 14
+        },
+        {
+          "name": "tests::exact_reference_returns_only_opaque_digest",
+          "status": "ok",
+          "suffix": "",
+          "original_line": 15
+        },
+        {
+          "name": "tests::bounded_reference_parser_rejects_hostile_components",
+          "status": "ok",
+          "suffix": "",
+          "original_line": 16
+        },
+        {
+          "name": "tests::revoked_and_stale_grants_fail_before_any_effect",
+          "status": "ok",
+          "suffix": "",
+          "original_line": 17
+        },
+        {
+          "name": "tests::producer_principal_and_payload_bindings_are_exact",
+          "status": "ok",
+          "suffix": "",
+          "original_line": 18
+        },
+        {
+          "name": "tests::revoked_lease_is_rejected",
+          "status": "ok",
+          "suffix": "",
+          "original_line": 19
+        },
+        {
+          "name": "tests::incomplete_or_overlong_grant_metadata_never_degrades_to_success",
+          "status": "ok",
+          "suffix": "",
+          "original_line": 20
+        },
+        {
+          "name": "tests::version_drift_is_rejected",
+          "status": "ok",
+          "suffix": "",
+          "original_line": 21
+        },
+        {
+          "name": "tests::unknown_schema_and_expired_request_are_rejected",
+          "status": "ok",
+          "suffix": "",
+          "original_line": 22
+        },
+        {
+          "name": "tests::scope_drift_is_rejected",
+          "status": "ok",
+          "suffix": "",
+          "original_line": 23
+        }
+      ],
+      "actual_named_count": 19,
+      "summary": "test result: ok. 19 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.07s",
+      "original_log": {
+        "path": "/workspace/scratch/07dd58cc9630/research-audit/published-5b633-ci-20261105/terminal/windows-business-source-127149582480/members/ordinary-consumers/native-test-logs/codex-rs/hepta-bao-adapter/hepta-bao-adapter-unit-tests/test.log",
+        "bytes": 1712,
+        "sha256": "bb5e8e3a9db96b8294a81ee1e77689bbeba44443029cb225bccaa0298eab617c",
+        "computed_git_blob": "cbcfcb934bccd7946bab166e60250675f1b89345"
+      },
+      "xml": {
+        "path": "/workspace/scratch/07dd58cc9630/research-audit/published-5b633-ci-20261105/terminal/windows-business-source-127149582480/members/ordinary-consumers/native-test-logs/codex-rs/hepta-bao-adapter/hepta-bao-adapter-unit-tests/test.xml",
+        "bytes": 2081,
+        "sha256": "f2939153c44e8a6b6dbb5db75cd469f640021bbebf418e227fadab79fdcf48f0",
+        "computed_git_blob": "20b2b4dc1ac7bae495ab5c1fbd3d2e9d11220ddf"
+      },
+      "xml_is_one_bazel_wrapper_case_not_per_libtest_name": true
+    },
+    {
+      "target": "//codex-rs/hepta-codex-adapter:hepta-codex-adapter-unit-tests",
+      "cases": [
+        {
+          "name": "deadline_digest_tests::exact_request_retry_is_stable",
+          "status": "ok",
+          "suffix": "",
+          "original_line": 5
+        },
+        {
+          "name": "tests::exact_prompt_delivery_observation_binds_submitted_bytes",
+          "status": "ok",
+          "suffix": "",
+          "original_line": 6
+        },
+        {
+          "name": "deadline_digest_tests::deadline_is_bound_and_exclusive",
+          "status": "ok",
+          "suffix": "",
+          "original_line": 7
+        },
+        {
+          "name": "deadline_digest_tests::observed_terminal_evidence_is_not_erased_by_later_wall_clock",
+          "status": "ok",
+          "suffix": "",
+          "original_line": 8
+        },
+        {
+          "name": "tests::payload_drift_fails_closed",
+          "status": "ok",
+          "suffix": "",
+          "original_line": 9
+        },
+        {
+          "name": "tests::prompt_delivery_rejection_and_positions_fail_closed",
+          "status": "ok",
+          "suffix": "",
+          "original_line": 10
+        },
+        {
+          "name": "tests::prompt_delivery_rejects_payload_drift_and_nonterminal_claims",
+          "status": "ok",
+          "suffix": "",
+          "original_line": 11
+        },
+        {
+          "name": "tests::prompt_delivery_v1_rejection_requires_bounded_reason_and_canonical_positions",
+          "status": "ok",
+          "suffix": "",
+          "original_line": 12
+        },
+        {
+          "name": "tests::prompt_delivery_v1_rejects_digest_drift_and_nonterminal_claims",
+          "status": "ok",
+          "suffix": "",
+          "original_line": 13
+        },
+        {
+          "name": "tests::only_observed_overload_is_retry_safe",
+          "status": "ok",
+          "suffix": "",
+          "original_line": 14
+        },
+        {
+          "name": "tests::prompt_delivery_v1_requires_exact_terminal_provider_request",
+          "status": "ok",
+          "suffix": "",
+          "original_line": 15
+        },
+        {
+          "name": "tests::terminal_witness_binds_connection_server_home_and_turn",
+          "status": "ok",
+          "suffix": "",
+          "original_line": 16
+        },
+        {
+          "name": "tests::request_digest_binds_source_generation_and_transport_connection",
+          "status": "ok",
+          "suffix": "",
+          "original_line": 17
+        },
+        {
+          "name": "tests::terminal_outcomes_remain_distinct_and_authority_free",
+          "status": "ok",
+          "suffix": "",
+          "original_line": 18
+        },
+        {
+          "name": "tests::unbound_wire_intent_cannot_consume_terminal_witness",
+          "status": "ok",
+          "suffix": "",
+          "original_line": 19
+        },
+        {
+          "name": "tests::thread_read_recovery_rejects_session_drift_and_duplicate_turns",
+          "status": "ok",
+          "suffix": "",
+          "original_line": 20
+        },
+        {
+          "name": "tests::thread_read_recovery_requires_exact_stable_message_and_input",
+          "status": "ok",
+          "suffix": "",
+          "original_line": 21
+        },
+        {
+          "name": "wire::tests::wire_v2_can_only_produce_indeterminate_authority_free_request",
+          "status": "ok",
+          "suffix": "",
+          "original_line": 22
+        },
+        {
+          "name": "tests::thread_read_recovery_keeps_in_progress_indeterminate",
+          "status": "ok",
+          "suffix": "",
+          "original_line": 23
+        },
+        {
+          "name": "wire::tests::wire_v2_refuses_to_drop_product_binding",
+          "status": "ok",
+          "suffix": "",
+          "original_line": 24
+        },
+        {
+          "name": "wire::tests::wire_v2_rejects_unknown_fields_and_payload_drift",
+          "status": "ok",
+          "suffix": "",
+          "original_line": 25
+        }
+      ],
+      "actual_named_count": 21,
+      "summary": "test result: ok. 21 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s",
+      "original_log": {
+        "path": "/workspace/scratch/07dd58cc9630/research-audit/published-5b633-ci-20261105/terminal/windows-business-source-127149582480/members/ordinary-consumers/native-test-logs/codex-rs/hepta-codex-adapter/hepta-codex-adapter-unit-tests/test.log",
+        "bytes": 1849,
+        "sha256": "894bc08985de4f197e5bd594a8dc4ef936943850f06f763d2ea97e986da7345e",
+        "computed_git_blob": "117b460c72adcdc85e274257777a925645ca19c6"
+      },
+      "xml": {
+        "path": "/workspace/scratch/07dd58cc9630/research-audit/published-5b633-ci-20261105/terminal/windows-business-source-127149582480/members/ordinary-consumers/native-test-logs/codex-rs/hepta-codex-adapter/hepta-codex-adapter-unit-tests/test.xml",
+        "bytes": 2226,
+        "sha256": "dacfbcf8f16a25cf32c69c36954916a50ba9a11564a1f957ab54e4a09ceb5b8f",
+        "computed_git_blob": "83760b38b6062735a5d46788583458b56ba40491"
+      },
+      "xml_is_one_bazel_wrapper_case_not_per_libtest_name": true
+    },
+    {
+      "target": "//codex-rs/hepta-intelligence:hepta-intelligence-unit-tests",
+      "cases": [
+        {
+          "name": "canonical::tests::legal_candidate_set_rejects_replay_identity_with_duplicate_semantics",
+          "status": "ok",
+          "suffix": "",
+          "original_line": 5
+        },
+        {
+          "name": "canonical::tests::key_rotation_and_wrong_owner_receipt_fail_closed",
+          "status": "ok",
+          "suffix": "",
+          "original_line": 6
+        },
+        {
+          "name": "canonical::tests::canonical_selected_path_has_first_class_ndu_and_all_seven_owners",
+          "status": "ok",
+          "suffix": "",
+          "original_line": 7
+        },
+        {
+          "name": "canonical::tests::abstention_stops_before_context_and_evaluation",
+          "status": "ok",
+          "suffix": "",
+          "original_line": 8
+        },
+        {
+          "name": "canonical::tests::owner_generation_change_between_call_and_publication_fails_closed",
+          "status": "ok",
+          "suffix": "",
+          "original_line": 9
+        },
+        {
+          "name": "capability_snapshot::tests::duplicate_unknown_and_wrong_owner_are_not_admitted",
+          "status": "ok",
+          "suffix": "",
+          "original_line": 10
+        },
+        {
+          "name": "capability_snapshot::tests::absent_optional_capability_composes_without_neural_or_model_artifact",
+          "status": "ok",
+          "suffix": "",
+          "original_line": 11
+        },
+        {
+          "name": "capability_snapshot::tests::declaration_reordering_is_stable_but_replacement_changes_actual_plan",
+          "status": "ok",
+          "suffix": "",
+          "original_line": 12
+        },
+        {
+          "name": "capability_snapshot::tests::optional_add_remove_is_explicit_and_does_not_weaken_requirements",
+          "status": "ok",
+          "suffix": "",
+          "original_line": 13
+        },
+        {
+          "name": "capability_snapshot::tests::optional_absence_keeps_existing_selection_and_hard_veto_semantics",
+          "status": "ok",
+          "suffix": "",
+          "original_line": 14
+        },
+        {
+          "name": "capability_snapshot::tests::required_missing_and_fabricated_zero_artifact_reject",
+          "status": "ok",
+          "suffix": "",
+          "original_line": 15
+        },
+        {
+          "name": "capability_snapshot::tests::snapshot_binds_core_freshness_and_bounded_unique_requirements",
+          "status": "ok",
+          "suffix": "",
+          "original_line": 16
+        },
+        {
+          "name": "evaluated_shadow::tests::durable_stage_records_a_decision_and_retries_after_reopen_without_new_bytes",
+          "status": "ok",
+          "suffix": "",
+          "original_line": 17
+        },
+        {
+          "name": "evaluated_shadow::tests::host_failure_or_substituted_intuition_never_reaches_the_durable_stage",
+          "status": "ok",
+          "suffix": "",
+          "original_line": 18
+        },
+        {
+          "name": "evaluated_shadow::tests::abstention_and_slow_path_are_real_decisions_without_dispatch_or_outcome",
+          "status": "ok",
+          "suffix": "",
+          "original_line": 19
+        },
+        {
+          "name": "evaluated_shadow::tests::old_signed_evidence_cannot_enter_a_recomputed_new_authority_epoch",
+          "status": "ok",
+          "suffix": "",
+          "original_line": 20
+        },
+        {
+          "name": "evaluated_shadow::tests::segmented::bad_evaluator_signature_does_not_enter_ports_or_modify_a_segmented_journal",
+          "status": "ok",
+          "suffix": "",
+          "original_line": 21
+        },
+        {
+          "name": "evaluated_shadow::tests::ledger_conflict_capacity_and_io_uncertainty_cannot_report_learning_recorded",
+          "status": "ok",
+          "suffix": "",
+          "original_line": 22
+        },
+        {
+          "name": "neuron_runtime::tests::named_product_caller_runs_through_runtime_without_extra_authority",
+          "status": "ok",
+          "suffix": "",
+          "original_line": 23
+        },
+        {
+          "name": "objective_run::tests::authenticated_objective_is_durable_before_product_receipt_returns",
+          "status": "ok",
+          "suffix": "",
+          "original_line": 24
+        },
+        {
+          "name": "objective_run::tests::compiler_conflict_is_durably_published_without_runtime_snapshot",
+          "status": "ok",
+          "suffix": "",
+          "original_line": 25
+        },
+        {
+          "name": "objective_run::tests::exact_product_retry_is_idempotent_and_semantic_drift_conflicts",
+          "status": "ok",
+          "suffix": "",
+          "original_line": 26
+        },
+        {
+          "name": "outcome_credit_v2::tests::credit_failure_preserves_outcome_for_exact_reconciliation",
+          "status": "ok",
+          "suffix": "",
+          "original_line": 27
+        },
+        {
+          "name": "outcome_credit_v2::tests::product_path_records_outcome_correction_then_conserved_credit",
+          "status": "ok",
+          "suffix": "",
+          "original_line": 28
+        },
+        {
+          "name": "outcome_credit_v2::tests::run_episode_mismatch_rejects_before_any_outcome_append",
+          "status": "ok",
+          "suffix": "",
+          "original_line": 29
+        },
+        {
+          "name": "pipeline::tests::full_shadow_path_is_ordered_and_authority_free",
+          "status": "ok",
+          "suffix": "",
+          "original_line": 30
+        },
+        {
+          "name": "pipeline::tests::invalid_budget_fails_before_any_port_call",
+          "status": "ok",
+          "suffix": "",
+          "original_line": 31
+        },
+        {
+          "name": "pipeline::tests::ledger_failure_overrides_advisory_decision",
+          "status": "ok",
+          "suffix": "",
+          "original_line": 32
+        },
+        {
+          "name": "pipeline::tests::mixed_snapshot_rejects_before_next_stage",
+          "status": "ok",
+          "suffix": "",
+          "original_line": 33
+        },
+        {
+          "name": "pipeline::tests::non_intuition_stage_cannot_report_an_advisory_decision",
+          "status": "ok",
+          "suffix": "",
+          "original_line": 34
+        },
+        {
+          "name": "pipeline::tests::optional_neuron_outage_uses_bounded_fallback",
+          "status": "ok",
+          "suffix": "",
+          "original_line": 35
+        },
+        {
+          "name": "pipeline::tests::persisted_receipt_rejects_dispatch_without_required_stages",
+          "status": "ok",
+          "suffix": "",
+          "original_line": 36
+        },
+        {
+          "name": "pipeline::tests::persisted_receipt_rejects_trace_mutation",
+          "status": "ok",
+          "suffix": "",
+          "original_line": 37
+        },
+        {
+          "name": "pipeline::tests::raw_port_authority_widening_rejects_before_trusted_receipt",
+          "status": "ok",
+          "suffix": "",
+          "original_line": 38
+        },
+        {
+          "name": "pipeline::tests::recomputed_digest_cannot_hide_a_missing_required_stage",
+          "status": "ok",
+          "suffix": "",
+          "original_line": 39
+        },
+        {
+          "name": "pipeline::tests::required_objective_failure_is_terminal_and_receipted",
+          "status": "ok",
+          "suffix": "",
+          "original_line": 40
+        },
+        {
+          "name": "pipeline::tests::slow_path_skips_context_and_dispatch_but_records_decision",
+          "status": "ok",
+          "suffix": "",
+          "original_line": 41
+        },
+        {
+          "name": "pipeline::tests::trace_digest_is_deterministic_for_equal_port_receipts",
+          "status": "ok",
+          "suffix": "",
+          "original_line": 42
+        },
+        {
+          "name": "pipeline_v2::tests::absent_core_is_rejected_even_when_manifest_omits_its_requirement",
+          "status": "ok",
+          "suffix": "",
+          "original_line": 43
+        },
+        {
+          "name": "pipeline_v2::tests::abstention_does_not_dispatch_but_preserves_learning_stage",
+          "status": "ok",
+          "suffix": "",
+          "original_line": 44
+        },
+        {
+          "name": "pipeline_v2::tests::existing_stage_engine_runs_without_neural_or_model_artifacts",
+          "status": "ok",
+          "suffix": "",
+          "original_line": 45
+        },
+        {
+          "name": "pipeline_v2::tests::mixed_snapshot_receipt_still_fails_existing_engine_validation",
+          "status": "ok",
+          "suffix": "",
+          "original_line": 46
+        },
+        {
+          "name": "pipeline_v2::tests::optional_add_remove_changes_routing_and_versioned_receipt",
+          "status": "ok",
+          "suffix": "",
+          "original_line": 47
+        },
+        {
+          "name": "pipeline_v2::tests::self_consistent_wrong_owner_is_rejected_before_any_stage_call",
+          "status": "ok",
+          "suffix": "",
+          "original_line": 48
+        },
+        {
+          "name": "plasticity_product::tests::admission_payload_binds_current_frontiers_and_generator",
+          "status": "ok",
+          "suffix": "",
+          "original_line": 49
+        },
+        {
+          "name": "plasticity_product::tests::product_writer_refuses_unanchored_nonempty_bootstrap",
+          "status": "ok",
+          "suffix": "",
+          "original_line": 50
+        },
+        {
+          "name": "plasticity_product_tests::anchor_commit_failure_poison_writer_after_durable_append",
+          "status": "ok",
+          "suffix": "",
+          "original_line": 51
+        },
+        {
+          "name": "evaluated_shadow::tests::segmented::existing_consumer_continues_after_rotation_and_replays_old_run_after_recovery",
+          "status": "ok",
+          "suffix": "",
+          "original_line": 52
+        },
+        {
+          "name": "plasticity_product_tests::authenticated_product_path_generates_evaluates_appends_and_commits_anchor",
+          "status": "ok",
+          "suffix": "",
+          "original_line": 53
+        },
+        {
+          "name": "plasticity_product_tests::no_admissible_update_is_independently_attested_and_durably_recorded",
+          "status": "ok",
+          "suffix": "",
+          "original_line": 54
+        },
+        {
+          "name": "plasticity_product_tests::product_path_rejects_generator_evaluator_controller_collision",
+          "status": "ok",
+          "suffix": "",
+          "original_line": 55
+        },
+        {
+          "name": "plasticity_product_tests::durable_v2_evaluation_digest_binds_governed_admission_context",
+          "status": "ok",
+          "suffix": "",
+          "original_line": 56
+        },
+        {
+          "name": "evaluated_shadow::tests::tampered_product_receipt_or_expired_candidate_evidence_refuses_all_ports",
+          "status": "ok",
+          "suffix": "",
+          "original_line": 57
+        },
+        {
+          "name": "plasticity_product_tests::product_path_rejects_tampered_frontier_witness",
+          "status": "ok",
+          "suffix": "",
+          "original_line": 58
+        },
+        {
+          "name": "plasticity_product_tests::product_path_rejects_observer_evaluator_controller_collision",
+          "status": "ok",
+          "suffix": "",
+          "original_line": 59
+        },
+        {
+          "name": "prompt_delivery::tests::compiler_rejects_registry_and_context_model_drift",
+          "status": "ok",
+          "suffix": "",
+          "original_line": 60
+        },
+        {
+          "name": "prompt_delivery::tests::exercised_registry_payload_is_the_exact_context_attachment_input",
+          "status": "ok",
+          "suffix": "",
+          "original_line": 61
+        },
+        {
+          "name": "prompt_delivery::tests::revocation_after_exercise_prevents_delivery_of_the_selected_realization",
+          "status": "ok",
+          "suffix": "",
+          "original_line": 62
+        },
+        {
+          "name": "prompt_pipeline::tests::exercised_portfolio_compiles_attaches_and_observes_exact_delivery",
+          "status": "ok",
+          "suffix": "",
+          "original_line": 63
+        },
+        {
+          "name": "prompt_pipeline::tests::materialization_drift_after_compilation_blocks_attachment_preparation",
+          "status": "ok",
+          "suffix": "",
+          "original_line": 64
+        },
+        {
+          "name": "tests::canonical_candidate_limit_is_enforced",
+          "status": "ok",
+          "suffix": "",
+          "original_line": 65
+        },
+        {
+          "name": "tests::duplicate_candidate_is_rejected",
+          "status": "ok",
+          "suffix": "",
+          "original_line": 66
+        },
+        {
+          "name": "tests::hard_veto_is_never_overridden",
+          "status": "ok",
+          "suffix": "",
+          "original_line": 67
+        },
+        {
+          "name": "tests::highest_eligible_candidate_is_selected_without_effect_authority",
+          "status": "ok",
+          "suffix": "",
+          "original_line": 68
+        },
+        {
+          "name": "tests::maximum_candidate_receipt_is_canonical_and_digest_complete",
+          "status": "ok",
+          "suffix": "",
+          "original_line": 69
+        },
+        {
+          "name": "tests::no_eligible_candidate_abstains",
+          "status": "ok",
+          "suffix": "",
+          "original_line": 70
+        },
+        {
+          "name": "topology_canary_product::tests::payload_binds_every_caller_asserted_canary_fact",
+          "status": "ok",
+          "suffix": "",
+          "original_line": 71
+        },
+        {
+          "name": "prompt_pipeline::tests::serialization_without_selected_prompt_bytes_fails_closed",
+          "status": "ok",
+          "suffix": "",
+          "original_line": 72
+        },
+        {
+          "name": "vertical_tests::candidate_outside_compiled_legal_actions_fails_closed",
+          "status": "ok",
+          "suffix": "",
+          "original_line": 73
+        },
+        {
+          "name": "vertical_tests::objective_soft_dimensions_must_bind_the_ndu_profile",
+          "status": "ok",
+          "suffix": "",
+          "original_line": 74
+        },
+        {
+          "name": "prompt_pipeline::tests::revocation_after_compilation_blocks_attachment_preparation",
+          "status": "ok",
+          "suffix": "",
+          "original_line": 75
+        },
+        {
+          "name": "vertical_tests::omitted_cognitive_read_evidence_fails_closed",
+          "status": "ok",
+          "suffix": "",
+          "original_line": 76
+        },
+        {
+          "name": "vertical_tests::selected_objective_profile_digest_cannot_be_replaced",
+          "status": "ok",
+          "suffix": "",
+          "original_line": 77
+        },
+        {
+          "name": "vertical_tests::tampered_read_evidence_binding_fails_before_context_compilation",
+          "status": "ok",
+          "suffix": "",
+          "original_line": 78
+        },
+        {
+          "name": "vertical_tests::vertical_facade_selects_only_a_legal_objective_action_without_authority",
+          "status": "ok",
+          "suffix": "",
+          "original_line": 79
+        },
+        {
+          "name": "vertical_tests::vertical_receipt_is_stable_under_canonical_input_reordering",
+          "status": "ok",
+          "suffix": "",
+          "original_line": 80
+        },
+        {
+          "name": "topology_product::tests::authenticated_topology_path_verifies_three_roles_and_persists_governed_record",
+          "status": "ok",
+          "suffix": "",
+          "original_line": 81
+        },
+        {
+          "name": "evaluated_shadow::tests::invalid_authentication_artifact_or_dataset_never_calls_any_port",
+          "status": "ok",
+          "suffix": "",
+          "original_line": 82
+        }
+      ],
+      "actual_named_count": 78,
+      "summary": "test result: ok. 78 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 1.99s",
+      "original_log": {
+        "path": "/workspace/scratch/07dd58cc9630/research-audit/published-5b633-ci-20261105/terminal/windows-business-source-127149582480/members/ordinary-consumers/native-test-logs/codex-rs/hepta-intelligence/hepta-intelligence-unit-tests/test.log",
+        "bytes": 7458,
+        "sha256": "323d03854a95b636dc5be5acf16c119353a4bf84798abb2a3ea89fe2f6e797db",
+        "computed_git_blob": "948cc8ad6c15b42e60e4511c6cde0e7a5151ff56"
+      },
+      "xml": {
+        "path": "/workspace/scratch/07dd58cc9630/research-audit/published-5b633-ci-20261105/terminal/windows-business-source-127149582480/members/ordinary-consumers/native-test-logs/codex-rs/hepta-intelligence/hepta-intelligence-unit-tests/test.xml",
+        "bytes": 7831,
+        "sha256": "57fcb055578aea7d0fec59e9e61d8f63c1fd38686a4428e9ae979190116606d9",
+        "computed_git_blob": "a90f383a17437b77fe00004966ad30172f9ea50c"
+      },
+      "xml_is_one_bazel_wrapper_case_not_per_libtest_name": true
+    }
+  ],
+  "actual_named_pass": 118,
+  "named_failures": 0,
+  "ignored": 0,
+  "filtered": 0,
+  "xml_wrapper_nodes": 3,
+  "libtest_names_derived_from_complete_original_test_logs": true,
+  "execution": "Original three MSVC targets executed with test-result cache disabled and flaky_test_attempts=1. Build action cache is separate: 2045 remote cache hits, 904 internal and 6 local processes.",
+  "invocation_id": "f1bf1a04-94c6-46d3-ac20-81ae8a2e0037",
+  "artifact": {
+    "schema": "hepta-original-artifact-byte-verification-v1",
+    "artifact_id": 13413516189,
+    "observed_at_utc": "2026-11-05T12:12:57.680185+00:00",
+    "download_url_source": "GitHub connector returned file_uri.download_url; no credential or private endpoint reconstruction",
+    "download_host": "sdmntpreastus2.oaiusercontent.com",
+    "zip_path": "/workspace/scratch/07dd58cc9630/research-audit/published-5b633-ci-20261105/terminal/windows-business-source-127149582480/artifact-13413516189.zip",
+    "zip_bytes": 3606194,
+    "zip_sha256": "016e0dc534e8824344d479e014fb8cd7b5e7136ff32e6835684934e204dd2037",
+    "github_size_and_digest_match": true,
+    "all_members_crc_ok": true,
+    "member_count": 10,
+    "members": [
+      {
+        "member": "ordinary-consumers/native-test-logs/codex-rs/hepta-bao-adapter/hepta-bao-adapter-unit-tests/test.log",
+        "bytes": 1712,
+        "sha256": "bb5e8e3a9db96b8294a81ee1e77689bbeba44443029cb225bccaa0298eab617c",
+        "git_blob": "cbcfcb934bccd7946bab166e60250675f1b89345",
+        "crc32": "484d8278",
+        "local_path": "/workspace/scratch/07dd58cc9630/research-audit/published-5b633-ci-20261105/terminal/windows-business-source-127149582480/members/ordinary-consumers/native-test-logs/codex-rs/hepta-bao-adapter/hepta-bao-adapter-unit-tests/test.log"
+      },
+      {
+        "member": "ordinary-consumers/native-test-logs/codex-rs/hepta-codex-adapter/hepta-codex-adapter-unit-tests/test.log",
+        "bytes": 1849,
+        "sha256": "894bc08985de4f197e5bd594a8dc4ef936943850f06f763d2ea97e986da7345e",
+        "git_blob": "117b460c72adcdc85e274257777a925645ca19c6",
+        "crc32": "fb973938",
+        "local_path": "/workspace/scratch/07dd58cc9630/research-audit/published-5b633-ci-20261105/terminal/windows-business-source-127149582480/members/ordinary-consumers/native-test-logs/codex-rs/hepta-codex-adapter/hepta-codex-adapter-unit-tests/test.log"
+      },
+      {
+        "member": "ordinary-consumers/native-test-logs/codex-rs/hepta-bao-adapter/hepta-bao-adapter-unit-tests/test.xml",
+        "bytes": 2081,
+        "sha256": "f2939153c44e8a6b6dbb5db75cd469f640021bbebf418e227fadab79fdcf48f0",
+        "git_blob": "20b2b4dc1ac7bae495ab5c1fbd3d2e9d11220ddf",
+        "crc32": "f1bb8848",
+        "local_path": "/workspace/scratch/07dd58cc9630/research-audit/published-5b633-ci-20261105/terminal/windows-business-source-127149582480/members/ordinary-consumers/native-test-logs/codex-rs/hepta-bao-adapter/hepta-bao-adapter-unit-tests/test.xml"
+      },
+      {
+        "member": "ordinary-consumers/native-test-logs/codex-rs/hepta-codex-adapter/hepta-codex-adapter-unit-tests/test.xml",
+        "bytes": 2226,
+        "sha256": "dacfbcf8f16a25cf32c69c36954916a50ba9a11564a1f957ab54e4a09ceb5b8f",
+        "git_blob": "83760b38b6062735a5d46788583458b56ba40491",
+        "crc32": "bf1738b3",
+        "local_path": "/workspace/scratch/07dd58cc9630/research-audit/published-5b633-ci-20261105/terminal/windows-business-source-127149582480/members/ordinary-consumers/native-test-logs/codex-rs/hepta-codex-adapter/hepta-codex-adapter-unit-tests/test.xml"
+      },
+      {
+        "member": "ordinary-consumers/native-test-logs/codex-rs/hepta-intelligence/hepta-intelligence-unit-tests/test.log",
+        "bytes": 7458,
+        "sha256": "323d03854a95b636dc5be5acf16c119353a4bf84798abb2a3ea89fe2f6e797db",
+        "git_blob": "948cc8ad6c15b42e60e4511c6cde0e7a5151ff56",
+        "crc32": "46c50e36",
+        "local_path": "/workspace/scratch/07dd58cc9630/research-audit/published-5b633-ci-20261105/terminal/windows-business-source-127149582480/members/ordinary-consumers/native-test-logs/codex-rs/hepta-intelligence/hepta-intelligence-unit-tests/test.log"
+      },
+      {
+        "member": "ordinary-consumers/native-test-logs/codex-rs/hepta-intelligence/hepta-intelligence-unit-tests/test.xml",
+        "bytes": 7831,
+        "sha256": "57fcb055578aea7d0fec59e9e61d8f63c1fd38686a4428e9ae979190116606d9",
+        "git_blob": "a90f383a17437b77fe00004966ad30172f9ea50c",
+        "crc32": "35b577cf",
+        "local_path": "/workspace/scratch/07dd58cc9630/research-audit/published-5b633-ci-20261105/terminal/windows-business-source-127149582480/members/ordinary-consumers/native-test-logs/codex-rs/hepta-intelligence/hepta-intelligence-unit-tests/test.xml"
+      },
+      {
+        "member": "ordinary-consumers/original-libraries.log",
+        "bytes": 93793,
+        "sha256": "111774ccdb5a5a32889694992ee3c0bf852c38b2997a71afadcef492d8918677",
+        "git_blob": "7460831b60adf48d9c38a3e3a92b4e98315fd02f",
+        "crc32": "18ba7640",
+        "local_path": "/workspace/scratch/07dd58cc9630/research-audit/published-5b633-ci-20261105/terminal/windows-business-source-127149582480/members/ordinary-consumers/original-libraries.log"
+      },
+      {
+        "member": "ordinary-consumers/result.json",
+        "bytes": 13211,
+        "sha256": "5961a0df0c4a7bda4cfda1ca7f25170d9c4dc1e125db0547996d7a920048a09d",
+        "git_blob": "25c7a62ff581dc99c63d003e068bd383e58861c9",
+        "crc32": "7e7386bd",
+        "local_path": "/workspace/scratch/07dd58cc9630/research-audit/published-5b633-ci-20261105/terminal/windows-business-source-127149582480/members/ordinary-consumers/result.json"
+      },
+      {
+        "member": "ordinary-consumers/source.json",
+        "bytes": 1336,
+        "sha256": "849db805521be8a1cfc409f83f683a8cbfba50f504bd8bbf741702ab121ae1b7",
+        "git_blob": "883f5a4bfc2d07fb851404144a048b8e304d81eb",
+        "crc32": "7552c019",
+        "local_path": "/workspace/scratch/07dd58cc9630/research-audit/published-5b633-ci-20261105/terminal/windows-business-source-127149582480/members/ordinary-consumers/source.json"
+      },
+      {
+        "member": "bazel-execution-logs/execution-log-test-original-libraries-763.zst",
+        "bytes": 3582702,
+        "sha256": "ce2e421850e4fff6752ac1c60f586ee32944c40fb909e4acfa1922e6cc432a2d",
+        "git_blob": "3f8bbdcff2990e37c6f9552325aa663de2473b0f",
+        "crc32": "5ca88b6c",
+        "local_path": "/workspace/scratch/07dd58cc9630/research-audit/published-5b633-ci-20261105/terminal/windows-business-source-127149582480/members/bazel-execution-logs/execution-log-test-original-libraries-763.zst"
+      }
+    ],
+    "native_or_project_execution": false
+  },
+  "full_job_log": {
+    "bytes": 195136,
+    "sha256": "c814b5015c8d1eb88764cafb9b1e796646e626cb406fbad9d12d16f02a1b8a17",
+    "computed_git_blob": "82b711c92b0f4e6c7f8b0091c05d02b4cf444223"
+  },
+  "working_tree_lock_encoding": {
+    "independent_review_blob": "75a12d82d7a830ede3a294a7649df1fb7d2d3f1f",
+    "scope": "These same recorded Windows hashes exactly match the already independently verified LF-to-CRLF transformations of the fixed Git lock blobs. Do not call Windows working-file bytes identical to LF Git/native bytes."
+  },
+  "original_142_map": {
+    "catalog": {
+      "bytes": 180651,
+      "sha256": "16df332bed13d79c0e2f0294d65218a0f83aaa1dd926c0694dfb1363b3b83752",
+      "computed_git_blob": "5ce46bbcb2f3979eb3a320ecf3c3d065000d9645"
+    },
+    "matched_names": 0,
+    "cases": [
+      {
+        "blocker_id": "B07",
+        "binary": "codex-core::all",
+        "test": "suite::hooks_executor::executor_stop_hook_stops_after_disconnection",
+        "bazel_target": "//codex-rs/core:core-all-test",
+        "windows_cfg_scope": "NOT_COMPILED_BY_ORIGINAL_CFG",
+        "disposition": "NOT_SELECTED_BY_THIS_THREE_TARGET_ORIGINAL_JOB",
+        "new_pass_from_this_job": false
+      },
+      {
+        "blocker_id": "B07",
+        "binary": "codex-core::all",
+        "test": "suite::hooks_executor::executor_stop_hook_runs_after_attachment",
+        "bazel_target": "//codex-rs/core:core-all-test",
+        "windows_cfg_scope": "NOT_COMPILED_BY_ORIGINAL_CFG",
+        "disposition": "NOT_SELECTED_BY_THIS_THREE_TARGET_ORIGINAL_JOB",
+        "new_pass_from_this_job": false
+      },
+      {
+        "blocker_id": "B07",
+        "binary": "codex-core::all",
+        "test": "suite::code_mode::code_mode_exec_surfaces_handler_errors_as_exceptions",
+        "bazel_target": "//codex-rs/core:core-all-test",
+        "windows_cfg_scope": "ORIGINAL_IGNORE_NO_EXEC_COMMAND",
+        "disposition": "NOT_SELECTED_BY_THIS_THREE_TARGET_ORIGINAL_JOB",
+        "new_pass_from_this_job": false
+      },
+      {
+        "blocker_id": "B07",
+        "binary": "codex-core::all",
+        "test": "suite::hooks_mcp::active_tool_policy_disables_mcp_tool_hooks_before_transport",
+        "bazel_target": "//codex-rs/core:core-all-test",
+        "windows_cfg_scope": "NOT_COMPILED_BY_ORIGINAL_CFG",
+        "disposition": "NOT_SELECTED_BY_THIS_THREE_TARGET_ORIGINAL_JOB",
+        "new_pass_from_this_job": false
+      },
+      {
+        "blocker_id": "B07",
+        "binary": "codex-core::all",
+        "test": "suite::hooks_mcp::hepta_feature_disables_mcp_tool_hooks_before_transport",
+        "bazel_target": "//codex-rs/core:core-all-test",
+        "windows_cfg_scope": "NOT_COMPILED_BY_ORIGINAL_CFG",
+        "disposition": "NOT_SELECTED_BY_THIS_THREE_TARGET_ORIGINAL_JOB",
+        "new_pass_from_this_job": false
+      },
+      {
+        "blocker_id": "B07",
+        "binary": "codex-core::all",
+        "test": "suite::hooks_mcp::mcp_tool_hook_blocks_model_tool_without_recursive_hooks_or_approval",
+        "bazel_target": "//codex-rs/core:core-all-test",
+        "windows_cfg_scope": "NOT_COMPILED_BY_ORIGINAL_CFG",
+        "disposition": "NOT_SELECTED_BY_THIS_THREE_TARGET_ORIGINAL_JOB",
+        "new_pass_from_this_job": false
+      },
+      {
+        "blocker_id": "B07",
+        "binary": "codex-core::all",
+        "test": "suite::hooks_mcp::mcp_tool_hook_fails_open_when_server_is_unavailable",
+        "bazel_target": "//codex-rs/core:core-all-test",
+        "windows_cfg_scope": "NOT_COMPILED_BY_ORIGINAL_CFG",
+        "disposition": "NOT_SELECTED_BY_THIS_THREE_TARGET_ORIGINAL_JOB",
+        "new_pass_from_this_job": false
+      },
+      {
+        "blocker_id": "B07",
+        "binary": "codex-core::all",
+        "test": "suite::hooks_mcp::mcp_tool_hook_interpolates_prompt_and_runs_without_tool_approval",
+        "bazel_target": "//codex-rs/core:core-all-test",
+        "windows_cfg_scope": "NOT_COMPILED_BY_ORIGINAL_CFG",
+        "disposition": "NOT_SELECTED_BY_THIS_THREE_TARGET_ORIGINAL_JOB",
+        "new_pass_from_this_job": false
+      },
+      {
+        "blocker_id": "B07",
+        "binary": "codex-core::all",
+        "test": "suite::hooks_executor::executor_stop_hook_rejects_mismatched_environment",
+        "bazel_target": "//codex-rs/core:core-all-test",
+        "windows_cfg_scope": "NOT_COMPILED_BY_ORIGINAL_CFG",
+        "disposition": "NOT_SELECTED_BY_THIS_THREE_TARGET_ORIGINAL_JOB",
+        "new_pass_from_this_job": false
+      },
+      {
+        "blocker_id": "B07",
+        "binary": "codex-core::all",
+        "test": "suite::hooks_mcp::mcp_tool_hook_cannot_call_tools_excluded_by_server_filters",
+        "bazel_target": "//codex-rs/core:core-all-test",
+        "windows_cfg_scope": "NOT_COMPILED_BY_ORIGINAL_CFG",
+        "disposition": "NOT_SELECTED_BY_THIS_THREE_TARGET_ORIGINAL_JOB",
+        "new_pass_from_this_job": false
+      },
+      {
+        "blocker_id": "B07",
+        "binary": "codex-core::all",
+        "test": "suite::hooks_mcp::mcp_tool_hook_marks_thread_memory_mode_polluted_when_configured",
+        "bazel_target": "//codex-rs/core:core-all-test",
+        "windows_cfg_scope": "NOT_COMPILED_BY_ORIGINAL_CFG",
+        "disposition": "NOT_SELECTED_BY_THIS_THREE_TARGET_ORIGINAL_JOB",
+        "new_pass_from_this_job": false
+      },
+      {
+        "blocker_id": "B07",
+        "binary": "codex-core::all",
+        "test": "suite::hooks_mcp::mcp_tool_hook_passes_thread_metadata_to_model_hidden_tools",
+        "bazel_target": "//codex-rs/core:core-all-test",
+        "windows_cfg_scope": "NOT_COMPILED_BY_ORIGINAL_CFG",
+        "disposition": "NOT_SELECTED_BY_THIS_THREE_TARGET_ORIGINAL_JOB",
+        "new_pass_from_this_job": false
+      },
+      {
+        "blocker_id": "B07",
+        "binary": "codex-core::all",
+        "test": "suite::hooks_mcp::permission_request_hook_allows_mcp_tool_without_user_or_guardian_review",
+        "bazel_target": "//codex-rs/core:core-all-test",
+        "windows_cfg_scope": "NOT_COMPILED_BY_ORIGINAL_CFG",
+        "disposition": "NOT_SELECTED_BY_THIS_THREE_TARGET_ORIGINAL_JOB",
+        "new_pass_from_this_job": false
+      },
+      {
+        "blocker_id": "B07",
+        "binary": "codex-core::all",
+        "test": "suite::hooks_mcp::permission_request_hook_denies_mcp_tool_without_user_or_guardian_review",
+        "bazel_target": "//codex-rs/core:core-all-test",
+        "windows_cfg_scope": "NOT_COMPILED_BY_ORIGINAL_CFG",
+        "disposition": "NOT_SELECTED_BY_THIS_THREE_TARGET_ORIGINAL_JOB",
+        "new_pass_from_this_job": false
+      },
+      {
+        "blocker_id": "B07",
+        "binary": "codex-core::all",
+        "test": "suite::hooks_mcp::post_tool_use_records_mcp_tool_payload_and_context_with_legacy_prefixed_names",
+        "bazel_target": "//codex-rs/core:core-all-test",
+        "windows_cfg_scope": "NOT_COMPILED_BY_ORIGINAL_CFG",
+        "disposition": "NOT_SELECTED_BY_THIS_THREE_TARGET_ORIGINAL_JOB",
+        "new_pass_from_this_job": false
+      },
+      {
+        "blocker_id": "B07",
+        "binary": "codex-core::all",
+        "test": "suite::hooks_mcp::post_tool_use_records_mcp_tool_payload_and_context_with_non_prefixed_names",
+        "bazel_target": "//codex-rs/core:core-all-test",
+        "windows_cfg_scope": "NOT_COMPILED_BY_ORIGINAL_CFG",
+        "disposition": "NOT_SELECTED_BY_THIS_THREE_TARGET_ORIGINAL_JOB",
+        "new_pass_from_this_job": false
+      },
+      {
+        "blocker_id": "B07",
+        "binary": "codex-core::all",
+        "test": "suite::hooks_mcp::pre_tool_use_blocks_mcp_tool_before_execution_with_legacy_prefixed_names",
+        "bazel_target": "//codex-rs/core:core-all-test",
+        "windows_cfg_scope": "NOT_COMPILED_BY_ORIGINAL_CFG",
+        "disposition": "NOT_SELECTED_BY_THIS_THREE_TARGET_ORIGINAL_JOB",
+        "new_pass_from_this_job": false
+      },
+      {
+        "blocker_id": "B07",
+        "binary": "codex-core::all",
+        "test": "suite::hooks_mcp::pre_tool_use_rewrites_mcp_tool_before_execution",
+        "bazel_target": "//codex-rs/core:core-all-test",
+        "windows_cfg_scope": "NOT_COMPILED_BY_ORIGINAL_CFG",
+        "disposition": "NOT_SELECTED_BY_THIS_THREE_TARGET_ORIGINAL_JOB",
+        "new_pass_from_this_job": false
+      },
+      {
+        "blocker_id": "B07",
+        "binary": "codex-core::all",
+        "test": "suite::hooks_mcp::pre_tool_use_blocks_mcp_tool_before_execution_with_non_prefixed_names",
+        "bazel_target": "//codex-rs/core:core-all-test",
+        "windows_cfg_scope": "NOT_COMPILED_BY_ORIGINAL_CFG",
+        "disposition": "NOT_SELECTED_BY_THIS_THREE_TARGET_ORIGINAL_JOB",
+        "new_pass_from_this_job": false
+      },
+      {
+        "blocker_id": "B07",
+        "binary": "codex-core::all",
+        "test": "suite::token_budget::active_tool_policy_skips_notes_thread_hint_without_calling_server",
+        "bazel_target": "//codex-rs/core:core-all-test",
+        "windows_cfg_scope": "NO_NEW_CFG_ASSUMPTION; ORIGINAL_TARGET_AND_FIXED_SOURCE_APPLY",
+        "disposition": "NOT_SELECTED_BY_THIS_THREE_TARGET_ORIGINAL_JOB",
+        "new_pass_from_this_job": false
+      },
+      {
+        "blocker_id": "B07",
+        "binary": "codex-core::all",
+        "test": "suite::token_budget::hepta_token_budget_skips_notes_thread_hint_without_calling_server",
+        "bazel_target": "//codex-rs/core:core-all-test",
+        "windows_cfg_scope": "NO_NEW_CFG_ASSUMPTION; ORIGINAL_TARGET_AND_FIXED_SOURCE_APPLY",
+        "disposition": "NOT_SELECTED_BY_THIS_THREE_TARGET_ORIGINAL_JOB",
+        "new_pass_from_this_job": false
+      },
+      {
+        "blocker_id": "B07",
+        "binary": "codex-core::all",
+        "test": "suite::token_budget::token_budget_context_injects_plain_thread_hint_text",
+        "bazel_target": "//codex-rs/core:core-all-test",
+        "windows_cfg_scope": "NO_NEW_CFG_ASSUMPTION; ORIGINAL_TARGET_AND_FIXED_SOURCE_APPLY",
+        "disposition": "NOT_SELECTED_BY_THIS_THREE_TARGET_ORIGINAL_JOB",
+        "new_pass_from_this_job": false
+      },
+      {
+        "blocker_id": "B07",
+        "binary": "codex-mcp",
+        "test": "binding::tests::configured_hook_call_preserves_model_and_environment_boundaries",
+        "bazel_target": "//codex-rs/codex-mcp:codex-mcp-unit-tests",
+        "windows_cfg_scope": "NO_NEW_CFG_ASSUMPTION; ORIGINAL_TARGET_AND_FIXED_SOURCE_APPLY",
+        "disposition": "NOT_SELECTED_BY_THIS_THREE_TARGET_ORIGINAL_JOB",
+        "new_pass_from_this_job": false
+      },
+      {
+        "blocker_id": "B07",
+        "binary": "codex-mcp",
+        "test": "binding::tests::prepared_call_keeps_captured_connection_and_authority_after_refresh",
+        "bazel_target": "//codex-rs/codex-mcp:codex-mcp-unit-tests",
+        "windows_cfg_scope": "NO_NEW_CFG_ASSUMPTION; ORIGINAL_TARGET_AND_FIXED_SOURCE_APPLY",
+        "disposition": "NOT_SELECTED_BY_THIS_THREE_TARGET_ORIGINAL_JOB",
+        "new_pass_from_this_job": false
+      },
+      {
+        "blocker_id": "B07",
+        "binary": "codex-mcp",
+        "test": "binding::tests::prepared_call_does_not_reroute_after_captured_connection_closes",
+        "bazel_target": "//codex-rs/codex-mcp:codex-mcp-unit-tests",
+        "windows_cfg_scope": "NO_NEW_CFG_ASSUMPTION; ORIGINAL_TARGET_AND_FIXED_SOURCE_APPLY",
+        "disposition": "NOT_SELECTED_BY_THIS_THREE_TARGET_ORIGINAL_JOB",
+        "new_pass_from_this_job": false
+      },
+      {
+        "blocker_id": "B07",
+        "binary": "codex-mcp",
+        "test": "binding::tests::prepared_call_is_rejected_after_catalog_refresh",
+        "bazel_target": "//codex-rs/codex-mcp:codex-mcp-unit-tests",
+        "windows_cfg_scope": "NO_NEW_CFG_ASSUMPTION; ORIGINAL_TARGET_AND_FIXED_SOURCE_APPLY",
+        "disposition": "NOT_SELECTED_BY_THIS_THREE_TARGET_ORIGINAL_JOB",
+        "new_pass_from_this_job": false
+      },
+      {
+        "blocker_id": "B07",
+        "binary": "codex-mcp",
+        "test": "binding::tests::stale_prepared_call_does_not_run_preparation",
+        "bazel_target": "//codex-rs/codex-mcp:codex-mcp-unit-tests",
+        "windows_cfg_scope": "NO_NEW_CFG_ASSUMPTION; ORIGINAL_TARGET_AND_FIXED_SOURCE_APPLY",
+        "disposition": "NOT_SELECTED_BY_THIS_THREE_TARGET_ORIGINAL_JOB",
+        "new_pass_from_this_job": false
+      },
+      {
+        "blocker_id": "B07",
+        "binary": "codex-mcp",
+        "test": "binding::tests::preparation_holds_catalog_authority_until_it_finishes",
+        "bazel_target": "//codex-rs/codex-mcp:codex-mcp-unit-tests",
+        "windows_cfg_scope": "NO_NEW_CFG_ASSUMPTION; ORIGINAL_TARGET_AND_FIXED_SOURCE_APPLY",
+        "disposition": "NOT_SELECTED_BY_THIS_THREE_TARGET_ORIGINAL_JOB",
+        "new_pass_from_this_job": false
+      },
+      {
+        "blocker_id": "B08",
+        "binary": "codex-core",
+        "test": "tools::executed_tool_calls::tests::executed_tool_call_recorder_bounds_pending_calls_and_preserves_overflow",
+        "bazel_target": "//codex-rs/core:core-unit-tests",
+        "windows_cfg_scope": "NO_NEW_CFG_ASSUMPTION; ORIGINAL_TARGET_AND_FIXED_SOURCE_APPLY",
+        "disposition": "NOT_SELECTED_BY_THIS_THREE_TARGET_ORIGINAL_JOB",
+        "new_pass_from_this_job": false
+      },
+      {
+        "blocker_id": "B08",
+        "binary": "codex-core",
+        "test": "tools::executed_tool_calls::tests::executed_tool_call_recorder_bounds_retained_history_and_reports_omissions",
+        "bazel_target": "//codex-rs/core:core-unit-tests",
+        "windows_cfg_scope": "NO_NEW_CFG_ASSUMPTION; ORIGINAL_TARGET_AND_FIXED_SOURCE_APPLY",
+        "disposition": "NOT_SELECTED_BY_THIS_THREE_TARGET_ORIGINAL_JOB",
+        "new_pass_from_this_job": false
+      },
+      {
+        "blocker_id": "B08",
+        "binary": "codex-core",
+        "test": "client::tests::chatgpt_codex_wire_strips_local_content_metadata_but_openai_wire_keeps_it",
+        "bazel_target": "//codex-rs/core:core-unit-tests",
+        "windows_cfg_scope": "NO_NEW_CFG_ASSUMPTION; ORIGINAL_TARGET_AND_FIXED_SOURCE_APPLY",
+        "disposition": "NOT_SELECTED_BY_THIS_THREE_TARGET_ORIGINAL_JOB",
+        "new_pass_from_this_job": false
+      },
+      {
+        "blocker_id": "B08",
+        "binary": "codex-core::all",
+        "test": "suite::tools::namespaced_custom_tool_call_preserves_namespace_through_dispatch_and_replay",
+        "bazel_target": "//codex-rs/core:core-all-test",
+        "windows_cfg_scope": "NOT_COMPILED_BY_ORIGINAL_CFG",
+        "disposition": "NOT_SELECTED_BY_THIS_THREE_TARGET_ORIGINAL_JOB",
+        "new_pass_from_this_job": false
+      },
+      {
+        "blocker_id": "B09",
+        "binary": "codex-app-server::all",
+        "test": "suite::v2::thread_inject_items::thread_inject_items_adds_raw_response_items_after_a_turn",
+        "bazel_target": "//codex-rs/app-server:app-server-all-test",
+        "windows_cfg_scope": "NO_NEW_CFG_ASSUMPTION; ORIGINAL_TARGET_AND_FIXED_SOURCE_APPLY",
+        "disposition": "NOT_SELECTED_BY_THIS_THREE_TARGET_ORIGINAL_JOB",
+        "new_pass_from_this_job": false
+      },
+      {
+        "blocker_id": "B09",
+        "binary": "codex-app-server::all",
+        "test": "suite::v2::turn_recover::cold_resume_explicit_cwd_override_is_fail_closed_for_recovery",
+        "bazel_target": "//codex-rs/app-server:app-server-all-test",
+        "windows_cfg_scope": "NOT_COMPILED_CFG_UNIX",
+        "disposition": "NOT_SELECTED_BY_THIS_THREE_TARGET_ORIGINAL_JOB",
+        "new_pass_from_this_job": false
+      },
+      {
+        "blocker_id": "B09",
+        "binary": "codex-app-server::all",
+        "test": "suite::v2::turn_recover::cold_paginated_sigkill_recovery_uses_canonical_context_tail",
+        "bazel_target": "//codex-rs/app-server:app-server-all-test",
+        "windows_cfg_scope": "NOT_COMPILED_CFG_UNIX",
+        "disposition": "NOT_SELECTED_BY_THIS_THREE_TARGET_ORIGINAL_JOB",
+        "new_pass_from_this_job": false
+      },
+      {
+        "blocker_id": "B09",
+        "binary": "codex-app-server::all",
+        "test": "suite::v2::turn_recover::cold_resume_explicit_workspace_roots_override_is_fail_closed_for_recovery",
+        "bazel_target": "//codex-rs/app-server:app-server-all-test",
+        "windows_cfg_scope": "NOT_COMPILED_CFG_UNIX",
+        "disposition": "NOT_SELECTED_BY_THIS_THREE_TARGET_ORIGINAL_JOB",
+        "new_pass_from_this_job": false
+      },
+      {
+        "blocker_id": "B09",
+        "binary": "codex-app-server::all",
+        "test": "suite::v2::turn_recover::cold_sigkill_after_provider_output_is_not_recoverable",
+        "bazel_target": "//codex-rs/app-server:app-server-all-test",
+        "windows_cfg_scope": "NOT_COMPILED_CFG_UNIX",
+        "disposition": "NOT_SELECTED_BY_THIS_THREE_TARGET_ORIGINAL_JOB",
+        "new_pass_from_this_job": false
+      },
+      {
+        "blocker_id": "B09",
+        "binary": "codex-app-server::all",
+        "test": "suite::v2::turn_recover::recover_rejects_busy_completed_and_cross_thread_turns",
+        "bazel_target": "//codex-rs/app-server:app-server-all-test",
+        "windows_cfg_scope": "NOT_COMPILED_CFG_UNIX",
+        "disposition": "NOT_SELECTED_BY_THIS_THREE_TARGET_ORIGINAL_JOB",
+        "new_pass_from_this_job": false
+      },
+      {
+        "blocker_id": "B09",
+        "binary": "codex-app-server::all",
+        "test": "suite::v2::turn_recover::same_process_ephemeral_interrupted_turn_recovers_from_listener_state",
+        "bazel_target": "//codex-rs/app-server:app-server-all-test",
+        "windows_cfg_scope": "NOT_COMPILED_CFG_UNIX",
+        "disposition": "NOT_SELECTED_BY_THIS_THREE_TARGET_ORIGINAL_JOB",
+        "new_pass_from_this_job": false
+      },
+      {
+        "blocker_id": "B09",
+        "binary": "codex-app-server::all",
+        "test": "suite::v2::turn_recover::turn_recover_requires_hepta_turn_recovery_feature",
+        "bazel_target": "//codex-rs/app-server:app-server-all-test",
+        "windows_cfg_scope": "NOT_COMPILED_CFG_UNIX",
+        "disposition": "NOT_SELECTED_BY_THIS_THREE_TARGET_ORIGINAL_JOB",
+        "new_pass_from_this_job": false
+      },
+      {
+        "blocker_id": "B09",
+        "binary": "codex-app-server::all",
+        "test": "suite::v2::turn_recover::cold_sigkill_recovery_preserves_turn_and_deduplicates_stable_queue_input",
+        "bazel_target": "//codex-rs/app-server:app-server-all-test",
+        "windows_cfg_scope": "NOT_COMPILED_CFG_UNIX",
+        "disposition": "NOT_SELECTED_BY_THIS_THREE_TARGET_ORIGINAL_JOB",
+        "new_pass_from_this_job": false
+      },
+      {
+        "blocker_id": "B09",
+        "binary": "codex-core::all",
+        "test": "suite::abort_tasks::root_turn_suspension_preserves_unfinished_turn_history",
+        "bazel_target": "//codex-rs/core:core-all-test",
+        "windows_cfg_scope": "NOT_COMPILED_BY_ORIGINAL_CFG",
+        "disposition": "NOT_SELECTED_BY_THIS_THREE_TARGET_ORIGINAL_JOB",
+        "new_pass_from_this_job": false
+      },
+      {
+        "blocker_id": "B09",
+        "binary": "codex-core",
+        "test": "session::tests::panicking_session_task_is_converted_to_terminal_error_and_releases_slot",
+        "bazel_target": "//codex-rs/core:core-unit-tests",
+        "windows_cfg_scope": "NO_NEW_CFG_ASSUMPTION; ORIGINAL_TARGET_AND_FIXED_SOURCE_APPLY",
+        "disposition": "NOT_SELECTED_BY_THIS_THREE_TARGET_ORIGINAL_JOB",
+        "new_pass_from_this_job": false
+      },
+      {
+        "blocker_id": "B09",
+        "binary": "codex-core",
+        "test": "session::tests::cancelled_finish_owner_keeps_terminalizer_alive",
+        "bazel_target": "//codex-rs/core:core-unit-tests",
+        "windows_cfg_scope": "NO_NEW_CFG_ASSUMPTION; ORIGINAL_TARGET_AND_FIXED_SOURCE_APPLY",
+        "disposition": "NOT_SELECTED_BY_THIS_THREE_TARGET_ORIGINAL_JOB",
+        "new_pass_from_this_job": false
+      },
+      {
+        "blocker_id": "B09",
+        "binary": "codex-core",
+        "test": "session::tests::panicking_finish_terminalizer_retains_fence",
+        "bazel_target": "//codex-rs/core:core-unit-tests",
+        "windows_cfg_scope": "NO_NEW_CFG_ASSUMPTION; ORIGINAL_TARGET_AND_FIXED_SOURCE_APPLY",
+        "disposition": "NOT_SELECTED_BY_THIS_THREE_TARGET_ORIGINAL_JOB",
+        "new_pass_from_this_job": false
+      },
+      {
+        "blocker_id": "B09",
+        "binary": "codex-core",
+        "test": "session::tests::hung_finish_terminalizer_watchdog_retains_fence",
+        "bazel_target": "//codex-rs/core:core-unit-tests",
+        "windows_cfg_scope": "NO_NEW_CFG_ASSUMPTION; ORIGINAL_TARGET_AND_FIXED_SOURCE_APPLY",
+        "disposition": "NOT_SELECTED_BY_THIS_THREE_TARGET_ORIGINAL_JOB",
+        "new_pass_from_this_job": false
+      },
+      {
+        "blocker_id": "B09",
+        "binary": "codex-core",
+        "test": "session::tests::cancelled_abort_owner_keeps_terminalizer_alive",
+        "bazel_target": "//codex-rs/core:core-unit-tests",
+        "windows_cfg_scope": "NO_NEW_CFG_ASSUMPTION; ORIGINAL_TARGET_AND_FIXED_SOURCE_APPLY",
+        "disposition": "NOT_SELECTED_BY_THIS_THREE_TARGET_ORIGINAL_JOB",
+        "new_pass_from_this_job": false
+      },
+      {
+        "blocker_id": "B09",
+        "binary": "codex-core",
+        "test": "session::tests::panicking_abort_terminalizer_retains_fence",
+        "bazel_target": "//codex-rs/core:core-unit-tests",
+        "windows_cfg_scope": "NO_NEW_CFG_ASSUMPTION; ORIGINAL_TARGET_AND_FIXED_SOURCE_APPLY",
+        "disposition": "NOT_SELECTED_BY_THIS_THREE_TARGET_ORIGINAL_JOB",
+        "new_pass_from_this_job": false
+      },
+      {
+        "blocker_id": "B09",
+        "binary": "codex-core",
+        "test": "session::tests::cancelled_suspend_caller_keeps_writer_handoff_alive",
+        "bazel_target": "//codex-rs/core:core-unit-tests",
+        "windows_cfg_scope": "NO_NEW_CFG_ASSUMPTION; ORIGINAL_TARGET_AND_FIXED_SOURCE_APPLY",
+        "disposition": "NOT_SELECTED_BY_THIS_THREE_TARGET_ORIGINAL_JOB",
+        "new_pass_from_this_job": false
+      },
+      {
+        "blocker_id": "B09",
+        "binary": "codex-core",
+        "test": "session::turn_input::tests::steer_only_requires_active_turn",
+        "bazel_target": "//codex-rs/core:core-unit-tests",
+        "windows_cfg_scope": "NO_NEW_CFG_ASSUMPTION; ORIGINAL_TARGET_AND_FIXED_SOURCE_APPLY",
+        "disposition": "NOT_SELECTED_BY_THIS_THREE_TARGET_ORIGINAL_JOB",
+        "new_pass_from_this_job": false
+      },
+      {
+        "blocker_id": "B09",
+        "binary": "codex-core",
+        "test": "session::turn_input::tests::steer_only_enforces_expected_turn_id",
+        "bazel_target": "//codex-rs/core:core-unit-tests",
+        "windows_cfg_scope": "NO_NEW_CFG_ASSUMPTION; ORIGINAL_TARGET_AND_FIXED_SOURCE_APPLY",
+        "disposition": "NOT_SELECTED_BY_THIS_THREE_TARGET_ORIGINAL_JOB",
+        "new_pass_from_this_job": false
+      },
+      {
+        "blocker_id": "B10",
+        "binary": "codex-core::all",
+        "test": "suite::agent_websocket::websocket_model_switch_to_responses_lite_omits_top_level_tools",
+        "bazel_target": "//codex-rs/core:core-all-test",
+        "windows_cfg_scope": "NO_NEW_CFG_ASSUMPTION; ORIGINAL_TARGET_AND_FIXED_SOURCE_APPLY",
+        "disposition": "NOT_SELECTED_BY_THIS_THREE_TARGET_ORIGINAL_JOB",
+        "new_pass_from_this_job": false
+      },
+      {
+        "blocker_id": "B10",
+        "binary": "codex-core::all",
+        "test": "suite::agent_websocket::websocket_v2_first_turn_drops_fast_tier_after_startup_prewarm",
+        "bazel_target": "//codex-rs/core:core-all-test",
+        "windows_cfg_scope": "NO_NEW_CFG_ASSUMPTION; ORIGINAL_TARGET_AND_FIXED_SOURCE_APPLY",
+        "disposition": "NOT_SELECTED_BY_THIS_THREE_TARGET_ORIGINAL_JOB",
+        "new_pass_from_this_job": false
+      },
+      {
+        "blocker_id": "B10",
+        "binary": "codex-core::all",
+        "test": "suite::agent_websocket::websocket_v2_first_turn_uses_updated_fast_tier_after_startup_prewarm",
+        "bazel_target": "//codex-rs/core:core-all-test",
+        "windows_cfg_scope": "NO_NEW_CFG_ASSUMPTION; ORIGINAL_TARGET_AND_FIXED_SOURCE_APPLY",
+        "disposition": "NOT_SELECTED_BY_THIS_THREE_TARGET_ORIGINAL_JOB",
+        "new_pass_from_this_job": false
+      },
+      {
+        "blocker_id": "B10",
+        "binary": "codex-core::all",
+        "test": "suite::agent_websocket::websocket_v2_next_turn_uses_updated_service_tier",
+        "bazel_target": "//codex-rs/core:core-all-test",
+        "windows_cfg_scope": "NO_NEW_CFG_ASSUMPTION; ORIGINAL_TARGET_AND_FIXED_SOURCE_APPLY",
+        "disposition": "NOT_SELECTED_BY_THIS_THREE_TARGET_ORIGINAL_JOB",
+        "new_pass_from_this_job": false
+      },
+      {
+        "blocker_id": "B10",
+        "binary": "codex-core::all",
+        "test": "suite::compact::remote_v2_compaction_keeps_creation_time_instructions_after_same_path_mutation",
+        "bazel_target": "//codex-rs/core:core-all-test",
+        "windows_cfg_scope": "NO_NEW_CFG_ASSUMPTION; ORIGINAL_TARGET_AND_FIXED_SOURCE_APPLY",
+        "disposition": "NOT_SELECTED_BY_THIS_THREE_TARGET_ORIGINAL_JOB",
+        "new_pass_from_this_job": false
+      },
+      {
+        "blocker_id": "B10",
+        "binary": "codex-core::all",
+        "test": "suite::compact_remote::remote_compact_v2_reuses_compaction_trigger_for_followups",
+        "bazel_target": "//codex-rs/core:core-all-test",
+        "windows_cfg_scope": "NO_NEW_CFG_ASSUMPTION; ORIGINAL_TARGET_AND_FIXED_SOURCE_APPLY",
+        "disposition": "NOT_SELECTED_BY_THIS_THREE_TARGET_ORIGINAL_JOB",
+        "new_pass_from_this_job": false
+      },
+      {
+        "blocker_id": "B10",
+        "binary": "codex-core::all",
+        "test": "suite::compact_remote::remote_mid_turn_compact_v2_sends_turn_state_over_websocket",
+        "bazel_target": "//codex-rs/core:core-all-test",
+        "windows_cfg_scope": "NO_NEW_CFG_ASSUMPTION; ORIGINAL_TARGET_AND_FIXED_SOURCE_APPLY",
+        "disposition": "NOT_SELECTED_BY_THIS_THREE_TARGET_ORIGINAL_JOB",
+        "new_pass_from_this_job": false
+      },
+      {
+        "blocker_id": "B10",
+        "binary": "codex-core::all",
+        "test": "suite::git_enrichment::ephemeral_system_thread_prewarm_skips_and_turn_observes_fresh_state::test_case_1_system_background_thread",
+        "bazel_target": "//codex-rs/core:core-all-test",
+        "windows_cfg_scope": "NO_NEW_CFG_ASSUMPTION; ORIGINAL_TARGET_AND_FIXED_SOURCE_APPLY",
+        "disposition": "NOT_SELECTED_BY_THIS_THREE_TARGET_ORIGINAL_JOB",
+        "new_pass_from_this_job": false
+      },
+      {
+        "blocker_id": "B10",
+        "binary": "codex-core::all",
+        "test": "suite::git_enrichment::ephemeral_system_thread_prewarm_skips_and_turn_observes_fresh_state::test_case_2_ambient_background_thread",
+        "bazel_target": "//codex-rs/core:core-all-test",
+        "windows_cfg_scope": "NO_NEW_CFG_ASSUMPTION; ORIGINAL_TARGET_AND_FIXED_SOURCE_APPLY",
+        "disposition": "NOT_SELECTED_BY_THIS_THREE_TARGET_ORIGINAL_JOB",
+        "new_pass_from_this_job": false
+      },
+      {
+        "blocker_id": "B10",
+        "binary": "codex-core::all",
+        "test": "suite::git_enrichment::startup_prewarm_skips_git_enrichment_and_user_turn_observes_fresh_state",
+        "bazel_target": "//codex-rs/core:core-all-test",
+        "windows_cfg_scope": "NO_NEW_CFG_ASSUMPTION; ORIGINAL_TARGET_AND_FIXED_SOURCE_APPLY",
+        "disposition": "NOT_SELECTED_BY_THIS_THREE_TARGET_ORIGINAL_JOB",
+        "new_pass_from_this_job": false
+      },
+      {
+        "blocker_id": "B10",
+        "binary": "codex-core::all",
+        "test": "suite::turn_state::responses_turn_state_persists_within_turn_and_resets_after",
+        "bazel_target": "//codex-rs/core:core-all-test",
+        "windows_cfg_scope": "NO_NEW_CFG_ASSUMPTION; ORIGINAL_TARGET_AND_FIXED_SOURCE_APPLY",
+        "disposition": "NOT_SELECTED_BY_THIS_THREE_TARGET_ORIGINAL_JOB",
+        "new_pass_from_this_job": false
+      },
+      {
+        "blocker_id": "B10",
+        "binary": "codex-core::all",
+        "test": "suite::turn_state::websocket_turn_state_persists_within_turn_and_resets_after",
+        "bazel_target": "//codex-rs/core:core-all-test",
+        "windows_cfg_scope": "NO_NEW_CFG_ASSUMPTION; ORIGINAL_TARGET_AND_FIXED_SOURCE_APPLY",
+        "disposition": "NOT_SELECTED_BY_THIS_THREE_TARGET_ORIGINAL_JOB",
+        "new_pass_from_this_job": false
+      },
+      {
+        "blocker_id": "B10",
+        "binary": "codex-core::all",
+        "test": "suite::turn_state::websocket_turn_state_is_stable_within_turn",
+        "bazel_target": "//codex-rs/core:core-all-test",
+        "windows_cfg_scope": "NO_NEW_CFG_ASSUMPTION; ORIGINAL_TARGET_AND_FIXED_SOURCE_APPLY",
+        "disposition": "NOT_SELECTED_BY_THIS_THREE_TARGET_ORIGINAL_JOB",
+        "new_pass_from_this_job": false
+      },
+      {
+        "blocker_id": "B10",
+        "binary": "codex-core::all",
+        "test": "suite::turn_state::websocket_turn_state_survives_permission_change_by_reconnecting",
+        "bazel_target": "//codex-rs/core:core-all-test",
+        "windows_cfg_scope": "NO_NEW_CFG_ASSUMPTION; ORIGINAL_TARGET_AND_FIXED_SOURCE_APPLY",
+        "disposition": "NOT_SELECTED_BY_THIS_THREE_TARGET_ORIGINAL_JOB",
+        "new_pass_from_this_job": false
+      },
+      {
+        "blocker_id": "B13",
+        "binary": "codex-hepta-agentd",
+        "test": "runtime::tests::qualification_prepare_quarantines_expired_registry_attempt_with_h7_evidence",
+        "bazel_target": "//codex-rs/hepta-agentd:hepta-agentd-cognitive-write-qualification-test",
+        "windows_cfg_scope": "NO_NEW_CFG_ASSUMPTION; ORIGINAL_TARGET_AND_FIXED_SOURCE_APPLY",
+        "disposition": "NOT_SELECTED_BY_THIS_THREE_TARGET_ORIGINAL_JOB",
+        "new_pass_from_this_job": false
+      },
+      {
+        "blocker_id": "B13",
+        "binary": "codex-queue-extension::queue_service",
+        "test": "caller_abort_after_core_started_keeps_exact_authority_until_persistence",
+        "bazel_target": "//codex-rs/ext/queue:queue-queue_service-test",
+        "windows_cfg_scope": "NO_NEW_CFG_ASSUMPTION; ORIGINAL_TARGET_AND_FIXED_SOURCE_APPLY",
+        "disposition": "NOT_SELECTED_BY_THIS_THREE_TARGET_ORIGINAL_JOB",
+        "new_pass_from_this_job": false
+      },
+      {
+        "blocker_id": "B13",
+        "binary": "codex-queue-extension::queue_service",
+        "test": "completion_panic_retains_exact_authority_in_settlement_guardian",
+        "bazel_target": "//codex-rs/ext/queue:queue-queue_service-test",
+        "windows_cfg_scope": "NO_NEW_CFG_ASSUMPTION; ORIGINAL_TARGET_AND_FIXED_SOURCE_APPLY",
+        "disposition": "NOT_SELECTED_BY_THIS_THREE_TARGET_ORIGINAL_JOB",
+        "new_pass_from_this_job": false
+      },
+      {
+        "blocker_id": "B13",
+        "binary": "codex-queue-extension::queue_service",
+        "test": "core_error_after_started_never_releases_ambiguous_dispatch",
+        "bazel_target": "//codex-rs/ext/queue:queue-queue_service-test",
+        "windows_cfg_scope": "NO_NEW_CFG_ASSUMPTION; ORIGINAL_TARGET_AND_FIXED_SOURCE_APPLY",
+        "disposition": "NOT_SELECTED_BY_THIS_THREE_TARGET_ORIGINAL_JOB",
+        "new_pass_from_this_job": false
+      },
+      {
+        "blocker_id": "B13",
+        "binary": "codex-queue-extension::queue_service",
+        "test": "rollout_flush_before_dispatch_db_completion_recovers_without_resubmit",
+        "bazel_target": "//codex-rs/ext/queue:queue-queue_service-test",
+        "windows_cfg_scope": "NO_NEW_CFG_ASSUMPTION; ORIGINAL_TARGET_AND_FIXED_SOURCE_APPLY",
+        "disposition": "NOT_SELECTED_BY_THIS_THREE_TARGET_ORIGINAL_JOB",
+        "new_pass_from_this_job": false
+      },
+      {
+        "blocker_id": "B13",
+        "binary": "codex-queue-extension::queue_service",
+        "test": "queued_input_and_unique_event_ids_round_trip",
+        "bazel_target": "//codex-rs/ext/queue:queue-queue_service-test",
+        "windows_cfg_scope": "NO_NEW_CFG_ASSUMPTION; ORIGINAL_TARGET_AND_FIXED_SOURCE_APPLY",
+        "disposition": "NOT_SELECTED_BY_THIS_THREE_TARGET_ORIGINAL_JOB",
+        "new_pass_from_this_job": false
+      },
+      {
+        "blocker_id": "B13",
+        "binary": "codex-queue-extension::queue_service",
+        "test": "reserved_to_persisted_legacy_row_deletion_emits_queue_changed",
+        "bazel_target": "//codex-rs/ext/queue:queue-queue_service-test",
+        "windows_cfg_scope": "NO_NEW_CFG_ASSUMPTION; ORIGINAL_TARGET_AND_FIXED_SOURCE_APPLY",
+        "disposition": "NOT_SELECTED_BY_THIS_THREE_TARGET_ORIGINAL_JOB",
+        "new_pass_from_this_job": false
+      },
+      {
+        "blocker_id": "B13",
+        "binary": "codex-queue-extension::queue_service",
+        "test": "queue_empty_observer_waits_for_owned_database_ack_after_turn_complete",
+        "bazel_target": "//codex-rs/ext/queue:queue-queue_service-test",
+        "windows_cfg_scope": "NO_NEW_CFG_ASSUMPTION; ORIGINAL_TARGET_AND_FIXED_SOURCE_APPLY",
+        "disposition": "NOT_SELECTED_BY_THIS_THREE_TARGET_ORIGINAL_JOB",
+        "new_pass_from_this_job": false
+      },
+      {
+        "blocker_id": "B13",
+        "binary": "codex-queue-extension::queue_service",
+        "test": "externally_changed_queues_dispatch_independently_and_retry_failed_wakes",
+        "bazel_target": "//codex-rs/ext/queue:queue-queue_service-test",
+        "windows_cfg_scope": "NO_NEW_CFG_ASSUMPTION; ORIGINAL_TARGET_AND_FIXED_SOURCE_APPLY",
+        "disposition": "NOT_SELECTED_BY_THIS_THREE_TARGET_ORIGINAL_JOB",
+        "new_pass_from_this_job": false
+      },
+      {
+        "blocker_id": "B20",
+        "binary": "codex-app-server::all",
+        "test": "suite::v2::remote_control::connected_backend_handles_models_lookup_before_websocket_initialize",
+        "bazel_target": "//codex-rs/app-server:app-server-all-test",
+        "windows_cfg_scope": "NO_NEW_CFG_ASSUMPTION; ORIGINAL_TARGET_AND_FIXED_SOURCE_APPLY",
+        "disposition": "NOT_SELECTED_BY_THIS_THREE_TARGET_ORIGINAL_JOB",
+        "new_pass_from_this_job": false
+      },
+      {
+        "blocker_id": "B20",
+        "binary": "codex-app-server::all",
+        "test": "suite::v2::remote_control::http_fixture_rejects_eof_before_request_headers_complete",
+        "bazel_target": "//codex-rs/app-server:app-server-all-test",
+        "windows_cfg_scope": "NO_NEW_CFG_ASSUMPTION; ORIGINAL_TARGET_AND_FIXED_SOURCE_APPLY",
+        "disposition": "NOT_SELECTED_BY_THIS_THREE_TARGET_ORIGINAL_JOB",
+        "new_pass_from_this_job": false
+      },
+      {
+        "blocker_id": "B20",
+        "binary": "codex-app-server::all",
+        "test": "suite::v2::remote_control::explicit_remote_control_startup_fails_when_disabled_by_requirements",
+        "bazel_target": "//codex-rs/app-server:app-server-all-test",
+        "windows_cfg_scope": "NO_NEW_CFG_ASSUMPTION; ORIGINAL_TARGET_AND_FIXED_SOURCE_APPLY",
+        "disposition": "NOT_SELECTED_BY_THIS_THREE_TARGET_ORIGINAL_JOB",
+        "new_pass_from_this_job": false
+      },
+      {
+        "blocker_id": "B20",
+        "binary": "codex-app-server::all",
+        "test": "suite::v2::remote_control::disable_waits_for_in_flight_durable_enable",
+        "bazel_target": "//codex-rs/app-server:app-server-all-test",
+        "windows_cfg_scope": "NO_NEW_CFG_ASSUMPTION; ORIGINAL_TARGET_AND_FIXED_SOURCE_APPLY",
+        "disposition": "NOT_SELECTED_BY_THIS_THREE_TARGET_ORIGINAL_JOB",
+        "new_pass_from_this_job": false
+      },
+      {
+        "blocker_id": "B20",
+        "binary": "codex-app-server::all",
+        "test": "suite::v2::remote_control::listen_off_honors_persisted_remote_control_enable",
+        "bazel_target": "//codex-rs/app-server:app-server-all-test",
+        "windows_cfg_scope": "NO_NEW_CFG_ASSUMPTION; ORIGINAL_TARGET_AND_FIXED_SOURCE_APPLY",
+        "disposition": "NOT_SELECTED_BY_THIS_THREE_TARGET_ORIGINAL_JOB",
+        "new_pass_from_this_job": false
+      },
+      {
+        "blocker_id": "B20",
+        "binary": "codex-app-server::all",
+        "test": "suite::v2::remote_control::listen_off_ignores_persisted_enable_when_disabled_by_requirements",
+        "bazel_target": "//codex-rs/app-server:app-server-all-test",
+        "windows_cfg_scope": "NO_NEW_CFG_ASSUMPTION; ORIGINAL_TARGET_AND_FIXED_SOURCE_APPLY",
+        "disposition": "NOT_SELECTED_BY_THIS_THREE_TARGET_ORIGINAL_JOB",
+        "new_pass_from_this_job": false
+      },
+      {
+        "blocker_id": "B20",
+        "binary": "codex-app-server::all",
+        "test": "suite::v2::remote_control::models_http_request_is_not_a_websocket_upgrade",
+        "bazel_target": "//codex-rs/app-server:app-server-all-test",
+        "windows_cfg_scope": "NO_NEW_CFG_ASSUMPTION; ORIGINAL_TARGET_AND_FIXED_SOURCE_APPLY",
+        "disposition": "NOT_SELECTED_BY_THIS_THREE_TARGET_ORIGINAL_JOB",
+        "new_pass_from_this_job": false
+      },
+      {
+        "blocker_id": "B20",
+        "binary": "codex-app-server::all",
+        "test": "suite::v2::remote_control::listen_off_exits_without_persisted_remote_control_enable",
+        "bazel_target": "//codex-rs/app-server:app-server-all-test",
+        "windows_cfg_scope": "NO_NEW_CFG_ASSUMPTION; ORIGINAL_TARGET_AND_FIXED_SOURCE_APPLY",
+        "disposition": "NOT_SELECTED_BY_THIS_THREE_TARGET_ORIGINAL_JOB",
+        "new_pass_from_this_job": false
+      },
+      {
+        "blocker_id": "B20",
+        "binary": "codex-app-server::all",
+        "test": "suite::v2::remote_control::managed_requirements_allow_remote_control_true_does_not_enable_or_block_it",
+        "bazel_target": "//codex-rs/app-server:app-server-all-test",
+        "windows_cfg_scope": "NO_NEW_CFG_ASSUMPTION; ORIGINAL_TARGET_AND_FIXED_SOURCE_APPLY",
+        "disposition": "NOT_SELECTED_BY_THIS_THREE_TARGET_ORIGINAL_JOB",
+        "new_pass_from_this_job": false
+      },
+      {
+        "blocker_id": "B20",
+        "binary": "codex-app-server::all",
+        "test": "suite::v2::remote_control::managed_requirements_reject_all_remote_control_rpcs",
+        "bazel_target": "//codex-rs/app-server:app-server-all-test",
+        "windows_cfg_scope": "NO_NEW_CFG_ASSUMPTION; ORIGINAL_TARGET_AND_FIXED_SOURCE_APPLY",
+        "disposition": "NOT_SELECTED_BY_THIS_THREE_TARGET_ORIGINAL_JOB",
+        "new_pass_from_this_job": false
+      },
+      {
+        "blocker_id": "B20",
+        "binary": "codex-app-server::all",
+        "test": "suite::v2::remote_control::pairing_start_works_after_ephemeral_enable",
+        "bazel_target": "//codex-rs/app-server:app-server-all-test",
+        "windows_cfg_scope": "NO_NEW_CFG_ASSUMPTION; ORIGINAL_TARGET_AND_FIXED_SOURCE_APPLY",
+        "disposition": "NOT_SELECTED_BY_THIS_THREE_TARGET_ORIGINAL_JOB",
+        "new_pass_from_this_job": false
+      },
+      {
+        "blocker_id": "B20",
+        "binary": "codex-app-server::all",
+        "test": "suite::v2::remote_control::remote_control_client_management_works_while_disabled",
+        "bazel_target": "//codex-rs/app-server:app-server-all-test",
+        "windows_cfg_scope": "NO_NEW_CFG_ASSUMPTION; ORIGINAL_TARGET_AND_FIXED_SOURCE_APPLY",
+        "disposition": "NOT_SELECTED_BY_THIS_THREE_TARGET_ORIGINAL_JOB",
+        "new_pass_from_this_job": false
+      },
+      {
+        "blocker_id": "B20",
+        "binary": "codex-app-server::all",
+        "test": "suite::v2::remote_control::remote_control_disable_returns_disabled_status",
+        "bazel_target": "//codex-rs/app-server:app-server-all-test",
+        "windows_cfg_scope": "NO_NEW_CFG_ASSUMPTION; ORIGINAL_TARGET_AND_FIXED_SOURCE_APPLY",
+        "disposition": "NOT_SELECTED_BY_THIS_THREE_TARGET_ORIGINAL_JOB",
+        "new_pass_from_this_job": false
+      },
+      {
+        "blocker_id": "B20",
+        "binary": "codex-app-server::all",
+        "test": "suite::v2::remote_control::remote_control_enable_returns_connecting_status",
+        "bazel_target": "//codex-rs/app-server:app-server-all-test",
+        "windows_cfg_scope": "NO_NEW_CFG_ASSUMPTION; ORIGINAL_TARGET_AND_FIXED_SOURCE_APPLY",
+        "disposition": "NOT_SELECTED_BY_THIS_THREE_TARGET_ORIGINAL_JOB",
+        "new_pass_from_this_job": false
+      },
+      {
+        "blocker_id": "B20",
+        "binary": "codex-app-server::all",
+        "test": "suite::v2::remote_control::remote_control_status_read_returns_disabled_status",
+        "bazel_target": "//codex-rs/app-server:app-server-all-test",
+        "windows_cfg_scope": "NO_NEW_CFG_ASSUMPTION; ORIGINAL_TARGET_AND_FIXED_SOURCE_APPLY",
+        "disposition": "NOT_SELECTED_BY_THIS_THREE_TARGET_ORIGINAL_JOB",
+        "new_pass_from_this_job": false
+      },
+      {
+        "blocker_id": "B20",
+        "binary": "codex-app-server::all",
+        "test": "suite::v2::remote_control::remote_control_status_read_returns_connecting_status_after_enable",
+        "bazel_target": "//codex-rs/app-server:app-server-all-test",
+        "windows_cfg_scope": "NO_NEW_CFG_ASSUMPTION; ORIGINAL_TARGET_AND_FIXED_SOURCE_APPLY",
+        "disposition": "NOT_SELECTED_BY_THIS_THREE_TARGET_ORIGINAL_JOB",
+        "new_pass_from_this_job": false
+      },
+      {
+        "blocker_id": "B20",
+        "binary": "codex-app-server::all",
+        "test": "suite::v2::remote_control::remote_control_pairing_start_returns_pairing_artifacts",
+        "bazel_target": "//codex-rs/app-server:app-server-all-test",
+        "windows_cfg_scope": "NO_NEW_CFG_ASSUMPTION; ORIGINAL_TARGET_AND_FIXED_SOURCE_APPLY",
+        "disposition": "NOT_SELECTED_BY_THIS_THREE_TARGET_ORIGINAL_JOB",
+        "new_pass_from_this_job": false
+      },
+      {
+        "blocker_id": "B20",
+        "binary": "codex-app-server::all",
+        "test": "suite::v2::remote_control::rpc_updates_durable_preference_but_ephemeral_does_not",
+        "bazel_target": "//codex-rs/app-server:app-server-all-test",
+        "windows_cfg_scope": "NO_NEW_CFG_ASSUMPTION; ORIGINAL_TARGET_AND_FIXED_SOURCE_APPLY",
+        "disposition": "NOT_SELECTED_BY_THIS_THREE_TARGET_ORIGINAL_JOB",
+        "new_pass_from_this_job": false
+      },
+      {
+        "blocker_id": "B20",
+        "binary": "codex-app-server::all",
+        "test": "suite::v2::remote_control::stdio_eof_exits_with_remote_control_connection",
+        "bazel_target": "//codex-rs/app-server:app-server-all-test",
+        "windows_cfg_scope": "NO_NEW_CFG_ASSUMPTION; ORIGINAL_TARGET_AND_FIXED_SOURCE_APPLY",
+        "disposition": "NOT_SELECTED_BY_THIS_THREE_TARGET_ORIGINAL_JOB",
+        "new_pass_from_this_job": false
+      },
+      {
+        "blocker_id": "B21",
+        "binary": "codex-utils-pty",
+        "test": "process_group::tests::denied_group_signal_rejects_unsafe_process_group_ids",
+        "bazel_target": "//codex-rs/utils/pty:pty-unit-tests",
+        "windows_cfg_scope": "THIS_MAP_TRACKS_ORIGINAL_INTEL_CASE_SET_NOT_WINDOWS_EQUIVALENCE",
+        "disposition": "NOT_SELECTED_BY_THIS_THREE_TARGET_ORIGINAL_JOB",
+        "new_pass_from_this_job": false
+      },
+      {
+        "blocker_id": "B21",
+        "binary": "codex-utils-pty",
+        "test": "tests::driver_backed_process_can_expose_split_stdout_and_stderr",
+        "bazel_target": "//codex-rs/utils/pty:pty-unit-tests",
+        "windows_cfg_scope": "THIS_MAP_TRACKS_ORIGINAL_INTEL_CASE_SET_NOT_WINDOWS_EQUIVALENCE",
+        "disposition": "NOT_SELECTED_BY_THIS_THREE_TARGET_ORIGINAL_JOB",
+        "new_pass_from_this_job": false
+      },
+      {
+        "blocker_id": "B21",
+        "binary": "codex-utils-pty",
+        "test": "tests::driver_backed_process_can_resize_via_resizer_hook",
+        "bazel_target": "//codex-rs/utils/pty:pty-unit-tests",
+        "windows_cfg_scope": "THIS_MAP_TRACKS_ORIGINAL_INTEL_CASE_SET_NOT_WINDOWS_EQUIVALENCE",
+        "disposition": "NOT_SELECTED_BY_THIS_THREE_TARGET_ORIGINAL_JOB",
+        "new_pass_from_this_job": false
+      },
+      {
+        "blocker_id": "B21",
+        "binary": "codex-utils-pty",
+        "test": "tests::driver_backed_process_drains_output_that_arrives_after_exit_signal",
+        "bazel_target": "//codex-rs/utils/pty:pty-unit-tests",
+        "windows_cfg_scope": "THIS_MAP_TRACKS_ORIGINAL_INTEL_CASE_SET_NOT_WINDOWS_EQUIVALENCE",
+        "disposition": "NOT_SELECTED_BY_THIS_THREE_TARGET_ORIGINAL_JOB",
+        "new_pass_from_this_job": false
+      },
+      {
+        "blocker_id": "B21",
+        "binary": "codex-utils-pty",
+        "test": "process_group::tests::denied_group_signal_terminates_owned_descendants_and_preserves_escalation",
+        "bazel_target": "//codex-rs/utils/pty:pty-unit-tests",
+        "windows_cfg_scope": "THIS_MAP_TRACKS_ORIGINAL_INTEL_CASE_SET_NOT_WINDOWS_EQUIVALENCE",
+        "disposition": "NOT_SELECTED_BY_THIS_THREE_TARGET_ORIGINAL_JOB",
+        "new_pass_from_this_job": false
+      },
+      {
+        "blocker_id": "B21",
+        "binary": "codex-utils-pty",
+        "test": "tests::pipe_process_can_expose_split_stdout_and_stderr",
+        "bazel_target": "//codex-rs/utils/pty:pty-unit-tests",
+        "windows_cfg_scope": "THIS_MAP_TRACKS_ORIGINAL_INTEL_CASE_SET_NOT_WINDOWS_EQUIVALENCE",
+        "disposition": "NOT_SELECTED_BY_THIS_THREE_TARGET_ORIGINAL_JOB",
+        "new_pass_from_this_job": false
+      },
+      {
+        "blocker_id": "B21",
+        "binary": "codex-utils-pty",
+        "test": "tests::pipe_drop_reaps_child",
+        "bazel_target": "//codex-rs/utils/pty:pty-unit-tests",
+        "windows_cfg_scope": "THIS_MAP_TRACKS_ORIGINAL_INTEL_CASE_SET_NOT_WINDOWS_EQUIVALENCE",
+        "disposition": "NOT_SELECTED_BY_THIS_THREE_TARGET_ORIGINAL_JOB",
+        "new_pass_from_this_job": false
+      },
+      {
+        "blocker_id": "B21",
+        "binary": "codex-utils-pty",
+        "test": "tests::pipe_and_pty_share_interface",
+        "bazel_target": "//codex-rs/utils/pty:pty-unit-tests",
+        "windows_cfg_scope": "THIS_MAP_TRACKS_ORIGINAL_INTEL_CASE_SET_NOT_WINDOWS_EQUIVALENCE",
+        "disposition": "NOT_SELECTED_BY_THIS_THREE_TARGET_ORIGINAL_JOB",
+        "new_pass_from_this_job": false
+      },
+      {
+        "blocker_id": "B21",
+        "binary": "codex-utils-pty",
+        "test": "tests::pipe_spawn_no_stdin_can_preserve_inherited_fds",
+        "bazel_target": "//codex-rs/utils/pty:pty-unit-tests",
+        "windows_cfg_scope": "THIS_MAP_TRACKS_ORIGINAL_INTEL_CASE_SET_NOT_WINDOWS_EQUIVALENCE",
+        "disposition": "NOT_SELECTED_BY_THIS_THREE_TARGET_ORIGINAL_JOB",
+        "new_pass_from_this_job": false
+      },
+      {
+        "blocker_id": "B21",
+        "binary": "codex-utils-pty",
+        "test": "tests::pipe_terminate_aborts_detached_readers",
+        "bazel_target": "//codex-rs/utils/pty:pty-unit-tests",
+        "windows_cfg_scope": "THIS_MAP_TRACKS_ORIGINAL_INTEL_CASE_SET_NOT_WINDOWS_EQUIVALENCE",
+        "disposition": "NOT_SELECTED_BY_THIS_THREE_TARGET_ORIGINAL_JOB",
+        "new_pass_from_this_job": false
+      },
+      {
+        "blocker_id": "B21",
+        "binary": "codex-utils-pty",
+        "test": "tests::pipe_terminate_reaps_child",
+        "bazel_target": "//codex-rs/utils/pty:pty-unit-tests",
+        "windows_cfg_scope": "THIS_MAP_TRACKS_ORIGINAL_INTEL_CASE_SET_NOT_WINDOWS_EQUIVALENCE",
+        "disposition": "NOT_SELECTED_BY_THIS_THREE_TARGET_ORIGINAL_JOB",
+        "new_pass_from_this_job": false
+      },
+      {
+        "blocker_id": "B21",
+        "binary": "codex-utils-pty",
+        "test": "tests::pipe_process_detaches_from_parent_session",
+        "bazel_target": "//codex-rs/utils/pty:pty-unit-tests",
+        "windows_cfg_scope": "THIS_MAP_TRACKS_ORIGINAL_INTEL_CASE_SET_NOT_WINDOWS_EQUIVALENCE",
+        "disposition": "NOT_SELECTED_BY_THIS_THREE_TARGET_ORIGINAL_JOB",
+        "new_pass_from_this_job": false
+      },
+      {
+        "blocker_id": "B21",
+        "binary": "codex-utils-pty",
+        "test": "tests::pipe_drains_stderr_without_stdout_activity",
+        "bazel_target": "//codex-rs/utils/pty:pty-unit-tests",
+        "windows_cfg_scope": "THIS_MAP_TRACKS_ORIGINAL_INTEL_CASE_SET_NOT_WINDOWS_EQUIVALENCE",
+        "disposition": "NOT_SELECTED_BY_THIS_THREE_TARGET_ORIGINAL_JOB",
+        "new_pass_from_this_job": false
+      },
+      {
+        "blocker_id": "B21",
+        "binary": "codex-utils-pty",
+        "test": "tests::pipe_process_round_trips_stdin",
+        "bazel_target": "//codex-rs/utils/pty:pty-unit-tests",
+        "windows_cfg_scope": "THIS_MAP_TRACKS_ORIGINAL_INTEL_CASE_SET_NOT_WINDOWS_EQUIVALENCE",
+        "disposition": "NOT_SELECTED_BY_THIS_THREE_TARGET_ORIGINAL_JOB",
+        "new_pass_from_this_job": false
+      },
+      {
+        "blocker_id": "B21",
+        "binary": "codex-utils-pty",
+        "test": "tests::pty_preserving_fds_drop_allows_runtime_shutdown_with_detached_child",
+        "bazel_target": "//codex-rs/utils/pty:pty-unit-tests",
+        "windows_cfg_scope": "THIS_MAP_TRACKS_ORIGINAL_INTEL_CASE_SET_NOT_WINDOWS_EQUIVALENCE",
+        "disposition": "NOT_SELECTED_BY_THIS_THREE_TARGET_ORIGINAL_JOB",
+        "new_pass_from_this_job": false
+      },
+      {
+        "blocker_id": "B21",
+        "binary": "codex-utils-pty",
+        "test": "tests::pty_drop_allows_runtime_shutdown_with_detached_child",
+        "bazel_target": "//codex-rs/utils/pty:pty-unit-tests",
+        "windows_cfg_scope": "THIS_MAP_TRACKS_ORIGINAL_INTEL_CASE_SET_NOT_WINDOWS_EQUIVALENCE",
+        "disposition": "NOT_SELECTED_BY_THIS_THREE_TARGET_ORIGINAL_JOB",
+        "new_pass_from_this_job": false
+      },
+      {
+        "blocker_id": "B21",
+        "binary": "codex-utils-pty",
+        "test": "tests::pty_preserving_fds_terminate_allows_runtime_shutdown_with_detached_child",
+        "bazel_target": "//codex-rs/utils/pty:pty-unit-tests",
+        "windows_cfg_scope": "THIS_MAP_TRACKS_ORIGINAL_INTEL_CASE_SET_NOT_WINDOWS_EQUIVALENCE",
+        "disposition": "NOT_SELECTED_BY_THIS_THREE_TARGET_ORIGINAL_JOB",
+        "new_pass_from_this_job": false
+      },
+      {
+        "blocker_id": "B21",
+        "binary": "codex-utils-pty",
+        "test": "tests::pty_dropped_output_receiver_keeps_draining_child",
+        "bazel_target": "//codex-rs/utils/pty:pty-unit-tests",
+        "windows_cfg_scope": "THIS_MAP_TRACKS_ORIGINAL_INTEL_CASE_SET_NOT_WINDOWS_EQUIVALENCE",
+        "disposition": "NOT_SELECTED_BY_THIS_THREE_TARGET_ORIGINAL_JOB",
+        "new_pass_from_this_job": false
+      },
+      {
+        "blocker_id": "B21",
+        "binary": "codex-utils-pty",
+        "test": "tests::pty_python_repl_emits_output_and_exits",
+        "bazel_target": "//codex-rs/utils/pty:pty-unit-tests",
+        "windows_cfg_scope": "THIS_MAP_TRACKS_ORIGINAL_INTEL_CASE_SET_NOT_WINDOWS_EQUIVALENCE",
+        "disposition": "NOT_SELECTED_BY_THIS_THREE_TARGET_ORIGINAL_JOB",
+        "new_pass_from_this_job": false
+      },
+      {
+        "blocker_id": "B21",
+        "binary": "codex-utils-pty",
+        "test": "tests::pty_spawn_can_preserve_inherited_fds",
+        "bazel_target": "//codex-rs/utils/pty:pty-unit-tests",
+        "windows_cfg_scope": "THIS_MAP_TRACKS_ORIGINAL_INTEL_CASE_SET_NOT_WINDOWS_EQUIVALENCE",
+        "disposition": "NOT_SELECTED_BY_THIS_THREE_TARGET_ORIGINAL_JOB",
+        "new_pass_from_this_job": false
+      },
+      {
+        "blocker_id": "B21",
+        "binary": "codex-utils-pty",
+        "test": "tests::pty_spawn_with_inherited_fds_reports_exec_failures",
+        "bazel_target": "//codex-rs/utils/pty:pty-unit-tests",
+        "windows_cfg_scope": "THIS_MAP_TRACKS_ORIGINAL_INTEL_CASE_SET_NOT_WINDOWS_EQUIVALENCE",
+        "disposition": "NOT_SELECTED_BY_THIS_THREE_TARGET_ORIGINAL_JOB",
+        "new_pass_from_this_job": false
+      },
+      {
+        "blocker_id": "B21",
+        "binary": "codex-utils-pty",
+        "test": "tests::pty_spawn_with_inherited_fds_supports_resize",
+        "bazel_target": "//codex-rs/utils/pty:pty-unit-tests",
+        "windows_cfg_scope": "THIS_MAP_TRACKS_ORIGINAL_INTEL_CASE_SET_NOT_WINDOWS_EQUIVALENCE",
+        "disposition": "NOT_SELECTED_BY_THIS_THREE_TARGET_ORIGINAL_JOB",
+        "new_pass_from_this_job": false
+      },
+      {
+        "blocker_id": "B21",
+        "binary": "codex-utils-pty",
+        "test": "tests::pty_spawn_without_io_driver_returns_error",
+        "bazel_target": "//codex-rs/utils/pty:pty-unit-tests",
+        "windows_cfg_scope": "THIS_MAP_TRACKS_ORIGINAL_INTEL_CASE_SET_NOT_WINDOWS_EQUIVALENCE",
+        "disposition": "NOT_SELECTED_BY_THIS_THREE_TARGET_ORIGINAL_JOB",
+        "new_pass_from_this_job": false
+      },
+      {
+        "blocker_id": "B21",
+        "binary": "codex-utils-pty",
+        "test": "tests::pty_preserving_inherited_fds_keeps_python_repl_running",
+        "bazel_target": "//codex-rs/utils/pty:pty-unit-tests",
+        "windows_cfg_scope": "THIS_MAP_TRACKS_ORIGINAL_INTEL_CASE_SET_NOT_WINDOWS_EQUIVALENCE",
+        "disposition": "NOT_SELECTED_BY_THIS_THREE_TARGET_ORIGINAL_JOB",
+        "new_pass_from_this_job": false
+      },
+      {
+        "blocker_id": "B21",
+        "binary": "codex-utils-pty",
+        "test": "tests::pty_terminate_allows_runtime_shutdown_with_detached_child",
+        "bazel_target": "//codex-rs/utils/pty:pty-unit-tests",
+        "windows_cfg_scope": "THIS_MAP_TRACKS_ORIGINAL_INTEL_CASE_SET_NOT_WINDOWS_EQUIVALENCE",
+        "disposition": "NOT_SELECTED_BY_THIS_THREE_TARGET_ORIGINAL_JOB",
+        "new_pass_from_this_job": false
+      },
+      {
+        "blocker_id": "B21",
+        "binary": "codex-utils-pty",
+        "test": "tests::pty_terminate_kills_background_children_in_same_process_group",
+        "bazel_target": "//codex-rs/utils/pty:pty-unit-tests",
+        "windows_cfg_scope": "THIS_MAP_TRACKS_ORIGINAL_INTEL_CASE_SET_NOT_WINDOWS_EQUIVALENCE",
+        "disposition": "NOT_SELECTED_BY_THIS_THREE_TARGET_ORIGINAL_JOB",
+        "new_pass_from_this_job": false
+      },
+      {
+        "blocker_id": "B21",
+        "binary": "codex-utils-pty",
+        "test": "tests::pty_terminate_reaps_child_when_waiter_is_queued",
+        "bazel_target": "//codex-rs/utils/pty:pty-unit-tests",
+        "windows_cfg_scope": "THIS_MAP_TRACKS_ORIGINAL_INTEL_CASE_SET_NOT_WINDOWS_EQUIVALENCE",
+        "disposition": "NOT_SELECTED_BY_THIS_THREE_TARGET_ORIGINAL_JOB",
+        "new_pass_from_this_job": false
+      },
+      {
+        "blocker_id": "B21",
+        "binary": "codex-utils-pty",
+        "test": "tests::pty_close_stdin_preserves_large_input_and_delivers_eof",
+        "bazel_target": "//codex-rs/utils/pty:pty-unit-tests",
+        "windows_cfg_scope": "THIS_MAP_TRACKS_ORIGINAL_INTEL_CASE_SET_NOT_WINDOWS_EQUIVALENCE",
+        "disposition": "NOT_SELECTED_BY_THIS_THREE_TARGET_ORIGINAL_JOB",
+        "new_pass_from_this_job": false
+      },
+      {
+        "blocker_id": "B21",
+        "binary": "codex-utils-pty",
+        "test": "tests::pty_python_repl_readiness_waits_for_execution_after_input_echo",
+        "bazel_target": "//codex-rs/utils/pty:pty-unit-tests",
+        "windows_cfg_scope": "THIS_MAP_TRACKS_ORIGINAL_INTEL_CASE_SET_NOT_WINDOWS_EQUIVALENCE",
+        "disposition": "NOT_SELECTED_BY_THIS_THREE_TARGET_ORIGINAL_JOB",
+        "new_pass_from_this_job": false
+      },
+      {
+        "blocker_id": "B21",
+        "binary": "codex-utils-pty",
+        "test": "tests::pty_terminate_allows_runtime_shutdown_with_full_output_channel",
+        "bazel_target": "//codex-rs/utils/pty:pty-unit-tests",
+        "windows_cfg_scope": "THIS_MAP_TRACKS_ORIGINAL_INTEL_CASE_SET_NOT_WINDOWS_EQUIVALENCE",
+        "disposition": "NOT_SELECTED_BY_THIS_THREE_TARGET_ORIGINAL_JOB",
+        "new_pass_from_this_job": false
+      },
+      {
+        "blocker_id": "B21",
+        "binary": "codex-utils-pty",
+        "test": "tests::output_collector_waits_for_exit_after_output_closes",
+        "bazel_target": "//codex-rs/utils/pty:pty-unit-tests",
+        "windows_cfg_scope": "THIS_MAP_TRACKS_ORIGINAL_INTEL_CASE_SET_NOT_WINDOWS_EQUIVALENCE",
+        "disposition": "NOT_SELECTED_BY_THIS_THREE_TARGET_ORIGINAL_JOB",
+        "new_pass_from_this_job": false
+      },
+      {
+        "blocker_id": "B22",
+        "binary": "codex-tui",
+        "test": "tests::embedded_state_db_corruption_preserves_failed_database_for_cli_recovery",
+        "bazel_target": "//codex-rs/tui:tui-unit-tests",
+        "windows_cfg_scope": "NO_NEW_CFG_ASSUMPTION; ORIGINAL_TARGET_AND_FIXED_SOURCE_APPLY",
+        "disposition": "NOT_SELECTED_BY_THIS_THREE_TARGET_ORIGINAL_JOB",
+        "new_pass_from_this_job": false
+      },
+      {
+        "blocker_id": "B22",
+        "binary": "codex-tui",
+        "test": "app::tests::background_exit_tests::daemon_ctrl_c_during_mcp_startup_does_not_show_background_exit_menu",
+        "bazel_target": "//codex-rs/tui:tui-unit-tests",
+        "windows_cfg_scope": "NO_NEW_CFG_ASSUMPTION; ORIGINAL_TARGET_AND_FIXED_SOURCE_APPLY",
+        "disposition": "NOT_SELECTED_BY_THIS_THREE_TARGET_ORIGINAL_JOB",
+        "new_pass_from_this_job": false
+      },
+      {
+        "blocker_id": "B22",
+        "binary": "codex-tui",
+        "test": "app::tests::background_exit_tests::cancel_task_interrupts_without_exiting",
+        "bazel_target": "//codex-rs/tui:tui-unit-tests",
+        "windows_cfg_scope": "NO_NEW_CFG_ASSUMPTION; ORIGINAL_TARGET_AND_FIXED_SOURCE_APPLY",
+        "disposition": "NOT_SELECTED_BY_THIS_THREE_TARGET_ORIGINAL_JOB",
+        "new_pass_from_this_job": false
+      },
+      {
+        "blocker_id": "B22",
+        "binary": "codex-tui",
+        "test": "app::tests::background_exit_tests::daemon_ctrl_c_during_paste_burst_does_not_show_exit_menu",
+        "bazel_target": "//codex-rs/tui:tui-unit-tests",
+        "windows_cfg_scope": "NO_NEW_CFG_ASSUMPTION; ORIGINAL_TARGET_AND_FIXED_SOURCE_APPLY",
+        "disposition": "NOT_SELECTED_BY_THIS_THREE_TARGET_ORIGINAL_JOB",
+        "new_pass_from_this_job": false
+      },
+      {
+        "blocker_id": "B22",
+        "binary": "codex-tui",
+        "test": "app::tests::background_exit_tests::daemon_ctrl_c_hides_background_exit_for_running_background_side_thread",
+        "bazel_target": "//codex-rs/tui:tui-unit-tests",
+        "windows_cfg_scope": "NO_NEW_CFG_ASSUMPTION; ORIGINAL_TARGET_AND_FIXED_SOURCE_APPLY",
+        "disposition": "NOT_SELECTED_BY_THIS_THREE_TARGET_ORIGINAL_JOB",
+        "new_pass_from_this_job": false
+      },
+      {
+        "blocker_id": "B22",
+        "binary": "codex-tui",
+        "test": "app::tests::background_exit_tests::daemon_ctrl_c_shows_background_exit_menu_and_escape_dismisses_it",
+        "bazel_target": "//codex-rs/tui:tui-unit-tests",
+        "windows_cfg_scope": "NO_NEW_CFG_ASSUMPTION; ORIGINAL_TARGET_AND_FIXED_SOURCE_APPLY",
+        "disposition": "NOT_SELECTED_BY_THIS_THREE_TARGET_ORIGINAL_JOB",
+        "new_pass_from_this_job": false
+      },
+      {
+        "blocker_id": "B22",
+        "binary": "codex-tui",
+        "test": "app::tests::background_exit_tests::daemon_ctrl_c_hides_background_exit_with_queued_follow_up",
+        "bazel_target": "//codex-rs/tui:tui-unit-tests",
+        "windows_cfg_scope": "NO_NEW_CFG_ASSUMPTION; ORIGINAL_TARGET_AND_FIXED_SOURCE_APPLY",
+        "disposition": "NOT_SELECTED_BY_THIS_THREE_TARGET_ORIGINAL_JOB",
+        "new_pass_from_this_job": false
+      },
+      {
+        "blocker_id": "B22",
+        "binary": "codex-tui",
+        "test": "app::tests::background_exit_tests::daemon_ctrl_c_with_draft_preserves_composer_cancellation",
+        "bazel_target": "//codex-rs/tui:tui-unit-tests",
+        "windows_cfg_scope": "NO_NEW_CFG_ASSUMPTION; ORIGINAL_TARGET_AND_FIXED_SOURCE_APPLY",
+        "disposition": "NOT_SELECTED_BY_THIS_THREE_TARGET_ORIGINAL_JOB",
+        "new_pass_from_this_job": false
+      },
+      {
+        "blocker_id": "B22",
+        "binary": "codex-tui",
+        "test": "app::tests::background_exit_tests::non_daemon_ctrl_c_keeps_interrupt_behavior",
+        "bazel_target": "//codex-rs/tui:tui-unit-tests",
+        "windows_cfg_scope": "NO_NEW_CFG_ASSUMPTION; ORIGINAL_TARGET_AND_FIXED_SOURCE_APPLY",
+        "disposition": "NOT_SELECTED_BY_THIS_THREE_TARGET_ORIGINAL_JOB",
+        "new_pass_from_this_job": false
+      },
+      {
+        "blocker_id": "B22",
+        "binary": "codex-tui",
+        "test": "app::tests::background_exit_tests::run_in_background_detaches_without_interrupting_main_or_side_threads",
+        "bazel_target": "//codex-rs/tui:tui-unit-tests",
+        "windows_cfg_scope": "NO_NEW_CFG_ASSUMPTION; ORIGINAL_TARGET_AND_FIXED_SOURCE_APPLY",
+        "disposition": "NOT_SELECTED_BY_THIS_THREE_TARGET_ORIGINAL_JOB",
+        "new_pass_from_this_job": false
+      },
+      {
+        "blocker_id": "B22",
+        "binary": "codex-tui",
+        "test": "app::tests::background_exit_tests::background_exit_shell_readiness_rejects_failed_start",
+        "bazel_target": "//codex-rs/tui:tui-unit-tests",
+        "windows_cfg_scope": "NO_NEW_CFG_ASSUMPTION; ORIGINAL_TARGET_AND_FIXED_SOURCE_APPLY",
+        "disposition": "NOT_SELECTED_BY_THIS_THREE_TARGET_ORIGINAL_JOB",
+        "new_pass_from_this_job": false
+      },
+      {
+        "blocker_id": "B22",
+        "binary": "codex-tui",
+        "test": "app::tests::background_exit_tests::daemon_ctrl_c_closes_running_side_thread_and_returns_to_parent",
+        "bazel_target": "//codex-rs/tui:tui-unit-tests",
+        "windows_cfg_scope": "NO_NEW_CFG_ASSUMPTION; ORIGINAL_TARGET_AND_FIXED_SOURCE_APPLY",
+        "disposition": "NOT_SELECTED_BY_THIS_THREE_TARGET_ORIGINAL_JOB",
+        "new_pass_from_this_job": false
+      },
+      {
+        "blocker_id": "B22",
+        "binary": "codex-tui",
+        "test": "app::tests::background_exit_tests::exit_interrupts_before_requesting_shutdown",
+        "bazel_target": "//codex-rs/tui:tui-unit-tests",
+        "windows_cfg_scope": "NO_NEW_CFG_ASSUMPTION; ORIGINAL_TARGET_AND_FIXED_SOURCE_APPLY",
+        "disposition": "NOT_SELECTED_BY_THIS_THREE_TARGET_ORIGINAL_JOB",
+        "new_pass_from_this_job": false
+      },
+      {
+        "blocker_id": "B23",
+        "binary": "codex-app-server",
+        "test": "drain_handle_tests::repeated_drain_requests_preserve_the_real_completion_acknowledgement",
+        "bazel_target": "//codex-rs/app-server:app-server-unit-tests",
+        "windows_cfg_scope": "NO_NEW_CFG_ASSUMPTION; ORIGINAL_TARGET_AND_FIXED_SOURCE_APPLY",
+        "disposition": "NOT_SELECTED_BY_THIS_THREE_TARGET_ORIGINAL_JOB",
+        "new_pass_from_this_job": false
+      },
+      {
+        "blocker_id": "B23",
+        "binary": "codex-app-server",
+        "test": "drain_handle_tests::requesting_drain_does_not_acknowledge_outstanding_turns",
+        "bazel_target": "//codex-rs/app-server:app-server-unit-tests",
+        "windows_cfg_scope": "NO_NEW_CFG_ASSUMPTION; ORIGINAL_TARGET_AND_FIXED_SOURCE_APPLY",
+        "disposition": "NOT_SELECTED_BY_THIS_THREE_TARGET_ORIGINAL_JOB",
+        "new_pass_from_this_job": false
+      },
+      {
+        "blocker_id": "B23",
+        "binary": "codex-app-server",
+        "test": "shutdown_signals::tests::first_sigint_survives_cancelled_receive",
+        "bazel_target": "//codex-rs/app-server:app-server-unit-tests",
+        "windows_cfg_scope": "NOT_COMPILED_UNIX_SIGNAL_PARENT; DO_NOT_COUNT_AS_WINDOWS_PASS",
+        "disposition": "NOT_SELECTED_BY_THIS_THREE_TARGET_ORIGINAL_JOB",
+        "new_pass_from_this_job": false
+      },
+      {
+        "blocker_id": "B23",
+        "binary": "codex-app-server",
+        "test": "shutdown_signals::tests::first_sighup_survives_cancelled_receive",
+        "bazel_target": "//codex-rs/app-server:app-server-unit-tests",
+        "windows_cfg_scope": "NOT_COMPILED_UNIX_SIGNAL_PARENT; DO_NOT_COUNT_AS_WINDOWS_PASS",
+        "disposition": "NOT_SELECTED_BY_THIS_THREE_TARGET_ORIGINAL_JOB",
+        "new_pass_from_this_job": false
+      },
+      {
+        "blocker_id": "B23",
+        "binary": "codex-app-server",
+        "test": "shutdown_signals::tests::first_sigterm_survives_cancelled_receive",
+        "bazel_target": "//codex-rs/app-server:app-server-unit-tests",
+        "windows_cfg_scope": "NOT_COMPILED_UNIX_SIGNAL_PARENT; DO_NOT_COUNT_AS_WINDOWS_PASS",
+        "disposition": "NOT_SELECTED_BY_THIS_THREE_TARGET_ORIGINAL_JOB",
+        "new_pass_from_this_job": false
+      }
+    ]
+  },
+  "scope": [
+    "This is a new source-head result, distinct from the earlier merge9063 job; no historical result was borrowed.",
+    "The 118 library fixture cases do not prove independent operator/Root/Bao/Chain/HIA acceptance or unpublished B16 custody/Current/FinalUse source.",
+    "No original 142 named exit case is present in these three targets; no original blocker status or exit condition changes.",
+    "XML holds three Bazel wrapper nodes, not 118 individual test nodes; exact cases come from complete original libtest logs.",
+    "Read-only API/log/ZIP parsing and hashing; no CI mutation, native/Cargo/product execution or retry."
+  ]
+}

@@ -1,0 +1,88 @@
+#!/usr/bin/env python3
+"""Read frozen files and compare identities; never import or execute a launcher."""
+import ast
+import base64
+import gzip
+import hashlib
+import json
+from pathlib import Path
+
+WORK = Path('/workspace/scratch/07dd58cc9630')
+HERE = Path(__file__).resolve().parent
+POOL = WORK / 'architecture-audit/b16-pool-launcher-template-20261105'
+DRIVER = WORK / 'architecture-audit/b16-driver-launcher-template-20261105'
+V7 = WORK / 'architecture-audit/b16-guarded-native-runner-20261105/original-ignored-catalog-v7/v7-candidate'
+
+
+def identity(raw):
+    return {'bytes': len(raw), 'sha256': hashlib.sha256(raw).hexdigest(),
+            'blob': hashlib.sha1(f'blob {len(raw)}\0'.encode() + raw).hexdigest()}
+
+
+def file_id(path):
+    return {'path': str(path), **identity(path.read_bytes())}
+
+
+def definition(text, name):
+    node = next(n for n in ast.parse(text).body if isinstance(n, ast.FunctionDef) and n.name == name)
+    return ''.join(text.splitlines(keepends=True)[node.lineno - 1:node.end_lineno])
+
+
+manifest = json.loads((POOL / 'manifest.json').read_bytes())
+checked = []
+for expected in manifest['files']:
+    actual = file_id(Path(expected['path']))
+    assert all(actual[k] == expected[k] for k in ('bytes', 'sha256', 'blob'))
+    checked.append(actual)
+old = (DRIVER / 'launch_driver_v7.py').read_text()
+new = (POOL / 'launch_pool_v7.py').read_text()
+names = ['need', 'identity', 'bytes_id', 'file_id', 'equal_content', 'save', 'save_json',
+         'verify_openssl_sdk', 'verify_libcap_sdk', 'verify_all_external']
+assert all(definition(old, name) == definition(new, name) for name in names)
+request = json.loads((POOL / 'launch-request-DISABLED.json').read_bytes())
+prior = json.loads((DRIVER / 'launch-request-DISABLED.json').read_bytes())
+assert request['install_bundle'] == prior['install_bundle']
+compressed = base64.b64decode(request['install_bundle']['base64'], validate=True)
+raw = gzip.decompress(compressed)
+assert identity(compressed) == request['install_bundle']['compressed_identity']
+assert identity(raw) == request['install_bundle']['uncompressed_identity']
+files = json.loads(raw)
+assert len(files) == len({row['path'] for row in files}) == 29
+for row in files:
+    body = row['text'].encode()
+    assert identity(body) == row['identity']
+    assert body == (V7 / row['path']).read_bytes()
+binding = request['binding']
+assert binding == json.loads((POOL / 'pool-binding-DISABLED.json').read_bytes())
+assert binding['execute'] is False and binding['approval_reference'] is None
+assert request['root_execution_guard'] is None and binding['authorized_epoch'] == 'pool'
+pending = ['initial_tree', 'locks', 'previous_epoch_receipt', 'previous_epoch_binding',
+           'previous_epoch_launch_terminal', 'baseline_metadata']
+assert all(binding[key] is None for key in pending)
+assert binding['previous_epoch_source_guards'] == {'before': None, 'after': None}
+assert binding['baseline_metadata_source_guards'] == {'before': None, 'after': None}
+assert binding['min_free_bytes'] == 8000000000
+epoch = json.loads((V7 / 'epoch-pool.json').read_bytes())
+negative = next(o for o in epoch['operations'] if o['kind'] == 'negative')
+positive = next(o for o in epoch['operations'] if o['kind'] == 'scopes')
+negative_names = [n for s in negative['scopes'] for n in s['exact_names']]
+positive_names = [n for s in positive['scopes'] for n in s['exact_names']]
+assert negative_names == positive_names and len(positive_names) == len(set(positive_names)) == 3
+assert negative['before'] == ['pool-patch'] and negative['restore'] == 'pool-restore'
+result = {'schema': 'pool-continuity-independent-static-comparisons-v1',
+          'checked_local_files': checked,
+          'ten_external_guard_function_bodies_byte_equal': names,
+          'unchanged_installer_files': len(files),
+          'installer_compressed_identity': identity(compressed),
+          'installer_uncompressed_identity': identity(raw),
+          'three_original_positive_and_negative_names': positive_names,
+          'one_frozen_negative_variant_and_one_restore': True,
+          'disabled_actual_driver_pins': pending,
+          'actual_source_schema_files_read': [file_id(V7 / n) for n in
+              ['b16_guard.py', 'b16_native.py', 'b16_runner.py', 'epoch-driver.json', 'epoch-pool.json']],
+          'launcher_imported_or_executed': False, 'project_or_native_commands_run': False,
+          'guard_test_suite_run': False, 'ref_or_shared_source_modified': False}
+(HERE / 'static-verification.json').write_text(json.dumps(result, ensure_ascii=False, indent=2) + '\n')
+print(json.dumps({'status': 'PASS_STATIC_COMPARISONS_ONLY', 'files': len(checked),
+                  'installer_files': len(files), 'old_functions': len(names),
+                  'report': file_id(HERE / 'static-verification.json')}))

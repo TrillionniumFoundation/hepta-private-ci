@@ -1,0 +1,66 @@
+{
+  "schema": "hepta-ci-pool-template-independent-static-review-v1",
+  "verdict": "STATIC_ACCEPT_DISABLED_TEMPLATE_ONLY",
+  "source_files": [
+    {
+      "path": "/workspace/scratch/07dd58cc9630/architecture-audit/b16-pool-launcher-template-20261105/launch_pool_v7.py",
+      "bytes": 27997,
+      "sha256": "a59a7551bfa5fae7f1eb0f8a221c70588cffaec2dfc659f4a357777cbfde8b14",
+      "git_blob": "057a2fc77788da13f46bdd32951eb3c8e0bae550"
+    },
+    {
+      "path": "/workspace/scratch/07dd58cc9630/architecture-audit/b16-pool-launcher-template-20261105/pool-binding-DISABLED.json",
+      "bytes": 20752,
+      "sha256": "e353c6408bdadf9ba4c631ce36b61d4fd33672dedf2127fbcec9bc54c948f566",
+      "git_blob": "fb4bfa837433f4077b4630a37e219bbf08fb04c3"
+    },
+    {
+      "path": "/workspace/scratch/07dd58cc9630/architecture-audit/b16-pool-launcher-template-20261105/launch-request-DISABLED.json",
+      "bytes": 936246,
+      "sha256": "555bf5eef440ce5fa0e5858bb2c2df66708ff5860818d912baf123f9a2de8149",
+      "git_blob": "09106951d40431d151d1f62f6efe69de23ade8d0"
+    },
+    {
+      "path": "/workspace/scratch/07dd58cc9630/architecture-audit/b16-pool-launcher-template-20261105/driver-v7-to-pool-v1.delta.patch",
+      "bytes": 17672,
+      "sha256": "abada2c74c43340991c5bb87f1f1a006dfe06c82558362d51e06bfbd3192ea5d",
+      "git_blob": "7792f2faff36922475413d0f085a30d3f2683296"
+    },
+    {
+      "path": "/workspace/scratch/07dd58cc9630/architecture-audit/b16-pool-launcher-template-20261105/pool-input-scope-oracle-review.json",
+      "bytes": 22562,
+      "sha256": "2704fb920b4ce226e2306b22327368759a8013dc62f970df3dfbcdbe0c8f2769",
+      "git_blob": "fe908ee872ae19c661ed93e3dd74bfae5a32129e"
+    }
+  ],
+  "unchanged_guard_functions": [
+    "need",
+    "identity",
+    "bytes_id",
+    "file_id",
+    "equal_content",
+    "save",
+    "save_json",
+    "verify_openssl_sdk",
+    "verify_libcap_sdk",
+    "verify_all_external"
+  ],
+  "unchanged_install_bundle_exact": true,
+  "frozen_runtime_files": 29,
+  "integrity_members": 25,
+  "actual_driver_values_all_null": true,
+  "continuity_review": [
+    "Driver source initial is matched to actual qualified foundation final, not incorrectly to final_A.",
+    "Driver entry source guard uses initial locks; driver final guard uses actual generated final locks. The two lock generations are not incorrectly required equal.",
+    "Pool initial tree/locks/metadata use actual driver final receipts and both original metadata guards.",
+    "Successful driver runner and outer launcher plus external final guards remain required.",
+    "Original tool/SDK/source identity and untracked-empty checks are retained; no new native probe required by template.",
+    "The negative variant spans two original package scopes/three cases with one restore; positive three; ignored support is not another positive."
+  ],
+  "limits": [
+    "Driver currently has no known durable job id after three same-key process_start tool timeouts. This review supplies no actual driver result.",
+    "No template execution, new native process, Cargo/test run, source/target/index/ref mutation occurred.",
+    "48,517,479,536 B initial planning and 8 GB per-command gates remain. Neither is a compiler peak guarantee.",
+    "Concrete binding requires future actual driver receipts and explicit root enablement."
+  ]
+}

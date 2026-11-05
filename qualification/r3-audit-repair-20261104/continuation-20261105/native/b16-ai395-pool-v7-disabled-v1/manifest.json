@@ -1,0 +1,308 @@
+{
+  "schema": "hepta-b16-pool-launcher-disabled-template-manifest-v1",
+  "status": "DISABLED_PENDING_ACTUAL_DRIVER_QUALIFICATION",
+  "created_on_utc": "2026-11-05",
+  "internal_stage_ids_are_not_original_blocker_ids": true,
+  "display_namespace": "B16/phase",
+  "authority_scope": "Cloud-only preparation authorized by root; no native execution, source/target mutation, ref write or future driver result claimed.",
+  "basis_launcher": {
+    "path": "/workspace/scratch/07dd58cc9630/architecture-audit/b16-driver-launcher-template-20261105/launch_driver_v7.py",
+    "bytes": 24697,
+    "sha256": "473af7a8d03188d43a1d88c594dfd4c0049ace13c671933c7ffb5fa4b600b175",
+    "blob": "bee66f1ff8ab5f3e4442b2dd14fc4aaa59b7a19d"
+  },
+  "basis_actual_disabled_driver_binding": {
+    "path": "/workspace/scratch/07dd58cc9630/ci-audit/recovered-20261105/b16-ai395-driver-v7-bound-candidate-v1/driver-binding-DISABLED-actual-foundation-v1.json",
+    "bytes": 22389,
+    "sha256": "6db812a2d7d5c381a8a6c130f3bea27a43f05c07c0cd3cbc48576b6c3760dcb6",
+    "blob": "bf4f5a9e31d2e779ea3020a177e98ebb2f79de41"
+  },
+  "files": [
+    {
+      "path": "/workspace/scratch/07dd58cc9630/architecture-audit/b16-pool-launcher-template-20261105/launch_pool_v7.py",
+      "bytes": 27997,
+      "sha256": "a59a7551bfa5fae7f1eb0f8a221c70588cffaec2dfc659f4a357777cbfde8b14",
+      "blob": "057a2fc77788da13f46bdd32951eb3c8e0bae550"
+    },
+    {
+      "path": "/workspace/scratch/07dd58cc9630/architecture-audit/b16-pool-launcher-template-20261105/pool-binding-DISABLED.json",
+      "bytes": 20752,
+      "sha256": "e353c6408bdadf9ba4c631ce36b61d4fd33672dedf2127fbcec9bc54c948f566",
+      "blob": "fb4bfa837433f4077b4630a37e219bbf08fb04c3"
+    },
+    {
+      "path": "/workspace/scratch/07dd58cc9630/architecture-audit/b16-pool-launcher-template-20261105/driver-v7-to-pool-v1.delta.patch",
+      "bytes": 17672,
+      "sha256": "abada2c74c43340991c5bb87f1f1a006dfe06c82558362d51e06bfbd3192ea5d",
+      "blob": "7792f2faff36922475413d0f085a30d3f2683296"
+    },
+    {
+      "path": "/workspace/scratch/07dd58cc9630/architecture-audit/b16-pool-launcher-template-20261105/driver-bound-to-pool-disabled.delta.patch",
+      "bytes": 11354,
+      "sha256": "ab704dd107d4e3116f2ea98cd3acbffb1dd3ab19b3ee32d253d3cc97d75435cf",
+      "blob": "400cea7aa35abc68bb5dbd92e570f2616f8e1fbe"
+    },
+    {
+      "path": "/workspace/scratch/07dd58cc9630/architecture-audit/b16-pool-launcher-template-20261105/pool-input-scope-oracle-review.json",
+      "bytes": 22562,
+      "sha256": "2704fb920b4ce226e2306b22327368759a8013dc62f970df3dfbcdbe0c8f2769",
+      "blob": "fe908ee872ae19c661ed93e3dd74bfae5a32129e"
+    },
+    {
+      "path": "/workspace/scratch/07dd58cc9630/architecture-audit/b16-pool-launcher-template-20261105/static-verification.json",
+      "bytes": 2149,
+      "sha256": "b37002f8dd3f78649853968cf8d93cfa7b5651c45c37a873c35f821842e02fd6",
+      "blob": "c7bdf25cb86b42ff691e0f0909c6d7da3d1258be"
+    },
+    {
+      "path": "/workspace/scratch/07dd58cc9630/architecture-audit/b16-pool-launcher-template-20261105/README.zh-CN.md",
+      "bytes": 4685,
+      "sha256": "0c4b0bace2a353acfe4b5fc3cb22825a8659187418be216bd112aeddc7bb89a9",
+      "blob": "f1a43bdfac2f072d1200d2e6a6a755a78834aa40"
+    }
+  ],
+  "large_transport_request": {
+    "path": "/workspace/scratch/07dd58cc9630/architecture-audit/b16-pool-launcher-template-20261105/launch-request-DISABLED.json",
+    "bytes": 936246,
+    "sha256": "555bf5eef440ce5fa0e5858bb2c2df66708ff5860818d912baf123f9a2de8149",
+    "blob": "09106951d40431d151d1f62f6efe69de23ade8d0",
+    "git_upload": false,
+    "reason": "Complete native transport exceeds the existing 512 KB Git evidence gate; preserve local raw with full hash and byte-identical previously frozen install bundle."
+  },
+  "unchanged_install_bundle": {
+    "encoding": "gzip-mtime0-base64",
+    "compressed_identity": {
+      "bytes": 685301,
+      "sha256": "3c944d66d0401badda75d74b367569e064507cd94e87eba4fdd6f7b6189055a6",
+      "blob": "7b5d1ae2246a792e6a663beff6ecdf24d5a4452f"
+    },
+    "uncompressed_identity": {
+      "bytes": 2362570,
+      "sha256": "5f1bf089b909c9e9fd28e45423c7f9c21051f369f8a1679ee3eab7d79302eb72",
+      "blob": "ed1db0257c355a17ade6995b8e38a6d9be1a8fe2"
+    }
+  },
+  "runtime_immutable_files": [
+    {
+      "path": "b16_build_only.py",
+      "bytes": 14919,
+      "sha256": "c19d6a25664a46c5736803dc60807a165bccbd57c1d04a6621f7a11eca7b4a0d",
+      "blob": "6a49c3e2f37d7f4cd42f45d7e37cca8c16669f12"
+    },
+    {
+      "path": "b16_capacity.py",
+      "bytes": 6342,
+      "sha256": "1581bdda147f4a74bd41c421cd267686ee75c42619ce37eddc5e459e41a0174d",
+      "blob": "4966c059c39ba5f7342feb40f88fda906607a32d"
+    },
+    {
+      "path": "b16_family.py",
+      "bytes": 7614,
+      "sha256": "6d18326d3dd6f539e85585c23cf682ae1c6cbfc1ef3e44c25fe750d37e006f8e",
+      "blob": "cd88578b832200f3fc96435f490440742dc76528"
+    },
+    {
+      "path": "b16_guard.py",
+      "bytes": 10896,
+      "sha256": "d0ba5a5746711a322438200498786044c8d561d9a256f7280a2c4791c6bd0389",
+      "blob": "a9a38d14c220be4c44336a6fefac08a168e52dcf"
+    },
+    {
+      "path": "b16_locks.py",
+      "bytes": 13015,
+      "sha256": "5edb44c7e4a6ce63981adc4681fead1987ddc19389e7d0659c9e4d3e13d8514e",
+      "blob": "1a6583b6226af4d20bb336b778476dedb02d59f4"
+    },
+    {
+      "path": "b16_native.py",
+      "bytes": 17595,
+      "sha256": "10620e1688ba208db22e22b6ecd727657b18967ca0d749be8ff0fd348fd1c92d",
+      "blob": "7596d6a32f4066cc72336767bcc71313d68675f8"
+    },
+    {
+      "path": "b16_oracles.py",
+      "bytes": 7483,
+      "sha256": "5928528add9ecb0f6a1681057a26954d9c607fb14c129293fa4bc6eac4e07e85",
+      "blob": "1a6efff50846f5c04bb5ea6def203ada42342050"
+    },
+    {
+      "path": "b16_runner.py",
+      "bytes": 16005,
+      "sha256": "f419dfa8e4cd98fc729c8b9851d8ea8ae3413a0fb1906358f8556920200b6944",
+      "blob": "4c8c2477189b84c6fe7b19c09fd27255bc7d1b66"
+    },
+    {
+      "path": "epoch-checkpoint.json",
+      "bytes": 3938,
+      "sha256": "0a9d2e32fe5aa16ef6dd490383fd4f7cc6ef10400a5a94a7bd5e97719b8780f8",
+      "blob": "7fb7a81cacd734e395f63d93938f9f4c94ba3468"
+    },
+    {
+      "path": "epoch-driver.json",
+      "bytes": 4348,
+      "sha256": "d28c2e9faa1cc0e3272d6aba88bfc3a49b062a484b6df530cca2ef2cf95a189f",
+      "blob": "5bd1014173766cb3599439e6a202514916286a5e"
+    },
+    {
+      "path": "epoch-foundation.json",
+      "bytes": 11472,
+      "sha256": "a8ac8886ec02230d5004dc8b608e0a33c0b89d5fdfabc1032569a13ee812fabd",
+      "blob": "6cc71ef831549fbe54f26c9bbe080e53effc59fa"
+    },
+    {
+      "path": "epoch-owning.json",
+      "bytes": 265,
+      "sha256": "87c7e1c517d3d601884a7555a7c677cec7490743dd2b5f7c0f1e2c45131efbe5",
+      "blob": "ce08a93c32f41135139b858d3bc22c6b224fec12"
+    },
+    {
+      "path": "epoch-pool.json",
+      "bytes": 3807,
+      "sha256": "19e1a06c6c97e20d1f1ef097222f6f7c2877850502223f16ed939848e228bf64",
+      "blob": "6d686ead86ef2c83f3b32f8bbd1b73e662d26093"
+    },
+    {
+      "path": "foundation-output-family.json",
+      "bytes": 142656,
+      "sha256": "5f63fcb507e899cc19df88e86efe997a34929edd5f45c83e7f7197987149a204",
+      "blob": "d3bfb3b487ceede8c923d1714fdadf87a06ed441"
+    },
+    {
+      "path": "observed-nextest-timeout-testcase.xml",
+      "bytes": 390,
+      "sha256": "fabd54568dd293a814449bc59027d1f5ecd6ee96a806b68b691ae2bb170a57df",
+      "blob": "e3cd2d7df83b2d5abebd96840722edcdd34d32f8"
+    },
+    {
+      "path": "observed-original-A-catalog.json",
+      "bytes": 369514,
+      "sha256": "6f0a4f7566621b451701a2612d068f194fc6a1b3aa1457722381d3d53c8a0690",
+      "blob": "5f4d2b2b82a3d1c0043ec4735fe4e2d2864ceb15"
+    },
+    {
+      "path": "payload-manifest.json",
+      "bytes": 62667,
+      "sha256": "a34cd6c5400deff4fedfffcb1f4f170eecabbb6bbfab1916829ab3911e986237",
+      "blob": "64db580beabe2642eb8611184dac4fc686fe34e1"
+    },
+    {
+      "path": "source-payload-00.json",
+      "bytes": 350291,
+      "sha256": "44299f93d8cfc2cd6a264a1df985052d8c7c4eb16e62c9bd8614b70cb9564f78",
+      "blob": "8e5ed16eca037384b17830f3625489ddf69f7d7a"
+    },
+    {
+      "path": "source-payload-01.json",
+      "bytes": 333825,
+      "sha256": "85adc1e88702b4fb8c9d417a936d665519fa56386cb434bbc6ef55d5f9cdf07d",
+      "blob": "e621574b496731997af604b8e4b138851c8be3d0"
+    },
+    {
+      "path": "source-payload-02.json",
+      "bytes": 342693,
+      "sha256": "563074644cce7c3e63f92e5b5e346e09d24ff4ca03e90cea4ca1b001347186ce",
+      "blob": "3bb4615120935560dd4bff326795b68e03cfb31a"
+    },
+    {
+      "path": "source-payload-03.json",
+      "bytes": 345962,
+      "sha256": "8a633ff6916a8b543e8aca196c54a41cc180d8f68c2cd2a26f2fe0e87ca57f55",
+      "blob": "819cfab8bf8a410d944e7d2c8c185d07a1eea886"
+    },
+    {
+      "path": "source-payload-04.json",
+      "bytes": 135857,
+      "sha256": "5d43327e7379cca4e6502973efd7ba6a3f67fb464c3bf41ebbaf1f88c6132bba",
+      "blob": "e5a287d7ae1f8a0c77cec32ce1113a48e94f8daa"
+    },
+    {
+      "path": "test_build_only_guard.py",
+      "bytes": 15667,
+      "sha256": "6563bc785ccd11d3c44b45ca2d8cf3df4baa807599a5a692826c359c463409a8",
+      "blob": "00069847aa5a25e760fee57c3c1a9cfa6c092ae5"
+    },
+    {
+      "path": "test_family_guard.py",
+      "bytes": 8509,
+      "sha256": "3c4ecffcf8c7bc4882c7a4f3455f044cfd226db72fe15559cf7b583d10ba7eb9",
+      "blob": "f0dc2e9e3390fe83dd41a40b964062fc8f95789e"
+    },
+    {
+      "path": "test_runner_guards.py",
+      "bytes": 15658,
+      "sha256": "d83e8391dc64aacd2daa1bddb2ec104796f6e30f7054796ef5144b7265b67128",
+      "blob": "378fe4b966d86cced0c89303c34c6ad7bf3b0d57"
+    }
+  ],
+  "unchanged_runtime_claim": "29 installer files and 25 integrity members are full-byte equal to frozen V7; no payload, oracle, project test, native command or finally edit.",
+  "new_launcher_delta_scope": [
+    "owned pool directory/epoch labels only",
+    "replace foundation continuation check with driver continuation check",
+    "pin original driver epoch-entry/final and actual metadata source guards",
+    "retain all ten old external/file/tool guard function bodies"
+  ],
+  "continuity": {
+    "historical_A": "fb9 tests and 40bd hygiene relation stay historical; native A source4a/head20fd remain the reviewed base.",
+    "foundation_to_driver": "Load the actual foundation receipt pinned by enabled driver binding; require its qualified final tree == driver actual initial tree and its terminal locks == driver initial locks.",
+    "driver_to_pool": "Driver QUALIFIED/runner0/launcher0/final SDK guards, then actual driver final tree and generated lock bytes == pool initial tree/locks.",
+    "driver_before_and_after": "Original epoch-entry guard checks driver initial tree/pre-generation locks; epoch-final guard checks actual final tree/post-generation locks. Equality across these two different lock states is not required.",
+    "metadata": "Exactly one original full locked no-p driver metadata command, zero exit, real stdout bytes and original before/after guards at actual final tree. Frozen V7 subsequently compares complete previous metadata graph.",
+    "future_values": "All actual driver receipt/binding/launcher/source guards, final tree, metadata/guards, locks, job id and guard stay null in this disabled template."
+  },
+  "capacity": {
+    "fresh_launch_gate_bytes": 48517479536,
+    "known_P4_output_family_bytes": 18517479536,
+    "additional_family_count": 1,
+    "other_cargo_growth_bytes": 12000000000,
+    "bazel_growth_bytes": 8000000000,
+    "evidence_growth_bytes": 2000000000,
+    "min_free_reserve_bytes": 8000000000,
+    "same_reviewed_driver_capacity_parameters": true,
+    "pool_has_no_new_bazel_or_lock_stage": true,
+    "unused_bazel_allowance_retained_conservatively": true,
+    "peak_measured_or_guaranteed": false,
+    "cache_deletion_or_budget_lowering_authorized": false
+  },
+  "frozen_scope_counts": {
+    "positive_cases": 3,
+    "negative_case_occurrences": 3,
+    "negative_source_variants": 1,
+    "negative_package_scopes": 2,
+    "positive_package_scopes": 2,
+    "exact_restorations": 1,
+    "ignored_support_children_not_additional_passes": 1
+  },
+  "enablement_required": {
+    "previous_epoch_receipt": "Actual current-host driver QUALIFIED epoch-terminal, never install success or a predicted receipt.",
+    "previous_epoch_binding": "Exact enabled driver binding that started from its actual qualified foundation final tree and pre-generation locks.",
+    "previous_epoch_launch_terminal": "Actual driver launcher zero exit plus original runner zero and successful final external SDK/tool guards.",
+    "previous_epoch_source_guards": "Original driver epoch-entry and epoch-final guards, each bound to its own actual tree and lock bytes; no new native probe is requested.",
+    "initial_tree": "Actual driver final_tree. It is not final_A_tree or a projected tree assembled before lock generation.",
+    "locks": "Exact actual driver terminal Cargo.lock and MODULE.bazel.lock, allowed to differ from the driver's initial locks and immutable P4 baseline locks.",
+    "baseline_metadata": "An original successful full locked no-p driver metadata command at the exact driver final source, normally B14_driver_twelve-metadata, plus its original before/after whole-source guards.",
+    "ordinary_head_and_index": "Exact current 20fd HEAD/index6b39 continuity through foundation, driver entry/final and pool; no reset/stat rewriting.",
+    "external_prerequisites": "Preserve actual eight tools and environment plus OpenSSL/libcap/V8 physical entry/finally guards.",
+    "capacity": "Fresh initial free >=48,517,479,536 B, unchanged conservative 1-family+12GB Cargo+8GB Bazel+2GB evidence+8GB reserve; pool runs no new lock/Bazel stage.",
+    "scope": "Only frozen epoch-pool: one negative source variant across two package scopes (three expected assertion failures), one exact restore, then the same three positive cases. The ignored support child is not another PASS.",
+    "enablement": "Root fills all actual pins and explicitly enables after driver acceptance. This template cannot execute."
+  },
+  "provider_status_at_template_creation": "Driver process_start and same-key reconciliation returned provider tool timeouts with no job identity; this is neither a driver test result nor a basis to fill future values.",
+  "not_executed": [
+    "pool launcher",
+    "project tests",
+    "extra harness test suite",
+    "native probes",
+    "native source/index/target/cache/ref writes"
+  ],
+  "static_check": {
+    "path": "/workspace/scratch/07dd58cc9630/architecture-audit/b16-pool-launcher-template-20261105/static-verification.json",
+    "bytes": 2149,
+    "sha256": "b37002f8dd3f78649853968cf8d93cfa7b5651c45c37a873c35f821842e02fd6",
+    "blob": "c7bdf25cb86b42ff691e0f0909c6d7da3d1258be"
+  },
+  "important_limits": [
+    "Valid pool lifetime controls do not establish authenticated Current, FinalUse or independent Root acceptance.",
+    "Internal stage B16_pool_binding is not closure of any original blocker ledger entry.",
+    "Actual driver results and final metadata are required before enabling; this artifact cannot bypass or predict them."
+  ]
+}

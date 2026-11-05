@@ -1,0 +1,37 @@
+{
+  "schema": "ci-audit-driver-disabled-launcher-narrow-review-v1",
+  "verdict": "STATIC_ACCEPT_PENDING_ACTUAL_FOUNDATION_TERMINAL_AND_ROOT_ENABLEMENT",
+  "launcher": {
+    "path": "/workspace/scratch/07dd58cc9630/architecture-audit/b16-driver-launcher-template-20261105/launch_driver_v7.py",
+    "bytes": 24697,
+    "sha256": "473af7a8d03188d43a1d88c594dfd4c0049ace13c671933c7ffb5fa4b600b175",
+    "git_blob": "bee66f1ff8ab5f3e4442b2dd14fc4aaa59b7a19d"
+  },
+  "original_functions_byte_equal": [
+    "bytes_id",
+    "equal_content",
+    "file_id",
+    "identity",
+    "need",
+    "save",
+    "save_json",
+    "verify_all_external",
+    "verify_libcap_sdk",
+    "verify_openssl_sdk"
+  ],
+  "new_function": "verify_foundation_continuity",
+  "binding_source": "driver-binding-DISABLED-v2.json",
+  "actual_previous_receipts_and_sources_predicted": false,
+  "native_execution": false,
+  "findings": [
+    "Original SDK/V8/tool helpers and original installation/child/finally mechanism preserved.",
+    "Prior actual QUALIFIED foundation receipt plus successful original launcher exit0 and SDK finally are required.",
+    "Metadata must be an original successful full locked command at the actual prior final tree with both original source/index/locks guards.",
+    "Fresh 48,517,479,536 B before install, V7 original capacity recalculation and per-command8GB remain.",
+    "No original payload/oracles/test budgets/retry or other epoch changes."
+  ],
+  "limitations": [
+    "No future native data was filled or inferred.",
+    "Static acceptance is not an execution authorization or native result."
+  ]
+}

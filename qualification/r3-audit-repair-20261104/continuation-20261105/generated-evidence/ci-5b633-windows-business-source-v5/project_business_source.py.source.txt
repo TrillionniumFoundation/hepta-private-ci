@@ -1,0 +1,96 @@
+#!/usr/bin/env python3
+"""Project original downloaded evidence; never execute the product or tests."""
+from pathlib import Path
+import collections
+import hashlib
+import json
+import re
+import xml.etree.ElementTree as ET
+
+ROOT = Path(__file__).resolve().parent
+HERE = ROOT / 'terminal/windows-business-source-127149582480'
+BASE = HERE / 'members/ordinary-consumers'
+
+
+def identity(raw):
+    return {'bytes':len(raw), 'sha256':hashlib.sha256(raw).hexdigest(),
+            'computed_git_blob':hashlib.sha1(f'blob {len(raw)}\0'.encode() + raw).hexdigest()}
+
+
+def read(path):
+    return json.loads(path.read_bytes())
+
+
+source = read(BASE / 'source.json')
+result = read(BASE / 'result.json')
+head = '5b6331250ff459033bd44d1a95daec70131277cc'
+assert source['head'] == head and source['tree'] == 'b26598d0d97d8d51e723bb5582137315f2174d35'
+assert source['checkout_kind'] == 'source-head' and source['run_id'] == '41999114539' and source['run_attempt'] == '1'
+assert source['parents'] == ['755374e93dba69214622f91c71a3ccac708d6a76']
+assert result['exit_code'] == 0 and result['unchanged_inputs'] is True
+assert '--nocache_test_results' in result['command'] and '--flaky_test_attempts=1' in result['command']
+assert '--platforms=//:windows_x86_64_msvc' in result['command']
+assert identity((BASE / 'original-libraries.log').read_bytes())['sha256'] == result['log_sha256']
+targets = []
+for path in sorted(BASE.glob('native-test-logs/**/test.log')):
+    text = path.read_text()
+    rows = []
+    for number, line in enumerate(text.splitlines(), 1):
+        match = re.fullmatch(r'test (\S+?)(?: - should panic)? \.\.\. (ok|FAILED|ignored)(.*)', line)
+        if match:
+            rows.append({'name':match[1], 'status':match[2], 'suffix':match[3], 'original_line':number})
+    assert rows and len(rows) == len({r['name'] for r in rows}) and all(r['status'] == 'ok' for r in rows)
+    summaries = re.findall(r'^test result:.*$', text, re.M)
+    assert len(summaries) == 1
+    expected = re.fullmatch(r'test result: ok\. (\d+) passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in ([0-9.]+)s', summaries[0])
+    assert expected and int(expected[1]) == len(rows)
+    xml = ET.fromstring((path.parent / 'test.xml').read_bytes())
+    wrappers = xml.findall('.//testcase')
+    assert len(wrappers) == 1 and not any(n.tag in {'failure','error','skipped'} for n in wrappers[0])
+    targets.append({'target':'//codex-rs/' + path.parent.parent.name + ':' + path.parent.name,
+                    'cases':rows, 'actual_named_count':len(rows), 'summary':summaries[0],
+                    'original_log':{'path':str(path), **identity(path.read_bytes())},
+                    'xml':{'path':str(path.parent / 'test.xml'), **identity((path.parent / 'test.xml').read_bytes())},
+                    'xml_is_one_bazel_wrapper_case_not_per_libtest_name':True})
+assert sorted(t['actual_named_count'] for t in targets) == [19,21,78]
+assert set(result['original_targets']) == {t['target'] for t in targets}
+all_names = [r['name'] for t in targets for r in t['cases']]
+catalog_path = ROOT.parent / 'next-head-ci-plan-20261105/named-exit-cases.json'
+catalog = read(catalog_path)
+assert len(catalog['cases']) == 142
+mapped = []
+for case in catalog['cases']:
+    names = [n for n in all_names if n == case['test']]
+    assert names == []
+    mapped.append({'blocker_id':case['blocker_id'],'binary':case['binary'],'test':case['test'],
+                   'bazel_target':case['bazel_target'],'windows_cfg_scope':case.get('windows_cfg_scope'),
+                   'disposition':'NOT_SELECTED_BY_THIS_THREE_TARGET_ORIGINAL_JOB', 'new_pass_from_this_job':False})
+raw = (BASE / 'original-libraries.log').read_text()
+assert 'Executed 3 out of 3 tests: 3 tests pass.' in raw
+assert '2045 remote cache hit, 904 internal, 6 local' in raw
+invocation = re.findall(r'https://app.buildbuddy.io/invocation/([0-9a-f-]+)',raw)
+assert invocation and set(invocation) == {'f1bf1a04-94c6-46d3-ac20-81ae8a2e0037'}
+assert source['inputs']['codex-rs/Cargo.lock'] == 'e0d6c75b8e46cbf3c8df62ca98d653144b796238be165155e1a2796cf372a49e'
+assert source['inputs']['MODULE.bazel.lock'] == '97f844724549757398c7834f5818d6244819b129658bdaa8453008dc694bbfc4'
+review = {'schema':'hepta-exact-source-windows-ordinary-consumers-review-v1',
+    'job_id':127149582480,'run_id':41999114539,'run_attempt':1,
+    'source':source,'source_json_identity':identity((BASE / 'source.json').read_bytes()),
+    'actual_command':result['command'],'original_exit_code':0,'unchanged_input_hashes':True,
+    'targets':targets,'actual_named_pass':118,'named_failures':0,'ignored':0,'filtered':0,
+    'xml_wrapper_nodes':3,'libtest_names_derived_from_complete_original_test_logs':True,
+    'execution':'Original three MSVC targets executed with test-result cache disabled and flaky_test_attempts=1. Build action cache is separate: 2045 remote cache hits, 904 internal and 6 local processes.',
+    'invocation_id':'f1bf1a04-94c6-46d3-ac20-81ae8a2e0037',
+    'artifact':read(HERE / 'artifact-verification.json'),
+    'full_job_log':identity((HERE / 'job.log').read_bytes()),
+    'working_tree_lock_encoding':{'independent_review_blob':'75a12d82d7a830ede3a294a7649df1fb7d2d3f1f',
+        'scope':'These same recorded Windows hashes exactly match the already independently verified LF-to-CRLF transformations of the fixed Git lock blobs. Do not call Windows working-file bytes identical to LF Git/native bytes.'},
+    'original_142_map':{'catalog':identity(catalog_path.read_bytes()),'matched_names':0,'cases':mapped},
+    'scope':['This is a new source-head result, distinct from the earlier merge9063 job; no historical result was borrowed.',
+        'The 118 library fixture cases do not prove independent operator/Root/Bao/Chain/HIA acceptance or unpublished B16 custody/Current/FinalUse source.',
+        'No original 142 named exit case is present in these three targets; no original blocker status or exit condition changes.',
+        'XML holds three Bazel wrapper nodes, not 118 individual test nodes; exact cases come from complete original libtest logs.',
+        'Read-only API/log/ZIP parsing and hashing; no CI mutation, native/Cargo/product execution or retry.']}
+file = HERE / 'original-case-review.json'
+file.write_text(json.dumps(review,ensure_ascii=False,indent=2) + '\n')
+print(json.dumps({'review':identity(file.read_bytes()),'passed':118,'original_142_matches':0,
+                  'target_counts':{t['target']:t['actual_named_count'] for t in targets}}))

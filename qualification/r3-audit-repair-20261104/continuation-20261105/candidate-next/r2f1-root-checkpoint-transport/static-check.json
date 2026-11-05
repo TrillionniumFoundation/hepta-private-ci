@@ -1,0 +1,104 @@
+{
+  "schema": "r2f1-static-construction-v1",
+  "status": "STATIC_ONLY_NOT_COMPILED",
+  "patch": {
+    "path": "/workspace/scratch/07dd58cc9630/architecture-audit/b16-next-normal-chain-20261105/r2f1-root-checkpoint-transport/candidate.patch",
+    "bytes": 20164,
+    "sha256": "97b3992955e72b1f6af0367c95fc8b1b16c8de920f44b012c0b9f9ae9faf3300",
+    "git_blob": "00e997f3ab4c1f5858121041ed1088adfd1f7a2c"
+  },
+  "changed_lines": {
+    "added": 386,
+    "removed": 0
+  },
+  "files": [
+    {
+      "path": "codex-rs/hepta-agentd/src/lib.rs",
+      "mode": "100644",
+      "before_blob": "3466e60a12138ae4816ace1531254312733e4175",
+      "after_blob": "0460a3c36edede87541136218016335b43ea0550",
+      "bytes": 15002,
+      "sha256": "3451e900b4cb419079a7413d27ef1394b29e2808fc74c1d22b93121145fe0ce0",
+      "local_postimage": "/workspace/scratch/07dd58cc9630/architecture-audit/b16-next-normal-chain-20261105/r2f1-root-checkpoint-transport/candidate/codex-rs/hepta-agentd/src/lib.rs"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/root_checkpoint_transport.rs",
+      "mode": "100644",
+      "before_blob": null,
+      "after_blob": "1c8b58ea8b16a8b0566a4efbc56bfbe68b994e27",
+      "bytes": 9201,
+      "sha256": "d1fe8f15a2e5f07814b46d26876f8045988b668b3b840ce9ded1043da3687a8d",
+      "local_postimage": "/workspace/scratch/07dd58cc9630/architecture-audit/b16-next-normal-chain-20261105/r2f1-root-checkpoint-transport/candidate/codex-rs/hepta-agentd/src/root_checkpoint_transport.rs"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/root_checkpoint_transport_tests.rs",
+      "mode": "100644",
+      "before_blob": null,
+      "after_blob": "3fdebffdc1fd5fd9f2ea3da7039e99e63debb3f1",
+      "bytes": 8874,
+      "sha256": "733a5ad8f2a9ac80f1bc06e368d4d738d8fbf4eb8f5036fa23f1313171324699",
+      "local_postimage": "/workspace/scratch/07dd58cc9630/architecture-audit/b16-next-normal-chain-20261105/r2f1-root-checkpoint-transport/candidate/codex-rs/hepta-agentd/src/root_checkpoint_transport_tests.rs"
+    }
+  ],
+  "original_lib_restored_by_removing_exact_8_added_lines": true,
+  "original_tests_modified": false,
+  "cloud_git_roundtrip_commands": [
+    {
+      "argv": [
+        "git",
+        "init",
+        "--quiet"
+      ],
+      "cwd": "/workspace/scratch/07dd58cc9630/architecture-audit/b16-next-normal-chain-20261105/r2f1-root-checkpoint-transport/isolated-patch-check-v1",
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "git",
+        "apply",
+        "--check",
+        "/workspace/scratch/07dd58cc9630/architecture-audit/b16-next-normal-chain-20261105/r2f1-root-checkpoint-transport/candidate.patch"
+      ],
+      "cwd": "/workspace/scratch/07dd58cc9630/architecture-audit/b16-next-normal-chain-20261105/r2f1-root-checkpoint-transport/isolated-patch-check-v1",
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "git",
+        "apply",
+        "/workspace/scratch/07dd58cc9630/architecture-audit/b16-next-normal-chain-20261105/r2f1-root-checkpoint-transport/candidate.patch"
+      ],
+      "cwd": "/workspace/scratch/07dd58cc9630/architecture-audit/b16-next-normal-chain-20261105/r2f1-root-checkpoint-transport/isolated-patch-check-v1",
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "git",
+        "apply",
+        "--reverse",
+        "--check",
+        "/workspace/scratch/07dd58cc9630/architecture-audit/b16-next-normal-chain-20261105/r2f1-root-checkpoint-transport/candidate.patch"
+      ],
+      "cwd": "/workspace/scratch/07dd58cc9630/architecture-audit/b16-next-normal-chain-20261105/r2f1-root-checkpoint-transport/isolated-patch-check-v1",
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": ""
+    }
+  ],
+  "all_postimages_equal_after_real_git_apply": true,
+  "runtime_commands": [],
+  "frozen_runner_or_payload_modified": false,
+  "new_test_names": [
+    "root_checkpoint_transport::tests::synchronous_custody_rejects_wrong_peer_and_closes_owned_socket",
+    "root_checkpoint_transport::tests::complete_ack_preserves_wire_bytes_and_wrong_request_closes_lane",
+    "root_checkpoint_transport::tests::cancellation_after_real_request_closes_lane_without_reconnecting",
+    "root_checkpoint_transport::tests::withheld_response_times_out_and_closes_lane"
+  ],
+  "note": "No Rust parsing/compile/formatter/native test was run. The isolated Git check is a patch delivery check, not product qualification."
+}

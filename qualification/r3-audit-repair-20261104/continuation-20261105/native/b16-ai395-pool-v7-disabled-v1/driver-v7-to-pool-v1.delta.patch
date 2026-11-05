@@ -1,0 +1,243 @@
+--- a/launch_driver_v7.py
++++ b/launch_pool_v7.py
+@@ -1,4 +1,4 @@
+-"""Install frozen V7 and execute only a root-enabled ai395 driver epoch.
++"""Install frozen V7 and execute only a root-enabled ai395 pool epoch.
+ Actual current-host build-only evidence remains separate from historical A tests.
+ """
+ import base64
+@@ -20,7 +20,7 @@
+ ROOT = Path('/home/qq/work/hepta-audit-b16-20261105')
+ TOOLS = ROOT / 'tools'
+ TARGET = ROOT / 'target-dev-small'
+-EVIDENCE = ROOT / 'evidence/b16-driver-v7-ai395-20261105-v1'
++EVIDENCE = ROOT / 'evidence/b16-pool-v7-ai395-20261105-v1'
+ RUNTIME = EVIDENCE / 'runtime'
+ RUN = EVIDENCE / 'run'
+ records = []
+@@ -194,90 +194,133 @@
+         {'name': row['name'], **file_id(row['path'])} for row in binding['tools']])
+     return observed
+ 
+-def verify_foundation_continuity(binding):
+-    # These are actual prior artifacts, not predicted trees or P4 relabels.
++def verify_driver_continuity(binding):
++    # The driver starts at the qualified foundation tree, not at final A. Its
++    # generated locks and actual final metadata become this pool epoch's inputs.
+     documents = {}
+     for key in ('previous_epoch_receipt', 'previous_epoch_binding',
+                 'previous_epoch_launch_terminal', 'baseline_metadata'):
+         pin = binding.get(key)
+         need(isinstance(pin, dict) and isinstance(pin.get('path'), str)
+              and isinstance(pin.get('bytes'), int) and isinstance(pin.get('sha256'), str),
+-             'actual foundation pin is required: ' + key)
+-        need(equal_content(file_id(pin['path']), pin), 'foundation artifact drift: ' + key)
++             'actual driver pin is required: ' + key)
++        need(equal_content(file_id(pin['path']), pin), 'driver artifact drift: ' + key)
+         documents[key] = json.loads(Path(pin['path']).read_bytes())
+     previous = documents['previous_epoch_receipt']
+     prior_binding = documents['previous_epoch_binding']
+     launch = documents['previous_epoch_launch_terminal']
+-    need(previous['epoch'] == 'foundation' and previous['status'] == 'QUALIFIED'
++    need(previous['epoch'] == 'driver' and previous['status'] == 'QUALIFIED'
+          and previous['error'] is None and previous['final_guard'] is True,
+-         'foundation did not qualify with its final source guard')
++         'driver did not qualify with its final source guard')
+     need(launch['original_runner_exit_code'] == launch['launcher_exit_code'] == 0
+          and launch['error'] is None and launch['external_guard_error'] is None
+          and launch['epoch_terminal_path'] == binding['previous_epoch_receipt']['path'],
+-         'foundation launcher/SDK final guards are not successful')
+-    need(prior_binding['execute'] is True and prior_binding['authorized_epoch'] == 'foundation'
++         'driver launcher/SDK final guards are not successful')
++    need(prior_binding['execute'] is True and prior_binding['authorized_epoch'] == 'driver'
+          and prior_binding['approval_reference'] == launch['root_execution_guard']
+          and prior_binding['evidence_directory'] == str(Path(binding['previous_epoch_receipt']['path']).parent),
+-         'foundation terminal and enabled binding are not the same execution')
+-    need(previous['initial_tree'] == prior_binding['initial_tree'] == binding['final_A_tree']
++         'driver terminal and enabled binding are not the same execution')
++    need(previous['initial_tree'] == prior_binding['initial_tree']
++         and previous['final_A_tree'] == binding['final_A_tree']
+          and previous['final_tree'] == binding['initial_tree']
+          and previous['payload_sha256'] == binding['approved_payload_sha256']
+          and previous['runner_integrity_sha256'] == binding['approved_runner_integrity_sha256'],
+-         'foundation source/payload/runtime continuity differs')
++         'driver source/payload/runtime continuity differs')
+     for key in ('final_A_tree', 'ordinary_head', 'source_directory', 'target_directory',
+                 'target_reuse_mode', 'bazel_cache_directory', 'bazel_cache_owner',
+                 'tools', 'environment', 'recipe_sources', 'external_build_prerequisites',
+                 'current_host_build_only_baseline', 'build_only_host', 'build_only_cache_owner',
+                 'last_tested_A_tree', 'last_tested_A_artifacts', 'last_tested_A_to_final_A_review',
+                 'A_helper_basename_roster', 'approved_payload_sha256', 'approved_runner_integrity_sha256'):
+-        need(prior_binding[key] == binding[key], 'foundation binding continuity differs: ' + key)
+-    need(equal_content(previous['ordinary_index'], binding['ordinary_index'])
++        need(prior_binding[key] == binding[key], 'driver binding continuity differs: ' + key)
++    need(previous['ordinary_head'] == binding['ordinary_head']
++         and equal_content(previous['ordinary_index'], binding['ordinary_index'])
+          and equal_content(prior_binding['ordinary_index'], binding['ordinary_index']),
+-         'ordinary index changed after foundation')
+-    need(set(previous['locks']) == set(binding['locks']) == {'codex-rs/Cargo.lock', 'MODULE.bazel.lock'}
+-         and all(equal_content(previous['locks'][path], binding['locks'][path]) for path in binding['locks']),
+-         'actual foundation locks must be retained before driver generation')
++         'ordinary HEAD/index changed after driver')
++    # Read the actual predecessor already pinned in the enabled driver binding.
++    # Do not replace the driver's initial e510... with final_A_tree, or require
++    # pre-generation locks to equal the actual generated post-driver locks.
++    foundation_pin = prior_binding.get('previous_epoch_receipt')
++    need(isinstance(foundation_pin, dict) and isinstance(foundation_pin.get('path'), str),
++         'driver must retain its actual foundation receipt')
++    need(equal_content(file_id(foundation_pin['path']), foundation_pin), 'driver foundation receipt drift')
++    foundation = json.loads(Path(foundation_pin['path']).read_bytes())
++    need(foundation['epoch'] == 'foundation' and foundation['status'] == 'QUALIFIED'
++         and foundation['error'] is None and foundation['final_guard'] is True
++         and foundation['initial_tree'] == foundation['final_A_tree'] == binding['final_A_tree']
++         and foundation['final_tree'] == previous['initial_tree']
++         and foundation['payload_sha256'] == binding['approved_payload_sha256']
++         and foundation['runner_integrity_sha256'] == binding['approved_runner_integrity_sha256']
++         and foundation['ordinary_head'] == binding['ordinary_head']
++         and equal_content(foundation['ordinary_index'], binding['ordinary_index']),
++         'driver initial source is not its qualified foundation successor')
++    lock_paths = {'codex-rs/Cargo.lock', 'MODULE.bazel.lock'}
++    need(set(foundation['locks']) == set(prior_binding['locks']) == lock_paths
++         and all(equal_content(foundation['locks'][path], prior_binding['locks'][path]) for path in lock_paths),
++         'driver initial locks differ from the actual foundation terminal')
++    need(set(previous['locks']) == set(binding['locks']) == lock_paths
++         and all(equal_content(previous['locks'][path], binding['locks'][path]) for path in lock_paths),
++         'pool must retain the actual generated post-driver locks')
++    epoch_guards = binding.get('previous_epoch_source_guards')
++    need(isinstance(epoch_guards, dict) and set(epoch_guards) == {'before', 'after'},
++         'bind the original driver entry and final whole-source guards')
++    for side, pin in epoch_guards.items():
++        need(equal_content(file_id(pin['path']), pin), 'driver source guard drift: ' + side)
++        guard = json.loads(Path(pin['path']).read_bytes())
++        expected_tree = previous['initial_tree'] if side == 'before' else previous['final_tree']
++        expected_locks = prior_binding['locks'] if side == 'before' else previous['locks']
++        need(Path(pin['path']).parent == Path(prior_binding['evidence_directory'])
++             and guard['label'] == ('epoch-entry' if side == 'before' else 'epoch-final')
++             and guard['expected_tree'] == guard['actual_tree'] == expected_tree
++             and guard['head'] == binding['ordinary_head'] and guard['untracked'] == []
++             and equal_content(guard['ordinary_index'], binding['ordinary_index'])
++             and set(guard['locks']) == lock_paths
++             and all(equal_content(guard['locks'][path], expected_locks[path]) for path in lock_paths),
++             'driver entry/final guard does not match its actual before/after source and locks')
+     metadata_pin = binding['baseline_metadata']
+     need(metadata_pin['source_tree'] == binding['initial_tree'], 'metadata relabeled from another source')
+     commands = [command for command in previous['commands']
+                 if command.get('stdout') and command['stdout']['path'] == metadata_pin['path']]
+-    need(len(commands) == 1, 'metadata must be one actual foundation command output')
++    need(len(commands) == 1, 'metadata must be one actual driver command output')
+     command = commands[0]
+     need(command['argv'] == ['cargo', 'metadata', '--format-version=1', '--locked']
+          and command['exit_code'] == 0 and command['source_before'] == binding['initial_tree']
+-         and equal_content(command['stdout'], metadata_pin), 'metadata is not a successful full locked foundation command')
++         and equal_content(command['stdout'], metadata_pin), 'metadata is not a successful full locked driver command')
+     metadata = documents['baseline_metadata']
+     need(metadata['workspace_root'] == str(ROOT / 'source/codex-rs')
+-         and metadata['target_directory'] == str(TARGET), 'actual foundation metadata paths differ')
++         and metadata['target_directory'] == str(TARGET), 'actual driver metadata paths differ')
+     provenance = binding.get('baseline_metadata_source_guards')
+     need(isinstance(provenance, dict) and set(provenance) == {'before', 'after'},
+          'bind both original metadata source guards')
+     for side, pin in provenance.items():
+         need(equal_content(file_id(pin['path']), pin), 'metadata source guard drift: ' + side)
+         guard = json.loads(Path(pin['path']).read_bytes())
+-        need(guard['label'] == command['name'] + '-' + side
++        need(Path(pin['path']).parent == Path(prior_binding['evidence_directory'])
++             and guard['label'] == command['name'] + '-' + side
+              and guard['expected_tree'] == guard['actual_tree'] == binding['initial_tree']
+              and guard['head'] == binding['ordinary_head'] and guard['untracked'] == []
+              and equal_content(guard['ordinary_index'], binding['ordinary_index'])
+-             and set(guard['locks']) == set(binding['locks'])
+-             and all(equal_content(guard['locks'][path], binding['locks'][path]) for path in binding['locks']),
+-             'metadata whole-source/index/locks guard does not match the qualified terminal')
++             and set(guard['locks']) == lock_paths
++             and all(equal_content(guard['locks'][path], binding['locks'][path]) for path in lock_paths),
++             'metadata whole-source/index/locks guard does not match the qualified driver terminal')
+     return {'previous_epoch_receipt': binding['previous_epoch_receipt'],
+             'previous_epoch_binding': binding['previous_epoch_binding'],
+             'previous_epoch_launch_terminal': binding['previous_epoch_launch_terminal'],
++            'driver_source_guards': epoch_guards, 'driver_actual_foundation_receipt': foundation_pin,
+             'baseline_metadata': metadata_pin, 'metadata_source_guards': provenance,
+-            'foundation_final_tree': previous['final_tree'], 'foundation_status': previous['status']}
++            'driver_initial_tree': previous['initial_tree'], 'driver_final_tree': previous['final_tree'],
++            'driver_status': previous['status'], 'generated_locks_preserved': True}
+ 
+ request = json.load(sys.stdin)
+ binding = request['binding']
+ root_guard = request['root_execution_guard']
+ need(isinstance(root_guard, str) and re.fullmatch(r'[0-9a-f]{40}', root_guard), 'root execution guard is not bound')
+ need(binding['execute'] is True and binding['approval_reference'] == root_guard, 'root has not enabled this exact candidate')
+-need(binding['authorized_epoch'] == 'driver', 'only driver is authorized')
++need(binding['authorized_epoch'] == 'pool', 'only pool is authorized')
+ need(binding['target_reuse_mode'] == 'BUILD_ONLY_CURRENT_HOST', 'this launcher accepts only actual current-host build-only provenance')
+ need(binding['final_A_tree'] == '4a3374e22e16ce5c764288ad018cd9affadf94ea', 'wrong native A source')
+ need(isinstance(binding['initial_tree'], str) and re.fullmatch(r'[0-9a-f]{40}', binding['initial_tree']),
+-     'actual qualified foundation final source is required')
++     'actual qualified driver final source is required')
+ need(binding['ordinary_head'] == '20fd174ded4e5ce01bda34e4f6d1d74803301f49', 'new-host ordinary HEAD changed')
+ need(binding['source_identity_bridge']['native_code_tree'] == binding['final_A_tree'], 'historical A source bridge mismatch')
+ need(binding['source_directory'] == str(ROOT / 'source') and binding['target_directory'] == str(TARGET), 'source or target path changed')
+@@ -290,12 +333,12 @@
+      all(binding['capacity_plan'][key] == value for key, value in {
+          'additional_executable_families': 1, 'other_cargo_growth_bytes': 12000000000,
+          'bazel_growth_bytes': 8000000000, 'evidence_growth_bytes': 2000000000}.items()),
+-     'retain the reviewed driver growth plan and 8 GB reserve')
++     'retain the reviewed conservative pool growth plan and 8 GB reserve')
+ if free < 48517479536:
+-    print(json.dumps({'state': 'DRIVER_NOT_STARTED_RESOURCE_REFUSED', 'actual_free_bytes': free,
++    print(json.dumps({'state': 'POOL_NOT_STARTED_RESOURCE_REFUSED', 'actual_free_bytes': free,
+         'required_free_bytes': 48517479536, 'source_mutation': False, 'cache_cleanup': False}), flush=True)
+     sys.exit(86)
+-foundation = verify_foundation_continuity(binding)
++driver = verify_driver_continuity(binding)
+ 
+ compressed = base64.b64decode(request['install_bundle']['base64'], validate=True)
+ need(identity(compressed) == request['install_bundle']['compressed_identity'], 'install archive identity mismatch')
+@@ -347,25 +390,25 @@
+ binding_path = EVIDENCE / 'binding.json'
+ with binding_path.open('xb') as stream:
+     stream.write(binding_raw)
+-receipt = {'schema': 'hepta-ai395-b16-driver-v7-installation-v1', 'root_execution_guard': root_guard,
++receipt = {'schema': 'hepta-ai395-b16-pool-v7-installation-v1', 'root_execution_guard': root_guard,
+     'binding': {'path': str(binding_path), **identity(binding_raw)}, 'source_identity_bridge': binding['source_identity_bridge'],
+     'runtime_files': [{'path': obj['path'], **obj['identity']} for obj in objects],
+-    'actual_free_bytes_before_install': free, 'driver_growth_budget_recomputed_by_frozen_V7': True,
+-    'foundation_continuity': foundation,
++    'actual_free_bytes_before_install': free, 'pool_growth_budget_recomputed_by_frozen_V7': True,
++    'driver_continuity': driver,
+     'other_epochs_authorized': False, 'source_or_target_deleted': False,
+     'historical_original_not_relabelled': True}
+ save_json('installation-receipt.json', receipt)
+ environment = dict(os.environ)
+ environment.update(binding['environment'])
+-argv = ['/usr/bin/python3', str(RUNTIME / 'b16_runner.py'), '--binding', str(binding_path), '--epoch', 'driver']
++argv = ['/usr/bin/python3', str(RUNTIME / 'b16_runner.py'), '--binding', str(binding_path), '--epoch', 'pool']
+ started = datetime.datetime.now(datetime.timezone.utc).isoformat()
+ clock = time.monotonic()
+ result = None
+ error = None
+ prerequisite_records = {}
+ try:
+-    prerequisite_records['before'] = verify_all_external('before-driver', binding, current)
+-    print(json.dumps({'launch': 'driver', 'argv': argv, 'binding_sha256': identity(binding_raw)['sha256'],
++    prerequisite_records['before'] = verify_all_external('before-pool', binding, current)
++    print(json.dumps({'launch': 'pool', 'argv': argv, 'binding_sha256': identity(binding_raw)['sha256'],
+         'source': binding['initial_tree'], 'root_execution_guard': root_guard, 'current_host_provenance': 'BUILD_ONLY_CURRENT_HOST'}), flush=True)
+     result = subprocess.run(argv, cwd=ROOT / 'source', env=environment)
+ except BaseException as caught:
+@@ -373,14 +416,14 @@
+ finally:
+     final_guard_error = None
+     try:
+-        prerequisite_records['after'] = verify_all_external('after-driver', binding, current)
++        prerequisite_records['after'] = verify_all_external('after-pool', binding, current)
+     except BaseException as caught:
+         final_guard_error = {'type': type(caught).__name__, 'message': str(caught), 'traceback': traceback.format_exc()}
+     child_exit = None if result is None else result.returncode
+     final_exit = child_exit if child_exit is not None else 1
+     if error or final_guard_error:
+         final_exit = 1
+-    status = {'schema': 'hepta-ai395-b16-driver-v7-launch-terminal-v1', 'root_execution_guard': root_guard,
++    status = {'schema': 'hepta-ai395-b16-pool-v7-launch-terminal-v1', 'root_execution_guard': root_guard,
+         'argv': argv, 'started_at': started, 'completed_at': datetime.datetime.now(datetime.timezone.utc).isoformat(),
+         'duration_seconds': time.monotonic() - clock, 'original_runner_exit_code': child_exit,
+         'launcher_exit_code': final_exit, 'error': error, 'external_guard_error': final_guard_error,

@@ -1,0 +1,75 @@
+#!/usr/bin/env python3
+"""Independent byte/patch checks only; never builds or runs the product."""
+from pathlib import Path
+import hashlib
+import json
+import subprocess
+
+ROOT = Path('/workspace/scratch/07dd58cc9630')
+AUTHOR = ROOT / 'architecture-audit/b16-next-normal-chain-20261105'
+PACKAGE = AUTHOR / 'r2f1-root-checkpoint-transport'
+OUT = Path(__file__).resolve().parent
+
+def identity(path):
+    data = path.read_bytes()
+    return {'path': str(path), 'bytes': len(data),
+            'sha256': hashlib.sha256(data).hexdigest(),
+            'git_blob': hashlib.sha1(f'blob {len(data)}\0'.encode() + data).hexdigest()}
+
+manifest = json.loads((PACKAGE / 'manifest-v2.json').read_text())
+checks = []
+for row in manifest['files']:
+    actual = identity(Path(row['local_postimage']))
+    assert actual['bytes'] == row['bytes']
+    assert actual['sha256'] == row['sha256']
+    assert actual['git_blob'] == row['after_blob']
+    checks.append({'logical_path': row['path'], **actual})
+patch = identity(PACKAGE / 'candidate.patch')
+assert patch['git_blob'] == manifest['patch']['git_blob']
+assert patch['sha256'] == manifest['patch']['sha256']
+assert patch['bytes'] == manifest['patch']['bytes']
+before = AUTHOR / 'source-5b/codex-rs/hepta-agentd/src/lib.rs'
+assert identity(before)['git_blob'] == manifest['baseline']['agentd_lib_preimage']
+work = OUT / 'isolated-patch-check'
+assert not work.exists(), 'Do not reuse an unknown verification tree'
+work.mkdir()
+original = work / 'codex-rs/hepta-agentd/src/lib.rs'
+original.parent.mkdir(parents=True)
+original.write_bytes(before.read_bytes())
+commands = []
+def command(args):
+    result = subprocess.run(args, cwd=work, capture_output=True, text=True, check=False)
+    commands.append({'argv': args, 'cwd': str(work), 'exit_code': result.returncode,
+                     'stdout': result.stdout, 'stderr': result.stderr})
+    assert result.returncode == 0, commands[-1]
+command(['git', 'init', '--quiet'])
+command(['git', 'apply', '--check', str(PACKAGE / 'candidate.patch')])
+command(['git', 'apply', str(PACKAGE / 'candidate.patch')])
+for row in manifest['files']:
+    assert (work / row['path']).read_bytes() == Path(row['local_postimage']).read_bytes()
+command(['git', 'apply', '--reverse', '--check', str(PACKAGE / 'candidate.patch')])
+command(['git', 'apply', '--reverse', str(PACKAGE / 'candidate.patch')])
+assert original.read_bytes() == before.read_bytes()
+assert not (work / 'codex-rs/hepta-agentd/src/root_checkpoint_transport.rs').exists()
+assert not (work / 'codex-rs/hepta-agentd/src/root_checkpoint_transport_tests.rs').exists()
+
+sources = [AUTHOR / 'source-final-B/codex-rs/hepta-memory/src' / name for name in
+           ['cognitive_checkpoint_codec.rs', 'cognitive_checkpoint_wire.rs', 'objective_sender.rs', 'lib.rs']]
+sources += [AUTHOR / 'source-5b/codex-rs/hepta-agentd/Cargo.toml',
+            AUTHOR / 'source-5b/codex-rs/hepta-agentd/BUILD.bazel', AUTHOR / 'source-5b/defs.bzl',
+            ROOT / 'architecture-audit/intel-pty-drain-remaining-20261105/source/tokio_async_fd.rs']
+primary = [identity(path) for path in sorted((OUT / 'primary/linux-v6.12').iterdir())]
+result = {'schema': 'r2f1-independent-static-byte-check-v1',
+          'status': 'STATIC_PATCH_CHECK_PASS_NO_COMPILE_OR_PRODUCT_EXECUTION',
+          'manifest': identity(PACKAGE / 'manifest-v2.json'), 'patch': patch,
+          'candidate_postimages': checks, 'original_lib': identity(before),
+          'all_three_postimages_match': True, 'reverse_restores_original_and_removes_new_paths': True,
+          'cloud_isolated_git_commands': commands,
+          'source_inputs': [identity(path) for path in sources],
+          'primary_sources': primary,
+          'primary_source_note': 'Linux reference files were retrieved at v6.12. Hashes describe exact decoded UTF-8 bodies; they are not a claim about the actual native-host kernel version.',
+          'no_native_commands': True, 'no_product_tests': True, 'no_shared_source_changes': True,
+          'no_ref_changes': True}
+(OUT / 'static-verification.json').write_text(json.dumps(result, ensure_ascii=False, indent=2) + '\n')
+print(json.dumps({'status': result['status'], 'postimages': len(checks),
+                  'commands': len(commands), 'receipt': identity(OUT / 'static-verification.json')}, ensure_ascii=False))

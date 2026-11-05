@@ -1,0 +1,170 @@
+--- a/driver-binding-DISABLED-actual-foundation-v1.json
++++ b/pool-binding-DISABLED.json
+@@ -3,11 +3,11 @@
+   "internal_stage_ids_are_not_original_blocker_ids": true,
+   "execute": false,
+   "approval_reference": null,
+-  "authorized_epoch": "driver",
++  "authorized_epoch": "pool",
+   "final_A_tree": "4a3374e22e16ce5c764288ad018cd9affadf94ea",
+   "last_tested_A_tree": "fb9e131272f7e7a138d6c0d1af2b048b9a6ab7ff",
+   "last_tested_A_to_final_A_review": "40bd8b7030931cae6573ec126f4afc13a1140d33",
+-  "initial_tree": "e510f685d2aa7b9a7121a78f96af3569919e6f88",
++  "initial_tree": null,
+   "ordinary_head": "20fd174ded4e5ce01bda34e4f6d1d74803301f49",
+   "ordinary_index": {
+     "bytes": 1224180,
+@@ -65,7 +65,7 @@
+     "test_stdio_server",
+     "test_streamable_http_server"
+   ],
+-  "evidence_directory": "/home/qq/work/hepta-audit-b16-20261105/evidence/b16-driver-v7-ai395-20261105-v1/run",
++  "evidence_directory": "/home/qq/work/hepta-audit-b16-20261105/evidence/b16-pool-v7-ai395-20261105-v1/run",
+   "bazel_cache_directory": "/home/qq/work/hepta-audit-b16-20261105/b16-native-bazel-cache-20261105-v1",
+   "bazel_cache_owner": "ci_audit_ai395_b16_20261105_v7",
+   "capacity_plan": {
+@@ -75,41 +75,10 @@
+     "evidence_growth_bytes": 2000000000,
+     "estimate_review_reference": "f4ec44ad131dd8a59d83011de221899e808a3171: actual P4 396-file family 18,517,479,536 B plus Cargo12GB/Bazel8GB/evidence2GB/reserve8GB yields 48,517,479,536 B initial planning gate. Fresh native check required; this is not a compilation peak guarantee; no cache deletion or lowered budget."
+   },
+-  "previous_epoch_receipt": {
+-    "path": "/home/qq/work/hepta-audit-b16-20261105/evidence/b16-foundation-v7-ai395-20261105-v1/run/epoch-terminal.json",
+-    "bytes": 3023590,
+-    "sha256": "480f166c3985d0e2afd838a0977391d259fc6255a5fc3d8ce2f45741beba3b56",
+-    "git_blob": "7846e787748900b3732bb01c532d04add763e2bf"
+-  },
+-  "baseline_metadata": {
+-    "path": "/home/qq/work/hepta-audit-b16-20261105/evidence/b16-foundation-v7-ai395-20261105-v1/run/B10_R2e3_final-metadata.log",
+-    "bytes": 8296096,
+-    "sha256": "b4090db792babde64575b11e7ae04df8245074b96a154048c4de08691e4a23e0",
+-    "source_tree": "e510f685d2aa7b9a7121a78f96af3569919e6f88"
+-  },
++  "previous_epoch_receipt": null,
++  "baseline_metadata": null,
+   "allowed_untracked_source_paths": [],
+-  "locks": {
+-    "MODULE.bazel.lock": {
+-      "bytes": 1738619,
+-      "dev": 66306,
+-      "git_blob": "1904db189003cb0b559f71958518e33a45fb6bb7",
+-      "inode": 64654420,
+-      "mode": "0o600",
+-      "nlink": 1,
+-      "path": "/home/qq/work/hepta-audit-b16-20261105/source/MODULE.bazel.lock",
+-      "sha256": "11f8a421224b9b05f32c4c14054e8868083d989fc497310c8d51e1156f189ca3"
+-    },
+-    "codex-rs/Cargo.lock": {
+-      "bytes": 413768,
+-      "dev": 66306,
+-      "git_blob": "71fc8fa78b5afa076835b29790a5e6b0bd772558",
+-      "inode": 65177174,
+-      "mode": "0o600",
+-      "nlink": 1,
+-      "path": "/home/qq/work/hepta-audit-b16-20261105/source/codex-rs/Cargo.lock",
+-      "sha256": "4a7a5535cf045089458468411e126b5f59bc6bbf34fc0deead9b0c1b8d84000a"
+-    }
+-  },
++  "locks": null,
+   "cargo_profile": "dev-small",
+   "nextest_profile": "local",
+   "junit_relative_path": "codex-rs/target/nextest/local/junit.xml",
+@@ -342,7 +311,7 @@
+     "root_creation_guard": "967ef896907e698a07e8028e049a47e934570b1d",
+     "uid": 1000
+   },
+-  "build_only_binding_limit": "Current ai395 4a baseline is BUILD_ONLY_CURRENT_HOST with tests_executed=false and test_qualification=false; historical ROG fb9 qualification and its paths remain unchanged. Driver requires the actual preceding foundation QUALIFIED receipt and successful original launcher/finally, exact post-foundation source/metadata/index/locks continuity, and a fresh minimum 48,517,479,536 B planning allowance. This is not a compiler/Bazel peak guarantee; the original per-command8GB remains.",
++  "build_only_binding_limit": "Current ai395 4a baseline remains BUILD_ONLY_CURRENT_HOST, tests_executed=false and test_qualification=false; historical ROG fb9 qualification and paths remain unchanged. Pool requires the actual driver QUALIFIED receipt and successful original launcher/finally, the driver entry/final guards with different legitimate pre/post locks, and original full locked metadata plus both source guards at the actual driver final tree. A fresh minimum 48,517,479,536 B conservative planning allowance and original per-command 8 GB reserve apply. No peak guarantee, no cache deletion, no lower pool budget, no driver result is predicted.",
+   "source_identity_bridge": {
+     "native_code_tree": "4a3374e22e16ce5c764288ad018cd9affadf94ea",
+     "same_code_source_commit": "20fd174ded4e5ce01bda34e4f6d1d74803301f49",
+@@ -414,7 +383,7 @@
+       "source_and_checksum_validated_by_original_P3": true
+     }
+   },
+-  "external_build_prerequisite_guard_limit": "The driver launcher checks the actual OpenSSL/libcap/V8 receipts and physical files plus all pinned tools before execution and in finally; V7 SourceGuard alone does not claim to cover these external SDK files. Preserve the exact successful P4 environment and all SDK source provenance.",
++  "external_build_prerequisite_guard_limit": "The pool launcher preserves the exact driver launcher OpenSSL/libcap/V8 receipts, physical file checks, and all eight tool checks at entry and finally. V7 SourceGuard does not claim coverage of these external SDK files.",
+   "preflight_evidence": {
+     "actual_P4_job": "1a1ab11e5d6-fc05-49ec",
+     "original_P4_commands_exit_codes": [
+@@ -443,51 +412,36 @@
+     "libcap_complete_root_review": "2da1bd12b4da41936e0354fc5f6e29b291661536"
+   },
+   "harness_attempt_context": {
+-    "kind": "DISABLED_DRIVER_CANDIDATE_BOUND_TO_ACTUAL_FOUNDATION_TERMINAL",
+-    "foundation_job_id": "1a1ab493f2b-fc05-4bfe",
+-    "foundation_root_execution_guard": "9ef6f66dca8ec960aad511a6fb9a973b7c3349a8",
+-    "foundation_binding_identity": {
+-      "path": "/workspace/scratch/07dd58cc9630/hepta-audit-fifth/foundation-binding-ENABLED.json",
+-      "bytes": 19313,
+-      "sha256": "59b1a7791a34fa753c8a12e683ebd48631e920b35f42863cebbd8fd28679b083"
+-    },
+-    "prior_provider_start_timeout_and_same_key_reconciliation_remain_historical": true,
+-    "current_driver_execution_authorized": false
+-  },
+-  "driver_required_actual_bindings": {
+-    "previous_epoch_receipt": "Exact current ai395 foundation QUALIFIED epoch-terminal bytes and path, never a predicted receipt.",
+-    "initial_tree": "Actual final_tree from that receipt and complete final source guard.",
+-    "baseline_metadata": "Original final positive scope full no-p metadata plus matching source-before/source-after guards and terminal source; preserve real path/hash.",
+-    "locks": "Actual prior terminal locks and final source guard, not copied forward or guessed.",
+-    "ordinary_head_and_index": "Require exact continuity with retained current binding, prior receipt and final guards; no reset or stat rewrite.",
+-    "external_prerequisites": "Reuse exact current SDK/V8/tools/environment pins; fresh physical guards at launcher entry and finally.",
+-    "capacity": "Fresh initial free >=48,517,479,536 B and per-command original8GB.",
+-    "scope": "Only frozen epoch-driver; no other epoch, no tests outside its scopes, no timeouts/retries/skip changes."
+-  },
+-  "previous_epoch_binding": {
+-    "path": "/home/qq/work/hepta-audit-b16-20261105/evidence/b16-foundation-v7-ai395-20261105-v1/binding.json",
+-    "bytes": 19313,
+-    "sha256": "59b1a7791a34fa753c8a12e683ebd48631e920b35f42863cebbd8fd28679b083",
+-    "git_blob": "29bb5e643fddc7fc571f6e4631ac3a9074f247a2"
+-  },
+-  "previous_epoch_launch_terminal": {
+-    "path": "/home/qq/work/hepta-audit-b16-20261105/evidence/b16-foundation-v7-ai395-20261105-v1/launcher-terminal.json",
+-    "bytes": 8176,
+-    "sha256": "209c3b2bfd0031aba00a765da7e66b54bd6fa23e882a7307bb337801d2123bc5",
+-    "git_blob": "d0d0ed580b0fc724caf393f630ef2c212e9c1fa4"
+-  },
++    "kind": "DISABLED_POOL_TEMPLATE_PENDING_ACTUAL_DRIVER_QUALIFICATION",
++    "driver_job_id": null,
++    "driver_root_execution_guard": null,
++    "driver_execution_or_completion_observed_at_template_creation": false,
++    "driver_provider_start_and_same_key_reconciliation_timeouts_are_not_product_results": true,
++    "current_pool_execution_authorized": false,
++    "foundation_qualification_is_not_driver_or_pool_qualification": true
++  },
++  "previous_epoch_binding": null,
++  "previous_epoch_launch_terminal": null,
+   "baseline_metadata_source_guards": {
+-    "before": {
+-      "path": "/home/qq/work/hepta-audit-b16-20261105/evidence/b16-foundation-v7-ai395-20261105-v1/run/0122-B10_R2e3_final-metadata-before-guard.json",
+-      "bytes": 911,
+-      "sha256": "743aa10a21af56d61f0e171ab3b24c9acda1c12df9b8e1e6f4d846d5d784b040",
+-      "git_blob": "f24ab5c6380e2e30a246ddeec993a1ae17c4da29"
+-    },
+-    "after": {
+-      "path": "/home/qq/work/hepta-audit-b16-20261105/evidence/b16-foundation-v7-ai395-20261105-v1/run/0123-B10_R2e3_final-metadata-after-guard.json",
+-      "bytes": 910,
+-      "sha256": "006b4c68b7ff68310ea74b4d85453f6927bd96f6d9bfebd2f2c8aae0ed0093c2",
+-      "git_blob": "8368e08b9a44a392c5732161e87a93bbe8d45ed0"
+-    }
++    "before": null,
++    "after": null
++  },
++  "previous_epoch_source_guards": {
++    "before": null,
++    "after": null
++  },
++  "pool_required_actual_bindings": {
++    "previous_epoch_receipt": "Actual current-host driver QUALIFIED epoch-terminal, never install success or a predicted receipt.",
++    "previous_epoch_binding": "Exact enabled driver binding that started from its actual qualified foundation final tree and pre-generation locks.",
++    "previous_epoch_launch_terminal": "Actual driver launcher zero exit plus original runner zero and successful final external SDK/tool guards.",
++    "previous_epoch_source_guards": "Original driver epoch-entry and epoch-final guards, each bound to its own actual tree and lock bytes; no new native probe is requested.",
++    "initial_tree": "Actual driver final_tree. It is not final_A_tree or a projected tree assembled before lock generation.",
++    "locks": "Exact actual driver terminal Cargo.lock and MODULE.bazel.lock, allowed to differ from the driver's initial locks and immutable P4 baseline locks.",
++    "baseline_metadata": "An original successful full locked no-p driver metadata command at the exact driver final source, normally B14_driver_twelve-metadata, plus its original before/after whole-source guards.",
++    "ordinary_head_and_index": "Exact current 20fd HEAD/index6b39 continuity through foundation, driver entry/final and pool; no reset/stat rewriting.",
++    "external_prerequisites": "Preserve actual eight tools and environment plus OpenSSL/libcap/V8 physical entry/finally guards.",
++    "capacity": "Fresh initial free >=48,517,479,536 B, unchanged conservative 1-family+12GB Cargo+8GB Bazel+2GB evidence+8GB reserve; pool runs no new lock/Bazel stage.",
++    "scope": "Only frozen epoch-pool: one negative source variant across two package scopes (three expected assertion failures), one exact restore, then the same three positive cases. The ignored support child is not another PASS.",
++    "enablement": "Root fills all actual pins and explicitly enables after driver acceptance. This template cannot execute."
+   }
+ }

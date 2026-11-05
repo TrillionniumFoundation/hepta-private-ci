@@ -1,0 +1,78 @@
+{
+  "schema": "hepta-immutable-ci-transport-v1",
+  "archive": {
+    "name": "original-ci.tar.gz",
+    "bytes": 607067,
+    "sha256": "3fec1d9da28df8e17af41e4d06e243df3a1a08643418ac7553bc397b693385f0",
+    "computed_git_blob": "307d7711b92641b385f4cc133b83b0cc9d0d461f"
+  },
+  "original_files_manifest": {
+    "name": "original-files-manifest.json",
+    "bytes": 10243,
+    "sha256": "9ac9c1a32db9b186c68a43d2ba19204c6911b7ea80408ef8bcb9544d04e406c4",
+    "computed_git_blob": "da0bc912a2277e308d14c60282ed733ae1b05170"
+  },
+  "part_count": 4,
+  "parts": [
+    {
+      "index": 0,
+      "name": "original-ci.tar.gz.part000.b64.txt",
+      "compressed_offset": 0,
+      "file": {
+        "bytes": 262145,
+        "sha256": "f55de6d8ccf3a2e09493a854d745d0e9827b2f62d706f1966ca6bc7a7e029696",
+        "computed_git_blob": "17ba59ff55c8f455b8ba6bd4e01b3382d93d3fef"
+      },
+      "decoded_chunk": {
+        "bytes": 196608,
+        "sha256": "9c0551180d341bd8c954cf2db03cf6869cd297de9f08075333c71d944412dc8b",
+        "computed_git_blob": "747f85bc5c395736ef87f4719ca7663f6e67304f"
+      }
+    },
+    {
+      "index": 1,
+      "name": "original-ci.tar.gz.part001.b64.txt",
+      "compressed_offset": 196608,
+      "file": {
+        "bytes": 262145,
+        "sha256": "a49c19c26142e84db70a81b6f64e1a591993fc57ac53cc5846574020e9326fd2",
+        "computed_git_blob": "b5e236c0a2186f9e98d2aea95838e486b32d5981"
+      },
+      "decoded_chunk": {
+        "bytes": 196608,
+        "sha256": "b9d2d0bd9e1523c3b1856e4b544d80511bdd238574b9d91c5f4f7f3802a9b4cc",
+        "computed_git_blob": "b4671c26b81cfe6f0e637f65c427e3e9c2922775"
+      }
+    },
+    {
+      "index": 2,
+      "name": "original-ci.tar.gz.part002.b64.txt",
+      "compressed_offset": 393216,
+      "file": {
+        "bytes": 262145,
+        "sha256": "76b068b9d68b43bfba8ad8932da70ead2209053e527b02282169c940a9374d7a",
+        "computed_git_blob": "c552a9919d539ed9971d4793050e8e16f694869f"
+      },
+      "decoded_chunk": {
+        "bytes": 196608,
+        "sha256": "5c87a1233a43755f94c228eccbd8a1ab4bc6b7b2560917de07a561d3aa5d7064",
+        "computed_git_blob": "895bc1403da59c054b9237099d82b85029d729f7"
+      }
+    },
+    {
+      "index": 3,
+      "name": "original-ci.tar.gz.part003.b64.txt",
+      "compressed_offset": 589824,
+      "file": {
+        "bytes": 22993,
+        "sha256": "11eb8b6faa33cbe7dbf2d5f58f170287d2b500acdb0d24049415ead7a25e3734",
+        "computed_git_blob": "362686835c6eccd9c69a64ce3acd577ce07750c8"
+      },
+      "decoded_chunk": {
+        "bytes": 17243,
+        "sha256": "f6c7d564294167205e6a85b450d588083fb2791125cb6cda0fb1e0d3ad1fe0cd",
+        "computed_git_blob": "a0e8b3ab7746e2ba7efe5cbf1474c052abc7dd9e"
+      }
+    }
+  ]
+}

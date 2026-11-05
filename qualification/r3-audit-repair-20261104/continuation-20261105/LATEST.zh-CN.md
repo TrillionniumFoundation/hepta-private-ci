@@ -1,34 +1,47 @@
 # 当前审计与修复状态
 
-**原 23 项仍为 8 项限定范围闭合、14 项开放、1 项科学 HOLD；尚未取得全部 blocker 闭合或 main 合并资格。**
+**原 23 项仍为 8 项限定范围闭合、14 项开放、1 项科学 HOLD。Foundation 原定范围已实际通过；driver 启动结果未知，最终候选与全部 blocker 尚未闭合。**
 
-产品修复已经发布到 [Draft PR #4797](https://github.com/TrillionniumFoundation/hepta-private-ci/pull/4797)，当前固定 head 为 `5b6331250ff459033bd44d1a95daec70131277cc`，代码 tree 为 `b26598d0d97d8d51e723bb5582137315f2174d35`。本轮七个提交涉及十个文件；旧失败和修复回执分别保留。
+产品修复已发布到 [Draft PR #4797](https://github.com/TrillionniumFoundation/hepta-private-ci/pull/4797)，固定 head 为 `5b6331250ff459033bd44d1a95daec70131277cc`、代码 tree 为 `b26598d0d97d8d51e723bb5582137315f2174d35`。本次只登记审计材料、原件与明确未取得原生资格的下一份候选，没有修改产品源、产品 ref、base 或 main。
 
-## 最近已经完成
+## 最新完成
 
-- macOS Bash 3.2 的原 wrapper 57 用例：修复前原 3 个失败重现，修复后 57 PASS、0 跳过/重试。13 个精确文件的真实 Git 投影及全部 74 份原件已经独立核验。
-- Linux 原 PTY 29 用例全部通过；原 fix/fmt 和两个 diff-check 成功，测试专用诊断及实际 fmt 改动已经提交。Intel PTY 的原失败原因和原平台资格继续开放。
-- ai395 的 V8、OpenSSL、libcap 构建前置已解决。原六 helper build、完整 metadata、无过滤完整 catalog 三条命令全部成功。19,506 个可执行用例、57 个原 ignored、193 成员、1,501 图节点和 363+33 程序身份均保持原契约。
-- 原目录解析器误拒绝 ignored 的失败已定位并保留。只读 completion 成功取得 396 个当前产物身份，没有重跑成功命令、没有执行 B 组测试。V7 使用完整原名单修正这一判断，保持原执行门；Git 工具身份也已独立补齐。
-- 新提交的 Intel / Windows operator 原 CI 分别实际通过 33 / 40 个原用例，含真实 OpenSSH 对照。Windows 普通业务库在实际 base-merge 上通过 118 个具名用例，保留库在产品 head 上通过 532 个具名用例，另有 7 个未具名跳过。完整日志与原 ZIP 分别核验，均不代替真实外部产品接受。
-- 可信入口 Foundation 已实际进入 B 源码验证：首组 4 个原 SQLite 提交门控制通过、0 重试；原 216 个过滤项单列。原定反事实负控继续执行，尚未取得整个 Foundation 或 B16 的关闭资格。
+- **Foundation：24 个不同正向控制、27 次规定执行全部 PASS；9 个不同负控、10 次规定执行均触发原物理断言；4 次 finally 精确恢复。** 原任务 `1a1ab493f2b-fc05-4bfe` 的 runner/launcher 均退出 0，完整终态 QUALIFIED，最终源码树 `e510f685d2aa7b9a7121a78f96af3569919e6f88`。
+- 最后四例证实：只要 SQLite 原生连接还活着，即使 pool/上层对象已关闭或 commit hook 已移除，custody 和文件锁仍保持；取消关闭也走到真实 checkpoint 与 SQLite 提交否决路径。
+- Foundation 最终完整 metadata 原件 8,296,096 字节，193 成员/1,501 节点，双源守卫、普通 HEAD/index、双锁及四组 SDK/工具末态原件均已独立核验。
+- 全部 Foundation 原件已完整归档并由根审重新解码核验：352 个原路径、110,290,778 字节；无损去重只影响传输，352 个路径均保留。8 个分片重建 341 个内容对象，116 份整树守卫全部与各自原树、原 HEAD/index/双锁一致。
+- Driver 的具体 binding、原 29 对象安装包和启动器完成双审，绑定实际 Foundation 终态。原 12 正向父例、3 负控父例、2 恢复及 Bazel 注册范围未变，fresh 48,517,479,536 字节门槛和逐命令 8 GB 余量保留。
+- R2f1 Root checkpoint transport 三文件候选已经写成并双重静态核验，386 行新增。它仍未编译/原生执行，不产生 Current，不借用 Foundation 的通过资格。
+- Windows 两份锁文件 receipt 的哈希差异已由完整 LF 原件的精确 CRLF 转换解释；Windows parent DELETE_CHILD 物理删除缺口的独立机制审查也已完成，B11 继续开放。
+- 新发现的 Memory 拒绝 COMMIT 后 stale transaction depth 风险已有两入口最小候选与两个物理控制，仍待实际编译和红绿验证；Foundation 旧控制不覆盖这一 SQLx Transaction bookkeeping 路径。
 
-## 正在推进
+## 当前实际阻塞
 
-旧 blocking run 的单个串行等待已经解除。10:41:39 的逐 job 快照及截至 10:45:00 的完整分页中，新 19 个 workflow 有 44 个 job：38 queued、2 skipped、4 success。**工作流顶层 queued 不证明内部没有执行**；后续按逐 job 的源码身份、完整日志与原用例结果更新。新 118+532 个用例与冻结的 142 个原失败退出用例没有名字交集，不据此减少这些未验项；两项 Windows 私有目录拒绝控制另获同 head 的实际通过结果。
+Driver 的首次启动和两次相同 key/实参协调均遇到 MCP request timeout，未取得任务编号。第二次协调以前，已通过后台只读接口取得旧 Foundation 任务的权威成功状态；这不证明 driver 写入调用成功。后验只读检查没有找到可归属的 owned installation；inventory 不提供 key/fingerprint。**当前是 START_OUTCOME_UNKNOWN，不能记为 native FAIL、0 用例或 PASS。** SSH 健康只证明连接正常，没有另建 key 或重复运行原编译。
 
-可信入口按已审查的 foundation → driver → pool → checkpoint → owning 顺序推进。构建收据仍只授予 BUILD_ONLY 范围；新原生结果独立记在实际任务 `1a1ab493f2b-fc05-4bfe` 下。首次启动工具超时保留；完全相同请求与操作键的对账取得 durable job，控制器实际返回 `reused=false`。原 24 个不同阳性控制、27 次规定执行、10 个负控执行、恢复规则和预算均保留。
+本次登记冻结的 **12:40:31 UTC** 逐 job 快照为 19 workflow / 44 job：**16 queued、16 running、9 success、1 failure、2 skipped**。任务会随前驱成功继续展开，44 不是预设最终数量。Windows Core lifecycle 在 12:12:02 实际失败：原正常分片共 2,343 个不同用例，其中 2,339 PASS、1 FAIL、3 ignored。唯一失败是 `blocking_snapshot_waits_for_starting_environment` 的原日志父子链断言；编译完成、业务等待断言已通过，但捕获日志缺少 snapshot 父 span。同任务较早的隔离四例包含该例并全部通过，不能覆盖后续正常并行失败。
 
-10:14 / 10:26 的 PR 增量复核另发现 45 个新 Draft 编号与 49 条近期更新记录。它不改变原全量库存的观察时间。Windows PTY donor 的新编译失败、Windows 删除隔离的真实边界及未接生产的 Memory 候选均单独记录，没有直接并入产品。
+新增 source-head 普通业务库在 12:09:56 实际通过 118 个具名用例，独立于之前 base-merge 上的 118 例；这两次执行不能合成 236 个不同测试。Windows owner-local 于 12:31:09 实际通过 UDS 14、Matrixd 31、Agentd 172，合计 217 个具名原 library 用例，三组均 0 skip；它们与原 142 个退出用例交集为 0，B13 的 Agentd 专项目标不在该 library 范围。已完成的 Intel operator 33、Windows operator 40、retained 532 例均保留，retained 另有 7 个未具名跳过。新 Core 原分片与冻结 142 个退出用例交集为 12 个实际 PASS（B08 3 个、B09 9 个）；其余 130 个未由该范围覆盖，原 blocker 状态不变。仅诊断或跳过业务阶段的成功任务不计业务验收资格。
+
+Core 的六行 Dispatch 候选经独立复核仍有初始化竞态窗口，已停止晋升。正在准备同一测试 binary 的精确单例 owned child 隔离：原父用例仍进入原分片，子进程保留原三条日志链断言、5 秒预算与业务流程，并须证明精确执行一个原用例、透传失败和输出、完成子进程清理。当前 pinned 源码机制与失败日志相符，实际 CI 调度交错仍属推断；尚未取得修复资格。
+
+后续继续按实际前序终态推进 driver → pool → checkpoint → owning，再完成正常 Root/Current/三池/签名 objective 与实际 caller 接线。B18 科学 HOLD、B19 Bao/Chain/HIA 的真实外部接受、原平台 CI 和 Windows 严格删除合同均按原条件独立闭合。
+
+Foundation 阶段 catalog 保留原 `-E` 选择、没有 `-p`；它保持 workspace 特性解析和程序布局，不是重新取得完整原 19,563 用例的无过滤或全执行资格。之前的 P4 完整 catalog 仍只是 BUILD_ONLY 前置。
 
 ## 阅读入口
 
-- [本轮构建收尾、目录修正、新 CI 结果与执行计划](CONTINUATION_PROGRESS_V3.zh-CN.md)
-- [原 23 项及本次进度](continuation-blocker-progress-v2.json)
+- [Foundation 完整结果、driver 接续与当前执行计划](CONTINUATION_PROGRESS_V4.zh-CN.md)
+- [原 23 项本次进度](continuation-blocker-progress-v3.json)
 - [全量项目审计](../CURRENT_AUDIT_PROGRESS.zh-CN.md)
-- [项目发展方向与后续计划](../PROJECT_DIRECTION_AND_PLAN.zh-CN.md)
-- [Mac wrapper 原 57 用例资格说明](MAC_WRAPPER_QUALIFICATION.zh-CN.md)
-- [新 PR 增量与候选边界复核](PR_INCREMENT_20261105_1014.zh-CN.md)
-- [上一批快照：发布、构建前置和原始失败](CONTINUATION_PROGRESS_V2.zh-CN.md)
+- [项目发展方向与当前执行计划](PROJECT_DIRECTION_AND_EXECUTION_PLAN_V2.zh-CN.md)
+- [Foundation 十阶段根审](reviews/foundation-phase-review-through-10.json)
+- [Foundation 全量原字节归档](native/b16-ai395-foundation-v7-v2/complete-archive/archive-manifest.json)
+- [Windows Core 完整失败和逐名结果](generated-evidence/ci-5b633-windows-core-lifecycle-v5/original-terminal-review.json)
+- [12:40 CI 快照与 Windows owner-local 原件](generated-evidence/ci-5b633-owner-local-and-snapshot0040-v5/snapshot-summary.json)
+- [Memory 连接复用修复候选](candidate-next/b16-refused-commit-pool/README.zh-CN.md)
+- [Windows 删除机制独立复核](reviews/b11-token-interface-independent/REVIEW.zh-CN.md)
+- [下一份 Root checkpoint 代码候选及限制](candidate-next/r2f1-root-checkpoint-transport/README.zh-CN.md)
+- [上一快照：新 CI、构建前置和第一组实际结果](CONTINUATION_PROGRESS_V3.zh-CN.md)
 
-原失败、取消、skip/retry、早退、缓存与未取得的证据分别记账。科学 HOLD、正常 UI/Root/provider 接受及 Bao/Chain/HIA 的真实外部接受没有因为构建或局部测试成功而关闭。
+已发布的本轮七个产品提交、十个修改文件，以及此前 Mac wrapper 原 57 用例、Linux PTY 原 29 用例的实际修复和证据全部保留。原失败、取消、skip/retry、早退、缓存和未知项不被新通过数覆盖。

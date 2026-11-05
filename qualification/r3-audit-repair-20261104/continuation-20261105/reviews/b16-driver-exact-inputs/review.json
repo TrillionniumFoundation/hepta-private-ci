@@ -1,0 +1,997 @@
+{
+  "schema": "hepta-b16-driver-next-epoch-input-review-v1",
+  "verdict": "STATIC_INPUTS_ACCEPTED_PENDING_QUALIFIED_FOUNDATION_AND_EXPLICIT_DRIVER_BINDING",
+  "internal_stage_ids_are_not_original_blocker_ids": true,
+  "driver_execution_authorized": false,
+  "native_execution_by_reviewer": false,
+  "refs_changed": false,
+  "runner_payload_oracles_modified": false,
+  "source_context": {
+    "final_A_tree": "4a3374e22e16ce5c764288ad018cd9affadf94ea",
+    "ordinary_head": "20fd174ded4e5ce01bda34e4f6d1d74803301f49",
+    "current_host": "ai395",
+    "initial_driver_tree": null,
+    "previous_qualified_foundation_receipt": null,
+    "initial_driver_metadata": null,
+    "driver_generated_locks": null,
+    "limits": "These null fields require actual foundation terminal and source/metadata/lock receipts. B01 4/4 PASS is not the complete prerequisite."
+  },
+  "frozen_runtime_inputs": [
+    {
+      "path": "architecture-audit/b16-guarded-native-runner-20261105/original-ignored-catalog-v7/v7-candidate/runner-integrity.json",
+      "bytes": 5679,
+      "sha256": "96bbff3180620d841b90b65ea1e159d04931c47fd2de1c270ba0f6c059ac5202",
+      "git_blob": "18f27fbb488777d621b4f37aa0cf70956cdbe7d9"
+    },
+    {
+      "path": "architecture-audit/b16-guarded-native-runner-20261105/original-ignored-catalog-v7/v7-candidate/payload-manifest.json",
+      "bytes": 62667,
+      "sha256": "a34cd6c5400deff4fedfffcb1f4f170eecabbb6bbfab1916829ab3911e986237",
+      "git_blob": "64db580beabe2642eb8611184dac4fc686fe34e1"
+    },
+    {
+      "path": "architecture-audit/b16-guarded-native-runner-20261105/original-ignored-catalog-v7/v7-candidate/epoch-driver.json",
+      "bytes": 4348,
+      "sha256": "d28c2e9faa1cc0e3272d6aba88bfc3a49b062a484b6df530cca2ef2cf95a189f",
+      "git_blob": "5bd1014173766cb3599439e6a202514916286a5e"
+    },
+    {
+      "path": "architecture-audit/b16-guarded-native-runner-20261105/original-ignored-catalog-v7/v7-candidate/b16_runner.py",
+      "bytes": 16005,
+      "sha256": "f419dfa8e4cd98fc729c8b9851d8ea8ae3413a0fb1906358f8556920200b6944",
+      "git_blob": "4c8c2477189b84c6fe7b19c09fd27255bc7d1b66"
+    },
+    {
+      "path": "architecture-audit/b16-guarded-native-runner-20261105/original-ignored-catalog-v7/v7-candidate/b16_guard.py",
+      "bytes": 10896,
+      "sha256": "d0ba5a5746711a322438200498786044c8d561d9a256f7280a2c4791c6bd0389",
+      "git_blob": "a9a38d14c220be4c44336a6fefac08a168e52dcf"
+    },
+    {
+      "path": "architecture-audit/b16-guarded-native-runner-20261105/original-ignored-catalog-v7/v7-candidate/b16_locks.py",
+      "bytes": 13015,
+      "sha256": "5edb44c7e4a6ce63981adc4681fead1987ddc19389e7d0659c9e4d3e13d8514e",
+      "git_blob": "1a6583b6226af4d20bb336b778476dedb02d59f4"
+    },
+    {
+      "path": "architecture-audit/b16-guarded-native-runner-20261105/original-ignored-catalog-v7/v7-candidate/b16_native.py",
+      "bytes": 17595,
+      "sha256": "10620e1688ba208db22e22b6ecd727657b18967ca0d749be8ff0fd348fd1c92d",
+      "git_blob": "7596d6a32f4066cc72336767bcc71313d68675f8"
+    },
+    {
+      "path": "architecture-audit/b16-guarded-native-runner-20261105/original-ignored-catalog-v7/v7-candidate/b16_oracles.py",
+      "bytes": 7483,
+      "sha256": "5928528add9ecb0f6a1681057a26954d9c607fb14c129293fa4bc6eac4e07e85",
+      "git_blob": "1a6efff50846f5c04bb5ea6def203ada42342050"
+    },
+    {
+      "path": "architecture-audit/b16-guarded-native-runner-20261105/original-ignored-catalog-v7/v7-candidate/b16_build_only.py",
+      "bytes": 14919,
+      "sha256": "c19d6a25664a46c5736803dc60807a165bccbd57c1d04a6621f7a11eca7b4a0d",
+      "git_blob": "6a49c3e2f37d7f4cd42f45d7e37cca8c16669f12"
+    },
+    {
+      "path": "architecture-audit/b16-guarded-native-runner-20261105/original-ignored-catalog-v7/v7-candidate/b16_capacity.py",
+      "bytes": 6342,
+      "sha256": "1581bdda147f4a74bd41c421cd267686ee75c42619ce37eddc5e459e41a0174d",
+      "git_blob": "4966c059c39ba5f7342feb40f88fda906607a32d"
+    }
+  ],
+  "payload_parts": [
+    {
+      "path": "architecture-audit/b16-guarded-native-runner-20261105/original-ignored-catalog-v7/v7-candidate/source-payload-00.json",
+      "bytes": 350291,
+      "sha256": "44299f93d8cfc2cd6a264a1df985052d8c7c4eb16e62c9bd8614b70cb9564f78",
+      "git_blob": "8e5ed16eca037384b17830f3625489ddf69f7d7a"
+    },
+    {
+      "path": "architecture-audit/b16-guarded-native-runner-20261105/original-ignored-catalog-v7/v7-candidate/source-payload-01.json",
+      "bytes": 333825,
+      "sha256": "85adc1e88702b4fb8c9d417a936d665519fa56386cb434bbc6ef55d5f9cdf07d",
+      "git_blob": "e621574b496731997af604b8e4b138851c8be3d0"
+    },
+    {
+      "path": "architecture-audit/b16-guarded-native-runner-20261105/original-ignored-catalog-v7/v7-candidate/source-payload-02.json",
+      "bytes": 342693,
+      "sha256": "563074644cce7c3e63f92e5b5e346e09d24ff4ca03e90cea4ca1b001347186ce",
+      "git_blob": "3bb4615120935560dd4bff326795b68e03cfb31a"
+    },
+    {
+      "path": "architecture-audit/b16-guarded-native-runner-20261105/original-ignored-catalog-v7/v7-candidate/source-payload-03.json",
+      "bytes": 345962,
+      "sha256": "8a633ff6916a8b543e8aca196c54a41cc180d8f68c2cd2a26f2fe0e87ca57f55",
+      "git_blob": "819cfab8bf8a410d944e7d2c8c185d07a1eea886"
+    },
+    {
+      "path": "architecture-audit/b16-guarded-native-runner-20261105/original-ignored-catalog-v7/v7-candidate/source-payload-04.json",
+      "bytes": 135857,
+      "sha256": "5d43327e7379cca4e6502973efd7ba6a3f67fb464c3bf41ebbaf1f88c6132bba",
+      "git_blob": "e5a287d7ae1f8a0c77cec32ce1113a48e94f8daa"
+    }
+  ],
+  "adoption": {
+    "path_count": 61,
+    "new_vendor_files": 60,
+    "existing_changed_paths": [
+      "codex-rs/Cargo.toml"
+    ],
+    "all_modes": "100644",
+    "deltas": {
+      "driver-adoption": {
+        "label": "driver-adoption",
+        "files": [
+          {
+            "path": "codex-rs/Cargo.toml",
+            "mode": "100644",
+            "before_blob": "4713741651affd053bb8ae5aa8b5d76831c15c0e",
+            "after_blob": "ef34e2f3926055d868a00ceafb3ac4694d7156ed",
+            "bytes": 22725,
+            "sha256": "6474e8e9ce81df154d76bc68671acfa25aec0b306b419a14b6ed58dbe8e169ff"
+          },
+          {
+            "path": "codex-rs/third_party/sqlx-sqlite-0.9.0/.cargo_vcs_info.json",
+            "mode": "100644",
+            "before_blob": null,
+            "after_blob": "f133fd70dbc3de37c8faaf09d928ca4e51f42c02",
+            "bytes": 105,
+            "sha256": "34f4ec6fd11a78aa8ef5214c49a5c2d5dffd80079196c13797887f36a88b9cab"
+          },
+          {
+            "path": "codex-rs/third_party/sqlx-sqlite-0.9.0/BUILD.bazel",
+            "mode": "100644",
+            "before_blob": null,
+            "after_blob": "4b8bcf22ab952a65c3e6bf0a25d36cb49869425d",
+            "bytes": 317,
+            "sha256": "60920bd8b2f0af6742449ee52c5527b40062fd5611c5a46fd82cb10a8df49d88"
+          },
+          {
+            "path": "codex-rs/third_party/sqlx-sqlite-0.9.0/Cargo.lock",
+            "mode": "100644",
+            "before_blob": null,
+            "after_blob": "ab88efa7fef22ae3b0192cc529bb4916e1485543",
+            "bytes": 34531,
+            "sha256": "aa84ca06b7b49982d0242cc5e4154e67bc2608434000da2e750864fbc8ff06f9"
+          },
+          {
+            "path": "codex-rs/third_party/sqlx-sqlite-0.9.0/Cargo.toml",
+            "mode": "100644",
+            "before_blob": null,
+            "after_blob": "39b9edd7321acfcd60dcfc6422160a8b233e9ffc",
+            "bytes": 3836,
+            "sha256": "a344e9400a2cea7feb0d59fbf0122e5b7a1d1e174b31a8b2286d0a585110f3f7"
+          },
+          {
+            "path": "codex-rs/third_party/sqlx-sqlite-0.9.0/Cargo.toml.orig",
+            "mode": "100644",
+            "before_blob": null,
+            "after_blob": "ffac1b9d149abd5252fd616ffb714a3b1cd3e68d",
+            "bytes": 2829,
+            "sha256": "af4193e1d9d8e9f63c85bf2468cdb24f4e9b7c217bd0745082fecf1a7369b0c6"
+          },
+          {
+            "path": "codex-rs/third_party/sqlx-sqlite-0.9.0/LICENSE-APACHE",
+            "mode": "100644",
+            "before_blob": null,
+            "after_blob": "e14699fb149e0b5cd2f2aa206d7bc4d5f8828fc3",
+            "bytes": 10297,
+            "sha256": "c8f5453612253e8ea8bad241617fe74c4a6d5d592ba64ff881668c211b50ac99"
+          },
+          {
+            "path": "codex-rs/third_party/sqlx-sqlite-0.9.0/LICENSE-MIT",
+            "mode": "100644",
+            "before_blob": null,
+            "after_blob": "6fe828e8eab3262db2dd59e567e3b35d8aea0f66",
+            "bytes": 1109,
+            "sha256": "5abbdd842310c8f1650fcde3a5a51a3e09412b9e5a6eea87519e0db9e32b339d"
+          },
+          {
+            "path": "codex-rs/third_party/sqlx-sqlite-0.9.0/src/any.rs",
+            "mode": "100644",
+            "before_blob": null,
+            "after_blob": "b3a5af55430ab4791eba6260e789ef854a65928c",
+            "bytes": 8130,
+            "sha256": "8e53372c37cee839dca016d16b6e8ea44432c0da41e68e548ec6bda84d90c6e0"
+          },
+          {
+            "path": "codex-rs/third_party/sqlx-sqlite-0.9.0/src/arguments.rs",
+            "mode": "100644",
+            "before_blob": null,
+            "after_blob": "4fd7da506749e4b5e467465f50a5d658a29a1831",
+            "bytes": 4513,
+            "sha256": "ba3cf95aa22adacddb01aee53918e77aaea8636c0e390e7800299eec1498ff58"
+          },
+          {
+            "path": "codex-rs/third_party/sqlx-sqlite-0.9.0/src/column.rs",
+            "mode": "100644",
+            "before_blob": null,
+            "after_blob": "d319bd46a890c5fb73f2460d69bbbeb4a7eaf290",
+            "bytes": 754,
+            "sha256": "b3951777b4b94f5512038da6d0ab5dc59a42d12937281dab9b18c9f79a94c350"
+          },
+          {
+            "path": "codex-rs/third_party/sqlx-sqlite-0.9.0/src/connection/collation.rs",
+            "mode": "100644",
+            "before_blob": null,
+            "after_blob": "229e780adfbdb34ac117cf279e11b70a79a491fc",
+            "bytes": 4730,
+            "sha256": "d863421fe2f377315ca75c2912e702b13cbb4b978ec3940989ae08c9acf2f752"
+          },
+          {
+            "path": "codex-rs/third_party/sqlx-sqlite-0.9.0/src/connection/describe.rs",
+            "mode": "100644",
+            "before_blob": null,
+            "after_blob": "400c671d96981326d335bf3914994217df88e23e",
+            "bytes": 3248,
+            "sha256": "f3cf13697aa71f09037017978f24292d358e4c2cdf32b06684e6fbb9e0d09372"
+          },
+          {
+            "path": "codex-rs/third_party/sqlx-sqlite-0.9.0/src/connection/deserialize.rs",
+            "mode": "100644",
+            "before_blob": null,
+            "after_blob": "5056eb6784a144375f9771869393581d75f5d303",
+            "bytes": 10226,
+            "sha256": "313984d02f10029201541e690ffda6f3620176b9676e598dac32d6ce04f59c3c"
+          },
+          {
+            "path": "codex-rs/third_party/sqlx-sqlite-0.9.0/src/connection/establish.rs",
+            "mode": "100644",
+            "before_blob": null,
+            "after_blob": "7bf04f3f06165371bfbe525c61cbaafa0c46667f",
+            "bytes": 10287,
+            "sha256": "3052fcc3047592fbb9b2d56030b39065fa3e77e1b9de69630671f1fa07d62dbe"
+          },
+          {
+            "path": "codex-rs/third_party/sqlx-sqlite-0.9.0/src/connection/execute.rs",
+            "mode": "100644",
+            "before_blob": null,
+            "after_blob": "733a1abbe66be36ddc4227c9cba8fbf46ad6b115",
+            "bytes": 3586,
+            "sha256": "d51b358721e8d790b3e81f1be6cf1d5db9391d0a81d6e04f607033fda7e61bf7"
+          },
+          {
+            "path": "codex-rs/third_party/sqlx-sqlite-0.9.0/src/connection/executor.rs",
+            "mode": "100644",
+            "before_blob": null,
+            "after_blob": "a62d3349a5590c726c44e9898b319b19ea507e48",
+            "bytes": 2934,
+            "sha256": "290451e396a8337eb8d850757537b8830d834790e386ed9f3887c8257a567e08"
+          },
+          {
+            "path": "codex-rs/third_party/sqlx-sqlite-0.9.0/src/connection/explain.rs",
+            "mode": "100644",
+            "before_blob": null,
+            "after_blob": "550f21557e3c9abea53c1910a275309a55d7f6ce",
+            "bytes": 67493,
+            "sha256": "4ec3e03d58eeb0ac5a0ca8621319291c7b3450c1bd3851a1b377410fe9d65ddd"
+          },
+          {
+            "path": "codex-rs/third_party/sqlx-sqlite-0.9.0/src/connection/handle.rs",
+            "mode": "100644",
+            "before_blob": null,
+            "after_blob": "ed7f2a0798a30f4e3574d0e6e685ac9b41aae1a6",
+            "bytes": 5735,
+            "sha256": "d1e809bb28d216bc0b84c6381adcbb6f89d123754c66a4b4498412295c0a2240"
+          },
+          {
+            "path": "codex-rs/third_party/sqlx-sqlite-0.9.0/src/connection/intmap.rs",
+            "mode": "100644",
+            "before_blob": null,
+            "after_blob": "f8308067ccf85d7288fa26bb0d3fe1a5e1b88b90",
+            "bytes": 4903,
+            "sha256": "8bab4e1d38cf98ddbc463ac4ace1c4d4cfd34cda1a8e56ea71fcb674e3f25508"
+          },
+          {
+            "path": "codex-rs/third_party/sqlx-sqlite-0.9.0/src/connection/mod.rs",
+            "mode": "100644",
+            "before_blob": null,
+            "after_blob": "218c747143fe80b344bca3405d4b0b38da2bd932",
+            "bytes": 20337,
+            "sha256": "a20c2e51a1505e298fd897b378f9032c89b82850838aa6e5d9409f612fb1e7fd"
+          },
+          {
+            "path": "codex-rs/third_party/sqlx-sqlite-0.9.0/src/connection/preupdate_hook.rs",
+            "mode": "100644",
+            "before_blob": null,
+            "after_blob": "275958887309325bbe4eebee26f265253dd2b5f5",
+            "bytes": 5529,
+            "sha256": "9430c89b380aedf4cd96eac5ea38e3d0f214f8e3ba0e6782ce5c3ed828627402"
+          },
+          {
+            "path": "codex-rs/third_party/sqlx-sqlite-0.9.0/src/connection/worker.rs",
+            "mode": "100644",
+            "before_blob": null,
+            "after_blob": "2585dc1312210d9eb18c15f6df1158656d3c6b2c",
+            "bytes": 22317,
+            "sha256": "b66aafc56f0e287eac3b09111c5d4997d350ab61294c5cc576ce359bc18cebe4"
+          },
+          {
+            "path": "codex-rs/third_party/sqlx-sqlite-0.9.0/src/database.rs",
+            "mode": "100644",
+            "before_blob": null,
+            "after_blob": "ca52d1cf6b9e46a00707a4f45ed62d03d5411331",
+            "bytes": 981,
+            "sha256": "d2ba29891e6cce6867c27f8bc1f406e0e424546f904ee85fd50edc7e3c170856"
+          },
+          {
+            "path": "codex-rs/third_party/sqlx-sqlite-0.9.0/src/error.rs",
+            "mode": "100644",
+            "before_blob": null,
+            "after_blob": "5510e25d9716852823422277991d81571fa8bcf6",
+            "bytes": 4233,
+            "sha256": "446bf97a158fc6a3978fb8965e8c3d500e00baf6e9cc3fba086cd689c05579ad"
+          },
+          {
+            "path": "codex-rs/third_party/sqlx-sqlite-0.9.0/src/lib.rs",
+            "mode": "100644",
+            "before_blob": null,
+            "after_blob": "17b4bed1ca40f112690011dbc3f38b4585ed1001",
+            "bytes": 6797,
+            "sha256": "6e19e45ffc8e018912798e2290527a2a332ecc775b70bd86223efffc06d6e57b"
+          },
+          {
+            "path": "codex-rs/third_party/sqlx-sqlite-0.9.0/src/logger.rs",
+            "mode": "100644",
+            "before_blob": null,
+            "after_blob": "1464a730c772ed0d29e881e335c721a3a51219a2",
+            "bytes": 15468,
+            "sha256": "1e988a76580540586de2548a04081598615cbef88934d2a7afa1c7b2828ed471"
+          },
+          {
+            "path": "codex-rs/third_party/sqlx-sqlite-0.9.0/src/migrate.rs",
+            "mode": "100644",
+            "before_blob": null,
+            "after_blob": "5864023891349f7989f72746ced964c5a36d216c",
+            "bytes": 9159,
+            "sha256": "039a8072ddf9b05363f47ebde40f3649c040d329cfd81e1d2b2745c53c01790d"
+          },
+          {
+            "path": "codex-rs/third_party/sqlx-sqlite-0.9.0/src/options/auto_vacuum.rs",
+            "mode": "100644",
+            "before_blob": null,
+            "after_blob": "582631c5bd636e11fd50e2f961ee69c3895f2d8b",
+            "bytes": 956,
+            "sha256": "0669bc62f9d0600e106443eeb1521635032ac48c123cbc232540fa3822aaaafd"
+          },
+          {
+            "path": "codex-rs/third_party/sqlx-sqlite-0.9.0/src/options/connect.rs",
+            "mode": "100644",
+            "before_blob": null,
+            "after_blob": "cfa25872b2c118cc955ac4e2f9cfb64e19e4a0ee",
+            "bytes": 2305,
+            "sha256": "6eab2d3914a2c9f35c60bd8b324e46790eca39a23c30a0d4101e35be52b04253"
+          },
+          {
+            "path": "codex-rs/third_party/sqlx-sqlite-0.9.0/src/options/connection_lifetime.rs",
+            "mode": "100644",
+            "before_blob": null,
+            "after_blob": "ea1b6007e9ac8ed14328f3cac79fb909183cb5dc",
+            "bytes": 1591,
+            "sha256": "b0d7e000af86e4e698b1453e3cc01e5d5cce08cce32022eab45a1708420aee5e"
+          },
+          {
+            "path": "codex-rs/third_party/sqlx-sqlite-0.9.0/src/options/connection_lifetime_tests.rs",
+            "mode": "100644",
+            "before_blob": null,
+            "after_blob": "15b4ac44e4f3cee8ddca8731a0af1063e4dafe89",
+            "bytes": 15437,
+            "sha256": "7428bfddb31e81922c921ba7ae7237926d5332631a43f34a1bedf40477c00cb9"
+          },
+          {
+            "path": "codex-rs/third_party/sqlx-sqlite-0.9.0/src/options/journal_mode.rs",
+            "mode": "100644",
+            "before_blob": null,
+            "after_blob": "5750ce97ec1f9d1ac31cbf86b06aa46d5063d78f",
+            "bytes": 1460,
+            "sha256": "73fd87ed1e830a127a5765ca5f7c22c717e5dec45c0c39fd33256348a4e1e695"
+          },
+          {
+            "path": "codex-rs/third_party/sqlx-sqlite-0.9.0/src/options/locking_mode.rs",
+            "mode": "100644",
+            "before_blob": null,
+            "after_blob": "99afd43eef69906c261830269c13ff80ae93a0cc",
+            "bytes": 1033,
+            "sha256": "41e10ca2b5cb8f53306676aa29c884d4bc22be8cc0c9b2540aa191ed1c25ecb4"
+          },
+          {
+            "path": "codex-rs/third_party/sqlx-sqlite-0.9.0/src/options/mod.rs",
+            "mode": "100644",
+            "before_blob": null,
+            "after_blob": "a9da93a72c7840f98dd9b53181c28f7fae5807ae",
+            "bytes": 28204,
+            "sha256": "ab2ad89bc9a6b84fce35fb108744343cf364ce121330657477ecdcb2ed8a2fdf"
+          },
+          {
+            "path": "codex-rs/third_party/sqlx-sqlite-0.9.0/src/options/parse.rs",
+            "mode": "100644",
+            "before_blob": null,
+            "after_blob": "0530f4204cf74def37027ac548ab23dc76c97854",
+            "bytes": 7736,
+            "sha256": "d94008fcdd7e03e2df1c6c0d788cc55cde42e772a83efb6e5f4839249154e156"
+          },
+          {
+            "path": "codex-rs/third_party/sqlx-sqlite-0.9.0/src/options/synchronous.rs",
+            "mode": "100644",
+            "before_blob": null,
+            "after_blob": "709b805bc76e23baa7329ea574347a0267b84a2d",
+            "bytes": 1215,
+            "sha256": "08b2ca83c2ed6781040d3cf49871cd45fc16321aad9c78ac0ab63ab0e2117d81"
+          },
+          {
+            "path": "codex-rs/third_party/sqlx-sqlite-0.9.0/src/query_result.rs",
+            "mode": "100644",
+            "before_blob": null,
+            "after_blob": "8c8c27fcf4937625b0b372df5ac3bbb821e245b4",
+            "bytes": 1025,
+            "sha256": "228e6a059828ca9413881334ec891d33b8ef08062743917929447722ef8bf4bb"
+          },
+          {
+            "path": "codex-rs/third_party/sqlx-sqlite-0.9.0/src/regexp.rs",
+            "mode": "100644",
+            "before_blob": null,
+            "after_blob": "735200e9be9be0ada0cb2fbe30344472b732d60f",
+            "bytes": 10493,
+            "sha256": "ea7a509291d3c9fcbaaa97cd02a139ee5be4608db68adac94829e160ac2cf6a1"
+          },
+          {
+            "path": "codex-rs/third_party/sqlx-sqlite-0.9.0/src/row.rs",
+            "mode": "100644",
+            "before_blob": null,
+            "after_blob": "ec038b6d4019bb462b4582e76f88d9cf0cb3ffbf",
+            "bytes": 2573,
+            "sha256": "1efd553cc6242f7c3217dc296ecedadebf9cafc1e83f04f8f3746eae40263484"
+          },
+          {
+            "path": "codex-rs/third_party/sqlx-sqlite-0.9.0/src/statement/handle.rs",
+            "mode": "100644",
+            "before_blob": null,
+            "after_blob": "c78ce984144e0f6b97050fc69d7349a701aabcc0",
+            "bytes": 16925,
+            "sha256": "29b57bec4f15647b8057f46c450146c32b412f4ac5573717e09c929158231718"
+          },
+          {
+            "path": "codex-rs/third_party/sqlx-sqlite-0.9.0/src/statement/mod.rs",
+            "mode": "100644",
+            "before_blob": null,
+            "after_blob": "93485397d3c2d7dd4727eb8a00df165dda83ab2a",
+            "bytes": 1418,
+            "sha256": "71a7093f2f03065667da92a26843872be74ebd2ae1e216f98b669b6df48626c8"
+          },
+          {
+            "path": "codex-rs/third_party/sqlx-sqlite-0.9.0/src/statement/unlock_notify.rs",
+            "mode": "100644",
+            "before_blob": null,
+            "after_blob": "5821c23ae3c8f095c72c2896f932aed895e0c0b1",
+            "bytes": 1543,
+            "sha256": "3c57283b3a1e3ad8a77263f59f2fcd50046db01c425d286d2ce346f4a89639de"
+          },
+          {
+            "path": "codex-rs/third_party/sqlx-sqlite-0.9.0/src/statement/virtual.rs",
+            "mode": "100644",
+            "before_blob": null,
+            "after_blob": "b25aa69e47c7b73a0879900439ce90f93f56d902",
+            "bytes": 6654,
+            "sha256": "527a73735223d789abf7c403ab5c85482511719ff5aae6be7331100d528c220f"
+          },
+          {
+            "path": "codex-rs/third_party/sqlx-sqlite-0.9.0/src/testing/mod.rs",
+            "mode": "100644",
+            "before_blob": null,
+            "after_blob": "058a24c52b79d353b4b0476228872266f388137d",
+            "bytes": 2360,
+            "sha256": "fe6f6e31fbde5d6d37bf57f8179cd35cb89fe659466163c0f75d6d996a74b3d8"
+          },
+          {
+            "path": "codex-rs/third_party/sqlx-sqlite-0.9.0/src/transaction.rs",
+            "mode": "100644",
+            "before_blob": null,
+            "after_blob": "1c57d0163f3505dc048be18c5d47bfee4360cf96",
+            "bytes": 1008,
+            "sha256": "5f6958702455ef631a9a7290e63c1666e60731c85ffc828a176c39d0ce01f6be"
+          },
+          {
+            "path": "codex-rs/third_party/sqlx-sqlite-0.9.0/src/type_checking.rs",
+            "mode": "100644",
+            "before_blob": null,
+            "after_blob": "97af601c86b9efe4f00f440ae668ed1da5a3a881",
+            "bytes": 1860,
+            "sha256": "c52de7ef80bc362837006a30e8a0bddfdffc7c5350797b57a60a998f861775d5"
+          },
+          {
+            "path": "codex-rs/third_party/sqlx-sqlite-0.9.0/src/type_info.rs",
+            "mode": "100644",
+            "before_blob": null,
+            "after_blob": "38a0fc4169ec2ea135c651ca119e6c888c55b8e0",
+            "bytes": 5190,
+            "sha256": "648170984482d66f22e48f5229dc959355a7bc4a34725e58c43eb2335ff9e19a"
+          },
+          {
+            "path": "codex-rs/third_party/sqlx-sqlite-0.9.0/src/types/bool.rs",
+            "mode": "100644",
+            "before_blob": null,
+            "after_blob": "9228eef2361798f102cb97bec5cb14a3d142672e",
+            "bytes": 894,
+            "sha256": "91c102eb72e593d72aec4c7409a1eb3278bcbefd13b1bb7e56b63ee94c22ded8"
+          },
+          {
+            "path": "codex-rs/third_party/sqlx-sqlite-0.9.0/src/types/bytes.rs",
+            "mode": "100644",
+            "before_blob": null,
+            "after_blob": "6453007bc9fb27fccc7e486b2491c3367c9ff7bb",
+            "bytes": 3048,
+            "sha256": "4b100252d1e16606e0246dafb47fa9f75e832440199ac75de6f757b8d451f8bc"
+          },
+          {
+            "path": "codex-rs/third_party/sqlx-sqlite-0.9.0/src/types/chrono.rs",
+            "mode": "100644",
+            "before_blob": null,
+            "after_blob": "8d987538d014432b1caa4767a98f1b893489b421",
+            "bytes": 6716,
+            "sha256": "35d95627aadc0f3bf68fd75f9badb7e71a49bc107ef5617f7d55acc9c90c7e77"
+          },
+          {
+            "path": "codex-rs/third_party/sqlx-sqlite-0.9.0/src/types/float.rs",
+            "mode": "100644",
+            "before_blob": null,
+            "after_blob": "d23b3f3a0886b2efed86f1b02fad238d7ba32c28",
+            "bytes": 1332,
+            "sha256": "3c31f61d58fbc7314a2acb74ebf29ddff1759a3dca090179a1a192aceeb411e1"
+          },
+          {
+            "path": "codex-rs/third_party/sqlx-sqlite-0.9.0/src/types/int.rs",
+            "mode": "100644",
+            "before_blob": null,
+            "after_blob": "2cf4209ad6979f244ed0fd8c870e4b1dc68c5776",
+            "bytes": 2964,
+            "sha256": "6d2871e483fb3de6cb4abf4faa7f5f5b0347dd1935945d48223921606dcdc59d"
+          },
+          {
+            "path": "codex-rs/third_party/sqlx-sqlite-0.9.0/src/types/json.rs",
+            "mode": "100644",
+            "before_blob": null,
+            "after_blob": "dafd4836587cce799325524fceed13834015ccf5",
+            "bytes": 1042,
+            "sha256": "a837cac084b3a82a63b0ec709fc5160f0b29846e15697e7e0e0f52f93e71bf8b"
+          },
+          {
+            "path": "codex-rs/third_party/sqlx-sqlite-0.9.0/src/types/mod.rs",
+            "mode": "100644",
+            "before_blob": null,
+            "after_blob": "d36af7ea1493d67cf15c475fdcc6e0510200c531",
+            "bytes": 13578,
+            "sha256": "82afc7e421a685cf14d21eeb9a058f335c594e99d861c4ccf0158b03276a7292"
+          },
+          {
+            "path": "codex-rs/third_party/sqlx-sqlite-0.9.0/src/types/str.rs",
+            "mode": "100644",
+            "before_blob": null,
+            "after_blob": "a28f778b63b91482b8951846d5a167e2ea9bf1e9",
+            "bytes": 3080,
+            "sha256": "346264cee42d107747e701df871d2cc9b38d5d9ec053bb4d41ffedc59628c0c2"
+          },
+          {
+            "path": "codex-rs/third_party/sqlx-sqlite-0.9.0/src/types/text.rs",
+            "mode": "100644",
+            "before_blob": null,
+            "after_blob": "ef03caf5a0288ced580348e1449bff4f96308a27",
+            "bytes": 1004,
+            "sha256": "24cb7d3374dc095ef0d3814f47fea84bbcaeb794d4c88e2240c5ec3f6a242881"
+          },
+          {
+            "path": "codex-rs/third_party/sqlx-sqlite-0.9.0/src/types/time.rs",
+            "mode": "100644",
+            "before_blob": null,
+            "after_blob": "0e0027882d61988d626e9a59e60f8f7faa948c99",
+            "bytes": 9491,
+            "sha256": "2d4e082cbe93604718f8be514ac9e4f019867ac6cad96da58a310c7720f1bfb7"
+          },
+          {
+            "path": "codex-rs/third_party/sqlx-sqlite-0.9.0/src/types/uint.rs",
+            "mode": "100644",
+            "before_blob": null,
+            "after_blob": "1e8b1c5392113c6e5422430348cabbfcec84baba",
+            "bytes": 2772,
+            "sha256": "323ceaae2608521a410a4be9635ce8654c98b06914faac0aba1743caf78439d1"
+          },
+          {
+            "path": "codex-rs/third_party/sqlx-sqlite-0.9.0/src/types/uuid.rs",
+            "mode": "100644",
+            "before_blob": null,
+            "after_blob": "718ca5fb5d213533a622ec284ea39105105cd2ee",
+            "bytes": 2386,
+            "sha256": "42beb2e273bcb48426d4f7f0ee01ec6f7d80a38417a202269fe6d4bf45c794d1"
+          },
+          {
+            "path": "codex-rs/third_party/sqlx-sqlite-0.9.0/src/value.rs",
+            "mode": "100644",
+            "before_blob": null,
+            "after_blob": "bdf376c187947a2a5039a4ef54661afa3edbefe3",
+            "bytes": 13848,
+            "sha256": "0d067051b2f86c53ed4e12f5c4fad27bbb3e4a4fb020e37b08415806c9b164d4"
+          }
+        ],
+        "provenance": {
+          "complete_payload": {
+            "blob": "ed4b2ade11ac009426131347a127419a179fcf73",
+            "bytes": 469133,
+            "sha256": "3735f09d567d860c7caaac0fb5b38d86e948e6c8d5639c7d0e9ad6486f1da288"
+          },
+          "original_archive_sha256": "488e99c397a62007e4229aec669a179816339afc6d2620ca6fa420dbee2e982c",
+          "vendor_regular_modes": "100644",
+          "licenses": "Two mechanical full-license overlays; original 57-member archive is separately preserved."
+        }
+      },
+      "driver-no_worker_token-patch": {
+        "label": "driver-no_worker_token-patch",
+        "files": [
+          {
+            "path": "codex-rs/third_party/sqlx-sqlite-0.9.0/src/connection/establish.rs",
+            "mode": "100644",
+            "before_blob": "7bf04f3f06165371bfbe525c61cbaafa0c46667f",
+            "after_blob": "4e31d9fc66df45eab48b24643f87e5cb52258241",
+            "bytes": 10256,
+            "sha256": "1a50db5eebbc1cb6eb4eb6bfa51958badd57e42d9bba885bc7e8f656ff67bf74"
+          }
+        ],
+        "provenance": {
+          "patch": {
+            "blob": "916c28d3c54119909342eeebe7beebd1d9ad7e91",
+            "bytes": 637,
+            "sha256": "52efe7fa47035ff5628e6224e4e946c1a99c582c09f3f64ebc580f8d3224c8cc"
+          },
+          "mapping": [
+            "-p2",
+            "--directory=codex-rs/third_party/sqlx-sqlite-0.9.0"
+          ]
+        }
+      },
+      "driver-no_worker_token-restore": {
+        "label": "driver-no_worker_token-restore",
+        "files": [
+          {
+            "path": "codex-rs/third_party/sqlx-sqlite-0.9.0/src/connection/establish.rs",
+            "mode": "100644",
+            "before_blob": "4e31d9fc66df45eab48b24643f87e5cb52258241",
+            "after_blob": "7bf04f3f06165371bfbe525c61cbaafa0c46667f",
+            "bytes": 10287,
+            "sha256": "3052fcc3047592fbb9b2d56030b39065fa3e77e1b9de69630671f1fa07d62dbe"
+          }
+        ],
+        "provenance": {
+          "patch": {
+            "blob": "cc635a7a55d3737039cc7fa2751fa003a7428b78",
+            "bytes": 637,
+            "sha256": "636877d63d6dd3fb810b19ad45f469b54ea41388f6f23618f5b8b331dcbc5ae0"
+          },
+          "mapping": [
+            "-p2",
+            "--directory=codex-rs/third_party/sqlx-sqlite-0.9.0"
+          ]
+        }
+      },
+      "driver-unwind_releases-patch": {
+        "label": "driver-unwind_releases-patch",
+        "files": [
+          {
+            "path": "codex-rs/third_party/sqlx-sqlite-0.9.0/src/connection/handle.rs",
+            "mode": "100644",
+            "before_blob": "ed7f2a0798a30f4e3574d0e6e685ac9b41aae1a6",
+            "after_blob": "e106e9ec8dd3e5b33ccde609ed22449709f1a488",
+            "bytes": 5686,
+            "sha256": "be2224b63def35dfcc2fd383b70fd0123f62b515122c559615ce54cc33ac0ded"
+          }
+        ],
+        "provenance": {
+          "patch": {
+            "blob": "5871bdd770ce0c99231a073cc227f320511a5938",
+            "bytes": 633,
+            "sha256": "573c6bf2af160b3b4a6a4af095f0cee6261f63adabd88e02b5ccc894bd114020"
+          },
+          "mapping": [
+            "-p2",
+            "--directory=codex-rs/third_party/sqlx-sqlite-0.9.0"
+          ]
+        }
+      },
+      "driver-unwind_releases-restore": {
+        "label": "driver-unwind_releases-restore",
+        "files": [
+          {
+            "path": "codex-rs/third_party/sqlx-sqlite-0.9.0/src/connection/handle.rs",
+            "mode": "100644",
+            "before_blob": "e106e9ec8dd3e5b33ccde609ed22449709f1a488",
+            "after_blob": "ed7f2a0798a30f4e3574d0e6e685ac9b41aae1a6",
+            "bytes": 5735,
+            "sha256": "d1e809bb28d216bc0b84c6381adcbb6f89d123754c66a4b4498412295c0a2240"
+          }
+        ],
+        "provenance": {
+          "patch": {
+            "blob": "1e54da270be0c25b381cf3dcf2cbbab1c1ce4515",
+            "bytes": 633,
+            "sha256": "db2dacacc04e5d67af8dfdecdb9cc138a98bb5802422bb6ef586f6f38cf830b4"
+          },
+          "mapping": [
+            "-p2",
+            "--directory=codex-rs/third_party/sqlx-sqlite-0.9.0"
+          ]
+        }
+      }
+    },
+    "source_identity_check": "Every driver postimage was independently decoded from the frozen payload and checked for bytes, SHA256 and Git blob identity. Both negative/restore pairs are exact inverses on their one owned source path.",
+    "original_archive_sha256": "488e99c397a62007e4229aec669a179816339afc6d2620ca6fa420dbee2e982c",
+    "original_archive_members": 57,
+    "overlays": "Two new lifetime source files, one BUILD; normalized vendor Cargo dev runtime; two full license replacements and regular mode 100644 are explicit overlays, not archive-byte-equality claims. The nested published Cargo.lock remains source, not the active workspace lock."
+  },
+  "before_mutation_requirements": [
+    "A new enabled driver binding, not the enabled foundation binding or a changed epoch CLI argument.",
+    "Previous exact foundation epoch-terminal must be QUALIFIED, belong to the same final A and payload, and match actual current tree, both locks, ordinary HEAD/index, cache owner and historical qualification references.",
+    "baseline_metadata source_tree must equal the actual driver initial tree; its graph must equal the prior qualified graph. Do not relabel P4 metadata from 4a as the later foundation tree.",
+    "Use the same task-owned target and BUILD_ONLY_CURRENT_HOST provenance; original P4 remains 193/1501/363/33 with tests_executed=false. Later phase binaries are rebuilt and rehashed, not compared to old physical P4 hashes.",
+    "Recheck all 8 tool identities, actual PATH/environment, both SDK and V8 physical guards as in the approved host launcher; changing source epoch is not permission to change these inputs.",
+    "No native token or local driver during foundation old counterfactuals. Driver adoption starts only after their actual terminal and restores are qualified."
+  ],
+  "actual_P4_dependency_baseline": {
+    "metadata": {
+      "path": "ci-audit/recovered-20261105/b16-ai395-cold-bootstrap-v1/p4-v3-catalog-readonly-export-v1/decoded-verified-v1/02-full-metadata.stdout.original",
+      "bytes": 8296096,
+      "sha256": "b4090db792babde64575b11e7ae04df8245074b96a154048c4de08691e4a23e0",
+      "git_blob": "e1f0ddb638f8d46e24d94176c3993e7fa2a293fd"
+    },
+    "packages": [
+      {
+        "id": "registry+https://github.com/rust-lang/crates.io-index#libsqlite3-sys@0.37.0",
+        "name": "libsqlite3-sys",
+        "version": "0.37.0",
+        "source": "registry+https://github.com/rust-lang/crates.io-index",
+        "links": "sqlite3",
+        "features": [
+          "bundled",
+          "bundled_bindings",
+          "cc",
+          "default",
+          "min_sqlite_version_3_34_1",
+          "pkg-config",
+          "vcpkg"
+        ],
+        "workspace_member": false
+      },
+      {
+        "id": "registry+https://github.com/rust-lang/crates.io-index#sqlx-core@0.9.0",
+        "name": "sqlx-core",
+        "version": "0.9.0",
+        "source": "registry+https://github.com/rust-lang/crates.io-index",
+        "links": null,
+        "features": [
+          "_rt-tokio",
+          "_tls-rustls",
+          "_tls-rustls-ring-webpki",
+          "any",
+          "chrono",
+          "crc",
+          "default",
+          "json",
+          "migrate",
+          "offline",
+          "rustls",
+          "serde",
+          "serde_json",
+          "sha2",
+          "time",
+          "tokio",
+          "tokio-stream",
+          "uuid",
+          "webpki-roots"
+        ],
+        "workspace_member": false
+      },
+      {
+        "id": "registry+https://github.com/rust-lang/crates.io-index#sqlx-sqlite@0.9.0",
+        "name": "sqlx-sqlite",
+        "version": "0.9.0",
+        "source": "registry+https://github.com/rust-lang/crates.io-index",
+        "links": null,
+        "features": [
+          "bundled",
+          "chrono",
+          "json",
+          "migrate",
+          "offline",
+          "serde",
+          "time",
+          "uuid"
+        ],
+        "workspace_member": false
+      }
+    ],
+    "scope": "Observed original actual graph, not a future driver resolution result."
+  },
+  "resolution_contract": {
+    "order": [
+      "cargo metadata --format-version=1 (actual unlocked resolution, Cargo.lock only)",
+      "just bazel-lock-update",
+      "just bazel-lock-check",
+      "actual generated DEP_DATA location/copy and driver rule/dependency queries",
+      "cargo metadata --format-version=1 --locked"
+    ],
+    "cargo_expected": "Exactly one sqlx-sqlite 0.9.0 selected from the approved local vendor, source=None, added as one workspace member; existing 1501 resolved package nodes remain, with only registry-to-local id remapping and sqlx_core dev edge allowed. Existing unrelated node features/deps and lock packages are required equal. Actual 8 driver features and sqlx-core _rt-tokio, libsqlite3-sys 0.37.0 links=sqlite3 remain required.",
+    "expected_member_count_if_current_graph_remains": 194,
+    "expected_node_count_if_current_graph_remains": 1501,
+    "active_locks": [
+      "codex-rs/Cargo.lock",
+      "MODULE.bazel.lock"
+    ],
+    "generated_lock_limit": "Real generator outputs are saved, including unchanged output. Only permitted lock paths may change. MODULE contents and hashes are not predicted; dependency/rule queries establish actual generation. No manual lock editing.",
+    "private_bazel": "One task-owned B cache shared across driver/checkpoint/final check. Only driver may create it. Existing user.bazelrc is refused, and the temporary owned config is removed only after exact pin validation; owned Bazel shutdown is attempted in finally. No existing cache cleanup.",
+    "failure_limit": "A lock/generator failure does not roll back or relabel real generated locks. The epoch stops with its exact current source/error receipts for review."
+  },
+  "operations": [
+    {
+      "kind": "apply",
+      "delta": "driver-adoption"
+    },
+    {
+      "kind": "locks",
+      "id": "B11_driver_adoption_and_first_locks",
+      "change": "driver"
+    },
+    {
+      "kind": "negative",
+      "id": "B12_driver_no_worker_token",
+      "before": [
+        "driver-no_worker_token-patch"
+      ],
+      "restore": "driver-no_worker_token-restore",
+      "scopes": [
+        {
+          "label": "B12_driver_no_worker_token",
+          "package": "sqlx-sqlite",
+          "exact_names": [
+            "options::connection_lifetime::tests::cancellation_during_native_open_keeps_resource_custody",
+            "options::connection_lifetime::tests::cancellation_during_initial_pragmas_keeps_resource_custody"
+          ],
+          "authored_argv": [
+            "just",
+            "test",
+            "-p",
+            "sqlx-sqlite",
+            "--lib",
+            "--locked",
+            "--retries",
+            "0",
+            "--features",
+            "bundled,chrono,json,migrate,offline,serde,time,uuid",
+            "-E",
+            "test(=options::connection_lifetime::tests::cancellation_during_native_open_keeps_resource_custody) | test(=options::connection_lifetime::tests::cancellation_during_initial_pragmas_keeps_resource_custody)"
+          ],
+          "oracle": "driver-worker",
+          "supports": [
+            "options::connection_lifetime::tests::owned_scenario"
+          ]
+        }
+      ]
+    },
+    {
+      "kind": "negative",
+      "id": "B13_driver_unwind_releases",
+      "before": [
+        "driver-unwind_releases-patch"
+      ],
+      "restore": "driver-unwind_releases-restore",
+      "scopes": [
+        {
+          "label": "B13_driver_unwind_releases",
+          "package": "sqlx-sqlite",
+          "exact_names": [
+            "options::connection_lifetime::tests::initialization_error_releases_but_failed_native_close_retains_custody"
+          ],
+          "authored_argv": [
+            "just",
+            "test",
+            "-p",
+            "sqlx-sqlite",
+            "--lib",
+            "--locked",
+            "--retries",
+            "0",
+            "--features",
+            "bundled,chrono,json,migrate,offline,serde,time,uuid",
+            "-E",
+            "test(=options::connection_lifetime::tests::initialization_error_releases_but_failed_native_close_retains_custody)"
+          ],
+          "oracle": "driver-close",
+          "supports": [
+            "options::connection_lifetime::tests::owned_scenario"
+          ]
+        }
+      ]
+    },
+    {
+      "kind": "scopes",
+      "id": "B14_driver_twelve",
+      "before": [],
+      "restore": null,
+      "scopes": [
+        {
+          "label": "B14_driver_twelve",
+          "package": "sqlx-sqlite",
+          "exact_names": [
+            "connection::explain::test_explain",
+            "connection::explain::test_root_block_columns_has_types",
+            "options::parse::it_returns_the_parsed_url",
+            "options::parse::test_parse_in_memory",
+            "options::parse::test_parse_read_only",
+            "options::parse::test_parse_shared_in_memory",
+            "testing::test_convert_path",
+            "type_info::test_data_type_from_str",
+            "options::connection_lifetime::tests::cancellation_during_native_open_keeps_resource_custody",
+            "options::connection_lifetime::tests::cancellation_during_initial_pragmas_keeps_resource_custody",
+            "options::connection_lifetime::tests::pool_growth_and_cancelled_close_keep_borrowed_connection_custody",
+            "options::connection_lifetime::tests::initialization_error_releases_but_failed_native_close_retains_custody"
+          ],
+          "authored_argv": [
+            "just",
+            "test",
+            "-p",
+            "sqlx-sqlite",
+            "--lib",
+            "--locked",
+            "--retries",
+            "0",
+            "--features",
+            "bundled,chrono,json,migrate,offline,serde,time,uuid"
+          ],
+          "oracle": null,
+          "supports": [
+            "options::connection_lifetime::tests::owned_scenario"
+          ]
+        }
+      ]
+    },
+    {
+      "kind": "bazel-registration",
+      "id": "B15_driver_bazel_registration",
+      "target": "//codex-rs/third_party/sqlx-sqlite-0.9.0:sqlx-sqlite-unit-tests"
+    }
+  ],
+  "runtime_argv_contract": {
+    "normal_helpers": "Original six explicit normal bin builds, --locked --profile dev-small, each exact compiler identity recorded before the full catalog.",
+    "catalog": "cargo nextest list --locked --cargo-profile dev-small --message-format=json -E <exact package(lib)/case expression>; no -p, preserving original complete workspace feature selection.",
+    "test": "just test --locked --cargo-profile dev-small --no-tests fail --retries 0 --success-output immediate -E <same exact expression>; original run-nextest supplies no-fail-fast, so there is no duplicate explicit flag.",
+    "authored_argv_limit": "The historical authored -p/--lib/--features strings remain provenance in epoch JSON. The actual frozen runner uses full-workspace resolution plus precise nextest filter; it requires the same exact driver feature graph before running cases.",
+    "roster": "2 + 1 negative parent executions, then 8 original + 4 new parent PASS. One ignored owned_scenario is explicitly invoked by parents, reported separately and never counted as a fifth new PASS.",
+    "terminal": "Fresh full JUnit/UUID, exact classname+name multiset, stable selected program and all 33 helpers, no early return, no retry. A qualified negative must be exit 100 with ordinary JUnit failure type test failure with exit code 101, not timeout/leak/compile/setup failure."
+  },
+  "negative_boundaries": {
+    "B16/phase/B12_driver_no_worker_token": "Only EstablishParams connection_lifetime clone becomes None. Open and initial PRAGMA cases must show their actual entered/cancelled checkpoint, cross-process physical lock unexpectedly acquired, then gate_status=0 after probe, and panic at the unique unchanged assertion.",
+    "B16/phase/B13_driver_unwind_releases": "Only forget(self.1.take()) is removed. Require original initialization error release, actual SQLITE_BUSY/WorkerCrashed plus still-running native ROW before the physical held-lock failure; timeout or error before this sequence is invalid.",
+    "finally": "Each negative records primary and restoration errors separately; it restores only the exact owned one-path counterfactual, after whole-source guard. An invalid negative is restored then stops; a restoration error never permits the next phase.",
+    "output_limit": "Owned children emit checkpoint lines to the parent, which forwards them to captured stderr. Other child stdout is consumed but not retained, so this is not a claim of complete child stdout."
+  },
+  "capacity": {
+    "baseline": {
+      "path": "ci-audit/recovered-20261105/b16-ai395-cold-bootstrap-v1/p4-readonly-completion-v4/originals/new-host-build-only-baseline.json",
+      "bytes": 265463,
+      "sha256": "16022204ade97bd6cdc78176e5dff2b8c19c536180aa9c5e7a5a219ddda7140f",
+      "git_blob": "31053a6179c016a9b5569cc6fb301e19aeb5c633"
+    },
+    "programs": 363,
+    "helpers": 33,
+    "unique_artifact_files": 396,
+    "observed_file_bytes": 18517479536,
+    "driver_minimum_additional_executable_families": 1,
+    "other_cargo_growth_bytes": 12000000000,
+    "bazel_growth_bytes": 8000000000,
+    "evidence_growth_bytes": 2000000000,
+    "reserve_bytes": 8000000000,
+    "required_free_bytes_for_one_family": 48517479536,
+    "fresh_native_free_bytes": null,
+    "limit": "Reviewed planning allowance, not compiler/Bazel peak proof. The foundation-only zero-family/22 GB exception is inapplicable. Refresh free space before execution; no cache deletion or budget lowering."
+  },
+  "qualification_limits": [
+    "B15 is actual Bazel target compilation, not Bazel test execution or hosted platform acceptance.",
+    "No Current/authority/Root signed producer/FinalUse closure from these 12 tests or the native lifetime-token API.",
+    "Pool binding and recovery checkpoint are later separate epochs with their own controls; the checkpoint adds a second real dependency/lock gate.",
+    "B16 internal B11-B15 identifiers do not change original blocker B11/B15 status."
+  ]
+}

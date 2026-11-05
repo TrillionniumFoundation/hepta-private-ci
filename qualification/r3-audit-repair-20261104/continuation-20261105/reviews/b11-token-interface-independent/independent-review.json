@@ -1,0 +1,390 @@
+{
+  "schema": "hepta.b11-token-interface-independent-review.v1",
+  "observed_at": "2026-11-05T11:13:09.045076+00:00",
+  "verdict": "NO_PROVEN_LOCAL_REPAIR_WITH_CURRENT_INTERFACE_AND_ORIGINAL_CONTRACT",
+  "current_head": "5b6331250ff459033bd44d1a95daec70131277cc",
+  "current_tree": "b26598d0d97d8d51e723bb5582137315f2174d35",
+  "author_review": {
+    "json_git_blob": "2f7ad7fb25f5deb09a4ddb52de3937da4020ceb2",
+    "md_git_blob": "8425c5daaf85a6a310e278d877b1b35834e99d60",
+    "source_manifest_git_blob": "baac2640cc41435c79b6102212e2137deb8b3844"
+  },
+  "fixed_source_verification": {
+    "count": 15,
+    "all_bytes_sha256_git_sha_exact": true,
+    "sources": [
+      {
+        "path": "codex-rs/windows-sandbox-rs/src/acl.rs",
+        "ref": "5b6331250ff459033bd44d1a95daec70131277cc",
+        "local_path": "architecture-audit/b11-delete-boundary-20261105/source/codex-rs/windows-sandbox-rs/src/acl.rs",
+        "bytes": 25821,
+        "sha256": "c6507c81014e82a7d968530e72b6f8534e5eb62040222fefd226e90060713eb7",
+        "git_blob": "53c7053c5880da13640f3bd777998b6998da6d47"
+      },
+      {
+        "path": "codex-rs/windows-sandbox-rs/src/allow.rs",
+        "ref": "5b6331250ff459033bd44d1a95daec70131277cc",
+        "local_path": "architecture-audit/b11-delete-boundary-20261105/source/codex-rs/windows-sandbox-rs/src/allow.rs",
+        "bytes": 12660,
+        "sha256": "80ec8f751950626ad9462a8d48c0531a90b3703d8b8ef97ac729c6dd46fc00a2",
+        "git_blob": "5a10261d0c5e82f5987df16c86680d68e7a6d705"
+      },
+      {
+        "path": "codex-rs/windows-sandbox-rs/src/bin/command_runner/win.rs",
+        "ref": "5b6331250ff459033bd44d1a95daec70131277cc",
+        "local_path": "architecture-audit/b11-delete-boundary-20261105/source/codex-rs/windows-sandbox-rs/src/bin/command_runner/win.rs",
+        "bytes": 25503,
+        "sha256": "295e74edb0562eb253d3dc4e733cbd5a918e666ac8515bde290a526a76fbd700",
+        "git_blob": "41d1e5c8ca2d13f54ca7d3a2eeb3eea6c26bb49f"
+      },
+      {
+        "path": "codex-rs/windows-sandbox-rs/src/bin/setup_main/win.rs",
+        "ref": "5b6331250ff459033bd44d1a95daec70131277cc",
+        "local_path": "architecture-audit/b11-delete-boundary-20261105/source/codex-rs/windows-sandbox-rs/src/bin/setup_main/win.rs",
+        "bytes": 47955,
+        "sha256": "ba3bf6444e72c443575281e192e7b343c7c61180a1a699f4ffb4f87cba7e0ac3",
+        "git_blob": "1d9340c6db26d6d10c1b3edecb1c9fecc908ef1d"
+      },
+      {
+        "path": "codex-rs/windows-sandbox-rs/src/identity.rs",
+        "ref": "5b6331250ff459033bd44d1a95daec70131277cc",
+        "local_path": "architecture-audit/b11-delete-boundary-20261105/source/codex-rs/windows-sandbox-rs/src/identity.rs",
+        "bytes": 14244,
+        "sha256": "7849ccc56947c1b26b4f9e6f7795d16ff5ae09c7d670d9beff01efdb24641245",
+        "git_blob": "860877dff2effb728d446d1a6d7db66073cf2ace"
+      },
+      {
+        "path": "codex-rs/windows-sandbox-rs/src/setup.rs",
+        "ref": "5b6331250ff459033bd44d1a95daec70131277cc",
+        "local_path": "architecture-audit/b11-delete-boundary-20261105/source/codex-rs/windows-sandbox-rs/src/setup.rs",
+        "bytes": 83794,
+        "sha256": "1fa3bfafe7eb75d3ff009bc7ed741689ee9cf25595f7a5433538c325b1254b09",
+        "git_blob": "890755d01ca24f5ede1960582eacb9714633a0db"
+      },
+      {
+        "path": "codex-rs/windows-sandbox-rs/src/spawn_prep.rs",
+        "ref": "5b6331250ff459033bd44d1a95daec70131277cc",
+        "local_path": "architecture-audit/b11-delete-boundary-20261105/source/codex-rs/windows-sandbox-rs/src/spawn_prep.rs",
+        "bytes": 27058,
+        "sha256": "f14b7c8ecbcf7e6b4571d4d1506b3b93844a6327f1f6dffd275be01b09234bea",
+        "git_blob": "2385bdbd3202fd2f14a090174b269791976d04c4"
+      },
+      {
+        "path": "codex-rs/windows-sandbox-rs/src/token.rs",
+        "ref": "5b6331250ff459033bd44d1a95daec70131277cc",
+        "local_path": "architecture-audit/b11-delete-boundary-20261105/source/codex-rs/windows-sandbox-rs/src/token.rs",
+        "bytes": 18359,
+        "sha256": "3fe5daee06868755f298a415864e4087984f95b1d20325a86687638bba4cd8ac",
+        "git_blob": "8945d75fe172679479b738e6266cac99a6f7ed16"
+      },
+      {
+        "path": "codex-rs/windows-sandbox-rs/src/token_tests.rs",
+        "ref": "5b6331250ff459033bd44d1a95daec70131277cc",
+        "local_path": "architecture-audit/b11-delete-boundary-20261105/source/codex-rs/windows-sandbox-rs/src/token_tests.rs",
+        "bytes": 22681,
+        "sha256": "cda729e069f427b9fb197a75391ea30b3427a6b6c98a8ecb60d858328b808af0",
+        "git_blob": "042858ce22b784d7809612e2d80e35d29b559f1a"
+      },
+      {
+        "path": "codex-rs/windows-sandbox-rs/src/unified_exec/backends/elevated.rs",
+        "ref": "5b6331250ff459033bd44d1a95daec70131277cc",
+        "local_path": "architecture-audit/b11-delete-boundary-20261105/source/codex-rs/windows-sandbox-rs/src/unified_exec/backends/elevated.rs",
+        "bytes": 8164,
+        "sha256": "dbaec663034a007063bf6967a10ae59e615a263378cf3f8bdb3a62a3ef660f00",
+        "git_blob": "138b0be7904e691f931382de7237cca72beb2c0a"
+      },
+      {
+        "path": "codex-rs/windows-sandbox-rs/src/unified_exec/backends/legacy.rs",
+        "ref": "5b6331250ff459033bd44d1a95daec70131277cc",
+        "local_path": "architecture-audit/b11-delete-boundary-20261105/source/codex-rs/windows-sandbox-rs/src/unified_exec/backends/legacy.rs",
+        "bytes": 15188,
+        "sha256": "121082fbb179ea82e808201e8478622c07c73ec90cecc9c25ce7b2f8b447f969",
+        "git_blob": "6fbf819c921a0097cd306e9de9ba9c965ecf0163"
+      },
+      {
+        "path": "codex-rs/windows-sandbox-rs/src/unified_exec/mod.rs",
+        "ref": "5b6331250ff459033bd44d1a95daec70131277cc",
+        "local_path": "architecture-audit/b11-delete-boundary-20261105/source/codex-rs/windows-sandbox-rs/src/unified_exec/mod.rs",
+        "bytes": 8588,
+        "sha256": "6de412ae0a3102084a0b28fc57a276dfc58e5113ffbd0e2d39df4931863e3a72",
+        "git_blob": "c98f3e5d217ada48732e1686129806d0dd52169e"
+      },
+      {
+        "path": "codex-rs/windows-sandbox-rs/src/unified_exec/tests.rs",
+        "ref": "5b6331250ff459033bd44d1a95daec70131277cc",
+        "local_path": "architecture-audit/b11-delete-boundary-20261105/source/codex-rs/windows-sandbox-rs/src/unified_exec/tests.rs",
+        "bytes": 43106,
+        "sha256": "f6b49b35c8c0aed98dc621ae179faa2ec6d5d33858c09223a38bf4784fa2b940",
+        "git_blob": "aea1ff8476ab8ce33642677a36b1609054888a4e"
+      },
+      {
+        "path": "codex-rs/windows-sandbox-rs/src/token_access_check_diagnostics_tests.rs",
+        "ref": "9459cf8a4e5e43d6645e2b619b86455132c7df67",
+        "local_path": "architecture-audit/b11-delete-boundary-20261105/source-original/codex-rs/windows-sandbox-rs/src/token_access_check_diagnostics_tests.rs",
+        "bytes": 16568,
+        "sha256": "348b5b7a7c633ccde80877cf4c9416af372e2613036deaf519b95277d4d21998",
+        "git_blob": "349bb50a38929fadbf038daf0c5c0c6913a3803b"
+      },
+      {
+        "path": "codex-rs/windows-sandbox-rs/src/token_delete_diagnostics_tests.rs",
+        "ref": "9459cf8a4e5e43d6645e2b619b86455132c7df67",
+        "local_path": "architecture-audit/b11-delete-boundary-20261105/source-original/codex-rs/windows-sandbox-rs/src/token_delete_diagnostics_tests.rs",
+        "bytes": 9879,
+        "sha256": "d38d61c5746375b6c155843adc78140638e2a1997c767fba4f56631b24895931",
+        "git_blob": "e8bf47c8a07ad827b322ffe689240efe42fbba95"
+      }
+    ],
+    "review_depth": "Token constructor, strict cases and original diagnostic implementations read in full relevant spans; spawn, ACL and routing callsites inspected narrowly. Other source bytes hashed without claiming whole-subsystem review."
+  },
+  "original_token_relationship": {
+    "current_git_blob": "8945d75fe172679479b738e6266cac99a6f7ed16",
+    "tested_git_blob": "3e732021a5e52fef8dfc60f1fdf338b55868ea7a",
+    "only_extra_bytes": "\n#[cfg(test)]\n#[path = \"token_delete_diagnostics_tests.rs\"]\npub(crate) mod delete_diagnostics;\n",
+    "production_bytes_equal": true
+  },
+  "original_run": {
+    "run_id": 41966043093,
+    "job_id": 127043294552,
+    "actual_merge": "9459cf8a4e5e43d6645e2b619b86455132c7df67",
+    "log_identity": {
+      "bytes": 600398,
+      "sha256": "a30a35effe2fe56d997ef570b27f3c81b358b33fb13401e3977ed6277bec0bb1",
+      "git_blob": "8c4e278f4cafda25687b939a058286d828854c8b"
+    },
+    "target_summary": {
+      "passed": 78,
+      "failed": 2,
+      "ignored": 2,
+      "filtered": 86
+    },
+    "not_current_head_execution": true
+  },
+  "official_primary_sources": [
+    {
+      "title": "CreateRestrictedToken",
+      "url": "https://learn.microsoft.com/en-us/windows/win32/api/securitybaseapi/nf-securitybaseapi-createrestrictedtoken",
+      "retrieved_ref": "turn110view0",
+      "relevant_line_anchors": [
+        69,
+        70,
+        77,
+        107,
+        120,
+        126
+      ],
+      "access_date": "2026-11-05",
+      "complete_page_republication": false
+    },
+    {
+      "title": "Restricted Tokens",
+      "url": "https://learn.microsoft.com/en-us/windows/win32/secauthz/restricted-tokens",
+      "retrieved_ref": "turn110view1",
+      "relevant_line_anchors": [
+        31,
+        37
+      ],
+      "access_date": "2026-11-05",
+      "complete_page_republication": false
+    },
+    {
+      "title": "DeleteFileW",
+      "url": "https://learn.microsoft.com/en-us/windows/win32/api/fileapi/nf-fileapi-deletefilew",
+      "retrieved_ref": "turn110view2",
+      "relevant_line_anchors": [
+        60,
+        69
+      ],
+      "access_date": "2026-11-05",
+      "complete_page_republication": false
+    },
+    {
+      "title": "Mandatory Integrity Control",
+      "url": "https://learn.microsoft.com/en-us/windows/win32/secauthz/mandatory-integrity-control",
+      "retrieved_ref": "turn111view0",
+      "relevant_line_anchors": [
+        31,
+        47
+      ],
+      "access_date": "2026-11-05",
+      "complete_page_republication": false
+    },
+    {
+      "title": "File Security and Access Rights",
+      "url": "https://learn.microsoft.com/en-us/windows/win32/fileio/file-security-and-access-rights",
+      "retrieved_ref": "turn111view1",
+      "relevant_line_anchors": [
+        34,
+        36,
+        42,
+        65
+      ],
+      "access_date": "2026-11-05",
+      "complete_page_republication": false
+    },
+    {
+      "title": "SID Attributes in an Access Token",
+      "url": "https://learn.microsoft.com/en-us/windows/win32/secauthz/sid-attributes-in-an-access-token",
+      "retrieved_ref": "turn111view2",
+      "relevant_line_anchors": [
+        31,
+        39
+      ],
+      "access_date": "2026-11-05",
+      "complete_page_republication": false
+    },
+    {
+      "title": "SECURITY_INFORMATION",
+      "url": "https://learn.microsoft.com/en-us/windows/win32/secauthz/security-information",
+      "retrieved_ref": "turn112view0",
+      "relevant_line_anchors": [
+        58,
+        86
+      ],
+      "access_date": "2026-11-05",
+      "complete_page_republication": false
+    },
+    {
+      "title": "SetSecurityInfo",
+      "url": "https://learn.microsoft.com/en-us/windows/win32/api/aclapi/nf-aclapi-setsecurityinfo",
+      "retrieved_ref": "turn112view1",
+      "relevant_line_anchors": [
+        59,
+        71,
+        79,
+        94
+      ],
+      "access_date": "2026-11-05",
+      "complete_page_republication": false
+    },
+    {
+      "title": "GetSecurityInfo",
+      "url": "https://learn.microsoft.com/en-us/windows/win32/api/aclapi/nf-aclapi-getsecurityinfo",
+      "retrieved_ref": "turn112view2",
+      "relevant_line_anchors": [
+        32,
+        85,
+        98
+      ],
+      "access_date": "2026-11-05",
+      "complete_page_republication": false
+    }
+  ],
+  "findings": [
+    {
+      "id": "F1",
+      "kind": "source+physical",
+      "finding": "The current base-token/capability-SID factory has no owned root handles, readable set, integrity-label contract, or per-operation filesystem mediator. The production bytes match the original failing token after removing only a cfg(test) module suffix."
+    },
+    {
+      "id": "F2",
+      "kind": "physical+AccessCheck-distinction",
+      "finding": "Original production-token tests physically remove outside objects; the full-restricting variant is only an AccessCheck control and rejects outside read there. It was never impersonated for physical I/O."
+    },
+    {
+      "id": "F3",
+      "kind": "documented-API+inference",
+      "finding": "Restricting-SID attributes do not supply a read-only access mask. Adding a SID with broad allow ACEs cannot be assumed to restore read while withholding write/delete; deny-only removes all allow matches for that SID."
+    },
+    {
+      "id": "F4",
+      "kind": "scope-limited-inference",
+      "finding": "The documented target DELETE or parent DELETE_CHILD rule coheres with the actual AccessCheck and physical results. No private-kernel syscall route or universal Windows-build behavior is claimed."
+    },
+    {
+      "id": "F5",
+      "kind": "source+inference",
+      "finding": "A default DACL update changes the token default for new objects, not the retained existing outside-parent DACL. A launch-only AccessCheck or blanket Err cannot implement the original successful-operation contract."
+    },
+    {
+      "id": "F6",
+      "kind": "missing-inputs-not-OS-impossibility",
+      "finding": "MIC is a distinct possible layer but requires actual token/object label observations, selected-root custody, positive-root write feasibility, outside low-integrity handling and lifecycle/restoration semantics. Those inputs are not supplied to the current constructor."
+    },
+    {
+      "id": "F7",
+      "kind": "official-rights-precision",
+      "finding": "LABEL_SECURITY_INFORMATION query requires READ_CONTROL; set requires WRITE_OWNER. Do not conflate a label-only operation with whole-SACL ACCESS_SYSTEM_SECURITY or assert all label observation requires administrator authority."
+    }
+  ],
+  "next_implementation_requirements": [
+    {
+      "option": "explicit-read-roots-full-restriction",
+      "new_inputs": [
+        "trusted read-root and write-root objects",
+        "independent read capability and exact access masks",
+        "actual ACL installation completion and object identity",
+        "real caller mode plus cleanup/concurrency/loader/IPC coverage"
+      ],
+      "permissions": [
+        "READ_CONTROL to query DACL",
+        "WRITE_DAC to change DACL"
+      ],
+      "contract_limit": "Cannot silently narrow ambient-read semantics or modify original strict assertions. A new mode is not the old raw-token factory closure."
+    },
+    {
+      "option": "mandatory-integrity-layer",
+      "new_inputs": [
+        "actual TokenIntegrityLevel and TokenMandatoryPolicy",
+        "same-object mandatory labels",
+        "selected writable-root custody",
+        "outside lower-integrity counterexample coverage",
+        "label inheritance and restoration ownership"
+      ],
+      "permissions": [
+        "READ_CONTROL for LABEL_SECURITY_INFORMATION query",
+        "WRITE_OWNER for LABEL_SECURITY_INFORMATION set; effective OS constraints still must be observed"
+      ],
+      "contract_limit": "No assumed root labels, rights or universal outside-medium environment. No unconditional relabel of all capability-granted roots."
+    },
+    {
+      "option": "preserve-ambient-read-with-independent-file-operation-enforcement",
+      "new_inputs": [
+        "real unbypassable per-operation enforcement component",
+        "authoritative root/object policy and handle lifecycle"
+      ],
+      "contract_limit": "No proven reusable component was found in the inspected call chain. This is not a whole-repository or whole-OS absence theorem."
+    }
+  ],
+  "original_gates_preserved": {
+    "strict_names": [
+      "token::tests::partial_delete_deny_is_repaired_before_native_workspace_writes",
+      "token::tests::workspace_capabilities_deny_writes_and_deletes_under_broad_identity_aces",
+      "unified_exec::tests::legacy_workspace_write_delete_is_limited_to_writable_roots"
+    ],
+    "requirements": [
+      "outside read must really succeed",
+      "capability-root and TEMP/TMP writes and deletes must really succeed",
+      "outside write/delete and protected .git deletion must be denied with physical preservation",
+      "two existing target-DELETE x parent-DELETE_CHILD matrix controls and ordinary-host positive/negative outcomes retained",
+      "loader/IPC real positives retained",
+      "original budgets/assertions/retries/skips unchanged"
+    ],
+    "no_general_file_matrix_substitution_for_protected_git": true
+  },
+  "evidence_products": {
+    "human_report": {
+      "path": "research-audit/b11-token-mechanism-independent-20261105/REVIEW.zh-CN.md",
+      "bytes": 8220,
+      "sha256": "f632ea7f0635c756e23ee3d6c8e137b3f0bd5a9389fdc3842ee919454bd9306b",
+      "git_blob": "56814885a4051e53a00e8f622020075c47a9a4f5"
+    },
+    "original_observation_projection": {
+      "path": "research-audit/b11-token-mechanism-independent-20261105/original-observation-projection.json",
+      "bytes": 3410,
+      "sha256": "7838e83d843762ab739e7a2fbc86d0da3d57b7bfa7ae1c361f569bfb6348fa73",
+      "git_blob": "167088ee88f303bb8a792f27c0a2831c24fd1fbc"
+    }
+  },
+  "activity": {
+    "read_only": true,
+    "production_patch_created": false,
+    "native_or_windows_executed": false,
+    "source_or_ref_changed": false,
+    "blocker_state_changed": false
+  },
+  "limits": [
+    "B11 remains OPEN. No original 23-exit text, status or closure count was changed.",
+    "Only the inspected token/callsite contract is assessed; no claim that all Windows mechanisms are impossible.",
+    "The current head Windows strict jobs remain pending; independent donor physical evidence is source-related but is not a current-head qualification."
+  ]
+}

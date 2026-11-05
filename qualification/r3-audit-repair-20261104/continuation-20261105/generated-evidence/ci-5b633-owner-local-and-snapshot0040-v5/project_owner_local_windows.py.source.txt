@@ -1,0 +1,76 @@
+#!/usr/bin/env python3
+"""Read the original owner-local artifact; do not execute product code."""
+from pathlib import Path
+import hashlib
+import json
+import re
+
+ROOT = Path(__file__).resolve().parent
+HERE = ROOT / 'terminal/windows-owner-local-127149582441'
+MEMBERS = HERE / 'members-13414467802'
+
+
+def identity(raw):
+    return {'bytes': len(raw), 'sha256': hashlib.sha256(raw).hexdigest(),
+            'computed_git_blob': hashlib.sha1(f'blob {len(raw)}\0'.encode() + raw).hexdigest()}
+
+
+head, tree = (MEMBERS / 'source.txt').read_text().splitlines()
+assert head == '5b6331250ff459033bd44d1a95daec70131277cc'
+assert tree == 'b26598d0d97d8d51e723bb5582137315f2174d35'
+toolchain = (MEMBERS / 'toolchain.txt').read_text()
+assert 'host: x86_64-pc-windows-msvc' in toolchain and 'release: 1.95.0' in toolchain
+full = (HERE / 'job.log').read_text()
+groups = []
+for member, package, expected in [('uds.log', 'codex-uds', 14),
+                                  ('matrixd.log', 'codex-hepta-matrixd', 31),
+                                  ('agentd.log', 'codex-hepta-agentd', 172)]:
+    path = MEMBERS / member
+    text = path.read_text()
+    rows = []
+    for line_number, line in enumerate(text.splitlines(), 1):
+        m = re.fullmatch(r'\s+PASS \[\s+([0-9.]+)s\] (\S+) (\S+)\s*', line)
+        if m:
+            assert m[2] == package
+            rows.append({'package': m[2], 'test': m[3], 'seconds': m[1],
+                         'status': 'PASS', 'original_line': line_number})
+    assert len(rows) == expected and len({r['test'] for r in rows}) == expected
+    summaries = re.findall(r'^\s+Summary \[\s+([0-9.]+)s\] (\d+) tests run: (\d+) passed, (\d+) skipped\s*$', text, re.M)
+    assert len(summaries) == 1 and tuple(map(int, summaries[0][1:])) == (expected, expected, 0)
+    uuids = re.findall(r'Nextest run ID ([0-9a-f-]+) with nextest profile: local', text)
+    assert len(uuids) == 1 and not re.search(r'^\s+(FAIL|TIMEOUT|TRY \d+|RETRY|SKIP)\b', text, re.M)
+    command = f'just test --locked -p {package} --lib --test-threads 1 --no-tests fail --retries 0'
+    assert full.count(command) == 1
+    groups.append({'package': package, 'command': command, 'nextest_profile': 'local',
+                   'nextest_run_id': uuids[0], 'named_pass': expected, 'skipped': 0,
+                   'duration_seconds': summaries[0][0], 'cases': rows,
+                   'original_member': {'name': member, **identity(path.read_bytes())}})
+catalog_path = ROOT.parent / 'next-head-ci-plan-20261105/named-exit-cases.json'
+catalog = json.loads(catalog_path.read_bytes())
+assert len(catalog['cases']) == 142
+names = {r['test'] for g in groups for r in g['cases']}
+mapped = [{'blocker_id': r['blocker_id'], 'binary': r['binary'], 'test': r['test'],
+           'bazel_target': r['bazel_target'], 'windows_cfg_scope': r.get('windows_cfg_scope'),
+           'disposition': 'NOT_SELECTED_BY_THIS_THREE_LIBRARY_JOB', 'new_pass_from_this_job': False}
+          for r in catalog['cases']]
+assert not any(r['test'] in names for r in catalog['cases'])
+verification = json.loads((HERE / 'artifact-13414467802-verification.json').read_bytes())
+assert verification['github_size_digest_match'] and verification['all_crc_ok']
+review = {'schema': 'hepta-owner-local-windows-original-case-review-v1',
+    'run_id': 41999114651, 'job_id': 127149582441, 'run_attempt': 1,
+    'actual_head': head, 'actual_tree': tree, 'toolchain': toolchain,
+    'job_started_at': '2026-11-05T12:12:05Z', 'job_completed_at': '2026-11-05T12:31:09Z',
+    'original_job_conclusion': 'success', 'groups': groups,
+    'named_pass': 217, 'named_fail': 0, 'summary_skipped': 0,
+    'artifact_verification': verification, 'job_log': identity((HERE / 'job.log').read_bytes()),
+    'original_142_map': {'catalog': identity(catalog_path.read_bytes()), 'matches': 0, 'cases': mapped},
+    'scope': ['All names come from complete original nextest text, not an API step or aggregate count.',
+              'The five-member original artifact contains no JUnit XML; no per-case XML claim is made.',
+              'The original three commands set --retries 0 and --no-tests fail. No new execution or retry occurred.',
+              'These --lib cases do not include the separate Agentd cognitive-write qualification target or any of the original 142 named exit cases.',
+              'PASS describes the actual original test outcome. Platform-specific early returns cannot be excluded merely by a zero-skipped summary; no independent Root/Current/Bao/Chain/operator acceptance is inferred.',
+              'Source.txt binds Git head/tree; it does not prove LF Git bytes equal Windows checkout working-file bytes.',
+              'No original blocker status, exit condition, test budget, or production source was modified.']}
+output = HERE / 'original-case-review.json'
+output.write_text(json.dumps(review, ensure_ascii=False, indent=2) + '\n')
+print(json.dumps({'review': identity(output.read_bytes()), 'named_pass': 217, 'original_142_matches': 0}))

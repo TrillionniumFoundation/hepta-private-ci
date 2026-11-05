@@ -1,0 +1,416 @@
+diff --git a/codex-rs/hepta-agentd/src/lib.rs b/codex-rs/hepta-agentd/src/lib.rs
+index 3466e60a12138ae4816ace1531254312733e4175..0460a3c36edede87541136218016335b43ea0550 100644
+--- a/codex-rs/hepta-agentd/src/lib.rs
++++ b/codex-rs/hepta-agentd/src/lib.rs
+@@ -53,6 +53,8 @@
+ mod production_writer_host;
+ mod prompt_runtime;
+ mod qualification_writer;
++#[cfg(target_os = "linux")]
++mod root_checkpoint_transport;
+ mod runtime;
+ mod runtime_tasks;
+ mod shared_terminal_cell;
+@@ -276,6 +278,12 @@
+ pub use prompt_runtime::AgentdPromptRuntimeError;
+ pub use prompt_runtime::AgentdPromptRuntimeOwner;
+ pub use prompt_runtime::PromptRuntimeStageDisposition;
++#[cfg(target_os = "linux")]
++pub use root_checkpoint_transport::AgentdRootCheckpointBootstrap;
++#[cfg(target_os = "linux")]
++pub use root_checkpoint_transport::AgentdRootCheckpointChannel;
++#[cfg(target_os = "linux")]
++pub use root_checkpoint_transport::AgentdRootCheckpointPeer;
+ pub use runtime::run;
+ pub use runtime_tasks::RuntimeTaskFailure;
+ pub use runtime_tasks::RuntimeTasks;
+diff --git a/codex-rs/hepta-agentd/src/root_checkpoint_transport.rs b/codex-rs/hepta-agentd/src/root_checkpoint_transport.rs
+new file mode 100644
+index 0000000000000000000000000000000000000000..1c8b58ea8b16a8b0566a4efbc56bfbe68b994e27
+--- /dev/null
++++ b/codex-rs/hepta-agentd/src/root_checkpoint_transport.rs
+@@ -0,0 +1,214 @@
++//! One inherited Root checkpoint lane, without a Current admission constructor.
++
++use std::fs::File;
++use std::io::Read;
++use std::mem::size_of;
++use std::os::fd::AsRawFd;
++use std::os::fd::OwnedFd;
++use std::os::unix::net::UnixStream;
++use std::path::Path;
++use std::time::Duration;
++use std::time::Instant;
++
++use codex_hepta_memory::COGNITIVE_CHECKPOINT_FRAME_LIMIT;
++use codex_hepta_memory::CognitiveCheckpointRequest;
++use codex_hepta_memory::ObjectiveSenderCheckpointError as Error;
++use tokio::io::AsyncReadExt;
++use tokio::io::AsyncWriteExt;
++use tokio::io::unix::AsyncFd;
++
++/// Root identity pinned by the trusted launcher before descriptor transfer.
++/// These values must not be learned from an untrusted response or socket path.
++pub struct AgentdRootCheckpointPeer {
++    pub pid: u32,
++    pub boot_id: String,
++    pub process_start_ticks: u64,
++}
++
++/// Synchronous custody, suitable for the original single-thread preflight.
++/// This owns the exact connected stream and original pidfd; it starts no task
++/// or runtime, opens no replacement channel, and performs no credential change.
++pub struct AgentdRootCheckpointBootstrap {
++    stream: UnixStream,
++    root: OwnedFd,
++    timeout: Duration,
++    end: Instant,
++}
++
++/// Exclusive asynchronous transport, not a recovery or FinalUse capability.
++/// A caller must still verify Current, live authority, the exact cut and legal
++/// predecessor/successor before admission. There is no arbitrary Receipt to
++/// Current conversion here, and this channel never creates a signer or issuer.
++pub struct AgentdRootCheckpointChannel {
++    stream: Option<tokio::net::UnixStream>,
++    root: AsyncFd<OwnedFd>,
++    timeout: Duration,
++    end: Instant,
++}
++
++impl AgentdRootCheckpointBootstrap {
++    /// Consume descriptors supplied by the trusted launcher in its host PID/user
++    /// namespace. Only the pinned UID 0 peer is accepted. Both descriptors regain
++    /// CLOEXEC before returning; duplicate descriptors remain the caller's duty.
++    /// The credential and proc observations are namespace-relative; they do not
++    /// authenticate the launcher's host-namespace or authority provenance.
++    /// The relative lifetime bounds transport use; it never establishes a lease
++    /// expiry or makes process liveness atomic with a later database admission.
++    pub fn from_inherited(
++        stream: UnixStream,
++        root: OwnedFd,
++        peer: AgentdRootCheckpointPeer,
++        timeout: Duration,
++        lifetime: Duration,
++    ) -> Result<Self, Error> {
++        Self::from_peer(stream, root, peer, timeout, lifetime, /*uid*/ 0)
++    }
++
++    fn from_peer(
++        stream: UnixStream,
++        root: OwnedFd,
++        peer: AgentdRootCheckpointPeer,
++        timeout: Duration,
++        lifetime: Duration,
++        uid: u32,
++    ) -> Result<Self, Error> {
++        let created = Instant::now();
++        if peer.pid == 0 || peer.pid > i32::MAX as u32 || peer.process_start_ticks == 0
++            || timeout.is_zero() || timeout > Duration::from_secs(5)
++            || lifetime.is_zero() || lifetime > Duration::from_secs(300)
++        {
++            return Err(Error::Refused);
++        }
++        for fd in [stream.as_raw_fd(), root.as_raw_fd()] {
++            // SAFETY: each descriptor is owned and live throughout both calls;
++            // descriptor flags are preserved and no raw ownership is transferred.
++            let result = unsafe {
++                let flags = libc::fcntl(fd, libc::F_GETFD);
++                if flags < 0 { -1 } else { libc::fcntl(fd, libc::F_SETFD, flags | libc::FD_CLOEXEC) }
++            };
++            if result < 0 {
++                return Err(Error::Unavailable);
++            }
++        }
++        let mut actual = libc::ucred { pid: 0, uid: 0, gid: 0 };
++        let mut length = size_of::<libc::ucred>() as libc::socklen_t;
++        // SAFETY: the live socket and initialized output have the declared size.
++        let result = unsafe {
++            libc::getsockopt(stream.as_raw_fd(), libc::SOL_SOCKET, libc::SO_PEERCRED,
++                (&mut actual as *mut libc::ucred).cast(), &mut length)
++        };
++        if result != 0 || length as usize != size_of::<libc::ucred>()
++            || actual.uid != uid || actual.pid != peer.pid as i32
++        {
++            return Err(Error::Refused);
++        }
++        let number = root.as_raw_fd();
++        if std::fs::read_link(format!("/proc/self/fd/{number}")).map_err(unavailable)?
++            != Path::new("anon_inode:[pidfd]")
++            || bounded_text(&format!("/proc/self/fdinfo/{number}"), /*limit*/ 4096)?.lines()
++                .find_map(|line| line.strip_prefix("Pid:")?.trim().parse::<u32>().ok()) != Some(peer.pid)
++            || bounded_text("/proc/sys/kernel/random/boot_id", /*limit*/ 128)?.trim() != peer.boot_id
++        {
++            return Err(Error::Refused);
++        }
++        let stat = bounded_text(&format!("/proc/{}/stat", peer.pid), /*limit*/ 8192)?;
++        if stat.rsplit_once(") ").and_then(|(_, fields)| fields.split_whitespace().nth(19))
++            .and_then(|value| value.parse::<u64>().ok()) != Some(peer.process_start_ticks)
++        {
++            return Err(Error::Refused);
++        }
++        root_alive(&root)?;
++        let end = created + lifetime;
++        if Instant::now() >= end {
++            return Err(Error::Unavailable);
++        }
++        Ok(Self { stream, root, timeout, end })
++    }
++
++    /// Register only after entering the normal I/O-enabled Tokio runtime.
++    /// O_NONBLOCK changes this stream's shared open-file-description: the
++    /// launcher must not retain aliases that expect blocking I/O on it.
++    pub fn into_runtime(self) -> Result<AgentdRootCheckpointChannel, Error> {
++        root_alive(&self.root)?;
++        if Instant::now() >= self.end {
++            return Err(Error::Unavailable);
++        }
++        self.stream.set_nonblocking(true).map_err(unavailable)?;
++        let stream = tokio::net::UnixStream::from_std(self.stream).map_err(unavailable)?;
++        // SAFETY: AsyncFd owns this OwnedFd exclusively. No raw descriptor or
++        // mutable access escapes; it remains the same live descriptor until drop.
++        let root = unsafe { AsyncFd::register_with_interest(self.root, tokio::io::Interest::READABLE) }
++            .map_err(|_| Error::Unavailable)?;
++        root_alive(root.get_ref())?;
++        Ok(AgentdRootCheckpointChannel { stream: Some(stream), root, timeout: self.timeout, end: self.end })
++    }
++}
++
++impl AgentdRootCheckpointChannel {
++    /// Send the exact codec bytes once. An in-flight cancellation, any invalid
++    /// response, timeout or Root exit consumes the channel permanently. A complete
++    /// ACK returns its original bytes for the caller's full successor validation.
++    pub async fn exchange(&mut self, request: &CognitiveCheckpointRequest) -> Result<Vec<u8>, Error> {
++        let bytes = request.encode()?;
++        let mut stream = self.stream.take().ok_or(Error::Unavailable)?;
++        root_alive(self.root.get_ref())?;
++        let deadline = (Instant::now() + self.timeout).min(self.end);
++        if Instant::now() >= deadline {
++            return Err(Error::Unavailable);
++        }
++        let response = tokio::select! {
++            biased;
++            _ = self.root.readable() => return Err(Error::Unavailable),
++            _ = tokio::time::sleep_until(tokio::time::Instant::from_std(deadline)) => return Err(Error::Unavailable),
++            response = async {
++                stream.write_all(&(bytes.len() as u32).to_be_bytes()).await.map_err(unavailable)?;
++                stream.write_all(&bytes).await.map_err(unavailable)?;
++                let mut prefix = [0; 4];
++                stream.read_exact(&mut prefix).await.map_err(unavailable)?;
++                let length = u32::from_be_bytes(prefix) as usize;
++                if length == 0 || length > COGNITIVE_CHECKPOINT_FRAME_LIMIT {
++                    return Err(Error::Unavailable);
++                }
++                let mut response = vec![0; length];
++                stream.read_exact(&mut response).await.map_err(unavailable)?;
++                Ok::<_, Error>(response)
++            } => response?,
++        };
++        request.decode_ack(&response)?;
++        root_alive(self.root.get_ref())?;
++        if Instant::now() >= deadline {
++            return Err(Error::Unavailable);
++        }
++        self.stream = Some(stream);
++        Ok(response)
++    }
++}
++
++fn bounded_text(path: &str, limit: u64) -> Result<String, Error> {
++    let mut text = String::new();
++    File::open(path).map_err(unavailable)?.take(limit + 1)
++        .read_to_string(&mut text).map_err(unavailable)?;
++    if text.len() as u64 > limit {
++        return Err(Error::Refused);
++    }
++    Ok(text)
++}
++
++fn root_alive(root: &OwnedFd) -> Result<(), Error> {
++    let mut descriptor = libc::pollfd { fd: root.as_raw_fd(), events: libc::POLLIN, revents: 0 };
++    // SAFETY: one owned live descriptor and one writable pollfd; this never waits.
++    let result = unsafe { libc::poll(&mut descriptor, /*nfds*/ 1, /*timeout*/ 0) };
++    if result == 0 && descriptor.revents == 0 {
++        Ok(())
++    } else {
++        Err(Error::Unavailable)
++    }
++}
++
++fn unavailable(_: std::io::Error) -> Error {
++    Error::Unavailable
++}
++
++#[cfg(test)]
++#[path = "root_checkpoint_transport_tests.rs"]
++mod tests;
+diff --git a/codex-rs/hepta-agentd/src/root_checkpoint_transport_tests.rs b/codex-rs/hepta-agentd/src/root_checkpoint_transport_tests.rs
+new file mode 100644
+index 0000000000000000000000000000000000000000..3fdebffdc1fd5fd9f2ea3da7039e99e63debb3f1
+--- /dev/null
++++ b/codex-rs/hepta-agentd/src/root_checkpoint_transport_tests.rs
+@@ -0,0 +1,164 @@
++//! Real local UDS/pidfd controls; the test UID and synthetic ACK are not Root admission.
++
++use super::*;
++use pretty_assertions::assert_eq;
++use std::os::fd::FromRawFd;
++
++const REQUEST: &str = r#"{"schema_version":1,"operation":"runtime.cognitive.checkpoint.v1","request_id":"00000000000000070000000000000003","command":"read_head","expected":null,"proposal":null}"#;
++const ACK: &str = r#"{
++  "schema_version": 1, "request_id": "00000000000000070000000000000003", "status": "ack", "reason": null,
++  "token": {"publisher_epoch":7,"counter":1,"head_sha256":"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"},
++  "head": {
++    "schema_version": 1, "owner_agent_id": "56d6489e-c050-4de0-ab29-61c2ea00d860",
++    "publisher_epoch": 7, "counter": 1, "last_mutation_sequence": 2,
++    "writer_binding": {"lease_id":"checkpoint-wire-fixture","generation":1,"authority_epoch":2,"owner_epoch":3,"authority_grant_digest":"bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb","fencing_token_digest":"cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc","expires_at_unix_seconds":1000},
++    "peer_lifetime": {"uid":0,"pid":17,"boot_id":"fixture-boot","process_start_ticks":4},
++    "phase": "current",
++    "last_current": {"profile":"hepta:cognitive:exact-current-cut:v1","owner_agent_id":"56d6489e-c050-4de0-ab29-61c2ea00d860","schema_digest":"dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd","state_digest":"eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee"},
++    "proposal": null, "last_request": null
++  }
++}"#;
++
++fn fixture_identity() -> (AgentdRootCheckpointPeer, OwnedFd) {
++    let pid = std::process::id();
++    // SAFETY: pidfd_open takes a PID and zero flags, and returns a new owned FD.
++    let fd = unsafe { libc::syscall(libc::SYS_pidfd_open, pid, 0) };
++    assert!(fd >= 0, "pidfd_open: {}", std::io::Error::last_os_error());
++    let stat = std::fs::read_to_string("/proc/self/stat").unwrap();
++    let peer = AgentdRootCheckpointPeer {
++        pid,
++        boot_id: std::fs::read_to_string("/proc/sys/kernel/random/boot_id").unwrap().trim().to_owned(),
++        process_start_ticks: stat.rsplit_once(") ").unwrap().1.split_whitespace().nth(19).unwrap().parse().unwrap(),
++    };
++    // SAFETY: the successful syscall returned a fresh FD, transferred exactly once.
++    (peer, unsafe { OwnedFd::from_raw_fd(fd as i32) })
++}
++
++fn fixture_bootstrap() -> (AgentdRootCheckpointBootstrap, UnixStream) {
++    let (peer, root) = fixture_identity();
++    let (stream, server) = UnixStream::pair().unwrap();
++    // SAFETY: geteuid has no pointer arguments or ownership effects. Only this
++    // private test fixture accepts the current UID; the public constructor uses 0.
++    let uid = unsafe { libc::geteuid() };
++    let bootstrap = AgentdRootCheckpointBootstrap::from_peer(
++        stream, root, peer, Duration::from_secs(1), Duration::from_secs(30), uid,
++    ).unwrap();
++    (bootstrap, server)
++}
++
++async fn receive_request(server: &mut tokio::net::UnixStream) {
++    let mut prefix = [0; 4];
++    server.read_exact(&mut prefix).await.unwrap();
++    assert_eq!(u32::from_be_bytes(prefix) as usize, REQUEST.len());
++    let mut bytes = vec![0; REQUEST.len()];
++    server.read_exact(&mut bytes).await.unwrap();
++    assert_eq!(bytes, REQUEST.as_bytes());
++}
++
++#[test]
++fn synchronous_custody_rejects_wrong_peer_and_closes_owned_socket() {
++    // This synchronous control does not enter a Tokio runtime. Libtest itself
++    // may have threads; this is not the ordinary single-thread launcher proof.
++    #[derive(Debug)]
++    enum Mismatch { Uid, Pid, Boot, Birth, NotPidfd }
++    for mismatch in [Mismatch::Uid, Mismatch::Pid, Mismatch::Boot, Mismatch::Birth, Mismatch::NotPidfd] {
++        let (mut peer, mut root) = fixture_identity();
++        let (stream, mut server) = UnixStream::pair().unwrap();
++        // SAFETY: geteuid has no pointer arguments or ownership effects.
++        let mut uid = unsafe { libc::geteuid() };
++        match mismatch {
++            Mismatch::Uid => uid = uid.wrapping_add(1),
++            Mismatch::Pid => peer.pid = if peer.pid == 1 { 2 } else { 1 },
++            Mismatch::Boot => peer.boot_id.push('x'),
++            Mismatch::Birth => peer.process_start_ticks += 1,
++            Mismatch::NotPidfd => root = File::open("/dev/null").unwrap().into(),
++        }
++        assert!(matches!(AgentdRootCheckpointBootstrap::from_peer(
++            stream, root, peer, Duration::from_secs(1), Duration::from_secs(30), uid,
++        ), Err(Error::Refused)), "{mismatch:?}");
++        server.set_read_timeout(Some(Duration::from_secs(1))).unwrap();
++        assert_eq!(server.read(&mut [0]).unwrap(), 0, "{mismatch:?}");
++    }
++    let (peer, root) = fixture_identity();
++    let (stream, mut server) = UnixStream::pair().unwrap();
++    let public = AgentdRootCheckpointBootstrap::from_inherited(
++        stream, root, peer, Duration::from_secs(1), Duration::from_secs(30),
++    );
++    // SAFETY: observe the real fixture credential, without changing it. A root
++    // test process still does not establish independent Root/issuer authority.
++    match unsafe { libc::geteuid() } {
++        0 => assert!(public.is_ok()),
++        _ => assert!(matches!(&public, Err(Error::Refused))),
++    }
++    drop(public);
++    server.set_read_timeout(Some(Duration::from_secs(1))).unwrap();
++    assert_eq!(server.read(&mut [0]).unwrap(), 0);
++    let (bootstrap, mut server) = fixture_bootstrap();
++    for fd in [bootstrap.stream.as_raw_fd(), bootstrap.root.as_raw_fd()] {
++        // SAFETY: bootstrap owns each live descriptor during this observation.
++        let flags = unsafe { libc::fcntl(fd, libc::F_GETFD) };
++        assert!(flags >= 0 && flags & libc::FD_CLOEXEC != 0);
++    }
++    drop(bootstrap);
++    server.set_read_timeout(Some(Duration::from_secs(1))).unwrap();
++    assert_eq!(server.read(&mut [0]).unwrap(), 0);
++}
++
++#[tokio::test]
++async fn complete_ack_preserves_wire_bytes_and_wrong_request_closes_lane() {
++    let (bootstrap, server) = fixture_bootstrap();
++    let mut channel = bootstrap.into_runtime().unwrap();
++    server.set_nonblocking(true).unwrap();
++    let mut server = tokio::net::UnixStream::from_std(server).unwrap();
++    let request: CognitiveCheckpointRequest = serde_json::from_str(REQUEST).unwrap();
++    let client = async {
++        assert_eq!(channel.exchange(&request).await.unwrap(), ACK.as_bytes());
++        assert_eq!(channel.exchange(&request).await, Err(Error::Unavailable));
++        assert_eq!(channel.exchange(&request).await, Err(Error::Unavailable));
++    };
++    let peer = async {
++        for reply in [ACK.to_owned(), ACK.replacen("00000000000000070000000000000003", "00000000000000070000000000000004", /*count*/ 1)] {
++            receive_request(&mut server).await;
++            server.write_all(&(reply.len() as u32).to_be_bytes()).await.unwrap();
++            server.write_all(reply.as_bytes()).await.unwrap();
++        }
++        assert_eq!(server.read(&mut [0]).await.unwrap(), 0);
++    };
++    tokio::time::timeout(Duration::from_secs(5), async { tokio::join!(client, peer); }).await.unwrap();
++}
++
++#[tokio::test]
++async fn cancellation_after_real_request_closes_lane_without_reconnecting() {
++    let (bootstrap, server) = fixture_bootstrap();
++    let mut channel = bootstrap.into_runtime().unwrap();
++    server.set_nonblocking(true).unwrap();
++    let mut server = tokio::net::UnixStream::from_std(server).unwrap();
++    let request: CognitiveCheckpointRequest = serde_json::from_str(REQUEST).unwrap();
++    let mut exchange = Box::pin(channel.exchange(&request));
++    tokio::time::timeout(Duration::from_secs(5), async {
++        tokio::select! {
++            result = &mut exchange => panic!("exchange ended before peer withheld response: {result:?}"),
++            _ = receive_request(&mut server) => {}
++        }
++    }).await.unwrap();
++    drop(exchange);
++    assert_eq!(tokio::time::timeout(Duration::from_secs(1), server.read(&mut [0])).await.unwrap().unwrap(), 0);
++    assert_eq!(channel.exchange(&request).await, Err(Error::Unavailable));
++}
++
++#[tokio::test]
++async fn withheld_response_times_out_and_closes_lane() {
++    let (bootstrap, server) = fixture_bootstrap();
++    let mut channel = bootstrap.into_runtime().unwrap();
++    server.set_nonblocking(true).unwrap();
++    let mut server = tokio::net::UnixStream::from_std(server).unwrap();
++    let request: CognitiveCheckpointRequest = serde_json::from_str(REQUEST).unwrap();
++    let mut exchange = Box::pin(channel.exchange(&request));
++    tokio::select! {
++        result = &mut exchange => panic!("exchange ended before peer received request: {result:?}"),
++        _ = receive_request(&mut server) => {}
++    }
++    assert_eq!(exchange.await, Err(Error::Unavailable));
++    assert_eq!(tokio::time::timeout(Duration::from_secs(1), server.read(&mut [0])).await.unwrap().unwrap(), 0);
++    assert_eq!(channel.exchange(&request).await, Err(Error::Unavailable));
++}

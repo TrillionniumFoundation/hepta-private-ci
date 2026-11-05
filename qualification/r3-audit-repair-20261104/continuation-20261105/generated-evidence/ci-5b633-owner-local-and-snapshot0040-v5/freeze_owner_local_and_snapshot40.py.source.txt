@@ -1,0 +1,93 @@
+#!/usr/bin/env python3
+"""Freeze existing CI evidence and two API cuts; run no product commands."""
+from pathlib import Path
+import base64
+import collections
+import gzip
+import hashlib
+import io
+import json
+import tarfile
+
+ROOT = Path(__file__).resolve().parent
+HERE = ROOT / 'terminal/windows-owner-local-127149582441'
+OUT = ROOT / 'immutable-v5-owner-local-and-snapshot0040'
+OUT.mkdir(exist_ok=False)
+
+
+def identity(raw):
+    return {'bytes': len(raw), 'sha256': hashlib.sha256(raw).hexdigest(),
+            'computed_git_blob': hashlib.sha1(f'blob {len(raw)}\0'.encode() + raw).hexdigest()}
+
+
+def save(name, value):
+    (OUT / name).write_text(json.dumps(value, ensure_ascii=False, indent=2) + '\n')
+
+
+snapshots = []
+for number in (39, 40):
+    path = ROOT / f'snapshot-{number:04d}/jobs-api-envelope.json'
+    envelope = json.loads(path.read_bytes())
+    records = envelope['records']
+    assert len(records) == 21 and len({r['label'] for r in records}) == 21
+    parsed = {r['label']: json.loads(r['response']['structuredContent']['content']) for r in records}
+    runs = parsed['runs']['workflow_runs']
+    assert len(runs) == parsed['runs']['total_count'] == 19
+    assert all(r['head_sha'] == '5b6331250ff459033bd44d1a95daec70131277cc' and r['run_attempt'] == 1 for r in runs)
+    jobs = []
+    for label, value in parsed.items():
+        if label.startswith('jobs-'):
+            assert value['total_count'] == len(value['jobs'])
+            jobs.extend(value['jobs'])
+    assert len(jobs) == len({j['id'] for j in jobs}) == 44
+    pr = parsed['pr']
+    assert pr['head']['sha'] == '5b6331250ff459033bd44d1a95daec70131277cc' and pr['draft'] and pr['state'] == 'open'
+    assert pr['base']['sha'] == '63652be658ebed8d3052eb789b951793384fd5e4'
+    snapshots.append({'snapshot': number, 'original_api': identity(path.read_bytes()),
+        'requested_from': min(r['requested_at'] for r in records), 'observed_to': max(r['observed_at'] for r in records),
+        'run_counts': dict(collections.Counter(r['conclusion'] or r['status'] for r in runs)),
+        'job_counts': dict(collections.Counter(j['conclusion'] or j['status'] for j in jobs)),
+        'pagination': 'Every original first page reports total_count equal to the complete returned array; no duplicates and exactly all 19 known run IDs. No historical empty page is relabelled current.',
+        'runs': [{k: r.get(k) for k in ('id', 'name', 'status', 'conclusion', 'head_sha', 'run_attempt', 'run_started_at', 'updated_at')} for r in runs],
+        'jobs': jobs})
+save('snapshot-summary.json', {'schema': 'hepta-original-ci-cut-summary-v1', 'snapshots': snapshots,
+    'scope': 'Run and job observations are non-atomic API snapshots. Actual job execution is reported independently of top-level queued status. API success does not prove named behavior or independent operator acceptance.'})
+review = json.loads((HERE / 'original-case-review.json').read_bytes())
+assert review['named_pass'] == 217 and review['original_142_map']['matches'] == 0
+(OUT / 'original-case-review.json').write_bytes((HERE / 'original-case-review.json').read_bytes())
+files = [Path(__file__), ROOT / 'project_owner_local_windows.py',
+         ROOT / 'snapshot-0039/jobs-api-envelope.json', ROOT / 'snapshot-0040/jobs-api-envelope.json',
+         *sorted(p for p in HERE.rglob('*') if p.is_file())]
+assert len(files) == len(set(files))
+buffer = io.BytesIO()
+rows = []
+with tarfile.open(fileobj=buffer, mode='w') as archive:
+    for file in files:
+        body = file.read_bytes()
+        name = str(file.relative_to(ROOT))
+        rows.append({'member': name, **identity(body)})
+        info = tarfile.TarInfo(name)
+        info.size = len(body)
+        info.mode = 0o644
+        info.mtime = 0
+        archive.addfile(info, io.BytesIO(body))
+compressed = gzip.compress(buffer.getvalue(), mtime=0)
+assert gzip.decompress(compressed) == buffer.getvalue()
+save('original-files-manifest.json', {'schema': 'hepta-immutable-original-file-index-v1',
+    'file_count': len(rows), 'total_original_bytes': sum(r['bytes'] for r in rows), 'files': rows})
+parts = []
+for index, offset in enumerate(range(0, len(compressed), 360448)):
+    chunk = compressed[offset:offset + 360448]
+    encoded = base64.b64encode(chunk) + b'\n'
+    name = f'original-ci.tar.gz.part{index:03d}.b64.txt'
+    (OUT / name).write_bytes(encoded)
+    assert len(encoded) < 500000
+    parts.append({'index': index, 'name': name, 'compressed_offset': offset,
+                  'file': identity(encoded), 'decoded_chunk': identity(chunk)})
+save('transport-manifest.json', {'schema': 'hepta-immutable-ci-transport-v1',
+    'archive': {'name': 'original-ci.tar.gz', **identity(compressed)},
+    'original_files_manifest': {'name': 'original-files-manifest.json', **identity((OUT / 'original-files-manifest.json').read_bytes())},
+    'part_count': len(parts), 'parts': parts})
+(OUT / 'verify_archive.py').write_bytes((ROOT / 'immutable-v5-snapshot0030/verify_archive.py').read_bytes())
+print(json.dumps({'files': len(rows), 'original_bytes': sum(r['bytes'] for r in rows),
+                  'parts': len(parts), 'archive': identity(compressed)}))

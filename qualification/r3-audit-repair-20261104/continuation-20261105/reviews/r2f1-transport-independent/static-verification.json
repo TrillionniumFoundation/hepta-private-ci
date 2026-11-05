@@ -1,0 +1,177 @@
+{
+  "schema": "r2f1-independent-static-byte-check-v1",
+  "status": "STATIC_PATCH_CHECK_PASS_NO_COMPILE_OR_PRODUCT_EXECUTION",
+  "manifest": {
+    "path": "/workspace/scratch/07dd58cc9630/architecture-audit/b16-next-normal-chain-20261105/r2f1-root-checkpoint-transport/manifest-v2.json",
+    "bytes": 12255,
+    "sha256": "664b4fd62bae66e28f7fa08aa125896db14acb21e7ff11d9e366ecb4bbe4910f",
+    "git_blob": "16e4c8e5ad178afe7e3351dbf7c3f5f99abd50c1"
+  },
+  "patch": {
+    "path": "/workspace/scratch/07dd58cc9630/architecture-audit/b16-next-normal-chain-20261105/r2f1-root-checkpoint-transport/candidate.patch",
+    "bytes": 20164,
+    "sha256": "97b3992955e72b1f6af0367c95fc8b1b16c8de920f44b012c0b9f9ae9faf3300",
+    "git_blob": "00e997f3ab4c1f5858121041ed1088adfd1f7a2c"
+  },
+  "candidate_postimages": [
+    {
+      "logical_path": "codex-rs/hepta-agentd/src/lib.rs",
+      "path": "/workspace/scratch/07dd58cc9630/architecture-audit/b16-next-normal-chain-20261105/r2f1-root-checkpoint-transport/candidate/codex-rs/hepta-agentd/src/lib.rs",
+      "bytes": 15002,
+      "sha256": "3451e900b4cb419079a7413d27ef1394b29e2808fc74c1d22b93121145fe0ce0",
+      "git_blob": "0460a3c36edede87541136218016335b43ea0550"
+    },
+    {
+      "logical_path": "codex-rs/hepta-agentd/src/root_checkpoint_transport.rs",
+      "path": "/workspace/scratch/07dd58cc9630/architecture-audit/b16-next-normal-chain-20261105/r2f1-root-checkpoint-transport/candidate/codex-rs/hepta-agentd/src/root_checkpoint_transport.rs",
+      "bytes": 9201,
+      "sha256": "d1fe8f15a2e5f07814b46d26876f8045988b668b3b840ce9ded1043da3687a8d",
+      "git_blob": "1c8b58ea8b16a8b0566a4efbc56bfbe68b994e27"
+    },
+    {
+      "logical_path": "codex-rs/hepta-agentd/src/root_checkpoint_transport_tests.rs",
+      "path": "/workspace/scratch/07dd58cc9630/architecture-audit/b16-next-normal-chain-20261105/r2f1-root-checkpoint-transport/candidate/codex-rs/hepta-agentd/src/root_checkpoint_transport_tests.rs",
+      "bytes": 8874,
+      "sha256": "733a5ad8f2a9ac80f1bc06e368d4d738d8fbf4eb8f5036fa23f1313171324699",
+      "git_blob": "3fdebffdc1fd5fd9f2ea3da7039e99e63debb3f1"
+    }
+  ],
+  "original_lib": {
+    "path": "/workspace/scratch/07dd58cc9630/architecture-audit/b16-next-normal-chain-20261105/source-5b/codex-rs/hepta-agentd/src/lib.rs",
+    "bytes": 14668,
+    "sha256": "b0d542c1a45293ca94b82712dc9c4ac65f65f662744230bf3eb0cee208df6d9e",
+    "git_blob": "3466e60a12138ae4816ace1531254312733e4175"
+  },
+  "all_three_postimages_match": true,
+  "reverse_restores_original_and_removes_new_paths": true,
+  "cloud_isolated_git_commands": [
+    {
+      "argv": [
+        "git",
+        "init",
+        "--quiet"
+      ],
+      "cwd": "/workspace/scratch/07dd58cc9630/research-audit/r2f1-independent-review-20261105/isolated-patch-check",
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "git",
+        "apply",
+        "--check",
+        "/workspace/scratch/07dd58cc9630/architecture-audit/b16-next-normal-chain-20261105/r2f1-root-checkpoint-transport/candidate.patch"
+      ],
+      "cwd": "/workspace/scratch/07dd58cc9630/research-audit/r2f1-independent-review-20261105/isolated-patch-check",
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "git",
+        "apply",
+        "/workspace/scratch/07dd58cc9630/architecture-audit/b16-next-normal-chain-20261105/r2f1-root-checkpoint-transport/candidate.patch"
+      ],
+      "cwd": "/workspace/scratch/07dd58cc9630/research-audit/r2f1-independent-review-20261105/isolated-patch-check",
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "git",
+        "apply",
+        "--reverse",
+        "--check",
+        "/workspace/scratch/07dd58cc9630/architecture-audit/b16-next-normal-chain-20261105/r2f1-root-checkpoint-transport/candidate.patch"
+      ],
+      "cwd": "/workspace/scratch/07dd58cc9630/research-audit/r2f1-independent-review-20261105/isolated-patch-check",
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "git",
+        "apply",
+        "--reverse",
+        "/workspace/scratch/07dd58cc9630/architecture-audit/b16-next-normal-chain-20261105/r2f1-root-checkpoint-transport/candidate.patch"
+      ],
+      "cwd": "/workspace/scratch/07dd58cc9630/research-audit/r2f1-independent-review-20261105/isolated-patch-check",
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": ""
+    }
+  ],
+  "source_inputs": [
+    {
+      "path": "/workspace/scratch/07dd58cc9630/architecture-audit/b16-next-normal-chain-20261105/source-final-B/codex-rs/hepta-memory/src/cognitive_checkpoint_codec.rs",
+      "bytes": 11437,
+      "sha256": "bea6cd9ed80d5a04e5cfc7d47707b9313d216509449e0360cbcd4f6ac566b3ae",
+      "git_blob": "3a6b75875c7e265ba71e7948b70e7e3fcd608c0f"
+    },
+    {
+      "path": "/workspace/scratch/07dd58cc9630/architecture-audit/b16-next-normal-chain-20261105/source-final-B/codex-rs/hepta-memory/src/cognitive_checkpoint_wire.rs",
+      "bytes": 5040,
+      "sha256": "7d88111a6ee92e91af1317f6e00fe5e6cd45b86571853dbeb39777a75df7dd40",
+      "git_blob": "c6bada509bf9108a2dffad91288b1432c136ef20"
+    },
+    {
+      "path": "/workspace/scratch/07dd58cc9630/architecture-audit/b16-next-normal-chain-20261105/source-final-B/codex-rs/hepta-memory/src/objective_sender.rs",
+      "bytes": 20125,
+      "sha256": "556f82d57e3a3d28ea741fa64423f4bb0ac42176daf82eaada1d983fb18795f8",
+      "git_blob": "e3789436918efae898ecaac96d49e6ac73b37f76"
+    },
+    {
+      "path": "/workspace/scratch/07dd58cc9630/architecture-audit/b16-next-normal-chain-20261105/source-final-B/codex-rs/hepta-memory/src/lib.rs",
+      "bytes": 26608,
+      "sha256": "bdaafbdfc78a8ded68676729d401d0b8a74fbeb65bcfd296014a3fa08dae7c86",
+      "git_blob": "d8c5fd3d36bf3fbca4ba33ecf80ba6ae46756f33"
+    },
+    {
+      "path": "/workspace/scratch/07dd58cc9630/architecture-audit/b16-next-normal-chain-20261105/source-5b/codex-rs/hepta-agentd/Cargo.toml",
+      "bytes": 4837,
+      "sha256": "01695336f08194ee7c0fd991266ed0f05adcab6413af173501ceee18209aa8b9",
+      "git_blob": "d94042bddf8fcf785e2963a3acc90afcab3dbd69"
+    },
+    {
+      "path": "/workspace/scratch/07dd58cc9630/architecture-audit/b16-next-normal-chain-20261105/source-5b/codex-rs/hepta-agentd/BUILD.bazel",
+      "bytes": 8491,
+      "sha256": "eb5ca96730ba01d5acf31d16cc0ce8bea580f5e5d56971a745cb12f5fba22773",
+      "git_blob": "f9354d8ecab6b3d026468301af83238493b09cb3"
+    },
+    {
+      "path": "/workspace/scratch/07dd58cc9630/architecture-audit/b16-next-normal-chain-20261105/source-5b/defs.bzl",
+      "bytes": 34630,
+      "sha256": "f5638a9189632c8d8524a438bbfc6b365bddf7f23dfd2df06a6de3a2ff3f2cfa",
+      "git_blob": "6f588ec3057fddfea35170e28e74036162ce6a23"
+    },
+    {
+      "path": "/workspace/scratch/07dd58cc9630/architecture-audit/intel-pty-drain-remaining-20261105/source/tokio_async_fd.rs",
+      "bytes": 62421,
+      "sha256": "0d9365deaa40f8d069770308a105aad31fe527ea593acf95c40265407d9f143d",
+      "git_blob": "3463439c9987132b95eb218119e7fe1fa93199b3"
+    }
+  ],
+  "primary_sources": [
+    {
+      "path": "/workspace/scratch/07dd58cc9630/research-audit/r2f1-independent-review-20261105/primary/linux-v6.12/fs-pidfs.c.source.txt",
+      "bytes": 11022,
+      "sha256": "fae3fa65abd35998c65d111b73f4acd7aa3b2ecf6bea2a18f573dd93860e3334",
+      "git_blob": "80675b6bf88459c22787edaa68db360bdc0d0782"
+    },
+    {
+      "path": "/workspace/scratch/07dd58cc9630/research-audit/r2f1-independent-review-20261105/primary/linux-v6.12/net-core-sock.c.source.txt",
+      "bytes": 110171,
+      "sha256": "8493cd7cc690e18edd30ee5356bb11ed53001f2b7908a4d2438d2725af9f53a8",
+      "git_blob": "da50df485090ff4cd6a91d2f3c2a734a19123958"
+    }
+  ],
+  "primary_source_note": "Linux reference files were retrieved at v6.12. Hashes describe exact decoded UTF-8 bodies; they are not a claim about the actual native-host kernel version.",
+  "no_native_commands": true,
+  "no_product_tests": true,
+  "no_shared_source_changes": true,
+  "no_ref_changes": true
+}

@@ -1,0 +1,163 @@
+diff --git a/codex-rs/state/src/sqlite.rs b/codex-rs/state/src/sqlite.rs
+index 85984c8c0fb1f699ad761de7383f920decad4808..6aa23ce40de3ce8254542681e363fbe85780af28 100644
+--- a/codex-rs/state/src/sqlite.rs
++++ b/codex-rs/state/src/sqlite.rs
+@@ -569,3 +569,7 @@
+ #[cfg(test)]
+ #[path = "sqlite_native_custody_tests.rs"]
+ mod native_custody_tests;
++
++#[cfg(test)]
++#[path = "sqlite_refused_commit_pool_tests.rs"]
++mod refused_commit_pool_tests;
+diff --git a/codex-rs/state/src/sqlite_refused_commit_pool_tests.rs b/codex-rs/state/src/sqlite_refused_commit_pool_tests.rs
+new file mode 100644
+index 0000000000000000000000000000000000000000..86b68c0120e8fca501f50e728fe6fefbad64fee6
+--- /dev/null
++++ b/codex-rs/state/src/sqlite_refused_commit_pool_tests.rs
+@@ -0,0 +1,145 @@
++use super::SqliteConfig;
++use crate::runtime::test_support::create_private_test_directory;
++use crate::runtime::test_support::unique_temp_dir;
++use codex_utils_absolute_path::test_support::PathExt;
++use pretty_assertions::assert_eq;
++use sqlx::Connection;
++use std::sync::Arc;
++use std::sync::atomic::AtomicBool;
++use std::sync::atomic::AtomicUsize;
++use std::sync::atomic::Ordering;
++
++#[derive(Clone, Copy, Debug)]
++enum PoolKind {
++    CommitGuarded,
++    Coordinated,
++}
++
++#[tokio::test]
++async fn guarded_pool_discards_refused_transaction_before_reuse() -> anyhow::Result<()> {
++    assert_refused_commit_replaces_connection(PoolKind::CommitGuarded).await
++}
++
++#[tokio::test]
++async fn coordinated_pool_discards_refused_transaction_before_owner_checkout() -> anyhow::Result<()> {
++    assert_refused_commit_replaces_connection(PoolKind::Coordinated).await
++}
++
++async fn assert_refused_commit_replaces_connection(kind: PoolKind) -> anyhow::Result<()> {
++    let home = unique_temp_dir();
++    create_private_test_directory(&home)?;
++    let home = scopeguard::guard(home, |home| {
++        let _ = std::fs::remove_dir_all(home);
++    });
++    let sqlite = SqliteConfig::new_for_testing(home.as_path().abs());
++    let database = home.join("refused-commit.sqlite3");
++    let allowed = Arc::new(AtomicBool::new(/*v*/ true));
++    let commit_allowed = Arc::clone(&allowed);
++    let checkouts = Arc::new(AtomicUsize::new(0));
++    let before_checkout = Arc::clone(&checkouts);
++    let pool = match kind {
++        PoolKind::CommitGuarded => {
++            sqlite
++                .open_commit_guarded_durable_evidence_pool(&database, move || {
++                    commit_allowed.load(Ordering::SeqCst)
++                })
++                .await?
++        }
++        PoolKind::Coordinated => {
++            sqlite
++                .open_coordinated_durable_evidence_pool(
++                    &database,
++                    move || commit_allowed.load(Ordering::SeqCst),
++                    move || {
++                        before_checkout.fetch_add(1, Ordering::SeqCst);
++                        std::future::ready(())
++                    },
++                )
++                .await?
++        }
++    };
++    sqlx::query("CREATE TABLE guarded_effect (value INTEGER NOT NULL)")
++        .execute(&pool)
++        .await?;
++
++    // Occupy four of the constructor's five slots. The fifth checkout cannot
++    // silently switch to a different idle connection after its refused COMMIT.
++    let mut held = Vec::new();
++    for _ in 0..4 {
++        held.push(pool.acquire().await?);
++    }
++    let mut rejected = pool.acquire().await?;
++    assert_eq!(pool.size(), 5);
++    sqlx::query("CREATE TEMP TABLE refused_slot_marker (value INTEGER)")
++        .execute(&mut *rejected)
++        .await?;
++    let mut transaction = rejected.begin_with("BEGIN IMMEDIATE").await?;
++    sqlx::query("INSERT INTO guarded_effect VALUES (7)")
++        .execute(&mut *transaction)
++        .await?;
++    allowed.store(/*val*/ false, Ordering::SeqCst);
++    let refusal = transaction.commit().await.unwrap_err();
++    assert_eq!(
++        refusal.as_database_error().and_then(|error| error.code()),
++        Some("531".into())
++    );
++
++    // Flush SQLx's queued rollback, then compare its tracked state with the
++    // actual SQLite handle while that handle is exclusively locked.
++    rejected.ping().await?;
++    let sqlite_autocommit = {
++        let mut handle = rejected.lock_handle().await?;
++        // SAFETY: lock_handle holds this live SQLite handle until this block ends.
++        unsafe { libsqlite3_sys::sqlite3_get_autocommit(handle.as_raw_handle().as_ptr()) != 0 }
++    };
++    let tracked_transaction = rejected.is_in_transaction();
++    eprintln!(
++        "refused_commit_pool: kind={kind:?} sqlite_autocommit={sqlite_autocommit} tracked_transaction={tracked_transaction}"
++    );
++    assert!(sqlite_autocommit);
++    assert!(tracked_transaction);
++    let checkouts_before_reuse = checkouts.load(Ordering::SeqCst);
++    drop(rejected);
++
++    let mut replacement = pool.acquire().await?;
++    let marker_count: i64 = sqlx::query_scalar(
++        "SELECT count(*) FROM sqlite_temp_schema WHERE name = 'refused_slot_marker'",
++    )
++    .fetch_one(&mut *replacement)
++    .await?;
++    let observation = replacement.begin_with("BEGIN IMMEDIATE").await;
++    eprintln!(
++        "refused_commit_pool: kind={kind:?} old_temp_marker={marker_count} read_begin_error={:?}",
++        observation.as_ref().err()
++    );
++    let mut observation =
++        observation.expect("read transaction must remain available after a refused commit");
++    let values: Vec<i64> = sqlx::query_scalar("SELECT value FROM guarded_effect ORDER BY value")
++        .fetch_all(&mut *observation)
++        .await?;
++    assert_eq!(values, Vec::<i64>::new());
++    observation.rollback().await?;
++    assert_eq!(marker_count, 0);
++    if let PoolKind::Coordinated = kind {
++        assert!(checkouts.load(Ordering::SeqCst) > checkouts_before_reuse);
++    }
++
++    // The replacement must reinstall the original rejecting owner hook.
++    let refusal = sqlx::query("INSERT INTO guarded_effect VALUES (9)")
++        .execute(&mut *replacement)
++        .await
++        .unwrap_err();
++    assert_eq!(
++        refusal.as_database_error().and_then(|error| error.code()),
++        Some("531".into())
++    );
++    let values: Vec<i64> = sqlx::query_scalar("SELECT value FROM guarded_effect ORDER BY value")
++        .fetch_all(&mut *replacement)
++        .await?;
++    assert_eq!(values, Vec::<i64>::new());
++    assert!(!allowed.load(Ordering::SeqCst));
++    drop(replacement);
++    drop(held);
++    pool.close().await;
++    Ok(())
++}

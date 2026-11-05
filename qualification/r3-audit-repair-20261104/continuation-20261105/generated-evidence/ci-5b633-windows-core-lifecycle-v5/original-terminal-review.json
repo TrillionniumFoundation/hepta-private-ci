@@ -1,0 +1,1944 @@
+{
+  "schema": "hepta-windows-core-lifecycle-original-terminal-review-v1",
+  "source": {
+    "source_head": "5b6331250ff459033bd44d1a95daec70131277cc",
+    "source_tree": "b26598d0d97d8d51e723bb5582137315f2174d35",
+    "run_id": "41999104379",
+    "run_attempt": "1",
+    "scope": "Original isolated controls and complete Core native target; full repository CI remains independent"
+  },
+  "job_id": 127149546323,
+  "run_id": 41999104379,
+  "run_attempt": 1,
+  "job_started": "2026-11-05T11:59:54Z",
+  "job_completed": "2026-11-05T12:12:02Z",
+  "runner_id": 1000000639,
+  "failure_class": "ACTUAL_RUNTIME_ASSERTION_FAILURE_IN_FULL_CORE_UNIT_SHARD_1",
+  "original_exit_semantics": {
+    "workflow_step": 9,
+    "workflow_step_exit_code": 3,
+    "bazel_shard_exit_code": 1,
+    "compilation_failure": false,
+    "timeouts_or_retries_inferred": false
+  },
+  "actual_selected_isolated_cases": {
+    "core-resume.log": [
+      {
+        "name": "environment_selection::tests::blocking_snapshot_waits_for_starting_environment",
+        "status": "ok",
+        "line": 1342
+      },
+      {
+        "name": "agent::control::tests::resume_agent_from_rollout_reads_archived_rollout_path",
+        "status": "ok",
+        "line": 1343
+      },
+      {
+        "name": "agent::control::tests::spawn_agent_fork_last_n_turns_strips_parent_usage_hints",
+        "status": "ok",
+        "line": 1344
+      },
+      {
+        "name": "agent::control::tests::resume_agent_from_paginated_rollout_loads_model_context",
+        "status": "ok",
+        "line": 1345
+      }
+    ],
+    "core-fork.log": [
+      {
+        "name": "agent::control::tests::spawn_agent_can_fork_parent_thread_history_with_sanitized_items",
+        "status": "ok",
+        "line": 54
+      }
+    ],
+    "core-ownership.log": [
+      {
+        "name": "agent::registry::tests::replacement_registration_rejects_stale_release_and_preserves_budget",
+        "status": "ok",
+        "line": 23
+      },
+      {
+        "name": "agent::control::tests::shutdown_tests::delayed_shutdown_preserves_replacement_runtime_and_ownership",
+        "status": "ok",
+        "line": 24
+      },
+      {
+        "name": "agent::control::tests::shutdown_tests::cold_close_waits_for_cancelled_reload_then_releases_ownership",
+        "status": "ok",
+        "line": 25
+      }
+    ]
+  },
+  "full_unit": {
+    "target": "//codex-rs/core:core-unit-tests",
+    "shards": [
+      {
+        "member": "native-test-logs/codex-rs/core/core-unit-tests/shard_1_of_8/test.log",
+        "bytes": 31440,
+        "sha256": "d2984606ee9cf6dba4dbb09d95ef683d8701b1ffad7f8719a140dd7f07949116",
+        "computed_git_blob": "71ee2cccac94764f9eaff7a7388fba7c82b5acd2",
+        "counts": {
+          "ok": 303,
+          "FAILED": 1
+        },
+        "libtest_subruns": 4,
+        "summaries": [
+          [
+            "89",
+            "0",
+            "0",
+            "0",
+            "2254",
+            "24.12"
+          ],
+          [
+            "78",
+            "1",
+            "0",
+            "0",
+            "2264",
+            "48.86"
+          ],
+          [
+            "81",
+            "0",
+            "0",
+            "0",
+            "2262",
+            "6.68"
+          ],
+          [
+            "55",
+            "0",
+            "0",
+            "0",
+            "2288",
+            "3.40"
+          ]
+        ]
+      },
+      {
+        "member": "native-test-logs/codex-rs/core/core-unit-tests/shard_2_of_8/test.log",
+        "bytes": 26811,
+        "sha256": "86c2358536d15140749e4f09c8e2157dcb0588732d888b50bf41420a05963ad7",
+        "computed_git_blob": "10fa7a65d14501faeb181b51e8bd3b020658d834",
+        "counts": {
+          "ok": 278,
+          "ignored": 1
+        },
+        "libtest_subruns": 4,
+        "summaries": [
+          [
+            "86",
+            "0",
+            "1",
+            "0",
+            "2256",
+            "12.69"
+          ],
+          [
+            "83",
+            "0",
+            "0",
+            "0",
+            "2260",
+            "4.43"
+          ],
+          [
+            "76",
+            "0",
+            "0",
+            "0",
+            "2267",
+            "23.67"
+          ],
+          [
+            "33",
+            "0",
+            "0",
+            "0",
+            "2310",
+            "11.65"
+          ]
+        ]
+      },
+      {
+        "member": "native-test-logs/codex-rs/core/core-unit-tests/shard_3_of_8/test.log",
+        "bytes": 26155,
+        "sha256": "b37dc43169c5832d482bb6b80c69373a4c1149798445fb0eb031f09b81a1051b",
+        "computed_git_blob": "74ce2318c4883d476d38dfa2cf151c43114d0bac",
+        "counts": {
+          "ok": 270
+        },
+        "libtest_subruns": 4,
+        "summaries": [
+          [
+            "84",
+            "0",
+            "0",
+            "0",
+            "2259",
+            "15.95"
+          ],
+          [
+            "79",
+            "0",
+            "0",
+            "0",
+            "2264",
+            "8.27"
+          ],
+          [
+            "79",
+            "0",
+            "0",
+            "0",
+            "2264",
+            "19.07"
+          ],
+          [
+            "28",
+            "0",
+            "0",
+            "0",
+            "2315",
+            "3.00"
+          ]
+        ]
+      },
+      {
+        "member": "native-test-logs/codex-rs/core/core-unit-tests/shard_4_of_8/test.log",
+        "bytes": 30124,
+        "sha256": "c0ef9f036b24e401b4882ac250cd4822d6a995b8472ec34b4a1ead3c8ab22a28",
+        "computed_git_blob": "a4f4548c187df0c5d8bcbbba58a4179113a865a0",
+        "counts": {
+          "ok": 313
+        },
+        "libtest_subruns": 4,
+        "summaries": [
+          [
+            "87",
+            "0",
+            "0",
+            "0",
+            "2256",
+            "19.98"
+          ],
+          [
+            "82",
+            "0",
+            "0",
+            "0",
+            "2261",
+            "4.42"
+          ],
+          [
+            "80",
+            "0",
+            "0",
+            "0",
+            "2263",
+            "19.62"
+          ],
+          [
+            "64",
+            "0",
+            "0",
+            "0",
+            "2279",
+            "11.04"
+          ]
+        ]
+      },
+      {
+        "member": "native-test-logs/codex-rs/core/core-unit-tests/shard_5_of_8/test.log",
+        "bytes": 28885,
+        "sha256": "9a191340af3ea71ad24ba269192b1c18962214926dbf65ba77837d6cbd07dcad",
+        "computed_git_blob": "2df46f1626f3eff50fa2f72cbebe1811bd1161a0",
+        "counts": {
+          "ok": 296,
+          "ignored": 1
+        },
+        "libtest_subruns": 4,
+        "summaries": [
+          [
+            "85",
+            "0",
+            "0",
+            "0",
+            "2258",
+            "21.24"
+          ],
+          [
+            "83",
+            "0",
+            "0",
+            "0",
+            "2260",
+            "11.82"
+          ],
+          [
+            "76",
+            "0",
+            "1",
+            "0",
+            "2266",
+            "15.85"
+          ],
+          [
+            "52",
+            "0",
+            "0",
+            "0",
+            "2291",
+            "14.22"
+          ]
+        ]
+      },
+      {
+        "member": "native-test-logs/codex-rs/core/core-unit-tests/shard_6_of_8/test.log",
+        "bytes": 26298,
+        "sha256": "d33312ff60a2409eaaa697b6d35e288c72444f8152369745217a02995a03f849",
+        "computed_git_blob": "4302a3dcb377cdd8bacfe54663b21e1eabf2e7a3",
+        "counts": {
+          "ok": 271,
+          "ignored": 1
+        },
+        "libtest_subruns": 4,
+        "summaries": [
+          [
+            "88",
+            "0",
+            "0",
+            "0",
+            "2255",
+            "15.15"
+          ],
+          [
+            "79",
+            "0",
+            "0",
+            "0",
+            "2264",
+            "9.97"
+          ],
+          [
+            "75",
+            "0",
+            "1",
+            "0",
+            "2267",
+            "17.84"
+          ],
+          [
+            "29",
+            "0",
+            "0",
+            "0",
+            "2314",
+            "5.02"
+          ]
+        ]
+      },
+      {
+        "member": "native-test-logs/codex-rs/core/core-unit-tests/shard_7_of_8/test.log",
+        "bytes": 32467,
+        "sha256": "9e1041cd1318f0635b9bb82fd0b676f4291372899c2e8497b49fc15c1386a812",
+        "computed_git_blob": "a57315fa2c86a5ffe4033e9d820e04257688dfaa",
+        "counts": {
+          "ok": 326
+        },
+        "libtest_subruns": 5,
+        "summaries": [
+          [
+            "85",
+            "0",
+            "0",
+            "0",
+            "2258",
+            "12.67"
+          ],
+          [
+            "82",
+            "0",
+            "0",
+            "0",
+            "2261",
+            "20.59"
+          ],
+          [
+            "77",
+            "0",
+            "0",
+            "0",
+            "2266",
+            "12.80"
+          ],
+          [
+            "76",
+            "0",
+            "0",
+            "0",
+            "2267",
+            "9.62"
+          ],
+          [
+            "6",
+            "0",
+            "0",
+            "0",
+            "2337",
+            "0.01"
+          ]
+        ]
+      },
+      {
+        "member": "native-test-logs/codex-rs/core/core-unit-tests/shard_8_of_8/test.log",
+        "bytes": 26516,
+        "sha256": "5fd1499c611c4f6e0d033da606508e8f97e5d8adba7039cbaccaa57f3abe8d49",
+        "computed_git_blob": "35a627dfbdea9a2ed15a608c4b0c94bff5b954de",
+        "counts": {
+          "ok": 282
+        },
+        "libtest_subruns": 4,
+        "summaries": [
+          [
+            "89",
+            "0",
+            "0",
+            "0",
+            "2254",
+            "22.64"
+          ],
+          [
+            "81",
+            "0",
+            "0",
+            "0",
+            "2262",
+            "9.54"
+          ],
+          [
+            "79",
+            "0",
+            "0",
+            "0",
+            "2264",
+            "17.61"
+          ],
+          [
+            "33",
+            "0",
+            "0",
+            "0",
+            "2310",
+            "6.99"
+          ]
+        ]
+      }
+    ],
+    "unique_names": 2343,
+    "passed": 2339,
+    "failed": 1,
+    "ignored": 3,
+    "actual_should_panic_successes": 7,
+    "libtest_subruns": 33,
+    "failures": [
+      {
+        "name": "environment_selection::tests::blocking_snapshot_waits_for_starting_environment",
+        "should_panic": false,
+        "status": "FAILED",
+        "suffix": "",
+        "line": 121,
+        "member": "native-test-logs/codex-rs/core/core-unit-tests/shard_1_of_8/test.log"
+      }
+    ],
+    "ignored_cases": [
+      {
+        "name": "agent::role::tests::apply_role_skills_config_disables_skill_for_spawned_agent",
+        "should_panic": false,
+        "status": "ignored",
+        "suffix": "",
+        "line": 10,
+        "member": "native-test-logs/codex-rs/core/core-unit-tests/shard_2_of_8/test.log"
+      },
+      {
+        "name": "shell_snapshot::tests::windows_powershell_snapshot_includes_sections",
+        "should_panic": false,
+        "status": "ignored",
+        "suffix": "",
+        "line": 248,
+        "member": "native-test-logs/codex-rs/core/core-unit-tests/shard_5_of_8/test.log"
+      },
+      {
+        "name": "session::tests::configuration_tests::new_default_turn_uses_config_aware_skills_for_role_overrides",
+        "should_panic": false,
+        "status": "ignored",
+        "suffix": "",
+        "line": 191,
+        "member": "native-test-logs/codex-rs/core/core-unit-tests/shard_6_of_8/test.log"
+      }
+    ],
+    "all_names_projection": {
+      "archive_member": "terminal/windows-core-lifecycle-127149546323/original-unit-case-projection.json",
+      "bytes": 685813,
+      "sha256": "2ced5ca243ed2f4836a3bed37a7d4a0da8236f308fcf79db0a9be6b630dd8ffb",
+      "computed_git_blob": "0f1acbdd6c23c7bc3d8a11f452810b36154c3158"
+    },
+    "no_xml_in_original_artifacts": true,
+    "unsharded_native_test_log": "The additional core-unit-tests/test.log contains the preceding three-case ownership scope (1.40s). It is excluded from the eight-shard full-target count.",
+    "partition_filter_counts": "Per-subrun filtered counts partition the same 2343-name test binary; they are not additional skips or unexecuted full-target cases."
+  },
+  "same_job_differential": {
+    "case": "environment_selection::tests::blocking_snapshot_waits_for_starting_environment",
+    "isolated_resume_group": "ACTUAL_PASS_IN_FOUR_CASE_GROUP",
+    "full_normal_sharding": "ACTUAL_ASSERTION_FAIL",
+    "causal_explanation": "OPEN; isolated success does not override the full-target failure and no scheduler/root cause is inferred."
+  },
+  "failure_complete_slice": {
+    "original_member": "native-test-logs/codex-rs/core/core-unit-tests/shard_1_of_8/test.log",
+    "original_bytes": 31440,
+    "original_sha256": "d2984606ee9cf6dba4dbb09d95ef683d8701b1ffad7f8719a140dd7f07949116",
+    "byte_start": 15688,
+    "byte_end_exclusive": 18060,
+    "first_line": 181,
+    "slice_bytes": 2372,
+    "slice_sha256": "ea8883ae8d406fa73971361dc032e0fac90e50d970cf01e356797c0e5c4a3a1d"
+  },
+  "original_command_evidence": [
+    {
+      "line": 1051,
+      "text": "2026-11-05T12:00:36.8135908Z \u001b[36;1m  --cache_test_results=no --flaky_test_attempts=1 \\\u001b[0m"
+    },
+    {
+      "line": 1052,
+      "text": "2026-11-05T12:00:36.8136420Z \u001b[36;1m  --test_sharding_strategy=disabled --test_output=all \\\u001b[0m"
+    },
+    {
+      "line": 1053,
+      "text": "2026-11-05T12:00:36.8136918Z \u001b[36;1m  --test_arg=agent::control::tests::resume_agent_from_paginated_rollout_loads_model_context \\\u001b[0m"
+    },
+    {
+      "line": 1054,
+      "text": "2026-11-05T12:00:36.8137542Z \u001b[36;1m  --test_arg=agent::control::tests::resume_agent_from_rollout_reads_archived_rollout_path \\\u001b[0m"
+    },
+    {
+      "line": 1055,
+      "text": "2026-11-05T12:00:36.8138189Z \u001b[36;1m  --test_arg=agent::control::tests::spawn_agent_fork_last_n_turns_strips_parent_usage_hints \\\u001b[0m"
+    },
+    {
+      "line": 1056,
+      "text": "2026-11-05T12:00:36.8138822Z \u001b[36;1m  --test_arg=environment_selection::tests::blocking_snapshot_waits_for_starting_environment \\\u001b[0m"
+    },
+    {
+      "line": 1057,
+      "text": "2026-11-05T12:00:36.8139342Z \u001b[36;1m  --test_arg=--exact --test_arg=--nocapture -- \\\u001b[0m"
+    },
+    {
+      "line": 2517,
+      "text": "2026-11-05T12:06:18.0400916Z \u001b[36;1m  --cache_test_results=no --flaky_test_attempts=1 \\\u001b[0m"
+    },
+    {
+      "line": 2518,
+      "text": "2026-11-05T12:06:18.0401622Z \u001b[36;1m  --test_sharding_strategy=disabled --test_output=all \\\u001b[0m"
+    },
+    {
+      "line": 2519,
+      "text": "2026-11-05T12:06:18.0402677Z \u001b[36;1m  --test_arg=agent::control::tests::spawn_agent_can_fork_parent_thread_history_with_sanitized_items \\\u001b[0m"
+    },
+    {
+      "line": 2520,
+      "text": "2026-11-05T12:06:18.0403683Z \u001b[36;1m  --test_arg=--exact --test_arg=--nocapture -- \\\u001b[0m"
+    },
+    {
+      "line": 2635,
+      "text": "2026-11-05T12:07:15.7624993Z \u001b[36;1m  --cache_test_results=no --flaky_test_attempts=1 \\\u001b[0m"
+    },
+    {
+      "line": 2636,
+      "text": "2026-11-05T12:07:15.7625675Z \u001b[36;1m  --test_sharding_strategy=disabled --test_output=all \\\u001b[0m"
+    },
+    {
+      "line": 2637,
+      "text": "2026-11-05T12:07:15.7626756Z \u001b[36;1m  --test_arg=agent::control::tests::shutdown_tests::delayed_shutdown_preserves_replacement_runtime_and_ownership \\\u001b[0m"
+    },
+    {
+      "line": 2638,
+      "text": "2026-11-05T12:07:15.7628557Z \u001b[36;1m  --test_arg=agent::control::tests::shutdown_tests::cold_close_waits_for_cancelled_reload_then_releases_ownership \\\u001b[0m"
+    },
+    {
+      "line": 2639,
+      "text": "2026-11-05T12:07:15.7630350Z \u001b[36;1m  --test_arg=agent::registry::tests::replacement_registration_rejects_stale_release_and_preserves_budget \\\u001b[0m"
+    },
+    {
+      "line": 2640,
+      "text": "2026-11-05T12:07:15.7631391Z \u001b[36;1m  --test_arg=--exact --test_arg=--nocapture -- \\\u001b[0m"
+    },
+    {
+      "line": 2734,
+      "text": "2026-11-05T12:07:40.1676985Z \u001b[36;1m  --cache_test_results=no --flaky_test_attempts=1 \\\u001b[0m"
+    },
+    {
+      "line": 5583,
+      "text": "2026-11-05T12:11:51.8794604Z ##[error]Process completed with exit code 3."
+    }
+  ],
+  "cache_and_attempt": "All four original workflow command blocks retain cache_test_results=no and flaky_test_attempts=1. First three scopes explicitly disable sharding; complete Core uses normal sharding. Build action-cache hits are separate from actual test execution. Repeated log printing of the failure is not a second attempt.",
+  "actual_142_named_projection": {
+    "catalog_names": 142,
+    "match_count": 12,
+    "matches": [
+      {
+        "blocker_id": "B08",
+        "binary": "codex-core",
+        "test": "tools::executed_tool_calls::tests::executed_tool_call_recorder_bounds_pending_calls_and_preserves_overflow",
+        "case_origin": "frozen_named_exit_catalog",
+        "bazel_target": "//codex-rs/core:core-unit-tests",
+        "separate_wine_target": null,
+        "windows_cfg_scope": "NO_NEW_CFG_ASSUMPTION; ORIGINAL_TARGET_AND_FIXED_SOURCE_APPLY",
+        "platforms_to_observe": [
+          "ubuntu-24.04 GNU/RBE",
+          "ubuntu-24.04 musl-label/same GNU RBE",
+          "macos-15",
+          "macos-15-intel",
+          "Windows when original cfg permits"
+        ],
+        "original_budget_policy": "KEEP_EXACT_SOURCE_AND_HARNESS_BUDGET; NO_NEW_TEST_COMMAND",
+        "new_head_observations": [],
+        "state": "AWAITING_PARENT_PUBLICATION_CONFIRMATION",
+        "historical_scope_reference": {
+          "catalog_blob": "2850ea7566e9a9d41878b36baaffc26dfb1ac81b",
+          "blocker_id": "B08",
+          "test": "tools::executed_tool_calls::tests::executed_tool_call_recorder_bounds_pending_calls_and_preserves_overflow"
+        },
+        "historical_outcome_not_transferred": true,
+        "actual_full_unit_occurrence": {
+          "name": "tools::executed_tool_calls::tests::executed_tool_call_recorder_bounds_pending_calls_and_preserves_overflow",
+          "should_panic": false,
+          "status": "ok",
+          "suffix": "",
+          "line": 284,
+          "member": "native-test-logs/codex-rs/core/core-unit-tests/shard_1_of_8/test.log"
+        }
+      },
+      {
+        "blocker_id": "B08",
+        "binary": "codex-core",
+        "test": "tools::executed_tool_calls::tests::executed_tool_call_recorder_bounds_retained_history_and_reports_omissions",
+        "case_origin": "frozen_named_exit_catalog",
+        "bazel_target": "//codex-rs/core:core-unit-tests",
+        "separate_wine_target": null,
+        "windows_cfg_scope": "NO_NEW_CFG_ASSUMPTION; ORIGINAL_TARGET_AND_FIXED_SOURCE_APPLY",
+        "platforms_to_observe": [
+          "ubuntu-24.04 GNU/RBE",
+          "ubuntu-24.04 musl-label/same GNU RBE",
+          "macos-15",
+          "macos-15-intel",
+          "Windows when original cfg permits"
+        ],
+        "original_budget_policy": "KEEP_EXACT_SOURCE_AND_HARNESS_BUDGET; NO_NEW_TEST_COMMAND",
+        "new_head_observations": [],
+        "state": "AWAITING_PARENT_PUBLICATION_CONFIRMATION",
+        "historical_scope_reference": {
+          "catalog_blob": "2850ea7566e9a9d41878b36baaffc26dfb1ac81b",
+          "blocker_id": "B08",
+          "test": "tools::executed_tool_calls::tests::executed_tool_call_recorder_bounds_retained_history_and_reports_omissions"
+        },
+        "historical_outcome_not_transferred": true,
+        "actual_full_unit_occurrence": {
+          "name": "tools::executed_tool_calls::tests::executed_tool_call_recorder_bounds_retained_history_and_reports_omissions",
+          "should_panic": false,
+          "status": "ok",
+          "suffix": "",
+          "line": 288,
+          "member": "native-test-logs/codex-rs/core/core-unit-tests/shard_1_of_8/test.log"
+        }
+      },
+      {
+        "blocker_id": "B08",
+        "binary": "codex-core",
+        "test": "client::tests::chatgpt_codex_wire_strips_local_content_metadata_but_openai_wire_keeps_it",
+        "case_origin": "frozen_named_exit_catalog",
+        "bazel_target": "//codex-rs/core:core-unit-tests",
+        "separate_wine_target": null,
+        "windows_cfg_scope": "NO_NEW_CFG_ASSUMPTION; ORIGINAL_TARGET_AND_FIXED_SOURCE_APPLY",
+        "platforms_to_observe": [
+          "ubuntu-24.04 GNU/RBE",
+          "ubuntu-24.04 musl-label/same GNU RBE",
+          "macos-15",
+          "macos-15-intel",
+          "Windows when original cfg permits"
+        ],
+        "original_budget_policy": "KEEP_EXACT_SOURCE_AND_HARNESS_BUDGET; NO_NEW_TEST_COMMAND",
+        "new_head_observations": [],
+        "state": "AWAITING_PARENT_PUBLICATION_CONFIRMATION",
+        "historical_scope_reference": {
+          "catalog_blob": "2850ea7566e9a9d41878b36baaffc26dfb1ac81b",
+          "blocker_id": "B08",
+          "test": "client::tests::chatgpt_codex_wire_strips_local_content_metadata_but_openai_wire_keeps_it"
+        },
+        "historical_outcome_not_transferred": true,
+        "actual_full_unit_occurrence": {
+          "name": "client::tests::chatgpt_codex_wire_strips_local_content_metadata_but_openai_wire_keeps_it",
+          "should_panic": false,
+          "status": "ok",
+          "suffix": "",
+          "line": 16,
+          "member": "native-test-logs/codex-rs/core/core-unit-tests/shard_3_of_8/test.log"
+        }
+      },
+      {
+        "blocker_id": "B09",
+        "binary": "codex-core",
+        "test": "session::tests::panicking_session_task_is_converted_to_terminal_error_and_releases_slot",
+        "case_origin": "frozen_named_exit_catalog",
+        "bazel_target": "//codex-rs/core:core-unit-tests",
+        "separate_wine_target": null,
+        "windows_cfg_scope": "NO_NEW_CFG_ASSUMPTION; ORIGINAL_TARGET_AND_FIXED_SOURCE_APPLY",
+        "platforms_to_observe": [
+          "ubuntu-24.04 GNU/RBE",
+          "ubuntu-24.04 musl-label/same GNU RBE",
+          "macos-15",
+          "macos-15-intel",
+          "Windows when original cfg permits"
+        ],
+        "original_budget_policy": "KEEP_EXACT_SOURCE_AND_HARNESS_BUDGET; NO_NEW_TEST_COMMAND",
+        "new_head_observations": [],
+        "state": "AWAITING_PARENT_PUBLICATION_CONFIRMATION",
+        "historical_scope_reference": {
+          "catalog_blob": "2850ea7566e9a9d41878b36baaffc26dfb1ac81b",
+          "blocker_id": "B09",
+          "test": "session::tests::panicking_session_task_is_converted_to_terminal_error_and_releases_slot"
+        },
+        "historical_outcome_not_transferred": true,
+        "actual_full_unit_occurrence": {
+          "name": "session::tests::panicking_session_task_is_converted_to_terminal_error_and_releases_slot",
+          "should_panic": false,
+          "status": "ok",
+          "suffix": "",
+          "line": 210,
+          "member": "native-test-logs/codex-rs/core/core-unit-tests/shard_2_of_8/test.log"
+        }
+      },
+      {
+        "blocker_id": "B09",
+        "binary": "codex-core",
+        "test": "session::tests::cancelled_finish_owner_keeps_terminalizer_alive",
+        "case_origin": "frozen_named_exit_catalog",
+        "bazel_target": "//codex-rs/core:core-unit-tests",
+        "separate_wine_target": null,
+        "windows_cfg_scope": "NO_NEW_CFG_ASSUMPTION; ORIGINAL_TARGET_AND_FIXED_SOURCE_APPLY",
+        "platforms_to_observe": [
+          "ubuntu-24.04 GNU/RBE",
+          "ubuntu-24.04 musl-label/same GNU RBE",
+          "macos-15",
+          "macos-15-intel",
+          "Windows when original cfg permits"
+        ],
+        "original_budget_policy": "KEEP_EXACT_SOURCE_AND_HARNESS_BUDGET; NO_NEW_TEST_COMMAND",
+        "new_head_observations": [],
+        "state": "AWAITING_PARENT_PUBLICATION_CONFIRMATION",
+        "historical_scope_reference": {
+          "catalog_blob": "2850ea7566e9a9d41878b36baaffc26dfb1ac81b",
+          "blocker_id": "B09",
+          "test": "session::tests::cancelled_finish_owner_keeps_terminalizer_alive"
+        },
+        "historical_outcome_not_transferred": true,
+        "actual_full_unit_occurrence": {
+          "name": "session::tests::cancelled_finish_owner_keeps_terminalizer_alive",
+          "should_panic": false,
+          "status": "ok",
+          "suffix": "",
+          "line": 196,
+          "member": "native-test-logs/codex-rs/core/core-unit-tests/shard_2_of_8/test.log"
+        }
+      },
+      {
+        "blocker_id": "B09",
+        "binary": "codex-core",
+        "test": "session::tests::panicking_finish_terminalizer_retains_fence",
+        "case_origin": "frozen_named_exit_catalog",
+        "bazel_target": "//codex-rs/core:core-unit-tests",
+        "separate_wine_target": null,
+        "windows_cfg_scope": "NO_NEW_CFG_ASSUMPTION; ORIGINAL_TARGET_AND_FIXED_SOURCE_APPLY",
+        "platforms_to_observe": [
+          "ubuntu-24.04 GNU/RBE",
+          "ubuntu-24.04 musl-label/same GNU RBE",
+          "macos-15",
+          "macos-15-intel",
+          "Windows when original cfg permits"
+        ],
+        "original_budget_policy": "KEEP_EXACT_SOURCE_AND_HARNESS_BUDGET; NO_NEW_TEST_COMMAND",
+        "new_head_observations": [],
+        "state": "AWAITING_PARENT_PUBLICATION_CONFIRMATION",
+        "historical_scope_reference": {
+          "catalog_blob": "2850ea7566e9a9d41878b36baaffc26dfb1ac81b",
+          "blocker_id": "B09",
+          "test": "session::tests::panicking_finish_terminalizer_retains_fence"
+        },
+        "historical_outcome_not_transferred": true,
+        "actual_full_unit_occurrence": {
+          "name": "session::tests::panicking_finish_terminalizer_retains_fence",
+          "should_panic": false,
+          "status": "ok",
+          "suffix": "",
+          "line": 246,
+          "member": "native-test-logs/codex-rs/core/core-unit-tests/shard_1_of_8/test.log"
+        }
+      },
+      {
+        "blocker_id": "B09",
+        "binary": "codex-core",
+        "test": "session::tests::hung_finish_terminalizer_watchdog_retains_fence",
+        "case_origin": "frozen_named_exit_catalog",
+        "bazel_target": "//codex-rs/core:core-unit-tests",
+        "separate_wine_target": null,
+        "windows_cfg_scope": "NO_NEW_CFG_ASSUMPTION; ORIGINAL_TARGET_AND_FIXED_SOURCE_APPLY",
+        "platforms_to_observe": [
+          "ubuntu-24.04 GNU/RBE",
+          "ubuntu-24.04 musl-label/same GNU RBE",
+          "macos-15",
+          "macos-15-intel",
+          "Windows when original cfg permits"
+        ],
+        "original_budget_policy": "KEEP_EXACT_SOURCE_AND_HARNESS_BUDGET; NO_NEW_TEST_COMMAND",
+        "new_head_observations": [],
+        "state": "AWAITING_PARENT_PUBLICATION_CONFIRMATION",
+        "historical_scope_reference": {
+          "catalog_blob": "2850ea7566e9a9d41878b36baaffc26dfb1ac81b",
+          "blocker_id": "B09",
+          "test": "session::tests::hung_finish_terminalizer_watchdog_retains_fence"
+        },
+        "historical_outcome_not_transferred": true,
+        "actual_full_unit_occurrence": {
+          "name": "session::tests::hung_finish_terminalizer_watchdog_retains_fence",
+          "should_panic": false,
+          "status": "ok",
+          "suffix": "",
+          "line": 287,
+          "member": "native-test-logs/codex-rs/core/core-unit-tests/shard_1_of_8/test.log"
+        }
+      },
+      {
+        "blocker_id": "B09",
+        "binary": "codex-core",
+        "test": "session::tests::cancelled_abort_owner_keeps_terminalizer_alive",
+        "case_origin": "frozen_named_exit_catalog",
+        "bazel_target": "//codex-rs/core:core-unit-tests",
+        "separate_wine_target": null,
+        "windows_cfg_scope": "NO_NEW_CFG_ASSUMPTION; ORIGINAL_TARGET_AND_FIXED_SOURCE_APPLY",
+        "platforms_to_observe": [
+          "ubuntu-24.04 GNU/RBE",
+          "ubuntu-24.04 musl-label/same GNU RBE",
+          "macos-15",
+          "macos-15-intel",
+          "Windows when original cfg permits"
+        ],
+        "original_budget_policy": "KEEP_EXACT_SOURCE_AND_HARNESS_BUDGET; NO_NEW_TEST_COMMAND",
+        "new_head_observations": [],
+        "state": "AWAITING_PARENT_PUBLICATION_CONFIRMATION",
+        "historical_scope_reference": {
+          "catalog_blob": "2850ea7566e9a9d41878b36baaffc26dfb1ac81b",
+          "blocker_id": "B09",
+          "test": "session::tests::cancelled_abort_owner_keeps_terminalizer_alive"
+        },
+        "historical_outcome_not_transferred": true,
+        "actual_full_unit_occurrence": {
+          "name": "session::tests::cancelled_abort_owner_keeps_terminalizer_alive",
+          "should_panic": false,
+          "status": "ok",
+          "suffix": "",
+          "line": 227,
+          "member": "native-test-logs/codex-rs/core/core-unit-tests/shard_7_of_8/test.log"
+        }
+      },
+      {
+        "blocker_id": "B09",
+        "binary": "codex-core",
+        "test": "session::tests::panicking_abort_terminalizer_retains_fence",
+        "case_origin": "frozen_named_exit_catalog",
+        "bazel_target": "//codex-rs/core:core-unit-tests",
+        "separate_wine_target": null,
+        "windows_cfg_scope": "NO_NEW_CFG_ASSUMPTION; ORIGINAL_TARGET_AND_FIXED_SOURCE_APPLY",
+        "platforms_to_observe": [
+          "ubuntu-24.04 GNU/RBE",
+          "ubuntu-24.04 musl-label/same GNU RBE",
+          "macos-15",
+          "macos-15-intel",
+          "Windows when original cfg permits"
+        ],
+        "original_budget_policy": "KEEP_EXACT_SOURCE_AND_HARNESS_BUDGET; NO_NEW_TEST_COMMAND",
+        "new_head_observations": [],
+        "state": "AWAITING_PARENT_PUBLICATION_CONFIRMATION",
+        "historical_scope_reference": {
+          "catalog_blob": "2850ea7566e9a9d41878b36baaffc26dfb1ac81b",
+          "blocker_id": "B09",
+          "test": "session::tests::panicking_abort_terminalizer_retains_fence"
+        },
+        "historical_outcome_not_transferred": true,
+        "actual_full_unit_occurrence": {
+          "name": "session::tests::panicking_abort_terminalizer_retains_fence",
+          "should_panic": false,
+          "status": "ok",
+          "suffix": "",
+          "line": 198,
+          "member": "native-test-logs/codex-rs/core/core-unit-tests/shard_6_of_8/test.log"
+        }
+      },
+      {
+        "blocker_id": "B09",
+        "binary": "codex-core",
+        "test": "session::tests::cancelled_suspend_caller_keeps_writer_handoff_alive",
+        "case_origin": "frozen_named_exit_catalog",
+        "bazel_target": "//codex-rs/core:core-unit-tests",
+        "separate_wine_target": null,
+        "windows_cfg_scope": "NO_NEW_CFG_ASSUMPTION; ORIGINAL_TARGET_AND_FIXED_SOURCE_APPLY",
+        "platforms_to_observe": [
+          "ubuntu-24.04 GNU/RBE",
+          "ubuntu-24.04 musl-label/same GNU RBE",
+          "macos-15",
+          "macos-15-intel",
+          "Windows when original cfg permits"
+        ],
+        "original_budget_policy": "KEEP_EXACT_SOURCE_AND_HARNESS_BUDGET; NO_NEW_TEST_COMMAND",
+        "new_head_observations": [],
+        "state": "AWAITING_PARENT_PUBLICATION_CONFIRMATION",
+        "historical_scope_reference": {
+          "catalog_blob": "2850ea7566e9a9d41878b36baaffc26dfb1ac81b",
+          "blocker_id": "B09",
+          "test": "session::tests::cancelled_suspend_caller_keeps_writer_handoff_alive"
+        },
+        "historical_outcome_not_transferred": true,
+        "actual_full_unit_occurrence": {
+          "name": "session::tests::cancelled_suspend_caller_keeps_writer_handoff_alive",
+          "should_panic": false,
+          "status": "ok",
+          "suffix": "",
+          "line": 235,
+          "member": "native-test-logs/codex-rs/core/core-unit-tests/shard_1_of_8/test.log"
+        }
+      },
+      {
+        "blocker_id": "B09",
+        "binary": "codex-core",
+        "test": "session::turn_input::tests::steer_only_requires_active_turn",
+        "case_origin": "frozen_named_exit_catalog",
+        "bazel_target": "//codex-rs/core:core-unit-tests",
+        "separate_wine_target": null,
+        "windows_cfg_scope": "NO_NEW_CFG_ASSUMPTION; ORIGINAL_TARGET_AND_FIXED_SOURCE_APPLY",
+        "platforms_to_observe": [
+          "ubuntu-24.04 GNU/RBE",
+          "ubuntu-24.04 musl-label/same GNU RBE",
+          "macos-15",
+          "macos-15-intel",
+          "Windows when original cfg permits"
+        ],
+        "original_budget_policy": "KEEP_EXACT_SOURCE_AND_HARNESS_BUDGET; NO_NEW_TEST_COMMAND",
+        "new_head_observations": [],
+        "state": "AWAITING_PARENT_PUBLICATION_CONFIRMATION",
+        "historical_scope_reference": {
+          "catalog_blob": "2850ea7566e9a9d41878b36baaffc26dfb1ac81b",
+          "blocker_id": "B09",
+          "test": "session::turn_input::tests::steer_only_requires_active_turn"
+        },
+        "historical_outcome_not_transferred": true,
+        "actual_full_unit_occurrence": {
+          "name": "session::turn_input::tests::steer_only_requires_active_turn",
+          "should_panic": false,
+          "status": "ok",
+          "suffix": "",
+          "line": 211,
+          "member": "native-test-logs/codex-rs/core/core-unit-tests/shard_3_of_8/test.log"
+        }
+      },
+      {
+        "blocker_id": "B09",
+        "binary": "codex-core",
+        "test": "session::turn_input::tests::steer_only_enforces_expected_turn_id",
+        "case_origin": "frozen_named_exit_catalog",
+        "bazel_target": "//codex-rs/core:core-unit-tests",
+        "separate_wine_target": null,
+        "windows_cfg_scope": "NO_NEW_CFG_ASSUMPTION; ORIGINAL_TARGET_AND_FIXED_SOURCE_APPLY",
+        "platforms_to_observe": [
+          "ubuntu-24.04 GNU/RBE",
+          "ubuntu-24.04 musl-label/same GNU RBE",
+          "macos-15",
+          "macos-15-intel",
+          "Windows when original cfg permits"
+        ],
+        "original_budget_policy": "KEEP_EXACT_SOURCE_AND_HARNESS_BUDGET; NO_NEW_TEST_COMMAND",
+        "new_head_observations": [],
+        "state": "AWAITING_PARENT_PUBLICATION_CONFIRMATION",
+        "historical_scope_reference": {
+          "catalog_blob": "2850ea7566e9a9d41878b36baaffc26dfb1ac81b",
+          "blocker_id": "B09",
+          "test": "session::turn_input::tests::steer_only_enforces_expected_turn_id"
+        },
+        "historical_outcome_not_transferred": true,
+        "actual_full_unit_occurrence": {
+          "name": "session::turn_input::tests::steer_only_enforces_expected_turn_id",
+          "should_panic": false,
+          "status": "ok",
+          "suffix": "",
+          "line": 228,
+          "member": "native-test-logs/codex-rs/core/core-unit-tests/shard_2_of_8/test.log"
+        }
+      }
+    ],
+    "missing": [
+      {
+        "id": "B07",
+        "name": "suite::hooks_executor::executor_stop_hook_stops_after_disconnection",
+        "target": "//codex-rs/core:core-all-test",
+        "cfg": "NOT_COMPILED_BY_ORIGINAL_CFG"
+      },
+      {
+        "id": "B07",
+        "name": "suite::hooks_executor::executor_stop_hook_runs_after_attachment",
+        "target": "//codex-rs/core:core-all-test",
+        "cfg": "NOT_COMPILED_BY_ORIGINAL_CFG"
+      },
+      {
+        "id": "B07",
+        "name": "suite::code_mode::code_mode_exec_surfaces_handler_errors_as_exceptions",
+        "target": "//codex-rs/core:core-all-test",
+        "cfg": "ORIGINAL_IGNORE_NO_EXEC_COMMAND"
+      },
+      {
+        "id": "B07",
+        "name": "suite::hooks_mcp::active_tool_policy_disables_mcp_tool_hooks_before_transport",
+        "target": "//codex-rs/core:core-all-test",
+        "cfg": "NOT_COMPILED_BY_ORIGINAL_CFG"
+      },
+      {
+        "id": "B07",
+        "name": "suite::hooks_mcp::hepta_feature_disables_mcp_tool_hooks_before_transport",
+        "target": "//codex-rs/core:core-all-test",
+        "cfg": "NOT_COMPILED_BY_ORIGINAL_CFG"
+      },
+      {
+        "id": "B07",
+        "name": "suite::hooks_mcp::mcp_tool_hook_blocks_model_tool_without_recursive_hooks_or_approval",
+        "target": "//codex-rs/core:core-all-test",
+        "cfg": "NOT_COMPILED_BY_ORIGINAL_CFG"
+      },
+      {
+        "id": "B07",
+        "name": "suite::hooks_mcp::mcp_tool_hook_fails_open_when_server_is_unavailable",
+        "target": "//codex-rs/core:core-all-test",
+        "cfg": "NOT_COMPILED_BY_ORIGINAL_CFG"
+      },
+      {
+        "id": "B07",
+        "name": "suite::hooks_mcp::mcp_tool_hook_interpolates_prompt_and_runs_without_tool_approval",
+        "target": "//codex-rs/core:core-all-test",
+        "cfg": "NOT_COMPILED_BY_ORIGINAL_CFG"
+      },
+      {
+        "id": "B07",
+        "name": "suite::hooks_executor::executor_stop_hook_rejects_mismatched_environment",
+        "target": "//codex-rs/core:core-all-test",
+        "cfg": "NOT_COMPILED_BY_ORIGINAL_CFG"
+      },
+      {
+        "id": "B07",
+        "name": "suite::hooks_mcp::mcp_tool_hook_cannot_call_tools_excluded_by_server_filters",
+        "target": "//codex-rs/core:core-all-test",
+        "cfg": "NOT_COMPILED_BY_ORIGINAL_CFG"
+      },
+      {
+        "id": "B07",
+        "name": "suite::hooks_mcp::mcp_tool_hook_marks_thread_memory_mode_polluted_when_configured",
+        "target": "//codex-rs/core:core-all-test",
+        "cfg": "NOT_COMPILED_BY_ORIGINAL_CFG"
+      },
+      {
+        "id": "B07",
+        "name": "suite::hooks_mcp::mcp_tool_hook_passes_thread_metadata_to_model_hidden_tools",
+        "target": "//codex-rs/core:core-all-test",
+        "cfg": "NOT_COMPILED_BY_ORIGINAL_CFG"
+      },
+      {
+        "id": "B07",
+        "name": "suite::hooks_mcp::permission_request_hook_allows_mcp_tool_without_user_or_guardian_review",
+        "target": "//codex-rs/core:core-all-test",
+        "cfg": "NOT_COMPILED_BY_ORIGINAL_CFG"
+      },
+      {
+        "id": "B07",
+        "name": "suite::hooks_mcp::permission_request_hook_denies_mcp_tool_without_user_or_guardian_review",
+        "target": "//codex-rs/core:core-all-test",
+        "cfg": "NOT_COMPILED_BY_ORIGINAL_CFG"
+      },
+      {
+        "id": "B07",
+        "name": "suite::hooks_mcp::post_tool_use_records_mcp_tool_payload_and_context_with_legacy_prefixed_names",
+        "target": "//codex-rs/core:core-all-test",
+        "cfg": "NOT_COMPILED_BY_ORIGINAL_CFG"
+      },
+      {
+        "id": "B07",
+        "name": "suite::hooks_mcp::post_tool_use_records_mcp_tool_payload_and_context_with_non_prefixed_names",
+        "target": "//codex-rs/core:core-all-test",
+        "cfg": "NOT_COMPILED_BY_ORIGINAL_CFG"
+      },
+      {
+        "id": "B07",
+        "name": "suite::hooks_mcp::pre_tool_use_blocks_mcp_tool_before_execution_with_legacy_prefixed_names",
+        "target": "//codex-rs/core:core-all-test",
+        "cfg": "NOT_COMPILED_BY_ORIGINAL_CFG"
+      },
+      {
+        "id": "B07",
+        "name": "suite::hooks_mcp::pre_tool_use_rewrites_mcp_tool_before_execution",
+        "target": "//codex-rs/core:core-all-test",
+        "cfg": "NOT_COMPILED_BY_ORIGINAL_CFG"
+      },
+      {
+        "id": "B07",
+        "name": "suite::hooks_mcp::pre_tool_use_blocks_mcp_tool_before_execution_with_non_prefixed_names",
+        "target": "//codex-rs/core:core-all-test",
+        "cfg": "NOT_COMPILED_BY_ORIGINAL_CFG"
+      },
+      {
+        "id": "B07",
+        "name": "suite::token_budget::active_tool_policy_skips_notes_thread_hint_without_calling_server",
+        "target": "//codex-rs/core:core-all-test",
+        "cfg": "NO_NEW_CFG_ASSUMPTION; ORIGINAL_TARGET_AND_FIXED_SOURCE_APPLY"
+      },
+      {
+        "id": "B07",
+        "name": "suite::token_budget::hepta_token_budget_skips_notes_thread_hint_without_calling_server",
+        "target": "//codex-rs/core:core-all-test",
+        "cfg": "NO_NEW_CFG_ASSUMPTION; ORIGINAL_TARGET_AND_FIXED_SOURCE_APPLY"
+      },
+      {
+        "id": "B07",
+        "name": "suite::token_budget::token_budget_context_injects_plain_thread_hint_text",
+        "target": "//codex-rs/core:core-all-test",
+        "cfg": "NO_NEW_CFG_ASSUMPTION; ORIGINAL_TARGET_AND_FIXED_SOURCE_APPLY"
+      },
+      {
+        "id": "B07",
+        "name": "binding::tests::configured_hook_call_preserves_model_and_environment_boundaries",
+        "target": "//codex-rs/codex-mcp:codex-mcp-unit-tests",
+        "cfg": "NO_NEW_CFG_ASSUMPTION; ORIGINAL_TARGET_AND_FIXED_SOURCE_APPLY"
+      },
+      {
+        "id": "B07",
+        "name": "binding::tests::prepared_call_keeps_captured_connection_and_authority_after_refresh",
+        "target": "//codex-rs/codex-mcp:codex-mcp-unit-tests",
+        "cfg": "NO_NEW_CFG_ASSUMPTION; ORIGINAL_TARGET_AND_FIXED_SOURCE_APPLY"
+      },
+      {
+        "id": "B07",
+        "name": "binding::tests::prepared_call_does_not_reroute_after_captured_connection_closes",
+        "target": "//codex-rs/codex-mcp:codex-mcp-unit-tests",
+        "cfg": "NO_NEW_CFG_ASSUMPTION; ORIGINAL_TARGET_AND_FIXED_SOURCE_APPLY"
+      },
+      {
+        "id": "B07",
+        "name": "binding::tests::prepared_call_is_rejected_after_catalog_refresh",
+        "target": "//codex-rs/codex-mcp:codex-mcp-unit-tests",
+        "cfg": "NO_NEW_CFG_ASSUMPTION; ORIGINAL_TARGET_AND_FIXED_SOURCE_APPLY"
+      },
+      {
+        "id": "B07",
+        "name": "binding::tests::stale_prepared_call_does_not_run_preparation",
+        "target": "//codex-rs/codex-mcp:codex-mcp-unit-tests",
+        "cfg": "NO_NEW_CFG_ASSUMPTION; ORIGINAL_TARGET_AND_FIXED_SOURCE_APPLY"
+      },
+      {
+        "id": "B07",
+        "name": "binding::tests::preparation_holds_catalog_authority_until_it_finishes",
+        "target": "//codex-rs/codex-mcp:codex-mcp-unit-tests",
+        "cfg": "NO_NEW_CFG_ASSUMPTION; ORIGINAL_TARGET_AND_FIXED_SOURCE_APPLY"
+      },
+      {
+        "id": "B08",
+        "name": "suite::tools::namespaced_custom_tool_call_preserves_namespace_through_dispatch_and_replay",
+        "target": "//codex-rs/core:core-all-test",
+        "cfg": "NOT_COMPILED_BY_ORIGINAL_CFG"
+      },
+      {
+        "id": "B09",
+        "name": "suite::v2::thread_inject_items::thread_inject_items_adds_raw_response_items_after_a_turn",
+        "target": "//codex-rs/app-server:app-server-all-test",
+        "cfg": "NO_NEW_CFG_ASSUMPTION; ORIGINAL_TARGET_AND_FIXED_SOURCE_APPLY"
+      },
+      {
+        "id": "B09",
+        "name": "suite::v2::turn_recover::cold_resume_explicit_cwd_override_is_fail_closed_for_recovery",
+        "target": "//codex-rs/app-server:app-server-all-test",
+        "cfg": "NOT_COMPILED_CFG_UNIX"
+      },
+      {
+        "id": "B09",
+        "name": "suite::v2::turn_recover::cold_paginated_sigkill_recovery_uses_canonical_context_tail",
+        "target": "//codex-rs/app-server:app-server-all-test",
+        "cfg": "NOT_COMPILED_CFG_UNIX"
+      },
+      {
+        "id": "B09",
+        "name": "suite::v2::turn_recover::cold_resume_explicit_workspace_roots_override_is_fail_closed_for_recovery",
+        "target": "//codex-rs/app-server:app-server-all-test",
+        "cfg": "NOT_COMPILED_CFG_UNIX"
+      },
+      {
+        "id": "B09",
+        "name": "suite::v2::turn_recover::cold_sigkill_after_provider_output_is_not_recoverable",
+        "target": "//codex-rs/app-server:app-server-all-test",
+        "cfg": "NOT_COMPILED_CFG_UNIX"
+      },
+      {
+        "id": "B09",
+        "name": "suite::v2::turn_recover::recover_rejects_busy_completed_and_cross_thread_turns",
+        "target": "//codex-rs/app-server:app-server-all-test",
+        "cfg": "NOT_COMPILED_CFG_UNIX"
+      },
+      {
+        "id": "B09",
+        "name": "suite::v2::turn_recover::same_process_ephemeral_interrupted_turn_recovers_from_listener_state",
+        "target": "//codex-rs/app-server:app-server-all-test",
+        "cfg": "NOT_COMPILED_CFG_UNIX"
+      },
+      {
+        "id": "B09",
+        "name": "suite::v2::turn_recover::turn_recover_requires_hepta_turn_recovery_feature",
+        "target": "//codex-rs/app-server:app-server-all-test",
+        "cfg": "NOT_COMPILED_CFG_UNIX"
+      },
+      {
+        "id": "B09",
+        "name": "suite::v2::turn_recover::cold_sigkill_recovery_preserves_turn_and_deduplicates_stable_queue_input",
+        "target": "//codex-rs/app-server:app-server-all-test",
+        "cfg": "NOT_COMPILED_CFG_UNIX"
+      },
+      {
+        "id": "B09",
+        "name": "suite::abort_tasks::root_turn_suspension_preserves_unfinished_turn_history",
+        "target": "//codex-rs/core:core-all-test",
+        "cfg": "NOT_COMPILED_BY_ORIGINAL_CFG"
+      },
+      {
+        "id": "B10",
+        "name": "suite::agent_websocket::websocket_model_switch_to_responses_lite_omits_top_level_tools",
+        "target": "//codex-rs/core:core-all-test",
+        "cfg": "NO_NEW_CFG_ASSUMPTION; ORIGINAL_TARGET_AND_FIXED_SOURCE_APPLY"
+      },
+      {
+        "id": "B10",
+        "name": "suite::agent_websocket::websocket_v2_first_turn_drops_fast_tier_after_startup_prewarm",
+        "target": "//codex-rs/core:core-all-test",
+        "cfg": "NO_NEW_CFG_ASSUMPTION; ORIGINAL_TARGET_AND_FIXED_SOURCE_APPLY"
+      },
+      {
+        "id": "B10",
+        "name": "suite::agent_websocket::websocket_v2_first_turn_uses_updated_fast_tier_after_startup_prewarm",
+        "target": "//codex-rs/core:core-all-test",
+        "cfg": "NO_NEW_CFG_ASSUMPTION; ORIGINAL_TARGET_AND_FIXED_SOURCE_APPLY"
+      },
+      {
+        "id": "B10",
+        "name": "suite::agent_websocket::websocket_v2_next_turn_uses_updated_service_tier",
+        "target": "//codex-rs/core:core-all-test",
+        "cfg": "NO_NEW_CFG_ASSUMPTION; ORIGINAL_TARGET_AND_FIXED_SOURCE_APPLY"
+      },
+      {
+        "id": "B10",
+        "name": "suite::compact::remote_v2_compaction_keeps_creation_time_instructions_after_same_path_mutation",
+        "target": "//codex-rs/core:core-all-test",
+        "cfg": "NO_NEW_CFG_ASSUMPTION; ORIGINAL_TARGET_AND_FIXED_SOURCE_APPLY"
+      },
+      {
+        "id": "B10",
+        "name": "suite::compact_remote::remote_compact_v2_reuses_compaction_trigger_for_followups",
+        "target": "//codex-rs/core:core-all-test",
+        "cfg": "NO_NEW_CFG_ASSUMPTION; ORIGINAL_TARGET_AND_FIXED_SOURCE_APPLY"
+      },
+      {
+        "id": "B10",
+        "name": "suite::compact_remote::remote_mid_turn_compact_v2_sends_turn_state_over_websocket",
+        "target": "//codex-rs/core:core-all-test",
+        "cfg": "NO_NEW_CFG_ASSUMPTION; ORIGINAL_TARGET_AND_FIXED_SOURCE_APPLY"
+      },
+      {
+        "id": "B10",
+        "name": "suite::git_enrichment::ephemeral_system_thread_prewarm_skips_and_turn_observes_fresh_state::test_case_1_system_background_thread",
+        "target": "//codex-rs/core:core-all-test",
+        "cfg": "NO_NEW_CFG_ASSUMPTION; ORIGINAL_TARGET_AND_FIXED_SOURCE_APPLY"
+      },
+      {
+        "id": "B10",
+        "name": "suite::git_enrichment::ephemeral_system_thread_prewarm_skips_and_turn_observes_fresh_state::test_case_2_ambient_background_thread",
+        "target": "//codex-rs/core:core-all-test",
+        "cfg": "NO_NEW_CFG_ASSUMPTION; ORIGINAL_TARGET_AND_FIXED_SOURCE_APPLY"
+      },
+      {
+        "id": "B10",
+        "name": "suite::git_enrichment::startup_prewarm_skips_git_enrichment_and_user_turn_observes_fresh_state",
+        "target": "//codex-rs/core:core-all-test",
+        "cfg": "NO_NEW_CFG_ASSUMPTION; ORIGINAL_TARGET_AND_FIXED_SOURCE_APPLY"
+      },
+      {
+        "id": "B10",
+        "name": "suite::turn_state::responses_turn_state_persists_within_turn_and_resets_after",
+        "target": "//codex-rs/core:core-all-test",
+        "cfg": "NO_NEW_CFG_ASSUMPTION; ORIGINAL_TARGET_AND_FIXED_SOURCE_APPLY"
+      },
+      {
+        "id": "B10",
+        "name": "suite::turn_state::websocket_turn_state_persists_within_turn_and_resets_after",
+        "target": "//codex-rs/core:core-all-test",
+        "cfg": "NO_NEW_CFG_ASSUMPTION; ORIGINAL_TARGET_AND_FIXED_SOURCE_APPLY"
+      },
+      {
+        "id": "B10",
+        "name": "suite::turn_state::websocket_turn_state_is_stable_within_turn",
+        "target": "//codex-rs/core:core-all-test",
+        "cfg": "NO_NEW_CFG_ASSUMPTION; ORIGINAL_TARGET_AND_FIXED_SOURCE_APPLY"
+      },
+      {
+        "id": "B10",
+        "name": "suite::turn_state::websocket_turn_state_survives_permission_change_by_reconnecting",
+        "target": "//codex-rs/core:core-all-test",
+        "cfg": "NO_NEW_CFG_ASSUMPTION; ORIGINAL_TARGET_AND_FIXED_SOURCE_APPLY"
+      },
+      {
+        "id": "B13",
+        "name": "runtime::tests::qualification_prepare_quarantines_expired_registry_attempt_with_h7_evidence",
+        "target": "//codex-rs/hepta-agentd:hepta-agentd-cognitive-write-qualification-test",
+        "cfg": "NO_NEW_CFG_ASSUMPTION; ORIGINAL_TARGET_AND_FIXED_SOURCE_APPLY"
+      },
+      {
+        "id": "B13",
+        "name": "caller_abort_after_core_started_keeps_exact_authority_until_persistence",
+        "target": "//codex-rs/ext/queue:queue-queue_service-test",
+        "cfg": "NO_NEW_CFG_ASSUMPTION; ORIGINAL_TARGET_AND_FIXED_SOURCE_APPLY"
+      },
+      {
+        "id": "B13",
+        "name": "completion_panic_retains_exact_authority_in_settlement_guardian",
+        "target": "//codex-rs/ext/queue:queue-queue_service-test",
+        "cfg": "NO_NEW_CFG_ASSUMPTION; ORIGINAL_TARGET_AND_FIXED_SOURCE_APPLY"
+      },
+      {
+        "id": "B13",
+        "name": "core_error_after_started_never_releases_ambiguous_dispatch",
+        "target": "//codex-rs/ext/queue:queue-queue_service-test",
+        "cfg": "NO_NEW_CFG_ASSUMPTION; ORIGINAL_TARGET_AND_FIXED_SOURCE_APPLY"
+      },
+      {
+        "id": "B13",
+        "name": "rollout_flush_before_dispatch_db_completion_recovers_without_resubmit",
+        "target": "//codex-rs/ext/queue:queue-queue_service-test",
+        "cfg": "NO_NEW_CFG_ASSUMPTION; ORIGINAL_TARGET_AND_FIXED_SOURCE_APPLY"
+      },
+      {
+        "id": "B13",
+        "name": "queued_input_and_unique_event_ids_round_trip",
+        "target": "//codex-rs/ext/queue:queue-queue_service-test",
+        "cfg": "NO_NEW_CFG_ASSUMPTION; ORIGINAL_TARGET_AND_FIXED_SOURCE_APPLY"
+      },
+      {
+        "id": "B13",
+        "name": "reserved_to_persisted_legacy_row_deletion_emits_queue_changed",
+        "target": "//codex-rs/ext/queue:queue-queue_service-test",
+        "cfg": "NO_NEW_CFG_ASSUMPTION; ORIGINAL_TARGET_AND_FIXED_SOURCE_APPLY"
+      },
+      {
+        "id": "B13",
+        "name": "queue_empty_observer_waits_for_owned_database_ack_after_turn_complete",
+        "target": "//codex-rs/ext/queue:queue-queue_service-test",
+        "cfg": "NO_NEW_CFG_ASSUMPTION; ORIGINAL_TARGET_AND_FIXED_SOURCE_APPLY"
+      },
+      {
+        "id": "B13",
+        "name": "externally_changed_queues_dispatch_independently_and_retry_failed_wakes",
+        "target": "//codex-rs/ext/queue:queue-queue_service-test",
+        "cfg": "NO_NEW_CFG_ASSUMPTION; ORIGINAL_TARGET_AND_FIXED_SOURCE_APPLY"
+      },
+      {
+        "id": "B20",
+        "name": "suite::v2::remote_control::connected_backend_handles_models_lookup_before_websocket_initialize",
+        "target": "//codex-rs/app-server:app-server-all-test",
+        "cfg": "NO_NEW_CFG_ASSUMPTION; ORIGINAL_TARGET_AND_FIXED_SOURCE_APPLY"
+      },
+      {
+        "id": "B20",
+        "name": "suite::v2::remote_control::http_fixture_rejects_eof_before_request_headers_complete",
+        "target": "//codex-rs/app-server:app-server-all-test",
+        "cfg": "NO_NEW_CFG_ASSUMPTION; ORIGINAL_TARGET_AND_FIXED_SOURCE_APPLY"
+      },
+      {
+        "id": "B20",
+        "name": "suite::v2::remote_control::explicit_remote_control_startup_fails_when_disabled_by_requirements",
+        "target": "//codex-rs/app-server:app-server-all-test",
+        "cfg": "NO_NEW_CFG_ASSUMPTION; ORIGINAL_TARGET_AND_FIXED_SOURCE_APPLY"
+      },
+      {
+        "id": "B20",
+        "name": "suite::v2::remote_control::disable_waits_for_in_flight_durable_enable",
+        "target": "//codex-rs/app-server:app-server-all-test",
+        "cfg": "NO_NEW_CFG_ASSUMPTION; ORIGINAL_TARGET_AND_FIXED_SOURCE_APPLY"
+      },
+      {
+        "id": "B20",
+        "name": "suite::v2::remote_control::listen_off_honors_persisted_remote_control_enable",
+        "target": "//codex-rs/app-server:app-server-all-test",
+        "cfg": "NO_NEW_CFG_ASSUMPTION; ORIGINAL_TARGET_AND_FIXED_SOURCE_APPLY"
+      },
+      {
+        "id": "B20",
+        "name": "suite::v2::remote_control::listen_off_ignores_persisted_enable_when_disabled_by_requirements",
+        "target": "//codex-rs/app-server:app-server-all-test",
+        "cfg": "NO_NEW_CFG_ASSUMPTION; ORIGINAL_TARGET_AND_FIXED_SOURCE_APPLY"
+      },
+      {
+        "id": "B20",
+        "name": "suite::v2::remote_control::models_http_request_is_not_a_websocket_upgrade",
+        "target": "//codex-rs/app-server:app-server-all-test",
+        "cfg": "NO_NEW_CFG_ASSUMPTION; ORIGINAL_TARGET_AND_FIXED_SOURCE_APPLY"
+      },
+      {
+        "id": "B20",
+        "name": "suite::v2::remote_control::listen_off_exits_without_persisted_remote_control_enable",
+        "target": "//codex-rs/app-server:app-server-all-test",
+        "cfg": "NO_NEW_CFG_ASSUMPTION; ORIGINAL_TARGET_AND_FIXED_SOURCE_APPLY"
+      },
+      {
+        "id": "B20",
+        "name": "suite::v2::remote_control::managed_requirements_allow_remote_control_true_does_not_enable_or_block_it",
+        "target": "//codex-rs/app-server:app-server-all-test",
+        "cfg": "NO_NEW_CFG_ASSUMPTION; ORIGINAL_TARGET_AND_FIXED_SOURCE_APPLY"
+      },
+      {
+        "id": "B20",
+        "name": "suite::v2::remote_control::managed_requirements_reject_all_remote_control_rpcs",
+        "target": "//codex-rs/app-server:app-server-all-test",
+        "cfg": "NO_NEW_CFG_ASSUMPTION; ORIGINAL_TARGET_AND_FIXED_SOURCE_APPLY"
+      },
+      {
+        "id": "B20",
+        "name": "suite::v2::remote_control::pairing_start_works_after_ephemeral_enable",
+        "target": "//codex-rs/app-server:app-server-all-test",
+        "cfg": "NO_NEW_CFG_ASSUMPTION; ORIGINAL_TARGET_AND_FIXED_SOURCE_APPLY"
+      },
+      {
+        "id": "B20",
+        "name": "suite::v2::remote_control::remote_control_client_management_works_while_disabled",
+        "target": "//codex-rs/app-server:app-server-all-test",
+        "cfg": "NO_NEW_CFG_ASSUMPTION; ORIGINAL_TARGET_AND_FIXED_SOURCE_APPLY"
+      },
+      {
+        "id": "B20",
+        "name": "suite::v2::remote_control::remote_control_disable_returns_disabled_status",
+        "target": "//codex-rs/app-server:app-server-all-test",
+        "cfg": "NO_NEW_CFG_ASSUMPTION; ORIGINAL_TARGET_AND_FIXED_SOURCE_APPLY"
+      },
+      {
+        "id": "B20",
+        "name": "suite::v2::remote_control::remote_control_enable_returns_connecting_status",
+        "target": "//codex-rs/app-server:app-server-all-test",
+        "cfg": "NO_NEW_CFG_ASSUMPTION; ORIGINAL_TARGET_AND_FIXED_SOURCE_APPLY"
+      },
+      {
+        "id": "B20",
+        "name": "suite::v2::remote_control::remote_control_status_read_returns_disabled_status",
+        "target": "//codex-rs/app-server:app-server-all-test",
+        "cfg": "NO_NEW_CFG_ASSUMPTION; ORIGINAL_TARGET_AND_FIXED_SOURCE_APPLY"
+      },
+      {
+        "id": "B20",
+        "name": "suite::v2::remote_control::remote_control_status_read_returns_connecting_status_after_enable",
+        "target": "//codex-rs/app-server:app-server-all-test",
+        "cfg": "NO_NEW_CFG_ASSUMPTION; ORIGINAL_TARGET_AND_FIXED_SOURCE_APPLY"
+      },
+      {
+        "id": "B20",
+        "name": "suite::v2::remote_control::remote_control_pairing_start_returns_pairing_artifacts",
+        "target": "//codex-rs/app-server:app-server-all-test",
+        "cfg": "NO_NEW_CFG_ASSUMPTION; ORIGINAL_TARGET_AND_FIXED_SOURCE_APPLY"
+      },
+      {
+        "id": "B20",
+        "name": "suite::v2::remote_control::rpc_updates_durable_preference_but_ephemeral_does_not",
+        "target": "//codex-rs/app-server:app-server-all-test",
+        "cfg": "NO_NEW_CFG_ASSUMPTION; ORIGINAL_TARGET_AND_FIXED_SOURCE_APPLY"
+      },
+      {
+        "id": "B20",
+        "name": "suite::v2::remote_control::stdio_eof_exits_with_remote_control_connection",
+        "target": "//codex-rs/app-server:app-server-all-test",
+        "cfg": "NO_NEW_CFG_ASSUMPTION; ORIGINAL_TARGET_AND_FIXED_SOURCE_APPLY"
+      },
+      {
+        "id": "B21",
+        "name": "process_group::tests::denied_group_signal_rejects_unsafe_process_group_ids",
+        "target": "//codex-rs/utils/pty:pty-unit-tests",
+        "cfg": "THIS_MAP_TRACKS_ORIGINAL_INTEL_CASE_SET_NOT_WINDOWS_EQUIVALENCE"
+      },
+      {
+        "id": "B21",
+        "name": "tests::driver_backed_process_can_expose_split_stdout_and_stderr",
+        "target": "//codex-rs/utils/pty:pty-unit-tests",
+        "cfg": "THIS_MAP_TRACKS_ORIGINAL_INTEL_CASE_SET_NOT_WINDOWS_EQUIVALENCE"
+      },
+      {
+        "id": "B21",
+        "name": "tests::driver_backed_process_can_resize_via_resizer_hook",
+        "target": "//codex-rs/utils/pty:pty-unit-tests",
+        "cfg": "THIS_MAP_TRACKS_ORIGINAL_INTEL_CASE_SET_NOT_WINDOWS_EQUIVALENCE"
+      },
+      {
+        "id": "B21",
+        "name": "tests::driver_backed_process_drains_output_that_arrives_after_exit_signal",
+        "target": "//codex-rs/utils/pty:pty-unit-tests",
+        "cfg": "THIS_MAP_TRACKS_ORIGINAL_INTEL_CASE_SET_NOT_WINDOWS_EQUIVALENCE"
+      },
+      {
+        "id": "B21",
+        "name": "process_group::tests::denied_group_signal_terminates_owned_descendants_and_preserves_escalation",
+        "target": "//codex-rs/utils/pty:pty-unit-tests",
+        "cfg": "THIS_MAP_TRACKS_ORIGINAL_INTEL_CASE_SET_NOT_WINDOWS_EQUIVALENCE"
+      },
+      {
+        "id": "B21",
+        "name": "tests::pipe_process_can_expose_split_stdout_and_stderr",
+        "target": "//codex-rs/utils/pty:pty-unit-tests",
+        "cfg": "THIS_MAP_TRACKS_ORIGINAL_INTEL_CASE_SET_NOT_WINDOWS_EQUIVALENCE"
+      },
+      {
+        "id": "B21",
+        "name": "tests::pipe_drop_reaps_child",
+        "target": "//codex-rs/utils/pty:pty-unit-tests",
+        "cfg": "THIS_MAP_TRACKS_ORIGINAL_INTEL_CASE_SET_NOT_WINDOWS_EQUIVALENCE"
+      },
+      {
+        "id": "B21",
+        "name": "tests::pipe_and_pty_share_interface",
+        "target": "//codex-rs/utils/pty:pty-unit-tests",
+        "cfg": "THIS_MAP_TRACKS_ORIGINAL_INTEL_CASE_SET_NOT_WINDOWS_EQUIVALENCE"
+      },
+      {
+        "id": "B21",
+        "name": "tests::pipe_spawn_no_stdin_can_preserve_inherited_fds",
+        "target": "//codex-rs/utils/pty:pty-unit-tests",
+        "cfg": "THIS_MAP_TRACKS_ORIGINAL_INTEL_CASE_SET_NOT_WINDOWS_EQUIVALENCE"
+      },
+      {
+        "id": "B21",
+        "name": "tests::pipe_terminate_aborts_detached_readers",
+        "target": "//codex-rs/utils/pty:pty-unit-tests",
+        "cfg": "THIS_MAP_TRACKS_ORIGINAL_INTEL_CASE_SET_NOT_WINDOWS_EQUIVALENCE"
+      },
+      {
+        "id": "B21",
+        "name": "tests::pipe_terminate_reaps_child",
+        "target": "//codex-rs/utils/pty:pty-unit-tests",
+        "cfg": "THIS_MAP_TRACKS_ORIGINAL_INTEL_CASE_SET_NOT_WINDOWS_EQUIVALENCE"
+      },
+      {
+        "id": "B21",
+        "name": "tests::pipe_process_detaches_from_parent_session",
+        "target": "//codex-rs/utils/pty:pty-unit-tests",
+        "cfg": "THIS_MAP_TRACKS_ORIGINAL_INTEL_CASE_SET_NOT_WINDOWS_EQUIVALENCE"
+      },
+      {
+        "id": "B21",
+        "name": "tests::pipe_drains_stderr_without_stdout_activity",
+        "target": "//codex-rs/utils/pty:pty-unit-tests",
+        "cfg": "THIS_MAP_TRACKS_ORIGINAL_INTEL_CASE_SET_NOT_WINDOWS_EQUIVALENCE"
+      },
+      {
+        "id": "B21",
+        "name": "tests::pipe_process_round_trips_stdin",
+        "target": "//codex-rs/utils/pty:pty-unit-tests",
+        "cfg": "THIS_MAP_TRACKS_ORIGINAL_INTEL_CASE_SET_NOT_WINDOWS_EQUIVALENCE"
+      },
+      {
+        "id": "B21",
+        "name": "tests::pty_preserving_fds_drop_allows_runtime_shutdown_with_detached_child",
+        "target": "//codex-rs/utils/pty:pty-unit-tests",
+        "cfg": "THIS_MAP_TRACKS_ORIGINAL_INTEL_CASE_SET_NOT_WINDOWS_EQUIVALENCE"
+      },
+      {
+        "id": "B21",
+        "name": "tests::pty_drop_allows_runtime_shutdown_with_detached_child",
+        "target": "//codex-rs/utils/pty:pty-unit-tests",
+        "cfg": "THIS_MAP_TRACKS_ORIGINAL_INTEL_CASE_SET_NOT_WINDOWS_EQUIVALENCE"
+      },
+      {
+        "id": "B21",
+        "name": "tests::pty_preserving_fds_terminate_allows_runtime_shutdown_with_detached_child",
+        "target": "//codex-rs/utils/pty:pty-unit-tests",
+        "cfg": "THIS_MAP_TRACKS_ORIGINAL_INTEL_CASE_SET_NOT_WINDOWS_EQUIVALENCE"
+      },
+      {
+        "id": "B21",
+        "name": "tests::pty_dropped_output_receiver_keeps_draining_child",
+        "target": "//codex-rs/utils/pty:pty-unit-tests",
+        "cfg": "THIS_MAP_TRACKS_ORIGINAL_INTEL_CASE_SET_NOT_WINDOWS_EQUIVALENCE"
+      },
+      {
+        "id": "B21",
+        "name": "tests::pty_python_repl_emits_output_and_exits",
+        "target": "//codex-rs/utils/pty:pty-unit-tests",
+        "cfg": "THIS_MAP_TRACKS_ORIGINAL_INTEL_CASE_SET_NOT_WINDOWS_EQUIVALENCE"
+      },
+      {
+        "id": "B21",
+        "name": "tests::pty_spawn_can_preserve_inherited_fds",
+        "target": "//codex-rs/utils/pty:pty-unit-tests",
+        "cfg": "THIS_MAP_TRACKS_ORIGINAL_INTEL_CASE_SET_NOT_WINDOWS_EQUIVALENCE"
+      },
+      {
+        "id": "B21",
+        "name": "tests::pty_spawn_with_inherited_fds_reports_exec_failures",
+        "target": "//codex-rs/utils/pty:pty-unit-tests",
+        "cfg": "THIS_MAP_TRACKS_ORIGINAL_INTEL_CASE_SET_NOT_WINDOWS_EQUIVALENCE"
+      },
+      {
+        "id": "B21",
+        "name": "tests::pty_spawn_with_inherited_fds_supports_resize",
+        "target": "//codex-rs/utils/pty:pty-unit-tests",
+        "cfg": "THIS_MAP_TRACKS_ORIGINAL_INTEL_CASE_SET_NOT_WINDOWS_EQUIVALENCE"
+      },
+      {
+        "id": "B21",
+        "name": "tests::pty_spawn_without_io_driver_returns_error",
+        "target": "//codex-rs/utils/pty:pty-unit-tests",
+        "cfg": "THIS_MAP_TRACKS_ORIGINAL_INTEL_CASE_SET_NOT_WINDOWS_EQUIVALENCE"
+      },
+      {
+        "id": "B21",
+        "name": "tests::pty_preserving_inherited_fds_keeps_python_repl_running",
+        "target": "//codex-rs/utils/pty:pty-unit-tests",
+        "cfg": "THIS_MAP_TRACKS_ORIGINAL_INTEL_CASE_SET_NOT_WINDOWS_EQUIVALENCE"
+      },
+      {
+        "id": "B21",
+        "name": "tests::pty_terminate_allows_runtime_shutdown_with_detached_child",
+        "target": "//codex-rs/utils/pty:pty-unit-tests",
+        "cfg": "THIS_MAP_TRACKS_ORIGINAL_INTEL_CASE_SET_NOT_WINDOWS_EQUIVALENCE"
+      },
+      {
+        "id": "B21",
+        "name": "tests::pty_terminate_kills_background_children_in_same_process_group",
+        "target": "//codex-rs/utils/pty:pty-unit-tests",
+        "cfg": "THIS_MAP_TRACKS_ORIGINAL_INTEL_CASE_SET_NOT_WINDOWS_EQUIVALENCE"
+      },
+      {
+        "id": "B21",
+        "name": "tests::pty_terminate_reaps_child_when_waiter_is_queued",
+        "target": "//codex-rs/utils/pty:pty-unit-tests",
+        "cfg": "THIS_MAP_TRACKS_ORIGINAL_INTEL_CASE_SET_NOT_WINDOWS_EQUIVALENCE"
+      },
+      {
+        "id": "B21",
+        "name": "tests::pty_close_stdin_preserves_large_input_and_delivers_eof",
+        "target": "//codex-rs/utils/pty:pty-unit-tests",
+        "cfg": "THIS_MAP_TRACKS_ORIGINAL_INTEL_CASE_SET_NOT_WINDOWS_EQUIVALENCE"
+      },
+      {
+        "id": "B21",
+        "name": "tests::pty_python_repl_readiness_waits_for_execution_after_input_echo",
+        "target": "//codex-rs/utils/pty:pty-unit-tests",
+        "cfg": "THIS_MAP_TRACKS_ORIGINAL_INTEL_CASE_SET_NOT_WINDOWS_EQUIVALENCE"
+      },
+      {
+        "id": "B21",
+        "name": "tests::pty_terminate_allows_runtime_shutdown_with_full_output_channel",
+        "target": "//codex-rs/utils/pty:pty-unit-tests",
+        "cfg": "THIS_MAP_TRACKS_ORIGINAL_INTEL_CASE_SET_NOT_WINDOWS_EQUIVALENCE"
+      },
+      {
+        "id": "B21",
+        "name": "tests::output_collector_waits_for_exit_after_output_closes",
+        "target": "//codex-rs/utils/pty:pty-unit-tests",
+        "cfg": "THIS_MAP_TRACKS_ORIGINAL_INTEL_CASE_SET_NOT_WINDOWS_EQUIVALENCE"
+      },
+      {
+        "id": "B22",
+        "name": "tests::embedded_state_db_corruption_preserves_failed_database_for_cli_recovery",
+        "target": "//codex-rs/tui:tui-unit-tests",
+        "cfg": "NO_NEW_CFG_ASSUMPTION; ORIGINAL_TARGET_AND_FIXED_SOURCE_APPLY"
+      },
+      {
+        "id": "B22",
+        "name": "app::tests::background_exit_tests::daemon_ctrl_c_during_mcp_startup_does_not_show_background_exit_menu",
+        "target": "//codex-rs/tui:tui-unit-tests",
+        "cfg": "NO_NEW_CFG_ASSUMPTION; ORIGINAL_TARGET_AND_FIXED_SOURCE_APPLY"
+      },
+      {
+        "id": "B22",
+        "name": "app::tests::background_exit_tests::cancel_task_interrupts_without_exiting",
+        "target": "//codex-rs/tui:tui-unit-tests",
+        "cfg": "NO_NEW_CFG_ASSUMPTION; ORIGINAL_TARGET_AND_FIXED_SOURCE_APPLY"
+      },
+      {
+        "id": "B22",
+        "name": "app::tests::background_exit_tests::daemon_ctrl_c_during_paste_burst_does_not_show_exit_menu",
+        "target": "//codex-rs/tui:tui-unit-tests",
+        "cfg": "NO_NEW_CFG_ASSUMPTION; ORIGINAL_TARGET_AND_FIXED_SOURCE_APPLY"
+      },
+      {
+        "id": "B22",
+        "name": "app::tests::background_exit_tests::daemon_ctrl_c_hides_background_exit_for_running_background_side_thread",
+        "target": "//codex-rs/tui:tui-unit-tests",
+        "cfg": "NO_NEW_CFG_ASSUMPTION; ORIGINAL_TARGET_AND_FIXED_SOURCE_APPLY"
+      },
+      {
+        "id": "B22",
+        "name": "app::tests::background_exit_tests::daemon_ctrl_c_shows_background_exit_menu_and_escape_dismisses_it",
+        "target": "//codex-rs/tui:tui-unit-tests",
+        "cfg": "NO_NEW_CFG_ASSUMPTION; ORIGINAL_TARGET_AND_FIXED_SOURCE_APPLY"
+      },
+      {
+        "id": "B22",
+        "name": "app::tests::background_exit_tests::daemon_ctrl_c_hides_background_exit_with_queued_follow_up",
+        "target": "//codex-rs/tui:tui-unit-tests",
+        "cfg": "NO_NEW_CFG_ASSUMPTION; ORIGINAL_TARGET_AND_FIXED_SOURCE_APPLY"
+      },
+      {
+        "id": "B22",
+        "name": "app::tests::background_exit_tests::daemon_ctrl_c_with_draft_preserves_composer_cancellation",
+        "target": "//codex-rs/tui:tui-unit-tests",
+        "cfg": "NO_NEW_CFG_ASSUMPTION; ORIGINAL_TARGET_AND_FIXED_SOURCE_APPLY"
+      },
+      {
+        "id": "B22",
+        "name": "app::tests::background_exit_tests::non_daemon_ctrl_c_keeps_interrupt_behavior",
+        "target": "//codex-rs/tui:tui-unit-tests",
+        "cfg": "NO_NEW_CFG_ASSUMPTION; ORIGINAL_TARGET_AND_FIXED_SOURCE_APPLY"
+      },
+      {
+        "id": "B22",
+        "name": "app::tests::background_exit_tests::run_in_background_detaches_without_interrupting_main_or_side_threads",
+        "target": "//codex-rs/tui:tui-unit-tests",
+        "cfg": "NO_NEW_CFG_ASSUMPTION; ORIGINAL_TARGET_AND_FIXED_SOURCE_APPLY"
+      },
+      {
+        "id": "B22",
+        "name": "app::tests::background_exit_tests::background_exit_shell_readiness_rejects_failed_start",
+        "target": "//codex-rs/tui:tui-unit-tests",
+        "cfg": "NO_NEW_CFG_ASSUMPTION; ORIGINAL_TARGET_AND_FIXED_SOURCE_APPLY"
+      },
+      {
+        "id": "B22",
+        "name": "app::tests::background_exit_tests::daemon_ctrl_c_closes_running_side_thread_and_returns_to_parent",
+        "target": "//codex-rs/tui:tui-unit-tests",
+        "cfg": "NO_NEW_CFG_ASSUMPTION; ORIGINAL_TARGET_AND_FIXED_SOURCE_APPLY"
+      },
+      {
+        "id": "B22",
+        "name": "app::tests::background_exit_tests::exit_interrupts_before_requesting_shutdown",
+        "target": "//codex-rs/tui:tui-unit-tests",
+        "cfg": "NO_NEW_CFG_ASSUMPTION; ORIGINAL_TARGET_AND_FIXED_SOURCE_APPLY"
+      },
+      {
+        "id": "B23",
+        "name": "drain_handle_tests::repeated_drain_requests_preserve_the_real_completion_acknowledgement",
+        "target": "//codex-rs/app-server:app-server-unit-tests",
+        "cfg": "NO_NEW_CFG_ASSUMPTION; ORIGINAL_TARGET_AND_FIXED_SOURCE_APPLY"
+      },
+      {
+        "id": "B23",
+        "name": "drain_handle_tests::requesting_drain_does_not_acknowledge_outstanding_turns",
+        "target": "//codex-rs/app-server:app-server-unit-tests",
+        "cfg": "NO_NEW_CFG_ASSUMPTION; ORIGINAL_TARGET_AND_FIXED_SOURCE_APPLY"
+      },
+      {
+        "id": "B23",
+        "name": "shutdown_signals::tests::first_sigint_survives_cancelled_receive",
+        "target": "//codex-rs/app-server:app-server-unit-tests",
+        "cfg": "NOT_COMPILED_UNIX_SIGNAL_PARENT; DO_NOT_COUNT_AS_WINDOWS_PASS"
+      },
+      {
+        "id": "B23",
+        "name": "shutdown_signals::tests::first_sighup_survives_cancelled_receive",
+        "target": "//codex-rs/app-server:app-server-unit-tests",
+        "cfg": "NOT_COMPILED_UNIX_SIGNAL_PARENT; DO_NOT_COUNT_AS_WINDOWS_PASS"
+      },
+      {
+        "id": "B23",
+        "name": "shutdown_signals::tests::first_sigterm_survives_cancelled_receive",
+        "target": "//codex-rs/app-server:app-server-unit-tests",
+        "cfg": "NOT_COMPILED_UNIX_SIGNAL_PARENT; DO_NOT_COUNT_AS_WINDOWS_PASS"
+      }
+    ]
+  },
+  "zip_verification": [
+    {
+      "schema": "hepta-original-artifact-byte-verification-v1",
+      "artifact_id": 13413341728,
+      "zip_path": "/workspace/scratch/07dd58cc9630/research-audit/published-5b633-ci-20261105/terminal/windows-core-lifecycle-127149546323/artifact-13413341728.zip",
+      "zip_bytes": 121308,
+      "zip_sha256": "3e0256fc97c42c912d9ee84e8ab5271d3bc605f426f792aa8e40a937e96fa618",
+      "github_size_and_digest_match": true,
+      "all_members_crc_ok": true,
+      "member_count": 15,
+      "members": [
+        {
+          "member": "core-fork.log",
+          "bytes": 4055,
+          "sha256": "094727ab6da21ee4e4b028f8044f4c5aa666832084f5894eadee07dc4e5543e6",
+          "git_blob": "984bf1172603df08fc9b6187f6ef704186f31998",
+          "crc32": "900d27d9",
+          "local_path": "/workspace/scratch/07dd58cc9630/research-audit/published-5b633-ci-20261105/terminal/windows-core-lifecycle-127149546323/members-13413341728/core-fork.log"
+        },
+        {
+          "member": "core-resume.log",
+          "bytes": 85565,
+          "sha256": "472845ec460b1f77ec1cc8322376d7f5acfbe033af35b051bb5ce065c03562e1",
+          "git_blob": "9efda4d94c87844d0a32940d8e4bbdca65811462",
+          "crc32": "a357c497",
+          "local_path": "/workspace/scratch/07dd58cc9630/research-audit/published-5b633-ci-20261105/terminal/windows-core-lifecycle-127149546323/members-13413341728/core-resume.log"
+        },
+        {
+          "member": "core-ownership.log",
+          "bytes": 2716,
+          "sha256": "80327f4984b242635612f499cc51492ce96813c4dcabe867920bc86816684652",
+          "git_blob": "e19f99fa541baa26ad3f25f766a12513bc32a1b7",
+          "crc32": "b2f8c7a6",
+          "local_path": "/workspace/scratch/07dd58cc9630/research-audit/published-5b633-ci-20261105/terminal/windows-core-lifecycle-127149546323/members-13413341728/core-ownership.log"
+        },
+        {
+          "member": "core-unit-target.log",
+          "bytes": 252253,
+          "sha256": "ca84321157da99725a65930ccf20d28820b1afd139eed6e1f74dcedd0d4dc874",
+          "git_blob": "e398f87b69f1a93b430675d78e2d1aa567f83f77",
+          "crc32": "6847ea84",
+          "local_path": "/workspace/scratch/07dd58cc9630/research-audit/published-5b633-ci-20261105/terminal/windows-core-lifecycle-127149546323/members-13413341728/core-unit-target.log"
+        },
+        {
+          "member": "native-test-logs/codex-rs/core/core-unit-tests/shard_1_of_8/test.log",
+          "bytes": 31440,
+          "sha256": "d2984606ee9cf6dba4dbb09d95ef683d8701b1ffad7f8719a140dd7f07949116",
+          "git_blob": "71ee2cccac94764f9eaff7a7388fba7c82b5acd2",
+          "crc32": "fbea2585",
+          "local_path": "/workspace/scratch/07dd58cc9630/research-audit/published-5b633-ci-20261105/terminal/windows-core-lifecycle-127149546323/members-13413341728/native-test-logs/codex-rs/core/core-unit-tests/shard_1_of_8/test.log"
+        },
+        {
+          "member": "native-test-logs/codex-rs/core/core-unit-tests/shard_2_of_8/test.log",
+          "bytes": 26811,
+          "sha256": "86c2358536d15140749e4f09c8e2157dcb0588732d888b50bf41420a05963ad7",
+          "git_blob": "10fa7a65d14501faeb181b51e8bd3b020658d834",
+          "crc32": "c8d38b49",
+          "local_path": "/workspace/scratch/07dd58cc9630/research-audit/published-5b633-ci-20261105/terminal/windows-core-lifecycle-127149546323/members-13413341728/native-test-logs/codex-rs/core/core-unit-tests/shard_2_of_8/test.log"
+        },
+        {
+          "member": "native-test-logs/codex-rs/core/core-unit-tests/shard_3_of_8/test.log",
+          "bytes": 26155,
+          "sha256": "b37dc43169c5832d482bb6b80c69373a4c1149798445fb0eb031f09b81a1051b",
+          "git_blob": "74ce2318c4883d476d38dfa2cf151c43114d0bac",
+          "crc32": "cd942b3a",
+          "local_path": "/workspace/scratch/07dd58cc9630/research-audit/published-5b633-ci-20261105/terminal/windows-core-lifecycle-127149546323/members-13413341728/native-test-logs/codex-rs/core/core-unit-tests/shard_3_of_8/test.log"
+        },
+        {
+          "member": "native-test-logs/codex-rs/core/core-unit-tests/shard_4_of_8/test.log",
+          "bytes": 30124,
+          "sha256": "c0ef9f036b24e401b4882ac250cd4822d6a995b8472ec34b4a1ead3c8ab22a28",
+          "git_blob": "a4f4548c187df0c5d8bcbbba58a4179113a865a0",
+          "crc32": "37cefbce",
+          "local_path": "/workspace/scratch/07dd58cc9630/research-audit/published-5b633-ci-20261105/terminal/windows-core-lifecycle-127149546323/members-13413341728/native-test-logs/codex-rs/core/core-unit-tests/shard_4_of_8/test.log"
+        },
+        {
+          "member": "native-test-logs/codex-rs/core/core-unit-tests/shard_5_of_8/test.log",
+          "bytes": 28885,
+          "sha256": "9a191340af3ea71ad24ba269192b1c18962214926dbf65ba77837d6cbd07dcad",
+          "git_blob": "2df46f1626f3eff50fa2f72cbebe1811bd1161a0",
+          "crc32": "7068f3c2",
+          "local_path": "/workspace/scratch/07dd58cc9630/research-audit/published-5b633-ci-20261105/terminal/windows-core-lifecycle-127149546323/members-13413341728/native-test-logs/codex-rs/core/core-unit-tests/shard_5_of_8/test.log"
+        },
+        {
+          "member": "native-test-logs/codex-rs/core/core-unit-tests/shard_6_of_8/test.log",
+          "bytes": 26298,
+          "sha256": "d33312ff60a2409eaaa697b6d35e288c72444f8152369745217a02995a03f849",
+          "git_blob": "4302a3dcb377cdd8bacfe54663b21e1eabf2e7a3",
+          "crc32": "0b87e935",
+          "local_path": "/workspace/scratch/07dd58cc9630/research-audit/published-5b633-ci-20261105/terminal/windows-core-lifecycle-127149546323/members-13413341728/native-test-logs/codex-rs/core/core-unit-tests/shard_6_of_8/test.log"
+        },
+        {
+          "member": "native-test-logs/codex-rs/core/core-unit-tests/shard_7_of_8/test.log",
+          "bytes": 32467,
+          "sha256": "9e1041cd1318f0635b9bb82fd0b676f4291372899c2e8497b49fc15c1386a812",
+          "git_blob": "a57315fa2c86a5ffe4033e9d820e04257688dfaa",
+          "crc32": "11a91d9d",
+          "local_path": "/workspace/scratch/07dd58cc9630/research-audit/published-5b633-ci-20261105/terminal/windows-core-lifecycle-127149546323/members-13413341728/native-test-logs/codex-rs/core/core-unit-tests/shard_7_of_8/test.log"
+        },
+        {
+          "member": "native-test-logs/codex-rs/core/core-unit-tests/shard_8_of_8/test.log",
+          "bytes": 26516,
+          "sha256": "5fd1499c611c4f6e0d033da606508e8f97e5d8adba7039cbaccaa57f3abe8d49",
+          "git_blob": "35a627dfbdea9a2ed15a608c4b0c94bff5b954de",
+          "crc32": "cfc4b936",
+          "local_path": "/workspace/scratch/07dd58cc9630/research-audit/published-5b633-ci-20261105/terminal/windows-core-lifecycle-127149546323/members-13413341728/native-test-logs/codex-rs/core/core-unit-tests/shard_8_of_8/test.log"
+        },
+        {
+          "member": "native-test-logs/codex-rs/core/core-unit-tests/test.log",
+          "bytes": 576,
+          "sha256": "53784b10275db377389687389683310c302c468d703b7486eccbb42f5433ad60",
+          "git_blob": "d7d1aff10650c26e863bd45b06438e15f715cc22",
+          "crc32": "5e4f7ca1",
+          "local_path": "/workspace/scratch/07dd58cc9630/research-audit/published-5b633-ci-20261105/terminal/windows-core-lifecycle-127149546323/members-13413341728/native-test-logs/codex-rs/core/core-unit-tests/test.log"
+        },
+        {
+          "member": "native-test-logs.json",
+          "bytes": 1628,
+          "sha256": "d1babdd809f5a88bc275ab858d75b1250af4dd5260017cb341da1c5a935029f9",
+          "git_blob": "51dc121bae01d0c33a4c4365f7beca169fd22e12",
+          "crc32": "732fef40",
+          "local_path": "/workspace/scratch/07dd58cc9630/research-audit/published-5b633-ci-20261105/terminal/windows-core-lifecycle-127149546323/members-13413341728/native-test-logs.json"
+        },
+        {
+          "member": "source.json",
+          "bytes": 294,
+          "sha256": "55a896510736a2cd32bd4b2c0da30f5edee266231abdeff4f8a8cadae55d8b3b",
+          "git_blob": "203f677456882ff75a1dbb347126b22814264fc7",
+          "crc32": "943d183d",
+          "local_path": "/workspace/scratch/07dd58cc9630/research-audit/published-5b633-ci-20261105/terminal/windows-core-lifecycle-127149546323/members-13413341728/source.json"
+        }
+      ],
+      "observed_at_utc": "2026-11-05T12:18:03.217748+00:00",
+      "native_or_project_execution": false
+    },
+    {
+      "schema": "hepta-original-artifact-byte-verification-v1",
+      "artifact_id": 13412159728,
+      "zip_path": "/workspace/scratch/07dd58cc9630/research-audit/published-5b633-ci-20261105/terminal/windows-core-lifecycle-127149546323/artifact-13412159728.zip",
+      "zip_bytes": 7322,
+      "zip_sha256": "c2099bf4101a2408c7a5b6fdf210d891e042caea131333ce97fe1133513302f8",
+      "github_size_and_digest_match": true,
+      "all_members_crc_ok": true,
+      "member_count": 2,
+      "members": [
+        {
+          "member": "core-resume.log",
+          "bytes": 85565,
+          "sha256": "472845ec460b1f77ec1cc8322376d7f5acfbe033af35b051bb5ce065c03562e1",
+          "git_blob": "9efda4d94c87844d0a32940d8e4bbdca65811462",
+          "crc32": "a357c497",
+          "local_path": "/workspace/scratch/07dd58cc9630/research-audit/published-5b633-ci-20261105/terminal/windows-core-lifecycle-127149546323/members-13412159728/core-resume.log"
+        },
+        {
+          "member": "source.json",
+          "bytes": 294,
+          "sha256": "55a896510736a2cd32bd4b2c0da30f5edee266231abdeff4f8a8cadae55d8b3b",
+          "git_blob": "203f677456882ff75a1dbb347126b22814264fc7",
+          "crc32": "943d183d",
+          "local_path": "/workspace/scratch/07dd58cc9630/research-audit/published-5b633-ci-20261105/terminal/windows-core-lifecycle-127149546323/members-13412159728/source.json"
+        }
+      ],
+      "observed_at_utc": "2026-11-05T12:18:03.345596+00:00",
+      "native_or_project_execution": false
+    }
+  ],
+  "scope_limits": [
+    "B08 has two recorder and one wire unit-name pass; the fourth replay integration name is absent. B09 has nine named unit passes. This is not all original exit conditions for either blocker.",
+    "The remaining 130 named catalog cases are outside this full unit binary, and a general Core integration, Windows strict/token, TUI, IntelPTY or external acceptance result is not supplied.",
+    "Original ignored names stay ignored; captured successful test stdout does not prove disappearance of previously identified platform-dependent early-return behavior elsewhere.",
+    "The source-head artifact is distinct from historical0e139 and other merge artifacts. No historical green result is borrowed.",
+    "No native/project command, source/ref mutation, CI rerun, dispatch or cancellation was performed by this evidence review."
+  ]
+}

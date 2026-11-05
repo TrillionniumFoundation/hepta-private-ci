@@ -1,0 +1,159 @@
+{
+  "schema": "isolated-cloud-git-patch-roundtrip-v1",
+  "commands": [
+    {
+      "argv": [
+        "git",
+        "init",
+        "-q"
+      ],
+      "cwd": "/workspace/scratch/07dd58cc9630/architecture-audit/b16-refused-commit-pool-20261105/isolated-git-roundtrip",
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "git",
+        "add",
+        "codex-rs/state/src/sqlite.rs"
+      ],
+      "cwd": "/workspace/scratch/07dd58cc9630/architecture-audit/b16-refused-commit-pool-20261105/isolated-git-roundtrip",
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "git",
+        "apply",
+        "--check",
+        "/workspace/scratch/07dd58cc9630/architecture-audit/b16-refused-commit-pool-20261105/full.patch"
+      ],
+      "cwd": "/workspace/scratch/07dd58cc9630/architecture-audit/b16-refused-commit-pool-20261105/isolated-git-roundtrip",
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "git",
+        "apply",
+        "/workspace/scratch/07dd58cc9630/architecture-audit/b16-refused-commit-pool-20261105/full.patch"
+      ],
+      "cwd": "/workspace/scratch/07dd58cc9630/architecture-audit/b16-refused-commit-pool-20261105/isolated-git-roundtrip",
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "git",
+        "apply",
+        "--check",
+        "/workspace/scratch/07dd58cc9630/architecture-audit/b16-refused-commit-pool-20261105/negative-restore-production.patch"
+      ],
+      "cwd": "/workspace/scratch/07dd58cc9630/architecture-audit/b16-refused-commit-pool-20261105/isolated-git-roundtrip",
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "git",
+        "apply",
+        "/workspace/scratch/07dd58cc9630/architecture-audit/b16-refused-commit-pool-20261105/negative-restore-production.patch"
+      ],
+      "cwd": "/workspace/scratch/07dd58cc9630/architecture-audit/b16-refused-commit-pool-20261105/isolated-git-roundtrip",
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "git",
+        "apply",
+        "--check",
+        "/workspace/scratch/07dd58cc9630/architecture-audit/b16-refused-commit-pool-20261105/production-only.patch"
+      ],
+      "cwd": "/workspace/scratch/07dd58cc9630/architecture-audit/b16-refused-commit-pool-20261105/isolated-git-roundtrip",
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "git",
+        "apply",
+        "/workspace/scratch/07dd58cc9630/architecture-audit/b16-refused-commit-pool-20261105/production-only.patch"
+      ],
+      "cwd": "/workspace/scratch/07dd58cc9630/architecture-audit/b16-refused-commit-pool-20261105/isolated-git-roundtrip",
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "git",
+        "apply",
+        "-R",
+        "/workspace/scratch/07dd58cc9630/architecture-audit/b16-refused-commit-pool-20261105/full.patch"
+      ],
+      "cwd": "/workspace/scratch/07dd58cc9630/architecture-audit/b16-refused-commit-pool-20261105/isolated-git-roundtrip",
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "git",
+        "apply",
+        "--check",
+        "/workspace/scratch/07dd58cc9630/architecture-audit/b16-refused-commit-pool-20261105/controls-only.patch"
+      ],
+      "cwd": "/workspace/scratch/07dd58cc9630/architecture-audit/b16-refused-commit-pool-20261105/isolated-git-roundtrip",
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "git",
+        "apply",
+        "/workspace/scratch/07dd58cc9630/architecture-audit/b16-refused-commit-pool-20261105/controls-only.patch"
+      ],
+      "cwd": "/workspace/scratch/07dd58cc9630/architecture-audit/b16-refused-commit-pool-20261105/isolated-git-roundtrip",
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "git",
+        "apply",
+        "/workspace/scratch/07dd58cc9630/architecture-audit/b16-refused-commit-pool-20261105/production-only.patch"
+      ],
+      "cwd": "/workspace/scratch/07dd58cc9630/architecture-audit/b16-refused-commit-pool-20261105/isolated-git-roundtrip",
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "git",
+        "diff",
+        "--check"
+      ],
+      "cwd": "/workspace/scratch/07dd58cc9630/architecture-audit/b16-refused-commit-pool-20261105/isolated-git-roundtrip",
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": ""
+    }
+  ],
+  "full_two_paths_exact": true,
+  "controls_then_production_exact": true,
+  "negative_then_restore_exact": true,
+  "native_commands": false,
+  "rust_compile": false,
+  "project_tests": false
+}

@@ -1,0 +1,59 @@
+{
+  "status": "STATIC_TEMPLATE_ONLY_NO_EXECUTION",
+  "launcher_ast_parse": true,
+  "basis_launcher": {
+    "path": "/workspace/scratch/07dd58cc9630/architecture-audit/b16-driver-launcher-template-20261105/launch_driver_v7.py",
+    "bytes": 24697,
+    "sha256": "473af7a8d03188d43a1d88c594dfd4c0049ace13c671933c7ffb5fa4b600b175",
+    "blob": "bee66f1ff8ab5f3e4442b2dd14fc4aaa59b7a19d"
+  },
+  "new_launcher": {
+    "path": "/workspace/scratch/07dd58cc9630/architecture-audit/b16-pool-launcher-template-20261105/launch_pool_v7.py",
+    "bytes": 27997,
+    "sha256": "a59a7551bfa5fae7f1eb0f8a221c70588cffaec2dfc659f4a357777cbfde8b14",
+    "blob": "057a2fc77788da13f46bdd32951eb3c8e0bae550"
+  },
+  "ten_guard_functions_byte_identical": [
+    "need",
+    "identity",
+    "bytes_id",
+    "file_id",
+    "equal_content",
+    "save",
+    "save_json",
+    "verify_openssl_sdk",
+    "verify_libcap_sdk",
+    "verify_all_external"
+  ],
+  "install_bundle_byte_identical": {
+    "bytes": 685301,
+    "sha256": "3c944d66d0401badda75d74b367569e064507cd94e87eba4fdd6f7b6189055a6",
+    "blob": "7b5d1ae2246a792e6a663beff6ecdf24d5a4452f"
+  },
+  "all_29_runtime_input_files_match_frozen_V7": true,
+  "all_25_integrity_entries_match": true,
+  "frozen_source_payload_scope_oracle_negative_finally_bytes_changed": false,
+  "tools_count": 8,
+  "helper_roster_count": 33,
+  "same_environment_recipe_SDK_V8_historical_A_and_P4_bindings": true,
+  "same_conservative_capacity_and_8GB_reserve": true,
+  "driver_generated_tree_locks_metadata_or_terminal_predicted": false,
+  "pending_fields": [
+    "initial_tree",
+    "locks",
+    "previous_epoch_receipt",
+    "previous_epoch_binding",
+    "previous_epoch_launch_terminal",
+    "previous_epoch_source_guards.before",
+    "previous_epoch_source_guards.after",
+    "baseline_metadata",
+    "baseline_metadata_source_guards.before",
+    "baseline_metadata_source_guards.after",
+    "harness_attempt_context.driver_job_id",
+    "harness_attempt_context.driver_root_execution_guard"
+  ],
+  "native_execution": false,
+  "project_tests_run": false,
+  "new_harness_tests_run": false,
+  "shared_source_target_or_refs_modified": false
+}

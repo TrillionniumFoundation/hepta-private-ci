@@ -1,0 +1,142 @@
+#!/usr/bin/env python3
+"""Verify original logs and package one completed CI job. No product execution."""
+from pathlib import Path
+from collections import Counter
+import base64
+import gzip
+import hashlib
+import io
+import json
+import re
+import tarfile
+import zipfile
+
+ROOT = Path(__file__).resolve().parent
+HERE = ROOT / 'terminal/windows-core-lifecycle-127149546323'
+BASE = HERE / 'members-13413341728'
+OUT = ROOT / 'immutable-v5-windows-core-lifecycle'
+OUT.mkdir(exist_ok=False)
+
+
+def identity(raw):
+    return {'bytes':len(raw), 'sha256':hashlib.sha256(raw).hexdigest(),
+            'computed_git_blob':hashlib.sha1(f'blob {len(raw)}\0'.encode() + raw).hexdigest()}
+
+
+def read(path):
+    return json.loads(path.read_bytes())
+
+
+def save(path, value):
+    path.write_text(json.dumps(value, ensure_ascii=False, indent=2) + '\n')
+
+
+source = read(BASE / 'source.json')
+assert source['source_head'] == '5b6331250ff459033bd44d1a95daec70131277cc'
+assert source['source_tree'] == 'b26598d0d97d8d51e723bb5582137315f2174d35'
+assert source['run_id'] == '41999104379' and source['run_attempt'] == '1'
+assert (BASE / 'source.json').read_bytes() == (HERE / 'members-13412159728/source.json').read_bytes()
+assert (BASE / 'core-resume.log').read_bytes() == (HERE / 'members-13412159728/core-resume.log').read_bytes()
+for artifact in (13413341728, 13412159728):
+    verification = read(HERE / f'artifact-{artifact}-verification.json')
+    raw = (HERE / f'artifact-{artifact}.zip').read_bytes()
+    assert len(raw) == verification['zip_bytes'] and hashlib.sha256(raw).hexdigest() == verification['zip_sha256']
+    with zipfile.ZipFile(io.BytesIO(raw)) as archive:
+        assert archive.testzip() is None
+        assert set(archive.namelist()) == {r['member'] for r in verification['members']}
+        for row in verification['members']:
+            body = archive.read(row['member'])
+            assert len(body) == row['bytes'] and hashlib.sha256(body).hexdigest() == row['sha256']
+            assert body == (HERE / f'members-{artifact}' / row['member']).read_bytes()
+all_cases = []
+shards = []
+for path in sorted(BASE.glob('native-test-logs/**/shard_*/test.log')):
+    text = path.read_text()
+    cases = []
+    for number, line in enumerate(text.splitlines(), 1):
+        match = re.fullmatch(r'test (\S+?)( - should panic)? \.\.\. (ok|FAILED|ignored)(.*)', line)
+        if match:
+            cases.append({'name':match[1], 'should_panic':bool(match[2]), 'status':match[3],
+                          'suffix':match[4], 'line':number, 'member':str(path.relative_to(BASE))})
+    summaries = re.findall(r'^test result: (?:ok|FAILED)\. (\d+) passed; (\d+) failed; (\d+) ignored; (\d+) measured; (\d+) filtered out; finished in ([0-9.]+)s', text, re.M)
+    counts = Counter(c['status'] for c in cases)
+    for index, status in enumerate(('ok','FAILED','ignored')):
+        assert sum(int(s[index]) for s in summaries) == counts[status]
+    assert len(cases) == len({c['name'] for c in cases})
+    all_cases.extend(cases)
+    shards.append({'member':str(path.relative_to(BASE)), **identity(path.read_bytes()),
+                   'counts':dict(counts), 'libtest_subruns':len(summaries), 'summaries':summaries})
+assert len(shards) == 8 and len(all_cases) == len({c['name'] for c in all_cases}) == 2343
+assert all_cases == read(HERE / 'original-unit-case-projection.json')['cases']
+counts = Counter(c['status'] for c in all_cases)
+assert counts == {'ok':2339,'FAILED':1,'ignored':3}
+assert sum(c['should_panic'] for c in all_cases) == 7
+failure = [c for c in all_cases if c['status'] == 'FAILED']
+assert failure[0]['name'] == 'environment_selection::tests::blocking_snapshot_waits_for_starting_environment'
+isolated = read(HERE / 'selected-isolated-case-projection.json')
+assert [len(isolated[n]) for n in ('core-resume.log','core-fork.log','core-ownership.log')] == [4,1,3]
+assert all(c['status'] == 'ok' for rows in isolated.values() for c in rows)
+assert any(c['name'] == failure[0]['name'] for c in isolated['core-resume.log'])
+mapping = read(HERE / 'original-142-match-projection.json')
+assert mapping['catalog_names'] == 142 and mapping['match_count'] == 12
+assert Counter(c['blocker_id'] for c in mapping['matches']) == {'B08':3,'B09':9}
+assert all(c['actual_full_unit_occurrence']['status'] == 'ok' for c in mapping['matches'])
+assert not list(BASE.rglob('*.xml'))
+job = json.loads(read(HERE / 'terminal-job-api-envelope.json')['response']['structuredContent']['content'])['jobs'][0]
+assert job['id'] == 127149546323 and job['head_sha'] == source['source_head'] and job['conclusion'] == 'failure'
+assert [s['number'] for s in job['steps'] if s['conclusion'] == 'failure'] == [9]
+report = {'schema':'hepta-windows-core-lifecycle-original-terminal-review-v1',
+    'source':source,'job_id':job['id'],'run_id':41999104379,'run_attempt':1,
+    'job_started':job['started_at'],'job_completed':job['completed_at'],'runner_id':job['runner_id'],
+    'failure_class':'ACTUAL_RUNTIME_ASSERTION_FAILURE_IN_FULL_CORE_UNIT_SHARD_1',
+    'original_exit_semantics':{'workflow_step':9,'workflow_step_exit_code':3,'bazel_shard_exit_code':1,
+        'compilation_failure':False,'timeouts_or_retries_inferred':False},
+    'actual_selected_isolated_cases':isolated,
+    'full_unit':{'target':'//codex-rs/core:core-unit-tests','shards':shards,'unique_names':2343,
+        'passed':2339,'failed':1,'ignored':3,'actual_should_panic_successes':7,'libtest_subruns':33,
+        'failures':failure,'ignored_cases':[c for c in all_cases if c['status']=='ignored'],
+        'all_names_projection':{'archive_member':str((HERE/'original-unit-case-projection.json').relative_to(ROOT)), **identity((HERE/'original-unit-case-projection.json').read_bytes())},
+        'no_xml_in_original_artifacts':True,
+        'unsharded_native_test_log':'The additional core-unit-tests/test.log contains the preceding three-case ownership scope (1.40s). It is excluded from the eight-shard full-target count.',
+        'partition_filter_counts':'Per-subrun filtered counts partition the same 2343-name test binary; they are not additional skips or unexecuted full-target cases.'},
+    'same_job_differential':{'case':failure[0]['name'],'isolated_resume_group':'ACTUAL_PASS_IN_FOUR_CASE_GROUP',
+        'full_normal_sharding':'ACTUAL_ASSERTION_FAIL','causal_explanation':'OPEN; isolated success does not override the full-target failure and no scheduler/root cause is inferred.'},
+    'failure_complete_slice':read(HERE/'blocking-snapshot-failure-provenance.json'),
+    'original_command_evidence':read(HERE/'original-command-and-exit-lines.json'),
+    'cache_and_attempt':'All four original workflow command blocks retain cache_test_results=no and flaky_test_attempts=1. First three scopes explicitly disable sharding; complete Core uses normal sharding. Build action-cache hits are separate from actual test execution. Repeated log printing of the failure is not a second attempt.',
+    'actual_142_named_projection':mapping,
+    'zip_verification':[read(HERE/f'artifact-{n}-verification.json') for n in (13413341728,13412159728)],
+    'scope_limits':['B08 has two recorder and one wire unit-name pass; the fourth replay integration name is absent. B09 has nine named unit passes. This is not all original exit conditions for either blocker.',
+        'The remaining 130 named catalog cases are outside this full unit binary, and a general Core integration, Windows strict/token, TUI, IntelPTY or external acceptance result is not supplied.',
+        'Original ignored names stay ignored; captured successful test stdout does not prove disappearance of previously identified platform-dependent early-return behavior elsewhere.',
+        'The source-head artifact is distinct from historical0e139 and other merge artifacts. No historical green result is borrowed.',
+        'No native/project command, source/ref mutation, CI rerun, dispatch or cancellation was performed by this evidence review.']}
+save(OUT/'original-terminal-review.json', report)
+files = [Path(__file__), OUT/'original-terminal-review.json', ROOT/'snapshot-0036/jobs-api-envelope.json',
+         *sorted(p for p in HERE.rglob('*') if p.is_file())]
+assert len(files) == len(set(files))
+buffer = io.BytesIO(); original_rows = []
+with tarfile.open(fileobj=buffer, mode='w') as archive:
+    for file in files:
+        raw = file.read_bytes(); name = str(file.relative_to(ROOT))
+        original_rows.append({'member':name, **identity(raw)})
+        info = tarfile.TarInfo(name); info.size = len(raw); info.mode = 0o644; info.mtime = 0
+        archive.addfile(info, io.BytesIO(raw))
+compressed = gzip.compress(buffer.getvalue(), mtime=0)
+assert gzip.decompress(compressed) == buffer.getvalue()
+manifest = {'schema':'hepta-immutable-original-file-index-v1','file_count':len(original_rows),
+            'total_original_bytes':sum(x['bytes'] for x in original_rows),'files':original_rows}
+save(OUT/'original-files-manifest.json', manifest)
+parts = []
+for index, offset in enumerate(range(0,len(compressed),196608)):
+    chunk = compressed[offset:offset+196608]; encoded = base64.b64encode(chunk) + b'\n'
+    name = f'original-ci.tar.gz.part{index:03d}.b64.txt'; (OUT/name).write_bytes(encoded)
+    parts.append({'index':index,'name':name,'compressed_offset':offset,'file':identity(encoded),'decoded_chunk':identity(chunk)})
+save(OUT/'transport-manifest.json', {'schema':'hepta-immutable-ci-transport-v1',
+    'archive':{'name':'original-ci.tar.gz', **identity(compressed)},
+    'original_files_manifest':{'name':'original-files-manifest.json', **identity((OUT/'original-files-manifest.json').read_bytes())},
+    'part_count':len(parts),'parts':parts})
+(OUT/'verify_archive.py').write_bytes((ROOT/'immutable-v5-snapshot0030/verify_archive.py').read_bytes())
+print(json.dumps({'review':identity((OUT/'original-terminal-review.json').read_bytes()),
+                  'files':len(files),'parts':len(parts),'archive':identity(compressed),
+                  'original_bytes':manifest['total_original_bytes']}))

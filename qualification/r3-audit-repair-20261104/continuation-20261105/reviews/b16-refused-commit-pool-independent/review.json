@@ -1,0 +1,68 @@
+{
+  "schema": "hepta-independent-refused-commit-pool-review-v1",
+  "observed_at": "2026-11-05T12:43:26.296Z",
+  "verdict": "STATIC_PASS_PENDING_EXACT_SOURCE_NATIVE_CONTROLS",
+  "candidate": {
+    "manifest": "28a0ccb97b740c6d18561c9bf2d63616db881189",
+    "full_patch": "6e0a36957f6f2976a06f3c91a968a33213a31b2d",
+    "preimage": "85984c8c0fb1f699ad761de7383f920decad4808",
+    "postimage": "e4a8ff7f6ce2742f2dc162244fae5f5cd5e9ecb9",
+    "tests": "86b68c0120e8fca501f50e728fe6fefbad64fee6",
+    "base_scope": "The final frozen B partial source map after native lifetime-token adoption and caller/checkpoint candidates; not published product 5b and not a prediction of a native tree."
+  },
+  "independent_checks": [
+    "Read the complete two-path patch, preimage, both test bodies, manifest and relevant actual-registry SQLx worker, Connection and pool code.",
+    "Recomputed every files entry in the frozen manifest; all bytes, SHA256 and Git blob identities match.",
+    "Ran only 13 isolated cloud git init/apply/check operations: controls-only, production, exact negative, exact restore, full reverse and full forward; all expected postimages and both unchanged control bodies match.",
+    "Original two after_connect hook installations, connection_lifetime_token ownership, native collation custody and remaining options are outside the production diff and preserved.",
+    "No Cargo, product tests, native host, shared checkout, original B payload, CI workflow or ref was executed or modified."
+  ],
+  "source_findings": [
+    {
+      "source": "actual SQLx 0.9 worker.rs 2585dc1312210d9eb18c15f6df1158656d3c6b2c",
+      "lines": "213–238, 264–300, 332–334",
+      "finding": "A custom BEGIN with tracked depth>0 rejects with InvalidSavePointStatement. Commit/rollback decrement depth only on successful native SQL; Ping is an acknowledgement and does not repair depth."
+    },
+    {
+      "source": "actual SQLx core Connection::is_in_transaction",
+      "lines": "70–79",
+      "finding": "The public method reports TransactionManager tracked depth rather than sqlite3_get_autocommit; its documented automatic-rollback caveat fits the proposed detection."
+    },
+    {
+      "source": "actual SQLx pool inner.rs check_idle_conn",
+      "lines": "469–505",
+      "finding": "before_acquire Ok(false) closes/discards the idle connection; it does not hand that connection to the caller. A replacement uses the existing after_connect hook and options."
+    },
+    {
+      "source": "candidate guarded and coordinated constructors",
+      "finding": "Both guarded entry points reject tracked nonzero depth. The coordinated branch returns false before its existing owner checkout callback. Normal non-guarded pool APIs are unchanged."
+    }
+  ],
+  "physical_controls_pending": {
+    "names": [
+      "sqlite::refused_commit_pool_tests::guarded_pool_discards_refused_transaction_before_reuse",
+      "sqlite::refused_commit_pool_tests::coordinated_pool_discards_refused_transaction_before_owner_checkout"
+    ],
+    "required_negative": [
+      "Both real constructors have five slots, four held; the fifth TEMP marker prevents accidentally validating another idle physical connection.",
+      "First real COMMIT rejects with SQLite code 531. Ping then lock_handle/raw sqlite3_get_autocommit must establish native autocommit=true and SQLx tracked_transaction=true.",
+      "Only removing the two production depth checks must reach old_temp_marker=1 plus Some(InvalidSavePointStatement), then the unique line116 expect and ordinary Rust exit101. Setup error, acquisition timeout, leak or unrelated panic is not a causal negative."
+    ],
+    "required_positive": [
+      "Replacement TEMP marker=0, explicit read transaction succeeds, no row was committed, coordinated callback still runs.",
+      "Original gate stays false and a subsequent implicit write is still vetoed with 531.",
+      "Both cases, existing owning regressions, exact source/program identities and retries=0 need actual native evidence."
+    ],
+    "precision": "The coordinated counter increase proves the callback remains active on replacement. It does not independently distinguish an extra callback on the rejected old connection; the check-before-callback ordering is source-proven here, not separately observed."
+  },
+  "boundaries": [
+    "No mandatory source/API bug was found in this narrow review; compilation and both physical red/green controls remain pending.",
+    "This is pool-reuse availability after a refused transaction, not permission to reopen an owner gate or approve a COMMIT.",
+    "Current admission, read ACK, recovery authorization, issuer and independent Root acceptance are not added or closed.",
+    "Native lifetime-token and custody prerequisites remain the existing B adoption contracts; this diff must not be blindly applied to product 5b.",
+    "Donor PR4855 original native red/green logs were not retrieved. Its body/job IDs and source comparison are not substituted for actual current-candidate control results.",
+    "No Windows outcome follows from this static review; original 23 blocker states and exit conditions remain unchanged."
+  ],
+  "verification": "static-verification.json",
+  "repro": "verify_static.py"
+}

@@ -1,0 +1,164 @@
+{
+  "schema": "hepta-b16-r2f1-root-checkpoint-transport-source-v1",
+  "status": "SOURCE_CANDIDATE_NOT_COMPILED_OR_RUN",
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "baseline": {
+    "product_head": "5b6331250ff459033bd44d1a95daec70131277cc",
+    "agentd_lib_preimage": "3466e60a12138ae4816ace1531254312733e4175",
+    "B_overlay": {
+      "path": "/workspace/scratch/07dd58cc9630/architecture-audit/b16-guarded-native-runner-20261105/original-ignored-catalog-v7/v7-candidate/payload-manifest.json",
+      "bytes": 62667,
+      "sha256": "a34cd6c5400deff4fedfffcb1f4f170eecabbb6bbfab1916829ab3911e986237",
+      "git_blob": "64db580beabe2642eb8611184dac4fc686fe34e1"
+    },
+    "application_requires_actual_final_B_preimages": true,
+    "whole_candidate_tree": null,
+    "no_historical_or_future_tree_relabel": true
+  },
+  "files": [
+    {
+      "path": "codex-rs/hepta-agentd/src/lib.rs",
+      "mode": "100644",
+      "before_blob": "3466e60a12138ae4816ace1531254312733e4175",
+      "after_blob": "0460a3c36edede87541136218016335b43ea0550",
+      "bytes": 15002,
+      "sha256": "3451e900b4cb419079a7413d27ef1394b29e2808fc74c1d22b93121145fe0ce0",
+      "local_postimage": "/workspace/scratch/07dd58cc9630/architecture-audit/b16-next-normal-chain-20261105/r2f1-root-checkpoint-transport/candidate/codex-rs/hepta-agentd/src/lib.rs"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/root_checkpoint_transport.rs",
+      "mode": "100644",
+      "before_blob": null,
+      "after_blob": "1c8b58ea8b16a8b0566a4efbc56bfbe68b994e27",
+      "bytes": 9201,
+      "sha256": "d1fe8f15a2e5f07814b46d26876f8045988b668b3b840ce9ded1043da3687a8d",
+      "local_postimage": "/workspace/scratch/07dd58cc9630/architecture-audit/b16-next-normal-chain-20261105/r2f1-root-checkpoint-transport/candidate/codex-rs/hepta-agentd/src/root_checkpoint_transport.rs"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/root_checkpoint_transport_tests.rs",
+      "mode": "100644",
+      "before_blob": null,
+      "after_blob": "3fdebffdc1fd5fd9f2ea3da7039e99e63debb3f1",
+      "bytes": 8874,
+      "sha256": "733a5ad8f2a9ac80f1bc06e368d4d738d8fbf4eb8f5036fa23f1313171324699",
+      "local_postimage": "/workspace/scratch/07dd58cc9630/architecture-audit/b16-next-normal-chain-20261105/r2f1-root-checkpoint-transport/candidate/codex-rs/hepta-agentd/src/root_checkpoint_transport_tests.rs"
+    }
+  ],
+  "patch": {
+    "path": "/workspace/scratch/07dd58cc9630/architecture-audit/b16-next-normal-chain-20261105/r2f1-root-checkpoint-transport/candidate.patch",
+    "bytes": 20164,
+    "sha256": "97b3992955e72b1f6af0367c95fc8b1b16c8de920f44b012c0b9f9ae9faf3300",
+    "git_blob": "00e997f3ab4c1f5858121041ed1088adfd1f7a2c"
+  },
+  "static_check": {
+    "path": "/workspace/scratch/07dd58cc9630/architecture-audit/b16-next-normal-chain-20261105/r2f1-root-checkpoint-transport/static-check.json",
+    "bytes": 4490,
+    "sha256": "1c50fa7101ab3d1afab3fd8bcd9d28cf652f29fe002548a7efd626a46bc46504",
+    "git_blob": "8f83a9f44aacb120a76ddf12435f3c6663127d22"
+  },
+  "source_map": {
+    "path": "/workspace/scratch/07dd58cc9630/architecture-audit/b16-next-normal-chain-20261105/r2f1-root-checkpoint-transport/source-map.json",
+    "bytes": 22335,
+    "sha256": "0fa2c80671aa3d89fbeb13baeb346b9e720f47d6ee06094eab243b6e704a42df",
+    "git_blob": "81dd551c7cb03b56b3a51661e4b67e0ea7f3b463"
+  },
+  "new_paths_absence": {
+    "path": "/workspace/scratch/07dd58cc9630/architecture-audit/b16-next-normal-chain-20261105/r2f1-root-checkpoint-transport/new-path-absence.json",
+    "bytes": 1692,
+    "sha256": "fd2e558813204e387041090ca586759ade332c28b04deccb895654efade81fef",
+    "git_blob": "835dfc85a4e2691c5a0a9d4ee7a6658548c0c377"
+  },
+  "scope": {
+    "component": "Linux synchronous descriptor custody then runtime checkpoint transport",
+    "production_paths_modified": [
+      "codex-rs/hepta-agentd/src/lib.rs",
+      "codex-rs/hepta-agentd/src/root_checkpoint_transport.rs"
+    ],
+    "test_path": "codex-rs/hepta-agentd/src/root_checkpoint_transport_tests.rs",
+    "changed_lines": {
+      "added": 386,
+      "removed": 0
+    },
+    "public_api": [
+      "AgentdRootCheckpointPeer",
+      "AgentdRootCheckpointBootstrap::from_inherited",
+      "AgentdRootCheckpointBootstrap::into_runtime",
+      "AgentdRootCheckpointChannel::exchange"
+    ],
+    "not_wired_to_normal_entry": true,
+    "Current_constructor_added": false,
+    "issuer_or_signer_added": false,
+    "credential_transition_added": false,
+    "Windows_behavior_changed": false,
+    "main_or_original_sender_changed": false
+  },
+  "ownership_and_protocol": [
+    "Public construction accepts only SO_PEERCRED UID 0 and the caller-pinned PID; expected identity must come from the trusted launcher, not a reply/path/TOFU discovery.",
+    "Caller must establish the host PID/user namespace and original Root authority provenance separately. Numeric UID/PID and proc observations are namespace-relative.",
+    "Both owned descriptors regain FD_CLOEXEC without dropping other descriptor flags. No raw handle escapes. Other pre-existing aliases are not disproved or revoked.",
+    "Original pidfd must identify the pinned PID. Bounded proc reads validate boot ID and process start ticks, then zero-time poll rejects readiness or any error.",
+    "Synchronous phase creates no runtime/task/thread or credentials; entered I/O-enabled Tokio is a real second-phase precondition. The runtime API can panic without a reactor as documented by Tokio.",
+    "Setting O_NONBLOCK affects the shared socket open-file-description. Launcher aliases expecting blocking I/O are not permitted by this contract.",
+    "Exclusive &mut exchange takes the stream before its first await. Cancellation or any in-flight error drops it permanently; no automatic retry/reconnect/path reopen.",
+    "Request bytes use the real frozen codec, 4-byte BE length and at most 32KiB response. Returned ACK bytes preserve the actual wire; basic decode/request-ID checks do not grant Current.",
+    "Root pidfd readiness and original lifetime deadline bound exchanges; they do not make liveness atomic with future database COMMIT/FinalUse. Any readiness/error/elapsed deadline refuses.",
+    "A complete Refused response also invalidates this new lane. No pre-existing denial-reuse contract is changed."
+  ],
+  "tests": {
+    "status": "UNEXECUTED",
+    "case_names": [
+      "root_checkpoint_transport::tests::synchronous_custody_rejects_wrong_peer_and_closes_owned_socket",
+      "root_checkpoint_transport::tests::complete_ack_preserves_wire_bytes_and_wrong_request_closes_lane",
+      "root_checkpoint_transport::tests::cancellation_after_real_request_closes_lane_without_reconnecting",
+      "root_checkpoint_transport::tests::withheld_response_times_out_and_closes_lane"
+    ],
+    "count": 4,
+    "ignored": 0,
+    "physical_fixture": "real local UDS socketpair, real self pidfd and proc metadata, kernel credentials, exact framing and peer EOF",
+    "synthetic_only": "ACK body is copied from the frozen codec fixture; it grants no authority. A private non-exported UID parameter permits actual local fixture UID; public API remains fixed 0. Public API is also exercised against the actual effective UID.",
+    "controls": [
+      "five wrong UID/PID/boot/birth/not-pidfd rejections with owned socket EOF; public UID gate; synchronous custody and CLOEXEC observation",
+      "actual framed ACK original bytes; request-ID mismatch permanently closes lane",
+      "exchange is polled until real peer receives exact request, then future cancellation causes EOF and unusable lane",
+      "peer actually receives exact request and withholds reply; original one-second fixture deadline closes lane"
+    ],
+    "no_skip_fallback": true,
+    "no_detached_tasks": true,
+    "per_exchange_fixture_timeout_seconds": 1,
+    "per_fixture_lifetime_seconds": 30,
+    "causal_limit": "CLOEXEC positive observation begins with ordinary CLOEXEC descriptors; no claim that this test alone proves restoration across exec. The pidfd is the current test process: no independent Root process/death control is claimed."
+  },
+  "native_gates_pending": {
+    "owner_package": "codex-hepta-agentd",
+    "original_recipe": "just test -p codex-hepta-agentd --lib --locked --profile dev-small",
+    "exact_new_case_filter": "test(=root_checkpoint_transport::tests::synchronous_custody_rejects_wrong_peer_and_closes_owned_socket) or test(=root_checkpoint_transport::tests::complete_ack_preserves_wire_bytes_and_wrong_request_closes_lane) or test(=root_checkpoint_transport::tests::cancellation_after_real_request_closes_lane_without_reconnecting) or test(=root_checkpoint_transport::tests::withheld_response_times_out_and_closes_lane)",
+    "original_owner_scope": "just test -p codex-hepta-agentd --locked --profile dev-small",
+    "retries": 0,
+    "add_no_fail_fast_argument": false,
+    "recipe_reason": "Original run-nextest.py already injects --no-fail-fast. Use original local timeout/selection/JUnit rules. No tests run by this author.",
+    "actual_helpers_and_feature_graph": "Use the original owning-package normal helper/full metadata/catalog flow; no new helper binary is introduced.",
+    "hygiene": [
+      "just fix -p codex-hepta-agentd --locked --profile dev-small",
+      "just fmt",
+      "git diff --check"
+    ],
+    "no_tests_after_fix_fmt": true,
+    "bazel_existing_unit_target": "//codex-rs/hepta-agentd:hepta-agentd-unit-tests",
+    "manifest_build_lock_changes": [],
+    "Bazel_registration": "Existing codex_rust_crate uses src/**/*.rs for library and unit target. No include_str/include_bytes or new compile_data; all new source paths participate automatically.",
+    "dependency_proof": "Existing hepta-agentd depends on Memory, serde_json, Tokio and Linux libc; pretty_assertions already dev-dependency. P4 actual locked graph resolved Tokio 1.53.3 with net/io-util/macros/rt/time; this is dependency evidence, not a new candidate compile."
+  },
+  "remain_open": [
+    "Actual independent UID0 Root/sealed handoff/host namespace provenance and original pidfd transfer; private fixture is not that evidence.",
+    "Actual independent Root exit and a late exit/atomic admission window are not covered by the self-pidfd controls.",
+    "Current private construction requires authenticated live owner/lease/expiry/revocation/Root authority plus legal phase/exact cut/full predecessor-successor, not arbitrary Receipt.",
+    "Whole-owner three-pool coordinator/binder is still absent from the frozen B final state. Existing monotonic gate cannot be replaced by no-op before_checkout or DTO.",
+    "Current recovery/bind/writer construction must respect physical connection custody and cannot use donor Arc::strong_count==1 as exclusive ownership proof.",
+    "Normal Root producer, listener custody, independent signer/issuer and ordinary Desktop joint Notes/Calculator wiring remain distinct required cohorts; no Root activation or effect acceptance here.",
+    "Original generic production attachment/original_sender, ordinary control peer/current-user gates and Windows private-state/retained directory semantics remain unchanged."
+  ],
+  "native_writes": false,
+  "native_tests": false,
+  "refs_changed": false,
+  "frozen_B_payload_modified": false
+}

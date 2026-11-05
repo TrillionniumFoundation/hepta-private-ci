@@ -1,0 +1,32 @@
+diff --git a/codex-rs/state/src/sqlite.rs b/codex-rs/state/src/sqlite.rs
+index e4a8ff7f6ce2742f2dc162244fae5f5cd5e9ecb9..6aa23ce40de3ce8254542681e363fbe85780af28 100644
+--- a/codex-rs/state/src/sqlite.rs
++++ b/codex-rs/state/src/sqlite.rs
+@@ -365,11 +365,6 @@
+                 let commit_allowed = Arc::clone(&commit_allowed);
+                 Box::pin(install_commit_guard(connection, commit_allowed))
+             })
+-            .before_acquire(|connection, _metadata| {
+-                // A refused COMMIT may leave SQLx's depth stale after SQLite
+-                // rolled back. Discard it without reopening the owner gate.
+-                Box::pin(std::future::ready(Ok(!connection.is_in_transaction())))
+-            })
+             .connect_with(options)
+             .await
+     }
+@@ -430,14 +425,9 @@
+                     Ok(())
+                 })
+             })
+-            .before_acquire(move |connection, _metadata| {
++            .before_acquire(move |_connection, _metadata| {
+                 let before_checkout = Arc::clone(&before_reuse);
+                 Box::pin(async move {
+-                    // Reject stale SQLx transaction state before owner checkout
+-                    // work. A replacement still installs the same commit guard.
+-                    if connection.is_in_transaction() {
+-                        return Ok(false);
+-                    }
+                     before_checkout().await;
+                     Ok(true)
+                 })

@@ -1,0 +1,36 @@
+{
+  "schema": "hepta-root-driver-enablement-v1",
+  "recorded_utc": "2026-11-05T11:40:43.617059+00:00",
+  "root_guard": {
+    "path": "/workspace/scratch/07dd58cc9630/hepta-audit-fifth/root-execution-guard-ai395-driver-v7-v1.json",
+    "bytes": 7091,
+    "sha256": "8664fca578cc9caac4447842a179f6e4be504957bf89c973de1c8bfe0ff79a55",
+    "blob": "3dfca4e071b15b54dd2d9949a2f5f011ef0f468f"
+  },
+  "enabled_request": {
+    "path": "/workspace/scratch/07dd58cc9630/hepta-audit-fifth/driver-launch-request-ENABLED.json",
+    "bytes": 938052,
+    "sha256": "5f2fe280d8e4fb6aa54d751cc6475060d238b18638b4b6efe4be9a5d7e7152d2",
+    "blob": "6d2b8e022fbaf91296df3f57ccb8707e785b84b6"
+  },
+  "enabled_binding": {
+    "path": "/workspace/scratch/07dd58cc9630/hepta-audit-fifth/driver-binding-ENABLED.json",
+    "bytes": 22424,
+    "sha256": "6ef976003f4d81245da75b1ae110498e655994f3131984894bb4ea3b69b0896b",
+    "blob": "57e981e3a88f54c85d202afa5c2e48540efdbec0"
+  },
+  "actual_Git_create_and_readback_required_before_start": true,
+  "allowed_value_changes": [
+    "binding.execute false to true",
+    "binding.approval_reference null to this guard Git blob",
+    "root_execution_guard null to this guard Git blob",
+    "binding.harness_attempt_context.kind DISABLED to ENABLED for this candidate",
+    "binding.harness_attempt_context.current_driver_execution_authorized false to true"
+  ],
+  "launcher_unchanged": {
+    "bytes": 24697,
+    "sha256": "473af7a8d03188d43a1d88c594dfd4c0049ace13c671933c7ffb5fa4b600b175",
+    "blob": "bee66f1ff8ab5f3e4442b2dd14fc4aaa59b7a19d"
+  },
+  "install_bundle_unchanged": true
+}

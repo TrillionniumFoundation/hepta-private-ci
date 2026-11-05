@@ -1,0 +1,62 @@
+{
+  "schema": "exact-git-object-readback-map-v1",
+  "objects": [
+    {
+      "path": "architecture-audit/pr-increment-20261105T1204/frozen/api-freeze-manifest.json",
+      "bytes": 14699,
+      "sha256": "a3bec3dfa2ae9c29bfd0212159746d4cb88e10236300adc43ed323e08a12d49d",
+      "git_blob": "9d1155c873a31c28e0c6faa654c9e3a9d441b8d7",
+      "create_succeeded": true,
+      "get_byte_equal": true
+    },
+    {
+      "path": "architecture-audit/pr-increment-20261105T1204/frozen/compare-4812-api-envelope.compressed.json",
+      "bytes": 278871,
+      "sha256": "09bfdcdcab71017947786a5f930fcbd1da36e1f726f6de594c78322864616e50",
+      "git_blob": "506eeb7bf17123291980b2acf6277ec327944124",
+      "create_succeeded": true,
+      "get_byte_equal": true
+    },
+    {
+      "path": "architecture-audit/pr-increment-20261105T1204/frozen/compare-4853-api-envelope.compressed.json",
+      "bytes": 25525,
+      "sha256": "5b61ee7bf400b777e75c112087aa486ea9a8e4820df39a7823f431de22d8dad4",
+      "git_blob": "9534f7e5d8cf7d3631bc07f2c0bae14eb530fab5",
+      "create_succeeded": true,
+      "get_byte_equal": true
+    },
+    {
+      "path": "architecture-audit/pr-increment-20261105T1204/frozen/compare-4855-api-envelope.compressed.json",
+      "bytes": 36081,
+      "sha256": "70639793f51baa98ada5671f2d68c638e6edb638ffbcc8f6892656bbdd9856a5",
+      "git_blob": "61efe7f80121fb417fe15666b7fc437fe6d3f95d",
+      "create_succeeded": true,
+      "get_byte_equal": true
+    },
+    {
+      "path": "architecture-audit/pr-increment-20261105T1204/frozen/compare-4856-api-envelope.compressed.json",
+      "bytes": 304239,
+      "sha256": "64653e7d287191a780850490327ab2e34ea8d687585aef8baab15716532c108c",
+      "git_blob": "71ceb42f84c353e03fff9c58eee2cea1dda5b3b2",
+      "create_succeeded": true,
+      "get_byte_equal": true
+    },
+    {
+      "path": "architecture-audit/pr-increment-20261105T1204/frozen/page-001-api-envelope.compressed.json",
+      "bytes": 152086,
+      "sha256": "436a7336d5683e97e6e02eb5c35a5ff183973f43650d4169fb8b62ccfbdad2cc",
+      "git_blob": "8b3978464f3bdd790acfde276c79c48e0b4ea59f",
+      "create_succeeded": true,
+      "get_byte_equal": true
+    },
+    {
+      "path": "architecture-audit/pr-increment-20261105T1204/frozen/page-002-api-envelope.compressed.json",
+      "bytes": 83425,
+      "sha256": "e81bc8d001a8b36744afcba6f11ec10b10ffc70a19ba5758473b26996ce3a8f7",
+      "git_blob": "47f23ed5acf8fda05fb6161ed9194f6d742cd5ac",
+      "create_succeeded": true,
+      "get_byte_equal": true
+    }
+  ],
+  "scope": "Two bounded PR-list pages and four fixed old/new-head compare original API envelopes; compressed originals are lossless; no branch/ref changes."
+}

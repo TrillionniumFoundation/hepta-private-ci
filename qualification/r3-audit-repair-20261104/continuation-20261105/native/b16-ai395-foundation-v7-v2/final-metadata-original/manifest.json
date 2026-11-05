@@ -1,0 +1,114 @@
+{
+  "schema": "hepta-lossless-original-archive-v1",
+  "label": "foundation-final-metadata",
+  "encoding": "ordered base64 parts of gzip of JSON array with per-original bytes_base64",
+  "originals": [
+    {
+      "logical_name": "B10_R2e3_final-metadata.log",
+      "local_source": "/workspace/scratch/07dd58cc9630/ci-audit/recovered-20261105/b16-ai395-foundation-v7-v2/terminal-originals/B10_R2e3_final-metadata.log",
+      "bytes": 8296096,
+      "sha256": "b4090db792babde64575b11e7ae04df8245074b96a154048c4de08691e4a23e0",
+      "blob": "e1f0ddb638f8d46e24d94176c3993e7fa2a293fd"
+    }
+  ],
+  "original_file_count": 1,
+  "original_byte_total": 8296096,
+  "uncompressed_transport": {
+    "bytes": 11061531,
+    "sha256": "7a8270eb1a69edf2db1aeadc689d65f62c04268f44af88dd2db225ace2d7ecc8",
+    "blob": "5874bec693d77cc8365d9ba030823e6ba66f5a24"
+  },
+  "compressed": {
+    "bytes": 1061523,
+    "sha256": "59b9081b3ac84c5ff733c69c5c980413db92ba5ade45eb97bcc51b036f1d9dbc",
+    "blob": "e04931f0e8c75e23f2a1e6f390bf5450b166af33"
+  },
+  "parts": [
+    {
+      "name": "part-000.b64",
+      "compressed_offset": 0,
+      "decoded": {
+        "bytes": 180000,
+        "sha256": "a186442cb02a68324653434ce7a24b6240c36b5664116dae7897ea72345d059f",
+        "blob": "2693ee7cf1e70b43a0ba9286335f17e41024aeeb"
+      },
+      "transport": {
+        "bytes": 240001,
+        "sha256": "93a0887aebc2304d7e7bcbb687d29d1adb37d739128eeafa4124a7980e2243e4",
+        "blob": "f18e8e3afb96a61f2f4b02e0d701d469433efdad"
+      }
+    },
+    {
+      "name": "part-001.b64",
+      "compressed_offset": 180000,
+      "decoded": {
+        "bytes": 180000,
+        "sha256": "8396e5e7ada7656b52a15ad48fef1ef3df031f73f52b1b866929c0ebefacdd5f",
+        "blob": "e7dc04f8466ab4c34996afb4effab4188e7f1981"
+      },
+      "transport": {
+        "bytes": 240001,
+        "sha256": "77d8638070a96030b9ffa5d47001ce50a6c8d38b4f8648e21bb18fdb679cef07",
+        "blob": "d7142bb38ccc7a9ade6a6a046fe5667c7e2ca64d"
+      }
+    },
+    {
+      "name": "part-002.b64",
+      "compressed_offset": 360000,
+      "decoded": {
+        "bytes": 180000,
+        "sha256": "569fa4bb2c6339c445d3f8c3540866bd994a122354432197137114130675edc1",
+        "blob": "606f353321e9a095c2be8832383faeb246f5d45f"
+      },
+      "transport": {
+        "bytes": 240001,
+        "sha256": "1e09bcd1dd5a0e3ef4e5819e4036bacf6c8f164cdaa189bdd7c2093cac3b9115",
+        "blob": "d5b861f9c35ba253b12b86d926499d6fcf34ef8f"
+      }
+    },
+    {
+      "name": "part-003.b64",
+      "compressed_offset": 540000,
+      "decoded": {
+        "bytes": 180000,
+        "sha256": "3221980d6c2f0b06a7b5384f6f5754673a93813320e6d3e57f4ff2ca172db70f",
+        "blob": "3400f87d6f6b79fc22f4307a7f315a8aee1906ff"
+      },
+      "transport": {
+        "bytes": 240001,
+        "sha256": "b5443f1a624c78f9201d736e90258326f2428e952cc0741e6c098c6106316c5a",
+        "blob": "4987aee678d5d693dccc441aa73ba464281fc19f"
+      }
+    },
+    {
+      "name": "part-004.b64",
+      "compressed_offset": 720000,
+      "decoded": {
+        "bytes": 180000,
+        "sha256": "9d8ac86ea7df445cfc8e52c2440f3bf319cafd6f250ebd5e50c33e03593a44ef",
+        "blob": "b716c4a7b0b5e87aac81c13e504c28892e96b816"
+      },
+      "transport": {
+        "bytes": 240001,
+        "sha256": "58121f61b7a53c9158db7fbbafbc7380cca7c8e51dd4ade7c2aaadb62878cf6e",
+        "blob": "c73aa507e84c20a7ee37130c2607e8b37d234caa"
+      }
+    },
+    {
+      "name": "part-005.b64",
+      "compressed_offset": 900000,
+      "decoded": {
+        "bytes": 161523,
+        "sha256": "a1f82067733f0ed9c1b6a838bf07311c5a87cb33269773fef7815ba5c2e21485",
+        "blob": "58224289d51b296e7ba3df151ce7454f13c53c18"
+      },
+      "transport": {
+        "bytes": 215365,
+        "sha256": "1ead84868a036ec6f83c5743b99fc1b8229961eca97ad2639830f4ab7820bef7",
+        "blob": "9760d7003b2dba261ca1c4f36f462b79bbb5df27"
+      }
+    }
+  ],
+  "native_commands_run_by_archiver": false,
+  "source_bytes_rewritten": false
+}

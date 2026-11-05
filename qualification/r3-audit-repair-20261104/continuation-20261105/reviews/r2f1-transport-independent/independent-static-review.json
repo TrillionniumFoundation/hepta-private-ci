@@ -1,0 +1,186 @@
+{
+  "schema": "hepta-r2f1-independent-static-review-v1",
+  "observed_at": "2026-11-05T11:51:02.568Z",
+  "verdict": "STATIC_PASS_WITH_EXPLICIT_OPEN_NATIVE_AND_AUTHORITY_ACCEPTANCE",
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "product_head": "5b6331250ff459033bd44d1a95daec70131277cc",
+  "candidate": {
+    "author_manifest_v2": "16e4c8e5ad178afe7e3351dbf7c3f5f99abd50c1",
+    "retained_original_manifest": "065bd7c6be614a791ecf5c62d98c85fa3e9900ac",
+    "patch": "00e997f3ab4c1f5858121041ed1088adfd1f7a2c",
+    "files": [
+      {
+        "path": "codex-rs/hepta-agentd/src/lib.rs",
+        "before": "3466e60a12138ae4816ace1531254312733e4175",
+        "after": "0460a3c36edede87541136218016335b43ea0550"
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/root_checkpoint_transport.rs",
+        "before": null,
+        "after": "1c8b58ea8b16a8b0566a4efbc56bfbe68b994e27"
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/root_checkpoint_transport_tests.rs",
+        "before": null,
+        "after": "3fdebffdc1fd5fd9f2ea3da7039e99e63debb3f1"
+      }
+    ],
+    "added": 386,
+    "removed": 0,
+    "foundation_or_driver_results_not_inherited": true,
+    "whole_final_B_tree_not_claimed": true
+  },
+  "method": {
+    "complete_three_source_bodies_read": true,
+    "complete_patch_read": true,
+    "real_isolated_git_apply_check_apply_reverse_check_reverse": true,
+    "three_postimages_and_original_lib_restoration_verified": true,
+    "independent_fixed_blob_GET_equal": true,
+    "cloud_static_verification": "static-verification.json",
+    "github_readbacks": "independent-github-readback.json",
+    "product_compiled": false,
+    "product_tests_run": false,
+    "formatter_or_clippy_run": false,
+    "native_host_access": false,
+    "shared_source_changed": false,
+    "refs_changed": false
+  },
+  "findings": [
+    {
+      "id": "R2F1-SCOPE",
+      "status": "PASS_STATIC",
+      "anchor": "lib.rs additions and complete patch",
+      "detail": "Exactly eight Linux-gated module/export lines are added to the original library. Existing main, generic production attachment/original_sender, ordinary peer/current-user path, Windows code and original tests are byte-unchanged. No Current constructor, Root activation or issuer is introduced."
+    },
+    {
+      "id": "R2F1-PUBLIC-UID",
+      "status": "PASS_STATIC",
+      "anchor": "root_checkpoint_transport.rs from_inherited/from_peer",
+      "detail": "Only the public from_inherited constructor is externally callable and it passes literal UID 0. The configurable UID helper is private; its fixture use does not add a public test-UID or non-root acceptance mode. Errors own and drop both supplied descriptors."
+    },
+    {
+      "id": "R2F1-NAMESPACE",
+      "status": "PASS_STATIC_WITH_PRECONDITION",
+      "anchor": "Linux v6.12 net/core/sock.c cred_to_ucred and SO_PEERCRED; fs/pidfs.c pidfd_show_fdinfo",
+      "detail": "SO_PEERCRED PID is caller-PID-namespace relative and effective UID is mapped through current_user_ns. pidfd fdinfo Pid is relative to the procfs mount's PID namespace. Numeric agreement and boot/start ticks are not proof of initial host namespaces or independent Root authority. The documented trusted-launcher/namespace provenance remains a real prerequisite."
+    },
+    {
+      "id": "R2F1-CREDENTIAL-TIME",
+      "status": "OPEN_INTEGRATION_BOUNDARY",
+      "anchor": "unix(7) SO_PEERCRED and SCM_RIGHTS; manifest-v2 addendum",
+      "detail": "Peer credentials were captured at connection/listen/socketpair establishment. Neither the live pidfd nor proc comparisons prove the endpoint was never duplicated or transferred afterwards. The original trusted handoff must preserve endpoint custody; no stronger per-message sender identity is claimed."
+    },
+    {
+      "id": "R2F1-PIDFD",
+      "status": "PASS_STATIC_WITH_LIVENESS_LIMIT",
+      "anchor": "root_checkpoint_transport.rs from_peer/root_alive; Linux v6.12 fs/pidfs.c",
+      "detail": "The exact owned pidfd is checked through its kernel fd-link name and fdinfo PID, followed by boot ID and start-tick checks and nonblocking poll. poll readiness, error or EINTR fail closed. The descriptor remains owned through AsyncFd; no replacement pidfd or socket is opened. pidfd readiness detects exit, not an atomic future COMMIT/FinalUse authority check."
+    },
+    {
+      "id": "R2F1-FLAGS",
+      "status": "PASS_STATIC",
+      "anchor": "from_peer fcntl loop; into_runtime",
+      "detail": "FD_CLOEXEC is ORed with existing per-descriptor flags. O_NONBLOCK changes only the inherited stream's shared open-file-description and its alias restriction is documented. Existing external aliases are neither revoked nor claimed absent. The current tests observe CLOEXEC on already-CLOEXEC descriptors; they do not establish restoration across an actual exec."
+    },
+    {
+      "id": "R2F1-TOKIO",
+      "status": "PASS_STATIC",
+      "anchor": "Tokio 1.53.3 async_fd.rs 244-283, 304-313, 978-981",
+      "detail": "AsyncFd::register_with_interest is a real unsafe API in the pinned Tokio source. Private OwnedFd storage preserves the same valid descriptor and open-file-description throughout its lifetime. Registration error owns and drops the original fd. into_runtime correctly requires an entered I/O-enabled Tokio runtime; lack of a reactor can panic as the upstream contract states. No runtime, task, thread or credential change occurs in synchronous construction."
+    },
+    {
+      "id": "R2F1-CANCELLATION",
+      "status": "PASS_STATIC",
+      "anchor": "AgentdRootCheckpointChannel::exchange",
+      "detail": "A valid locally encoded request takes Option<UnixStream> before its first await. All subsequent early returns, malformed/Refused ACK, I/O error, timeout, observed Root exit and cancellation drop that local stream; self.stream stays None. Only a completely decoded, live and in-deadline exchange restores Some(stream). There is no retry, reconnect or detached task. A local encode error happens before taking the unused lane and is not mislabeled an in-flight cancellation."
+    },
+    {
+      "id": "R2F1-DEADLINES",
+      "status": "PASS_STATIC",
+      "anchor": "from_peer lifetime validation; exchange deadline/select/final checks",
+      "detail": "The transport end is fixed at synchronous creation and is not renewed by each exchange. Each exchange uses min(now + timeout, end); timeout is in (0,5s] and lifetime in (0,300s]. Root readiness and expiration are checked before and after exchange. These durations are transport availability limits and do not establish a signed lease expiry."
+    },
+    {
+      "id": "R2F1-WIRE",
+      "status": "PASS_STATIC",
+      "anchor": "frozen Memory codec 3a6b75875c7e265ba71e7948b70e7e3fcd608c0f and wire c6bada509bf9108a2dffad91288b1432c136ef20",
+      "detail": "The actual encode() output is sent once with a four-byte big-endian length; encode caps requests at 32768 bytes, making the u32 cast bounded. Response lengths zero or above that cap are refused before allocation. Actual received ACK bytes are returned unchanged after existing decode_ack checks. The full predecessor/successor validator decode_against is not invoked here and no admission is claimed."
+    },
+    {
+      "id": "R2F1-CURRENT",
+      "status": "OPEN_INTEGRATION_BOUNDARY",
+      "anchor": "AgentdRootCheckpointChannel documentation and frozen CognitiveCheckpointHead peer_lifetime schema",
+      "detail": "The transport-authenticated Root server process and the ACK's writer/lease-owner lifetime are distinct concepts. A later binder must verify the latter against its actual owner/lease, exact cut, legal phase, predecessor/successor, revocation and authority inputs. Simply equating ACK.head.peer_lifetime.pid with the Root server PID would be an unjustified new contract. No successful exchange, synthetic ACK or decoded Receipt grants Current, recovery, COMMIT or FinalUse."
+    },
+    {
+      "id": "R2F1-TESTS",
+      "status": "STATIC_REVIEW_ONLY_UNEXECUTED",
+      "anchor": "complete root_checkpoint_transport_tests.rs",
+      "detail": "Four concrete tests use real local UDS, a real self pidfd, kernel/proc credentials and peer EOF. The wrong-identity loop checks UID/PID/boot/birth/not-pidfd, then public UID gate. The ACK test reads exact real frame bytes and tests permanent invalidation after wrong request ID. Cancellation is triggered only after the peer receives the exact request; withheld response uses the original one-second fixture timeout. Futures use owned local resources with no spawned/detached task. These tests do not create an independent Root process or prove Root death, sealed handoff or single-thread normal launch."
+    }
+  ],
+  "mandatory_remaining_gates": [
+    "Compile and execute the exact four new unit cases with the owning package and original timeout/selection/zero-retry recipe, preserving actual helper/catalog and program identities.",
+    "Run the original Agentd owner scope and hygiene in the authorized serial lane; verify Cargo/Bazel inclusion on the actual final B preimages. Existing src/**/*.rs registration is a static source proof, not a compile result.",
+    "Establish the real trusted-launcher, namespace and descriptor handoff protocol, including endpoint custody after connection and independent Root termination behavior.",
+    "Implement and validate the separate Current/binder/whole-owner three-pool, actual issuer/listener and normal UI caller cohorts without replacing ordinary current-user/Windows boundaries.",
+    "Do not report this source-only component or its local private-UID fixtures as B16 closed or as external independent acceptance."
+  ],
+  "independent_primary_sources": [
+    {
+      "repository": "torvalds/linux",
+      "ref": "v6.12",
+      "path": "net/core/sock.c",
+      "git_blob": "da50df485090ff4cd6a91d2f3c2a734a19123958",
+      "bytes": 110171,
+      "sha256": "8493cd7cc690e18edd30ee5356bb11ed53001f2b7908a4d2438d2725af9f53a8",
+      "url": "https://github.com/torvalds/linux/blob/v6.12/net/core/sock.c",
+      "anchors": [
+        "cred_to_ucred:1655-1666",
+        "SO_PEERCRED:1841-1854"
+      ],
+      "fixed_blob_GET_equal": true
+    },
+    {
+      "repository": "torvalds/linux",
+      "ref": "v6.12",
+      "path": "fs/pidfs.c",
+      "git_blob": "80675b6bf88459c22787edaa68db360bdc0d0782",
+      "bytes": 11022,
+      "sha256": "fae3fa65abd35998c65d111b73f4acd7aa3b2ecf6bea2a18f573dd93860e3334",
+      "url": "https://github.com/torvalds/linux/blob/v6.12/fs/pidfs.c",
+      "anchors": [
+        "pidfd_show_fdinfo:25-89",
+        "pidfd_poll:95-116",
+        "pidfs_dname:339-342"
+      ],
+      "fixed_blob_GET_equal": true
+    },
+    {
+      "repository": "tokio-rs/tokio",
+      "ref": "tokio-1.53.3",
+      "path": "tokio/src/io/async_fd.rs",
+      "git_blob": "3463439c9987132b95eb218119e7fe1fa93199b3",
+      "bytes": 62421,
+      "sha256": "0d9365deaa40f8d069770308a105aad31fe527ea593acf95c40265407d9f143d",
+      "url": "https://github.com/tokio-rs/tokio/blob/tokio-1.53.3/tokio/src/io/async_fd.rs",
+      "scope": "Existing fixed source cache independently hashed and relevant functions read; no new runtime was executed."
+    },
+    {
+      "url": "https://man7.org/linux/man-pages/man7/unix.7.html",
+      "scope": "Linux man-pages SO_PEERCRED establishment-time and SCM_RIGHTS open-description transfer semantics",
+      "observed_at": "2026-11-05T11:40–11:41Z"
+    },
+    {
+      "url": "https://man7.org/linux/man-pages/man2/pidfd_open.2.html",
+      "scope": "Linux-specific pidfd exit readiness and process/thread distinction; documented Linux5.3 introduction"
+    },
+    {
+      "url": "https://man7.org/linux/man-pages/man5/proc_pid_stat.5.html",
+      "scope": "Field22 starttime is clock ticks. nth(19) after comm is the correct field and is not listed as a ptrace-zeroed field."
+    }
+  ],
+  "primary_limit": "Linux v6.12 and Tokio 1.53.3 are fixed reference sources. This review does not assert that the current native host runs Linux v6.12; no host syscall experiment was performed.",
+  "changes_requested": [],
+  "original23_statuses_changed": false
+}

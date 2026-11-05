@@ -1,0 +1,117 @@
+{
+  "schema": "hepta-root-actual-foundation-driver-review-v1",
+  "recorded_utc": "2026-11-05T11:40:00.091450+00:00",
+  "verdict": "ACCEPT_EXACT_DRIVER_CANDIDATE_WITH_MANDATORY_NATIVE_REOPEN_GUARDS",
+  "candidate_binding": {
+    "bytes": 22389,
+    "sha256": "6db812a2d7d5c381a8a6c130f3bea27a43f05c07c0cd3cbc48576b6c3760dcb6",
+    "blob": "bf4f5a9e31d2e779ea3020a177e98ebb2f79de41"
+  },
+  "candidate_request": {
+    "bytes": 937979,
+    "sha256": "6084394482b5e11d7bb8ec47c5e43b59fcb4811ff816115ff71e8b290e49267a",
+    "blob": "be7c196eaecf780e23f0f7ad504d3a4753a4be95"
+  },
+  "launcher": {
+    "bytes": 24697,
+    "sha256": "473af7a8d03188d43a1d88c594dfd4c0049ace13c671933c7ffb5fa4b600b175",
+    "blob": "bee66f1ff8ab5f3e4442b2dd14fc4aaa59b7a19d"
+  },
+  "original_foundation_artifacts": {
+    "previous_epoch_receipt": {
+      "bytes": 3023590,
+      "sha256": "480f166c3985d0e2afd838a0977391d259fc6255a5fc3d8ce2f45741beba3b56",
+      "blob": "7846e787748900b3732bb01c532d04add763e2bf"
+    },
+    "previous_epoch_binding": {
+      "bytes": 19313,
+      "sha256": "59b1a7791a34fa753c8a12e683ebd48631e920b35f42863cebbd8fd28679b083",
+      "blob": "29bb5e643fddc7fc571f6e4631ac3a9074f247a2"
+    },
+    "previous_epoch_launch_terminal": {
+      "bytes": 8176,
+      "sha256": "209c3b2bfd0031aba00a765da7e66b54bd6fa23e882a7307bb337801d2123bc5",
+      "blob": "d0d0ed580b0fc724caf393f630ef2c212e9c1fa4"
+    }
+  },
+  "foundation_phase_review": {
+    "bytes": 12596,
+    "sha256": "b94717cdc5a98b820a9831f39e83f1e43ccc4349499d927928d554d19f7d393c",
+    "blob": "c9da4defd63c6c63b22fdf731c37fa91a201f4c4"
+  },
+  "foundation_final_tree": "e510f685d2aa7b9a7121a78f96af3569919e6f88",
+  "runner_exit_code": 0,
+  "launcher_exit_code": 0,
+  "original_final_source_guard": {
+    "bytes": 892,
+    "sha256": "04c1bd9b66494087e23044aaf5aa36fb4be5ebeff868b285086e364a4fd6207d",
+    "blob": "8bd579f6602e2f81284ff3d4d26cf35f40d1cf57"
+  },
+  "metadata_command_succeeded_original_attempt": 1,
+  "metadata_original_pin": {
+    "path": "/home/qq/work/hepta-audit-b16-20261105/evidence/b16-foundation-v7-ai395-20261105-v1/run/B10_R2e3_final-metadata.log",
+    "bytes": 8296096,
+    "sha256": "b4090db792babde64575b11e7ae04df8245074b96a154048c4de08691e4a23e0",
+    "source_tree": "e510f685d2aa7b9a7121a78f96af3569919e6f88"
+  },
+  "metadata_original_guards": {
+    "before": {
+      "bytes": 911,
+      "sha256": "743aa10a21af56d61f0e171ab3b24c9acda1c12df9b8e1e6f4d846d5d784b040",
+      "blob": "f24ab5c6380e2e30a246ddeec993a1ae17c4da29"
+    },
+    "after": {
+      "bytes": 910,
+      "sha256": "006b4c68b7ff68310ea74b4d85453f6927bd96f6d9bfebd2f2c8aae0ed0093c2",
+      "blob": "8368e08b9a44a392c5732161e87a93bbe8d45ed0"
+    }
+  },
+  "metadata_full_raw_received_and_graph_compared": true,
+  "metadata_complete_original_native_reopen_and_graph_check_required_before_product_mutation": true,
+  "original_sdk_guard_review": {
+    "libcap": {
+      "before_and_after_original_records_equal": true,
+      "sha256": "d2873c2c374003397e21fec5bca4561553a7a68981ec47d261dd3057a86fe098",
+      "after_original_copy_received": true
+    },
+    "openssl": {
+      "before_and_after_original_records_equal": true,
+      "sha256": "764eca25406722c8f9f9a73a12cf125a617c5c96b50f2d4a20b0da331bb9e46c",
+      "after_original_copy_received": true
+    },
+    "tools": {
+      "before_and_after_original_records_equal": true,
+      "sha256": "7b93ecdeced19e0b6c8ed9e6ef6ac709d6daf829b41f3194ff59a0f38c840809",
+      "after_original_copy_received": true
+    },
+    "v8": {
+      "before_and_after_original_records_equal": true,
+      "sha256": "1fe28fe18048a2c11db17f61f29a86026d259cae795d20aea3e37e97a7121a31",
+      "after_original_copy_received": true
+    }
+  },
+  "exact_frozen_runtime_files": 29,
+  "integrity_entries": 25,
+  "tools": 8,
+  "helper_roster": 33,
+  "foundation_positive_occurrences": 27,
+  "foundation_positive_unique": 24,
+  "foundation_negative_occurrences": 10,
+  "foundation_negative_unique": 9,
+  "foundation_exact_restorations": 4,
+  "driver_original_positive_parent_cases": 12,
+  "driver_original_negative_parent_cases": 3,
+  "driver_original_finally_scopes": 2,
+  "driver_fresh_capacity_required_bytes": 48517479536,
+  "foundation_completed_at": "2026-11-05T11:26:45.678211+00:00",
+  "foundation_recorded_free_bytes": 656695242752,
+  "recorded_capacity_does_not_replace_fresh_launcher_measurement": true,
+  "project_commands_executed_by_this_cloud_review": false,
+  "B16_closed": false,
+  "limits": [
+    "Selected foundation phase catalogs retain original -E selections, not a new unfiltered full-suite qualification.",
+    "Original negative controls are expected physical counterfactual failures, not positive test passes.",
+    "No independent Root issuer, Current factory, three-pool binding, or platform-matrix acceptance is inferred.",
+    "This review binds copied originals and requires the unchanged native launcher/runtime to reopen actual metadata, source, SDK and tools before execution."
+  ]
+}

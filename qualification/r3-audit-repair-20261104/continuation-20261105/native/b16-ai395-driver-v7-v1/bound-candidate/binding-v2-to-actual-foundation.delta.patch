@@ -1,0 +1,100 @@
+--- driver-binding-DISABLED-v2.json
++++ driver-binding-DISABLED-actual-foundation-v1.json
+@@ -7,7 +7,7 @@
+   "final_A_tree": "4a3374e22e16ce5c764288ad018cd9affadf94ea",
+   "last_tested_A_tree": "fb9e131272f7e7a138d6c0d1af2b048b9a6ab7ff",
+   "last_tested_A_to_final_A_review": "40bd8b7030931cae6573ec126f4afc13a1140d33",
+-  "initial_tree": null,
++  "initial_tree": "e510f685d2aa7b9a7121a78f96af3569919e6f88",
+   "ordinary_head": "20fd174ded4e5ce01bda34e4f6d1d74803301f49",
+   "ordinary_index": {
+     "bytes": 1224180,
+@@ -75,10 +75,41 @@
+     "evidence_growth_bytes": 2000000000,
+     "estimate_review_reference": "f4ec44ad131dd8a59d83011de221899e808a3171: actual P4 396-file family 18,517,479,536 B plus Cargo12GB/Bazel8GB/evidence2GB/reserve8GB yields 48,517,479,536 B initial planning gate. Fresh native check required; this is not a compilation peak guarantee; no cache deletion or lowered budget."
+   },
+-  "previous_epoch_receipt": null,
+-  "baseline_metadata": null,
++  "previous_epoch_receipt": {
++    "path": "/home/qq/work/hepta-audit-b16-20261105/evidence/b16-foundation-v7-ai395-20261105-v1/run/epoch-terminal.json",
++    "bytes": 3023590,
++    "sha256": "480f166c3985d0e2afd838a0977391d259fc6255a5fc3d8ce2f45741beba3b56",
++    "git_blob": "7846e787748900b3732bb01c532d04add763e2bf"
++  },
++  "baseline_metadata": {
++    "path": "/home/qq/work/hepta-audit-b16-20261105/evidence/b16-foundation-v7-ai395-20261105-v1/run/B10_R2e3_final-metadata.log",
++    "bytes": 8296096,
++    "sha256": "b4090db792babde64575b11e7ae04df8245074b96a154048c4de08691e4a23e0",
++    "source_tree": "e510f685d2aa7b9a7121a78f96af3569919e6f88"
++  },
+   "allowed_untracked_source_paths": [],
+-  "locks": null,
++  "locks": {
++    "MODULE.bazel.lock": {
++      "bytes": 1738619,
++      "dev": 66306,
++      "git_blob": "1904db189003cb0b559f71958518e33a45fb6bb7",
++      "inode": 64654420,
++      "mode": "0o600",
++      "nlink": 1,
++      "path": "/home/qq/work/hepta-audit-b16-20261105/source/MODULE.bazel.lock",
++      "sha256": "11f8a421224b9b05f32c4c14054e8868083d989fc497310c8d51e1156f189ca3"
++    },
++    "codex-rs/Cargo.lock": {
++      "bytes": 413768,
++      "dev": 66306,
++      "git_blob": "71fc8fa78b5afa076835b29790a5e6b0bd772558",
++      "inode": 65177174,
++      "mode": "0o600",
++      "nlink": 1,
++      "path": "/home/qq/work/hepta-audit-b16-20261105/source/codex-rs/Cargo.lock",
++      "sha256": "4a7a5535cf045089458468411e126b5f59bc6bbf34fc0deead9b0c1b8d84000a"
++    }
++  },
+   "cargo_profile": "dev-small",
+   "nextest_profile": "local",
+   "junit_relative_path": "codex-rs/target/nextest/local/junit.xml",
+@@ -412,7 +443,7 @@
+     "libcap_complete_root_review": "2da1bd12b4da41936e0354fc5f6e29b291661536"
+   },
+   "harness_attempt_context": {
+-    "kind": "DISABLED_DRIVER_TEMPLATE_PENDING_ACTUAL_FOUNDATION_TERMINAL",
++    "kind": "DISABLED_DRIVER_CANDIDATE_BOUND_TO_ACTUAL_FOUNDATION_TERMINAL",
+     "foundation_job_id": "1a1ab493f2b-fc05-4bfe",
+     "foundation_root_execution_guard": "9ef6f66dca8ec960aad511a6fb9a973b7c3349a8",
+     "foundation_binding_identity": {
+@@ -433,10 +464,30 @@
+     "capacity": "Fresh initial free >=48,517,479,536 B and per-command original8GB.",
+     "scope": "Only frozen epoch-driver; no other epoch, no tests outside its scopes, no timeouts/retries/skip changes."
+   },
+-  "previous_epoch_binding": null,
+-  "previous_epoch_launch_terminal": null,
++  "previous_epoch_binding": {
++    "path": "/home/qq/work/hepta-audit-b16-20261105/evidence/b16-foundation-v7-ai395-20261105-v1/binding.json",
++    "bytes": 19313,
++    "sha256": "59b1a7791a34fa753c8a12e683ebd48631e920b35f42863cebbd8fd28679b083",
++    "git_blob": "29bb5e643fddc7fc571f6e4631ac3a9074f247a2"
++  },
++  "previous_epoch_launch_terminal": {
++    "path": "/home/qq/work/hepta-audit-b16-20261105/evidence/b16-foundation-v7-ai395-20261105-v1/launcher-terminal.json",
++    "bytes": 8176,
++    "sha256": "209c3b2bfd0031aba00a765da7e66b54bd6fa23e882a7307bb337801d2123bc5",
++    "git_blob": "d0d0ed580b0fc724caf393f630ef2c212e9c1fa4"
++  },
+   "baseline_metadata_source_guards": {
+-    "before": null,
+-    "after": null
++    "before": {
++      "path": "/home/qq/work/hepta-audit-b16-20261105/evidence/b16-foundation-v7-ai395-20261105-v1/run/0122-B10_R2e3_final-metadata-before-guard.json",
++      "bytes": 911,
++      "sha256": "743aa10a21af56d61f0e171ab3b24c9acda1c12df9b8e1e6f4d846d5d784b040",
++      "git_blob": "f24ab5c6380e2e30a246ddeec993a1ae17c4da29"
++    },
++    "after": {
++      "path": "/home/qq/work/hepta-audit-b16-20261105/evidence/b16-foundation-v7-ai395-20261105-v1/run/0123-B10_R2e3_final-metadata-after-guard.json",
++      "bytes": 910,
++      "sha256": "006b4c68b7ff68310ea74b4d85453f6927bd96f6d9bfebd2f2c8aae0ed0093c2",
++      "git_blob": "8368e08b9a44a392c5732161e87a93bbe8d45ed0"
++    }
+   }
+ }

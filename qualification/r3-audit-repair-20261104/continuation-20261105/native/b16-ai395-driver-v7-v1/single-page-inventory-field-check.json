@@ -1,0 +1,19 @@
+{
+  "schema": "hepta-driver-single-page-field-inspection-v1",
+  "args": {
+    "host": "ai395",
+    "limit": 1
+  },
+  "original_response": {
+    "content": [
+      {
+        "type": "text",
+        "text": "{\"has_more\":true,\"inventory_complete\":false,\"jobs\":[{\"created_unix_ms\":1793690650781,\"execution_mode\":\"operator\",\"host\":\"ai395\",\"id\":\"1a1a04b489d-fc05-1\",\"launch_state\":\"launched\"}],\"next_cursor\":\"afe4382bf10d5122a653f79af39261ec9d685fdfdeea232b8a82c73579deba8c:1a1a04b489d-fc05-1\",\"snapshot_semantics\":\"registry_metadata_at_observation\",\"snapshot_sha256\":\"afe4382bf10d5122a653f79af39261ec9d685fdfdeea232b8a82c73579deba8c\",\"status_authoritative\":false,\"total\":1893}"
+      }
+    ],
+    "structuredContent": null,
+    "isError": false
+  },
+  "followed_cursor": false,
+  "purpose": "Inspect documented returned fields only; do not infer job attribution or read stdout of an unknown job."
+}

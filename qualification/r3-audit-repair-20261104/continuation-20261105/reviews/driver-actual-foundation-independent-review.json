@@ -1,0 +1,172 @@
+{
+  "schema": "b16-driver-actual-foundation-independent-binding-review-v1",
+  "verdict": "STATIC_PASS_FOR_ROOT_GUARDED_DRIVER_ENABLEMENT",
+  "no_native_run_or_source_mutation": true,
+  "candidate": {
+    "binding": {
+      "path": "/workspace/scratch/07dd58cc9630/ci-audit/recovered-20261105/b16-ai395-driver-v7-bound-candidate-v1/driver-binding-DISABLED-actual-foundation-v1.json",
+      "bytes": 22389,
+      "sha256": "6db812a2d7d5c381a8a6c130f3bea27a43f05c07c0cd3cbc48576b6c3760dcb6",
+      "git_blob": "bf4f5a9e31d2e779ea3020a177e98ebb2f79de41"
+    },
+    "request": {
+      "path": "/workspace/scratch/07dd58cc9630/ci-audit/recovered-20261105/b16-ai395-driver-v7-bound-candidate-v1/launch-request-DISABLED-actual-foundation-v1.json",
+      "bytes": 937979,
+      "sha256": "6084394482b5e11d7bb8ec47c5e43b59fcb4811ff816115ff71e8b290e49267a",
+      "git_blob": "be7c196eaecf780e23f0f7ad504d3a4753a4be95"
+    },
+    "binding_delta": {
+      "path": "/workspace/scratch/07dd58cc9630/ci-audit/recovered-20261105/b16-ai395-driver-v7-bound-candidate-v1/binding-v2-to-actual-foundation.delta.patch",
+      "bytes": 4808,
+      "sha256": "a3dc4f551a60423ade841737febcfcd0bf9498da18fd085ddec435dd1da8acc3",
+      "git_blob": "aeaa9658bc7f3a4d5227eb42f94381daf07dd5ae"
+    },
+    "unchanged_launcher": {
+      "path": "/workspace/scratch/07dd58cc9630/architecture-audit/b16-driver-launcher-template-20261105/launch_driver_v7.py",
+      "bytes": 24697,
+      "sha256": "473af7a8d03188d43a1d88c594dfd4c0049ace13c671933c7ffb5fa4b600b175",
+      "git_blob": "bee66f1ff8ab5f3e4442b2dd14fc4aaa59b7a19d"
+    }
+  },
+  "actual_prior_artifacts": [
+    {
+      "local_path": "/workspace/scratch/07dd58cc9630/ci-audit/recovered-20261105/b16-ai395-foundation-v7-v2/terminal-originals/epoch-terminal.json",
+      "bytes": 3023590,
+      "sha256": "480f166c3985d0e2afd838a0977391d259fc6255a5fc3d8ce2f45741beba3b56",
+      "git_blob": "7846e787748900b3732bb01c532d04add763e2bf"
+    },
+    {
+      "local_path": "/workspace/scratch/07dd58cc9630/ci-audit/recovered-20261105/b16-ai395-foundation-v7-v2/terminal-originals/launcher-terminal.json",
+      "bytes": 8176,
+      "sha256": "209c3b2bfd0031aba00a765da7e66b54bd6fa23e882a7307bb337801d2123bc5",
+      "git_blob": "d0d0ed580b0fc724caf393f630ef2c212e9c1fa4"
+    },
+    {
+      "local_path": "/workspace/scratch/07dd58cc9630/ci-audit/recovered-20261105/b16-ai395-foundation-v7-v2/terminal-originals/binding.json",
+      "bytes": 19313,
+      "sha256": "59b1a7791a34fa753c8a12e683ebd48631e920b35f42863cebbd8fd28679b083",
+      "git_blob": "29bb5e643fddc7fc571f6e4631ac3a9074f247a2"
+    },
+    {
+      "local_path": "/workspace/scratch/07dd58cc9630/ci-audit/recovered-20261105/b16-ai395-foundation-v7-v2/terminal-originals/0122-B10_R2e3_final-metadata-before-guard.json",
+      "bytes": 911,
+      "sha256": "743aa10a21af56d61f0e171ab3b24c9acda1c12df9b8e1e6f4d846d5d784b040",
+      "git_blob": "f24ab5c6380e2e30a246ddeec993a1ae17c4da29"
+    },
+    {
+      "local_path": "/workspace/scratch/07dd58cc9630/ci-audit/recovered-20261105/b16-ai395-foundation-v7-v2/terminal-originals/0123-B10_R2e3_final-metadata-after-guard.json",
+      "bytes": 910,
+      "sha256": "006b4c68b7ff68310ea74b4d85453f6927bd96f6d9bfebd2f2c8aae0ed0093c2",
+      "git_blob": "8368e08b9a44a392c5732161e87a93bbe8d45ed0"
+    },
+    {
+      "local_path": "/workspace/scratch/07dd58cc9630/ci-audit/recovered-20261105/b16-ai395-foundation-v7-v2/terminal-originals/0128-epoch-final-guard.json",
+      "bytes": 892,
+      "sha256": "04c1bd9b66494087e23044aaf5aa36fb4be5ebeff868b285086e364a4fd6207d",
+      "git_blob": "8bd579f6602e2f81284ff3d4d26cf35f40d1cf57"
+    },
+    {
+      "local_path": "/workspace/scratch/07dd58cc9630/ci-audit/recovered-20261105/b16-ai395-foundation-v7-v2/terminal-originals/B10_R2e3_final-metadata-command-terminal.json",
+      "bytes": 983,
+      "sha256": "f97772f7a17377dadca0746ff0eee5d453ec188703ea06949ab1b72e25834b74",
+      "git_blob": "a83521edef7a6408ce93daa36b3630b9b2e5d0e8"
+    }
+  ],
+  "metadata_independently_reconstructed": {
+    "envelopes": [
+      {
+        "local_path": "/workspace/scratch/07dd58cc9630/ci-audit/recovered-20261105/b16-ai395-foundation-v7-v2/terminal-originals/metadata-retrieval-small-1.json",
+        "bytes": 118490,
+        "sha256": "cb032182756966c87c92a77a8e71d1061fbefc70579692622493df4082c780af",
+        "git_blob": "23d26e1bc77da6405985a7093278c9b708e19d3a"
+      },
+      {
+        "local_path": "/workspace/scratch/07dd58cc9630/ci-audit/recovered-20261105/b16-ai395-foundation-v7-v2/terminal-originals/metadata-retrieval-small-0.json",
+        "bytes": 118485,
+        "sha256": "b4290909c4e0d5eedda67ac0ec1fe60b4207b088f1b462783f54b00e8996da54",
+        "git_blob": "0d998b77b1c905337930baa3a44bdccf1349932c"
+      },
+      {
+        "local_path": "/workspace/scratch/07dd58cc9630/ci-audit/recovered-20261105/b16-ai395-foundation-v7-v2/terminal-originals/metadata-retrieval-small-2.json",
+        "bytes": 118491,
+        "sha256": "0750d7fdd3af3e50f12c47f3668848d86c6bee7773e7b666da16d69dd3f9db85",
+        "git_blob": "31410fa23e5440af6c7c0fcee8477232692cb1fe"
+      },
+      {
+        "local_path": "/workspace/scratch/07dd58cc9630/ci-audit/recovered-20261105/b16-ai395-foundation-v7-v2/terminal-originals/metadata-retrieval-small-3.json",
+        "bytes": 118491,
+        "sha256": "c741eec05186a12c66fe3a5416fa2b3b40f886a2f39e8ade1f78737923a8b30a",
+        "git_blob": "84676809e139c28857c1a44c7a2319c160ed3cb6"
+      },
+      {
+        "local_path": "/workspace/scratch/07dd58cc9630/ci-audit/recovered-20261105/b16-ai395-foundation-v7-v2/terminal-originals/metadata-transfer-2.json",
+        "bytes": 236849,
+        "sha256": "6306012127449e563fcf30a310ae822a3bbfe41b070460160f57b5ff1ba23fa9",
+        "git_blob": "2f774eed14ad41301fe6764f6c0e32d4b5a4d2ab"
+      },
+      {
+        "local_path": "/workspace/scratch/07dd58cc9630/ci-audit/recovered-20261105/b16-ai395-foundation-v7-v2/terminal-originals/metadata-transfer-3.json",
+        "bytes": 77067,
+        "sha256": "cc0baf948b7d12d67a8e1316590c1fedb22452154bb7d97e78dcde56d9cbeeb6",
+        "git_blob": "088311e1f5ab78df474b877762a6d7abc8559daf"
+      }
+    ],
+    "chunks": 14,
+    "compressed_bytes": 584931,
+    "raw": {
+      "local_path": "/workspace/scratch/07dd58cc9630/architecture-audit/b16-driver-bound-review-20261105/B10-metadata.original.json",
+      "bytes": 8296096,
+      "sha256": "b4090db792babde64575b11e7ae04df8245074b96a154048c4de08691e4a23e0",
+      "git_blob": "e1f0ddb638f8d46e24d94176c3993e7fa2a293fd"
+    },
+    "members": 193,
+    "resolve_nodes": 1501,
+    "source": "e510f685d2aa7b9a7121a78f96af3569919e6f88",
+    "original_argv": [
+      "cargo",
+      "metadata",
+      "--format-version=1",
+      "--locked"
+    ],
+    "original_exit_code": 0,
+    "original_elapsed_seconds": 0.6394909219816327
+  },
+  "checks": {
+    "exact_actual_foundation_QUALIFIED_and_launcher_zero": true,
+    "same_original_guard_and_enabled_binding": true,
+    "initial_final_source_bridge": true,
+    "eight_tools_environment_recipes_SDKs_V8_original_equal": true,
+    "ordinary_HEAD_index_dual_locks_equal": true,
+    "B10_metadata_original_paths_command_guards_pins": true,
+    "29_frozen_inputs_byteequal": true,
+    "25_integrity_exact": true,
+    "driver_only_scopes_oracles_payload_unchanged": true,
+    "two_lock_generation_and_negative_finally_unchanged": true,
+    "driver_48517479536_fresh_launch_and_original_8GB_reserve_remain": true,
+    "disabled_until_root_guard": true
+  },
+  "binding_top_level_differences": [
+    "baseline_metadata",
+    "baseline_metadata_source_guards",
+    "harness_attempt_context",
+    "initial_tree",
+    "locks",
+    "previous_epoch_binding",
+    "previous_epoch_launch_terminal",
+    "previous_epoch_receipt"
+  ],
+  "root_enable_changes_expected": [
+    "binding.execute=true",
+    "binding.approval_reference=exact root guard",
+    "outer root_execution_guard=same exact root guard",
+    "binding.harness_attempt_context.kind transparently ENABLED",
+    "binding.harness_attempt_context.current_driver_execution_authorized=true"
+  ],
+  "reviewer_check_correction": "First local reviewer check used the wrong hand-typed idempotency-key ordering and stopped before artifact checks. Corrected to the exact frozen request key hepta-ai395-b16-driver-v7-20261105-v1; candidate bytes were unchanged. No native operation occurred.",
+  "limits": [
+    "This review rechecks continuity and exact objects, not every original positive/negative assertion. Root independently reviews the complete foundation qualification.",
+    "Observed free 656695242752 B is a terminal instant; driver must perform fresh >=48517479536 B admission and original per-command reserve checks. Budget is an estimate, not peak proof.",
+    "Historical ROG A tests and 4a new-host BUILD_ONLY remain separate. B10 metadata is reconstructed from the actual new source command, not relabeled P4 bytes.",
+    "No driver native execution, dependency generation, new Cargo/Bazel result, Current admission or platform closure is claimed."
+  ]
+}

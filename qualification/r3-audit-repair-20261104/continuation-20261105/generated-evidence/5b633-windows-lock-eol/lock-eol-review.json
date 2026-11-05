@@ -1,0 +1,107 @@
+{
+  "schema": "hepta.windows-lock-checkout-eol.v1",
+  "verified_at": "2026-11-05T10:54:30.332528+00:00",
+  "verdict": "EXACT_CRLF_RECONSTRUCTION_MATCHES_BOTH_WINDOWS_INPUT_RECEIPTS",
+  "product_head": "5b6331250ff459033bd44d1a95daec70131277cc",
+  "product_tree": "b26598d0d97d8d51e723bb5582137315f2174d35",
+  "business_merge": "9063c52a063b6f26c48e9418f6d8dbd14e9e06ff",
+  "business_merge_parents": [
+    "63652be658ebed8d3052eb789b951793384fd5e4",
+    "5b6331250ff459033bd44d1a95daec70131277cc"
+  ],
+  "business_run_id": "41999114539",
+  "business_job_id": 127149582006,
+  "retained_run_id": "41999104713",
+  "retained_job_id": 127149547694,
+  "run_attempt": 1,
+  "rows": [
+    {
+      "logical_path": "codex-rs/Cargo.lock",
+      "local_original_path": "research-audit/published-5b633-ci-20261105/windows-checkout-locks/Cargo.lock.source.txt",
+      "fixed_git_leaf": {
+        "path": "Cargo.lock",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "71fc8fa78b5afa076835b29790a5e6b0bd772558",
+        "size": 413768,
+        "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/git/blobs/71fc8fa78b5afa076835b29790a5e6b0bd772558"
+      },
+      "stored_lf": {
+        "bytes": 413768,
+        "sha256": "4a7a5535cf045089458468411e126b5f59bc6bbf34fc0deead9b0c1b8d84000a",
+        "git_blob": "71fc8fa78b5afa076835b29790a5e6b0bd772558"
+      },
+      "stored_cr_count": 0,
+      "stored_lf_count": 18486,
+      "reconstructed_crlf": {
+        "bytes": 432254,
+        "sha256": "e0d6c75b8e46cbf3c8df62ca98d653144b796238be165155e1a2796cf372a49e",
+        "git_blob": "5023778e8442419c93b0c80d1e28695556817f5d"
+      },
+      "business_artifact_reported_sha256": "e0d6c75b8e46cbf3c8df62ca98d653144b796238be165155e1a2796cf372a49e",
+      "retained_artifact_reported_sha256": "e0d6c75b8e46cbf3c8df62ca98d653144b796238be165155e1a2796cf372a49e",
+      "both_exact_sha256_matches": true,
+      "inverse_crlf_to_lf_is_byte_equal": true
+    },
+    {
+      "logical_path": "MODULE.bazel.lock",
+      "local_original_path": "research-audit/published-0e139-ci-20261105/terminal/ui-run-41975255764/artifact-13393945289/members/MODULE.bazel.lock",
+      "fixed_git_leaf": {
+        "path": "MODULE.bazel.lock",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "1904db189003cb0b559f71958518e33a45fb6bb7",
+        "size": 1738619,
+        "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/git/blobs/1904db189003cb0b559f71958518e33a45fb6bb7"
+      },
+      "stored_lf": {
+        "bytes": 1738619,
+        "sha256": "11f8a421224b9b05f32c4c14054e8868083d989fc497310c8d51e1156f189ca3",
+        "git_blob": "1904db189003cb0b559f71958518e33a45fb6bb7"
+      },
+      "stored_cr_count": 0,
+      "stored_lf_count": 2336,
+      "reconstructed_crlf": {
+        "bytes": 1740955,
+        "sha256": "97f844724549757398c7834f5818d6244819b129658bdaa8453008dc694bbfc4",
+        "git_blob": "f8999d38e9add55812237878f9030d1c1e25b59d"
+      },
+      "business_artifact_reported_sha256": "97f844724549757398c7834f5818d6244819b129658bdaa8453008dc694bbfc4",
+      "retained_artifact_reported_sha256": "97f844724549757398c7834f5818d6244819b129658bdaa8453008dc694bbfc4",
+      "both_exact_sha256_matches": true,
+      "inverse_crlf_to_lf_is_byte_equal": true
+    }
+  ],
+  "gitattributes": {
+    "identity": {
+      "bytes": 755,
+      "sha256": "51bdbf461a07d891e1cb85721bf9ce50d4f761288edbe301bd565ee8e5091190",
+      "git_blob": "17da38650745923743630d38d3eb0327b7a55d1f"
+    },
+    "text": "codex-rs/app-server-protocol/schema/** linguist-generated\ncodex-rs/hooks/schema/generated/** linguist-generated\n# The embedded oracle is hashed byte-for-byte, including its final LF.\ncodex-rs/hepta-shadow-qualification/fixtures/live_product_oracle_v2_2f704.json text eol=lf\n# SQLx checksums and generated projection comparisons use the exact stored bytes.\ncodex-rs/hepta-evidence/migrations/*.sql text eol=lf\ncodex-rs/hepta-memory/migrations/*.sql text eol=lf\ncodex-rs/hepta-supervisor/fixtures/robrix-control-v2/** text eol=lf\n# Native acquisition qualification binds these production/patch bytes exactly.\ncodex-rs/utils/path-utils/src/private_state_windows_directory.rs text eol=lf\n.github/fixtures/windows-private-state-acquisition/*.patch text eol=lf\n",
+    "lock_file_eol_override_present": false
+  },
+  "original_input_receipts": [
+    {
+      "path": "research-audit/published-5b633-ci-20261105/snapshot-0017/windows-business-extracted/ordinary-consumers/source.json",
+      "bytes": 1384,
+      "sha256": "9cd2d61c5ada69f0146d9d329ffa198ef8918b37a3cb9c2431227be48f451a98",
+      "git_blob": "1e68ec1efcdd185c925631f047db36f39a09a8de"
+    },
+    {
+      "path": "research-audit/published-5b633-ci-20261105/retained-extracted/source.json",
+      "bytes": 2738,
+      "sha256": "ce7a61b30c57d4c15463988ea15f125462bcf7f6c31ff6ab68c03fa75ace3921",
+      "git_blob": "1645547112a2ba69eeb1c60be3d938dccf37b196"
+    }
+  ],
+  "scope": [
+    "The actual b265 Git root and codex-rs subtree were fetched and the two stored leaf identities verified independently.",
+    "Cargo original text was read from its fixed Git blob. MODULE original text was reused from an already verified original UI artifact and matched the current leaf exactly.",
+    "Changing every LF to CRLF, with no other byte changes, reproduces each reported Windows SHA256 exactly in both independent job source receipts.",
+    "The Windows ZIPs contain the input hashes, not the full working-tree lock files. The CRLF bodies here are reconstructed candidates verified by cryptographic hash equality, not separately downloaded Windows lock bodies.",
+    "This proves the recorded difference is fully accounted for by line endings. It does not imply the source Git blobs and Windows working-tree byte sequences are identical.",
+    "No new native build, test, checkout, repository source change, index change or ref update was performed. No new qualification is inferred."
+  ],
+  "reproduce": "python research-audit/published-5b633-ci-20261105/windows-checkout-locks/verify_lock_eol.py"
+}

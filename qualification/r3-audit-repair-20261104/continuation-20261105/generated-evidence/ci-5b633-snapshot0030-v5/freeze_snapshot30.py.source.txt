@@ -1,0 +1,111 @@
+#!/usr/bin/env python3
+"""Freeze one already-observed CI API snapshot; no network or project execution."""
+from collections import Counter
+from pathlib import Path
+import base64
+import gzip
+import hashlib
+import io
+import json
+import tarfile
+
+ROOT = Path(__file__).resolve().parent
+OUT = ROOT / 'immutable-v5-snapshot0030'
+OUT.mkdir(exist_ok=False)
+
+def ident(data):
+    return {'bytes': len(data), 'sha256': hashlib.sha256(data).hexdigest(),
+            'computed_git_blob': hashlib.sha1(f'blob {len(data)}\0'.encode() + data).hexdigest()}
+
+def save(name, obj):
+    data = (json.dumps(obj, ensure_ascii=False, indent=2) + '\n').encode()
+    (OUT / name).write_bytes(data)
+    return data
+
+original = ROOT / 'snapshot-0030/jobs-api-envelope.json'
+terminal = ROOT / 'snapshot-0030/terminal-empty-page2.json'
+records = json.loads(original.read_bytes())['records']
+assert len(records) == 21 and len({r['label'] for r in records}) == 21
+bodies = {r['label']: json.loads(r['response']['structuredContent']['content']) for r in records}
+runs = bodies['runs']['workflow_runs']
+assert bodies['runs']['total_count'] == len(runs) == 19
+assert len({r['id'] for r in runs}) == 19
+head = '5b6331250ff459033bd44d1a95daec70131277cc'
+assert all(r['head_sha'] == head and r['run_attempt'] == 1 for r in runs)
+pr = bodies['pr']
+assert pr['head']['sha'] == head and pr['base']['sha'] == '63652be658ebed8d3052eb789b951793384fd5e4'
+assert pr['draft'] and pr['state'] == 'open'
+jobs = []
+for run in runs:
+    body = bodies[f"jobs-{run['id']}"]
+    assert body['total_count'] == len(body['jobs'])
+    assert len({j['id'] for j in body['jobs']}) == len(body['jobs'])
+    for j in body['jobs']:
+        assert j['run_id'] == run['id'] and j['head_sha'] == head and j['run_attempt'] == 1
+        jobs.append(j)
+assert len(jobs) == len({j['id'] for j in jobs}) == 44
+pages = json.loads(terminal.read_bytes())['records']
+assert len(pages) == len({p['label'] for p in pages}) == 20
+for p in pages:
+    body = json.loads(p['response']['structuredContent']['content'])
+    assert not body.get('jobs', body.get('workflow_runs')) and p['item_count'] == 0
+    assert 'per_page=100&page=2' in p['url']
+
+def status_counts(items):
+    return dict(Counter(x['conclusion'] if x['status'] == 'completed' else x['status'] for x in items))
+
+summary = {'schema': 'hepta-exact-head-ci-snapshot-projection-v1', 'snapshot': '0030',
+           'observed_first_page_window': {'started': min(r['requested_at'] for r in records),
+                                          'finished': max(r['observed_at'] for r in records)},
+           'observed_terminal_page_window': {'started': min(p['requested_at'] for p in pages),
+                                             'finished': max(p['observed_at'] for p in pages)},
+           'head': head, 'tree': 'b26598d0d97d8d51e723bb5582137315f2174d35',
+           'base': pr['base']['sha'], 'open': True, 'draft': True,
+           'run_attempt': 1, 'run_count': 19, 'job_count': 44,
+           'run_status_counts': status_counts(runs), 'job_status_counts': status_counts(jobs),
+           'all_pages_complete_no_duplicate_runs_or_jobs': True,
+           'all_twenty_terminal_pages_empty': True,
+           'runs': [{k:r.get(k) for k in ['id','name','head_sha','event','status','conclusion','run_attempt','created_at','updated_at','html_url']} for r in runs],
+           'jobs': [{k:j.get(k) for k in ['id','run_id','name','head_sha','status','conclusion','run_attempt','runner_id','runner_name','labels','started_at','completed_at','html_url','check_run_url']} for j in jobs],
+           'queued_jobs_with_assigned_runner': [j['id'] for j in jobs if j['status'] == 'queued' and (j.get('runner_id') or j.get('runner_name'))],
+           'scope': ['Top-level queued is not zero internal execution; four completed success jobs are explicitly retained.',
+                     'Counts describe APIs at the observed window, not named test qualification. Existing completed-case receipts are unchanged and not downloaded again.',
+                     'Pagination checks occurred later than first-page observations. GitHub data can change concurrently; this is not an atomic database snapshot.',
+                     'No newly observed failure, actor or queue cause is inferred. No rerun, cancellation, dispatch, ref or source mutation.'],
+           'source_tree_evidence': 'The tree identity comes from the separately frozen exact 5b Git verification, not a claim that every job has checked out or executed that tree.',
+           'raw_first_page': {'member': 'snapshot-0030/jobs-api-envelope.json', **ident(original.read_bytes())},
+           'raw_terminal_pages': {'member': 'snapshot-0030/terminal-empty-page2.json', **ident(terminal.read_bytes())}}
+summary_bytes = save('snapshot-summary.json', summary)
+files = [('snapshot-0030/jobs-api-envelope.json', original.read_bytes()),
+         ('snapshot-0030/terminal-empty-page2.json', terminal.read_bytes()),
+         ('snapshot-summary.json', summary_bytes)]
+original_manifest = save('original-files-manifest.json', {'schema': 'hepta-immutable-original-file-index-v1',
+                       'file_count': len(files), 'total_original_bytes': sum(len(b) for _,b in files),
+                       'files': [{'member': n, **ident(b)} for n,b in files]})
+buffer = io.BytesIO()
+with tarfile.open(fileobj=buffer, mode='w') as tar:
+    for name, body in files:
+        info = tarfile.TarInfo(name); info.size = len(body); info.mode = 0o644; info.mtime = 0
+        tar.addfile(info, io.BytesIO(body))
+compressed = gzip.compress(buffer.getvalue(), mtime=0)
+assert gzip.decompress(compressed) == buffer.getvalue()
+parts = []
+for index, offset in enumerate(range(0, len(compressed), 196608)):
+    chunk = compressed[offset:offset+196608]; encoded = base64.b64encode(chunk) + b'\n'
+    name = f'original-ci.tar.gz.part{index:03d}.b64.txt'
+    (OUT / name).write_bytes(encoded)
+    parts.append({'index': index, 'name': name, 'compressed_offset': offset,
+                  'file': ident(encoded), 'decoded_chunk': ident(chunk)})
+save('transport-manifest.json', {'schema': 'hepta-immutable-ci-transport-v1',
+     'archive': {'name': 'original-ci.tar.gz', **ident(compressed)},
+     'original_files_manifest': {'name': 'original-files-manifest.json', **ident(original_manifest)},
+     'part_count': len(parts), 'parts': parts, 'complete_original_file_count': len(files)})
+verify = (ROOT / 'immutable-v5-business-retained/verify_archive.py').read_text()
+verify = verify.replace('import hashlib\n', 'import hashlib\nimport gzip\n')
+verify = verify.replace('with tarfile.open(fileobj=io.BytesIO(archive), mode="r:gz") as tar:',
+                        'uncompressed = gzip.decompress(archive)  # Consume and verify the complete gzip trailer/CRC.\n    with tarfile.open(fileobj=io.BytesIO(uncompressed), mode="r:") as tar:')
+verify = verify.replace('"project_commands_executed": False,', '"project_commands_executed": False, "complete_gzip_crc_verified": True,')
+(OUT / 'verify_archive.py').write_text(verify)
+print(json.dumps({'directory': str(OUT), 'parts': len(parts), 'archive': ident(compressed),
+                  'original_bytes': sum(len(b) for _,b in files),
+                  'counts': summary['job_status_counts']}))
