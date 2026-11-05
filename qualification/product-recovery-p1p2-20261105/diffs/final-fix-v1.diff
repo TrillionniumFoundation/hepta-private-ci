@@ -1,0 +1,80 @@
+diff --git a/codex-rs/hepta-agentd/src/authority_host_admin_issuer_tests.rs b/codex-rs/hepta-agentd/src/authority_host_admin_issuer_tests.rs
+index 9f1f043b9f55ecac764fa9ff6ab50ceb2cfada45..3f865200105061a2d47cd778293ea5680e9e0df5 100644
+--- a/codex-rs/hepta-agentd/src/authority_host_admin_issuer_tests.rs
++++ b/codex-rs/hepta-agentd/src/authority_host_admin_issuer_tests.rs
+@@ -70,7 +70,7 @@ fn actual_issuer_receipt_matches_exact_retained_canonical_postimage()
+         assert!(confirm_committed(&registry, &original, &changed, end).is_err());
+         assert_eq!(registry.frontier()?, frontier);
+     }
+-    let mut changed_original = original.clone();
++    let mut changed_original = original;
+     changed_original.binding.destination_id.push('x');
+     assert!(confirm_committed(&registry, &changed_original, &receipt, end).is_err());
+     assert_eq!(registry.frontier()?, frontier);
+@@ -95,7 +95,7 @@ fn late_client_confirmation_preserves_committed_revoke_and_refuses_renewal()
+         .read_revocation(&original.lease_id)?
+         .ok_or("revocation absent")?;
+     assert_eq!(retained.revocation.reason_sha256, [7; 32]);
+-    let mut renewed = original.clone();
++    let mut renewed = original;
+     renewed.revision = receipt
+         .lease_revision
+         .checked_add(1)
+diff --git a/codex-rs/hepta-agentd/src/intelligence_canonical_runtime_tests.rs b/codex-rs/hepta-agentd/src/intelligence_canonical_runtime_tests.rs
+index b3cd832456966499984e8f7848402dde30cd6721..cc6609ed2b37bce74f4b9d74fa3e3809ef7eeabc 100644
+--- a/codex-rs/hepta-agentd/src/intelligence_canonical_runtime_tests.rs
++++ b/codex-rs/hepta-agentd/src/intelligence_canonical_runtime_tests.rs
+@@ -47,7 +47,7 @@ async fn running_canonical_admission_preserves_the_recovered_run_start() {
+         authority_epoch: original.snapshot.authority_epoch,
+         generation: original.snapshot.generation,
+         fence_digest: original.snapshot.fence_digest.to_string(),
+-        deadline_ms: (original.admission.deadline_unix_micros + 999) / 1_000,
++        deadline_ms: original.admission.deadline_unix_micros.div_ceil(1_000),
+     };
+     assert_eq!(prepared.run_snapshot(), expected);
+     assert_eq!(prepared.snapshot.body_generation().get(), 1);
+diff --git a/codex-rs/hepta-agentd/src/root_desktop_startup_tests.rs b/codex-rs/hepta-agentd/src/root_desktop_startup_tests.rs
+index bf0aeee0d3d1c6e89ca4f73214807ff43d7986aa..071273b873f95471e984cfe5bd3e975b068a86a7 100644
+--- a/codex-rs/hepta-agentd/src/root_desktop_startup_tests.rs
++++ b/codex-rs/hepta-agentd/src/root_desktop_startup_tests.rs
+@@ -149,12 +149,11 @@ fn joint_root_bounds_every_saved_selector_and_original_helper_path() {
+             }
+             _ => value["previous_recovery"]["grant"] = true.into(),
+         }
+-        match serde_json::from_value::<Profile>(value) {
+-            Ok(profile) => assert!(
++        if let Ok(profile) = serde_json::from_value::<Profile>(value) {
++            assert!(
+                 validate_profile(&profile, "fixture-root", true).is_err(),
+                 "accepted {change}"
+-            ),
+-            Err(_) => {}
++            )
+         }
+     }
+     let mut value = recovered_wire();
+diff --git a/codex-rs/hepta-infer-worker-host/src/native_app_server.rs b/codex-rs/hepta-infer-worker-host/src/native_app_server.rs
+index abd0df4893122b7f97e5c63fd7dfaf6278aa8abf..6c3bc4ca60e87258d6be108cb97f6a03382d2da5 100644
+--- a/codex-rs/hepta-infer-worker-host/src/native_app_server.rs
++++ b/codex-rs/hepta-infer-worker-host/src/native_app_server.rs
+@@ -699,16 +699,15 @@ impl AppServerModelDriver {
+             let cancel_recorded = control.cancel_native(request_id);
+             #[cfg(all(test, unix))]
+             failure_tests::pause_after_observation_journal(request_id).await;
+-            if let (Some(binding), Some(revision)) = (intelligence, intelligence_revision) {
+-                if let Ok(cancelled) = owner
++            if let (Some(binding), Some(revision)) = (intelligence, intelligence_revision)
++                && let Ok(cancelled) = owner
+                     .run_cancel_bound(
+                         binding.expected_run_binding(revision),
+                         reason.chars().take(512).collect(),
+                     )
+                     .await
+-                {
+-                    intelligence_revision = Some(cancelled.receipt.revision);
+-                }
++            {
++                intelligence_revision = Some(cancelled.receipt.revision);
+             }
+             // Attempt physical cleanup even if either journal append failed.
+             // The retained error still fences settlement and later admission.

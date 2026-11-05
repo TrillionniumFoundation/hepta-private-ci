@@ -1,0 +1,122 @@
+{
+  "schema": "hepta.current-memory-owner-audit.v1",
+  "audited_commit": "a6403e8ae23e9f62cba2a6343563214f6a49dbed",
+  "audited_tree": "12418befd4574b13560e5c5c074e7beb0b805d6a",
+  "source_provenance": "28 files fetched from fixed parent a7ab532d852887772fffab83a5108accac1cf286 through the authorized GitHub connector; every Git blob was recomputed locally; none is touched by the three published v5 commits. SOURCE_IDENTITIES.json records all blob and SHA-256 identities.",
+  "conclusion": "The default Agentd owners cannot currently supply a complete authenticated CurrentMemoryRetrievalContext. No production provider was added: doing so now would require inventing external currentness or adding unused forwarding interfaces. Existing HnmfRequired failure and all generation/revocation checks remain intact.",
+  "repository_source_changes": [],
+  "exact_head_repository_search": {
+    "performed_by": "root",
+    "log_basename": "memory-context-owners.log",
+    "scope": "Complete reconstructed source at audited_commit/audited_tree; root reported and reviewed the raw output. This agent did not issue another SSH request.",
+    "matches": [
+      {"path": "codex-rs/hepta-memory/src/cognitive_retrieval_adapter.rs", "line": 49, "symbol": "struct RetrievalExecutionContextV1"},
+      {"path": "codex-rs/hepta-memory/src/cognitive_retrieval_adapter.rs", "line": 65, "symbol": "impl RetrievalExecutionContextV1"},
+      {"path": "codex-rs/hepta-agentd/src/config.rs", "line": 642, "symbol": "with_cognitive_retrieval_context"},
+      {"path": "codex-rs/hepta-memory/src/cognitive_retrieval_adapter_tests.rs", "line": 82, "symbol": "RetrievalExecutionContextV1 construction"},
+      {"path": "codex-rs/hepta-agentd/src/cognitive_context_hnmf_tests.rs", "line": 48, "symbol": "impl CurrentMemoryRetrievalContext for SwitchingContext"},
+      {"path": "codex-rs/hepta-agentd/src/cognitive_context_hnmf_tests.rs", "line": 183, "symbol": "RetrievalExecutionContextV1 construction"}
+    ],
+    "production_provider_implementations": [],
+    "engram_owner_or_store_struct_matches": [],
+    "only_concrete_provider": {
+      "type": "SwitchingContext",
+      "path": "codex-rs/hepta-agentd/src/cognitive_context_hnmf_tests.rs",
+      "line": 48,
+      "semantics": "Test-only fixture returns first/later captured contexts using an atomic call counter; rejects an unexpected owner/body generation. It does not authenticate or read live external owners.",
+      "fixture_fields": "Lines 143-190 use a fixture external digest for encoder/model/tokenizer/template/tool-schema, literal compact/prompt/authority generations, and an explicitly fabricated test Engram node. These values cannot be promoted into production currentness."
+    }
+  },
+  "existing_real_sources": [
+    {
+      "fields": ["owner identity", "body generation", "current lifecycle generation/fence"],
+      "owner": "AgentdIdentity and FleetRegistry via AgentdState::refresh_generation",
+      "source": "codex-rs/hepta-agentd/src/state.rs:336; state_control.rs:296-311,375-389",
+      "available": true,
+      "semantics": "body_generation is the original spawn generation. CognitiveContext and final-use revalidation pass identity.spawn_generation; lifecycle authority is independently refreshed before and after I/O. The provider must not substitute the current lifecycle generation for body identity."
+    },
+    {
+      "fields": ["scope_id", "memory_ledger_frontier", "source_ledger_frontier", "tombstone_frontier", "knowledge_fact_frontier", "knowledge_graph_generation"],
+      "owner": "The existing canonical SQLite CognitiveStore",
+      "source": "codex-rs/hepta-memory/src/lane_c_snapshot.rs:55-64,163-255,259; cognitive_context.rs:137-153",
+      "available": true,
+      "semantics": "lane_c_snapshot obtains a real read transaction; DurableCognitiveSnapshot exposes owner frontiers and scope. bind_context checks all five cognitive-owned frontier/generation values and scope exactly. Snapshot digest/cut digest alone do not authenticate external owners or anti-rollback currentness."
+    },
+    {
+      "fields": ["retrieval_policy", "retrieval_profile_digest", "cue_profile_digest", "dynamics_policy"],
+      "owner": "Versioned product algorithms already used by the SQLite adapter",
+      "source": "codex-rs/hepta-memory/src/cognitive_retrieval_adapter.rs:sqlite_owner_retrieval_policy_v1,sqlite_owner_cue_profile_digest; hepta-memory-retrieval/src/engram.rs:280-300",
+      "available": true,
+      "semantics": "The real seven-channel SQLite policy and product_default dynamics can be selected and hashed as their defined algorithm identity. This does not create an encoder, vector channel, model identity, Engram owner, or authority epoch."
+    },
+    {
+      "fields": ["prompt_registry_revision", "prompt registry snapshot/revocation frontier"],
+      "owner": "The already opened AgentdPromptPipelineOwner and its Mutex<DurablePromptRegistry>",
+      "source": "codex-rs/hepta-agentd/src/state.rs:134-146; prompt_runtime.rs:517-599; hepta-prompt-registry/src/durable.rs:104-125; lib.rs:853-868",
+      "available": "real owner exists; retrieval snapshot entry point is missing",
+      "semantics": "DurablePromptRegistry::registry() first rejects poisoned/reopen-required state. Its PromptRegistry exposes revision(), lifecycle_frontier(), revocation_frontier(), and snapshot_digest(). AgentdPromptPipelineOwner currently exposes enumerate_candidates/compile_and_stage/runtime_owner, not a retrieval current-state snapshot. A future consumer should read this same locked owner, not open another registry or return a constant revision."
+    }
+  ],
+  "missing_owner_boundaries": [
+    {
+      "fields": ["compact_checkpoint_generation"],
+      "required": "A current product checkpoint head, or an explicitly versioned and owner-observed absent-checkpoint state",
+      "existing_code": "hepta-memory/src/local_compact_executor.rs:1-8,733-752 provides real SQLite persistence only for the local_development_only CompactFence/CompactCheckpoint journal. compact_persistence.rs:1-6 is a contract-only model. hepta-compact-engine/src/qualified.rs:223,380 builds/proves supplied candidates without owning a current durable head.",
+      "gap": "No default Agentd owner exports the Lane C CompactCheckpointV1 generation/currentness. Local checkpoint_revision and fleet generation have different contracts. LaneCGenerationVectorV1 requires a nonzero Generation, so absence cannot safely be represented by an invented Generation(1)."
+    },
+    {
+      "fields": ["encoder_preprocessor_digest"],
+      "required": "A manifest from the actual active encoder/preprocessor implementation, with currentness and replacement/revocation semantics",
+      "existing_code": "LaneCGenerationVectorV1 declares/validates/hashes the field; AdmittedCognitiveStoreV2 compares supplied vectors. The GitHub repository index finds assignments in fixtures, including cognitive_context_hnmf_tests.rs:143-160, and no connected producer in the default runtime.",
+      "gap": "The SQLite retrieval-policy or cue-profile digest is not an encoder identity. The default SQLite profile has no real vector-index owner; treating lexical/KG scores as vector evidence would violate the existing contract."
+    },
+    {
+      "fields": ["model_digest", "tokenizer_digest", "template_digest", "tool_schema_digest"],
+      "required": "A current authenticated manifest of the actual model/provider and exact tokenizer/template/tool schema used by the consuming App Server turn",
+      "existing_code": "hepta-prompt-registry/src/v2.rs:PromptModelTupleV2 and hepta-context-compiler/src/v2.rs:717-764 validate caller-supplied digests. hepta-intelligence/src/prompt_delivery.rs:42-51 receives both registry_model_tuple and context_model_profile from its caller. ext/hepta-prompt/src/lib.rs:182-186 supplies only thread_id, turn_id, and model_context_window to PromptRuntimePrepareRequest.",
+      "gap": "No default Agentd callback exports these four current owner-authenticated identities. Hashing a requested model name or reusing a prompt payload hash would not prove the active model/tokenizer/template/tool schema."
+    },
+    {
+      "fields": ["authority_epoch", "purpose_id", "objective_digest", "approved_context_digest"],
+      "required": "An independently admitted objective/context and active authority epoch for this retrieval purpose and consuming body/run",
+      "existing_code": "hepta-agentd/src/objective_runtime.rs:69-107 has an optional authenticated objective profile/journal; runtime.rs:76-79,210-226 enables it only with explicit profile and AuthBus trust. Default readiness's zero-effect revocation baseline is not a retrieval authority epoch.",
+      "gap": "CognitiveContext currently carries only query and limit. No authenticated run/objective/approval identity selects these fields for the provider; the native provider may not replace them with query text hashes, fixture digests, or an arbitrary epoch."
+    },
+    {
+      "fields": ["engram_snapshot", "engram_generation_digest", "Engram currentness"],
+      "required": "A named owner that publishes and revalidates bounded immutable Engram snapshots for the exact complete Lane C generation vector, including retirement/rebuild and restart behavior",
+      "existing_code": "hepta-memory-retrieval/src/engram.rs:1-5 explicitly declares a pure deterministic core owning no store/encoder/clock/model; EngramSnapshotV1::new at163 receives the generation digest, nodes, and synapses from its caller and only validates integrity/bounds. cognitive_retrieval_adapter.rs:99-108 checks its vector digest against the supplied Lane C vector.",
+      "gap": "The default composition has no durable/current Engram owner. Empty graphs, fixture nodes, or arbitrary hashes would satisfy structural validation without supplying the missing currentness."
+    }
+  ],
+  "composition_and_consistency_gaps": [
+    {
+      "name": "Existing constructor precedes the real owner objects",
+      "source": "hepta-agentd/src/config.rs:642-658; runtime.rs:92-128,164-170,227-249",
+      "detail": "with_cognitive_retrieval_context calls current() immediately; runtime requires the provider before AgentdState::new opens the prompt owner and before CognitiveStore is opened/attached. A provider backed by those exact default owners needs an explicit composition point after their construction and before control sockets/tasks/admission. A forwarding placeholder installed early would not solve this."
+    },
+    {
+      "name": "No request/turn model identity in the current provider contract",
+      "source": "hepta-agentd/src/cognitive_retrieval_context.rs:16-23; hepta-agent-protocol/src/lib.rs:691-701; state_control.rs:296-305",
+      "detail": "current(owner, body_generation) is body-scoped. CognitiveContext carries no thread/run/model identity. A complete implementation must either enforce one immutable authenticated profile for the entire body or add a versioned request-scoped binding; it cannot guess which concurrent App Server turn/model/objective a query belongs to."
+    },
+    {
+      "name": "Cross-owner atomicity/currentness must be explicit",
+      "source": "hepta-cognitive-types/src/lane_c.rs:34-38; hepta-memory/src/cognitive_retrieval_adapter.rs:65-128; hepta-agentd/src/cognitive_context.rs:403-422,566-580",
+      "detail": "Every external component and Engram must bind the same full vector. The consumer already revalidates the SQLite cut, re-reads the provider and compares binding_digest before publishing, and re-reads it again at final use. A new provider must observe monotone/current owner heads and fail on changes/revocation; caching a captured struct forever would defeat those existing checks."
+    },
+    {
+      "name": "Bounded synchronous I/O remains the provider's obligation",
+      "source": "hepta-agentd/src/cognitive_retrieval_context.rs:10-15; cognitive_context.rs:701-715",
+      "detail": "The trait is synchronous and load_retrieval_context runs it via spawn_blocking without an enclosing I/O timeout. A future real provider must bound each owner read and return unavailable on blocked/poisoned/revoked sources. No runtime test of a real provider exists in this cohort."
+    }
+  ],
+  "smallest_safe_follow_on": [
+    "First supply actual model/encoder, compact, objective/authority, and Engram current-owner contracts. Their successful construction and recovery must provide observable identities, not just caller-provided Digest32 values.",
+    "Expose a bounded read snapshot from the existing AgentdPromptPipelineOwner under its existing registry lock/availability gate, only when it has a real consumer.",
+    "Compose the named concrete retrieval provider from the same opened CognitiveStore and prompt owner plus authenticated external owners after owner startup, before admitting control/App Server traffic. Keep HnmfRequired rejecting absent owners.",
+    "Choose explicit body-wide pinned-profile enforcement or a versioned request/turn-specific context contract. Reuse the exact owner cut and existing publication/final-use revalidation rather than weakening or replacing those gates.",
+    "Qualify revocation/drift during reads, model/tool-schema replacement, wrong body generation, compact absence/retirement, Engram vector mismatch, owner restart/rollback, and bounded I/O with the real implementations before marking provider integration complete."
+  ],
+  "delivery_boundary": "This audit identifies exact reusable owners and blocking APIs; it is not a production provider, activation receipt, or learning-chain completion claim. The 670/670 native test pass belongs to the already completed native integration cohort, not this still-open HNMF composition."
+}

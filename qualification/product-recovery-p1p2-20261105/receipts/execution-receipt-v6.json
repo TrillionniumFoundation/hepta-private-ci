@@ -1,0 +1,148 @@
+{
+  "state": {
+    "phase": "tests_finished",
+    "base_commit": "a6403e8ae23e9f62cba2a6343563214f6a49dbed",
+    "commands": [
+      {
+        "name": "format-1",
+        "argv": [
+          "just",
+          "fmt"
+        ],
+        "exit": 0,
+        "seconds": 0.4728407859802246
+      },
+      {
+        "name": "format-2",
+        "argv": [
+          "just",
+          "fmt"
+        ],
+        "exit": 0,
+        "seconds": 0.6376733779907227
+      },
+      {
+        "name": "diff-check",
+        "argv": [
+          "git",
+          "diff",
+          "--cached",
+          "--check"
+        ],
+        "exit": 0,
+        "seconds": 0.013289928436279297
+      },
+      {
+        "name": "owner-tests",
+        "argv": [
+          "just",
+          "test",
+          "-p",
+          "codex-hepta-agent-protocol",
+          "-p",
+          "codex-hepta-agentd",
+          "-p",
+          "codex-hepta-infer-worker-host",
+          "-p",
+          "codex-hepta-runtime"
+        ],
+        "exit": 100,
+        "seconds": 491.52193880081177
+      }
+    ],
+    "stages": [
+      {
+        "name": "canonical-run-start-wiring",
+        "tree": "a39e2943b5b8ae5aa0ee5b83fcbad497c93c85fc",
+        "paths": [
+          "codex-rs/hepta-agentd/src/intelligence_ingress.rs",
+          "codex-rs/hepta-agentd/src/lane_b_runtime.rs",
+          "codex-rs/hepta-agentd/src/intelligence_product_runner.rs",
+          "codex-rs/hepta-agentd/src/intelligence_run_start.rs",
+          "codex-rs/hepta-agentd/src/state.rs",
+          "codex-rs/hepta-agentd/src/intelligence_run_start_tests.rs"
+        ]
+      },
+      {
+        "name": "canonical-owner-regressions",
+        "tree": "305ddbbd95ea6d40bf6eaf38feee2c7d7188c3eb",
+        "paths": [
+          "codex-rs/hepta-agentd/src/intelligence_product_tests.rs",
+          "codex-rs/hepta-agentd/src/intelligence_product_signed_tests.rs",
+          "codex-rs/hepta-agentd/src/intelligence_canonical_runtime_tests.rs",
+          "codex-rs/hepta-agentd/src/intelligence_canonical_runtime_test_support.rs"
+        ]
+      }
+    ],
+    "disk_before": {
+      "total": 983023263744,
+      "used": 919722512384,
+      "free": 13290442752
+    },
+    "formatted_tree": "305ddbbd95ea6d40bf6eaf38feee2c7d7188c3eb",
+    "formatted_payload": {
+      "bytes": 53546,
+      "sha256": "45102ea684f22131a20b8fee2266291ddcd7c50c51c97b565e13be4c43f8d55a"
+    },
+    "disk_after": {
+      "total": 983023263744,
+      "used": 919855599616,
+      "free": 13157355520
+    }
+  },
+  "raw_log": {
+    "path": "/data/hepta-p1p2-20261105-05ef/qualification-v6/owner-tests.log",
+    "bytes": 157060,
+    "sha256": "1d31d9a3841705d5ebbfc6507d7b2361214dc411383b8745baff4c59e1475a43"
+  },
+  "summary_lines": [
+    "    Finished `test` profile [unoptimized + debuginfo] target(s) in 5m 43s",
+    "    Starting 675 tests across 21 binaries (66 tests skipped)",
+    "        PASS [   0.015s] (234/675) codex-hepta-agentd intelligence_product::runner::run_start::tests::preparation_budget_is_capped_by_the_original_deadline",
+    "  TRY 2 FAIL [   1.155s] (445/675) codex-hepta-agentd root_authority_session::tests::both_original_frontiers_finish_before_new_head_is_published",
+    "  TRY 1 FAIL [   6.796s] (\u2500\u2500\u2500\u2500\u2500\u2500\u2500) codex-hepta-agentd intelligence_product::tests::signed::canonical_runtime::canonical_recovery_rejects_old_generation_fence_and_signature_before_provider",
+    "    test intelligence_product::tests::signed::canonical_runtime::canonical_recovery_rejects_old_generation_fence_and_signature_before_provider ... FAILED",
+    "        intelligence_product::tests::signed::canonical_runtime::canonical_recovery_rejects_old_generation_fence_and_signature_before_provider",
+    "    thread 'intelligence_product::tests::signed::canonical_runtime::canonical_recovery_rejects_old_generation_fence_and_signature_before_provider' (2405130) panicked at hepta-agentd/src/intelligence_canonical_runtime_test_support.rs:204:14:",
+    "  TRY 1 FAIL [   6.901s] (\u2500\u2500\u2500\u2500\u2500\u2500\u2500) codex-hepta-agentd intelligence_product::tests::signed::canonical_runtime::owner_transition_during_canonical_preparation_never_refreshes_the_old_run",
+    "    test intelligence_product::tests::signed::canonical_runtime::owner_transition_during_canonical_preparation_never_refreshes_the_old_run ... FAILED",
+    "        intelligence_product::tests::signed::canonical_runtime::owner_transition_during_canonical_preparation_never_refreshes_the_old_run",
+    "    thread 'intelligence_product::tests::signed::canonical_runtime::owner_transition_during_canonical_preparation_never_refreshes_the_old_run' (2405174) panicked at hepta-agentd/src/intelligence_canonical_runtime_test_support.rs:204:14:",
+    "  TRY 1 FAIL [   7.005s] (\u2500\u2500\u2500\u2500\u2500\u2500\u2500) codex-hepta-agentd intelligence_product::tests::signed::canonical_runtime::canonical_body_does_not_alias_the_run_lifecycle_generation",
+    "    test intelligence_product::tests::signed::canonical_runtime::canonical_body_does_not_alias_the_run_lifecycle_generation ... FAILED",
+    "        intelligence_product::tests::signed::canonical_runtime::canonical_body_does_not_alias_the_run_lifecycle_generation",
+    "    thread 'intelligence_product::tests::signed::canonical_runtime::canonical_body_does_not_alias_the_run_lifecycle_generation' (2405129) panicked at hepta-agentd/src/intelligence_canonical_runtime_test_support.rs:204:14:",
+    "  TRY 1 FAIL [   7.000s] (\u2500\u2500\u2500\u2500\u2500\u2500\u2500) codex-hepta-agentd intelligence_product::tests::signed::canonical_runtime::running_canonical_admission_preserves_the_recovered_run_start",
+    "    test intelligence_product::tests::signed::canonical_runtime::running_canonical_admission_preserves_the_recovered_run_start ... FAILED",
+    "        intelligence_product::tests::signed::canonical_runtime::running_canonical_admission_preserves_the_recovered_run_start",
+    "    thread 'intelligence_product::tests::signed::canonical_runtime::running_canonical_admission_preserves_the_recovered_run_start' (2405186) panicked at hepta-agentd/src/intelligence_canonical_runtime_test_support.rs:204:14:",
+    "  TRY 2 FAIL [  10.285s] (549/675) codex-hepta-agentd intelligence_product::tests::signed::canonical_runtime::canonical_recovery_rejects_old_generation_fence_and_signature_before_provider",
+    "    test intelligence_product::tests::signed::canonical_runtime::canonical_recovery_rejects_old_generation_fence_and_signature_before_provider ... FAILED",
+    "        intelligence_product::tests::signed::canonical_runtime::canonical_recovery_rejects_old_generation_fence_and_signature_before_provider",
+    "    thread 'intelligence_product::tests::signed::canonical_runtime::canonical_recovery_rejects_old_generation_fence_and_signature_before_provider' (2406731) panicked at hepta-agentd/src/intelligence_canonical_runtime_test_support.rs:204:14:",
+    "  TRY 2 FAIL [  10.370s] (558/675) codex-hepta-agentd intelligence_product::tests::signed::canonical_runtime::running_canonical_admission_preserves_the_recovered_run_start",
+    "    test intelligence_product::tests::signed::canonical_runtime::running_canonical_admission_preserves_the_recovered_run_start ... FAILED",
+    "        intelligence_product::tests::signed::canonical_runtime::running_canonical_admission_preserves_the_recovered_run_start",
+    "    thread 'intelligence_product::tests::signed::canonical_runtime::running_canonical_admission_preserves_the_recovered_run_start' (2406804) panicked at hepta-agentd/src/intelligence_canonical_runtime_test_support.rs:204:14:",
+    "  TRY 2 FAIL [  10.475s] (559/675) codex-hepta-agentd intelligence_product::tests::signed::canonical_runtime::owner_transition_during_canonical_preparation_never_refreshes_the_old_run",
+    "    test intelligence_product::tests::signed::canonical_runtime::owner_transition_during_canonical_preparation_never_refreshes_the_old_run ... FAILED",
+    "        intelligence_product::tests::signed::canonical_runtime::owner_transition_during_canonical_preparation_never_refreshes_the_old_run",
+    "    thread 'intelligence_product::tests::signed::canonical_runtime::owner_transition_during_canonical_preparation_never_refreshes_the_old_run' (2406772) panicked at hepta-agentd/src/intelligence_canonical_runtime_test_support.rs:204:14:",
+    "  TRY 2 FAIL [  10.530s] (564/675) codex-hepta-agentd intelligence_product::tests::signed::canonical_runtime::canonical_body_does_not_alias_the_run_lifecycle_generation",
+    "    test intelligence_product::tests::signed::canonical_runtime::canonical_body_does_not_alias_the_run_lifecycle_generation ... FAILED",
+    "        intelligence_product::tests::signed::canonical_runtime::canonical_body_does_not_alias_the_run_lifecycle_generation",
+    "    thread 'intelligence_product::tests::signed::canonical_runtime::canonical_body_does_not_alias_the_run_lifecycle_generation' (2406785) panicked at hepta-agentd/src/intelligence_canonical_runtime_test_support.rs:204:14:",
+    "   TRY 2 TMT [  60.006s] (675/675) codex-hepta-agentd::supervisord_product_e2e five_real_agents_survive_daemon_restart_and_isolate_one_agent_release_changes",
+    "     Summary [ 146.990s] 675 tests run: 669 passed (13 slow, 3 flaky), 5 failed, 1 timed out, 66 skipped",
+    "   FLAKY 2/2 [   0.920s] (436/675) codex-hepta-agentd root_authority_session::tests::uncertain_original_consumer_update_fences_even_with_fresh_root_responses",
+    "   FLAKY 2/2 [  36.862s] (673/675) codex-hepta-agentd::five_agent_rolling_upgrade five_real_agentd_processes_roll_one_agent_without_stopping_peers",
+    "   FLAKY 2/2 [  52.489s] (674/675) codex-hepta-agentd runtime_tasks::service_generations::writer_tests::sqlite_writer_rotates_256_times_without_consuming_new_service_identities",
+    "  TRY 2 FAIL [   1.155s] (445/675) codex-hepta-agentd root_authority_session::tests::both_original_frontiers_finish_before_new_head_is_published",
+    "  TRY 2 FAIL [  10.285s] (549/675) codex-hepta-agentd intelligence_product::tests::signed::canonical_runtime::canonical_recovery_rejects_old_generation_fence_and_signature_before_provider",
+    "  TRY 2 FAIL [  10.370s] (558/675) codex-hepta-agentd intelligence_product::tests::signed::canonical_runtime::running_canonical_admission_preserves_the_recovered_run_start",
+    "  TRY 2 FAIL [  10.475s] (559/675) codex-hepta-agentd intelligence_product::tests::signed::canonical_runtime::owner_transition_during_canonical_preparation_never_refreshes_the_old_run",
+    "  TRY 2 FAIL [  10.530s] (564/675) codex-hepta-agentd intelligence_product::tests::signed::canonical_runtime::canonical_body_does_not_alias_the_run_lifecycle_generation",
+    "   TRY 2 TMT [  60.006s] (675/675) codex-hepta-agentd::supervisord_product_e2e five_real_agents_survive_daemon_restart_and_isolate_one_agent_release_changes"
+  ],
+  "source_commit_published": false
+}

@@ -1,0 +1,33 @@
+{
+  "verdict": "ACCEPTED_ACTUAL_ORIGINAL_SYNC_OUTPUT",
+  "base_commit": "2e0e66d0a5c7938404401aff1854d46296dfaec4",
+  "base_tree": "f3609a9615157c614520555c49937a28433c1cc1",
+  "command": [
+    "/usr/bin/python3",
+    "/data/hepta-p1p2-20261105-05ef/exact-r3-source/scripts/hepta-implementation-maps.py",
+    "sync-plasticity-status"
+  ],
+  "exit": 0,
+  "seconds": 0.1781268670456484,
+  "bundle_sha256": "cea05b32b659ba6cc791f9886e6eef1ce69fbfd1a82a538ffe5234ddaa90d207",
+  "bundle_bytes": 30888,
+  "files": [
+    {
+      "path": "docs/modules/learning.plasticity/CURRENT_IMPLEMENTATION.md",
+      "before_blob": "d9fbd66beb3a4a9554be978b9a5a2274dd5cb9c6",
+      "after_blob": "d9fbd66beb3a4a9554be978b9a5a2274dd5cb9c6",
+      "bytes": 28140,
+      "changed": false
+    },
+    {
+      "path": "docs/modules/learning.plasticity/CURRENT_STATE.json",
+      "before_blob": "1ba6941284d4cec3565ce5040c0d00291f0634d0",
+      "after_blob": "8a8e1a32df6fd74998f4f04141329bfaf2c02502",
+      "bytes": 18302,
+      "changed": true
+    }
+  ],
+  "checks": "All raw bytes/SHA256/Git blobs verified, before bytes equal independently fetched exact-S2 files, CURRENT_STATE equals original pure canonical projection exactly, only sourceBase commit/tree changed; Markdown wholly unchanged.",
+  "runtime_qualification_inferred": false,
+  "next_step": "Commit and run original full-40 qualifier on clean candidate."
+}

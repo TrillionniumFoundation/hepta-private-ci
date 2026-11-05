@@ -1,0 +1,761 @@
+{
+  "result": "OUTSIDE_ALL_40_MAPPED_SOURCE_AND_OBSERVATION_PREFIXES",
+  "directory": "qualification/product-recovery-p1p2-20261105",
+  "sourceS1": "39b81b33e4e8071b1f8dfe7c9804d44c4dcdefc0",
+  "mapOnlyS2": "2e0e66d0a5c7938404401aff1854d46296dfaec4",
+  "maps": 40,
+  "string_values_examined": 6883,
+  "matching_paths_or_prefixes": [],
+  "boundary": "This is source-map scope analysis only. The unchanged original full-40 verifier must still run on the final clean evidence-only commit. Qualification flags are untouched.",
+  "inventory": [
+    {
+      "module": "auth.authbus",
+      "map_sha256": "46b8416e7981e4638379e27626d73335e21bc2cef65ac041c7720d982770a4cf",
+      "root_and_observation_fields": {
+        "declaredRoots": [
+          "codex-rs/hepta-authbus",
+          "codex-rs/hepta-authbus-p1-3-qualification"
+        ],
+        "resolvedRoots": [
+          "codex-rs/hepta-authbus",
+          "codex-rs/hepta-authbus-p1-3-qualification"
+        ],
+        "sourceRoot": [
+          "codex-rs/hepta-authbus",
+          "codex-rs/hepta-authbus-p1-3-qualification"
+        ]
+      }
+    },
+    {
+      "module": "automation.taskflow",
+      "map_sha256": "ad4df7468109a9e009ac4b5528260551fb527a67a84dfa6e60c6a5e265a878c8",
+      "root_and_observation_fields": {
+        "declaredRoots": [
+          "codex-rs/hepta-automation"
+        ],
+        "resolvedRoots": [
+          "codex-rs/hepta-automation"
+        ],
+        "sourceRoot": [
+          "codex-rs/hepta-automation"
+        ],
+        "observedSourcePaths": [
+          "CALLERS.toml",
+          "codex-rs/Cargo.lock",
+          "codex-rs/Cargo.toml",
+          "codex-rs/app-server-protocol/src/protocol/v2/thread.rs",
+          "codex-rs/app-server/src/request_processors/thread_processor.rs",
+          "codex-rs/hepta-agent-protocol",
+          "codex-rs/hepta-agentd/src/automation.rs",
+          "codex-rs/hepta-agentd/src/automation_recovery.rs",
+          "codex-rs/hepta-agentd/src/client.rs",
+          "codex-rs/hepta-agentd/src/lib.rs",
+          "codex-rs/hepta-agentd/src/runtime.rs",
+          "codex-rs/hepta-agentd/src/runtime_tests.rs",
+          "codex-rs/hepta-agentd/src/state_control.rs",
+          "codex-rs/hepta-agentd/tests/five_agent_rolling_upgrade.rs",
+          "codex-rs/hepta-automation",
+          "codex-rs/hepta-contracts",
+          "codex-rs/hepta-operations",
+          "codex-rs/hepta-types"
+        ]
+      }
+    },
+    {
+      "module": "browser.servo",
+      "map_sha256": "dce4c5c0820a30656b8f8d8853c93cf05547ccd485a1c9a67437378a6db264bb",
+      "root_and_observation_fields": {
+        "declaredRoots": [
+          "apps/hepta-browser",
+          "third_party/servo-patches"
+        ],
+        "resolvedRoots": [
+          "apps/hepta-browser",
+          "third_party/servo-patches"
+        ],
+        "sourceRoot": [
+          "apps/hepta-browser",
+          "third_party/servo-patches"
+        ]
+      }
+    },
+    {
+      "module": "channel.matrix",
+      "map_sha256": "dfd6292bf4cd6b226009964639a028da42a73d3d840c6a6ae05d5424468947c2",
+      "root_and_observation_fields": {
+        "declaredRoots": [
+          "codex-rs/hepta-matrix-sdk",
+          "codex-rs/hepta-matrixd"
+        ],
+        "resolvedRoots": [
+          "codex-rs/hepta-matrix-sdk",
+          "codex-rs/hepta-matrixd"
+        ],
+        "sourceRoot": [
+          "codex-rs/hepta-matrix-sdk",
+          "codex-rs/hepta-matrixd"
+        ]
+      }
+    },
+    {
+      "module": "cognitive.read",
+      "map_sha256": "f50a81f0cd4519f2bb6936294e6c1b3b807622e3f6c50b60f4fe1730ba1b6978",
+      "root_and_observation_fields": {
+        "declaredRoots": [
+          "codex-rs/hepta-cognitive-read"
+        ],
+        "resolvedRoots": [
+          "codex-rs/hepta-cognitive-read"
+        ],
+        "sourceRoot": [
+          "codex-rs/hepta-cognitive-read"
+        ],
+        "observedSourcePaths": [
+          "codex-rs/Cargo.lock",
+          "codex-rs/Cargo.toml",
+          "codex-rs/hepta-cognitive-read"
+        ]
+      }
+    },
+    {
+      "module": "cognitive.store",
+      "map_sha256": "2ec13eb32f7ee0d7ed682b729a02f8fba42f48a45eb53f81636bdbfbcea45f0d",
+      "root_and_observation_fields": {
+        "declaredRoots": [
+          "codex-rs/hepta-cognitive-store"
+        ],
+        "resolvedRoots": [
+          "codex-rs/hepta-cognitive-store"
+        ],
+        "sourceRoot": [
+          "codex-rs/hepta-cognitive-store"
+        ]
+      }
+    },
+    {
+      "module": "cognitive.types",
+      "map_sha256": "46eed2cc572ac26096a82e79424190d0ce8aadd34bff6f270673819d5239b8ee",
+      "root_and_observation_fields": {
+        "declaredRoots": [
+          "codex-rs/hepta-cognitive-types"
+        ],
+        "resolvedRoots": [
+          "codex-rs/hepta-cognitive-types"
+        ],
+        "sourceRoot": [
+          "codex-rs/hepta-cognitive-types"
+        ]
+      }
+    },
+    {
+      "module": "compact.engine",
+      "map_sha256": "0124a1cedc1d1bc682a576e0728fce73c63a6083c1bca3bb08f65c81e73085f6",
+      "root_and_observation_fields": {
+        "declaredRoots": [
+          "codex-rs/hepta-compact-engine"
+        ],
+        "resolvedRoots": [
+          "codex-rs/hepta-compact-engine"
+        ],
+        "sourceRoot": [
+          "codex-rs/hepta-compact-engine"
+        ]
+      }
+    },
+    {
+      "module": "context.compiler",
+      "map_sha256": "d0571848b065c088ba8ed039f997a75b64a1ebf0e0e2c2ee0c42b9a4fe4ed046",
+      "root_and_observation_fields": {
+        "declaredRoots": [
+          "codex-rs/hepta-context-compiler"
+        ],
+        "resolvedRoots": [
+          "codex-rs/hepta-context-compiler"
+        ],
+        "sourceRoot": [
+          "codex-rs/hepta-context-compiler"
+        ]
+      }
+    },
+    {
+      "module": "control.engineering",
+      "map_sha256": "d68d019d87a4f75639d35a1d8503c5db9e93a16c85a3473d4dd1dc84165e0035",
+      "root_and_observation_fields": {
+        "declaredRoots": [
+          "tools/hepta-engineering-control"
+        ],
+        "resolvedRoots": [
+          "tools/hepta-engineering-control"
+        ],
+        "sourceRoot": [
+          "tools/hepta-engineering-control"
+        ],
+        "observedSourcePaths": [
+          "tools/hepta-engineering-control"
+        ]
+      }
+    },
+    {
+      "module": "control.runtime",
+      "map_sha256": "888c377f93840fdc3cd340571010b781316f3a9582f03e8d72d37fdc92a80561",
+      "root_and_observation_fields": {
+        "sourceRoot": [
+          "codex-rs/hepta-control-plane"
+        ],
+        "declaredRoots": [
+          "codex-rs/hepta-control-plane"
+        ],
+        "resolvedRoots": [
+          "codex-rs/hepta-control-plane"
+        ]
+      }
+    },
+    {
+      "module": "inference.control",
+      "map_sha256": "8aab0d6018eb257844d32c62e37c82b24f5b8b4a75ebc1f56b890b0eeab03816",
+      "root_and_observation_fields": {
+        "declaredRoots": [
+          "codex-rs/hepta-infer-core",
+          "codex-rs/hepta-inferd"
+        ],
+        "resolvedRoots": [
+          "codex-rs/hepta-infer-core",
+          "codex-rs/hepta-inferd"
+        ],
+        "sourceRoot": [
+          "codex-rs/hepta-infer-core",
+          "codex-rs/hepta-inferd"
+        ]
+      }
+    },
+    {
+      "module": "inference.worker",
+      "map_sha256": "91a8bda215a24340c3e94e0e23ce11f7d50aae133e6ceb82d6cf3b84b6e27a7a",
+      "root_and_observation_fields": {
+        "declaredRoots": [
+          "codex-rs/hepta-infer-worker-host"
+        ],
+        "resolvedRoots": [
+          "codex-rs/hepta-infer-worker-host"
+        ],
+        "sourceRoot": [
+          "codex-rs/hepta-infer-worker-host"
+        ]
+      }
+    },
+    {
+      "module": "intelligence.control",
+      "map_sha256": "0a8ac58761fad70017b088dbab1dbeec267e31923f5f611a24140f5872a3fc45",
+      "root_and_observation_fields": {
+        "observedSourcePaths": [
+          "codex-rs/Cargo.lock",
+          "codex-rs/Cargo.toml",
+          "codex-rs/hepta-intelligence"
+        ],
+        "declaredRoots": [
+          "codex-rs/hepta-intelligence"
+        ],
+        "resolvedRoots": [
+          "codex-rs/hepta-intelligence"
+        ],
+        "sourceRoot": [
+          "codex-rs/hepta-intelligence"
+        ]
+      }
+    },
+    {
+      "module": "intuition.policy",
+      "map_sha256": "ee626e5604c144fbebca5d37b391fd8e2f913c8abbeb9ab65e05cea5b61cf4c0",
+      "root_and_observation_fields": {
+        "declaredRoots": [
+          "codex-rs/hepta-intuition"
+        ],
+        "resolvedRoots": [
+          "codex-rs/hepta-intuition"
+        ],
+        "sourceRoot": [
+          "codex-rs/hepta-intuition"
+        ]
+      }
+    },
+    {
+      "module": "kernel.authority",
+      "map_sha256": "417f0ed47bbf82e09b3465e29aa9b55292eb35ec37257286c0ef58f74257046b",
+      "root_and_observation_fields": {
+        "declaredRoots": [
+          "codex-rs/hepta-contracts"
+        ],
+        "resolvedRoots": [
+          "codex-rs/hepta-contracts"
+        ],
+        "sourceRoot": [
+          "codex-rs/hepta-contracts"
+        ]
+      }
+    },
+    {
+      "module": "kernel.evidence",
+      "map_sha256": "6acf1205ffcad579c133e4319e1302ee28df2042dd42484f9c8cc6b397a0a53d",
+      "root_and_observation_fields": {
+        "declaredRoots": [
+          "codex-rs/hepta-evidence"
+        ],
+        "resolvedRoots": [
+          "codex-rs/hepta-evidence"
+        ],
+        "sourceRoot": [
+          "codex-rs/hepta-evidence"
+        ]
+      }
+    },
+    {
+      "module": "kernel.operations",
+      "map_sha256": "1c16accbeee47c67e26e43251c6105db1d2f7122a8c38c132fce3f67b74bbcda",
+      "root_and_observation_fields": {
+        "declaredRoots": [
+          "codex-rs/hepta-operations"
+        ],
+        "resolvedRoots": [
+          "codex-rs/hepta-operations"
+        ],
+        "sourceRoot": [
+          "codex-rs/hepta-operations"
+        ],
+        "observedSourcePaths": [
+          "codex-rs/Cargo.lock",
+          "codex-rs/Cargo.toml",
+          "codex-rs/hepta-operations"
+        ]
+      }
+    },
+    {
+      "module": "knowledge.graph",
+      "map_sha256": "d41ca6ab22268b17ad8ed6e8172ef9b88b9cd6a89e4a8b0d2e9ba34bc4bb737e",
+      "root_and_observation_fields": {
+        "declaredRoots": [
+          "codex-rs/hepta-kg"
+        ],
+        "resolvedRoots": [
+          "codex-rs/hepta-kg"
+        ],
+        "sourceRoot": [
+          "codex-rs/hepta-kg"
+        ],
+        "observedSourcePaths": [
+          ".github/workflows/hepta-knowledge-graph-qualification.yml",
+          "codex-rs/Cargo.lock",
+          "codex-rs/Cargo.toml",
+          "codex-rs/ext/hepta-memory/src/cognitive/federation.rs",
+          "codex-rs/ext/hepta-memory/src/cognitive/tools.rs",
+          "codex-rs/ext/hepta-memory/src/cognitive/tools_tests.rs",
+          "codex-rs/hepta-agentd/Cargo.toml",
+          "codex-rs/hepta-agentd/src/app_runtime.rs",
+          "codex-rs/hepta-agentd/src/error.rs",
+          "codex-rs/hepta-agentd/src/runtime.rs",
+          "codex-rs/hepta-agentd/src/runtime_tests.rs",
+          "codex-rs/hepta-agentd/tests/cognitive_product_e2e.rs",
+          "codex-rs/hepta-contracts/CALLERS.toml",
+          "codex-rs/hepta-contracts/src/callers_manifest_tests.rs",
+          "codex-rs/hepta-kg",
+          "codex-rs/hepta-memory/Cargo.toml",
+          "codex-rs/hepta-memory/migrations/0013_kg_generation_semantics.sql",
+          "codex-rs/hepta-memory/src/cognitive_kg_benchmark_tests.rs",
+          "codex-rs/hepta-memory/src/cognitive_kg_oracle_tests.rs",
+          "codex-rs/hepta-memory/src/cognitive_kg_store.rs",
+          "codex-rs/hepta-memory/src/cognitive_model.rs",
+          "codex-rs/hepta-memory/src/cognitive_retrieval.rs",
+          "codex-rs/hepta-memory/src/cognitive_store.rs",
+          "codex-rs/hepta-memory/src/cognitive_store_tests.rs",
+          "codex-rs/hepta-memory/src/lib.rs",
+          "codex-rs/hepta-prompt-optimizer/Cargo.toml",
+          "codex-rs/hepta-prompt-optimizer/src/graph.rs",
+          "codex-rs/hepta-prompt-optimizer/src/graph_tests.rs",
+          "codex-rs/hepta-prompt-optimizer/src/lib.rs",
+          "codex-rs/hepta-prompt-registry/Cargo.toml",
+          "codex-rs/hepta-prompt-registry/src/lib.rs",
+          "codex-rs/hepta-prompt-registry/src/lib_tests.rs"
+        ]
+      }
+    },
+    {
+      "module": "learning.artifacts",
+      "map_sha256": "ac8cae2ebc782bdebc51db93612003c5d7d964fe386884b5abbe2fdfd7d91818",
+      "root_and_observation_fields": {
+        "declaredRoots": [
+          "codex-rs/hepta-learning-artifacts"
+        ],
+        "resolvedRoots": [
+          "codex-rs/hepta-learning-artifacts"
+        ],
+        "sourceRoot": [
+          "codex-rs/hepta-learning-artifacts"
+        ]
+      }
+    },
+    {
+      "module": "learning.eval",
+      "map_sha256": "a478b27c2b0a88c18a3e0edb0ab76879202180d4f6febb5b26470782f11cdbdb",
+      "root_and_observation_fields": {
+        "declaredRoots": [
+          "codex-rs/hepta-intelligence-eval"
+        ],
+        "resolvedRoots": [
+          "codex-rs/hepta-intelligence-eval"
+        ],
+        "sourceRoot": [
+          "codex-rs/hepta-intelligence-eval"
+        ]
+      }
+    },
+    {
+      "module": "learning.ledger",
+      "map_sha256": "f61e31715916e086d871d914da95b8f4e321f46d5e45ffdfd087fd9058e2daba",
+      "root_and_observation_fields": {
+        "declaredRoots": [
+          "codex-rs/hepta-learning-ledger"
+        ],
+        "resolvedRoots": [
+          "codex-rs/hepta-learning-ledger"
+        ],
+        "sourceRoot": [
+          "codex-rs/hepta-learning-ledger"
+        ]
+      }
+    },
+    {
+      "module": "learning.operator",
+      "map_sha256": "b0a2512a84ae808cacaf38ef745555c2fa79e0cdb18f223e2539bf5412edb837",
+      "root_and_observation_fields": {
+        "declaredRoots": [
+          "codex-rs/hepta-bellman-operator"
+        ],
+        "resolvedRoots": [
+          "codex-rs/hepta-bellman-operator"
+        ],
+        "sourceRoot": [
+          "codex-rs/hepta-bellman-operator"
+        ],
+        "observedSourcePaths": [
+          "codex-rs/Cargo.lock",
+          "codex-rs/Cargo.toml",
+          "codex-rs/hepta-bellman-operator"
+        ]
+      }
+    },
+    {
+      "module": "learning.plasticity",
+      "map_sha256": "875fbd6f035117ea0a09cf68be76fec4b108b5677417203c57ba25a651673ead",
+      "root_and_observation_fields": {
+        "declaredRoots": [
+          "codex-rs/hepta-plasticity"
+        ],
+        "resolvedRoots": [
+          "codex-rs/hepta-plasticity"
+        ],
+        "sourceRoot": [
+          "codex-rs/hepta-plasticity"
+        ]
+      }
+    },
+    {
+      "module": "memory.federation",
+      "map_sha256": "aa3868c5c279ca6b169c2bfdc29acb96d340009c1f121f432a7e9d1aa004b4d8",
+      "root_and_observation_fields": {
+        "declaredRoots": [
+          "codex-rs/hepta-memory-federation"
+        ],
+        "resolvedRoots": [
+          "codex-rs/hepta-memory-federation"
+        ],
+        "sourceRoot": [
+          "codex-rs/hepta-memory-federation"
+        ],
+        "observedSourcePaths": [
+          "codex-rs/Cargo.lock",
+          "codex-rs/Cargo.toml",
+          "codex-rs/hepta-memory-federation"
+        ]
+      }
+    },
+    {
+      "module": "memory.retrieval",
+      "map_sha256": "6a9caf9abd6603d952d1917413198234b8aae6e396e0f5dcd6210351f278724a",
+      "root_and_observation_fields": {
+        "declaredRoots": [
+          "codex-rs/hepta-memory-retrieval"
+        ],
+        "resolvedRoots": [
+          "codex-rs/hepta-memory-retrieval"
+        ],
+        "sourceRoot": [
+          "codex-rs/hepta-memory-retrieval"
+        ],
+        "observedSourcePaths": [
+          ".github/workflows/hepta-memory-retrieval-qualification-host.yml",
+          "codex-rs/Cargo.lock",
+          "codex-rs/Cargo.toml",
+          "codex-rs/hepta-agentd/Cargo.toml",
+          "codex-rs/hepta-agentd/src/cognitive_context.rs",
+          "codex-rs/hepta-agentd/src/cognitive_context_budget_tests.rs",
+          "codex-rs/hepta-agentd/src/cognitive_context_hnmf_tests.rs",
+          "codex-rs/hepta-agentd/src/cognitive_context_tests.rs",
+          "codex-rs/hepta-agentd/src/cognitive_retrieval_context.rs",
+          "codex-rs/hepta-agentd/src/cognitive_retrieval_learning.rs",
+          "codex-rs/hepta-agentd/src/cognitive_retrieval_learning_tests.rs",
+          "codex-rs/hepta-agentd/src/config.rs",
+          "codex-rs/hepta-agentd/src/config_tests.rs",
+          "codex-rs/hepta-agentd/src/runtime.rs",
+          "codex-rs/hepta-agentd/src/runtime_tests.rs",
+          "codex-rs/hepta-learning-ledger/Cargo.toml",
+          "codex-rs/hepta-learning-ledger/src/durable_codec.rs",
+          "codex-rs/hepta-learning-ledger/src/ledger.rs",
+          "codex-rs/hepta-learning-ledger/src/model.rs",
+          "codex-rs/hepta-learning-ledger/src/retrieval_assignment.rs",
+          "codex-rs/hepta-learning-ledger/src/retrieval_assignment_tests.rs",
+          "codex-rs/hepta-memory-retrieval",
+          "codex-rs/hepta-memory/Cargo.toml",
+          "codex-rs/hepta-memory/src/cognitive_intelligence_writer.rs",
+          "codex-rs/hepta-memory/src/cognitive_kg_store.rs",
+          "codex-rs/hepta-memory/src/cognitive_model.rs",
+          "codex-rs/hepta-memory/src/cognitive_retrieval.rs",
+          "codex-rs/hepta-memory/src/cognitive_retrieval_adapter.rs",
+          "codex-rs/hepta-memory/src/cognitive_retrieval_adapter_tests.rs",
+          "codex-rs/hepta-memory/src/cognitive_retrieval_observation.rs",
+          "codex-rs/hepta-memory/src/cognitive_retrieval_observation_tests.rs",
+          "qualification/memory-retrieval/TARGET_HOST.md"
+        ]
+      }
+    },
+    {
+      "module": "neuron.runtime",
+      "map_sha256": "17f3eae413b39ca8921725968dce32a22e73f6585dfb15194ab33978ec7ff08a",
+      "root_and_observation_fields": {
+        "declaredRoots": [
+          "codex-rs/hepta-neuron"
+        ],
+        "resolvedRoots": [
+          "codex-rs/hepta-neuron"
+        ],
+        "sourceRoot": [
+          "codex-rs/hepta-neuron"
+        ]
+      }
+    },
+    {
+      "module": "objective.compiler",
+      "map_sha256": "b15755a505bd1adc66c51c92745b005fd41bf97919d6fc95e9c956d43fabe4d2",
+      "root_and_observation_fields": {
+        "sourceRoot": [
+          "codex-rs/hepta-objective"
+        ],
+        "declaredRoots": [
+          "codex-rs/hepta-objective"
+        ],
+        "resolvedRoots": [
+          "codex-rs/hepta-objective"
+        ]
+      }
+    },
+    {
+      "module": "platform.types",
+      "map_sha256": "02ed4a5d16e49be02f690b0c1d282fd31ca78b62d99446d9f4b2680a590720b7",
+      "root_and_observation_fields": {
+        "declaredRoots": [
+          "codex-rs/hepta-types"
+        ],
+        "resolvedRoots": [
+          "codex-rs/hepta-types"
+        ],
+        "sourceRoot": [
+          "codex-rs/hepta-types"
+        ],
+        "observedSourcePaths": [
+          "codex-rs/Cargo.lock",
+          "codex-rs/Cargo.toml",
+          "codex-rs/hepta-types"
+        ]
+      }
+    },
+    {
+      "module": "platform.wire",
+      "map_sha256": "bce97f20d4d2a0b317efb927bd5caa9cb416f76a47b6d8ec74b54f000f911030",
+      "root_and_observation_fields": {
+        "declaredRoots": [
+          "codex-rs/hepta-wire"
+        ],
+        "resolvedRoots": [
+          "codex-rs/hepta-wire"
+        ],
+        "sourceRoot": [
+          "codex-rs/hepta-wire"
+        ]
+      }
+    },
+    {
+      "module": "prompt.optimizer",
+      "map_sha256": "243fda33cf9be9a02c7714ad34807e3e569a5d61aacc78f8665f0247ad6ab277",
+      "root_and_observation_fields": {
+        "declaredRoots": [
+          "codex-rs/hepta-prompt-optimizer"
+        ],
+        "resolvedRoots": [
+          "codex-rs/hepta-prompt-optimizer"
+        ],
+        "sourceRoot": [
+          "codex-rs/hepta-prompt-optimizer"
+        ]
+      }
+    },
+    {
+      "module": "prompt.registry",
+      "map_sha256": "dbd4e49bff28ddcbf8ccea66d2912f13f0a8706228ee34ed71eac29790d2a0d6",
+      "root_and_observation_fields": {
+        "declaredRoots": [
+          "codex-rs/hepta-prompt-registry"
+        ],
+        "resolvedRoots": [
+          "codex-rs/hepta-prompt-registry"
+        ],
+        "sourceRoot": [
+          "codex-rs/hepta-prompt-registry"
+        ]
+      }
+    },
+    {
+      "module": "runtime.agentd",
+      "map_sha256": "e909e610b4d1db22e65cd57aac4558d52b1692f0350be7baa93dbbbcc1516b58",
+      "root_and_observation_fields": {
+        "declaredRoots": [
+          "codex-rs/hepta-agentd"
+        ],
+        "resolvedRoots": [
+          "codex-rs/hepta-agentd"
+        ],
+        "sourceRoot": [
+          "codex-rs/hepta-agentd"
+        ]
+      }
+    },
+    {
+      "module": "runtime.codex",
+      "map_sha256": "da68cf659dc9c27c315a69e3854ab84c8305e25b6142f5e70fb004936974570a",
+      "root_and_observation_fields": {
+        "declaredRoots": [
+          "codex-rs/codex-app-server",
+          "codex-rs/hepta-codex-adapter"
+        ],
+        "resolvedRoots": [
+          "codex-rs/app-server",
+          "codex-rs/hepta-codex-adapter"
+        ],
+        "sourceRoot": [
+          "codex-rs/codex-app-server",
+          "codex-rs/hepta-codex-adapter"
+        ]
+      }
+    },
+    {
+      "module": "runtime.fleet",
+      "map_sha256": "243e292dfc034d11e6757333e95f72d30bac7e3c6cab788a484b4eebe1111466",
+      "root_and_observation_fields": {
+        "declaredRoots": [
+          "codex-rs/hepta-fleet"
+        ],
+        "resolvedRoots": [
+          "codex-rs/hepta-fleet"
+        ],
+        "sourceRoot": [
+          "codex-rs/hepta-fleet"
+        ]
+      }
+    },
+    {
+      "module": "runtime.supervisor",
+      "map_sha256": "2e1a11e2e13863cc1545afb8df9e0a47ede2ea2e67f64eae9ff0fc00c2b7319f",
+      "root_and_observation_fields": {
+        "declaredRoots": [
+          "codex-rs/hepta-supervisor"
+        ],
+        "resolvedRoots": [
+          "codex-rs/hepta-supervisor"
+        ],
+        "sourceRoot": [
+          "codex-rs/hepta-supervisor"
+        ],
+        "observedSourcePaths": [
+          "codex-rs/Cargo.lock",
+          "codex-rs/Cargo.toml",
+          "codex-rs/app-server",
+          "codex-rs/hepta-agent-protocol",
+          "codex-rs/hepta-agentd",
+          "codex-rs/hepta-automation",
+          "codex-rs/hepta-fleet",
+          "codex-rs/hepta-supervisor"
+        ]
+      }
+    },
+    {
+      "module": "secrets.heptabao",
+      "map_sha256": "9e5c8a5efa822b2bbac223e04198c0427f0d9206594614e1783a1ecb708377db",
+      "root_and_observation_fields": {
+        "declaredRoots": [
+          "external/HeptaBao",
+          "codex-rs/hepta-bao-adapter"
+        ],
+        "resolvedRoots": [
+          "external/HeptaBao",
+          "codex-rs/hepta-bao-adapter"
+        ],
+        "sourceRoot": [
+          "external/HeptaBao",
+          "codex-rs/hepta-bao-adapter"
+        ]
+      }
+    },
+    {
+      "module": "ui.control",
+      "map_sha256": "f05c165b85dd9a800e62f5818759648dbe138e932e79b3e77c00f1b0d8453d0c",
+      "root_and_observation_fields": {
+        "declaredRoots": [
+          "apps/hepta-control-ui"
+        ],
+        "resolvedRoots": [
+          "apps/hepta-control-ui"
+        ],
+        "sourceRoot": [
+          "apps/hepta-control-ui"
+        ]
+      }
+    },
+    {
+      "module": "ui.native",
+      "map_sha256": "92319084652ea2cebf58731454ed2c52afdfc05110707b64ba83c254a2ab6480",
+      "root_and_observation_fields": {
+        "declaredRoots": [
+          "apps/hepta-native"
+        ],
+        "resolvedRoots": [
+          "apps/hepta-native"
+        ],
+        "sourceRoot": [
+          "apps/hepta-native"
+        ]
+      }
+    },
+    {
+      "module": "utility.ndu",
+      "map_sha256": "cfa9b8b3968ceeb86bc472cc21ce6e70d9800719e12d616b31873684f330402d",
+      "root_and_observation_fields": {
+        "sourceRoot": [
+          "codex-rs/hepta-ndu"
+        ],
+        "declaredRoots": [
+          "codex-rs/hepta-ndu"
+        ],
+        "resolvedRoots": [
+          "codex-rs/hepta-ndu"
+        ]
+      }
+    }
+  ]
+}

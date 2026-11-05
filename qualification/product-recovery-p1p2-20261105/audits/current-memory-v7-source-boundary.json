@@ -1,0 +1,278 @@
+{
+  "schema": "hepta.current-memory-owner-audit.delta.v1",
+  "review_kind": "Fixed-range source-boundary appendix, not a new complete-source audit",
+  "prior_audit": {
+    "commit": "a6403e8ae23e9f62cba2a6343563214f6a49dbed",
+    "tree": "12418befd4574b13560e5c5c074e7beb0b805d6a",
+    "sources_sha256": "3b34e0a37c4a13e07c0780eb63c934f0892c95143f5a4d588b9e8cea733a6c1f",
+    "owner_gaps_sha256": "88b2262aed25a7c05ffc5b79044dce735a84542884bd4348503b57f53a77db17",
+    "unchanged": true
+  },
+  "reviewed_head": "78668ea2837a16811b922dfcfbc438f3d8a98f5e",
+  "reviewed_tree": "caa6e68ece518f751b10b0cc6a027361aaf68589",
+  "range_evidence": {
+    "origin": "Authorized GitHub exact compare API",
+    "base": "a6403e8ae23e9f62cba2a6343563214f6a49dbed",
+    "merge_base": "a6403e8ae23e9f62cba2a6343563214f6a49dbed",
+    "head": "78668ea2837a16811b922dfcfbc438f3d8a98f5e",
+    "commits": [
+      "06a9847bcdd672ca61f69e88eaaba3ad8d2d49c1",
+      "a214982bfe2f7c91c8099419444ac33863052fae",
+      "78668ea2837a16811b922dfcfbc438f3d8a98f5e"
+    ],
+    "changed_paths": 10,
+    "all_patch_add_delete_counts_match": true,
+    "response_file": "exact-range-compare.json",
+    "response_sha256": "5a03e62583215b4ec9d21d231e6a89b0808bf1897f0f60f8a5eaba70e86d59d3"
+  },
+  "prior_audited_sources": 28,
+  "changed_intersection": [
+    {
+      "path": "codex-rs/hepta-agentd/src/state.rs",
+      "old_blob": "b53847a05cbd3b63081adde58aa20f0580651e8b",
+      "new_blob": "df7372299a9c6edce9d219f85493a617becc6213",
+      "new_sha256": "0b7110c36c66ed3734b3bfffbdb24fbb73b188a910210bc4e7c2b4ded78443a3",
+      "new_bytes": 35431,
+      "new_content_refetched_from_fixed_head": true
+    }
+  ],
+  "unchanged_prior_audited_sources": [
+    {
+      "path": "codex-rs/ext/hepta-prompt/src/lib.rs",
+      "blob": "798fb1c705e20545b35e0276839483da2f857c05",
+      "basis": "Absent from complete fixed-range changed-path inventory; contents not re-fetched for this appendix"
+    },
+    {
+      "path": "codex-rs/hepta-agent-protocol/src/lib.rs",
+      "blob": "3996c7b7950d04026dbf7539645d9c6de73be4c9",
+      "basis": "Absent from complete fixed-range changed-path inventory; contents not re-fetched for this appendix"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/app_runtime.rs",
+      "blob": "a634d8844ecbcf87774286d3333bc7d560092d6d",
+      "basis": "Absent from complete fixed-range changed-path inventory; contents not re-fetched for this appendix"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cognitive_context.rs",
+      "blob": "494043d2e03a7f738ad1de3a065766a4423cef0b",
+      "basis": "Absent from complete fixed-range changed-path inventory; contents not re-fetched for this appendix"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cognitive_context_hnmf_tests.rs",
+      "blob": "5dd3c5c0c7cdb8c80faf83a75137429069dcdff1",
+      "basis": "Absent from complete fixed-range changed-path inventory; contents not re-fetched for this appendix"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cognitive_retrieval_context.rs",
+      "blob": "14b482e9e523274d3af6f7f513d025bf4ac704ad",
+      "basis": "Absent from complete fixed-range changed-path inventory; contents not re-fetched for this appendix"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/config.rs",
+      "blob": "cb7eea63c83bbe4cb9dd993a26334d5f7ba53a97",
+      "basis": "Absent from complete fixed-range changed-path inventory; contents not re-fetched for this appendix"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/lib.rs",
+      "blob": "1928eb920337ab5dbfe1a3fd4894fe6c96dad158",
+      "basis": "Absent from complete fixed-range changed-path inventory; contents not re-fetched for this appendix"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/objective_runtime.rs",
+      "blob": "47c63dde721db264e622cead0638987d0bb550cb",
+      "basis": "Absent from complete fixed-range changed-path inventory; contents not re-fetched for this appendix"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/prompt_runtime.rs",
+      "blob": "c6fa495db25c4431a697573410b7ff60c4fa2d0e",
+      "basis": "Absent from complete fixed-range changed-path inventory; contents not re-fetched for this appendix"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/runtime.rs",
+      "blob": "ca57d28162bd5788ef6ad6a5234e671a930175a9",
+      "basis": "Absent from complete fixed-range changed-path inventory; contents not re-fetched for this appendix"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/state_control.rs",
+      "blob": "cd715f6b0f1977fd7454c2776ecccca4479defdf",
+      "basis": "Absent from complete fixed-range changed-path inventory; contents not re-fetched for this appendix"
+    },
+    {
+      "path": "codex-rs/hepta-cognitive-store/src/v2.rs",
+      "blob": "e9ec79e983aa4a125536f688e480293c8b7d3131",
+      "basis": "Absent from complete fixed-range changed-path inventory; contents not re-fetched for this appendix"
+    },
+    {
+      "path": "codex-rs/hepta-cognitive-types/src/lane_c.rs",
+      "blob": "c134d096b24583779036a2c1bc1600fddec842b0",
+      "basis": "Absent from complete fixed-range changed-path inventory; contents not re-fetched for this appendix"
+    },
+    {
+      "path": "codex-rs/hepta-compact-engine/src/qualified.rs",
+      "blob": "e4cda5b81edd20453179369bdee6ba5e1bb41b2c",
+      "basis": "Absent from complete fixed-range changed-path inventory; contents not re-fetched for this appendix"
+    },
+    {
+      "path": "codex-rs/hepta-context-compiler/src/v2.rs",
+      "blob": "d6be3d4b86ef261157af101c6629bcee8ecf1311",
+      "basis": "Absent from complete fixed-range changed-path inventory; contents not re-fetched for this appendix"
+    },
+    {
+      "path": "codex-rs/hepta-intelligence/src/prompt_delivery.rs",
+      "blob": "803989e30f19c8f6cce78cde09434925f4f0a522",
+      "basis": "Absent from complete fixed-range changed-path inventory; contents not re-fetched for this appendix"
+    },
+    {
+      "path": "codex-rs/hepta-intelligence/src/prompt_pipeline.rs",
+      "blob": "1e247f40bb8156357cf6d6274891d09e8b88570e",
+      "basis": "Absent from complete fixed-range changed-path inventory; contents not re-fetched for this appendix"
+    },
+    {
+      "path": "codex-rs/hepta-memory-retrieval/src/engram.rs",
+      "blob": "2d2df3efb3cfcfe0c785c4e1369a68a8712258b0",
+      "basis": "Absent from complete fixed-range changed-path inventory; contents not re-fetched for this appendix"
+    },
+    {
+      "path": "codex-rs/hepta-memory/src/cognitive_compact.rs",
+      "blob": "b1bcf14d67071b2cea9cad0a9e92fa0d98c71ad5",
+      "basis": "Absent from complete fixed-range changed-path inventory; contents not re-fetched for this appendix"
+    },
+    {
+      "path": "codex-rs/hepta-memory/src/cognitive_retrieval_adapter.rs",
+      "blob": "255461531b165634463de79f4aee92f1de6ffc08",
+      "basis": "Absent from complete fixed-range changed-path inventory; contents not re-fetched for this appendix"
+    },
+    {
+      "path": "codex-rs/hepta-memory/src/compact_persistence.rs",
+      "blob": "fbd8d823566143effbf05979641a4fc1dba7fbc3",
+      "basis": "Absent from complete fixed-range changed-path inventory; contents not re-fetched for this appendix"
+    },
+    {
+      "path": "codex-rs/hepta-memory/src/lane_c_snapshot.rs",
+      "blob": "af66a5195f8a65635abe6c2abaf7b8e265bb6e9d",
+      "basis": "Absent from complete fixed-range changed-path inventory; contents not re-fetched for this appendix"
+    },
+    {
+      "path": "codex-rs/hepta-memory/src/local_compact_executor.rs",
+      "blob": "31c9b9a0f2e859c48df618076d0d6b3a3b6e1e98",
+      "basis": "Absent from complete fixed-range changed-path inventory; contents not re-fetched for this appendix"
+    },
+    {
+      "path": "codex-rs/hepta-prompt-registry/src/durable.rs",
+      "blob": "9a1ce796106e180ac14fda81228af6ceed3bcc86",
+      "basis": "Absent from complete fixed-range changed-path inventory; contents not re-fetched for this appendix"
+    },
+    {
+      "path": "codex-rs/hepta-prompt-registry/src/lib.rs",
+      "blob": "dcad4ab66bc88db8b7afc3a34fcab7946be9425f",
+      "basis": "Absent from complete fixed-range changed-path inventory; contents not re-fetched for this appendix"
+    },
+    {
+      "path": "codex-rs/hepta-prompt-registry/src/v2.rs",
+      "blob": "975ecaf4f3c5adbcecb0eba45bc70f7f2d0227f2",
+      "basis": "Absent from complete fixed-range changed-path inventory; contents not re-fetched for this appendix"
+    }
+  ],
+  "additional_production_change_review": {
+    "source": "Root formatted-v7 artifact, each complete file Git blob recomputed and matched to the exact remote compare SHA",
+    "files": [
+      {
+        "path": "codex-rs/hepta-agentd/src/intelligence_ingress.rs",
+        "blob": "0a86e1d8654e936d55308791a57de5572814fac7",
+        "bytes": 2534,
+        "sha256": "3a81390c3b35cd62e1b73b8fe45059e7462da957206fc15b103383456de150c9",
+        "kind": "production"
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/intelligence_product_runner.rs",
+        "blob": "c50715f005238d3e7eb3e5034e259f129ee0b460",
+        "bytes": 18237,
+        "sha256": "311d34a4063e93750df10f929451f6102e68b749e0eb48d3dba0f8cd6a48b6fa",
+        "kind": "production"
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/intelligence_run_start.rs",
+        "blob": "4604af82ba294ae0a42b61f6a89146a1d9d8efbd",
+        "bytes": 4062,
+        "sha256": "f2a05bf44b352f1f1ee90d3ede507b61bc63788649af19469046a04210ea337f",
+        "kind": "production"
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/lane_b_runtime.rs",
+        "blob": "625a017984d98a1dc51c3aa8514afb34b0d78fc1",
+        "bytes": 26825,
+        "sha256": "0fb91113c2fdb414d68e90827cd3d79fd75168921f35cea865a11ff6269c24ae",
+        "kind": "production"
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/state.rs",
+        "blob": "df7372299a9c6edce9d219f85493a617becc6213",
+        "bytes": 35431,
+        "sha256": "0b7110c36c66ed3734b3bfffbdb24fbb73b188a910210bc4e7c2b4ded78443a3",
+        "kind": "production"
+      }
+    ]
+  },
+  "new_head_global_source_search_performed": false,
+  "all_prior_sources_refetched_at_new_head": false,
+  "bounded_changed_file_mentions": [
+    {
+      "path": "codex-rs/hepta-agentd/src/state.rs",
+      "line": 55,
+      "text": "std::sync::OnceLock<Arc<dyn crate::CurrentMemoryRetrievalContext>>,"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/intelligence_canonical_runtime_test_support.rs",
+      "line": 42,
+      "text": "impl crate::AgentdIntelligenceInvocationProviderV1 for InvocationProvider {"
+    }
+  ],
+  "findings": [
+    {
+      "topic": "CurrentMemoryRetrievalContext default provider",
+      "conclusion": "This cohort does not add or install a concrete default current-memory provider; the prior default-owner gaps remain open in the reviewed composition.",
+      "evidence": [
+        "state.rs:54-55 still holds OnceLock<Arc<dyn CurrentMemoryRetrievalContext>>; state.rs:160 still initializes it empty.",
+        "The only state.rs changes are inside start_canonical_intelligence (637-690); retrieval context initialization, the opened prompt owner and CognitiveStore attachment are unchanged.",
+        "config.rs is unchanged in the exact range: 279 defaults cognitive_retrieval_context to None; 642-658 requires explicit injection. runtime.rs is also unchanged: 94-97 enforces required-mode availability before owner startup, 164-170 attaches only an explicitly supplied provider.",
+        "Trait, cognitive_context, Lane C types, SQLite adapter/snapshot, prompt owners, compact owners and Engram source paths from the prior audit are absent from the changed-path inventory. No missing external currentness owner is supplied by the five production changes."
+      ]
+    },
+    {
+      "topic": "Canonical invocation provider",
+      "conclusion": "The configured canonical ingress now authenticates and preserves the original durable RunStart identity. It remains an explicit composition seam and does not install a default invocation provider.",
+      "evidence": [
+        "state.rs:620-637 still requires both configured runner and provider; the missing pair returns Ok(None). state.rs:153-154 initializes those OnceLocks empty.",
+        "state.rs:642-645 checks the current original RunStart before provider.build and separates spawn/body generation from current lifecycle generation/fence.",
+        "state.rs:657 calls prepare_for_run_start; 670-685 revalidates and uses start_revalidated_run_start before attaching the exact context.",
+        "intelligence_ingress.rs:22-47 validates request/run/objective/authority plus original spawn/body versus current run generation/fence. Lines54-60 remain a trait contract.",
+        "config.rs:283-284 defaults both optional components to None; runtime.rs:154-162 only attaches explicit configuration; both files are unchanged.",
+        "The new concrete InvocationProvider appears at intelligence_canonical_runtime_test_support.rs:35-69 and stores a preconstructed Mutex<Option<AgentdIntelligenceInvocationV1>>. Lines347-357 install it explicitly into the test fixture. It is not a current production owner composition."
+      ]
+    },
+    {
+      "topic": "Decision/Outcome writer and recovery",
+      "conclusion": "This cohort does not add a default durable Decision/Outcome owner or its cross-process publication/recovery path. The existing caller-owned qualification APIs must not be presented as that default wiring.",
+      "evidence": [
+        "intelligence_product_runner.rs:296-407 keeps append_decision, append_outcome, append_event and reconcile_ledger_append behind qualification-legacy-learning-write. Each receives caller-owned &mut DurableLedger; append_event/reconcile call append_qualification.",
+        "The exact runner diff changes preparation and original RunStart projection/budget only. It does not alter these append/reconcile implementations or construct a LedgerWriter owner.",
+        "intelligence_canonical_runtime_test_support.rs:268-328 creates/reopens the real DurableRunStartJournal in the same process. That journal is the original admission record, not a default D/O writer.",
+        "The canonical owner fixture explicitly seeds the App Server readiness event at lines178-180. These new tests do not independently demonstrate real App Server/provider startup or process-loss D/O recovery."
+      ]
+    },
+    {
+      "topic": "What the new source change does establish",
+      "conclusion": "The configured ingress now carries the exact original request/objective/body/artifact/authority/generation/fence/deadline identity through preparation and admission; remaining preparation time is capped by the original deadline. This is a concrete call-edge and failure-boundary repair.",
+      "evidence": [
+        "intelligence_run_start.rs:12-30 projects the durable RunStart and validates its request identity before preparation.",
+        "intelligence_run_start.rs:37-61 checks the full frozen run and attachment tuple before coordinator mutation.",
+        "intelligence_run_start.rs:65-95 reuses RunSnapshot::from_run_start and caps the requested budget by the original remaining deadline.",
+        "lane_b_runtime.rs:67-100 centralizes the unchanged durable RunStart projection; start_revalidated_run_start at266-271 reuses it."
+      ]
+    }
+  ],
+  "conclusion": "Retain the original a640 full-search/28-source audit as immutable evidence. Add this fixed-range appendix: one audited source changed (state.rs), 27 audited sources are unchanged by the exact range, and the five production changes repair configured canonical ingress without closing default CurrentMemory, invocation-provider, or D/O-owner composition. No new-head global absence search is claimed.",
+  "repository_source_changes_by_this_review": [],
+  "new_runtime_tests_by_this_review": false,
+  "scope_limit": "The new head is assessed only through the exact ten-file delta, one refetched affected audit source, and hash-verified formatted production/test changes. This appendix does not relabel source review as activation, full-chain qualification, or a fresh complete-tree audit."
+}
