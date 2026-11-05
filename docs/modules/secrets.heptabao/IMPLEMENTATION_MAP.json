@@ -35,7 +35,8 @@
       "sourcePathExists": true,
       "designOperation": "consume_kv_v2",
       "mappingClass": "owner_native",
-      "delegatedCallees": []
+      "delegatedCallees": [],
+      "sourceBlob": "2fc9ce3431897ee1a9bce4485fc5d8a230a05066"
     },
     {
       "operation": "binding",
@@ -49,7 +50,8 @@
       "sourcePathExists": true,
       "designOperation": "binding",
       "mappingClass": "owner_native",
-      "delegatedCallees": []
+      "delegatedCallees": [],
+      "sourceBlob": "2fc9ce3431897ee1a9bce4485fc5d8a230a05066"
     },
     {
       "operation": "lease_lifecycle_prepare",
@@ -63,7 +65,8 @@
       "sourcePathExists": true,
       "designOperation": "request_secret_lease/renew/revoke local durable intent",
       "mappingClass": "owner_native",
-      "delegatedCallees": []
+      "delegatedCallees": [],
+      "sourceBlob": "858b486ee74ba22073727a1d5c94d5e4e466e99c"
     },
     {
       "operation": "lease_lifecycle_reconcile",
@@ -77,7 +80,8 @@
       "sourcePathExists": true,
       "designOperation": "ambiguous outcome reconciliation",
       "mappingClass": "owner_native",
-      "delegatedCallees": []
+      "delegatedCallees": [],
+      "sourceBlob": "858b486ee74ba22073727a1d5c94d5e4e466e99c"
     }
   ],
   "repositoryControlledGaps": [
@@ -103,5 +107,16 @@
   "sourceRoot": [
     "external/HeptaBao",
     "codex-rs/hepta-bao-adapter"
+  ],
+  "mappingSourceIdentityMode": "exact_blob",
+  "observedAtHead": {
+    "commit": "58c81ccdd25002ae0f481d434af067a56fa7ddb8",
+    "tree": "57809be09ef01c02389ef37a817f1447d13d167b"
+  },
+  "observedSourcePaths": [
+    "codex-rs/Cargo.lock",
+    "codex-rs/Cargo.toml",
+    "codex-rs/hepta-bao-adapter",
+    "external/HeptaBao"
   ]
 }

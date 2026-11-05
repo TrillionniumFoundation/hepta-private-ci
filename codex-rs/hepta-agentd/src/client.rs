@@ -92,15 +92,24 @@ impl AgentdClient {
     }
 
     pub async fn health(&self) -> Result<HealthSnapshot, AgentdError> {
-        match self
+        let (_, snapshot) = self.health_with_current_generation().await?;
+        Ok(snapshot)
+    }
+
+    /// Read health and its lifecycle generation from the same identity-checked
+    /// response. This generation can initialize a new admission; it must not
+    /// replace the original generation of an already admitted run.
+    pub async fn health_with_current_generation(
+        &self,
+    ) -> Result<(u64, HealthSnapshot), AgentdError> {
+        let response = self
             .send(AgentdRequest::health(
                 self.request_id(),
                 self.spawn_generation,
             ))
-            .await?
-            .payload
-        {
-            AgentdPayload::Health(snapshot) => Ok(snapshot),
+            .await?;
+        match response.payload {
+            AgentdPayload::Health(snapshot) => Ok((response.current_generation, snapshot)),
             payload => unexpected(payload),
         }
     }
@@ -484,6 +493,82 @@ impl AgentdClient {
             .payload
         {
             AgentdPayload::RunStatus { run } => Ok(run),
+            payload => unexpected(payload),
+        }
+    }
+
+    pub async fn run_mark_bound_dispatched(
+        &self,
+        binding: crate::AgentRunBinding,
+    ) -> Result<AgentRunReceipt, AgentdError> {
+        match self
+            .send(AgentdRequest::run_mark_bound_dispatched(
+                self.request_id(),
+                self.spawn_generation,
+                binding,
+            ))
+            .await?
+            .payload
+        {
+            AgentdPayload::RunReceipt(receipt) => Ok(receipt),
+            payload => unexpected(payload),
+        }
+    }
+
+    pub async fn run_cancel_bound(
+        &self,
+        binding: crate::AgentRunBinding,
+        reason: String,
+    ) -> Result<AgentRunCancellation, AgentdError> {
+        match self
+            .send(AgentdRequest::run_cancel_bound(
+                self.request_id(),
+                self.spawn_generation,
+                binding,
+                reason,
+            ))
+            .await?
+            .payload
+        {
+            AgentdPayload::RunCancellation(cancellation) => Ok(cancellation),
+            payload => unexpected(payload),
+        }
+    }
+
+    /// Compare the frozen snapshot and context in the same lock as terminal CAS.
+    pub async fn run_observe_bound_terminal(
+        &self,
+        observation: crate::AgentRunTerminalObservation,
+    ) -> Result<AgentRunReceipt, AgentdError> {
+        match self
+            .send(AgentdRequest::run_observe_bound_terminal(
+                self.request_id(),
+                self.spawn_generation,
+                observation,
+            ))
+            .await?
+            .payload
+        {
+            AgentdPayload::RunReceipt(receipt) => Ok(receipt),
+            payload => unexpected(payload),
+        }
+    }
+
+    /// Read the original admitted tuple and current receipt in one owner lock.
+    pub async fn run_reconciliation_state(
+        &self,
+        run_id: String,
+    ) -> Result<Option<crate::AgentRunReconciliationState>, AgentdError> {
+        match self
+            .send(AgentdRequest::run_reconciliation_state(
+                self.request_id(),
+                self.spawn_generation,
+                run_id,
+            ))
+            .await?
+            .payload
+        {
+            AgentdPayload::RunReconciliationState { run } => Ok(run),
             payload => unexpected(payload),
         }
     }

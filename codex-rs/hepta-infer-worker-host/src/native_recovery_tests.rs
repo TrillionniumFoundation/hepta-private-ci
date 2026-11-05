@@ -98,10 +98,10 @@ async fn real_agentd_reconciles_reopened_worker_without_replaying_provider() -> 
     let agent_id = AgentId::parse("018f4f72-5f8f-7cc1-8f55-df9fb3aa2c13")?;
     let host = CognitiveTestHost::start(
         directory.path().join("host"),
-        std::env::current_exe()?,
         agent_id,
         MODEL,
         &format!("{}/v1", server.uri()),
+        crate::native_app_server::tests::app_server_test_runtime_paths()?,
     )
     .await?;
     let authority_directory = tempfile::tempdir()?;
@@ -240,7 +240,8 @@ async fn real_agentd_reconciles_reopened_worker_without_replaying_provider() -> 
         assert_eq!(
             recovered.observed_output_tokens,
             match boundary {
-                Some(NativeBoundaryStatus::TimedOut | NativeBoundaryStatus::Quarantined) => Some(17),
+                Some(NativeBoundaryStatus::TimedOut | NativeBoundaryStatus::Quarantined) =>
+                    Some(17),
                 _ => None,
             },
         );
@@ -319,10 +320,10 @@ async fn recover_non_success_terminal(physical_status: NativeRunStatus) -> Resul
     let directory = tempfile::Builder::new().prefix("hnm-").tempdir_in("/tmp")?;
     let host = CognitiveTestHost::start(
         directory.path().join("host"),
-        std::env::current_exe()?,
         AgentId::parse("018f4f72-5f8f-7cc1-8f55-df9fb3aa2c15")?,
         MODEL,
         &format!("{}/v1", server.uri()),
+        crate::native_app_server::tests::app_server_test_runtime_paths()?,
     )
     .await?;
     let authority_directory = tempfile::tempdir()?;

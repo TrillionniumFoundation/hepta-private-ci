@@ -90,7 +90,9 @@ impl NativeChild {
                 io::Error::new(io::ErrorKind::TimedOut, "fixture observation expired")
             })?;
         let wait_ms = remaining.as_millis().min(u128::from(u32::MAX)) as u32;
-        match unsafe { WaitForSingleObject(AsRawHandle::as_raw_handle(&self.child).cast(), wait_ms) } {
+        match unsafe {
+            WaitForSingleObject(AsRawHandle::as_raw_handle(&self.child).cast(), wait_ms)
+        } {
             WAIT_OBJECT_0 => {}
             WAIT_TIMEOUT => {
                 return Err(io::Error::new(

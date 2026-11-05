@@ -47,6 +47,53 @@ impl Drop for Fixture {
     }
 }
 
+impl LedgerWitnessStore {
+    // This method exists only in the cfg(test) module. It changes no File or
+    // lock and cannot replace the real ledger append/sync being exercised.
+    pub(crate) fn fail_next_advance_write_for_test(&mut self) {
+        self.fail_next_advance_write = true;
+    }
+}
+
+#[test]
+fn complete_unconfirmed_witness_frame_requires_successful_recovery_sync() {
+    let fixture = Fixture::new();
+    let mut store = LedgerWitnessStore::create(fixture.file(), binding()).unwrap();
+    let one = LedgerWitnessFrontier {
+        anchor: LedgerAnchor {
+            sequence: 1,
+            chain_digest: digest("unconfirmed-chain"),
+        },
+        segment: None,
+        sealed: false,
+    };
+    // Model the distinct window where a complete valid frame was written but
+    // its sync never completed. No advance acknowledgement has been returned.
+    store
+        .file
+        .write_all(&encode_frontier(one).unwrap())
+        .unwrap();
+    drop(store);
+
+    let sync_attempted = std::cell::Cell::new(false);
+    let recovered = LedgerWitnessStore::recover_with_sync(fixture.file(), binding(), |file| {
+        sync_attempted.set(true);
+        assert_eq!(file.metadata().unwrap().len(), (HEADER + FRAME) as u64);
+        Err(std::io::Error::other("injected recovery sync failure"))
+    });
+    assert!(sync_attempted.get());
+    assert!(matches!(recovered, Err(DurableLedgerError::Indeterminate)));
+
+    // Failed synchronization exposes no owner and releases only its acquired
+    // lock. A later real sync recovers the same frame without appending another.
+    let recovered = LedgerWitnessStore::recover(fixture.file(), binding()).unwrap();
+    assert_eq!(recovered.frontier(), Ok(one));
+    assert_eq!(
+        recovered.file.metadata().unwrap().len(),
+        (HEADER + FRAME) as u64
+    );
+}
+
 #[test]
 fn witness_advances_monotonically_and_recovers_exact_frontier() {
     let fixture = Fixture::new();
