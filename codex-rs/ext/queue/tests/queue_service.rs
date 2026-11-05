@@ -2965,14 +2965,14 @@ async fn registered_queue_waits_for_terminal_cleanup_without_admitting_other_cal
         // Core publishes A's TurnComplete before entering its idle callbacks.
         // Consume that exact completion while the gate still holds, so the
         // next observed completion proves that the deferred B actually ran.
-        let initial_turn_id = wait_for_event_match(test.codex.as_ref(), |event| {
-            if let EventMsg::TurnComplete(completed) = event {
-                Some(completed.turn_id.clone())
-            } else {
-                None
+        // The shared event helper also waits for the finish owner. This raw
+        // observation must return while our idle gate still holds that owner.
+        let initial_turn_id = loop {
+            let event = test.codex.next_event().await?;
+            if let EventMsg::TurnComplete(completed) = event.msg {
+                break completed.turn_id;
             }
-        })
-        .await;
+        };
         assert_eq!(
             initial_submission,
             TurnInputSubmission::Started {
@@ -3094,11 +3094,14 @@ async fn queued_input_precedes_an_older_automatic_notification_at_the_same_fence
         phase = "waiting for the initial idle contributor";
         entered.notified().await;
         phase = "observing the initial completion while its idle gate is held";
-        let initial_turn_id = wait_for_event_match(test.codex.as_ref(), |event| match event {
-            EventMsg::TurnComplete(completed) => Some(completed.turn_id.clone()),
-            _ => None,
-        })
-        .await;
+        // The shared event helper also waits for the finish owner. This raw
+        // observation must return while our idle gate still holds that owner.
+        let initial_turn_id = loop {
+            let event = test.codex.next_event().await?;
+            if let EventMsg::TurnComplete(completed) = event.msg {
+                break completed.turn_id;
+            }
+        };
         assert_eq!(
             initial_submission,
             TurnInputSubmission::Started {
