@@ -391,7 +391,7 @@ jobs:
         run: |
           set -euo pipefail
           unset PYTHONPATH PYTHONHOME PYTHONUSERBASE
-          python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-public-initial-v2/material-download-controls.json" --timeout-seconds 60 --minimum-tests 2 -- python3 scripts/test_hepta_smollm_public_initial_v2.py -v
+          python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-public-initial-v2/material-download-controls.json" --timeout-seconds 60 --minimum-tests 7 -- python3 scripts/test_hepta_smollm_public_initial_v2.py -v
           python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-public-initial-v2/descendant-boundary-controls.json" --timeout-seconds 60 --minimum-tests 4 -- python3 scripts/test_hepta_smollm_descendant_v2.py -v
           python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-public-initial-v2/research-boundary-controls.json" --timeout-seconds 60 --minimum-tests 8 -- python3 scripts/test_hepta_smollm_answer_eos_research_v3.py -v
           python3 -I -B -m venv "$RUNNER_TEMP/hepta-public-env"
