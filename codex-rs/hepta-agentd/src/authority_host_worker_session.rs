@@ -37,6 +37,9 @@ pub struct HeldWorkerRootRegistration<'a> {
     channel: UnixDatagram,
 }
 
+#[cfg(test)]
+#[path = "worker_root_registration_root_tests.rs"]
+mod tests;
 
 impl HeldWorkerRootRegistration<'_> {
     pub fn observation(&self) -> &WorkerRootRegistrationV1 {
