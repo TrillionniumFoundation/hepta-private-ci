@@ -187,5 +187,131 @@ class SandboxHelperArtifactTests(unittest.TestCase):
             self.assertEqual(sibling.read_bytes(), b"unrelated existing executable")
 
 
+class ClosedTestTargetTests(unittest.TestCase):
+    def test_default_group_keeps_complete_original_lib_command(self):
+        seen = []
+
+        def invoke(command):
+            seen.append(command)
+            return 0, PASS
+
+        with tempfile.TemporaryDirectory() as td:
+            root = Path(td)
+            result = execute_groups(root, root, [GROUP], invoke)
+        self.assertEqual(
+            seen,
+            [
+                [
+                    "just",
+                    "test",
+                    "--locked",
+                    "-p",
+                    "owner",
+                    "--lib",
+                    "--cargo-profile",
+                    "dev-small",
+                    "-E",
+                    "test(=original)",
+                    "--test-threads",
+                    "1",
+                    "--no-tests",
+                    "fail",
+                    "--retries",
+                    "0",
+                ]
+            ],
+        )
+        self.assertTrue(result[0]["passed"])
+
+    def test_app_all_target_requires_exact_integration_binary_receipt(self):
+        name = "suite::v2::thread_termination_observed::observed_termination_jsonrpc_reaches_core_and_original_child"
+        group = {
+            **GROUP,
+            "package": "codex-app-server",
+            "testTarget": "all",
+            "filter": f"test(={name})",
+            "requiredTests": [name],
+        }
+        log = (
+            "Starting 1 test across 1 binary (99 tests skipped)\n"
+            f"PASS [ 0.1s] codex-app-server::all {name}\n"
+        )
+        seen = []
+
+        def invoke(command):
+            seen.append(command)
+            return 0, log
+
+        with tempfile.TemporaryDirectory() as td:
+            root = Path(td)
+            result = execute_groups(root, root, [group], invoke)
+        self.assertEqual(
+            seen,
+            [
+                [
+                    "just",
+                    "test",
+                    "--locked",
+                    "-p",
+                    "codex-app-server",
+                    "--test",
+                    "all",
+                    "--cargo-profile",
+                    "dev-small",
+                    "-E",
+                    f"test(={name})",
+                    "--test-threads",
+                    "1",
+                    "--no-tests",
+                    "fail",
+                    "--retries",
+                    "0",
+                ]
+            ],
+        )
+        self.assertTrue(result[0]["passed"])
+        for changed in (
+            log.replace("codex-app-server::all", "codex-app-server"),
+            log.replace("codex-app-server::all", "codex-app-server::other"),
+            log.replace("codex-app-server::all", "other::all"),
+            log.replace("Starting 1 test", "Starting 0 tests"),
+            log.replace(name, "replacement"),
+        ):
+            with self.subTest(log=changed):
+                self.assertFalse(assess(group, 0, changed)["passed"])
+        self.assertFalse(assess(group, 1, log)["passed"])
+
+    def test_invalid_target_refuses_before_any_group_is_invoked(self):
+        invalid = [
+            {**GROUP, "package": "codex-app-server", "testTarget": target}
+            for target in (
+                None,
+                "",
+                "lib",
+                "integration",
+                "all --retries 2",
+                ["all"],
+                {"name": "all"},
+            )
+        ]
+        invalid.append({**GROUP, "testTarget": "all"})
+        for group in invalid:
+            with self.subTest(group=group):
+                seen = []
+
+                def invoke(command):
+                    seen.append(command)
+                    return 0, PASS
+
+                with tempfile.TemporaryDirectory() as td:
+                    root = Path(td)
+                    with self.assertRaisesRegex(
+                        ValueError, "unsupported Windows test target"
+                    ):
+                        execute_groups(root, root, [GROUP, group], invoke)
+                    self.assertEqual(list(root.iterdir()), [])
+                self.assertEqual(seen, [])
+
+
 if __name__ == "__main__":
     unittest.main()
