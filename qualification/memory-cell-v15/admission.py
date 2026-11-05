@@ -11,6 +11,8 @@ import json
 import math
 import time
 
+from cohort import INFORMATION, check_arms, check_registration
+
 
 def digest(value):
     return hashlib.sha256(json.dumps(value, sort_keys=True, separators=(",", ":"),
@@ -35,6 +37,9 @@ class Run:
     executor: str
     budget: str
     predict: object
+    encoder: str = ""
+    decoder: str = ""
+    tool_permissions: str = ""
 
 
 @dataclass(frozen=True)
@@ -50,6 +55,7 @@ class Protocol:
     required_strata: tuple
     prices: tuple
     limits: tuple
+    planned_looks: int = 1
 
 
 CPU_PHASES = ("acquire_cpu_s", "train_cpu_s", "search_cpu_s", "update_cpu_s",
@@ -75,7 +81,7 @@ class MatchedEvaluator:
     a hung predictor and must run inside an externally bounded worker.
     """
 
-    def __init__(self, cases, executor_factory, protocol):
+    def __init__(self, cases, executor_factory, protocol, *, registration=None):
         # A frozen dataclass alone does not freeze nested payload/expected objects.
         self._cases_wire = json.dumps([vars(x) for x in cases], sort_keys=True, allow_nan=False)
         cases = tuple(Case(**row) for row in json.loads(self._cases_wire))
@@ -89,6 +95,7 @@ class MatchedEvaluator:
                 or any(not x.cluster or not x.stratum for x in cases)
                 or type(p.expected_reads) is not int or p.expected_reads <= 0
                 or type(p.comparisons) is not int or p.comparisons <= 0
+                or type(p.planned_looks) is not int or p.planned_looks <= 0
                 or type(p.minimum_clusters) is not int or p.minimum_clusters < 2
                 or not 0 < p.alpha < 1 or not 0 <= p.retention_margin < 1
                 or not math.isfinite(p.deadline_seconds) or p.deadline_seconds <= 0
@@ -105,6 +112,9 @@ class MatchedEvaluator:
                                                 if k not in ("billed_usd", "p99_seconds")):
             raise ValueError("use bills or resource pricing, not both")
         self.data_digest = digest(json.loads(self._cases_wire))
+        self._registration_wire = json.dumps(registration, sort_keys=True, allow_nan=False)
+        self._registration_reasons = check_registration(json.loads(self._registration_wire),
+                                    cases, p, self.data_digest, digest(vars(p)))
 
     def _run(self, model, executor):
         rows = []
@@ -129,18 +139,20 @@ class MatchedEvaluator:
         return rows
 
     def evaluate(self, candidate, incumbent, candidate_cost, incumbent_cost, *, manifest):
-        p, reasons = self.protocol, []
+        p, reasons = self.protocol, list(self._registration_reasons)
+        registration = json.loads(self._registration_wire)
+        reasons.extend(check_arms(registration, candidate, incumbent))
         # Freeze caller-owned nested receipts before invoking any model callbacks.
         frozen = json.loads(json.dumps({"candidate_cost": candidate_cost,
                                        "incumbent_cost": incumbent_cost, "manifest": manifest},
                                       allow_nan=False))
         candidate_cost, incumbent_cost, manifest = (frozen["candidate_cost"],
                                                     frozen["incumbent_cost"], frozen["manifest"])
-        if not p.prospective:
+        if p.prospective is not True:
             reasons.append("retrospective_evidence_cannot_authorize_growth")
         if candidate.bundle == incumbent.bundle:
             reasons.append("candidate_equals_incumbent")
-        for field in ("memory", "training_inputs", "executor", "budget"):
+        for field in INFORMATION:
             if not getattr(candidate, field) or getattr(candidate, field) != getattr(incumbent, field):
                 reasons.append("unmatched_" + field)
         # The complete new bundle identity must be supplied by the trusted loader.
@@ -173,7 +185,7 @@ class MatchedEvaluator:
             value = int(a["correct"]) - int(b["correct"])
             groups.setdefault(a["cluster"], []).append(value)
             by_stratum.setdefault(a["stratum"], {}).setdefault(a["cluster"], []).append(value)
-        alpha = p.alpha / (p.comparisons * (1 + len(p.required_strata)))
+        alpha = p.alpha / (p.comparisons * p.planned_looks * (1 + len(p.required_strata)))
         averages = [sum(v) / len(v) for v in groups.values()]
         mean, lower = paired_bound(averages, alpha)
         if len(groups) < p.minimum_clusters:
@@ -198,16 +210,18 @@ class MatchedEvaluator:
                 reasons.append("positive_full_cost_net_value_not_established")
         else:
             reasons.append("full_cost_net_value_unknown")
-        report = {"schema": "hepta.memory.matched-admission.v15", "approved": not reasons,
+        report = {"schema": "hepta.memory.matched-admission.v15.cohort-v1", "approved": not reasons,
                   "candidate": candidate.bundle, "incumbent": incumbent.bundle,
                   "manifest": digest(manifest), "protocol": p.identity,
                   "protocol_settings": digest(vars(p)), "data": self.data_digest,
-                  "paired_mean": mean, "paired_lower_bound": lower,
+                  "cohort_registration": digest(registration),
+                  "paired_mean": mean, "paired_lower_bound": lower, "per_bound_alpha": alpha,
                   "clusters": len(groups), "requests_per_arm": self.case_count,
+                  "qualified_clusters": len(groups) if not self._registration_reasons else None,
                   "extra_cost_per_read": extra_cost, "retention": retention,
                   "reasons": reasons, "traces": {"candidate": left, "incumbent": right},
                   "costs": {"candidate": candidate_cost, "incumbent": incumbent_cost},
-                  "statistical_scope": "Equal-weight independent cluster means; fixed prospective comparisons. Cost horizon must use the same uniform-cluster workload mixture.",
+                  "statistical_scope": "Equal-weight independent cluster means; fixed prospective comparisons and monitoring looks. Cost horizon must use the same uniform-cluster workload mixture.",
                   "production_authority": False}
         report["evidence"] = digest(report)
         return report

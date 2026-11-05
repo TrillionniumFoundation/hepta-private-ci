@@ -1,5 +1,7 @@
 # Memory Cell V15: typed memory and verifiable lifecycle research
 
+2026-11-05 follow-up: [frozen cohort admission and reproducibility](COHORT_REPRODUCE.md) extends the evaluator with phase/source isolation, explicit information parity and finite monitoring correction. Historical results below retain their original source scope.
+
 This directory adds an executable reference for ownership, version publication,
 migration, structural admission, and evidence-bound evaluation. It also independently
 audits the existing real-model V14 evidence. It is stacked on
