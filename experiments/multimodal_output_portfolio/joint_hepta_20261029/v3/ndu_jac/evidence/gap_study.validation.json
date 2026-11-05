@@ -1,0 +1,49 @@
+{
+  "schema": "ndu-jac.gap-validation.v1",
+  "python": "3.12.14",
+  "commands": [
+    {
+      "command": [
+        "python",
+        "-m",
+        "unittest",
+        "experiments.multimodal_output_portfolio.joint_hepta_20261029.v3.ndu_jac.test_gap_study",
+        "-v"
+      ],
+      "exit": 0,
+      "stdout": "",
+      "stderr": "test_empirical_improvement_can_harm_true_utility (experiments.multimodal_output_portfolio.joint_hepta_20261029.v3.ndu_jac.test_gap_study.GapStudyTests.test_empirical_improvement_can_harm_true_utility) ... ok\ntest_mirror_improvement_is_monotone_on_fixed_empirical_law (experiments.multimodal_output_portfolio.joint_hepta_20261029.v3.ndu_jac.test_gap_study.GapStudyTests.test_mirror_improvement_is_monotone_on_fixed_empirical_law) ... ok\ntest_planning_updates_root_unreachable_states (experiments.multimodal_output_portfolio.joint_hepta_20261029.v3.ndu_jac.test_gap_study.GapStudyTests.test_planning_updates_root_unreachable_states) ... ok\ntest_residual_bounds_actual_gap_and_iteration_closes_it (experiments.multimodal_output_portfolio.joint_hepta_20261029.v3.ndu_jac.test_gap_study.GapStudyTests.test_residual_bounds_actual_gap_and_iteration_closes_it) ... ok\ntest_rounding_a_policy_is_not_guaranteed_to_improve (experiments.multimodal_output_portfolio.joint_hepta_20261029.v3.ndu_jac.test_gap_study.GapStudyTests.test_rounding_a_policy_is_not_guaranteed_to_improve) ... ok\n\n----------------------------------------------------------------------\nRan 5 tests in 0.216s\n\nOK\n"
+    },
+    {
+      "command": [
+        "python",
+        "-O",
+        "-m",
+        "unittest",
+        "experiments.multimodal_output_portfolio.joint_hepta_20261029.v3.ndu_jac.test_gap_study",
+        "-v"
+      ],
+      "exit": 0,
+      "stdout": "",
+      "stderr": "test_empirical_improvement_can_harm_true_utility (experiments.multimodal_output_portfolio.joint_hepta_20261029.v3.ndu_jac.test_gap_study.GapStudyTests.test_empirical_improvement_can_harm_true_utility) ... ok\ntest_mirror_improvement_is_monotone_on_fixed_empirical_law (experiments.multimodal_output_portfolio.joint_hepta_20261029.v3.ndu_jac.test_gap_study.GapStudyTests.test_mirror_improvement_is_monotone_on_fixed_empirical_law) ... ok\ntest_planning_updates_root_unreachable_states (experiments.multimodal_output_portfolio.joint_hepta_20261029.v3.ndu_jac.test_gap_study.GapStudyTests.test_planning_updates_root_unreachable_states) ... ok\ntest_residual_bounds_actual_gap_and_iteration_closes_it (experiments.multimodal_output_portfolio.joint_hepta_20261029.v3.ndu_jac.test_gap_study.GapStudyTests.test_residual_bounds_actual_gap_and_iteration_closes_it) ... ok\ntest_rounding_a_policy_is_not_guaranteed_to_improve (experiments.multimodal_output_portfolio.joint_hepta_20261029.v3.ndu_jac.test_gap_study.GapStudyTests.test_rounding_a_policy_is_not_guaranteed_to_improve) ... ok\n\n----------------------------------------------------------------------\nRan 5 tests in 0.219s\n\nOK\n"
+    }
+  ],
+  "checks": {
+    "protocol_hash_matches": true,
+    "source_hashes_match": true,
+    "original_four_exactly_reproduced": true,
+    "all_empirical_pi_gaps_below_frozen_tolerance": true,
+    "all_decomposition_identity_errors_below_1e_14": true,
+    "upstream_unchanged_core.py": true,
+    "upstream_unchanged_finite_study.py": true,
+    "upstream_unchanged_evidence/finite.json": true
+  },
+  "files": {
+    "gap_study.py": "2bcefbc3f01546bdb19f0eefd3dbd1b26be885b7a8c3a0a1fb66b53175ba9781",
+    "test_gap_study.py": "59396a0163db6e767c0724df15ae9a801f6857740089f4f4b93de7c964f9c337",
+    "GAP_STUDY.md": "3b1002e05440378e6de3bc758825b3c7a6edd121ac2deba339b997968c9634d7",
+    "evidence/gap_study.protocol.json": "40df2607c0de22395ed71423a06f2a98fc544233f3b7cbdde01d073ae89d6654",
+    "evidence/gap_study.json": "56ad5d043a2ac661b3d0155747851a67e282d7faa42e7fa463ef5b581ca765dd"
+  },
+  "scope": "local finite-model Python checks; not full Rust CI or external replication"
+}

@@ -2,6 +2,15 @@
 
 This package implements and challenges one finite-horizon, risk-sensitive joint-control model. It provides executable mathematics, sampled-model actor training, critic diagnostics, and paid conditional comparisons. **It establishes neither algorithmic originality nor superiority over ordinary planning, and grants no production or full-CI qualification.**
 
+## Follow-up: optimization error versus identification error
+
+[GAP_STUDY.md](GAP_STUDY.md) preserves and exactly reproduces the four original
+losses below, adds 16 independently sampled banks on the same task, and compares
+deterministic actor extraction, all-state mirror improvement and certified
+empirical policy iteration. Deterministic extraction is a strong baseline;
+closing the empirical DP gap can worsen true utility. This follow-up establishes
+neither independent-task generalization nor positive lifecycle economics.
+
 ## Objective and implementation map
 
 Freeze the external score, cost prices, risk parameter, legal actions and model/objective version. The state can include belief/history, an internal configuration, remaining resources, residency and elapsed time. Actions may acquire evidence, reconfigure, stop or skip. For one jointly sampled reward/cost/duration/successor outcome, use
