@@ -153,3 +153,142 @@ async fn observed_driver_exit_keeps_its_actual_code() -> Result<()> {
     assert_eq!(process.failure_message(), None);
     Ok(())
 }
+
+#[cfg(unix)]
+struct NativeExitGate {
+    process: UnifiedExecProcess,
+    observed_exit: oneshot::Receiver<i32>,
+    release_exit: oneshot::Sender<()>,
+}
+
+#[cfg(unix)]
+async fn native_exit_gate() -> Result<NativeExitGate> {
+    let mut spawned = codex_utils_pty::spawn_pipe_process(
+        "/bin/sh",
+        &["-c".to_string(), "exec 1>&- 2>&-; read -r line".to_string()],
+        &std::env::current_dir()?,
+        &std::env::vars().collect(),
+        /*arg0*/ &None,
+        /*inherited_fds*/ &[],
+    )
+    .await?;
+    let (forward_exit, forwarded_exit) = oneshot::channel();
+    let native_exit = std::mem::replace(&mut spawned.exit_rx, forwarded_exit);
+    let (observed_exit_tx, observed_exit) = oneshot::channel();
+    let (release_exit, release_exit_rx) = oneshot::channel();
+    tokio::spawn(async move {
+        // Relay only the actual code from the original native child waiter.
+        // The gate delays publication without creating a replacement waiter.
+        if let Ok(code) = native_exit.await {
+            let _ = observed_exit_tx.send(code);
+            if release_exit_rx.await.is_ok() {
+                let _ = forward_exit.send(code);
+            }
+        }
+    });
+    let process = UnifiedExecProcess::from_spawned(
+        spawned,
+        SandboxType::None,
+        Box::new(NoopSpawnLifecycle),
+    )
+    .await?;
+    let output = process.output_handles();
+    tokio::time::timeout(Duration::from_secs(/*secs*/ 2), async {
+        loop {
+            let closed = output.output_closed_notify.notified();
+            tokio::pin!(closed);
+            closed.as_mut().enable();
+            if output.output_closed.load(Ordering::Acquire) {
+                break;
+            }
+            closed.await;
+        }
+    })
+    .await?;
+    // Both output streams are closed while the actual child is still alive.
+    assert!(!process.has_exited());
+    assert_eq!(process.exit_code(), None);
+    Ok(NativeExitGate {
+        process,
+        observed_exit,
+        release_exit,
+    })
+}
+
+#[cfg(unix)]
+#[tokio::test]
+async fn local_termination_waits_for_native_exit_after_io_closed() -> Result<()> {
+    let gate = native_exit_gate().await?;
+    let mut termination = Box::pin(gate.process.terminate_confirmed());
+    assert!(futures::poll!(termination.as_mut()).is_pending());
+    let actual_code = tokio::time::timeout(Duration::from_secs(/*secs*/ 2), gate.observed_exit).await??;
+    assert_eq!(actual_code, 128 + libc::SIGKILL);
+    assert!(futures::poll!(termination.as_mut()).is_pending());
+    assert!(!gate.process.state_rx.borrow().has_exited);
+    assert_eq!(gate.process.failure_message(), None);
+
+    gate.release_exit
+        .send(())
+        .map_err(|()| anyhow::anyhow!("native exit relay closed"))?;
+    tokio::time::timeout(Duration::from_secs(/*secs*/ 2), termination).await??;
+    assert!(gate.process.has_exited());
+    assert_eq!(gate.process.exit_code(), Some(actual_code));
+    assert_eq!(gate.process.failure_message(), None);
+    Ok(())
+}
+
+#[cfg(unix)]
+#[tokio::test]
+async fn cancelling_local_termination_keeps_original_native_observer() -> Result<()> {
+    let gate = native_exit_gate().await?;
+    let mut termination = Box::pin(gate.process.terminate_confirmed());
+    assert!(futures::poll!(termination.as_mut()).is_pending());
+    drop(termination);
+    assert!(!gate.process.state_rx.borrow().has_exited);
+    assert_eq!(gate.process.failure_message(), None);
+
+    let actual_code = tokio::time::timeout(Duration::from_secs(/*secs*/ 2), gate.observed_exit).await??;
+    assert_eq!(actual_code, 128 + libc::SIGKILL);
+    let mut state_rx = gate.process.state_rx.clone();
+    gate.release_exit
+        .send(())
+        .map_err(|()| anyhow::anyhow!("native exit relay closed after awaiter cancellation"))?;
+    tokio::time::timeout(Duration::from_secs(/*secs*/ 2), async {
+        while !state_rx.borrow().has_exited {
+            state_rx.changed().await?;
+        }
+        Ok::<(), tokio::sync::watch::error::RecvError>(())
+    })
+    .await??;
+    gate.process.terminate_confirmed().await?;
+    assert!(gate.process.has_exited());
+    assert_eq!(gate.process.exit_code(), Some(actual_code));
+    assert_eq!(gate.process.failure_message(), None);
+    Ok(())
+}
+
+#[tokio::test]
+async fn local_termination_reports_observation_loss_while_waiting() -> Result<()> {
+    let fixture = driver_fixture();
+    let process = UnifiedExecProcess::from_spawned(
+        fixture.spawned,
+        SandboxType::None,
+        Box::new(NoopSpawnLifecycle),
+    )
+    .await?;
+    let mut termination = Box::pin(process.terminate_confirmed());
+    assert!(futures::poll!(termination.as_mut()).is_pending());
+    assert_eq!(fixture.terminations.load(Ordering::SeqCst), 1);
+    assert!(!process.has_exited());
+    assert_eq!(process.exit_code(), None);
+    drop(fixture.exit_tx);
+    let error = tokio::time::timeout(Duration::from_secs(/*secs*/ 2), termination)
+        .await?
+        .expect_err("losing the original waiter must not confirm termination");
+    assert!(matches!(error, UnifiedExecError::ProcessFailed { .. }));
+    assert!(error.to_string().contains(EXIT_OBSERVATION_LOST));
+    assert!(!process.has_exited());
+    assert_eq!(process.exit_code(), None);
+    assert_eq!(fixture.terminations.load(Ordering::SeqCst), 1);
+    Ok(())
+}
