@@ -1,0 +1,74 @@
+{
+  "schema_version": 1,
+  "created_at": "2026-11-05T06:32:42.197373+00:00",
+  "baseline_commit": "379c21c2e625c3a3dfbb514e11b9e8fe2213cda8",
+  "result": "pass_for_bounded_native_migration_transition_subset",
+  "production_activation_allowed": false,
+  "production_rust_control_integrated": false,
+  "neural_memory_benefit_claim": false,
+  "real_model_migration_claim": false,
+  "epoch_fix": {
+    "reproduced": true,
+    "baseline_storage_type": "real",
+    "repaired_storage_type": "integer",
+    "saturated_mutation": "signed_rejection",
+    "prepare_reserves_terminal_increment": true,
+    "fixture_injects_high_counter": true
+  },
+  "protocol_suite": {
+    "cases": 57,
+    "passed": 57,
+    "failed": 0,
+    "skipped": 0,
+    "source_unchanged": true,
+    "receipt": "protocol-checks.json",
+    "wall_seconds": 4.2918705819975
+  },
+  "differential": {
+    "scenarios": 64,
+    "operations": 1536,
+    "reset_lines": 64,
+    "seed": 150520261105,
+    "accepted": 472,
+    "rejected": 1064,
+    "compare": "acceptance, current owner/epoch/phase, addressed transfer phase, complete transfer history; trailing whitespace ignored",
+    "independent_samples": 0
+  },
+  "native_runs": [
+    {
+      "host_alias": "mac",
+      "architecture": "arm64",
+      "job_id": "1a1aa5eb00d-fc05-41e0",
+      "format_job_id": "1a1aa662627-fc05-4274",
+      "receipt": "mac-receipt.json",
+      "matched_lines": 1600,
+      "exit_code": 0
+    },
+    {
+      "host_alias": "x230",
+      "architecture": "x86_64",
+      "job_id": "1a1aa5fbcab-fc05-41f9",
+      "format_job_id": "1a1aa6684a1-fc05-427c",
+      "receipt": "x230-receipt.json",
+      "matched_lines": 1600,
+      "exit_code": 0
+    }
+  ],
+  "source_manifest": "source-manifest.json",
+  "archive": {
+    "path": "raw-evidence.tar.gz",
+    "sha256": "ebb2483b61edea8e6bbcb597b4a5b5d0c525ce75fda64bfb93de0a21ff75ccc3",
+    "size": 120679,
+    "manifest": "archive-manifest.json"
+  },
+  "not_established": [
+    "Production Control linkage or loader",
+    "Native cryptographic authentication, permissions or durable idempotency",
+    "Native WAL/process-kill/full authority restore equivalence",
+    "Universal request-domain equivalence beyond ASCII mapped fixture IDs",
+    "Direct host-to-host transport or model/LoRA migration",
+    "Distributed consensus or protection from entire-authority rollback",
+    "Matched-resource semantic efficacy or complete economic cost"
+  ],
+  "cost_scope": "Protocol verification and one-shot runner process costs only. Compilation, setup, network, review, energy and billing excluded; cross-host elapsed times are not a benchmark."
+}
