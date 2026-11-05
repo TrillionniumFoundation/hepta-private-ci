@@ -1,0 +1,46 @@
+{
+  "profile": "research",
+  "device": "cuda:0",
+  "tasks": [
+    "delayed_recall",
+    "adding"
+  ],
+  "models": [
+    "hx_dual",
+    "hx_fixed",
+    "hx_call",
+    "hx_risk",
+    "no_rollover",
+    "softplus",
+    "no_recovery",
+    "hx_attention",
+    "population_flux",
+    "population_flux_no_recovery",
+    "gru",
+    "lif",
+    "adaptive_lif",
+    "pif",
+    "transformer",
+    "cfc",
+    "mamba2"
+  ],
+  "seeds": [
+    0,
+    1,
+    2,
+    3,
+    4
+  ],
+  "data_seed": 271828,
+  "train_count": 4096,
+  "validation_count": 512,
+  "test_count": 1024,
+  "length": 64,
+  "hidden_size": 64,
+  "batch_size": 64,
+  "train_steps": 400,
+  "learning_rate": 0.001,
+  "dt": 0.1,
+  "latency_repeats": 100,
+  "cpu_threads": 2
+}

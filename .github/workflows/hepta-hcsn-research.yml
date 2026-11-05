@@ -20,7 +20,7 @@ concurrency:
 jobs:
   kernel-and-mechanisms:
     runs-on: ubuntu-24.04
-    timeout-minutes: 30
+    timeout-minutes: 45
     env:
       PYTHONPATH: qualification
       OMP_NUM_THREADS: "1"
@@ -40,7 +40,20 @@ jobs:
       - name: Require tensor runtime and validate research modules
         run: |
           python -c 'import torch; print(torch.__version__)'
-          python -m unittest discover -s qualification/hcsn/tests -v
+          python -m hcsn.checks --require-torch --output "$RUNNER_TEMP/hcsn-tests.json"
+      - name: Independent FP64 and population mechanism receipts
+        run: |
+          python -m hcsn.validate --output "$RUNNER_TEMP/hcsn-kernel-reference.json"
+          python -m hcsn.mechanisms --output "$RUNNER_TEMP/hcsn-mechanisms.json"
+      - name: Equal-budget three-seed CPU training smoke
+        run: python -m hcsn.benchmark --config qualification/hcsn/configs/smoke.json --output "$RUNNER_TEMP/hcsn-training-smoke.json"
+      - name: Retain exact-source research receipts
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: hcsn-research-${{ github.sha }}
+          path: ${{ runner.temp }}/hcsn-*.json
+          if-no-files-found: warn
       - name: Check the source stayed unchanged
         if: always()
         run: git diff --exit-code
