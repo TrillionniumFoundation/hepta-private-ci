@@ -121,6 +121,40 @@ class HXTorchTests(unittest.TestCase):
         expected = reference.hx_equity(margins, par)
         np.testing.assert_allclose(actual.detach().numpy(), expected, atol=5e-4, rtol=5e-4)
 
+    def test_dtype_switch_values_slopes_and_ode_against_independent_integrals(self):
+        for par in (reference.HXParams(), reference.HXParams(maturity=.05, ell=0),
+                    reference.HXParams(maturity=.05, ell=1e-10)):
+            for dtype, cutoff, tolerance in ((torch.float64, .12, 3e-8),
+                                              (torch.float32, .5, 5e-4)):
+                params = _params_from_vector(torch.tensor(list(asdict(par).values()), dtype=dtype))
+                a, z, zq, eta, gamma, scale, *_ = hx._components(params)
+                switch = float(cutoff/(1+a.abs()+zq+1/scale+eta))
+                margins = [switch*.99, switch*1.01]
+                if dtype == torch.float64 and par.maturity == .05:
+                    margins.append(.01863547519748838)
+                for margin in margins:
+                    x = torch.tensor(margin, dtype=dtype, requires_grad=True)
+                    value = hx.hx_equity(x, params)
+                    slope = torch.autograd.grad(value, x, create_graph=True)[0]
+                    curvature = torch.autograd.grad(slope, x)[0]
+                    actual_x = float(x.detach())
+                    expected = reference.hx_equity(actual_x, par)
+                    expected_slope = _reference_derivative(
+                        lambda distance: reference.hx_equity(distance, par), actual_x, 1e-5)
+                    self.assertAlmostEqual(float(value.detach()), expected,
+                                           delta=tolerance*(1+abs(expected)))
+                    self.assertAlmostEqual(float(slope.detach()), expected_slope,
+                                           delta=tolerance*(1+abs(expected_slope)))
+                    # Independent debt and boundary, preserving the original
+                    # FP64 ODE tolerance. FP32 uses the original value tolerance
+                    # scaled by the equation terms to account for roundoff.
+                    b = reference.hx_boundary(par)
+                    running = (par.delta*b*math.exp(actual_x)-(1-par.tax)*par.coupon
+                               +reference.hx_debt(actual_x,par.maturity,par)-par.p)
+                    residual = par.r*value-par.mu*slope-par.sigma**2/2*curvature-running
+                    ode_tolerance = 3e-7 if dtype == torch.float64 else 5e-4*(1+abs(running))
+                    self.assertLess(abs(float(residual.detach())), ode_tolerance)
+
     def test_boundary_and_equity_parameter_gradcheck(self):
         values=list(asdict(reference.HXParams()).values())
         parameters=torch.tensor(values,dtype=torch.float64,requires_grad=True)
