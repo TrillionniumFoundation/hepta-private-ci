@@ -1,0 +1,17 @@
+{
+  "schema": "hcsn-v14-observed-hardware.v1",
+  "host_alias": "desktop",
+  "gpu": "NVIDIA GeForce RTX 4060",
+  "gpu_total_mib": 8188,
+  "driver": "580.178.04",
+  "gpu_used_mib_at_initial_inventory": 1397,
+  "gpu_utilization_percent_at_initial_inventory": 24,
+  "board_power_watts": null,
+  "power_observation": "nvidia-smi power.draw returned [N/A]",
+  "cuda_runtime_verified": "2.10.0+cu130 / CUDA 13.0 available",
+  "engineering_runtime_verified": "2.10.0+cpu / numpy 2.2.6",
+  "raw_new_capture_observed": false,
+  "formal_target_gpu_benchmark_executed": false,
+  "shared_host_background_load_present": true,
+  "scope": "Direct authenticated host inventory; availability is not performance, quality or energy qualification"
+}

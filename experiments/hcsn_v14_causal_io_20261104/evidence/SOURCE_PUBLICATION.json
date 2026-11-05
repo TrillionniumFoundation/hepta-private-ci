@@ -1,0 +1,111 @@
+{
+  "source_commit": "eee65cf3cdb99a165d0476a25a2426c3e7987006",
+  "source_tree": "87b494056e9f493432ace0c2c7d9a3348f87c5fc",
+  "pr": {
+    "content": [
+      {
+        "type": "text",
+        "text": "Action completed."
+      }
+    ],
+    "structuredContent": {
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/pull/4816",
+      "number": 4816,
+      "state": "open",
+      "merged": false,
+      "mergeable": false,
+      "draft": true,
+      "body": "The V13 model and checkpoint identities are recovered exactly; the stronger audio corpus still differs from the old joint corpus. This stage on #4815 adds a stateless adapter to real frozen HX/GRU/SSM checkpoints and predeclares CPU engineering replay: original six-prefix parity, actual subprocess pending-read recovery, RESET rejection and a 128-step repeated historical stream. It also freezes a single historical real-media decode/clock diagnostic.\n\nSource is published before numerical execution. Results will be appended with their exact source commit; this source checkpoint does not assert numerical PASS.\n\nThe known-exposure inventory has 288 official-audio TRAIN recordings and 24 joint TRAIN recordings, with zero recording or actor intersection. It is a partial known exposure union, not a complete historical exclusion ledger. Text/image and 1536-dimensional audio are rejected by the actual V13 row55 adapter until proper adapters are trained and qualified.\n\nOriginal parameter counts differ (HX 31,430; GRU 32,550; SSM 29,382), and original training time was not matched. No new training or quality benefit is claimed. Strong common frontend, new independent worlds, continuous first-passage/reset semantics, equal-budget strong comparisons and target GPU/energy qualification remain HOLD.",
+      "title": "research(hcsn): execute frozen AV models through durable causal I/O",
+      "base": "research/hcsn-v14-runtime-20261104-8a9c35",
+      "base_sha": "8b31a2c7ec3c4e6d90b44e66a342f22e271d5ac5",
+      "head": "research/hcsn-v14-replay-20261104-8a9c35",
+      "head_sha": "eee65cf3cdb99a165d0476a25a2426c3e7987006",
+      "head_repo_id": 1320694176,
+      "head_repo_full_name": "TrillionniumFoundation/hepta-private-ci",
+      "merge_commit_sha": null,
+      "user": {
+        "login": "Franksudoman",
+        "name": "Franksudoman",
+        "email": null,
+        "avatar_url": "https://avatars.githubusercontent.com/u/273670192?v=4",
+        "id": 273670192
+      },
+      "requested_reviewers": null,
+      "requested_team_reviewers": null,
+      "diff": null,
+      "comments": null,
+      "created_at": "2026-11-05T01:17:01Z",
+      "updated_at": "2026-11-05T01:17:01Z",
+      "closed_at": null,
+      "merged_at": null,
+      "commits": 1,
+      "changed_files": 5,
+      "additions": 1172,
+      "deletions": 0,
+      "display_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/pull/4816",
+      "display_title": "research(hcsn): execute frozen AV models through durable causal I/O"
+    },
+    "isError": false
+  },
+  "source_manifest": {
+    "commit": "eee65cf3cdb99a165d0476a25a2426c3e7987006",
+    "files": [
+      {
+        "path": "experiments/hcsn_v14_causal_io_20261104/BOUNDARY.md",
+        "bytes": 1734,
+        "sha256": "232e012b196af612e47973e11888e07fdf6337b3eeff8cf7e30e90e4c46ebcb7"
+      },
+      {
+        "path": "experiments/hcsn_v14_causal_io_20261104/ENGINEERING_PROTOCOL.json",
+        "bytes": 1687,
+        "sha256": "c4aa7458fef3ce5ffb365fda7a1779e1b9e660c2822f4657fec3ed85d85e62e4"
+      },
+      {
+        "path": "experiments/hcsn_v14_causal_io_20261104/KNOWN_EXPOSURE.json",
+        "bytes": 35814,
+        "sha256": "f47bc777fd999d8885a2702d64e5064db8504f2272127283fbc4d82d5434d61b"
+      },
+      {
+        "path": "experiments/hcsn_v14_causal_io_20261104/RUNTIME.md",
+        "bytes": 1822,
+        "sha256": "0c00a6837e41e9fc08e6e6e89cf088749cb373b8868e882b21580587b5dd7784"
+      },
+      {
+        "path": "experiments/hcsn_v14_causal_io_20261104/boundary.py",
+        "bytes": 9253,
+        "sha256": "a8ab4676be5ac3188043662d34c78f206b0adc08a1215bbdf3a547a27e8f2428"
+      },
+      {
+        "path": "experiments/hcsn_v14_causal_io_20261104/engineering_replay.py",
+        "bytes": 9809,
+        "sha256": "d28639dd028f43712d45ace29bc55465248e858049a8d5892dc7b438cd65e9b3"
+      },
+      {
+        "path": "experiments/hcsn_v14_causal_io_20261104/media_audit.py",
+        "bytes": 10634,
+        "sha256": "b9fec568921295c2bc5c6259483c0607e24b1f410f31d90f4f79cc2a18d280c9"
+      },
+      {
+        "path": "experiments/hcsn_v14_causal_io_20261104/runtime.py",
+        "bytes": 11238,
+        "sha256": "406ab11a7cbffe788490c98d50e165bdcd86ae51b1a2ebbca9186d713d8603f9"
+      },
+      {
+        "path": "experiments/hcsn_v14_causal_io_20261104/test_boundary.py",
+        "bytes": 8822,
+        "sha256": "c81de304753b4508877252e70127f5750a1618a569de70d3f76dc794dfc34ff8"
+      },
+      {
+        "path": "experiments/hcsn_v14_causal_io_20261104/test_runtime.py",
+        "bytes": 13756,
+        "sha256": "4afed10b9ff44f5945f3306c5719f19f544ce66d88049ab8da0230bba1ef8a4c"
+      },
+      {
+        "path": "experiments/hcsn_v14_causal_io_20261104/v13_bridge.py",
+        "bytes": 10411,
+        "sha256": "f000028355f4a2d936c650a32070dbfa936e21202b7e5ef1ebf20026dd9daa08"
+      }
+    ]
+  }
+}

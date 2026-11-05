@@ -1,0 +1,191 @@
+{
+  "schema": "hcsn-v14-causal-io-acceptance.v1",
+  "status": "ENGINEERING_CHECKPOINT_SCIENTIFIC_HOLD",
+  "baseline_commit": "3b9a136c56e9e743d7ecba852d621e1ecabf6bba",
+  "frozen_executed_source_commit": "eee65cf3cdb99a165d0476a25a2426c3e7987006",
+  "source_published_before_model_and_media_runs": true,
+  "new_training_performed": false,
+  "all_blockers_closed": false,
+  "full_multimodal_learning_loop": false,
+  "independent_confirmation": false,
+  "production_activation": false,
+  "historical_exclusion": {
+    "known_recordings": 312,
+    "known_actors": 28,
+    "audio_train_recordings": 288,
+    "joint_train_recordings": 24,
+    "recording_overlap_between_two_known_train_sets": 0,
+    "actor_overlap_between_two_known_train_sets": 0,
+    "complete_historical_ledger": false,
+    "pretraining_contamination_excluded": false,
+    "new_recordings_observed": false,
+    "role": "development"
+  },
+  "boundary": {
+    "generic_packet_modalities": [
+      "text",
+      "audio",
+      "video",
+      "image"
+    ],
+    "exact_source_bytes_validated": true,
+    "declared_identity_and_clock_checked": true,
+    "physical_sync_calibration_measured": false,
+    "learned_cross_modal_identity_qualified": false,
+    "typed_failure_statuses_tested": true,
+    "learned_ood_detection_qualified": false
+  },
+  "frontend": {
+    "historical_real_media_diagnostics": 1,
+    "clock_and_native_indices_equal_prior": true,
+    "accepted_16k_waveform_hash_equal_prior": true,
+    "encoder_executed_in_new_diagnostic": false,
+    "real_online_causal_frontend_qualified": false,
+    "quality_qualified": false,
+    "raw_media_to_encoder_to_core_to_content_executed": false
+  },
+  "runtime": {
+    "normal_tests_passed": 23,
+    "optimized_tests_passed": 23,
+    "idempotent_read_and_atomic_commit": true,
+    "crash_before_acceptance_commit_recovery": true,
+    "reset_cancels_late_result": true,
+    "exact_addressed_text_after_intervening_reads": 1024,
+    "long_storage_fixtures_synthetic": true,
+    "learned_active_reset_policy_qualified": false,
+    "semantic_content_recall_qualified": false,
+    "cross_machine_failover_qualified": false,
+    "external_io_exactly_once_qualified": false
+  },
+  "neural_replay": {
+    "status": "ENGINEERING_PASS",
+    "task": "async_av",
+    "seed": 13301,
+    "device": "cpu",
+    "dtype": "float64",
+    "threads": 1,
+    "original_sequence_index": 0,
+    "actual_core_modalities": [
+      "audio",
+      "video"
+    ],
+    "text_and_image_trained_adapter": false,
+    "output_kind": "class_probabilities",
+    "av_packet_text_empty": true,
+    "six_prefix_difference_by_family": {
+      "hx_full": 0.0,
+      "gru": 0.0,
+      "ssm": 0.0
+    },
+    "parameters_by_family": {
+      "hx_full": 31430,
+      "gru": 32550,
+      "ssm": 29382
+    },
+    "actual_cold_subprocess_recovery_all": true,
+    "actual_reset_checks_all": true,
+    "steps_per_family": 128,
+    "long_replay": "Six historical rows repeated with synthetic three-second time shifts",
+    "long_context_accuracy_qualified": false,
+    "parameter_budget_matched": false,
+    "training_time_matched": false
+  },
+  "gain_attribution": {
+    "frontend": {
+      "status": "NOT_ESTABLISHED",
+      "measured_quality_gain": null
+    },
+    "mathematical_operator_core": {
+      "status": "NOT_ESTABLISHED",
+      "measured_quality_gain": null
+    },
+    "semantic_content_recall": {
+      "status": "NOT_ESTABLISHED",
+      "measured_quality_gain": null
+    },
+    "combination": {
+      "status": "NOT_ESTABLISHED",
+      "measured_quality_gain": null
+    }
+  },
+  "preserved_v13_negative_findings": {
+    "old_exposed_development_results": true,
+    "new_independent_confirmation": false,
+    "value_controller_condition_hx_minus_gru_emotion_utility": -0.1400008333,
+    "value_controller_condition_hx_minus_gru_binding_utility": -0.0027785417,
+    "scope": "Reported historical value-controller condition; not a new proof of identical controller parameters and calibration"
+  },
+  "resources": {
+    "wall_seconds": 78.69496741704643,
+    "self_cpu_seconds": 39.07536,
+    "children_cpu_seconds": 11.24242,
+    "measured_cpu_seconds_total": 50.31778,
+    "self_rss_high_water_kib": 303776,
+    "child_rss_high_water_kib": 309056,
+    "complete_process_family_peak_bytes": null,
+    "gpu_peak_bytes": null,
+    "device_energy_joules": null,
+    "target_gpu_formal_benchmark_executed": false,
+    "inference_latency_quantiles_measured": false,
+    "measurement_scope": "Includes loads, CPU forwards, SQLite transactions, subprocess restart and collection through this receipt; excludes raw AV decode, encoder execution, capture, training and report-write tail"
+  },
+  "independent_review": {
+    "engineering_test_count_per_mode": 23,
+    "post_execution_summary_checks": 23,
+    "post_execution_raw_consistency_checks": 1729,
+    "all_checks_pass": true,
+    "raw_consistency_checks_are_not_independent_model_trials": true
+  },
+  "stages": [
+    {
+      "name": "freeze_inputs_and_provenance",
+      "engineering": "PASS_WITH_INCOMPLETE_HISTORY",
+      "scientific": "HOLD"
+    },
+    {
+      "name": "real_frontend_validation",
+      "engineering": "HISTORICAL_DECODE_DIAGNOSTIC_ONLY",
+      "scientific": "HOLD"
+    },
+    {
+      "name": "control_state_interface",
+      "engineering": "PASS_WITH_DECLARED_SCOPE",
+      "scientific": "HOLD"
+    },
+    {
+      "name": "strong_head_gru_ssm",
+      "engineering": "FROZEN_CHECKPOINT_COMPATIBILITY_PASS",
+      "scientific": "HOLD"
+    },
+    {
+      "name": "out_of_sample",
+      "engineering": "NOT_EXECUTED",
+      "scientific": "HOLD"
+    },
+    {
+      "name": "target_gpu_performance",
+      "engineering": "AVAILABILITY_INVENTORY_ONLY",
+      "scientific": "HOLD"
+    }
+  ],
+  "evidence": {
+    "engineering_result_sha256": "d3a5c6a03b30f9b30cc401f36e71b38d7a18e88e022bab6e20cd84b4f5d6d6bd",
+    "media_report_sha256": "a6fe6134829b531a51304d5921decc8f1b62c6f7e90f0ad269d4961e888fa59f",
+    "archive_path": "evidence/V14_EXECUTED_EVIDENCE.tar.gz",
+    "archive_sha256": "db01fe802631b021f8cbf450ed7a86090014e1a822e879459f94aefb1c0b635d",
+    "archive_bytes": 245951,
+    "source_manifest": "evidence/SOURCE_PUBLICATION.json",
+    "review_summary": "evidence/review/POST_EXECUTION_REVIEW_SUMMARY.json",
+    "readable_report": "REPORT_ZH.md",
+    "future_qualification_design": "QUALIFICATION_PLAN.md"
+  },
+  "open_blockers": [
+    "Complete historical exclusion and original-v6 authenticated equivalence remain unverified",
+    "A new prospective study can proceed separately, with instance-level isolation and honest pretraining limits",
+    "Common genuine multimodal encoders and a qualified strong content head are not connected",
+    "Real semantic content output, identity binding and learned READ/RESET behavior are unqualified",
+    "Strict same-information/controller/parameter/time comparisons have not run",
+    "Independent new-world missingness/OOD/long-query confirmation has not run",
+    "Full target-GPU latency/memory/energy/restart costs are unmeasured"
+  ]
+}

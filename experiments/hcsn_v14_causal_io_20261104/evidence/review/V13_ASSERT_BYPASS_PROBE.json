@@ -1,0 +1,69 @@
+{
+  "schema": "hcsn-v13-independent-freeze-assert-probe.v1",
+  "source_sha256": "3760db42f332cac14134b2f98af8d8d0c2a506c9c0e5cede085b93928ee25be6",
+  "scope": "Actual freeze function AST from pinned v13 source, executed with temporary synthetic metadata and I/O helpers; does not rerun scientific experiment",
+  "results": [
+    {
+      "python_optimization": 0,
+      "fault": "updates",
+      "outcome": "AssertionError",
+      "candidate_manifest_written": false
+    },
+    {
+      "python_optimization": 0,
+      "fault": "weight_hash",
+      "outcome": "AssertionError",
+      "candidate_manifest_written": false
+    },
+    {
+      "python_optimization": 0,
+      "fault": "normalization_hash",
+      "outcome": "AssertionError",
+      "candidate_manifest_written": false
+    },
+    {
+      "python_optimization": 0,
+      "fault": "stream_mismatch",
+      "outcome": "AssertionError",
+      "candidate_manifest_written": false
+    },
+    {
+      "python_optimization": 0,
+      "fault": "initial_mismatch",
+      "outcome": "AssertionError",
+      "candidate_manifest_written": false
+    },
+    {
+      "python_optimization": 2,
+      "fault": "updates",
+      "outcome": "ACCEPTED_INVALID_FIXTURE",
+      "candidate_manifest_written": true
+    },
+    {
+      "python_optimization": 2,
+      "fault": "weight_hash",
+      "outcome": "ACCEPTED_INVALID_FIXTURE",
+      "candidate_manifest_written": true
+    },
+    {
+      "python_optimization": 2,
+      "fault": "normalization_hash",
+      "outcome": "ACCEPTED_INVALID_FIXTURE",
+      "candidate_manifest_written": true
+    },
+    {
+      "python_optimization": 2,
+      "fault": "stream_mismatch",
+      "outcome": "ACCEPTED_INVALID_FIXTURE",
+      "candidate_manifest_written": true
+    },
+    {
+      "python_optimization": 2,
+      "fault": "initial_mismatch",
+      "outcome": "ACCEPTED_INVALID_FIXTURE",
+      "candidate_manifest_written": true
+    }
+  ],
+  "all_checks_removed_with_optimize2": true,
+  "all_checks_active_without_optimization": true
+}
