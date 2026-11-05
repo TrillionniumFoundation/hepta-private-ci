@@ -1,0 +1,92 @@
+{
+  "label": "b0b7-automation-authorized-effect-first-test",
+  "command": [
+    "/home/qian/.cargo/bin/just",
+    "test",
+    "--locked",
+    "-p",
+    "codex-hepta-automation",
+    "--test",
+    "authorized_effect"
+  ],
+  "exit_code": 0,
+  "started_unix_s": 1793887684.7466624,
+  "finished_unix_s": 1793887990.1054552,
+  "pre": {
+    "head": "b0b7d95105bb4c63b422c3097e159caa6c65fe00",
+    "tree": "89fc387e70e2a0f96edf0a6a0e096b54fe9d8a9d",
+    "source_manifest_sha256": "6a47c894f71161cb64e30bb4690d067b71234a1460ac2dd2fab6592dc0df0240",
+    "cargo_lock_sha256": "0f458d7746a0ca0b95bedc5404fd3347c1b0a7508f1c387f3b1f3f71ced08663",
+    "target": "/home/qian/pq-effects-2c2b-target",
+    "target_device": 2053,
+    "target_inode": 2003125,
+    "tracked_count": 11834,
+    "materialized_count": 9764,
+    "disk_free": 9351245824,
+    "status": ""
+  },
+  "post": {
+    "head": "b0b7d95105bb4c63b422c3097e159caa6c65fe00",
+    "tree": "89fc387e70e2a0f96edf0a6a0e096b54fe9d8a9d",
+    "source_manifest_sha256": "6a47c894f71161cb64e30bb4690d067b71234a1460ac2dd2fab6592dc0df0240",
+    "cargo_lock_sha256": "0f458d7746a0ca0b95bedc5404fd3347c1b0a7508f1c387f3b1f3f71ced08663",
+    "target": "/home/qian/pq-effects-2c2b-target",
+    "target_device": 2053,
+    "target_inode": 2003125,
+    "tracked_count": 11834,
+    "materialized_count": 9764,
+    "disk_free": 6394060800,
+    "status": ""
+  },
+  "source_unchanged": true,
+  "sourceclean": true,
+  "cargo_lock_unchanged": true,
+  "stdout_path": "/home/qian/pq-effects-2c2b-validation/b0b7-automation-authorized-effect-first-test-stdout.log",
+  "stderr_path": "/home/qian/pq-effects-2c2b-validation/b0b7-automation-authorized-effect-first-test-stderr.log",
+  "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "stderr_sha256": "a61b963d9448773915a668a959c5136267e2964227c0c84c3f4886b4df7d0685",
+  "workflow_sha256": {
+    "justfile": "837b31ce1b29a48a69dac729357deb034dbf111845990e95b916dc55d0e1b061",
+    "scripts/run-nextest.py": "b939d9c06af3269924e05de14abb1cc7e4c44be32024325a593300b5199dd385",
+    "codex-rs/.config/nextest.toml": "3ec2f9a8ed35c5582fe5d59b4ad427e5e87249c5e7d84cf149dd9874c1f9d222",
+    "codex-rs/rust-toolchain.toml": "e8b379eaa492bf59d35187de269afd1c4f55d85e0322f6fea32803a3fec1a380"
+  },
+  "profile": "local (original justfile selection; inherits default)",
+  "build_jobs": 2,
+  "junit_before": {
+    "kind": "file",
+    "device": 2053,
+    "inode": 2127541,
+    "size": 17668,
+    "mtime_ns": 1793887416415358692,
+    "sha256": "2aaba270ae080bcb38c336e1a8918d6736df00e132129833b93df8a4809e9822"
+  },
+  "junit_after": {
+    "kind": "file",
+    "device": 2053,
+    "inode": 2127541,
+    "size": 10183,
+    "mtime_ns": 1793887989704226628,
+    "sha256": "6fb3470ee60695fad92823f5394aa169829caf49c10e4c470297e9f185061ab5"
+  },
+  "junit_saved": {
+    "path": "/home/qian/pq-effects-2c2b-validation/b0b7-automation-authorized-effect-first-test-junit.xml",
+    "sha256": "6fb3470ee60695fad92823f5394aa169829caf49c10e4c470297e9f185061ab5",
+    "size": 10183,
+    "source_path": "/home/qian/pq-effects-2c2b-20261105/codex-rs/target/nextest/local/junit.xml"
+  },
+  "new_test_elf_artifacts": [
+    {
+      "path": "/home/qian/pq-effects-2c2b-target/debug/deps/authorized_effect-972e9e667b1e0ea6",
+      "kind": "file",
+      "device": 2053,
+      "inode": 2052160,
+      "size": 267799416,
+      "mtime_ns": 1793887979702224436,
+      "sha256": "0fc92d02e31d64d0d8e7ede50d0a45f237bb1bcd570f69ad486048ea10321ba8",
+      "freshness": "new_or_changed_ELF_during_this_command",
+      "before": null
+    }
+  ],
+  "artifact_scope_note": "Only selected-target ELF files newly created or changed within this command interval; no unmodified cached ELF is claimed as a new build."
+}

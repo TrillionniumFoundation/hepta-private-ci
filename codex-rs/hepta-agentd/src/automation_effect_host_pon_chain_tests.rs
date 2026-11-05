@@ -24,11 +24,11 @@ use std::time::UNIX_EPOCH;
 
 type TestResult = Result<(), Box<dyn std::error::Error>>;
 
-struct Chain {
-    binary: PathBuf,
-    digest: Sha256Digest,
-    genesis_time: u64,
-    backend: &'static str,
+pub(in super::super) struct Chain {
+    pub(in super::super) binary: PathBuf,
+    pub(in super::super) digest: Sha256Digest,
+    pub(in super::super) genesis_time: u64,
+    pub(in super::super) backend: &'static str,
 }
 impl Chain {
     fn command(&self, operation: &str, store: &Path, executable: &Path) -> Command {
@@ -52,7 +52,7 @@ impl Chain {
             .arg("1");
         command
     }
-    async fn call(
+    pub(in super::super) async fn call(
         &self,
         operation: &str,
         store: &Path,
@@ -85,7 +85,7 @@ impl Chain {
             timeout: Duration::from_secs(30),
         }
     }
-    async fn packet(
+    pub(in super::super) async fn packet(
         &self,
         operation: &str,
         store: &Path,

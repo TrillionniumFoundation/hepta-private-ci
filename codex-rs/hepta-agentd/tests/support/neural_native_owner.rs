@@ -4,6 +4,7 @@
 use std::collections::BTreeMap;
 use std::collections::BTreeSet;
 use std::fs;
+use std::io::Read;
 use std::path::Path;
 use std::path::PathBuf;
 use std::sync::Arc;
@@ -42,6 +43,9 @@ pub type Result<T> = std::result::Result<T, Box<dyn std::error::Error>>;
 pub struct Input {
     pub schema: String,
     pub python: PathBuf,
+    /// Operator-pinned before this comparison; never captured during model loading.
+    pub runtime_snapshot: PathBuf,
+    pub runtime_snapshot_sha256: String,
     pub chain: PathBuf,
     pub materials: PathBuf,
     pub baseline_parent: PathBuf,
@@ -79,12 +83,30 @@ pub fn model(
     let target_contract = fs::read(directory.join("target-contract.json"))?;
     let contract: serde_json::Value = serde_json::from_slice(&target_contract)?;
     let wrapped_adapter = fs::read(directory.join("wrapped-adapter.json"))?;
+    let mut runtime_snapshot = Vec::new();
+    fs::File::open(&input.runtime_snapshot)?
+        .take(16 * 1024 * 1024 + 1)
+        .read_to_end(&mut runtime_snapshot)?;
+    let expected_runtime_snapshot: Digest32 = input.runtime_snapshot_sha256.parse()?;
+    if runtime_snapshot.is_empty()
+        || runtime_snapshot.len() > 16 * 1024 * 1024
+        || Digest32::of_bytes(&runtime_snapshot) != expected_runtime_snapshot
+    {
+        return Err("independently pinned runtime snapshot mismatch".into());
+    }
     let mut source_pins = BTreeMap::new();
     for relative in [
+        "formal/pon-nakamoto-v1/contract_wire.py",
+        "config/pon/devnet-v1.json",
+        "config/pon/ledger-v1.json",
+        "config/pon/model-family-v1.json",
+        "config/pon/work-profile-v1.json",
         "formal/pon-nakamoto-v1/llm_adapter_contract.py",
+        "scripts/llm_base_material.py",
         "scripts/llm_inherited_runtime.py",
         "scripts/llm_neural_read_worker.py",
         "scripts/llm_parent_material.py",
+        "scripts/llm_python_runtime_contract.py",
         "scripts/llm_runtime_pilot.py",
         "config/pon/model-family-smollm2-135m-v1.json",
     ] {
@@ -100,6 +122,7 @@ pub fn model(
         materials: input.materials.clone(),
         run_directory: input.output.join(format!("original-{name}-model-session")),
         source_pins,
+        runtime_snapshot,
         target_contract,
         wrapped_adapter,
         contract_digest: parent["contract"]

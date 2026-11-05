@@ -60,6 +60,9 @@ use sha2::Sha256;
 use crate::AgentdError;
 use crate::AgentdIdentity;
 
+#[path = "automation_effect_host_pq.rs"]
+mod pq;
+
 #[path = "automation_effect_host_pon_task_acceptance.rs"]
 mod pon_task_acceptance;
 
@@ -72,15 +75,20 @@ mod pon_process;
 #[path = "automation_effect_host_pon_tests.rs"]
 mod pon_lifecycle_tests;
 
+#[cfg(test)]
 const AUTOMATION_EFFECT_HOST_SCHEMA_VERSION: u32 = 1;
+#[cfg(test)]
 const MAX_AUTOMATION_EFFECT_HOST_FILE_BYTES: u64 = 64 * 1024;
 const MAX_AUTOMATION_EFFECT_REVOCATIONS_FILE_BYTES: u64 = 4 * 1024 * 1024;
 const MAX_PROVIDER_HEADERS: usize = 64;
+#[cfg(test)]
 const AUTOMATION_EFFECT_HOST_PON_SCHEMA_VERSION: u32 = 3;
+#[cfg(test)]
 const PON_PROVIDER_KIND: &str = "trillionnium-pon-local-v1";
 const MAX_PON_BINARY_BYTES: u64 = 256 * 1024 * 1024;
 const MAX_PON_PROCESS_OUTPUT_BYTES: usize = 64 * 1024;
 
+#[cfg(test)]
 #[derive(Clone, Debug, Deserialize)]
 #[serde(deny_unknown_fields)]
 struct AutomationEffectHostFileV3 {
@@ -111,6 +119,7 @@ struct AutomationEffectHostFileV3 {
     final_use_revocations_file: PathBuf,
 }
 
+#[cfg(test)]
 enum AutomationEffectHostFile {
     Http(AutomationEffectHostFileV1),
     Pon(AutomationEffectHostFileV3),
@@ -778,6 +787,7 @@ fn verify_pinned_binary(path: &Path, expected: &Sha256Digest) -> Result<(), Agen
     Ok(())
 }
 
+#[cfg(test)]
 fn pon_contract_digest(config: &AutomationEffectHostFileV3) -> Result<Sha256Digest, AgentdError> {
     let value = serde_json::json!({
         "schema":"hepta-agentd-pon-provider-contract-v2",
@@ -819,6 +829,7 @@ pub(crate) struct AgentdAutomationEffectHost {
     destination_id: String,
     final_use_scope_digest: Sha256Digest,
     authority: FinalUseAuthority,
+    pq: Option<Arc<pq::PqEffectAuthority>>,
     revocations_file: PathBuf,
     // Serialize refreshes; the existing durable authority owns the only head.
     revocation_refresh: Arc<Mutex<()>>,
@@ -838,6 +849,7 @@ impl std::fmt::Debug for AgentdAutomationEffectHost {
     }
 }
 
+#[cfg(test)]
 #[derive(Debug, Deserialize)]
 #[serde(deny_unknown_fields)]
 struct AutomationEffectHostFileV1 {
@@ -862,6 +874,13 @@ struct AutomationEffectHostFileV1 {
 
 impl AgentdAutomationEffectHost {
     pub(crate) fn open(identity: &AgentdIdentity, path: &Path) -> Result<Self, AgentdError> {
+        pq::open(identity, path)
+    }
+
+    // Historical protocol tests keep their exact fixtures and assertions. This
+    // constructor is absent from product builds and from the ordinary loader.
+    #[cfg(test)]
+    fn open_legacy_for_test(identity: &AgentdIdentity, path: &Path) -> Result<Self, AgentdError> {
         let config = match read_host_file(path)? {
             AutomationEffectHostFile::Http(config) => config,
             AutomationEffectHostFile::Pon(config) => return Self::open_pon(identity, config),
@@ -964,12 +983,14 @@ impl AgentdAutomationEffectHost {
             destination_id: config.destination_id,
             final_use_scope_digest,
             authority,
+            pq: None,
             revocations_file: config.final_use_revocations_file,
             revocation_refresh: Arc::new(Mutex::new(())),
             adapter: AgentdProviderEffectAdapter::Http(adapter),
         })
     }
 
+    #[cfg(test)]
     fn open_pon(
         identity: &AgentdIdentity,
         config: AutomationEffectHostFileV3,
@@ -1090,6 +1111,7 @@ impl AgentdAutomationEffectHost {
             destination_id: config.destination_id,
             final_use_scope_digest,
             authority,
+            pq: None,
             revocations_file: config.final_use_revocations_file,
             revocation_refresh: Arc::new(Mutex::new(())),
             adapter: AgentdProviderEffectAdapter::Pon(adapter),
@@ -1111,7 +1133,8 @@ impl AgentdAutomationEffectHost {
             ));
         }
         self.validate_intent(intent, wire_payload)?;
-        self.refresh_revocations()?;
+        // Exact terminal readback mints no authority and must remain usable
+        // after a grant expires or its issuer is revoked.
         if let Some(receipt) = store
             .read_authorized_taskflow_effect_receipt(intent, command_id)
             .await
@@ -1121,6 +1144,25 @@ impl AgentdAutomationEffectHost {
         {
             return Ok(receipt);
         }
+        let lease = if let Some(pq) = &self.pq {
+            let _refresh = self.revocation_refresh.lock().map_err(|_| {
+                AgentdError::Protocol("automation revocation refresh lock is poisoned".to_string())
+            })?;
+            pq::EffectDispatchLease::Pq(pq.authenticate(
+                &self.authority,
+                &self.revocations_file,
+                signed_grant,
+            )?)
+        } else {
+            #[cfg(test)]
+            self.refresh_revocations()?;
+            #[cfg(not(test))]
+            return Err(AgentdError::Invalid(
+                "ordinary automation effect PQ owner missing".to_string(),
+            ));
+            #[cfg(test)]
+            pq::EffectDispatchLease::ClassicalFixture
+        };
         let run = store
             .taskflow_run(&intent.run_id)
             .await
@@ -1134,6 +1176,7 @@ impl AgentdAutomationEffectHost {
             .map_err(|error| AgentdError::Invalid(error.to_string()))?;
         let mut driver = AgentdAuthorizedEffectDriver {
             adapter: self.adapter.clone(),
+            lease,
             provider_scope: self.provider_scope.clone(),
             destination_id: self.destination_id.clone(),
         };
@@ -1311,6 +1354,7 @@ impl AgentdAutomationEffectHost {
         }
     }
 
+    #[cfg(test)]
     fn refresh_revocations(&self) -> Result<(), AgentdError> {
         // A numeric (epoch, revision) cache cannot detect same-head content
         // drift or a head advanced through another clone of the authority.
@@ -1458,6 +1502,7 @@ impl AgentdAutomationEffectHost {
 
 struct AgentdAuthorizedEffectDriver {
     adapter: AgentdProviderEffectAdapter,
+    lease: pq::EffectDispatchLease,
     provider_scope: String,
     destination_id: String,
 }
@@ -1487,6 +1532,7 @@ impl AuthorizedEffectDriver for AgentdAuthorizedEffectDriver {
         if request.intent.destination_id != self.destination_id {
             return Err(AuthorizedEffectDriverError::BeforeProviderContact);
         }
+        self.lease.check()?;
         let expected = self.recovery_key(request.owner_agent_id, request.intent)?;
         let legacy = ProviderEffectKey::for_operation(
             &self.provider_scope,
@@ -1504,6 +1550,7 @@ impl AuthorizedEffectDriver for AgentdAuthorizedEffectDriver {
         let adapter = self.adapter.clone();
         let wire_payload = request.wire_payload.to_vec();
         let thread_intent = provider_intent.clone();
+        let lease = self.lease.clone();
         let spawn = thread::Builder::new()
             .name("hepta-automation-provider-effect".to_string())
             .spawn(move || {
@@ -1514,6 +1561,9 @@ impl AuthorizedEffectDriver for AgentdAuthorizedEffectDriver {
                     Ok(runtime) => runtime,
                     Err(_) => return ProviderThreadOutcome::BeforeContact,
                 };
+                if lease.check().is_err() {
+                    return ProviderThreadOutcome::BeforeContact;
+                }
                 ProviderThreadOutcome::Dispatch(
                     runtime.block_on(adapter.dispatch_with_payload(&thread_intent, &wire_payload)),
                 )
@@ -1583,6 +1633,7 @@ fn serialized_observation_digest(domain: &[u8], value: &impl serde::Serialize) -
     Sha256Digest::for_bytes(&bytes)
 }
 
+#[cfg(test)]
 fn read_host_file(path: &Path) -> Result<AutomationEffectHostFile, AgentdError> {
     let bytes = read_protected_file(
         path,
@@ -1603,6 +1654,7 @@ fn read_host_file(path: &Path) -> Result<AutomationEffectHostFile, AgentdError> 
     }
 }
 
+#[cfg(test)]
 fn read_revocations_file(path: &Path) -> Result<FinalUseRevocations, AgentdError> {
     let bytes = read_protected_file(
         path,
@@ -1616,33 +1668,54 @@ fn read_protected_file(path: &Path, max_bytes: u64, label: &str) -> Result<Vec<u
     if !path.is_absolute() {
         return Err(AgentdError::Invalid(format!("{label} must be absolute")));
     }
-    let canonical = path.canonicalize()?;
-    if canonical != path {
-        return Err(AgentdError::Invalid(format!(
-            "{label} must be canonical and symlink-free"
-        )));
-    }
-    let metadata = fs::symlink_metadata(path)?;
-    if metadata.file_type().is_symlink() || !metadata.is_file() {
+    // Reject special files before open as well as checking the opened file.
+    // All content and permission checks below refer to that same descriptor.
+    let initial = fs::symlink_metadata(path)?;
+    if !initial.is_file() || initial.file_type().is_symlink() {
         return Err(AgentdError::Invalid(format!(
             "{label} must be a regular non-symlink file"
         )));
     }
-    if metadata.len() == 0 || metadata.len() > max_bytes {
+    let mut file = fs::File::open(path)?;
+    let metadata = file.metadata()?;
+    let named = fs::symlink_metadata(path)?;
+    if !metadata.is_file()
+        || named.file_type().is_symlink()
+        || path.canonicalize()?.as_os_str() != path.as_os_str()
+        || metadata.len() == 0
+        || metadata.len() > max_bytes
+    {
         return Err(AgentdError::Invalid(format!(
-            "{label} is empty or too large"
+            "{label} must be a bounded canonical regular file"
         )));
     }
     #[cfg(unix)]
     {
-        use std::os::unix::fs::PermissionsExt;
-        if metadata.permissions().mode() & 0o077 != 0 {
+        use std::os::unix::fs::MetadataExt;
+        let parent = fs::metadata(
+            path.parent()
+                .ok_or_else(|| AgentdError::Invalid(format!("{label} has no parent")))?,
+        )?;
+        if metadata.mode() & 0o077 != 0
+            || metadata.nlink() != 1
+            || metadata.dev() != named.dev()
+            || metadata.ino() != named.ino()
+            || metadata.uid() != parent.uid()
+            || parent.mode() & 0o022 != 0
+        {
             return Err(AgentdError::Invalid(format!(
-                "{label} must not be group/world accessible"
+                "{label} file identity or private ownership is unsafe"
             )));
         }
     }
-    Ok(fs::read(path)?)
+    let mut bytes = Vec::new();
+    file.by_ref().take(max_bytes + 1).read_to_end(&mut bytes)?;
+    if bytes.is_empty() || bytes.len() as u64 > max_bytes || bytes.len() as u64 != metadata.len() {
+        return Err(AgentdError::Invalid(format!(
+            "{label} changed size or exceeded its bound"
+        )));
+    }
+    Ok(bytes)
 }
 
 fn validate_host_identifier(label: &str, value: &str) -> Result<(), AgentdError> {
@@ -1659,6 +1732,7 @@ fn validate_host_identifier(label: &str, value: &str) -> Result<(), AgentdError>
     Ok(())
 }
 
+#[cfg(test)]
 fn decode_hex_array<const N: usize>(value: &str, label: &str) -> Result<[u8; N], AgentdError> {
     if value.len() != N * 2 {
         return Err(AgentdError::Invalid(format!(
@@ -1677,6 +1751,7 @@ fn decode_hex_array<const N: usize>(value: &str, label: &str) -> Result<[u8; N],
     Ok(output)
 }
 
+#[cfg(test)]
 fn hex_nibble(value: u8) -> Option<u8> {
     match value {
         b'0'..=b'9' => Some(value - b'0'),
@@ -2191,7 +2266,7 @@ mod tests {
         fs::set_permissions(&host_file, fs::Permissions::from_mode(0o600))
             .context("host file permissions")?;
 
-        let host = AgentdAutomationEffectHost::open(&fixture.identity, &host_file)
+        let host = AgentdAutomationEffectHost::open_legacy_for_test(&fixture.identity, &host_file)
             .context("effect host")?;
         Ok((host, final_use_signer, revocations_file))
     }

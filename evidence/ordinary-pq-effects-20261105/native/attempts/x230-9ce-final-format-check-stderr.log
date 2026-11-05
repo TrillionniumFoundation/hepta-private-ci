@@ -1,0 +1,29 @@
+==> Rust formatter failed
+$ rustfmt --edition 2024 --config imports_granularity=Item,skip_children=true --check -- /home/qian/pq-effects-2c2b-20261105/codex-rs/hepta-agentd/src/automation_effect_host_pq_chain_tests.rs
+Warning: can't set `imports_granularity = Item`, unstable features are only available in nightly channel.
+Diff in /home/qian/pq-effects-2c2b-20261105/codex-rs/hepta-agentd/src/automation_effect_host_pq_chain_tests.rs:118:
+                 NOW + 5,
+             )
+             .await?;
+-        assert_eq!(receipt.observation, Some(TaskFlowStepObservation::Succeeded));
++        assert_eq!(
++            receipt.observation,
++            Some(TaskFlowStepObservation::Succeeded)
++        );
+         let durable = fixture
+             .store
+             .authorized_taskflow_effect_attempt(&intent.run_id, &intent.step_id, intent.attempt)
+Diff in /home/qian/pq-effects-2c2b-20261105/codex-rs/hepta-agentd/src/automation_effect_host_pq_chain_tests.rs:157:
+             ),
+             ProviderEffectAckSource::DispatchResponse,
+         );
+-        assert_eq!(receipt.receipt_digest.as_ref(), Some(&expected.receipt_digest));
++        assert_eq!(
++            receipt.receipt_digest.as_ref(),
++            Some(&expected.receipt_digest)
++        );
+         let consumed = host.authority.frontier()?;
+         assert_eq!(host.authority.capacity()?.used_nonces, 1);
+         assert_eq!(
+Formatting failed: Rust
+error: recipe `fmt` failed on line 51 with exit code 1

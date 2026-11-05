@@ -1,0 +1,71 @@
+{
+  "label": "b0b7-model-provider-first-test",
+  "command": [
+    "/home/qian/.cargo/bin/just",
+    "test",
+    "--locked",
+    "-p",
+    "codex-model-provider"
+  ],
+  "exit_code": 0,
+  "started_unix_s": 1793886876.2448983,
+  "finished_unix_s": 1793887416.7787685,
+  "pre": {
+    "head": "b0b7d95105bb4c63b422c3097e159caa6c65fe00",
+    "tree": "89fc387e70e2a0f96edf0a6a0e096b54fe9d8a9d",
+    "source_manifest_sha256": "6a47c894f71161cb64e30bb4690d067b71234a1460ac2dd2fab6592dc0df0240",
+    "cargo_lock_sha256": "0f458d7746a0ca0b95bedc5404fd3347c1b0a7508f1c387f3b1f3f71ced08663",
+    "target": "/home/qian/pq-effects-2c2b-target",
+    "target_device": 2053,
+    "target_inode": 2003125,
+    "tracked_count": 11834,
+    "materialized_count": 9764,
+    "disk_free": 14233755648,
+    "status": ""
+  },
+  "post": {
+    "head": "b0b7d95105bb4c63b422c3097e159caa6c65fe00",
+    "tree": "89fc387e70e2a0f96edf0a6a0e096b54fe9d8a9d",
+    "source_manifest_sha256": "6a47c894f71161cb64e30bb4690d067b71234a1460ac2dd2fab6592dc0df0240",
+    "cargo_lock_sha256": "0f458d7746a0ca0b95bedc5404fd3347c1b0a7508f1c387f3b1f3f71ced08663",
+    "target": "/home/qian/pq-effects-2c2b-target",
+    "target_device": 2053,
+    "target_inode": 2003125,
+    "tracked_count": 11834,
+    "materialized_count": 9764,
+    "disk_free": 9354792960,
+    "status": ""
+  },
+  "source_unchanged": true,
+  "sourceclean": true,
+  "cargo_lock_unchanged": true,
+  "stdout_path": "/home/qian/pq-effects-2c2b-validation/b0b7-model-provider-first-test-stdout.log",
+  "stderr_path": "/home/qian/pq-effects-2c2b-validation/b0b7-model-provider-first-test-stderr.log",
+  "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "stderr_sha256": "b922bf769de40c30d195d125d461de80471bfc0a7cea22ce4d3c2485402f52a3",
+  "workflow_sha256": {
+    "justfile": "837b31ce1b29a48a69dac729357deb034dbf111845990e95b916dc55d0e1b061",
+    "scripts/run-nextest.py": "b939d9c06af3269924e05de14abb1cc7e4c44be32024325a593300b5199dd385",
+    "codex-rs/.config/nextest.toml": "3ec2f9a8ed35c5582fe5d59b4ad427e5e87249c5e7d84cf149dd9874c1f9d222",
+    "codex-rs/rust-toolchain.toml": "e8b379eaa492bf59d35187de269afd1c4f55d85e0322f6fea32803a3fec1a380"
+  },
+  "profile": "local (original justfile selection; inherits default)",
+  "build_jobs": 2,
+  "junit_before": null,
+  "junit_after": null,
+  "junit_saved": null,
+  "new_test_elf_artifacts": [
+    {
+      "path": "/home/qian/pq-effects-2c2b-target/debug/deps/codex_model_provider-c530c1ff3e20408e",
+      "kind": "file",
+      "device": 2053,
+      "inode": 2048012,
+      "size": 418620176,
+      "mtime_ns": 1793887409508364911,
+      "sha256": "fdc493b6fc9acf89f15d2b3689b100c16bd0e509d01847bc52be4702d4853cd5",
+      "freshness": "new_or_changed_ELF_during_this_command",
+      "before": null
+    }
+  ],
+  "artifact_scope_note": "Only selected-target ELF files newly created or changed within this command interval; no unmodified cached ELF is claimed as a new build."
+}

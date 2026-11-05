@@ -1,0 +1,93 @@
+{
+  "schema": "hepta-fixed-chain-input-transfer-history-v1",
+  "source_commit": "04be5f02c84cf5cb626a53f34bc03a5bd6ff5137",
+  "source_tree": "d4f4a85c439982d8decec9265c1993408f3577cf",
+  "binary_sha256": "095458755051afd137478145a42b5edb94ee32587837e4723931317900a955d9",
+  "binary_bytes": 14519384,
+  "gzip_sha256": "403cc60a51823e7eaaaf0c5281c5eaae96fc116560a0cb1d5ba3d20bd032ff7c",
+  "gzip_bytes": 5538176,
+  "typed_upload_id": "chain-node-04be-2c2b-20261105",
+  "typed_target": "/home/qian-qi/work/hepta-pq-effects-2c2b-chain-04be-20261105/evidence/trnm-pon-node.04be.x86_64.gz",
+  "events": [
+    {
+      "action": "read",
+      "offset": 0,
+      "bytes": 65536,
+      "outcome": "MCP request timed out; read-only"
+    },
+    {
+      "action": "read",
+      "offset": 0,
+      "bytes": 12288,
+      "outcome": "version-pinned success"
+    },
+    {
+      "action": "upload_chunk",
+      "offset": 0,
+      "bytes": 12288,
+      "next_offset": 12288,
+      "visible": false
+    },
+    {
+      "action": "upload_chunk",
+      "offset": 12288,
+      "bytes": 262128,
+      "next_offset": 274416,
+      "visible": false
+    },
+    {
+      "action": "upload_chunk",
+      "offset": 274416,
+      "bytes": 524256,
+      "outcome": "MCP request timed out; initially unknown"
+    },
+    {
+      "action": "exact_upload_replay",
+      "offset": 274416,
+      "bytes": 524256,
+      "next_offset": 798672,
+      "visible": false
+    },
+    {
+      "action": "read",
+      "offset": 929736,
+      "bytes": 32766,
+      "attempts": 2,
+      "outcome": "MCP request timed out twice"
+    },
+    {
+      "action": "stop_pipeline",
+      "last_acknowledged_offset": 798672,
+      "upload_in_flight": false,
+      "remaining_requests_read_only": true
+    }
+  ],
+  "typed_commit_performed": false,
+  "typed_abort_performed": true,
+  "replacement_transport": {
+    "owner": "pq_scope under root authorization",
+    "method": "existing SSH aliases; separate CLI destination",
+    "original_transfer_job": "1a1ac30a1dc-fc05-52ba",
+    "original_transfer_exit_code": 1,
+    "original_help_probe": "EXPLICIT_DEVELOPMENT_REQUIRED: public test identities; no monetary value",
+    "original_failure_retained": true,
+    "artifact_validation_job": "1a1ac32afd8-fc05-52d2",
+    "artifact_validation_exit_code": 0,
+    "artifact_validation_receipt": "node-cli-validation.json",
+    "artifact_validation_receipt_sha256": "54e4a02f062cc27c4c130ad5a581d01eae33e9072cf9dd158f24d4a114ec64be",
+    "node_destination": "/home/qian-qi/work/hepta-pq-effects-2c2b-chain-04be-20261105/bin/trnm-pon-node",
+    "gzip_destination": "/home/qian-qi/work/hepta-pq-effects-2c2b-chain-04be-20261105/evidence/cli-transfer-ee57-20261105-v1/trnm-pon-node.04be.cli.gz",
+    "mode": "0o555",
+    "nlink": 1,
+    "elf_class": 64,
+    "elf_machine": 62,
+    "ldd_exit_code": 0,
+    "business_submit_by_this_agent": false
+  },
+  "source_elf_unchanged": true,
+  "business_submit_performed": false,
+  "typed_abort_receipt": "typed-upload-abort.json",
+  "typed_abort_result": {
+    "aborted": true
+  }
+}

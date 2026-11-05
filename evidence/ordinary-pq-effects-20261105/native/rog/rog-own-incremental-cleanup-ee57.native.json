@@ -1,0 +1,81 @@
+{
+  "action": "remove only this task regenerable incremental cache",
+  "path": "/home/qian-qi/work/hepta-pq-effects-2c2b-target/debug/incremental",
+  "cargo_lock": "/home/qian-qi/work/hepta-pq-effects-2c2b-target/debug/.cargo-lock",
+  "lock_mode": "exclusive nonblocking held through cleanup",
+  "native_job_terminals": [
+    {
+      "job_id": "1a1ac0d2769-fc05-51f0",
+      "state": "succeeded",
+      "exit_code": 0
+    },
+    {
+      "job_id": "1a1ac19e3d5-fc05-5235",
+      "state": "succeeded",
+      "exit_code": 0
+    },
+    {
+      "job_id": "1a1ac341327-fc05-52dc",
+      "state": "failed",
+      "exit_code": 100
+    }
+  ],
+  "terminal_basis": "previous authoritative process_status observations",
+  "head_before": "ee57cd57c322a8fecdf674a662c741452baf6478",
+  "tree_before": "ec40412aff2091fd05e0feaf31a46179f8afaa46",
+  "cargo_lock_sha256_before": "0f458d7746a0ca0b95bedc5404fd3347c1b0a7508f1c387f3b1f3f71ced08663",
+  "source_clean_before": true,
+  "test_elf_before": [
+    {
+      "path": "/home/qian-qi/work/hepta-pq-effects-2c2b-target/debug/deps/codex_hepta_agentd-b1f0709e78245ce8",
+      "bytes": 1284198808,
+      "sha256": "c2d19ddbea51e84257a2db6968f3d541ac858955a05d026762b716293907ed92",
+      "inode": 38213662,
+      "device": 66306
+    },
+    {
+      "path": "/home/qian-qi/work/hepta-pq-effects-2c2b-target/debug/deps/neural_cognitive_bootstrap-1e2f5115385303f4",
+      "bytes": 830743216,
+      "sha256": "1e8e50d862920ba5de1a8dc6d914cf5bc7df7762daa9c5dccad62c968afa7d96",
+      "inode": 38213852,
+      "device": 66306
+    }
+  ],
+  "incremental_du_bytes_before": 12604919808,
+  "free_bytes_before": 7443947520,
+  "start_utc": "2026-11-05T15:14:51.823667+00:00",
+  "retained": [
+    "debug/deps",
+    "source",
+    "all evidence",
+    "Chain Node",
+    "all other task directories"
+  ],
+  "completed": true,
+  "duration_seconds": 1.803133808018174,
+  "end_utc": "2026-11-05T15:14:53.626935+00:00",
+  "free_bytes_after": 19495342080,
+  "incremental_path_absent": true,
+  "test_elf_after": [
+    {
+      "path": "/home/qian-qi/work/hepta-pq-effects-2c2b-target/debug/deps/codex_hepta_agentd-b1f0709e78245ce8",
+      "bytes": 1284198808,
+      "sha256": "c2d19ddbea51e84257a2db6968f3d541ac858955a05d026762b716293907ed92",
+      "inode": 38213662,
+      "device": 66306
+    },
+    {
+      "path": "/home/qian-qi/work/hepta-pq-effects-2c2b-target/debug/deps/neural_cognitive_bootstrap-1e2f5115385303f4",
+      "bytes": 830743216,
+      "sha256": "1e8e50d862920ba5de1a8dc6d914cf5bc7df7762daa9c5dccad62c968afa7d96",
+      "inode": 38213852,
+      "device": 66306
+    }
+  ],
+  "head_after": "ee57cd57c322a8fecdf674a662c741452baf6478",
+  "tree_after": "ec40412aff2091fd05e0feaf31a46179f8afaa46",
+  "source_status_after": "",
+  "cargo_lock_sha256_after": "0f458d7746a0ca0b95bedc5404fd3347c1b0a7508f1c387f3b1f3f71ced08663",
+  "cargo_clean_executed": false,
+  "tests_rerun": false
+}

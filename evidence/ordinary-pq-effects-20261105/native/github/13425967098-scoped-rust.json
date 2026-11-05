@@ -1,0 +1,59 @@
+{
+  "after": {
+    "commit": "ee57cd57c322a8fecdf674a662c741452baf6478",
+    "dirty": false,
+    "parents": [
+      "5957eb3bb9887c71abefb1e7ea6febba8b7969ce"
+    ],
+    "tree": "ec40412aff2091fd05e0feaf31a46179f8afaa46"
+  },
+  "base_sha": "1556a4df6e279055fd8196f81a4ca2fe0f19384a",
+  "before": {
+    "commit": "ee57cd57c322a8fecdf674a662c741452baf6478",
+    "dirty": false,
+    "parents": [
+      "5957eb3bb9887c71abefb1e7ea6febba8b7969ce"
+    ],
+    "tree": "ec40412aff2091fd05e0feaf31a46179f8afaa46"
+  },
+  "command": [
+    "just",
+    "test",
+    "--locked",
+    "-p",
+    "codex-hepta-agent-protocol",
+    "-p",
+    "codex-hepta-learning-artifacts",
+    "-p",
+    "codex-hepta-agentd",
+    "-p",
+    "codex-hepta-infer-worker-host",
+    "-p",
+    "codex-app-server",
+    "--no-capture"
+  ],
+  "command_exit_code": 100,
+  "elapsed_seconds": 1457.1199217360004,
+  "error": "required tests were not observed passing",
+  "exit_code": 100,
+  "finished_at": "2026-11-05T14:50:31.990202+00:00",
+  "job": "real-parent-trained-child",
+  "lane": "source-head",
+  "log_bytes": 18965216,
+  "log_file": "scoped-rust.json.86016979f378483ea8c85a2f94b77f2a.log",
+  "log_sha256": "49a05ff4828f36bfb7010fa88fcf532cb7bcc5da54f63967f5fe3423ddfa5035",
+  "minimum_tests": 1,
+  "observed_failed_tests": 5,
+  "observed_passed_tests": 1967,
+  "output_limit_exceeded": false,
+  "returncode": 100,
+  "run_attempt": "1",
+  "run_id": "42042507261",
+  "schema_version": 1,
+  "source_sha": "ee57cd57c322a8fecdf674a662c741452baf6478",
+  "started_at": "2026-11-05T14:26:14.869748+00:00",
+  "status": "failed",
+  "tested_sha": "ee57cd57c322a8fecdf674a662c741452baf6478",
+  "timed_out": false,
+  "working_directory": "/home/runner/work/hepta-private-ci/hepta-private-ci/hepta"
+}

@@ -1,0 +1,44 @@
+{
+  "head": "ee57cd57c322a8fecdf674a662c741452baf6478",
+  "tree": "ec40412aff2091fd05e0feaf31a46179f8afaa46",
+  "real_chain_test_sha256": "412b449e99a062844025e234399355dc8f3cd6de15812fadd854ff79945f33bf",
+  "lock_sha256": "0f458d7746a0ca0b95bedc5404fd3347c1b0a7508f1c387f3b1f3f71ced08663",
+  "source_clean_before": true,
+  "command": [
+    "/home/qian-qi/.cargo/bin/just",
+    "test",
+    "--locked",
+    "-p",
+    "codex-hepta-agentd",
+    "--lib",
+    "-E",
+    "test(automation_effect_host::)"
+  ],
+  "cargo_version": "cargo 1.96.0 (30a34c682 2026-05-25)",
+  "rustc_version": "rustc 1.96.0 (ac68faa20 2026-05-25)",
+  "nextest_version": "cargo-nextest 0.9.103 (d2e7b879f 2025-08-25)\nrelease: 0.9.103\ncommit-hash: d2e7b879fb79975e8b47a8e3ce569b651e6381c0\ncommit-date: 2025-08-25\nhost: x86_64-unknown-linux-gnu",
+  "target": "/home/qian-qi/work/hepta-pq-effects-2c2b-target",
+  "build_jobs": 2,
+  "profile": "original local nextest profile, original retries/timeouts; default Cargo test profile",
+  "nextest_config_sha256": "3ec2f9a8ed35c5582fe5d59b4ad427e5e87249c5e7d84cf149dd9874c1f9d222",
+  "start_utc": "2026-11-05T14:12:17.473820+00:00",
+  "free_bytes_before": 20228493312,
+  "ignored_real_chain_case": "NOT_RUN; no --run-ignored supplied",
+  "returncode": 0,
+  "duration_seconds": 381.025,
+  "end_utc": "2026-11-05T14:18:38.497507+00:00",
+  "free_bytes_after": 5734887424,
+  "log_sha256": "e0b8a5040a431f021bf469b31190a3442afd2bf815ceb4f76b2124005d780fdd",
+  "git_status": "",
+  "junit": [],
+  "test_library_elf_candidates": [
+    {
+      "path": "/home/qian-qi/work/hepta-pq-effects-2c2b-target/debug/deps/codex_hepta_agentd-b1f0709e78245ce8",
+      "size": 1284198808,
+      "mtime_ns": 1793888316309755573,
+      "new_or_changed_this_command": true,
+      "sha256": "c2d19ddbea51e84257a2db6968f3d541ac858955a05d026762b716293907ed92"
+    }
+  ],
+  "target_du_bytes": 20628439040
+}

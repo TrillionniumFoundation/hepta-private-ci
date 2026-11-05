@@ -76,6 +76,9 @@ mod provider_receipt_tests;
 #[path = "support/authorized_owner_recovery_tests.rs"]
 mod owner_recovery_tests;
 
+#[path = "support/authorized_effect_pq_tests.rs"]
+mod pq_tests;
+
 struct Fixture {
     _temp: tempfile::TempDir,
     layout: HeptaAgentLayout,

@@ -1,0 +1,471 @@
+{
+  "schema_version": 1,
+  "reviewed_at_utc": "2026-11-05T15:23:47.211754+00:00",
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "head_sha": "ee57cd57c322a8fecdf674a662c741452baf6478",
+  "scope": "Read-only inspection of these two completed GitHub runs, their jobs, original logs, and uploaded artifacts. No rerun, cancellation, source edit, runtime action, or historical comparison.",
+  "finding": "Both workflows are failure. Their complete five-package Rust gate failed with the same four failed tests and one timed-out test. The public initial run additionally failed the original public-plan byte check.",
+  "causal_limit": "These are observed errors, not an attribution of regression origin. No base-run comparison or source change was performed. The separate ordinary PoN 49508-byte versus 24576-byte limit finding is not a cause inferred from these CI logs.",
+  "native_pair_run_42042508912": "Outside this two-run read; parent snapshot reported pending.",
+  "line_number_note": "Raw scoped logs are retained byte-for-byte; quoted scoped-log line numbers use the same line ordering with ANSI escape sequences removed for readability.",
+  "runs": [
+    {
+      "run_id": 42042507261,
+      "run_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/42042507261",
+      "head_sha": "ee57cd57c322a8fecdf674a662c741452baf6478",
+      "run_attempt": 1,
+      "workflow_path": ".github/workflows/hepta-neural-study-v1.yml",
+      "status": "completed",
+      "conclusion": "failure",
+      "created_at": "2026-11-05T14:10:55Z",
+      "updated_at": "2026-11-05T14:55:24Z",
+      "job": {
+        "id": 127296694099,
+        "name": "real-parent-trained-child",
+        "conclusion": "failure",
+        "failed_steps": [
+          {
+            "number": 28,
+            "name": "Enforce real source and every declared required outcome",
+            "conclusion": "failure"
+          }
+        ],
+        "skipped_steps": [
+          {
+            "number": 20,
+            "name": "Install the exact CPU wheel closure in a new environment"
+          },
+          {
+            "number": 21,
+            "name": "Rebuild public V2 from the seven exact upstream files"
+          },
+          {
+            "number": 22,
+            "name": "Require real ordinary inference, independent revocation and same-owner reopen"
+          },
+          {
+            "number": 23,
+            "name": "Run Cell training-source and evidence-reader refusal controls before the study"
+          },
+          {
+            "number": 24,
+            "name": "Build the actual pinned two-node Cell executable"
+          },
+          {
+            "number": 25,
+            "name": "Freeze complete actual source before the single study"
+          },
+          {
+            "number": 26,
+            "name": "Train actual parent and require qualification Cell ordinary install and next read"
+          }
+        ]
+      },
+      "chain_sha": "c16507147b65285ea94dead22d3b93c5db7295af",
+      "source_log_errors": [
+        {
+          "line": 2313,
+          "text": "2026-11-05T14:50:32.0027418Z ##[error]Process completed with exit code 100."
+        },
+        {
+          "line": 3710,
+          "text": "2026-11-05T14:55:14.6615154Z ##[error]Process completed with exit code 1."
+        }
+      ],
+      "artifact": {
+        "id": 13425967098,
+        "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/42042507261/artifacts/13425967098",
+        "bytes": 3209440,
+        "sha256": "61a4364842fe63c9fe58ecf4fd65b392206f7c4b0e34044ea24e85eff1724e79",
+        "local_path": "ee57-ci-artifacts/13425967098.zip"
+      },
+      "scoped_rust": {
+        "command": [
+          "just",
+          "test",
+          "--locked",
+          "-p",
+          "codex-hepta-agent-protocol",
+          "-p",
+          "codex-hepta-learning-artifacts",
+          "-p",
+          "codex-hepta-agentd",
+          "-p",
+          "codex-hepta-infer-worker-host",
+          "-p",
+          "codex-app-server",
+          "--no-capture"
+        ],
+        "exit_code": 100,
+        "command_exit_code": 100,
+        "status": "failed",
+        "error": "required tests were not observed passing",
+        "observed_passed_tests": 1967,
+        "observed_failed_tests": 5,
+        "timed_out": false,
+        "output_limit_exceeded": false,
+        "before": {
+          "commit": "ee57cd57c322a8fecdf674a662c741452baf6478",
+          "dirty": false,
+          "parents": [
+            "5957eb3bb9887c71abefb1e7ea6febba8b7969ce"
+          ],
+          "tree": "ec40412aff2091fd05e0feaf31a46179f8afaa46"
+        },
+        "after": {
+          "commit": "ee57cd57c322a8fecdf674a662c741452baf6478",
+          "dirty": false,
+          "parents": [
+            "5957eb3bb9887c71abefb1e7ea6febba8b7969ce"
+          ],
+          "tree": "ec40412aff2091fd05e0feaf31a46179f8afaa46"
+        },
+        "github_step_conclusion": "success",
+        "interpretation": "The step conclusion does not override its actual exit 100, failed receipt, or required-outcome failure.",
+        "nextest_summary": {
+          "line": 41726,
+          "text": "     Summary [1126.368s] 1972 tests run: 1967 passed, 4 failed, 1 timed out, 30 skipped"
+        },
+        "final_failure_lines": [
+          {
+            "line": 41727,
+            "text": "  TRY 2 FAIL [   2.703s] (1613/1972) codex-hepta-agentd::cognitive_product_e2e real_agentd_local_memory_review_hides_host_tombstone_after_reopen"
+          },
+          {
+            "line": 41728,
+            "text": "  TRY 2 FAIL [   1.971s] (1614/1972) codex-hepta-agentd::cognitive_product_e2e real_agentd_local_memory_review_is_read_only_and_replayable"
+          },
+          {
+            "line": 41729,
+            "text": "   TRY 2 TMT [  60.008s] (1620/1972) codex-hepta-agentd::five_agent_rolling_upgrade six_agent_fleet_lifecycle_keeps_peers_fair_and_isolated"
+          },
+          {
+            "line": 41730,
+            "text": "  TRY 2 FAIL [   2.171s] (1656/1972) codex-hepta-agentd::two_agent_turn_recovery killed_agent_recovers_same_turn_then_dispatches_queue_once_while_peer_stays_live"
+          },
+          {
+            "line": 41731,
+            "text": "  TRY 2 FAIL [   0.016s] (1780/1972) codex-hepta-infer-worker-host smollm_neural_read::driver::environment::tests::ambient_python_injection_cannot_enter_supervisor_or_descendant"
+          }
+        ],
+        "timeout_attempts": [
+          {
+            "line": 38775,
+            "text": "   TRY 1 TMT [  60.008s] (─────────) codex-hepta-agentd::five_agent_rolling_upgrade six_agent_fleet_lifecycle_keeps_peers_fair_and_isolated"
+          },
+          {
+            "line": 38815,
+            "text": "   TRY 2 TMT [  60.008s] (1620/1972) codex-hepta-agentd::five_agent_rolling_upgrade six_agent_fleet_lifecycle_keeps_peers_fair_and_isolated"
+          }
+        ],
+        "observed_error_lines": {
+          "agentd_recovery_frontier": [
+            {
+              "line": 38605,
+              "text": "Error: invalid agentd configuration: kernel.evidence recovery_required: local evidence/replay/effect/invocation frontier does not match the signed checkpoint"
+            },
+            {
+              "line": 38623,
+              "text": "Error: invalid agentd configuration: kernel.evidence recovery_required: local evidence/replay/effect/invocation frontier does not match the signed checkpoint"
+            },
+            {
+              "line": 38641,
+              "text": "Error: invalid agentd configuration: kernel.evidence recovery_required: local evidence/replay/effect/invocation frontier does not match the signed checkpoint"
+            },
+            {
+              "line": 38659,
+              "text": "Error: invalid agentd configuration: kernel.evidence recovery_required: local evidence/replay/effect/invocation frontier does not match the signed checkpoint"
+            },
+            {
+              "line": 39126,
+              "text": "Error: invalid agentd configuration: kernel.evidence recovery_required: local evidence/replay/effect/invocation frontier does not match the signed checkpoint"
+            },
+            {
+              "line": 39144,
+              "text": "Error: invalid agentd configuration: kernel.evidence recovery_required: local evidence/replay/effect/invocation frontier does not match the signed checkpoint"
+            }
+          ],
+          "python_override_rejection": [
+            {
+              "line": 40152,
+              "text": "called `Result::unwrap()` on an `Err` value: \"neural Python loader overrides are not allowed\""
+            },
+            {
+              "line": 40169,
+              "text": "called `Result::unwrap()` on an `Err` value: \"neural Python loader overrides are not allowed\""
+            }
+          ]
+        },
+        "original_receipt": {
+          "archive_entry": "raw/scoped-rust.json",
+          "bytes": 1750,
+          "sha256": "281628efb6bedbd90d42aa5bb6d905c36ce9c8427833a5749c2b8087f48a9215",
+          "local_path": "ee57-ci-artifacts/13425967098-scoped-rust.json"
+        },
+        "original_log": {
+          "archive_entry": "raw/scoped-rust.json.86016979f378483ea8c85a2f94b77f2a.log",
+          "bytes": 18965216,
+          "sha256": "49a05ff4828f36bfb7010fa88fcf532cb7bcc5da54f63967f5fe3423ddfa5035",
+          "local_path": "ee57-ci-artifacts/13425967098-scoped-rust.json.86016979f378483ea8c85a2f94b77f2a.log"
+        }
+      },
+      "final_gate_record": {
+        "archive_entry": "raw/qualification-summary.json",
+        "bytes": 3506,
+        "sha256": "e964c45646136328e2efeac74337b53473f03f4fd242244d6d97f139e49d59e3",
+        "local_path": "ee57-ci-artifacts/13425967098-qualification-summary.json",
+        "passed": false,
+        "installation_authority": false,
+        "required_outcomes": {
+          "CELL": "skipped",
+          "LINT": "success",
+          "NAMESPACE": "success",
+          "ORDINARY": "skipped",
+          "POSITIVE": "skipped",
+          "REQUIRED_CLI": "success",
+          "SCOPED_RUST": "failure",
+          "STUDY_CONTROLS": "skipped"
+        },
+        "declared_outcome_error": "every declared outcome must be success; skipped is not passed",
+        "scoped_rust_error": "scoped-rust did not pass"
+      }
+    },
+    {
+      "run_id": 42042507211,
+      "run_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/42042507211",
+      "head_sha": "ee57cd57c322a8fecdf674a662c741452baf6478",
+      "run_attempt": 1,
+      "workflow_path": ".github/workflows/hepta-public-initial-v2.yml",
+      "status": "completed",
+      "conclusion": "failure",
+      "created_at": "2026-11-05T14:10:55Z",
+      "updated_at": "2026-11-05T14:57:50Z",
+      "job": {
+        "id": 127296694580,
+        "name": "cold-ordinary-three-rounds",
+        "conclusion": "failure",
+        "failed_steps": [
+          {
+            "number": 20,
+            "name": "Rebuild public V2 from the seven exact upstream files",
+            "conclusion": "failure"
+          },
+          {
+            "number": 25,
+            "name": "Enforce every original qualification and observation outcome",
+            "conclusion": "failure"
+          }
+        ],
+        "skipped_steps": [
+          {
+            "number": 21,
+            "name": "Require real ordinary inference, independent revocation and same-owner reopen"
+          },
+          {
+            "number": 22,
+            "name": "Run three real matched proposal rounds and reread original CURRENT"
+          },
+          {
+            "number": 23,
+            "name": "Execute six-arm candidate descendants and retain typed install blockers"
+          },
+          {
+            "number": 24,
+            "name": "Finish the scoped lint and formatting gate after tests"
+          },
+          {
+            "number": 26,
+            "name": "Run one frozen answer-EOS research comparison after all original gates"
+          }
+        ]
+      },
+      "chain_sha": "cfa57cd04751427451302b5c10539b3984d7f8db",
+      "source_log_errors": [
+        {
+          "line": 2233,
+          "text": "2026-11-05T14:56:19.6534540Z ##[error]Process completed with exit code 100."
+        },
+        {
+          "line": 2520,
+          "text": "2026-11-05T14:57:37.1627373Z ValueError: public plan bytes differ"
+        },
+        {
+          "line": 2521,
+          "text": "2026-11-05T14:57:37.1760581Z ##[error]Process completed with exit code 1."
+        },
+        {
+          "line": 2590,
+          "text": "2026-11-05T14:57:37.2242678Z ##[error]Process completed with exit code 1."
+        }
+      ],
+      "artifact": {
+        "id": 13427580067,
+        "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/42042507211/artifacts/13427580067",
+        "bytes": 2232884,
+        "sha256": "7e4bbfa58f4c2ef56206341ee12ae4c4a2f1a246544a0074fef3091fed42adfb",
+        "local_path": "ee57-ci-artifacts/13427580067.zip"
+      },
+      "scoped_rust": {
+        "command": [
+          "just",
+          "test",
+          "--locked",
+          "-p",
+          "codex-hepta-agent-protocol",
+          "-p",
+          "codex-hepta-learning-artifacts",
+          "-p",
+          "codex-hepta-agentd",
+          "-p",
+          "codex-hepta-infer-worker-host",
+          "-p",
+          "codex-app-server",
+          "--no-capture"
+        ],
+        "exit_code": 100,
+        "command_exit_code": 100,
+        "status": "failed",
+        "error": "required tests were not observed passing",
+        "observed_passed_tests": 1967,
+        "observed_failed_tests": 5,
+        "timed_out": false,
+        "output_limit_exceeded": false,
+        "before": {
+          "commit": "ee57cd57c322a8fecdf674a662c741452baf6478",
+          "dirty": false,
+          "parents": [
+            "5957eb3bb9887c71abefb1e7ea6febba8b7969ce"
+          ],
+          "tree": "ec40412aff2091fd05e0feaf31a46179f8afaa46"
+        },
+        "after": {
+          "commit": "ee57cd57c322a8fecdf674a662c741452baf6478",
+          "dirty": false,
+          "parents": [
+            "5957eb3bb9887c71abefb1e7ea6febba8b7969ce"
+          ],
+          "tree": "ec40412aff2091fd05e0feaf31a46179f8afaa46"
+        },
+        "github_step_conclusion": "success",
+        "interpretation": "The step conclusion does not override its actual exit 100, failed receipt, or required-outcome failure.",
+        "nextest_summary": {
+          "line": 42101,
+          "text": "     Summary [1385.141s] 1972 tests run: 1967 passed (1 flaky), 4 failed, 1 timed out, 30 skipped"
+        },
+        "final_failure_lines": [
+          {
+            "line": 42103,
+            "text": "  TRY 2 FAIL [   4.438s] (1613/1972) codex-hepta-agentd::cognitive_product_e2e real_agentd_local_memory_review_hides_host_tombstone_after_reopen"
+          },
+          {
+            "line": 42104,
+            "text": "  TRY 2 FAIL [   3.268s] (1614/1972) codex-hepta-agentd::cognitive_product_e2e real_agentd_local_memory_review_is_read_only_and_replayable"
+          },
+          {
+            "line": 42105,
+            "text": "   TRY 2 TMT [  60.015s] (1620/1972) codex-hepta-agentd::five_agent_rolling_upgrade six_agent_fleet_lifecycle_keeps_peers_fair_and_isolated"
+          },
+          {
+            "line": 42106,
+            "text": "  TRY 2 FAIL [   2.447s] (1656/1972) codex-hepta-agentd::two_agent_turn_recovery killed_agent_recovers_same_turn_then_dispatches_queue_once_while_peer_stays_live"
+          },
+          {
+            "line": 42107,
+            "text": "  TRY 2 FAIL [   0.016s] (1780/1972) codex-hepta-infer-worker-host smollm_neural_read::driver::environment::tests::ambient_python_injection_cannot_enter_supervisor_or_descendant"
+          }
+        ],
+        "timeout_attempts": [
+          {
+            "line": 39151,
+            "text": "   TRY 1 TMT [  60.012s] (─────────) codex-hepta-agentd::five_agent_rolling_upgrade six_agent_fleet_lifecycle_keeps_peers_fair_and_isolated"
+          },
+          {
+            "line": 39190,
+            "text": "   TRY 2 TMT [  60.015s] (1620/1972) codex-hepta-agentd::five_agent_rolling_upgrade six_agent_fleet_lifecycle_keeps_peers_fair_and_isolated"
+          }
+        ],
+        "observed_error_lines": {
+          "agentd_recovery_frontier": [
+            {
+              "line": 38982,
+              "text": "Error: invalid agentd configuration: kernel.evidence recovery_required: local evidence/replay/effect/invocation frontier does not match the signed checkpoint"
+            },
+            {
+              "line": 39000,
+              "text": "Error: invalid agentd configuration: kernel.evidence recovery_required: local evidence/replay/effect/invocation frontier does not match the signed checkpoint"
+            },
+            {
+              "line": 39018,
+              "text": "Error: invalid agentd configuration: kernel.evidence recovery_required: local evidence/replay/effect/invocation frontier does not match the signed checkpoint"
+            },
+            {
+              "line": 39036,
+              "text": "Error: invalid agentd configuration: kernel.evidence recovery_required: local evidence/replay/effect/invocation frontier does not match the signed checkpoint"
+            },
+            {
+              "line": 39501,
+              "text": "Error: invalid agentd configuration: kernel.evidence recovery_required: local evidence/replay/effect/invocation frontier does not match the signed checkpoint"
+            },
+            {
+              "line": 39519,
+              "text": "Error: invalid agentd configuration: kernel.evidence recovery_required: local evidence/replay/effect/invocation frontier does not match the signed checkpoint"
+            }
+          ],
+          "python_override_rejection": [
+            {
+              "line": 40527,
+              "text": "called `Result::unwrap()` on an `Err` value: \"neural Python loader overrides are not allowed\""
+            },
+            {
+              "line": 40544,
+              "text": "called `Result::unwrap()` on an `Err` value: \"neural Python loader overrides are not allowed\""
+            }
+          ]
+        },
+        "original_receipt": {
+          "archive_entry": "scoped-rust.json",
+          "bytes": 1747,
+          "sha256": "273c69d92960daf1284f0baf0c0b8db2e63eba9e065387efb9a062faee5d097d",
+          "local_path": "ee57-ci-artifacts/13427580067-scoped-rust.json"
+        },
+        "original_log": {
+          "archive_entry": "scoped-rust.json.070e52bcdbd94e40a341b8181f0565d9.log",
+          "bytes": 19208770,
+          "sha256": "527b17f6a878dfa115dd01aca5bee625b462fd8c50d378477a446170b7c47d2c",
+          "local_path": "ee57-ci-artifacts/13427580067-scoped-rust.json.070e52bcdbd94e40a341b8181f0565d9.log"
+        }
+      },
+      "final_gate_record": {
+        "archive_entry": "required-outcomes.json",
+        "bytes": 575,
+        "sha256": "2279a4f72da67bf0c8685a56517be402c1da3b81b425f9a568b145af40f87546",
+        "local_path": "ee57-ci-artifacts/13427580067-required-outcomes.json",
+        "record": {
+          "schema": "hepta-public-initial-required-outcomes-v2",
+          "outcomes": {
+            "REQUIRED_CLI_OUTCOME": "success",
+            "SCOPED_RUST_OUTCOME": "failure",
+            "COLD_RUNTIME_OUTCOME": "success",
+            "MATERIALS_OUTCOME": "failure",
+            "ORDINARY_OUTCOME": "skipped",
+            "PROPOSAL_ROUNDS_OUTCOME": "skipped",
+            "DESCENDANTS_OUTCOME": "skipped",
+            "LINT_OUTCOME": "skipped"
+          },
+          "model_target_available": true,
+          "all_required_outcomes_passed": false,
+          "original_full_rust_gate_required": true,
+          "product_qualification": false,
+          "three_installed_upgrades_proven": false
+        }
+      },
+      "material_failure": {
+        "step": 20,
+        "exception": "ValueError: public plan bytes differ",
+        "script": "scripts/hepta_smollm_public_initial_v2.py",
+        "derive_line": 129,
+        "evidence": "Job log lines 2511-2521; no underlying byte mismatch origin inferred."
+      }
+    }
+  ]
+}

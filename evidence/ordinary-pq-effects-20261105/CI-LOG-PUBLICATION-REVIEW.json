@@ -1,0 +1,69 @@
+{
+  "schema_version": 1,
+  "head_sha": "ee57cd57c322a8fecdf674a662c741452baf6478",
+  "scope": "Read-only conventional credential-pattern scan and limited exact test-fixture matching of the two raw scoped logs. No matching values were printed.",
+  "records": [
+    {
+      "run_id": 42042507261,
+      "jwt_like": {
+        "matches": 18,
+        "unique_tokens": 11,
+        "every_header_and_signature_matches_fixed_test_helper": true,
+        "helper_source_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/ee57cd57c322a8fecdf674a662c741452baf6478/codex-rs/app-server/tests/common/auth_fixtures.rs",
+        "helper_git_blob": "2303f9be186499dd478b11bebc6e8765e5c6507e",
+        "helper_header_line": 115,
+        "helper_constant_signature_line": 142,
+        "payload_specific_source_verification": "Not performed for every payload. No payload values emitted."
+      },
+      "bearer_like": {
+        "matches": 14,
+        "unique_tokens": 1,
+        "every_token_hash_matches_source_fixture": true,
+        "source_path": "codex-rs/app-server/tests/suite/v2/turn_start.rs",
+        "source_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/ee57cd57c322a8fecdf674a662c741452baf6478/codex-rs/app-server/tests/suite/v2/turn_start.rs",
+        "source_git_blob": "e624887eccb92cc0be6eaceeec9c5a50da20dbc1",
+        "source_lines": [
+          2344,
+          2585
+        ],
+        "enclosing_test_helpers": [
+          "turn_start_exec_approval_toggle_v2",
+          "run_turn_start_exec_approval_rejection_v2"
+        ],
+        "token_values_emitted": false
+      }
+    },
+    {
+      "run_id": 42042507211,
+      "jwt_like": {
+        "matches": 18,
+        "unique_tokens": 11,
+        "every_header_and_signature_matches_fixed_test_helper": true,
+        "helper_source_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/ee57cd57c322a8fecdf674a662c741452baf6478/codex-rs/app-server/tests/common/auth_fixtures.rs",
+        "helper_git_blob": "2303f9be186499dd478b11bebc6e8765e5c6507e",
+        "helper_header_line": 115,
+        "helper_constant_signature_line": 142,
+        "payload_specific_source_verification": "Not performed for every payload. No payload values emitted."
+      },
+      "bearer_like": {
+        "matches": 14,
+        "unique_tokens": 1,
+        "every_token_hash_matches_source_fixture": true,
+        "source_path": "codex-rs/app-server/tests/suite/v2/turn_start.rs",
+        "source_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/ee57cd57c322a8fecdf674a662c741452baf6478/codex-rs/app-server/tests/suite/v2/turn_start.rs",
+        "source_git_blob": "e624887eccb92cc0be6eaceeec9c5a50da20dbc1",
+        "source_lines": [
+          2344,
+          2585
+        ],
+        "enclosing_test_helpers": [
+          "turn_start_exec_approval_toggle_v2",
+          "run_turn_start_exec_approval_rejection_v2"
+        ],
+        "token_values_emitted": false
+      }
+    }
+  ],
+  "conclusion": "All observed Bearer values match the fixed source test fixture. All observed JWT headers and fixed signatures match encode_id_token in the fixed test helper, but payload-specific source provenance was not verified for every JWT.",
+  "publication_recommendation": "Keep the complete original logs and lossless compressed encodings local. For this delivery, archive original Actions artifact URLs, expiry, original/ZIP/gzip/base64 hashes, and the already reviewed value-free failure excerpts in Git; do not copy complete logs or their base64 encodings into Git. This avoids blocking delivery or treating a pattern scan as exhaustive content clearance."
+}

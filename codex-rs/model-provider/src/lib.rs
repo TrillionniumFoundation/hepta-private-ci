@@ -34,6 +34,7 @@ pub use provider::create_model_provider;
 pub use provider::create_model_provider_with_effect_adapter;
 pub use provider_effect::FailClosedProviderEffectAdapter;
 pub use provider_effect::HttpProviderEffectAdapter;
+pub use provider_effect::HttpProviderEffectAuthenticationProfile;
 pub use provider_effect::HttpProviderEffectConfig;
 pub use provider_effect::HttpProviderEffectContractAttestation;
 pub use provider_effect::PROVIDER_EFFECT_IDEMPOTENCY_KEY_HEADER;

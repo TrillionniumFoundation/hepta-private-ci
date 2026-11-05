@@ -1,0 +1,287 @@
+{"event": "fetch_start", "expected_head": "5957eb3bb9887c71abefb1e7ea6febba8b7969ce", "free_bytes": 20732899328}
+{"command": ["/home/qian-qi/.cargo/bin/just", "fmt", "--base", "b0b7d95105bb4c63b422c3097e159caa6c65fe00"], "event": "format_start", "head": "5957eb3bb9887c71abefb1e7ea6febba8b7969ce"}
+{"command": ["/home/qian-qi/.cargo/bin/just", "fmt", "--base", "b0b7d95105bb4c63b422c3097e159caa6c65fe00"], "event": "format_complete", "free_bytes": 20722282496, "git_status": "", "head": "5957eb3bb9887c71abefb1e7ea6febba8b7969ce", "log_path": "/home/qian-qi/work/hepta-pq-effects-2c2b-evidence/agentd-fmt-5957eb3bb9887c71abefb1e7ea6febba8b7969ce.log", "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855", "meta_path": "/home/qian-qi/work/hepta-pq-effects-2c2b-evidence/agentd-fmt-5957eb3bb9887c71abefb1e7ea6febba8b7969ce.json", "patch_bytes": 0, "patch_path": "/home/qian-qi/work/hepta-pq-effects-2c2b-evidence/agentd-fmt-5957eb3bb9887c71abefb1e7ea6febba8b7969ce.patch", "patch_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855", "returncode": 0, "tree": "7088f308f4a62adbd13028e9c6e860dc6c6490ae"}
+{"build_jobs": 2, "cargo_version": "cargo 1.96.0 (30a34c682 2026-05-25)", "command": ["/home/qian-qi/.cargo/bin/just", "fix", "--locked", "-p", "codex-hepta-agentd", "--lib"], "event": "fix_start", "free_bytes_before": 20722278400, "head": "5957eb3bb9887c71abefb1e7ea6febba8b7969ce", "lock_sha256": "0f458d7746a0ca0b95bedc5404fd3347c1b0a7508f1c387f3b1f3f71ced08663", "log_path": "/home/qian-qi/work/hepta-pq-effects-2c2b-evidence/agentd-fix-5957eb3bb9887c71abefb1e7ea6febba8b7969ce.log", "profile": "repository default dev; no overrides", "rustc_version": "rustc 1.96.0 (ac68faa20 2026-05-25)", "start_utc": "2026-11-05T14:08:28.033913+00:00", "target": "/home/qian-qi/work/hepta-pq-effects-2c2b-target", "tree": "7088f308f4a62adbd13028e9c6e860dc6c6490ae"}
+cargo clippy --fix --tests --allow-dirty {args}
+warning: use of deprecated tuple variant `time::format_description::BorrowedFormatItem::Literal`: use `StringLiteral` instead; raw bytes are not recommended
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:196:67
+    |
+196 |     use time::format_description::BorrowedFormatItem::{Component, Literal, Optional};
+    |                                                                   ^^^^^^^
+    |
+    = note: `#[warn(deprecated)]` on by default
+
+warning: use of deprecated tuple variant `time::format_description::Component::Year`: use one of the various `Year*` components instead
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:199:52
+    |
+199 |     const YEAR: BorrowedFormatItem<'_> = Component(Year({
+    |                                                    ^^^^
+
+warning: use of deprecated struct `time::format_description::modifier::Year`: use one of the various `Year*` components instead
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:200:35
+    |
+200 |         let mut value = modifier::Year::default();
+    |                                   ^^^^
+
+warning: use of deprecated unit variant `time::format_description::modifier::YearRepr::Full`: used only in the deprecated `Year` component
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:202:42
+    |
+202 |         value.repr = modifier::YearRepr::Full;
+    |                                          ^^^^
+
+warning: use of deprecated tuple variant `time::format_description::Component::Month`: use `MonthShort`, `MonthLong`, or `MonthNumeric` instead
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:208:53
+    |
+208 |     const MONTH: BorrowedFormatItem<'_> = Component(Month({
+    |                                                     ^^^^^
+
+warning: use of deprecated struct `time::format_description::modifier::Month`: use `MonthShort`, `MonthLong`, or `MonthNumeric` instead
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:209:35
+    |
+209 |         let mut value = modifier::Month::default();
+    |                                   ^^^^^
+
+warning: use of deprecated unit variant `time::format_description::modifier::MonthRepr::Numerical`: used only in the deprecated `Month` component
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:211:43
+    |
+211 |         value.repr = modifier::MonthRepr::Numerical;
+    |                                           ^^^^^^^^^
+
+warning: use of deprecated tuple variant `time::format_description::Component::Hour`: use `Hour12` or `Hour24` instead
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:222:52
+    |
+222 |     const HOUR: BorrowedFormatItem<'_> = Component(Hour({
+    |                                                    ^^^^
+
+warning: use of deprecated struct `time::format_description::modifier::Hour`: use `Hour12` or `Hour24` instead
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:223:35
+    |
+223 |         let mut value = modifier::Hour::default();
+    |                                   ^^^^
+
+warning: use of deprecated tuple variant `time::format_description::BorrowedFormatItem::Literal`: use `StringLiteral` instead; raw bytes are not recommended
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:263:13
+    |
+263 |             Literal(b"-"),
+    |             ^^^^^^^
+
+warning: use of deprecated tuple variant `time::format_description::BorrowedFormatItem::Literal`: use `StringLiteral` instead; raw bytes are not recommended
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:265:13
+    |
+265 |             Literal(b"-"),
+    |             ^^^^^^^
+
+warning: use of deprecated tuple variant `time::format_description::BorrowedFormatItem::Literal`: use `StringLiteral` instead; raw bytes are not recommended
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:267:23
+    |
+267 |             Optional(&Literal(b" ")),
+    |                       ^^^^^^^
+
+warning: use of deprecated tuple variant `time::format_description::BorrowedFormatItem::Literal`: use `StringLiteral` instead; raw bytes are not recommended
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:268:23
+    |
+268 |             Optional(&Literal(b"T")),
+    |                       ^^^^^^^
+
+warning: use of deprecated tuple variant `time::format_description::BorrowedFormatItem::Literal`: use `StringLiteral` instead; raw bytes are not recommended
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:270:13
+    |
+270 |             Literal(b":"),
+    |             ^^^^^^^
+
+warning: use of deprecated tuple variant `time::format_description::BorrowedFormatItem::Literal`: use `StringLiteral` instead; raw bytes are not recommended
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:272:23
+    |
+272 |             Optional(&Literal(b":")),
+    |                       ^^^^^^^
+
+warning: use of deprecated tuple variant `time::format_description::BorrowedFormatItem::Literal`: use `StringLiteral` instead; raw bytes are not recommended
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:274:23
+    |
+274 |             Optional(&Literal(b".")),
+    |                       ^^^^^^^
+
+warning: use of deprecated tuple variant `time::format_description::BorrowedFormatItem::Literal`: use `StringLiteral` instead; raw bytes are not recommended
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:277:23
+    |
+277 |             Optional(&Literal(b":")),
+    |                       ^^^^^^^
+
+warning: use of deprecated tuple variant `time::format_description::BorrowedFormatItem::Literal`: use `StringLiteral` instead; raw bytes are not recommended
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:285:13
+    |
+285 |             Literal(b"-"),
+    |             ^^^^^^^
+
+warning: use of deprecated tuple variant `time::format_description::BorrowedFormatItem::Literal`: use `StringLiteral` instead; raw bytes are not recommended
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:287:13
+    |
+287 |             Literal(b"-"),
+    |             ^^^^^^^
+
+warning: use of deprecated tuple variant `time::format_description::BorrowedFormatItem::Literal`: use `StringLiteral` instead; raw bytes are not recommended
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:289:13
+    |
+289 |             Literal(b" "),
+    |             ^^^^^^^
+
+warning: use of deprecated tuple variant `time::format_description::BorrowedFormatItem::Literal`: use `StringLiteral` instead; raw bytes are not recommended
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:291:13
+    |
+291 |             Literal(b":"),
+    |             ^^^^^^^
+
+warning: use of deprecated tuple variant `time::format_description::BorrowedFormatItem::Literal`: use `StringLiteral` instead; raw bytes are not recommended
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:293:23
+    |
+293 |             Optional(&Literal(b":")),
+    |                       ^^^^^^^
+
+warning: use of deprecated tuple variant `time::format_description::BorrowedFormatItem::Literal`: use `StringLiteral` instead; raw bytes are not recommended
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:295:23
+    |
+295 |             Optional(&Literal(b".")),
+    |                       ^^^^^^^
+
+warning: use of deprecated tuple variant `time::format_description::BorrowedFormatItem::Literal`: use `StringLiteral` instead; raw bytes are not recommended
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:297:23
+    |
+297 |             Optional(&Literal(b"Z")),
+    |                       ^^^^^^^
+
+warning: use of deprecated tuple variant `time::format_description::BorrowedFormatItem::Literal`: use `StringLiteral` instead; raw bytes are not recommended
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:304:13
+    |
+304 |             Literal(b"-"),
+    |             ^^^^^^^
+
+warning: use of deprecated tuple variant `time::format_description::BorrowedFormatItem::Literal`: use `StringLiteral` instead; raw bytes are not recommended
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:306:13
+    |
+306 |             Literal(b"-"),
+    |             ^^^^^^^
+
+warning: use of deprecated tuple variant `time::format_description::BorrowedFormatItem::Literal`: use `StringLiteral` instead; raw bytes are not recommended
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:308:13
+    |
+308 |             Literal(b"T"),
+    |             ^^^^^^^
+
+warning: use of deprecated tuple variant `time::format_description::BorrowedFormatItem::Literal`: use `StringLiteral` instead; raw bytes are not recommended
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:310:13
+    |
+310 |             Literal(b":"),
+    |             ^^^^^^^
+
+warning: use of deprecated tuple variant `time::format_description::BorrowedFormatItem::Literal`: use `StringLiteral` instead; raw bytes are not recommended
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:312:23
+    |
+312 |             Optional(&Literal(b":")),
+    |                       ^^^^^^^
+
+warning: use of deprecated tuple variant `time::format_description::BorrowedFormatItem::Literal`: use `StringLiteral` instead; raw bytes are not recommended
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:314:23
+    |
+314 |             Optional(&Literal(b".")),
+    |                       ^^^^^^^
+
+warning: use of deprecated tuple variant `time::format_description::BorrowedFormatItem::Literal`: use `StringLiteral` instead; raw bytes are not recommended
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:316:23
+    |
+316 |             Optional(&Literal(b"Z")),
+    |                       ^^^^^^^
+
+warning: use of deprecated field `time::format_description::modifier::Year::padding`: use one of the various `Year*` components instead
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:201:9
+    |
+201 |         value.padding = modifier::Padding::Zero;
+    |         ^^^^^^^^^^^^^
+
+warning: use of deprecated field `time::format_description::modifier::Year::repr`: use one of the various `Year*` components instead
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:202:9
+    |
+202 |         value.repr = modifier::YearRepr::Full;
+    |         ^^^^^^^^^^
+
+warning: use of deprecated field `time::format_description::modifier::Year::iso_week_based`: use one of the various `Year*` components instead
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:203:9
+    |
+203 |         value.iso_week_based = false;
+    |         ^^^^^^^^^^^^^^^^^^^^
+
+warning: use of deprecated field `time::format_description::modifier::Year::sign_is_mandatory`: use one of the various `Year*` components instead
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:204:9
+    |
+204 |         value.sign_is_mandatory = false;
+    |         ^^^^^^^^^^^^^^^^^^^^^^^
+
+warning: use of deprecated field `time::format_description::modifier::Month::padding`: use `MonthShort`, `MonthLong`, or `MonthNumeric` instead
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:210:9
+    |
+210 |         value.padding = modifier::Padding::Zero;
+    |         ^^^^^^^^^^^^^
+
+warning: use of deprecated field `time::format_description::modifier::Month::repr`: use `MonthShort`, `MonthLong`, or `MonthNumeric` instead
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:211:9
+    |
+211 |         value.repr = modifier::MonthRepr::Numerical;
+    |         ^^^^^^^^^^
+
+warning: use of deprecated field `time::format_description::modifier::Month::case_sensitive`: use `MonthShort`, `MonthLong`, or `MonthNumeric` instead
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:212:9
+    |
+212 |         value.case_sensitive = true;
+    |         ^^^^^^^^^^^^^^^^^^^^
+
+warning: use of deprecated field `time::format_description::modifier::Hour::padding`: use `Hour12` or `Hour24` instead
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:224:9
+    |
+224 |         value.padding = modifier::Padding::Zero;
+    |         ^^^^^^^^^^^^^
+
+warning: use of deprecated field `time::format_description::modifier::Hour::is_12_hour_clock`: use `Hour12` or `Hour24` instead
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:225:9
+    |
+225 |         value.is_12_hour_clock = false;
+    |         ^^^^^^^^^^^^^^^^^^^^^^
+
+warning: `sqlx-sqlite` (lib) generated 40 warnings
+warning: `sqlx-sqlite` (lib) generated 40 warnings (40 duplicates)
+    Checking codex-hepta-agentd v0.0.0 (/home/qian-qi/work/hepta-pq-effects-2c2b-20261105/codex-rs/hepta-agentd)
+error[E0432]: unresolved import `pretty_assertions`
+  --> hepta-agentd/src/automation_effect_host_pq_tests.rs:12:5
+   |
+12 | use pretty_assertions::assert_eq;
+   |     ^^^^^^^^^^^^^^^^^ use of unresolved module or unlinked crate `pretty_assertions`
+   |
+   = help: if you wanted to use a crate named `pretty_assertions`, use `cargo add pretty_assertions` to add it to your `Cargo.toml`
+
+error[E0432]: unresolved import `pretty_assertions`
+ --> hepta-agentd/src/automation_effect_host_pq_chain_tests.rs:8:5
+  |
+8 | use pretty_assertions::assert_eq;
+  |     ^^^^^^^^^^^^^^^^^ use of unresolved module or unlinked crate `pretty_assertions`
+  |
+  = help: if you wanted to use a crate named `pretty_assertions`, use `cargo add pretty_assertions` to add it to your `Cargo.toml`
+
+warning: unused import: `codex_hepta_contracts::FinalUseFrontier`
+ --> hepta-agentd/src/automation_effect_host_pq_tests.rs:7:5
+  |
+7 | use codex_hepta_contracts::FinalUseFrontier;
+  |     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  |
+  = note: `#[warn(unused_imports)]` (part of `#[warn(unused)]`) on by default
+
+warning: file is loaded as a module multiple times: `hepta-agentd/src/intelligence_qualification_test_support.rs`
+  |
+  = help: replace all but one `mod` item with `use` items
+  = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.96.0/index.html#duplicate_mod
+  = note: `#[warn(clippy::duplicate_mod)]` on by default
+
+For more information about this error, try `rustc --explain E0432`.
+warning: `codex-hepta-agentd` (lib test) generated 2 warnings
+error: could not compile `codex-hepta-agentd` (lib test) due to 2 previous errors; 2 warnings emitted
+warning: build failed, waiting for other jobs to finish...
+error: recipe `fix` failed on line 58 with exit code 101
+{"build_jobs": 2, "cargo_version": "cargo 1.96.0 (30a34c682 2026-05-25)", "command": ["/home/qian-qi/.cargo/bin/just", "fix", "--locked", "-p", "codex-hepta-agentd", "--lib"], "duration_seconds": 12.818, "end_utc": "2026-11-05T14:08:40.852434+00:00", "event": "fix_complete", "free_bytes_after": 20624400384, "free_bytes_before": 20722278400, "git_status": "", "head": "5957eb3bb9887c71abefb1e7ea6febba8b7969ce", "lock_sha256": "0f458d7746a0ca0b95bedc5404fd3347c1b0a7508f1c387f3b1f3f71ced08663", "log_path": "/home/qian-qi/work/hepta-pq-effects-2c2b-evidence/agentd-fix-5957eb3bb9887c71abefb1e7ea6febba8b7969ce.log", "log_sha256": "343731ee120e694f12d7d72a506336bfd743fadf53cafff107671e27129b3e91", "meta_path": "/home/qian-qi/work/hepta-pq-effects-2c2b-evidence/agentd-fix-5957eb3bb9887c71abefb1e7ea6febba8b7969ce.json", "no_tests_run": true, "patch_bytes": 0, "patch_path": "/home/qian-qi/work/hepta-pq-effects-2c2b-evidence/agentd-fix-5957eb3bb9887c71abefb1e7ea6febba8b7969ce.patch", "patch_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855", "profile": "repository default dev; no overrides", "returncode": 101, "rustc_version": "rustc 1.96.0 (ac68faa20 2026-05-25)", "start_utc": "2026-11-05T14:08:28.033913+00:00", "target": "/home/qian-qi/work/hepta-pq-effects-2c2b-target", "target_du_bytes": 6026346496, "tree": "7088f308f4a62adbd13028e9c6e860dc6c6490ae"}
+{"event": "effects_tests_not_run", "fix_returncode": 101, "git_status": "", "patch_bytes": 0, "reason": "fix failed or changed unpublished source"}

@@ -1,0 +1,269 @@
+{
+  "schema_version": 1,
+  "checked_at_utc": "2026-11-05T14:32:09.459Z",
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "tested_base": {
+    "commit": "b0b7d95105bb4c63b422c3097e159caa6c65fe00",
+    "tree": "89fc387e70e2a0f96edf0a6a0e096b54fe9d8a9d"
+  },
+  "compared_successor": {
+    "commit": "ee57cd57c322a8fecdf674a662c741452baf6478",
+    "tree": "ec40412aff2091fd05e0feaf31a46179f8afaa46"
+  },
+  "comparison": {
+    "status": "ahead",
+    "ahead_by": 2,
+    "behind_by": 0,
+    "total_commits": 2,
+    "merge_base_commit": "b0b7d95105bb4c63b422c3097e159caa6c65fe00",
+    "github_compare_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/compare/b0b7d95105bb4c63b422c3097e159caa6c65fe00...ee57cd57c322a8fecdf674a662c741452baf6478",
+    "method": "GitHub compare file list corroborated by complete, non-recursive Git tree comparisons from repository root down every changed subtree to leaf blobs. The independent leaf set is identical to the compare API's three-file set.",
+    "complete_tree_reads": [
+      {
+        "sha": "89fc387e70e2a0f96edf0a6a0e096b54fe9d8a9d",
+        "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/git/trees/89fc387e70e2a0f96edf0a6a0e096b54fe9d8a9d",
+        "truncated": false,
+        "entry_count": 56
+      },
+      {
+        "sha": "ec40412aff2091fd05e0feaf31a46179f8afaa46",
+        "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/git/trees/ec40412aff2091fd05e0feaf31a46179f8afaa46",
+        "truncated": false,
+        "entry_count": 56
+      },
+      {
+        "sha": "3e50900b89b6b62a2dea014a4d30f63c6f721b14",
+        "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/git/trees/3e50900b89b6b62a2dea014a4d30f63c6f721b14",
+        "truncated": false,
+        "entry_count": 165
+      },
+      {
+        "sha": "cc720a547de75914754364742e320d5ae817499a",
+        "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/git/trees/cc720a547de75914754364742e320d5ae817499a",
+        "truncated": false,
+        "entry_count": 165
+      },
+      {
+        "sha": "ccf12cc52b2d523671f03655156f09186dff6f7f",
+        "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/git/trees/ccf12cc52b2d523671f03655156f09186dff6f7f",
+        "truncated": false,
+        "entry_count": 200
+      },
+      {
+        "sha": "8651ff742be3d69ad527f113fa81a78f956c9878",
+        "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/git/trees/8651ff742be3d69ad527f113fa81a78f956c9878",
+        "truncated": false,
+        "entry_count": 1
+      },
+      {
+        "sha": "db306c328d41451bc91f4f717f10fb736b56dbba",
+        "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/git/trees/db306c328d41451bc91f4f717f10fb736b56dbba",
+        "truncated": false,
+        "entry_count": 9
+      },
+      {
+        "sha": "46f0f0e71e85a9b55ab25a2c6d7bcd7ce8434946",
+        "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/git/trees/46f0f0e71e85a9b55ab25a2c6d7bcd7ce8434946",
+        "truncated": false,
+        "entry_count": 9
+      },
+      {
+        "sha": "141a9f10c163617ec2b5d13c0b06abd1e40e65b8",
+        "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/git/trees/141a9f10c163617ec2b5d13c0b06abd1e40e65b8",
+        "truncated": false,
+        "entry_count": 147
+      },
+      {
+        "sha": "e1ea28a71151aa1e79facc0862ea21221144809c",
+        "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/git/trees/e1ea28a71151aa1e79facc0862ea21221144809c",
+        "truncated": false,
+        "entry_count": 147
+      },
+      {
+        "sha": "62bba2dae33624b277ca64337f5d2c7d79fb85b8",
+        "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/git/trees/62bba2dae33624b277ca64337f5d2c7d79fb85b8",
+        "truncated": false,
+        "entry_count": 22
+      },
+      {
+        "sha": "3a22cd499f76cd62efe132c0975dd8138ff7b558",
+        "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/git/trees/3a22cd499f76cd62efe132c0975dd8138ff7b558",
+        "truncated": false,
+        "entry_count": 22
+      }
+    ]
+  },
+  "exact_changed_paths": [
+    {
+      "path": "codex-rs/hepta-agentd/src/automation_effect_host_pq_chain_tests.rs",
+      "base_blob_sha": "748ae5851501d0b96209d80d594026b87a5488dd",
+      "head_blob_sha": "704544993b0c83aa1eb1333390577de4823c5fa2",
+      "base_size": 10201,
+      "head_size": 10167,
+      "mode_unchanged": true,
+      "additions": 0,
+      "deletions": 1,
+      "classification": "Agentd test-only source",
+      "change": "Remove one undeclared pretty_assertions::assert_eq import in the Agentd ignored Chain test module; comparison expressions are unchanged.",
+      "patch": "@@ -5,7 +5,6 @@\n use super::super::super::pon_process::chain_tests::Chain;\n use super::*;\n use anyhow::Context;\n-use pretty_assertions::assert_eq;\n use std::time::SystemTime;\n use std::time::UNIX_EPOCH;\n ",
+      "base_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/b0b7d95105bb4c63b422c3097e159caa6c65fe00/codex-rs/hepta-agentd/src/automation_effect_host_pq_chain_tests.rs",
+      "head_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/ee57cd57c322a8fecdf674a662c741452baf6478/codex-rs/hepta-agentd/src/automation_effect_host_pq_chain_tests.rs"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/automation_effect_host_pq_tests.rs",
+      "base_blob_sha": "e0b7f35754a60d118d6093d58d50fa7c738ae5d4",
+      "head_blob_sha": "c018f93ea1042c2a0ab5f78db7f49e9143e23a3f",
+      "base_size": 20211,
+      "head_size": 20177,
+      "mode_unchanged": true,
+      "additions": 0,
+      "deletions": 1,
+      "classification": "Agentd test-only source",
+      "change": "Remove one undeclared pretty_assertions::assert_eq import in the Agentd ordinary PQ test module; comparison expressions are unchanged.",
+      "patch": "@@ -9,7 +9,6 @@ use codex_model_provider::PROVIDER_EFFECT_IDEMPOTENCY_KEY_HEADER;\n use codex_model_provider::PROVIDER_EFFECT_PAYLOAD_SHA256_HEADER;\n use ed25519_dalek::Signer;\n use ed25519_dalek::SigningKey;\n-use pretty_assertions::assert_eq;\n use std::sync::atomic::Ordering;\n use wiremock::Mock;\n use wiremock::MockServer;",
+      "base_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/b0b7d95105bb4c63b422c3097e159caa6c65fe00/codex-rs/hepta-agentd/src/automation_effect_host_pq_tests.rs",
+      "head_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/ee57cd57c322a8fecdf674a662c741452baf6478/codex-rs/hepta-agentd/src/automation_effect_host_pq_tests.rs"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/tests/neural_cognitive_bootstrap.rs",
+      "base_blob_sha": "0522692dcc7d266cdbb014722833236a4547a14b",
+      "head_blob_sha": "244c0be7222f351599f87b0b490b70830e88e1dd",
+      "base_size": 17197,
+      "head_size": 17367,
+      "mode_unchanged": true,
+      "additions": 2,
+      "deletions": 0,
+      "classification": "Agentd test-only source",
+      "change": "Add a comment and deliberately invalid, nonempty runtime_snapshot sentinel to the pre-existing qualification-rejection integration fixture; existing assertions are unchanged.",
+      "patch": "@@ -388,6 +388,8 @@ async fn ordinary_native_composition_rejects_untrusted_qualification_before_infe\n             materials: unavailable.clone(),\n             run_directory: worker_directory.clone(),\n             source_pins: BTreeMap::new(),\n+            // Qualification must reject before these invalid runtime bytes are read.\n+            runtime_snapshot: b\"must-not-use-unadmitted-runtime-snapshot\".to_vec(),\n             target_contract: Vec::new(),\n             wrapped_adapter: Vec::new(),\n             contract_digest: digest,",
+      "base_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/b0b7d95105bb4c63b422c3097e159caa6c65fe00/codex-rs/hepta-agentd/tests/neural_cognitive_bootstrap.rs",
+      "head_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/ee57cd57c322a8fecdf674a662c741452baf6478/codex-rs/hepta-agentd/tests/neural_cognitive_bootstrap.rs"
+    }
+  ],
+  "unchanged_tested_package_subtrees": [
+    {
+      "path": "codex-rs/model-provider",
+      "base_tree_sha": "e6390751113d4c4a46e32181ec008c83ab4064ae",
+      "head_tree_sha": "e6390751113d4c4a46e32181ec008c83ab4064ae",
+      "all_descendant_production_and_test_files_identical": true,
+      "git_tree_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/git/trees/e6390751113d4c4a46e32181ec008c83ab4064ae"
+    },
+    {
+      "path": "codex-rs/hepta-automation",
+      "base_tree_sha": "261141ea847dc57d05df5dbebebd0964cb569f68",
+      "head_tree_sha": "261141ea847dc57d05df5dbebebd0964cb569f68",
+      "all_descendant_production_and_test_files_identical": true,
+      "git_tree_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/git/trees/261141ea847dc57d05df5dbebebd0964cb569f68"
+    }
+  ],
+  "unchanged_workflow_and_manifest_paths": [
+    {
+      "path": "codex-rs/Cargo.lock",
+      "base_blob_sha": "181d14a3124d94fb1f2c880da93f1c09a1f5cf76",
+      "head_blob_sha": "181d14a3124d94fb1f2c880da93f1c09a1f5cf76",
+      "mode": "100644",
+      "unchanged": true,
+      "native_test_sha256": "0f458d7746a0ca0b95bedc5404fd3347c1b0a7508f1c387f3b1f3f71ced08663",
+      "base_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/b0b7d95105bb4c63b422c3097e159caa6c65fe00/codex-rs/Cargo.lock",
+      "head_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/ee57cd57c322a8fecdf674a662c741452baf6478/codex-rs/Cargo.lock"
+    },
+    {
+      "path": "justfile",
+      "base_blob_sha": "5636206c53b44385e731b885eeefa7abedf32493",
+      "head_blob_sha": "5636206c53b44385e731b885eeefa7abedf32493",
+      "mode": "100644",
+      "unchanged": true,
+      "native_test_sha256": "837b31ce1b29a48a69dac729357deb034dbf111845990e95b916dc55d0e1b061",
+      "base_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/b0b7d95105bb4c63b422c3097e159caa6c65fe00/justfile",
+      "head_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/ee57cd57c322a8fecdf674a662c741452baf6478/justfile",
+      "saved_native_workflow_bytes_match_git_blob": true
+    },
+    {
+      "path": "scripts/run-nextest.py",
+      "base_blob_sha": "952fd964e36af1e713eae04b54d4887695e6dd43",
+      "head_blob_sha": "952fd964e36af1e713eae04b54d4887695e6dd43",
+      "mode": "100644",
+      "unchanged": true,
+      "native_test_sha256": "b939d9c06af3269924e05de14abb1cc7e4c44be32024325a593300b5199dd385",
+      "base_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/b0b7d95105bb4c63b422c3097e159caa6c65fe00/scripts/run-nextest.py",
+      "head_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/ee57cd57c322a8fecdf674a662c741452baf6478/scripts/run-nextest.py",
+      "saved_native_workflow_bytes_match_git_blob": true
+    },
+    {
+      "path": "codex-rs/.config/nextest.toml",
+      "base_blob_sha": "26576a3b8ab4575db262c4614227a85eb3068b6c",
+      "head_blob_sha": "26576a3b8ab4575db262c4614227a85eb3068b6c",
+      "mode": "100644",
+      "unchanged": true,
+      "native_test_sha256": "3ec2f9a8ed35c5582fe5d59b4ad427e5e87249c5e7d84cf149dd9874c1f9d222",
+      "base_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/b0b7d95105bb4c63b422c3097e159caa6c65fe00/codex-rs/.config/nextest.toml",
+      "head_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/ee57cd57c322a8fecdf674a662c741452baf6478/codex-rs/.config/nextest.toml",
+      "saved_native_workflow_bytes_match_git_blob": true
+    },
+    {
+      "path": "codex-rs/Cargo.toml",
+      "base_blob_sha": "02a140c213aa7ac9f621915f1ef5ef084d915069",
+      "head_blob_sha": "02a140c213aa7ac9f621915f1ef5ef084d915069",
+      "mode": "100644",
+      "unchanged": true,
+      "native_test_sha256": null,
+      "base_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/b0b7d95105bb4c63b422c3097e159caa6c65fe00/codex-rs/Cargo.toml",
+      "head_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/ee57cd57c322a8fecdf674a662c741452baf6478/codex-rs/Cargo.toml"
+    },
+    {
+      "path": "codex-rs/rust-toolchain.toml",
+      "base_blob_sha": "917d2492264a35bc9c0feaef41878d8825870866",
+      "head_blob_sha": "917d2492264a35bc9c0feaef41878d8825870866",
+      "mode": "100644",
+      "unchanged": true,
+      "native_test_sha256": "e8b379eaa492bf59d35187de269afd1c4f55d85e0322f6fea32803a3fec1a380",
+      "base_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/b0b7d95105bb4c63b422c3097e159caa6c65fe00/codex-rs/rust-toolchain.toml",
+      "head_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/ee57cd57c322a8fecdf674a662c741452baf6478/codex-rs/rust-toolchain.toml"
+    },
+    {
+      "path": "scripts/format.py",
+      "base_blob_sha": "d4eabe70b68605933240e9129245f7f4cccbde5d",
+      "head_blob_sha": "d4eabe70b68605933240e9129245f7f4cccbde5d",
+      "mode": "100644",
+      "unchanged": true,
+      "native_test_sha256": null,
+      "base_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/b0b7d95105bb4c63b422c3097e159caa6c65fe00/scripts/format.py",
+      "head_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/ee57cd57c322a8fecdf674a662c741452baf6478/scripts/format.py"
+    },
+    {
+      "path": "AGENTS.md",
+      "base_blob_sha": "faa57cc0db48123e1011f1eb47692cd3bbbcfc3a",
+      "head_blob_sha": "faa57cc0db48123e1011f1eb47692cd3bbbcfc3a",
+      "mode": "100644",
+      "unchanged": true,
+      "native_test_sha256": null,
+      "base_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/b0b7d95105bb4c63b422c3097e159caa6c65fe00/AGENTS.md",
+      "head_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/ee57cd57c322a8fecdf674a662c741452baf6478/AGENTS.md"
+    }
+  ],
+  "scope_conclusion": "The entire model-provider and hepta-automation package subtrees, workspace dependency/lock/toolchain inputs, and original test workflow are unchanged. All other root and codex-rs child entries are identical except the Agentd subtree, whose exact three leaf changes are test-only files listed above.",
+  "test_result_attribution": {
+    "actual_tested_commit": "b0b7d95105bb4c63b422c3097e159caa6c65fe00",
+    "actual_tested_tree": "89fc387e70e2a0f96edf0a6a0e096b54fe9d8a9d",
+    "actual_commands": [
+      {
+        "command": "just test --locked -p codex-model-provider",
+        "passed": 89,
+        "skipped": 0,
+        "job_id": "1a1abfd3144-fc05-5184"
+      },
+      {
+        "command": "just test --locked -p codex-hepta-automation --test authorized_effect",
+        "passed": 42,
+        "skipped": 0,
+        "job_id": "1a1ac09bdeb-fc05-51cf"
+      }
+    ],
+    "total_passed": 131,
+    "successor_execution_performed_by_this_check": false,
+    "attribution_limit": "The 131 native PASS results remain attributed only to b0b7. This read-only source-equivalence check does not relabel them as execution on ee57, does not qualify the changed Agentd tests, and does not certify the complete successor repository tree.",
+    "native_evidence_file": "/workspace/scratch/2c2bcaad5723/hepta-review/NATIVE-QUALIFICATION.json"
+  },
+  "no_tests_run": true,
+  "no_repository_code_changes": true
+}

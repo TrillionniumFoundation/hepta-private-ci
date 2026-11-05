@@ -1,0 +1,48 @@
+{
+  "label": "369-fix",
+  "command": [
+    "/home/qian/.cargo/bin/just",
+    "fix",
+    "--locked",
+    "-p",
+    "codex-model-provider",
+    "-p",
+    "codex-hepta-automation"
+  ],
+  "exit_code": 0,
+  "started_unix_s": 1793885119.8109188,
+  "finished_unix_s": 1793885207.1888037,
+  "pre": {
+    "head": "369a021af4a045da2feb7480a119e549694a5033",
+    "tree": "3387a0343a247016af5ee59baccf1156899c7ab3",
+    "source_manifest_sha256": "d2a3b49d0f7dc4f9f5ad6cdbf01933cbf69117274c229e9048edba7e76cc215e",
+    "cargo_lock_sha256": "0f458d7746a0ca0b95bedc5404fd3347c1b0a7508f1c387f3b1f3f71ced08663",
+    "target": "/home/qian/pq-effects-2c2b-target",
+    "target_device": 2053,
+    "target_inode": 2003125,
+    "tracked_count": 11833,
+    "materialized_count": 9763,
+    "disk_free": 14989029376,
+    "status": ""
+  },
+  "post": {
+    "head": "369a021af4a045da2feb7480a119e549694a5033",
+    "tree": "3387a0343a247016af5ee59baccf1156899c7ab3",
+    "source_manifest_sha256": "4aea30b4e0e44454d9de737902dde62e42b82a9e5111ca11e8700786fe32ba66",
+    "cargo_lock_sha256": "0f458d7746a0ca0b95bedc5404fd3347c1b0a7508f1c387f3b1f3f71ced08663",
+    "target": "/home/qian/pq-effects-2c2b-target",
+    "target_device": 2053,
+    "target_inode": 2003125,
+    "tracked_count": 11833,
+    "materialized_count": 9763,
+    "disk_free": 14253256704,
+    "status": " M codex-rs/hepta-automation/tests/support/authorized_effect_pq_tests.rs\n"
+  },
+  "source_unchanged": false,
+  "cargo_lock_unchanged": true,
+  "stdout_path": "/home/qian/pq-effects-2c2b-validation/369-fix-stdout.log",
+  "stderr_path": "/home/qian/pq-effects-2c2b-validation/369-fix-stderr.log",
+  "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "stderr_sha256": "ef88884ca89f046561884febefabd36f9261dd15b0fe39f52d46d7cd5c5a5d9e",
+  "build_jobs": 2
+}

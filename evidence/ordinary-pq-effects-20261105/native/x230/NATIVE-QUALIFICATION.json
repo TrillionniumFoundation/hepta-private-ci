@@ -1,0 +1,249 @@
+{
+  "qualification_scope": "Two original scoped native test commands, first executed on the same published b0b7 source; no production provisioning or whole-chain PQ claim.",
+  "tested_commit": "b0b7d95105bb4c63b422c3097e159caa6c65fe00",
+  "tested_tree": "89fc387e70e2a0f96edf0a6a0e096b54fe9d8a9d",
+  "pre_and_post_source_manifest_sha256": "6a47c894f71161cb64e30bb4690d067b71234a1460ac2dd2fab6592dc0df0240",
+  "pre_and_post_cargo_lock_sha256": "0f458d7746a0ca0b95bedc5404fd3347c1b0a7508f1c387f3b1f3f71ced08663",
+  "pre_and_post_sourceclean": true,
+  "source_manifest_description": "All tracked index blob identities plus hashes of materialized file bytes; sparse absent entries are explicit. Raw pre/post manifests remain in the remote validation directory.",
+  "host": "x230",
+  "worktree": "/home/qian/pq-effects-2c2b-20261105",
+  "target_directory": "/home/qian/pq-effects-2c2b-target",
+  "target_device": 2053,
+  "target_inode": 2003125,
+  "native_validation_directory": "/home/qian/pq-effects-2c2b-validation",
+  "profile": "local, selected by original justfile and inheriting default; unchanged retries=1 and default slow-timeout 30s x 2. No observed retries.",
+  "build_jobs": 2,
+  "workflow_sha256": {
+    "justfile": "837b31ce1b29a48a69dac729357deb034dbf111845990e95b916dc55d0e1b061",
+    "scripts/run-nextest.py": "b939d9c06af3269924e05de14abb1cc7e4c44be32024325a593300b5199dd385",
+    "codex-rs/.config/nextest.toml": "3ec2f9a8ed35c5582fe5d59b4ad427e5e87249c5e7d84cf149dd9874c1f9d222",
+    "codex-rs/rust-toolchain.toml": "e8b379eaa492bf59d35187de269afd1c4f55d85e0322f6fea32803a3fec1a380"
+  },
+  "results": [
+    {
+      "scope": "codex-model-provider",
+      "job_id": "1a1abfd3144-fc05-5184",
+      "command": [
+        "/home/qian/.cargo/bin/just",
+        "test",
+        "--locked",
+        "-p",
+        "codex-model-provider"
+      ],
+      "command_exit_code": 0,
+      "nextest_summary": {
+        "tests_run": 89,
+        "passed": 89,
+        "skipped": 0,
+        "test_execution_seconds": 1.907
+      },
+      "junit_cases": 89,
+      "junit_failure_error_skipped_flaky_rerun_elements": 0,
+      "observed_retry_log_lines": false,
+      "new_pq_regression_cases": [
+        "provider_effect::pq_attestation::tests::legacy_verified_contract_cannot_claim_pq_authentication",
+        "provider_effect::pq_attestation::tests::pq_adapter_refuses_endpoint_header_and_timeout_changes_after_signing",
+        "provider_effect::pq_attestation::tests::pq_contract_rejects_every_changed_signed_binding",
+        "provider_effect::pq_attestation::tests::pq_contract_retains_verified_profile_through_adapter_construction",
+        "provider_effect::pq_attestation::tests::pq_contract_requires_matching_pinned_key_and_exact_mldsa65_spki",
+        "provider_effect::pq_attestation::tests::pq_contract_refuses_v1_and_foreign_signing_domains"
+      ],
+      "command_wall_seconds": 540.5338702201843,
+      "newly_generated_test_elf_artifacts": [
+        {
+          "path": "/home/qian/pq-effects-2c2b-target/debug/deps/codex_model_provider-c530c1ff3e20408e",
+          "kind": "file",
+          "device": 2053,
+          "inode": 2048012,
+          "size": 418620176,
+          "mtime_ns": 1793887409508364911,
+          "sha256": "fdc493b6fc9acf89f15d2b3689b100c16bd0e509d01847bc52be4702d4853cd5",
+          "freshness": "new_or_changed_ELF_during_this_command",
+          "before": null
+        }
+      ],
+      "evidence": [
+        {
+          "local_path": "/workspace/scratch/2c2bcaad5723/hepta-review/b0b7-model-provider-first-test-receipt.json",
+          "size_bytes": 2977,
+          "sha256": "f9c1a3c85d9937cbe9249db586e17ebf41409180f57998587798f28e26091df8"
+        },
+        {
+          "local_path": "/workspace/scratch/2c2bcaad5723/hepta-review/b0b7-model-provider-first-test-terminal.json",
+          "size_bytes": 732,
+          "sha256": "126b6f0812e772b48252713194d09b87f04a2dc2a72c906feaa0b1e5d847002e"
+        },
+        {
+          "local_path": "/workspace/scratch/2c2bcaad5723/hepta-review/b0b7-model-provider-first-test-stdout.log",
+          "size_bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "local_path": "/workspace/scratch/2c2bcaad5723/hepta-review/b0b7-model-provider-first-test-stderr.log",
+          "size_bytes": 47254,
+          "sha256": "b922bf769de40c30d195d125d461de80471bfc0a7cea22ce4d3c2485402f52a3"
+        },
+        {
+          "local_path": "/workspace/scratch/2c2bcaad5723/hepta-review/b0b7-model-provider-first-test-discovered-junit-1.xml",
+          "size_bytes": 17668,
+          "sha256": "2aaba270ae080bcb38c336e1a8918d6736df00e132129833b93df8a4809e9822"
+        }
+      ]
+    },
+    {
+      "scope": "codex-hepta-automation::authorized_effect",
+      "job_id": "1a1ac09bdeb-fc05-51cf",
+      "command": [
+        "/home/qian/.cargo/bin/just",
+        "test",
+        "--locked",
+        "-p",
+        "codex-hepta-automation",
+        "--test",
+        "authorized_effect"
+      ],
+      "command_exit_code": 0,
+      "nextest_summary": {
+        "tests_run": 42,
+        "passed": 42,
+        "skipped": 0,
+        "test_execution_seconds": 7.102
+      },
+      "junit_cases": 42,
+      "junit_failure_error_skipped_flaky_rerun_elements": 0,
+      "observed_retry_log_lines": false,
+      "new_pq_regression_cases": [
+        "pq_tests::pq_effect_dispatch_and_spent_nonce_survive_owner_and_outbox_reopen",
+        "pq_tests::pq_effect_external_owner_progress_refuses_stale_dispatch",
+        "pq_tests::pq_effect_old_image_refuses_reopen_then_current_image_preserves_consumption",
+        "pq_tests::pq_effect_rejects_classical_wire_and_signature_before_consumption",
+        "pq_tests::pq_effect_refuses_spent_revoked_and_previous_epoch_grants",
+        "pq_tests::pq_effect_unknown_outcome_reopens_for_reconciliation_without_redispatch"
+      ],
+      "command_wall_seconds": 305.35879278182983,
+      "newly_generated_test_elf_artifacts": [
+        {
+          "path": "/home/qian/pq-effects-2c2b-target/debug/deps/authorized_effect-972e9e667b1e0ea6",
+          "kind": "file",
+          "device": 2053,
+          "inode": 2052160,
+          "size": 267799416,
+          "mtime_ns": 1793887979702224436,
+          "sha256": "0fc92d02e31d64d0d8e7ede50d0a45f237bb1bcd570f69ad486048ea10321ba8",
+          "freshness": "new_or_changed_ELF_during_this_command",
+          "before": null
+        }
+      ],
+      "evidence": [
+        {
+          "local_path": "/workspace/scratch/2c2bcaad5723/hepta-review/b0b7-automation-authorized-effect-first-test-receipt.json",
+          "size_bytes": 3763,
+          "sha256": "0265fb84adfef06bdf34ee5f8a3058ebfc7cebb0acea9aff5c9c37716e8aa476"
+        },
+        {
+          "local_path": "/workspace/scratch/2c2bcaad5723/hepta-review/b0b7-automation-authorized-effect-first-test-terminal.json",
+          "size_bytes": 732,
+          "sha256": "f5c2dcb6726631e826a27fd646241ecae989552a47949f2742ffca03ed65cf0a"
+        },
+        {
+          "local_path": "/workspace/scratch/2c2bcaad5723/hepta-review/b0b7-automation-authorized-effect-first-test-stdout.log",
+          "size_bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "local_path": "/workspace/scratch/2c2bcaad5723/hepta-review/b0b7-automation-authorized-effect-first-test-stderr.log",
+          "size_bytes": 36853,
+          "sha256": "a61b963d9448773915a668a959c5136267e2964227c0c84c3f4886b4df7d0685"
+        },
+        {
+          "local_path": "/workspace/scratch/2c2bcaad5723/hepta-review/b0b7-automation-authorized-effect-first-test-junit.xml",
+          "size_bytes": 10183,
+          "sha256": "6fb3470ee60695fad92823f5394aa169829caf49c10e4c470297e9f185061ab5"
+        }
+      ]
+    }
+  ],
+  "total_tests_run": 131,
+  "total_passed": 131,
+  "total_skipped": 0,
+  "new_pq_regression_tests_passed": 12,
+  "later_commit_note": "Root later changed only Agentd integration fixture code. These exact test results remain attributed to b0b7; no claim that later whole-repository HEAD was tested here.",
+  "earlier_failures_preserved": {
+    "1f26_fix": "exit101: sparse source lacked tracked docs/modules/MODULES.json; source clean, no tests. Corrected by materializing tracked docs.",
+    "369_fix": "exit0: two Copy lint rewrites in automation PQ tests; published exactly before first tests.",
+    "9ce_format_check": "exit1: two assert_eq layout differences in the Agentd ignored Chain test. Exact native formatter successor was published as b0b7.",
+    "9ce_guard": "exit1 on failed format receipt before executing any test; no qualification test was run at 9ce.",
+    "evidence": [
+      {
+        "local_path": "/workspace/scratch/2c2bcaad5723/hepta-review/1f26-fix-receipt.json",
+        "size_bytes": 1761,
+        "sha256": "55ff5b26c52a6ad2fe9724b341212b2212a4775d994212787e504a076b18280c"
+      },
+      {
+        "local_path": "/workspace/scratch/2c2bcaad5723/hepta-review/1f26-fix-terminal.json",
+        "size_bytes": 731,
+        "sha256": "16ba1032d3a17da2b9049a4fd7247fd1399847da15796e43d68bb4af7f32c022"
+      },
+      {
+        "local_path": "/workspace/scratch/2c2bcaad5723/hepta-review/1f26-fix-stderr.log",
+        "size_bytes": 33457,
+        "sha256": "e3d3a2293655bd90b34101197ffa946f6fa39e6b223a6689c7eb2882406ad142"
+      },
+      {
+        "local_path": "/workspace/scratch/2c2bcaad5723/hepta-review/369-fix-receipt.json",
+        "size_bytes": 1831,
+        "sha256": "1a1da44d3ab1e4a3ceaa63ff03a63113b3d420b9c3a08037db13afb744716b16"
+      },
+      {
+        "local_path": "/workspace/scratch/2c2bcaad5723/hepta-review/369-fix-terminal.json",
+        "size_bytes": 732,
+        "sha256": "524cf7e87e9a8794bc5688e16b1b81c542d294f69fd7ca16a3b9433658a1960a"
+      },
+      {
+        "local_path": "/workspace/scratch/2c2bcaad5723/hepta-review/369-fix-stderr.log",
+        "size_bytes": 20042,
+        "sha256": "ef88884ca89f046561884febefabd36f9261dd15b0fe39f52d46d7cd5c5a5d9e"
+      },
+      {
+        "local_path": "/workspace/scratch/2c2bcaad5723/hepta-review/369-fix.patch",
+        "size_bytes": 956,
+        "sha256": "cc34feb8fbe079e41f9e00f9e192fd0fca43bcdf82e840c990c722e100b126b7"
+      },
+      {
+        "local_path": "/workspace/scratch/2c2bcaad5723/hepta-review/369-fix-format-check-receipt.json",
+        "size_bytes": 877,
+        "sha256": "65446314f1076f4015250b1aedc7c0372f9e94f3cbd754f944c19c3d07074911"
+      },
+      {
+        "local_path": "/workspace/scratch/2c2bcaad5723/hepta-review/9ce-final-format-check-receipt.json",
+        "size_bytes": 1781,
+        "sha256": "4d3e2d53eacb6a365fd7c1304c866f15ac088f36553115dee24ea62f5de03fd0"
+      },
+      {
+        "local_path": "/workspace/scratch/2c2bcaad5723/hepta-review/9ce-final-format-check-stderr.log",
+        "size_bytes": 1482,
+        "sha256": "e877d38bc7a87e1d67019c83aa31574d2cbfa77e1e1c5754e16187e063307447"
+      },
+      {
+        "local_path": "/workspace/scratch/2c2bcaad5723/hepta-review/9ce-guard-terminal.json",
+        "size_bytes": 725,
+        "sha256": "ae77df873f44e64a05edab8a0610e3902d09876c18511b5f8e9a946ff3a3c44d"
+      },
+      {
+        "local_path": "/workspace/scratch/2c2bcaad5723/hepta-review/9ce-guard-stderr.log",
+        "size_bytes": 90,
+        "sha256": "b47f12f3b4f123eb9f8258df80813bc8b977fc0614f96bc7795397ef0149cbe7"
+      },
+      {
+        "local_path": "/workspace/scratch/2c2bcaad5723/hepta-review/b0b7-model-provider-junit-locate.json",
+        "size_bytes": 1239,
+        "sha256": "a5cfd54537d12f175d45e217ae06bcdef7cd6c2caa1d51a0c6fac1231e5d7a7c"
+      }
+    ]
+  },
+  "junit_location_note": "Original nextest wrote JUnit under worktree/codex-rs/target/nextest/local/junit.xml despite test ELFs living in CARGO_TARGET_DIR. Model report was located and copied before automation; automation report was separately copied at command completion. No test was rerun to obtain a report.",
+  "remaining_free_disk_bytes_after_last_test": 6394060800,
+  "all_test_jobs_terminal": true,
+  "further_tests_started": false
+}

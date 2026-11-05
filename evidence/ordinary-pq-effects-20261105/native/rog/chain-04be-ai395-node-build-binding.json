@@ -1,0 +1,124 @@
+{
+  "schema": "hepta-ordinary-pq-chain-input-build-v1",
+  "source_before": {
+    "commit": "04be5f02c84cf5cb626a53f34bc03a5bd6ff5137",
+    "tree": "d4f4a85c439982d8decec9265c1993408f3577cf",
+    "cargo_lock_sha256": "00f3573879f3da7d5a702a8bc13245196bbfd53b86b0b6eb19c51f14887cef61",
+    "manifest_files_verified": 51,
+    "clean": true
+  },
+  "source_after": {
+    "commit": "04be5f02c84cf5cb626a53f34bc03a5bd6ff5137",
+    "tree": "d4f4a85c439982d8decec9265c1993408f3577cf",
+    "cargo_lock_sha256": "00f3573879f3da7d5a702a8bc13245196bbfd53b86b0b6eb19c51f14887cef61",
+    "manifest_files_verified": 51,
+    "clean": true
+  },
+  "host": "ai395",
+  "machine": "x86_64",
+  "binary": "/home/qq/work/chain-hepta-pq-effects-2c2b-20261105-target/release/trnm-pon-node",
+  "binary_sha256": "095458755051afd137478145a42b5edb94ee32587837e4723931317900a955d9",
+  "binary_bytes": 14519384,
+  "elf_machine": 62,
+  "cargo_home": "/home/qq/work/chain-hepta-pq-effects-2c2b-20261105-target/cargo-home",
+  "target": "/home/qq/work/chain-hepta-pq-effects-2c2b-20261105-target",
+  "build_parallel_jobs": 8,
+  "build_profile": "original-default-release",
+  "cache_reused": false,
+  "source_modified": false,
+  "default_toolchain_changed": false,
+  "commands": [
+    {
+      "name": "rustup-default",
+      "args": [
+        "/home/qq/.cargo/bin/rustup",
+        "default"
+      ],
+      "cwd": "/home/qq/work/chain-hepta-pq-effects-2c2b-20261105",
+      "exit_code": 0,
+      "seconds": 0.003295421600341797,
+      "stdout_sha256": "92c1c770a30548f21b33a78d1ea600d446f5327f3887d58cf3d6ff1eb4267457",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "rustc-195",
+      "args": [
+        "/home/qq/.cargo/bin/rustc",
+        "+1.95.0",
+        "-Vv"
+      ],
+      "cwd": "/home/qq/work/chain-hepta-pq-effects-2c2b-20261105",
+      "exit_code": 0,
+      "seconds": 0.00735163688659668,
+      "stdout_sha256": "4fdff2578428e9c5c08ddd7a0d3079c1a106b1cdaa46e73e46f7cd32b0fb9cad",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "cargo-195",
+      "args": [
+        "/home/qq/.cargo/bin/cargo",
+        "+1.95.0",
+        "-Vv"
+      ],
+      "cwd": "/home/qq/work/chain-hepta-pq-effects-2c2b-20261105",
+      "exit_code": 0,
+      "seconds": 0.015409469604492188,
+      "stdout_sha256": "c034ed37e1ee0ec102326f27e9b3b8fe6a481f8c8ad28df58a2e117b241c0f0e",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "preflight-before-build",
+      "args": [
+        "bash",
+        "scripts/project-preflight.sh",
+        "--audit"
+      ],
+      "cwd": "/home/qq/work/chain-hepta-pq-effects-2c2b-20261105",
+      "exit_code": 0,
+      "seconds": 0.03148198127746582,
+      "stdout_sha256": "a47133fd7030ccda88d70f7e8f0c9df1ffb0fc5fd3257ed034439bbe6fc6e2e0",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "cargo-metadata",
+      "args": [
+        "/home/qq/.cargo/bin/cargo",
+        "+1.95.0",
+        "metadata",
+        "--locked",
+        "--format-version",
+        "1",
+        "--manifest-path",
+        "trillionnium/Cargo.toml"
+      ],
+      "cwd": "/home/qq/work/chain-hepta-pq-effects-2c2b-20261105",
+      "exit_code": 0,
+      "seconds": 57.33350396156311,
+      "stdout_sha256": "fdd0af50342062d0c61df3634b1f4cf0114e357716fa24b912866fa82745c4c2",
+      "stderr_sha256": "5766442a73ca86997a73f1c9df6b0e80f69754f0ea3d5e53feb676dc14784ff5"
+    },
+    {
+      "name": "node-release-build",
+      "args": [
+        "/home/qq/.cargo/bin/cargo",
+        "+1.95.0",
+        "build",
+        "--locked",
+        "--release",
+        "--manifest-path",
+        "trillionnium/Cargo.toml",
+        "-p",
+        "trnm-pon-node",
+        "--bin",
+        "trnm-pon-node"
+      ],
+      "cwd": "/home/qq/work/chain-hepta-pq-effects-2c2b-20261105",
+      "exit_code": 0,
+      "seconds": 55.5942702293396,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_sha256": "f8ab7fd7d3a7612c837374a4f2b120671346b396f1490e956094159fcfcd0f72"
+    }
+  ],
+  "qualification_result_transferred": false,
+  "production_activation": false
+}
