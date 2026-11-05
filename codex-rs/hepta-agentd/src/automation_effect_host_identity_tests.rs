@@ -83,6 +83,8 @@ async fn host_provider_identity_terminal_execute_uses_store_owner_not_shared_sub
             lease: pq::EffectDispatchLease::ClassicalFixture,
             provider_scope: host.provider_scope.clone(),
             destination_id: host.destination_id.clone(),
+            packet_retention: None,
+            packet_execution: None,
         };
         // The existing generic owner intentionally permits independent caller
         // subjects. Use its real dispatch so the foreign terminal is valid.
@@ -192,6 +194,8 @@ async fn host_provider_identity_legacy_http_queries_original_occurrence_and_reta
         lease: pq::EffectDispatchLease::ClassicalFixture,
         provider_scope: host.provider_scope.clone(),
         destination_id: host.destination_id.clone(),
+        packet_retention: None,
+            packet_execution: None,
     });
     fixture
         .store

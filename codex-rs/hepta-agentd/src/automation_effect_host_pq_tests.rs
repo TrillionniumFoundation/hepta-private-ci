@@ -33,6 +33,9 @@ use fixture::PqFixture;
 #[path = "automation_effect_host_pq_chain_tests.rs"]
 mod chain_tests;
 
+#[path = "automation_effect_host_packet_tests.rs"]
+mod packet_tests;
+
 const NOW: u64 = 1_000_000;
 
 #[tokio::test(flavor = "multi_thread", worker_threads = 2)]
@@ -436,6 +439,8 @@ async fn original_store_driver_refuses_authenticated_lease_after_exact_head_chan
         lease: EffectDispatchLease::Pq(lease),
         provider_scope: host.provider_scope.clone(),
         destination_id: host.destination_id.clone(),
+        packet_retention: None,
+            packet_execution: None,
     };
     let binding = intent.final_use_binding()?;
     let result = fixture

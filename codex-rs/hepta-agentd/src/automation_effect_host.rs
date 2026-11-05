@@ -62,6 +62,9 @@ use crate::AgentdIdentity;
 
 #[path = "automation_effect_host_pq.rs"]
 mod pq;
+#[path = "automation_effect_host_packet.rs"]
+mod packet;
+use packet::EffectWire;
 
 #[path = "automation_effect_host_pon_task_acceptance.rs"]
 mod pon_task_acceptance;
@@ -290,36 +293,7 @@ impl PonLocalProviderEffectAdapter {
         let Some(deadline) = Instant::now().checked_add(self.timeout) else {
             return PonInvocation::BeforeStart;
         };
-        if wire_payload.len() > 1024 * 1024 || self.validate_paths().is_err() {
-            return PonInvocation::BeforeStart;
-        }
-        let Ok(executable) = pon_executable::PinnedExecutable::prepare(
-            &self.binary,
-            self.binary_sha256.as_str(),
-            deadline,
-        ) else {
-            return PonInvocation::BeforeStart;
-        };
-        let Ok(runtime) = tokio::runtime::Handle::try_current() else {
-            return PonInvocation::BeforeStart;
-        };
-        // Provider methods enter here via their existing spawn_blocking scope.
-        // Hash/path verification is not preemptible, but no child may start if
-        // it consumed the original deadline. The entire pipe exchange uses the
-        // same deadline; stdout and stderr limits are equally authoritative.
-        match runtime.block_on(pon_process::run(
-            self.command(operation, executable.path()),
-            wire_payload,
-            deadline,
-            MAX_PON_PROCESS_OUTPUT_BYTES,
-        )) {
-            pon_process::Outcome::BeforeStart => PonInvocation::BeforeStart,
-            pon_process::Outcome::Unknown => PonInvocation::Unknown,
-            pon_process::Outcome::Complete(stdout) => match serde_json::from_slice(&stdout) {
-                Ok(value) => PonInvocation::Value(value),
-                Err(_) => PonInvocation::Unknown,
-            },
-        }
+        self.invoke_until(operation, wire_payload, deadline, /*execution*/ None)
     }
 
     fn block_digest(value: &Value) -> Option<Sha256Digest> {
@@ -346,7 +320,14 @@ impl PonLocalProviderEffectAdapter {
                 reason_code: "pon_packet_payload_binding_invalid".to_string(),
             };
         }
-        match self.invoke("submit", &wire_payload) {
+        Self::dispatch_outcome(intent, self.invoke("submit", &wire_payload))
+    }
+
+    fn dispatch_outcome(
+        intent: ProviderEffectIntent,
+        outcome: PonInvocation,
+    ) -> ProviderEffectDispatch {
+        match outcome {
             PonInvocation::BeforeStart => ProviderEffectDispatch::NotDispatched {
                 reason_code: "pon_local_owner_unavailable_before_start".to_string(),
             },
@@ -1127,12 +1108,48 @@ impl AgentdAutomationEffectHost {
         command_id: &str,
         now_ms: u64,
     ) -> Result<TaskFlowStepReceipt, AgentdError> {
+        self.execute_wire(
+            store,
+            intent,
+            EffectWire::Inline(wire_payload),
+            signed_grant,
+            command_id,
+            now_ms,
+        )
+        .await
+    }
+
+    async fn execute_wire(
+        &self,
+        store: &AutomationStore,
+        intent: &AuthorizedEffectIntent,
+        wire: EffectWire<'_>,
+        signed_grant: &SignedFinalUseGrant,
+        command_id: &str,
+        now_ms: u64,
+    ) -> Result<TaskFlowStepReceipt, AgentdError> {
         if store.owner_agent_id() != &self.agent_id {
             return Err(AgentdError::GenerationFenced(
                 "automation effect store is owned by a different Agent".to_string(),
             ));
         }
-        self.validate_intent(intent, wire_payload)?;
+        let (wire_payload, packet_retention, packet_execution) = match wire {
+            EffectWire::Inline(bytes) => {
+                self.validate_intent(intent, bytes)?;
+                (bytes, None, None)
+            }
+            EffectWire::Packet(packet) => {
+                if !self.supports_packet_v1() {
+                    return Err(AgentdError::Invalid(
+                        "packet v1 requires a PQ PoN effect host".to_string(),
+                    ));
+                }
+                packet.execution().check().map_err(AgentdError::Protocol)?;
+                let bytes = packet.wire_payload();
+                self.validate_intent_binding(intent, bytes)?;
+                (bytes, Some(packet.retention()), Some(packet.execution().clone()))
+            }
+        };
         // Exact terminal readback mints no authority and must remain usable
         // after a grant expires or its issuer is revoked.
         if let Some(receipt) = store
@@ -1179,6 +1196,8 @@ impl AgentdAutomationEffectHost {
             lease,
             provider_scope: self.provider_scope.clone(),
             destination_id: self.destination_id.clone(),
+            packet_retention,
+            packet_execution,
         };
         store
             .execute_authorized_taskflow_effect(
@@ -1393,6 +1412,14 @@ impl AgentdAutomationEffectHost {
                 "automation effect wire payload is empty or too large".to_string(),
             ));
         }
+        self.validate_intent_binding(intent, wire_payload)
+    }
+
+    fn validate_intent_binding(
+        &self,
+        intent: &AuthorizedEffectIntent,
+        wire_payload: &[u8],
+    ) -> Result<(), AgentdError> {
         if intent.subject_id != self.agent_id.as_str()
             || intent.destination_id != self.destination_id
             || intent.final_use_scope_digest != self.final_use_scope_digest
@@ -1505,6 +1532,10 @@ struct AgentdAuthorizedEffectDriver {
     lease: pq::EffectDispatchLease,
     provider_scope: String,
     destination_id: String,
+    // Packet admission remains retained until the actual provider thread exits,
+    // even if the calling control connection no longer observes its result.
+    packet_retention: Option<Arc<tokio::sync::OwnedSemaphorePermit>>,
+    packet_execution: Option<crate::NeuralCognitiveExecutionV1>,
 }
 
 impl AuthorizedEffectDriver for AgentdAuthorizedEffectDriver {
@@ -1533,6 +1564,9 @@ impl AuthorizedEffectDriver for AgentdAuthorizedEffectDriver {
             return Err(AuthorizedEffectDriverError::BeforeProviderContact);
         }
         self.lease.check()?;
+        if self.packet_execution.as_ref().is_some_and(|execution| execution.check().is_err()) {
+            return Err(AuthorizedEffectDriverError::BeforeProviderContact);
+        }
         let expected = self.recovery_key(request.owner_agent_id, request.intent)?;
         let legacy = ProviderEffectKey::for_operation(
             &self.provider_scope,
@@ -1551,9 +1585,12 @@ impl AuthorizedEffectDriver for AgentdAuthorizedEffectDriver {
         let wire_payload = request.wire_payload.to_vec();
         let thread_intent = provider_intent.clone();
         let lease = self.lease.clone();
+        let packet_retention = self.packet_retention.clone();
+        let packet_execution = self.packet_execution.clone();
         let spawn = thread::Builder::new()
             .name("hepta-automation-provider-effect".to_string())
             .spawn(move || {
+                let _packet_retention = packet_retention;
                 let runtime = match tokio::runtime::Builder::new_current_thread()
                     .enable_all()
                     .build()
@@ -1561,12 +1598,20 @@ impl AuthorizedEffectDriver for AgentdAuthorizedEffectDriver {
                     Ok(runtime) => runtime,
                     Err(_) => return ProviderThreadOutcome::BeforeContact,
                 };
-                if lease.check().is_err() {
+                if lease.check().is_err()
+                    || packet_execution.as_ref().is_some_and(|execution| execution.check().is_err())
+                {
                     return ProviderThreadOutcome::BeforeContact;
                 }
-                ProviderThreadOutcome::Dispatch(
-                    runtime.block_on(adapter.dispatch_with_payload(&thread_intent, &wire_payload)),
-                )
+                let dispatch = if let Some(execution) = packet_execution {
+                    let AgentdProviderEffectAdapter::Pon(adapter) = adapter else {
+                        return ProviderThreadOutcome::BeforeContact;
+                    };
+                    runtime.block_on(adapter.dispatch_packet(thread_intent, wire_payload, execution))
+                } else {
+                    runtime.block_on(adapter.dispatch_with_payload(&thread_intent, &wire_payload))
+                };
+                ProviderThreadOutcome::Dispatch(dispatch)
             })
             .map_err(|_| AuthorizedEffectDriverError::BeforeProviderContact)?;
         match spawn.join() {

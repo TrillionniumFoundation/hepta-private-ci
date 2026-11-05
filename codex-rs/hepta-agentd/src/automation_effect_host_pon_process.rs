@@ -34,12 +34,41 @@ async fn read_bounded(mut stream: impl AsyncRead + Unpin, limit: usize) -> io::R
 }
 
 pub(super) async fn run(
-    mut command: Command,
+    command: Command,
     payload: &[u8],
     deadline: Instant,
     output_limit: usize,
 ) -> Outcome {
-    if Instant::now() >= deadline {
+    run_inner(command, payload, deadline, output_limit, /*execution*/ None).await
+}
+
+pub(super) async fn run_packet(
+    command: Command,
+    payload: &[u8],
+    deadline: Instant,
+    output_limit: usize,
+    execution: &crate::NeuralCognitiveExecutionV1,
+) -> Outcome {
+    run_inner(
+        command,
+        payload,
+        deadline.min(execution.deadline()),
+        output_limit,
+        Some(execution),
+    )
+    .await
+}
+
+async fn run_inner(
+    mut command: Command,
+    payload: &[u8],
+    deadline: Instant,
+    output_limit: usize,
+    execution: Option<&crate::NeuralCognitiveExecutionV1>,
+) -> Outcome {
+    if Instant::now() >= deadline
+        || execution.is_some_and(|execution| execution.check().is_err())
+    {
         return Outcome::BeforeStart;
     }
     // The sealed ELF identity does not cover ambient loader configuration or
@@ -55,6 +84,14 @@ pub(super) async fn run(
         .stdin(Stdio::piped())
         .stdout(Stdio::piped())
         .stderr(Stdio::piped());
+    // Configuration and executable preparation cannot renew the caller's
+    // window. This check is immediately before spawn, but is not an atomic
+    // transaction between cancellation and the operating system's spawn.
+    if Instant::now() >= deadline
+        || execution.is_some_and(|execution| execution.check().is_err())
+    {
+        return Outcome::BeforeStart;
+    }
     let mut child = match command.spawn() {
         Ok(child) => child,
         Err(_) => return Outcome::BeforeStart,
@@ -91,13 +128,22 @@ pub(super) async fn run(
         }
         Ok::<Vec<u8>, io::Error>(stdout)
     };
-    let result = tokio::time::timeout_at(tokio::time::Instant::from_std(deadline), exchange).await;
-    if let Ok(Ok(stdout)) = result
+    let result = if let Some(execution) = execution {
+        tokio::select! {
+            biased;
+            _ = execution.cancelled() => None,
+            result = tokio::time::timeout_at(tokio::time::Instant::from_std(deadline), exchange) => Some(result),
+        }
+    } else {
+        Some(tokio::time::timeout_at(tokio::time::Instant::from_std(deadline), exchange).await)
+    };
+    if let Some(Ok(Ok(stdout))) = result
         && Instant::now() < deadline
+        && execution.is_none_or(|execution| execution.check().is_ok())
     {
         return Outcome::Complete(stdout);
     }
-    // Timeout/output failure is post-entry Unknown, never NotDispatched. This
+    // Cancellation/timeout/output failure is post-entry Unknown, never NotDispatched. This
     // cleanup grace grants no extra execution-success deadline. If the kernel
     // cannot reap promptly, Tokio's kill-on-drop/reaper retains child cleanup;
     // it cannot turn an incomplete response into an acknowledgement. This is
@@ -106,6 +152,10 @@ pub(super) async fn run(
     let _ = tokio::time::timeout(Duration::from_millis(250), child.wait()).await;
     Outcome::Unknown
 }
+
+#[cfg(all(test, unix))]
+#[path = "automation_effect_host_pon_packet_process_tests.rs"]
+mod packet_process_tests;
 
 #[cfg(all(
     test,

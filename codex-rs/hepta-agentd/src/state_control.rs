@@ -143,7 +143,16 @@ impl AgentdState {
                         )
                         .map_err(AgentdError::Protocol)?,
                     );
-
+                    if host.supports_packet_v1() {
+                        capabilities.push(
+                            crate::AgentdCapability::new(
+                                crate::AGENTD_CAPABILITY_AUTOMATION_EXTERNAL_EFFECT_PACKET_V1,
+                                /*major*/ 1,
+                                /*minor*/ 0,
+                            )
+                            .map_err(AgentdError::Protocol)?,
+                        );
+                    }
                 }
                 if self.evidence.get().is_some() {
                     capabilities.push(
@@ -693,10 +702,58 @@ impl AgentdState {
                 self.fence_after_durable_change()?;
                 AgentdPayload::AutomationEffect(effect_snapshot(receipt)?)
             }
-            crate::AgentdMethod::AutomationExecuteEffectPacketV1 { .. } => {
-                return Err(AgentdError::Protocol(
-                    "automation packet v1 is not enabled in this composition".to_string(),
-                ));
+            crate::AgentdMethod::AutomationExecuteEffectPacketV1 {
+                intent,
+                wire_len,
+                signed_grant,
+                command_id,
+            } => {
+                let packet = packet.ok_or_else(|| {
+                    AgentdError::Protocol("automation packet body was not admitted".to_string())
+                })?;
+                if packet.wire_payload().len() as u64 != u64::from(wire_len) {
+                    return Err(AgentdError::Protocol(
+                        "automation packet length does not match its header".to_string(),
+                    ));
+                }
+                require_automation_ready(
+                    lifecycle,
+                    app_server_ready,
+                    critical_stores_ready,
+                    revocation_ready,
+                    required_ports_ready,
+                    admission_open,
+                    fenced,
+                )?;
+                let Some(store) = automation.as_ref() else {
+                    return self.response_with_payload(
+                        request_id,
+                        current_generation,
+                        automation_unavailable(),
+                    );
+                };
+                let Some(host) = self
+                    .automation_effect_host()
+                    .filter(|host| host.supports_packet_v1())
+                else {
+                    return self.response_with_payload(
+                        request_id,
+                        current_generation,
+                        automation_effect_unavailable(),
+                    );
+                };
+                let receipt = host
+                    .execute_packet_v1(
+                        store,
+                        &intent,
+                        packet,
+                        &signed_grant,
+                        &command_id,
+                        now_ms()?,
+                    )
+                    .await?;
+                self.fence_after_durable_change()?;
+                AgentdPayload::AutomationEffect(effect_snapshot(receipt)?)
             }
             crate::AgentdMethod::AutomationReconcileEffect {
                 run_id,
