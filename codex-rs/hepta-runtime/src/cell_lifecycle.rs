@@ -171,6 +171,10 @@ pub struct RuntimeCellLifecycleIntentV1 {
     pub plan_digest: Digest32,
     pub stage: RuntimeCellLifecycleStageV1,
     pub semantic_operation: Digest32,
+    /// Revision of the durable Prepared event that requires this observation.
+    pub prepared_revision: u64,
+    /// Freshness binding only; the native semantic operation remains unchanged.
+    pub attempt_digest: Digest32,
     pub authority: AuthorityPosture,
 }
 
@@ -195,6 +199,8 @@ pub struct RuntimeCellLifecycleObservationV1 {
     pub plan_digest: String,
     pub stage: RuntimeCellLifecycleStageV1,
     pub semantic_operation: String,
+    pub prepared_revision: u64,
+    pub attempt_digest: String,
     pub outcome: RuntimeCellLifecycleNativeOutcomeV1,
     /// Admission to the affected routing region, not to retired member IDs.
     pub admission_closed: bool,
@@ -213,6 +219,8 @@ pub struct RuntimeCellLifecycleObservationV1 {
 /// An adapter to the existing independent observer authentication owner.
 /// Verify the complete canonical observation, live trust/revocation, native
 /// receipt custody, principal/agent scope and exact writer/readback provenance.
+/// A NotApplied proof must be fresh for the specified durable prepare attempt;
+/// absence proved for an earlier attempt cannot clear a later unknown outcome.
 /// There is no default verifier and no flag that bypasses authentication.
 pub trait RuntimeCellLifecycleObserverV1 {
     fn authenticate(
@@ -274,16 +282,26 @@ impl Error for RuntimeCellLifecycleError {}
 pub(crate) fn intent(
     plan: &RuntimeCellLifecyclePlanV1,
     stage: RuntimeCellLifecycleStageV1,
+    prepared_revision: u64,
 ) -> Result<RuntimeCellLifecycleIntentV1, RuntimeCellLifecycleError> {
+    if prepared_revision == 0 {
+        return Err(RuntimeCellLifecycleError::InvalidObservation);
+    }
     let plan_digest = plan.digest()?;
     let semantic_operation = Digest32::of_parts(&[
         b"hepta.runtime.cell-lifecycle-operation.v1\0",
         plan_digest.as_array(),
         &[stage.code()],
     ]);
+    let attempt_digest = Digest32::of_parts(&[
+        b"hepta.runtime.cell-lifecycle-attempt.v1\0",
+        semantic_operation.as_array(),
+        &prepared_revision.to_be_bytes(),
+    ]);
     Ok(RuntimeCellLifecycleIntentV1 {
         operation_id: plan.operation_id.clone(), plan_digest,
-        stage, semantic_operation, authority: AuthorityPosture::DENY_ALL,
+        stage, semantic_operation, prepared_revision, attempt_digest,
+        authority: AuthorityPosture::DENY_ALL,
     })
 }
 
