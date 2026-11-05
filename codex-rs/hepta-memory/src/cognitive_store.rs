@@ -235,8 +235,10 @@ const REQUIRED_SCHEMA_OBJECTS: &[(&str, &str)] = &[
     ),
     ("cognitive_local_outbox_hos2_delivery", "index"),
 ];
+// Exact required-object definitions after migrations 0001..=0018.
+// Migration 0018 adds retirement ACKs and quotes the renamed local-events table.
 const REQUIRED_SCHEMA_ORACLE_SHA256: &str =
-    "55a697816bedf97c5fa3ef36a4d9d39d98f6f572d825a38541afe62e19203773";
+    "efe57698e8999796cd0aa95a279ba85ef5ed05a823d016fb8cefd0d36d7dd46d";
 
 #[derive(Debug, thiserror::Error)]
 pub enum CognitiveStoreError {
