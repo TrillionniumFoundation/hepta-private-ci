@@ -251,3 +251,7 @@ pub(super) fn calculator_slot(
 #[cfg(test)]
 #[path = "deployment_calculator_issuer_followup_tests.rs"]
 mod issuer_followup;
+
+#[cfg(test)]
+#[path = "deployment_calculator_issuer_final_tests.rs"]
+mod issuer_final_tests;

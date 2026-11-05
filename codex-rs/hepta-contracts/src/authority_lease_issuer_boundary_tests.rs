@@ -280,3 +280,6 @@ fn administrative_recovery_rejects_future_issuer_with_live_successor() {
         Err(AuthorityLeaseError::NotYetValid)
     );
 }
+
+#[path = "authority_lease_issuer_readback_tests.rs"]
+mod readback;
