@@ -240,7 +240,8 @@ async fn real_agentd_reconciles_reopened_worker_without_replaying_provider() -> 
         assert_eq!(
             recovered.observed_output_tokens,
             match boundary {
-                Some(NativeBoundaryStatus::TimedOut | NativeBoundaryStatus::Quarantined) => Some(17),
+                Some(NativeBoundaryStatus::TimedOut | NativeBoundaryStatus::Quarantined) =>
+                    Some(17),
                 _ => None,
             },
         );
