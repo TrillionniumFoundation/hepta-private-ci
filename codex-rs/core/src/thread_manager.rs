@@ -1279,6 +1279,32 @@ impl ThreadManager {
         .await
     }
 
+    /// Resumes stored rollout history with its original thread-owned environments.
+    ///
+    /// Only supply these selections when no resume override changed the cwd or
+    /// workspace roots. The existing recovery binding still verifies their exact
+    /// environment IDs and paths.
+    pub async fn resume_thread_from_rollout_with_environments(
+        &self,
+        config: Config,
+        rollout_path: PathBuf,
+        auth_manager: Arc<AuthManager>,
+        parent_trace: Option<W3cTraceContext>,
+        client_mcp_extensions: ClientMcpExtensions,
+        environments: Vec<TurnEnvironmentSelection>,
+    ) -> CodexResult<NewThread> {
+        let initial_history = self.initial_history_from_rollout_path(rollout_path).await?;
+        Box::pin(self.resume_thread_with_history_and_environments(
+            config,
+            initial_history,
+            auth_manager,
+            parent_trace,
+            client_mcp_extensions,
+            Some(environments),
+        ))
+        .await
+    }
+
     /// Reloads a recorded Multi-Agent V2 child through its currently loaded immediate parent.
     ///
     /// The child keeps the existing parent-controlled reload semantics. Callers cannot supply

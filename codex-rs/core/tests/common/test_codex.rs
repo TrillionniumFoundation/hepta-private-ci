@@ -330,6 +330,7 @@ pub struct TestCodexBuilder {
     cloud_config_bundle: Option<CloudConfigBundleLoader>,
     user_shell_override: Option<Shell>,
     exec_server_url: Option<String>,
+    resume_environments: Option<Vec<TurnEnvironmentSelection>>,
     extensions: Arc<ExtensionRegistry<Config>>,
     user_instructions_provider: Option<Arc<dyn UserInstructionsProvider>>,
     supports_openai_form_elicitation: bool,
@@ -450,6 +451,12 @@ impl TestCodexBuilder {
 
     pub fn with_exec_server_url(mut self, exec_server_url: impl Into<String>) -> Self {
         self.exec_server_url = Some(exec_server_url.into());
+        self
+    }
+
+    /// Preserves the original selections when resuming without cwd or workspace overrides.
+    pub fn with_resume_environments(mut self, environments: Vec<TurnEnvironmentSelection>) -> Self {
+        self.resume_environments = Some(environments);
         self
     }
 
@@ -740,6 +747,7 @@ impl TestCodexBuilder {
         };
         let thread_manager = Arc::new(thread_manager);
         let user_shell_override = self.user_shell_override.clone();
+        let resume_environments = self.resume_environments.take();
         let client_mcp_extensions = || {
             ClientMcpExtensions::new(
                 self.supports_openai_form_elicitation
@@ -747,8 +755,23 @@ impl TestCodexBuilder {
             )
         };
 
-        let new_conversation = match (resume_from, user_shell_override) {
-            (Some(path), Some(user_shell_override)) => {
+        let new_conversation = match (resume_from, user_shell_override, resume_environments) {
+            (Some(path), None, Some(environments)) => {
+                let auth_manager = codex_core::test_support::auth_manager_from_auth_with_home(
+                    auth,
+                    config.codex_home.to_path_buf(),
+                );
+                Box::pin(thread_manager.resume_thread_from_rollout_with_environments(
+                    config.clone(),
+                    path,
+                    auth_manager,
+                    /*parent_trace*/ None,
+                    client_mcp_extensions(),
+                    environments,
+                ))
+                .await?
+            }
+            (Some(path), Some(user_shell_override), None) => {
                 let auth_manager = codex_core::test_support::auth_manager_from_auth_with_home(
                     auth,
                     config.codex_home.to_path_buf(),
@@ -765,7 +788,7 @@ impl TestCodexBuilder {
                 )
                 .await?
             }
-            (Some(path), None) => {
+            (Some(path), None, None) => {
                 let auth_manager = codex_core::test_support::auth_manager_from_auth_with_home(
                     auth,
                     config.codex_home.to_path_buf(),
@@ -779,7 +802,7 @@ impl TestCodexBuilder {
                 ))
                 .await?
             }
-            (None, Some(user_shell_override)) => {
+            (None, Some(user_shell_override), None) => {
                 Box::pin(
                     codex_core::test_support::start_thread_with_user_shell_override(
                         thread_manager.as_ref(),
@@ -790,7 +813,7 @@ impl TestCodexBuilder {
                 )
                 .await?
             }
-            (None, None) => {
+            (None, None, None) => {
                 let environments = if test_env.selection().cwd.infer_path_convention()
                     == Some(PathConvention::Windows)
                     && PathUri::from_abs_path(&config.cwd) != test_env.selection().cwd
@@ -811,6 +834,11 @@ impl TestCodexBuilder {
                     ..StartThreadOptions::new(config.clone())
                 }))
                 .await?
+            }
+            (_, _, Some(_)) => {
+                anyhow::bail!(
+                    "explicit resume environments require a saved thread without a user shell override"
+                );
             }
         };
 
@@ -1403,6 +1431,7 @@ pub fn test_codex() -> TestCodexBuilder {
         cloud_config_bundle: None,
         user_shell_override: None,
         exec_server_url: None,
+        resume_environments: None,
         extensions: empty_extension_registry(),
         user_instructions_provider: None,
         supports_openai_form_elicitation: false,
