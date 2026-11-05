@@ -5,6 +5,7 @@ on:
     branches:
       - research/memory-cell-v15-20261104
       - research/memory-v15-native-transfer-20261105-728b
+      - fix/memory-v15-admission-identity-20261105-b5d58
     paths:
       - 'qualification/memory-cell-v15/**.py'
       - 'qualification/memory-cell-v15/requirements.txt'
@@ -35,7 +36,18 @@ jobs:
           /tmp/memory-v15-env/bin/python -m pip install -r qualification/memory-cell-v15/requirements.txt
       - name: Run actual bounded protocol checks
         timeout-minutes: 3
-        run: /tmp/memory-v15-env/bin/python qualification/memory-cell-v15/verify.py
+        run: |
+          /tmp/memory-v15-env/bin/python qualification/memory-cell-v15/verify.py
+          cp qualification/memory-cell-v15/evidence/checks.json qualification/memory-cell-v15/evidence/checks-normal.json
+          cp qualification/memory-cell-v15/evidence/checks.log qualification/memory-cell-v15/evidence/checks-normal.log
+      - name: Reject source and receipt rebinding while preserving historical identity
+        timeout-minutes: 3
+        run: /tmp/memory-v15-env/bin/python qualification/memory-cell-v15/device_qualification/history_tests.py
+      - name: Verify admission and recovery with Python assertions disabled
+        timeout-minutes: 3
+        run: |
+          /tmp/memory-v15-env/bin/python -O qualification/memory-cell-v15/verify.py
+          cp qualification/memory-cell-v15/evidence/checks.json qualification/memory-cell-v15/evidence/checks-optimized.json
       - name: Independently verify the preserved two-host signatures and results
         run: |
           /tmp/memory-v15-env/bin/python qualification/memory-cell-v15/device_qualification/verify_receipts.py \
@@ -62,8 +74,12 @@ jobs:
           path: |
             qualification/memory-cell-v15/evidence/checks.json
             qualification/memory-cell-v15/evidence/checks.log
+            qualification/memory-cell-v15/evidence/checks-normal.json
+            qualification/memory-cell-v15/evidence/checks-normal.log
+            qualification/memory-cell-v15/evidence/checks-optimized.json
             qualification/memory-cell-v15/device_qualification/review_checks.json
             /tmp/memory-v15-native/*.txt
             /tmp/memory-v15-native/*.json
           if-no-files-found: error
           retention-days: 30
+

@@ -2,16 +2,19 @@
 
 import argparse
 import hashlib
+import io
 import json
 from pathlib import Path
 import re
 import sys
+import zipfile
 
 from cryptography.hazmat.primitives.asymmetric.ed25519 import Ed25519PublicKey
 
 
 ROOT = Path(__file__).resolve().parent
 DOMAIN = "hepta.memory-cell.v15"
+HISTORY_MANIFEST_SHA256 = "3fb8f7f07e0794bd5751acffd4e5229bb3127437a0da2e991feaf5009e2c58ad"
 COMPONENTS = {"model", "memory", "encoder", "tokenizer", "schema", "routing",
               "calibration", "optimizer", "rng", "sampler", "runtime"}
 
@@ -35,11 +38,50 @@ def verify():
     require(record.get("finished") is True, "incomplete recorded campaign")
     require(record.get("hardware_attestation") is False, "hardware claim changed")
     require(record.get("private_keys_exported") is False, "key-export declaration changed")
-    source_hashes = json.loads((ROOT.parent / "evidence/checks.json").read_bytes())["source_files_sha256"]
+    # Current checks retain their own exact-source guard. They do not qualify
+    # a historical device run, whose executable source has a separate identity.
+    current_raw = (ROOT.parent / "evidence/checks.json").read_bytes()
+    current = json.loads(current_raw)
+    source_hashes = current["source_files_sha256"]
+    require(current.get("passed") is True and current.get("source_unchanged_during_execution") is True,
+            "current source checks did not pass unchanged")
+    require(source_hashes and set(source_hashes) == {p.name for p in ROOT.parent.glob("*.py")},
+            "current source inventory differs from checked inventory")
     require(all(sha((ROOT.parent / name).read_bytes()) == value for name, value in source_hashes.items()),
-            "a previously qualified Python source changed")
-    require(record["authority_sha256"] == source_hashes["authority.py"], "authority source identity mismatch")
-    require(record["worker_sha256"] == sha((ROOT / "host_worker.py").read_bytes()), "worker source identity mismatch")
+            "a currently qualified Python source changed")
+
+    # Read the pinned old implementation as data, never import or execute it.
+    history_raw = (ROOT / "history/manifest.json").read_bytes()
+    require(sha(history_raw) == HISTORY_MANIFEST_SHA256, "historical source manifest identity mismatch")
+    history = json.loads(history_raw)
+    require(history["run_id"] == record["run_id"] and history["receipts_sha256"] == sha(raw),
+            "historical receipt identity mismatch")
+    require(history["costs_sha256"] == sha((ROOT / "costs.json").read_bytes()),
+            "historical costs identity mismatch")
+    checks_raw = (ROOT.parent / history["protocol_checks"]["path"]).read_bytes()
+    require(sha(checks_raw) == history["protocol_checks"]["sha256"], "historical check receipt identity mismatch")
+    old_checks = json.loads(checks_raw)
+    require(old_checks.get("passed") is True and old_checks.get("source_unchanged_during_execution") is True,
+            "historical source checks did not pass unchanged")
+    snapshot = (ROOT / "history/sources.zip").read_bytes()
+    require(sha(snapshot) == history["snapshot_sha256"], "historical source archive identity mismatch")
+    with zipfile.ZipFile(io.BytesIO(snapshot)) as archive:
+        names = archive.namelist()
+        require(len(names) == len(set(names)) and set(names) == set(history["files"]),
+                "historical source inventory mismatch")
+        for name, identity in history["files"].items():
+            source = archive.read(name)
+            git_blob = hashlib.sha1(b"blob " + str(len(source)).encode() + b"\0" + source).hexdigest()
+            require(len(source) == identity["bytes"] and sha(source) == identity["sha256"]
+                    and git_blob == identity["git_blob_sha1"], "historical source bytes mismatch")
+    old_hashes = old_checks["source_files_sha256"]
+    require(set(old_hashes) == {name for name in names if "/" not in name},
+            "historical checked source inventory mismatch")
+    require(all(history["files"][name]["sha256"] == value for name, value in old_hashes.items()),
+            "historical qualification/source mismatch")
+    require(record["authority_sha256"] == old_hashes["authority.py"], "authority source identity mismatch")
+    require(record["worker_sha256"] == history["files"]["device_qualification/host_worker.py"]["sha256"],
+            "worker source identity mismatch")
     phases = {(phase["host"], phase["step"]): phase for phase in record["phases"]}
     expected = {("mac", "setup"), ("pocket4", "setup"), ("mac", "bootstrap"),
                 ("pocket4", "persist"), ("pocket4", "cold_ready"), ("mac", "accept_ready"),
@@ -242,6 +284,13 @@ def verify():
     return {"schema": "hepta.memory.v15.device-offline-review.v1", "passed": True, "run_id": record["run_id"],
             "evidence_sha256": sha(raw), "costs_sha256": sha(cost_raw), "authority_sha256": record["authority_sha256"],
             "worker_sha256": record["worker_sha256"], "verifier_sha256": sha(Path(__file__).read_bytes()),
+            "historical_source_commit": history["source_commit"],
+            "historical_source_manifest_sha256": sha(history_raw),
+            "historical_source_snapshot_sha256": sha(snapshot),
+            "current_protocol_checks_sha256": sha(current_raw),
+            "current_protocol_source_files_sha256": source_hashes,
+            "current_protocol_source_checked_independently": True,
+            "historical_receipt_qualifies_current_device_code": False,
             "successful_remote_phases": 10, "control_phases": 9, "readonly_export_phases": 1,
             "signed_journal_successes": 6, "signed_journal_rejections": 1,
             "unique_signed_objects_verified": len(verified_signatures), "runtimes": environments,

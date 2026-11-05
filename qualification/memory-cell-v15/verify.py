@@ -13,6 +13,7 @@ import time
 import unittest
 
 import cryptography
+import cloudpickle
 
 
 ROOT = Path(__file__).resolve().parent
@@ -53,7 +54,8 @@ def main():
         "skipped": [(t.id(), reason) for t, reason in result.skipped],
         "source_files_sha256": source_before, "source_unchanged_during_execution": source_before == source_after,
         "git_source_commit_if_ci": os.getenv("GITHUB_SHA"), "python": sys.version,
-        "cryptography": cryptography.__version__, "sqlite": sqlite3.sqlite_version,
+        "cryptography": cryptography.__version__, "cloudpickle": cloudpickle.__version__,
+        "python_optimize": sys.flags.optimize, "sqlite": sqlite3.sqlite_version,
         "platform": platform.platform(), "wall_seconds": time.perf_counter() - began,
         "self_cpu_seconds": (after_self.ru_utime + after_self.ru_stime) - (before_self.ru_utime + before_self.ru_stime),
         "child_cpu_seconds": (after_child.ru_utime + after_child.ru_stime) - (before_child.ru_utime + before_child.ru_stime),

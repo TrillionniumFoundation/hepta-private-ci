@@ -88,3 +88,39 @@ python qualification/memory-cell-v15/device_qualification/verify_receipts.py
 能源、网络 wire 流量、物理存储占用、整机总内存、完整训练摊销和完整生命周期成本均未测得，在 `costs.json` 保留 `null`。初始失败和基础设施操作的完整成本也未知。本轮没有训练，并未比较相同预算下的学习效果或收益，因此不能据这些控制测试认定产品净收益。
 
 本证据没有覆盖断电、磁盘硬件失效、远端保留时长、拜占庭接收者、独立见证、权威整盘回退、跨主机 SQLite 共享存储、共识恢复或网络分区自动接管。目标签名加上本轮成功的文件落盘和不同进程冷计算，加强了此次观察的证据；它没有把 ready 升格为任意远端未来持久性的证明。
+
+## Historical and current source identity
+
+The recorded Mac-to-pocket4 execution remains bound to executable source
+`386f7a4453b5e59e83db12d8bf958cfb5e4847d0`, preserved by
+`379c21c2e625c3a3dfbb514e11b9e8fe2213cda8`. Its signed receipts and costs have
+not been edited. `history/manifest.json` pins their hashes, the original independent
+CI receipt and all eleven source objects in `history/sources.zip`. The verifier
+checks each file's SHA-256, byte count and original Git blob identity, reads the
+archive as data, and never imports or executes the archived implementation.
+
+Current `evidence/checks.json` is a separate qualification record. It must report
+passing unchanged source and exactly cover the current top-level Python inventory;
+every current source hash is still checked. The output reports the historical
+authority/source identities and current protocol-check identities separately.
+A successful historical verification does not qualify current device code or count
+as another device experiment. Changing the authority for the epoch fix or later
+admission changes therefore cannot relabel the older Mac-to-pocket4 execution.
+
+This corrects the observed CI run
+[41981272551](https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/41981272551),
+which passed 57 protocol cases but failed `authority source identity mismatch` when
+the newly generated checks were compared to the older device receipt. Its subsequent
+native steps were skipped; that original failure remains part of the record.
+
+Run the regression controls separately from the original protocol suite:
+
+```bash
+python qualification/memory-cell-v15/device_qualification/history_tests.py
+python qualification/memory-cell-v15/verify.py
+python qualification/memory-cell-v15/device_qualification/verify_receipts.py
+```
+
+The controls run the actual protocol suite on a newly identified source copy, verify
+that the old device record remains attributed to its old source, and require refusal
+for altered historical bytes/manifests/receipts and unqualified current source edits.

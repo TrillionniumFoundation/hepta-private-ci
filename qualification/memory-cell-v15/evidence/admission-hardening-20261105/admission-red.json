@@ -1,0 +1,75 @@
+{
+  "failures": 6,
+  "observations": [
+    {
+      "approved": true,
+      "case": "positive_control",
+      "expected_approved": true,
+      "extra_cost_per_read": 0.0,
+      "paired_lower_bound": 0.8302373105324226,
+      "paired_mean": 1.0,
+      "reasons": []
+    },
+    {
+      "approved": true,
+      "case": "empty_cost_model_and_caps",
+      "expected_approved": false,
+      "extra_cost_per_read": 0.0,
+      "paired_lower_bound": 0.8302373105324226,
+      "paired_mean": 1.0,
+      "reasons": []
+    },
+    {
+      "approved": true,
+      "case": "matching_arbitrary_budget_label",
+      "expected_approved": false,
+      "extra_cost_per_read": 0.0,
+      "paired_lower_bound": 0.8302373105324226,
+      "paired_mean": 1.0,
+      "reasons": []
+    },
+    {
+      "approved": true,
+      "case": "foreign_dataset_receipt",
+      "expected_approved": false,
+      "extra_cost_per_read": 0.0,
+      "paired_lower_bound": 0.8302373105324226,
+      "paired_mean": 1.0,
+      "reasons": []
+    },
+    {
+      "approved": true,
+      "case": "foreign_workload_receipt",
+      "expected_approved": false,
+      "extra_cost_per_read": 0.0,
+      "paired_lower_bound": 0.8302373105324226,
+      "paired_mean": 1.0,
+      "reasons": []
+    },
+    {
+      "approved": true,
+      "case": "foreign_input_receipt",
+      "expected_approved": false,
+      "extra_cost_per_read": 0.0,
+      "paired_lower_bound": 0.8302373105324226,
+      "paired_mean": 1.0,
+      "reasons": []
+    },
+    {
+      "approved": true,
+      "case": "foreign_cohort_receipt",
+      "expected_approved": false,
+      "extra_cost_per_read": 0.0,
+      "paired_lower_bound": 0.8302373105324226,
+      "paired_mean": 1.0,
+      "reasons": []
+    }
+  ],
+  "schema": "memory-cost-admission-red-green.v1",
+  "source": {
+    "admission.py": "1b062799b90ba89a26a8da9c71f00a411127d371a9c2dd3b3ddf4de0013da775",
+    "admission_test_support.py": "42ad7f05a10db14b318f2d62fa511c0c74540499aac3fc9f8b100a7e04079700",
+    "cohort.py": "c14e4ecc87e926894da1ba2838df02b420b6fd660c9ec28039567840f85b1bfe"
+  },
+  "synthetic_control_only": true
+}

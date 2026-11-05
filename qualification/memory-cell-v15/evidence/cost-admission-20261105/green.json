@@ -1,0 +1,1014 @@
+{
+  "failures": 0,
+  "observations": [
+    {
+      "approved": true,
+      "artificial_resources": {
+        "candidate": {
+          "acquire_cpu_s": 0.0,
+          "billed_usd": 0.0,
+          "energy_joules": 0.0,
+          "migration_cpu_s": 0.0,
+          "network_bytes": 0.0,
+          "p99_seconds": 0.0,
+          "peak_rss_bytes": 134217728,
+          "restore_cpu_s": 0.0,
+          "retained_byte_seconds": 0.0,
+          "search_cpu_s": 0.0,
+          "serve_cpu_s": 10.0,
+          "train_cpu_s": 0.0,
+          "update_cpu_s": 0.0,
+          "verify_cpu_s": 0.0
+        },
+        "incumbent": {
+          "acquire_cpu_s": 0.0,
+          "billed_usd": 0.0,
+          "energy_joules": 0.0,
+          "migration_cpu_s": 0.0,
+          "network_bytes": 0.0,
+          "p99_seconds": 0.0,
+          "peak_rss_bytes": 134217728,
+          "restore_cpu_s": 0.0,
+          "retained_byte_seconds": 0.0,
+          "search_cpu_s": 0.0,
+          "serve_cpu_s": 10.0,
+          "train_cpu_s": 0.0,
+          "update_cpu_s": 0.0,
+          "verify_cpu_s": 0.0
+        }
+      },
+      "case": "positive_control",
+      "common_caps": [
+        [
+          "serve_cpu_s",
+          32.0
+        ],
+        [
+          "peak_rss_bytes",
+          268435456
+        ]
+      ],
+      "execution": {
+        "candidate": {
+          "address_space_limit_bytes": 1073741824,
+          "callback_modules_by_value": [
+            "__main__"
+          ],
+          "cloudpickle": "3.1.2",
+          "cost_scope": "One worker and children it reaped; excludes setup, parent serialization, network, energy and external services. Not a complete deployment bill.",
+          "cpu_limit_seconds": 30,
+          "cpu_seconds": 0.6158440000000001,
+          "exit_code": 0,
+          "external_state_isolated": false,
+          "input_sha256": "593c0b6a0e984edd5c185cb5e2cce76c6b1b1f61e7339689b7413b1f6669af1b",
+          "isolation": "fresh-interpreter-private-cwd",
+          "limit_scope": "CPU/AS hard limits are per process; joined CPU is checked after wait4",
+          "output_bytes": 27952,
+          "output_sha256": "b3400ac27dab4f8fa056586a861b760829ad28f3471e99766befb6b6bbdd8857",
+          "peak_rss_bytes": 15073280,
+          "runner_sha256": "944346ca3cdc64af6c13f168231a2af08d833092541790dcc053a7de94383768",
+          "snapshot_scope": "Callback defining modules by value; other imports use the pinned runtime",
+          "status": "completed",
+          "stderr_bytes": 0,
+          "wall_limit_seconds": 60.0,
+          "wall_seconds": 3.5751523560029455,
+          "worker_pid": 6,
+          "worker_wall_seconds": 2.486142148001818
+        },
+        "incumbent": {
+          "address_space_limit_bytes": 1073741824,
+          "callback_modules_by_value": [
+            "__main__"
+          ],
+          "cloudpickle": "3.1.2",
+          "cost_scope": "One worker and children it reaped; excludes setup, parent serialization, network, energy and external services. Not a complete deployment bill.",
+          "cpu_limit_seconds": 30,
+          "cpu_seconds": 0.48228899999999997,
+          "exit_code": 0,
+          "external_state_isolated": false,
+          "input_sha256": "a4119ea02c138acd971b0ace355e81785796cae56b92ff0c908bce65ed396fd4",
+          "isolation": "fresh-interpreter-private-cwd",
+          "limit_scope": "CPU/AS hard limits are per process; joined CPU is checked after wait4",
+          "output_bytes": 28201,
+          "output_sha256": "cfcefebbbecb9ba2f7df21d5560d0aed0a8e836986774b824cccaf9704caa5a1",
+          "peak_rss_bytes": 15204352,
+          "runner_sha256": "944346ca3cdc64af6c13f168231a2af08d833092541790dcc053a7de94383768",
+          "snapshot_scope": "Callback defining modules by value; other imports use the pinned runtime",
+          "status": "completed",
+          "stderr_bytes": 0,
+          "wall_limit_seconds": 60.0,
+          "wall_seconds": 1.2181301019954844,
+          "worker_pid": 7,
+          "worker_wall_seconds": 1.1847175599978073
+        }
+      },
+      "expected_approved": true,
+      "extra_cost_per_read": 0.0,
+      "logical_budget": "fd4256823634dab7c6e68df4d9b708d898e654a5e8fee70a5e650be570507861",
+      "paired_lower_bound": 0.8302373105324226,
+      "paired_mean": 1.0,
+      "prior_frozen_result": null,
+      "reasons": []
+    },
+    {
+      "approved": false,
+      "artificial_resources": {
+        "candidate": {
+          "acquire_cpu_s": 1000000.0,
+          "billed_usd": 1000000.0,
+          "energy_joules": 1000000.0,
+          "migration_cpu_s": 1000000.0,
+          "network_bytes": 1000000.0,
+          "p99_seconds": 1000000.0,
+          "peak_rss_bytes": 134217728,
+          "restore_cpu_s": 1000000.0,
+          "retained_byte_seconds": 1000000.0,
+          "search_cpu_s": 1000000.0,
+          "serve_cpu_s": 1000000.0,
+          "train_cpu_s": 1000000.0,
+          "update_cpu_s": 1000000.0,
+          "verify_cpu_s": 1000000.0
+        },
+        "incumbent": {
+          "acquire_cpu_s": 1.0,
+          "billed_usd": 1.0,
+          "energy_joules": 1.0,
+          "migration_cpu_s": 1.0,
+          "network_bytes": 1.0,
+          "p99_seconds": 1.0,
+          "peak_rss_bytes": 134217728,
+          "restore_cpu_s": 1.0,
+          "retained_byte_seconds": 1.0,
+          "search_cpu_s": 1.0,
+          "serve_cpu_s": 10.0,
+          "train_cpu_s": 1.0,
+          "update_cpu_s": 1.0,
+          "verify_cpu_s": 1.0
+        }
+      },
+      "case": "empty_cost_model_and_caps",
+      "common_caps": [],
+      "execution": {
+        "candidate": {
+          "address_space_limit_bytes": 1073741824,
+          "callback_modules_by_value": [
+            "__main__"
+          ],
+          "cloudpickle": "3.1.2",
+          "cost_scope": "One worker and children it reaped; excludes setup, parent serialization, network, energy and external services. Not a complete deployment bill.",
+          "cpu_limit_seconds": 30,
+          "cpu_seconds": 1.433192,
+          "exit_code": 0,
+          "external_state_isolated": false,
+          "input_sha256": "593c0b6a0e984edd5c185cb5e2cce76c6b1b1f61e7339689b7413b1f6669af1b",
+          "isolation": "fresh-interpreter-private-cwd",
+          "limit_scope": "CPU/AS hard limits are per process; joined CPU is checked after wait4",
+          "output_bytes": 28067,
+          "output_sha256": "353e148fe613a1a1e8663534c7b726de3e88411e528f71912ee82890614f4ad6",
+          "peak_rss_bytes": 15466496,
+          "runner_sha256": "944346ca3cdc64af6c13f168231a2af08d833092541790dcc053a7de94383768",
+          "snapshot_scope": "Callback defining modules by value; other imports use the pinned runtime",
+          "status": "completed",
+          "stderr_bytes": 0,
+          "wall_limit_seconds": 60.0,
+          "wall_seconds": 7.090532813999744,
+          "worker_pid": 8,
+          "worker_wall_seconds": 7.046730703994399
+        },
+        "incumbent": {
+          "address_space_limit_bytes": 1073741824,
+          "callback_modules_by_value": [
+            "__main__"
+          ],
+          "cloudpickle": "3.1.2",
+          "cost_scope": "One worker and children it reaped; excludes setup, parent serialization, network, energy and external services. Not a complete deployment bill.",
+          "cpu_limit_seconds": 30,
+          "cpu_seconds": 2.002957,
+          "exit_code": 0,
+          "external_state_isolated": false,
+          "input_sha256": "a4119ea02c138acd971b0ace355e81785796cae56b92ff0c908bce65ed396fd4",
+          "isolation": "fresh-interpreter-private-cwd",
+          "limit_scope": "CPU/AS hard limits are per process; joined CPU is checked after wait4",
+          "output_bytes": 28209,
+          "output_sha256": "534ff6d83ab04a7df250156bbaa6f6a0bba5e307fe0325dd86a171593bfeebea",
+          "peak_rss_bytes": 15466496,
+          "runner_sha256": "944346ca3cdc64af6c13f168231a2af08d833092541790dcc053a7de94383768",
+          "snapshot_scope": "Callback defining modules by value; other imports use the pinned runtime",
+          "status": "completed",
+          "stderr_bytes": 0,
+          "wall_limit_seconds": 60.0,
+          "wall_seconds": 12.71814887200162,
+          "worker_pid": 9,
+          "worker_wall_seconds": 11.75672720700095
+        }
+      },
+      "expected_approved": false,
+      "extra_cost_per_read": null,
+      "logical_budget": "ce203ac8c68872455c863292a0b831e860868dda5fd05d09fe022e74623de377",
+      "paired_lower_bound": 0.8302373105324226,
+      "paired_mean": 1.0,
+      "prior_frozen_result": null,
+      "reasons": [
+        "missing_common_resource_caps",
+        "empty_cost_model"
+      ]
+    },
+    {
+      "approved": false,
+      "artificial_resources": {
+        "candidate": {
+          "acquire_cpu_s": 0.0,
+          "billed_usd": 0.0,
+          "energy_joules": 0.0,
+          "migration_cpu_s": 0.0,
+          "network_bytes": 0.0,
+          "p99_seconds": 0.0,
+          "peak_rss_bytes": 134217728,
+          "restore_cpu_s": 0.0,
+          "retained_byte_seconds": 0.0,
+          "search_cpu_s": 0.0,
+          "serve_cpu_s": 10.0,
+          "train_cpu_s": 0.0,
+          "update_cpu_s": 0.0,
+          "verify_cpu_s": 0.0
+        },
+        "incumbent": {
+          "acquire_cpu_s": 0.0,
+          "billed_usd": 0.0,
+          "energy_joules": 0.0,
+          "migration_cpu_s": 0.0,
+          "network_bytes": 0.0,
+          "p99_seconds": 0.0,
+          "peak_rss_bytes": 134217728,
+          "restore_cpu_s": 0.0,
+          "retained_byte_seconds": 0.0,
+          "search_cpu_s": 0.0,
+          "serve_cpu_s": 10.0,
+          "train_cpu_s": 0.0,
+          "update_cpu_s": 0.0,
+          "verify_cpu_s": 0.0
+        }
+      },
+      "case": "matching_arbitrary_budget_label",
+      "common_caps": [
+        [
+          "serve_cpu_s",
+          32.0
+        ],
+        [
+          "peak_rss_bytes",
+          268435456
+        ]
+      ],
+      "execution": {
+        "candidate": {
+          "address_space_limit_bytes": 1073741824,
+          "callback_modules_by_value": [
+            "__main__"
+          ],
+          "cloudpickle": "3.1.2",
+          "cost_scope": "One worker and children it reaped; excludes setup, parent serialization, network, energy and external services. Not a complete deployment bill.",
+          "cpu_limit_seconds": 30,
+          "cpu_seconds": 0.383442,
+          "exit_code": 0,
+          "external_state_isolated": false,
+          "input_sha256": "593c0b6a0e984edd5c185cb5e2cce76c6b1b1f61e7339689b7413b1f6669af1b",
+          "isolation": "fresh-interpreter-private-cwd",
+          "limit_scope": "CPU/AS hard limits are per process; joined CPU is checked after wait4",
+          "output_bytes": 27988,
+          "output_sha256": "5f12768b2c4a4efeb923c4aafcd103ab0ce56c6a06d7960c23a6d4cc5b4ee60d",
+          "peak_rss_bytes": 15597568,
+          "runner_sha256": "944346ca3cdc64af6c13f168231a2af08d833092541790dcc053a7de94383768",
+          "snapshot_scope": "Callback defining modules by value; other imports use the pinned runtime",
+          "status": "completed",
+          "stderr_bytes": 0,
+          "wall_limit_seconds": 60.0,
+          "wall_seconds": 0.8591480069953832,
+          "worker_pid": 10,
+          "worker_wall_seconds": 0.8087036540018744
+        },
+        "incumbent": {
+          "address_space_limit_bytes": 1073741824,
+          "callback_modules_by_value": [
+            "__main__"
+          ],
+          "cloudpickle": "3.1.2",
+          "cost_scope": "One worker and children it reaped; excludes setup, parent serialization, network, energy and external services. Not a complete deployment bill.",
+          "cpu_limit_seconds": 30,
+          "cpu_seconds": 0.5137430000000001,
+          "exit_code": 0,
+          "external_state_isolated": false,
+          "input_sha256": "a4119ea02c138acd971b0ace355e81785796cae56b92ff0c908bce65ed396fd4",
+          "isolation": "fresh-interpreter-private-cwd",
+          "limit_scope": "CPU/AS hard limits are per process; joined CPU is checked after wait4",
+          "output_bytes": 28229,
+          "output_sha256": "79200a01b1094a563d488b995397f6542609ec195d8e59a08337c1eeddb341b2",
+          "peak_rss_bytes": 15597568,
+          "runner_sha256": "944346ca3cdc64af6c13f168231a2af08d833092541790dcc053a7de94383768",
+          "snapshot_scope": "Callback defining modules by value; other imports use the pinned runtime",
+          "status": "completed",
+          "stderr_bytes": 0,
+          "wall_limit_seconds": 60.0,
+          "wall_seconds": 1.0863742569999886,
+          "worker_pid": 11,
+          "worker_wall_seconds": 0.814400105002278
+        }
+      },
+      "expected_approved": false,
+      "extra_cost_per_read": 0.0,
+      "logical_budget": "same-arbitrary-budget",
+      "paired_lower_bound": 0.8302373105324226,
+      "paired_mean": 1.0,
+      "prior_frozen_result": null,
+      "reasons": [
+        "candidate_budget_identity_mismatch",
+        "incumbent_budget_identity_mismatch"
+      ]
+    },
+    {
+      "approved": false,
+      "artificial_resources": {
+        "candidate": {
+          "acquire_cpu_s": 0.0,
+          "billed_usd": 0.0,
+          "energy_joules": 0.0,
+          "migration_cpu_s": 0.0,
+          "network_bytes": 0.0,
+          "p99_seconds": 0.0,
+          "peak_rss_bytes": 134217728,
+          "restore_cpu_s": 0.0,
+          "retained_byte_seconds": 0.0,
+          "search_cpu_s": 0.0,
+          "serve_cpu_s": 10.0,
+          "train_cpu_s": 0.0,
+          "update_cpu_s": 0.0,
+          "verify_cpu_s": 0.0
+        },
+        "incumbent": {
+          "acquire_cpu_s": 0.0,
+          "billed_usd": 0.0,
+          "energy_joules": 0.0,
+          "migration_cpu_s": 0.0,
+          "network_bytes": 0.0,
+          "p99_seconds": 0.0,
+          "peak_rss_bytes": 134217728,
+          "restore_cpu_s": 0.0,
+          "retained_byte_seconds": 0.0,
+          "search_cpu_s": 0.0,
+          "serve_cpu_s": 10.0,
+          "train_cpu_s": 0.0,
+          "update_cpu_s": 0.0,
+          "verify_cpu_s": 0.0
+        }
+      },
+      "case": "foreign_dataset_receipt",
+      "common_caps": [
+        [
+          "serve_cpu_s",
+          32.0
+        ],
+        [
+          "peak_rss_bytes",
+          268435456
+        ]
+      ],
+      "execution": {
+        "candidate": {
+          "address_space_limit_bytes": 1073741824,
+          "callback_modules_by_value": [
+            "__main__"
+          ],
+          "cloudpickle": "3.1.2",
+          "cost_scope": "One worker and children it reaped; excludes setup, parent serialization, network, energy and external services. Not a complete deployment bill.",
+          "cpu_limit_seconds": 30,
+          "cpu_seconds": 0.404427,
+          "exit_code": 0,
+          "external_state_isolated": false,
+          "input_sha256": "593c0b6a0e984edd5c185cb5e2cce76c6b1b1f61e7339689b7413b1f6669af1b",
+          "isolation": "fresh-interpreter-private-cwd",
+          "limit_scope": "CPU/AS hard limits are per process; joined CPU is checked after wait4",
+          "output_bytes": 27974,
+          "output_sha256": "7dd4a4672f06a243d1a022595aac9d89b792aa50f8ad457a0d6ed076cfe3c0bd",
+          "peak_rss_bytes": 15597568,
+          "runner_sha256": "944346ca3cdc64af6c13f168231a2af08d833092541790dcc053a7de94383768",
+          "snapshot_scope": "Callback defining modules by value; other imports use the pinned runtime",
+          "status": "completed",
+          "stderr_bytes": 0,
+          "wall_limit_seconds": 60.0,
+          "wall_seconds": 0.47973355399881257,
+          "worker_pid": 12,
+          "worker_wall_seconds": 0.4588835270042182
+        },
+        "incumbent": {
+          "address_space_limit_bytes": 1073741824,
+          "callback_modules_by_value": [
+            "__main__"
+          ],
+          "cloudpickle": "3.1.2",
+          "cost_scope": "One worker and children it reaped; excludes setup, parent serialization, network, energy and external services. Not a complete deployment bill.",
+          "cpu_limit_seconds": 30,
+          "cpu_seconds": 0.18209999999999998,
+          "exit_code": 0,
+          "external_state_isolated": false,
+          "input_sha256": "a4119ea02c138acd971b0ace355e81785796cae56b92ff0c908bce65ed396fd4",
+          "isolation": "fresh-interpreter-private-cwd",
+          "limit_scope": "CPU/AS hard limits are per process; joined CPU is checked after wait4",
+          "output_bytes": 28193,
+          "output_sha256": "a964f59be46c430130bea83238df3c54b1b36f7546768085be9136ea9c105dc6",
+          "peak_rss_bytes": 15597568,
+          "runner_sha256": "944346ca3cdc64af6c13f168231a2af08d833092541790dcc053a7de94383768",
+          "snapshot_scope": "Callback defining modules by value; other imports use the pinned runtime",
+          "status": "completed",
+          "stderr_bytes": 0,
+          "wall_limit_seconds": 60.0,
+          "wall_seconds": 0.19024760000320384,
+          "worker_pid": 13,
+          "worker_wall_seconds": 0.184837676002644
+        }
+      },
+      "expected_approved": false,
+      "extra_cost_per_read": 0.0,
+      "logical_budget": "fd4256823634dab7c6e68df4d9b708d898e654a5e8fee70a5e650be570507861",
+      "paired_lower_bound": 0.8302373105324226,
+      "paired_mean": 1.0,
+      "prior_frozen_result": null,
+      "reasons": [
+        "candidate_unbound_cost_receipt",
+        "candidate_cost_identity_mismatch:data"
+      ]
+    },
+    {
+      "approved": false,
+      "artificial_resources": {
+        "candidate": {
+          "acquire_cpu_s": 0.0,
+          "billed_usd": 0.0,
+          "energy_joules": 0.0,
+          "migration_cpu_s": 0.0,
+          "network_bytes": 0.0,
+          "p99_seconds": 0.0,
+          "peak_rss_bytes": 134217728,
+          "restore_cpu_s": 0.0,
+          "retained_byte_seconds": 0.0,
+          "search_cpu_s": 0.0,
+          "serve_cpu_s": 10.0,
+          "train_cpu_s": 0.0,
+          "update_cpu_s": 0.0,
+          "verify_cpu_s": 0.0
+        },
+        "incumbent": {
+          "acquire_cpu_s": 0.0,
+          "billed_usd": 0.0,
+          "energy_joules": 0.0,
+          "migration_cpu_s": 0.0,
+          "network_bytes": 0.0,
+          "p99_seconds": 0.0,
+          "peak_rss_bytes": 134217728,
+          "restore_cpu_s": 0.0,
+          "retained_byte_seconds": 0.0,
+          "search_cpu_s": 0.0,
+          "serve_cpu_s": 10.0,
+          "train_cpu_s": 0.0,
+          "update_cpu_s": 0.0,
+          "verify_cpu_s": 0.0
+        }
+      },
+      "case": "foreign_workload_receipt",
+      "common_caps": [
+        [
+          "serve_cpu_s",
+          32.0
+        ],
+        [
+          "peak_rss_bytes",
+          268435456
+        ]
+      ],
+      "execution": {
+        "candidate": {
+          "address_space_limit_bytes": 1073741824,
+          "callback_modules_by_value": [
+            "__main__"
+          ],
+          "cloudpickle": "3.1.2",
+          "cost_scope": "One worker and children it reaped; excludes setup, parent serialization, network, energy and external services. Not a complete deployment bill.",
+          "cpu_limit_seconds": 30,
+          "cpu_seconds": 0.08520699999999999,
+          "exit_code": 0,
+          "external_state_isolated": false,
+          "input_sha256": "593c0b6a0e984edd5c185cb5e2cce76c6b1b1f61e7339689b7413b1f6669af1b",
+          "isolation": "fresh-interpreter-private-cwd",
+          "limit_scope": "CPU/AS hard limits are per process; joined CPU is checked after wait4",
+          "output_bytes": 27950,
+          "output_sha256": "6dfbb10986900281ccb6bd77cb6cfdf0da6485731c0692f41559a7e3a4ceeb2e",
+          "peak_rss_bytes": 15728640,
+          "runner_sha256": "944346ca3cdc64af6c13f168231a2af08d833092541790dcc053a7de94383768",
+          "snapshot_scope": "Callback defining modules by value; other imports use the pinned runtime",
+          "status": "completed",
+          "stderr_bytes": 0,
+          "wall_limit_seconds": 60.0,
+          "wall_seconds": 0.09652687599736964,
+          "worker_pid": 14,
+          "worker_wall_seconds": 0.08971291800116887
+        },
+        "incumbent": {
+          "address_space_limit_bytes": 1073741824,
+          "callback_modules_by_value": [
+            "__main__"
+          ],
+          "cloudpickle": "3.1.2",
+          "cost_scope": "One worker and children it reaped; excludes setup, parent serialization, network, energy and external services. Not a complete deployment bill.",
+          "cpu_limit_seconds": 30,
+          "cpu_seconds": 0.22891799999999998,
+          "exit_code": 0,
+          "external_state_isolated": false,
+          "input_sha256": "a4119ea02c138acd971b0ace355e81785796cae56b92ff0c908bce65ed396fd4",
+          "isolation": "fresh-interpreter-private-cwd",
+          "limit_scope": "CPU/AS hard limits are per process; joined CPU is checked after wait4",
+          "output_bytes": 28221,
+          "output_sha256": "79d2eb17ba4d15f7790993198ada16b8c85b340f00b29d5834584663fbfa61c2",
+          "peak_rss_bytes": 15728640,
+          "runner_sha256": "944346ca3cdc64af6c13f168231a2af08d833092541790dcc053a7de94383768",
+          "snapshot_scope": "Callback defining modules by value; other imports use the pinned runtime",
+          "status": "completed",
+          "stderr_bytes": 0,
+          "wall_limit_seconds": 60.0,
+          "wall_seconds": 0.24025562799943145,
+          "worker_pid": 15,
+          "worker_wall_seconds": 0.23455605600611307
+        }
+      },
+      "expected_approved": false,
+      "extra_cost_per_read": 0.0,
+      "logical_budget": "fd4256823634dab7c6e68df4d9b708d898e654a5e8fee70a5e650be570507861",
+      "paired_lower_bound": 0.8302373105324226,
+      "paired_mean": 1.0,
+      "prior_frozen_result": null,
+      "reasons": [
+        "candidate_unbound_cost_receipt",
+        "candidate_cost_identity_mismatch:workload"
+      ]
+    },
+    {
+      "approved": false,
+      "artificial_resources": {
+        "candidate": {
+          "acquire_cpu_s": 0.0,
+          "billed_usd": 0.0,
+          "energy_joules": 0.0,
+          "migration_cpu_s": 0.0,
+          "network_bytes": 0.0,
+          "p99_seconds": 0.0,
+          "peak_rss_bytes": 134217728,
+          "restore_cpu_s": 0.0,
+          "retained_byte_seconds": 0.0,
+          "search_cpu_s": 0.0,
+          "serve_cpu_s": 10.0,
+          "train_cpu_s": 0.0,
+          "update_cpu_s": 0.0,
+          "verify_cpu_s": 0.0
+        },
+        "incumbent": {
+          "acquire_cpu_s": 0.0,
+          "billed_usd": 0.0,
+          "energy_joules": 0.0,
+          "migration_cpu_s": 0.0,
+          "network_bytes": 0.0,
+          "p99_seconds": 0.0,
+          "peak_rss_bytes": 134217728,
+          "restore_cpu_s": 0.0,
+          "retained_byte_seconds": 0.0,
+          "search_cpu_s": 0.0,
+          "serve_cpu_s": 10.0,
+          "train_cpu_s": 0.0,
+          "update_cpu_s": 0.0,
+          "verify_cpu_s": 0.0
+        }
+      },
+      "case": "foreign_input_receipt",
+      "common_caps": [
+        [
+          "serve_cpu_s",
+          32.0
+        ],
+        [
+          "peak_rss_bytes",
+          268435456
+        ]
+      ],
+      "execution": {
+        "candidate": {
+          "address_space_limit_bytes": 1073741824,
+          "callback_modules_by_value": [
+            "__main__"
+          ],
+          "cloudpickle": "3.1.2",
+          "cost_scope": "One worker and children it reaped; excludes setup, parent serialization, network, energy and external services. Not a complete deployment bill.",
+          "cpu_limit_seconds": 30,
+          "cpu_seconds": 0.1826,
+          "exit_code": 0,
+          "external_state_isolated": false,
+          "input_sha256": "593c0b6a0e984edd5c185cb5e2cce76c6b1b1f61e7339689b7413b1f6669af1b",
+          "isolation": "fresh-interpreter-private-cwd",
+          "limit_scope": "CPU/AS hard limits are per process; joined CPU is checked after wait4",
+          "output_bytes": 27946,
+          "output_sha256": "699bc8093b27f8a8b258394a0e99e5852facd7222c99a64c05392654b748e5cf",
+          "peak_rss_bytes": 15728640,
+          "runner_sha256": "944346ca3cdc64af6c13f168231a2af08d833092541790dcc053a7de94383768",
+          "snapshot_scope": "Callback defining modules by value; other imports use the pinned runtime",
+          "status": "completed",
+          "stderr_bytes": 0,
+          "wall_limit_seconds": 60.0,
+          "wall_seconds": 0.1999588329999824,
+          "worker_pid": 16,
+          "worker_wall_seconds": 0.17841785800555954
+        },
+        "incumbent": {
+          "address_space_limit_bytes": 1073741824,
+          "callback_modules_by_value": [
+            "__main__"
+          ],
+          "cloudpickle": "3.1.2",
+          "cost_scope": "One worker and children it reaped; excludes setup, parent serialization, network, energy and external services. Not a complete deployment bill.",
+          "cpu_limit_seconds": 30,
+          "cpu_seconds": 0.187681,
+          "exit_code": 0,
+          "external_state_isolated": false,
+          "input_sha256": "a4119ea02c138acd971b0ace355e81785796cae56b92ff0c908bce65ed396fd4",
+          "isolation": "fresh-interpreter-private-cwd",
+          "limit_scope": "CPU/AS hard limits are per process; joined CPU is checked after wait4",
+          "output_bytes": 28223,
+          "output_sha256": "0f78ce9134c4c153bf650f64b75556c66cf67624d55fdf130b6d4c77cf4b2c9e",
+          "peak_rss_bytes": 15728640,
+          "runner_sha256": "944346ca3cdc64af6c13f168231a2af08d833092541790dcc053a7de94383768",
+          "snapshot_scope": "Callback defining modules by value; other imports use the pinned runtime",
+          "status": "completed",
+          "stderr_bytes": 0,
+          "wall_limit_seconds": 60.0,
+          "wall_seconds": 0.2597953860022244,
+          "worker_pid": 17,
+          "worker_wall_seconds": 0.2453521589995944
+        }
+      },
+      "expected_approved": false,
+      "extra_cost_per_read": 0.0,
+      "logical_budget": "fd4256823634dab7c6e68df4d9b708d898e654a5e8fee70a5e650be570507861",
+      "paired_lower_bound": 0.8302373105324226,
+      "paired_mean": 1.0,
+      "prior_frozen_result": null,
+      "reasons": [
+        "candidate_unbound_cost_receipt",
+        "candidate_cost_identity_mismatch:memory"
+      ]
+    },
+    {
+      "approved": false,
+      "artificial_resources": {
+        "candidate": {
+          "acquire_cpu_s": 0.0,
+          "billed_usd": 0.0,
+          "energy_joules": 0.0,
+          "migration_cpu_s": 0.0,
+          "network_bytes": 0.0,
+          "p99_seconds": 0.0,
+          "peak_rss_bytes": 134217728,
+          "restore_cpu_s": 0.0,
+          "retained_byte_seconds": 0.0,
+          "search_cpu_s": 0.0,
+          "serve_cpu_s": 10.0,
+          "train_cpu_s": 0.0,
+          "update_cpu_s": 0.0,
+          "verify_cpu_s": 0.0
+        },
+        "incumbent": {
+          "acquire_cpu_s": 0.0,
+          "billed_usd": 0.0,
+          "energy_joules": 0.0,
+          "migration_cpu_s": 0.0,
+          "network_bytes": 0.0,
+          "p99_seconds": 0.0,
+          "peak_rss_bytes": 134217728,
+          "restore_cpu_s": 0.0,
+          "retained_byte_seconds": 0.0,
+          "search_cpu_s": 0.0,
+          "serve_cpu_s": 10.0,
+          "train_cpu_s": 0.0,
+          "update_cpu_s": 0.0,
+          "verify_cpu_s": 0.0
+        }
+      },
+      "case": "foreign_cohort_receipt",
+      "common_caps": [
+        [
+          "serve_cpu_s",
+          32.0
+        ],
+        [
+          "peak_rss_bytes",
+          268435456
+        ]
+      ],
+      "execution": {
+        "candidate": {
+          "address_space_limit_bytes": 1073741824,
+          "callback_modules_by_value": [
+            "__main__"
+          ],
+          "cloudpickle": "3.1.2",
+          "cost_scope": "One worker and children it reaped; excludes setup, parent serialization, network, energy and external services. Not a complete deployment bill.",
+          "cpu_limit_seconds": 30,
+          "cpu_seconds": 0.284767,
+          "exit_code": 0,
+          "external_state_isolated": false,
+          "input_sha256": "593c0b6a0e984edd5c185cb5e2cce76c6b1b1f61e7339689b7413b1f6669af1b",
+          "isolation": "fresh-interpreter-private-cwd",
+          "limit_scope": "CPU/AS hard limits are per process; joined CPU is checked after wait4",
+          "output_bytes": 27956,
+          "output_sha256": "e13c7cc5d1ab0ce64206b8d2359ca9f08d03314dbc425c8982fa7a9a7d14fcc7",
+          "peak_rss_bytes": 15728640,
+          "runner_sha256": "944346ca3cdc64af6c13f168231a2af08d833092541790dcc053a7de94383768",
+          "snapshot_scope": "Callback defining modules by value; other imports use the pinned runtime",
+          "status": "completed",
+          "stderr_bytes": 0,
+          "wall_limit_seconds": 60.0,
+          "wall_seconds": 0.3210917429969413,
+          "worker_pid": 18,
+          "worker_wall_seconds": 0.31702411599690095
+        },
+        "incumbent": {
+          "address_space_limit_bytes": 1073741824,
+          "callback_modules_by_value": [
+            "__main__"
+          ],
+          "cloudpickle": "3.1.2",
+          "cost_scope": "One worker and children it reaped; excludes setup, parent serialization, network, energy and external services. Not a complete deployment bill.",
+          "cpu_limit_seconds": 30,
+          "cpu_seconds": 0.30259,
+          "exit_code": 0,
+          "external_state_isolated": false,
+          "input_sha256": "a4119ea02c138acd971b0ace355e81785796cae56b92ff0c908bce65ed396fd4",
+          "isolation": "fresh-interpreter-private-cwd",
+          "limit_scope": "CPU/AS hard limits are per process; joined CPU is checked after wait4",
+          "output_bytes": 28215,
+          "output_sha256": "4e63d546310c12acb5741f799a7bdcd93884c48d8a3e6c5c6a4218d1429b7ce6",
+          "peak_rss_bytes": 15728640,
+          "runner_sha256": "944346ca3cdc64af6c13f168231a2af08d833092541790dcc053a7de94383768",
+          "snapshot_scope": "Callback defining modules by value; other imports use the pinned runtime",
+          "status": "completed",
+          "stderr_bytes": 0,
+          "wall_limit_seconds": 60.0,
+          "wall_seconds": 0.30662010599917267,
+          "worker_pid": 19,
+          "worker_wall_seconds": 0.30327314200258115
+        }
+      },
+      "expected_approved": false,
+      "extra_cost_per_read": 0.0,
+      "logical_budget": "fd4256823634dab7c6e68df4d9b708d898e654a5e8fee70a5e650be570507861",
+      "paired_lower_bound": 0.8302373105324226,
+      "paired_mean": 1.0,
+      "prior_frozen_result": null,
+      "reasons": [
+        "candidate_unbound_cost_receipt",
+        "candidate_cost_identity_mismatch:cohort_registration"
+      ]
+    },
+    {
+      "approved": false,
+      "artificial_resources": {
+        "candidate": {
+          "acquire_cpu_s": 0.0,
+          "billed_usd": 0.0,
+          "energy_joules": 0.0,
+          "migration_cpu_s": 0.0,
+          "network_bytes": 0.0,
+          "p99_seconds": 0.0,
+          "peak_rss_bytes": 134217728,
+          "restore_cpu_s": 0.0,
+          "retained_byte_seconds": 0.0,
+          "search_cpu_s": 0.0,
+          "serve_cpu_s": 10.0,
+          "train_cpu_s": 0.0,
+          "update_cpu_s": 0.0,
+          "verify_cpu_s": 0.0
+        },
+        "incumbent": {
+          "acquire_cpu_s": 0.0,
+          "billed_usd": 0.0,
+          "energy_joules": 0.0,
+          "migration_cpu_s": 0.0,
+          "network_bytes": 0.0,
+          "p99_seconds": 0.0,
+          "peak_rss_bytes": 134217728,
+          "restore_cpu_s": 0.0,
+          "retained_byte_seconds": 0.0,
+          "search_cpu_s": 0.0,
+          "serve_cpu_s": 10.0,
+          "train_cpu_s": 0.0,
+          "update_cpu_s": 0.0,
+          "verify_cpu_s": 0.0
+        }
+      },
+      "case": "shared_executor_backing_state",
+      "common_caps": [
+        [
+          "serve_cpu_s",
+          32.0
+        ],
+        [
+          "peak_rss_bytes",
+          268435456
+        ]
+      ],
+      "execution": {
+        "candidate": {
+          "address_space_limit_bytes": 1073741824,
+          "callback_modules_by_value": [
+            "__main__"
+          ],
+          "cloudpickle": "3.1.2",
+          "cost_scope": "One worker and children it reaped; excludes setup, parent serialization, network, energy and external services. Not a complete deployment bill.",
+          "cpu_limit_seconds": 30,
+          "cpu_seconds": 0.385171,
+          "exit_code": 0,
+          "external_state_isolated": false,
+          "input_sha256": "ee051826b204d714b806b12645921fb85a7b5712d09feb00f54e211d08ff0c66",
+          "isolation": "fresh-interpreter-private-cwd",
+          "limit_scope": "CPU/AS hard limits are per process; joined CPU is checked after wait4",
+          "output_bytes": 27970,
+          "output_sha256": "5826d51e2b26d7abb2fd6b261e4b478672694362abbbed0641b307a8f4d41fd1",
+          "peak_rss_bytes": 15859712,
+          "runner_sha256": "944346ca3cdc64af6c13f168231a2af08d833092541790dcc053a7de94383768",
+          "snapshot_scope": "Callback defining modules by value; other imports use the pinned runtime",
+          "status": "completed",
+          "stderr_bytes": 0,
+          "wall_limit_seconds": 60.0,
+          "wall_seconds": 0.3958775840001181,
+          "worker_pid": 20,
+          "worker_wall_seconds": 0.3855338670036872
+        },
+        "incumbent": {
+          "address_space_limit_bytes": 1073741824,
+          "callback_modules_by_value": [
+            "__main__"
+          ],
+          "cloudpickle": "3.1.2",
+          "cost_scope": "One worker and children it reaped; excludes setup, parent serialization, network, energy and external services. Not a complete deployment bill.",
+          "cpu_limit_seconds": 30,
+          "cpu_seconds": 0.223884,
+          "exit_code": 0,
+          "external_state_isolated": false,
+          "input_sha256": "76b167a1f3692ea18908e119b61de0276f987d096ea3c47324e543313f6baa15",
+          "isolation": "fresh-interpreter-private-cwd",
+          "limit_scope": "CPU/AS hard limits are per process; joined CPU is checked after wait4",
+          "output_bytes": 27959,
+          "output_sha256": "c57ec28f223e60596fcf3d144cd47f428b5d0f406840f9e9dd5a426b704b0ac1",
+          "peak_rss_bytes": 15859712,
+          "runner_sha256": "944346ca3cdc64af6c13f168231a2af08d833092541790dcc053a7de94383768",
+          "snapshot_scope": "Callback defining modules by value; other imports use the pinned runtime",
+          "status": "completed",
+          "stderr_bytes": 0,
+          "wall_limit_seconds": 60.0,
+          "wall_seconds": 0.24085518400534056,
+          "worker_pid": 21,
+          "worker_wall_seconds": 0.2263759810011834
+        }
+      },
+      "expected_approved": false,
+      "extra_cost_per_read": 0.0,
+      "logical_budget": "fd4256823634dab7c6e68df4d9b708d898e654a5e8fee70a5e650be570507861",
+      "paired_lower_bound": -0.16976268946757744,
+      "paired_mean": 0.0,
+      "prior_frozen_result": null,
+      "reasons": [
+        "positive_full_cost_net_value_not_established"
+      ]
+    },
+    {
+      "approved": false,
+      "artificial_resources": {
+        "candidate": {
+          "acquire_cpu_s": 0.0,
+          "billed_usd": 0.0,
+          "energy_joules": 0.0,
+          "migration_cpu_s": 0.0,
+          "network_bytes": 0.0,
+          "p99_seconds": 0.0,
+          "peak_rss_bytes": 134217728,
+          "restore_cpu_s": 0.0,
+          "retained_byte_seconds": 0.0,
+          "search_cpu_s": 0.0,
+          "serve_cpu_s": 10.0,
+          "train_cpu_s": 0.0,
+          "update_cpu_s": 0.0,
+          "verify_cpu_s": 0.0
+        },
+        "incumbent": {
+          "acquire_cpu_s": 0.0,
+          "billed_usd": 0.0,
+          "energy_joules": 0.0,
+          "migration_cpu_s": 0.0,
+          "network_bytes": 0.0,
+          "p99_seconds": 0.0,
+          "peak_rss_bytes": 134217728,
+          "restore_cpu_s": 0.0,
+          "retained_byte_seconds": 0.0,
+          "search_cpu_s": 0.0,
+          "serve_cpu_s": 10.0,
+          "train_cpu_s": 0.0,
+          "update_cpu_s": 0.0,
+          "verify_cpu_s": 0.0
+        }
+      },
+      "case": "changed_protocol_after_freeze",
+      "common_caps": [
+        [
+          "serve_cpu_s",
+          32.0
+        ],
+        [
+          "peak_rss_bytes",
+          268435456
+        ]
+      ],
+      "execution": {
+        "candidate": {
+          "address_space_limit_bytes": 1073741824,
+          "callback_modules_by_value": [
+            "__main__"
+          ],
+          "cloudpickle": "3.1.2",
+          "cost_scope": "One worker and children it reaped; excludes setup, parent serialization, network, energy and external services. Not a complete deployment bill.",
+          "cpu_limit_seconds": 30,
+          "cpu_seconds": 1.215218,
+          "exit_code": 0,
+          "external_state_isolated": false,
+          "input_sha256": "593c0b6a0e984edd5c185cb5e2cce76c6b1b1f61e7339689b7413b1f6669af1b",
+          "isolation": "fresh-interpreter-private-cwd",
+          "limit_scope": "CPU/AS hard limits are per process; joined CPU is checked after wait4",
+          "output_bytes": 28070,
+          "output_sha256": "b6be047c078f47c80aa093554ff8b37d2fc8911c3db989e0a76143306ce6938d",
+          "peak_rss_bytes": 15859712,
+          "runner_sha256": "944346ca3cdc64af6c13f168231a2af08d833092541790dcc053a7de94383768",
+          "snapshot_scope": "Callback defining modules by value; other imports use the pinned runtime",
+          "status": "completed",
+          "stderr_bytes": 0,
+          "wall_limit_seconds": 60.0,
+          "wall_seconds": 1.2254291249992093,
+          "worker_pid": 24,
+          "worker_wall_seconds": 1.2225513449957361
+        },
+        "incumbent": {
+          "address_space_limit_bytes": 1073741824,
+          "callback_modules_by_value": [
+            "__main__"
+          ],
+          "cloudpickle": "3.1.2",
+          "cost_scope": "One worker and children it reaped; excludes setup, parent serialization, network, energy and external services. Not a complete deployment bill.",
+          "cpu_limit_seconds": 30,
+          "cpu_seconds": 0.106926,
+          "exit_code": 0,
+          "external_state_isolated": false,
+          "input_sha256": "389dd2e67a7e68086187b2aae2496abb0c4ff8dc922c447609568491e63bb5e8",
+          "isolation": "fresh-interpreter-private-cwd",
+          "limit_scope": "CPU/AS hard limits are per process; joined CPU is checked after wait4",
+          "output_bytes": 28021,
+          "output_sha256": "4e8fea11f65368142d75b990586a21d55dcac9de88216ed982b198fc65563f98",
+          "peak_rss_bytes": 15990784,
+          "runner_sha256": "944346ca3cdc64af6c13f168231a2af08d833092541790dcc053a7de94383768",
+          "snapshot_scope": "Callback defining modules by value; other imports use the pinned runtime",
+          "status": "completed",
+          "stderr_bytes": 0,
+          "wall_limit_seconds": 60.0,
+          "wall_seconds": 0.1114517669993802,
+          "worker_pid": 25,
+          "worker_wall_seconds": 0.1076641199979349
+        }
+      },
+      "expected_approved": false,
+      "extra_cost_per_read": 0.0,
+      "logical_budget": "fd4256823634dab7c6e68df4d9b708d898e654a5e8fee70a5e650be570507861",
+      "paired_lower_bound": -0.06745102754807558,
+      "paired_mean": 0.25,
+      "prior_frozen_result": {
+        "approved": false,
+        "paired_lower_bound": -0.06745102754807558,
+        "per_bound_alpha": 2.5e-06
+      },
+      "reasons": [
+        "protocol_changed_after_freeze",
+        "positive_full_cost_net_value_not_established"
+      ]
+    }
+  ],
+  "probe_sha256": "d41d5f54e76750d13dfe0375aeb721f165561cc284462ec9552419fbc56153d3",
+  "schema": "memory-cost-admission-red-green.v1",
+  "source": {
+    "admission.py": "68c5f46179c712bf2321e3e12ec4b9fda1f05341960d45e215d03fd2e0e15ebe",
+    "admission_test_support.py": "d57a0633ce2d6fcd95bf375513a8a36f912d53324e86bf75e1b9c6939858349d",
+    "cohort.py": "c14e4ecc87e926894da1ba2838df02b420b6fd660c9ec28039567840f85b1bfe",
+    "isolated_runner.py": "944346ca3cdc64af6c13f168231a2af08d833092541790dcc053a7de94383768"
+  },
+  "source_unchanged_during_execution": true,
+  "synthetic_control_only": true
+}

@@ -6,7 +6,8 @@ from tempfile import TemporaryDirectory
 
 from cryptography.hazmat.primitives.asymmetric.ed25519 import Ed25519PrivateKey
 
-from admission import COSTS, Case, MatchedEvaluator, Protocol, Run, digest as protocol_digest
+from admission import Case, MatchedEvaluator, Protocol, Run, budget_digest
+from admission_test_support import fixture_cost_protocol, fixture_ledger, fixture_registration
 from authority import (Authority, COMPONENTS, GateDecision, Rejected, StructureDecision,
                        bundle, canonical, digest, public, sign)
 
@@ -14,32 +15,27 @@ from authority import (Authority, COMPONENTS, GateDecision, Rejected, StructureD
 def experiment(size=256):
     cases = [Case(str(i), str(i), "retained", "public question", {}, [1])
              for i in range(size)]
-    protocol = Protocol("independent-review", True, size, 0.05, 1, 0.25,
-                        16, 1.0, ("retained",), (), ())
+    protocol = fixture_cost_protocol(Protocol("independent-review", True, size, 0.05, 1, 0.25,
+                        16, 1.0, ("retained",), (), ()))
     return cases, protocol
 
 
 def model(bundle, predictor):
-    return Run(bundle, "memory-cut", "train-cut", "executor-v1", "budget-v1", predictor)
-
-
-def costs(bundle, horizon):
-    return {"bundle": bundle, "protocol": "independent-review", "horizon_reads": horizon,
-            "protocol_settings": protocol_digest(vars(experiment(horizon)[1])),
-            "all_searches_and_failures_included": True,
-            "resources": {name: 0 for name in COSTS}}
+    return Run(bundle, "memory-cut", "train-cut", "executor-v1", budget_digest(experiment()[1]),
+               predictor, "encoder-v1", "decoder-v1", "tools-v1")
 
 
 def assess(evaluator, candidate, incumbent, horizon):
-    return evaluator.evaluate(candidate, incumbent, costs(candidate.bundle, horizon),
-                              costs(incumbent.bundle, horizon),
+    return evaluator.evaluate(candidate, incumbent, fixture_ledger(evaluator, candidate),
+                              fixture_ledger(evaluator, incumbent),
                               manifest={"bundle": candidate.bundle, "memory": candidate.memory})
 
 
 class IndependentAdmissionReview(unittest.TestCase):
     def test_frozen_dataset_survives_callers_nested_mutation(self):
         cases, protocol = experiment()
-        evaluator = MatchedEvaluator(cases, lambda: (lambda choice, payload: [choice]), protocol)
+        evaluator = MatchedEvaluator(cases, lambda: (lambda choice, payload: [choice]), protocol, registration=fixture_registration(cases, protocol,
+                    model("new", None), model("old", None)))
         for case in cases:
             case.expected[0] = 2
             case.payload["after_freeze"] = "changed"
@@ -60,7 +56,8 @@ class IndependentAdmissionReview(unittest.TestCase):
                 self.remaining -= 1
                 return [1 if self.remaining >= 0 else 0]
 
-        evaluator = MatchedEvaluator(cases, FiniteExecutor, protocol)
+        evaluator = MatchedEvaluator(cases, FiniteExecutor, protocol, registration=fixture_registration(cases, protocol,
+                    model("new", None), model("old", None)))
         predictor = lambda query: 7
         result = assess(evaluator, model("new", predictor), model("old", predictor), len(cases))
         self.assertFalse(result["approved"],
@@ -68,12 +65,37 @@ class IndependentAdmissionReview(unittest.TestCase):
         self.assertEqual(result["paired_mean"], 0)
         self.assertFalse(any("unbound_cost" in reason for reason in result["reasons"]))
 
-    def test_factory_reusing_one_executor_is_rejected(self):
+    def test_factory_reusing_one_executor_is_isolated_in_fresh_arms(self):
         cases, protocol = experiment()
-        executor = lambda choice, payload: [choice]
-        evaluator = MatchedEvaluator(cases, lambda: executor, protocol)
-        with self.assertRaises(ValueError):
-            assess(evaluator, model("new", lambda query: 1), model("old", lambda query: 0), len(cases))
+        remaining = [len(cases)]
+        def executor(choice, payload):
+            remaining[0] -= 1
+            return [int(remaining[0] >= 0)]
+        candidate, incumbent = model("new", lambda query: 7), model("old", lambda query: 7)
+        evaluator = MatchedEvaluator(cases, lambda: executor, protocol,
+            registration=fixture_registration(cases, protocol, candidate, incumbent))
+        result = assess(evaluator, candidate, incumbent, len(cases))
+        self.assertEqual(result["paired_mean"], 0)
+        self.assertFalse(result["approved"])
+        self.assertTrue(result["resource_qualified"], result["reasons"])
+        self.assertEqual(remaining, [len(cases)])
+
+    def test_different_wrappers_cannot_share_backing_state_between_arms(self):
+        cases, protocol = experiment()
+        shared = {"calls": 0}
+        def factory():
+            def execute(choice, payload):
+                shared["calls"] += 1
+                return [int(shared["calls"] <= len(cases))]
+            return execute
+        candidate, incumbent = model("new", lambda query: 7), model("old", lambda query: 7)
+        evaluator = MatchedEvaluator(cases, factory, protocol,
+            registration=fixture_registration(cases, protocol, candidate, incumbent))
+        result = assess(evaluator, candidate, incumbent, len(cases))
+        self.assertEqual(result["paired_mean"], 0)
+        self.assertFalse(result["approved"])
+        self.assertTrue(all(row["correct"] for rows in result["traces"].values() for row in rows))
+        self.assertEqual(shared, {"calls": 0})
 
 
 class IndependentAuthorityReview(unittest.TestCase):

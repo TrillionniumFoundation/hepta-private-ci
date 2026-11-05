@@ -1,0 +1,99 @@
+{
+  "schema": "hepta.memory.v15.device-offline-review.v1",
+  "passed": true,
+  "run_id": "hepta-v15-23f86845405a4bb8",
+  "evidence_sha256": "8412c030ed18f95e4e2b97939beebb35570881d981550390223b7b2e0cd9f17b",
+  "costs_sha256": "752ecbffc158480c765659571d1020d509be10332ad20e9aec705feb13cdf326",
+  "authority_sha256": "7e5a2016347718e87df147f2ae96f2e56b9813d2c11e705bf88c8649a16bbe68",
+  "worker_sha256": "e71df378426d8eb6c7afd8e75938741943fbdb482ec15de17c45b3f74ca12160",
+  "verifier_sha256": "bffedde293fc5076f7377cb986ef146a03b1046482449552194104eec45c3e3c",
+  "historical_source_commit": "386f7a4453b5e59e83db12d8bf958cfb5e4847d0",
+  "historical_source_manifest_sha256": "3fb8f7f07e0794bd5751acffd4e5229bb3127437a0da2e991feaf5009e2c58ad",
+  "historical_source_snapshot_sha256": "b30210a10ce656294b00e3dc020e07edaa337e47ed5624565fd868fabe7732bf",
+  "current_protocol_checks_sha256": "325507b79914ade15687816d14c7b978aacddc174566551d8e347fce462c1788",
+  "current_protocol_source_files_sha256": {
+    "admission.py": "68c5f46179c712bf2321e3e12ec4b9fda1f05341960d45e215d03fd2e0e15ebe",
+    "admission_test_support.py": "d57a0633ce2d6fcd95bf375513a8a36f912d53324e86bf75e1b9c6939858349d",
+    "admission_tests.py": "914e002d2aebb73a4edb03f683fd16d7b0b514777d73cce4de196299a84e70be",
+    "audit_v14.py": "58d71c7fbea2cd1ed583ba4fa7668e18a623b56be49e05aa767de522a5919943",
+    "authority.py": "d571fa876b8b0cbfc89f347a5f10a461b18a376564f89139a23a5aae157088f2",
+    "authority_tests.py": "6a1e15817b306cc4f1736a48667ff3f173d3243e974c4db03e86ecfbf00be7eb",
+    "cohort.py": "c14e4ecc87e926894da1ba2838df02b420b6fd660c9ec28039567840f85b1bfe",
+    "cohort_tests.py": "1eb266d798932c1309bf89bacf70db55f83be09776ff816e31b4e3b9255a9875",
+    "counter_tests.py": "176e4daa5f9201091c1052e68ef9540c5c8bd41f8d7cf1b4e2587ed586dd0fca",
+    "integration_tests.py": "67b48845f264b6661f1487ba2d9254c4d1e7eb06aabb0d9916bb0c9faa3fa5df",
+    "isolated_runner.py": "944346ca3cdc64af6c13f168231a2af08d833092541790dcc053a7de94383768",
+    "isolated_runner_tests.py": "e26da4569330383fe72d9849a9ece54514f09229574035d3fd5ae19a7eb5622e",
+    "review_tests.py": "defdc391623754719b6794de4d7f2d1bbef38b1c0743142049376fc7a2c5e53f",
+    "runner_review_fixture.py": "acb4f8fbb54b83530e8aea2ce96826d67795f9a76c9bba8561fee8d7ac68f836",
+    "runner_review_tests.py": "d08ada18c3e4f9d70b1968ea6d95fcefa720104bdf6ba2dab80a67816ec12254",
+    "verify.py": "3b6577d127a6ea623b8faff070baae72b41b8be339f7e5c10e76db731d98d8d6"
+  },
+  "current_protocol_source_checked_independently": true,
+  "historical_receipt_qualifies_current_device_code": false,
+  "successful_remote_phases": 10,
+  "control_phases": 9,
+  "readonly_export_phases": 1,
+  "signed_journal_successes": 6,
+  "signed_journal_rejections": 1,
+  "unique_signed_objects_verified": 16,
+  "runtimes": {
+    "mac": {
+      "arch": "arm64",
+      "crypto": "46.0.5",
+      "node_digest": "7587a49c3993547c3edae2b9c17c4eaa22a14c3b9e05a116c9b17b294f81f099",
+      "platform": "Darwin",
+      "python": "3.9.6",
+      "sqlite": "3.51.0"
+    },
+    "pocket4": {
+      "arch": "x86_64",
+      "crypto": "46.0.5",
+      "node_digest": "54d6a54e456bc672a4490b3695adb364566eef77976002732b47d78c3b9ee980",
+      "platform": "Linux",
+      "python": "3.14.4",
+      "sqlite": "3.46.1"
+    }
+  },
+  "initial_outputs": [
+    [
+      11,
+      10
+    ],
+    [
+      1,
+      -10
+    ],
+    [
+      14,
+      22
+    ]
+  ],
+  "updated_outputs": [
+    [
+      13,
+      10
+    ],
+    [
+      3,
+      -10
+    ],
+    [
+      16,
+      22
+    ]
+  ],
+  "initial_bundle": "e6776564499a641af1dccf74f70ff6611443565e1af755437397ade99f183d43",
+  "updated_bundle": "11a05eeb09c217a4115c3b22aaeff714c3a7efd433bea00d52d06352b6b3371c",
+  "final_epoch": 4,
+  "final_owner_role": "target",
+  "old_owner_current_epoch_write_refused": true,
+  "old_owner_remains_in_read_acl": true,
+  "fixture_logical_component_bytes": 408,
+  "fixture_transport_bytes": 2276,
+  "privacy_scope": "Output-path/code review plus field, PEM and personal-path scans; not hardware key attestation.",
+  "scope": "Offline checks of recorded cross-OS relay jobs and a finite integer matrix; no new host actions.",
+  "hardware_attestation": false,
+  "replicated_consensus": false,
+  "full_cost_or_quality_benefit_established": false
+}

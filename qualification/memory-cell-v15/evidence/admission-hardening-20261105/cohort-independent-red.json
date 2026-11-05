@@ -1,0 +1,91 @@
+{
+  "schema": "hepta.memory.independent-cohort-review.v1",
+  "reviewed_commit": "c8a8bdc5ef9ac060f2c6abf3dc7e561953f8b684",
+  "source_sha256": {
+    "admission.py": "1b062799b90ba89a26a8da9c71f00a411127d371a9c2dd3b3ddf4de0013da775",
+    "cohort.py": "c14e4ecc87e926894da1ba2838df02b420b6fd660c9ec28039567840f85b1bfe",
+    "admission_test_support.py": "42ad7f05a10db14b318f2d62fa511c0c74540499aac3fc9f8b100a7e04079700"
+  },
+  "scope": "Synthetic protocol counterexamples and positive controls only; no real-model efficacy sample.",
+  "confirmed_bug": {
+    "name": "cached registration accepts changed public protocol after freeze",
+    "registered_planned_looks": 10000,
+    "evaluated_planned_looks": 1,
+    "original": {
+      "approved": false,
+      "reasons": [
+        "positive_full_cost_net_value_not_established"
+      ],
+      "per_bound_alpha": 2.5e-06,
+      "paired_mean": 0.25,
+      "paired_lower_bound": -0.06745102754807558,
+      "cohort_registration": "226f90696676ccbb1fe51cb7d5968c9cc42bcfbc4cc56db61105239370fa457a",
+      "protocol_settings": "ef4c13ffbdc9e823779860dbc1312bf1ddd105aff936a79ec8eca2844eb7f461",
+      "qualified_clusters": 256,
+      "requests_per_arm": 256
+    },
+    "after_public_protocol_reassignment": {
+      "approved": true,
+      "reasons": [],
+      "per_bound_alpha": 0.025,
+      "paired_mean": 0.25,
+      "paired_lower_bound": 0.08023731053242256,
+      "cohort_registration": "226f90696676ccbb1fe51cb7d5968c9cc42bcfbc4cc56db61105239370fa457a",
+      "protocol_settings": "3219edb61201798f17bdedb26e3980b30cf8c32cdd765e7c5ce943c740578dfa",
+      "qualified_clusters": 256,
+      "requests_per_arm": 256
+    },
+    "cohort_still_binds_old_protocol_settings": "ef4c13ffbdc9e823779860dbc1312bf1ddd105aff936a79ec8eca2844eb7f461",
+    "requires_trusted_host_modification": true,
+    "qualification": "Internal freeze-consistency bug; not an untrusted network authority bypass."
+  },
+  "documented_missing_service_boundaries": {
+    "planned_one_look_allows_same_instance_repeated_evaluation": {
+      "approvals": 3,
+      "evaluation_calls": 3,
+      "per_bound_alpha": [
+        0.025,
+        0.025,
+        0.025
+      ]
+    },
+    "newly_declared_candidate_roster_after_previous_final_evaluation": {
+      "approved": true,
+      "reasons": [],
+      "per_bound_alpha": 0.025,
+      "paired_mean": 0.25,
+      "paired_lower_bound": 0.08023731053242256,
+      "cohort_registration": "60032ef97697f1b2fd70569dbf02181e2b8a42213be7ce4749c6d72a6182f78d",
+      "protocol_settings": "3219edb61201798f17bdedb26e3980b30cf8c32cdd765e7c5ce943c740578dfa",
+      "qualified_clusters": 256,
+      "requests_per_arm": 256
+    },
+    "meaning": "No persistent registration/consumption ledger exists in this predicate. Repeated evaluation is not itself evidence of an invalid bound for fixed deterministic outputs; adaptive selection or stochastic looks require an external durable monitor."
+  },
+  "controls": {
+    "nested_caller_registration_mutation_frozen": {
+      "approved": true,
+      "reasons": [],
+      "per_bound_alpha": 0.025,
+      "paired_mean": 0.25,
+      "paired_lower_bound": 0.08023731053242256,
+      "cohort_registration": "d4babc71dc8ab70df13c38bbe26eff2594be7933ed70c8009802fabe5d85c906",
+      "protocol_settings": "3219edb61201798f17bdedb26e3980b30cf8c32cdd765e7c5ce943c740578dfa",
+      "qualified_clusters": 256,
+      "requests_per_arm": 256
+    },
+    "duplicate_logical_source_unit_rejected": {
+      "approved": false,
+      "reasons": [
+        "replicated_source_unit:0"
+      ],
+      "per_bound_alpha": 0.025,
+      "paired_mean": 0.25,
+      "paired_lower_bound": 0.08023731053242256,
+      "cohort_registration": "ec45522c5aee9dac01bf9b389dff443d46cd3a90c508c87029ce5958e03c774f",
+      "protocol_settings": "3219edb61201798f17bdedb26e3980b30cf8c32cdd765e7c5ce943c740578dfa",
+      "qualified_clusters": null,
+      "requests_per_arm": 256
+    }
+  }
+}

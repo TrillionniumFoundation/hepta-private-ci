@@ -1,0 +1,326 @@
+{
+  "schema": "hepta.memory.independent-frozen-protocol-review.v1",
+  "source_before": {
+    "admission.py": {
+      "sha256": "68c5f46179c712bf2321e3e12ec4b9fda1f05341960d45e215d03fd2e0e15ebe",
+      "git_blob_sha1": "1651c10c92dd09ce7926f03e6f78c2305dc1f696",
+      "bytes": 16845
+    },
+    "cohort.py": {
+      "sha256": "c14e4ecc87e926894da1ba2838df02b420b6fd660c9ec28039567840f85b1bfe",
+      "git_blob_sha1": "a97615a752e9aa25e7480a1d48eab5f021d70c34",
+      "bytes": 5030
+    },
+    "admission_test_support.py": {
+      "sha256": "d57a0633ce2d6fcd95bf375513a8a36f912d53324e86bf75e1b9c6939858349d",
+      "git_blob_sha1": "1042b3ba9d45ab7453ce5d7de176254727895a6f",
+      "bytes": 2439
+    },
+    "isolated_runner.py": {
+      "sha256": "944346ca3cdc64af6c13f168231a2af08d833092541790dcc053a7de94383768",
+      "git_blob_sha1": "9613bf2b618b23c10a6e3e81da2204aaeb171752",
+      "bytes": 11064
+    }
+  },
+  "checks": [
+    "original 10000-look conservative control and two real workers",
+    "original 10000-to-1 reproduction is rejected with the frozen alpha/bound",
+    "alpha, deadline, worker caps, workload, cost identity stay on one frozen protocol for both arms",
+    "both arm receipts rebound to reassigned settings are rejected",
+    "public replacement during dispatch cannot change either arm or its cost/statistical settings"
+  ],
+  "observations": [
+    {
+      "case": "original_10000_look_control",
+      "result": {
+        "approved": false,
+        "quality_qualified": true,
+        "resource_qualified": true,
+        "economic_qualified": false,
+        "reasons": [
+          "positive_full_cost_net_value_not_established"
+        ],
+        "per_bound_alpha": 2.5e-06,
+        "paired_mean": 0.25,
+        "paired_lower_bound": -0.06745102754807558,
+        "protocol": "independent-frozen-protocol-review",
+        "protocol_settings": "b8b098d5be7e4062c6b2675779aedb493aa7fa44f063fbae1c15af5ce28019df",
+        "observed_protocol_settings": "b8b098d5be7e4062c6b2675779aedb493aa7fa44f063fbae1c15af5ce28019df",
+        "cohort_registration": "c46a711b01d6bcff62aa9b475c2002d728762d9b3214d2cfb66c220b04608842",
+        "budget": "8e1a4172df933c15ec43ef0192e93be6c817c61bbcbe3238ea211431487f85a8",
+        "workload": "9d99bc6568bb20be8b3b428916a8414c16e03dbfbd767d5e40f47bc37bb0eaff",
+        "extra_cost_per_read": 0.0,
+        "requests_per_arm": 256
+      },
+      "actual_worker_calls": [
+        {
+          "bundle": "candidate-frozen",
+          "deadline_seconds": 1.0,
+          "dispatched_cpu_seconds": 5,
+          "wall_seconds": 10.0,
+          "address_space_bytes": 536870912,
+          "worker_status": "completed",
+          "worker_pid": 6,
+          "completed_rows": 256,
+          "measured_cpu_seconds": 0.156757,
+          "peak_rss_bytes": 15859712
+        },
+        {
+          "bundle": "incumbent-frozen",
+          "deadline_seconds": 1.0,
+          "dispatched_cpu_seconds": 5,
+          "wall_seconds": 10.0,
+          "address_space_bytes": 536870912,
+          "worker_status": "completed",
+          "worker_pid": 7,
+          "completed_rows": 256,
+          "measured_cpu_seconds": 0.441395,
+          "peak_rss_bytes": 16121856
+        }
+      ]
+    },
+    {
+      "case": "original_10000_to_1_regression",
+      "result": {
+        "approved": false,
+        "quality_qualified": false,
+        "resource_qualified": true,
+        "economic_qualified": false,
+        "reasons": [
+          "protocol_changed_after_freeze",
+          "positive_full_cost_net_value_not_established"
+        ],
+        "per_bound_alpha": 2.5e-06,
+        "paired_mean": 0.25,
+        "paired_lower_bound": -0.06745102754807558,
+        "protocol": "independent-frozen-protocol-review",
+        "protocol_settings": "b8b098d5be7e4062c6b2675779aedb493aa7fa44f063fbae1c15af5ce28019df",
+        "observed_protocol_settings": "26c48906bd28e836fd648706e0d02cd026569f5d55bab4b2b876743ea7a526eb",
+        "cohort_registration": "c46a711b01d6bcff62aa9b475c2002d728762d9b3214d2cfb66c220b04608842",
+        "budget": "8e1a4172df933c15ec43ef0192e93be6c817c61bbcbe3238ea211431487f85a8",
+        "workload": "9d99bc6568bb20be8b3b428916a8414c16e03dbfbd767d5e40f47bc37bb0eaff",
+        "extra_cost_per_read": 0.0,
+        "requests_per_arm": 256
+      },
+      "actual_worker_calls": [
+        {
+          "bundle": "candidate-frozen",
+          "deadline_seconds": 1.0,
+          "dispatched_cpu_seconds": 5,
+          "wall_seconds": 10.0,
+          "address_space_bytes": 536870912,
+          "worker_status": "completed",
+          "worker_pid": 8,
+          "completed_rows": 256,
+          "measured_cpu_seconds": 0.127101,
+          "peak_rss_bytes": 16384000
+        },
+        {
+          "bundle": "incumbent-frozen",
+          "deadline_seconds": 1.0,
+          "dispatched_cpu_seconds": 5,
+          "wall_seconds": 10.0,
+          "address_space_bytes": 536870912,
+          "worker_status": "completed",
+          "worker_pid": 9,
+          "completed_rows": 256,
+          "measured_cpu_seconds": 0.136071,
+          "peak_rss_bytes": 16515072
+        }
+      ],
+      "cost_bindings_before_and_after_equal": true
+    },
+    {
+      "case": "alpha_deadline_caps_cost_and_workload_reassignment",
+      "result": {
+        "approved": false,
+        "quality_qualified": false,
+        "resource_qualified": true,
+        "economic_qualified": false,
+        "reasons": [
+          "protocol_changed_after_freeze",
+          "positive_full_cost_net_value_not_established"
+        ],
+        "per_bound_alpha": 2.5e-06,
+        "paired_mean": 0.25,
+        "paired_lower_bound": -0.06745102754807558,
+        "protocol": "independent-frozen-protocol-review",
+        "protocol_settings": "b8b098d5be7e4062c6b2675779aedb493aa7fa44f063fbae1c15af5ce28019df",
+        "observed_protocol_settings": "e2d756d33077a4471576e040d8de568105ba5d84c61adf34b6b5b8db70379ea5",
+        "cohort_registration": "c46a711b01d6bcff62aa9b475c2002d728762d9b3214d2cfb66c220b04608842",
+        "budget": "8e1a4172df933c15ec43ef0192e93be6c817c61bbcbe3238ea211431487f85a8",
+        "workload": "9d99bc6568bb20be8b3b428916a8414c16e03dbfbd767d5e40f47bc37bb0eaff",
+        "extra_cost_per_read": 0.0,
+        "requests_per_arm": 256
+      },
+      "actual_worker_calls": [
+        {
+          "bundle": "candidate-frozen",
+          "deadline_seconds": 1.0,
+          "dispatched_cpu_seconds": 5,
+          "wall_seconds": 10.0,
+          "address_space_bytes": 536870912,
+          "worker_status": "completed",
+          "worker_pid": 10,
+          "completed_rows": 256,
+          "measured_cpu_seconds": 0.103284,
+          "peak_rss_bytes": 16777216
+        },
+        {
+          "bundle": "incumbent-frozen",
+          "deadline_seconds": 1.0,
+          "dispatched_cpu_seconds": 5,
+          "wall_seconds": 10.0,
+          "address_space_bytes": 536870912,
+          "worker_status": "completed",
+          "worker_pid": 11,
+          "completed_rows": 256,
+          "measured_cpu_seconds": 0.104662,
+          "peak_rss_bytes": 16908288
+        }
+      ],
+      "cost_bindings_before_and_after_equal": true
+    },
+    {
+      "case": "both_arm_cost_receipts_rebound_to_changed_protocol",
+      "result": {
+        "approved": false,
+        "quality_qualified": false,
+        "resource_qualified": false,
+        "economic_qualified": false,
+        "reasons": [
+          "protocol_changed_after_freeze",
+          "candidate_unbound_cost_receipt",
+          "candidate_cost_identity_mismatch:protocol",
+          "candidate_cost_identity_mismatch:protocol_settings",
+          "candidate_cost_identity_mismatch:horizon_reads",
+          "candidate_cost_identity_mismatch:budget",
+          "candidate_cost_identity_mismatch:workload",
+          "incumbent_unbound_cost_receipt",
+          "incumbent_cost_identity_mismatch:protocol",
+          "incumbent_cost_identity_mismatch:protocol_settings",
+          "incumbent_cost_identity_mismatch:horizon_reads",
+          "incumbent_cost_identity_mismatch:budget",
+          "incumbent_cost_identity_mismatch:workload",
+          "positive_full_cost_net_value_not_established"
+        ],
+        "per_bound_alpha": 2.5e-06,
+        "paired_mean": 0.25,
+        "paired_lower_bound": -0.06745102754807558,
+        "protocol": "independent-frozen-protocol-review",
+        "protocol_settings": "b8b098d5be7e4062c6b2675779aedb493aa7fa44f063fbae1c15af5ce28019df",
+        "observed_protocol_settings": "e2d756d33077a4471576e040d8de568105ba5d84c61adf34b6b5b8db70379ea5",
+        "cohort_registration": "c46a711b01d6bcff62aa9b475c2002d728762d9b3214d2cfb66c220b04608842",
+        "budget": "8e1a4172df933c15ec43ef0192e93be6c817c61bbcbe3238ea211431487f85a8",
+        "workload": "9d99bc6568bb20be8b3b428916a8414c16e03dbfbd767d5e40f47bc37bb0eaff",
+        "extra_cost_per_read": 0.0,
+        "requests_per_arm": 256
+      },
+      "actual_worker_calls": [
+        {
+          "bundle": "candidate-frozen",
+          "deadline_seconds": 1.0,
+          "dispatched_cpu_seconds": 5,
+          "wall_seconds": 10.0,
+          "address_space_bytes": 536870912,
+          "worker_status": "completed",
+          "worker_pid": 12,
+          "completed_rows": 256,
+          "measured_cpu_seconds": 0.097349,
+          "peak_rss_bytes": 17170432
+        },
+        {
+          "bundle": "incumbent-frozen",
+          "deadline_seconds": 1.0,
+          "dispatched_cpu_seconds": 5,
+          "wall_seconds": 10.0,
+          "address_space_bytes": 536870912,
+          "worker_status": "completed",
+          "worker_pid": 13,
+          "completed_rows": 256,
+          "measured_cpu_seconds": 0.096701,
+          "peak_rss_bytes": 17432576
+        }
+      ]
+    },
+    {
+      "case": "public_reassignment_during_dispatch_ignored_by_both_frozen_arms",
+      "result": {
+        "approved": true,
+        "quality_qualified": true,
+        "resource_qualified": true,
+        "economic_qualified": true,
+        "reasons": [],
+        "per_bound_alpha": 0.025,
+        "paired_mean": 1.0,
+        "paired_lower_bound": 0.8302373105324226,
+        "protocol": "independent-frozen-protocol-review",
+        "protocol_settings": "26c48906bd28e836fd648706e0d02cd026569f5d55bab4b2b876743ea7a526eb",
+        "observed_protocol_settings": "26c48906bd28e836fd648706e0d02cd026569f5d55bab4b2b876743ea7a526eb",
+        "cohort_registration": "cf49ed241fd071683e03aa6f705310547aed4307356d27ba801c786ec81fe917",
+        "budget": "8e1a4172df933c15ec43ef0192e93be6c817c61bbcbe3238ea211431487f85a8",
+        "workload": "9d99bc6568bb20be8b3b428916a8414c16e03dbfbd767d5e40f47bc37bb0eaff",
+        "extra_cost_per_read": 0.0,
+        "requests_per_arm": 256
+      },
+      "actual_worker_calls": [
+        {
+          "bundle": "candidate-frozen",
+          "deadline_seconds": 1.0,
+          "dispatched_cpu_seconds": 5,
+          "wall_seconds": 10.0,
+          "address_space_bytes": 536870912,
+          "worker_status": "completed",
+          "worker_pid": 14,
+          "completed_rows": 256,
+          "measured_cpu_seconds": 0.12520599999999998,
+          "peak_rss_bytes": 17694720
+        },
+        {
+          "bundle": "incumbent-frozen",
+          "deadline_seconds": 1.0,
+          "dispatched_cpu_seconds": 5,
+          "wall_seconds": 10.0,
+          "address_space_bytes": 536870912,
+          "worker_status": "completed",
+          "worker_pid": 15,
+          "completed_rows": 256,
+          "measured_cpu_seconds": 0.10485,
+          "peak_rss_bytes": 17825792
+        }
+      ],
+      "note": "The start-of-call protocol was valid; both arms and all resulting bounds use that frozen protocol. No new protocol is activated."
+    }
+  ],
+  "scope": "Synthetic protocol controls using real bounded child interpreters. No neural-memory efficacy or production qualification.",
+  "persistent_look_ledger_implemented": false,
+  "python": "3.12.14 (main, Aug 25 2026, 14:00:49) [Clang 22.1.3 ]",
+  "platform": "Linux-6.18.57-x86_64-with-glibc2.39",
+  "passed": true,
+  "source_after": {
+    "admission.py": {
+      "sha256": "68c5f46179c712bf2321e3e12ec4b9fda1f05341960d45e215d03fd2e0e15ebe"
+    },
+    "cohort.py": {
+      "sha256": "c14e4ecc87e926894da1ba2838df02b420b6fd660c9ec28039567840f85b1bfe"
+    },
+    "admission_test_support.py": {
+      "sha256": "d57a0633ce2d6fcd95bf375513a8a36f912d53324e86bf75e1b9c6939858349d"
+    },
+    "isolated_runner.py": {
+      "sha256": "944346ca3cdc64af6c13f168231a2af08d833092541790dcc053a7de94383768"
+    }
+  },
+  "source_unchanged_during_review": true,
+  "checks_completed": 5,
+  "wall_seconds": 1.7636175850057043,
+  "probe_sha256": "3b1b8c38ac7bf2021a6826a192638596675d6e7802dd24163804557a21b569da",
+  "runtime_dependency": {
+    "cloudpickle": "3.1.2",
+    "source": "existing task python-deps directory; no installation during this review"
+  },
+  "preflight": {
+    "default_python_without_dependency_path": "failed before test execution: ModuleNotFoundError cloudpickle",
+    "successful_command": "PYTHONPATH=/workspace/scratch/b5d58a60397e/python-deps python /workspace/scratch/b5d58a60397e/cohort-review/verify_frozen_protocol.py"
+  }
+}

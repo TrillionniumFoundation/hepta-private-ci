@@ -1,0 +1,20 @@
+{
+  "schema": "hepta.memory.independent-history-review.v1",
+  "verifier_sha256": "bffedde293fc5076f7377cb986ef146a03b1046482449552194104eec45c3e3c",
+  "scope": "Temporary copy only. Archived sources are read as data and never imported or executed. No production or historical originals changed.",
+  "checks": [
+    {
+      "case": "unmodified historical source and receipts",
+      "passed": true,
+      "signed_objects": 16,
+      "historical_receipt_qualifies_current_device_code": false
+    },
+    {
+      "case": "change historical source and consistently rehash archive/file metadata/manifest",
+      "rejected": true,
+      "reason": "historical source manifest identity mismatch",
+      "pinned_manifest_constant_unchanged": "3fb8f7f07e0794bd5751acffd4e5229bb3127437a0da2e991feaf5009e2c58ad"
+    }
+  ],
+  "limit": "The verifier source itself and current local protocol receipts remain trusted. This test does not assert resistance to replacing trusted code or rolling back its entire trust root."
+}

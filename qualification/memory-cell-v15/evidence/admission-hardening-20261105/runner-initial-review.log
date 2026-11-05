@@ -1,0 +1,71 @@
+runner_sha256 39a038dc0b95195c939d3e157ac2c8d2560d5ac677721ac721e0d567a0d37767
+test_arm_cpu_cap_includes_joined_children (__main__.IndependentRunnerReview.test_arm_cpu_cap_includes_joined_children) ... joined_children {"rows": [{"id": "one", "cluster": "one", "stratum": "old", "correct": true, "error": null, "seconds": 1.632659861999855}], "receipt": {"status": "completed", "wall_seconds": 1.967393503000494, "cpu_seconds": 1.924455, "peak_rss_bytes": 18460672, "output_bytes": 136, "worker_pid": 6, "input_sha256": "81adb510665ac0750ba895676d02f4b31784ab5330bd24414215d7f61aa7d4ab", "runner_sha256": "39a038dc0b95195c939d3e157ac2c8d2560d5ac677721ac721e0d567a0d37767", "isolation": "fresh-interpreter-private-cwd", "cloudpickle": "3.1.2", "external_state_isolated": false, "cpu_limit_seconds": 1, "address_space_limit_bytes": 1073741824, "wall_limit_seconds": 5.0, "cost_scope": "One worker and children it reaped; excludes setup, parent serialization, network, energy and external services. Not a complete deployment bill.", "exit_code": 0, "worker_wall_seconds": 1.9474803150005755, "stderr_bytes": 0, "output_sha256": "99165b6c035b03ca358226c08a7dcb55e87adb0eb96531f77c2a0bf045436cb9"}}
+FAIL
+test_cancel_after_launch_cleans_owned_group (__main__.IndependentRunnerReview.test_cancel_after_launch_cleans_owned_group) ... cancellation_boundary {"worker_pid": 9, "alive_after_cancel": true}
+FAIL
+test_frozen_host_module_configuration_is_preserved (__main__.IndependentRunnerReview.test_frozen_host_module_configuration_is_preserved) ... module_configuration {"rows": [{"id": "one", "cluster": "one", "stratum": "old", "correct": false, "error": null, "seconds": 2.220003807451576e-06}], "receipt": {"status": "completed", "wall_seconds": 0.17535502299870132, "cpu_seconds": 0.16722199999999998, "peak_rss_bytes": 18460672, "output_bytes": 141, "worker_pid": 10, "input_sha256": "cab9e1d5ac51022fda0d3a7c6bf05bdc27fdf0bb8d61348b295716ca8358abf3", "runner_sha256": "39a038dc0b95195c939d3e157ac2c8d2560d5ac677721ac721e0d567a0d37767", "isolation": "fresh-interpreter-private-cwd", "cloudpickle": "3.1.2", "external_state_isolated": false, "cpu_limit_seconds": 30, "address_space_limit_bytes": 1073741824, "wall_limit_seconds": 60.0, "cost_scope": "One worker and children it reaped; excludes setup, parent serialization, network, energy and external services. Not a complete deployment bill.", "exit_code": 0, "worker_wall_seconds": 0.16766166599700227, "stderr_bytes": 0, "output_sha256": "a9746cf7e9aafe8ea488fb4ea13650df8ec84872781b48db5008dad8b3fb8c99"}}
+FAIL
+test_process_start_failure_retains_denominator (__main__.IndependentRunnerReview.test_process_start_failure_retains_denominator) ... ERROR
+
+======================================================================
+ERROR: test_process_start_failure_retains_denominator (__main__.IndependentRunnerReview.test_process_start_failure_retains_denominator)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/scratch/b5d58a60397e/runner-review/test_runner_review.py", line 63, in test_process_start_failure_retains_denominator
+    rows, receipt = run(lambda _: True)
+                    ^^^^^^^^^^^^^^^^^^^
+  File "/workspace/scratch/b5d58a60397e/runner-review/test_runner_review.py", line 30, in run
+    return runner.run_arm(wire(), SimpleNamespace(predict=predict),
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/workspace/scratch/b5d58a60397e/memory-cell-work/qualification/memory-cell-v15/isolated_runner.py", line 101, in run_arm
+    process = subprocess.Popen([sys.executable, str(ROOT), '--worker', str(payload),
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/unittest/mock.py", line 1139, in __call__
+    return self._mock_call(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/unittest/mock.py", line 1143, in _mock_call
+    return self._execute_mock_call(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/unittest/mock.py", line 1198, in _execute_mock_call
+    raise effect
+BlockingIOError: [Errno 11] Resource temporarily unavailable
+
+======================================================================
+FAIL: test_arm_cpu_cap_includes_joined_children (__main__.IndependentRunnerReview.test_arm_cpu_cap_includes_joined_children)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/scratch/b5d58a60397e/runner-review/test_runner_review.py", line 46, in test_arm_cpu_cap_includes_joined_children
+    self.assertTrue(receipt['status'] != 'completed' or receipt['cpu_seconds'] <= 1,
+AssertionError: False is not true : An arm exceeded its declared CPU cap using ordinary joined children.
+
+======================================================================
+FAIL: test_cancel_after_launch_cleans_owned_group (__main__.IndependentRunnerReview.test_cancel_after_launch_cleans_owned_group)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/scratch/b5d58a60397e/runner-review/test_runner_review.py", line 102, in test_cancel_after_launch_cleans_owned_group
+    self.assertFalse(alive, 'Worker survived cancellation before entering cleanup try/finally.')
+AssertionError: True is not false : Worker survived cancellation before entering cleanup try/finally.
+
+======================================================================
+FAIL: test_frozen_host_module_configuration_is_preserved (__main__.IndependentRunnerReview.test_frozen_host_module_configuration_is_preserved)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/scratch/b5d58a60397e/runner-review/test_runner_review.py", line 56, in test_frozen_host_module_configuration_is_preserved
+    self.assertEqual((receipt['status'], rows[0]['correct']), ('completed', True),
+AssertionError: Tuples differ: ('completed', False) != ('completed', True)
+
+First differing element 1:
+False
+True
+
+- ('completed', False)
+?               ^^^^
+
++ ('completed', True)
+?               ^^^
+ : Cloudpickle re-imported module defaults instead of frozen host state.
+
+----------------------------------------------------------------------
+Ran 4 tests in 2.408s
+
+FAILED (failures=3, errors=1)

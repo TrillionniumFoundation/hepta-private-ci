@@ -1,0 +1,46 @@
+{
+  "schema": "hepta.memory.cohort-verification.v1",
+  "parent_commit": "379c21c2e625c3a3dfbb514e11b9e8fe2213cda8",
+  "source_unchanged": true,
+  "cryptography": "50.0.2",
+  "python": "3.12.14 (main, Aug 25 2026, 14:00:49) [Clang 22.1.3 ]",
+  "runs": [
+    {
+      "mode": "normal",
+      "exit_code": 0,
+      "test_count": 67,
+      "wall_seconds": 3.734727456998371,
+      "log_sha256": "26b0dd045a81114cc04e77fb2a05d63cd33eca3c25a01c82c206004783cd0e0c",
+      "skipped": false
+    },
+    {
+      "mode": "optimized",
+      "exit_code": 0,
+      "test_count": 67,
+      "wall_seconds": 4.796101113999612,
+      "log_sha256": "3e6bc9f715083a5ce0bc7bb3be539dad8e87f086ccd5417c64b9ac54ba254bc4",
+      "skipped": false
+    }
+  ],
+  "scope": "Synthetic protocol and finite-model controls; zero new language efficacy samples; no native Rust or production qualification.",
+  "source_files_sha256": {
+    "qualification/memory-cell-v15/admission.py": "1b062799b90ba89a26a8da9c71f00a411127d371a9c2dd3b3ddf4de0013da775",
+    "qualification/memory-cell-v15/admission_test_support.py": "42ad7f05a10db14b318f2d62fa511c0c74540499aac3fc9f8b100a7e04079700",
+    "qualification/memory-cell-v15/admission_tests.py": "a6ec707e121066133e4a7586a9fb524b7a5553136fbb1162d64de1377377cf46",
+    "qualification/memory-cell-v15/audit_v14.py": "58d71c7fbea2cd1ed583ba4fa7668e18a623b56be49e05aa767de522a5919943",
+    "qualification/memory-cell-v15/authority.py": "7e5a2016347718e87df147f2ae96f2e56b9813d2c11e705bf88c8649a16bbe68",
+    "qualification/memory-cell-v15/authority_tests.py": "6a1e15817b306cc4f1736a48667ff3f173d3243e974c4db03e86ecfbf00be7eb",
+    "qualification/memory-cell-v15/cohort.py": "c14e4ecc87e926894da1ba2838df02b420b6fd660c9ec28039567840f85b1bfe",
+    "qualification/memory-cell-v15/cohort_tests.py": "dbc439ce7681de1052c64c915fbc29c322de6449e2afcd261bd7f08c5b3b8f71",
+    "qualification/memory-cell-v15/integration_tests.py": "539a108c2efbca8a6f66df7bfb9e1b51bcc56c3903b37eed8105cb1c8d730486",
+    "qualification/memory-cell-v15/review_tests.py": "29e87a135ae690e817c8d0950ab2a7ab08eb0d5efe23ff7765dab71617d14ef9",
+    "qualification/memory-cell-v15/verify.py": "5d826aafbcbc7e59fb1d33a39566f26e9093feaffc388ea709b0b713e5d41e3c"
+  },
+  "formatting": {
+    "command": "just fmt",
+    "exit_code": 0,
+    "scope": "Original formatter selected no owning language group for qualification/ paths; no Python source changed. This is not a full-tree formatting claim.",
+    "log_sha256": "b6a6d5ad920f48c9b49a3ca8c2308227b7849b9e0a498dc452f3a7bd2f7fb752",
+    "source_changes": {}
+  }
+}
