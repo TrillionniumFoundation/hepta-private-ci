@@ -100,6 +100,34 @@ class Qualification(unittest.TestCase):
         self.assertAlmostEqual(result["attempt_fees"], 0.2)
         self.assertEqual(len(result["events"]), 1)
 
+    def test_stderr_flood_cannot_turn_small_stdout_into_delivery(self):
+        # Original code checked stdout after unbounded communicate() and did not
+        # enforce any limit on stderr: this printed valid STOP plus 128 KiB
+        # stderr and incorrectly delivered the answer under a 1 KiB budget.
+        controller = worker(
+            'import sys; print(\'{"action":"STOP","payload":7}\'); '
+            'sys.stderr.buffer.write(b"E"*131072)', 0.13)
+        result = self.run_case(
+            "stderr_flood", controller,
+            contract=Contract(deadline_seconds=6.0, call_timeout_seconds=5.0,
+                              max_output_bytes=1024))
+        self.assertEqual(result["termination"], "controller_oversized_output")
+        self.assertEqual(result["delivered_quality"], 0)
+        self.assertAlmostEqual(result["attempt_fees"], 0.13)
+        self.assertLessEqual(result["events"][0]["capture_bytes_observed_at_abort"], 1025)
+
+    def test_stdout_flood_aborts_without_unbounded_capture(self):
+        controller = worker(
+            'import sys; sys.stdout.buffer.write(b"X"*131072)', 0.11)
+        result = self.run_case(
+            "stdout_flood", controller,
+            contract=Contract(deadline_seconds=6.0, call_timeout_seconds=5.0,
+                              max_output_bytes=1024))
+        self.assertEqual(result["termination"], "controller_oversized_output")
+        self.assertEqual(result["delivered_quality"], 0)
+        self.assertAlmostEqual(result["attempt_fees"], 0.11)
+        self.assertLessEqual(result["events"][0]["capture_bytes_observed_at_abort"], 1025)
+
     def test_non_utf8_worker_keeps_paid_receipt(self):
         result = self.run_case("non_utf8", worker('import sys; sys.stdout.buffer.write(bytes([255]))', .2))
         self.assertEqual(result["termination"], "controller_invalid_output_or_launch")
