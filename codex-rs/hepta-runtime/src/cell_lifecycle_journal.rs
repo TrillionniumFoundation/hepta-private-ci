@@ -153,7 +153,7 @@ impl<A: RuntimeCellLifecycleAnchorStoreV1> RuntimeCellLifecycleJournalV1<A> {
         let mut tx = self.pool.begin().await.map_err(unavailable)?;
         self.check_anchor_in(&mut tx).await?;
         replay_in(&mut tx, plan, self.max_events).await?;
-        let rows: Vec<String> = sqlx::query_scalar("SELECT substr(event_json, 1, 16385) FROM hepta_cell_lifecycle_event_v1 WHERE agent_id = ? AND operation_id = ? ORDER BY sequence LIMIT 16")
+        let rows: Vec<String> = sqlx::query_scalar("SELECT substr(event_json, 1, 16385) FROM hepta_cell_lifecycle_event_v1 WHERE agent_id = ? AND operation_id = ? ORDER BY sequence LIMIT 65")
             .bind(self.agent_id.as_str()).bind(plan.operation_id.as_str())
             .fetch_all(&mut *tx).await.map_err(unavailable)?;
         let mut result = None;
@@ -226,6 +226,9 @@ impl<A: RuntimeCellLifecycleAnchorStoreV1> RuntimeCellLifecycleJournalV1<A> {
             return Err(RuntimeCellLifecycleError::Conflict);
         }
         let next = transition(plan, previous.as_ref(), &event)?;
+        if next.revision >= 64 {
+            return Err(RuntimeCellLifecycleError::Capacity);
+        }
         let event_json = serde_json::to_string(&event).map_err(unavailable)?;
         let snapshot_json = serde_json::to_string(&next).map_err(unavailable)?;
         if event_json.len() > MAX_EVENT_BYTES || snapshot_json.len() > MAX_EVENT_BYTES {
@@ -321,7 +324,7 @@ pub(crate) async fn replay_in(
     let rows = sqlx::query("SELECT substr(plan_digest, 1, 65) AS plan_digest, substr(event_json, 1, 16385) AS event_json FROM hepta_cell_lifecycle_event_v1 WHERE agent_id = ? AND operation_id = ? ORDER BY sequence LIMIT ?")
         .bind(plan.agent_id.as_str()).bind(plan.operation_id.as_str()).bind((maximum + 1) as i64)
         .fetch_all(&mut **tx).await.map_err(unavailable)?;
-    if rows.len() > 15 {
+    if rows.len() > 64 {
         return Err(RuntimeCellLifecycleError::Corrupt);
     }
     let mut state = None;

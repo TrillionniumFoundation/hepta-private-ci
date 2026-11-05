@@ -67,7 +67,10 @@ pub(crate) fn transition(
             next.revision = next.revision.checked_add(1)
                 .ok_or(RuntimeCellLifecycleError::Capacity)?;
             next.pending = false;
-            next.stage = observation.stage.next();
+            next.stage = match observation.outcome {
+                RuntimeCellLifecycleNativeOutcomeV1::Applied => observation.stage.next(),
+                RuntimeCellLifecycleNativeOutcomeV1::NotApplied => Some(observation.stage),
+            };
             next.last_observed_ms = observation.observed_at_ms;
             next.evidence.push(authentication.clone());
             Ok(next)
@@ -98,8 +101,12 @@ pub(crate) fn validate_observation(
     for digest in [&observation.topology, &observation.state_root, &observation.bundle] {
         nonzero(digest)?;
     }
-    let stage = observation.stage.code();
-    if (stage < RuntimeCellLifecycleStageV1::Resume.code() && !observation.admission_closed)
+    let requested_stage = observation.stage.code();
+    let applied = observation.outcome == RuntimeCellLifecycleNativeOutcomeV1::Applied;
+    let stage = if applied { requested_stage } else { requested_stage.saturating_sub(1) };
+    let expects_closed = !(applied && observation.stage == RuntimeCellLifecycleStageV1::Resume
+        || !applied && observation.stage == RuntimeCellLifecycleStageV1::StopAdmission);
+    if observation.admission_closed != expects_closed
         || (stage >= RuntimeCellLifecycleStageV1::Drain.code()
             && (observation.inflight != 0 || observation.unknown_effects != 0))
         || (stage >= RuntimeCellLifecycleStageV1::FenceWriters.code()
@@ -124,9 +131,6 @@ pub(crate) fn validate_observation(
     if stage < RuntimeCellLifecycleStageV1::TransferState.code()
         && observation.state_root != plan.predecessor_state_root.to_string()
     {
-        return Err(RuntimeCellLifecycleError::InvalidObservation);
-    }
-    if observation.stage == RuntimeCellLifecycleStageV1::Resume && observation.admission_closed {
         return Err(RuntimeCellLifecycleError::InvalidObservation);
     }
     Ok(())

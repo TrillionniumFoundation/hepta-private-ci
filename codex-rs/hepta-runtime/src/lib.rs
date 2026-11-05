@@ -54,6 +54,7 @@ use zeroize::Zeroizing;
 
 pub use cell_lifecycle::RuntimeCellLifecycleError;
 pub use cell_lifecycle::RuntimeCellLifecycleIntentV1;
+pub use cell_lifecycle::RuntimeCellLifecycleNativeOutcomeV1;
 pub use cell_lifecycle::RuntimeCellLifecycleObservationV1;
 pub use cell_lifecycle::RuntimeCellLifecycleObserverV1;
 pub use cell_lifecycle::RuntimeCellLifecyclePlanV1;

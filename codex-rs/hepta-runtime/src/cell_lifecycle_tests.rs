@@ -125,6 +125,7 @@ fn observation(
         observer_id: plan.observer_id.to_string(), observer_trust: plan.observer_trust.to_string(),
         plan_digest: intent.plan_digest.to_string(), stage: intent.stage,
         semantic_operation: intent.semantic_operation.to_string(),
+        outcome: RuntimeCellLifecycleNativeOutcomeV1::Applied,
         admission_closed: intent.stage != RuntimeCellLifecycleStageV1::Resume,
         inflight: 0, unknown_effects: 0,
         writer_fence: if stage >= RuntimeCellLifecycleStageV1::FenceWriters.code() { 2 } else { 1 },
@@ -321,4 +322,34 @@ async fn unacknowledged_native_observation_must_be_independently_reauthenticated
         recovered.read_observation(&plan, RuntimeCellLifecycleStageV1::StopAdmission).await.unwrap(),
         Some(observed),
     );
+}
+
+#[tokio::test]
+async fn proved_no_contact_reuses_the_same_operation_but_unknown_cannot() {
+    let directory = tempfile::tempdir().unwrap();
+    let plan = plan(RuntimeCellStructuralChangeV1::Split);
+    let witness = Witness::new(&plan.agent_id);
+    let mut journal = RuntimeCellLifecycleJournalV1::attach(
+        pool(&directory.path().join("owner.sqlite")).await,
+        plan.agent_id.clone(), /*writer_epoch*/ 1, witness, /*max_events*/ 100,
+    ).await.unwrap();
+    journal.create(&plan, /*now_ms*/ 100).await.unwrap();
+    let first = journal.prepare_next(&plan, /*expected_revision*/ 0, /*now_ms*/ 101).await.unwrap();
+    assert_eq!(
+        journal.prepare_next(&plan, /*expected_revision*/ 1, /*now_ms*/ 102).await.unwrap_err(),
+        RuntimeCellLifecycleError::ReconciliationRequired,
+    );
+    let mut absent = observation(&plan, &first, /*at*/ 103);
+    absent.outcome = RuntimeCellLifecycleNativeOutcomeV1::NotApplied;
+    absent.admission_closed = false;
+    let state = journal.record_observation(
+        &plan, /*expected_revision*/ 1, absent, &Observer,
+    ).await.unwrap();
+    assert_eq!(state.stage(), Some(RuntimeCellLifecycleStageV1::StopAdmission));
+    let retry = journal.prepare_next(&plan, state.revision(), /*now_ms*/ 104).await.unwrap();
+    assert_eq!(retry, first);
+    let done = journal.record_observation(
+        &plan, /*expected_revision*/ 3, observation(&plan, &retry, /*at*/ 105), &Observer,
+    ).await.unwrap();
+    assert_eq!(done.stage(), Some(RuntimeCellLifecycleStageV1::Drain));
 }

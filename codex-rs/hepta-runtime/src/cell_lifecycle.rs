@@ -174,6 +174,15 @@ pub struct RuntimeCellLifecycleIntentV1 {
     pub authority: AuthorityPosture,
 }
 
+#[derive(Clone, Copy, Debug, Deserialize, Eq, PartialEq, Serialize)]
+#[serde(rename_all = "snake_case")]
+pub enum RuntimeCellLifecycleNativeOutcomeV1 {
+    Applied,
+    /// Independently proved absence of contact for this exact semantic operation.
+    /// An unknown outcome must never be represented by this value.
+    NotApplied,
+}
+
 /// The host's independent verifier authenticates all these fields together.
 /// Nonzero digests or self-asserted booleans alone prove no native execution.
 #[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
@@ -186,6 +195,7 @@ pub struct RuntimeCellLifecycleObservationV1 {
     pub plan_digest: String,
     pub stage: RuntimeCellLifecycleStageV1,
     pub semantic_operation: String,
+    pub outcome: RuntimeCellLifecycleNativeOutcomeV1,
     /// Admission to the affected routing region, not to retired member IDs.
     pub admission_closed: bool,
     /// Outstanding predecessor work; new-generation work is not included.
