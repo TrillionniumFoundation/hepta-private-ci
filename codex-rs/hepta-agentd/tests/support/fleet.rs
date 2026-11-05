@@ -305,7 +305,10 @@ impl FleetHarness {
             expected_provider_invocation_rows,
         )
         .await?;
-        ensure!(control.health().await?.ready, "fixture owner left readiness");
+        ensure!(
+            control.health().await?.ready,
+            "fixture owner left readiness"
+        );
         Ok(retained)
     }
 

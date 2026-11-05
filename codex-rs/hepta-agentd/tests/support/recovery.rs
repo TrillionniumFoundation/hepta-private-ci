@@ -102,10 +102,7 @@ pub(super) fn stage_initial(
         hex(&key.sign_exact_message(&evidence_recovery_frontier_signing_bytes(&frontier)?)?);
     for (path, value) in [
         (&frontier_file, serde_json::to_value(&frontier)?),
-        (
-            &trust_file,
-            recovery_trust(&frontier, &key),
-        ),
+        (&trust_file, recovery_trust(&frontier, &key)),
     ] {
         std::fs::write(path, serde_json::to_vec(&value)?)?;
         std::fs::set_permissions(path, std::fs::Permissions::from_mode(0o600))?;
@@ -194,7 +191,10 @@ fn recovery_signer() -> Result<PqNativeSigningKey> {
     )?)
 }
 
-fn recovery_trust(frontier: &EvidenceRecoveryFrontierV4, key: &PqNativeSigningKey) -> serde_json::Value {
+fn recovery_trust(
+    frontier: &EvidenceRecoveryFrontierV4,
+    key: &PqNativeSigningKey,
+) -> serde_json::Value {
     json!({
         "schemaVersion": 2, "authenticationProfile": "ml_dsa65_v2",
         "storeId": frontier.store_id,
