@@ -568,8 +568,18 @@ fn parse_pon_chain_observation(
         value => Some(value.as_u64()?),
     };
     let owner_generation = result.get("generation")?.as_u64()?;
+    // Native generation zero is the initial genesis head, with zero height
+    // and work. Only its explicit absent-packet shape is observable here;
+    // it cannot acknowledge a send or establish global absence.
     if owner_generation == 0
-        || active_membership_sql_budget != 1024
+        && (stored_exact
+            || active_tip_height != 0
+            || active_tip_chainwork_hex.bytes().any(|byte| byte != b'0')
+            || result.get("accepted_task") != Some(&Value::Null))
+    {
+        return None;
+    }
+    if active_membership_sql_budget != 1024
         || (!stored_exact
             && (block_height.is_some()
                 || block_chainwork_hex.is_some()

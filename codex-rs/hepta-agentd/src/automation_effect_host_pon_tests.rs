@@ -234,3 +234,6 @@ async fn pon_descendant_held_pipe_cannot_extend_the_exchange_deadline() -> anyho
     assert!(matches!(outcome, PonInvocation::Unknown));
     Ok(())
 }
+
+#[path = "automation_effect_host_pon_genesis_tests.rs"]
+mod genesis_tests;
