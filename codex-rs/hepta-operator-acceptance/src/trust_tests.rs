@@ -1,4 +1,6 @@
+#[cfg(not(windows))]
 use std::fs::OpenOptions;
+#[cfg(not(windows))]
 use std::io::Write;
 use std::path::Path;
 use std::path::PathBuf;
@@ -223,7 +225,10 @@ impl TrustFixture {
             .expect("start SSHSIG signer for test fixture");
         assert!(signed.success(), "create test-only SSHSIG");
         let signature = PathBuf::from(format!("{}.sig", statement_path.display()));
+        #[cfg(unix)]
         set_private_permissions(&signature);
+        #[cfg(windows)]
+        let signature = crate::test_support::private_generated_signature(&signature);
         signature
     }
 }
@@ -237,6 +242,7 @@ fn ssh_string(bytes: &[u8]) -> Vec<u8> {
     encoded
 }
 
+#[cfg(not(windows))]
 fn write_private(path: &Path, bytes: &[u8]) {
     let mut options = OpenOptions::new();
     options.create_new(true).write(true);
@@ -249,6 +255,7 @@ fn write_private(path: &Path, bytes: &[u8]) {
     file.write_all(bytes).expect("write private test file");
 }
 
+#[cfg(unix)]
 fn set_private_permissions(path: &Path) {
     #[cfg(unix)]
     {
@@ -261,3 +268,9 @@ fn set_private_permissions(path: &Path) {
 #[cfg(unix)]
 #[path = "sshsig_differential_tests.rs"]
 mod differential;
+
+#[cfg(windows)]
+fn write_private(path: &Path, bytes: &[u8]) {
+    crate::durable::write_private_new(path, bytes)
+        .unwrap_or_else(|error| panic!("create private Windows test file: {error}"));
+}
