@@ -115,10 +115,7 @@ impl DeploymentFinalUseIssuer {
         registration: &HostAuthorityWriterRegistration,
         verifier: &AuthorityLeaseVerifier,
     ) -> io::Result<HostSignedWriterAuthorizationV1> {
-        if self.lease.is_none() {
-            return Err(io::Error::other("protected issuer required"));
-        }
-        registration.with_live(verifier, |_| {
+        self.with_live_issuer_writer_registration(registration, verifier, |issuer| {
             let _guard = self
                 .request_lock
                 .lock()
@@ -126,11 +123,18 @@ impl DeploymentFinalUseIssuer {
             let state = self.store.load(STATE_OWNER).map_err(io::Error::other)?;
             if let Some(proof) = &state.writer_authorization {
                 self.validate_writer_proof(&state, registration, proof)?;
+                let after = self.clock.now_unix_ms().map_err(io::Error::other)?;
+                validate_writer_time(registration, state.head.authority_epoch, after)?;
+                Self::validate_issuer_lease_time(issuer, state.head.authority_epoch, after)?;
                 return Ok(proof.clone());
             }
             let now = self.clock.now_unix_ms().map_err(io::Error::other)?;
             validate_writer_time(registration, state.head.authority_epoch, now)?;
-            self.retain_writer_authorization(&state, registration, now)
+            let proof = self.retain_writer_authorization(&state, registration, now)?;
+            let after = self.clock.now_unix_ms().map_err(io::Error::other)?;
+            validate_writer_time(registration, state.head.authority_epoch, after)?;
+            Self::validate_issuer_lease_time(issuer, state.head.authority_epoch, after)?;
+            Ok(proof)
         })
     }
 

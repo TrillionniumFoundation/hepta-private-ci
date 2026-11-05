@@ -125,7 +125,7 @@ impl RootNotesGrantAdmission {
     }
 
     /// Register one short exact original lease, then enter the original joint
-    /// writer/effect boundary. Repeated requests can reuse the retained lease
+    /// issuer/writer/effect boundary. Repeated requests can reuse the retained lease
     /// while live, but never renew, replace, reset or resurrect its ID.
     pub(crate) fn issue(
         &self,
@@ -145,7 +145,7 @@ impl RootNotesGrantAdmission {
             .as_ref()
             .ok_or_else(|| denied("protected canonical issuer required"))?
             .verifier;
-        self.writer.with_live(canonical, |_| {
+        issuer.with_live_issuer_writer_registration(&self.writer, canonical, |_| {
             if issuer.retained_writer_authorization(&self.writer)? != self.proof {
                 return Err(denied("registered writer proof changed"));
             }
@@ -210,33 +210,22 @@ impl RootNotesGrantAdmission {
             return Err(denied("retained Notes lease differs from its registration"));
         }
         let writer = &self.writer.authority_lease;
-        let writer_token = canonical
-            .verify_use(&writer.lease_id, writer.revision, &writer.binding)
-            .map_err(root::lease_error)?;
-        let effect_token = self
-            .registry
-            .verifier()
-            .verify_use(&effect.lease_id, effect.revision, &expected)
-            .map_err(root::lease_error)?;
-        let result = canonical
-            .with_joint_dispatch_boundary(
-                writer_token,
-                &writer.binding,
-                effect_token,
-                &expected,
-                |actual_writer, actual_effect, _| {
-                    if actual_writer != writer || actual_effect != &effect {
-                        return Err(denied("Notes signing boundary changed"));
-                    }
-                    issuer.issue_registered_final_use(
-                        binding,
-                        &self.writer,
-                        &self.proof,
-                        writer.expires_at_unix_ms.min(effect.expires_at_unix_ms),
-                    )
-                },
-            )
-            .map_err(root::lease_error)?;
+        let result = issuer.with_live_issuer_writer_effect(
+            &self.writer,
+            &effect,
+            &self.registry.verifier(),
+            |actual_issuer| {
+                issuer.issue_registered_final_use(
+                    binding,
+                    &self.writer,
+                    &self.proof,
+                    writer
+                        .expires_at_unix_ms
+                        .min(effect.expires_at_unix_ms)
+                        .min(actual_issuer.expires_at_unix_ms),
+                )
+            },
+        );
         if let Ok(Some(signed)) = &result
             && let Some(observed) = &self.observations
         {
@@ -331,7 +320,7 @@ impl DeploymentFinalUseIssuer {
             .as_ref()
             .ok_or_else(|| denied("protected canonical issuer required"))?
             .verifier;
-        registration.with_live(verifier, |_| {
+        self.with_live_issuer_writer_registration(registration, verifier, |issuer| {
             let proof = self.retained_writer_authorization(registration)?;
             let _guard = self
                 .request_lock
@@ -365,6 +354,7 @@ impl DeploymentFinalUseIssuer {
             let slot = notes_slot(&state.policies, &next.subject_id)?;
             if state.policies[slot] == next {
                 let after = self.clock.now_unix_ms().map_err(io::Error::other)?;
+                Self::validate_issuer_lease_time(issuer, state.head.authority_epoch, after)?;
                 return writer::validate_writer_time(
                     registration,
                     state.head.authority_epoch,
@@ -382,6 +372,7 @@ impl DeploymentFinalUseIssuer {
                 .compare_and_set(STATE_OWNER, &state, &changed)
                 .map_err(io::Error::other)?;
             let after = self.clock.now_unix_ms().map_err(io::Error::other)?;
+            Self::validate_issuer_lease_time(issuer, state.head.authority_epoch, after)?;
             writer::validate_writer_time(registration, state.head.authority_epoch, after)
         })
     }

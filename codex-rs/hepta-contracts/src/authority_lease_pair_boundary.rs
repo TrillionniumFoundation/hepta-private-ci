@@ -1,6 +1,9 @@
 //! Bounded same-owner entry and explicit predecessor retirement. No new ledger.
 use super::*;
 
+#[path = "authority_lease_issuer_boundary.rs"]
+mod issuer_boundary;
+
 /// Non-authorizing facts about a complete original predecessor lease. They
 /// describe the locked registry state; they are not a transferable capability.
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]

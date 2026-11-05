@@ -54,18 +54,19 @@ impl DeploymentFinalUseIssuer {
     ) -> io::Result<HostSignedWriterAuthorizationV1> {
         // Use the verifier retained by the canonical protected factory, never
         // a caller-supplied lookalike owner with equal serialized lease data.
-        let verifier = &self
+        let pinned = self
             .lease
             .as_ref()
-            .ok_or_else(|| io::Error::other("protected issuer required"))?
-            .verifier;
+            .ok_or_else(|| io::Error::other("protected issuer required"))?;
+        let verifier = &pinned.verifier;
         predecessor.validate_successor(successor)?;
         let lease = &successor.authority_lease;
         let token = verifier
             .verify_use(&lease.lease_id, lease.revision, &lease.binding)
             .map_err(root::lease_error)?;
         verifier
-            .with_retired_predecessor_boundary(
+            .with_retired_predecessor_for_pinned_issuer_boundary(
+                pinned.identity(),
                 &predecessor.authority_lease,
                 token,
                 &lease.binding,

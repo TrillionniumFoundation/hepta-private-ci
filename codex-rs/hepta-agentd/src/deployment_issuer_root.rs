@@ -7,6 +7,9 @@ use codex_hepta_contracts::authority_lease::AuthorityLeaseBinding;
 use codex_hepta_contracts::authority_lease::AuthorityLeaseError;
 use codex_hepta_contracts::authority_lease::AuthorityLeaseVerifier;
 
+#[path = "deployment_issuer_dependencies.rs"]
+mod dependencies;
+
 pub(super) struct ProtectedLease {
     pub(super) verifier: AuthorityLeaseVerifier,
     id: String,
@@ -14,6 +17,10 @@ pub(super) struct ProtectedLease {
 }
 
 impl ProtectedLease {
+    pub(super) fn identity(&self) -> (&str, u64) {
+        (&self.id, self.revision)
+    }
+
     pub(super) fn new(
         verifier: AuthorityLeaseVerifier,
         id: String,
@@ -139,7 +146,10 @@ impl DeploymentFinalUseIssuer {
             .read_lease(&pinned.id)
             .map_err(lease_error)?
             .ok_or_else(|| {
-                io::Error::new(io::ErrorKind::PermissionDenied, "original issuer lease missing")
+                io::Error::new(
+                    io::ErrorKind::PermissionDenied,
+                    "original issuer lease missing",
+                )
             })?
             .lease;
         if issuer.revision != pinned.revision {
