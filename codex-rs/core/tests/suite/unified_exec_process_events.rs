@@ -46,6 +46,7 @@ use std::time::Duration;
 use test_case::test_case;
 use tokio::net::TcpListener;
 use tokio::net::TcpStream;
+use tokio::sync::oneshot;
 use tokio::time::timeout;
 use tokio_tungstenite::WebSocketStream;
 use tokio_tungstenite::accept_async;
@@ -78,6 +79,9 @@ enum PushedExecScenario {
 struct PushedExecServerResult {
     process_read_requests: usize,
     process_start: Value,
+    // Keep the transport alive until the test has checked the consumed terminal
+    // output. Returning this result must not manufacture a connection-loss exit.
+    _websocket: WebSocketStream<TcpStream>,
 }
 
 async fn read_exec_server_json(websocket: &mut WebSocketStream<TcpStream>) -> Value {
@@ -163,6 +167,7 @@ async fn respond_environment_info(
 async fn serve_exec_with_pushed_events(
     listener: TcpListener,
     scenario: PushedExecScenario,
+    mut terminal_consumed: oneshot::Receiver<()>,
 ) -> PushedExecServerResult {
     let unrestricted_patch = matches!(
         scenario,
@@ -247,6 +252,7 @@ async fn serve_exec_with_pushed_events(
                     return PushedExecServerResult {
                         process_read_requests: 0,
                         process_start: request,
+                        _websocket: websocket,
                     };
                 }
             }
@@ -265,6 +271,7 @@ async fn serve_exec_with_pushed_events(
                 return PushedExecServerResult {
                     process_read_requests: 0,
                     process_start: request,
+                    _websocket: websocket,
                 };
             }
             Some("fs/canonicalize") => {
@@ -421,8 +428,23 @@ async fn serve_exec_with_pushed_events(
     }
 
     let mut process_read_requests = 0;
+    let mut terminal_complete = matches!(
+        scenario,
+        PushedExecScenario::Complete | PushedExecScenario::ElevatedPowerShell
+    );
     loop {
-        let request = read_exec_server_json(&mut websocket).await;
+        let request = tokio::select! {
+            biased;
+            request = read_exec_server_json(&mut websocket) => request,
+            consumed = &mut terminal_consumed, if terminal_complete => {
+                consumed.expect("test should observe the terminal result before releasing the server");
+                return PushedExecServerResult {
+                    process_read_requests,
+                    process_start,
+                    _websocket: websocket,
+                };
+            }
+        };
         match request["method"].as_str() {
             Some("process/read") => {
                 process_read_requests += 1;
@@ -513,6 +535,14 @@ async fn serve_exec_with_pushed_events(
                     )
                     .await;
                 }
+                if matches!(
+                    scenario,
+                    PushedExecScenario::LegacyExit | PushedExecScenario::ReplayGap
+                ) {
+                    // Keep accepting requests until the test has consumed the
+                    // terminal result, including the original required read.
+                    terminal_complete = true;
+                }
             }
             Some("process/terminate") => {
                 send_exec_server_json(
@@ -526,6 +556,7 @@ async fn serve_exec_with_pushed_events(
                 return PushedExecServerResult {
                     process_read_requests,
                     process_start,
+                    _websocket: websocket,
                 };
             }
             method => panic!("unexpected exec-server request: {method:?}"),
@@ -600,7 +631,12 @@ async fn exec_command_consumes_pushed_remote_process_events(
     )
     .await;
     let exec_server_url = format!("ws://{}", listener.local_addr()?);
-    let exec_server = tokio::spawn(serve_exec_with_pushed_events(listener, scenario));
+    let (terminal_consumed_tx, terminal_consumed_rx) = oneshot::channel();
+    let exec_server = tokio::spawn(serve_exec_with_pushed_events(
+        listener,
+        scenario,
+        terminal_consumed_rx,
+    ));
     let mut builder = test_codex().with_exec_server_url(exec_server_url);
     if managed_network {
         let cloud_config_bundle = if policy_callbacks {
@@ -892,6 +928,26 @@ timeout = 900
         );
         return Ok(());
     }
+    if managed_network {
+        timeout(Duration::from_secs(5), async {
+            while response_mock.requests().len() < 2 {
+                tokio::time::sleep(Duration::from_millis(10)).await;
+            }
+        })
+        .await
+        .context("model should receive the remote exec output")?;
+    }
+    if matches!(
+        scenario,
+        PushedExecScenario::Complete
+            | PushedExecScenario::ElevatedPowerShell
+            | PushedExecScenario::LegacyExit
+            | PushedExecScenario::ReplayGap
+    ) {
+        // The original terminate branch may already have completed successfully;
+        // the join below still requires the actual server result in either case.
+        let _ = terminal_consumed_tx.send(());
+    }
     let cleanup_timeout = if managed_network {
         Duration::from_secs(15)
     } else {
@@ -933,13 +989,6 @@ timeout = 900
         );
         assert_eq!(params["networkProxy"]["environmentId"], "remote");
         assert!(params["networkProxy"]["executionId"].as_str().is_some());
-        timeout(Duration::from_secs(5), async {
-            while response_mock.requests().len() < 2 {
-                tokio::time::sleep(Duration::from_millis(10)).await;
-            }
-        })
-        .await
-        .context("model should receive the remote exec output")?;
         return Ok(());
     }
     let request = response_mock
