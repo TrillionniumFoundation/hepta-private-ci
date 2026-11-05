@@ -1,0 +1,22 @@
+{
+  "argv": [
+    "just",
+    "test",
+    "-p",
+    "codex-hepta-evidence",
+    "--locked",
+    "--lib",
+    "--retries",
+    "0",
+    "-E",
+    "test(recovery_effect_frontier_tests::) | test(provider_effect_recovery_provenance_tests::)"
+  ],
+  "cwd": "/workspace/scratch/48266f5bd43f/hepta-effects/codex-rs",
+  "exit_code": 101,
+  "elapsed_seconds": 164.77800464630127,
+  "head": "f2bc730eb40faaf1937c5f5f5c6286e24cb2b4f7",
+  "log_sha256": "50ca92827dfa38c09c9dd6fc96821ce96e2627ba4fe22d451f53fdfcbe967824",
+  "build_jobs": 1,
+  "cargo_target_dir": "/workspace/scratch/822cc50e24f0/authority-recovery/native-20261105/target",
+  "offline": true
+}

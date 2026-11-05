@@ -1,0 +1,97 @@
+{
+  "commit": "cec7a61b6c0aed19abd13bdbda0c6838aa398ef3",
+  "tree": "c0df69ecfdf84d375e57c7ea0cd1d3d4e833cb0b",
+  "log": "green-final-observations.log",
+  "log_sha256": "29decf3e884510bafa70e238bf1c7191d6cd8c25d7a24e855dd997e919001124",
+  "cases": [
+    {
+      "case": "provider_effect_recovery_provenance_tests::exhausted_observation_clock_refuses_new_events_without_forgetting_exact_retries",
+      "status": "PASS",
+      "seconds": 0.185,
+      "log_line": 353
+    },
+    {
+      "case": "provider_effect_recovery_provenance_tests::recovery_provenance_preserves_dispatch_then_authoritative_status",
+      "status": "PASS",
+      "seconds": 0.346,
+      "log_line": 356
+    },
+    {
+      "case": "provider_effect_recovery_provenance_tests::recovery_provenance_rejects_late_dispatch_after_status_without_uncertainty",
+      "status": "PASS",
+      "seconds": 0.638,
+      "log_line": 357
+    },
+    {
+      "case": "provider_effect_recovery_provenance_tests::repeated_status_ack_persists_provenance_and_fences_late_dispatch_after_restart",
+      "status": "PASS",
+      "seconds": 0.832,
+      "log_line": 358
+    },
+    {
+      "case": "provider_effect_recovery_provenance_tests::separate_store_writers_preserve_latest_observation_idempotency",
+      "status": "PASS",
+      "seconds": 0.88,
+      "log_line": 359
+    },
+    {
+      "case": "provider_effect_recovery_provenance_tests::terminal_status_reobservation_cannot_hide_an_intervening_imported_uncertainty",
+      "status": "PASS",
+      "seconds": 1.157,
+      "log_line": 367
+    },
+    {
+      "case": "provider_effect_recovery_provenance_tests::repeated_unknown_and_status_observations_survive_recovery_without_erasing_quarantine",
+      "status": "PASS",
+      "seconds": 1.239,
+      "log_line": 368
+    },
+    {
+      "case": "recovery_effect_frontier_tests::recovery_snapshot_commits_ack_provenance_and_cross_table_order",
+      "status": "PASS",
+      "seconds": 0.301,
+      "log_line": 424
+    },
+    {
+      "case": "recovery_effect_frontier_tests::recovery_snapshot_commits_intent_unknown_and_original_operation_receipt",
+      "status": "PASS",
+      "seconds": 0.304,
+      "log_line": 426
+    },
+    {
+      "case": "recovery_effect_frontier_tests::recovery_snapshot_refuses_changed_json_with_retained_record_digests",
+      "status": "PASS",
+      "seconds": 0.324,
+      "log_line": 428
+    },
+    {
+      "case": "store::provider_effect_observation_migration_tests::observation_migration_preserves_effect_rows_sequences_and_consumed_boundary",
+      "status": "PASS",
+      "seconds": 0.41,
+      "log_line": 429
+    },
+    {
+      "case": "recovery_effect_frontier_tests::recovery_snapshot_distinguishes_a_valid_effect_only_database_rollback",
+      "status": "PASS",
+      "seconds": 0.446,
+      "log_line": 430
+    },
+    {
+      "case": "store::provider_effect_observation_migration_tests::observation_schema_rejects_reintroduced_content_deduplication",
+      "status": "PASS",
+      "seconds": 0.634,
+      "log_line": 434
+    },
+    {
+      "case": "recovery_effect_frontier_tests::recovery_snapshot_commits_effect_history_after_the_first_page",
+      "status": "PASS",
+      "seconds": 1.272,
+      "log_line": 439
+    }
+  ],
+  "notes": [
+    "The terminal reobservation case explicitly loops Completed and Rejected inside one native test.",
+    "The migration case runs real migrations through version 15 before ordinary open applies version 16.",
+    "The migration fingerprint difference is not a directly executed Agentd signature verification test."
+  ]
+}

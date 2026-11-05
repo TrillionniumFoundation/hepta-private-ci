@@ -1,0 +1,97 @@
+diff --git a/trillionnium/crates/trnm-mvcc-fee/src/continuity_v1/capacity_range_tests.rs b/trillionnium/crates/trnm-mvcc-fee/src/continuity_v1/capacity_range_tests.rs
+index 6d109ee..06a662c 100644
+--- a/trillionnium/crates/trnm-mvcc-fee/src/continuity_v1/capacity_range_tests.rs
++++ b/trillionnium/crates/trnm-mvcc-fee/src/continuity_v1/capacity_range_tests.rs
+@@ -131,34 +131,67 @@ fn capacity_ranges_match_full_state_and_authenticated_monetary_sources() {
+     ] {
+         state.insert(key.into(), json!(null));
+     }
++    // Quorum evaluation requires a native replay model; Growth currently
++    // accepts only the linear model. Exercise each installed combination and
++    // retain the incompatible profile refusals instead of inventing one.
+     for task in [PROFILE, crate::growth_profile_v2::PROFILE] {
+-        for evaluation in [
+-            "legacy-first-two-v3",
++        assert!(matches!(
++            Config::installed_with_profiles(crate::public_evaluation::QUORUM_PROFILE, task),
++            Err("PUBLIC_EVAL_NATIVE_REPLAY_REQUIRED")
++        ));
++    }
++    assert!(matches!(
++        Config::installed_with_model_profiles(
++            crate::public_evaluation::QUORUM_PROFILE,
++            crate::growth_profile_v2::PROFILE,
++            crate::model_evidence_v3::PROFILE,
++        ),
++        Err("GROWTH_MODEL_PROFILE")
++    ));
++    for (task, evaluation, model) in [
++        (PROFILE, "legacy-first-two-v3", "linear-expert-dev-v1"),
++        (
++            PROFILE,
+             crate::public_evaluation::PROFILE,
++            "linear-expert-dev-v1",
++        ),
++        (
++            PROFILE,
+             crate::public_evaluation::QUORUM_PROFILE,
+-        ] {
+-            let cfg = config(task, evaluation);
+-            let monetary: State = state
+-                .iter()
+-                .filter(|(key, _)| crate::pon_executor::is_monetary_obligation(key))
+-                .map(|(key, value)| (key.clone(), value.clone()))
+-                .collect();
+-            for source in [None, Some(&monetary)] {
+-                let expected = full_capacity(&state, 1, &cfg, None, source).unwrap();
+-                let actual = capacity_with_sources(&state, 1, &cfg, None, source).unwrap();
+-                assert_eq!(actual, expected);
+-                assert_eq!(actual.actual_keys, state.len());
+-                assert_eq!(actual.credit_account_reserve, 1);
+-                assert_eq!(actual.reward_queue_reserve, 19);
+-                assert_eq!(
+-                    actual.archive_reserve,
+-                    if crate::public_evaluation::enabled(&cfg) {
+-                        2
+-                    } else {
+-                        0
+-                    }
+-                );
+-            }
++            crate::model_evidence_v3::PROFILE,
++        ),
++        (
++            crate::growth_profile_v2::PROFILE,
++            "legacy-first-two-v3",
++            "linear-expert-dev-v1",
++        ),
++        (
++            crate::growth_profile_v2::PROFILE,
++            crate::public_evaluation::PROFILE,
++            "linear-expert-dev-v1",
++        ),
++    ] {
++        let cfg = Config::installed_with_model_profiles(evaluation, task, model).unwrap();
++        let monetary: State = state
++            .iter()
++            .filter(|(key, _)| crate::pon_executor::is_monetary_obligation(key))
++            .map(|(key, value)| (key.clone(), value.clone()))
++            .collect();
++        for source in [None, Some(&monetary)] {
++            let expected = full_capacity(&state, 1, &cfg, None, source).unwrap();
++            let actual = capacity_with_sources(&state, 1, &cfg, None, source).unwrap();
++            assert_eq!(actual, expected);
++            assert_eq!(actual.actual_keys, state.len());
++            assert_eq!(actual.credit_account_reserve, 1);
++            assert_eq!(actual.reward_queue_reserve, 19);
++            assert_eq!(
++                actual.archive_reserve,
++                if crate::public_evaluation::enabled(&cfg) {
++                    2
++                } else {
++                    0
++                }
++            );
+         }
+     }
+ }

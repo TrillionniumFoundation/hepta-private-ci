@@ -1,0 +1,51 @@
+{
+  "scope": "local provider-effect journal and migration; final integrated runtime gate pending",
+  "runtime_repository": "TrillionniumFoundation/hepta-private-ci",
+  "base_commit": "d206c3c787f6b67c771b67a8e1d46c8261810042",
+  "production_commit": "b5bb98297a1765d71160dd62d1cd53863f948012",
+  "package_acceptance_commit": "cec7a61b6c0aed19abd13bdbda0c6838aa398ef3",
+  "package_acceptance_tree": "c0df69ecfdf84d375e57c7ea0cd1d3d4e833cb0b",
+  "red": {
+    "receipt": "red-observations.json",
+    "tests_run": 9,
+    "passed": 7,
+    "failed": 2,
+    "exit_code": 100,
+    "production_unchanged": true
+  },
+  "first_green_attempt": {
+    "receipt": "green-observations.json",
+    "tests_run": 145,
+    "passed": 144,
+    "failed": 1,
+    "skipped": 1,
+    "exit_code": 100,
+    "reason": "new migration 16 exposed a fixture assuming migration 15 was latest; unchanged permission refusal assertions were retained in fix"
+  },
+  "package_pass": {
+    "receipt": "green-final-observations.json",
+    "tests_run": 145,
+    "passed": 145,
+    "failed": 0,
+    "skipped": 1,
+    "exit_code": 0
+  },
+  "strict_fix": {
+    "receipt": "green-strict-fix.json",
+    "exit_code": 0,
+    "checked_file_hash_count": 65,
+    "source_changed": false
+  },
+  "lockfile_sha256": "aabdc987ff578836729359be72ce15b383d6dd86f8689680e1d8ac8291772349",
+  "hold_boundaries": [
+    "real provider operation execution and provider-owned fresh status authenticity",
+    "physical exactly-once beyond qualification adapters",
+    "independent current frontier custody, freshness and whole-host rollback",
+    "distributed external frontier CAS atomicity with real effects",
+    "direct native Agentd signature rejection for the migration case",
+    "ordinary Growth/PQ account/service/payment/recovery configuration",
+    "observation history storage, migration temporary space and retained roots total budget"
+  ],
+  "security_claim_changed": false,
+  "remote_writes_performed": false
+}

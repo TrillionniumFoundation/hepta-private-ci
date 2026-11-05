@@ -1,0 +1,13 @@
+........................................F..................................................................
+======================================================================
+FAIL: test_real_public_cli_checks_each_registered_source_before_download (test_hepta_smollm_execution_source_v4.ExecutionSourceV4Tests.test_real_public_cli_checks_each_registered_source_before_download) (profile='hepta-integrated-chain-execution-v10')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/scratch/48266f5bd43f/runtime/scripts/test_hepta_smollm_execution_source_v4.py", line 250, in test_real_public_cli_checks_each_registered_source_before_download
+    self.assertIn("exact integrated Chain commit", result.stderr)
+AssertionError: 'exact integrated Chain commit' not found in 'Traceback (most recent call last):\n  File "/workspace/scratch/48266f5bd43f/runtime/scripts/hepta_smollm_public_initial_v2.py", line 221, in <module>\n    main()\n  File "/workspace/scratch/48266f5bd43f/runtime/scripts/hepta_smollm_public_initial_v2.py", line 211, in main\n    derive(\n  File "/workspace/scratch/48266f5bd43f/runtime/scripts/hepta_smollm_public_initial_v2.py", line 81, in derive\n    execution_source = execution.verify(chain, execution_source_profile)\n                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File "/workspace/scratch/48266f5bd43f/runtime/scripts/hepta_smollm_execution_source_v1.py", line 216, in verify\n    return _verify(chain, profile, None)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File "/workspace/scratch/48266f5bd43f/runtime/scripts/hepta_smollm_execution_source_v1.py", line 233, in _verify\n    value = checked_manifest(profile)\n            ^^^^^^^^^^^^^^^^^^^^^^^^^\n  File "/workspace/scratch/48266f5bd43f/runtime/scripts/hepta_smollm_execution_source_v1.py", line 138, in checked_manifest\n    require(\n  File "/workspace/scratch/48266f5bd43f/runtime/scripts/hepta_smollm_execution_source_v1.py", line 82, in require\n    raise ValueError(reason)\nValueError: unpublishable execution source has not been frozen\n'
+
+----------------------------------------------------------------------
+Ran 107 tests in 19.915s
+
+FAILED (failures=1)

@@ -1,0 +1,34 @@
+{
+  "argv": [
+    "just",
+    "test",
+    "-p",
+    "codex-hepta-evidence",
+    "--locked",
+    "--lib",
+    "--retries",
+    "0",
+    "-E",
+    "test(recovery_effect_frontier_tests::) | test(provider_effect_recovery_provenance_tests::)"
+  ],
+  "cwd": "/workspace/scratch/48266f5bd43f/hepta-effects/codex-rs",
+  "exit_code": 100,
+  "elapsed_seconds": 1280.3008167743683,
+  "base_head": "f2bc730eb40faaf1937c5f5f5c6286e24cb2b4f7",
+  "log_sha256": "62336384b9e3b770952f14dad172d80495f00db01b012b8dfc9cbef03628e3e5",
+  "build_jobs": 1,
+  "cargo_target_dir": "/workspace/scratch/48266f5bd43f/hepta-effects-target",
+  "offline": true,
+  "files_before": {
+    "codex-rs/hepta-evidence/src/recovery_effect_frontier_tests.rs": "f1b85c12e4a31927e4eac92be675a1cbd00162d8451fff35d79c8a492f5d4229",
+    "codex-rs/hepta-evidence/src/provider_effect_recovery_provenance_tests.rs": "4475c24acf92ebb15f4bdd0e904a4acbe210f3209dc475abb934a979b32013db",
+    "codex-rs/hepta-evidence/src/provider_effect_store.rs": "90a763e505766d3e85f62e26af89e5e501c3ed8f8c4175ce407d7b3490f13f22",
+    "codex-rs/Cargo.lock": "aabdc987ff578836729359be72ce15b383d6dd86f8689680e1d8ac8291772349"
+  },
+  "files_after": {
+    "codex-rs/hepta-evidence/src/recovery_effect_frontier_tests.rs": "f1b85c12e4a31927e4eac92be675a1cbd00162d8451fff35d79c8a492f5d4229",
+    "codex-rs/hepta-evidence/src/provider_effect_recovery_provenance_tests.rs": "4475c24acf92ebb15f4bdd0e904a4acbe210f3209dc475abb934a979b32013db",
+    "codex-rs/hepta-evidence/src/provider_effect_store.rs": "90a763e505766d3e85f62e26af89e5e501c3ed8f8c4175ce407d7b3490f13f22",
+    "codex-rs/Cargo.lock": "aabdc987ff578836729359be72ce15b383d6dd86f8689680e1d8ac8291772349"
+  }
+}

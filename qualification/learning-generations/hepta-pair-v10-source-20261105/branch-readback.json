@@ -1,0 +1,596 @@
+{
+  "schema": "hepta-pair-v10-branch-readback-v1",
+  "observed_at": "2026-11-05T05:25:44.360Z",
+  "frozen_pair": {
+    "chain": "04be5f02c84cf5cb626a53f34bc03a5bd6ff5137",
+    "chain_tree": "d4f4a85c439982d8decec9265c1993408f3577cf",
+    "runtime": "d7c32f38ae1c3890e73ff48ef8ee725ba4e80c58",
+    "runtime_tree": "b79a4a4677b672a89cce53c9abe6f6c71810ee88"
+  },
+  "chain_branch": {
+    "name": "fix/chain-six-axis-performance-20261103",
+    "head": "fc86ed8e927a8eb4e048b160437126a6c0b96c0d",
+    "base": "dd6e1c3cbeacbdc532b0679297835b3a0aac78f0",
+    "draft": true,
+    "state": "open",
+    "comparison": {
+      "status": "ahead",
+      "ahead_by": 12,
+      "behind_by": 0,
+      "merge_base": "04be5f02c84cf5cb626a53f34bc03a5bd6ff5137",
+      "changed_files": [
+        {
+          "path": "config/pon/pq-cross-branch-corpus-v1.json",
+          "status": "modified"
+        },
+        {
+          "path": "docs/development/TRNM_AI_NATIVE_BLOCKCHAIN_DEVELOPMENT_PLAN.md",
+          "status": "modified"
+        },
+        {
+          "path": "docs/development/specs/pon/CELL_MODEL_STORAGE_V1.md",
+          "status": "modified"
+        },
+        {
+          "path": "docs/development/specs/pon/CELL_ORDINARY_HOST_HANDOFF_V2.md",
+          "status": "modified"
+        },
+        {
+          "path": "docs/development/specs/pon/SHARED_CELL_WORK_V1.md",
+          "status": "added"
+        },
+        {
+          "path": "evidence/cell-storage-runtime-20261104/README.md",
+          "status": "added"
+        },
+        {
+          "path": "evidence/cell-storage-runtime-20261104/attempts/cell-runtime-checks.json",
+          "status": "added"
+        },
+        {
+          "path": "evidence/cell-storage-runtime-20261104/attempts/cell-runtime-checks.log",
+          "status": "added"
+        },
+        {
+          "path": "evidence/cell-storage-runtime-20261104/attempts/cell-runtime-clippy-canonical.json",
+          "status": "added"
+        },
+        {
+          "path": "evidence/cell-storage-runtime-20261104/attempts/cell-runtime-clippy-canonical.log",
+          "status": "added"
+        },
+        {
+          "path": "evidence/cell-storage-runtime-20261104/attempts/cell-runtime-native-canonical.json",
+          "status": "added"
+        },
+        {
+          "path": "evidence/cell-storage-runtime-20261104/attempts/cell-runtime-native-canonical.log",
+          "status": "added"
+        },
+        {
+          "path": "evidence/cell-storage-runtime-20261104/attempts/node-storage-development.log",
+          "status": "added"
+        },
+        {
+          "path": "evidence/cell-storage-runtime-20261104/attempts/object-recovery.json",
+          "status": "added"
+        },
+        {
+          "path": "evidence/cell-storage-runtime-20261104/attempts/source-after-object-recovery.json",
+          "status": "added"
+        },
+        {
+          "path": "evidence/cell-storage-runtime-20261104/attempts/sqlite-canonical-build.log",
+          "status": "added"
+        },
+        {
+          "path": "evidence/cell-storage-runtime-20261104/attempts/sqlite-rustup-build.log",
+          "status": "added"
+        },
+        {
+          "path": "evidence/cell-storage-runtime-20261104/cancellation-red.log",
+          "status": "added"
+        },
+        {
+          "path": "evidence/cell-storage-runtime-20261104/cancellation-red.patch",
+          "status": "added"
+        },
+        {
+          "path": "evidence/cell-storage-runtime-20261104/prior-pr-cell-continuation.md",
+          "status": "added"
+        },
+        {
+          "path": "evidence/cell-storage-runtime-20261104/reproduce.sh",
+          "status": "added"
+        },
+        {
+          "path": "evidence/cell-storage-runtime-20261104/verification.json",
+          "status": "added"
+        },
+        {
+          "path": "evidence/pon-fixed-host-root-f0-b5bb-readback-20261105/README.md",
+          "status": "added"
+        },
+        {
+          "path": "evidence/pon-fixed-host-root-f0-b5bb-readback-20261105/analysis.json",
+          "status": "added"
+        },
+        {
+          "path": "evidence/pon-fixed-host-root-f0-b5bb-readback-20261105/artifact-inventory.json",
+          "status": "added"
+        },
+        {
+          "path": "evidence/pon-fixed-host-root-f0-b5bb-readback-20261105/artifact/SCOPE.txt",
+          "status": "added"
+        },
+        {
+          "path": "evidence/pon-fixed-host-root-f0-b5bb-readback-20261105/artifact/execution/predeclared.json",
+          "status": "added"
+        },
+        {
+          "path": "evidence/pon-fixed-host-root-f0-b5bb-readback-20261105/artifact/execution/raw/baseline-fixed-root-host-control/host/inside-after.json",
+          "status": "added"
+        },
+        {
+          "path": "evidence/pon-fixed-host-root-f0-b5bb-readback-20261105/artifact/execution/raw/baseline-fixed-root-host-control/host/inside-before.json",
+          "status": "added"
+        },
+        {
+          "path": "evidence/pon-fixed-host-root-f0-b5bb-readback-20261105/artifact/execution/raw/baseline-fixed-root-host-control/host/outside-after.json",
+          "status": "added"
+        },
+        {
+          "path": "evidence/pon-fixed-host-root-f0-b5bb-readback-20261105/artifact/execution/raw/baseline-fixed-root-host-control/host/outside-before.json",
+          "status": "added"
+        },
+        {
+          "path": "evidence/pon-fixed-host-root-f0-b5bb-readback-20261105/artifact/execution/raw/predeclared-denominators.json",
+          "status": "added"
+        },
+        {
+          "path": "evidence/pon-fixed-host-root-f0-b5bb-readback-20261105/artifact/execution/raw/valid-work-root-fixed-root-host-control/host/inside-after.json",
+          "status": "added"
+        },
+        {
+          "path": "evidence/pon-fixed-host-root-f0-b5bb-readback-20261105/artifact/execution/raw/valid-work-root-fixed-root-host-control/host/inside-before.json",
+          "status": "added"
+        },
+        {
+          "path": "evidence/pon-fixed-host-root-f0-b5bb-readback-20261105/artifact/execution/raw/valid-work-root-fixed-root-host-control/host/outside-after.json",
+          "status": "added"
+        },
+        {
+          "path": "evidence/pon-fixed-host-root-f0-b5bb-readback-20261105/artifact/execution/raw/valid-work-root-fixed-root-host-control/host/outside-before.json",
+          "status": "added"
+        },
+        {
+          "path": "evidence/pon-fixed-host-root-f0-b5bb-readback-20261105/artifact/execution/results.json",
+          "status": "added"
+        },
+        {
+          "path": "evidence/pon-fixed-host-root-f0-b5bb-readback-20261105/artifact/execution/supplement.stderr.log",
+          "status": "added"
+        },
+        {
+          "path": "evidence/pon-fixed-host-root-f0-b5bb-readback-20261105/artifact/execution/supplement.stdout.log",
+          "status": "added"
+        },
+        {
+          "path": "evidence/pon-fixed-host-root-f0-b5bb-readback-20261105/artifact/finalization/result.json",
+          "status": "added"
+        },
+        {
+          "path": "evidence/pon-fixed-host-root-f0-b5bb-readback-20261105/artifact/prepared/build.step.json",
+          "status": "added"
+        },
+        {
+          "path": "evidence/pon-fixed-host-root-f0-b5bb-readback-20261105/artifact/prepared/hardware.json",
+          "status": "added"
+        },
+        {
+          "path": "evidence/pon-fixed-host-root-f0-b5bb-readback-20261105/artifact/prepared/prepared.json",
+          "status": "added"
+        },
+        {
+          "path": "evidence/pon-fixed-host-root-f0-b5bb-readback-20261105/artifact/source-after.json",
+          "status": "added"
+        },
+        {
+          "path": "evidence/pon-fixed-host-root-f0-b5bb-readback-20261105/artifact/source-before.json",
+          "status": "added"
+        },
+        {
+          "path": "evidence/pon-fixed-host-root-f0-b5bb-readback-20261105/artifact/systemd-run.stderr.log",
+          "status": "added"
+        },
+        {
+          "path": "evidence/pon-fixed-host-root-f0-b5bb-readback-20261105/artifact/systemd-run.stdout.log",
+          "status": "added"
+        },
+        {
+          "path": "evidence/pon-fixed-host-root-f0-b5bb-readback-20261105/artifact/workflow-outcomes.json",
+          "status": "added"
+        },
+        {
+          "path": "evidence/pon-fixed-host-root-f0-b5bb-readback-20261105/artifact/workflow-predeclared.json",
+          "status": "added"
+        },
+        {
+          "path": "evidence/pon-fixed-host-root-f0-b5bb-readback-20261105/client-import-summary.json",
+          "status": "added"
+        },
+        {
+          "path": "evidence/pon-fixed-host-root-f0-b5bb-readback-20261105/extract_analysis.py",
+          "status": "added"
+        },
+        {
+          "path": "evidence/pon-fixed-host-root-f0-b5bb-readback-20261105/issue-639-observation.json",
+          "status": "added"
+        },
+        {
+          "path": "evidence/pon-fixed-host-root-f0-b5bb-readback-20261105/manifest.json",
+          "status": "added"
+        },
+        {
+          "path": "evidence/pon-fixed-host-root-f0-b5bb-readback-20261105/phase-client-import-extracts.json",
+          "status": "added"
+        },
+        {
+          "path": "evidence/pon-fixed-host-root-f0-b5bb-readback-20261105/phase-performance-summary.json",
+          "status": "added"
+        },
+        {
+          "path": "evidence/pon-fixed-host-root-f0-b5bb-readback-20261105/source-trace.json",
+          "status": "added"
+        },
+        {
+          "path": "evidence/pon-fixed-host-root-f0-b5bb-readback-20261105/workflow-job-127038806677.log",
+          "status": "added"
+        },
+        {
+          "path": "evidence/pon-growth-persistence-control-20261105/b5bb-f0-backend-scope.json",
+          "status": "added"
+        },
+        {
+          "path": "evidence/pon-growth-persistence-control-20261105/b5bb-f0-growth-coverage.json",
+          "status": "added"
+        },
+        {
+          "path": "evidence/pon-growth-persistence-control-20261105/checkpoint-resource-wait.json",
+          "status": "added"
+        },
+        {
+          "path": "evidence/pon-growth-persistence-control-20261105/checkpoint-resource-waiter-retry2.json",
+          "status": "added"
+        },
+        {
+          "path": "evidence/pon-growth-persistence-control-20261105/frozen-b5bb-component-binding.json",
+          "status": "added"
+        },
+        {
+          "path": "evidence/pon-growth-persistence-control-20261105/post-runtime-idle-process-observation.json",
+          "status": "added"
+        },
+        {
+          "path": "evidence/pon-growth-persistence-control-20261105/resource-waiter-retry2-outcome.json",
+          "status": "added"
+        },
+        {
+          "path": "evidence/pon-growth-persistence-control-20261105/resource-waiter-retry2.json",
+          "status": "added"
+        },
+        {
+          "path": "evidence/pon-growth-persistence-control-20261105/resource-window-after-ef1fa4d.json",
+          "status": "added"
+        },
+        {
+          "path": "evidence/pon-growth-persistence-control-20261105/resource-window-followup.json",
+          "status": "added"
+        },
+        {
+          "path": "evidence/pon-growth-persistence-control-20261105/resource-window-latest.json",
+          "status": "added"
+        },
+        {
+          "path": "evidence/pon-growth-persistence-control-20261105/wait-canonical-red-retry2.py",
+          "status": "added"
+        },
+        {
+          "path": "evidence/pon-shared-material-v1-20261105/README.md",
+          "status": "added"
+        },
+        {
+          "path": "evidence/pon-shared-material-v1-20261105/archive.json",
+          "status": "added"
+        },
+        {
+          "path": "evidence/pon-shared-material-v1-20261105/summary.json",
+          "status": "added"
+        },
+        {
+          "path": "evidence/pon-shared-material-v1-20261105/v2-preflight.json",
+          "status": "added"
+        },
+        {
+          "path": "evidence/pq-workflow-continuation-20261105/additional-checkpoint/cargo-graph-storage.json",
+          "status": "added"
+        },
+        {
+          "path": "evidence/pq-workflow-continuation-20261105/additional-checkpoint/run-strict-clippy.py",
+          "status": "added"
+        },
+        {
+          "path": "evidence/pq-workflow-continuation-20261105/additional-checkpoint/static/cargo-graph.log.gz",
+          "status": "added"
+        },
+        {
+          "path": "evidence/pq-workflow-continuation-20261105/additional-checkpoint/strict-clippy/cargo.log",
+          "status": "added"
+        },
+        {
+          "path": "evidence/pq-workflow-continuation-20261105/additional-checkpoint/strict-clippy/preflight.log",
+          "status": "added"
+        },
+        {
+          "path": "evidence/pq-workflow-continuation-20261105/additional-checkpoint/strict-clippy/result.json",
+          "status": "added"
+        },
+        {
+          "path": "evidence/pq-workflow-continuation-20261105/frozen-b5bb-367e/README.md",
+          "status": "added"
+        },
+        {
+          "path": "evidence/pq-workflow-continuation-20261105/frozen-b5bb-367e/fixed-pair.json",
+          "status": "added"
+        },
+        {
+          "path": "evidence/pq-workflow-continuation-20261105/frozen-b5bb-367e/gate-ledger.json",
+          "status": "added"
+        },
+        {
+          "path": "evidence/pq-workflow-continuation-20261105/frozen-b5bb-367e/late-integration.json",
+          "status": "added"
+        },
+        {
+          "path": "evidence/pq-workflow-continuation-20261105/frozen-b5bb-367e/link-review.json",
+          "status": "added"
+        },
+        {
+          "path": "evidence/pq-workflow-continuation-20261105/frozen-b5bb-367e/publication-inputs.json",
+          "status": "added"
+        },
+        {
+          "path": "evidence/pq-workflow-continuation-20261105/frozen-b5bb-367e/review-state-scheduling.json",
+          "status": "added"
+        },
+        {
+          "path": "evidence/pq-workflow-continuation-20261105/frozen-b5bb-367e/review-work-proofs.json",
+          "status": "added"
+        },
+        {
+          "path": "evidence/throughput-contracts-20261104/REPRODUCE.md",
+          "status": "added"
+        },
+        {
+          "path": "formal/pon-nakamoto-v1/experiments/shared_cell_operator_v1.py",
+          "status": "added"
+        },
+        {
+          "path": "formal/pon-nakamoto-v1/test_shared_cell_operator_v1.py",
+          "status": "added"
+        },
+        {
+          "path": "scripts/ci/run_from_zero_native.py",
+          "status": "modified"
+        },
+        {
+          "path": "scripts/ci/run_shared_material_security_v1.py",
+          "status": "added"
+        },
+        {
+          "path": "scripts/ci/test_llm_cell_handoff_deadline.py",
+          "status": "modified"
+        },
+        {
+          "path": "scripts/ci/test_llm_cell_provider_ready.py",
+          "status": "added"
+        },
+        {
+          "path": "scripts/ci/test_run_from_zero_native.py",
+          "status": "modified"
+        },
+        {
+          "path": "scripts/ci/test_w1_staged_observer.py",
+          "status": "modified"
+        },
+        {
+          "path": "scripts/run_llm_cell_native_handoff.py",
+          "status": "modified"
+        },
+        {
+          "path": "scripts/w1_v2_receipt_controls.py",
+          "status": "modified"
+        },
+        {
+          "path": "trillionnium/Cargo.lock",
+          "status": "modified"
+        },
+        {
+          "path": "trillionnium/crates/trnm-crypto-primitives/Cargo.toml",
+          "status": "modified"
+        },
+        {
+          "path": "trillionnium/crates/trnm-crypto-primitives/examples/pon_shared_material_v1.rs",
+          "status": "added"
+        },
+        {
+          "path": "trillionnium/crates/trnm-data-availability/examples/cell_delta_workload_observer.rs",
+          "status": "added"
+        },
+        {
+          "path": "trillionnium/crates/trnm-data-availability/src/bin/trnm-cell.rs",
+          "status": "modified"
+        },
+        {
+          "path": "trillionnium/crates/trnm-data-availability/src/cell.rs",
+          "status": "modified"
+        },
+        {
+          "path": "trillionnium/crates/trnm-data-availability/src/cell/archive.rs",
+          "status": "modified"
+        },
+        {
+          "path": "trillionnium/crates/trnm-data-availability/src/cell/delta.rs",
+          "status": "modified"
+        },
+        {
+          "path": "trillionnium/crates/trnm-data-availability/src/cell/discovery/diversity_tests.rs",
+          "status": "modified"
+        },
+        {
+          "path": "trillionnium/crates/trnm-data-availability/src/cell/discovery/pq/tests.rs",
+          "status": "modified"
+        },
+        {
+          "path": "trillionnium/crates/trnm-data-availability/src/cell/discovery/pq/transport.rs",
+          "status": "modified"
+        },
+        {
+          "path": "trillionnium/crates/trnm-data-availability/src/cell/discovery/tests.rs",
+          "status": "modified"
+        },
+        {
+          "path": "trillionnium/crates/trnm-data-availability/src/cell/discovery/transport.rs",
+          "status": "modified"
+        },
+        {
+          "path": "trillionnium/crates/trnm-data-availability/src/cell/network.rs",
+          "status": "modified"
+        },
+        {
+          "path": "trillionnium/crates/trnm-data-availability/src/cell/network/availability/tests.rs",
+          "status": "modified"
+        },
+        {
+          "path": "trillionnium/crates/trnm-data-availability/src/cell/network/cancellation_tests.rs",
+          "status": "added"
+        },
+        {
+          "path": "trillionnium/crates/trnm-data-availability/src/cell/network/persistent.rs",
+          "status": "modified"
+        },
+        {
+          "path": "trillionnium/crates/trnm-data-availability/src/cell/network/persistent/tests.rs",
+          "status": "modified"
+        },
+        {
+          "path": "trillionnium/crates/trnm-data-availability/src/cell/network/serving.rs",
+          "status": "modified"
+        },
+        {
+          "path": "trillionnium/crates/trnm-data-availability/src/cell/network/serving/tests.rs",
+          "status": "modified"
+        },
+        {
+          "path": "trillionnium/crates/trnm-data-availability/src/cell/release.rs",
+          "status": "modified"
+        },
+        {
+          "path": "trillionnium/crates/trnm-data-availability/src/cell/release/transport_tests.rs",
+          "status": "modified"
+        },
+        {
+          "path": "trillionnium/crates/trnm-data-availability/src/cell/residency.rs",
+          "status": "modified"
+        },
+        {
+          "path": "trillionnium/crates/trnm-data-availability/src/cell/residency/tensor.rs",
+          "status": "added"
+        },
+        {
+          "path": "trillionnium/crates/trnm-data-availability/src/cell/residency/tensor/tests.rs",
+          "status": "added"
+        },
+        {
+          "path": "trillionnium/crates/trnm-data-availability/src/cell/residency_tests.rs",
+          "status": "modified"
+        },
+        {
+          "path": "trillionnium/crates/trnm-data-availability/src/cell/tensor.rs",
+          "status": "modified"
+        },
+        {
+          "path": "trillionnium/crates/trnm-data-availability/src/cell/tests.rs",
+          "status": "modified"
+        },
+        {
+          "path": "trillionnium/crates/trnm-data-availability/tests/cell_provider_ready_cli.rs",
+          "status": "added"
+        },
+        {
+          "path": "trillionnium/crates/trnm-mvcc-fee/src/continuity_v1.rs",
+          "status": "modified"
+        },
+        {
+          "path": "trillionnium/crates/trnm-mvcc-fee/src/pon_executor/growth.rs",
+          "status": "modified"
+        },
+        {
+          "path": "trillionnium/crates/trnm-mvcc-fee/tests/capacity_progress.rs",
+          "status": "modified"
+        },
+        {
+          "path": "trillionnium/crates/trnm-pon-node/examples/support/distributed_source_inventory.rs",
+          "status": "modified"
+        },
+        {
+          "path": "trillionnium/crates/trnm-pon-node/src/ingress/public_v3.rs",
+          "status": "modified"
+        },
+        {
+          "path": "trillionnium/crates/trnm-pon-node/src/ingress/public_v3/intake_domain_tests.rs",
+          "status": "modified"
+        },
+        {
+          "path": "trillionnium/crates/trnm-pon-node/src/ingress/public_v3/request_observation.rs",
+          "status": "modified"
+        },
+        {
+          "path": "trillionnium/crates/trnm-pon-node/src/lib.rs",
+          "status": "modified"
+        },
+        {
+          "path": "trillionnium/crates/trnm-pon-node/src/store/storage_service.rs",
+          "status": "modified"
+        },
+        {
+          "path": "trillionnium/crates/trnm-pon-node/src/store/storage_service/release.rs",
+          "status": "added"
+        },
+        {
+          "path": "trillionnium/crates/trnm-pon-node/src/store/storage_service/release_tests.rs",
+          "status": "added"
+        },
+        {
+          "path": "trillionnium/crates/trnm-pon-node/src/store/storage_service/tests.rs",
+          "status": "modified"
+        },
+        {
+          "path": "trillionnium/crates/trnm-pon-node/tests/public_v3_from_zero.rs",
+          "status": "modified"
+        },
+        {
+          "path": "trillionnium/crates/trnm-service-settlement/src/native_budget.rs",
+          "status": "modified"
+        },
+        {
+          "path": "trillionnium/crates/trnm-service-settlement/src/native_budget/tests.rs",
+          "status": "modified"
+        }
+      ]
+    }
+  },
+  "claim": "The moving branch has additional code and lockfile changes. Results recorded against the frozen pair do not qualify this moving branch head.",
+  "product_qualification": false,
+  "installation_authorized": false
+}

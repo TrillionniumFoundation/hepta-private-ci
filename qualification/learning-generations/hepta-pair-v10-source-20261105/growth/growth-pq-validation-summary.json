@@ -1,0 +1,204 @@
+{
+  "schema": "growth-pq-native-validation-summary-v1",
+  "recorded_utc": "2026-11-05T04:59:28.184256+00:00",
+  "final_published_chain": {
+    "head": "04be5f02c84cf5cb626a53f34bc03a5bd6ff5137",
+    "tree": "d4f4a85c439982d8decec9265c1993408f3577cf",
+    "working_tree_clean_after": true,
+    "source_receipt": "green-final-source.json",
+    "test_elf_sha256": "f869a33141d4b1602979bbaf583d96764e6c89cdd22bc1c2569ec153425e2f5c"
+  },
+  "red_baseline": {
+    "head": "47b4a62463d8e1371a175c74196d52d99c5fccb8",
+    "tree": "c8f3b8e6f5a602edb380f89e1ad941b8d0d374fe",
+    "production_unchanged": true,
+    "added_tests_only_patch": "growth-pq-red-tests.patch",
+    "test_elf_sha256": "579ed8bdf3a9c4e5d12dc1fefbf1a954bf915ec4a714983f2d9a927ca093c6fe"
+  },
+  "production_fix": {
+    "file": "trillionnium/crates/trnm-pon-node/src/store/growth/recovery.rs",
+    "changes": [
+      "Observe GrowthProgress::BeforeContext before any SQL or owner audit, including no-op and unknown activation targets.",
+      "Recheck the audited storage epoch after acquiring BEGIN IMMEDIATE, before the early no-op return."
+    ],
+    "added_production_lines": 6,
+    "added_test_lines": 174,
+    "scope": "Runtime Growth cancellation and foreign-writer epoch race; no PQ/Growth profile unification or whole-database anti-rollback protocol was implemented."
+  },
+  "original_profile_attempt": {
+    "phase": "RED_BASELINE",
+    "returncode": 101,
+    "result": "rustc SIGKILL; native tests did not run",
+    "wall_seconds": 506.78506349400004,
+    "evidence": "red-command-result.json"
+  },
+  "diagnostic_profile": {
+    "rust": "1.95.0",
+    "node_opt_level": 3,
+    "node_debug_information": 0,
+    "node_debug_assertions": true,
+    "cargo_locked": true,
+    "cargo_offline": true,
+    "all_features": true,
+    "build_jobs": 1,
+    "native_openssl_version": "3.5.9",
+    "original_profile": false,
+    "original_deadline_or_attack_gate_acceptance": false,
+    "description": "Only Node debuginfo=0; original optimization, debug assertions, overflow checks, dependency profiles, locked graph, provider and features retained. Diagnostic correctness only; no original gate acceptance."
+  },
+  "observed_results": {
+    "red": {
+      "passed": 0,
+      "failed": 2,
+      "seconds": 0.15,
+      "failures": [
+        "cancelled activation returned success",
+        "activation returned from a changed storage epoch"
+      ],
+      "source_drift": []
+    },
+    "green_activation": {
+      "passed": 2,
+      "failed": 0,
+      "ignored": 0,
+      "seconds": 0.23,
+      "source_drift": []
+    },
+    "retained_native_growth": {
+      "passed": 44,
+      "failed": 0,
+      "ignored": 2,
+      "seconds": 12.29,
+      "includes_both_activation_tests": true
+    },
+    "retained_public_growth": {
+      "passed": 2,
+      "failed": 0
+    },
+    "retained_pq": {
+      "passed": 5,
+      "failed": 0
+    },
+    "total_distinct_passing_final_tests": 51,
+    "total_distinct_ignored_final_tests": 2,
+    "ignored_tests": [
+      "store::growth::tests::native_growth_v2_signed_cross_65536_bounded_io_zero_nonce_and_reopen",
+      "store::growth::tests::scale_observation::native_growth_v2_fixed_owner_account_history_scale_observation"
+    ],
+    "provider_files_unchanged": true,
+    "test_elf_unchanged": true
+  },
+  "release_gates": {
+    "growth_and_pq_in_one_configuration": "OPEN",
+    "original_hardware_deadline_attack_liveness": "NOT_QUALIFIED_BY_THIS_RUN",
+    "full_database_rollback_non_reuse": "NOT_QUALIFIED_BY_THIS_FIX",
+    "whole_chain_pq_security_claim": "UNCHANGED",
+    "production_acceptance": false
+  },
+  "remaining_growth_pq_boundaries": [
+    "Growth requests decode classical Envelope and its packet format limits each transaction to 2048 bytes; the existing successful PQ ApplicationV6 retained test uses a transaction larger than 2048 bytes.",
+    "Growth execution supplies timestamp=None; the PQ authorization path requires header-time-bound checks.",
+    "PQ config integrity binds network, parameters and full configuration while Growth selects a different network/parameter/genesis context.",
+    "PQ validate_state checks complete account rows and all retained pq-* authority generations; a Growth partial-account view cannot silently replace it.",
+    "Node open_selected requires a PQ network owner backend for PQ account profiles; current Growth and PQ/witness backends are different selections.",
+    "PublicServer::with_native_growth rejects PQ identities; PQ History and Growth public operation profiles are distinct."
+  ],
+  "evidence": {
+    "red-source.json": {
+      "sha256": "6664ccafa29d57b877b1b8881e89ad03bd99c6e123e8581b69b9988e5697b89c",
+      "bytes": 183903
+    },
+    "red-command-result.json": {
+      "sha256": "d4f858d3b113139cbc9f7352163e9922ee9989e690ea22e1fba273bc5646c7a7",
+      "bytes": 1374
+    },
+    "red.log": {
+      "sha256": "83b935357a3e2bf11d9ca6e1d51f8ee4544ee134fb439376223e25a87b2c8c83",
+      "bytes": 7469
+    },
+    "red-nodebug-command-result.json": {
+      "sha256": "9e4aa6a80247283e6b07c7200e442e2ec19032143c7268b58616286fbe575c48",
+      "bytes": 1745
+    },
+    "red-nodebug-observation.json": {
+      "sha256": "2dc4f126202fcfb2ec1a958243c49149eacb9d71a66fb84b69c9abaf61a18a71",
+      "bytes": 685
+    },
+    "red-nodebug.log": {
+      "sha256": "a30c4f9eaaad27e54c1cb228e45f69f5d5dc28b1c6377d8f49bd4c248ba3e288",
+      "bytes": 9118
+    },
+    "red-reproduction.json": {
+      "sha256": "08142e2cf2bfb457657c8fa2b242caf3b1600bedb1bff7ad369825e1378b7627",
+      "bytes": 2081
+    },
+    "green-final-source.json": {
+      "sha256": "4d40714547d9175e7229b88a13b8d960c49e96d3b176634b8d5984696b80cd05",
+      "bytes": 217457
+    },
+    "green-provider-inputs.json": {
+      "sha256": "24c3c7741099760f29a1379aff54e7115c08627f2d680e2de7368ccf9eda77ea",
+      "bytes": 1336
+    },
+    "green-nodebug-command-result.json": {
+      "sha256": "87a8fc86820462fd5b97251f3b6c61eeec9a93be9238b7204fe92c9fec78061f",
+      "bytes": 2544
+    },
+    "green-nodebug.log": {
+      "sha256": "e91049a6340f36ee08967655fd6a181a8104b0a83005f38c9abcf7bfdd120cbe",
+      "bytes": 10533
+    },
+    "retained-command-result.json": {
+      "sha256": "290ed974251685002c2cd8dd6ab635be035df0dcb46cfe010f437d4792dc21a2",
+      "bytes": 15139
+    },
+    "retained-native_growth_family.log": {
+      "sha256": "b9eafda786623a15dddc749a44c5880794fbabcb7d66162ab403980032c68a18",
+      "bytes": 5851
+    },
+    "retained-public_growth_recovery.log": {
+      "sha256": "40acfad331048bf8e12c91c51115a32a6dd9fdef0ba398da9788434024e610d3",
+      "bytes": 236
+    },
+    "retained-public_growth_mismatch.log": {
+      "sha256": "051cf3a4069892543e2745ba293970f7adbd44cca0503135fab2738a2a06cabb",
+      "bytes": 235
+    },
+    "retained-pq_classic_client_refusal.log": {
+      "sha256": "2c3b8fa6a357ed5dde110edfe5cacab964f943e2c12b5f3b8ec1c3a7d1c714e7",
+      "bytes": 244
+    },
+    "retained-pq_context_wire_downgrade.log": {
+      "sha256": "6a7c19294459dff2ecf6bb52b8633a6abdbcc9c39e5935256f68c66b74f25078",
+      "bytes": 223
+    },
+    "retained-pq_real_listener_downgrade.log": {
+      "sha256": "a445531ab9051e43885d667c5666f2f02195dd60faf44d242bd024e208d952c4",
+      "bytes": 252
+    },
+    "retained-pq_tcp_lost_ack_recovery.log": {
+      "sha256": "49bb7766793b49d3899874362ecede439b8523c00c2cebc4b5c9c2d20a212cc0",
+      "bytes": 531
+    },
+    "retained-pq_application_paid_owner.log": {
+      "sha256": "36b92a03529e297d9812945914c160838cceb00d272eacb37381a499e4c93117",
+      "bytes": 245
+    }
+  },
+  "patches": {
+    "growth-pq-activation.patch": {
+      "sha256": "2c677cec65d384203fb6ab3fee3b1d04c785528c5505ac953e9185f1d4ac6051",
+      "bytes": 9393
+    },
+    "growth-pq-red-tests.patch": {
+      "sha256": "0d0ddf3791b790000f704c9689402fa23b5373f0638b381b449e7f72fa5df720",
+      "bytes": 8218
+    }
+  },
+  "scope_notes": [
+    "Separate existing Growth and PQ test configurations were executed from the same final binary; passing them is not proof that one fused configuration exists.",
+    "The original-profile compilation failure remains separate from diagnostic RED/GREEN results.",
+    "The two ignored tests were already explicit large native release gates; their markers and workloads were not changed.",
+    "Earlier production input hash inventory for prepublication 0f86b1f is retained separately in green-source.json and is not an executed GREEN result."
+  ]
+}

@@ -1,0 +1,7 @@
+RUST_MIN_STACK=8388608 NEXTEST_PROFILE=local python3 ../scripts/run-nextest.py "$@"
+error: failed to download `pretty_assertions v1.4.1`
+
+Caused by:
+  attempting to make an HTTP request, but --offline was specified
+error: command `/root/.rustup/toolchains/1.96.0-x86_64-unknown-linux-gnu/bin/cargo '--color=auto' test '--manifest-path=/workspace/scratch/48266f5bd43f/hepta-effects-green/codex-rs/Cargo.toml' --no-run '--message-format=json-render-diagnostics' '--package=codex-hepta-automation' --locked` exited with code 101
+error: recipe `test` failed on line 89 with exit code 101

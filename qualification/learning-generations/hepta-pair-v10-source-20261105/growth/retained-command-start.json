@@ -1,0 +1,125 @@
+{
+  "schema": "growth-pq-retained-native-tests-v1",
+  "started_utc": "2026-11-05T04:57:33.072014+00:00",
+  "head": "04be5f02c84cf5cb626a53f34bc03a5bd6ff5137",
+  "tree": "d4f4a85c439982d8decec9265c1993408f3577cf",
+  "source_receipt": "green-final-source.json",
+  "source_receipt_sha256": "4d40714547d9175e7229b88a13b8d960c49e96d3b176634b8d5984696b80cd05",
+  "cwd": "/workspace/scratch/48266f5bd43f/chain",
+  "test_elf": "/workspace/scratch/48266f5bd43f/chain-target/debug/deps/trnm_pon_node-33be7312af1f531b",
+  "test_elf_sha256": "f869a33141d4b1602979bbaf583d96764e6c89cdd22bc1c2569ec153425e2f5c",
+  "environment": {
+    "CARGO_HOME": "/workspace/scratch/fee7901564fd-next/cargo-native799",
+    "CARGO_TARGET_DIR": "/workspace/scratch/48266f5bd43f/chain-target",
+    "CARGO_BUILD_JOBS": "1",
+    "CARGO_INCREMENTAL": "0",
+    "OPENSSL_DIR": "/workspace/scratch/fee7901564fd-next/provider-native799/trnm-pq-provider-3.5.9.UF6qy3Q5/install",
+    "OPENSSL_STATIC": "1",
+    "TRNM_PQ_OPENSSL": "/workspace/scratch/fee7901564fd-next/provider-native799/trnm-pq-provider-3.5.9.UF6qy3Q5/install/bin/openssl",
+    "TRNM_PQ_OPENSSL_SHA256": "35f28c82e7e4fdcd06b0a42062efd224a5fd5d32d5cc9894252f8206219d496e",
+    "TRNM_PQ_OPENSSL_VERSION": "3.5.9",
+    "OPENSSL_CONF": "/dev/null",
+    "OPENSSL_MODULES": "/workspace/scratch/fee7901564fd-next/provider-native799/trnm-pq-provider-3.5.9.UF6qy3Q5/install/lib/ossl-modules",
+    "PATH_prefix": "/root/.cargo/bin"
+  },
+  "compile_profile_override": "Only Node debuginfo=0; original optimization, debug assertions, overflow checks, dependency profiles, locked graph, provider and features retained. Diagnostic correctness only; no original gate acceptance.",
+  "original_test_profile": false,
+  "new_source_acceptance": false,
+  "profile_fusion_demonstrated": false,
+  "activation_tests_also_in_growth_family": true,
+  "selections": [
+    {
+      "label": "native_growth_family",
+      "tests": [
+        "store::growth::tests::header_window::native_growth_v2_single_header_window_foreign_write_refuses_before_work_or_duplicate_return",
+        "store::growth::tests::header_window::native_growth_v2_single_header_window_keeps_epoch_fences_before_and_after_precheck",
+        "store::growth::tests::header_window::native_growth_v2_single_header_window_preserves_retarget_time_and_error_order",
+        "store::growth::tests::header_window::native_growth_v2_single_header_window_reloads_each_admission_context",
+        "store::growth::tests::header_window::native_growth_v2_single_header_window_still_rejects_changed_retained_headers",
+        "store::growth::tests::mandatory_capacity::native_growth_v2_mandatory_owner_cap_excludes_new_miner_but_refunds_and_matures",
+        "store::growth::tests::native_growth_v2_activation_cancellation_precedes_sql_even_for_noop_or_unknown_target",
+        "store::growth::tests::native_growth_v2_activation_rechecks_foreign_epoch_after_transaction_begin",
+        "store::growth::tests::native_growth_v2_and_complete_state_reference_reject_cross_profile_openers",
+        "store::growth::tests::native_growth_v2_cancelled_writes_and_activation_are_atomic",
+        "store::growth::tests::native_growth_v2_cold_journal_streams_real_history_and_deep_reorg",
+        "store::growth::tests::native_growth_v2_cold_journal_zero_generation_and_late_typed_error_priority",
+        "store::growth::tests::native_growth_v2_cold_observer_bounds_copy_and_cleans_private_snapshot",
+        "store::growth::tests::native_growth_v2_cold_observer_fences_source_changes_despite_private_epoch",
+        "store::growth::tests::native_growth_v2_cold_observer_preserves_closed_wal_namespace",
+        "store::growth::tests::native_growth_v2_cold_observer_refuses_live_logs_before_sqlite_or_packet_absence",
+        "store::growth::tests::native_growth_v2_cold_observer_requires_existing_owner_without_creating_it",
+        "store::growth::tests::native_growth_v2_cold_open_never_ignores_reference_budget_records",
+        "store::growth::tests::native_growth_v2_commitment_proof_cancellation_preserves_original_error",
+        "store::growth::tests::native_growth_v2_exact_packet_observation_binds_bytes_context_and_active_snapshot",
+        "store::growth::tests::native_growth_v2_exact_packet_observation_refuses_foreign_epoch",
+        "store::growth::tests::native_growth_v2_final_successor_proof_cancellation_preserves_original_error",
+        "store::growth::tests::native_growth_v2_missing_proof_extra_proof_and_external_loss_refuse",
+        "store::growth::tests::native_growth_v2_nonce_batch_preserves_order_limits_absence_and_overflow",
+        "store::growth::tests::native_growth_v2_nonce_batch_rechecks_proof_paths_and_refuses_foreign_epoch",
+        "store::growth::tests::native_growth_v2_nonce_batch_uses_one_snapshot_without_complete_state_reads",
+        "store::growth::tests::native_growth_v2_packet_observer_opens_read_only_without_recovering",
+        "store::growth::tests::native_growth_v2_parent_proof_cancellation_preserves_original_error",
+        "store::growth::tests::native_growth_v2_process_cut_before_commit_recovers",
+        "store::growth::tests::native_growth_v2_real_disk_full_rolls_back_all_native_rows",
+        "store::growth::tests::native_growth_v2_real_task_escrow_settlement_and_expiry",
+        "store::growth::tests::native_growth_v2_reorg_ancestor_cancellation_is_atomic",
+        "store::growth::tests::native_growth_v2_reorg_readback_cancellation_is_atomic",
+        "store::growth::tests::native_growth_v2_reorg_readback_preserves_exact_rows_and_singleton",
+        "store::growth::tests::native_growth_v2_reorg_write_cancellation_is_atomic",
+        "store::growth::tests::native_growth_v2_signed_branches_nonce_obligations_and_cold_reopen",
+        "store::growth::tests::native_growth_v2_signed_cross_65536_bounded_io_zero_nonce_and_reopen",
+        "store::growth::tests::native_growth_v2_work_failures_never_publish_or_reuse_success",
+        "store::growth::tests::native_growth_v2_work_replay_cancellation_preserves_original_error",
+        "store::growth::tests::scale_observation::native_growth_v2_fixed_owner_account_history_scale_observation",
+        "store::growth::tests::work_checked::native_growth_v2_checked_work_cancellation_never_commits_partial_state",
+        "store::growth::tests::work_checked::native_growth_v2_checked_work_cannot_reuse_clock_context_or_parent_state",
+        "store::growth::tests::work_checked::native_growth_v2_checked_work_rebinds_after_releasing_the_original_owner",
+        "store::growth::tests::work_checked::native_growth_v2_checked_work_refuses_foreign_sql_epoch_before_admission",
+        "store::growth::tests::work_checked::native_growth_v2_controlled_exact_observation_cancels_without_sql_mutation",
+        "store::growth::tests::work_checked::native_growth_v2_controlled_exact_observation_uses_original_service_cpu_domain"
+      ]
+    },
+    {
+      "label": "public_growth_recovery",
+      "tests": [
+        "ingress::public_v3::growth::tests::public_growth_v1_real_listener_lost_ack_exact_query_reorg_and_cold_reopen"
+      ]
+    },
+    {
+      "label": "public_growth_mismatch",
+      "tests": [
+        "ingress::public_v3::growth::tests::public_growth_v1_wire_profile_namespace_and_free_lane_cannot_be_confused"
+      ]
+    },
+    {
+      "label": "pq_classic_client_refusal",
+      "tests": [
+        "ingress::public_v3::pq_identity::tests::pq_only_account_profile_rejects_classical_public_v3_client_before_connection"
+      ]
+    },
+    {
+      "label": "pq_context_wire_downgrade",
+      "tests": [
+        "ingress::pq_network::tests::pins_context_canonical_wire_sequence_and_classical_downgrade_refuse"
+      ]
+    },
+    {
+      "label": "pq_real_listener_downgrade",
+      "tests": [
+        "ingress::public_v3::pq_identity::tests::pq_history_original_listener_reads_real_owner_and_classical_clients_cannot_downgrade"
+      ]
+    },
+    {
+      "label": "pq_tcp_lost_ack_recovery",
+      "tests": [
+        "ingress::pq_network::tests::real_tcp_node_submit_lost_ack_signature_randomness_and_cold_reopen"
+      ]
+    },
+    {
+      "label": "pq_application_paid_owner",
+      "tests": [
+        "ingress::public_v3::pq_identity::tests::pq_history_native_application_account_packet_uses_the_same_paid_history_owner"
+      ]
+    }
+  ]
+}

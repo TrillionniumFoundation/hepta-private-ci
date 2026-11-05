@@ -1,0 +1,37 @@
+{
+  "rustc": {
+    "argv": [
+      "rustc",
+      "-Vv"
+    ],
+    "exit_code": 0,
+    "output": "rustc 1.96.0 (ac68faa20 2026-05-25)\nbinary: rustc\ncommit-hash: ac68faa20c58cbccd01ee7208bf3b6e93a7d7f96\ncommit-date: 2026-05-25\nhost: x86_64-unknown-linux-gnu\nrelease: 1.96.0\nLLVM version: 22.1.2"
+  },
+  "cargo": {
+    "argv": [
+      "cargo",
+      "-V"
+    ],
+    "exit_code": 0,
+    "output": "cargo 1.96.0 (30a34c682 2026-05-25)"
+  },
+  "just": {
+    "argv": [
+      "just",
+      "--version"
+    ],
+    "exit_code": 0,
+    "output": "just 1.59.0"
+  },
+  "nextest": {
+    "argv": [
+      "cargo",
+      "nextest",
+      "--version"
+    ],
+    "exit_code": 0,
+    "output": "cargo-nextest 0.9.151 (6b3f99457 2026-11-02)\nrelease: 0.9.151\ncommit-hash: 6b3f994577a98874a2e0ea5bef77fbbab3434044\ncommit-date: 2026-11-02\nhost: x86_64-unknown-linux-gnu"
+  },
+  "memory.max": "8589934592",
+  "cpu.max": "800000 100000"
+}

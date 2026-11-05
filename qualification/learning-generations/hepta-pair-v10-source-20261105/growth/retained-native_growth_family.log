@@ -1,0 +1,55 @@
+
+running 46 tests
+test store::growth::tests::header_window::native_growth_v2_single_header_window_foreign_write_refuses_before_work_or_duplicate_return ... ok
+test store::growth::tests::header_window::native_growth_v2_single_header_window_keeps_epoch_fences_before_and_after_precheck ... ok
+test store::growth::tests::header_window::native_growth_v2_single_header_window_preserves_retarget_time_and_error_order ... ok
+test store::growth::tests::header_window::native_growth_v2_single_header_window_reloads_each_admission_context ... ok
+test store::growth::tests::header_window::native_growth_v2_single_header_window_still_rejects_changed_retained_headers ... ok
+test store::growth::tests::mandatory_capacity::native_growth_v2_mandatory_owner_cap_excludes_new_miner_but_refunds_and_matures ... native mandatory owner capacity: signed_transactions=62, owners=32, working_keys=37, working_bytes=12910, witness_accounts=33, witness_bytes=1297, packet_bytes=64551; new reward owner rejected at h2, admitted at h3 after refunds; h21 maturity succeeded
+ok
+test store::growth::tests::native_growth_v2_activation_cancellation_precedes_sql_even_for_noop_or_unknown_target ... ok
+test store::growth::tests::native_growth_v2_activation_rechecks_foreign_epoch_after_transaction_begin ... ok
+test store::growth::tests::native_growth_v2_and_complete_state_reference_reject_cross_profile_openers ... ok
+test store::growth::tests::native_growth_v2_cancelled_writes_and_activation_are_atomic ... ok
+test store::growth::tests::native_growth_v2_cold_journal_streams_real_history_and_deep_reorg ... growth_cold_journal_actual_rows old_vectors=(73,49) new=ColdJournalReads { typed_events: 73, semantic_events: 73, latest_steps: 49, latest_events: 49, peak_event_rows: 2 }; excludes SQLite pages/RSS/other cold audit collections
+ok
+test store::growth::tests::native_growth_v2_cold_journal_zero_generation_and_late_typed_error_priority ... ok
+test store::growth::tests::native_growth_v2_cold_observer_bounds_copy_and_cleans_private_snapshot ... ok
+test store::growth::tests::native_growth_v2_cold_observer_fences_source_changes_despite_private_epoch ... ok
+test store::growth::tests::native_growth_v2_cold_observer_preserves_closed_wal_namespace ... ok
+test store::growth::tests::native_growth_v2_cold_observer_refuses_live_logs_before_sqlite_or_packet_absence ... ok
+test store::growth::tests::native_growth_v2_cold_observer_requires_existing_owner_without_creating_it ... ok
+test store::growth::tests::native_growth_v2_cold_open_never_ignores_reference_budget_records ... ok
+test store::growth::tests::native_growth_v2_commitment_proof_cancellation_preserves_original_error ... ok
+test store::growth::tests::native_growth_v2_exact_packet_observation_binds_bytes_context_and_active_snapshot ... ok
+test store::growth::tests::native_growth_v2_exact_packet_observation_refuses_foreign_epoch ... ok
+test store::growth::tests::native_growth_v2_final_successor_proof_cancellation_preserves_original_error ... ok
+test store::growth::tests::native_growth_v2_missing_proof_extra_proof_and_external_loss_refuse ... ok
+test store::growth::tests::native_growth_v2_nonce_batch_preserves_order_limits_absence_and_overflow ... ok
+test store::growth::tests::native_growth_v2_nonce_batch_rechecks_proof_paths_and_refuses_foreign_epoch ... ok
+test store::growth::tests::native_growth_v2_nonce_batch_uses_one_snapshot_without_complete_state_reads ... ok
+test store::growth::tests::native_growth_v2_packet_observer_opens_read_only_without_recovering ... ok
+test store::growth::tests::native_growth_v2_parent_proof_cancellation_preserves_original_error ... ok
+test store::growth::tests::native_growth_v2_process_cut_before_commit_recovers ... 
+running 1 test
+ok
+test store::growth::tests::native_growth_v2_real_disk_full_rolls_back_all_native_rows ... ok
+test store::growth::tests::native_growth_v2_real_task_escrow_settlement_and_expiry ... ok
+test store::growth::tests::native_growth_v2_reorg_ancestor_cancellation_is_atomic ... ok
+test store::growth::tests::native_growth_v2_reorg_readback_cancellation_is_atomic ... ok
+test store::growth::tests::native_growth_v2_reorg_readback_preserves_exact_rows_and_singleton ... ok
+test store::growth::tests::native_growth_v2_reorg_write_cancellation_is_atomic ... ok
+test store::growth::tests::native_growth_v2_signed_branches_nonce_obligations_and_cold_reopen ... ok
+test store::growth::tests::native_growth_v2_signed_cross_65536_bounded_io_zero_nonce_and_reopen ... ignored, explicit release gate: actual signed native transition across 65,536 accounts, full work and cold replay
+test store::growth::tests::native_growth_v2_work_failures_never_publish_or_reuse_success ... ok
+test store::growth::tests::native_growth_v2_work_replay_cancellation_preserves_original_error ... ok
+test store::growth::tests::scale_observation::native_growth_v2_fixed_owner_account_history_scale_observation ... ignored, explicit native A/H observation: full State reference, real W1/signed admission, atomic cancellation and cold reopen
+test store::growth::tests::work_checked::native_growth_v2_checked_work_cancellation_never_commits_partial_state ... ok
+test store::growth::tests::work_checked::native_growth_v2_checked_work_cannot_reuse_clock_context_or_parent_state ... ok
+test store::growth::tests::work_checked::native_growth_v2_checked_work_rebinds_after_releasing_the_original_owner ... ok
+test store::growth::tests::work_checked::native_growth_v2_checked_work_refuses_foreign_sql_epoch_before_admission ... ok
+test store::growth::tests::work_checked::native_growth_v2_controlled_exact_observation_cancels_without_sql_mutation ... ok
+test store::growth::tests::work_checked::native_growth_v2_controlled_exact_observation_uses_original_service_cpu_domain ... ok
+
+test result: ok. 44 passed; 0 failed; 2 ignored; 0 measured; 1036 filtered out; finished in 12.29s
+

@@ -1,0 +1,55 @@
+{
+  "after": {
+    "commit": "d7c32f38ae1c3890e73ff48ef8ee725ba4e80c58",
+    "dirty": false,
+    "parents": [
+      "ce56018cadc83120068de1a63020c60e92b48f42",
+      "f85289eff7366b60940d72cc611217db1bf1aef9"
+    ],
+    "tree": "b79a4a4677b672a89cce53c9abe6f6c71810ee88"
+  },
+  "base_sha": "",
+  "before": {
+    "commit": "d7c32f38ae1c3890e73ff48ef8ee725ba4e80c58",
+    "dirty": false,
+    "parents": [
+      "ce56018cadc83120068de1a63020c60e92b48f42",
+      "f85289eff7366b60940d72cc611217db1bf1aef9"
+    ],
+    "tree": "b79a4a4677b672a89cce53c9abe6f6c71810ee88"
+  },
+  "command": [
+    "python3",
+    "-B",
+    "-m",
+    "unittest",
+    "test_hepta_ci_source_identity",
+    "test_hepta_ci_candidate",
+    "test_hepta_ci_exec_identity",
+    "test_hepta_ci_pq_binary_v7",
+    "-v"
+  ],
+  "command_exit_code": 0,
+  "elapsed_seconds": 12.477797425000063,
+  "exit_code": 0,
+  "finished_at": "2026-11-05T05:20:17.074086+00:00",
+  "job": null,
+  "lane": "source-head",
+  "log_bytes": 10738,
+  "log_file": "runtime-published-owner-controls.json.82b8aabef9a2430aae834db39cbc08df.log",
+  "log_sha256": "afb48f18ada9771f5b4d8783563cdbb8bc77e3594b2a8612d14e2c72f4015222",
+  "minimum_tests": 60,
+  "observed_failed_tests": 0,
+  "observed_passed_tests": 60,
+  "output_limit_exceeded": false,
+  "returncode": 0,
+  "run_attempt": null,
+  "run_id": null,
+  "schema_version": 1,
+  "source_sha": "d7c32f38ae1c3890e73ff48ef8ee725ba4e80c58",
+  "started_at": "2026-11-05T05:20:04.595319+00:00",
+  "status": "passed",
+  "tested_sha": "d7c32f38ae1c3890e73ff48ef8ee725ba4e80c58",
+  "timed_out": false,
+  "working_directory": "/workspace/scratch/48266f5bd43f/runtime"
+}

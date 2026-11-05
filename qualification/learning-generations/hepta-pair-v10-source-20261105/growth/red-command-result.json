@@ -1,0 +1,39 @@
+{
+  "phase": "RED",
+  "started_utc": "2026-11-05T04:10:13.144670+00:00",
+  "argv": [
+    "cargo",
+    "+1.95.0",
+    "test",
+    "--locked",
+    "--offline",
+    "--manifest-path",
+    "trillionnium/Cargo.toml",
+    "-p",
+    "trnm-pon-node",
+    "--lib",
+    "--all-features",
+    "native_growth_v2_activation_",
+    "--",
+    "--nocapture",
+    "--test-threads=1"
+  ],
+  "source_receipt_sha256": "6664ccafa29d57b877b1b8881e89ad03bd99c6e123e8581b69b9988e5697b89c",
+  "environment": {
+    "CARGO_HOME": "/workspace/scratch/fee7901564fd-next/cargo-native799",
+    "CARGO_TARGET_DIR": "/workspace/scratch/48266f5bd43f/chain-target",
+    "CARGO_BUILD_JOBS": "1",
+    "CARGO_INCREMENTAL": "0",
+    "OPENSSL_DIR": "/workspace/scratch/fee7901564fd-next/provider-native799/trnm-pq-provider-3.5.9.UF6qy3Q5/install",
+    "OPENSSL_STATIC": "1",
+    "TRNM_PQ_OPENSSL": "/workspace/scratch/fee7901564fd-next/provider-native799/trnm-pq-provider-3.5.9.UF6qy3Q5/install/bin/openssl",
+    "TRNM_PQ_OPENSSL_SHA256": "35f28c82e7e4fdcd06b0a42062efd224a5fd5d32d5cc9894252f8206219d496e",
+    "TRNM_PQ_OPENSSL_VERSION": "3.5.9"
+  },
+  "new_source_acceptance": false,
+  "returncode": 101,
+  "wall_seconds": 506.78506349400004,
+  "finished_utc": "2026-11-05T04:18:39.930674+00:00",
+  "log_sha256": "83b935357a3e2bf11d9ca6e1d51f8ee4544ee134fb439376223e25a87b2c8c83",
+  "child_maxrss_kib": 2831240
+}

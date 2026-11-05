@@ -1,0 +1,37 @@
+{
+  "base_sha": "",
+  "before": {
+    "commit": "f85289eff7366b60940d72cc611217db1bf1aef9",
+    "dirty": false,
+    "parents": [
+      "367e27fb6bf30443641b9e23a063d24e49eda9f7",
+      "8f825137f873c386116863451972fa6ddfcebb14"
+    ],
+    "tree": "0b73080c1520f2d6b1c711662ea7df3d73b09b64"
+  },
+  "command": [
+    "python3",
+    "-B",
+    "-m",
+    "unittest",
+    "test_hepta_ci_source_identity",
+    "test_hepta_ci_candidate",
+    "test_hepta_ci_pq_binary_v7",
+    "-v"
+  ],
+  "command_exit_code": null,
+  "elapsed_seconds": 3.0514431410001635,
+  "error": "invalid source_sha",
+  "exit_code": 2,
+  "finished_at": "2026-11-05T05:00:50.110914+00:00",
+  "job": null,
+  "lane": "",
+  "run_attempt": null,
+  "run_id": null,
+  "schema_version": 1,
+  "source_sha": "",
+  "started_at": "2026-11-05T05:00:47.058322+00:00",
+  "status": "rejected",
+  "tested_sha": "",
+  "working_directory": "/workspace/scratch/48266f5bd43f/runtime"
+}

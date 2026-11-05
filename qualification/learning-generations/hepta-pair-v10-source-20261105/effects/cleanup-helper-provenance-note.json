@@ -1,0 +1,61 @@
+{
+  "recorded_utc": "2026-11-05T05:40:49Z",
+  "current_helper_sha256": "202391b72578761f6af2864b30eab275825d6f09e38188aa1b771e0c9d69d5a9",
+  "earlier_receipts": [
+    {
+      "receipt": "final-automation-authorized-effect-binary.json",
+      "sha256": "4b89514c3c8f2a003c1e0dc055ad764112497cba98aadbdf69658e40348339cf",
+      "helper_sha256_recorded_at_execution": false,
+      "classification_field_recorded": true
+    },
+    {
+      "receipt": "final-automation-automation-binary.json",
+      "sha256": "19d5637436c95dccd31cc848b950bd07c4b245b5f2711edbe3bcaf47c626d406",
+      "helper_sha256_recorded_at_execution": false,
+      "classification_field_recorded": true
+    },
+    {
+      "receipt": "final-automation-bin-binary.json",
+      "sha256": "305b18f1b96dd4dab04ed5bda58432338ad200a61bd9208930ea2efb55a605c4",
+      "helper_sha256_recorded_at_execution": false,
+      "classification_field_recorded": true
+    },
+    {
+      "receipt": "final-automation-durable-causal-chain-binary.json",
+      "sha256": "b63d502f40587edaba8f79264b513ef231daee817f9ec91ce9001cd6e50cef2c",
+      "helper_sha256_recorded_at_execution": false,
+      "classification_field_recorded": true
+    },
+    {
+      "receipt": "final-automation-kernel-operations-destination-binary.json",
+      "sha256": "7da3d82392fa9386e87832072e82521bf264905214b303034e18d296a53f0680",
+      "helper_sha256_recorded_at_execution": false,
+      "classification_field_recorded": true
+    },
+    {
+      "receipt": "final-automation-lib-binary.json",
+      "sha256": "532830cae4f7192f5f1941a696488591fecb6655035330524cbce89c141f6eb2",
+      "helper_sha256_recorded_at_execution": false,
+      "classification_field_recorded": false
+    },
+    {
+      "receipt": "final-automation-operation-timer-fence-binary.json",
+      "sha256": "12cf9144be56d20c3248b404480f803c83ce4f50474410bb6dfa1eeef6cd3eb5",
+      "helper_sha256_recorded_at_execution": false,
+      "classification_field_recorded": true
+    },
+    {
+      "receipt": "final-automation-retirement-recovery-binary.json",
+      "sha256": "aca7b35bcc570ebb72a831b595c1698f1a8c469787a668d306193057f1e7a3ea",
+      "helper_sha256_recorded_at_execution": false,
+      "classification_field_recorded": true
+    },
+    {
+      "receipt": "final-automation-taskflow-binary.json",
+      "sha256": "8ae0810dba46cf14ee957fdb2c6f1de82000453fd6527212b0c67df1773702d2",
+      "helper_sha256_recorded_at_execution": false,
+      "classification_field_recorded": true
+    }
+  ],
+  "note": "Earlier binary receipts were left intact. They do not prove the exact cleanup-helper revision; native command, source guards, ELF hashes, and fingerprint evidence remain separately recorded. Later cleanup receipts include the executing helper hash."
+}

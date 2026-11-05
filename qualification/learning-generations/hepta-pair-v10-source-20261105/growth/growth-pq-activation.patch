@@ -1,0 +1,207 @@
+diff --git a/trillionnium/crates/trnm-pon-node/src/store/growth/recovery.rs b/trillionnium/crates/trnm-pon-node/src/store/growth/recovery.rs
+index 40200a846..a41c51973 100644
+--- a/trillionnium/crates/trnm-pon-node/src/store/growth/recovery.rs
++++ b/trillionnium/crates/trnm-pon-node/src/store/growth/recovery.rs
+@@ -378,11 +378,17 @@ impl Node {
+         target: Hash,
+         progress: &impl Fn(GrowthProgress) -> Result<()>,
+     ) -> Result<Hash> {
++        // Even an already-active or lower-work target belongs to this caller's
++        // operation. Observe cancellation before any owner/SQLite lookup.
++        progress(GrowthProgress::BeforeContext)?;
+         self.growth_guard()?;
+         let tx = rusqlite::Transaction::new_unchecked(
+             &self.db,
+             rusqlite::TransactionBehavior::Immediate,
+         )?;
++        // A foreign writer may commit between the first epoch check and BEGIN
++        // IMMEDIATE. Rebind after the write lock, including the no-op return.
++        self.growth_guard()?;
+         let (old, generation) = self.active()?;
+         if self.record(target)?.work <= self.record(old)?.work {
+             tx.rollback()?;
+diff --git a/trillionnium/crates/trnm-pon-node/src/store/growth/tests.rs b/trillionnium/crates/trnm-pon-node/src/store/growth/tests.rs
+index 304683bc8..4f3369420 100644
+--- a/trillionnium/crates/trnm-pon-node/src/store/growth/tests.rs
++++ b/trillionnium/crates/trnm-pon-node/src/store/growth/tests.rs
+@@ -1256,6 +1256,180 @@ fn native_growth_v2_cancelled_writes_and_activation_are_atomic() {
+     assert_eq!(node.next_nonce(public(0)).unwrap(), 2);
+ }
+ 
++#[test]
++fn native_growth_v2_activation_cancellation_precedes_sql_even_for_noop_or_unknown_target() {
++    use rusqlite::hooks::{AuthContext, Authorization};
++    use std::sync::Arc;
++
++    let dir = tempfile::tempdir().unwrap();
++    let settings = settings();
++    let mut node =
++        Node::open_with_permanent_account_growth_v2(dir.path(), settings.clone()).unwrap();
++    let packet = make(
++        &node,
++        settings.genesis(),
++        vec![transfer(&settings, 0, 1, public(83), 1_000)],
++    );
++    let id = admit(&mut node, &packet);
++    let active = node.active().unwrap();
++    let before = rows(&node.db);
++
++    // Both real no-op targets and a missing target must honor an already
++    // cancelled caller. The SQL authorizer observes the real connection;
++    // no mock substitutes for its transaction or retained-state reads.
++    for target in [id, settings.genesis(), [0xff; 32]] {
++        for with_source in [false, true] {
++            let sql_calls = Arc::new(AtomicUsize::new(0));
++            let sql = sql_calls.clone();
++            node.db
++                .authorizer(Some(move |_: AuthContext<'_>| {
++                    sql.fetch_add(1, Ordering::Relaxed);
++                    Authorization::Allow
++                }))
++                .unwrap();
++            let callbacks = AtomicUsize::new(0);
++            let identity = Arc::new(());
++            let result = node.growth_activate_with_progress(target, &|point| {
++                assert_eq!(point, GrowthProgress::BeforeContext);
++                callbacks.fetch_add(1, Ordering::Relaxed);
++                if with_source {
++                    Err(Error::from(std::io::Error::new(
++                        std::io::ErrorKind::Interrupted,
++                        ProofControlSource(identity.clone()),
++                    )))
++                } else {
++                    Err(Error::new(ErrorCode::PublicRequestCancelled))
++                }
++            });
++            node.db
++                .authorizer(None::<fn(AuthContext<'_>) -> Authorization>)
++                .unwrap();
++            let error = result.expect_err("cancelled activation returned success");
++            assert_eq!(callbacks.load(Ordering::Relaxed), 1);
++            assert_eq!(sql_calls.load(Ordering::Relaxed), 0);
++            if with_source {
++                assert_eq!(error.kind(), crate::ErrorKind::Transport);
++                let source = std::error::Error::source(&error)
++                    .unwrap()
++                    .downcast_ref::<std::io::Error>()
++                    .unwrap()
++                    .get_ref()
++                    .unwrap()
++                    .downcast_ref::<ProofControlSource>()
++                    .unwrap();
++                assert!(Arc::ptr_eq(&identity, &source.0));
++            } else {
++                assert!(error.is(ErrorCode::PublicRequestCancelled));
++                assert_eq!(error.kind(), crate::ErrorKind::Cancelled);
++            }
++            assert!(node.db.is_autocommit());
++            assert_eq!(node.active().unwrap(), active);
++            assert_eq!(rows(&node.db), before);
++        }
++    }
++
++    // A later live caller still gets the original no-op behavior and can
++    // advance the actual signed chain; cancellation consumes no native state.
++    assert_eq!(node.growth_activate(id).unwrap(), id);
++    assert_eq!(node.growth_activate(settings.genesis()).unwrap(), id);
++    let next = make(
++        &node,
++        id,
++        vec![transfer(&settings, 0, 2, public(84), 1_000)],
++    );
++    let next_id = admit(&mut node, &next);
++    let after = rows(&node.db);
++    drop(node);
++    let node = Node::open_with_permanent_account_growth_v2(dir.path(), settings).unwrap();
++    assert_eq!(node.active().unwrap().0, next_id);
++    assert_eq!(node.next_nonce(public(0)).unwrap(), 3);
++    assert_eq!(rows(&node.db), after);
++}
++
++#[test]
++fn native_growth_v2_activation_rechecks_foreign_epoch_after_transaction_begin() {
++    use rusqlite::hooks::{AuthAction, AuthContext, Authorization, TransactionOperation};
++    use std::sync::Arc;
++
++    for lower_work in [false, true] {
++        let dir = tempfile::tempdir().unwrap();
++        let settings = settings();
++        let mut node =
++            Node::open_with_permanent_account_growth_v2(dir.path(), settings.clone()).unwrap();
++        let packet = make(&node, settings.genesis(), vec![]);
++        let id = admit(&mut node, &packet);
++        let active = node.active().unwrap();
++        let before = rows(&node.db);
++        let version: u64 = node
++            .db
++            .query_row("PRAGMA data_version", [], |r| r.get(0))
++            .unwrap();
++        let own_changes = node.db.total_changes();
++        let path = dir.path().join("native.sqlite");
++        let foreign_commit = Arc::new(AtomicBool::new(false));
++        let observed = foreign_commit.clone();
++        node.db
++            .authorizer(Some(move |context: AuthContext<'_>| {
++                if matches!(
++                    context.action,
++                    AuthAction::Transaction {
++                        operation: TransactionOperation::Begin
++                    }
++                ) && !observed.swap(true, Ordering::Relaxed)
++                {
++                    // The authorizer runs while BEGIN is prepared, before its
++                    // lock is acquired. Two genuine foreign commits restore the
++                    // same final rows but invalidate the original audited epoch.
++                    let foreign = Connection::open(&path).unwrap();
++                    assert_eq!(
++                        foreign
++                            .execute(
++                                "UPDATE active SET generation=generation+1 WHERE singleton=1",
++                                []
++                            )
++                            .unwrap(),
++                        1
++                    );
++                    assert_eq!(
++                        foreign
++                            .execute(
++                                "UPDATE active SET generation=generation-1 WHERE singleton=1",
++                                []
++                            )
++                            .unwrap(),
++                        1
++                    );
++                }
++                Authorization::Allow
++            }))
++            .unwrap();
++        let target = if lower_work { settings.genesis() } else { id };
++        let result = node.growth_activate_with_progress(target, &|_| Ok(()));
++        node.db
++            .authorizer(None::<fn(AuthContext<'_>) -> Authorization>)
++            .unwrap();
++        assert!(foreign_commit.load(Ordering::Relaxed));
++        let after_version: u64 = node
++            .db
++            .query_row("PRAGMA data_version", [], |r| r.get(0))
++            .unwrap();
++        assert_ne!(version, after_version);
++        let error = result.expect_err("activation returned from a changed storage epoch");
++        assert_eq!(error.to_string(), "GROWTH_STORAGE_EPOCH_CHANGED");
++        assert!(error.requires_owner_stop());
++        assert!(node.db.is_autocommit());
++        assert_eq!(node.db.total_changes(), own_changes);
++        assert_eq!(node.active().unwrap(), active);
++        assert_eq!(rows(&node.db), before);
++        drop(node);
++        // The unchanged logical state is valid only after the ordinary cold
++        // audit establishes a fresh owner epoch; the old owner cannot clear it.
++        let node = Node::open_with_permanent_account_growth_v2(dir.path(), settings).unwrap();
++        assert_eq!(node.active().unwrap(), active);
++        assert_eq!(rows(&node.db), before);
++    }
++}
++
+ #[derive(Clone, Copy, Debug)]
+ enum ProofTestPhase {
+     Parent,

@@ -1,0 +1,33 @@
+{
+  "schema": "growth-native-provider-inputs-v1",
+  "recorded_utc": "2026-11-05T04:54:15.201367+00:00",
+  "phase": "GREEN_PRE_LINK",
+  "prefix": "/workspace/scratch/fee7901564fd-next/provider-native799/trnm-pq-provider-3.5.9.UF6qy3Q5/install",
+  "selected_files": {
+    "bin/openssl": {
+      "sha256": "35f28c82e7e4fdcd06b0a42062efd224a5fd5d32d5cc9894252f8206219d496e",
+      "bytes": 8933400
+    },
+    "lib/libcrypto.a": {
+      "sha256": "a287a19e2d6863b06adc85bfcd81e399a2c95a31c5ef4f10784de969a5d320c3",
+      "bytes": 12380480
+    },
+    "lib/libssl.a": {
+      "sha256": "e15be5fe884475c5efdd00ad40173d9abe71a2127f476145bed6ef2d86dfd5c9",
+      "bytes": 2123050
+    },
+    "include/openssl/opensslv.h": {
+      "sha256": "9647fc99758cf83e3bcf11ae310894fd4911ad62bff22d8213a614df89cfedda",
+      "bytes": 3449
+    },
+    "include/openssl/configuration.h": {
+      "sha256": "406c26f93511299b264062f9f3faf0760e7a0506e91a61717c491f3c92e1a996",
+      "bytes": 4729
+    },
+    "lib/pkgconfig/openssl.pc": {
+      "sha256": "daae2f15c96ff4dfe7149610031d2aa1a8d9d5709842cf018367df904c7e0c53",
+      "bytes": 312
+    }
+  },
+  "scope": "Pinned local native provider binary, static libraries and build headers/pkg-config metadata; captured before final Node linking, not a retroactive pre-build observation of the earlier RED command."
+}

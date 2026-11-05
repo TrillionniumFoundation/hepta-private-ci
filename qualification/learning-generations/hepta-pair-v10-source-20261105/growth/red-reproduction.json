@@ -1,0 +1,32 @@
+{
+  "schema": "growth-activation-red-reproduction-v1",
+  "base": "47b4a62463d8e1371a175c74196d52d99c5fccb8",
+  "tracked_source_tree": "c8f3b8e6f5a602edb380f89e1ad941b8d0d374fe",
+  "patch": "../growth-pq-red-tests.patch",
+  "patch_sha256": "0d0ddf3791b790000f704c9689402fa23b5373f0638b381b449e7f72fa5df720",
+  "complete_input_hashes": "red-source.json",
+  "complete_input_hashes_sha256": "6664ccafa29d57b877b1b8881e89ad03bd99c6e123e8581b69b9988e5697b89c",
+  "original_profile_command_result": "red-command-result.json",
+  "original_profile_result": "COMPILATION_SIGKILL_TESTS_NOT_RUN",
+  "diagnostic_command_result": "red-nodebug-command-result.json",
+  "diagnostic_observation": "red-nodebug-observation.json",
+  "diagnostic_result": "ACTUAL_NATIVE_RED_0_PASS_2_FAIL",
+  "profile_difference": "Only trnm-pon-node test debug information is disabled; opt-level=3, native provider, all features, locked graph, assertion/overflow profile and test operations remain the same. This is diagnostic correctness evidence only.",
+  "ordinary_growth_pq_integration_complete": false,
+  "original_liveness_gate_passed": false,
+  "reconstruction": [
+    "Use a fresh checkout of the exact base commit.",
+    "Apply only growth-pq-red-tests.patch; do not apply the production fix.",
+    "Verify the full red-source.json input hash map before building.",
+    "Use exact recorded Rust 1.95.0, locked Cargo graph and OpenSSL 3.5.9 binary from red-nodebug-command-result.json.",
+    "Execute its argv and environment; expected failures are the two observed activation errors."
+  ],
+  "git_object_retained_in": "/workspace/scratch/48266f5bd43f/chain",
+  "temporary_clone_cleanup": "Original isolated clone may be removed after its complete source/patch/hash and native output receipts are retained outside it.",
+  "security_claim_modified": false,
+  "runtime_environment_supplement": {
+    "PATH_prefix": "/root/.cargo/bin",
+    "OPENSSL_CONF": "/dev/null",
+    "OPENSSL_MODULES": "/workspace/scratch/fee7901564fd-next/provider-native799/trnm-pq-provider-3.5.9.UF6qy3Q5/install/lib/ossl-modules"
+  }
+}
