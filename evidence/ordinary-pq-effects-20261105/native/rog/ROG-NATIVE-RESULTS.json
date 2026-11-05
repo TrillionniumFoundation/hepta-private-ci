@@ -1,0 +1,138 @@
+{
+  "cache_cleanup": {
+    "completed_utc": "2026-11-05T15:14:53.626935+00:00",
+    "exit_code": 0,
+    "free_bytes_at_completion": 19495342080,
+    "free_bytes_at_start": 7443947520,
+    "guard": "exclusive nonblocking held through cleanup",
+    "incremental_du_bytes_removed": 12604919808,
+    "job_id": "1a1ac46dd6c-fc05-5333",
+    "path": "/home/qian-qi/work/hepta-pq-effects-2c2b-target/debug/incremental",
+    "receipt": "rog-own-incremental-cleanup-ee57.native.json",
+    "retained_test_elf": [
+      {
+        "bytes": 1284198808,
+        "device": 66306,
+        "inode": 38213662,
+        "path": "/home/qian-qi/work/hepta-pq-effects-2c2b-target/debug/deps/codex_hepta_agentd-b1f0709e78245ce8",
+        "sha256": "c2d19ddbea51e84257a2db6968f3d541ac858955a05d026762b716293907ed92"
+      },
+      {
+        "bytes": 830743216,
+        "device": 66306,
+        "inode": 38213852,
+        "path": "/home/qian-qi/work/hepta-pq-effects-2c2b-target/debug/deps/neural_cognitive_bootstrap-1e2f5115385303f4",
+        "sha256": "1e8e50d862920ba5de1a8dc6d914cf5bc7df7762daa9c5dccad62c968afa7d96"
+      }
+    ],
+    "source_head_and_lock_unchanged": true
+  },
+  "cargo_lock_sha256": "0f458d7746a0ca0b95bedc5404fd3347c1b0a7508f1c387f3b1f3f71ced08663",
+  "chain_input": {
+    "binary": "/home/qian-qi/work/hepta-pq-effects-2c2b-chain-04be-20261105/bin/trnm-pon-node",
+    "binary_bytes": 14519384,
+    "binary_sha256": "095458755051afd137478145a42b5edb94ee32587837e4723931317900a955d9",
+    "build_binding_sha256": "dee03d77a98ce9a0d2f781f1c18666401a73efda4594b068d7f1b73fc534b08a",
+    "cargo_lock_sha256": "00f3573879f3da7d5a702a8bc13245196bbfd53b86b0b6eb19c51f14887cef61",
+    "mode": "0o555",
+    "nlink": 1,
+    "original_cli_transfer_job_exit_code": 1,
+    "original_help_error": "EXPLICIT_DEVELOPMENT_REQUIRED: public test identities; no monetary value",
+    "separate_artifact_validation_exit_code": 0,
+    "source": "04be5f02c84cf5cb626a53f34bc03a5bd6ff5137",
+    "tree": "d4f4a85c439982d8decec9265c1993408f3577cf",
+    "validation_receipt": "chain-cli-node-validation.receipt.json",
+    "validation_receipt_sha256": "54e4a02f062cc27c4c130ad5a581d01eae33e9072cf9dd158f24d4a114ec64be"
+  },
+  "code_head": "ee57cd57c322a8fecdf674a662c741452baf6478",
+  "code_tree": "ec40412aff2091fd05e0feaf31a46179f8afaa46",
+  "independent_trust_deployment_qualified": false,
+  "junit": {
+    "diagnostic": "agentd-ee57cd57-junit-path-review.stdout.log",
+    "generated": false,
+    "preserved_observation": "original nextest 0.9.103 local profile produced no JUnit; three precise candidate paths absent"
+  },
+  "native_failure": {
+    "authenticated_backend_reached": false,
+    "backend": "legacy-v2",
+    "line": 58,
+    "message": "Error: real Chain packet is 49508 bytes, beyond ordinary Agentd's 24576-byte limit",
+    "original_limit_bytes": 24576,
+    "packet_bytes": 49508,
+    "pon_pair_output_count": 0,
+    "real_effect_dispatch_reached": false,
+    "source_file": "codex-rs/hepta-agentd/src/automation_effect_host_pq_chain_tests.rs",
+    "source_or_budget_modified_after_failure": false,
+    "stage": "after original packet make; before PQ fixture/host construction"
+  },
+  "new_pq_case_pass_lines": [
+    "PASS [   0.369s] codex-hepta-agentd automation_effect_host::pq::tests::ordinary_loader_rejects_legacy_missing_or_classical_profile_before_trust",
+    "PASS [   0.414s] codex-hepta-agentd automation_effect_host::pq::tests::ordinary_pq_pon_loader_binds_actual_elf_and_contract_without_executing_chain",
+    "PASS [   0.453s] codex-hepta-agentd automation_effect_host::pq::tests::original_store_driver_refuses_authenticated_lease_after_exact_head_changes",
+    "PASS [   0.499s] codex-hepta-agentd automation_effect_host::pq::tests::ordinary_pq_signed_revocation_and_old_feed_never_reenter_provider",
+    "PASS [   0.557s] codex-hepta-agentd automation_effect_host::pq::tests::ordinary_pq_refuses_invalid_feed_expiry_and_grant_outliving_feed_before_send",
+    "PASS [   0.625s] codex-hepta-agentd automation_effect_host::pq::tests::ordinary_pq_missing_external_frontier_cannot_bootstrap_or_dispatch",
+    "PASS [   0.722s] codex-hepta-agentd automation_effect_host::pq::tests::ordinary_pq_http_dispatches_once_and_reads_exact_receipt_after_reopen"
+  ],
+  "prior_failed_attempts_preserved": [
+    "1f26e63f: sparse docs include missing",
+    "369a021a: first missing runtime_snapshot field",
+    "b0b7d951: negative fixture missing runtime_snapshot",
+    "5957eb3b: undeclared pretty_assertions imports"
+  ],
+  "production_activation": false,
+  "profiles": {
+    "cargo": "repository original default dev/test profile",
+    "nextest": "cargo-nextest 0.9.103 (d2e7b879f 2025-08-25)\nrelease: 0.9.103\ncommit-hash: d2e7b879fb79975e8b47a8e3ce569b651e6381c0\ncommit-date: 2025-08-25\nhost: x86_64-unknown-linux-gnu",
+    "nextest_config_sha256": "3ec2f9a8ed35c5582fe5d59b4ad427e5e87249c5e7d84cf149dd9874c1f9d222",
+    "nextest_profile": "local",
+    "overrides_applied": false,
+    "retries": 1,
+    "rustup": "1.96.0",
+    "slow_timeout_period_seconds": 30,
+    "terminate_after": 2
+  },
+  "result": "REAL_PON_QUALIFICATION_BLOCKED",
+  "runs": [
+    {
+      "exit_code": 0,
+      "name": "fmt",
+      "patch_bytes": 0,
+      "receipt": "agentd-fmt-ee57cd57.native.json"
+    },
+    {
+      "exit_code": 0,
+      "name": "fix",
+      "patch_bytes": 0,
+      "receipt": "agentd-fix-ee57cd57.native.json"
+    },
+    {
+      "failed": 0,
+      "job_id": "1a1ac0d2769-fc05-51f0",
+      "name": "ordinary effects filter",
+      "new_pq_cases_passed": 7,
+      "passed": 38,
+      "receipt": "agentd-effects-ee57cd57.native.json",
+      "skipped": 222
+    },
+    {
+      "failed": 0,
+      "job_id": "1a1ac19e3d5-fc05-5235",
+      "name": "original qualification rejection case",
+      "passed": 1,
+      "receipt": "agentd-negative-qualification-ee57cd57.native.json",
+      "skipped": 2
+    },
+    {
+      "attempts_under_original_retries": 2,
+      "exit_code": 100,
+      "failed": 1,
+      "job_id": "1a1ac341327-fc05-52dc",
+      "name": "real Chain ordinary PQ case",
+      "passed": 0,
+      "receipt": "agentd-real-chain-ee57cd57.receipt.json",
+      "skipped": 259
+    }
+  ],
+  "scope": "ROG scoped Agentd ordinary effects validation; no full-workspace or whole-chain PQ qualification"
+}

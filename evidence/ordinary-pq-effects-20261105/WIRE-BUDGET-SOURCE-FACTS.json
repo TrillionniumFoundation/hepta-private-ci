@@ -1,0 +1,150 @@
+{
+  "schema_version": 1,
+  "review_kind": "read_only_fixed_source_budget_and_binding",
+  "hepta_sha": "ee57cd57c322a8fecdf674a662c741452baf6478",
+  "hepta_original_sha": "1556a4df6e279055fd8196f81a4ca2fe0f19384a",
+  "chain_sha": "04be5f02c84cf5cb626a53f34bc03a5bd6ff5137",
+  "budgets": [
+    {
+      "path": "codex-rs/hepta-agent-protocol/src/lib.rs",
+      "lines": [
+        62,
+        63
+      ],
+      "control_frame_bytes": 65536,
+      "effect_wire_bytes": 24576,
+      "also_verified_at_original_sha": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/lib.rs",
+      "lines": [
+        129,
+        131
+      ],
+      "meaning": "reexports the shared constants"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/state_control.rs",
+      "lines": [
+        1147,
+        1166
+      ],
+      "max_hex_characters": 49152,
+      "meaning": "reject empty, odd or oversized hex before decoding"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/control.rs",
+      "lines": [
+        125,
+        133
+      ],
+      "meaning": "bounded newline JSON frame rejected before request deserialization"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/automation_effect_host.rs",
+      "lines": [
+        1386,
+        1409
+      ],
+      "effect_wire_bytes": 24576,
+      "meaning": "ordinary host checks nonempty bounded wire and full SHA256(payload)"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/automation_effect_host.rs",
+      "lines": [
+        289,
+        315
+      ],
+      "adapter_input_bytes": 1048576,
+      "meaning": "lower-level adapter capacity does not override ordinary host and control limits"
+    }
+  ],
+  "packet_minimum": {
+    "path": "trillionnium/crates/trnm-pon-node/src/lib.rs",
+    "lines": [
+      170,
+      234
+    ],
+    "header_source": {
+      "path": "trillionnium/crates/trnm-protocol/src/pon_wire.rs",
+      "line": 9,
+      "bytes": 318
+    },
+    "proof_source": {
+      "path": "trillionnium/crates/trnm-crypto-primitives/src/pon_work.rs",
+      "lines": [
+        20,
+        25
+      ],
+      "N": 64,
+      "cells": 4096,
+      "formula": "4 + 3 * CELLS * 4 + 32",
+      "bytes": 49188
+    },
+    "transaction_count_bytes": 2,
+    "minimum_wire_bytes": 49508,
+    "minimum_hex_characters": 99016,
+    "meaning": "Selected original Packet grammar already exceeds the ordinary payload limit with zero transactions; decode requires an exact full fixed-size proof."
+  },
+  "binding": [
+    {
+      "path": "codex-rs/hepta-automation/src/authorized_effect.rs",
+      "lines": [
+        163,
+        176
+      ],
+      "meaning": "owner derives FinalUseBinding containing payload digest and complete intent digest"
+    },
+    {
+      "path": "codex-rs/hepta-contracts/src/final_use.rs",
+      "lines": [
+        64,
+        99
+      ],
+      "meaning": "schema2 grant signing input serializes the full grant including payload binding under PQ domain"
+    },
+    {
+      "path": "codex-rs/hepta-contracts/src/final_use.rs",
+      "lines": [
+        622,
+        641
+      ],
+      "meaning": "authority verifies profile, expected binding, epoch-key window and grant signature"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/automation_effect_host.rs",
+      "lines": [
+        339,
+        399
+      ],
+      "meaning": "dispatch and exact observation recompute complete wire SHA256 then submit the same bytes on stdin"
+    },
+    {
+      "path": "trillionnium/crates/trnm-pon-node/src/main.rs",
+      "lines": [
+        47,
+        68
+      ],
+      "meaning": "one exact packet input, file or bounded stdin"
+    },
+    {
+      "path": "trillionnium/crates/trnm-pon-node/src/main.rs",
+      "lines": [
+        2002,
+        2006
+      ],
+      "meaning": "submit decodes the full packet before native admit/activate"
+    }
+  ],
+  "qualification_boundary": {
+    "case_path": "codex-rs/hepta-agentd/src/automation_effect_host_pq_chain_tests.rs",
+    "check_lines": [
+      55,
+      62
+    ],
+    "first_host_open_line": 98,
+    "runtime_result": "Parent supplied verified failure:49508 >24576 in first legacy-v2 iteration; this review performed no runtime read or test.",
+    "conclusion": "BLOCKED for this real Chain ordinary-PQ full-path qualification under unchanged budgets. Unit and scoped native passes cannot be relabeled as this pair's end-to-end pass.",
+    "changes_performed": "No source, limit, workload, test, runtime or Git mutation."
+  }
+}

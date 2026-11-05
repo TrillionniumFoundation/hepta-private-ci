@@ -1,0 +1,46 @@
+{
+  "label": "9ce-final-format-check",
+  "command": [
+    "/home/qian/.cargo/bin/just",
+    "fmt",
+    "--base",
+    "369a021af4a045da2feb7480a119e549694a5033",
+    "--check"
+  ],
+  "exit_code": 1,
+  "started_unix_s": 1793886231.10018,
+  "finished_unix_s": 1793886232.601311,
+  "pre": {
+    "head": "9ce5c86ceb640e912ef0f23cce1730cb6c48d67e",
+    "tree": "faa27abfbb0bb9ae8bd2dfa0c6b7e8f5a8087a87",
+    "source_manifest_sha256": "bac4a8ca9ae95b9715d949e3b58d927ba414c3db288e90c13a4f39093453c787",
+    "cargo_lock_sha256": "0f458d7746a0ca0b95bedc5404fd3347c1b0a7508f1c387f3b1f3f71ced08663",
+    "target": "/home/qian/pq-effects-2c2b-target",
+    "target_device": 2053,
+    "target_inode": 2003125,
+    "tracked_count": 11834,
+    "materialized_count": 9764,
+    "disk_free": 14247796736,
+    "status": ""
+  },
+  "post": {
+    "head": "9ce5c86ceb640e912ef0f23cce1730cb6c48d67e",
+    "tree": "faa27abfbb0bb9ae8bd2dfa0c6b7e8f5a8087a87",
+    "source_manifest_sha256": "bac4a8ca9ae95b9715d949e3b58d927ba414c3db288e90c13a4f39093453c787",
+    "cargo_lock_sha256": "0f458d7746a0ca0b95bedc5404fd3347c1b0a7508f1c387f3b1f3f71ced08663",
+    "target": "/home/qian/pq-effects-2c2b-target",
+    "target_device": 2053,
+    "target_inode": 2003125,
+    "tracked_count": 11834,
+    "materialized_count": 9764,
+    "disk_free": 14244790272,
+    "status": ""
+  },
+  "source_unchanged": true,
+  "cargo_lock_unchanged": true,
+  "stdout_path": "/home/qian/pq-effects-2c2b-validation/9ce-final-format-check-stdout.log",
+  "stderr_path": "/home/qian/pq-effects-2c2b-validation/9ce-final-format-check-stderr.log",
+  "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "stderr_sha256": "e877d38bc7a87e1d67019c83aa31574d2cbfa77e1e1c5754e16187e063307447",
+  "build_jobs": 2
+}

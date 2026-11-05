@@ -1,0 +1,33 @@
+{
+  "audit_recorded": true,
+  "job": {
+    "args": [
+      "-c",
+      "python3 - <<'PY'\nimport datetime,fcntl,hashlib,json,os,pathlib,shutil,stat,subprocess,sys,time\ntarget=pathlib.Path('/home/qian-qi/work/hepta-pq-effects-2c2b-target')\ndebug=target/'debug'\nincremental=debug/'incremental'\nsource=pathlib.Path('/home/qian-qi/work/hepta-pq-effects-2c2b-20261105')\nevidence=pathlib.Path('/home/qian-qi/work/hepta-pq-effects-2c2b-evidence')\nreceipt=evidence/'rog-own-incremental-cleanup-ee57.json'\nfor p in [target,debug,incremental,source,evidence]:\n if p.resolve(strict=True)!=p or p.is_symlink() or not p.is_dir():raise SystemExit('refuse noncanonical task directory')\nif str(incremental)!='/home/qian-qi/work/hepta-pq-effects-2c2b-target/debug/incremental' or os.path.ismount(incremental):raise SystemExit('unexpected cleanup target')\nif incremental.stat().st_dev!=debug.stat().st_dev:raise SystemExit('unexpected mounted cache')\nif os.path.lexists(receipt):raise SystemExit('refuse existing cleanup receipt')\nif not shutil.rmtree.avoids_symlink_attacks:raise SystemExit('fd-safe cache deletion unavailable')\ndef sha(p):\n h=hashlib.sha256()\n with p.open('rb') as f:\n  for chunk in iter(lambda:f.read(1048576),b''):h.update(chunk)\n return h.hexdigest()\ndef git(*args):return subprocess.check_output(['git',*args],cwd=source,text=True).strip()\nhead='ee57cd57c322a8fecdf674a662c741452baf6478'\ntree='ec40412aff2091fd05e0feaf31a46179f8afaa46'\nlock_sha='0f458d7746a0ca0b95bedc5404fd3347c1b0a7508f1c387f3b1f3f71ced08663'\nif git('rev-parse','HEAD')!=head or git('rev-parse','HEAD^{tree}')!=tree or git('status','--porcelain') or sha(source/'codex-rs/Cargo.lock')!=lock_sha:raise SystemExit('refuse changed source identity')\nlock_path=debug/'.cargo-lock'\nif lock_path.resolve(strict=True)!=lock_path or lock_path.is_symlink():raise SystemExit('unexpected Cargo lock path')\nlock_fd=os.open(lock_path,os.O_RDWR|os.O_NOFOLLOW)\ntry:\n s=os.fstat(lock_fd)\n if not stat.S_ISREG(s.st_mode) or s.st_nlink!=1:raise SystemExit('unexpected Cargo lock metadata')\n try:fcntl.flock(lock_fd,fcntl.LOCK_EX|fcntl.LOCK_NB)\n except BlockingIOError:raise SystemExit('Cargo lock busy: no cache deletion')\n elf_specs=[\n (debug/'deps/codex_hepta_agentd-b1f0709e78245ce8','c2d19ddbea51e84257a2db6968f3d541ac858955a05d026762b716293907ed92'),\n (debug/'deps/neural_cognitive_bootstrap-1e2f5115385303f4','1e8e50d862920ba5de1a8dc6d914cf5bc7df7762daa9c5dccad62c968afa7d96')]\n before=[]\n for p,digest in elf_specs:\n  if p.resolve(strict=True)!=p or p.is_symlink() or not p.is_file() or sha(p)!=digest:raise SystemExit('test ELF identity mismatch before cleanup')\n  s=p.stat();before.append({'path':str(p),'bytes':s.st_size,'sha256':digest,'inode':s.st_ino,'device':s.st_dev})\n cache_bytes=int(subprocess.check_output(['du','-s','-B1',str(incremental)],text=True).split()[0])\n record={'action':'remove only this task regenerable incremental cache','path':str(incremental),'cargo_lock':str(lock_path),'lock_mode':'exclusive nonblocking held through cleanup','native_job_terminals':[{\"job_id\":\"1a1ac0d2769-fc05-51f0\",\"state\":\"succeeded\",\"exit_code\":0},{\"job_id\":\"1a1ac19e3d5-fc05-5235\",\"state\":\"succeeded\",\"exit_code\":0},{\"job_id\":\"1a1ac341327-fc05-52dc\",\"state\":\"failed\",\"exit_code\":100}],'terminal_basis':'previous authoritative process_status observations','head_before':head,'tree_before':tree,'cargo_lock_sha256_before':lock_sha,'source_clean_before':True,'test_elf_before':before,'incremental_du_bytes_before':cache_bytes,'free_bytes_before':shutil.disk_usage(target).free,'start_utc':datetime.datetime.now(datetime.timezone.utc).isoformat(),'retained':['debug/deps','source','all evidence','Chain Node','all other task directories']}\n print(json.dumps({'event':'incremental_cleanup_start',**record},sort_keys=True),flush=True)\n started=time.monotonic()\n debug_fd=os.open(debug,os.O_RDONLY|os.O_DIRECTORY|os.O_NOFOLLOW)\n try:\n  a=incremental.lstat();b=os.stat('incremental',dir_fd=debug_fd,follow_symlinks=False)\n  if (a.st_dev,a.st_ino)!=(b.st_dev,b.st_ino) or not stat.S_ISDIR(b.st_mode):raise SystemExit('cache inode changed')\n  shutil.rmtree('incremental',dir_fd=debug_fd)\n  try:os.stat('incremental',dir_fd=debug_fd,follow_symlinks=False)\n  except FileNotFoundError:pass\n  else:raise SystemExit('incremental path still present')\n finally:os.close(debug_fd)\n after=[]\n for p,digest in elf_specs:\n  if sha(p)!=digest:raise SystemExit('test ELF identity mismatch after cleanup')\n  s=p.stat();after.append({'path':str(p),'bytes':s.st_size,'sha256':digest,'inode':s.st_ino,'device':s.st_dev})\n if before!=after:raise SystemExit('test ELF metadata changed')\n head_after=git('rev-parse','HEAD');tree_after=git('rev-parse','HEAD^{tree}');status_after=git('status','--porcelain');lock_after=sha(source/'codex-rs/Cargo.lock')\n if head_after!=head or tree_after!=tree or status_after or lock_after!=lock_sha:raise SystemExit('source identity changed during cleanup')\n record.update(completed=True,duration_seconds=time.monotonic()-started,end_utc=datetime.datetime.now(datetime.timezone.utc).isoformat(),free_bytes_after=shutil.disk_usage(target).free,incremental_path_absent=True,test_elf_after=after,head_after=head_after,tree_after=tree_after,source_status_after=status_after,cargo_lock_sha256_after=lock_after,cargo_clean_executed=False,tests_rerun=False)\n with receipt.open('x') as out:json.dump(record,out,indent=2);out.write('\\n');out.flush();os.fsync(out.fileno())\n print(json.dumps({'event':'incremental_cleanup_complete',**record,'receipt_path':str(receipt),'receipt_sha256':sha(receipt)},sort_keys=True),flush=True)\nfinally:\n fcntl.flock(lock_fd,fcntl.LOCK_UN)\n os.close(lock_fd)\nPY"
+    ],
+    "created_unix_ms": 1793891687788,
+    "cwd": null,
+    "env_keys": [],
+    "executable": "/bin/bash",
+    "execution_mode": "operator",
+    "host": "rog",
+    "id": "1a1ac46dd6c-fc05-5333",
+    "idempotency_key": "pq-scope-rog-own-incremental-cleanup-ee57-20261105-v1",
+    "launch_error": null,
+    "launch_state": "launched",
+    "remote_job_dir": "/home/qian-qi/.local/state/hepta-runtime-mac-worker/jobs/1a1ac46dd6c-fc05-5333",
+    "request_digest": "2b0621f7ae643cd226c41bf16150e0dd565936e44b1bc65c1bfcce640c8b272e",
+    "request_fingerprint": 3100202741157608658,
+    "ssh_target": "rog-ts",
+    "system_jobctl": false,
+    "unit": "hepta-runtime-job-1a1ac46dd6c-fc05-5333"
+  },
+  "launch": {
+    "backend": "systemd",
+    "launcher_pid": null,
+    "ok": true,
+    "unit": "hepta-runtime-job-1a1ac46dd6c-fc05-5333"
+  },
+  "local_record_pending": false,
+  "reused": false
+}

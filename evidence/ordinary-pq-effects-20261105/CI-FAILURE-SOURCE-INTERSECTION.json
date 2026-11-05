@@ -1,0 +1,262 @@
+{
+  "schema_version": 1,
+  "review_kind": "read_only_narrow_source_intersection",
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "base_sha": "1556a4df6e279055fd8196f81a4ca2fe0f19384a",
+  "head_sha": "ee57cd57c322a8fecdf674a662c741452baf6478",
+  "observed_failure_record": "ee57-ci-failure-review.json",
+  "compare": {
+    "ahead_by": 12,
+    "behind_by": 0,
+    "changed_files": 20,
+    "merge_base": "1556a4df6e279055fd8196f81a4ca2fe0f19384a"
+  },
+  "verification": "Compare API lists 20 changed paths. Each of 12 directly relevant source paths was additionally verified by independent base/head directory content Git blob IDs.",
+  "checked_files": [
+    {
+      "path": "codex-rs/hepta-agentd/tests/cognitive_product_e2e.rs",
+      "base_blob": "c8ff0a8d7497c4742d539e5bab9a43b7099d80dd",
+      "head_blob": "c8ff0a8d7497c4742d539e5bab9a43b7099d80dd",
+      "equal": true,
+      "listed_in_compare": false
+    },
+    {
+      "path": "codex-rs/hepta-agentd/tests/five_agent_rolling_upgrade.rs",
+      "base_blob": "1af182f3aca43c2f466a2e41a7eeff21adb2b0a5",
+      "head_blob": "1af182f3aca43c2f466a2e41a7eeff21adb2b0a5",
+      "equal": true,
+      "listed_in_compare": false
+    },
+    {
+      "path": "codex-rs/hepta-agentd/tests/two_agent_turn_recovery.rs",
+      "base_blob": "5ed24159c7ae6204a4f2c58fe15f2dbfeb906671",
+      "head_blob": "5ed24159c7ae6204a4f2c58fe15f2dbfeb906671",
+      "equal": true,
+      "listed_in_compare": false
+    },
+    {
+      "path": "codex-rs/hepta-agentd/tests/support/fleet.rs",
+      "base_blob": "b82b225213a149103fd47a57fee9256bcb328b22",
+      "head_blob": "b82b225213a149103fd47a57fee9256bcb328b22",
+      "equal": true,
+      "listed_in_compare": false
+    },
+    {
+      "path": "codex-rs/hepta-agentd/tests/support/mod.rs",
+      "base_blob": "93319893c69292d151aaf3ca46a2a5527cc4aada",
+      "head_blob": "93319893c69292d151aaf3ca46a2a5527cc4aada",
+      "equal": true,
+      "listed_in_compare": false
+    },
+    {
+      "path": "codex-rs/hepta-agentd/tests/support/recovery.rs",
+      "base_blob": "4913b9c16006c4bdbc0975fa888151d655b0df3c",
+      "head_blob": "4913b9c16006c4bdbc0975fa888151d655b0df3c",
+      "equal": true,
+      "listed_in_compare": false
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/config.rs",
+      "base_blob": "fdb40b98af1774f3e4684955ce6a71e933ae00ec",
+      "head_blob": "fdb40b98af1774f3e4684955ce6a71e933ae00ec",
+      "equal": true,
+      "listed_in_compare": false
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/evidence_frontier.rs",
+      "base_blob": "e17b055dc942cf2582911f03cec59695640e9950",
+      "head_blob": "e17b055dc942cf2582911f03cec59695640e9950",
+      "equal": true,
+      "listed_in_compare": false
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/main.rs",
+      "base_blob": "01387f0f2fcaa4641b6851961c4f9961913e7cb5",
+      "head_blob": "01387f0f2fcaa4641b6851961c4f9961913e7cb5",
+      "equal": true,
+      "listed_in_compare": false
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/runtime.rs",
+      "base_blob": "2931472d8378984e8a7c17872dd4f8255bf041f4",
+      "head_blob": "2931472d8378984e8a7c17872dd4f8255bf041f4",
+      "equal": true,
+      "listed_in_compare": false
+    },
+    {
+      "path": "codex-rs/hepta-infer-worker-host/src/smollm_neural_environment.rs",
+      "base_blob": "59132210d2d27318116aa8865664358e20a968de",
+      "head_blob": "59132210d2d27318116aa8865664358e20a968de",
+      "equal": true,
+      "listed_in_compare": false
+    },
+    {
+      "path": "codex-rs/hepta-infer-worker-host/src/smollm_neural_environment_tests.rs",
+      "base_blob": "d89dfc4d5b39f0081726debf94378919f42c8dcc",
+      "head_blob": "d89dfc4d5b39f0081726debf94378919f42c8dcc",
+      "equal": true,
+      "listed_in_compare": false
+    }
+  ],
+  "cases": [
+    {
+      "test": "real_agentd_local_memory_review_is_read_only_and_replayable",
+      "path": "codex-rs/hepta-agentd/tests/cognitive_product_e2e.rs",
+      "definition_line": 567,
+      "entry_lines": [
+        571,
+        579
+      ],
+      "restart_lines": [
+        625,
+        631
+      ],
+      "observed_failure": "kernel.evidence recovery_required: checkpoint frontier mismatch",
+      "ordinary_effect_configuration": "None supplied; FleetHarness::start uses recovery_args only."
+    },
+    {
+      "test": "real_agentd_local_memory_review_hides_host_tombstone_after_reopen",
+      "path": "codex-rs/hepta-agentd/tests/cognitive_product_e2e.rs",
+      "definition_line": 737,
+      "entry_lines": [
+        742,
+        750
+      ],
+      "restart_lines": [
+        823,
+        827
+      ],
+      "observed_failure": "kernel.evidence recovery_required: checkpoint frontier mismatch",
+      "ordinary_effect_configuration": "None supplied; host mutation comment explicitly excludes provider effect/production authority."
+    },
+    {
+      "test": "killed_agent_recovers_same_turn_then_dispatches_queue_once_while_peer_stays_live",
+      "path": "codex-rs/hepta-agentd/tests/two_agent_turn_recovery.rs",
+      "definition_line": 597,
+      "entry_lines": [
+        599,
+        606
+      ],
+      "restart_lines": [
+        743,
+        745
+      ],
+      "observed_failure": "kernel.evidence recovery_required: checkpoint frontier mismatch",
+      "ordinary_effect_configuration": "None supplied; same FleetHarness recovery-only launch."
+    },
+    {
+      "test": "six_agent_fleet_lifecycle_keeps_peers_fair_and_isolated",
+      "path": "codex-rs/hepta-agentd/tests/five_agent_rolling_upgrade.rs",
+      "definition_line": 309,
+      "entry_lines": [
+        310,
+        342
+      ],
+      "release_lines": [
+        539,
+        556
+      ],
+      "observed_failure": "two original 60-second watchdog timeouts",
+      "ordinary_effect_configuration": "Release command arguments derive from agent.recovery_args(); original Agentd wrapper passes arguments onward.",
+      "causal_limit": "Source review does not locate the runtime timeout phase or explain its cause."
+    },
+    {
+      "test": "smollm_neural_read::driver::environment::tests::ambient_python_injection_cannot_enter_supervisor_or_descendant",
+      "path": "codex-rs/hepta-infer-worker-host/src/smollm_neural_environment_tests.rs",
+      "definition_line": 24,
+      "call_line": 46,
+      "python_spawn_line": 47,
+      "observed_failure": "unwrap Err: neural Python loader overrides are not allowed",
+      "ordinary_effect_configuration": "Not an Agentd launch; directly invokes configure_python_environment before Command::output.",
+      "guard": {
+        "path": "codex-rs/hepta-infer-worker-host/src/smollm_neural_environment.rs",
+        "lines": [
+          6,
+          15
+        ],
+        "predicate": "process environment or explicitly set command environment contains an LD_* key or GLIBC_TUNABLES"
+      },
+      "causal_limit": "No runtime environment was inspected; this review does not identify a specific injected variable, its provenance, or a regression origin."
+    }
+  ],
+  "startup_evidence": [
+    {
+      "path": "codex-rs/hepta-agentd/tests/support/fleet.rs",
+      "lines": [
+        43,
+        50
+      ],
+      "fact": "recovery_args contains only Evidence frontier and trust-file flags"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/tests/support/fleet.rs",
+      "lines": [
+        139,
+        155
+      ],
+      "fact": "registration stages initial Evidence checkpoint;start launches with those recovery args"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/tests/support/recovery.rs",
+      "lines": [
+        1,
+        2
+      ],
+      "fact": "fixture comment says initial checkpoint is created once and never refreshed on restart; no runtime mismatch cause is inferred from this fact alone"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/config.rs",
+      "line": 203,
+      "fact": "ordinary automation_effect_host_file starts as None"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/main.rs",
+      "lines": [
+        108,
+        113,
+        170,
+        171
+      ],
+      "fact": "explicit automation-effect-host-file flag sets the optional configuration"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/main.rs",
+      "line": 193,
+      "fact": "Evidence recovery preflight runs before runtime owners"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/evidence_frontier.rs",
+      "lines": [
+        276,
+        290
+      ],
+      "fact": "observed checkpoint-mismatch string is emitted when actual Evidence recovery_snapshot differs from signed frontier snapshot"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/runtime.rs",
+      "lines": [
+        53,
+        83,
+        234,
+        239
+      ],
+      "fact": "Evidence admission precedes the optional Some(path) ordinary effect host open"
+    }
+  ],
+  "changed_code_relevant_boundary": [
+    "Ordinary automation_effect_host.rs and new PQ module are changed and compiled into the actual Agentd binary.",
+    "model-provider/src/lib.rs and provider_effect.rs also change; provider_effect_pq.rs and provider_effect_pq_tests.rs are added.",
+    "The directly reviewed fixture entrypoints do not supply ordinary effect configuration; this is a static reachability result for those entrypoints.",
+    "Unchanged directly relevant files and an unselected runtime branch do not establish base success/failure, eliminate composition effects, or remove the actual CI failures."
+  ],
+  "conclusion": "All 12 directly relevant files are byte-identical Git blobs. No reviewed failing entrypoint selects the ordinary PQ effect host. The actual ee57 broad-scope CI failures remain unresolved; no baseline-old-issue attribution or exclusion of composition regressions is claimed.",
+  "actions_not_performed": [
+    "no test reproduction",
+    "no runtime or environment inspection",
+    "no source or test edits",
+    "no test-budget changes",
+    "no Git mutation",
+    "no baseline CI replay",
+    "no broader failure search"
+  ]
+}

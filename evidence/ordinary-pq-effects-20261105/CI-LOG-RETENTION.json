@@ -1,0 +1,217 @@
+{
+  "schema_version": 1,
+  "created_at_utc": "2026-11-05T15:25:04.413901+00:00",
+  "head_sha": "ee57cd57c322a8fecdf674a662c741452baf6478",
+  "scope": "Lossless deterministic compression of the two original failed CI scoped-test evidence logs; these are not test inputs.",
+  "test_count_boundary": "Each distinct run reported 1972 tests; they overlap each other and the 170 scoped tests. Do not sum these totals.",
+  "causal_limit": "No base reproduction was performed. These findings do not establish that failures predate or were caused by the PQ change.",
+  "scan_limit": "Conventional credential-pattern scan only; reported matches contain no values. A zero-match result is not a guarantee of absence of sensitive information; positive matches require classification before publication.",
+  "records": [
+    {
+      "run_id": 42042507261,
+      "artifact": {
+        "id": 13425967098,
+        "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/42042507261/artifacts/13425967098",
+        "bytes": 3209440,
+        "sha256": "61a4364842fe63c9fe58ecf4fd65b392206f7c4b0e34044ea24e85eff1724e79",
+        "local_path": "ee57-ci-artifacts/13425967098.zip"
+      },
+      "artifact_expires_at": "2026-11-19T14:55:15Z",
+      "artifact_retention_days": 14,
+      "archive_entry": "raw/scoped-rust.json.86016979f378483ea8c85a2f94b77f2a.log",
+      "original": {
+        "path": "ee57-ci-artifacts/13425967098-scoped-rust.json.86016979f378483ea8c85a2f94b77f2a.log",
+        "bytes": 18965216,
+        "sha256": "49a05ff4828f36bfb7010fa88fcf532cb7bcc5da54f63967f5fe3423ddfa5035"
+      },
+      "gzip": {
+        "path": "ee57-ci-artifacts/neural-scoped-rust.log.gz",
+        "bytes": 686459,
+        "sha256": "deb9ff5141ef80821b9772c3aea651780deb6a3c8a4860dbdf47f1bd25516606",
+        "mtime": 0,
+        "compression_level": 9,
+        "filename_header": ""
+      },
+      "base64_utf8": {
+        "path": "ee57-ci-artifacts/neural-scoped-rust.log.gz.b64",
+        "bytes": 915281,
+        "sha256": "d3c26e6b9e7005aae0b8eaac6d55e05ac10cd030e196b3f6d259e0ac0b6084f0",
+        "encoding": "RFC 4648 base64, one ASCII line plus terminal LF"
+      },
+      "lossless_roundtrip_verified": true,
+      "credential_pattern_scan": {
+        "github_token": {
+          "matches": 0,
+          "lines": []
+        },
+        "aws_access_key_id": {
+          "matches": 0,
+          "lines": []
+        },
+        "private_key_pem": {
+          "matches": 0,
+          "lines": []
+        },
+        "openai_api_key": {
+          "matches": 0,
+          "lines": []
+        },
+        "google_api_key": {
+          "matches": 0,
+          "lines": []
+        },
+        "slack_token": {
+          "matches": 0,
+          "lines": []
+        },
+        "jwt_like": {
+          "matches": 18,
+          "lines": [
+            3635,
+            3697,
+            3754,
+            3805,
+            3855,
+            3904,
+            3936,
+            3953,
+            3985,
+            4236,
+            4784,
+            4805,
+            4877,
+            5424,
+            5534,
+            16553,
+            21459,
+            21501
+          ]
+        },
+        "authorization_bearer_value": {
+          "matches": 14,
+          "lines": [
+            34836,
+            34844,
+            34884,
+            34893,
+            34931
+          ]
+        },
+        "url_embedded_user_password": {
+          "matches": 0,
+          "lines": []
+        },
+        "credential_assignment": {
+          "matches": 0,
+          "lines": []
+        }
+      }
+    },
+    {
+      "run_id": 42042507211,
+      "artifact": {
+        "id": 13427580067,
+        "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/42042507211/artifacts/13427580067",
+        "bytes": 2232884,
+        "sha256": "7e4bbfa58f4c2ef56206341ee12ae4c4a2f1a246544a0074fef3091fed42adfb",
+        "local_path": "ee57-ci-artifacts/13427580067.zip"
+      },
+      "artifact_expires_at": "2026-11-19T14:57:39Z",
+      "artifact_retention_days": 14,
+      "archive_entry": "scoped-rust.json.070e52bcdbd94e40a341b8181f0565d9.log",
+      "original": {
+        "path": "ee57-ci-artifacts/13427580067-scoped-rust.json.070e52bcdbd94e40a341b8181f0565d9.log",
+        "bytes": 19208770,
+        "sha256": "527b17f6a878dfa115dd01aca5bee625b462fd8c50d378477a446170b7c47d2c"
+      },
+      "gzip": {
+        "path": "ee57-ci-artifacts/public-initial-scoped-rust.log.gz",
+        "bytes": 741021,
+        "sha256": "283b999a9b95d81179e612f67c43b601c4eb426d9abbbcad489ec4b6db0ad55c",
+        "mtime": 0,
+        "compression_level": 9,
+        "filename_header": ""
+      },
+      "base64_utf8": {
+        "path": "ee57-ci-artifacts/public-initial-scoped-rust.log.gz.b64",
+        "bytes": 988029,
+        "sha256": "c2bf760084ef3cfaf7c84c0e443e034f221eb333ee41d6ac2acc095819b00fd0",
+        "encoding": "RFC 4648 base64, one ASCII line plus terminal LF"
+      },
+      "lossless_roundtrip_verified": true,
+      "credential_pattern_scan": {
+        "github_token": {
+          "matches": 0,
+          "lines": []
+        },
+        "aws_access_key_id": {
+          "matches": 0,
+          "lines": []
+        },
+        "private_key_pem": {
+          "matches": 0,
+          "lines": []
+        },
+        "openai_api_key": {
+          "matches": 0,
+          "lines": []
+        },
+        "google_api_key": {
+          "matches": 0,
+          "lines": []
+        },
+        "slack_token": {
+          "matches": 0,
+          "lines": []
+        },
+        "jwt_like": {
+          "matches": 18,
+          "lines": [
+            3726,
+            3788,
+            3845,
+            3905,
+            3955,
+            4004,
+            4036,
+            4053,
+            4085,
+            4336,
+            4884,
+            4905,
+            4977,
+            5523,
+            5634,
+            16838,
+            21763,
+            21805
+          ]
+        },
+        "authorization_bearer_value": {
+          "matches": 14,
+          "lines": [
+            35213,
+            35221,
+            35261,
+            35270,
+            35308
+          ]
+        },
+        "url_embedded_user_password": {
+          "matches": 0,
+          "lines": []
+        },
+        "credential_assignment": {
+          "matches": 0,
+          "lines": []
+        }
+      }
+    }
+  ],
+  "credential_classification": {
+    "path": "ee57-ci-artifacts/credential-scan-classification.json",
+    "bytes": 3658,
+    "sha256": "0c8dc8460bba55780e75281cf75efcc6867acfdc50f57bf1e6dfc5ce84ada145",
+    "complete_log_git_copy": "Not recommended for this limited review; retain local originals and Actions artifact identity."
+  }
+}
