@@ -22,7 +22,7 @@ use windows_sys::Win32::Foundation::WAIT_TIMEOUT;
 use windows_sys::Win32::System::Threading::CREATE_NO_WINDOW;
 use windows_sys::Win32::System::Threading::WaitForSingleObject;
 
-struct OwnedFixtureChild(Child);
+pub(super) struct OwnedFixtureChild(pub(super) Child);
 
 impl Drop for OwnedFixtureChild {
     fn drop(&mut self) {
@@ -31,7 +31,7 @@ impl Drop for OwnedFixtureChild {
     }
 }
 
-fn blocked_fixture() -> Result<OwnedFixtureChild> {
+pub(super) fn blocked_fixture() -> Result<OwnedFixtureChild> {
     let mut child = OwnedFixtureChild(
         Command::new(r"C:\Windows\System32\cmd.exe")
             .args([

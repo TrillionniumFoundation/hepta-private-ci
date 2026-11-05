@@ -7,7 +7,7 @@ use crate::ipc_framed::ResizePayload;
 use crate::ipc_framed::StdinPayload;
 use crate::ipc_framed::decode_bytes;
 use crate::ipc_framed::encode_bytes;
-use crate::runner_client::RunnerProcess;
+use crate::runner_client::RunnerProcessOwner;
 use anyhow::Result;
 use codex_utils_pty::ProcessDriver;
 use codex_utils_pty::SpawnedProcess;
@@ -83,33 +83,23 @@ pub(crate) fn start_runner_stdin_writer(
 
 pub(crate) fn start_runner_stdout_reader(
     mut pipe_read: File,
-    runner_process: RunnerProcess,
+    mut runner_process: RunnerProcessOwner,
     termination_requested: Arc<AtomicBool>,
     stdout_tx: broadcast::Sender<Vec<u8>>,
     stderr_tx: Option<broadcast::Sender<Vec<u8>>>,
     exit_tx: oneshot::Sender<i32>,
 ) {
     std::thread::spawn(move || {
-        loop {
-            let msg = match crate::ipc_framed::read_frame(&mut pipe_read) {
+        let result = loop {
+            let msg = match runner_process.read_frame(&mut pipe_read, || {
+                exit_tx.is_closed() || termination_requested.load(Ordering::SeqCst)
+            }) {
                 Ok(Some(v)) => v,
                 Ok(None) => {
-                    send_runner_error(
-                        "runner pipe closed before exit",
-                        &stdout_tx,
-                        stderr_tx.as_ref(),
-                    );
-                    let _ = exit_tx.send(-1);
-                    break;
+                    break Err(anyhow::anyhow!("runner pipe closed before exit"));
                 }
                 Err(err) => {
-                    send_runner_error(
-                        &format!("runner read failed: {err}"),
-                        &stdout_tx,
-                        stderr_tx.as_ref(),
-                    );
-                    let _ = exit_tx.send(-1);
-                    break;
+                    break Err(err.context("runner read failed"));
                 }
             };
 
@@ -134,26 +124,14 @@ pub(crate) fn start_runner_stdout_reader(
                     // The broker sends this frame immediately before exiting.
                     // Do not publish completion until that same retained process
                     // is terminal and its native status agrees with the frame.
-                    let exit_code = match runner_process.wait_for_exit(payload.exit_code, || {
-                        exit_tx.is_closed() || termination_requested.load(Ordering::SeqCst)
-                    }) {
-                        Ok(()) => payload.exit_code,
-                        Err(err) => {
-                            send_runner_error(
-                                &format!("runner terminal observation failed: {err}"),
-                                &stdout_tx,
-                                stderr_tx.as_ref(),
-                            );
-                            -1
-                        }
-                    };
-                    let _ = exit_tx.send(exit_code);
-                    break;
+                    break runner_process
+                        .wait_for_exit(payload.exit_code, || {
+                            exit_tx.is_closed() || termination_requested.load(Ordering::SeqCst)
+                        })
+                        .map(|()| payload.exit_code);
                 }
                 Message::Error { payload } => {
-                    send_runner_error(&payload.message, &stdout_tx, stderr_tx.as_ref());
-                    let _ = exit_tx.send(-1);
-                    break;
+                    break Err(anyhow::anyhow!(payload.message));
                 }
                 Message::SpawnReady { .. }
                 | Message::Stdin { .. }
@@ -161,6 +139,17 @@ pub(crate) fn start_runner_stdout_reader(
                 | Message::Resize { .. }
                 | Message::SpawnRequest { .. }
                 | Message::Terminate { .. } => {}
+            }
+        };
+        match result {
+            Ok(code) => {
+                let _ = exit_tx.send(code);
+            }
+            Err(error) => {
+                let error = runner_process.reconcile_failure(error);
+                send_runner_error(&format!("{error:#}"), &stdout_tx, stderr_tx.as_ref());
+                // No numeric Exit message is manufactured from an error. The
+                // receiver must retain unknown state when this sender closes.
             }
         }
     });
