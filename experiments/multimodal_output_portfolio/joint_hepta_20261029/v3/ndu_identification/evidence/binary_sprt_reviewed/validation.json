@@ -1,0 +1,11 @@
+{
+  "command": "python -m unittest experiments.multimodal_output_portfolio.joint_hepta_20261029.v3.ndu_identification.test_binary_sprt -v",
+  "deadline_cells": 81,
+  "independent_absorbing_chain_exact_matches": 9,
+  "registered_numeric_rows_identical_to_previous": 90,
+  "result": "6 tests passed",
+  "result_sha256": "c69fdfe6fb3233cdcb06b70969e581d870f22d79a3e5def75077b488bef37dd9",
+  "review_fix": "deadline_walk is limited to p>1/2 so its fixed-cap majority error is correctly called optimal; fixed registered p=7/10 unaffected",
+  "scope": "classical known-law binary fixed-confidence test; not full-repository CI",
+  "unlimited_cells": 9
+}
