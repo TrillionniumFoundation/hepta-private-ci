@@ -5,20 +5,20 @@ This package connects the He–Xiong stationary rollover model to two separately
 ## Latest cloud qualification (2026-11-05)
 
 The project cloud environment now runs official `torch==2.8.0+cpu` with the
-pinned requirements. The [strict receipt](evidence/cloud-20261105/qualified-source/tests.json)
-records **86 passed, 0 failed, 0 errors, 0 skipped**. It includes dtype-specific
+pinned requirements. The [strict receipt](evidence/cloud-20261105/attempt-safe/tests.json)
+records **95 passed, 0 failed, 0 errors, 0 skipped**. It includes dtype-specific
 expansion-switch values, integral finite-difference slopes and equity ODE
 residuals, including the admissible short-maturity FP64 counterexample. FP64
 retains cutoff `.12`; FP32 uses `.5`. Original tolerances and financial-domain
-checks remain. The [switch probes](evidence/cloud-20261105/qualified-source/switch-probes.json)
+checks remain. The [switch probes](evidence/cloud-20261105/attempt-safe/switch-probes.json)
 retain measured values. Earlier failed receipts are retained separately and do
 not qualify the final source.
 
-Fresh [kernel](evidence/cloud-20261105/qualified-source/kernel.json),
-[mechanism](evidence/cloud-20261105/qualified-source/mechanisms.json),
-[smoke](evidence/cloud-20261105/qualified-source/smoke.json), and
-[full resource accounting](evidence/cloud-20261105/qualified-source/full.json)
-receipts bind their actual source hashes. Read every status and count; optional
+Fresh [kernel](evidence/cloud-20261105/attempt-safe/kernel.json),
+[mechanism](evidence/cloud-20261105/attempt-safe/mechanisms.json),
+[smoke](evidence/cloud-20261105/attempt-safe/smoke.json), and
+[full resource accounting](evidence/cloud-20261105/attempt-safe/full.json)
+receipts bind source `06052c42c6075f888d953397546b75b4ddf247f3` through verified file hashes. Earlier `qualified-source/` and `final/` receipts are historical snapshots, not the current qualification. Read every status and count; optional
 unavailability makes a report partial even when the CLI exits zero. No GPU is
 exposed in this environment: all **170 unique full combinations remain
 unavailable, with zero completed CUDA runs**. The 400-step, 64-example,
@@ -29,7 +29,19 @@ qualification, and GPU physical energy remain open.
 The benchmark now writes atomic per-run JSON and validation-selected weights to
 `<output-stem>.runs/`. Repeating the same command reuses completed runs only when
 source, config, seed, dataset, software, hardware and the weight hash match.
-Failed/unavailable runs are retried. An interrupted in-progress run restarts
+Failed/unavailable runs are retried, with **immutable attempt history** in
+`<key>.attempts/`: durable start journals, terminal receipts and unique weights.
+The replaceable `<key>.json` is only an index. Final seed outcomes and attempt
+failure rates are separate; every retry retains its submitted sample/token
+budget, completed optimizer steps, energy readings or explicit missing reasons.
+Interrupted journals without terminal outcomes count as interrupted with unknown
+budget/energy. Source verification precedes promotion of staged weights and
+publication of reusable results; rejected attempts are quarantined.
+
+Weight paths use `best_checkpoint_relative` within the report's sibling
+`<output-stem>.runs/`. Copy the report and that directory together. Resume
+rebinds `best_checkpoint` to the weights verified in the current directory, and
+B audits resolve the same relative convention. An interrupted in-progress run restarts
 from its original seed and budget; completed runs survive. This is run-level
 recovery, not an optimizer-step restart. Source changes during execution abort
 the aggregate instead of certifying mixed-source results.
@@ -37,7 +49,14 @@ the aggregate instead of certifying mixed-source results.
 For trained B, run `python -m qualification.hcsn.audit_population --benchmark
 <smoke.json> --output <audit.json>`. It reloads validation-selected weights,
 checks mass/escape on all held-out inputs and reports joint `(32,.1)`,
-`(64,.05)`, `(128,.025)` sensitivity. The effective refractory duration stays
+`(64,.05)`, `(128,.025)` sensitivity. The audit enumerates all planned B identities and reports requested, completed
+and audited counts. Unavailable/failed benchmark identities retain their reasons;
+zero coverage exits 2 with status unavailable, partial coverage exits 2, and a
+provenance failure exits 1. Checkpoint config/task/model/seed/validation loss,
+population discretization and held-out x/y byte hashes must match. Factor=1
+uses the actual loaded population buffers, exactly matches the full encoder
+forward, and replays the original CPU test MSE with the same batch accumulation.
+The effective refractory duration stays
 `.3` at every resolution, and each original input is held over its substeps.
 Finite mass accounting does not establish resolution independence, and smoke
 weights do not qualify full-budget B.
@@ -51,34 +70,42 @@ Mamba2 remains unavailable on CPU. The constant predictor test MSE is
 retained in each row (completed / failed / unavailable). Throughput and latency
 are measurements on this CPU, not CUDA claims. Eight optimization steps do not
 establish convergence or superiority. Per-seed values and deviations are in the
-[summary](evidence/cloud-20261105/qualified-source/summary.json) and raw receipt.
+[summary](evidence/cloud-20261105/attempt-safe/summary.json) and raw receipt.
 
 | Model | C/F/U (of 3) | Test MSE | Train examples/s | Inference examples/s | p50 ms | p95 ms |
 | --- | --- | ---: | ---: | ---: | ---: | ---: |
-| adaptive_lif | 3/0/0 | 0.410222 | 3644.68 | 18920.7 | 0.843418 | 0.968344 |
-| cfc | 3/0/0 | 0.368342 | 2967.96 | 16192.8 | 0.955246 | 1.28736 |
-| gru | 3/0/0 | 0.386832 | 7154.75 | 70594.9 | 0.20412 | 0.319278 |
-| hx_attention | 3/0/0 | 0.364493 | 48.0593 | 249.679 | 65.1215 | 68.4909 |
-| hx_call | 3/0/0 | 0.396069 | 50.9493 | 279.412 | 56.4526 | 62.4152 |
-| hx_dual | 3/0/0 | 0.396088 | 43.5987 | 240.663 | 67.4806 | 71.2929 |
-| hx_fixed | 3/0/0 | 0.396392 | 46.6956 | 254.001 | 64.0356 | 68.8281 |
-| hx_risk | 3/0/0 | 0.388596 | 767.019 | 3992.93 | 4.01358 | 4.35368 |
-| lif | 3/0/0 | 0.416321 | 3839.64 | 20091.5 | 0.783982 | 0.943149 |
+| adaptive_lif | 3/0/0 | 0.410222 | 3651.1 | 18454.7 | 0.832371 | 1.07498 |
+| cfc | 3/0/0 | 0.368342 | 3054.08 | 17147.3 | 0.898293 | 1.05577 |
+| gru | 3/0/0 | 0.386832 | 5829.12 | 69946.3 | 0.214236 | 0.288584 |
+| hx_attention | 3/0/0 | 0.364493 | 51.2269 | 267.708 | 59.1067 | 66.6632 |
+| hx_call | 3/0/0 | 0.396069 | 52.1108 | 257.298 | 62.1892 | 72.3421 |
+| hx_dual | 3/0/0 | 0.396088 | 47.5732 | 236.089 | 67.1458 | 77.5548 |
+| hx_fixed | 3/0/0 | 0.396392 | 49.4795 | 253.495 | 61.1269 | 77.8633 |
+| hx_risk | 3/0/0 | 0.388596 | 812.349 | 4042.13 | 3.87965 | 4.27199 |
+| lif | 3/0/0 | 0.416321 | 3714.09 | 21149.7 | 0.73605 | 0.863743 |
 | mamba2 | 0/0/3 | — | — | — | — | — |
-| no_recovery | 3/0/0 | 0.39834 | 48.3548 | 253.11 | 64.1883 | 66.9419 |
-| no_rollover | 3/0/0 | 0.39844 | 622.804 | 3366.25 | 4.85696 | 5.28677 |
-| pif | 3/0/0 | 0.397737 | 1787.98 | 9132.68 | 1.75409 | 1.98655 |
-| population_flux | 3/0/0 | 0.370274 | 43.5495 | 112.251 | 139.667 | 160.842 |
-| softplus | 3/0/0 | 0.398426 | 1531.65 | 7328.3 | 2.09049 | 2.73665 |
-| transformer | 3/0/0 | 0.373921 | 4061.9 | 39708.7 | 0.406 | 0.470289 |
+| no_recovery | 3/0/0 | 0.39834 | 49.1072 | 254.656 | 61.0745 | 71.3296 |
+| no_rollover | 3/0/0 | 0.39844 | 705.839 | 3624.06 | 4.37411 | 4.87483 |
+| pif | 3/0/0 | 0.397737 | 1738.51 | 9768.27 | 1.57429 | 1.86181 |
+| population_flux | 3/0/0 | 0.370274 | 43.0268 | 106.064 | 148.537 | 170.498 |
+| softplus | 3/0/0 | 0.398426 | 1699 | 7851.85 | 1.91602 | 2.6478 |
+| transformer | 3/0/0 | 0.373921 | 3580.49 | 28992.9 | 0.536029 | 0.844899 |
 
-All 45 completed runs have zero observed training/execution failures; the
-three unavailable requests remain separate. GPU allocation and measured energy
+All 45 completed seeds have zero observed training/execution failures; the
+three unavailable requests remain separate. Actual resume retains **51 attempts:
+45 completed, 0 failed, 6 unavailable**, including two attempts per Mamba2 seed.
+The submitted training totals remain 5,760 examples / 46,080 tokens. The
+[separate fault regression](evidence/cloud-20261105/attempt-safe/fault-retry.json)
+retains failed→completed attempts and an attempt failure rate of **0.5**, even
+though its final seed completed; this tiny fixture is not a research matrix run. GPU allocation and measured energy
 are **null for all 45 runs**, with missing reasons; no physical energy counter
-is accessible. Full CUDA failure rates and quality are unmeasured, not zero.
+is accessible. Full CUDA failure rates and quality are unmeasured, not zero. Its
+[coverage audit](evidence/cloud-20261105/attempt-safe/full-population-audit.json)
+preserves all **20 requested B identities: 0 completed, 0 audited**, status
+unavailable and exit 2.
 
-The [new-weight B audit](evidence/cloud-20261105/qualified-source/population-audit.json)
-covers all 64 held-out inputs for each of three seeds. Maximum mass error is
+The [new-weight B audit](evidence/cloud-20261105/attempt-safe/population-audit.json)
+records **3 requested / 3 completed / 3 audited**, covering all 64 held-out inputs for each seed. The replayed original test MSEs are `.37538662552833557`, `.3698462247848511`, `.36559009552001953`; factor=1 full-forward equality is exact. Maximum mass error is
 **3.5763e-7** at the trained `(32,.1)` grid and **6.5566e-7** over refinements;
 observed escape is zero. Joint refinement to `(128,.025)` changes filtered
 outputs by RMS **0.1660–0.1977**, and test MSE ranges **0.37077–0.37908** there.
