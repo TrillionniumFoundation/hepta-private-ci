@@ -210,8 +210,7 @@ async fn shell_zsh_fork_skill_scripts_ignore_declared_permissions() -> Result<()
         "expected skill script execution to skip the removed skill approval path"
     );
     eprintln!("skill_approval_phase: turn completed without an approval request");
-
-    wait_for_turn_complete(&test).await;
+    // The None branch already consumed this turn's TurnComplete event.
 
     let call_output = mocks
         .completion

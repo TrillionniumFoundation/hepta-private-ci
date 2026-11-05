@@ -342,7 +342,16 @@ if payload.get("prompt") == {blocked_prompt_json}:
     Ok(())
 }
 
-fn write_async_user_prompt_submit_hook(home: &Path, gated: bool) -> Result<()> {
+enum AsyncUserPromptSubmitFixture {
+    Immediate,
+    GatedOnce,
+}
+
+fn write_async_user_prompt_submit_hook(
+    home: &Path,
+    fixture: AsyncUserPromptSubmitFixture,
+) -> Result<()> {
+    let gated = matches!(fixture, AsyncUserPromptSubmitFixture::GatedOnce);
     let script_path = home.join("async_user_prompt_submit_hook.py");
     let started_path = home.join("async_user_prompt_submit_started");
     let finished_path = home.join("async_user_prompt_submit_finished");
@@ -354,6 +363,8 @@ import sys
 import time
 
 prompt = json.load(sys.stdin).get("prompt")
+if {gated} and Path(r"{finished_path}").exists():
+    raise SystemExit(0)
 Path(r"{started_path}").write_text(prompt, encoding="utf-8")
 while {gated} and not Path(r"{release_path}").exists():
     time.sleep(0.01)
@@ -1637,7 +1648,7 @@ async fn async_hook_context_is_injected_into_the_active_turn() -> Result<()> {
 
     let test = test_codex()
         .with_pre_build_hook(|home| {
-            write_async_user_prompt_submit_hook(home, /*gated*/ false)
+            write_async_user_prompt_submit_hook(home, AsyncUserPromptSubmitFixture::Immediate)
                 .expect("write immediate async user prompt submit hook");
         })
         .with_config(trust_discovered_hooks)
@@ -1738,7 +1749,7 @@ async fn async_hook_finishing_while_idle_waits_for_the_next_turn() -> Result<()>
 
     let test = test_codex()
         .with_pre_build_hook(|home| {
-            write_async_user_prompt_submit_hook(home, /*gated*/ true)
+            write_async_user_prompt_submit_hook(home, AsyncUserPromptSubmitFixture::GatedOnce)
                 .expect("write gated async user prompt submit hook");
         })
         .with_config(trust_discovered_hooks)

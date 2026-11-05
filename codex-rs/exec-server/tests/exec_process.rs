@@ -167,10 +167,15 @@ async fn shell_snapshot_v2_filters_profile_exports_and_stays_in_memory(
     } else {
         "unset() { exit 41; }\nbuiltin() { :; }\n"
     };
+    let capture_count_script = if use_sandbox {
+        ""
+    } else {
+        "printf x >> \"$HOME/captures\"\n"
+    };
     std::fs::write(
         &profile_path,
         format!(
-            "printf x >> \"$HOME/captures\"\nexport PATH=\"$HOME/profile-bin:/usr/bin:/bin\"\nexport PROFILE_ALLOWED=profile\nexport PROFILE_SECRET=secret\nexport PROFILE_DENIED=denied\nprofile_helper() {{ printf helper; }}\n{shadowed_builtins}{padding}"
+            "{capture_count_script}export PATH=\"$HOME/profile-bin:/usr/bin:/bin\"\nexport PROFILE_ALLOWED=profile\nexport PROFILE_SECRET=secret\nexport PROFILE_DENIED=denied\nprofile_helper() {{ printf helper; }}\n{shadowed_builtins}{padding}"
         ),
     )?;
     if shell_name == "zsh" && automatic_startup {
@@ -242,7 +247,7 @@ async fn shell_snapshot_v2_filters_profile_exports_and_stays_in_memory(
                 tty,
                 pipe_stdin: false,
                 arg0: None,
-                sandbox: (use_sandbox && attempt == 0).then(|| {
+                sandbox: use_sandbox.then(|| {
                     FileSystemSandboxContext::from_permission_profile_with_cwd(
                         PermissionProfile::read_only(),
                         cwd.clone(),
@@ -259,9 +264,19 @@ async fn shell_snapshot_v2_filters_profile_exports_and_stays_in_memory(
             (stdout, stderr, status, closed),
             (expected_stdout.clone(), String::new(), Some(0), true,)
         );
+        if use_sandbox && attempt == 0 {
+            // A second capture would source this profile and fall back. Reusing
+            // the same read-only cache key must preserve the full result above.
+            std::fs::write(&profile_path, "exit 42\n")?;
+            eprintln!("shell_snapshot_readonly_phase: first_result_verified_profile_poisoned");
+        }
     }
 
-    assert_eq!(std::fs::read_to_string(home.path().join("captures"))?, "x");
+    if use_sandbox {
+        assert!(!home.path().join("captures").try_exists()?);
+    } else {
+        assert_eq!(std::fs::read_to_string(home.path().join("captures"))?, "x");
+    }
     if let Some(server) = context._server {
         assert!(!server.codex_home().join("shell_snapshots").exists());
     }
