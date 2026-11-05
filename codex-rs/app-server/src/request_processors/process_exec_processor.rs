@@ -24,6 +24,8 @@ use crate::outgoing_message::OutgoingMessageSender;
 
 #[path = "process_exec_manager.rs"]
 mod manager;
+#[path = "process_exec_registry.rs"]
+mod registry;
 #[path = "process_exec_runtime.rs"]
 mod runtime;
 

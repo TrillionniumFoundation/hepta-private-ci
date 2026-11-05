@@ -1,5 +1,4 @@
 use std::collections::HashMap;
-use std::collections::hash_map::Entry;
 use std::sync::Arc;
 
 use base64::Engine;
@@ -15,10 +14,12 @@ use codex_app_server_protocol::ProcessWriteStdinResponse;
 use codex_core::exec::ExecExpiration;
 use codex_utils_absolute_path::AbsolutePathBuf;
 use codex_utils_pty::TerminalSize;
-use tokio::sync::Mutex;
 use tokio::sync::mpsc;
 use tokio::sync::oneshot;
 
+use super::registry::ConnectionProcessHandle;
+use super::registry::ProcessRegistry;
+use super::registry::observation_lost_error;
 use super::runtime::RunProcessParams;
 use super::runtime::run_process;
 use super::terminal_size_from_protocol;
@@ -31,18 +32,7 @@ use crate::outgoing_message::OutgoingMessageSender;
 
 #[derive(Clone, Default)]
 pub(super) struct ProcessExecManager {
-    sessions: Arc<Mutex<HashMap<ConnectionProcessHandle, ProcessSession>>>,
-}
-
-#[derive(Clone, Debug, Eq, Hash, PartialEq)]
-struct ConnectionProcessHandle {
-    connection_id: ConnectionId,
-    process_handle: String,
-}
-
-#[derive(Clone)]
-struct ProcessSession {
-    control_tx: mpsc::Sender<ProcessControlRequest>,
+    registry: Arc<ProcessRegistry>,
 }
 
 pub(super) enum ProcessControl {
@@ -100,19 +90,10 @@ impl ProcessExecManager {
             process_handle: process_handle.clone(),
         };
 
-        {
-            let mut sessions = self.sessions.lock().await;
-            match sessions.entry(process_key.clone()) {
-                Entry::Occupied(_) => {
-                    return Err(invalid_request(format!(
-                        "duplicate active process handle: {process_handle:?}",
-                    )));
-                }
-                Entry::Vacant(entry) => {
-                    entry.insert(ProcessSession { control_tx });
-                }
-            }
-        }
+        // Admission and the first-unknown fence share one registry lock.
+        // This reservation precedes the native spawn; existing reservations may finish.
+        let guard = self.registry.admit(process_key, control_tx)?;
+        let registration = Arc::clone(guard.registration());
 
         let spawned = if tty {
             codex_utils_pty::spawn_pty_process(
@@ -142,22 +123,37 @@ impl ProcessExecManager {
         let spawned = match spawned {
             Ok(spawned) => spawned,
             Err(err) => {
-                self.sessions.lock().await.remove(&process_key);
+                // The untyped helper error can follow native spawn/setup.
+                // Dropping the pending guard fences admission; it is not no-effect proof.
+                drop(guard);
                 return Err(internal_error(format!("failed to spawn process: {err}")));
             }
         };
+
+        let codex_utils_pty::SpawnedProcess {
+            session,
+            stdout_rx,
+            stderr_rx,
+            exit_rx,
+        } = spawned;
+        // This is the sole initialization site for a newly admitted registration.
+        // The registry keeps this exact owner even if the connection/worker disappears.
+        let session = Arc::clone(registration.owner.get_or_init(|| Arc::new(session)));
 
         outgoing
             .send_response(request_id.clone(), ProcessSpawnResponse {})
             .await;
 
-        let sessions = Arc::clone(&self.sessions);
         tokio::spawn(async move {
             run_process(RunProcessParams {
                 outgoing,
                 request_id,
                 process_handle,
-                spawned,
+                session,
+                stdout_rx,
+                stderr_rx,
+                exit_rx,
+                guard,
                 control_rx,
                 stream_stdin,
                 stream_stdout_stderr,
@@ -165,7 +161,6 @@ impl ProcessExecManager {
                 output_bytes_cap,
             })
             .await;
-            sessions.lock().await.remove(&process_key);
         });
 
         Ok(())
@@ -233,30 +228,19 @@ impl ProcessExecManager {
     }
 
     pub(super) async fn connection_closed(&self, connection_id: ConnectionId) {
-        let controls = {
-            let mut sessions = self.sessions.lock().await;
-            let process_handles = sessions
-                .keys()
-                .filter(|process_handle| process_handle.connection_id == connection_id)
-                .cloned()
-                .collect::<Vec<_>>();
-            let mut controls = Vec::with_capacity(process_handles.len());
-            for process_handle in process_handles {
-                if let Some(control) = sessions.remove(&process_handle) {
-                    controls.push(control);
-                }
-            }
-            controls
-        };
-
-        for control in controls {
-            let _ = control
+        let registrations = self.registry.connection_closed(connection_id);
+        for registration in registrations {
+            if registration
                 .control_tx
                 .send(ProcessControlRequest {
                     control: ProcessControl::Kill,
                     response_tx: None,
                 })
-                .await;
+                .await
+                .is_err()
+            {
+                self.registry.observation_lost(&registration);
+            }
         }
     }
 
@@ -270,34 +254,26 @@ impl ProcessExecManager {
             connection_id,
             process_handle,
         };
-        let session = self
-            .sessions
-            .lock()
-            .await
-            .get(&process_key)
-            .cloned()
-            .ok_or_else(|| no_active_process_error(&process_key.process_handle))?;
+        let registration = self.registry.active(&process_key)?;
         let (response_tx, response_rx) = oneshot::channel();
-        session
+        if registration
             .control_tx
             .send(ProcessControlRequest {
                 control,
                 response_tx: Some(response_tx),
             })
             .await
-            .map_err(|_| process_no_longer_running_error(&process_key.process_handle))?;
-        response_rx
-            .await
-            .map_err(|_| process_no_longer_running_error(&process_key.process_handle))?
+            .is_err()
+        {
+            self.registry.observation_lost(&registration);
+            return Err(observation_lost_error(&process_key.process_handle));
+        }
+        match response_rx.await {
+            Ok(result) => result,
+            Err(_) => {
+                self.registry.observation_lost(&registration);
+                Err(observation_lost_error(&process_key.process_handle))
+            }
+        }
     }
-}
-
-fn no_active_process_error(process_handle: &str) -> JSONRPCErrorError {
-    invalid_request(format!(
-        "no active process for process handle {process_handle:?}"
-    ))
-}
-
-fn process_no_longer_running_error(process_handle: &str) -> JSONRPCErrorError {
-    invalid_request(format!("process {process_handle:?} is no longer running"))
 }

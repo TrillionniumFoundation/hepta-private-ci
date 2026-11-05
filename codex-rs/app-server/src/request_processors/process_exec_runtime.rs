@@ -1,3 +1,4 @@
+use std::panic::AssertUnwindSafe;
 use std::sync::Arc;
 use std::time::Duration;
 
@@ -5,6 +6,8 @@ use base64::Engine;
 use base64::engine::general_purpose::STANDARD;
 use codex_app_server_protocol::JSONRPCErrorError;
 use codex_app_server_protocol::ProcessExitedNotification;
+use codex_app_server_protocol::ProcessIndeterminateNotification;
+use codex_app_server_protocol::ProcessIndeterminateReason;
 use codex_app_server_protocol::ProcessOutputDeltaNotification;
 use codex_app_server_protocol::ProcessOutputStream;
 use codex_app_server_protocol::ServerNotification;
@@ -13,13 +16,15 @@ use codex_core::exec::ExecExpirationOutcome;
 use codex_core::exec::IO_DRAIN_TIMEOUT_MS;
 use codex_protocol::exec_output::bytes_to_string_smart;
 use codex_utils_pty::ProcessHandle;
-use codex_utils_pty::SpawnedProcess;
 use codex_utils_pty::TerminalSize;
+use futures::FutureExt;
 use tokio::sync::mpsc;
+use tokio::sync::oneshot;
 use tokio::sync::watch;
 
 use super::manager::ProcessControl;
 use super::manager::ProcessControlRequest;
+use super::registry::ProcessRegistrationGuard;
 use crate::error_code::invalid_request;
 use crate::outgoing_message::ConnectionId;
 use crate::outgoing_message::ConnectionRequestId;
@@ -32,7 +37,11 @@ pub(super) struct RunProcessParams {
     pub(super) outgoing: Arc<OutgoingMessageSender>,
     pub(super) request_id: ConnectionRequestId,
     pub(super) process_handle: String,
-    pub(super) spawned: SpawnedProcess,
+    pub(super) session: Arc<ProcessHandle>,
+    pub(super) stdout_rx: mpsc::Receiver<Vec<u8>>,
+    pub(super) stderr_rx: mpsc::Receiver<Vec<u8>>,
+    pub(super) exit_rx: oneshot::Receiver<i32>,
+    pub(super) guard: ProcessRegistrationGuard,
     pub(super) control_rx: mpsc::Receiver<ProcessControlRequest>,
     pub(super) stream_stdin: bool,
     pub(super) stream_stdout_stderr: bool,
@@ -62,7 +71,11 @@ pub(super) async fn run_process(params: RunProcessParams) {
         outgoing,
         request_id,
         process_handle,
-        spawned,
+        session,
+        stdout_rx,
+        stderr_rx,
+        exit_rx,
+        mut guard,
         control_rx,
         stream_stdin,
         stream_stdout_stderr,
@@ -73,12 +86,6 @@ pub(super) async fn run_process(params: RunProcessParams) {
     let mut control_open = true;
     let expiration = expiration.wait_with_outcome();
     tokio::pin!(expiration);
-    let SpawnedProcess {
-        session,
-        stdout_rx,
-        stderr_rx,
-        exit_rx,
-    } = spawned;
     tokio::pin!(exit_rx);
     let mut expiration_outcome = None;
     let (stdio_timeout_tx, stdio_timeout_rx) = watch::channel(false);
@@ -104,7 +111,8 @@ pub(super) async fn run_process(params: RunProcessParams) {
         output_bytes_cap,
     });
 
-    let exit_code = loop {
+    let exit_observation = AssertUnwindSafe(async {
+      loop {
         tokio::select! {
             control = control_rx.recv(), if control_open => {
                 match control {
@@ -146,16 +154,34 @@ pub(super) async fn run_process(params: RunProcessParams) {
                 session.request_terminate();
             }
             exit = &mut exit_rx => {
-                if matches!(expiration_outcome, Some(ExecExpirationOutcome::TimedOut)) {
-                    break EXEC_TIMEOUT_EXIT_CODE;
-                } else {
-                    break exit.unwrap_or(-1);
+                match exit {
+                    Ok(code) => {
+                        guard.observed_exit();
+                        break Ok(if matches!(expiration_outcome, Some(ExecExpirationOutcome::TimedOut)) {
+                            EXEC_TIMEOUT_EXIT_CODE
+                        } else {
+                            code
+                        });
+                    }
+                    Err(_) => {
+                        // Fence before output draining or any notification await.
+                        guard.observation_lost();
+                        break Err(ProcessIndeterminateReason::ExitObservationLost);
+                    }
                 }
             }
         }
+      }
+    }).catch_unwind().await;
+    let exit_code = match exit_observation {
+        Ok(observation) => observation,
+        Err(_) => {
+            guard.observation_lost();
+            Err(ProcessIndeterminateReason::ExitObservationLost)
+        }
     };
 
-    // Give stdout/stderr readers a bounded grace period to drain after process exit.
+    // Preserve the original bounded drain for both observed and unknown outcomes.
     let timeout_handle = tokio::spawn(async move {
         tokio::time::sleep(Duration::from_millis(IO_DRAIN_TIMEOUT_MS)).await;
         let _ = stdio_timeout_tx.send(true);
@@ -165,18 +191,26 @@ pub(super) async fn run_process(params: RunProcessParams) {
     let stderr = stderr_handle.await.unwrap_or_default();
     timeout_handle.abort();
 
+    let notification = match exit_code {
+        Ok(exit_code) => ServerNotification::ProcessExited(ProcessExitedNotification {
+            process_handle,
+            exit_code,
+            stdout: stdout.text,
+            stdout_cap_reached: stdout.cap_reached,
+            stderr: stderr.text,
+            stderr_cap_reached: stderr.cap_reached,
+        }),
+        Err(reason) => ServerNotification::ProcessIndeterminate(ProcessIndeterminateNotification {
+            process_handle,
+            reason,
+            stdout: stdout.text,
+            stdout_cap_reached: stdout.cap_reached,
+            stderr: stderr.text,
+            stderr_cap_reached: stderr.cap_reached,
+        }),
+    };
     outgoing
-        .send_server_notification_to_connection_and_wait(
-            request_id.connection_id,
-            ServerNotification::ProcessExited(ProcessExitedNotification {
-                process_handle,
-                exit_code,
-                stdout: stdout.text,
-                stdout_cap_reached: stdout.cap_reached,
-                stderr: stderr.text,
-                stderr_cap_reached: stderr.cap_reached,
-            }),
-        )
+        .send_server_notification_to_connection_and_wait(request_id.connection_id, notification)
         .await;
 }
 
@@ -222,8 +256,8 @@ fn collect_spawn_process_output(
             };
             cap_reached = Some(observed_num_bytes) == output_bytes_cap;
             if stream_output {
-                outgoing
-                    .send_server_notification_to_connection_and_wait(
+                tokio::select! {
+                    _ = outgoing.send_server_notification_to_connection_and_wait(
                         connection_id,
                         ServerNotification::ProcessOutputDelta(ProcessOutputDeltaNotification {
                             process_handle: process_handle.clone(),
@@ -231,8 +265,9 @@ fn collect_spawn_process_output(
                             delta_base64: STANDARD.encode(capped_chunk),
                             cap_reached,
                         }),
-                    )
-                    .await;
+                    ) => {}
+                    _ = stdio_timeout_rx.wait_for(|&v| v) => break,
+                }
             } else {
                 buffer.extend_from_slice(capped_chunk);
             }
@@ -281,3 +316,11 @@ fn handle_process_resize(
         .resize(size)
         .map_err(|err| invalid_request(format!("failed to resize PTY: {err}")))
 }
+
+#[cfg(test)]
+#[path = "process_exec_runtime_tests.rs"]
+mod process_exec_runtime_tests;
+
+#[cfg(test)]
+#[path = "process_exec_drain_tests.rs"]
+mod drain_tests;
