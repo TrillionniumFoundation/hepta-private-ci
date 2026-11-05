@@ -260,6 +260,26 @@ fn workspace_capabilities_deny_writes_and_deletes_under_broad_identity_aces() ->
     let token = OwnedToken(unsafe {
         create_workspace_write_token_with_caps_from(base.0, &[cap_a.as_ptr(), cap_b.as_ptr()])?
     });
+    let workspace_file = allowed[0].join("delete.txt");
+    let temp_file = allowed[1].join("delete.txt");
+    let outside_file = outside.join("keep.txt");
+    let diagnostics = super::delete_diagnostics::observe(
+        base.0,
+        token.0,
+        &[
+            ("workspace-dir", allowed[0].as_path()),
+            ("workspace-file", workspace_file.as_path()),
+            ("temp-dir", allowed[1].as_path()),
+            ("temp-file", temp_file.as_path()),
+            ("outside-dir", outside.as_path()),
+            ("outside-file", outside_file.as_path()),
+        ],
+        &[&cap_a, &cap_b, &other_cap],
+    );
+    eprintln!(
+        "delete-native token-observation-complete={}",
+        diagnostics.is_ok()
+    );
     let (outside_read, refused) = {
         let _impersonation = unsafe { Impersonation::enter(token.0)? };
         for path in &allowed {
