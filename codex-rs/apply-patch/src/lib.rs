@@ -439,7 +439,14 @@ async fn apply_hunks_with_options(
         }
         Err(error) => {
             let msg = error.to_string();
-            writeln!(stderr, "{msg}").map_err(|error| {
+            // Preserve the existing write-failure prefix used by sandbox denial detection.
+            // Other error messages retain their historical formatting and classification.
+            if msg.starts_with("Failed to write file ") {
+                writeln!(stderr, "{error:#}")
+            } else {
+                writeln!(stderr, "{msg}")
+            }
+            .map_err(|error| {
                 ApplyPatchFailure::new(ApplyPatchError::from(error), delta.clone())
             })?;
             let error = if let Some(io) = error.downcast_ref::<std::io::Error>() {
@@ -875,6 +882,10 @@ pub fn print_summary(
     }
     Ok(())
 }
+
+#[cfg(test)]
+#[path = "error_output_tests.rs"]
+mod error_output_tests;
 
 #[cfg(test)]
 mod tests {
