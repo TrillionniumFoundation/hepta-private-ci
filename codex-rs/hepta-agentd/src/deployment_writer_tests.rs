@@ -302,3 +302,6 @@ fn writer_proof_concurrent_registration_returns_one_exact_retained_signature() {
 
 #[path = "deployment_writer_issuer_parent_tests.rs"]
 mod issuer_parent;
+
+#[path = "deployment_writer_issuer_deadline_tests.rs"]
+mod issuer_deadline;
