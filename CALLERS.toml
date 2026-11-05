@@ -546,9 +546,9 @@ forbidden = ["ProductionDurableWriter", "CognitiveStore::open_with_recovery"]
 
 [[protected_file]]
 path = "codex-rs/hepta-agentd/src/runtime.rs"
-required = ["operations.attach(", "production_writer_host.as_ref()", "attach_production_operations", "run_production_operation_reconciler", "let notes_thread_tools = config.take_original_notes_thread_tools()", "let app_server_model_tools = if notes_thread_tools.is_some()", "crate::app_runtime::AppServerModelToolProfile::OriginalNotes", "crate::app_runtime::AppServerModelToolProfile::Standard", "                app_server_model_tools,"]
+required = ["operations.attach(", "production_writer_host.as_ref()", "attach_production_operations", "run_production_operation_reconciler", "let notes_thread_tools = config.take_original_notes_thread_tools()", "let app_server_model_tools = if desktop_thread_tools.is_some()", "crate::app_runtime::AppServerModelToolProfile::OriginalNotes", "crate::app_runtime::AppServerModelToolProfile::Standard", "                app_server_model_tools,"]
 forbidden = ["ProductionAuthorityToken::from_verified_bytes", "SigningKey::from_bytes"]
-required_function_order = [{function = "fn run(", sequence = ["let notes_thread_tools = config.take_original_notes_thread_tools()", "let app_server_model_tools = if notes_thread_tools.is_some()", "crate::app_runtime::AppServerModelToolProfile::OriginalNotes", "crate::app_runtime::AppServerModelToolProfile::Standard", "run_app_server(", "app_server_model_tools,"]}]
+required_function_order = [{function = "fn run(", sequence = ["let notes_thread_tools = config.take_original_notes_thread_tools()", "let app_server_model_tools = if desktop_thread_tools.is_some()", "crate::app_runtime::AppServerModelToolProfile::OriginalNotes", "crate::app_runtime::AppServerModelToolProfile::Standard", "run_app_server(", "app_server_model_tools,"]}]
 
 [[protected_file]]
 path = "codex-rs/hepta-learning-artifacts/src/owner_service.rs"
@@ -1949,74 +1949,92 @@ caller_markers = ["call: &VerifiedDesktopThreadCall", "call.recorded_reference(&
 [[protected_file]]
 path = "codex-rs/hepta-agentd/src/deployment_calculator.rs"
 required = ["libc::geteuid()", ".with_dispatch_boundary(token, &actual.lease.binding, || {", "if state.policies[slot] != policy || lifetime_ms == 0", "self.writer.with_live(canonical, |_| {", "issuer.retained_writer_authorization(&self.writer)? != self.proof", "match self.registry.put_lease(lease, 0)", ".with_joint_dispatch_boundary(", "issuer.issue_registered_final_use(", "actual_writer != writer || actual_effect != &effect"]
+forbidden = []
 
 [[protected_file]]
 path = "codex-rs/hepta-agentd/src/desktop_thread_observe.rs"
 required = ["impl AgentdDesktopThreadToolRuntime", "original.reference.tool.as_str()", ".retained_notes_terminal_receipt(&original.run_id)", ".retained_calculator_terminal_receipt(&original.run_id)", "self.adapter.writer.status(&original.run_id).await?", "self.adapter.check_available()?"]
+forbidden = []
 
 [[protected_file]]
 path = "codex-rs/hepta-agentd/src/desktop_thread_transport.rs"
 required = ["pub(super) async fn verify_human_turn(", "host.sync_replay_checkpoint().await?", ".retained_authbus_delivery(delivery_id)", "retained.status.subject_id != host.subject", "retained.status.scope_digest != host.scope", "VerifiedHumanTurn::from_original_input(adapter, &self.route, &user, retained)", "ThreadQueueReconcileMode::ReconcileOnly", "human::confirm_original_queue"]
+forbidden = []
 
 [[protected_file]]
 path = "codex-rs/hepta-agentd/src/desktop_adapter_prepare.rs"
 required = ["self.profile != NotesAdapterProfile::OriginalDesktop", "!callback_matches(&reference, arguments)?", "AgentdNotesLiteralAdapter::verify_original_human_text(", "crate::AgentdUnixFinalUseGrantProvider::verify_original_human_text(", "!human.owner().same_authorization(&current)", "retained.origin().original_notes_thread.is_some()", "crate::notes_literal_prepare::require_unprepared_original_turn(&self.writer, &run_id)", "state.receipt_pending", "prepare_desktop_operation_before(", "retained.state != LocalOutcomeState::Queued", "current.route != route", "!original.same_authorization(&current)", ".sign_objective(&body)", ".retain_before_send(request)"]
+forbidden = []
 
 [[protected_file]]
 path = "codex-rs/hepta-agentd/src/desktop_thread_recorded.rs"
 required = ["self.profile != NotesAdapterProfile::OriginalDesktop", "pub(crate) async fn latest_recorded_desktop_operation(", "tokio::time::timeout_at(end, async {", ".retained_owner_requests()", "request.origin().original_notes_thread.is_some()", "request.origin().spawn_generation > self.identity.spawn_generation", "reference.thread_id != route.thread_id", "reference.app_server_session_id != route.app_server_session_id", "request.identity().run_id != run_id", "operation.topic != topic", "exact != operation.operation", "!payload_callback_matches(reference, &payload)?", "if !orders.insert(order)", "self.verify_desktop_recorded(route, tool, request).await"]
+forbidden = []
 
 [[protected_file]]
 path = "codex-rs/hepta-agentd/src/authority_host_runtime.rs"
 required = ["put_lease"]
+forbidden = []
 
 [[protected_file]]
 path = "codex-rs/hepta-agentd/src/deployment_notes.rs"
 required = ["put_lease", ".verify_use("]
+forbidden = []
 
 [[protected_file]]
 path = "codex-rs/hepta-agentd/src/authority_host_writer_rotate.rs"
 required = ["put_lease"]
+forbidden = []
 
 [[protected_file]]
 path = "codex-rs/hepta-fleet/src/authority_port.rs"
 required = [".verify_use("]
+forbidden = []
 
 [[protected_file]]
 path = "codex-rs/hepta-agentd/src/deployment_issuer_root.rs"
 required = [".verify_use("]
+forbidden = []
 
 [[protected_file]]
 path = "codex-rs/hepta-agentd/src/deployment_writer.rs"
 required = [".verify_use("]
+forbidden = []
 
 [[protected_file]]
 path = "codex-rs/hepta-agentd/src/deployment_writer_rotate.rs"
 required = [".verify_use("]
+forbidden = []
 
 [[protected_file]]
 path = "codex-rs/hepta-contracts/src/authority_host_issuer.rs"
 required = [".verify_use("]
+forbidden = []
 
 [[protected_file]]
 path = "codex-rs/hepta-agentd/src/notes_thread_tool.rs"
 required = ["async fn observe_retained(", "async fn observe_operation(", ".retained_notes_terminal_receipt(&run_id)", "retained_thread_request_sha256(request_id, original_call_id)", "async fn observe_original_reference(", "request_id: &str", "original_call_id: &str"]
+forbidden = []
 
 [[protected_file]]
 path = "codex-rs/hepta-agentd/src/notes_thread_runtime.rs"
 required = ["host.sync_replay_checkpoint().await?", "retained.status.subject_id != host.subject", "retained.status.scope_digest != host.scope", "ThreadQueueReconcileMode::ReconcileOnly", "human::confirm_original_queue", "connection.verify(&params).await?", "verify_human_turn(&state, &self.adapter, call.turn_id())"]
+forbidden = []
 
 [[protected_file]]
 path = "codex-rs/hepta-agentd/src/notes_literal_adapter.rs"
 required = ["verify_original_human_text", "crate::notes_literal_prepare::require_unprepared_original_turn(&self.writer, &run_id)", "thread.is_none()", "sign_objective(&body)"]
+forbidden = []
 
 [[protected_file]]
 path = "codex-rs/hepta-agentd/src/notes_thread_human.rs"
 required = ["adapter.verify_original_human_text(&ingress, route).await?", "retained.status.state != AuthBusDeliveryState::Acked", "retained.status.acknowledgement.is_none()"]
+forbidden = []
 
 [[protected_file]]
 path = "codex-rs/hepta-agentd/src/notes_thread_recorded.rs"
 required = ["latest_recorded_thread_operation", "tokio::time::timeout_at(end,", "latest_matching_request(scope, requests, end)?", "self.verify_recorded_thread_operation(route, &request, &operation)?"]
+forbidden = []
 
 [[boundary]]
 id = "calculator_previous_recovery_owner_target"
@@ -2078,3 +2096,8 @@ forbidden = ["AllowVerifier", "permit_all"]
 path = "codex-rs/hepta-agentd/src/calculator_recovery_selection.rs"
 required = ["#[serde(deny_unknown_fields)]\n        struct Exact", "#[serde(deny_unknown_fields)]\n        struct Latest", "LatestRecordedOriginalCalculator", "codex_hepta_types::StableId::new(&operation_id)"]
 forbidden = ["unsafe", "transmute", "AllowVerifier", "permit_all"]
+
+[[protected_file]]
+path = "codex-rs/hepta-agentd/src/runtime.rs"
+required = ["let app_server_model_tools = if desktop_thread_tools.is_some()", "AppServerModelToolProfile::OriginalDesktop", "} else if notes_thread_tools.is_some()", "AppServerModelToolProfile::OriginalNotes", "AppServerModelToolProfile::Standard"]
+forbidden = []
