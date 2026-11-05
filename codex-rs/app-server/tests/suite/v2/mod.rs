@@ -110,6 +110,8 @@ mod thread_settings_update;
 mod thread_shell_command;
 mod thread_start;
 mod thread_status;
+#[path = "thread_termination_observed_tests.rs"]
+mod thread_termination_observed;
 mod thread_unarchive;
 mod thread_unsubscribe;
 mod turn_interrupt;
