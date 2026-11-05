@@ -47,6 +47,10 @@ fn sign_fixture(
     (value, trust)
 }
 
+#[cfg(unix)]
+#[path = "intelligence_canonical_runtime_tests.rs"]
+mod canonical_runtime;
+
 #[tokio::test(flavor = "multi_thread", worker_threads = 2)]
 async fn signed_evaluation_completes_existing_owner_preparation_and_run_admission() {
     let (value, trust) = signed_fixture();
