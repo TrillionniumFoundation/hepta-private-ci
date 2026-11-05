@@ -121,11 +121,12 @@ async fn recover_turn_if_idle_preserves_id_and_resumes_plan_mode() {
     let (server, _completions) = start_streaming_sse_server(vec![
         vec![
             StreamingSseChunk {
-                gate: None,
+                // Recovery is eligible only before the first provider response frame.
+                gate: Some(first_response_gate),
                 body: responses::sse(vec![ev_response_created("resp-interrupted")]),
             },
             StreamingSseChunk {
-                gate: Some(first_response_gate),
+                gate: None,
                 body: responses::sse(vec![ev_completed("resp-interrupted")]),
             },
         ],
