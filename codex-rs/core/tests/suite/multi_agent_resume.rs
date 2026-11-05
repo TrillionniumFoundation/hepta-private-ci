@@ -326,6 +326,15 @@ async fn cold_root_resume_restores_agent_identity_and_role_on_followup() -> Resu
         )
     );
 
+    // The configured limit includes the root, leaving two resident child slots.
+    // The sibling admission may unload this worker; flush while its writer is
+    // still live. Eviction drains and shuts down the writer before removal.
+    worker_thread.flush_rollout().await.inspect_err(|error| {
+        eprintln!(
+            "COLD_ROOT_RESUME_STAGE_ERROR stage=flush_worker thread_id={worker_thread_id} error={error:?}"
+        );
+    })?;
+
     let sibling_spawn_args = serde_json::to_string(&json!({
         "message": SIBLING_TASK,
         "task_name": SIBLING_NAME,
@@ -381,11 +390,6 @@ async fn cold_root_resume_restores_agent_identity_and_role_on_followup() -> Resu
     sibling_thread.flush_rollout().await.inspect_err(|error| {
         eprintln!(
             "COLD_ROOT_RESUME_STAGE_ERROR stage=flush_sibling thread_id={sibling_thread_id} error={error:?}"
-        );
-    })?;
-    worker_thread.flush_rollout().await.inspect_err(|error| {
-        eprintln!(
-            "COLD_ROOT_RESUME_STAGE_ERROR stage=flush_worker thread_id={worker_thread_id} error={error:?}"
         );
     })?;
     initial.codex.flush_rollout().await.inspect_err(|error| {

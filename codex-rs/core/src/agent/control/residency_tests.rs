@@ -16,6 +16,7 @@ use codex_protocol::protocol::ThreadSource;
 use codex_protocol::protocol::TurnAbortReason;
 use codex_protocol::protocol::TurnAbortedEvent;
 use codex_protocol::protocol::TurnCompleteEvent;
+use codex_thread_store::ThreadStoreError;
 use pretty_assertions::assert_eq;
 use std::sync::Arc;
 
@@ -49,6 +50,12 @@ async fn residency_slot_reservation_unloads_oldest_idle_v2_agent() {
     first_slot.commit(first.thread_id);
     mark_thread_completed(first.thread.as_ref()).await;
 
+    first
+        .thread
+        .flush_rollout()
+        .await
+        .expect("the resident writer should accept a live flush");
+
     let second_slot = control
         .reserve_v2_residency_slot(&state, &config, /*protected_thread_id*/ None)
         .await
@@ -60,6 +67,23 @@ async fn residency_slot_reservation_unloads_oldest_idle_v2_agent() {
         },
         Ok(_) => panic!("expected evicted thread to be missing"),
     }
+    let flush_error = first
+        .thread
+        .flush_rollout()
+        .await
+        .expect_err("a retained handle must not revive an evicted writer");
+    assert!(matches!(
+        flush_error
+            .get_ref()
+            .and_then(|error| error.downcast_ref::<ThreadStoreError>()),
+        Some(ThreadStoreError::ThreadNotFound { thread_id }) if *thread_id == first.thread_id
+    ));
+    first
+        .thread
+        .shutdown_and_wait()
+        .await
+        .expect("an evicted session should retain its completed shutdown join");
+
     let second = spawn_v2_subagent(&control, &state, config, root.thread_id, "worker-2").await;
     second_slot.commit(second.thread_id);
 
