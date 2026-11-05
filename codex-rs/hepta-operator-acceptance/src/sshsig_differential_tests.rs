@@ -1,6 +1,7 @@
 //! Real original OpenSSH bytes/oracle; no mocked cryptographic verdicts.
 use super::*;
 use crate::sshsig_strict::verify_ed25519_sshsig;
+use std::process::Command;
 use std::process::Stdio;
 
 #[test]
