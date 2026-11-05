@@ -1,0 +1,6 @@
+# Separate engineering-preflight profile; does not amend historical v6 pins.
+--extra-index-url https://download.pytorch.org/whl/cpu
+torch==2.6.0+cpu; sys_platform != 'darwin'
+torch==2.6.0; sys_platform == 'darwin'
+numpy==2.2.6
+Pillow==11.3.0

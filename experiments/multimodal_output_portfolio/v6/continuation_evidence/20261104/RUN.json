@@ -1,0 +1,25 @@
+{
+  "scope": "direct-host CPU engineering preflight; not Codex Cloud",
+  "steps": [
+    {
+      "name": "tests",
+      "exit_code": 0,
+      "wall_seconds": 12.764618239016272
+    },
+    {
+      "name": "fixture",
+      "exit_code": 0,
+      "wall_seconds": 5.498255133046769
+    }
+  ],
+  "runtime": {
+    "python": "3.12.3",
+    "torch": "2.6.0+cpu",
+    "numpy": "2.2.6",
+    "pillow": "11.3.0",
+    "cuda": false
+  },
+  "source_sha256": "2767d7593f227dd1ae24cfe9e02caa915940cafbc89a7c34e196ff2f72bc066b",
+  "binary_sha256": "ede5337ba80d147bf0d1f1b84454ee6abb3fe69ffb10cef2ba5d1aa73620cf19",
+  "tests_log_sha256": "99d5ee7c6700ab2782f77f4d1d17fe4f70a071ebf8a69e1e43d8dda0fa2df37b"
+}
