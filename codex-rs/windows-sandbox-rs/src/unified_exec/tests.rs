@@ -3,6 +3,9 @@
 #[path = "acl_setup_tests.rs"]
 mod acl_setup_tests;
 
+#[path = "legacy_delete_fixture_tests.rs"]
+mod legacy_delete_fixture_tests;
+
 use super::WindowsSandboxSessionRequest;
 use super::spawn_windows_sandbox_session_elevated_for_permission_profile;
 use super::spawn_windows_sandbox_session_for_level;
@@ -693,6 +696,11 @@ fn legacy_workspace_write_delete_is_limited_to_writable_roots() {
         for directory in [&workspace, &temp_root, &tmp_root, &outside_root] {
             fs::create_dir_all(directory).expect("create legacy delete test directory");
         }
+        // LUA filtering must not remove the fixture's ordinary write/delete
+        // prerequisite before the capability restriction is exercised.
+        legacy_delete_fixture_tests::grant_writable_roots_to_current_user([
+            &workspace, &temp_root, &tmp_root,
+        ]);
         let protected_git_dir = workspace.join(".git");
         fs::create_dir(&protected_git_dir).expect("create protected .git directory");
 
