@@ -1,0 +1,172 @@
+{
+  "schema": "hepta.memory.authority-rollback-observation.v1",
+  "probe_completed": true,
+  "guard_qualified": false,
+  "production_activation_allowed": false,
+  "vulnerability_reproduced": true,
+  "authority_sha256": "cb66f793698dbe2ec8aba8eaf9e10a6a2ea783c31f17ca3bddb19ac5e87fd57b",
+  "fixture_source_sha256": "6a1e15817b306cc4f1736a48667ff3f173d3243e974c4db03e86ecfbf00be7eb",
+  "probe_sha256": "5a099823353b8bc397e873fcda0be43e7cf88b088a09b85aed2dc4ca6d7aaeb6",
+  "snapshot_sha256": "6ea23ac1b1d994cc5f30f4805a3e14b9da22466884e9d8f7ff5c1172fac5a37e",
+  "restored_bytes_match_snapshot": true,
+  "current_state": {
+    "owner": "ca93ac1705187071d67b83c7ff0efe8108e8ec4530575d7726879333dbdabe7c",
+    "epoch": 3,
+    "phase": "active",
+    "source_revision": 2,
+    "source_active": false
+  },
+  "restored_state_before_replay": {
+    "owner": "ed4928c628d1c2c6eae90338905995612959273a5c63f93636c14614ac8737d1",
+    "epoch": 1,
+    "phase": "active",
+    "source_revision": 1,
+    "source_active": true
+  },
+  "identical_signed_requests": {
+    "read": {
+      "domain": "hepta.memory-cell.v15",
+      "authority": "8a88e3dd7409f195fd52db2d3cba5d72ca6709bf1d94121bf3748801b40f6f5c",
+      "actor": "ed4928c628d1c2c6eae90338905995612959273a5c63f93636c14614ac8737d1",
+      "operation": "read",
+      "args": {
+        "scope": "scope",
+        "address": "address"
+      },
+      "request_id": "old-read",
+      "signature": "85725e5f8faea12f0f66352c94ac9b75c18514f75548debf9bddbd06c501a60fa544b5c6cd72b89917932182f70ab6f517b6efff0f1ed57ccaea6cba5c9a1505"
+    },
+    "prepare": {
+      "domain": "hepta.memory-cell.v15",
+      "authority": "8a88e3dd7409f195fd52db2d3cba5d72ca6709bf1d94121bf3748801b40f6f5c",
+      "actor": "ed4928c628d1c2c6eae90338905995612959273a5c63f93636c14614ac8737d1",
+      "operation": "prepare",
+      "args": {
+        "cell": "cell",
+        "epoch": 1,
+        "expected": "fd155ab244cf242e63909f5c0fb90acc53b4c041baff2dbe6044969c64163259",
+        "transfer": "old-owner-transfer",
+        "target": "6e7a1cdd29b0b78fd13af4c5598feff4ef2a97166e3ca6f2e4fbfccd80505bf1"
+      },
+      "request_id": "old-prepare",
+      "signature": "b84a539ad16e561979dd4074b43d0c5c501845552ae2ce19bc84c2f3dc3cf40e702734180a143438fe7a0cdaace623e6c2743553cf70da31674ea11e337dee0b"
+    }
+  },
+  "current": {
+    "read": {
+      "outcome": "rejected",
+      "receipt": {
+        "domain": "hepta.memory-cell.v15",
+        "authority": "8a88e3dd7409f195fd52db2d3cba5d72ca6709bf1d94121bf3748801b40f6f5c",
+        "request_id": "old-read",
+        "command_hash": "205e418d3e28320aea9b5ae504b7381a87e66a90dbcd7434ea05f7cef6d42e44",
+        "outcome": "rejected",
+        "reason": "source revoked or stale",
+        "signature": "8a71012486441c3d1ef1d0d4e9748fa335390e3cd79c691cce914703e6d2bba8544991b0f4aabd3694e41ff4af7bf48ff94e024f4dd5efa2c73d6db9b6621c06"
+      },
+      "fixture_signature_verified": true
+    },
+    "prepare": {
+      "outcome": "rejected",
+      "receipt": {
+        "domain": "hepta.memory-cell.v15",
+        "authority": "8a88e3dd7409f195fd52db2d3cba5d72ca6709bf1d94121bf3748801b40f6f5c",
+        "request_id": "old-prepare",
+        "command_hash": "4d1a1a8fba869a93622281a58925306295fbb72ce4e6133424e6084258296b6a",
+        "outcome": "rejected",
+        "reason": "not current owner",
+        "signature": "7d773ef14c6bee7ee5db6048d1844f2e7feb940dc62974f043da3cde8ae975467b049ad6aff240113a061beb1d8a88705541b01e4983c4e9a9d683f353d3050f"
+      },
+      "fixture_signature_verified": true
+    }
+  },
+  "restored": {
+    "read": {
+      "outcome": "accepted",
+      "receipt": {
+        "domain": "hepta.memory-cell.v15",
+        "authority": "8a88e3dd7409f195fd52db2d3cba5d72ca6709bf1d94121bf3748801b40f6f5c",
+        "request_id": "old-read",
+        "command_hash": "205e418d3e28320aea9b5ae504b7381a87e66a90dbcd7434ea05f7cef6d42e44",
+        "result": {
+          "cell": "cell",
+          "owner": "ed4928c628d1c2c6eae90338905995612959273a5c63f93636c14614ac8737d1",
+          "epoch": 1,
+          "acl": [
+            "ca93ac1705187071d67b83c7ff0efe8108e8ec4530575d7726879333dbdabe7c",
+            "ed4928c628d1c2c6eae90338905995612959273a5c63f93636c14614ac8737d1"
+          ],
+          "bundle": {
+            "id": "fd155ab244cf242e63909f5c0fb90acc53b4c041baff2dbe6044969c64163259",
+            "manifest": {
+              "acl": [
+                "ca93ac1705187071d67b83c7ff0efe8108e8ec4530575d7726879333dbdabe7c",
+                "ed4928c628d1c2c6eae90338905995612959273a5c63f93636c14614ac8737d1"
+              ],
+              "addresses": [
+                "address"
+              ],
+              "components": {
+                "calibration": "e152337e4e85aa3e81482f0ce329aec7bfad531413fe53fef84f1f0d4165caee",
+                "encoder": "9ff94c3eb0c1d350b76101c553e6e70c1178b96fc7fd738182e39e2a3f1b9ebe",
+                "memory": "c064fbca9d9de8dd9bb0624984403b28d0da807a69365d4f7fb09123ecb0c405",
+                "model": "9372c470eeadd5ecd9c3c74c2b3cb633f8e2f2fad799250a0f70d652b6b825e4",
+                "optimizer": "23732d00643137c9b14b11bdb90f47a8e97b4da42cdfc0887912f4ff732c689c",
+                "rng": "b1dc753bc89b0bcf8bd325ff0f3af44aae13d485aefc71063d95e938f24af20b",
+                "routing": "fc6672ade6fd208a2c9659f88884ecf3a5bf7b8841194261506ad9cc4570e286",
+                "runtime": "d92c6a81b2ff50096bcda80885427d1f59a25b5f483f7055523504925d16ab23",
+                "sampler": "b7a56c61657d4e5cc44636b6f7fe94597cb1d803ab5db4a5ade18fc35cc937e7",
+                "schema": "df0ad6e43880f09c90ebf95f19110178aba6890df0010ebda7485029e2b543b4",
+                "tokenizer": "5f97e3774c51edd1d63706c2ec3826c564a067794770cdab0f8c4797971cacf9"
+              },
+              "format": "hepta.memory-cell.v15",
+              "scope": "scope",
+              "sources": [
+                {
+                  "hash": "81a617f696b03f00e04797ea1b371c38d63cbb564faa647b3a97af0ff74c049c",
+                  "id": "source",
+                  "revision": 1
+                }
+              ]
+            },
+            "objects": {
+              "calibration": "63616c6962726174696f6e",
+              "encoder": "656e636f646572",
+              "memory": "6d656d6f7279",
+              "model": "6d6f64656c",
+              "optimizer": "6f7074696d697a6572",
+              "rng": "726e67",
+              "routing": "726f7574696e67",
+              "runtime": "72756e74696d65",
+              "sampler": "73616d706c6572",
+              "schema": "736368656d61",
+              "tokenizer": "746f6b656e697a6572"
+            }
+          }
+        },
+        "signature": "c37557cb214f479f1dcb2e001c4ca9571b096717b6a9647f315ff655d7889f699dcb0844dec650d66b2351d202115615210551b9264496d4d2bbfa62e2040205"
+      },
+      "fixture_signature_verified": true
+    },
+    "prepare": {
+      "outcome": "accepted",
+      "receipt": {
+        "domain": "hepta.memory-cell.v15",
+        "authority": "8a88e3dd7409f195fd52db2d3cba5d72ca6709bf1d94121bf3748801b40f6f5c",
+        "request_id": "old-prepare",
+        "command_hash": "4d1a1a8fba869a93622281a58925306295fbb72ce4e6133424e6084258296b6a",
+        "result": {
+          "transfer": "old-owner-transfer",
+          "epoch": 2,
+          "bundle": "fd155ab244cf242e63909f5c0fb90acc53b4c041baff2dbe6044969c64163259",
+          "state": "prepared"
+        },
+        "signature": "8ca41f46143caf34c5524cd9c56139b95b123b073cdf0abac6cda64bd012f37915964fb787514afb132c818d3407c8f3d86e231915a0c346f0d33fe92ca95901"
+      },
+      "fixture_signature_verified": true
+    }
+  },
+  "scope": "Known test keys and disposable SQLite only; observation is an unmet rollback-security gate.",
+  "missing_boundary": "No independently retained nonrollbackable frontier or canonical replicated authority.",
+  "claim_limit": "Demonstrates whole-store history loss, not unauthorized control of a live filesystem or production compromise."
+}

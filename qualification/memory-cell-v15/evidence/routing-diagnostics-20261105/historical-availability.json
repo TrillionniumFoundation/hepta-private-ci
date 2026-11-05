@@ -1,0 +1,998 @@
+{
+  "schema": "hepta.memory.routing-historical-availability.v1",
+  "status": "unavailable",
+  "inputs": [
+    {
+      "name": "semantic-17.json",
+      "sha256": "1a3e7cffadc4b6f78e520fa08d88379824366195794335254e262da864d257c8",
+      "git_blob": "1f31bd44f8b3730323dac9a52ed7c73d8976219f",
+      "bytes": 794754,
+      "source_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/6d2551388ed42355f02afbf528472ee2b4d8488b/qualification/memory-cell-v14/evidence/semantic-41261379136-1/readable/v14-semantic-17-41261379136-1/semantic_run.json",
+      "status": "unavailable",
+      "decomposition": null,
+      "observed_fields": {
+        "bert_centroid": {
+          "holdout_fields": [
+            "count",
+            "label_accuracy",
+            "outcomes",
+            "predictions",
+            "task_success"
+          ],
+          "outcome_fields": [
+            "correct",
+            "error",
+            "label_correct",
+            "output",
+            "predicted_skill"
+          ],
+          "outcome_count": 96,
+          "composition_trace_fields": [
+            "error",
+            "output",
+            "prediction"
+          ]
+        },
+        "bert_fast_weights": {
+          "holdout_fields": [
+            "count",
+            "label_accuracy",
+            "outcomes",
+            "predictions",
+            "task_success"
+          ],
+          "outcome_fields": [
+            "correct",
+            "error",
+            "label_correct",
+            "output",
+            "predicted_skill"
+          ],
+          "outcome_count": 96,
+          "composition_trace_fields": [
+            "error",
+            "output",
+            "prediction"
+          ]
+        },
+        "bert_linear": {
+          "holdout_fields": [
+            "count",
+            "label_accuracy",
+            "outcomes",
+            "predictions",
+            "task_success"
+          ],
+          "outcome_fields": [
+            "correct",
+            "error",
+            "label_correct",
+            "output",
+            "predicted_skill"
+          ],
+          "outcome_count": 96,
+          "composition_trace_fields": [
+            "error",
+            "output",
+            "prediction"
+          ]
+        },
+        "bert_lora": {
+          "holdout_fields": [
+            "count",
+            "label_accuracy",
+            "outcomes",
+            "predictions",
+            "task_success"
+          ],
+          "outcome_fields": [
+            "correct",
+            "error",
+            "label_correct",
+            "output",
+            "predicted_skill"
+          ],
+          "outcome_count": 96,
+          "composition_trace_fields": [
+            "error",
+            "output",
+            "prediction"
+          ]
+        },
+        "bert_mlp": {
+          "holdout_fields": [
+            "count",
+            "label_accuracy",
+            "outcomes",
+            "predictions",
+            "task_success"
+          ],
+          "outcome_fields": [
+            "correct",
+            "error",
+            "label_correct",
+            "output",
+            "predicted_skill"
+          ],
+          "outcome_count": 96,
+          "composition_trace_fields": [
+            "error",
+            "output",
+            "prediction"
+          ]
+        },
+        "bert_nearest": {
+          "holdout_fields": [
+            "count",
+            "label_accuracy",
+            "outcomes",
+            "predictions",
+            "task_success"
+          ],
+          "outcome_fields": [
+            "correct",
+            "error",
+            "label_correct",
+            "output",
+            "predicted_skill"
+          ],
+          "outcome_count": 96,
+          "composition_trace_fields": [
+            "error",
+            "output",
+            "prediction"
+          ]
+        },
+        "bert_ridge": {
+          "holdout_fields": [
+            "count",
+            "label_accuracy",
+            "outcomes",
+            "predictions",
+            "task_success"
+          ],
+          "outcome_fields": [
+            "correct",
+            "error",
+            "label_correct",
+            "output",
+            "predicted_skill"
+          ],
+          "outcome_count": 96,
+          "composition_trace_fields": [
+            "error",
+            "output",
+            "prediction"
+          ]
+        },
+        "bm25": {
+          "holdout_fields": [
+            "count",
+            "label_accuracy",
+            "outcomes",
+            "predictions",
+            "task_success"
+          ],
+          "outcome_fields": [
+            "correct",
+            "error",
+            "label_correct",
+            "output",
+            "predicted_skill"
+          ],
+          "outcome_count": 96,
+          "composition_trace_fields": [
+            "error",
+            "output",
+            "prediction"
+          ]
+        },
+        "exact_kv": {
+          "holdout_fields": [
+            "count",
+            "label_accuracy",
+            "outcomes",
+            "predictions",
+            "task_success"
+          ],
+          "outcome_fields": [
+            "correct",
+            "error",
+            "label_correct",
+            "output",
+            "predicted_skill"
+          ],
+          "outcome_count": 96,
+          "composition_trace_fields": [
+            "error",
+            "output",
+            "prediction"
+          ]
+        },
+        "kv_bm25": {
+          "holdout_fields": [
+            "count",
+            "label_accuracy",
+            "outcomes",
+            "predictions",
+            "task_success"
+          ],
+          "outcome_fields": [
+            "correct",
+            "error",
+            "label_correct",
+            "output",
+            "predicted_skill"
+          ],
+          "outcome_count": 96,
+          "composition_trace_fields": [
+            "error",
+            "output",
+            "prediction"
+          ]
+        },
+        "lexical_ridge": {
+          "holdout_fields": [
+            "count",
+            "label_accuracy",
+            "outcomes",
+            "predictions",
+            "task_success"
+          ],
+          "outcome_fields": [
+            "correct",
+            "error",
+            "label_correct",
+            "output",
+            "predicted_skill"
+          ],
+          "outcome_count": 96,
+          "composition_trace_fields": [
+            "error",
+            "output",
+            "prediction"
+          ]
+        },
+        "minilm_centroid": {
+          "holdout_fields": [
+            "count",
+            "label_accuracy",
+            "outcomes",
+            "predictions",
+            "task_success"
+          ],
+          "outcome_fields": [
+            "correct",
+            "error",
+            "label_correct",
+            "output",
+            "predicted_skill"
+          ],
+          "outcome_count": 96,
+          "composition_trace_fields": [
+            "error",
+            "output",
+            "prediction"
+          ]
+        },
+        "minilm_nearest": {
+          "holdout_fields": [
+            "count",
+            "label_accuracy",
+            "outcomes",
+            "predictions",
+            "task_success"
+          ],
+          "outcome_fields": [
+            "correct",
+            "error",
+            "label_correct",
+            "output",
+            "predicted_skill"
+          ],
+          "outcome_count": 96,
+          "composition_trace_fields": [
+            "error",
+            "output",
+            "prediction"
+          ]
+        },
+        "minilm_ridge": {
+          "holdout_fields": [
+            "count",
+            "label_accuracy",
+            "outcomes",
+            "predictions",
+            "task_success"
+          ],
+          "outcome_fields": [
+            "correct",
+            "error",
+            "label_correct",
+            "output",
+            "predicted_skill"
+          ],
+          "outcome_count": 96,
+          "composition_trace_fields": [
+            "error",
+            "output",
+            "prediction"
+          ]
+        }
+      },
+      "missing": [
+        "per_query_normalized_input_and_sha256",
+        "gold_evidence_support_sets",
+        "current_authorized_record_snapshot",
+        "common_per_cell_candidate_pools",
+        "per_cell_local_selections",
+        "routed_cell_set",
+        "executor_evidence_ids"
+      ]
+    },
+    {
+      "name": "semantic-29.json",
+      "sha256": "2d4f8df185a6f2947a9709307071563ddc895c884dde7790631979f623837ad8",
+      "git_blob": "f61bcb0e76fe1fe672a3e03ebce96c38d808ffd1",
+      "bytes": 790858,
+      "source_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/6d2551388ed42355f02afbf528472ee2b4d8488b/qualification/memory-cell-v14/evidence/semantic-41261379136-1/readable/v14-semantic-29-41261379136-1/semantic_run.json",
+      "status": "unavailable",
+      "decomposition": null,
+      "observed_fields": {
+        "bert_centroid": {
+          "holdout_fields": [
+            "count",
+            "label_accuracy",
+            "outcomes",
+            "predictions",
+            "task_success"
+          ],
+          "outcome_fields": [
+            "correct",
+            "error",
+            "label_correct",
+            "output",
+            "predicted_skill"
+          ],
+          "outcome_count": 96,
+          "composition_trace_fields": [
+            "error",
+            "output",
+            "prediction"
+          ]
+        },
+        "bert_fast_weights": {
+          "holdout_fields": [
+            "count",
+            "label_accuracy",
+            "outcomes",
+            "predictions",
+            "task_success"
+          ],
+          "outcome_fields": [
+            "correct",
+            "error",
+            "label_correct",
+            "output",
+            "predicted_skill"
+          ],
+          "outcome_count": 96,
+          "composition_trace_fields": [
+            "error",
+            "output",
+            "prediction"
+          ]
+        },
+        "bert_linear": {
+          "holdout_fields": [
+            "count",
+            "label_accuracy",
+            "outcomes",
+            "predictions",
+            "task_success"
+          ],
+          "outcome_fields": [
+            "correct",
+            "error",
+            "label_correct",
+            "output",
+            "predicted_skill"
+          ],
+          "outcome_count": 96,
+          "composition_trace_fields": [
+            "error",
+            "output",
+            "prediction"
+          ]
+        },
+        "bert_lora": {
+          "holdout_fields": [
+            "count",
+            "label_accuracy",
+            "outcomes",
+            "predictions",
+            "task_success"
+          ],
+          "outcome_fields": [
+            "correct",
+            "error",
+            "label_correct",
+            "output",
+            "predicted_skill"
+          ],
+          "outcome_count": 96,
+          "composition_trace_fields": [
+            "error",
+            "output",
+            "prediction"
+          ]
+        },
+        "bert_mlp": {
+          "holdout_fields": [
+            "count",
+            "label_accuracy",
+            "outcomes",
+            "predictions",
+            "task_success"
+          ],
+          "outcome_fields": [
+            "correct",
+            "error",
+            "label_correct",
+            "output",
+            "predicted_skill"
+          ],
+          "outcome_count": 96,
+          "composition_trace_fields": [
+            "error",
+            "output",
+            "prediction"
+          ]
+        },
+        "bert_nearest": {
+          "holdout_fields": [
+            "count",
+            "label_accuracy",
+            "outcomes",
+            "predictions",
+            "task_success"
+          ],
+          "outcome_fields": [
+            "correct",
+            "error",
+            "label_correct",
+            "output",
+            "predicted_skill"
+          ],
+          "outcome_count": 96,
+          "composition_trace_fields": [
+            "error",
+            "output",
+            "prediction"
+          ]
+        },
+        "bert_ridge": {
+          "holdout_fields": [
+            "count",
+            "label_accuracy",
+            "outcomes",
+            "predictions",
+            "task_success"
+          ],
+          "outcome_fields": [
+            "correct",
+            "error",
+            "label_correct",
+            "output",
+            "predicted_skill"
+          ],
+          "outcome_count": 96,
+          "composition_trace_fields": [
+            "error",
+            "output",
+            "prediction"
+          ]
+        },
+        "bm25": {
+          "holdout_fields": [
+            "count",
+            "label_accuracy",
+            "outcomes",
+            "predictions",
+            "task_success"
+          ],
+          "outcome_fields": [
+            "correct",
+            "error",
+            "label_correct",
+            "output",
+            "predicted_skill"
+          ],
+          "outcome_count": 96,
+          "composition_trace_fields": [
+            "error",
+            "output",
+            "prediction"
+          ]
+        },
+        "exact_kv": {
+          "holdout_fields": [
+            "count",
+            "label_accuracy",
+            "outcomes",
+            "predictions",
+            "task_success"
+          ],
+          "outcome_fields": [
+            "correct",
+            "error",
+            "label_correct",
+            "output",
+            "predicted_skill"
+          ],
+          "outcome_count": 96,
+          "composition_trace_fields": [
+            "error",
+            "output",
+            "prediction"
+          ]
+        },
+        "kv_bm25": {
+          "holdout_fields": [
+            "count",
+            "label_accuracy",
+            "outcomes",
+            "predictions",
+            "task_success"
+          ],
+          "outcome_fields": [
+            "correct",
+            "error",
+            "label_correct",
+            "output",
+            "predicted_skill"
+          ],
+          "outcome_count": 96,
+          "composition_trace_fields": [
+            "error",
+            "output",
+            "prediction"
+          ]
+        },
+        "lexical_ridge": {
+          "holdout_fields": [
+            "count",
+            "label_accuracy",
+            "outcomes",
+            "predictions",
+            "task_success"
+          ],
+          "outcome_fields": [
+            "correct",
+            "error",
+            "label_correct",
+            "output",
+            "predicted_skill"
+          ],
+          "outcome_count": 96,
+          "composition_trace_fields": [
+            "error",
+            "output",
+            "prediction"
+          ]
+        },
+        "minilm_centroid": {
+          "holdout_fields": [
+            "count",
+            "label_accuracy",
+            "outcomes",
+            "predictions",
+            "task_success"
+          ],
+          "outcome_fields": [
+            "correct",
+            "error",
+            "label_correct",
+            "output",
+            "predicted_skill"
+          ],
+          "outcome_count": 96,
+          "composition_trace_fields": [
+            "error",
+            "output",
+            "prediction"
+          ]
+        },
+        "minilm_nearest": {
+          "holdout_fields": [
+            "count",
+            "label_accuracy",
+            "outcomes",
+            "predictions",
+            "task_success"
+          ],
+          "outcome_fields": [
+            "correct",
+            "error",
+            "label_correct",
+            "output",
+            "predicted_skill"
+          ],
+          "outcome_count": 96,
+          "composition_trace_fields": [
+            "error",
+            "output",
+            "prediction"
+          ]
+        },
+        "minilm_ridge": {
+          "holdout_fields": [
+            "count",
+            "label_accuracy",
+            "outcomes",
+            "predictions",
+            "task_success"
+          ],
+          "outcome_fields": [
+            "correct",
+            "error",
+            "label_correct",
+            "output",
+            "predicted_skill"
+          ],
+          "outcome_count": 96,
+          "composition_trace_fields": [
+            "error",
+            "output",
+            "prediction"
+          ]
+        }
+      },
+      "missing": [
+        "per_query_normalized_input_and_sha256",
+        "gold_evidence_support_sets",
+        "current_authorized_record_snapshot",
+        "common_per_cell_candidate_pools",
+        "per_cell_local_selections",
+        "routed_cell_set",
+        "executor_evidence_ids"
+      ]
+    },
+    {
+      "name": "semantic-43.json",
+      "sha256": "c62bf36a849a54c5698b76b9145ce8a671643f802b55bf9fbf62d0f7923751e8",
+      "git_blob": "f1fc33f70858e1cd935fb9eb882271ab1c2f9a09",
+      "bytes": 789066,
+      "source_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/6d2551388ed42355f02afbf528472ee2b4d8488b/qualification/memory-cell-v14/evidence/semantic-41261379136-1/readable/v14-semantic-43-41261379136-1/semantic_run.json",
+      "status": "unavailable",
+      "decomposition": null,
+      "observed_fields": {
+        "bert_centroid": {
+          "holdout_fields": [
+            "count",
+            "label_accuracy",
+            "outcomes",
+            "predictions",
+            "task_success"
+          ],
+          "outcome_fields": [
+            "correct",
+            "error",
+            "label_correct",
+            "output",
+            "predicted_skill"
+          ],
+          "outcome_count": 96,
+          "composition_trace_fields": [
+            "error",
+            "output",
+            "prediction"
+          ]
+        },
+        "bert_fast_weights": {
+          "holdout_fields": [
+            "count",
+            "label_accuracy",
+            "outcomes",
+            "predictions",
+            "task_success"
+          ],
+          "outcome_fields": [
+            "correct",
+            "error",
+            "label_correct",
+            "output",
+            "predicted_skill"
+          ],
+          "outcome_count": 96,
+          "composition_trace_fields": [
+            "error",
+            "output",
+            "prediction"
+          ]
+        },
+        "bert_linear": {
+          "holdout_fields": [
+            "count",
+            "label_accuracy",
+            "outcomes",
+            "predictions",
+            "task_success"
+          ],
+          "outcome_fields": [
+            "correct",
+            "error",
+            "label_correct",
+            "output",
+            "predicted_skill"
+          ],
+          "outcome_count": 96,
+          "composition_trace_fields": [
+            "error",
+            "output",
+            "prediction"
+          ]
+        },
+        "bert_lora": {
+          "holdout_fields": [
+            "count",
+            "label_accuracy",
+            "outcomes",
+            "predictions",
+            "task_success"
+          ],
+          "outcome_fields": [
+            "correct",
+            "error",
+            "label_correct",
+            "output",
+            "predicted_skill"
+          ],
+          "outcome_count": 96,
+          "composition_trace_fields": [
+            "error",
+            "output",
+            "prediction"
+          ]
+        },
+        "bert_mlp": {
+          "holdout_fields": [
+            "count",
+            "label_accuracy",
+            "outcomes",
+            "predictions",
+            "task_success"
+          ],
+          "outcome_fields": [
+            "correct",
+            "error",
+            "label_correct",
+            "output",
+            "predicted_skill"
+          ],
+          "outcome_count": 96,
+          "composition_trace_fields": [
+            "error",
+            "output",
+            "prediction"
+          ]
+        },
+        "bert_nearest": {
+          "holdout_fields": [
+            "count",
+            "label_accuracy",
+            "outcomes",
+            "predictions",
+            "task_success"
+          ],
+          "outcome_fields": [
+            "correct",
+            "error",
+            "label_correct",
+            "output",
+            "predicted_skill"
+          ],
+          "outcome_count": 96,
+          "composition_trace_fields": [
+            "error",
+            "output",
+            "prediction"
+          ]
+        },
+        "bert_ridge": {
+          "holdout_fields": [
+            "count",
+            "label_accuracy",
+            "outcomes",
+            "predictions",
+            "task_success"
+          ],
+          "outcome_fields": [
+            "correct",
+            "error",
+            "label_correct",
+            "output",
+            "predicted_skill"
+          ],
+          "outcome_count": 96,
+          "composition_trace_fields": [
+            "error",
+            "output",
+            "prediction"
+          ]
+        },
+        "bm25": {
+          "holdout_fields": [
+            "count",
+            "label_accuracy",
+            "outcomes",
+            "predictions",
+            "task_success"
+          ],
+          "outcome_fields": [
+            "correct",
+            "error",
+            "label_correct",
+            "output",
+            "predicted_skill"
+          ],
+          "outcome_count": 96,
+          "composition_trace_fields": [
+            "error",
+            "output",
+            "prediction"
+          ]
+        },
+        "exact_kv": {
+          "holdout_fields": [
+            "count",
+            "label_accuracy",
+            "outcomes",
+            "predictions",
+            "task_success"
+          ],
+          "outcome_fields": [
+            "correct",
+            "error",
+            "label_correct",
+            "output",
+            "predicted_skill"
+          ],
+          "outcome_count": 96,
+          "composition_trace_fields": [
+            "error",
+            "output",
+            "prediction"
+          ]
+        },
+        "kv_bm25": {
+          "holdout_fields": [
+            "count",
+            "label_accuracy",
+            "outcomes",
+            "predictions",
+            "task_success"
+          ],
+          "outcome_fields": [
+            "correct",
+            "error",
+            "label_correct",
+            "output",
+            "predicted_skill"
+          ],
+          "outcome_count": 96,
+          "composition_trace_fields": [
+            "error",
+            "output",
+            "prediction"
+          ]
+        },
+        "lexical_ridge": {
+          "holdout_fields": [
+            "count",
+            "label_accuracy",
+            "outcomes",
+            "predictions",
+            "task_success"
+          ],
+          "outcome_fields": [
+            "correct",
+            "error",
+            "label_correct",
+            "output",
+            "predicted_skill"
+          ],
+          "outcome_count": 96,
+          "composition_trace_fields": [
+            "error",
+            "output",
+            "prediction"
+          ]
+        },
+        "minilm_centroid": {
+          "holdout_fields": [
+            "count",
+            "label_accuracy",
+            "outcomes",
+            "predictions",
+            "task_success"
+          ],
+          "outcome_fields": [
+            "correct",
+            "error",
+            "label_correct",
+            "output",
+            "predicted_skill"
+          ],
+          "outcome_count": 96,
+          "composition_trace_fields": [
+            "error",
+            "output",
+            "prediction"
+          ]
+        },
+        "minilm_nearest": {
+          "holdout_fields": [
+            "count",
+            "label_accuracy",
+            "outcomes",
+            "predictions",
+            "task_success"
+          ],
+          "outcome_fields": [
+            "correct",
+            "error",
+            "label_correct",
+            "output",
+            "predicted_skill"
+          ],
+          "outcome_count": 96,
+          "composition_trace_fields": [
+            "error",
+            "output",
+            "prediction"
+          ]
+        },
+        "minilm_ridge": {
+          "holdout_fields": [
+            "count",
+            "label_accuracy",
+            "outcomes",
+            "predictions",
+            "task_success"
+          ],
+          "outcome_fields": [
+            "correct",
+            "error",
+            "label_correct",
+            "output",
+            "predicted_skill"
+          ],
+          "outcome_count": 96,
+          "composition_trace_fields": [
+            "error",
+            "output",
+            "prediction"
+          ]
+        }
+      },
+      "missing": [
+        "per_query_normalized_input_and_sha256",
+        "gold_evidence_support_sets",
+        "current_authorized_record_snapshot",
+        "common_per_cell_candidate_pools",
+        "per_cell_local_selections",
+        "routed_cell_set",
+        "executor_evidence_ids"
+      ]
+    }
+  ],
+  "historical_source_commit": "c991ad02f1cba86471cbba59c9756a678a18ecf7",
+  "pin_registry_sha256": "58d71c7fbea2cd1ed583ba4fa7668e18a623b56be49e05aa767de522a5919943",
+  "new_model_runs": 0,
+  "new_independent_queries": 0,
+  "production_activation_allowed": false,
+  "reason": "Final predicted skill/output and composition execution steps do not bind the actual per-query input or identify candidate coverage, expert-local scoring or cross-expert routing. No trace was synthesized.",
+  "analyzer_sha256": "8485541eb306b7633417e7f606dcadf0676e937631280830788eb8e8cca950f3",
+  "comparator_sha256": "18a948695925b18398f857017a05087815c445813049d53e39e4fec5e417ed48"
+}

@@ -1,0 +1,43 @@
+{
+  "schema": "hepta.memory.historical-type-audit.v1",
+  "recorded_at": "2026-11-05T16:31:18.078066+00:00",
+  "source_ref": "6d2551388ed42355f02afbf528472ee2b4d8488b",
+  "inputs": {
+    "semantic_holdout.json": {
+      "git_blob": "e9b997dc16d0a600dbbc133dfd9acd20c8eda8e4",
+      "sha256": "4da3efbd4777da5af2dfdd79e23cd65f2ce7bc259cd1e0c1440fa5e36decc101",
+      "bytes": 65852
+    },
+    "semantic-17.json": {
+      "git_blob": "1f31bd44f8b3730323dac9a52ed7c73d8976219f",
+      "sha256": "1a3e7cffadc4b6f78e520fa08d88379824366195794335254e262da864d257c8",
+      "bytes": 794754
+    },
+    "semantic-29.json": {
+      "git_blob": "f61bcb0e76fe1fe672a3e03ebce96c38d808ffd1",
+      "sha256": "2d4f8df185a6f2947a9709307071563ddc895c884dde7790631979f623837ad8",
+      "bytes": 790858
+    },
+    "semantic-43.json": {
+      "git_blob": "f1fc33f70858e1cd935fb9eb882271ab1c2f9a09",
+      "sha256": "c62bf36a849a54c5698b76b9145ce8a671643f802b55bf9fbf62d0f7923751e8",
+      "bytes": 789066
+    }
+  },
+  "counts": {
+    "single_outputs": 4032,
+    "composition_outputs": 504
+  },
+  "changes": [],
+  "type_comparison_changes": 0,
+  "source_sha256": {
+    "typed_json.py": "18a948695925b18398f857017a05087815c445813049d53e39e4fec5e417ed48",
+    "audit_v14.py": "58d71c7fbea2cd1ed583ba4fa7668e18a623b56be49e05aa767de522a5919943"
+  },
+  "audit_script_sha256": "f47d40e8b7ed6742f0a6f9a701809855e1ffd1676770748cfe9e8f6c00c70d86",
+  "new_model_runs": 0,
+  "new_executor_runs": 0,
+  "new_independent_samples": 0,
+  "scope": "Read-only rescoring of recorded outputs; no new model, executor, fixture or independent generalization evidence.",
+  "production_activation_allowed": false
+}
