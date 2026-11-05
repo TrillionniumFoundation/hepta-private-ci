@@ -569,7 +569,7 @@ async fn run_operation_reconciler(
     }
 }
 
-async fn monitor_runtime(
+pub(crate) async fn monitor_runtime(
     state: Arc<AgentdState>,
     cancellation: CancellationToken,
 ) -> Result<(), AgentdError> {

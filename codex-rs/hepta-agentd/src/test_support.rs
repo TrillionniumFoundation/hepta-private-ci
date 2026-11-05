@@ -13,11 +13,10 @@ use std::path::Path;
 use std::path::PathBuf;
 use std::sync::Arc;
 use std::time::Duration;
-use std::time::Instant;
 use std::time::SystemTime;
 use std::time::UNIX_EPOCH;
 
-use codex_arg0::Arg0DispatchPaths;
+pub use codex_arg0::Arg0DispatchPaths;
 use codex_hepta_contracts::AgentId;
 use codex_hepta_fleet::AgentLifecycle;
 use codex_hepta_fleet::AgentManifest;
@@ -48,6 +47,7 @@ use crate::AgentdControlServer;
 use crate::AgentdIdentity;
 use crate::AgentdState;
 use crate::app_runtime::run_app_server;
+use crate::runtime::monitor_runtime;
 
 pub type TestResult<T> = Result<T, Box<dyn StdError + Send + Sync>>;
 
@@ -69,14 +69,19 @@ pub struct CognitiveTestHost {
     cancellation: CancellationToken,
     control_task: Option<JoinHandle<Result<(), crate::AgentdError>>>,
     app_server_task: Option<JoinHandle<std::io::Result<()>>>,
+    readiness_task: Option<JoinHandle<Result<(), crate::AgentdError>>>,
 }
 
 impl CognitiveTestHost {
+    /// Start the real runtime using executable paths supplied by the test host.
+    /// The caller owns same-build helper dispatch; this fixture never guesses
+    /// whether its current executable implements the Codex helper modes.
     pub async fn start(
         root: PathBuf,
         agent_id: AgentId,
         model: &str,
         provider_base_url: &str,
+        arg0_paths: Arg0DispatchPaths,
     ) -> TestResult<Self> {
         validate_config_scalar(model, "model")?;
         validate_config_scalar(provider_base_url, "provider base URL")?;
@@ -118,11 +123,15 @@ impl CognitiveTestHost {
         state.attach_cognitive_store(Arc::clone(&store))?;
         registry.compare_and_transition(&agent_id, 1, AgentLifecycle::Running)?;
         state.refresh_generation()?;
+        // Derive the same owner-local prerequisites as production startup.
+        // Only the real App Server probe below can open runtime admission.
+        state.mark_runtime_prerequisites_ready()?;
 
         codex_utils_home_dir::set_process_codex_home_override(
             AbsolutePathBuf::from_absolute_path(identity.home_root.clone())?,
         )?;
 
+        let client = AgentdClient::new(identity.control_socket.clone(), agent_id.clone(), 1)?;
         let cancellation = CancellationToken::new();
         let control = AgentdControlServer::bind(
             identity.control_socket.clone(),
@@ -133,42 +142,19 @@ impl CognitiveTestHost {
         let control_task = tokio::spawn(control.run());
         let app_server_task = tokio::spawn(run_app_server(
             identity.clone(),
-            Arg0DispatchPaths::default(),
+            arg0_paths,
             CognitiveRuntime::Available(Arc::clone(&store)),
             Arc::clone(&state),
             /*production_writer_host*/ None,
             crate::app_runtime::AppServerSocket::Bind,
             crate::app_runtime::AppServerModelToolProfile::Standard,
         ));
+        let readiness_task =
+            tokio::spawn(monitor_runtime(Arc::clone(&state), cancellation.clone()));
 
-        let deadline = Instant::now() + READY_TIMEOUT;
-        while !identity.app_server_socket.exists() {
-            if app_server_task.is_finished() {
-                let outcome = app_server_task.await?;
-                return Err(
-                    format!("Agentd test App Server exited before readiness: {outcome:?}").into(),
-                );
-            }
-            if Instant::now() >= deadline {
-                return Err("timed out waiting for Agentd test App Server socket".into());
-            }
-            tokio::time::sleep(Duration::from_millis(10)).await;
-        }
-        state.mark_app_server_ready()?;
-
-        let client = AgentdClient::new(identity.control_socket.clone(), agent_id.clone(), 1)?;
-        let deadline = Instant::now() + READY_TIMEOUT;
-        loop {
-            match client.health().await {
-                Ok(health) if health.ready => break,
-                _ if Instant::now() >= deadline => {
-                    return Err("timed out waiting for Agentd test control readiness".into());
-                }
-                _ => tokio::time::sleep(Duration::from_millis(10)).await,
-            }
-        }
-
-        Ok(Self {
+        // Own every task before the first startup await so cancellation of
+        // this future also cancels and aborts the runtime through Drop.
+        let mut host = Self {
             _root: root,
             agent_id,
             layout: identity.layout,
@@ -176,7 +162,67 @@ impl CognitiveTestHost {
             cancellation,
             control_task: Some(control_task),
             app_server_task: Some(app_server_task),
-        })
+            readiness_task: Some(readiness_task),
+        };
+        let startup: TestResult<()> = async {
+            let socket_ready: TestResult<()> = tokio::time::timeout(READY_TIMEOUT, async {
+                while !host.layout.app_server_socket().exists() {
+                    host.require_running_tasks().await?;
+                    tokio::time::sleep(Duration::from_millis(10)).await;
+                }
+                Ok(())
+            })
+            .await
+            .map_err(|_| "timed out waiting for Agentd test App Server socket")?;
+            socket_ready?;
+
+            let control_ready: TestResult<()> = tokio::time::timeout(READY_TIMEOUT, async {
+                loop {
+                    host.require_running_tasks().await?;
+                    if let Ok(health) = client.health().await
+                        && health.ready
+                    {
+                        break;
+                    }
+                    tokio::time::sleep(Duration::from_millis(10)).await;
+                }
+                Ok(())
+            })
+            .await
+            .map_err(|_| "timed out waiting for Agentd test control readiness")?;
+            control_ready?;
+            Ok(())
+        }
+        .await;
+        if let Err(error) = startup {
+            host.shutdown().await;
+            return Err(error);
+        }
+        Ok(host)
+    }
+
+    async fn require_running_tasks(&mut self) -> TestResult<()> {
+        for (name, slot) in [
+            ("control server", &mut self.control_task),
+            ("readiness monitor", &mut self.readiness_task),
+        ] {
+            if slot.as_ref().is_some_and(JoinHandle::is_finished)
+                && let Some(task) = slot.take()
+            {
+                task.await??;
+                return Err(format!("Agentd test {name} exited before readiness").into());
+            }
+        }
+        if self
+            .app_server_task
+            .as_ref()
+            .is_some_and(JoinHandle::is_finished)
+            && let Some(task) = self.app_server_task.take()
+        {
+            task.await??;
+            return Err("Agentd test App Server exited before readiness".into());
+        }
+        Ok(())
     }
 
     pub fn agent_id(&self) -> &AgentId {
@@ -273,27 +319,35 @@ impl CognitiveTestHost {
     }
 
     pub async fn shutdown(mut self) {
-        self.cancellation.cancel();
+        self.cancel_tasks();
+        if let Some(task) = self.readiness_task.take() {
+            let _ = task.await;
+        }
         if let Some(task) = self.control_task.take() {
-            task.abort();
             let _ = task.await;
         }
         if let Some(task) = self.app_server_task.take() {
-            task.abort();
             let _ = task.await;
         }
     }
-}
 
-impl Drop for CognitiveTestHost {
-    fn drop(&mut self) {
+    fn cancel_tasks(&self) {
         self.cancellation.cancel();
+        if let Some(task) = self.readiness_task.as_ref() {
+            task.abort();
+        }
         if let Some(task) = self.control_task.as_ref() {
             task.abort();
         }
         if let Some(task) = self.app_server_task.as_ref() {
             task.abort();
         }
+    }
+}
+
+impl Drop for CognitiveTestHost {
+    fn drop(&mut self) {
+        self.cancel_tasks();
     }
 }
 

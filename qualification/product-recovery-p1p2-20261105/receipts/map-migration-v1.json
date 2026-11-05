@@ -1,0 +1,1380 @@
+{
+  "schema_version": 1,
+  "phase": "migration_completed_pending_review",
+  "payload": {
+    "schema_version": 1,
+    "task_root": "/data/hepta-p1p2-20261105-05ef",
+    "source_repo": "/data/hepta-p1p2-20261105-05ef/exact-r3-source",
+    "s1_head": "39b81b33e4e8071b1f8dfe7c9804d44c4dcdefc0",
+    "s1_tree": "e15523424da7b3b0a3dc56bbb41b09c00a1778f6",
+    "expected_clean": true
+  },
+  "payload_sha256": "6f872c152bb2c1ce642aa5f3ff82ca69b12188341b0ad4ec92dc2d0d922b6249",
+  "commands": [
+    {
+      "name": "git-root",
+      "argv": [
+        "git",
+        "--literal-pathspecs",
+        "-c",
+        "core.fsmonitor=false",
+        "rev-parse",
+        "--show-toplevel"
+      ],
+      "cwd": "/data/hepta-p1p2-20261105-05ef/exact-r3-source",
+      "started_unix_seconds": 1793871936.1940367,
+      "exit": 0,
+      "log": "01-git-root.log",
+      "seconds": 0.04013820306863636,
+      "finished_unix_seconds": 1793871936.2347252,
+      "raw_log_bytes": 47,
+      "raw_log_sha256": "6b570ce5273547b6ce688aba2a69b391609b211e145cef951134b74a9dc376c6"
+    },
+    {
+      "name": "head-before",
+      "argv": [
+        "git",
+        "--literal-pathspecs",
+        "-c",
+        "core.fsmonitor=false",
+        "rev-parse",
+        "HEAD"
+      ],
+      "cwd": "/data/hepta-p1p2-20261105-05ef/exact-r3-source",
+      "started_unix_seconds": 1793871936.2358248,
+      "exit": 0,
+      "log": "02-head-before.log",
+      "seconds": 0.02584822103381157,
+      "finished_unix_seconds": 1793871936.262225,
+      "raw_log_bytes": 41,
+      "raw_log_sha256": "4b1a1dfa68362067222351f703cbca5f0c8ec1cb5892b9096bba46042e8b1a57"
+    },
+    {
+      "name": "tree-before",
+      "argv": [
+        "git",
+        "--literal-pathspecs",
+        "-c",
+        "core.fsmonitor=false",
+        "rev-parse",
+        "HEAD^{tree}"
+      ],
+      "cwd": "/data/hepta-p1p2-20261105-05ef/exact-r3-source",
+      "started_unix_seconds": 1793871936.2630548,
+      "exit": 0,
+      "log": "03-tree-before.log",
+      "seconds": 0.02643050393089652,
+      "finished_unix_seconds": 1793871936.2900288,
+      "raw_log_bytes": 41,
+      "raw_log_sha256": "71396d34d7e2606baa1e9eedead6d26a01dc9826903150fe3c4db12cae7baca8"
+    },
+    {
+      "name": "status-before",
+      "argv": [
+        "git",
+        "--literal-pathspecs",
+        "-c",
+        "core.fsmonitor=false",
+        "status",
+        "--porcelain=v1",
+        "-z",
+        "--untracked-files=all"
+      ],
+      "cwd": "/data/hepta-p1p2-20261105-05ef/exact-r3-source",
+      "started_unix_seconds": 1793871936.2905192,
+      "exit": 0,
+      "log": "04-status-before.log",
+      "seconds": 0.05534854799043387,
+      "finished_unix_seconds": 1793871936.3462362,
+      "raw_log_bytes": 0,
+      "raw_log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "index-before",
+      "argv": [
+        "git",
+        "--literal-pathspecs",
+        "-c",
+        "core.fsmonitor=false",
+        "ls-files",
+        "--stage",
+        "-z"
+      ],
+      "cwd": "/data/hepta-p1p2-20261105-05ef/exact-r3-source",
+      "started_unix_seconds": 1793871936.3473945,
+      "exit": 0,
+      "log": "05-index-before.log",
+      "seconds": 0.01564067101571709,
+      "finished_unix_seconds": 1793871936.3637614,
+      "raw_log_bytes": 1198843,
+      "raw_log_sha256": "42a836fa9c1aa9e4252529297e8bc5aa56b4309a253160a5f1103b1a5a15b73e"
+    },
+    {
+      "name": "flags-before",
+      "argv": [
+        "git",
+        "--literal-pathspecs",
+        "-c",
+        "core.fsmonitor=false",
+        "ls-files",
+        "-v",
+        "-z"
+      ],
+      "cwd": "/data/hepta-p1p2-20261105-05ef/exact-r3-source",
+      "started_unix_seconds": 1793871936.3707044,
+      "exit": 0,
+      "log": "06-flags-before.log",
+      "seconds": 0.010327790980227292,
+      "finished_unix_seconds": 1793871936.3814468,
+      "raw_log_bytes": 679579,
+      "raw_log_sha256": "8a57a185c5ed209c39b3c3b3ff266d33d93da5e0727255200d37010795a635d9"
+    },
+    {
+      "name": "tool-0",
+      "argv": [
+        "git",
+        "--literal-pathspecs",
+        "-c",
+        "core.fsmonitor=false",
+        "rev-parse",
+        "HEAD:scripts/hepta-implementation-maps.py"
+      ],
+      "cwd": "/data/hepta-p1p2-20261105-05ef/exact-r3-source",
+      "started_unix_seconds": 1793871936.3851078,
+      "exit": 0,
+      "log": "07-tool-0.log",
+      "seconds": 0.0040393510134890676,
+      "finished_unix_seconds": 1793871936.3895783,
+      "raw_log_bytes": 41,
+      "raw_log_sha256": "aedbb612e35536897561d3548cae6470f578f89a11ae59b1a881055c8d04bb81"
+    },
+    {
+      "name": "tool-1",
+      "argv": [
+        "git",
+        "--literal-pathspecs",
+        "-c",
+        "core.fsmonitor=false",
+        "rev-parse",
+        "HEAD:scripts/hepta_module_source_roots.py"
+      ],
+      "cwd": "/data/hepta-p1p2-20261105-05ef/exact-r3-source",
+      "started_unix_seconds": 1793871936.3902485,
+      "exit": 0,
+      "log": "08-tool-1.log",
+      "seconds": 0.004320112988352776,
+      "finished_unix_seconds": 1793871936.3949847,
+      "raw_log_bytes": 41,
+      "raw_log_sha256": "2fa3796a8466fb196185dc4462ecdcf201f2f56ea5a5e950e80dc6df6716f13f"
+    },
+    {
+      "name": "registry-before",
+      "argv": [
+        "git",
+        "--literal-pathspecs",
+        "-c",
+        "core.fsmonitor=false",
+        "show",
+        "HEAD:docs/modules/MODULES.json"
+      ],
+      "cwd": "/data/hepta-p1p2-20261105-05ef/exact-r3-source",
+      "started_unix_seconds": 1793871936.3967428,
+      "exit": 0,
+      "log": "09-registry-before.log",
+      "seconds": 0.005119899986311793,
+      "finished_unix_seconds": 1793871936.4023561,
+      "raw_log_bytes": 60119,
+      "raw_log_sha256": "468ce01963e5665ad0b39df7c69a0c630bb93e2168f4d669dd4f8dea55e17716"
+    },
+    {
+      "name": "map-before-00",
+      "argv": [
+        "git",
+        "--literal-pathspecs",
+        "-c",
+        "core.fsmonitor=false",
+        "show",
+        "HEAD:docs/modules/platform.types/IMPLEMENTATION_MAP.json"
+      ],
+      "cwd": "/data/hepta-p1p2-20261105-05ef/exact-r3-source",
+      "started_unix_seconds": 1793871936.4054513,
+      "exit": 0,
+      "log": "10-map-before-00.log",
+      "seconds": 0.006505565019324422,
+      "finished_unix_seconds": 1793871936.4129553,
+      "raw_log_bytes": 9939,
+      "raw_log_sha256": "e2f5649ee5ed76f3e13d5e7f1d578391fa0953dbc689a8cac658382173942110"
+    },
+    {
+      "name": "map-before-01",
+      "argv": [
+        "git",
+        "--literal-pathspecs",
+        "-c",
+        "core.fsmonitor=false",
+        "show",
+        "HEAD:docs/modules/platform.wire/IMPLEMENTATION_MAP.json"
+      ],
+      "cwd": "/data/hepta-p1p2-20261105-05ef/exact-r3-source",
+      "started_unix_seconds": 1793871936.4144545,
+      "exit": 0,
+      "log": "11-map-before-01.log",
+      "seconds": 0.00569465896114707,
+      "finished_unix_seconds": 1793871936.421104,
+      "raw_log_bytes": 7972,
+      "raw_log_sha256": "f24afecff5549f86f5aa19868f415d4163a49b2db2c844a3afe10a06455afac9"
+    },
+    {
+      "name": "map-before-02",
+      "argv": [
+        "git",
+        "--literal-pathspecs",
+        "-c",
+        "core.fsmonitor=false",
+        "show",
+        "HEAD:docs/modules/kernel.authority/IMPLEMENTATION_MAP.json"
+      ],
+      "cwd": "/data/hepta-p1p2-20261105-05ef/exact-r3-source",
+      "started_unix_seconds": 1793871936.4226012,
+      "exit": 0,
+      "log": "12-map-before-02.log",
+      "seconds": 0.005510444985702634,
+      "finished_unix_seconds": 1793871936.4290924,
+      "raw_log_bytes": 11357,
+      "raw_log_sha256": "787c3d2ab166acf4e0891aa083586903e391524dd1fa012b5c4a92acd0d4ee7a"
+    },
+    {
+      "name": "map-before-03",
+      "argv": [
+        "git",
+        "--literal-pathspecs",
+        "-c",
+        "core.fsmonitor=false",
+        "show",
+        "HEAD:docs/modules/kernel.operations/IMPLEMENTATION_MAP.json"
+      ],
+      "cwd": "/data/hepta-p1p2-20261105-05ef/exact-r3-source",
+      "started_unix_seconds": 1793871936.4302921,
+      "exit": 0,
+      "log": "13-map-before-03.log",
+      "seconds": 0.0058415449457243085,
+      "finished_unix_seconds": 1793871936.436683,
+      "raw_log_bytes": 16840,
+      "raw_log_sha256": "40d51193fbfa448df57d8887e06bd3a303e6dc78a9312634daf2259410c888d6"
+    },
+    {
+      "name": "map-before-04",
+      "argv": [
+        "git",
+        "--literal-pathspecs",
+        "-c",
+        "core.fsmonitor=false",
+        "show",
+        "HEAD:docs/modules/kernel.evidence/IMPLEMENTATION_MAP.json"
+      ],
+      "cwd": "/data/hepta-p1p2-20261105-05ef/exact-r3-source",
+      "started_unix_seconds": 1793871936.4377375,
+      "exit": 0,
+      "log": "14-map-before-04.log",
+      "seconds": 0.005137042026035488,
+      "finished_unix_seconds": 1793871936.4434311,
+      "raw_log_bytes": 6791,
+      "raw_log_sha256": "b816131a7e43e26f353519f74c9af8e06489f633776004b14ed107757462bb73"
+    },
+    {
+      "name": "map-before-05",
+      "argv": [
+        "git",
+        "--literal-pathspecs",
+        "-c",
+        "core.fsmonitor=false",
+        "show",
+        "HEAD:docs/modules/runtime.supervisor/IMPLEMENTATION_MAP.json"
+      ],
+      "cwd": "/data/hepta-p1p2-20261105-05ef/exact-r3-source",
+      "started_unix_seconds": 1793871936.4443655,
+      "exit": 0,
+      "log": "15-map-before-05.log",
+      "seconds": 0.005364564014598727,
+      "finished_unix_seconds": 1793871936.450339,
+      "raw_log_bytes": 18249,
+      "raw_log_sha256": "362f4f5ca0a88f603099f4c0f02c434945d81b3210fa2af833de4be4332f4d69"
+    },
+    {
+      "name": "map-before-06",
+      "argv": [
+        "git",
+        "--literal-pathspecs",
+        "-c",
+        "core.fsmonitor=false",
+        "show",
+        "HEAD:docs/modules/runtime.fleet/IMPLEMENTATION_MAP.json"
+      ],
+      "cwd": "/data/hepta-p1p2-20261105-05ef/exact-r3-source",
+      "started_unix_seconds": 1793871936.451621,
+      "exit": 0,
+      "log": "16-map-before-06.log",
+      "seconds": 0.005449174088425934,
+      "finished_unix_seconds": 1793871936.457762,
+      "raw_log_bytes": 4570,
+      "raw_log_sha256": "c2f6cb4612a8067c3e548e4366ad2014c4d38851682e29b300c8eb00d3044f93"
+    },
+    {
+      "name": "map-before-07",
+      "argv": [
+        "git",
+        "--literal-pathspecs",
+        "-c",
+        "core.fsmonitor=false",
+        "show",
+        "HEAD:docs/modules/runtime.agentd/IMPLEMENTATION_MAP.json"
+      ],
+      "cwd": "/data/hepta-p1p2-20261105-05ef/exact-r3-source",
+      "started_unix_seconds": 1793871936.4587343,
+      "exit": 0,
+      "log": "17-map-before-07.log",
+      "seconds": 0.005131101002916694,
+      "finished_unix_seconds": 1793871936.4645534,
+      "raw_log_bytes": 17344,
+      "raw_log_sha256": "fdec79bc475c6578dda563e552e42b4265215824e60738f5807003cb16e62deb"
+    },
+    {
+      "name": "map-before-08",
+      "argv": [
+        "git",
+        "--literal-pathspecs",
+        "-c",
+        "core.fsmonitor=false",
+        "show",
+        "HEAD:docs/modules/runtime.codex/IMPLEMENTATION_MAP.json"
+      ],
+      "cwd": "/data/hepta-p1p2-20261105-05ef/exact-r3-source",
+      "started_unix_seconds": 1793871936.4657362,
+      "exit": 0,
+      "log": "18-map-before-08.log",
+      "seconds": 0.004998827003873885,
+      "finished_unix_seconds": 1793871936.4714599,
+      "raw_log_bytes": 15869,
+      "raw_log_sha256": "08b10bad948d2fc0e05a9a060a4c02fff4dd9fddba760a1dcada60f6262edbbb"
+    },
+    {
+      "name": "map-before-09",
+      "argv": [
+        "git",
+        "--literal-pathspecs",
+        "-c",
+        "core.fsmonitor=false",
+        "show",
+        "HEAD:docs/modules/auth.authbus/IMPLEMENTATION_MAP.json"
+      ],
+      "cwd": "/data/hepta-p1p2-20261105-05ef/exact-r3-source",
+      "started_unix_seconds": 1793871936.4725814,
+      "exit": 0,
+      "log": "19-map-before-09.log",
+      "seconds": 0.004420554032549262,
+      "finished_unix_seconds": 1793871936.4777718,
+      "raw_log_bytes": 2831,
+      "raw_log_sha256": "46b8416e7981e4638379e27626d73335e21bc2cef65ac041c7720d982770a4cf"
+    },
+    {
+      "name": "map-before-10",
+      "argv": [
+        "git",
+        "--literal-pathspecs",
+        "-c",
+        "core.fsmonitor=false",
+        "show",
+        "HEAD:docs/modules/secrets.heptabao/IMPLEMENTATION_MAP.json"
+      ],
+      "cwd": "/data/hepta-p1p2-20261105-05ef/exact-r3-source",
+      "started_unix_seconds": 1793871936.4787185,
+      "exit": 0,
+      "log": "20-map-before-10.log",
+      "seconds": 0.005362596013583243,
+      "finished_unix_seconds": 1793871936.4849415,
+      "raw_log_bytes": 3880,
+      "raw_log_sha256": "9e5c8a5efa822b2bbac223e04198c0427f0d9206594614e1783a1ecb708377db"
+    },
+    {
+      "name": "map-before-11",
+      "argv": [
+        "git",
+        "--literal-pathspecs",
+        "-c",
+        "core.fsmonitor=false",
+        "show",
+        "HEAD:docs/modules/inference.control/IMPLEMENTATION_MAP.json"
+      ],
+      "cwd": "/data/hepta-p1p2-20261105-05ef/exact-r3-source",
+      "started_unix_seconds": 1793871936.486014,
+      "exit": 0,
+      "log": "21-map-before-11.log",
+      "seconds": 0.004515061038546264,
+      "finished_unix_seconds": 1793871936.4912946,
+      "raw_log_bytes": 6922,
+      "raw_log_sha256": "8aab0d6018eb257844d32c62e37c82b24f5b8b4a75ebc1f56b890b0eeab03816"
+    },
+    {
+      "name": "map-before-12",
+      "argv": [
+        "git",
+        "--literal-pathspecs",
+        "-c",
+        "core.fsmonitor=false",
+        "show",
+        "HEAD:docs/modules/inference.worker/IMPLEMENTATION_MAP.json"
+      ],
+      "cwd": "/data/hepta-p1p2-20261105-05ef/exact-r3-source",
+      "started_unix_seconds": 1793871936.4923818,
+      "exit": 0,
+      "log": "22-map-before-12.log",
+      "seconds": 0.004823220078833401,
+      "finished_unix_seconds": 1793871936.4980032,
+      "raw_log_bytes": 6336,
+      "raw_log_sha256": "68a20d8fea7eaea8b7b0b29db3bf80d9a876e2459d5c4ff893a7ee57087308c1"
+    },
+    {
+      "name": "map-before-13",
+      "argv": [
+        "git",
+        "--literal-pathspecs",
+        "-c",
+        "core.fsmonitor=false",
+        "show",
+        "HEAD:docs/modules/objective.compiler/IMPLEMENTATION_MAP.json"
+      ],
+      "cwd": "/data/hepta-p1p2-20261105-05ef/exact-r3-source",
+      "started_unix_seconds": 1793871936.4990048,
+      "exit": 0,
+      "log": "23-map-before-13.log",
+      "seconds": 0.004838992957957089,
+      "finished_unix_seconds": 1793871936.5046256,
+      "raw_log_bytes": 18523,
+      "raw_log_sha256": "c9c90dbcd02f4933ffb9149e1b9c2d9b3d4144b40cd3d50c9b695f99fa39ab04"
+    },
+    {
+      "name": "map-before-14",
+      "argv": [
+        "git",
+        "--literal-pathspecs",
+        "-c",
+        "core.fsmonitor=false",
+        "show",
+        "HEAD:docs/modules/utility.ndu/IMPLEMENTATION_MAP.json"
+      ],
+      "cwd": "/data/hepta-p1p2-20261105-05ef/exact-r3-source",
+      "started_unix_seconds": 1793871936.5060706,
+      "exit": 0,
+      "log": "24-map-before-14.log",
+      "seconds": 0.004549080040305853,
+      "finished_unix_seconds": 1793871936.511492,
+      "raw_log_bytes": 27997,
+      "raw_log_sha256": "cfa9b8b3968ceeb86bc472cc21ce6e70d9800719e12d616b31873684f330402d"
+    },
+    {
+      "name": "map-before-15",
+      "argv": [
+        "git",
+        "--literal-pathspecs",
+        "-c",
+        "core.fsmonitor=false",
+        "show",
+        "HEAD:docs/modules/neuron.runtime/IMPLEMENTATION_MAP.json"
+      ],
+      "cwd": "/data/hepta-p1p2-20261105-05ef/exact-r3-source",
+      "started_unix_seconds": 1793871936.5128226,
+      "exit": 0,
+      "log": "25-map-before-15.log",
+      "seconds": 0.0045848810113966465,
+      "finished_unix_seconds": 1793871936.5181568,
+      "raw_log_bytes": 11292,
+      "raw_log_sha256": "17f3eae413b39ca8921725968dce32a22e73f6585dfb15194ab33978ec7ff08a"
+    },
+    {
+      "name": "map-before-16",
+      "argv": [
+        "git",
+        "--literal-pathspecs",
+        "-c",
+        "core.fsmonitor=false",
+        "show",
+        "HEAD:docs/modules/intuition.policy/IMPLEMENTATION_MAP.json"
+      ],
+      "cwd": "/data/hepta-p1p2-20261105-05ef/exact-r3-source",
+      "started_unix_seconds": 1793871936.5192325,
+      "exit": 0,
+      "log": "26-map-before-16.log",
+      "seconds": 0.004175259964540601,
+      "finished_unix_seconds": 1793871936.5241935,
+      "raw_log_bytes": 2300,
+      "raw_log_sha256": "ee626e5604c144fbebca5d37b391fd8e2f913c8abbeb9ab65e05cea5b61cf4c0"
+    },
+    {
+      "name": "map-before-17",
+      "argv": [
+        "git",
+        "--literal-pathspecs",
+        "-c",
+        "core.fsmonitor=false",
+        "show",
+        "HEAD:docs/modules/prompt.registry/IMPLEMENTATION_MAP.json"
+      ],
+      "cwd": "/data/hepta-p1p2-20261105-05ef/exact-r3-source",
+      "started_unix_seconds": 1793871936.5252283,
+      "exit": 0,
+      "log": "27-map-before-17.log",
+      "seconds": 0.004465311067178845,
+      "finished_unix_seconds": 1793871936.5305057,
+      "raw_log_bytes": 2709,
+      "raw_log_sha256": "dbd4e49bff28ddcbf8ccea66d2912f13f0a8706228ee34ed71eac29790d2a0d6"
+    },
+    {
+      "name": "map-before-18",
+      "argv": [
+        "git",
+        "--literal-pathspecs",
+        "-c",
+        "core.fsmonitor=false",
+        "show",
+        "HEAD:docs/modules/prompt.optimizer/IMPLEMENTATION_MAP.json"
+      ],
+      "cwd": "/data/hepta-p1p2-20261105-05ef/exact-r3-source",
+      "started_unix_seconds": 1793871936.5315351,
+      "exit": 0,
+      "log": "28-map-before-18.log",
+      "seconds": 0.005887356004677713,
+      "finished_unix_seconds": 1793871936.5382607,
+      "raw_log_bytes": 2295,
+      "raw_log_sha256": "243fda33cf9be9a02c7714ad34807e3e569a5d61aacc78f8665f0247ad6ab277"
+    },
+    {
+      "name": "map-before-19",
+      "argv": [
+        "git",
+        "--literal-pathspecs",
+        "-c",
+        "core.fsmonitor=false",
+        "show",
+        "HEAD:docs/modules/context.compiler/IMPLEMENTATION_MAP.json"
+      ],
+      "cwd": "/data/hepta-p1p2-20261105-05ef/exact-r3-source",
+      "started_unix_seconds": 1793871936.5393395,
+      "exit": 0,
+      "log": "29-map-before-19.log",
+      "seconds": 0.004705273080617189,
+      "finished_unix_seconds": 1793871936.5449085,
+      "raw_log_bytes": 10201,
+      "raw_log_sha256": "d0571848b065c088ba8ed039f997a75b64a1ebf0e0e2c2ee0c42b9a4fe4ed046"
+    },
+    {
+      "name": "map-before-20",
+      "argv": [
+        "git",
+        "--literal-pathspecs",
+        "-c",
+        "core.fsmonitor=false",
+        "show",
+        "HEAD:docs/modules/intelligence.control/IMPLEMENTATION_MAP.json"
+      ],
+      "cwd": "/data/hepta-p1p2-20261105-05ef/exact-r3-source",
+      "started_unix_seconds": 1793871936.5460536,
+      "exit": 0,
+      "log": "30-map-before-20.log",
+      "seconds": 0.004758063005283475,
+      "finished_unix_seconds": 1793871936.5517528,
+      "raw_log_bytes": 27689,
+      "raw_log_sha256": "261a27a7a69cdf316feeb855e30eb1b96d0aab06ad013182fcb865b5775d4b9f"
+    },
+    {
+      "name": "map-before-21",
+      "argv": [
+        "git",
+        "--literal-pathspecs",
+        "-c",
+        "core.fsmonitor=false",
+        "show",
+        "HEAD:docs/modules/cognitive.types/IMPLEMENTATION_MAP.json"
+      ],
+      "cwd": "/data/hepta-p1p2-20261105-05ef/exact-r3-source",
+      "started_unix_seconds": 1793871936.5532749,
+      "exit": 0,
+      "log": "31-map-before-21.log",
+      "seconds": 0.004219221067614853,
+      "finished_unix_seconds": 1793871936.5583823,
+      "raw_log_bytes": 11120,
+      "raw_log_sha256": "46eed2cc572ac26096a82e79424190d0ce8aadd34bff6f270673819d5239b8ee"
+    },
+    {
+      "name": "map-before-22",
+      "argv": [
+        "git",
+        "--literal-pathspecs",
+        "-c",
+        "core.fsmonitor=false",
+        "show",
+        "HEAD:docs/modules/cognitive.store/IMPLEMENTATION_MAP.json"
+      ],
+      "cwd": "/data/hepta-p1p2-20261105-05ef/exact-r3-source",
+      "started_unix_seconds": 1793871936.5599298,
+      "exit": 0,
+      "log": "32-map-before-22.log",
+      "seconds": 0.00562503095716238,
+      "finished_unix_seconds": 1793871936.5664601,
+      "raw_log_bytes": 14770,
+      "raw_log_sha256": "b48b3821baa63041bc2a18741c282eb62c2f869c4560c397cbe04ee892346cea"
+    },
+    {
+      "name": "map-before-23",
+      "argv": [
+        "git",
+        "--literal-pathspecs",
+        "-c",
+        "core.fsmonitor=false",
+        "show",
+        "HEAD:docs/modules/cognitive.read/IMPLEMENTATION_MAP.json"
+      ],
+      "cwd": "/data/hepta-p1p2-20261105-05ef/exact-r3-source",
+      "started_unix_seconds": 1793871936.5681458,
+      "exit": 0,
+      "log": "33-map-before-23.log",
+      "seconds": 0.004500053008086979,
+      "finished_unix_seconds": 1793871936.5738392,
+      "raw_log_bytes": 14146,
+      "raw_log_sha256": "6ce095a039d1afab06dbe0de443efdc3c6f917d71dcb16d01452270905caca85"
+    },
+    {
+      "name": "map-before-24",
+      "argv": [
+        "git",
+        "--literal-pathspecs",
+        "-c",
+        "core.fsmonitor=false",
+        "show",
+        "HEAD:docs/modules/memory.retrieval/IMPLEMENTATION_MAP.json"
+      ],
+      "cwd": "/data/hepta-p1p2-20261105-05ef/exact-r3-source",
+      "started_unix_seconds": 1793871936.5753706,
+      "exit": 0,
+      "log": "34-map-before-24.log",
+      "seconds": 0.005739668034948409,
+      "finished_unix_seconds": 1793871936.5822551,
+      "raw_log_bytes": 12703,
+      "raw_log_sha256": "319e582f9d52414c2bc1446a74859ca77875ff394a8324bde0051a3d277b3bbc"
+    },
+    {
+      "name": "map-before-25",
+      "argv": [
+        "git",
+        "--literal-pathspecs",
+        "-c",
+        "core.fsmonitor=false",
+        "show",
+        "HEAD:docs/modules/memory.federation/IMPLEMENTATION_MAP.json"
+      ],
+      "cwd": "/data/hepta-p1p2-20261105-05ef/exact-r3-source",
+      "started_unix_seconds": 1793871936.5838199,
+      "exit": 0,
+      "log": "35-map-before-25.log",
+      "seconds": 0.005563350976444781,
+      "finished_unix_seconds": 1793871936.5905485,
+      "raw_log_bytes": 10103,
+      "raw_log_sha256": "6a20fac8af4010780aa35ec5d32017dee98fdad97a113bc5d62602fd44946e18"
+    },
+    {
+      "name": "map-before-26",
+      "argv": [
+        "git",
+        "--literal-pathspecs",
+        "-c",
+        "core.fsmonitor=false",
+        "show",
+        "HEAD:docs/modules/knowledge.graph/IMPLEMENTATION_MAP.json"
+      ],
+      "cwd": "/data/hepta-p1p2-20261105-05ef/exact-r3-source",
+      "started_unix_seconds": 1793871936.592084,
+      "exit": 0,
+      "log": "36-map-before-26.log",
+      "seconds": 0.006167893065139651,
+      "finished_unix_seconds": 1793871936.599676,
+      "raw_log_bytes": 13230,
+      "raw_log_sha256": "543885e40763443c1f41c8166eaa94d2866b769cf25411e037710cda945740fa"
+    },
+    {
+      "name": "map-before-27",
+      "argv": [
+        "git",
+        "--literal-pathspecs",
+        "-c",
+        "core.fsmonitor=false",
+        "show",
+        "HEAD:docs/modules/compact.engine/IMPLEMENTATION_MAP.json"
+      ],
+      "cwd": "/data/hepta-p1p2-20261105-05ef/exact-r3-source",
+      "started_unix_seconds": 1793871936.6012948,
+      "exit": 0,
+      "log": "37-map-before-27.log",
+      "seconds": 0.005285750958137214,
+      "finished_unix_seconds": 1793871936.6078105,
+      "raw_log_bytes": 2690,
+      "raw_log_sha256": "0124a1cedc1d1bc682a576e0728fce73c63a6083c1bca3bb08f65c81e73085f6"
+    },
+    {
+      "name": "map-before-28",
+      "argv": [
+        "git",
+        "--literal-pathspecs",
+        "-c",
+        "core.fsmonitor=false",
+        "show",
+        "HEAD:docs/modules/learning.ledger/IMPLEMENTATION_MAP.json"
+      ],
+      "cwd": "/data/hepta-p1p2-20261105-05ef/exact-r3-source",
+      "started_unix_seconds": 1793871936.6093554,
+      "exit": 0,
+      "log": "38-map-before-28.log",
+      "seconds": 0.005858491989783943,
+      "finished_unix_seconds": 1793871936.6164849,
+      "raw_log_bytes": 20665,
+      "raw_log_sha256": "35759393b6fa9fc58c15ce454ce32697b120f30ee898434f68f7962511796936"
+    },
+    {
+      "name": "map-before-29",
+      "argv": [
+        "git",
+        "--literal-pathspecs",
+        "-c",
+        "core.fsmonitor=false",
+        "show",
+        "HEAD:docs/modules/learning.operator/IMPLEMENTATION_MAP.json"
+      ],
+      "cwd": "/data/hepta-p1p2-20261105-05ef/exact-r3-source",
+      "started_unix_seconds": 1793871936.6182818,
+      "exit": 0,
+      "log": "39-map-before-29.log",
+      "seconds": 0.005632660933770239,
+      "finished_unix_seconds": 1793871936.6253793,
+      "raw_log_bytes": 14176,
+      "raw_log_sha256": "d0e6f494c86cb079a1a3f52d5c58beede1193f04b28b31a3f86550dfa1aeb5db"
+    },
+    {
+      "name": "map-before-30",
+      "argv": [
+        "git",
+        "--literal-pathspecs",
+        "-c",
+        "core.fsmonitor=false",
+        "show",
+        "HEAD:docs/modules/learning.eval/IMPLEMENTATION_MAP.json"
+      ],
+      "cwd": "/data/hepta-p1p2-20261105-05ef/exact-r3-source",
+      "started_unix_seconds": 1793871936.626899,
+      "exit": 0,
+      "log": "40-map-before-30.log",
+      "seconds": 0.00568046304397285,
+      "finished_unix_seconds": 1793871936.6337457,
+      "raw_log_bytes": 15234,
+      "raw_log_sha256": "a478b27c2b0a88c18a3e0edb0ab76879202180d4f6febb5b26470782f11cdbdb"
+    },
+    {
+      "name": "map-before-31",
+      "argv": [
+        "git",
+        "--literal-pathspecs",
+        "-c",
+        "core.fsmonitor=false",
+        "show",
+        "HEAD:docs/modules/learning.artifacts/IMPLEMENTATION_MAP.json"
+      ],
+      "cwd": "/data/hepta-p1p2-20261105-05ef/exact-r3-source",
+      "started_unix_seconds": 1793871936.635131,
+      "exit": 0,
+      "log": "41-map-before-31.log",
+      "seconds": 0.005625879974104464,
+      "finished_unix_seconds": 1793871936.6418073,
+      "raw_log_bytes": 20630,
+      "raw_log_sha256": "ac8cae2ebc782bdebc51db93612003c5d7d964fe386884b5abbe2fdfd7d91818"
+    },
+    {
+      "name": "map-before-32",
+      "argv": [
+        "git",
+        "--literal-pathspecs",
+        "-c",
+        "core.fsmonitor=false",
+        "show",
+        "HEAD:docs/modules/learning.plasticity/IMPLEMENTATION_MAP.json"
+      ],
+      "cwd": "/data/hepta-p1p2-20261105-05ef/exact-r3-source",
+      "started_unix_seconds": 1793871936.643507,
+      "exit": 0,
+      "log": "42-map-before-32.log",
+      "seconds": 0.005223860964179039,
+      "finished_unix_seconds": 1793871936.6499326,
+      "raw_log_bytes": 37294,
+      "raw_log_sha256": "1afcf5cca1cf5d5a25fe04df9d9ea4ace6037d4009d8fdbc5336953ddb85b2eb"
+    },
+    {
+      "name": "map-before-33",
+      "argv": [
+        "git",
+        "--literal-pathspecs",
+        "-c",
+        "core.fsmonitor=false",
+        "show",
+        "HEAD:docs/modules/automation.taskflow/IMPLEMENTATION_MAP.json"
+      ],
+      "cwd": "/data/hepta-p1p2-20261105-05ef/exact-r3-source",
+      "started_unix_seconds": 1793871936.6517487,
+      "exit": 0,
+      "log": "43-map-before-33.log",
+      "seconds": 0.00524624006357044,
+      "finished_unix_seconds": 1793871936.658159,
+      "raw_log_bytes": 16540,
+      "raw_log_sha256": "422f34a5ad944ce91b2c36985df1888c0b661af6582b2acab24f0ffd421caff0"
+    },
+    {
+      "name": "map-before-34",
+      "argv": [
+        "git",
+        "--literal-pathspecs",
+        "-c",
+        "core.fsmonitor=false",
+        "show",
+        "HEAD:docs/modules/channel.matrix/IMPLEMENTATION_MAP.json"
+      ],
+      "cwd": "/data/hepta-p1p2-20261105-05ef/exact-r3-source",
+      "started_unix_seconds": 1793871936.6599202,
+      "exit": 0,
+      "log": "44-map-before-34.log",
+      "seconds": 0.004677803022786975,
+      "finished_unix_seconds": 1793871936.6659694,
+      "raw_log_bytes": 4841,
+      "raw_log_sha256": "dfd6292bf4cd6b226009964639a028da42a73d3d840c6a6ae05d5424468947c2"
+    },
+    {
+      "name": "map-before-35",
+      "argv": [
+        "git",
+        "--literal-pathspecs",
+        "-c",
+        "core.fsmonitor=false",
+        "show",
+        "HEAD:docs/modules/browser.servo/IMPLEMENTATION_MAP.json"
+      ],
+      "cwd": "/data/hepta-p1p2-20261105-05ef/exact-r3-source",
+      "started_unix_seconds": 1793871936.6676495,
+      "exit": 0,
+      "log": "45-map-before-35.log",
+      "seconds": 0.005050319014117122,
+      "finished_unix_seconds": 1793871936.6741197,
+      "raw_log_bytes": 4578,
+      "raw_log_sha256": "dce4c5c0820a30656b8f8d8853c93cf05547ccd485a1c9a67437378a6db264bb"
+    },
+    {
+      "name": "map-before-36",
+      "argv": [
+        "git",
+        "--literal-pathspecs",
+        "-c",
+        "core.fsmonitor=false",
+        "show",
+        "HEAD:docs/modules/ui.control/IMPLEMENTATION_MAP.json"
+      ],
+      "cwd": "/data/hepta-p1p2-20261105-05ef/exact-r3-source",
+      "started_unix_seconds": 1793871936.6758235,
+      "exit": 0,
+      "log": "46-map-before-36.log",
+      "seconds": 0.005051308078691363,
+      "finished_unix_seconds": 1793871936.682301,
+      "raw_log_bytes": 4587,
+      "raw_log_sha256": "f05c165b85dd9a800e62f5818759648dbe138e932e79b3e77c00f1b0d8453d0c"
+    },
+    {
+      "name": "map-before-37",
+      "argv": [
+        "git",
+        "--literal-pathspecs",
+        "-c",
+        "core.fsmonitor=false",
+        "show",
+        "HEAD:docs/modules/ui.native/IMPLEMENTATION_MAP.json"
+      ],
+      "cwd": "/data/hepta-p1p2-20261105-05ef/exact-r3-source",
+      "started_unix_seconds": 1793871936.684012,
+      "exit": 0,
+      "log": "47-map-before-37.log",
+      "seconds": 0.0056635059881955385,
+      "finished_unix_seconds": 1793871936.691134,
+      "raw_log_bytes": 5530,
+      "raw_log_sha256": "92319084652ea2cebf58731454ed2c52afdfc05110707b64ba83c254a2ab6480"
+    },
+    {
+      "name": "map-before-38",
+      "argv": [
+        "git",
+        "--literal-pathspecs",
+        "-c",
+        "core.fsmonitor=false",
+        "show",
+        "HEAD:docs/modules/control.runtime/IMPLEMENTATION_MAP.json"
+      ],
+      "cwd": "/data/hepta-p1p2-20261105-05ef/exact-r3-source",
+      "started_unix_seconds": 1793871936.692881,
+      "exit": 0,
+      "log": "48-map-before-38.log",
+      "seconds": 0.005796919926069677,
+      "finished_unix_seconds": 1793871936.7001579,
+      "raw_log_bytes": 9024,
+      "raw_log_sha256": "888c377f93840fdc3cd340571010b781316f3a9582f03e8d72d37fdc92a80561"
+    },
+    {
+      "name": "map-before-39",
+      "argv": [
+        "git",
+        "--literal-pathspecs",
+        "-c",
+        "core.fsmonitor=false",
+        "show",
+        "HEAD:docs/modules/control.engineering/IMPLEMENTATION_MAP.json"
+      ],
+      "cwd": "/data/hepta-p1p2-20261105-05ef/exact-r3-source",
+      "started_unix_seconds": 1793871936.7021859,
+      "exit": 0,
+      "log": "49-map-before-39.log",
+      "seconds": 0.006362145999446511,
+      "finished_unix_seconds": 1793871936.7100923,
+      "raw_log_bytes": 41559,
+      "raw_log_sha256": "d68d019d87a4f75639d35a1d8503c5db9e93a16c85a3473d4dd1dc84165e0035"
+    },
+    {
+      "name": "original-verify",
+      "argv": [
+        "/usr/bin/python3",
+        "/data/hepta-p1p2-20261105-05ef/exact-r3-source/scripts/hepta-implementation-maps.py",
+        "verify",
+        "--profile",
+        "qualification",
+        "--expected-sha",
+        "39b81b33e4e8071b1f8dfe7c9804d44c4dcdefc0",
+        "--expected-tree",
+        "e15523424da7b3b0a3dc56bbb41b09c00a1778f6"
+      ],
+      "cwd": "/data/hepta-p1p2-20261105-05ef/exact-r3-source",
+      "started_unix_seconds": 1793871936.7505085,
+      "exit": 1,
+      "log": "50-original-verify.log",
+      "seconds": 8.76364418794401,
+      "finished_unix_seconds": 1793871945.5154557,
+      "raw_log_bytes": 23572,
+      "raw_log_sha256": "406a299a466a5baf159ae8782d25f010b015e1313cfd987469fc26db89eaf903"
+    },
+    {
+      "name": "original-migrate",
+      "argv": [
+        "/usr/bin/python3",
+        "/data/hepta-p1p2-20261105-05ef/exact-r3-source/scripts/hepta-implementation-maps.py",
+        "migrate"
+      ],
+      "cwd": "/data/hepta-p1p2-20261105-05ef/exact-r3-source",
+      "started_unix_seconds": 1793871945.5178702,
+      "exit": 0,
+      "log": "51-original-migrate.log",
+      "seconds": 6.143224693951197,
+      "finished_unix_seconds": 1793871951.6628182,
+      "raw_log_bytes": 1222,
+      "raw_log_sha256": "7132da089b755115e98717b0359afce87d96383a29fdfd4ad21c1256f7034f96"
+    },
+    {
+      "name": "head-after",
+      "argv": [
+        "git",
+        "--literal-pathspecs",
+        "-c",
+        "core.fsmonitor=false",
+        "rev-parse",
+        "HEAD"
+      ],
+      "cwd": "/data/hepta-p1p2-20261105-05ef/exact-r3-source",
+      "started_unix_seconds": 1793871951.6683319,
+      "exit": 0,
+      "log": "52-head-after.log",
+      "seconds": 0.04455161700025201,
+      "finished_unix_seconds": 1793871951.715366,
+      "raw_log_bytes": 41,
+      "raw_log_sha256": "4b1a1dfa68362067222351f703cbca5f0c8ec1cb5892b9096bba46042e8b1a57"
+    },
+    {
+      "name": "tree-after",
+      "argv": [
+        "git",
+        "--literal-pathspecs",
+        "-c",
+        "core.fsmonitor=false",
+        "rev-parse",
+        "HEAD^{tree}"
+      ],
+      "cwd": "/data/hepta-p1p2-20261105-05ef/exact-r3-source",
+      "started_unix_seconds": 1793871951.7185113,
+      "exit": 0,
+      "log": "53-tree-after.log",
+      "seconds": 0.027732847025617957,
+      "finished_unix_seconds": 1793871951.7489364,
+      "raw_log_bytes": 41,
+      "raw_log_sha256": "71396d34d7e2606baa1e9eedead6d26a01dc9826903150fe3c4db12cae7baca8"
+    },
+    {
+      "name": "status-after",
+      "argv": [
+        "git",
+        "--literal-pathspecs",
+        "-c",
+        "core.fsmonitor=false",
+        "status",
+        "--porcelain=v1",
+        "-z",
+        "--untracked-files=all"
+      ],
+      "cwd": "/data/hepta-p1p2-20261105-05ef/exact-r3-source",
+      "started_unix_seconds": 1793871951.7521572,
+      "exit": 0,
+      "log": "54-status-after.log",
+      "seconds": 0.04248877498321235,
+      "finished_unix_seconds": 1793871951.7972126,
+      "raw_log_bytes": 1195,
+      "raw_log_sha256": "0bf5d514198a1ee0ac636dc9cce97e210ed92d8c0b2e62974feaa6228ef4057e"
+    },
+    {
+      "name": "index-after",
+      "argv": [
+        "git",
+        "--literal-pathspecs",
+        "-c",
+        "core.fsmonitor=false",
+        "ls-files",
+        "--stage",
+        "-z"
+      ],
+      "cwd": "/data/hepta-p1p2-20261105-05ef/exact-r3-source",
+      "started_unix_seconds": 1793871951.8011022,
+      "exit": 0,
+      "log": "55-index-after.log",
+      "seconds": 0.016367087024264038,
+      "finished_unix_seconds": 1793871951.8200386,
+      "raw_log_bytes": 1198843,
+      "raw_log_sha256": "42a836fa9c1aa9e4252529297e8bc5aa56b4309a253160a5f1103b1a5a15b73e"
+    },
+    {
+      "name": "index-flags-after",
+      "argv": [
+        "git",
+        "--literal-pathspecs",
+        "-c",
+        "core.fsmonitor=false",
+        "ls-files",
+        "-v",
+        "-z"
+      ],
+      "cwd": "/data/hepta-p1p2-20261105-05ef/exact-r3-source",
+      "started_unix_seconds": 1793871951.8284702,
+      "exit": 0,
+      "log": "56-index-flags-after.log",
+      "seconds": 0.009406236000359058,
+      "finished_unix_seconds": 1793871951.8394845,
+      "raw_log_bytes": 679579,
+      "raw_log_sha256": "8a57a185c5ed209c39b3c3b3ff266d33d93da5e0727255200d37010795a635d9"
+    },
+    {
+      "name": "changed-head",
+      "argv": [
+        "git",
+        "--literal-pathspecs",
+        "-c",
+        "core.fsmonitor=false",
+        "diff",
+        "--no-ext-diff",
+        "--no-textconv",
+        "--no-renames",
+        "--name-only",
+        "-z",
+        "HEAD",
+        "--"
+      ],
+      "cwd": "/data/hepta-p1p2-20261105-05ef/exact-r3-source",
+      "started_unix_seconds": 1793871951.8443794,
+      "exit": 0,
+      "log": "57-changed-head.log",
+      "seconds": 0.01750109496060759,
+      "finished_unix_seconds": 1793871951.8632538,
+      "raw_log_bytes": 1132,
+      "raw_log_sha256": "3cbe10441105dead0b4d64db6357c9e63a4bd16c189189435dd1fa634adfceec"
+    },
+    {
+      "name": "changed-index",
+      "argv": [
+        "git",
+        "--literal-pathspecs",
+        "-c",
+        "core.fsmonitor=false",
+        "diff",
+        "--no-ext-diff",
+        "--no-textconv",
+        "--no-renames",
+        "--name-only",
+        "-z",
+        "--cached",
+        "HEAD",
+        "--"
+      ],
+      "cwd": "/data/hepta-p1p2-20261105-05ef/exact-r3-source",
+      "started_unix_seconds": 1793871951.8652842,
+      "exit": 0,
+      "log": "58-changed-index.log",
+      "seconds": 0.007160127046518028,
+      "finished_unix_seconds": 1793871951.873973,
+      "raw_log_bytes": 0,
+      "raw_log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "changed-worktree",
+      "argv": [
+        "git",
+        "--literal-pathspecs",
+        "-c",
+        "core.fsmonitor=false",
+        "diff",
+        "--no-ext-diff",
+        "--no-textconv",
+        "--no-renames",
+        "--name-only",
+        "-z",
+        "--"
+      ],
+      "cwd": "/data/hepta-p1p2-20261105-05ef/exact-r3-source",
+      "started_unix_seconds": 1793871951.8756394,
+      "exit": 0,
+      "log": "59-changed-worktree.log",
+      "seconds": 0.015153820044361055,
+      "finished_unix_seconds": 1793871951.8924267,
+      "raw_log_bytes": 1132,
+      "raw_log_sha256": "3cbe10441105dead0b4d64db6357c9e63a4bd16c189189435dd1fa634adfceec"
+    },
+    {
+      "name": "untracked",
+      "argv": [
+        "git",
+        "--literal-pathspecs",
+        "-c",
+        "core.fsmonitor=false",
+        "ls-files",
+        "--others",
+        "--exclude-standard",
+        "-z"
+      ],
+      "cwd": "/data/hepta-p1p2-20261105-05ef/exact-r3-source",
+      "started_unix_seconds": 1793871951.8944356,
+      "exit": 0,
+      "log": "60-untracked.log",
+      "seconds": 0.03351907501928508,
+      "finished_unix_seconds": 1793871951.9294782,
+      "raw_log_bytes": 0,
+      "raw_log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "diff-head",
+      "argv": [
+        "git",
+        "--literal-pathspecs",
+        "-c",
+        "core.fsmonitor=false",
+        "diff",
+        "--no-ext-diff",
+        "--no-textconv",
+        "--binary",
+        "--full-index",
+        "HEAD",
+        "--"
+      ],
+      "cwd": "/data/hepta-p1p2-20261105-05ef/exact-r3-source",
+      "started_unix_seconds": 1793871951.932964,
+      "exit": 0,
+      "log": "61-diff-head.log",
+      "seconds": 0.021925557986833155,
+      "finished_unix_seconds": 1793871951.9563544,
+      "raw_log_bytes": 36417,
+      "raw_log_sha256": "5a6fe89bc4f89455a781a8b57bc1976f0ffd97e192800a84cf81689458bcd1c2"
+    },
+    {
+      "name": "diff-index",
+      "argv": [
+        "git",
+        "--literal-pathspecs",
+        "-c",
+        "core.fsmonitor=false",
+        "diff",
+        "--no-ext-diff",
+        "--no-textconv",
+        "--binary",
+        "--full-index",
+        "--cached",
+        "HEAD",
+        "--"
+      ],
+      "cwd": "/data/hepta-p1p2-20261105-05ef/exact-r3-source",
+      "started_unix_seconds": 1793871951.958623,
+      "exit": 0,
+      "log": "62-diff-index.log",
+      "seconds": 0.007313043926842511,
+      "finished_unix_seconds": 1793871951.9674573,
+      "raw_log_bytes": 0,
+      "raw_log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "diff-worktree",
+      "argv": [
+        "git",
+        "--literal-pathspecs",
+        "-c",
+        "core.fsmonitor=false",
+        "diff",
+        "--no-ext-diff",
+        "--no-textconv",
+        "--binary",
+        "--full-index",
+        "--"
+      ],
+      "cwd": "/data/hepta-p1p2-20261105-05ef/exact-r3-source",
+      "started_unix_seconds": 1793871951.9694448,
+      "exit": 0,
+      "log": "63-diff-worktree.log",
+      "seconds": 0.026471122982911766,
+      "finished_unix_seconds": 1793871951.9974387,
+      "raw_log_bytes": 36417,
+      "raw_log_sha256": "5a6fe89bc4f89455a781a8b57bc1976f0ffd97e192800a84cf81689458bcd1c2"
+    }
+  ],
+  "preflight_verified": true,
+  "qualification_of_migrated_output": false,
+  "scope": "Entire original MODULES registry; no --module selection",
+  "commands_after_migrate": "Read-only export only; final verify belongs to committed S2",
+  "errors": [],
+  "disk_before": {
+    "total": 983023263744,
+    "used": 919342309376,
+    "free": 13670645760
+  },
+  "head_before": "39b81b33e4e8071b1f8dfe7c9804d44c4dcdefc0",
+  "tree_before": "e15523424da7b3b0a3dc56bbb41b09c00a1778f6",
+  "original_tool_blobs": {
+    "scripts/hepta-implementation-maps.py": "e8ae0fd675b7e3ca2911b80af92cc21021789fbe",
+    "scripts/hepta_module_source_roots.py": "25c028baa4341885bfacf42d3a5f94ece5a6e784"
+  },
+  "working_tool_blobs": {
+    "scripts/hepta-implementation-maps.py": "e8ae0fd675b7e3ca2911b80af92cc21021789fbe",
+    "scripts/hepta_module_source_roots.py": "25c028baa4341885bfacf42d3a5f94ece5a6e784"
+  },
+  "original_tool_identity_verified": true,
+  "registry_module_count": 40,
+  "original_verify_exit": 1,
+  "original_migrate_exit": 0,
+  "head_after": "39b81b33e4e8071b1f8dfe7c9804d44c4dcdefc0",
+  "tree_after": "e15523424da7b3b0a3dc56bbb41b09c00a1778f6",
+  "modified_paths": [
+    "docs/modules/automation.taskflow/IMPLEMENTATION_MAP.json",
+    "docs/modules/cognitive.read/IMPLEMENTATION_MAP.json",
+    "docs/modules/cognitive.store/IMPLEMENTATION_MAP.json",
+    "docs/modules/inference.worker/IMPLEMENTATION_MAP.json",
+    "docs/modules/intelligence.control/IMPLEMENTATION_MAP.json",
+    "docs/modules/kernel.authority/IMPLEMENTATION_MAP.json",
+    "docs/modules/kernel.evidence/IMPLEMENTATION_MAP.json",
+    "docs/modules/kernel.operations/IMPLEMENTATION_MAP.json",
+    "docs/modules/knowledge.graph/IMPLEMENTATION_MAP.json",
+    "docs/modules/learning.ledger/IMPLEMENTATION_MAP.json",
+    "docs/modules/learning.operator/IMPLEMENTATION_MAP.json",
+    "docs/modules/learning.plasticity/IMPLEMENTATION_MAP.json",
+    "docs/modules/memory.federation/IMPLEMENTATION_MAP.json",
+    "docs/modules/memory.retrieval/IMPLEMENTATION_MAP.json",
+    "docs/modules/objective.compiler/IMPLEMENTATION_MAP.json",
+    "docs/modules/platform.types/IMPLEMENTATION_MAP.json",
+    "docs/modules/platform.wire/IMPLEMENTATION_MAP.json",
+    "docs/modules/runtime.agentd/IMPLEMENTATION_MAP.json",
+    "docs/modules/runtime.codex/IMPLEMENTATION_MAP.json",
+    "docs/modules/runtime.fleet/IMPLEMENTATION_MAP.json",
+    "docs/modules/runtime.supervisor/IMPLEMENTATION_MAP.json"
+  ],
+  "untracked_paths": [],
+  "actual_modified_maps": [
+    "docs/modules/automation.taskflow/IMPLEMENTATION_MAP.json",
+    "docs/modules/cognitive.read/IMPLEMENTATION_MAP.json",
+    "docs/modules/cognitive.store/IMPLEMENTATION_MAP.json",
+    "docs/modules/inference.worker/IMPLEMENTATION_MAP.json",
+    "docs/modules/intelligence.control/IMPLEMENTATION_MAP.json",
+    "docs/modules/kernel.authority/IMPLEMENTATION_MAP.json",
+    "docs/modules/kernel.evidence/IMPLEMENTATION_MAP.json",
+    "docs/modules/kernel.operations/IMPLEMENTATION_MAP.json",
+    "docs/modules/knowledge.graph/IMPLEMENTATION_MAP.json",
+    "docs/modules/learning.ledger/IMPLEMENTATION_MAP.json",
+    "docs/modules/learning.operator/IMPLEMENTATION_MAP.json",
+    "docs/modules/learning.plasticity/IMPLEMENTATION_MAP.json",
+    "docs/modules/memory.federation/IMPLEMENTATION_MAP.json",
+    "docs/modules/memory.retrieval/IMPLEMENTATION_MAP.json",
+    "docs/modules/objective.compiler/IMPLEMENTATION_MAP.json",
+    "docs/modules/platform.types/IMPLEMENTATION_MAP.json",
+    "docs/modules/platform.wire/IMPLEMENTATION_MAP.json",
+    "docs/modules/runtime.agentd/IMPLEMENTATION_MAP.json",
+    "docs/modules/runtime.codex/IMPLEMENTATION_MAP.json",
+    "docs/modules/runtime.fleet/IMPLEMENTATION_MAP.json",
+    "docs/modules/runtime.supervisor/IMPLEMENTATION_MAP.json"
+  ],
+  "unexpected_paths": [],
+  "head_unchanged": true,
+  "index_unchanged": true,
+  "index_flags_unchanged": true,
+  "artifacts": {
+    "index-after.z": {
+      "bytes": 1198843,
+      "sha256": "42a836fa9c1aa9e4252529297e8bc5aa56b4309a253160a5f1103b1a5a15b73e"
+    },
+    "s1-maps.zlib": {
+      "bytes": 141116,
+      "sha256": "bcf414bf43cc752f9781a0370fda66392b36df7a10bdc7d6eca64d55c845c38b"
+    },
+    "map-files.zlib": {
+      "bytes": 320547,
+      "sha256": "6579890b7adb82072364a402ea140fc4579545b65c31086137be08569a439260"
+    },
+    "index-flags-before.z": {
+      "bytes": 679579,
+      "sha256": "8a57a185c5ed209c39b3c3b3ff266d33d93da5e0727255200d37010795a635d9"
+    },
+    "index-flags-after.z": {
+      "bytes": 679579,
+      "sha256": "8a57a185c5ed209c39b3c3b3ff266d33d93da5e0727255200d37010795a635d9"
+    },
+    "full.diff": {
+      "bytes": 36417,
+      "sha256": "5a6fe89bc4f89455a781a8b57bc1976f0ffd97e192800a84cf81689458bcd1c2"
+    },
+    "index.diff": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "status-after.z": {
+      "bytes": 1195,
+      "sha256": "0bf5d514198a1ee0ac636dc9cce97e210ed92d8c0b2e62974feaa6228ef4057e"
+    },
+    "worktree.diff": {
+      "bytes": 36417,
+      "sha256": "5a6fe89bc4f89455a781a8b57bc1976f0ffd97e192800a84cf81689458bcd1c2"
+    },
+    "index-before.z": {
+      "bytes": 1198843,
+      "sha256": "42a836fa9c1aa9e4252529297e8bc5aa56b4309a253160a5f1103b1a5a15b73e"
+    }
+  },
+  "exit": 0,
+  "disk_after": {
+    "total": 983023263744,
+    "used": 919351291904,
+    "free": 13661663232
+  }
+}

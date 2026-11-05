@@ -29,21 +29,35 @@ class ModuleStatusFactsTests(unittest.TestCase):
         self.assertEqual(set(by_id), set(by_binding))
         self.assertEqual(set(by_id), set(by_document))
         for module_id, module in by_id.items():
-            projected = [module, by_binding[module_id], by_document[module_id]]
-            self.assertTrue(
-                all(type(row["source_root_present"]) is bool for row in projected)
-            )
-            self.assertTrue(
-                all(type(row["production_implementation"]) is bool for row in projected)
-            )
-            self.assertEqual({row["source_root_present"] for row in projected}, {True})
-            self.assertEqual(
-                len({row["production_implementation"] for row in projected}), 1
-            )
-            self.assertFalse(
-                module["production_implementation"]
-                and not module["source_root_present"]
-            )
+            with self.subTest(module=module_id):
+                implementation = json.loads(
+                    (ROOT / f"docs/modules/{module_id}/IMPLEMENTATION_MAP.json").read_text()
+                )
+                self.assertEqual(implementation["module"], module_id)
+                projected = [module, by_binding[module_id], by_document[module_id]]
+                # Map spellings and their claim boundary carry the same facts;
+                # navigation cannot independently promote product qualification.
+                for row in (implementation, implementation["claimBoundary"]):
+                    projected.append(
+                        {
+                            "source_root_present": row["sourceRootPresent"],
+                            "production_implementation": row["productionImplementation"],
+                        }
+                    )
+                self.assertTrue(
+                    all(type(row["source_root_present"]) is bool for row in projected)
+                )
+                self.assertTrue(
+                    all(type(row["production_implementation"]) is bool for row in projected)
+                )
+                self.assertEqual({row["source_root_present"] for row in projected}, {True})
+                self.assertEqual(
+                    len({row["production_implementation"] for row in projected}), 1
+                )
+                self.assertFalse(
+                    module["production_implementation"]
+                    and not module["source_root_present"]
+                )
 
     def test_status_model_declares_the_split_facts(self):
         model = json.loads((ROOT / "docs/readiness/STATUS_MODEL.json").read_text())

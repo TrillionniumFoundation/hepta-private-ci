@@ -1,0 +1,32 @@
+{
+  "schema_version": 1,
+  "head": "d0bc7fb8e1e18408ed58cb3999fcd33a7d499daa",
+  "tree": "54443d13d00a6063af19e24a0de4004f24377d31",
+  "command": [
+    "/usr/bin/python3",
+    "/data/hepta-p1p2-20261105-05ef/exact-r3-source/scripts/hepta-implementation-maps.py",
+    "verify",
+    "--profile",
+    "qualification",
+    "--expected-sha",
+    "d0bc7fb8e1e18408ed58cb3999fcd33a7d499daa",
+    "--expected-tree",
+    "54443d13d00a6063af19e24a0de4004f24377d31"
+  ],
+  "cwd": "/data/hepta-p1p2-20261105-05ef/exact-r3-source",
+  "exit": 0,
+  "seconds": 10.027191862929612,
+  "original_tools": {
+    "scripts/hepta-implementation-maps.py": "e8ae0fd675b7e3ca2911b80af92cc21021789fbe",
+    "scripts/hepta_module_source_roots.py": "25c028baa4341885bfacf42d3a5f94ece5a6e784"
+  },
+  "log": {
+    "path": "/data/hepta-p1p2-20261105-05ef/s2b-map-qualification/original-verify.log",
+    "bytes": 690,
+    "sha256": "cf484a0c140adda5d426146d7a0218d3cb5ff467be495aea81abfa6433ba44c7"
+  },
+  "head_after": "d0bc7fb8e1e18408ed58cb3999fcd33a7d499daa",
+  "tree_after": "54443d13d00a6063af19e24a0de4004f24377d31",
+  "clean": true,
+  "status": "PASS"
+}

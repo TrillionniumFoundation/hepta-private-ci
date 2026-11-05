@@ -1,0 +1,450 @@
+{
+  "schema": "hepta.product-recovery-execution-dossier.v1",
+  "schemaVersion": 1,
+  "documentClass": "qualification_companion",
+  "scope": "bounded_product_recovery_execution_and_source_review",
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "pullRequest": 4846,
+  "date": "2026-11-05",
+  "recordStatus": "frozen_source_bound_execution_evidence",
+  "publishable": true,
+  "claimBoundary": {
+    "productionImplementation": false,
+    "fullProductExecutionProved": false,
+    "defaultLearningChainProved": false,
+    "activationQualified": false,
+    "releaseQualified": false,
+    "allGapsClosed": false,
+    "qualificationPromotion": "none"
+  },
+  "sourceIdentities": {
+    "r3": {"commit": "4e31abc907f09740d402d1ddef7a1d2fe0a366a6", "tree": "e6968e2be93a7e9fc8329f400b646ad4f9734216"},
+    "v2": {"commit": "8f7751afb426831285633fd10135d9b70f5dd6c7", "tree": "11fb7fcef1eefda4fe037a3c195b08c06f5db3e0"},
+    "v3": {"commit": "58181837d6ceb62ceee14475304f3b19acd9f8e4", "tree": "eecafcf10e5dda896b2d213fb695e100039095a2"},
+    "v4": {"commit": "a7ab532d852887772fffab83a5108accac1cf286", "tree": "2bd7fd2ad36859785df8ae9e3f0e1d109759f7f8"},
+    "v5": {
+      "commit": "a6403e8ae23e9f62cba2a6343563214f6a49dbed",
+      "testedTree": "12418befd4574b13560e5c5c074e7beb0b805d6a",
+      "commitBindingStatus": "exact_formatted_tree_published_and_remote_checkout_clean"
+    },
+    "v6": {
+      "baseCommit": "a6403e8ae23e9f62cba2a6343563214f6a49dbed",
+      "testedTree": "305ddbbd95ea6d40bf6eaf38feee2c7d7188c3eb",
+      "commitBindingStatus": "unpublished_formatted_candidate_tree",
+      "formattedPayloadSha256": "0c78658fc27dd5b4ccbbd00a142897680c08aedabb219a9e39736d2543d8a6ab",
+      "retainedSourceArtifact": {"path": "qualification-v6/formatted.zlib", "bytes": 53546, "sha256": "45102ea684f22131a20b8fee2266291ddcd7c50c51c97b565e13be4c43f8d55a"}
+    },
+    "v7": {
+      "commit": "78668ea2837a16811b922dfcfbc438f3d8a98f5e",
+      "baseCommit": "a6403e8ae23e9f62cba2a6343563214f6a49dbed",
+      "testedTree": "caa6e68ece518f751b10b0cc6a027361aaf68589",
+      "commitBindingStatus": "exact_tested_tree_published_and_native_checkout_clean",
+      "nativeSyncSummary": {"sha256": "f52da25a5c19a8a6b3e7b157e2c6244dd24d0796ac404be8ee3b5b3f7cd3f4ad", "bytes": 348, "kind": "complete_stdout_JSON_summary"},
+      "formattedPayloadSha256": "3e5ab4290dadc47a9f9db9f3a4a41eeac1ff0e56f89751bd9242425c7ad2925f"
+    },
+    "finalSourceS1": {"commit": "39b81b33e4e8071b1f8dfe7c9804d44c4dcdefc0", "tree": "e15523424da7b3b0a3dc56bbb41b09c00a1778f6", "parent": "78668ea2837a16811b922dfcfbc438f3d8a98f5e", "commitBindingStatus": "published_mechanical_fix_native_clean_preflight_verified"},
+    "mapsS2": {"commit": "2e0e66d0a5c7938404401aff1854d46296dfaec4", "tree": "f3609a9615157c614520555c49937a28433c1cc1", "parent": "39b81b33e4e8071b1f8dfe7c9804d44c4dcdefc0", "commitBindingStatus": "published_21_map_only_changes_native_clean_qualification_failed_derived_projection"},
+    "mapsS2b": {"commit": "d0bc7fb8e1e18408ed58cb3999fcd33a7d499daa", "tree": "54443d13d00a6063af19e24a0de4004f24377d31", "parent": "2e0e66d0a5c7938404401aff1854d46296dfaec4", "commitBindingStatus": "published_canonical_projection_sync_native_clean_original_full40_source_qualification_pass"}
+  },
+  "bundleNavigation": {
+    "pathsRelativeTo": "this dossier directory",
+    "execution": ["receipts/execution-receipt-v5.json", "receipts/execution-receipt-v6.json", "receipts/execution-receipt-v7.json", "logs/v7-owner-tests.log"],
+    "sourceAndFix": ["receipts/published-v7-sync.json", "receipts/history-import-v1-summary.json", "receipts/final-fix-v1.json", "diffs/final-fix-v1.diff"],
+    "sourceMaps": ["receipts/map-migration-v1.json", "logs/map-migration-v1-original-verify.log", "logs/map-migration-v1-original-migrate.log", "receipts/s2-map-qualification.json", "logs/s2-map-original-verify.log", "receipts/plasticity-sync.json", "diffs/plasticity-status.diff", "receipts/s2b-map-qualification.json", "logs/s2b-map-original-verify.log"],
+    "ownerAudits": ["audits/intelligence-ledger-owner-boundary.json", "audits/current-memory-owner-gaps.json", "audits/current-memory-source-identities.json", "audits/current-memory-v7-source-boundary.json"],
+    "reviewSnapshots": ["audits/final-map-field-details.json", "audits/plasticity-sync-s2-review.json"],
+    "boundary": "These are retained repository copies. Other rawLogs/stateReceipts paths below are relative to executionContext.artifactRoot on the execution host; this directory does not claim to contain every original log. Review and receipt collection-time states are not rewritten after later success."
+  },
+  "executionContext": {
+    "host": "desktop",
+    "artifactRoot": "/data/hepta-p1p2-20261105-05ef",
+    "entryPoint": "just test",
+    "workingDirectory": "codex-rs",
+    "requestedRustToolchain": "1.96.0",
+    "cargoBuildJobs": 4,
+    "packages": [
+      "codex-hepta-agent-protocol",
+      "codex-hepta-agentd",
+      "codex-hepta-infer-worker-host",
+      "codex-hepta-runtime"
+    ],
+    "policy": "Original package selection, Nextest configuration and watchdog budgets; no disabled assertions, widened timeouts or new test filters in v5.",
+    "providerBoundary": "Real Agentd and App Server paths with a local mock Responses/SSE provider; no external-provider billing or production-service qualification.",
+    "evidenceCollection": "Native execution receipt binds state manifests, command exits and raw-log SHA256/bytes; its selected PASS lines and all round summaries were inspected. Original raw logs remain on the execution host.",
+    "receiptPublicationSemantics": "Receipts and review records preserve collection-time publication or pending markers unchanged; later publication and qualification results are bound separately in this dossier.",
+    "executionReceiptSha256": "c7e943384ff17fa25064c89b29d8dd6cea0650d06cd725a818cf3f73f80eac89"
+  },
+  "commands": {
+    "fourPackages": "just test -p codex-hepta-agent-protocol -p codex-hepta-agentd -p codex-hepta-infer-worker-host -p codex-hepta-runtime",
+    "hostOnly": "just test -p codex-hepta-infer-worker-host",
+    "v3IssuerFrontier": "just test -p codex-hepta-agentd -E 'test(deployment_issuer::desktop::tests) | test(root_authority_session::tests::both_original_frontiers_finish_before_new_head_is_published)'",
+    "v4FocusedExpression": "package(codex-hepta-infer-worker-host) | test(deployment_issuer::desktop::tests) | test(root_authority_session::tests::both_original_frontiers_finish_before_new_head_is_published)",
+    "v4WriterExpression": "test(runtime_tasks::service_generations::writer_tests::sqlite_writer_rotates_256_times_without_consuming_new_service_identities)",
+    "v7FocusedExpression": "test(intelligence_product::tests::signed::canonical_runtime::) | test(root_authority_session::tests::both_original_frontiers_finish_before_new_head_is_published) | test(root_authority_session::tests::uncertain_original_consumer_update_fences_even_with_fresh_root_responses) | test(five_real_agents_survive_daemon_restart_and_isolate_one_agent_release_changes)",
+    "rustFormat": "just fmt",
+    "requiredFix": "just fix -p codex-hepta-agent-protocol -p codex-hepta-agentd -p codex-hepta-infer-worker-host -p codex-hepta-runtime",
+    "moduleRegressionsInitial": "python3 -m unittest scripts.test_hepta_module_status_facts scripts.test_hepta_module_doc_metadata scripts.test_hepta_module_projection_membership",
+    "moduleRegressionsCorrected": "python3 -m unittest test_hepta_module_status_facts test_hepta_module_doc_metadata test_hepta_module_projection_membership"
+  },
+  "rounds": [
+    {
+      "id": "v2",
+      "source": "sourceIdentities.v2",
+      "command": "fourPackages",
+      "expressionFilter": null,
+      "compilation": "PASS",
+      "result": "FAIL",
+      "counts": {"run": 664, "passed": 651, "failed": 7, "timedOut": 6, "skipped": 66},
+      "skippedReason": "Original Nextest configuration; skipped cases were not executed.",
+      "passedAnnotations": {"slow": 4, "flaky": 1},
+      "flakyCase": {
+        "name": "root_authority_session::tests::both_original_frontiers_finish_before_new_head_is_published",
+        "firstAttempt": "Failed its original 300 ms assertion budget.",
+        "retry": "PASS",
+        "retrySeconds": 0.928
+      },
+      "rawLog": "v2OwnerTests",
+      "retainedFailureEvidence": "All seven failures and six timeouts remain part of this run even when later runs pass. The original issuer-revocation failure and native fixture startup failures triggered separate repairs.",
+      "summarySeconds": 139.628,
+      "compilationSeconds": 860,
+      "exitCode": 100
+    },
+    {
+      "id": "v3",
+      "source": "sourceIdentities.v3",
+      "host": {
+        "command": "hostOnly",
+        "result": "FAIL",
+        "counts": {"run": 41, "passed": 35, "failed": 6, "timedOut": 0, "skipped": 0},
+        "rawLog": "v3HostTests",
+        "failureBoundary": "Executable-path repair reached the real host; fixture readiness still lacked the production prerequisites/initialize handshake.",
+        "summarySeconds": 24.594,
+        "compilationSeconds": 78,
+        "exitCode": 100
+      },
+      "issuerFrontier": {
+        "command": "v3IssuerFrontier",
+        "result": "BUILD_FAILED",
+        "reason": "ENOSPC",
+        "testsExecuted": false,
+        "counts": null,
+        "rawLog": "v3IssuerFrontierTests",
+        "exitCode": 101
+      }
+    },
+    {
+      "id": "v4",
+      "source": "sourceIdentities.v4",
+      "focused": {
+        "command": "fourPackages plus -E v4FocusedExpression",
+        "compilation": "PASS",
+        "result": "FAIL",
+        "counts": {"run": 51, "passed": 46, "failed": 5, "timedOut": 0, "skipped": 680},
+        "skippedReason": "Focused expression plus original configuration; this was not a complete four-package run.",
+        "rawLog": "v4HostIssuerFrontierTests",
+        "observations": [
+          "Worker loss at the production pre-cleanup journal cutoff passed in 13.484 seconds.",
+          "All nine desktop tests passed, including original issuer revocation and the new idempotent acknowledgement regression.",
+          "The unchanged frontier case passed in 0.603 seconds.",
+          "Remaining failures exposed spawn/current generation mixing, missing completed-only text and two host homes in one fixture process."
+        ],
+        "summarySeconds": 13.493,
+        "compilationSeconds": 190,
+        "exitCode": 100
+      },
+      "writerIsolation": {
+        "command": "fourPackages plus -E v4WriterExpression",
+        "result": "PASS",
+        "counts": {"run": 1, "passed": 1, "failed": 0, "timedOut": 0, "skipped": 730},
+        "seconds": 24.161,
+        "watchdogSeconds": 60,
+        "rawLog": "v4WriterRotationTest",
+        "boundary": "Unchanged workload and original watchdog. An isolated pass does not erase the v2 combined-run timeouts at 60.070 and 60.096 seconds.",
+        "summarySeconds": 24.177,
+        "exitCode": 0
+      }
+    },
+    {
+      "id": "v5",
+      "source": "sourceIdentities.v5",
+      "command": "fourPackages",
+      "expressionFilter": null,
+      "compilation": "PASS",
+      "compilationSeconds": 98,
+      "result": "PASS",
+      "nextestRunId": "2f3cd383-d2f3-49a1-9b11-c84e7aef8ee0",
+      "summarySeconds": 62.853,
+      "counts": {"run": 670, "passed": 670, "failed": 0, "timedOut": 0, "skipped": 66},
+      "passedAnnotations": {"slow": 6, "flaky": 0},
+      "skippedReason": "Original Nextest configuration; no -E expression was supplied.",
+      "rawLog": "v5OwnerTests",
+      "observations": [
+        "All six cases that timed out in v2 passed in this run.",
+        "This is the complete selected four-package command, not the complete repository test suite.",
+        "Prior failures, timeouts and the flaky v2 retry remain recorded above."
+      ],
+      "exitCode": 0,
+      "selectedPassesFromRawLog": [
+        {"test": "settled_terminal_survives_worker_loss_before_agentd_publication", "seconds": 8.999},
+        {"test": "retained_app_server_terminal_reconciles_current_agentd_revision", "seconds": 9.16},
+        {"test": "real_agentd_reconciles_reopened_worker_without_replaying_provider", "seconds": 9.321},
+        {"test": "worker_loss_before_cleanup_retains_observed_timeout_and_usage", "seconds": 16.377},
+        {"test": "real_owner_decision_outcome_freeze_fit_registry_reload_and_withdrawal", "seconds": 5.114},
+        {"test": "sqlite_writer_rotates_256_times_without_consuming_new_service_identities", "seconds": 46.195}
+      ]
+    },
+    {
+      "id": "v6",
+      "source": "sourceIdentities.v6",
+      "command": "fourPackages",
+      "expressionFilter": null,
+      "compilation": "PASS",
+      "compilationSeconds": 343,
+      "result": "FAIL",
+      "summarySeconds": 146.99,
+      "commandSeconds": 491.52193880081177,
+      "counts": {"run": 675, "passed": 669, "failed": 5, "timedOut": 1, "skipped": 66},
+      "passedAnnotations": {"slow": 13, "flaky": 3},
+      "skippedReason": "Original Nextest configuration; no -E expression was supplied.",
+      "rawLog": "v6OwnerTests",
+      "exitCode": 100,
+      "receiptBindingStatus": "native_receipt_and_raw_log_digest_bound",
+      "receiptSha256": "c9e059ff645eca42c95a2128d409c68e419ddea785f738cac7bb7624c3589fa5",
+      "receiptBytes": 10912,
+      "flakyCases": [
+        {"binary": "codex-hepta-agentd", "test": "root_authority_session::tests::uncertain_original_consumer_update_fences_even_with_fresh_root_responses", "retrySeconds": 0.92},
+        {"binary": "codex-hepta-agentd::five_agent_rolling_upgrade", "test": "five_real_agentd_processes_roll_one_agent_without_stopping_peers", "retrySeconds": 36.862},
+        {"binary": "codex-hepta-agentd", "test": "runtime_tasks::service_generations::writer_tests::sqlite_writer_rotates_256_times_without_consuming_new_service_identities", "retrySeconds": 52.489}
+      ],
+      "observations": [
+        "All four new canonical runtime cases failed their fixture initialization on the real AuthBus external replay checkpoint rollback/drift guard, on both attempts. The guard was not relaxed.",
+        "The new original-deadline preparation-budget unit case passed in 0.015 seconds.",
+        "The original frontier case failed on both attempts; the daemon-restart case timed out at 60.006 seconds.",
+        "Three original cases passed only on retry, as named below. Original failure, retry and timeout evidence remains in the raw log; no environment root cause is asserted.",
+        "This failed run qualifies neither the new canonical admission path nor a repaired fixture. The prior v5 pass remains bound to the unchanged v5 source tree."
+      ]
+    },
+    {
+      "id": "v7", "source": "sourceIdentities.v7",
+      "focused": {
+        "command": "fourPackages plus -E v7FocusedExpression", "compilation": "PASS", "result": "PASS", "exitCode": 0,
+        "counts": {"run": 7, "passed": 7, "failed": 0, "timedOut": 0, "skipped": 734}, "passedAnnotations": {"slow": 1},
+        "skippedReason": "Focused expression plus original configuration; this is not the complete four-package run.",
+        "compilationSeconds": 43.93, "commandSeconds": 95.81174516677856, "summarySeconds": 50.867, "nextestRunId": "7e1e7ce7-8fe2-4c27-8cfe-14b6c8c749a6", "rawLog": "v7FocusedTests"
+      },
+      "full": {
+        "command": "fourPackages", "expressionFilter": null, "compilation": "PASS", "result": "PASS", "exitCode": 0,
+        "counts": {"run": 675, "passed": 675, "failed": 0, "timedOut": 0, "skipped": 66}, "passedAnnotations": {"slow": 8, "flaky": 2},
+        "skippedReason": "Original Nextest configuration; no -E expression was supplied.",
+        "compilationSeconds": 1.6, "commandSeconds": 135.45429182052612, "summarySeconds": 133.009, "nextestRunId": "3c44043f-26de-4ca1-94cc-5b53d080383d", "rawLog": "v7OwnerTests",
+        "flakyCases": [
+          {"test": "root_authority_session::tests::both_original_frontiers_finish_before_new_head_is_published", "firstAttempt": "FAIL", "retrySeconds": 0.77},
+          {"test": "five_real_agents_survive_daemon_restart_and_isolate_one_agent_release_changes", "firstAttempt": "TIMED_OUT", "firstAttemptSeconds": 60.01, "retrySeconds": 58.344}
+        ],
+        "observations": ["The original profile, retry policy and 60-second watchdog were unchanged. This is a successful final-result run with two flaky passes, not zero transient failures.", "All prior failures/timeouts remain recorded, including v6 on its exact earlier tree. No environment root cause or repaired timing guarantee is inferred.", "The four canonical runtime scenarios now reach their real owner gates after deriving the fixture witness from its actual same-home EvidenceStore frontier. Default invocation-provider startup, simultaneous owner restart and typed Decision/Outcome handoff remain open."]
+      },
+      "receiptBindingStatus": "complete_native_receipt_and_raw_log_hashes_bound",
+      "receiptSha256": "917822a9b56d9b583998659473d66f842f1bee85de3b46cfa783be4e6960df1d", "receiptBytes": 7677,
+      "newCanonicalPassesFromFullLog": {"preparation_budget_is_capped_by_the_original_deadline": 0.018, "canonical_body_does_not_alias_the_run_lifecycle_generation": 5.033, "canonical_recovery_rejects_old_generation_fence_and_signature_before_provider": 5.123, "running_canonical_admission_preserves_the_recovered_run_start": 5.463, "owner_transition_during_canonical_preparation_never_refreshes_the_old_run": 5.593}
+    }
+  ],
+  "pythonAndStyle": {
+    "moduleRegressions": {
+      "source": "sourceIdentities.v2",
+      "command": "moduleRegressionsCorrected",
+      "result": "PASS",
+      "tests": 16,
+      "composition": "2 status-fact tests plus 14 document-metadata/projection-membership tests.",
+      "rawLog": "v2ModuleRegressions",
+      "workingDirectory": "scripts",
+      "seconds": 2.416,
+      "initialEntry": {
+        "command": "moduleRegressionsInitial",
+        "workingDirectory": "repository root",
+        "exitCode": 1,
+        "result": "FAIL",
+        "rawLog": "v2ModuleRegressionsInitial",
+        "repair": "Corrected the execution working directory/import entry only; no source or test changes."
+      }
+    },
+    "pythonStyle": {
+      "result": "NOT_PASSED",
+      "lockedRuffVersion": "0.15.13",
+      "formatCheckCompleted": false,
+      "lintCheckCompleted": false,
+      "attempts": [
+        "The target style entry point could not start while uv was unavailable.",
+        "Locked Ruff dependency download did not finish within 90 seconds; no successful formatter/linter result was obtained.",
+        "Earlier local uv --offline --locked attempts also lacked the exact cached Ruff wheel."
+      ],
+      "rawLogAvailability": "No standalone completed formatter/linter log is bound; the retained dependency-install state records TimeoutExpired.",
+      "stateReceipt": "pythonStyle",
+      "dependencyInstallExit": "TimeoutExpired",
+      "dependencyInstallSeconds": 90.01636171340942
+    },
+    "rustFormat": {
+      "command": "rustFormat",
+      "v5StageResult": "PASS",
+      "boundary": "Original just fmt ran before each v5 stage; this does not establish Ruff or all required fix/lint gates."
+    },
+    "requiredFixGate": {
+      "result": "PASS",
+      "command": "requiredFix",
+      "rawLog": "requiredFix",
+      "details": "finalVerification.requiredFixGate"
+    }
+  },
+  "boundedExecutionEvidence": {
+    "canonicalAdmission": {"run": "v7.full", "result": "PASS", "supported": "Actual Fleet spawn/current generation separation, original durable RunStart publication and same-process reopen, current AuthBus signature/trust checks before preparation, original nine-field runtime/context binding at admission, and rejection after an actual Running-to-Draining transition. Stale generation/fence/signature and revoked trust are rejected before provider work; original deadline budgeting is also exercised.", "limits": ["The App Server readiness event is seeded and the invocation provider is test-only; these cases do not dispatch a provider or exercise ObjectiveSubmit wire ingress.", "RunStart reopen occurs in one process. Default invocation-provider startup and authenticated Decision/Outcome owner handoff remain absent.", "These bounded cases do not remove the separate original frontier/daemon retry evidence in the full run."]},
+    "nativeWorkerLoss": {"run": "v4.focused", "test": "worker_loss_before_cleanup_retains_observed_timeout_and_usage", "result": "PASS", "seconds": 13.484, "supported": "Actual worker SIGKILL after production observation/cancel persistence, then a fresh worker reopens the durable record without redispatch.", "limits": ["Parent Agentd and App Server stay alive; simultaneous owner/server restart is not demonstrated.", "Observed usage is retained when known; missing usage remains unknown. Not every provider token is durably recorded and billing reconciliation is not proved.", "An exact physical terminal can release the native reservation while a lost owner leaves its Agentd run reserved."]},
+    "typedLearningOwner": {"run": "v2", "test": "real_owner_decision_outcome_freeze_fit_registry_reload_and_withdrawal", "sourcePath": "codex-rs/hepta-agentd/tests/terminal_cell_owner.rs", "sourceBlob": "8990c7336abbab8af2d461f51adeb9e9c8a0e0fc", "sourceBlobCheckedAt": "sourceIdentities.r3 and sourceIdentities.v2", "result": "PASS", "seconds": 5.923, "supported": ["Real typed LedgerWriter V2 signed Decision/Outcome writes to a durable ledger and independent witness using fixture-local role-separated authority.", "Immutable freeze, bounded terminal-cell fit, artifact registry/payload persistence and same-process pinned file reload execute.", "A separate fixture ledger supplies held-out episodes; authenticated correction rejects stale fitting and explicit registry revocation blocks a descendant."], "limits": ["The typed owner APIs are ungated production methods, although the test build enables legacy qualification features and uses qualification-only keys/events.", "The test never constructs the default AgentdIntelligenceProductRunner; its legacy Decision/Outcome append/reconcile path remains feature-gated.", "Reload opens files in the same process. The main case does not drop/reopen LedgerWriter or start a new process.", "Evaluation shares fixture trust and target-generation code; no independent evaluator process/service or signed selection/promotion is proved.", "Register/eligibility does not select or activate a generation. Revocation is explicit; automatic correction-to-artifact withdrawal and already-loaded model invalidation are not proved."]}
+  },
+  "independentSourceReview": {
+    "kind": "source_and_patch_review",
+    "runtimePassInferred": false,
+    "reviews": [
+      "Bound snapshot/context/envelope/revision checks precede mutation and idempotence under the owner lock; existing admission, draining, fence and generation gates remain.",
+      "Spawn identity and run lifecycle generation are distinct; recovery retains the original complete run binding instead of promoting it from current health.",
+      "Completed item text replaces its streamed fragments with atomic text/metadata bounds. Terminal and usage reducers remain unchanged.",
+      "Cleanup persists classified partial observation and cancel intent before its first await; late terminal evidence does not restore lost authority.",
+      "Desktop succession checks the original issuer and writer under one joint owner boundary; readiness fixtures use production prerequisites, initialize and Codex-home validation.",
+      "Generation/output patch application succeeds in both orders with identical resulting bytes. This check is separate from the v5 native execution result."
+    ],
+    "limits": "Single-record arithmetic is prechecked; drain batches may retain a completed prefix. Source review does not prove batch atomicity, full lifecycle coordination or product qualification."
+  },
+  "remainingP1": [
+    {
+      "item": "Agentd/App Server product lifecycle",
+      "state": "bounded_execution_evidence_only",
+      "remaining": "Close the complete product composition and simultaneous Agentd/App Server loss, restart, route and capacity semantics beyond the tested native worker boundary. Canonical record-bound admission passes its bounded v7 owner tests after the fixture witness repair; full default composition and stable timing guarantees are not established by those passes."
+    },
+    {
+      "item": "Default Intelligence Decision/Outcome recovery",
+      "state": "open",
+      "remaining": "Wire a production canonical invocation provider and an authenticated long-lived typed ledger owner into default startup, durably bind original event/signatures/predecessor, and recover acknowledged or indeterminate writes after process loss."
+    },
+    {
+      "item": "Provider dispatch, terminal and usage reconciliation",
+      "state": "partially_exercised",
+      "remaining": "The native mock-provider paths exercise exact terminal and unknown-dispatch behavior; complete external-provider reconciliation and durable usage/billing accounting remain unqualified."
+    },
+    {
+      "item": "CurrentMemoryRetrievalContext provider",
+      "state": "open",
+      "remaining": "Supply and qualify the real current-context provider in default product composition; optional injection and fixture context do not close it."
+    },
+    {
+      "item": "Default learning chain",
+      "state": "open",
+      "remaining": "Compose frozen data, training, independent evaluation, selection, activation and loading in a new process with failure/revocation recovery. The typed-owner test closes only its stated bounded chain."
+    },
+    {
+      "item": "Cell lifecycle coordinator",
+      "state": "open",
+      "remaining": "Unify native entry, current generation, route switching and recovery under the lifecycle owner; source guards and focused mutation tests are not complete coordinator evidence."
+    }
+  ],
+  "p2SourceAndStatus": {
+    "statusProjectionRepair": "objective.compiler and cognitive.store production projections now agree with false implementation-map qualifications; source presence remains separate.",
+    "symbolRepair": "kernel.operations references execute_authorized_taskflow_effect and execute_authorized_taskflow_effect_async instead of absent dispatch_authorized_effect.",
+    "documentMetadata": "Changed kernel TECHNICAL.md byte/hash/word metrics were refreshed with the semantic correction.",
+    "firstQualificationVerification": {
+      "source": "sourceIdentities.v5",
+      "result": "FAIL",
+      "exitCode": 1,
+      "seconds": 8.719,
+      "failedModules": 36,
+      "classes": { "missingHistoricalIdentityObjects": 23, "sourceDrift": 9, "historicalPathObjectsMissing": 4 },
+      "logBytes": 14172,
+      "logSha256": "fad2e5fc77166d302de11d4aad765860c394ccf2c51ae682aff06950251e4395",
+      "boundary": "All four reported historical paths exist in the exact old tree; restore their real blobs before judging drift. This failed diagnostic is retained when later canonical migration succeeds."
+    },
+    "historicalObjectRestoration": {
+      "exportResult": "PASS", "exportSeconds": 6.0625236, "exportManifestSha256": "c8bc961a38c218fa0ab5c6e2bfe324bec853f8d8212c1eaad1e0d64b8e3f56c8",
+      "pack": {"bytes": 603117, "sha256": "e8cb3bfea22383b86fd18984902969454c26209f311578d0941b8c9033255b12"}, "objects": {"exported": 606, "reusedAndRehashed": 2688, "originalCommits": 536, "genuinelyAbsentQueries": 0},
+      "importResult": "PASS", "pathAndPrefixQueries": 755, "directoryDescendantObjects": 2529, "reachableCommitsBefore": 47, "reachableCommitsAfter": 581,
+      "headIndexWorktreeBytesUnchanged": true, "originalParentsUnchanged": true, "existingExpandedHistoryPreserved": true,
+      "importSummary": {"kind": "complete_native_helper_stdout_JSON_summary", "bytes": 1684, "sha256": "a1399b2a835fd6dfedb57203cff74ad853c6f30ed0bfebca47f484085269cbfe"},
+      "boundary": "Only exact Git objects and the proven shallow boundary update were installed in the task checkout. The complete parent/object receipt remains on the execution host; this summary is not that full receipt. Object availability is separate from the original all-module qualification verifier."
+    },
+    "finalMigration": {
+      "result": "MIGRATED_AND_ALL_40_SOURCE_VERIFIED_AFTER_CANONICAL_PROJECTION_SYNC",
+      "sourceCommit": "39b81b33e4e8071b1f8dfe7c9804d44c4dcdefc0",
+      "sourceTree": "e15523424da7b3b0a3dc56bbb41b09c00a1778f6",
+      "mapOnlyCommit": "2e0e66d0a5c7938404401aff1854d46296dfaec4",
+      "mapOnlyTree": "f3609a9615157c614520555c49937a28433c1cc1",
+      "command": "python3 scripts/hepta-implementation-maps.py migrate",
+      "selectedModules": 40,
+      "changedMaps": 21, "unchangedMaps": 19, "exitCode": 0, "seconds": 6.143224693951197, "rawLog": "allMapsMigration",
+      "preMigrationQualificationVerification": {"source": "sourceIdentities.finalSourceS1", "result": "FAIL", "exitCode": 1, "seconds": 8.76364418794401, "rawLog": "allMapsBeforeMigration"},
+      "independentFieldReview": {"result": "ACCEPTED", "falseQualificationFieldsRetained": 240, "claimBoundariesGapsGatesAndPathsUnchanged": true, "controlEngineeringEntireFileUnchanged": true, "fieldDetailsSha256": "eec0bde8fa5284c84f1464e84a0888f79d29daf085d7c865816c860c7d79c7e0", "boundary": "Source-navigation field review is separate from original qualification verification on committed S2."},
+      "derivedProjectionRepair": {"result": "PASS", "publishedSource": "sourceIdentities.mapsS2b", "originalCommand": "python3 scripts/hepta-implementation-maps.py sync-plasticity-status", "exitCode": 0, "seconds": 0.1781268670456484, "bundleSha256": "cea05b32b659ba6cc791f9886e6eef1ce69fbfd1a82a538ffe5234ddaa90d207", "bundleBytes": 30888, "changedFiles": 1, "changedFields": ["CURRENT_STATE.json/sourceBase/commit", "CURRENT_STATE.json/sourceBase/tree"], "markdownBytesUnchanged": true, "independentReview": "ACCEPTED", "reason": "Plain migrate writes maps only. The separate original sync command regenerates CURRENT_STATE.json from the map without changing qualifications; sourceBase remains the mapped S1 source."},
+      "selection": "Original full-registry migration, without a module selector, after restoring real historical objects; original verification covers all 40 modules.",
+      "verification": "Original qualification verifier on the final clean map-only commit with --expected-sha and --expected-tree.",
+      "boundary": "Keep control.engineering immutable exact-blob sourceBase 331b81d385a88837e252bd80fda8b8ac35ea4191. The verifier checks all 40 modules and has no module selector. Any remaining provenance failures stay visible; scoped source checks cannot substitute for repository or product qualification."
+    }
+  },
+  "rawLogs": {
+    "v2OwnerTests": {"path": "qualification-v2/owner-tests.log", "sha256": "42d9160fe3f1780c70de0be11aaa3c9966901ea5a758e81995aec38c05d501e1", "bytes": 213937},
+    "v2ModuleRegressions": {"path": "qualification-v2/module-regressions-correct-entry.log", "sha256": "4fe77db310e469f21377098f5b88f6d4a39e6a0bf0c27f650a1e00035e56c158", "bytes": 115},
+    "v3HostTests": {"path": "qualification-v3/host-tests.log", "sha256": "2a76d160ec908d6790bd94d3c16f7219e0e13abb470f79d65102bd2973e5d600", "bytes": 46214},
+    "v3IssuerFrontierTests": {"path": "qualification-v3/issuer-frontier-tests.log", "sha256": "bad95bc427573deea4d6740274a23d57b9a1b393913cc5385b1f00cdd542a367", "bytes": 68949},
+    "v4HostIssuerFrontierTests": {"path": "qualification-v4/host-issuer-frontier-tests.log", "sha256": "f0e55b88243de1e73ff9e5ba2cb4548fdb341a4766134360ae99f59aeaa01dfa", "bytes": 46192},
+    "v4WriterRotationTest": {"path": "qualification-v4/writer-rotation-test.log", "sha256": "38d7ecd69ea4cf74d9c9587ada2671ef316135676743a62ce31cf8580ea66a2f", "bytes": 24466},
+    "v5OwnerTests": {"path": "qualification-v5/owner-tests.log", "lines": 1007, "sha256": "0c98eb27440fdca2c6ef6fd206392ae850b8f4adeaa8eb0cbdcfe3adc1ba6956", "bytes": 127026},
+    "v2ModuleRegressionsInitial": {"path": "qualification-v2/module-regressions.log", "sha256": "380dd31f0e94a257cc4f252cd411df7732be8846f4fe2014f205b327f37e4c01", "bytes": 884},
+    "v6OwnerTests": {"path": "qualification-v6/owner-tests.log", "sha256": "1d31d9a3841705d5ebbfc6507d7b2361214dc411383b8745baff4c59e1475a43", "bytes": 157060},
+    "v7FocusedTests": {"path": "qualification-v7/focused-tests.log", "sha256": "d64337be9e3b967b1897f3fe02712430398f921c66a979330e008ce7c97a56f9", "bytes": 25719},
+    "v7OwnerTests": {"path": "qualification-v7/owner-tests.log", "sha256": "a5db010e2caaa62895fd76ce1ebf8ad909b6d783f892fc58744dd054a5af1898", "bytes": 130201},
+    "requiredFix": {"path": "final-fix-v1/08-just-fix.log", "sha256": "3d73b6fc8e8a85574c2b578447deede3202b8e6108b3a1deb093335536b070a5", "bytes": 83015},
+    "requiredFormat": {"path": "final-fix-v1/09-just-fmt.log", "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855", "bytes": 0},
+    "allMapsBeforeMigration": {"path": "map-migration-v1/50-original-verify.log", "sha256": "406a299a466a5baf159ae8782d25f010b015e1313cfd987469fc26db89eaf903", "bytes": 23572},
+    "allMapsMigration": {"path": "map-migration-v1/51-original-migrate.log", "sha256": "7132da089b755115e98717b0359afce87d96383a29fdfd4ad21c1256f7034f96", "bytes": 1222},
+    "s2MapQualification": {"path": "s2-map-qualification/original-verify.log", "sha256": "fcb3edce13d60f0419203adde81878ac750c7352396bce9ac8095ccbb7d76766", "bytes": 113},
+    "s2bMapQualification": {"path": "s2b-map-qualification/original-verify.log", "sha256": "cf484a0c140adda5d426146d7a0218d3cb5ff467be495aea81abfa6433ba44c7", "bytes": 690}
+  },
+  "finalVerification": {
+    "sourceContentComparedWithTestedTree": {"testedSource": "sourceIdentities.v7", "subsequentSource": "sourceIdentities.finalSourceS1", "byteIdentical": false, "changedFiles": 4, "changedHunks": 5, "review": "ACCEPTED_MECHANICAL_SOURCE_DIFF", "testsAfterFix": "NOT_RUN_PER_FIXED_AGENTS_INSTRUCTION", "runtimePassInferredForChangedBytes": false, "diffSha256": "55c6ceea6bcafa9f5896c76ec5b00134bb5718a62f9a9ad1737c398eb8d833ae", "diffBytes": 4647},
+    "requiredFixGate": {
+      "fix": {"command": "requiredFix", "result": "PASS", "exitCode": 0, "seconds": 456.28016474703327, "rawLog": "requiredFix"},
+      "format": {"command": "rustFormat", "result": "PASS", "exitCode": 0, "seconds": 1.3717468079412356, "rawLog": "requiredFormat"},
+      "driverExitCode": 2, "driverPhase": "complete_review_required", "scopeReview": "COMPLETED_ACCEPTED", "boundary": "Two pre-existing test files were outside the initial path allowlist. Exit 2 requested review; both original gate commands exited 0. The four-file diff was independently reviewed and published separately; no post-fix runtime execution is claimed.",
+      "mechanicalChanges": ["Two last-use clones of plain AuthorityLease records become moves.", "One bounded fixture deadline expectation uses div_ceil; production checked overflow rejection is unchanged.", "One empty error match arm becomes if let with its original negative assertion.", "One nested native cancellation if let becomes a let-chain with the same short-circuit conditions, await and cleanup order."]
+    },
+    "implementationMapVerification": {
+      "result": "PASS", "source": "sourceIdentities.mapsS2b", "profile": "qualification", "scope": "all_40_modules", "exitCode": 0, "seconds": 10.027191862929612, "rawLog": "s2bMapQualification", "headTreeUnchanged": true, "cleanAfter": true,
+      "validationScope": "source_navigation_and_declared_evidence_not_build_or_execution",
+      "originalVerifierFacts": {"maps": 40, "modules": 40, "currentSourceIdentityRequired": true, "historicalEvidenceRevalidated": true, "legacyProvenanceOnlyMaps": [], "exactObservedFallbackMaps": 39, "provenanceAnchoredExactBlobMaps": 1, "productionImplementationProved": false},
+      "priorCommittedAttempt": {"source": "sourceIdentities.mapsS2", "result": "FAIL", "exitCode": 1, "seconds": 10.079296276089735, "rawLog": "s2MapQualification", "failure": "learning.plasticity: generated plasticity status differs from implementation map"}
+    },
+    "ci": {
+      "commit": "d0bc7fb8e1e18408ed58cb3999fcd33a7d499daa",
+      "status": "QUEUED_AND_SKIPPED_SNAPSHOT_NOT_A_PASS",
+      "checks": [
+        {"name": "metadata", "status": "queued", "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/42007169760/job/127176750593"},
+        {"name": "Windows ACL recovery", "status": "queued", "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/42007169801/job/127176750334"},
+        {"name": "owner-candidate", "status": "skipped", "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/42007170035/job/127176749768"}
+      ],
+      "boundary": "Known S2b CI snapshot supplied by the publishing agent; no CI success is inferred. Later-head verification and CI results are recorded separately in the pull request."
+    },
+    "allProductQualificationsRemainFalse": true,
+    "laterSourceChange": "Canonical v7 passed the original four-package command with two flaky passes after v6 failed, and its exact tested tree was published. S1 adds the separately reviewed four-file mechanical fix; original fix/fmt exited 0. S2 and S2b add only source maps and their canonical status projection; S2b passes original all-module source navigation verification. No runtime test PASS is transferred to post-fix bytes; CI remains a queued/skipped snapshot."
+  },
+  "evidenceScope": [
+    "Execution results bind their exact v2-v7 source trees. The current source-navigation result binds S2b; this document does not need the SHA of its own later evidence-only commit.",
+    "Original failed commands, retries, unavailable style checks and collection-time receipt states remain visible; later success does not erase them.",
+    "Qualification-profile source navigation grants no product execution, independent acceptance, activation or release. The stated P1 gaps remain open.",
+    "The evidence directory is outside all 40 maps' observed source/evidence prefixes. Verification and CI of later evidence-only commits are reported separately on the pull request."
+  ],
+  "stateReceipts": {
+    "v2": {"path": "qualification-v2/state.json", "sha256": "8df1a14e45a421edb104d15ad9cc56a605da1aceb5fb0144c21711a892faa310", "bytes": 1936},
+    "v3": {"path": "qualification-v3/state.json", "sha256": "df2200b53626a146cfb38a0298c70729f1f25c38de6349f43cf23e60879d291b", "bytes": 1486},
+    "v4": {"path": "qualification-v4/state.json", "sha256": "97a028a9bf464b4d31d3b11f2e0a320bb5e586ec68cb4fb357be1bbda722babb", "bytes": 1988},
+    "v5": {"path": "qualification-v5/state.json", "sha256": "cbd19833f29fad6e79275d8180225a0a4adef43333a07a4131697ab6650f2a92", "bytes": 2709},
+    "pythonStyle": {"path": "python-style-pinned-v4/state.json", "sha256": "03bb01860d4dfa9045144d1dd55013568c410ffe7c9b27c64cc45e813d516110", "bytes": 625},
+    "requiredFix": {"path": "final-fix-v1/state.json", "sha256": "066d6231c2c0a1e1b0ebe7264ecc7def32bda6cd48db2687c77fb6d1209d4eff", "bytes": 21434},
+    "allMapsMigration": {"path": "map-migration-v1/state.json", "sha256": "b34a9e300395ff3b7eeacfc0beb83c5cdf6e3c77b5312b6114906beaa4581196", "bytes": 45114},
+    "s2MapQualification": {"path": "s2-map-qualification/receipt.json", "sha256": "3a5afa60abdf0494368c4b3c86ecaf54b92abf49fa978ddc756c744fdb32ffaf", "bytes": 1127},
+    "s2bMapQualification": {"path": "s2b-map-qualification/receipt.json", "sha256": "a0b214aaaf8397d147a36ee4f724f6dda52fef297231d23ee555aacfd2abf806", "bytes": 1128}
+  }
+}

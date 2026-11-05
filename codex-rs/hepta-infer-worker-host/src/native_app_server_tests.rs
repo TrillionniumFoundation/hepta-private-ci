@@ -5,6 +5,21 @@ use codex_app_server_protocol::Turn;
 use codex_app_server_protocol::TurnCompletedNotification;
 use codex_app_server_protocol::TurnItemsView;
 use codex_app_server_protocol::TurnStartedNotification;
+use codex_hepta_agentd::test_support::Arg0DispatchPaths;
+
+/// These test binaries link core_test_support, whose startup constructor
+/// installs the real same-build arg0, filesystem and process helper dispatch.
+pub(super) fn app_server_test_runtime_paths() -> Result<Arg0DispatchPaths> {
+    #[cfg(target_os = "linux")]
+    let codex_linux_sandbox_exe = Some(core_test_support::find_codex_linux_sandbox_exe()?);
+    #[cfg(not(target_os = "linux"))]
+    let codex_linux_sandbox_exe = None;
+    Ok(Arg0DispatchPaths {
+        codex_self_exe: Some(std::env::current_exe()?),
+        codex_linux_sandbox_exe,
+        ..Arg0DispatchPaths::default()
+    })
+}
 
 fn binding() -> CodexTurnBinding {
     let payload_digest = Digest32::of_bytes(b"test-turn-payload");
@@ -49,7 +64,7 @@ fn observe_for_test(
     observe_event(output, &observed(notification), &binding)
 }
 
-fn output() -> NativeRunOutput {
+pub(super) fn output() -> NativeRunOutput {
     NativeRunOutput {
         thread_id: "thread-a".to_string(),
         turn_id: "turn-a".to_string(),
@@ -163,6 +178,7 @@ fn only_the_bound_turn_can_complete_the_native_request() {
 #[test]
 fn output_is_observed_bounded_and_never_predeclares_success() {
     let mut output = output();
+    let mut messages = AgentMessageOutput::default();
     let delta = |thread: &str, text: String| {
         ServerNotification::AgentMessageDelta(AgentMessageDeltaNotification {
             thread_id: thread.to_string(),
@@ -171,12 +187,21 @@ fn output_is_observed_bounded_and_never_predeclares_success() {
             delta: text,
         })
     };
-    observe_for_test(&mut output, delta("unrelated", "discard".to_string())).unwrap();
-    observe_for_test(&mut output, delta("thread-a", "model output".to_string())).unwrap();
+    messages
+        .observe(&delta("unrelated", "discard".to_string()), &mut output)
+        .unwrap();
+    messages
+        .observe(&delta("thread-a", "model output".to_string()), &mut output)
+        .unwrap();
     assert_eq!(output.output, "model output");
     assert_eq!(output.status, NativeRunStatus::Indeterminate);
     assert!(
-        observe_for_test(&mut output, delta("thread-a", "x".repeat(MAX_OUTPUT_BYTES))).is_err()
+        messages
+            .observe(
+                &delta("thread-a", "x".repeat(MAX_OUTPUT_BYTES)),
+                &mut output
+            )
+            .is_err()
     );
     assert_eq!(output.output, "model output");
     assert!(!output.terminal_observed);
@@ -465,8 +490,14 @@ async fn real_agentd_worker_accepts_fresh_context_and_rejects_final_use_tombston
     let nonce = SystemTime::now().duration_since(UNIX_EPOCH)?.as_nanos();
     let root = std::env::temp_dir().join(format!("hepta-cognitive-worker-e2e-{nonce}"));
     let agent_id = codex_hepta_contracts::AgentId::parse(AGENT_ID)?;
-    let host =
-        CognitiveTestHost::start(root, agent_id, MODEL, &format!("{}/v1", server.uri())).await?;
+    let host = CognitiveTestHost::start(
+        root,
+        agent_id,
+        MODEL,
+        &format!("{}/v1", server.uri()),
+        app_server_test_runtime_paths()?,
+    )
+    .await?;
     let _accepted_memory = host
         .seed_verified_memory("worker-final-use-accept", ACCEPT_MEMORY)
         .await?;

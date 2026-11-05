@@ -1,0 +1,32 @@
+{
+  "schema_version": 1,
+  "head": "2e0e66d0a5c7938404401aff1854d46296dfaec4",
+  "tree": "f3609a9615157c614520555c49937a28433c1cc1",
+  "command": [
+    "/usr/bin/python3",
+    "/data/hepta-p1p2-20261105-05ef/exact-r3-source/scripts/hepta-implementation-maps.py",
+    "verify",
+    "--profile",
+    "qualification",
+    "--expected-sha",
+    "2e0e66d0a5c7938404401aff1854d46296dfaec4",
+    "--expected-tree",
+    "f3609a9615157c614520555c49937a28433c1cc1"
+  ],
+  "cwd": "/data/hepta-p1p2-20261105-05ef/exact-r3-source",
+  "exit": 1,
+  "seconds": 10.079296276089735,
+  "original_tools": {
+    "scripts/hepta-implementation-maps.py": "e8ae0fd675b7e3ca2911b80af92cc21021789fbe",
+    "scripts/hepta_module_source_roots.py": "25c028baa4341885bfacf42d3a5f94ece5a6e784"
+  },
+  "log": {
+    "path": "/data/hepta-p1p2-20261105-05ef/s2-map-qualification/original-verify.log",
+    "bytes": 113,
+    "sha256": "fcb3edce13d60f0419203adde81878ac750c7352396bce9ac8095ccbb7d76766"
+  },
+  "head_after": "2e0e66d0a5c7938404401aff1854d46296dfaec4",
+  "tree_after": "f3609a9615157c614520555c49937a28433c1cc1",
+  "clean": true,
+  "status": "FAIL"
+}

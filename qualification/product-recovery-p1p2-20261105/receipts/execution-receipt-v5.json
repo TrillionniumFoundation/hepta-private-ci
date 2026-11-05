@@ -1,0 +1,497 @@
+{
+  "synchronized_source": {
+    "head": "a6403e8ae23e9f62cba2a6343563214f6a49dbed",
+    "tree": "12418befd4574b13560e5c5c074e7beb0b805d6a",
+    "clean": true,
+    "disk": {
+      "total": 983023263744,
+      "used": 919049449472,
+      "free": 13963505664
+    }
+  },
+  "records": [
+    {
+      "path": "qualification-v2/state.json",
+      "sha256": "8df1a14e45a421edb104d15ad9cc56a605da1aceb5fb0144c21711a892faa310",
+      "bytes": 1936,
+      "state": {
+        "phase": "tests_finished",
+        "base_commit": "b31592352e614444fb770fcae5f09a91b78e1ead",
+        "commands": [
+          {
+            "name": "toolchain",
+            "argv": [
+              "rustc",
+              "--version"
+            ],
+            "exit": 0,
+            "seconds": 0.024465322494506836
+          },
+          {
+            "name": "nextest-version",
+            "argv": [
+              "cargo",
+              "nextest",
+              "--version"
+            ],
+            "exit": 0,
+            "seconds": 0.03238487243652344
+          },
+          {
+            "name": "format",
+            "argv": [
+              "just",
+              "fmt"
+            ],
+            "exit": 0,
+            "seconds": 1.2933440208435059
+          },
+          {
+            "name": "diff-check",
+            "argv": [
+              "git",
+              "diff",
+              "--cached",
+              "--check"
+            ],
+            "exit": 0,
+            "seconds": 0.021564245223999023
+          },
+          {
+            "name": "module-regressions",
+            "argv": [
+              "python3",
+              "-m",
+              "unittest",
+              "scripts.test_hepta_module_status_facts",
+              "scripts.test_hepta_module_doc_metadata",
+              "scripts.test_hepta_module_projection_membership"
+            ],
+            "exit": 1,
+            "seconds": 0.35503315925598145
+          },
+          {
+            "name": "owner-tests",
+            "argv": [
+              "just",
+              "test",
+              "-p",
+              "codex-hepta-agent-protocol",
+              "-p",
+              "codex-hepta-agentd",
+              "-p",
+              "codex-hepta-infer-worker-host",
+              "-p",
+              "codex-hepta-runtime"
+            ],
+            "exit": 100,
+            "seconds": 1004.7415869235992
+          }
+        ],
+        "disk_before": {
+          "total": 983023263744,
+          "used": 867650252800,
+          "free": 65362702336
+        },
+        "unformatted_tree": "de9458d713dbb54368cbd6c01f4200d1b87cf8d8",
+        "formatted_tree": "11fb7fcef1eefda4fe037a3c195b08c06f5db3e0",
+        "formatted_payload": {
+          "bytes": 59760,
+          "sha256": "85790aee1eff7201e590173dc1a24eec8303c35ac81bfb87afb7c09e5cbc050c"
+        },
+        "disk_after": {
+          "total": 983023263744,
+          "used": 908679421952,
+          "free": 24333533184
+        }
+      }
+    },
+    {
+      "path": "qualification-v2/owner-tests.log",
+      "sha256": "42d9160fe3f1780c70de0be11aaa3c9966901ea5a758e81995aec38c05d501e1",
+      "bytes": 213937,
+      "summary_lines": [
+        "    Finished `test` profile [unoptimized + debuginfo] target(s) in 14m 20s",
+        "    Starting 664 tests across 21 binaries (66 tests skipped)",
+        "     Summary [ 139.628s] 664 tests run: 651 passed (4 slow, 1 flaky), 7 failed, 6 timed out, 66 skipped"
+      ]
+    },
+    {
+      "path": "qualification-v2/module-regressions-correct-entry.log",
+      "sha256": "4fe77db310e469f21377098f5b88f6d4a39e6a0bf0c27f650a1e00035e56c158",
+      "bytes": 115,
+      "summary_lines": [
+        "Ran 16 tests in 2.416s",
+        "OK"
+      ]
+    },
+    {
+      "path": "qualification-v3/state.json",
+      "sha256": "df2200b53626a146cfb38a0298c70729f1f25c38de6349f43cf23e60879d291b",
+      "bytes": 1486,
+      "state": {
+        "phase": "tests_finished",
+        "base_commit": "8f7751afb426831285633fd10135d9b70f5dd6c7",
+        "commands": [
+          {
+            "name": "format",
+            "argv": [
+              "just",
+              "fmt"
+            ],
+            "exit": 0,
+            "seconds": 0.5483114719390869
+          },
+          {
+            "name": "diff-check",
+            "argv": [
+              "git",
+              "diff",
+              "--cached",
+              "--check"
+            ],
+            "exit": 0,
+            "seconds": 0.014802217483520508
+          },
+          {
+            "name": "host-tests",
+            "argv": [
+              "just",
+              "test",
+              "-p",
+              "codex-hepta-infer-worker-host"
+            ],
+            "exit": 100,
+            "seconds": 104.18172645568848
+          },
+          {
+            "name": "issuer-frontier-tests",
+            "argv": [
+              "just",
+              "test",
+              "-p",
+              "codex-hepta-agentd",
+              "-E",
+              "test(deployment_issuer::desktop::tests) | test(root_authority_session::tests::both_original_frontiers_finish_before_new_head_is_published)"
+            ],
+            "exit": 101,
+            "seconds": 147.83326196670532
+          }
+        ],
+        "disk_before": {
+          "total": 983023263744,
+          "used": 908362465280,
+          "free": 24650489856
+        },
+        "unformatted_tree": "eecafcf10e5dda896b2d213fb695e100039095a2",
+        "formatted_tree": "eecafcf10e5dda896b2d213fb695e100039095a2",
+        "formatted_payload": {
+          "bytes": 22368,
+          "sha256": "2200b68851d9cad3e4a19ffabfde430693b0554c0fe267ac09c3ebd0d8e53c52"
+        },
+        "disk_after": {
+          "total": 983023263744,
+          "used": 932276453376,
+          "free": 736501760
+        }
+      }
+    },
+    {
+      "path": "qualification-v3/host-tests.log",
+      "sha256": "2a76d160ec908d6790bd94d3c16f7219e0e13abb470f79d65102bd2973e5d600",
+      "bytes": 46214,
+      "summary_lines": [
+        "    Finished `test` profile [unoptimized + debuginfo] target(s) in 1m 18s",
+        "    Starting 41 tests across 2 binaries",
+        "     Summary [  24.594s] 41 tests run: 35 passed, 6 failed, 0 skipped"
+      ]
+    },
+    {
+      "path": "qualification-v3/issuer-frontier-tests.log",
+      "sha256": "bad95bc427573deea4d6740274a23d57b9a1b393913cc5385b1f00cdd542a367",
+      "bytes": 68949,
+      "summary_lines": []
+    },
+    {
+      "path": "qualification-v4/state.json",
+      "sha256": "97a028a9bf464b4d31d3b11f2e0a320bb5e586ec68cb4fb357be1bbda722babb",
+      "bytes": 1988,
+      "state": {
+        "phase": "tests_finished",
+        "base_commit": "58181837d6ceb62ceee14475304f3b19acd9f8e4",
+        "commands": [
+          {
+            "name": "format",
+            "argv": [
+              "just",
+              "fmt"
+            ],
+            "exit": 0,
+            "seconds": 0.6713459491729736
+          },
+          {
+            "name": "diff-check",
+            "argv": [
+              "git",
+              "diff",
+              "--cached",
+              "--check"
+            ],
+            "exit": 0,
+            "seconds": 0.009604454040527344
+          },
+          {
+            "name": "host-issuer-frontier-tests",
+            "argv": [
+              "just",
+              "test",
+              "-p",
+              "codex-hepta-agent-protocol",
+              "-p",
+              "codex-hepta-agentd",
+              "-p",
+              "codex-hepta-infer-worker-host",
+              "-p",
+              "codex-hepta-runtime",
+              "-E",
+              "package(codex-hepta-infer-worker-host) | test(deployment_issuer::desktop::tests) | test(root_authority_session::tests::both_original_frontiers_finish_before_new_head_is_published)"
+            ],
+            "exit": 100,
+            "seconds": 205.41496992111206
+          },
+          {
+            "name": "writer-rotation-test",
+            "argv": [
+              "just",
+              "test",
+              "-p",
+              "codex-hepta-agent-protocol",
+              "-p",
+              "codex-hepta-agentd",
+              "-p",
+              "codex-hepta-infer-worker-host",
+              "-p",
+              "codex-hepta-runtime",
+              "-E",
+              "test(runtime_tasks::service_generations::writer_tests::sqlite_writer_rotates_256_times_without_consuming_new_service_identities)"
+            ],
+            "exit": 0,
+            "seconds": 26.564321756362915
+          }
+        ],
+        "disk_before": {
+          "total": 983023263744,
+          "used": 921042862080,
+          "free": 11970093056
+        },
+        "unformatted_tree": "473834e86210c85d3f96898d2ba27548b68c669c",
+        "formatted_tree": "2bd7fd2ad36859785df8ae9e3f0e1d109759f7f8",
+        "formatted_payload": {
+          "bytes": 9152,
+          "sha256": "4b8ad1e4c03bad7dd390f23cca07ba00d562e9e026b1820c8923d87213ebab6b"
+        },
+        "disk_after": {
+          "total": 983023263744,
+          "used": 922869411840,
+          "free": 10143543296
+        }
+      }
+    },
+    {
+      "path": "qualification-v4/host-issuer-frontier-tests.log",
+      "sha256": "f0e55b88243de1e73ff9e5ba2cb4548fdb341a4766134360ae99f59aeaa01dfa",
+      "bytes": 46192,
+      "summary_lines": [
+        "    Finished `test` profile [unoptimized + debuginfo] target(s) in 3m 10s",
+        "    Starting 51 tests across 21 binaries (680 tests skipped)",
+        "     Summary [  13.493s] 51 tests run: 46 passed, 5 failed, 680 skipped"
+      ]
+    },
+    {
+      "path": "qualification-v4/writer-rotation-test.log",
+      "sha256": "38d7ecd69ea4cf74d9c9587ada2671ef316135676743a62ce31cf8580ea66a2f",
+      "bytes": 24466,
+      "summary_lines": [
+        "    Finished `test` profile [unoptimized + debuginfo] target(s) in 1.49s",
+        "     Summary [  24.177s] 1 test run: 1 passed, 730 skipped"
+      ]
+    },
+    {
+      "path": "qualification-v5/state.json",
+      "sha256": "cbd19833f29fad6e79275d8180225a0a4adef43333a07a4131697ab6650f2a92",
+      "bytes": 2709,
+      "state": {
+        "phase": "tests_finished",
+        "base_commit": "a7ab532d852887772fffab83a5108accac1cf286",
+        "commands": [
+          {
+            "name": "format-1",
+            "argv": [
+              "just",
+              "fmt"
+            ],
+            "exit": 0,
+            "seconds": 0.5705199241638184
+          },
+          {
+            "name": "format-2",
+            "argv": [
+              "just",
+              "fmt"
+            ],
+            "exit": 0,
+            "seconds": 0.5651810169219971
+          },
+          {
+            "name": "format-3",
+            "argv": [
+              "just",
+              "fmt"
+            ],
+            "exit": 0,
+            "seconds": 0.578946590423584
+          },
+          {
+            "name": "diff-check",
+            "argv": [
+              "git",
+              "diff",
+              "--cached",
+              "--check"
+            ],
+            "exit": 0,
+            "seconds": 0.013533592224121094
+          },
+          {
+            "name": "owner-tests",
+            "argv": [
+              "just",
+              "test",
+              "-p",
+              "codex-hepta-agent-protocol",
+              "-p",
+              "codex-hepta-agentd",
+              "-p",
+              "codex-hepta-infer-worker-host",
+              "-p",
+              "codex-hepta-runtime"
+            ],
+            "exit": 0,
+            "seconds": 162.68044304847717
+          }
+        ],
+        "stages": [
+          {
+            "name": "native-generation",
+            "tree": "2e18f9cc46952bd2c05fed8331cade8dba5f649f",
+            "paths": [
+              "codex-rs/hepta-agentd/src/client.rs",
+              "codex-rs/hepta-infer-worker-host/src/native_app_server.rs",
+              "codex-rs/hepta-infer-worker-host/src/native_intelligence_recovery.rs",
+              "codex-rs/hepta-infer-worker-host/src/native_intelligence_recovery_process_tests.rs",
+              "codex-rs/hepta-infer-worker-host/src/native_intelligence_recovery_tests.rs",
+              "codex-rs/hepta-infer-worker-host/src/native_run_control.rs"
+            ]
+          },
+          {
+            "name": "01-agent-message-output",
+            "tree": "53e6d70ea9028baebb3cb90af49102db8297b787",
+            "paths": [
+              "codex-rs/hepta-infer-worker-host/src/native_app_server.rs",
+              "codex-rs/hepta-infer-worker-host/src/native_app_server_tests.rs",
+              "codex-rs/hepta-infer-worker-host/src/native_output.rs",
+              "codex-rs/hepta-infer-worker-host/src/native_output_tests.rs"
+            ]
+          },
+          {
+            "name": "02-matrix-process-isolation",
+            "tree": "12418befd4574b13560e5c5c074e7beb0b805d6a",
+            "paths": [
+              "codex-rs/hepta-infer-worker-host/src/native_recovery_tests.rs"
+            ]
+          }
+        ],
+        "disk_before": {
+          "total": 983023263744,
+          "used": 918381244416,
+          "free": 14631710720
+        },
+        "formatted_tree": "12418befd4574b13560e5c5c074e7beb0b805d6a",
+        "formatted_payload": {
+          "bytes": 76849,
+          "sha256": "a49c8e739803a09a8a4e289598d286e6b2102d3e50eef0a0d0e3aa6fc6e41362"
+        },
+        "disk_after": {
+          "total": 983023263744,
+          "used": 919893671936,
+          "free": 13119283200
+        }
+      }
+    },
+    {
+      "path": "qualification-v5/owner-tests.log",
+      "sha256": "0c98eb27440fdca2c6ef6fd206392ae850b8f4adeaa8eb0cbdcfe3adc1ba6956",
+      "bytes": 127026,
+      "summary_lines": [
+        "    Finished `test` profile [unoptimized + debuginfo] target(s) in 1m 38s",
+        "    Starting 670 tests across 21 binaries (66 tests skipped)",
+        "     Summary [  62.853s] 670 tests run: 670 passed (6 slow), 66 skipped"
+      ],
+      "selected_pass_lines": [
+        "        PASS [   1.852s] (154/670) codex-hepta-agentd deployment_issuer::desktop::tests::revoked_original_issuer_cannot_acknowledge_an_already_published_desktop_pair",
+        "        PASS [   2.197s] (155/670) codex-hepta-agentd deployment_issuer::desktop::tests::desktop_policy_two_successors_keep_one_original_issuer_then_revocation_fences_the_pair",
+        "        PASS [   5.114s] (614/670) codex-hepta-agentd::terminal_cell_owner real_owner_decision_outcome_freeze_fit_registry_reload_and_withdrawal",
+        "        PASS [   8.999s] (646/670) codex-hepta-infer-worker-host native_app_server::control::intelligence_recovery::tests::process::settled_terminal_survives_worker_loss_before_agentd_publication",
+        "        PASS [   9.160s] (648/670) codex-hepta-infer-worker-host native_app_server::control::intelligence_recovery::tests::process::retained_app_server_terminal_reconciles_current_agentd_revision",
+        "        PASS [   8.487s] (650/670) codex-hepta-infer-worker-host native_app_server::recovery::tests::recovered_cancellation_preserves_failed_provider_terminal",
+        "        PASS [   8.309s] (651/670) codex-hepta-infer-worker-host native_app_server::recovery::tests::recovered_cancellation_preserves_interrupted_provider_terminal",
+        "        PASS [   8.065s] (653/670) codex-hepta-infer-worker-host native_app_server::tests::real_agentd_worker_accepts_fresh_context_and_rejects_final_use_tombstone",
+        "        PASS [   9.321s] (655/670) codex-hepta-infer-worker-host native_app_server::recovery::tests::real_agentd_reconciles_reopened_worker_without_replaying_provider",
+        "        PASS [  16.377s] (662/670) codex-hepta-infer-worker-host native_app_server::failure_tests::worker_loss_before_cleanup_retains_observed_timeout_and_usage",
+        "        PASS [  29.439s] (663/670) codex-hepta-agentd::cognitive_product_e2e five_running_agents_share_only_with_the_explicit_consumer",
+        "        PASS [  29.504s] (664/670) codex-hepta-agentd::cognitive_product_e2e five_real_agents_survive_one_automation_store_failure_without_peer_stall",
+        "        PASS [  36.203s] (667/670) codex-hepta-agentd::five_agent_rolling_upgrade six_agent_fleet_lifecycle_keeps_peers_fair_and_isolated",
+        "        PASS [  36.664s] (668/670) codex-hepta-agentd::five_agent_rolling_upgrade five_real_agentd_processes_roll_one_agent_without_stopping_peers",
+        "        PASS [  46.195s] (669/670) codex-hepta-agentd runtime_tasks::service_generations::writer_tests::sqlite_writer_rotates_256_times_without_consuming_new_service_identities",
+        "        PASS [  48.641s] (670/670) codex-hepta-agentd::supervisord_product_e2e five_real_agents_survive_daemon_restart_and_isolate_one_agent_release_changes"
+      ]
+    },
+    {
+      "path": "python-style-pinned-v4/state.json",
+      "sha256": "03bb01860d4dfa9045144d1dd55013568c410ffe7c9b27c64cc45e813d516110",
+      "bytes": 625,
+      "state": [
+        {
+          "name": "venv",
+          "argv": [
+            "python3",
+            "-m",
+            "venv",
+            "/data/hepta-p1p2-20261105-05ef/python-style-pinned-v4/venv"
+          ],
+          "exit": 0,
+          "seconds": 4.47644829750061
+        },
+        {
+          "name": "locked-wheel",
+          "argv": [
+            "/data/hepta-p1p2-20261105-05ef/python-style-pinned-v4/venv/bin/python",
+            "-m",
+            "pip",
+            "install",
+            "--disable-pip-version-check",
+            "--no-deps",
+            "--require-hashes",
+            "-r",
+            "/data/hepta-p1p2-20261105-05ef/python-style-pinned-v4/requirements.txt"
+          ],
+          "exit": "TimeoutExpired",
+          "seconds": 90.01636171340942
+        }
+      ]
+    }
+  ],
+  "raw_logs_retained": true,
+  "raw_logs_location": "/data/hepta-p1p2-20261105-05ef",
+  "parents_rewritten": false
+}

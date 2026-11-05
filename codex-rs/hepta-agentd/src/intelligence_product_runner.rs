@@ -2,6 +2,9 @@
 
 use super::*;
 
+#[path = "intelligence_run_start.rs"]
+mod run_start;
+
 impl AgentdIntelligenceProductRunnerV1 {
     pub fn new(
         authority_file: PathBuf,
@@ -71,9 +74,22 @@ impl AgentdIntelligenceProductRunnerV1 {
 
     /// Run the seven-owner preparation against one frozen Agentd composition
     /// without retaining the run-coordinator mutex across owner execution.
+    /// This standalone path uses the caller's frozen composition identity;
+    /// durable Objective admission uses the record-bound preparation instead.
     pub async fn prepare_for_composition(
         &self,
         composition: &crate::RuntimeComposition,
+        request: CanonicalIntelligenceRunRequestV1,
+        inputs: AgentdIntelligenceOwnerInputsV1,
+    ) -> Result<AgentdIntelligenceProductOutcomeV1, AgentdIntelligenceProductError> {
+        self.prepare_with_run_identity(composition, None, request, inputs)
+            .await
+    }
+
+    async fn prepare_with_run_identity(
+        &self,
+        composition: &crate::RuntimeComposition,
+        original_run: Option<crate::AgentRunSnapshot>,
         request: CanonicalIntelligenceRunRequestV1,
         mut inputs: AgentdIntelligenceOwnerInputsV1,
     ) -> Result<AgentdIntelligenceProductOutcomeV1, AgentdIntelligenceProductError> {
@@ -93,9 +109,9 @@ impl AgentdIntelligenceProductRunnerV1 {
             return Err(AgentdIntelligenceProductError::CandidateSetMismatch);
         }
 
-        // Freeze the identity of the existing owner, never a new coordinator
-        // or a caller-selected body/model generation. Agentd validates this
-        // fence again at the actual admission and attachment boundary.
+        // Standalone preparation retains its caller-owned composition identity.
+        // The daemon supplies an original durable RunStart below; that identity
+        // is independent of both this spawn and the canonical body generation.
         let generation = composition.agentd_generation;
         let mut fence_bytes = b"hepta:agentd:objective-fence:v1\0".to_vec();
         fence_bytes.extend_from_slice(composition.agent_id.as_bytes());
@@ -103,8 +119,15 @@ impl AgentdIntelligenceProductRunnerV1 {
         fence_bytes.extend_from_slice(&generation.to_be_bytes());
         let fence_digest = Digest32::of_bytes(&fence_bytes).to_string();
         let snapshot = request.snapshot.clone();
-        let timeout_micros = request.budget.total_micros;
         let started_ms = wall_clock_ms()?;
+        let timeout_micros = match &original_run {
+            Some(original) => run_start::remaining_preparation_budget(
+                started_ms,
+                original.deadline_ms,
+                request.budget.total_micros,
+            )?,
+            None => request.budget.total_micros,
+        };
         let timeout_ms = timeout_micros.saturating_add(999) / 1_000;
         let deadline_ms = started_ms
             .checked_add(timeout_ms.max(1))
@@ -165,7 +188,7 @@ impl AgentdIntelligenceProductRunnerV1 {
                 body.extend_from_slice(snapshot.digest().as_array());
                 body.extend_from_slice(&snapshot.body_generation().get().to_be_bytes());
                 let body_digest = Digest32::of_bytes(&body);
-                let run_snapshot = crate::AgentRunSnapshot {
+                let run_snapshot = original_run.unwrap_or_else(|| crate::AgentRunSnapshot {
                     run_id: envelope.run_id.to_string(),
                     request_digest: envelope.trace_digest.to_string(),
                     objective_digest: envelope.objective_digest.to_string(),
@@ -175,7 +198,7 @@ impl AgentdIntelligenceProductRunnerV1 {
                     generation,
                     fence_digest,
                     deadline_ms,
-                };
+                });
                 let context_attachment = crate::AgentContextAttachment {
                     run_id: run_snapshot.run_id.clone(),
                     request_digest: run_snapshot.request_digest.clone(),

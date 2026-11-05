@@ -1,0 +1,687 @@
+{
+  "schema_version": 1,
+  "phase": "complete_review_required",
+  "preflight_verified": true,
+  "payload_sha256": "db3296ea69e95ba225585562ebe7746868a5f10a23541360b07d92399e01e547",
+  "expected": {
+    "schema_version": 1,
+    "task_root": "/data/hepta-p1p2-20261105-05ef",
+    "source_repo": "/data/hepta-p1p2-20261105-05ef/exact-r3-source",
+    "expected_published_head": "78668ea2837a16811b922dfcfbc438f3d8a98f5e",
+    "expected_published_tree": "caa6e68ece518f751b10b0cc6a027361aaf68589",
+    "tested_tree": "caa6e68ece518f751b10b0cc6a027361aaf68589",
+    "expected_clean": true,
+    "qualification_label": "v7 original four-package PASS: 675 passed, 8 slow, 2 flaky, 66 original skips",
+    "path_prefix": [
+      "/home/qian-qi/.cargo/bin",
+      "/home/qian-qi/.local/bin"
+    ],
+    "expected_modified_paths": [
+      "codex-rs/hepta-agent-protocol/src/lib.rs",
+      "codex-rs/hepta-agentd/src/client.rs",
+      "codex-rs/hepta-agentd/src/deployment_desktop.rs",
+      "codex-rs/hepta-agentd/src/deployment_desktop_tests.rs",
+      "codex-rs/hepta-agentd/src/deployment_issuer_root.rs",
+      "codex-rs/hepta-agentd/src/intelligence_canonical_runtime_test_support.rs",
+      "codex-rs/hepta-agentd/src/intelligence_canonical_runtime_tests.rs",
+      "codex-rs/hepta-agentd/src/intelligence_ingress.rs",
+      "codex-rs/hepta-agentd/src/intelligence_product_runner.rs",
+      "codex-rs/hepta-agentd/src/intelligence_product_signed_tests.rs",
+      "codex-rs/hepta-agentd/src/intelligence_product_tests.rs",
+      "codex-rs/hepta-agentd/src/intelligence_run_start.rs",
+      "codex-rs/hepta-agentd/src/intelligence_run_start_tests.rs",
+      "codex-rs/hepta-agentd/src/lane_b_bound.rs",
+      "codex-rs/hepta-agentd/src/lane_b_bound_tests.rs",
+      "codex-rs/hepta-agentd/src/lane_b_runtime.rs",
+      "codex-rs/hepta-agentd/src/lane_b_runtime_fault_tests.rs",
+      "codex-rs/hepta-agentd/src/lib.rs",
+      "codex-rs/hepta-agentd/src/runtime.rs",
+      "codex-rs/hepta-agentd/src/state.rs",
+      "codex-rs/hepta-agentd/src/state_control.rs",
+      "codex-rs/hepta-agentd/src/state_run_reconciliation.rs",
+      "codex-rs/hepta-agentd/src/test_support.rs",
+      "codex-rs/hepta-infer-worker-host/src/bin/hepta-infer-worker.rs",
+      "codex-rs/hepta-infer-worker-host/src/native_app_server.rs",
+      "codex-rs/hepta-infer-worker-host/src/native_app_server_tests.rs",
+      "codex-rs/hepta-infer-worker-host/src/native_failure_tests.rs",
+      "codex-rs/hepta-infer-worker-host/src/native_intelligence_recovery.rs",
+      "codex-rs/hepta-infer-worker-host/src/native_intelligence_recovery_process_tests.rs",
+      "codex-rs/hepta-infer-worker-host/src/native_intelligence_recovery_tests.rs",
+      "codex-rs/hepta-infer-worker-host/src/native_output.rs",
+      "codex-rs/hepta-infer-worker-host/src/native_output_tests.rs",
+      "codex-rs/hepta-infer-worker-host/src/native_recovery.rs",
+      "codex-rs/hepta-infer-worker-host/src/native_recovery_tests.rs",
+      "codex-rs/hepta-infer-worker-host/src/native_run_control.rs",
+      "codex-rs/hepta-infer-worker-host/src/native_run_control_tests.rs",
+      "codex-rs/hepta-infer-worker-host/src/native_worker_cli_tests.rs",
+      "codex-rs/hepta-runtime/src/lib.rs",
+      "codex-rs/hepta-runtime/src/organs_tests.rs",
+      "codex-rs/hepta-runtime/src/topology_execution.rs"
+    ]
+  },
+  "commands": [
+    {
+      "name": "git-root-before",
+      "argv": [
+        "git",
+        "rev-parse",
+        "--show-toplevel"
+      ],
+      "cwd": "/data/hepta-p1p2-20261105-05ef/exact-r3-source",
+      "log": "01-git-root-before.log",
+      "started_unix_seconds": 1793871059.3111982,
+      "disk_before": {
+        "total": 983023263744,
+        "used": 920525660160,
+        "free": 12487294976
+      },
+      "exit": 0,
+      "pid": 2585341,
+      "seconds": 0.060812574927695096,
+      "finished_unix_seconds": 1793871059.3724,
+      "raw_log_bytes": 47,
+      "raw_log_sha256": "6b570ce5273547b6ce688aba2a69b391609b211e145cef951134b74a9dc376c6",
+      "disk_after": {
+        "total": 983023263744,
+        "used": 920525664256,
+        "free": 12487290880
+      }
+    },
+    {
+      "name": "head-before",
+      "argv": [
+        "git",
+        "rev-parse",
+        "HEAD"
+      ],
+      "cwd": "/data/hepta-p1p2-20261105-05ef/exact-r3-source",
+      "log": "02-head-before.log",
+      "started_unix_seconds": 1793871059.3732085,
+      "disk_before": {
+        "total": 983023263744,
+        "used": 920525664256,
+        "free": 12487290880
+      },
+      "exit": 0,
+      "pid": 2585347,
+      "seconds": 0.03834291594102979,
+      "finished_unix_seconds": 1793871059.411936,
+      "raw_log_bytes": 41,
+      "raw_log_sha256": "a5e521211f44e7bb20d0554c01a536392271ab9cfc16901321f6103e6896ee2e",
+      "disk_after": {
+        "total": 983023263744,
+        "used": 920525668352,
+        "free": 12487286784
+      }
+    },
+    {
+      "name": "tree-before",
+      "argv": [
+        "git",
+        "rev-parse",
+        "HEAD^{tree}"
+      ],
+      "cwd": "/data/hepta-p1p2-20261105-05ef/exact-r3-source",
+      "log": "03-tree-before.log",
+      "started_unix_seconds": 1793871059.4126003,
+      "disk_before": {
+        "total": 983023263744,
+        "used": 920525668352,
+        "free": 12487286784
+      },
+      "exit": 0,
+      "pid": 2585356,
+      "seconds": 0.005264022038318217,
+      "finished_unix_seconds": 1793871059.4183152,
+      "raw_log_bytes": 41,
+      "raw_log_sha256": "03a73c2de1039f1f74c82a57206a0014e9b5b4a10371927b042308294cd5fb0a",
+      "disk_after": {
+        "total": 983023263744,
+        "used": 920525672448,
+        "free": 12487282688
+      }
+    },
+    {
+      "name": "status-before",
+      "argv": [
+        "git",
+        "status",
+        "--porcelain=v1",
+        "-z",
+        "--untracked-files=all"
+      ],
+      "cwd": "/data/hepta-p1p2-20261105-05ef/exact-r3-source",
+      "log": "04-status-before.log",
+      "started_unix_seconds": 1793871059.4192953,
+      "disk_before": {
+        "total": 983023263744,
+        "used": 920525672448,
+        "free": 12487282688
+      },
+      "exit": 0,
+      "pid": 2585357,
+      "seconds": 0.04684615693986416,
+      "finished_unix_seconds": 1793871059.4666703,
+      "raw_log_bytes": 0,
+      "raw_log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "disk_after": {
+        "total": 983023263744,
+        "used": 920525672448,
+        "free": 12487282688
+      }
+    },
+    {
+      "name": "rustc-version",
+      "argv": [
+        "rustc",
+        "--version"
+      ],
+      "cwd": "/data/hepta-p1p2-20261105-05ef/exact-r3-source",
+      "log": "05-rustc-version.log",
+      "started_unix_seconds": 1793871059.4674325,
+      "disk_before": {
+        "total": 983023263744,
+        "used": 920525672448,
+        "free": 12487282688
+      },
+      "exit": 0,
+      "pid": 2585378,
+      "seconds": 0.02596350002568215,
+      "finished_unix_seconds": 1793871059.4938905,
+      "raw_log_bytes": 36,
+      "raw_log_sha256": "7aaf71af0cccdebda4e70ae5216dcf348bccfeb5cc30d148247005558cec03ad",
+      "disk_after": {
+        "total": 983023263744,
+        "used": 920525676544,
+        "free": 12487278592
+      }
+    },
+    {
+      "name": "cargo-version",
+      "argv": [
+        "cargo",
+        "--version"
+      ],
+      "cwd": "/data/hepta-p1p2-20261105-05ef/exact-r3-source",
+      "log": "06-cargo-version.log",
+      "started_unix_seconds": 1793871059.494676,
+      "disk_before": {
+        "total": 983023263744,
+        "used": 920525676544,
+        "free": 12487278592
+      },
+      "exit": 0,
+      "pid": 2585391,
+      "seconds": 0.016144611057825387,
+      "finished_unix_seconds": 1793871059.511337,
+      "raw_log_bytes": 36,
+      "raw_log_sha256": "b6ef6807dd96d18b833474ad68e7a23a29e562a29c67afa71a59fb9a73df0068",
+      "disk_after": {
+        "total": 983023263744,
+        "used": 920525684736,
+        "free": 12487270400
+      }
+    },
+    {
+      "name": "just-version",
+      "argv": [
+        "just",
+        "--version"
+      ],
+      "cwd": "/data/hepta-p1p2-20261105-05ef/exact-r3-source",
+      "log": "07-just-version.log",
+      "started_unix_seconds": 1793871059.5121863,
+      "disk_before": {
+        "total": 983023263744,
+        "used": 920525684736,
+        "free": 12487270400
+      },
+      "exit": 0,
+      "pid": 2585403,
+      "seconds": 0.032932745991274714,
+      "finished_unix_seconds": 1793871059.5456548,
+      "raw_log_bytes": 12,
+      "raw_log_sha256": "4e91345369534015fde1a3e2fed862ad938bcfda47b993eb02536f7b3f095b87",
+      "disk_after": {
+        "total": 983023263744,
+        "used": 920525688832,
+        "free": 12487266304
+      }
+    },
+    {
+      "name": "just-fix",
+      "argv": [
+        "just",
+        "fix",
+        "-p",
+        "codex-hepta-agent-protocol",
+        "-p",
+        "codex-hepta-agentd",
+        "-p",
+        "codex-hepta-infer-worker-host",
+        "-p",
+        "codex-hepta-runtime"
+      ],
+      "cwd": "/data/hepta-p1p2-20261105-05ef/exact-r3-source/codex-rs",
+      "log": "08-just-fix.log",
+      "started_unix_seconds": 1793871059.5470235,
+      "disk_before": {
+        "total": 983023263744,
+        "used": 920525688832,
+        "free": 12487266304
+      },
+      "exit": 0,
+      "pid": 2585406,
+      "seconds": 456.28016474703327,
+      "finished_unix_seconds": 1793871515.8277967,
+      "raw_log_bytes": 83015,
+      "raw_log_sha256": "3d73b6fc8e8a85574c2b578447deede3202b8e6108b3a1deb093335536b070a5",
+      "disk_after": {
+        "total": 983023263744,
+        "used": 926698397696,
+        "free": 6314557440
+      }
+    },
+    {
+      "name": "just-fmt",
+      "argv": [
+        "just",
+        "fmt"
+      ],
+      "cwd": "/data/hepta-p1p2-20261105-05ef/exact-r3-source/codex-rs",
+      "log": "09-just-fmt.log",
+      "started_unix_seconds": 1793871515.8293521,
+      "disk_before": {
+        "total": 983023263744,
+        "used": 926698397696,
+        "free": 6314557440
+      },
+      "exit": 0,
+      "pid": 2623588,
+      "seconds": 1.3717468079412356,
+      "finished_unix_seconds": 1793871517.201816,
+      "raw_log_bytes": 0,
+      "raw_log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "disk_after": {
+        "total": 983023263744,
+        "used": 926698401792,
+        "free": 6314553344
+      }
+    },
+    {
+      "name": "head-after",
+      "argv": [
+        "git",
+        "rev-parse",
+        "HEAD"
+      ],
+      "cwd": "/data/hepta-p1p2-20261105-05ef/exact-r3-source",
+      "log": "10-head-after.log",
+      "started_unix_seconds": 1793871517.2035446,
+      "disk_before": {
+        "total": 983023263744,
+        "used": 926698401792,
+        "free": 6314553344
+      },
+      "exit": 0,
+      "pid": 2623704,
+      "seconds": 0.026425946969538927,
+      "finished_unix_seconds": 1793871517.231197,
+      "raw_log_bytes": 41,
+      "raw_log_sha256": "a5e521211f44e7bb20d0554c01a536392271ab9cfc16901321f6103e6896ee2e",
+      "disk_after": {
+        "total": 983023263744,
+        "used": 926698405888,
+        "free": 6314549248
+      }
+    },
+    {
+      "name": "tree-after",
+      "argv": [
+        "git",
+        "rev-parse",
+        "HEAD^{tree}"
+      ],
+      "cwd": "/data/hepta-p1p2-20261105-05ef/exact-r3-source",
+      "log": "11-tree-after.log",
+      "started_unix_seconds": 1793871517.2331064,
+      "disk_before": {
+        "total": 983023263744,
+        "used": 926698405888,
+        "free": 6314549248
+      },
+      "exit": 0,
+      "pid": 2623708,
+      "seconds": 0.021536797983571887,
+      "finished_unix_seconds": 1793871517.2559047,
+      "raw_log_bytes": 41,
+      "raw_log_sha256": "03a73c2de1039f1f74c82a57206a0014e9b5b4a10371927b042308294cd5fb0a",
+      "disk_after": {
+        "total": 983023263744,
+        "used": 926698414080,
+        "free": 6314541056
+      }
+    },
+    {
+      "name": "status-after",
+      "argv": [
+        "git",
+        "status",
+        "--porcelain=v1",
+        "-z",
+        "--untracked-files=all"
+      ],
+      "cwd": "/data/hepta-p1p2-20261105-05ef/exact-r3-source",
+      "log": "12-status-after.log",
+      "started_unix_seconds": 1793871517.2579114,
+      "disk_before": {
+        "total": 983023263744,
+        "used": 926698414080,
+        "free": 6314541056
+      },
+      "exit": 0,
+      "pid": 2623710,
+      "seconds": 0.048414299031719565,
+      "finished_unix_seconds": 1793871517.307656,
+      "raw_log_bytes": 255,
+      "raw_log_sha256": "d41bcad7b59fed4f9bffbbce556e4de3909031f2e9a5e93ee4df769eb4dcbdd5",
+      "disk_after": {
+        "total": 983023263744,
+        "used": 926698418176,
+        "free": 6314536960
+      }
+    },
+    {
+      "name": "names-head",
+      "argv": [
+        "git",
+        "diff",
+        "--no-ext-diff",
+        "--no-textconv",
+        "--no-renames",
+        "--name-only",
+        "-z",
+        "HEAD",
+        "--"
+      ],
+      "cwd": "/data/hepta-p1p2-20261105-05ef/exact-r3-source",
+      "log": "13-names-head.log",
+      "started_unix_seconds": 1793871517.3091197,
+      "disk_before": {
+        "total": 983023263744,
+        "used": 926698422272,
+        "free": 6314532864
+      },
+      "exit": 0,
+      "pid": 2623735,
+      "seconds": 0.025412542978301644,
+      "finished_unix_seconds": 1793871517.3353152,
+      "raw_log_bytes": 243,
+      "raw_log_sha256": "7be98eade03a81e9eb06b1b524521d6bbcf89eafa2d03b640eebb476472231a5",
+      "disk_after": {
+        "total": 983023263744,
+        "used": 926698426368,
+        "free": 6314528768
+      }
+    },
+    {
+      "name": "names-index",
+      "argv": [
+        "git",
+        "diff",
+        "--no-ext-diff",
+        "--no-textconv",
+        "--no-renames",
+        "--name-only",
+        "-z",
+        "--cached",
+        "HEAD",
+        "--"
+      ],
+      "cwd": "/data/hepta-p1p2-20261105-05ef/exact-r3-source",
+      "log": "14-names-index.log",
+      "started_unix_seconds": 1793871517.3369422,
+      "disk_before": {
+        "total": 983023263744,
+        "used": 926698426368,
+        "free": 6314528768
+      },
+      "exit": 0,
+      "pid": 2623756,
+      "seconds": 0.0213468229630962,
+      "finished_unix_seconds": 1793871517.359052,
+      "raw_log_bytes": 0,
+      "raw_log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "disk_after": {
+        "total": 983023263744,
+        "used": 926698426368,
+        "free": 6314528768
+      }
+    },
+    {
+      "name": "names-worktree",
+      "argv": [
+        "git",
+        "diff",
+        "--no-ext-diff",
+        "--no-textconv",
+        "--no-renames",
+        "--name-only",
+        "-z",
+        "--"
+      ],
+      "cwd": "/data/hepta-p1p2-20261105-05ef/exact-r3-source",
+      "log": "15-names-worktree.log",
+      "started_unix_seconds": 1793871517.361379,
+      "disk_before": {
+        "total": 983023263744,
+        "used": 926698426368,
+        "free": 6314528768
+      },
+      "exit": 0,
+      "pid": 2623757,
+      "seconds": 0.021935738041065633,
+      "finished_unix_seconds": 1793871517.384858,
+      "raw_log_bytes": 243,
+      "raw_log_sha256": "7be98eade03a81e9eb06b1b524521d6bbcf89eafa2d03b640eebb476472231a5",
+      "disk_after": {
+        "total": 983023263744,
+        "used": 926698430464,
+        "free": 6314524672
+      }
+    },
+    {
+      "name": "untracked",
+      "argv": [
+        "git",
+        "ls-files",
+        "--others",
+        "--exclude-standard",
+        "-z"
+      ],
+      "cwd": "/data/hepta-p1p2-20261105-05ef/exact-r3-source",
+      "log": "16-untracked.log",
+      "started_unix_seconds": 1793871517.3867397,
+      "disk_before": {
+        "total": 983023263744,
+        "used": 926698434560,
+        "free": 6314520576
+      },
+      "exit": 0,
+      "pid": 2623778,
+      "seconds": 0.03464383294340223,
+      "finished_unix_seconds": 1793871517.4221885,
+      "raw_log_bytes": 0,
+      "raw_log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "disk_after": {
+        "total": 983023263744,
+        "used": 926698434560,
+        "free": 6314520576
+      }
+    },
+    {
+      "name": "diff-head",
+      "argv": [
+        "git",
+        "diff",
+        "--no-ext-diff",
+        "--no-textconv",
+        "--binary",
+        "--full-index",
+        "HEAD",
+        "--"
+      ],
+      "cwd": "/data/hepta-p1p2-20261105-05ef/exact-r3-source",
+      "log": "17-diff-head.log",
+      "started_unix_seconds": 1793871517.4244328,
+      "disk_before": {
+        "total": 983023263744,
+        "used": 926698434560,
+        "free": 6314520576
+      },
+      "exit": 0,
+      "pid": 2623780,
+      "seconds": 0.01591542293317616,
+      "finished_unix_seconds": 1793871517.441239,
+      "raw_log_bytes": 4647,
+      "raw_log_sha256": "55c6ceea6bcafa9f5896c76ec5b00134bb5718a62f9a9ad1737c398eb8d833ae",
+      "disk_after": {
+        "total": 983023263744,
+        "used": 926698442752,
+        "free": 6314512384
+      }
+    },
+    {
+      "name": "diff-index",
+      "argv": [
+        "git",
+        "diff",
+        "--no-ext-diff",
+        "--no-textconv",
+        "--binary",
+        "--full-index",
+        "--cached",
+        "HEAD",
+        "--"
+      ],
+      "cwd": "/data/hepta-p1p2-20261105-05ef/exact-r3-source",
+      "log": "18-diff-index.log",
+      "started_unix_seconds": 1793871517.4427106,
+      "disk_before": {
+        "total": 983023263744,
+        "used": 926698442752,
+        "free": 6314512384
+      },
+      "exit": 0,
+      "pid": 2623801,
+      "seconds": 0.007704811985604465,
+      "finished_unix_seconds": 1793871517.4512842,
+      "raw_log_bytes": 0,
+      "raw_log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "disk_after": {
+        "total": 983023263744,
+        "used": 926698442752,
+        "free": 6314512384
+      }
+    },
+    {
+      "name": "diff-worktree",
+      "argv": [
+        "git",
+        "diff",
+        "--no-ext-diff",
+        "--no-textconv",
+        "--binary",
+        "--full-index",
+        "--"
+      ],
+      "cwd": "/data/hepta-p1p2-20261105-05ef/exact-r3-source",
+      "log": "19-diff-worktree.log",
+      "started_unix_seconds": 1793871517.4529119,
+      "disk_before": {
+        "total": 983023263744,
+        "used": 926698442752,
+        "free": 6314512384
+      },
+      "exit": 0,
+      "pid": 2623802,
+      "seconds": 0.014051442965865135,
+      "finished_unix_seconds": 1793871517.4679391,
+      "raw_log_bytes": 4647,
+      "raw_log_sha256": "55c6ceea6bcafa9f5896c76ec5b00134bb5718a62f9a9ad1737c398eb8d833ae",
+      "disk_after": {
+        "total": 983023263744,
+        "used": 926698450944,
+        "free": 6314504192
+      }
+    }
+  ],
+  "archive_errors": [],
+  "environment_overrides": {
+    "PATH": "/home/qian-qi/.cargo/bin:/home/qian-qi/.local/bin:/home/qian-qi/.elan/bin:/home/qian-qi/.local/bin:/home/qian-qi/.elan/bin:/home/qian-qi/.cargo/bin:/home/qian-qi/.local/bin:/opt/gradle/current/bin:/opt/android-sdk/cmdline-tools/latest/bin:/opt/android-sdk/platform-tools:/opt/android-sdk/build-tools/35.0.1:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/snap/bin:/snap/bin",
+    "RUSTUP_TOOLCHAIN": "1.96.0",
+    "CARGO_TARGET_DIR": "/data/hepta-p1p2-20261105-05ef/target",
+    "CARGO_BUILD_JOBS": "4"
+  },
+  "disk_before": {
+    "total": 983023263744,
+    "used": 920525647872,
+    "free": 12487307264
+  },
+  "started_unix_seconds": 1793871059.310679,
+  "tests_rerun": false,
+  "source_staged_or_committed_by_driver": false,
+  "head_before": "78668ea2837a16811b922dfcfbc438f3d8a98f5e",
+  "head_tree_before": "caa6e68ece518f751b10b0cc6a027361aaf68589",
+  "clean_before": true,
+  "head_after": "78668ea2837a16811b922dfcfbc438f3d8a98f5e",
+  "head_tree_after": "caa6e68ece518f751b10b0cc6a027361aaf68589",
+  "modified_paths": [
+    "codex-rs/hepta-agentd/src/authority_host_admin_issuer_tests.rs",
+    "codex-rs/hepta-agentd/src/intelligence_canonical_runtime_tests.rs",
+    "codex-rs/hepta-agentd/src/root_desktop_startup_tests.rs",
+    "codex-rs/hepta-infer-worker-host/src/native_app_server.rs"
+  ],
+  "tracked_modified_paths": [
+    "codex-rs/hepta-agentd/src/authority_host_admin_issuer_tests.rs",
+    "codex-rs/hepta-agentd/src/intelligence_canonical_runtime_tests.rs",
+    "codex-rs/hepta-agentd/src/root_desktop_startup_tests.rs",
+    "codex-rs/hepta-infer-worker-host/src/native_app_server.rs"
+  ],
+  "untracked_paths": [],
+  "unexpected_paths": [
+    "codex-rs/hepta-agentd/src/authority_host_admin_issuer_tests.rs",
+    "codex-rs/hepta-agentd/src/root_desktop_startup_tests.rs"
+  ],
+  "no_op": false,
+  "artifacts": {
+    "full.diff": {
+      "bytes": 4647,
+      "sha256": "55c6ceea6bcafa9f5896c76ec5b00134bb5718a62f9a9ad1737c398eb8d833ae"
+    },
+    "index.diff": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "worktree.diff": {
+      "bytes": 4647,
+      "sha256": "55c6ceea6bcafa9f5896c76ec5b00134bb5718a62f9a9ad1737c398eb8d833ae"
+    },
+    "status-after.z": {
+      "bytes": 255,
+      "sha256": "d41bcad7b59fed4f9bffbbce556e4de3909031f2e9a5e93ee4df769eb4dcbdd5"
+    },
+    "changed-files.zlib": {
+      "bytes": 25742,
+      "sha256": "8ec9742e0434988297bdb816ce5eef7d30e7220befd65bf0661fd53626394cd1"
+    }
+  },
+  "head_unchanged": true,
+  "exit": 2,
+  "disk_after": {
+    "total": 983023263744,
+    "used": 926698500096,
+    "free": 6314455040
+  },
+  "finished_unix_seconds": 1793871517.477039
+}

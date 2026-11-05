@@ -1,0 +1,143 @@
+{
+  "state": {
+    "phase": "tests_finished",
+    "base_commit": "a6403e8ae23e9f62cba2a6343563214f6a49dbed",
+    "initial_tree": "305ddbbd95ea6d40bf6eaf38feee2c7d7188c3eb",
+    "commands": [
+      {
+        "name": "format",
+        "argv": [
+          "just",
+          "fmt"
+        ],
+        "exit": 0,
+        "seconds": 0.7467930316925049,
+        "log_bytes": 0,
+        "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "name": "diff-check",
+        "argv": [
+          "git",
+          "diff",
+          "--cached",
+          "--check"
+        ],
+        "exit": 0,
+        "seconds": 0.010496139526367188,
+        "log_bytes": 0,
+        "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "name": "focused-tests",
+        "argv": [
+          "just",
+          "test",
+          "-p",
+          "codex-hepta-agent-protocol",
+          "-p",
+          "codex-hepta-agentd",
+          "-p",
+          "codex-hepta-infer-worker-host",
+          "-p",
+          "codex-hepta-runtime",
+          "-E",
+          "test(intelligence_product::tests::signed::canonical_runtime::) | test(root_authority_session::tests::both_original_frontiers_finish_before_new_head_is_published) | test(root_authority_session::tests::uncertain_original_consumer_update_fences_even_with_fresh_root_responses) | test(five_real_agents_survive_daemon_restart_and_isolate_one_agent_release_changes)"
+        ],
+        "exit": 0,
+        "seconds": 95.81174516677856,
+        "log_bytes": 25719,
+        "log_sha256": "d64337be9e3b967b1897f3fe02712430398f921c66a979330e008ce7c97a56f9"
+      },
+      {
+        "name": "owner-tests",
+        "argv": [
+          "just",
+          "test",
+          "-p",
+          "codex-hepta-agent-protocol",
+          "-p",
+          "codex-hepta-agentd",
+          "-p",
+          "codex-hepta-infer-worker-host",
+          "-p",
+          "codex-hepta-runtime"
+        ],
+        "exit": 0,
+        "seconds": 135.45429182052612,
+        "log_bytes": 130201,
+        "log_sha256": "a5db010e2caaa62895fd76ce1ebf8ad909b6d783f892fc58744dd054a5af1898"
+      }
+    ],
+    "disk_before": {
+      "total": 983023263744,
+      "used": 919855669248,
+      "free": 13157285888
+    },
+    "formatted_tree": "caa6e68ece518f751b10b0cc6a027361aaf68589",
+    "formatted_payload": {
+      "bytes": 29163,
+      "sha256": "916ab253b70ef7db9e58e68b5764e1867c759be7b449bb8392829569c9eae533"
+    },
+    "disk_after": {
+      "total": 983023263744,
+      "used": 919790510080,
+      "free": 13222445056
+    },
+    "disk_after_full": {
+      "total": 983023263744,
+      "used": 919793442816,
+      "free": 13219512320
+    }
+  },
+  "records": [
+    {
+      "path": "/data/hepta-p1p2-20261105-05ef/qualification-v7/focused-tests.log",
+      "bytes": 25719,
+      "sha256": "d64337be9e3b967b1897f3fe02712430398f921c66a979330e008ce7c97a56f9",
+      "summary_lines": [
+        "    Finished `test` profile [unoptimized + debuginfo] target(s) in 43.93s",
+        " Nextest run ID 7e1e7ce7-8fe2-4c27-8cfe-14b6c8c749a6 with nextest profile: local",
+        "    Starting 7 tests across 21 binaries (734 tests skipped)",
+        "     Summary [  50.867s] 7 tests run: 7 passed (1 slow), 734 skipped"
+      ],
+      "selected_passes": [
+        "        PASS [   3.318s] (3/7) codex-hepta-agentd intelligence_product::tests::signed::canonical_runtime::canonical_body_does_not_alias_the_run_lifecycle_generation",
+        "        PASS [   3.465s] (4/7) codex-hepta-agentd intelligence_product::tests::signed::canonical_runtime::canonical_recovery_rejects_old_generation_fence_and_signature_before_provider",
+        "        PASS [   3.836s] (5/7) codex-hepta-agentd intelligence_product::tests::signed::canonical_runtime::running_canonical_admission_preserves_the_recovered_run_start",
+        "        PASS [   3.851s] (6/7) codex-hepta-agentd intelligence_product::tests::signed::canonical_runtime::owner_transition_during_canonical_preparation_never_refreshes_the_old_run"
+      ]
+    },
+    {
+      "path": "/data/hepta-p1p2-20261105-05ef/qualification-v7/owner-tests.log",
+      "bytes": 130201,
+      "sha256": "a5db010e2caaa62895fd76ce1ebf8ad909b6d783f892fc58744dd054a5af1898",
+      "summary_lines": [
+        "    Finished `test` profile [unoptimized + debuginfo] target(s) in 1.60s",
+        " Nextest run ID 3c44043f-26de-4ca1-94cc-5b53d080383d with nextest profile: local",
+        "    Starting 675 tests across 21 binaries (66 tests skipped)",
+        "   TRY 1 TMT [  60.010s] (\u2500\u2500\u2500\u2500\u2500\u2500\u2500) codex-hepta-agentd::supervisord_product_e2e five_real_agents_survive_daemon_restart_and_isolate_one_agent_release_changes",
+        "     Summary [ 133.009s] 675 tests run: 675 passed (8 slow, 2 flaky), 66 skipped",
+        "   FLAKY 2/2 [   0.770s] (448/675) codex-hepta-agentd root_authority_session::tests::both_original_frontiers_finish_before_new_head_is_published",
+        "   FLAKY 2/2 [  58.344s] (675/675) codex-hepta-agentd::supervisord_product_e2e five_real_agents_survive_daemon_restart_and_isolate_one_agent_release_changes"
+      ],
+      "selected_passes": [
+        "        PASS [   1.080s] (152/675) codex-hepta-agentd deployment_issuer::desktop::tests::revoked_original_issuer_cannot_acknowledge_an_already_published_desktop_pair",
+        "        PASS [   1.515s] (156/675) codex-hepta-agentd deployment_issuer::desktop::tests::desktop_policy_two_successors_keep_one_original_issuer_then_revocation_fences_the_pair",
+        "        PASS [   0.018s] (237/675) codex-hepta-agentd intelligence_product::runner::run_start::tests::preparation_budget_is_capped_by_the_original_deadline",
+        "        PASS [   5.033s] (488/675) codex-hepta-agentd intelligence_product::tests::signed::canonical_runtime::canonical_body_does_not_alias_the_run_lifecycle_generation",
+        "        PASS [   5.123s] (496/675) codex-hepta-agentd intelligence_product::tests::signed::canonical_runtime::canonical_recovery_rejects_old_generation_fence_and_signature_before_provider",
+        "        PASS [   5.463s] (504/675) codex-hepta-agentd intelligence_product::tests::signed::canonical_runtime::running_canonical_admission_preserves_the_recovered_run_start",
+        "        PASS [   5.593s] (507/675) codex-hepta-agentd intelligence_product::tests::signed::canonical_runtime::owner_transition_during_canonical_preparation_never_refreshes_the_old_run",
+        "        PASS [   5.467s] (618/675) codex-hepta-agentd::terminal_cell_owner real_owner_decision_outcome_freeze_fit_registry_reload_and_withdrawal",
+        "        PASS [  11.671s] (651/675) codex-hepta-infer-worker-host native_app_server::control::intelligence_recovery::tests::process::settled_terminal_survives_worker_loss_before_agentd_publication",
+        "        PASS [  11.739s] (653/675) codex-hepta-infer-worker-host native_app_server::control::intelligence_recovery::tests::process::retained_app_server_terminal_reconciles_current_agentd_revision",
+        "        PASS [  11.667s] (659/675) codex-hepta-infer-worker-host native_app_server::tests::real_agentd_worker_accepts_fresh_context_and_rejects_final_use_tombstone",
+        "        PASS [  12.473s] (660/675) codex-hepta-infer-worker-host native_app_server::recovery::tests::real_agentd_reconciles_reopened_worker_without_replaying_provider",
+        "        PASS [  19.611s] (666/675) codex-hepta-infer-worker-host native_app_server::failure_tests::worker_loss_before_cleanup_retains_observed_timeout_and_usage"
+      ]
+    }
+  ],
+  "source_published": false,
+  "prior_v6_failures_retained": true
+}
