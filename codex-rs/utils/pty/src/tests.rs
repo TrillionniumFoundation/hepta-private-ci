@@ -1222,6 +1222,10 @@ with open(sys.argv[1], 'w') as progress:
             session.has_exited(),
             session.exit_code(),
         );
+        eprintln!(
+            "PTY dropped receiver: backend={backend} io_snapshot={}",
+            session.pty_io_diagnostic_snapshot(),
+        );
         let progress = std::fs::read_to_string(&progress_path);
         eprintln!("PTY dropped receiver: backend={backend} child_phase={progress:?}");
         if result.is_err() {
