@@ -16,6 +16,7 @@ use crate::env::inherit_path_env;
 use crate::env::normalize_null_device_env;
 use crate::identity::SandboxCreds;
 use crate::identity::require_logon_sandbox_creds;
+use crate::legacy_admission::require_legacy_filesystem_isolation;
 use crate::logging::log_start;
 use crate::path_normalization::canonicalize_path;
 use crate::resolved_permissions::ResolvedWindowsSandboxPermissions;
@@ -129,6 +130,7 @@ pub(crate) fn prepare_legacy_spawn_context(
     command: &[String],
     options: SpawnPrepOptions,
 ) -> Result<SpawnContext> {
+    require_legacy_filesystem_isolation()?;
     let common = prepare_spawn_context_common(
         permission_profile,
         workspace_roots,
@@ -150,6 +152,7 @@ pub(crate) fn prepare_legacy_session_security(
     cwd: &Path,
     capability_roots: impl IntoIterator<Item = PathBuf>,
 ) -> Result<LegacySessionSecurity> {
+    require_legacy_filesystem_isolation()?;
     let caps = load_or_create_cap_sids(codex_home)?;
     let (h_token, readonly_sid, readonly_sid_str, write_root_sids) = unsafe {
         if uses_write_capabilities {
