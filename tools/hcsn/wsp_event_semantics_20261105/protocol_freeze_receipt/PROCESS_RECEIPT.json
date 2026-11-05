@@ -1,0 +1,21 @@
+{
+  "child_peak_rss_bytes": 11403264,
+  "child_system_cpu_seconds": 0.020035,
+  "child_total_cpu_seconds": 0.066467,
+  "child_user_cpu_seconds": 0.046432,
+  "command": [
+    "python",
+    "freeze_protocol.py",
+    "--source-package",
+    "/workspace/scratch/237419f85815/value_edit"
+  ],
+  "controller_partial_cpu_seconds": 0.0011619750000000026,
+  "ended_utc": "2026-11-05T05:17:58.517190+00:00",
+  "exit_code": 0,
+  "schema": "hepta-ctmc-semantic-whole-child-cost-v1",
+  "scope": "Whole child including imports and final writes; controller imports/final receipt writes, editor, prior training, energy and production costs excluded/unknown.",
+  "source_sha256": "dba06c62a8050e01f0e9f55b5062c1c3a47100e807e4aa127d5be7284a906279",
+  "started_utc": "2026-11-05T05:17:58.398847+00:00",
+  "timed_out": false,
+  "wall_seconds": 0.12560069799656048
+}

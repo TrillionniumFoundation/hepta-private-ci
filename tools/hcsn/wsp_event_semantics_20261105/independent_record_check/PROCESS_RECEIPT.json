@@ -1,0 +1,23 @@
+{
+  "child_peak_rss_bytes": 19378176,
+  "child_system_cpu_seconds": 0.015621,
+  "child_total_cpu_seconds": 0.12132799999999999,
+  "child_user_cpu_seconds": 0.105707,
+  "command": [
+    "python",
+    "verify_diagnostic.py",
+    "--run",
+    "execution_r1/run",
+    "--output",
+    "independent_record_check/VERIFIED.json"
+  ],
+  "controller_partial_cpu_seconds": 0.0011684599999999962,
+  "ended_utc": "2026-11-05T05:18:17.671217+00:00",
+  "exit_code": 0,
+  "schema": "hepta-ctmc-semantic-whole-child-cost-v1",
+  "scope": "Whole child including imports and final writes; controller imports/final receipt writes, editor, prior training, energy and production costs excluded/unknown.",
+  "source_sha256": "dba06c62a8050e01f0e9f55b5062c1c3a47100e807e4aa127d5be7284a906279",
+  "started_utc": "2026-11-05T05:18:17.506181+00:00",
+  "timed_out": false,
+  "wall_seconds": 0.16508454899667413
+}

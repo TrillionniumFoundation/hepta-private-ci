@@ -1,0 +1,158 @@
+{
+  "actual_live_trader_checkpoint": false,
+  "arithmetic": "IEEE F64; residual/tail diagnostics are not outward-rounded mathematical certificates.",
+  "base_training_commit": "36e9ddd099e09688593bccf2c32d1dfabc39ac99",
+  "budget": {
+    "action_on_failure": "preserve failure and stop; no reduced sample or changed tolerance rerun",
+    "cpu_seconds": 120,
+    "max_rss_bytes": 1073741824,
+    "numeric_threads": 1,
+    "wall_seconds": 180
+  },
+  "candidate_weight_edit": false,
+  "costs": "Whole child process includes imports/copies/checks/final writes where separately metered; nested phase times not added again. Agent/editor, historical training, power and production execution costs unknown.",
+  "first_hit_contract": "tau_K=inf{t>=0: coordinate(X_t)>K}; initial mass above K counts at time0; strict endpoint event X_T>K has complement X_T<=K, including threshold equality.",
+  "fits": [
+    11,
+    23,
+    37,
+    53,
+    71
+  ],
+  "frozen_utc": "2026-11-05T05:17:58.465281+00:00",
+  "horizons": [
+    1,
+    2,
+    6
+  ],
+  "input_files": {
+    "inputs/fit_11_C.json.gz": {
+      "bytes": 172526,
+      "sha256": "fd4e8104066879320811d8276eb96ff524fcb224f80aab4dd20dacb4a9d628e9",
+      "source_relative": "inputs/fit_11_C.json.gz"
+    },
+    "inputs/fit_11_TRAIN_PUBLICS.json.gz": {
+      "bytes": 17697,
+      "sha256": "1b8381020bb5ecb60a5d75233082de80b9761cb61a1e43b08ce7b9ff2f7c1960",
+      "source_relative": "inputs/fit_11_TRAIN_PUBLICS.json.gz"
+    },
+    "inputs/fit_23_C.json.gz": {
+      "bytes": 172558,
+      "sha256": "2037bf93f45bf19cd27f73201e57bedc41ddea08243728eaa466d8f7e3555693",
+      "source_relative": "inputs/fit_23_C.json.gz"
+    },
+    "inputs/fit_23_TRAIN_PUBLICS.json.gz": {
+      "bytes": 17643,
+      "sha256": "a8f2b75e8dd939b8c5c357ee22db5b1b734f39041b482fc09daeb30e557cb5a5",
+      "source_relative": "inputs/fit_23_TRAIN_PUBLICS.json.gz"
+    },
+    "inputs/fit_37_C.json.gz": {
+      "bytes": 172564,
+      "sha256": "1f4a3be85213f3fc221187dcb16308d033d033cccf48c86da7fec703e7bfb774",
+      "source_relative": "inputs/fit_37_C.json.gz"
+    },
+    "inputs/fit_37_TRAIN_PUBLICS.json.gz": {
+      "bytes": 17677,
+      "sha256": "89ce630969362b3352bf7fa6f079293674b4300b010f2dc6e5c05952b46feeed",
+      "source_relative": "inputs/fit_37_TRAIN_PUBLICS.json.gz"
+    },
+    "inputs/fit_53_C.json.gz": {
+      "bytes": 172562,
+      "sha256": "b412cd6743563caaa57d66399c46afdd7394bfd4fe4c964a84e221b3c23ffd24",
+      "source_relative": "inputs/fit_53_C.json.gz"
+    },
+    "inputs/fit_53_TRAIN_PUBLICS.json.gz": {
+      "bytes": 17630,
+      "sha256": "5903b1ac76387ab25a6a24d996869c800b2752f0742e3f7e0c50f02caa3bc90b",
+      "source_relative": "inputs/fit_53_TRAIN_PUBLICS.json.gz"
+    },
+    "inputs/fit_71_C.json.gz": {
+      "bytes": 172492,
+      "sha256": "8420c224f35255dfba2e30dbbd59947fe3e64281473877d9d47869bef995df6f",
+      "source_relative": "inputs/fit_71_C.json.gz"
+    },
+    "inputs/fit_71_TRAIN_PUBLICS.json.gz": {
+      "bytes": 17649,
+      "sha256": "e89efc01d96de6ce3d48127b9866474bb98b0f342a1a35eb1c3c0ba4d54d1bff",
+      "source_relative": "inputs/fit_71_TRAIN_PUBLICS.json.gz"
+    },
+    "vendor/frozen_joint/checked_replay.py": {
+      "bytes": 2614,
+      "sha256": "d0922ab0c458d9d382e1f9c851c52731c4a71256870000862dbebf5d38366b24",
+      "source_relative": "vendor/frozen_joint/checked_replay.py"
+    },
+    "vendor/frozen_joint/joint_deploy.py": {
+      "bytes": 4445,
+      "sha256": "c91ef40c484000e2a2b923425467c03fbbfb4e15a1f54856f6c850f9242c8e26",
+      "source_relative": "vendor/frozen_joint/joint_deploy.py"
+    },
+    "vendor/frozen_joint/joint_task.py": {
+      "bytes": 12845,
+      "sha256": "51139ba57004f2a5d69381af2f781b3717404318f122d8b6bec8416004efffa5",
+      "source_relative": "vendor/frozen_joint/joint_task.py"
+    },
+    "vendor/frozen_joint/legacy_task.py": {
+      "bytes": 12163,
+      "sha256": "d8e88364932bb344e4df811f40163550e9c198b8e34778b5664c72367f4bde06",
+      "source_relative": "vendor/frozen_joint/legacy_task.py"
+    }
+  },
+  "input_scope": "All original 320 TRAIN public schedules and five unchanged research C checkpoints from the prior value_edit package; no holdout labels or new worlds.",
+  "largest_uniformization_mean": 600,
+  "limits": [
+    "finite-space CTMC, not continuous-space diffusion proof",
+    "conditioning is known supplied model, not unknown-world truth",
+    "TRAIN diagnostic, not a fresh generalization experiment",
+    "no new model repair or real trading benefit",
+    "no independent Call/Put parameter pair in these checkpoints"
+  ],
+  "local_freeze_is_not_external_preregistration": true,
+  "matrix_tolerance": 2e-10,
+  "maximum_terms": 4096,
+  "model_source_commit": "5b69a046d886cf4c2a73c50e58197360ea15d8f5",
+  "new_training": false,
+  "no_effectiveness_endpoint": true,
+  "outer_boundary_contract": "First arrival to either of stored lower_ref/upper_ref states: two competing hit causes plus surviving interior mass; prior is interior.",
+  "poisson_tail_target": 1e-15,
+  "propagation_tolerance": 5e-10,
+  "purpose": "Distinguish existing endpoint bank, first-hit/survival and endogenous reset semantics on actual frozen research checkpoints.",
+  "reference_methods": [
+    "SciPy Pade expm of stored finite generator",
+    "positive Poisson uniformization of same generator",
+    "Van Loan jump-count block vs integrated uniformization"
+  ],
+  "repair_counterfactual": "For every TRAIN world: request first READ, advance WAIT if due2, force allowed failure, compare WAIT and REPAIR from resulting reachable broken state at equal next tick; same history and exogenous dynamics.",
+  "reset_contract": "A recovery jump from either reference boundary to interior is an endogenous reset; count all boundary entries and all such departures. REPAIR changes sensor broken/fees only.",
+  "schema": "hepta-wsp-event-semantics-diagnostic-v1",
+  "semantic_difference_reporting_threshold": 2e-08,
+  "source_files": {
+    "ctmc_semantics.py": {
+      "bytes": 6418,
+      "sha256": "358253f8f0538fb79a5e226029ff0f6859f8dd3d4a4b100074aec1cfc7e550b3"
+    },
+    "freeze_protocol.py": {
+      "bytes": 4956,
+      "sha256": "75d29468ff5478183aa55307476c5516e71903730832d29debe5c5d54accae99"
+    },
+    "measure_process.py": {
+      "bytes": 2778,
+      "sha256": "dba06c62a8050e01f0e9f55b5062c1c3a47100e807e4aa127d5be7284a906279"
+    },
+    "run_diagnostic.py": {
+      "bytes": 20480,
+      "sha256": "b7ada01c56d6d10aa6d6c7ef39ebfba2f478fddf042f0f2d534ab59b4f107dea"
+    },
+    "verify_diagnostic.py": {
+      "bytes": 6383,
+      "sha256": "9cb8e455944d6082c0b86eafe9eef098aa738e4d47cc4781d5ebfa63d95752d9"
+    }
+  },
+  "status": "FROZEN_BEFORE_FIRST_NEW_DIAGNOSTIC_EXECUTION",
+  "thresholds": [
+    -0.5,
+    0.0,
+    0.5
+  ],
+  "thresholds_not_retuned": true,
+  "worlds_per_fit": 64
+}

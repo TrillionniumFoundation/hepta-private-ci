@@ -1,0 +1,1137 @@
+{
+  "artifacts": [
+    {
+      "bytes": 80597,
+      "path": "fit_11_RECORDS.json.gz",
+      "sha256": "66600d54e2947ed0cdfb395d7ba840ed77b2a26474e23a8ad441fedd7bfe1de9"
+    },
+    {
+      "bytes": 77049,
+      "path": "fit_23_RECORDS.json.gz",
+      "sha256": "da9b6ed9c69d508b7708d98d47232754bc3ca60bb7c2df148afc89f09ecc5b30"
+    },
+    {
+      "bytes": 78638,
+      "path": "fit_37_RECORDS.json.gz",
+      "sha256": "da9f33ce02c5cef4856056d131dfadfc9659ad0112e7c37ff772588a4a34d47c"
+    },
+    {
+      "bytes": 74330,
+      "path": "fit_53_RECORDS.json.gz",
+      "sha256": "20bf369a7350721b833b0d5946064fc6fca7c93523feb27f1ba9e4483f9f066d"
+    },
+    {
+      "bytes": 79458,
+      "path": "fit_71_RECORDS.json.gz",
+      "sha256": "3c2463ebcea881a7ae153c213014960f83325cb83d37467060dd1e3c244549da"
+    }
+  ],
+  "known_answer_controls": {
+    "endpoint": 0.5950456920790493,
+    "expected_entries": 1.0389762265762417,
+    "expected_resets": 0.4439305344971923,
+    "first_hit": 0.8347011117784134,
+    "killed": {
+      "expm_vs_uniformization_max": 6.661338147750939e-16,
+      "generator_row_error": 0.0,
+      "integral_tail_bound": 1.2124492149050278e-15,
+      "minimum_probability": 0.0,
+      "poisson_tail": 8.082994766033518e-16,
+      "probability_row_error": 0.0,
+      "terms": 21
+    },
+    "max_closed_form_error": 1.3322676295501878e-15,
+    "ordinary": {
+      "expm_vs_uniformization_max": 1.5543122344752192e-15,
+      "generator_row_error": 0.0,
+      "integral_tail_bound": 1.2124492149050278e-15,
+      "minimum_probability": 0.3471099870461113,
+      "poisson_tail": 8.082994766033518e-16,
+      "probability_row_error": 1.1102230246251565e-16,
+      "terms": 21
+    },
+    "reward_integral_disagreement": 8.881784197001252e-16,
+    "scope": "Numerical known-answer controls; no outward-rounded proof"
+  },
+  "limitations": [
+    "finite-space CTMC, not continuous-space diffusion proof",
+    "conditioning is known supplied model, not unknown-world truth",
+    "TRAIN diagnostic, not a fresh generalization experiment",
+    "no new model repair or real trading benefit",
+    "no independent Call/Put parameter pair in these checkpoints"
+  ],
+  "no_live_host_access": true,
+  "no_optimizer_run": true,
+  "no_weights_changed": true,
+  "numerical_verification": {
+    "max_expm_vs_uniformization": 1.63202784619898e-14,
+    "max_poisson_tail": 9.283370182099324e-16,
+    "max_reward_integral_disagreement": 8.215650382226158e-15,
+    "max_stored_table_vs_generator": 2.4646951146678475e-14,
+    "maximum_series_terms": 217,
+    "stochastic_transition_pairs": 300,
+    "stored_generator_table_pairs": 60
+  },
+  "per_fit": {
+    "11": {
+      "endpoint_vs_first_hit": [
+        {
+          "count": 64,
+          "differing_count": 64,
+          "endpoint_mean": 0.772589341812628,
+          "equality_mass_max": 0.04370403409869729,
+          "equality_mass_mean": 0.029513065236800015,
+          "first_hit_mean": 0.8895891047623148,
+          "first_hit_minus_endpoint_max": 0.2528683990960099,
+          "first_hit_minus_endpoint_mean": 0.11699976294968689,
+          "first_hit_minus_endpoint_min": 0.042575773762559166,
+          "threshold": -0.5,
+          "tick": 1
+        },
+        {
+          "count": 64,
+          "differing_count": 64,
+          "endpoint_mean": 0.48884212807838595,
+          "equality_mass_max": 0.08116982093598178,
+          "equality_mass_mean": 0.03794105092902286,
+          "first_hit_mean": 0.6237504129186827,
+          "first_hit_minus_endpoint_max": 0.39888666567874603,
+          "first_hit_minus_endpoint_mean": 0.13490828484029677,
+          "first_hit_minus_endpoint_min": 0.010319092655157736,
+          "threshold": 0.0,
+          "tick": 1
+        },
+        {
+          "count": 64,
+          "differing_count": 64,
+          "endpoint_mean": 0.2053743369297745,
+          "equality_mass_max": 0.04415048229907872,
+          "equality_mass_mean": 0.030611716530445095,
+          "first_hit_mean": 0.3216495627982695,
+          "first_hit_minus_endpoint_max": 0.22245408640071057,
+          "first_hit_minus_endpoint_mean": 0.11627522586849504,
+          "first_hit_minus_endpoint_min": 0.021024449043420646,
+          "threshold": 0.5,
+          "tick": 1
+        },
+        {
+          "count": 64,
+          "differing_count": 64,
+          "endpoint_mean": 0.7768826574961172,
+          "equality_mass_max": 0.038154412913678215,
+          "equality_mass_mean": 0.02614690235048964,
+          "first_hit_mean": 0.9338020094582808,
+          "first_hit_minus_endpoint_max": 0.29655509262326385,
+          "first_hit_minus_endpoint_mean": 0.15691935196216356,
+          "first_hit_minus_endpoint_min": 0.07673294094013183,
+          "threshold": -0.5,
+          "tick": 2
+        },
+        {
+          "count": 64,
+          "differing_count": 64,
+          "endpoint_mean": 0.49173187793040024,
+          "equality_mass_max": 0.06058676224420204,
+          "equality_mass_mean": 0.03999483174647925,
+          "first_hit_mean": 0.7032092343008617,
+          "first_hit_minus_endpoint_max": 0.44919122971103354,
+          "first_hit_minus_endpoint_mean": 0.21147735637046144,
+          "first_hit_minus_endpoint_min": 0.050737189676125505,
+          "threshold": 0.0,
+          "tick": 2
+        },
+        {
+          "count": 64,
+          "differing_count": 64,
+          "endpoint_mean": 0.21310105418018394,
+          "equality_mass_max": 0.039724491552766326,
+          "equality_mass_mean": 0.027285952177018076,
+          "first_hit_mean": 0.39595686435237976,
+          "first_hit_minus_endpoint_max": 0.2706505926440119,
+          "first_hit_minus_endpoint_mean": 0.18285581017219588,
+          "first_hit_minus_endpoint_min": 0.06346922121422047,
+          "threshold": 0.5,
+          "tick": 2
+        },
+        {
+          "count": 64,
+          "differing_count": 64,
+          "endpoint_mean": 0.7835170379159937,
+          "equality_mass_max": 0.03096857734635821,
+          "equality_mass_mean": 0.02339861832658954,
+          "first_hit_mean": 0.9866014048464299,
+          "first_hit_minus_endpoint_max": 0.3133372824342304,
+          "first_hit_minus_endpoint_mean": 0.2030843669304362,
+          "first_hit_minus_endpoint_min": 0.12164295388298862,
+          "threshold": -0.5,
+          "tick": 6
+        },
+        {
+          "count": 64,
+          "differing_count": 64,
+          "endpoint_mean": 0.501601991294939,
+          "equality_mass_max": 0.04238934889385924,
+          "equality_mass_mean": 0.04124754745240332,
+          "first_hit_mean": 0.8807904212322172,
+          "first_hit_minus_endpoint_max": 0.5184619716168303,
+          "first_hit_minus_endpoint_mean": 0.3791884299372783,
+          "first_hit_minus_endpoint_min": 0.22628487560646626,
+          "threshold": 0.0,
+          "tick": 6
+        },
+        {
+          "count": 64,
+          "differing_count": 64,
+          "endpoint_mean": 0.22247043453145857,
+          "equality_mass_max": 0.03212390445942328,
+          "equality_mass_mean": 0.02565956789511741,
+          "first_hit_mean": 0.5879779076840865,
+          "first_hit_minus_endpoint_max": 0.47252908656400533,
+          "first_hit_minus_endpoint_mean": 0.365507473152628,
+          "first_hit_minus_endpoint_min": 0.2234351011825875,
+          "threshold": 0.5,
+          "tick": 6
+        }
+      ],
+      "max_cross_method_error": 1.2906342661267445e-14,
+      "max_semantic_invariant_error": 8.01581023779363e-14,
+      "outer_boundary_and_reset": [
+        {
+          "expected_entries_beyond_first_min": 5.897955353273421e-10,
+          "means": {
+            "boundary_occupancy": 0.15574814705040685,
+            "expected_boundary_entries": 0.1919400115898392,
+            "expected_entries_beyond_first": 0.00014761515633243493,
+            "expected_reset_departures": 0.036191864539433405,
+            "first_either": 0.19179239643350676,
+            "first_lower": 0.09337219303288086,
+            "first_upper": 0.09842020340062593,
+            "survival_no_outer_hit": 0.8082076035664922
+          },
+          "tick": 1,
+          "worlds": 64
+        },
+        {
+          "expected_entries_beyond_first_min": 1.7758601298378807e-06,
+          "means": {
+            "boundary_occupancy": 0.20986722347497566,
+            "expected_boundary_entries": 0.31853261599953175,
+            "expected_entries_beyond_first": 0.0026211563387387713,
+            "expected_reset_departures": 0.10866539252455842,
+            "first_either": 0.31591145966079304,
+            "first_lower": 0.15151853686576175,
+            "first_upper": 0.16439292279503126,
+            "survival_no_outer_hit": 0.6840885403392052
+          },
+          "tick": 2,
+          "worlds": 64
+        },
+        {
+          "expected_entries_beyond_first_min": 0.010689572090722466,
+          "means": {
+            "boundary_occupancy": 0.2423638706454267,
+            "expected_boundary_entries": 0.7047003804113723,
+            "expected_entries_beyond_first": 0.0879518593532768,
+            "expected_reset_departures": 0.4623365097659543,
+            "first_either": 0.6167485210580954,
+            "first_lower": 0.290954455385396,
+            "first_upper": 0.3257940656726995,
+            "survival_no_outer_hit": 0.38325147894190104
+          },
+          "tick": 6,
+          "worlds": 64
+        }
+      ],
+      "repair_mass_and_bank_exact_equal_count": 64,
+      "scope": "Deterministic summaries of existing TRAIN input contracts; five reused fits, no efficacy endpoint",
+      "significance_claim": false,
+      "worlds": 64
+    },
+    "23": {
+      "endpoint_vs_first_hit": [
+        {
+          "count": 64,
+          "differing_count": 64,
+          "endpoint_mean": 0.7818966241561337,
+          "equality_mass_max": 0.04368720120298831,
+          "equality_mass_mean": 0.028356145396575334,
+          "first_hit_mean": 0.8949828604893559,
+          "first_hit_minus_endpoint_max": 0.24926864789901793,
+          "first_hit_minus_endpoint_mean": 0.11308623633322218,
+          "first_hit_minus_endpoint_min": 0.04273158759482576,
+          "threshold": -0.5,
+          "tick": 1
+        },
+        {
+          "count": 64,
+          "differing_count": 64,
+          "endpoint_mean": 0.48292307045574534,
+          "equality_mass_max": 0.08145031926535001,
+          "equality_mass_mean": 0.041606631688720835,
+          "first_hit_mean": 0.6392742828535402,
+          "first_hit_minus_endpoint_max": 0.39470910191638525,
+          "first_hit_minus_endpoint_mean": 0.15635121239779487,
+          "first_hit_minus_endpoint_min": 0.008742869560911082,
+          "threshold": 0.0,
+          "tick": 1
+        },
+        {
+          "count": 64,
+          "differing_count": 64,
+          "endpoint_mean": 0.19195541086669604,
+          "equality_mass_max": 0.04420184586543453,
+          "equality_mass_mean": 0.029062411784511674,
+          "first_hit_mean": 0.30349950352036975,
+          "first_hit_minus_endpoint_max": 0.21817818021018298,
+          "first_hit_minus_endpoint_mean": 0.11154409265367374,
+          "first_hit_minus_endpoint_min": 0.020951590578242488,
+          "threshold": 0.5,
+          "tick": 1
+        },
+        {
+          "count": 64,
+          "differing_count": 64,
+          "endpoint_mean": 0.7835492317138435,
+          "equality_mass_max": 0.03669473329916537,
+          "equality_mass_mean": 0.025783189429784477,
+          "first_hit_mean": 0.9357314828874412,
+          "first_hit_minus_endpoint_max": 0.27631986294364563,
+          "first_hit_minus_endpoint_mean": 0.15218225117359782,
+          "first_hit_minus_endpoint_min": 0.08062108118283473,
+          "threshold": -0.5,
+          "tick": 2
+        },
+        {
+          "count": 64,
+          "differing_count": 64,
+          "endpoint_mean": 0.49439746581875377,
+          "equality_mass_max": 0.0607712386725755,
+          "equality_mass_mean": 0.040866397111907524,
+          "first_hit_mean": 0.7176803745137029,
+          "first_hit_minus_endpoint_max": 0.47141635450101044,
+          "first_hit_minus_endpoint_mean": 0.22328290869494918,
+          "first_hit_minus_endpoint_min": 0.04616390635929879,
+          "threshold": 0.0,
+          "tick": 2
+        },
+        {
+          "count": 64,
+          "differing_count": 64,
+          "endpoint_mean": 0.20833248677076432,
+          "equality_mass_max": 0.03948799102178197,
+          "equality_mass_mean": 0.02778230666252343,
+          "first_hit_mean": 0.3853564266528166,
+          "first_hit_minus_endpoint_max": 0.29996574836421974,
+          "first_hit_minus_endpoint_mean": 0.17702393988205228,
+          "first_hit_minus_endpoint_min": 0.06324140912336329,
+          "threshold": 0.5,
+          "tick": 2
+        },
+        {
+          "count": 64,
+          "differing_count": 64,
+          "endpoint_mean": 0.782957095377204,
+          "equality_mass_max": 0.031378238285598575,
+          "equality_mass_mean": 0.023295728877659995,
+          "first_hit_mean": 0.9863952591212383,
+          "first_hit_minus_endpoint_max": 0.3275246052532599,
+          "first_hit_minus_endpoint_mean": 0.20343816374403417,
+          "first_hit_minus_endpoint_min": 0.12596546952070253,
+          "threshold": -0.5,
+          "tick": 6
+        },
+        {
+          "count": 64,
+          "differing_count": 64,
+          "endpoint_mean": 0.5043723550857269,
+          "equality_mass_max": 0.04282891692369545,
+          "equality_mass_mean": 0.04050188883738734,
+          "first_hit_mean": 0.8851811771918131,
+          "first_hit_minus_endpoint_max": 0.5682715338395898,
+          "first_hit_minus_endpoint_mean": 0.3808088221060863,
+          "first_hit_minus_endpoint_min": 0.23765190972257177,
+          "threshold": 0.0,
+          "tick": 6
+        },
+        {
+          "count": 64,
+          "differing_count": 64,
+          "endpoint_mean": 0.22465349710815885,
+          "equality_mass_max": 0.032825372154062116,
+          "equality_mass_mean": 0.02605379235831097,
+          "first_hit_mean": 0.5839631070438325,
+          "first_hit_minus_endpoint_max": 0.4580831039647743,
+          "first_hit_minus_endpoint_mean": 0.3593096099356736,
+          "first_hit_minus_endpoint_min": 0.2564712550114304,
+          "threshold": 0.5,
+          "tick": 6
+        }
+      ],
+      "max_cross_method_error": 9.797718192317006e-15,
+      "max_semantic_invariant_error": 1.1746159600534156e-13,
+      "outer_boundary_and_reset": [
+        {
+          "expected_entries_beyond_first_min": 7.338995535420556e-10,
+          "means": {
+            "boundary_occupancy": 0.15159527726869743,
+            "expected_boundary_entries": 0.18785924713153926,
+            "expected_entries_beyond_first": 0.00017228694449645388,
+            "expected_reset_departures": 0.03626396986284121,
+            "first_either": 0.18768696018704278,
+            "first_lower": 0.09393229356968211,
+            "first_upper": 0.09375466661736069,
+            "survival_no_outer_hit": 0.8123130398129578
+          },
+          "tick": 1,
+          "worlds": 64
+        },
+        {
+          "expected_entries_beyond_first_min": 1.911781307255278e-06,
+          "means": {
+            "boundary_occupancy": 0.20183674096955345,
+            "expected_boundary_entries": 0.30729130853542896,
+            "expected_entries_beyond_first": 0.0029752656223561097,
+            "expected_reset_departures": 0.10545456756587526,
+            "first_either": 0.30431604291307285,
+            "first_lower": 0.1480162163930696,
+            "first_upper": 0.15629982652000324,
+            "survival_no_outer_hit": 0.6956839570869288
+          },
+          "tick": 2,
+          "worlds": 64
+        },
+        {
+          "expected_entries_beyond_first_min": 0.0055157484075514795,
+          "means": {
+            "boundary_occupancy": 0.24384359193779953,
+            "expected_boundary_entries": 0.6976136249466711,
+            "expected_entries_beyond_first": 0.08917244890034076,
+            "expected_reset_departures": 0.45377003300887864,
+            "first_either": 0.6084411760463304,
+            "first_lower": 0.28856707366941453,
+            "first_upper": 0.31987410237691594,
+            "survival_no_outer_hit": 0.39155882395367336
+          },
+          "tick": 6,
+          "worlds": 64
+        }
+      ],
+      "repair_mass_and_bank_exact_equal_count": 64,
+      "scope": "Deterministic summaries of existing TRAIN input contracts; five reused fits, no efficacy endpoint",
+      "significance_claim": false,
+      "worlds": 64
+    },
+    "37": {
+      "endpoint_vs_first_hit": [
+        {
+          "count": 64,
+          "differing_count": 64,
+          "endpoint_mean": 0.7823604623294578,
+          "equality_mass_max": 0.04369828996090179,
+          "equality_mass_mean": 0.03028814088200287,
+          "first_hit_mean": 0.9012265330183069,
+          "first_hit_minus_endpoint_max": 0.25082190570505736,
+          "first_hit_minus_endpoint_mean": 0.11886607068884905,
+          "first_hit_minus_endpoint_min": 0.04334350873494086,
+          "threshold": -0.5,
+          "tick": 1
+        },
+        {
+          "count": 64,
+          "differing_count": 64,
+          "endpoint_mean": 0.47717786430811404,
+          "equality_mass_max": 0.08134385470210559,
+          "equality_mass_mean": 0.04119255409559423,
+          "first_hit_mean": 0.6294063374376047,
+          "first_hit_minus_endpoint_max": 0.3963879289234358,
+          "first_hit_minus_endpoint_mean": 0.15222847312949073,
+          "first_hit_minus_endpoint_min": 0.008737144560771182,
+          "threshold": 0.0,
+          "tick": 1
+        },
+        {
+          "count": 64,
+          "differing_count": 64,
+          "endpoint_mean": 0.1868757152321862,
+          "equality_mass_max": 0.044080335776723004,
+          "equality_mass_mean": 0.02937107072481989,
+          "first_hit_mean": 0.29066126619118726,
+          "first_hit_minus_endpoint_max": 0.2192858982992662,
+          "first_hit_minus_endpoint_mean": 0.10378555095900102,
+          "first_hit_minus_endpoint_min": 0.020973782573052206,
+          "threshold": 0.5,
+          "tick": 1
+        },
+        {
+          "count": 64,
+          "differing_count": 64,
+          "endpoint_mean": 0.779485896348788,
+          "equality_mass_max": 0.037874026330833005,
+          "equality_mass_mean": 0.027159809138160622,
+          "first_hit_mean": 0.9421173571215584,
+          "first_hit_minus_endpoint_max": 0.27943838346174743,
+          "first_hit_minus_endpoint_mean": 0.16263146077277035,
+          "first_hit_minus_endpoint_min": 0.07750542304251418,
+          "threshold": -0.5,
+          "tick": 2
+        },
+        {
+          "count": 64,
+          "differing_count": 64,
+          "endpoint_mean": 0.4828521167271008,
+          "equality_mass_max": 0.06068703054894721,
+          "equality_mass_mean": 0.04121982919790433,
+          "first_hit_mean": 0.7090125306086589,
+          "first_hit_minus_endpoint_max": 0.47379975905375027,
+          "first_hit_minus_endpoint_mean": 0.22616041388155805,
+          "first_hit_minus_endpoint_min": 0.04640022064693183,
+          "threshold": 0.0,
+          "tick": 2
+        },
+        {
+          "count": 64,
+          "differing_count": 64,
+          "endpoint_mean": 0.19811503407030567,
+          "equality_mass_max": 0.039253323343028404,
+          "equality_mass_mean": 0.0273911931690219,
+          "first_hit_mean": 0.3679077699293182,
+          "first_hit_minus_endpoint_max": 0.2794565452966792,
+          "first_hit_minus_endpoint_mean": 0.1697927358590125,
+          "first_hit_minus_endpoint_min": 0.06349976566392619,
+          "threshold": 0.5,
+          "tick": 2
+        },
+        {
+          "count": 64,
+          "differing_count": 64,
+          "endpoint_mean": 0.7718053058638676,
+          "equality_mass_max": 0.03199972192647822,
+          "equality_mass_mean": 0.024005585065472533,
+          "first_hit_mean": 0.9881636008073212,
+          "first_hit_minus_endpoint_max": 0.3232987830554236,
+          "first_hit_minus_endpoint_mean": 0.21635829494345352,
+          "first_hit_minus_endpoint_min": 0.14087527714795067,
+          "threshold": -0.5,
+          "tick": 6
+        },
+        {
+          "count": 64,
+          "differing_count": 64,
+          "endpoint_mean": 0.4891341738158622,
+          "equality_mass_max": 0.042661091021625595,
+          "equality_mass_mean": 0.04052436777773902,
+          "first_hit_mean": 0.881068214138679,
+          "first_hit_minus_endpoint_max": 0.5661093161589938,
+          "first_hit_minus_endpoint_mean": 0.39193404032281665,
+          "first_hit_minus_endpoint_min": 0.2536964708879027,
+          "threshold": 0.0,
+          "tick": 6
+        },
+        {
+          "count": 64,
+          "differing_count": 64,
+          "endpoint_mean": 0.2140344664945215,
+          "equality_mass_max": 0.03270039606550498,
+          "equality_mass_mean": 0.02533586510736634,
+          "first_hit_mean": 0.5670908090877407,
+          "first_hit_minus_endpoint_max": 0.4414830033616859,
+          "first_hit_minus_endpoint_mean": 0.3530563425932191,
+          "first_hit_minus_endpoint_min": 0.20105029562040927,
+          "threshold": 0.5,
+          "tick": 6
+        }
+      ],
+      "max_cross_method_error": 2.5646151868841116e-14,
+      "max_semantic_invariant_error": 1.3145040611561853e-13,
+      "outer_boundary_and_reset": [
+        {
+          "expected_entries_beyond_first_min": 7.940668938360984e-10,
+          "means": {
+            "boundary_occupancy": 0.13584093161328137,
+            "expected_boundary_entries": 0.16459823262684428,
+            "expected_entries_beyond_first": 0.00012269332076061135,
+            "expected_reset_departures": 0.02875730101356293,
+            "first_either": 0.1644755393060837,
+            "first_lower": 0.08045243538827149,
+            "first_upper": 0.08402310391781219,
+            "survival_no_outer_hit": 0.8355244606939096
+          },
+          "tick": 1,
+          "worlds": 64
+        },
+        {
+          "expected_entries_beyond_first_min": 2.009098633834472e-06,
+          "means": {
+            "boundary_occupancy": 0.19073492831018463,
+            "expected_boundary_entries": 0.2865211962397623,
+            "expected_entries_beyond_first": 0.0026355757579513747,
+            "expected_reset_departures": 0.09578626792957766,
+            "first_either": 0.2838856204818109,
+            "first_lower": 0.13927987889110796,
+            "first_upper": 0.14460574159070297,
+            "survival_no_outer_hit": 0.7161143795181761
+          },
+          "tick": 2,
+          "worlds": 64
+        },
+        {
+          "expected_entries_beyond_first_min": 0.005131799910080281,
+          "means": {
+            "boundary_occupancy": 0.24383774145983353,
+            "expected_boundary_entries": 0.6943145392873211,
+            "expected_entries_beyond_first": 0.08677975700319451,
+            "expected_reset_departures": 0.4504767978274854,
+            "first_either": 0.6075347822841266,
+            "first_lower": 0.3040462321838785,
+            "first_upper": 0.3034885501002481,
+            "survival_no_outer_hit": 0.392465217715842
+          },
+          "tick": 6,
+          "worlds": 64
+        }
+      ],
+      "repair_mass_and_bank_exact_equal_count": 64,
+      "scope": "Deterministic summaries of existing TRAIN input contracts; five reused fits, no efficacy endpoint",
+      "significance_claim": false,
+      "worlds": 64
+    },
+    "53": {
+      "endpoint_vs_first_hit": [
+        {
+          "count": 64,
+          "differing_count": 64,
+          "endpoint_mean": 0.8385599346469874,
+          "equality_mass_max": 0.04417958111105407,
+          "equality_mass_mean": 0.028826854291635243,
+          "first_hit_mean": 0.9689806293242196,
+          "first_hit_minus_endpoint_max": 0.25595799298652944,
+          "first_hit_minus_endpoint_mean": 0.13042069467723208,
+          "first_hit_minus_endpoint_min": 0.04098341385325455,
+          "threshold": -0.5,
+          "tick": 1
+        },
+        {
+          "count": 64,
+          "differing_count": 64,
+          "endpoint_mean": 0.4815235558324061,
+          "equality_mass_max": 0.08177944778134766,
+          "equality_mass_mean": 0.051798418328169324,
+          "first_hit_mean": 0.6952449656413251,
+          "first_hit_minus_endpoint_max": 0.40078847922824756,
+          "first_hit_minus_endpoint_mean": 0.21372140980891904,
+          "first_hit_minus_endpoint_min": 0.012987764101128174,
+          "threshold": 0.0,
+          "tick": 1
+        },
+        {
+          "count": 64,
+          "differing_count": 64,
+          "endpoint_mean": 0.1417224106694961,
+          "equality_mass_max": 0.04454778150662603,
+          "equality_mass_mean": 0.030022986469290133,
+          "first_hit_mean": 0.23971761805376646,
+          "first_hit_minus_endpoint_max": 0.22227952668854672,
+          "first_hit_minus_endpoint_mean": 0.09799520738427034,
+          "first_hit_minus_endpoint_min": 0.019922098499278992,
+          "threshold": 0.5,
+          "tick": 1
+        },
+        {
+          "count": 64,
+          "differing_count": 64,
+          "endpoint_mean": 0.8085770435169258,
+          "equality_mass_max": 0.03875243668422547,
+          "equality_mass_mean": 0.02741504962406364,
+          "first_hit_mean": 0.9782528271193525,
+          "first_hit_minus_endpoint_max": 0.2821711478280262,
+          "first_hit_minus_endpoint_mean": 0.1696757836024266,
+          "first_hit_minus_endpoint_min": 0.07422345633897154,
+          "threshold": -0.5,
+          "tick": 2
+        },
+        {
+          "count": 64,
+          "differing_count": 64,
+          "endpoint_mean": 0.49346492101595,
+          "equality_mass_max": 0.061096851496964866,
+          "equality_mass_mean": 0.04514016210179425,
+          "first_hit_mean": 0.7701198602788728,
+          "first_hit_minus_endpoint_max": 0.45247458326625184,
+          "first_hit_minus_endpoint_mean": 0.27665493926292284,
+          "first_hit_minus_endpoint_min": 0.051575363808513686,
+          "threshold": 0.0,
+          "tick": 2
+        },
+        {
+          "count": 64,
+          "differing_count": 64,
+          "endpoint_mean": 0.1847899187033371,
+          "equality_mass_max": 0.040077096442345306,
+          "equality_mass_mean": 0.029365568873541123,
+          "first_hit_mean": 0.3464338158963091,
+          "first_hit_minus_endpoint_max": 0.2829292815273007,
+          "first_hit_minus_endpoint_mean": 0.161643897192972,
+          "first_hit_minus_endpoint_min": 0.060783333744611756,
+          "threshold": 0.5,
+          "tick": 2
+        },
+        {
+          "count": 64,
+          "differing_count": 64,
+          "endpoint_mean": 0.7869439777028103,
+          "equality_mass_max": 0.031200212576035766,
+          "equality_mass_mean": 0.023109065992941668,
+          "first_hit_mean": 0.9954485318248629,
+          "first_hit_minus_endpoint_max": 0.3274257138626837,
+          "first_hit_minus_endpoint_mean": 0.20850455412205254,
+          "first_hit_minus_endpoint_min": 0.11785171703568764,
+          "threshold": -0.5,
+          "tick": 6
+        },
+        {
+          "count": 64,
+          "differing_count": 64,
+          "endpoint_mean": 0.5073110229270614,
+          "equality_mass_max": 0.04265484464416911,
+          "equality_mass_mean": 0.04142447562660241,
+          "first_hit_mean": 0.9108039977081945,
+          "first_hit_minus_endpoint_max": 0.5810752529345234,
+          "first_hit_minus_endpoint_mean": 0.4034929747811332,
+          "first_hit_minus_endpoint_min": 0.2741859041990571,
+          "threshold": 0.0,
+          "tick": 6
+        },
+        {
+          "count": 64,
+          "differing_count": 64,
+          "endpoint_mean": 0.22593885164329458,
+          "equality_mass_max": 0.03346141030123505,
+          "equality_mass_mean": 0.026191029402127683,
+          "first_hit_mean": 0.5729002713567453,
+          "first_hit_minus_endpoint_max": 0.4646700913594866,
+          "first_hit_minus_endpoint_mean": 0.3469614197134506,
+          "first_hit_minus_endpoint_min": 0.20101606219314266,
+          "threshold": 0.5,
+          "tick": 6
+        }
+      ],
+      "max_cross_method_error": 1.0658141036401503e-14,
+      "max_semantic_invariant_error": 9.903189379656396e-14,
+      "outer_boundary_and_reset": [
+        {
+          "expected_entries_beyond_first_min": 3.3333433994801875e-10,
+          "means": {
+            "boundary_occupancy": 0.08173631726457373,
+            "expected_boundary_entries": 0.10157556629543683,
+            "expected_entries_beyond_first": 7.546659470683084e-05,
+            "expected_reset_departures": 0.019839249030862247,
+            "first_either": 0.10150009970073001,
+            "first_lower": 0.04869025912343215,
+            "first_upper": 0.05280984057729786,
+            "survival_no_outer_hit": 0.8984999002992717
+          },
+          "tick": 1,
+          "worlds": 64
+        },
+        {
+          "expected_entries_beyond_first_min": 1.1953712835688357e-06,
+          "means": {
+            "boundary_occupancy": 0.14534880645352263,
+            "expected_boundary_entries": 0.20330969326549736,
+            "expected_entries_beyond_first": 0.0009125581620547923,
+            "expected_reset_departures": 0.05796088681197299,
+            "first_either": 0.20239713510344254,
+            "first_lower": 0.09461883266315171,
+            "first_upper": 0.10777830244029081,
+            "survival_no_outer_hit": 0.7976028648965604
+          },
+          "tick": 2,
+          "worlds": 64
+        },
+        {
+          "expected_entries_beyond_first_min": 0.009240658200846297,
+          "means": {
+            "boundary_occupancy": 0.23978931949901422,
+            "expected_boundary_entries": 0.6028074911394846,
+            "expected_entries_beyond_first": 0.057085249925881404,
+            "expected_reset_departures": 0.36301817164046657,
+            "first_either": 0.5457222412136031,
+            "first_lower": 0.25164417167008524,
+            "first_upper": 0.2940780695435179,
+            "survival_no_outer_hit": 0.4542777587864034
+          },
+          "tick": 6,
+          "worlds": 64
+        }
+      ],
+      "repair_mass_and_bank_exact_equal_count": 64,
+      "scope": "Deterministic summaries of existing TRAIN input contracts; five reused fits, no efficacy endpoint",
+      "significance_claim": false,
+      "worlds": 64
+    },
+    "71": {
+      "endpoint_vs_first_hit": [
+        {
+          "count": 64,
+          "differing_count": 64,
+          "endpoint_mean": 0.77799570085448,
+          "equality_mass_max": 0.04387003672590854,
+          "equality_mass_mean": 0.02735185917963609,
+          "first_hit_mean": 0.8889673799128621,
+          "first_hit_minus_endpoint_max": 0.25282253305125213,
+          "first_hit_minus_endpoint_mean": 0.11097167905838204,
+          "first_hit_minus_endpoint_min": 0.04275834168351533,
+          "threshold": -0.5,
+          "tick": 1
+        },
+        {
+          "count": 64,
+          "differing_count": 64,
+          "endpoint_mean": 0.48450937827496293,
+          "equality_mass_max": 0.08147216410395897,
+          "equality_mass_mean": 0.04162821246911748,
+          "first_hit_mean": 0.644679211295677,
+          "first_hit_minus_endpoint_max": 0.39838226133748755,
+          "first_hit_minus_endpoint_mean": 0.16016983302071414,
+          "first_hit_minus_endpoint_min": 0.0103794278184694,
+          "threshold": 0.0,
+          "tick": 1
+        },
+        {
+          "count": 64,
+          "differing_count": 64,
+          "endpoint_mean": 0.1980689645772151,
+          "equality_mass_max": 0.04419508736951827,
+          "equality_mass_mean": 0.028328710658898613,
+          "first_hit_mean": 0.31675394775156546,
+          "first_hit_minus_endpoint_max": 0.2218528755749326,
+          "first_hit_minus_endpoint_mean": 0.11868498317435036,
+          "first_hit_minus_endpoint_min": 0.020606489874914462,
+          "threshold": 0.5,
+          "tick": 1
+        },
+        {
+          "count": 64,
+          "differing_count": 64,
+          "endpoint_mean": 0.7715407856730764,
+          "equality_mass_max": 0.03720311424615579,
+          "equality_mass_mean": 0.02621722897811543,
+          "first_hit_mean": 0.9285776297849615,
+          "first_hit_minus_endpoint_max": 0.283197724014316,
+          "first_hit_minus_endpoint_mean": 0.157036844111885,
+          "first_hit_minus_endpoint_min": 0.0765637810749712,
+          "threshold": -0.5,
+          "tick": 2
+        },
+        {
+          "count": 64,
+          "differing_count": 64,
+          "endpoint_mean": 0.4817168969153126,
+          "equality_mass_max": 0.06082363280503853,
+          "equality_mass_mean": 0.04080096211896579,
+          "first_hit_mean": 0.7161501083203331,
+          "first_hit_minus_endpoint_max": 0.4776300211599626,
+          "first_hit_minus_endpoint_mean": 0.23443321140502046,
+          "first_hit_minus_endpoint_min": 0.050239633209321344,
+          "threshold": 0.0,
+          "tick": 2
+        },
+        {
+          "count": 64,
+          "differing_count": 64,
+          "endpoint_mean": 0.20419866701177714,
+          "equality_mass_max": 0.03829281465637876,
+          "equality_mass_mean": 0.02649212169876637,
+          "first_hit_mean": 0.38930303173002156,
+          "first_hit_minus_endpoint_max": 0.2910494397657739,
+          "first_hit_minus_endpoint_mean": 0.18510436471824443,
+          "first_hit_minus_endpoint_min": 0.06260184780221131,
+          "threshold": 0.5,
+          "tick": 2
+        },
+        {
+          "count": 64,
+          "differing_count": 64,
+          "endpoint_mean": 0.7631753211210541,
+          "equality_mass_max": 0.030688394703843925,
+          "equality_mass_mean": 0.024849528778908933,
+          "first_hit_mean": 0.9841238823880938,
+          "first_hit_minus_endpoint_max": 0.30073331145217375,
+          "first_hit_minus_endpoint_mean": 0.22094856126703968,
+          "first_hit_minus_endpoint_min": 0.14764598043822486,
+          "threshold": -0.5,
+          "tick": 6
+        },
+        {
+          "count": 64,
+          "differing_count": 64,
+          "endpoint_mean": 0.4729036861651987,
+          "equality_mass_max": 0.04256276436746918,
+          "equality_mass_mean": 0.04142057447345398,
+          "first_hit_mean": 0.8822744583710873,
+          "first_hit_minus_endpoint_max": 0.5394013897363791,
+          "first_hit_minus_endpoint_mean": 0.40937077220588863,
+          "first_hit_minus_endpoint_min": 0.2665029239800848,
+          "threshold": 0.0,
+          "tick": 6
+        },
+        {
+          "count": 64,
+          "differing_count": 64,
+          "endpoint_mean": 0.2034535910401603,
+          "equality_mass_max": 0.03187985946553399,
+          "equality_mass_mean": 0.024028295649930406,
+          "first_hit_mean": 0.5748276015837572,
+          "first_hit_minus_endpoint_max": 0.4908744581784945,
+          "first_hit_minus_endpoint_mean": 0.371374010543597,
+          "first_hit_minus_endpoint_min": 0.23122899427837096,
+          "threshold": 0.5,
+          "tick": 6
+        }
+      ],
+      "max_cross_method_error": 1.3322676295501878e-14,
+      "max_semantic_invariant_error": 4.884981308350689e-14,
+      "outer_boundary_and_reset": [
+        {
+          "expected_entries_beyond_first_min": 5.180846580736531e-10,
+          "means": {
+            "boundary_occupancy": 0.16629541280505583,
+            "expected_boundary_entries": 0.20918769990559605,
+            "expected_entries_beyond_first": 0.00018648138003628386,
+            "expected_reset_departures": 0.042892287100540355,
+            "first_either": 0.20900121852555975,
+            "first_lower": 0.10493151157010594,
+            "first_upper": 0.10406970695545384,
+            "survival_no_outer_hit": 0.7909987814744412
+          },
+          "tick": 1,
+          "worlds": 64
+        },
+        {
+          "expected_entries_beyond_first_min": 1.561811572438343e-06,
+          "means": {
+            "boundary_occupancy": 0.21079096879033016,
+            "expected_boundary_entries": 0.32289868555008333,
+            "expected_entries_beyond_first": 0.002906380252027231,
+            "expected_reset_departures": 0.11210771675975355,
+            "first_either": 0.3199923052980561,
+            "first_lower": 0.15969550704509047,
+            "first_upper": 0.1602967982529656,
+            "survival_no_outer_hit": 0.6800076947019464
+          },
+          "tick": 2,
+          "worlds": 64
+        },
+        {
+          "expected_entries_beyond_first_min": 0.010299273295747036,
+          "means": {
+            "boundary_occupancy": 0.243341781123396,
+            "expected_boundary_entries": 0.7173022674967885,
+            "expected_entries_beyond_first": 0.09036228462758802,
+            "expected_reset_departures": 0.47396048637339316,
+            "first_either": 0.6269399828692006,
+            "first_lower": 0.31621057123509155,
+            "first_upper": 0.31072941163410894,
+            "survival_no_outer_hit": 0.3730600171308059
+          },
+          "tick": 6,
+          "worlds": 64
+        }
+      ],
+      "repair_mass_and_bank_exact_equal_count": 64,
+      "scope": "Deterministic summaries of existing TRAIN input contracts; five reused fits, no efficacy endpoint",
+      "significance_claim": false,
+      "worlds": 64
+    }
+  },
+  "protocol": {
+    "bytes": 6814,
+    "sha256": "b6d272a3f329fab883bb1ef12e7fbddcad9a82793a14d8d2409aaca83f5bc648"
+  },
+  "schema": "hepta-wsp-event-semantics-diagnostic-v1",
+  "source_checked_arithmetic": {
+    "count": 11520,
+    "max_abs_difference": 4.440892098500626e-16,
+    "max_input_abs": 1.0,
+    "max_output_abs": 1.0,
+    "nonfinite_count": 0
+  },
+  "status": "NUMERICAL_SEMANTIC_DIAGNOSTIC_COMPLETE_NO_EFFICACY_CLAIM",
+  "summary": {
+    "endpoint_vs_first_hit": [
+      {
+        "count": 320,
+        "differing_count": 320,
+        "endpoint_mean": 0.7906804127599375,
+        "equality_mass_max": 0.04417958111105407,
+        "equality_mass_mean": 0.02886721299732991,
+        "first_hit_mean": 0.9087493015014119,
+        "first_hit_minus_endpoint_max": 0.25595799298652944,
+        "first_hit_minus_endpoint_mean": 0.11806888874147443,
+        "first_hit_minus_endpoint_min": 0.04098341385325455,
+        "threshold": -0.5,
+        "tick": 1
+      },
+      {
+        "count": 320,
+        "differing_count": 320,
+        "endpoint_mean": 0.4829951993899229,
+        "equality_mass_max": 0.08177944778134766,
+        "equality_mass_mean": 0.04283337350212495,
+        "first_hit_mean": 0.646471042029366,
+        "first_hit_minus_endpoint_max": 0.40078847922824756,
+        "first_hit_minus_endpoint_mean": 0.1634758426394431,
+        "first_hit_minus_endpoint_min": 0.008737144560771182,
+        "threshold": 0.0,
+        "tick": 1
+      },
+      {
+        "count": 320,
+        "differing_count": 320,
+        "endpoint_mean": 0.1847993676550736,
+        "equality_mass_max": 0.04454778150662603,
+        "equality_mass_mean": 0.02947937923359308,
+        "first_hit_mean": 0.2944563796630317,
+        "first_hit_minus_endpoint_max": 0.22245408640071057,
+        "first_hit_minus_endpoint_mean": 0.1096570120079581,
+        "first_hit_minus_endpoint_min": 0.019922098499278992,
+        "threshold": 0.5,
+        "tick": 1
+      },
+      {
+        "count": 320,
+        "differing_count": 320,
+        "endpoint_mean": 0.7840071229497502,
+        "equality_mass_max": 0.03875243668422547,
+        "equality_mass_mean": 0.026544435904122764,
+        "first_hit_mean": 0.9436962612743189,
+        "first_hit_minus_endpoint_max": 0.29655509262326385,
+        "first_hit_minus_endpoint_mean": 0.15968913832456866,
+        "first_hit_minus_endpoint_min": 0.07422345633897154,
+        "threshold": -0.5,
+        "tick": 2
+      },
+      {
+        "count": 320,
+        "differing_count": 320,
+        "endpoint_mean": 0.4888326556815035,
+        "equality_mass_max": 0.061096851496964866,
+        "equality_mass_mean": 0.04160443645541023,
+        "first_hit_mean": 0.7232344216044859,
+        "first_hit_minus_endpoint_max": 0.4776300211599626,
+        "first_hit_minus_endpoint_mean": 0.23440176592298237,
+        "first_hit_minus_endpoint_min": 0.04616390635929879,
+        "threshold": 0.0,
+        "tick": 2
+      },
+      {
+        "count": 320,
+        "differing_count": 320,
+        "endpoint_mean": 0.20170743214727366,
+        "equality_mass_max": 0.040077096442345306,
+        "equality_mass_mean": 0.027663428516174184,
+        "first_hit_mean": 0.37699158171216907,
+        "first_hit_minus_endpoint_max": 0.29996574836421974,
+        "first_hit_minus_endpoint_mean": 0.1752841495648954,
+        "first_hit_minus_endpoint_min": 0.060783333744611756,
+        "threshold": 0.5,
+        "tick": 2
+      },
+      {
+        "count": 320,
+        "differing_count": 320,
+        "endpoint_mean": 0.7776797475961861,
+        "equality_mass_max": 0.03199972192647822,
+        "equality_mass_mean": 0.023731705408314534,
+        "first_hit_mean": 0.9881465357975893,
+        "first_hit_minus_endpoint_max": 0.3275246052532599,
+        "first_hit_minus_endpoint_mean": 0.21046678820140322,
+        "first_hit_minus_endpoint_min": 0.11785171703568764,
+        "threshold": -0.5,
+        "tick": 6
+      },
+      {
+        "count": 320,
+        "differing_count": 320,
+        "endpoint_mean": 0.49506464585775756,
+        "equality_mass_max": 0.04282891692369545,
+        "equality_mass_mean": 0.041023770833517215,
+        "first_hit_mean": 0.8880236537283983,
+        "first_hit_minus_endpoint_max": 0.5810752529345234,
+        "first_hit_minus_endpoint_mean": 0.39295900787064064,
+        "first_hit_minus_endpoint_min": 0.22628487560646626,
+        "threshold": 0.0,
+        "tick": 6
+      },
+      {
+        "count": 320,
+        "differing_count": 320,
+        "endpoint_mean": 0.21811016816351878,
+        "equality_mass_max": 0.03346141030123505,
+        "equality_mass_mean": 0.025453710082570562,
+        "first_hit_mean": 0.5773519393512323,
+        "first_hit_minus_endpoint_max": 0.4908744581784945,
+        "first_hit_minus_endpoint_mean": 0.35924177118771367,
+        "first_hit_minus_endpoint_min": 0.20101606219314266,
+        "threshold": 0.5,
+        "tick": 6
+      }
+    ],
+    "max_cross_method_error": 2.5646151868841116e-14,
+    "max_semantic_invariant_error": 1.3145040611561853e-13,
+    "outer_boundary_and_reset": [
+      {
+        "expected_entries_beyond_first_min": 3.3333433994801875e-10,
+        "means": {
+          "boundary_occupancy": 0.13824321720040306,
+          "expected_boundary_entries": 0.17103215150985113,
+          "expected_entries_beyond_first": 0.00014090867926652297,
+          "expected_reset_departures": 0.03278893430944803,
+          "first_either": 0.1708912428305846,
+          "first_lower": 0.0842757385368745,
+          "first_upper": 0.0866155042937101,
+          "survival_no_outer_hit": 0.8291087571694146
+        },
+        "tick": 1,
+        "worlds": 320
+      },
+      {
+        "expected_entries_beyond_first_min": 1.1953712835688357e-06,
+        "means": {
+          "boundary_occupancy": 0.19171573359971333,
+          "expected_boundary_entries": 0.2877106999180607,
+          "expected_entries_beyond_first": 0.002410187226625656,
+          "expected_reset_departures": 0.09599496631834759,
+          "first_either": 0.2853005126914351,
+          "first_lower": 0.1386257943716363,
+          "first_upper": 0.14667471831979878,
+          "survival_no_outer_hit": 0.7146994873085635
+        },
+        "tick": 2,
+        "worlds": 320
+      },
+      {
+        "expected_entries_beyond_first_min": 0.005131799910080281,
+        "means": {
+          "boundary_occupancy": 0.242635260933094,
+          "expected_boundary_entries": 0.6833476606563276,
+          "expected_entries_beyond_first": 0.08227031996205629,
+          "expected_reset_departures": 0.44071239972323556,
+          "first_either": 0.6010773406942712,
+          "first_lower": 0.29028450082877316,
+          "first_upper": 0.3107928398654981,
+          "survival_no_outer_hit": 0.3989226593057251
+        },
+        "tick": 6,
+        "worlds": 320
+      }
+    ],
+    "repair_mass_and_bank_exact_equal_count": 320,
+    "scope": "Deterministic summaries of existing TRAIN input contracts; five reused fits, no efficacy endpoint",
+    "significance_claim": false,
+    "worlds": 320
+  },
+  "worker_body_cpu_seconds": 1.56283329,
+  "worker_body_wall_seconds": 1.5784943170001497,
+  "worker_peak_rss_bytes": 59711488
+}

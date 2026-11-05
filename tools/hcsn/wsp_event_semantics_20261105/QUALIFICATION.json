@@ -1,0 +1,46 @@
+{
+  "expm_vs_uniformization_pairs_checked": 300,
+  "full_state_coverage": false,
+  "independent_record_aggregation_passed": true,
+  "initial_hit_convention": "t>=0 and initial strict-greater event mass included; K0 initial atom is 0.5",
+  "initial_state_predictions": 320,
+  "live_trader_checkpoint": false,
+  "new_efficacy_claim": false,
+  "new_gradient_replacement_claim": false,
+  "new_independent_test_worlds": 0,
+  "new_independent_validation_worlds": 0,
+  "new_training_fits": 0,
+  "original_checkpoint_bug_inferred_from_event_difference": false,
+  "production_changes": 0,
+  "protocol": {
+    "bytes": 6814,
+    "sha256": "b6d272a3f329fab883bb1ef12e7fbddcad9a82793a14d8d2409aaca83f5bc648"
+  },
+  "record_verification": {
+    "bytes": 651,
+    "sha256": "6c830e72edfe65828927fe4816e686b7a067d992d7c552d126d4e542affb586e"
+  },
+  "research_checkpoint_fits": [
+    11,
+    23,
+    37,
+    53,
+    71
+  ],
+  "results": {
+    "bytes": 44453,
+    "sha256": "afeef1c538c358a14afab2294951e7e5c833798270a9dd2d24e6bd1b14701a91"
+  },
+  "schema": "hepta-event-semantics-qualification-v1",
+  "sensor_failure_counterfactual_worlds": 320,
+  "separate_independent_algorithm_reexecution": false,
+  "source_contract_replayed": true,
+  "sources_binding": [
+    "model_source_commit=5b69a046d886cf4c2a73c50e58197360ea15d8f5",
+    "base_training_commit=36e9ddd099e09688593bccf2c32d1dfabc39ac99",
+    "exact input bytes in PROTOCOL_FROZEN.json"
+  ],
+  "status": "BOUNDED_NUMERICAL_SEMANTICS_DIAGNOSTIC_COMPLETE",
+  "stored_generators_vs_transition_pairs_checked": 60,
+  "threshold_horizon_comparisons": 2880
+}

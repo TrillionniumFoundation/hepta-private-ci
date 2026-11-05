@@ -1,0 +1,13 @@
+{
+  "error": "ValueError('incompatible dynamic-task schema')",
+  "new_generalization_or_task_value_evidence": false,
+  "new_training_or_weight_edit": false,
+  "producer_frozen_files_modified": false,
+  "review_body_cpu_seconds": 0.07941474700000006,
+  "review_body_wall_seconds": 0.08044915500067873,
+  "review_peak_rss_bytes": 66109440,
+  "reviewer_source_sha256": "35c51dd39043c9949f84117c3460c720718c273c59ba358747344e275425461f",
+  "schema": "hepta-ctmc-independent-semantic-review-v1",
+  "status": "FAIL",
+  "traceback": "Traceback (most recent call last):\n  File \"/workspace/scratch/db06eb2f868f/neuron_work/review_semantics.py\", line 205, in main\n    state = ctx['initial'](public)\n            ^^^^^^^^^^^^^^^^^^^^^^\n  File \"joint_task.py\", line 52, in initial\n  File \"joint_task.py\", line 27, in validate_public\nValueError: incompatible dynamic-task schema\n"
+}

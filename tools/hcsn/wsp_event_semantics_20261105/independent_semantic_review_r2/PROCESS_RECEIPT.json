@@ -1,0 +1,20 @@
+{
+  "child_peak_rss_bytes": 69742592,
+  "child_system_cpu_seconds": 0.05932,
+  "child_total_cpu_seconds": 1.101085,
+  "child_user_cpu_seconds": 1.041765,
+  "command": [
+    "python",
+    "-B",
+    "review_semantics_r2.py"
+  ],
+  "controller_partial_cpu_seconds": 0.002262723000000001,
+  "ended_utc": "2026-11-05T05:22:25.875181+00:00",
+  "exit_code": 1,
+  "schema": "hepta-ctmc-semantic-whole-child-cost-v1",
+  "scope": "Whole child including imports and final writes; controller imports/final receipt writes, editor, prior training, energy and production costs excluded/unknown.",
+  "source_sha256": "dba06c62a8050e01f0e9f55b5062c1c3a47100e807e4aa127d5be7284a906279",
+  "started_utc": "2026-11-05T05:22:24.754739+00:00",
+  "timed_out": false,
+  "wall_seconds": 1.120486448999145
+}
