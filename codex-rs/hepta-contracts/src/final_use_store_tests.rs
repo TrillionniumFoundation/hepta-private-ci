@@ -193,3 +193,111 @@ fn legacy_zero_nonce_rejects_before_original_stage_or_committed_bytes_change() {
         }
     }
 }
+
+#[test]
+fn live_claim_journal_length_drift_rejects_append_and_compaction_without_writes() {
+    enum Mutation {
+        Append,
+        Compact,
+    }
+    for length in [0, (CLAIM_FRAME_BYTES * 2) as u64] {
+        for operation in [Mutation::Append, Mutation::Compact] {
+            let directory = private_tempdir();
+            let head = FinalUseRevocations {
+                authority_epoch: 9,
+                revision: 1,
+                revoked_grant_ids: BTreeSet::new(),
+            };
+            let (owner, mut state) =
+                Store::open(directory.path(), "owner", [47; 32], head).unwrap();
+            owner.append_claim(9, [5; 32]).unwrap();
+            state.used_nonces.insert([5; 32]);
+            state.head.revision += 1;
+            let claims_path = directory.path().join("authority.claims");
+            std::fs::OpenOptions::new()
+                .write(true)
+                .open(&claims_path)
+                .unwrap()
+                .set_len(length)
+                .unwrap();
+            let claims = std::fs::read(&claims_path).unwrap();
+            let snapshot_path = directory.path().join("authority.json");
+            let snapshot = std::fs::read(&snapshot_path).unwrap();
+            let result = match operation {
+                Mutation::Append => owner.append_claim(9, [6; 32]),
+                Mutation::Compact => owner.persist(&state),
+            };
+            assert_eq!(result, Err(FinalUseError::Unavailable));
+            assert_eq!(owner.revalidate_owner(), Err(FinalUseError::Unavailable));
+            assert_eq!(std::fs::read(&claims_path).unwrap(), claims);
+            assert_eq!(std::fs::read(&snapshot_path).unwrap(), snapshot);
+        }
+    }
+}
+
+#[test]
+fn identical_replacement_claim_journal_cannot_take_over_the_live_descriptor() {
+    let directory = private_tempdir();
+    let head = FinalUseRevocations {
+        authority_epoch: 9,
+        revision: 1,
+        revoked_grant_ids: BTreeSet::new(),
+    };
+    let (owner, _) = Store::open(directory.path(), "owner", [47; 32], head).unwrap();
+    owner.append_claim(9, [5; 32]).unwrap();
+    let claims_path = directory.path().join("authority.claims");
+    let retained_path = directory.path().join("moved.claims");
+    let claims = std::fs::read(&claims_path).unwrap();
+    std::fs::rename(&claims_path, &retained_path).unwrap();
+    std::fs::write(&claims_path, &claims).unwrap();
+    std::fs::set_permissions(&claims_path, std::fs::Permissions::from_mode(0o600)).unwrap();
+
+    assert_eq!(
+        owner.append_claim(9, [6; 32]),
+        Err(FinalUseError::Unavailable)
+    );
+    assert_eq!(std::fs::read(&claims_path).unwrap(), claims);
+    assert_eq!(std::fs::read(&retained_path).unwrap(), claims);
+    // Restoring the original name cannot unfence an owner which saw drift.
+    std::fs::rename(&retained_path, &claims_path).unwrap();
+    assert_eq!(
+        owner.append_claim(9, [6; 32]),
+        Err(FinalUseError::Unavailable)
+    );
+}
+
+#[test]
+fn compacted_claim_journal_keeps_the_new_descriptor_through_append_and_reopen() {
+    let directory = private_tempdir();
+    let head = FinalUseRevocations {
+        authority_epoch: 9,
+        revision: 1,
+        revoked_grant_ids: BTreeSet::new(),
+    };
+    let (owner, mut state) = Store::open(directory.path(), "owner", [47; 32], head).unwrap();
+    owner.append_claim(9, [5; 32]).unwrap();
+    state.used_nonces.insert([5; 32]);
+    state.head.revision += 1;
+    owner.persist(&state).unwrap();
+    owner.append_claim(9, [6; 32]).unwrap();
+    state.used_nonces.insert([6; 32]);
+    drop(owner);
+    let (owner, recovered) =
+        Store::open_exact(directory.path(), "owner", [47; 32], state.head.clone()).unwrap();
+    assert_eq!(recovered.head, state.head);
+    assert_eq!(recovered.used_nonces, state.used_nonces);
+
+    state.head.authority_epoch += 1;
+    state.head.revision += 1;
+    state.used_nonces.clear();
+    owner.persist(&state).unwrap();
+    owner.append_claim(10, [5; 32]).unwrap();
+    state.used_nonces.insert([5; 32]);
+    drop(owner);
+    let (owner, recovered) =
+        Store::open_exact(directory.path(), "owner", [47; 32], state.head.clone()).unwrap();
+    assert_eq!(recovered.head, state.head);
+    assert_eq!(recovered.used_nonces, state.used_nonces);
+    owner.append_claim(10, [6; 32]).unwrap();
+    owner.revalidate_owner().unwrap();
+}

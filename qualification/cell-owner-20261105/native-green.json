@@ -1,0 +1,22 @@
+{
+  "stage": "complete_candidate",
+  "base": "5bf9e9eb7dc49ef56caf5143531f3a705fcd0e52",
+  "command": [
+    "/home/qian-qi/.cargo/bin/just",
+    "test",
+    "-p",
+    "codex-hepta-contracts",
+    "-p",
+    "codex-hepta-operations",
+    "-p",
+    "codex-hepta-runtime",
+    "--locked",
+    "--retries",
+    "0"
+  ],
+  "started_at_utc": "2026-11-05T01:23:32.430718+00:00",
+  "completed_at_utc": "2026-11-05T01:24:10.463630+00:00",
+  "exit_code": 0,
+  "candidate_archive_sha256": "8fc77ac61970780d33d12ebec4d1323f340de540d6c2c08be07fe551645d7536",
+  "production_activation": false
+}

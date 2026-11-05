@@ -1,0 +1,788 @@
+cargo clippy --fix --tests --allow-dirty {args}
+    Checking serde_core v1.0.229
+    Checking cfg-if v1.0.4
+    Checking memchr v2.8.1
+    Checking libc v0.2.186
+    Checking itoa v1.0.17
+    Checking typenum v1.20.0
+    Checking serde v1.0.229
+    Checking smallvec v1.15.1
+    Checking scopeguard v1.2.0
+    Checking lock_api v0.4.14
+    Checking parking_lot_core v0.9.12
+    Checking thiserror v2.0.21
+    Checking portable-atomic v1.13.1
+    Checking parking_lot v0.12.5
+    Checking critical-section v1.2.0
+    Checking subtle v2.6.1
+    Checking generic-array v0.14.7
+    Checking once_cell v1.21.4
+    Checking aho-corasick v1.1.4
+    Checking block-buffer v0.10.4
+    Checking crypto-common v0.1.7
+    Checking regex-syntax v0.8.11
+    Checking digest v0.10.7
+    Checking cpufeatures v0.2.17
+    Checking stable_deref_trait v1.2.1
+   Compiling shlex v1.3.0
+   Compiling cc v1.2.55
+    Checking regex-automata v0.4.18
+    Checking zmij v1.0.19
+    Checking serde_json v1.0.151
+    Checking pin-project-lite v0.2.17
+    Checking bitflags v2.13.2
+    Checking zeroize v1.9.0
+    Checking num-traits v0.2.19
+    Checking log v0.4.29
+    Checking equivalent v1.0.2
+    Checking bytes v1.12.1
+    Checking fastrand v2.3.0
+    Checking errno v0.3.14
+    Checking signal-hook-registry v1.4.8
+    Checking mio v1.2.0
+    Checking socket2 v0.6.3
+    Checking rand_core v0.10.1
+    Checking tokio v1.53.1
+    Checking sha2 v0.10.9
+    Checking foldhash v0.2.0
+    Checking allocator-api2 v0.2.21
+    Checking futures-core v0.3.34
+    Checking getrandom v0.4.3
+    Checking bstr v1.12.1
+    Checking futures-sink v0.3.34
+    Checking tinyvec_macros v0.1.1
+    Checking tinyvec v1.10.0
+    Checking tracing-core v0.1.36
+    Checking slab v0.4.12
+    Checking byteorder v1.5.0
+    Checking zerofrom v0.1.6
+    Checking linux-raw-sys v0.12.1
+    Checking cmov v0.5.4
+    Checking ctutils v0.4.6
+    Checking yoke v0.8.2
+    Checking tracing v0.1.44
+    Checking futures-channel v0.3.34
+    Checking rustix v1.1.4
+    Checking hybrid-array v0.4.15
+    Checking futures-task v0.3.34
+    Checking percent-encoding v2.3.2
+    Checking futures-io v0.3.34
+    Checking futures-util v0.3.34
+    Checking zerovec v0.11.6
+    Checking writeable v0.6.2
+    Checking either v1.15.0
+    Checking crc32fast v1.5.0
+    Checking crypto-common v0.2.2
+    Checking block-buffer v0.12.0
+    Checking tinystr v0.8.3
+    Checking digest v0.11.3
+    Checking hashbrown v0.16.1
+   Compiling ring v0.17.14
+    Checking litemap v0.8.1
+    Checking icu_locale_core v2.2.0
+    Checking potential_utf v0.1.4
+    Checking zerotrie v0.2.4
+    Checking hashbrown v0.17.1
+    Checking sha1 v0.10.6
+    Checking gix-trace v0.1.21
+    Checking utf8_iter v1.0.4
+   Compiling indexmap v2.14.2
+    Checking icu_collections v2.2.0
+    Checking icu_provider v2.2.0
+    Checking gix-validate v0.11.4
+    Checking regex v1.13.1
+    Checking gix-path v0.11.3
+    Checking crossbeam-utils v0.8.21
+    Checking unicode-normalization v0.1.25
+    Checking http v1.5.0
+    Checking spin v0.9.8
+   Compiling num-conv v0.2.2
+   Compiling time-core v0.1.9
+   Compiling time-macros v0.2.32
+    Checking gix-utils v0.3.1
+    Checking tokio-util v0.7.19
+    Checking http-body v1.0.1
+    Checking form_urlencoded v1.2.2
+    Checking icu_normalizer_data v2.2.0
+    Checking icu_properties_data v2.2.0
+   Compiling cmake v0.1.57
+    Checking ipnet v2.11.0
+   Compiling dunce v1.0.5
+    Checking same-file v1.0.6
+   Compiling aws-lc-sys v0.45.0
+    Checking walkdir v2.5.0
+    Checking icu_properties v2.2.0
+    Checking icu_normalizer v2.2.0
+    Checking prodash v31.0.0
+    Checking base64 v0.22.1
+    Checking zlib-rs v0.6.3
+    Checking fnv v1.0.7
+    Checking idna_adapter v1.2.1
+    Checking gix-features v0.46.2
+    Checking futures-executor v0.3.34
+    Checking uuid v1.26.1
+   Compiling winnow v1.0.4
+   Compiling toml_parser v1.1.3+spec-1.1.0
+    Checking idna v1.1.0
+    Checking zerocopy v0.8.37
+    Checking getrandom v0.3.4
+    Checking itertools v0.14.0
+    Checking hash32 v0.3.1
+    Checking cpufeatures v0.3.0
+   Compiling toml_edit v0.23.10+spec-1.0.0
+    Checking heapless v0.8.0
+    Checking gix-error v0.2.1
+    Checking sync_wrapper v1.0.2
+    Checking nibble_vec v0.1.0
+    Checking deranged v0.5.8
+    Checking powerfmt v0.2.0
+   Compiling unicase v2.9.0
+    Checking mime v0.3.17
+    Checking psl-types v2.0.11
+    Checking const-oid v0.9.6
+    Checking der v0.7.10
+   Compiling mime_guess v2.0.5
+    Checking time v0.3.55
+    Checking faster-hex v0.10.0
+   Compiling proc-macro-crate v3.4.0
+    Checking chacha20 v0.10.0
+    Checking url v2.5.8
+    Checking http-body-util v0.1.3
+    Checking rustls-pki-types v1.14.0
+    Checking getrandom v0.2.17
+    Checking winnow v0.7.14
+    Checking untrusted v0.9.0
+    Checking untrusted v0.7.1
+    Checking const_format v0.2.35
+    Checking rand v0.10.3
+   Compiling rama-macros v0.3.0-alpha.4
+    Checking crossbeam-epoch v0.9.20
+    Checking spki v0.7.3
+    Checking rand_core v0.9.5
+    Checking ppv-lite86 v0.2.21
+    Checking futures v0.3.31
+    Checking flume v0.12.0
+    Checking tempfile v3.27.0
+    Checking codex-hepta-types v0.0.0 (/home/qian-qi/work/hepta-cell-owner-fences-20261105/codex-rs/hepta-types)
+    Checking wildcard v0.3.0
+    Checking smol_str v0.3.5
+    Checking rama-utils v0.3.0-alpha.4
+    Checking rand_chacha v0.9.0
+    Checking pkcs8 v0.10.2
+    Checking ahash v0.8.12
+    Checking sha1-checked v0.10.0
+    Checking tokio-graceful v0.2.2
+    Checking asynk-strim v0.1.5
+    Checking keccak v0.2.2
+    Checking sponge-cursor v0.1.0
+    Checking rama-error v0.3.0-alpha.4
+    Checking signature v2.2.0
+    Checking ed25519 v2.2.3
+    Checking rama-core v0.3.0-alpha.4
+    Checking shake v0.1.0
+    Checking curve25519-dalek v4.1.3
+    Checking gix-hash v0.23.0
+    Checking rand v0.9.3
+    Checking signature v3.0.0
+    Checking module-lattice v0.2.3
+    Checking nom v8.0.0
+    Checking endian-type v0.2.0
+    Checking radix_trie v0.3.0
+    Checking rama-http-types v0.3.0-alpha.4
+    Checking ml-dsa v0.1.1
+    Checking ed25519-dalek v2.2.0
+    Checking psl v2.1.184
+    Checking num-integer v0.1.46
+    Checking jiff v0.2.23
+    Checking md5 v0.8.0
+    Checking hex v0.4.3
+    Checking anstyle v1.0.13
+    Checking rama-net v0.3.0-alpha.4
+    Checking gix-date v0.15.1
+    Checking num-bigint v0.4.6
+    Checking crc-catalog v2.4.0
+    Checking data-encoding v2.10.0
+    Checking crc v3.4.0
+    Checking gix-actor v0.40.0
+    Checking anyhow v1.0.103
+    Checking codex-hepta-contracts v0.0.0 (/home/qian-qi/work/hepta-cell-owner-fences-20261105/codex-rs/hepta-contracts)
+   Compiling aws-lc-rs v1.18.1
+   Compiling rustls v0.23.46
+    Checking gix-hashtable v0.13.0
+   Compiling openssl-sys v0.9.117
+    Checking atomic-waker v1.1.2
+    Checking try-lock v0.2.5
+    Checking iana-time-zone v0.1.65
+   Compiling lazy_static v1.5.0
+    Checking chrono v0.4.43
+    Checking rustls-webpki v0.103.16
+    Checking want v0.3.1
+    Checking gix-object v0.58.0
+    Checking httparse v1.10.1
+    Checking memmap2 v0.9.10
+    Checking ryu v1.0.22
+    Checking minimal-lexical v0.2.1
+    Checking nom v7.1.3
+    Checking h2 v0.4.16
+    Checking prefix-trie v0.8.4
+    Checking env_filter v1.0.0
+    Checking tokio-stream v0.1.19
+    Checking option-ext v0.2.0
+    Checking dyn-clone v1.0.20
+    Checking utf8parse v0.2.2
+    Checking schemars v0.8.22
+    Checking dirs-sys v0.5.0
+    Checking bytemuck v1.25.0
+    Checking env_logger v0.11.9
+    Checking hickory-proto v0.26.3
+    Checking rusticata-macros v4.1.0
+    Checking crossbeam-deque v0.8.6
+    Checking crossbeam-channel v0.5.15
+    Checking hash32 v0.2.1
+   Compiling blake3 v1.8.7
+    Checking tagptr v0.2.0
+    Checking foreign-types-shared v0.1.1
+    Checking link-section v0.17.2
+    Checking tower-service v0.3.3
+    Checking iri-string v0.7.10
+    Checking atomic v0.5.3
+    Checking bit-vec v0.8.0
+   Compiling openssl v0.10.81
+    Checking ctor v1.0.6
+    Checking bit-set v0.8.0
+    Checking lock_free_hashtable v0.1.4
+    Checking foreign-types v0.3.2
+    Checking moka v0.12.13
+    Checking asn1-rs v0.7.1
+    Checking ref-cast v1.0.25
+    Checking heapless v0.7.17
+    Checking rayon-core v1.13.0
+    Checking hickory-net v0.26.3
+    Checking quickcheck v1.1.0
+    Checking dirs v6.0.0
+    Checking ts-rs v11.1.0
+    Checking typeid v1.0.3
+    Checking webpki-roots v1.0.10
+    Checking gix-fs v0.19.2
+   Compiling zstd-sys v2.1.2+zstd.1.5.7
+    Checking cobs v0.3.0
+    Checking openssl-probe v0.2.1
+    Checking resolv-conf v0.7.6
+    Checking hashbrown v0.14.5
+    Checking constant_time_eq v0.4.2
+   Compiling unicode-segmentation v1.12.0
+    Checking bumpalo v3.19.1
+    Checking unicode-width v0.1.14
+    Checking arrayvec v0.7.8
+    Checking pin-utils v0.1.0
+    Checking simd-adler32 v0.3.8
+    Checking hyper v1.8.1
+   Compiling logos-codegen v0.15.1
+    Checking allocative v0.3.6
+   Compiling native-tls v0.2.14
+   Compiling convert_case v0.6.0
+    Checking dashmap v6.1.0
+    Checking hickory-resolver v0.26.3
+    Checking rustls-native-certs v0.8.3
+    Checking codex-utils-absolute-path v0.0.0 (/home/qian-qi/work/hepta-cell-owner-fences-20261105/codex-rs/utils/absolute-path)
+    Checking strong_hash v0.1.0
+    Checking postcard v1.1.3
+    Checking erased-serde v0.4.10
+    Checking nix v0.28.0
+    Checking sorted_vector_map v0.2.1
+   Compiling Inflector v0.11.4
+    Checking static_interner v0.1.2
+    Checking fancy-regex v0.16.2
+    Checking anstyle-parse v0.2.7
+    Checking dupe v0.9.1
+    Checking tokio-rustls v0.26.4
+   Compiling schemafy_core v0.5.2
+    Checking gix-chunk v0.7.0
+   Compiling libsqlite3-sys v0.38.2
+    Checking triomphe v0.1.15
+    Checking csv-core v0.1.13
+    Checking bitflags v1.3.2
+    Checking is_terminal_polyfill v1.70.2
+    Checking sequence_trie v0.3.6
+    Checking adler2 v2.0.1
+    Checking take_mut v0.2.2
+    Checking nonempty v0.12.0
+    Checking static_assertions v1.1.0
+    Checking inventory v0.3.24
+    Checking httpdate v1.0.3
+    Checking colorchoice v1.0.4
+   Compiling strsim v0.11.1
+    Checking anstyle-query v1.1.5
+    Checking openssl-probe v0.1.6
+    Checking anstream v0.6.21
+   Compiling darling_core v0.21.3
+    Checking rama-http-headers v0.3.0-alpha.4
+    Checking pagable v0.4.2
+    Checking miniz_oxide v0.8.9
+    Checking fluent-uri v0.1.4
+    Checking csv v1.4.0
+   Compiling schemafy_lib v0.5.2
+    Checking oid-registry v0.8.1
+    Checking rama-dns v0.3.0-alpha.4 (/home/qian-qi/work/hepta-cell-owner-fences-20261105/codex-rs/third_party/rama-dns-0.3.0-alpha.4)
+   Compiling derive_more-impl v1.0.0
+   Compiling logos-derive v0.15.1
+    Checking hyper-util v0.1.20
+    Checking gix-tempfile v21.0.2
+    Checking der-parser v10.0.0
+    Checking serde_html_form v0.3.2
+    Checking fxhash v0.2.1
+    Checking clap_lex v1.0.0
+    Checking tower-layer v0.3.3
+    Checking endian-type v0.1.2
+    Checking matchit v0.9.1
+    Checking http-range-header v0.4.2
+    Checking rama-http v0.3.0-alpha.4
+   Compiling zstd-safe v8.2.0
+    Checking radix_trie v0.2.1
+    Checking tower v0.5.3
+    Checking clap_builder v4.5.58
+    Checking starlark_map v0.14.2
+    Checking derive_more v1.0.0
+    Checking x509-parser v0.18.1
+    Checking gix-lock v21.0.2
+    Checking logos v0.15.1
+    Checking rama-tcp v0.3.0-alpha.4
+   Compiling schemafy v0.5.2
+    Checking cookie v0.18.1
+    Checking lsp-types v0.97.0
+    Checking flate2 v1.1.8
+   Compiling darling_macro v0.21.3
+    Checking tokio-native-tls v0.3.1
+    Checking fdeflate v0.3.7
+    Checking annotate-snippets v0.9.2
+    Checking sharded-slab v0.1.7
+    Checking tokio-test v0.4.5
+    Checking yasna v0.5.2
+    Checking publicsuffix v2.3.0
+    Checking pem v3.0.6
+    Checking fd-lock v4.0.4
+    Checking tracing-log v0.2.0
+    Checking pxfm v0.1.27
+    Checking encoding_rs v0.8.35
+    Checking thread_local v1.1.9
+    Checking weezl v0.1.12
+    Checking shell-words v1.1.1
+    Checking nu-ansi-term v0.50.3
+    Checking quick-error v2.0.1
+   Compiling parking v2.2.1
+    Checking color_quant v1.1.0
+    Checking zune-core v0.5.1
+    Checking byteorder-lite v0.1.0
+    Checking home v0.5.12
+    Checking indenter v0.3.4
+    Checking image-webp v0.2.4
+    Checking display_container v0.9.0
+    Checking rustyline v14.0.0
+    Checking zune-jpeg v0.5.12
+    Checking gif v0.14.1
+    Checking starlark_syntax v0.14.2
+   Compiling event-listener v5.4.2
+    Checking tracing-subscriber v0.3.23
+    Checking moxcms v0.7.11
+    Checking rcgen v0.14.7
+    Checking cookie_store v0.22.1
+    Checking clap v4.5.58
+    Checking rama-http-core v0.3.0-alpha.4
+   Compiling starlark_derive v0.14.2
+    Checking png v0.18.0
+    Checking hyper-tls v0.6.0
+   Compiling darling v0.21.3
+   Compiling crossbeam-queue v0.3.12
+    Checking debugserver-types v0.5.0
+    Checking memoffset v0.9.1
+   Compiling futures-intrusive v0.5.0
+    Checking tower-http v0.6.8
+   Compiling hashlink v0.11.0
+    Checking icu_locale_data v2.2.0
+    Checking hyper-rustls v0.27.7
+    Checking gix-commitgraph v0.35.0
+    Checking textwrap v0.11.0
+    Checking codex-utils-rustls-provider v0.0.0 (/home/qian-qi/work/hepta-cell-owner-fences-20261105/codex-rs/utils/rustls-provider)
+    Checking serde_urlencoded v0.7.1
+    Checking rama-unix v0.3.0-alpha.4
+    Checking rama-udp v0.3.0-alpha.4
+    Checking gix-quote v0.7.0
+    Checking lru v0.18.2
+    Checking opentelemetry v0.31.0
+    Checking gix-sec v0.13.3
+    Checking erased-serde v0.3.31
+    Checking strsim v0.10.0
+    Checking maplit v1.0.2
+    Checking cmp_any v0.8.1
+   Compiling sqlx-core v0.9.0
+    Checking starlark v0.14.2 (/home/qian-qi/work/hepta-cell-owner-fences-20261105/codex-rs/third_party/starlark-0.14.2)
+    Checking enumflags2 v0.7.12
+    Checking tracing-opentelemetry v0.32.1
+    Checking codex-utils-cache v0.0.0 (/home/qian-qi/work/hepta-cell-owner-fences-20261105/codex-rs/utils/cache)
+    Checking rama-socks5 v0.3.0-alpha.4
+    Checking rama-http-backend v0.3.0-alpha.4
+    Checking reqwest v0.12.28
+    Checking gix-revwalk v0.29.0
+    Checking icu_locale v2.2.0
+    Checking zstd v0.14.3
+   Compiling serde_with_macros v3.17.0
+    Checking image v0.25.9
+    Checking rama-tls-rustls v0.3.0-alpha.4
+    Checking icu_decimal_data v2.2.0
+    Checking gix-ref v0.61.0
+   Compiling atoi v2.0.0
+    Checking codex-utils-home-dir v0.0.0 (/home/qian-qi/work/hepta-cell-owner-fences-20261105/codex-rs/utils/home-dir)
+    Checking fixed_decimal v0.7.2
+    Checking globset v0.4.18
+    Checking multimap v0.10.1
+    Checking regex-lite v0.1.8
+    Checking urlencoding v2.1.3
+    Checking codex-execpolicy v0.0.0 (/home/qian-qi/work/hepta-cell-owner-fences-20261105/codex-rs/execpolicy)
+    Checking codex-utils-string v0.0.0 (/home/qian-qi/work/hepta-cell-owner-fences-20261105/codex-rs/utils/string)
+    Checking codex-utils-path-uri v0.0.0 (/home/qian-qi/work/hepta-cell-owner-fences-20261105/codex-rs/utils/path-uri)
+    Checking codex-network-proxy v0.0.0 (/home/qian-qi/work/hepta-cell-owner-fences-20261105/codex-rs/network-proxy)
+    Checking thiserror v1.0.69
+    Checking icu_decimal v2.2.0
+   Compiling sqlx-sqlite v0.9.0 (/home/qian-qi/work/hepta-cell-owner-fences-20261105/codex-rs/third_party/sqlx-sqlite-0.9.0)
+warning: use of deprecated tuple variant `time::format_description::BorrowedFormatItem::Literal`: use `StringLiteral` instead; raw bytes are not recommended
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:196:67
+    |
+196 |     use time::format_description::BorrowedFormatItem::{Component, Literal, Optional};
+    |                                                                   ^^^^^^^
+    |
+    = note: `#[warn(deprecated)]` on by default
+
+warning: use of deprecated tuple variant `time::format_description::Component::Year`: use one of the various `Year*` components instead
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:199:52
+    |
+199 |     const YEAR: BorrowedFormatItem<'_> = Component(Year({
+    |                                                    ^^^^
+
+warning: use of deprecated struct `time::format_description::modifier::Year`: use one of the various `Year*` components instead
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:200:35
+    |
+200 |         let mut value = modifier::Year::default();
+    |                                   ^^^^
+
+warning: use of deprecated unit variant `time::format_description::modifier::YearRepr::Full`: used only in the deprecated `Year` component
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:202:42
+    |
+202 |         value.repr = modifier::YearRepr::Full;
+    |                                          ^^^^
+
+warning: use of deprecated tuple variant `time::format_description::Component::Month`: use `MonthShort`, `MonthLong`, or `MonthNumeric` instead
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:208:53
+    |
+208 |     const MONTH: BorrowedFormatItem<'_> = Component(Month({
+    |                                                     ^^^^^
+
+warning: use of deprecated struct `time::format_description::modifier::Month`: use `MonthShort`, `MonthLong`, or `MonthNumeric` instead
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:209:35
+    |
+209 |         let mut value = modifier::Month::default();
+    |                                   ^^^^^
+
+warning: use of deprecated unit variant `time::format_description::modifier::MonthRepr::Numerical`: used only in the deprecated `Month` component
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:211:43
+    |
+211 |         value.repr = modifier::MonthRepr::Numerical;
+    |                                           ^^^^^^^^^
+
+warning: use of deprecated tuple variant `time::format_description::Component::Hour`: use `Hour12` or `Hour24` instead
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:222:52
+    |
+222 |     const HOUR: BorrowedFormatItem<'_> = Component(Hour({
+    |                                                    ^^^^
+
+warning: use of deprecated struct `time::format_description::modifier::Hour`: use `Hour12` or `Hour24` instead
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:223:35
+    |
+223 |         let mut value = modifier::Hour::default();
+    |                                   ^^^^
+
+warning: use of deprecated tuple variant `time::format_description::BorrowedFormatItem::Literal`: use `StringLiteral` instead; raw bytes are not recommended
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:263:13
+    |
+263 |             Literal(b"-"),
+    |             ^^^^^^^
+
+warning: use of deprecated tuple variant `time::format_description::BorrowedFormatItem::Literal`: use `StringLiteral` instead; raw bytes are not recommended
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:265:13
+    |
+265 |             Literal(b"-"),
+    |             ^^^^^^^
+
+warning: use of deprecated tuple variant `time::format_description::BorrowedFormatItem::Literal`: use `StringLiteral` instead; raw bytes are not recommended
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:267:23
+    |
+267 |             Optional(&Literal(b" ")),
+    |                       ^^^^^^^
+
+warning: use of deprecated tuple variant `time::format_description::BorrowedFormatItem::Literal`: use `StringLiteral` instead; raw bytes are not recommended
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:268:23
+    |
+268 |             Optional(&Literal(b"T")),
+    |                       ^^^^^^^
+
+warning: use of deprecated tuple variant `time::format_description::BorrowedFormatItem::Literal`: use `StringLiteral` instead; raw bytes are not recommended
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:270:13
+    |
+270 |             Literal(b":"),
+    |             ^^^^^^^
+
+warning: use of deprecated tuple variant `time::format_description::BorrowedFormatItem::Literal`: use `StringLiteral` instead; raw bytes are not recommended
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:272:23
+    |
+272 |             Optional(&Literal(b":")),
+    |                       ^^^^^^^
+
+warning: use of deprecated tuple variant `time::format_description::BorrowedFormatItem::Literal`: use `StringLiteral` instead; raw bytes are not recommended
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:274:23
+    |
+274 |             Optional(&Literal(b".")),
+    |                       ^^^^^^^
+
+warning: use of deprecated tuple variant `time::format_description::BorrowedFormatItem::Literal`: use `StringLiteral` instead; raw bytes are not recommended
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:277:23
+    |
+277 |             Optional(&Literal(b":")),
+    |                       ^^^^^^^
+
+warning: use of deprecated tuple variant `time::format_description::BorrowedFormatItem::Literal`: use `StringLiteral` instead; raw bytes are not recommended
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:285:13
+    |
+285 |             Literal(b"-"),
+    |             ^^^^^^^
+
+warning: use of deprecated tuple variant `time::format_description::BorrowedFormatItem::Literal`: use `StringLiteral` instead; raw bytes are not recommended
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:287:13
+    |
+287 |             Literal(b"-"),
+    |             ^^^^^^^
+
+warning: use of deprecated tuple variant `time::format_description::BorrowedFormatItem::Literal`: use `StringLiteral` instead; raw bytes are not recommended
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:289:13
+    |
+289 |             Literal(b" "),
+    |             ^^^^^^^
+
+warning: use of deprecated tuple variant `time::format_description::BorrowedFormatItem::Literal`: use `StringLiteral` instead; raw bytes are not recommended
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:291:13
+    |
+291 |             Literal(b":"),
+    |             ^^^^^^^
+
+warning: use of deprecated tuple variant `time::format_description::BorrowedFormatItem::Literal`: use `StringLiteral` instead; raw bytes are not recommended
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:293:23
+    |
+293 |             Optional(&Literal(b":")),
+    |                       ^^^^^^^
+
+warning: use of deprecated tuple variant `time::format_description::BorrowedFormatItem::Literal`: use `StringLiteral` instead; raw bytes are not recommended
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:295:23
+    |
+295 |             Optional(&Literal(b".")),
+    |                       ^^^^^^^
+
+warning: use of deprecated tuple variant `time::format_description::BorrowedFormatItem::Literal`: use `StringLiteral` instead; raw bytes are not recommended
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:297:23
+    |
+297 |             Optional(&Literal(b"Z")),
+    |                       ^^^^^^^
+
+warning: use of deprecated tuple variant `time::format_description::BorrowedFormatItem::Literal`: use `StringLiteral` instead; raw bytes are not recommended
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:304:13
+    |
+304 |             Literal(b"-"),
+    |             ^^^^^^^
+
+warning: use of deprecated tuple variant `time::format_description::BorrowedFormatItem::Literal`: use `StringLiteral` instead; raw bytes are not recommended
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:306:13
+    |
+306 |             Literal(b"-"),
+    |             ^^^^^^^
+
+warning: use of deprecated tuple variant `time::format_description::BorrowedFormatItem::Literal`: use `StringLiteral` instead; raw bytes are not recommended
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:308:13
+    |
+308 |             Literal(b"T"),
+    |             ^^^^^^^
+
+warning: use of deprecated tuple variant `time::format_description::BorrowedFormatItem::Literal`: use `StringLiteral` instead; raw bytes are not recommended
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:310:13
+    |
+310 |             Literal(b":"),
+    |             ^^^^^^^
+
+warning: use of deprecated tuple variant `time::format_description::BorrowedFormatItem::Literal`: use `StringLiteral` instead; raw bytes are not recommended
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:312:23
+    |
+312 |             Optional(&Literal(b":")),
+    |                       ^^^^^^^
+
+warning: use of deprecated tuple variant `time::format_description::BorrowedFormatItem::Literal`: use `StringLiteral` instead; raw bytes are not recommended
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:314:23
+    |
+314 |             Optional(&Literal(b".")),
+    |                       ^^^^^^^
+
+warning: use of deprecated tuple variant `time::format_description::BorrowedFormatItem::Literal`: use `StringLiteral` instead; raw bytes are not recommended
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:316:23
+    |
+316 |             Optional(&Literal(b"Z")),
+    |                       ^^^^^^^
+
+warning: use of deprecated field `time::format_description::modifier::Year::padding`: use one of the various `Year*` components instead
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:201:9
+    |
+201 |         value.padding = modifier::Padding::Zero;
+    |         ^^^^^^^^^^^^^
+
+warning: use of deprecated field `time::format_description::modifier::Year::repr`: use one of the various `Year*` components instead
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:202:9
+    |
+202 |         value.repr = modifier::YearRepr::Full;
+    |         ^^^^^^^^^^
+
+warning: use of deprecated field `time::format_description::modifier::Year::iso_week_based`: use one of the various `Year*` components instead
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:203:9
+    |
+203 |         value.iso_week_based = false;
+    |         ^^^^^^^^^^^^^^^^^^^^
+
+warning: use of deprecated field `time::format_description::modifier::Year::sign_is_mandatory`: use one of the various `Year*` components instead
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:204:9
+    |
+204 |         value.sign_is_mandatory = false;
+    |         ^^^^^^^^^^^^^^^^^^^^^^^
+
+warning: use of deprecated field `time::format_description::modifier::Month::padding`: use `MonthShort`, `MonthLong`, or `MonthNumeric` instead
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:210:9
+    |
+210 |         value.padding = modifier::Padding::Zero;
+    |         ^^^^^^^^^^^^^
+
+warning: use of deprecated field `time::format_description::modifier::Month::repr`: use `MonthShort`, `MonthLong`, or `MonthNumeric` instead
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:211:9
+    |
+211 |         value.repr = modifier::MonthRepr::Numerical;
+    |         ^^^^^^^^^^
+
+warning: use of deprecated field `time::format_description::modifier::Month::case_sensitive`: use `MonthShort`, `MonthLong`, or `MonthNumeric` instead
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:212:9
+    |
+212 |         value.case_sensitive = true;
+    |         ^^^^^^^^^^^^^^^^^^^^
+
+warning: use of deprecated field `time::format_description::modifier::Hour::padding`: use `Hour12` or `Hour24` instead
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:224:9
+    |
+224 |         value.padding = modifier::Padding::Zero;
+    |         ^^^^^^^^^^^^^
+
+warning: use of deprecated field `time::format_description::modifier::Hour::is_12_hour_clock`: use `Hour12` or `Hour24` instead
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:225:9
+    |
+225 |         value.is_12_hour_clock = false;
+    |         ^^^^^^^^^^^^^^^^^^^^^^
+
+    Checking strum v0.27.2
+    Checking codex-utils-image v0.0.0 (/home/qian-qi/work/hepta-cell-owner-fences-20261105/codex-rs/utils/image)
+    Checking serde_with v3.17.0
+warning: `sqlx-sqlite` (lib) generated 40 warnings
+    Checking codex-http-client v0.0.0 (/home/qian-qi/work/hepta-cell-owner-fences-20261105/codex-rs/http-client)
+    Checking landlock v0.4.4
+    Checking gix-command v0.8.0
+    Checking chardetng v0.1.17
+    Checking codex-extension-items v0.0.0 (/home/qian-qi/work/hepta-cell-owner-fences-20261105/codex-rs/ext/items)
+    Checking codex-utils-redacted-string v0.0.0 (/home/qian-qi/work/hepta-cell-owner-fences-20261105/codex-rs/utils/redacted-string)
+    Checking gix-packetline v0.21.5
+    Checking gix-glob v0.24.0
+    Checking codex-async-utils v0.0.0 (/home/qian-qi/work/hepta-cell-owner-fences-20261105/codex-rs/async-utils)
+    Checking gix-url v0.35.2
+    Checking clru v0.6.3
+    Checking quick-xml v0.41.0
+    Checking seccompiler v0.5.0
+    Checking predicates-core v1.0.9
+    Checking wildmatch v2.6.1
+    Checking sys-locale v0.3.2
+   Compiling sqlx-macros-core v0.9.0
+    Checking codex-protocol v0.0.0 (/home/qian-qi/work/hepta-cell-owner-fences-20261105/codex-rs/protocol)
+    Checking gix-pack v0.68.0
+    Checking gix-transport v0.55.1
+    Checking arc-swap v1.9.0
+    Checking filedescriptor v0.8.3
+    Checking gix-revision v0.43.0
+    Checking gix-shallow v0.10.0
+    Checking codex-hepta-cognitive-types v0.0.0 (/home/qian-qi/work/hepta-cell-owner-fences-20261105/codex-rs/hepta-cognitive-types)
+    Checking gix-config-value v0.17.1
+    Checking serial2 v0.2.33
+    Checking difflib v0.4.0
+    Checking unicode-bom v2.0.3
+    Checking termtree v0.5.1
+    Checking downcast-rs v1.2.1
+    Checking portable-pty v0.9.0
+    Checking predicates-tree v1.0.12
+    Checking gix-config v0.54.0
+    Checking predicates v3.1.3
+    Checking gix-protocol v0.59.0
+warning: `sqlx-sqlite` (lib) generated 40 warnings (40 duplicates)
+    Checking gix-refspec v0.39.0
+    Checking gix-odb v0.78.0
+   Compiling sqlx-macros v0.9.0
+    Checking gix-discover v0.49.0
+    Checking gix-traverse v0.55.0
+    Checking gix-diff v0.61.0
+    Checking wait-timeout v0.2.1
+    Checking assert_cmd v2.1.2
+    Checking gix v0.81.0
+    Checking sqlx v0.9.0
+    Checking codex-utils-pty v0.0.0 (/home/qian-qi/work/hepta-cell-owner-fences-20261105/codex-rs/utils/pty)
+    Checking codex-hepta-memory-retrieval v0.0.0 (/home/qian-qi/work/hepta-cell-owner-fences-20261105/codex-rs/hepta-memory-retrieval)
+    Checking codex-hepta-intuition v0.0.0 (/home/qian-qi/work/hepta-cell-owner-fences-20261105/codex-rs/hepta-intuition)
+    Checking toml_datetime v0.7.5+spec-1.1.0
+    Checking codex-file-system v0.0.0 (/home/qian-qi/work/hepta-cell-owner-fences-20261105/codex-rs/file-system)
+    Checking serde_spanned v1.1.1
+    Checking toml_writer v1.0.6+spec-1.1.0
+    Checking diff v0.1.13
+    Checking runfiles v0.1.0 (https://github.com/dzbarsky/rules_rust?rev=b56cbaa8465e74127f1ea216f813cd377295ad81#b56cbaa8)
+    Checking yansi v1.0.1
+    Checking similar v2.7.0
+    Checking pretty_assertions v1.4.1
+    Checking codex-utils-cargo-bin v0.0.0 (/home/qian-qi/work/hepta-cell-owner-fences-20261105/codex-rs/utils/cargo-bin)
+    Checking toml v0.9.11+spec-1.1.0
+    Checking codex-git-utils v0.0.0 (/home/qian-qi/work/hepta-cell-owner-fences-20261105/codex-rs/git-utils)
+    Checking codex-history v0.0.0 (/home/qian-qi/work/hepta-cell-owner-fences-20261105/codex-rs/history)
+    Checking codex-hepta-learning-ledger v0.0.0 (/home/qian-qi/work/hepta-cell-owner-fences-20261105/codex-rs/hepta-learning-ledger)
+    Checking codex-hepta-prompt-registry v0.0.0 (/home/qian-qi/work/hepta-cell-owner-fences-20261105/codex-rs/hepta-prompt-registry)
+    Checking codex-state v0.0.0 (/home/qian-qi/work/hepta-cell-owner-fences-20261105/codex-rs/state)
+    Checking codex-hepta-kg v0.0.0 (/home/qian-qi/work/hepta-cell-owner-fences-20261105/codex-rs/hepta-kg)
+    Checking codex-hepta-ndu v0.0.0 (/home/qian-qi/work/hepta-cell-owner-fences-20261105/codex-rs/hepta-ndu)
+    Checking codex-hepta-wire v0.0.0 (/home/qian-qi/work/hepta-cell-owner-fences-20261105/codex-rs/hepta-wire)
+    Checking codex-hepta-infer-core v0.0.0 (/home/qian-qi/work/hepta-cell-owner-fences-20261105/codex-rs/hepta-infer-core)
+    Checking codex-hepta-neuron v0.0.0 (/home/qian-qi/work/hepta-cell-owner-fences-20261105/codex-rs/hepta-neuron)
+    Checking codex-hepta-context-compiler v0.0.0 (/home/qian-qi/work/hepta-cell-owner-fences-20261105/codex-rs/hepta-context-compiler)
+    Checking codex-hepta-prompt-optimizer v0.0.0 (/home/qian-qi/work/hepta-cell-owner-fences-20261105/codex-rs/hepta-prompt-optimizer)
+    Checking codex-hepta-intelligence-eval v0.0.0 (/home/qian-qi/work/hepta-cell-owner-fences-20261105/codex-rs/hepta-intelligence-eval)
+    Checking codex-hepta-cognitive-read v0.0.0 (/home/qian-qi/work/hepta-cell-owner-fences-20261105/codex-rs/hepta-cognitive-read)
+    Checking codex-hepta-learning-artifacts v0.0.0 (/home/qian-qi/work/hepta-cell-owner-fences-20261105/codex-rs/hepta-learning-artifacts)
+    Checking codex-hepta-objective v0.0.0 (/home/qian-qi/work/hepta-cell-owner-fences-20261105/codex-rs/hepta-objective)
+    Checking codex-hepta-plasticity v0.0.0 (/home/qian-qi/work/hepta-cell-owner-fences-20261105/codex-rs/hepta-plasticity)
+    Checking codex-hepta-operations v0.0.0 (/home/qian-qi/work/hepta-cell-owner-fences-20261105/codex-rs/hepta-operations)
+    Checking codex-hepta-intelligence v0.0.0 (/home/qian-qi/work/hepta-cell-owner-fences-20261105/codex-rs/hepta-intelligence)
+    Checking codex-hepta-control-plane v0.0.0 (/home/qian-qi/work/hepta-cell-owner-fences-20261105/codex-rs/hepta-control-plane)
+    Checking codex-hepta-paths v0.0.0 (/home/qian-qi/work/hepta-cell-owner-fences-20261105/codex-rs/hepta-paths)
+    Checking hmac v0.12.1
+    Checking codex-hepta-runtime v0.0.0 (/home/qian-qi/work/hepta-cell-owner-fences-20261105/codex-rs/hepta-runtime)
+warning: use of a disallowed method `sqlx::pool::PoolOptions::connect_with`
+   --> hepta-operations/src/durable_dispatch_tests.rs:146:10
+    |
+146 |         .connect_with(
+    |          ^^^^^^^^^^^^
+    |
+    = note: Create SQLite pools through codex-state's sqlite shim.
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.96.0/index.html#disallowed_methods
+    = note: requested on the command line with `-D clippy::disallowed-methods`
+
+warning: `codex-hepta-operations` (lib test) generated 1 warning
+    Finished `dev` profile [unoptimized + debuginfo] target(s) in 5m 27s

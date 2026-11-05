@@ -1,0 +1,65 @@
+{
+  "schema": "hepta-cell-owner-native-publication-map-v1",
+  "verdict": "DENY_ALL",
+  "production_activation": false,
+  "complete_lifecycle_owner_implemented": false,
+  "observation_kind": "Assistant-recorded native regressions and source identity; not independently signed deployment custody or power-loss verdict.",
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "branch": "fix/cell-owner-final-use-fences-20261105",
+  "integration_base": "484ce165522026d915c4cf526cd7df2effab632c",
+  "native_code_commit": "14e07bffb0394d853aac58829abdd60c27d6be9c",
+  "published_code_commit": "771c221231df80b4cc29fce4b5ec46dc9edebf20",
+  "native_evidence_commit": "077c0074a0fd63db9843acbfa5cc8d6fc3d17842",
+  "published_exact_evidence_commit": "716c6545f54955f50a36611c5b7f804df080a807",
+  "exact_tree_mappings": [
+    {
+      "native_commit": "42069d8873362b993e9793862f19ac26482cb589",
+      "published_commit": "8ef1ca261a929c562b17e27365612b7c21113fe1",
+      "tree": "1550290ac3dff923f68de3c9b4221e78bbccbdae",
+      "exact_tree_match": true,
+      "title": "fix(hepta): fence final-use journal drift and late expiry"
+    },
+    {
+      "native_commit": "10896ab92c42ca9f57ac478a0512f3c69809bfd6",
+      "published_commit": "e2ff1d9879398c6dc84c84a614206d55d2df4a60",
+      "tree": "111e32e27f3a9aa6ac6770c4617c26f039c9159c",
+      "exact_tree_match": true,
+      "title": "fix(hepta): serialize final dispatch with operation recovery"
+    },
+    {
+      "native_commit": "14e07bffb0394d853aac58829abdd60c27d6be9c",
+      "published_commit": "771c221231df80b4cc29fce4b5ec46dc9edebf20",
+      "tree": "11a0d4147f2358d6f96ae7a0601f5b7314591402",
+      "exact_tree_match": true,
+      "title": "fix(hepta): deny topology effects without lifecycle owner"
+    },
+    {
+      "native_commit": "077c0074a0fd63db9843acbfa5cc8d6fc3d17842",
+      "published_commit": "716c6545f54955f50a36611c5b7f804df080a807",
+      "tree": "96c0aaa112d239aa33c90c434d0e37e9266e44d4",
+      "exact_tree_match": true,
+      "title": "docs(hepta): retain Cell owner regression evidence and DENY_ALL limits"
+    }
+  ],
+  "publication_method": "Existing GitHub application connection; repository API reported push permission and accepted standard Git data operations.",
+  "native_git_transport": {
+    "exit_code": 128,
+    "http_status": 403,
+    "reason": "Configured native Git account was reported suspended. That push did not publish a ref; no native credentials were changed."
+  },
+  "native_bundle": {
+    "path": "native-commits.bundle",
+    "bytes": 103425,
+    "sha256": "490046595b02dec6769652d70b29c3161c3a9419cf7ea34d973606014f277d6d",
+    "git_blob": "07771e836720f67e562c3a83b354fb4999c33e87",
+    "prerequisite_commit": "484ce165522026d915c4cf526cd7df2effab632c",
+    "native_verify_exit_code": 0
+  },
+  "final_publication_change_scope": "Add this mapping and the preserved native Git bundle only. All original source, test logs and qualification files remain byte-identical to the mapped evidence tree.",
+  "preserved_records": {
+    "source_manifest": "final-source-manifest.json",
+    "evidence_manifest": "evidence-manifest.json",
+    "qualification_summary": "qualification-summary.json"
+  },
+  "source_files_verified": 12
+}
