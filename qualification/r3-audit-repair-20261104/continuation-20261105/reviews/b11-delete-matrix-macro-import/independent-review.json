@@ -1,0 +1,71 @@
+{
+  "schema": "b11_explicit_assert_macro_import_independent_review_v1",
+  "observed_at": "2026-11-05T15:04:59.724123+00:00",
+  "verdict": "STATIC_ACCEPTED_PENDING_WINDOWS_REBUILD",
+  "reviewer": "/root/research_audit",
+  "patch": {
+    "local_path": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-pr4884-ci-20261105/repair-macro-import-v1/repair.patch",
+    "bytes": 750,
+    "sha256": "12b41de67be6a9f4865389736e45dea62972cdb3d59ab3d544ddcaeb631b4108",
+    "git_blob": "a442366ae64689eb96a8a3aaf9b39bd166de986e"
+  },
+  "manifest": {
+    "local_path": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-pr4884-ci-20261105/repair-macro-import-v1/manifest.json",
+    "bytes": 3932,
+    "sha256": "1427f307a07fcb7ae13f1120fab748b403de01171a74ce6de3510954ec1c8348",
+    "git_blob": "615c2abc65182aac2dc259c29961beed4d8e77e4"
+  },
+  "preimage": {
+    "local_path": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-pr4884-ci-20261105/repair-macro-import-v1/source/codex-rs/windows-sandbox-rs/src/unified_exec/delete_permission_tests.rs",
+    "bytes": 6807,
+    "sha256": "8dc0ae01935586ac22001a5b567c148fa9ff744bf10e4de691c6fbe0993021da",
+    "git_blob": "a0cb1647d95f067fcf135bc9ea2a654ca3e5e7a2"
+  },
+  "postimage": {
+    "local_path": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-pr4884-ci-20261105/repair-macro-import-v1/candidate/codex-rs/windows-sandbox-rs/src/unified_exec/delete_permission_tests.rs",
+    "bytes": 6841,
+    "sha256": "397abb256644d00394b64d0d48cf02b72a32ca835163b1b7aed793617f68dcf3",
+    "git_blob": "d8511f92f9fbd9d58061238dbf3181152c74ccbc"
+  },
+  "actual_failure": {
+    "run_id": 42049112832,
+    "job_id": 127320081049,
+    "attempt": 1,
+    "tested_merge": "a4e2d71f85d6da48cb6bfc7c09bd34f2837ff7f6",
+    "tree": "fc47759c145d33122b3cab70235a617661556db8",
+    "code": "E0659",
+    "endpoint": "assert_eq ambiguous between super::* and prelude",
+    "pre_lines": [
+      65,
+      66,
+      68,
+      104,
+      105,
+      107,
+      108,
+      109
+    ],
+    "outer_target": "//codex-rs/windows-sandbox-rs:windows-sandbox-rs-unit-tests",
+    "executed_tests": 0,
+    "wrapper_exit": 1,
+    "complete_job_log": {
+      "path": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-pr4884-ci-20261105/terminal/probe-127320081049/job.log",
+      "bytes": 256778,
+      "sha256": "449a53c9925b58e10e24082f19b5f57a7b2b39e7b148c9cd6d2468158d3ed299",
+      "git_blob": "31264e17a1f148bc464d91986fcc7446b5771b2b"
+    }
+  },
+  "checks": [
+    "Full 6,841-byte candidate and exact one-line patch read.",
+    "Removing the sole explicit pretty_assertions import restores the entire original 6,807-byte source exactly.",
+    "All eight original assert_eq invocations, original test body, five-second child limits, host negative/positive controls and matrix endpoint remain byte-identical.",
+    "Parent tests.rs already explicitly imports this same macro; the compiler original E0659 diagnostics recommend an explicit import to disambiguate the glob/prelude collision.",
+    "No token/ACL/loader implementation, probe V2 source, workflow, dependency, lock, test names or selection changes."
+  ],
+  "qualification_limits": [
+    "The observed PR4884 run failed compilation and executed zero tests. No original strict/matrix or new eight-row probe result can be inferred from that run.",
+    "This review executes no Rust compiler/tests/native actions. A new exact-source original Windows target must compile and run before this candidate is called a tested fix.",
+    "B11 remains OPEN; no scope is closed by a macro import."
+  ],
+  "no_shared_source_ref_or_native_mutation": true
+}

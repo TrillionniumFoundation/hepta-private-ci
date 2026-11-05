@@ -1,0 +1,109 @@
+{
+  "schema": "v7-original-archive-and-raw-byte-verification-v1",
+  "created_at_utc": "2026-11-05T16:48:25.939370+00:00",
+  "archive_verification_command": [
+    "python3",
+    "/workspace/scratch/07dd58cc9630/research-audit/published-5b633-ci-20261105/immutable-v7-main-windows-and-publication-cut0004-final/verify_archive.py"
+  ],
+  "exit_code": 0,
+  "stdout_original": "{\n  \"transport_parts\": 85,\n  \"original_files\": 139,\n  \"original_bytes\": 78260373,\n  \"archive\": {\n    \"bytes\": 30597514,\n    \"sha256\": \"5a014a22532f0764c4b0b92a66e747f727b6f1cc8c82c7329ee7ad26d893460c\",\n    \"computed_git_blob\": \"e0eef862d812b918d661e098014cec312abc7345\"\n  },\n  \"all_part_and_original_identities_verified\": true,\n  \"project_commands_executed\": false,\n  \"complete_gzip_crc_verified\": true\n}\n",
+  "stderr_original": "",
+  "parsed": {
+    "transport_parts": 85,
+    "original_files": 139,
+    "original_bytes": 78260373,
+    "archive": {
+      "bytes": 30597514,
+      "sha256": "5a014a22532f0764c4b0b92a66e747f727b6f1cc8c82c7329ee7ad26d893460c",
+      "computed_git_blob": "e0eef862d812b918d661e098014cec312abc7345"
+    },
+    "all_part_and_original_identities_verified": true,
+    "project_commands_executed": false,
+    "complete_gzip_crc_verified": true
+  },
+  "original_job_log_checks": [
+    {
+      "job_directory": "main-blob-size-127168221756",
+      "bytes": 1627924,
+      "sha256": "da17519a31dce2cb01f0702bbf973eedb73491b5410a57927e93b033c7bbe7ae",
+      "exact_original_api_content_fields": [
+        "/response/structuredContent/content"
+      ],
+      "crlf_count": 0,
+      "no_line_normalization": true
+    },
+    {
+      "job_directory": "main-repo-checks-win-127339255190",
+      "bytes": 96038,
+      "sha256": "7ecaee8ec64d850ff6f56a10130e3228a9e584b1fdd37119e14857a2cebc23a8",
+      "exact_original_api_content_fields": [
+        "/response/structuredContent/content"
+      ],
+      "crlf_count": 1155,
+      "no_line_normalization": true
+    },
+    {
+      "job_directory": "main-win-clippy-127339256052",
+      "bytes": 653362,
+      "sha256": "5dfc74d81027356bbea20d3c4fa1b1f3d9aa6d39f3989b153ffc97fcf557c467",
+      "exact_original_api_content_fields": [
+        "/structuredContent/content"
+      ],
+      "crlf_count": 6512,
+      "no_line_normalization": true
+    },
+    {
+      "job_directory": "main-win-release-127339256195",
+      "bytes": 556085,
+      "sha256": "9a2cc1d4cb98034dd6a67c4807863e7fe00ba3952c7f7aaac299e9e1a8ae995d",
+      "exact_original_api_content_fields": [
+        "/structuredContent/content"
+      ],
+      "crlf_count": 4597,
+      "no_line_normalization": true
+    },
+    {
+      "job_directory": "main-win-shard1-127339256007",
+      "bytes": 439112,
+      "sha256": "a18586d09674a0ea0a46eb4956e312e1fa47cd465be920340a32f24cb14673ad",
+      "exact_original_api_content_fields": [
+        "/structuredContent/content"
+      ],
+      "crlf_count": 3645,
+      "no_line_normalization": true
+    },
+    {
+      "job_directory": "main-win-shard2-127339255880",
+      "bytes": 463383,
+      "sha256": "1b7114b1ff639cc2cd5d38e5d53326e16796ffb1516fef1e960d8df371c3de65",
+      "exact_original_api_content_fields": [
+        "/structuredContent/content"
+      ],
+      "crlf_count": 3880,
+      "no_line_normalization": true
+    },
+    {
+      "job_directory": "main-win-shard3-127339255966",
+      "bytes": 403231,
+      "sha256": "7c182190775bf0829057d72a3bb4f15dc977f0a1d440a59836f8155c376a8c91",
+      "exact_original_api_content_fields": [
+        "/response/structuredContent/content"
+      ],
+      "crlf_count": 3443,
+      "no_line_normalization": true
+    },
+    {
+      "job_directory": "main-win-shard4-127339256056",
+      "bytes": 1405851,
+      "sha256": "5586c4ac026a7ddae3d38dc6399e3b21003d797aef7ff9bb2174c7e7112c4a4d",
+      "exact_original_api_content_fields": [
+        "/structuredContent/content"
+      ],
+      "crlf_count": 4980,
+      "no_line_normalization": true
+    }
+  ],
+  "source_manifests_preserved": true,
+  "no_project_or_native_execution": true,
+  "author_construction_history": "An unpublished packaging wording correction required a new final directory after an output-name collision. Earlier author drafts remain local; only this final transport identity is submitted. This was not a product/native test failure."
+}

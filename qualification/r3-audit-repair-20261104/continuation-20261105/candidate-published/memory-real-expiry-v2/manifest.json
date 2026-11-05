@@ -1,0 +1,223 @@
+{
+  "schema": "memory-owner-expiry-real-clock-fixture-repair-v2",
+  "status": "STATIC_CANDIDATE_PENDING_ORIGINAL_WINDOWS_NATIVE",
+  "fixed_product_commit": "5b6331250ff459033bd44d1a95daec70131277cc",
+  "fixed_product_tree": "b26598d0d97d8d51e723bb5582137315f2174d35",
+  "scope": "one original cfg(test) case; no production, dependency, BUILD, workflow, lock, test roster or outer budget change",
+  "source_files": [
+    {
+      "repository_path": "codex-rs/hepta-memory/src/cognitive_store.rs",
+      "path": "/workspace/scratch/07dd58cc9630/architecture-audit/memory-owner-expiry-20261105/source/cognitive_store.rs",
+      "bytes": 73322,
+      "sha256": "2087a257a866f72e0143e6b23b61ec1314d0509de56dc7b01ff0d0ecc1903cb8",
+      "git_blob": "03f469dcdc0b44754e92a855fcbabf7c21059899"
+    },
+    {
+      "repository_path": "codex-rs/hepta-memory/src/compact_persistence.rs",
+      "path": "/workspace/scratch/07dd58cc9630/architecture-audit/memory-owner-expiry-20261105/source/compact_persistence.rs",
+      "bytes": 30128,
+      "sha256": "3bd7b105258367520344b7ce158621a094fa03a6a51a184740d2623463d66eaf",
+      "git_blob": "fbd8d823566143effbf05979641a4fc1dba7fbc3"
+    },
+    {
+      "repository_path": "codex-rs/hepta-memory/src/local_compact_executor.rs",
+      "path": "/workspace/scratch/07dd58cc9630/architecture-audit/memory-owner-expiry-20261105/source/local_compact_executor.rs",
+      "bytes": 47668,
+      "sha256": "816d9207a2ccf66bf66c70383c5c0756aa7ae995232cd04a296748096159ada0",
+      "git_blob": "31c9b9a0f2e859c48df618076d0d6b3a3b6e1e98"
+    },
+    {
+      "repository_path": "codex-rs/ext/hepta-memory/src/local_development_owner.rs",
+      "path": "/workspace/scratch/07dd58cc9630/architecture-audit/memory-owner-expiry-20261105/source/local_development_owner.rs",
+      "bytes": 5741,
+      "sha256": "0ff370a07d9bea936d9d66c35c5aba0fc159cadba7d59cb934a3b59560dd2a5e",
+      "git_blob": "6979f629cda48c56a849699a05495b513e2e4b28"
+    },
+    {
+      "repository_path": "codex-rs/ext/hepta-memory/src/local_development_owner_tests.rs",
+      "path": "/workspace/scratch/07dd58cc9630/architecture-audit/memory-owner-expiry-20261105/source/local_development_owner_tests.rs",
+      "bytes": 12351,
+      "sha256": "353bcf66ba0a02189a8aee635092fdf6049f959b0193d4670030f4002f1b7792",
+      "git_blob": "41b52d8093610e50932795a18e28d4dc1fc5b813"
+    },
+    {
+      "repository_path": "codex-rs/hepta-memory/src/local_lease_outbox.rs",
+      "path": "/workspace/scratch/07dd58cc9630/architecture-audit/memory-owner-expiry-20261105/source/local_lease_outbox.rs",
+      "bytes": 213835,
+      "sha256": "7d66d0ae95a4661f9b3c2b9217cd463166ebb5768367815c39d1ee70eb77c31c",
+      "git_blob": "aac82355a64f315d218f0f9bcf373fdaf3c75d39"
+    }
+  ],
+  "contract_sources": [
+    {
+      "path": "/workspace/scratch/07dd58cc9630/architecture-audit/memory-owner-expiry-20261105/contract-source/compact-engine-TECHNICAL.md",
+      "bytes": 16555,
+      "sha256": "139525c416f612cdeb941671df4b30f1ff77829215e65749d38979da4b92831c",
+      "git_blob": "a32875e895a4688a0a55435ef2d9bf609ca2338f",
+      "repository_path": "docs/modules/compact.engine/TECHNICAL.md"
+    },
+    {
+      "path": "/workspace/scratch/07dd58cc9630/architecture-audit/memory-owner-expiry-20261105/contract-source/memory-retrieval-TECHNICAL.md",
+      "bytes": 25088,
+      "sha256": "e961e7967e91bfa4c7ef2e0e7ae8e2268b462793f6c84b8e10f482aef82fe4cf",
+      "git_blob": "718e16077576dbeb1e1928938188b7706e34f1fd",
+      "repository_path": "docs/modules/memory.retrieval/TECHNICAL.md"
+    },
+    {
+      "path": "/workspace/scratch/07dd58cc9630/architecture-audit/memory-owner-expiry-20261105/contract-source/compact-engine-dossier.md",
+      "bytes": 5480,
+      "sha256": "bbc575c10c274e8c59f186407ae210dbe1a05d8dde8a8a4747d1e148e162704c",
+      "git_blob": "4d32f02f5c6273d52ad027ccbd2c34f49924168c",
+      "repository_path": "qualification/module-execution-dossiers/detail/compact.engine.md"
+    },
+    {
+      "path": "/workspace/scratch/07dd58cc9630/architecture-audit/memory-owner-expiry-20261105/contract-source/ext-memory-BUILD.bazel",
+      "bytes": 137,
+      "sha256": "59bea0114206420d408dcd5d60f5504433201f32cb402157d51cb7a99080f573",
+      "git_blob": "948b95ad42967ea78449ba6e3738118cf95cf151",
+      "repository_path": "codex-rs/ext/hepta-memory/BUILD.bazel"
+    },
+    {
+      "path": "/workspace/scratch/07dd58cc9630/architecture-audit/memory-owner-expiry-20261105/contract-source/ext-memory-Cargo.toml",
+      "bytes": 1184,
+      "sha256": "6b0cd713fab0d2038840dd6d18ad856bf59de3a34f936977e2fa1c2539da3f91",
+      "git_blob": "2d17c6481dbe0d75bd057e2edc9e3ee46de88c73",
+      "repository_path": "codex-rs/ext/hepta-memory/Cargo.toml"
+    }
+  ],
+  "actual_failure": {
+    "run_head": "5b6331250ff459033bd44d1a95daec70131277cc",
+    "job_id": 127339256007,
+    "original_job_log": {
+      "path": "/workspace/scratch/07dd58cc9630/research-audit/published-5b633-ci-20261105/terminal/main-win-shard1-127339256007/job.log",
+      "bytes": 439112,
+      "sha256": "a18586d09674a0ea0a46eb4956e312e1fa47cd465be920340a32f24cb14673ad",
+      "git_blob": "d6419a04fdc93d9786ee8619cdcee9fd550bfb35"
+    },
+    "failure_slice": {
+      "path": "/workspace/scratch/07dd58cc9630/architecture-audit/memory-owner-expiry-20261105/original-failure-slice.txt",
+      "bytes": 946,
+      "sha256": "ade6dcec9feb5af08fa2a5e323e667a2db57c534e2ad8e572ed40043c1f93d5a",
+      "git_blob": "620399979b39df27d88ae60b0685c0e4d58c279c"
+    },
+    "case": "local_development_owner::tests::explicit_owner_expires_bound_lease_and_fences_old_witness",
+    "target": "//codex-rs/ext/hepta-memory:hepta-memory-unit-tests",
+    "original_scope_summary": "79 passed; 1 failed; 0 ignored; 20 filtered out; 16.52s, followed by disjoint original20-case group",
+    "endpoint": "local_development_owner_tests.rs:257:10 expect(intent): Lease(StaleFence(\"local lease has expired\"))",
+    "later_assertions_reached": false,
+    "wrapper_tail_repetition_is_not_retry": true
+  },
+  "contract_decision": {
+    "one_second_and_120_polls_are_fixture_parameters_not_business_contract": true,
+    "basis": [
+      "LocalLeaseBinding::new accepts nonzero caller-provided expiry, no one-second bound (local_lease_outbox.rs:152-174).",
+      "expire_local_lease checks qualification policy, exact store and explicit binding; delegates real expire_lease (local_development_owner.rs:114-138).",
+      "expire_lease and ensure_current_active use original real SystemTime and enforce opposite sides of the same persisted deadline (local_lease_outbox.rs:1177-1307,5208-5224).",
+      "Original case requires successful intent then real expiry, terminal/replay, stale witnesses and generation2; it does not assert a one-second performance result.",
+      "Read canonical compact/memory design and original B16 exit condition do not supply a one-second owner TTL; B16 real Current/Root/normal-caller acceptance remains open."
+    ],
+    "not_a_claim_of_exhaustive_absence_in_every_repository_file": true,
+    "earlier_self_imposed_constraint_corrected": "V1 diagnostic direction treated fixture constants as immutable; root explicitly authorized contract-preserving real-clock repair. V1 stays immutable history, unexecuted."
+  },
+  "source_causality": [
+    {
+      "location": "ext/hepta-memory/src/local_development_owner_tests.rs:227–257",
+      "finding": "CognitiveStore::open completes before real-clock sampling. Expiry is floor(SystemTime seconds)+1, leaving strictly more than0 and at most1 second before deadline, absent clock jumps."
+    },
+    {
+      "location": "hepta-memory/src/cognitive_store.rs:346–381",
+      "finding": "Directory creation, Windows private database setup, SQLite pool initialization, migrations and complete store verification happen before the expiry sample in this original test."
+    },
+    {
+      "location": "hepta-memory/src/local_lease_outbox.rs:478–627",
+      "finding": "After sampling, lease acquisition starts BEGIN IMMEDIATE, verifies/creates an immutable bound lease head and commits."
+    },
+    {
+      "location": "hepta-memory/src/local_compact_executor.rs:110–187",
+      "finding": "Bound executor open verifies live lease under BEGIN IMMEDIATE, commits, then independently opens a read transaction and verifies the complete compact journal before return."
+    }
+  ],
+  "candidate": {
+    "repository_path": "codex-rs/ext/hepta-memory/src/local_development_owner_tests.rs",
+    "preimage": {
+      "path": "/workspace/scratch/07dd58cc9630/architecture-audit/memory-owner-expiry-20261105/source/local_development_owner_tests.rs",
+      "bytes": 12351,
+      "sha256": "353bcf66ba0a02189a8aee635092fdf6049f959b0193d4670030f4002f1b7792",
+      "git_blob": "41b52d8093610e50932795a18e28d4dc1fc5b813"
+    },
+    "postimage": {
+      "path": "/workspace/scratch/07dd58cc9630/architecture-audit/memory-owner-expiry-20261105/real-clock-fixture-candidate-v2/candidate/codex-rs/ext/hepta-memory/src/local_development_owner_tests.rs",
+      "bytes": 12665,
+      "sha256": "192e335c4e3dacf12a140512b17bf5acb21cf810b1f11dd887bd38910157cc1c",
+      "git_blob": "a47edda2a96a9d6a02a90e65af1ce071d9c81096"
+    },
+    "patch": {
+      "path": "/workspace/scratch/07dd58cc9630/architecture-audit/memory-owner-expiry-20261105/real-clock-fixture-candidate-v2/real-clock-fixture.patch",
+      "bytes": 1891,
+      "sha256": "2ae189f0f2dc7d56f345ea0f32688aae71f0f03d64abadd41a1e4df4e2986d44",
+      "git_blob": "c095591fd8bcc33b2a146f3a99b520fd136e5362"
+    },
+    "changes": {
+      "additions": 17,
+      "deletions": 11,
+      "paths": 1,
+      "original_expiry_delta_seconds": 1,
+      "candidate_expiry_delta_seconds": 10,
+      "original_maximum_poll_count": 120,
+      "unchanged_poll_interval_milliseconds": 25,
+      "new_expiry_wait_timeout_seconds": 12
+    },
+    "preserved": [
+      "All existing production calls, real SystemTime use and ordering, including second-store preparation after first intent.",
+      "Ten original assert!/assert_eq! macros byte equal in order.",
+      "Original final SystemTime>=expiry assertion remains, after bounded waiting.",
+      "Successful initial intent; qualification-only/no runtime/no production assertions; wrong-store rejection; RolledBack terminal and idempotent replay; old executor and lease StaleFence; generation2 explicitly bound successor.",
+      "All bytes outside the original case and all five original test names.",
+      "Existing Tokio time features; all dependency/BUILD/workflow/locks/outer test budgets."
+    ],
+    "no_fake_clock_or_now_override_or_retry_or_skip": true,
+    "no_diagnostic_instrumentation": true,
+    "margin_limit": "Absent clock jumps, initialization has more than9 and at most10 real seconds instead of more than0 and at most1. Ten seconds is a bounded fixture choice, not a measured platform ceiling; longer stalls still fail original live checks.",
+    "wait_limit": "Expiration wait future is bounded by12-second Tokio timeout with actual25ms SystemTime polling. Timer depends on scheduler progress; no total host wall-time guarantee. Original target timeout unchanged."
+  },
+  "static_checks": {
+    "path": "/workspace/scratch/07dd58cc9630/architecture-audit/memory-owner-expiry-20261105/real-clock-fixture-candidate-v2/static-checks.json",
+    "bytes": 3792,
+    "sha256": "8537855f44ae2af3b63a50ed05551f57c874f68e2babc65813adf3ffcc4e518a",
+    "git_blob": "8be8fd63398a6d3918a493b8cbae0df3e1325a2d"
+  },
+  "review": {
+    "path": "/workspace/scratch/07dd58cc9630/architecture-audit/memory-owner-expiry-20261105/real-clock-fixture-candidate-v2/REVIEW.zh-CN.md",
+    "bytes": 4878,
+    "sha256": "b9323c5c74c367316adac17b082e882e02b43a465c1247cacdfcf57dead75fc5",
+    "git_blob": "5ba8d5e29e9d298952718d4032f5b5d793b24067"
+  },
+  "required_native": {
+    "status": "NOT_RUN",
+    "platform": "original Windows MSVC owning scope",
+    "bazel_target": "//codex-rs/ext/hepta-memory:hepta-memory-unit-tests",
+    "exact_case": "local_development_owner::tests::explicit_owner_expires_bound_lease_and_fences_old_witness",
+    "original_wrapper": ".github/scripts/run-bazel-ci.sh --print-failed-action-summary --print-failed-test-logs --windows-msvc-host-platform --remote-download-toplevel",
+    "original_platform_flags": [
+      "--platforms=//:windows_x86_64_msvc",
+      "--skip_incompatible_explicit_targets",
+      "--test_tag_filters=-argument-comment-lint",
+      "--test_verbose_timeout_warnings"
+    ],
+    "gate": [
+      "Original whole owning target, unchanged actual platform/configuration/outer timeout/case names.",
+      "Complete raw/JUnit/source; original case reaches all assertions and passes.",
+      "No selected skip/early return, synthetic time, retry, or target/workflow timeout increase.",
+      "Linux or compile-only does not substitute for Windows observed failure."
+    ],
+    "execution_authority": "root/ci sole native lane; no run enabled by this manifest"
+  },
+  "author_checks_note": "Manifest construction first caught an incorrect planned diff count18/12; actual diff is17/11 and documentation was corrected before freezing. Candidate code was unchanged.",
+  "non_claims": [
+    "No original native failure rerun or relabeled.",
+    "No specific host/scheduler/FS latency cause proved.",
+    "No production lease expiry, authority or FinalUse relaxation.",
+    "No B16 Current/Root closure.",
+    "No Rust compilation/rustfmt/Cargo/Bazel/native tests in this author stage."
+  ]
+}

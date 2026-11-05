@@ -1,0 +1,68 @@
+{
+  "schema": "hepta-b11-acl-four-path-publication-v1",
+  "head": "7e0b2303ed0242d83bf56202e8ffb17f5c856186",
+  "tree": "3de59a6aa185b13c8758bff3e8fbc530edcef307",
+  "parent": "3a407dde2727de2176b02d3cb2c3883fbb771f60",
+  "pr": 4884,
+  "branch": "diag/b11-token-mechanism-observations-20261105",
+  "draft": true,
+  "actual_ref_update": {
+    "success": true
+  },
+  "exact_changes": [
+    {
+      "repository_path": "codex-rs/windows-sandbox-rs/src/acl_deny.rs",
+      "preimage_git_blob": "8f73a1a58176a1a15b3476c008cb3682b24f6579",
+      "postimage_git_blob": "1f4a78406d71c8fef5e764fa473a48b769a1606c",
+      "postimage_bytes": 7075,
+      "postimage_sha256": "1131c2291e492c8ecd037dd19be76a9fa111f42e32e23013ca68d6291d16c423",
+      "preimage_path": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-acl-repair-20261105/source/acl_deny.rs",
+      "postimage_path": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-acl-repair-20261105/execution-candidate-v2/candidate/codex-rs/windows-sandbox-rs/src/acl_deny.rs"
+    },
+    {
+      "repository_path": "codex-rs/windows-sandbox-rs/src/acl_tests.rs",
+      "preimage_git_blob": "2e16c9e370368fd4b75e346dd2aac7e632b19975",
+      "postimage_git_blob": "2afcc4e189fa8adfbe2a02c80fcc5c7554d1ef67",
+      "postimage_bytes": 17033,
+      "postimage_sha256": "02bbdde1fdc5368f4cb1c884373add510e4577620e04d4539513d4faa4a37628",
+      "preimage_path": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-acl-repair-20261105/source/acl_tests.rs",
+      "postimage_path": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-acl-repair-20261105/execution-candidate-v2/candidate/codex-rs/windows-sandbox-rs/src/acl_tests.rs"
+    },
+    {
+      "repository_path": "codex-rs/windows-sandbox-rs/src/unified_exec/acl_setup_tests.rs",
+      "preimage_git_blob": "f2ea4c8636dca50fba18e1f5f26781146419ac9f",
+      "postimage_git_blob": "5390daefe0f872866764cb567ad13f22c0675cf4",
+      "postimage_bytes": 16157,
+      "postimage_sha256": "1d6e80bb4a94b0af4504f79e210d3a3019741c169b1a78590eae8b6067b8a844",
+      "preimage_path": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-acl-repair-20261105/source/acl_setup_tests.rs",
+      "postimage_path": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-acl-repair-20261105/execution-candidate-v2/candidate/codex-rs/windows-sandbox-rs/src/unified_exec/acl_setup_tests.rs"
+    },
+    {
+      "repository_path": ".github/workflows/hepta-windows-token-mechanism-probe.yml",
+      "preimage_git_blob": "757e0eb43b2583604569fd51fac3aee4828899a5",
+      "postimage_git_blob": "70f3145268e042ec04fbfe85eda83ccbbc4ff79c",
+      "postimage_bytes": 4468,
+      "postimage_sha256": "c74e9deb8da612c3e881805d20fcf19112043d3888386412e9d4a1aefc36a831",
+      "preimage_path": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-acl-repair-20261105/source/hepta-windows-token-mechanism-probe.yml",
+      "postimage_path": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-acl-repair-20261105/execution-candidate-v2/candidate/.github/workflows/hepta-windows-token-mechanism-probe.yml"
+    }
+  ],
+  "leaf_count": 10583,
+  "merge": {
+    "head": "582f5315f4f632444ae3782d9381f69ed1ae555d",
+    "tree": "1718e3e2235b875320f366d03cf796e2a4e92281",
+    "parents": [
+      "eed4d6bb61b789b19f60facc79f9e031765fa4c9",
+      "7e0b2303ed0242d83bf56202e8ffb17f5c856186"
+    ],
+    "leaf_count": 10585,
+    "full_leaf_map_exactly_equals_primary14_plus_diagnostic": true
+  },
+  "normalized_pr_base_sha_at_first_read": "5b6331250ff459033bd44d1a95daec70131277cc",
+  "resolved_actual_base": "eed4d6bb61b789b19f60facc79f9e031765fa4c9",
+  "review": "d80874b92e5b8788f9b7b0ea1af829eae3dc39ba",
+  "verdict": "PUBLISHED_CANDIDATE_PENDING_ORIGINAL_WINDOWS_B11_OPEN",
+  "run_id": 42066891449,
+  "job_id": 127383345954,
+  "initial_state": "queued"
+}

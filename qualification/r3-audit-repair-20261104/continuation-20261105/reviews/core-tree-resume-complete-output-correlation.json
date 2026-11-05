@@ -1,0 +1,57 @@
+{
+  "schema": "core-parallel-complete-original-correlation-addendum-v1",
+  "observed_at": "2026-11-05T15:19:06.370514+00:00",
+  "original_stdout": {
+    "local_path": "/workspace/scratch/07dd58cc9630/ci-audit/core-wait-span-20261105/project-nonpass-complete-v1/decoded-verified-v1/core-same-process-parallel.stdout",
+    "bytes": 7597636,
+    "sha256": "3cab8cd6a583cc5fa2bd1cbade4eab3b21d6dccdd3820bd5e6a0a69b8c81dd15",
+    "git_blob": "accda4b558e7cc071f7a9549e30c807fcee7ae64"
+  },
+  "original_stderr": {
+    "local_path": "/workspace/scratch/07dd58cc9630/ci-audit/core-wait-span-20261105/project-nonpass-complete-v1/decoded-verified-v1/core-same-process-parallel.stderr",
+    "bytes": 3197,
+    "sha256": "952bb0c28a972829fb86ab717a3bbd77b64a1334a7a4ea0deb2c0ca39408cb8d",
+    "git_blob": "57f6f5ab1056e5a157671dc72570b140af5c037f"
+  },
+  "failed_case": "agent::control::tests::resume_agent_from_rollout_skips_descendants_when_parent_resume_fails",
+  "failed_turn_from_stderr": "01a1ac0a-77d7-77e3-b487-12196828a4a6",
+  "complete_stdout_line_count": 27939,
+  "exact_failed_turn_occurrences": {
+    "stdout_raw": 0,
+    "stdout_after_ansi_removal": 0,
+    "stderr": 1
+  },
+  "case_occurrences": [
+    {
+      "line": 23961,
+      "original": "test agent::control::tests::resume_agent_from_rollout_skips_descendants_when_parent_resume_fails ... FAILED"
+    },
+    {
+      "line": 27936,
+      "original": "    agent::control::tests::resume_agent_from_rollout_skips_descendants_when_parent_resume_fails"
+    }
+  ],
+  "original_summary_lines": [
+    {
+      "line": 997,
+      "original": "test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 2433 filtered out; finished in 0.05s"
+    },
+    {
+      "line": 27938,
+      "original": "test result: FAILED. 2432 passed; 1 failed; 1 ignored; 0 measured; 0 filtered out; finished in 26.24s"
+    }
+  ],
+  "existing_span_child_markers": {
+    "started": 1,
+    "passed": 1
+  },
+  "candidate_manifest_git_blob": "4e00a0a4ff6c345701ce3f42367705f02bbe7041",
+  "conclusion": "Full original output does not bind any prewarm or provider error to the failed turn; dynamic cause remains OPEN. The static fixture change removes a real external provider dependency without weakening the original tree-resume oracle.",
+  "limits": [
+    "The exact failed turn is absent from complete stdout even after ANSI normalization; this does not prove that any particular startup phase was skipped.",
+    "Other threads contain external-provider/prewarm errors, but adjacency and similar model configuration do not identify this failed case.",
+    "Original helper omitted thread ID and needle, so the failure cannot be assigned to child versus grandchild from these events alone.",
+    "The original complete parallel gate failed2432PASS/1FAIL/1ignored; controlled tracing probe success and child span markers do not make that product gate successful.",
+    "No project or native execution, budget change, new retry, source/ref mutation; frozen candidate/source objects are unchanged."
+  ]
+}

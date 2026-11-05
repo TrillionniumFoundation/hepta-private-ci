@@ -1,0 +1,379 @@
+{
+  "schema": "remaining-configured-linux-capacity-conclusion-v1",
+  "purpose": "Identify a feasible native Linux full-gate host without creating machines, cleaning caches, inspecting processes or starting builds.",
+  "directory_source": {
+    "local_path": "/workspace/scratch/07dd58cc9630/ci-audit/core-wait-span-20261105/resource-feasibility-after-C1-stop-v1/R1-host-list.original.json",
+    "actual_originals_bundle": "3011b3096e2a26c7474903356cb4b2430451ba62"
+  },
+  "configured_linux_hosts": [
+    "ai395",
+    "desktop",
+    "pocket4",
+    "rog",
+    "x230"
+  ],
+  "prior_three_host_observations": {
+    "report_identity": {
+      "local_path": "/workspace/scratch/07dd58cc9630/ci-audit/core-wait-span-20261105/resource-feasibility-after-C1-stop-v1/R2-complete-observations-v1.json",
+      "bytes": 14873,
+      "sha256": "0d859d9843c49ac635db23cd8a6af38e5b4de44a1ce958ac0b47feed8eae5693",
+      "git_blob": "d0014f1cb28d5cf4516df5534c62f4991f6f326a"
+    },
+    "observations": [
+      {
+        "host": "desktop",
+        "job_id": "1a1ac6ff2e5-fc05-5450",
+        "observed_utc": "2026-11-05T15:59:42.270773+00:00",
+        "identity": {
+          "account_home": "/home/qian-qi",
+          "account_name": "qian-qi",
+          "cpu_count": 48,
+          "environment_home": "/home/qian-qi",
+          "euid": 1000,
+          "uid": 1000,
+          "uname": [
+            "Linux",
+            "qian-qi",
+            "7.0.0-38-generic",
+            "#38~24.04.4-Ubuntu SMP PREEMPT_DYNAMIC Mon Sep 14 16:37:11 UTC 2",
+            "x86_64",
+            "x86_64"
+          ]
+        },
+        "memory": {
+          "MemAvailable_bytes": 85124222976,
+          "MemTotal_bytes": 134923063296,
+          "SwapFree_bytes": 54030336,
+          "SwapTotal_bytes": 8589930496
+        },
+        "filesystems": [
+          {
+            "path": "/home/qian-qi",
+            "exists": true,
+            "statvfs": {
+              "available_bytes": 27535761408,
+              "device_major": 8,
+              "device_minor": 2,
+              "f_bavail": 6722598,
+              "f_bfree": 11604989,
+              "f_blocks": 239804694,
+              "f_bsize": 4096,
+              "f_favail": 47525117,
+              "f_frsize": 4096
+            }
+          },
+          {
+            "path": "/home/qian-qi/work",
+            "exists": true,
+            "statvfs": {
+              "available_bytes": 27535761408,
+              "device_major": 8,
+              "device_minor": 2,
+              "f_bavail": 6722598,
+              "f_bfree": 11604989,
+              "f_blocks": 239804694,
+              "f_bsize": 4096,
+              "f_favail": 47525117,
+              "f_frsize": 4096
+            }
+          }
+        ],
+        "authoritative_terminal": {
+          "state": "succeeded",
+          "exit_code": 0,
+          "output_complete": true,
+          "original": {
+            "local_path": "/workspace/scratch/07dd58cc9630/ci-audit/core-wait-span-20261105/resource-feasibility-after-C1-stop-v1/readonly-linux-resources-v2/native-first-start/desktop-process-status-001.original.json",
+            "bytes": 912,
+            "sha256": "0eb17c10b769d11ad38f7cff1a86cc6fc46b1d42f04b22c8e1d6c4aa32b75a2f",
+            "git_blob": "ed5fa2f7cf4a6a14adcc49b4ae0ea11fa3921e23"
+          }
+        },
+        "known_erratum": "Raw child_processes_started=0 is hard-coded and NOT_MEASURED. platform.uname/list may invoke uname -p internally; no dynamic child-count claim is made. Original raw is unchanged."
+      },
+      {
+        "host": "rog",
+        "job_id": "1a1ac71f131-fc05-5462",
+        "observed_utc": "2026-11-05T16:01:52.033336+00:00",
+        "identity": {
+          "account_home": "/home/qian-qi",
+          "account_name": "qian-qi",
+          "cpu_count": 32,
+          "environment_home": "/home/qian-qi",
+          "euid": 1000,
+          "uid": 1000,
+          "uname": [
+            "Linux",
+            "qian-qi-ROG-Flow-Z13-GZ302EA-GZ302EA",
+            "7.0.0-42-generic",
+            "#42-Ubuntu SMP PREEMPT_DYNAMIC Thu Oct 15 08:06:44 UTC 2026",
+            "x86_64",
+            ""
+          ]
+        },
+        "memory": {
+          "MemAvailable_bytes": 78347649024,
+          "MemTotal_bytes": 128039612416,
+          "SwapFree_bytes": 2134269952,
+          "SwapTotal_bytes": 8589930496
+        },
+        "filesystems": [
+          {
+            "path": "/home/qian-qi",
+            "exists": true,
+            "statvfs": {
+              "available_bytes": 18676203520,
+              "device_major": 259,
+              "device_minor": 2,
+              "f_bavail": 4559620,
+              "f_bfree": 7061469,
+              "f_blocks": 245573239,
+              "f_bsize": 4096,
+              "f_favail": 54158973,
+              "f_frsize": 4096
+            }
+          },
+          {
+            "path": "/home/qian-qi/work",
+            "exists": true,
+            "statvfs": {
+              "available_bytes": 18676203520,
+              "device_major": 259,
+              "device_minor": 2,
+              "f_bavail": 4559620,
+              "f_bfree": 7061469,
+              "f_blocks": 245573239,
+              "f_bsize": 4096,
+              "f_favail": 54158973,
+              "f_frsize": 4096
+            }
+          }
+        ],
+        "authoritative_terminal": {
+          "state": "succeeded",
+          "exit_code": 0,
+          "output_complete": true,
+          "original": {
+            "local_path": "/workspace/scratch/07dd58cc9630/ci-audit/core-wait-span-20261105/resource-feasibility-after-C1-stop-v1/readonly-linux-resources-v2/native-first-start/rog-process-status-001.original.json",
+            "bytes": 912,
+            "sha256": "9f01300398704d2cc1f227c9e4f877bf2a0245dabf73a6ec81e24e1ca65d0db0",
+            "git_blob": "ce906106eaa33b017ba2d1ae109ad3f71404ce5c"
+          }
+        },
+        "known_erratum": "Raw child_processes_started=0 is hard-coded and NOT_MEASURED. platform.uname/list may invoke uname -p; no exact child count is claimed."
+      },
+      {
+        "host": "ai395",
+        "job_id": "1a1ac708c95-fc05-5458",
+        "observed_utc": "2026-11-05T16:00:25.506788+00:00",
+        "identity": {
+          "account_home": "/home/qq",
+          "account_name": "qq",
+          "cpu_count": 32,
+          "environment_home": "/home/qq",
+          "euid": 1000,
+          "uid": 1000,
+          "uname": [
+            "Linux",
+            "ai395",
+            "7.0.0-38-generic",
+            "#38-Ubuntu SMP PREEMPT_DYNAMIC Fri Sep  4 09:10:14 UTC 2026",
+            "x86_64",
+            ""
+          ]
+        },
+        "memory": {
+          "MemAvailable_bytes": 37325516800,
+          "MemTotal_bytes": 131738578944,
+          "SwapFree_bytes": 368640,
+          "SwapTotal_bytes": 8589930496
+        },
+        "filesystems": [
+          {
+            "path": "/home/qq",
+            "exists": true,
+            "statvfs": {
+              "available_bytes": 193636540416,
+              "device_major": 259,
+              "device_minor": 2,
+              "f_bavail": 47274546,
+              "f_bfree": 71683787,
+              "f_blocks": 480160322,
+              "f_bsize": 4096,
+              "f_favail": 115476295,
+              "f_frsize": 4096
+            }
+          },
+          {
+            "path": "/home/qq/work",
+            "exists": true,
+            "statvfs": {
+              "available_bytes": 193636540416,
+              "device_major": 259,
+              "device_minor": 2,
+              "f_bavail": 47274546,
+              "f_bfree": 71683787,
+              "f_blocks": 480160322,
+              "f_bsize": 4096,
+              "f_favail": 115476295,
+              "f_frsize": 4096
+            }
+          }
+        ],
+        "authoritative_terminal": {
+          "state": "succeeded",
+          "exit_code": 0,
+          "output_complete": true,
+          "original": {
+            "local_path": "/workspace/scratch/07dd58cc9630/ci-audit/core-wait-span-20261105/resource-feasibility-after-C1-stop-v1/readonly-linux-resources-v2/native-first-start/ai395-process-status-001.original.json",
+            "bytes": 912,
+            "sha256": "a1ed20f5f41734fe030fa5d09a841e20f9bbb60a5cd4058afd2a02a495469a97",
+            "git_blob": "c8206c5b70d46b9768fbb112b4dbfa41c71c0ee6"
+          }
+        },
+        "known_erratum": "Raw child_processes_started=0 is hard-coded and NOT_MEASURED. platform.uname/list may invoke uname -p internally; no dynamic child-count claim is made. Original raw is unchanged."
+      }
+    ],
+    "timing": "Historical individual observations; not remeasured in this follow-up."
+  },
+  "latest_ai395_owned_attempt": {
+    "job_id": "1a1ac90de70-fc05-5557",
+    "entry_capacity": {
+      "label": "candidate-stage-entry",
+      "at": "2026-11-05T16:35:47.104968+00:00",
+      "free_bytes": 139231227904,
+      "minimum_free_bytes": 64000000000,
+      "mem_available_bytes": 25061957632,
+      "minimum_mem_available_bytes": 34359738368,
+      "cpu_count": 32,
+      "loadavg": "0.43 2.28 4.76 2/1075 760705\n",
+      "measured_peak": false
+    },
+    "final_capacity": {
+      "label": "candidate-default-full-final",
+      "at": "2026-11-05T16:35:51.393379+00:00",
+      "free_bytes": 139230912512,
+      "minimum_free_bytes": 64000000000,
+      "mem_available_bytes": 24930164736,
+      "minimum_mem_available_bytes": 34359738368,
+      "cpu_count": 32,
+      "loadavg": "0.56 2.27 4.74 1/1075 760717\n",
+      "measured_peak": false
+    },
+    "source": {
+      "tree": "e78c819b8b1f435f8b37bea17b4ffdc724961aa2",
+      "head": "5b6331250ff459033bd44d1a95daec70131277cc",
+      "ordinary_index": {
+        "path": "/home/qq/work/hepta-core-musl-full-20261105/source/.git/index",
+        "bytes": 1401599,
+        "sha256": "b488256c0552f9ff6d6030b3a1738721dec54ffb5d2a2b56d99100943f04ed19",
+        "git_blob": "c96068a31d1b75d064d6764cc28db47fd73fec24",
+        "mode": 384,
+        "executable": false
+      },
+      "locks": {
+        "codex-rs/Cargo.lock": {
+          "path": "/home/qq/work/hepta-core-musl-full-20261105/source/codex-rs/Cargo.lock",
+          "bytes": 413768,
+          "sha256": "4a7a5535cf045089458468411e126b5f59bc6bbf34fc0deead9b0c1b8d84000a",
+          "git_blob": "71fc8fa78b5afa076835b29790a5e6b0bd772558",
+          "mode": 384,
+          "executable": false
+        },
+        "MODULE.bazel.lock": {
+          "path": "/home/qq/work/hepta-core-musl-full-20261105/source/MODULE.bazel.lock",
+          "bytes": 1738619,
+          "sha256": "11f8a421224b9b05f32c4c14054e8868083d989fc497310c8d51e1156f189ca3",
+          "git_blob": "1904db189003cb0b559f71958518e33a45fb6bb7",
+          "mode": 384,
+          "executable": false
+        }
+      }
+    },
+    "full_gate": "NOT_STARTED_RESOURCE_PENDING",
+    "actual_transport_manifest": "eefc19d3d6282c0a7bd27ded3719a003551b8eca"
+  },
+  "additional_two_hosts": [
+    {
+      "host_alias": "pocket4",
+      "platform": "linux",
+      "machine": "x86_64",
+      "cpu_model": "AMD Ryzen AI 9 HX 370 w/ Radeon 890M",
+      "observed_utc": "2026-11-05T16:40:33.840000+00:00",
+      "reported_memory": {
+        "MemAvailable": "14422140 kB",
+        "MemTotal": "25739556 kB",
+        "SwapFree": "3859660 kB",
+        "SwapTotal": "16777208 kB"
+      },
+      "memory_bytes": {
+        "MemAvailable": 14768271360,
+        "MemTotal": 26357305344,
+        "SwapFree": 3952291840,
+        "SwapTotal": 17179860992
+      },
+      "minimum_build_MemAvailable_bytes": 34359738368,
+      "physical_total_below_required_available": true,
+      "disk_checked": false,
+      "tool_or_build_started": false,
+      "original": {
+        "local_path": "/workspace/scratch/07dd58cc9630/ci-audit/core-wait-span-20261105/ai395-candidate-default-full-v1/remaining-linux-capacity/pocket4-hardware-snapshot.original.json",
+        "bytes": 6543,
+        "sha256": "73c363c787a8c0ae988458c6417d8d47e5a08854765a4101b76ad2612c07cb46",
+        "git_blob": "f73eb8b11294f687d2b61a9af779aa3e8d2a0e14"
+      }
+    },
+    {
+      "host_alias": "x230",
+      "platform": "linux",
+      "machine": "x86_64",
+      "cpu_model": "Intel(R) Core(TM) i5-3230M CPU @ 2.60GHz",
+      "observed_utc": "2026-11-05T16:40:32.953000+00:00",
+      "reported_memory": {
+        "MemAvailable": "5657492 kB",
+        "MemTotal": "7824912 kB",
+        "SwapFree": "8336052 kB",
+        "SwapTotal": "10485752 kB"
+      },
+      "memory_bytes": {
+        "MemAvailable": 5793271808,
+        "MemTotal": 8012709888,
+        "SwapFree": 8536117248,
+        "SwapTotal": 10737410048
+      },
+      "minimum_build_MemAvailable_bytes": 34359738368,
+      "physical_total_below_required_available": true,
+      "disk_checked": false,
+      "tool_or_build_started": false,
+      "original": {
+        "local_path": "/workspace/scratch/07dd58cc9630/ci-audit/core-wait-span-20261105/ai395-candidate-default-full-v1/remaining-linux-capacity/x230-hardware-snapshot.original.json",
+        "bytes": 4979,
+        "sha256": "4c403f5ec754efc862c2815f545ec51aee21c724f7f2b2098edc4bc24ed76ca1",
+        "git_blob": "da1093a4e1ff18d71aeb6e27ed2da7589f7d2a14"
+      }
+    }
+  ],
+  "conclusion": "No additional configured Linux host is established as eligible by these observations. The latest ai395 attempt fails available memory; desktop and ROG prior observed disk is insufficient; pocket4 and x230 total memory is below the unchanged floor.",
+  "next_executable_trigger": {
+    "host": "ai395",
+    "prepared_source_directory": "/home/qq/work/hepta-core-musl-full-20261105/source",
+    "prepared_target_directory": "/home/qq/work/hepta-core-musl-full-20261105/target-dev-small",
+    "fresh_free_bytes_at_least": 64000000000,
+    "fresh_MemAvailable_bytes_at_least": 34359738368,
+    "cargo_jobs": 4,
+    "source_expected": "e78c819b8b1f435f8b37bea17b4ffdc724961aa2",
+    "published_candidate_to_apply": "ca1c4671ef6b2773280d01b5d76c6166252f5856",
+    "required_before_build": "An explicitly bound continuation with a new owned evidence path, exact current source/index/locks/tool/SDK guards, then the same 12-path transition and original seven-helper/full-metadata/full-catalog/full-just commands. No prior commands were completed in this attempt.",
+    "execution_authorized_by_this_report": false,
+    "automatic_retry": false,
+    "old_B_driver_replayed": false
+  },
+  "limits": [
+    "No native test or compile failure is inferred from an entry resource refusal.",
+    "Memory and disk readings vary; historical adequacy is not a startup guarantee.",
+    "The new evidence directories and remote status responses do not authorize cleanup, cache deletion, process termination, or a lower resource floor.",
+    "Two macOS hosts are not substitutes for the Linux native gate.",
+    "R2 hardcoded child_processes_started=0 remains unsupported; its explicit erratum is preserved.",
+    "Hardware snapshots do not supply a disk readiness proof; none is needed to reject hosts whose total memory is already below the required available-memory floor."
+  ]
+}

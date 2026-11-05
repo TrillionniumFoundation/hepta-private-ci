@@ -1,0 +1,125 @@
+{
+  "schema": "b11_actual_windows_compile_macro_import_fix_v1",
+  "base_commit": "f02b9ae98e8608210c92a3f53646147f5c7dc428",
+  "base_tree": "fc47759c145d33122b3cab70235a617661556db8",
+  "path": "codex-rs/windows-sandbox-rs/src/unified_exec/delete_permission_tests.rs",
+  "before": {
+    "bytes": 6807,
+    "sha256": "8dc0ae01935586ac22001a5b567c148fa9ff744bf10e4de691c6fbe0993021da",
+    "git_blob": "a0cb1647d95f067fcf135bc9ea2a654ca3e5e7a2"
+  },
+  "after": {
+    "bytes": 6841,
+    "sha256": "397abb256644d00394b64d0d48cf02b72a32ca835163b1b7aed793617f68dcf3",
+    "git_blob": "d8511f92f9fbd9d58061238dbf3181152c74ccbc"
+  },
+  "patch": {
+    "bytes": 750,
+    "sha256": "12b41de67be6a9f4865389736e45dea62972cdb3d59ab3d544ddcaeb631b4108",
+    "git_blob": "a442366ae64689eb96a8a3aaf9b39bd166de986e"
+  },
+  "scope": "single explicit import of the same pretty_assertions macro already used by parent; all original assertion/case bodies byte-identical after deleting one inserted line",
+  "actual_failure": {
+    "run_id": 42049112832,
+    "job_id": 127320081049,
+    "attempt": 1,
+    "tested_merge": "a4e2d71f85d6da48cb6bfc7c09bd34f2837ff7f6",
+    "tree": "fc47759c145d33122b3cab70235a617661556db8",
+    "code": "E0659",
+    "endpoint": "assert_eq ambiguous between super::* and prelude",
+    "pre_lines": [
+      65,
+      66,
+      68,
+      104,
+      105,
+      107,
+      108,
+      109
+    ],
+    "outer_target": "//codex-rs/windows-sandbox-rs:windows-sandbox-rs-unit-tests",
+    "executed_tests": 0,
+    "wrapper_exit": 1,
+    "complete_job_log": {
+      "path": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-pr4884-ci-20261105/terminal/probe-127320081049/job.log",
+      "bytes": 256778,
+      "sha256": "449a53c9925b58e10e24082f19b5f57a7b2b39e7b148c9cd6d2468158d3ed299",
+      "git_blob": "31264e17a1f148bc464d91986fcc7446b5771b2b"
+    }
+  },
+  "parent_source": {
+    "path": "codex-rs/windows-sandbox-rs/src/unified_exec/tests.rs",
+    "git_blob": "aea1ff8476ab8ce33642677a36b1609054888a4e",
+    "explicit_pretty_assertions_import_line": 25
+  },
+  "changes": {
+    "inserted_lines": 1,
+    "removed_lines": 0,
+    "assertions_modified": 0,
+    "test_names_modified": 0,
+    "budgets_modified": false,
+    "permissions_or_flags_modified": false,
+    "dependencies_or_locks_modified": false,
+    "probe_v2_modified": false,
+    "workflow_modified": false
+  },
+  "cloud_git_commands": [
+    {
+      "argv": [
+        "git",
+        "init",
+        "--quiet"
+      ],
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "git",
+        "apply",
+        "--check",
+        "/workspace/scratch/07dd58cc9630/architecture-audit/b11-pr4884-ci-20261105/repair-macro-import-v1/repair.patch"
+      ],
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "git",
+        "apply",
+        "/workspace/scratch/07dd58cc9630/architecture-audit/b11-pr4884-ci-20261105/repair-macro-import-v1/repair.patch"
+      ],
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "git",
+        "apply",
+        "--reverse",
+        "--check",
+        "/workspace/scratch/07dd58cc9630/architecture-audit/b11-pr4884-ci-20261105/repair-macro-import-v1/repair.patch"
+      ],
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "git",
+        "apply",
+        "--reverse",
+        "/workspace/scratch/07dd58cc9630/architecture-audit/b11-pr4884-ci-20261105/repair-macro-import-v1/repair.patch"
+      ],
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": ""
+    }
+  ],
+  "rust_compile_or_native_execution": "NOT_RUN_AFTER_FIX",
+  "required_next_gate": "same original complete Windows outer target at new source; preserve failing assertion status and collect six original/probe names plus eight physical rows if reached",
+  "status": "SOURCE_FIX_CANDIDATE_ONLY"
+}

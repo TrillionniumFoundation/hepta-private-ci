@@ -1,0 +1,132 @@
+{
+  "schema": "ca1-full-first-start-memory-refusal-reconstruction-v1",
+  "job_id": "1a1ac90de70-fc05-5557",
+  "idempotency_key": "hepta-ai395-core-candidate-ca1-full-20261105-v1",
+  "state": "failed",
+  "exit_code": 1,
+  "output_complete": true,
+  "reused": false,
+  "qualification": "NO_SOURCE_TRANSITION_BUILD_OR_TEST_EXECUTED_RESOURCE_PENDING",
+  "published_candidate": {
+    "commit": "eed4d6bb61b789b19f60facc79f9e031765fa4c9",
+    "tree": "ca1c4671ef6b2773280d01b5d76c6166252f5856",
+    "applied_on_native_host": false
+  },
+  "actual_native_source": {
+    "tree": "e78c819b8b1f435f8b37bea17b4ffdc724961aa2",
+    "head": "5b6331250ff459033bd44d1a95daec70131277cc",
+    "ordinary_index": {
+      "path": "/home/qq/work/hepta-core-musl-full-20261105/source/.git/index",
+      "bytes": 1401599,
+      "sha256": "b488256c0552f9ff6d6030b3a1738721dec54ffb5d2a2b56d99100943f04ed19",
+      "git_blob": "c96068a31d1b75d064d6764cc28db47fd73fec24",
+      "mode": 384,
+      "executable": false
+    },
+    "locks": {
+      "codex-rs/Cargo.lock": {
+        "path": "/home/qq/work/hepta-core-musl-full-20261105/source/codex-rs/Cargo.lock",
+        "bytes": 413768,
+        "sha256": "4a7a5535cf045089458468411e126b5f59bc6bbf34fc0deead9b0c1b8d84000a",
+        "git_blob": "71fc8fa78b5afa076835b29790a5e6b0bd772558",
+        "mode": 384,
+        "executable": false
+      },
+      "MODULE.bazel.lock": {
+        "path": "/home/qq/work/hepta-core-musl-full-20261105/source/MODULE.bazel.lock",
+        "bytes": 1738619,
+        "sha256": "11f8a421224b9b05f32c4c14054e8868083d989fc497310c8d51e1156f189ca3",
+        "git_blob": "1904db189003cb0b559f71958518e33a45fb6bb7",
+        "mode": 384,
+        "executable": false
+      }
+    }
+  },
+  "entry_capacity": {
+    "label": "candidate-stage-entry",
+    "at": "2026-11-05T16:35:47.104968+00:00",
+    "free_bytes": 139231227904,
+    "minimum_free_bytes": 64000000000,
+    "mem_available_bytes": 25061957632,
+    "minimum_mem_available_bytes": 34359738368,
+    "cpu_count": 32,
+    "loadavg": "0.43 2.28 4.76 2/1075 760705\n",
+    "measured_peak": false
+  },
+  "final_capacity": {
+    "label": "candidate-default-full-final",
+    "at": "2026-11-05T16:35:51.393379+00:00",
+    "free_bytes": 139230912512,
+    "minimum_free_bytes": 64000000000,
+    "mem_available_bytes": 24930164736,
+    "minimum_mem_available_bytes": 34359738368,
+    "cpu_count": 32,
+    "loadavg": "0.56 2.27 4.74 1/1075 760717\n",
+    "measured_peak": false
+  },
+  "source_guards_byte_identities_preserved": true,
+  "sdk_three_bodies_equal_except_observation_at": true,
+  "sdk_file_count": 171,
+  "sdk_link_count": 147,
+  "sdk_observation_times": [
+    "2026-11-05T16:35:47.103039+00:00",
+    "2026-11-05T16:35:50.052894+00:00",
+    "2026-11-05T16:35:51.391400+00:00"
+  ],
+  "native_originals": [
+    {
+      "native_path": "/home/qq/work/hepta-core-musl-full-20261105/candidate-default-full-v1/candidate-default-full-terminal.json",
+      "version": "66306:73676947:5417:1793896551393705650:1793896551393705650",
+      "local_path": "/workspace/scratch/07dd58cc9630/ci-audit/core-wait-span-20261105/ai395-candidate-default-full-v1/native-first-start/native-originals/candidate-default-full-terminal.json",
+      "bytes": 5417,
+      "sha256": "52451648403f140d1c9b3cef9a51f5992035f30cb9bacb14241a9757783d5a67",
+      "git_blob": "391884633a54f1e296472e8900506a18ae42830a"
+    },
+    {
+      "native_path": "/home/qq/work/hepta-core-musl-full-20261105/candidate-default-full-v1/candidate-stage-entry-e78-source-guard.json",
+      "version": "66306:73676940:2145:1793896545733594478:1793896545733594478",
+      "local_path": "/workspace/scratch/07dd58cc9630/ci-audit/core-wait-span-20261105/ai395-candidate-default-full-v1/native-first-start/native-originals/candidate-stage-entry-e78-source-guard.json",
+      "bytes": 2145,
+      "sha256": "908525824dda3e361387f2595090e75562e548e7eb528d52b278c1d5aa9f2b95",
+      "git_blob": "cebd9e0ad46086a2b5d7fdb1998fe5b422f2c410"
+    },
+    {
+      "native_path": "/home/qq/work/hepta-core-musl-full-20261105/candidate-default-full-v1/candidate-default-full-final-source-guard.json",
+      "version": "66306:73676944:2148:1793896548713926199:1793896548713926199",
+      "local_path": "/workspace/scratch/07dd58cc9630/ci-audit/core-wait-span-20261105/ai395-candidate-default-full-v1/native-first-start/native-originals/candidate-default-full-final-source-guard.json",
+      "bytes": 2148,
+      "sha256": "a48495b20a1934ebba5eaba04465e5c645b3885306b0d6b3b9664893b3e13eae",
+      "git_blob": "276dfbae34123cca0655a904069df54ec68198b0"
+    },
+    {
+      "native_path": "/home/qq/work/hepta-core-musl-full-20261105/candidate-default-full-v1/candidate-stage-entry-e78-prerequisites.json",
+      "version": "66306:73676942:151134:1793896547104091447:1793896547104091447",
+      "local_path": "/workspace/scratch/07dd58cc9630/ci-audit/core-wait-span-20261105/ai395-candidate-default-full-v1/native-first-start/native-originals/candidate-stage-entry-e78-prerequisites.json",
+      "bytes": 151134,
+      "sha256": "3781ef41e2a13fda131bcb281d1b2361ee79805e5576b3e9703a70adcef9dc03",
+      "git_blob": "ceef3079b69b400d4586f31d615377f595c7e41c"
+    },
+    {
+      "native_path": "/home/qq/work/hepta-core-musl-full-20261105/candidate-default-full-v1/candidate-default-full-final-prerequisites.json",
+      "version": "66306:73676945:151134:1793896550053919174:1793896550053919174",
+      "local_path": "/workspace/scratch/07dd58cc9630/ci-audit/core-wait-span-20261105/ai395-candidate-default-full-v1/native-first-start/native-originals/candidate-default-full-final-prerequisites.json",
+      "bytes": 151134,
+      "sha256": "81faae872860efa546f37311d42494cce0b3c56395f3a3ede50a8dd9843ffcfa",
+      "git_blob": "25a7a5177b84072c6234525fd12aed45f39651d7"
+    },
+    {
+      "native_path": "/home/qq/work/hepta-core-musl-full-20261105/candidate-default-full-v1/prerequisites-final.json",
+      "version": "66306:73676946:151134:1793896551392444541:1793896551392444541",
+      "local_path": "/workspace/scratch/07dd58cc9630/ci-audit/core-wait-span-20261105/ai395-candidate-default-full-v1/native-first-start/native-originals/prerequisites-final.json",
+      "bytes": 151134,
+      "sha256": "52284a70d1e272617d52fa20d46b2f73db9bbd7d5042453991da28fd468a62ea",
+      "git_blob": "e9768e589d8da36e9252bec0a0a9a412cb55d703"
+    }
+  ],
+  "limits": [
+    "No compile failure or test result is inferred from this resource refusal.",
+    "The full gate remains OPEN; no retry, resource-floor change or cache cleanup occurred.",
+    "Source guards pin the two V8 files; the complete SDK files are independent preserved receipts.",
+    "The three snapshots are not one atomic cross-file snapshot."
+  ]
+}

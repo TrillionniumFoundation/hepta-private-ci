@@ -1,0 +1,31 @@
+diff --git a/codex-rs/windows-sandbox-rs/src/acl_deny.rs b/codex-rs/windows-sandbox-rs/src/acl_deny.rs
+index 8f73a1a58176a1a15b3476c008cb3682b24f6579..1f4a78406d71c8fef5e764fa473a48b769a1606c 100644
+--- a/codex-rs/windows-sandbox-rs/src/acl_deny.rs
++++ b/codex-rs/windows-sandbox-rs/src/acl_deny.rs
+@@ -155,10 +155,11 @@
+         return Ok(false);
+     }
+ 
+-    // Reopen this object, not its path. No-op callers never require WRITE_DAC.
++    // Keep query and update access on the same object. No-op callers never
++    // require WRITE_DAC.
+     let raw_write = ReOpenFile(
+         handle,
+-        WRITE_DAC,
++        READ_CONTROL | WRITE_DAC,
+         FILE_SHARE_READ | FILE_SHARE_WRITE | FILE_SHARE_DELETE,
+         FILE_FLAG_BACKUP_SEMANTICS,
+     );
+diff --git a/codex-rs/windows-sandbox-rs/src/acl_tests.rs b/codex-rs/windows-sandbox-rs/src/acl_tests.rs
+index 2e16c9e370368fd4b75e346dd2aac7e632b19975..2afcc4e189fa8adfbe2a02c80fcc5c7554d1ef67 100644
+--- a/codex-rs/windows-sandbox-rs/src/acl_tests.rs
++++ b/codex-rs/windows-sandbox-rs/src/acl_tests.rs
+@@ -442,7 +442,7 @@
+     let write_denied = unsafe {
+         let raw = windows_sys::Win32::Storage::FileSystem::ReOpenFile(
+             query.as_raw_handle() as HANDLE,
+-            WRITE_DAC,
++            READ_CONTROL | WRITE_DAC,
+             FILE_SHARE_READ | FILE_SHARE_WRITE | FILE_SHARE_DELETE,
+             FILE_FLAG_BACKUP_SEMANTICS,
+         );

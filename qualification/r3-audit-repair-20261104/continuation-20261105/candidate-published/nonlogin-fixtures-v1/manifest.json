@@ -1,0 +1,133 @@
+{
+  "schema": "five-approval-nonlogin-fixture-candidate-v1",
+  "status": "STATIC_CANDIDATE_PENDING_ORIGINAL_NATIVE",
+  "base_commit": "5b6331250ff459033bd44d1a95daec70131277cc",
+  "base_tree": "b26598d0d97d8d51e723bb5582137315f2174d35",
+  "source_review_blob": "f27f02019f991a25f256f8f6ad4ce3b9fb224d91",
+  "files": [
+    {
+      "path": "codex-rs/core/tests/suite/approvals.rs",
+      "preimage": {
+        "bytes": 157912,
+        "sha256": "1242d0d211d6b3e667489d1335dbfff0f4c05e5d97a37b50889989a960056624",
+        "git_blob": "f1ab8e85959c5d4e6653836c424d643dd6b4cfc6"
+      },
+      "postimage": {
+        "bytes": 157966,
+        "sha256": "5e3b179c89b4fb5068246f404e3f776843e56ec3305068e5a25ed5dd8cf35614",
+        "git_blob": "10874f8ac6ef743ce1557f2251d0cc631795b0d6"
+      },
+      "cases": [
+        "approving_execpolicy_amendment_persists_policy_and_skips_future_prompts"
+      ],
+      "only_inserted_lines": 1,
+      "inverse_insertion_equals_full_preimage": true
+    },
+    {
+      "path": "codex-rs/core/tests/suite/request_permissions.rs",
+      "preimage": {
+        "bytes": 82226,
+        "sha256": "53d9fbf500e11184ae805c5454d9e1f96f70b97bf26fc0530f5ba57a478f1641",
+        "git_blob": "fa48e01442917eee2a5b91bada0a5af6cacea98d"
+      },
+      "postimage": {
+        "bytes": 82442,
+        "sha256": "8ec4541e8d9afe92684cd27a01f00e5e724c9e44ba8a83c75bc44936d323eb92",
+        "git_blob": "18952e04bf41f021ec4c2c38a618b727454ecce1"
+      },
+      "cases": [
+        "request_permissions_grants_apply_to_later_exec_command_calls",
+        "request_permissions_preapprove_explicit_exec_permissions_outside_on_request",
+        "request_permissions_grants_apply_to_later_exec_command_calls_without_inline_permission_feature",
+        "partial_request_permissions_grants_do_not_preapprove_new_permissions"
+      ],
+      "only_inserted_lines": 4,
+      "inverse_insertion_equals_full_preimage": true
+    }
+  ],
+  "patch": {
+    "bytes": 2233,
+    "sha256": "c90073b4c0bb992248fb1c846a0c8c09db7151d0e68a72dbd6367d5bd9f37480",
+    "git_blob": "e57fab990b7ea55891ea85aa6a4b0796ee0a2589"
+  },
+  "actual_baseline": {
+    "tree": "e78c819b8b1f435f8b37bea17b4ffdc724961aa2",
+    "failure_projection": {
+      "path": "ci-audit/core-wait-span-20261105/project-nonpass-priority-v1/nonpass-projection.json",
+      "bytes": 145424,
+      "sha256": "9931149a3239406315e2b51e05b3a8c04f48fd9f97c37cbeb9d4145508e71cfb",
+      "git_blob": "99dd6edb6401a82f9f7664c2a64e6aac5155d403"
+    },
+    "cases": [
+      "suite::approvals::approving_execpolicy_amendment_persists_policy_and_skips_future_prompts",
+      "suite::request_permissions::request_permissions_grants_apply_to_later_exec_command_calls",
+      "suite::request_permissions::request_permissions_preapprove_explicit_exec_permissions_outside_on_request",
+      "suite::request_permissions::request_permissions_grants_apply_to_later_exec_command_calls_without_inline_permission_feature",
+      "suite::request_permissions::partial_request_permissions_grants_do_not_preapprove_new_permissions"
+    ],
+    "result": "Five original exact cases failed on output assertions; original complete raw and JUnit retained by CI."
+  },
+  "scope": "Exactly five inserted assignments inside their existing per-case with_config closures. No other source or common fixture edits.",
+  "preserved": [
+    "All five original test names, output/exit/file assertions, approval-event handling, Turn grant scope and normalized roots",
+    "UnlessTrusted/OnRequest values, original sandbox profiles, network policy, sandbox permissions and feature enables",
+    "Command strings, mock SSE sequence, original yield/wait budgets and existing skip macros",
+    "Production defaults, host profile/security, stderr/output handling and all common builder/helper semantics"
+  ],
+  "reason": "These five fixtures assert approval/permission/file effects. They neither request login nor assert profile initialization; existing explicit non-login configuration avoids injecting host login behavior into those contracts.",
+  "limits": [
+    "This is a local fixture-scope design, not a global login-shell product change.",
+    "The raw failures show extra stream-fd lines and four expected output tails; they do not prove the following real-file assertions passed.",
+    "Current host static im-config chain is consistent with the extra lines but no dynamic syscall/provenance trace identifies each printed line.",
+    "Non-login mode does not promise a fully sanitized environment (e.g. shell-specific non-login startup inputs can still exist); no unproved complete isolation claim.",
+    "No stderr filtering, substring output relaxation, sandbox broadening, sleeps, retries or time-budget changes."
+  ],
+  "native_gate": "Run the same five original exact cases on the actual source with zero retries and no early-return qualification. New source has not been compiled or executed.",
+  "cloud_only_checks": [
+    {
+      "argv": [
+        "git",
+        "init",
+        "-q"
+      ],
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "git",
+        "apply",
+        "--check",
+        "/workspace/scratch/07dd58cc9630/architecture-audit/approval-shell-fixtures-20261105/nonlogin-candidate-v1/fixture.patch"
+      ],
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "git",
+        "apply",
+        "/workspace/scratch/07dd58cc9630/architecture-audit/approval-shell-fixtures-20261105/nonlogin-candidate-v1/fixture.patch"
+      ],
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "git",
+        "apply",
+        "--reverse",
+        "fixture.patch"
+      ],
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": ""
+    }
+  ],
+  "native_test_runs": 0,
+  "product_ref_updates": 0,
+  "host_changes": 0
+}

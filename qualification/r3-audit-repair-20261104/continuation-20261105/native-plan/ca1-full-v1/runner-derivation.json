@@ -1,0 +1,47 @@
+{
+  "parent": {
+    "local_path": "/workspace/scratch/07dd58cc9630/ci-audit/core-wait-span-20261105/ai395-c1-after-memory-stop-v1/c1-resume-candidate-v1/run_c1_resume.py",
+    "bytes": 19311,
+    "sha256": "aef49506d04053d0ff60ae338b8cab8b2fba7bd286742a79d53934023f5aa4eb",
+    "git_blob": "d5915099d4f66f02b24f3411dae0285081964190"
+  },
+  "runner": {
+    "local_path": "/workspace/scratch/07dd58cc9630/ci-audit/core-wait-span-20261105/ai395-candidate-default-full-v1/run_candidate_default_full.py",
+    "bytes": 31785,
+    "sha256": "85395371678e7a5a20317a2a1e4eadc514dd37f3e8946acac567f5036eaaa7fb",
+    "git_blob": "4b0b81abc8487f5f6c6b59b04ecfd2dd76c22abb"
+  },
+  "delta": {
+    "local_path": "/workspace/scratch/07dd58cc9630/ci-audit/core-wait-span-20261105/ai395-candidate-default-full-v1/C1-to-candidate-default-full.delta.patch",
+    "bytes": 26173,
+    "sha256": "69b1464eeaf041fc886ad46fa2d8023fc76ff06b4360b54ca6ed7dd65c9191c4",
+    "git_blob": "4e3097aad8d0943f7e1204c01e6d31784484b853"
+  },
+  "twelve_common_functions_byte_equal": [
+    "need",
+    "now",
+    "identity",
+    "stat_id",
+    "read_stable",
+    "pinned",
+    "file_record",
+    "absent",
+    "capacity",
+    "verify_prerequisites",
+    "save",
+    "save_json"
+  ],
+  "frozen_V3_functions_not_changed": [
+    "command",
+    "source_guard",
+    "preflight_environment",
+    "catalog",
+    "program_guard",
+    "nextest",
+    "save",
+    "save_bytes"
+  ],
+  "cloud_checks": [
+    "AST parse and source equality only; no native execution or optional tests."
+  ]
+}

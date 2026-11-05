@@ -1,0 +1,71 @@
+{
+  "schema": "hepta.inventory-transport-consumer-review.v1",
+  "fixed_head": "5b6331250ff459033bd44d1a95daec70131277cc",
+  "fixed_tree": "b26598d0d97d8d51e723bb5582137315f2174d35",
+  "scope": "All 73 fixed qualification executable source files, report references, evidence index, and the existing general documentation/blob-size checkers. This is not a claim that arbitrary external consumers were enumerated.",
+  "executable_scan_receipt": {
+    "path": "qualification-script-consumer-scan.json",
+    "bytes": 34184,
+    "sha256": "c54e2c67e587a1b2d4e8ea4ed169303c0701c23cb51a7c20e2b4169736e4620f",
+    "blob": "9e4677954cedd514e5435f4d31c239b82d85246f"
+  },
+  "actual_consumers": [
+    {
+      "path": "qualification/r3-audit-repair-20261104/repository-inventory-20261105/build_inventory.py",
+      "blob": "6c0e0c8b15f5b340a01b7f437ef5ca5edda15abb",
+      "operation": "Writes complete-inventory.json at its original logical path; does not parse the replaced fourth-repository-inventory path. Frozen script unchanged."
+    },
+    {
+      "path": "qualification/r3-audit-repair-20261104/reproduce/review_repository_inventory_20261105.py",
+      "blob": "a4876f26a0f36ea138bc3d7f54a818fd91d50e92",
+      "operation": "Historical review reads complete-inventory.json through a frozen absolute scratch layout and compares the archived member. Not silently redirected to the typed index. Reproduction still requires that historical layout or an explicit caller adaptation."
+    },
+    {
+      "path": "qualification/r3-audit-repair-20261104/fourth-evidence-index.json",
+      "operation": "Current inventory row now identifies the typed index, retains the exact original under original_payload, and adds the two restoration files. Other 988 original artifact rows unchanged."
+    },
+    {
+      "path": "scripts/hepta-docs.py",
+      "blob": "0d65aa4dee439e58ef124d99f4d422affdfae82f",
+      "operation": "General documentation/reference checks; no inventory-specific JSON field parser identified. New helper instructions/index introduce no literal workflow paths."
+    }
+  ],
+  "report_changes": [
+    {
+      "path": "qualification/r3-audit-repair-20261104/CURRENT_AUDIT_PROGRESS.zh-CN.md",
+      "only_link_label_changes": true
+    },
+    {
+      "path": "qualification/r3-audit-repair-20261104/PROJECT_DIRECTION_AND_PLAN.zh-CN.md",
+      "only_link_label_changes": true
+    },
+    {
+      "path": "qualification/r3-audit-repair-20261104/FOURTH_BATCH_QUALIFICATION.md",
+      "only_link_label_changes": true
+    }
+  ],
+  "unchanged_historical_references": [
+    "original root inventory review and readback receipts",
+    "current-blockers.json references to the path, not a JSON inventory parser",
+    "original 18 archive parts and archive-manifest.json",
+    "original internal raw_identity_index paths and full observation records"
+  ],
+  "current_index_changes": {
+    "original_artifact_count": 989,
+    "new_artifact_count": 991,
+    "only_existing_row_changed": [
+      "fourth-repository-inventory-20261105.json"
+    ],
+    "new_rows": [
+      "repository-inventory-20261105/RESTORE_INVENTORY.md",
+      "repository-inventory-20261105/restore_inventory.py"
+    ]
+  },
+  "parser_migration": "Consumers requiring original prs/branches/observations must run restore_inventory.py, check the exact identity, and parse the restored JSON. The index explicitly rejects being interpreted as the old complete-inventory schema.",
+  "policies_unchanged": [
+    ".github/blob-size-allowlist.txt",
+    ".codespellrc",
+    "scripts/check_blob_size.py"
+  ],
+  "statistics_and_original_23_ledger_not_modified": true
+}

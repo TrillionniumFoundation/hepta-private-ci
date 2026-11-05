@@ -1,0 +1,161 @@
+{
+  "schema": "eed-queue-readonly-diagnostic-v1",
+  "head": "eed4d6bb61b789b19f60facc79f9e031765fa4c9",
+  "snapshot": {
+    "path": "/workspace/scratch/07dd58cc9630/ci-audit/published-eed4d6-ci-20261105/snapshot-0002/index.json",
+    "bytes": 9203,
+    "sha256": "085ad597db6f4cd8c36d6222ea8dce3b64b76faf6ad7f507c129f0a497e9ea9d",
+    "git_blob": "d68ff85d55eb2dd6c9b0e340f2b8cfb7a7788ff6"
+  },
+  "pending_runs": [
+    {
+      "id": 42063947919,
+      "name": "Hepta architecture convergence",
+      "event": "pull_request",
+      "head_sha": "eed4d6bb61b789b19f60facc79f9e031765fa4c9",
+      "head_branch": "fix/r3-original-product-contracts-20261104",
+      "status": "pending",
+      "created_at": "2026-11-05T16:23:34Z",
+      "updated_at": "2026-11-05T16:23:35Z"
+    },
+    {
+      "id": 42063948117,
+      "name": "blocking-ci",
+      "event": "pull_request",
+      "head_sha": "eed4d6bb61b789b19f60facc79f9e031765fa4c9",
+      "head_branch": "fix/r3-original-product-contracts-20261104",
+      "status": "pending",
+      "created_at": "2026-11-05T16:23:34Z",
+      "updated_at": "2026-11-05T16:23:35Z"
+    }
+  ],
+  "pending_run_job_count_each": 0,
+  "workflow_concurrency": {
+    "blocking": {
+      "source": {
+        "path": "/workspace/scratch/07dd58cc9630/ci-audit/published-eed4d6-ci-20261105/queue-diagnostic-v1/blocking-workflow.yml.source.txt",
+        "bytes": 9486,
+        "sha256": "f1bcb14e114cb10553ce3691f7c48a216cc696a88549de8b1f63207b6218aa56",
+        "git_blob": "fd01ab5edac5d78c9bcfb78397a157a3d5ea7c71"
+      },
+      "static_group_expression": "group: blocking-ci-${{ github.event.pull_request.head.ref || github.ref_name }}",
+      "resolved_group_for_this_branch": "blocking-ci-fix/r3-original-product-contracts-20261104",
+      "cancel_in_progress": true
+    },
+    "architecture": {
+      "source": {
+        "path": "/workspace/scratch/07dd58cc9630/ci-audit/published-eed4d6-ci-20261105/queue-diagnostic-v1/architecture-workflow.yml.source.txt",
+        "bytes": 19380,
+        "sha256": "445b3402be0dd393351b0f35a186646fd5548c4cab29e55ac04e2819e1466427",
+        "git_blob": "fb2491dea531af8f2750d08c9010069065bc35fc"
+      },
+      "static_group_expression": "group: hepta-architecture-convergence-${{ github.event.pull_request.head.ref || github.ref_name }}",
+      "resolved_group_for_this_branch": "hepta-architecture-convergence-fix/r3-original-product-contracts-20261104",
+      "cancel_in_progress": true
+    }
+  },
+  "same_branch_predecessors": [
+    {
+      "run": {
+        "id": 41999114801,
+        "name": "Hepta architecture convergence",
+        "head_sha": "5b6331250ff459033bd44d1a95daec70131277cc",
+        "head_branch": "fix/r3-original-product-contracts-20261104",
+        "event": "pull_request",
+        "status": "queued",
+        "conclusion": null,
+        "created_at": "2026-11-05T09:02:27Z",
+        "updated_at": "2026-11-05T13:05:39Z"
+      },
+      "observed_at": "2026-11-05T17:10:39.733Z",
+      "run_original": {
+        "path": "/workspace/scratch/07dd58cc9630/ci-audit/published-eed4d6-ci-20261105/queue-diagnostic-v1/previous-41999114801.original.json",
+        "bytes": 32724,
+        "sha256": "b6ebb5982a8120e906b125a3d0fa2b450585cd7cf5a63c082b9485caf5f6410e",
+        "git_blob": "737dbfe76f1be8246c125891f0088145464cdc35"
+      },
+      "jobs_original": {
+        "path": "/workspace/scratch/07dd58cc9630/ci-audit/published-eed4d6-ci-20261105/queue-diagnostic-v1/previous-41999114801-jobs.original.json",
+        "bytes": 32332,
+        "sha256": "ced767309df599824b13a6ff1251d75e38d05295818d5cf8d97d7faa26e441ee",
+        "git_blob": "39c59cd050b893ad1450394e426345701e0cd116"
+      },
+      "nonterminal_jobs": [
+        {
+          "id": 127262866167,
+          "name": "Architecture required",
+          "status": "queued",
+          "conclusion": null,
+          "labels": [
+            "ubuntu-24.04"
+          ],
+          "runner_id": 0,
+          "runner_name": ""
+        }
+      ]
+    },
+    {
+      "run": {
+        "id": 41999114842,
+        "name": "blocking-ci",
+        "head_sha": "5b6331250ff459033bd44d1a95daec70131277cc",
+        "head_branch": "fix/r3-original-product-contracts-20261104",
+        "event": "pull_request",
+        "status": "queued",
+        "conclusion": null,
+        "created_at": "2026-11-05T09:02:27Z",
+        "updated_at": "2026-11-05T15:23:52Z"
+      },
+      "observed_at": "2026-11-05T17:10:39.760Z",
+      "run_original": {
+        "path": "/workspace/scratch/07dd58cc9630/ci-audit/published-eed4d6-ci-20261105/queue-diagnostic-v1/previous-41999114842.original.json",
+        "bytes": 36086,
+        "sha256": "830c7b2fc0f654a231a5ba0bb82ec65918c3e1d16bb5dfbda15fba54bd49e7fa",
+        "git_blob": "9a9681e6442c16aae1586ebd662361228c94f644"
+      },
+      "jobs_original": {
+        "path": "/workspace/scratch/07dd58cc9630/ci-audit/published-eed4d6-ci-20261105/queue-diagnostic-v1/previous-41999114842-jobs.original.json",
+        "bytes": 131990,
+        "sha256": "2d5cfee8f73f87ab0e4838c3a1b627e9e9cfdfe64494acff8c87154d3a361359",
+        "git_blob": "e27f02c965d27633b019c3bdf3bf763ae5b869f8"
+      },
+      "nonterminal_jobs": [
+        {
+          "id": 127358110773,
+          "name": "Bazel / Bazel test on windows-latest for x86_64-pc-windows-msvc",
+          "status": "queued",
+          "conclusion": null,
+          "labels": [
+            "ubuntu-24.04"
+          ],
+          "runner_id": 0,
+          "runner_name": ""
+        },
+        {
+          "id": 127372817972,
+          "name": "rust-ci / CI results (required)",
+          "status": "queued",
+          "conclusion": null,
+          "labels": [
+            "ubuntu-24.04"
+          ],
+          "runner_id": 0,
+          "runner_name": ""
+        }
+      ]
+    }
+  ],
+  "queued_job_labels": {
+    "[\"ubuntu-24.04\"]": 19,
+    "[\"macos-15\"]": 8,
+    "[\"ubuntu-24.04-arm\"]": 4
+  },
+  "queued_assignment_counts": {
+    "(0, '', 0, '')": 31
+  },
+  "finding": "Both new runs are pending before any jobs. Both same-branch predecessor runs remain nonterminal; the source declares branch-keyed workflow concurrency. This is consistent with workflow concurrency serialization, but the retrieved REST responses do not contain an explicit waits-for relationship or queue-reason field.",
+  "runner_limit": "The 31 queued jobs request ubuntu-24.04, ubuntu-24.04-arm or macos-15 labels, not self-hosted. All have runner_id 0 and empty runner names/groups. Requested labels do not prove that a machine has been allocated or identify a capacity/billing/approval cause.",
+  "workflow_dependency_limit": "The first scope/qualification jobs have no needs dependency on another workflow; later within-workflow fan-in does not explain the zero-job run state by itself.",
+  "retrieval_limits": "Two branch-filtered workflow-run collection URLs were rejected by connector URL policy with HTTP 400. Original errors are retained. GitHub run page URLs were normalized by the connector to run metadata, not a rendered page wait banner.",
+  "mutations_performed": []
+}

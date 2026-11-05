@@ -1,0 +1,160 @@
+{
+  "schema": "b11-acl-update-and-legacy-error-contract-candidate-v2",
+  "status": "STATIC_SOURCE_CANDIDATE_PENDING_ORIGINAL_WINDOWS",
+  "target_pr": 4884,
+  "base_head": "3a407dde2727de2176b02d3cb2c3883fbb771f60",
+  "base_tree": "e45bcd4fb4bbaf8b4f0351ba866e84137e635a68",
+  "main_product_head": "5b6331250ff459033bd44d1a95daec70131277cc",
+  "main_product_ref_untouched": true,
+  "native4_actual_checkout": "5006ac5d52f437bc1d1ec2ccd9efd5c7f5e35a6c",
+  "native4_job_id": 127352234293,
+  "source_preimage_binding": {
+    "path": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-pr4884-ci-20261105/terminal/probe-127352234293/members/b11-token-mechanism-probe/source-leaves.txt",
+    "bytes": 8195,
+    "sha256": "8a4511610ef37beb4c3282e07cb1374f2e657550eb2e7e1991c4865fef3a2494",
+    "git_blob": "bb840a3b71f493636689ba5325b4d5624b5cf94a"
+  },
+  "source_map": [
+    {
+      "repository_path": "codex-rs/windows-sandbox-rs/src/acl_deny.rs",
+      "preimage_git_blob": "8f73a1a58176a1a15b3476c008cb3682b24f6579",
+      "postimage_git_blob": "1f4a78406d71c8fef5e764fa473a48b769a1606c",
+      "postimage_bytes": 7075,
+      "postimage_sha256": "1131c2291e492c8ecd037dd19be76a9fa111f42e32e23013ca68d6291d16c423",
+      "preimage_path": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-acl-repair-20261105/source/acl_deny.rs",
+      "postimage_path": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-acl-repair-20261105/execution-candidate-v2/candidate/codex-rs/windows-sandbox-rs/src/acl_deny.rs"
+    },
+    {
+      "repository_path": "codex-rs/windows-sandbox-rs/src/acl_tests.rs",
+      "preimage_git_blob": "2e16c9e370368fd4b75e346dd2aac7e632b19975",
+      "postimage_git_blob": "2afcc4e189fa8adfbe2a02c80fcc5c7554d1ef67",
+      "postimage_bytes": 17033,
+      "postimage_sha256": "02bbdde1fdc5368f4cb1c884373add510e4577620e04d4539513d4faa4a37628",
+      "preimage_path": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-acl-repair-20261105/source/acl_tests.rs",
+      "postimage_path": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-acl-repair-20261105/execution-candidate-v2/candidate/codex-rs/windows-sandbox-rs/src/acl_tests.rs"
+    },
+    {
+      "repository_path": "codex-rs/windows-sandbox-rs/src/unified_exec/acl_setup_tests.rs",
+      "preimage_git_blob": "f2ea4c8636dca50fba18e1f5f26781146419ac9f",
+      "postimage_git_blob": "5390daefe0f872866764cb567ad13f22c0675cf4",
+      "postimage_bytes": 16157,
+      "postimage_sha256": "1d6e80bb4a94b0af4504f79e210d3a3019741c169b1a78590eae8b6067b8a844",
+      "preimage_path": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-acl-repair-20261105/source/acl_setup_tests.rs",
+      "postimage_path": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-acl-repair-20261105/execution-candidate-v2/candidate/codex-rs/windows-sandbox-rs/src/unified_exec/acl_setup_tests.rs"
+    },
+    {
+      "repository_path": ".github/workflows/hepta-windows-token-mechanism-probe.yml",
+      "preimage_git_blob": "757e0eb43b2583604569fd51fac3aee4828899a5",
+      "postimage_git_blob": "70f3145268e042ec04fbfe85eda83ccbbc4ff79c",
+      "postimage_bytes": 4468,
+      "postimage_sha256": "c74e9deb8da612c3e881805d20fcf19112043d3888386412e9d4a1aefc36a831",
+      "preimage_path": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-acl-repair-20261105/source/hepta-windows-token-mechanism-probe.yml",
+      "postimage_path": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-acl-repair-20261105/execution-candidate-v2/candidate/.github/workflows/hepta-windows-token-mechanism-probe.yml"
+    }
+  ],
+  "change_counts": {
+    "additions": 15,
+    "deletions": 8,
+    "paths": 4
+  },
+  "full_patch": {
+    "path": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-acl-repair-20261105/execution-candidate-v2/full.patch",
+    "bytes": 3554,
+    "sha256": "bb3f74e9b9e2bfbbd2f1c98d36669c5226ee7c052572ff6aff8fdba37f4a7fce",
+    "git_blob": "9b8eb5eab0b8676e54fe276672f83abddbf0bef8"
+  },
+  "separate_patches": {
+    "acl_repair_rights": {
+      "path": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-acl-repair-20261105/candidate-v1/repair-handle-rights.patch",
+      "bytes": 1416,
+      "sha256": "49e7c058a725fee3f0d5fa2eec2be811171e707324437958452d610778bb4902",
+      "git_blob": "b718835f82045f5a47dc2020293cd0752f025fa7"
+    },
+    "legacy_error_contract": {
+      "path": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-acl-repair-20261105/candidate-v1/legacy-error-contract.patch",
+      "bytes": 1357,
+      "sha256": "e46c34d5efad9ffeef33a4df77ec8a81946fd1592a51ca87f2f49a98b84fcb9a",
+      "git_blob": "391c3a97ab3d87ddaf249d8d178295e7ec6d7087"
+    },
+    "workflow_trigger": {
+      "path": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-acl-repair-20261105/execution-candidate-v2/workflow-trigger.patch",
+      "bytes": 781,
+      "sha256": "4f2d432c41bb3efdfa533bfac2114a466719c384dc5187175f9750e48665b4cd",
+      "git_blob": "d5d50ad3cefa0e6dc699526ccecf89c5b088069f"
+    }
+  },
+  "primary_docs": {
+    "path": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-acl-repair-20261105/candidate-v1/official-api-docs-retrieval.json",
+    "bytes": 31441,
+    "sha256": "f4abb9bbc00dfbd4eae9aa90b2a43912f2419b13142dd59861f9df6057b1ce13",
+    "git_blob": "0d9d872caaeba7f47db99aecec71f2a1caea64e0"
+  },
+  "proof_layers": {
+    "legacy_error_contract": "Original raw proves exact outer path context and marker=false, with io::Error OS5 replacing historical named-setter text. Candidate requires typed PermissionDenied+OS5; no generic error acceptance.",
+    "acl_repair_rights": "Proposed repair handle combines original query right READ_CONTROL with original WRITE_DAC. Readonly/noop stage and every DACL rule remain unchanged. Native API errors on four original cases need fresh original Windows validation; not statically proved fixed.",
+    "directory_limit": "Official ReOpenFile explicitly supports directory handles with BACKUP_SEMANTICS. No claim that unsupported directories caused the original error5, or that READ_CONTROL is a documented universal setter requirement.",
+    "host_matrix_limit": "Originalfour-cell case failed host_errors before restricted token creation, not a second independent strict-token failure.",
+    "token_limit": "No token flag/SID/path-grant/ambient read/MIC/production constructor is changed. B11 remains OPEN even if this narrow repair passes."
+  },
+  "preserved": [
+    "Original public recursive DACL query and exact current-object complete-deny matcher.",
+    "No-op path requires only READ_CONTROL and returns before acquiring WRITE_DAC.",
+    "Original same retained object; no pathname re-resolution, security relaxation, fallback or error swallowing.",
+    "Original mask, SID, explicit/inherited scope, ordering, resource ownership and propagation API.",
+    "Original real no-WRITE_DAC physical control; same expected error5 and no-op/DACL byte assertions.",
+    "Original legacy fixture privilege restriction, named-setter refusal and fresh-WRITE_DAC denial checks, exact outer path and spawn marker=false.",
+    "All original strict token and process assertions, both four-cell matrices, and eight physical mechanism probe rows.",
+    "Original test roster/selection/ignored policy/retries/timeouts/dependencies/locks.",
+    "Original dedicated workflow runner, command, target, secrets reference, return status and artifact archive; only3 exact path triggers added."
+  ],
+  "classification": {
+    "path": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-acl-repair-20261105/candidate-v1/native4-failure-classification.json",
+    "bytes": 16807,
+    "sha256": "e3dafa5b1bec1b7f87c07829081937ad6dc8778cf6f09e0ac139c0bce2387fac",
+    "git_blob": "60a43463c1d9f2cbc798e0da33dd762d3157139b"
+  },
+  "static_checks": [
+    {
+      "path": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-acl-repair-20261105/candidate-v1/static-checks.json",
+      "bytes": 2651,
+      "sha256": "4c1796a1666b386a698651ed13f17398eea03b5da6778023c31015e231602c59",
+      "git_blob": "527d62bd167c7fe798a9672772dee4ea4e4f86e0"
+    },
+    {
+      "path": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-acl-repair-20261105/execution-candidate-v2/static-checks.json",
+      "bytes": 1525,
+      "sha256": "9b446ceb67433c024c7fa52b59f9894262ad60bd5ea67704faa5e2ff71b3878c",
+      "git_blob": "9aee932c2184bb2814247a4dec7a85e734b9c981"
+    }
+  ],
+  "author_review": {
+    "path": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-acl-repair-20261105/execution-candidate-v2/REVIEW.zh-CN.md",
+    "bytes": 5358,
+    "sha256": "9beda7ea260684fcca8bde55ce4711d472fc5b7b13653c3c34859b38930eb18b",
+    "git_blob": "ad3e0d971704edb2434e1cfda9db04b29981e329"
+  },
+  "execution": {
+    "status": "NOT_RUN",
+    "root_publish_or_enable_required": true,
+    "original_target": "//codex-rs/windows-sandbox-rs:windows-sandbox-rs-unit-tests",
+    "workflow": ".github/workflows/hepta-windows-token-mechanism-probe.yml",
+    "fresh_gate": "Same original whole Windows MSVC target; capture all155 original/probe results and actual reached assertions, preserve original2ignored; no selector/timeout/retry/expected-outcome changes. Do not predict whole-target PASS.",
+    "original_acl_cases": [
+      "acl::tests::existing_native_deny_does_not_require_write_dac",
+      "acl::tests::partial_read_deny_is_repaired_before_native_file_data_access",
+      "acl::tests::native_file_and_directory_repairs_are_idempotent_for_read_and_write",
+      "token::tests::partial_delete_deny_is_repaired_before_native_workspace_writes"
+    ],
+    "legacy_cases": [
+      "unified_exec::tests::acl_setup_tests::legacy_capture_rejects_deny_acl_setup_failure_before_spawn",
+      "unified_exec::tests::acl_setup_tests::legacy_session_rejects_deny_acl_setup_failure_before_spawn"
+    ]
+  },
+  "unperformed": [
+    "Native Windows API or ACL operations",
+    "Rust compile/format/Cargo/Bazel/project tests",
+    "Any native source/target or ref/PR mutation",
+    "Any workflow dispatch/rerun/cancel"
+  ],
+  "historical_v1_preserved": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-acl-repair-20261105/candidate-v1"
+}

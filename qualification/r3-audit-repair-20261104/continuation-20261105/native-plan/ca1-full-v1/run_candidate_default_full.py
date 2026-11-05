@@ -1,0 +1,568 @@
+"""Continue prepared Core source to the published candidate, then the original full gate.
+
+Only the reviewed12-file e78-to-ca1 transition, seven helpers and default full
+metadata/catalog/just-test recipe run. No hygiene, qualification feature scope,
+old B-driver access, source reset, resource relaxation or automatic retry.
+"""
+import base64
+import collections
+import datetime
+import gzip
+import hashlib
+import json
+import os
+from pathlib import Path
+import platform
+import shutil
+import stat
+import subprocess
+import sys
+import time
+import traceback
+
+ROOT = Path('/home/qq/work/hepta-core-musl-full-20261105')
+SOURCE = ROOT / 'source'
+TARGET = ROOT / 'target-dev-small'
+PARENT_OUT = ROOT / 'evidence'
+OUT = ROOT / 'candidate-default-full-v1'
+PRODUCT_COMMIT = '5b6331250ff459033bd44d1a95daec70131277cc'
+PRODUCT_TREE = 'b26598d0d97d8d51e723bb5582137315f2174d35'
+INITIAL_TREE = 'e78c819b8b1f435f8b37bea17b4ffdc724961aa2'
+FINAL_TREE = 'ca1c4671ef6b2773280d01b5d76c6166252f5856'
+PUBLICATION_COMMIT = 'eed4d6bb61b789b19f60facc79f9e031765fa4c9'
+PHASE_FREE = 64_000_000_000
+BUILD_MEM = 32 * 1024**3
+FROZEN_RUNNER_SHA = '1201a4a2fec8d508f781f8f55f31ef1e60fb67747d08c7ff66794404128e9ed0'
+
+
+def need(ok, message):
+    if not ok:
+        raise RuntimeError(message)
+
+
+def now():
+    return datetime.datetime.now(datetime.timezone.utc).isoformat()
+
+
+def identity(raw):
+    return {'bytes': len(raw), 'sha256': hashlib.sha256(raw).hexdigest(),
+            'git_blob': hashlib.sha1(f'blob {len(raw)}\0'.encode() + raw).hexdigest()}
+
+
+def stat_id(s):
+    return (s.st_dev, s.st_ino, s.st_size, s.st_mode, s.st_nlink,
+            s.st_mtime_ns, s.st_ctime_ns)
+
+
+def read_stable(path):
+    p = Path(path)
+    fd = os.open(p, os.O_RDONLY | os.O_NOFOLLOW | os.O_CLOEXEC)
+    try:
+        first = os.fstat(fd)
+        need(stat.S_ISREG(first.st_mode), 'not regular: ' + str(p))
+        with os.fdopen(fd, 'rb', closefd=False) as stream:
+            raw = stream.read()
+        last = os.fstat(fd)
+        need(stat_id(first) == stat_id(last) == stat_id(p.lstat()),
+             'physical input changed while reading: ' + str(p))
+        return raw
+    finally:
+        os.close(fd)
+
+
+def pinned(path, expected):
+    raw = read_stable(path)
+    actual = identity(raw)
+    need(all(actual[k] == expected[k] for k in ('bytes', 'sha256')),
+         'pinned bytes mismatch: ' + str(path))
+    return raw
+
+
+def file_record(path):
+    p = Path(path)
+    return {'path': str(p), **identity(read_stable(p)),
+            'mode': stat.S_IMODE(p.stat().st_mode),
+            'executable': os.access(p, os.X_OK)}
+
+
+def absent(path):
+    try:
+        Path(path).lstat()
+    except FileNotFoundError:
+        return
+    raise RuntimeError('owned path must be absent: ' + str(path))
+
+
+def capacity(label, floor, memory_required=False):
+    disk = os.statvfs(ROOT if ROOT.exists() else ROOT.parent)
+    mem = {}
+    for line in Path('/proc/meminfo').read_text().splitlines():
+        if ':' in line:
+            key, value = line.split(':', 1)
+            mem[key] = value.strip()
+    available = int(mem['MemAvailable'].split()[0]) * 1024
+    result = {'label': label, 'at': now(), 'free_bytes': disk.f_bavail * disk.f_frsize,
+              'minimum_free_bytes': floor, 'mem_available_bytes': available,
+              'minimum_mem_available_bytes': BUILD_MEM if memory_required else None,
+              'cpu_count': os.cpu_count(), 'loadavg': Path('/proc/loadavg').read_text(),
+              'measured_peak': False}
+    need(result['free_bytes'] >= floor, 'cold capacity prerequisite: ' + json.dumps(result))
+    need(not memory_required or available >= BUILD_MEM,
+         'cold build memory prerequisite: ' + json.dumps(result))
+    return result
+
+
+def verify_prerequisites(readiness, environment, tools):
+    files = []
+    for original in readiness['files']:
+        path = original['path']
+        raw = pinned(path, {'bytes': original['read_bytes'], 'sha256': original['sha256']})
+        s = Path(path).lstat()
+        files.append({'path': path, **identity(raw), 'stat_identity': list(stat_id(s))})
+    by_path = {row['path']: row for row in files}
+    links = []
+    for original in readiness['links']:
+        path = Path(original['path'])
+        before = path.lstat()
+        need(stat.S_ISLNK(before.st_mode), 'SDK alias no longer symlink: ' + str(path))
+        text = os.readlink(path)
+        resolved = path.resolve(strict=True)
+        need(text == original['link_target'] and str(resolved) == original['resolved_path'],
+             'SDK alias drift: ' + str(path))
+        need(stat_id(before) == stat_id(path.lstat()), 'SDK alias changed while reading')
+        need(list(stat_id(resolved.stat())) == by_path[str(resolved)]['stat_identity'],
+             'SDK target changed after byte verification')
+        links.append({'path': str(path), 'link_target': text, 'resolved_path': str(resolved),
+                      'stat_identity': list(stat_id(before))})
+    need(len(files) == 171 and len(links) == 147, 'fixed readiness physical roster')
+    for tool in tools:
+        observed = by_path[tool['path']]
+        need(all(observed[k] == tool[k] for k in ('bytes', 'sha256')), 'tool pin mismatch')
+        resolved = shutil.which(tool['name'], path=environment['PATH'])
+        need(resolved and Path(resolved).resolve() == Path(tool['path']).resolve(),
+             'actual tool PATH resolution: ' + tool['name'])
+        need(os.access(tool['path'], os.X_OK), 'tool is not executable')
+    return {'at': now(), 'files': files, 'links': links, 'tool_count': len(tools),
+            'qualification': 'Current physical input reads only; historical version strings are unchanged.'}
+
+
+def save(name, raw):
+    p = OUT / name
+    with p.open('xb') as stream:
+        stream.write(raw)
+    return file_record(p)
+
+
+def save_json(name, value):
+    return save(name, (json.dumps(value, indent=2) + '\n').encode())
+
+
+def decode_stage_inputs(envelope):
+    need(isinstance(envelope, dict), 'final candidate input is unbound')
+    packed = base64.b64decode(envelope['gzip_base64'], validate=True)
+    need(len(packed) == envelope['gzip_bytes']
+         and hashlib.sha256(packed).hexdigest() == envelope['gzip_sha256'],
+         'candidate compressed input identity')
+    raw = gzip.decompress(packed)
+    need(identity(raw) == envelope['identity'], 'candidate complete input identity')
+    return json.loads(raw), raw
+
+
+def bind_candidate(initial, stage_inputs, tree_hash):
+    need(stage_inputs['initial_tree'] == INITIAL_TREE
+         and stage_inputs['candidate_tree'] == FINAL_TREE
+         and stage_inputs['publication_commit'] == PUBLICATION_COMMIT,
+         'published candidate binding')
+    changes = stage_inputs['changes']
+    need(len(changes) == 12 and len({row['path'] for row in changes}) == 12,
+         'exact twelve changes from e78')
+    result = dict(initial)
+    decoded = []
+    for row in changes:
+        path = row['path']
+        relative = Path(path)
+        need(path == relative.as_posix() and not relative.is_absolute()
+             and '..' not in relative.parts and '.git' not in relative.parts
+             and '\\' not in path and path != '.', 'invalid source relative path')
+        before = initial.get(path)
+        expected = row['before']
+        need((before is None) == (expected is None), 'source new/existing preimage shape')
+        if before is not None:
+            need(all(before[k] == expected[k] for k in ('mode', 'sha')),
+                 'source mapped preimage: ' + path)
+            need(before['mode'] in ('100644', '100755'), 'only regular source transitions')
+        body = base64.b64decode(row['base64'], validate=True)
+        need(identity(body) == row['identity'] and row['mode'] in ('100644', '100755'),
+             'candidate postimage: ' + path)
+        result[path] = {'path': path, 'mode': row['mode'], 'sha': row['identity']['git_blob'],
+                        'type': 'blob', 'size': len(body)}
+        decoded.append((row, body))
+    need(sum(row['before'] is None for row in changes) == 2
+         and len(result) == 10582 and tree_hash(result.values()) == FINAL_TREE,
+         'complete published10582-leaf candidate tree')
+    return result, decoded
+
+
+def normalized_graph(value, source_directory):
+    result = json.loads(json.dumps(value))
+    prefix = 'path+file://' + source_directory.rstrip('/')
+
+    def package_id(text):
+        if text.startswith('path+file://'):
+            need(text.startswith(prefix + '/') or text.startswith(prefix + '#'),
+                 'unexpected local package source outside the explicitly bound workspace')
+            return 'path+file://<TASK_SOURCE>' + text[len(prefix):]
+        return text
+
+    result['workspace_members'] = sorted(package_id(v) for v in result['workspace_members'])
+    for node in result['nodes']:
+        node['id'] = package_id(node['id'])
+        for dependency in node['deps']:
+            dependency['pkg'] = package_id(dependency['pkg'])
+        node['deps'].sort(key=lambda value: (value['name'], value['pkg']))
+    result['nodes'].sort(key=lambda value: value['id'])
+    return result
+
+
+def apply_candidate(runner, candidate, decoded, tree_hash):
+    runner.capacity('candidate-transition-before')
+    runner.source_guard('candidate-transition-before')
+    staging = OUT / 'source-staging'
+    backup = OUT / 'source-preimages'
+    staging.mkdir()
+    backup.mkdir()
+    journal = OUT / 'candidate-source-transitions.jsonl'
+    for number, (change, body) in enumerate(decoded):
+        path = SOURCE / change['path']
+        before = change['before']
+        if before is None:
+            absent(path)
+            previous = None
+            before_stat = None
+        else:
+            previous = read_stable(path)
+            before_stat = path.lstat()
+            need(identity(previous)['git_blob'] == before['sha']
+                 and bool(before_stat.st_mode & 0o111) == (before['mode'] == '100755'),
+                 'physical source preimage changed: ' + change['path'])
+        for ancestor in path.parents:
+            if ancestor == SOURCE:
+                break
+            need(not ancestor.is_symlink(), 'source parent symlink: ' + str(ancestor))
+        missing = []
+        parent = path.parent
+        while not parent.exists():
+            missing.append(parent)
+            parent = parent.parent
+        need(parent.resolve().is_relative_to(SOURCE), 'source parent escapes owned checkout')
+        for directory in reversed(missing):
+            directory.mkdir()
+            with journal.open('a') as stream:
+                stream.write(json.dumps({'created_directory': str(directory), 'at': now()}) + '\n')
+        previous_record = None
+        if previous is not None:
+            copy = backup / ('%03d.before' % number)
+            with copy.open('xb') as stream:
+                stream.write(previous)
+            copy.chmod(stat.S_IMODE(before_stat.st_mode))
+            previous_record = file_record(copy)
+        temporary = staging / ('%03d.post' % number)
+        with temporary.open('xb') as stream:
+            stream.write(body)
+        temporary.chmod(0o755 if change['mode'] == '100755' else 0o644)
+        if before is None:
+            # Exclusive publication refuses any file that appeared after absence checks.
+            os.link(temporary, path, follow_symlinks=False)
+            temporary.unlink()
+        else:
+            need(stat_id(path.lstat()) == stat_id(before_stat),
+                 'existing source changed immediately before atomic replacement')
+            os.replace(temporary, path)
+        runner.expected[change['path']] = candidate[change['path']]
+        runner.expected_tree = tree_hash(runner.expected.values())
+        row = {'path': change['path'], 'before': before, 'preimage_copy': previous_record,
+               'post': file_record(path), 'working_tree_after_write': runner.expected_tree,
+               'at': now()}
+        runner.transitions.append(row)
+        with journal.open('a') as stream:
+            stream.write(json.dumps(row) + '\n')
+    need(runner.expected_tree == FINAL_TREE and runner.expected == candidate,
+         'source transition did not reach the exact published tree')
+    runner.source_guard('published-candidate-installed')
+
+
+def main(request, raw_request):
+    terminal = {'schema': 'ai395-core-candidate-default-full-terminal-v1', 'started_at': now(),
+                'tests_executed': 0, 'metadata_executed': 0, 'catalogs_executed': 0,
+                'hygiene_executed': 0, 'prior_B_mutated': False,
+                'source_mutations': [], 'build_commands': [],
+                'scope': 'Reviewed source transition, original seven helpers and default complete workspace gate only.',
+                'full_gate': 'NOT_STARTED', 'hygiene': 'NOT_STARTED',
+                'qualification_feature_scope': 'NOT_STARTED_SEPARATE_REVIEW_REQUIRED'}
+    created = False
+    runner = None
+    parent_request = None
+    readiness = None
+    environment = None
+    code = 1
+    try:
+        need(request.get('execute') is True and request.get('root_execution_guard'), 'disabled')
+        need(request['stage'] == 'PUBLISHED_CANDIDATE_C1_DEFAULT_FULL', 'fixed candidate/full stage')
+        need(request['idempotency_key'] == 'hepta-ai395-core-candidate-ca1-full-20261105-v1', 'fixed new candidate key')
+        need(platform.node() == 'ai395' and platform.system() == 'Linux'
+             and platform.machine() == 'x86_64' and os.getuid() == os.geteuid() == 1000,
+             'actual configured host identity')
+        for directory in (ROOT, SOURCE, TARGET, PARENT_OUT):
+            need(directory.is_dir() and directory.resolve(strict=True) == directory,
+                 'existing owned directory must be physical: ' + str(directory))
+        absent(OUT)
+
+        parent_raw = pinned(PARENT_OUT / 'preparation-terminal.json', request['parent_terminal'])
+        parent = json.loads(parent_raw)
+        need(parent['state'] == 'PREPARATION_STOPPED_AT_ACTUAL_FAILURE'
+             and parent['controller_exit_code'] == 1 and parent['build_commands'] == []
+             and 'cold build memory prerequisite' in parent['error']
+             and parent['source_expected_at_stop'] == INITIAL_TREE,
+             'actual C0-complete/C1-not-started parent prerequisite')
+        parent_guard_raw = pinned(PARENT_OUT / 'preparation-final-source-guard.json', request['parent_source_guard'])
+        parent_guard = json.loads(parent_guard_raw)
+        need(parent_guard == parent['final_source_guard'], 'parent final guard exact relation')
+        need(parent_guard['source_tree'] == INITIAL_TREE and parent_guard['leaf_count'] == 10580
+             and parent_guard['ordinary_head'] == PRODUCT_COMMIT
+             and parent_guard['ordinary_index']['bytes'] == 1401599
+             and parent_guard['ordinary_index']['sha256'] == 'b488256c0552f9ff6d6030b3a1738721dec54ffb5d2a2b56d99100943f04ed19'
+             and parent_guard['unexpected_untracked'] == [], 'fixed C0 identity')
+        latest_raw = pinned(ROOT / 'c1-resume-e78-v1/C1-resume-terminal.json', request['latest_C1_terminal'])
+        latest = json.loads(latest_raw)
+        need(latest['state'] == 'C1_STOPPED_AT_ACTUAL_FAILURE'
+             and latest['controller_exit_code'] == 1 and latest['build_commands'] == []
+             and 'cold build memory prerequisite' in latest['error']
+             and latest['source_expected_at_stop'] == INITIAL_TREE,
+             'latest actual C1 memory stop, not a compile failure or retry result')
+        latest_guard_raw = pinned(ROOT / 'c1-resume-e78-v1/C1-resume-final-source-guard.json',
+                                  request['latest_C1_source_guard'])
+        latest_guard = json.loads(latest_guard_raw)
+        need(latest_guard == latest['final_source_guard']
+             and latest_guard['source_tree'] == INITIAL_TREE
+             and latest_guard['ordinary_head'] == PRODUCT_COMMIT
+             and latest_guard['ordinary_index'] == parent_guard['ordinary_index']
+             and latest_guard['locks'] == parent_guard['locks']
+             and latest_guard['unexpected_untracked'] == [], 'latest physical source continuity')
+        latest_prerequisites_raw = pinned(ROOT / 'c1-resume-e78-v1/prerequisites-final.json',
+                                          latest['final_prerequisites'])
+        parent_request_raw = pinned(PARENT_OUT / 'execution-request.json', request['parent_request'])
+        parent_request = json.loads(parent_request_raw)
+        need(parent_request['execute'] is True and parent_request['root_execution_guard']
+             and parent_request['stage'] == 'prepare'
+             and parent_request['idempotency_key'] == 'hepta-ai395-core-cold-prepare-20261105-v1',
+             'original enabled C0 request')
+        observation_raw = pinned(ROOT / 'readiness-after-memory-stop-v1/readonly-terminal.json', request['historical_readonly_observation'])
+        observation = json.loads(observation_raw)
+        need(observation['state'] == 'OBSERVED_FOR_ROOT_RESOURCE_DECISION'
+             and observation['exit_code'] == 0 and observation['builds_executed'] == 0
+             and observation['tests_executed'] == 0
+             and observation['source_after']['source_tree'] == INITIAL_TREE,
+             'actual one-shot observation is provenance, not a replacement for fresh capacity')
+        readiness_raw = pinned(PARENT_OUT / 'parent-readiness.original.json', parent_request['readiness'])
+        readiness = json.loads(readiness_raw)
+        need(readiness['status'] == 'PINNED_BYTES_AND_HOST_OBSERVED'
+             and readiness['exit_code'] == 0 and readiness['tests_executed'] == readiness['builds_executed'] == 0,
+             'original actual physical prerequisite roster')
+
+        original_raw = pinned(PARENT_OUT / 'original-ROG-request-input-only.json', request['original_input_request'])
+        original = json.loads(original_raw)
+        frozen_source = pinned(PARENT_OUT / 'original-V3-reference-runner.py', request['original_reference_runner'])
+        need(frozen_source == original['runner']['source'].encode()
+             and hashlib.sha256(frozen_source).hexdigest() == FROZEN_RUNNER_SHA,
+             'unchanged original V3 definitions')
+        nested = original['inputs']
+        packed = base64.b64decode(nested['gzip_base64'], validate=True)
+        need(hashlib.sha256(packed).hexdigest() == nested['gzip_sha256'], 'nested compressed input pin')
+        raw_inputs = gzip.decompress(packed)
+        need(len(raw_inputs) == nested['bytes'] and hashlib.sha256(raw_inputs).hexdigest() == nested['sha256'],
+             'original complete source maps and rosters')
+        inputs = json.loads(raw_inputs)
+        namespace = {'__name__': 'frozen_original_V3_reference_only'}
+        exec(compile(frozen_source.decode(), 'fixed-original-V3-reference.py', 'exec'), namespace)
+        Base = namespace['Runner']
+        tree_hash = namespace['tree_hash']
+        product = {row['path']: row for row in inputs['product_leaves']}
+        need(len(product) == 10580 and tree_hash(product.values()) == PRODUCT_TREE, 'complete product source map')
+        candidate = dict(product)
+        for post in inputs['candidate_posts']:
+            raw = base64.b64decode(post['base64'], validate=True)
+            need(identity(raw) == post['identity'], 'original reviewed candidate post bytes')
+            candidate[post['path']] = {'path': post['path'], 'mode': '100644',
+                                      'sha': post['identity']['git_blob'], 'type': 'blob', 'size': len(raw)}
+        need(len(inputs['candidate_posts']) == 2 and tree_hash(candidate.values()) == INITIAL_TREE,
+             'unchanged e78 candidate source map')
+
+        stage_inputs, stage_raw = decode_stage_inputs(request['candidate_inputs'])
+        final_candidate, decoded_changes = bind_candidate(candidate, stage_inputs, tree_hash)
+        historical = stage_inputs['historical_graph_reference']
+        original_reference = inputs['historical_full_metadata']
+        need(historical['source_directory'] == original['plan']['source_directory']
+             and historical['raw_metadata_identity']['bytes'] == original_reference['bytes']
+             and historical['raw_metadata_identity']['sha256'] == original_reference['sha256']
+             and historical['source_tree'] == original_reference['source_tree'],
+             'historical raw metadata provenance remains original, not current-host qualification')
+        graph_raw = (json.dumps(historical['graph'], sort_keys=True, separators=(',', ':')) + '\n').encode()
+        need(identity(graph_raw) == historical['graph_identity'], 'complete historical graph bytes')
+        need(len(historical['graph']['workspace_members']) == 193
+             and len(historical['graph']['nodes']) == 1501, 'complete original graph dimensions')
+        need(len(inputs['full_roster']) == 19563, 'original complete default workspace roster')
+        environment = os.environ.copy()
+        environment.update(parent_request['environment'])
+        for key, suffix in {'CARGO_HOME': 'cargo-home', 'CARGO_TARGET_DIR': 'target-dev-small',
+                            'DOTSLASH_CACHE': 'dotslash-cache', 'UV_CACHE_DIR': 'uv-cache',
+                            'PYTHONPYCACHEPREFIX': 'python-pycache', 'RUSTUP_HOME': 'rustup-home'}.items():
+            need(environment[key] == str(ROOT / suffix), 'task-owned writable path: ' + key)
+        need(environment['GIT_OPTIONAL_LOCKS'] == '0' and environment['CARGO_BUILD_JOBS'] == '4'
+             and environment['CARGO_INCREMENTAL'] == '0' and environment['GIT_TERMINAL_PROMPT'] == '0',
+             'unchanged reviewed build controls')
+        for name in ('RUSTFLAGS', 'CARGO_ENCODED_RUSTFLAGS', 'RUSTC_WRAPPER', 'RUSTC_WORKSPACE_WRAPPER',
+                     'CARGO_PROFILE_DEV_DEBUG', 'CARGO_PROFILE_DEV_OPT_LEVEL', 'RUST_TEST_THREADS',
+                     'CODEX_SKIP_BWRAP_BUILD', 'CODEX_TEST_BLOCKING_SNAPSHOT_CHILD',
+                     'GIT_INDEX_FILE', 'GIT_DIR', 'GIT_WORK_TREE', 'GIT_OBJECT_DIRECTORY',
+                     'GIT_ALTERNATE_OBJECT_DIRECTORIES'):
+            need(not os.environ.get(name), 'unreviewed injection variable name: ' + name)
+
+        OUT.mkdir(mode=0o700)
+        created = True
+        save('execution-request.json', raw_request)
+        save('parent-C0-terminal.original.json', parent_raw)
+        save('parent-C0-final-source-guard.original.json', parent_guard_raw)
+        save('parent-C0-request.original.json', parent_request_raw)
+        save('historical-readonly-observation.original.json', observation_raw)
+        save('prior-C1-resource-stop.original.json', latest_raw)
+        save('prior-C1-final-source-guard.original.json', latest_guard_raw)
+        save('prior-C1-final-prerequisites.original.json', latest_prerequisites_raw)
+        save('candidate-stage-inputs.json', stage_raw)
+        save('historical-full-graph.json', graph_raw)
+        class CandidateRunner(Base):
+            def capacity(self, label, minimum=PHASE_FREE, write=True):
+                value = capacity(label, max(minimum, PHASE_FREE), memory_required=True)
+                if write:
+                    self.save(label + '-capacity', value)
+                return value
+
+            def source_guard(self, label, write=True):
+                result = Base.source_guard(self, label, write=write)
+                observed = verify_prerequisites(readiness, self.env, parent_request['tools'])
+                if write:
+                    self.save(label + '-prerequisites', observed)
+                return result
+
+        runner = CandidateRunner.__new__(CandidateRunner)
+        runner.created_owned_root = True
+        runner.root, runner.source, runner.target, runner.out = ROOT, SOURCE, TARGET, OUT
+        runner.env = environment
+        runner.commands, runner.reviews, runner.transitions, runner.failures = [], [], [], []
+        runner.run_ids = set()
+        runner.expected, runner.product, runner.candidate = candidate, product, candidate
+        runner.expected_tree = INITIAL_TREE
+        runner.r = {'plan': {}, 'junit_path': str(SOURCE / 'codex-rs/target/nextest/local/junit.xml')}
+        runner.p = {'ordinary_head': PRODUCT_COMMIT, 'ordinary_index': parent_guard['ordinary_index'],
+                    'locks': original['plan']['locks'], 'tools': parent_request['tools'],
+                    'external_build_inputs': parent_request['external_build_inputs']}
+        runner.source_guard('candidate-stage-entry-e78')
+        terminal['entry_capacity'] = save_json('entry-capacity.json', capacity('candidate-stage-entry', PHASE_FREE, memory_required=True))
+        terminal['initial_prerequisites'] = save_json('prerequisites-initial.json',
+            verify_prerequisites(readiness, environment, parent_request['tools']))
+        apply_candidate(runner, final_candidate, decoded_changes, tree_hash)
+        terminal['published_commit'] = PUBLICATION_COMMIT
+        terminal['published_working_tree'] = FINAL_TREE
+        terminal['ordinary_checkout_HEAD_retained'] = PRODUCT_COMMIT
+        row = runner.command('cold-normal-seven-helpers', original['plan']['phases'][3]['commands'][0])
+        need(row['exit_code'] == 0, 'cold helper build failed; keep actual raw and stop')
+        wanted = {'test_arg0_preflight', 'codex-code-mode-host', 'codex-execve-wrapper',
+                  'test_stdio_server', 'test_streamable_http_server', 'codex-exec', 'codex'}
+        artifacts, finished = [], []
+        for line in Path(row['stdout']['path']).read_text().splitlines():
+            value = json.loads(line)
+            if value.get('reason') == 'build-finished':
+                finished.append(value)
+            if value.get('reason') == 'compiler-artifact' and value.get('executable') and value['target']['name'] in wanted:
+                path = Path(value['executable'])
+                need(path.resolve().is_relative_to(TARGET.resolve()), 'normal helper outside new target')
+                artifacts.append({'target': value['target']['name'], 'package_id': value['package_id'],
+                                  'features': value['features'], 'fresh': value['fresh'], **file_record(path)})
+        need(finished == [{'reason': 'build-finished', 'success': True}], 'one real successful build finish')
+        need(collections.Counter(row['target'] for row in artifacts) == collections.Counter(wanted),
+             'exact seven actual normal helpers')
+        save_json('normal-seven-helper-receipt.json', artifacts)
+        runner.source_guard('C1-current-candidate-build-complete')
+        terminal['C1_helpers'] = file_record(OUT / 'normal-seven-helper-receipt.json')
+        fullphase = original['plan']['phases'][5]
+        metadata_row = runner.command('candidate-full-metadata', fullphase['commands'][0])
+        need(metadata_row['exit_code'] == 0, 'complete metadata command failed')
+        metadata = json.loads(Path(metadata_row['stdout']['path']).read_bytes())
+        need(metadata['workspace_root'] == str(SOURCE / 'codex-rs'), 'actual metadata workspace path')
+        actual_graph = namespace['graph'](metadata)
+        need(normalized_graph(actual_graph, str(SOURCE)) ==
+             normalized_graph(historical['graph'], historical['source_directory']),
+             'whole193/1501 feature/dependency graph differs beyond explicit source-directory IDs')
+        need(sorted(metadata['workspace_default_members']) == sorted(metadata['workspace_members']),
+             'default members narrow the complete workspace')
+        graph_receipt = {'source_tree': runner.expected_tree, 'command': metadata_row,
+                         'historical_raw_metadata': historical['raw_metadata_identity'],
+                         'historical_source_tree': historical['source_tree'],
+                         'historical_graph_identity': historical['graph_identity'],
+                         'normalization': {'old_source': historical['source_directory'],
+                                           'new_source': str(SOURCE),
+                                           'only_fields': ['workspace_members', 'nodes.id', 'nodes.deps.pkg']},
+                         'members': len(metadata['workspace_members']), 'nodes': len(metadata['resolve']['nodes']),
+                         'full_resolve_projection_equal': True}
+        save_json('metadata-binding.json', graph_receipt)
+        _, selection = runner.catalog('full-workspace-catalog', fullphase['commands'][1],
+                                      artifacts, inputs['full_roster'])
+        terminal['full_gate'] = 'RUNNING_ORIGINAL_DEFAULT_WORKSPACE'
+        full = runner.nextest('original-full-workspace', fullphase['commands'][2], selection)
+        terminal['full_gate'] = 'PASS' if full['suite_passed'] else 'NONPASS'
+        terminal['full_result'] = {'review': file_record(OUT / 'original-full-workspace-review.json'),
+                                   'counts': full['counts'], 'retries': full['retries'],
+                                   'ignored': full['original_ignored_count'],
+                                   'observed_early_return_candidates': len(full['raw_early_return_candidates']),
+                                   'qualification_limit': 'JUnit/command results are separate from behavior omitted by observed early returns.'}
+        terminal['state'] = 'DEFAULT_FULL_TERMINAL_ROOT_REVIEW_REQUIRED'
+        code = 0 if full['suite_passed'] else 1
+    except BaseException as error:
+        terminal.update({'state': 'CANDIDATE_STAGE_STOPPED_AT_ACTUAL_FAILURE',
+                         'error': repr(error), 'traceback': traceback.format_exc()})
+    finally:
+        if runner is not None:
+            terminal['commands'] = runner.commands
+            terminal['build_commands'] = [row for row in runner.commands if row['label'] == 'cold-normal-seven-helpers']
+            terminal['metadata_executed'] = sum(row['label'] == 'candidate-full-metadata' for row in runner.commands)
+            terminal['catalogs_executed'] = sum(row['label'] == 'full-workspace-catalog' for row in runner.commands)
+            terminal['tests_executed'] = sum(row['label'] == 'original-full-workspace' for row in runner.commands)
+            terminal['source_mutations'] = runner.transitions
+            terminal['source_expected_at_stop'] = runner.expected_tree
+            try:
+                terminal['final_source_guard'] = runner.source_guard('candidate-default-full-final')
+            except BaseException as error:
+                terminal['final_guard_error'] = repr(error)
+                terminal['scope_conclusion_before_final_guard_failure'] = terminal['full_gate']
+                terminal['full_gate'] = 'OPEN_FINAL_GUARD_FAILURE'
+                code = 1
+        if created:
+            try:
+                terminal['final_prerequisites'] = save_json('prerequisites-final.json',
+                    verify_prerequisites(readiness, environment, parent_request['tools']))
+                terminal['final_capacity'] = capacity('candidate-default-full-final', PHASE_FREE, memory_required=True)
+            except BaseException as error:
+                terminal['final_input_or_capacity_error'] = repr(error)
+                terminal['scope_conclusion_before_final_input_or_capacity_failure'] = terminal['full_gate']
+                terminal['full_gate'] = 'OPEN_FINAL_INPUT_OR_CAPACITY_FAILURE'
+                code = 1
+        terminal['completed_at'] = now()
+        terminal['controller_exit_code'] = code
+        if created:
+            save_json('candidate-default-full-terminal.json', terminal)
+        print(json.dumps({'candidate_default_full_terminal': terminal}), flush=True)
+    return code
+
+
+if __name__ == '__main__':
+    raw = sys.stdin.buffer.read()
+    raise SystemExit(main(json.loads(raw), raw))

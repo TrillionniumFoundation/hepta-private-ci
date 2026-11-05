@@ -1,0 +1,10 @@
+Traceback (most recent call last):
+  File "/workspace/scratch/07dd58cc9630/research-audit/inventory-blob-packaging-20261105/validation/qualification/r3-audit-repair-20261104/repository-inventory-20261105/restore_inventory.py", line 127, in <module>
+    main()
+  File "/workspace/scratch/07dd58cc9630/research-audit/inventory-blob-packaging-20261105/validation/qualification/r3-audit-repair-20261104/repository-inventory-20261105/restore_inventory.py", line 113, in main
+    with args.output.open("xb") as output:
+         ^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/pathlib.py", line 1013, in open
+    return io.open(self, mode, buffering, encoding, errors, newline)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+FileExistsError: [Errno 17] File exists: '/workspace/scratch/07dd58cc9630/research-audit/inventory-blob-packaging-20261105/validation/complete-inventory.restored.json'

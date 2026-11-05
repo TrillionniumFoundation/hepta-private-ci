@@ -1,0 +1,268 @@
+{
+  "schema": "b11-c05-strict-label-ace-fixture-repair-v1",
+  "status": "STATIC_SOURCE_CANDIDATE_PENDING_INDEPENDENT_REVIEW_AND_FRESH_WINDOWS_TARGET",
+  "scope": "One cfg(test) support module; diagnostic fixture semantics only, no sandbox isolation qualification.",
+  "base": {
+    "pr": 4884,
+    "head": "c05dc16cc055e58d020d848d2bca0ff04736e7c2",
+    "head_tree": "6646c0b2670b5877f46b80494c042c9d3fe9ec42",
+    "actual_checkout_commit": "bd3d9e96b8a568d0ba26dc3e7e55a00a61c8650f",
+    "actual_checkout_tree": "6646c0b2670b5877f46b80494c042c9d3fe9ec42",
+    "main_product_4797_unchanged": true
+  },
+  "source": {
+    "path": "codex-rs/windows-sandbox-rs/src/token_integrity_probe_support.rs",
+    "mode": "100644",
+    "pre": {
+      "local_path": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-pr4884-ci-20261105/repair-label-ace-semantics-v1/source/codex-rs/windows-sandbox-rs/src/token_integrity_probe_support.rs",
+      "bytes": 13465,
+      "sha256": "018166e25f5e2014d2ae0f74c58252af85625f88a43fa320573926d491e1225a",
+      "git_blob": "47dddb48c727c1bcae89b613409a72bd7d1312ff"
+    },
+    "post": {
+      "local_path": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-pr4884-ci-20261105/repair-label-ace-semantics-v1/candidate/codex-rs/windows-sandbox-rs/src/token_integrity_probe_support.rs",
+      "bytes": 17560,
+      "sha256": "986fe8864f789e4bfa876553d99f1949be403f5ed10b9c88fdc8e0fd7331c0d1",
+      "git_blob": "7a7008f9becf09578ca953c849401eda93eb94b2"
+    }
+  },
+  "patch": {
+    "local_path": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-pr4884-ci-20261105/repair-label-ace-semantics-v1/repair.patch",
+    "bytes": 8055,
+    "sha256": "4ee7ad086af52af9832b843b574e4d59305e41fcc162218992a903a036a6ce25",
+    "git_blob": "03f5ee7e4122d22189b8056ef0137f820943c1ac"
+  },
+  "change_size": {
+    "added": 71,
+    "deleted": 5,
+    "paths": 1
+  },
+  "actual_failure": {
+    "run": 42053829668,
+    "job": 127336717141,
+    "attempt": 1,
+    "conclusion": "failure",
+    "job_log": {
+      "local_path": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-pr4884-ci-20261105/terminal/probe-127336717141/job.log",
+      "bytes": 306142,
+      "sha256": "4d30992655422af664f659780e1549daa80f9545eff2a4f3bfd9defc15734beb",
+      "git_blob": "a5bad004d7d3c47b0a02049c9e797c9d62832869"
+    },
+    "complete_test_log": {
+      "local_path": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-pr4884-ci-20261105/terminal/probe-127336717141/members/bazel-execution-logs/failed-test-logs/invocation-4ln_urq0/targets/0000/test.log",
+      "bytes": 39506,
+      "sha256": "1781c270bf00f5fa7a9b6735b1f8ea206489207d9dd8340d6cae5633fc23f79c",
+      "git_blob": "0e6e864a6c9fbfb9684280b384d93e09df032226"
+    },
+    "original_observation": [
+      {
+        "line": 166,
+        "raw": "PROBE_OBSERVATION_ONLY initial_label path=\"D:\\\\tmp\\\\.tmpyieOXk\\\\host-medium\\\\inside\" actual=\"S:AI(ML;;NW;;;ME)\" expected=\"S:(ML;;NW;;;ME)\""
+      }
+    ],
+    "probe_error": "created object did not preserve its explicit initial label",
+    "complete_physical_rows": 0,
+    "counts_from_two_disjoint_libtest_summaries": {
+      "passed": 139,
+      "failed": 14,
+      "ignored": 2
+    },
+    "not_all_failures_are_probe_failure": true
+  },
+  "contract": {
+    "label_ace": "Require a present non-NULL valid ACL containing exactly one ACE; GetAce index zero must lie wholly within the validated ACL. Require mandatory label ACE type and a bounded one-subauthority valid SID with SECURITY_MANDATORY_LABEL_AUTHORITY. Derived equality checks exact ACE type, ACE inheritance flags, policy mask and all SID bytes including revision/authority/RID. No string trimming, prefix removal or mask relaxation.",
+    "acl_control": "AI is an SDDL ACL control token. Original actual label SDDL and numeric descriptor control/revision remain observed; template-vs-object label equality compares the precise label ACE rather than requiring the template to acquire native ACL control bits.",
+    "original_custody": "The actual Descriptor allocation captured from the same retained handle is unchanged and kept intact. No descriptor control mutation API is added. Existing survivor restore still applies that original label and requires complete ALL_INFO string equality, now also exact descriptor control/revision equality. Deleted pending objects retain the original close/name-check behavior; they are not resurrected.",
+    "label_apply_and_finish": "Both after-set and pre-finish mandatory-label checks use the same strict single-ACE predicate. Owner/group/DACL equality and same-object identity assertions remain exact. Original expected label SDDL remains in observation JSON.",
+    "same_object": "No new handles or path opens, no sharing/rights changes, no production flags, no timing changes. All added Windows calls query the existing native descriptor, except existing label setter which remains byte-identical."
+  },
+  "unchanged": {
+    "physical_probe_test_file": {
+      "local_path": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-mic-physical-probe-20261105/candidate/codex-rs/windows-sandbox-rs/src/token_integrity_probe_tests.rs",
+      "bytes": 14475,
+      "sha256": "5fe644714b4180dd4bbb988452a4c8464524149eda1a91af0af8879761f448ab",
+      "git_blob": "2a384792e8ba88518c26943716e8c3a39a523f9b"
+    },
+    "eight_rows_and_final_assertions_unchanged": true,
+    "three_original_strict_and_two_matrix_cases_unchanged": true,
+    "original_AccessCheck_body_unchanged": true,
+    "workflow_Bazel_argv_budget_selection_status_unchanged": true,
+    "source_block_byte_comparisons": {
+      "pub(super) fn from_sddl": true,
+      "fn read(": true,
+      "fn text(": true,
+      "fn apply_label(": true,
+      "pub(super) fn create(": true,
+      "fn identity(": true,
+      "pub(super) fn access_checks(": true,
+      "impl Drop for LabelledObject": true
+    },
+    "cargo": {
+      "local_path": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-mic-physical-probe-20261105/source/codex-rs/windows-sandbox-rs/Cargo.toml",
+      "bytes": 2438,
+      "sha256": "183a3691be018640668dfb766f29651d8fd75ab08f7fd526f3d378ae2a86469d",
+      "git_blob": "aa41ed5f08608c0275785b2f5e27ec5db08f50dd"
+    },
+    "existing_required_features": [
+      "Win32_Foundation",
+      "Win32_Security",
+      "Win32_System_SystemServices"
+    ],
+    "new_dependencies_or_features": []
+  },
+  "primary_sources": [
+    {
+      "repository": "MicrosoftDocs/win32",
+      "path": "desktop-src/SecAuthZ/security-descriptor-string-format.md",
+      "requested_ref": "docs",
+      "blob": "f06e267f0a3f4ef401a097b9763c3523970d8768",
+      "bytes": 9969,
+      "sha256": "3b56039d85c073f27252cd54e80b44dd17611123f8844edbac3cf0a45dc493c0",
+      "url": "https://github.com/MicrosoftDocs/win32/blob/docs/desktop-src/SecAuthZ/security-descriptor-string-format.md"
+    },
+    {
+      "repository": "MicrosoftDocs/sdk-api",
+      "path": "sdk-api-src/content/winnt/ns-winnt-system_mandatory_label_ace.md",
+      "requested_ref": "docs",
+      "blob": "c161d8f0883f4476275dda10a40f0fcbd2071078",
+      "bytes": 5200,
+      "sha256": "74360cef42c0883041273e0180f6b14c3997fe293504dda5ded62172e6ace2ac",
+      "url": "https://github.com/MicrosoftDocs/sdk-api/blob/docs/sdk-api-src/content/winnt/ns-winnt-system_mandatory_label_ace.md"
+    },
+    {
+      "repository": "MicrosoftDocs/sdk-api",
+      "path": "sdk-api-src/content/securitybaseapi/nf-securitybaseapi-getsecuritydescriptorsacl.md",
+      "requested_ref": "docs",
+      "blob": "1be1075e1877be8755cedf2ab9c2c71c0118adda",
+      "bytes": 5288,
+      "sha256": "d64f03fca94cf6ff5bac05e255b26354e168d9a295a9a0249eb75e141416ec9d",
+      "url": "https://github.com/MicrosoftDocs/sdk-api/blob/docs/sdk-api-src/content/securitybaseapi/nf-securitybaseapi-getsecuritydescriptorsacl.md"
+    },
+    {
+      "repository": "MicrosoftDocs/sdk-api",
+      "path": "sdk-api-src/content/securitybaseapi/nf-securitybaseapi-getace.md",
+      "requested_ref": "docs",
+      "blob": "cbc0ddcae5738811a90c54a2e92e9ce322a04325",
+      "bytes": 3277,
+      "sha256": "8c5ee07f882ffbcc140f876c2482df859bb4ba4bf6ac50c1ac9cd669a125ff6d",
+      "url": "https://github.com/MicrosoftDocs/sdk-api/blob/docs/sdk-api-src/content/securitybaseapi/nf-securitybaseapi-getace.md"
+    },
+    {
+      "repository": "MicrosoftDocs/sdk-api",
+      "path": "sdk-api-src/content/securitybaseapi/nf-securitybaseapi-getsecuritydescriptorcontrol.md",
+      "requested_ref": "docs",
+      "blob": "f31ccbe9d866950670513600dec7162d29af9369",
+      "bytes": 4194,
+      "sha256": "ae94e6b5c59927b22887d1efd3820dc88ab06b947a9603d54ad6edae3e9684c9",
+      "url": "https://github.com/MicrosoftDocs/sdk-api/blob/docs/sdk-api-src/content/securitybaseapi/nf-securitybaseapi-getsecuritydescriptorcontrol.md"
+    },
+    {
+      "repository": "MicrosoftDocs/sdk-api",
+      "path": "sdk-api-src/content/securitybaseapi/nf-securitybaseapi-isvalidacl.md",
+      "requested_ref": "docs",
+      "blob": "05ad6495db83be5e439ca3ef1df05e4ff7929b78",
+      "bytes": 3168,
+      "sha256": "b0596e2540ceeb5bd568765181c3e93e7cbcb57f92142d589bdff5dfb514d4d1",
+      "url": "https://github.com/MicrosoftDocs/sdk-api/blob/docs/sdk-api-src/content/securitybaseapi/nf-securitybaseapi-isvalidacl.md"
+    },
+    {
+      "repository": "MicrosoftDocs/sdk-api",
+      "path": "sdk-api-src/content/securitybaseapi/nf-securitybaseapi-isvalidsid.md",
+      "requested_ref": "docs",
+      "blob": "94f509185ffa93d49b08eb119100db771898a26f",
+      "bytes": 3517,
+      "sha256": "524cb3ff989392ee716bb8d28b2ed7cfc20a4cec146dc19802b954bf79ae6cd8",
+      "url": "https://github.com/MicrosoftDocs/sdk-api/blob/docs/sdk-api-src/content/securitybaseapi/nf-securitybaseapi-isvalidsid.md"
+    }
+  ],
+  "fixed_windows_sys_api_sources": [
+    {
+      "local_envelope": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-mic-physical-probe-20261105/primary/windows-security-0.52.0.json",
+      "upstream_blob": "e474d1dfc62b7be1443f2b59eda8370477fdfa74",
+      "bytes": 111353,
+      "sha256": "b35db507ad9380695f15b7ba798d0e677e08cc84b905577489d7e63994f00673"
+    },
+    {
+      "local_envelope": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-mic-physical-probe-20261105/primary/windows-systemservices-0.52.0.json",
+      "upstream_blob": "3d024dcbdf3061096f2a5e90a3762af7cca2bddd",
+      "bytes": 253400,
+      "sha256": "edd591c9ea164c7d6f4e7b7174f33054261a122a231f3ea8ce5cdacb5bcd2475"
+    }
+  ],
+  "complete_primary_bundle": {
+    "local_path": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-pr4884-ci-20261105/repair-label-ace-semantics-v1/primary/microsoft-docs-originals.json",
+    "bytes": 40196,
+    "sha256": "78e28140e54154b3dc9cdef9b5c7cc74c11a48c803d4b144fea1bf36e07e5099",
+    "git_blob": "0c0934acd6aa2e8ce7235bce4c0d2e86808bccd1"
+  },
+  "primary_interpretation": [
+    {
+      "source_blob": "f06e267f0a3f4ef401a097b9763c3523970d8768",
+      "finding": "SDDL separates sacl_flags from each parenthesized ACE; the SACL uses the same P/AR/AI control-token scheme as the DACL. Thus the observed S:AI prefix is not an ACE flags or policy-mask change."
+    },
+    {
+      "source_blob": "c161d8f0883f4476275dda10a40f0fcbd2071078",
+      "finding": "Mandatory label ACE consists of Header, Mask and the variable-length SID beginning at SidStart. Header includes type, size and inheritance flags; policy mask and mandatory authority/RID are retained exactly."
+    },
+    {
+      "source_blob": "1be1075e1877be8755cedf2ab9c2c71c0118adda",
+      "finding": "Only successful present SACL with non-NULL ACL pointer is accepted; absent and NULL differ and both fail this fixture."
+    },
+    {
+      "source_blob": "cbc0ddcae5738811a90c54a2e92e9ce322a04325",
+      "finding": "GetAce index zero returns the first ACE pointer; candidate additionally validates the returned extent within ACL bounds before dereferencing label/SID fields."
+    },
+    {
+      "source_blob": "05ad6495db83be5e439ca3ef1df05e4ff7929b78",
+      "finding": "IsValidAcl checks revision and that ACE count fits AclSize. Candidate separately validates label type, payload extent, authority and SID validity."
+    },
+    {
+      "source_blob": "f31ccbe9d866950670513600dec7162d29af9369",
+      "finding": "GetSecurityDescriptorControl supplies control and revision; both are compared on restoration, including bits not serialized by SDDL."
+    }
+  ],
+  "static_validation": {
+    "cloud_git_roundtrip": {
+      "local_path": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-pr4884-ci-20261105/repair-label-ace-semantics-v1/static-verification.json",
+      "bytes": 2137,
+      "sha256": "c7fe45f221368a669558c8563405efc7b795dd2b3460a3f844e4b30d5ff3b69c",
+      "git_blob": "2b7799557e8e1430066cf814dbac502232f44088"
+    },
+    "four_git_commands_all_zero": true,
+    "forward_reverse_exact": true,
+    "full_three_case_and_probe_files_not_modified": true,
+    "compiled": false,
+    "windows_runtime_executed": false,
+    "new_tests_created": false
+  },
+  "rejection_reasoning_not_executed_tests": [
+    "missing SACL",
+    "NULL SACL",
+    "invalid ACL",
+    "ACE count zero or greater than one",
+    "non-ML ACE",
+    "ACE or SID extent out of bounds",
+    "extra SID payload",
+    "non-mandatory SID authority",
+    "SID subauthority count other than one",
+    "invalid SID revision",
+    "different ACE inheritance flags",
+    "different policy mask",
+    "different SID/RID",
+    "owner/group/DACL drift",
+    "same-object identity drift",
+    "complete original SD or control/revision restoration drift"
+  ],
+  "next_native_scope": {
+    "workflow": ".github/workflows/hepta-windows-token-mechanism-probe.yml",
+    "target": "//codex-rs/windows-sandbox-rs:windows-sandbox-rs-unit-tests",
+    "requirement": "Fresh new-head original dedicated Windows job. Retain full console, wrapper log/XML, source/leaf receipts, original failure exit code. Probe eight rows must reach their real physical operations and full restoration before they qualify as observation; original strict assertions remain mandatory and may still fail overall target.",
+    "no_rerun_or_ref_action_by_author": true
+  },
+  "open_boundaries": [
+    "No Windows compile/run of this candidate yet.",
+    "No eight-row MIC or explicit-read mechanism result exists from the previous three heads.",
+    "B11 remains OPEN; a successful diagnostic probe cannot replace the original strict deletion, helper, IPC, legitimate I/O and isolation exits.",
+    "Observed high-integrity host token and prior ordinary-host matrix failure remain distinct open evidence; this patch does not attribute or fix them."
+  ]
+}

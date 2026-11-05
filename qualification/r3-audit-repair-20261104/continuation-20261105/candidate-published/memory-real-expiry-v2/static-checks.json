@@ -1,0 +1,95 @@
+{
+  "schema": "memory-real-clock-fixture-static-checks-v2",
+  "commands": [
+    {
+      "argv": [
+        "git",
+        "init",
+        "--quiet"
+      ],
+      "cwd": "/workspace/scratch/07dd58cc9630/architecture-audit/memory-owner-expiry-20261105/real-clock-fixture-candidate-v2/roundtrip-repo",
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "git",
+        "apply",
+        "--check",
+        "/workspace/scratch/07dd58cc9630/architecture-audit/memory-owner-expiry-20261105/real-clock-fixture-candidate-v2/real-clock-fixture.patch"
+      ],
+      "cwd": "/workspace/scratch/07dd58cc9630/architecture-audit/memory-owner-expiry-20261105/real-clock-fixture-candidate-v2/roundtrip-repo",
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "git",
+        "apply",
+        "/workspace/scratch/07dd58cc9630/architecture-audit/memory-owner-expiry-20261105/real-clock-fixture-candidate-v2/real-clock-fixture.patch"
+      ],
+      "cwd": "/workspace/scratch/07dd58cc9630/architecture-audit/memory-owner-expiry-20261105/real-clock-fixture-candidate-v2/roundtrip-repo",
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "git",
+        "apply",
+        "--reverse",
+        "--check",
+        "/workspace/scratch/07dd58cc9630/architecture-audit/memory-owner-expiry-20261105/real-clock-fixture-candidate-v2/real-clock-fixture.patch"
+      ],
+      "cwd": "/workspace/scratch/07dd58cc9630/architecture-audit/memory-owner-expiry-20261105/real-clock-fixture-candidate-v2/roundtrip-repo",
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "git",
+        "apply",
+        "--reverse",
+        "/workspace/scratch/07dd58cc9630/architecture-audit/memory-owner-expiry-20261105/real-clock-fixture-candidate-v2/real-clock-fixture.patch"
+      ],
+      "cwd": "/workspace/scratch/07dd58cc9630/architecture-audit/memory-owner-expiry-20261105/real-clock-fixture-candidate-v2/roundtrip-repo",
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": ""
+    }
+  ],
+  "original_assertions_byte_equal_in_order": true,
+  "original_assertion_count": 10,
+  "original_test_roster_byte_equal": true,
+  "original_test_names": [
+    "owner_is_explicit_and_caller_zero",
+    "owner_rejects_production_policy",
+    "explicit_owner_writes_bound_witness_and_replays_without_registration",
+    "explicit_owner_expires_bound_lease_and_fences_old_witness",
+    "explicit_owner_rejects_unbound_lease_expiry"
+  ],
+  "all_bytes_outside_original_case_equal": true,
+  "replacing_only_two_changed_regions_exactly_restores_original_file": true,
+  "no_rust_compilation_formatter_native_or_project_tests_run": true,
+  "preimage": {
+    "path": "/workspace/scratch/07dd58cc9630/architecture-audit/memory-owner-expiry-20261105/source/local_development_owner_tests.rs",
+    "bytes": 12351,
+    "sha256": "353bcf66ba0a02189a8aee635092fdf6049f959b0193d4670030f4002f1b7792",
+    "git_blob": "41b52d8093610e50932795a18e28d4dc1fc5b813"
+  },
+  "postimage": {
+    "path": "/workspace/scratch/07dd58cc9630/architecture-audit/memory-owner-expiry-20261105/real-clock-fixture-candidate-v2/candidate/codex-rs/ext/hepta-memory/src/local_development_owner_tests.rs",
+    "bytes": 12665,
+    "sha256": "192e335c4e3dacf12a140512b17bf5acb21cf810b1f11dd887bd38910157cc1c",
+    "git_blob": "a47edda2a96a9d6a02a90e65af1ce071d9c81096"
+  },
+  "patch": {
+    "path": "/workspace/scratch/07dd58cc9630/architecture-audit/memory-owner-expiry-20261105/real-clock-fixture-candidate-v2/real-clock-fixture.patch",
+    "bytes": 1891,
+    "sha256": "2ae189f0f2dc7d56f345ea0f32688aae71f0f03d64abadd41a1e4df4e2986d44",
+    "git_blob": "c095591fd8bcc33b2a146f3a99b520fd136e5362"
+  }
+}

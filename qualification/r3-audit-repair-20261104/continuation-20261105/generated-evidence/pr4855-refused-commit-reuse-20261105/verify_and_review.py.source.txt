@@ -1,0 +1,189 @@
+from pathlib import Path
+import collections
+import datetime
+import hashlib
+import json
+import re
+import zipfile
+
+HERE = Path(__file__).resolve().parent
+ROOT = HERE.parents[1]
+OLD = ROOT / "architecture-audit/pr4855-refused-commit-20261105"
+OWN = ROOT / "architecture-audit/b16-refused-commit-pool-20261105"
+DEC = HERE / "matched-original-evidence/decoded-verified"
+NINE = DEC / "root-state-and-nine-f7a57e6"
+MATCHED = DEC / "root-state-matched-f7a57e6"
+
+def identity(path):
+    data = path.read_bytes()
+    return {"path": str(path.relative_to(ROOT)), "bytes": len(data),
+            "sha256": hashlib.sha256(data).hexdigest(),
+            "git_blob": hashlib.sha1(b"blob " + str(len(data)).encode() + b"\0" + data).hexdigest()}
+
+def document(path):
+    return json.loads(path.read_bytes())
+
+def api(name):
+    return json.loads(document(HERE / (name + ".original.json"))["response"]["structuredContent"]["content"])
+
+def native_dto(path):
+    obj = document(path)
+    return json.loads(next(x["text"] for x in obj["response"]["content"] if x["type"] == "text"))
+
+def cleaned(path):
+    return re.sub(r"\x1b\[[0-?]*[ -/]*[@-~]", "", path.read_text())
+
+def selected_lines(path, needles):
+    text = cleaned(path)
+    return [{"line": i, "text": line} for i, line in enumerate(text.splitlines(), 1)
+            if any(needle in line for needle in needles)]
+
+tree = api("head-tree")
+assert tree["sha"] == "f83f9dfc55bda251e05746d1c60a4d26f157e752" and tree["truncated"] is False
+by = {r["path"]: r for r in tree["tree"]}
+assert len(by) == len(tree["tree"]) == 12202
+source_paths = [
+    ("codex-rs/state/src/sqlite.rs", OLD / "source/green/codex-rs/state/src/sqlite.rs"),
+    ("codex-rs/state/src/sqlite_pool_tests.rs", OLD / "source/green-test/codex-rs/state/src/sqlite_pool_tests.rs"),
+    ("codex-rs/hepta-memory/src/objective_sender_gate_tests.rs", OLD / "source/green-memory-gate-tests/codex-rs/hepta-memory/src/objective_sender_gate_tests.rs")
+]
+sources = []
+for path, old in source_paths:
+    current = HERE / "source" / path
+    row = identity(current)
+    assert row["git_blob"] == by[path]["sha"]
+    assert current.read_bytes() == old.read_bytes()
+    row.update(logical_path=path, head_tree_leaf_equal=True, stage25_file_byte_equal=True,
+               stage25_cached_original=identity(old))
+    sources.append(row)
+
+jobs = []
+for job, count in [("1a1aafb05fe-fc05-4936", 2), ("1a1ab20eb00-fc05-4aba", 1)]:
+    status_path = HERE / f"native-status-{job}.original.json"
+    status = native_dto(status_path)
+    assert status["job_id"] == job and status["state"] == "succeeded" and status["exit_code"] == 0
+    assert status["output_complete"] and status["output_durable"] and status["terminal_publication_confirmed"]
+    assert not status["cancelled"] and not status["timed_out"] and not status["automatic_retry"]
+    streams = {s: bytearray() for s in ("stdout", "stderr")}
+    for page in range(count):
+        dto = native_dto(HERE / f"native-read{page}-{job}.original.json")
+        assert dto["job_id"] == job
+        for stream, accum in streams.items():
+            d = dto[stream]
+            assert d["offset"] == len(accum)
+            accum.extend(bytes.fromhex(d["bytes_hex"]))
+            assert d["next_offset"] == len(accum)
+    for stream, accum in streams.items():
+        assert dto[stream]["eof"]
+        assert len(accum) == status["log_bytes"][stream]["seen"] == status["log_bytes"][stream]["stored"]
+        assert bytes(accum) == (HERE / f"native-{job}.{stream}.original").read_bytes()
+        assert not status["log_truncated"][stream] and status["log_errors"][stream] is None
+    jobs.append({"host": "x230", "job_id": job, "status_response": identity(status_path),
+                 "status": status, "stdout": identity(HERE / f"native-{job}.stdout.original"),
+                 "stderr": identity(HERE / f"native-{job}.stderr.original"),
+                 "lossless_offsets_match_authoritative_totals": True})
+
+archive = HERE / "matched-original-evidence/portable-evidence.original"
+assert archive.stat().st_size == 142236
+assert hashlib.sha256(archive.read_bytes()).hexdigest() == "d73aa340816844d4e1fbf619fd0020b9655dea00aa89e1aff0e94f1132465e99"
+with zipfile.ZipFile(archive) as z:
+    assert z.testzip() is None and len(z.infolist()) == 20
+    assert len({x.filename for x in z.infolist()}) == 20
+    for info in z.infolist():
+        assert z.read(info) == (DEC / info.filename).read_bytes()
+    assert not any(x.filename.endswith(".xml") for x in z.infolist())
+
+nine = document(NINE / "manifest.json")
+matched = document(MATCHED / "manifest.json")
+streams = []
+for folder, manifest in [(NINE, nine), (MATCHED, matched)]:
+    for phase in manifest["phases"]:
+        for stream in ("stdout", "stderr"):
+            path = folder / (phase["name"] + "." + stream)
+            row = identity(path)
+            assert row["sha256"] == phase[stream + "_sha256"]
+            streams.append(row)
+assert len(streams) == 18
+assert identity(NINE / "manifest.json")["sha256"] == matched["prior_nine_manifest_sha256"]
+red_phase = next(x for x in nine["phases"] if x["name"] == "state-red")
+green_phase = next(x for x in matched["phases"] if x["name"] == "state-green-matched")
+assert red_phase["argv"] == green_phase["argv"]
+assert red_phase["exit_code"] == 100 and green_phase["exit_code"] == 0
+
+red = cleaned(NINE / "state-red.stderr")
+green = cleaned(MATCHED / "state-green-matched.stderr")
+assert red.count("read transaction must remain available after a refused commit: InvalidSavePointStatement") == 2
+assert red.count("panicked at state/src/sqlite_pool_tests.rs:45:10:") == 2
+assert "RETRY 2/2" in red
+assert "1 test run: 0 passed, 1 failed, 216 skipped" in red
+assert "1 test run: 1 passed, 216 skipped" in green
+assert "with nextest profile: local" in red and "with nextest profile: local" in green
+assert "Compiling codex-state v0.0.0" in red and "Compiling codex-state v0.0.0" in green
+
+catalog = document(NINE / "nine-package-binary-list.stdout")
+expected = {}
+for binary_id, suite in catalog["rust-suites"].items():
+    for name, case in suite["testcases"].items():
+        expected[(binary_id, name)] = case
+raw = cleaned(NINE / "nine-packages.stderr")
+rows = []
+for lineno, line in enumerate(raw.split("     Summary [", 1)[0].splitlines(), 1):
+    m = re.match(r"^\s*(PASS|SKIP)\s+\[([^]]*)\]\s+(\S+)\s+(\S+)\s*$", line)
+    if m:
+        rows.append({"status": m[1], "duration": m[2].strip(), "binary_id": m[3], "name": m[4], "line": lineno})
+counter = collections.Counter((r["binary_id"], r["name"]) for r in rows)
+assert len(rows) == len(counter) == len(expected) == 1312
+assert set(counter) == set(expected)
+assert all(v == 1 for v in counter.values())
+assert all((r["status"] == "SKIP") == expected[(r["binary_id"], r["name"])]["ignored"] for r in rows)
+counts = dict(collections.Counter(r["status"] for r in rows))
+assert counts == {"SKIP": 24, "PASS": 1288} or counts == {"PASS": 1288, "SKIP": 24}
+assert all(case["filter-match"] == ({"status": "mismatch", "reason": "ignored"} if case["ignored"] else {"status": "matches"}) for case in expected.values())
+
+state_name = "sqlite::pool_tests::refused_commit_keeps_reused_pool_readable_without_reopening_write_gate"
+memory_name = "production_writer::objective_sender::gate_tests::cancelled_checkpoint_fences_a_writer_already_waiting_for_sqlite"
+scope_rows = [r for r in rows if r["name"] in (state_name, memory_name)]
+assert len(scope_rows) == 2 and all(r["status"] == "PASS" for r in scope_rows)
+
+lock = document(OLD / "originals/green-lock-envelope.json")
+lock_bytes = lock["content"].encode()
+assert hashlib.sha1(b"blob " + str(len(lock_bytes)).encode() + b"\0" + lock_bytes).hexdigest() == lock["sha"]
+assert hashlib.sha256(lock_bytes).hexdigest() == nine["cargo_lock_before_sha256"] == nine["cargo_lock_after_sha256"] == matched["cargo_lock_sha256"]
+assert lock["sha"] == "b7e710988d6a3377a7e0a1dc68aef49c68dda36e"
+
+review = {
+ "schema": "hepta.pr4855.refused-commit-reuse-independent-review.v1",
+ "reviewed_at_utc": datetime.datetime.now(datetime.timezone.utc).isoformat(),
+ "disposition": "VERIFIED_DONOR_MATCHED_MECHANISM_AND_SCOPED_NATIVE_RESULTS; CURRENT_PRODUCT_AND_B16_QUALIFICATION_NOT_TRANSFERRED",
+ "fresh_pr": {"number":4855,"head":"3a39c799a3f776b0aeedfce350341d865d3cc1c4","tree":tree["sha"],"base":"732e934ba496d90fbe042b8d41d479ef901643e5","observed_at":document(HERE/"pr-fresh.original.json")["observed_at"],"state":"open","draft":True},
+ "historical_source_pair": {"red":"3466a3074ab2df88bfae3519f453aa4672c536e5","red_tree":"5ba499258fd738f0a848bf289c68ba67f76102bf","green":"f7a57e6f40e3e8220233f0d27b8cfbdf1f721c55","green_tree":"1f3d38ee52320bba1f345da2f2c54b23a36832ee","production_delta":"One sqlite.rs before_acquire callback: read actual SQLx tracked depth; return Ok(false) when nonzero, before original owner callback. 8 insertions / 1 deletion including comments.","same_test_blob":"20fe71be06d34c6b962d07450d21dcaf72cbbb96"},
+ "sources":sources,
+ "original_acquisition": {"method":"Read only two exact PR-body native job IDs on already configured x230; no host inventory scan, process launch, build, test, mutation, or credential access. Read only four exact exported evidence paths from original stdout.","native_jobs":jobs,"portable_zip":identity(archive),"zip_member_count":20,"all_crc_verified":True,"member_manifest":identity(HERE/"matched-original-evidence/complete-member-manifest.json"),"raw_stream_count":18,"all_raw_streams_match_original_phase_hashes":True,"no_junit_in_archive":True,"nine_manifest_link_verified":True},
+ "matched_state": {"exact_name":state_name,"argv":red_phase["argv"],"same_argv_verified":True,"nextest_profile":"local","red_unique_cases":1,"red_attempts":2,"red_case_seconds":[0.019,0.018],"red_recipe_exit":100,"red_exact_panic":"state/src/sqlite_pool_tests.rs:45:10: read transaction must remain available after a refused commit: InvalidSavePointStatement","green_unique_cases":1,"green_actual_case_seconds":0.023,"green_summary_seconds":0.034,"green_recipe_exit":0,"unselected_cases_each":216,"retried_red_is_not_two_unique_tests":True,"raw_evidence":[identity(NINE/"state-red.stderr"),identity(MATCHED/"state-green-matched.stderr")],"separate_red_target_recorded":red_phase["target_dir"],"original_retry_policy_retained":True},
+ "nine_package_scope": {"catalog_cases":1312,"binaries":17,"empty_binary_suites":2,"actual_distinct_pass":1288,"actual_distinct_skip":24,"all24_skips_exact_catalog_ignored":True,"pre_summary_case_rows_unique_and_complete":True,"final_status_duplicate_prints_not_counted_twice":True,"selected_relevant_cases":scope_rows,"raw":identity(NINE/"nine-packages.stderr"),"catalog":identity(NINE/"nine-package-binary-list.stdout"),"recipe_exit":0,"does_not_replace_matched_state_pair":True},
+ "source_and_binary_custody": {"host_and_tools":nine["tools"],"host_uname":nine["host_uname"],"lock_git_blob":lock["sha"],"lock_sha256":matched["cargo_lock_sha256"],"lock_blob_actual_hash_verified":True,"source_tree_and_unchanged_flags_recorded_in_original_manifests":True,"selected_binary_identity_records_match_catalog":True,"red_binary_records":nine["binaries"],"matched_state_binary_records":matched["state_binaries"],"nine_state_binary_record":[x for x in nine["selected_binary_suites"] if x["binary_id"]=="codex-state"],"nine_memory_binary_record":[x for x in nine["selected_binary_suites"] if x["binary_id"]=="codex-hepta-memory"],"binary_bytes_not_retrieved_or_rehashed_now":True,"complete_environment_equality_not_independently_proven":True},
+ "comparison_with_our_frozen_candidate": {
+  "manifest":identity(OWN/"manifest.json"),"postimage":identity(OWN/"postimage-sqlite.rs"),"test":identity(OWN/"sqlite_refused_commit_pool_tests.rs"),
+  "whole_source_or_test_byte_equal":False,
+  "same_predicate_and_order":"Both reject connection.is_in_transaction() before user checkout work. The donor guarded method delegates to one shared coordinated constructor; our commit-guarded and coordinated constructors are distinct and both need the guard.",
+  "our_additional_contracts":["Both separate constructor entrypoints execute their original controls.","Actual sqlite_autocommit=true and SQLx tracked_transaction=true after refused commit and queued rollback flush.","TEMP marker proves fifth physical connection is replaced; no idle sibling substitution.","Both first explicit COMMIT and replacement implicit write retain exact SQLite code 531.","Coordinated replacement invokes original checkout callback.","Native connection lifetime token and collation custody remain bound to original owner; donor source has neither added mechanism.","Default ordinary pool and private recovery checkpoint source/authority boundaries remain those of our frozen B source."],
+  "donor_coverage_limits":["Donor COMMIT/INSERT tests assert is_err(), not exact SQLite 531.","Donor holds four handles but has no TEMP marker or direct SQLite-autocommit/SQLx-depth observation.","The Memory case is real SQLite + in-process checkpoint fixture, not an independent Root service, Current factory, issuer, or provider effect proof.","Donor Rust1.96/debug/test-profile build and original retry policy differ from our planned dev-small/zero-retry candidate gate."]
+ },
+ "reuse_decision": [
+  {"gate":"SQLx0.9 stale tracked-depth regression and before_acquire discard direction","decision":"REUSE_VERIFIED_DONOR_MECHANISM","scope":"Do not recreate the identical donor experiment. Preserve this exact matched 3466/f7a pair and raw attempts as existing causal evidence."},
+  {"gate":"Donor original guarded pool readable-after-veto and gate stays false","decision":"REUSE_ONLY_AT_RECORDED_DONOR_SOURCE","scope":"One matched State case and one separate nine-package Memory case are actually read and source-bound. Current 3a39 preserves these three source files byte-for-byte, but this is not a new 3a39 full-workspace execution."},
+  {"gate":"Our B candidate two entrypoints / physical replacement / exact531 / owner callback / native custody","decision":"ORIGINAL_CURRENT_CANDIDATE_GATE_REMAINS_REQUIRED","scope":"The source and oracle are materially different. Keep the already frozen two controls and their precise negative/positive endpoints; no additional mirror tests are proposed."},
+  {"gate":"Current product eed / B16 full acceptance / other platforms","decision":"NO_TRANSFER_NO_CLOSURE","scope":"No product ref or ledger exit/status is changed by this review."}
+ ],
+ "prior_statement_correction": "Earlier RAW_NOT_RETRIEVED was accurate for the GitHub tree/discussion read alone. This review newly obtains the two exact native retained jobs and the complete archive they explicitly expose; it does not rewrite that earlier frozen receipt.",
+ "limits":["No JUnit XML was present; full raw nextest logs and exact catalog are the case evidence.","The historical native supervisor job succeeded because expected RED was classified; State negative itself failed twice and stays failed.","No unknown ROG launch identity was queried or resolved.","No current binary, source, Cargo target, locks, refs, CI workflow, assertion, timeout, or retry was changed.","The donor current tree and its 150 qualification files were inspected; absence of archive in that tree is not evidence that the now-retrieved native retained archive did not exist."],
+ "raw_hash_checks":streams,
+ "project_or_native_commands_executed_by_this_review":False
+}
+# Explicitly match original binary identity records to catalog paths, without claiming current rehash.
+for row in nine["selected_binary_suites"]:
+    assert catalog["rust-suites"][row["binary_id"]]["binary-path"] == row["binary_path"]
+    assert len(catalog["rust-suites"][row["binary_id"]]["testcases"]) == row["listed_tests"]
+(HERE/"independent-review.json").write_text(json.dumps(review,ensure_ascii=False,indent=2)+"\n")
+(HERE/"native-case-projection.json").write_text(json.dumps({"schema":"pr4855-original-nextest-projection-v1","normalization":"Strip only ANSI for parsing; original bytes retained. Use only rows before the first Summary so final-status repeats are not counted.","nine_package_rows":rows,"red_original_lines":selected_lines(NINE/"state-red.stderr",["Nextest run","Starting 1 test","TRY 1 FAIL","TRY 2 FAIL","RETRY 2/2","panicked at","read transaction must","Summary ["]),"green_original_lines":selected_lines(MATCHED/"state-green-matched.stderr",["Nextest run","Starting 1 test",state_name,"Summary ["])},ensure_ascii=False,indent=2)+"\n")
+print(json.dumps({"review":identity(HERE/"independent-review.json"),"projection":identity(HERE/"native-case-projection.json"),"matched_argv":True,"zip_members":20,"raw_streams":18,"catalog_exact":{"PASS":1288,"SKIP":24},"project_or_native_commands_run":False},ensure_ascii=False))

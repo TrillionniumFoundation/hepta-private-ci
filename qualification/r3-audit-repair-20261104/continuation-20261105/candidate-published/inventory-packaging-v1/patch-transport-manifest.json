@@ -1,0 +1,27 @@
+{
+  "schema": "hepta.unified-patch-gzip-base64.v1",
+  "original_patch": {
+    "bytes": 1924673,
+    "sha256": "98273787adcbc2482660d4c089d3c332c6b1620d72863ffe7121a3669d17c27f",
+    "blob": "f1dbea01d36341ec7dc4da4044994c85c7d19b21"
+  },
+  "gzip": {
+    "bytes": 327816,
+    "sha256": "0af67391115a5a8f4dc9bc1fa194298a5769a2cb65cb94675e9663d810eae229",
+    "blob": "52b74d297ca01f04dae29dece056cbc4b09ee5c1"
+  },
+  "base64_bytes": 437088,
+  "part_max_bytes": 480000,
+  "parts": [
+    {
+      "sequence": 0,
+      "offset": 0,
+      "path": "patch-transport/part-000.txt",
+      "bytes": 437088,
+      "sha256": "e22844bc99ec82b01b10a53b0ec22e899531c27c5e534071499a34e109899348",
+      "blob": "124d8634bc3694e4267473e41909facfba88e84c"
+    }
+  ],
+  "restored_patch_bytes_equal": true,
+  "role": "Unreachable review transport; original inventory remains in the unchanged existing 18 repository parts."
+}

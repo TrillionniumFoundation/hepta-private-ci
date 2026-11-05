@@ -1,0 +1,56 @@
+{
+  "schema": "ca1-full-resource-stop-complete-transport-v1",
+  "original_bundle": {
+    "path": "/workspace/scratch/07dd58cc9630/ci-audit/core-wait-span-20261105/ai395-candidate-default-full-v1/ca1-full-resource-stop-complete-originals-bundle-v1.json",
+    "bytes": 1085362,
+    "sha256": "3983951010ad4072b5b92a996aa4bd8cd9ecac2edeaa3fa90fb42fd74481720e",
+    "git_blob": "14a987febfac6c2d66b2e8f82d7c63a35efcd18e"
+  },
+  "bundle_template": {
+    "schema": "ca1-full-native-resource-stop-originals-bundle-v1",
+    "job_id": "1a1ac90de70-fc05-5557",
+    "file_count": 24,
+    "original_bytes": 1759796,
+    "payload": {
+      "bytes": 2351572,
+      "sha256": "e399dcc5db378648f875ce3a4f085a632cc0fae0a842e3e22d4468385204747f",
+      "git_blob": "6c3bcdb76553e7aed09e0db12153e0745ad652b9"
+    },
+    "gzip": {
+      "bytes": 813512,
+      "sha256": "39209e0d61b5e5d696b6247a67516653b90196c67eb51b422af1c325fa216d59",
+      "git_blob": "1f338d8890797496b3bc0b80c7b3ae28d3627184"
+    },
+    "gzip_base64": null,
+    "raw_original_git_ids_are_content_identity_only": true,
+    "qualification": "NO_SOURCE_TRANSITION_BUILD_OR_TEST_EXECUTED_RESOURCE_PENDING"
+  },
+  "parts": [
+    {
+      "index": 0,
+      "path": "/workspace/scratch/07dd58cc9630/ci-audit/core-wait-span-20261105/ai395-candidate-default-full-v1/resource-stop-git-transport-v1/gzip-base64-part-000.txt",
+      "base64_offset": 0,
+      "bytes": 400000,
+      "sha256": "84cc0702765bb4deed4b35bd8f4cda746cddfbf5ac3d91b5c505ec4e5eb3414c",
+      "git_blob": "79ee21066c77b872f6e18dbb0f7c0fad8a96859e"
+    },
+    {
+      "index": 1,
+      "path": "/workspace/scratch/07dd58cc9630/ci-audit/core-wait-span-20261105/ai395-candidate-default-full-v1/resource-stop-git-transport-v1/gzip-base64-part-001.txt",
+      "base64_offset": 400000,
+      "bytes": 400000,
+      "sha256": "67fb6f7951ed1558c4fa390ed440a922227ce40ace6aeb3394e89ffb155c488f",
+      "git_blob": "db9af389bdff2125bfdaca8e306f99c38e9d3928"
+    },
+    {
+      "index": 2,
+      "path": "/workspace/scratch/07dd58cc9630/ci-audit/core-wait-span-20261105/ai395-candidate-default-full-v1/resource-stop-git-transport-v1/gzip-base64-part-002.txt",
+      "base64_offset": 800000,
+      "bytes": 284684,
+      "sha256": "dcc5b72bdecba89be9728fd182add15a8bc973d6ea4973e8d93d2d79694ee967",
+      "git_blob": "5884b34b3d913ebe6097079ef3470a69959fd81d"
+    }
+  ],
+  "part_encoding": "UTF-8 ASCII base64, concatenate in index order before strict base64 decode",
+  "original_git_ids_are_content_identity_only": true
+}

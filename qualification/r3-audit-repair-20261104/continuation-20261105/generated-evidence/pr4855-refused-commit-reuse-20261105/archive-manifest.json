@@ -1,0 +1,340 @@
+{
+  "schema": "pr4855-existing-native-and-fixed-source-lossless-archive-v1",
+  "source_scope": "PR4855 fixed3a39 and historical exact3466/f7a; read-only original artifacts, no project/native execution",
+  "archive": {
+    "bytes": 1766998,
+    "sha256": "7a5a7e34c099d19657a9ef1d95fdf7345232fd9f4abaa9a98c447623fcea0777",
+    "git_blob": "e3652ba19fd6300fc8891e1aa3740bc8e29e65be"
+  },
+  "archive_format": "gzip of deterministic POSIX TAR",
+  "encoding": "strict base64, split at479996 characters, each part has one trailing LF",
+  "parts": [
+    {
+      "path": "originals.part000.b64",
+      "bytes": 479997,
+      "sha256": "9d9bf7bc19d42b102ea11bf28b3ab4fdf9fc82382b5e2cffef3e8cbda6acf13f",
+      "git_blob": "c25f849a63e773bf4241186020dc2095ae8befb0"
+    },
+    {
+      "path": "originals.part001.b64",
+      "bytes": 479997,
+      "sha256": "971e0f00d436c709738b20bf2cb592e67fdaeaa9ba50c98c4e0e7792ef15eb90",
+      "git_blob": "027ddea4dc6ee442ed7ab73964cc3690cc1d3b22"
+    },
+    {
+      "path": "originals.part002.b64",
+      "bytes": 479997,
+      "sha256": "ee973e8e5c7b4a3b7fb2ff72501b124280be4f99009c0182820e7447b1218460",
+      "git_blob": "ba5ec60c6b90d0dee1dba768f8b410d57b3e9c32"
+    },
+    {
+      "path": "originals.part003.b64",
+      "bytes": 479997,
+      "sha256": "ce528cd620a1acc4893f7950dac4ef8a90c28cc8609e5c3c8343589e97c00cb1",
+      "git_blob": "e5642cd724aef1279fb8e893d3347dc56e5e3a60"
+    },
+    {
+      "path": "originals.part004.b64",
+      "bytes": 436017,
+      "sha256": "e880c4811b1a42c35557e91aaaabbfbebc7f1c952c4d87f3ffa9335e3022d0ef",
+      "git_blob": "94c0ce6468a6787edee4713a5188ea0ed2f85547"
+    }
+  ],
+  "original_file_count": 46,
+  "original_byte_count": 9597045,
+  "originals": [
+    {
+      "archive_path": "architecture-audit/b16-refused-commit-pool-20261105/full.patch",
+      "bytes": 7737,
+      "sha256": "be17d135e0877edce9250e0e157f07d4b64752387fe3e20bf93df2f767e2a67f",
+      "git_blob": "6e0a36957f6f2976a06f3c91a968a33213a31b2d"
+    },
+    {
+      "archive_path": "architecture-audit/b16-refused-commit-pool-20261105/manifest.json",
+      "bytes": 17512,
+      "sha256": "e05802198782fc015ed4c499f3d99646ddbb9d6ccde20134be2a66077a7cc7ec",
+      "git_blob": "28a0ccb97b740c6d18561c9bf2d63616db881189"
+    },
+    {
+      "archive_path": "architecture-audit/b16-refused-commit-pool-20261105/postimage-sqlite.rs",
+      "bytes": 21514,
+      "sha256": "f88996ad7528f21d9a952571b5111c7ac6c6b843829d03e3cbd488ae84e72171",
+      "git_blob": "e4a8ff7f6ce2742f2dc162244fae5f5cd5e9ecb9"
+    },
+    {
+      "archive_path": "architecture-audit/b16-refused-commit-pool-20261105/preimage-sqlite.rs",
+      "bytes": 20834,
+      "sha256": "d68ee42f26b764105936b57f70f588a4b3d7c0bcc32e4e660680354fa165830c",
+      "git_blob": "85984c8c0fb1f699ad761de7383f920decad4808"
+    },
+    {
+      "archive_path": "architecture-audit/b16-refused-commit-pool-20261105/production-only.patch",
+      "bytes": 1487,
+      "sha256": "2809b8ba63d21ffe7a07dbc5eb8200cc5540157905a0ce89d5ee83a30da1bf28",
+      "git_blob": "7be8e1e90a78c90d00535961b90673d339d6e0d6"
+    },
+    {
+      "archive_path": "architecture-audit/b16-refused-commit-pool-20261105/sqlite_refused_commit_pool_tests.rs",
+      "bytes": 5575,
+      "sha256": "fe1c70906982882159f8ecb2fe634a0a8692c02034b0387f695e075fdd42661d",
+      "git_blob": "86b68c0120e8fca501f50e728fe6fefbad64fee6"
+    },
+    {
+      "archive_path": "architecture-audit/pr4855-refused-commit-20261105/originals/f7a-fixed-commit-api.json",
+      "bytes": 5637,
+      "sha256": "69e1ebcf796f6c01023161b0dd67d1ccebc5d5961d71e71bd44b89ce21dd94b8",
+      "git_blob": "5fec12ff038e9b2ccadbec30cb2007d6219e720b"
+    },
+    {
+      "archive_path": "architecture-audit/pr4855-refused-commit-20261105/originals/green-lock-envelope.json",
+      "bytes": 462718,
+      "sha256": "ac69a974fe57b7a5b2ff8a06f8810ad8898c4e3fafd7464d4656949305229c8e",
+      "git_blob": "de3f792dc17076ce912144c61833a4c31c078492"
+    },
+    {
+      "archive_path": "architecture-audit/pr4855-refused-commit-20261105/originals/red-commit-api.json",
+      "bytes": 8459,
+      "sha256": "c28320c50574fa489b76f8e7cc8fcf6acc287c135a05fc0689e244ee31bf9ba9",
+      "git_blob": "f3da70c6e11e469d54d327d838dbc14f9f45e522"
+    },
+    {
+      "archive_path": "architecture-audit/pr4855-refused-commit-20261105/source/green/codex-rs/state/src/sqlite.rs",
+      "bytes": 17180,
+      "sha256": "0a36229790d23fa47a676fd40cada5d9cee396c5215168d30fe4babbbad0464e",
+      "git_blob": "ec847b1c29b46ce74e7043fab8bac1c00eb8dbda"
+    },
+    {
+      "archive_path": "architecture-audit/pr4855-refused-commit-20261105/source/green-memory-gate-tests/codex-rs/hepta-memory/src/objective_sender_gate_tests.rs",
+      "bytes": 8645,
+      "sha256": "edba3520898376624aaf34eb53d1c974858a1ab1ef496e314b229bcae2a1d5f4",
+      "git_blob": "ccdc29095b9a4cdc280ddcc1bda643b301891b71"
+    },
+    {
+      "archive_path": "architecture-audit/pr4855-refused-commit-20261105/source/green-test/codex-rs/state/src/sqlite_pool_tests.rs",
+      "bytes": 2558,
+      "sha256": "1444cf64120549c9af265d6ed16d69c832d4faeffdddc0093d7cd0de8ccd6e4c",
+      "git_blob": "20fe71be06d34c6b962d07450d21dcaf72cbbb96"
+    },
+    {
+      "archive_path": "research-audit/pr4855-pool-reuse-delta-20261105/comments-page1.original.json",
+      "bytes": 92864,
+      "sha256": "a749f3071fae510183a8c69ae07700ace1492a228e2269b88b37dd7c7c2d6c4d",
+      "git_blob": "ad2b87a17728369c7a91a6cd8b540bc9bd10a826"
+    },
+    {
+      "archive_path": "research-audit/pr4855-pool-reuse-delta-20261105/fixed-tree-delta.json",
+      "bytes": 11153,
+      "sha256": "35744a71e394c3a1a7c7946fd2415c2b83204e73cdd422285c5acf6353e3bcbe",
+      "git_blob": "f25645a4eb2c98f38105458bf53857887c8e77b4"
+    },
+    {
+      "archive_path": "research-audit/pr4855-pool-reuse-delta-20261105/fresh-body.md",
+      "bytes": 45581,
+      "sha256": "197917fd6adf0cac782ea8ecb288da224a47d47f039b991a67e7fabfb02f7ce0",
+      "git_blob": "df0b23ae01bb938be6e663a6c53815f8b5fcef03"
+    },
+    {
+      "archive_path": "research-audit/pr4855-pool-reuse-delta-20261105/head-commit.original.json",
+      "bytes": 3962,
+      "sha256": "dbfaacef9a10490ffd76aa86aa168a9d839bedade85cf0cac7d9c74bb6c36e91",
+      "git_blob": "181cae294d081fbb8dc582866cee6fd92626a521"
+    },
+    {
+      "archive_path": "research-audit/pr4855-pool-reuse-delta-20261105/head-tree.original.json",
+      "bytes": 7533762,
+      "sha256": "105410040c85725897de0700219643bf9de6ed590ce4d177637601d0cf51e8b4",
+      "git_blob": "74a342926929dc0958f02cf39dc82b76c3347ee7"
+    },
+    {
+      "archive_path": "research-audit/pr4855-pool-reuse-delta-20261105/matched-original-evidence/complete-member-manifest.json",
+      "bytes": 5753,
+      "sha256": "79111da7dda75817dd98ec8483daa86ed8996761f38f46c0ebdf190d180cd30a",
+      "git_blob": "a1a517f8736916973ff7e0d341ee5f9cee595d24"
+    },
+    {
+      "archive_path": "research-audit/pr4855-pool-reuse-delta-20261105/matched-original-evidence/portable-evidence.original",
+      "bytes": 142236,
+      "sha256": "d73aa340816844d4e1fbf619fd0020b9655dea00aa89e1aff0e94f1132465e99",
+      "git_blob": "6cb6d81bbabc370debc3acf0a461a19ea4bcbab4"
+    },
+    {
+      "archive_path": "research-audit/pr4855-pool-reuse-delta-20261105/matched-original-evidence/portable-evidence.part00.b64",
+      "bytes": 60000,
+      "sha256": "ef9f53e58b277be08b99b7843f3b8ae45ebc3fa85441c0be5d31a4448a7c8321",
+      "git_blob": "345245c32949a23b92595c6c5cf8e50dac27bdfa"
+    },
+    {
+      "archive_path": "research-audit/pr4855-pool-reuse-delta-20261105/matched-original-evidence/portable-evidence.part01.b64",
+      "bytes": 60000,
+      "sha256": "80fc6a3d0391f53347eebe6d8f49ce1969a4b34ae7ba1650b152b9a81cef53dd",
+      "git_blob": "80706b7202ace2840c319fefac2292ed28f5b24d"
+    },
+    {
+      "archive_path": "research-audit/pr4855-pool-reuse-delta-20261105/matched-original-evidence/portable-evidence.part02.b64",
+      "bytes": 60000,
+      "sha256": "3ea2844d5816c0f5a64e12d948378f7ae008bba732d95096531c2769cd21e311",
+      "git_blob": "8cca92845ac9c7b8a2d27c68131e125169b870d2"
+    },
+    {
+      "archive_path": "research-audit/pr4855-pool-reuse-delta-20261105/matched-original-evidence/portable-evidence.part03.b64",
+      "bytes": 9648,
+      "sha256": "c2b7a65000d28fdb17388320af0c7e63013cbc3f1eb78a0aea348db98b46d1b9",
+      "git_blob": "92000febbbd4179518b56e5802709d9294f076b0"
+    },
+    {
+      "archive_path": "research-audit/pr4855-pool-reuse-delta-20261105/memory-gates-current.original.json",
+      "bytes": 19088,
+      "sha256": "1927e49dcaf3b13bb287863a70b9b78d29ecfdd113d19708858e243e1290d8a5",
+      "git_blob": "87ae930ba76c0617602a36de6c3b840905ae6839"
+    },
+    {
+      "archive_path": "research-audit/pr4855-pool-reuse-delta-20261105/native-1a1aafb05fe-fc05-4936.stderr.original",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "git_blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391"
+    },
+    {
+      "archive_path": "research-audit/pr4855-pool-reuse-delta-20261105/native-1a1aafb05fe-fc05-4936.stdout.original",
+      "bytes": 19066,
+      "sha256": "13dd877cd17d1dd225193059c00c3cd6787e6109aa4fc898880a5b32f8aa4af0",
+      "git_blob": "2be7ba7bbe2ac02a7d0d7aa5c333416b5287af00"
+    },
+    {
+      "archive_path": "research-audit/pr4855-pool-reuse-delta-20261105/native-1a1ab20eb00-fc05-4aba.stderr.original",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "git_blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391"
+    },
+    {
+      "archive_path": "research-audit/pr4855-pool-reuse-delta-20261105/native-1a1ab20eb00-fc05-4aba.stdout.original",
+      "bytes": 5429,
+      "sha256": "d97348b779fbce8a77192b54f05c2dc8f9f1ba8f320655f371bfd36a8992cf23",
+      "git_blob": "2a04c36bea0aff5638c71417d94f2c2030a160ca"
+    },
+    {
+      "archive_path": "research-audit/pr4855-pool-reuse-delta-20261105/native-case-projection.json",
+      "bytes": 304969,
+      "sha256": "9e23eed7de00bd7ca8e2a29f8b67e5ffd10f0f9a891556f4e204d533b9f01a23",
+      "git_blob": "2c8a60aa9350611ade704eb08a9422adfb1d1ecb"
+    },
+    {
+      "archive_path": "research-audit/pr4855-pool-reuse-delta-20261105/native-matched-evidence-four-parts.original.json",
+      "bytes": 191865,
+      "sha256": "7a1f9eebe2cd9c9bd4a196a44089f8cf687518333acf3efb3a7d53a688776d6c",
+      "git_blob": "6ab1d24a86a2bde7e1083b7c15a4b96760e472a1"
+    },
+    {
+      "archive_path": "research-audit/pr4855-pool-reuse-delta-20261105/native-read0-1a1aafb05fe-fc05-4936.original.json",
+      "bytes": 53406,
+      "sha256": "6b6bbb4a1981d5593c9cd2561e0f8dba7de166a9548e05c882ca83a217d4a38a",
+      "git_blob": "ffa2659b38c1545a1cbe1039af87fa97558fc2b8"
+    },
+    {
+      "archive_path": "research-audit/pr4855-pool-reuse-delta-20261105/native-read0-1a1ab20eb00-fc05-4aba.original.json",
+      "bytes": 18059,
+      "sha256": "a57fe33881f467a18399145f01558ea25543469360c7cb6c5d7a81d4ad4e720c",
+      "git_blob": "fdbc96215d06014a7d9e38b292b1bd58f0de9749"
+    },
+    {
+      "archive_path": "research-audit/pr4855-pool-reuse-delta-20261105/native-read1-1a1aafb05fe-fc05-4936.original.json",
+      "bytes": 9287,
+      "sha256": "c8efdf2535e2058905be189e0aa8a0e47450228150a55eeec66ab9b526f694f3",
+      "git_blob": "5f7bc442e8094a91b663424011bbbc5a57566b74"
+    },
+    {
+      "archive_path": "research-audit/pr4855-pool-reuse-delta-20261105/native-status-1a1aafb05fe-fc05-4936.original.json",
+      "bytes": 1206,
+      "sha256": "ada6b142e28a6cf832aae91183076efd27a938ee7ff3c7e13dacfb23dad6c457",
+      "git_blob": "e40de8ec533c75e4abac0502b36114322e2d5b22"
+    },
+    {
+      "archive_path": "research-audit/pr4855-pool-reuse-delta-20261105/native-status-1a1ab20eb00-fc05-4aba.original.json",
+      "bytes": 1204,
+      "sha256": "a3e6f5185db1dc25ea525014f02adc9a8e88aae6a12104cb4d49c196f99b162a",
+      "git_blob": "fc6a5aa19e437a254da3975b77f81fd813afbca6"
+    },
+    {
+      "archive_path": "research-audit/pr4855-pool-reuse-delta-20261105/pr-fresh.original.json",
+      "bytes": 132256,
+      "sha256": "b9bf117f28e5edd523ee439b93bf8c8c23f47b3e68812fbbc2b5c792e59bc10b",
+      "git_blob": "5ba4833fe40b06a010245144619b6b620f86ec41"
+    },
+    {
+      "archive_path": "research-audit/pr4855-pool-reuse-delta-20261105/qualification-list.original.json",
+      "bytes": 53903,
+      "sha256": "670cbdb9bd7d55c7bd485c5a84f1e349454cd7ed799c8f35395ecbbd9631ca36",
+      "git_blob": "7d7dabb9572dac46796e600734fa771f00889704"
+    },
+    {
+      "archive_path": "research-audit/pr4855-pool-reuse-delta-20261105/root-observed-body.md",
+      "bytes": 45581,
+      "sha256": "197917fd6adf0cac782ea8ecb288da224a47d47f039b991a67e7fabfb02f7ce0",
+      "git_blob": "df0b23ae01bb938be6e663a6c53815f8b5fcef03"
+    },
+    {
+      "archive_path": "research-audit/pr4855-pool-reuse-delta-20261105/root-observed-pr.json",
+      "bytes": 47515,
+      "sha256": "b1acb2d3f1e62612dba21a7ae5afb17cb86c98a5f7cec05371a54af25d6f3f3f",
+      "git_blob": "27a3d19c51f2e5a5dd4e1dccd7afcd11c017f742"
+    },
+    {
+      "archive_path": "research-audit/pr4855-pool-reuse-delta-20261105/source/codex-rs/hepta-memory/src/objective_sender_gate_tests.rs",
+      "bytes": 8645,
+      "sha256": "edba3520898376624aaf34eb53d1c974858a1ab1ef496e314b229bcae2a1d5f4",
+      "git_blob": "ccdc29095b9a4cdc280ddcc1bda643b301891b71"
+    },
+    {
+      "archive_path": "research-audit/pr4855-pool-reuse-delta-20261105/source/codex-rs/state/src/sqlite.rs",
+      "bytes": 17180,
+      "sha256": "0a36229790d23fa47a676fd40cada5d9cee396c5215168d30fe4babbbad0464e",
+      "git_blob": "ec847b1c29b46ce74e7043fab8bac1c00eb8dbda"
+    },
+    {
+      "archive_path": "research-audit/pr4855-pool-reuse-delta-20261105/source/codex-rs/state/src/sqlite_pool_tests.rs",
+      "bytes": 2558,
+      "sha256": "1444cf64120549c9af265d6ed16d69c832d4faeffdddc0093d7cd0de8ccd6e4c",
+      "git_blob": "20fe71be06d34c6b962d07450d21dcaf72cbbb96"
+    },
+    {
+      "archive_path": "research-audit/pr4855-pool-reuse-delta-20261105/state-pool-tests-current.original.json",
+      "bytes": 6478,
+      "sha256": "6f56ba444f79abe514a8fefcd8bd3a336de05550045d5cb525e44c7a40a6e76e",
+      "git_blob": "4cfe9d6c2afda8a344a4d1ad2a363b50ad3079a5"
+    },
+    {
+      "archive_path": "research-audit/pr4855-pool-reuse-delta-20261105/state-sqlite-current.original.json",
+      "bytes": 36601,
+      "sha256": "b7353f6abb18e58156a7cb6ddb10ff8ca5f99d68386c8dc676a835c536d08865",
+      "git_blob": "bc55abd04c480b7941214d3f5dc4968022b6741e"
+    },
+    {
+      "archive_path": "research-audit/pr4855-pool-reuse-delta-20261105/verification-result.json",
+      "bytes": 1204,
+      "sha256": "cd2d16ba4cb5c828fd61fb5ba64f416cda3f872cb3be0c7e633fa6bf692c4095",
+      "git_blob": "cf826b415f8d77e05760941775a735a000396958"
+    },
+    {
+      "archive_path": "research-audit/pr4855-pool-reuse-delta-20261105/verify_and_review.py",
+      "bytes": 16730,
+      "sha256": "05eda88e855df3640e7b3cb2d11cd189de58eed2223224dd470bd071a76d57da",
+      "git_blob": "dec661d8b85d1ca42bffd4e47fe54de53ac34f76"
+    }
+  ],
+  "verification": {
+    "strict_base64": true,
+    "gzip_crc_complete": true,
+    "all_tar_member_bytes_sha256_git_equal": true,
+    "native_portable_zip": {
+      "bytes": 142236,
+      "sha256": "d73aa340816844d4e1fbf619fd0020b9655dea00aa89e1aff0e94f1132465e99",
+      "members": 20,
+      "all_crc": true,
+      "xml_members": 0
+    }
+  },
+  "restore": "Read parts in listed order; strip only their trailing LF, concatenate, decode with validate=True; verify archive SHA256/length; decompress gzip to TAR; for every regular member verify complete length/SHA256/Git blob before writing into a fresh isolated evidence directory. Preserve archived paths as logical source paths. Do not apply any source to a product checkout.",
+  "limits": [
+    "Original native logs and source-only fixtures are passive evidence, not new current-head tests.",
+    "B16 donor authority is not inferred from successful artifact transport."
+  ]
+}

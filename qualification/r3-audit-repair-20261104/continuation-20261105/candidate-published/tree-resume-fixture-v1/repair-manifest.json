@@ -1,0 +1,275 @@
+{
+  "schema": "core_tree_resume_local_provider_fixture_candidate_v1",
+  "status": "STATIC_CANDIDATE_NOT_EXECUTED",
+  "created_at": "2026-11-05T15:03:33.971124+00:00",
+  "base_commit": "5b6331250ff459033bd44d1a95daec70131277cc",
+  "base_tree": "b26598d0d97d8d51e723bb5582137315f2174d35",
+  "path": "codex-rs/core/src/agent/control_tests.rs",
+  "preimage": {
+    "local_path": "/workspace/scratch/07dd58cc9630/research-audit/core-parallel-resume-triage-20261105/source/codex-rs/core/src/agent/control_tests.rs",
+    "bytes": 171303,
+    "sha256": "c7089bc1d130334fd43a153e76a0c0780043903bfdea0448421bfb2f7a0bc738",
+    "git_blob": "0d2d33f034a333c437deb42764b7dcf657e492a8"
+  },
+  "postimage": {
+    "local_path": "/workspace/scratch/07dd58cc9630/research-audit/core-parallel-resume-triage-20261105/candidate/codex-rs/core/src/agent/control_tests.rs",
+    "bytes": 173084,
+    "sha256": "2529dca22467d72ee6f067a4f600c99ea17c8099d4010ade2a09f008cfed386d",
+    "git_blob": "05054632b7cd82e5e7587dbcb7aee293788e00a2"
+  },
+  "patch": {
+    "local_path": "/workspace/scratch/07dd58cc9630/research-audit/core-parallel-resume-triage-20261105/repair.patch",
+    "bytes": 3000,
+    "sha256": "3ee1b1fa85b69d102757028525473aa926b0b8b6b0b91091d266c12d73568e5a",
+    "git_blob": "0fa9b277ea746d27bd9a788e4fa64be8a441b07a"
+  },
+  "diff_lines": {
+    "added": 46,
+    "removed": 2,
+    "paths": 1
+  },
+  "original_actual_failure": {
+    "native_source_tree": "e78c819b8b1f435f8b37bea17b4ffdc724961aa2",
+    "test_name": "agent::control::tests::resume_agent_from_rollout_skips_descendants_when_parent_resume_fails",
+    "original_stderr": {
+      "local_path": "/workspace/scratch/07dd58cc9630/ci-audit/core-wait-span-20261105/project-nonpass-priority-v1/core-same-process-parallel.stderr",
+      "bytes": 3197,
+      "sha256": "952bb0c28a972829fb86ab717a3bbd77b64a1334a7a4ea0deb2c0ca39408cb8d",
+      "git_blob": "57f6f5ab1056e5a157671dc72570b140af5c037f"
+    },
+    "complete_nonpass_projection": {
+      "local_path": "/workspace/scratch/07dd58cc9630/ci-audit/core-wait-span-20261105/project-nonpass-priority-v1/nonpass-projection.json",
+      "bytes": 145424,
+      "sha256": "9931149a3239406315e2b51e05b3a8c04f48fd9f97c37cbeb9d4145508e71cfb",
+      "git_blob": "99dd6edb6401a82f9f7664c2a64e6aac5155d403"
+    },
+    "parallel_outer_counts": {
+      "passed": 2432,
+      "failed": 1,
+      "ignored": 1,
+      "measured": 0,
+      "filtered": 0
+    },
+    "observed_endpoint": "Ordinary Rust assert at control_tests.rs:347:5 after original 5-second wait. Only McpStartupComplete and TurnStarted appeared in the helper observed events.",
+    "failed_turn_id": "01a1ac0a-77d7-77e3-b487-12196828a4a6",
+    "child_or_grandchild": "UNRESOLVED: original message omitted needle/thread ID; both call the same helper.",
+    "not_a_claim_of_original_test_body_success": true
+  },
+  "proved_source_chain": [
+    {
+      "path": "codex-rs/core/src/agent/control_tests.rs",
+      "lines": "86-99,181-209,4666-4771",
+      "fact": "The original harness uses default provider configuration, setting temporary codex_home and model gpt-5.5, with dummy API auth; this case supplies no local Responses server. The two hello ItemCompleted waits precede the persist helper."
+    },
+    {
+      "path": "codex-rs/core/src/agent/control/spawn.rs",
+      "lines": "780-800",
+      "fact": "Spawn edge persistence precedes send_input; successful submit is not completion of user input recording."
+    },
+    {
+      "path": "codex-rs/core/src/tasks/regular.rs",
+      "lines": "95-128",
+      "fact": "TurnStarted is emitted before awaiting consume_startup_prewarm_for_regular_turn, before run_turn and user input recording."
+    },
+    {
+      "path": "codex-rs/core/src/session_startup_prewarm.rs",
+      "lines": "65-110,174-254,300-344",
+      "fact": "Unfinished startup prewarm can wait for the provider websocket timeout. With WebSockets disabled no startup prewarm handle is installed; the regular-turn waiter resolves not_scheduled. The websocket prewarm otherwise reaches provider-facing I/O."
+    },
+    {
+      "path": "codex-rs/core/src/client.rs",
+      "lines": "682,1323-1331",
+      "fact": "ModelClient starts with disable_websockets=false; effective websocket transport depends on provider supports_websockets and session fallback state."
+    },
+    {
+      "path": "codex-rs/model-provider-info/src/lib.rs",
+      "lines": "31,393-436",
+      "fact": "Built-in OpenAI provider supports WebSockets and has a default 15,000-ms connect timeout, longer than this fixture's unchanged 5-second recording wait."
+    },
+    {
+      "path": "codex-rs/core/src/session/turn.rs",
+      "lines": "365-470",
+      "fact": "Other pre-recording work remains: pre-sampling compaction, MCP requirements, step context/world-state, skills/plugins and session-start hooks. The observed events alone do not discriminate these stages."
+    }
+  ],
+  "causal_limits": [
+    "This specific timeout has not been proven to occur in startup prewarm. The candidate removes a demonstrated unrelated external-provider dependency from this fixture; it is not a claim of fixing production scheduling, the provider or tracing-core.",
+    "Nearby API 401 output from other tests is not attributed to this test or failed turn.",
+    "No controlled negative or repaired runtime was executed for this candidate. The original parallel failure remains preserved."
+  ],
+  "changes": [
+    "Only this one tree-resume case creates an existing Responses MockServer and mounts a reusable successful created+completed SSE response on local POST /v1/responses.",
+    "The existing test_config_with_cli_overrides builds an explicit custom local provider through the real ConfigBuilder layer, including supports_websockets=false and requires_openai_auth=false; it asserts the effective local base URL and HTTP mode before constructing the original harness.",
+    "The server is retained until after the existing bounded shutdown/rollout deletion/resume/tree shutdown body; declaration order also keeps it alive while the harness and thread handles are dropped. No explicit process spawn or custom runtime is added; the existing wiremock helper owns its server lifecycle.",
+    "The shared helper only adds needle and session thread ID to its existing failure message; event loop, matching predicate and original five-second timeout are byte-identical."
+  ],
+  "preserved": [
+    "Original test name and every function/test name in this file.",
+    "Entire original case after harness setup, including real spawned hello input, ItemCompleted waits, persisted markers, five-second child-tree waits and shutdown, removed child rollout, resumed root identity, child+grandchild NotFound and final tree shutdown.",
+    "No global AgentControlHarness change, no production source, no Cargo/BUILD/dependency/feature/lock change.",
+    "No original timeout, retry, ignored/skip, serial_test or libtest thread-count change.",
+    "No request-count assertion is added: this test terminates prompt work after real user recording, before a provider request is guaranteed to be made. The mock is a local dependency boundary, not a model/RPC qualification."
+  ],
+  "existing_dependencies": {
+    "cargo_manifest": {
+      "local_path": "/workspace/scratch/07dd58cc9630/research-audit/core-parallel-resume-triage-20261105/source/codex-rs/core/Cargo.toml",
+      "bytes": 6185,
+      "sha256": "3a2576956d2844516f1e38554a207c50e44503dd0c49cd8612fb630d3c6eb5f4",
+      "git_blob": "df43645d3ca5e18e4ba526479a4c59cb103d3a5d"
+    },
+    "direct_dev_dependencies": [
+      "core_test_support",
+      "wiremock",
+      "tempfile",
+      "pretty_assertions"
+    ],
+    "responses_module": {
+      "local_path": "/workspace/scratch/07dd58cc9630/research-audit/core-parallel-resume-triage-20261105/source/codex-rs/core/tests/common/lib.rs",
+      "bytes": 22506,
+      "sha256": "5418ece8bb498ed07b87e99e1faa9a8c86944a40cfe20d519e4d60ecbec54f24",
+      "git_blob": "29ed4875e0674d534efc39a23b96995eb3790ce6"
+    },
+    "mock_apis": {
+      "path": "codex-rs/core/tests/common/responses.rs",
+      "identity": {
+        "local_path": "/workspace/scratch/07dd58cc9630/research-audit/core-parallel-resume-triage-20261105/source/codex-rs/core/tests/common/responses.rs",
+        "bytes": 66235,
+        "sha256": "4f6baa55dcec3a157e68582a534019d53e5407402fd9924c467b32e4a648f3ff",
+        "git_blob": "707c11dfebf6db065a5fffce8ca37cc184ff2b11"
+      },
+      "functions": [
+        "start_mock_server at1463",
+        "sse_completed at907 (created+completed)",
+        "sse_response at1222"
+      ]
+    },
+    "provider_schema": {
+      "local_path": "/workspace/scratch/07dd58cc9630/research-audit/core-parallel-resume-triage-20261105/source/codex-rs/model-provider-info/src/lib.rs",
+      "bytes": 25810,
+      "sha256": "fb824382514ccc02ff02973b7a1cfc3a3cd7b0b9c1e170fecf6363477063c026",
+      "git_blob": "98c0fdb74861c92628996f1e1a58a2ac18352da3"
+    }
+  },
+  "static_validation": {
+    "local_path": "/workspace/scratch/07dd58cc9630/research-audit/core-parallel-resume-triage-20261105/static-reconstruction.json",
+    "bytes": 2440,
+    "sha256": "95ea8bdc16991ffc78be59d4d992adb7ee7b6a368186d1896c8a120d82deff27",
+    "git_blob": "60343933f09cdceccd85fa2ee1bf20002f993b96"
+  },
+  "next_gate": {
+    "status": "PENDING_ROOT_REVIEW_AND_SOLE_NATIVE_OWNER",
+    "required_source": "Verify this control_tests.rs preimage on the intended integration source; do not borrow unchanged 5b/e78 whole-tree qualification.",
+    "original_case": "agent::control::tests::resume_agent_from_rollout_skips_descendants_when_parent_resume_fails",
+    "required_parallel_command": {
+      "argv": [
+        "<fresh exact-source codex-core library binary from actual catalog>",
+        "--nocapture",
+        "--color",
+        "never"
+      ],
+      "cwd": "original catalog suite cwd",
+      "thread_count": "default libtest; no override",
+      "scope": "Complete original Core library named roster, 0 filtered; preserve ignored and remote early-return accounting.",
+      "timeout": "Original 5-second helper and all existing per-case budgets remain; prior direct-parallel qualification uses the unchanged 900-second reference, not a new forced kill.",
+      "retries": 0
+    },
+    "original_runner_reference": {
+      "local_path": "/workspace/scratch/07dd58cc9630/ci-audit/core-wait-span-20261105/native_project_runner_v3.py",
+      "bytes": 36195,
+      "sha256": "1201a4a2fec8d508f781f8f55f31ef1e60fb67747d08c7ff66794404128e9ed0",
+      "git_blob": "ecc9e19f2722dc6ee668ad5f42a10b6bfa2bfdde"
+    },
+    "do_not_claim": "An exact-case pass alone does not validate the former same-process parallel failure. A successful mechanism probe or scoped Linux result does not close Windows/full/platform gates."
+  },
+  "fixed_dependency_sources": [
+    {
+      "path": "codex-rs/core/Cargo.toml",
+      "ref": "5b6331250ff459033bd44d1a95daec70131277cc",
+      "local_path": "/workspace/scratch/07dd58cc9630/research-audit/core-parallel-resume-triage-20261105/source/codex-rs/core/Cargo.toml",
+      "bytes": 6185,
+      "sha256": "3a2576956d2844516f1e38554a207c50e44503dd0c49cd8612fb630d3c6eb5f4",
+      "git_blob": "df43645d3ca5e18e4ba526479a4c59cb103d3a5d"
+    },
+    {
+      "path": "codex-rs/core/src/agent/control/spawn.rs",
+      "ref": "5b6331250ff459033bd44d1a95daec70131277cc",
+      "local_path": "/workspace/scratch/07dd58cc9630/research-audit/core-parallel-resume-triage-20261105/source/codex-rs/core/src/agent/control/spawn.rs",
+      "bytes": 55556,
+      "sha256": "9c34e1f645186cfc43a132e2b256577640e0f3931322b8e27441f622e12f4171",
+      "git_blob": "3722500c55ac82a216bf6593f86c8d716b74f11c"
+    },
+    {
+      "path": "codex-rs/core/src/agent/control_tests.rs",
+      "ref": "5b6331250ff459033bd44d1a95daec70131277cc",
+      "local_path": "/workspace/scratch/07dd58cc9630/research-audit/core-parallel-resume-triage-20261105/source/codex-rs/core/src/agent/control_tests.rs",
+      "bytes": 171303,
+      "sha256": "c7089bc1d130334fd43a153e76a0c0780043903bfdea0448421bfb2f7a0bc738",
+      "git_blob": "0d2d33f034a333c437deb42764b7dcf657e492a8"
+    },
+    {
+      "path": "codex-rs/core/src/client.rs",
+      "ref": "5b6331250ff459033bd44d1a95daec70131277cc",
+      "local_path": "/workspace/scratch/07dd58cc9630/research-audit/core-parallel-resume-triage-20261105/source/codex-rs/core/src/client.rs",
+      "bytes": 162877,
+      "sha256": "b295e4af51993e2254f2bb1473591dd02dd0e8b15e9591bbcdf45d60d9d8b75b",
+      "git_blob": "4f16e0eec07d7d95ad3fc206140d260500592277"
+    },
+    {
+      "path": "codex-rs/core/src/session/turn.rs",
+      "ref": "5b6331250ff459033bd44d1a95daec70131277cc",
+      "local_path": "/workspace/scratch/07dd58cc9630/research-audit/core-parallel-resume-triage-20261105/source/codex-rs/core/src/session/turn.rs",
+      "bytes": 132572,
+      "sha256": "20b756ac6cfbf03a5cec343366cc8e529a653e615befaa2362b3524837ce100a",
+      "git_blob": "942935e6d73ef3e3fc53c1fd73dd490e0247354e"
+    },
+    {
+      "path": "codex-rs/core/src/session_startup_prewarm.rs",
+      "ref": "5b6331250ff459033bd44d1a95daec70131277cc",
+      "local_path": "/workspace/scratch/07dd58cc9630/research-audit/core-parallel-resume-triage-20261105/source/codex-rs/core/src/session_startup_prewarm.rs",
+      "bytes": 12859,
+      "sha256": "9178d4d24f7c0339242b6048b20556d844c94f1b06445ec4bfb6fea48c8f9192",
+      "git_blob": "7ba2692577b881a949593ddc32974aa3c0f38926"
+    },
+    {
+      "path": "codex-rs/core/src/tasks/regular.rs",
+      "ref": "5b6331250ff459033bd44d1a95daec70131277cc",
+      "local_path": "/workspace/scratch/07dd58cc9630/research-audit/core-parallel-resume-triage-20261105/source/codex-rs/core/src/tasks/regular.rs",
+      "bytes": 5432,
+      "sha256": "bacfc1f5c9b1b1de6951f14558dad4d43ceaaa265600aac3ecedce04bdf4240f",
+      "git_blob": "a9c7225095f4109d6d8af01279475fe840ae816e"
+    },
+    {
+      "path": "codex-rs/core/tests/common/lib.rs",
+      "ref": "5b6331250ff459033bd44d1a95daec70131277cc",
+      "local_path": "/workspace/scratch/07dd58cc9630/research-audit/core-parallel-resume-triage-20261105/source/codex-rs/core/tests/common/lib.rs",
+      "bytes": 22506,
+      "sha256": "5418ece8bb498ed07b87e99e1faa9a8c86944a40cfe20d519e4d60ecbec54f24",
+      "git_blob": "29ed4875e0674d534efc39a23b96995eb3790ce6"
+    },
+    {
+      "path": "codex-rs/core/tests/common/responses.rs",
+      "ref": "5b6331250ff459033bd44d1a95daec70131277cc",
+      "local_path": "/workspace/scratch/07dd58cc9630/research-audit/core-parallel-resume-triage-20261105/source/codex-rs/core/tests/common/responses.rs",
+      "bytes": 66235,
+      "sha256": "4f6baa55dcec3a157e68582a534019d53e5407402fd9924c467b32e4a648f3ff",
+      "git_blob": "707c11dfebf6db065a5fffce8ca37cc184ff2b11"
+    },
+    {
+      "path": "codex-rs/model-provider-info/src/lib.rs",
+      "ref": "5b6331250ff459033bd44d1a95daec70131277cc",
+      "local_path": "/workspace/scratch/07dd58cc9630/research-audit/core-parallel-resume-triage-20261105/source/codex-rs/model-provider-info/src/lib.rs",
+      "bytes": 25810,
+      "sha256": "fb824382514ccc02ff02973b7a1cfc3a3cd7b0b9c1e170fecf6363477063c026",
+      "git_blob": "98c0fdb74861c92628996f1e1a58a2ac18352da3"
+    }
+  ],
+  "not_executed": [
+    "Rust fmt",
+    "Rust compile/clippy",
+    "candidate original case",
+    "candidate same-process parallel scope",
+    "hosted CI"
+  ],
+  "no_native_shared_source_index_target_or_ref_mutation": true,
+  "github_delivery": "separate actual create+GET map; source identities here are content hashes"
+}

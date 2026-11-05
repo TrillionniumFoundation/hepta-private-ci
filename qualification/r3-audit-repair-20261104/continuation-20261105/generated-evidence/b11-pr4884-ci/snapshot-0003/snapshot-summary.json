@@ -1,0 +1,155 @@
+{
+  "observed_at": "2026-11-05 15:07:36 UTC",
+  "non_atomic": true,
+  "pr": 4884,
+  "head": "0d65de9bf1e28a7b313a344ebba71ba8378d0f5a",
+  "base": "5b6331250ff459033bd44d1a95daec70131277cc",
+  "commits": 4,
+  "changed_files": 5,
+  "draft": true,
+  "run_count": 6,
+  "runs": [
+    {
+      "id": 42051179689,
+      "name": "Original Objective owner package gates",
+      "head_sha": "0d65de9bf1e28a7b313a344ebba71ba8378d0f5a",
+      "status": "queued",
+      "conclusion": null,
+      "run_attempt": 1,
+      "created_at": "2026-11-05T15:04:08Z",
+      "updated_at": "2026-11-05T15:04:10Z"
+    },
+    {
+      "id": 42051179809,
+      "name": "Hepta musl product smoke",
+      "head_sha": "0d65de9bf1e28a7b313a344ebba71ba8378d0f5a",
+      "status": "pending",
+      "conclusion": null,
+      "run_attempt": 1,
+      "created_at": "2026-11-05T15:04:08Z",
+      "updated_at": "2026-11-05T15:04:10Z"
+    },
+    {
+      "id": 42051179569,
+      "name": "blocking-ci",
+      "head_sha": "0d65de9bf1e28a7b313a344ebba71ba8378d0f5a",
+      "status": "pending",
+      "conclusion": null,
+      "run_attempt": 1,
+      "created_at": "2026-11-05T15:04:08Z",
+      "updated_at": "2026-11-05T15:04:09Z"
+    },
+    {
+      "id": 42051179792,
+      "name": "Windows token mechanisms (observations only)",
+      "head_sha": "0d65de9bf1e28a7b313a344ebba71ba8378d0f5a",
+      "status": "in_progress",
+      "conclusion": null,
+      "run_attempt": 1,
+      "created_at": "2026-11-05T15:04:08Z",
+      "updated_at": "2026-11-05T15:06:24Z"
+    },
+    {
+      "id": 42051180076,
+      "name": "Hepta architecture convergence",
+      "head_sha": "0d65de9bf1e28a7b313a344ebba71ba8378d0f5a",
+      "status": "pending",
+      "conclusion": null,
+      "run_attempt": 1,
+      "created_at": "2026-11-05T15:04:08Z",
+      "updated_at": "2026-11-05T15:04:09Z"
+    },
+    {
+      "id": 42051179766,
+      "name": "v8-canary",
+      "head_sha": "0d65de9bf1e28a7b313a344ebba71ba8378d0f5a",
+      "status": "queued",
+      "conclusion": null,
+      "run_attempt": 1,
+      "created_at": "2026-11-05T15:04:08Z",
+      "updated_at": "2026-11-05T15:04:10Z"
+    }
+  ],
+  "probe_jobs": [
+    {
+      "id": 127327372905,
+      "name": "Windows token observations with original strict assertions",
+      "status": "in_progress",
+      "conclusion": null,
+      "runner_id": 1000001579,
+      "labels": [
+        "windows-latest"
+      ],
+      "started_at": "2026-11-05T15:06:24Z",
+      "completed_at": null,
+      "steps": [
+        {
+          "name": "Set up job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 1,
+          "started_at": "2026-11-05T15:06:24Z",
+          "completed_at": "2026-11-05T15:06:25Z"
+        },
+        {
+          "name": "Run actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 2,
+          "started_at": "2026-11-05T15:06:25Z",
+          "completed_at": "2026-11-05T15:06:42Z"
+        },
+        {
+          "name": "Prepare original native MSVC Bazel environment",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 3,
+          "started_at": "2026-11-05T15:06:42Z",
+          "completed_at": "2026-11-05T15:07:24Z"
+        },
+        {
+          "name": "Run the original outer Windows sandbox unit target",
+          "status": "in_progress",
+          "conclusion": null,
+          "number": 4,
+          "started_at": "2026-11-05T15:07:24Z",
+          "completed_at": null
+        },
+        {
+          "name": "Upload complete observation and original failure evidence",
+          "status": "pending",
+          "conclusion": null,
+          "number": 5,
+          "started_at": null,
+          "completed_at": null
+        },
+        {
+          "name": "Check for a clean worktree",
+          "status": "pending",
+          "conclusion": null,
+          "number": 6,
+          "started_at": null,
+          "completed_at": null
+        },
+        {
+          "name": "Post Prepare original native MSVC Bazel environment",
+          "status": "pending",
+          "conclusion": null,
+          "number": 11,
+          "started_at": null,
+          "completed_at": null
+        },
+        {
+          "name": "Post Run actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd",
+          "status": "pending",
+          "conclusion": null,
+          "number": 12,
+          "started_at": null,
+          "completed_at": null
+        }
+      ]
+    }
+  ],
+  "tests_passed_claim": false,
+  "B11_closed": false
+}

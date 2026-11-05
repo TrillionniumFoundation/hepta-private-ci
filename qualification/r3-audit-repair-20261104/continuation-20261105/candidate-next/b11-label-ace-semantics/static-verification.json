@@ -1,0 +1,78 @@
+{
+  "preimage": {
+    "bytes": 13465,
+    "sha256": "018166e25f5e2014d2ae0f74c58252af85625f88a43fa320573926d491e1225a",
+    "git_blob": "47dddb48c727c1bcae89b613409a72bd7d1312ff"
+  },
+  "postimage": {
+    "bytes": 17560,
+    "sha256": "986fe8864f789e4bfa876553d99f1949be403f5ed10b9c88fdc8e0fd7331c0d1",
+    "git_blob": "7a7008f9becf09578ca953c849401eda93eb94b2"
+  },
+  "patch": {
+    "bytes": 8055,
+    "sha256": "4ee7ad086af52af9832b843b574e4d59305e41fcc162218992a903a036a6ce25",
+    "git_blob": "03f5ee7e4122d22189b8056ef0137f820943c1ac"
+  },
+  "diff_added": 71,
+  "diff_deleted": 5,
+  "cloud_git_only_commands": [
+    {
+      "argv": [
+        "git",
+        "apply",
+        "--check",
+        "/workspace/scratch/07dd58cc9630/architecture-audit/b11-pr4884-ci-20261105/repair-label-ace-semantics-v1/repair.patch"
+      ],
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "git",
+        "apply",
+        "/workspace/scratch/07dd58cc9630/architecture-audit/b11-pr4884-ci-20261105/repair-label-ace-semantics-v1/repair.patch"
+      ],
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "git",
+        "apply",
+        "--reverse",
+        "--check",
+        "/workspace/scratch/07dd58cc9630/architecture-audit/b11-pr4884-ci-20261105/repair-label-ace-semantics-v1/repair.patch"
+      ],
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "git",
+        "apply",
+        "--reverse",
+        "/workspace/scratch/07dd58cc9630/architecture-audit/b11-pr4884-ci-20261105/repair-label-ace-semantics-v1/repair.patch"
+      ],
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": ""
+    }
+  ],
+  "forward_reverse_exact": true,
+  "unchanged_source_blocks": {
+    "pub(super) fn from_sddl": true,
+    "fn read(": true,
+    "fn text(": true,
+    "fn apply_label(": true,
+    "pub(super) fn create(": true,
+    "fn identity(": true,
+    "pub(super) fn access_checks(": true,
+    "impl Drop for LabelledObject": true
+  },
+  "native_commands_executed": false,
+  "rust_compile_or_tests_executed": false
+}

@@ -1,0 +1,132 @@
+{
+  "schema": "b11-native4-exact-failure-classification-v1",
+  "head": "3a407dde2727de2176b02d3cb2c3883fbb771f60",
+  "actual_checkout": "5006ac5d52f437bc1d1ec2ccd9efd5c7f5e35a6c",
+  "tree": "e45bcd4fb4bbaf8b4f0351ba866e84137e635a68",
+  "job_id": 127352234293,
+  "original": {
+    "path": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-pr4884-ci-20261105/terminal/probe-127352234293/members/bazel-execution-logs/failed-test-logs/invocation-1m84m15p/targets/0000/test.log",
+    "bytes": 127916,
+    "sha256": "105df80dbfc071ef8b2addce0cfe4d3d9c283f3673da2d84e0143b0e7e5bbdbb",
+    "git_blob": "af35e023f86c2a9216f0bb2ce787dc9e8226a405"
+  },
+  "counts": {
+    "ACL_REPAIR_NATIVE_API_ERROR": 4,
+    "PHYSICAL_CURRENT_TOKEN_DELETE_ESCAPE": 1,
+    "HOST_MATRIX_PRECONDITION_FAILURE": 1,
+    "STALE_ERROR_LEAF_STRING_EXPECTATION": 1,
+    "LOCK_POISON_AFTER_EARLIER_ASSERTION": 6
+  },
+  "failures": [
+    {
+      "case": "acl::tests::existing_native_deny_does_not_require_write_dac",
+      "start_line": 100,
+      "end_line": 102,
+      "classification": "ACL_REPAIR_NATIVE_API_ERROR",
+      "reason": "Original helper returned AccessDenied from SetSecurityInfo or ReOpenFile before later assertions.",
+      "original_block": "---- acl::tests::existing_native_deny_does_not_require_write_dac stdout ----\nError: SetSecurityInfo failed for D:\\tmp\\.tmpJz7FCU\\read-control-only.txt: 5\n\n"
+    },
+    {
+      "case": "acl::tests::partial_read_deny_is_repaired_before_native_file_data_access",
+      "start_line": 103,
+      "end_line": 105,
+      "classification": "ACL_REPAIR_NATIVE_API_ERROR",
+      "reason": "Original helper returned AccessDenied from SetSecurityInfo or ReOpenFile before later assertions.",
+      "original_block": "---- acl::tests::partial_read_deny_is_repaired_before_native_file_data_access stdout ----\nError: SetSecurityInfo failed for D:\\tmp\\.tmpgHJ3jU\\read.txt: 5\n\n"
+    },
+    {
+      "case": "acl::tests::native_file_and_directory_repairs_are_idempotent_for_read_and_write",
+      "start_line": 106,
+      "end_line": 112,
+      "classification": "ACL_REPAIR_NATIVE_API_ERROR",
+      "reason": "Original helper returned AccessDenied from SetSecurityInfo or ReOpenFile before later assertions.",
+      "original_block": "---- acl::tests::native_file_and_directory_repairs_are_idempotent_for_read_and_write stdout ----\nError: ReOpenFile for deny repair failed for D:\\tmp\\.tmpouldsS\\.tmpvipKWK\n\nCaused by:\n    Access is denied. (os error 5)\n\n\n"
+    },
+    {
+      "case": "token::tests::partial_delete_deny_is_repaired_before_native_workspace_writes",
+      "start_line": 479,
+      "end_line": 484,
+      "classification": "ACL_REPAIR_NATIVE_API_ERROR",
+      "reason": "Original helper returned AccessDenied from SetSecurityInfo or ReOpenFile before later assertions.",
+      "original_block": "---- token::tests::partial_delete_deny_is_repaired_before_native_workspace_writes stdout ----\nError: ReOpenFile for deny repair failed for D:\\tmp\\.tmp5JRWiK\n\nCaused by:\n    Access is denied. (os error 5)\n\n"
+    },
+    {
+      "case": "token::tests::workspace_capabilities_deny_writes_and_deletes_under_broad_identity_aces",
+      "start_line": 485,
+      "end_line": 510,
+      "classification": "PHYSICAL_CURRENT_TOKEN_DELETE_ESCAPE",
+      "reason": "Current product token: overwrite/create PermissionDenied, file/directory remove succeeded; original strict assertion failed.",
+      "original_block": "---- token::tests::workspace_capabilities_deny_writes_and_deletes_under_broad_identity_aces stdout ----\n\nthread 'token::tests::workspace_capabilities_deny_writes_and_deletes_under_broad_identity_aces' (2572) panicked at windows-sandbox-rs/src\\token_tests.rs:434:5:\nassertion failed: `(left == right)`\n\n\u001b[1mDiff\u001b[0m \u001b[31m< left\u001b[0m / \u001b[32mright >\u001b[0m :\n [\n     Some(\n         PermissionDenied,\n     ),\n     Some(\n         PermissionDenied,\n     ),\n\u001b[31m<    None,\u001b[0m\n\u001b[31m<    None,\u001b[0m\n\u001b[32m>    Some(\u001b[0m\n\u001b[32m>        PermissionDenied,\u001b[0m\n\u001b[32m>    ),\u001b[0m\n\u001b[32m>    Some(\u001b[0m\n\u001b[32m>        PermissionDenied,\u001b[0m\n\u001b[32m>    ),\u001b[0m\n ]\n\n\nnote: run with `RUST_BACKTRACE=1` environment variable to display a backtrace\n\n"
+    },
+    {
+      "case": "token::tests::workspace_capability_delete_routes_require_the_capability_in_all_four_cells",
+      "start_line": 511,
+      "end_line": 567,
+      "classification": "HOST_MATRIX_PRECONDITION_FAILURE",
+      "reason": "Line479 host_errors assertion fails before token constructor; host Neither deletes unexpectedly succeeded. Current restricted token was not exercised by this failing case.",
+      "original_block": "---- token::tests::workspace_capability_delete_routes_require_the_capability_in_all_four_cells stdout ----\ndelete_matrix ordinary-host path=\"D:\\\\tmp\\\\.tmplOPHUn\\\\host\\\\Neither\\\\file\" identity=(275813096, 196608, 98280) directory=0 pending=1 links=0 acl=[02, 00, 30, 00, 02, 00, 00, 00, 01, 00, 14, 00, 00, 00, 01, 00, 01, 01, 00, 00, 00, 00, 00, 01, 00, 00, 00, 00, 00, 00, 14, 00, ff, 01, 1e, 00, 01, 01, 00, 00, 00, 00, 00, 01, 00, 00, 00, 00]\ndelete_matrix ordinary-host path=\"D:\\\\tmp\\\\.tmplOPHUn\\\\host\\\\Neither\\\\directory\" identity=(275813096, 196608, 98281) directory=1 pending=1 links=0 acl=[02, 00, 30, 00, 02, 00, 00, 00, 01, 00, 14, 00, 00, 00, 01, 00, 01, 01, 00, 00, 00, 00, 00, 01, 00, 00, 00, 00, 00, 00, 14, 00, ff, 01, 1e, 00, 01, 01, 00, 00, 00, 00, 00, 01, 00, 00, 00, 00]\ndelete_matrix ordinary-host path=\"D:\\\\tmp\\\\.tmplOPHUn\\\\host\\\\Neither\" identity=(275813096, 196608, 98279) directory=1 pending=0 links=1 acl=[02, 00, 30, 00, 02, 00, 00, 00, 01, 00, 14, 00, 40, 00, 00, 00, 01, 01, 00, 00, 00, 00, 00, 01, 00, 00, 00, 00, 00, 00, 14, 00, bf, 01, 1f, 00, 01, 01, 00, 00, 00, 00, 00, 01, 00, 00, 00, 00]\ndelete_matrix ordinary-host path=\"D:\\\\tmp\\\\.tmplOPHUn\\\\host\\\\TargetOnly\\\\file\" identity=(275813096, 131072, 98283) directory=0 pending=1 links=0 acl=[02, 00, 1c, 00, 01, 00, 00, 00, 00, 00, 14, 00, ff, 01, 1f, 00, 01, 01, 00, 00, 00, 00, 00, 01, 00, 00, 00, 00]\ndelete_matrix ordinary-host path=\"D:\\\\tmp\\\\.tmplOPHUn\\\\host\\\\TargetOnly\\\\directory\" identity=(275813096, 131072, 98284) directory=1 pending=1 links=0 acl=[02, 00, 1c, 00, 01, 00, 00, 00, 00, 00, 14, 00, ff, 01, 1f, 00, 01, 01, 00, 00, 00, 00, 00, 01, 00, 00, 00, 00]\ndelete_matrix ordinary-host path=\"D:\\\\tmp\\\\.tmplOPHUn\\\\host\\\\TargetOnly\" identity=(275813096, 131072, 98282) directory=1 pending=0 links=1 acl=[02, 00, 30, 00, 02, 00, 00, 00, 01, 00, 14, 00, 40, 00, 00, 00, 01, 01, 00, 00, 00, 00, 00, 01, 00, 00, 00, 00, 00, 00, 14, 00, bf, 01, 1f, 00, 01, 01, 00, 00, 00, 00, 00, 01, 00, 00, 00, 00]\ndelete_matrix ordinary-host path=\"D:\\\\tmp\\\\.tmplOPHUn\\\\host\\\\ParentOnly\\\\file\" identity=(275813096, 131072, 98286) directory=0 pending=1 links=0 acl=[02, 00, 30, 00, 02, 00, 00, 00, 01, 00, 14, 00, 00, 00, 01, 00, 01, 01, 00, 00, 00, 00, 00, 01, 00, 00, 00, 00, 00, 00, 14, 00, ff, 01, 1e, 00, 01, 01, 00, 00, 00, 00, 00, 01, 00, 00, 00, 00]\ndelete_matrix ordinary-host path=\"D:\\\\tmp\\\\.tmplOPHUn\\\\host\\\\ParentOnly\\\\directory\" identity=(275813096, 131072, 98287) directory=1 pending=1 links=0 acl=[02, 00, 30, 00, 02, 00, 00, 00, 01, 00, 14, 00, 00, 00, 01, 00, 01, 01, 00, 00, 00, 00, 00, 01, 00, 00, 00, 00, 00, 00, 14, 00, ff, 01, 1e, 00, 01, 01, 00, 00, 00, 00, 00, 01, 00, 00, 00, 00]\ndelete_matrix ordinary-host path=\"D:\\\\tmp\\\\.tmplOPHUn\\\\host\\\\ParentOnly\" identity=(275813096, 131072, 98285) directory=1 pending=0 links=1 acl=[02, 00, 1c, 00, 01, 00, 00, 00, 00, 00, 14, 00, ff, 01, 1f, 00, 01, 01, 00, 00, 00, 00, 00, 01, 00, 00, 00, 00]\ndelete_matrix ordinary-host path=\"D:\\\\tmp\\\\.tmplOPHUn\\\\host\\\\Both\\\\file\" identity=(275813096, 65536, 98298) directory=0 pending=1 links=0 acl=[02, 00, 1c, 00, 01, 00, 00, 00, 00, 00, 14, 00, ff, 01, 1f, 00, 01, 01, 00, 00, 00, 00, 00, 01, 00, 00, 00, 00]\ndelete_matrix ordinary-host path=\"D:\\\\tmp\\\\.tmplOPHUn\\\\host\\\\Both\\\\directory\" identity=(275813096, 65536, 98299) directory=1 pending=1 links=0 acl=[02, 00, 1c, 00, 01, 00, 00, 00, 00, 00, 14, 00, ff, 01, 1f, 00, 01, 01, 00, 00, 00, 00, 00, 01, 00, 00, 00, 00]\ndelete_matrix ordinary-host path=\"D:\\\\tmp\\\\.tmplOPHUn\\\\host\\\\Both\" identity=(275813096, 65536, 98297) directory=1 pending=0 links=1 acl=[02, 00, 1c, 00, 01, 00, 00, 00, 00, 00, 14, 00, ff, 01, 1f, 00, 01, 01, 00, 00, 00, 00, 00, 01, 00, 00, 00, 00]\ndelete_matrix ordinary-host after_release=[DeleteOutcome { route: Neither, file_deleted: true, directory_deleted: true }, DeleteOutcome { route: TargetOnly, file_deleted: true, directory_deleted: true }, DeleteOutcome { route: ParentOnly, file_deleted: true, directory_deleted: true }, DeleteOutcome { route: Both, file_deleted: true, directory_deleted: true }]\ndelete_matrix host_native_errors=[[None, None], [None, None], [None, None], [None, None]]\n\nthread 'token::tests::workspace_capability_delete_routes_require_the_capability_in_all_four_cells' (8556) panicked at windows-sandbox-rs/src\\token_tests.rs:479:5:\nassertion failed: `(left == right)`\n\n\u001b[1mDiff\u001b[0m \u001b[31m< left\u001b[0m / \u001b[32mright >\u001b[0m :\n [\n     [\n\u001b[31m<        None,\u001b[0m\n\u001b[31m<        None,\u001b[0m\n\u001b[32m>        Some(\u001b[0m\n\u001b[32m>            (\u001b[0m\n\u001b[32m>                PermissionDenied,\u001b[0m\n\u001b[32m>                Some(\u001b[0m\n\u001b[32m>                    5,\u001b[0m\n\u001b[32m>                ),\u001b[0m\n\u001b[32m>            ),\u001b[0m\n\u001b[32m>        ),\u001b[0m\n\u001b[32m>        Some(\u001b[0m\n\u001b[32m>            (\u001b[0m\n\u001b[32m>                PermissionDenied,\u001b[0m\n\u001b[32m>                Some(\u001b[0m\n\u001b[32m>                    5,\u001b[0m\n\u001b[32m>                ),\u001b[0m\n\u001b[32m>            ),\u001b[0m\n\u001b[32m>        ),\u001b[0m\n     ],\n     [\n         None,\n         None,\n     ],\n     [\n         None,\n         None,\n     ],\n     [\n         None,\n         None,\n     ],\n ]\n\n\n\n"
+    },
+    {
+      "case": "unified_exec::tests::acl_setup_tests::legacy_capture_rejects_deny_acl_setup_failure_before_spawn",
+      "start_line": 568,
+      "end_line": 582,
+      "classification": "STALE_ERROR_LEAF_STRING_EXPECTATION",
+      "reason": "Original outer path context and marker=false match; root cause is io::Error OS5 while test expects old SetNamedSecurityInfoW textual leaf.",
+      "original_block": "---- unified_exec::tests::acl_setup_tests::legacy_capture_rejects_deny_acl_setup_failure_before_spawn stdout ----\n\nthread 'unified_exec::tests::acl_setup_tests::legacy_capture_rejects_deny_acl_setup_failure_before_spawn' (4156) panicked at windows-sandbox-rs/src\\unified_exec\\acl_setup_tests.rs:346:9:\nassertion failed: `(left == right)`\n\n\u001b[1mDiff\u001b[0m \u001b[31m< left\u001b[0m / \u001b[32mright >\u001b[0m :\n (\n     \"apply legacy deny-write ACL to D:\\\\a\\\\hepta-private-ci\\\\hepta-private-ci\\\\codex-rs\\\\.tmpL3OQs1\\\\protected.txt\",\n\u001b[31m<    \"\u001b[0m\u001b[1;48;5;52;31mAcc\u001b[0m\u001b[31me\u001b[0m\u001b[1;48;5;52;31mss is \u001b[0m\u001b[31mdenied\u001b[0m\u001b[1;48;5;52;31m.\u001b[0m\u001b[31m \u001b[0m\u001b[1;48;5;52;31m(\u001b[0m\u001b[31mo\u001b[0m\u001b[1;48;5;52;31ms\u001b[0m\u001b[31m error 5\u001b[0m\u001b[1;48;5;52;31m)\u001b[0m\u001b[31m\",\u001b[0m\n\u001b[32m>    \"\u001b[0m\u001b[1;48;5;22;32mS\u001b[0m\u001b[32me\u001b[0m\u001b[1;48;5;22;32mtName\u001b[0m\u001b[32md\u001b[0m\u001b[1;48;5;22;32mS\u001b[0m\u001b[32me\u001b[0m\u001b[1;48;5;22;32mcurityI\u001b[0m\u001b[32mn\u001b[0m\u001b[1;48;5;22;32mfoW fa\u001b[0m\u001b[32mi\u001b[0m\u001b[1;48;5;22;32ml\u001b[0m\u001b[32med \u001b[0m\u001b[1;48;5;22;32mf\u001b[0m\u001b[32mo\u001b[0m\u001b[1;48;5;22;32mr\u001b[0m\u001b[32m \u001b[0m\u001b[1;48;5;22;32mD:\\\\a\\\\h\u001b[0m\u001b[32me\u001b[0m\u001b[1;48;5;22;32mpta-p\u001b[0m\u001b[32mr\u001b[0m\u001b[1;48;5;22;32mivate-ci\\\\hepta-p\u001b[0m\u001b[32mr\u001b[0m\u001b[1;48;5;22;32mivate-ci\\\\c\u001b[0m\u001b[32mo\u001b[0m\u001b[1;48;5;22;32mdex-\u001b[0m\u001b[32mr\u001b[0m\u001b[1;48;5;22;32ms\\\\.tmpL3OQs1\\\\protected.txt:\u001b[0m\u001b[32m 5\",\u001b[0m\n     false,\n )\n\n\n\n"
+    },
+    {
+      "case": "unified_exec::tests::acl_setup_tests::legacy_session_rejects_deny_acl_setup_failure_before_spawn",
+      "start_line": 583,
+      "end_line": 587,
+      "classification": "LOCK_POISON_AFTER_EARLIER_ASSERTION",
+      "reason": "No independent isolated sandbox result from this body.",
+      "original_block": "---- unified_exec::tests::acl_setup_tests::legacy_session_rejects_deny_acl_setup_failure_before_spawn stdout ----\n\nthread 'unified_exec::tests::acl_setup_tests::legacy_session_rejects_deny_acl_setup_failure_before_spawn' (6372) panicked at windows-sandbox-rs/src\\unified_exec\\tests.rs:62:10:\nlegacy Windows sandbox process test lock poisoned: PoisonError { .. }\n\n"
+    },
+    {
+      "case": "unified_exec::tests::delete_permission_tests::legacy_delete_routes_require_workspace_capability_in_all_four_cells",
+      "start_line": 588,
+      "end_line": 592,
+      "classification": "LOCK_POISON_AFTER_EARLIER_ASSERTION",
+      "reason": "No independent isolated sandbox result from this body.",
+      "original_block": "---- unified_exec::tests::delete_permission_tests::legacy_delete_routes_require_workspace_capability_in_all_four_cells stdout ----\n\nthread 'unified_exec::tests::delete_permission_tests::legacy_delete_routes_require_workspace_capability_in_all_four_cells' (7484) panicked at windows-sandbox-rs/src\\unified_exec\\tests.rs:62:10:\nlegacy Windows sandbox process test lock poisoned: PoisonError { .. }\n\n"
+    },
+    {
+      "case": "unified_exec::tests::elevated_non_tty_cmd_forwards_env_output_and_exit",
+      "start_line": 593,
+      "end_line": 597,
+      "classification": "LOCK_POISON_AFTER_EARLIER_ASSERTION",
+      "reason": "No independent isolated sandbox result from this body.",
+      "original_block": "---- unified_exec::tests::elevated_non_tty_cmd_forwards_env_output_and_exit stdout ----\n\nthread 'unified_exec::tests::elevated_non_tty_cmd_forwards_env_output_and_exit' (892) panicked at windows-sandbox-rs/src\\unified_exec\\tests.rs:62:10:\nlegacy Windows sandbox process test lock poisoned: PoisonError { .. }\n\n"
+    },
+    {
+      "case": "unified_exec::tests::legacy_non_tty_cmd_emits_output",
+      "start_line": 598,
+      "end_line": 602,
+      "classification": "LOCK_POISON_AFTER_EARLIER_ASSERTION",
+      "reason": "No independent isolated sandbox result from this body.",
+      "original_block": "---- unified_exec::tests::legacy_non_tty_cmd_emits_output stdout ----\n\nthread 'unified_exec::tests::legacy_non_tty_cmd_emits_output' (2508) panicked at windows-sandbox-rs/src\\unified_exec\\tests.rs:62:10:\nlegacy Windows sandbox process test lock poisoned: PoisonError { .. }\n\n"
+    },
+    {
+      "case": "unified_exec::tests::legacy_non_tty_cmd_rejects_deny_read_overrides",
+      "start_line": 603,
+      "end_line": 607,
+      "classification": "LOCK_POISON_AFTER_EARLIER_ASSERTION",
+      "reason": "No independent isolated sandbox result from this body.",
+      "original_block": "---- unified_exec::tests::legacy_non_tty_cmd_rejects_deny_read_overrides stdout ----\n\nthread 'unified_exec::tests::legacy_non_tty_cmd_rejects_deny_read_overrides' (3884) panicked at windows-sandbox-rs/src\\unified_exec\\tests.rs:62:10:\nlegacy Windows sandbox process test lock poisoned: PoisonError { .. }\n\n"
+    },
+    {
+      "case": "unified_exec::tests::legacy_workspace_write_delete_is_limited_to_writable_roots",
+      "start_line": 608,
+      "end_line": 613,
+      "classification": "LOCK_POISON_AFTER_EARLIER_ASSERTION",
+      "reason": "No independent isolated sandbox result from this body.",
+      "original_block": "---- unified_exec::tests::legacy_workspace_write_delete_is_limited_to_writable_roots stdout ----\n\nthread 'unified_exec::tests::legacy_workspace_write_delete_is_limited_to_writable_roots' (5168) panicked at windows-sandbox-rs/src\\unified_exec\\tests.rs:62:10:\nlegacy Windows sandbox process test lock poisoned: PoisonError { .. }\n\n\n"
+    }
+  ],
+  "limits": [
+    "The8-row probe is separate physical evidence, not a substitute for the unexecuted strict matrix portion.",
+    "No lock-poisoned body has a new business failure proven.",
+    "Host precondition cause remains open; neither elevated-privilege nor Rust removal-route hypothesis is established by this raw log.",
+    "Four ACL failures have two API endpoints; a shared cause is not established."
+  ]
+}

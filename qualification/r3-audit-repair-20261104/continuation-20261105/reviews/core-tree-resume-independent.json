@@ -1,0 +1,104 @@
+{
+  "schema": "core-tree-resume-local-provider-independent-static-review-v1",
+  "verdict": "STATIC_ACCEPTED_FIXTURE_ONLY_PENDING_ORIGINAL_PARALLEL_NATIVE",
+  "candidate": {
+    "patch": {
+      "bytes": 3000,
+      "sha256": "3ee1b1fa85b69d102757028525473aa926b0b8b6b0b91091d266c12d73568e5a",
+      "git_blob": "0fa9b277ea746d27bd9a788e4fa64be8a441b07a"
+    },
+    "preimage": {
+      "bytes": 171303,
+      "sha256": "c7089bc1d130334fd43a153e76a0c0780043903bfdea0448421bfb2f7a0bc738",
+      "git_blob": "0d2d33f034a333c437deb42764b7dcf657e492a8"
+    },
+    "postimage": {
+      "bytes": 173084,
+      "sha256": "2529dca22467d72ee6f067a4f600c99ea17c8099d4010ade2a09f008cfed386d",
+      "git_blob": "05054632b7cd82e5e7587dbcb7aee293788e00a2"
+    },
+    "author_manifest": "4e00a0a4ff6c345701ce3f42367705f02bbe7041"
+  },
+  "findings": [
+    {
+      "topic": "actual ConfigBuilder",
+      "finding": "Existing test_config_with_cli_overrides passes the custom provider table and selected ID through ConfigBuilder; fixed config/mod merges cfg.model_providers and resolves the selected key. ModelProviderInfo exposes base_url/wire_api/auth/websocket fields used by the candidate. Config assertions catch a discarded override."
+    },
+    {
+      "topic": "fixture lifecycle",
+      "finding": "MockServer is declared before home/config/harness and retained for the whole case. Reusable POST /v1/responses match returns the existing completed SSE template. Harness receives the same actual configured provider in both ThreadManager and subsequent cloned Config, including resume. No request-count condition is invented."
+    },
+    {
+      "topic": "original tree contract",
+      "finding": "The entire original case from first parent start through final shutdown is byte-identical. Real child/grandchild UserMessage ItemCompleted observation, 5-second waits, persisted markers, deleted child rollout, resumed parent identity and both NotFound assertions remain."
+    },
+    {
+      "topic": "helper diagnostic",
+      "finding": "The common waiter only adds needle/thread ID to its existing timeout message; event predicate and timeout are unchanged."
+    },
+    {
+      "topic": "scope and cause",
+      "finding": "This removes a real external-provider dependency from this one fixture; it does not prove the previous timeout occurred inside startup prewarm. Full original parallel scope remains the acceptance gate."
+    }
+  ],
+  "dependencies": "core_test_support and wiremock are existing direct dev dependencies; responses module was already used in this file. No production/Cargo/BUILD/lock changes.",
+  "primary_additional_read": {
+    "path": "codex-rs/core/src/config/mod.rs",
+    "bytes": 190270,
+    "sha256": "ebbeae65aa387cce085524de709516e2877e6c4ea15738cd26dbe531bf74b65b",
+    "git_blob": "57a071fd89537bf4219c521281e4c42174d5e924",
+    "segments": [
+      1390,
+      1458,
+      3674,
+      3711
+    ]
+  },
+  "isolated_cloud_git_roundtrip": [
+    {
+      "argv": [
+        "git",
+        "init",
+        "-q"
+      ],
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "git",
+        "apply",
+        "--check",
+        "/workspace/scratch/07dd58cc9630/research-audit/core-parallel-resume-triage-20261105/repair.patch"
+      ],
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "git",
+        "apply",
+        "/workspace/scratch/07dd58cc9630/research-audit/core-parallel-resume-triage-20261105/repair.patch"
+      ],
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "git",
+        "apply",
+        "--reverse",
+        "repair.patch"
+      ],
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": ""
+    }
+  ],
+  "native_execution": false,
+  "format_compile_test_executed": false,
+  "no_source_ref_or_native_changes": true
+}

@@ -1,0 +1,43 @@
+{
+  "schema": "b11-initial-label-observation-independent-static-review-v1",
+  "observed_at": "2026-11-05T15:19:06.486098+00:00",
+  "verdict": "STATIC_ACCEPTED_DIAGNOSTIC_ONLY_UNEXECUTED",
+  "preimage": {
+    "local_path": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-pr4884-ci-20261105/repair-initial-label-observation-v1/source/codex-rs/windows-sandbox-rs/src/token_integrity_probe_support.rs",
+    "bytes": 13242,
+    "sha256": "80de0b271e57775c00661cfda26dd8b20b8894b040a2081d601c931982a2ecd7",
+    "git_blob": "3b850db502bef372592322dd1c1d2272e65a6a47"
+  },
+  "postimage": {
+    "local_path": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-pr4884-ci-20261105/repair-initial-label-observation-v1/candidate/codex-rs/windows-sandbox-rs/src/token_integrity_probe_support.rs",
+    "bytes": 13465,
+    "sha256": "018166e25f5e2014d2ae0f74c58252af85625f88a43fa320573926d491e1225a",
+    "git_blob": "47dddb48c727c1bcae89b613409a72bd7d1312ff"
+  },
+  "patch": {
+    "local_path": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-pr4884-ci-20261105/repair-initial-label-observation-v1/observation.patch",
+    "bytes": 1200,
+    "sha256": "ef4407eeba0dc97a3b757effaac4f22f8f9a58bb2a083d40535987af85d8897b",
+    "git_blob": "69ffe2af03a6132d225b3ece2e9bb6a1c99ecf1e"
+  },
+  "manifest": {
+    "local_path": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-pr4884-ci-20261105/repair-initial-label-observation-v1/manifest.json",
+    "bytes": 3273,
+    "sha256": "9abb013a2ed700174cae5eccf93a50adf86aeb03e0e923f06f8a57a152f55a0a",
+    "git_blob": "61ae6a9893f3e0b539c780b1011f218edc43ff72"
+  },
+  "independent_checks": {
+    "one_exact_text_replacement": true,
+    "original_two_conversions_same_order_and_error_propagation": true,
+    "original_exact_equality_and_failure_text_preserved": true,
+    "rest_of_complete_source_byte_equal": true,
+    "uses_existing_direct_stderr_observer": true,
+    "no_added_native_identity_query_or_permission_change": true
+  },
+  "limits": [
+    "The actual Windows failure reached initial-label comparison, with no complete eight-row physical result. Neither comparison operand was printed in that original run.",
+    "The added observer is diagnostic. It does not normalize, trim, ignore or weaken either original label string.",
+    "A diagnostic write error still fails the fixture, and is not a passing equality or mechanism result.",
+    "No Rust compile, native execution, source/ref mutation or B11 closure is claimed by this review."
+  ]
+}

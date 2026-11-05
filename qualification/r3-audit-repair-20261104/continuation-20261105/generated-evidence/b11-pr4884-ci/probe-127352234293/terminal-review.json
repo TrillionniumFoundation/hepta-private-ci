@@ -1,0 +1,931 @@
+{
+  "schema": "b11-diagnostic-pr-native-terminal-review-v2",
+  "role": "ORIGINAL_RESULT_EVIDENCE_NOT_B11_CLOSURE",
+  "head": "3a407dde2727de2176b02d3cb2c3883fbb771f60",
+  "run_id": 42058186727,
+  "run_attempt": 1,
+  "job_id": 127352234293,
+  "conclusion": "failure",
+  "started_at": "2026-11-05T15:46:10Z",
+  "completed_at": "2026-11-05T15:50:50Z",
+  "checkout_commit": "5006ac5d52f437bc1d1ec2ccd9efd5c7f5e35a6c",
+  "head_tree_equals_actual_checkout_tree": "e45bcd4fb4bbaf8b4f0351ba866e84137e635a68",
+  "source_leaf_checks": [
+    {
+      "path": "codex-rs/windows-sandbox-rs/src/token.rs",
+      "mode": "100644",
+      "type": "blob",
+      "git_blob": "b22acb5556f6af3b4c250a2441f161ee448ea1c1"
+    },
+    {
+      "path": "codex-rs/windows-sandbox-rs/src/token_integrity_probe_support.rs",
+      "mode": "100644",
+      "type": "blob",
+      "git_blob": "7a7008f9becf09578ca953c849401eda93eb94b2"
+    },
+    {
+      "path": "codex-rs/windows-sandbox-rs/src/token_integrity_probe_tests.rs",
+      "mode": "100644",
+      "type": "blob",
+      "git_blob": "2a384792e8ba88518c26943716e8c3a39a523f9b"
+    },
+    {
+      "path": "codex-rs/windows-sandbox-rs/src/unified_exec/delete_permission_tests.rs",
+      "mode": "100644",
+      "type": "blob",
+      "git_blob": "d8511f92f9fbd9d58061238dbf3181152c74ccbc"
+    },
+    {
+      "path": ".github/workflows/hepta-windows-token-mechanism-probe.yml",
+      "mode": "100644",
+      "type": "blob",
+      "git_blob": "757e0eb43b2583604569fd51fac3aee4828899a5"
+    }
+  ],
+  "clean_worktree_before_after": true,
+  "target": "//codex-rs/windows-sandbox-rs:windows-sandbox-rs-unit-tests",
+  "summaries": [
+    {
+      "line": 118,
+      "raw": "test result: FAILED. 89 passed; 3 failed; 0 ignored; 0 measured; 63 filtered out; finished in 1.04s",
+      "passed": 89,
+      "failed": 3,
+      "ignored": 0,
+      "filtered_out": 63,
+      "seconds": "1.04"
+    },
+    {
+      "line": 626,
+      "raw": "test result: FAILED. 51 passed; 10 failed; 2 ignored; 0 measured; 92 filtered out; finished in 0.21s",
+      "passed": 51,
+      "failed": 10,
+      "ignored": 2,
+      "filtered_out": 92,
+      "seconds": "0.21"
+    }
+  ],
+  "combined_disjoint_counts": {
+    "total_named_tests": 155,
+    "passed": 140,
+    "failed": 13,
+    "ignored": 2
+  },
+  "count_limit": "Two disjoint libtest groups in one target attempt. Wrapper log-tail repetition is not a retry. XML is target-level, not 155 testcase entries.",
+  "direct_status_records": [
+    {
+      "case": "acl::tests::complete_denies_require_effective_recursive_scope_and_precede_allows",
+      "result": "ok",
+      "line": 5
+    },
+    {
+      "case": "acl::tests::complete_denies_compare_mapped_masks_and_require_every_right",
+      "result": "ok",
+      "line": 6
+    },
+    {
+      "case": "acl::tests::deny_ace_update_failure_is_an_error",
+      "result": "ok",
+      "line": 7
+    },
+    {
+      "case": "acl::tests::normalized_denies_require_same_sid_complete_masks_and_both_directory_scopes",
+      "result": "ok",
+      "line": 8
+    },
+    {
+      "case": "acl::tests::existing_native_deny_does_not_require_write_dac",
+      "result": "FAILED",
+      "line": 9
+    },
+    {
+      "case": "acl::tests::partial_read_deny_is_repaired_before_native_file_data_access",
+      "result": "FAILED",
+      "line": 10
+    },
+    {
+      "case": "acl::tests::native_file_and_directory_repairs_are_idempotent_for_read_and_write",
+      "result": "FAILED",
+      "line": 11
+    },
+    {
+      "case": "allow::tests::denies_git_file_inside_writable_root",
+      "result": "ok",
+      "line": 12
+    },
+    {
+      "case": "allow::tests::excludes_tmp_env_vars_when_requested",
+      "result": "ok",
+      "line": 13
+    },
+    {
+      "case": "allow::tests::denies_git_dir_inside_writable_root",
+      "result": "ok",
+      "line": 14
+    },
+    {
+      "case": "allow::tests::denies_codex_and_agents_inside_writable_root",
+      "result": "ok",
+      "line": 15
+    },
+    {
+      "case": "allow::tests::ignores_unix_slash_tmp_for_windows_allow_roots",
+      "result": "ok",
+      "line": 16
+    },
+    {
+      "case": "allow::tests::skips_protected_subdirs_when_missing",
+      "result": "ok",
+      "line": 17
+    },
+    {
+      "case": "allow::tests::includes_tmp_env_vars_when_requested",
+      "result": "ok",
+      "line": 18
+    },
+    {
+      "case": "audit::tests::deny_ace_failure_is_propagated_after_other_paths_are_attempted",
+      "result": "ok",
+      "line": 19
+    },
+    {
+      "case": "audit::tests::gathers_path_entries_by_list_separator",
+      "result": "ok",
+      "line": 20
+    },
+    {
+      "case": "allow::tests::uses_runtime_workspace_roots_for_workspace_root",
+      "result": "ok",
+      "line": 21
+    },
+    {
+      "case": "cap::tests::equivalent_cwd_spellings_share_workspace_sid_key",
+      "result": "ok",
+      "line": 22
+    },
+    {
+      "case": "allow::tests::includes_additional_writable_roots",
+      "result": "ok",
+      "line": 23
+    },
+    {
+      "case": "deny_read_acl::tests::plan_includes_existing_canonical_targets",
+      "result": "ok",
+      "line": 24
+    },
+    {
+      "case": "deny_read_acl::tests::plan_preserves_missing_paths",
+      "result": "ok",
+      "line": 25
+    },
+    {
+      "case": "deny_read_resolver::tests::configured_depth_bounds_root_recursive_glob_scans",
+      "result": "ok",
+      "line": 26
+    },
+    {
+      "case": "deny_read_resolver::tests::configured_depth_caps_recursive_glob_scans",
+      "result": "ok",
+      "line": 27
+    },
+    {
+      "case": "deny_read_resolver::tests::exact_missing_paths_are_preserved",
+      "result": "ok",
+      "line": 28
+    },
+    {
+      "case": "deny_read_resolver::tests::invalid_glob_patterns_fail_before_expansion",
+      "result": "ok",
+      "line": 29
+    },
+    {
+      "case": "cap::tests::write_roots_get_path_scoped_sids",
+      "result": "ok",
+      "line": 30
+    },
+    {
+      "case": "deny_read_resolver::tests::scan_depth_is_bounded_for_non_recursive_globs",
+      "result": "ok",
+      "line": 31
+    },
+    {
+      "case": "deny_read_resolver::tests::scan_root_uses_literal_prefix_before_glob",
+      "result": "ok",
+      "line": 32
+    },
+    {
+      "case": "desktop::tests::desktop_rejects_unrestricted_and_invalid_tokens",
+      "result": "ok",
+      "line": 33
+    },
+    {
+      "case": "desktop::tests::readonly_preserves_private_and_default_desktop_access",
+      "result": "ok",
+      "line": 34
+    },
+    {
+      "case": "deny_read_resolver::tests::root_recursive_globs_without_depth_fail_before_expansion",
+      "result": "ok",
+      "line": 35
+    },
+    {
+      "case": "deny_read_resolver::tests::glob_patterns_expand_to_existing_matches",
+      "result": "ok",
+      "line": 36
+    },
+    {
+      "case": "elevated::ipc_framed::tests::error_payload_serializes_stage_and_windows_error_code",
+      "result": "ok",
+      "line": 37
+    },
+    {
+      "case": "desktop::tests::workspace_private_desktop_checks_the_exact_capability",
+      "result": "ok",
+      "line": 38
+    },
+    {
+      "case": "elevated::ipc_framed::tests::framed_round_trip",
+      "result": "ok",
+      "line": 39
+    },
+    {
+      "case": "elevated::ipc_framed::tests::spawn_request_serializes_permission_profile",
+      "result": "ok",
+      "line": 40
+    },
+    {
+      "case": "elevated::runner_client::tests::refreshable_sandbox_creds_error_recognizes_credential_and_child_start_failures",
+      "result": "ok",
+      "line": 41
+    },
+    {
+      "case": "helper_materialization::tests::copy_from_source_if_needed_copies_missing_destination",
+      "result": "ok",
+      "line": 42
+    },
+    {
+      "case": "deny_read_resolver::tests::non_recursive_globs_do_not_expand_nested_matches",
+      "result": "ok",
+      "line": 43
+    },
+    {
+      "case": "helper_materialization::tests::copy_from_source_if_needed_reuses_fresh_destination",
+      "result": "ok",
+      "line": 44
+    },
+    {
+      "case": "helper_materialization::tests::helper_bin_dir_is_under_sandbox_bin",
+      "result": "ok",
+      "line": 45
+    },
+    {
+      "case": "helper_materialization::tests::copy_runner_into_shared_bin_dir",
+      "result": "ok",
+      "line": 46
+    },
+    {
+      "case": "helper_materialization::tests::helper_source_lookup_checks_resource_dir",
+      "result": "ok",
+      "line": 47
+    },
+    {
+      "case": "helper_materialization::tests::helper_source_lookup_checks_package_resource_dir_for_bin_exe",
+      "result": "ok",
+      "line": 48
+    },
+    {
+      "case": "helper_materialization::tests::helper_source_lookup_prefers_direct_sibling_over_resource_dir",
+      "result": "ok",
+      "line": 49
+    },
+    {
+      "case": "helper_materialization::tests::helper_version_suffix_uses_cli_version_or_dev_build_metadata",
+      "result": "ok",
+      "line": 50
+    },
+    {
+      "case": "helper_materialization::tests::materialized_file_name_adds_suffix_before_extension",
+      "result": "ok",
+      "line": 51
+    },
+    {
+      "case": "identity::tests::guardian_preserve_mode_does_not_churn_marker_with_empty_proxy_ports",
+      "result": "ok",
+      "line": 52
+    },
+    {
+      "case": "helper_materialization::tests::helper_source_lookup_prefers_package_resource_dir_over_bin_resource_dir",
+      "result": "ok",
+      "line": 53
+    },
+    {
+      "case": "identity::tests::preserving_proxy_settings_uses_the_existing_marker",
+      "result": "ok",
+      "line": 54
+    },
+    {
+      "case": "identity::tests::remove_sandbox_users_file_ignores_missing_file",
+      "result": "ok",
+      "line": 55
+    },
+    {
+      "case": "logging::tests::current_log_file_path_for_codex_home_uses_sandbox_dir",
+      "result": "ok",
+      "line": 56
+    },
+    {
+      "case": "identity::tests::remove_sandbox_users_file_deletes_existing_file",
+      "result": "ok",
+      "line": 57
+    },
+    {
+      "case": "logging::tests::log_file_path_for_utc_date_matches_rolling_appender_name",
+      "result": "ok",
+      "line": 58
+    },
+    {
+      "case": "logging::tests::preview_does_not_panic_on_utf8_boundary",
+      "result": "ok",
+      "line": 59
+    },
+    {
+      "case": "path_normalization::tests::canonical_path_key_normalizes_case_and_separators",
+      "result": "ok",
+      "line": 60
+    },
+    {
+      "case": "resolved_permissions::tests::permission_profile_rejects_disabled_profiles",
+      "result": "ok",
+      "line": 61
+    },
+    {
+      "case": "resolved_permissions::tests::permission_profile_rejects_unrestricted_managed_filesystem",
+      "result": "ok",
+      "line": 62
+    },
+    {
+      "case": "logging::tests::log_note_writes_to_daily_rolling_log",
+      "result": "ok",
+      "line": 63
+    },
+    {
+      "case": "resolved_permissions::tests::permission_profile_workspace_roots_expand_all_runtime_workspace_roots",
+      "result": "ok",
+      "line": 64
+    },
+    {
+      "case": "resolved_permissions::tests::permission_profile_workspace_root_uses_runtime_workspace_roots",
+      "result": "ok",
+      "line": 65
+    },
+    {
+      "case": "resolved_permissions::tests::permission_profile_workspace_write_uses_windows_temp_env_vars",
+      "result": "ok",
+      "line": 66
+    },
+    {
+      "case": "resolved_permissions::tests::token_mode_for_profile_with_writable_roots_uses_write_capabilities",
+      "result": "ok",
+      "line": 67
+    },
+    {
+      "case": "resolved_permissions::tests::token_mode_for_profile_without_writable_roots_uses_readonly_capability",
+      "result": "ok",
+      "line": 68
+    },
+    {
+      "case": "resolved_permissions::tests::token_mode_rejects_full_disk_write_entries",
+      "result": "ok",
+      "line": 69
+    },
+    {
+      "case": "sandbox_utils::tests::injects_worktree_root_for_gitfile",
+      "result": "ok",
+      "line": 70
+    },
+    {
+      "case": "sandbox_utils::tests::injects_safe_directory_for_git_directory",
+      "result": "ok",
+      "line": 71
+    },
+    {
+      "case": "setup::tests::build_payload_deny_read_paths_preserves_explicit_paths",
+      "result": "ok",
+      "line": 72
+    },
+    {
+      "case": "helper_materialization::tests::helper_source_lookup_resolves_bin_junctions",
+      "result": "ok",
+      "line": 73
+    },
+    {
+      "case": "setup::tests::build_payload_roots_replaces_full_read_policy_when_read_override_is_provided",
+      "result": "ok",
+      "line": 74
+    },
+    {
+      "case": "setup::tests::build_payload_roots_preserves_helper_roots_when_read_override_is_provided",
+      "result": "ok",
+      "line": 75
+    },
+    {
+      "case": "setup::tests::effective_write_roots_use_runtime_workspace_roots_for_workspace_root",
+      "result": "ok",
+      "line": 76
+    },
+    {
+      "case": "setup::tests::expand_user_profile_root_for_replaces_profile_root_with_children",
+      "result": "ok",
+      "line": 77
+    },
+    {
+      "case": "setup::tests::expanded_write_roots_still_drop_protected_codex_home",
+      "result": "ok",
+      "line": 78
+    },
+    {
+      "case": "setup::tests::gather_read_roots_includes_helper_bin_dir",
+      "result": "ok",
+      "line": 79
+    },
+    {
+      "case": "setup::tests::full_read_roots_preserve_legacy_platform_defaults",
+      "result": "ok",
+      "line": 80
+    },
+    {
+      "case": "setup::tests::identical_setup_requests_share_one_in_flight_run",
+      "result": "ok",
+      "line": 81
+    },
+    {
+      "case": "setup::tests::is_user_profile_root_exclusion_blocks_configured_children",
+      "result": "ok",
+      "line": 82
+    },
+    {
+      "case": "setup::tests::loopback_proxy_url_parsing_rejects_non_loopback_and_zero_port",
+      "result": "ok",
+      "line": 83
+    },
+    {
+      "case": "setup::tests::loopback_proxy_url_parsing_supports_common_forms",
+      "result": "ok",
+      "line": 84
+    },
+    {
+      "case": "setup::tests::offline_proxy_settings_capture_proxy_ports_and_local_binding_for_offline_identity",
+      "result": "ok",
+      "line": 85
+    },
+    {
+      "case": "setup::tests::offline_proxy_settings_ignore_proxy_env_when_online_identity_selected",
+      "result": "ok",
+      "line": 86
+    },
+    {
+      "case": "setup::tests::is_ssh_config_dependency_root_blocks_config_dependencies",
+      "result": "ok",
+      "line": 87
+    },
+    {
+      "case": "setup::tests::profile_read_roots_excludes_configured_top_level_entries",
+      "result": "ok",
+      "line": 88
+    },
+    {
+      "case": "setup::tests::profile_read_roots_falls_back_to_profile_root_when_enumeration_fails",
+      "result": "ok",
+      "line": 89
+    },
+    {
+      "case": "setup::tests::proxy_ports_from_env_dedupes_and_sorts",
+      "result": "ok",
+      "line": 90
+    },
+    {
+      "case": "setup::tests::report_helper_failure_ignores_setup_error_report_when_clear_failed",
+      "result": "ok",
+      "line": 91
+    },
+    {
+      "case": "setup::tests::report_helper_failure_uses_setup_error_report_when_clear_succeeded",
+      "result": "ok",
+      "line": 92
+    },
+    {
+      "case": "setup::tests::setup_completion_requires_ready_artifacts",
+      "result": "ok",
+      "line": 93
+    },
+    {
+      "case": "setup::tests::payload_deny_write_paths_merge_explicit_and_protected_children",
+      "result": "ok",
+      "line": 94
+    },
+    {
+      "case": "setup::tests::effective_write_roots_match_payload_filtering_for_overrides",
+      "result": "ok",
+      "line": 95
+    },
+    {
+      "case": "helper_materialization::tests::destination_is_fresh_uses_size_and_mtime",
+      "result": "ok",
+      "line": 96
+    },
+    {
+      "case": "setup::tests::setup_marker_request_mismatch_reason_ignores_proxy_drift_for_online_identity",
+      "result": "ok",
+      "line": 122
+    },
+    {
+      "case": "setup::tests::setup_marker_request_mismatch_reason_reports_offline_firewall_drift",
+      "result": "ok",
+      "line": 123
+    },
+    {
+      "case": "setup::tests::setup_refresh_skips_profiles_without_managed_filesystem_permissions",
+      "result": "ok",
+      "line": 124
+    },
+    {
+      "case": "setup::tests::setup_refresh_rejects_invalid_deny_read_globs",
+      "result": "ok",
+      "line": 125
+    },
+    {
+      "case": "setup::tests::setup_exe_lookup_checks_package_resource_dir_for_bin_exe",
+      "result": "ok",
+      "line": 126
+    },
+    {
+      "case": "setup::tests::setup_request_prefers_explicit_proxy_settings",
+      "result": "ok",
+      "line": 127
+    },
+    {
+      "case": "setup_error::tests::sanitize_tag_value_leaves_unknown_segments",
+      "result": "ok",
+      "line": 128
+    },
+    {
+      "case": "setup_error::tests::sanitize_tag_value_redacts_multiple_occurrences",
+      "result": "ok",
+      "line": 129
+    },
+    {
+      "case": "setup_error::tests::sanitize_tag_value_redacts_username_segments",
+      "result": "ok",
+      "line": 130
+    },
+    {
+      "case": "setup::tests::setup_refresh_preserves_workspace_scoped_deny_read_paths",
+      "result": "ok",
+      "line": 131
+    },
+    {
+      "case": "spawn_prep::tests::common_spawn_env_keeps_network_env_unchanged",
+      "result": "ok",
+      "line": 132
+    },
+    {
+      "case": "spawn_prep::tests::legacy_deny_path_includes_nested_active_root_sid",
+      "result": "ok",
+      "line": 133
+    },
+    {
+      "case": "spawn_prep::tests::legacy_session_capability_roots_use_runtime_workspace_roots_for_workspace_root",
+      "result": "ok",
+      "line": 134
+    },
+    {
+      "case": "setup::tests::workspace_write_roots_remain_readable",
+      "result": "ok",
+      "line": 135
+    },
+    {
+      "case": "spawn_prep::tests::no_network_env_rewrite_applies_for_workspace_write",
+      "result": "ok",
+      "line": 136
+    },
+    {
+      "case": "spawn_prep::tests::no_network_env_rewrite_skips_when_network_access_is_allowed",
+      "result": "ok",
+      "line": 137
+    },
+    {
+      "case": "ssh_config_dependencies::tests::collects_path_directive_profile_entries",
+      "result": "ok",
+      "line": 138
+    },
+    {
+      "case": "spawn_prep::tests::legacy_spawn_env_applies_offline_network_rewrite",
+      "result": "ok",
+      "line": 139
+    },
+    {
+      "case": "ssh_config_dependencies::tests::recursively_collects_include_dependencies",
+      "result": "ok",
+      "line": 140
+    },
+    {
+      "case": "stdio_bridge::tests::input_forwarder_sends_chunks_and_reports_eof",
+      "result": "ok",
+      "line": 141
+    },
+    {
+      "case": "stdio_bridge::tests::output_forwarder_writes_all_chunks",
+      "result": "ok",
+      "line": 142
+    },
+    {
+      "case": "spawn_prep::tests::root_capability_sids_only_include_active_roots",
+      "result": "ok",
+      "line": 143
+    },
+    {
+      "case": "token::tests::elevated_token_includes_network_proxy_restricting_sid",
+      "result": "ok",
+      "line": 144
+    },
+    {
+      "case": "spawn_prep::tests::legacy_capability_roots_use_effective_write_roots",
+      "result": "ok",
+      "line": 227
+    },
+    {
+      "case": "unified_exec::backend_selection_tests::deny_write_override_is_forced_through_elevated_broker",
+      "result": "ok",
+      "line": 244
+    },
+    {
+      "case": "unified_exec::backend_selection_tests::explicit_elevated_level_always_uses_elevated_broker",
+      "result": "ok",
+      "line": 249
+    },
+    {
+      "case": "token::tests::workspace_capabilities_deny_writes_and_deletes_under_broad_identity_aces",
+      "result": "FAILED",
+      "line": 250
+    },
+    {
+      "case": "unified_exec::backend_selection_tests::explicit_write_root_override_is_forced_through_elevated_broker",
+      "result": "ok",
+      "line": 251
+    },
+    {
+      "case": "unified_exec::backend_selection_tests::read_only_profile_without_overrides_keeps_restricted_token_backend",
+      "result": "ok",
+      "line": 255
+    },
+    {
+      "case": "token::tests::workspace_capability_delete_routes_require_the_capability_in_all_four_cells",
+      "result": "FAILED",
+      "line": 256
+    },
+    {
+      "case": "unified_exec::backends::elevated::tests::retry_uses_original_unified_exec_request_and_stops_after_second_failure",
+      "result": "ok",
+      "line": 257
+    },
+    {
+      "case": "unified_exec::backend_selection_tests::workspace_write_profile_is_forced_through_elevated_broker",
+      "result": "ok",
+      "line": 258
+    },
+    {
+      "case": "unified_exec::tests::acl_setup_tests::legacy_capture_rejects_deny_acl_setup_failure_before_spawn",
+      "result": "FAILED",
+      "line": 284
+    },
+    {
+      "case": "unified_exec::tests::acl_setup_tests::legacy_session_rejects_deny_acl_setup_failure_before_spawn",
+      "result": "FAILED",
+      "line": 285
+    },
+    {
+      "case": "unified_exec::tests::delete_permission_tests::legacy_delete_routes_require_workspace_capability_in_all_four_cells",
+      "result": "FAILED",
+      "line": 286
+    },
+    {
+      "case": "unified_exec::tests::finish_driver_spawn_closes_stdin_when_not_requested",
+      "result": "ok",
+      "line": 288
+    },
+    {
+      "case": "unified_exec::tests::legacy_capture_emits_output_and_preserves_descendant_after_normal_exit",
+      "result": "ok",
+      "line": 291
+    },
+    {
+      "case": "unified_exec::tests::legacy_non_tty_cmd_emits_output",
+      "result": "FAILED",
+      "line": 292
+    },
+    {
+      "case": "unified_exec::tests::legacy_non_tty_powershell_interrupt_terminates_process",
+      "result": "ok",
+      "line": 295
+    },
+    {
+      "case": "unified_exec::tests::legacy_tty_cmd_emits_output_and_accepts_input",
+      "result": "ignored",
+      "line": 296
+    },
+    {
+      "case": "unified_exec::tests::legacy_tty_powershell_emits_output_and_accepts_input",
+      "result": "ok",
+      "line": 298
+    },
+    {
+      "case": "windows_impl::tests::applies_network_block_for_read_only",
+      "result": "ok",
+      "line": 303
+    },
+    {
+      "case": "unified_exec::tests::runner_stdin_writer_sends_close_stdin_after_input_eof",
+      "result": "ok",
+      "line": 304
+    },
+    {
+      "case": "windows_impl::tests::legacy_preflight_skips_profiles_without_managed_filesystem_permissions",
+      "result": "ok",
+      "line": 306
+    },
+    {
+      "case": "winutil::tests::argv_to_command_line_quotes_regular_program_args",
+      "result": "ok",
+      "line": 309
+    },
+    {
+      "case": "wrapper::tests::windows_wrapper_args_round_trip",
+      "result": "ok",
+      "line": 311
+    },
+    {
+      "case": "unified_exec::tests::runner_resizer_sends_resize_frame",
+      "result": "ok",
+      "line": 316
+    },
+    {
+      "case": "token::integrity_probe::integrity_mechanism_probe_observation_only",
+      "result": "ok",
+      "line": 475
+    }
+  ],
+  "direct_status_parse_limit": "Concurrent direct diagnostic stderr and libtest stdout can interleave. Only contiguous status forms are listed; omitted forms are not labelled direct PASS.",
+  "failure_headers": [
+    {
+      "case": "acl::tests::existing_native_deny_does_not_require_write_dac",
+      "line": 100
+    },
+    {
+      "case": "acl::tests::partial_read_deny_is_repaired_before_native_file_data_access",
+      "line": 103
+    },
+    {
+      "case": "acl::tests::native_file_and_directory_repairs_are_idempotent_for_read_and_write",
+      "line": 106
+    },
+    {
+      "case": "token::tests::partial_delete_deny_is_repaired_before_native_workspace_writes",
+      "line": 479
+    },
+    {
+      "case": "token::tests::workspace_capabilities_deny_writes_and_deletes_under_broad_identity_aces",
+      "line": 485
+    },
+    {
+      "case": "token::tests::workspace_capability_delete_routes_require_the_capability_in_all_four_cells",
+      "line": 511
+    },
+    {
+      "case": "unified_exec::tests::acl_setup_tests::legacy_capture_rejects_deny_acl_setup_failure_before_spawn",
+      "line": 568
+    },
+    {
+      "case": "unified_exec::tests::acl_setup_tests::legacy_session_rejects_deny_acl_setup_failure_before_spawn",
+      "line": 583
+    },
+    {
+      "case": "unified_exec::tests::delete_permission_tests::legacy_delete_routes_require_workspace_capability_in_all_four_cells",
+      "line": 588
+    },
+    {
+      "case": "unified_exec::tests::elevated_non_tty_cmd_forwards_env_output_and_exit",
+      "line": 593
+    },
+    {
+      "case": "unified_exec::tests::legacy_non_tty_cmd_emits_output",
+      "line": 598
+    },
+    {
+      "case": "unified_exec::tests::legacy_non_tty_cmd_rejects_deny_read_overrides",
+      "line": 603
+    },
+    {
+      "case": "unified_exec::tests::legacy_workspace_write_delete_is_limited_to_writable_roots",
+      "line": 608
+    }
+  ],
+  "required_six_cases": [
+    {
+      "case": "token::tests::partial_delete_deny_is_repaired_before_native_workspace_writes",
+      "result": "FAIL"
+    },
+    {
+      "case": "token::tests::workspace_capabilities_deny_writes_and_deletes_under_broad_identity_aces",
+      "result": "FAIL"
+    },
+    {
+      "case": "unified_exec::tests::legacy_workspace_write_delete_is_limited_to_writable_roots",
+      "result": "FAIL"
+    },
+    {
+      "case": "token::tests::workspace_capability_delete_routes_require_the_capability_in_all_four_cells",
+      "result": "FAIL"
+    },
+    {
+      "case": "unified_exec::tests::delete_permission_tests::legacy_delete_routes_require_workspace_capability_in_all_four_cells",
+      "result": "FAIL"
+    },
+    {
+      "case": "token::integrity_probe::integrity_mechanism_probe_observation_only",
+      "result": "PASS"
+    }
+  ],
+  "probe_fixture_reached_complete_eight_rows": true,
+  "probe_fixture_pass": true,
+  "physical_observation_projection": {
+    "local_path": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-pr4884-ci-20261105/terminal/probe-127352234293/physical-observation-projection.json",
+    "bytes": 126978,
+    "sha256": "7e34114df2540f69c1e5058e2990b0e4a306b467b0004aa16fbb1c11dd059f83",
+    "git_blob": "6a45b4c5b49e30aeaa566f96a7d827e3ea9e5b92"
+  },
+  "mechanism_observations": [
+    "Current strict token: outside read succeeds; overwrite/create fail with error5; file and directory removal succeed on both Medium and Low-other-cohort objects.",
+    "Current strict token lowered to Low: outside Medium read succeeds and all four mutations fail with error5; Low-other-cohort read succeeds, overwrite/create fail but both removals succeed.",
+    "Full restricting token plus explicitly granted read SID on this finite fixture: outside read succeeds and all four mutations fail with error5 on both cohorts; inside legitimate operations succeed.",
+    "All eight rows reached restoration/finalized records: 80 retained objects, zero restoration errors; survivors satisfy original descriptor/control identity checks, pending deletions are closed then observed missing by the original code."
+  ],
+  "limits": [
+    "This is current-thread impersonation with no descendants, not a native helper/loader/IPC or process/Job acceptance.",
+    "The explicit read SID covers only the finite owned fixture and is not ambient-read equivalence.",
+    "Low integrity does not isolate one Low cohort from another under the existing WRITE_RESTRICTED token.",
+    "Thirteen original tests still fail. Probe PASS does not close B11 or replace any original strict assertion.",
+    "Older native2/native3 139PASS14FAIL2ignored results remain separate immutable evidence."
+  ],
+  "original_bazel_exit_code": 3,
+  "console_copy_exit_code": 0,
+  "evidence": {
+    "full_job_log": {
+      "local_path": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-pr4884-ci-20261105/terminal/probe-127352234293/job.log",
+      "bytes": 414676,
+      "sha256": "d1f34cc25702c009930cb1136b37cf8c9fac8f6c7a2888527e7c7bde75cbcdc5",
+      "git_blob": "54e682f0362f240d8fa6282985d1f04a444fd3aa"
+    },
+    "full_test_log": {
+      "local_path": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-pr4884-ci-20261105/terminal/probe-127352234293/members/bazel-execution-logs/failed-test-logs/invocation-1m84m15p/targets/0000/test.log",
+      "bytes": 127916,
+      "sha256": "105df80dbfc071ef8b2addce0cfe4d3d9c283f3673da2d84e0143b0e7e5bbdbb",
+      "git_blob": "af35e023f86c2a9216f0bb2ce787dc9e8226a405"
+    },
+    "target_level_xml": {
+      "local_path": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-pr4884-ci-20261105/terminal/probe-127352234293/members/bazel-execution-logs/failed-test-logs/invocation-1m84m15p/targets/0000/test.xml",
+      "bytes": 128339,
+      "sha256": "bad3fd90d7e42b860362f2bdfa9d5b172c0aebe7ef19f5888f2ba0ee53357efc",
+      "git_blob": "ed522e2677fd3711d7a8e4f79d80290cfc4f8f69"
+    },
+    "api_envelopes": {
+      "local_path": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-pr4884-ci-20261105/terminal/probe-127352234293/terminal-api-envelopes.json",
+      "bytes": 484775,
+      "sha256": "79e2c5b11f92225d78e03c4ba57dc7ab675322e3ab0b809cb36dd983ffcc37db",
+      "git_blob": "a99e7087151b5e000349f8ccfdb2cb8e3aca2391"
+    },
+    "full_archive": {
+      "local_path": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-pr4884-ci-20261105/terminal/probe-127352234293/artifact-13430755552.zip",
+      "bytes": 2027692,
+      "sha256": "0f54ed330b915f924fd7cb123f648c17bdf9865b87cb7d431f3834889448069c",
+      "git_blob": "28880bc4d980f853123fd32a0ecaabece652f6f8"
+    },
+    "archive_verification": {
+      "local_path": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-pr4884-ci-20261105/terminal/probe-127352234293/artifact-verification.json",
+      "bytes": 4933,
+      "sha256": "224c153abc89db18aa71232f36e9ff36b22b3726c4bbbaff4cbd890e2cebeb4a",
+      "git_blob": "e98cfd5b061251eb935f4b8309ab9707ebebceaa"
+    },
+    "archive_chunk_manifest": {
+      "local_path": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-pr4884-ci-20261105/terminal/probe-127352234293/archive-parts-manifest.json",
+      "bytes": 11135,
+      "sha256": "5e0c6652498b02e4fa3193f517880605b87316de36279128719294149ea57d2e",
+      "git_blob": "4a311f26f0848b3e0a93c1f2b5dcaf94e16186aa"
+    }
+  },
+  "qualification": {
+    "B11_status": "OPEN",
+    "strict_token_qualified": false,
+    "legacy_helper_qualified": false,
+    "retry_or_rerun_started_by_auditor": false,
+    "native_host_or_source_changed_by_auditor": false
+  }
+}

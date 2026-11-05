@@ -1,0 +1,128 @@
+{
+  "schema": "b11-label-observation-and-ace-semantics-registration-v1",
+  "evidence_only": true,
+  "previous_published_audit_commit": "526aca0c1aba938d3dfea0f8dd29c51bfc00fcc9",
+  "previous_cut_not_rewritten": true,
+  "B11_status": "OPEN",
+  "product_ref_changes_by_this_plan": false,
+  "native_actions_by_this_plan": false,
+  "count": 10,
+  "items": [
+    {
+      "repository_path": "qualification/r3-audit-repair-20261104/continuation-20261105/candidate-next/b11-initial-label-observation/token_integrity_probe_support.rs.source.txt",
+      "local_file": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-pr4884-ci-20261105/repair-initial-label-observation-v1/candidate/codex-rs/windows-sandbox-rs/src/token_integrity_probe_support.rs",
+      "mode": "100644",
+      "bytes": 13465,
+      "sha256": "018166e25f5e2014d2ae0f74c58252af85625f88a43fa320573926d491e1225a",
+      "blob": "47dddb48c727c1bcae89b613409a72bd7d1312ff",
+      "role": "static_candidate_source_or_evidence",
+      "actual_object_verified": true
+    },
+    {
+      "repository_path": "qualification/r3-audit-repair-20261104/continuation-20261105/candidate-next/b11-initial-label-observation/observation.patch",
+      "local_file": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-pr4884-ci-20261105/repair-initial-label-observation-v1/observation.patch",
+      "mode": "100644",
+      "bytes": 1200,
+      "sha256": "ef4407eeba0dc97a3b757effaac4f22f8f9a58bb2a083d40535987af85d8897b",
+      "blob": "69ffe2af03a6132d225b3ece2e9bb6a1c99ecf1e",
+      "role": "static_candidate_source_or_evidence",
+      "actual_object_verified": true
+    },
+    {
+      "repository_path": "qualification/r3-audit-repair-20261104/continuation-20261105/candidate-next/b11-initial-label-observation/manifest.json",
+      "local_file": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-pr4884-ci-20261105/repair-initial-label-observation-v1/manifest.json",
+      "mode": "100644",
+      "bytes": 3273,
+      "sha256": "9abb013a2ed700174cae5eccf93a50adf86aeb03e0e923f06f8a57a152f55a0a",
+      "blob": "61ae6a9893f3e0b539c780b1011f218edc43ff72",
+      "role": "static_candidate_source_or_evidence",
+      "actual_object_verified": true
+    },
+    {
+      "repository_path": "qualification/r3-audit-repair-20261104/continuation-20261105/candidate-next/b11-label-ace-semantics/token_integrity_probe_support.rs.source.txt",
+      "local_file": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-pr4884-ci-20261105/repair-label-ace-semantics-v1/candidate/codex-rs/windows-sandbox-rs/src/token_integrity_probe_support.rs",
+      "mode": "100644",
+      "bytes": 17560,
+      "sha256": "986fe8864f789e4bfa876553d99f1949be403f5ed10b9c88fdc8e0fd7331c0d1",
+      "blob": "7a7008f9becf09578ca953c849401eda93eb94b2",
+      "role": "static_candidate_source_or_evidence",
+      "actual_object_verified": true
+    },
+    {
+      "repository_path": "qualification/r3-audit-repair-20261104/continuation-20261105/candidate-next/b11-label-ace-semantics/repair.patch",
+      "local_file": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-pr4884-ci-20261105/repair-label-ace-semantics-v1/repair.patch",
+      "mode": "100644",
+      "bytes": 8055,
+      "sha256": "4ee7ad086af52af9832b843b574e4d59305e41fcc162218992a903a036a6ce25",
+      "blob": "03f5ee7e4122d22189b8056ef0137f820943c1ac",
+      "role": "static_candidate_source_or_evidence",
+      "actual_object_verified": true
+    },
+    {
+      "repository_path": "qualification/r3-audit-repair-20261104/continuation-20261105/candidate-next/b11-label-ace-semantics/manifest.json",
+      "local_file": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-pr4884-ci-20261105/repair-label-ace-semantics-v1/manifest.json",
+      "mode": "100644",
+      "bytes": 14658,
+      "sha256": "e0779093da69b56e32fc8b96c1fa15bc7e686599f0c2413102d9fb18ad39a761",
+      "blob": "26631a3b242c5a14df89b22de4f6c1a84d3aa904",
+      "role": "static_candidate_source_or_evidence",
+      "actual_object_verified": true
+    },
+    {
+      "repository_path": "qualification/r3-audit-repair-20261104/continuation-20261105/candidate-next/b11-label-ace-semantics/primary/microsoft-docs-originals.json",
+      "local_file": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-pr4884-ci-20261105/repair-label-ace-semantics-v1/primary/microsoft-docs-originals.json",
+      "mode": "100644",
+      "bytes": 40196,
+      "sha256": "78e28140e54154b3dc9cdef9b5c7cc74c11a48c803d4b144fea1bf36e07e5099",
+      "blob": "0c0934acd6aa2e8ce7235bce4c0d2e86808bccd1",
+      "role": "static_candidate_source_or_evidence",
+      "actual_object_verified": true
+    },
+    {
+      "repository_path": "qualification/r3-audit-repair-20261104/continuation-20261105/candidate-next/b11-label-ace-semantics/static-verification.json",
+      "local_file": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-pr4884-ci-20261105/repair-label-ace-semantics-v1/static-verification.json",
+      "mode": "100644",
+      "bytes": 2137,
+      "sha256": "c7fe45f221368a669558c8563405efc7b795dd2b3460a3f844e4b30d5ff3b69c",
+      "blob": "2b7799557e8e1430066cf814dbac502232f44088",
+      "role": "static_candidate_source_or_evidence",
+      "actual_object_verified": true
+    },
+    {
+      "repository_path": "qualification/r3-audit-repair-20261104/continuation-20261105/reviews/b11-initial-label-observation/independent-review.json",
+      "local_file": "/workspace/scratch/07dd58cc9630/research-audit/b11-mic-probe-independent-review-20261105/initial-label-observation-independent-review.json",
+      "mode": "100644",
+      "bytes": 2504,
+      "sha256": "ef785a553d2d58c5ca77b95d4961ba17b6f41e5b4bdb63f771da9900aee42a10",
+      "blob": "d43f23e18d1664504b807635cf0b2ec80d54182a",
+      "role": "independent_static_review",
+      "actual_object_verified": true
+    },
+    {
+      "repository_path": "qualification/r3-audit-repair-20261104/continuation-20261105/reviews/b11-label-ace-semantics/independent-review.json",
+      "local_file": "/workspace/scratch/07dd58cc9630/research-audit/b11-mic-probe-independent-review-20261105/label-ace-semantics/independent-review.json",
+      "mode": "100644",
+      "bytes": 8089,
+      "sha256": "c29024f05b22414408c269cae0c91e0f9e63be8f16dafbb88e20adf6772581dc",
+      "blob": "c06ff63c83722832ce03840407c6aef3fd471b4c",
+      "role": "independent_static_review",
+      "actual_object_verified": true
+    }
+  ],
+  "source_progression": [
+    {
+      "head": "c05dc16cc055e58d020d848d2bca0ff04736e7c2",
+      "role": "diagnostic-only label values; native result139PASS14FAIL2ignored;0completephysicalrows",
+      "observed": "S:AI(ML;;NW;;;ME) versus S:(ML;;NW;;;ME)"
+    },
+    {
+      "head": "3a407dde2727de2176b02d3cb2c3883fbb771f60",
+      "role": "strict single mandatory-label ACE comparison; independent STATIC PASS; original new job running at last read15:50UTC; no native qualification claimed"
+    }
+  ],
+  "limits": [
+    "Original complete security descriptor/control and restore checks remain strict.",
+    "The diagnostic eight-row test is not a replacement for original strict-token or legacy physical acceptance.",
+    "Source objects and independent reviews were actually created and fetched earlier; this plan references those immutable objects without reuploading product trees."
+  ]
+}

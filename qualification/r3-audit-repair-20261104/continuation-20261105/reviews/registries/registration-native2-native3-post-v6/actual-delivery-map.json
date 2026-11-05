@@ -1,0 +1,532 @@
+{
+  "schema": "b11-native2-native3-post-v6-registration-v1",
+  "evidence_only": true,
+  "root_reconciles_actual_audit_ref": true,
+  "previous_published_audit_commit": "526aca0c1aba938d3dfea0f8dd29c51bfc00fcc9",
+  "previous_cut_not_rewritten": true,
+  "B11_status": "OPEN",
+  "product_ref_changes_by_this_plan": false,
+  "native_actions_by_this_plan": false,
+  "source_groups": [
+    {
+      "head": "0d65de9bf1e28a7b313a344ebba71ba8378d0f5a",
+      "run": 42051179792,
+      "job": 127327372905,
+      "counts": {
+        "pass": 139,
+        "fail": 14,
+        "ignored": 2
+      },
+      "probe_complete_physical_rows": 0,
+      "label_values_observed": false
+    },
+    {
+      "head": "c05dc16cc055e58d020d848d2bca0ff04736e7c2",
+      "run": 42053829668,
+      "job": 127336717141,
+      "counts": {
+        "pass": 139,
+        "fail": 14,
+        "ignored": 2
+      },
+      "probe_complete_physical_rows": 0,
+      "label_values_observed": "S:AI(ML;;NW;;;ME) vs S:(ML;;NW;;;ME)"
+    }
+  ],
+  "count": 48,
+  "items": [
+    {
+      "repository_path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/b11-pr4884-ci/probe-127327372905/archive-parts/artifact-13427542488-000.base64",
+      "local_file": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-pr4884-ci-20261105/terminal/probe-127327372905/archive-parts/artifact-13427542488-000.base64",
+      "mode": "100644",
+      "bytes": 174765,
+      "sha256": "97697e5d1ea649b78933f59501dfb3c2059d6383e6ca8c81bd9b01917114d68c",
+      "blob": "2fc12118ff31ab0cc0040e40b948338dd4c5b581",
+      "role": "original_artifact_base64_chunk",
+      "actual_object_verified": true
+    },
+    {
+      "repository_path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/b11-pr4884-ci/probe-127327372905/archive-parts/artifact-13427542488-001.base64",
+      "local_file": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-pr4884-ci-20261105/terminal/probe-127327372905/archive-parts/artifact-13427542488-001.base64",
+      "mode": "100644",
+      "bytes": 174765,
+      "sha256": "81f1ff8a6d7bbcf3555c4e9a53ea28b055451cd3df92acb7b2a981a62af24125",
+      "blob": "54d9073862513550fe9b4e7047ba7b18da2c3014",
+      "role": "original_artifact_base64_chunk",
+      "actual_object_verified": true
+    },
+    {
+      "repository_path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/b11-pr4884-ci/probe-127327372905/archive-parts/artifact-13427542488-002.base64",
+      "local_file": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-pr4884-ci-20261105/terminal/probe-127327372905/archive-parts/artifact-13427542488-002.base64",
+      "mode": "100644",
+      "bytes": 174765,
+      "sha256": "4e72c4daada9fd434fab7ae06d8ce83135b3e2897ea6b5e6b69a3440bbb38666",
+      "blob": "904654abb007323fdca0cd77969017a4bd810ec5",
+      "role": "original_artifact_base64_chunk",
+      "actual_object_verified": true
+    },
+    {
+      "repository_path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/b11-pr4884-ci/probe-127327372905/archive-parts/artifact-13427542488-003.base64",
+      "local_file": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-pr4884-ci-20261105/terminal/probe-127327372905/archive-parts/artifact-13427542488-003.base64",
+      "mode": "100644",
+      "bytes": 174765,
+      "sha256": "c1407b1da4025918cc19db7d3df91a1e23cd9276ed965e2535c0ab7f2fb315dd",
+      "blob": "cdaa6e4e47c885b012ae851fe00d9256b0511ca4",
+      "role": "original_artifact_base64_chunk",
+      "actual_object_verified": true
+    },
+    {
+      "repository_path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/b11-pr4884-ci/probe-127327372905/archive-parts/artifact-13427542488-004.base64",
+      "local_file": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-pr4884-ci-20261105/terminal/probe-127327372905/archive-parts/artifact-13427542488-004.base64",
+      "mode": "100644",
+      "bytes": 174765,
+      "sha256": "20dc7bfd5e60ff2694bdd5e9979011a92282ae270c18d827d697e1abd20614a7",
+      "blob": "c09fe0b545412f746e63b0a37dcaf8f264a07206",
+      "role": "original_artifact_base64_chunk",
+      "actual_object_verified": true
+    },
+    {
+      "repository_path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/b11-pr4884-ci/probe-127327372905/archive-parts/artifact-13427542488-005.base64",
+      "local_file": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-pr4884-ci-20261105/terminal/probe-127327372905/archive-parts/artifact-13427542488-005.base64",
+      "mode": "100644",
+      "bytes": 174765,
+      "sha256": "709f5a1789424b22541a24107ccc7bcfaabaa70b3be13147efdd31abd0a35aec",
+      "blob": "1983f6433bb09b501e4f18fc68aace94b575c103",
+      "role": "original_artifact_base64_chunk",
+      "actual_object_verified": true
+    },
+    {
+      "repository_path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/b11-pr4884-ci/probe-127327372905/archive-parts/artifact-13427542488-006.base64",
+      "local_file": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-pr4884-ci-20261105/terminal/probe-127327372905/archive-parts/artifact-13427542488-006.base64",
+      "mode": "100644",
+      "bytes": 174765,
+      "sha256": "cb0f9063aeb75ca27ad9679815639a6a7ee263efb1d56bd419cb7e96f15fead0",
+      "blob": "6fb016624e2b5763eefa9194a2ca4d6374947fbb",
+      "role": "original_artifact_base64_chunk",
+      "actual_object_verified": true
+    },
+    {
+      "repository_path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/b11-pr4884-ci/probe-127327372905/archive-parts/artifact-13427542488-007.base64",
+      "local_file": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-pr4884-ci-20261105/terminal/probe-127327372905/archive-parts/artifact-13427542488-007.base64",
+      "mode": "100644",
+      "bytes": 174765,
+      "sha256": "fa1a6d46cf855a0da2f820fc92afb3a04e108600087f1ddef65adfe65d5c4e1f",
+      "blob": "3db943e7d15b16dc8c2b5d39c2dcc6fb70a5d6d4",
+      "role": "original_artifact_base64_chunk",
+      "actual_object_verified": true
+    },
+    {
+      "repository_path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/b11-pr4884-ci/probe-127327372905/archive-parts/artifact-13427542488-008.base64",
+      "local_file": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-pr4884-ci-20261105/terminal/probe-127327372905/archive-parts/artifact-13427542488-008.base64",
+      "mode": "100644",
+      "bytes": 174765,
+      "sha256": "b8e0d743c54c468aeb839cc03d4151c87fd18c7e3376297014846c0a1bb709aa",
+      "blob": "50d163c60509f9f60e49e839072748c6dff24f8c",
+      "role": "original_artifact_base64_chunk",
+      "actual_object_verified": true
+    },
+    {
+      "repository_path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/b11-pr4884-ci/probe-127327372905/archive-parts/artifact-13427542488-009.base64",
+      "local_file": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-pr4884-ci-20261105/terminal/probe-127327372905/archive-parts/artifact-13427542488-009.base64",
+      "mode": "100644",
+      "bytes": 174765,
+      "sha256": "52d5fe222e460834a6349e55f0d175f726236f948d272203fc784b215688b48b",
+      "blob": "98b85bd15f27fa30ebadee78ff5cfe3e5631e021",
+      "role": "original_artifact_base64_chunk",
+      "actual_object_verified": true
+    },
+    {
+      "repository_path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/b11-pr4884-ci/probe-127327372905/archive-parts/artifact-13427542488-010.base64",
+      "local_file": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-pr4884-ci-20261105/terminal/probe-127327372905/archive-parts/artifact-13427542488-010.base64",
+      "mode": "100644",
+      "bytes": 174765,
+      "sha256": "7c1ded1b3d1b496429dd3d5bc72496bc7fe9c9e75ce9c51a4a3b98227ef93843",
+      "blob": "1910a735c6135a3597f173777f51b82dd8928801",
+      "role": "original_artifact_base64_chunk",
+      "actual_object_verified": true
+    },
+    {
+      "repository_path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/b11-pr4884-ci/probe-127327372905/archive-parts/artifact-13427542488-011.base64",
+      "local_file": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-pr4884-ci-20261105/terminal/probe-127327372905/archive-parts/artifact-13427542488-011.base64",
+      "mode": "100644",
+      "bytes": 174765,
+      "sha256": "6abf13967a8a93c0bcdb2d7e002f473d251fb2f0d254388ad994f523a0d8042c",
+      "blob": "a7d2f92aae8f664f166ea0f2766cf060140aa3b6",
+      "role": "original_artifact_base64_chunk",
+      "actual_object_verified": true
+    },
+    {
+      "repository_path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/b11-pr4884-ci/probe-127327372905/archive-parts/artifact-13427542488-012.base64",
+      "local_file": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-pr4884-ci-20261105/terminal/probe-127327372905/archive-parts/artifact-13427542488-012.base64",
+      "mode": "100644",
+      "bytes": 174765,
+      "sha256": "bdd4c901218ff1d5af3fc581a4f27f1e285faf89706bb9300bf9e132170dced3",
+      "blob": "f768978bd58e1c58e08c5272cfdaee9f7d2fa674",
+      "role": "original_artifact_base64_chunk",
+      "actual_object_verified": true
+    },
+    {
+      "repository_path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/b11-pr4884-ci/probe-127327372905/archive-parts/artifact-13427542488-013.base64",
+      "local_file": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-pr4884-ci-20261105/terminal/probe-127327372905/archive-parts/artifact-13427542488-013.base64",
+      "mode": "100644",
+      "bytes": 174765,
+      "sha256": "0f04882210494b28799113b44be770c46bd30a343e051d470cebcfecf4299485",
+      "blob": "6cce64055ee8875595f2e1129a20c23e0a46e7e6",
+      "role": "original_artifact_base64_chunk",
+      "actual_object_verified": true
+    },
+    {
+      "repository_path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/b11-pr4884-ci/probe-127327372905/archive-parts/artifact-13427542488-014.base64",
+      "local_file": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-pr4884-ci-20261105/terminal/probe-127327372905/archive-parts/artifact-13427542488-014.base64",
+      "mode": "100644",
+      "bytes": 174765,
+      "sha256": "bf37885b2ece0af1a2041c678d94a4365687546df388731e5f5c3af328c78214",
+      "blob": "96707ddf403f805c6479885b3a280a006f68ec6f",
+      "role": "original_artifact_base64_chunk",
+      "actual_object_verified": true
+    },
+    {
+      "repository_path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/b11-pr4884-ci/probe-127327372905/archive-parts/artifact-13427542488-015.base64",
+      "local_file": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-pr4884-ci-20261105/terminal/probe-127327372905/archive-parts/artifact-13427542488-015.base64",
+      "mode": "100644",
+      "bytes": 84257,
+      "sha256": "30cf129885e2fb4cf96aaccfdbaebf1a6d620dd655c1e28d96fe696c155cf63d",
+      "blob": "224bfab550ce9b9a9c2e9e58c90f08d7c5193503",
+      "role": "original_artifact_base64_chunk",
+      "actual_object_verified": true
+    },
+    {
+      "repository_path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/b11-pr4884-ci/probe-127336717141/archive-parts/artifact-13429330823-000.base64",
+      "local_file": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-pr4884-ci-20261105/terminal/probe-127336717141/archive-parts/artifact-13429330823-000.base64",
+      "mode": "100644",
+      "bytes": 174765,
+      "sha256": "65e0b53455c57a3a5c06b27869777145651b174afaf085615e906c9d14b53b40",
+      "blob": "8db3248c17b6fc973588557b9f057640c9078a95",
+      "role": "original_artifact_base64_chunk",
+      "actual_object_verified": true
+    },
+    {
+      "repository_path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/b11-pr4884-ci/probe-127336717141/archive-parts/artifact-13429330823-001.base64",
+      "local_file": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-pr4884-ci-20261105/terminal/probe-127336717141/archive-parts/artifact-13429330823-001.base64",
+      "mode": "100644",
+      "bytes": 174765,
+      "sha256": "e33f6f9eb1aab55c6b39b84d656ca1e779d39ef10a009391d0c36e2f1b1b9a21",
+      "blob": "d61647f764b6366530911789a110a7d45994430b",
+      "role": "original_artifact_base64_chunk",
+      "actual_object_verified": true
+    },
+    {
+      "repository_path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/b11-pr4884-ci/probe-127336717141/archive-parts/artifact-13429330823-002.base64",
+      "local_file": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-pr4884-ci-20261105/terminal/probe-127336717141/archive-parts/artifact-13429330823-002.base64",
+      "mode": "100644",
+      "bytes": 174765,
+      "sha256": "0742fcae0b2cb9b9a1aae736c3ad312f6cbeb3dc64657f0a6577c86cee122536",
+      "blob": "3f9696659897989b0798d421d825d50c4cbe7c08",
+      "role": "original_artifact_base64_chunk",
+      "actual_object_verified": true
+    },
+    {
+      "repository_path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/b11-pr4884-ci/probe-127336717141/archive-parts/artifact-13429330823-003.base64",
+      "local_file": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-pr4884-ci-20261105/terminal/probe-127336717141/archive-parts/artifact-13429330823-003.base64",
+      "mode": "100644",
+      "bytes": 174765,
+      "sha256": "471329d49f789772846205136b1591ab29f0275ac2cd78b3c0e497dcdf854db2",
+      "blob": "010f451f659bcb2eac89b769c65d8226171d856e",
+      "role": "original_artifact_base64_chunk",
+      "actual_object_verified": true
+    },
+    {
+      "repository_path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/b11-pr4884-ci/probe-127336717141/archive-parts/artifact-13429330823-004.base64",
+      "local_file": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-pr4884-ci-20261105/terminal/probe-127336717141/archive-parts/artifact-13429330823-004.base64",
+      "mode": "100644",
+      "bytes": 174765,
+      "sha256": "4a12ace3fb8682281e18a30a131ed2e6c85bfeb3a47c7ed6467e4932f33d4460",
+      "blob": "f0b72c2b3067d0c3877cb1c1929fa868adb9dee8",
+      "role": "original_artifact_base64_chunk",
+      "actual_object_verified": true
+    },
+    {
+      "repository_path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/b11-pr4884-ci/probe-127336717141/archive-parts/artifact-13429330823-005.base64",
+      "local_file": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-pr4884-ci-20261105/terminal/probe-127336717141/archive-parts/artifact-13429330823-005.base64",
+      "mode": "100644",
+      "bytes": 174765,
+      "sha256": "df6a4f112bf34d90e1837a41314cfb96123f1ac8b825f6427550ef02a2437dfd",
+      "blob": "1717f80e82f48001318666ac0b577cb3f3aff59d",
+      "role": "original_artifact_base64_chunk",
+      "actual_object_verified": true
+    },
+    {
+      "repository_path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/b11-pr4884-ci/probe-127336717141/archive-parts/artifact-13429330823-006.base64",
+      "local_file": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-pr4884-ci-20261105/terminal/probe-127336717141/archive-parts/artifact-13429330823-006.base64",
+      "mode": "100644",
+      "bytes": 174765,
+      "sha256": "0a36e4d2f4b03e42480bb5da9210da29197ae11f8c39a540d4fb401cc804b3f2",
+      "blob": "53a9a4a3b40a4d5898583fa2bb634b85f97d18f0",
+      "role": "original_artifact_base64_chunk",
+      "actual_object_verified": true
+    },
+    {
+      "repository_path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/b11-pr4884-ci/probe-127336717141/archive-parts/artifact-13429330823-007.base64",
+      "local_file": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-pr4884-ci-20261105/terminal/probe-127336717141/archive-parts/artifact-13429330823-007.base64",
+      "mode": "100644",
+      "bytes": 174765,
+      "sha256": "8976df386c1b32082a8c0f05fbca38cc8469ce88d1066d8702528c6f00fe4375",
+      "blob": "0228b82cb66ff7236f736e9a205c021b6b0916c1",
+      "role": "original_artifact_base64_chunk",
+      "actual_object_verified": true
+    },
+    {
+      "repository_path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/b11-pr4884-ci/probe-127336717141/archive-parts/artifact-13429330823-008.base64",
+      "local_file": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-pr4884-ci-20261105/terminal/probe-127336717141/archive-parts/artifact-13429330823-008.base64",
+      "mode": "100644",
+      "bytes": 174765,
+      "sha256": "6331123a056262163565cc03cf9c967db76215a9fb701606012578735526ed9c",
+      "blob": "1af3ff762fb57d2b724ee84fb73f2e63973ed935",
+      "role": "original_artifact_base64_chunk",
+      "actual_object_verified": true
+    },
+    {
+      "repository_path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/b11-pr4884-ci/probe-127336717141/archive-parts/artifact-13429330823-009.base64",
+      "local_file": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-pr4884-ci-20261105/terminal/probe-127336717141/archive-parts/artifact-13429330823-009.base64",
+      "mode": "100644",
+      "bytes": 174765,
+      "sha256": "d654814fc05efce80d19ed2c4590a92488895b0d7c57ca95f72bdf972bda2396",
+      "blob": "b4684f7557ff44c3dc9de07455d6ba127bb0315c",
+      "role": "original_artifact_base64_chunk",
+      "actual_object_verified": true
+    },
+    {
+      "repository_path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/b11-pr4884-ci/probe-127336717141/archive-parts/artifact-13429330823-010.base64",
+      "local_file": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-pr4884-ci-20261105/terminal/probe-127336717141/archive-parts/artifact-13429330823-010.base64",
+      "mode": "100644",
+      "bytes": 174765,
+      "sha256": "c64048be37fe65bc6c89561f6e875a1f995223c164ea73ad07338aaca49bda19",
+      "blob": "dbe5b1e9d72a25fa2e44261ab534bac597996aeb",
+      "role": "original_artifact_base64_chunk",
+      "actual_object_verified": true
+    },
+    {
+      "repository_path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/b11-pr4884-ci/probe-127336717141/archive-parts/artifact-13429330823-011.base64",
+      "local_file": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-pr4884-ci-20261105/terminal/probe-127336717141/archive-parts/artifact-13429330823-011.base64",
+      "mode": "100644",
+      "bytes": 174765,
+      "sha256": "b95767f752a7a6f89ae11256b24c5904b1dee7ca6f1d1ea27d43e1ec33f8da37",
+      "blob": "365cc58af1acd4402711103b91d1b3e6168e4fb5",
+      "role": "original_artifact_base64_chunk",
+      "actual_object_verified": true
+    },
+    {
+      "repository_path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/b11-pr4884-ci/probe-127336717141/archive-parts/artifact-13429330823-012.base64",
+      "local_file": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-pr4884-ci-20261105/terminal/probe-127336717141/archive-parts/artifact-13429330823-012.base64",
+      "mode": "100644",
+      "bytes": 174765,
+      "sha256": "eb1b644088fe71e43bc803010ea11f7fac91544e19ba423928f5cff2f0302418",
+      "blob": "ccfdfc00bedc65d3524bde3383a9e9cff225974b",
+      "role": "original_artifact_base64_chunk",
+      "actual_object_verified": true
+    },
+    {
+      "repository_path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/b11-pr4884-ci/probe-127336717141/archive-parts/artifact-13429330823-013.base64",
+      "local_file": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-pr4884-ci-20261105/terminal/probe-127336717141/archive-parts/artifact-13429330823-013.base64",
+      "mode": "100644",
+      "bytes": 174765,
+      "sha256": "1038b97bedaf06f05bb5c5424b3952e92255ed4d81acc217af4fe77951f93bc0",
+      "blob": "fd5a8ffd8c6dab91e9261578a7ce28ce504aaac4",
+      "role": "original_artifact_base64_chunk",
+      "actual_object_verified": true
+    },
+    {
+      "repository_path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/b11-pr4884-ci/probe-127336717141/archive-parts/artifact-13429330823-014.base64",
+      "local_file": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-pr4884-ci-20261105/terminal/probe-127336717141/archive-parts/artifact-13429330823-014.base64",
+      "mode": "100644",
+      "bytes": 174765,
+      "sha256": "43914dfd8af06d04e61e4330884777ad15f6d41e3f5c121009b208a8ec678993",
+      "blob": "152b309f5e00657be1e32f8db34b5781b8a7e493",
+      "role": "original_artifact_base64_chunk",
+      "actual_object_verified": true
+    },
+    {
+      "repository_path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/b11-pr4884-ci/probe-127336717141/archive-parts/artifact-13429330823-015.base64",
+      "local_file": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-pr4884-ci-20261105/terminal/probe-127336717141/archive-parts/artifact-13429330823-015.base64",
+      "mode": "100644",
+      "bytes": 92429,
+      "sha256": "553697ad29c6dba99bc9e3c2dc8e08a79f0dcb04443fa5c40e4eb0a2acc50464",
+      "blob": "46009707af1713c7adca770a274ed232d67cdd39",
+      "role": "original_artifact_base64_chunk",
+      "actual_object_verified": true
+    },
+    {
+      "repository_path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/b11-pr4884-ci/probe-127327372905/job.log",
+      "local_file": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-pr4884-ci-20261105/terminal/probe-127327372905/job.log",
+      "mode": "100644",
+      "bytes": 300129,
+      "sha256": "2744b1663c2053ad90cb52db5fe8f91e17be4aa14bfff4123774c28a5c985bcf",
+      "blob": "fa749e89b15d1409fc8cbe637e9ee1f8629f1d39",
+      "role": "original_bytes",
+      "actual_object_verified": true
+    },
+    {
+      "repository_path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/b11-pr4884-ci/probe-127327372905/members/bazel-execution-logs/failed-test-logs/invocation-67xn0k2f/targets/0000/test.log",
+      "local_file": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-pr4884-ci-20261105/terminal/probe-127327372905/members/bazel-execution-logs/failed-test-logs/invocation-67xn0k2f/targets/0000/test.log",
+      "mode": "100644",
+      "bytes": 39327,
+      "sha256": "753a855a0a296b47ed7a83daa0801b6de35025c1d29f61369e05d14e7c880380",
+      "blob": "6b650bd5003b47250125ebd71f291b7b186987c6",
+      "role": "original_bytes",
+      "actual_object_verified": true
+    },
+    {
+      "repository_path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/b11-pr4884-ci/probe-127327372905/members/bazel-execution-logs/failed-test-logs/invocation-67xn0k2f/targets/0000/test.xml",
+      "local_file": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-pr4884-ci-20261105/terminal/probe-127327372905/members/bazel-execution-logs/failed-test-logs/invocation-67xn0k2f/targets/0000/test.xml",
+      "mode": "100644",
+      "bytes": 39750,
+      "sha256": "e75010facd09263fe32bccded7a2c0a2bd65d2a8a66eb743a7e94d755778e9b5",
+      "blob": "f20c924fed823f453e85145425a3db691c8f6395",
+      "role": "original_bytes",
+      "actual_object_verified": true
+    },
+    {
+      "repository_path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/b11-pr4884-ci/probe-127327372905/artifact-verification.json",
+      "local_file": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-pr4884-ci-20261105/terminal/probe-127327372905/artifact-verification.json",
+      "mode": "100644",
+      "bytes": 4132,
+      "sha256": "9d677f5d65582f710578fcf9432a484bab6c999064e52436eb1d4c0b6b536b35",
+      "blob": "fe8427cfbf4ff481d4ea39c05ff32f020c15bdcf",
+      "role": "source_bound_review_or_archive_verification",
+      "actual_object_verified": true
+    },
+    {
+      "repository_path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/b11-pr4884-ci/probe-127336717141/job.log",
+      "local_file": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-pr4884-ci-20261105/terminal/probe-127336717141/job.log",
+      "mode": "100644",
+      "bytes": 306142,
+      "sha256": "4d30992655422af664f659780e1549daa80f9545eff2a4f3bfd9defc15734beb",
+      "blob": "a5bad004d7d3c47b0a02049c9e797c9d62832869",
+      "role": "original_bytes",
+      "actual_object_verified": true
+    },
+    {
+      "repository_path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/b11-pr4884-ci/probe-127336717141/members/bazel-execution-logs/failed-test-logs/invocation-4ln_urq0/targets/0000/test.log",
+      "local_file": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-pr4884-ci-20261105/terminal/probe-127336717141/members/bazel-execution-logs/failed-test-logs/invocation-4ln_urq0/targets/0000/test.log",
+      "mode": "100644",
+      "bytes": 39506,
+      "sha256": "1781c270bf00f5fa7a9b6735b1f8ea206489207d9dd8340d6cae5633fc23f79c",
+      "blob": "0e6e864a6c9fbfb9684280b384d93e09df032226",
+      "role": "original_bytes",
+      "actual_object_verified": true
+    },
+    {
+      "repository_path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/b11-pr4884-ci/probe-127336717141/members/bazel-execution-logs/failed-test-logs/invocation-4ln_urq0/targets/0000/test.xml",
+      "local_file": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-pr4884-ci-20261105/terminal/probe-127336717141/members/bazel-execution-logs/failed-test-logs/invocation-4ln_urq0/targets/0000/test.xml",
+      "mode": "100644",
+      "bytes": 39929,
+      "sha256": "24efc1c7f1f73ba2c97e5187f3734c05d41b2ef8eebc4e56caa5fdbdf0a52547",
+      "blob": "0ce079ac47beed0a8f4e6a165e4a97a31183d90b",
+      "role": "original_bytes",
+      "actual_object_verified": true
+    },
+    {
+      "repository_path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/b11-pr4884-ci/probe-127336717141/artifact-verification.json",
+      "local_file": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-pr4884-ci-20261105/terminal/probe-127336717141/artifact-verification.json",
+      "mode": "100644",
+      "bytes": 4844,
+      "sha256": "5cbf7ef99589e3b9f6d1286c64aac2ef2462967327954bb0e21883a27519315e",
+      "blob": "0c8dd6f17f206616d55159898b17e60fa4245b75",
+      "role": "source_bound_review_or_archive_verification",
+      "actual_object_verified": true
+    },
+    {
+      "repository_path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/b11-pr4884-ci/probe-127327372905/archive-parts-manifest.json",
+      "local_file": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-pr4884-ci-20261105/terminal/probe-127327372905/archive-parts-manifest.json",
+      "mode": "100644",
+      "bytes": 11279,
+      "sha256": "8c5075d8e687c2977fa0281e09b842f59d7645315df768b16d320f0c5652f200",
+      "blob": "4b3285e91f2f852889469fb654a95493b44ea104",
+      "role": "source_bound_review_or_archive_verification",
+      "actual_object_verified": true
+    },
+    {
+      "repository_path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/b11-pr4884-ci/probe-127327372905/archive-parts-readback.json",
+      "local_file": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-pr4884-ci-20261105/terminal/probe-127327372905/archive-parts-readback.json",
+      "mode": "100644",
+      "bytes": 7342,
+      "sha256": "56202bd62e45a39e48fe7cd6a996d18c9db883ca8dfce5a4696088b0ea76a224",
+      "blob": "0647bcadd1088e7ee594e8a675ce2587d674f0bd",
+      "role": "source_bound_review_or_archive_verification",
+      "actual_object_verified": true
+    },
+    {
+      "repository_path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/b11-pr4884-ci/probe-127327372905/terminal-review.json",
+      "local_file": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-pr4884-ci-20261105/terminal/probe-127327372905/terminal-review.json",
+      "mode": "100644",
+      "bytes": 33414,
+      "sha256": "6ce9bbc3f227c73d52efe54c5fffb55206d034863e8377cbbfa95bf79b16bfe1",
+      "blob": "84df8d024986897f1b864b63d078ff5d5cbbd4cc",
+      "role": "source_bound_review_or_archive_verification",
+      "actual_object_verified": true
+    },
+    {
+      "repository_path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/b11-pr4884-ci/probe-127327372905/terminal-api-envelopes.json",
+      "local_file": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-pr4884-ci-20261105/terminal/probe-127327372905/terminal-api-envelopes.json",
+      "mode": "100644",
+      "bytes": 42481,
+      "sha256": "4abc1ee6ea7ee36e5a89aabb2b7d1437e64827ca700d5856c8e1b103da4d757b",
+      "blob": "517ab16eda5d10db0bd9a69ee9849a64fc1b7ee7",
+      "role": "original_bytes",
+      "actual_object_verified": true
+    },
+    {
+      "repository_path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/b11-pr4884-ci/probe-127336717141/archive-parts-manifest.json",
+      "local_file": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-pr4884-ci-20261105/terminal/probe-127336717141/archive-parts-manifest.json",
+      "mode": "100644",
+      "bytes": 11279,
+      "sha256": "b4f9205b74fa7954af8938aa31d81b0e32770939744d67ec0938141665f8ce40",
+      "blob": "3c0d19196e8f8eddb10a6038a1e5de2cc6467a2c",
+      "role": "source_bound_review_or_archive_verification",
+      "actual_object_verified": true
+    },
+    {
+      "repository_path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/b11-pr4884-ci/probe-127336717141/archive-parts-readback.json",
+      "local_file": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-pr4884-ci-20261105/terminal/probe-127336717141/archive-parts-readback.json",
+      "mode": "100644",
+      "bytes": 7342,
+      "sha256": "c94bdac320c1297d846235a8f82a15c9abd34798819528478178723c24ba0e16",
+      "blob": "0cd11b14688b974c6c7b847242632bbc0cade88c",
+      "role": "source_bound_review_or_archive_verification",
+      "actual_object_verified": true
+    },
+    {
+      "repository_path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/b11-pr4884-ci/probe-127336717141/terminal-review.json",
+      "local_file": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-pr4884-ci-20261105/terminal/probe-127336717141/terminal-review.json",
+      "mode": "100644",
+      "bytes": 34149,
+      "sha256": "5627dd670a75888d36612d16e0de31e7e2ff97ed38ee8d10f6910f990c4da405",
+      "blob": "44b5c4053f57babf58ed8ad9a3e1b5cd5734135e",
+      "role": "source_bound_review_or_archive_verification",
+      "actual_object_verified": true
+    },
+    {
+      "repository_path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/b11-pr4884-ci/probe-127336717141/terminal-api-envelopes.json",
+      "local_file": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-pr4884-ci-20261105/terminal/probe-127336717141/terminal-api-envelopes.json",
+      "mode": "100644",
+      "bytes": 91549,
+      "sha256": "2a6f31a1fe3d4c5922fce29cc4246414970ce98ad35a4d540bef46b0307ac524",
+      "blob": "3721d45450095d8ee5c97dbbd78dcdb4be80cec3",
+      "role": "original_bytes",
+      "actual_object_verified": true
+    }
+  ],
+  "readback_map": {
+    "local_file": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-pr4884-ci-20261105/native2-native3-actual-readback-map.json",
+    "bytes": 18772,
+    "sha256": "dfa1a397b453de5cc4a2c5724b4b4a6f64e1222a2ae9db7aed245c5eb9d7dff2",
+    "git_blob": "670eb1930f41a5a7328f37a6aa145ab2e4c7c743"
+  },
+  "limits": [
+    "Both real target failures retained; no diagnostic/strict-token qualification.",
+    "All 14+14 ZIP members preserved via 16+16 encoded raw ZIP chunks, with individual raw and encoded hashes and full CRC inventories.",
+    "Complete source-bound full job/test log and outer XML supplied independently; target XML is not 155 per-case records.",
+    "Timestamped workflow log failure tail reprints are not additional executions.",
+    "Contiguous status parser yields152 of155 for0d65 because of actual concurrent output interleaving; original summaries and all14 failure headers are intact. c05 has155 contiguous name/status rows."
+  ]
+}

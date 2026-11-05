@@ -1,0 +1,1180 @@
+{
+  "schema": "b13-original-platform-scoped-closure-independent-review-v1",
+  "created_at_utc": "2026-11-05T16:37:54.299938+00:00",
+  "verdict": "RECOMMEND_CLOSED_SCOPED_ORIGINAL_WINDOWS_LEASE_QUEUE_CONTRACT",
+  "root_acceptance_pending": true,
+  "original_exit_condition_zh": "原过期、quarantine、guardian、release=0、单发送及重启不重放断言全保留并在原平台通过。",
+  "scope": "Original Windows Lease/Queue fixture contract at exact5b/equal-tree merge9063; all9 frozen names have actual unignored PASS bodies. Not a five-platform all-pass or currenteed qualification.",
+  "source": {
+    "head": "5b6331250ff459033bd44d1a95daec70131277cc",
+    "checkout": "9063c52a063b6f26c48e9418f6d8dbd14e9e06ff",
+    "tree": "b26598d0d97d8d51e723bb5582137315f2174d35",
+    "leaf_manifest": {
+      "local_file": "/workspace/scratch/07dd58cc9630/hepta-audit-fifth/inputs/product-5b-full-leaf-manifest.json",
+      "bytes": 2262883,
+      "sha256": "b2deb3758d48bcec2a07eb9fe6678248af8683478d765806a3c19bb682dd07b2",
+      "git_blob": "ec157b75bbf716ac43b2f7027b2821e76142c5a9"
+    },
+    "fixed_sources": [
+      {
+        "archived_logical_source_path": "codex-rs/ext/queue/tests/queue_service.rs",
+        "local_file": "/workspace/scratch/07dd58cc9630/research-audit/published-5b633-ci-20261105/b13-closure-review/source/codex-rs/ext/queue/tests/queue_service.rs.source.txt",
+        "bytes": 103291,
+        "sha256": "daeba9fdbc373f696f5ec06dcc8dfa07a58f85df6faf9475c812e7314a23f42f",
+        "git_blob": "13afd7f2c536c5622fc7f8cc3fe68c0cc1a59cc1"
+      },
+      {
+        "archived_logical_source_path": "codex-rs/ext/queue/BUILD.bazel",
+        "local_file": "/workspace/scratch/07dd58cc9630/research-audit/published-5b633-ci-20261105/b13-closure-review/source/codex-rs/ext/queue/BUILD.bazel",
+        "bytes": 506,
+        "sha256": "b7610f80115d2c8dae38c28e8ed66c7bdcb9f21969a4a0c79fe572204d620c47",
+        "git_blob": "ece6922f7b389aa7b23336c34567955cf2755a89"
+      },
+      {
+        "archived_logical_source_path": "codex-rs/hepta-agentd/src/runtime_tests.rs",
+        "local_file": "/workspace/scratch/07dd58cc9630/research-audit/published-5b633-ci-20261105/b13-closure-review/source/codex-rs/hepta-agentd/src/runtime_tests.rs.source.txt",
+        "bytes": 38274,
+        "sha256": "dd57c70dc21e92d82ee609bd2f771413c57c189ac2cadd581af7bf47f634b972",
+        "git_blob": "31a41d8cad53ee3f04a1106e245dc5c3f4392a5b"
+      },
+      {
+        "archived_logical_source_path": "codex-rs/hepta-agentd/src/runtime.rs",
+        "local_file": "/workspace/scratch/07dd58cc9630/research-audit/published-5b633-ci-20261105/b13-closure-review/source/codex-rs/hepta-agentd/src/runtime.rs.source.txt",
+        "bytes": 21533,
+        "sha256": "b2eb80954a210d2f21ce93d40926b84f13d4859a6145c429ae0ec28b59ea5e41",
+        "git_blob": "7f7241d8d7b1ad978cd6a07db785f3b0e4af612d"
+      },
+      {
+        "archived_logical_source_path": "codex-rs/hepta-agentd/src/lib.rs",
+        "local_file": "/workspace/scratch/07dd58cc9630/research-audit/published-5b633-ci-20261105/b13-closure-review/source/codex-rs/hepta-agentd/src/lib.rs.source.txt",
+        "bytes": 14668,
+        "sha256": "b0d542c1a45293ca94b82712dc9c4ac65f65f662744230bf3eb0cee208df6d9e",
+        "git_blob": "3466e60a12138ae4816ace1531254312733e4175"
+      },
+      {
+        "archived_logical_source_path": "codex-rs/hepta-agentd/Cargo.toml",
+        "local_file": "/workspace/scratch/07dd58cc9630/research-audit/published-5b633-ci-20261105/b13-closure-review/source/codex-rs/hepta-agentd/Cargo.toml",
+        "bytes": 4837,
+        "sha256": "01695336f08194ee7c0fd991266ed0f05adcab6413af173501ceee18209aa8b9",
+        "git_blob": "d94042bddf8fcf785e2963a3acc90afcab3dbd69"
+      },
+      {
+        "archived_logical_source_path": "codex-rs/hepta-agentd/BUILD.bazel",
+        "local_file": "/workspace/scratch/07dd58cc9630/research-audit/published-5b633-ci-20261105/b13-closure-review/source/codex-rs/hepta-agentd/BUILD.bazel",
+        "bytes": 8491,
+        "sha256": "eb5ca96730ba01d5acf31d16cc0ce8bea580f5e5d56971a745cb12f5fba22773",
+        "git_blob": "f9354d8ecab6b3d026468301af83238493b09cb3"
+      }
+    ]
+  },
+  "original48_platform_association": [
+    {
+      "test": "completion_panic_retains_exact_authority_in_settlement_guardian",
+      "status_at_snapshot": "EXACT_NATIVE_PASS_ORIGINAL_PLATFORM_QUALIFICATION_PENDING",
+      "workstream": "queue_claim_setup",
+      "patch_refs": [
+        "queue_setup_lease"
+      ],
+      "original_platforms": [
+        "windows-shard3"
+      ],
+      "original_platform_gate": "PENDING",
+      "closed": false
+    }
+  ],
+  "original48_association_limit": "Only the guardian case among these nine belongs to the original48 union; its only recorded failed platform is windows-shard3. The other eight are supporting original contract regressions, not invented original48 failures.",
+  "broader_collection_plan_limit": "Historical Q05/Q06 requested five platform inventories. That evidence-collection plan is not an independently proven five-platform result. GNU/musl-label/Mac qualification remains separate; this recommendation closes only the original Windows failure and nine-case contract.",
+  "agentd_actual": {
+    "run_id": 41999114842,
+    "run_attempt": 1,
+    "job_id": 127339255880,
+    "artifact_id": 13431285250,
+    "archive": {
+      "local_file": "/workspace/scratch/07dd58cc9630/research-audit/published-5b633-ci-20261105/terminal/main-win-shard2-127339255880/artifact-13431285250/artifact.zip",
+      "bytes": 4967167,
+      "sha256": "d0dd2347f5be91ae1f445d21e892ea5d4559499dc8e2f71554ce0ce2bb93ba85",
+      "git_blob": "9b9fa486d7b33d003f9139ebce829f7afa982122"
+    },
+    "archive_members": 54,
+    "all_crc_and_member_hashes_verified": true,
+    "collector_source": {
+      "commit": "9063c52a063b6f26c48e9418f6d8dbd14e9e06ff",
+      "tracked_worktree_dirty": false,
+      "tree": "b26598d0d97d8d51e723bb5582137315f2174d35"
+    },
+    "collector_scope": "Existing local test.log/test.xml and test_attempts log/XML records for the allowlisted targets reported PASSED or FLAKY in this console; not failed-target-only evidence or a complete case/attempt inventory.",
+    "retention": {
+      "cached_marker": false,
+      "collect_existing_logs": true,
+      "status": "PASSED",
+      "summary_lines": [
+        "//codex-rs/hepta-agentd:hepta-agentd-cognitive-write-qualification-test  PASSED in 31.0s"
+      ]
+    },
+    "files": [
+      {
+        "member": "selected-target-test-logs/invocation-pj7csqys/targets/0003/test.log",
+        "archive_relative_path": "targets/0003/test.log",
+        "bytes": 584,
+        "sha256": "7a97dd8f0e8bd329bafa61e41c45f3f7f9bac9da58436afbfbd5fc10fa82f08b",
+        "source_mtime_ns": 1793893641634767600,
+        "target": "//codex-rs/hepta-agentd:hepta-agentd-cognitive-write-qualification-test",
+        "testlogs_relative_path": "codex-rs/hepta-agentd/hepta-agentd-cognitive-write-qualification-test/test.log",
+        "local_file": "/workspace/scratch/07dd58cc9630/research-audit/published-5b633-ci-20261105/b13-closure-review/originals/test.log",
+        "git_blob": "74ef3b10bf04a89798c0ec67a1369a6f949f71be"
+      },
+      {
+        "member": "selected-target-test-logs/invocation-pj7csqys/targets/0003/test.xml",
+        "archive_relative_path": "targets/0003/test.xml",
+        "bytes": 981,
+        "sha256": "07ed91678dd03e742362e3b1423b47f3e30b5fac13cbdd37c7724bf5df2f383b",
+        "source_mtime_ns": 1793893790908161600,
+        "target": "//codex-rs/hepta-agentd:hepta-agentd-cognitive-write-qualification-test",
+        "testlogs_relative_path": "codex-rs/hepta-agentd/hepta-agentd-cognitive-write-qualification-test/test.xml",
+        "local_file": "/workspace/scratch/07dd58cc9630/research-audit/published-5b633-ci-20261105/b13-closure-review/originals/test.xml",
+        "git_blob": "d53a86a73b11fc2b4960a81b09aec111e686c6ae"
+      }
+    ],
+    "exact_rows": [
+      {
+        "line_1based": 5,
+        "name": "runtime::tests::qualification_prepare_takes_over_expired_registry_head_without_evidence",
+        "result": "ok",
+        "physical_line": "test runtime::tests::qualification_prepare_takes_over_expired_registry_head_without_evidence ... ok"
+      },
+      {
+        "line_1based": 6,
+        "name": "runtime::tests::qualification_host_binds_one_local_turn_and_replays_exactly_once",
+        "result": "ok",
+        "physical_line": "test runtime::tests::qualification_host_binds_one_local_turn_and_replays_exactly_once ... ok"
+      },
+      {
+        "line_1based": 7,
+        "name": "runtime::tests::qualification_prepare_quarantines_expired_registry_attempt_with_h7_evidence",
+        "result": "ok",
+        "physical_line": "test runtime::tests::qualification_prepare_quarantines_expired_registry_attempt_with_h7_evidence ... ok"
+      }
+    ],
+    "summary": "3 passed;0 failed;0 ignored;172 filtered;30.56s",
+    "xml_scope": "One Bazel wrapper testcase, not three independent JUnit testcase nodes.",
+    "feature_scope": "Explicit existing Bazel wrapper enables production-cognitive-write and qualification-cognitive-write and selects runtime::tests::qualification_. Default Cargo feature absence does not negate this actual target run.",
+    "attempt_scope": "Only final test.log/test.xml exists for this target in the complete archive. No retries0 claim; existing Bazel retry/cache policy remains unchanged.",
+    "freshness_scope": "Console shows actual local test action and noncached31.0s target; collector source is clean equal-tree merge. mtime alone is not independent invocation attestation."
+  },
+  "queue_actual_source_and_merge": [
+    {
+      "role": "source",
+      "review": {
+        "local_file": "/workspace/scratch/07dd58cc9630/research-audit/published-5b633-ci-20261105/terminal/windows-gitqueue-source-127149583164/original-case-review.json",
+        "bytes": 32920,
+        "sha256": "40c116baeb2ee54c061f7dec2d3df866ef7a141848f31077519a74831c8135bc",
+        "git_blob": "8ac8043ed4c8db0c992379f5d6a917662927084c"
+      },
+      "api_head": "5b6331250ff459033bd44d1a95daec70131277cc",
+      "job_id": 127149583164,
+      "run_id": 41999114838,
+      "run_attempt": 1,
+      "checkout": "5b6331250ff459033bd44d1a95daec70131277cc",
+      "tree": "b26598d0d97d8d51e723bb5582137315f2174d35",
+      "source_original": {
+        "head": "5b6331250ff459033bd44d1a95daec70131277cc",
+        "tree": "b26598d0d97d8d51e723bb5582137315f2174d35",
+        "run_id": "41999114838",
+        "run_attempt": "1",
+        "platform": "Windows-2025Server-10.0.26100-SP0",
+        "cpu_count": 4,
+        "input_git_objects": "100644 blob 3d5877b283b887091af507f3672003f84c500687\t.bazelrc\n100644 blob 1904db189003cb0b559f71958518e33a45fb6bb7\tMODULE.bazel.lock\n100644 blob 71fc8fa78b5afa076835b29790a5e6b0bd772558\tcodex-rs/Cargo.lock\n100644 blob ece6922f7b389aa7b23336c34567955cf2755a89\tcodex-rs/ext/queue/BUILD.bazel\n100644 blob 13afd7f2c536c5622fc7f8cc3fe68c0cc1a59cc1\tcodex-rs/ext/queue/tests/queue_service.rs\n100644 blob 346fd3f8f4c6885b7fa1b688bd192531945f39d0\tcodex-rs/git-utils/BUILD.bazel\n100644 blob 3ce0431434d0c0e4bbde65eb68bce27cc572d9c6\tcodex-rs/git-utils/src/git_process.rs\n100644 blob 5cb1aab4e3f4727a59bd662fafab0b5ffb430a97\tcodex-rs/git-utils/src/git_process_tests.rs\n100644 blob b06035f72d227b4069da677e8104617ae5616283\tcodex-rs/utils/pty/src/win/job.rs\n100644 blob 6f588ec3057fddfea35170e28e74036162ce6a23\tdefs.bzl\n100644 blob fa18c301dd22ca9023ba2f59801a8119dfbf8a69\tworkspace_root_test_launcher.bat.tpl\n",
+        "inputs": {
+          ".bazelrc": "0a5924ef90c0df166fb23744c650e1721106a7af0717c4f693f814208657c822",
+          "defs.bzl": "22eaf0e2f909b007faf90f2b1700a9b3175106d59889cb3dfc65191bf71fb50e",
+          "workspace_root_test_launcher.bat.tpl": "18b3945fd54e6a6e8e3413ec465289ad53ea252caff9fa9f9bb0b9cdc30962e5",
+          "MODULE.bazel.lock": "97f844724549757398c7834f5818d6244819b129658bdaa8453008dc694bbfc4",
+          "codex-rs/Cargo.lock": "e0d6c75b8e46cbf3c8df62ca98d653144b796238be165155e1a2796cf372a49e",
+          "codex-rs/git-utils/BUILD.bazel": "29d7aeb0cbd9f282eecca996fd40a75428bb75936964b58d73a4f7967f50f688",
+          "codex-rs/git-utils/src/git_process.rs": "da7c71b4a257113ab2a63ff3d84648640732934357d04f70e50cda344b4dbead",
+          "codex-rs/git-utils/src/git_process_tests.rs": "1a26298796193903a0ac38672de11bd124384d1ea396b19d326669911d4b4647",
+          "codex-rs/ext/queue/BUILD.bazel": "918ee78665bd24d8c6fef4d3aa68e9d4d15356b65120c96833be828656592d02",
+          "codex-rs/ext/queue/tests/queue_service.rs": "faa7808afad7ddb01cb413983e19ba84faed071cd4d8bff967f36d0e2a42f5ad",
+          "codex-rs/utils/pty/src/win/job.rs": "112293607f90d6614ffab4c5499a0bbeff743e3b1e4885739ccff41c47d48d43"
+        },
+        "environment": {
+          "TEMP": "D:/tmp",
+          "TMP": "D:/tmp",
+          "BAZEL_OUTPUT_BASE": "D:/o",
+          "BAZEL_OUTPUT_USER_ROOT": "D:/b",
+          "RUST_TEST_THREADS": null
+        },
+        "scope": [
+          "//codex-rs/git-utils:git-utils-unit-tests",
+          "//codex-rs/ext/queue:queue-queue_service-test"
+        ],
+        "diagnostic_only": false,
+        "pre_test_powershell_probe": false
+      },
+      "selected_target": {
+        "target": "//codex-rs/ext/queue:queue-queue_service-test",
+        "log_identity": {
+          "bytes": 2852,
+          "sha256": "1ce6ba5d350483739a3f3f27acf913a32e1cade99914d0b9403772973eb3604e",
+          "computed_git_blob": "b95dd23411fb0b670268df345dc6750ef17e139e"
+        },
+        "xml_identity": {
+          "bytes": 3197,
+          "sha256": "b6141e7bd1471f6442ac9379187fa7b617bbcc8e01cabc9399458b33f4910832",
+          "computed_git_blob": "4b5920dacb2466fa44ee56445e9b3f2ee6aa1114"
+        },
+        "xml_scope": "one Bazel wrapper testcase, not the named Rust inventory",
+        "named_pass_occurrences": 36,
+        "distinct_names": 36,
+        "cases": [
+          {
+            "test": "capacity_rejection_preserves_the_admitted_client_identity",
+            "status": "ok",
+            "should_panic": false,
+            "line_1based": 5
+          },
+          {
+            "test": "conflicting_queued_client_ids_fail_closed_before_core_submission",
+            "status": "ok",
+            "should_panic": false,
+            "line_1based": 6
+          },
+          {
+            "test": "corrupt_rollout_blocks_queue_replay_and_preserves_the_item",
+            "status": "ok",
+            "should_panic": false,
+            "line_1based": 7
+          },
+          {
+            "test": "duplicate_queued_client_ids_dispatch_to_core_once",
+            "status": "ok",
+            "should_panic": false,
+            "line_1based": 8
+          },
+          {
+            "test": "completion_panic_retains_exact_authority_in_settlement_guardian",
+            "status": "ok",
+            "should_panic": false,
+            "line_1based": 9
+          },
+          {
+            "test": "editing_reordering_and_deleting_preserve_queue_identity",
+            "status": "ok",
+            "should_panic": false,
+            "line_1based": 10
+          },
+          {
+            "test": "exact_reconcile_conflicting_payload_fails_before_second_admission",
+            "status": "ok",
+            "should_panic": false,
+            "line_1based": 11
+          },
+          {
+            "test": "exact_reconcile_is_one_idempotent_queue_admission",
+            "status": "ok",
+            "should_panic": false,
+            "line_1based": 12
+          },
+          {
+            "test": "exact_and_legacy_bindings_for_the_same_turn_join_once",
+            "status": "ok",
+            "should_panic": false,
+            "line_1based": 13
+          },
+          {
+            "test": "exact_reconcile_rejects_expected_digest_drift_without_a_row",
+            "status": "ok",
+            "should_panic": false,
+            "line_1based": 14
+          },
+          {
+            "test": "caller_abort_after_core_started_keeps_exact_authority_until_persistence",
+            "status": "ok",
+            "should_panic": false,
+            "line_1based": 15
+          },
+          {
+            "test": "core_error_after_started_never_releases_ambiguous_dispatch",
+            "status": "ok",
+            "should_panic": false,
+            "line_1based": 16
+          },
+          {
+            "test": "interrupted_turns_pause_queued_messages_but_failed_turns_drain_them",
+            "status": "ok",
+            "should_panic": false,
+            "line_1based": 17
+          },
+          {
+            "test": "explicitly_started_rejected_queue_messages_remain_durable",
+            "status": "ok",
+            "should_panic": false,
+            "line_1based": 18
+          },
+          {
+            "test": "invalid_local_attachments_do_not_mutate_queue",
+            "status": "ok",
+            "should_panic": false,
+            "line_1based": 19
+          },
+          {
+            "test": "invalid_head_is_skipped_and_a_live_user_turn_is_accepted",
+            "status": "ok",
+            "should_panic": false,
+            "line_1based": 20
+          },
+          {
+            "test": "local_attachments_are_snapshotted_before_enqueue_and_update",
+            "status": "ok",
+            "should_panic": false,
+            "line_1based": 21
+          },
+          {
+            "test": "non_user_input_cannot_enter_the_user_message_queue",
+            "status": "ok",
+            "should_panic": false,
+            "line_1based": 22
+          },
+          {
+            "test": "legacy_client_id_without_payload_digest_is_readable_but_cannot_join",
+            "status": "ok",
+            "should_panic": false,
+            "line_1based": 23
+          },
+          {
+            "test": "persisted_admission_reconciles_compressed_rollout",
+            "status": "ok",
+            "should_panic": false,
+            "line_1based": 24
+          },
+          {
+            "test": "persisted_client_id_with_conflicting_payload_fails_closed_from_compressed_rollout",
+            "status": "ok",
+            "should_panic": false,
+            "line_1based": 25
+          },
+          {
+            "test": "queue_empty_observer_waits_for_owned_database_ack_after_turn_complete",
+            "status": "ok",
+            "should_panic": false,
+            "line_1based": 26
+          },
+          {
+            "test": "queued_input_and_unique_event_ids_round_trip",
+            "status": "ok",
+            "should_panic": false,
+            "line_1based": 27
+          },
+          {
+            "test": "queued_text_limit_is_enforced_across_all_input_items",
+            "status": "ok",
+            "should_panic": false,
+            "line_1based": 28
+          },
+          {
+            "test": "raw_queue_store_enqueue_cannot_bypass_reconcile_reservation",
+            "status": "ok",
+            "should_panic": false,
+            "line_1based": 29
+          },
+          {
+            "test": "queued_text_limit_counts_characters_and_ignores_non_text_items",
+            "status": "ok",
+            "should_panic": false,
+            "line_1based": 30
+          },
+          {
+            "test": "reserved_to_persisted_legacy_row_deletion_emits_queue_changed",
+            "status": "ok",
+            "should_panic": false,
+            "line_1based": 31
+          },
+          {
+            "test": "registered_queue_lifecycle_starts_messages_in_fifo_order",
+            "status": "ok",
+            "should_panic": false,
+            "line_1based": 32
+          },
+          {
+            "test": "resumed_idle_dispatches_input_without_a_loaded_manager",
+            "status": "ok",
+            "should_panic": false,
+            "line_1based": 33
+          },
+          {
+            "test": "same_client_id_bound_to_two_turns_is_ambiguous_and_fails_closed",
+            "status": "ok",
+            "should_panic": false,
+            "line_1based": 34
+          },
+          {
+            "test": "rollout_flush_before_dispatch_db_completion_recovers_without_resubmit",
+            "status": "ok",
+            "should_panic": false,
+            "line_1based": 35
+          },
+          {
+            "test": "rejected_queue_messages_remain_durable_and_block_followups",
+            "status": "ok",
+            "should_panic": false,
+            "line_1based": 36
+          },
+          {
+            "test": "starting_a_selected_item_preserves_the_remaining_queue",
+            "status": "ok",
+            "should_panic": false,
+            "line_1based": 37
+          },
+          {
+            "test": "starting_a_selected_item_while_active_leaves_it_queued",
+            "status": "ok",
+            "should_panic": false,
+            "line_1based": 38
+          },
+          {
+            "test": "two_queue_services_across_state_runtimes_submit_one_exact_binding",
+            "status": "ok",
+            "should_panic": false,
+            "line_1based": 39
+          },
+          {
+            "test": "externally_changed_queues_dispatch_independently_and_retry_failed_wakes",
+            "status": "ok",
+            "should_panic": false,
+            "line_1based": 40
+          }
+        ],
+        "summaries": [
+          {
+            "line_1based": 4,
+            "text": "running 36 tests"
+          },
+          {
+            "line_1based": 42,
+            "text": "test result: ok. 36 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 53.67s"
+          }
+        ]
+      },
+      "original_eight": [
+        {
+          "test": "completion_panic_retains_exact_authority_in_settlement_guardian",
+          "status": "ok",
+          "should_panic": false,
+          "line_1based": 9
+        },
+        {
+          "test": "caller_abort_after_core_started_keeps_exact_authority_until_persistence",
+          "status": "ok",
+          "should_panic": false,
+          "line_1based": 15
+        },
+        {
+          "test": "core_error_after_started_never_releases_ambiguous_dispatch",
+          "status": "ok",
+          "should_panic": false,
+          "line_1based": 16
+        },
+        {
+          "test": "queue_empty_observer_waits_for_owned_database_ack_after_turn_complete",
+          "status": "ok",
+          "should_panic": false,
+          "line_1based": 26
+        },
+        {
+          "test": "queued_input_and_unique_event_ids_round_trip",
+          "status": "ok",
+          "should_panic": false,
+          "line_1based": 27
+        },
+        {
+          "test": "reserved_to_persisted_legacy_row_deletion_emits_queue_changed",
+          "status": "ok",
+          "should_panic": false,
+          "line_1based": 31
+        },
+        {
+          "test": "rollout_flush_before_dispatch_db_completion_recovers_without_resubmit",
+          "status": "ok",
+          "should_panic": false,
+          "line_1based": 35
+        },
+        {
+          "test": "externally_changed_queues_dispatch_independently_and_retry_failed_wakes",
+          "status": "ok",
+          "should_panic": false,
+          "line_1based": 40
+        }
+      ],
+      "cache_and_retry_scope": "Original command disables cached test results. Build action cache hits are separate. No explicit flaky_test_attempts option is asserted; observed target statuses are PASS, with no FLAKY or retry member. The nested Git-utils child is not a retry.",
+      "workingtree_lock_encoding": "Original Windows hashes are retained; separate exact LF-to-CRLF review 75a12d82d7a830ede3a294a7649df1fb7d2d3f1f explains both locks. Git tree identity is not used to claim LF working bytes."
+    },
+    {
+      "role": "merge",
+      "review": {
+        "local_file": "/workspace/scratch/07dd58cc9630/research-audit/published-5b633-ci-20261105/terminal/windows-gitqueue-merge-127149583430/original-case-review.json",
+        "bytes": 32918,
+        "sha256": "3391b252cb193cd5f23560033bb964cce4767bb1d9b6159eccaf9c97d971b884",
+        "git_blob": "6d3c3c3df36621093de010723c53eb7564cdba64"
+      },
+      "api_head": "5b6331250ff459033bd44d1a95daec70131277cc",
+      "job_id": 127149583430,
+      "run_id": 41999114838,
+      "run_attempt": 1,
+      "checkout": "9063c52a063b6f26c48e9418f6d8dbd14e9e06ff",
+      "tree": "b26598d0d97d8d51e723bb5582137315f2174d35",
+      "source_original": {
+        "head": "9063c52a063b6f26c48e9418f6d8dbd14e9e06ff",
+        "tree": "b26598d0d97d8d51e723bb5582137315f2174d35",
+        "run_id": "41999114838",
+        "run_attempt": "1",
+        "platform": "Windows-2025Server-10.0.26100-SP0",
+        "cpu_count": 4,
+        "input_git_objects": "100644 blob 3d5877b283b887091af507f3672003f84c500687\t.bazelrc\n100644 blob 1904db189003cb0b559f71958518e33a45fb6bb7\tMODULE.bazel.lock\n100644 blob 71fc8fa78b5afa076835b29790a5e6b0bd772558\tcodex-rs/Cargo.lock\n100644 blob ece6922f7b389aa7b23336c34567955cf2755a89\tcodex-rs/ext/queue/BUILD.bazel\n100644 blob 13afd7f2c536c5622fc7f8cc3fe68c0cc1a59cc1\tcodex-rs/ext/queue/tests/queue_service.rs\n100644 blob 346fd3f8f4c6885b7fa1b688bd192531945f39d0\tcodex-rs/git-utils/BUILD.bazel\n100644 blob 3ce0431434d0c0e4bbde65eb68bce27cc572d9c6\tcodex-rs/git-utils/src/git_process.rs\n100644 blob 5cb1aab4e3f4727a59bd662fafab0b5ffb430a97\tcodex-rs/git-utils/src/git_process_tests.rs\n100644 blob b06035f72d227b4069da677e8104617ae5616283\tcodex-rs/utils/pty/src/win/job.rs\n100644 blob 6f588ec3057fddfea35170e28e74036162ce6a23\tdefs.bzl\n100644 blob fa18c301dd22ca9023ba2f59801a8119dfbf8a69\tworkspace_root_test_launcher.bat.tpl\n",
+        "inputs": {
+          ".bazelrc": "0a5924ef90c0df166fb23744c650e1721106a7af0717c4f693f814208657c822",
+          "defs.bzl": "22eaf0e2f909b007faf90f2b1700a9b3175106d59889cb3dfc65191bf71fb50e",
+          "workspace_root_test_launcher.bat.tpl": "18b3945fd54e6a6e8e3413ec465289ad53ea252caff9fa9f9bb0b9cdc30962e5",
+          "MODULE.bazel.lock": "97f844724549757398c7834f5818d6244819b129658bdaa8453008dc694bbfc4",
+          "codex-rs/Cargo.lock": "e0d6c75b8e46cbf3c8df62ca98d653144b796238be165155e1a2796cf372a49e",
+          "codex-rs/git-utils/BUILD.bazel": "29d7aeb0cbd9f282eecca996fd40a75428bb75936964b58d73a4f7967f50f688",
+          "codex-rs/git-utils/src/git_process.rs": "da7c71b4a257113ab2a63ff3d84648640732934357d04f70e50cda344b4dbead",
+          "codex-rs/git-utils/src/git_process_tests.rs": "1a26298796193903a0ac38672de11bd124384d1ea396b19d326669911d4b4647",
+          "codex-rs/ext/queue/BUILD.bazel": "918ee78665bd24d8c6fef4d3aa68e9d4d15356b65120c96833be828656592d02",
+          "codex-rs/ext/queue/tests/queue_service.rs": "faa7808afad7ddb01cb413983e19ba84faed071cd4d8bff967f36d0e2a42f5ad",
+          "codex-rs/utils/pty/src/win/job.rs": "112293607f90d6614ffab4c5499a0bbeff743e3b1e4885739ccff41c47d48d43"
+        },
+        "environment": {
+          "TEMP": "D:/tmp",
+          "TMP": "D:/tmp",
+          "BAZEL_OUTPUT_BASE": "D:/o",
+          "BAZEL_OUTPUT_USER_ROOT": "D:/b",
+          "RUST_TEST_THREADS": null
+        },
+        "scope": [
+          "//codex-rs/git-utils:git-utils-unit-tests",
+          "//codex-rs/ext/queue:queue-queue_service-test"
+        ],
+        "diagnostic_only": false,
+        "pre_test_powershell_probe": false
+      },
+      "selected_target": {
+        "target": "//codex-rs/ext/queue:queue-queue_service-test",
+        "log_identity": {
+          "bytes": 2852,
+          "sha256": "e87c54c72e024173bf6c033174851bb71a63559276c6a890ac036c8502eb11f9",
+          "computed_git_blob": "875b30a830eab67badfa927ba7f95f0cbeb92ed1"
+        },
+        "xml_identity": {
+          "bytes": 3197,
+          "sha256": "107aad21678f658bdf8f581416a2b1938b159018649db3e10dd475fe0d908b56",
+          "computed_git_blob": "ca1f679d6b439382ea34b92db5b2353ec8c40d9d"
+        },
+        "xml_scope": "one Bazel wrapper testcase, not the named Rust inventory",
+        "named_pass_occurrences": 36,
+        "distinct_names": 36,
+        "cases": [
+          {
+            "test": "capacity_rejection_preserves_the_admitted_client_identity",
+            "status": "ok",
+            "should_panic": false,
+            "line_1based": 5
+          },
+          {
+            "test": "conflicting_queued_client_ids_fail_closed_before_core_submission",
+            "status": "ok",
+            "should_panic": false,
+            "line_1based": 6
+          },
+          {
+            "test": "corrupt_rollout_blocks_queue_replay_and_preserves_the_item",
+            "status": "ok",
+            "should_panic": false,
+            "line_1based": 7
+          },
+          {
+            "test": "completion_panic_retains_exact_authority_in_settlement_guardian",
+            "status": "ok",
+            "should_panic": false,
+            "line_1based": 8
+          },
+          {
+            "test": "duplicate_queued_client_ids_dispatch_to_core_once",
+            "status": "ok",
+            "should_panic": false,
+            "line_1based": 9
+          },
+          {
+            "test": "editing_reordering_and_deleting_preserve_queue_identity",
+            "status": "ok",
+            "should_panic": false,
+            "line_1based": 10
+          },
+          {
+            "test": "exact_reconcile_conflicting_payload_fails_before_second_admission",
+            "status": "ok",
+            "should_panic": false,
+            "line_1based": 11
+          },
+          {
+            "test": "exact_and_legacy_bindings_for_the_same_turn_join_once",
+            "status": "ok",
+            "should_panic": false,
+            "line_1based": 12
+          },
+          {
+            "test": "exact_reconcile_is_one_idempotent_queue_admission",
+            "status": "ok",
+            "should_panic": false,
+            "line_1based": 13
+          },
+          {
+            "test": "exact_reconcile_rejects_expected_digest_drift_without_a_row",
+            "status": "ok",
+            "should_panic": false,
+            "line_1based": 14
+          },
+          {
+            "test": "caller_abort_after_core_started_keeps_exact_authority_until_persistence",
+            "status": "ok",
+            "should_panic": false,
+            "line_1based": 15
+          },
+          {
+            "test": "explicitly_started_rejected_queue_messages_remain_durable",
+            "status": "ok",
+            "should_panic": false,
+            "line_1based": 16
+          },
+          {
+            "test": "core_error_after_started_never_releases_ambiguous_dispatch",
+            "status": "ok",
+            "should_panic": false,
+            "line_1based": 17
+          },
+          {
+            "test": "invalid_local_attachments_do_not_mutate_queue",
+            "status": "ok",
+            "should_panic": false,
+            "line_1based": 18
+          },
+          {
+            "test": "interrupted_turns_pause_queued_messages_but_failed_turns_drain_them",
+            "status": "ok",
+            "should_panic": false,
+            "line_1based": 19
+          },
+          {
+            "test": "invalid_head_is_skipped_and_a_live_user_turn_is_accepted",
+            "status": "ok",
+            "should_panic": false,
+            "line_1based": 20
+          },
+          {
+            "test": "local_attachments_are_snapshotted_before_enqueue_and_update",
+            "status": "ok",
+            "should_panic": false,
+            "line_1based": 21
+          },
+          {
+            "test": "non_user_input_cannot_enter_the_user_message_queue",
+            "status": "ok",
+            "should_panic": false,
+            "line_1based": 22
+          },
+          {
+            "test": "legacy_client_id_without_payload_digest_is_readable_but_cannot_join",
+            "status": "ok",
+            "should_panic": false,
+            "line_1based": 23
+          },
+          {
+            "test": "persisted_client_id_with_conflicting_payload_fails_closed_from_compressed_rollout",
+            "status": "ok",
+            "should_panic": false,
+            "line_1based": 24
+          },
+          {
+            "test": "persisted_admission_reconciles_compressed_rollout",
+            "status": "ok",
+            "should_panic": false,
+            "line_1based": 25
+          },
+          {
+            "test": "queued_input_and_unique_event_ids_round_trip",
+            "status": "ok",
+            "should_panic": false,
+            "line_1based": 26
+          },
+          {
+            "test": "queue_empty_observer_waits_for_owned_database_ack_after_turn_complete",
+            "status": "ok",
+            "should_panic": false,
+            "line_1based": 27
+          },
+          {
+            "test": "queued_text_limit_is_enforced_across_all_input_items",
+            "status": "ok",
+            "should_panic": false,
+            "line_1based": 28
+          },
+          {
+            "test": "queued_text_limit_counts_characters_and_ignores_non_text_items",
+            "status": "ok",
+            "should_panic": false,
+            "line_1based": 29
+          },
+          {
+            "test": "raw_queue_store_enqueue_cannot_bypass_reconcile_reservation",
+            "status": "ok",
+            "should_panic": false,
+            "line_1based": 30
+          },
+          {
+            "test": "registered_queue_lifecycle_starts_messages_in_fifo_order",
+            "status": "ok",
+            "should_panic": false,
+            "line_1based": 31
+          },
+          {
+            "test": "reserved_to_persisted_legacy_row_deletion_emits_queue_changed",
+            "status": "ok",
+            "should_panic": false,
+            "line_1based": 32
+          },
+          {
+            "test": "resumed_idle_dispatches_input_without_a_loaded_manager",
+            "status": "ok",
+            "should_panic": false,
+            "line_1based": 33
+          },
+          {
+            "test": "same_client_id_bound_to_two_turns_is_ambiguous_and_fails_closed",
+            "status": "ok",
+            "should_panic": false,
+            "line_1based": 34
+          },
+          {
+            "test": "rollout_flush_before_dispatch_db_completion_recovers_without_resubmit",
+            "status": "ok",
+            "should_panic": false,
+            "line_1based": 35
+          },
+          {
+            "test": "rejected_queue_messages_remain_durable_and_block_followups",
+            "status": "ok",
+            "should_panic": false,
+            "line_1based": 36
+          },
+          {
+            "test": "starting_a_selected_item_while_active_leaves_it_queued",
+            "status": "ok",
+            "should_panic": false,
+            "line_1based": 37
+          },
+          {
+            "test": "starting_a_selected_item_preserves_the_remaining_queue",
+            "status": "ok",
+            "should_panic": false,
+            "line_1based": 38
+          },
+          {
+            "test": "two_queue_services_across_state_runtimes_submit_one_exact_binding",
+            "status": "ok",
+            "should_panic": false,
+            "line_1based": 39
+          },
+          {
+            "test": "externally_changed_queues_dispatch_independently_and_retry_failed_wakes",
+            "status": "ok",
+            "should_panic": false,
+            "line_1based": 40
+          }
+        ],
+        "summaries": [
+          {
+            "line_1based": 4,
+            "text": "running 36 tests"
+          },
+          {
+            "line_1based": 42,
+            "text": "test result: ok. 36 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 53.91s"
+          }
+        ]
+      },
+      "original_eight": [
+        {
+          "test": "completion_panic_retains_exact_authority_in_settlement_guardian",
+          "status": "ok",
+          "should_panic": false,
+          "line_1based": 8
+        },
+        {
+          "test": "caller_abort_after_core_started_keeps_exact_authority_until_persistence",
+          "status": "ok",
+          "should_panic": false,
+          "line_1based": 15
+        },
+        {
+          "test": "core_error_after_started_never_releases_ambiguous_dispatch",
+          "status": "ok",
+          "should_panic": false,
+          "line_1based": 17
+        },
+        {
+          "test": "queued_input_and_unique_event_ids_round_trip",
+          "status": "ok",
+          "should_panic": false,
+          "line_1based": 26
+        },
+        {
+          "test": "queue_empty_observer_waits_for_owned_database_ack_after_turn_complete",
+          "status": "ok",
+          "should_panic": false,
+          "line_1based": 27
+        },
+        {
+          "test": "reserved_to_persisted_legacy_row_deletion_emits_queue_changed",
+          "status": "ok",
+          "should_panic": false,
+          "line_1based": 32
+        },
+        {
+          "test": "rollout_flush_before_dispatch_db_completion_recovers_without_resubmit",
+          "status": "ok",
+          "should_panic": false,
+          "line_1based": 35
+        },
+        {
+          "test": "externally_changed_queues_dispatch_independently_and_retry_failed_wakes",
+          "status": "ok",
+          "should_panic": false,
+          "line_1based": 40
+        }
+      ],
+      "cache_and_retry_scope": "Original command disables cached test results. Build action cache hits are separate. No explicit flaky_test_attempts option is asserted; observed target statuses are PASS, with no FLAKY or retry member. The nested Git-utils child is not a retry.",
+      "workingtree_lock_encoding": "Original Windows hashes are retained; separate exact LF-to-CRLF review 75a12d82d7a830ede3a294a7649df1fb7d2d3f1f explains both locks. Git tree identity is not used to claim LF working bytes."
+    }
+  ],
+  "case_index": [
+    {
+      "name": "runtime::tests::qualification_prepare_quarantines_expired_registry_attempt_with_h7_evidence",
+      "target": "//codex-rs/hepta-agentd:hepta-agentd-cognitive-write-qualification-test",
+      "source_path": "codex-rs/hepta-agentd/src/runtime_tests.rs",
+      "source_line_start": 608,
+      "source_line_end": 807,
+      "preserved_contract": "Real 30-second setup lease; verify_current before releasing handles; sleep to its actual expiry; ExpiredActive; writer input is Err; exact expired head unchanged after H7 quarantine.",
+      "body_excerpt": "async fn qualification_prepare_quarantines_expired_registry_attempt_with_h7_evidence() {\n    let fixture = runtime_fixture();\n    attach_runtime_prerequisites(&fixture).await;\n    fixture\n        .registry\n        .compare_and_transition(\n            &fixture.identity.agent_id,\n            /*expected_generation*/ 1,\n            AgentLifecycle::Running,\n        )\n        .expect(\"running generation\");\n    fixture.state.refresh_generation().expect(\"refresh running\");\n    fixture\n        .state\n        .mark_app_server_ready()\n        .expect(\"mark App Server ready\");\n\n    let store = Arc::new(\n        CognitiveStore::open(&fixture.identity.layout)\n            .await\n            .expect(\"open cognitive store\"),\n    );\n    let fleet_generation = fixture\n        .state\n        .qualification_turn_authority()\n        .expect(\"qualification authority\");\n    let turn_id = \"turn:agentd-expired-terminal\";\n    let spawn_generation = fixture.identity.spawn_generation;\n    let logical = LogicalTurnRequest::new(\n        format!(\"qualification:logical:{turn_id}\"),\n        \"qualification:local\",\n        Sha256Digest::for_bytes(format!(\"qualification:logical-binding:v1:{turn_id}\").as_bytes()),\n    )\n    .expect(\"logical request\");\n    // The real bound writes must finish while the setup lease is live. Expiry\n    // is exercised afterward against its actual deadline, not a setup race.\n    const SETUP_LEASE_TTL_SECONDS: u64 = 30;\n    let expires_at = SystemTime::now()\n        .duration_since(UNIX_EPOCH)\n        .expect(\"clock\")\n        .as_secs()\n        .checked_add(SETUP_LEASE_TTL_SECONDS)\n        .expect(\"setup lease expiry\");\n    let old = LogicalTurnAttemptRequest::new(\n        \"seed-terminal-attempt\",\n        \"seed-terminal-lease\",\n        \"seed-terminal-journal\",\n        \"seed-terminal-trajectory\",\n        \"seed-terminal-occurrence\",\n        /*authority_epoch*/ 1,\n        fleet_generation,\n        /*generation*/ 1,\n        \"seed-terminal-fence\",\n        expires_at,\n    )\n    .expect(\"terminal attempt request\");\n    let reservation = store\n        .reserve_or_replay_logical_turn(logical, old)\n        .await\n        .expect(\"seed registry attempt\");\n    let codex_hepta_memory::LogicalTurnReservation::Acquired { attempt } = reservation else {\n        panic!(\"seed must acquire registry attempt\")\n    };\n    let head = store\n        .inspect_local_lease_head(&attempt.lease_id)\n        .await\n        .expect(\"inspect seeded head\")\n        .head\n        .expect(\"seeded head\");\n    let lease = store\n        .reopen_host_bound_lease(\n            head,\n            attempt.authority_epoch,\n            attempt.owner_epoch,\n            attempt.lease_expires_at_unix_seconds,\n        )\n        .await\n        .expect(\"reopen seeded lease\");\n    let fence = CompactFence::new(\n        attempt.authority_epoch,\n        attempt.owner_epoch,\n        attempt.generation,\n        attempt.fencing_token.clone(),\n    )\n    .expect(\"compact fence\");\n    let executor = store\n        .open_local_compact_executor_bound(attempt.journal_id.clone(), fence, &lease)\n        .await\n        .expect(\"open compact executor\");\n    let binding =\n        LocalTurnLifecycleBinding::from_handles(turn_id, &lease, &executor).expect(\"binding\");\n    let payload = r#\"{\"schema_version\":1,\"external_effect\":false,\"kg_write_authority\":false,\"production_caller\":false}\"#;\n    let receipt = match lease\n        .admit(\n            attempt.occurrence_key.clone(),\n            \"codex.turn.qualification.start.v1\",\n            payload,\n        )\n        .await\n        .expect(\"admit local intent\")\n    {\n        LocalAdmission::Queued(receipt) | LocalAdmission::Replay(receipt) => receipt,\n    };\n    let trajectory_id = attempt.trajectory_id.clone();\n    let start = H7TrajectoryRecord::new(\n        trajectory_id.clone(),\n        /*event_seq*/ 1,\n        format!(\"{trajectory_id}:event:turn-start\"),\n        H7TrajectoryEventKind::TurnStart,\n        turn_id,\n        attempt.occurrence_key.clone(),\n        /*causal_parent_seq*/ None,\n        /*causal_parent_sha256*/ None,\n        Sha256Digest::for_bytes(payload.as_bytes()),\n        Sha256Digest::for_bytes(b\"qualification:observation-only-policy:v1\"),\n        Sha256Digest::for_bytes(b\"qualification:model-receipt:not-applicable:v1\"),\n        h7_trajectory_local_receipt_digest(&receipt),\n        \"turn_started\",\n        /*reward_bps*/ 0,\n        /*safety_ok*/ true,\n        r#\"{\"source\":\"qualification_turn_writer\"}\"#,\n        \"not_applicable\",\n    )\n    .expect(\"start trajectory\");\n    let H7TrajectoryAppend::Inserted {\n        event_sha256: parent,\n        ..\n    } = append_h7_trajectory_event_bound(&lease, &executor, &binding, &start)\n        .await\n        .expect(\"append H7 start\")\n    else {\n        panic!(\"start must be inserted\")\n    };\n    let terminal = H7TrajectoryRecord::terminal(\n        trajectory_id.clone(),\n        /*event_seq*/ 2,\n        format!(\"{trajectory_id}:event:terminal:stop\"),\n        turn_id,\n        format!(\"{}:terminal\", attempt.occurrence_key),\n        /*causal_parent_seq*/ 1,\n        parent,\n        Sha256Digest::for_bytes(b\"terminal-state\"),\n        Sha256Digest::for_bytes(b\"qualification:observation-only-policy:v1\"),\n        Sha256Digest::for_bytes(b\"qualification:model-receipt:not-applicable:v1\"),\n        Sha256Digest::for_bytes(b\"terminal-receipt\"),\n        \"turn_stopped\",\n        \"turn_stopped\",\n        r#\"{\"source\":\"qualification_turn_writer\",\"terminal_action\":\"stop\"}\"#,\n    )\n    .expect(\"terminal trajectory\");\n    append_h7_trajectory_event_bound(&lease, &executor, &binding, &terminal)\n        .await\n        .expect(\"append H7 terminal\");\n    lease\n        .verify_current()\n        .await\n        .expect(\"bound H7 setup must complete under a live lease\");\n    drop(binding);\n    drop(executor);\n    drop(lease);\n    let remaining = (UNIX_EPOCH + Duration::from_secs(expires_at))\n        .duration_since(SystemTime::now())\n        .unwrap_or_default();\n    tokio::time::sleep(remaining).await;\n    let expired = store\n        .inspect_local_lease_head(&attempt.lease_id)\n        .await\n        .expect(\"inspect expired fixture head\");\n    assert_eq!(\n        expired.disposition,\n        LocalLeaseHeadDisposition::ExpiredActive,\n        \"qualification prepare must observe an already-expired active head\"\n    );\n\n    let result = prepare_qualification_turn_writer_input(\n        Arc::clone(&fixture.state),\n        Arc::clone(&store),\n        fixture.identity.agent_id.clone(),\n        spawn_generation,\n        turn_id.to_string(),\n    )\n    .await;\n    assert!(\n        result.is_err(),\n        \"terminal recovery returns no writable input\"\n    );\n    let inspected = store\n        .inspect_local_lease_head(&attempt.lease_id)\n        .await\n        .expect(\"inspect recovered head\");\n    assert_eq!(\n        inspected.disposition,\n        LocalLeaseHeadDisposition::ExpiredActive,\n        \"registry-backed H7 quarantine must not mutate the active registry head\"\n    );\n    assert_eq!(\n        inspected, expired,\n        \"quarantine must preserve the exact head\"\n    );\n}",
+      "current_windows_result": "ok",
+      "original48_entry": null
+    },
+    {
+      "name": "caller_abort_after_core_started_keeps_exact_authority_until_persistence",
+      "target": "//codex-rs/ext/queue:queue-queue_service-test",
+      "source_path": "codex-rs/ext/queue/tests/queue_service.rs",
+      "source_line_start": 884,
+      "source_line_end": 993,
+      "preserved_contract": "Abort the actual caller after hook entry; competitor remains DispatchInProgress after 400ms; zero then exactly one provider request and one persisted stable client message.",
+      "body_excerpt": "async fn caller_abort_after_core_started_keeps_exact_authority_until_persistence()\n-> anyhow::Result<()> {\n    let server = start_mock_server().await;\n    let response =\n        responses::mount_sse_once(&server, responses::sse_completed(\"one-cancel-safe-owner\")).await;\n    let test = test_codex()\n        .with_pre_build_hook(write_blocking_prompt_hook)\n        .with_config(trust_discovered_hooks)\n        .with_config(|config| config.include_environment_context = false)\n        .build_with_auto_env(&server)\n        .await?;\n    let thread_id = test.session_configured.thread_id;\n    let primary_runtime = test.codex.state_db().context(\"state runtime unavailable\")?;\n    let competing_runtime = StateRuntime::init(\n        primary_runtime.sqlite().clone(),\n        \"test-provider\".to_string(),\n    )\n    .await?;\n    let owner_queue: Arc<dyn QueueStore> =\n        Arc::new(FailDeleteOnceQueueStore::with_short_dispatch_lease(\n            LocalQueueStore::new(Arc::clone(&primary_runtime)),\n        ));\n    let competing_queue: Arc<dyn QueueStore> = Arc::new(LocalQueueStore::new(competing_runtime));\n    let owner = Arc::new(QueuedItemService::new(\n        Arc::clone(&owner_queue),\n        Arc::downgrade(&test.thread_manager),\n        Arc::new(NoopExtensionEventSink),\n    ));\n    let competitor = QueuedItemService::new(\n        competing_queue,\n        Arc::downgrade(&test.thread_manager),\n        Arc::new(NoopExtensionEventSink),\n    );\n    let input = structured_user_input(\"delay exact persistence\");\n    let TurnInput::UserInput { content, .. } = &input else {\n        unreachable!(\"test input is user input\");\n    };\n    let digest = user_input_payload_sha256(content)?;\n    let admitted = owner\n        .reconcile(\n            thread_id,\n            test.codex.rollout_path(),\n            input,\n            digest,\n            QueueReconcileMode::AllowIfAbsent,\n        )\n        .await?;\n    let QueueReconcileOutcome::Queued { item, .. } = admitted.outcome else {\n        anyhow::bail!(\"exact Matrix input was not queued\");\n    };\n\n    let owner_start = tokio::spawn({\n        let owner = Arc::clone(&owner);\n        let codex = Arc::clone(&test.codex);\n        let queued_item_id = item.id.clone();\n        async move {\n            owner\n                .start(codex.as_ref(), Some(queued_item_id), None)\n                .await\n        }\n    });\n    let entered = test\n        .codex_home_path()\n        .join(\"queue_blocking_prompt_hook.entered\");\n    let release = test\n        .codex_home_path()\n        .join(\"queue_blocking_prompt_hook.release\");\n    wait_for_path(&entered).await?;\n    owner_start.abort();\n    let aborted = owner_start\n        .await\n        .expect_err(\"caller task must be cancelled\");\n    assert!(aborted.is_cancelled());\n\n    tokio::time::sleep(Duration::from_millis(400)).await;\n    let competing = competitor\n        .start(test.codex.as_ref(), Some(item.id.clone()), None)\n        .await\n        .expect_err(\"expired SQLite time alone must not bypass the owned process lock\");\n    assert!(matches!(\n        competing,\n        QueueServiceError::DispatchInProgress { .. }\n    ));\n    assert_eq!(0, response.requests().len());\n\n    fs::write(&release, b\"release\")?;\n    wait_for_event_match(test.codex.as_ref(), |event| {\n        matches!(event, EventMsg::TurnComplete(_)).then_some(())\n    })\n    .await;\n    tokio::time::timeout(Duration::from_secs(10), async {\n        loop {\n            if competitor\n                .list(thread_id)\n                .await\n                .is_ok_and(|items| items.is_empty())\n            {\n                return;\n            }\n            tokio::time::sleep(Duration::from_millis(20)).await;\n        }\n    })\n    .await?;\n    assert_eq!(1, response.requests().len());\n    assert_eq!(\n        1,\n        persisted_client_message_count(test.codex.as_ref(), \"stable-client-message\").await?\n    );\n    Ok(())\n}",
+      "current_windows_result": "ok",
+      "original48_entry": null
+    },
+    {
+      "name": "completion_panic_retains_exact_authority_in_settlement_guardian",
+      "target": "//codex-rs/ext/queue:queue-queue_service-test",
+      "source_path": "codex-rs/ext/queue/tests/queue_service.rs",
+      "source_line_start": 1098,
+      "source_line_end": 1207,
+      "preserved_contract": "Injected completion panic is surfaced; completion guardian keeps physical process ownership past expiry; release_count=0; exactly one request and one persisted message after completion.",
+      "body_excerpt": "async fn completion_panic_retains_exact_authority_in_settlement_guardian() -> anyhow::Result<()> {\n    let server = start_mock_server().await;\n    let response =\n        responses::mount_sse_once(&server, responses::sse_completed(\"panic-safe-owner\")).await;\n    let test = test_codex()\n        .with_history_mode(ThreadHistoryMode::Paginated)\n        .with_config(|config| config.include_environment_context = false)\n        .build_with_auto_env(&server)\n        .await?;\n    let thread_id = test.session_configured.thread_id;\n    let primary_runtime = test.codex.state_db().context(\"state runtime unavailable\")?;\n    let competing_runtime = StateRuntime::init(\n        primary_runtime.sqlite().clone(),\n        \"test-provider\".to_string(),\n    )\n    .await?;\n    let owner_store = Arc::new(FailDeleteOnceQueueStore::panic_then_block_completion(\n        LocalQueueStore::new(Arc::clone(&primary_runtime)),\n    ));\n    let owner_queue: Arc<dyn QueueStore> = owner_store.clone();\n    let competing_queue: Arc<dyn QueueStore> = Arc::new(LocalQueueStore::new(competing_runtime));\n    let owner = QueuedItemService::new(\n        owner_queue,\n        Arc::downgrade(&test.thread_manager),\n        Arc::new(NoopExtensionEventSink),\n    );\n    let competitor = QueuedItemService::new(\n        competing_queue,\n        Arc::downgrade(&test.thread_manager),\n        Arc::new(NoopExtensionEventSink),\n    );\n    let input = structured_user_input(\"panic after exact admission\");\n    let TurnInput::UserInput { content, .. } = &input else {\n        unreachable!(\"test input is user input\");\n    };\n    let digest = user_input_payload_sha256(content)?;\n    let admitted = owner\n        .reconcile(\n            thread_id,\n            test.codex.rollout_path(),\n            input,\n            digest,\n            QueueReconcileMode::AllowIfAbsent,\n        )\n        .await?;\n    let QueueReconcileOutcome::Queued { item, .. } = admitted.outcome else {\n        anyhow::bail!(\"exact Matrix input was not queued\");\n    };\n\n    let error = owner\n        .start(test.codex.as_ref(), Some(item.id.clone()), None)\n        .await\n        .expect_err(\"completion panic must be surfaced without dropping authority\");\n    assert!(\n        matches!(\n            error,\n            QueueServiceError::Storage(ThreadStoreError::Internal { ref message })\n                if message.contains(\"completion task failed ambiguously\")\n        ),\n        \"unexpected completion panic error: {error:?}\"\n    );\n\n    tokio::time::timeout(Duration::from_secs(10), async {\n        while owner_store.complete_attempts.load(Ordering::SeqCst) < 2 {\n            tokio::time::sleep(Duration::from_millis(10)).await;\n        }\n    })\n    .await?;\n    tokio::time::sleep(Duration::from_millis(400)).await;\n    let competing = competitor\n        .start(test.codex.as_ref(), Some(item.id.clone()), None)\n        .await\n        .expect_err(\"lease expiry must not bypass the panic guardian's process lock\");\n    assert!(matches!(\n        competing,\n        QueueServiceError::DispatchInProgress { .. }\n    ));\n    assert_eq!(\n        0,\n        owner_store.release_count.load(Ordering::SeqCst),\n        \"panic settlement must never release ambiguous authority\"\n    );\n\n    owner_store\n        .allow_blocked_complete\n        .store(true, Ordering::SeqCst);\n    tokio::time::timeout(Duration::from_secs(10), async {\n        loop {\n            if owner\n                .list(thread_id)\n                .await\n                .is_ok_and(|items| items.is_empty())\n            {\n                break;\n            }\n            tokio::time::sleep(Duration::from_millis(20)).await;\n        }\n    })\n    .await?;\n    wait_for_event_match(test.codex.as_ref(), |event| {\n        matches!(event, EventMsg::TurnComplete(_)).then_some(())\n    })\n    .await;\n    assert_eq!(1, response.requests().len());\n    assert_eq!(\n        1,\n        persisted_client_message_count(test.codex.as_ref(), \"stable-client-message\").await?\n    );\n    Ok(())\n}",
+      "current_windows_result": "ok",
+      "original48_entry": {
+        "test": "completion_panic_retains_exact_authority_in_settlement_guardian",
+        "status_at_snapshot": "EXACT_NATIVE_PASS_ORIGINAL_PLATFORM_QUALIFICATION_PENDING",
+        "workstream": "queue_claim_setup",
+        "patch_refs": [
+          "queue_setup_lease"
+        ],
+        "original_platforms": [
+          "windows-shard3"
+        ],
+        "original_platform_gate": "PENDING",
+        "closed": false
+      }
+    },
+    {
+      "name": "core_error_after_started_never_releases_ambiguous_dispatch",
+      "target": "//codex-rs/ext/queue:queue-queue_service-test",
+      "source_path": "codex-rs/ext/queue/tests/queue_service.rs",
+      "source_line_start": 996,
+      "source_line_end": 1095,
+      "preserved_contract": "Delayed actual hook rejects admitted Core task; exact CoreSubmissionError; release_count=0; queued binding unchanged; no provider request; competing dispatch remains refused after expiry.",
+      "body_excerpt": "async fn core_error_after_started_never_releases_ambiguous_dispatch() -> anyhow::Result<()> {\n    let server = start_mock_server().await;\n    let response =\n        responses::mount_sse_once(&server, responses::sse_completed(\"must-not-run\")).await;\n    let test = test_codex()\n        .with_pre_build_hook(write_blocking_prompt_hook)\n        .with_config(trust_discovered_hooks)\n        .with_config(|config| config.include_environment_context = false)\n        .build_with_auto_env(&server)\n        .await?;\n    let thread_id = test.session_configured.thread_id;\n    let primary_runtime = test.codex.state_db().context(\"state runtime unavailable\")?;\n    let competing_runtime = StateRuntime::init(\n        primary_runtime.sqlite().clone(),\n        \"test-provider\".to_string(),\n    )\n    .await?;\n    let owner_store = Arc::new(FailDeleteOnceQueueStore::with_short_dispatch_lease(\n        LocalQueueStore::new(Arc::clone(&primary_runtime)),\n    ));\n    let owner_queue: Arc<dyn QueueStore> = owner_store.clone();\n    let competing_queue: Arc<dyn QueueStore> = Arc::new(LocalQueueStore::new(competing_runtime));\n    let owner = Arc::new(QueuedItemService::new(\n        owner_queue,\n        Arc::downgrade(&test.thread_manager),\n        Arc::new(NoopExtensionEventSink),\n    ));\n    let competitor = QueuedItemService::new(\n        competing_queue,\n        Arc::downgrade(&test.thread_manager),\n        Arc::new(NoopExtensionEventSink),\n    );\n    let input = structured_user_input(\"delay exact rejection\");\n    let TurnInput::UserInput { content, .. } = &input else {\n        unreachable!(\"test input is user input\");\n    };\n    let digest = user_input_payload_sha256(content)?;\n    let admitted = owner\n        .reconcile(\n            thread_id,\n            test.codex.rollout_path(),\n            input,\n            digest,\n            QueueReconcileMode::AllowIfAbsent,\n        )\n        .await?;\n    let QueueReconcileOutcome::Queued { item, .. } = admitted.outcome else {\n        anyhow::bail!(\"exact Matrix input was not queued\");\n    };\n\n    let owner_start = tokio::spawn({\n        let owner = Arc::clone(&owner);\n        let codex = Arc::clone(&test.codex);\n        let queued_item_id = item.id.clone();\n        async move {\n            owner\n                .start(codex.as_ref(), Some(queued_item_id), None)\n                .await\n        }\n    });\n    let entered = test\n        .codex_home_path()\n        .join(\"queue_blocking_prompt_hook.entered\");\n    let release = test\n        .codex_home_path()\n        .join(\"queue_blocking_prompt_hook.release\");\n    wait_for_path(&entered).await?;\n    tokio::time::sleep(Duration::from_millis(400)).await;\n    let competing = competitor\n        .start(test.codex.as_ref(), Some(item.id.clone()), None)\n        .await\n        .expect_err(\"expired SQLite lease must not bypass active Core ownership\");\n    assert!(matches!(\n        competing,\n        QueueServiceError::DispatchInProgress { .. }\n    ));\n\n    fs::write(&release, b\"release\")?;\n    let error = tokio::time::timeout(Duration::from_secs(10), owner_start)\n        .await??\n        .expect_err(\"the delayed hook must reject the started Core task\");\n    assert!(matches!(error, QueueServiceError::CoreSubmissionError(_)));\n    assert_eq!(\n        0,\n        owner_store.release_count.load(Ordering::SeqCst),\n        \"an ambiguous Core error must leave the binding dispatching\"\n    );\n    assert_eq!(vec![item.clone()], owner.list(thread_id).await?);\n    assert!(response.requests().is_empty());\n    tokio::time::sleep(Duration::from_millis(400)).await;\n    let competing = competitor\n        .start(test.codex.as_ref(), Some(item.id.clone()), None)\n        .await\n        .expect_err(\"an ambiguous Core error must retain the process fence beyond lease expiry\");\n    assert!(matches!(\n        competing,\n        QueueServiceError::DispatchInProgress { .. }\n    ));\n    Ok(())\n}",
+      "current_windows_result": "ok",
+      "original48_entry": null
+    },
+    {
+      "name": "rollout_flush_before_dispatch_db_completion_recovers_without_resubmit",
+      "target": "//codex-rs/ext/queue:queue-queue_service-test",
+      "source_path": "codex-rs/ext/queue/tests/queue_service.rs",
+      "source_line_start": 1270,
+      "source_line_end": 1345,
+      "preserved_contract": "Injected crash-window completion error after durable rollout; reopen actual SQLite runtime; recover without resubmission; exactly one request and one persisted message.",
+      "body_excerpt": "async fn rollout_flush_before_dispatch_db_completion_recovers_without_resubmit()\n-> anyhow::Result<()> {\n    let server = start_mock_server().await;\n    let response =\n        responses::mount_sse_once(&server, responses::sse_completed(\"persisted-before-crash\"))\n            .await;\n    let test = test_codex()\n        .with_history_mode(ThreadHistoryMode::Paginated)\n        .with_config(|config| config.include_environment_context = false)\n        .build_with_auto_env(&server)\n        .await?;\n    let thread_id = test.session_configured.thread_id;\n    let runtime = test.codex.state_db().context(\"state runtime unavailable\")?;\n    let crash_queue: Arc<dyn QueueStore> =\n        Arc::new(FailDeleteOnceQueueStore::crash_after_rollout_flush(\n            LocalQueueStore::new(Arc::clone(&runtime)),\n        ));\n    let crashing = QueuedItemService::new(\n        crash_queue,\n        Arc::downgrade(&test.thread_manager),\n        Arc::new(NoopExtensionEventSink),\n    );\n    let input = structured_user_input(\"rollout durable before DB CAS\");\n    let TurnInput::UserInput { content, .. } = &input else {\n        unreachable!(\"test input is user input\");\n    };\n    let digest = user_input_payload_sha256(content)?;\n    let admitted = crashing\n        .reconcile(\n            thread_id,\n            test.codex.rollout_path(),\n            input,\n            digest,\n            QueueReconcileMode::AllowIfAbsent,\n        )\n        .await?;\n    let QueueReconcileOutcome::Queued { item, .. } = admitted.outcome else {\n        anyhow::bail!(\"exact Matrix input was not queued\");\n    };\n\n    let error = crashing\n        .start(test.codex.as_ref(), Some(item.id.clone()), None)\n        .await\n        .expect_err(\"fault must interrupt after Core persisted admission\");\n    assert!(\n        matches!(\n            error,\n            QueueServiceError::Storage(ThreadStoreError::Internal { .. })\n        ),\n        \"unexpected crash-window error: {error:?}\"\n    );\n    wait_for_event_match(test.codex.as_ref(), |event| {\n        matches!(event, EventMsg::TurnComplete(_)).then_some(())\n    })\n    .await;\n    tokio::time::sleep(Duration::from_millis(300)).await;\n\n    let restarted_runtime =\n        StateRuntime::init(runtime.sqlite().clone(), \"test-provider\".to_string()).await?;\n    let restarted = QueuedItemService::new(\n        Arc::new(LocalQueueStore::new(restarted_runtime)),\n        Arc::downgrade(&test.thread_manager),\n        Arc::new(NoopExtensionEventSink),\n    );\n    let recovered = restarted\n        .start(test.codex.as_ref(), Some(item.id), None)\n        .await?;\n    assert!(matches!(recovered, StartIfIdleSubmission::Started { .. }));\n    assert!(restarted.list(thread_id).await?.is_empty());\n    assert_eq!(1, response.requests().len());\n    assert_eq!(\n        1,\n        persisted_client_message_count(test.codex.as_ref(), \"stable-client-message\").await?\n    );\n    Ok(())\n}",
+      "current_windows_result": "ok",
+      "original48_entry": null
+    },
+    {
+      "name": "queued_input_and_unique_event_ids_round_trip",
+      "target": "//codex-rs/ext/queue:queue-queue_service-test",
+      "source_path": "codex-rs/ext/queue/tests/queue_service.rs",
+      "source_line_start": 710,
+      "source_line_end": 752,
+      "preserved_contract": "Exact structured input/list round trip; generated UUIDv7 client identity; exactly two queue-change events with distinct IDs and correct thread identity.",
+      "body_excerpt": "async fn queued_input_and_unique_event_ids_round_trip() -> anyhow::Result<()> {\n    let (queue, _home) = test_queue().await?;\n    let sink = Arc::new(RecordingEventSink::default());\n    let event_sink: Arc<dyn ExtensionEventSink> = sink.clone();\n    let service = QueuedItemService::new(queue, Weak::new(), event_sink);\n    let thread_id = ThreadId::new();\n    let input = structured_user_input(\"structured message\");\n\n    let first = service.enqueue(thread_id, input.clone()).await?;\n    let second = service.enqueue(thread_id, user_input(\"next\")).await?;\n    let TurnInput::UserInput {\n        client_id: Some(generated_client_id),\n        ..\n    } = &second.input\n    else {\n        anyhow::bail!(\"queued message did not receive a client message id\");\n    };\n    assert_eq!(\n        7,\n        uuid::Uuid::parse_str(generated_client_id)?.get_version_num()\n    );\n    assert_eq!(\n        vec![first.clone(), second.clone()],\n        service.list(thread_id).await?\n    );\n    assert_eq!(input, first.input);\n\n    {\n        let events = sink\n            .events\n            .lock()\n            .unwrap_or_else(std::sync::PoisonError::into_inner);\n        assert_eq!(2, events.len());\n        for event in events.iter() {\n            let EventMsg::ThreadQueueChanged(change) = &event.msg else {\n                anyhow::bail!(\"event is not a queue change\");\n            };\n            assert_eq!(change.thread_id, thread_id);\n        }\n        assert_ne!(events[0].id, events[1].id);\n    }\n    Ok(())\n}",
+      "current_windows_result": "ok",
+      "original48_entry": null
+    },
+    {
+      "name": "reserved_to_persisted_legacy_row_deletion_emits_queue_changed",
+      "target": "//codex-rs/ext/queue:queue-queue_service-test",
+      "source_path": "codex-rs/ext/queue/tests/queue_service.rs",
+      "source_line_start": 1210,
+      "source_line_end": 1267,
+      "preserved_contract": "Persist a real turn before adopting a legacy queue row; reconciliation is Persisted, queue empty, one queue-change and one provider request.",
+      "body_excerpt": "async fn reserved_to_persisted_legacy_row_deletion_emits_queue_changed() -> anyhow::Result<()> {\n    let server = start_mock_server().await;\n    let response =\n        responses::mount_sse_once(&server, responses::sse_completed(\"already-persisted\")).await;\n    let test = test_codex()\n        .with_history_mode(ThreadHistoryMode::Paginated)\n        .with_config(|config| config.include_environment_context = false)\n        .build_with_auto_env(&server)\n        .await?;\n    let thread_id = test.session_configured.thread_id;\n    let input = structured_user_input(\"persist before legacy row adoption\");\n    let TurnInput::UserInput { content, .. } = &input else {\n        unreachable!(\"test input is user input\");\n    };\n    let digest = user_input_payload_sha256(content)?;\n    let submission = test\n        .codex\n        .start_or_steer_turn(TurnInputRequest::new(input.clone()))\n        .await?;\n    assert!(matches!(submission, TurnInputSubmission::Started { .. }));\n    wait_for_event_match(test.codex.as_ref(), |event| {\n        matches!(event, EventMsg::TurnComplete(_)).then_some(())\n    })\n    .await;\n\n    let queue = loaded_thread_queue(&test)?;\n    queue\n        .enqueue(thread_id, serde_json::to_string(&input)?)\n        .await?;\n    let sink = Arc::new(RecordingEventSink::default());\n    let event_sink: Arc<dyn ExtensionEventSink> = sink.clone();\n    let service = QueuedItemService::new(queue, Arc::downgrade(&test.thread_manager), event_sink);\n    let reconciled = service\n        .reconcile(\n            thread_id,\n            test.codex.rollout_path(),\n            input,\n            digest,\n            QueueReconcileMode::ReconcileOnly,\n        )\n        .await?;\n    assert!(matches!(\n        reconciled.outcome,\n        QueueReconcileOutcome::Persisted { .. }\n    ));\n    assert!(service.list(thread_id).await?.is_empty());\n    let events = sink\n        .events\n        .lock()\n        .unwrap_or_else(std::sync::PoisonError::into_inner);\n    assert_eq!(1, events.len());\n    assert!(matches!(\n        &events[0].msg,\n        EventMsg::ThreadQueueChanged(change) if change.thread_id == thread_id\n    ));\n    assert_eq!(1, response.requests().len());\n    Ok(())\n}",
+      "current_windows_result": "ok",
+      "original48_entry": null
+    },
+    {
+      "name": "queue_empty_observer_waits_for_owned_database_ack_after_turn_complete",
+      "target": "//codex-rs/ext/queue:queue-queue_service-test",
+      "source_path": "codex-rs/ext/queue/tests/queue_service.rs",
+      "source_line_start": 2264,
+      "source_line_end": 2363,
+      "preserved_contract": "TurnComplete and reconciliation event do not stand in for owned database ACK; gated dispatch and observer remain pending with exact row; then release and observe completion.",
+      "body_excerpt": "async fn queue_empty_observer_waits_for_owned_database_ack_after_turn_complete()\n-> anyhow::Result<()> {\n    let server = start_mock_server().await;\n    let response =\n        responses::mount_sse_once(&server, responses::sse_completed(\"turn-before-queue-ack\")).await;\n    let test = test_codex()\n        .with_config(|config| config.include_environment_context = false)\n        .build_with_auto_env(&server)\n        .await?;\n    let thread_id = test.session_configured.thread_id;\n    let runtime = test.codex.state_db().context(\"state runtime unavailable\")?;\n    let store = Arc::new(FailDeleteOnceQueueStore {\n        fail_next_delete: AtomicBool::new(false),\n        block_complete_after_panic: AtomicBool::new(true),\n        allow_blocked_complete: AtomicBool::new(false),\n        ..FailDeleteOnceQueueStore::new(LocalQueueStore::new(runtime))\n    });\n    let events = Arc::new(RecordingEventSink::default());\n    let staging = QueuedItemService::new(store.clone(), Weak::new(), events.clone());\n    let service = Arc::new(QueuedItemService::new(\n        store.clone(),\n        Arc::downgrade(&test.thread_manager),\n        events.clone(),\n    ));\n    let input = structured_user_input(\"wait for the actual queue ack\");\n    let TurnInput::UserInput { content, .. } = &input else {\n        unreachable!(\"test input is user input\");\n    };\n    let digest = user_input_payload_sha256(content)?;\n    let cursor = events.cursor();\n    let admitted = staging\n        .reconcile(\n            thread_id,\n            test.codex.rollout_path(),\n            input,\n            digest,\n            QueueReconcileMode::AllowIfAbsent,\n        )\n        .await?;\n    let QueueReconcileOutcome::Queued { item: queued, .. } = admitted.outcome else {\n        anyhow::bail!(\"the exact input was not queued\");\n    };\n    assert!(\n        events.cursor() > cursor,\n        \"reconciliation emits a change before DB ack\"\n    );\n\n    tokio::time::timeout(Duration::from_secs(25), async {\n        let dispatch_service = Arc::clone(&service);\n        let dispatch_thread = Arc::clone(&test.codex);\n        let queued_id = queued.id.clone();\n        let dispatch = tokio::spawn(async move {\n            dispatch_service\n                .start(dispatch_thread.as_ref(), Some(queued_id), None)\n                .await\n        });\n        wait_for_event_with_timeout(\n            test.codex.as_ref(),\n            |event| matches!(event, EventMsg::TurnComplete(_)),\n            Duration::from_secs(25),\n        )\n        .await;\n        while store.complete_attempts.load(Ordering::SeqCst) == 0 {\n            tokio::task::yield_now().await;\n        }\n        assert_eq!(1, response.requests().len());\n        assert_eq!(vec![queued], service.list(thread_id).await?);\n        assert!(\n            !dispatch.is_finished(),\n            \"the owned DB completion is still gated\"\n        );\n\n        let nonempty = events.nonempty_observed.notified();\n        tokio::pin!(nonempty);\n        nonempty.as_mut().enable();\n        let waiting_events = Arc::clone(&events);\n        let waiting_service = Arc::clone(&service);\n        let waiting = tokio::spawn(async move {\n            waiting_events\n                .wait_for_queue_empty(waiting_service.as_ref(), thread_id, cursor)\n                .await\n        });\n        nonempty.await;\n        assert!(\n            !waiting.is_finished(),\n            \"a reconciliation change and TurnComplete cannot stand in for the DB ack\"\n        );\n        store.allow_blocked_complete.store(true, Ordering::SeqCst);\n        waiting.await??;\n        assert!(matches!(\n            dispatch.await??,\n            StartIfIdleSubmission::Started { .. }\n        ));\n        assert!(service.list(thread_id).await?.is_empty());\n        assert_eq!(1, response.requests().len());\n        Ok::<(), anyhow::Error>(())\n    })\n    .await??;\n    Ok(())\n}",
+      "current_windows_result": "ok",
+      "original48_entry": null
+    },
+    {
+      "name": "externally_changed_queues_dispatch_independently_and_retry_failed_wakes",
+      "target": "//codex-rs/ext/queue:queue-queue_service-test",
+      "source_path": "codex-rs/ext/queue/tests/queue_service.rs",
+      "source_line_start": 2366,
+      "source_line_end": 2508,
+      "preserved_contract": "Real independent/external/resumed queued turns; preserve 1/11/11-second sleeps and 25-second waits; exact three ordered prompts with no extra replay.",
+      "body_excerpt": "async fn externally_changed_queues_dispatch_independently_and_retry_failed_wakes()\n-> anyhow::Result<()> {\n    let server = start_mock_server().await;\n    let model_responses = responses::mount_sse_sequence(\n        &server,\n        [\n            \"independent-queued-turn\",\n            \"external-queued-turn\",\n            \"resumed-queued-turn\",\n        ]\n        .into_iter()\n        .map(responses::sse_completed)\n        .collect(),\n    )\n    .await;\n    let (installed, extensions) = registered_queue_extensions();\n    let test = test_codex()\n        .with_extensions(extensions)\n        .with_config(|config| config.include_environment_context = false)\n        .build_with_auto_env(&server)\n        .await?;\n    let thread_id = test.session_configured.thread_id;\n    let queue_events = Arc::new(RecordingEventSink::default());\n    let queue = Arc::new(QueuedItemService::new(\n        loaded_thread_queue(&test)?,\n        Arc::downgrade(&test.thread_manager),\n        queue_events.clone(),\n    ));\n    assert!(installed.service.set(Arc::clone(&queue)).is_ok());\n    let independent_thread = test\n        .thread_manager\n        .start_thread(StartThreadOptions::new(test.config.clone()))\n        .await?;\n    let external_runtime = StateRuntime::init(\n        test.codex\n            .state_db()\n            .context(\"state runtime unavailable\")?\n            .sqlite()\n            .clone(),\n        \"test-provider\".to_string(),\n    )\n    .await?;\n    let external_queue = QueuedItemService::new(\n        Arc::new(LocalQueueStore::new(external_runtime)),\n        Weak::new(),\n        Arc::new(NoopExtensionEventSink),\n    );\n    let mut watcher_extensions = ExtensionRegistryBuilder::<codex_core::config::Config>::new();\n    codex_queue_extension::install(&mut watcher_extensions, Arc::clone(&queue));\n\n    tokio::time::sleep(Duration::from_secs(/*secs*/ 1)).await;\n    assert!(model_responses.requests().is_empty());\n    *installed\n        .skip_next_idle\n        .lock()\n        .unwrap_or_else(std::sync::PoisonError::into_inner) = Some(thread_id);\n    let first = external_queue\n        .enqueue(thread_id, user_input(\"written by another process\"))\n        .await?;\n    let updated = queue\n        .update(\n            thread_id,\n            first.id,\n            user_input(\"locally edited external message\"),\n        )\n        .await?\n        .context(\"external queue item disappeared\")?;\n    external_queue\n        .enqueue(\n            independent_thread.thread_id,\n            user_input(\"independent thread\"),\n        )\n        .await?;\n\n    wait_for_event_with_timeout(\n        independent_thread.thread.as_ref(),\n        |event| matches!(event, EventMsg::TurnComplete(_)),\n        Duration::from_secs(/*secs*/ 25),\n    )\n    .await;\n    assert_eq!(1, model_responses.requests().len());\n    assert_eq!(vec![updated], queue.list(thread_id).await?);\n\n    wait_for_event_with_timeout(\n        test.codex.as_ref(),\n        |event| matches!(event, EventMsg::TurnComplete(_)),\n        Duration::from_secs(/*secs*/ 25),\n    )\n    .await;\n    tokio::time::sleep(Duration::from_secs(/*secs*/ 11)).await;\n\n    assert!(queue.list(thread_id).await?.is_empty());\n    assert!(queue.list(independent_thread.thread_id).await?.is_empty());\n\n    let rollout_path = test.codex.rollout_path().context(\"rollout path missing\")?;\n    test.codex.shutdown_and_wait().await?;\n    test.thread_manager.remove_thread(&thread_id).await;\n    external_queue\n        .enqueue(thread_id, user_input(\"queued before ordinary resume\"))\n        .await?;\n    tokio::time::sleep(Duration::from_secs(/*secs*/ 11)).await;\n    let queue_event_cursor = queue_events.cursor();\n    let resumed = test\n        .thread_manager\n        .resume_thread_from_rollout(\n            test.config.clone(),\n            rollout_path,\n            test.thread_manager.auth_manager(),\n            /*parent_trace*/ None,\n            Default::default(),\n        )\n        .await?;\n    let deadline = tokio::time::Instant::now() + Duration::from_secs(/*secs*/ 25);\n    tokio::time::timeout_at(deadline, async {\n        wait_for_event_with_timeout(\n            resumed.thread.as_ref(),\n            |event| matches!(event, EventMsg::TurnComplete(_)),\n            Duration::from_secs(/*secs*/ 25),\n        )\n        .await;\n        queue_events\n            .wait_for_queue_empty(queue.as_ref(), thread_id, queue_event_cursor)\n            .await\n    })\n    .await\n    .context(\"resumed turn and owned queue acknowledgement exceeded the shared 25s deadline\")??;\n    assert!(queue.list(thread_id).await?.is_empty());\n\n    let prompts = model_responses\n        .requests()\n        .into_iter()\n        .filter_map(|request| request.message_input_texts(\"user\").pop())\n        .collect::<Vec<_>>();\n    assert_eq!(\n        vec![\n            \"independent thread\",\n            \"locally edited external message\",\n            \"queued before ordinary resume\",\n        ],\n        prompts\n    );\n    Ok(())\n}",
+      "current_windows_result": "ok",
+      "original48_entry": null
+    }
+  ],
+  "negative_controls": [
+    {
+      "source": "codex-rs/ext/queue/tests/queue_service.rs",
+      "lines": [
+        240,
+        291
+      ],
+      "mechanism": "Owned real Python hook records entered marker, waits bounded20s, then returns blocking decision only for delay exact rejection."
+    },
+    {
+      "source": "codex-rs/ext/queue/tests/queue_service.rs",
+      "lines": [
+        339,
+        378,
+        467,
+        576
+      ],
+      "mechanism": "Original test QueueStore wrapper retains normal setup claim, installs250ms dispatch authorization, injects real panic/error after admission and counts every release; current original cases exercise refusal and eventual positive completion."
+    },
+    {
+      "source": "codex-rs/hepta-agentd/src/runtime_tests.rs",
+      "lines": [
+        608,
+        807
+      ],
+      "mechanism": "Live bound H7 writes precede actual wall-clock expiry; original expired/quarantine rejection is directly asserted, not inferred from a final positive summary."
+    }
+  ],
+  "historical_native_context": {
+    "original_summary": {
+      "local_file": "/workspace/scratch/07dd58cc9630/research-audit/published-5b633-ci-20261105/b13-closure-review/historical-second-batch-qualification.original.json.txt",
+      "bytes": 343668,
+      "sha256": "cf2e962b3bcf20e2d19d4397d2a1d4d23f11905cf8f76c7c6947b312eda35e18",
+      "git_blob": "f03ce31c7e39759148577633dad9b36b4e0b3669"
+    },
+    "api_envelope": {
+      "local_file": "/workspace/scratch/07dd58cc9630/research-audit/published-0e139-ci-20261105/case-source-api/qualification__r3-audit-repair-20261104__second-batch-qualification.json.json",
+      "bytes": 370360,
+      "sha256": "a4009c01979bdb6dd5fabe3b3f180331c562a77460cea4da87ab88b646febab5",
+      "git_blob": "78859ac479203f879b1dea1a500c90e29f6bb541"
+    },
+    "phases": [
+      {
+        "phase": "agentd-lease-original",
+        "source_tree": "d12e1f208276f8986a5dcb641182ec20316ac4c8",
+        "source_stage": null,
+        "status_receipt": {
+          "artifact": "ci-audit/native-evidence/agentd-lease-original-status.json",
+          "bytes": 1512,
+          "sha256": "0f34ce549e38309a4c0d63c7c6b5c17ddf1a682d1210c7238503339cec02c2e7"
+        },
+        "junit": {
+          "artifact": "ci-audit/native-evidence/agentd-lease-original.junit.xml",
+          "bytes": 550,
+          "sha256": "ba068f1986e8387f682a43916e86d1068622eff3a1c9e7944a4c74e20e265ad3"
+        },
+        "source_recheck": null,
+        "source_manifest_receipts": [
+          {
+            "artifact": "ci-audit/core-production-v2-manifest.json",
+            "bytes": 13357,
+            "sha256": "5afb17b6326d80b60ea203106addfcca2b098edc539d67eb6a2bc509b4ac1f47"
+          }
+        ],
+        "source_manifest_limit": null,
+        "command": [
+          "just",
+          "test",
+          "--locked",
+          "--offline",
+          "-p",
+          "codex-hepta-agentd",
+          "--lib",
+          "--features",
+          "qualification-cognitive-write",
+          "-E",
+          "test(runtime::tests::qualification_prepare_quarantines_expired_registry_attempt_with_h7_evidence)",
+          "--no-tests",
+          "fail",
+          "--retries",
+          "0",
+          "--test-threads",
+          "4"
+        ],
+        "exit_code": 0,
+        "uuid": "93746896-df5d-440d-9ef7-1b5335c6f6e7",
+        "timestamp": "2026-11-04T09:39:23.615-05:00",
+        "selected": 1,
+        "passed": 1,
+        "failed": 0,
+        "skipped": 0,
+        "whole_phase_elapsed_seconds": 424.54739833797794,
+        "junit_elapsed_seconds": 30.429,
+        "selection_complete": true,
+        "source_unchanged": true,
+        "retries": 0,
+        "targeted_negative_observations": [],
+        "cases": [
+          {
+            "test": "runtime::tests::qualification_prepare_quarantines_expired_registry_attempt_with_h7_evidence",
+            "binary": "codex-hepta-agentd",
+            "result": "PASS",
+            "seconds": 30.375,
+            "in_original_failure_union": false
+          }
+        ],
+        "scope": "Only this exact native source stage and selected roster; no final combined-source or original-platform qualification is inferred."
+      },
+      {
+        "phase": "queue-claim-originals",
+        "source_tree": "d12e1f208276f8986a5dcb641182ec20316ac4c8",
+        "source_stage": null,
+        "status_receipt": {
+          "artifact": "ci-audit/native-evidence/queue-claim-originals-status.json",
+          "bytes": 2602,
+          "sha256": "9f3755b0cf727df1463f47378cca905bbe5936e46acf82203f5f66ad67fe6f17"
+        },
+        "junit": {
+          "artifact": "ci-audit/native-evidence/queue-claim-originals.junit.xml",
+          "bytes": 1207,
+          "sha256": "5f409976291835e838f5f7733e09e04ce759d34f2e8cb2052dfbc331282f4724"
+        },
+        "source_recheck": null,
+        "source_manifest_receipts": [
+          {
+            "artifact": "ci-audit/core-production-v2-manifest.json",
+            "bytes": 13357,
+            "sha256": "5afb17b6326d80b60ea203106addfcca2b098edc539d67eb6a2bc509b4ac1f47"
+          }
+        ],
+        "source_manifest_limit": null,
+        "command": [
+          "just",
+          "test",
+          "--locked",
+          "--offline",
+          "-p",
+          "codex-queue-extension",
+          "--test",
+          "queue_service",
+          "-E",
+          "test(caller_abort_after_core_started_keeps_exact_authority_until_persistence) | test(core_error_after_started_never_releases_ambiguous_dispatch) | test(completion_panic_retains_exact_authority_in_settlement_guardian) | test(rollout_flush_before_dispatch_db_completion_recovers_without_resubmit)",
+          "--no-tests",
+          "fail",
+          "--retries",
+          "0",
+          "--test-threads",
+          "4"
+        ],
+        "exit_code": 0,
+        "uuid": "52156ee5-096a-4061-bb9e-4102f56387b9",
+        "timestamp": "2026-11-04T09:44:31.983-05:00",
+        "selected": 4,
+        "passed": 4,
+        "failed": 0,
+        "skipped": 0,
+        "whole_phase_elapsed_seconds": 281.33077247592155,
+        "junit_elapsed_seconds": 6.441,
+        "selection_complete": true,
+        "source_unchanged": true,
+        "retries": 0,
+        "targeted_negative_observations": [],
+        "cases": [
+          {
+            "test": "caller_abort_after_core_started_keeps_exact_authority_until_persistence",
+            "binary": "codex-queue-extension::queue_service",
+            "result": "PASS",
+            "seconds": 6.024,
+            "in_original_failure_union": false
+          },
+          {
+            "test": "completion_panic_retains_exact_authority_in_settlement_guardian",
+            "binary": "codex-queue-extension::queue_service",
+            "result": "PASS",
+            "seconds": 6.126,
+            "in_original_failure_union": true
+          },
+          {
+            "test": "core_error_after_started_never_releases_ambiguous_dispatch",
+            "binary": "codex-queue-extension::queue_service",
+            "result": "PASS",
+            "seconds": 6.312,
+            "in_original_failure_union": false
+          },
+          {
+            "test": "rollout_flush_before_dispatch_db_completion_recovers_without_resubmit",
+            "binary": "codex-queue-extension::queue_service",
+            "result": "PASS",
+            "seconds": 6.44,
+            "in_original_failure_union": false
+          }
+        ],
+        "scope": "Only this exact native source stage and selected roster; no final combined-source or original-platform qualification is inferred."
+      }
+    ],
+    "limit": "Historical d12 native1+4 passes and source identities remain historical. Their original phase receipts report no targeted mutation-negative observations; this review does not invent a red/green mutation experiment or borrow those results for5b."
+  },
+  "unchanged_budgets": "Lease real setup TTL30s then sleep until its actual expiry; Queue original10s acknowledgement waits and existing400/300ms delays unchanged. Existing DB-ack/externally-changed fixture25s waits and real1/11/11s observation sleeps unchanged.",
+  "limitations": [
+    "No original ledger exit condition, source, test, timeout, retry, or platform selection was changed by this audit.",
+    "The exact Queue and Agentd source blobs equal the frozen source references already named in the seven-row missing-evidence plan.",
+    "No process-level Agentd/AppServer/Root/Current authority acceptance is claimed from local qualification unit fixtures.",
+    "No all-workflow/all-platform/B15 closure is claimed, and all failure/retry/ignored results elsewhere remain intact.",
+    "New published eed4d6 requires its own original CI; it does not inherit5b PASS."
+  ],
+  "reviewer_native_execution": false,
+  "root_ledger_modified": false,
+  "member_manifest": "agentd-archive-members.json",
+  "source_map": "source-map.json"
+}

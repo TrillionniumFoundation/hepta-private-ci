@@ -1,0 +1,58 @@
+{
+  "schema": "hepta-lossless-original-archive-v1",
+  "label": "concurrent-pr-increment-1644-v7",
+  "encoding": "ordered base64 parts of gzip of JSON array with per-original bytes_base64",
+  "originals": [
+    {
+      "logical_name": "search-and-pr-metadata.original.json",
+      "local_source": "/workspace/scratch/07dd58cc9630/hepta-audit-fifth/pr-increment-1644/search-and-pr-metadata.original.json",
+      "bytes": 470658,
+      "sha256": "5995ee52cc6d11310d5f86ff7eba238e2b69396a4f90b4c8fd2b73a290dd7104",
+      "blob": "e61462bd1004b9e3ea643591c39f772890561136"
+    }
+  ],
+  "original_file_count": 1,
+  "original_byte_total": 470658,
+  "uncompressed_transport": {
+    "bytes": 627620,
+    "sha256": "03690b62256ea31f5d21b78738685359da0a8cbd4141e2a877a9a4e2402387fa",
+    "blob": "80fa261776bcd0832383984f8928bb8c5c9cc5fb"
+  },
+  "compressed": {
+    "bytes": 237285,
+    "sha256": "a4da3d81189d95de435d0a321445b8dab325387ad72a454b080b697618776281",
+    "blob": "0558b964065b928b9995e298d4ceaa829ab14de0"
+  },
+  "parts": [
+    {
+      "name": "part-000.b64",
+      "compressed_offset": 0,
+      "decoded": {
+        "bytes": 180000,
+        "sha256": "f6bf50f7e0d3f21cfe57b048b125f7da7af7d526abe3caad268c405176ed5edd",
+        "blob": "d0e639965f62d8562cec23f95e1f46bb12f09e13"
+      },
+      "transport": {
+        "bytes": 240001,
+        "sha256": "0b0ef9ec1babd5774384b86503ccf6bef1a2996dada47615c820eb077cc31f30",
+        "blob": "b9c2b533850ae71f8aee4e1d0c641e4a8d9a765b"
+      }
+    },
+    {
+      "name": "part-001.b64",
+      "compressed_offset": 180000,
+      "decoded": {
+        "bytes": 57285,
+        "sha256": "ce6e48971cbf1434a430967cbacc53e05d58c29932ba1a51215e9cd73c1bc072",
+        "blob": "0581afb035619d9590da599e5f223aae8d03e395"
+      },
+      "transport": {
+        "bytes": 76381,
+        "sha256": "af109e70df89c8c89f5ff30e55bd5abbbf6ed29f814657e7d15d12ad87bdf153",
+        "blob": "60743b35a826a785163fdb0ffb378d04b802463d"
+      }
+    }
+  ],
+  "native_commands_run_by_archiver": false,
+  "source_bytes_rewritten": false
+}

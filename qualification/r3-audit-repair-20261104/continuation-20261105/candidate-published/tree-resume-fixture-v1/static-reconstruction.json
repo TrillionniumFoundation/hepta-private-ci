@@ -1,0 +1,74 @@
+{
+  "observed_at": "2026-11-05T15:01:32.974749+00:00",
+  "scope": "Cloud-only text and isolated Git reconstruction. No Rust fmt/compile/project execution.",
+  "commands": [
+    {
+      "argv": [
+        "git",
+        "init",
+        "--quiet"
+      ],
+      "cwd": "/workspace/scratch/07dd58cc9630/research-audit/core-parallel-resume-triage-20261105/isolated-roundtrip-x8ljqffn",
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "git",
+        "apply",
+        "--check",
+        "/workspace/scratch/07dd58cc9630/research-audit/core-parallel-resume-triage-20261105/repair.patch"
+      ],
+      "cwd": "/workspace/scratch/07dd58cc9630/research-audit/core-parallel-resume-triage-20261105/isolated-roundtrip-x8ljqffn",
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "git",
+        "apply",
+        "/workspace/scratch/07dd58cc9630/research-audit/core-parallel-resume-triage-20261105/repair.patch"
+      ],
+      "cwd": "/workspace/scratch/07dd58cc9630/research-audit/core-parallel-resume-triage-20261105/isolated-roundtrip-x8ljqffn",
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "git",
+        "apply",
+        "--reverse",
+        "--check",
+        "/workspace/scratch/07dd58cc9630/research-audit/core-parallel-resume-triage-20261105/repair.patch"
+      ],
+      "cwd": "/workspace/scratch/07dd58cc9630/research-audit/core-parallel-resume-triage-20261105/isolated-roundtrip-x8ljqffn",
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "git",
+        "apply",
+        "--reverse",
+        "/workspace/scratch/07dd58cc9630/research-audit/core-parallel-resume-triage-20261105/repair.patch"
+      ],
+      "cwd": "/workspace/scratch/07dd58cc9630/research-audit/core-parallel-resume-triage-20261105/isolated-roundtrip-x8ljqffn",
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": ""
+    }
+  ],
+  "postimage_exact": true,
+  "inverse_preimage_exact": true,
+  "original_case_body_after_harness_setup_byte_identical": true,
+  "original_helper_loop_and_five_second_budget_byte_identical": true,
+  "all_function_name_roster_unchanged": true,
+  "pre_sha256": "c7089bc1d130334fd43a153e76a0c0780043903bfdea0448421bfb2f7a0bc738",
+  "post_sha256": "2529dca22467d72ee6f067a4f600c99ea17c8099d4010ade2a09f008cfed386d",
+  "added": 46,
+  "removed": 2
+}

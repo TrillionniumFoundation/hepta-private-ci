@@ -1,0 +1,31 @@
+diff --git a/codex-rs/windows-sandbox-rs/src/unified_exec/acl_setup_tests.rs b/codex-rs/windows-sandbox-rs/src/unified_exec/acl_setup_tests.rs
+index f2ea4c8636dca50fba18e1f5f26781146419ac9f..5390daefe0f872866764cb567ad13f22c0675cf4 100644
+--- a/codex-rs/windows-sandbox-rs/src/unified_exec/acl_setup_tests.rs
++++ b/codex-rs/windows-sandbox-rs/src/unified_exec/acl_setup_tests.rs
+@@ -346,7 +346,10 @@
+         assert_eq!(
+             (
+                 error.to_string(),
+-                error.root_cause().to_string(),
++                error
++                    .root_cause()
++                    .downcast_ref::<std::io::Error>()
++                    .map(|error| (error.kind(), error.raw_os_error())),
+                 self.marker.try_exists().expect("inspect process marker"),
+             ),
+             (
+@@ -354,10 +357,10 @@
+                     "apply legacy deny-write ACL to {}",
+                     self.protected_file.display()
+                 ),
+-                format!(
+-                    "SetNamedSecurityInfoW failed for {}: {ERROR_ACCESS_DENIED}",
+-                    self.protected_file.display(),
+-                ),
++                Some((
++                    std::io::ErrorKind::PermissionDenied,
++                    Some(ERROR_ACCESS_DENIED as i32),
++                )),
+                 false,
+             ),
+         );

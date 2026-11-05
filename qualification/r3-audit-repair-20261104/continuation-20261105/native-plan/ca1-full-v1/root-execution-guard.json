@@ -1,0 +1,155 @@
+{
+  "schema": "root-ca1-native-default-full-execution-guard-v1",
+  "approved": true,
+  "reviewed_at": "2026-11-05T16:33:20.310472+00:00",
+  "authorization": "User requested full project audit and active closure of all blockers, including necessary full tests. This executes the published reviewed repair in the already prepared owned Core workspace.",
+  "published_commit": "eed4d6bb61b789b19f60facc79f9e031765fa4c9",
+  "source_tree": "ca1c4671ef6b2773280d01b5d76c6166252f5856",
+  "ordinary_native_HEAD_retained": "5b6331250ff459033bd44d1a95daec70131277cc",
+  "ordinary_native_index_sha256": "b488256c0552f9ff6d6030b3a1738721dec54ffb5d2a2b56d99100943f04ed19",
+  "runner": {
+    "path": "/workspace/scratch/07dd58cc9630/ci-audit/core-wait-span-20261105/ai395-candidate-default-full-v1/run_candidate_default_full.py",
+    "bytes": 31785,
+    "sha256": "85395371678e7a5a20317a2a1e4eadc514dd37f3e8946acac567f5036eaaa7fb",
+    "git_blob": "4b0b81abc8487f5f6c6b59b04ecfd2dd76c22abb"
+  },
+  "disabled_manifest": {
+    "path": "/workspace/scratch/07dd58cc9630/ci-audit/core-wait-span-20261105/ai395-candidate-default-full-v1/manifest-DISABLED.json",
+    "bytes": 12583,
+    "sha256": "c7d34eed441fd53995abed1bc7ab134a0f0c38b0d817f210eed4f099aa071a49",
+    "git_blob": "02879741f095329744589ec0e078e7b3e7e11d01"
+  },
+  "disabled_request": {
+    "path": "/workspace/scratch/07dd58cc9630/ci-audit/core-wait-span-20261105/ai395-candidate-default-full-v1/request-DISABLED.json",
+    "bytes": 577112,
+    "sha256": "debb8bdf518a075c9269e71bea6d66ba9dc0c83068efff83116b19ec0e432851",
+    "git_blob": "ccd2404d6f07a25aed31f08dce5ec40f9de5c110"
+  },
+  "disabled_process_start": {
+    "path": "/workspace/scratch/07dd58cc9630/ci-audit/core-wait-span-20261105/ai395-candidate-default-full-v1/process-start-DISABLED.json",
+    "bytes": 609982,
+    "sha256": "c7919e23d2df8ddcb395649fff0b67eb5f64efd9f8f3d74215dfd2fff673c53b",
+    "git_blob": "7b8bdf77b4ce740347e5decaf04e75b92daa566e"
+  },
+  "decoded_stage_input": {
+    "bytes": 4118561,
+    "sha256": "e366f23f8746326b9590a438fbf900665b4b63f8d42138b3516d4aef86d5f96d",
+    "git_blob": "eed788df00213616e545427835751ce3de46eb42"
+  },
+  "source_postimages_bound_to_independently_read_published_tree": 12,
+  "new_files": 2,
+  "final_complete_leaves": 10582,
+  "reference_publication": {
+    "path": "/workspace/scratch/07dd58cc9630/hepta-audit-fifth/inputs/primary-14-path-publication-v1.json",
+    "bytes": 1777,
+    "sha256": "b0da5967d0f6a939424df05c40d6b6746da672f7fc42abd9655bb1c847cc8107",
+    "git_blob": "7f7a86c41df2b3b4aa655cd5852e6406934b05a1"
+  },
+  "twelve_C1_common_functions_byte_equal": [
+    "need",
+    "now",
+    "identity",
+    "stat_id",
+    "read_stable",
+    "pinned",
+    "file_record",
+    "absent",
+    "capacity",
+    "verify_prerequisites",
+    "save",
+    "save_json"
+  ],
+  "frozen_original_V3_guard_catalog_JUnit_functions_reused": true,
+  "commands_exactly_equal_original_recipe": [
+    [
+      "cargo",
+      "build",
+      "--locked",
+      "--profile",
+      "dev-small",
+      "--message-format=json-render-diagnostics",
+      "-p",
+      "codex-arg0",
+      "--bin",
+      "test_arg0_preflight",
+      "-p",
+      "codex-code-mode-host",
+      "--bin",
+      "codex-code-mode-host",
+      "-p",
+      "codex-shell-escalation",
+      "--bin",
+      "codex-execve-wrapper",
+      "-p",
+      "codex-rmcp-client",
+      "--bin",
+      "test_stdio_server",
+      "--bin",
+      "test_streamable_http_server",
+      "-p",
+      "codex-exec",
+      "--bin",
+      "codex-exec",
+      "-p",
+      "codex-cli",
+      "--bin",
+      "codex"
+    ],
+    [
+      "cargo",
+      "metadata",
+      "--locked",
+      "--format-version",
+      "1"
+    ],
+    [
+      "cargo",
+      "nextest",
+      "list",
+      "--locked",
+      "--cargo-profile",
+      "dev-small",
+      "--message-format=json"
+    ],
+    [
+      "just",
+      "test",
+      "--locked",
+      "--cargo-profile",
+      "dev-small",
+      "--no-tests",
+      "fail",
+      "--retries",
+      "0",
+      "--success-output",
+      "immediate"
+    ]
+  ],
+  "resource_floors": {
+    "disk_bytes_before_after_every_command": 64000000000,
+    "MemAvailable_bytes": 34359738368,
+    "CARGO_BUILD_JOBS": 4,
+    "entry_200GB": "Already completed C0, not a new cold root or a lowered initial floor."
+  },
+  "original_default_roster": {
+    "total": 19563,
+    "eligible": 19506,
+    "ignored": 57,
+    "comparison": "Exact Counter(binary_id,name,ignored); only nonignored matches or ignored mismatch/reason ignored."
+  },
+  "host": "ai395",
+  "idempotency_key": "hepta-ai395-core-candidate-ca1-full-20261105-v1",
+  "timeout_seconds": 21600,
+  "fresh_entry_source_SDK_disk_memory_checks_required": true,
+  "source_transition": "Exact preimage checks, owned backup and transition journal, atomic replacement or exclusive new-file publication, then full tree. No original index/HEAD/lock changes; failure preserves evidence.",
+  "limits": [
+    "Run the original seven helpers then complete193/1501 metadata, unfiltered19563-name catalog and original full just test once; zero retries.",
+    "Do not substitute selected tests, hide ignored or early-return results, or convert compile/resource/guard failure into test success.",
+    "No automatic hygiene, optional project reruns or feature scope. Required later actions are decided from actual results.",
+    "No cache cleanup, security changes, signals to other tasks, or old unknown B16 driver replay or writes.",
+    "All writable build/cache/source paths stay in the existing independently owned Core root; pinned external SDK/tools are read or executed only.",
+    "One idempotent first start. An ambiguous start must be reconciled by its same durable identity, never by a changed key or replay."
+  ],
+  "native_executed_by_this_builder": false,
+  "enabled_delta": "Only request.execute and request.root_execution_guard, and process-start.stdin containing that request."
+}

@@ -1,0 +1,95 @@
+{
+  "schema": "b11-initial-label-observation-v1",
+  "status": "STATIC_DIAGNOSTIC_ONLY_UNEXECUTED",
+  "base_head": "0d65de9bf1e28a7b313a344ebba71ba8378d0f5a",
+  "base_tree": "f13680916b9a7f773dcc95e4ce6ee6785021ead4",
+  "path": "codex-rs/windows-sandbox-rs/src/token_integrity_probe_support.rs",
+  "preimage": {
+    "bytes": 13242,
+    "sha256": "80de0b271e57775c00661cfda26dd8b20b8894b040a2081d601c931982a2ecd7",
+    "git_blob": "3b850db502bef372592322dd1c1d2272e65a6a47"
+  },
+  "postimage": {
+    "bytes": 13465,
+    "sha256": "018166e25f5e2014d2ae0f74c58252af85625f88a43fa320573926d491e1225a",
+    "git_blob": "47dddb48c727c1bcae89b613409a72bd7d1312ff"
+  },
+  "patch": {
+    "bytes": 1200,
+    "sha256": "ef4407eeba0dc97a3b757effaac4f22f8f9a58bb2a083d40535987af85d8897b",
+    "git_blob": "69ffe2af03a6132d225b3ece2e9bb6a1c99ecf1e"
+  },
+  "actual_failure": {
+    "run": 42051179792,
+    "job": 127327372905,
+    "log_file": "architecture-audit/b11-pr4884-ci-20261105/terminal/probe-127327372905/job.log",
+    "log": {
+      "bytes": 300129,
+      "sha256": "2744b1663c2053ad90cb52db5fe8f91e17be4aa14bfff4123774c28a5c985bcf",
+      "git_blob": "fa749e89b15d1409fc8cbe637e9ee1f8629f1d39"
+    },
+    "error": "created object did not preserve its explicit initial label",
+    "complete_physical_rows": 0
+  },
+  "changes": [
+    "Bind the same two original LABEL SDDL conversions in their original order.",
+    "Print actual and expected strings and the existing path using the existing direct-stderr observer.",
+    "Compare the same two strings for exact equality with the same original failure text."
+  ],
+  "unchanged": [
+    "Original equality condition, permissions, native API calls for label read/set, owner/identity/access SD checks and cleanup/restoration",
+    "All old test bodies, eight-row matrix, controls, budgets, workflow, dependency/lock/platform settings"
+  ],
+  "limits": [
+    "No actual or expected label value was present in the original failure; normalization versus label alteration remains unknown.",
+    "Logging failure remains a test error; no ignoring or weakening of the original setup gate.",
+    "No local Windows or Rust execution; no product ref mutation."
+  ],
+  "mechanical_checks": {
+    "reverse_text_exact_preimage": true,
+    "isolated_git_apply_roundtrip": [
+      {
+        "argv": [
+          "git",
+          "init",
+          "-q"
+        ],
+        "exit_code": 0,
+        "stdout": "",
+        "stderr": ""
+      },
+      {
+        "argv": [
+          "git",
+          "apply",
+          "--check",
+          "/workspace/scratch/07dd58cc9630/architecture-audit/b11-pr4884-ci-20261105/repair-initial-label-observation-v1/observation.patch"
+        ],
+        "exit_code": 0,
+        "stdout": "",
+        "stderr": ""
+      },
+      {
+        "argv": [
+          "git",
+          "apply",
+          "/workspace/scratch/07dd58cc9630/architecture-audit/b11-pr4884-ci-20261105/repair-initial-label-observation-v1/observation.patch"
+        ],
+        "exit_code": 0,
+        "stdout": "",
+        "stderr": ""
+      },
+      {
+        "argv": [
+          "git",
+          "apply",
+          "--reverse",
+          "observation.patch"
+        ],
+        "exit_code": 0,
+        "stdout": "",
+        "stderr": ""
+      }
+    ]
+  }
+}

@@ -1,0 +1,706 @@
+{
+  "schema": "hepta-b13-original-windows-root-verification-v1",
+  "observed_utc": "2026-11-05T16:45:53.044119+00:00",
+  "decision": "CLOSED_SCOPED",
+  "scope": "Original Windows Lease/Queue fixture contract on 5b and equal-tree merge9063; not whole-project or five-platform acceptance.",
+  "head": "5b6331250ff459033bd44d1a95daec70131277cc",
+  "merge": "9063c52a063b6f26c48e9418f6d8dbd14e9e06ff",
+  "tree": "b26598d0d97d8d51e723bb5582137315f2174d35",
+  "original_exit_condition_zh": "原过期、quarantine、guardian、release=0、单发送及重启不重放断言全保留并在原平台通过。",
+  "original_exit_unchanged": true,
+  "frozen_nine": [
+    {
+      "test": "runtime::tests::qualification_prepare_quarantines_expired_registry_attempt_with_h7_evidence",
+      "binary": "codex-hepta-agentd",
+      "platform_cfg": {
+        "rule": "original target/default cfg",
+        "windows": "original compiled roster; no new skip",
+        "proofs": []
+      },
+      "old_cabc_exact_observation_count": 0,
+      "original_observations": {
+        "blob": "203d8eab0dd003f272c09f962e16ca9505da4f2a",
+        "json_pointer": "/case_index/B13/0/observations"
+      },
+      "still_missing_query_ids": [
+        "Q06"
+      ]
+    },
+    {
+      "test": "caller_abort_after_core_started_keeps_exact_authority_until_persistence",
+      "binary": "codex-queue-extension::queue_service",
+      "platform_cfg": {
+        "rule": "original target/default cfg",
+        "windows": "original compiled roster; no new skip",
+        "proofs": []
+      },
+      "old_cabc_exact_observation_count": 0,
+      "original_observations": {
+        "blob": "203d8eab0dd003f272c09f962e16ca9505da4f2a",
+        "json_pointer": "/case_index/B13/1/observations"
+      },
+      "still_missing_query_ids": [
+        "Q05"
+      ]
+    },
+    {
+      "test": "completion_panic_retains_exact_authority_in_settlement_guardian",
+      "binary": "codex-queue-extension::queue_service",
+      "platform_cfg": {
+        "rule": "original target/default cfg",
+        "windows": "original compiled roster; no new skip",
+        "proofs": []
+      },
+      "old_cabc_exact_observation_count": 0,
+      "original_observations": {
+        "blob": "203d8eab0dd003f272c09f962e16ca9505da4f2a",
+        "json_pointer": "/case_index/B13/2/observations"
+      },
+      "still_missing_query_ids": [
+        "Q05"
+      ]
+    },
+    {
+      "test": "core_error_after_started_never_releases_ambiguous_dispatch",
+      "binary": "codex-queue-extension::queue_service",
+      "platform_cfg": {
+        "rule": "original target/default cfg",
+        "windows": "original compiled roster; no new skip",
+        "proofs": []
+      },
+      "old_cabc_exact_observation_count": 0,
+      "original_observations": {
+        "blob": "203d8eab0dd003f272c09f962e16ca9505da4f2a",
+        "json_pointer": "/case_index/B13/3/observations"
+      },
+      "still_missing_query_ids": [
+        "Q05"
+      ]
+    },
+    {
+      "test": "rollout_flush_before_dispatch_db_completion_recovers_without_resubmit",
+      "binary": "codex-queue-extension::queue_service",
+      "platform_cfg": {
+        "rule": "original target/default cfg",
+        "windows": "original compiled roster; no new skip",
+        "proofs": []
+      },
+      "old_cabc_exact_observation_count": 0,
+      "original_observations": {
+        "blob": "203d8eab0dd003f272c09f962e16ca9505da4f2a",
+        "json_pointer": "/case_index/B13/4/observations"
+      },
+      "still_missing_query_ids": [
+        "Q05"
+      ]
+    },
+    {
+      "test": "queued_input_and_unique_event_ids_round_trip",
+      "binary": "codex-queue-extension::queue_service",
+      "platform_cfg": {
+        "rule": "original target/default cfg",
+        "windows": "original compiled roster; no new skip",
+        "proofs": []
+      },
+      "old_cabc_exact_observation_count": 0,
+      "original_observations": {
+        "blob": "203d8eab0dd003f272c09f962e16ca9505da4f2a",
+        "json_pointer": "/case_index/B13/5/observations"
+      },
+      "still_missing_query_ids": [
+        "Q05"
+      ]
+    },
+    {
+      "test": "reserved_to_persisted_legacy_row_deletion_emits_queue_changed",
+      "binary": "codex-queue-extension::queue_service",
+      "platform_cfg": {
+        "rule": "original target/default cfg",
+        "windows": "original compiled roster; no new skip",
+        "proofs": []
+      },
+      "old_cabc_exact_observation_count": 0,
+      "original_observations": {
+        "blob": "203d8eab0dd003f272c09f962e16ca9505da4f2a",
+        "json_pointer": "/case_index/B13/6/observations"
+      },
+      "still_missing_query_ids": [
+        "Q05"
+      ]
+    },
+    {
+      "test": "queue_empty_observer_waits_for_owned_database_ack_after_turn_complete",
+      "binary": "codex-queue-extension::queue_service",
+      "platform_cfg": {
+        "rule": "original target/default cfg",
+        "windows": "original compiled roster; no new skip",
+        "proofs": []
+      },
+      "old_cabc_exact_observation_count": 0,
+      "original_observations": {
+        "blob": "203d8eab0dd003f272c09f962e16ca9505da4f2a",
+        "json_pointer": "/case_index/B13/7/observations"
+      },
+      "still_missing_query_ids": [
+        "Q05"
+      ]
+    },
+    {
+      "test": "externally_changed_queues_dispatch_independently_and_retry_failed_wakes",
+      "binary": "codex-queue-extension::queue_service",
+      "platform_cfg": {
+        "rule": "original target/default cfg",
+        "windows": "original compiled roster; no new skip",
+        "proofs": []
+      },
+      "old_cabc_exact_observation_count": 0,
+      "original_observations": {
+        "blob": "203d8eab0dd003f272c09f962e16ca9505da4f2a",
+        "json_pointer": "/case_index/B13/8/observations"
+      },
+      "still_missing_query_ids": [
+        "Q05"
+      ]
+    }
+  ],
+  "original48_association": [
+    {
+      "test": "completion_panic_retains_exact_authority_in_settlement_guardian",
+      "status_at_snapshot": "EXACT_NATIVE_PASS_ORIGINAL_PLATFORM_QUALIFICATION_PENDING",
+      "workstream": "queue_claim_setup",
+      "patch_refs": [
+        "queue_setup_lease"
+      ],
+      "original_platforms": [
+        "windows-shard3"
+      ],
+      "original_platform_gate": "PENDING",
+      "closed": false
+    }
+  ],
+  "archives": [
+    {
+      "artifact_id": 13415207261,
+      "local_file": "/workspace/scratch/07dd58cc9630/research-audit/published-5b633-ci-20261105/terminal/windows-gitqueue-source-127149583164/artifact-13415207261.zip",
+      "bytes": 4550023,
+      "sha256": "624a7beccc39c0647f08211d410ad2ebdcc0c9d17440d541d8593f7bfb5bd5fd",
+      "computed_git_blob": "282c3174037ab2d50a252f944c0152beac72451f",
+      "members": 10,
+      "crc_and_all_member_hashes_equal": true,
+      "fresh_api_digest_and_source_binding_equal": true
+    },
+    {
+      "artifact_id": 13415148242,
+      "local_file": "/workspace/scratch/07dd58cc9630/research-audit/published-5b633-ci-20261105/terminal/windows-gitqueue-merge-127149583430/artifact-13415148242.zip",
+      "bytes": 4537620,
+      "sha256": "0fe246ef79f72d896b65f5aa24759883e78e039888767fc4a9dd4e82479023e1",
+      "computed_git_blob": "59ae2bf2972fcafab262de7cf52f68251ee9bdcf",
+      "members": 10,
+      "crc_and_all_member_hashes_equal": true,
+      "fresh_api_digest_and_source_binding_equal": true
+    },
+    {
+      "artifact_id": 13431285250,
+      "local_file": "/workspace/scratch/07dd58cc9630/research-audit/published-5b633-ci-20261105/terminal/main-win-shard2-127339255880/artifact-13431285250/artifact.zip",
+      "bytes": 4967167,
+      "sha256": "d0dd2347f5be91ae1f445d21e892ea5d4559499dc8e2f71554ce0ce2bb93ba85",
+      "computed_git_blob": "9b9fa486d7b33d003f9139ebce829f7afa982122",
+      "members": 54,
+      "crc_and_all_member_hashes_equal": true,
+      "fresh_api_digest_and_source_binding_equal": true
+    }
+  ],
+  "source_bindings": [
+    {
+      "repository_path": "codex-rs/ext/queue/tests/queue_service.rs",
+      "local_file": "/workspace/scratch/07dd58cc9630/research-audit/published-5b633-ci-20261105/b13-closure-review/source/codex-rs/ext/queue/tests/queue_service.rs.source.txt",
+      "bytes": 103291,
+      "sha256": "daeba9fdbc373f696f5ec06dcc8dfa07a58f85df6faf9475c812e7314a23f42f",
+      "computed_git_blob": "13afd7f2c536c5622fc7f8cc3fe68c0cc1a59cc1"
+    },
+    {
+      "repository_path": "codex-rs/ext/queue/BUILD.bazel",
+      "local_file": "/workspace/scratch/07dd58cc9630/research-audit/published-5b633-ci-20261105/b13-closure-review/source/codex-rs/ext/queue/BUILD.bazel",
+      "bytes": 506,
+      "sha256": "b7610f80115d2c8dae38c28e8ed66c7bdcb9f21969a4a0c79fe572204d620c47",
+      "computed_git_blob": "ece6922f7b389aa7b23336c34567955cf2755a89"
+    },
+    {
+      "repository_path": "codex-rs/hepta-agentd/src/runtime_tests.rs",
+      "local_file": "/workspace/scratch/07dd58cc9630/research-audit/published-5b633-ci-20261105/b13-closure-review/source/codex-rs/hepta-agentd/src/runtime_tests.rs.source.txt",
+      "bytes": 38274,
+      "sha256": "dd57c70dc21e92d82ee609bd2f771413c57c189ac2cadd581af7bf47f634b972",
+      "computed_git_blob": "31a41d8cad53ee3f04a1106e245dc5c3f4392a5b"
+    },
+    {
+      "repository_path": "codex-rs/hepta-agentd/src/runtime.rs",
+      "local_file": "/workspace/scratch/07dd58cc9630/research-audit/published-5b633-ci-20261105/b13-closure-review/source/codex-rs/hepta-agentd/src/runtime.rs.source.txt",
+      "bytes": 21533,
+      "sha256": "b2eb80954a210d2f21ce93d40926b84f13d4859a6145c429ae0ec28b59ea5e41",
+      "computed_git_blob": "7f7241d8d7b1ad978cd6a07db785f3b0e4af612d"
+    },
+    {
+      "repository_path": "codex-rs/hepta-agentd/src/lib.rs",
+      "local_file": "/workspace/scratch/07dd58cc9630/research-audit/published-5b633-ci-20261105/b13-closure-review/source/codex-rs/hepta-agentd/src/lib.rs.source.txt",
+      "bytes": 14668,
+      "sha256": "b0d542c1a45293ca94b82712dc9c4ac65f65f662744230bf3eb0cee208df6d9e",
+      "computed_git_blob": "3466e60a12138ae4816ace1531254312733e4175"
+    },
+    {
+      "repository_path": "codex-rs/hepta-agentd/Cargo.toml",
+      "local_file": "/workspace/scratch/07dd58cc9630/research-audit/published-5b633-ci-20261105/b13-closure-review/source/codex-rs/hepta-agentd/Cargo.toml",
+      "bytes": 4837,
+      "sha256": "01695336f08194ee7c0fd991266ed0f05adcab6413af173501ceee18209aa8b9",
+      "computed_git_blob": "d94042bddf8fcf785e2963a3acc90afcab3dbd69"
+    },
+    {
+      "repository_path": "codex-rs/hepta-agentd/BUILD.bazel",
+      "local_file": "/workspace/scratch/07dd58cc9630/research-audit/published-5b633-ci-20261105/b13-closure-review/source/codex-rs/hepta-agentd/BUILD.bazel",
+      "bytes": 8491,
+      "sha256": "eb5ca96730ba01d5acf31d16cc0ce8bea580f5e5d56971a745cb12f5fba22773",
+      "computed_git_blob": "f9354d8ecab6b3d026468301af83238493b09cb3"
+    }
+  ],
+  "all_nine_complete_case_bodies_read_and_exactly_bound": true,
+  "contract_review": [
+    {
+      "name": "runtime::tests::qualification_prepare_quarantines_expired_registry_attempt_with_h7_evidence",
+      "source_path": "codex-rs/hepta-agentd/src/runtime_tests.rs",
+      "source_line_start": 608,
+      "source_line_end": 807,
+      "preserved_contract": "Real 30-second setup lease; verify_current before releasing handles; sleep to its actual expiry; ExpiredActive; writer input is Err; exact expired head unchanged after H7 quarantine."
+    },
+    {
+      "name": "caller_abort_after_core_started_keeps_exact_authority_until_persistence",
+      "source_path": "codex-rs/ext/queue/tests/queue_service.rs",
+      "source_line_start": 884,
+      "source_line_end": 993,
+      "preserved_contract": "Abort the actual caller after hook entry; competitor remains DispatchInProgress after 400ms; zero then exactly one provider request and one persisted stable client message."
+    },
+    {
+      "name": "completion_panic_retains_exact_authority_in_settlement_guardian",
+      "source_path": "codex-rs/ext/queue/tests/queue_service.rs",
+      "source_line_start": 1098,
+      "source_line_end": 1207,
+      "preserved_contract": "Injected completion panic is surfaced; completion guardian keeps physical process ownership past expiry; release_count=0; exactly one request and one persisted message after completion."
+    },
+    {
+      "name": "core_error_after_started_never_releases_ambiguous_dispatch",
+      "source_path": "codex-rs/ext/queue/tests/queue_service.rs",
+      "source_line_start": 996,
+      "source_line_end": 1095,
+      "preserved_contract": "Delayed actual hook rejects admitted Core task; exact CoreSubmissionError; release_count=0; queued binding unchanged; no provider request; competing dispatch remains refused after expiry."
+    },
+    {
+      "name": "rollout_flush_before_dispatch_db_completion_recovers_without_resubmit",
+      "source_path": "codex-rs/ext/queue/tests/queue_service.rs",
+      "source_line_start": 1270,
+      "source_line_end": 1345,
+      "preserved_contract": "Injected crash-window completion error after durable rollout; reopen actual SQLite runtime; recover without resubmission; exactly one request and one persisted message."
+    },
+    {
+      "name": "queued_input_and_unique_event_ids_round_trip",
+      "source_path": "codex-rs/ext/queue/tests/queue_service.rs",
+      "source_line_start": 710,
+      "source_line_end": 752,
+      "preserved_contract": "Exact structured input/list round trip; generated UUIDv7 client identity; exactly two queue-change events with distinct IDs and correct thread identity."
+    },
+    {
+      "name": "reserved_to_persisted_legacy_row_deletion_emits_queue_changed",
+      "source_path": "codex-rs/ext/queue/tests/queue_service.rs",
+      "source_line_start": 1210,
+      "source_line_end": 1267,
+      "preserved_contract": "Persist a real turn before adopting a legacy queue row; reconciliation is Persisted, queue empty, one queue-change and one provider request."
+    },
+    {
+      "name": "queue_empty_observer_waits_for_owned_database_ack_after_turn_complete",
+      "source_path": "codex-rs/ext/queue/tests/queue_service.rs",
+      "source_line_start": 2264,
+      "source_line_end": 2363,
+      "preserved_contract": "TurnComplete and reconciliation event do not stand in for owned database ACK; gated dispatch and observer remain pending with exact row; then release and observe completion."
+    },
+    {
+      "name": "externally_changed_queues_dispatch_independently_and_retry_failed_wakes",
+      "source_path": "codex-rs/ext/queue/tests/queue_service.rs",
+      "source_line_start": 2366,
+      "source_line_end": 2508,
+      "preserved_contract": "Real independent/external/resumed queued turns; preserve 1/11/11-second sleeps and 25-second waits; exact three ordered prompts with no extra replay."
+    }
+  ],
+  "queue_actual": [
+    {
+      "role": "source",
+      "job_id": 127149583164,
+      "artifact_id": 13415207261,
+      "source_original": {
+        "head": "5b6331250ff459033bd44d1a95daec70131277cc",
+        "tree": "b26598d0d97d8d51e723bb5582137315f2174d35",
+        "run_id": "41999114838",
+        "run_attempt": "1",
+        "platform": "Windows-2025Server-10.0.26100-SP0",
+        "cpu_count": 4,
+        "input_git_objects": "100644 blob 3d5877b283b887091af507f3672003f84c500687\t.bazelrc\n100644 blob 1904db189003cb0b559f71958518e33a45fb6bb7\tMODULE.bazel.lock\n100644 blob 71fc8fa78b5afa076835b29790a5e6b0bd772558\tcodex-rs/Cargo.lock\n100644 blob ece6922f7b389aa7b23336c34567955cf2755a89\tcodex-rs/ext/queue/BUILD.bazel\n100644 blob 13afd7f2c536c5622fc7f8cc3fe68c0cc1a59cc1\tcodex-rs/ext/queue/tests/queue_service.rs\n100644 blob 346fd3f8f4c6885b7fa1b688bd192531945f39d0\tcodex-rs/git-utils/BUILD.bazel\n100644 blob 3ce0431434d0c0e4bbde65eb68bce27cc572d9c6\tcodex-rs/git-utils/src/git_process.rs\n100644 blob 5cb1aab4e3f4727a59bd662fafab0b5ffb430a97\tcodex-rs/git-utils/src/git_process_tests.rs\n100644 blob b06035f72d227b4069da677e8104617ae5616283\tcodex-rs/utils/pty/src/win/job.rs\n100644 blob 6f588ec3057fddfea35170e28e74036162ce6a23\tdefs.bzl\n100644 blob fa18c301dd22ca9023ba2f59801a8119dfbf8a69\tworkspace_root_test_launcher.bat.tpl\n",
+        "inputs": {
+          ".bazelrc": "0a5924ef90c0df166fb23744c650e1721106a7af0717c4f693f814208657c822",
+          "defs.bzl": "22eaf0e2f909b007faf90f2b1700a9b3175106d59889cb3dfc65191bf71fb50e",
+          "workspace_root_test_launcher.bat.tpl": "18b3945fd54e6a6e8e3413ec465289ad53ea252caff9fa9f9bb0b9cdc30962e5",
+          "MODULE.bazel.lock": "97f844724549757398c7834f5818d6244819b129658bdaa8453008dc694bbfc4",
+          "codex-rs/Cargo.lock": "e0d6c75b8e46cbf3c8df62ca98d653144b796238be165155e1a2796cf372a49e",
+          "codex-rs/git-utils/BUILD.bazel": "29d7aeb0cbd9f282eecca996fd40a75428bb75936964b58d73a4f7967f50f688",
+          "codex-rs/git-utils/src/git_process.rs": "da7c71b4a257113ab2a63ff3d84648640732934357d04f70e50cda344b4dbead",
+          "codex-rs/git-utils/src/git_process_tests.rs": "1a26298796193903a0ac38672de11bd124384d1ea396b19d326669911d4b4647",
+          "codex-rs/ext/queue/BUILD.bazel": "918ee78665bd24d8c6fef4d3aa68e9d4d15356b65120c96833be828656592d02",
+          "codex-rs/ext/queue/tests/queue_service.rs": "faa7808afad7ddb01cb413983e19ba84faed071cd4d8bff967f36d0e2a42f5ad",
+          "codex-rs/utils/pty/src/win/job.rs": "112293607f90d6614ffab4c5499a0bbeff743e3b1e4885739ccff41c47d48d43"
+        },
+        "environment": {
+          "TEMP": "D:/tmp",
+          "TMP": "D:/tmp",
+          "BAZEL_OUTPUT_BASE": "D:/o",
+          "BAZEL_OUTPUT_USER_ROOT": "D:/b",
+          "RUST_TEST_THREADS": null
+        },
+        "scope": [
+          "//codex-rs/git-utils:git-utils-unit-tests",
+          "//codex-rs/ext/queue:queue-queue_service-test"
+        ],
+        "diagnostic_only": false,
+        "pre_test_powershell_probe": false
+      },
+      "retained_original": {
+        "unchanged_inputs": true,
+        "logs": [
+          {
+            "source": "D:\\o\\execroot\\_main\\bazel-out\\windows_x86_64_msvc-fastbuild\\testlogs\\codex-rs\\git-utils\\git-utils-unit-tests\\test.log",
+            "file": "git-utils-unit-tests-test.log",
+            "bytes": 4328,
+            "sha256": "9eec533e897a7fa1cf2c0758fc8c6497495402bb9acc0e8d6292e080067d2986"
+          },
+          {
+            "source": "D:\\o\\execroot\\_main\\bazel-out\\windows_x86_64_msvc-fastbuild\\testlogs\\codex-rs\\git-utils\\git-utils-unit-tests\\test.xml",
+            "file": "git-utils-unit-tests-test.xml",
+            "bytes": 4665,
+            "sha256": "da9cfd98151c48db0f5620fefcc3d3bf6e5bfc421007286362072dc51c00a9d7"
+          },
+          {
+            "source": "D:\\o\\execroot\\_main\\bazel-out\\windows_x86_64_msvc-fastbuild\\testlogs\\codex-rs\\ext\\queue\\queue-queue_service-test\\test.log",
+            "file": "queue-queue_service-test-test.log",
+            "bytes": 2852,
+            "sha256": "1ce6ba5d350483739a3f3f27acf913a32e1cade99914d0b9403772973eb3604e"
+          },
+          {
+            "source": "D:\\o\\execroot\\_main\\bazel-out\\windows_x86_64_msvc-fastbuild\\testlogs\\codex-rs\\ext\\queue\\queue-queue_service-test\\test.xml",
+            "file": "queue-queue_service-test-test.xml",
+            "bytes": 3197,
+            "sha256": "b6141e7bd1471f6442ac9379187fa7b617bbcc8e01cabc9399458b33f4910832"
+          }
+        ]
+      },
+      "log_identity": {
+        "bytes": 2852,
+        "sha256": "1ce6ba5d350483739a3f3f27acf913a32e1cade99914d0b9403772973eb3604e",
+        "computed_git_blob": "b95dd23411fb0b670268df345dc6750ef17e139e"
+      },
+      "required_rows": [
+        {
+          "name": "completion_panic_retains_exact_authority_in_settlement_guardian",
+          "result": "ok",
+          "line_1based": 9,
+          "physical_line": "test completion_panic_retains_exact_authority_in_settlement_guardian ... ok"
+        },
+        {
+          "name": "caller_abort_after_core_started_keeps_exact_authority_until_persistence",
+          "result": "ok",
+          "line_1based": 15,
+          "physical_line": "test caller_abort_after_core_started_keeps_exact_authority_until_persistence ... ok"
+        },
+        {
+          "name": "core_error_after_started_never_releases_ambiguous_dispatch",
+          "result": "ok",
+          "line_1based": 16,
+          "physical_line": "test core_error_after_started_never_releases_ambiguous_dispatch ... ok"
+        },
+        {
+          "name": "queue_empty_observer_waits_for_owned_database_ack_after_turn_complete",
+          "result": "ok",
+          "line_1based": 26,
+          "physical_line": "test queue_empty_observer_waits_for_owned_database_ack_after_turn_complete ... ok"
+        },
+        {
+          "name": "queued_input_and_unique_event_ids_round_trip",
+          "result": "ok",
+          "line_1based": 27,
+          "physical_line": "test queued_input_and_unique_event_ids_round_trip ... ok"
+        },
+        {
+          "name": "reserved_to_persisted_legacy_row_deletion_emits_queue_changed",
+          "result": "ok",
+          "line_1based": 31,
+          "physical_line": "test reserved_to_persisted_legacy_row_deletion_emits_queue_changed ... ok"
+        },
+        {
+          "name": "rollout_flush_before_dispatch_db_completion_recovers_without_resubmit",
+          "result": "ok",
+          "line_1based": 35,
+          "physical_line": "test rollout_flush_before_dispatch_db_completion_recovers_without_resubmit ... ok"
+        },
+        {
+          "name": "externally_changed_queues_dispatch_independently_and_retry_failed_wakes",
+          "result": "ok",
+          "line_1based": 40,
+          "physical_line": "test externally_changed_queues_dispatch_independently_and_retry_failed_wakes ... ok"
+        }
+      ],
+      "whole_target": {
+        "passed": 36,
+        "failed": 0,
+        "ignored": 0
+      }
+    },
+    {
+      "role": "merge",
+      "job_id": 127149583430,
+      "artifact_id": 13415148242,
+      "source_original": {
+        "head": "9063c52a063b6f26c48e9418f6d8dbd14e9e06ff",
+        "tree": "b26598d0d97d8d51e723bb5582137315f2174d35",
+        "run_id": "41999114838",
+        "run_attempt": "1",
+        "platform": "Windows-2025Server-10.0.26100-SP0",
+        "cpu_count": 4,
+        "input_git_objects": "100644 blob 3d5877b283b887091af507f3672003f84c500687\t.bazelrc\n100644 blob 1904db189003cb0b559f71958518e33a45fb6bb7\tMODULE.bazel.lock\n100644 blob 71fc8fa78b5afa076835b29790a5e6b0bd772558\tcodex-rs/Cargo.lock\n100644 blob ece6922f7b389aa7b23336c34567955cf2755a89\tcodex-rs/ext/queue/BUILD.bazel\n100644 blob 13afd7f2c536c5622fc7f8cc3fe68c0cc1a59cc1\tcodex-rs/ext/queue/tests/queue_service.rs\n100644 blob 346fd3f8f4c6885b7fa1b688bd192531945f39d0\tcodex-rs/git-utils/BUILD.bazel\n100644 blob 3ce0431434d0c0e4bbde65eb68bce27cc572d9c6\tcodex-rs/git-utils/src/git_process.rs\n100644 blob 5cb1aab4e3f4727a59bd662fafab0b5ffb430a97\tcodex-rs/git-utils/src/git_process_tests.rs\n100644 blob b06035f72d227b4069da677e8104617ae5616283\tcodex-rs/utils/pty/src/win/job.rs\n100644 blob 6f588ec3057fddfea35170e28e74036162ce6a23\tdefs.bzl\n100644 blob fa18c301dd22ca9023ba2f59801a8119dfbf8a69\tworkspace_root_test_launcher.bat.tpl\n",
+        "inputs": {
+          ".bazelrc": "0a5924ef90c0df166fb23744c650e1721106a7af0717c4f693f814208657c822",
+          "defs.bzl": "22eaf0e2f909b007faf90f2b1700a9b3175106d59889cb3dfc65191bf71fb50e",
+          "workspace_root_test_launcher.bat.tpl": "18b3945fd54e6a6e8e3413ec465289ad53ea252caff9fa9f9bb0b9cdc30962e5",
+          "MODULE.bazel.lock": "97f844724549757398c7834f5818d6244819b129658bdaa8453008dc694bbfc4",
+          "codex-rs/Cargo.lock": "e0d6c75b8e46cbf3c8df62ca98d653144b796238be165155e1a2796cf372a49e",
+          "codex-rs/git-utils/BUILD.bazel": "29d7aeb0cbd9f282eecca996fd40a75428bb75936964b58d73a4f7967f50f688",
+          "codex-rs/git-utils/src/git_process.rs": "da7c71b4a257113ab2a63ff3d84648640732934357d04f70e50cda344b4dbead",
+          "codex-rs/git-utils/src/git_process_tests.rs": "1a26298796193903a0ac38672de11bd124384d1ea396b19d326669911d4b4647",
+          "codex-rs/ext/queue/BUILD.bazel": "918ee78665bd24d8c6fef4d3aa68e9d4d15356b65120c96833be828656592d02",
+          "codex-rs/ext/queue/tests/queue_service.rs": "faa7808afad7ddb01cb413983e19ba84faed071cd4d8bff967f36d0e2a42f5ad",
+          "codex-rs/utils/pty/src/win/job.rs": "112293607f90d6614ffab4c5499a0bbeff743e3b1e4885739ccff41c47d48d43"
+        },
+        "environment": {
+          "TEMP": "D:/tmp",
+          "TMP": "D:/tmp",
+          "BAZEL_OUTPUT_BASE": "D:/o",
+          "BAZEL_OUTPUT_USER_ROOT": "D:/b",
+          "RUST_TEST_THREADS": null
+        },
+        "scope": [
+          "//codex-rs/git-utils:git-utils-unit-tests",
+          "//codex-rs/ext/queue:queue-queue_service-test"
+        ],
+        "diagnostic_only": false,
+        "pre_test_powershell_probe": false
+      },
+      "retained_original": {
+        "unchanged_inputs": true,
+        "logs": [
+          {
+            "source": "D:\\o\\execroot\\_main\\bazel-out\\windows_x86_64_msvc-fastbuild\\testlogs\\codex-rs\\git-utils\\git-utils-unit-tests\\test.log",
+            "file": "git-utils-unit-tests-test.log",
+            "bytes": 4328,
+            "sha256": "e327ed6b989312315a34d53111d1b060fa40e8f52395c5c0431d275f68455da6"
+          },
+          {
+            "source": "D:\\o\\execroot\\_main\\bazel-out\\windows_x86_64_msvc-fastbuild\\testlogs\\codex-rs\\git-utils\\git-utils-unit-tests\\test.xml",
+            "file": "git-utils-unit-tests-test.xml",
+            "bytes": 4665,
+            "sha256": "fb7665d2271b653d0f3b2b152d5888cde0afd32956d0b9dd3d99e3e5acc8cbab"
+          },
+          {
+            "source": "D:\\o\\execroot\\_main\\bazel-out\\windows_x86_64_msvc-fastbuild\\testlogs\\codex-rs\\ext\\queue\\queue-queue_service-test\\test.log",
+            "file": "queue-queue_service-test-test.log",
+            "bytes": 2852,
+            "sha256": "e87c54c72e024173bf6c033174851bb71a63559276c6a890ac036c8502eb11f9"
+          },
+          {
+            "source": "D:\\o\\execroot\\_main\\bazel-out\\windows_x86_64_msvc-fastbuild\\testlogs\\codex-rs\\ext\\queue\\queue-queue_service-test\\test.xml",
+            "file": "queue-queue_service-test-test.xml",
+            "bytes": 3197,
+            "sha256": "107aad21678f658bdf8f581416a2b1938b159018649db3e10dd475fe0d908b56"
+          }
+        ]
+      },
+      "log_identity": {
+        "bytes": 2852,
+        "sha256": "e87c54c72e024173bf6c033174851bb71a63559276c6a890ac036c8502eb11f9",
+        "computed_git_blob": "875b30a830eab67badfa927ba7f95f0cbeb92ed1"
+      },
+      "required_rows": [
+        {
+          "name": "completion_panic_retains_exact_authority_in_settlement_guardian",
+          "result": "ok",
+          "line_1based": 8,
+          "physical_line": "test completion_panic_retains_exact_authority_in_settlement_guardian ... ok"
+        },
+        {
+          "name": "caller_abort_after_core_started_keeps_exact_authority_until_persistence",
+          "result": "ok",
+          "line_1based": 15,
+          "physical_line": "test caller_abort_after_core_started_keeps_exact_authority_until_persistence ... ok"
+        },
+        {
+          "name": "core_error_after_started_never_releases_ambiguous_dispatch",
+          "result": "ok",
+          "line_1based": 17,
+          "physical_line": "test core_error_after_started_never_releases_ambiguous_dispatch ... ok"
+        },
+        {
+          "name": "queued_input_and_unique_event_ids_round_trip",
+          "result": "ok",
+          "line_1based": 26,
+          "physical_line": "test queued_input_and_unique_event_ids_round_trip ... ok"
+        },
+        {
+          "name": "queue_empty_observer_waits_for_owned_database_ack_after_turn_complete",
+          "result": "ok",
+          "line_1based": 27,
+          "physical_line": "test queue_empty_observer_waits_for_owned_database_ack_after_turn_complete ... ok"
+        },
+        {
+          "name": "reserved_to_persisted_legacy_row_deletion_emits_queue_changed",
+          "result": "ok",
+          "line_1based": 32,
+          "physical_line": "test reserved_to_persisted_legacy_row_deletion_emits_queue_changed ... ok"
+        },
+        {
+          "name": "rollout_flush_before_dispatch_db_completion_recovers_without_resubmit",
+          "result": "ok",
+          "line_1based": 35,
+          "physical_line": "test rollout_flush_before_dispatch_db_completion_recovers_without_resubmit ... ok"
+        },
+        {
+          "name": "externally_changed_queues_dispatch_independently_and_retry_failed_wakes",
+          "result": "ok",
+          "line_1based": 40,
+          "physical_line": "test externally_changed_queues_dispatch_independently_and_retry_failed_wakes ... ok"
+        }
+      ],
+      "whole_target": {
+        "passed": 36,
+        "failed": 0,
+        "ignored": 0
+      }
+    }
+  ],
+  "agentd_actual": {
+    "job_id": 127339255880,
+    "artifact_id": 13431285250,
+    "source": {
+      "commit": "9063c52a063b6f26c48e9418f6d8dbd14e9e06ff",
+      "tracked_worktree_dirty": false,
+      "tree": "b26598d0d97d8d51e723bb5582137315f2174d35"
+    },
+    "target": "//codex-rs/hepta-agentd:hepta-agentd-cognitive-write-qualification-test",
+    "rows": [
+      {
+        "name": "runtime::tests::qualification_prepare_takes_over_expired_registry_head_without_evidence",
+        "result": "ok",
+        "line_1based": 5,
+        "physical_line": "test runtime::tests::qualification_prepare_takes_over_expired_registry_head_without_evidence ... ok"
+      },
+      {
+        "name": "runtime::tests::qualification_host_binds_one_local_turn_and_replays_exactly_once",
+        "result": "ok",
+        "line_1based": 6,
+        "physical_line": "test runtime::tests::qualification_host_binds_one_local_turn_and_replays_exactly_once ... ok"
+      },
+      {
+        "name": "runtime::tests::qualification_prepare_quarantines_expired_registry_attempt_with_h7_evidence",
+        "result": "ok",
+        "line_1based": 7,
+        "physical_line": "test runtime::tests::qualification_prepare_quarantines_expired_registry_attempt_with_h7_evidence ... ok"
+      }
+    ],
+    "log_identity": {
+      "bytes": 584,
+      "sha256": "7a97dd8f0e8bd329bafa61e41c45f3f7f9bac9da58436afbfbd5fc10fa82f08b",
+      "computed_git_blob": "74ef3b10bf04a89798c0ec67a1369a6f949f71be"
+    },
+    "complete_wrapper_summary": {
+      "passed": 3,
+      "failed": 0,
+      "ignored": 0,
+      "filtered": 172,
+      "seconds": 30.56
+    },
+    "job_original": {
+      "local_file": "/workspace/scratch/07dd58cc9630/research-audit/published-5b633-ci-20261105/terminal/main-win-shard2-127339255880/job.log",
+      "bytes": 463383,
+      "sha256": "1b7114b1ff639cc2cd5d38e5d53326e16796ffb1516fef1e960d8df371c3de65",
+      "computed_git_blob": "e5519cc76138d773f491c7ea42655448655c0dc9"
+    },
+    "actual_compile_test_and_checkout_lines": [
+      {
+        "line_1based": 33,
+        "text": "2026-11-05T15:26:31.4083843Z Uses: TrillionniumFoundation/hepta-private-ci/.github/workflows/bazel.yml@refs/pull/4797/merge (9063c52a063b6f26c48e9418f6d8dbd14e9e06ff)"
+      },
+      {
+        "line_1based": 86,
+        "text": "2026-11-05T15:26:39.2520814Z [command]\"C:\\Program Files\\Git\\bin\\git.exe\" -c protocol.version=2 fetch --no-tags --prune --no-recurse-submodules --depth=1 origin +9063c52a063b6f26c48e9418f6d8dbd14e9e06ff:refs/remotes/pull/4797/merge"
+      },
+      {
+        "line_1based": 88,
+        "text": "2026-11-05T15:26:45.1789273Z  * [new ref]         9063c52a063b6f26c48e9418f6d8dbd14e9e06ff -> pull/4797/merge"
+      },
+      {
+        "line_1based": 180,
+        "text": "2026-11-05T15:26:49.0696559Z 9063c52a063b6f26c48e9418f6d8dbd14e9e06ff"
+      },
+      {
+        "line_1based": 3159,
+        "text": "2026-11-05T15:45:37.4707830Z INFO: From Compiling Rust bin //codex-rs/hepta-agentd:hepta-agentd-cognitive-write-qualification-test-bin (114 files):"
+      },
+      {
+        "line_1based": 3279,
+        "text": "2026-11-05T15:49:34.5856616Z [3,883 / 3,930] 87 / 153 tests, 1 failed; Testing //codex-rs/hepta-agentd:hepta-agentd-cognitive-write-qualification-test; 163s local, remote-cache ... (30 actions, 20 running)"
+      },
+      {
+        "line_1based": 3280,
+        "text": "2026-11-05T15:49:45.3492709Z [3,883 / 3,930] 87 / 153 tests, 1 failed; Testing //codex-rs/hepta-agentd:hepta-agentd-cognitive-write-qualification-test; 174s local, remote-cache ... (30 actions, 20 running)"
+      },
+      {
+        "line_1based": 3281,
+        "text": "2026-11-05T15:49:50.4379882Z [3,883 / 3,930] 87 / 153 tests, 1 failed; Testing //codex-rs/hepta-agentd:hepta-agentd-cognitive-write-qualification-test; 179s local, remote-cache ... (30 actions, 20 running)"
+      },
+      {
+        "line_1based": 3471,
+        "text": "2026-11-05T15:50:40.7836696Z //codex-rs/hepta-agentd:hepta-agentd-cognitive-write-qualification-test  PASSED in 31.0s"
+      }
+    ]
+  },
+  "negative_control_review": "Original test bodies retain physical hook block, caller cancellation, injected completion panic/error, process fence after short dispatch expiry, release_count==0, real SQLite reopen with no resubmit, gated DB ACK and actual wall-clock H7 quarantine. No mutation-negative experiment is invented.",
+  "budgets": "Original current source TTL30s then actual expiry; Queue10s/25s waits,400ms/300ms and1/11/11s observations unchanged.",
+  "limits": [
+    "Collector alone only records existing logs and checkout at collection; full job adds actual checkout, compile and test actions. Execution-log zst is preserved, not decoded by this receipt.",
+    "Existing Bazel retry/cache policy remains; no retries=0 claim. Final Agentd target contains only log/XML, not an attempt inventory.",
+    "Bazel wrapper XML is not a per-Rust-case inventory; names come from complete original test.log bodies.",
+    "Queue working files may be CRLF; recorded Git objects and original working hashes remain distinct.",
+    "Default Cargo omits qualification feature, but original explicit Bazel target actually ran it.",
+    "Historical Q05/Q06 five-platform collection plan is not five-platform all-pass. Original failed guardian platform is Windows-shard3.",
+    "Historical d12 native results and empty targeted_negative_observations are preserved, not borrowed or embellished.",
+    "New eed tree, full B15 and production Agentd/AppServer/Root/Current acceptance remain independently pending."
+  ],
+  "independent_review": {
+    "local_file": "/workspace/scratch/07dd58cc9630/research-audit/published-5b633-ci-20261105/b13-closure-review/closure-review.json",
+    "bytes": 87583,
+    "sha256": "e35bcb2b2d108b28b19b4f4d5f127ca03bb6b1d037237506f9482cf6ce08a4f1",
+    "computed_git_blob": "b5d087e898ee173b8670477ebfd49e938f9f52e1"
+  },
+  "api_binding": {
+    "local_file": "/workspace/scratch/07dd58cc9630/hepta-audit-fifth/inputs/b13-artifact-list-api-bindings-v1.json",
+    "bytes": 9714,
+    "sha256": "7f57ebf3b296a90548d0696716f8009e5f8e65b8ad7ba273db74f2390f706d02",
+    "computed_git_blob": "b80bc8d0c4a5dd9ea0e9c298d0dfbea5bb025ed1"
+  },
+  "native_tests_executed_by_this_root_verification": false,
+  "counts_after_B22_and_B13": {
+    "CLOSED_SCOPED": 10,
+    "OPEN": 12,
+    "SCIENTIFIC_HOLD": 1
+  }
+}

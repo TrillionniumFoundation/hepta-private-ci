@@ -1,0 +1,293 @@
+diff --git a/qualification/r3-audit-repair-20261104/CURRENT_AUDIT_PROGRESS.zh-CN.md b/qualification/r3-audit-repair-20261104/CURRENT_AUDIT_PROGRESS.zh-CN.md
+index 2bb40fbc66617fa5a2deb29e00f8dbc8699a6bc2..305094117c7efb9e25ee44df73e37b831b382fda 100644
+--- a/qualification/r3-audit-repair-20261104/CURRENT_AUDIT_PROGRESS.zh-CN.md
++++ b/qualification/r3-audit-repair-20261104/CURRENT_AUDIT_PROGRESS.zh-CN.md
+@@ -12,7 +12,7 @@
+ 
+ ## 1. 全量盘点与实际开发阶段
+ 
+-最新完整分页快照覆盖 **1,103个open PR、5,193个分支、0个open非PR issue、0个release**。其中1,079个Draft、24个非Draft；155个直接以main为base、948个为其他base；最长依赖链211层。PR13页到终态空页，branch53页到首个空页并另核两个空页guard；issues13页全部为PR，未以open_issues_count替代计数。没有重复、依赖环或head/branch不一致；185个metadata base SHA不同于当前分支tip，不自动证明冲突。首/尾/空页及latest100终锚一致，但多次API读取不是原子快照。相比旧1088 PR/5163分支，新增15个Draft（#4809–#4823）和30个分支；仅旧#4729的head改变。[新完整库存](fourth-repository-inventory-20261105.json) / [逐字归档](repository-inventory-20261105/archive-manifest.json) / [旧1088历史快照](fourth-complete-inventory.json)
++最新完整分页快照覆盖 **1,103个open PR、5,193个分支、0个open非PR issue、0个release**。其中1,079个Draft、24个非Draft；155个直接以main为base、948个为其他base；最长依赖链211层。PR13页到终态空页，branch53页到首个空页并另核两个空页guard；issues13页全部为PR，未以open_issues_count替代计数。没有重复、依赖环或head/branch不一致；185个metadata base SHA不同于当前分支tip，不自动证明冲突。首/尾/空页及latest100终锚一致，但多次API读取不是原子快照。相比旧1088 PR/5163分支，新增15个Draft（#4809–#4823）和30个分支；仅旧#4729的head改变。[完整库存冻结索引](fourth-repository-inventory-20261105.json) / [逐字归档](repository-inventory-20261105/archive-manifest.json) / [旧1088历史快照](fourth-complete-inventory.json)
+ 
+ 规范登记为40模块、205契约、58协议、67持久数据域、91工作包。工作包状态为43 planned、25 source_implemented、20 source_implemented_execution_pending、2 source_implemented_semantic_review_pending、1 blocked_external。源码映射为46根、1,408源文件、938 Rust文件、474名称含测试特征的文件。这些分别是登记与源码规模，不是测试执行数或产品完成百分比。[阶段计划与规范映射](PROJECT_DIRECTION_AND_PLAN.zh-CN.md)
+ 
+@@ -226,7 +226,7 @@ Chain固定continuation README中的不同范围控制与结构核查仍保HOLD_
+ 
+ - [第四批技术资格与执行树](FOURTH_BATCH_QUALIFICATION.md)
+ - [当前23项机器账本](current-blockers.json)
+-- [新完整库存](fourth-repository-inventory-20261105.json) / [旧1088历史快照](fourth-complete-inventory.json)
++- [完整库存冻结索引](fourth-repository-inventory-20261105.json) / [旧1088历史快照](fourth-complete-inventory.json)
+ - [新donor固定源与资格](FOURTH_DONOR_PROGRESS_20261105.zh-CN.md) / [机器索引](fourth-donor-progress-20261105.json)
+ - [第四批证据索引](fourth-evidence-index.json)
+ - [原平台失败全集](fourth-original-platform-failures.json)
+diff --git a/qualification/r3-audit-repair-20261104/FOURTH_BATCH_QUALIFICATION.md b/qualification/r3-audit-repair-20261104/FOURTH_BATCH_QUALIFICATION.md
+index 982be059e7d0440ffcfbd35280475b29c88a6f11..bed13a3f5bdde66d36dadbcc5d0233c6884f2d21 100644
+--- a/qualification/r3-audit-repair-20261104/FOURTH_BATCH_QUALIFICATION.md
++++ b/qualification/r3-audit-repair-20261104/FOURTH_BATCH_QUALIFICATION.md
+@@ -115,7 +115,7 @@ The B16 two-pool caller binding has a separate static review and three proposed
+ 
+ ## New inventory and separate donor qualification
+ 
+-The full API interval03:16–03:24 UTC on2026-11-05 enumerated1103 open PRs (1079Draft/24nonDraft;155main-base/948other-base),5193branches,0non-PR issues and0releases. Complete pagination, terminal empty pages and final anchors were checked; these are not an atomic snapshot. The previous1088/5163 snapshot remains historical. Published4797/cabc and research4798/77b244 are unchanged. [New inventory](fourth-repository-inventory-20261105.json)
++The full API interval03:16–03:24 UTC on2026-11-05 enumerated1103 open PRs (1079Draft/24nonDraft;155main-base/948other-base),5193branches,0non-PR issues and0releases. Complete pagination, terminal empty pages and final anchors were checked; these are not an atomic snapshot. The previous1088/5163 snapshot remains historical. Published4797/cabc and research4798/77b244 are unchanged. [Frozen full-inventory index](fourth-repository-inventory-20261105.json)
+ 
+ | Donor | Independently observed scope | Qualification limit |
+ |---|---|---|
+diff --git a/qualification/r3-audit-repair-20261104/PROJECT_DIRECTION_AND_PLAN.zh-CN.md b/qualification/r3-audit-repair-20261104/PROJECT_DIRECTION_AND_PLAN.zh-CN.md
+index f97995096073006673bb587fac3c2754b5e48bfe..7c06b7f3041a8e4b3df794f00166aa59b369f832 100644
+--- a/qualification/r3-audit-repair-20261104/PROJECT_DIRECTION_AND_PLAN.zh-CN.md
++++ b/qualification/r3-audit-repair-20261104/PROJECT_DIRECTION_AND_PLAN.zh-CN.md
+@@ -40,7 +40,7 @@ Hepta 的目标是本地优先、可恢复的多 Agent 系统。其工程核心
+ 
+ **先完成当前工程修复、更新现有Draft PR，再以新提交的原始跨平台CI验收。** 当前原23项账本为8项范围内闭合、14项开放、1项科学HOLD。既有局部结果与原失败均保留；工程发布候选与后续Memory大改分阶段执行，避免等待尚未编译的方案阻塞已完成修复。
+ 
+-最新完整清点覆盖2026-11-05 03:16–03:24 UTC：1103个open PR，其中1079 Draft、24非Draft；5193 branches，155 main-base/948 nonmain-base，最长依赖链211；0个open非PR issue/0个release。逐页到空页并核终锚，不把多时点查询称为原子快照。旧22:27的1088 PR/5163分支及下文18:57历史增量分别保留。当前候选仍是PR #4797，目标base为integration/ui-objective-20261103-product，main观察为732e934。没有合入main或改变目标base。[本轮完整进展](CURRENT_AUDIT_PROGRESS.zh-CN.md) / [新完整库存](fourth-repository-inventory-20261105.json)
++最新完整清点覆盖2026-11-05 03:16–03:24 UTC：1103个open PR，其中1079 Draft、24非Draft；5193 branches，155 main-base/948 nonmain-base，最长依赖链211；0个open非PR issue/0个release。逐页到空页并核终锚，不把多时点查询称为原子快照。旧22:27的1088 PR/5163分支及下文18:57历史增量分别保留。当前候选仍是PR #4797，目标base为integration/ui-objective-20261103-product，main观察为732e934。没有合入main或改变目标base。[本轮完整进展](CURRENT_AUDIT_PROGRESS.zh-CN.md) / [完整库存冻结索引](fourth-repository-inventory-20261105.json)
+ 
+ 此前f825组合源已执行原25项权限回归25/25通过；原七包选中5416项，其中5408 JUnit PASS、8 FAIL；原全工作区19503项为19485 JUnit PASS、17 FAIL、1 TIMEOUT。24项requires-remote早退已逐名绑定原始输出；后续另核1项原capability早退，已知25项省略行为，均不当作对应行为执行。完整raw/JUnit/catalog/程序身份已独立重建与核验。[完整原始证据](fourth-f825-full-owning-complete-root-review.json)
+ 
+diff --git a/qualification/r3-audit-repair-20261104/fourth-evidence-index.json b/qualification/r3-audit-repair-20261104/fourth-evidence-index.json
+index ed81563ca591ba6a8da7db81923196b5b7e61a5c..f9337e344c05cd788a14a0ebb95bbee3d53511d3 100644
+--- a/qualification/r3-audit-repair-20261104/fourth-evidence-index.json
++++ b/qualification/r3-audit-repair-20261104/fourth-evidence-index.json
+@@ -247,7 +247,7 @@
+     "original_full16_failures_and25_early_returns_preserved": true,
+     "latest_actual_free_bytes": 23893377024
+   },
+-  "artifact_count": 989,
++  "artifact_count": 991,
+   "artifacts": [
+     {
+       "path": "fourth-cabc-ci-terminal.json",
+@@ -4706,11 +4706,18 @@
+     },
+     {
+       "path": "fourth-repository-inventory-20261105.json",
+-      "bytes": 1846885,
+-      "sha256": "4adb3a73f03226fd73daba8c5ae2a5644fb84cde7702ddc892abb72d75a810f9",
+-      "blob": "5fac62f2526a56ebc0cdaa8cfe66531c9a33f912",
+-      "mode": "100644",
+-      "scope": "Complete non-atomic observed repository inventory; all pages and ending anchors preserved."
++      "bytes": 4366,
++      "sha256": "0bfe1d00ba090d18d7b7604f26887cebfb50784bbcfcb9ec4973863eb541483a",
++      "blob": "9db84c745e7f31fd0781e25baa5d03a405aaf13c",
++      "mode": "100644",
++      "scope": "Typed frozen inventory index. Restore the unchanged full JSON from the existing archive before parsing original fields.",
++      "original_payload": {
++        "bytes": 1846885,
++        "sha256": "4adb3a73f03226fd73daba8c5ae2a5644fb84cde7702ddc892abb72d75a810f9",
++        "blob": "5fac62f2526a56ebc0cdaa8cfe66531c9a33f912",
++        "archive_member": "complete-inventory.json",
++        "archive_manifest": "repository-inventory-20261105/archive-manifest.json"
++      }
+     },
+     {
+       "path": "repository-inventory-20261105/archive-manifest.json",
+@@ -8045,6 +8052,22 @@
+       "bytes": 60728,
+       "sha256": "5759f2b257f21ce50ce2d20999096805f990208b25329d3d65e9fb07bbb55032",
+       "scope": "Independent new59 archived-body identity and25activeMD/JSON literal workflow scan;15paths/79occurrences valid. Static check, not whole docs gate."
++    },
++    {
++      "path": "repository-inventory-20261105/restore_inventory.py",
++      "bytes": 5232,
++      "sha256": "9754c5f64731ec188c8c9d32752fb40d7756c679803d826aef74db01b18e60ae",
++      "blob": "5495be1a51b14a4a0642d7c09c6bd670f539ef77",
++      "mode": "100644",
++      "scope": "Frozen inventory verification and exact create-only JSON restoration; no project or native tests."
++    },
++    {
++      "path": "repository-inventory-20261105/RESTORE_INVENTORY.md",
++      "bytes": 2584,
++      "sha256": "6f1b0a15845e412152382ed2fbe0bef3177c94ceac23917111865787c4054141",
++      "blob": "2994e990903b7eb9eb51f1ae9ba191932f9efef7",
++      "mode": "100644",
++      "scope": "Frozen inventory verification and exact create-only JSON restoration; no project or native tests."
+     }
+   ],
+   "interpretation": [
+@@ -8514,5 +8537,15 @@
+     "causes_closed": false,
+     "diagnostic_candidates_executed": false
+   },
+-  "additional_passive_source_evidence_rule": "Original formatter postimages and diagnostic Rust source snapshots use passive .source.txt with logical path mapping; frozen report postimages likewise avoid active relative-link interpretation."
++  "additional_passive_source_evidence_rule": "Original formatter postimages and diagnostic Rust source snapshots use passive .source.txt with logical path mapping; frozen report postimages likewise avoid active relative-link interpretation.",
++  "inventory_transport_update": {
++    "original_payload_unchanged": {
++      "bytes": 1846885,
++      "sha256": "4adb3a73f03226fd73daba8c5ae2a5644fb84cde7702ddc892abb72d75a810f9",
++      "blob": "5fac62f2526a56ebc0cdaa8cfe66531c9a33f912"
++    },
++    "typed_index": "fourth-repository-inventory-20261105.json",
++    "existing_archive_manifest": "repository-inventory-20261105/archive-manifest.json",
++    "counts_or_blocker_status_changed": false
++  }
+ }
+diff --git a/qualification/r3-audit-repair-20261104/repository-inventory-20261105/RESTORE_INVENTORY.md b/qualification/r3-audit-repair-20261104/repository-inventory-20261105/RESTORE_INVENTORY.md
+new file mode 100644
+index 0000000000000000000000000000000000000000..2994e990903b7eb9eb51f1ae9ba191932f9efef7
+--- /dev/null
++++ b/qualification/r3-audit-repair-20261104/repository-inventory-20261105/RESTORE_INVENTORY.md
+@@ -0,0 +1,29 @@
++# Restore the frozen complete repository inventory
++
++[The typed index](../fourth-repository-inventory-20261105.json) describes the complete inventory observed on 2026-11-05 at 03:16–03:24 UTC. It is an index, not the original inventory JSON object. The frozen counts remain 1,103 open PRs, 1,079 Drafts, 24 non-Drafts and 5,193 branches. This packaging change adds no new observation or qualification.
++
++The original JSON is the `complete-inventory.json` member of the existing [archive manifest](archive-manifest.json) and its 18 existing base64 parts. Its identity remains:
++
++- Bytes: `1846885`
++- SHA256: `4adb3a73f03226fd73daba8c5ae2a5644fb84cde7702ddc892abb72d75a810f9`
++- Git blob: `5fac62f2526a56ebc0cdaa8cfe66531c9a33f912`
++
++From the repository root, verify the complete archive without creating any files:
++
++```sh
++python3 qualification/r3-audit-repair-20261104/repository-inventory-20261105/restore_inventory.py
++```
++
++To restore the exact JSON, choose a new output filename:
++
++```sh
++python3 qualification/r3-audit-repair-20261104/repository-inventory-20261105/restore_inventory.py --output complete-inventory.restored.json
++```
++
++The verifier checks the original manifest identity, ordered part offsets and identities, strict base64, complete gzip CRC, complete TAR identity, every member name and identity, and the restored JSON schema and frozen count projection. It reads TAR members in memory and never extracts archive paths. Output is created only after all checks pass; an existing output file is rejected. Nothing in the archived evidence is executed.
++
++Parse the restored file to access `prs`, `branches`, observations, graph edges and all other original fields. A parser must not treat the typed index as the original `hepta.complete-repository-inventory.v2` object. The original internal `raw_identity_index` remains relative to its historical archive layout. Reconstructing only the JSON does not materialize those related API files.
++
++The existing inventory builder writes `complete-inventory.json`; the historical root review reads that exact logical file and verifies it against the original archive member. Both frozen scripts and their original source paths remain unchanged. The Markdown reports link to the typed index. The current evidence index records the new index identity and retains the full original identity separately; historical receipts continue to describe the original bytes.
++
++All 18 part files, the original archive manifest, original root review and their historical Git identities are reused unchanged. Blob-size and spelling policies are unchanged.
+diff --git a/qualification/r3-audit-repair-20261104/repository-inventory-20261105/restore_inventory.py b/qualification/r3-audit-repair-20261104/repository-inventory-20261105/restore_inventory.py
+new file mode 100644
+index 0000000000000000000000000000000000000000..5495be1a51b14a4a0642d7c09c6bd670f539ef77
+--- /dev/null
++++ b/qualification/r3-audit-repair-20261104/repository-inventory-20261105/restore_inventory.py
+@@ -0,0 +1,127 @@
++#!/usr/bin/env python3
++"""Verify the frozen inventory archive and optionally restore its exact JSON."""
++
++import argparse
++import base64
++import gzip
++import hashlib
++import io
++import json
++from pathlib import Path
++from pathlib import PurePosixPath
++import tarfile
++
++
++def identity(data):
++    return {
++        "bytes": len(data),
++        "sha256": hashlib.sha256(data).hexdigest(),
++        "blob": hashlib.sha1(
++            b"blob " + str(len(data)).encode() + b"\0" + data
++        ).hexdigest(),
++    }
++
++
++def check_identity(data, expected):
++    actual = identity(data)
++    for key, value in actual.items():
++        if expected.get(key) != value:
++            raise ValueError(f"Identity mismatch for {key}: {value}")
++    return actual
++
++
++def safe_file(directory, name):
++    path = PurePosixPath(name)
++    if path.is_absolute() or ".." in path.parts or not path.parts:
++        raise ValueError(f"Invalid archive part path: {name}")
++    local = directory / path
++    local.resolve().relative_to(directory.resolve())
++    if local.is_symlink() or not local.is_file():
++        raise ValueError(f"Not a regular archive part: {name}")
++    return local
++
++
++def restore(directory):
++    index = json.loads(
++        (directory.parent / "fourth-repository-inventory-20261105.json").read_bytes()
++    )
++    if index.get("schema") != "hepta.frozen-repository-inventory-index.v1":
++        raise ValueError("Expected the typed frozen inventory index")
++    manifest_bytes = (directory / "archive-manifest.json").read_bytes()
++    check_identity(manifest_bytes, index["archive"]["manifest_identity"])
++    manifest = json.loads(manifest_bytes)
++    encoded_parts = []
++    offset = 0
++    for number, part in enumerate(manifest["parts"]):
++        if part["sequence"] != number or part["offset"] != offset:
++            raise ValueError("Archive parts are not contiguous")
++        data = safe_file(directory, part["path"]).read_bytes()
++        check_identity(data, part)
++        encoded_parts.append(data)
++        offset += len(data)
++    if len(encoded_parts) != index["archive"]["part_count"]:
++        raise ValueError("Unexpected archive part count")
++    if offset != manifest["base64_bytes"]:
++        raise ValueError("Incomplete encoded archive")
++    compressed = base64.b64decode(b"".join(encoded_parts), validate=True)
++    check_identity(compressed, manifest["gzip"])
++    uncompressed = gzip.decompress(compressed)
++    check_identity(uncompressed, manifest["uncompressed_tar"])
++    expected = {row["path"]: row for row in manifest["members"]}
++    if len(expected) != manifest["member_count"]:
++        raise ValueError("Duplicate expected archive members")
++    inventory_bytes = None
++    with tarfile.open(fileobj=io.BytesIO(uncompressed), mode="r:") as archive:
++        members = archive.getmembers()
++        if len(members) != len(expected):
++            raise ValueError("Unexpected archive member count")
++        if {member.name for member in members} != set(expected):
++            raise ValueError("Unexpected archive member names")
++        for member in members:
++            path = PurePosixPath(member.name)
++            if not member.isfile() or path.is_absolute() or ".." in path.parts:
++                raise ValueError(f"Unsafe archive member: {member.name}")
++            stream = archive.extractfile(member)
++            if stream is None:
++                raise ValueError(f"Unreadable archive member: {member.name}")
++            data = stream.read()
++            check_identity(data, expected[member.name])
++            if len(data) != member.size:
++                raise ValueError(f"Incomplete archive member: {member.name}")
++            if member.name == index["archive"]["inventory_member"]:
++                inventory_bytes = data
++    if inventory_bytes is None:
++        raise ValueError("The complete inventory member is absent")
++    check_identity(inventory_bytes, index["original"])
++    check_identity(inventory_bytes, manifest["inventory"])
++    inventory = json.loads(inventory_bytes)
++    if inventory.get("schema") != index["original"]["schema"]:
++        raise ValueError("Unexpected restored inventory schema")
++    if inventory["counts"] != index["counts"]:
++        raise ValueError("The frozen count projection differs from the original")
++    if len(inventory["prs"]) != index["counts"]["open_prs"]:
++        raise ValueError("The complete PR list differs from the frozen count")
++    return inventory_bytes, index, len(members)
++
++
++def main():
++    parser = argparse.ArgumentParser(description=__doc__)
++    parser.add_argument("--output", type=Path)
++    args = parser.parse_args()
++    data, index, member_count = restore(Path(__file__).resolve().parent)
++    if args.output is not None:
++        with args.output.open("xb") as output:
++            output.write(data)
++    print(json.dumps({
++        "complete_original_identity": identity(data),
++        "archive_parts_verified": index["archive"]["part_count"],
++        "all_archive_members_verified": member_count,
++        "complete_gzip_crc_verified": True,
++        "counts": index["counts"],
++        "output": str(args.output) if args.output is not None else None,
++        "scope": "Frozen evidence verification; no project tests or ref changes.",
++    }, indent=2))
++
++
++if __name__ == "__main__":
++    main()

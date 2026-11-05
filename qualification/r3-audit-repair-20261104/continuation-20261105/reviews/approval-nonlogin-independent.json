@@ -1,0 +1,444 @@
+{
+  "schema": "five-approval-nonlogin-independent-static-review-v1",
+  "observed_at": "2026-11-05T15:27:16.633809+00:00",
+  "verdict": "STATIC_ACCEPTED_PENDING_ORIGINAL_NATIVE",
+  "base_commit": "5b6331250ff459033bd44d1a95daec70131277cc",
+  "base_tree": "b26598d0d97d8d51e723bb5582137315f2174d35",
+  "candidate_manifest": {
+    "local_path": "/workspace/scratch/07dd58cc9630/architecture-audit/approval-shell-fixtures-20261105/nonlogin-candidate-v1/manifest.json",
+    "bytes": 5875,
+    "sha256": "b48245d7e650b39fd9af6f259ccf5916b95f98ec0183d1fcac9ee7ac210860d8",
+    "git_blob": "3743f3151101f04e59ea8c19c53c79b927249b44"
+  },
+  "source_review": {
+    "local_path": "/workspace/scratch/07dd58cc9630/architecture-audit/approval-shell-fixtures-20261105/source-review.json",
+    "bytes": 14585,
+    "sha256": "224af8844927dcab64350b1a8f3ea9f897e53b9d7c415eb28d47fccaa6c1fd65",
+    "git_blob": "f27f02019f991a25f256f8f6ad4ce3b9fb224d91"
+  },
+  "patch": {
+    "local_path": "/workspace/scratch/07dd58cc9630/architecture-audit/approval-shell-fixtures-20261105/nonlogin-candidate-v1/fixture.patch",
+    "bytes": 2233,
+    "sha256": "c90073b4c0bb992248fb1c846a0c8c09db7151d0e68a72dbd6367d5bd9f37480",
+    "git_blob": "e57fab990b7ea55891ea85aa6a4b0796ee0a2589"
+  },
+  "postimages": [
+    {
+      "logical_path": "codex-rs/core/tests/suite/approvals.rs",
+      "local_path": "/workspace/scratch/07dd58cc9630/architecture-audit/approval-shell-fixtures-20261105/nonlogin-candidate-v1/candidate/codex-rs/core/tests/suite/approvals.rs",
+      "bytes": 157966,
+      "sha256": "5e3b179c89b4fb5068246f404e3f776843e56ec3305068e5a25ed5dd8cf35614",
+      "git_blob": "10874f8ac6ef743ce1557f2251d0cc631795b0d6",
+      "only_changed_lines": 1,
+      "all_other_complete_file_bytes_preserved": true
+    },
+    {
+      "logical_path": "codex-rs/core/tests/suite/request_permissions.rs",
+      "local_path": "/workspace/scratch/07dd58cc9630/architecture-audit/approval-shell-fixtures-20261105/nonlogin-candidate-v1/candidate/codex-rs/core/tests/suite/request_permissions.rs",
+      "bytes": 82442,
+      "sha256": "8ec4541e8d9afe92684cd27a01f00e5e724c9e44ba8a83c75bc44936d323eb92",
+      "git_blob": "18952e04bf41f021ec4c2c38a618b727454ecce1",
+      "only_changed_lines": 4,
+      "all_other_complete_file_bytes_preserved": true
+    }
+  ],
+  "fixed_source_bodies_verified": [
+    {
+      "logical_path": "codex-rs/core/src/config/mod.rs",
+      "local_path": "/workspace/scratch/07dd58cc9630/architecture-audit/approval-shell-fixtures-20261105/source/codex-rs/core/src/config/mod.rs",
+      "bytes": 190270,
+      "sha256": "ebbeae65aa387cce085524de709516e2877e6c4ea15738cd26dbe531bf74b65b",
+      "git_blob": "57a071fd89537bf4219c521281e4c42174d5e924"
+    },
+    {
+      "logical_path": "codex-rs/core/src/environment_selection.rs",
+      "local_path": "/workspace/scratch/07dd58cc9630/architecture-audit/approval-shell-fixtures-20261105/source/codex-rs/core/src/environment_selection.rs",
+      "bytes": 73500,
+      "sha256": "04bdcec5996e2bae7187622fc7bc8a82784b70b916cb9c54618febd9f0101ca6",
+      "git_blob": "85d590f386ba81428e5ea3360d2e573d054cab4a"
+    },
+    {
+      "logical_path": "codex-rs/core/src/exec_policy.rs",
+      "local_path": "/workspace/scratch/07dd58cc9630/architecture-audit/approval-shell-fixtures-20261105/source/codex-rs/core/src/exec_policy.rs",
+      "bytes": 39414,
+      "sha256": "876e42cd25f8bab1b494328ceb1bbe04d87d25003b43db2e8d9d64cf1b53bdff",
+      "git_blob": "f24b062469d579929739c2cb4221661499ca9248"
+    },
+    {
+      "logical_path": "codex-rs/core/src/session/mod.rs",
+      "local_path": "/workspace/scratch/07dd58cc9630/architecture-audit/approval-shell-fixtures-20261105/source/codex-rs/core/src/session/mod.rs",
+      "bytes": 215824,
+      "sha256": "a666d5f63dddd2a197827082087692819a841cfa2d30943ab3a19a7ba983ba39",
+      "git_blob": "b71bc56687973debf2b8615da036e60a436e3c08"
+    },
+    {
+      "logical_path": "codex-rs/core/src/session/session.rs",
+      "local_path": "/workspace/scratch/07dd58cc9630/architecture-audit/approval-shell-fixtures-20261105/source/codex-rs/core/src/session/session.rs",
+      "bytes": 80362,
+      "sha256": "3bd010c24ce1e11e42956d40c949ad0f72de93da1b590349c3aad776660ea756",
+      "git_blob": "b3a03355df039c9406c30a07be87bac83e390ad9"
+    },
+    {
+      "logical_path": "codex-rs/core/src/shell.rs",
+      "local_path": "/workspace/scratch/07dd58cc9630/architecture-audit/approval-shell-fixtures-20261105/source/codex-rs/core/src/shell.rs",
+      "bytes": 3290,
+      "sha256": "99ca66a51f7f662978548b49d54346f489206b638c57abcfaa810538afdc71a2",
+      "git_blob": "37a35bfe3f44c71c1829d03918185043880655af"
+    },
+    {
+      "logical_path": "codex-rs/core/src/tools/handlers/unified_exec/exec_command.rs",
+      "local_path": "/workspace/scratch/07dd58cc9630/architecture-audit/approval-shell-fixtures-20261105/source/codex-rs/core/src/tools/handlers/unified_exec/exec_command.rs",
+      "bytes": 18907,
+      "sha256": "2ad70d101f22c8f0ac14e149043c3e2ecac70a3dc8d8a6cf389a415676500b44",
+      "git_blob": "2ef9c0f6baae48748cb2cb22e93202952759fbce"
+    },
+    {
+      "logical_path": "codex-rs/core/src/tools/handlers/unified_exec.rs",
+      "local_path": "/workspace/scratch/07dd58cc9630/architecture-audit/approval-shell-fixtures-20261105/source/codex-rs/core/src/tools/handlers/unified_exec.rs",
+      "bytes": 4730,
+      "sha256": "acdd9d801500be041808a5c9fc356812512e3e1327801d37e65c0e554c962f8b",
+      "git_blob": "f6a5bfa5423af952bca4b1f8788fd25760882ad7"
+    },
+    {
+      "logical_path": "codex-rs/core/src/tools/handlers/unified_exec_tests.rs",
+      "local_path": "/workspace/scratch/07dd58cc9630/architecture-audit/approval-shell-fixtures-20261105/source/codex-rs/core/src/tools/handlers/unified_exec_tests.rs",
+      "bytes": 17899,
+      "sha256": "1f9aae4be1b55a556e9a9d68bc9a3d74e8c1165419be0f09b7f952b20fd6c323",
+      "git_blob": "775d78cc1f77093f27a67b683db63f5a9833c452"
+    },
+    {
+      "logical_path": "codex-rs/core/src/unified_exec/process_manager.rs",
+      "local_path": "/workspace/scratch/07dd58cc9630/architecture-audit/approval-shell-fixtures-20261105/source/codex-rs/core/src/unified_exec/process_manager.rs",
+      "bytes": 62256,
+      "sha256": "7ae992c634e0cf431122f2a806b1fa6b172030b5fe2652afaaac400c2385f2df",
+      "git_blob": "181551409d2d511a3ff8f027048200beb27606ec"
+    },
+    {
+      "logical_path": "codex-rs/core/src/unified_exec/shell_snapshot.rs",
+      "local_path": "/workspace/scratch/07dd58cc9630/architecture-audit/approval-shell-fixtures-20261105/source/codex-rs/core/src/unified_exec/shell_snapshot.rs",
+      "bytes": 1275,
+      "sha256": "c486fdb7f284c3fc200f2ec7ff229a133775c756da3456bf75e9ce1bbf4b9e9c",
+      "git_blob": "ddd93ec8b54e03dd75c2877816116b824d6b5a98"
+    },
+    {
+      "logical_path": "codex-rs/core/tests/common/test_codex.rs",
+      "local_path": "/workspace/scratch/07dd58cc9630/architecture-audit/approval-shell-fixtures-20261105/source/codex-rs/core/tests/common/test_codex.rs",
+      "bytes": 49262,
+      "sha256": "318fb9469c3f65839f7384c29414b14f9f3617400e65829a47de9ad964fd28da",
+      "git_blob": "efaaf61844b49a1e42e9d630b306733d06647094"
+    },
+    {
+      "logical_path": "codex-rs/core/tests/suite/approvals.rs",
+      "local_path": "/workspace/scratch/07dd58cc9630/architecture-audit/approval-shell-fixtures-20261105/source/codex-rs/core/tests/suite/approvals.rs",
+      "bytes": 157912,
+      "sha256": "1242d0d211d6b3e667489d1335dbfff0f4c05e5d97a37b50889989a960056624",
+      "git_blob": "f1ab8e85959c5d4e6653836c424d643dd6b4cfc6"
+    },
+    {
+      "logical_path": "codex-rs/core/tests/suite/request_permissions.rs",
+      "local_path": "/workspace/scratch/07dd58cc9630/architecture-audit/approval-shell-fixtures-20261105/source/codex-rs/core/tests/suite/request_permissions.rs",
+      "bytes": 82226,
+      "sha256": "53d9fbf500e11184ae805c5454d9e1f96f70b97bf26fc0530f5ba57a478f1641",
+      "git_blob": "fa48e01442917eee2a5b91bada0a5af6cacea98d"
+    },
+    {
+      "logical_path": "codex-rs/exec-server/src/environment_config.rs",
+      "local_path": "/workspace/scratch/07dd58cc9630/architecture-audit/approval-shell-fixtures-20261105/source/codex-rs/exec-server/src/environment_config.rs",
+      "bytes": 7371,
+      "sha256": "f18fdcb95067d757e8e3dd58e674657eb4564ccf61d3499b7862ba77ebac5a1d",
+      "git_blob": "b53208b63a87d10210a0be1b12c2a756270c0e81"
+    },
+    {
+      "logical_path": "codex-rs/shell-command/src/bash.rs",
+      "local_path": "/workspace/scratch/07dd58cc9630/architecture-audit/approval-shell-fixtures-20261105/source/codex-rs/shell-command/src/bash.rs",
+      "bytes": 18944,
+      "sha256": "47ef45c594e56bc16ba54989c02eeefd569897a88283ec3bb933b333cd4612c0",
+      "git_blob": "ddd5807bfce5d1a54796e7a557b77d589be14d35"
+    }
+  ],
+  "cases": [
+    {
+      "name": "suite::approvals::approving_execpolicy_amendment_persists_policy_and_skips_future_prompts",
+      "source_path": "codex-rs/core/tests/suite/approvals.rs",
+      "declaration_line": 2442,
+      "original_complete_body": {
+        "bytes": 5110,
+        "sha256": "fe1fceadf079cc7257b4460a334820e4b39c4165b7641320859ebe3e9d0c8329",
+        "git_blob": "6f920f201dea7291b196b0a8537f687e53432a19"
+      },
+      "original_contract": "first real touch requires approval; exact ExecPolicyAmendment([touch,allow-prefix.txt]); saved rules/developer notice; empty output+exit0+empty real file; second same command without approval",
+      "original_budget": "30,000 ms yield via original ActionKind helper",
+      "explicit_login_or_profile_requirement_in_original": false,
+      "one_config_assignment_only": true
+    },
+    {
+      "name": "suite::request_permissions::request_permissions_grants_apply_to_later_exec_command_calls",
+      "source_path": "codex-rs/core/tests/suite/request_permissions.rs",
+      "declaration_line": 1272,
+      "original_complete_body": {
+        "bytes": 4371,
+        "sha256": "231536595da0d72f21dca811690502d2772bb45caefc51586c4f9ca7ed565ac6",
+        "git_blob": "f4230105457e7c34e1f577e8c35edf25b72b9bab"
+      },
+      "original_contract": "grant normalized outside directory for Turn; retain original optional exec approval branch and exact additional_permissions; exit0/exact sticky-grant-ok/real file contents",
+      "original_budget": "10,000 ms original exec yield",
+      "explicit_login_or_profile_requirement_in_original": false,
+      "one_config_assignment_only": true
+    },
+    {
+      "name": "suite::request_permissions::request_permissions_preapprove_explicit_exec_permissions_outside_on_request",
+      "source_path": "codex-rs/core/tests/suite/request_permissions.rs",
+      "declaration_line": 1398,
+      "original_complete_body": {
+        "bytes": 4247,
+        "sha256": "168833597354f1e59767e43790747ca0435d394eb5c664d37878dc36a85080a1",
+        "git_blob": "24c8b30eb45c4a7a4f2b2994a5edc1bf393f5195"
+      },
+      "original_contract": "grant normalized outside directory for Turn; explicit WithAdditionalPermissions preserved; retain existing optional approval branch and exact output/file assertions",
+      "original_budget": "10,000 ms original exec yield",
+      "explicit_login_or_profile_requirement_in_original": false,
+      "one_config_assignment_only": true
+    },
+    {
+      "name": "suite::request_permissions::request_permissions_grants_apply_to_later_exec_command_calls_without_inline_permission_feature",
+      "source_path": "codex-rs/core/tests/suite/request_permissions.rs",
+      "declaration_line": 1520,
+      "original_complete_body": {
+        "bytes": 4155,
+        "sha256": "0e42597fc2aa00553c284981a933c8d9e6d1ed375c2f9c299212e04622947619",
+        "git_blob": "79def29b5fadf3d9f4ea3bfbcbf62eb6efff2666"
+      },
+      "original_contract": "enable RequestPermissionsTool without adding inline-permission feature; Turn grant applies to later exec; optional approval path and original exact output/file assertions",
+      "original_budget": "10,000 ms original exec yield",
+      "explicit_login_or_profile_requirement_in_original": false,
+      "one_config_assignment_only": true
+    },
+    {
+      "name": "suite::request_permissions::partial_request_permissions_grants_do_not_preapprove_new_permissions",
+      "source_path": "codex-rs/core/tests/suite/request_permissions.rs",
+      "declaration_line": 1636,
+      "original_complete_body": {
+        "bytes": 6328,
+        "sha256": "73edaeeaf447c78362f17940bb221f969c489b0f367760702db8a9fa855b5fb6",
+        "git_blob": "ebbfd601d8a93a80ff349c51bfd5e6bfafb9ddfa"
+      },
+      "original_contract": "request first+second dirs but grant only first; later second-dir request still requires exec approval; assert merged normalized roots, no network/read grants, exact output and real file",
+      "original_budget": "10,000 ms original exec yield",
+      "explicit_login_or_profile_requirement_in_original": false,
+      "one_config_assignment_only": true
+    }
+  ],
+  "independent_original_junit": {
+    "local_path": "/workspace/scratch/07dd58cc9630/ci-audit/core-wait-span-20261105/project-nonpass-complete-v1/decoded-verified-v1/original-owning-projects.junit.xml",
+    "bytes": 839106,
+    "sha256": "dba2abf1ada37ea47ed8bb5910956094ad5519652df72256cce723e26d84d071",
+    "git_blob": "575da9b27fcf5e423b2fa23b9f872e0b07eacade"
+  },
+  "actual_original_failure_endpoints": [
+    {
+      "name": "suite::approvals::approving_execpolicy_amendment_persists_policy_and_skips_future_prompts",
+      "time": "0.379",
+      "failure_attributes": {
+        "message": "thread 'suite::approvals::approving_execpolicy_amendment_persists_policy_and_skips_future_prompts' (2835981) panicked at core/tests/suite/approvals.rs:2540:5",
+        "type": "test failure with exit code 101"
+      },
+      "following_real_file_assertion_reached": false
+    },
+    {
+      "name": "suite::request_permissions::partial_request_permissions_grants_do_not_preapprove_new_permissions",
+      "time": "0.449",
+      "failure_attributes": {
+        "message": "thread 'suite::request_permissions::partial_request_permissions_grants_do_not_preapprove_new_permissions' (2943024) panicked at core/tests/suite/request_permissions.rs:1802:5",
+        "type": "test failure with exit code 101"
+      },
+      "following_real_file_assertion_reached": false
+    },
+    {
+      "name": "suite::request_permissions::request_permissions_grants_apply_to_later_exec_command_calls",
+      "time": "0.437",
+      "failure_attributes": {
+        "message": "thread 'suite::request_permissions::request_permissions_grants_apply_to_later_exec_command_calls' (2943088) panicked at core/tests/suite/request_permissions.rs:1391:5",
+        "type": "test failure with exit code 101"
+      },
+      "following_real_file_assertion_reached": false
+    },
+    {
+      "name": "suite::request_permissions::request_permissions_grants_apply_to_later_exec_command_calls_without_inline_permission_feature",
+      "time": "0.443",
+      "failure_attributes": {
+        "message": "thread 'suite::request_permissions::request_permissions_grants_apply_to_later_exec_command_calls_without_inline_permission_feature' (2943122) panicked at core/tests/suite/request_permissions.rs:1626:5",
+        "type": "test failure with exit code 101"
+      },
+      "following_real_file_assertion_reached": false
+    },
+    {
+      "name": "suite::request_permissions::request_permissions_preapprove_explicit_exec_permissions_outside_on_request",
+      "time": "0.436",
+      "failure_attributes": {
+        "message": "thread 'suite::request_permissions::request_permissions_preapprove_explicit_exec_permissions_outside_on_request' (2943464) panicked at core/tests/suite/request_permissions.rs:1510:5",
+        "type": "test failure with exit code 101"
+      },
+      "following_real_file_assertion_reached": false
+    }
+  ],
+  "source_chain": [
+    {
+      "path": "codex-rs/core/tests/common/test_codex.rs",
+      "lines": [
+        344,
+        348,
+        807,
+        859,
+        1345,
+        1355
+      ],
+      "fact": "Per-case FnOnce config mutator is applied before build. Existing generic ShellSnapshot disable does not set allow_login_shell."
+    },
+    {
+      "path": "codex-rs/core/src/config/mod.rs",
+      "lines": [
+        309,
+        317,
+        3707
+      ],
+      "fact": "The separate field defaults true; false rejects explicit login and makes omitted login non-login."
+    },
+    {
+      "path": "codex-rs/core/src/session/mod.rs",
+      "lines": [
+        727,
+        731
+      ],
+      "fact": "Copy original approval/permission fields and allow_login_shell independently."
+    },
+    {
+      "path": "codex-rs/core/src/session/session.rs",
+      "lines": [
+        224,
+        234
+      ],
+      "fact": "Carry allow_login_shell and the permission-profile snapshot as separate environment fields."
+    },
+    {
+      "path": "codex-rs/core/src/environment_selection.rs",
+      "lines": [
+        163,
+        177
+      ],
+      "fact": "FromThread selection receives this thread environment config."
+    },
+    {
+      "path": "codex-rs/core/src/tools/handlers/unified_exec/exec_command.rs",
+      "lines": [
+        238,
+        243
+      ],
+      "fact": "Actual command construction consumes selected environment allow_login_shell."
+    },
+    {
+      "path": "codex-rs/core/src/tools/handlers/unified_exec.rs",
+      "lines": [
+        97,
+        141
+      ],
+      "fact": "All five unchanged tool-argument helpers omit login; omitted login uses the field, including direct and ZshFork branches."
+    },
+    {
+      "path": "codex-rs/core/src/shell.rs",
+      "lines": [
+        22,
+        47
+      ],
+      "fact": "Bash/Zsh/Sh switch-lc to-c without changing script; existing PowerShell NoProfile/Cmd behavior is unchanged."
+    },
+    {
+      "path": "codex-rs/shell-command/src/bash.rs",
+      "lines": [
+        106,
+        126
+      ],
+      "fact": "Exact three-argument shell extraction accepts both-c and-lc, then parses the same original script."
+    },
+    {
+      "path": "codex-rs/core/src/exec_policy.rs",
+      "lines": [
+        831,
+        839
+      ],
+      "fact": "Exec policy consumes this existing parser; original touch amendment remains the same two tokens."
+    },
+    {
+      "path": "codex-rs/core/tests/suite/approvals.rs",
+      "lines": [
+        238,
+        247,
+        338,
+        357,
+        2458,
+        2471
+      ],
+      "fact": "Original ActionKind retains30,000ms and expected bare command string; tool args omit login and exact touch prefix is retained."
+    },
+    {
+      "path": "codex-rs/core/tests/suite/request_permissions.rs",
+      "lines": [
+        124,
+        145
+      ],
+      "fact": "Both unchanged tool-event helpers retain10,000ms and original requested permissions; neither sends login."
+    }
+  ],
+  "isolated_cloud_git_roundtrip": [
+    {
+      "argv": [
+        "git",
+        "init",
+        "-q"
+      ],
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "git",
+        "apply",
+        "--check",
+        "/workspace/scratch/07dd58cc9630/architecture-audit/approval-shell-fixtures-20261105/nonlogin-candidate-v1/fixture.patch"
+      ],
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "git",
+        "apply",
+        "/workspace/scratch/07dd58cc9630/architecture-audit/approval-shell-fixtures-20261105/nonlogin-candidate-v1/fixture.patch"
+      ],
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "git",
+        "apply",
+        "--reverse",
+        "/workspace/scratch/07dd58cc9630/architecture-audit/approval-shell-fixtures-20261105/nonlogin-candidate-v1/fixture.patch"
+      ],
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": ""
+    }
+  ],
+  "limits": [
+    "No global production default, shared fixture, permission profile, root grant, review policy, command, shell parser, output filtering or assertion is changed.",
+    "All five tests have approval/permission/file contracts and no explicit login/profile contract. Changing the fixture shell mode is an intentional configuration correction, not a claim that command argv is byte-identical.",
+    "The five original failures reach their exact stdout assertions. Later real-file assertions were not reached; the approval case also did not reach its second no-prompt execution.",
+    "Static host im-config evidence and extra lines are not a dynamic trace identifying the origin of every emitted byte.",
+    "Non-login does not promise fully sanitized environment or disable every shell-specific startup input.",
+    "Existing skip macros remain unchanged; future actual qualification must reject early-return-only passes and use the same five original cases with0retries.",
+    "No Rust compile/project test/native execution/ref mutation occurred in this review. The current e78 source and results are not silently replaced by this candidate."
+  ]
+}

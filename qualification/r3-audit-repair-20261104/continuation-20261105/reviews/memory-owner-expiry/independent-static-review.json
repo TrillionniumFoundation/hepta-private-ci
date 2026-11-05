@@ -1,0 +1,146 @@
+{
+  "schema": "memory-owner-real-clock-fixture-independent-review-v1",
+  "observed_at_utc": "2026-11-05T16:22:33.411770+00:00",
+  "verdict": "STATIC_ACCEPTED_FIXTURE_ONLY_PENDING_ORIGINAL_WINDOWS_RUNTIME",
+  "reviewer": "research_audit independent of author architecture_audit",
+  "fixed_product_head": "5b6331250ff459033bd44d1a95daec70131277cc",
+  "fixed_tree": "b26598d0d97d8d51e723bb5582137315f2174d35",
+  "author_manifest": {
+    "local_file": "/workspace/scratch/07dd58cc9630/architecture-audit/memory-owner-expiry-20261105/real-clock-fixture-candidate-v2/manifest.json",
+    "bytes": 13491,
+    "sha256": "61b9c0d616f2a6937d2c188c4a14171f54063d49fc157dd3d4ac18cc9d3c1752",
+    "blob": "6424caba5e2c4782169d20a951b27373cd45a004"
+  },
+  "patch": {
+    "local_file": "/workspace/scratch/07dd58cc9630/architecture-audit/memory-owner-expiry-20261105/real-clock-fixture-candidate-v2/real-clock-fixture.patch",
+    "bytes": 1891,
+    "sha256": "2ae189f0f2dc7d56f345ea0f32688aae71f0f03d64abadd41a1e4df4e2986d44",
+    "blob": "c095591fd8bcc33b2a146f3a99b520fd136e5362"
+  },
+  "preimage": {
+    "local_file": "/workspace/scratch/07dd58cc9630/architecture-audit/memory-owner-expiry-20261105/source/local_development_owner_tests.rs",
+    "bytes": 12351,
+    "sha256": "353bcf66ba0a02189a8aee635092fdf6049f959b0193d4670030f4002f1b7792",
+    "blob": "41b52d8093610e50932795a18e28d4dc1fc5b813"
+  },
+  "postimage": {
+    "local_file": "/workspace/scratch/07dd58cc9630/architecture-audit/memory-owner-expiry-20261105/real-clock-fixture-candidate-v2/candidate/codex-rs/ext/hepta-memory/src/local_development_owner_tests.rs",
+    "bytes": 12665,
+    "sha256": "192e335c4e3dacf12a140512b17bf5acb21cf810b1f11dd887bd38910157cc1c",
+    "blob": "a47edda2a96a9d6a02a90e65af1ce071d9c81096"
+  },
+  "sources_verified": [
+    {
+      "repository_path": "codex-rs/hepta-memory/src/cognitive_store.rs",
+      "local_file": "/workspace/scratch/07dd58cc9630/architecture-audit/memory-owner-expiry-20261105/source/cognitive_store.rs",
+      "bytes": 73322,
+      "sha256": "2087a257a866f72e0143e6b23b61ec1314d0509de56dc7b01ff0d0ecc1903cb8",
+      "blob": "03f469dcdc0b44754e92a855fcbabf7c21059899"
+    },
+    {
+      "repository_path": "codex-rs/hepta-memory/src/compact_persistence.rs",
+      "local_file": "/workspace/scratch/07dd58cc9630/architecture-audit/memory-owner-expiry-20261105/source/compact_persistence.rs",
+      "bytes": 30128,
+      "sha256": "3bd7b105258367520344b7ce158621a094fa03a6a51a184740d2623463d66eaf",
+      "blob": "fbd8d823566143effbf05979641a4fc1dba7fbc3"
+    },
+    {
+      "repository_path": "codex-rs/hepta-memory/src/local_compact_executor.rs",
+      "local_file": "/workspace/scratch/07dd58cc9630/architecture-audit/memory-owner-expiry-20261105/source/local_compact_executor.rs",
+      "bytes": 47668,
+      "sha256": "816d9207a2ccf66bf66c70383c5c0756aa7ae995232cd04a296748096159ada0",
+      "blob": "31c9b9a0f2e859c48df618076d0d6b3a3b6e1e98"
+    },
+    {
+      "repository_path": "codex-rs/ext/hepta-memory/src/local_development_owner.rs",
+      "local_file": "/workspace/scratch/07dd58cc9630/architecture-audit/memory-owner-expiry-20261105/source/local_development_owner.rs",
+      "bytes": 5741,
+      "sha256": "0ff370a07d9bea936d9d66c35c5aba0fc159cadba7d59cb934a3b59560dd2a5e",
+      "blob": "6979f629cda48c56a849699a05495b513e2e4b28"
+    },
+    {
+      "repository_path": "codex-rs/ext/hepta-memory/src/local_development_owner_tests.rs",
+      "local_file": "/workspace/scratch/07dd58cc9630/architecture-audit/memory-owner-expiry-20261105/source/local_development_owner_tests.rs",
+      "bytes": 12351,
+      "sha256": "353bcf66ba0a02189a8aee635092fdf6049f959b0193d4670030f4002f1b7792",
+      "blob": "41b52d8093610e50932795a18e28d4dc1fc5b813"
+    },
+    {
+      "repository_path": "codex-rs/hepta-memory/src/local_lease_outbox.rs",
+      "local_file": "/workspace/scratch/07dd58cc9630/architecture-audit/memory-owner-expiry-20261105/source/local_lease_outbox.rs",
+      "bytes": 213835,
+      "sha256": "7d66d0ae95a4661f9b3c2b9217cd463166ebb5768367815c39d1ee70eb77c31c",
+      "blob": "aac82355a64f315d218f0f9bcf373fdaf3c75d39"
+    },
+    {
+      "repository_path": "docs/modules/compact.engine/TECHNICAL.md",
+      "local_file": "/workspace/scratch/07dd58cc9630/architecture-audit/memory-owner-expiry-20261105/contract-source/compact-engine-TECHNICAL.md",
+      "bytes": 16555,
+      "sha256": "139525c416f612cdeb941671df4b30f1ff77829215e65749d38979da4b92831c",
+      "blob": "a32875e895a4688a0a55435ef2d9bf609ca2338f"
+    },
+    {
+      "repository_path": "docs/modules/memory.retrieval/TECHNICAL.md",
+      "local_file": "/workspace/scratch/07dd58cc9630/architecture-audit/memory-owner-expiry-20261105/contract-source/memory-retrieval-TECHNICAL.md",
+      "bytes": 25088,
+      "sha256": "e961e7967e91bfa4c7ef2e0e7ae8e2268b462793f6c84b8e10f482aef82fe4cf",
+      "blob": "718e16077576dbeb1e1928938188b7706e34f1fd"
+    },
+    {
+      "repository_path": "qualification/module-execution-dossiers/detail/compact.engine.md",
+      "local_file": "/workspace/scratch/07dd58cc9630/architecture-audit/memory-owner-expiry-20261105/contract-source/compact-engine-dossier.md",
+      "bytes": 5480,
+      "sha256": "bbc575c10c274e8c59f186407ae210dbe1a05d8dde8a8a4747d1e148e162704c",
+      "blob": "4d32f02f5c6273d52ad027ccbd2c34f49924168c"
+    },
+    {
+      "repository_path": "codex-rs/ext/hepta-memory/BUILD.bazel",
+      "local_file": "/workspace/scratch/07dd58cc9630/architecture-audit/memory-owner-expiry-20261105/contract-source/ext-memory-BUILD.bazel",
+      "bytes": 137,
+      "sha256": "59bea0114206420d408dcd5d60f5504433201f32cb402157d51cb7a99080f573",
+      "blob": "948b95ad42967ea78449ba6e3738118cf95cf151"
+    },
+    {
+      "repository_path": "codex-rs/ext/hepta-memory/Cargo.toml",
+      "local_file": "/workspace/scratch/07dd58cc9630/architecture-audit/memory-owner-expiry-20261105/contract-source/ext-memory-Cargo.toml",
+      "bytes": 1184,
+      "sha256": "6b0cd713fab0d2038840dd6d18ad856bf59de3a34f936977e2fa1c2539da3f91",
+      "blob": "2d17c6481dbe0d75bd057e2edc9e3ee46de88c73"
+    }
+  ],
+  "independent_exact_inverse_matches_original": true,
+  "original_test_roster_unchanged": [
+    "owner_is_explicit_and_caller_zero",
+    "owner_rejects_production_policy",
+    "explicit_owner_writes_bound_witness_and_replays_without_registration",
+    "explicit_owner_expires_bound_lease_and_fences_old_witness",
+    "explicit_owner_rejects_unbound_lease_expiry"
+  ],
+  "directly_read_contract": {
+    "binding": "LocalLeaseBinding::new accepts nonzero caller-supplied expiry; it has no one-second fixed TTL requirement. This is a conclusion about the fixed API and reviewed source, not an exhaustive claim about unseen specifications.",
+    "active_write": "ensure_current_active samples real SystemTime and rejects now>=persisted expiry. open_bound and append_intent retain actual database/fence validation.",
+    "terminalization": "expire_lease uses real time sampled inside the original transaction; it rejects now<expiry and preserves persisted binding/journal checks. The extension owner still checks exact store and explicit binding.",
+    "fixture_order": "First real store open/migration precedes sampling expiry. acquire lease, bound executor setup and first real intent must succeed before expiration. Other-store setup remains in its original later position."
+  },
+  "intentional_fixture_changes": {
+    "expiry_input": "floor(SystemTime)+1 becomes floor(SystemTime)+10, giving (9,10] real seconds from sampling to the deadline under a progressing wall clock. It does not renew or mutate an already persisted lease.",
+    "wait": "Old at-most120 sleeps of25ms becomes an explicit12s Tokio timeout around unchanged25ms real-SystemTime polling. This is an intentional fixture wait-bound change; do not describe all original budgets as unchanged.",
+    "unchanged_budget_scope": "Original owning Bazel/nextest outer budget, production deadlines and all other tests are unchanged."
+  },
+  "preserved_oracles": [
+    "Original exact wrong-store rejection",
+    "Original runtime_registered=false and production_caller=false",
+    "Explicit real SystemTime>=expires_at assertion before owner terminalization",
+    "Original RolledBack state and identical replay",
+    "Expired executor append and lease admit must return StaleFence",
+    "Original next-generation2 and explicitly-bound assertions"
+  ],
+  "failure_causality": {
+    "actual_job": 127339256007,
+    "actual_endpoint": "expect(intent) at original line257: Lease(StaleFence(local lease has expired))",
+    "proven": "The setup intent encountered the unchanged production expiry rejection before later expiry/replay/witness assertions.",
+    "not_proven": "No exact per-transaction latency trace or scheduler cause was recorded. The new9-10second setup allowance has not run on Windows and can still fail if real setup consumes that allowance.",
+    "not_closed": "No platform or B16 acceptance scope is closed by this static review."
+  },
+  "validation": "Read complete changed case, original patch, owner/binding/active/expiry APIs and source identities; independent exact reversal restores entire original file; no Rust compilation, native execution, source/index/target/ref mutation. Author isolated Git roundtrip is supporting evidence, not falsely attributed to this reviewer."
+}

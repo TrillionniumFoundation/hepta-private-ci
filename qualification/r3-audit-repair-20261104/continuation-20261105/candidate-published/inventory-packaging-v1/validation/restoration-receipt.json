@@ -1,0 +1,61 @@
+{
+  "commands": [
+    {
+      "name": "verify",
+      "argv": [
+        "python3",
+        "/workspace/scratch/07dd58cc9630/research-audit/inventory-blob-packaging-20261105/validation/qualification/r3-audit-repair-20261104/repository-inventory-20261105/restore_inventory.py"
+      ],
+      "exit_code": 0,
+      "stdout": {
+        "bytes": 689,
+        "sha256": "1d0e98a297f8430bc60575cc17d1894185fde1978f941fdec46d261b4086b6c0"
+      },
+      "stderr": {
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "name": "restore",
+      "argv": [
+        "python3",
+        "/workspace/scratch/07dd58cc9630/research-audit/inventory-blob-packaging-20261105/validation/qualification/r3-audit-repair-20261104/repository-inventory-20261105/restore_inventory.py",
+        "--output",
+        "/workspace/scratch/07dd58cc9630/research-audit/inventory-blob-packaging-20261105/validation/complete-inventory.restored.json"
+      ],
+      "exit_code": 0,
+      "stdout": {
+        "bytes": 811,
+        "sha256": "4c0935ea44a5d731fb4145fdecdc175da787895bcde9b82b69d0e5a22a0f95ed"
+      },
+      "stderr": {
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "name": "no-overwrite",
+      "argv": [
+        "python3",
+        "/workspace/scratch/07dd58cc9630/research-audit/inventory-blob-packaging-20261105/validation/qualification/r3-audit-repair-20261104/repository-inventory-20261105/restore_inventory.py",
+        "--output",
+        "/workspace/scratch/07dd58cc9630/research-audit/inventory-blob-packaging-20261105/validation/complete-inventory.restored.json"
+      ],
+      "exit_code": 1,
+      "stdout": {
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stderr": {
+        "bytes": 968,
+        "sha256": "3dcb54d3d8fd9280babea80f2b1b7a5b7bd7095a21267d1c86a9d2fea7f1fd0e"
+      }
+    }
+  ],
+  "exact_bytes_equal": true,
+  "parsed_JSON_values_equal": true,
+  "bytes": 1846885,
+  "sha256": "4adb3a73f03226fd73daba8c5ae2a5644fb84cde7702ddc892abb72d75a810f9",
+  "scope": "Evidence decoder only; no project tests, native host, refs, or original evidence mutations."
+}

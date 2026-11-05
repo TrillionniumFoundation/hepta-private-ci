@@ -1,0 +1,60 @@
+{
+  "schema": "hepta.root-inventory-packaging-independent-verification.v1",
+  "verified_at": "2026-11-05T16:12:21.329820+00:00",
+  "source_head": "5b6331250ff459033bd44d1a95daec70131277cc",
+  "source_tree": "b26598d0d97d8d51e723bb5582137315f2174d35",
+  "manifest": {
+    "bytes": 22147,
+    "sha256": "bee8b80c5cd88d07bed952795d404e21fde097577598b107b44b23262289bb8a",
+    "blob": "0c1451e45f550590dd19042db5f11fe2f710a98d"
+  },
+  "seven_postimages_verified": true,
+  "existing_manifest_and_18_parts_bound_to_fixed_tree": true,
+  "independent_isolated_restore_command_exit": 0,
+  "complete_original_1846885_bytes_equal": true,
+  "restored_original": {
+    "bytes": 1846885,
+    "sha256": "4adb3a73f03226fd73daba8c5ae2a5644fb84cde7702ddc892abb72d75a810f9",
+    "blob": "5fac62f2526a56ebc0cdaa8cfe66531c9a33f912"
+  },
+  "restore_original_stdout": {
+    "complete_original_identity": {
+      "bytes": 1846885,
+      "sha256": "4adb3a73f03226fd73daba8c5ae2a5644fb84cde7702ddc892abb72d75a810f9",
+      "blob": "5fac62f2526a56ebc0cdaa8cfe66531c9a33f912"
+    },
+    "archive_parts_verified": 18,
+    "all_archive_members_verified": 117,
+    "complete_gzip_crc_verified": true,
+    "counts": {
+      "open_prs": 1103,
+      "draft": 1079,
+      "non_draft": 24,
+      "branches": 5193,
+      "base_main": 155,
+      "base_non_main": 948,
+      "open_issues": 0,
+      "published_releases": 0,
+      "all_releases_including_drafts": 0,
+      "repo_open_issues_including_pr": 1103
+    },
+    "output": "/tmp/hepta-inventory-independent-c1ucoi8j/complete-inventory.json",
+    "scope": "Frozen evidence verification; no project tests or ref changes."
+  },
+  "unchanged_existing_evidence_rows": 988,
+  "changed_existing_row": [
+    "fourth-repository-inventory-20261105.json"
+  ],
+  "added_rows": [
+    "repository-inventory-20261105/RESTORE_INVENTORY.md",
+    "repository-inventory-20261105/restore_inventory.py"
+  ],
+  "top_level_index_keys_changed": [
+    "artifact_count",
+    "artifacts",
+    "inventory_transport_update"
+  ],
+  "maximum_changed_postimage_bytes": 459950,
+  "decision": "ACCEPT_SEVEN_PATH_PACKAGING_REPAIR_FOR_INTEGRATED_CANDIDATE",
+  "scope": "Cloud original evidence restoration and static source review only; not a hosted policy-gate or Rust test result."
+}

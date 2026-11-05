@@ -1,0 +1,91 @@
+{
+  "schema": "ca1-full-resource-stop-complete-actual-git-delivery-v1",
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "job_id": "1a1ac90de70-fc05-5557",
+  "native_outcome": "RESOURCE_PENDING_BEFORE_SOURCE_TRANSITION_OR_ANY_BUILD_TEST",
+  "objects": [
+    {
+      "index": 0,
+      "path": "/workspace/scratch/07dd58cc9630/ci-audit/core-wait-span-20261105/ai395-candidate-default-full-v1/resource-stop-git-transport-v1/gzip-base64-part-000.txt",
+      "base64_offset": 0,
+      "bytes": 400000,
+      "sha256": "84cc0702765bb4deed4b35bd8f4cda746cddfbf5ac3d91b5c505ec4e5eb3414c",
+      "git_blob": "79ee21066c77b872f6e18dbb0f7c0fad8a96859e",
+      "actual_create": true,
+      "full_get_byteequal": true
+    },
+    {
+      "index": 1,
+      "path": "/workspace/scratch/07dd58cc9630/ci-audit/core-wait-span-20261105/ai395-candidate-default-full-v1/resource-stop-git-transport-v1/gzip-base64-part-001.txt",
+      "base64_offset": 400000,
+      "bytes": 400000,
+      "sha256": "67fb6f7951ed1558c4fa390ed440a922227ce40ace6aeb3394e89ffb155c488f",
+      "git_blob": "db9af389bdff2125bfdaca8e306f99c38e9d3928",
+      "actual_create": true,
+      "full_get_byteequal": true
+    },
+    {
+      "index": 2,
+      "path": "/workspace/scratch/07dd58cc9630/ci-audit/core-wait-span-20261105/ai395-candidate-default-full-v1/resource-stop-git-transport-v1/gzip-base64-part-002.txt",
+      "base64_offset": 800000,
+      "bytes": 284684,
+      "sha256": "dcc5b72bdecba89be9728fd182add15a8bc973d6ea4973e8d93d2d79694ee967",
+      "git_blob": "5884b34b3d913ebe6097079ef3470a69959fd81d",
+      "actual_create": true,
+      "full_get_byteequal": true
+    },
+    {
+      "path": "/workspace/scratch/07dd58cc9630/ci-audit/core-wait-span-20261105/ai395-candidate-default-full-v1/resource-stop-git-transport-v1/transport-manifest.json",
+      "git_blob": "eefc19d3d6282c0a7bd27ded3719a003551b8eca",
+      "bytes": 2524,
+      "sha256": "ebc7da2b997c72505fddb88099fde8d3fbdafd557361a5e6a7b491d438833800",
+      "actual_create": true,
+      "full_get_byteequal": true
+    },
+    {
+      "path": "/workspace/scratch/07dd58cc9630/ci-audit/core-wait-span-20261105/ai395-candidate-default-full-v1/remaining-linux-capacity/pocket4-hardware-snapshot.original.json",
+      "bytes": 6543,
+      "sha256": "73c363c787a8c0ae988458c6417d8d47e5a08854765a4101b76ad2612c07cb46",
+      "git_blob": "f73eb8b11294f687d2b61a9af779aa3e8d2a0e14",
+      "actual_create": true,
+      "full_get_byteequal": true
+    },
+    {
+      "path": "/workspace/scratch/07dd58cc9630/ci-audit/core-wait-span-20261105/ai395-candidate-default-full-v1/remaining-linux-capacity/x230-hardware-snapshot.original.json",
+      "bytes": 4979,
+      "sha256": "4c403f5ec754efc862c2815f545ec51aee21c724f7f2b2098edc4bc24ed76ca1",
+      "git_blob": "da1093a4e1ff18d71aeb6e27ed2da7589f7d2a14",
+      "actual_create": true,
+      "full_get_byteequal": true
+    },
+    {
+      "path": "/workspace/scratch/07dd58cc9630/ci-audit/core-wait-span-20261105/ai395-candidate-default-full-v1/remaining-linux-capacity/remaining-linux-capacity-conclusion.json",
+      "bytes": 14984,
+      "sha256": "e64530cd79b2dd64e5269d6e582e34104da86a18c4475a4eaf6aa74e04733c70",
+      "git_blob": "f25c7e865f59116366e6badb22cf229c0a5f4fd9",
+      "actual_create": true,
+      "full_get_byteequal": true
+    },
+    {
+      "path": "/workspace/scratch/07dd58cc9630/ci-audit/core-wait-span-20261105/ai395-candidate-default-full-v1/native-first-start/actual-resource-stop-reconstruction.json",
+      "bytes": 6725,
+      "sha256": "1b8c626cd548c0cff50ab4b9441ee0190995f17d1ee6699069358924d543797f",
+      "git_blob": "32b24133dff8475f8db70a641566027b07875022",
+      "actual_create": true,
+      "full_get_byteequal": true
+    }
+  ],
+  "transport_manifest_actual_git": "eefc19d3d6282c0a7bd27ded3719a003551b8eca",
+  "complete_original_file_count": 24,
+  "complete_original_bytes": 1759796,
+  "raw_bundle_git_id_is_content_identity_only": "14a987febfac6c2d66b2e8f82d7c63a35efcd18e",
+  "raw_original_blobs_separately_materialized": false,
+  "complete_archive_verified": true,
+  "source_remains": "e78c819b8b1f435f8b37bea17b4ffdc724961aa2",
+  "source_mutations": 0,
+  "build_commands": 0,
+  "tests_executed": 0,
+  "old_B_driver_replayed": false,
+  "lowered_resource_floor": false,
+  "repeat_attempt_started": false
+}

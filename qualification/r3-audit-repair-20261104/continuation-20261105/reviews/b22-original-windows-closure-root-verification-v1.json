@@ -1,0 +1,337 @@
+{
+  "schema": "hepta.root-b22-original-windows-closure.v1",
+  "verified_at": "2026-11-05T16:12:21.471465+00:00",
+  "decision": "CLOSED_SCOPED",
+  "scope": "Original B22 Windows TUI 13-name exit contract on head5b/treeb265; not whole product or B15.",
+  "source_head": "5b6331250ff459033bd44d1a95daec70131277cc",
+  "source_tree": "b26598d0d97d8d51e723bb5582137315f2174d35",
+  "original_CI": {
+    "run_id": 41999114842,
+    "run_attempt": 1,
+    "job_id": 127339255966,
+    "runner_labels": [
+      "windows-latest"
+    ],
+    "runner_id": 1000001666,
+    "target": "//codex-rs/tui:tui-unit-tests",
+    "target_status": "PASSED",
+    "target_summary_cached_marker": false,
+    "target_seconds": 30.2,
+    "job_started_at": "2026-11-05T15:24:28Z",
+    "test_step_started_at": "2026-11-05T15:25:38Z",
+    "test_step_completed_at": "2026-11-05T15:40:31Z",
+    "job_completed_at": "2026-11-05T15:40:39Z",
+    "artifact_id": 13430142275,
+    "artifact": {
+      "bytes": 5227725,
+      "sha256": "b2edb0892c80cc978215ab5a57b0a1e6f324f98709256c72a352c219f00bda81",
+      "blob": "c058ea7fe7840f933336a8b778a2b05dfa5d2dce"
+    },
+    "job_log": {
+      "bytes": 403231,
+      "sha256": "7c182190775bf0829057d72a3bb4f15dc977f0a1d440a59836f8155c376a8c91",
+      "blob": "ac476562dc33ab87e2feeb0c72ecf145469f58d3"
+    },
+    "archive_crc_all20_members_valid": true,
+    "collector_manifest": {
+      "member": "selected-target-test-logs/invocation-pmp6vcz8/manifest.json",
+      "bytes": 10763,
+      "sha256": "a7efaea2b2c41db3a03368ece94ed1024f9c68b755c2d1d7f4e283892f01412d",
+      "blob": "2112b3fbf771f6d886af32924aa2e517b676c7c0"
+    }
+  },
+  "independent_archive_crc_and_all20_member_hashes": true,
+  "verified_members": [
+    {
+      "path": "execution-log-test-test-windows-shard-3574.zst",
+      "bytes": 5025401,
+      "sha256": "d8d842d6a5569b31c16657d7a6b827d5d8dd4750edc515a5795b5107b83dffc5",
+      "blob": "ff590fd65c22a3956720e7715e52353febb098f8"
+    },
+    {
+      "path": "selected-target-test-logs/invocation-pmp6vcz8/manifest.json",
+      "bytes": 10763,
+      "sha256": "a7efaea2b2c41db3a03368ece94ed1024f9c68b755c2d1d7f4e283892f01412d",
+      "blob": "2112b3fbf771f6d886af32924aa2e517b676c7c0"
+    },
+    {
+      "path": "selected-target-test-logs/invocation-pmp6vcz8/targets/0000/shard_1_of_8/test.log",
+      "bytes": 44081,
+      "sha256": "d841eaf213b3dfee955a3d1d5f4de99a313f4f00f57226027572f6781154c3fe",
+      "blob": "a9f3ce9563a020fe3dcbc6d573b32c72bc135240"
+    },
+    {
+      "path": "selected-target-test-logs/invocation-pmp6vcz8/targets/0000/shard_1_of_8/test.xml",
+      "bytes": 44414,
+      "sha256": "2f08e91e8c5c5f2a59938c1559280e879af5f068d21fef7009817e09154b2228",
+      "blob": "8d208b66f1373b13a871e47e0d12c901dafd1342"
+    },
+    {
+      "path": "selected-target-test-logs/invocation-pmp6vcz8/targets/0000/shard_2_of_8/test.log",
+      "bytes": 102097,
+      "sha256": "d92cae86921538ae88208d36f02ccaf680a705aa886246ad2f269a38a29405b9",
+      "blob": "0f7d6125e662479fe205745c07b0a763b2bfee01"
+    },
+    {
+      "path": "selected-target-test-logs/invocation-pmp6vcz8/targets/0000/shard_2_of_8/test.xml",
+      "bytes": 102430,
+      "sha256": "d6c31340718088b1a5ebcd39b039e0477b99d552fcd32f461ed430a9b76c748e",
+      "blob": "4afb24b347102614866b2db51edb2b0439350245"
+    },
+    {
+      "path": "selected-target-test-logs/invocation-pmp6vcz8/targets/0000/shard_3_of_8/test.log",
+      "bytes": 54422,
+      "sha256": "4c3290d4ec0b7be9f5793075b3c7645ee897b02eae3cb96eb20c5f1a54b881a6",
+      "blob": "57ad80933e9414e1eeb4e3e724b7a54babf51d2c"
+    },
+    {
+      "path": "selected-target-test-logs/invocation-pmp6vcz8/targets/0000/shard_3_of_8/test.xml",
+      "bytes": 54755,
+      "sha256": "cd16731ef8aed98533df5de6f50a2352a985b1cf4252acb10a8335b81bdaa915",
+      "blob": "87135e86fba18e197cb0c8aad85eadb3a2a29131"
+    },
+    {
+      "path": "selected-target-test-logs/invocation-pmp6vcz8/targets/0000/shard_4_of_8/test.log",
+      "bytes": 54304,
+      "sha256": "f52c1510661798df8387bcdc2c53c1a2c060a823b5c3129e23012e72d0bd0d58",
+      "blob": "db85c5db9dd6d534dadd1dc0706b7e07083959c9"
+    },
+    {
+      "path": "selected-target-test-logs/invocation-pmp6vcz8/targets/0000/shard_5_of_8/test.log",
+      "bytes": 47498,
+      "sha256": "f80d0fa196d0030a8da0d531febdd0680529304d553b02b1c222e39c750e384c",
+      "blob": "037256fe9ff3d171a769296154fa8cf7e701b4ab"
+    },
+    {
+      "path": "selected-target-test-logs/invocation-pmp6vcz8/targets/0000/shard_5_of_8/test.xml",
+      "bytes": 47831,
+      "sha256": "3f46642769e0372bf19e4a0970a5e6377af29ccd0b2b1fcd30c544f73b68f607",
+      "blob": "b0183edc5904aae987485e726efbd35b4dd9fe27"
+    },
+    {
+      "path": "selected-target-test-logs/invocation-pmp6vcz8/targets/0000/shard_4_of_8/test.xml",
+      "bytes": 54637,
+      "sha256": "8aa237ceb123ec12e07c8c4f2b489b428d5094383d96335f6e18b3c8f315ef9d",
+      "blob": "352c215d60847e062cae56ed0f8c018af0648485"
+    },
+    {
+      "path": "selected-target-test-logs/invocation-pmp6vcz8/targets/0000/shard_6_of_8/test.log",
+      "bytes": 44943,
+      "sha256": "b80b980ae0f05fdb769ea3d90c913c6f60c24aec3286fb51207064ac52e83999",
+      "blob": "6f1b36c37a11107ee27fa98d5949b88035006455"
+    },
+    {
+      "path": "selected-target-test-logs/invocation-pmp6vcz8/targets/0000/shard_6_of_8/test.xml",
+      "bytes": 45276,
+      "sha256": "949ba82a448cb40a9fb65d075dd918c72bbc08b5a32dce281b66a4f97d658852",
+      "blob": "20c4943b52c4daf8a431ab1ebf5c37bc2dc84ea8"
+    },
+    {
+      "path": "selected-target-test-logs/invocation-pmp6vcz8/targets/0000/shard_7_of_8/test.log",
+      "bytes": 49096,
+      "sha256": "a18da17ebb6373f99e671d700f7c1a3d91705f216e348e02db24c3f119c42bf5",
+      "blob": "6f6ae2a18c5b6809c5b3d875cea0a3a3e077343f"
+    },
+    {
+      "path": "selected-target-test-logs/invocation-pmp6vcz8/targets/0000/shard_8_of_8/test.log",
+      "bytes": 48837,
+      "sha256": "d37086af9915dad3c793ad38030b594ff0c0f2b8619dd0e535688ac3c3aed19f",
+      "blob": "f000ddb5103f9cafc293acaa65ec954aa8517f0e"
+    },
+    {
+      "path": "selected-target-test-logs/invocation-pmp6vcz8/targets/0000/shard_7_of_8/test.xml",
+      "bytes": 49429,
+      "sha256": "e16b3fb819e7726520ca60582ea3ec7e6e43d60d7da8c7973d8392579ce16ac4",
+      "blob": "e43bcd5542d20ee1f140867866f7a2552b553f05"
+    },
+    {
+      "path": "selected-target-test-logs/invocation-pmp6vcz8/targets/0000/shard_8_of_8/test.xml",
+      "bytes": 49170,
+      "sha256": "f1a71deafca39a6c9e3b6acb115427a5695125bfecfb78415578fd858fcf143b",
+      "blob": "62486fe05043410dafb5236792f42ac516ac56f0"
+    },
+    {
+      "path": "selected-target-test-logs/invocation-pmp6vcz8/targets/0001/test.log",
+      "bytes": 2852,
+      "sha256": "b6062a39f52c36ab2a452dabfa503f95497921a6c9c63eedcb14b8a638ba376b",
+      "blob": "bb9894a2f02c5bc1e66ac0cf22625dcbf1bbbc02"
+    },
+    {
+      "path": "selected-target-test-logs/invocation-pmp6vcz8/targets/0001/test.xml",
+      "bytes": 3197,
+      "sha256": "c530ac2eb09ef07e197b47a362e7df97087ad0002f4a43b828d1b613c6370d5d",
+      "blob": "f3cea422068531f9d31315a9017d1a9016a6b54a"
+    }
+  ],
+  "fixed_source_blobs_bound_to_full_remote_tree": [
+    {
+      "path": "codex-rs/tui/src/app/tests/background_exit_tests.rs",
+      "bytes": 22060,
+      "sha256": "468897b04633ca59ffe873bfce3fcdac504dd886b8ab5772049eca4dc65ea53f",
+      "blob": "d7d9ed4435b3fb7cb7d8303e94cbb223b5ced438"
+    },
+    {
+      "path": "codex-rs/tui/BUILD.bazel",
+      "bytes": 874,
+      "sha256": "8c8633c5c673984544211981b21c04c3d1411b15cdf4cd29a3925e1ffa3df195",
+      "blob": "b6e67fcf5634805ca21371c652f5464da546094d"
+    },
+    {
+      "path": "codex-rs/tui/src/lib.rs",
+      "bytes": 122961,
+      "sha256": "acb8d9e8fd21aad9f121d2d7ca1db818f54cb86c8e9bc035cca4413d93a675af",
+      "blob": "1b99810dec2de74f11514f8e0dc1a126e6e5b8d7"
+    },
+    {
+      "path": ".bazelrc",
+      "bytes": 14926,
+      "sha256": "53a5fd4e65e4e9937b826174520fe1eb642adb79cfe7a6335c871d5fa9db57fa",
+      "blob": "3d5877b283b887091af507f3672003f84c500687"
+    },
+    {
+      "path": "codex-rs/tui/src/app/event_dispatch.rs",
+      "bytes": 140966,
+      "sha256": "779225fde05411d29ad41791b9b91e58ef228c5e1e19e8b3e243d81a6449f037",
+      "blob": "9029728e6c9f8bf8d16e1bc39d5a5863e6305cac"
+    },
+    {
+      "path": "defs.bzl",
+      "bytes": 34630,
+      "sha256": "f5638a9189632c8d8524a438bbfc6b365bddf7f23dfd2df06a6de3a2ff3f2cfa",
+      "blob": "6f588ec3057fddfea35170e28e74036162ce6a23"
+    }
+  ],
+  "original_named_exit_roster_exact": true,
+  "current_case_results": [
+    {
+      "name": "tests::embedded_state_db_corruption_preserves_failed_database_for_cli_recovery",
+      "member": "selected-target-test-logs/invocation-pmp6vcz8/targets/0000/shard_3_of_8/test.log",
+      "line": 540,
+      "raw_line": "test tests::embedded_state_db_corruption_preserves_failed_database_for_cli_recovery ... ok",
+      "occurrences": 1,
+      "result": "PASS"
+    },
+    {
+      "name": "app::tests::background_exit_tests::daemon_ctrl_c_during_mcp_startup_does_not_show_background_exit_menu",
+      "member": "selected-target-test-logs/invocation-pmp6vcz8/targets/0000/shard_4_of_8/test.log",
+      "line": 31,
+      "raw_line": "\u001b[0 qtest app::tests::background_exit_tests::daemon_ctrl_c_during_mcp_startup_does_not_show_background_exit_menu ... ok",
+      "occurrences": 1,
+      "result": "PASS"
+    },
+    {
+      "name": "app::tests::background_exit_tests::cancel_task_interrupts_without_exiting",
+      "member": "selected-target-test-logs/invocation-pmp6vcz8/targets/0000/shard_8_of_8/test.log",
+      "line": 33,
+      "raw_line": "\u001b[0 qtest app::tests::background_exit_tests::cancel_task_interrupts_without_exiting ... ok",
+      "occurrences": 1,
+      "result": "PASS"
+    },
+    {
+      "name": "app::tests::background_exit_tests::daemon_ctrl_c_during_paste_burst_does_not_show_exit_menu",
+      "member": "selected-target-test-logs/invocation-pmp6vcz8/targets/0000/shard_5_of_8/test.log",
+      "line": 22,
+      "raw_line": "\u001b[0 qtest app::tests::background_exit_tests::daemon_ctrl_c_during_paste_burst_does_not_show_exit_menu ... ok",
+      "occurrences": 1,
+      "result": "PASS"
+    },
+    {
+      "name": "app::tests::background_exit_tests::daemon_ctrl_c_hides_background_exit_for_running_background_side_thread",
+      "member": "selected-target-test-logs/invocation-pmp6vcz8/targets/0000/shard_5_of_8/test.log",
+      "line": 21,
+      "raw_line": "\u001b[0 qtest app::tests::background_exit_tests::daemon_ctrl_c_hides_background_exit_for_running_background_side_thread ... ok",
+      "occurrences": 1,
+      "result": "PASS"
+    },
+    {
+      "name": "app::tests::background_exit_tests::daemon_ctrl_c_shows_background_exit_menu_and_escape_dismisses_it",
+      "member": "selected-target-test-logs/invocation-pmp6vcz8/targets/0000/shard_1_of_8/test.log",
+      "line": 29,
+      "raw_line": "\u001b[0 qtest app::tests::background_exit_tests::daemon_ctrl_c_shows_background_exit_menu_and_escape_dismisses_it ... ok",
+      "occurrences": 1,
+      "result": "PASS"
+    },
+    {
+      "name": "app::tests::background_exit_tests::daemon_ctrl_c_hides_background_exit_with_queued_follow_up",
+      "member": "selected-target-test-logs/invocation-pmp6vcz8/targets/0000/shard_6_of_8/test.log",
+      "line": 20,
+      "raw_line": "\u001b[0 qtest app::tests::background_exit_tests::daemon_ctrl_c_hides_background_exit_with_queued_follow_up ... ok",
+      "occurrences": 1,
+      "result": "PASS"
+    },
+    {
+      "name": "app::tests::background_exit_tests::daemon_ctrl_c_with_draft_preserves_composer_cancellation",
+      "member": "selected-target-test-logs/invocation-pmp6vcz8/targets/0000/shard_3_of_8/test.log",
+      "line": 24,
+      "raw_line": "\u001b[0 qtest app::tests::background_exit_tests::daemon_ctrl_c_with_draft_preserves_composer_cancellation ... ok",
+      "occurrences": 1,
+      "result": "PASS"
+    },
+    {
+      "name": "app::tests::background_exit_tests::non_daemon_ctrl_c_keeps_interrupt_behavior",
+      "member": "selected-target-test-logs/invocation-pmp6vcz8/targets/0000/shard_3_of_8/test.log",
+      "line": 28,
+      "raw_line": "\u001b[0 qtest app::tests::background_exit_tests::non_daemon_ctrl_c_keeps_interrupt_behavior ... ok",
+      "occurrences": 1,
+      "result": "PASS"
+    },
+    {
+      "name": "app::tests::background_exit_tests::run_in_background_detaches_without_interrupting_main_or_side_threads",
+      "member": "selected-target-test-logs/invocation-pmp6vcz8/targets/0000/shard_4_of_8/test.log",
+      "line": 25,
+      "raw_line": "\u001b[0 qtest app::tests::background_exit_tests::run_in_background_detaches_without_interrupting_main_or_side_threads ... ok",
+      "occurrences": 1,
+      "result": "PASS"
+    },
+    {
+      "name": "app::tests::background_exit_tests::background_exit_shell_readiness_rejects_failed_start",
+      "member": "selected-target-test-logs/invocation-pmp6vcz8/targets/0000/shard_8_of_8/test.log",
+      "line": 32,
+      "raw_line": "\u001b[0 qtest app::tests::background_exit_tests::background_exit_shell_readiness_rejects_failed_start ... ok",
+      "occurrences": 1,
+      "result": "PASS"
+    },
+    {
+      "name": "app::tests::background_exit_tests::daemon_ctrl_c_closes_running_side_thread_and_returns_to_parent",
+      "member": "selected-target-test-logs/invocation-pmp6vcz8/targets/0000/shard_7_of_8/test.log",
+      "line": 27,
+      "raw_line": "\u001b[0 qtest app::tests::background_exit_tests::daemon_ctrl_c_closes_running_side_thread_and_returns_to_parent ... ok",
+      "occurrences": 1,
+      "result": "PASS"
+    },
+    {
+      "name": "app::tests::background_exit_tests::exit_interrupts_before_requesting_shutdown",
+      "member": "selected-target-test-logs/invocation-pmp6vcz8/targets/0000/shard_1_of_8/test.log",
+      "line": 40,
+      "raw_line": "\u001b[0 qtest app::tests::background_exit_tests::exit_interrupts_before_requesting_shutdown ... ok",
+      "occurrences": 1,
+      "result": "PASS"
+    }
+  ],
+  "current_missing_cwd_negative_control_pass": true,
+  "source_contract_review": [
+    "Readiness still uses real same-thread/turn/item command output after TurnStarted and UserShell InProgress, within the original five seconds.",
+    "Actual Exit RPC waits for successful turn_interrupt before queuing ShutdownFirst; original three final assertions are preserved.",
+    "Original corruption test writes an invalid real SQLite DB and requires the original typed path and corruption detail.",
+    "Current negative control requires actual Failed command exit -1 and an absent cwd before and after; TurnStarted alone is rejected.",
+    "All 13 exact current libtest result lines occur once; none is ignored or converted from a wrapper count."
+  ],
+  "limits": [
+    "Close only original B22 Windows TUI selected contract, not B15 whole-platform/whole-repository qualification.",
+    "Current other Windows jobs failing and Intel queued/cancelled statuses remain independent.",
+    "The six unrelated TUI ignored cases remain ignored and are not converted to PASS.",
+    "Bazel wrapper XML is target-level; case PASS comes from actual original log names.",
+    "Collector source is recorded at collection; execution.zst remains preserved but was not decoded in this review. Standard job checkout/progress/source/target/result linkage is used, not mtime alone.",
+    "Existing configured flaky policy is unchanged; absent attempt files are retained as an observation rather than a fabricated retries0 claim.",
+    "The 13 frozen B22 names are the selected contract roster; only a subset originated in the original48 failure union.",
+    "A subsequent source change needs its own exact-head qualification, not inherited success from this run."
+  ],
+  "retry_policy": "All available original target logs contain one observation per selected name; there are no test_attempts members. No undocumented absence of retries is asserted.",
+  "independent_review_input": {
+    "bytes": 32249,
+    "sha256": "b0c448b80191531db041982a79d67b5d88f0eabd4c9fae4fa4bdab467c80c30d",
+    "blob": "9893d1b070abad1e63bd2f57c7f35f81f7e4fea0"
+  },
+  "historical_controls_not_rerun": true,
+  "B15_whole_product_status": "OPEN"
+}

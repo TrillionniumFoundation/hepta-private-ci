@@ -1,0 +1,117 @@
+{
+  "schema": "hepta.integrated-candidate-source-composition.v1",
+  "parent": "5b6331250ff459033bd44d1a95daec70131277cc",
+  "base_tree": "b26598d0d97d8d51e723bb5582137315f2174d35",
+  "tree": "34b33a6a703fcd3347f9b6c53c00c499b1fe607a",
+  "changes": [
+    {
+      "path": "codex-rs/core/src/environment_selection.rs",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "3c08e1620e800c30c47d98cc775cb20d4650ac88",
+      "before_sha": "85d590f386ba81428e5ea3360d2e573d054cab4a",
+      "purpose": "owned test child preserves tracing assertions"
+    },
+    {
+      "path": "codex-rs/linux-sandbox/src/parent_lifecycle.rs",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "fe42212316589999fdfc0b1877c975bdafa4a8e7",
+      "before_sha": "8f500e03938718820360ce2ad41f2286eb9071bd",
+      "purpose": "lossless statfs type comparison across GNU and musl"
+    },
+    {
+      "path": "codex-rs/core/tests/suite/approvals.rs",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "10874f8ac6ef743ce1557f2251d0cc631795b0d6",
+      "before_sha": "f1ab8e85959c5d4e6653836c424d643dd6b4cfc6",
+      "purpose": "case-local nonlogin shell fixture"
+    },
+    {
+      "path": "codex-rs/core/tests/suite/request_permissions.rs",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "18952e04bf41f021ec4c2c38a618b727454ecce1",
+      "before_sha": "fa48e01442917eee2a5b91bada0a5af6cacea98d",
+      "purpose": "case-local nonlogin shell fixtures"
+    },
+    {
+      "path": "codex-rs/core/src/agent/control_tests.rs",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "05054632b7cd82e5e7587dbcb7aee293788e00a2",
+      "before_sha": "0d2d33f034a333c437deb42764b7dcf657e492a8",
+      "purpose": "local responses provider for original tree resume test"
+    },
+    {
+      "path": "codex-rs/windows-sandbox-rs/src/unified_exec/delete_permission_tests.rs",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "d8511f92f9fbd9d58061238dbf3181152c74ccbc",
+      "before_sha": "a0cb1647d95f067fcf135bc9ea2a654ca3e5e7a2",
+      "purpose": "explicit pretty_assertions macro import"
+    },
+    {
+      "path": "qualification/r3-audit-repair-20261104/fourth-repository-inventory-20261105.json",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "9db84c745e7f31fd0781e25baa5d03a405aaf13c",
+      "before_sha": "5fac62f2526a56ebc0cdaa8cfe66531c9a33f912",
+      "purpose": "lossless audit inventory packaging"
+    },
+    {
+      "path": "qualification/r3-audit-repair-20261104/repository-inventory-20261105/restore_inventory.py",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "5495be1a51b14a4a0642d7c09c6bd670f539ef77",
+      "before_sha": null,
+      "purpose": "lossless audit inventory packaging"
+    },
+    {
+      "path": "qualification/r3-audit-repair-20261104/repository-inventory-20261105/RESTORE_INVENTORY.md",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "2994e990903b7eb9eb51f1ae9ba191932f9efef7",
+      "before_sha": null,
+      "purpose": "lossless audit inventory packaging"
+    },
+    {
+      "path": "qualification/r3-audit-repair-20261104/CURRENT_AUDIT_PROGRESS.zh-CN.md",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "305094117c7efb9e25ee44df73e37b831b382fda",
+      "before_sha": "2bb40fbc66617fa5a2deb29e00f8dbc8699a6bc2",
+      "purpose": "lossless audit inventory packaging"
+    },
+    {
+      "path": "qualification/r3-audit-repair-20261104/PROJECT_DIRECTION_AND_PLAN.zh-CN.md",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "7c06b7f3041a8e4b3df794f00166aa59b369f832",
+      "before_sha": "f97995096073006673bb587fac3c2754b5e48bfe",
+      "purpose": "lossless audit inventory packaging"
+    },
+    {
+      "path": "qualification/r3-audit-repair-20261104/FOURTH_BATCH_QUALIFICATION.md",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "bed13a3f5bdde66d36dadbcc5d0233c6884f2d21",
+      "before_sha": "982be059e7d0440ffcfbd35280475b29c88a6f11",
+      "purpose": "lossless audit inventory packaging"
+    },
+    {
+      "path": "qualification/r3-audit-repair-20261104/fourth-evidence-index.json",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "f9337e344c05cd788a14a0ebb95bbee3d53511d3",
+      "before_sha": "ed81563ca591ba6a8da7db81923196b5b7e61a5c",
+      "purpose": "lossless audit inventory packaging"
+    }
+  ],
+  "leaf_count": 10582,
+  "exact_tree_verified": true,
+  "state": "UNPUBLISHED_INTERMEDIATE_PENDING_MEMORY_FIXTURE_REVIEW",
+  "tests_on_composed_tree": "NOT_STARTED",
+  "readiness": "NOT_QUALIFIED"
+}

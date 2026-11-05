@@ -1,0 +1,410 @@
+{
+  "schema": "eed-success-increment-actual-git-registry-v1",
+  "state": "ALL_36_LISTED_OBJECTS_ACTUAL_CREATE_AND_FULL_GET_BYTE_EQUAL",
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "repo_prefix": "qualification/r3-audit-repair-20261104/continuation-20261105/ci/eed-success-increment-20261105/",
+  "head": "eed4d6bb61b789b19f60facc79f9e031765fa4c9",
+  "tree": "ca1c4671ef6b2773280d01b5d76c6166252f5856",
+  "frozen_at": "2026-11-05T17:21:59.110Z",
+  "archive": {
+    "record_count": 136,
+    "original_bytes": 18256550,
+    "gzip_bytes": 10389622,
+    "part_count": 29,
+    "part_max_bytes": 480000,
+    "manifest_blob": "4e10cd11d23fd014f41ebcd4235952d9d277cf38"
+  },
+  "current_scoped_results": {
+    "core_full_outer": {
+      "passed": 2340,
+      "ignored": 3,
+      "failed": 0,
+      "nested_child_pass_separate": 1
+    },
+    "retained": {
+      "selected_pass": 532,
+      "raw_unexecuted_skips": 7
+    },
+    "gitqueue_each_source_and_merge": {
+      "git_utils_outer_pass": 35,
+      "queue_outer_pass": 36,
+      "nested_git_child_pass_separate": 1
+    }
+  },
+  "observations": {
+    "research_cut_not_modified": "2026-11-05T16:39:48.921Z",
+    "our_snapshot_0001": "2026-11-05T16:47:59.849Z/2026-11-05T16:48:00.909Z",
+    "our_snapshot_0002": "2026-11-05T17:07:23Z/2026-11-05T17:07:25Z",
+    "queue_predecessor_observations": "2026-11-05T17:10:39Z",
+    "native_state": "RESOURCE_PENDING; no native mutation/build/test during this increment"
+  },
+  "records": [
+    {
+      "path": "/workspace/scratch/07dd58cc9630/ci-audit/published-eed4d6-ci-20261105/immutable-success-increment-v1/original-evidence.tar.gz.part000.b64.txt",
+      "bytes": 480000,
+      "sha256": "7dc73ead4665f6ef8d2b8dc117ad39bcfabbc39b522b6aa1e6c145e523731d85",
+      "git_blob": "6f0ae6f3cd65997ffca9ddf6afee95d4d4fe67fd",
+      "repo_path": "qualification/r3-audit-repair-20261104/continuation-20261105/ci/eed-success-increment-20261105/transport/original-evidence.tar.gz.part000.b64.txt",
+      "actual_create_get_verified": true,
+      "verified_at": "2026-11-05T17:14:26.932Z",
+      "receipt_local_path": "/workspace/scratch/07dd58cc9630/ci-audit/published-eed4d6-ci-20261105/immutable-success-increment-v1/actual-get-receipt-000.json"
+    },
+    {
+      "path": "/workspace/scratch/07dd58cc9630/ci-audit/published-eed4d6-ci-20261105/immutable-success-increment-v1/original-evidence.tar.gz.part001.b64.txt",
+      "bytes": 480000,
+      "sha256": "77f6e348aa54f89db9a4685cdf9d2658f18cf24d17d8d6efa810a9eefa060561",
+      "git_blob": "b1b4194166682f47110d781442eb77a24ee13da5",
+      "repo_path": "qualification/r3-audit-repair-20261104/continuation-20261105/ci/eed-success-increment-20261105/transport/original-evidence.tar.gz.part001.b64.txt",
+      "actual_create_get_verified": true,
+      "verified_at": "2026-11-05T17:14:46.510Z",
+      "receipt_local_path": "/workspace/scratch/07dd58cc9630/ci-audit/published-eed4d6-ci-20261105/immutable-success-increment-v1/actual-get-receipt-001.json"
+    },
+    {
+      "path": "/workspace/scratch/07dd58cc9630/ci-audit/published-eed4d6-ci-20261105/immutable-success-increment-v1/original-evidence.tar.gz.part002.b64.txt",
+      "bytes": 480000,
+      "sha256": "2b54e3560f02dfb2c258a900c59d957c0656285629624dc694c58f1a680b2267",
+      "git_blob": "05a8fd35e4d0837ce2aac717c521d74d7f8b4d2e",
+      "repo_path": "qualification/r3-audit-repair-20261104/continuation-20261105/ci/eed-success-increment-20261105/transport/original-evidence.tar.gz.part002.b64.txt",
+      "actual_create_get_verified": true,
+      "verified_at": "2026-11-05T17:14:51.200Z",
+      "receipt_local_path": "/workspace/scratch/07dd58cc9630/ci-audit/published-eed4d6-ci-20261105/immutable-success-increment-v1/actual-get-receipt-002.json"
+    },
+    {
+      "path": "/workspace/scratch/07dd58cc9630/ci-audit/published-eed4d6-ci-20261105/immutable-success-increment-v1/original-evidence.tar.gz.part003.b64.txt",
+      "bytes": 480000,
+      "sha256": "7de863a728a6f0623f475867f9703f68b6c288e51357783fbf2e00e49b8af422",
+      "git_blob": "c8b13aae68988912e02b47f1473b22591b4919d6",
+      "repo_path": "qualification/r3-audit-repair-20261104/continuation-20261105/ci/eed-success-increment-20261105/transport/original-evidence.tar.gz.part003.b64.txt",
+      "actual_create_get_verified": true,
+      "verified_at": "2026-11-05T17:14:56.165Z",
+      "receipt_local_path": "/workspace/scratch/07dd58cc9630/ci-audit/published-eed4d6-ci-20261105/immutable-success-increment-v1/actual-get-receipt-003.json"
+    },
+    {
+      "path": "/workspace/scratch/07dd58cc9630/ci-audit/published-eed4d6-ci-20261105/immutable-success-increment-v1/original-evidence.tar.gz.part004.b64.txt",
+      "bytes": 480000,
+      "sha256": "b52d90c839f2e2deb329813ec8c99c086943189842ad961c976709177df50902",
+      "git_blob": "c693dc5a8f236e8acc431f18c687b273dc8a4364",
+      "repo_path": "qualification/r3-audit-repair-20261104/continuation-20261105/ci/eed-success-increment-20261105/transport/original-evidence.tar.gz.part004.b64.txt",
+      "actual_create_get_verified": true,
+      "verified_at": "2026-11-05T17:15:00.739Z",
+      "receipt_local_path": "/workspace/scratch/07dd58cc9630/ci-audit/published-eed4d6-ci-20261105/immutable-success-increment-v1/actual-get-receipt-004.json"
+    },
+    {
+      "path": "/workspace/scratch/07dd58cc9630/ci-audit/published-eed4d6-ci-20261105/immutable-success-increment-v1/original-evidence.tar.gz.part005.b64.txt",
+      "bytes": 480000,
+      "sha256": "0f63f92dd8f170008d97baceb0ac9dfe8cb0965d2906e810a5e14d85b0c0890f",
+      "git_blob": "2ac1f8ae1de60cc538d1078843e439ae0ab5a018",
+      "repo_path": "qualification/r3-audit-repair-20261104/continuation-20261105/ci/eed-success-increment-20261105/transport/original-evidence.tar.gz.part005.b64.txt",
+      "actual_create_get_verified": true,
+      "verified_at": "2026-11-05T17:15:05.542Z",
+      "receipt_local_path": "/workspace/scratch/07dd58cc9630/ci-audit/published-eed4d6-ci-20261105/immutable-success-increment-v1/actual-get-receipt-005.json"
+    },
+    {
+      "path": "/workspace/scratch/07dd58cc9630/ci-audit/published-eed4d6-ci-20261105/immutable-success-increment-v1/original-evidence.tar.gz.part006.b64.txt",
+      "bytes": 480000,
+      "sha256": "81770e57fd26bafc2c0deafc2f3d02a5bc787e04163a1804693c2abb62a299fc",
+      "git_blob": "c9a1636ed1ed7f932f16443388a2a5076b6b52ff",
+      "repo_path": "qualification/r3-audit-repair-20261104/continuation-20261105/ci/eed-success-increment-20261105/transport/original-evidence.tar.gz.part006.b64.txt",
+      "actual_create_get_verified": true,
+      "verified_at": "2026-11-05T17:15:10.186Z",
+      "receipt_local_path": "/workspace/scratch/07dd58cc9630/ci-audit/published-eed4d6-ci-20261105/immutable-success-increment-v1/actual-get-receipt-006.json"
+    },
+    {
+      "path": "/workspace/scratch/07dd58cc9630/ci-audit/published-eed4d6-ci-20261105/immutable-success-increment-v1/original-evidence.tar.gz.part007.b64.txt",
+      "bytes": 480000,
+      "sha256": "1bdf95a1213b0494639e389431e98ba82f07d7cfeacf7fc8f9ca74c3430c1cc2",
+      "git_blob": "c1407f0c0b7e4917bc9f2c60ca75044f9a76dc87",
+      "repo_path": "qualification/r3-audit-repair-20261104/continuation-20261105/ci/eed-success-increment-20261105/transport/original-evidence.tar.gz.part007.b64.txt",
+      "actual_create_get_verified": true,
+      "verified_at": "2026-11-05T17:15:15.200Z",
+      "receipt_local_path": "/workspace/scratch/07dd58cc9630/ci-audit/published-eed4d6-ci-20261105/immutable-success-increment-v1/actual-get-receipt-007.json"
+    },
+    {
+      "path": "/workspace/scratch/07dd58cc9630/ci-audit/published-eed4d6-ci-20261105/immutable-success-increment-v1/original-evidence.tar.gz.part008.b64.txt",
+      "bytes": 480000,
+      "sha256": "b7745b62ae27bec99a190df93a3ff89a81c50e35baee4b7abc90728420e8ef94",
+      "git_blob": "71c6910590a1079a9762bf92c57aaaec0e9fd877",
+      "repo_path": "qualification/r3-audit-repair-20261104/continuation-20261105/ci/eed-success-increment-20261105/transport/original-evidence.tar.gz.part008.b64.txt",
+      "actual_create_get_verified": true,
+      "verified_at": "2026-11-05T17:15:19.811Z",
+      "receipt_local_path": "/workspace/scratch/07dd58cc9630/ci-audit/published-eed4d6-ci-20261105/immutable-success-increment-v1/actual-get-receipt-008.json"
+    },
+    {
+      "path": "/workspace/scratch/07dd58cc9630/ci-audit/published-eed4d6-ci-20261105/immutable-success-increment-v1/original-evidence.tar.gz.part009.b64.txt",
+      "bytes": 480000,
+      "sha256": "cc30e4d175f5a53aaec517030b1a2f91457858323b822ac791f7cfbfbf419f85",
+      "git_blob": "104a5b2d58d96c5652efc40ff3f64989862759ff",
+      "repo_path": "qualification/r3-audit-repair-20261104/continuation-20261105/ci/eed-success-increment-20261105/transport/original-evidence.tar.gz.part009.b64.txt",
+      "actual_create_get_verified": true,
+      "verified_at": "2026-11-05T17:15:24.625Z",
+      "receipt_local_path": "/workspace/scratch/07dd58cc9630/ci-audit/published-eed4d6-ci-20261105/immutable-success-increment-v1/actual-get-receipt-009.json"
+    },
+    {
+      "path": "/workspace/scratch/07dd58cc9630/ci-audit/published-eed4d6-ci-20261105/immutable-success-increment-v1/original-evidence.tar.gz.part010.b64.txt",
+      "bytes": 480000,
+      "sha256": "1f15e94505bf04d48020b476e26f8384a9ebca6b4d98e21c79f8f0da7ff9f5b4",
+      "git_blob": "609b129049a2ebfbffefcf7cb621d42c0138bc9b",
+      "repo_path": "qualification/r3-audit-repair-20261104/continuation-20261105/ci/eed-success-increment-20261105/transport/original-evidence.tar.gz.part010.b64.txt",
+      "actual_create_get_verified": true,
+      "verified_at": "2026-11-05T17:15:29.918Z",
+      "receipt_local_path": "/workspace/scratch/07dd58cc9630/ci-audit/published-eed4d6-ci-20261105/immutable-success-increment-v1/actual-get-receipt-010.json"
+    },
+    {
+      "path": "/workspace/scratch/07dd58cc9630/ci-audit/published-eed4d6-ci-20261105/immutable-success-increment-v1/original-evidence.tar.gz.part011.b64.txt",
+      "bytes": 480000,
+      "sha256": "868ba8b641d816e51f36cb452846f06d0412e2f59e564a3abae926c2a977761c",
+      "git_blob": "aaf1ab9814bfd251f10d9de74876cae9aa6e598e",
+      "repo_path": "qualification/r3-audit-repair-20261104/continuation-20261105/ci/eed-success-increment-20261105/transport/original-evidence.tar.gz.part011.b64.txt",
+      "actual_create_get_verified": true,
+      "verified_at": "2026-11-05T17:15:35.039Z",
+      "receipt_local_path": "/workspace/scratch/07dd58cc9630/ci-audit/published-eed4d6-ci-20261105/immutable-success-increment-v1/actual-get-receipt-011.json"
+    },
+    {
+      "path": "/workspace/scratch/07dd58cc9630/ci-audit/published-eed4d6-ci-20261105/immutable-success-increment-v1/original-evidence.tar.gz.part012.b64.txt",
+      "bytes": 480000,
+      "sha256": "450c1d548ea8ca1594e243fefb9f04a3e43f9e21ee862344d18d1614165138df",
+      "git_blob": "140b6094bdc874c9e7c41febf1fe256fc2924d2e",
+      "repo_path": "qualification/r3-audit-repair-20261104/continuation-20261105/ci/eed-success-increment-20261105/transport/original-evidence.tar.gz.part012.b64.txt",
+      "actual_create_get_verified": true,
+      "verified_at": "2026-11-05T17:15:40.124Z",
+      "receipt_local_path": "/workspace/scratch/07dd58cc9630/ci-audit/published-eed4d6-ci-20261105/immutable-success-increment-v1/actual-get-receipt-012.json"
+    },
+    {
+      "path": "/workspace/scratch/07dd58cc9630/ci-audit/published-eed4d6-ci-20261105/immutable-success-increment-v1/original-evidence.tar.gz.part013.b64.txt",
+      "bytes": 480000,
+      "sha256": "b10bf23b3a2f4aea8808f7f93a2ffe25a0cd3633cc7534719369029428d4c590",
+      "git_blob": "0132f1ccbdfc847f1e318661d319219ce28b0a1f",
+      "repo_path": "qualification/r3-audit-repair-20261104/continuation-20261105/ci/eed-success-increment-20261105/transport/original-evidence.tar.gz.part013.b64.txt",
+      "actual_create_get_verified": true,
+      "verified_at": "2026-11-05T17:18:46.999Z",
+      "receipt_local_path": "/workspace/scratch/07dd58cc9630/ci-audit/published-eed4d6-ci-20261105/immutable-success-increment-v1/actual-get-receipt-013.json"
+    },
+    {
+      "path": "/workspace/scratch/07dd58cc9630/ci-audit/published-eed4d6-ci-20261105/immutable-success-increment-v1/original-evidence.tar.gz.part014.b64.txt",
+      "bytes": 480000,
+      "sha256": "b6d089a678a4aaa8fb8e09891ed1a917e42fd51d7eb60f3ff8f7d6429da80f47",
+      "git_blob": "5740fcdc3a1f5e59f6ac7757b03890c27d72e311",
+      "repo_path": "qualification/r3-audit-repair-20261104/continuation-20261105/ci/eed-success-increment-20261105/transport/original-evidence.tar.gz.part014.b64.txt",
+      "actual_create_get_verified": true,
+      "verified_at": "2026-11-05T17:18:51.954Z",
+      "receipt_local_path": "/workspace/scratch/07dd58cc9630/ci-audit/published-eed4d6-ci-20261105/immutable-success-increment-v1/actual-get-receipt-014.json"
+    },
+    {
+      "path": "/workspace/scratch/07dd58cc9630/ci-audit/published-eed4d6-ci-20261105/immutable-success-increment-v1/original-evidence.tar.gz.part015.b64.txt",
+      "bytes": 480000,
+      "sha256": "004171ca659d31a520573af0286aba7b6f201cfcc068f731206a279722f2693e",
+      "git_blob": "c0f591c84d4150e786bb11657b52f48a98b38959",
+      "repo_path": "qualification/r3-audit-repair-20261104/continuation-20261105/ci/eed-success-increment-20261105/transport/original-evidence.tar.gz.part015.b64.txt",
+      "actual_create_get_verified": true,
+      "verified_at": "2026-11-05T17:18:56.697Z",
+      "receipt_local_path": "/workspace/scratch/07dd58cc9630/ci-audit/published-eed4d6-ci-20261105/immutable-success-increment-v1/actual-get-receipt-015.json"
+    },
+    {
+      "path": "/workspace/scratch/07dd58cc9630/ci-audit/published-eed4d6-ci-20261105/immutable-success-increment-v1/original-evidence.tar.gz.part016.b64.txt",
+      "bytes": 480000,
+      "sha256": "9c2b04ef28730de464bc6dff67d2790f78a5a5de3dc819c2fd798590175fac0c",
+      "git_blob": "f9f6489ed14f63869bc495f2bff185686f6d6353",
+      "repo_path": "qualification/r3-audit-repair-20261104/continuation-20261105/ci/eed-success-increment-20261105/transport/original-evidence.tar.gz.part016.b64.txt",
+      "actual_create_get_verified": true,
+      "verified_at": "2026-11-05T17:19:01.496Z",
+      "receipt_local_path": "/workspace/scratch/07dd58cc9630/ci-audit/published-eed4d6-ci-20261105/immutable-success-increment-v1/actual-get-receipt-016.json"
+    },
+    {
+      "path": "/workspace/scratch/07dd58cc9630/ci-audit/published-eed4d6-ci-20261105/immutable-success-increment-v1/original-evidence.tar.gz.part017.b64.txt",
+      "bytes": 480000,
+      "sha256": "710408e3a8ccf100c48ccd809f44627b5aeb7d269c4d3e4bdfab00586056a8f9",
+      "git_blob": "d652f48621b589850be210fd9c660168c689135c",
+      "repo_path": "qualification/r3-audit-repair-20261104/continuation-20261105/ci/eed-success-increment-20261105/transport/original-evidence.tar.gz.part017.b64.txt",
+      "actual_create_get_verified": true,
+      "verified_at": "2026-11-05T17:19:06.372Z",
+      "receipt_local_path": "/workspace/scratch/07dd58cc9630/ci-audit/published-eed4d6-ci-20261105/immutable-success-increment-v1/actual-get-receipt-017.json"
+    },
+    {
+      "path": "/workspace/scratch/07dd58cc9630/ci-audit/published-eed4d6-ci-20261105/immutable-success-increment-v1/original-evidence.tar.gz.part018.b64.txt",
+      "bytes": 480000,
+      "sha256": "2ff82f7a7ca004f6178b6bca79cf209c92a0269c002b3c99dfff3df1ab49e34b",
+      "git_blob": "73c0562d00b884d95ec0fd346dc268ca33f1f1c1",
+      "repo_path": "qualification/r3-audit-repair-20261104/continuation-20261105/ci/eed-success-increment-20261105/transport/original-evidence.tar.gz.part018.b64.txt",
+      "actual_create_get_verified": true,
+      "verified_at": "2026-11-05T17:19:11.403Z",
+      "receipt_local_path": "/workspace/scratch/07dd58cc9630/ci-audit/published-eed4d6-ci-20261105/immutable-success-increment-v1/actual-get-receipt-018.json"
+    },
+    {
+      "path": "/workspace/scratch/07dd58cc9630/ci-audit/published-eed4d6-ci-20261105/immutable-success-increment-v1/original-evidence.tar.gz.part019.b64.txt",
+      "bytes": 480000,
+      "sha256": "c0a5568b89fecda6a58260eb8020e6116e467079a180f7b4e5dc334ecad0babb",
+      "git_blob": "38f90c220d97a0267da5370547ac5a800d038fa3",
+      "repo_path": "qualification/r3-audit-repair-20261104/continuation-20261105/ci/eed-success-increment-20261105/transport/original-evidence.tar.gz.part019.b64.txt",
+      "actual_create_get_verified": true,
+      "verified_at": "2026-11-05T17:19:15.580Z",
+      "receipt_local_path": "/workspace/scratch/07dd58cc9630/ci-audit/published-eed4d6-ci-20261105/immutable-success-increment-v1/actual-get-receipt-019.json"
+    },
+    {
+      "path": "/workspace/scratch/07dd58cc9630/ci-audit/published-eed4d6-ci-20261105/immutable-success-increment-v1/original-evidence.tar.gz.part020.b64.txt",
+      "bytes": 480000,
+      "sha256": "18ac580ef90e7dd6da3e453fabe749fe107684d3a17abda97793a5f90bbb92e1",
+      "git_blob": "7221ff57507d4a1b55af45df5a75c3984cb50f74",
+      "repo_path": "qualification/r3-audit-repair-20261104/continuation-20261105/ci/eed-success-increment-20261105/transport/original-evidence.tar.gz.part020.b64.txt",
+      "actual_create_get_verified": true,
+      "verified_at": "2026-11-05T17:19:20.885Z",
+      "receipt_local_path": "/workspace/scratch/07dd58cc9630/ci-audit/published-eed4d6-ci-20261105/immutable-success-increment-v1/actual-get-receipt-020.json"
+    },
+    {
+      "path": "/workspace/scratch/07dd58cc9630/ci-audit/published-eed4d6-ci-20261105/immutable-success-increment-v1/original-evidence.tar.gz.part021.b64.txt",
+      "bytes": 480000,
+      "sha256": "ae7575b06f3854fa03caf04489734aaebc11255eb23ebb94b659c24f0f2a13e8",
+      "git_blob": "8583a5a564cb76d52dbac554c7710c6b744eb516",
+      "repo_path": "qualification/r3-audit-repair-20261104/continuation-20261105/ci/eed-success-increment-20261105/transport/original-evidence.tar.gz.part021.b64.txt",
+      "actual_create_get_verified": true,
+      "verified_at": "2026-11-05T17:19:25.547Z",
+      "receipt_local_path": "/workspace/scratch/07dd58cc9630/ci-audit/published-eed4d6-ci-20261105/immutable-success-increment-v1/actual-get-receipt-021.json"
+    },
+    {
+      "path": "/workspace/scratch/07dd58cc9630/ci-audit/published-eed4d6-ci-20261105/immutable-success-increment-v1/original-evidence.tar.gz.part022.b64.txt",
+      "bytes": 480000,
+      "sha256": "a164ff3554507baffb29a0adfc776e606e4acfc1cc2b27bcc78e5b089255dc4b",
+      "git_blob": "d883d7950a427d2d1002027d0aec5434cbabe4d7",
+      "repo_path": "qualification/r3-audit-repair-20261104/continuation-20261105/ci/eed-success-increment-20261105/transport/original-evidence.tar.gz.part022.b64.txt",
+      "actual_create_get_verified": true,
+      "verified_at": "2026-11-05T17:19:29.941Z",
+      "receipt_local_path": "/workspace/scratch/07dd58cc9630/ci-audit/published-eed4d6-ci-20261105/immutable-success-increment-v1/actual-get-receipt-022.json"
+    },
+    {
+      "path": "/workspace/scratch/07dd58cc9630/ci-audit/published-eed4d6-ci-20261105/immutable-success-increment-v1/original-evidence.tar.gz.part023.b64.txt",
+      "bytes": 480000,
+      "sha256": "174092ca52fc2c18a437bfbb533d5182c6d5eea6d854ac1d310a7afb21e4fb87",
+      "git_blob": "a3c0c86d6ab1630a424c0bb67ada4e9c9a2770f1",
+      "repo_path": "qualification/r3-audit-repair-20261104/continuation-20261105/ci/eed-success-increment-20261105/transport/original-evidence.tar.gz.part023.b64.txt",
+      "actual_create_get_verified": true,
+      "verified_at": "2026-11-05T17:19:34.610Z",
+      "receipt_local_path": "/workspace/scratch/07dd58cc9630/ci-audit/published-eed4d6-ci-20261105/immutable-success-increment-v1/actual-get-receipt-023.json"
+    },
+    {
+      "path": "/workspace/scratch/07dd58cc9630/ci-audit/published-eed4d6-ci-20261105/immutable-success-increment-v1/original-evidence.tar.gz.part024.b64.txt",
+      "bytes": 480000,
+      "sha256": "04888b6bcf64b50748e43d8a7313f305d9386ddce9e3acea0f7a7353dbabd878",
+      "git_blob": "9eec956a5548415e2d87a02271eb6da907e14341",
+      "repo_path": "qualification/r3-audit-repair-20261104/continuation-20261105/ci/eed-success-increment-20261105/transport/original-evidence.tar.gz.part024.b64.txt",
+      "actual_create_get_verified": true,
+      "verified_at": "2026-11-05T17:19:38.994Z",
+      "receipt_local_path": "/workspace/scratch/07dd58cc9630/ci-audit/published-eed4d6-ci-20261105/immutable-success-increment-v1/actual-get-receipt-024.json"
+    },
+    {
+      "path": "/workspace/scratch/07dd58cc9630/ci-audit/published-eed4d6-ci-20261105/immutable-success-increment-v1/original-evidence.tar.gz.part025.b64.txt",
+      "bytes": 480000,
+      "sha256": "a7d57dc39a969f6df2093e01d88a60266b8c5f8ddb8402ee564452006d94f8cd",
+      "git_blob": "9df19c2d3b18310504604415795c8635896fedc8",
+      "repo_path": "qualification/r3-audit-repair-20261104/continuation-20261105/ci/eed-success-increment-20261105/transport/original-evidence.tar.gz.part025.b64.txt",
+      "actual_create_get_verified": true,
+      "verified_at": "2026-11-05T17:20:32.674Z",
+      "receipt_local_path": "/workspace/scratch/07dd58cc9630/ci-audit/published-eed4d6-ci-20261105/immutable-success-increment-v1/actual-get-receipt-025.json"
+    },
+    {
+      "path": "/workspace/scratch/07dd58cc9630/ci-audit/published-eed4d6-ci-20261105/immutable-success-increment-v1/original-evidence.tar.gz.part026.b64.txt",
+      "bytes": 480000,
+      "sha256": "030b627e8ee5206340420f5ae33269bbcdde0531e236b66e4b8331ed81266a7e",
+      "git_blob": "0568b9c7edfad30d4fbe1cdee48922d87b150760",
+      "repo_path": "qualification/r3-audit-repair-20261104/continuation-20261105/ci/eed-success-increment-20261105/transport/original-evidence.tar.gz.part026.b64.txt",
+      "actual_create_get_verified": true,
+      "verified_at": "2026-11-05T17:20:37.396Z",
+      "receipt_local_path": "/workspace/scratch/07dd58cc9630/ci-audit/published-eed4d6-ci-20261105/immutable-success-increment-v1/actual-get-receipt-026.json"
+    },
+    {
+      "path": "/workspace/scratch/07dd58cc9630/ci-audit/published-eed4d6-ci-20261105/immutable-success-increment-v1/original-evidence.tar.gz.part027.b64.txt",
+      "bytes": 480000,
+      "sha256": "a75d918ffb675edbeea974f4160d87696b9b82714e20dba9daf2bbfa544c3f89",
+      "git_blob": "a053919fa9c4bcf6099a127365a017754fb5000a",
+      "repo_path": "qualification/r3-audit-repair-20261104/continuation-20261105/ci/eed-success-increment-20261105/transport/original-evidence.tar.gz.part027.b64.txt",
+      "actual_create_get_verified": true,
+      "verified_at": "2026-11-05T17:20:41.532Z",
+      "receipt_local_path": "/workspace/scratch/07dd58cc9630/ci-audit/published-eed4d6-ci-20261105/immutable-success-increment-v1/actual-get-receipt-027.json"
+    },
+    {
+      "path": "/workspace/scratch/07dd58cc9630/ci-audit/published-eed4d6-ci-20261105/immutable-success-increment-v1/original-evidence.tar.gz.part028.b64.txt",
+      "bytes": 412832,
+      "sha256": "a47807ab04c167f7c4bef5e7363a2dfe447ab21bb42329147f62a6422895572e",
+      "git_blob": "2f3f8b5075b719ba358cb901ff6ee8c029473eea",
+      "repo_path": "qualification/r3-audit-repair-20261104/continuation-20261105/ci/eed-success-increment-20261105/transport/original-evidence.tar.gz.part028.b64.txt",
+      "actual_create_get_verified": true,
+      "verified_at": "2026-11-05T17:20:45.892Z",
+      "receipt_local_path": "/workspace/scratch/07dd58cc9630/ci-audit/published-eed4d6-ci-20261105/immutable-success-increment-v1/actual-get-receipt-028.json"
+    },
+    {
+      "path": "/workspace/scratch/07dd58cc9630/ci-audit/published-eed4d6-ci-20261105/immutable-success-increment-v1/transport-manifest.json",
+      "bytes": 65790,
+      "sha256": "aaed66d36dc2a1582d409bf42baf968e1d43741f3b3003cd83ac56aba5bf3b46",
+      "git_blob": "4e10cd11d23fd014f41ebcd4235952d9d277cf38",
+      "repo_path": "qualification/r3-audit-repair-20261104/continuation-20261105/ci/eed-success-increment-20261105/transport/transport-manifest.json",
+      "actual_create_get_verified": true,
+      "verified_at": "2026-11-05T17:20:49.274Z",
+      "receipt_local_path": "/workspace/scratch/07dd58cc9630/ci-audit/published-eed4d6-ci-20261105/immutable-success-increment-v1/actual-get-receipt-029.json"
+    },
+    {
+      "path": "/workspace/scratch/07dd58cc9630/ci-audit/published-eed4d6-ci-20261105/success-review-v2/review.json",
+      "bytes": 23360,
+      "sha256": "3e9292dc3b10d3759e42cd1187e65e89fdb5149eae88db3a72c2890e1fa5f2ea",
+      "git_blob": "26ad22a0ddd503eb289a2d3f656e91f28eb1813c",
+      "repo_path": "qualification/r3-audit-repair-20261104/continuation-20261105/ci/eed-success-increment-20261105/reviews/review.json",
+      "actual_create_get_verified": true,
+      "verified_at": "2026-11-05T17:20:52.724Z",
+      "receipt_local_path": "/workspace/scratch/07dd58cc9630/ci-audit/published-eed4d6-ci-20261105/immutable-success-increment-v1/actual-get-receipt-030.json"
+    },
+    {
+      "path": "/workspace/scratch/07dd58cc9630/ci-audit/published-eed4d6-ci-20261105/success-review-v2/source-and-api-binding-addendum.json",
+      "bytes": 6764,
+      "sha256": "4d88b7636f43f09523b3b2e56e1d00894699952fa91a50cccc486b63145e7f7d",
+      "git_blob": "73e9dba4452d19deb47366e04c3b72f1227159af",
+      "repo_path": "qualification/r3-audit-repair-20261104/continuation-20261105/ci/eed-success-increment-20261105/reviews/source-and-api-binding-addendum.json",
+      "actual_create_get_verified": true,
+      "verified_at": "2026-11-05T17:20:55.942Z",
+      "receipt_local_path": "/workspace/scratch/07dd58cc9630/ci-audit/published-eed4d6-ci-20261105/immutable-success-increment-v1/actual-get-receipt-031.json"
+    },
+    {
+      "path": "/workspace/scratch/07dd58cc9630/ci-audit/published-eed4d6-ci-20261105/success-review-v2/retained-complete-review.json",
+      "bytes": 412787,
+      "sha256": "71367a630603b7bc367f0064d649f2a2f52c323ac31be02635d2a1c0812c4706",
+      "git_blob": "1d750b596e167054a17c57f99f6bdcf731157fcc",
+      "repo_path": "qualification/r3-audit-repair-20261104/continuation-20261105/ci/eed-success-increment-20261105/reviews/retained-complete-review.json",
+      "actual_create_get_verified": true,
+      "verified_at": "2026-11-05T17:21:00.918Z",
+      "receipt_local_path": "/workspace/scratch/07dd58cc9630/ci-audit/published-eed4d6-ci-20261105/immutable-success-increment-v1/actual-get-receipt-032.json"
+    },
+    {
+      "path": "/workspace/scratch/07dd58cc9630/ci-audit/published-eed4d6-ci-20261105/success-review-v2/gitqueue-source-complete-review.json",
+      "bytes": 22059,
+      "sha256": "f46b97a3b96c762ff5be18a507020d7117113a145aa248e83f429d644d709030",
+      "git_blob": "3ce9aacc77d4303cde440340ddef85ae4d4e7590",
+      "repo_path": "qualification/r3-audit-repair-20261104/continuation-20261105/ci/eed-success-increment-20261105/reviews/gitqueue-source-complete-review.json",
+      "actual_create_get_verified": true,
+      "verified_at": "2026-11-05T17:21:04.299Z",
+      "receipt_local_path": "/workspace/scratch/07dd58cc9630/ci-audit/published-eed4d6-ci-20261105/immutable-success-increment-v1/actual-get-receipt-033.json"
+    },
+    {
+      "path": "/workspace/scratch/07dd58cc9630/ci-audit/published-eed4d6-ci-20261105/success-review-v2/gitqueue-merge-complete-review.json",
+      "bytes": 22060,
+      "sha256": "8554ff21864c3cc2134959eb4b88ddc4e0d454efe2a3fc026ce20a112be405dd",
+      "git_blob": "ad1ca52c3bce4ce739395949c5f365bf94c76514",
+      "repo_path": "qualification/r3-audit-repair-20261104/continuation-20261105/ci/eed-success-increment-20261105/reviews/gitqueue-merge-complete-review.json",
+      "actual_create_get_verified": true,
+      "verified_at": "2026-11-05T17:21:07.770Z",
+      "receipt_local_path": "/workspace/scratch/07dd58cc9630/ci-audit/published-eed4d6-ci-20261105/immutable-success-increment-v1/actual-get-receipt-034.json"
+    },
+    {
+      "path": "/workspace/scratch/07dd58cc9630/ci-audit/published-eed4d6-ci-20261105/queue-diagnostic-v1/queue-review.json",
+      "bytes": 7052,
+      "sha256": "4bab2e1c25dcafd8294a221f5bb6d77d79a25e858001477e88dcf8ee2122fe75",
+      "git_blob": "60c97bf95f8556435fdb29573aa80c06f2d9666a",
+      "repo_path": "qualification/r3-audit-repair-20261104/continuation-20261105/ci/eed-success-increment-20261105/queue/queue-review.json",
+      "actual_create_get_verified": true,
+      "verified_at": "2026-11-05T17:21:11.515Z",
+      "receipt_local_path": "/workspace/scratch/07dd58cc9630/ci-audit/published-eed4d6-ci-20261105/immutable-success-increment-v1/actual-get-receipt-035.json"
+    }
+  ],
+  "limits": [
+    "Core full target is not full workspace.",
+    "Seven retained raw skips have no named list/reason in this artifact; no behavior qualification is added for them.",
+    "Console 42-block excerpt and initial cloud verifier fork/resume count association errors are explicitly preserved/corrected.",
+    "Four later API success states are not substituted for their not-yet-reviewed test bodies.",
+    "All original48 platform and six-blocker closure analysis is a separate additive review."
+  ]
+}

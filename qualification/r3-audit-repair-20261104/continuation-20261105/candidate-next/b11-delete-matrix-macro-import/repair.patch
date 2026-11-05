@@ -1,0 +1,12 @@
+diff --git a/codex-rs/windows-sandbox-rs/src/unified_exec/delete_permission_tests.rs b/codex-rs/windows-sandbox-rs/src/unified_exec/delete_permission_tests.rs
+index a0cb1647d95f067fcf135bc9ea2a654ca3e5e7a2..d8511f92f9fbd9d58061238dbf3181152c74ccbc 100644
+--- a/codex-rs/windows-sandbox-rs/src/unified_exec/delete_permission_tests.rs
++++ b/codex-rs/windows-sandbox-rs/src/unified_exec/delete_permission_tests.rs
+@@ -2,6 +2,7 @@
+ use crate::delete_permission_matrix::DeleteMatrix;
+ use crate::delete_permission_matrix::DeleteOutcome;
+ use crate::delete_permission_matrix::DeleteRoute;
++use pretty_assertions::assert_eq;
+ 
+ fn matrix_script(matrix: &DeleteMatrix) -> (String, HashMap<String, String>) {
+     let mut script = "@echo off\r\n".to_owned();

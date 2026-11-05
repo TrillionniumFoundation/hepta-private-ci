@@ -1,0 +1,693 @@
+{
+  "schema": "hepta.b22-original-windows-closure-review.v1",
+  "created_at_utc": "2026-11-05T16:08:53.153530+00:00",
+  "recommendation": "CLOSE_B22_ORIGINAL_WINDOWS_TUI_SCOPE",
+  "ledger_mutated": false,
+  "original_exit_condition_zh": "定位真实turn/interrupt与关闭顺序，保留原断言和时间预算，以固定修复源的原用例/有效负控及原WindowsCI验收。",
+  "source": {
+    "head": "5b6331250ff459033bd44d1a95daec70131277cc",
+    "tree": "b26598d0d97d8d51e723bb5582137315f2174d35",
+    "actual_checkout": "9063c52a063b6f26c48e9418f6d8dbd14e9e06ff",
+    "actual_collector_source": {
+      "commit": "9063c52a063b6f26c48e9418f6d8dbd14e9e06ff",
+      "tracked_worktree_dirty": false,
+      "tree": "b26598d0d97d8d51e723bb5582137315f2174d35"
+    },
+    "tracked_clean_step": "original job success",
+    "fixed_sources": [
+      {
+        "path": "codex-rs/tui/src/app/tests/background_exit_tests.rs",
+        "local_file": "/workspace/scratch/07dd58cc9630/research-audit/published-5b633-ci-20261105/b22-closure-review/source/background_exit_tests.rs",
+        "bytes": 22060,
+        "sha256": "468897b04633ca59ffe873bfce3fcdac504dd886b8ab5772049eca4dc65ea53f",
+        "blob": "d7d9ed4435b3fb7cb7d8303e94cbb223b5ced438"
+      },
+      {
+        "path": "codex-rs/tui/BUILD.bazel",
+        "local_file": "/workspace/scratch/07dd58cc9630/research-audit/published-5b633-ci-20261105/b22-closure-review/source/tui.BUILD.bazel",
+        "bytes": 874,
+        "sha256": "8c8633c5c673984544211981b21c04c3d1411b15cdf4cd29a3925e1ffa3df195",
+        "blob": "b6e67fcf5634805ca21371c652f5464da546094d"
+      },
+      {
+        "path": "codex-rs/tui/src/lib.rs",
+        "local_file": "/workspace/scratch/07dd58cc9630/research-audit/published-5b633-ci-20261105/b22-closure-review/source/tui-lib.rs",
+        "bytes": 122961,
+        "sha256": "acb8d9e8fd21aad9f121d2d7ca1db818f54cb86c8e9bc035cca4413d93a675af",
+        "blob": "1b99810dec2de74f11514f8e0dc1a126e6e5b8d7"
+      },
+      {
+        "path": ".bazelrc",
+        "local_file": "/workspace/scratch/07dd58cc9630/research-audit/published-5b633-ci-20261105/b22-closure-review/source/bazelrc.source.txt",
+        "bytes": 14926,
+        "sha256": "53a5fd4e65e4e9937b826174520fe1eb642adb79cfe7a6335c871d5fa9db57fa",
+        "blob": "3d5877b283b887091af507f3672003f84c500687"
+      },
+      {
+        "path": "codex-rs/tui/src/app/event_dispatch.rs",
+        "local_file": "/workspace/scratch/07dd58cc9630/research-audit/published-5b633-ci-20261105/b22-closure-review/source/event_dispatch.rs.source.txt",
+        "bytes": 140966,
+        "sha256": "779225fde05411d29ad41791b9b91e58ef228c5e1e19e8b3e243d81a6449f037",
+        "blob": "9029728e6c9f8bf8d16e1bc39d5a5863e6305cac"
+      },
+      {
+        "path": "defs.bzl",
+        "local_file": "/workspace/scratch/07dd58cc9630/architecture-audit/original-exit-selection-5b-20261105/source/defs.bzl",
+        "bytes": 34630,
+        "sha256": "f5638a9189632c8d8524a438bbfc6b365bddf7f23dfd2df06a6de3a2ff3f2cfa",
+        "blob": "6f588ec3057fddfea35170e28e74036162ce6a23"
+      }
+    ]
+  },
+  "original_CI": {
+    "run_id": 41999114842,
+    "run_attempt": 1,
+    "job_id": 127339255966,
+    "runner_labels": [
+      "windows-latest"
+    ],
+    "runner_id": 1000001666,
+    "target": "//codex-rs/tui:tui-unit-tests",
+    "target_status": "PASSED",
+    "target_summary_cached_marker": false,
+    "target_seconds": 30.2,
+    "job_started_at": "2026-11-05T15:24:28Z",
+    "test_step_started_at": "2026-11-05T15:25:38Z",
+    "test_step_completed_at": "2026-11-05T15:40:31Z",
+    "job_completed_at": "2026-11-05T15:40:39Z",
+    "artifact_id": 13430142275,
+    "artifact": {
+      "bytes": 5227725,
+      "sha256": "b2edb0892c80cc978215ab5a57b0a1e6f324f98709256c72a352c219f00bda81",
+      "blob": "c058ea7fe7840f933336a8b778a2b05dfa5d2dce"
+    },
+    "job_log": {
+      "bytes": 403231,
+      "sha256": "7c182190775bf0829057d72a3bb4f15dc977f0a1d440a59836f8155c376a8c91",
+      "blob": "ac476562dc33ab87e2feeb0c72ecf145469f58d3"
+    },
+    "archive_crc_all20_members_valid": true,
+    "collector_manifest": {
+      "member": "selected-target-test-logs/invocation-pmp6vcz8/manifest.json",
+      "bytes": 10763,
+      "sha256": "a7efaea2b2c41db3a03368ece94ed1024f9c68b755c2d1d7f4e283892f01412d",
+      "blob": "2112b3fbf771f6d886af32924aa2e517b676c7c0"
+    }
+  },
+  "current_exact_names": [
+    {
+      "name": "tests::embedded_state_db_corruption_preserves_failed_database_for_cli_recovery",
+      "target": "//codex-rs/tui:tui-unit-tests",
+      "result": "PASS",
+      "raw_member": "selected-target-test-logs/invocation-pmp6vcz8/targets/0000/shard_3_of_8/test.log",
+      "raw_member_identity": {
+        "bytes": 54422,
+        "sha256": "4c3290d4ec0b7be9f5793075b3c7645ee897b02eae3cb96eb20c5f1a54b881a6",
+        "blob": "57ad80933e9414e1eeb4e3e724b7a54babf51d2c"
+      },
+      "line": 540,
+      "raw_line": "test tests::embedded_state_db_corruption_preserves_failed_database_for_cli_recovery ... ok",
+      "occurrences": 1,
+      "per_case_seconds": "NOT_EMITTED_BY_LIBTEST_FORMAT",
+      "selected_ignored": false,
+      "current_actual_expected_rejection_control": false
+    },
+    {
+      "name": "app::tests::background_exit_tests::daemon_ctrl_c_during_mcp_startup_does_not_show_background_exit_menu",
+      "target": "//codex-rs/tui:tui-unit-tests",
+      "result": "PASS",
+      "raw_member": "selected-target-test-logs/invocation-pmp6vcz8/targets/0000/shard_4_of_8/test.log",
+      "raw_member_identity": {
+        "bytes": 54304,
+        "sha256": "f52c1510661798df8387bcdc2c53c1a2c060a823b5c3129e23012e72d0bd0d58",
+        "blob": "db85c5db9dd6d534dadd1dc0706b7e07083959c9"
+      },
+      "line": 31,
+      "raw_line": "\u001b[0 qtest app::tests::background_exit_tests::daemon_ctrl_c_during_mcp_startup_does_not_show_background_exit_menu ... ok",
+      "occurrences": 1,
+      "per_case_seconds": "NOT_EMITTED_BY_LIBTEST_FORMAT",
+      "selected_ignored": false,
+      "current_actual_expected_rejection_control": false
+    },
+    {
+      "name": "app::tests::background_exit_tests::cancel_task_interrupts_without_exiting",
+      "target": "//codex-rs/tui:tui-unit-tests",
+      "result": "PASS",
+      "raw_member": "selected-target-test-logs/invocation-pmp6vcz8/targets/0000/shard_8_of_8/test.log",
+      "raw_member_identity": {
+        "bytes": 48837,
+        "sha256": "d37086af9915dad3c793ad38030b594ff0c0f2b8619dd0e535688ac3c3aed19f",
+        "blob": "f000ddb5103f9cafc293acaa65ec954aa8517f0e"
+      },
+      "line": 33,
+      "raw_line": "\u001b[0 qtest app::tests::background_exit_tests::cancel_task_interrupts_without_exiting ... ok",
+      "occurrences": 1,
+      "per_case_seconds": "NOT_EMITTED_BY_LIBTEST_FORMAT",
+      "selected_ignored": false,
+      "current_actual_expected_rejection_control": false
+    },
+    {
+      "name": "app::tests::background_exit_tests::daemon_ctrl_c_during_paste_burst_does_not_show_exit_menu",
+      "target": "//codex-rs/tui:tui-unit-tests",
+      "result": "PASS",
+      "raw_member": "selected-target-test-logs/invocation-pmp6vcz8/targets/0000/shard_5_of_8/test.log",
+      "raw_member_identity": {
+        "bytes": 47498,
+        "sha256": "f80d0fa196d0030a8da0d531febdd0680529304d553b02b1c222e39c750e384c",
+        "blob": "037256fe9ff3d171a769296154fa8cf7e701b4ab"
+      },
+      "line": 22,
+      "raw_line": "\u001b[0 qtest app::tests::background_exit_tests::daemon_ctrl_c_during_paste_burst_does_not_show_exit_menu ... ok",
+      "occurrences": 1,
+      "per_case_seconds": "NOT_EMITTED_BY_LIBTEST_FORMAT",
+      "selected_ignored": false,
+      "current_actual_expected_rejection_control": false
+    },
+    {
+      "name": "app::tests::background_exit_tests::daemon_ctrl_c_hides_background_exit_for_running_background_side_thread",
+      "target": "//codex-rs/tui:tui-unit-tests",
+      "result": "PASS",
+      "raw_member": "selected-target-test-logs/invocation-pmp6vcz8/targets/0000/shard_5_of_8/test.log",
+      "raw_member_identity": {
+        "bytes": 47498,
+        "sha256": "f80d0fa196d0030a8da0d531febdd0680529304d553b02b1c222e39c750e384c",
+        "blob": "037256fe9ff3d171a769296154fa8cf7e701b4ab"
+      },
+      "line": 21,
+      "raw_line": "\u001b[0 qtest app::tests::background_exit_tests::daemon_ctrl_c_hides_background_exit_for_running_background_side_thread ... ok",
+      "occurrences": 1,
+      "per_case_seconds": "NOT_EMITTED_BY_LIBTEST_FORMAT",
+      "selected_ignored": false,
+      "current_actual_expected_rejection_control": false
+    },
+    {
+      "name": "app::tests::background_exit_tests::daemon_ctrl_c_shows_background_exit_menu_and_escape_dismisses_it",
+      "target": "//codex-rs/tui:tui-unit-tests",
+      "result": "PASS",
+      "raw_member": "selected-target-test-logs/invocation-pmp6vcz8/targets/0000/shard_1_of_8/test.log",
+      "raw_member_identity": {
+        "bytes": 44081,
+        "sha256": "d841eaf213b3dfee955a3d1d5f4de99a313f4f00f57226027572f6781154c3fe",
+        "blob": "a9f3ce9563a020fe3dcbc6d573b32c72bc135240"
+      },
+      "line": 29,
+      "raw_line": "\u001b[0 qtest app::tests::background_exit_tests::daemon_ctrl_c_shows_background_exit_menu_and_escape_dismisses_it ... ok",
+      "occurrences": 1,
+      "per_case_seconds": "NOT_EMITTED_BY_LIBTEST_FORMAT",
+      "selected_ignored": false,
+      "current_actual_expected_rejection_control": false
+    },
+    {
+      "name": "app::tests::background_exit_tests::daemon_ctrl_c_hides_background_exit_with_queued_follow_up",
+      "target": "//codex-rs/tui:tui-unit-tests",
+      "result": "PASS",
+      "raw_member": "selected-target-test-logs/invocation-pmp6vcz8/targets/0000/shard_6_of_8/test.log",
+      "raw_member_identity": {
+        "bytes": 44943,
+        "sha256": "b80b980ae0f05fdb769ea3d90c913c6f60c24aec3286fb51207064ac52e83999",
+        "blob": "6f1b36c37a11107ee27fa98d5949b88035006455"
+      },
+      "line": 20,
+      "raw_line": "\u001b[0 qtest app::tests::background_exit_tests::daemon_ctrl_c_hides_background_exit_with_queued_follow_up ... ok",
+      "occurrences": 1,
+      "per_case_seconds": "NOT_EMITTED_BY_LIBTEST_FORMAT",
+      "selected_ignored": false,
+      "current_actual_expected_rejection_control": false
+    },
+    {
+      "name": "app::tests::background_exit_tests::daemon_ctrl_c_with_draft_preserves_composer_cancellation",
+      "target": "//codex-rs/tui:tui-unit-tests",
+      "result": "PASS",
+      "raw_member": "selected-target-test-logs/invocation-pmp6vcz8/targets/0000/shard_3_of_8/test.log",
+      "raw_member_identity": {
+        "bytes": 54422,
+        "sha256": "4c3290d4ec0b7be9f5793075b3c7645ee897b02eae3cb96eb20c5f1a54b881a6",
+        "blob": "57ad80933e9414e1eeb4e3e724b7a54babf51d2c"
+      },
+      "line": 24,
+      "raw_line": "\u001b[0 qtest app::tests::background_exit_tests::daemon_ctrl_c_with_draft_preserves_composer_cancellation ... ok",
+      "occurrences": 1,
+      "per_case_seconds": "NOT_EMITTED_BY_LIBTEST_FORMAT",
+      "selected_ignored": false,
+      "current_actual_expected_rejection_control": false
+    },
+    {
+      "name": "app::tests::background_exit_tests::non_daemon_ctrl_c_keeps_interrupt_behavior",
+      "target": "//codex-rs/tui:tui-unit-tests",
+      "result": "PASS",
+      "raw_member": "selected-target-test-logs/invocation-pmp6vcz8/targets/0000/shard_3_of_8/test.log",
+      "raw_member_identity": {
+        "bytes": 54422,
+        "sha256": "4c3290d4ec0b7be9f5793075b3c7645ee897b02eae3cb96eb20c5f1a54b881a6",
+        "blob": "57ad80933e9414e1eeb4e3e724b7a54babf51d2c"
+      },
+      "line": 28,
+      "raw_line": "\u001b[0 qtest app::tests::background_exit_tests::non_daemon_ctrl_c_keeps_interrupt_behavior ... ok",
+      "occurrences": 1,
+      "per_case_seconds": "NOT_EMITTED_BY_LIBTEST_FORMAT",
+      "selected_ignored": false,
+      "current_actual_expected_rejection_control": false
+    },
+    {
+      "name": "app::tests::background_exit_tests::run_in_background_detaches_without_interrupting_main_or_side_threads",
+      "target": "//codex-rs/tui:tui-unit-tests",
+      "result": "PASS",
+      "raw_member": "selected-target-test-logs/invocation-pmp6vcz8/targets/0000/shard_4_of_8/test.log",
+      "raw_member_identity": {
+        "bytes": 54304,
+        "sha256": "f52c1510661798df8387bcdc2c53c1a2c060a823b5c3129e23012e72d0bd0d58",
+        "blob": "db85c5db9dd6d534dadd1dc0706b7e07083959c9"
+      },
+      "line": 25,
+      "raw_line": "\u001b[0 qtest app::tests::background_exit_tests::run_in_background_detaches_without_interrupting_main_or_side_threads ... ok",
+      "occurrences": 1,
+      "per_case_seconds": "NOT_EMITTED_BY_LIBTEST_FORMAT",
+      "selected_ignored": false,
+      "current_actual_expected_rejection_control": false
+    },
+    {
+      "name": "app::tests::background_exit_tests::background_exit_shell_readiness_rejects_failed_start",
+      "target": "//codex-rs/tui:tui-unit-tests",
+      "result": "PASS",
+      "raw_member": "selected-target-test-logs/invocation-pmp6vcz8/targets/0000/shard_8_of_8/test.log",
+      "raw_member_identity": {
+        "bytes": 48837,
+        "sha256": "d37086af9915dad3c793ad38030b594ff0c0f2b8619dd0e535688ac3c3aed19f",
+        "blob": "f000ddb5103f9cafc293acaa65ec954aa8517f0e"
+      },
+      "line": 32,
+      "raw_line": "\u001b[0 qtest app::tests::background_exit_tests::background_exit_shell_readiness_rejects_failed_start ... ok",
+      "occurrences": 1,
+      "per_case_seconds": "NOT_EMITTED_BY_LIBTEST_FORMAT",
+      "selected_ignored": false,
+      "current_actual_expected_rejection_control": true
+    },
+    {
+      "name": "app::tests::background_exit_tests::daemon_ctrl_c_closes_running_side_thread_and_returns_to_parent",
+      "target": "//codex-rs/tui:tui-unit-tests",
+      "result": "PASS",
+      "raw_member": "selected-target-test-logs/invocation-pmp6vcz8/targets/0000/shard_7_of_8/test.log",
+      "raw_member_identity": {
+        "bytes": 49096,
+        "sha256": "a18da17ebb6373f99e671d700f7c1a3d91705f216e348e02db24c3f119c42bf5",
+        "blob": "6f6ae2a18c5b6809c5b3d875cea0a3a3e077343f"
+      },
+      "line": 27,
+      "raw_line": "\u001b[0 qtest app::tests::background_exit_tests::daemon_ctrl_c_closes_running_side_thread_and_returns_to_parent ... ok",
+      "occurrences": 1,
+      "per_case_seconds": "NOT_EMITTED_BY_LIBTEST_FORMAT",
+      "selected_ignored": false,
+      "current_actual_expected_rejection_control": false
+    },
+    {
+      "name": "app::tests::background_exit_tests::exit_interrupts_before_requesting_shutdown",
+      "target": "//codex-rs/tui:tui-unit-tests",
+      "result": "PASS",
+      "raw_member": "selected-target-test-logs/invocation-pmp6vcz8/targets/0000/shard_1_of_8/test.log",
+      "raw_member_identity": {
+        "bytes": 44081,
+        "sha256": "d841eaf213b3dfee955a3d1d5f4de99a313f4f00f57226027572f6781154c3fe",
+        "blob": "a9f3ce9563a020fe3dcbc6d573b32c72bc135240"
+      },
+      "line": 40,
+      "raw_line": "\u001b[0 qtest app::tests::background_exit_tests::exit_interrupts_before_requesting_shutdown ... ok",
+      "occurrences": 1,
+      "per_case_seconds": "NOT_EMITTED_BY_LIBTEST_FORMAT",
+      "selected_ignored": false,
+      "current_actual_expected_rejection_control": false
+    }
+  ],
+  "exit_condition_assessment": [
+    {
+      "condition": "定位真实 turn / interrupt 与关闭顺序",
+      "finding": "SATISFIED_WITHIN_ORIGINAL_CASE_CONTRACT",
+      "evidence": "Current helper requires same thread, turn and UserShell item, InProgress states and real stdout marker. event_dispatch.rs:668–697 awaits actual turn_interrupt and only queues ShutdownFirst on Ok. The original exit case reaches its three original final assertions after the real embedded RPC. This proves the existing contract, not every possible UI shutdown scenario."
+    },
+    {
+      "condition": "保留原断言和时间预算",
+      "finding": "SATISFIED_FIXED_REPAIR_SOURCE_UNCHANGED",
+      "evidence": "Current background_exit_tests.rs and tui lib.rs exactly equal the historical fixed 7c437 postimages. Readiness remains 5s, shell sleep remains 30s, canonical filesystem cwd and error-return branches preserved. No new retry/timeout/ignore/fixture mutation in this observation."
+    },
+    {
+      "condition": "固定修复源原用例",
+      "finding": "SATISFIED_ON_CURRENT_WINDOWS_ORIGINAL_CI",
+      "evidence": "All 13 frozen selected names occur exactly once with ok in the current original Windows TUI unit target; no selected ignored/failed rows."
+    },
+    {
+      "condition": "有效负控",
+      "finding": "SATISFIED_CURRENT_PHYSICAL_REJECTION_AND_PRESERVED_HISTORICAL_CAUSAL_RECEIPT",
+      "evidence": "Current Windows missing-cwd test actually passed. Its expect_err and exact Failed/-1 CommandExecution event verify that TurnStarted alone does not qualify readiness, and the missing directory remains absent. Historical old-predicate negative records a selected 1 FAIL at the intended expect_err assertion, followed by exact fixed12 PASS with retries0. Historical raw XML not newly reacquired; current rejection test and fixed source were directly inspected."
+    },
+    {
+      "condition": "原 Windows CI 验收",
+      "finding": "SATISFIED_TARGETED_SCOPE",
+      "evidence": "Original blocking workflow run41999114842 attempt1/job127339255966 checkout9063 with equal5b treeb265, noncached targetPASSED30.2s and actual eight-shard progress plus complete success logs. XML is nine wrapper cases total; individual results are parsed from original libtest logs, not inferred from XML totals."
+    }
+  ],
+  "budget_and_selection": {
+    "source_readiness_timeout_seconds": 5,
+    "intentional_shell_sleep_seconds": 30,
+    "tui_shards": 8,
+    "case_cfg": "The 12 background cases and embedded corruption case are ordinary tokio tests; no Windows skip/ignore branch.",
+    "original_windows_skip_filter": "suite::code_mode::code_mode_can_call_hidden_dynamic_tools,tests::windows_tests::conpty_ctrl_c_interrupts_powershell_foreground_child",
+    "selected_B22_names_hit_skip_filter": false,
+    "Bazel_target_flaky_flag": true,
+    "configured_retry_limit_scope": "Fixed defs.bzl marks sharded target flaky; its existing documented default three attempts was not changed. This is not a --retries0 invocation.",
+    "observed_additional_attempt_logs": [],
+    "observed_TUI_failure_or_FLAKY_console": false,
+    "retry_claim": "All available original target logs contain one observation per selected name; there are no test_attempts members. No undocumented absence of retries is asserted."
+  },
+  "complete_retained_log_projection": {
+    "full_projection_local_file": "/workspace/scratch/07dd58cc9630/research-audit/published-5b633-ci-20261105/terminal/main-win-shard3-127339255966/complete-normalized-projection-v2.json",
+    "full_projection_identity": {
+      "bytes": 2226194,
+      "sha256": "40e7f6fb070c9a9d5768f9bff1738ee40dde4df21d6cb32c60200e3ecdbaac03",
+      "blob": "65f1eb2f023b8d9151c84219955eb01255ee80db"
+    },
+    "TUI_distinct_ok": 3775,
+    "TUI_ignored": 6,
+    "Queue_distinct_ok": 36,
+    "total_name_rows": 3817,
+    "total_ok": 3811,
+    "total_ignored": 6,
+    "xml_files": 9,
+    "xml_wrapper_testcases": 9,
+    "actual_display_prefixed_result_rows": 19,
+    "all_result_counts_match_original_libtest_summaries": true,
+    "duplicates": 0,
+    "six_TUI_ignored_names": [
+      "app::tests::clear_ui_header_shows_fast_status_for_fast_capable_models",
+      "app::tests::clear_ui_after_long_transcript_snapshots_fresh_header_only",
+      "history_cell::tests::session_header_indicates_yolo_mode",
+      "app::tests::ctrl_l_clear_ui_after_long_transcript_reuses_clear_header_snapshot",
+      "chatwidget::tests::status_and_layout::configured_pet_load_is_deferred_until_after_construction",
+      "history_cell::tests::session_info_availability_nux_tooltip_snapshot"
+    ]
+  },
+  "historical_controls": {
+    "frozen_summary_source": {
+      "path": "qualification/r3-audit-repair-20261104/second-batch-qualification.json",
+      "bytes": 343668,
+      "sha256": "cf2e962b3bcf20e2d19d4397d2a1d4d23f11905cf8f76c7c6947b312eda35e18",
+      "blob": "f03ce31c7e39759148577633dad9b36b4e0b3669"
+    },
+    "historical_phases_preserved": [
+      {
+        "phase": "tui-canonical-original",
+        "source_tree": "d12e1f208276f8986a5dcb641182ec20316ac4c8",
+        "source_stage": null,
+        "status_receipt": {
+          "artifact": "ci-audit/native-evidence/tui-canonical-original-status.json",
+          "bytes": 1398,
+          "sha256": "8873ab5514ec045cab7f67db312926cdb5ff67d5ba0d176b9e92571f0eb79134"
+        },
+        "junit": {
+          "artifact": "ci-audit/native-evidence/tui-canonical-original.junit.xml",
+          "bytes": 517,
+          "sha256": "98d906e0a3100ede54b98969c94f46a4458b387a26f4c6ade5545266a2566248"
+        },
+        "source_recheck": null,
+        "source_manifest_receipts": [
+          {
+            "artifact": "ci-audit/core-production-v2-manifest.json",
+            "bytes": 13357,
+            "sha256": "5afb17b6326d80b60ea203106addfcca2b098edc539d67eb6a2bc509b4ac1f47"
+          }
+        ],
+        "source_manifest_limit": null,
+        "command": [
+          "just",
+          "test",
+          "--locked",
+          "--offline",
+          "-p",
+          "codex-tui",
+          "--lib",
+          "-E",
+          "test(tests::embedded_state_db_corruption_preserves_failed_database_for_cli_recovery)",
+          "--no-tests",
+          "fail",
+          "--retries",
+          "0",
+          "--test-threads",
+          "4"
+        ],
+        "exit_code": 0,
+        "uuid": "0ee941b5-c338-4aa4-b3f9-00118b28525c",
+        "timestamp": "2026-11-04T09:52:13.309-05:00",
+        "selected": 1,
+        "passed": 1,
+        "failed": 0,
+        "skipped": 0,
+        "whole_phase_elapsed_seconds": 455.3055034140125,
+        "junit_elapsed_seconds": 0.541,
+        "selection_complete": true,
+        "source_unchanged": true,
+        "retries": 0,
+        "targeted_negative_observations": [],
+        "cases": [
+          {
+            "test": "tests::embedded_state_db_corruption_preserves_failed_database_for_cli_recovery",
+            "binary": "codex-tui",
+            "result": "PASS",
+            "seconds": 0.48,
+            "in_original_failure_union": true
+          }
+        ],
+        "scope": "Only this exact native source stage and selected roster; no final combined-source or original-platform qualification is inferred."
+      },
+      {
+        "phase": "tui-interrupt-old-predicate-negative",
+        "source_tree": "0b76fae93d0f5afc30e7a602c7a7db78dd97c224",
+        "source_stage": "tui-interrupt-baseline",
+        "status_receipt": {
+          "artifact": "ci-audit/native-evidence/pty-tui-results.json",
+          "bytes": 15407,
+          "sha256": "3b86b8bbf08e76931a1a6569c244843db89250d2ea56288d1d9cd7f4077b03e3"
+        },
+        "junit": {
+          "artifact": "ci-audit/native-evidence/tui-interrupt-old-predicate-negative.junit.xml",
+          "bytes": 1949,
+          "sha256": "188ae84e026d18572293856c6ae6cea4bc4e2fed3a3d40be6f4077b8afecea75"
+        },
+        "source_recheck": null,
+        "source_manifest_receipts": [],
+        "source_manifest_limit": "No separate full file manifest is attached for this stage; the exact tree and unchanged-source status are retained.",
+        "command": [
+          "just",
+          "test",
+          "--locked",
+          "--offline",
+          "-p",
+          "codex-tui",
+          "--lib",
+          "-E",
+          "test(app::tests::background_exit_tests::background_exit_shell_readiness_rejects_failed_start)",
+          "--no-tests",
+          "fail",
+          "--retries",
+          "0",
+          "--test-threads",
+          "4"
+        ],
+        "exit_code": 100,
+        "uuid": "905952d9-182b-4c36-81e7-23f5a1802913",
+        "timestamp": "2026-11-04T11:39:11.209-05:00",
+        "selected": 1,
+        "passed": 0,
+        "failed": 1,
+        "skipped": 0,
+        "whole_phase_elapsed_seconds": 216.76622987096198,
+        "junit_elapsed_seconds": 1.152,
+        "selection_complete": true,
+        "source_unchanged": true,
+        "retries": 0,
+        "targeted_negative_observations": [
+          "TurnStarted must not make a failed shell start ready for interrupt"
+        ],
+        "cases": [
+          {
+            "test": "app::tests::background_exit_tests::background_exit_shell_readiness_rejects_failed_start",
+            "binary": "codex-tui",
+            "result": "FAIL",
+            "seconds": 1.086,
+            "in_original_failure_union": false
+          }
+        ],
+        "scope": "Only this exact native source stage and selected roster; no final combined-source or original-platform qualification is inferred."
+      },
+      {
+        "phase": "tui-interrupt-fixed-all-originals",
+        "source_tree": "7c4370335115a1eb098c5b88981d9dff24371cf4",
+        "source_stage": "pty-tui-final",
+        "status_receipt": {
+          "artifact": "ci-audit/native-evidence/pty-tui-results.json",
+          "bytes": 15407,
+          "sha256": "3b86b8bbf08e76931a1a6569c244843db89250d2ea56288d1d9cd7f4077b03e3"
+        },
+        "junit": {
+          "artifact": "ci-audit/native-evidence/tui-interrupt-fixed-all-originals.junit.xml",
+          "bytes": 2899,
+          "sha256": "06172fc5d5478cd45ed13a4e43d7afa79acb65dd28a82f56a52aa2ff0b96ef8b"
+        },
+        "source_recheck": null,
+        "source_manifest_receipts": [
+          {
+            "artifact": "ci-audit/native-evidence/pty-tui-final-manifest.json",
+            "bytes": 14228,
+            "sha256": "892f684e5770c3a12c53e1a804eb5eab3462d569f0f6b305d523577f9f2e3f3d"
+          }
+        ],
+        "source_manifest_limit": null,
+        "command": [
+          "just",
+          "test",
+          "--locked",
+          "--offline",
+          "-p",
+          "codex-tui",
+          "--lib",
+          "-E",
+          "test(app::tests::background_exit_tests::) | test(app::tests::background_exit_tests::background_exit_shell_readiness_rejects_failed_start) | test(app::tests::background_exit_tests::exit_interrupts_before_requesting_shutdown)",
+          "--no-tests",
+          "fail",
+          "--retries",
+          "0",
+          "--test-threads",
+          "4"
+        ],
+        "exit_code": 0,
+        "uuid": "bf3eb09d-b815-4bca-9a1c-dfa86699b9dc",
+        "timestamp": "2026-11-04T11:40:55.226-05:00",
+        "selected": 12,
+        "passed": 12,
+        "failed": 0,
+        "skipped": 0,
+        "whole_phase_elapsed_seconds": 104.52896516502369,
+        "junit_elapsed_seconds": 6.242,
+        "selection_complete": true,
+        "source_unchanged": true,
+        "retries": 0,
+        "targeted_negative_observations": [],
+        "cases": [
+          {
+            "test": "app::tests::background_exit_tests::daemon_ctrl_c_during_mcp_startup_does_not_show_background_exit_menu",
+            "binary": "codex-tui",
+            "result": "PASS",
+            "seconds": 0.77,
+            "in_original_failure_union": false
+          },
+          {
+            "test": "app::tests::background_exit_tests::cancel_task_interrupts_without_exiting",
+            "binary": "codex-tui",
+            "result": "PASS",
+            "seconds": 0.78,
+            "in_original_failure_union": false
+          },
+          {
+            "test": "app::tests::background_exit_tests::daemon_ctrl_c_during_paste_burst_does_not_show_exit_menu",
+            "binary": "codex-tui",
+            "result": "PASS",
+            "seconds": 0.705,
+            "in_original_failure_union": false
+          },
+          {
+            "test": "app::tests::background_exit_tests::daemon_ctrl_c_hides_background_exit_for_running_background_side_thread",
+            "binary": "codex-tui",
+            "result": "PASS",
+            "seconds": 0.704,
+            "in_original_failure_union": false
+          },
+          {
+            "test": "app::tests::background_exit_tests::daemon_ctrl_c_shows_background_exit_menu_and_escape_dismisses_it",
+            "binary": "codex-tui",
+            "result": "PASS",
+            "seconds": 0.695,
+            "in_original_failure_union": false
+          },
+          {
+            "test": "app::tests::background_exit_tests::daemon_ctrl_c_hides_background_exit_with_queued_follow_up",
+            "binary": "codex-tui",
+            "result": "PASS",
+            "seconds": 0.706,
+            "in_original_failure_union": false
+          },
+          {
+            "test": "app::tests::background_exit_tests::daemon_ctrl_c_with_draft_preserves_composer_cancellation",
+            "binary": "codex-tui",
+            "result": "PASS",
+            "seconds": 0.725,
+            "in_original_failure_union": false
+          },
+          {
+            "test": "app::tests::background_exit_tests::non_daemon_ctrl_c_keeps_interrupt_behavior",
+            "binary": "codex-tui",
+            "result": "PASS",
+            "seconds": 1.302,
+            "in_original_failure_union": false
+          },
+          {
+            "test": "app::tests::background_exit_tests::run_in_background_detaches_without_interrupting_main_or_side_threads",
+            "binary": "codex-tui",
+            "result": "PASS",
+            "seconds": 0.61,
+            "in_original_failure_union": false
+          },
+          {
+            "test": "app::tests::background_exit_tests::background_exit_shell_readiness_rejects_failed_start",
+            "binary": "codex-tui",
+            "result": "PASS",
+            "seconds": 6.19,
+            "in_original_failure_union": false
+          },
+          {
+            "test": "app::tests::background_exit_tests::daemon_ctrl_c_closes_running_side_thread_and_returns_to_parent",
+            "binary": "codex-tui",
+            "result": "PASS",
+            "seconds": 6.19,
+            "in_original_failure_union": false
+          },
+          {
+            "test": "app::tests::background_exit_tests::exit_interrupts_before_requesting_shutdown",
+            "binary": "codex-tui",
+            "result": "PASS",
+            "seconds": 4.01,
+            "in_original_failure_union": true
+          }
+        ],
+        "scope": "Only this exact native source stage and selected roster; no final combined-source or original-platform qualification is inferred."
+      }
+    ],
+    "current_source_equals_historical_fixed_postimages": [
+      {
+        "path": "codex-rs/tui/src/app/tests/background_exit_tests.rs",
+        "bytes": 22060,
+        "sha256": "468897b04633ca59ffe873bfce3fcdac504dd886b8ab5772049eca4dc65ea53f",
+        "git_blob": "d7d9ed4435b3fb7cb7d8303e94cbb223b5ced438"
+      },
+      {
+        "path": "codex-rs/tui/src/lib.rs",
+        "bytes": 122961,
+        "sha256": "acb8d9e8fd21aad9f121d2d7ca1db818f54cb86c8e9bc035cca4413d93a675af",
+        "git_blob": "1b99810dec2de74f11514f8e0dc1a126e6e5b8d7"
+      }
+    ],
+    "new_primary_read_limit": "Historical original JUnit/raw is referenced by frozen full identities in the unchanged published summary; not re-downloaded or promoted to a new-head native execution."
+  },
+  "limits": [
+    "Close only original B22 Windows TUI selected contract, not B15 whole-platform/whole-repository qualification.",
+    "Current other Windows jobs failing and Intel queued/cancelled statuses remain independent.",
+    "The six unrelated TUI ignored cases remain ignored and are not converted to PASS.",
+    "Bazel wrapper XML is target-level; case PASS comes from actual original log names.",
+    "Collector source is recorded at collection; execution.zst remains preserved but was not decoded in this review. Standard job checkout/progress/source/target/result linkage is used, not mtime alone.",
+    "Existing configured flaky policy is unchanged; absent attempt files are retained as an observation rather than a fabricated retries0 claim.",
+    "The 13 frozen B22 names are the selected contract roster; only a subset originated in the original48 failure union.",
+    "A subsequent source change needs its own exact-head qualification, not inherited success from this run."
+  ],
+  "B13_queue_side_result": {
+    "original_Queue_names_present": 8,
+    "Queue_all36_original_log_cases": "PASS",
+    "ninth_Agentd_qualification_target": "NOT_REPORTED",
+    "B13_closed": false
+  }
+}

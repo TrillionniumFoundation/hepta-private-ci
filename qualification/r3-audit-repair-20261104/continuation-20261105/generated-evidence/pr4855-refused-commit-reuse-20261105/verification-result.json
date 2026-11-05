@@ -1,0 +1,28 @@
+{
+  "schema": "readonly-existing-artifact-verification-result-v1",
+  "project_or_native_commands_run": false,
+  "command": [
+    "python3",
+    "research-audit/pr4855-pool-reuse-delta-20261105/verify_and_review.py"
+  ],
+  "exit_code": 0,
+  "verified": {
+    "terminal_stream_total_equality": true,
+    "zip_members_crc_and_bytes": 20,
+    "phase_raw_stream_hash_matches": 18,
+    "matched_argv": true,
+    "catalog_exact_pass": 1288,
+    "catalog_exact_original_ignored": 24,
+    "selected_case_members": [
+      "production_writer::objective_sender::gate_tests::cancelled_checkpoint_fences_a_writer_already_waiting_for_sqlite",
+      "sqlite::pool_tests::refused_commit_keeps_reused_pool_readable_without_reopening_write_gate"
+    ]
+  },
+  "final_review": {
+    "path": "research-audit/pr4855-pool-reuse-delta-20261105/independent-review.json",
+    "bytes": 27513,
+    "sha256": "c1a38a7b67d4f3e741cb97af1205f7946f09a5fc5f4a2d45bd0e149afa36394f",
+    "git_blob": "1dcd801bcd0406b494a21b19124f0f1b5d518530"
+  },
+  "note": "Verifier constructs a timestamped derived review; run only in a separate copy if reproducing. Final review additionally identifies the already read fixed Git commit API sources."
+}

@@ -1,0 +1,187 @@
+{
+  "schema": "hepta.b11.strict-label-ace.independent-static-review.v1",
+  "observed_at_utc": "2026-11-05T15:43:19.833750+00:00",
+  "verdict": "STATIC_PASS_PENDING_FRESH_WINDOWS_EXECUTION",
+  "scope": "Only test fixture mandatory-label equality; no sandbox permission change or isolation qualification",
+  "author_manifest": {
+    "blob": "26631a3b242c5a14df89b22de4f6c1a84d3aa904",
+    "bytes": 14658,
+    "sha256": "e0779093da69b56e32fc8b96c1fa15bc7e686599f0c2413102d9fb18ad39a761",
+    "git_blob": "26631a3b242c5a14df89b22de4f6c1a84d3aa904"
+  },
+  "source_path": "codex-rs/windows-sandbox-rs/src/token_integrity_probe_support.rs",
+  "pre": {
+    "bytes": 13465,
+    "sha256": "018166e25f5e2014d2ae0f74c58252af85625f88a43fa320573926d491e1225a",
+    "git_blob": "47dddb48c727c1bcae89b613409a72bd7d1312ff"
+  },
+  "post": {
+    "bytes": 17560,
+    "sha256": "986fe8864f789e4bfa876553d99f1949be403f5ed10b9c88fdc8e0fd7331c0d1",
+    "git_blob": "7a7008f9becf09578ca953c849401eda93eb94b2"
+  },
+  "patch": {
+    "bytes": 8055,
+    "sha256": "4ee7ad086af52af9832b843b574e4d59305e41fcc162218992a903a036a6ce25",
+    "git_blob": "03f5ee7e4122d22189b8056ef0137f820943c1ac"
+  },
+  "actual_original_failure": {
+    "run": 42053829668,
+    "job": 127336717141,
+    "attempt": 1,
+    "conclusion": "failure",
+    "job_log": {
+      "local_path": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-pr4884-ci-20261105/terminal/probe-127336717141/job.log",
+      "bytes": 306142,
+      "sha256": "4d30992655422af664f659780e1549daa80f9545eff2a4f3bfd9defc15734beb",
+      "git_blob": "a5bad004d7d3c47b0a02049c9e797c9d62832869"
+    },
+    "complete_test_log": {
+      "local_path": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-pr4884-ci-20261105/terminal/probe-127336717141/members/bazel-execution-logs/failed-test-logs/invocation-4ln_urq0/targets/0000/test.log",
+      "bytes": 39506,
+      "sha256": "1781c270bf00f5fa7a9b6735b1f8ea206489207d9dd8340d6cae5633fc23f79c",
+      "git_blob": "0e6e864a6c9fbfb9684280b384d93e09df032226"
+    },
+    "original_observation": [
+      {
+        "line": 166,
+        "raw": "PROBE_OBSERVATION_ONLY initial_label path=\"D:\\\\tmp\\\\.tmpyieOXk\\\\host-medium\\\\inside\" actual=\"S:AI(ML;;NW;;;ME)\" expected=\"S:(ML;;NW;;;ME)\""
+      }
+    ],
+    "probe_error": "created object did not preserve its explicit initial label",
+    "complete_physical_rows": 0,
+    "counts_from_two_disjoint_libtest_summaries": {
+      "passed": 139,
+      "failed": 14,
+      "ignored": 2
+    },
+    "not_all_failures_are_probe_failure": true
+  },
+  "independent_commands": [
+    {
+      "argv": [
+        "git",
+        "init",
+        "-q"
+      ],
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "git",
+        "apply",
+        "--check",
+        "/workspace/scratch/07dd58cc9630/architecture-audit/b11-pr4884-ci-20261105/repair-label-ace-semantics-v1/repair.patch"
+      ],
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "git",
+        "apply",
+        "/workspace/scratch/07dd58cc9630/architecture-audit/b11-pr4884-ci-20261105/repair-label-ace-semantics-v1/repair.patch"
+      ],
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "git",
+        "apply",
+        "--reverse",
+        "--check",
+        "/workspace/scratch/07dd58cc9630/architecture-audit/b11-pr4884-ci-20261105/repair-label-ace-semantics-v1/repair.patch"
+      ],
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "git",
+        "apply",
+        "--reverse",
+        "/workspace/scratch/07dd58cc9630/architecture-audit/b11-pr4884-ci-20261105/repair-label-ace-semantics-v1/repair.patch"
+      ],
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": ""
+    }
+  ],
+  "forward_and_reverse_exact": true,
+  "review_findings": [
+    "Present non-NULL SACL and IsValidAcl precede reading AceCount/AclSize. Exactly one ACE is required.",
+    "GetAce offset uses checked_sub; complete ACE_HEADER is bounded within AclSize before read_unaligned.",
+    "Mandatory-label type and full prefix plus one-subauthority SID fit before label and SID reads. SID authority, SubAuthorityCount=1, exact ACE payload extent and IsValidSid are mandatory.",
+    "Derived equality includes ACE type, ACE flags, policy mask and full SID bytes, including RID/revision. No unconditional AI/P string removal or permissive mask is used.",
+    "Observed AI is descriptor/ACL control state rather than the mandatory-label ACE inheritance flags. It remains observed through full SDDL and raw control/revision queries.",
+    "The actual same-handle original descriptor stays owned unchanged; finish restores original LABEL and requires ALL_INFO text plus raw control/revision equality. Owner/group/DACL, object identity, pending-delete and post-close name checks remain.",
+    "Windows API features are already enabled and the actual0.52 SID/ACL/ACE layouts match the bound sizes. Added calls are descriptor queries only."
+  ],
+  "unchanged_contract": {
+    "physical_probe_test_file": {
+      "local_path": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-mic-physical-probe-20261105/candidate/codex-rs/windows-sandbox-rs/src/token_integrity_probe_tests.rs",
+      "bytes": 14475,
+      "sha256": "5fe644714b4180dd4bbb988452a4c8464524149eda1a91af0af8879761f448ab",
+      "git_blob": "2a384792e8ba88518c26943716e8c3a39a523f9b"
+    },
+    "eight_rows_and_final_assertions_unchanged": true,
+    "three_original_strict_and_two_matrix_cases_unchanged": true,
+    "original_AccessCheck_body_unchanged": true,
+    "workflow_Bazel_argv_budget_selection_status_unchanged": true,
+    "source_block_byte_comparisons": {
+      "pub(super) fn from_sddl": true,
+      "fn read(": true,
+      "fn text(": true,
+      "fn apply_label(": true,
+      "pub(super) fn create(": true,
+      "fn identity(": true,
+      "pub(super) fn access_checks(": true,
+      "impl Drop for LabelledObject": true
+    },
+    "cargo": {
+      "local_path": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-mic-physical-probe-20261105/source/codex-rs/windows-sandbox-rs/Cargo.toml",
+      "bytes": 2438,
+      "sha256": "183a3691be018640668dfb766f29651d8fd75ab08f7fd526f3d378ae2a86469d",
+      "git_blob": "aa41ed5f08608c0275785b2f5e27ec5db08f50dd"
+    },
+    "existing_required_features": [
+      "Win32_Foundation",
+      "Win32_Security",
+      "Win32_System_SystemServices"
+    ],
+    "new_dependencies_or_features": []
+  },
+  "remaining_limits": [
+    "No Rust compile or Windows execution was performed in this review.",
+    "The prior run reached zero complete physical mechanism rows; this review does not supply them.",
+    "A future diagnostic probe success does not close strict deletion, IPC/helper, legitimate I/O or broader B11 gates.",
+    "Drop restoration remains best-effort on failure and is not counted as successful restoration."
+  ],
+  "primary_bundle": {
+    "local_path": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-pr4884-ci-20261105/repair-label-ace-semantics-v1/primary/microsoft-docs-originals.json",
+    "bytes": 40196,
+    "sha256": "78e28140e54154b3dc9cdef9b5c7cc74c11a48c803d4b144fea1bf36e07e5099",
+    "git_blob": "0c0934acd6aa2e8ce7235bce4c0d2e86808bccd1"
+  },
+  "fixed_windows_api_sources": [
+    {
+      "local_envelope": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-mic-physical-probe-20261105/primary/windows-security-0.52.0.json",
+      "upstream_blob": "e474d1dfc62b7be1443f2b59eda8370477fdfa74",
+      "bytes": 111353,
+      "sha256": "b35db507ad9380695f15b7ba798d0e677e08cc84b905577489d7e63994f00673"
+    },
+    {
+      "local_envelope": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-mic-physical-probe-20261105/primary/windows-systemservices-0.52.0.json",
+      "upstream_blob": "3d024dcbdf3061096f2a5e90a3762af7cca2bddd",
+      "bytes": 253400,
+      "sha256": "edd591c9ea164c7d6f4e7b7174f33054261a122a231f3ea8ce5cdacb5bcd2475"
+    }
+  ],
+  "changes_to_shared_source_or_refs": false
+}

@@ -1,0 +1,14 @@
+diff --git a/.github/workflows/hepta-windows-token-mechanism-probe.yml b/.github/workflows/hepta-windows-token-mechanism-probe.yml
+index 757e0eb43b2583604569fd51fac3aee4828899a5..70f3145268e042ec04fbfe85eda83ccbbc4ff79c 100644
+--- a/.github/workflows/hepta-windows-token-mechanism-probe.yml
++++ b/.github/workflows/hepta-windows-token-mechanism-probe.yml
+@@ -3,6 +3,9 @@
+ on:
+   pull_request:
+     paths:
++      - codex-rs/windows-sandbox-rs/src/acl_deny.rs
++      - codex-rs/windows-sandbox-rs/src/acl_tests.rs
++      - codex-rs/windows-sandbox-rs/src/unified_exec/acl_setup_tests.rs
+       - codex-rs/windows-sandbox-rs/src/token.rs
+       - codex-rs/windows-sandbox-rs/src/token_integrity_probe_tests.rs
+       - codex-rs/windows-sandbox-rs/src/token_integrity_probe_support.rs

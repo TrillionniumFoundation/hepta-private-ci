@@ -1,0 +1,176 @@
+{
+  "schema": "pr4855-existing-donor-native-evidence-verified-registry-v1",
+  "created_at": "2026-11-05T17:12:05.391Z",
+  "item_count": 11,
+  "all_actual_create_and_complete_GET_equal": true,
+  "source_head": "3a39c799a3f776b0aeedfce350341d865d3cc1c4",
+  "tested_red": "3466a3074ab2df88bfae3519f453aa4672c536e5",
+  "tested_green": "f7a57e6f40e3e8220233f0d27b8cfbdf1f721c55",
+  "native_jobs_read_only": [
+    "1a1aafb05fe-fc05-4936",
+    "1a1ab20eb00-fc05-4aba"
+  ],
+  "native_commands_started": false,
+  "original_files": 46,
+  "original_bytes": 9597045,
+  "original_portable_zip_members": 20,
+  "archive_parts": 5,
+  "maximum_part_bytes": 479997,
+  "items": [
+    {
+      "local_file": "/workspace/scratch/07dd58cc9630/research-audit/pr4855-pool-reuse-delta-20261105/independent-review.json",
+      "repo_relative_path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/pr4855-refused-commit-reuse-20261105/independent-review.json",
+      "bytes": 27513,
+      "sha256": "c1a38a7b67d4f3e741cb97af1205f7946f09a5fc5f4a2d45bd0e149afa36394f",
+      "blob": "1dcd801bcd0406b494a21b19124f0f1b5d518530",
+      "mode": "100644",
+      "role": "independent existing donor raw and exact source reuse review",
+      "verification": {
+        "actual_create_sha": "1dcd801bcd0406b494a21b19124f0f1b5d518530",
+        "actual_GET_bytes_equal": true,
+        "observed_at": "2026-11-05T17:09:49.970Z"
+      }
+    },
+    {
+      "local_file": "/workspace/scratch/07dd58cc9630/research-audit/pr4855-pool-reuse-delta-20261105/REVIEW.zh-CN.md",
+      "repo_relative_path": "qualification/r3-audit-repair-20261104/continuation-20261105/reviews/pr4855-refused-commit-reuse/REVIEW.zh-CN.md",
+      "bytes": 6191,
+      "sha256": "3e7c8f2b1320602127e1899148ceb46913a3fcbfaa37189f7749ee61b2a1db15",
+      "blob": "96abf6006db9102fd1ef67e1e7ac088aa7089922",
+      "mode": "100644",
+      "role": "Chinese bounded source and existing native evidence reuse report",
+      "verification": {
+        "actual_create_sha": "96abf6006db9102fd1ef67e1e7ac088aa7089922",
+        "actual_GET_bytes_equal": true,
+        "observed_at": "2026-11-05T17:09:51.824Z"
+      }
+    },
+    {
+      "local_file": "/workspace/scratch/07dd58cc9630/research-audit/pr4855-pool-reuse-delta-20261105/archive-manifest.json",
+      "repo_relative_path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/pr4855-refused-commit-reuse-20261105/archive-manifest.json",
+      "bytes": 16076,
+      "sha256": "d20759f8fab4b7d66c50ff0f4a6c301d29e3c0b8c6a24d04f4eeb58258f32f5c",
+      "mode": "100644",
+      "role": "complete archive/member identity and strict restoration recipe",
+      "blob": "cb0f384e5cffd2fee4c28d4c2667c2523fd75068",
+      "verification": {
+        "actual_create_sha": "cb0f384e5cffd2fee4c28d4c2667c2523fd75068",
+        "actual_GET_bytes_equal": true,
+        "observed_at": "2026-11-05T17:11:17.040Z"
+      }
+    },
+    {
+      "local_file": "/workspace/scratch/07dd58cc9630/research-audit/pr4855-pool-reuse-delta-20261105/native-case-projection.json",
+      "repo_relative_path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/pr4855-refused-commit-reuse-20261105/native-case-projection.json",
+      "bytes": 304969,
+      "sha256": "9e23eed7de00bd7ca8e2a29f8b67e5ffd10f0f9a891556f4e204d533b9f01a23",
+      "mode": "100644",
+      "role": "complete original1312names plus exact matched-state evidence projection",
+      "blob": "2c8a60aa9350611ade704eb08a9422adfb1d1ecb",
+      "verification": {
+        "actual_create_sha": "2c8a60aa9350611ade704eb08a9422adfb1d1ecb",
+        "actual_GET_bytes_equal": true,
+        "observed_at": "2026-11-05T17:11:20.355Z"
+      }
+    },
+    {
+      "local_file": "/workspace/scratch/07dd58cc9630/research-audit/pr4855-pool-reuse-delta-20261105/verification-result.json",
+      "repo_relative_path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/pr4855-refused-commit-reuse-20261105/verification-result.json",
+      "bytes": 1204,
+      "sha256": "cd2d16ba4cb5c828fd61fb5ba64f416cda3f872cb3be0c7e633fa6bf692c4095",
+      "mode": "100644",
+      "role": "actual cloud read-only original-evidence verification result",
+      "blob": "cf826b415f8d77e05760941775a735a000396958",
+      "verification": {
+        "actual_create_sha": "cf826b415f8d77e05760941775a735a000396958",
+        "actual_GET_bytes_equal": true,
+        "observed_at": "2026-11-05T17:11:24.223Z"
+      }
+    },
+    {
+      "local_file": "/workspace/scratch/07dd58cc9630/research-audit/pr4855-pool-reuse-delta-20261105/verify_and_review.py",
+      "repo_relative_path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/pr4855-refused-commit-reuse-20261105/verify_and_review.py.source.txt",
+      "bytes": 16730,
+      "sha256": "05eda88e855df3640e7b3cb2d11cd189de58eed2223224dd470bd071a76d57da",
+      "mode": "100644",
+      "role": "passive read-only evidence verifier source",
+      "blob": "dec661d8b85d1ca42bffd4e47fe54de53ac34f76",
+      "verification": {
+        "actual_create_sha": "dec661d8b85d1ca42bffd4e47fe54de53ac34f76",
+        "actual_GET_bytes_equal": true,
+        "observed_at": "2026-11-05T17:11:26.657Z"
+      },
+      "archived_logical_source_path": "research-audit/pr4855-pool-reuse-delta-20261105/verify_and_review.py"
+    },
+    {
+      "local_file": "/workspace/scratch/07dd58cc9630/research-audit/pr4855-pool-reuse-delta-20261105/immutable-originals-v1/originals.part000.b64",
+      "repo_relative_path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/pr4855-refused-commit-reuse-20261105/parts/originals.part000.b64",
+      "bytes": 479997,
+      "sha256": "9d9bf7bc19d42b102ea11bf28b3ab4fdf9fc82382b5e2cffef3e8cbda6acf13f",
+      "mode": "100644",
+      "role": "lossless original archive base64 transport part",
+      "blob": "c25f849a63e773bf4241186020dc2095ae8befb0",
+      "verification": {
+        "actual_create_sha": "c25f849a63e773bf4241186020dc2095ae8befb0",
+        "actual_GET_bytes_equal": true,
+        "observed_at": "2026-11-05T17:11:30.084Z"
+      }
+    },
+    {
+      "local_file": "/workspace/scratch/07dd58cc9630/research-audit/pr4855-pool-reuse-delta-20261105/immutable-originals-v1/originals.part001.b64",
+      "repo_relative_path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/pr4855-refused-commit-reuse-20261105/parts/originals.part001.b64",
+      "bytes": 479997,
+      "sha256": "971e0f00d436c709738b20bf2cb592e67fdaeaa9ba50c98c4e0e7792ef15eb90",
+      "mode": "100644",
+      "role": "lossless original archive base64 transport part",
+      "blob": "027ddea4dc6ee442ed7ab73964cc3690cc1d3b22",
+      "verification": {
+        "actual_create_sha": "027ddea4dc6ee442ed7ab73964cc3690cc1d3b22",
+        "actual_GET_bytes_equal": true,
+        "observed_at": "2026-11-05T17:11:33.122Z"
+      }
+    },
+    {
+      "local_file": "/workspace/scratch/07dd58cc9630/research-audit/pr4855-pool-reuse-delta-20261105/immutable-originals-v1/originals.part002.b64",
+      "repo_relative_path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/pr4855-refused-commit-reuse-20261105/parts/originals.part002.b64",
+      "bytes": 479997,
+      "sha256": "ee973e8e5c7b4a3b7fb2ff72501b124280be4f99009c0182820e7447b1218460",
+      "mode": "100644",
+      "role": "lossless original archive base64 transport part",
+      "blob": "ba5ec60c6b90d0dee1dba768f8b410d57b3e9c32",
+      "verification": {
+        "actual_create_sha": "ba5ec60c6b90d0dee1dba768f8b410d57b3e9c32",
+        "actual_GET_bytes_equal": true,
+        "observed_at": "2026-11-05T17:11:36.513Z"
+      }
+    },
+    {
+      "local_file": "/workspace/scratch/07dd58cc9630/research-audit/pr4855-pool-reuse-delta-20261105/immutable-originals-v1/originals.part003.b64",
+      "repo_relative_path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/pr4855-refused-commit-reuse-20261105/parts/originals.part003.b64",
+      "bytes": 479997,
+      "sha256": "ce528cd620a1acc4893f7950dac4ef8a90c28cc8609e5c3c8343589e97c00cb1",
+      "mode": "100644",
+      "role": "lossless original archive base64 transport part",
+      "blob": "e5642cd724aef1279fb8e893d3347dc56e5e3a60",
+      "verification": {
+        "actual_create_sha": "e5642cd724aef1279fb8e893d3347dc56e5e3a60",
+        "actual_GET_bytes_equal": true,
+        "observed_at": "2026-11-05T17:11:39.219Z"
+      }
+    },
+    {
+      "local_file": "/workspace/scratch/07dd58cc9630/research-audit/pr4855-pool-reuse-delta-20261105/immutable-originals-v1/originals.part004.b64",
+      "repo_relative_path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/pr4855-refused-commit-reuse-20261105/parts/originals.part004.b64",
+      "bytes": 436017,
+      "sha256": "e880c4811b1a42c35557e91aaaabbfbebc7f1c952c4d87f3ffa9335e3022d0ef",
+      "mode": "100644",
+      "role": "lossless original archive base64 transport part",
+      "blob": "94c0ce6468a6787edee4713a5188ea0ed2f85547",
+      "verification": {
+        "actual_create_sha": "94c0ce6468a6787edee4713a5188ea0ed2f85547",
+        "actual_GET_bytes_equal": true,
+        "observed_at": "2026-11-05T17:11:44.192Z"
+      }
+    }
+  ]
+}

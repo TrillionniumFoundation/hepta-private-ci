@@ -1,0 +1,329 @@
+{
+  "scope": "Cloud isolated seven-path evidence packaging only; this is not the hosted full 1330-change gate or native/project execution.",
+  "fixed_head": "5b6331250ff459033bd44d1a95daec70131277cc",
+  "fixed_tree": "b26598d0d97d8d51e723bb5582137315f2174d35",
+  "commands": [
+    {
+      "argv": [
+        "git",
+        "init",
+        "--quiet"
+      ],
+      "cwd": "/workspace/scratch/07dd58cc9630/research-audit/inventory-blob-packaging-20261105/isolated-git",
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "git",
+        "add",
+        "."
+      ],
+      "cwd": "/workspace/scratch/07dd58cc9630/research-audit/inventory-blob-packaging-20261105/isolated-git",
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "git",
+        "write-tree"
+      ],
+      "cwd": "/workspace/scratch/07dd58cc9630/research-audit/inventory-blob-packaging-20261105/isolated-git",
+      "exit_code": 0,
+      "stdout": "9722c8d58eefa20e341cf01b9f7504af47ddaf51\n",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "git",
+        "commit-tree",
+        "9722c8d58eefa20e341cf01b9f7504af47ddaf51"
+      ],
+      "cwd": "/workspace/scratch/07dd58cc9630/research-audit/inventory-blob-packaging-20261105/isolated-git",
+      "exit_code": 0,
+      "stdout": "36e39823b2f9968b43827e5b9c25f6c60104c79d\n",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "git",
+        "add",
+        "."
+      ],
+      "cwd": "/workspace/scratch/07dd58cc9630/research-audit/inventory-blob-packaging-20261105/isolated-git",
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "git",
+        "write-tree"
+      ],
+      "cwd": "/workspace/scratch/07dd58cc9630/research-audit/inventory-blob-packaging-20261105/isolated-git",
+      "exit_code": 0,
+      "stdout": "b55ecf3308e631fb292c6c324d6f3e3425d10109\n",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "git",
+        "commit-tree",
+        "b55ecf3308e631fb292c6c324d6f3e3425d10109",
+        "-p",
+        "36e39823b2f9968b43827e5b9c25f6c60104c79d"
+      ],
+      "cwd": "/workspace/scratch/07dd58cc9630/research-audit/inventory-blob-packaging-20261105/isolated-git",
+      "exit_code": 0,
+      "stdout": "bca2e967c9aff71e866ead6f15145bef84520760\n",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "python3",
+        "scripts/check_blob_size.py",
+        "--base",
+        "36e39823b2f9968b43827e5b9c25f6c60104c79d",
+        "--head",
+        "bca2e967c9aff71e866ead6f15145bef84520760",
+        "--max-bytes",
+        "512000",
+        "--allowlist",
+        ".github/blob-size-allowlist.txt"
+      ],
+      "cwd": "/workspace/scratch/07dd58cc9630/research-audit/inventory-blob-packaging-20261105/isolated-git",
+      "exit_code": 1,
+      "stdout": "Checked 5 changed file(s) against the 512000-byte limit.\n- qualification/r3-audit-repair-20261104/CURRENT_AUDIT_PROGRESS.zh-CN.md: 43236 bytes (42.2 KiB) [non-binary, ok]\n- qualification/r3-audit-repair-20261104/FOURTH_BATCH_QUALIFICATION.md: 28168 bytes (27.5 KiB) [non-binary, ok]\n- qualification/r3-audit-repair-20261104/PROJECT_DIRECTION_AND_PLAN.zh-CN.md: 21977 bytes (21.5 KiB) [non-binary, ok]\n- qualification/r3-audit-repair-20261104/fourth-evidence-index.json: 458369 bytes (447.6 KiB) [non-binary, ok]\n- qualification/r3-audit-repair-20261104/fourth-repository-inventory-20261105.json: 1846885 bytes (1803.6 KiB) [non-binary, blocked]\n\nFile(s) exceed the configured limit:\n- qualification/r3-audit-repair-20261104/fourth-repository-inventory-20261105.json: 1846885 bytes > 512000 bytes\n\nIf one of these is a real checked-in asset we want to keep, add its repo-relative path to .github/blob-size-allowlist.txt. Otherwise, shrink it or keep it out of git.\n",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "git",
+        "add",
+        "."
+      ],
+      "cwd": "/workspace/scratch/07dd58cc9630/research-audit/inventory-blob-packaging-20261105/isolated-git",
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "git",
+        "write-tree"
+      ],
+      "cwd": "/workspace/scratch/07dd58cc9630/research-audit/inventory-blob-packaging-20261105/isolated-git",
+      "exit_code": 0,
+      "stdout": "18197400aae05346b0beecc7986cdf8bfac201bf\n",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "git",
+        "commit-tree",
+        "18197400aae05346b0beecc7986cdf8bfac201bf",
+        "-p",
+        "bca2e967c9aff71e866ead6f15145bef84520760"
+      ],
+      "cwd": "/workspace/scratch/07dd58cc9630/research-audit/inventory-blob-packaging-20261105/isolated-git",
+      "exit_code": 0,
+      "stdout": "5112ebdbe677a93ac1ed9217f319e1f26e528005\n",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "python3",
+        "scripts/check_blob_size.py",
+        "--base",
+        "36e39823b2f9968b43827e5b9c25f6c60104c79d",
+        "--head",
+        "5112ebdbe677a93ac1ed9217f319e1f26e528005",
+        "--max-bytes",
+        "512000",
+        "--allowlist",
+        ".github/blob-size-allowlist.txt"
+      ],
+      "cwd": "/workspace/scratch/07dd58cc9630/research-audit/inventory-blob-packaging-20261105/isolated-git",
+      "exit_code": 0,
+      "stdout": "Checked 7 changed file(s) against the 512000-byte limit.\n- qualification/r3-audit-repair-20261104/CURRENT_AUDIT_PROGRESS.zh-CN.md: 43254 bytes (42.2 KiB) [non-binary, ok]\n- qualification/r3-audit-repair-20261104/FOURTH_BATCH_QUALIFICATION.md: 28182 bytes (27.5 KiB) [non-binary, ok]\n- qualification/r3-audit-repair-20261104/PROJECT_DIRECTION_AND_PLAN.zh-CN.md: 21986 bytes (21.5 KiB) [non-binary, ok]\n- qualification/r3-audit-repair-20261104/fourth-evidence-index.json: 459950 bytes (449.2 KiB) [non-binary, ok]\n- qualification/r3-audit-repair-20261104/fourth-repository-inventory-20261105.json: 4366 bytes (4.3 KiB) [non-binary, ok]\n- qualification/r3-audit-repair-20261104/repository-inventory-20261105/RESTORE_INVENTORY.md: 2584 bytes (2.5 KiB) [non-binary, ok]\n- qualification/r3-audit-repair-20261104/repository-inventory-20261105/restore_inventory.py: 5232 bytes (5.1 KiB) [non-binary, ok]\n",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "git",
+        "diff",
+        "--check",
+        "bca2e967c9aff71e866ead6f15145bef84520760",
+        "5112ebdbe677a93ac1ed9217f319e1f26e528005"
+      ],
+      "cwd": "/workspace/scratch/07dd58cc9630/research-audit/inventory-blob-packaging-20261105/isolated-git",
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "git",
+        "diff",
+        "--binary",
+        "--full-index",
+        "bca2e967c9aff71e866ead6f15145bef84520760",
+        "5112ebdbe677a93ac1ed9217f319e1f26e528005"
+      ],
+      "cwd": "/workspace/scratch/07dd58cc9630/research-audit/inventory-blob-packaging-20261105/isolated-git",
+      "exit_code": 0,
+      "stderr": "",
+      "stdout_identity": {
+        "bytes": 1924673,
+        "sha256": "98273787adcbc2482660d4c089d3c332c6b1620d72863ffe7121a3669d17c27f",
+        "blob": "f1dbea01d36341ec7dc4da4044994c85c7d19b21"
+      },
+      "stdout_original_file": "inventory-packaging.patch"
+    },
+    {
+      "argv": [
+        "git",
+        "diff",
+        "--binary",
+        "--full-index",
+        "bca2e967c9aff71e866ead6f15145bef84520760",
+        "5112ebdbe677a93ac1ed9217f319e1f26e528005",
+        "--",
+        "qualification/r3-audit-repair-20261104/repository-inventory-20261105/restore_inventory.py",
+        "qualification/r3-audit-repair-20261104/repository-inventory-20261105/RESTORE_INVENTORY.md",
+        "qualification/r3-audit-repair-20261104/CURRENT_AUDIT_PROGRESS.zh-CN.md",
+        "qualification/r3-audit-repair-20261104/PROJECT_DIRECTION_AND_PLAN.zh-CN.md",
+        "qualification/r3-audit-repair-20261104/FOURTH_BATCH_QUALIFICATION.md",
+        "qualification/r3-audit-repair-20261104/fourth-evidence-index.json"
+      ],
+      "cwd": "/workspace/scratch/07dd58cc9630/research-audit/inventory-blob-packaging-20261105/isolated-git",
+      "exit_code": 0,
+      "stderr": "",
+      "stdout_identity": {
+        "bytes": 20362,
+        "sha256": "d6d46aec489b32090cacdb0174d8433860b027b1cfc63af9f96bbe5fa0b6b8a8",
+        "blob": "a6e863c6abb831e59adface7fd4b94d854addb09"
+      },
+      "stdout_original_file": "compatibility-and-restoration.patch"
+    },
+    {
+      "argv": [
+        "git",
+        "init",
+        "--quiet"
+      ],
+      "cwd": "/workspace/scratch/07dd58cc9630/research-audit/inventory-blob-packaging-20261105/roundtrip",
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "git",
+        "apply",
+        "--check",
+        "/workspace/scratch/07dd58cc9630/research-audit/inventory-blob-packaging-20261105/inventory-packaging.patch"
+      ],
+      "cwd": "/workspace/scratch/07dd58cc9630/research-audit/inventory-blob-packaging-20261105/roundtrip",
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "git",
+        "apply",
+        "/workspace/scratch/07dd58cc9630/research-audit/inventory-blob-packaging-20261105/inventory-packaging.patch"
+      ],
+      "cwd": "/workspace/scratch/07dd58cc9630/research-audit/inventory-blob-packaging-20261105/roundtrip",
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "git",
+        "apply",
+        "--reverse",
+        "--check",
+        "/workspace/scratch/07dd58cc9630/research-audit/inventory-blob-packaging-20261105/inventory-packaging.patch"
+      ],
+      "cwd": "/workspace/scratch/07dd58cc9630/research-audit/inventory-blob-packaging-20261105/roundtrip",
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "git",
+        "apply",
+        "--reverse",
+        "/workspace/scratch/07dd58cc9630/research-audit/inventory-blob-packaging-20261105/inventory-packaging.patch"
+      ],
+      "cwd": "/workspace/scratch/07dd58cc9630/research-audit/inventory-blob-packaging-20261105/roundtrip",
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": ""
+    }
+  ],
+  "all_seven_postimages_exact": [
+    {
+      "path": "qualification/r3-audit-repair-20261104/fourth-repository-inventory-20261105.json",
+      "bytes": 4366,
+      "sha256": "0bfe1d00ba090d18d7b7604f26887cebfb50784bbcfcb9ec4973863eb541483a",
+      "blob": "9db84c745e7f31fd0781e25baa5d03a405aaf13c"
+    },
+    {
+      "path": "qualification/r3-audit-repair-20261104/repository-inventory-20261105/restore_inventory.py",
+      "bytes": 5232,
+      "sha256": "9754c5f64731ec188c8c9d32752fb40d7756c679803d826aef74db01b18e60ae",
+      "blob": "5495be1a51b14a4a0642d7c09c6bd670f539ef77"
+    },
+    {
+      "path": "qualification/r3-audit-repair-20261104/repository-inventory-20261105/RESTORE_INVENTORY.md",
+      "bytes": 2584,
+      "sha256": "6f1b0a15845e412152382ed2fbe0bef3177c94ceac23917111865787c4054141",
+      "blob": "2994e990903b7eb9eb51f1ae9ba191932f9efef7"
+    },
+    {
+      "path": "qualification/r3-audit-repair-20261104/CURRENT_AUDIT_PROGRESS.zh-CN.md",
+      "bytes": 43254,
+      "sha256": "5f4462b472af63fa78bb05c91a1bf623ebb33a1ab573f420be1f50073edc3fe4",
+      "blob": "305094117c7efb9e25ee44df73e37b831b382fda"
+    },
+    {
+      "path": "qualification/r3-audit-repair-20261104/PROJECT_DIRECTION_AND_PLAN.zh-CN.md",
+      "bytes": 21986,
+      "sha256": "e1fde42af9e7eb5557423898b12ec477a49abfc9137f9362e869f5779e9c24b9",
+      "blob": "7c06b7f3041a8e4b3df794f00166aa59b369f832"
+    },
+    {
+      "path": "qualification/r3-audit-repair-20261104/FOURTH_BATCH_QUALIFICATION.md",
+      "bytes": 28182,
+      "sha256": "0e5f77494728211b87d8d5b9c3401f0e5cdd12e5865fc3c793a4d138f8f77c6f",
+      "blob": "bed13a3f5bdde66d36dadbcc5d0233c6884f2d21"
+    },
+    {
+      "path": "qualification/r3-audit-repair-20261104/fourth-evidence-index.json",
+      "bytes": 459950,
+      "sha256": "3c98f9701d8a3792be0187fdd8e2fbdf6fa4eb3b4bfc156907bd766bea20eaf4",
+      "blob": "f9337e344c05cd788a14a0ebb95bbee3d53511d3"
+    }
+  ],
+  "reverse_restored_five_preimages_and_removed_two_new_paths": true,
+  "blob_policy_unchanged": {
+    "bytes": 471,
+    "sha256": "bb867bc531c86f5341a031698e16b4e5a4a0d31f7d8f4cc5ff26e101d84f9d75",
+    "blob": "9375b49c2739ae9adacfefd38ded9e88bb865541"
+  },
+  "checker_unchanged": {
+    "bytes": 5340,
+    "sha256": "a6a66ffc6c1fe7f52092c96e746725de38a7ea8a2bb4d7fd7f4c825b778c14c9",
+    "blob": "b63e1d19f0cba28e7954bc41d3800d3f967b6c9b"
+  },
+  "before_policy_exit": 1,
+  "after_policy_exit": 0,
+  "new_or_changed_blobs_all_less_than_512000": true
+}

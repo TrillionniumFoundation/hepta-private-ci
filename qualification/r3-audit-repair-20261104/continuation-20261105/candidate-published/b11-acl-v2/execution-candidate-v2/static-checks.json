@@ -1,0 +1,63 @@
+{
+  "schema": "b11-acl-execution-candidate-v2-static",
+  "v1_all_three_source_postimages_byte_equal": true,
+  "workflow_only_three_exact_paths_inserted": true,
+  "workflow_original_jobs_commands_runner_budget_permissions_artifact_steps_byte_equal": true,
+  "commands": [
+    {
+      "argv": [
+        "git",
+        "init",
+        "--quiet"
+      ],
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "git",
+        "apply",
+        "--check",
+        "/workspace/scratch/07dd58cc9630/architecture-audit/b11-acl-repair-20261105/execution-candidate-v2/full.patch"
+      ],
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "git",
+        "apply",
+        "/workspace/scratch/07dd58cc9630/architecture-audit/b11-acl-repair-20261105/execution-candidate-v2/full.patch"
+      ],
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "git",
+        "apply",
+        "--reverse",
+        "--check",
+        "/workspace/scratch/07dd58cc9630/architecture-audit/b11-acl-repair-20261105/execution-candidate-v2/full.patch"
+      ],
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "git",
+        "apply",
+        "--reverse",
+        "/workspace/scratch/07dd58cc9630/architecture-audit/b11-acl-repair-20261105/execution-candidate-v2/full.patch"
+      ],
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": ""
+    }
+  ],
+  "no_native": true
+}

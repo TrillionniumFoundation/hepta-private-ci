@@ -1,0 +1,216 @@
+{
+  "schema": "complete-ROG-project-e78-content-reconciliation-v1",
+  "archive_verification": {
+    "path": "/workspace/scratch/07dd58cc9630/ci-audit/core-wait-span-20261105/project-nonpass-complete-v1/complete-verification.json",
+    "bytes": 40817,
+    "sha256": "2dd0b68baf677cbffcc212cd38fe1e60f8b3d46bec4ad43fa7716d08a1e81d18",
+    "git_blob": "4a43edf1cf183728cf0ede0c85ac9615794e0c1e"
+  },
+  "source_tree": "e78c819b8b1f435f8b37bea17b4ffdc724961aa2",
+  "selection": {
+    "path": "/workspace/scratch/07dd58cc9630/ci-audit/core-wait-span-20261105/project-nonpass-complete-v1/decoded-verified-v1/project-catalog-selection.json",
+    "bytes": 694242,
+    "sha256": "8dbb2f04777e25467f8c5cee177a0ab8c4936ace156fb22f1a125c2a625137e4",
+    "git_blob": "8e93d34a9de7382ef1eff1c759fe283c10d81801"
+  },
+  "xml": {
+    "path": "/workspace/scratch/07dd58cc9630/ci-audit/core-wait-span-20261105/project-nonpass-complete-v1/decoded-verified-v1/original-owning-projects.junit.xml",
+    "bytes": 839106,
+    "sha256": "dba2abf1ada37ea47ed8bb5910956094ad5519652df72256cce723e26d84d071",
+    "git_blob": "575da9b27fcf5e423b2fa23b9f872e0b07eacade"
+  },
+  "project_review": {
+    "path": "/workspace/scratch/07dd58cc9630/ci-audit/core-wait-span-20261105/project-nonpass-complete-v1/decoded-verified-v1/original-owning-projects-review.json",
+    "bytes": 881193,
+    "sha256": "6931a8ad888925471da6e8d03aa8ecafec46e152c20440972ce420604e8b47f4",
+    "git_blob": "f0a55073f44cab2ca4cd7013f28ed4341f9e68fc"
+  },
+  "project_raw": {
+    "path": "/workspace/scratch/07dd58cc9630/ci-audit/core-wait-span-20261105/project-nonpass-complete-v1/decoded-verified-v1/original-owning-projects.stdout",
+    "bytes": 11059831,
+    "sha256": "a06d2a7c73589c76300a3a6886f37affcd8609f8cb41499e6704a9762a20aeb4",
+    "git_blob": "e611358b8bdcd77bb3eb7cb68c0067a0438368b7"
+  },
+  "exact_case_Counters_equal": true,
+  "counts": {
+    "PASS": 3962,
+    "FAIL": 5
+  },
+  "original_ignored": 10,
+  "unmatched": 0,
+  "project_programs": 7,
+  "project_helpers": 9,
+  "normal_helpers": 7,
+  "original_review_reports_programs_helpers_stable": true,
+  "original_raw_early_return_candidates": [
+    {
+      "line": 22876,
+      "text": "    Skipping test because it requires a remote test environment."
+    },
+    {
+      "line": 22977,
+      "text": "    Skipping test because it requires a remote test environment."
+    },
+    {
+      "line": 23513,
+      "text": "    Skipping test because it requires a remote test environment."
+    },
+    {
+      "line": 23533,
+      "text": "    Skipping test because it requires a remote test environment."
+    },
+    {
+      "line": 29233,
+      "text": "    Skipping test because it requires a remote test environment."
+    },
+    {
+      "line": 30300,
+      "text": "    Skipping test because it requires a remote test environment."
+    },
+    {
+      "line": 30392,
+      "text": "    Skipping test because it requires a remote test environment."
+    },
+    {
+      "line": 30430,
+      "text": "    Skipping test because it requires a remote test environment."
+    },
+    {
+      "line": 30547,
+      "text": "    Skipping test because it requires a remote test environment."
+    },
+    {
+      "line": 44403,
+      "text": "    Skipping test because it requires a remote test environment."
+    },
+    {
+      "line": 44430,
+      "text": "    Skipping test because it requires a remote test environment."
+    },
+    {
+      "line": 44441,
+      "text": "    Skipping test because it requires a remote test environment."
+    },
+    {
+      "line": 44531,
+      "text": "    Skipping test because it requires a remote test environment."
+    },
+    {
+      "line": 44542,
+      "text": "    Skipping test because it requires a remote test environment."
+    },
+    {
+      "line": 44601,
+      "text": "    Skipping test because it requires a remote test environment."
+    },
+    {
+      "line": 44612,
+      "text": "    Skipping test because it requires a remote test environment."
+    },
+    {
+      "line": 44623,
+      "text": "    Skipping test because it requires a remote test environment."
+    },
+    {
+      "line": 44634,
+      "text": "    Skipping test because it requires a remote test environment."
+    },
+    {
+      "line": 44645,
+      "text": "    Skipping test because it requires a remote test environment."
+    },
+    {
+      "line": 44656,
+      "text": "    Skipping test because it requires a remote test environment."
+    },
+    {
+      "line": 44667,
+      "text": "    Skipping test because it requires a remote test environment."
+    },
+    {
+      "line": 44678,
+      "text": "    Skipping test because it requires a remote test environment."
+    },
+    {
+      "line": 45853,
+      "text": "    Skipping test because it requires a remote test environment."
+    },
+    {
+      "line": 49455,
+      "text": "    Skipping test because it requires a remote test environment."
+    },
+    {
+      "line": 51060,
+      "text": "    skipping capability test: unprivileged user namespaces are unavailable"
+    }
+  ],
+  "failure_cases": [
+    {
+      "binary_id": "codex-core::all",
+      "name": "suite::approvals::approving_execpolicy_amendment_persists_policy_and_skips_future_prompts",
+      "failure": "thread 'suite::approvals::approving_execpolicy_amendment_persists_policy_and_skips_future_prompts' (2835981) panicked at core/tests/suite/approvals.rs:2540:5:\nunexpected stdout: Failed to create stream fd: Operation not permitted\nFailed to create stream fd: Operation not permitted\nFailed to create stream fd: Operation not permitted\n\nnote: run with `RUST_BACKTRACE=1` environment variable to display a backtrace",
+      "system_out": "\nrunning 1 test\ntest suite::approvals::approving_execpolicy_amendment_persists_policy_and_skips_future_prompts ... FAILED\n\nfailures:\n\nfailures:\n    suite::approvals::approving_execpolicy_amendment_persists_policy_and_skips_future_prompts\n\ntest result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 1432 filtered out; finished in 0.37s\n\n",
+      "system_err": "\nthread 'suite::approvals::approving_execpolicy_amendment_persists_policy_and_skips_future_prompts' (2835981) panicked at core/tests/suite/approvals.rs:2540:5:\nunexpected stdout: Failed to create stream fd: Operation not permitted\nFailed to create stream fd: Operation not permitted\nFailed to create stream fd: Operation not permitted\n\nnote: run with `RUST_BACKTRACE=1` environment variable to display a backtrace\n"
+    },
+    {
+      "binary_id": "codex-core::all",
+      "name": "suite::request_permissions::partial_request_permissions_grants_do_not_preapprove_new_permissions",
+      "failure": "thread 'suite::request_permissions::partial_request_permissions_grants_do_not_preapprove_new_permissions' (2943024) panicked at core/tests/suite/request_permissions.rs:1802:5:\nassertion failed: `(left == right)`\n\nDiff < left / right > :\n<Failed to create stream fd: Operation not permitted\n<Failed to create stream fd: Operation not permitted\n<Failed to create stream fd: Operation not permitted\n partial-grant-ok\n\n\nnote: run with `RUST_BACKTRACE=1` environment variable to display a backtrace",
+      "system_out": "\nrunning 1 test\ntest suite::request_permissions::partial_request_permissions_grants_do_not_preapprove_new_permissions ... FAILED\n\nfailures:\n\nfailures:\n    suite::request_permissions::partial_request_permissions_grants_do_not_preapprove_new_permissions\n\ntest result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 1432 filtered out; finished in 0.43s\n\n",
+      "system_err": "\nthread 'suite::request_permissions::partial_request_permissions_grants_do_not_preapprove_new_permissions' (2943024) panicked at core/tests/suite/request_permissions.rs:1802:5:\nassertion failed: `(left == right)`\n\nDiff < left / right > :\n<Failed to create stream fd: Operation not permitted\n<Failed to create stream fd: Operation not permitted\n<Failed to create stream fd: Operation not permitted\n partial-grant-ok\n\n\nnote: run with `RUST_BACKTRACE=1` environment variable to display a backtrace\n"
+    },
+    {
+      "binary_id": "codex-core::all",
+      "name": "suite::request_permissions::request_permissions_grants_apply_to_later_exec_command_calls",
+      "failure": "thread 'suite::request_permissions::request_permissions_grants_apply_to_later_exec_command_calls' (2943088) panicked at core/tests/suite/request_permissions.rs:1391:5:\nassertion failed: `(left == right)`\n\nDiff < left / right > :\n<Failed to create stream fd: Operation not permitted\n<Failed to create stream fd: Operation not permitted\n<Failed to create stream fd: Operation not permitted\n sticky-grant-ok\n\n\nnote: run with `RUST_BACKTRACE=1` environment variable to display a backtrace",
+      "system_out": "\nrunning 1 test\ntest suite::request_permissions::request_permissions_grants_apply_to_later_exec_command_calls ... FAILED\n\nfailures:\n\nfailures:\n    suite::request_permissions::request_permissions_grants_apply_to_later_exec_command_calls\n\ntest result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 1432 filtered out; finished in 0.42s\n\n",
+      "system_err": "\nthread 'suite::request_permissions::request_permissions_grants_apply_to_later_exec_command_calls' (2943088) panicked at core/tests/suite/request_permissions.rs:1391:5:\nassertion failed: `(left == right)`\n\nDiff < left / right > :\n<Failed to create stream fd: Operation not permitted\n<Failed to create stream fd: Operation not permitted\n<Failed to create stream fd: Operation not permitted\n sticky-grant-ok\n\n\nnote: run with `RUST_BACKTRACE=1` environment variable to display a backtrace\n"
+    },
+    {
+      "binary_id": "codex-core::all",
+      "name": "suite::request_permissions::request_permissions_grants_apply_to_later_exec_command_calls_without_inline_permission_feature",
+      "failure": "thread 'suite::request_permissions::request_permissions_grants_apply_to_later_exec_command_calls_without_inline_permission_feature' (2943122) panicked at core/tests/suite/request_permissions.rs:1626:5:\nassertion failed: `(left == right)`\n\nDiff < left / right > :\n<Failed to create stream fd: Operation not permitted\n<Failed to create stream fd: Operation not permitted\n<Failed to create stream fd: Operation not permitted\n sticky-shell-feature-independent-ok\n\n\nnote: run with `RUST_BACKTRACE=1` environment variable to display a backtrace",
+      "system_out": "\nrunning 1 test\ntest suite::request_permissions::request_permissions_grants_apply_to_later_exec_command_calls_without_inline_permission_feature ... FAILED\n\nfailures:\n\nfailures:\n    suite::request_permissions::request_permissions_grants_apply_to_later_exec_command_calls_without_inline_permission_feature\n\ntest result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 1432 filtered out; finished in 0.43s\n\n",
+      "system_err": "\nthread 'suite::request_permissions::request_permissions_grants_apply_to_later_exec_command_calls_without_inline_permission_feature' (2943122) panicked at core/tests/suite/request_permissions.rs:1626:5:\nassertion failed: `(left == right)`\n\nDiff < left / right > :\n<Failed to create stream fd: Operation not permitted\n<Failed to create stream fd: Operation not permitted\n<Failed to create stream fd: Operation not permitted\n sticky-shell-feature-independent-ok\n\n\nnote: run with `RUST_BACKTRACE=1` environment variable to display a backtrace\n"
+    },
+    {
+      "binary_id": "codex-core::all",
+      "name": "suite::request_permissions::request_permissions_preapprove_explicit_exec_permissions_outside_on_request",
+      "failure": "thread 'suite::request_permissions::request_permissions_preapprove_explicit_exec_permissions_outside_on_request' (2943464) panicked at core/tests/suite/request_permissions.rs:1510:5:\nassertion failed: `(left == right)`\n\nDiff < left / right > :\n<Failed to create stream fd: Operation not permitted\n<Failed to create stream fd: Operation not permitted\n<Failed to create stream fd: Operation not permitted\n sticky-explicit-grant-ok\n\n\nnote: run with `RUST_BACKTRACE=1` environment variable to display a backtrace",
+      "system_out": "\nrunning 1 test\ntest suite::request_permissions::request_permissions_preapprove_explicit_exec_permissions_outside_on_request ... FAILED\n\nfailures:\n\nfailures:\n    suite::request_permissions::request_permissions_preapprove_explicit_exec_permissions_outside_on_request\n\ntest result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 1432 filtered out; finished in 0.42s\n\n",
+      "system_err": "\nthread 'suite::request_permissions::request_permissions_preapprove_explicit_exec_permissions_outside_on_request' (2943464) panicked at core/tests/suite/request_permissions.rs:1510:5:\nassertion failed: `(left == right)`\n\nDiff < left / right > :\n<Failed to create stream fd: Operation not permitted\n<Failed to create stream fd: Operation not permitted\n<Failed to create stream fd: Operation not permitted\n sticky-explicit-grant-ok\n\n\nnote: run with `RUST_BACKTRACE=1` environment variable to display a backtrace\n"
+    }
+  ],
+  "parallel_review": {
+    "path": "/workspace/scratch/07dd58cc9630/ci-audit/core-wait-span-20261105/project-nonpass-complete-v1/decoded-verified-v1/core-same-process-parallel-review.json",
+    "bytes": 332193,
+    "sha256": "43e8c027149cdbfa4a665f26057b2382faac1266c3bb221dcbee55d036482dec",
+    "git_blob": "b1c22efd56c8d0434c6b71b8bcc4793b4ae57f79"
+  },
+  "parallel_stdout": {
+    "path": "/workspace/scratch/07dd58cc9630/ci-audit/core-wait-span-20261105/project-nonpass-complete-v1/decoded-verified-v1/core-same-process-parallel.stdout",
+    "bytes": 7597636,
+    "sha256": "3cab8cd6a583cc5fa2bd1cbade4eab3b21d6dccdd3820bd5e6a0a69b8c81dd15",
+    "git_blob": "accda4b558e7cc071f7a9549e30c807fcee7ae64"
+  },
+  "parallel_stderr": {
+    "path": "/workspace/scratch/07dd58cc9630/ci-audit/core-wait-span-20261105/project-nonpass-complete-v1/decoded-verified-v1/core-same-process-parallel.stderr",
+    "bytes": 3197,
+    "sha256": "952bb0c28a972829fb86ab717a3bbd77b64a1334a7a4ea0deb2c0ca39408cb8d",
+    "git_blob": "57f6f5ab1056e5a157671dc72570b140af5c037f"
+  },
+  "parallel_counts": {
+    "passed": 2432,
+    "failed": 1,
+    "ignored": 1,
+    "measured": 0,
+    "filtered": 0
+  },
+  "new_wrapper_owned_begin_end_counts": [
+    1,
+    1
+  ],
+  "direct_scope": "Additional full unsharded Linux Core libtest; does not replace original Windows shards.",
+  "native_tests_retried": false,
+  "source_hygiene_or_full_executed_after_nonpass": false
+}

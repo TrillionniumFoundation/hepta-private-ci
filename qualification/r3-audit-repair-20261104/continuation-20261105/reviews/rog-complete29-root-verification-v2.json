@@ -1,0 +1,770 @@
+{
+  "schema": "root-independent-full-ROG-original-verification-v2",
+  "created_utc": "2026-11-05T15:42:58.911628+00:00",
+  "original_verification": {
+    "bytes": 40817,
+    "sha256": "2dd0b68baf677cbffcc212cd38fe1e60f8b3d46bec4ad43fa7716d08a1e81d18",
+    "git_blob": "4a43edf1cf183728cf0ede0c85ac9615794e0c1e"
+  },
+  "manifest": {
+    "bytes": 53278,
+    "sha256": "8a30fd1939e75a997ae3d8cb305673ef2ed6f233952855dd498937839aa84b29",
+    "git_blob": "4fa8c17b473bd78d1caf04c0c9f4ca4d57c68ea1"
+  },
+  "archive": {
+    "bytes": 3324170,
+    "sha256": "928bec9a5f7160bda72c522f8d2e91ce33582fc37b4b911e71dab52868e7d127",
+    "git_blob": "06ab6596124959f4b1da8bbb7f021308ff3b8a5e"
+  },
+  "parts": 70,
+  "originals": 29,
+  "original_bytes": 33420419,
+  "strict_base64_roundtrip": true,
+  "gzip_full_crc_size": true,
+  "all_tar_member_and_local_bytes_equal": true,
+  "source_tree": "e78c819b8b1f435f8b37bea17b4ffdc724961aa2",
+  "guards": [
+    {
+      "member": "terminal-source-guard.json",
+      "bytes": 111382,
+      "sha256": "f72f52b2fe29758ceaa8c45470552455051d849064a45bda1af2c19542607cb8",
+      "git_blob": "488f6f5d74323fb99bb09ff6b709adf14c1ef32f"
+    },
+    {
+      "member": "original-owning-projects-before-source-guard.json",
+      "bytes": 111405,
+      "sha256": "27915d1da4d100219044e27a45823eb1bacf05a8e09f3382df9a798715d17029",
+      "git_blob": "3533527795df6f5f2dbb874a8e162f21b87a2cc0"
+    },
+    {
+      "member": "original-owning-projects-after-source-guard.json",
+      "bytes": 111404,
+      "sha256": "ed5de4a70e67655724cbdd60e29bf1beea840ff88006ea3b461bf9f892e2a292",
+      "git_blob": "1df85a3e2ea1c38c1e0746d78d2116dc18d3daad"
+    },
+    {
+      "member": "core-same-process-parallel-before-source-guard.json",
+      "bytes": 111407,
+      "sha256": "133efe374889a29111a8bc36538b4fdac03f049ce6a719de4189ca4f3fd02776",
+      "git_blob": "7d3df4fb3797bd9b7f99185c9c603f94c5289527"
+    },
+    {
+      "member": "core-same-process-parallel-after-source-guard.json",
+      "bytes": 111406,
+      "sha256": "c3dd573e9bb9c1a5f6bcab39f26629ccd607af626d0f6fa9cdd2c53a7e36b24c",
+      "git_blob": "9b6a37877ecd900f49dbc92e4f5fe3e231176002"
+    }
+  ],
+  "owning_project": {
+    "selected": 3967,
+    "junit_counts": {
+      "PASS": 3962,
+      "FAIL": 5
+    },
+    "ignored": 10,
+    "unmatched": 0,
+    "exact_catalog_and_case_result_multisets_equal": true,
+    "failed_cases": [
+      {
+        "binary_id": "codex-core::all",
+        "name": "suite::approvals::approving_execpolicy_amendment_persists_policy_and_skips_future_prompts",
+        "result": "FAIL",
+        "captured": "thread 'suite::approvals::approving_execpolicy_amendment_persists_policy_and_skips_future_prompts' (2835981) panicked at core/tests/suite/approvals.rs:2540:5:\nunexpected stdout: Failed to create stream fd: Operation not permitted\nFailed to create stream fd: Operation not permitted\nFailed to create stream fd: Operation not permitted\n\nnote: run with `RUST_BACKTRACE=1` environment variable to display a backtrace\n\nrunning 1 test\ntest suite::approvals::approving_execpolicy_amendment_persists_policy_and_skips_future_prompts ... FAILED\n\nfailures:\n\nfailures:\n    suite::approvals::approving_execpolicy_amendment_persists_policy_and_skips_future_prompts\n\ntest result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 1432 filtered out; finished in 0.37s\n\n\n\nthread 'suite::approvals::approving_execpolicy_amendment_persists_policy_and_skips_future_prompts' (2835981) panicked at core/tests/suite/approvals.rs:2540:5:\nunexpected stdout: Failed to create stream fd: Operation not permitted\nFailed to create stream fd: Operation not permitted\nFailed to create stream fd: Operation not permitted\n\nnote: run with `RUST_BACKTRACE=1` environment variable to display a backtrace\n"
+      },
+      {
+        "binary_id": "codex-core::all",
+        "name": "suite::request_permissions::partial_request_permissions_grants_do_not_preapprove_new_permissions",
+        "result": "FAIL",
+        "captured": "thread 'suite::request_permissions::partial_request_permissions_grants_do_not_preapprove_new_permissions' (2943024) panicked at core/tests/suite/request_permissions.rs:1802:5:\nassertion failed: `(left == right)`\n\nDiff < left / right > :\n<Failed to create stream fd: Operation not permitted\n<Failed to create stream fd: Operation not permitted\n<Failed to create stream fd: Operation not permitted\n partial-grant-ok\n\n\nnote: run with `RUST_BACKTRACE=1` environment variable to display a backtrace\n\nrunning 1 test\ntest suite::request_permissions::partial_request_permissions_grants_do_not_preapprove_new_permissions ... FAILED\n\nfailures:\n\nfailures:\n    suite::request_permissions::partial_request_permissions_grants_do_not_preapprove_new_permissions\n\ntest result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 1432 filtered out; finished in 0.43s\n\n\n\nthread 'suite::request_permissions::partial_request_permissions_grants_do_not_preapprove_new_permissions' (2943024) panicked at core/tests/suite/request_permissions.rs:1802:5:\nassertion failed: `(left == right)`\n\nDiff < left / right > :\n<Failed to create stream fd: Operation not permitted\n<Failed to create stream fd: Operation not permitted\n<Failed to create stream fd: Operation not permitted\n partial-grant-ok\n\n\nnote: run with `RUST_BACKTRACE=1` environment variable to display a backtrace\n"
+      },
+      {
+        "binary_id": "codex-core::all",
+        "name": "suite::request_permissions::request_permissions_grants_apply_to_later_exec_command_calls",
+        "result": "FAIL",
+        "captured": "thread 'suite::request_permissions::request_permissions_grants_apply_to_later_exec_command_calls' (2943088) panicked at core/tests/suite/request_permissions.rs:1391:5:\nassertion failed: `(left == right)`\n\nDiff < left / right > :\n<Failed to create stream fd: Operation not permitted\n<Failed to create stream fd: Operation not permitted\n<Failed to create stream fd: Operation not permitted\n sticky-grant-ok\n\n\nnote: run with `RUST_BACKTRACE=1` environment variable to display a backtrace\n\nrunning 1 test\ntest suite::request_permissions::request_permissions_grants_apply_to_later_exec_command_calls ... FAILED\n\nfailures:\n\nfailures:\n    suite::request_permissions::request_permissions_grants_apply_to_later_exec_command_calls\n\ntest result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 1432 filtered out; finished in 0.42s\n\n\n\nthread 'suite::request_permissions::request_permissions_grants_apply_to_later_exec_command_calls' (2943088) panicked at core/tests/suite/request_permissions.rs:1391:5:\nassertion failed: `(left == right)`\n\nDiff < left / right > :\n<Failed to create stream fd: Operation not permitted\n<Failed to create stream fd: Operation not permitted\n<Failed to create stream fd: Operation not permitted\n sticky-grant-ok\n\n\nnote: run with `RUST_BACKTRACE=1` environment variable to display a backtrace\n"
+      },
+      {
+        "binary_id": "codex-core::all",
+        "name": "suite::request_permissions::request_permissions_grants_apply_to_later_exec_command_calls_without_inline_permission_feature",
+        "result": "FAIL",
+        "captured": "thread 'suite::request_permissions::request_permissions_grants_apply_to_later_exec_command_calls_without_inline_permission_feature' (2943122) panicked at core/tests/suite/request_permissions.rs:1626:5:\nassertion failed: `(left == right)`\n\nDiff < left / right > :\n<Failed to create stream fd: Operation not permitted\n<Failed to create stream fd: Operation not permitted\n<Failed to create stream fd: Operation not permitted\n sticky-shell-feature-independent-ok\n\n\nnote: run with `RUST_BACKTRACE=1` environment variable to display a backtrace\n\nrunning 1 test\ntest suite::request_permissions::request_permissions_grants_apply_to_later_exec_command_calls_without_inline_permission_feature ... FAILED\n\nfailures:\n\nfailures:\n    suite::request_permissions::request_permissions_grants_apply_to_later_exec_command_calls_without_inline_permission_feature\n\ntest result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 1432 filtered out; finished in 0.43s\n\n\n\nthread 'suite::request_permissions::request_permissions_grants_apply_to_later_exec_command_calls_without_inline_permission_feature' (2943122) panicked at core/tests/suite/request_permissions.rs:1626:5:\nassertion failed: `(left == right)`\n\nDiff < left / right > :\n<Failed to create stream fd: Operation not permitted\n<Failed to create stream fd: Operation not permitted\n<Failed to create stream fd: Operation not permitted\n sticky-shell-feature-independent-ok\n\n\nnote: run with `RUST_BACKTRACE=1` environment variable to display a backtrace\n"
+      },
+      {
+        "binary_id": "codex-core::all",
+        "name": "suite::request_permissions::request_permissions_preapprove_explicit_exec_permissions_outside_on_request",
+        "result": "FAIL",
+        "captured": "thread 'suite::request_permissions::request_permissions_preapprove_explicit_exec_permissions_outside_on_request' (2943464) panicked at core/tests/suite/request_permissions.rs:1510:5:\nassertion failed: `(left == right)`\n\nDiff < left / right > :\n<Failed to create stream fd: Operation not permitted\n<Failed to create stream fd: Operation not permitted\n<Failed to create stream fd: Operation not permitted\n sticky-explicit-grant-ok\n\n\nnote: run with `RUST_BACKTRACE=1` environment variable to display a backtrace\n\nrunning 1 test\ntest suite::request_permissions::request_permissions_preapprove_explicit_exec_permissions_outside_on_request ... FAILED\n\nfailures:\n\nfailures:\n    suite::request_permissions::request_permissions_preapprove_explicit_exec_permissions_outside_on_request\n\ntest result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 1432 filtered out; finished in 0.42s\n\n\n\nthread 'suite::request_permissions::request_permissions_preapprove_explicit_exec_permissions_outside_on_request' (2943464) panicked at core/tests/suite/request_permissions.rs:1510:5:\nassertion failed: `(left == right)`\n\nDiff < left / right > :\n<Failed to create stream fd: Operation not permitted\n<Failed to create stream fd: Operation not permitted\n<Failed to create stream fd: Operation not permitted\n sticky-explicit-grant-ok\n\n\nnote: run with `RUST_BACKTRACE=1` environment variable to display a backtrace\n"
+      }
+    ],
+    "qualification_limit": "The original stdout proves 24 remote-environment and one namespace-capability early return inside JUnit PASS. JUnit does not include those passing captures, so its zero captured skip messages was not a zero-early-return result. All 38 intersecting frozen original names have matching raw PASS and no such early-return message; other final source/platform gates remain separate.",
+    "junit_captured_early_return_cases": [],
+    "junit_captured_early_return_count": 0,
+    "raw_output_early_return_cases": [
+      {
+        "binary_id": "codex-core",
+        "name": "unified_exec::tests::remote_exec_server_rejects_inherited_fd_launches",
+        "result": "PASS",
+        "header_line": 22867,
+        "raw_line": 22876,
+        "reason": "Skipping test because it requires a remote test environment."
+      },
+      {
+        "binary_id": "codex-core",
+        "name": "unified_exec::tests::unified_exec_uses_remote_exec_server_when_configured",
+        "result": "PASS",
+        "header_line": 22968,
+        "raw_line": 22977,
+        "reason": "Skipping test because it requires a remote test environment."
+      },
+      {
+        "binary_id": "codex-core::all",
+        "name": "suite::agents_md::multi_environment_project_instructions_share_one_byte_budget",
+        "result": "PASS",
+        "header_line": 23504,
+        "raw_line": 23513,
+        "reason": "Skipping test because it requires a remote test environment."
+      },
+      {
+        "binary_id": "codex-core::all",
+        "name": "suite::agents_md::multi_environment_thread_loads_every_project_and_keeps_creation_snapshot",
+        "result": "PASS",
+        "header_line": 23524,
+        "raw_line": 23533,
+        "reason": "Skipping test because it requires a remote test environment."
+      },
+      {
+        "binary_id": "codex-core::all",
+        "name": "suite::apply_patch_cli::apply_patch_turn_diff_emits_portable_paths_for_remote_cwd",
+        "result": "PASS",
+        "header_line": 29224,
+        "raw_line": 29233,
+        "reason": "Skipping test because it requires a remote test environment."
+      },
+      {
+        "binary_id": "codex-core::all",
+        "name": "suite::network_approval::approved_network_host_for_one_environment_still_prompts_in_another",
+        "result": "PASS",
+        "header_line": 30291,
+        "raw_line": 30300,
+        "reason": "Skipping test because it requires a remote test environment."
+      },
+      {
+        "binary_id": "codex-core::all",
+        "name": "suite::network_approval::owner_network_policy_follows_the_selected_remote_command",
+        "result": "PASS",
+        "header_line": 30383,
+        "raw_line": 30392,
+        "reason": "Skipping test because it requires a remote test environment."
+      },
+      {
+        "binary_id": "codex-core::all",
+        "name": "suite::network_approval::remote_guardian_network_decisions_are_scoped_to_each_request_and_environment",
+        "result": "PASS",
+        "header_line": 30421,
+        "raw_line": 30430,
+        "reason": "Skipping test because it requires a remote test environment."
+      },
+      {
+        "binary_id": "codex-core::all",
+        "name": "suite::apply_patch_cli::apply_patch_turn_diff_tracks_local_and_remote_environment_paths",
+        "result": "PASS",
+        "header_line": 30538,
+        "raw_line": 30547,
+        "reason": "Skipping test because it requires a remote test environment."
+      },
+      {
+        "binary_id": "codex-core::all",
+        "name": "suite::remote_env::apply_patch_approvals_are_remembered_per_environment",
+        "result": "PASS",
+        "header_line": 44394,
+        "raw_line": 44403,
+        "reason": "Skipping test because it requires a remote test environment."
+      },
+      {
+        "binary_id": "codex-core::all",
+        "name": "suite::remote_env::apply_patch_freeform_routes_to_selected_remote_environment",
+        "result": "PASS",
+        "header_line": 44421,
+        "raw_line": 44430,
+        "reason": "Skipping test because it requires a remote test environment."
+      },
+      {
+        "binary_id": "codex-core::all",
+        "name": "suite::remote_env::apply_patch_intercepted_exec_command_routes_to_selected_remote_environment",
+        "result": "PASS",
+        "header_line": 44432,
+        "raw_line": 44441,
+        "reason": "Skipping test because it requires a remote test environment."
+      },
+      {
+        "binary_id": "codex-core::all",
+        "name": "suite::remote_env::explicit_remote_shell_runs_in_remote_cwd",
+        "result": "PASS",
+        "header_line": 44522,
+        "raw_line": 44531,
+        "reason": "Skipping test because it requires a remote test environment."
+      },
+      {
+        "binary_id": "codex-core::all",
+        "name": "suite::remote_env::exec_command_routes_to_selected_remote_environment",
+        "result": "PASS",
+        "header_line": 44533,
+        "raw_line": 44542,
+        "reason": "Skipping test because it requires a remote test environment."
+      },
+      {
+        "binary_id": "codex-core::all",
+        "name": "suite::remote_env::remote_exec_materializes_target_roots_before_sandbox_selection",
+        "result": "PASS",
+        "header_line": 44592,
+        "raw_line": 44601,
+        "reason": "Skipping test because it requires a remote test environment."
+      },
+      {
+        "binary_id": "codex-core::all",
+        "name": "suite::remote_env::remote_test_env_can_connect_and_use_filesystem",
+        "result": "PASS",
+        "header_line": 44603,
+        "raw_line": 44612,
+        "reason": "Skipping test because it requires a remote test environment."
+      },
+      {
+        "binary_id": "codex-core::all",
+        "name": "suite::remote_env::remote_request_permissions_grant_unblocks_later_remote_exec",
+        "result": "PASS",
+        "header_line": 44614,
+        "raw_line": 44623,
+        "reason": "Skipping test because it requires a remote test environment."
+      },
+      {
+        "binary_id": "codex-core::all",
+        "name": "suite::remote_env::remote_test_env_exposes_target_shell_to_model",
+        "result": "PASS",
+        "header_line": 44625,
+        "raw_line": 44634,
+        "reason": "Skipping test because it requires a remote test environment."
+      },
+      {
+        "binary_id": "codex-core::all",
+        "name": "suite::remote_env::remote_test_env_copy_preserves_symlink_source",
+        "result": "PASS",
+        "header_line": 44636,
+        "raw_line": 44645,
+        "reason": "Skipping test because it requires a remote test environment."
+      },
+      {
+        "binary_id": "codex-core::all",
+        "name": "suite::remote_env::remote_test_env_remove_removes_symlink_not_target",
+        "result": "PASS",
+        "header_line": 44647,
+        "raw_line": 44656,
+        "reason": "Skipping test because it requires a remote test environment."
+      },
+      {
+        "binary_id": "codex-core::all",
+        "name": "suite::remote_env::remote_test_env_sandboxed_read_allows_readable_root",
+        "result": "PASS",
+        "header_line": 44658,
+        "raw_line": 44667,
+        "reason": "Skipping test because it requires a remote test environment."
+      },
+      {
+        "binary_id": "codex-core::all",
+        "name": "suite::remote_env::remote_test_env_sandboxed_read_rejects_symlink_parent_dotdot_escape",
+        "result": "PASS",
+        "header_line": 44669,
+        "raw_line": 44678,
+        "reason": "Skipping test because it requires a remote test environment."
+      },
+      {
+        "binary_id": "codex-core::all",
+        "name": "suite::rmcp_client::remote_stdio_env_var_source_does_not_copy_local_env",
+        "result": "PASS",
+        "header_line": 45844,
+        "raw_line": 45853,
+        "reason": "Skipping test because it requires a remote test environment."
+      },
+      {
+        "binary_id": "codex-core::all",
+        "name": "suite::view_image::view_image_routes_to_selected_remote_environment",
+        "result": "PASS",
+        "header_line": 49446,
+        "raw_line": 49455,
+        "reason": "Skipping test because it requires a remote test environment."
+      },
+      {
+        "binary_id": "codex-linux-sandbox::all",
+        "name": "suite::landlock::sandbox_inner_stage_rejects_retained_capabilities",
+        "result": "PASS",
+        "header_line": 51051,
+        "raw_line": 51060,
+        "reason": "skipping capability test: unprivileged user namespaces are unavailable"
+      }
+    ],
+    "raw_output_early_return_count": 25,
+    "raw_output_distinct_case_identity_count": 3967,
+    "raw_output_failure_summary_reprints": 5,
+    "raw_output_matches_all_junit_case_results": true
+  },
+  "same_process_library": {
+    "pass": 2432,
+    "fail": 1,
+    "ignored": 1,
+    "filtered": 0,
+    "failure": "resume_agent_from_rollout_skips_descendants_when_parent_resume_fails",
+    "original_stdout": {
+      "bytes": 7597636,
+      "sha256": "3cab8cd6a583cc5fa2bd1cbade4eab3b21d6dccdd3820bd5e6a0a69b8c81dd15",
+      "git_blob": "accda4b558e7cc071f7a9549e30c807fcee7ae64"
+    },
+    "original_stderr": {
+      "bytes": 3197,
+      "sha256": "952bb0c28a972829fb86ab717a3bbd77b64a1334a7a4ea0deb2c0ca39408cb8d",
+      "git_blob": "57f6f5ab1056e5a157671dc72570b140af5c037f"
+    }
+  },
+  "frozen_remaining54_intersection": [
+    {
+      "blocker_id": "B07",
+      "binary_id": "codex-core::all",
+      "name": "suite::hooks_executor::executor_stop_hook_stops_after_disconnection",
+      "this_run_result": "PASS",
+      "captured_early_return": false,
+      "raw_output_early_return": false
+    },
+    {
+      "blocker_id": "B07",
+      "binary_id": "codex-core::all",
+      "name": "suite::hooks_executor::executor_stop_hook_runs_after_attachment",
+      "this_run_result": "PASS",
+      "captured_early_return": false,
+      "raw_output_early_return": false
+    },
+    {
+      "blocker_id": "B07",
+      "binary_id": "codex-core::all",
+      "name": "suite::code_mode::code_mode_exec_surfaces_handler_errors_as_exceptions",
+      "this_run_result": "PASS",
+      "captured_early_return": false,
+      "raw_output_early_return": false
+    },
+    {
+      "blocker_id": "B07",
+      "binary_id": "codex-core::all",
+      "name": "suite::hooks_mcp::active_tool_policy_disables_mcp_tool_hooks_before_transport",
+      "this_run_result": "PASS",
+      "captured_early_return": false,
+      "raw_output_early_return": false
+    },
+    {
+      "blocker_id": "B07",
+      "binary_id": "codex-core::all",
+      "name": "suite::hooks_mcp::hepta_feature_disables_mcp_tool_hooks_before_transport",
+      "this_run_result": "PASS",
+      "captured_early_return": false,
+      "raw_output_early_return": false
+    },
+    {
+      "blocker_id": "B07",
+      "binary_id": "codex-core::all",
+      "name": "suite::hooks_mcp::mcp_tool_hook_blocks_model_tool_without_recursive_hooks_or_approval",
+      "this_run_result": "PASS",
+      "captured_early_return": false,
+      "raw_output_early_return": false
+    },
+    {
+      "blocker_id": "B07",
+      "binary_id": "codex-core::all",
+      "name": "suite::hooks_mcp::mcp_tool_hook_fails_open_when_server_is_unavailable",
+      "this_run_result": "PASS",
+      "captured_early_return": false,
+      "raw_output_early_return": false
+    },
+    {
+      "blocker_id": "B07",
+      "binary_id": "codex-core::all",
+      "name": "suite::hooks_mcp::mcp_tool_hook_interpolates_prompt_and_runs_without_tool_approval",
+      "this_run_result": "PASS",
+      "captured_early_return": false,
+      "raw_output_early_return": false
+    },
+    {
+      "blocker_id": "B07",
+      "binary_id": "codex-core::all",
+      "name": "suite::hooks_executor::executor_stop_hook_rejects_mismatched_environment",
+      "this_run_result": "PASS",
+      "captured_early_return": false,
+      "raw_output_early_return": false
+    },
+    {
+      "blocker_id": "B07",
+      "binary_id": "codex-core::all",
+      "name": "suite::hooks_mcp::mcp_tool_hook_cannot_call_tools_excluded_by_server_filters",
+      "this_run_result": "PASS",
+      "captured_early_return": false,
+      "raw_output_early_return": false
+    },
+    {
+      "blocker_id": "B07",
+      "binary_id": "codex-core::all",
+      "name": "suite::hooks_mcp::mcp_tool_hook_marks_thread_memory_mode_polluted_when_configured",
+      "this_run_result": "PASS",
+      "captured_early_return": false,
+      "raw_output_early_return": false
+    },
+    {
+      "blocker_id": "B07",
+      "binary_id": "codex-core::all",
+      "name": "suite::hooks_mcp::mcp_tool_hook_passes_thread_metadata_to_model_hidden_tools",
+      "this_run_result": "PASS",
+      "captured_early_return": false,
+      "raw_output_early_return": false
+    },
+    {
+      "blocker_id": "B07",
+      "binary_id": "codex-core::all",
+      "name": "suite::hooks_mcp::permission_request_hook_allows_mcp_tool_without_user_or_guardian_review",
+      "this_run_result": "PASS",
+      "captured_early_return": false,
+      "raw_output_early_return": false
+    },
+    {
+      "blocker_id": "B07",
+      "binary_id": "codex-core::all",
+      "name": "suite::hooks_mcp::permission_request_hook_denies_mcp_tool_without_user_or_guardian_review",
+      "this_run_result": "PASS",
+      "captured_early_return": false,
+      "raw_output_early_return": false
+    },
+    {
+      "blocker_id": "B07",
+      "binary_id": "codex-core::all",
+      "name": "suite::hooks_mcp::post_tool_use_records_mcp_tool_payload_and_context_with_legacy_prefixed_names",
+      "this_run_result": "PASS",
+      "captured_early_return": false,
+      "raw_output_early_return": false
+    },
+    {
+      "blocker_id": "B07",
+      "binary_id": "codex-core::all",
+      "name": "suite::hooks_mcp::post_tool_use_records_mcp_tool_payload_and_context_with_non_prefixed_names",
+      "this_run_result": "PASS",
+      "captured_early_return": false,
+      "raw_output_early_return": false
+    },
+    {
+      "blocker_id": "B07",
+      "binary_id": "codex-core::all",
+      "name": "suite::hooks_mcp::pre_tool_use_blocks_mcp_tool_before_execution_with_legacy_prefixed_names",
+      "this_run_result": "PASS",
+      "captured_early_return": false,
+      "raw_output_early_return": false
+    },
+    {
+      "blocker_id": "B07",
+      "binary_id": "codex-core::all",
+      "name": "suite::hooks_mcp::pre_tool_use_rewrites_mcp_tool_before_execution",
+      "this_run_result": "PASS",
+      "captured_early_return": false,
+      "raw_output_early_return": false
+    },
+    {
+      "blocker_id": "B07",
+      "binary_id": "codex-core::all",
+      "name": "suite::hooks_mcp::pre_tool_use_blocks_mcp_tool_before_execution_with_non_prefixed_names",
+      "this_run_result": "PASS",
+      "captured_early_return": false,
+      "raw_output_early_return": false
+    },
+    {
+      "blocker_id": "B07",
+      "binary_id": "codex-core::all",
+      "name": "suite::token_budget::active_tool_policy_skips_notes_thread_hint_without_calling_server",
+      "this_run_result": "PASS",
+      "captured_early_return": false,
+      "raw_output_early_return": false
+    },
+    {
+      "blocker_id": "B07",
+      "binary_id": "codex-core::all",
+      "name": "suite::token_budget::hepta_token_budget_skips_notes_thread_hint_without_calling_server",
+      "this_run_result": "PASS",
+      "captured_early_return": false,
+      "raw_output_early_return": false
+    },
+    {
+      "blocker_id": "B07",
+      "binary_id": "codex-core::all",
+      "name": "suite::token_budget::token_budget_context_injects_plain_thread_hint_text",
+      "this_run_result": "PASS",
+      "captured_early_return": false,
+      "raw_output_early_return": false
+    },
+    {
+      "blocker_id": "B08",
+      "binary_id": "codex-core::all",
+      "name": "suite::tools::namespaced_custom_tool_call_preserves_namespace_through_dispatch_and_replay",
+      "this_run_result": "PASS",
+      "captured_early_return": false,
+      "raw_output_early_return": false
+    },
+    {
+      "blocker_id": "B09",
+      "binary_id": "codex-core::all",
+      "name": "suite::abort_tasks::root_turn_suspension_preserves_unfinished_turn_history",
+      "this_run_result": "PASS",
+      "captured_early_return": false,
+      "raw_output_early_return": false
+    },
+    {
+      "blocker_id": "B10",
+      "binary_id": "codex-core::all",
+      "name": "suite::agent_websocket::websocket_model_switch_to_responses_lite_omits_top_level_tools",
+      "this_run_result": "PASS",
+      "captured_early_return": false,
+      "raw_output_early_return": false
+    },
+    {
+      "blocker_id": "B10",
+      "binary_id": "codex-core::all",
+      "name": "suite::agent_websocket::websocket_v2_first_turn_drops_fast_tier_after_startup_prewarm",
+      "this_run_result": "PASS",
+      "captured_early_return": false,
+      "raw_output_early_return": false
+    },
+    {
+      "blocker_id": "B10",
+      "binary_id": "codex-core::all",
+      "name": "suite::agent_websocket::websocket_v2_first_turn_uses_updated_fast_tier_after_startup_prewarm",
+      "this_run_result": "PASS",
+      "captured_early_return": false,
+      "raw_output_early_return": false
+    },
+    {
+      "blocker_id": "B10",
+      "binary_id": "codex-core::all",
+      "name": "suite::agent_websocket::websocket_v2_next_turn_uses_updated_service_tier",
+      "this_run_result": "PASS",
+      "captured_early_return": false,
+      "raw_output_early_return": false
+    },
+    {
+      "blocker_id": "B10",
+      "binary_id": "codex-core::all",
+      "name": "suite::compact::remote_v2_compaction_keeps_creation_time_instructions_after_same_path_mutation",
+      "this_run_result": "PASS",
+      "captured_early_return": false,
+      "raw_output_early_return": false
+    },
+    {
+      "blocker_id": "B10",
+      "binary_id": "codex-core::all",
+      "name": "suite::compact_remote::remote_compact_v2_reuses_compaction_trigger_for_followups",
+      "this_run_result": "PASS",
+      "captured_early_return": false,
+      "raw_output_early_return": false
+    },
+    {
+      "blocker_id": "B10",
+      "binary_id": "codex-core::all",
+      "name": "suite::compact_remote::remote_mid_turn_compact_v2_sends_turn_state_over_websocket",
+      "this_run_result": "PASS",
+      "captured_early_return": false,
+      "raw_output_early_return": false
+    },
+    {
+      "blocker_id": "B10",
+      "binary_id": "codex-core::all",
+      "name": "suite::git_enrichment::ephemeral_system_thread_prewarm_skips_and_turn_observes_fresh_state::test_case_1_system_background_thread",
+      "this_run_result": "PASS",
+      "captured_early_return": false,
+      "raw_output_early_return": false
+    },
+    {
+      "blocker_id": "B10",
+      "binary_id": "codex-core::all",
+      "name": "suite::git_enrichment::ephemeral_system_thread_prewarm_skips_and_turn_observes_fresh_state::test_case_2_ambient_background_thread",
+      "this_run_result": "PASS",
+      "captured_early_return": false,
+      "raw_output_early_return": false
+    },
+    {
+      "blocker_id": "B10",
+      "binary_id": "codex-core::all",
+      "name": "suite::git_enrichment::startup_prewarm_skips_git_enrichment_and_user_turn_observes_fresh_state",
+      "this_run_result": "PASS",
+      "captured_early_return": false,
+      "raw_output_early_return": false
+    },
+    {
+      "blocker_id": "B10",
+      "binary_id": "codex-core::all",
+      "name": "suite::turn_state::responses_turn_state_persists_within_turn_and_resets_after",
+      "this_run_result": "PASS",
+      "captured_early_return": false,
+      "raw_output_early_return": false
+    },
+    {
+      "blocker_id": "B10",
+      "binary_id": "codex-core::all",
+      "name": "suite::turn_state::websocket_turn_state_persists_within_turn_and_resets_after",
+      "this_run_result": "PASS",
+      "captured_early_return": false,
+      "raw_output_early_return": false
+    },
+    {
+      "blocker_id": "B10",
+      "binary_id": "codex-core::all",
+      "name": "suite::turn_state::websocket_turn_state_is_stable_within_turn",
+      "this_run_result": "PASS",
+      "captured_early_return": false,
+      "raw_output_early_return": false
+    },
+    {
+      "blocker_id": "B10",
+      "binary_id": "codex-core::all",
+      "name": "suite::turn_state::websocket_turn_state_survives_permission_change_by_reconnecting",
+      "this_run_result": "PASS",
+      "captured_early_return": false,
+      "raw_output_early_return": false
+    },
+    {
+      "blocker_id": "B07",
+      "binary_id": "codex-mcp",
+      "name": "binding::tests::configured_hook_call_preserves_model_and_environment_boundaries",
+      "this_run_result": "NOT_IN_THIS_PROJECT_SCOPE",
+      "captured_early_return": false,
+      "raw_output_early_return": false
+    },
+    {
+      "blocker_id": "B07",
+      "binary_id": "codex-mcp",
+      "name": "binding::tests::prepared_call_keeps_captured_connection_and_authority_after_refresh",
+      "this_run_result": "NOT_IN_THIS_PROJECT_SCOPE",
+      "captured_early_return": false,
+      "raw_output_early_return": false
+    },
+    {
+      "blocker_id": "B07",
+      "binary_id": "codex-mcp",
+      "name": "binding::tests::prepared_call_does_not_reroute_after_captured_connection_closes",
+      "this_run_result": "NOT_IN_THIS_PROJECT_SCOPE",
+      "captured_early_return": false,
+      "raw_output_early_return": false
+    },
+    {
+      "blocker_id": "B07",
+      "binary_id": "codex-mcp",
+      "name": "binding::tests::prepared_call_is_rejected_after_catalog_refresh",
+      "this_run_result": "NOT_IN_THIS_PROJECT_SCOPE",
+      "captured_early_return": false,
+      "raw_output_early_return": false
+    },
+    {
+      "blocker_id": "B07",
+      "binary_id": "codex-mcp",
+      "name": "binding::tests::stale_prepared_call_does_not_run_preparation",
+      "this_run_result": "NOT_IN_THIS_PROJECT_SCOPE",
+      "captured_early_return": false,
+      "raw_output_early_return": false
+    },
+    {
+      "blocker_id": "B07",
+      "binary_id": "codex-mcp",
+      "name": "binding::tests::preparation_holds_catalog_authority_until_it_finishes",
+      "this_run_result": "NOT_IN_THIS_PROJECT_SCOPE",
+      "captured_early_return": false,
+      "raw_output_early_return": false
+    },
+    {
+      "blocker_id": "B09",
+      "binary_id": "codex-app-server::all",
+      "name": "suite::v2::thread_inject_items::thread_inject_items_adds_raw_response_items_after_a_turn",
+      "this_run_result": "NOT_IN_THIS_PROJECT_SCOPE",
+      "captured_early_return": false,
+      "raw_output_early_return": false
+    },
+    {
+      "blocker_id": "B09",
+      "binary_id": "codex-app-server::all",
+      "name": "suite::v2::turn_recover::cold_resume_explicit_cwd_override_is_fail_closed_for_recovery",
+      "this_run_result": "NOT_IN_THIS_PROJECT_SCOPE",
+      "captured_early_return": false,
+      "raw_output_early_return": false
+    },
+    {
+      "blocker_id": "B09",
+      "binary_id": "codex-app-server::all",
+      "name": "suite::v2::turn_recover::cold_paginated_sigkill_recovery_uses_canonical_context_tail",
+      "this_run_result": "NOT_IN_THIS_PROJECT_SCOPE",
+      "captured_early_return": false,
+      "raw_output_early_return": false
+    },
+    {
+      "blocker_id": "B09",
+      "binary_id": "codex-app-server::all",
+      "name": "suite::v2::turn_recover::cold_resume_explicit_workspace_roots_override_is_fail_closed_for_recovery",
+      "this_run_result": "NOT_IN_THIS_PROJECT_SCOPE",
+      "captured_early_return": false,
+      "raw_output_early_return": false
+    },
+    {
+      "blocker_id": "B09",
+      "binary_id": "codex-app-server::all",
+      "name": "suite::v2::turn_recover::cold_sigkill_after_provider_output_is_not_recoverable",
+      "this_run_result": "NOT_IN_THIS_PROJECT_SCOPE",
+      "captured_early_return": false,
+      "raw_output_early_return": false
+    },
+    {
+      "blocker_id": "B09",
+      "binary_id": "codex-app-server::all",
+      "name": "suite::v2::turn_recover::recover_rejects_busy_completed_and_cross_thread_turns",
+      "this_run_result": "NOT_IN_THIS_PROJECT_SCOPE",
+      "captured_early_return": false,
+      "raw_output_early_return": false
+    },
+    {
+      "blocker_id": "B09",
+      "binary_id": "codex-app-server::all",
+      "name": "suite::v2::turn_recover::same_process_ephemeral_interrupted_turn_recovers_from_listener_state",
+      "this_run_result": "NOT_IN_THIS_PROJECT_SCOPE",
+      "captured_early_return": false,
+      "raw_output_early_return": false
+    },
+    {
+      "blocker_id": "B09",
+      "binary_id": "codex-app-server::all",
+      "name": "suite::v2::turn_recover::turn_recover_requires_hepta_turn_recovery_feature",
+      "this_run_result": "NOT_IN_THIS_PROJECT_SCOPE",
+      "captured_early_return": false,
+      "raw_output_early_return": false
+    },
+    {
+      "blocker_id": "B09",
+      "binary_id": "codex-app-server::all",
+      "name": "suite::v2::turn_recover::cold_sigkill_recovery_preserves_turn_and_deduplicates_stable_queue_input",
+      "this_run_result": "NOT_IN_THIS_PROJECT_SCOPE",
+      "captured_early_return": false,
+      "raw_output_early_return": false
+    },
+    {
+      "blocker_id": "B13",
+      "binary_id": "codex-hepta-agentd",
+      "name": "runtime::tests::qualification_prepare_quarantines_expired_registry_attempt_with_h7_evidence",
+      "this_run_result": "NOT_IN_THIS_PROJECT_SCOPE",
+      "captured_early_return": false,
+      "raw_output_early_return": false
+    }
+  ],
+  "terminal_state": "PROJECT_NONPASS_REVIEW_REQUIRED",
+  "full_gate": "OPEN",
+  "hygiene": "NOT_STARTED",
+  "native_tests_rerun": false,
+  "all_blockers_closed": false,
+  "raw_output_scope_correction": {
+    "prior_derivation_sha256": "1a9d13302adb1461cdf6265f8930b2cef8f1f319710607eb4e1c2871da0128df",
+    "reason": "Extend initial JUnit-only captured-output inspection with complete original stdout. Preserve original counts and failures; do not equate absent JUnit pass capture with executed business assertions.",
+    "original_stdout_sha256": "a06d2a7c73589c76300a3a6886f37affcd8609f8cb41499e6704a9762a20aeb4"
+  }
+}

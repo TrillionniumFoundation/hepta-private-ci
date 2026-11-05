@@ -1,0 +1,767 @@
+{
+  "fixed_head": "5b6331250ff459033bd44d1a95daec70131277cc",
+  "total_fixed_script_paths": 73,
+  "available_exact_paths": 73,
+  "rows": [
+    {
+      "path": "qualification/r3-audit-repair-20261104/diagnostics/core-cold-root-fb9/build_core_diagnostic.py",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "651029c1916cd5b2412dab84ea10cfc5f0b2e053",
+      "size": 6396,
+      "local_file": "research-audit/fb9-new-failures-20261105/build_core_diagnostic.py",
+      "sha256": "b615bd06eb83cb5b91cc84165bbe7a14dfff7ea5e11d4d64efc526de9cd947e7",
+      "hits": []
+    },
+    {
+      "path": "qualification/r3-audit-repair-20261104/diagnostics/core-cold-root-fb9/freeze_core_diagnosis.py",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "d49120fe309a19e4647b51930bb0eb239cce5277",
+      "size": 15026,
+      "local_file": "research-audit/fb9-new-failures-20261105/freeze_core_diagnosis.py",
+      "sha256": "ac183878d4970fbb01336c29f1e8383f22032d96e44a380d6ca88f0315ff2e9d",
+      "hits": []
+    },
+    {
+      "path": "qualification/r3-audit-repair-20261104/diagnostics/proxy-connect-fb9/build_static_receipt.py",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "6cb902633ac774bd6b9d4943dff1cb49dde2aafa",
+      "size": 18628,
+      "local_file": "architecture-audit/fb9-proxy-connect-20261105/build_static_receipt.py",
+      "sha256": "b723ded4317a914a7d43f64cc2f35cdae91f2b657ae2becbb21bb9647dd3fa43",
+      "hits": []
+    },
+    {
+      "path": "qualification/r3-audit-repair-20261104/generate_second_batch_qualification.py",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "e54100a22885a09bc2769cff8eaccc3e35d1e6dd",
+      "size": 35534,
+      "local_file": "research-audit/inventory-blob-packaging-20261105/inputs/generate_second_batch_qualification.py.source.txt",
+      "sha256": "e86f65d894a71cb598a703a8902988ee4f85e3d5594293ceb410c47bd3996300",
+      "hits": []
+    },
+    {
+      "path": "qualification/r3-audit-repair-20261104/native-evidence/final-A-fmt/repro/build_fmt_review.py",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "ff734c5b481e004626cd1527ec8ad70c4c2539e7",
+      "size": 15688,
+      "local_file": "architecture-audit/a-hygiene-independent-review-20261105/build_fmt_review.py",
+      "sha256": "791af60a2ae65baf950df9c3edf00b631a5fc0ac7b592b6fbbdd37a0ced40809",
+      "hits": []
+    },
+    {
+      "path": "qualification/r3-audit-repair-20261104/report-reviews/final-consistency-20261105/build_minimal_correction.py",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "e3ea420c461a13d5d30d589e99427a830c3cc22f",
+      "size": 8982,
+      "local_file": "research-audit/fourth-final-report-review-20261105/build_minimal_correction.py",
+      "sha256": "9733a160cd197765b41224ec2893e392ea483145cc1b9c2325200335efbb7b01",
+      "hits": []
+    },
+    {
+      "path": "qualification/r3-audit-repair-20261104/report-reviews/final-consistency-20261105/review_current_reports.py",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "f7068cc62f571490eb38f90b4d9bf69af824af28",
+      "size": 9512,
+      "local_file": "research-audit/fourth-final-report-review-20261105/review_current_reports.py",
+      "sha256": "dd4df0b62221ed48341af2be718226fddd426785973f3d649cfce1541d1b5cd5",
+      "hits": []
+    },
+    {
+      "path": "qualification/r3-audit-repair-20261104/repository-inventory-20261105/build_inventory.py",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "6c0e0c8b15f5b340a01b7f437ef5ca5edda15abb",
+      "size": 12876,
+      "local_file": "research-audit/repository-inventory-20261105/build_inventory.py",
+      "sha256": "bf3f39da12d66e312a1afd3b26f9db3e7dae71876528ebbd74992378bb708338",
+      "hits": [
+        {
+          "line": 66,
+          "text": "old = read('old-complete-inventory.json')"
+        },
+        {
+          "line": 170,
+          "text": "    'previous_snapshot': {'blob': '0db12ef5efcb2df620def35407a3076f1af8aa2b', **ident((ROOT / 'old-complete-inventory.json').read_bytes()), 'final_anchor_at_utc': old['pr_observation']['final_anchor_at_utc'], 'counts': old['counts'], 'preserved_unchanged': True},"
+        },
+        {
+          "line": 201,
+          "text": "(ROOT / 'complete-inventory.json').write_text(json.dumps(inventory, ensure_ascii=False, indent=2) + '\\n')"
+        },
+        {
+          "line": 210,
+          "text": "summary['inventory_identity'] = ident((ROOT / 'complete-inventory.json').read_bytes())"
+        }
+      ]
+    },
+    {
+      "path": "qualification/r3-audit-repair-20261104/repro/review_app_epoch2_complete.py",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "7c201d9d6f4d69f5fdad1d9c746ce383ab743abd",
+      "size": 9480,
+      "local_file": "hepta-audit-fourth/review_app_epoch2_complete.py",
+      "sha256": "1e5159567788d0d65c305234ffeac2e3cab995e6ccfe8c154f2d522ca0fffd64",
+      "hits": []
+    },
+    {
+      "path": "qualification/r3-audit-repair-20261104/repro/review_app_liveness_v2_complete.py",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "fde16c28ed17fc670cc06f201b86edd81bbc8a96",
+      "size": 8121,
+      "local_file": "hepta-audit-fourth/review_app_liveness_v2_complete.py",
+      "sha256": "d2ed4f95ff43ba174edc38d5cca5fa643e8ec526e5a19ce668d7112720031b8f",
+      "hits": []
+    },
+    {
+      "path": "qualification/r3-audit-repair-20261104/repro/review_app_parent_probe.py",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "1981669936ad539b2b43099af7ea768960af2825",
+      "size": 8153,
+      "local_file": "hepta-audit-fourth/review_app_parent_probe.py",
+      "sha256": "ba24c5e55c5c5dc3d53ccec2974a41310bf3814a74fd791032da6463a90ba5a7",
+      "hits": []
+    },
+    {
+      "path": "qualification/r3-audit-repair-20261104/repro/review_app_parent_probe_complete.py",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "29af2a06571b18b923680e9537ac1291f8244de8",
+      "size": 10959,
+      "local_file": "hepta-audit-fourth/review_app_parent_probe_complete.py",
+      "sha256": "244a298740e68ae69fcc4ab010b3be8a7d218f4d75d67ac95ab9ab9fde7c2e2a",
+      "hits": []
+    },
+    {
+      "path": "qualification/r3-audit-repair-20261104/repro/review_full_fb9_complete.py",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "360b6579401355652c3ab6f196c034f22cff0894",
+      "size": 13167,
+      "local_file": "hepta-audit-fourth/review_full_fb9_complete.py",
+      "sha256": "460fe443882fe78b2106955aa358b64bd3dea4f977bf46d702bdba0ba308e3eb",
+      "hits": []
+    },
+    {
+      "path": "qualification/r3-audit-repair-20261104/repro/review_skills_v2.py",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "5dd379bed35a143e535ed7e9f47672ec303058e2",
+      "size": 6574,
+      "local_file": "hepta-audit-fourth/review_skills_v2.py",
+      "sha256": "1fdf82d48a96684480b96d5724754765525fc1522fa584f9e38e7cfe6f4c8780",
+      "hits": []
+    },
+    {
+      "path": "qualification/r3-audit-repair-20261104/repro/review_three_repairs_complete.py",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "8e228060f08f1e2e08d8fd52d86eaebb989d53a7",
+      "size": 11447,
+      "local_file": "hepta-audit-fourth/review_three_repairs_complete.py",
+      "sha256": "a38a6d72c9ae97451b9b30c0f4acd8bd97c669202b7f00d37e82cba28a3f1f96",
+      "hits": []
+    },
+    {
+      "path": "qualification/r3-audit-repair-20261104/repro/review_three_repairs_v3.py",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "c9c4469f3adbe01873f1bcc19e92a3a9d15d7527",
+      "size": 11204,
+      "local_file": "hepta-audit-fourth/review_three_repairs_v3.py",
+      "sha256": "7d5776dbd08862bf4eecff4705a6ed700e1712c33958a376a9a2774c197a93ee",
+      "hits": []
+    },
+    {
+      "path": "qualification/r3-audit-repair-20261104/repro/review_windows_index_complete.py",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "2cd5b8e5fe3307a56672a38ad1868be746cdc775",
+      "size": 10698,
+      "local_file": "hepta-audit-fourth/review_windows_index_complete.py",
+      "sha256": "7d21aeacd5a0fef5277ee768902b12b8b0813504bd158a2147728ce7e016859b",
+      "hits": []
+    },
+    {
+      "path": "qualification/r3-audit-repair-20261104/repro/windows-python-index-readonly-reconciliation.py",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "50ba5cb1aed98218136ac2423324444e6b07879a",
+      "size": 7912,
+      "local_file": "ci-audit/recovered-20261105/windows-python-index-readonly-reconciliation.py",
+      "sha256": "9d388eddf8f08e0170102450cce6cc886a514cc5706b0cc9ab0ddb04978c7c18",
+      "hits": []
+    },
+    {
+      "path": "qualification/r3-audit-repair-20261104/reproduce/review_repository_inventory_20261105.py",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "a4876f26a0f36ea138bc3d7f54a818fd91d50e92",
+      "size": 10416,
+      "local_file": "hepta-audit-fourth/review_repository_inventory_20261105.py",
+      "sha256": "57160e434f13585a42ed32039d42cd42e507c056573dd751280612eed76c9688",
+      "hits": [
+        {
+          "line": 28,
+          "text": "inventory_raw = (SOURCE / 'complete-inventory.json').read_bytes()"
+        },
+        {
+          "line": 57,
+          "text": "assert originals['complete-inventory.json'] == inventory_raw"
+        },
+        {
+          "line": 134,
+          "text": "old_raw = (SOURCE / 'old-complete-inventory.json').read_bytes()"
+        }
+      ]
+    },
+    {
+      "path": "qualification/r3-audit-repair-20261104/scientific-pr4823/check_archived_margin_witnesses.py",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "de3da9ea65281998164bc2792feb92054918c880",
+      "size": 7813,
+      "local_file": "research-audit/science-pr4823-independent-review-20261105/check_archived_margin_witnesses.py",
+      "sha256": "ea4d221ce822535c7cf528d5f93935fab8667d0c4a27bfeca0e6555acd7f1224",
+      "hits": []
+    },
+    {
+      "path": "qualification/r3-audit-repair-20261104/scientific-pr4823/check_engineering_records_and_costs.py",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "2bd47b352b04b0101087b79ce236d504b1f2a316",
+      "size": 17755,
+      "local_file": "research-audit/science-pr4823-independent-review-20261105/check_engineering_records_and_costs.py",
+      "sha256": "acc2f0fed6f650b9dec2c2d268dcc073e42d775870d6c13312c778224c93aed4",
+      "hits": []
+    },
+    {
+      "path": "qualification/r3-audit-repair-20261104/scientific-pr4823/compare_archived_replay.py",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "1cf666ce40950f2c926062a752c57dd2b59a8239",
+      "size": 3444,
+      "local_file": "research-audit/science-pr4823-independent-review-20261105/compare_archived_replay.py",
+      "sha256": "a164a15adaea77dcde403f1b76577e171f5599d34582cc55db52f97dcfd97aa0",
+      "hits": []
+    },
+    {
+      "path": "qualification/r3-audit-repair-20261104/scientific-pr4823/recalculate_frozen_records.py",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "0d0ad0b9ec066798050cdff68d7307e5ac2e2771",
+      "size": 16827,
+      "local_file": "research-audit/science-pr4823-independent-review-20261105/recalculate_frozen_records.py",
+      "sha256": "aa037250de7318fa7390c4a72680db733f44e7f94058c4cf876b64e25af9cb00",
+      "hits": []
+    },
+    {
+      "path": "qualification/r3-audit-repair-20261104/source-assembly/final-A-diffchecks-continuation-runner-v1.py",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "b24aae0acc886d453f07431735b686eae064ebc7",
+      "size": 16544,
+      "local_file": "ci-audit/recovered-20261105/final-A-hygiene-diffchecks-continuation-runner-v1.py",
+      "sha256": "e9c506868f968be7d5bb6d26475d215cfd7169a83b7bd01c1c599460f21100dc",
+      "hits": []
+    },
+    {
+      "path": "qualification/r3-audit-repair-20261104/source-assembly/final-A-fmt-continuation-runner-v1.py",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "655349b2bd6e9035de963e6c355941d00af8acfe",
+      "size": 14235,
+      "local_file": "ci-audit/recovered-20261105/final-A-hygiene-fmt-continuation-runner-v1.py",
+      "sha256": "42056aa0ff22d061dfa25e3d71a2857d0ee65af1b222c097a540f5b43156e1c8",
+      "hits": []
+    },
+    {
+      "path": "qualification/r3-audit-repair-20261104/static-proposals/app-parent-liveness/native-runner-v2/app-parent-liveness-validation-runner-v2.py",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "6fd0636bdc81848f757893192021aede12129915",
+      "size": 29385,
+      "local_file": "ci-audit/recovered-20261105/app-parent-liveness-validation-runner-v2.py",
+      "sha256": "2d2ba32e6b4d5347495847750d254759f9c1d96da980af60ff9e84a58aa40043",
+      "hits": []
+    },
+    {
+      "path": "qualification/r3-audit-repair-20261104/static-proposals/app-parent-liveness/native-runner/app-parent-liveness-validation-runner.py",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "7b4fce92dfe624f046c1cb022b7f9618d7dcb09d",
+      "size": 29370,
+      "local_file": "ci-audit/recovered-20261105/app-parent-liveness-validation-runner.py",
+      "sha256": "9ee2ae01565bfede3984ee2390ef5bf16cca5e504667397ce665945d67c82040",
+      "hits": []
+    },
+    {
+      "path": "qualification/r3-audit-repair-20261104/static-proposals/app-parent-observation/app-parent-lifecycle-diagnostic-runner-final.py",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "55bbe3e4512eeeba6b27c3bc2061cde572c8c5ea",
+      "size": 29284,
+      "local_file": "hepta-audit-fourth/inputs/app-parent-probe-complete-root-decoded/runner.py",
+      "sha256": "cd8a926469d7583021cbc49b22f42526ff354d7938d01e3919f86cb6c43aee46",
+      "hits": []
+    },
+    {
+      "path": "qualification/r3-audit-repair-20261104/static-proposals/app-parent-observation/app-parent-lifecycle-diagnostic-runner.py",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "da0f50b09930ca7b79d1cd01760b2fa495d301a3",
+      "size": 29213,
+      "local_file": "ci-audit/recovered-20261105/app-parent-lifecycle-diagnostic-runner.py",
+      "sha256": "71d53e3c18ae398f288e3156fa65c526ea514e3080d6a83279b2cb3065376a41",
+      "hits": []
+    },
+    {
+      "path": "qualification/r3-audit-repair-20261104/static-proposals/b16-native-adoption-runner/check_native_receipts.py",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "28a24186fd6f52d92cee806bedda83dcbb1260db",
+      "size": 5131,
+      "local_file": "architecture-audit/b16-native-adoption-runner-20261105/check_native_receipts.py",
+      "sha256": "40006b8770024a840f96b322055a67565aee27d3e77b2c59c9aff0f6106864ce",
+      "hits": []
+    },
+    {
+      "path": "qualification/r3-audit-repair-20261104/static-proposals/b16-native-adoption-runner/prepare_execution_plan.py",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "4fc7c7e1f5f0a92baefdf7a5ed6c898881387b59",
+      "size": 17654,
+      "local_file": "architecture-audit/b16-native-adoption-runner-20261105/prepare_execution_plan.py",
+      "sha256": "ceb4843d9463563fb26ff5e7f622833ab04d8a6d2242b6a333bbe6b53ef039d1",
+      "hits": []
+    },
+    {
+      "path": "qualification/r3-audit-repair-20261104/static-proposals/b16-native-runner/b16_capacity.py",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "12d04a630e613c6170d2e1172c3fc988dcfc2965",
+      "size": 4796,
+      "local_file": "architecture-audit/b16-guarded-native-runner-20261105/v2-frozen/b16_capacity.py",
+      "sha256": "2879eaf9f1e3c87bc575e33e34880ba3dc6b80a211687a1317533fcfbf8e3168",
+      "hits": []
+    },
+    {
+      "path": "qualification/r3-audit-repair-20261104/static-proposals/b16-native-runner/b16_guard.py",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "9d1c5716db2b50ef86a689fe43db18816d06b561",
+      "size": 10724,
+      "local_file": "architecture-audit/b16-guarded-native-runner-20261105/v2-frozen/b16_guard.py",
+      "sha256": "dfaa27e85dd1ee2843893af811484f7bc059583615a4234a716e3472d507bb3d",
+      "hits": []
+    },
+    {
+      "path": "qualification/r3-audit-repair-20261104/static-proposals/b16-native-runner/b16_locks.py",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "1a6583b6226af4d20bb336b778476dedb02d59f4",
+      "size": 13015,
+      "local_file": "architecture-audit/b16-guarded-native-runner-20261105/b16_locks.py",
+      "sha256": "5edb44c7e4a6ce63981adc4681fead1987ddc19389e7d0659c9e4d3e13d8514e",
+      "hits": []
+    },
+    {
+      "path": "qualification/r3-audit-repair-20261104/static-proposals/b16-native-runner/b16_native.py",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "8accb86a14acaa88305575da13dd49692db11757",
+      "size": 16843,
+      "local_file": "architecture-audit/b16-guarded-native-runner-20261105/b16_native.py",
+      "sha256": "1955c298c3ae120ad1e7a3fb8bb1302d20aedc392a2a13c278ad9e988d915ea7",
+      "hits": []
+    },
+    {
+      "path": "qualification/r3-audit-repair-20261104/static-proposals/b16-native-runner/b16_oracles.py",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "1a6efff50846f5c04bb5ea6def203ada42342050",
+      "size": 7483,
+      "local_file": "architecture-audit/b16-guarded-native-runner-20261105/v2-frozen/b16_oracles.py",
+      "sha256": "5928528add9ecb0f6a1681057a26954d9c607fb14c129293fa4bc6eac4e07e85",
+      "hits": []
+    },
+    {
+      "path": "qualification/r3-audit-repair-20261104/static-proposals/b16-native-runner/b16_runner.py",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "f0ecc2359b81d49a5088e51cedbad32a8b54504a",
+      "size": 15307,
+      "local_file": "architecture-audit/b16-guarded-native-runner-20261105/v2-frozen/b16_runner.py",
+      "sha256": "63aac34b3bd16201615b6b3f4391d468fb0dad39c2a6187bfe17d7b627b33e6a",
+      "hits": []
+    },
+    {
+      "path": "qualification/r3-audit-repair-20261104/static-proposals/b16-native-runner/build_foundation_readiness.py",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "cc0bbbfd3c6389cf36766e165fd84708cee42487",
+      "size": 17403,
+      "local_file": "architecture-audit/b16-guarded-native-runner-20261105/build_foundation_readiness.py",
+      "sha256": "56443de1064a14863b68668cd8dcb64851ff5ca30697e7e65c7de7d39dfbe770",
+      "hits": []
+    },
+    {
+      "path": "qualification/r3-audit-repair-20261104/static-proposals/b16-native-runner/build_payload.py",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "bf7a3e53781fe4dbc97af905a2d87952d8c9f38c",
+      "size": 11192,
+      "local_file": "architecture-audit/b16-guarded-native-runner-20261105/v1-frozen/build_payload.py",
+      "sha256": "35b05b1ae777ec4f3b6bd94a7fc59145c415702eb65df34f3269c1ae744258fa",
+      "hits": []
+    },
+    {
+      "path": "qualification/r3-audit-repair-20261104/static-proposals/b16-native-runner/test_runner_guards.py",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "378fe4b966d86cced0c89303c34c6ad7bf3b0d57",
+      "size": 15658,
+      "local_file": "architecture-audit/b16-guarded-native-runner-20261105/test_runner_guards.py",
+      "sha256": "d83e8391dc64aacd2daa1bddb2ec104796f6e30f7054796ef5144b7265b67128",
+      "hits": []
+    },
+    {
+      "path": "qualification/r3-audit-repair-20261104/static-proposals/b16-native-runner/v1-frozen/b16_guard.py",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "9c8caa0993dac4c57c1f88e142f1e6f31b907e50",
+      "size": 9964,
+      "local_file": "architecture-audit/b16-guarded-native-runner-20261105/v1-frozen/b16_guard.py",
+      "sha256": "7489a68d7537a8343d3b7a62d05ce3dfaaf2d9020035facde75f270186723d5b",
+      "hits": []
+    },
+    {
+      "path": "qualification/r3-audit-repair-20261104/static-proposals/b16-native-runner/v1-frozen/b16_locks.py",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "f484c2bb30669c3ab1a22533ca4fc9a6876b1fd2",
+      "size": 12310,
+      "local_file": "architecture-audit/b16-guarded-native-runner-20261105/v1-frozen/b16_locks.py",
+      "sha256": "33b9dbf9893d2be615e6e80332ed047f4fc89e4c3e8bb83a88b8678c70ebf869",
+      "hits": []
+    },
+    {
+      "path": "qualification/r3-audit-repair-20261104/static-proposals/b16-native-runner/v1-frozen/b16_native.py",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "9c98e5716b399dcecb90032d3bb55ed89933f416",
+      "size": 15146,
+      "local_file": "architecture-audit/b16-guarded-native-runner-20261105/v1-frozen/b16_native.py",
+      "sha256": "c2627d054ec82187ecc81ea7607f49684bc816617476399199678c8b5e36e821",
+      "hits": []
+    },
+    {
+      "path": "qualification/r3-audit-repair-20261104/static-proposals/b16-native-runner/v1-frozen/b16_oracles.py",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "b8dce12b4a6fbd8979003ca9216522941cc04f07",
+      "size": 7454,
+      "local_file": "architecture-audit/b16-guarded-native-runner-20261105/v1-frozen/b16_oracles.py",
+      "sha256": "1e56eff59ddcf83895605e7545c4db38393273dc27b9b04505cb23707626f3ca",
+      "hits": []
+    },
+    {
+      "path": "qualification/r3-audit-repair-20261104/static-proposals/b16-native-runner/v1-frozen/b16_runner.py",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "6125db4e7102c226f2c2deee45459fa1202e5894",
+      "size": 13912,
+      "local_file": "architecture-audit/b16-guarded-native-runner-20261105/v1-frozen/b16_runner.py",
+      "sha256": "566e471a18ee0b04dd7560d55dd23f2fc1e6b2d6cb4643356ed94421815f2039",
+      "hits": []
+    },
+    {
+      "path": "qualification/r3-audit-repair-20261104/static-proposals/b16-native-runner/v1-frozen/build_payload.py",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "bf7a3e53781fe4dbc97af905a2d87952d8c9f38c",
+      "size": 11192,
+      "local_file": "architecture-audit/b16-guarded-native-runner-20261105/v1-frozen/build_payload.py",
+      "sha256": "35b05b1ae777ec4f3b6bd94a7fc59145c415702eb65df34f3269c1ae744258fa",
+      "hits": []
+    },
+    {
+      "path": "qualification/r3-audit-repair-20261104/static-proposals/b16-native-runner/v1-frozen/test_runner_guards.py",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "af782ede2efd32bc4e437b341c395bfa8c826a4a",
+      "size": 9266,
+      "local_file": "architecture-audit/b16-guarded-native-runner-20261105/v1-frozen/test_runner_guards.py",
+      "sha256": "74758744d7fc2f0598466661bf779756ed1f70ad7bb20a52b3d92578aa2e6781",
+      "hits": []
+    },
+    {
+      "path": "qualification/r3-audit-repair-20261104/static-proposals/b16-native-runner/v2-frozen/b16_capacity.py",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "12d04a630e613c6170d2e1172c3fc988dcfc2965",
+      "size": 4796,
+      "local_file": "architecture-audit/b16-guarded-native-runner-20261105/v2-frozen/b16_capacity.py",
+      "sha256": "2879eaf9f1e3c87bc575e33e34880ba3dc6b80a211687a1317533fcfbf8e3168",
+      "hits": []
+    },
+    {
+      "path": "qualification/r3-audit-repair-20261104/static-proposals/b16-native-runner/v2-frozen/b16_guard.py",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "9d1c5716db2b50ef86a689fe43db18816d06b561",
+      "size": 10724,
+      "local_file": "architecture-audit/b16-guarded-native-runner-20261105/v2-frozen/b16_guard.py",
+      "sha256": "dfaa27e85dd1ee2843893af811484f7bc059583615a4234a716e3472d507bb3d",
+      "hits": []
+    },
+    {
+      "path": "qualification/r3-audit-repair-20261104/static-proposals/b16-native-runner/v2-frozen/b16_locks.py",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "1a6583b6226af4d20bb336b778476dedb02d59f4",
+      "size": 13015,
+      "local_file": "architecture-audit/b16-guarded-native-runner-20261105/b16_locks.py",
+      "sha256": "5edb44c7e4a6ce63981adc4681fead1987ddc19389e7d0659c9e4d3e13d8514e",
+      "hits": []
+    },
+    {
+      "path": "qualification/r3-audit-repair-20261104/static-proposals/b16-native-runner/v2-frozen/b16_native.py",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "eee5c2792fb72b4e73591ebfffcce10c1aeb829f",
+      "size": 16306,
+      "local_file": "architecture-audit/b16-guarded-native-runner-20261105/v2-frozen/b16_native.py",
+      "sha256": "ce9bdfb7697b74ae8f1189a39c84a9aa928a40be4cd5dee6ce195a9366e1af81",
+      "hits": []
+    },
+    {
+      "path": "qualification/r3-audit-repair-20261104/static-proposals/b16-native-runner/v2-frozen/b16_oracles.py",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "1a6efff50846f5c04bb5ea6def203ada42342050",
+      "size": 7483,
+      "local_file": "architecture-audit/b16-guarded-native-runner-20261105/v2-frozen/b16_oracles.py",
+      "sha256": "5928528add9ecb0f6a1681057a26954d9c607fb14c129293fa4bc6eac4e07e85",
+      "hits": []
+    },
+    {
+      "path": "qualification/r3-audit-repair-20261104/static-proposals/b16-native-runner/v2-frozen/b16_runner.py",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "f0ecc2359b81d49a5088e51cedbad32a8b54504a",
+      "size": 15307,
+      "local_file": "architecture-audit/b16-guarded-native-runner-20261105/v2-frozen/b16_runner.py",
+      "sha256": "63aac34b3bd16201615b6b3f4391d468fb0dad39c2a6187bfe17d7b627b33e6a",
+      "hits": []
+    },
+    {
+      "path": "qualification/r3-audit-repair-20261104/static-proposals/b16-native-runner/v2-frozen/build_payload.py",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "bf7a3e53781fe4dbc97af905a2d87952d8c9f38c",
+      "size": 11192,
+      "local_file": "architecture-audit/b16-guarded-native-runner-20261105/v1-frozen/build_payload.py",
+      "sha256": "35b05b1ae777ec4f3b6bd94a7fc59145c415702eb65df34f3269c1ae744258fa",
+      "hits": []
+    },
+    {
+      "path": "qualification/r3-audit-repair-20261104/static-proposals/b16-native-runner/v2-frozen/test_runner_guards.py",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "f294bc0400619ba7017d85c7c690c70acae41547",
+      "size": 13792,
+      "local_file": "architecture-audit/b16-guarded-native-runner-20261105/v2-frozen/test_runner_guards.py",
+      "sha256": "a15285bda85d38b774395f989a6d29600a463ec1fd5a42705276cd3bf2163bed",
+      "hits": []
+    },
+    {
+      "path": "qualification/r3-audit-repair-20261104/static-proposals/final-A-hygiene/final-A-hygiene-runner-v2.py",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "3b679c52a5b2e0da6fda8ccf8fa5ad450b6f395f",
+      "size": 12146,
+      "local_file": "ci-audit/recovered-20261105/final-A-hygiene-runner-v2.py",
+      "sha256": "6ad17ba555e8024e07bd6e56e5a35af636f4fe63e8ca70454fd84a2a0898a1e0",
+      "hits": []
+    },
+    {
+      "path": "qualification/r3-audit-repair-20261104/static-proposals/full18-native-runner/full18-three-repairs-runner-draft.py",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "bd0e21742148f6b443886e9a2b47a90505d9d2e5",
+      "size": 21025,
+      "local_file": "ci-audit/recovered-20261105/full18-three-repairs-runner-draft.py",
+      "sha256": "8e943dd681a172e9d9cd537d03e10b6f19a66fe3a4392fce7b196db698746b9d",
+      "hits": []
+    },
+    {
+      "path": "qualification/r3-audit-repair-20261104/static-proposals/full18-native-runner/full18-three-repairs-runner-v2.py",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "6a88d730302334977a3275218443f766cd07fd55",
+      "size": 23244,
+      "local_file": "hepta-audit-fourth/inputs/skills-invalid-negative-compressed-archive-root-decoded/runner.py",
+      "sha256": "08faad541e33d77c9c5263e90a442011958d34c22418c3f58d5aa638980417f0",
+      "hits": []
+    },
+    {
+      "path": "qualification/r3-audit-repair-20261104/static-proposals/full18-native-runner/full18-three-repairs-runner-v3-draft.py",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "89a705ef48b40e2834bd218744d2d56d58c0031a",
+      "size": 23244,
+      "local_file": "hepta-audit-fourth/inputs/three-repairs-v3-compressed-archive-root-decoded/runner.py",
+      "sha256": "abac4fd7590dbb607a9069b969ae2185b3d530c7ba612c9bc3f87e37e5ac8bf3",
+      "hits": []
+    },
+    {
+      "path": "qualification/r3-audit-repair-20261104/static-proposals/intel-original-failure-review/build_review.py",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "b667c2737b25a55abe270e04836fabd6ee03e853",
+      "size": 24142,
+      "local_file": "architecture-audit/intel-pty-forward-causal-review-20261105/build_review.py",
+      "sha256": "8c3db926743ed402e48821e0a335f7639136fa5dfa1f3bc52b20c524a8cd00d3",
+      "hits": []
+    },
+    {
+      "path": "qualification/r3-audit-repair-20261104/static-proposals/sqlx-adoption/materialize_verified_driver.first.py",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "09efe207d792a755469a896f86948b7f5d95c9a8",
+      "size": 5696,
+      "local_file": "architecture-audit/sqlx-adoption-test-entry-20261105/materialize_verified_driver.first.py",
+      "sha256": "2585b6d96c5ed7cdb33130d0a96b93d598e6f47472e59c19ec4aa9d2ea44d1f9",
+      "hits": []
+    },
+    {
+      "path": "qualification/r3-audit-repair-20261104/static-proposals/sqlx-adoption/materialize_verified_driver.py",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "56e8c43cbdafd058c75e7e81f2601b1a46061fd2",
+      "size": 6072,
+      "local_file": "architecture-audit/sqlx-adoption-test-entry-20261105/materialize_verified_driver.py",
+      "sha256": "330b6275ef5ed37bd0d146cf9353f2cd37b2748d1f97589ff490f31ed8889449",
+      "hits": []
+    },
+    {
+      "path": "qualification/r3-audit-repair-20261104/static-proposals/sqlx-adoption/verify_adoption_scaffold.py",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "84db5a2ee25b560285b6579bd83e8f626b9582db",
+      "size": 4897,
+      "local_file": "architecture-audit/sqlx-adoption-test-entry-20261105/verify_adoption_scaffold.py",
+      "sha256": "5c5e360506c902ddde1a67947cee4486e96c718e3c19c837123a5005509a9fbc",
+      "hits": []
+    },
+    {
+      "path": "qualification/r3-audit-repair-20261104/static-proposals/sqlx-adoption/verify_complete_vendor_assembly.py",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "f6f9d0a106770124f465ac8cc487f58a79a4fd26",
+      "size": 5772,
+      "local_file": "architecture-audit/sqlx-adoption-test-entry-20261105/verify_complete_vendor_assembly.py",
+      "sha256": "5e9ee127ab416f7ff7bea13f1a7f12b60da7ed2c9acb42d1acdc2395ec6f15cf",
+      "hits": []
+    },
+    {
+      "path": "qualification/r3-audit-repair-20261104/static-proposals/sqlx-adoption/verify_driver_path_mapping.py",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "11739859824d49d4936213e3c4fa65aa1ba565f0",
+      "size": 3535,
+      "local_file": "architecture-audit/sqlx-adoption-test-entry-20261105/verify_driver_path_mapping.py",
+      "sha256": "9bfebebfb068ad4f1986e66a066c9887778b389a1c656503270eaf78fe74a6f7",
+      "hits": []
+    },
+    {
+      "path": "qualification/r3-audit-repair-20261104/static-proposals/windows-acl-matrix-independent-review/reconstruct.py",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "f0343a6ab2138a6ff95f69bf5aee25fcdafc7a47",
+      "size": 6338,
+      "local_file": "architecture-audit/windows-acl-matrix-independent-review-20261105/reconstruct.py",
+      "sha256": "5bb000c72b28bf079ab9682370005b1512e03a9d771893d436e61b3547958063",
+      "hits": []
+    },
+    {
+      "path": "qualification/r3-audit-repair-20261104/static-proposals/windows-python-full/windows-full-index-continuation-runner-v1.py",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "2ac2daa6dab6cad7075a1f0a1f63a460ea2dc2e6",
+      "size": 32103,
+      "local_file": "ci-audit/recovered-20261105/windows-full-index-continuation-runner-v1.py",
+      "sha256": "95990be783cb611677d5f6a7dc137b28f12c84f039e7435764f14f22e2b6fb04",
+      "hits": []
+    },
+    {
+      "path": "qualification/r3-audit-repair-20261104/static-proposals/windows-python-full/windows-full-index-continuation-runner-v2.py",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "050c507c59a270802cd4791e5c7c5ec57ea5a978",
+      "size": 32121,
+      "local_file": "ci-audit/recovered-20261105/windows-full-index-continuation-runner-v2.py",
+      "sha256": "da17a81f611e9021933819542c9bb87d891b73e6f5da4e784209c1fc9ca5b96c",
+      "hits": []
+    },
+    {
+      "path": "qualification/r3-audit-repair-20261104/static-proposals/windows-python-full/windows-python-full-continuation-runner-v1.py",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "bc267b356645d8bb023bf41c21b7623e79c40870",
+      "size": 27044,
+      "local_file": "ci-audit/recovered-20261105/windows-python-full-continuation-runner-v1.py",
+      "sha256": "6fdd1fe6c17b04ba5ad7b1d861e6b88c9215474bcdf8c572fba8627c0d79de01",
+      "hits": []
+    },
+    {
+      "path": "qualification/r3-audit-repair-20261104/static-proposals/windows-python-full/windows-python-full-continuation-runner-v2.py",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "bfce621b167b8afbd762f6a63c9a94dcc451f8d3",
+      "size": 27134,
+      "local_file": "ci-audit/recovered-20261105/windows-python-full-continuation-runner-v2.py",
+      "sha256": "6f3e0958b322bff4dc99eac2853d2b6fe7cb90cd6a58b82c995fa9372ffe11d3",
+      "hits": []
+    },
+    {
+      "path": "qualification/r3-audit-repair-20261104/static-proposals/windows-python-full/windows-python-full-continuation-runner-v3.py",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "5a7a50f68988f2b6858bd1ee05f798634d5cf6d1",
+      "size": 28707,
+      "local_file": "ci-audit/recovered-20261105/windows-python-full-continuation-runner-v3.py",
+      "sha256": "5f2173caf73f39b899f85221f899897f6d4e3503ba74cfec6f4ae2fd1d6b1545",
+      "hits": []
+    },
+    {
+      "path": "qualification/r3-audit-repair-20261104/static-proposals/windows-python-full/windows-python-full-continuation-runner-v4.py",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "bd0461a2c99364a62bbbc5aa525ad25c85a17f40",
+      "size": 28735,
+      "local_file": "ci-audit/recovered-20261105/windows-python-full-continuation-runner-v4.py",
+      "sha256": "e32da3b0334f7a85ecb72fe8bf5b0baf10dfdc6f3ff73a0ae85f800c654638c2",
+      "hits": []
+    },
+    {
+      "path": "qualification/r3-audit-repair-20261104/verify_cognitive_projection_sql.py",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "952d11e047e6c377892347b04ec7feb4aa245256",
+      "size": 7055,
+      "local_file": "research-audit/inventory-blob-packaging-20261105/inputs/verify_cognitive_projection_sql.py.source.txt",
+      "sha256": "b20408b340fdadb96cd70e895c0c1f10fcdae94cb90d75b26c3fe8dba9a2d3f3",
+      "hits": []
+    }
+  ]
+}

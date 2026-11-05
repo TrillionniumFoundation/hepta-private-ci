@@ -1,0 +1,77 @@
+{
+  "schema": "C1-resource-refusal-complete-small-originals-v1",
+  "job_id": "1a1ac5adb7e-fc05-53ce",
+  "key": "hepta-ai395-core-c1-resume-e78-20261105-v1",
+  "actual_state": "failed",
+  "actual_exit_code": 1,
+  "output_complete": true,
+  "tests_started": 0,
+  "build_commands_started": 0,
+  "native_terminal_equals_full_stdout_body": true,
+  "before_after_source_guard_equal_except_label_time": true,
+  "originals": [
+    {
+      "native_path": "/home/qq/work/hepta-core-musl-full-20261105/c1-resume-e78-v1/C1-resume-terminal.json",
+      "native_version": "66306:73702457:5084:1793893002538853857:1793893002538853857",
+      "local_path": "/workspace/scratch/07dd58cc9630/ci-audit/core-wait-span-20261105/ai395-c1-after-memory-stop-v1/native-c1-first-start/native-originals/C1-resume-terminal.json",
+      "bytes": 5084,
+      "sha256": "cdfe0d174795b202cb4e92754cb681b83934513ba8fb6fe545fa60e1edec332a",
+      "git_blob": "fd7d328f01a13d2393c8474672d3e4e1e79c7b84"
+    },
+    {
+      "native_path": "/home/qq/work/hepta-core-musl-full-20261105/c1-resume-e78-v1/C1-resume-entry-source-guard.json",
+      "native_version": "66306:73702452:2135:1793893000669946048:1793893000669946048",
+      "local_path": "/workspace/scratch/07dd58cc9630/ci-audit/core-wait-span-20261105/ai395-c1-after-memory-stop-v1/native-c1-first-start/native-originals/C1-resume-entry-source-guard.json",
+      "bytes": 2135,
+      "sha256": "1a381d80b64927dc9e1273cfc77034af0ac19ce20ea8f29d2e35feb3b3211df6",
+      "git_blob": "b525817628fa23af88246b63b5f0b2e2a58ab127"
+    },
+    {
+      "native_path": "/home/qq/work/hepta-core-musl-full-20261105/c1-resume-e78-v1/C1-resume-final-source-guard.json",
+      "native_version": "66306:73702454:2135:1793893001676019497:1793893001676019497",
+      "local_path": "/workspace/scratch/07dd58cc9630/ci-audit/core-wait-span-20261105/ai395-c1-after-memory-stop-v1/native-c1-first-start/native-originals/C1-resume-final-source-guard.json",
+      "bytes": 2135,
+      "sha256": "cb501fdc496d20758f8df791b704e59b19a29b3b4d69ddd460950f3b93bdc7f8",
+      "git_blob": "41f9be0b08024aace9bc50201debd6e0785e14d4"
+    }
+  ],
+  "full_stdout": {
+    "local_path": "/workspace/scratch/07dd58cc9630/ci-audit/core-wait-span-20261105/ai395-c1-after-memory-stop-v1/native-c1-first-start/C1-native-stdout.original",
+    "bytes": 4690,
+    "sha256": "3c955804508f0c2d345530ccdef3fc5abd22e0820f84a0ac03241767cb51ddca",
+    "git_blob": "3814d0bd13b6637839fd5a345945edac0118c5f9"
+  },
+  "full_stderr": {
+    "local_path": "/workspace/scratch/07dd58cc9630/ci-audit/core-wait-span-20261105/ai395-c1-after-memory-stop-v1/native-c1-first-start/C1-native-stderr.original",
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "git_blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391"
+  },
+  "authoritative_status_tool_response": {
+    "local_path": "/workspace/scratch/07dd58cc9630/ci-audit/core-wait-span-20261105/ai395-c1-after-memory-stop-v1/native-c1-first-start/C1-authoritative-status-001.original.json",
+    "bytes": 909,
+    "sha256": "c9f305ffd6f02db09aae44c19a2ea92bcaed1f227a7ac878c4e8b2a67a3add70",
+    "git_blob": "484038a63589f53c58be6cb8555972d992ee5516"
+  },
+  "tool_response_files": [
+    {
+      "local_path": "/workspace/scratch/07dd58cc9630/ci-audit/core-wait-span-20261105/ai395-c1-after-memory-stop-v1/native-c1-first-start/process-start.original-response.json",
+      "bytes": 21291,
+      "sha256": "5134a9bca1dc87bdaf8edb9d948c58aa466713e6990b6165f9d6f1a83531db0f",
+      "git_blob": "9c995d1fed9c6f3770812f58812ac68df3132e54"
+    },
+    {
+      "local_path": "/workspace/scratch/07dd58cc9630/ci-audit/core-wait-span-20261105/ai395-c1-after-memory-stop-v1/native-c1-first-start/process-read-001.original.json",
+      "bytes": 15683,
+      "sha256": "4f6217fc9c4c191ff3368b5b1b81cc9c108cd88b6daf8cd04386be205447e23b",
+      "git_blob": "f2023d738b1033489aaa948a2338cc7c7b72e823"
+    },
+    {
+      "local_path": "/workspace/scratch/07dd58cc9630/ci-audit/core-wait-span-20261105/ai395-c1-after-memory-stop-v1/native-c1-first-start/C1-terminal-guards-read-001.original.json",
+      "bytes": 12754,
+      "sha256": "080fe6fc50444005554615097c39338ef5f48818d41c1adf4cd9c34eace35ac4",
+      "git_blob": "0fa59d87edf57f58a5b719944f8d3277e0fc45db"
+    }
+  ],
+  "further_raw_prerequisite_bodies_not_yet_read": "Native171-file/147-link entry/final guards completed, original151134B prerequisite files remain native; current small bundle includes exact raw terminal/source guards and their receipts, not an assertion that all SDK bodies are downloaded."
+}

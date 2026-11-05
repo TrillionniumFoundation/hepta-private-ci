@@ -1,0 +1,483 @@
+{
+  "schema": "hepta.inventory-blob-packaging-repair.v1",
+  "created_at_utc": "2026-11-05T15:55:52.347476+00:00",
+  "status": "STATIC_AND_EVIDENCE_RESTORATION_VERIFIED_NOT_APPLIED_OR_HOSTED_TESTED",
+  "source_head": "5b6331250ff459033bd44d1a95daec70131277cc",
+  "source_tree": "b26598d0d97d8d51e723bb5582137315f2174d35",
+  "actual_failure": {
+    "run": 41999114842,
+    "attempt": 1,
+    "job": 127168221756,
+    "checkout_source": "9063c52a063b6f26c48e9418f6d8dbd14e9e06ff",
+    "original_limit": 512000,
+    "changed_files_checked": 1330,
+    "sole_violation": "qualification/r3-audit-repair-20261104/fourth-repository-inventory-20261105.json",
+    "bytes": 1846885,
+    "job_log_sha256": "da17519a31dce2cb01f0702bbf973eedb73491b5410a57927e93b033c7bbe7ae",
+    "checked_HEAD_SHA": "5b6331250ff459033bd44d1a95daec70131277cc",
+    "checked_BASE_SHA": "63652be658ebed8d3052eb789b951793384fd5e4"
+  },
+  "changes": [
+    {
+      "path": "qualification/r3-audit-repair-20261104/fourth-repository-inventory-20261105.json",
+      "mode": "100644",
+      "pre": {
+        "bytes": 1846885,
+        "sha256": "4adb3a73f03226fd73daba8c5ae2a5644fb84cde7702ddc892abb72d75a810f9",
+        "blob": "5fac62f2526a56ebc0cdaa8cfe66531c9a33f912"
+      },
+      "post": {
+        "bytes": 4366,
+        "sha256": "0bfe1d00ba090d18d7b7604f26887cebfb50784bbcfcb9ec4973863eb541483a",
+        "blob": "9db84c745e7f31fd0781e25baa5d03a405aaf13c"
+      },
+      "local_file": "/workspace/scratch/07dd58cc9630/research-audit/inventory-blob-packaging-20261105/candidate/qualification/r3-audit-repair-20261104/fourth-repository-inventory-20261105.json"
+    },
+    {
+      "path": "qualification/r3-audit-repair-20261104/repository-inventory-20261105/restore_inventory.py",
+      "mode": "100644",
+      "pre": null,
+      "post": {
+        "bytes": 5232,
+        "sha256": "9754c5f64731ec188c8c9d32752fb40d7756c679803d826aef74db01b18e60ae",
+        "blob": "5495be1a51b14a4a0642d7c09c6bd670f539ef77"
+      },
+      "local_file": "/workspace/scratch/07dd58cc9630/research-audit/inventory-blob-packaging-20261105/candidate/qualification/r3-audit-repair-20261104/repository-inventory-20261105/restore_inventory.py"
+    },
+    {
+      "path": "qualification/r3-audit-repair-20261104/repository-inventory-20261105/RESTORE_INVENTORY.md",
+      "mode": "100644",
+      "pre": null,
+      "post": {
+        "bytes": 2584,
+        "sha256": "6f1b0a15845e412152382ed2fbe0bef3177c94ceac23917111865787c4054141",
+        "blob": "2994e990903b7eb9eb51f1ae9ba191932f9efef7"
+      },
+      "local_file": "/workspace/scratch/07dd58cc9630/research-audit/inventory-blob-packaging-20261105/candidate/qualification/r3-audit-repair-20261104/repository-inventory-20261105/RESTORE_INVENTORY.md"
+    },
+    {
+      "path": "qualification/r3-audit-repair-20261104/CURRENT_AUDIT_PROGRESS.zh-CN.md",
+      "mode": "100644",
+      "pre": {
+        "bytes": 43236,
+        "sha256": "a10ff2899ed078387dfda5f05003a87b66850e683608109ad91e4eb12be60bea",
+        "blob": "2bb40fbc66617fa5a2deb29e00f8dbc8699a6bc2"
+      },
+      "post": {
+        "bytes": 43254,
+        "sha256": "5f4462b472af63fa78bb05c91a1bf623ebb33a1ab573f420be1f50073edc3fe4",
+        "blob": "305094117c7efb9e25ee44df73e37b831b382fda"
+      },
+      "local_file": "/workspace/scratch/07dd58cc9630/research-audit/inventory-blob-packaging-20261105/candidate/qualification/r3-audit-repair-20261104/CURRENT_AUDIT_PROGRESS.zh-CN.md"
+    },
+    {
+      "path": "qualification/r3-audit-repair-20261104/PROJECT_DIRECTION_AND_PLAN.zh-CN.md",
+      "mode": "100644",
+      "pre": {
+        "bytes": 21977,
+        "sha256": "39fa1a5fd4ee8932e6ec7562b4a54998e3b3d464c21378defdb281e45642c6b3",
+        "blob": "f97995096073006673bb587fac3c2754b5e48bfe"
+      },
+      "post": {
+        "bytes": 21986,
+        "sha256": "e1fde42af9e7eb5557423898b12ec477a49abfc9137f9362e869f5779e9c24b9",
+        "blob": "7c06b7f3041a8e4b3df794f00166aa59b369f832"
+      },
+      "local_file": "/workspace/scratch/07dd58cc9630/research-audit/inventory-blob-packaging-20261105/candidate/qualification/r3-audit-repair-20261104/PROJECT_DIRECTION_AND_PLAN.zh-CN.md"
+    },
+    {
+      "path": "qualification/r3-audit-repair-20261104/FOURTH_BATCH_QUALIFICATION.md",
+      "mode": "100644",
+      "pre": {
+        "bytes": 28168,
+        "sha256": "c4e395d1287e5b3fb941698133e2d3e7cd6309328ee803f3e4965a92f935c982",
+        "blob": "982be059e7d0440ffcfbd35280475b29c88a6f11"
+      },
+      "post": {
+        "bytes": 28182,
+        "sha256": "0e5f77494728211b87d8d5b9c3401f0e5cdd12e5865fc3c793a4d138f8f77c6f",
+        "blob": "bed13a3f5bdde66d36dadbcc5d0233c6884f2d21"
+      },
+      "local_file": "/workspace/scratch/07dd58cc9630/research-audit/inventory-blob-packaging-20261105/candidate/qualification/r3-audit-repair-20261104/FOURTH_BATCH_QUALIFICATION.md"
+    },
+    {
+      "path": "qualification/r3-audit-repair-20261104/fourth-evidence-index.json",
+      "mode": "100644",
+      "pre": {
+        "bytes": 458369,
+        "sha256": "600a379adc21bc1f0b6d4db6d51aec8efdda693ead4451131abcb91631a20df9",
+        "blob": "ed81563ca591ba6a8da7db81923196b5b7e61a5c"
+      },
+      "post": {
+        "bytes": 459950,
+        "sha256": "3c98f9701d8a3792be0187fdd8e2fbdf6fa4eb3b4bfc156907bd766bea20eaf4",
+        "blob": "f9337e344c05cd788a14a0ebb95bbee3d53511d3"
+      },
+      "local_file": "/workspace/scratch/07dd58cc9630/research-audit/inventory-blob-packaging-20261105/candidate/qualification/r3-audit-repair-20261104/fourth-evidence-index.json"
+    }
+  ],
+  "unchanged_reused_archive": {
+    "manifest_path": "qualification/r3-audit-repair-20261104/repository-inventory-20261105/archive-manifest.json",
+    "blob": "a4cb25e1bd5a9e161c1ebae494a8cddb3681512b",
+    "parts": [
+      {
+        "sequence": 0,
+        "offset": 0,
+        "path": "archive-parts/part-000.txt",
+        "bytes": 384000,
+        "sha256": "0c5eddba131614e4cfe754dbcf4851b6d245c84657f1f379deb7f1694fb93b6d",
+        "blob": "2264233875239cf99c8429628a47294965818f0f"
+      },
+      {
+        "sequence": 1,
+        "offset": 384000,
+        "path": "archive-parts/part-001.txt",
+        "bytes": 384000,
+        "sha256": "a9972fd46f964896934511d0faf7542496b516a1fc7c1d79c9cfbf2f5ada9c69",
+        "blob": "16da65523564a2325d67fd89ef60cce2629a9825"
+      },
+      {
+        "sequence": 2,
+        "offset": 768000,
+        "path": "archive-parts/part-002.txt",
+        "bytes": 384000,
+        "sha256": "3c9fe0e29015a7ecaef8c847aa3500c6f4b547bba01a79710bbc615a29938831",
+        "blob": "fc56332d14e3dd3ce53aafaf63db8f8211349230"
+      },
+      {
+        "sequence": 3,
+        "offset": 1152000,
+        "path": "archive-parts/part-003.txt",
+        "bytes": 384000,
+        "sha256": "a7d52458fc9b4c74ea2c269fa8294deb72a0ce2e205f34f69af5be2fa2e0789f",
+        "blob": "d255588e88eeca9ce1a71fb64e5537036d47f8c0"
+      },
+      {
+        "sequence": 4,
+        "offset": 1536000,
+        "path": "archive-parts/part-004.txt",
+        "bytes": 384000,
+        "sha256": "9a8efbbff0615e481a19ed5bdacc81aca52a09f8de2eefdc32b044fbfa79cfd8",
+        "blob": "076ba666ae73ae49e382ca237415c808f4b8993d"
+      },
+      {
+        "sequence": 5,
+        "offset": 1920000,
+        "path": "archive-parts/part-005.txt",
+        "bytes": 384000,
+        "sha256": "7fd5d7b05fc0d3544a0913937ea81bebce22974d651ea85fe6d0e0042f774276",
+        "blob": "f9e4f17539a15b827aa4023e8f8a4023da7732d6"
+      },
+      {
+        "sequence": 6,
+        "offset": 2304000,
+        "path": "archive-parts/part-006.txt",
+        "bytes": 384000,
+        "sha256": "9c130acb03e8a294d16ff25b8ad60aa0152b048162766f836730905d825dbc60",
+        "blob": "7a7d9b52f66bb56f5869f9c27ad66864208bf855"
+      },
+      {
+        "sequence": 7,
+        "offset": 2688000,
+        "path": "archive-parts/part-007.txt",
+        "bytes": 384000,
+        "sha256": "e3ce8833025c0c785a4de300754aea845a50f201eb5179b405f25e823d1b3512",
+        "blob": "bc4195c9ade3a000dc6d9546812dbbdfe025bbb0"
+      },
+      {
+        "sequence": 8,
+        "offset": 3072000,
+        "path": "archive-parts/part-008.txt",
+        "bytes": 384000,
+        "sha256": "ff351029072ad03d95f57f5faf53e3aad83e59936df9ed82222591ca1ebf81c4",
+        "blob": "c0bb52cdec3f2e37dc681a5db0689d9e9bbaa360"
+      },
+      {
+        "sequence": 9,
+        "offset": 3456000,
+        "path": "archive-parts/part-009.txt",
+        "bytes": 384000,
+        "sha256": "8cf5be32ef1935645f644ffef7b62e865e6741640d52c1b3ac0d7ec94ca62ce2",
+        "blob": "e82f72b50e092c77f1f44fab0958b0edab55d7a5"
+      },
+      {
+        "sequence": 10,
+        "offset": 3840000,
+        "path": "archive-parts/part-010.txt",
+        "bytes": 384000,
+        "sha256": "b9c1fd67a8b76792b82a02ddd7d04e383dee26a222cd1d5c925ba053a33f5784",
+        "blob": "2ab70995f6e4b731d7a6a131240bc9f6947cf177"
+      },
+      {
+        "sequence": 11,
+        "offset": 4224000,
+        "path": "archive-parts/part-011.txt",
+        "bytes": 384000,
+        "sha256": "e30f92a4a415a1046d5bee23b835f207a9a48d4f005c9d97a8a1bb2066161d33",
+        "blob": "bc6976cadfc9ab3724a328ec4ca78b3659f78d54"
+      },
+      {
+        "sequence": 12,
+        "offset": 4608000,
+        "path": "archive-parts/part-012.txt",
+        "bytes": 384000,
+        "sha256": "f347d405638ccb33264f0ccfcec1a9e92f11395ef55bf30c7687e846888b9d26",
+        "blob": "3f0cb87cd6da3a96db46fda26383ffeffd8d6e77"
+      },
+      {
+        "sequence": 13,
+        "offset": 4992000,
+        "path": "archive-parts/part-013.txt",
+        "bytes": 384000,
+        "sha256": "1068fe98e9cb0f8f977ffa9816acd577a25a892d9c13991b1d5fbca1702c4a44",
+        "blob": "e3e345a0dfa070bce93e6a0ed8c899fe6c81ad9a"
+      },
+      {
+        "sequence": 14,
+        "offset": 5376000,
+        "path": "archive-parts/part-014.txt",
+        "bytes": 384000,
+        "sha256": "f7e277b57845ba5e13bc903eeac8701d1c3558ea0173df5020f3b737f073f213",
+        "blob": "65a0770976154cf6cec10a5c25b300c56b08c91f"
+      },
+      {
+        "sequence": 15,
+        "offset": 5760000,
+        "path": "archive-parts/part-015.txt",
+        "bytes": 384000,
+        "sha256": "77de60ad9341e4de2804d1fe85089eb2205fd0b07a722c64c206d8f4bf1bbe54",
+        "blob": "0f1176ae919d414371f177ceee14dfa519df076e"
+      },
+      {
+        "sequence": 16,
+        "offset": 6144000,
+        "path": "archive-parts/part-016.txt",
+        "bytes": 384000,
+        "sha256": "1e2b570d620b64c457b4bbe515fca70fb0d13440e4b25efd31fc77a8ec667584",
+        "blob": "50fb9ca811b5139fb354954121138e1506adc791"
+      },
+      {
+        "sequence": 17,
+        "offset": 6528000,
+        "path": "archive-parts/part-017.txt",
+        "bytes": 378784,
+        "sha256": "f5439297fc688237d5d861c2c748f2103de62eb59bea9259cb4fe9115b02f91c",
+        "blob": "742afb0b2b39179a4fe00c7821871eb80bd87f95"
+      }
+    ],
+    "prior_create_get_receipt": "1af01aa5894310d3414a4534823721c99b8cf1a2",
+    "fixed_tree_leaf_and_local_bytes_reverified": true,
+    "new_payload_parts_added_to_repository": 0
+  },
+  "full_patch": {
+    "local_path": "/workspace/scratch/07dd58cc9630/research-audit/inventory-blob-packaging-20261105/inventory-packaging.patch",
+    "bytes": 1924673,
+    "sha256": "98273787adcbc2482660d4c089d3c332c6b1620d72863ffe7121a3669d17c27f",
+    "blob": "f1dbea01d36341ec7dc4da4044994c85c7d19b21",
+    "not_uploaded_as_oversize_blob": true,
+    "transport_manifest": "patch-transport-manifest.json",
+    "transport": {
+      "schema": "hepta.unified-patch-gzip-base64.v1",
+      "original_patch": {
+        "bytes": 1924673,
+        "sha256": "98273787adcbc2482660d4c089d3c332c6b1620d72863ffe7121a3669d17c27f",
+        "blob": "f1dbea01d36341ec7dc4da4044994c85c7d19b21"
+      },
+      "gzip": {
+        "bytes": 327816,
+        "sha256": "0af67391115a5a8f4dc9bc1fa194298a5769a2cb65cb94675e9663d810eae229",
+        "blob": "52b74d297ca01f04dae29dece056cbc4b09ee5c1"
+      },
+      "base64_bytes": 437088,
+      "part_max_bytes": 480000,
+      "parts": [
+        {
+          "sequence": 0,
+          "offset": 0,
+          "path": "patch-transport/part-000.txt",
+          "bytes": 437088,
+          "sha256": "e22844bc99ec82b01b10a53b0ec22e899531c27c5e534071499a34e109899348",
+          "blob": "124d8634bc3694e4267473e41909facfba88e84c"
+        }
+      ],
+      "restored_patch_bytes_equal": true,
+      "role": "Unreachable review transport; original inventory remains in the unchanged existing 18 repository parts."
+    }
+  },
+  "verified": {
+    "restored_all_original_bytes": true,
+    "all_JSON_values_equal": true,
+    "original_1103_PR_and_5193_branch_records_retained": true,
+    "all_117_archive_members_verified": true,
+    "all_18_original_parts_unchanged": true,
+    "create_only_output_existing_path_rejected": true,
+    "seven_path_git_apply_and_reverse_exact": true,
+    "isolated_original_blob_checker_before_exit1_after_exit0": true,
+    "unchanged_original_allowlist": true,
+    "maximum_new_or_changed_blob_bytes": 459950
+  },
+  "scope_limits": [
+    "No project, native, hosted CI, or product runtime tests executed.",
+    "The isolated policy check covers these seven paths, not a rerun of the hosted full changed-file set.",
+    "The original full unified patch is an immutable review input distributed in one gzip/base64 blob, not a new oversized repository file.",
+    "No statistics, original blocker status, closure class, exit condition, CI command, budget, retries, refs, or policies were changed.",
+    "Old historical receipts retain the original inventory identity; current index identity is explicit."
+  ],
+  "files": [
+    {
+      "role": "candidate_postimage",
+      "repository_path": "qualification/r3-audit-repair-20261104/fourth-repository-inventory-20261105.json",
+      "local_file": "/workspace/scratch/07dd58cc9630/research-audit/inventory-blob-packaging-20261105/candidate/qualification/r3-audit-repair-20261104/fourth-repository-inventory-20261105.json",
+      "bytes": 4366,
+      "sha256": "0bfe1d00ba090d18d7b7604f26887cebfb50784bbcfcb9ec4973863eb541483a",
+      "blob": "9db84c745e7f31fd0781e25baa5d03a405aaf13c"
+    },
+    {
+      "role": "candidate_postimage",
+      "repository_path": "qualification/r3-audit-repair-20261104/repository-inventory-20261105/restore_inventory.py",
+      "local_file": "/workspace/scratch/07dd58cc9630/research-audit/inventory-blob-packaging-20261105/candidate/qualification/r3-audit-repair-20261104/repository-inventory-20261105/restore_inventory.py",
+      "bytes": 5232,
+      "sha256": "9754c5f64731ec188c8c9d32752fb40d7756c679803d826aef74db01b18e60ae",
+      "blob": "5495be1a51b14a4a0642d7c09c6bd670f539ef77"
+    },
+    {
+      "role": "candidate_postimage",
+      "repository_path": "qualification/r3-audit-repair-20261104/repository-inventory-20261105/RESTORE_INVENTORY.md",
+      "local_file": "/workspace/scratch/07dd58cc9630/research-audit/inventory-blob-packaging-20261105/candidate/qualification/r3-audit-repair-20261104/repository-inventory-20261105/RESTORE_INVENTORY.md",
+      "bytes": 2584,
+      "sha256": "6f1b0a15845e412152382ed2fbe0bef3177c94ceac23917111865787c4054141",
+      "blob": "2994e990903b7eb9eb51f1ae9ba191932f9efef7"
+    },
+    {
+      "role": "candidate_postimage",
+      "repository_path": "qualification/r3-audit-repair-20261104/CURRENT_AUDIT_PROGRESS.zh-CN.md",
+      "local_file": "/workspace/scratch/07dd58cc9630/research-audit/inventory-blob-packaging-20261105/candidate/qualification/r3-audit-repair-20261104/CURRENT_AUDIT_PROGRESS.zh-CN.md",
+      "bytes": 43254,
+      "sha256": "5f4462b472af63fa78bb05c91a1bf623ebb33a1ab573f420be1f50073edc3fe4",
+      "blob": "305094117c7efb9e25ee44df73e37b831b382fda"
+    },
+    {
+      "role": "candidate_postimage",
+      "repository_path": "qualification/r3-audit-repair-20261104/PROJECT_DIRECTION_AND_PLAN.zh-CN.md",
+      "local_file": "/workspace/scratch/07dd58cc9630/research-audit/inventory-blob-packaging-20261105/candidate/qualification/r3-audit-repair-20261104/PROJECT_DIRECTION_AND_PLAN.zh-CN.md",
+      "bytes": 21986,
+      "sha256": "e1fde42af9e7eb5557423898b12ec477a49abfc9137f9362e869f5779e9c24b9",
+      "blob": "7c06b7f3041a8e4b3df794f00166aa59b369f832"
+    },
+    {
+      "role": "candidate_postimage",
+      "repository_path": "qualification/r3-audit-repair-20261104/FOURTH_BATCH_QUALIFICATION.md",
+      "local_file": "/workspace/scratch/07dd58cc9630/research-audit/inventory-blob-packaging-20261105/candidate/qualification/r3-audit-repair-20261104/FOURTH_BATCH_QUALIFICATION.md",
+      "bytes": 28182,
+      "sha256": "0e5f77494728211b87d8d5b9c3401f0e5cdd12e5865fc3c793a4d138f8f77c6f",
+      "blob": "bed13a3f5bdde66d36dadbcc5d0233c6884f2d21"
+    },
+    {
+      "role": "candidate_postimage",
+      "repository_path": "qualification/r3-audit-repair-20261104/fourth-evidence-index.json",
+      "local_file": "/workspace/scratch/07dd58cc9630/research-audit/inventory-blob-packaging-20261105/candidate/qualification/r3-audit-repair-20261104/fourth-evidence-index.json",
+      "bytes": 459950,
+      "sha256": "3c98f9701d8a3792be0187fdd8e2fbdf6fa4eb3b4bfc156907bd766bea20eaf4",
+      "blob": "f9337e344c05cd788a14a0ebb95bbee3d53511d3"
+    },
+    {
+      "role": "review_evidence",
+      "local_file": "/workspace/scratch/07dd58cc9630/research-audit/inventory-blob-packaging-20261105/source-map.json",
+      "bytes": 10830,
+      "sha256": "45e357f155a08e3c09252e9e0f317aa7a794b1b174914d6ea97e6716a82d2aaa",
+      "blob": "fcc459272cdf30c0d3d2c3f610422badcfb52ac9"
+    },
+    {
+      "role": "review_evidence",
+      "local_file": "/workspace/scratch/07dd58cc9630/research-audit/inventory-blob-packaging-20261105/consumer-review.json",
+      "bytes": 3612,
+      "sha256": "c736b108006c92f6b39cfcb23729d46824997d98ba0d67f25c65650ff89aeb94",
+      "blob": "78e0add2a7d2adb74a0c9df4e5d0d28b3f79b60a"
+    },
+    {
+      "role": "review_evidence",
+      "local_file": "/workspace/scratch/07dd58cc9630/research-audit/inventory-blob-packaging-20261105/qualification-script-consumer-scan.json",
+      "bytes": 34184,
+      "sha256": "c54e2c67e587a1b2d4e8ea4ed169303c0701c23cb51a7c20e2b4169736e4620f",
+      "blob": "9e4677954cedd514e5435f4d31c239b82d85246f"
+    },
+    {
+      "role": "review_evidence",
+      "local_file": "/workspace/scratch/07dd58cc9630/research-audit/inventory-blob-packaging-20261105/static-verification.json",
+      "bytes": 12620,
+      "sha256": "8982b178ad6eef5421b16ea8dc2ca048946479bb98b5d821de981308ad7420c5",
+      "blob": "f566a43af5abede41e87bffcfcb4983767e9800a"
+    },
+    {
+      "role": "review_evidence",
+      "local_file": "/workspace/scratch/07dd58cc9630/research-audit/inventory-blob-packaging-20261105/validation/restoration-receipt.json",
+      "bytes": 2293,
+      "sha256": "65a8f043643eb53b8fd3b8d606c3a5b9cbd461bedd638d9edfef7b336f8f2054",
+      "blob": "f28db614772d37811dbd3fcae996d8e5fcba7cd2"
+    },
+    {
+      "role": "review_evidence",
+      "local_file": "/workspace/scratch/07dd58cc9630/research-audit/inventory-blob-packaging-20261105/validation/verify.stdout",
+      "bytes": 689,
+      "sha256": "1d0e98a297f8430bc60575cc17d1894185fde1978f941fdec46d261b4086b6c0",
+      "blob": "fdd4f8d2708cb40f0fdaa1b018e4b8a6d62e62fd"
+    },
+    {
+      "role": "review_evidence",
+      "local_file": "/workspace/scratch/07dd58cc9630/research-audit/inventory-blob-packaging-20261105/validation/verify.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391"
+    },
+    {
+      "role": "review_evidence",
+      "local_file": "/workspace/scratch/07dd58cc9630/research-audit/inventory-blob-packaging-20261105/validation/restore.stdout",
+      "bytes": 811,
+      "sha256": "4c0935ea44a5d731fb4145fdecdc175da787895bcde9b82b69d0e5a22a0f95ed",
+      "blob": "4dc3e439d115e9889b82a0a456a2e87c79810beb"
+    },
+    {
+      "role": "review_evidence",
+      "local_file": "/workspace/scratch/07dd58cc9630/research-audit/inventory-blob-packaging-20261105/validation/restore.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391"
+    },
+    {
+      "role": "review_evidence",
+      "local_file": "/workspace/scratch/07dd58cc9630/research-audit/inventory-blob-packaging-20261105/validation/no-overwrite.stdout",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391"
+    },
+    {
+      "role": "review_evidence",
+      "local_file": "/workspace/scratch/07dd58cc9630/research-audit/inventory-blob-packaging-20261105/validation/no-overwrite.stderr",
+      "bytes": 968,
+      "sha256": "3dcb54d3d8fd9280babea80f2b1b7a5b7bd7095a21267d1c86a9d2fea7f1fd0e",
+      "blob": "cf98bcb2367227d10d1267710e12cc6490c415fc"
+    },
+    {
+      "role": "review_evidence",
+      "local_file": "/workspace/scratch/07dd58cc9630/research-audit/inventory-blob-packaging-20261105/compatibility-and-restoration.patch",
+      "bytes": 20362,
+      "sha256": "d6d46aec489b32090cacdb0174d8433860b027b1cfc63af9f96bbe5fa0b6b8a8",
+      "blob": "a6e863c6abb831e59adface7fd4b94d854addb09"
+    },
+    {
+      "role": "review_evidence",
+      "local_file": "/workspace/scratch/07dd58cc9630/research-audit/inventory-blob-packaging-20261105/patch-transport-manifest.json",
+      "bytes": 903,
+      "sha256": "e21a2d74a212d1956757acb9a02bf2f9c30a65eda62ea3360c7dfe08ac59f7fc",
+      "blob": "cb2ffe0beb29e463591d09f97bd95eb32d47b671"
+    },
+    {
+      "role": "review_evidence",
+      "local_file": "/workspace/scratch/07dd58cc9630/research-audit/inventory-blob-packaging-20261105/patch-transport/part-000.txt",
+      "bytes": 437088,
+      "sha256": "e22844bc99ec82b01b10a53b0ec22e899531c27c5e534071499a34e109899348",
+      "blob": "124d8634bc3694e4267473e41909facfba88e84c"
+    }
+  ],
+  "post_merge_gate": "The unchanged original Blob Size Policy workflow and original documentation/reference checks must execute on the final integrated head. Existing 18 parts and manifest are required in the checkout."
+}

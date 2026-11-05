@@ -1,0 +1,140 @@
+diff --git a/codex-rs/windows-sandbox-rs/src/token_integrity_probe_support.rs b/codex-rs/windows-sandbox-rs/src/token_integrity_probe_support.rs
+index 47dddb48c727c1bcae89b613409a72bd7d1312ff..7a7008f9becf09578ca953c849401eda93eb94b2 100644
+--- a/codex-rs/windows-sandbox-rs/src/token_integrity_probe_support.rs
++++ b/codex-rs/windows-sandbox-rs/src/token_integrity_probe_support.rs
+@@ -16,6 +16,7 @@
+ use windows_sys::Win32::Security as security;
+ use windows_sys::Win32::Security::Authorization as auth;
+ use windows_sys::Win32::Storage::FileSystem as fswin;
++use windows_sys::Win32::System::SystemServices as services;
+ 
+ const IDENTITY_INFO: u32 = security::OWNER_SECURITY_INFORMATION
+     | security::GROUP_SECURITY_INFORMATION
+@@ -46,6 +47,14 @@
+ }
+ 
+ pub(super) struct Descriptor(Local);
++
++#[derive(Debug, PartialEq, Eq)]
++struct MandatoryLabel {
++    ace_type: u8,
++    ace_flags: u8,
++    mask: u32,
++    sid: Vec<u8>,
++}
+ 
+ impl Descriptor {
+     pub(super) fn from_sddl(sddl: &str) -> Result<Self> {
+@@ -100,6 +109,57 @@
+         };
+         ensure!(code == 0, "set owned object label: {code}");
+         Ok(())
++    }
++
++    fn control(&self) -> Result<(u16, u32)> {
++        let (mut control, mut revision) = (0, 0);
++        // SAFETY: the owned descriptor stays live through this read-only query.
++        ensure!(unsafe {
++            security::GetSecurityDescriptorControl(self.0.0, &mut control, &mut revision)
++        } != 0, "read descriptor control: {}", std::io::Error::last_os_error());
++        Ok((control, revision))
++    }
++
++    fn mandatory_label(&self) -> Result<MandatoryLabel> {
++        let (mut present, mut defaulted, mut acl) = (0, 0, std::ptr::null_mut());
++        // SAFETY: GetSecurityInfo/from_sddl own the descriptor and its contained ACL.
++        ensure!(unsafe {
++            security::GetSecurityDescriptorSacl(self.0.0, &mut present, &mut acl, &mut defaulted)
++        } != 0 && present != 0 && !acl.is_null(), "missing explicit mandatory label");
++        // SAFETY: the non-null ACL belongs to this live native descriptor.
++        ensure!(unsafe { security::IsValidAcl(acl) } != 0
++            && unsafe { (*acl).AceCount } == 1, "expected exactly one valid label ACE");
++        let mut raw = std::ptr::null_mut();
++        // SAFETY: index zero exists in the validated, single-entry ACL.
++        ensure!(unsafe { security::GetAce(acl, /*dwaceindex*/ 0, &mut raw) } != 0
++            && !raw.is_null(), "read mandatory label ACE");
++        let offset = (raw as usize).checked_sub(acl as usize)
++            .ok_or_else(|| anyhow::anyhow!("label ACE before ACL"))?;
++        let acl_size = usize::from(unsafe { (*acl).AclSize });
++        ensure!(offset >= std::mem::size_of::<security::ACL>()
++            && offset.checked_add(std::mem::size_of::<security::ACE_HEADER>())
++                .is_some_and(|end| end <= acl_size), "label ACE header outside ACL");
++        // SAFETY: the complete header was bounded above; unaligned reads avoid assumptions.
++        let header = unsafe { raw.cast::<security::ACE_HEADER>().read_unaligned() };
++        let ace_size = usize::from(header.AceSize);
++        let sid_offset = std::mem::offset_of!(security::SYSTEM_MANDATORY_LABEL_ACE, SidStart);
++        ensure!(u32::from(header.AceType) == services::SYSTEM_MANDATORY_LABEL_ACE_TYPE
++            && ace_size >= sid_offset + std::mem::size_of::<security::SID>()
++            && offset.checked_add(ace_size).is_some_and(|end| end <= acl_size),
++            "invalid mandatory label ACE type or extent");
++        // SAFETY: the full label prefix and one-subauthority SID fit inside this ACE.
++        let label = unsafe { raw.cast::<security::SYSTEM_MANDATORY_LABEL_ACE>().read_unaligned() };
++        let sid = unsafe { raw.cast::<u8>().add(sid_offset).cast::<security::SID>() };
++        let sid_header = unsafe { sid.read_unaligned() };
++        let sid_size = std::mem::offset_of!(security::SID, SubAuthority)
++            + usize::from(sid_header.SubAuthorityCount) * std::mem::size_of::<u32>();
++        ensure!(sid_header.SubAuthorityCount == 1
++            && sid_header.IdentifierAuthority.Value == security::SECURITY_MANDATORY_LABEL_AUTHORITY.Value
++            && sid_offset + sid_size == ace_size, "invalid mandatory label SID extent or authority");
++        // SAFETY: the SID is non-null and its entire declared extent fits the native ACE.
++        ensure!(unsafe { security::IsValidSid(sid.cast()) } != 0, "invalid mandatory label SID");
++        let sid = unsafe { std::slice::from_raw_parts(sid.cast::<u8>(), sid_size) }.to_vec();
++        Ok(MandatoryLabel { ace_type: header.AceType, ace_flags: header.AceFlags, mask: label.Mask, sid })
+     }
+ 
+     pub(super) fn create(&self, path: &Path, kind: ObjectKind) -> Result<()> {
+@@ -151,6 +211,7 @@
+     original_identity: (u32, u32, u32),
+     original_access: String,
+     expected_label: String,
++    expected_label_ace: MandatoryLabel,
+     restore: bool,
+ }
+ 
+@@ -172,20 +233,23 @@
+         let actual_label = original.text(security::LABEL_SECURITY_INFORMATION)?;
+         let expected_label = initial_label.text(security::LABEL_SECURITY_INFORMATION)?;
+         observe(format_args!(
+-            "initial_label path={path:?} actual={actual_label:?} expected={expected_label:?}"
++            "initial_label path={path:?} actual={actual_label:?} expected={expected_label:?} actual_control={:?} expected_control={:?}",
++            original.control()?, initial_label.control()?
+         ))?;
+-        ensure!(actual_label == expected_label,
++        // SACL control flags (for example AI) describe the ACL, not the label ACE.
++        ensure!(original.mandatory_label()? == initial_label.mandatory_label()?,
+             "created object did not preserve its explicit initial label");
+         let result = Self {
+             path: path.to_owned(), original_identity: identity(&file)?,
+             original_access: original.text(IDENTITY_INFO)?,
+             expected_label: label.text(security::LABEL_SECURITY_INFORMATION)?,
++            expected_label_ace: label.mandatory_label()?,
+             original, file, restore: true,
+         };
+         label.apply_label(handle)?;
+         let actual = Descriptor::read(handle)?;
+         ensure!(actual.text(IDENTITY_INFO)? == result.original_access
+-            && actual.text(security::LABEL_SECURITY_INFORMATION)? == result.expected_label,
++            && actual.mandatory_label()? == result.expected_label_ace,
+             "label set changed access SD or failed readback");
+         ensure!(identity(&result.file)? == result.original_identity, "label set changed object identity");
+         Ok(result)
+@@ -227,7 +291,7 @@
+         ensure!(identity(&self.file)? == self.original_identity, "retained identity changed");
+         let actual = Descriptor::read(self.file.as_raw_handle() as win::HANDLE)?;
+         ensure!(actual.text(IDENTITY_INFO)? == self.original_access
+-            && actual.text(security::LABEL_SECURITY_INFORMATION)? == self.expected_label,
++            && actual.mandatory_label()? == self.expected_label_ace,
+             "SD changed during physical operations");
+         let mut info: fswin::FILE_STANDARD_INFO = unsafe { std::mem::zeroed() };
+         // SAFETY: the File owns this handle and the native output has the exact size.
+@@ -238,7 +302,9 @@
+         let deleted = info.DeletePending != 0 || info.NumberOfLinks == 0;
+         if !deleted {
+             self.original.apply_label(self.file.as_raw_handle() as win::HANDLE)?;
+-            ensure!(Descriptor::read(self.file.as_raw_handle() as win::HANDLE)?.text(ALL_INFO)? == self.original.text(ALL_INFO)?,
++            let restored = Descriptor::read(self.file.as_raw_handle() as win::HANDLE)?;
++            ensure!(restored.text(ALL_INFO)? == self.original.text(ALL_INFO)?
++                && restored.control()? == self.original.control()?,
+                 "original label/access SD restoration failed");
+         }
+         let result = json!({"path": self.path, "identity": self.original_identity,

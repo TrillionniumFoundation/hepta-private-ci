@@ -1,0 +1,359 @@
+{
+  "schema": "hepta-b11-native5-original-root-verification-v1",
+  "observed_utc": "2026-11-05T17:06:26.463218+00:00",
+  "run": 42066891449,
+  "job": 127383345954,
+  "head": "7e0b2303ed0242d83bf56202e8ffb17f5c856186",
+  "actual_checkout": "582f5315f4f632444ae3782d9381f69ed1ae555d",
+  "actual_tree": "1718e3e2235b875320f366d03cf796e2a4e92281",
+  "scope": "Actual merged primaryeed+diagnostic7e; whole target FAILED; B11 remains OPEN",
+  "archive": {
+    "local_file": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-pr4884-ci-20261105/terminal/probe-127383345954/artifact-13432969770.zip",
+    "bytes": 2029329,
+    "sha256": "4b36db2a7068cdd4d3498a5097193e62de3a2a6463c2dbc4b54a876c7f2ba5e7",
+    "computed_git_blob": "3da7a2d4a3e36109359625e691e5739e08b3197e"
+  },
+  "official_artifact": {
+    "id": 13432969770,
+    "name": "windows-token-mechanism-observations-42066891449-1",
+    "size_in_bytes": 2029329,
+    "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/actions/artifacts/13432969770",
+    "archive_download_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/actions/artifacts/13432969770/zip",
+    "expired": false,
+    "created_at": "2026-11-05T16:52:54Z",
+    "expires_at": "2027-02-03T16:40:41Z",
+    "updated_at": "2026-11-05T16:52:54Z",
+    "digest": "sha256:4b36db2a7068cdd4d3498a5097193e62de3a2a6463c2dbc4b54a876c7f2ba5e7",
+    "workflow_run": {
+      "id": 42066891449,
+      "repository_id": 1320694176,
+      "head_repository_id": 1320694176,
+      "head_branch": "diag/b11-token-mechanism-observations-20261105",
+      "head_sha": "7e0b2303ed0242d83bf56202e8ffb17f5c856186"
+    }
+  },
+  "all14_crc_hash_and_local_originals_verified": true,
+  "members": [
+    {
+      "member": "b11-token-mechanism-probe/bazel-console.log",
+      "bytes": 205680,
+      "sha256": "dcf96676b15afb26f1cb5e328b1474f53304efeb7631552b2a98d32223c6ceec",
+      "computed_git_blob": "0b9f3b8cca42daedbd5809791a6fe5ece0857d67"
+    },
+    {
+      "member": "b11-token-mechanism-probe/original-bazel-exit-code.txt",
+      "bytes": 2,
+      "sha256": "1121cfccd5913f0a63fec40a6ffd44ea64f9dc135c66634ba001d10bcf4302a2",
+      "computed_git_blob": "00750edc07d6415dcc07ae0351e9397b0222b7ba"
+    },
+    {
+      "member": "b11-token-mechanism-probe/console-copy-exit-code.txt",
+      "bytes": 2,
+      "sha256": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa",
+      "computed_git_blob": "573541ac9702dd3969c9bc859d2b91ec1f7e6e56"
+    },
+    {
+      "member": "b11-token-mechanism-probe/interpretation.txt",
+      "bytes": 88,
+      "sha256": "3d738017a6bbb6feeedf984d1988c262ef5f57f5f3fa9473fad1b818db5cb1a5",
+      "computed_git_blob": "1783cdc244713974c542347cf1ecff302fe9fe99"
+    },
+    {
+      "member": "b11-token-mechanism-probe/source-head-tree.txt",
+      "bytes": 82,
+      "sha256": "3c89da115add683ed501c654b7e27d986b38f6f73f856a127972668a532c97c2",
+      "computed_git_blob": "2b0d94f155d62beaf51e3638d41035efdd9b48d0"
+    },
+    {
+      "member": "b11-token-mechanism-probe/required-case-names.txt",
+      "bytes": 515,
+      "sha256": "6a2215727aafe7254ced1724c7e39937b83fdfedf706c8d9e0683173e20eba7b",
+      "computed_git_blob": "6f291615a56c86b2d8c930c0339a520c675bfccf"
+    },
+    {
+      "member": "b11-token-mechanism-probe/source-status-after.txt",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "computed_git_blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391"
+    },
+    {
+      "member": "b11-token-mechanism-probe/source-leaves.txt",
+      "bytes": 8195,
+      "sha256": "018705b298d6522c66508dcdd7c932cbf4b86b01ae021ec50417143f86c9d0f0",
+      "computed_git_blob": "77d480760890dc424831b47b05f7571f22950c33"
+    },
+    {
+      "member": "b11-token-mechanism-probe/source-status-before.txt",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "computed_git_blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391"
+    },
+    {
+      "member": "bazel-execution-logs/execution-log-test-token-mechanism-observations-582.zst",
+      "bytes": 1986482,
+      "sha256": "8e6b0bdede2999c9d9c075d9f474d37c3166e6096ada4c490bf8dfd0cc9cb438",
+      "computed_git_blob": "35e86930f91e99f7b77e882fb36ed9021c8d819f"
+    },
+    {
+      "member": "bazel-execution-logs/failed-test-logs/invocation-iloq9z78/manifest.json",
+      "bytes": 1273,
+      "sha256": "fcbbf587f6b8df2ebf5aaf66b551a2fda9c12a50c6f12a079c686f337958905e",
+      "computed_git_blob": "d5c0d7f1ddf538ed97b776b3db83e13ad525b67c"
+    },
+    {
+      "member": "bazel-execution-logs/failed-test-logs/invocation-iloq9z78/targets/0000/test.log",
+      "bytes": 131855,
+      "sha256": "fcea1fd7d4a059130a34b392f5171e5db76ddfd2d0a0a0f21ebd7414641f71fc",
+      "computed_git_blob": "d4a9dcff6525450a9c5afaacaa531a56514aa5e9"
+    },
+    {
+      "member": "bazel-execution-logs/failed-test-logs/invocation-iloq9z78/targets/0000/test.xml",
+      "bytes": 132278,
+      "sha256": "d95a552bf494118386f5cc082226b9d7776f2ae245204d6f26b08a0298c6301b",
+      "computed_git_blob": "da30b59327acd3e51ebb9e59512f77b52355e732"
+    },
+    {
+      "member": "bazel-execution-logs/selected-target-test-logs/invocation-kt489c4s/manifest.json",
+      "bytes": 3699,
+      "sha256": "446806f1c00baa32b349696ea2145b7fef006e60d96b8de37131ded51aa2ddeb",
+      "computed_git_blob": "cf434a95beeb7af12efba8c768a934c15e020db9"
+    }
+  ],
+  "source_leaves": [
+    {
+      "path": ".github/workflows/hepta-windows-token-mechanism-probe.yml",
+      "mode": "100644",
+      "type": "blob",
+      "git_blob": "70f3145268e042ec04fbfe85eda83ccbbc4ff79c"
+    },
+    {
+      "path": "codex-rs/windows-sandbox-rs/src/acl_deny.rs",
+      "mode": "100644",
+      "type": "blob",
+      "git_blob": "1f4a78406d71c8fef5e764fa473a48b769a1606c"
+    },
+    {
+      "path": "codex-rs/windows-sandbox-rs/src/acl_tests.rs",
+      "mode": "100644",
+      "type": "blob",
+      "git_blob": "2afcc4e189fa8adfbe2a02c80fcc5c7554d1ef67"
+    },
+    {
+      "path": "codex-rs/windows-sandbox-rs/src/unified_exec/acl_setup_tests.rs",
+      "mode": "100644",
+      "type": "blob",
+      "git_blob": "5390daefe0f872866764cb567ad13f22c0675cf4"
+    },
+    {
+      "path": "codex-rs/windows-sandbox-rs/src/token.rs",
+      "mode": "100644",
+      "type": "blob",
+      "git_blob": "b22acb5556f6af3b4c250a2441f161ee448ea1c1"
+    },
+    {
+      "path": "codex-rs/windows-sandbox-rs/src/token_integrity_probe_support.rs",
+      "mode": "100644",
+      "type": "blob",
+      "git_blob": "7a7008f9becf09578ca953c849401eda93eb94b2"
+    },
+    {
+      "path": "codex-rs/windows-sandbox-rs/src/token_integrity_probe_tests.rs",
+      "mode": "100644",
+      "type": "blob",
+      "git_blob": "2a384792e8ba88518c26943716e8c3a39a523f9b"
+    },
+    {
+      "path": "codex-rs/windows-sandbox-rs/src/unified_exec/delete_permission_tests.rs",
+      "mode": "100644",
+      "type": "blob",
+      "git_blob": "d8511f92f9fbd9d58061238dbf3181152c74ccbc"
+    }
+  ],
+  "source_clean_before_after": true,
+  "exit_codes": {
+    "bazel": 3,
+    "console_copy": 0
+  },
+  "two_original_disjoint_harness_summaries": [
+    {
+      "line": 125,
+      "raw": "test result: FAILED. 90 passed; 2 failed; 0 ignored; 0 measured; 63 filtered out; finished in 1.02s",
+      "counts": [
+        90,
+        2,
+        0,
+        0,
+        63
+      ],
+      "seconds": "1.02"
+    },
+    {
+      "line": 653,
+      "raw": "test result: FAILED. 53 passed; 8 failed; 2 ignored; 0 measured; 92 filtered out; finished in 0.11s",
+      "counts": [
+        53,
+        8,
+        2,
+        0,
+        92
+      ],
+      "seconds": "0.11"
+    }
+  ],
+  "combined_counts": {
+    "total_named_tests": 155,
+    "passed": 143,
+    "failed": 10,
+    "ignored": 2
+  },
+  "three_original_named_passes": [
+    {
+      "name": "acl::tests::partial_read_deny_is_repaired_before_native_file_data_access",
+      "line": 10,
+      "raw": "test acl::tests::partial_read_deny_is_repaired_before_native_file_data_access ... ok"
+    },
+    {
+      "name": "unified_exec::tests::acl_setup_tests::legacy_capture_rejects_deny_acl_setup_failure_before_spawn",
+      "line": 290,
+      "raw": "test unified_exec::tests::acl_setup_tests::legacy_capture_rejects_deny_acl_setup_failure_before_spawn ... ok"
+    },
+    {
+      "name": "unified_exec::tests::acl_setup_tests::legacy_session_rejects_deny_acl_setup_failure_before_spawn",
+      "line": 317,
+      "raw": "test unified_exec::tests::acl_setup_tests::legacy_session_rejects_deny_acl_setup_failure_before_spawn ... ok"
+    }
+  ],
+  "failures": [
+    {
+      "case": "acl::tests::native_file_and_directory_repairs_are_idempotent_for_read_and_write",
+      "line": 100,
+      "original_block": "---- acl::tests::native_file_and_directory_repairs_are_idempotent_for_read_and_write stdout ----\nError: ReOpenFile for deny repair failed for D:\\tmp\\.tmpmUBI7c\\.tmpKxClqa\n\nCaused by:\n    Access is denied. (os error 5)\n\n",
+      "classification": "PRODUCTION_REPAIR_ENDPOINT_REOPEN_ACCESS_DENIED"
+    },
+    {
+      "case": "acl::tests::existing_native_deny_does_not_require_write_dac",
+      "line": 106,
+      "original_block": "---- acl::tests::existing_native_deny_does_not_require_write_dac stdout ----\n\nthread 'acl::tests::existing_native_deny_does_not_require_write_dac' (8640) panicked at windows-sandbox-rs/src\\acl_tests.rs:456:5:\nassertion failed: `(left == right)`: host control must really lack WRITE_DAC\n\n\u001b[1mDiff\u001b[0m \u001b[31m< left\u001b[0m / \u001b[32mright >\u001b[0m :\n\u001b[31m<None\u001b[0m\n\u001b[32m>Some(\u001b[0m\n\u001b[32m>    5,\u001b[0m\n\u001b[32m>)\u001b[0m\n\n\nnote: run with `RUST_BACKTRACE=1` environment variable to display a backtrace\n\n",
+      "classification": "HOST_NEGATIVE_PRECONDITION_FAILED_REOPEN_SUCCEEDED"
+    },
+    {
+      "case": "token::tests::partial_delete_deny_is_repaired_before_native_workspace_writes",
+      "line": 486,
+      "original_block": "---- token::tests::partial_delete_deny_is_repaired_before_native_workspace_writes stdout ----\nError: ReOpenFile for deny repair failed for D:\\tmp\\.tmpVOOmoO\n\nCaused by:\n    Access is denied. (os error 5)\n\n",
+      "classification": "PRODUCTION_REPAIR_ENDPOINT_REOPEN_ACCESS_DENIED"
+    },
+    {
+      "case": "token::tests::workspace_capabilities_deny_writes_and_deletes_under_broad_identity_aces",
+      "line": 492,
+      "original_block": "---- token::tests::workspace_capabilities_deny_writes_and_deletes_under_broad_identity_aces stdout ----\n\nthread 'token::tests::workspace_capabilities_deny_writes_and_deletes_under_broad_identity_aces' (9748) panicked at windows-sandbox-rs/src\\token_tests.rs:434:5:\nassertion failed: `(left == right)`\n\n\u001b[1mDiff\u001b[0m \u001b[31m< left\u001b[0m / \u001b[32mright >\u001b[0m :\n [\n     Some(\n         PermissionDenied,\n     ),\n     Some(\n         PermissionDenied,\n     ),\n\u001b[31m<    None,\u001b[0m\n\u001b[31m<    None,\u001b[0m\n\u001b[32m>    Some(\u001b[0m\n\u001b[32m>        PermissionDenied,\u001b[0m\n\u001b[32m>    ),\u001b[0m\n\u001b[32m>    Some(\u001b[0m\n\u001b[32m>        PermissionDenied,\u001b[0m\n\u001b[32m>    ),\u001b[0m\n ]\n\n\nnote: run with `RUST_BACKTRACE=1` environment variable to display a backtrace\n\n",
+      "classification": "ACTUAL_STRICT_TOKEN_OUTSIDE_DELETE_ESCAPE"
+    },
+    {
+      "case": "token::tests::workspace_capability_delete_routes_require_the_capability_in_all_four_cells",
+      "line": 518,
+      "original_block": "---- token::tests::workspace_capability_delete_routes_require_the_capability_in_all_four_cells stdout ----\ndelete_matrix ordinary-host path=\"D:\\\\tmp\\\\.tmpwPOmDG\\\\host\\\\Neither\\\\file\" identity=(2255700520, 196608, 98265) directory=0 pending=1 links=0 acl=[02, 00, 30, 00, 02, 00, 00, 00, 01, 00, 14, 00, 00, 00, 01, 00, 01, 01, 00, 00, 00, 00, 00, 01, 00, 00, 00, 00, 00, 00, 14, 00, ff, 01, 1e, 00, 01, 01, 00, 00, 00, 00, 00, 01, 00, 00, 00, 00]\ndelete_matrix ordinary-host path=\"D:\\\\tmp\\\\.tmpwPOmDG\\\\host\\\\Neither\\\\directory\" identity=(2255700520, 196608, 98266) directory=1 pending=1 links=0 acl=[02, 00, 30, 00, 02, 00, 00, 00, 01, 00, 14, 00, 00, 00, 01, 00, 01, 01, 00, 00, 00, 00, 00, 01, 00, 00, 00, 00, 00, 00, 14, 00, ff, 01, 1e, 00, 01, 01, 00, 00, 00, 00, 00, 01, 00, 00, 00, 00]\ndelete_matrix ordinary-host path=\"D:\\\\tmp\\\\.tmpwPOmDG\\\\host\\\\Neither\" identity=(2255700520, 196608, 98264) directory=1 pending=0 links=1 acl=[02, 00, 30, 00, 02, 00, 00, 00, 01, 00, 14, 00, 40, 00, 00, 00, 01, 01, 00, 00, 00, 00, 00, 01, 00, 00, 00, 00, 00, 00, 14, 00, bf, 01, 1f, 00, 01, 01, 00, 00, 00, 00, 00, 01, 00, 00, 00, 00]\ndelete_matrix ordinary-host path=\"D:\\\\tmp\\\\.tmpwPOmDG\\\\host\\\\TargetOnly\\\\file\" identity=(2255700520, 131072, 98268) directory=0 pending=1 links=0 acl=[02, 00, 1c, 00, 01, 00, 00, 00, 00, 00, 14, 00, ff, 01, 1f, 00, 01, 01, 00, 00, 00, 00, 00, 01, 00, 00, 00, 00]\ndelete_matrix ordinary-host path=\"D:\\\\tmp\\\\.tmpwPOmDG\\\\host\\\\TargetOnly\\\\directory\" identity=(2255700520, 131072, 98269) directory=1 pending=1 links=0 acl=[02, 00, 1c, 00, 01, 00, 00, 00, 00, 00, 14, 00, ff, 01, 1f, 00, 01, 01, 00, 00, 00, 00, 00, 01, 00, 00, 00, 00]\ndelete_matrix ordinary-host path=\"D:\\\\tmp\\\\.tmpwPOmDG\\\\host\\\\TargetOnly\" identity=(2255700520, 131072, 98267) directory=1 pending=0 links=1 acl=[02, 00, 30, 00, 02, 00, 00, 00, 01, 00, 14, 00, 40, 00, 00, 00, 01, 01, 00, 00, 00, 00, 00, 01, 00, 00, 00, 00, 00, 00, 14, 00, bf, 01, 1f, 00, 01, 01, 00, 00, 00, 00, 00, 01, 00, 00, 00, 00]\ndelete_matrix ordinary-host path=\"D:\\\\tmp\\\\.tmpwPOmDG\\\\host\\\\ParentOnly\\\\file\" identity=(2255700520, 720896, 98254) directory=0 pending=1 links=0 acl=[02, 00, 30, 00, 02, 00, 00, 00, 01, 00, 14, 00, 00, 00, 01, 00, 01, 01, 00, 00, 00, 00, 00, 01, 00, 00, 00, 00, 00, 00, 14, 00, ff, 01, 1e, 00, 01, 01, 00, 00, 00, 00, 00, 01, 00, 00, 00, 00]\ndelete_matrix ordinary-host path=\"D:\\\\tmp\\\\.tmpwPOmDG\\\\host\\\\ParentOnly\\\\directory\" identity=(2255700520, 131072, 98270) directory=1 pending=1 links=0 acl=[02, 00, 30, 00, 02, 00, 00, 00, 01, 00, 14, 00, 00, 00, 01, 00, 01, 01, 00, 00, 00, 00, 00, 01, 00, 00, 00, 00, 00, 00, 14, 00, ff, 01, 1e, 00, 01, 01, 00, 00, 00, 00, 00, 01, 00, 00, 00, 00]\ndelete_matrix ordinary-host path=\"D:\\\\tmp\\\\.tmpwPOmDG\\\\host\\\\ParentOnly\" identity=(2255700520, 720896, 98247) directory=1 pending=0 links=1 acl=[02, 00, 1c, 00, 01, 00, 00, 00, 00, 00, 14, 00, ff, 01, 1f, 00, 01, 01, 00, 00, 00, 00, 00, 01, 00, 00, 00, 00]\ndelete_matrix ordinary-host path=\"D:\\\\tmp\\\\.tmpwPOmDG\\\\host\\\\Both\\\\file\" identity=(2255700520, 458752, 98256) directory=0 pending=1 links=0 acl=[02, 00, 1c, 00, 01, 00, 00, 00, 00, 00, 14, 00, ff, 01, 1f, 00, 01, 01, 00, 00, 00, 00, 00, 01, 00, 00, 00, 00]\ndelete_matrix ordinary-host path=\"D:\\\\tmp\\\\.tmpwPOmDG\\\\host\\\\Both\\\\directory\" identity=(2255700520, 65536, 98282) directory=1 pending=1 links=0 acl=[02, 00, 1c, 00, 01, 00, 00, 00, 00, 00, 14, 00, ff, 01, 1f, 00, 01, 01, 00, 00, 00, 00, 00, 01, 00, 00, 00, 00]\ndelete_matrix ordinary-host path=\"D:\\\\tmp\\\\.tmpwPOmDG\\\\host\\\\Both\" identity=(2255700520, 983040, 98255) directory=1 pending=0 links=1 acl=[02, 00, 1c, 00, 01, 00, 00, 00, 00, 00, 14, 00, ff, 01, 1f, 00, 01, 01, 00, 00, 00, 00, 00, 01, 00, 00, 00, 00]\ndelete_matrix ordinary-host after_release=[DeleteOutcome { route: Neither, file_deleted: true, directory_deleted: true }, DeleteOutcome { route: TargetOnly, file_deleted: true, directory_deleted: true }, DeleteOutcome { route: ParentOnly, file_deleted: true, directory_deleted: true }, DeleteOutcome { route: Both, file_deleted: true, directory_deleted: true }]\ndelete_matrix host_native_errors=[[None, None], [None, None], [None, None], [None, None]]\n\nthread 'token::tests::workspace_capability_delete_routes_require_the_capability_in_all_four_cells' (3760) panicked at windows-sandbox-rs/src\\token_tests.rs:479:5:\nassertion failed: `(left == right)`\n\n\u001b[1mDiff\u001b[0m \u001b[31m< left\u001b[0m / \u001b[32mright >\u001b[0m :\n [\n     [\n\u001b[31m<        None,\u001b[0m\n\u001b[31m<        None,\u001b[0m\n\u001b[32m>        Some(\u001b[0m\n\u001b[32m>            (\u001b[0m\n\u001b[32m>                PermissionDenied,\u001b[0m\n\u001b[32m>                Some(\u001b[0m\n\u001b[32m>                    5,\u001b[0m\n\u001b[32m>                ),\u001b[0m\n\u001b[32m>            ),\u001b[0m\n\u001b[32m>        ),\u001b[0m\n\u001b[32m>        Some(\u001b[0m\n\u001b[32m>            (\u001b[0m\n\u001b[32m>                PermissionDenied,\u001b[0m\n\u001b[32m>                Some(\u001b[0m\n\u001b[32m>                    5,\u001b[0m\n\u001b[32m>                ),\u001b[0m\n\u001b[32m>            ),\u001b[0m\n\u001b[32m>        ),\u001b[0m\n     ],\n     [\n         None,\n         None,\n     ],\n     [\n         None,\n         None,\n     ],\n     [\n         None,\n         None,\n     ],\n ]\n\n\n\n",
+      "classification": "ORDINARY_HOST_NEITHER_PRECONDITION_FAILED_BEFORE_RESTRICTED_SUBJECT"
+    },
+    {
+      "case": "unified_exec::tests::delete_permission_tests::legacy_delete_routes_require_workspace_capability_in_all_four_cells",
+      "line": 575,
+      "original_block": "---- unified_exec::tests::delete_permission_tests::legacy_delete_routes_require_workspace_capability_in_all_four_cells stdout ----\ndelete_matrix ordinary-host-cmd-done path=\"D:\\\\a\\\\hepta-private-ci\\\\hepta-private-ci\\\\codex-rs\\\\.tmpTeQHDj\\\\host\\\\Neither\\\\file\" identity=(2255700520, 131072, 98288) directory=0 pending=1 links=0 acl=[02, 00, 30, 00, 02, 00, 00, 00, 01, 00, 14, 00, 00, 00, 01, 00, 01, 01, 00, 00, 00, 00, 00, 01, 00, 00, 00, 00, 00, 00, 14, 00, ff, 01, 1e, 00, 01, 01, 00, 00, 00, 00, 00, 01, 00, 00, 00, 00]\ndelete_matrix ordinary-host-cmd-done path=\"D:\\\\a\\\\hepta-private-ci\\\\hepta-private-ci\\\\codex-rs\\\\.tmpTeQHDj\\\\host\\\\Neither\\\\directory\" identity=(2255700520, 262144, 98289) directory=1 pending=1 links=0 acl=[02, 00, 30, 00, 02, 00, 00, 00, 01, 00, 14, 00, 00, 00, 01, 00, 01, 01, 00, 00, 00, 00, 00, 01, 00, 00, 00, 00, 00, 00, 14, 00, ff, 01, 1e, 00, 01, 01, 00, 00, 00, 00, 00, 01, 00, 00, 00, 00]\ndelete_matrix ordinary-host-cmd-done path=\"D:\\\\a\\\\hepta-private-ci\\\\hepta-private-ci\\\\codex-rs\\\\.tmpTeQHDj\\\\host\\\\Neither\" identity=(2255700520, 131072, 98287) directory=1 pending=0 links=1 acl=[02, 00, 30, 00, 02, 00, 00, 00, 01, 00, 14, 00, 40, 00, 00, 00, 01, 01, 00, 00, 00, 00, 00, 01, 00, 00, 00, 00, 00, 00, 14, 00, bf, 01, 1f, 00, 01, 01, 00, 00, 00, 00, 00, 01, 00, 00, 00, 00]\ndelete_matrix ordinary-host-cmd-done path=\"D:\\\\a\\\\hepta-private-ci\\\\hepta-private-ci\\\\codex-rs\\\\.tmpTeQHDj\\\\host\\\\TargetOnly\\\\file\" identity=(2255700520, 131072, 98291) directory=0 pending=1 links=0 acl=[02, 00, 1c, 00, 01, 00, 00, 00, 00, 00, 14, 00, ff, 01, 1f, 00, 01, 01, 00, 00, 00, 00, 00, 01, 00, 00, 00, 00]\ndelete_matrix ordinary-host-cmd-done path=\"D:\\\\a\\\\hepta-private-ci\\\\hepta-private-ci\\\\codex-rs\\\\.tmpTeQHDj\\\\host\\\\TargetOnly\\\\directory\" identity=(2255700520, 196608, 98292) directory=1 pending=1 links=0 acl=[02, 00, 1c, 00, 01, 00, 00, 00, 00, 00, 14, 00, ff, 01, 1f, 00, 01, 01, 00, 00, 00, 00, 00, 01, 00, 00, 00, 00]\ndelete_matrix ordinary-host-cmd-done path=\"D:\\\\a\\\\hepta-private-ci\\\\hepta-private-ci\\\\codex-rs\\\\.tmpTeQHDj\\\\host\\\\TargetOnly\" identity=(2255700520, 196608, 98290) directory=1 pending=0 links=1 acl=[02, 00, 30, 00, 02, 00, 00, 00, 01, 00, 14, 00, 40, 00, 00, 00, 01, 01, 00, 00, 00, 00, 00, 01, 00, 00, 00, 00, 00, 00, 14, 00, bf, 01, 1f, 00, 01, 01, 00, 00, 00, 00, 00, 01, 00, 00, 00, 00]\ndelete_matrix ordinary-host-cmd-done path=\"D:\\\\a\\\\hepta-private-ci\\\\hepta-private-ci\\\\codex-rs\\\\.tmpTeQHDj\\\\host\\\\ParentOnly\\\\file\" identity=(2255700520, 262144, 98294) directory=0 pending=1 links=0 acl=[02, 00, 30, 00, 02, 00, 00, 00, 01, 00, 14, 00, 00, 00, 01, 00, 01, 01, 00, 00, 00, 00, 00, 01, 00, 00, 00, 00, 00, 00, 14, 00, ff, 01, 1e, 00, 01, 01, 00, 00, 00, 00, 00, 01, 00, 00, 00, 00]\ndelete_matrix ordinary-host-cmd-done path=\"D:\\\\a\\\\hepta-private-ci\\\\hepta-private-ci\\\\codex-rs\\\\.tmpTeQHDj\\\\host\\\\ParentOnly\\\\directory\" identity=(2255700520, 131072, 98295) directory=1 pending=1 links=0 acl=[02, 00, 30, 00, 02, 00, 00, 00, 01, 00, 14, 00, 00, 00, 01, 00, 01, 01, 00, 00, 00, 00, 00, 01, 00, 00, 00, 00, 00, 00, 14, 00, ff, 01, 1e, 00, 01, 01, 00, 00, 00, 00, 00, 01, 00, 00, 00, 00]\ndelete_matrix ordinary-host-cmd-done path=\"D:\\\\a\\\\hepta-private-ci\\\\hepta-private-ci\\\\codex-rs\\\\.tmpTeQHDj\\\\host\\\\ParentOnly\" identity=(2255700520, 131072, 98293) directory=1 pending=0 links=1 acl=[02, 00, 1c, 00, 01, 00, 00, 00, 00, 00, 14, 00, ff, 01, 1f, 00, 01, 01, 00, 00, 00, 00, 00, 01, 00, 00, 00, 00]\ndelete_matrix ordinary-host-cmd-done path=\"D:\\\\a\\\\hepta-private-ci\\\\hepta-private-ci\\\\codex-rs\\\\.tmpTeQHDj\\\\host\\\\Both\\\\file\" identity=(2255700520, 196608, 98297) directory=0 pending=1 links=0 acl=[02, 00, 1c, 00, 01, 00, 00, 00, 00, 00, 14, 00, ff, 01, 1f, 00, 01, 01, 00, 00, 00, 00, 00, 01, 00, 00, 00, 00]\ndelete_matrix ordinary-host-cmd-done path=\"D:\\\\a\\\\hepta-private-ci\\\\hepta-private-ci\\\\codex-rs\\\\.tmpTeQHDj\\\\host\\\\Both\\\\directory\" identity=(2255700520, 131072, 98298) directory=1 pending=1 links=0 acl=[02, 00, 1c, 00, 01, 00, 00, 00, 00, 00, 14, 00, ff, 01, 1f, 00, 01, 01, 00, 00, 00, 00, 00, 01, 00, 00, 00, 00]\ndelete_matrix ordinary-host-cmd-done path=\"D:\\\\a\\\\hepta-private-ci\\\\hepta-private-ci\\\\codex-rs\\\\.tmpTeQHDj\\\\host\\\\Both\" identity=(2255700520, 196608, 98296) directory=1 pending=0 links=1 acl=[02, 00, 1c, 00, 01, 00, 00, 00, 00, 00, 14, 00, ff, 01, 1f, 00, 01, 01, 00, 00, 00, 00, 00, 01, 00, 00, 00, 00]\ndelete_matrix ordinary-host-cmd-done after_release=[DeleteOutcome { route: Neither, file_deleted: true, directory_deleted: true }, DeleteOutcome { route: TargetOnly, file_deleted: true, directory_deleted: true }, DeleteOutcome { route: ParentOnly, file_deleted: true, directory_deleted: true }, DeleteOutcome { route: Both, file_deleted: true, directory_deleted: true }]\ndelete_matrix host_cmd_status=exit code: 0 output=\"MATRIX_ATTEMPT_0\\r\\nFILE_RC_0=0\\r\\nDIR_RC_0=0\\r\\nMATRIX_ATTEMPT_1\\r\\nFILE_RC_1=0\\r\\nDIR_RC_1=0\\r\\nMATRIX_ATTEMPT_2\\r\\nFILE_RC_2=0\\r\\nDIR_RC_2=0\\r\\nMATRIX_ATTEMPT_3\\r\\nFILE_RC_3=0\\r\\nDIR_RC_3=0\\r\\nMATRIX_DONE\\r\\n\"\n\nthread 'unified_exec::tests::delete_permission_tests::legacy_delete_routes_require_workspace_capability_in_all_four_cells' (1040) panicked at windows-sandbox-rs/src\\unified_exec\\delete_permission_tests.rs:69:9:\nassertion failed: `(left == right)`\n\n\u001b[1mDiff\u001b[0m \u001b[31m< left\u001b[0m / \u001b[32mright >\u001b[0m :\n [\n     DeleteOutcome {\n         route: Neither,\n\u001b[31m<        file_deleted: true,\u001b[0m\n\u001b[31m<        directory_deleted: true,\u001b[0m\n\u001b[32m>        file_deleted: false,\u001b[0m\n\u001b[32m>        directory_deleted: false,\u001b[0m\n     },\n     DeleteOutcome {\n         route: TargetOnly,\n         file_deleted: true,\n         directory_deleted: true,\n     },\n     DeleteOutcome {\n         route: ParentOnly,\n         file_deleted: true,\n         directory_deleted: true,\n     },\n     DeleteOutcome {\n         route: Both,\n         file_deleted: true,\n         directory_deleted: true,\n     },\n ]\n\n\n\n",
+      "classification": "ORDINARY_HOST_NEITHER_PRECONDITION_FAILED_BEFORE_RESTRICTED_SUBJECT"
+    },
+    {
+      "case": "unified_exec::tests::elevated_non_tty_cmd_forwards_env_output_and_exit",
+      "line": 622,
+      "original_block": "---- unified_exec::tests::elevated_non_tty_cmd_forwards_env_output_and_exit stdout ----\n\nthread 'unified_exec::tests::elevated_non_tty_cmd_forwards_env_output_and_exit' (8100) panicked at windows-sandbox-rs/src\\unified_exec\\tests.rs:62:10:\nlegacy Windows sandbox process test lock poisoned: PoisonError { .. }\n\n",
+      "classification": "SHARED_TEST_MUTEX_POISON_NOT_INDEPENDENT_BUSINESS_ORACLE"
+    },
+    {
+      "case": "unified_exec::tests::legacy_non_tty_cmd_emits_output",
+      "line": 627,
+      "original_block": "---- unified_exec::tests::legacy_non_tty_cmd_emits_output stdout ----\n\nthread 'unified_exec::tests::legacy_non_tty_cmd_emits_output' (8416) panicked at windows-sandbox-rs/src\\unified_exec\\tests.rs:62:10:\nlegacy Windows sandbox process test lock poisoned: PoisonError { .. }\n\n",
+      "classification": "SHARED_TEST_MUTEX_POISON_NOT_INDEPENDENT_BUSINESS_ORACLE"
+    },
+    {
+      "case": "unified_exec::tests::legacy_non_tty_cmd_rejects_deny_read_overrides",
+      "line": 632,
+      "original_block": "---- unified_exec::tests::legacy_non_tty_cmd_rejects_deny_read_overrides stdout ----\n\nthread 'unified_exec::tests::legacy_non_tty_cmd_rejects_deny_read_overrides' (9368) panicked at windows-sandbox-rs/src\\unified_exec\\tests.rs:62:10:\nlegacy Windows sandbox process test lock poisoned: PoisonError { .. }\n\n",
+      "classification": "SHARED_TEST_MUTEX_POISON_NOT_INDEPENDENT_BUSINESS_ORACLE"
+    },
+    {
+      "case": "unified_exec::tests::legacy_workspace_write_delete_is_limited_to_writable_roots",
+      "line": 637,
+      "original_block": "---- unified_exec::tests::legacy_workspace_write_delete_is_limited_to_writable_roots stdout ----\n\nthread 'unified_exec::tests::legacy_workspace_write_delete_is_limited_to_writable_roots' (8956) panicked at windows-sandbox-rs/src\\unified_exec\\tests.rs:62:10:\nlegacy Windows sandbox process test lock poisoned: PoisonError { .. }\n\n",
+      "classification": "SHARED_TEST_MUTEX_POISON_NOT_INDEPENDENT_BUSINESS_ORACLE"
+    }
+  ],
+  "failure_category_counts": {
+    "PRODUCTION_REPAIR_ENDPOINT_REOPEN_ACCESS_DENIED": 2,
+    "HOST_NEGATIVE_PRECONDITION_FAILED_REOPEN_SUCCEEDED": 1,
+    "ACTUAL_STRICT_TOKEN_OUTSIDE_DELETE_ESCAPE": 1,
+    "ORDINARY_HOST_NEITHER_PRECONDITION_FAILED_BEFORE_RESTRICTED_SUBJECT": 2,
+    "SHARED_TEST_MUTEX_POISON_NOT_INDEPENDENT_BUSINESS_ORACLE": 4
+  },
+  "physical_projection": {
+    "local_file": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-pr4884-ci-20261105/terminal/probe-127383345954/physical-observation-projection.json",
+    "bytes": 127229,
+    "sha256": "c915074a50a3478168ed22be9ab483961277c25d5eef9ff83606a7f10a64bf5c",
+    "computed_git_blob": "fc47f2962ae1bcb48901e3f90601a2e4bc7f649e"
+  },
+  "physical_complete_json_row_identities": [
+    [
+      "host",
+      "low_other_cohort"
+    ],
+    [
+      "current_strict",
+      "low_other_cohort"
+    ],
+    [
+      "current_strict_low",
+      "medium"
+    ],
+    [
+      "current_strict_low",
+      "low_other_cohort"
+    ],
+    [
+      "full_restricting_explicit_read",
+      "medium"
+    ],
+    [
+      "full_restricting_explicit_read",
+      "low_other_cohort"
+    ]
+  ],
+  "physical_interleaved_rows": [
+    "host/medium",
+    "current_strict/medium"
+  ],
+  "all8_restoration_and_finalized_rows_equal_original_json": true,
+  "objects": 80,
+  "restoration_errors": 0,
+  "survivors": 54,
+  "deleted_pending": 26,
+  "descendants_spawned": 0,
+  "job_log": {
+    "local_file": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-pr4884-ci-20261105/terminal/probe-127383345954/job.log",
+    "bytes": 411299,
+    "sha256": "da8e91ca01bfefedb79384dc5dec3f7d267ce566e6f9207d82a9fd5b27a136a7",
+    "computed_git_blob": "e272f0775358fb23471b72033838dae91f23934d"
+  },
+  "original_test_log": {
+    "bytes": 131855,
+    "sha256": "fcea1fd7d4a059130a34b392f5171e5db76ddfd2d0a0a0f21ebd7414641f71fc",
+    "computed_git_blob": "d4a9dcff6525450a9c5afaacaa531a56514aa5e9"
+  },
+  "limits": [
+    "Only144 contiguous direct result lines exist; all155 unique case outcomes are not invented from interleaved output. Whole counts come from two original disjoint harness summaries.",
+    "Eight-row completion marker and probe PASS are observation-only, not production isolation qualification.",
+    "Unlike native4, this native5 has host/low complete and current_strict/medium interleaved. Missing JSON is never repaired.",
+    "The successful partial read/legacy fixtures are observations at this actual source. Additional READ_CONTROL is not proved the sole cause.",
+    "New host-control failure means combined-access ReOpenFile succeeded, so no-WRITE_DAC prerequisite was not established.",
+    "Two ordinary-host Neither failures precede restricted-subject checks; four poisoned mutex failures are downstream nonexecution, not independent business failures.",
+    "Directory ReOpen error5, strict external delete, normal loader/read-owner lifecycle and full B11 exit remain open."
+  ],
+  "native_tests_rerun_by_verifier": false,
+  "all_blockers_closed": false
+}
