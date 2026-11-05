@@ -36,6 +36,10 @@ use super::head_tail_buffer::HeadTailBuffer;
 use super::process_state::ProcessState;
 
 const EARLY_EXIT_GRACE_PERIOD: Duration = Duration::from_millis(150);
+const EXIT_OBSERVATION_LOST: &str =
+    "process exit observation channel closed without a native result";
+const TERMINATION_NOT_OBSERVED: &str =
+    "termination was requested but native exit has not been observed";
 pub(crate) trait SpawnLifecycle: std::fmt::Debug + Send + Sync {
     /// Returns file descriptors that must stay open across the child `exec()`.
     ///
@@ -142,6 +146,11 @@ impl UnifiedExecProcess {
     }
 
     pub(super) async fn write(&self, data: &[u8]) -> Result<(), UnifiedExecError> {
+        if !self.has_exited()
+            && let Some(message) = self.failure_message()
+        {
+            return Err(UnifiedExecError::process_failed(message));
+        }
         match &self.process_handle {
             ProcessHandle::Local(process_handle) => process_handle
                 .writer_sender()
@@ -152,12 +161,15 @@ impl UnifiedExecProcess {
                 match process_handle.write(data.to_vec()).await {
                     Ok(response) => match response.status {
                         WriteStatus::Accepted => Ok(()),
-                        WriteStatus::UnknownProcess | WriteStatus::StdinClosed => {
-                            let state = self.state_rx.borrow().clone();
-                            let _ = self.state_tx.send_replace(state.exited(state.exit_code));
-                            self.output.cancellation_token.cancel();
+                        WriteStatus::UnknownProcess => {
+                            self.signal_observation_failure(
+                                "exec-server no longer recognizes the process without a native exit observation".to_string(),
+                            );
                             Err(UnifiedExecError::WriteToStdin)
                         }
+                        // A process can close stdin and continue running. Keep
+                        // its independent exit observer and its current facts.
+                        WriteStatus::StdinClosed => Err(UnifiedExecError::WriteToStdin),
                         WriteStatus::Starting => Err(UnifiedExecError::WriteToStdin),
                     },
                     Err(err) => Err(UnifiedExecError::process_failed(err.to_string())),
@@ -196,22 +208,30 @@ impl UnifiedExecProcess {
 
     pub(super) fn exit_code(&self) -> Option<i32> {
         let state = self.state_rx.borrow().clone();
+        if state.has_exited {
+            // An observed exit without a numeric code is still an exit.
+            return state.exit_code;
+        }
         match &self.process_handle {
-            ProcessHandle::Local(process_handle) => {
-                state.exit_code.or_else(|| process_handle.exit_code())
-            }
-            ProcessHandle::ExecServer(_) => state.exit_code,
+            ProcessHandle::Local(process_handle) => process_handle.exit_code(),
+            ProcessHandle::ExecServer(_) => None,
         }
     }
 
     fn finish_termination(&self) {
         self.output.cancellation_token.cancel();
-        if let Some(output_task) = &self.output_task {
+        if self.has_exited()
+            && let Some(output_task) = &self.output_task
+        {
             output_task.abort();
         }
     }
 
     pub(super) fn terminate(&self) {
+        if self.observe_current_exit() {
+            self.finish_termination();
+            return;
+        }
         match &self.process_handle {
             ProcessHandle::Local(process_handle) => process_handle.terminate(),
             ProcessHandle::ExecServer(process_handle) => {
@@ -225,6 +245,14 @@ impl UnifiedExecProcess {
     }
 
     pub(super) async fn terminate_confirmed(&self) -> Result<(), UnifiedExecError> {
+        if self.observe_current_exit() {
+            self.finish_termination();
+            return Ok(());
+        }
+        if let Some(message) = self.failure_message() {
+            self.terminate();
+            return Err(UnifiedExecError::process_failed(message));
+        }
         match &self.process_handle {
             ProcessHandle::Local(process_handle) => process_handle.terminate(),
             ProcessHandle::ExecServer(process_handle) => {
@@ -234,9 +262,27 @@ impl UnifiedExecProcess {
                     .map_err(|err| UnifiedExecError::process_failed(err.to_string()))?;
             }
         }
-        self.signal_exit(self.exit_code());
-        self.finish_termination();
-        Ok(())
+        // The existing callers provide no deadline for an additional read RPC
+        // or wait. An ACK confirms the request, not a native process exit.
+        if self.observe_current_exit() {
+            self.finish_termination();
+            Ok(())
+        } else {
+            self.signal_observation_failure(TERMINATION_NOT_OBSERVED.to_string());
+            Err(UnifiedExecError::process_failed(
+                self.failure_message()
+                    .unwrap_or_else(|| TERMINATION_NOT_OBSERVED.to_string()),
+            ))
+        }
+    }
+
+    fn observe_current_exit(&self) -> bool {
+        if let ProcessHandle::Local(process_handle) = &self.process_handle
+            && process_handle.has_exited()
+        {
+            self.signal_exit(process_handle.exit_code());
+        }
+        self.state_rx.borrow().has_exited
     }
 
     pub(super) async fn interrupt(&self) -> Result<(), UnifiedExecError> {
@@ -252,10 +298,9 @@ impl UnifiedExecProcess {
     }
 
     pub(super) fn fail_and_terminate(&self, message: String) {
-        let state = self.state_rx.borrow().clone();
-        if state.failure_message.is_none() {
-            let _ = self.state_tx.send_replace(state.failed(message));
-        }
+        self.state_tx.send_modify(|state| {
+            *state = state.failed(message);
+        });
         self.terminate();
     }
 
@@ -353,15 +398,24 @@ impl UnifiedExecProcess {
                 return Ok(managed);
             }
             Err(TryRecvError::Closed) => {
-                managed.signal_exit(/*exit_code*/ None);
-                managed.check_for_sandbox_denial().await?;
-                return Ok(managed);
+                managed.signal_observation_failure(EXIT_OBSERVATION_LOST.to_string());
+                return Err(UnifiedExecError::process_failed(
+                    EXIT_OBSERVATION_LOST.to_string(),
+                ));
             }
             Err(TryRecvError::Empty) => {}
         }
 
         if let Ok(exit_result) = tokio::time::timeout(EARLY_EXIT_GRACE_PERIOD, &mut exit_rx).await {
-            managed.signal_exit(exit_result.ok());
+            match exit_result {
+                Ok(exit_code) => managed.signal_exit(Some(exit_code)),
+                Err(_) => {
+                    managed.signal_observation_failure(EXIT_OBSERVATION_LOST.to_string());
+                    return Err(UnifiedExecError::process_failed(
+                        EXIT_OBSERVATION_LOST.to_string(),
+                    ));
+                }
+            }
             managed.check_for_sandbox_denial().await?;
             return Ok(managed);
         }
@@ -370,9 +424,13 @@ impl UnifiedExecProcess {
             let state_tx = managed.state_tx.clone();
             let cancellation_token = managed.output.cancellation_token.clone();
             async move {
-                let exit_code = exit_rx.await.ok();
-                let state = state_tx.borrow().clone();
-                let _ = state_tx.send_replace(state.exited(exit_code));
+                let observed_exit = exit_rx.await;
+                state_tx.send_modify(|state| {
+                    *state = match observed_exit {
+                        Ok(exit_code) => state.exited(Some(exit_code)),
+                        Err(_) => state.observation_failed(EXIT_OBSERVATION_LOST.to_string()),
+                    };
+                });
                 cancellation_token.cancel();
             }
         });
@@ -443,10 +501,11 @@ impl UnifiedExecProcess {
                     Ok(event) => Some(event),
                     Err(broadcast::error::RecvError::Lagged(_)) => None,
                     Err(broadcast::error::RecvError::Closed) => {
-                        let state = state_tx.borrow().clone();
-                        let _ = state_tx.send_replace(
-                            state.failed("exec-server process event stream closed".to_string()),
-                        );
+                        state_tx.send_modify(|state| {
+                            *state = state.observation_failed(
+                                "exec-server process event stream closed".to_string(),
+                            );
+                        });
                         output_closed.store(true, Ordering::Release);
                         output_closed_notify.notify_waiters();
                         cancellation_token.cancel();
@@ -481,8 +540,9 @@ impl UnifiedExecProcess {
                     {
                         Ok(response) => response,
                         Err(err) => {
-                            let state = state_tx.borrow().clone();
-                            let _ = state_tx.send_replace(state.failed(err.to_string()));
+                            state_tx.send_modify(|state| {
+                                *state = state.observation_failed(err.to_string());
+                            });
                             output_closed.store(true, Ordering::Release);
                             output_closed_notify.notify_waiters();
                             cancellation_token.cancel();
@@ -507,22 +567,21 @@ impl UnifiedExecProcess {
                         output_notify.notify_waiters();
                     }
                     last_seq = last_seq.max(next_seq.saturating_sub(1));
-                    if let Some(message) = failure {
-                        let state = state_tx.borrow().clone();
-                        let _ = state_tx.send_replace(state.failed(message));
+                    let observation_failed = failure.is_some();
+                    state_tx.send_modify(|state| {
+                        state.sandbox_denied |= sandbox_denied;
+                        if exited {
+                            *state = state.exited(exit_code);
+                        }
+                        if let Some(message) = failure {
+                            *state = state.observation_failed(message);
+                        }
+                    });
+                    if observation_failed {
                         output_closed.store(true, Ordering::Release);
                         output_closed_notify.notify_waiters();
                         cancellation_token.cancel();
                         break;
-                    }
-                    if sandbox_denied || exited {
-                        let mut state = state_tx.borrow().clone();
-                        state.sandbox_denied |= sandbox_denied;
-                        let _ = state_tx.send_replace(if exited {
-                            state.exited(exit_code)
-                        } else {
-                            state
-                        });
                     }
                     if closed {
                         output_closed.store(true, Ordering::Release);
@@ -558,9 +617,10 @@ impl UnifiedExecProcess {
                             continue;
                         }
                         last_seq = seq;
-                        let mut state = state_tx.borrow().clone();
-                        state.sandbox_denied |= sandbox_denied.unwrap_or(false);
-                        let _ = state_tx.send_replace(state.exited(Some(exit_code)));
+                        state_tx.send_modify(|state| {
+                            state.sandbox_denied |= sandbox_denied.unwrap_or(false);
+                            *state = state.exited(Some(exit_code));
+                        });
                     }
                     ExecProcessEvent::Closed { seq } => {
                         if seq <= last_seq {
@@ -572,8 +632,9 @@ impl UnifiedExecProcess {
                         break;
                     }
                     ExecProcessEvent::Failed(message) => {
-                        let state = state_tx.borrow().clone();
-                        let _ = state_tx.send_replace(state.failed(message));
+                        state_tx.send_modify(|state| {
+                            *state = state.observation_failed(message);
+                        });
                         output_closed.store(true, Ordering::Release);
                         output_closed_notify.notify_waiters();
                         cancellation_token.cancel();
@@ -621,9 +682,17 @@ impl UnifiedExecProcess {
         })
     }
 
+    fn signal_observation_failure(&self, message: String) {
+        self.state_tx.send_modify(|state| {
+            *state = state.observation_failed(message);
+        });
+        self.output.cancellation_token.cancel();
+    }
+
     fn signal_exit(&self, exit_code: Option<i32>) {
-        let state = self.state_rx.borrow().clone();
-        let _ = self.state_tx.send_replace(state.exited(exit_code));
+        self.state_tx.send_modify(|state| {
+            *state = state.exited(exit_code);
+        });
         self.output.cancellation_token.cancel();
     }
 }
@@ -633,3 +702,7 @@ impl Drop for UnifiedExecProcess {
         self.terminate();
     }
 }
+
+#[cfg(test)]
+#[path = "process_observation_tests.rs"]
+mod observation_tests;

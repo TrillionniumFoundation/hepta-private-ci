@@ -145,6 +145,17 @@
         "tests::driver_terminal_tests::driver_sender_drop_keeps_unknown_exit_and_drains_output"
       ],
       "filter": "test(=tests::driver_terminal_tests::driver_sender_drop_keeps_unknown_exit_and_drains_output)"
+    },
+    {
+      "id": "core-exit-observation",
+      "package": "codex-core",
+      "expectedTestCount": 3,
+      "requiredTests": [
+        "unified_exec::process::observation_tests::early_driver_sender_loss_returns_process_failure",
+        "unified_exec::process::observation_tests::late_driver_sender_loss_cannot_be_upgraded_by_write_or_termination",
+        "unified_exec::process::observation_tests::observed_driver_exit_keeps_its_actual_code"
+      ],
+      "filter": "test(=unified_exec::process::observation_tests::early_driver_sender_loss_returns_process_failure) | test(=unified_exec::process::observation_tests::late_driver_sender_loss_cannot_be_upgraded_by_write_or_termination) | test(=unified_exec::process::observation_tests::observed_driver_exit_keeps_its_actual_code)"
     }
   ]
 }
