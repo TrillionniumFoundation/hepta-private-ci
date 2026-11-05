@@ -90,7 +90,9 @@ impl WorkerRootRegistrationV1 {
             || self.observed_unix_ms < self.writer.authority_lease.issued_at_unix_ms
             || self.observed_unix_ms >= self.expires_at_unix_ms
         {
-            return Err(refused("Worker registration purpose, identity or authority pins differ"));
+            return Err(refused(
+                "Worker registration purpose, identity or authority pins differ",
+            ));
         }
         for peer in [&self.root, &self.agentd, &self.worker] {
             if peer.pid == 0
@@ -141,13 +143,11 @@ pub fn receive_worker_root_registration(
     timeout: Duration,
 ) -> io::Result<WorkerRootRegistrationReceipt> {
     let end = wire::deadline(timeout)?;
-    let peer = crate::root_production_handoff::root_pair(&channel, timeout)
-        .map_err(io::Error::other)?;
-    let (mut sealed, root_pidfd) = crate::receive_root_production_handoff(
-        channel.try_clone()?,
-        wire::remaining(end)?,
-    )
-    .map_err(io::Error::other)?;
+    let peer =
+        crate::root_production_handoff::root_pair(&channel, timeout).map_err(io::Error::other)?;
+    let (mut sealed, root_pidfd) =
+        crate::receive_root_production_handoff(channel.try_clone()?, wire::remaining(end)?)
+            .map_err(io::Error::other)?;
     let size = sealed.metadata()?.len();
     sealed.rewind()?;
     let mut bytes = Vec::new();
@@ -168,7 +168,9 @@ pub fn receive_worker_root_registration(
         || registration.root.gid != peer.gid
         || registration.worker != process::observe(std::process::id())?
     {
-        return Err(refused("actual receiver or expected original Agent differs"));
+        return Err(refused(
+            "actual receiver or expected original Agent differs",
+        ));
     }
     crate::authority_host_runtime::verify_process_credentials(
         registration.worker.pid,
