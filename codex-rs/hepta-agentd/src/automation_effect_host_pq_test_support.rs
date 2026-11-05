@@ -175,7 +175,9 @@ pub(super) fn frontier_service(root: &Path, initial: FinalUseFrontier) -> anyhow
             PqTrustOperationV2::FrontierLoad { .. }
             | PqTrustOperationV2::ClockNow
             | PqTrustOperationV2::LearningFrontierLoad { .. }
-            | PqTrustOperationV2::LearningFrontierCompareAndSet { .. } => {
+            | PqTrustOperationV2::LearningFrontierCompareAndSet { .. }
+            | PqTrustOperationV2::ReleaseFrontierLoad { .. }
+            | PqTrustOperationV2::ReleaseFrontierCompareAndSet { .. } => {
                 PqTrustOutcomeV2::Unavailable
             }
         })

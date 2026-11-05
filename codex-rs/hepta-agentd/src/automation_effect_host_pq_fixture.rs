@@ -48,7 +48,9 @@ impl PqFixture {
                     PqTrustOperationV2::FrontierLoad { .. }
                     | PqTrustOperationV2::FrontierCompareAndSet { .. }
                     | PqTrustOperationV2::LearningFrontierLoad { .. }
-                    | PqTrustOperationV2::LearningFrontierCompareAndSet { .. } => {
+                    | PqTrustOperationV2::LearningFrontierCompareAndSet { .. }
+                    | PqTrustOperationV2::ReleaseFrontierLoad { .. }
+                    | PqTrustOperationV2::ReleaseFrontierCompareAndSet { .. } => {
                         PqTrustOutcomeV2::Unavailable
                     }
                 })

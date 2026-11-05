@@ -14,6 +14,7 @@ mod authbus_tests;
 mod authority_authentication;
 pub mod authority_lease;
 pub mod authority_trust;
+mod authority_trust_release;
 pub mod authority_trust_unix;
 mod learning_authentication;
 pub mod pq_auth;
@@ -49,6 +50,7 @@ pub use authority_trust::AuthorityClock;
 pub use authority_trust::AuthorityFrontierStore;
 pub use authority_trust::AuthorityTrustError;
 pub use authority_trust::SystemAuthorityClock;
+pub use authority_trust_release::ReleaseFrontierV1;
 
 pub use final_use::EnteredUseToken;
 pub use final_use::FinalUseAuthority;

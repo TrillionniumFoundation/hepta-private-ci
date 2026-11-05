@@ -15,11 +15,15 @@ use crate::AuthorityFrontierStore;
 use crate::AuthorityTrustError;
 use crate::FinalUseFrontier;
 use crate::LearningTrustFrontier;
+use crate::ReleaseFrontierV1;
 use crate::pq_auth::PqNativeVerifier;
 use serde::Deserialize;
 use serde::Serialize;
 
+mod release;
 mod transport;
+
+pub use release::UnixPqReleaseFrontier;
 
 const MAX_REQUEST_BYTES: usize = 16 * 1024;
 #[cfg(target_os = "linux")]
@@ -67,6 +71,14 @@ pub enum PqTrustOperationV2 {
         expected: LearningTrustFrontier,
         next: LearningTrustFrontier,
     },
+    ReleaseFrontierLoad {
+        owner_id: String,
+    },
+    ReleaseFrontierCompareAndSet {
+        owner_id: String,
+        expected: Option<ReleaseFrontierV1>,
+        next: ReleaseFrontierV1,
+    },
 }
 #[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
 #[serde(tag = "kind", rename_all = "snake_case", deny_unknown_fields)]
@@ -76,6 +88,8 @@ pub enum PqTrustOutcomeV2 {
     CompareAndSetApplied { value: FinalUseFrontier },
     LearningFrontier { value: LearningTrustFrontier },
     LearningCompareAndSetApplied { value: LearningTrustFrontier },
+    ReleaseFrontier { value: Option<ReleaseFrontierV1> },
+    ReleaseCompareAndSetApplied { value: ReleaseFrontierV1 },
     Conflict,
     Unavailable,
 }
@@ -364,6 +378,18 @@ fn validate_operation(operation: &PqTrustOperationV2) -> Result<(), AuthorityTru
         {
             Ok(())
         }
+        PqTrustOperationV2::ReleaseFrontierLoad { owner_id } if release::valid_owner(owner_id) => {
+            Ok(())
+        }
+        PqTrustOperationV2::ReleaseFrontierCompareAndSet {
+            owner_id,
+            expected,
+            next,
+        } if release::valid_owner(owner_id)
+            && release::valid_transition(expected.as_ref(), next) =>
+        {
+            Ok(())
+        }
         _ => Err(AuthorityTrustError::Invalid),
     }
 }
@@ -375,3 +401,7 @@ pub(crate) mod tests;
 #[cfg(all(test, target_os = "linux"))]
 #[path = "authority_trust_learning_tests.rs"]
 mod learning_tests;
+
+#[cfg(all(test, target_os = "linux"))]
+#[path = "authority_trust_release_tests.rs"]
+mod release_tests;
