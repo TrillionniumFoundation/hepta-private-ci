@@ -1,0 +1,31 @@
+diff --git a/codex-rs/hepta-learning-artifacts/profiles/smollm2-public-initial-v2.execution-sources-v12.json b/codex-rs/hepta-learning-artifacts/profiles/smollm2-public-initial-v2.execution-sources-v12.json
+index 2510a5e72d6869bb3c73c255aabd37d2622c166b..8a98dd49e9a58aee292aa63ccd12a6d4f736b6e0 100644
+--- a/codex-rs/hepta-learning-artifacts/profiles/smollm2-public-initial-v2.execution-sources-v12.json
++++ b/codex-rs/hepta-learning-artifacts/profiles/smollm2-public-initial-v2.execution-sources-v12.json
+@@ -1,6 +1,6 @@
+ {
+-  "chain_commit": "03521b2f32346a49cccde8ff72e8c7b886b31222",
+-  "chain_tree": "e0235248ecae2a67717c8b9ff2e3f25774ba63d7",
++  "chain_commit": "b5ef97b29c2e8b738525a2e3326dd60784c46e72",
++  "chain_tree": "020880f22725e93cabb65c6e7eda3cbbd3c2405a",
+   "files": {
+     "config/pon/binary-diverse60-training-v3.json": {
+       "sha256": "d457f4b01cc6aaa445403e81b1fa9511e24f23e4254a6ef9ff9ec29abab693cf",
+diff --git a/scripts/hepta_smollm_execution_source_v1.py b/scripts/hepta_smollm_execution_source_v1.py
+index 7e53f0162aa05b5fd401a7a0302ef7ff207fd88d..429f85112577caf3abf131adc502d5483076797d 100644
+--- a/scripts/hepta_smollm_execution_source_v1.py
++++ b/scripts/hepta_smollm_execution_source_v1.py
+@@ -78,10 +78,10 @@
+ # A new cancellation-capable source must be frozen independently of V11.
+ # Frozen only after the reviewed Chain candidate was published with this exact tree.
+ PROFILE_V12 = "hepta-integrated-chain-execution-v12"
+-CHAIN_COMMIT_V12 = "03521b2f32346a49cccde8ff72e8c7b886b31222"
+-CHAIN_TREE_V12 = "e0235248ecae2a67717c8b9ff2e3f25774ba63d7"
++CHAIN_COMMIT_V12 = "b5ef97b29c2e8b738525a2e3326dd60784c46e72"
++CHAIN_TREE_V12 = "020880f22725e93cabb65c6e7eda3cbbd3c2405a"
+ MANIFEST_NAME_V12 = "smollm2-public-initial-v2.execution-sources-v12.json"
+-MANIFEST_SHA256_V12 = "2410c65955383aaffa977840770c8209b8f62db0805ccc7585091d37cd5f99e7"
++MANIFEST_SHA256_V12 = "4b49e0b611eb0c8bad4992319edba7d73d59cec6fbdd37978b6cd0be986d2a21"
+ RUNTIME_SOURCES_V11 = frozenset(
+     (
+         "formal/pon-nakamoto-v1/contract_wire.py",

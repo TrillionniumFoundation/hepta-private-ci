@@ -1,0 +1,197 @@
+{
+  "build_environment": {
+    "CARGO_BUILD_JOBS": "2",
+    "CARGO_INCREMENTAL": "0",
+    "CARGO_TARGET_DIR": "/home/qian-qi/work/chain-joint-20261105-93bfc-w1-target-C3",
+    "CARGO_TERM_COLOR": "never",
+    "PYTHONDONTWRITEBYTECODE": "1",
+    "RUST_TEST_THREADS": "1"
+  },
+  "commit": "b5ef97b29c2e8b738525a2e3326dd60784c46e72",
+  "compiler_override_keys": [],
+  "completed_utc": "2026-11-05T17:13:38Z",
+  "coordinator_sha256": "1746a1f161b9e9619214dfef3e58407a0d6817ac9bc2877ae3b802d26d723ad0",
+  "execution_context": "local-native-preflight",
+  "failures": [
+    "complete candidate objects required; no partial source execution"
+  ],
+  "fastest_adversary_qualified": false,
+  "missing_candidate_objects": [
+    "?994f491e4aaf28ef4dbebd85c3a2d8260b6c6db6",
+    "?1df0e0369e878ec123511158082d56109562a126",
+    "?0afe2d73e0bcc8c71e7e38e733b71d13568b1209"
+  ],
+  "observations": [
+    {
+      "command": [
+        "bash",
+        "scripts/project-preflight.sh",
+        "--audit"
+      ],
+      "elapsed_ns": 93920550,
+      "exit_code": 0,
+      "name": "restored-preflight",
+      "passed": true,
+      "stderr": {
+        "bytes": 0,
+        "path": "restored-preflight.stderr",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stderr_limit_bytes": 8388608,
+      "stdout": {
+        "bytes": 133,
+        "path": "restored-preflight.stdout",
+        "sha256": "a47133fd7030ccda88d70f7e8f0c9df1ffb0fc5fd3257ed034439bbe6fc6e2e0"
+      },
+      "stdout_limit_bytes": 8388608,
+      "timed_out": false,
+      "timeout_seconds": 120
+    },
+    {
+      "command": [
+        "git",
+        "status",
+        "--porcelain=v1",
+        "--untracked-files=all"
+      ],
+      "elapsed_ns": 48446039,
+      "exit_code": 0,
+      "name": "restored-clean",
+      "passed": true,
+      "stderr": {
+        "bytes": 0,
+        "path": "restored-clean.stderr",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stderr_limit_bytes": 8388608,
+      "stdout": {
+        "bytes": 0,
+        "path": "restored-clean.stdout",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stdout_limit_bytes": 8388608,
+      "timed_out": false,
+      "timeout_seconds": 120
+    },
+    {
+      "command": [
+        "git",
+        "fetch",
+        "--no-write-fetch-head",
+        "--no-tags",
+        "--no-auto-gc",
+        "origin",
+        "b5ef97b29c2e8b738525a2e3326dd60784c46e72"
+      ],
+      "elapsed_ns": 2869142757,
+      "exit_code": 0,
+      "name": "fetch-frozen-candidate",
+      "passed": true,
+      "stderr": {
+        "bytes": 0,
+        "path": "fetch-frozen-candidate.stderr",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stderr_limit_bytes": 8388608,
+      "stdout": {
+        "bytes": 0,
+        "path": "fetch-frozen-candidate.stdout",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stdout_limit_bytes": 8388608,
+      "timed_out": false,
+      "timeout_seconds": 600
+    },
+    {
+      "command": [
+        "git",
+        "rev-parse",
+        "b5ef97b29c2e8b738525a2e3326dd60784c46e72^{tree}"
+      ],
+      "elapsed_ns": 5373721,
+      "exit_code": 0,
+      "name": "candidate-tree",
+      "passed": true,
+      "stderr": {
+        "bytes": 0,
+        "path": "candidate-tree.stderr",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stderr_limit_bytes": 8388608,
+      "stdout": {
+        "bytes": 41,
+        "path": "candidate-tree.stdout",
+        "sha256": "e4e8f97c51797f47d0ba8b42cde8332a6a36a626703a5ff2a1752fdf3a747407"
+      },
+      "stdout_limit_bytes": 8388608,
+      "timed_out": false,
+      "timeout_seconds": 120
+    },
+    {
+      "command": [
+        "git",
+        "rev-parse",
+        "b5ef97b29c2e8b738525a2e3326dd60784c46e72^"
+      ],
+      "elapsed_ns": 3959859,
+      "exit_code": 0,
+      "name": "candidate-parent",
+      "passed": true,
+      "stderr": {
+        "bytes": 0,
+        "path": "candidate-parent.stderr",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stderr_limit_bytes": 8388608,
+      "stdout": {
+        "bytes": 41,
+        "path": "candidate-parent.stdout",
+        "sha256": "dea2f0f703edc95c7c978f03860bb56821d8af835f5da8806b017273bdce1bec"
+      },
+      "stdout_limit_bytes": 8388608,
+      "timed_out": false,
+      "timeout_seconds": 120
+    },
+    {
+      "command": [
+        "git",
+        "rev-list",
+        "--objects",
+        "--no-object-names",
+        "--missing=print",
+        "--no-walk",
+        "b5ef97b29c2e8b738525a2e3326dd60784c46e72"
+      ],
+      "elapsed_ns": 30477588,
+      "exit_code": 0,
+      "name": "candidate-objects",
+      "passed": true,
+      "stderr": {
+        "bytes": 0,
+        "path": "candidate-objects.stderr",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stderr_limit_bytes": 8388608,
+      "stdout": {
+        "bytes": 422672,
+        "path": "candidate-objects.stdout",
+        "sha256": "57dd26ad2ee6eab5bb6676fe5aaee784a644a8ff28ce1c38252425e5904731c0"
+      },
+      "stdout_limit_bytes": 8388608,
+      "timed_out": false,
+      "timeout_seconds": 120
+    }
+  ],
+  "output": "/home/qian-qi/work/chain-joint-20261105-93bfc-w1-native-C3/prepare",
+  "passed": false,
+  "phase": "prepare",
+  "production_activation": false,
+  "public_service_measured": false,
+  "root": "/home/qian-qi/work/chain-joint-20261105-93bfc-current",
+  "schema": "trnm-c3-local-w1-native-phase-v1",
+  "source_after": null,
+  "source_before": null,
+  "started_utc": "2026-11-05T17:13:34Z",
+  "tree": "020880f22725e93cabb65c6e7eda3cbbd3c2405a",
+  "work_hardness_accepted": false
+}

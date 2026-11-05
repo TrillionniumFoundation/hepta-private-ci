@@ -1,0 +1,413 @@
+{
+  "schema": "cell-residency-reproduction-v1",
+  "scope": "native immutable byte staging and local selection; not model forward, host admission or production acceptance",
+  "baseline_commit": "93e207c8d2ccb8509f78566223abc371b9d8118b",
+  "baseline_tree": "1066c67970802b52070ece6fcc77bc9b2806a4e1",
+  "integration": {
+    "repository": "TrillionniumFoundation/Trillionnium-Chain",
+    "pull_request": 688,
+    "branch": "fix/chain-six-axis-performance-20261103",
+    "source_revision": "resolve the containing Git commit and verify candidate_source_sha256; this record does not hash itself"
+  },
+  "toolchain": {
+    "rustc": "1.95.0 (59807616e 2026-04-14)",
+    "rustc_commit": "59807616e1fa2540724bfbac14d7976d7e4a3860",
+    "host": "x86_64-unknown-linux-gnu",
+    "llvm": "22.1.2",
+    "workspace_members": 26,
+    "all_features_resolved_packages": 180,
+    "workspace_lock_unchanged": true
+  },
+  "candidate_source_sha256": {
+    "rust-toolchain.toml": "24ef3b9d3edbd850aa386cb0a98e10450b0030991a4537cb359f54d49dbbb33a",
+    "trillionnium/Cargo.toml": "48e0094090202b3b6d12331965be846a34c2a454ff3dc3717a532f228e4dd50b",
+    "trillionnium/Cargo.lock": "773cd1364a02cc70b017412350e2343172ae4f2a8770b044a5a307e33a638d0a",
+    "trillionnium/crates/trnm-data-availability/Cargo.toml": "81f73d9ffb4091abc54962fe22cf8ecd448fa748efd0c19cba5f3e8db93501a1",
+    "trillionnium/crates/trnm-data-availability/src/cell.rs": "48871e73c4d5d05e3e26b6af3d8946754639bb53aaee892cc6c9d96967512453",
+    "trillionnium/crates/trnm-data-availability/src/cell/release.rs": "fe23f046008d18c63f97c9356281456af6321189000cb8c799daa251dac27f0f",
+    "trillionnium/crates/trnm-data-availability/src/cell/release_tests.rs": "94c0d3651d8ca53190f2165cc74b36d71732f0a3155957d02bd7878a74ca9a7f",
+    "trillionnium/crates/trnm-data-availability/src/cell/residency.rs": "c04fe5894bd4e7aaf7f275a10d7a2c10e56da46b14d77f73fc983c3e50a0f747",
+    "trillionnium/crates/trnm-data-availability/src/cell/residency_tests.rs": "e372cfbeeeb4d8011a50923ff9e353f7dc79abf04f7428e638a4d2153d26cded",
+    "trillionnium/crates/trnm-data-availability/examples/cell_residency_observer.rs": "a1ddd3a3ccf249dfc118d370bffcec99596794a0a5955a32e360f5ba4d5b224f",
+    "config/pon/pq-cross-branch-corpus-v1.json": "f49bfb95fa2719d8423f600b68895557854044af46a8dfce9e40f3e7e4818aa7"
+  },
+  "native_tests": {
+    "command": [
+      "cargo",
+      "test",
+      "--locked",
+      "--offline",
+      "--manifest-path",
+      "trillionnium/Cargo.toml",
+      "-p",
+      "trnm-data-availability",
+      "--all-targets",
+      "--",
+      "--test-threads=1"
+    ],
+    "exit_code": 0,
+    "passed": 223,
+    "failed": 0,
+    "ignored": 0,
+    "target_results": [
+      {
+        "target": "unittests src/lib.rs",
+        "passed": 205,
+        "failed": 0,
+        "ignored": 0
+      },
+      {
+        "target": "unittests src/bin/trnm-cell.rs",
+        "passed": 0,
+        "failed": 0,
+        "ignored": 0
+      },
+      {
+        "target": "unittests src/bin/trnm-cell-discovery.rs",
+        "passed": 0,
+        "failed": 0,
+        "ignored": 0
+      },
+      {
+        "target": "tests/cell_cache_wal_cli.rs",
+        "passed": 1,
+        "failed": 0,
+        "ignored": 0
+      },
+      {
+        "target": "tests/cell_closure_cli.rs",
+        "passed": 3,
+        "failed": 0,
+        "ignored": 0
+      },
+      {
+        "target": "tests/cell_discovery_cli.rs",
+        "passed": 5,
+        "failed": 0,
+        "ignored": 0
+      },
+      {
+        "target": "tests/cell_fetch_deadline_cli.rs",
+        "passed": 5,
+        "failed": 0,
+        "ignored": 0
+      },
+      {
+        "target": "tests/cell_release_cli.rs",
+        "passed": 2,
+        "failed": 0,
+        "ignored": 0
+      },
+      {
+        "target": "tests/pq_cell_cli.rs",
+        "passed": 2,
+        "failed": 0,
+        "ignored": 0
+      },
+      {
+        "target": "unittests examples/cell_residency_observer.rs",
+        "passed": 0,
+        "failed": 0,
+        "ignored": 0
+      },
+      {
+        "target": "unittests examples/cell_serving_ab_observer.rs",
+        "passed": 0,
+        "failed": 0,
+        "ignored": 0
+      }
+    ],
+    "log_sha256": "7920c5973469b1f62ad09958532819038a163f330a390b5891f71f0b95d7a2d7",
+    "executed_elf_sha256": {
+      "trnm_data_availability-860e4d3b2378d360": "5d85eb0dc71da1ae50ba4ac1bc5e90dcd464e0d1e33284841a0e652046cc55a7",
+      "trnm_cell-1ae2e6d4d6723ab2": "5b242e87bb5fca1a66f3e9bcc8a8fe6461c0dea6baff93fc534a5494b735bc93",
+      "trnm_cell_discovery-76371536d5e6ab4a": "85f30953707fa0cd85db79b34b3f2cedcd1b463b3f88b8f8385b42fac5ae6db8",
+      "cell_cache_wal_cli-418ca6fb26abe462": "c1f6dfef8e022b20f84abb91a7ad9c67ce0ef34821def42557d1af1678ad6ca5",
+      "cell_closure_cli-4147b23a0eed19c0": "1be521362d15d95938ee526f7022235d287605e663a0d818352adcf728e36aad",
+      "cell_discovery_cli-a9cc25f7b591d32a": "59a5755e8e33ff79761d0fb88985a98fc23dc9f931621aa7c55d20f9ce509161",
+      "cell_fetch_deadline_cli-be9c799cfd9a3594": "90f388f4ae07f73a88df82e2848283bf9dd175fd48a8ab7f9f496c7014f39953",
+      "cell_release_cli-c77730e06da90998": "e7f84b6c98e9c389eab85731996fe7a2e0bb2f69e456b01869266be3b075fbf5",
+      "pq_cell_cli-7405d1d6aace5673": "9fdf5aaff743e230c853de268197071defcb72e5c78ac8cab8ca63d25c2cae7e",
+      "cell_residency_observer-a62470d772aea495": "4a0246e92891bdffe856703f960c13a83436461f7080cd58da82c52cfb68f6a2",
+      "cell_serving_ab_observer-d6798334e0f523c2": "9d27aa16fa54f2aafb3479ead991b947f32c1b9abda7ab723c836f46d23a9c6a"
+    }
+  },
+  "new_control_names": [
+    "cell::release_tests::closure_prefetch_expired_original_deadline_opens_no_connections",
+    "cell::release_tests::closure_prefetch_rejects_changed_owner_generation_before_cache_or_network_work",
+    "cell::release_tests::closure_prefetch_repeat_is_fully_local_and_reuses_the_same_version",
+    "cell::release_tests::closure_prefetch_uses_real_transport_without_publishing_a_marker",
+    "cell::residency::tests::residency_byte_quota_refuses_new_release_without_evicting_hot_or_selected_bytes",
+    "cell::residency::tests::residency_cancellation_after_index_merge_rolls_back_only_new_chunks_and_retry_recharges",
+    "cell::residency::tests::residency_corrupt_cache_cannot_create_a_new_view_or_mutate_existing_immutable_bytes",
+    "cell::residency::tests::residency_deadline_after_index_merge_rolls_back_new_chunks_without_renewal",
+    "cell::residency::tests::residency_expired_or_cancelled_preparation_and_switch_preserve_the_old_selection",
+    "cell::residency::tests::residency_hits_recheck_exact_version_generation_profile_roles_and_loader_budgets",
+    "cell::residency::tests::residency_incomplete_prefetch_retains_old_selection_and_retry_only_prepares_bytes",
+    "cell::residency::tests::residency_known_closure_capacity_refuses_prefetch_before_any_peer_connection",
+    "cell::residency::tests::residency_local_selection_compare_and_swap_rejects_stale_and_aba_tickets",
+    "cell::residency::tests::residency_reference_budget_counts_shared_mappings_and_eviction_releases_all_unpinned_bytes",
+    "cell::residency::tests::residency_restart_reuses_fixed_disk_bytes_but_restores_no_local_selection_or_hot_pin",
+    "cell::residency::tests::residency_tcp_mid_download_cancellation_is_observed_after_bounded_complete_fetch",
+    "cell::residency::tests::residency_tcp_prefetch_then_100_local_reads_need_neither_provider_nor_disk_cache",
+    "cell::residency::tests::residency_two_versions_share_the_same_base_buffers_but_keep_distinct_file_mappings",
+    "cell::residency::tests::residency_valid_individual_chunks_do_not_bypass_the_ordered_payload_digest"
+  ],
+  "documentation_tests": {
+    "passed": 8,
+    "failed": 0,
+    "ignored": 0,
+    "kind": "existing compile-fail boundaries",
+    "log_sha256": "41f3dac35c0120c460da51020d0c0b0abd69d35166f099657328193ea39cf5f3"
+  },
+  "source_negative_controls": {
+    "source-integrity-final": 34,
+    "research-corpus-negative": 34,
+    "claim-guard": 22
+  },
+  "final_validation_commands": [
+    {
+      "stage": "clippy-final",
+      "command": [
+        "cargo",
+        "clippy",
+        "--locked",
+        "--offline",
+        "--manifest-path",
+        "trillionnium/Cargo.toml",
+        "-p",
+        "trnm-data-availability",
+        "--all-targets",
+        "--",
+        "-D",
+        "warnings"
+      ],
+      "exit_code": 0,
+      "elapsed_seconds": 8.174815,
+      "log_sha256": "170ce686615d95026a69b030ea93f66980b5e03798a38b8eb279e1aaa476f13f"
+    },
+    {
+      "stage": "format-final",
+      "command": [
+        "cargo",
+        "fmt",
+        "--manifest-path",
+        "trillionnium/Cargo.toml",
+        "--all",
+        "--check"
+      ],
+      "exit_code": 0,
+      "elapsed_seconds": 13.347323,
+      "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "stage": "doc-tests-final",
+      "command": [
+        "cargo",
+        "test",
+        "--locked",
+        "--offline",
+        "--manifest-path",
+        "trillionnium/Cargo.toml",
+        "-p",
+        "trnm-data-availability",
+        "--doc"
+      ],
+      "exit_code": 0,
+      "elapsed_seconds": 0.564708,
+      "log_sha256": "41f3dac35c0120c460da51020d0c0b0abd69d35166f099657328193ea39cf5f3"
+    },
+    {
+      "stage": "source-integrity-final",
+      "command": [
+        "python",
+        "scripts/ci/test_ci_source_integrity.py"
+      ],
+      "exit_code": 0,
+      "elapsed_seconds": 4.358559,
+      "log_sha256": "db85af89171d6177bfdcbc802ebbd6a98feba6453f544652ba1e79f8a47e206f"
+    },
+    {
+      "stage": "research-corpus-negative",
+      "command": [
+        "python",
+        "scripts/ci/test_pq_research_integration.py"
+      ],
+      "exit_code": 0,
+      "elapsed_seconds": 15.365191,
+      "log_sha256": "b7776d75082ed69840b426427ee6861d857c2a088eca30ba5ca4b5fb05dbe9b3"
+    },
+    {
+      "stage": "claim-guard",
+      "command": [
+        "python",
+        "scripts/ci/test_pq_chain_claim_guard.py"
+      ],
+      "exit_code": 0,
+      "elapsed_seconds": 0.163171,
+      "log_sha256": "f4713c46295599194fdb13df78b1b8a4de7bcb6786c28127d54e79b8f3e059c4"
+    },
+    {
+      "stage": "research-corpus-final",
+      "command": [
+        "python",
+        "scripts/ci/check_pq_research_integration.py"
+      ],
+      "exit_code": 0,
+      "elapsed_seconds": 0.239487,
+      "log_sha256": "405fe0cc538aad27409f0bd9fe8d1b5a3fbcdfd992507fdb3fb7b37dea7f9db3"
+    },
+    {
+      "stage": "repository-check-final",
+      "command": [
+        "python",
+        "scripts/ci/check_repository.py"
+      ],
+      "exit_code": 0,
+      "elapsed_seconds": 50.329078,
+      "log_sha256": "256e143243a31a16da0271ca7ea18b036965bde8ffe53ce07aec10e0773ccfc0"
+    }
+  ],
+  "research_source_check": {
+    "canonical_default_provider_contract_checked": true,
+    "canonical_pnq2_contract_checked": true,
+    "continuous_npq6_combination_accepted": false,
+    "cryptographic_acceptance": false,
+    "exact_source_blobs": 393,
+    "legacy_qtx1_optional_adapter_contract_checked": true,
+    "native_transfer_account_contract_checked": true,
+    "native_transport_contract_checked": true,
+    "node_activated": false,
+    "production_confidentiality_accepted": false,
+    "schema": "trnm-pq-cross-branch-check-v1",
+    "status": "HOLD_NO_GO",
+    "upstream_heads": 6,
+    "whole_native_authorization_migrated": false
+  },
+  "repository_source_and_link_check": {
+    "activation": false,
+    "head": "93e207c8d2ccb8509f78566223abc371b9d8118b",
+    "local_links": 2454,
+    "normal_dependency_edges": 24,
+    "result": "PASS",
+    "runtime_implemented": false,
+    "rust_files": 1097,
+    "source_state": "dirty-candidate",
+    "tree": "1066c67970802b52070ece6fcc77bc9b2806a4e1",
+    "workspace_packages": 26
+  },
+  "observer": {
+    "command": [
+      "cargo",
+      "run",
+      "--locked",
+      "--offline",
+      "--manifest-path",
+      "trillionnium/Cargo.toml",
+      "-p",
+      "trnm-data-availability",
+      "--example",
+      "cell_residency_observer"
+    ],
+    "exit_code": 0,
+    "result": {
+      "after_old_version_eviction": {
+        "chunk_references": 6,
+        "resident_closures": 1,
+        "selected_shared_base_readback": true,
+        "unique_chunks": 6,
+        "unique_payload_bytes": 70656
+      },
+      "cold": {
+        "connection_attempts": 9,
+        "downloaded_bytes": 70656,
+        "downloaded_chunks": 6,
+        "received_response_bytes": 71667
+      },
+      "exclusions": "no real router predictor, tensors, GPU allocation, CURRENT, FinalUse, KV/activation transport, distributed inference, WAN or latency percentile qualification; observer source hash alone is not the full build receipt",
+      "fixture": {
+        "adapter_bytes_per_version": 4096,
+        "base_bytes": 65536,
+        "closure_ids": [
+          "d26e30aaee0ffb95614cc6a36dffa9c7a9e24e4af9ce5b21c436b84a656e28db",
+          "d403d70389a85bde2b88850e982f353d4adad88a42db023ab07f5ae488de4bd3"
+        ],
+        "closures": 2,
+        "files_per_closure": 3,
+        "tokenizer_bytes": 1024
+      },
+      "local": {
+        "base_buffers_shared_between_closures": 4,
+        "chunk_references": 12,
+        "fixed_disk_version_prepared_without_peers": true,
+        "hot_accesses": 1000,
+        "rehashed_payload_bytes": 70656000,
+        "resident_closures": 2,
+        "resident_hit_fetch": false,
+        "selected_generation": 2,
+        "unique_chunks": 7,
+        "unique_payload_bytes": 74752
+      },
+      "observer_source_sha256": "a1ddd3a3ccf249dfc118d370bffcec99596794a0a5955a32e360f5ba4d5b224f",
+      "provider": {
+        "accepted_connections": 11,
+        "completed_requests": 11,
+        "sent_response_bytes": 76055,
+        "stopped_and_joined_before_hot_access": true
+      },
+      "refusals": {
+        "cancelled_switch": "cell: resident operation cancelled",
+        "cold_local_miss": "cell: no configured peer supplied the pinned bytes",
+        "expired_download": "cell: resident operation deadline",
+        "expired_switch": "cell: resident operation deadline",
+        "hot_eviction": "cell: resident hot pin",
+        "resident_quota": "cell: resident byte budget",
+        "selected_eviction": "cell: resident local selection pinned",
+        "stale_selection": "cell: resident selection conflict",
+        "wrong_generation": "cell: resident loader context"
+      },
+      "result": "PASS",
+      "route_prefetch": {
+        "cached_chunks": 5,
+        "connection_attempts": 2,
+        "downloaded_bytes": 4096,
+        "downloaded_chunks": 1,
+        "preserved_previous_selection": true,
+        "received_response_bytes": 4388
+      },
+      "schema": "cell-residency-byte-observation-v1",
+      "scope": "synthetic byte staging; explicit route hint; loopback TCP; no model forward"
+    },
+    "stdout_sha256": "581de002b5f3a7af7ea7a9c86de853ea6e19186e90f53f0050110d1214f5b122",
+    "elf_sha256": "ac28e0e4cc3068212df5e2f5f59cf9f4a13e793e563870c789aabb04bd3e2702"
+  },
+  "earlier_observations": [
+    {
+      "kind": "initial_test_compile_failure",
+      "cause": "new nested test module imported its parent scope rather than public cell fixture types; fixed the import without weakening tests",
+      "log_sha256": "4f6f7e131b7dd307de3348a17131712a23d9463c0b8139894ba7cf8fe3da481f"
+    },
+    {
+      "kind": "expected_source_pin_mismatch",
+      "cause": "changed Cell code and contract required refreshing exact blob pins; preserved original required entries and added three new source/test/observer pins",
+      "log_sha256": "879d4d2169b3528062b09c60f912cc7bb54bf31954fac1a6255319a63da0c8db"
+    }
+  ],
+  "acceptance": {
+    "byte_component_controls_passed": true,
+    "real_router_prediction_integrated": false,
+    "real_model_loader_integrated": false,
+    "shared_base_tensor_or_gpu_memory_proven": false,
+    "current_or_final_use_authorized_by_residency": false,
+    "cross_node_inference_implemented": false,
+    "wan_latency_or_model_p99_qualified": false,
+    "production_activation": false
+  },
+  "remaining_contracts": [
+    "Use the existing Hepta owner, grant, qualification, safe parser and FinalUse at actual load/use; process-local Arc buffers do not survive exec_owner.",
+    "Bind a new exact source/profile composition and measure its own real model forward and loaded hashes; historical V8 selects a different Chain source.",
+    "Keep aggregate budgets across multiple predicted closure calls in the upper owner.",
+    "External cancellation is observed before/after the complete fetch phase and at local staging checkpoints; fetch can keep consuming its original finite reservation until completion or deadline.",
+    "Retained unique bytes exclude metadata/allocator/SQLite/transient conversion/device allocations; lookup callbacks own their own computation deadlines."
+  ]
+}

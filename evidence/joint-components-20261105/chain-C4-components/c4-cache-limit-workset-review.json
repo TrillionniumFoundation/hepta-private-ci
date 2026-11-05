@@ -1,0 +1,77 @@
+{
+  "schema": "chain-c4-cache-limit-independent-workset-review-v1",
+  "scope": "Independent recomputation over the preserved W1 exact-C3 source workset. No parser profiling, native test, full original gate or RSS measurement is performed by this review.",
+  "previous_review": {
+    "path": "pq_recovery/c4-cache-limit-review.json",
+    "sha256": "f5da3fcb2460394a34219ba574df8d78f60d1020eb6eb75159e774f6177fb8ef",
+    "preserved_unchanged": true
+  },
+  "workset": {
+    "path": "w1/C3-applicability-workset.json",
+    "bytes": 47049,
+    "sha256": "da6e9ef6395c01c7545a1cc860c6f2f172252892dce3899500c45452600b16ee",
+    "source_commit": "b5ef97b29c2e8b738525a2e3326dd60784c46e72",
+    "source_tree": "020880f22725e93cabb65c6e7eda3cbbd3c2405a",
+    "W1_reported_all_Git_blobs_verified": true
+  },
+  "independent_checks": {
+    "all_rows_unique": true,
+    "row_count": 171,
+    "recomputed_statistics_equal": true,
+    "per_row_threshold_flags_equal": true,
+    "recomputed_256k_exclusions_equal": true,
+    "recomputed_512k_exclusions_equal": true,
+    "baseline_unique_inputs_below_128_per_transform": true
+  },
+  "recomputed_statistics": {
+    "rust": {
+      "unique_inputs": 100,
+      "total_input_bytes": 4028182,
+      "total_input_chars": 4028096,
+      "total_transform_calls": 1373,
+      "maximum_input_chars": 386697
+    },
+    "python": {
+      "unique_inputs": 71,
+      "total_input_bytes": 1352071,
+      "total_input_chars": 1352059,
+      "total_transform_calls": 575,
+      "maximum_input_chars": 64669
+    }
+  },
+  "newly_cache_eligible_inputs": [
+    {
+      "bytes": 386697,
+      "excluded_by_256k": true,
+      "excluded_by_512k": false,
+      "git_blob": "891ec08f59a6e2346735bd08b1bf363466fe38a3",
+      "kind": "rust",
+      "parse_calls_per_complete_validate": 37,
+      "parser_text_chars": 386697,
+      "path": "trillionnium/crates/trnm-pon-node/src/ingress/public_v3.rs"
+    },
+    {
+      "bytes": 346418,
+      "excluded_by_256k": true,
+      "excluded_by_512k": false,
+      "git_blob": "48674a83dde3f8ea6721e93cd5f52cab8a28fa63",
+      "kind": "rust",
+      "parse_calls_per_complete_validate": 44,
+      "parser_text_chars": 346417,
+      "path": "trillionnium/crates/trnm-pon-node/src/store.rs"
+    }
+  ],
+  "remaining_oversize_at_512k": [],
+  "reported_transform_calls_for_new_inputs_per_complete_validate": 81,
+  "resource_interpretation": [
+    "The only baseline inputs whose cache eligibility changes are these two Rust files. The largest current Python input is 64669 characters, so this literal does not add a larger Python baseline input to retention.",
+    "The two additional Rust input strings plus same-length masked outputs represent 1466228 retained characters before Python object/LRU overhead; actual representation bytes and overall RSS were not measured.",
+    "100 Rust and 71 Python baseline unique texts fit their separate 128-entry caches. Mutation tests introduce additional full-text versions, so this does not prove a bound on the runtime working set or guarantee freedom from eviction.",
+    "There are 81 declared rust_code calls across the two previously oversize files in one complete validate. This is structural workload evidence, not an observed hit count, elapsed-time attribution or predicted 300-second pass.",
+    "The prior theoretical full-cache capacity discussion remains a capacity warning, not a description of this measured baseline corpus. Original process/resource controls and the 300-second timeout remain the acceptance test."
+  ],
+  "candidate_parser_source_is_a_declared_workset_input": false,
+  "decision": "The actual coverage supports the narrowly targeted 512-Ki-character retention change; retain the original complete source/test/resource gates and preserve C3 timeout evidence.",
+  "new_tests_executed": false,
+  "full_gate_pass": false
+}

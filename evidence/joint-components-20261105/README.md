@@ -2,11 +2,21 @@
 
 **Release status: HOLD.** This record retains reviewable component changes and their actual refusals. It does not authorize production activation or mark any of the eight joint acceptance gates complete.
 
-## Current fixed Chain candidate
+## Current fixed Chain C4 candidate
 
-The current candidate is Chain C3 `b5ef97b29c2e8b738525a2e3326dd60784c46e72`, tree `020880f22725e93cabb65c6e7eda3cbbd3c2405a`, on draft [PR #722](https://github.com/TrillionniumFoundation/Trillionnium-Chain/pull/722). Its verified ordered merge is `df39fe4db01e20ae6494a2cb4570434c50a84cfc`, with parents `dd6e1c3cbeacbdc532b0679297835b3a0aac78f0` then C3, and the same tree. C3 changes only three existing CI files relative to C2: bounded content-keyed parsing, five mutation controls, and the exact nine-name W1 kernel guard. The original 300-second applicability limit and W1 commands/resources/budgets remain unchanged.
+The current candidate is Chain C4 `8df4b21d893906570d48f5beafabb3b31e0aefbc`, tree `6f5aaa2af0432e27e24b6bd2ad18013ab4423d14`, on [PR #724](https://github.com/TrillionniumFoundation/Trillionnium-Chain/pull/724). Its verified ordered merge `0fd0c94b94ae7181bf387d52e650be8dd359325f` has parents `dd6e1c3cbeacbdc532b0679297835b3a0aac78f0` then C4, and the same tree.
+
+C4 changes only the parser cache eligibility limit from 262144 to 524288 characters. Each parser retains its own 128-entry LRU, original path check and fresh read, complete-content key and immutable result. Original checking functions, test bytes, CI resources and deadlines remain unchanged. The independently verified baseline workset has 100 Rust and 71 Python inputs; only two Rust files exceeded the old threshold, and none exceeds the new one. This is a coverage observation, not a byte/RSS bound. See [C4 component and independent reviews](chain-C4-components/).
+
+C4's original complete preparation and checks passed on 10357 tracked files and 985270534 bytes, unchanged before/after. Applicability completed in **67.939380245 seconds within the original 300-second budget**. The 92 report controls, 100 CI controls, three selected Rust controls, strict Clippy and format checks also passed. The phase manifests are retained in [C4 native evidence](chain-native-C4/). The cumulative child ru_maxrss value is not a separate applicability RSS measurement. The four-kernel collector and original reader subsequently passed on C4 with 96 proof flows and 1152 timed verifications; its invoked ELF digest matches the historical C2 image, but the C4 timings were newly executed. Full raw export follows the exclusive measurement window. Original legal-strategy, specialized-producer and hosted public-service gates retain their own execution requirements.
+
+## Preserved C3 source and failed gate
+
+The preserved C3 candidate is Chain C3 `b5ef97b29c2e8b738525a2e3326dd60784c46e72`, tree `020880f22725e93cabb65c6e7eda3cbbd3c2405a`, on draft [PR #722](https://github.com/TrillionniumFoundation/Trillionnium-Chain/pull/722). Its verified ordered merge is `df39fe4db01e20ae6494a2cb4570434c50a84cfc`, with parents `dd6e1c3cbeacbdc532b0679297835b3a0aac78f0` then C3, and the same tree. C3 changes only three existing CI files relative to C2: bounded content-keyed parsing, five mutation controls, and the exact nine-name W1 kernel guard. The original 300-second applicability limit and W1 commands/resources/budgets remain unchanged.
 
 The complete C2 base passed the original project audit and full raw source guard before the C3 commit. Seventeen selected parser controls and eight synthetic-log guard controls passed; the latter are not native Rust executions. See [C3 component provenance](chain-C3-components/root-review.json) and [fixed source/queued-run identity](chain-C3-components/fixed-candidate.json). All 17 actual C3 pull-request workflow runs were queued at 17:14:35 UTC. A dynamic PR aggregate receives no gate credit. C3 must earn its own original native and hosted results; the C2 measurements below retain historical scope.
+
+C3's complete original checks later failed only at applicability: **300.005226838 seconds**, nineteen cases completed and the twentieth started. All other original report/CI/Rust/Clippy/format controls passed with unchanged source. The first missing-object preparation refusal is separately preserved. The complete [79-file original C3 archive](chain-C3-history/complete-native-receipts/README.md) includes 70 actual command streams and 40 actual empty files; every archive member was independently compared with the exported originals. No C3 cost sampling was started. C2 and C3 timeouts remain failures.
 
 ## Preserved C2 candidate and source evidence
 
@@ -86,7 +96,17 @@ Historical component `495e36f8cb71fdae7290710dd339e2ee34d4feec` passed all ten p
 
 The first observer retained a provider test image but did not perform all later process-ancestry and post-open identity checks. A corrected collector subsequently passed three real desktop controls; this does not retrospectively improve the historical capture. Final qualification must bind the actual image during execution on the final source. The real Agentd process control is prepared separately to exercise durable provider application with no ACK, an owned supervisor kill, current-generation restart and lookup-only recovery of the same operation. Its fixture roots and loopback services do not establish independent custody, a live Chain node or WAN qualification.
 
-## Current Hepta preparation checkpoint
+## Current frozen Hepta H1 candidate
+
+H1 is frozen at `9f785cb201ba12ab0ae0f0d341c0f7912cc65efc`, tree `24804b21d0306b617e12fa3f5b9454a12ed4ad41`, on [PR #4896](https://github.com/TrillionniumFoundation/hepta-private-ci/pull/4896). It is stacked on the unchanged #4812 source `1556a4df6e279055fd8196f81a4ca2fe0f19384a`, with exactly 30 reviewed changed paths. V12 binds C4 with manifest SHA-256 `4d178376231d3063d122045a5978f3474b2e59eb5c7e38d7ac9c89c39f10b931`; all 53 selected source pins and 55 historical registry assignments remain unchanged.
+
+Root also verified prospective merge `a9ff46c9670364a5bc4c9058166290f2227b37f8`: its ordered parents are the unchanged base and H1, and its tree is identical to H1. In the [18:24 UTC hosted observation](hosted-checkpoint-20261105T1824/assessment.json), all 16 C4 pull-request workflows remained queued. H1's PQ renewal workflow and three other observed workflows were queued; three other workflows were in progress, v8-canary had succeeded and the FinalUse observations workflow was skipped. Those statuses do not qualify the required joint matrix or public-service gate. The separate dynamic C4 aggregate success likewise receives no required-gate credit.
+
+Actual full preparation verified 11839 tracked files and 183369088 bytes, exact raw Git blobs, zero missing/hidden entries, clean source, three unchanged shared configuration hashes and **zero formatter delta**. Root verified all 13 original files in [the complete H1 preparation](hepta-9f785-complete-preparation/root-review.json). Original native commands are pending the end of the independent W1 measurement window. They must execute on this exact source under the frozen coordinator's original 5400-second total bound. Source135/diverse32, 69 exact selected cases, full evidence161 plus its one original ignored case, additional original controls, scoped fix and format retain their separate original commands and deadlines. A local source-head/x64 result cannot qualify the hosted base-merge/ARM matrix.
+
+The intermediate C3-bound 135 and 32 Python commands passed. An extra whole-directory audit nevertheless failed on one generated ignored bytecode file; the original 66 source files remained unchanged. Both layers of result, all raw logs and that actual generated file are preserved in [V12 C3](v12-C3/). The C4 [two-file binding update](v12-C4/) did not rerun selected fixtures as a substitute for full H1 validation. Original tracked-source guards must not be represented as a closure over all ignored runtime inputs.
+
+## Preserved earlier Hepta preparation
 
 The source preparation branch is at `e373bf7df8b2d6a7360090ba392f0d07275063c8`, tree `b02a95375a5f6299abc8b167e216a0e2534acc52`, before the C3 V12 retarget. This integrates the recovery, bounded qualification-cost, ordinary automation PQ, real Agentd process test and 69-name workflow changes. It is not yet a frozen H1 qualification. The final five-file delta contains original formatter output plus two public-import corrections; no dependency or lock file changed.
 
@@ -102,12 +122,18 @@ Changing the enum to Enforce would not repair this missing owner relationship. E
 
 The [separate interface assessment](ordinary-pq-owner-interface-assessment.md) examines 21 fixed-source files. The existing ephemeral-input guard is consumed immediately before its HTTP attempt, but its contract and implementation concern federated-input currentness and explicitly do not confer provider authority. It cannot be relabelled as PQ authorization for WebSockets or other requests. A proper bridge needs an opaque, one-use owner capability, propagation through ordinary admission and physical attempts, and current PQ owner injection in the ordinary host composition. This bridge has not been implemented by the automation patch.
 
+## Current composition and input availability findings
+
+The [current independent 43-file generic PQ review](generic-PQ-bridge-current/assessment.md) confirms that all reviewed sources remain unchanged in H1. The existing external issuer is bound to runtime.codex.turn_start; the ordinary App Server composition has no generic issuer/policy/owner or one-shot entry capability. The first finite HTTP boundary would be after asynchronous authentication and before physical invocation, with the effect fence retained. WebSocket and tool waits require their own correct capability lifetimes. Automation authority and federation-input guards cannot be relabelled as generic permission. The required real generic-domain operator policy and per-attempt grant source remain missing from this composition.
+
+A bounded [authentic input availability audit](current-input-availability/availability-review.md) traced exact repository sources and already observed records. It did not obtain and verify a current physical full-model closure, operator owner configuration, runtime snapshot or installed-image qualification for this tuple. This does not establish global nonexistence. The historical 272189870-byte transfer and the separate 272189990-byte failed sealed cohort remain distinct; neither supplies current ordinary inference qualification. No private key or fixture authority was substituted for current inputs.
+
 ## Remaining joint conditions
 
 | Gate | Current boundary |
 | --- | --- |
-| Fixed joint candidate | Final complete Hepta source, configuration, dependencies, actual execution images and ordinary process behavior must be verified together with frozen C3. Component passes cannot be inherited by a new commit. |
-| W1 and public liveness | The original bounded x64 rejection collector and reader passed on C2; its applicability checks phase failed at 300 seconds. C3 must rerun the original checks, four-kernel collector, legal-strategy-v3 experiment and hosted service gate. |
+| Fixed joint candidate | Final complete Hepta source, configuration, dependencies, actual execution images and ordinary process behavior must be verified together with frozen C4. Component passes cannot be inherited by a new commit. |
+| W1 and public liveness | C4 original source/checks and the four-kernel collector/reader passed. Current legal and specialized-producer comparisons and the original hosted public-service gate remain separate requirements. C2/C3 failures and earlier measurements retain their original scope. |
 | Current PQ for effects | Ordinary automation controls and the generic tool/provider owner bridge require separate evidence. Current operator root custody and all critical sinks are not qualified by local signed fixtures. |
 | Recovery and unknown effects | Whole-store restore, physical process crash windows, current authority and independently retained frontiers must be validated together with the stable provider operation. Controlled store reopen is not physical host restore. |
 | Complete model adoption | Current-source authentic model/owner/snapshot inputs have not been obtained and verified in this run. Earlier transfers or small synthetic closures do not qualify this candidate. |
