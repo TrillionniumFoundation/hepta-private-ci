@@ -121,7 +121,7 @@ mod native_tests;
     any(target_arch = "x86_64", target_arch = "aarch64")
 ))]
 #[path = "automation_effect_host_pon_chain_tests.rs"]
-mod chain_tests;
+pub(super) mod chain_tests;
 
 #[cfg(all(
     test,

@@ -30,6 +30,10 @@ mod legacy_fixture;
 mod fixture;
 use fixture::PqFixture;
 
+#[cfg(any(target_arch = "x86_64", target_arch = "aarch64"))]
+#[path = "automation_effect_host_pq_chain_tests.rs"]
+mod chain_tests;
+
 const NOW: u64 = 1_000_000;
 
 #[tokio::test(flavor = "multi_thread", worker_threads = 2)]
