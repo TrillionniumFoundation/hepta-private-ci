@@ -36,6 +36,11 @@ use wiremock::http::HeaderValue;
 use wiremock::matchers::method;
 use wiremock::matchers::path_regex;
 
+#[path = "responses_websocket_concurrent.rs"]
+mod websocket_concurrent;
+
+pub use websocket_concurrent::start_concurrent_websocket_server;
+
 #[derive(Debug, Clone)]
 pub struct ResponseMock {
     requests: Arc<Mutex<Vec<ResponsesRequest>>>,

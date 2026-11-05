@@ -377,6 +377,31 @@ async fn wait_for_requests(
     }
 }
 
+// ResponseMock records requests before the caller's matcher is evaluated.
+// Wait until the request for this child phase has been observed.
+async fn wait_for_subagent_request(
+    mock: &core_test_support::responses::ResponseMock,
+    prompt: &str,
+) -> Result<Vec<ResponsesRequest>> {
+    let deadline = Instant::now() + Duration::from_secs(2);
+    loop {
+        let requests = mock
+            .requests()
+            .into_iter()
+            .filter(|request| {
+                request.body_contains_text(prompt) && !request.body_contains_text(SPAWN_CALL_ID)
+            })
+            .collect::<Vec<_>>();
+        if !requests.is_empty() {
+            return Ok(requests);
+        }
+        if Instant::now() >= deadline {
+            anyhow::bail!("expected a subagent request containing {prompt:?}, got none");
+        }
+        sleep(Duration::from_millis(10)).await;
+    }
+}
+
 async fn wait_for_request_with_model(
     mock: &core_test_support::responses::ResponseMock,
     model: &str,
@@ -760,8 +785,8 @@ async fn subagent_stop_replaces_stop_and_skips_internal_subagents() -> Result<()
         .await?;
 
     test.submit_turn(TURN_1_PROMPT).await?;
-    let _ = wait_for_requests(&first_child_request).await?;
-    let _ = wait_for_requests(&second_child_request).await?;
+    let _ = wait_for_subagent_request(&first_child_request, CHILD_PROMPT).await?;
+    let _ = wait_for_subagent_request(&second_child_request, SUBAGENT_STOP_CONTINUATION).await?;
 
     let subagent_stop_inputs = wait_for_hook_log(
         test.codex_home_path(),
@@ -850,7 +875,7 @@ async fn subagent_stop_replaces_stop_and_skips_internal_subagents() -> Result<()
         _ => None,
     })
     .await;
-    let requests = wait_for_requests(&internal_request).await?;
+    let requests = wait_for_subagent_request(&internal_request, INTERNAL_SUBAGENT_PROMPT).await?;
     assert_eq!(requests.len(), 1);
 
     let subagent_stop_inputs_after_internal =
