@@ -1,0 +1,64 @@
+name: ARM64 original image builder diagnosis (not qualification)
+
+on:
+  push:
+    branches:
+      - diagnostics/p1-arm64-image-20261105-ba4b
+
+permissions:
+  contents: read
+
+jobs:
+  arm64-image-diagnostic:
+    runs-on: ubuntu-24.04-arm
+    timeout-minutes: 40
+    steps:
+      - name: Checkout the exact diagnostic event
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.sha }}
+          path: orchestrator
+          fetch-depth: 2
+          persist-credentials: false
+      - name: Read the fixed candidate identity
+        id: candidate-source
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 -B - <<'PY'
+          import json
+          import os
+          from pathlib import Path
+          import re
+
+          manifest = json.loads(Path("orchestrator/.github/fixtures/hosted-arm64-image-source.json").read_text(encoding="utf-8"))
+          source_sha = manifest["source_sha"]
+          if not isinstance(source_sha, str) or re.fullmatch(r"[0-9a-f]{40}", source_sha) is None:
+              raise SystemExit("Manifest source_sha must be a full lowercase Git commit SHA")
+          with open(os.environ["GITHUB_OUTPUT"], "a", encoding="utf-8") as output:
+              output.write("source_sha=" + source_sha + "\n")
+          PY
+      - name: Checkout the exact candidate independently
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          repository: ${{ github.repository }}
+          ref: ${{ steps.candidate-source.outputs.source_sha }}
+          path: candidate
+          fetch-depth: 1
+          persist-credentials: false
+      - name: Run the original native ARM builder
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 -B orchestrator/.github/scripts/hosted_arm64_image_diagnostic.py \
+            --source candidate \
+            --manifest orchestrator/.github/fixtures/hosted-arm64-image-source.json \
+            --output "${{ runner.temp }}/hepta-arm64-image-diagnostic"
+      - name: Preserve original output and both source identities
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: arm64-image-diagnostic-${{ github.sha }}-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/hepta-arm64-image-diagnostic/
+          if-no-files-found: error
+          retention-days: 14
