@@ -385,3 +385,30 @@ used by automation. It and `with_verified_use_async` reject concurrent trusted
 revocation commits with `DispatchInProgress` until completion or cancellation.
 Both use the same authority owner, clock and persisted revocation state.
 The local `with_dispatch_boundary` witness APIs retain their short mutex fence.
+
+### Evidence recovery checkpoint V2
+
+Agentd's signed evidence recovery checkpoint now uses the V2 snapshot and
+`hepta.kernel.evidence.recovery-frontier.v2` signing domain. In addition to
+qualification evidence and AuthBus replay, it commits every `hepta-evidence`
+provider-effect intent, uncertainty and receipt. Table identity, sequence, record
+digest, ACK provenance and cross-table ordering timestamp are all bound. The
+snapshot reads every component in one SQLite transaction and rechecks each
+provider-effect record digest against its actual JSON bytes; effect rows use primary-key pages.
+A self-consistent old database containing fewer effect rows
+therefore cannot equal a retained current V2 checkpoint.
+
+V1 evidence recovery files are refused and require a newly reviewed and signed
+V2 checkpoint from the existing recovery authority. They must not be silently
+upgraded using the database being recovered. The recovery trust key remains
+Ed25519 in this interface; this change does not qualify that interface as PQ.
+An external checkpoint file is not a freshness oracle or a live atomic consume
+service. A deployment still needs independent fresh state and an atomic
+consumption/receipt contract for each effect owner. This snapshot does not
+consume FinalUse rights, issue business permission, turn preparation into an
+execution receipt, or resolve an unknown result by allocating a new nonce.
+
+Cold-open provider-effect validation also rejects a dispatch-response ACK after
+an authoritative status-lookup ACK, even when there is no uncertainty marker.
+This matches the live append boundary and preserves valid dispatch-then-status
+histories without manufacturing a new operation identity.

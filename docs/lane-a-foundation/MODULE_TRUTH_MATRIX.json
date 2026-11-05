@@ -435,7 +435,7 @@
         {
           "path": "codex-rs/hepta-evidence/src/recovery_frontier.rs",
           "mustContain": [
-            "EvidenceRecoverySnapshotV1",
+            "EvidenceRecoverySnapshotV2",
             "pub async fn recovery_snapshot",
             "pub async fn bind_recovery_store_id"
           ]
@@ -443,7 +443,7 @@
         {
           "path": "codex-rs/hepta-agentd/src/evidence_frontier.rs",
           "mustContain": [
-            "EvidenceRecoveryFrontierV1",
+            "EvidenceRecoveryFrontierV2",
             "verify_evidence_recovery_frontier",
             "recovery_required"
           ]
