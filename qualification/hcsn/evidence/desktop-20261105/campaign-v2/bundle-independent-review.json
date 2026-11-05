@@ -1,0 +1,75 @@
+{
+  "schema": "hcsn-campaign-v2-independent-bundle-binding-review-v1",
+  "created_utc": "2026-11-05T17:54:51.325025+00:00",
+  "decision": "no_blocking_finding_in_frozen_local_bundle_binding",
+  "scope": "Local archive, manifest, inventory and reviewed source-byte binding; no remote extraction or CUDA execution by reviewer.",
+  "manifest": {
+    "path": "campaign-bundle-v2/MANIFEST.json",
+    "sha256": "dafb594b4d6af2ade6915b7767369f1c5c69c7b4a06232cae75855cf6be6f531",
+    "bytes": 8955
+  },
+  "archive": {
+    "path": "hcsn-campaign-bundle-v2.zip",
+    "sha256": "a9d5d39155b0d93a89c246c69cb82960b5b9308b6150dd1809486e10791791f5",
+    "bytes": 139193
+  },
+  "inventory": {
+    "path": "hcsn-campaign-bundle-v2.inventory.json",
+    "sha256": "8c0d794d7b09c4aa3d0ec8262e86cd25bc698b46fbfedc2c1f264f7016551bc8",
+    "bytes": 14153
+  },
+  "verified": {
+    "archive_files": 39,
+    "uncompressed_bytes": 422505,
+    "payload_files": 38,
+    "candidate_package_files": 32,
+    "candidate_python_files": 26,
+    "all_member_sha256_and_lengths_match_inventory_and_local_files": true,
+    "all_zip_crc_valid": true,
+    "one_prefix": "campaign-bundle-v2/",
+    "unique_regular_0644_entries": true,
+    "fixed_timestamp": [
+      2026,
+      11,
+      5,
+      0,
+      0,
+      0
+    ],
+    "no_symlinks_or_path_escape": true,
+    "all_three_gate_files_match_reviewed_sources": true,
+    "external_audit_and_protocol_match_reviewed_sources": true,
+    "all_candidate_files_match_frozen_candidate": true,
+    "ten_task_dependency_hashes_identical_to_v1": true,
+    "original_baseline_full_configuration_and_training_budget_unchanged": true
+  },
+  "candidate_commit": "f355cfe2ae96b2bc9a5409f8eeb857894f1b0c5b",
+  "candidate_source_map_sha256": "415f6a2f2d7a89ad0585f29bea0d91928898a11ec8a672de39ce6e22f04d39e9",
+  "candidate_benchmark_source_sha256": "7e89657ae4bd9444d0ed53b27cadaa70de1fa09027205cf2a0b8ca78891774bc",
+  "candidate_strict_test_count": 109,
+  "runtime_profile_schema": "hcsn-runtime-profile-v2",
+  "linked_reviews": [
+    {
+      "path": "ci-audit/uuid/independent-uuid-v2-review.json",
+      "sha256": "8bc27d47c471bb54d578e94bd7ce6e435ba3352f0b8f66e3c0ce744d3f4c9c8f",
+      "bytes": 5423
+    },
+    {
+      "path": "ci-audit/uuid/full-b-audit-v2-delta-review.json",
+      "sha256": "8f3dad9252bb2660d7c0f3a1de589a66872bb6207d6a51c702841abef2f63ebf",
+      "bytes": 4025
+    },
+    {
+      "path": "ci-audit/uuid/v1-review-correction.json",
+      "sha256": "5efdf8debb0bb8815a03575ecbd032fc8b44368d118f7159dafea1e74bf3b145",
+      "bytes": 6775
+    }
+  ],
+  "readme_findings": [
+    "The v1 cancellation is described as occurring before any stage with zero completed CUDA runs.",
+    "Actual bare/canonical NVML acceptance is distinguished from unsupported physical energy counters.",
+    "No CI-success, runtime-installation, training, full-B, superiority or resolution-independence result is claimed by preparation."
+  ],
+  "deployment_boundary": "The actual task-root staging must independently verify archive/manifest and task dependencies. The existing READY, exclusive campaign ownership, shared install lock, strict tensor checks, probes and full-budget gates remain required.",
+  "cuda_qualified": false
+}

@@ -1,0 +1,473 @@
+{
+  "schema": "hcsn-followup-publication-text-scan-v5",
+  "checked_at_utc": "2026-11-05T18:10:19.923219+00:00",
+  "scope": "Minimal v5 label correction: two current generated READMEs rechecked; all 67 other retained payload files match frozen v4 byte hashes. Prior text/decoded-JSON/ZIP-member coverage is carried forward unchanged. This report itself is excluded from its content map. No new runtime observation or numerical test.",
+  "payload_files_before_this_report": 69,
+  "text_entries_including_zip_members": 145,
+  "checks": [
+    "local_home_path",
+    "private_key_header",
+    "private_key_keyword",
+    "signed_url_query",
+    "credential_prefix",
+    "literal_secret_assignment",
+    "authorization_bearer",
+    "token_keyword_review"
+  ],
+  "high_risk_or_home_findings": [],
+  "high_risk_or_home_finding_count": 0,
+  "token_keyword_line_count": 83,
+  "token_keyword_file_count": 33,
+  "token_keyword_findings": [
+    {
+      "path": "qualification/hcsn/evidence/desktop-20261105/campaign-v1/README.md",
+      "line_numbers": [
+        43
+      ],
+      "classification": "Reviewed training sample/token accounting, output-owner UUID nonce source variables, the public tokenizers package name, or prior privacy-scan labels/dispositions; no access credential."
+    },
+    {
+      "path": "qualification/hcsn/evidence/desktop-20261105/campaign-v1/STATUS.json",
+      "line_numbers": [
+        47
+      ],
+      "classification": "Reviewed training sample/token accounting, output-owner UUID nonce source variables, the public tokenizers package name, or prior privacy-scan labels/dispositions; no access credential."
+    },
+    {
+      "path": "qualification/hcsn/evidence/desktop-20261105/campaign-v1/privacy-scan.json",
+      "line_numbers": [
+        18,
+        19,
+        25,
+        32,
+        39,
+        46,
+        56,
+        64,
+        71,
+        78,
+        88,
+        98,
+        106,
+        117,
+        124,
+        132,
+        140
+      ],
+      "classification": "Reviewed training sample/token accounting, output-owner UUID nonce source variables, the public tokenizers package name, or prior privacy-scan labels/dispositions; no access credential."
+    },
+    {
+      "path": "qualification/hcsn/evidence/desktop-20261105/campaign-v2/README.md",
+      "line_numbers": [
+        35
+      ],
+      "classification": "Reviewed training sample/token accounting, output-owner UUID nonce source variables, the public tokenizers package name, or prior privacy-scan labels/dispositions; no access credential."
+    },
+    {
+      "path": "qualification/hcsn/evidence/desktop-20261105/campaign-v2/STATUS.json",
+      "line_numbers": [
+        94
+      ],
+      "classification": "Reviewed training sample/token accounting, output-owner UUID nonce source variables, the public tokenizers package name, or prior privacy-scan labels/dispositions; no access credential."
+    },
+    {
+      "path": "qualification/hcsn/evidence/desktop-20261105/campaign-v2/execution-candidate-manifest.json",
+      "line_numbers": [
+        261
+      ],
+      "classification": "Reviewed training sample/token accounting, output-owner UUID nonce source variables, the public tokenizers package name, or prior privacy-scan labels/dispositions; no access credential."
+    },
+    {
+      "path": "qualification/hcsn/evidence/desktop-20261105/campaign-v2/mamba-wheel-verification-summary.json",
+      "line_numbers": [
+        115
+      ],
+      "classification": "Reviewed training sample/token accounting, output-owner UUID nonce source variables, the public tokenizers package name, or prior privacy-scan labels/dispositions; no access credential."
+    },
+    {
+      "path": "tools/hcsn/gated-campaign-v1/MANIFEST.json",
+      "line_numbers": [
+        84
+      ],
+      "classification": "Reviewed training sample/token accounting, output-owner UUID nonce source variables, the public tokenizers package name, or prior privacy-scan labels/dispositions; no access credential."
+    },
+    {
+      "path": "tools/hcsn/gated-campaign-v1/README.md",
+      "line_numbers": [
+        19
+      ],
+      "classification": "Reviewed training sample/token accounting, output-owner UUID nonce source variables, the public tokenizers package name, or prior privacy-scan labels/dispositions; no access credential."
+    },
+    {
+      "path": "tools/hcsn/gated-campaign-v1/audit_full_population.py",
+      "line_numbers": [
+        125,
+        128,
+        132,
+        394
+      ],
+      "classification": "Reviewed training sample/token accounting, output-owner UUID nonce source variables, the public tokenizers package name, or prior privacy-scan labels/dispositions; no access credential."
+    },
+    {
+      "path": "tools/hcsn/gated-campaign-v1/contracts.py",
+      "line_numbers": [
+        102,
+        163
+      ],
+      "classification": "Reviewed training sample/token accounting, output-owner UUID nonce source variables, the public tokenizers package name, or prior privacy-scan labels/dispositions; no access credential."
+    },
+    {
+      "path": "tools/hcsn/gated-campaign-v1/hcsn-campaign-bundle-v1.zip!campaign-bundle-v1/MANIFEST.json",
+      "line_numbers": [
+        84
+      ],
+      "classification": "Reviewed training sample/token accounting, output-owner UUID nonce source variables, the public tokenizers package name, or prior privacy-scan labels/dispositions; no access credential."
+    },
+    {
+      "path": "tools/hcsn/gated-campaign-v1/hcsn-campaign-bundle-v1.zip!campaign-bundle-v1/README.md",
+      "line_numbers": [
+        19
+      ],
+      "classification": "Reviewed training sample/token accounting, output-owner UUID nonce source variables, the public tokenizers package name, or prior privacy-scan labels/dispositions; no access credential."
+    },
+    {
+      "path": "tools/hcsn/gated-campaign-v1/hcsn-campaign-bundle-v1.zip!campaign-bundle-v1/audit_full_population.py",
+      "line_numbers": [
+        125,
+        128,
+        132,
+        394
+      ],
+      "classification": "Reviewed training sample/token accounting, output-owner UUID nonce source variables, the public tokenizers package name, or prior privacy-scan labels/dispositions; no access credential."
+    },
+    {
+      "path": "tools/hcsn/gated-campaign-v1/hcsn-campaign-bundle-v1.zip!campaign-bundle-v1/candidate/qualification/hcsn/README.md",
+      "line_numbers": [
+        25,
+        35,
+        97,
+        310
+      ],
+      "classification": "Reviewed training sample/token accounting, output-owner UUID nonce source variables, the public tokenizers package name, or prior privacy-scan labels/dispositions; no access credential."
+    },
+    {
+      "path": "tools/hcsn/gated-campaign-v1/hcsn-campaign-bundle-v1.zip!campaign-bundle-v1/candidate/qualification/hcsn/attempts.py",
+      "line_numbers": [
+        25,
+        96
+      ],
+      "classification": "Reviewed training sample/token accounting, output-owner UUID nonce source variables, the public tokenizers package name, or prior privacy-scan labels/dispositions; no access credential."
+    },
+    {
+      "path": "tools/hcsn/gated-campaign-v1/hcsn-campaign-bundle-v1.zip!campaign-bundle-v1/candidate/qualification/hcsn/benchmark.py",
+      "line_numbers": [
+        222,
+        223,
+        282,
+        324,
+        476
+      ],
+      "classification": "Reviewed training sample/token accounting, output-owner UUID nonce source variables, the public tokenizers package name, or prior privacy-scan labels/dispositions; no access credential."
+    },
+    {
+      "path": "tools/hcsn/gated-campaign-v1/hcsn-campaign-bundle-v1.zip!campaign-bundle-v1/candidate/qualification/hcsn/tests/test_benchmark.py",
+      "line_numbers": [
+        132
+      ],
+      "classification": "Reviewed training sample/token accounting, output-owner UUID nonce source variables, the public tokenizers package name, or prior privacy-scan labels/dispositions; no access credential."
+    },
+    {
+      "path": "tools/hcsn/gated-campaign-v1/hcsn-campaign-bundle-v1.zip!campaign-bundle-v1/candidate/qualification/hcsn/tests/test_execution.py",
+      "line_numbers": [
+        31,
+        49
+      ],
+      "classification": "Reviewed training sample/token accounting, output-owner UUID nonce source variables, the public tokenizers package name, or prior privacy-scan labels/dispositions; no access credential."
+    },
+    {
+      "path": "tools/hcsn/gated-campaign-v1/hcsn-campaign-bundle-v1.zip!campaign-bundle-v1/contracts.py",
+      "line_numbers": [
+        102,
+        163
+      ],
+      "classification": "Reviewed training sample/token accounting, output-owner UUID nonce source variables, the public tokenizers package name, or prior privacy-scan labels/dispositions; no access credential."
+    },
+    {
+      "path": "tools/hcsn/gated-campaign-v2/MANIFEST.json",
+      "line_numbers": [
+        95
+      ],
+      "classification": "Reviewed training sample/token accounting, output-owner UUID nonce source variables, the public tokenizers package name, or prior privacy-scan labels/dispositions; no access credential."
+    },
+    {
+      "path": "tools/hcsn/gated-campaign-v2/README.md",
+      "line_numbers": [
+        18
+      ],
+      "classification": "Reviewed training sample/token accounting, output-owner UUID nonce source variables, the public tokenizers package name, or prior privacy-scan labels/dispositions; no access credential."
+    },
+    {
+      "path": "tools/hcsn/gated-campaign-v2/audit_full_population.py",
+      "line_numbers": [
+        134,
+        137,
+        141,
+        410
+      ],
+      "classification": "Reviewed training sample/token accounting, output-owner UUID nonce source variables, the public tokenizers package name, or prior privacy-scan labels/dispositions; no access credential."
+    },
+    {
+      "path": "tools/hcsn/gated-campaign-v2/contracts.py",
+      "line_numbers": [
+        116,
+        179
+      ],
+      "classification": "Reviewed training sample/token accounting, output-owner UUID nonce source variables, the public tokenizers package name, or prior privacy-scan labels/dispositions; no access credential."
+    },
+    {
+      "path": "tools/hcsn/gated-campaign-v2/hcsn-campaign-bundle-v2.zip!campaign-bundle-v2/MANIFEST.json",
+      "line_numbers": [
+        95
+      ],
+      "classification": "Reviewed training sample/token accounting, output-owner UUID nonce source variables, the public tokenizers package name, or prior privacy-scan labels/dispositions; no access credential."
+    },
+    {
+      "path": "tools/hcsn/gated-campaign-v2/hcsn-campaign-bundle-v2.zip!campaign-bundle-v2/README.md",
+      "line_numbers": [
+        18
+      ],
+      "classification": "Reviewed training sample/token accounting, output-owner UUID nonce source variables, the public tokenizers package name, or prior privacy-scan labels/dispositions; no access credential."
+    },
+    {
+      "path": "tools/hcsn/gated-campaign-v2/hcsn-campaign-bundle-v2.zip!campaign-bundle-v2/audit_full_population.py",
+      "line_numbers": [
+        134,
+        137,
+        141,
+        410
+      ],
+      "classification": "Reviewed training sample/token accounting, output-owner UUID nonce source variables, the public tokenizers package name, or prior privacy-scan labels/dispositions; no access credential."
+    },
+    {
+      "path": "tools/hcsn/gated-campaign-v2/hcsn-campaign-bundle-v2.zip!campaign-bundle-v2/candidate/qualification/hcsn/README.md",
+      "line_numbers": [
+        25,
+        35,
+        97,
+        310
+      ],
+      "classification": "Reviewed training sample/token accounting, output-owner UUID nonce source variables, the public tokenizers package name, or prior privacy-scan labels/dispositions; no access credential."
+    },
+    {
+      "path": "tools/hcsn/gated-campaign-v2/hcsn-campaign-bundle-v2.zip!campaign-bundle-v2/candidate/qualification/hcsn/attempts.py",
+      "line_numbers": [
+        25,
+        96
+      ],
+      "classification": "Reviewed training sample/token accounting, output-owner UUID nonce source variables, the public tokenizers package name, or prior privacy-scan labels/dispositions; no access credential."
+    },
+    {
+      "path": "tools/hcsn/gated-campaign-v2/hcsn-campaign-bundle-v2.zip!campaign-bundle-v2/candidate/qualification/hcsn/benchmark.py",
+      "line_numbers": [
+        238,
+        239,
+        298,
+        340,
+        492
+      ],
+      "classification": "Reviewed training sample/token accounting, output-owner UUID nonce source variables, the public tokenizers package name, or prior privacy-scan labels/dispositions; no access credential."
+    },
+    {
+      "path": "tools/hcsn/gated-campaign-v2/hcsn-campaign-bundle-v2.zip!campaign-bundle-v2/candidate/qualification/hcsn/tests/test_benchmark.py",
+      "line_numbers": [
+        132
+      ],
+      "classification": "Reviewed training sample/token accounting, output-owner UUID nonce source variables, the public tokenizers package name, or prior privacy-scan labels/dispositions; no access credential."
+    },
+    {
+      "path": "tools/hcsn/gated-campaign-v2/hcsn-campaign-bundle-v2.zip!campaign-bundle-v2/candidate/qualification/hcsn/tests/test_execution.py",
+      "line_numbers": [
+        119,
+        137
+      ],
+      "classification": "Reviewed training sample/token accounting, output-owner UUID nonce source variables, the public tokenizers package name, or prior privacy-scan labels/dispositions; no access credential."
+    },
+    {
+      "path": "tools/hcsn/gated-campaign-v2/hcsn-campaign-bundle-v2.zip!campaign-bundle-v2/contracts.py",
+      "line_numbers": [
+        116,
+        179
+      ],
+      "classification": "Reviewed training sample/token accounting, output-owner UUID nonce source variables, the public tokenizers package name, or prior privacy-scan labels/dispositions; no access credential."
+    }
+  ],
+  "private_key_keyword_findings": [
+    {
+      "path": "qualification/hcsn/evidence/desktop-20261105/campaign-v1/privacy-scan.json",
+      "line_number": 9,
+      "classification": "The preserved v1 privacy report names its scan categories; no private key material."
+    },
+    {
+      "path": "qualification/hcsn/evidence/desktop-20261105/campaign-v1/privacy-scan.json",
+      "line_number": 10,
+      "classification": "The preserved v1 privacy report names its scan categories; no private key material."
+    }
+  ],
+  "redactions_applied": 0,
+  "frozen_source_and_zip_bytes_modified": false,
+  "result": "no high-risk credential or local-home-path finding in selected publication content",
+  "scope_limit": "Pattern scanning and explicit keyword review of this selected set only; not a claim about unselected raw installer files or external systems.",
+  "scanned_text_sha256": {
+    "qualification/hcsn/evidence/desktop-20261105/README.md": "13cc0db002b99022f3ae84c179831a8e9d1ba42ca49e10e80431c9307744b129",
+    "qualification/hcsn/evidence/desktop-20261105/campaign-v1/README.md": "d6b7f3391074a9f80d2d19e98cb550d31d2b433831871f73e3a8b41cfd86ad1c",
+    "qualification/hcsn/evidence/desktop-20261105/campaign-v1/STATUS.json": "e5336f0e7f4ba718000c2091c1e7ca65bcbf38d4932e3799d25515a4e2d6baf4",
+    "qualification/hcsn/evidence/desktop-20261105/campaign-v1/archive-inventory.json": "fb0d989f2447f094f546f37512d65ee15b24d158104af02e68b1ba6e0cc5cb1d",
+    "qualification/hcsn/evidence/desktop-20261105/campaign-v1/audit-independent-review-v2.json": "7cc4fa3268c61e22f64480df1dffe99b0c2951c20327065236fb93048fd0d23e",
+    "qualification/hcsn/evidence/desktop-20261105/campaign-v1/audit-synthetic-controls-v1.json": "c6336a8a9014563e2c13214829ac88cfcea1f340951137c0c62340c0fb409587",
+    "qualification/hcsn/evidence/desktop-20261105/campaign-v1/bundle-independent-review-v1.json": "1c4fd1d9beca242091efaf324045998f6678522f99c2c7028341e3a80e33e991",
+    "qualification/hcsn/evidence/desktop-20261105/campaign-v1/campaign-runtime-claim.json": "da9f73687ad113544c6a6873fc7b8cd152a37f2938a7180dd38a6cf84309dc11",
+    "qualification/hcsn/evidence/desktop-20261105/campaign-v1/campaign-runtime-launch.json": "b5baef11722dbda46c2e68b6d75df2c2accde8154c7ae424a8d6797bb9a40d4d",
+    "qualification/hcsn/evidence/desktop-20261105/campaign-v1/campaign-runtime-progress-initial.json": "e6f0407736ae6248a613e38d3304dd4b9b312f1578bf074f5966596cfd094745",
+    "qualification/hcsn/evidence/desktop-20261105/campaign-v1/campaign-runtime-staging.json": "9eee742d770fbe6c82de993541a96f65421ecf85ae0da36d766da05e1799d238",
+    "qualification/hcsn/evidence/desktop-20261105/campaign-v1/candidate-source-publication.json": "82b748d3469308b5b1591e65ff7e504e2313a3bab9d0f73c48a178fd73960f0a",
+    "qualification/hcsn/evidence/desktop-20261105/campaign-v1/ci-candidate-latest.json": "38c69a8af80a6e46596f7b7854cd5a289ea8577a8f5a8a8e28fad7e168285f46",
+    "qualification/hcsn/evidence/desktop-20261105/campaign-v1/ci-source-transition.json": "0ccfd0993b182bd58b2da47a8c0cf4254e82efae3f6d31a247dfec4e4f6f244c",
+    "qualification/hcsn/evidence/desktop-20261105/campaign-v1/controller-synthetic-controls-v3.json": "4a6da098f6e5bc1743781ceb74c55e52a6c44c10aa122cf83a6d3b33460c809e",
+    "qualification/hcsn/evidence/desktop-20261105/campaign-v1/full-b-audit-package.json": "a41fe7f4adf6a791490f33b94ee3a9643388e30006ab96cb82a507ef705958ae",
+    "qualification/hcsn/evidence/desktop-20261105/campaign-v1/full-b-audit-protocol.md": "7b84c9b56118c3418e6a5b8ee9980e45c2286d2c2fbccba69019b092ad2f99b0",
+    "qualification/hcsn/evidence/desktop-20261105/campaign-v1/numeric-runtime-ready.json": "74bd91aa38786f49beb3f4fc5be7ca9cf278f79d13d1246e02174d696ca9052f",
+    "qualification/hcsn/evidence/desktop-20261105/campaign-v1/nvml-field-values.json": "848977ad65af0f8fe31a0f1a6dd68a0a21246f4e92ef05f2f8bcf8eabcf4ffc7",
+    "qualification/hcsn/evidence/desktop-20261105/campaign-v1/privacy-scan.json": "30b48ab215d31b53865eef79b49e470383592862c466a5f5e3399a40bfa7b1f9",
+    "qualification/hcsn/evidence/desktop-20261105/campaign-v1/runtime-dependency-progress.json": "e9029b0629895604b27903c43265def116a0270c28ec305a19a1463f8bd20ef9",
+    "qualification/hcsn/evidence/desktop-20261105/campaign-v2/README.md": "15c5c44b3a1ac07968c280c1cc8d8dee3f2bc4e6a83573d97d5fa60affcf3440",
+    "qualification/hcsn/evidence/desktop-20261105/campaign-v2/STATUS.json": "1f0d7d7320012b610b095df38d34ea77ad17cbc6a3baa852f581b6d40b54445c",
+    "qualification/hcsn/evidence/desktop-20261105/campaign-v2/archive-inventory.json": "8c0d794d7b09c4aa3d0ec8262e86cd25bc698b46fbfedc2c1f264f7016551bc8",
+    "qualification/hcsn/evidence/desktop-20261105/campaign-v2/audit-independent-delta-review.json": "8f3dad9252bb2660d7c0f3a1de589a66872bb6207d6a51c702841abef2f63ebf",
+    "qualification/hcsn/evidence/desktop-20261105/campaign-v2/audit-synthetic-controls.json": "7dd08c4ce9ac3a849def8ebc8e84524de2fcc77afeff982fc1c383c2a93470f0",
+    "qualification/hcsn/evidence/desktop-20261105/campaign-v2/bare-uuid-regression.json": "3bb7bcb888515c6a63969fd741c8ba3d1511ffb53bfbd80d809f6898662dc725",
+    "qualification/hcsn/evidence/desktop-20261105/campaign-v2/bundle-independent-review.json": "29c7aa084a51425d19bdb070407ce527a1cf57b1d4bce82ff64b7671baa67c6d",
+    "qualification/hcsn/evidence/desktop-20261105/campaign-v2/campaign-runtime-claim.json": "074b5449ca235a19608e8787208c6700bd618d2ccacb3b3574bca87ab750e6ab",
+    "qualification/hcsn/evidence/desktop-20261105/campaign-v2/campaign-runtime-launch.json": "178e908d57b0f6daef89c90c11f4068ba8918703a27c65f810fd7c453940557b",
+    "qualification/hcsn/evidence/desktop-20261105/campaign-v2/campaign-runtime-plan.json": "40c977e94cbb3763b3b44f00a69bb3e0da4f74a584bd4f064af82a560bf5dcc0",
+    "qualification/hcsn/evidence/desktop-20261105/campaign-v2/campaign-runtime-progress-initial.json": "655d597d42d9f9ab02c54eb368545404da6b787a9035b23c6e70f6ba64781b72",
+    "qualification/hcsn/evidence/desktop-20261105/campaign-v2/campaign-runtime-staging.json": "8c0289f5186946507f9fe564a8adcf7b2ac040f85ebcd0de66d0072d2304d92e",
+    "qualification/hcsn/evidence/desktop-20261105/campaign-v2/campaign-staging-job.json": "2b9810ede46fe0b6daac31508b833858e8258d9bb85d30283a4ad902097686f9",
+    "qualification/hcsn/evidence/desktop-20261105/campaign-v2/campaign-v1-cancellation.json": "99ab64fe0fecafc0439ff78a4ec8915b9eeb15b9dd1d00cf82082ddeb3eb1678",
+    "qualification/hcsn/evidence/desktop-20261105/campaign-v2/campaign-v1-terminal.json": "05a3377ab04b787587618c8376d0ef95e96bfe3b6050e298f0b48da69c9c1ab8",
+    "qualification/hcsn/evidence/desktop-20261105/campaign-v2/candidate-available-controls.json": "76b9617debbe5386a2e490d9bc242605a63e4633c9ea17fe77c0ab0a130f26c2",
+    "qualification/hcsn/evidence/desktop-20261105/campaign-v2/candidate-source-publication.json": "c4fc6ed024f3fc5273ebb83d9e4dcbd3cfc32f246f2a08649ad844bcba5d08ea",
+    "qualification/hcsn/evidence/desktop-20261105/campaign-v2/candidate-strict-unavailable.json": "a1bfc048a29cf71e849fad0c63c6de7aa805491305b727df285a3e5eb192cdd5",
+    "qualification/hcsn/evidence/desktop-20261105/campaign-v2/candidate-uuid-fix.md": "74ca089b05bf2f044bb048b48de5f8e3fce24d76e6054313576d631856e1f5f7",
+    "qualification/hcsn/evidence/desktop-20261105/campaign-v2/ci-candidate-latest.json": "56459f4235a47710febf346a3ed7cd9e58a8e3c5518ead6c3c235c41d256b09d",
+    "qualification/hcsn/evidence/desktop-20261105/campaign-v2/ci-source-transition.json": "5b960247080fc968eb815d0444931bdc84bd52be53978542b07bfdc81d9679a0",
+    "qualification/hcsn/evidence/desktop-20261105/campaign-v2/controller-synthetic-controls.json": "e1a5db803d93e7d4d3d5d440656358df75f5bfad05ddb75450801bbbae3efcd7",
+    "qualification/hcsn/evidence/desktop-20261105/campaign-v2/execution-candidate-manifest.json": "9b0cda6b3db4d9ca81ce1caa49d41d76c39902074ac66617fbe3985adebc4343",
+    "qualification/hcsn/evidence/desktop-20261105/campaign-v2/full-b-audit-package.json": "543a5c5794f49289ff796f3dad93f04c729651581aa1fb838410870d503d3683",
+    "qualification/hcsn/evidence/desktop-20261105/campaign-v2/full-b-audit-protocol.md": "50ed7402370b5f8d7b648782cf0c12a59c9406c68c7328266a02d2c77f2bc34d",
+    "qualification/hcsn/evidence/desktop-20261105/campaign-v2/mamba-wheel-verification-summary.json": "46148da2dde9ddee0bf5e84976f2a0abf9b91417ceee2590ba73a9d93819b1ae",
+    "qualification/hcsn/evidence/desktop-20261105/campaign-v2/mamba-wheels-ready.json": "f733f94818ea70056c52ef8ec7c5bd030f470482c3182d7642afa93d845cf384",
+    "qualification/hcsn/evidence/desktop-20261105/campaign-v2/nvml-uuid-lookup-provenance.json": "5119b142448fe5367fee1274db39b775e22518f6420d1d799aaf65b67adfe7b6",
+    "qualification/hcsn/evidence/desktop-20261105/campaign-v2/nvml-uuid-lookup.json": "986b3c43bcf6df58b7d79324477622c27279e0613708ae3eaad8d86d02bea60a",
+    "qualification/hcsn/evidence/desktop-20261105/campaign-v2/runtime-environment-handoff.json": "50f587370e921785b076b2d0d4f29c828024f7b6a42a119ed4c99927b95424de",
+    "qualification/hcsn/evidence/desktop-20261105/campaign-v2/uuid-independent-review.json": "8bc27d47c471bb54d578e94bd7ce6e435ba3352f0b8f66e3c0ce744d3f4c9c8f",
+    "qualification/hcsn/evidence/desktop-20261105/campaign-v2/v1-review-correction.json": "5efdf8debb0bb8815a03575ecbd032fc8b44368d118f7159dafea1e74bf3b145",
+    "tools/hcsn/gated-campaign-v1/MANIFEST.json": "90b3c9f6c6dc206362ee21f3617bd487c5484ca00ad61189195aa832382d3e40",
+    "tools/hcsn/gated-campaign-v1/PROTOCOL.json": "4983e126099ff69221e477012034058035463bd03f853f51cea1299de60fc1db",
+    "tools/hcsn/gated-campaign-v1/README.md": "7b44399fee8bd25423a17d4981472842c1100263b39ff393564f2a607393deb3",
+    "tools/hcsn/gated-campaign-v1/audit_full_population.py": "5acbb1fa661a67db81fa5148c3c30293aaffb4827f363985e8e3905f17cd7b05",
+    "tools/hcsn/gated-campaign-v1/campaign.py": "563694479c0dd5e6bfe76caae88583c9cf442f3ced86951f3cf390325114f1ea",
+    "tools/hcsn/gated-campaign-v1/contracts.py": "685b20a716cb5b929e5018d742b25bb00a901be35c2e1db203bbd50af85a3a6d",
+    "tools/hcsn/gated-campaign-v1/hcsn-campaign-bundle-v1.zip!campaign-bundle-v1/MANIFEST.json": "90b3c9f6c6dc206362ee21f3617bd487c5484ca00ad61189195aa832382d3e40",
+    "tools/hcsn/gated-campaign-v1/hcsn-campaign-bundle-v1.zip!campaign-bundle-v1/PROTOCOL.json": "4983e126099ff69221e477012034058035463bd03f853f51cea1299de60fc1db",
+    "tools/hcsn/gated-campaign-v1/hcsn-campaign-bundle-v1.zip!campaign-bundle-v1/README.md": "7b44399fee8bd25423a17d4981472842c1100263b39ff393564f2a607393deb3",
+    "tools/hcsn/gated-campaign-v1/hcsn-campaign-bundle-v1.zip!campaign-bundle-v1/audit_full_population.py": "5acbb1fa661a67db81fa5148c3c30293aaffb4827f363985e8e3905f17cd7b05",
+    "tools/hcsn/gated-campaign-v1/hcsn-campaign-bundle-v1.zip!campaign-bundle-v1/campaign.py": "563694479c0dd5e6bfe76caae88583c9cf442f3ced86951f3cf390325114f1ea",
+    "tools/hcsn/gated-campaign-v1/hcsn-campaign-bundle-v1.zip!campaign-bundle-v1/candidate/qualification/hcsn/MATH.md": "240abe1e5ba2c2db9f1bbc56be8f14f9f70663ad8ef7d68f6276384e8d352da8",
+    "tools/hcsn/gated-campaign-v1/hcsn-campaign-bundle-v1.zip!campaign-bundle-v1/candidate/qualification/hcsn/README.md": "b25b63ce8c0f3b5c65d0cb81607a3381b025dac8749c93a4ec3e3d3f19d261b7",
+    "tools/hcsn/gated-campaign-v1/hcsn-campaign-bundle-v1.zip!campaign-bundle-v1/candidate/qualification/hcsn/__init__.py": "4502992afe553d132b2dd77148e6bcf69cac92b736194c5ac28bbded8cae380d",
+    "tools/hcsn/gated-campaign-v1/hcsn-campaign-bundle-v1.zip!campaign-bundle-v1/candidate/qualification/hcsn/attempts.py": "4b1ea35d42f2a88307228c4d039b5654395c0648058855e7b1a51e3a78437b22",
+    "tools/hcsn/gated-campaign-v1/hcsn-campaign-bundle-v1.zip!campaign-bundle-v1/candidate/qualification/hcsn/audit_population.py": "2154a964a2722a0859ae3b1dda98af9a40c4376d4580146e4b3c1b7079e15136",
+    "tools/hcsn/gated-campaign-v1/hcsn-campaign-bundle-v1.zip!campaign-bundle-v1/candidate/qualification/hcsn/baselines.py": "a98cbbe7b1ba15486a44a2dd06542b64e39560012df395a2f2f393e67561640d",
+    "tools/hcsn/gated-campaign-v1/hcsn-campaign-bundle-v1.zip!campaign-bundle-v1/candidate/qualification/hcsn/benchmark.py": "dcf60a9cf4683a35c9a2b2cf2e608c3bf1d8bf3e213e0f8f30c8c06183caade7",
+    "tools/hcsn/gated-campaign-v1/hcsn-campaign-bundle-v1.zip!campaign-bundle-v1/candidate/qualification/hcsn/cells.py": "9a2cd6b059b5b01532c1bb920196c34960b8013825068fc7a8762640ad2459d6",
+    "tools/hcsn/gated-campaign-v1/hcsn-campaign-bundle-v1.zip!campaign-bundle-v1/candidate/qualification/hcsn/checks.py": "7a48f3fc993d6234615982165f1aac7725ce33bba4b3b79393e15b714915688c",
+    "tools/hcsn/gated-campaign-v1/hcsn-campaign-bundle-v1.zip!campaign-bundle-v1/candidate/qualification/hcsn/configs/full-rematerialized.json": "43fb7b280bb80643c0bcdbfceae6788b37dd1d45fad682805ec6045088b31611",
+    "tools/hcsn/gated-campaign-v1/hcsn-campaign-bundle-v1.zip!campaign-bundle-v1/candidate/qualification/hcsn/configs/full.json": "7fa3d05b8c04a918043afdfa1c266a17beccb814351258d0555a753baf13777a",
+    "tools/hcsn/gated-campaign-v1/hcsn-campaign-bundle-v1.zip!campaign-bundle-v1/candidate/qualification/hcsn/configs/smoke.json": "3c0e9eb10d1ae13035ba7d455a2fd280531d43c0af15329f49a814722a4a3a57",
+    "tools/hcsn/gated-campaign-v1/hcsn-campaign-bundle-v1.zip!campaign-bundle-v1/candidate/qualification/hcsn/execution.py": "6794762ec760edd7d847e73f802128813c507f538b515973e8367df73c2d8a73",
+    "tools/hcsn/gated-campaign-v1/hcsn-campaign-bundle-v1.zip!campaign-bundle-v1/candidate/qualification/hcsn/mechanisms.py": "fa64def064d603c16111d0ed29cd1cdb6c64308ed0db5ded96ee6b4614e5b6ed",
+    "tools/hcsn/gated-campaign-v1/hcsn-campaign-bundle-v1.zip!campaign-bundle-v1/candidate/qualification/hcsn/population.py": "3de163561abeb475573a8f680357000f68bffdb485405d61bf1fe40b493f6178",
+    "tools/hcsn/gated-campaign-v1/hcsn-campaign-bundle-v1.zip!campaign-bundle-v1/candidate/qualification/hcsn/population_torch.py": "80af92d1e8c900b4d29bbd76492572a19e70840b3b09747243df39843b0efe3d",
+    "tools/hcsn/gated-campaign-v1/hcsn-campaign-bundle-v1.zip!campaign-bundle-v1/candidate/qualification/hcsn/reference.py": "8cae6a0b5274bde355e0eeacaf9600f04be779cdde65a379ddcfb0194cd461c2",
+    "tools/hcsn/gated-campaign-v1/hcsn-campaign-bundle-v1.zip!campaign-bundle-v1/candidate/qualification/hcsn/rematerialization.py": "ea0be5db010342050437fc5aa5d0458b8601b744670a4d7e3abd84cfbc52ae38",
+    "tools/hcsn/gated-campaign-v1/hcsn-campaign-bundle-v1.zip!campaign-bundle-v1/candidate/qualification/hcsn/requirements.txt": "168e95da616ce7f1535ebb13b5575a708c6d4e41a7f788d6afdef8ceff121f9b",
+    "tools/hcsn/gated-campaign-v1/hcsn-campaign-bundle-v1.zip!campaign-bundle-v1/candidate/qualification/hcsn/tensor.py": "624d293a9d3a7afa7e32be3e9133ac18cc0f90e49e7bdc5ff9a3b25c4563bddc",
+    "tools/hcsn/gated-campaign-v1/hcsn-campaign-bundle-v1.zip!campaign-bundle-v1/candidate/qualification/hcsn/tests/__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "tools/hcsn/gated-campaign-v1/hcsn-campaign-bundle-v1.zip!campaign-bundle-v1/candidate/qualification/hcsn/tests/test_audit_population.py": "249a8118632082d802bebed55005abd100ebaf292290e5573822d594ef57dc6d",
+    "tools/hcsn/gated-campaign-v1/hcsn-campaign-bundle-v1.zip!campaign-bundle-v1/candidate/qualification/hcsn/tests/test_benchmark.py": "15939465d403647ecbd924dfb97297aee43c0c8e64e69d196d157ebdf19852e2",
+    "tools/hcsn/gated-campaign-v1/hcsn-campaign-bundle-v1.zip!campaign-bundle-v1/candidate/qualification/hcsn/tests/test_cells.py": "e579936cb01bd810636ab5de963ed2f24a64013da0056d8568d45d42d5ebd79b",
+    "tools/hcsn/gated-campaign-v1/hcsn-campaign-bundle-v1.zip!campaign-bundle-v1/candidate/qualification/hcsn/tests/test_checks.py": "54c994b9a6ca76d9e048f5fb0b3f770bfe4f6025329d29be22808b493e3ca68f",
+    "tools/hcsn/gated-campaign-v1/hcsn-campaign-bundle-v1.zip!campaign-bundle-v1/candidate/qualification/hcsn/tests/test_execution.py": "c2dfc42ccdb134d42c4772153278dd4b54182812a382d9fab53876b741f61a68",
+    "tools/hcsn/gated-campaign-v1/hcsn-campaign-bundle-v1.zip!campaign-bundle-v1/candidate/qualification/hcsn/tests/test_hx_tensor.py": "d1c405651f956b112d907f4109c0d759648703b6d6b303e503cb716228fde7a4",
+    "tools/hcsn/gated-campaign-v1/hcsn-campaign-bundle-v1.zip!campaign-bundle-v1/candidate/qualification/hcsn/tests/test_population.py": "85dacb782ac9cf6f61f7c5c70027693d3ef50f83da24ce40348658ea0ed04c95",
+    "tools/hcsn/gated-campaign-v1/hcsn-campaign-bundle-v1.zip!campaign-bundle-v1/candidate/qualification/hcsn/tests/test_population_torch.py": "7bf3ba7a2f54f8dd7707a166fddf0a5f91c90d017a4e3564666a8f9ec0798076",
+    "tools/hcsn/gated-campaign-v1/hcsn-campaign-bundle-v1.zip!campaign-bundle-v1/candidate/qualification/hcsn/tests/test_reference.py": "d95e4eefbd46f8f9fd37813b63f20549ad1fbae43ae436a0f1ca0fdae4c0eb8d",
+    "tools/hcsn/gated-campaign-v1/hcsn-campaign-bundle-v1.zip!campaign-bundle-v1/candidate/qualification/hcsn/tests/test_tensor.py": "355ba9bf747bc427acb0f10c8525ed80bc5f6e55f9f897602141bf0b6cb4421f",
+    "tools/hcsn/gated-campaign-v1/hcsn-campaign-bundle-v1.zip!campaign-bundle-v1/candidate/qualification/hcsn/validate.py": "d6f925e9784770705230adbe871547726dd0db91f476dcfc1e265c525e377045",
+    "tools/hcsn/gated-campaign-v1/hcsn-campaign-bundle-v1.zip!campaign-bundle-v1/contracts.py": "685b20a716cb5b929e5018d742b25bb00a901be35c2e1db203bbd50af85a3a6d",
+    "tools/hcsn/gated-campaign-v1/hcsn-campaign-bundle-v1.zip!campaign-bundle-v1/runtime_entry.py": "8cb10553073686301fc81e15e088e356ba16e41c3bc8a0a44d1b146c06b74fb4",
+    "tools/hcsn/gated-campaign-v1/runtime_entry.py": "8cb10553073686301fc81e15e088e356ba16e41c3bc8a0a44d1b146c06b74fb4",
+    "tools/hcsn/gated-campaign-v2/MANIFEST.json": "dafb594b4d6af2ade6915b7767369f1c5c69c7b4a06232cae75855cf6be6f531",
+    "tools/hcsn/gated-campaign-v2/PROTOCOL.json": "1b0c726785a406501a83ab33265bb04428b611264120ad502c44e599bd4154e7",
+    "tools/hcsn/gated-campaign-v2/README.md": "f8f18e8e1c4b3a41a08d55fe2f0bc3df36a8fc06e8b9d7f900844784d1af1078",
+    "tools/hcsn/gated-campaign-v2/audit_full_population.py": "7a5e27f123ba2f8d32d17385f13650b230c03cd9d51496364bb2da39f082a7de",
+    "tools/hcsn/gated-campaign-v2/campaign.py": "07241e2eac7ab06b41625dcb71b8216408af3d9f5bcb5710a3df51525f881a97",
+    "tools/hcsn/gated-campaign-v2/contracts.py": "1b378e4e1940212cd97740337aed33cb38494ab18a259cd0d7e1f668857a1e28",
+    "tools/hcsn/gated-campaign-v2/hcsn-campaign-bundle-v2.zip!campaign-bundle-v2/MANIFEST.json": "dafb594b4d6af2ade6915b7767369f1c5c69c7b4a06232cae75855cf6be6f531",
+    "tools/hcsn/gated-campaign-v2/hcsn-campaign-bundle-v2.zip!campaign-bundle-v2/PROTOCOL.json": "1b0c726785a406501a83ab33265bb04428b611264120ad502c44e599bd4154e7",
+    "tools/hcsn/gated-campaign-v2/hcsn-campaign-bundle-v2.zip!campaign-bundle-v2/README.md": "f8f18e8e1c4b3a41a08d55fe2f0bc3df36a8fc06e8b9d7f900844784d1af1078",
+    "tools/hcsn/gated-campaign-v2/hcsn-campaign-bundle-v2.zip!campaign-bundle-v2/audit_full_population.py": "7a5e27f123ba2f8d32d17385f13650b230c03cd9d51496364bb2da39f082a7de",
+    "tools/hcsn/gated-campaign-v2/hcsn-campaign-bundle-v2.zip!campaign-bundle-v2/campaign.py": "07241e2eac7ab06b41625dcb71b8216408af3d9f5bcb5710a3df51525f881a97",
+    "tools/hcsn/gated-campaign-v2/hcsn-campaign-bundle-v2.zip!campaign-bundle-v2/candidate/qualification/hcsn/MATH.md": "240abe1e5ba2c2db9f1bbc56be8f14f9f70663ad8ef7d68f6276384e8d352da8",
+    "tools/hcsn/gated-campaign-v2/hcsn-campaign-bundle-v2.zip!campaign-bundle-v2/candidate/qualification/hcsn/README.md": "b25b63ce8c0f3b5c65d0cb81607a3381b025dac8749c93a4ec3e3d3f19d261b7",
+    "tools/hcsn/gated-campaign-v2/hcsn-campaign-bundle-v2.zip!campaign-bundle-v2/candidate/qualification/hcsn/__init__.py": "4502992afe553d132b2dd77148e6bcf69cac92b736194c5ac28bbded8cae380d",
+    "tools/hcsn/gated-campaign-v2/hcsn-campaign-bundle-v2.zip!campaign-bundle-v2/candidate/qualification/hcsn/attempts.py": "4b1ea35d42f2a88307228c4d039b5654395c0648058855e7b1a51e3a78437b22",
+    "tools/hcsn/gated-campaign-v2/hcsn-campaign-bundle-v2.zip!campaign-bundle-v2/candidate/qualification/hcsn/audit_population.py": "2154a964a2722a0859ae3b1dda98af9a40c4376d4580146e4b3c1b7079e15136",
+    "tools/hcsn/gated-campaign-v2/hcsn-campaign-bundle-v2.zip!campaign-bundle-v2/candidate/qualification/hcsn/baselines.py": "a98cbbe7b1ba15486a44a2dd06542b64e39560012df395a2f2f393e67561640d",
+    "tools/hcsn/gated-campaign-v2/hcsn-campaign-bundle-v2.zip!campaign-bundle-v2/candidate/qualification/hcsn/benchmark.py": "d6b96100a09e9bbcccd6d7ff998771600c08c9b0c6f9d0354849afb044b94540",
+    "tools/hcsn/gated-campaign-v2/hcsn-campaign-bundle-v2.zip!campaign-bundle-v2/candidate/qualification/hcsn/cells.py": "9a2cd6b059b5b01532c1bb920196c34960b8013825068fc7a8762640ad2459d6",
+    "tools/hcsn/gated-campaign-v2/hcsn-campaign-bundle-v2.zip!campaign-bundle-v2/candidate/qualification/hcsn/checks.py": "7a48f3fc993d6234615982165f1aac7725ce33bba4b3b79393e15b714915688c",
+    "tools/hcsn/gated-campaign-v2/hcsn-campaign-bundle-v2.zip!campaign-bundle-v2/candidate/qualification/hcsn/configs/full-rematerialized.json": "43fb7b280bb80643c0bcdbfceae6788b37dd1d45fad682805ec6045088b31611",
+    "tools/hcsn/gated-campaign-v2/hcsn-campaign-bundle-v2.zip!campaign-bundle-v2/candidate/qualification/hcsn/configs/full.json": "7fa3d05b8c04a918043afdfa1c266a17beccb814351258d0555a753baf13777a",
+    "tools/hcsn/gated-campaign-v2/hcsn-campaign-bundle-v2.zip!campaign-bundle-v2/candidate/qualification/hcsn/configs/smoke.json": "3c0e9eb10d1ae13035ba7d455a2fd280531d43c0af15329f49a814722a4a3a57",
+    "tools/hcsn/gated-campaign-v2/hcsn-campaign-bundle-v2.zip!campaign-bundle-v2/candidate/qualification/hcsn/execution.py": "cec0644b0ae13721a5162eba217c183f2aa69adc73909a2183bd3dd5727abcd7",
+    "tools/hcsn/gated-campaign-v2/hcsn-campaign-bundle-v2.zip!campaign-bundle-v2/candidate/qualification/hcsn/mechanisms.py": "fa64def064d603c16111d0ed29cd1cdb6c64308ed0db5ded96ee6b4614e5b6ed",
+    "tools/hcsn/gated-campaign-v2/hcsn-campaign-bundle-v2.zip!campaign-bundle-v2/candidate/qualification/hcsn/population.py": "3de163561abeb475573a8f680357000f68bffdb485405d61bf1fe40b493f6178",
+    "tools/hcsn/gated-campaign-v2/hcsn-campaign-bundle-v2.zip!campaign-bundle-v2/candidate/qualification/hcsn/population_torch.py": "80af92d1e8c900b4d29bbd76492572a19e70840b3b09747243df39843b0efe3d",
+    "tools/hcsn/gated-campaign-v2/hcsn-campaign-bundle-v2.zip!campaign-bundle-v2/candidate/qualification/hcsn/reference.py": "8cae6a0b5274bde355e0eeacaf9600f04be779cdde65a379ddcfb0194cd461c2",
+    "tools/hcsn/gated-campaign-v2/hcsn-campaign-bundle-v2.zip!campaign-bundle-v2/candidate/qualification/hcsn/rematerialization.py": "ea0be5db010342050437fc5aa5d0458b8601b744670a4d7e3abd84cfbc52ae38",
+    "tools/hcsn/gated-campaign-v2/hcsn-campaign-bundle-v2.zip!campaign-bundle-v2/candidate/qualification/hcsn/requirements.txt": "168e95da616ce7f1535ebb13b5575a708c6d4e41a7f788d6afdef8ceff121f9b",
+    "tools/hcsn/gated-campaign-v2/hcsn-campaign-bundle-v2.zip!campaign-bundle-v2/candidate/qualification/hcsn/tensor.py": "624d293a9d3a7afa7e32be3e9133ac18cc0f90e49e7bdc5ff9a3b25c4563bddc",
+    "tools/hcsn/gated-campaign-v2/hcsn-campaign-bundle-v2.zip!campaign-bundle-v2/candidate/qualification/hcsn/tests/__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "tools/hcsn/gated-campaign-v2/hcsn-campaign-bundle-v2.zip!campaign-bundle-v2/candidate/qualification/hcsn/tests/test_audit_population.py": "249a8118632082d802bebed55005abd100ebaf292290e5573822d594ef57dc6d",
+    "tools/hcsn/gated-campaign-v2/hcsn-campaign-bundle-v2.zip!campaign-bundle-v2/candidate/qualification/hcsn/tests/test_benchmark.py": "15939465d403647ecbd924dfb97297aee43c0c8e64e69d196d157ebdf19852e2",
+    "tools/hcsn/gated-campaign-v2/hcsn-campaign-bundle-v2.zip!campaign-bundle-v2/candidate/qualification/hcsn/tests/test_cells.py": "e579936cb01bd810636ab5de963ed2f24a64013da0056d8568d45d42d5ebd79b",
+    "tools/hcsn/gated-campaign-v2/hcsn-campaign-bundle-v2.zip!campaign-bundle-v2/candidate/qualification/hcsn/tests/test_checks.py": "54c994b9a6ca76d9e048f5fb0b3f770bfe4f6025329d29be22808b493e3ca68f",
+    "tools/hcsn/gated-campaign-v2/hcsn-campaign-bundle-v2.zip!campaign-bundle-v2/candidate/qualification/hcsn/tests/test_execution.py": "7c887fb9e38d7d39ba2f53238dbd0b2bb61fb5b0f6cf4454e9684caaa8a561cc",
+    "tools/hcsn/gated-campaign-v2/hcsn-campaign-bundle-v2.zip!campaign-bundle-v2/candidate/qualification/hcsn/tests/test_hx_tensor.py": "d1c405651f956b112d907f4109c0d759648703b6d6b303e503cb716228fde7a4",
+    "tools/hcsn/gated-campaign-v2/hcsn-campaign-bundle-v2.zip!campaign-bundle-v2/candidate/qualification/hcsn/tests/test_population.py": "85dacb782ac9cf6f61f7c5c70027693d3ef50f83da24ce40348658ea0ed04c95",
+    "tools/hcsn/gated-campaign-v2/hcsn-campaign-bundle-v2.zip!campaign-bundle-v2/candidate/qualification/hcsn/tests/test_population_torch.py": "7bf3ba7a2f54f8dd7707a166fddf0a5f91c90d017a4e3564666a8f9ec0798076",
+    "tools/hcsn/gated-campaign-v2/hcsn-campaign-bundle-v2.zip!campaign-bundle-v2/candidate/qualification/hcsn/tests/test_reference.py": "d95e4eefbd46f8f9fd37813b63f20549ad1fbae43ae436a0f1ca0fdae4c0eb8d",
+    "tools/hcsn/gated-campaign-v2/hcsn-campaign-bundle-v2.zip!campaign-bundle-v2/candidate/qualification/hcsn/tests/test_tensor.py": "355ba9bf747bc427acb0f10c8525ed80bc5f6e55f9f897602141bf0b6cb4421f",
+    "tools/hcsn/gated-campaign-v2/hcsn-campaign-bundle-v2.zip!campaign-bundle-v2/candidate/qualification/hcsn/validate.py": "d6f925e9784770705230adbe871547726dd0db91f476dcfc1e265c525e377045",
+    "tools/hcsn/gated-campaign-v2/hcsn-campaign-bundle-v2.zip!campaign-bundle-v2/contracts.py": "1b378e4e1940212cd97740337aed33cb38494ab18a259cd0d7e1f668857a1e28",
+    "tools/hcsn/gated-campaign-v2/hcsn-campaign-bundle-v2.zip!campaign-bundle-v2/runtime_entry.py": "ddc68ffa94ee796a1b9a08a4e403754b11eb63c2897cd6465db0447800ee8217",
+    "tools/hcsn/gated-campaign-v2/runtime_entry.py": "ddc68ffa94ee796a1b9a08a4e403754b11eb63c2897cd6465db0447800ee8217"
+  },
+  "prior_v4_scan_sha256": "f3f918a3808cd34ce7be4c970e016f071221467cf1beada5082ea79d00f63b07",
+  "delta_rechecked_texts": {
+    "qualification/hcsn/evidence/desktop-20261105/README.md": "13cc0db002b99022f3ae84c179831a8e9d1ba42ca49e10e80431c9307744b129",
+    "qualification/hcsn/evidence/desktop-20261105/campaign-v2/README.md": "15c5c44b3a1ac07968c280c1cc8d8dee3f2bc4e6a83573d97d5fa60affcf3440"
+  },
+  "unchanged_retained_payload_files": 67
+}

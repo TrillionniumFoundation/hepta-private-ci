@@ -1,0 +1,55 @@
+{
+  "schema": "hcsn-campaign-runtime-launch-v2",
+  "observed_at_utc": "2026-11-05 18:02:27 UTC",
+  "host": "desktop",
+  "job_id": "1a1acdd69f2-fc05-5757",
+  "idempotency_key": "hcsn-cuda-r1-gated-full170-campaign-v2",
+  "request_digest": "1ab4f345eb683f49febbe79914ed7861ab01e569af82d43d6405aadb99f3dfaf",
+  "launch_state": "launched",
+  "launch_ok": true,
+  "reused": false,
+  "created_unix_ms": 1793901554162,
+  "task_root": "/data/hcsn-cuda-170run-20261105-r1",
+  "bundle_directory": "/data/hcsn-cuda-170run-20261105-r1/experiments/execution_v2",
+  "output_directory": "/data/hcsn-cuda-170run-20261105-r1/campaigns/full-v2",
+  "manifest_sha256": "dafb594b4d6af2ade6915b7767369f1c5c69c7b4a06232cae75855cf6be6f531",
+  "archive_sha256": "a9d5d39155b0d93a89c246c69cb82960b5b9308b6150dd1809486e10791791f5",
+  "source_commit": "f355cfe2ae96b2bc9a5409f8eeb857894f1b0c5b",
+  "process_observation": {
+    "audit_recorded": true,
+    "backend": "systemd",
+    "job_id": "1a1acdd69f2-fc05-5757",
+    "state": "running",
+    "systemd": {
+      "ActiveState": "active",
+      "Description": "Hepta Runtime job 1a1acdd69f2-fc05-5757 d47233c214bcc8143da5e05871f44372",
+      "ExecMainCode": "0",
+      "ExecMainPID": "356991",
+      "ExecMainStatus": "0",
+      "InvocationID": "639f5d79691948ff8e3f2b7d82d26810",
+      "LoadState": "loaded",
+      "Result": "success",
+      "SubState": "running"
+    }
+  },
+  "runtime_receipts": [
+    {
+      "name": "progress.json",
+      "sha256": "655d597d42d9f9ab02c54eb368545404da6b787a9035b23c6e70f6ba64781b72",
+      "bytes": 564
+    },
+    {
+      "name": "claim.json",
+      "sha256": "074b5449ca235a19608e8787208c6700bd618d2ccacb3b3574bca87ab750e6ab",
+      "bytes": 304
+    },
+    {
+      "name": "predeclared-plan.json",
+      "sha256": "40c977e94cbb3763b3b44f00a69bb3e0da4f74a584bd4f064af82a560bf5dcc0",
+      "bytes": 12607
+    }
+  ],
+  "cuda_model_work_completed": 0,
+  "global_qualification": "open",
+  "scope": "Successful durable launch and initial waiting observation only; no tensor, CUDA model, full-budget or physical-energy qualification is inferred."
+}

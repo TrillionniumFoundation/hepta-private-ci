@@ -1,0 +1,474 @@
+{
+  "schema": "hcsn-followup-publication-text-scan-v2",
+  "checked_at_utc": "2026-11-05T17:26:38.474602+00:00",
+  "scope": "Updated selected publication text and every unchanged ZIP member; excludes this report itself. JSON also decoded. Prior v2 source/numerical reviews remain applicable; no model tests rerun. Raw installer status/logs are not selected.",
+  "payload_files_before_this_report": 27,
+  "text_entries_including_zip_members": 65,
+  "checks": [
+    "local_home_path",
+    "private_key_header",
+    "private_key_keyword",
+    "signed_url_query",
+    "credential_prefix",
+    "literal_secret_assignment",
+    "authorization_bearer"
+  ],
+  "high_risk_or_home_findings": [],
+  "high_risk_or_home_finding_count": 0,
+  "token_keyword_file_count": 15,
+  "token_keyword_findings": [
+    {
+      "path": "qualification/hcsn/evidence/desktop-20261105/campaign-v1/README.md",
+      "line_numbers": [
+        43
+      ],
+      "classification": "Training sample/token accounting or UUID output-ownership source variable; retained unchanged from reviewed v2 where applicable; no credential value detected."
+    },
+    {
+      "path": "qualification/hcsn/evidence/desktop-20261105/campaign-v1/STATUS.json",
+      "line_numbers": [
+        47
+      ],
+      "classification": "Training sample/token accounting or UUID output-ownership source variable; retained unchanged from reviewed v2 where applicable; no credential value detected."
+    },
+    {
+      "path": "tools/hcsn/gated-campaign-v1/MANIFEST.json",
+      "line_numbers": [
+        84
+      ],
+      "classification": "Training sample/token accounting or UUID output-ownership source variable; retained unchanged from reviewed v2 where applicable; no credential value detected."
+    },
+    {
+      "path": "tools/hcsn/gated-campaign-v1/README.md",
+      "line_numbers": [
+        19
+      ],
+      "classification": "Training sample/token accounting or UUID output-ownership source variable; retained unchanged from reviewed v2 where applicable; no credential value detected."
+    },
+    {
+      "path": "tools/hcsn/gated-campaign-v1/audit_full_population.py",
+      "line_numbers": [
+        125,
+        128,
+        132,
+        394
+      ],
+      "classification": "Training sample/token accounting or UUID output-ownership source variable; retained unchanged from reviewed v2 where applicable; no credential value detected."
+    },
+    {
+      "path": "tools/hcsn/gated-campaign-v1/contracts.py",
+      "line_numbers": [
+        102,
+        163
+      ],
+      "classification": "Training sample/token accounting or UUID output-ownership source variable; retained unchanged from reviewed v2 where applicable; no credential value detected."
+    },
+    {
+      "path": "tools/hcsn/gated-campaign-v1/hcsn-campaign-bundle-v1.zip!campaign-bundle-v1/MANIFEST.json",
+      "line_numbers": [
+        84
+      ],
+      "classification": "Training sample/token accounting or UUID output-ownership source variable; retained unchanged from reviewed v2 where applicable; no credential value detected."
+    },
+    {
+      "path": "tools/hcsn/gated-campaign-v1/hcsn-campaign-bundle-v1.zip!campaign-bundle-v1/README.md",
+      "line_numbers": [
+        19
+      ],
+      "classification": "Training sample/token accounting or UUID output-ownership source variable; retained unchanged from reviewed v2 where applicable; no credential value detected."
+    },
+    {
+      "path": "tools/hcsn/gated-campaign-v1/hcsn-campaign-bundle-v1.zip!campaign-bundle-v1/audit_full_population.py",
+      "line_numbers": [
+        125,
+        128,
+        132,
+        394
+      ],
+      "classification": "Training sample/token accounting or UUID output-ownership source variable; retained unchanged from reviewed v2 where applicable; no credential value detected."
+    },
+    {
+      "path": "tools/hcsn/gated-campaign-v1/hcsn-campaign-bundle-v1.zip!campaign-bundle-v1/candidate/qualification/hcsn/README.md",
+      "line_numbers": [
+        25,
+        35,
+        97,
+        310
+      ],
+      "classification": "Training sample/token accounting or UUID output-ownership source variable; retained unchanged from reviewed v2 where applicable; no credential value detected."
+    },
+    {
+      "path": "tools/hcsn/gated-campaign-v1/hcsn-campaign-bundle-v1.zip!campaign-bundle-v1/candidate/qualification/hcsn/attempts.py",
+      "line_numbers": [
+        25,
+        96
+      ],
+      "classification": "Training sample/token accounting or UUID output-ownership source variable; retained unchanged from reviewed v2 where applicable; no credential value detected."
+    },
+    {
+      "path": "tools/hcsn/gated-campaign-v1/hcsn-campaign-bundle-v1.zip!campaign-bundle-v1/candidate/qualification/hcsn/benchmark.py",
+      "line_numbers": [
+        222,
+        223,
+        282,
+        324,
+        476
+      ],
+      "classification": "Training sample/token accounting or UUID output-ownership source variable; retained unchanged from reviewed v2 where applicable; no credential value detected."
+    },
+    {
+      "path": "tools/hcsn/gated-campaign-v1/hcsn-campaign-bundle-v1.zip!campaign-bundle-v1/candidate/qualification/hcsn/tests/test_benchmark.py",
+      "line_numbers": [
+        132
+      ],
+      "classification": "Training sample/token accounting or UUID output-ownership source variable; retained unchanged from reviewed v2 where applicable; no credential value detected."
+    },
+    {
+      "path": "tools/hcsn/gated-campaign-v1/hcsn-campaign-bundle-v1.zip!campaign-bundle-v1/candidate/qualification/hcsn/tests/test_execution.py",
+      "line_numbers": [
+        31,
+        49
+      ],
+      "classification": "Training sample/token accounting or UUID output-ownership source variable; retained unchanged from reviewed v2 where applicable; no credential value detected."
+    },
+    {
+      "path": "tools/hcsn/gated-campaign-v1/hcsn-campaign-bundle-v1.zip!campaign-bundle-v1/contracts.py",
+      "line_numbers": [
+        102,
+        163
+      ],
+      "classification": "Training sample/token accounting or UUID output-ownership source variable; retained unchanged from reviewed v2 where applicable; no credential value detected."
+    }
+  ],
+  "redactions_applied": false,
+  "frozen_source_and_zip_bytes_modified": false,
+  "result": "passed_pattern_scan",
+  "scope_limit": "Pattern review of selected contents. The newly added dependency observation was already safely projected by the coordinator and retains original full-status hashes without publishing their raw files.",
+  "scanned_text_sha256": [
+    {
+      "path": "qualification/hcsn/evidence/desktop-20261105/campaign-v1/README.md",
+      "bytes": 7283,
+      "sha256": "d6b7f3391074a9f80d2d19e98cb550d31d2b433831871f73e3a8b41cfd86ad1c"
+    },
+    {
+      "path": "qualification/hcsn/evidence/desktop-20261105/campaign-v1/STATUS.json",
+      "bytes": 11713,
+      "sha256": "e5336f0e7f4ba718000c2091c1e7ca65bcbf38d4932e3799d25515a4e2d6baf4"
+    },
+    {
+      "path": "qualification/hcsn/evidence/desktop-20261105/campaign-v1/archive-inventory.json",
+      "bytes": 14729,
+      "sha256": "fb0d989f2447f094f546f37512d65ee15b24d158104af02e68b1ba6e0cc5cb1d"
+    },
+    {
+      "path": "qualification/hcsn/evidence/desktop-20261105/campaign-v1/audit-independent-review-v2.json",
+      "bytes": 3969,
+      "sha256": "7cc4fa3268c61e22f64480df1dffe99b0c2951c20327065236fb93048fd0d23e"
+    },
+    {
+      "path": "qualification/hcsn/evidence/desktop-20261105/campaign-v1/audit-synthetic-controls-v1.json",
+      "bytes": 6514,
+      "sha256": "c6336a8a9014563e2c13214829ac88cfcea1f340951137c0c62340c0fb409587"
+    },
+    {
+      "path": "qualification/hcsn/evidence/desktop-20261105/campaign-v1/bundle-independent-review-v1.json",
+      "bytes": 3688,
+      "sha256": "1c4fd1d9beca242091efaf324045998f6678522f99c2c7028341e3a80e33e991"
+    },
+    {
+      "path": "qualification/hcsn/evidence/desktop-20261105/campaign-v1/campaign-runtime-claim.json",
+      "bytes": 304,
+      "sha256": "da9f73687ad113544c6a6873fc7b8cd152a37f2938a7180dd38a6cf84309dc11"
+    },
+    {
+      "path": "qualification/hcsn/evidence/desktop-20261105/campaign-v1/campaign-runtime-launch.json",
+      "bytes": 2142,
+      "sha256": "b5baef11722dbda46c2e68b6d75df2c2accde8154c7ae424a8d6797bb9a40d4d"
+    },
+    {
+      "path": "qualification/hcsn/evidence/desktop-20261105/campaign-v1/campaign-runtime-progress-initial.json",
+      "bytes": 517,
+      "sha256": "e6f0407736ae6248a613e38d3304dd4b9b312f1578bf074f5966596cfd094745"
+    },
+    {
+      "path": "qualification/hcsn/evidence/desktop-20261105/campaign-v1/campaign-runtime-staging.json",
+      "bytes": 424,
+      "sha256": "9eee742d770fbe6c82de993541a96f65421ecf85ae0da36d766da05e1799d238"
+    },
+    {
+      "path": "qualification/hcsn/evidence/desktop-20261105/campaign-v1/candidate-source-publication.json",
+      "bytes": 2860,
+      "sha256": "82b748d3469308b5b1591e65ff7e504e2313a3bab9d0f73c48a178fd73960f0a"
+    },
+    {
+      "path": "qualification/hcsn/evidence/desktop-20261105/campaign-v1/ci-candidate-latest.json",
+      "bytes": 1308,
+      "sha256": "38c69a8af80a6e46596f7b7854cd5a289ea8577a8f5a8a8e28fad7e168285f46"
+    },
+    {
+      "path": "qualification/hcsn/evidence/desktop-20261105/campaign-v1/ci-source-transition.json",
+      "bytes": 3281,
+      "sha256": "0ccfd0993b182bd58b2da47a8c0cf4254e82efae3f6d31a247dfec4e4f6f244c"
+    },
+    {
+      "path": "qualification/hcsn/evidence/desktop-20261105/campaign-v1/controller-synthetic-controls-v3.json",
+      "bytes": 639,
+      "sha256": "4a6da098f6e5bc1743781ceb74c55e52a6c44c10aa122cf83a6d3b33460c809e"
+    },
+    {
+      "path": "qualification/hcsn/evidence/desktop-20261105/campaign-v1/full-b-audit-package.json",
+      "bytes": 6588,
+      "sha256": "a41fe7f4adf6a791490f33b94ee3a9643388e30006ab96cb82a507ef705958ae"
+    },
+    {
+      "path": "qualification/hcsn/evidence/desktop-20261105/campaign-v1/full-b-audit-protocol.md",
+      "bytes": 11623,
+      "sha256": "7b84c9b56118c3418e6a5b8ee9980e45c2286d2c2fbccba69019b092ad2f99b0"
+    },
+    {
+      "path": "qualification/hcsn/evidence/desktop-20261105/campaign-v1/numeric-runtime-ready.json",
+      "bytes": 774,
+      "sha256": "74bd91aa38786f49beb3f4fc5be7ca9cf278f79d13d1246e02174d696ca9052f"
+    },
+    {
+      "path": "qualification/hcsn/evidence/desktop-20261105/campaign-v1/nvml-field-values.json",
+      "bytes": 4306,
+      "sha256": "848977ad65af0f8fe31a0f1a6dd68a0a21246f4e92ef05f2f8bcf8eabcf4ffc7"
+    },
+    {
+      "path": "qualification/hcsn/evidence/desktop-20261105/campaign-v1/runtime-dependency-progress.json",
+      "bytes": 2901,
+      "sha256": "e9029b0629895604b27903c43265def116a0270c28ec305a19a1463f8bd20ef9"
+    },
+    {
+      "path": "tools/hcsn/gated-campaign-v1/MANIFEST.json",
+      "bytes": 8176,
+      "sha256": "90b3c9f6c6dc206362ee21f3617bd487c5484ca00ad61189195aa832382d3e40"
+    },
+    {
+      "path": "tools/hcsn/gated-campaign-v1/PROTOCOL.json",
+      "bytes": 3000,
+      "sha256": "4983e126099ff69221e477012034058035463bd03f853f51cea1299de60fc1db"
+    },
+    {
+      "path": "tools/hcsn/gated-campaign-v1/README.md",
+      "bytes": 6331,
+      "sha256": "7b44399fee8bd25423a17d4981472842c1100263b39ff393564f2a607393deb3"
+    },
+    {
+      "path": "tools/hcsn/gated-campaign-v1/audit_full_population.py",
+      "bytes": 41875,
+      "sha256": "5acbb1fa661a67db81fa5148c3c30293aaffb4827f363985e8e3905f17cd7b05"
+    },
+    {
+      "path": "tools/hcsn/gated-campaign-v1/campaign.py",
+      "bytes": 19235,
+      "sha256": "563694479c0dd5e6bfe76caae88583c9cf442f3ced86951f3cf390325114f1ea"
+    },
+    {
+      "path": "tools/hcsn/gated-campaign-v1/contracts.py",
+      "bytes": 11726,
+      "sha256": "685b20a716cb5b929e5018d742b25bb00a901be35c2e1db203bbd50af85a3a6d"
+    },
+    {
+      "path": "tools/hcsn/gated-campaign-v1/hcsn-campaign-bundle-v1.zip!campaign-bundle-v1/MANIFEST.json",
+      "bytes": 8176,
+      "sha256": "90b3c9f6c6dc206362ee21f3617bd487c5484ca00ad61189195aa832382d3e40"
+    },
+    {
+      "path": "tools/hcsn/gated-campaign-v1/hcsn-campaign-bundle-v1.zip!campaign-bundle-v1/PROTOCOL.json",
+      "bytes": 3000,
+      "sha256": "4983e126099ff69221e477012034058035463bd03f853f51cea1299de60fc1db"
+    },
+    {
+      "path": "tools/hcsn/gated-campaign-v1/hcsn-campaign-bundle-v1.zip!campaign-bundle-v1/README.md",
+      "bytes": 6331,
+      "sha256": "7b44399fee8bd25423a17d4981472842c1100263b39ff393564f2a607393deb3"
+    },
+    {
+      "path": "tools/hcsn/gated-campaign-v1/hcsn-campaign-bundle-v1.zip!campaign-bundle-v1/audit_full_population.py",
+      "bytes": 41875,
+      "sha256": "5acbb1fa661a67db81fa5148c3c30293aaffb4827f363985e8e3905f17cd7b05"
+    },
+    {
+      "path": "tools/hcsn/gated-campaign-v1/hcsn-campaign-bundle-v1.zip!campaign-bundle-v1/campaign.py",
+      "bytes": 19235,
+      "sha256": "563694479c0dd5e6bfe76caae88583c9cf442f3ced86951f3cf390325114f1ea"
+    },
+    {
+      "path": "tools/hcsn/gated-campaign-v1/hcsn-campaign-bundle-v1.zip!campaign-bundle-v1/candidate/qualification/hcsn/MATH.md",
+      "bytes": 7922,
+      "sha256": "240abe1e5ba2c2db9f1bbc56be8f14f9f70663ad8ef7d68f6276384e8d352da8"
+    },
+    {
+      "path": "tools/hcsn/gated-campaign-v1/hcsn-campaign-bundle-v1.zip!campaign-bundle-v1/candidate/qualification/hcsn/README.md",
+      "bytes": 29480,
+      "sha256": "b25b63ce8c0f3b5c65d0cb81607a3381b025dac8749c93a4ec3e3d3f19d261b7"
+    },
+    {
+      "path": "tools/hcsn/gated-campaign-v1/hcsn-campaign-bundle-v1.zip!campaign-bundle-v1/candidate/qualification/hcsn/__init__.py",
+      "bytes": 84,
+      "sha256": "4502992afe553d132b2dd77148e6bcf69cac92b736194c5ac28bbded8cae380d"
+    },
+    {
+      "path": "tools/hcsn/gated-campaign-v1/hcsn-campaign-bundle-v1.zip!campaign-bundle-v1/candidate/qualification/hcsn/attempts.py",
+      "bytes": 6281,
+      "sha256": "4b1ea35d42f2a88307228c4d039b5654395c0648058855e7b1a51e3a78437b22"
+    },
+    {
+      "path": "tools/hcsn/gated-campaign-v1/hcsn-campaign-bundle-v1.zip!campaign-bundle-v1/candidate/qualification/hcsn/audit_population.py",
+      "bytes": 10403,
+      "sha256": "2154a964a2722a0859ae3b1dda98af9a40c4376d4580146e4b3c1b7079e15136"
+    },
+    {
+      "path": "tools/hcsn/gated-campaign-v1/hcsn-campaign-bundle-v1.zip!campaign-bundle-v1/candidate/qualification/hcsn/baselines.py",
+      "bytes": 11800,
+      "sha256": "a98cbbe7b1ba15486a44a2dd06542b64e39560012df395a2f2f393e67561640d"
+    },
+    {
+      "path": "tools/hcsn/gated-campaign-v1/hcsn-campaign-bundle-v1.zip!campaign-bundle-v1/candidate/qualification/hcsn/benchmark.py",
+      "bytes": 30476,
+      "sha256": "dcf60a9cf4683a35c9a2b2cf2e608c3bf1d8bf3e213e0f8f30c8c06183caade7"
+    },
+    {
+      "path": "tools/hcsn/gated-campaign-v1/hcsn-campaign-bundle-v1.zip!campaign-bundle-v1/candidate/qualification/hcsn/cells.py",
+      "bytes": 8094,
+      "sha256": "9a2cd6b059b5b01532c1bb920196c34960b8013825068fc7a8762640ad2459d6"
+    },
+    {
+      "path": "tools/hcsn/gated-campaign-v1/hcsn-campaign-bundle-v1.zip!campaign-bundle-v1/candidate/qualification/hcsn/checks.py",
+      "bytes": 7266,
+      "sha256": "7a48f3fc993d6234615982165f1aac7725ce33bba4b3b79393e15b714915688c"
+    },
+    {
+      "path": "tools/hcsn/gated-campaign-v1/hcsn-campaign-bundle-v1.zip!campaign-bundle-v1/candidate/qualification/hcsn/configs/full-rematerialized.json",
+      "bytes": 789,
+      "sha256": "43fb7b280bb80643c0bcdbfceae6788b37dd1d45fad682805ec6045088b31611"
+    },
+    {
+      "path": "tools/hcsn/gated-campaign-v1/hcsn-campaign-bundle-v1.zip!campaign-bundle-v1/candidate/qualification/hcsn/configs/full.json",
+      "bytes": 722,
+      "sha256": "7fa3d05b8c04a918043afdfa1c266a17beccb814351258d0555a753baf13777a"
+    },
+    {
+      "path": "tools/hcsn/gated-campaign-v1/hcsn-campaign-bundle-v1.zip!campaign-bundle-v1/candidate/qualification/hcsn/configs/smoke.json",
+      "bytes": 643,
+      "sha256": "3c0e9eb10d1ae13035ba7d455a2fd280531d43c0af15329f49a814722a4a3a57"
+    },
+    {
+      "path": "tools/hcsn/gated-campaign-v1/hcsn-campaign-bundle-v1.zip!campaign-bundle-v1/candidate/qualification/hcsn/execution.py",
+      "bytes": 7353,
+      "sha256": "6794762ec760edd7d847e73f802128813c507f538b515973e8367df73c2d8a73"
+    },
+    {
+      "path": "tools/hcsn/gated-campaign-v1/hcsn-campaign-bundle-v1.zip!campaign-bundle-v1/candidate/qualification/hcsn/mechanisms.py",
+      "bytes": 17040,
+      "sha256": "fa64def064d603c16111d0ed29cd1cdb6c64308ed0db5ded96ee6b4614e5b6ed"
+    },
+    {
+      "path": "tools/hcsn/gated-campaign-v1/hcsn-campaign-bundle-v1.zip!campaign-bundle-v1/candidate/qualification/hcsn/population.py",
+      "bytes": 8894,
+      "sha256": "3de163561abeb475573a8f680357000f68bffdb485405d61bf1fe40b493f6178"
+    },
+    {
+      "path": "tools/hcsn/gated-campaign-v1/hcsn-campaign-bundle-v1.zip!campaign-bundle-v1/candidate/qualification/hcsn/population_torch.py",
+      "bytes": 6450,
+      "sha256": "80af92d1e8c900b4d29bbd76492572a19e70840b3b09747243df39843b0efe3d"
+    },
+    {
+      "path": "tools/hcsn/gated-campaign-v1/hcsn-campaign-bundle-v1.zip!campaign-bundle-v1/candidate/qualification/hcsn/reference.py",
+      "bytes": 15847,
+      "sha256": "8cae6a0b5274bde355e0eeacaf9600f04be779cdde65a379ddcfb0194cd461c2"
+    },
+    {
+      "path": "tools/hcsn/gated-campaign-v1/hcsn-campaign-bundle-v1.zip!campaign-bundle-v1/candidate/qualification/hcsn/rematerialization.py",
+      "bytes": 2791,
+      "sha256": "ea0be5db010342050437fc5aa5d0458b8601b744670a4d7e3abd84cfbc52ae38"
+    },
+    {
+      "path": "tools/hcsn/gated-campaign-v1/hcsn-campaign-bundle-v1.zip!campaign-bundle-v1/candidate/qualification/hcsn/requirements.txt",
+      "bytes": 195,
+      "sha256": "168e95da616ce7f1535ebb13b5575a708c6d4e41a7f788d6afdef8ceff121f9b"
+    },
+    {
+      "path": "tools/hcsn/gated-campaign-v1/hcsn-campaign-bundle-v1.zip!campaign-bundle-v1/candidate/qualification/hcsn/tensor.py",
+      "bytes": 19509,
+      "sha256": "624d293a9d3a7afa7e32be3e9133ac18cc0f90e49e7bdc5ff9a3b25c4563bddc"
+    },
+    {
+      "path": "tools/hcsn/gated-campaign-v1/hcsn-campaign-bundle-v1.zip!campaign-bundle-v1/candidate/qualification/hcsn/tests/__init__.py",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "tools/hcsn/gated-campaign-v1/hcsn-campaign-bundle-v1.zip!campaign-bundle-v1/candidate/qualification/hcsn/tests/test_audit_population.py",
+      "bytes": 5490,
+      "sha256": "249a8118632082d802bebed55005abd100ebaf292290e5573822d594ef57dc6d"
+    },
+    {
+      "path": "tools/hcsn/gated-campaign-v1/hcsn-campaign-bundle-v1.zip!campaign-bundle-v1/candidate/qualification/hcsn/tests/test_benchmark.py",
+      "bytes": 11867,
+      "sha256": "15939465d403647ecbd924dfb97297aee43c0c8e64e69d196d157ebdf19852e2"
+    },
+    {
+      "path": "tools/hcsn/gated-campaign-v1/hcsn-campaign-bundle-v1.zip!campaign-bundle-v1/candidate/qualification/hcsn/tests/test_cells.py",
+      "bytes": 8087,
+      "sha256": "e579936cb01bd810636ab5de963ed2f24a64013da0056d8568d45d42d5ebd79b"
+    },
+    {
+      "path": "tools/hcsn/gated-campaign-v1/hcsn-campaign-bundle-v1.zip!campaign-bundle-v1/candidate/qualification/hcsn/tests/test_checks.py",
+      "bytes": 6488,
+      "sha256": "54c994b9a6ca76d9e048f5fb0b3f770bfe4f6025329d29be22808b493e3ca68f"
+    },
+    {
+      "path": "tools/hcsn/gated-campaign-v1/hcsn-campaign-bundle-v1.zip!campaign-bundle-v1/candidate/qualification/hcsn/tests/test_execution.py",
+      "bytes": 14566,
+      "sha256": "c2dfc42ccdb134d42c4772153278dd4b54182812a382d9fab53876b741f61a68"
+    },
+    {
+      "path": "tools/hcsn/gated-campaign-v1/hcsn-campaign-bundle-v1.zip!campaign-bundle-v1/candidate/qualification/hcsn/tests/test_hx_tensor.py",
+      "bytes": 17544,
+      "sha256": "d1c405651f956b112d907f4109c0d759648703b6d6b303e503cb716228fde7a4"
+    },
+    {
+      "path": "tools/hcsn/gated-campaign-v1/hcsn-campaign-bundle-v1.zip!campaign-bundle-v1/candidate/qualification/hcsn/tests/test_population.py",
+      "bytes": 8785,
+      "sha256": "85dacb782ac9cf6f61f7c5c70027693d3ef50f83da24ce40348658ea0ed04c95"
+    },
+    {
+      "path": "tools/hcsn/gated-campaign-v1/hcsn-campaign-bundle-v1.zip!campaign-bundle-v1/candidate/qualification/hcsn/tests/test_population_torch.py",
+      "bytes": 5350,
+      "sha256": "7bf3ba7a2f54f8dd7707a166fddf0a5f91c90d017a4e3564666a8f9ec0798076"
+    },
+    {
+      "path": "tools/hcsn/gated-campaign-v1/hcsn-campaign-bundle-v1.zip!campaign-bundle-v1/candidate/qualification/hcsn/tests/test_reference.py",
+      "bytes": 11571,
+      "sha256": "d95e4eefbd46f8f9fd37813b63f20549ad1fbae43ae436a0f1ca0fdae4c0eb8d"
+    },
+    {
+      "path": "tools/hcsn/gated-campaign-v1/hcsn-campaign-bundle-v1.zip!campaign-bundle-v1/candidate/qualification/hcsn/tests/test_tensor.py",
+      "bytes": 13111,
+      "sha256": "355ba9bf747bc427acb0f10c8525ed80bc5f6e55f9f897602141bf0b6cb4421f"
+    },
+    {
+      "path": "tools/hcsn/gated-campaign-v1/hcsn-campaign-bundle-v1.zip!campaign-bundle-v1/candidate/qualification/hcsn/validate.py",
+      "bytes": 15114,
+      "sha256": "d6f925e9784770705230adbe871547726dd0db91f476dcfc1e265c525e377045"
+    },
+    {
+      "path": "tools/hcsn/gated-campaign-v1/hcsn-campaign-bundle-v1.zip!campaign-bundle-v1/contracts.py",
+      "bytes": 11726,
+      "sha256": "685b20a716cb5b929e5018d742b25bb00a901be35c2e1db203bbd50af85a3a6d"
+    },
+    {
+      "path": "tools/hcsn/gated-campaign-v1/hcsn-campaign-bundle-v1.zip!campaign-bundle-v1/runtime_entry.py",
+      "bytes": 8253,
+      "sha256": "8cb10553073686301fc81e15e088e356ba16e41c3bc8a0a44d1b146c06b74fb4"
+    },
+    {
+      "path": "tools/hcsn/gated-campaign-v1/runtime_entry.py",
+      "bytes": 8253,
+      "sha256": "8cb10553073686301fc81e15e088e356ba16e41c3bc8a0a44d1b146c06b74fb4"
+    }
+  ]
+}

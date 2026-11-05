@@ -1,0 +1,219 @@
+{
+  "schema": "hcsn-data-environment-handoff-v2",
+  "task_root": "/data/hcsn-cuda-170run-20261105-r1",
+  "python": "/data/hcsn-cuda-170run-20261105-r1/.venv/bin/python",
+  "source_archive_sha256": "c46a6f47911adcf12298a5059bbde74ee096c49b3946d8ee10f4710719d3521c",
+  "baseline_commit": "28a61d14ea7d4c3b3c515ab57b29c98de22e5673",
+  "migration": {
+    "job_id": "1a1ac974d95-fc05-559b",
+    "state": "succeeded",
+    "exit_code": 0,
+    "verified_nonvenv_files": 1156,
+    "copied_bytes": 1437884158,
+    "manifest_sha256": "bf7ac51855f51d11d746774729d85be4c85034a67a5cd4455d2d23b4e4ec67fc",
+    "receipt_sha256": "300a8144f08f4d0c0dea009d2975184c81a42c292b03c3a135dc66653dacd086",
+    "old_root_preserved": true,
+    "old_root_bytes_deleted": 0,
+    "venv_copied": false
+  },
+  "numeric": {
+    "job_id": "1a1aca4308e-fc05-5618",
+    "state": "succeeded",
+    "exit_code": 0,
+    "ready_sha256": "74bd91aa38786f49beb3f4fc5be7ca9cf278f79d13d1246e02174d696ca9052f",
+    "artifact_manifest_sha256": "dccf2f8cbb728e463e7d569a7eee56db3b219d351b8319e48670851bbd3b7cb5",
+    "original_pip_report_sha256": "e517118bcfec0c97b8a29a9edd5fe0048f970978d8944ca503800bc8993d1343",
+    "versions": {
+      "numpy": "2.3.5",
+      "scipy": "1.17.0",
+      "ncps": "1.0.1",
+      "nvidia-ml-py": "13.610.43",
+      "future": "1.0.0",
+      "packaging": "26.3"
+    }
+  },
+  "scripts": [
+    {
+      "file": "envsetup/rebuild_numeric_venv.py",
+      "sha256": "5547065d2f1f5a8be4edd49246330592e3072099b8f4c9b60b8389e0d3055d25"
+    },
+    {
+      "file": "envsetup/resume_torch_install_v4_data.py",
+      "sha256": "a01f4a9bed417e97fe9446b670d5ba40ca4fecda3cf6910d860f8258588f3da3"
+    },
+    {
+      "file": "envsetup/install_mamba_stage_v3_data.py",
+      "sha256": "c7d67ffd43c2939da304154976eafe22e4869f6507f0e3a7b379963a43c4317f"
+    },
+    {
+      "file": "envsetup/wait_install_mamba.py",
+      "sha256": "f22259c7fba2fc11117dc17f7ef80774cb3e3007860ea8a1aeafa56a0162d6fc"
+    }
+  ],
+  "active_jobs": [
+    {
+      "role": "torch_download_and_offline_install",
+      "id": "1a1aca78192-fc05-562f",
+      "key": "hcsn-cuda-r1-data-torch-resume-v4",
+      "last_observed_state": "download_verified_ranges",
+      "request_digest": "f4a126d1499cadbd84c35c8c9310f11e73e791becb28717fc910577cb6d0caf3"
+    },
+    {
+      "role": "mamba_download_only",
+      "id": "1a1aca7f6ba-fc05-5631",
+      "key": "hcsn-cuda-r1-data-mamba-download-v3",
+      "last_observed_state": "succeeded",
+      "request_digest": "25b34adf4070cfd5c5ea71cb5b94e6a9893d9e935d0ef0e93718e7a4fe45207f",
+      "exit_code": 0,
+      "terminal_receipt_sha256": "3c9cf37909ee09c5d34de7ca774609bd1503f5d8f7c089c90c4d94037494d9bd"
+    },
+    {
+      "role": "mamba_automatic_offline_install_waiter",
+      "id": "1a1acadd69c-fc05-5654",
+      "key": "hcsn-cuda-r1-data-offline-mamba-waiter-v1",
+      "last_observed_state": "waiting_for_verified_dependencies",
+      "request_digest": "bffb44465f84e76f947179d2391c84bb5cddaf5f957d25f7b5a44622d5db9342"
+    }
+  ],
+  "contract": {
+    "install_lock": "envsetup/install.lock",
+    "installer_lock_mode": "exclusive; inherited by writing pip subprocess",
+    "experiment_lock_mode": "shared after both READY receipts",
+    "torch_ready": {
+      "file": "envsetup/TORCH_READY.json",
+      "state": "ready",
+      "manifest_sha256": "5b8df3b8ff4583f10f43a1ecfb05f35574a3f95a16a458d107e36e8a89175701",
+      "availability_file": "envsetup/torch-availability.json",
+      "required_fields": [
+        "python",
+        "manifest_sha256",
+        "availability_sha256",
+        "source_archive_sha256",
+        "script_sha256"
+      ]
+    },
+    "mamba_ready": {
+      "file": "envsetup/MAMBA_READY.json",
+      "state": "imports_ready",
+      "manifest_sha256": "86f88c5d54c74e5baccdd99cace8f056a6ed6acc11f4bd8f633e122c951d5501",
+      "availability_file": "envsetup/mamba-import-availability.json",
+      "required_fields": [
+        "python",
+        "manifest_sha256",
+        "torch_manifest_sha256",
+        "availability_sha256",
+        "source_archive_sha256",
+        "script_sha256"
+      ]
+    },
+    "waiter_preconditions": "exact two owned job IDs publish durable successful exit; fixed READY, full-wheel verification, manifest and source hashes match",
+    "waiter_automatic_install_attempts": 1,
+    "waiter_timeout_seconds": 86400,
+    "offline_install_timeout_seconds": 3600,
+    "reserve_bytes": 5368709120,
+    "temp_directory": "envsetup/pip-tmp",
+    "known_parallel_writes_budgeted": true
+  },
+  "limits": {
+    "torch_or_mamba_ready_not_yet_observed": true,
+    "no_model_forward_backward_training_by_gpu_access": true,
+    "physical_gpu_power_energy_nvml_status": 3,
+    "physical_gpu_power_energy": "NOT_SUPPORTED; failed null values are not measured zeros",
+    "official_prebuilt_mamba_profile_selected": true,
+    "source_build_feasibility_only": true
+  },
+  "independent_reviews": [
+    {
+      "file": "ci-audit/storage-installers-static-review-v3.json",
+      "sha256": "ab52182b2eeb50898fcec6109993e78b91c530e74c11e5241b913694423d5018"
+    },
+    {
+      "file": "ci-audit/offline-waiter-independent-review-v1.json",
+      "sha256": "9b29a5260768274e851b600ef0c2ac82a695891da35f0de8540cb487dab7600e"
+    }
+  ],
+  "storage_observation": {
+    "observed_at": "2026-11-05T17:55:43.793915+00:00",
+    "task_allocated_bytes": 3015262208,
+    "task_apparent_bytes": 2995667247,
+    "data_free_bytes": 32687108096,
+    "control_filesystem_free_bytes": 4037849088,
+    "old_root_bytes_deleted_by_this_task": 0,
+    "control_below_1gib": false,
+    "data_below_5gib": false,
+    "source_latest_sha256": "dfc8308f9bc0bfb7ee184d26e1bcc9d2d0030e88b2ce2812984baae3ec8e7fa9"
+  },
+  "mamba_verified_wheels": {
+    "state": "verified_wheels_only",
+    "job_id": "1a1aca7f6ba-fc05-5631",
+    "exit_code": 0,
+    "completed_at": "2026-11-05T17:29:27.884343+00:00",
+    "ready_sha256": "f733f94818ea70056c52ef8ec7c5bd030f470482c3182d7642afa93d845cf384",
+    "verification_sha256": "778615bf24fa01214f9eaacad3b1cd7c5141e42cd6b7f650dadd55d53697fb99",
+    "verification_report_bytes": 83556,
+    "compressed_wheel_bytes": 706688727,
+    "exact_zip_uncompressed_bytes": 1015779069,
+    "artifact_count": 17,
+    "installed": false,
+    "import_test_performed": false,
+    "only_redundant_complete_parts_deleted_bytes": 706688727,
+    "all_wheels_and_receipts_preserved": true,
+    "raw_ready_local_file": "gpu-audit/MAMBA_WHEELS_READY.json",
+    "safe_raw_ready_bytes": 451,
+    "full_report_local_file": "gpu-audit/mamba-artifact-complete-verification.json",
+    "safe_summary_local_file": "gpu-audit/mamba-whole-wheel-verification-summary.json"
+  },
+  "compiled_at_utc": "2026-11-05T17:59:55Z",
+  "handoff_frozen": true,
+  "storage_observer": {
+    "state": "running_verified",
+    "job_id": "1a1acda2df4-fc05-5745",
+    "idempotency_key": "hcsn-cuda-r1-data-storage-observer-v2",
+    "request_digest": "3cfdf175a6ac8275efaf77abd06c741626c8569c13d61e547aae53caa3cccc65",
+    "script_file": "envsetup/observe_environment_storage.py",
+    "script_sha256": "7713f44ad5e519e3d3dd31655089c9a40f8ce5b46403aaa78a59504ba56ffa99",
+    "period_seconds": 300,
+    "maximum_observation_seconds": 43140,
+    "runtime_timeout_seconds": 43200,
+    "stops_when": "both installation READY markers are observed, cancelled by owner, or bounded observation deadline",
+    "latest_file": "envsetup/storage-observation-latest.json",
+    "history_file": "envsetup/storage-observations.jsonl",
+    "console_file": "envsetup/storage-observer-console-v2.log",
+    "exit_file": "envsetup/storage-observer-exit.json",
+    "scope": "du of this task root only; statvfs of data and control filesystems; read task status; write task observation evidence only",
+    "no_install_or_training_control": true,
+    "low_space_flags_only": true,
+    "launch_timeout_reconciled_with_same_key": true,
+    "reconciled_launch_reused_existing_job": true,
+    "previous_observer": {
+      "job_id": "1a1acd55ab6-fc05-5739",
+      "idempotency_key": "hcsn-cuda-r1-data-storage-observer-v1",
+      "state": "cancelled",
+      "exit_code": -15,
+      "output_complete": true,
+      "output_durable": true,
+      "terminal_receipt_sha256": "e32ee55b216bd55632327a9e8ee1c3736d4c7861719c79d1e1918342d28dbc5a",
+      "task_exit_receipt_sha256": "580e5cf056f0deff0e58153eb5848d9199257e17e575f1acaea17cdf228afbc0",
+      "preserved_task_exit_file": "envsetup/storage-observer-v1-exit.json",
+      "observations": 1,
+      "stdout_bytes": 232,
+      "reason": "Stopped while reconciling the observation log destination; restored once after confirmed terminal cancellation using unchanged observer source and data-volume console redirection. No download, installer or installation waiter was stopped."
+    }
+  },
+  "torch_download_observation": {
+    "last_payload_at": "2026-11-05T17:55:42.466513+00:00",
+    "state": "download_verified_ranges",
+    "completed_bytes": 1938178509,
+    "total_bytes": 3918339031,
+    "inflight_partial_bytes": 17451897,
+    "wire_bytes_received_this_attempt": 1011980279,
+    "imports_or_cuda_model_test_not_yet_performed": true
+  },
+  "mamba_install_waiter_observation": {
+    "updated_at": "2026-11-05T17:57:53.443344+00:00",
+    "state": "waiting_for_verified_dependencies",
+    "automatic_install_attempts": 0,
+    "mamba_download_terminal_verified": true,
+    "torch_dependency_still_pending": true
+  }
+}

@@ -1,0 +1,56 @@
+{
+  "schema": "hcsn-source-faithful-bare-uuid-regression-v1",
+  "created_utc": "2026-11-05T17:49:18.042872+00:00",
+  "status": "passed",
+  "scope": "One synthetic 16-byte UUID representation regression through original function AST; no Torch import or CUDA/model computation",
+  "torch_imported": false,
+  "cuda_computation": false,
+  "counts_toward_170_runs": false,
+  "source_sha256": {
+    "ci-audit/uuid/test_bare_uuid_regression.py": "6b6c6e949d8c84b86461e47cd999817e283d0c8049b0151a03312244d845412f",
+    "ci-audit/uuid/PyTorch-v2.8.0-Module.cpp": "6dcdd889c619878f0a31d35064ed208c7b4b75a61af53ec3d1b97b84e0b6f04d",
+    "ci-audit/uuid/NVIDIA-nvbandwidth-inline_common.h": "5e7b46d85067b593f2c746984a3600503203c763e530879ddf77ca19f279ddb1",
+    "gated-execution/contracts.py": "685b20a716cb5b929e5018d742b25bb00a901be35c2e1db203bbd50af85a3a6d",
+    "gated-execution/runtime_entry.py": "8cb10553073686301fc81e15e088e356ba16e41c3bc8a0a44d1b146c06b74fb4",
+    "hcsn-execution-candidate/qualification/hcsn/execution.py": "6794762ec760edd7d847e73f802128813c507f538b515973e8367df73c2d8a73",
+    "gated-execution-v2/contracts.py": "1b378e4e1940212cd97740337aed33cb38494ab18a259cd0d7e1f668857a1e28",
+    "gated-execution-v2/runtime_entry.py": "ddc68ffa94ee796a1b9a08a4e403754b11eb63c2897cd6465db0447800ee8217",
+    "hcsn-execution-candidate-v2/qualification/hcsn/execution.py": "cec0644b0ae13721a5162eba217c183f2aa69adc73909a2183bd3dd5727abcd7"
+  },
+  "observations": [
+    {
+      "component": "runtime_entry",
+      "version": "v1",
+      "outcome": "rejected_source_faithful_bare_uuid",
+      "reason": "CUDA GPU/runtime/ABI mismatch",
+      "smi_calls": 0
+    },
+    {
+      "component": "configure_cuda",
+      "version": "v1",
+      "outcome": "same_device_readback_misclassified_as_mismatch",
+      "smi_query": "a33875b7-7eb7-679e-df08-19227d3decee",
+      "reason": "ValueError: nvidia-smi did not return the requested UUID and driver"
+    },
+    {
+      "component": "runtime_entry",
+      "version": "v2",
+      "outcome": "accepted_same_physical_uuid",
+      "raw": "a33875b7-7eb7-679e-df08-19227d3decee",
+      "canonical": "GPU-a33875b7-7eb7-679e-df08-19227d3decee",
+      "smi_query": "GPU-a33875b7-7eb7-679e-df08-19227d3decee"
+    },
+    {
+      "component": "configure_cuda",
+      "version": "v2",
+      "outcome": "accepted_same_physical_uuid",
+      "raw": "a33875b7-7eb7-679e-df08-19227d3decee",
+      "canonical": "GPU-a33875b7-7eb7-679e-df08-19227d3decee"
+    },
+    {
+      "component": "external_original_probe_validation",
+      "v1_outcome": "rejected_bare_uuid",
+      "v2_outcome": "accepted_without_mutating_original_receipt"
+    }
+  ]
+}

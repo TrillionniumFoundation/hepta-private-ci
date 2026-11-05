@@ -1,0 +1,29 @@
+{
+  "schema": "hcsn-nvml-uuid-lookup-comparison-v1",
+  "started_utc": "2026-11-05T17:45:23.518902+00:00",
+  "nvidia_ml_py": "13.610.43",
+  "expected_physical_uuid": "GPU-a33875b7-7eb7-679e-df08-19227d3decee",
+  "scope": "getHandleByUUID and getUUID only; no Torch import, power/energy read or GPU computation",
+  "torch_imported": false,
+  "gpu_computation": false,
+  "driver_changed": false,
+  "observations": [
+    {
+      "spelling": "canonical_nvml",
+      "requested_uuid": "GPU-a33875b7-7eb7-679e-df08-19227d3decee",
+      "status_code": 0,
+      "returned_uuid_type": "str",
+      "returned_uuid": "GPU-a33875b7-7eb7-679e-df08-19227d3decee",
+      "matches_expected_physical_uuid": true
+    },
+    {
+      "spelling": "bare_cuda",
+      "requested_uuid": "a33875b7-7eb7-679e-df08-19227d3decee",
+      "status_code": 0,
+      "returned_uuid_type": "str",
+      "returned_uuid": "GPU-a33875b7-7eb7-679e-df08-19227d3decee",
+      "matches_expected_physical_uuid": true
+    }
+  ],
+  "finished_utc": "2026-11-05T17:45:23.572407+00:00"
+}

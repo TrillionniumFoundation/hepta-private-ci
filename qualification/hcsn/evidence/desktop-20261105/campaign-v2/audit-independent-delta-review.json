@@ -1,0 +1,86 @@
+{
+  "schema": "hcsn-full-b-uuid-v2-independent-delta-review-v1",
+  "created_utc": "2026-11-05T17:54:51.325025+00:00",
+  "decision": "no_blocking_finding_in_UUID_source_profile_delta",
+  "scope": "Read-only v1-to-v2 delta and source-bound non-Torch control evidence; no rerun or Torch/CUDA import.",
+  "source_files": [
+    {
+      "path": "numeric-audit/cuda-full-b-v2/audit_full_b_cuda.py",
+      "sha256": "7a5e27f123ba2f8d32d17385f13650b230c03cd9d51496364bb2da39f082a7de",
+      "bytes": 42990
+    },
+    {
+      "path": "numeric-audit/cuda-full-b-v2/PROTOCOL.json",
+      "sha256": "1b0c726785a406501a83ab33265bb04428b611264120ad502c44e599bd4154e7",
+      "bytes": 3464
+    },
+    {
+      "path": "numeric-audit/cuda-full-b-v2/check_non_torch.py",
+      "sha256": "8fd44e90e7af111a7e1f7c167d17629203558941a48a43019aab6f19da658add",
+      "bytes": 14853
+    }
+  ],
+  "changed_functions": [
+    "prepare",
+    "read_profile",
+    "setup_runtime",
+    "validate_uuid_pair"
+  ],
+  "numerical_functions_unchanged": {
+    "run_grid": {
+      "equal": true,
+      "sha256": "b0bc50aeaf8e27407cb548d5f798a8aed2d9b10eb46b5867e0332297dba39fa1"
+    },
+    "load_checkpoint": {
+      "equal": true,
+      "sha256": "aae988374605ac3b8536059eb3f28a2c107891770813d20e638a61f19f4028e3"
+    }
+  },
+  "controls": {
+    "receipt": {
+      "path": "numeric-audit/cuda-full-b-v2/negative-controls-v1/RESULT.json",
+      "sha256": "7dd08c4ce9ac3a849def8ebc8e84524de2fcc77afeff982fc1c383c2a93470f0",
+      "bytes": 7746
+    },
+    "passed": 25,
+    "failed": 0,
+    "new_uuid_cases": [
+      {
+        "name": "benchmark_uuid_raw_mismatch",
+        "status": "invalidated",
+        "reason": "Invalidated: invalid raw/canonical GPU UUID evidence: raw and canonical fields identify different devices or lack canonical spelling",
+        "torch_preimported": false,
+        "sha256": "d21162a0c2c00fa8718bd27f66ed91a33949c3ce83b8381fe2b0255d5366a48d"
+      },
+      {
+        "name": "profile_uuid_raw_mismatch",
+        "status": "invalidated",
+        "reason": "Invalidated: invalid raw/canonical GPU UUID evidence: raw and canonical fields identify different devices or lack canonical spelling",
+        "torch_preimported": false,
+        "sha256": "d4a922bf9bbe02bdd1d3a2f929f31bd907ba27dcffdeb1320c21b3a143a95683"
+      },
+      {
+        "name": "profile_mig_identity",
+        "status": "invalidated",
+        "reason": "Invalidated: invalid raw/canonical GPU UUID evidence: expected one complete bare or GPU-prefixed GPU UUID; ordinal/MIG/ambiguous values refused",
+        "torch_preimported": false,
+        "sha256": "901e588b3065c9fe0c1a7abf18b6a4e67afeb7e8f4dbe938db7c211f40727528"
+      },
+      {
+        "name": "profile_canonical_field_bare",
+        "status": "invalidated",
+        "reason": "Invalidated: invalid raw/canonical GPU UUID evidence: raw and canonical fields identify different devices or lack canonical spelling",
+        "torch_preimported": false,
+        "sha256": "c0414daa756257d9c015f45b7e0df935f2e39644cf19ba426b0af2bfdc6a1d2c"
+      }
+    ]
+  },
+  "verified_behaviors": [
+    "The candidate source map is validated before importing its normalizer; module paths must resolve inside the frozen package.",
+    "Benchmark hardware raw/canonical identifiers, runtime profile v2 raw/canonical identifiers, and launch profile v2 raw/canonical identifiers must encode the same physical GPU.",
+    "Actual configure_cuda raw/canonical identifiers are validated and actual canonical UUID remains compared to the immutable training hardware.",
+    "Current-process PID, wrapper-entry hash, target path/hash, exact arguments, preimport assertions, environment, runtime flags and distribution bindings are retained.",
+    "Numerical replay, checkpoint loading, all-20 coverage, batch regrouping, intervals and ownership rules were not changed by this delta."
+  ],
+  "limit": "Static and synthetic admission evidence does not establish CUDA numerical qualification, energy availability or resolution independence."
+}

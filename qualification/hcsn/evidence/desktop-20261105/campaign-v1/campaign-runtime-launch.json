@@ -1,0 +1,53 @@
+{
+  "schema": "hcsn-durable-campaign-launch-v1",
+  "host": "desktop",
+  "job_id": "1a1acb0a367-fc05-5667",
+  "idempotency_key": "hcsn-cuda-r1-gated-full170-campaign-v1",
+  "request_digest": "ba10a5e413a99ecd0356f708bb260b1d844204e913058e1f4b719564cc2d88ab",
+  "launch_state": "launched",
+  "created_unix_ms": 1793898619751,
+  "task_root": "/data/hcsn-cuda-170run-20261105-r1",
+  "output_dir": "/data/hcsn-cuda-170run-20261105-r1/campaigns/full-v1",
+  "candidate_source_commit": "fe1def4a8a6655a361726f3ca275d9f5688dd394",
+  "manifest_sha256": "90b3c9f6c6dc206362ee21f3617bd487c5484ca00ad61189195aa832382d3e40",
+  "archive_sha256": "3219e48fb0e8b28a77e1e245ad967f3be5d37948eddac24a64b05dcf17dce2a2",
+  "controller_state": {
+    "schema": "hcsn-gated-cuda-campaign-v1",
+    "status": "waiting_for_pinned_runtime",
+    "started_utc": "2026-11-05T17:10:25.989759+00:00",
+    "pid": 124088,
+    "stages": [],
+    "completed_cuda_runs": 0,
+    "requested_cuda_runs": 170,
+    "global_qualification": "open",
+    "source_branch_ci_not_claimed": true,
+    "no_automatic_training_retries": true,
+    "budget_change_permitted": false,
+    "physical_energy_missing_is_not_zero": true,
+    "updated_utc": "2026-11-05T17:10:56.040300+00:00",
+    "disk_free_bytes": 34283954176
+  },
+  "process_state": "running",
+  "runtime_wait_deadline_seconds": 86400,
+  "durable_job_timeout_seconds": 604800,
+  "stage_history": [
+    {
+      "job": "1a1acabf2e4-fc05-564a",
+      "state": "failed",
+      "exit_code": 1,
+      "reason": "staging script assumed no ZIP directory prefix; KeyError before target directory creation",
+      "model_computation_performed": false
+    },
+    {
+      "job": "1a1acafc1f4-fc05-5660",
+      "state": "succeeded",
+      "exit_code": 0,
+      "terminal_publication_confirmed": true,
+      "output_complete": true,
+      "output_durable": true,
+      "fix": "strip only verified campaign-bundle-v1/ archive prefix; payload bytes unchanged",
+      "model_computation_performed": false
+    }
+  ],
+  "snapshot_scope": "Actual launch, durable process state and independently read files; no CUDA training completed at this observation"
+}
