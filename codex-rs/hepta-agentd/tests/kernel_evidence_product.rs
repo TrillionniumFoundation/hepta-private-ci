@@ -10,7 +10,7 @@ use anyhow::Result;
 use anyhow::ensure;
 use app_test_support::MockResponsesConfig;
 use codex_hepta_agentd::AgentdError;
-use codex_hepta_agentd::EvidenceRecoveryFrontierV2;
+use codex_hepta_agentd::EvidenceRecoveryFrontierV3;
 use codex_hepta_agentd::KernelEvidenceAppendIngress;
 use codex_hepta_agentd::KernelEvidenceCandidateV1;
 use codex_hepta_agentd::KernelEvidenceQueryV1;
@@ -20,6 +20,9 @@ use codex_hepta_agentd::kernel_evidence_claims;
 use codex_hepta_authbus::IssuerRegistration;
 use codex_hepta_authbus::SignedMessage;
 use codex_hepta_contracts::Sha256Digest;
+use codex_hepta_contracts::pq_auth::ML_DSA_65_SIGNATURE_BYTES;
+use codex_hepta_contracts::pq_auth::PqNativeSigningKey;
+use codex_hepta_contracts::pq_auth::ml_dsa_65_key_id_from_spki;
 use codex_hepta_evidence::EvidenceCandidateV1;
 use codex_hepta_evidence::EvidenceClaimClassV1;
 use codex_hepta_evidence::EvidenceDispositionV1;
@@ -94,7 +97,21 @@ async fn real_agentd_composes_authenticated_evidence_writer_query_verifier_and_t
         ],
     )?;
 
-    fleet.start_with_evidence_trust_file(&agent, &trust_file)?;
+    let sqlite = SqliteConfig::from_sqlite_home(AbsolutePathBuf::from_absolute_path(
+        agent.layout.home_root(),
+    )?);
+    let store = HeptaEvidenceStore::open(&sqlite).await?;
+    let snapshot = store.recovery_snapshot().await?;
+    store.close().await;
+    let external = tempfile::tempdir()?;
+    let (frontier_file, frontier_trust_file) =
+        write_recovery_frontier(external.path(), "store:kernel-evidence-product", snapshot)?;
+    fleet.start_with_evidence_recovery(
+        &agent,
+        &trust_file,
+        &frontier_file,
+        &frontier_trust_file,
+    )?;
     let (control, _) = fleet.wait_ready(&agent, /*generation*/ 1).await?;
     let capabilities = control.capabilities().await?;
     ensure!(
@@ -683,6 +700,7 @@ async fn check_recovery_rollback(fixture: RecoveryRollbackFixture) -> Result<()>
     )?;
 
     std::fs::copy(&old_image, &database_path)?;
+    let restored_image_bytes = std::fs::read(&database_path)?;
     fleet.start_with_evidence_recovery(
         &agent,
         &trust_file,
@@ -697,6 +715,10 @@ async fn check_recovery_rollback(fixture: RecoveryRollbackFixture) -> Result<()>
     ensure!(
         format!("{failure:#}").contains("recovery_required"),
         "older database failed without the recovery-required oracle: {failure:#}"
+    );
+    ensure!(
+        std::fs::read(&database_path)? == restored_image_bytes,
+        "rejected recovery rewrote the restored database before admission"
     );
     Ok(())
 }
@@ -835,9 +857,13 @@ fn write_recovery_frontier(
     store_id: &str,
     snapshot: codex_hepta_evidence::EvidenceRecoverySnapshotV2,
 ) -> Result<(std::path::PathBuf, std::path::PathBuf)> {
-    let signer_key = SigningKey::from_bytes(&[63; 32]);
-    let mut frontier = EvidenceRecoveryFrontierV2 {
-        schema_version: 2,
+    let directory = directory.canonicalize()?;
+    let seed = [63; 32].into();
+    let spki = PqNativeSigningKey::public_spki_from_seed(&seed);
+    let signer_key = PqNativeSigningKey::from_owned_seed(seed, ml_dsa_65_key_id_from_spki(&spki)?)?;
+    let mut frontier = EvidenceRecoveryFrontierV3 {
+        schema_version: 3,
+        authentication_profile: "ml_dsa65_v2".into(),
         store_id: store_id.to_string(),
         frontier_generation: 1,
         snapshot,
@@ -846,11 +872,12 @@ fn write_recovery_frontier(
         created_at_unix_ms: now_ms()?,
         signer_principal_id: RECOVERY_SIGNER.to_string(),
         signer_key_epoch: 1,
-        signature_hex: "00".repeat(64),
+        signer_public_key_id_hex: hex(&signer_key.public_key_id()),
+        signature_hex: "00".repeat(ML_DSA_65_SIGNATURE_BYTES),
     };
-    frontier.signature_hex = hex(&signer_key
-        .sign(&evidence_recovery_frontier_signing_bytes(&frontier)?)
-        .to_bytes());
+    frontier.signature_hex =
+        hex(&signer_key
+            .sign_exact_message(&evidence_recovery_frontier_signing_bytes(&frontier)?)?);
 
     let frontier_file = directory.join("evidence-recovery-frontier.json");
     write_private_json(&frontier_file, &frontier)?;
@@ -858,10 +885,14 @@ fn write_recovery_frontier(
     write_private_json(
         &trust_file,
         &json!({
-            "schemaVersion": 1,
+            "schemaVersion": 2,
+            "authenticationProfile": "ml_dsa65_v2",
+            "storeId": store_id,
+            "minimumFrontierGeneration": 1,
             "signerPrincipalId": RECOVERY_SIGNER,
             "signerKeyEpoch": 1,
-            "publicKeyHex": hex(signer_key.verifying_key().as_bytes()),
+            "publicSpkiHex": hex(signer_key.public_spki()),
+            "publicKeyIdHex": hex(&signer_key.public_key_id()),
             "revoked": false
         }),
     )?;

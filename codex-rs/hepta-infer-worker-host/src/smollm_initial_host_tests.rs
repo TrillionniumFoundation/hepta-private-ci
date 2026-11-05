@@ -21,6 +21,8 @@ use std::os::unix::fs::PermissionsExt;
 
 type TestResult<T> = Result<T, Box<dyn Error>>;
 
+#[path = "smollm_agentd_recovery_tests.rs"]
+mod evidence_recovery;
 #[path = "smollm_initial_pq_inputs_tests.rs"]
 mod pq_inputs;
 use pq_inputs::archive_pq_authority as archive_authority;
@@ -442,7 +444,7 @@ impl Fixture {
         )?;
         fs::create_dir_all(record.layout.home_root())?;
         fs::create_dir_all(record.layout.run_root())?;
-        Ok(AgentdConfig::load(
+        let config = AgentdConfig::load(
             root.join("fleet"),
             owner,
             /*spawn_generation*/ 1,
@@ -450,7 +452,8 @@ impl Fixture {
             record.layout.run_root().to_path_buf(),
             record.layout.home_root().to_path_buf(),
             workspace,
-        )?)
+        )?;
+        evidence_recovery::stage_initial(config)
     }
 
     fn withdraw(&mut self) -> TestResult<()> {

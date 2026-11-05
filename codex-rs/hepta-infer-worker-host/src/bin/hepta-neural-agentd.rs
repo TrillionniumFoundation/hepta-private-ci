@@ -3,6 +3,7 @@
 #[cfg(target_os = "linux")]
 fn main() -> Result<(), Box<dyn std::error::Error + Send + Sync>> {
     use codex_hepta_agentd::AgentdConfig;
+    use codex_hepta_agentd::preflight_evidence_recovery;
     use codex_hepta_infer_worker_host::smollm_cognitive_host::SmolLmCognitiveCellHostInputsV2;
     use codex_hepta_infer_worker_host::smollm_cognitive_host::SmolLmCognitiveHostInputsV1;
     use codex_hepta_infer_worker_host::smollm_cognitive_host::prepare_smollm_cell_neural_agentd_v2;
@@ -45,10 +46,12 @@ fn main() -> Result<(), Box<dyn std::error::Error + Send + Sync>> {
         let mut path = None;
         let mut digest = None;
         let mut host_format = None;
+        let mut recovery_frontier = None;
+        let mut recovery_frontier_trust = None;
         let mut args = std::env::args_os().skip(1);
         while let Some(flag) = args.next() {
             if flag == "--help" {
-                println!("hepta-neural-agentd --host-config ABSOLUTE_JSON --host-config-sha256 HEX [--host-format owner-v1|cell-v2]\nUses the normal HEPTA_AGENT_* identity and original Agentd runtime. owner-v1 (default) requires the original hepta-smollm-cognitive-host-v1 file. cell-v2 requires hepta-smollm-cognitive-cell-host-v2 with independently pinned complete TCD1 and sidecar bytes. Both retain real product-qualified neural bootstrap v3 and independently operated Unix FinalUse admission. No model fallback or qualification is manufactured.");
+                println!("hepta-neural-agentd --host-config ABSOLUTE_JSON --host-config-sha256 HEX --evidence-recovery-frontier-file ABSOLUTE_JSON --evidence-recovery-frontier-trust-file ABSOLUTE_JSON [--host-format owner-v1|cell-v2]\nUses the normal HEPTA_AGENT_* identity and original Agentd runtime. owner-v1 (default) requires the original hepta-smollm-cognitive-host-v1 file. cell-v2 requires hepta-smollm-cognitive-cell-host-v2 with independently pinned complete TCD1 and sidecar bytes. Both require the same PQ evidence recovery admission before model preparation and retain real product-qualified neural bootstrap v3 and independently operated Unix FinalUse admission. No model fallback or qualification is manufactured.");
                 return Ok(());
             }
             let value = args.next().ok_or_else(|| io::Error::other("missing neural host argument value"))?;
@@ -59,12 +62,18 @@ fn main() -> Result<(), Box<dyn std::error::Error + Send + Sync>> {
                     .parse::<Digest32>().map_err(io::Error::other)?);
             } else if flag == "--host-format" && host_format.is_none() {
                 host_format = Some(value.into_string().map_err(|_| io::Error::other("host format must be UTF-8"))?);
+            } else if flag == "--evidence-recovery-frontier-file" && recovery_frontier.is_none() {
+                recovery_frontier = Some(PathBuf::from(value));
+            } else if flag == "--evidence-recovery-frontier-trust-file" && recovery_frontier_trust.is_none() {
+                recovery_frontier_trust = Some(PathBuf::from(value));
             } else {
                 return Err(io::Error::other(format!("unknown or duplicate neural host flag {flag:?}")).into());
             }
         }
         let path = path.ok_or_else(|| io::Error::other("--host-config is required"))?;
         let digest = digest.ok_or_else(|| io::Error::other("--host-config-sha256 is required"))?;
+        let recovery_frontier = recovery_frontier.ok_or_else(|| io::Error::other("--evidence-recovery-frontier-file is required"))?;
+        let recovery_frontier_trust = recovery_frontier_trust.ok_or_else(|| io::Error::other("--evidence-recovery-frontier-trust-file is required"))?;
         let host_format = host_format.as_deref().unwrap_or("owner-v1");
         // Only protected byte snapshots are decoded here. Qualification and
         // selected parameter FDs still come from the original runtime owners.
@@ -73,7 +82,11 @@ fn main() -> Result<(), Box<dyn std::error::Error + Send + Sync>> {
             "cell-v2" => HostInputs::Cell(load_smollm_cognitive_cell_host_inputs_v2(&path, digest).map_err(io::Error::other)?),
             _ => return Err(io::Error::other("unsupported neural host format").into()),
         };
-        let config = AgentdConfig::from_process_environment()?;
+        let config = AgentdConfig::from_process_environment()?
+            .with_evidence_recovery_frontier_files(recovery_frontier, recovery_frontier_trust);
+        // The original model preparation can open its inference journal and
+        // claim FinalUse. Admit the existing evidence image before those owners.
+        preflight_evidence_recovery(&config).await?;
         let codex_home = AbsolutePathBuf::from_absolute_path(&config.identity().home_root)?;
         codex_utils_home_dir::set_process_codex_home_override(codex_home)?;
         let prepared = match inputs {

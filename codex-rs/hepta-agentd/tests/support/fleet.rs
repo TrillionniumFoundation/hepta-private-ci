@@ -36,6 +36,19 @@ pub(crate) struct AgentFixture {
     pub(crate) agent_id: AgentId,
     pub(crate) layout: HeptaAgentLayout,
     pub(crate) workspace: PathBuf,
+    recovery_frontier_file: PathBuf,
+    recovery_frontier_trust_file: PathBuf,
+}
+
+impl AgentFixture {
+    pub(crate) fn recovery_args(&self) -> Vec<std::ffi::OsString> {
+        vec![
+            "--evidence-recovery-frontier-file".into(),
+            self.recovery_frontier_file.as_os_str().to_owned(),
+            "--evidence-recovery-frontier-trust-file".into(),
+            self.recovery_frontier_trust_file.as_os_str().to_owned(),
+        ]
+    }
 }
 
 pub(crate) struct FleetHarness {
@@ -123,17 +136,21 @@ impl FleetHarness {
             recovery.faults
         );
         self.supervisor = supervisor;
+        let (recovery_frontier_file, recovery_frontier_trust_file) =
+            super::recovery::stage_initial(&self.root, record.layout.home_root(), &agent_id)?;
         Ok(AgentFixture {
             agent_id,
             layout: record.layout,
             workspace,
+            recovery_frontier_file,
+            recovery_frontier_trust_file,
         })
     }
 
     #[allow(dead_code)]
     pub(crate) fn start(&mut self, agent: &AgentFixture) -> Result<()> {
         let binary = agentd_binary()?;
-        let command = AgentCommand::new(binary, Vec::new())?;
+        let command = AgentCommand::new(binary, agent.recovery_args())?;
         self.supervisor
             .start(&agent.agent_id, command, Instant::now())?;
         self.started = true;
@@ -149,12 +166,16 @@ impl FleetHarness {
     ) -> Result<()> {
         let command = AgentCommand::new(
             agentd_binary()?,
-            vec![
-                "--authbus-trust-file".into(),
-                trust_file.as_os_str().to_owned(),
-                "--authbus-checkpoint-file".into(),
-                checkpoint_file.as_os_str().to_owned(),
-            ],
+            agent
+                .recovery_args()
+                .into_iter()
+                .chain(vec![
+                    "--authbus-trust-file".into(),
+                    trust_file.as_os_str().to_owned(),
+                    "--authbus-checkpoint-file".into(),
+                    checkpoint_file.as_os_str().to_owned(),
+                ])
+                .collect(),
         )?;
         self.supervisor
             .start(&agent.agent_id, command, Instant::now())?;
@@ -170,10 +191,14 @@ impl FleetHarness {
     ) -> Result<()> {
         let command = AgentCommand::new(
             agentd_binary()?,
-            vec![
-                "--evidence-trust-file".into(),
-                trust_file.as_os_str().to_owned(),
-            ],
+            agent
+                .recovery_args()
+                .into_iter()
+                .chain(vec![
+                    "--evidence-trust-file".into(),
+                    trust_file.as_os_str().to_owned(),
+                ])
+                .collect(),
         )?;
         self.supervisor
             .start(&agent.agent_id, command, Instant::now())?;
@@ -215,12 +240,16 @@ impl FleetHarness {
     ) -> Result<()> {
         let command = AgentCommand::new(
             agentd_binary()?,
-            vec![
-                "--plasticity-bootstrap-descriptor".into(),
-                descriptor.as_os_str().to_owned(),
-                "--plasticity-bootstrap-descriptor-digest".into(),
-                descriptor_digest.into(),
-            ],
+            agent
+                .recovery_args()
+                .into_iter()
+                .chain(vec![
+                    "--plasticity-bootstrap-descriptor".into(),
+                    descriptor.as_os_str().to_owned(),
+                    "--plasticity-bootstrap-descriptor-digest".into(),
+                    descriptor_digest.into(),
+                ])
+                .collect(),
         )?;
         self.supervisor
             .start(&agent.agent_id, command, Instant::now())?;

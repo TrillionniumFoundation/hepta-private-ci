@@ -178,7 +178,7 @@ pub(super) fn restart_stopped_config(
         stopped.generation,
         AgentLifecycle::Starting,
     )?;
-    Ok(AgentdConfig::load(
+    let config = AgentdConfig::load(
         identity.fleet_root.clone(),
         identity.agent_id.clone(),
         starting.generation,
@@ -186,7 +186,8 @@ pub(super) fn restart_stopped_config(
         identity.run_root.clone(),
         identity.home_root.clone(),
         identity.workspace.clone(),
-    )?)
+    )?;
+    super::evidence_recovery::retain_existing(config)
 }
 
 #[tokio::test(flavor = "multi_thread", worker_threads = 2)]
@@ -252,6 +253,7 @@ async fn session(
     if !(1..=6).contains(&reads) {
         return Err("ordinary read count must fit original journal".into());
     }
+    codex_hepta_agentd::preflight_evidence_recovery(&config).await?;
     let codex_executable = codex_utils_cargo_bin::cargo_bin("codex")?.canonicalize()?;
     let identity = config.identity().clone();
     let parameter = material.manifest().content_digest;

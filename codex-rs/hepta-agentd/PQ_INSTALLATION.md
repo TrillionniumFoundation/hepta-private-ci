@@ -5,6 +5,70 @@ host must independently authorize the entire descriptor digest. A descriptor is
 untrusted input until the original owners reconstruct and verify its evidence.
 This candidate does not make every Agentd control protocol post-quantum.
 
+## Mandatory Agentd evidence recovery
+
+Every ordinary Agentd startup requires both `--evidence-recovery-frontier-file`
+and `--evidence-recovery-frontier-trust-file`, even without `--evidence-trust-file`
+or AuthBus options. Agentd always enables the governance extension, which opens
+the same evidence database when a thread starts. Disabling the evidence append
+API must not bypass recovery of that shared state.
+
+The checkpoint is `EvidenceRecoveryFrontierV3`, with `schemaVersion: 3` and
+`authenticationProfile: "ml_dsa65_v2"`. It signs the existing V2 snapshot (including
+the provider-effect row count and root), store ID, generation, source commit/tree,
+creation time, signer principal/epoch and canonical signer key ID. The message
+domain is `hepta.kernel.evidence.recovery-frontier.pq.v3` followed by a NUL byte.
+Keys use the existing contracts ML-DSA-65 SPKI and key-ID definitions; signatures
+are pure ML-DSA-65 with empty context. All hex fields use lowercase. There is no
+classical checkpoint fallback or automatic conversion of V1/V2 historical data.
+
+The separately supplied trust file uses `schemaVersion: 2`, the same
+`authenticationProfile`, `storeId`, `minimumFrontierGeneration`,
+`signerPrincipalId`, `signerKeyEpoch`, `publicSpkiHex`, `publicKeyIdHex`, and
+`revoked`. The checkpoint must meet the nonzero generation floor and exact store,
+principal, epoch and key pins. The configured root may be rotated or revoked;
+the operator must independently retain the new root and generation floor.
+
+Both files must be canonical and outside Agent home, run, workspace and fleet
+roots. The fleet root contains the supervisor database, fleet configuration,
+release state and agents' persistent state, so it is also a protected rollback
+domain. Root resolution is read-only: an absent normal tail is resolved from its
+existing canonical ancestor without creating directories; broken aliases,
+inaccessible ancestors and non-directory ancestors are refused. This excludes
+explicitly Agent-owned locations but does not establish different operating-system
+UIDs, protected parent directories or independent custody.
+
+This recovery file-identity profile is currently Unix-only. Requiring it at the
+global startup boundary makes Windows Agentd refuse startup until an equivalent
+native recovery-root path is implemented and qualified. Windows qualification
+remains open; a classical or unchecked fallback is not an activation option.
+
+The ordinary and qualified-neural executables call
+`preflight_evidence_recovery` before learning/cognitive bootstrap or neural model
+preparation. This authenticates the files and compares the already staged shared
+evidence image through a read-only connection; it does not migrate the image or
+bind its store ID. A missing or partial database is refused. Bootstrap and
+migration tooling must first stage an explicitly approved image and have the
+recovery owner sign that exact image. `run` independently repeats authentication
+and the read-only comparison, then rechecks the writable image before
+`AgentdState::new`, runtime plasticity composition, AuthBus or the App Server can
+run. Process tests stage their initial fixture once and retain the same checkpoint
+over restart; they do not re-sign a restored image automatically.
+
+This is an admission boundary for the shared evidence image, not a recovery
+protocol for every database opened by bootstrap or runtime owners. Files outside Agent home do not establish
+independent custody or freshness after an entire host restore. Snapshot matching
+and store-ID binding rely on the runtime's exclusive writer and are not an atomic
+transaction with remote effects. Consuming an effect does not atomically publish
+a new external checkpoint. An earlier matching image can still pass this gate
+until an independent owner advances the retained checkpoint/floor, unless the
+provider separately prevents reuse. The snapshot's provider-effect tables do not
+cover the separate `provider_invocation_*` governance history or TaskFlow's
+automation database. Source commit/tree fields are signed identities, not a check
+of the running binary. Direct non-Agentd App Server/governance constructors,
+complete effect admission, installation root deployment and original capacity
+qualification remain separate open work.
+
 ## Version and trust selection
 
 Classical descriptors keep their existing family schema and fixed hexadecimal

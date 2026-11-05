@@ -7,6 +7,7 @@ on:
       - codex-rs/hepta-authbus/**
       - codex-rs/hepta-contracts/**
       - codex-rs/hepta-evidence/**
+      - codex-rs/hepta-infer-worker-host/**
       - codex-rs/Cargo.toml
       - codex-rs/Cargo.lock
       - codex-rs/rust-toolchain.toml
@@ -16,6 +17,7 @@ on:
       - scripts/format.py
       - justfile
       - AGENTS.md
+      - evidence/pq-recovery-owner-20261105/ci-*
       - .github/workflows/hepta-pq-policy-renewal.yml
   workflow_dispatch:
 
@@ -97,7 +99,7 @@ jobs:
           PYTHONPATH: scripts
         run: python3 scripts/hepta_ci_v8.py
 
-      - name: Fetch the unchanged locked dependency graph
+      - name: Fetch the locked current dependency graph
         id: dependencies
         timeout-minutes: 12
         env:
@@ -132,8 +134,8 @@ jobs:
           just test --locked -p codex-hepta-agentd --test authbus_text_product
           --no-capture --retries 0 --test-threads=1
 
-      # The recovery frontier still uses Ed25519. These controls do not qualify
-      # a PQ recovery root or independent custody of the monotonic frontier.
+      # Snapshot and PQ-signature controls do not qualify independent custody
+      # or freshness of the monotonic frontier after an entire-host restore.
       - name: Run the seven recovery snapshot and ACK provenance controls
         if: ${{ !cancelled() && steps.dependencies.outcome == 'success' }}
         env:
@@ -152,17 +154,39 @@ jobs:
           | test(=provider_effect_recovery_provenance_tests::recovery_provenance_preserves_dispatch_then_authoritative_status)'
           --no-capture --retries 0 --test-threads=1
 
-      - name: Run the two signed recovery frontier controls
+      - name: Run the nine PQ recovery frontier controls
         if: ${{ !cancelled() && steps.dependencies.outcome == 'success' }}
         env:
           CARGO_NET_OFFLINE: "true"
         run: >-
           python3 scripts/hepta_ci_exec.py
           --output "$RUNNER_TEMP/pq-policy-renewal/recovery-signed.json"
-          --minimum-tests 2 --timeout-seconds 600 --
+          --minimum-tests 9 --timeout-seconds 600 --
           just test --locked -p codex-hepta-agentd --lib
-          -E 'test(=evidence_frontier::tests::recovery_frontier_refuses_a_valid_old_v1_signature)
-          | test(=evidence_frontier::tests::recovery_frontier_authenticates_both_effect_fields)'
+          -E 'test(=evidence_frontier::tests::recovery_frontier_refuses_valid_classical_v1_and_v2_signatures)
+          | test(=evidence_frontier::tests::recovery_frontier_authenticates_both_effect_fields)
+          | test(=evidence_frontier::tests::recovery_frontier_pq_survives_store_close_and_reopen)
+          | test(=evidence_frontier::tests::recovery_frontier_read_only_preflight_never_binds_or_changes_the_image)
+          | test(=evidence_frontier::tests::recovery_frontier_cannot_be_omitted_at_the_ordinary_agentd_run_entry)
+          | test(=evidence_frontier::tests::recovery_frontier_rejects_wrong_domain_and_profile)
+          | test(=evidence_frontier::tests::recovery_frontier_enforces_root_scope_epoch_revocation_and_generation_floor)
+          | test(=evidence_frontier::tests::recovery_frontier_rejects_wrong_key_pin_and_noncanonical_signature)
+          | test(=evidence_frontier::tests::recovery_frontier_root_rotation_retires_the_old_key)'
+          --no-capture --retries 0 --test-threads=1
+
+      - name: Run the four real Agentd evidence recovery process controls
+        if: ${{ !cancelled() && steps.dependencies.outcome == 'success' }}
+        env:
+          CARGO_NET_OFFLINE: "true"
+        run: >-
+          python3 scripts/hepta_ci_exec.py
+          --output "$RUNNER_TEMP/pq-policy-renewal/recovery-product.json"
+          --minimum-tests 4 --timeout-seconds 1800 --
+          just test --locked -p codex-hepta-agentd --test kernel_evidence_product
+          -E 'test(=real_agentd_composes_authenticated_evidence_writer_query_verifier_and_terminal_observer)
+          | test(=signed_recovery_frontier_allows_exact_current_database)
+          | test(=signed_recovery_frontier_rejects_valid_older_database_image)
+          | test(=signed_recovery_frontier_rejects_effect_only_database_rollback)'
           --no-capture --retries 0 --test-threads=1
 
       - name: Require every selected test by name with no selected skip
@@ -215,9 +239,22 @@ jobs:
               },
               "recovery-signed": {
                   "evidence_frontier::tests::" + name for name in (
-                      "recovery_frontier_refuses_a_valid_old_v1_signature",
+                      "recovery_frontier_refuses_valid_classical_v1_and_v2_signatures",
                       "recovery_frontier_authenticates_both_effect_fields",
+                      "recovery_frontier_pq_survives_store_close_and_reopen",
+                      "recovery_frontier_read_only_preflight_never_binds_or_changes_the_image",
+                      "recovery_frontier_cannot_be_omitted_at_the_ordinary_agentd_run_entry",
+                      "recovery_frontier_rejects_wrong_domain_and_profile",
+                      "recovery_frontier_enforces_root_scope_epoch_revocation_and_generation_floor",
+                      "recovery_frontier_rejects_wrong_key_pin_and_noncanonical_signature",
+                      "recovery_frontier_root_rotation_retires_the_old_key",
                   )
+              },
+              "recovery-product": {
+                  "real_agentd_composes_authenticated_evidence_writer_query_verifier_and_terminal_observer",
+                  "signed_recovery_frontier_allows_exact_current_database",
+                  "signed_recovery_frontier_rejects_valid_older_database_image",
+                  "signed_recovery_frontier_rejects_effect_only_database_rollback",
               },
           }
           observations = {}
@@ -250,7 +287,7 @@ jobs:
           python3 scripts/hepta_ci_exec.py
           --output "$RUNNER_TEMP/pq-policy-renewal/fix.json"
           --timeout-seconds 1200 --
-          just fix --locked -p codex-hepta-evidence -p codex-hepta-agentd
+          just fix --locked -p codex-hepta-evidence -p codex-hepta-agentd -p codex-hepta-infer-worker-host
 
       - name: Run the original formatter after tests and lint
         if: ${{ !cancelled() && steps.dependencies.outcome == 'success' }}

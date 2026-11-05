@@ -153,6 +153,7 @@ pub(super) async fn read_child(
     actions: BTreeMap<StableId, String>,
     root: &Path,
 ) -> TestResult<Value> {
+    codex_hepta_agentd::preflight_evidence_recovery(&config).await?;
     let identity = config.identity().clone();
     let parameter: Digest32 = installed.child["file_sha256"]
         .as_str()

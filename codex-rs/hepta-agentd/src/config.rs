@@ -240,9 +240,10 @@ impl AgentdConfig {
         self.evidence_trust_file.as_deref()
     }
 
-    /// Optional restore/startup gate backed by a signed frontier and a signer
-    /// trust file from outside the Agent home rollback domain. Both files are
-    /// required together.
+    /// Required for every Agentd startup, including an empty database. The
+    /// ML-DSA-65 frontier and signer trust must be supplied together from outside
+    /// Agent home, run, workspace and fleet rollback domains; no classical
+    /// recovery fallback exists.
     pub fn with_evidence_recovery_frontier_files(
         mut self,
         frontier_file: PathBuf,
