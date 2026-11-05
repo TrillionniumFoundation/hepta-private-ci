@@ -1,0 +1,75 @@
+{
+  "schema": "hepta.memory.v15.device-offline-review.v1",
+  "passed": true,
+  "run_id": "hepta-v15-23f86845405a4bb8",
+  "evidence_sha256": "8412c030ed18f95e4e2b97939beebb35570881d981550390223b7b2e0cd9f17b",
+  "costs_sha256": "752ecbffc158480c765659571d1020d509be10332ad20e9aec705feb13cdf326",
+  "authority_sha256": "7e5a2016347718e87df147f2ae96f2e56b9813d2c11e705bf88c8649a16bbe68",
+  "worker_sha256": "e71df378426d8eb6c7afd8e75938741943fbdb482ec15de17c45b3f74ca12160",
+  "verifier_sha256": "013f16a1776de6c7f3c78668f9e484ec9bfedb77db94a24b3ec7c79e15a2e4ef",
+  "successful_remote_phases": 10,
+  "control_phases": 9,
+  "readonly_export_phases": 1,
+  "signed_journal_successes": 6,
+  "signed_journal_rejections": 1,
+  "unique_signed_objects_verified": 16,
+  "runtimes": {
+    "mac": {
+      "arch": "arm64",
+      "crypto": "46.0.5",
+      "node_digest": "7587a49c3993547c3edae2b9c17c4eaa22a14c3b9e05a116c9b17b294f81f099",
+      "platform": "Darwin",
+      "python": "3.9.6",
+      "sqlite": "3.51.0"
+    },
+    "pocket4": {
+      "arch": "x86_64",
+      "crypto": "46.0.5",
+      "node_digest": "54d6a54e456bc672a4490b3695adb364566eef77976002732b47d78c3b9ee980",
+      "platform": "Linux",
+      "python": "3.14.4",
+      "sqlite": "3.46.1"
+    }
+  },
+  "initial_outputs": [
+    [
+      11,
+      10
+    ],
+    [
+      1,
+      -10
+    ],
+    [
+      14,
+      22
+    ]
+  ],
+  "updated_outputs": [
+    [
+      13,
+      10
+    ],
+    [
+      3,
+      -10
+    ],
+    [
+      16,
+      22
+    ]
+  ],
+  "initial_bundle": "e6776564499a641af1dccf74f70ff6611443565e1af755437397ade99f183d43",
+  "updated_bundle": "11a05eeb09c217a4115c3b22aaeff714c3a7efd433bea00d52d06352b6b3371c",
+  "final_epoch": 4,
+  "final_owner_role": "target",
+  "old_owner_current_epoch_write_refused": true,
+  "old_owner_remains_in_read_acl": true,
+  "fixture_logical_component_bytes": 408,
+  "fixture_transport_bytes": 2276,
+  "privacy_scope": "Output-path/code review plus field, PEM and personal-path scans; not hardware key attestation.",
+  "scope": "Offline checks of recorded cross-OS relay jobs and a finite integer matrix; no new host actions.",
+  "hardware_attestation": false,
+  "replicated_consensus": false,
+  "full_cost_or_quality_benefit_established": false
+}

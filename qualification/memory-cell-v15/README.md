@@ -125,6 +125,16 @@ digest were verified. Original CI receipts and acquisition metadata are retained
 [`evidence/ci_41947667160`](evidence/ci_41947667160). Its Python validation wall time
 was 1.740 seconds; this is another protocol run, not another efficacy sample.
 
+After adding the two-host records and independent verifier, exact source
+`386f7a4453b5e59e83db12d8bf958cfb5e4847d0` passed the same 53 cases and the separate
+offline evidence-verification step in
+[run 41950367467](https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/41950367467).
+The downloaded ZIP, source/log hashes and all 16 independently verified signed
+objects matched the local records. Original receipts are retained in
+[`evidence/ci_41950367467`](evidence/ci_41950367467). CI did not repeat the remote
+host operations; it verified their preserved evidence. The later evidence-preservation
+commit does not change the executed Python source.
+
 The local environment lacks Rust/cargo/just and contains only a partial historical
 checkout. The required `just fmt` attempt exited 127 (`just: command not found`). No
 Rust source changed in this delta and no V15 Rust formatter/native test claim is made.
