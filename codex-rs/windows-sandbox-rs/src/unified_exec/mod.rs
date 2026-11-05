@@ -61,12 +61,13 @@ enum WindowsSandboxBackend {
 /// declared writable roots. Explicit filesystem overrides have the same
 /// problem because their effective parent ACLs are not part of the token.
 ///
-/// Write-capable and path-restricted requests use the elevated broker's separate
-/// provisioning path. That selection is not evidence that its deletion boundary
-/// has passed the original native regressions. Requests selected for the direct
-/// backend still pass its mandatory admission check: ambient parent rights also
-/// prevent the same-user read-only token from being a qualified deletion boundary.
-/// There is no fallback from a failed backend to unrestricted execution.
+/// Explicit Elevated requests use the broker's separate provisioning path. The
+/// public entry refuses RestrictedToken requests before this selector, including
+/// profiles this mapping would otherwise redirect to the broker. Disabled is an
+/// invalid level for this sandbox-session API; ordinary disabled execution uses
+/// SandboxType::None outside it. Neither backend selection nor a read-only profile
+/// qualifies a deletion boundary under ambient parent rights. There is no fallback
+/// from a failed backend to unrestricted execution.
 fn select_windows_sandbox_backend(
     request: &WindowsSandboxSessionRequest<'_>,
 ) -> Result<WindowsSandboxBackend> {
@@ -102,6 +103,19 @@ fn select_windows_sandbox_backend(
 pub async fn spawn_windows_sandbox_session_for_level(
     request: WindowsSandboxSessionRequest<'_>,
 ) -> Result<SpawnedProcess> {
+    match request.windows_sandbox_level {
+        WindowsSandboxLevel::RestrictedToken => {
+            // Refuse before the selector can turn a requested legacy workspace
+            // or override into broker provisioning.
+            crate::legacy_admission::require_legacy_filesystem_isolation()?;
+        }
+        // Explicit Elevated is a separate entry with its own identity and native
+        // qualification requirements. It is not a fallback for a legacy request.
+        WindowsSandboxLevel::Elevated => {}
+        WindowsSandboxLevel::Disabled => {
+            bail!("disabled Windows sandbox level cannot launch a sandbox session");
+        }
+    }
     match select_windows_sandbox_backend(&request)? {
         WindowsSandboxBackend::Elevated => {
             backends::elevated::spawn_windows_sandbox_session_elevated_for_permission_profile(

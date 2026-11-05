@@ -192,7 +192,8 @@ fn raw_token_factories_reject_live_base() -> Result<()> {
             crate::create_readonly_token_with_caps_from(base.0, &[cap.as_ptr()]).map(OwnedToken),
         );
         assert_unavailable(
-            crate::create_workspace_write_token_with_caps_from(base.0, &[cap.as_ptr()]).map(OwnedToken),
+            crate::create_workspace_write_token_with_caps_from(base.0, &[cap.as_ptr()])
+                .map(OwnedToken),
         );
         assert_unavailable(
             crate::token::create_readonly_token_with_cap(cap.as_ptr())
@@ -232,19 +233,21 @@ fn legacy_capture_overrides_refuse_before_side_effects() -> Result<()> {
             fixture.workspace.join("carveout-must-not-be-created"),
         )?;
         for reads in [&[][..], std::slice::from_ref(&read)] {
-            assert_unavailable(crate::run_windows_sandbox_capture_with_filesystem_overrides(
-                &profile,
-                &fixture.roots()?,
-                &fixture.home,
-                command(),
-                &fixture.workspace,
-                fixture.env(),
-                /*timeout_ms*/ Some(5_000),
-                /*cancellation*/ None,
-                reads,
-                std::slice::from_ref(&write),
-                /*use_private_desktop*/ true,
-            ));
+            assert_unavailable(
+                crate::run_windows_sandbox_capture_with_filesystem_overrides(
+                    &profile,
+                    &fixture.roots()?,
+                    &fixture.home,
+                    command(),
+                    &fixture.workspace,
+                    fixture.env(),
+                    /*timeout_ms*/ Some(5_000),
+                    /*cancellation*/ None,
+                    reads,
+                    std::slice::from_ref(&write),
+                    /*use_private_desktop*/ true,
+                ),
+            );
             fixture.assert_unchanged()?;
         }
     }
@@ -366,4 +369,124 @@ async fn public_selector_refuses_legacy_read_only_without_fallback() -> Result<(
     .await;
     assert_unavailable(result);
     fixture.assert_unchanged()
+}
+
+#[tokio::test(flavor = "current_thread")]
+async fn public_selector_refuses_legacy_requests_before_automatic_elevation() -> Result<()> {
+    #[derive(Clone, Copy, Debug)]
+    enum SelectorCase {
+        WorkspaceWrite,
+        ReadRoots,
+        WriteRoots,
+        DenyRead,
+        DenyWrite,
+    }
+
+    // Every case previously selected Elevated before reaching legacy admission.
+    // Valid native fixtures prove the requested legacy entry refuses before
+    // provisioning can create its home, alter ACLs, or launch the command.
+    for case in [
+        SelectorCase::WorkspaceWrite,
+        SelectorCase::ReadRoots,
+        SelectorCase::WriteRoots,
+        SelectorCase::DenyRead,
+        SelectorCase::DenyWrite,
+    ] {
+        let fixture = Fixture::new()?;
+        let profile = match case {
+            SelectorCase::WorkspaceWrite => PermissionProfile::workspace_write(),
+            SelectorCase::ReadRoots
+            | SelectorCase::WriteRoots
+            | SelectorCase::DenyRead
+            | SelectorCase::DenyWrite => PermissionProfile::read_only(),
+        };
+        let roots = fixture.roots()?;
+        let override_roots = [fixture.workspace.clone()];
+        let denied = [AbsolutePathBuf::from_absolute_path(
+            fixture.root.path().join("outside"),
+        )?];
+        let result = crate::spawn_windows_sandbox_session_for_level(WindowsSandboxSessionRequest {
+            permission_profile: &profile,
+            workspace_roots: &roots,
+            codex_home: &fixture.home,
+            command: command(),
+            cwd: &fixture.workspace,
+            env_map: fixture.env(),
+            windows_sandbox_level: WindowsSandboxLevel::RestrictedToken,
+            proxy_enforced: false,
+            network_proxy_restricting_sid: None,
+            proxy_settings_mode: crate::WindowsSandboxProxySettingsMode::Preserve,
+            timeout_ms: Some(5_000),
+            read_roots_override: matches!(case, SelectorCase::ReadRoots)
+                .then_some(override_roots.as_slice()),
+            read_roots_include_platform_defaults: true,
+            write_roots_override: matches!(case, SelectorCase::WriteRoots)
+                .then_some(override_roots.as_slice()),
+            deny_read_paths_override: if matches!(case, SelectorCase::DenyRead) {
+                &denied
+            } else {
+                &[]
+            },
+            deny_write_paths_override: if matches!(case, SelectorCase::DenyWrite) {
+                &denied
+            } else {
+                &[]
+            },
+            tty: false,
+            stdin_open: false,
+            use_private_desktop: true,
+        })
+        .await;
+        assert_unavailable(result);
+        fixture.assert_unchanged()?;
+    }
+    Ok(())
+}
+
+#[tokio::test(flavor = "current_thread")]
+async fn public_selector_rejects_disabled_level_without_provisioning() -> Result<()> {
+    // Disabled normally selects SandboxType::None in the caller. A direct call
+    // to this sandbox-session API must not reinterpret it as a legacy or broker
+    // request, even when the profile would otherwise require Elevated.
+    for profile in profiles() {
+        let fixture = Fixture::new()?;
+        let roots = fixture.roots()?;
+        let result = crate::spawn_windows_sandbox_session_for_level(WindowsSandboxSessionRequest {
+            permission_profile: &profile,
+            workspace_roots: &roots,
+            codex_home: &fixture.home,
+            command: command(),
+            cwd: &fixture.workspace,
+            env_map: fixture.env(),
+            windows_sandbox_level: WindowsSandboxLevel::Disabled,
+            proxy_enforced: false,
+            network_proxy_restricting_sid: None,
+            proxy_settings_mode: crate::WindowsSandboxProxySettingsMode::Preserve,
+            timeout_ms: Some(5_000),
+            read_roots_override: None,
+            read_roots_include_platform_defaults: true,
+            write_roots_override: None,
+            deny_read_paths_override: &[],
+            deny_write_paths_override: &[],
+            tty: false,
+            stdin_open: false,
+            use_private_desktop: true,
+        })
+        .await;
+        let error = match result {
+            Ok(_) => anyhow::bail!("Disabled unexpectedly launched a sandbox session"),
+            Err(error) => error,
+        };
+        assert_eq!(
+            error.to_string(),
+            "disabled Windows sandbox level cannot launch a sandbox session"
+        );
+        assert!(
+            error
+                .downcast_ref::<LegacyWindowsSandboxIsolationUnavailable>()
+                .is_none()
+        );
+        fixture.assert_unchanged()?;
+    }
+    Ok(())
 }

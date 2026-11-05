@@ -321,7 +321,7 @@
     {
       "id": "legacy-isolation-admission",
       "package": "codex-windows-sandbox",
-      "expectedTestCount": 8,
+      "expectedTestCount": 10,
       "requiredTests": [
         "legacy_admission_tests::raw_token_factories_reject_live_base",
         "legacy_admission_tests::legacy_capture_refuses_before_side_effects",
@@ -330,9 +330,11 @@
         "legacy_admission_tests::legacy_preflight_refuses_before_side_effects",
         "legacy_admission_tests::legacy_spawn_preparation_refuses_before_side_effects",
         "legacy_admission_tests::legacy_security_preparation_refuses_before_side_effects",
-        "legacy_admission_tests::public_selector_refuses_legacy_read_only_without_fallback"
+        "legacy_admission_tests::public_selector_refuses_legacy_read_only_without_fallback",
+        "legacy_admission_tests::public_selector_refuses_legacy_requests_before_automatic_elevation",
+        "legacy_admission_tests::public_selector_rejects_disabled_level_without_provisioning"
       ],
-      "filter": "test(=legacy_admission_tests::raw_token_factories_reject_live_base) | test(=legacy_admission_tests::legacy_capture_refuses_before_side_effects) | test(=legacy_admission_tests::legacy_capture_overrides_refuse_before_side_effects) | test(=legacy_admission_tests::legacy_sessions_refuse_before_side_effects) | test(=legacy_admission_tests::legacy_preflight_refuses_before_side_effects) | test(=legacy_admission_tests::legacy_spawn_preparation_refuses_before_side_effects) | test(=legacy_admission_tests::legacy_security_preparation_refuses_before_side_effects) | test(=legacy_admission_tests::public_selector_refuses_legacy_read_only_without_fallback)"
+      "filter": "test(=legacy_admission_tests::raw_token_factories_reject_live_base) | test(=legacy_admission_tests::legacy_capture_refuses_before_side_effects) | test(=legacy_admission_tests::legacy_capture_overrides_refuse_before_side_effects) | test(=legacy_admission_tests::legacy_sessions_refuse_before_side_effects) | test(=legacy_admission_tests::legacy_preflight_refuses_before_side_effects) | test(=legacy_admission_tests::legacy_spawn_preparation_refuses_before_side_effects) | test(=legacy_admission_tests::legacy_security_preparation_refuses_before_side_effects) | test(=legacy_admission_tests::public_selector_refuses_legacy_read_only_without_fallback) | test(=legacy_admission_tests::public_selector_refuses_legacy_requests_before_automatic_elevation) | test(=legacy_admission_tests::public_selector_rejects_disabled_level_without_provisioning)"
     }
   ]
 }
