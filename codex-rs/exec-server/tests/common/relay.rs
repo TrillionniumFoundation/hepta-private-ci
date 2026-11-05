@@ -153,6 +153,20 @@ impl RelayTest {
 }
 
 impl RelayConnection {
+    /// Counts frames received by the fixture relay before its forwarding send.
+    /// These opaque byte totals do not establish delivery to the destination.
+    pub(crate) fn received_binary_progress(&self) -> (usize, usize, bool) {
+        let frames = self
+            .captured_frames
+            .lock()
+            .unwrap_or_else(std::sync::PoisonError::into_inner);
+        (
+            frames.len(),
+            frames.iter().map(Vec::len).sum(),
+            self.relay_task.is_finished(),
+        )
+    }
+
     pub(crate) fn assert_encrypted(&self) -> Result<()> {
         assert_relay_data_is_encrypted(&self.captured_frames)
     }

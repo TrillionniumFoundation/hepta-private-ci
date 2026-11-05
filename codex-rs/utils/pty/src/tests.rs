@@ -105,18 +105,29 @@ async fn collect_output_until_exit(
     timeout_ms: u64,
 ) -> (Vec<u8>, i32) {
     let mut collected = Vec::new();
-    let deadline = tokio::time::Instant::now() + tokio::time::Duration::from_millis(timeout_ms);
+    let started = tokio::time::Instant::now();
+    let deadline = started + tokio::time::Duration::from_millis(timeout_ms);
+    let mut output_open = true;
     tokio::pin!(exit_rx);
 
     loop {
         tokio::select! {
-            res = output_rx.recv() => {
-                if let Ok(chunk) = res {
-                    collected.extend_from_slice(&chunk);
+            res = output_rx.recv(), if output_open => {
+                match res {
+                    Ok(chunk) => collected.extend_from_slice(&chunk),
+                    Err(tokio::sync::broadcast::error::RecvError::Lagged(_)) => {}
+                    Err(tokio::sync::broadcast::error::RecvError::Closed) => {
+                        // Output EOF does not acknowledge process exit. Disable
+                        // this ready branch while retaining the original deadline.
+                        output_open = false;
+                    }
                 }
             }
             res = &mut exit_rx => {
-                let code = res.unwrap_or(-1);
+                let (code, outcome) = match res {
+                    Ok(code) => (code, "exit_code_received"),
+                    Err(_) => (-1, "exit_channel_closed"),
+                };
                 // On Windows (ConPTY in particular), it's possible to observe the exit notification
                 // before the final bytes are drained from the PTY reader thread. Drain for a brief
                 // "quiet" window to make output assertions deterministic.
@@ -132,13 +143,53 @@ async fn collect_output_until_exit(
                         Err(_) => break,
                     }
                 }
+                eprintln!(
+                    "PTY output collector: outcome={outcome} code={code} elapsed={:?} output_branch_disabled={} output_bytes={}",
+                    started.elapsed(),
+                    !output_open,
+                    collected.len(),
+                );
                 return (collected, code);
             }
             _ = tokio::time::sleep_until(deadline) => {
+                eprintln!(
+                    "PTY output collector: outcome=deadline_elapsed elapsed={:?} output_branch_disabled={} output_bytes={}",
+                    started.elapsed(),
+                    !output_open,
+                    collected.len(),
+                );
                 return (collected, -1);
             }
         }
     }
+}
+
+#[tokio::test]
+async fn output_collector_waits_for_exit_after_output_closes() -> anyhow::Result<()> {
+    let expected_output = b"__collector_output__".to_vec();
+    let (output_tx, output_rx) = tokio::sync::broadcast::channel(2);
+    output_tx.send(expected_output.clone())?;
+    drop(output_tx);
+    let (exit_tx, exit_rx) = tokio::sync::oneshot::channel();
+    let collected = collect_output_until_exit(output_rx, exit_rx, /*timeout_ms*/ 5_000);
+    tokio::pin!(collected);
+
+    // Actually poll the collector after the output sender has closed, while
+    // the exit sender remains live. EOF must not become a fabricated exit.
+    let pending = std::future::poll_fn(|cx| {
+        std::task::Poll::Ready(std::future::Future::poll(collected.as_mut(), cx).is_pending())
+    })
+    .await;
+    assert!(
+        pending,
+        "closed output must still wait for the real exit signal"
+    );
+    exit_tx
+        .send(37)
+        .expect("collector must retain the exit receiver");
+    let observed = tokio::time::timeout(std::time::Duration::from_secs(2), collected).await?;
+    assert_eq!(observed, (expected_output, 37));
+    Ok(())
 }
 
 async fn wait_for_output_contains(
@@ -1223,6 +1274,12 @@ print('__complete__', flush=True)
     session.close_stdin();
 
     let (output, code) = collect_output_until_exit(output_rx, exit_rx, /*timeout_ms*/ 5_000).await;
+    eprintln!(
+        "PTY close stdin: collected_code={code} has_exited={} session_exit_code={:?} output_bytes={}",
+        session.has_exited(),
+        session.exit_code(),
+        output.len(),
+    );
     assert_eq!(
         (code, String::from_utf8_lossy(&output).trim()),
         (0, "__complete__")

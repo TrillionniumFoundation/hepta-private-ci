@@ -3967,37 +3967,141 @@ mod tests {
         assert_eq!(status, Ok("HTTP 405".to_string()));
     }
 
-    #[tokio::test]
-    async fn mcp_http_probe_falls_back_to_get_when_head_times_out() {
-        let listener = TcpListener::bind("127.0.0.1:0").expect("bind test listener");
-        let addr = listener.local_addr().expect("listener address");
-        let server = std::thread::spawn(move || {
-            let (mut head_stream, _) = listener.accept().expect("accept HEAD probe request");
-            let head = std::thread::spawn(move || {
-                let mut request = [0; 1024];
-                let _ = head_stream.read(&mut request);
-                std::thread::sleep(Duration::from_millis(50));
-            });
+    #[derive(Clone, Copy, Debug)]
+    enum McpProbeResponse {
+        RespondMethodNotAllowed,
+        HoldWithoutResponse,
+    }
 
-            let (mut get_stream, _) = listener.accept().expect("accept GET probe request");
-            let mut request = [0; 1024];
-            let _ = get_stream.read(&mut request);
-            get_stream
-                .write_all(
-                    b"HTTP/1.1 405 Method Not Allowed\r\nContent-Length: 0\r\nConnection: close\r\n\r\n",
-                )
-                .expect("write response");
-            head.join().expect("HEAD holder should finish");
+    async fn mcp_http_timeout_fixture(get_response: McpProbeResponse) -> Result<String, String> {
+        use tokio::io::AsyncBufReadExt;
+        use tokio::io::AsyncWriteExt;
+        use tokio::io::BufReader;
+
+        let started_at = std::time::Instant::now();
+        let listener = tokio::net::TcpListener::bind("127.0.0.1:0")
+            .await
+            .expect("bind test listener");
+        let addr = listener.local_addr().expect("listener address");
+        let server = tokio::spawn(async move {
+            let mut handlers = Vec::new();
+            let mut accept_errors = Vec::new();
+            for (method, response) in [
+                ("HEAD", McpProbeResponse::HoldWithoutResponse),
+                ("GET", get_response),
+            ] {
+                let stream = match listener.accept().await {
+                    Ok((stream, _)) => stream,
+                    Err(error) => {
+                        accept_errors.push((
+                            method,
+                            started_at.elapsed().as_micros(),
+                            error.to_string(),
+                        ));
+                        break;
+                    }
+                };
+                let accepted_at = started_at.elapsed().as_micros();
+                handlers.push((
+                    method,
+                    tokio::spawn(async move {
+                        let mut observations = vec![("accepted", accepted_at)];
+                        let result: Result<String, String> = async {
+                            let mut stream = BufReader::new(stream);
+                            let mut request_line = String::new();
+                            observations.push(("request_read_started", started_at.elapsed().as_micros()));
+                            stream
+                                .read_line(&mut request_line)
+                                .await
+                                .map_err(|error| format!("read request line: {error}"))?;
+                            observations.push(("request_arrived", started_at.elapsed().as_micros()));
+                            loop {
+                                let mut header = String::new();
+                                let bytes = stream
+                                    .read_line(&mut header)
+                                    .await
+                                    .map_err(|error| format!("read request header: {error}"))?;
+                                if bytes == 0 {
+                                    return Err("probe headers ended before their terminator".to_string());
+                                }
+                                if header == "\r\n" {
+                                    break;
+                                }
+                            }
+                            observations.push(("headers_arrived", started_at.elapsed().as_micros()));
+                            match response {
+                                McpProbeResponse::RespondMethodNotAllowed => {
+                                    observations.push(("response_write_started", started_at.elapsed().as_micros()));
+                                    stream
+                                        .get_mut()
+                                        .write_all(
+                                            b"HTTP/1.1 405 Method Not Allowed\r\nContent-Length: 0\r\nConnection: close\r\n\r\n",
+                                        )
+                                        .await
+                                        .map_err(|error| format!("write response: {error}"))?;
+                                    observations.push(("response_sent", started_at.elapsed().as_micros()));
+                                }
+                                McpProbeResponse::HoldWithoutResponse => {
+                                    observations.push(("hold_started", started_at.elapsed().as_micros()));
+                                    tokio::time::sleep(Duration::from_millis(50)).await;
+                                    observations.push(("hold_finished", started_at.elapsed().as_micros()));
+                                }
+                            }
+                            Ok(request_line)
+                        }
+                        .await;
+                        observations.push(("handler_returned", started_at.elapsed().as_micros()));
+                        (observations, result)
+                    }),
+                ));
+            }
+            let mut outcomes = Vec::new();
+            for (method, handler) in handlers {
+                let (observations, result) = match handler.await {
+                    Ok(outcome) => outcome,
+                    Err(error) => (Vec::new(), Err(format!("probe handler task failed: {error}"))),
+                };
+                outcomes.push((method, observations, result));
+            }
+            (accept_errors, outcomes)
         });
 
-        let status = mcp_http_probe_url_with_timeout(
-            &format!("http://{addr}/mcp"),
-            Duration::from_millis(10),
-        )
-        .await;
-        server.join().expect("probe server thread should finish");
+        let client_started_at = started_at.elapsed().as_micros();
+        let status =
+            mcp_http_probe_url_with_timeout(&format!("http://{addr}/mcp"), Duration::from_millis(10))
+                .await;
+        let client_returned_at = started_at.elapsed().as_micros();
+        let server_result = server.await;
+        // Retain I/O errors and sampled stages before any assertion can unwind.
+        // Emit only after both timed requests and their handlers have finished.
+        eprintln!(
+            "mcp_http_timeout_fixture get_response={get_response:?} client_started_us={client_started_at} client_returned_us={client_returned_at} server_result=(accept_errors,[(method,[(phase,us)],request_line_or_error)]):{server_result:?}"
+        );
+        let (accept_errors, outcomes) = server_result.expect("probe server task should finish");
+        assert!(accept_errors.is_empty(), "probe accepts failed: {accept_errors:?}");
+        assert_eq!(outcomes.len(), 2, "both real probe requests must be observed");
+        for (method, _, result) in outcomes {
+            let request_line = result.expect("probe request handler should finish");
+            assert_eq!(request_line, format!("{method} /mcp HTTP/1.1\r\n"));
+        }
+        status
+    }
+
+    #[tokio::test]
+    async fn mcp_http_probe_falls_back_to_get_when_head_times_out() {
+        let status = mcp_http_timeout_fixture(McpProbeResponse::RespondMethodNotAllowed).await;
 
         assert_eq!(status, Ok("HTTP 405".to_string()));
+    }
+
+    #[tokio::test]
+    async fn mcp_http_probe_reports_both_timeouts_when_get_is_also_held() {
+        let status = mcp_http_timeout_fixture(McpProbeResponse::HoldWithoutResponse).await;
+
+        assert_eq!(
+            status,
+            Err("HEAD request timed out; GET request timed out".to_string())
+        );
     }
 
     #[tokio::test]

@@ -127,6 +127,7 @@ async fn forwarder_runs_commands_and_transfers_files() -> Result<()> {
     let temp_dir = TempDir::new()?;
     let path = temp_dir.path().join("large-request.bin");
     let contents = vec![0xa5; 13 * 1024 * 1024];
+    let relay_before_write = connection.received_binary_progress();
     let write_started = std::time::Instant::now();
     timeout(
         TEST_TIMEOUT,
@@ -139,8 +140,13 @@ async fn forwarder_runs_commands_and_transfers_files() -> Result<()> {
     )
     .await
     .with_context(|| {
+        let relay_after_write = connection.received_binary_progress();
+        let destination_file_bytes = std::fs::metadata(&path).map(|metadata| metadata.len());
         format!(
-            "forward large-file write phase timed out: payload_bytes={} elapsed={:?}",
+            "forward large-file write phase timed out: payload_bytes={} elapsed={:?} \
+             relay_received_frames_bytes_finished_before={relay_before_write:?} \
+             relay_received_frames_bytes_finished_after={relay_after_write:?} \
+             owned_destination_file_bytes={destination_file_bytes:?}",
             contents.len(),
             write_started.elapsed()
         )

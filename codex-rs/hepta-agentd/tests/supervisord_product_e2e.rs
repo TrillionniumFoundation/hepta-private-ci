@@ -289,7 +289,13 @@ async fn five_real_agents_survive_daemon_restart_and_isolate_one_agent_release_c
         &accepted,
     )?;
     wait_for_stopped(&client, &agents[0], &mut process_guard).await?;
-    assert_peers_unchanged(&client, &agents[1..], &peer_status_baseline).await?;
+    assert_peers_unchanged(
+        &client,
+        &agents[1..],
+        &peer_status_baseline,
+        "after_agent_a_kill",
+    )
+    .await?;
 
     let stopped_a = client
         .snapshot(agents[0].agent_id.clone())
@@ -322,7 +328,13 @@ async fn five_real_agents_survive_daemon_restart_and_isolate_one_agent_release_c
         require_pid(&restarted_a)? != initial_a_pid,
         "Agent A restart reused its killed process"
     );
-    assert_peers_unchanged(&client, &agents[1..], &peer_status_baseline).await?;
+    assert_peers_unchanged(
+        &client,
+        &agents[1..],
+        &peer_status_baseline,
+        "after_agent_a_restart",
+    )
+    .await?;
 
     let concurrent_fence = restarted_a.control_fence.clone();
     let (left, right) = tokio::join!(
@@ -350,7 +362,13 @@ async fn five_real_agents_survive_daemon_restart_and_isolate_one_agent_release_c
     )?;
     restarted_a =
         wait_for_release(&client, &agents[0], &release_v1, None, &mut process_guard).await?;
-    assert_peers_unchanged(&client, &agents[1..], &peer_status_baseline).await?;
+    assert_peers_unchanged(
+        &client,
+        &agents[1..],
+        &peer_status_baseline,
+        "after_same_fence_restart",
+    )
+    .await?;
 
     let accepted = client
         .upgrade(restarted_a.control_fence.clone(), release_v2.clone())
@@ -373,7 +391,13 @@ async fn five_real_agents_survive_daemon_restart_and_isolate_one_agent_release_c
         require_pid(&upgraded_a)? != require_pid(&restarted_a)?,
         "Agent A upgrade did not replace its process"
     );
-    assert_peers_unchanged(&client, &agents[1..], &peer_status_baseline).await?;
+    assert_peers_unchanged(
+        &client,
+        &agents[1..],
+        &peer_status_baseline,
+        "after_agent_a_upgrade",
+    )
+    .await?;
 
     let before_daemon_restart = snapshot_all(&client, &agents).await?;
     assert_agentd_endpoints(&agents, &before_daemon_restart).await?;
@@ -456,7 +480,13 @@ async fn five_real_agents_survive_daemon_restart_and_isolate_one_agent_release_c
         require_pid(&rolled_back_a)? != require_pid(&upgraded_a)?,
         "Agent A rollback did not replace its process"
     );
-    assert_peers_unchanged(&restarted_client, &agents[1..], &peer_status_baseline).await?;
+    assert_peers_unchanged(
+        &restarted_client,
+        &agents[1..],
+        &peer_status_baseline,
+        "after_agent_a_rollback",
+    )
+    .await?;
 
     for agent in &agents {
         let before = restarted_client
@@ -684,16 +714,29 @@ async fn assert_peers_unchanged(
     client: &SupervisordClient,
     peers: &[AgentFixture],
     baseline: &[SupervisordAgentStatus],
+    phase: &'static str,
 ) -> Result<()> {
     ensure!(
         peers.len() == baseline.len(),
         "peer baseline length drifted"
     );
     for (peer, expected) in peers.iter().zip(baseline) {
-        let actual = client
-            .snapshot(peer.agent_id.clone())
-            .await
-            .with_context(|| format!("client.snapshot RPC failed at {}:{}", file!(), line!()))?;
+        let started = Instant::now();
+        let snapshot = client.snapshot(peer.agent_id.clone()).await;
+        let elapsed_ms = started.elapsed().as_millis();
+        let outcome = if snapshot.is_ok() { "ok" } else { "error" };
+        eprintln!(
+            "SUPERVISORD_PEER_SNAPSHOT phase={phase} peer={} elapsed_ms={elapsed_ms} outcome={outcome}",
+            peer.agent_id
+        );
+        let actual = snapshot.with_context(|| {
+            format!(
+                "client.snapshot RPC failed phase={phase} peer={} elapsed_ms={elapsed_ms} at {}:{}",
+                peer.agent_id,
+                file!(),
+                line!()
+            )
+        })?;
         assert_exact_status(expected, &actual, "an isolated peer changed")?;
         assert_agentd_endpoint(peer, expected).await?;
     }
@@ -868,7 +911,14 @@ impl DaemonChild {
 
 impl Drop for DaemonChild {
     fn drop(&mut self) {
-        if self.child.try_wait().ok().flatten().is_none() {
+        let observed_exit = self.child.try_wait();
+        #[cfg(target_os = "linux")]
+        if matches!(&observed_exit, Ok(None)) {
+            // The unreaped Child still owns this PID, so observe only its tasks
+            // before the original cleanup removes the diagnostic state.
+            report_owned_daemon_tasks(self.child.id());
+        }
+        if observed_exit.ok().flatten().is_none() {
             let _ = self.child.kill();
             let _ = self.child.wait();
         }
@@ -902,6 +952,101 @@ impl Drop for DaemonChild {
             }
             Err(error) => eprintln!("SUPERVISORD_OWNED_LOG read_error={error}"),
         }
+    }
+}
+
+#[cfg(target_os = "linux")]
+fn read_owned_proc_text(path: &Path, max_bytes: u64) -> std::io::Result<String> {
+    let mut bytes = Vec::new();
+    std::fs::File::open(path)?
+        .take(max_bytes)
+        .read_to_end(&mut bytes)?;
+    Ok(String::from_utf8_lossy(&bytes).into_owned())
+}
+
+#[cfg(target_os = "linux")]
+fn report_owned_daemon_tasks(process_id: u32) {
+    const MAX_TASKS: usize = 64;
+    const FIELDS: [&str; 10] = [
+        "Name",
+        "State",
+        "Tgid",
+        "Pid",
+        "PPid",
+        "Threads",
+        "VmRSS",
+        "VmSwap",
+        "voluntary_ctxt_switches",
+        "nonvoluntary_ctxt_switches",
+    ];
+    let task_root = PathBuf::from(format!("/proc/{process_id}/task"));
+    let entries = match std::fs::read_dir(&task_root) {
+        Ok(entries) => entries,
+        Err(error) => {
+            eprintln!(
+                "SUPERVISORD_OWNED_TASKS pid={process_id} read_error={:?} os_error={:?}",
+                error.kind(),
+                error.raw_os_error()
+            );
+            return;
+        }
+    };
+    let mut task_ids = Vec::new();
+    for entry in entries.take(MAX_TASKS + 1) {
+        match entry {
+            Ok(entry) => {
+                if let Some(task_id) = entry
+                    .file_name()
+                    .to_str()
+                    .and_then(|name| name.parse::<u32>().ok())
+                {
+                    task_ids.push(task_id);
+                }
+            }
+            Err(error) => eprintln!(
+                "SUPERVISORD_OWNED_TASKS pid={process_id} entry_error={:?} os_error={:?}",
+                error.kind(),
+                error.raw_os_error()
+            ),
+        }
+    }
+    let truncated = task_ids.len() > MAX_TASKS;
+    task_ids.sort_unstable();
+    task_ids.truncate(MAX_TASKS);
+    eprintln!(
+        "SUPERVISORD_OWNED_TASKS pid={process_id} sampled_tasks={} truncated={truncated}",
+        task_ids.len()
+    );
+    for task_id in task_ids {
+        let task = task_root.join(task_id.to_string());
+        let status = match read_owned_proc_text(&task.join("status"), 8 * 1024) {
+            Ok(text) => text
+                .lines()
+                .filter_map(|line| line.split_once(':'))
+                .filter(|(field, _)| FIELDS.contains(field))
+                .map(|(field, value)| {
+                    let value = value.trim().chars().take(128).collect::<String>();
+                    format!("{field}={value}")
+                })
+                .collect::<Vec<_>>()
+                .join("; "),
+            Err(error) => format!(
+                "read_error={:?} os_error={:?}",
+                error.kind(),
+                error.raw_os_error()
+            ),
+        };
+        let wait_channel = match read_owned_proc_text(&task.join("wchan"), 128) {
+            Ok(text) => text.trim().to_string(),
+            Err(error) => format!(
+                "read_error={:?} os_error={:?}",
+                error.kind(),
+                error.raw_os_error()
+            ),
+        };
+        eprintln!(
+            "SUPERVISORD_OWNED_TASK pid={process_id} tid={task_id} status={status:?} wchan={wait_channel:?}"
+        );
     }
 }
 
