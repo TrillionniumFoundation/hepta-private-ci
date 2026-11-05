@@ -39,9 +39,12 @@ impl AgentdNotesLiteralAdapter {
         }
         let (turn, call) = reference_ids(&reference, self.identity.agent_id.as_str())?;
         let prepared = tokio::time::timeout(end.remaining()?, async {
-            let current = self
-                .verify_original_human_text(human.ingress(), human.route())
-                .await?;
+            let current = AgentdNotesLiteralAdapter::verify_original_human_text(
+                self,
+                human.ingress(),
+                human.route(),
+            )
+            .await?;
             end.remaining()?;
             if !human.owner().same_authorization(&current) {
                 return Err(invalid(
@@ -263,7 +266,11 @@ impl AgentdNotesLiteralAdapter {
                 return Err(invalid("Desktop source expired before Root signing"));
             }
             if let Some((ingress, original, route)) = human_check {
-                let current = grants.verify_original_human_text(&ingress).map_err(|_| {
+                let current = crate::AgentdUnixFinalUseGrantProvider::verify_original_human_text(
+                    grants.as_ref(),
+                    &ingress,
+                )
+                .map_err(|_| {
                     invalid("original human session is unavailable before Desktop signing")
                 })?;
                 if !current.validate()
