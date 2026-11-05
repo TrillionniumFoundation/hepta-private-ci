@@ -104,8 +104,8 @@ impl UnixFinalUseAuthorizer {
         }
     }
 
-    /// Explicit classical compatibility owner for historical verification and
-    /// research. Ordinary business entry points use the PQ-required `open`.
+    /// Explicit classical compatibility constructor, including effect authorization.
+    /// Ordinary business entry points use the PQ-required `open`.
     pub fn from_config(config: FinalUseAuthorizerConfig) -> Result<Self> {
         if !config.issuer_socket.is_absolute() || !config.authority_state_dir.is_absolute() {
             return Err("final-use authority socket and state directory must be absolute".into());

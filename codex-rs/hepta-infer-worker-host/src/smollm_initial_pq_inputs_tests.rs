@@ -15,7 +15,7 @@ pub(super) async fn ordinary_inputs(
     IndependentPqIssuer,
     tempfile::TempDir,
 )> {
-    inputs_with_postload_time(worker, root, expected_claims, None).await
+    inputs_with_postload_time(worker, root, expected_claims, /*late_ms*/ None).await
 }
 
 pub(super) async fn ordinary_inputs_after_load(

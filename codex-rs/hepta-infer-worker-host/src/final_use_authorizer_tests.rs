@@ -152,7 +152,7 @@ fn ordinary_open_does_not_reactivate_or_change_existing_classic_state() -> Resul
     let owner = UnixFinalUseAuthorizer::from_config(config)?;
     assert_eq!(
         owner.authority.revocation_head()?,
-        revocations(2, &["historically-revoked"])
+        revocations(/*revision*/ 2, &["historically-revoked"])
     );
     Ok(())
 }
