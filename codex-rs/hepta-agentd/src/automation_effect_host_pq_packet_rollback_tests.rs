@@ -3,7 +3,6 @@
 //! fixture keys and services do not qualify independent production custody.
 
 use super::*;
-use pretty_assertions::assert_eq;
 use std::collections::BTreeMap;
 use std::os::unix::fs::PermissionsExt;
 
