@@ -517,6 +517,52 @@ inject_repo(crate, "v8_targets")
 llvm = use_extension("@llvm//extensions:llvm.bzl", "llvm")
 use_repo(llvm, "llvm-project")
 
+kernel_headers = use_extension("@llvm//kernel/extension:kernel_headers.bzl", "kernel_headers")
+use_repo(kernel_headers, "kernel_headers")
+
+# rama-dns generates libresolv bindings for Linux GNU targets. Keep the
+# executable libclang in the exec configuration and libc/kernel headers in the
+# target configuration so cross builds cannot use the executor's system headers.
+rama_dns_bindgen_headers = [
+    "@kernel_headers//:kernel_headers_directory",
+    "@llvm//runtimes/glibc:glibc_headers_include_search_directory",
+]
+
+rama_dns_bindgen_tools = [
+    "@llvm-project//clang:libclang_interface_output",
+    "@llvm//:builtin_resource_dir",
+]
+
+rama_dns_bindgen_args = " ".join([
+    "--sysroot=/dev/null",
+    "-nostdlibinc",
+    "-isystem $(location @kernel_headers//:kernel_headers_directory)",
+    "-isystem $(location @llvm//runtimes/glibc:glibc_headers_include_search_directory)",
+    "-Xclang -internal-isystem -Xclang $(location @llvm//:builtin_resource_dir)/include",
+])
+
+crate.annotation(
+    build_script_data_select = {
+        "aarch64-unknown-linux-gnu": rama_dns_bindgen_headers,
+        "x86_64-unknown-linux-gnu": rama_dns_bindgen_headers,
+    },
+    build_script_env_select = {
+        "aarch64-unknown-linux-gnu": json.encode({
+            "BINDGEN_EXTRA_CLANG_ARGS": "--target=aarch64-unknown-linux-gnu " + rama_dns_bindgen_args,
+            "LIBCLANG_PATH": "$(location @llvm-project//clang:libclang_interface_output)",
+        }),
+        "x86_64-unknown-linux-gnu": json.encode({
+            "BINDGEN_EXTRA_CLANG_ARGS": "--target=x86_64-unknown-linux-gnu " + rama_dns_bindgen_args,
+            "LIBCLANG_PATH": "$(location @llvm-project//clang:libclang_interface_output)",
+        }),
+    },
+    build_script_tools_select = {
+        "aarch64-unknown-linux-gnu": rama_dns_bindgen_tools,
+        "x86_64-unknown-linux-gnu": rama_dns_bindgen_tools,
+    },
+    crate = "rama-dns",
+    gen_build_script = "on",
+)
 crate.annotation(
     # Provide the hermetic SDK path so the build script doesn't try to invoke an unhermetic `xcrun --show-sdk-path`.
     build_script_data = [
@@ -535,7 +581,7 @@ crate.annotation(
     gen_build_script = "on",
 )
 
-inject_repo(crate, "llvm", "llvm-project", "macos_sdk")
+inject_repo(crate, "kernel_headers", "llvm", "llvm-project", "macos_sdk")
 
 crate.annotation(
     # Provide the hermetic SDK path so the build script doesn't try to invoke an unavailable `xcrun --show-sdk-path`.
