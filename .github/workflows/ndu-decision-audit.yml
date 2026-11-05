@@ -1,0 +1,86 @@
+name: NDU decision audit and real dual generation
+
+on:
+  push:
+    branches:
+      - research/ndu-decision-real-20261104
+    paths:
+      - experiments/multimodal_output_portfolio/joint_hepta_20261029/v3/decision_audit/**
+      - .github/workflows/ndu-decision-audit.yml
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ndu-decision-audit-${{ github.sha }}
+  cancel-in-progress: false
+
+env:
+  PYTHONDONTWRITEBYTECODE: "1"
+  PYTHONNOUSERSITE: "1"
+  OMP_NUM_THREADS: "2"
+  MKL_NUM_THREADS: "2"
+  OPENBLAS_NUM_THREADS: "2"
+  HF_HUB_DISABLE_TELEMETRY: "1"
+
+jobs:
+  exact-and-real-dual:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+          sparse-checkout: |
+            experiments/multimodal_output_portfolio/joint_hepta_20261029
+            experiments/multimodal_output_portfolio/unified_20261028
+      - uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405
+        with:
+          python-version: "3.12.14"
+      - name: Prepare bounded execution receipts
+        run: |
+          set -euo pipefail
+          mkdir -p "$RUNNER_TEMP/decision-evidence"
+          test "$(git rev-parse HEAD)" = "${{ github.sha }}"
+          git rev-parse HEAD > "$RUNNER_TEMP/decision-evidence/SOURCE_SHA.txt"
+      - name: Install declared CPU model runtimes
+        run: |
+          python -m pip install --no-cache-dir --disable-pip-version-check --extra-index-url https://download.pytorch.org/whl/cpu torch==2.8.0+cpu torchvision==0.23.0+cpu numpy==2.3.5 Pillow==13.0.0 transformers==4.57.3 diffusers==0.35.2 accelerate==1.12.0 safetensors==0.7.0 num2words==0.5.14
+          python -m pip freeze > "$RUNNER_TEMP/decision-evidence/environment.txt"
+      - name: Exact online references and adversarial accounting contracts
+        run: |
+          set -euo pipefail
+          python -B -m unittest experiments.multimodal_output_portfolio.joint_hepta_20261029.v3.decision_audit.test_exact experiments.multimodal_output_portfolio.joint_hepta_20261029.v3.decision_audit.test_factorial experiments.multimodal_output_portfolio.joint_hepta_20261029.v3.decision_audit.test_dual_runtime experiments.multimodal_output_portfolio.joint_hepta_20261029.v3.decision_audit.test_local_models -v 2>&1 | tee "$RUNNER_TEMP/decision-evidence/tests.log"
+          python -B -m experiments.multimodal_output_portfolio.joint_hepta_20261029.v3.decision_audit.exact > "$RUNNER_TEMP/decision-evidence/EXACT.json"
+      - name: Acquire pinned public models with original failure receipts
+        run: |
+          set -euo pipefail
+          python -B -m experiments.multimodal_output_portfolio.joint_hepta_20261029.v3.decision_audit.acquire_models --root "$RUNNER_TEMP/dual-models" 2>&1 | tee "$RUNNER_TEMP/decision-evidence/acquisition.log"
+      - name: Execute both real generator schedules
+        run: |
+          set -euo pipefail
+          python -B -m experiments.multimodal_output_portfolio.joint_hepta_20261029.v3.decision_audit.run_real --models "$RUNNER_TEMP/dual-models" --output "$RUNNER_TEMP/decision-evidence/real" --source-sha "${{ github.sha }}" --threads 2 2>&1 | tee "$RUNNER_TEMP/decision-evidence/real.log"
+          git diff --check
+          git diff --exit-code
+      - name: Preserve acquisition manifests, including incomplete attempts
+        if: always()
+        run: |
+          python - <<'PY'
+          import os, pathlib, shutil
+          root = pathlib.Path(os.environ["RUNNER_TEMP"])
+          for name in ("ACQUISITION.json", "ACQUISITION_ATTEMPTS.jsonl", "vlm/MANIFEST.json", "sd/MANIFEST.json", "task/INPUT_MANIFEST.json"):
+              source = root / "dual-models" / name
+              if source.is_file():
+                  target = root / "decision-evidence" / "acquisition" / name
+                  target.parent.mkdir(parents=True, exist_ok=True)
+                  shutil.copyfile(source, target)
+          PY
+      - uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f
+        if: always()
+        with:
+          name: ndu-decision-${{ github.sha }}
+          path: ${{ runner.temp }}/decision-evidence/
+          if-no-files-found: warn
+          retention-days: 30
