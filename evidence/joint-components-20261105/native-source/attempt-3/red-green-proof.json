@@ -1,0 +1,33 @@
+{
+  "schema_version": 1,
+  "red_target_assertions_proven": true,
+  "red_source_commit": "13c8a987927f4d6bf3db1e57dc6e7bb692800b74",
+  "red_source_tree": "4c2351a23a476e826ec879b125b774c77c857f55",
+  "red_elapsed_seconds": 47.881214468041435,
+  "red_log_sha256": "5ff119c2bf066fce13b0a73b2a54caa6aa2b3f465f5203d8107ca0e48a624c92",
+  "all_five_exact_markers": [
+    "snapshot trusted drift in these projections: [\"intent payload\", \"ACK payload\", \"ACK operation\", \"ACK status\", \"uncertainty payload\", \"uncertainty reason\"]",
+    "snapshot accepted a canonical ACK for a different authoritative payload",
+    "snapshot trusted orphan observations: [\"ack\", \"uncertainty\"]",
+    "snapshot accepted a repeated sequence within an effect page",
+    "snapshot skipped repeated sequences at these page boundaries: [\"ordinary\", \"maximum\"]"
+  ],
+  "green_receipts": [
+    {
+      "receipt": "green-five-controls.json",
+      "source_commit": "a877333eff1577179fce8b1ceb6edf4322440e03",
+      "passed": 5,
+      "elapsed_seconds": 33.95879579207394,
+      "log_sha256": "869f34cae327bbf76f3374ac9e60753c0715ce9c310a5b77a4ce668827c25f2a"
+    },
+    {
+      "receipt": "original-seventeen-owner-controls.json",
+      "source_commit": "a877333eff1577179fce8b1ceb6edf4322440e03",
+      "passed": 17,
+      "elapsed_seconds": 34.10983384400606,
+      "log_sha256": "9c633598dbe281e6d1cce8c69fe82579f5cf3e601b5d4d82c42e7b8709bdf492"
+    }
+  ],
+  "component_complete": false,
+  "remaining": "Full library original qualification test timed out at its unchanged local 60-second limit; baseline comparison and Clippy/final-format pending."
+}

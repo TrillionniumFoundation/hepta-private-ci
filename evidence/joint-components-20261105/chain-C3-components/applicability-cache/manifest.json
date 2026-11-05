@@ -1,0 +1,65 @@
+{
+  "schema": "chain-c3-applicability-content-cache-component-v1",
+  "base_commit": "03521b2f32346a49cccde8ff72e8c7b886b31222",
+  "base_tree": "e0235248ecae2a67717c8b9ff2e3f25774ba63d7",
+  "status": "LOCAL SELECTED CONTROLS PASS; COMPLETE C3 ORIGINAL GATES PENDING",
+  "files": [
+    {
+      "path": "scripts/ci/report_module_evidence.py",
+      "base_git_blob_sha1": "042983fe3a6ff8ca1c76529d02f7420576717cc7",
+      "base_sha256": "031b21a54e0e893e755fcddaa524a2a6971e385b3742ce901954d27cba3f154e",
+      "candidate_git_blob_sha1": "1df0e0369e878ec123511158082d56109562a126",
+      "candidate_sha256": "d980a9a63c0b5bca3ef7c36b819fda69810742ecba0554d1ec22bc82e7cf3179",
+      "candidate_bytes": 24277,
+      "mode_change": false
+    },
+    {
+      "path": "scripts/ci/test_applicability.py",
+      "base_git_blob_sha1": "d823f1da8a93d748b93b7185989c43986ee8c6ba",
+      "base_sha256": "8c5111a595225dd8919029ce124163b1c334f10de050da94bcc6ae3812b4b232",
+      "candidate_git_blob_sha1": "0afe2d73e0bcc8c71e7e38e733b71d13568b1209",
+      "candidate_sha256": "f32db882d7a8108f86bada2ed88e494a5e38e633e06e90a22c02c4de9914c128",
+      "candidate_bytes": 24777,
+      "mode_change": false
+    }
+  ],
+  "patch": "/workspace/scratch/93bfcfe29fc8/pq_recovery/c3-applicability/applicability-content-cache.patch",
+  "patch_sha256": "1fc3bd0fd7e60e6259b71fe92d7e97c3f381ff6009b7be41dd0090dced980ea5",
+  "patch_applies_to_exact_base_and_reproduces_candidate": true,
+  "cache": {
+    "key": "complete freshly read str, equality checked by lru_cache",
+    "entries_per_transform": 128,
+    "maximum_retained_text_characters_per_entry": 262144,
+    "oversized_input": "uncached complete original parse",
+    "rust_result": "immutable str",
+    "python_result": "immutable frozenset",
+    "validation_verdicts_cached": false,
+    "file_reads_cached": false,
+    "path_or_mtime_keys": false
+  },
+  "preserved": {
+    "all_other_checker_function_asts": true,
+    "rust_parser_ast_except_decorator": true,
+    "python_symbol_traversal_except_frozen_result_and_decorator": true,
+    "all_original_test_class_asts": true,
+    "safe_path_checks_and_fresh_reads": true,
+    "original_300_second_and_resource_gates": true
+  },
+  "selected_validation": {
+    "new_mutation_tests_passed": 5,
+    "retained_parser_tests_passed": 12,
+    "receipt": "/workspace/scratch/93bfcfe29fc8/pq_recovery/c3-applicability/local-selected/receipt.json",
+    "receipt_sha256": "27b33660bcc6dc2c31b145fe7c1f28f51b0ecaf55583c30dd5490cf57453e4a9",
+    "source_before_after_equal": true
+  },
+  "preflight": {
+    "local_fragment_git_preflight_exit_code": 128,
+    "reason": "not a Git repository",
+    "original_script_git_blob_sha1": "cfd4f58405ca7620ad267f6aa42b240be038797c",
+    "complete_C3_checkout_preflight_required_before_application_build_commit": true
+  },
+  "independent_review": "w1_audit reviewed complete patch: no semantic bypass found; no native/full-suite credit",
+  "full_original_suite_executed": false,
+  "original_timeout_resolved": false,
+  "next_owner": "w1_audit: full C3 checkout original 300-second suite, with root coordinating source freeze and native budget"
+}

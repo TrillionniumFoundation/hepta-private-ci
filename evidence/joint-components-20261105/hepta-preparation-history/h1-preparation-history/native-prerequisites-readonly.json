@@ -1,0 +1,25 @@
+{
+  "scope": "read-only native prerequisite inspection; no build, execution gate, or outer-timeout cleanup claim",
+  "created_unix": 1793898142.4978127,
+  "tools": {
+    "bwrap": "/usr/bin/bwrap",
+    "dotslash": "/usr/local/bin/dotslash",
+    "pkg-config": "/usr/bin/pkg-config",
+    "cc": "/usr/bin/cc",
+    "just": "/home/qian-qi/.cargo/bin/just",
+    "cargo-nextest": "/home/qian-qi/work/hepta-pq-frontier-20261105-93bfcf/tools/bin/cargo-nextest",
+    "uv": "/home/qian-qi/work/hepta-pq-effect-v4-20261105-93bfcf/tools/uv-0.11.3/bin/uv"
+  },
+  "kernel": {
+    "kernel/unprivileged_userns_clone": "1",
+    "kernel/apparmor_restrict_unprivileged_userns": "1"
+  },
+  "libcap_pkg_config_exit": 0,
+  "own_cgroup": "0::/user.slice/user-1000.slice/user@1000.service/app.slice/hepta-runtime-job-1a1aca955bb-fc05-563a.service\n",
+  "unit_configuration": {
+    "unit": "hepta-runtime-job-1a1aca955bb-fc05-563a.service",
+    "exit": 0,
+    "stdout": "TimeoutStopUSec=10s\nControlGroup=/user.slice/user-1000.slice/user@1000.service/app.slice/hepta-runtime-job-1a1aca955bb-fc05-563a.service\nKillMode=control-group\nSendSIGKILL=yes\n",
+    "stderr": ""
+  }
+}

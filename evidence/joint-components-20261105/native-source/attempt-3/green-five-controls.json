@@ -1,0 +1,56 @@
+{
+  "after": {
+    "commit": "a877333eff1577179fce8b1ceb6edf4322440e03",
+    "dirty": false,
+    "parents": [
+      "13c8a987927f4d6bf3db1e57dc6e7bb692800b74"
+    ],
+    "tree": "40271e58d09387864fb4865cc02ec5cad0b5707b"
+  },
+  "base_sha": "1556a4df6e279055fd8196f81a4ca2fe0f19384a",
+  "before": {
+    "commit": "a877333eff1577179fce8b1ceb6edf4322440e03",
+    "dirty": false,
+    "parents": [
+      "13c8a987927f4d6bf3db1e57dc6e7bb692800b74"
+    ],
+    "tree": "40271e58d09387864fb4865cc02ec5cad0b5707b"
+  },
+  "command": [
+    "just",
+    "test",
+    "--locked",
+    "-p",
+    "codex-hepta-evidence",
+    "--lib",
+    "-E",
+    "test(=recovery_effect_frontier_tests::recovery_snapshot_refuses_effect_projection_drift_with_retained_payloads) | test(=recovery_effect_frontier_tests::recovery_snapshot_refuses_canonical_ack_bound_to_a_different_payload) | test(=recovery_effect_frontier_tests::recovery_snapshot_refuses_orphan_effect_observations) | test(=recovery_effect_frontier_tests::recovery_snapshot_refuses_repeated_effect_sequence_after_schema_drift) | test(=recovery_effect_frontier_tests::recovery_snapshot_refuses_repeated_effect_sequence_at_page_boundary)",
+    "--no-capture",
+    "--retries",
+    "0",
+    "--test-threads=1"
+  ],
+  "command_exit_code": 0,
+  "elapsed_seconds": 33.95879579207394,
+  "exit_code": 0,
+  "finished_at": "2026-11-05T14:40:22.594645+00:00",
+  "job": null,
+  "lane": "source-head",
+  "log_bytes": 25266,
+  "log_file": "green-five-controls.json.664606a92d4b4a88950b0c8813f1274f.log",
+  "log_sha256": "869f34cae327bbf76f3374ac9e60753c0715ce9c310a5b77a4ce668827c25f2a",
+  "minimum_tests": 5,
+  "observed_failed_tests": 0,
+  "observed_passed_tests": 5,
+  "output_limit_exceeded": false,
+  "returncode": 0,
+  "run_attempt": null,
+  "run_id": null,
+  "schema_version": 1,
+  "source_sha": "a877333eff1577179fce8b1ceb6edf4322440e03",
+  "started_at": "2026-11-05T14:39:48.595419+00:00",
+  "status": "passed",
+  "tested_sha": "a877333eff1577179fce8b1ceb6edf4322440e03",
+  "timed_out": false,
+  "working_directory": "/home/qian-qi/work/hepta-pq-frontier-20261105-93bfcf/source"
+}

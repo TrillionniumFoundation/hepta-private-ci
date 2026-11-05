@@ -1,0 +1,69 @@
+{
+  "schema": "hepta-v12-C2-review-v1",
+  "chain": {
+    "status": "PASS source retarget static identity only",
+    "old_candidate": "9ecdbebc897d35f07b998d084b015db8474be84b",
+    "chain_commit": "03521b2f32346a49cccde8ff72e8c7b886b31222",
+    "chain_tree": "e0235248ecae2a67717c8b9ff2e3f25774ba63d7",
+    "ordered_merge": "ebe23e4bd9eeb704479e588e873edc2c61bf7e76",
+    "manifest_sha256": "2410c65955383aaffa977840770c8209b8f62db0805ccc7585091d37cd5f99e7",
+    "closure_files": 53,
+    "native_loader_inputs": 13,
+    "only_changed_closure_member": "config/pon/pq-cross-branch-corpus-v1.json",
+    "C1_artifacts_preserved": true,
+    "native_execution": false,
+    "old_tests_promoted_to_C2": false
+  },
+  "base_hepta_commit": "1556a4df6e279055fd8196f81a4ca2fe0f19384a",
+  "old_registry_assignments_unchanged": 55,
+  "old_v11_manifest_sha256": "a951e866f66b0e251fc5a9f81d02a7f86954d1b3ca8ac483890fcb23a4955647",
+  "unchanged_workflow_jobs": [
+    "effect-recovery",
+    "windows-ledger",
+    "cell-host-scope",
+    "cell-host-v2"
+  ],
+  "original_resources_and_original_step_order_preserved": true,
+  "workflow_changes": {
+    "pair": {
+      "old_steps": 66,
+      "new_steps": 67,
+      "modified_run_steps": [
+        "Prepare native prerequisites and verify both exact source tuples",
+        "Require complete bounded W1 collector and cross-architecture report controls"
+      ],
+      "added_steps": [
+        "Require original supervisor cancellation through the ordinary neural entry"
+      ]
+    },
+    "cell-installed-host-v3": {
+      "old_steps": 14,
+      "new_steps": 14,
+      "modified_run_steps": [
+        "Require an exact installed-profile source and exercise artifact rejection controls",
+        "Run the fixed Chain's original source preflight"
+      ],
+      "added_steps": []
+    }
+  },
+  "logs": {
+    "all-source-controls.log": {
+      "sha256": "8dd95f3378d232936eff500bb6b9495e92f7df28b9c995cc54dbc2811298dd4d",
+      "bytes": 26717,
+      "passed": 135,
+      "seconds": 32.693,
+      "exit_code": 0,
+      "scope": "Actual local selected-source Python controls; no native/full-model run"
+    },
+    "diverse-controls.log": {
+      "sha256": "6477e7e5aee360c0e1f695cc56d04968e2764d310792178df0ddef71e1aec4ee",
+      "bytes": 6233,
+      "passed": 32,
+      "seconds": 0.941,
+      "exit_code": 0,
+      "scope": "Actual local selected-source Python controls; no native/full-model run"
+    }
+  },
+  "patch_sha256": "35b8a7df383d4803699611a825e64d0eb385eb790ff7843380d22d6f9e1f85f1",
+  "native_qualified": false
+}

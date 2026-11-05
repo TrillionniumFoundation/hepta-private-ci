@@ -1,0 +1,14 @@
+==> Rust formatter failed
+$ rustfmt --edition 2024 --config imports_granularity=Item,skip_children=true -- /home/qian-qi/work/hepta-pq-effect-v4-20261105-93bfcf/source/codex-rs/hepta-agentd/tests/support/automation_effect_binary.rs
+Warning: can't set `imports_granularity = Item`, unstable features are only available in nightly channel.
+error: this file contains an unclosed delimiter
+  --> /home/qian-qi/work/hepta-pq-effect-v4-20261105-93bfcf/source/codex-rs/hepta-agentd/tests/support/automation_effect_binary.rs:74:3
+   |
+15 | pub(super) fn source_identity()->Result<Value> {
+   |                                                - unclosed delimiter
+...
+74 | }
+   |  ^
+
+Formatting failed: Rust
+error: recipe `fmt` failed on line 51 with exit code 1

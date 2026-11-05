@@ -1,0 +1,45 @@
+{
+  "source_commit": "1556a4df6e279055fd8196f81a4ca2fe0f19384a",
+  "level": "SQLite + exact upstream SELECTs and digest encoding; native Rust not executed",
+  "sqlite_version": "3.53.1",
+  "snapshot_rows": 3,
+  "snapshot_sha256": "7baef601f62f63688bd35387d996ddbd491627641c653f3d4d01c7ea3d0122b1",
+  "omitted_projection_cases": [
+    {
+      "table": "provider_effect_intents",
+      "changed_column": "payload_sha256",
+      "canonical_projection_disagrees": true,
+      "upstream_snapshot_unchanged": true
+    },
+    {
+      "table": "provider_effect_acknowledgements",
+      "changed_column": "payload_sha256",
+      "canonical_projection_disagrees": true,
+      "upstream_snapshot_unchanged": true
+    },
+    {
+      "table": "provider_effect_acknowledgements",
+      "changed_column": "provider_operation_id_sha256",
+      "canonical_projection_disagrees": true,
+      "upstream_snapshot_unchanged": true
+    },
+    {
+      "table": "provider_effect_acknowledgements",
+      "changed_column": "status",
+      "canonical_projection_disagrees": true,
+      "upstream_snapshot_unchanged": true
+    },
+    {
+      "table": "provider_effect_uncertainties",
+      "changed_column": "payload_sha256",
+      "canonical_projection_disagrees": true,
+      "upstream_snapshot_unchanged": true
+    },
+    {
+      "table": "provider_effect_uncertainties",
+      "changed_column": "reason_code",
+      "canonical_projection_disagrees": true,
+      "upstream_snapshot_unchanged": true
+    }
+  ]
+}

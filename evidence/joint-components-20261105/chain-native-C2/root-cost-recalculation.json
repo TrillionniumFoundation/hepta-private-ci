@@ -1,0 +1,42 @@
+{
+  "schema": "root-c2-cost-recalculation-v1",
+  "commit": "03521b2f32346a49cccde8ff72e8c7b886b31222",
+  "native_raw_sha256": "7d4a2a4c1e20bf9c77a7ba099fc936a60bf59c7fba39c776131d5eea907aaa3c",
+  "independent_review_sha256": "a9a260b494d3c1b0b58c6cb37b8b068320b59d4a484c250e498ea38ca3515bd1",
+  "actual_samples": 96,
+  "timing_values": 1152,
+  "recomputed_class_target_kernel_variant_cells": 96,
+  "all_exact_medians_p95_sums_and_paired_total_ratios_match": true,
+  "all_four_kernels_share_same_proof_per_variant": true,
+  "all_legal_results_agree_with_scalar_product": true,
+  "actual_nonce_attempts": 1434,
+  "unsuccessful_attempts": 1338,
+  "actual_honest_producer_implementations": 1,
+  "production_kernel": {
+    "legal": {
+      "median_ms_range": [
+        1.666793,
+        1.6974545
+      ],
+      "largest_group_nearest_rank_p95_ms": 2.197303
+    },
+    "transcript": {
+      "median_ms_range": [
+        1.500383,
+        1.521604
+      ],
+      "largest_group_nearest_rank_p95_ms": 2.479376
+    },
+    "product-last-cell": {
+      "median_ms_range": [
+        1.6707005,
+        1.7077095
+      ],
+      "largest_group_nearest_rank_p95_ms": 2.958098
+    }
+  },
+  "additional_measurement_run": false,
+  "cheapest_legal_work_qualified": false,
+  "public_service_qualified": false,
+  "p95_scope": "Per cell n=12 nearest rank p95 is observed maximum, not a tail guarantee"
+}

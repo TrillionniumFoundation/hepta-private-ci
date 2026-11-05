@@ -1,0 +1,1071 @@
+{
+  "schema": "hepta-joint-pq-ci-wiring-audit-v2",
+  "reviewer": "pq_recovery independent source review",
+  "base_commit": "1556a4df6e279055fd8196f81a4ca2fe0f19384a",
+  "base_workflow_git_blob_sha1": "c2af6c222075720750ec1130192a495ea6bb0548",
+  "base_workflow_sha256": "2582f09165785e42803699b62c0155201501a00eaa2cb7b87151b326fcd75d75",
+  "workflow_sha256": "4f331d94dc8927d537873f976ce8c459a5e09673ef8431d3b310419ecf21f2ad",
+  "result": "STATIC WIRING CHECKS PASS; NATIVE QUALIFICATION NOT ESTABLISHED",
+  "scope": "YAML and guard AST comparison, all exact names mapped to byte-identified Rust test sources, original resources/order/budgets and real historical growth-log parser check. No Cargo, native tests, hosted run or W1 sampling executed by this audit.",
+  "native_execution_status": "NOT RUN BY THIS STATIC AUDIT",
+  "joint_qualification": false,
+  "final_h1_source_bound": false,
+  "original_matrix_environment_permissions_concurrency_job_timeout_unchanged": true,
+  "job_settings": {
+    "name": "PQ renewal (${{ matrix.runner }}, ${{ matrix.lane }})",
+    "strategy": {
+      "fail-fast": "false",
+      "matrix": {
+        "runner": [
+          "ubuntu-24.04",
+          "ubuntu-24.04-arm"
+        ],
+        "lane": "${{ fromJSON(github.event_name == 'pull_request' && '[\"source-head\",\"base-merge\"]' || '[\"source-head\"]') }}"
+      }
+    },
+    "runs-on": "${{ matrix.runner }}",
+    "timeout-minutes": "90",
+    "env": {
+      "SOURCE_SHA": "${{ github.event.pull_request.head.sha || github.sha }}",
+      "TESTED_SHA": "${{ matrix.lane == 'base-merge' && github.sha || github.event.pull_request.head.sha || github.sha }}",
+      "BASE_SHA": "${{ github.event.pull_request.base.sha || github.event.before }}",
+      "HEPTA_CI_LANE": "${{ matrix.lane }}",
+      "RUSTUP_TOOLCHAIN": "1.96.0",
+      "CARGO_INCREMENTAL": "0",
+      "CARGO_BUILD_JOBS": "2",
+      "CARGO_PROFILE_TEST_DEBUG": "0",
+      "CARGO_PROFILE_DEV_DEBUG": "0",
+      "RUST_BACKTRACE": "1",
+      "PYTHONDONTWRITEBYTECODE": "1",
+      "TMPDIR": "/tmp"
+    }
+  },
+  "permissions": {
+    "contents": "read",
+    "actions": "read"
+  },
+  "concurrency": {
+    "group": "hepta-pq-policy-renewal-${{ github.event.pull_request.number || github.ref }}",
+    "cancel-in-progress": "false"
+  },
+  "original_steps_retained": true,
+  "original_step_relative_order_preserved": true,
+  "original_step_order": [
+    "Check out the exact source or prospective merge",
+    "Bind commit, tree and merge parents",
+    "Prepare the original native process prerequisites",
+    "taiki-e/install-action@44c6d64aa62cd779e873306675c7a58e86d6d532",
+    "Install the existing pinned Python formatter launcher",
+    "facebook/install-dotslash@1e4e7b3e07eaca387acb98f1d4720e0bee8dbb6a",
+    "run:sudo install -m 0755 \"$(command -v dotslash)\" /usr/local/bin/dotslash",
+    "Resolve the existing verified V8 artifacts",
+    "receipt:dependencies",
+    "receipt:dispatcher",
+    "receipt:product",
+    "receipt:recovery-owner",
+    "receipt:recovery-signed",
+    "receipt:recovery-product",
+    "Require every selected test by name with no selected skip",
+    "receipt:fix",
+    "receipt:format",
+    "Verify the exact source after all execution",
+    "Retain original command logs and identity records"
+  ],
+  "current_step_order": [
+    "Check out the exact source or prospective merge",
+    "Bind commit, tree and merge parents",
+    "Prepare the original native process prerequisites",
+    "taiki-e/install-action@44c6d64aa62cd779e873306675c7a58e86d6d532",
+    "Install the existing pinned Python formatter launcher",
+    "facebook/install-dotslash@1e4e7b3e07eaca387acb98f1d4720e0bee8dbb6a",
+    "run:sudo install -m 0755 \"$(command -v dotslash)\" /usr/local/bin/dotslash",
+    "Resolve the existing verified V8 artifacts",
+    "receipt:dependencies",
+    "receipt:dispatcher",
+    "receipt:product",
+    "receipt:recovery-owner",
+    "receipt:recovery-signed",
+    "receipt:recovery-product",
+    "receipt:qualification-growth",
+    "receipt:effect-pq-owner",
+    "receipt:effect-pq-contract",
+    "receipt:effect-pq-product",
+    "Require every selected test by name with no selected skip",
+    "receipt:fix",
+    "receipt:format",
+    "Verify the exact source after all execution",
+    "Retain original command logs and identity records"
+  ],
+  "original_steps_unchanged": 16,
+  "changed_original_steps": {
+    "recovery-owner": "17 to 22 exact names; original 17 and 600-second budget retained",
+    "exact-name-guard": "Only expected-name catalog changed; all other Python AST unchanged",
+    "fix": "Original three packages retained; codex-hepta-contracts and codex-model-provider added; 1200-second budget unchanged"
+  },
+  "trigger_paths_originals_preserved": true,
+  "added_trigger_paths": [
+    "codex-rs/hepta-automation/**",
+    "codex-rs/model-provider/**"
+  ],
+  "original_expected_test_count": 49,
+  "expected_test_count": 69,
+  "unique_expected_test_count": 69,
+  "expected_case_counts": {
+    "qualification-growth": 2,
+    "effect-pq-product": 1,
+    "effect-pq-owner": 11,
+    "effect-pq-contract": 1,
+    "dispatcher": 14,
+    "product": 3,
+    "recovery-owner": 22,
+    "recovery-signed": 11,
+    "recovery-product": 4
+  },
+  "all_original_expected_test_names_preserved": true,
+  "original_expected_names": {
+    "dispatcher": [
+      "authbus_dispatch::tests::abandoned_first_claim_without_admission_is_quarantined_after_lookup_missing",
+      "authbus_dispatch::tests::checkpoint_sync::cancelled_checkpoint_sync_waiter_and_owner_release_exclusive_admission",
+      "authbus_dispatch::tests::checkpoint_sync::concurrent_checkpoint_syncs_share_owner_lock_and_preserve_rollback_rejection",
+      "authbus_dispatch::tests::lease_delay::trust_refresh_sqlite_wait_cannot_authorize_transport_with_an_expired_lease",
+      "authbus_dispatch::tests::lost_queue_reply_recovers_from_sqlite_using_lookup_only_and_exact_receipt",
+      "authbus_dispatch::tests::matching_receipt_metadata_with_different_queue_input_never_acknowledges",
+      "authbus_dispatch::tests::policy_rollback::pq_bound_policy_refuses_renewal_without_policy_snapshot",
+      "authbus_dispatch::tests::policy_rollback::pq_owner_requires_explicit_nonzero_policy_revision_and_accepts_set_ordering",
+      "authbus_dispatch::tests::policy_rollback::pq_policy_change_fences_stale_renewal_and_current_policy_restores_dispatch",
+      "authbus_dispatch::tests::policy_rollback::pq_removed_thread_cannot_return_through_owner_file_rollback_after_reopen",
+      "authbus_dispatch::tests::pq::pq_text_owner_resumes_after_revocation_rotation_and_rejected_config_rollback",
+      "authbus_dispatch::tests::pq::pq_text_producer_recovers_through_existing_dispatch_and_rejects_wire_and_config_downgrade",
+      "authbus_dispatch::tests::ready_generation_and_owner_private_trust_are_required_before_admission",
+      "authbus_dispatch::tests::revocation_during_queue_request_prevents_success_ack"
+    ],
+    "product": [
+      "pq_signed_text_crosses_real_queue_after_rejection_without_downgrade",
+      "real_agentd_without_explicit_trust_rejects_signed_text",
+      "signed_text_crosses_real_queue_once_and_current_trust_rejects_invalid_ingress"
+    ],
+    "recovery-owner": [
+      "provider_effect_recovery_provenance_tests::recovery_provenance_preserves_dispatch_then_authoritative_status",
+      "provider_effect_recovery_provenance_tests::recovery_provenance_rejects_late_dispatch_after_status_without_uncertainty",
+      "recovery_effect_frontier_tests::recovery_snapshot_commits_ack_provenance_and_cross_table_order",
+      "recovery_effect_frontier_tests::recovery_snapshot_commits_effect_history_after_the_first_page",
+      "recovery_effect_frontier_tests::recovery_snapshot_commits_intent_unknown_and_original_operation_receipt",
+      "recovery_effect_frontier_tests::recovery_snapshot_distinguishes_a_valid_effect_only_database_rollback",
+      "recovery_effect_frontier_tests::recovery_snapshot_refuses_changed_json_with_retained_record_digests",
+      "recovery_invocation_frontier_tests::recovery_snapshot_binds_invocation_sequence_and_recording_time",
+      "recovery_invocation_frontier_tests::recovery_snapshot_commits_invocations_after_the_first_page",
+      "recovery_invocation_frontier_tests::recovery_snapshot_commits_pending_invocations_and_terminal_states",
+      "recovery_invocation_frontier_tests::recovery_snapshot_refuses_duplicate_terminal_hidden_at_page_boundary",
+      "recovery_invocation_frontier_tests::recovery_snapshot_refuses_invocation_column_type_corruption_without_panicking",
+      "recovery_invocation_frontier_tests::recovery_snapshot_requires_the_terminals_authoritative_intent",
+      "recovery_invocation_frontier_tests::recovery_snapshot_revalidates_invocation_payloads_and_projected_columns",
+      "recovery_invocation_schema_tests::recovery_invocation_schema_accepts_current_migration_keys",
+      "recovery_invocation_schema_tests::recovery_invocation_schema_refuses_non_rowid_or_composite_sequences",
+      "recovery_invocation_schema_tests::recovery_invocation_schema_requires_exact_unconditional_column_uniqueness"
+    ],
+    "recovery-signed": [
+      "evidence_frontier::tests::recovery_frontier_authenticates_both_effect_fields",
+      "evidence_frontier::tests::recovery_frontier_cannot_be_omitted_at_the_ordinary_agentd_run_entry",
+      "evidence_frontier::tests::recovery_frontier_enforces_root_scope_epoch_revocation_and_generation_floor",
+      "evidence_frontier::tests::recovery_frontier_pq_rejects_invocation_only_database_rollbacks",
+      "evidence_frontier::tests::recovery_frontier_pq_survives_store_close_and_reopen",
+      "evidence_frontier::tests::recovery_frontier_read_only_preflight_never_binds_or_changes_the_image",
+      "evidence_frontier::tests::recovery_frontier_refuses_valid_classical_v1_and_v2_signatures",
+      "evidence_frontier::tests::recovery_frontier_refuses_valid_pq_v3_and_relabelled_v2_snapshots",
+      "evidence_frontier::tests::recovery_frontier_rejects_wrong_domain_and_profile",
+      "evidence_frontier::tests::recovery_frontier_rejects_wrong_key_pin_and_noncanonical_signature",
+      "evidence_frontier::tests::recovery_frontier_root_rotation_retires_the_old_key"
+    ],
+    "recovery-product": [
+      "real_agentd_composes_authenticated_evidence_writer_query_verifier_and_terminal_observer",
+      "signed_recovery_frontier_allows_exact_current_database",
+      "signed_recovery_frontier_rejects_effect_only_database_rollback",
+      "signed_recovery_frontier_rejects_valid_older_database_image"
+    ]
+  },
+  "expected_names": {
+    "qualification-growth": [
+      "qualification_tests::claim_query_rejects_more_than_512_references",
+      "qualification_tests::ordinary_append_rejects_historical_projection_drift_without_consuming_replay"
+    ],
+    "effect-pq-product": [
+      "pq_effect_survives_owned_agentd_kill_after_provider_fsync_without_resend"
+    ],
+    "effect-pq-owner": [
+      "automation_effect_host::pq::tests::current_clock_frontier_and_pq_grant_are_mandatory_before_contact",
+      "automation_effect_host::pq::tests::generation_change_after_store_await_refuses_contact_and_keeps_consumed_nonce",
+      "automation_effect_host::pq::tests::historical_policy_does_not_connect_old_trust_services_or_follow_its_references",
+      "automation_effect_host::pq::tests::initial_feed_is_authenticated_before_any_local_authority_or_frontier_write",
+      "automation_effect_host::pq::tests::ordinary_dispatch_and_new_generation_recovery_keep_one_stable_operation",
+      "automation_effect_host::pq::tests::ordinary_loader_denies_classical_schema_and_contract_or_policy_substitution",
+      "automation_effect_host::pq::tests::pon_schema4_binds_native_binary_and_original_limits_without_running_a_node",
+      "automation_effect_host::pq::tests::reconcile_rechecks_generation_after_store_await_without_reclassifying_unknown",
+      "automation_effect_host::pq::tests::recovery_requires_current_signed_exact_historical_policy_and_same_provider",
+      "automation_effect_host::pq::tests::revoked_equal_number_drift_expired_feed_and_new_epoch_do_not_contact_provider",
+      "automation_effect_host::pq::tests::signed_revocation_after_store_await_obeys_active_effect_fence_and_never_sends"
+    ],
+    "effect-pq-contract": [
+      "provider_effect::pq_tests::pq_contract_binds_profile_root_epoch_and_complete_authority_scope"
+    ],
+    "dispatcher": [
+      "authbus_dispatch::tests::abandoned_first_claim_without_admission_is_quarantined_after_lookup_missing",
+      "authbus_dispatch::tests::checkpoint_sync::cancelled_checkpoint_sync_waiter_and_owner_release_exclusive_admission",
+      "authbus_dispatch::tests::checkpoint_sync::concurrent_checkpoint_syncs_share_owner_lock_and_preserve_rollback_rejection",
+      "authbus_dispatch::tests::lease_delay::trust_refresh_sqlite_wait_cannot_authorize_transport_with_an_expired_lease",
+      "authbus_dispatch::tests::lost_queue_reply_recovers_from_sqlite_using_lookup_only_and_exact_receipt",
+      "authbus_dispatch::tests::matching_receipt_metadata_with_different_queue_input_never_acknowledges",
+      "authbus_dispatch::tests::policy_rollback::pq_bound_policy_refuses_renewal_without_policy_snapshot",
+      "authbus_dispatch::tests::policy_rollback::pq_owner_requires_explicit_nonzero_policy_revision_and_accepts_set_ordering",
+      "authbus_dispatch::tests::policy_rollback::pq_policy_change_fences_stale_renewal_and_current_policy_restores_dispatch",
+      "authbus_dispatch::tests::policy_rollback::pq_removed_thread_cannot_return_through_owner_file_rollback_after_reopen",
+      "authbus_dispatch::tests::pq::pq_text_owner_resumes_after_revocation_rotation_and_rejected_config_rollback",
+      "authbus_dispatch::tests::pq::pq_text_producer_recovers_through_existing_dispatch_and_rejects_wire_and_config_downgrade",
+      "authbus_dispatch::tests::ready_generation_and_owner_private_trust_are_required_before_admission",
+      "authbus_dispatch::tests::revocation_during_queue_request_prevents_success_ack"
+    ],
+    "product": [
+      "pq_signed_text_crosses_real_queue_after_rejection_without_downgrade",
+      "real_agentd_without_explicit_trust_rejects_signed_text",
+      "signed_text_crosses_real_queue_once_and_current_trust_rejects_invalid_ingress"
+    ],
+    "recovery-owner": [
+      "provider_effect_recovery_provenance_tests::recovery_provenance_preserves_dispatch_then_authoritative_status",
+      "provider_effect_recovery_provenance_tests::recovery_provenance_rejects_late_dispatch_after_status_without_uncertainty",
+      "recovery_effect_frontier_tests::recovery_snapshot_commits_ack_provenance_and_cross_table_order",
+      "recovery_effect_frontier_tests::recovery_snapshot_commits_effect_history_after_the_first_page",
+      "recovery_effect_frontier_tests::recovery_snapshot_commits_intent_unknown_and_original_operation_receipt",
+      "recovery_effect_frontier_tests::recovery_snapshot_distinguishes_a_valid_effect_only_database_rollback",
+      "recovery_effect_frontier_tests::recovery_snapshot_refuses_canonical_ack_bound_to_a_different_payload",
+      "recovery_effect_frontier_tests::recovery_snapshot_refuses_changed_json_with_retained_record_digests",
+      "recovery_effect_frontier_tests::recovery_snapshot_refuses_effect_projection_drift_with_retained_payloads",
+      "recovery_effect_frontier_tests::recovery_snapshot_refuses_orphan_effect_observations",
+      "recovery_effect_frontier_tests::recovery_snapshot_refuses_repeated_effect_sequence_after_schema_drift",
+      "recovery_effect_frontier_tests::recovery_snapshot_refuses_repeated_effect_sequence_at_page_boundary",
+      "recovery_invocation_frontier_tests::recovery_snapshot_binds_invocation_sequence_and_recording_time",
+      "recovery_invocation_frontier_tests::recovery_snapshot_commits_invocations_after_the_first_page",
+      "recovery_invocation_frontier_tests::recovery_snapshot_commits_pending_invocations_and_terminal_states",
+      "recovery_invocation_frontier_tests::recovery_snapshot_refuses_duplicate_terminal_hidden_at_page_boundary",
+      "recovery_invocation_frontier_tests::recovery_snapshot_refuses_invocation_column_type_corruption_without_panicking",
+      "recovery_invocation_frontier_tests::recovery_snapshot_requires_the_terminals_authoritative_intent",
+      "recovery_invocation_frontier_tests::recovery_snapshot_revalidates_invocation_payloads_and_projected_columns",
+      "recovery_invocation_schema_tests::recovery_invocation_schema_accepts_current_migration_keys",
+      "recovery_invocation_schema_tests::recovery_invocation_schema_refuses_non_rowid_or_composite_sequences",
+      "recovery_invocation_schema_tests::recovery_invocation_schema_requires_exact_unconditional_column_uniqueness"
+    ],
+    "recovery-signed": [
+      "evidence_frontier::tests::recovery_frontier_authenticates_both_effect_fields",
+      "evidence_frontier::tests::recovery_frontier_cannot_be_omitted_at_the_ordinary_agentd_run_entry",
+      "evidence_frontier::tests::recovery_frontier_enforces_root_scope_epoch_revocation_and_generation_floor",
+      "evidence_frontier::tests::recovery_frontier_pq_rejects_invocation_only_database_rollbacks",
+      "evidence_frontier::tests::recovery_frontier_pq_survives_store_close_and_reopen",
+      "evidence_frontier::tests::recovery_frontier_read_only_preflight_never_binds_or_changes_the_image",
+      "evidence_frontier::tests::recovery_frontier_refuses_valid_classical_v1_and_v2_signatures",
+      "evidence_frontier::tests::recovery_frontier_refuses_valid_pq_v3_and_relabelled_v2_snapshots",
+      "evidence_frontier::tests::recovery_frontier_rejects_wrong_domain_and_profile",
+      "evidence_frontier::tests::recovery_frontier_rejects_wrong_key_pin_and_noncanonical_signature",
+      "evidence_frontier::tests::recovery_frontier_root_rotation_retires_the_old_key"
+    ],
+    "recovery-product": [
+      "real_agentd_composes_authenticated_evidence_writer_query_verifier_and_terminal_observer",
+      "signed_recovery_frontier_allows_exact_current_database",
+      "signed_recovery_frontier_rejects_effect_only_database_rollback",
+      "signed_recovery_frontier_rejects_valid_older_database_image"
+    ]
+  },
+  "recovery_original_tests_retained": 17,
+  "recovery_new_tests": 5,
+  "all_original_wrapper_budgets_retained": true,
+  "command_gates": [
+    {
+      "receipt": "dependencies",
+      "step_name": "Fetch the locked current dependency graph",
+      "order_index": 8,
+      "timeout_seconds": 600,
+      "original_timeout_seconds": 600,
+      "if": null,
+      "environment": {
+        "CARGO_NET_RETRY": "5",
+        "CARGO_HTTP_TIMEOUT": "60",
+        "CARGO_HTTP_MULTIPLEXING": "false"
+      },
+      "command": "python3 scripts/hepta_ci_exec.py --output \"$RUNNER_TEMP/pq-policy-renewal/dependencies.json\" --timeout-seconds 600 -- cargo fetch --locked --manifest-path codex-rs/Cargo.toml"
+    },
+    {
+      "receipt": "dispatcher",
+      "step_name": "Run all fourteen original and added dispatcher controls",
+      "order_index": 9,
+      "timeout_seconds": 3600,
+      "original_timeout_seconds": 3600,
+      "if": "${{ !cancelled() && steps.dependencies.outcome == 'success' }}",
+      "environment": {
+        "CARGO_NET_OFFLINE": "true"
+      },
+      "command": "python3 scripts/hepta_ci_exec.py --output \"$RUNNER_TEMP/pq-policy-renewal/dispatcher.json\" --minimum-tests 14 --timeout-seconds 3600 -- just test --locked -p codex-hepta-agentd --lib -E 'test(authbus_dispatch::tests::)' --no-capture --retries 0 --test-threads=1",
+      "minimum_tests": 14,
+      "expected_test_count": 14,
+      "selector": "test(authbus_dispatch::tests::)",
+      "exact_selector_equals_catalog": null
+    },
+    {
+      "receipt": "product",
+      "step_name": "Run the three real Agentd and App Server process controls",
+      "order_index": 10,
+      "timeout_seconds": 1800,
+      "original_timeout_seconds": 1800,
+      "if": "${{ !cancelled() && steps.dependencies.outcome == 'success' }}",
+      "environment": {
+        "CARGO_NET_OFFLINE": "true"
+      },
+      "command": "python3 scripts/hepta_ci_exec.py --output \"$RUNNER_TEMP/pq-policy-renewal/product.json\" --minimum-tests 3 --timeout-seconds 1800 -- just test --locked -p codex-hepta-agentd --test authbus_text_product --no-capture --retries 0 --test-threads=1",
+      "minimum_tests": 3,
+      "expected_test_count": 3,
+      "selector": null,
+      "exact_selector_equals_catalog": null
+    },
+    {
+      "receipt": "recovery-owner",
+      "step_name": "Run the twenty-two recovery snapshot and ACK provenance controls",
+      "order_index": 11,
+      "timeout_seconds": 600,
+      "original_timeout_seconds": 600,
+      "if": "${{ !cancelled() && steps.dependencies.outcome == 'success' }}",
+      "environment": {
+        "CARGO_NET_OFFLINE": "true"
+      },
+      "command": "python3 scripts/hepta_ci_exec.py --output \"$RUNNER_TEMP/pq-policy-renewal/recovery-owner.json\" --minimum-tests 22 --timeout-seconds 600 -- just test --locked -p codex-hepta-evidence --lib -E 'test(=recovery_effect_frontier_tests::recovery_snapshot_commits_intent_unknown_and_original_operation_receipt) | test(=recovery_effect_frontier_tests::recovery_snapshot_distinguishes_a_valid_effect_only_database_rollback) | test(=recovery_effect_frontier_tests::recovery_snapshot_commits_ack_provenance_and_cross_table_order) | test(=recovery_effect_frontier_tests::recovery_snapshot_commits_effect_history_after_the_first_page) | test(=recovery_effect_frontier_tests::recovery_snapshot_refuses_changed_json_with_retained_record_digests) | test(=recovery_effect_frontier_tests::recovery_snapshot_refuses_effect_projection_drift_with_retained_payloads) | test(=recovery_effect_frontier_tests::recovery_snapshot_refuses_canonical_ack_bound_to_a_different_payload) | test(=recovery_effect_frontier_tests::recovery_snapshot_refuses_orphan_effect_observations) | test(=recovery_effect_frontier_tests::recovery_snapshot_refuses_repeated_effect_sequence_after_schema_drift) | test(=recovery_effect_frontier_tests::recovery_snapshot_refuses_repeated_effect_sequence_at_page_boundary) | test(=provider_effect_recovery_provenance_tests::recovery_provenance_rejects_late_dispatch_after_status_without_uncertainty) | test(=provider_effect_recovery_provenance_tests::recovery_provenance_preserves_dispatch_then_authoritative_status) | test(=recovery_invocation_frontier_tests::recovery_snapshot_commits_pending_invocations_and_terminal_states) | test(=recovery_invocation_frontier_tests::recovery_snapshot_commits_invocations_after_the_first_page) | test(=recovery_invocation_frontier_tests::recovery_snapshot_revalidates_invocation_payloads_and_projected_columns) | test(=recovery_invocation_frontier_tests::recovery_snapshot_requires_the_terminals_authoritative_intent) | test(=recovery_invocation_frontier_tests::recovery_snapshot_refuses_duplicate_terminal_hidden_at_page_boundary) | test(=recovery_invocation_frontier_tests::recovery_snapshot_refuses_invocation_column_type_corruption_without_panicking) | test(=recovery_invocation_frontier_tests::recovery_snapshot_binds_invocation_sequence_and_recording_time) | test(=recovery_invocation_schema_tests::recovery_invocation_schema_accepts_current_migration_keys) | test(=recovery_invocation_schema_tests::recovery_invocation_schema_refuses_non_rowid_or_composite_sequences) | test(=recovery_invocation_schema_tests::recovery_invocation_schema_requires_exact_unconditional_column_uniqueness)' --no-capture --retries 0 --test-threads=1",
+      "minimum_tests": 22,
+      "expected_test_count": 22,
+      "selector": "test(=recovery_effect_frontier_tests::recovery_snapshot_commits_intent_unknown_and_original_operation_receipt) | test(=recovery_effect_frontier_tests::recovery_snapshot_distinguishes_a_valid_effect_only_database_rollback) | test(=recovery_effect_frontier_tests::recovery_snapshot_commits_ack_provenance_and_cross_table_order) | test(=recovery_effect_frontier_tests::recovery_snapshot_commits_effect_history_after_the_first_page) | test(=recovery_effect_frontier_tests::recovery_snapshot_refuses_changed_json_with_retained_record_digests) | test(=recovery_effect_frontier_tests::recovery_snapshot_refuses_effect_projection_drift_with_retained_payloads) | test(=recovery_effect_frontier_tests::recovery_snapshot_refuses_canonical_ack_bound_to_a_different_payload) | test(=recovery_effect_frontier_tests::recovery_snapshot_refuses_orphan_effect_observations) | test(=recovery_effect_frontier_tests::recovery_snapshot_refuses_repeated_effect_sequence_after_schema_drift) | test(=recovery_effect_frontier_tests::recovery_snapshot_refuses_repeated_effect_sequence_at_page_boundary) | test(=provider_effect_recovery_provenance_tests::recovery_provenance_rejects_late_dispatch_after_status_without_uncertainty) | test(=provider_effect_recovery_provenance_tests::recovery_provenance_preserves_dispatch_then_authoritative_status) | test(=recovery_invocation_frontier_tests::recovery_snapshot_commits_pending_invocations_and_terminal_states) | test(=recovery_invocation_frontier_tests::recovery_snapshot_commits_invocations_after_the_first_page) | test(=recovery_invocation_frontier_tests::recovery_snapshot_revalidates_invocation_payloads_and_projected_columns) | test(=recovery_invocation_frontier_tests::recovery_snapshot_requires_the_terminals_authoritative_intent) | test(=recovery_invocation_frontier_tests::recovery_snapshot_refuses_duplicate_terminal_hidden_at_page_boundary) | test(=recovery_invocation_frontier_tests::recovery_snapshot_refuses_invocation_column_type_corruption_without_panicking) | test(=recovery_invocation_frontier_tests::recovery_snapshot_binds_invocation_sequence_and_recording_time) | test(=recovery_invocation_schema_tests::recovery_invocation_schema_accepts_current_migration_keys) | test(=recovery_invocation_schema_tests::recovery_invocation_schema_refuses_non_rowid_or_composite_sequences) | test(=recovery_invocation_schema_tests::recovery_invocation_schema_requires_exact_unconditional_column_uniqueness)",
+      "exact_selector_equals_catalog": true
+    },
+    {
+      "receipt": "recovery-signed",
+      "step_name": "Run the eleven PQ recovery frontier controls",
+      "order_index": 12,
+      "timeout_seconds": 600,
+      "original_timeout_seconds": 600,
+      "if": "${{ !cancelled() && steps.dependencies.outcome == 'success' }}",
+      "environment": {
+        "CARGO_NET_OFFLINE": "true"
+      },
+      "command": "python3 scripts/hepta_ci_exec.py --output \"$RUNNER_TEMP/pq-policy-renewal/recovery-signed.json\" --minimum-tests 11 --timeout-seconds 600 -- just test --locked -p codex-hepta-agentd --lib -E 'test(=evidence_frontier::tests::recovery_frontier_refuses_valid_classical_v1_and_v2_signatures) | test(=evidence_frontier::tests::recovery_frontier_authenticates_both_effect_fields) | test(=evidence_frontier::tests::recovery_frontier_pq_survives_store_close_and_reopen) | test(=evidence_frontier::tests::recovery_frontier_read_only_preflight_never_binds_or_changes_the_image) | test(=evidence_frontier::tests::recovery_frontier_cannot_be_omitted_at_the_ordinary_agentd_run_entry) | test(=evidence_frontier::tests::recovery_frontier_rejects_wrong_domain_and_profile) | test(=evidence_frontier::tests::recovery_frontier_enforces_root_scope_epoch_revocation_and_generation_floor) | test(=evidence_frontier::tests::recovery_frontier_rejects_wrong_key_pin_and_noncanonical_signature) | test(=evidence_frontier::tests::recovery_frontier_root_rotation_retires_the_old_key) | test(=evidence_frontier::tests::recovery_frontier_refuses_valid_pq_v3_and_relabelled_v2_snapshots) | test(=evidence_frontier::tests::recovery_frontier_pq_rejects_invocation_only_database_rollbacks)' --no-capture --retries 0 --test-threads=1",
+      "minimum_tests": 11,
+      "expected_test_count": 11,
+      "selector": "test(=evidence_frontier::tests::recovery_frontier_refuses_valid_classical_v1_and_v2_signatures) | test(=evidence_frontier::tests::recovery_frontier_authenticates_both_effect_fields) | test(=evidence_frontier::tests::recovery_frontier_pq_survives_store_close_and_reopen) | test(=evidence_frontier::tests::recovery_frontier_read_only_preflight_never_binds_or_changes_the_image) | test(=evidence_frontier::tests::recovery_frontier_cannot_be_omitted_at_the_ordinary_agentd_run_entry) | test(=evidence_frontier::tests::recovery_frontier_rejects_wrong_domain_and_profile) | test(=evidence_frontier::tests::recovery_frontier_enforces_root_scope_epoch_revocation_and_generation_floor) | test(=evidence_frontier::tests::recovery_frontier_rejects_wrong_key_pin_and_noncanonical_signature) | test(=evidence_frontier::tests::recovery_frontier_root_rotation_retires_the_old_key) | test(=evidence_frontier::tests::recovery_frontier_refuses_valid_pq_v3_and_relabelled_v2_snapshots) | test(=evidence_frontier::tests::recovery_frontier_pq_rejects_invocation_only_database_rollbacks)",
+      "exact_selector_equals_catalog": true
+    },
+    {
+      "receipt": "recovery-product",
+      "step_name": "Run the four real Agentd evidence recovery process controls",
+      "order_index": 13,
+      "timeout_seconds": 1800,
+      "original_timeout_seconds": 1800,
+      "if": "${{ !cancelled() && steps.dependencies.outcome == 'success' }}",
+      "environment": {
+        "CARGO_NET_OFFLINE": "true"
+      },
+      "command": "python3 scripts/hepta_ci_exec.py --output \"$RUNNER_TEMP/pq-policy-renewal/recovery-product.json\" --minimum-tests 4 --timeout-seconds 1800 -- just test --locked -p codex-hepta-agentd --test kernel_evidence_product -E 'test(=real_agentd_composes_authenticated_evidence_writer_query_verifier_and_terminal_observer) | test(=signed_recovery_frontier_allows_exact_current_database) | test(=signed_recovery_frontier_rejects_valid_older_database_image) | test(=signed_recovery_frontier_rejects_effect_only_database_rollback)' --no-capture --retries 0 --test-threads=1",
+      "minimum_tests": 4,
+      "expected_test_count": 4,
+      "selector": "test(=real_agentd_composes_authenticated_evidence_writer_query_verifier_and_terminal_observer) | test(=signed_recovery_frontier_allows_exact_current_database) | test(=signed_recovery_frontier_rejects_valid_older_database_image) | test(=signed_recovery_frontier_rejects_effect_only_database_rollback)",
+      "exact_selector_equals_catalog": true
+    },
+    {
+      "receipt": "qualification-growth",
+      "step_name": "Run the original qualification bound and historical corruption refusal",
+      "order_index": 14,
+      "timeout_seconds": 600,
+      "original_timeout_seconds": null,
+      "if": "${{ !cancelled() && steps.dependencies.outcome == 'success' }}",
+      "environment": {
+        "CARGO_NET_OFFLINE": "true"
+      },
+      "command": "python3 scripts/hepta_ci_exec.py --output \"$RUNNER_TEMP/pq-policy-renewal/qualification-growth.json\" --minimum-tests 2 --timeout-seconds 600 -- just test --locked -p codex-hepta-evidence --lib -E 'test(=qualification_tests::claim_query_rejects_more_than_512_references) | test(=qualification_tests::ordinary_append_rejects_historical_projection_drift_without_consuming_replay)' --no-capture --retries 0 --test-threads=1",
+      "minimum_tests": 2,
+      "expected_test_count": 2,
+      "selector": "test(=qualification_tests::claim_query_rejects_more_than_512_references) | test(=qualification_tests::ordinary_append_rejects_historical_projection_drift_without_consuming_replay)",
+      "exact_selector_equals_catalog": true
+    },
+    {
+      "receipt": "effect-pq-owner",
+      "step_name": "Run the eleven ordinary PQ effect and recovery controls",
+      "order_index": 15,
+      "timeout_seconds": 600,
+      "original_timeout_seconds": null,
+      "if": "${{ !cancelled() && steps.dependencies.outcome == 'success' }}",
+      "environment": {
+        "CARGO_NET_OFFLINE": "true"
+      },
+      "command": "python3 scripts/hepta_ci_exec.py --output \"$RUNNER_TEMP/pq-policy-renewal/effect-pq-owner.json\" --minimum-tests 11 --timeout-seconds 600 -- just test --locked -p codex-hepta-agentd --lib -E 'test(automation_effect_host::pq::tests::)' --no-capture --retries 0 --test-threads=1",
+      "minimum_tests": 11,
+      "expected_test_count": 11,
+      "selector": "test(automation_effect_host::pq::tests::)",
+      "exact_selector_equals_catalog": null
+    },
+    {
+      "receipt": "effect-pq-contract",
+      "step_name": "Run the PQ provider contract signature control",
+      "order_index": 16,
+      "timeout_seconds": 600,
+      "original_timeout_seconds": null,
+      "if": "${{ !cancelled() && steps.dependencies.outcome == 'success' }}",
+      "environment": {
+        "CARGO_NET_OFFLINE": "true"
+      },
+      "command": "python3 scripts/hepta_ci_exec.py --output \"$RUNNER_TEMP/pq-policy-renewal/effect-pq-contract.json\" --minimum-tests 1 --timeout-seconds 600 -- just test --locked -p codex-model-provider --lib -E 'test(provider_effect::pq_tests::)' --no-capture --retries 0 --test-threads=1",
+      "minimum_tests": 1,
+      "expected_test_count": 1,
+      "selector": "test(provider_effect::pq_tests::)",
+      "exact_selector_equals_catalog": null
+    },
+    {
+      "receipt": "effect-pq-product",
+      "step_name": "Run the ordinary Agentd process through provider ACK loss and owned kill",
+      "order_index": 17,
+      "timeout_seconds": 1800,
+      "original_timeout_seconds": null,
+      "if": "${{ !cancelled() && steps.dependencies.outcome == 'success' }}",
+      "environment": {
+        "CARGO_NET_OFFLINE": "true",
+        "HEPTA_PQ_EFFECT_PROCESS_EVIDENCE_DIR": "${{ runner.temp }}/pq-policy-renewal/effect-pq-product-process",
+        "HEPTA_PQ_EFFECT_SOURCE_ROOT": "${{ github.workspace }}"
+      },
+      "command": "python3 scripts/hepta_ci_exec.py --output \"$RUNNER_TEMP/pq-policy-renewal/effect-pq-product.json\" --minimum-tests 1 --timeout-seconds 1800 -- just test --locked -p codex-hepta-agentd --test automation_effect_pq_product -E 'test(=pq_effect_survives_owned_agentd_kill_after_provider_fsync_without_resend)' --no-capture --retries 0 --test-threads=1",
+      "minimum_tests": 1,
+      "expected_test_count": 1,
+      "selector": "test(=pq_effect_survives_owned_agentd_kill_after_provider_fsync_without_resend)",
+      "exact_selector_equals_catalog": true
+    },
+    {
+      "receipt": "fix",
+      "step_name": "Run the original scoped linter and retain any source mutation as failure",
+      "order_index": 19,
+      "timeout_seconds": 1200,
+      "original_timeout_seconds": 1200,
+      "if": "${{ !cancelled() && steps.dependencies.outcome == 'success' }}",
+      "environment": {
+        "CARGO_NET_OFFLINE": "true"
+      },
+      "command": "python3 scripts/hepta_ci_exec.py --output \"$RUNNER_TEMP/pq-policy-renewal/fix.json\" --timeout-seconds 1200 -- just fix --locked -p codex-hepta-evidence -p codex-hepta-agentd -p codex-hepta-infer-worker-host -p codex-hepta-contracts -p codex-model-provider"
+    },
+    {
+      "receipt": "format",
+      "step_name": "Run the original formatter after tests and lint",
+      "order_index": 20,
+      "timeout_seconds": 300,
+      "original_timeout_seconds": 300,
+      "if": "${{ !cancelled() && steps.dependencies.outcome == 'success' }}",
+      "environment": {},
+      "command": "set -euo pipefail\nformat_base=\"$BASE_SHA\"\nif test -z \"$format_base\"; then\n  format_base=\"$(git rev-parse \"$SOURCE_SHA^\")\"\nfi\npython3 scripts/hepta_ci_exec.py --output \"$RUNNER_TEMP/pq-policy-renewal/format.json\" \\\n  --timeout-seconds 300 -- just fmt --base \"$format_base\"\n"
+    }
+  ],
+  "exact_name_and_no_selected_skip_guard_retained": true,
+  "guard_ast_except_expected_dictionary_unchanged": true,
+  "guard_python_sha256": "1ac4d01065a3fd5745b064d1124e3dd3e350d0bbf86af147edf8f8bbf2649ed6",
+  "guard_requires": [
+    "passed receipt and zero command exit",
+    "raw log SHA256 match",
+    "exact expected pass count and zero failures",
+    "exact case count",
+    "all cases successful; ignored and FAILED are refused",
+    "exact expected-name set; duplicates, omissions and extras refused"
+  ],
+  "source_names_verified": 69,
+  "case_source_bindings": {
+    "qualification-growth": [
+      {
+        "name": "qualification_tests::claim_query_rejects_more_than_512_references",
+        "source": "qualification_native:codex-rs/hepta-evidence/src/qualification_tests.rs",
+        "function_line": 1272
+      },
+      {
+        "name": "qualification_tests::ordinary_append_rejects_historical_projection_drift_without_consuming_replay",
+        "source": "qualification_native:codex-rs/hepta-evidence/src/qualification_tests.rs",
+        "function_line": 551
+      }
+    ],
+    "effect-pq-product": [
+      {
+        "name": "pq_effect_survives_owned_agentd_kill_after_provider_fsync_without_resend",
+        "source": "effect_formatted:codex-rs/hepta-agentd/tests/automation_effect_pq_product.rs",
+        "function_line": 182
+      }
+    ],
+    "effect-pq-owner": [
+      {
+        "name": "automation_effect_host::pq::tests::current_clock_frontier_and_pq_grant_are_mandatory_before_contact",
+        "source": "effect_formatted:codex-rs/hepta-agentd/src/automation_effect_host_pq_tests.rs",
+        "function_line": 120
+      },
+      {
+        "name": "automation_effect_host::pq::tests::generation_change_after_store_await_refuses_contact_and_keeps_consumed_nonce",
+        "source": "effect_formatted:codex-rs/hepta-agentd/src/automation_effect_host_pq_tests.rs",
+        "function_line": 279
+      },
+      {
+        "name": "automation_effect_host::pq::tests::historical_policy_does_not_connect_old_trust_services_or_follow_its_references",
+        "source": "effect_formatted:codex-rs/hepta-agentd/src/automation_effect_host_pq_tests.rs",
+        "function_line": 658
+      },
+      {
+        "name": "automation_effect_host::pq::tests::initial_feed_is_authenticated_before_any_local_authority_or_frontier_write",
+        "source": "effect_formatted:codex-rs/hepta-agentd/src/automation_effect_host_pq_tests.rs",
+        "function_line": 94
+      },
+      {
+        "name": "automation_effect_host::pq::tests::ordinary_dispatch_and_new_generation_recovery_keep_one_stable_operation",
+        "source": "effect_formatted:codex-rs/hepta-agentd/src/automation_effect_host_pq_tests.rs",
+        "function_line": 404
+      },
+      {
+        "name": "automation_effect_host::pq::tests::ordinary_loader_denies_classical_schema_and_contract_or_policy_substitution",
+        "source": "effect_formatted:codex-rs/hepta-agentd/src/automation_effect_host_pq_tests.rs",
+        "function_line": 52
+      },
+      {
+        "name": "automation_effect_host::pq::tests::pon_schema4_binds_native_binary_and_original_limits_without_running_a_node",
+        "source": "effect_formatted:codex-rs/hepta-agentd/src/automation_effect_host_pq_tests.rs",
+        "function_line": 765
+      },
+      {
+        "name": "automation_effect_host::pq::tests::reconcile_rechecks_generation_after_store_await_without_reclassifying_unknown",
+        "source": "effect_formatted:codex-rs/hepta-agentd/src/automation_effect_host_pq_tests.rs",
+        "function_line": 687
+      },
+      {
+        "name": "automation_effect_host::pq::tests::recovery_requires_current_signed_exact_historical_policy_and_same_provider",
+        "source": "effect_formatted:codex-rs/hepta-agentd/src/automation_effect_host_pq_tests.rs",
+        "function_line": 595
+      },
+      {
+        "name": "automation_effect_host::pq::tests::revoked_equal_number_drift_expired_feed_and_new_epoch_do_not_contact_provider",
+        "source": "effect_formatted:codex-rs/hepta-agentd/src/automation_effect_host_pq_tests.rs",
+        "function_line": 202
+      },
+      {
+        "name": "automation_effect_host::pq::tests::signed_revocation_after_store_await_obeys_active_effect_fence_and_never_sends",
+        "source": "effect_formatted:codex-rs/hepta-agentd/src/automation_effect_host_pq_tests.rs",
+        "function_line": 340
+      }
+    ],
+    "effect-pq-contract": [
+      {
+        "name": "provider_effect::pq_tests::pq_contract_binds_profile_root_epoch_and_complete_authority_scope",
+        "source": "effect_formatted:codex-rs/model-provider/src/provider_effect_pq_tests.rs",
+        "function_line": 9
+      }
+    ],
+    "dispatcher": [
+      {
+        "name": "authbus_dispatch::tests::abandoned_first_claim_without_admission_is_quarantined_after_lookup_missing",
+        "source": "base_fetch:codex-rs/hepta-agentd/src/authbus_dispatch_tests.rs",
+        "function_line": 322
+      },
+      {
+        "name": "authbus_dispatch::tests::checkpoint_sync::cancelled_checkpoint_sync_waiter_and_owner_release_exclusive_admission",
+        "source": "base_fetch:codex-rs/hepta-agentd/src/authbus_checkpoint_sync_tests.rs",
+        "function_line": 113
+      },
+      {
+        "name": "authbus_dispatch::tests::checkpoint_sync::concurrent_checkpoint_syncs_share_owner_lock_and_preserve_rollback_rejection",
+        "source": "base_fetch:codex-rs/hepta-agentd/src/authbus_checkpoint_sync_tests.rs",
+        "function_line": 12
+      },
+      {
+        "name": "authbus_dispatch::tests::lease_delay::trust_refresh_sqlite_wait_cannot_authorize_transport_with_an_expired_lease",
+        "source": "base_fetch:codex-rs/hepta-agentd/src/authbus_lease_delay_tests.rs",
+        "function_line": 4
+      },
+      {
+        "name": "authbus_dispatch::tests::lost_queue_reply_recovers_from_sqlite_using_lookup_only_and_exact_receipt",
+        "source": "base_fetch:codex-rs/hepta-agentd/src/authbus_dispatch_tests.rs",
+        "function_line": 270
+      },
+      {
+        "name": "authbus_dispatch::tests::matching_receipt_metadata_with_different_queue_input_never_acknowledges",
+        "source": "base_fetch:codex-rs/hepta-agentd/src/authbus_dispatch_tests.rs",
+        "function_line": 472
+      },
+      {
+        "name": "authbus_dispatch::tests::policy_rollback::pq_bound_policy_refuses_renewal_without_policy_snapshot",
+        "source": "base_fetch:codex-rs/hepta-agentd/src/authbus_policy_rollback_tests.rs",
+        "function_line": 7
+      },
+      {
+        "name": "authbus_dispatch::tests::policy_rollback::pq_owner_requires_explicit_nonzero_policy_revision_and_accepts_set_ordering",
+        "source": "base_fetch:codex-rs/hepta-agentd/src/authbus_policy_rollback_tests.rs",
+        "function_line": 310
+      },
+      {
+        "name": "authbus_dispatch::tests::policy_rollback::pq_policy_change_fences_stale_renewal_and_current_policy_restores_dispatch",
+        "source": "base_fetch:codex-rs/hepta-agentd/src/authbus_policy_rollback_tests.rs",
+        "function_line": 51
+      },
+      {
+        "name": "authbus_dispatch::tests::policy_rollback::pq_removed_thread_cannot_return_through_owner_file_rollback_after_reopen",
+        "source": "base_fetch:codex-rs/hepta-agentd/src/authbus_policy_rollback_tests.rs",
+        "function_line": 179
+      },
+      {
+        "name": "authbus_dispatch::tests::pq::pq_text_owner_resumes_after_revocation_rotation_and_rejected_config_rollback",
+        "source": "base_fetch:codex-rs/hepta-agentd/src/authbus_pq_dispatch_tests.rs",
+        "function_line": 178
+      },
+      {
+        "name": "authbus_dispatch::tests::pq::pq_text_producer_recovers_through_existing_dispatch_and_rejects_wire_and_config_downgrade",
+        "source": "base_fetch:codex-rs/hepta-agentd/src/authbus_pq_dispatch_tests.rs",
+        "function_line": 61
+      },
+      {
+        "name": "authbus_dispatch::tests::ready_generation_and_owner_private_trust_are_required_before_admission",
+        "source": "base_fetch:codex-rs/hepta-agentd/src/authbus_dispatch_tests.rs",
+        "function_line": 394
+      },
+      {
+        "name": "authbus_dispatch::tests::revocation_during_queue_request_prevents_success_ack",
+        "source": "base_fetch:codex-rs/hepta-agentd/src/authbus_dispatch_tests.rs",
+        "function_line": 371
+      }
+    ],
+    "product": [
+      {
+        "name": "pq_signed_text_crosses_real_queue_after_rejection_without_downgrade",
+        "source": "base_audit:codex-rs/hepta-agentd/tests/authbus_text_product.rs",
+        "function_line": 59
+      },
+      {
+        "name": "real_agentd_without_explicit_trust_rejects_signed_text",
+        "source": "base_audit:codex-rs/hepta-agentd/tests/authbus_text_product.rs",
+        "function_line": 206
+      },
+      {
+        "name": "signed_text_crosses_real_queue_once_and_current_trust_rejects_invalid_ingress",
+        "source": "base_audit:codex-rs/hepta-agentd/tests/authbus_text_product.rs",
+        "function_line": 53
+      }
+    ],
+    "recovery-owner": [
+      {
+        "name": "provider_effect_recovery_provenance_tests::recovery_provenance_preserves_dispatch_then_authoritative_status",
+        "source": "base_recovery:codex-rs/hepta-evidence/src/provider_effect_recovery_provenance_tests.rs",
+        "function_line": 107
+      },
+      {
+        "name": "provider_effect_recovery_provenance_tests::recovery_provenance_rejects_late_dispatch_after_status_without_uncertainty",
+        "source": "base_recovery:codex-rs/hepta-evidence/src/provider_effect_recovery_provenance_tests.rs",
+        "function_line": 43
+      },
+      {
+        "name": "recovery_effect_frontier_tests::recovery_snapshot_commits_ack_provenance_and_cross_table_order",
+        "source": "recovery_native:codex-rs/hepta-evidence/src/recovery_effect_frontier_tests.rs",
+        "function_line": 138
+      },
+      {
+        "name": "recovery_effect_frontier_tests::recovery_snapshot_commits_effect_history_after_the_first_page",
+        "source": "recovery_native:codex-rs/hepta-evidence/src/recovery_effect_frontier_tests.rs",
+        "function_line": 191
+      },
+      {
+        "name": "recovery_effect_frontier_tests::recovery_snapshot_commits_intent_unknown_and_original_operation_receipt",
+        "source": "recovery_native:codex-rs/hepta-evidence/src/recovery_effect_frontier_tests.rs",
+        "function_line": 28
+      },
+      {
+        "name": "recovery_effect_frontier_tests::recovery_snapshot_distinguishes_a_valid_effect_only_database_rollback",
+        "source": "recovery_native:codex-rs/hepta-evidence/src/recovery_effect_frontier_tests.rs",
+        "function_line": 85
+      },
+      {
+        "name": "recovery_effect_frontier_tests::recovery_snapshot_refuses_canonical_ack_bound_to_a_different_payload",
+        "source": "recovery_native:codex-rs/hepta-evidence/src/recovery_effect_frontier_tests.rs",
+        "function_line": 410
+      },
+      {
+        "name": "recovery_effect_frontier_tests::recovery_snapshot_refuses_changed_json_with_retained_record_digests",
+        "source": "recovery_native:codex-rs/hepta-evidence/src/recovery_effect_frontier_tests.rs",
+        "function_line": 220
+      },
+      {
+        "name": "recovery_effect_frontier_tests::recovery_snapshot_refuses_effect_projection_drift_with_retained_payloads",
+        "source": "recovery_native:codex-rs/hepta-evidence/src/recovery_effect_frontier_tests.rs",
+        "function_line": 300
+      },
+      {
+        "name": "recovery_effect_frontier_tests::recovery_snapshot_refuses_orphan_effect_observations",
+        "source": "recovery_native:codex-rs/hepta-evidence/src/recovery_effect_frontier_tests.rs",
+        "function_line": 468
+      },
+      {
+        "name": "recovery_effect_frontier_tests::recovery_snapshot_refuses_repeated_effect_sequence_after_schema_drift",
+        "source": "recovery_native:codex-rs/hepta-evidence/src/recovery_effect_frontier_tests.rs",
+        "function_line": 559
+      },
+      {
+        "name": "recovery_effect_frontier_tests::recovery_snapshot_refuses_repeated_effect_sequence_at_page_boundary",
+        "source": "recovery_native:codex-rs/hepta-evidence/src/recovery_effect_frontier_tests.rs",
+        "function_line": 592
+      },
+      {
+        "name": "recovery_invocation_frontier_tests::recovery_snapshot_binds_invocation_sequence_and_recording_time",
+        "source": "base_fetch:codex-rs/hepta-evidence/src/recovery_invocation_frontier_tests.rs",
+        "function_line": 399
+      },
+      {
+        "name": "recovery_invocation_frontier_tests::recovery_snapshot_commits_invocations_after_the_first_page",
+        "source": "base_fetch:codex-rs/hepta-evidence/src/recovery_invocation_frontier_tests.rs",
+        "function_line": 97
+      },
+      {
+        "name": "recovery_invocation_frontier_tests::recovery_snapshot_commits_pending_invocations_and_terminal_states",
+        "source": "base_fetch:codex-rs/hepta-evidence/src/recovery_invocation_frontier_tests.rs",
+        "function_line": 49
+      },
+      {
+        "name": "recovery_invocation_frontier_tests::recovery_snapshot_refuses_duplicate_terminal_hidden_at_page_boundary",
+        "source": "base_fetch:codex-rs/hepta-evidence/src/recovery_invocation_frontier_tests.rs",
+        "function_line": 113
+      },
+      {
+        "name": "recovery_invocation_frontier_tests::recovery_snapshot_refuses_invocation_column_type_corruption_without_panicking",
+        "source": "base_fetch:codex-rs/hepta-evidence/src/recovery_invocation_frontier_tests.rs",
+        "function_line": 343
+      },
+      {
+        "name": "recovery_invocation_frontier_tests::recovery_snapshot_requires_the_terminals_authoritative_intent",
+        "source": "base_fetch:codex-rs/hepta-evidence/src/recovery_invocation_frontier_tests.rs",
+        "function_line": 306
+      },
+      {
+        "name": "recovery_invocation_frontier_tests::recovery_snapshot_revalidates_invocation_payloads_and_projected_columns",
+        "source": "base_fetch:codex-rs/hepta-evidence/src/recovery_invocation_frontier_tests.rs",
+        "function_line": 215
+      },
+      {
+        "name": "recovery_invocation_schema_tests::recovery_invocation_schema_accepts_current_migration_keys",
+        "source": "base_fetch:codex-rs/hepta-evidence/src/recovery_invocation_schema_tests.rs",
+        "function_line": 36
+      },
+      {
+        "name": "recovery_invocation_schema_tests::recovery_invocation_schema_refuses_non_rowid_or_composite_sequences",
+        "source": "base_fetch:codex-rs/hepta-evidence/src/recovery_invocation_schema_tests.rs",
+        "function_line": 49
+      },
+      {
+        "name": "recovery_invocation_schema_tests::recovery_invocation_schema_requires_exact_unconditional_column_uniqueness",
+        "source": "base_fetch:codex-rs/hepta-evidence/src/recovery_invocation_schema_tests.rs",
+        "function_line": 98
+      }
+    ],
+    "recovery-signed": [
+      {
+        "name": "evidence_frontier::tests::recovery_frontier_authenticates_both_effect_fields",
+        "source": "base_audit:codex-rs/hepta-agentd/src/evidence_frontier_tests.rs",
+        "function_line": 158
+      },
+      {
+        "name": "evidence_frontier::tests::recovery_frontier_cannot_be_omitted_at_the_ordinary_agentd_run_entry",
+        "source": "base_audit:codex-rs/hepta-agentd/src/evidence_frontier_tests.rs",
+        "function_line": 449
+      },
+      {
+        "name": "evidence_frontier::tests::recovery_frontier_enforces_root_scope_epoch_revocation_and_generation_floor",
+        "source": "base_audit:codex-rs/hepta-agentd/src/evidence_frontier_tests.rs",
+        "function_line": 542
+      },
+      {
+        "name": "evidence_frontier::tests::recovery_frontier_pq_rejects_invocation_only_database_rollbacks",
+        "source": "base_audit:codex-rs/hepta-agentd/src/evidence_frontier_tests.rs",
+        "function_line": 286
+      },
+      {
+        "name": "evidence_frontier::tests::recovery_frontier_pq_survives_store_close_and_reopen",
+        "source": "base_audit:codex-rs/hepta-agentd/src/evidence_frontier_tests.rs",
+        "function_line": 374
+      },
+      {
+        "name": "evidence_frontier::tests::recovery_frontier_read_only_preflight_never_binds_or_changes_the_image",
+        "source": "base_audit:codex-rs/hepta-agentd/src/evidence_frontier_tests.rs",
+        "function_line": 398
+      },
+      {
+        "name": "evidence_frontier::tests::recovery_frontier_refuses_valid_classical_v1_and_v2_signatures",
+        "source": "base_audit:codex-rs/hepta-agentd/src/evidence_frontier_tests.rs",
+        "function_line": 117
+      },
+      {
+        "name": "evidence_frontier::tests::recovery_frontier_refuses_valid_pq_v3_and_relabelled_v2_snapshots",
+        "source": "base_audit:codex-rs/hepta-agentd/src/evidence_frontier_tests.rs",
+        "function_line": 242
+      },
+      {
+        "name": "evidence_frontier::tests::recovery_frontier_rejects_wrong_domain_and_profile",
+        "source": "base_audit:codex-rs/hepta-agentd/src/evidence_frontier_tests.rs",
+        "function_line": 513
+      },
+      {
+        "name": "evidence_frontier::tests::recovery_frontier_rejects_wrong_key_pin_and_noncanonical_signature",
+        "source": "base_audit:codex-rs/hepta-agentd/src/evidence_frontier_tests.rs",
+        "function_line": 594
+      },
+      {
+        "name": "evidence_frontier::tests::recovery_frontier_root_rotation_retires_the_old_key",
+        "source": "base_audit:codex-rs/hepta-agentd/src/evidence_frontier_tests.rs",
+        "function_line": 629
+      }
+    ],
+    "recovery-product": [
+      {
+        "name": "real_agentd_composes_authenticated_evidence_writer_query_verifier_and_terminal_observer",
+        "source": "base_audit:codex-rs/hepta-agentd/tests/kernel_evidence_product.rs",
+        "function_line": 60
+      },
+      {
+        "name": "signed_recovery_frontier_allows_exact_current_database",
+        "source": "base_audit:codex-rs/hepta-agentd/tests/kernel_evidence_product.rs",
+        "function_line": 530
+      },
+      {
+        "name": "signed_recovery_frontier_rejects_effect_only_database_rollback",
+        "source": "base_audit:codex-rs/hepta-agentd/tests/kernel_evidence_product.rs",
+        "function_line": 610
+      },
+      {
+        "name": "signed_recovery_frontier_rejects_valid_older_database_image",
+        "source": "base_audit:codex-rs/hepta-agentd/tests/kernel_evidence_product.rs",
+        "function_line": 605
+      }
+    ]
+  },
+  "source_inventory": [
+    {
+      "source_kind": "qualification_native",
+      "repository_path": "codex-rs/hepta-evidence/src/qualification_tests.rs",
+      "local_path": "/workspace/scratch/93bfcfe29fc8/pq_recovery/qualification_perf/hepta/codex-rs/hepta-evidence/src/qualification_tests.rs",
+      "sha256": "f6c5bcde1d1ad19312a973a97339129feb988de10bb7db5a8731eb2fc10c8de7",
+      "git_blob_sha1": "30676fcfbbda6f8283e62b82b26aeb479da9307f",
+      "bytes": 48038,
+      "source_commit": "4dce06a9945fc54482f546c9dfb7cbb7a4716ccc"
+    },
+    {
+      "source_kind": "effect_formatted",
+      "repository_path": "codex-rs/hepta-agentd/tests/automation_effect_pq_product.rs",
+      "local_path": "/workspace/scratch/93bfcfe29fc8/model_storage/pq_effect_migration/native/reviewed-6550/candidate/codex-rs/hepta-agentd/tests/automation_effect_pq_product.rs",
+      "sha256": "36d2f87ec7e59b8fd273c351eb16ffed3d0fdd67b42e6729dc2aab31a8f87999",
+      "git_blob_sha1": "7e356863ee1be81894bccdea74dfbfceab4e1f62",
+      "bytes": 17206,
+      "source_commit": "6550b582a92cae97dd74ef9098176f2f2e6d6231",
+      "source_tree": "087181272a6fb776a35610a3d7f37c26d1724727",
+      "scope": "Actual formatted 6550 exported bytes; preparation only, no native test or final H1 qualification credit"
+    },
+    {
+      "source_kind": "effect_formatted",
+      "repository_path": "codex-rs/hepta-agentd/src/automation_effect_host_pq_tests.rs",
+      "local_path": "/workspace/scratch/93bfcfe29fc8/model_storage/pq_effect_migration/native/reviewed-6550/candidate/codex-rs/hepta-agentd/src/automation_effect_host_pq_tests.rs",
+      "sha256": "7645fc19a734b2ffbbc5ecdb7001069e29f41e9aef3249fc0a5f383ed0e99a78",
+      "git_blob_sha1": "a90611a21faa06a589b7c9cf7901d10616c488bf",
+      "bytes": 30337,
+      "source_commit": "6550b582a92cae97dd74ef9098176f2f2e6d6231",
+      "source_tree": "087181272a6fb776a35610a3d7f37c26d1724727",
+      "scope": "Actual formatted 6550 exported bytes; preparation only, no native test or final H1 qualification credit"
+    },
+    {
+      "source_kind": "effect_formatted",
+      "repository_path": "codex-rs/model-provider/src/provider_effect_pq_tests.rs",
+      "local_path": "/workspace/scratch/93bfcfe29fc8/model_storage/pq_effect_migration/native/reviewed-6550/candidate/codex-rs/model-provider/src/provider_effect_pq_tests.rs",
+      "sha256": "3117df369ce2339023a57d132fa78a87a3f2cad4480f3250547ed95aac39b548",
+      "git_blob_sha1": "021a1d1d57327fae905fa2699e09c3f0c4ce0fa2",
+      "bytes": 4104,
+      "source_commit": "6550b582a92cae97dd74ef9098176f2f2e6d6231",
+      "source_tree": "087181272a6fb776a35610a3d7f37c26d1724727",
+      "scope": "Actual formatted 6550 exported bytes; preparation only, no native test or final H1 qualification credit"
+    },
+    {
+      "source_kind": "base_fetch",
+      "repository_path": "codex-rs/hepta-agentd/src/authbus_dispatch_tests.rs",
+      "local_path": "/workspace/scratch/93bfcfe29fc8/pq_recovery/ci-review/base-source/codex-rs/hepta-agentd/src/authbus_dispatch_tests.rs",
+      "sha256": "1a72763311cfa8e03e6c2992c75c413cab4c3ed0519376d856010cc4b6f18eed",
+      "git_blob_sha1": "f880c98b1261d8d5d8c9a1d94602fbc4cb0e982e",
+      "bytes": 17730,
+      "source_commit": "1556a4df6e279055fd8196f81a4ca2fe0f19384a"
+    },
+    {
+      "source_kind": "base_fetch",
+      "repository_path": "codex-rs/hepta-agentd/src/authbus_checkpoint_sync_tests.rs",
+      "local_path": "/workspace/scratch/93bfcfe29fc8/pq_recovery/ci-review/base-source/codex-rs/hepta-agentd/src/authbus_checkpoint_sync_tests.rs",
+      "sha256": "578b0bcd17048e822d555ef79ad5ec33fb276f2681fb7b82c624b80f5d6acd9c",
+      "git_blob_sha1": "0ea056f429138579dcd4c7c39b2525f22a08b51d",
+      "bytes": 7306,
+      "source_commit": "1556a4df6e279055fd8196f81a4ca2fe0f19384a"
+    },
+    {
+      "source_kind": "base_fetch",
+      "repository_path": "codex-rs/hepta-agentd/src/authbus_lease_delay_tests.rs",
+      "local_path": "/workspace/scratch/93bfcfe29fc8/pq_recovery/ci-review/base-source/codex-rs/hepta-agentd/src/authbus_lease_delay_tests.rs",
+      "sha256": "de863b0bbddacce54f764bfd1acbc5789dce94b8d9d39e701ada8d769da2eba4",
+      "git_blob_sha1": "2c342acfcb754a8be7128a1f3ea14f1dbfa19bf8",
+      "bytes": 2364,
+      "source_commit": "1556a4df6e279055fd8196f81a4ca2fe0f19384a"
+    },
+    {
+      "source_kind": "base_fetch",
+      "repository_path": "codex-rs/hepta-agentd/src/authbus_policy_rollback_tests.rs",
+      "local_path": "/workspace/scratch/93bfcfe29fc8/pq_recovery/ci-review/base-source/codex-rs/hepta-agentd/src/authbus_policy_rollback_tests.rs",
+      "sha256": "46d49bb9e0ebf7e602b52123d13f7e646af8c8114da2505922c538cb7ae8b761",
+      "git_blob_sha1": "ee0fc17125fa7c74f82ff500330d2bdcea9b6485",
+      "bytes": 13058,
+      "source_commit": "1556a4df6e279055fd8196f81a4ca2fe0f19384a"
+    },
+    {
+      "source_kind": "base_fetch",
+      "repository_path": "codex-rs/hepta-agentd/src/authbus_pq_dispatch_tests.rs",
+      "local_path": "/workspace/scratch/93bfcfe29fc8/pq_recovery/ci-review/base-source/codex-rs/hepta-agentd/src/authbus_pq_dispatch_tests.rs",
+      "sha256": "680d7331e69dfeb6b01918cd386959496c248226abe0fbbd3e8aff87eaf6864a",
+      "git_blob_sha1": "7109c2b6442a26a19a28bea558cec422274339d9",
+      "bytes": 9857,
+      "source_commit": "1556a4df6e279055fd8196f81a4ca2fe0f19384a"
+    },
+    {
+      "source_kind": "base_audit",
+      "repository_path": "codex-rs/hepta-agentd/tests/authbus_text_product.rs",
+      "local_path": "/workspace/scratch/93bfcfe29fc8/model_storage/pq-audit-source/codex-rs/hepta-agentd/tests/authbus_text_product.rs",
+      "sha256": "38a4791af499795e304108407c96795629886959489172064bdbba6164462d34",
+      "git_blob_sha1": "5ed7f4e57f9fbff3317b20c2d557b76a2465d40a",
+      "bytes": 15548,
+      "source_commit": "1556a4df6e279055fd8196f81a4ca2fe0f19384a"
+    },
+    {
+      "source_kind": "base_recovery",
+      "repository_path": "codex-rs/hepta-evidence/src/provider_effect_recovery_provenance_tests.rs",
+      "local_path": "/workspace/scratch/93bfcfe29fc8/pq_recovery/hepta/codex-rs/hepta-evidence/src/provider_effect_recovery_provenance_tests.rs",
+      "sha256": "cce524c13697ca265cda23dade36401aaf74f84681c7c5859f22e6a34642223e",
+      "git_blob_sha1": "d4c3b801015e4fcd6ee8b089ca04aaa80cec3ce4",
+      "bytes": 20051,
+      "source_commit": "1556a4df6e279055fd8196f81a4ca2fe0f19384a"
+    },
+    {
+      "source_kind": "recovery_native",
+      "repository_path": "codex-rs/hepta-evidence/src/recovery_effect_frontier_tests.rs",
+      "local_path": "/workspace/scratch/93bfcfe29fc8/pq_recovery/native/a877-source/codex-rs/hepta-evidence/src/recovery_effect_frontier_tests.rs",
+      "sha256": "c1cbd465859f39c43ec5f17a7ff12d043049d572e222eeb263ddd67f46dfec66",
+      "git_blob_sha1": "5e53c274e1bb081604915380494ef0461e302f78",
+      "bytes": 23469,
+      "source_commit": "a877333eff1577179fce8b1ceb6edf4322440e03"
+    },
+    {
+      "source_kind": "base_fetch",
+      "repository_path": "codex-rs/hepta-evidence/src/recovery_invocation_frontier_tests.rs",
+      "local_path": "/workspace/scratch/93bfcfe29fc8/pq_recovery/ci-review/base-source/codex-rs/hepta-evidence/src/recovery_invocation_frontier_tests.rs",
+      "sha256": "64d163ec3b9e4c5c878823fc99b8278b59eead8f9adc45a8042c550cd3359a4a",
+      "git_blob_sha1": "349abfabfe3988901235479b64c94a53ff1a21ec",
+      "bytes": 16666,
+      "source_commit": "1556a4df6e279055fd8196f81a4ca2fe0f19384a"
+    },
+    {
+      "source_kind": "base_fetch",
+      "repository_path": "codex-rs/hepta-evidence/src/recovery_invocation_schema_tests.rs",
+      "local_path": "/workspace/scratch/93bfcfe29fc8/pq_recovery/ci-review/base-source/codex-rs/hepta-evidence/src/recovery_invocation_schema_tests.rs",
+      "sha256": "1c5d4d6bcf9ccd8157790077772b441a18909876835b1e6563c5ae9d8b837d09",
+      "git_blob_sha1": "097327b809e2777b211d0fc0fef0abc54f4647a6",
+      "bytes": 7740,
+      "source_commit": "1556a4df6e279055fd8196f81a4ca2fe0f19384a"
+    },
+    {
+      "source_kind": "base_audit",
+      "repository_path": "codex-rs/hepta-agentd/src/evidence_frontier_tests.rs",
+      "local_path": "/workspace/scratch/93bfcfe29fc8/model_storage/pq-audit-source/codex-rs/hepta-agentd/src/evidence_frontier_tests.rs",
+      "sha256": "39cbf68639ad7bb124c35576f4ce79b4489613ef070ddabeff2531764092cc01",
+      "git_blob_sha1": "2eb63fb2ed7fc84acc9092764342e78092196087",
+      "bytes": 26145,
+      "source_commit": "1556a4df6e279055fd8196f81a4ca2fe0f19384a"
+    },
+    {
+      "source_kind": "base_audit",
+      "repository_path": "codex-rs/hepta-agentd/tests/kernel_evidence_product.rs",
+      "local_path": "/workspace/scratch/93bfcfe29fc8/model_storage/pq-audit-source/codex-rs/hepta-agentd/tests/kernel_evidence_product.rs",
+      "sha256": "6856dd6d72fdd83d4c0656abf072a917d557f020248ca58511efcc8dfa2362e8",
+      "git_blob_sha1": "030e98c450a29570d13e2dae07d1a243baadb794",
+      "bytes": 33165,
+      "source_commit": "1556a4df6e279055fd8196f81a4ca2fe0f19384a"
+    }
+  ],
+  "source_catalog_limit": "Definitions and module routes were reviewed at fixed base/component bytes, including the actual formatted 6550 export. The final combined checkout must still compile and execute these tests.",
+  "formatted_effect_source": {
+    "commit": "6550b582a92cae97dd74ef9098176f2f2e6d6231",
+    "tree": "087181272a6fb776a35610a3d7f37c26d1724727",
+    "manifest": "/workspace/scratch/93bfcfe29fc8/model_storage/pq_effect_migration/native/reviewed-6550/manifest.json",
+    "manifest_sha256": "636484871d292aa75c48b1acc47a9c87672bac92f8e234a5360fd88c7f199605",
+    "all_18_exported_paths_verified": true,
+    "native_qualification_credit": false
+  },
+  "growth_actual_raw_parser_check": {
+    "receipt": "/workspace/scratch/93bfcfe29fc8/pq_recovery/qualification_perf/native/attempt-1/two-controls.json",
+    "receipt_sha256": "b419bc79650eb30997e04b8273399fbda65a94bdf2d7d163ff6ea34dd6a1fda8",
+    "raw_log": "/workspace/scratch/93bfcfe29fc8/pq_recovery/qualification_perf/native/attempt-1/two-controls.json.d82a7d3114cf426fa25a551ae954a5e7.log",
+    "raw_log_sha256": "a0a20dd922f79425c6abeac43341521a4ca5bf991484f36b59342a4981aee9d9",
+    "source_identity": {
+      "commit": "4dce06a9945fc54482f546c9dfb7cbb7a4716ccc",
+      "dirty": false,
+      "parents": [
+        "a877333eff1577179fce8b1ceb6edf4322440e03"
+      ],
+      "tree": "ace984bea899295f7e8fa6666fc78cfd49ad2a92"
+    },
+    "cases": [
+      [
+        "qualification_tests::claim_query_rejects_more_than_512_references",
+        "ok"
+      ],
+      [
+        "qualification_tests::ordinary_append_rejects_historical_projection_drift_without_consuming_replay",
+        "ok"
+      ]
+    ],
+    "matches_current_growth_catalog": true,
+    "scope": "Reuses the recorded 4dce two-control run only to verify the unchanged guard regex; not a native execution of this workflow or final H1",
+    "historical_run_elf_capture_complete": false
+  },
+  "product_bindings": {
+    "source_root_environment": "${{ github.workspace }}",
+    "source_root_key_matches_helper": true,
+    "helper_checks_tested_sha_against_commit": true,
+    "helper_sha256": "bc9c66c5135f11ed70c5ad4d635b98d224ed792c881948176c4030345d6efb39",
+    "process_evidence_directory": "${{ runner.temp }}/pq-policy-renewal/effect-pq-product-process",
+    "artifact_upload_parent": "${{ runner.temp }}/pq-policy-renewal/",
+    "artifact_upload_always": true,
+    "process_evidence_is_outside_source_tree": true,
+    "linux_product_matches_both_linux_runners": true
+  },
+  "nextest_profile_delta": {
+    "base_commit": "1556a4df6e279055fd8196f81a4ca2fe0f19384a",
+    "base_git_blob_sha1": "26576a3b8ab4575db262c4614227a85eb3068b6c",
+    "base_sha256": "3ec2f9a8ed35c5582fe5d59b4ad427e5e87249c5e7d84cf149dd9874c1f9d222",
+    "formatted_6550_sha256": "65f8b298b60f5f4d480cdd45d4de62a37c5b52d13a2cc7b77eecba3062eaa803",
+    "only_change": "Add automation_effect_pq_product to the existing hepta_process_integration serial test group",
+    "all_original_profile_timeout_retry_thread_and_group_settings_retained": true,
+    "new_timeout_or_retry_override": false
+  },
+  "qualification_4dce_delivery": {
+    "commit": "4dce06a9945fc54482f546c9dfb7cbb7a4716ccc",
+    "tree": "ace984bea899295f7e8fa6666fc78cfd49ad2a92",
+    "patch": "/workspace/scratch/93bfcfe29fc8/pq_recovery/qualification_perf/qualification-unused-set-digest.patch",
+    "patch_sha256": "903269d4d4741e051437dcc6eaeaf5e6a455a4a88fab10f4b0606e415ca8e0b7",
+    "source_sha256": {
+      "codex-rs/hepta-evidence/src/qualification.rs": "5d74be55f5bb02077e655ff9d833ae82531cdeda00583e870454da1c9186efff",
+      "codex-rs/hepta-evidence/src/qualification_tests.rs": "f6c5bcde1d1ad19312a973a97339129feb988de10bb7db5a8731eb2fc10c8de7"
+    },
+    "actual_formatted_source_files_present": true,
+    "patch_applies_to_exact_base_bytes_and_reproduces_formatted_files": true,
+    "full_evidence_fix_and_final_format_deferred_to_h1": true
+  },
+  "issues": [],
+  "remaining_qualification": [
+    "Compile and execute all 69 exact controls on the final combined candidate",
+    "Run full evidence/fix/fmt on the final candidate",
+    "Bind executed test and ordinary process binaries using the reviewed collector",
+    "Retain original 90-minute job and per-command/per-test budgets; this static audit provides no timing guarantee"
+  ],
+  "superseded_66_case_audit": {
+    "path": "/workspace/scratch/93bfcfe29fc8/hepta-ci-integration/workflow-wiring-audit-66-history.json",
+    "sha256": "97c1e5234bf11a8b1df8f9e35c069ebde2df44427d8e1d99b0c724ccffa032a1"
+  }
+}

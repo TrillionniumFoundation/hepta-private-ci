@@ -1,0 +1,34 @@
+{
+  "base_sha": "1556a4df6e279055fd8196f81a4ca2fe0f19384a",
+  "before": {
+    "commit": "1556a4df6e279055fd8196f81a4ca2fe0f19384a",
+    "dirty": true,
+    "parents": [
+      "96af771bda36fd4bc12125d4eded5322ae8a7cbe",
+      "796b622634ae46d2d344024dbc713f4993539e60"
+    ],
+    "tree": "9675a9e62a1fbbdaed3248eb239bb2036d79feba"
+  },
+  "command": [
+    "cargo",
+    "fetch",
+    "--locked",
+    "--manifest-path",
+    "codex-rs/Cargo.toml"
+  ],
+  "command_exit_code": null,
+  "elapsed_seconds": 0.02112955995835364,
+  "error": "checkout does not match the clean tested identity",
+  "exit_code": 2,
+  "finished_at": "2026-11-05T13:35:41.513614+00:00",
+  "job": null,
+  "lane": "source-head",
+  "run_attempt": null,
+  "run_id": null,
+  "schema_version": 1,
+  "source_sha": "1556a4df6e279055fd8196f81a4ca2fe0f19384a",
+  "started_at": "2026-11-05T13:35:41.484870+00:00",
+  "status": "rejected",
+  "tested_sha": "1556a4df6e279055fd8196f81a4ca2fe0f19384a",
+  "working_directory": "/home/qian-qi/work/hepta-pq-frontier-20261105-93bfcf/source"
+}

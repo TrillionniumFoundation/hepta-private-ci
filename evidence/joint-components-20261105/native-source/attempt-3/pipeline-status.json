@@ -1,0 +1,178 @@
+{
+  "assertion_red_proven": true,
+  "base_commit": "1556a4df6e279055fd8196f81a4ca2fe0f19384a",
+  "base_tree": "9675a9e62a1fbbdaed3248eb239bb2036d79feba",
+  "candidate": "/home/qian-qi/work/hepta-pq-frontier-20261105-93bfcf/source",
+  "current_command": [
+    "/usr/bin/python3",
+    "scripts/hepta_ci_exec.py",
+    "--output",
+    "/home/qian-qi/work/hepta-pq-frontier-20261105-93bfcf/evidence/attempt-3/full-evidence-library.json",
+    "--minimum-tests",
+    "22",
+    "--timeout-seconds",
+    "600",
+    "--",
+    "just",
+    "test",
+    "--locked",
+    "-p",
+    "codex-hepta-evidence",
+    "--lib",
+    "--no-capture",
+    "--retries",
+    "0",
+    "--test-threads=1"
+  ],
+  "current_commit": "a877333eff1577179fce8b1ceb6edf4322440e03",
+  "error": "RuntimeError: full-evidence-library did not pass its original clean-source wrapper",
+  "finished_unix": 1793889940.776861,
+  "gates": {
+    "apply-implementation": {
+      "command": [
+        "git",
+        "apply",
+        "/home/qian-qi/work/hepta-pq-frontier-20261105-93bfcf/evidence/attempt-3/implementation_patch.patch"
+      ],
+      "exit_code": 0,
+      "kind": "preparation",
+      "log": "apply-implementation.log",
+      "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "commit-green": {
+      "command": [
+        "git",
+        "commit",
+        "--only",
+        "codex-rs/hepta-evidence/src/recovery_effect_frontier.rs",
+        "codex-rs/hepta-evidence/src/provider_effect_store.rs",
+        "codex-rs/hepta-evidence/src/recovery_effect_frontier_tests.rs",
+        "-m",
+        "fix(evidence): validate effect recovery projections and complete sequence pages"
+      ],
+      "exit_code": 0,
+      "kind": "preparation",
+      "log": "commit-green.log",
+      "log_sha256": "6eb3ed1992738e0ddfccf90dd685be77f4f69c75f70f777f0e31c7b3c94a0284"
+    },
+    "commit-red": {
+      "command": [
+        "git",
+        "commit",
+        "--only",
+        "codex-rs/hepta-evidence/src/recovery_effect_frontier_tests.rs",
+        "-m",
+        "test(evidence): replace sequence fixture schema atomically"
+      ],
+      "exit_code": 0,
+      "kind": "preparation",
+      "log": "commit-red.log",
+      "log_sha256": "15759a7f5c3e76b12f978e4377ecb195dfe75ef887471167eb856f053607582b"
+    },
+    "dependencies": {
+      "command_exit_code": 0,
+      "failed": 0,
+      "log_file": "dependencies.json.bb84c7a81e8949e9afac85039b22f3e1.log",
+      "passed": 0,
+      "receipt": "dependencies.json",
+      "status": "passed",
+      "timed_out": false,
+      "wrapper_exit": 0
+    },
+    "format-green-preparation": {
+      "command": [
+        "just",
+        "fmt",
+        "--base",
+        "1556a4df6e279055fd8196f81a4ca2fe0f19384a"
+      ],
+      "exit_code": 0,
+      "kind": "preparation",
+      "log": "format-green-preparation.log",
+      "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "format-red-preparation": {
+      "command": [
+        "just",
+        "fmt",
+        "--base",
+        "1556a4df6e279055fd8196f81a4ca2fe0f19384a"
+      ],
+      "exit_code": 0,
+      "kind": "preparation",
+      "log": "format-red-preparation.log",
+      "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "full-evidence-library": {
+      "command_exit_code": 100,
+      "failed": 1,
+      "log_file": "full-evidence-library.json.b2590fae562c47229c23b0ab9a8a6e62.log",
+      "passed": 159,
+      "receipt": "full-evidence-library.json",
+      "status": "failed",
+      "timed_out": false,
+      "wrapper_exit": 100
+    },
+    "green-five-controls": {
+      "command_exit_code": 0,
+      "failed": 0,
+      "log_file": "green-five-controls.json.664606a92d4b4a88950b0c8813f1274f.log",
+      "passed": 5,
+      "receipt": "green-five-controls.json",
+      "status": "passed",
+      "timed_out": false,
+      "wrapper_exit": 0
+    },
+    "original-seventeen-owner-controls": {
+      "command_exit_code": 0,
+      "failed": 0,
+      "log_file": "original-seventeen-owner-controls.json.2109aade0ab6489ab846a6e47198a967.log",
+      "passed": 17,
+      "receipt": "original-seventeen-owner-controls.json",
+      "status": "passed",
+      "timed_out": false,
+      "wrapper_exit": 0
+    },
+    "red-five-controls": {
+      "command_exit_code": 100,
+      "failed": 5,
+      "log_file": "red-five-controls.json.6a0d506f55fd4b188fa3dff1701a0b98.log",
+      "passed": 0,
+      "receipt": "red-five-controls.json",
+      "status": "failed",
+      "timed_out": false,
+      "wrapper_exit": 100
+    },
+    "replace-test-fixture": {
+      "change": "atomic schema replacement within one pooled transaction",
+      "kind": "preparation",
+      "previous_red_commit": "cf665344d5c4af16f03eb46e3eeb0c47ef028d6a",
+      "source_sha256": "68f676ee654e4e6506cbe9d8fdc863b1894bdc98eb68d93c95aeb114e0c31cec"
+    }
+  },
+  "green_commit": "a877333eff1577179fce8b1ceb6edf4322440e03",
+  "green_tree": "40271e58d09387864fb4865cc02ec5cad0b5707b",
+  "initial_lock_sha256": "0f458d7746a0ca0b95bedc5404fd3347c1b0a7508f1c387f3b1f3f71ced08663",
+  "patch_payload_sha256": {
+    "implementation_patch": "5a3c74af20ab497388cca8233d81253b8762d12c99b2c5294edeb3b61d226591",
+    "test_source": "68f676ee654e4e6506cbe9d8fdc863b1894bdc98eb68d93c95aeb114e0c31cec"
+  },
+  "phase": "stopped",
+  "previous_attempt": "attempt-2",
+  "previous_red_commit": "cf665344d5c4af16f03eb46e3eeb0c47ef028d6a",
+  "previous_red_tree": "9037266d1ba9b7262fd19a81c2f86b56a8e25361",
+  "red_binary_artifacts": [
+    {
+      "bytes": 53254736,
+      "compiled_artifact_path": "/home/qian-qi/work/hepta-pq-frontier-20261105-93bfcf/target/debug/deps/codex_hepta_evidence-0f5076227f347d3a",
+      "retained_copy": "/home/qian-qi/work/hepta-pq-frontier-20261105-93bfcf/evidence/attempt-3/binaries-red/codex_hepta_evidence-0f5076227f347d3a",
+      "sha256": "2d59459e5a0efe530f146fa4c918b40b937d462e9427a5885dec204af96b1d63"
+    }
+  ],
+  "red_commit": "13c8a987927f4d6bf3db1e57dc6e7bb692800b74",
+  "red_tree": "4c2351a23a476e826ec879b125b774c77c857f55",
+  "schema_version": 1,
+  "started_unix": 1793889516.3822415,
+  "status": "failed",
+  "target": "codex-rs/hepta-evidence/src/recovery_effect_frontier_tests.rs"
+}

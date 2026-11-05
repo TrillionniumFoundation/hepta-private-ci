@@ -1,0 +1,376 @@
+{
+  "pr": {
+    "url": "https://github.com/TrillionniumFoundation/Trillionnium-Chain/pull/720",
+    "number": 720,
+    "state": "open",
+    "merged": false,
+    "mergeable": true,
+    "draft": true,
+    "body": "## Fixed candidate for original-source qualification\n\nC2 is `03521b2f32346a49cccde8ff72e8c7b886b31222`, tree `e0235248ecae2a67717c8b9ff2e3f25774ba63d7`, directly on C1 `9ecdbebc897d35f07b998d084b015db8474be84b`.\n\nThe moving development PR #688 advanced while C1 was pending, and C1 baseline run [42036027611](https://github.com/TrillionniumFoundation/Trillionnium-Chain/actions/runs/42036027611) was cancelled. This separate draft carries the fixed candidate so later development updates do not replace its pending run. The development branch and its concurrent changes are preserved.\n\n## Why C2 is needed\n\nC1 changed five already registered CI/runtime files but left their required source pins stale. The original refusal and all five mismatches are retained in [the source-pin repair evidence](https://github.com/TrillionniumFoundation/Trillionnium-Chain/tree/03521b2f32346a49cccde8ff72e8c7b886b31222/evidence/ci-joint-components-pins-20261105). C2 changes exactly those five pin values and adds the associated evidence. The pin values were independently checked against the actual C1 Git blobs. Runtime code, validation rules and resource budgets are unchanged by this repair.\n\nThe joint components inherited from C1 repair the supervisor's spawn-before-adoption cancellation window and the four-kernel W1 rejection-cost report, while retaining the ordinary service gate and its original limits. The unpublished Hepta V12 source manifest is being retargeted to C2 before that runtime candidate is published.\n\n## Qualification boundaries\n\nAll eight joint gates remain **HOLD**. This PR does not activate production or authorize a merge.\n\n- C1's 59 supervisor/framing controls, 92 rejection-report controls and CI wiring checks are component evidence, not a C2 native or public-service pass.\n- C2 must pass its own full source guard, locked native build and original hosted gates. A cancelled or queued run receives no execution credit.\n- The original public-service resource, workload and timeout settings remain unchanged.\n- Full current-source model adoption, the spent learning trial, independent effect/recovery authority, funded storage/state-growth budgets and independent WAN operation retain their original acceptance requirements.\n- No classical fallback, fabricated operator root, learning-trial reset or original-budget increase is introduced.\n\nRetain this candidate's exact head and the ordered base/source merge identities in every run receipt. Do not promote earlier source or binary results to this candidate.",
+    "title": "Draft: freeze joint C2 candidate for original-source qualification",
+    "base": "main",
+    "base_sha": "dd6e1c3cbeacbdc532b0679297835b3a0aac78f0",
+    "head": "fix/chain-joint-v12-c2-20261105-93bfc-frozen",
+    "head_sha": "03521b2f32346a49cccde8ff72e8c7b886b31222",
+    "head_repo_id": 1323087357,
+    "head_repo_full_name": "TrillionniumFoundation/Trillionnium-Chain",
+    "merge_commit_sha": "ebe23e4bd9eeb704479e588e873edc2c61bf7e76",
+    "user": {
+      "login": "Franksudoman",
+      "name": "Franksudoman",
+      "email": null,
+      "avatar_url": "https://avatars.githubusercontent.com/u/273670192?v=4",
+      "id": 273670192
+    },
+    "requested_reviewers": null,
+    "requested_team_reviewers": null,
+    "diff": null,
+    "comments": null,
+    "created_at": "2026-11-05T15:06:35Z",
+    "updated_at": "2026-11-05T15:06:35Z",
+    "closed_at": null,
+    "merged_at": null,
+    "commits": 1255,
+    "changed_files": 0,
+    "additions": 0,
+    "deletions": 0,
+    "display_url": "https://github.com/TrillionniumFoundation/Trillionnium-Chain/pull/720",
+    "display_title": "Draft: freeze joint C2 candidate for original-source qualification"
+  },
+  "ordered_merge": {
+    "sha": "ebe23e4bd9eeb704479e588e873edc2c61bf7e76",
+    "node_id": "C_kwDOTty1_doAKGViZTIzZTRiZDllZWI3MDQ0NzllNTg4ZTg3M2VkYzJjNjFiZjdlNzY",
+    "url": "https://api.github.com/repos/TrillionniumFoundation/Trillionnium-Chain/git/commits/ebe23e4bd9eeb704479e588e873edc2c61bf7e76",
+    "html_url": "https://github.com/TrillionniumFoundation/Trillionnium-Chain/commit/ebe23e4bd9eeb704479e588e873edc2c61bf7e76",
+    "author": {
+      "name": "Franksudoman",
+      "email": "273670192+Franksudoman@users.noreply.github.com",
+      "date": "2026-11-05T15:06:39Z"
+    },
+    "committer": {
+      "name": "GitHub",
+      "email": "noreply@github.com",
+      "date": "2026-11-05T15:06:39Z"
+    },
+    "tree": {
+      "sha": "e0235248ecae2a67717c8b9ff2e3f25774ba63d7",
+      "url": "https://api.github.com/repos/TrillionniumFoundation/Trillionnium-Chain/git/trees/e0235248ecae2a67717c8b9ff2e3f25774ba63d7"
+    },
+    "message": "Merge 03521b2f32346a49cccde8ff72e8c7b886b31222 into dd6e1c3cbeacbdc532b0679297835b3a0aac78f0",
+    "parents": [
+      {
+        "sha": "dd6e1c3cbeacbdc532b0679297835b3a0aac78f0",
+        "url": "https://api.github.com/repos/TrillionniumFoundation/Trillionnium-Chain/git/commits/dd6e1c3cbeacbdc532b0679297835b3a0aac78f0",
+        "html_url": "https://github.com/TrillionniumFoundation/Trillionnium-Chain/commit/dd6e1c3cbeacbdc532b0679297835b3a0aac78f0"
+      },
+      {
+        "sha": "03521b2f32346a49cccde8ff72e8c7b886b31222",
+        "url": "https://api.github.com/repos/TrillionniumFoundation/Trillionnium-Chain/git/commits/03521b2f32346a49cccde8ff72e8c7b886b31222",
+        "html_url": "https://github.com/TrillionniumFoundation/Trillionnium-Chain/commit/03521b2f32346a49cccde8ff72e8c7b886b31222"
+      }
+    ],
+    "verification": {
+      "verified": true,
+      "reason": "valid",
+      "signature": "-----BEGIN PGP SIGNATURE-----\n\nwsFcBAABCAAQBQJq7Jt/CRC1aQ7uu5UhlAAA294QADvQGK3szPgx8/E8Rzm1qe/k\n4I4Q3vITDe5le/K092nNv23O05fVSmDQDz9ks9DEUQzFjydTWD2zEswWIp31LONf\n9KlA5XmpI4OjkpvwEhUM95foggjhXATyi9vzChRBu4/pJM0w+/yiXlWSLoa8KapN\nrjVcDtyGsboZJsRfSoK9vgwDb8tV11rjKe0VCiT5lHesbO7Y23JRHF2ToY152e2J\nDfFWfuOuyomscRRqcV4WbwSQ0GVt1fjljGvIqbJdk8TVX9150zLZ3/XsZewxo8kC\nPL2TH7pcVGN2tN9WvSun5270RdCXDdOFjplNU3p0V6B7BZ82fPSsIHMktoxjy/DI\nzA3uP7k4kP1GmuaXTv69uP3OscB8TJd1I9PrEFXSRHTBIKaSUJ2eDM4wquv+IXCg\nWfFS/1XT5Q+IO4AQrSGAr4Wdr+yfKdnDyL0w1Jrt/AxT6red0t8d3qOCFcfWLRBc\n/3fVABxfbgNGIhYa1ll0NOZCtBfkdiVigfhpApizb5Fv33W94jkRJuGxwbNTwO5z\nzcyc1LAxeJi+oLVuYE9R8hYV3OTiacVhQIxjfpz5hyBOy09geUeO8QNJsrYENj3x\nt82oHyd9hYDYpxPxbtaVe/c+361seFjKV/otuqLcs0p1Bjbs8ogCADfjSdAWDnf6\nlEWsxHCWqGckrQ8t0FaX\n=S89r\n-----END PGP SIGNATURE-----\n",
+      "payload": "tree e0235248ecae2a67717c8b9ff2e3f25774ba63d7\nparent dd6e1c3cbeacbdc532b0679297835b3a0aac78f0\nparent 03521b2f32346a49cccde8ff72e8c7b886b31222\nauthor Franksudoman <273670192+Franksudoman@users.noreply.github.com> 1793891199 +0000\ncommitter GitHub <noreply@github.com> 1793891199 +0000\n\nMerge 03521b2f32346a49cccde8ff72e8c7b886b31222 into dd6e1c3cbeacbdc532b0679297835b3a0aac78f0\n",
+      "verified_at": "2026-11-05T15:06:39Z"
+    }
+  },
+  "initial_runs": [
+    {
+      "id": 42051619879,
+      "name": "PoN W1 transparent candidate observations",
+      "path": ".github/workflows/pon-w1-transparent-profile.yml",
+      "status": "queued",
+      "conclusion": null,
+      "head_sha": "03521b2f32346a49cccde8ff72e8c7b886b31222",
+      "created_at": "2026-11-05T15:06:42Z",
+      "url": "https://github.com/TrillionniumFoundation/Trillionnium-Chain/actions/runs/42051619879",
+      "pr": [
+        720
+      ]
+    },
+    {
+      "id": 42051619734,
+      "name": "PoN fixed Host ROOT F0 diagnostic",
+      "path": ".github/workflows/pon-fixed-host-root-f0.yml",
+      "status": "queued",
+      "conclusion": null,
+      "head_sha": "03521b2f32346a49cccde8ff72e8c7b886b31222",
+      "created_at": "2026-11-05T15:06:42Z",
+      "url": "https://github.com/TrillionniumFoundation/Trillionnium-Chain/actions/runs/42051619734",
+      "pr": [
+        720
+      ]
+    },
+    {
+      "id": 42051619900,
+      "name": "PoN W1 work security observations",
+      "path": ".github/workflows/pon-w1-work-security.yml",
+      "status": "queued",
+      "conclusion": null,
+      "head_sha": "03521b2f32346a49cccde8ff72e8c7b886b31222",
+      "created_at": "2026-11-05T15:06:42Z",
+      "url": "https://github.com/TrillionniumFoundation/Trillionnium-Chain/actions/runs/42051619900",
+      "pr": [
+        720
+      ]
+    },
+    {
+      "id": 42051619752,
+      "name": "PoN recent batch exact-source acceptance",
+      "path": ".github/workflows/pon-recent-batch-acceptance.yml",
+      "status": "queued",
+      "conclusion": null,
+      "head_sha": "03521b2f32346a49cccde8ff72e8c7b886b31222",
+      "created_at": "2026-11-05T15:06:42Z",
+      "url": "https://github.com/TrillionniumFoundation/Trillionnium-Chain/actions/runs/42051619752",
+      "pr": [
+        720
+      ]
+    },
+    {
+      "id": 42051619702,
+      "name": "PoN original native campaign",
+      "path": ".github/workflows/pon-native-campaign-qualification.yml",
+      "status": "queued",
+      "conclusion": null,
+      "head_sha": "03521b2f32346a49cccde8ff72e8c7b886b31222",
+      "created_at": "2026-11-05T15:06:42Z",
+      "url": "https://github.com/TrillionniumFoundation/Trillionnium-Chain/actions/runs/42051619702",
+      "pr": [
+        720
+      ]
+    },
+    {
+      "id": 42051619749,
+      "name": "PoN owned process cleanup",
+      "path": ".github/workflows/pon-owned-process-cleanup.yml",
+      "status": "queued",
+      "conclusion": null,
+      "head_sha": "03521b2f32346a49cccde8ff72e8c7b886b31222",
+      "created_at": "2026-11-05T15:06:42Z",
+      "url": "https://github.com/TrillionniumFoundation/Trillionnium-Chain/actions/runs/42051619749",
+      "pr": [
+        720
+      ]
+    },
+    {
+      "id": 42051619760,
+      "name": "CodeQL exact-source analysis export",
+      "path": ".github/workflows/codeql-analysis-export.yml",
+      "status": "queued",
+      "conclusion": null,
+      "head_sha": "03521b2f32346a49cccde8ff72e8c7b886b31222",
+      "created_at": "2026-11-05T15:06:42Z",
+      "url": "https://github.com/TrillionniumFoundation/Trillionnium-Chain/actions/runs/42051619760",
+      "pr": [
+        720
+      ]
+    },
+    {
+      "id": 42051619800,
+      "name": "PoN original workspace test-profile CPU acceptance",
+      "path": ".github/workflows/pon-original-workspace-large-state-cpu.yml",
+      "status": "queued",
+      "conclusion": null,
+      "head_sha": "03521b2f32346a49cccde8ff72e8c7b886b31222",
+      "created_at": "2026-11-05T15:06:42Z",
+      "url": "https://github.com/TrillionniumFoundation/Trillionnium-Chain/actions/runs/42051619800",
+      "pr": [
+        720
+      ]
+    },
+    {
+      "id": 42051619812,
+      "name": "PoN baseline diagnostic readback",
+      "path": ".github/workflows/pon-baseline-diagnostic-readback.yml",
+      "status": "queued",
+      "conclusion": null,
+      "head_sha": "03521b2f32346a49cccde8ff72e8c7b886b31222",
+      "created_at": "2026-11-05T15:06:42Z",
+      "url": "https://github.com/TrillionniumFoundation/Trillionnium-Chain/actions/runs/42051619812",
+      "pr": [
+        720
+      ]
+    },
+    {
+      "id": 42051619693,
+      "name": "Release finality reference and native baseline",
+      "path": ".github/workflows/release-finality-reference.yml",
+      "status": "queued",
+      "conclusion": null,
+      "head_sha": "03521b2f32346a49cccde8ff72e8c7b886b31222",
+      "created_at": "2026-11-05T15:06:42Z",
+      "url": "https://github.com/TrillionniumFoundation/Trillionnium-Chain/actions/runs/42051619693",
+      "pr": [
+        720
+      ]
+    },
+    {
+      "id": 42051619848,
+      "name": "PoN original large-state CPU acceptance",
+      "path": ".github/workflows/pon-original-large-state-cpu.yml",
+      "status": "queued",
+      "conclusion": null,
+      "head_sha": "03521b2f32346a49cccde8ff72e8c7b886b31222",
+      "created_at": "2026-11-05T15:06:42Z",
+      "url": "https://github.com/TrillionniumFoundation/Trillionnium-Chain/actions/runs/42051619848",
+      "pr": [
+        720
+      ]
+    },
+    {
+      "id": 42051619772,
+      "name": "trnm-required-baseline",
+      "path": ".github/workflows/trnm-required-baseline.yml",
+      "status": "queued",
+      "conclusion": null,
+      "head_sha": "03521b2f32346a49cccde8ff72e8c7b886b31222",
+      "created_at": "2026-11-05T15:06:42Z",
+      "url": "https://github.com/TrillionniumFoundation/Trillionnium-Chain/actions/runs/42051619772",
+      "pr": [
+        720
+      ]
+    },
+    {
+      "id": 42051619814,
+      "name": "PoN parent-bound model evidence",
+      "path": ".github/workflows/pon-model-parent-acceptance.yml",
+      "status": "queued",
+      "conclusion": null,
+      "head_sha": "03521b2f32346a49cccde8ff72e8c7b886b31222",
+      "created_at": "2026-11-05T15:06:42Z",
+      "url": "https://github.com/TrillionniumFoundation/Trillionnium-Chain/actions/runs/42051619814",
+      "pr": [
+        720
+      ]
+    },
+    {
+      "id": 42051619973,
+      "name": "PoN priority acceptance",
+      "path": ".github/workflows/pon-priority-acceptance.yml",
+      "status": "queued",
+      "conclusion": null,
+      "head_sha": "03521b2f32346a49cccde8ff72e8c7b886b31222",
+      "created_at": "2026-11-05T15:06:42Z",
+      "url": "https://github.com/TrillionniumFoundation/Trillionnium-Chain/actions/runs/42051619973",
+      "pr": [
+        720
+      ]
+    },
+    {
+      "id": 42051619796,
+      "name": "PoN PQ network and rollback witness",
+      "path": ".github/workflows/pon-pq-system-continuation.yml",
+      "status": "queued",
+      "conclusion": null,
+      "head_sha": "03521b2f32346a49cccde8ff72e8c7b886b31222",
+      "created_at": "2026-11-05T15:06:42Z",
+      "url": "https://github.com/TrillionniumFoundation/Trillionnium-Chain/actions/runs/42051619796",
+      "pr": [
+        720
+      ]
+    },
+    {
+      "id": 42051619770,
+      "name": "PoN isolated cloud build inputs",
+      "path": ".github/workflows/pon-cloud-build-inputs.yml",
+      "status": "queued",
+      "conclusion": null,
+      "head_sha": "03521b2f32346a49cccde8ff72e8c7b886b31222",
+      "created_at": "2026-11-05T15:06:42Z",
+      "url": "https://github.com/TrillionniumFoundation/Trillionnium-Chain/actions/runs/42051619770",
+      "pr": [
+        720
+      ]
+    }
+  ],
+  "comparison": {
+    "repository_full_name": "TrillionniumFoundation/Trillionnium-Chain",
+    "base": "9ecdbebc897d35f07b998d084b015db8474be84b",
+    "head": "03521b2f32346a49cccde8ff72e8c7b886b31222",
+    "status": "ahead",
+    "ahead_by": 1,
+    "behind_by": 0,
+    "total_commits": 1,
+    "too_large": null,
+    "base_commit": {
+      "sha": "9ecdbebc897d35f07b998d084b015db8474be84b",
+      "url": "https://api.github.com/repos/TrillionniumFoundation/Trillionnium-Chain/commits/9ecdbebc897d35f07b998d084b015db8474be84b",
+      "html_url": "https://github.com/TrillionniumFoundation/Trillionnium-Chain/commit/9ecdbebc897d35f07b998d084b015db8474be84b"
+    },
+    "merge_base_commit": {
+      "sha": "9ecdbebc897d35f07b998d084b015db8474be84b",
+      "url": "https://api.github.com/repos/TrillionniumFoundation/Trillionnium-Chain/commits/9ecdbebc897d35f07b998d084b015db8474be84b",
+      "html_url": "https://github.com/TrillionniumFoundation/Trillionnium-Chain/commit/9ecdbebc897d35f07b998d084b015db8474be84b"
+    },
+    "files": [
+      {
+        "filename": "config/pon/pq-cross-branch-corpus-v1.json",
+        "status": "modified",
+        "additions": 5,
+        "deletions": 5,
+        "changes": 10,
+        "previous_filename": null
+      },
+      {
+        "filename": "evidence/ci-joint-components-pins-20261105/README.md",
+        "status": "added",
+        "additions": 7,
+        "deletions": 0,
+        "changes": 7,
+        "previous_filename": null
+      },
+      {
+        "filename": "evidence/ci-joint-components-pins-20261105/ci-contract.txt",
+        "status": "added",
+        "additions": 105,
+        "deletions": 0,
+        "changes": 105,
+        "previous_filename": null
+      },
+      {
+        "filename": "evidence/ci-joint-components-pins-20261105/original-failure.txt",
+        "status": "added",
+        "additions": 1,
+        "deletions": 0,
+        "changes": 1,
+        "previous_filename": null
+      },
+      {
+        "filename": "evidence/ci-joint-components-pins-20261105/pq-source-controls.txt",
+        "status": "added",
+        "additions": 5,
+        "deletions": 0,
+        "changes": 5,
+        "previous_filename": null
+      },
+      {
+        "filename": "evidence/ci-joint-components-pins-20261105/source-guard.json",
+        "status": "added",
+        "additions": 1,
+        "deletions": 0,
+        "changes": 1,
+        "previous_filename": null
+      },
+      {
+        "filename": "evidence/ci-joint-components-pins-20261105/source-integrity.txt",
+        "status": "added",
+        "additions": 11,
+        "deletions": 0,
+        "changes": 11,
+        "previous_filename": null
+      },
+      {
+        "filename": "evidence/ci-joint-components-pins-20261105/stale-pins.json",
+        "status": "added",
+        "additions": 30,
+        "deletions": 0,
+        "changes": 30,
+        "previous_filename": null
+      }
+    ]
+  }
+}

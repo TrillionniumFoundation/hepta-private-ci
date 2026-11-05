@@ -1,0 +1,56 @@
+{
+  "after": {
+    "commit": "495e36f8cb71fdae7290710dd339e2ee34d4feec",
+    "dirty": false,
+    "parents": [
+      "96d8414a9ab36e7e47d1430699274d0b635eec6f"
+    ],
+    "tree": "a9a266faa47ba78430ff73f31e55b14e0043e196"
+  },
+  "base_sha": "1556a4df6e279055fd8196f81a4ca2fe0f19384a",
+  "before": {
+    "commit": "495e36f8cb71fdae7290710dd339e2ee34d4feec",
+    "dirty": false,
+    "parents": [
+      "96d8414a9ab36e7e47d1430699274d0b635eec6f"
+    ],
+    "tree": "a9a266faa47ba78430ff73f31e55b14e0043e196"
+  },
+  "command": [
+    "just",
+    "test",
+    "--locked",
+    "-p",
+    "codex-model-provider",
+    "--lib",
+    "-E",
+    "test(provider_effect)",
+    "--no-capture",
+    "--retries",
+    "0",
+    "--test-threads=1"
+  ],
+  "command_exit_code": 0,
+  "elapsed_seconds": 17.783040705951862,
+  "exit_code": 0,
+  "finished_at": "2026-11-05T15:18:38.092490+00:00",
+  "job": null,
+  "lane": "source-head",
+  "log_bytes": 15469,
+  "log_file": "provider-effect-existing-and-pq.json.b47fe353f4b74b049c7d08183d5cb365.log",
+  "log_sha256": "fe832720c6d2febed6fd14df5a1da708eca0ec060e03f17c97ad201c7d4829f4",
+  "minimum_tests": 10,
+  "observed_failed_tests": 0,
+  "observed_passed_tests": 10,
+  "output_limit_exceeded": false,
+  "returncode": 0,
+  "run_attempt": null,
+  "run_id": null,
+  "schema_version": 1,
+  "source_sha": "495e36f8cb71fdae7290710dd339e2ee34d4feec",
+  "started_at": "2026-11-05T15:18:20.297560+00:00",
+  "status": "passed",
+  "tested_sha": "495e36f8cb71fdae7290710dd339e2ee34d4feec",
+  "timed_out": false,
+  "working_directory": "/home/qian-qi/work/hepta-pq-effect-v4-20261105-93bfcf/source"
+}

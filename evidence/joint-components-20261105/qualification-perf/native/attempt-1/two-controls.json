@@ -1,0 +1,56 @@
+{
+  "after": {
+    "commit": "4dce06a9945fc54482f546c9dfb7cbb7a4716ccc",
+    "dirty": false,
+    "parents": [
+      "a877333eff1577179fce8b1ceb6edf4322440e03"
+    ],
+    "tree": "ace984bea899295f7e8fa6666fc78cfd49ad2a92"
+  },
+  "base_sha": "1556a4df6e279055fd8196f81a4ca2fe0f19384a",
+  "before": {
+    "commit": "4dce06a9945fc54482f546c9dfb7cbb7a4716ccc",
+    "dirty": false,
+    "parents": [
+      "a877333eff1577179fce8b1ceb6edf4322440e03"
+    ],
+    "tree": "ace984bea899295f7e8fa6666fc78cfd49ad2a92"
+  },
+  "command": [
+    "just",
+    "test",
+    "--locked",
+    "-p",
+    "codex-hepta-evidence",
+    "--lib",
+    "-E",
+    "test(=qualification_tests::claim_query_rejects_more_than_512_references) | test(=qualification_tests::ordinary_append_rejects_historical_projection_drift_without_consuming_replay)",
+    "--no-capture",
+    "--retries",
+    "0",
+    "--test-threads=1"
+  ],
+  "command_exit_code": 0,
+  "elapsed_seconds": 147.03345308999997,
+  "exit_code": 0,
+  "finished_at": "2026-11-05T15:52:31.756234+00:00",
+  "job": null,
+  "lane": "source-head",
+  "log_bytes": 27595,
+  "log_file": "two-controls.json.d82a7d3114cf426fa25a551ae954a5e7.log",
+  "log_sha256": "a0a20dd922f79425c6abeac43341521a4ca5bf991484f36b59342a4981aee9d9",
+  "minimum_tests": 2,
+  "observed_failed_tests": 0,
+  "observed_passed_tests": 2,
+  "output_limit_exceeded": false,
+  "returncode": 0,
+  "run_attempt": null,
+  "run_id": null,
+  "schema_version": 1,
+  "source_sha": "4dce06a9945fc54482f546c9dfb7cbb7a4716ccc",
+  "started_at": "2026-11-05T15:50:04.718092+00:00",
+  "status": "passed",
+  "tested_sha": "4dce06a9945fc54482f546c9dfb7cbb7a4716ccc",
+  "timed_out": false,
+  "working_directory": "/home/qian-qi/work/hepta-pq-frontier-20261105-93bfcf/qualification-perf-source"
+}

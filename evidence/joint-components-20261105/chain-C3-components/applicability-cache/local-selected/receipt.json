@@ -1,0 +1,69 @@
+{
+  "scope": "Isolated local selected parser controls, not a complete C3 checkout or full original suite",
+  "python": "3.12.14",
+  "base_commit": "03521b2f32346a49cccde8ff72e8c7b886b31222",
+  "source_hashes_before": {
+    "scripts/ci/report_module_evidence.py": "d980a9a63c0b5bca3ef7c36b819fda69810742ecba0554d1ec22bc82e7cf3179",
+    "scripts/ci/test_applicability.py": "f32db882d7a8108f86bada2ed88e494a5e38e633e06e90a22c02c4de9914c128",
+    "scripts/ci/check_applicability.py": "1651c8adf3f86bb5302d84709192bee5d2703650be02e8d365c2a2f4142fa3f2",
+    "scripts/ci/check_invariant_evidence.py": "1d21d001c3de0305e4718de76daf79c9f74a7cfc66522484b1db3e76c409a6ff",
+    "scripts/ci/test_responsibility_evidence.py": "4cc0504e4a2426df057326d3e971a3582d3c581e79f400ff6042b18095a80329"
+  },
+  "source_hashes_after": {
+    "scripts/ci/report_module_evidence.py": "d980a9a63c0b5bca3ef7c36b819fda69810742ecba0554d1ec22bc82e7cf3179",
+    "scripts/ci/test_applicability.py": "f32db882d7a8108f86bada2ed88e494a5e38e633e06e90a22c02c4de9914c128",
+    "scripts/ci/check_applicability.py": "1651c8adf3f86bb5302d84709192bee5d2703650be02e8d365c2a2f4142fa3f2",
+    "scripts/ci/check_invariant_evidence.py": "1d21d001c3de0305e4718de76daf79c9f74a7cfc66522484b1db3e76c409a6ff",
+    "scripts/ci/test_responsibility_evidence.py": "4cc0504e4a2426df057326d3e971a3582d3c581e79f400ff6042b18095a80329"
+  },
+  "observations": [
+    {
+      "name": "local-preflight",
+      "command": [
+        "bash",
+        "/workspace/scratch/93bfcfe29fc8/pq_recovery/c3-applicability/base/scripts/project-preflight.sh"
+      ],
+      "returncode": 128,
+      "elapsed_seconds": 0.012576022003486287,
+      "stdout": "local-preflight.stdout",
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr": "local-preflight.stderr",
+      "stderr_sha256": "d2b35cacadc66b7fad8dedd1be5244e17150a6625978c9330f831bd7a9cd6b1e"
+    },
+    {
+      "name": "cache-mutation-five",
+      "command": [
+        "python",
+        "-B",
+        "scripts/ci/test_applicability.py",
+        "ParserCacheMutationTests"
+      ],
+      "returncode": 0,
+      "elapsed_seconds": 0.33323126399773173,
+      "stdout": "cache-mutation-five.stdout",
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr": "cache-mutation-five.stderr",
+      "stderr_sha256": "71560ddde0d28104291a6ca8a7b7118b151c95e8aad1d182739b8b09af4acf65"
+    },
+    {
+      "name": "retained-parser-twelve",
+      "command": [
+        "python",
+        "-B",
+        "scripts/ci/test_responsibility_evidence.py",
+        "RustImplementationOwnerTests",
+        "SourceApplicabilityTests.test_class_and_method_source_bindings_are_distinct"
+      ],
+      "returncode": 0,
+      "elapsed_seconds": 0.15340375599771505,
+      "stdout": "retained-parser-twelve.stdout",
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr": "retained-parser-twelve.stderr",
+      "stderr_sha256": "fd58bf9eab4ae2485c261a1c2ffc0548346ec91e26702679891eccf6b67899f4"
+    }
+  ],
+  "full_suite_run": false,
+  "original_300_second_gate_passed": false,
+  "git_source_preflight_established": false,
+  "local_preflight_limitation": "Patch sandbox has no Git repository; the original full project preflight must execute in the complete C3 checkout before application/build/commit. This local stage does not claim that qualification."
+}

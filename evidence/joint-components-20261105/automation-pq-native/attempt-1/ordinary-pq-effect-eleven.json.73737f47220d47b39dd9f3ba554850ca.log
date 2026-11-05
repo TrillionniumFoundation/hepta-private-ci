@@ -1,0 +1,816 @@
+RUST_MIN_STACK=8388608 NEXTEST_PROFILE=local python3 ../scripts/run-nextest.py "$@"
+warning: in config file .config/nextest.toml, ignoring unknown configuration keys: 
+  - profile.hepta-public-initial-v2.inherits
+  - profile.local.inherits
+warning: ignoring --test-threads because --no-capture is specified
+   Compiling syn v3.0.3
+   Compiling lock_api v0.4.14
+   Compiling serde_json v1.0.151
+   Compiling mio v1.2.0
+   Compiling futures-io v0.3.34
+   Compiling serde_core v1.0.229
+   Compiling num_threads v0.1.7
+   Compiling serde_derive v1.0.229
+   Compiling thiserror-impl v2.0.21
+   Compiling thiserror v2.0.21
+   Compiling futures-macro v0.3.34
+   Compiling futures-util v0.3.34
+   Compiling serde v1.0.229
+   Compiling smallvec v1.15.1
+   Compiling parking_lot_core v0.9.12
+   Compiling parking_lot v0.12.5
+   Compiling tokio v1.53.1
+   Compiling time v0.3.55
+   Compiling either v1.15.0
+   Compiling ipnet v2.11.0
+   Compiling tokio-util v0.7.19
+   Compiling icu_normalizer v2.2.0
+   Compiling rustix v1.1.4
+   Compiling idna_adapter v1.2.1
+   Compiling block-buffer v0.12.0
+   Compiling digest v0.11.3
+   Compiling idna v1.1.0
+   Compiling sha1_smol v1.0.1
+   Compiling uuid v1.26.1
+   Compiling url v2.5.8
+   Compiling h2 v0.4.16
+   Compiling futures-executor v0.3.34
+   Compiling tokio-rustls v0.26.4
+   Compiling tower v0.5.3
+   Compiling futures v0.3.31
+   Compiling spin v0.9.8
+   Compiling hyper v1.8.1
+   Compiling hyper-util v0.1.20
+   Compiling num-bigint v0.4.6
+   Compiling hyper-rustls v0.27.7
+   Compiling itertools v0.14.0
+   Compiling async-trait v0.1.92
+   Compiling nibble_vec v0.1.0
+   Compiling rand v0.10.3
+   Compiling wildcard v0.3.0
+   Compiling rama-utils v0.3.0-alpha.4
+   Compiling flume v0.12.0
+   Compiling tokio-graceful v0.2.2
+   Compiling tokio-stream v0.1.19
+   Compiling rama-core v0.3.0-alpha.4
+   Compiling radix_trie v0.3.0
+   Compiling aho-corasick v1.1.4
+   Compiling regex-automata v0.4.18
+   Compiling rama-http-types v0.3.0-alpha.4
+   Compiling rama-net v0.3.0-alpha.4
+   Compiling cookie v0.18.1
+   Compiling tokio-native-tls v0.3.1
+   Compiling tower-http v0.6.8
+   Compiling chrono v0.4.43
+   Compiling publicsuffix v2.3.0
+   Compiling tempfile v3.27.0
+   Compiling cookie_store v0.22.1
+   Compiling hyper-tls v0.6.0
+   Compiling regex v1.13.1
+   Compiling serde_urlencoded v0.7.1
+   Compiling opentelemetry v0.31.0
+   Compiling reqwest v0.12.28
+   Compiling schemars v0.8.22
+   Compiling ts-rs v11.1.0
+   Compiling prefix-trie v0.8.4
+   Compiling tracing-serde v0.2.0
+   Compiling matchers v0.2.0
+   Compiling tracing-subscriber v0.3.23
+   Compiling hickory-proto v0.26.3
+   Compiling codex-utils-absolute-path v0.0.0 (/home/qian-qi/work/hepta-pq-effect-v4-20261105-93bfcf/source/codex-rs/utils/absolute-path)
+   Compiling arrayvec v0.7.8
+   Compiling lock_free_hashtable v0.1.4
+   Compiling moka v0.12.13
+   Compiling asn1-rs v0.7.1
+   Compiling heapless v0.7.17
+   Compiling quickcheck v1.1.0
+   Compiling hickory-net v0.26.3
+   Compiling cobs v0.3.0
+   Compiling blake3 v1.8.7
+   Compiling hickory-resolver v0.26.3
+   Compiling dashmap v6.1.0
+   Compiling allocative v0.3.6
+   Compiling postcard v1.1.3
+   Compiling sorted_vector_map v0.2.1
+   Compiling static_interner v0.1.2
+   Compiling Inflector v0.11.4
+   Compiling schemafy_core v0.5.2
+   Compiling terminal_size v0.4.3
+   Compiling triomphe v0.1.15
+   Compiling clap_builder v4.5.58
+   Compiling pagable v0.4.2
+   Compiling schemafy_lib v0.5.2
+   Compiling rama-dns v0.3.0-alpha.4 (/home/qian-qi/work/hepta-pq-effect-v4-20261105-93bfcf/source/codex-rs/third_party/rama-dns-0.3.0-alpha.4)
+   Compiling rama-http-headers v0.3.0-alpha.4
+   Compiling oid-registry v0.8.1
+   Compiling der-parser v10.0.0
+   Compiling tracing-opentelemetry v0.32.1
+   Compiling rama-http v0.3.0-alpha.4
+   Compiling radix_trie v0.2.1
+   Compiling clap v4.5.58
+   Compiling codex-http-client v0.0.0 (/home/qian-qi/work/hepta-pq-effect-v4-20261105-93bfcf/source/codex-rs/http-client)
+   Compiling x509-parser v0.18.1
+   Compiling rama-tcp v0.3.0-alpha.4
+   Compiling schemafy v0.5.2
+   Compiling starlark_map v0.14.2
+   Compiling lsp-types v0.97.0
+   Compiling tokio-test v0.4.5
+   Compiling fd-lock v4.0.4
+   Compiling yasna v0.5.2
+   Compiling display_container v0.9.0
+   Compiling rustyline v14.0.0
+   Compiling rcgen v0.14.7
+   Compiling gix-path v0.11.3
+   Compiling rama-http-core v0.3.0-alpha.4
+   Compiling starlark_syntax v0.14.2
+   Compiling debugserver-types v0.5.0
+   Compiling codex-utils-home-dir v0.0.0 (/home/qian-qi/work/hepta-pq-effect-v4-20261105-93bfcf/source/codex-rs/utils/home-dir)
+   Compiling rama-unix v0.3.0-alpha.4
+   Compiling rama-udp v0.3.0-alpha.4
+   Compiling erased-serde v0.3.31
+   Compiling codex-utils-cache v0.0.0 (/home/qian-qi/work/hepta-pq-effect-v4-20261105-93bfcf/source/codex-rs/utils/cache)
+   Compiling rama-socks5 v0.3.0-alpha.4
+   Compiling starlark v0.14.2 (/home/qian-qi/work/hepta-pq-effect-v4-20261105-93bfcf/source/codex-rs/third_party/starlark-0.14.2)
+   Compiling rama-http-backend v0.3.0-alpha.4
+   Compiling rama-tls-rustls v0.3.0-alpha.4
+   Compiling strum_macros v0.27.2
+   Compiling fixed_decimal v0.7.2
+   Compiling multimap v0.10.1
+   Compiling icu_decimal v2.2.0
+   Compiling strum v0.27.2
+   Compiling codex-network-proxy v0.0.0 (/home/qian-qi/work/hepta-pq-effect-v4-20261105-93bfcf/source/codex-rs/network-proxy)
+   Compiling codex-execpolicy v0.0.0 (/home/qian-qi/work/hepta-pq-effect-v4-20261105-93bfcf/source/codex-rs/execpolicy)
+   Compiling codex-utils-image v0.0.0 (/home/qian-qi/work/hepta-pq-effect-v4-20261105-93bfcf/source/codex-rs/utils/image)
+   Compiling landlock v0.4.4
+   Compiling codex-utils-path-uri v0.0.0 (/home/qian-qi/work/hepta-pq-effect-v4-20261105-93bfcf/source/codex-rs/utils/path-uri)
+   Compiling codex-extension-items v0.0.0 (/home/qian-qi/work/hepta-pq-effect-v4-20261105-93bfcf/source/codex-rs/ext/items)
+   Compiling codex-utils-redacted-string v0.0.0 (/home/qian-qi/work/hepta-pq-effect-v4-20261105-93bfcf/source/codex-rs/utils/redacted-string)
+   Compiling codex-utils-string v0.0.0 (/home/qian-qi/work/hepta-pq-effect-v4-20261105-93bfcf/source/codex-rs/utils/string)
+   Compiling codex-async-utils v0.0.0 (/home/qian-qi/work/hepta-pq-effect-v4-20261105-93bfcf/source/codex-rs/async-utils)
+   Compiling quick-xml v0.41.0
+   Compiling codex-protocol v0.0.0 (/home/qian-qi/work/hepta-pq-effect-v4-20261105-93bfcf/source/codex-rs/protocol)
+   Compiling prodash v31.0.0
+   Compiling gix-features v0.46.2
+   Compiling zerofrom v0.1.6
+   Compiling stable_deref_trait v1.2.1
+   Compiling yoke v0.8.2
+   Compiling zerovec v0.11.6
+   Compiling gix-hash v0.23.0
+   Compiling tinystr v0.8.3
+   Compiling event-listener v5.4.2
+   Compiling gix-date v0.15.1
+   Compiling gix-actor v0.40.0
+   Compiling gix-hashtable v0.13.0
+   Compiling gix-object v0.58.0
+   Compiling gix-fs v0.19.2
+   Compiling gix-tempfile v21.0.2
+   Compiling gix-lock v21.0.2
+   Compiling itertools v0.13.0
+   Compiling prost-derive v0.14.4
+   Compiling gix-commitgraph v0.35.0
+   Compiling gix-revwalk v0.29.0
+   Compiling gix-ref v0.61.0
+   Compiling codex-utils-pty v0.0.0 (/home/qian-qi/work/hepta-pq-effect-v4-20261105-93bfcf/source/codex-rs/utils/pty)
+   Compiling gix-command v0.8.0
+   Compiling gix-packetline v0.21.5
+   Compiling gix-glob v0.24.0
+   Compiling gix-url v0.35.2
+   Compiling gix-pack v0.68.0
+   Compiling gix-transport v0.55.1
+   Compiling gix-revision v0.43.0
+   Compiling gix-shallow v0.10.0
+   Compiling gix-config-value v0.17.1
+   Compiling gix-config v0.54.0
+   Compiling gix-protocol v0.59.0
+   Compiling gix-refspec v0.39.0
+   Compiling gix-odb v0.78.0
+   Compiling codex-file-system v0.0.0 (/home/qian-qi/work/hepta-pq-effect-v4-20261105-93bfcf/source/codex-rs/file-system)
+   Compiling gix-discover v0.49.0
+   Compiling gix-traverse v0.55.0
+   Compiling gix-diff v0.61.0
+   Compiling tungstenite v0.27.0 (https://github.com/openai-oss-forks/tungstenite-rs?rev=4fffad30fe373adbdcffab9545e9e9bf4f2fc19f#4fffad30)
+   Compiling gix v0.81.0
+   Compiling tokio-tungstenite v0.28.0 (https://github.com/openai-oss-forks/tokio-tungstenite?rev=0e5b2d73aa18dd9f0a50ee9ff199d5aef7594186#0e5b2d73)
+   Compiling codex-git-utils v0.0.0 (/home/qian-qi/work/hepta-pq-effect-v4-20261105-93bfcf/source/codex-rs/git-utils)
+   Compiling hyper-timeout v0.5.2
+   Compiling tonic v0.14.3
+   Compiling prost v0.14.4
+   Compiling signature v3.0.0
+   Compiling nix v0.30.1
+   Compiling codex-websocket-client v0.0.0 (/home/qian-qi/work/hepta-pq-effect-v4-20261105-93bfcf/source/codex-rs/websocket-client)
+   Compiling tonic-prost v0.14.3
+   Compiling once_cell v1.21.4
+   Compiling event-listener-strategy v0.5.4
+   Compiling async-channel v2.5.0
+   Compiling codex-client v0.0.0 (/home/qian-qi/work/hepta-pq-effect-v4-20261105-93bfcf/source/codex-rs/codex-client)
+   Compiling shake v0.1.0
+   Compiling codex-api v0.0.0 (/home/qian-qi/work/hepta-pq-effect-v4-20261105-93bfcf/source/codex-rs/codex-api)
+   Compiling opentelemetry_sdk v0.31.0
+   Compiling opentelemetry-proto v0.31.0
+   Compiling ml-dsa v0.1.1
+   Compiling rand v0.8.6
+   Compiling opentelemetry-http v0.31.0
+   Compiling num-complex v0.4.6
+   Compiling tree-sitter-language v0.1.7
+   Compiling opentelemetry-otlp v0.31.0
+   Compiling codex-hepta-contracts v0.0.0 (/home/qian-qi/work/hepta-pq-effect-v4-20261105-93bfcf/source/codex-rs/hepta-contracts)
+   Compiling os_info v3.14.0
+   Compiling opentelemetry-appender-tracing v0.31.1
+   Compiling gethostname v1.1.0
+   Compiling codex-otel v0.0.0 (/home/qian-qi/work/hepta-pq-effect-v4-20261105-93bfcf/source/codex-rs/otel)
+   Compiling unic-langid-impl v0.9.6
+   Compiling unic-langid v0.9.6
+   Compiling bytes-utils v0.1.4
+   Compiling env_home v0.1.0
+   Compiling writeable v0.6.2
+   Compiling windows_x86_64_gnu v0.52.6
+   Compiling litemap v0.8.1
+   Compiling icu_locale_core v2.2.0
+   Compiling which v8.0.0
+   Compiling aws-smithy-types v1.4.7
+   Compiling potential_utf v0.1.4
+   Compiling zerotrie v0.2.4
+   Compiling codex-utils-path v0.0.0 (/home/qian-qi/work/hepta-pq-effect-v4-20261105-93bfcf/source/codex-rs/utils/path-utils)
+   Compiling tree-sitter v0.25.10
+   Compiling tree-sitter-powershell v0.26.4
+   Compiling tree-sitter-bash v0.25.1
+   Compiling icu_provider v2.2.0
+   Compiling icu_collections v2.2.0
+   Compiling serde_spanned v1.1.1
+   Compiling toml_datetime v1.1.1+spec-1.1.0
+   Compiling ring v0.17.14
+   Compiling streaming-iterator v0.1.9
+   Compiling glob v0.3.3
+   Compiling toml v1.1.4+spec-1.1.0
+   Compiling windows-targets v0.52.6
+   Compiling toml v0.5.11
+   Compiling aws-smithy-async v1.2.14
+   Compiling num-traits v0.2.19
+   Compiling futures-sink v0.3.34
+   Compiling zeroize v1.9.0
+   Compiling rustls-pki-types v1.14.0
+   Compiling aws-smithy-runtime-api v1.12.0
+   Compiling find-crate v0.6.3
+   Compiling codex-shell-command v0.0.0 (/home/qian-qi/work/hepta-pq-effect-v4-20261105-93bfcf/source/codex-rs/shell-command)
+   Compiling windows-result v0.2.0
+   Compiling i18n-config v0.4.8 (/home/qian-qi/work/hepta-pq-effect-v4-20261105-93bfcf/source/codex-rs/third_party/i18n-config-0.4.8)
+   Compiling icu_properties v2.2.0
+   Compiling intl-memoizer v0.5.3
+   Compiling intl_pluralrules v7.0.2
+   Compiling fluent-langneg v0.13.1
+   Compiling codex-features v0.0.0 (/home/qian-qi/work/hepta-pq-effect-v4-20261105-93bfcf/source/codex-rs/features)
+   Compiling codex-model-provider-info v0.0.0 (/home/qian-qi/work/hepta-pq-effect-v4-20261105-93bfcf/source/codex-rs/model-provider-info)
+   Compiling getrandom v0.2.17
+   Compiling crossbeam-utils v0.8.21
+   Compiling codex-config v0.0.0 (/home/qian-qi/work/hepta-pq-effect-v4-20261105-93bfcf/source/codex-rs/config)
+   Compiling fluent-bundle v0.15.3
+   Compiling i18n-embed-impl v0.8.4
+   Compiling windows-strings v0.1.0
+   Compiling num-rational v0.4.2
+   Compiling libsqlite3-sys v0.38.2
+   Compiling hashlink v0.11.0
+   Compiling socket2 v0.6.3
+   Compiling windows-interface v0.58.0
+   Compiling windows-implement v0.58.0
+   Compiling rustls v0.23.46
+   Compiling slab v0.4.12
+   Compiling windows-core v0.58.0
+   Compiling num v0.4.3
+   Compiling fluent v0.16.1
+   Compiling rustls-webpki v0.103.16
+   Compiling tracing-core v0.1.36
+   Compiling dirs-sys-next v0.1.2
+   Compiling subtle v2.6.1
+   Compiling codex-windows-sandbox v0.0.0 (/home/qian-qi/work/hepta-pq-effect-v4-20261105-93bfcf/source/codex-rs/windows-sandbox-rs)
+   Compiling dirs-next v2.0.0
+   Compiling dbus-secret-service v4.1.0
+   Compiling tracing v0.1.44
+   Compiling i18n-embed v0.15.4
+   Compiling crossbeam-queue v0.3.12
+   Compiling windows v0.58.0
+   Compiling webpki-roots v1.0.10
+   Compiling polyval v0.6.2
+   Compiling futures-intrusive v0.5.0
+   Compiling tracing-appender v0.2.4
+   Compiling cookie-factory v0.3.3
+   Compiling keccak v0.1.6
+   Compiling base64 v0.22.1
+   Compiling sha3 v0.10.9
+   Compiling sqlx-core v0.9.0
+   Compiling age-core v0.11.0
+   Compiling keyring v3.6.3
+   Compiling ghash v0.5.1
+   Compiling i18n-embed-fl v0.9.4
+   Compiling atoi v2.0.0
+   Compiling futures-channel v0.3.34
+   Compiling ctr v0.9.2
+   Compiling thiserror-impl-no-std v2.0.2
+   Compiling kem v0.3.0-pre.0
+   Compiling hybrid-array v0.2.3
+   Compiling dotenvy v0.15.7
+   Compiling age v0.11.2
+   Compiling thiserror-no-std v2.0.2
+   Compiling ml-kem v0.2.3
+   Compiling sqlx-sqlite v0.9.0 (/home/qian-qi/work/hepta-pq-effect-v4-20261105-93bfcf/source/codex-rs/third_party/sqlx-sqlite-0.9.0)
+warning: use of deprecated tuple variant `time::format_description::BorrowedFormatItem::Literal`: use `StringLiteral` instead; raw bytes are not recommended
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:196:67
+    |
+196 |     use time::format_description::BorrowedFormatItem::{Component, Literal, Optional};
+    |                                                                   ^^^^^^^
+    |
+    = note: `#[warn(deprecated)]` on by default
+
+warning: use of deprecated tuple variant `time::format_description::Component::Year`: use one of the various `Year*` components instead
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:199:52
+    |
+199 |     const YEAR: BorrowedFormatItem<'_> = Component(Year({
+    |                                                    ^^^^
+
+warning: use of deprecated struct `time::format_description::modifier::Year`: use one of the various `Year*` components instead
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:200:35
+    |
+200 |         let mut value = modifier::Year::default();
+    |                                   ^^^^
+
+warning: use of deprecated unit variant `time::format_description::modifier::YearRepr::Full`: used only in the deprecated `Year` component
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:202:42
+    |
+202 |         value.repr = modifier::YearRepr::Full;
+    |                                          ^^^^
+
+warning: use of deprecated tuple variant `time::format_description::Component::Month`: use `MonthShort`, `MonthLong`, or `MonthNumeric` instead
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:208:53
+    |
+208 |     const MONTH: BorrowedFormatItem<'_> = Component(Month({
+    |                                                     ^^^^^
+
+warning: use of deprecated struct `time::format_description::modifier::Month`: use `MonthShort`, `MonthLong`, or `MonthNumeric` instead
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:209:35
+    |
+209 |         let mut value = modifier::Month::default();
+    |                                   ^^^^^
+
+warning: use of deprecated unit variant `time::format_description::modifier::MonthRepr::Numerical`: used only in the deprecated `Month` component
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:211:43
+    |
+211 |         value.repr = modifier::MonthRepr::Numerical;
+    |                                           ^^^^^^^^^
+
+warning: use of deprecated tuple variant `time::format_description::Component::Hour`: use `Hour12` or `Hour24` instead
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:222:52
+    |
+222 |     const HOUR: BorrowedFormatItem<'_> = Component(Hour({
+    |                                                    ^^^^
+
+warning: use of deprecated struct `time::format_description::modifier::Hour`: use `Hour12` or `Hour24` instead
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:223:35
+    |
+223 |         let mut value = modifier::Hour::default();
+    |                                   ^^^^
+
+warning: use of deprecated tuple variant `time::format_description::BorrowedFormatItem::Literal`: use `StringLiteral` instead; raw bytes are not recommended
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:263:13
+    |
+263 |             Literal(b"-"),
+    |             ^^^^^^^
+
+warning: use of deprecated tuple variant `time::format_description::BorrowedFormatItem::Literal`: use `StringLiteral` instead; raw bytes are not recommended
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:265:13
+    |
+265 |             Literal(b"-"),
+    |             ^^^^^^^
+
+warning: use of deprecated tuple variant `time::format_description::BorrowedFormatItem::Literal`: use `StringLiteral` instead; raw bytes are not recommended
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:267:23
+    |
+267 |             Optional(&Literal(b" ")),
+    |                       ^^^^^^^
+
+warning: use of deprecated tuple variant `time::format_description::BorrowedFormatItem::Literal`: use `StringLiteral` instead; raw bytes are not recommended
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:268:23
+    |
+268 |             Optional(&Literal(b"T")),
+    |                       ^^^^^^^
+
+warning: use of deprecated tuple variant `time::format_description::BorrowedFormatItem::Literal`: use `StringLiteral` instead; raw bytes are not recommended
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:270:13
+    |
+270 |             Literal(b":"),
+    |             ^^^^^^^
+
+warning: use of deprecated tuple variant `time::format_description::BorrowedFormatItem::Literal`: use `StringLiteral` instead; raw bytes are not recommended
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:272:23
+    |
+272 |             Optional(&Literal(b":")),
+    |                       ^^^^^^^
+
+warning: use of deprecated tuple variant `time::format_description::BorrowedFormatItem::Literal`: use `StringLiteral` instead; raw bytes are not recommended
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:274:23
+    |
+274 |             Optional(&Literal(b".")),
+    |                       ^^^^^^^
+
+warning: use of deprecated tuple variant `time::format_description::BorrowedFormatItem::Literal`: use `StringLiteral` instead; raw bytes are not recommended
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:277:23
+    |
+277 |             Optional(&Literal(b":")),
+    |                       ^^^^^^^
+
+warning: use of deprecated tuple variant `time::format_description::BorrowedFormatItem::Literal`: use `StringLiteral` instead; raw bytes are not recommended
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:285:13
+    |
+285 |             Literal(b"-"),
+    |             ^^^^^^^
+
+warning: use of deprecated tuple variant `time::format_description::BorrowedFormatItem::Literal`: use `StringLiteral` instead; raw bytes are not recommended
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:287:13
+    |
+287 |             Literal(b"-"),
+    |             ^^^^^^^
+
+warning: use of deprecated tuple variant `time::format_description::BorrowedFormatItem::Literal`: use `StringLiteral` instead; raw bytes are not recommended
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:289:13
+    |
+289 |             Literal(b" "),
+    |             ^^^^^^^
+
+warning: use of deprecated tuple variant `time::format_description::BorrowedFormatItem::Literal`: use `StringLiteral` instead; raw bytes are not recommended
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:291:13
+    |
+291 |             Literal(b":"),
+    |             ^^^^^^^
+
+warning: use of deprecated tuple variant `time::format_description::BorrowedFormatItem::Literal`: use `StringLiteral` instead; raw bytes are not recommended
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:293:23
+    |
+293 |             Optional(&Literal(b":")),
+    |                       ^^^^^^^
+
+warning: use of deprecated tuple variant `time::format_description::BorrowedFormatItem::Literal`: use `StringLiteral` instead; raw bytes are not recommended
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:295:23
+    |
+295 |             Optional(&Literal(b".")),
+    |                       ^^^^^^^
+
+warning: use of deprecated tuple variant `time::format_description::BorrowedFormatItem::Literal`: use `StringLiteral` instead; raw bytes are not recommended
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:297:23
+    |
+297 |             Optional(&Literal(b"Z")),
+    |                       ^^^^^^^
+
+warning: use of deprecated tuple variant `time::format_description::BorrowedFormatItem::Literal`: use `StringLiteral` instead; raw bytes are not recommended
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:304:13
+    |
+304 |             Literal(b"-"),
+    |             ^^^^^^^
+
+warning: use of deprecated tuple variant `time::format_description::BorrowedFormatItem::Literal`: use `StringLiteral` instead; raw bytes are not recommended
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:306:13
+    |
+306 |             Literal(b"-"),
+    |             ^^^^^^^
+
+warning: use of deprecated tuple variant `time::format_description::BorrowedFormatItem::Literal`: use `StringLiteral` instead; raw bytes are not recommended
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:308:13
+    |
+308 |             Literal(b"T"),
+    |             ^^^^^^^
+
+warning: use of deprecated tuple variant `time::format_description::BorrowedFormatItem::Literal`: use `StringLiteral` instead; raw bytes are not recommended
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:310:13
+    |
+310 |             Literal(b":"),
+    |             ^^^^^^^
+
+warning: use of deprecated tuple variant `time::format_description::BorrowedFormatItem::Literal`: use `StringLiteral` instead; raw bytes are not recommended
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:312:23
+    |
+312 |             Optional(&Literal(b":")),
+    |                       ^^^^^^^
+
+warning: use of deprecated tuple variant `time::format_description::BorrowedFormatItem::Literal`: use `StringLiteral` instead; raw bytes are not recommended
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:314:23
+    |
+314 |             Optional(&Literal(b".")),
+    |                       ^^^^^^^
+
+warning: use of deprecated tuple variant `time::format_description::BorrowedFormatItem::Literal`: use `StringLiteral` instead; raw bytes are not recommended
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:316:23
+    |
+316 |             Optional(&Literal(b"Z")),
+    |                       ^^^^^^^
+
+   Compiling aes-gcm v0.10.3
+   Compiling codex-sandboxing v0.0.0 (/home/qian-qi/work/hepta-pq-effect-v4-20261105-93bfcf/source/codex-rs/sandboxing)
+warning: use of deprecated field `time::format_description::modifier::Year::padding`: use one of the various `Year*` components instead
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:201:9
+    |
+201 |         value.padding = modifier::Padding::Zero;
+    |         ^^^^^^^^^^^^^
+
+warning: use of deprecated field `time::format_description::modifier::Year::repr`: use one of the various `Year*` components instead
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:202:9
+    |
+202 |         value.repr = modifier::YearRepr::Full;
+    |         ^^^^^^^^^^
+
+warning: use of deprecated field `time::format_description::modifier::Year::iso_week_based`: use one of the various `Year*` components instead
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:203:9
+    |
+203 |         value.iso_week_based = false;
+    |         ^^^^^^^^^^^^^^^^^^^^
+
+warning: use of deprecated field `time::format_description::modifier::Year::sign_is_mandatory`: use one of the various `Year*` components instead
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:204:9
+    |
+204 |         value.sign_is_mandatory = false;
+    |         ^^^^^^^^^^^^^^^^^^^^^^^
+
+warning: use of deprecated field `time::format_description::modifier::Month::padding`: use `MonthShort`, `MonthLong`, or `MonthNumeric` instead
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:210:9
+    |
+210 |         value.padding = modifier::Padding::Zero;
+    |         ^^^^^^^^^^^^^
+
+warning: use of deprecated field `time::format_description::modifier::Month::repr`: use `MonthShort`, `MonthLong`, or `MonthNumeric` instead
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:211:9
+    |
+211 |         value.repr = modifier::MonthRepr::Numerical;
+    |         ^^^^^^^^^^
+
+warning: use of deprecated field `time::format_description::modifier::Month::case_sensitive`: use `MonthShort`, `MonthLong`, or `MonthNumeric` instead
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:212:9
+    |
+212 |         value.case_sensitive = true;
+    |         ^^^^^^^^^^^^^^^^^^^^
+
+warning: use of deprecated field `time::format_description::modifier::Hour::padding`: use `Hour12` or `Hour24` instead
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:224:9
+    |
+224 |         value.padding = modifier::Padding::Zero;
+    |         ^^^^^^^^^^^^^
+
+warning: use of deprecated field `time::format_description::modifier::Hour::is_12_hour_clock`: use `Hour12` or `Hour24` instead
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:225:9
+    |
+225 |         value.is_12_hour_clock = false;
+    |         ^^^^^^^^^^^^^^^^^^^^^^
+
+   Compiling codex-keyring-store v0.0.0 (/home/qian-qi/work/hepta-pq-effect-v4-20261105-93bfcf/source/codex-rs/keyring-store)
+   Compiling aws-credential-types v1.2.11
+   Compiling aws-smithy-http v0.62.6
+   Compiling axum-core v0.5.6
+warning: `sqlx-sqlite` (lib) generated 40 warnings
+   Compiling foldhash v0.1.5
+   Compiling matchit v0.8.4
+   Compiling axum v0.8.8
+   Compiling codex-secrets v0.0.0 (/home/qian-qi/work/hepta-pq-effect-v4-20261105-93bfcf/source/codex-rs/secrets)
+   Compiling sqlx-macros-core v0.9.0
+   Compiling clatter v2.2.0
+   Compiling codex-exec-server-protocol v0.0.0 (/home/qian-qi/work/hepta-pq-effect-v4-20261105-93bfcf/source/codex-rs/exec-server-protocol)
+   Compiling aws-smithy-http-client v1.1.12
+   Compiling aws-smithy-observability v0.1.5
+   Compiling debugid v0.8.0
+   Compiling aws-smithy-runtime v1.9.5
+warning: `sqlx-sqlite` (lib) generated 40 warnings (40 duplicates)
+   Compiling sentry-types v0.46.1
+   Compiling codex-exec-server v0.0.0 (/home/qian-qi/work/hepta-pq-effect-v4-20261105-93bfcf/source/codex-rs/exec-server)
+   Compiling sqlx-macros v0.9.0
+   Compiling aws-types v1.3.11
+   Compiling aws-sigv4 v1.3.7
+   Compiling simple_asn1 v0.6.4
+   Compiling hmac v0.13.0
+   Compiling getrandom v0.4.3
+   Compiling prettyplease v0.2.37
+   Compiling jsonwebtoken v9.3.1
+   Compiling aws-runtime v1.5.17
+   Compiling sqlx v0.9.0
+   Compiling sentry-core v0.46.1
+   Compiling aws-smithy-json v0.61.9 (/home/qian-qi/work/hepta-pq-effect-v4-20261105-93bfcf/source/codex-rs/third_party/aws-smithy-json-0.61.9)
+   Compiling codex-history v0.0.0 (/home/qian-qi/work/hepta-pq-effect-v4-20261105-93bfcf/source/codex-rs/history)
+   Compiling darling_core v0.24.0
+   Compiling webbrowser v1.2.4
+   Compiling linux-raw-sys v0.12.1
+   Compiling base64 v0.23.1
+   Compiling darling_macro v0.24.0
+   Compiling codex-state v0.0.0 (/home/qian-qi/work/hepta-pq-effect-v4-20261105-93bfcf/source/codex-rs/state)
+   Compiling elliptic-curve v0.14.3
+   Compiling codex-agent-identity v0.0.0 (/home/qian-qi/work/hepta-pq-effect-v4-20261105-93bfcf/source/codex-rs/agent-identity)
+   Compiling hashbrown v0.15.5
+   Compiling codex-workload-identity v0.0.0 (/home/qian-qi/work/hepta-pq-effect-v4-20261105-93bfcf/source/codex-rs/workload-identity)
+   Compiling sha2 v0.11.0
+   Compiling fixedbitset v0.5.7
+   Compiling fastrand v2.3.0
+   Compiling petgraph v0.8.3
+   Compiling codex-login v0.0.0 (/home/qian-qi/work/hepta-pq-effect-v4-20261105-93bfcf/source/codex-rs/login)
+   Compiling prost-types v0.14.3
+   Compiling darling v0.24.0
+   Compiling rfc6979 v0.6.0
+   Compiling schemars_derive v1.2.1
+   Compiling rmcp v3.1.3
+   Compiling prost-build v0.14.3
+   Compiling schemars v1.2.1
+   Compiling ecdsa v0.17.0
+   Compiling rmcp-macros v3.1.3
+   Compiling primeorder v0.14.0
+   Compiling sentry-backtrace v0.46.1
+   Compiling tonic-build v0.14.3
+   Compiling reqwest v0.13.5
+   Compiling aws-smithy-query v0.60.9
+   Compiling oauth2 v5.0.0
+   Compiling process-wrap v9.0.1
+   Compiling codex-utils-output-truncation v0.0.0 (/home/qian-qi/work/hepta-pq-effect-v4-20261105-93bfcf/source/codex-rs/utils/output-truncation)
+   Compiling sse-stream v0.2.5
+   Compiling semver v1.0.27
+   Compiling protoc-bin-vendored-linux-s390_64 v3.2.0
+   Compiling protoc-bin-vendored-macos-x86_64 v3.2.0
+   Compiling protoc-bin-vendored-linux-x86_64 v3.2.0
+   Compiling protoc-bin-vendored-win32 v3.2.0
+   Compiling pastey v0.2.1
+   Compiling protoc-bin-vendored-linux-aarch_64 v3.2.0
+   Compiling protoc-bin-vendored-linux-x86_32 v3.2.0
+   Compiling protoc-bin-vendored-linux-ppcle_64 v3.2.0
+   Compiling protoc-bin-vendored-macos-aarch_64 v3.2.0
+   Compiling protoc-bin-vendored v3.2.0
+   Compiling sentry-contexts v0.46.1
+   Compiling codex-install-context v0.0.0 (/home/qian-qi/work/hepta-pq-effect-v4-20261105-93bfcf/source/codex-rs/install-context)
+   Compiling aws-sdk-sts v1.95.0
+   Compiling tonic-prost-build v0.14.3
+   Compiling sentry-panic v0.46.1
+   Compiling sentry-debug-images v0.46.1
+   Compiling p256 v0.14.0
+   Compiling codex-utils-plugins v0.0.0 (/home/qian-qi/work/hepta-pq-effect-v4-20261105-93bfcf/source/codex-rs/utils/plugins)
+   Compiling aws-sdk-ssooidc v1.93.0
+   Compiling aws-sdk-sso v1.91.0
+   Compiling aws-sdk-signin v1.2.0
+   Compiling codex-hepta-types v0.0.0 (/home/qian-qi/work/hepta-pq-effect-v4-20261105-93bfcf/source/codex-rs/hepta-types)
+   Compiling aws-config v1.8.12 (/home/qian-qi/work/hepta-pq-effect-v4-20261105-93bfcf/source/codex-rs/third_party/aws-config-1.8.12)
+   Compiling codex-plugin v0.0.0 (/home/qian-qi/work/hepta-pq-effect-v4-20261105-93bfcf/source/codex-rs/plugin)
+   Compiling sentry v0.46.1
+   Compiling codex-code-mode-protocol v0.0.0 (/home/qian-qi/work/hepta-pq-effect-v4-20261105-93bfcf/source/codex-rs/code-mode-protocol)
+   Compiling codex-models-manager v0.0.0 (/home/qian-qi/work/hepta-pq-effect-v4-20261105-93bfcf/source/codex-rs/models-manager)
+   Compiling codex-feedback v0.0.0 (/home/qian-qi/work/hepta-pq-effect-v4-20261105-93bfcf/source/codex-rs/feedback)
+   Compiling codex-aws-auth v0.0.0 (/home/qian-qi/work/hepta-pq-effect-v4-20261105-93bfcf/source/codex-rs/aws-auth)
+   Compiling codex-response-debug-context v0.0.0 (/home/qian-qi/work/hepta-pq-effect-v4-20261105-93bfcf/source/codex-rs/response-debug-context)
+   Compiling codex-model-provider v0.0.0 (/home/qian-qi/work/hepta-pq-effect-v4-20261105-93bfcf/source/codex-rs/model-provider)
+   Compiling codex-connectors v0.0.0 (/home/qian-qi/work/hepta-pq-effect-v4-20261105-93bfcf/source/codex-rs/connectors)
+   Compiling codex-code-mode v0.0.0 (/home/qian-qi/work/hepta-pq-effect-v4-20261105-93bfcf/source/codex-rs/code-mode)
+   Compiling codex-rmcp-client v0.0.0 (/home/qian-qi/work/hepta-pq-effect-v4-20261105-93bfcf/source/codex-rs/rmcp-client)
+   Compiling codex-exec-server-test-support v0.0.0 (/home/qian-qi/work/hepta-pq-effect-v4-20261105-93bfcf/source/codex-rs/exec-server/tests/support)
+   Compiling codex-diagnostics v0.0.0 (/home/qian-qi/work/hepta-pq-effect-v4-20261105-93bfcf/source/codex-rs/diagnostics)
+   Compiling jsonptr v0.7.1
+   Compiling predicates-core v1.0.9
+   Compiling codex-tools v0.0.0 (/home/qian-qi/work/hepta-pq-effect-v4-20261105-93bfcf/source/codex-rs/tools)
+   Compiling codex-mcp v0.0.0 (/home/qian-qi/work/hepta-pq-effect-v4-20261105-93bfcf/source/codex-rs/codex-mcp)
+   Compiling symphonia-core v0.6.0
+   Compiling rayon v1.11.0
+   Compiling nucleo-matcher v0.3.1 (https://github.com/helix-editor/nucleo.git?rev=4253de9faabb4e5c6d81d946a5e35a90f87347ee#4253de9f)
+   Compiling difflib v0.4.0
+   Compiling assert_cmd v2.1.2
+   Compiling termtree v0.5.1
+   Compiling predicates-tree v1.0.12
+   Compiling predicates v3.1.3
+   Compiling nucleo v0.5.0 (https://github.com/helix-editor/nucleo.git?rev=4253de9faabb4e5c6d81d946a5e35a90f87347ee#4253de9f)
+   Compiling codex-context-fragments v0.0.0 (/home/qian-qi/work/hepta-pq-effect-v4-20261105-93bfcf/source/codex-rs/context-fragments)
+   Compiling ignore v0.4.25
+   Compiling wait-timeout v0.2.1
+   Compiling codex-file-search v0.0.0 (/home/qian-qi/work/hepta-pq-effect-v4-20261105-93bfcf/source/codex-rs/file-search)
+   Compiling symphonia-metadata v0.6.0
+   Compiling runfiles v0.1.0 (https://github.com/dzbarsky/rules_rust?rev=b56cbaa8465e74127f1ea216f813cd377295ad81#b56cbaa8)
+   Compiling codex-utils-cargo-bin v0.0.0 (/home/qian-qi/work/hepta-pq-effect-v4-20261105-93bfcf/source/codex-rs/utils/cargo-bin)
+   Compiling codex-rollout v0.0.0 (/home/qian-qi/work/hepta-pq-effect-v4-20261105-93bfcf/source/codex-rs/rollout)
+   Compiling codex-extension-api v0.0.0 (/home/qian-qi/work/hepta-pq-effect-v4-20261105-93bfcf/source/codex-rs/ext/extension-api)
+   Compiling bzip2-sys v0.1.13+1.0.8
+   Compiling codex-experimental-api-macros v0.0.0 (/home/qian-qi/work/hepta-pq-effect-v4-20261105-93bfcf/source/codex-rs/codex-experimental-api-macros)
+   Compiling arraydeque v0.5.1
+   Compiling unicode-width v0.2.1
+   Compiling codex-app-server-protocol-noop-macros v0.0.0 (/home/qian-qi/work/hepta-pq-effect-v4-20261105-93bfcf/source/codex-rs/app-server-protocol-noop-macros)
+   Compiling annotate-snippets v0.12.5
+   Compiling granit-parser v1.3.0
+   Compiling codex-app-server-protocol v0.0.0 (/home/qian-qi/work/hepta-pq-effect-v4-20261105-93bfcf/source/codex-rs/app-server-protocol)
+   Compiling symphonia-common v0.6.0
+   Compiling constant_time_eq v0.6.1
+   Compiling encoding_rs_io v0.1.8
+   Compiling darling_core v0.20.11
+   Compiling inout v0.2.2
+   Compiling include_dir_macros v0.7.4
+   Compiling nohash-hasher v0.2.0
+   Compiling codex-skills v0.0.0 (/home/qian-qi/work/hepta-pq-effect-v4-20261105-93bfcf/source/codex-rs/skills)
+   Compiling serde-saphyr v1.3.0
+   Compiling include_dir v0.7.4
+   Compiling cipher v0.5.2
+   Compiling darling_macro v0.20.11
+   Compiling libbz2-rs-sys v0.2.5
+   Compiling bzip2 v0.6.1
+   Compiling darling v0.20.11
+   Compiling aes v0.9.3
+   Compiling lzma-rust2 v0.22.0
+   Compiling pbkdf2 v0.13.0
+   Compiling zopfli v0.8.3
+   Compiling stop-words v0.9.0
+   Compiling sha1 v0.11.0
+   Compiling filetime v0.2.27
+   Compiling typed-path v0.12.3
+   Compiling codex-analytics v0.0.0 (/home/qian-qi/work/hepta-pq-effect-v4-20261105-93bfcf/source/codex-rs/analytics)
+   Compiling extended v0.1.0
+   Compiling ppmd-rust v1.5.0
+   Compiling pulldown-cmark v0.10.3
+   Compiling deflate64 v0.1.10
+   Compiling zip v9.0.5
+   Compiling symphonia-format-riff v0.6.0
+   Compiling tar v0.4.46
+   Compiling cached_proc_macro v0.25.0
+   Compiling symphonia-format-isomp4 v0.6.0
+   Compiling symphonia-format-ogg v0.6.0
+   Compiling symphonia-format-mkv v0.6.0
+   Compiling symphonia-bundle-mp3 v0.6.0
+   Compiling codex-hooks v0.0.0 (/home/qian-qi/work/hepta-pq-effect-v4-20261105-93bfcf/source/codex-rs/hooks)
+   Compiling cached_proc_macro_types v0.1.1
+   Compiling web-time v1.1.0
+   Compiling cached v0.56.0
+   Compiling symphonia v0.6.0
+   Compiling codex-core-plugins v0.0.0 (/home/qian-qi/work/hepta-pq-effect-v4-20261105-93bfcf/source/codex-rs/core-plugins)
+   Compiling codex-apply-patch v0.0.0 (/home/qian-qi/work/hepta-pq-effect-v4-20261105-93bfcf/source/codex-rs/apply-patch)
+   Compiling codex-shell-escalation v0.0.0 (/home/qian-qi/work/hepta-pq-effect-v4-20261105-93bfcf/source/codex-rs/shell-escalation)
+   Compiling rust-stemmers v1.2.0
+   Compiling deunicode v1.6.2
+   Compiling bm25 v2.3.2
+   Compiling codex-thread-store v0.0.0 (/home/qian-qi/work/hepta-pq-effect-v4-20261105-93bfcf/source/codex-rs/thread-store)
+   Compiling codex-utils-audio v0.0.0 (/home/qian-qi/work/hepta-pq-effect-v4-20261105-93bfcf/source/codex-rs/utils/audio)
+   Compiling codex-skills-extension v0.0.0 (/home/qian-qi/work/hepta-pq-effect-v4-20261105-93bfcf/source/codex-rs/ext/skills)
+   Compiling codex-prompts v0.0.0 (/home/qian-qi/work/hepta-pq-effect-v4-20261105-93bfcf/source/codex-rs/prompts)
+   Compiling codex-rollout-trace v0.0.0 (/home/qian-qi/work/hepta-pq-effect-v4-20261105-93bfcf/source/codex-rs/rollout-trace)
+   Compiling codex-agent-graph-store v0.0.0 (/home/qian-qi/work/hepta-pq-effect-v4-20261105-93bfcf/source/codex-rs/agent-graph-store)
+   Compiling codex-memories-read v0.0.0 (/home/qian-qi/work/hepta-pq-effect-v4-20261105-93bfcf/source/codex-rs/memories/read)
+   Compiling whoami v1.6.1
+   Compiling codex-utils-stream-parser v0.0.0 (/home/qian-qi/work/hepta-pq-effect-v4-20261105-93bfcf/source/codex-rs/utils/stream-parser)
+   Compiling codex-core v0.0.0 (/home/qian-qi/work/hepta-pq-effect-v4-20261105-93bfcf/source/codex-rs/core)
+   Compiling codex-hepta-cognitive-types v0.0.0 (/home/qian-qi/work/hepta-pq-effect-v4-20261105-93bfcf/source/codex-rs/hepta-cognitive-types)
+   Compiling codex-hepta-memory-retrieval v0.0.0 (/home/qian-qi/work/hepta-pq-effect-v4-20261105-93bfcf/source/codex-rs/hepta-memory-retrieval)
+   Compiling codex-hepta-prompt-registry v0.0.0 (/home/qian-qi/work/hepta-pq-effect-v4-20261105-93bfcf/source/codex-rs/hepta-prompt-registry)
+   Compiling codex-hepta-paths v0.0.0 (/home/qian-qi/work/hepta-pq-effect-v4-20261105-93bfcf/source/codex-rs/hepta-paths)
+   Compiling codex-hepta-kg v0.0.0 (/home/qian-qi/work/hepta-pq-effect-v4-20261105-93bfcf/source/codex-rs/hepta-kg)
+   Compiling codex-hepta-operations v0.0.0 (/home/qian-qi/work/hepta-pq-effect-v4-20261105-93bfcf/source/codex-rs/hepta-operations)
+   Compiling codex-hepta-cognitive-read v0.0.0 (/home/qian-qi/work/hepta-pq-effect-v4-20261105-93bfcf/source/codex-rs/hepta-cognitive-read)
+   Compiling codex-backend-openapi-models v0.0.0 (/home/qian-qi/work/hepta-pq-effect-v4-20261105-93bfcf/source/codex-rs/codex-backend-openapi-models)
+   Compiling inotify-sys v0.1.5
+   Compiling codex-linux-sandbox v0.0.0 (/home/qian-qi/work/hepta-pq-effect-v4-20261105-93bfcf/source/codex-rs/linux-sandbox)
+   Compiling inotify v0.11.0
+   Compiling codex-backend-client v0.0.0 (/home/qian-qi/work/hepta-pq-effect-v4-20261105-93bfcf/source/codex-rs/backend-client)
+   Compiling codex-hepta-memory-federation v0.0.0 (/home/qian-qi/work/hepta-pq-effect-v4-20261105-93bfcf/source/codex-rs/hepta-memory-federation)
+   Compiling notify-types v2.1.0
+   Compiling codex-process-hardening v0.0.0 (/home/qian-qi/work/hepta-pq-effect-v4-20261105-93bfcf/source/codex-rs/process-hardening)
+   Compiling is_ci v1.2.0
+   Compiling notify v8.2.0
+   Compiling codex-hepta-memory v0.0.0 (/home/qian-qi/work/hepta-pq-effect-v4-20261105-93bfcf/source/codex-rs/hepta-memory)
+   Compiling codex-hepta-intuition v0.0.0 (/home/qian-qi/work/hepta-pq-effect-v4-20261105-93bfcf/source/codex-rs/hepta-intuition)
+   Compiling is-terminal v0.4.17
+   Compiling owo-colors v4.3.0
+   Compiling supports-color v2.1.0
+   Compiling codex-hepta-learning-ledger v0.0.0 (/home/qian-qi/work/hepta-pq-effect-v4-20261105-93bfcf/source/codex-rs/hepta-learning-ledger)
+   Compiling codex-arg0 v0.0.0 (/home/qian-qi/work/hepta-pq-effect-v4-20261105-93bfcf/source/codex-rs/arg0)
+   Compiling supports-color v3.0.2
+   Compiling codex-home v0.0.0 (/home/qian-qi/work/hepta-pq-effect-v4-20261105-93bfcf/source/codex-rs/codex-home)
+   Compiling codex-hepta-authbus v0.0.0 (/home/qian-qi/work/hepta-pq-effect-v4-20261105-93bfcf/source/codex-rs/hepta-authbus)
+   Compiling codex-uds v0.0.0 (/home/qian-qi/work/hepta-pq-effect-v4-20261105-93bfcf/source/codex-rs/uds)
+   Compiling constant_time_eq v0.3.1
+   Compiling codex-hepta-evidence v0.0.0 (/home/qian-qi/work/hepta-pq-effect-v4-20261105-93bfcf/source/codex-rs/hepta-evidence)
+   Compiling codex-memories-write v0.0.0 (/home/qian-qi/work/hepta-pq-effect-v4-20261105-93bfcf/source/codex-rs/memories/write)
+   Compiling codex-connectors-extension v0.0.0 (/home/qian-qi/work/hepta-pq-effect-v4-20261105-93bfcf/source/codex-rs/ext/connectors)
+   Compiling codex-utils-cli v0.0.0 (/home/qian-qi/work/hepta-pq-effect-v4-20261105-93bfcf/source/codex-rs/utils/cli)
+   Compiling codex-chatgpt v0.0.0 (/home/qian-qi/work/hepta-pq-effect-v4-20261105-93bfcf/source/codex-rs/chatgpt)
+   Compiling codex-mcp-extension v0.0.0 (/home/qian-qi/work/hepta-pq-effect-v4-20261105-93bfcf/source/codex-rs/ext/mcp)
+   Compiling codex-app-server-transport v0.0.0 (/home/qian-qi/work/hepta-pq-effect-v4-20261105-93bfcf/source/codex-rs/app-server-transport)
+   Compiling codex-external-agent-migration v0.0.0 (/home/qian-qi/work/hepta-pq-effect-v4-20261105-93bfcf/source/codex-rs/external-agent-migration)
+   Compiling codex-hepta-governance v0.0.0 (/home/qian-qi/work/hepta-pq-effect-v4-20261105-93bfcf/source/codex-rs/ext/hepta-governance)
+   Compiling codex-goal-extension v0.0.0 (/home/qian-qi/work/hepta-pq-effect-v4-20261105-93bfcf/source/codex-rs/ext/goal)
+   Compiling codex-image-generation-extension v0.0.0 (/home/qian-qi/work/hepta-pq-effect-v4-20261105-93bfcf/source/codex-rs/ext/image-generation)
+   Compiling codex-guardian-v2 v0.0.0 (/home/qian-qi/work/hepta-pq-effect-v4-20261105-93bfcf/source/codex-rs/ext/guardian-v2)
+   Compiling codex-agent-extension v0.0.0 (/home/qian-qi/work/hepta-pq-effect-v4-20261105-93bfcf/source/codex-rs/ext/agent)
+   Compiling codex-web-search-extension v0.0.0 (/home/qian-qi/work/hepta-pq-effect-v4-20261105-93bfcf/source/codex-rs/ext/web-search)
+   Compiling codex-history-notes-extension v0.0.0 (/home/qian-qi/work/hepta-pq-effect-v4-20261105-93bfcf/source/codex-rs/ext/history-notes)
+   Compiling codex-queue-extension v0.0.0 (/home/qian-qi/work/hepta-pq-effect-v4-20261105-93bfcf/source/codex-rs/ext/queue)
+   Compiling codex-cloud-config v0.0.0 (/home/qian-qi/work/hepta-pq-effect-v4-20261105-93bfcf/source/codex-rs/cloud-config)
+   Compiling codex-memories-extension v0.0.0 (/home/qian-qi/work/hepta-pq-effect-v4-20261105-93bfcf/source/codex-rs/ext/memories)
+   Compiling codex-hepta-memory-extension v0.0.0 (/home/qian-qi/work/hepta-pq-effect-v4-20261105-93bfcf/source/codex-rs/ext/hepta-memory)
+   Compiling codex-file-watcher v0.0.0 (/home/qian-qi/work/hepta-pq-effect-v4-20261105-93bfcf/source/codex-rs/file-watcher)
+   Compiling codex-git-attribution v0.0.0 (/home/qian-qi/work/hepta-pq-effect-v4-20261105-93bfcf/source/codex-rs/ext/git-attribution)
+   Compiling codex-hepta-prompt-extension v0.0.0 (/home/qian-qi/work/hepta-pq-effect-v4-20261105-93bfcf/source/codex-rs/ext/hepta-prompt)
+   Compiling codex-hepta-ndu v0.0.0 (/home/qian-qi/work/hepta-pq-effect-v4-20261105-93bfcf/source/codex-rs/hepta-ndu)
+   Compiling codex-hepta-wire v0.0.0 (/home/qian-qi/work/hepta-pq-effect-v4-20261105-93bfcf/source/codex-rs/hepta-wire)
+   Compiling codex-utils-json-to-toml v0.0.0 (/home/qian-qi/work/hepta-pq-effect-v4-20261105-93bfcf/source/codex-rs/utils/json-to-toml)
+   Compiling codex-app-server v0.0.0 (/home/qian-qi/work/hepta-pq-effect-v4-20261105-93bfcf/source/codex-rs/app-server)
+   Compiling codex-hepta-intelligence-eval v0.0.0 (/home/qian-qi/work/hepta-pq-effect-v4-20261105-93bfcf/source/codex-rs/hepta-intelligence-eval)
+   Compiling codex-hepta-automation v0.0.0 (/home/qian-qi/work/hepta-pq-effect-v4-20261105-93bfcf/source/codex-rs/hepta-automation)
+   Compiling codex-hepta-fleet v0.0.0 (/home/qian-qi/work/hepta-pq-effect-v4-20261105-93bfcf/source/codex-rs/hepta-fleet)
+   Compiling codex-hepta-infer-core v0.0.0 (/home/qian-qi/work/hepta-pq-effect-v4-20261105-93bfcf/source/codex-rs/hepta-infer-core)
+   Compiling dtor-proc-macro v0.0.6
+   Compiling dtor v0.1.1
+   Compiling deadpool v0.12.3
+   Compiling codex-hepta-neuron v0.0.0 (/home/qian-qi/work/hepta-pq-effect-v4-20261105-93bfcf/source/codex-rs/hepta-neuron)
+   Compiling codex-hepta-agent-protocol v0.0.0 (/home/qian-qi/work/hepta-pq-effect-v4-20261105-93bfcf/source/codex-rs/hepta-agent-protocol)
+   Compiling codex-hepta-control-plane v0.0.0 (/home/qian-qi/work/hepta-pq-effect-v4-20261105-93bfcf/source/codex-rs/hepta-control-plane)
+   Compiling codex-hepta-context-compiler v0.0.0 (/home/qian-qi/work/hepta-pq-effect-v4-20261105-93bfcf/source/codex-rs/hepta-context-compiler)
+   Compiling codex-hepta-prompt-optimizer v0.0.0 (/home/qian-qi/work/hepta-pq-effect-v4-20261105-93bfcf/source/codex-rs/hepta-prompt-optimizer)
+   Compiling codex-hepta-plasticity v0.0.0 (/home/qian-qi/work/hepta-pq-effect-v4-20261105-93bfcf/source/codex-rs/hepta-plasticity)
+   Compiling codex-hepta-learning-artifacts v0.0.0 (/home/qian-qi/work/hepta-pq-effect-v4-20261105-93bfcf/source/codex-rs/hepta-learning-artifacts)

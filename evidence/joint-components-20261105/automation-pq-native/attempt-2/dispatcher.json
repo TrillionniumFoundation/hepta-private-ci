@@ -1,0 +1,57 @@
+{
+  "after": {
+    "commit": "495e36f8cb71fdae7290710dd339e2ee34d4feec",
+    "dirty": false,
+    "parents": [
+      "96d8414a9ab36e7e47d1430699274d0b635eec6f"
+    ],
+    "tree": "a9a266faa47ba78430ff73f31e55b14e0043e196"
+  },
+  "base_sha": "1556a4df6e279055fd8196f81a4ca2fe0f19384a",
+  "before": {
+    "commit": "495e36f8cb71fdae7290710dd339e2ee34d4feec",
+    "dirty": false,
+    "parents": [
+      "96d8414a9ab36e7e47d1430699274d0b635eec6f"
+    ],
+    "tree": "a9a266faa47ba78430ff73f31e55b14e0043e196"
+  },
+  "command": [
+    "just",
+    "test",
+    "--locked",
+    "-p",
+    "codex-hepta-agentd",
+    "--lib",
+    "-E",
+    "test(authbus_dispatch::tests::)",
+    "--no-capture",
+    "--retries",
+    "0",
+    "--test-threads=1"
+  ],
+  "command_exit_code": 101,
+  "elapsed_seconds": 79.06215023004916,
+  "error": "required tests were not observed passing",
+  "exit_code": 101,
+  "finished_at": "2026-11-05T15:42:59.550265+00:00",
+  "job": null,
+  "lane": "source-head",
+  "log_bytes": 17875,
+  "log_file": "dispatcher.json.40618f74fdf142609e44960b94baf047.log",
+  "log_sha256": "3d3c2c39bf80c571b2d92953337abac430bf35c27e0681b3f6a98ab21e643c85",
+  "minimum_tests": 14,
+  "observed_failed_tests": 0,
+  "observed_passed_tests": 0,
+  "output_limit_exceeded": false,
+  "returncode": 101,
+  "run_attempt": null,
+  "run_id": null,
+  "schema_version": 1,
+  "source_sha": "495e36f8cb71fdae7290710dd339e2ee34d4feec",
+  "started_at": "2026-11-05T15:41:40.422320+00:00",
+  "status": "failed",
+  "tested_sha": "495e36f8cb71fdae7290710dd339e2ee34d4feec",
+  "timed_out": false,
+  "working_directory": "/home/qian-qi/work/hepta-pq-effect-v4-20261105-93bfcf/source"
+}

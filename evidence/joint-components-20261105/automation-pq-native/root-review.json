@@ -1,0 +1,40 @@
+{
+  "schema": "root-automation-pq-native-review-v1",
+  "component_commit": "495e36f8cb71fdae7290710dd339e2ee34d4feec",
+  "component_tree": "a9a266faa47ba78430ff73f31e55b14e0043e196",
+  "source_files_sha256_verified": 11,
+  "provider_controls": {
+    "standalone_new_test_passed": 1,
+    "original_and_new_combined_passed": 10,
+    "new_test_included_in_combined_count": true,
+    "raw_receipts_sha256_checked": true
+  },
+  "attempt_1_new_host": {
+    "original_wrapper_timeout_seconds": 600,
+    "timed_out_during_cold_compile": true,
+    "tests_executed": 0,
+    "test_failures": 0,
+    "qualified": false
+  },
+  "attempt_1_actual_provider_image_hash": "2eb9f6570a4f4a0c2f53ab32e743a5fe9f38b6f7467c63089674d7aff88e6c6f",
+  "attempt_1_image_binding_limitation": "Observer did not yet bind wrapper ancestry and perform a post-open task/image identity recheck. Do not apply the corrected collector retroactively.",
+  "corrected_collector_controls": {
+    "actual_desktop_passes": 3,
+    "seconds": 2.315,
+    "raw_sha256": "db982524f22efda27ce59e7f7fc03a8b5d44162c5309721e6e98658aebf3bfed"
+  },
+  "attempt_2_dispatcher": {
+    "command_exit_code": 101,
+    "tests_executed": 0,
+    "compiler_diagnostics": 5,
+    "later_product_and_new_host_gates_executed": false,
+    "receipt_and_raw_hash_independently_checked": true,
+    "elapsed_seconds": 79.06215023004916,
+    "timed_out": false,
+    "source_clean_unchanged": true,
+    "receipt_sha256": "dfed086783efacd881ab096c57014311e1746f6dfc88851cf00ae7e2c32e9fd1",
+    "raw_sha256": "3d3c2c39bf80c571b2d92953337abac430bf35c27e0681b3f6a98ab21e643c85"
+  },
+  "native_host_qualified": false,
+  "joint_candidate_qualified": false
+}

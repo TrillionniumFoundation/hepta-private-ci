@@ -1,0 +1,120 @@
+{
+  "job": {
+    "content": [
+      {
+        "type": "text",
+        "text": "{\n  \"audit_recorded\": true,\n  \"job\": {\n    \"args\": [\n      \"-c\",\n      \"from pathlib import Path\\nimport base64,gzip,hashlib,importlib.util,json,os,subprocess,sys,time,tomllib\\nROOT=Path('/home/qian-qi/work/hepta-pq-effect-v4-20261105-93bfcf');SOURCE=ROOT/'source';EVIDENCE=ROOT/'evidence/h1-format-preparation-6'\\nBEFORE='6550b582a92cae97dd74ef9098176f2f2e6d6231';H1='b4b81cc59847cfe2683f170949d464778f413147';TREE='a64d3f3d34f5e52546ec762b6ad7fbdfa69e96b2';BASE='1556a4df6e279055fd8196f81a4ca2fe0f19384a'\\nENV=dict(os.environ,GIT_NO_LAZY_FETCH='1',GIT_TERMINAL_PROMPT='0',PYTHONDONTWRITEBYTECODE='1',RUSTUP_TOOLCHAIN='1.96.0')\\nos.environ.update({k:ENV[k] for k in ['GIT_NO_LAZY_FETCH','GIT_TERMINAL_PROMPT','PYTHONDONTWRITEBYTECODE','RUSTUP_TOOLCHAIN']});sys.dont_write_bytecode=True\\nSTATE={'status':'preparing-not-qualified','source':str(SOURCE),'requested_commit':H1,'requested_tree':TREE,'started_unix':time.time()}\\ndef git(*a):return subprocess.check_output(['git','-c','gc.auto=0',*a],cwd=SOURCE,env=ENV,timeout=180)\\ndef digest(p):return hashlib.sha256(Path(p).read_bytes()).hexdigest()\\ndef publish(phase,**extra):\\n STATE.update(phase=phase,**extra);p=EVIDENCE/'status.pending.json';p.write_text(json.dumps(STATE,indent=2)+'\\\\n');p.replace(EVIDENCE/'status.json');print(json.dumps({'phase':phase,**extra}),flush=True)\\ndef guard(label):\\n path=SOURCE/'scripts/hepta_ci_exec.py';assert digest(path)=='e55f5ca1200b2c9fc5af4158c42f460e71f3815166a962a5b892acfe9477b1d1'\\n spec=importlib.util.spec_from_file_location('original_hepta_ci_exec',path);m=importlib.util.module_from_spec(spec);spec.loader.exec_module(m)\\n identity=m.identity(repository=SOURCE);raw_ok=m.worktree_blobs_match(repository=SOURCE)\\n entries=git('ls-tree','-r','-l','-z','HEAD').split(b'\\\\0');count=total=0;missing=[]\\n for entry in entries:\\n  if not entry:continue\\n  header,name=entry.split(b'\\\\t',1);mode,kind,oid,size=header.split();assert kind==b'blob'\\n  count+=1;total+=int(size)\\n  if not os.path.lexists(SOURCE/os.fsdecode(name)):missing.append(os.fsdecode(name))\\n flags=[v for v in git('ls-files','-v','-z').decode().split('\\\\0') if v];hidden=[v for v in flags if v[0]=='S' or v[0].islower()]\\n result={'identity':identity,'raw_git_blob_bytes_match':raw_ok,'tracked_count':count,'tracked_bytes':total,'index_count':len(flags),'missing':missing,'hidden':hidden,'tree_inventory_sha256':hashlib.sha256(b'\\\\0'.join(entries)).hexdigest(),'guard_sha256':digest(path),'cargo_lock_sha256':digest(SOURCE/'codex-rs/Cargo.lock'),'toolchain_file_sha256':digest(SOURCE/'codex-rs/rust-toolchain.toml'),'nextest_config_sha256':digest(SOURCE/'codex-rs/.config/nextest.toml')}\\n (EVIDENCE/(label+'.json')).write_text(json.dumps(result,indent=2)+'\\\\n')\\n assert count==len(flags) and not hidden and not missing\\n return result\\n\\ndef main():\\n EVIDENCE.mkdir(mode=0o700)\\n previous=json.loads((ROOT/'evidence/h1-format-preparation-5/result.json').read_text())\\n assert previous['format_exit_code']==0\\n assert git('rev-parse','HEAD').decode().strip()==H1 and git('rev-parse','HEAD^{tree}').decode().strip()==TREE\\n assert hashlib.sha256(git('diff','--binary','HEAD')).hexdigest()==previous['delta_sha256'],'preparation source drift'\\n configurations=[Path(p) for p in previous['configurations']]\\n configs={str(p):digest(p) for p in configurations};assert configs==previous['configurations']\\n project=tomllib.loads((SOURCE/'codex-rs/hepta-agentd/Cargo.toml').read_text())\\n assert 'reqwest' not in project['dependencies'] and 'reqwest' not in project['dev-dependencies'] and 'http' in project['dependencies']\\n assert 'codex-hepta-contracts' in project['dependencies']\\n path=SOURCE/'codex-rs/hepta-agentd/tests/automation_effect_pq_product.rs'\\n before_text=path.read_text()\\n for name in ['ProviderEffectIntent','ProviderEffectKey']:\\n  old='use codex_model_provider::'+name+';';assert before_text.count(old)==1\\n  before_text=before_text.replace(old,'use codex_hepta_contracts::'+name+';')\\n path.write_text(before_text)\\n ENV['PATH']=str(ROOT/'tools/uv-0.11.3/bin')+':'+ENV['PATH'];os.environ['PATH']=ENV['PATH']\\n uv=ROOT/'tools/uv-0.11.3/bin/uv';assert digest(uv)=='fa5fc652fa5ed5b44fa8e7dda507f27975c02f59643787fd8ab4bf36f1ba7438'\\n before=guard('joint-before-format')\\n publish('format-joint-import-repair',repair='reuse direct contracts ProviderEffectIntent/Key; no dependency or lock change',configuration_before=configs)\\n with (EVIDENCE/'format.log').open('xb') as log:r=subprocess.run(['just','fmt','--base',BASE],cwd=SOURCE,env=ENV,stdout=log,stderr=subprocess.STDOUT,timeout=300)\\n after=guard('joint-after-format');delta=git('diff','--binary','HEAD');(EVIDENCE/'format.patch').write_bytes(delta)\\n paths=git('diff','--name-only','HEAD').decode().splitlines();after_configs={str(p):digest(p) for p in configurations}\\n assert configs==after_configs,'original configuration changed'\\n result={'status':'formatted-not-tested' if r.returncode==0 else 'format-failed','format_exit_code':r.returncode,'source':H1,'tree':TREE,'before':before,'after':after,'configurations':configs,'configuration_unchanged':configs==after_configs,'delta_paths':paths,'delta_sha256':hashlib.sha256(delta).hexdigest(),'finished_unix':time.time()}\\n if paths:\\n  payload=json.dumps({'paths':paths,'patch':delta.decode(),'files':[{'path':p,'sha256':digest(SOURCE/p),'content':(SOURCE/p).read_text()} for p in paths]},separators=(',',':')).encode();(EVIDENCE/'format-delta-export.json').write_text(json.dumps({'payload_sha256':hashlib.sha256(payload).hexdigest(),'gzip_base64':base64.b64encode(gzip.compress(payload,mtime=0)).decode()}))\\n (EVIDENCE/'result.json').write_text(json.dumps(result,indent=2)+'\\\\n');publish('complete',**result)\\n assert r.returncode==0\\n if not paths:assert not after['identity']['dirty'] and after['raw_git_blob_bytes_match']\\nif __name__=='__main__':\\n try:main()\\n except BaseException as error:\\n  if EVIDENCE.exists():publish('failed',status='failed',error=repr(error),finished_unix=time.time())\\n  raise\\n\"\n    ],\n    \"created_unix_ms\": 1793897464953,\n    \"cwd\": \"/home/qian-qi/work/hepta-pq-effect-v4-20261105-93bfcf/source\",\n    \"env_keys\": [],\n    \"executable\": \"/usr/bin/python3\",\n    \"execution_mode\": \"operator\",\n    \"host\": \"desktop\",\n    \"id\": \"1a1ac9f0479-fc05-55ef\",\n    \"idempotency_key\": \"ms-joint-h1-final-direct-imports-fmt-93bfcf\",\n    \"launch_error\": null,\n    \"launch_state\": \"launched\",\n    \"remote_job_dir\": \"/home/qian-qi/.local/state/hepta-runtime-mac-worker/jobs/1a1ac9f0479-fc05-55ef\",\n    \"request_digest\": \"d6989ac535168a91a0cd514ae291057626441578eb7e63d9a5977a4a10f53b9f\",\n    \"request_fingerprint\": 15463279492366502545,\n    \"ssh_target\": \"desktop-ts\",\n    \"system_jobctl\": false,\n    \"unit\": \"hepta-runtime-job-1a1ac9f0479-fc05-55ef\"\n  },\n  \"launch\": {\n    \"backend\": \"systemd\",\n    \"launcher_pid\": null,\n    \"ok\": true,\n    \"unit\": \"hepta-runtime-job-1a1ac9f0479-fc05-55ef\"\n  },\n  \"local_record_pending\": false,\n  \"reused\": false\n}"
+      }
+    ],
+    "structuredContent": null,
+    "isError": false
+  },
+  "status": {
+    "content": [
+      {
+        "type": "text",
+        "text": "{\n  \"at_unix_ms\": 1793897470445,\n  \"audit_recorded\": true,\n  \"automatic_retry\": false,\n  \"cancelled\": false,\n  \"exit_code\": 0,\n  \"job_id\": \"1a1ac9f0479-fc05-55ef\",\n  \"launch_nonce\": \"212c66022a56d1787cf6d8c5b7dc2476\",\n  \"log_bytes\": {\n    \"stderr\": {\n      \"seen\": 0,\n      \"stored\": 0\n    },\n    \"stdout\": {\n      \"seen\": 3434,\n      \"stored\": 3434\n    }\n  },\n  \"log_errors\": {\n    \"stderr\": null,\n    \"stdout\": null\n  },\n  \"log_synced\": {\n    \"stderr\": true,\n    \"stdout\": true\n  },\n  \"log_truncated\": {\n    \"stderr\": false,\n    \"stdout\": false\n  },\n  \"output_complete\": true,\n  \"output_durable\": true,\n  \"state\": \"succeeded\",\n  \"terminal_publication_confirmed\": true,\n  \"terminal_publication_protocol\": 1,\n  \"timed_out\": false\n}"
+      }
+    ],
+    "structuredContent": null,
+    "isError": false
+  },
+  "result": {
+    "status": "formatted-not-tested",
+    "format_exit_code": 0,
+    "source": "b4b81cc59847cfe2683f170949d464778f413147",
+    "tree": "a64d3f3d34f5e52546ec762b6ad7fbdfa69e96b2",
+    "before": {
+      "identity": {
+        "commit": "b4b81cc59847cfe2683f170949d464778f413147",
+        "tree": "a64d3f3d34f5e52546ec762b6ad7fbdfa69e96b2",
+        "parents": [
+          "723d4f6b72ec64d73803e5603e9adec79c753fca"
+        ],
+        "dirty": true
+      },
+      "raw_git_blob_bytes_match": false,
+      "tracked_count": 11839,
+      "tracked_bytes": 183367649,
+      "index_count": 11839,
+      "missing": [],
+      "hidden": [],
+      "tree_inventory_sha256": "bcff86a690685f186b18556888684c2e2372d1f9e2f73a546fe6da0369ddfe72",
+      "guard_sha256": "e55f5ca1200b2c9fc5af4158c42f460e71f3815166a962a5b892acfe9477b1d1",
+      "cargo_lock_sha256": "0f458d7746a0ca0b95bedc5404fd3347c1b0a7508f1c387f3b1f3f71ced08663",
+      "toolchain_file_sha256": "e8b379eaa492bf59d35187de269afd1c4f55d85e0322f6fea32803a3fec1a380",
+      "nextest_config_sha256": "65f8b298b60f5f4d480cdd45d4de62a37c5b52d13a2cc7b77eecba3062eaa803"
+    },
+    "after": {
+      "identity": {
+        "commit": "b4b81cc59847cfe2683f170949d464778f413147",
+        "tree": "a64d3f3d34f5e52546ec762b6ad7fbdfa69e96b2",
+        "parents": [
+          "723d4f6b72ec64d73803e5603e9adec79c753fca"
+        ],
+        "dirty": true
+      },
+      "raw_git_blob_bytes_match": false,
+      "tracked_count": 11839,
+      "tracked_bytes": 183367649,
+      "index_count": 11839,
+      "missing": [],
+      "hidden": [],
+      "tree_inventory_sha256": "bcff86a690685f186b18556888684c2e2372d1f9e2f73a546fe6da0369ddfe72",
+      "guard_sha256": "e55f5ca1200b2c9fc5af4158c42f460e71f3815166a962a5b892acfe9477b1d1",
+      "cargo_lock_sha256": "0f458d7746a0ca0b95bedc5404fd3347c1b0a7508f1c387f3b1f3f71ced08663",
+      "toolchain_file_sha256": "e8b379eaa492bf59d35187de269afd1c4f55d85e0322f6fea32803a3fec1a380",
+      "nextest_config_sha256": "65f8b298b60f5f4d480cdd45d4de62a37c5b52d13a2cc7b77eecba3062eaa803"
+    },
+    "configurations": {
+      "/home/qian-qi/work/hepta-audit-ledger-fixture-fix-20261103/.git/config": "24452f7031356ffbc08ab7fb9657efa5b67fb0b16b2a2ce704ec99d1514267b8",
+      "/home/qian-qi/work/hepta-audit-ledger-fixture-fix-20261103/.git/worktrees/hepta-audit-provider-recovery-fix-20261103/config.worktree": "bfefdfeb2bf56f4a5282c172fe3a69b4075e13fe3bf3cd54f6611bafa461c276",
+      "/home/qian-qi/work/hepta-audit-ledger-fixture-fix-20261103/.git/worktrees/source1/config.worktree": "443a5f645c23c3d0c0aa09f634b2ad111d46ef61946b598a2fb311678ab47454"
+    },
+    "configuration_unchanged": true,
+    "delta_paths": [
+      "codex-rs/hepta-agentd/tests/automation_effect_pq_product.rs",
+      "codex-rs/hepta-agentd/tests/support/automation_effect_operator.rs",
+      "scripts/hepta_smollm_runtime_handoff_v12.py",
+      "scripts/test_hepta_smollm_execution_source_v1.py",
+      "scripts/test_hepta_smollm_execution_source_v12.py"
+    ],
+    "delta_sha256": "317aa2ef9b61da3e5c08b413b6d64c46a266290932d448700750cba5a4a320a3",
+    "finished_unix": 1793897470.3361387
+  },
+  "raw_file_hashes": [
+    {
+      "path": "/home/qian-qi/work/hepta-pq-effect-v4-20261105-93bfcf/evidence/h1-format-preparation-6/result.json",
+      "sha256": "a68b66d2688b85d062cad25289fd0df335432083cac6223efe0e0b01e603ee4b",
+      "bytes": 3001
+    },
+    {
+      "path": "/home/qian-qi/work/hepta-pq-effect-v4-20261105-93bfcf/evidence/h1-format-preparation-6/format-delta-export.json",
+      "sha256": "ba241fb35d646ffae3584910bc2f524f750b1bca7de7c3c1336d7b67a49acb74",
+      "bytes": 31389
+    },
+    {
+      "path": "/home/qian-qi/work/hepta-pq-effect-v4-20261105-93bfcf/evidence/h1-format-preparation-6/format.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    }
+  ],
+  "uv_provenance": {
+    "scope": "environment prerequisite provenance; no native test credit",
+    "metadata_url": "https://pypi.org/pypi/uv/0.11.3/json",
+    "metadata_sha256": "0ada47581443ab9c6ece59a404db9a88f66c03ae19f1ac32d2984bae7d98cd38",
+    "filename": "uv-0.11.3-py3-none-manylinux_2_17_x86_64.manylinux2014_x86_64.whl",
+    "url": "https://files.pythonhosted.org/packages/4e/be/7c66d350f833eb437f9aa0875655cc05e07b441e3f4a770f8bced56133f7/uv-0.11.3-py3-none-manylinux_2_17_x86_64.manylinux2014_x86_64.whl",
+    "pypi_sha256": "0fde893b5ab9f6997fe357138e794bac09d144328052519fbbe2e6f72145e457",
+    "actual_wheel_sha256": "0fde893b5ab9f6997fe357138e794bac09d144328052519fbbe2e6f72145e457",
+    "bytes": 24589293,
+    "retained_wheel": "/home/qian-qi/work/hepta-pq-effect-v4-20261105-93bfcf/evidence/uv-0.11.3-provenance/uv-0.11.3-py3-none-manylinux_2_17_x86_64.manylinux2014_x86_64.whl",
+    "retention_route": "pip original downloaded HTTP-cache body",
+    "launcher_path": "/home/qian-qi/work/hepta-pq-effect-v4-20261105-93bfcf/tools/uv-0.11.3/bin/uv",
+    "launcher_sha256": "fa5fc652fa5ed5b44fa8e7dda507f27975c02f59643787fd8ab4bf36f1ba7438",
+    "launcher_matches_wheel_member": "uv-0.11.3.data/scripts/uv",
+    "version": "uv 0.11.3 (x86_64-unknown-linux-gnu)",
+    "workflow_pin": "0.11.3",
+    "finished_unix": 1793897283.9517307
+  }
+}

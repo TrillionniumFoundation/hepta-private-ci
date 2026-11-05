@@ -1,0 +1,88 @@
+{
+  "status": "PASS scoped YAML, actual discovery and frozen source audit",
+  "pair_steps": 67,
+  "installed_steps": 14,
+  "other_jobs_unchanged": 4,
+  "original_job_and_step_resources_unchanged": true,
+  "original_steps_retained_in_order": true,
+  "changed_existing_run_steps": {
+    "pair": 2,
+    "cell-installed-host-v3": 2
+  },
+  "new_stop_controls_floor": 12,
+  "source_controls_floor_change": [
+    107,
+    135
+  ],
+  "source_controls_discovery": {
+    "test_hepta_smollm_execution_source_v*.py": {
+      "total": 135,
+      "v12": 19,
+      "by_module": {
+        "test_hepta_smollm_execution_source_v1": 16,
+        "test_hepta_smollm_execution_source_v10": 5,
+        "test_hepta_smollm_execution_source_v11": 9,
+        "test_hepta_smollm_execution_source_v12": 19,
+        "test_hepta_smollm_execution_source_v2": 7,
+        "test_hepta_smollm_execution_source_v3": 8,
+        "test_hepta_smollm_execution_source_v4": 11,
+        "test_hepta_smollm_execution_source_v5": 9,
+        "test_hepta_smollm_execution_source_v6": 12,
+        "test_hepta_smollm_execution_source_v7": 9,
+        "test_hepta_smollm_execution_source_v8": 9,
+        "test_hepta_smollm_execution_source_v9": 21
+      }
+    },
+    "test_hepta_smollm_execution_source*.py": {
+      "total": 135,
+      "v12": 19,
+      "by_module": {
+        "test_hepta_smollm_execution_source_v1": 16,
+        "test_hepta_smollm_execution_source_v10": 5,
+        "test_hepta_smollm_execution_source_v11": 9,
+        "test_hepta_smollm_execution_source_v12": 19,
+        "test_hepta_smollm_execution_source_v2": 7,
+        "test_hepta_smollm_execution_source_v3": 8,
+        "test_hepta_smollm_execution_source_v4": 11,
+        "test_hepta_smollm_execution_source_v5": 9,
+        "test_hepta_smollm_execution_source_v6": 12,
+        "test_hepta_smollm_execution_source_v7": 9,
+        "test_hepta_smollm_execution_source_v8": 9,
+        "test_hepta_smollm_execution_source_v9": 21
+      }
+    }
+  },
+  "v12_control_ids": [
+    "test_hepta_smollm_execution_source_v12.CooperativeStopExecutionSourceTests.test_hidden_index_flags_and_ignored_import_inputs_refuse_without_repair",
+    "test_hepta_smollm_execution_source_v12.CooperativeStopExecutionSourceTests.test_inherited_no_bytecode_policy_is_still_required",
+    "test_hepta_smollm_execution_source_v12.CooperativeStopExecutionSourceTests.test_native_source_and_dependency_lock_remain_bound",
+    "test_hepta_smollm_execution_source_v12.CooperativeStopExecutionSourceTests.test_new_commit_with_old_worker_pins_refuses",
+    "test_hepta_smollm_execution_source_v12.CooperativeStopExecutionSourceTests.test_new_identity_preserves_v11_and_cannot_issue_runtime_authority",
+    "test_hepta_smollm_execution_source_v12.CooperativeStopExecutionSourceTests.test_old_forward_paths_refuse_v12_before_reading_inputs_or_importing_chain",
+    "test_hepta_smollm_execution_source_v12.CooperativeStopExecutionSourceTests.test_ordered_merge_uses_original_candidate_owner_and_rejects_reversed_parents",
+    "test_hepta_smollm_execution_source_v12.CooperativeStopExecutionSourceTests.test_profile_cannot_declare_a_runtime_snapshot_bypass",
+    "test_hepta_smollm_execution_source_v12.CooperativeStopExecutionSourceTests.test_relabelled_v11_manifest_refuses_even_when_rehashed",
+    "test_hepta_smollm_execution_source_v12.CooperativeStopExecutionSourceTests.test_runtime_admission_and_complete_v11_closure_cannot_be_omitted",
+    "test_hepta_smollm_execution_source_v12.CooperativeStopExecutionSourceTests.test_successor_commit_cannot_inherit_v12_source_evidence",
+    "test_hepta_smollm_execution_source_v12.CooperativeStopExecutionSourceTests.test_unfrozen_commit_manifest_or_tree_refuses_before_git",
+    "test_hepta_smollm_execution_source_v12.OriginalHostHandoffTests.test_cli_requires_separator_and_delegates_the_same_complete_arguments",
+    "test_hepta_smollm_execution_source_v12.OriginalHostHandoffTests.test_duplicate_or_extra_arguments_cannot_override_the_checked_snapshot",
+    "test_hepta_smollm_execution_source_v12.OriginalHostHandoffTests.test_inexact_runtime_pin_or_mixed_hepta_checkout_cannot_delegate",
+    "test_hepta_smollm_execution_source_v12.OriginalHostHandoffTests.test_legacy_source_or_consumer_is_rejected_before_any_delegation",
+    "test_hepta_smollm_execution_source_v12.OriginalHostHandoffTests.test_missing_snapshot_owner_pin_or_resource_flag_never_selects_defaults",
+    "test_hepta_smollm_execution_source_v12.OriginalHostHandoffTests.test_unfrozen_or_dirty_source_refuses_without_an_exec",
+    "test_hepta_smollm_execution_source_v12.OriginalHostHandoffTests.test_verified_source_execs_original_entry_with_unchanged_owner_snapshot_and_budgets"
+  ],
+  "w1_collector_floor_change": [
+    87,
+    92
+  ],
+  "source": "9ecdbebc897d35f07b998d084b015db8474be84b",
+  "tree": "94050c5f5f72a27d6c4a5fbf627791c15c2704af",
+  "merge": "7f3611c2ac0490908249533e398390912cc87125",
+  "manifest_sha256": "08d4e1c0177b845803d1e8166597aab43188ef18781549cb1c3302afa12bb1a9",
+  "manifest_source_files_verified": 53,
+  "original_registry_assignments_unchanged": 55,
+  "runtime_model_executed": false,
+  "hosted_ci_executed": false
+}

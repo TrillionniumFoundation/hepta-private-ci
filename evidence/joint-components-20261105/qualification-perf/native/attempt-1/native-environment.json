@@ -1,0 +1,60 @@
+{
+  "source_identity": {
+    "commit": "4dce06a9945fc54482f546c9dfb7cbb7a4716ccc",
+    "tree": "ace984bea899295f7e8fa6666fc78cfd49ad2a92",
+    "parents": [
+      "a877333eff1577179fce8b1ceb6edf4322440e03"
+    ],
+    "dirty": false
+  },
+  "tracked_files": 11825,
+  "hidden_flags": 0,
+  "build_environment": {
+    "RUSTUP_TOOLCHAIN": "1.96.0",
+    "CARGO_INCREMENTAL": "0",
+    "CARGO_BUILD_JOBS": "2",
+    "CARGO_PROFILE_TEST_DEBUG": "0",
+    "CARGO_PROFILE_DEV_DEBUG": "0",
+    "RUST_BACKTRACE": "1",
+    "CARGO_TARGET_DIR": "/home/qian-qi/work/hepta-pq-frontier-20261105-93bfcf/target",
+    "CARGO_TERM_COLOR": "never",
+    "RUSTFLAGS": null,
+    "CARGO_ENCODED_RUSTFLAGS": null,
+    "RUSTC_WRAPPER": null,
+    "RUSTC_WORKSPACE_WRAPPER": null,
+    "CARGO_HOME": null
+  },
+  "tools": {
+    "rustc": {
+      "exit_code": 0,
+      "stdout": "rustc 1.96.0 (ac68faa20 2026-05-25)\nbinary: rustc\ncommit-hash: ac68faa20c58cbccd01ee7208bf3b6e93a7d7f96\ncommit-date: 2026-05-25\nhost: x86_64-unknown-linux-gnu\nrelease: 1.96.0\nLLVM version: 22.1.2\n",
+      "stderr": ""
+    },
+    "cargo": {
+      "exit_code": 0,
+      "stdout": "cargo 1.96.0 (30a34c682 2026-05-25)\n",
+      "stderr": ""
+    },
+    "just": {
+      "exit_code": 0,
+      "stdout": "just 1.51.0\n",
+      "stderr": ""
+    },
+    "nextest": {
+      "exit_code": 0,
+      "stdout": "cargo-nextest 0.9.103 (d2e7b879f 2025-08-25)\nrelease: 0.9.103\ncommit-hash: d2e7b879fb79975e8b47a8e3ce569b651e6381c0\ncommit-date: 2025-08-25\nhost: x86_64-unknown-linux-gnu\n",
+      "stderr": ""
+    },
+    "pkg_config": {
+      "exit_code": 0,
+      "stdout": "1.8.1\n",
+      "stderr": ""
+    }
+  },
+  "cargo_lock_sha256": "0f458d7746a0ca0b95bedc5404fd3347c1b0a7508f1c387f3b1f3f71ced08663",
+  "workflow_sha256": "2582f09165785e42803699b62c0155201501a00eaa2cb7b87151b326fcd75d75",
+  "nextest_profile_sha256": "3ec2f9a8ed35c5582fe5d59b4ad427e5e87249c5e7d84cf149dd9874c1f9d222",
+  "nextest_binary_sha256": "e999c122a02c3fe74a1b66d254b6419a8a665e8bf540b1d31de7933a6d3753f1",
+  "outer_timeout_seconds": 600,
+  "original_local_per_test_timeout_seconds": 60
+}

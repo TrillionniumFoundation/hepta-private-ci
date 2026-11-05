@@ -1,0 +1,56 @@
+{
+  "after": {
+    "commit": "495e36f8cb71fdae7290710dd339e2ee34d4feec",
+    "dirty": false,
+    "parents": [
+      "96d8414a9ab36e7e47d1430699274d0b635eec6f"
+    ],
+    "tree": "a9a266faa47ba78430ff73f31e55b14e0043e196"
+  },
+  "base_sha": "1556a4df6e279055fd8196f81a4ca2fe0f19384a",
+  "before": {
+    "commit": "495e36f8cb71fdae7290710dd339e2ee34d4feec",
+    "dirty": false,
+    "parents": [
+      "96d8414a9ab36e7e47d1430699274d0b635eec6f"
+    ],
+    "tree": "a9a266faa47ba78430ff73f31e55b14e0043e196"
+  },
+  "command": [
+    "just",
+    "test",
+    "--locked",
+    "-p",
+    "codex-hepta-agentd",
+    "--lib",
+    "-E",
+    "test(=automation_effect_host::pq::tests::ordinary_loader_denies_classical_schema_and_contract_or_policy_substitution) | test(=automation_effect_host::pq::tests::initial_feed_is_authenticated_before_any_local_authority_or_frontier_write) | test(=automation_effect_host::pq::tests::current_clock_frontier_and_pq_grant_are_mandatory_before_contact) | test(=automation_effect_host::pq::tests::revoked_equal_number_drift_expired_feed_and_new_epoch_do_not_contact_provider) | test(=automation_effect_host::pq::tests::generation_change_after_store_await_refuses_contact_and_keeps_consumed_nonce) | test(=automation_effect_host::pq::tests::signed_revocation_after_store_await_obeys_active_effect_fence_and_never_sends) | test(=automation_effect_host::pq::tests::ordinary_dispatch_and_new_generation_recovery_keep_one_stable_operation) | test(=automation_effect_host::pq::tests::recovery_requires_current_signed_exact_historical_policy_and_same_provider) | test(=automation_effect_host::pq::tests::historical_policy_does_not_connect_old_trust_services_or_follow_its_references) | test(=automation_effect_host::pq::tests::reconcile_rechecks_generation_after_store_await_without_reclassifying_unknown) | test(=automation_effect_host::pq::tests::pon_schema4_binds_native_binary_and_original_limits_without_running_a_node)",
+    "--no-capture",
+    "--retries",
+    "0",
+    "--test-threads=1"
+  ],
+  "command_exit_code": -9,
+  "elapsed_seconds": 606.1634736539563,
+  "exit_code": 124,
+  "finished_at": "2026-11-05T15:28:44.419875+00:00",
+  "job": null,
+  "lane": "source-head",
+  "log_bytes": 44896,
+  "log_file": "ordinary-pq-effect-eleven.json.73737f47220d47b39dd9f3ba554850ca.log",
+  "log_sha256": "569505350ea34d6dc4455a887431e1a25ba5249059a9b2d4dd7a7fb561c9a8e8",
+  "minimum_tests": 11,
+  "observed_failed_tests": 0,
+  "observed_passed_tests": 0,
+  "output_limit_exceeded": false,
+  "returncode": -9,
+  "run_attempt": null,
+  "run_id": null,
+  "schema_version": 1,
+  "source_sha": "495e36f8cb71fdae7290710dd339e2ee34d4feec",
+  "started_at": "2026-11-05T15:18:38.233378+00:00",
+  "status": "failed",
+  "tested_sha": "495e36f8cb71fdae7290710dd339e2ee34d4feec",
+  "timed_out": true,
+  "working_directory": "/home/qian-qi/work/hepta-pq-effect-v4-20261105-93bfcf/source"
+}

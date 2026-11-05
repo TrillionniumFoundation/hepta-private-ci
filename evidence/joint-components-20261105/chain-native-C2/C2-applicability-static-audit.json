@@ -1,0 +1,109 @@
+{
+  "causal_status": "repeated whole-file parsing is a concrete static cost source; the exact active frame at timeout was not sampled, so no exclusive causal attribution",
+  "commit": "03521b2f32346a49cccde8ff72e8c7b886b31222",
+  "contract_responsibilities": 39,
+  "contract_selectors": 779,
+  "contract_unique_runtime_refs": 217,
+  "copy_scope": "setUpClass copies the complete ROOT once, excluding .git/target/__pycache__/.pytest_cache/node_modules",
+  "external_commands_called_by_test_function": [],
+  "full_source_hash_guard_called_by_validate": false,
+  "observed_failure": {
+    "assertion_failure_reported": false,
+    "command_timeout_seconds": 300,
+    "completed_test_lines": 7,
+    "elapsed_ns": 300005678623,
+    "last_started_test_unfinished": true,
+    "returncode": -9,
+    "stderr_bytes": 1111,
+    "stderr_sha256": "a4d01ec2eb290bccb58d13b6deca0c933bbf28e1ea98acef37a11c60cb89820b"
+  },
+  "profile_entrypoint_calls": 24,
+  "profile_selectors": 324,
+  "profiles": 24,
+  "python_ast_calls": 575,
+  "runtime_stack_captured": false,
+  "rust_mask_calls": 1373,
+  "schema": "trnm-c2-applicability-static-work-inventory-v1",
+  "scope": "one successful complete validate(root), counts derived from frozen registries; no profiling or test execution",
+  "test_function": "scripts/ci/test_applicability.py::ApplicabilityTests.test_factor_and_public_queue_bind_real_tests_without_execution",
+  "top_parser_paths": [
+    {
+      "parser_calls": 98,
+      "path": "scripts/ci/test_work_rejection_report.py",
+      "selector_calls": 98
+    },
+    {
+      "parser_calls": 81,
+      "path": "scripts/ci/test_zero_locality_cost.py",
+      "selector_calls": 81
+    },
+    {
+      "parser_calls": 72,
+      "path": "trillionnium/crates/trnm-pon-node/tests/account_archive_execution.rs",
+      "selector_calls": 36
+    },
+    {
+      "parser_calls": 72,
+      "path": "trillionnium/crates/trnm-pon-node/src/store/authenticated_migration_tests.rs",
+      "selector_calls": 36
+    },
+    {
+      "parser_calls": 66,
+      "path": "trillionnium/crates/trnm-pon-node/src/native_authenticated_tests.rs",
+      "selector_calls": 33
+    },
+    {
+      "parser_calls": 62,
+      "path": "trillionnium/crates/trnm-pon-node/tests/native_node.rs",
+      "selector_calls": 31
+    },
+    {
+      "parser_calls": 58,
+      "path": "formal/pon-nakamoto-v1/test_native_authenticated_storage_oracle.py",
+      "selector_calls": 58
+    },
+    {
+      "parser_calls": 54,
+      "path": "trillionnium/crates/trnm-pon-node/src/account_archive_prototype/native_store_batch_tests.rs",
+      "selector_calls": 27
+    },
+    {
+      "parser_calls": 50,
+      "path": "trillionnium/crates/trnm-pon-node/src/account_archive_prototype/native_primitive_tests.rs",
+      "selector_calls": 25
+    },
+    {
+      "parser_calls": 44,
+      "path": "trillionnium/crates/trnm-pon-node/src/store.rs",
+      "selector_calls": 9
+    },
+    {
+      "parser_calls": 40,
+      "path": "trillionnium/crates/trnm-mvcc-fee/tests/model_evolution_v5.rs",
+      "selector_calls": 20
+    },
+    {
+      "parser_calls": 40,
+      "path": "trillionnium/crates/trnm-pon-node/src/authenticated_state_archive_tests.rs",
+      "selector_calls": 20
+    },
+    {
+      "parser_calls": 39,
+      "path": "formal/pon-nakamoto-v1/test_obligation_range_oracle.py",
+      "selector_calls": 39
+    },
+    {
+      "parser_calls": 38,
+      "path": "trillionnium/crates/trnm-pon-node/src/native_ancestry_commit_tests.rs",
+      "selector_calls": 19
+    },
+    {
+      "parser_calls": 37,
+      "path": "trillionnium/crates/trnm-pon-node/src/ingress/public_v3.rs",
+      "selector_calls": 18
+    }
+  ],
+  "total_selector_calls": 1103,
+  "unique_selector_paths": 109,
+  "unique_selector_strings": 628
+}

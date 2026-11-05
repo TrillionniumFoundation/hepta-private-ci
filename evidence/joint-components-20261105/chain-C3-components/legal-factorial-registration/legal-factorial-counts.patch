@@ -1,0 +1,34 @@
+--- a/.github/workflows/pon-w1-work-security.yml
++++ b/.github/workflows/pon-w1-work-security.yml
+@@ -320,7 +320,7 @@
+           root = Path(sys.argv[1])
+           # The one ignored History entry is the existing subprocess fixture;
+           # its parent control selects real SIGKILL cuts. It is not a skipped gate.
+-          expected = {"factorial-kernel-tests": (6, 0), "factorial-example-tests": (6, 0),
++          expected = {"factorial-kernel-tests": (9, 0), "factorial-example-tests": (6, 0),
+               "header-binding-tests": (1, 0), "history-w1-tests": (5, 0),
+               "history-import-tests": (28, 1), "cpu-completion-tests": (11, 0)}
+           for name, counts in expected.items():
+@@ -328,6 +328,22 @@
+               rows = re.findall(r'^test result: ok\. ([0-9]+) passed; 0 failed; ([0-9]+) ignored;', text, re.M)
+               if rows != [tuple(map(str, counts))]:
+                   raise SystemExit(name + ': exact native controls did not execute')
++          kernels = (root / 'factorial-kernel-tests.log').read_text()
++          for name in (
++              'factorial_kernels_match_independent_reference_for_full_and_structured_fields',
++              'losing_attempt_still_replays_every_transcript_tile_without_lazy_serialization',
++              'every_stage_cancellation_returns_no_attempt_and_does_not_poison_retry',
++              'changed_challenge_and_task_never_gain_acceptance_from_cached_product',
++              'boundary_target_is_inclusive_and_zero_target_refuses_before_work',
++              'preparation_never_reduces_noncanonical_fields_or_wrong_shapes',
++              'sparse_preparation_matches_dense_and_independent_full_field_proofs',
++              'sparse_preparation_rejects_hidden_noncanonical_words_and_wrong_lengths',
++              'sparse_setup_keeps_complete_misses_callbacks_and_cancelled_retry',
++          ):
++              selector = 'pon_work::legal_attempt::tests::' + name
++              rows = re.findall(r'^test ' + re.escape(selector) + r' \.\.\. ok$', kernels, re.M)
++              if len(rows) != 1:
++                  raise SystemExit(selector + ': exact kernel control did not execute once')
+           history = (root / 'history-import-tests.log').read_text()
+           for name in (
+               'final_resource_completion_preserves_error_priority_and_original_deadline',

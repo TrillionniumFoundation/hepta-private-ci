@@ -1,0 +1,34 @@
+{
+  "schema_version": 1,
+  "review_kind": "root_independent_receipt_and_content_verification",
+  "component_commit": "4dce06a9945fc54482f546c9dfb7cbb7a4716ccc",
+  "component_tree": "ace984bea899295f7e8fa6666fc78cfd49ad2a92",
+  "receipt_sha256": "b419bc79650eb30997e04b8273399fbda65a94bdf2d7d163ff6ea34dd6a1fda8",
+  "raw_log_sha256": "a0a20dd922f79425c6abeac43341521a4ca5bf991484f36b59342a4981aee9d9",
+  "original_wrapper_status": "passed",
+  "passed": 2,
+  "failed": 0,
+  "original_per_test_seconds": 60,
+  "original_wrapper_seconds": 600,
+  "original_512_case_elapsed_seconds": 54.595,
+  "historical_corruption_case_elapsed_seconds": 0.488,
+  "source_clean_unchanged": true,
+  "original_source_files_verified": {
+    "codex-rs/hepta-evidence/src/qualification.rs": "5d74be55f5bb02077e655ff9d833ae82531cdeda00583e870454da1c9186efff",
+    "codex-rs/hepta-evidence/src/qualification_tests.rs": "f6c5bcde1d1ad19312a973a97339129feb988de10bb7db5a8731eb2fc10c8de7"
+  },
+  "preparation_logs_verified": [
+    "apply.log",
+    "apply-check.log",
+    "commit.log",
+    "format-preparation.log"
+  ],
+  "executed_elf_captured": false,
+  "outer_pipeline_status": "failed",
+  "joint_qualification": false,
+  "limits": [
+    "full evidence library, scoped Clippy and final formatting gate not yet run on this component",
+    "actual execution binary binding missing; no later binary is attributed to these passes",
+    "historical decode remains quadratic; this is not long-term affordable-growth evidence"
+  ]
+}

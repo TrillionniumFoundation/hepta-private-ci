@@ -1,0 +1,274 @@
+{
+  "schema": "joint-chain-C3-fixed-candidate-v1",
+  "observed_utc": "2026-11-05T17:14:35Z",
+  "commit": "b5ef97b29c2e8b738525a2e3326dd60784c46e72",
+  "tree": "020880f22725e93cabb65c6e7eda3cbbd3c2405a",
+  "parent": "03521b2f32346a49cccde8ff72e8c7b886b31222",
+  "branch": "fix/chain-joint-v12-c3-20261105-93bfc-frozen",
+  "pull_request": "https://github.com/TrillionniumFoundation/Trillionnium-Chain/pull/722",
+  "ordered_merge": {
+    "commit": "df39fe4db01e20ae6494a2cb4570434c50a84cfc",
+    "tree": "020880f22725e93cabb65c6e7eda3cbbd3c2405a",
+    "parents": [
+      "dd6e1c3cbeacbdc532b0679297835b3a0aac78f0",
+      "b5ef97b29c2e8b738525a2e3326dd60784c46e72"
+    ]
+  },
+  "diff_from_C2": {
+    "repository_full_name": "TrillionniumFoundation/Trillionnium-Chain",
+    "base": "03521b2f32346a49cccde8ff72e8c7b886b31222",
+    "head": "b5ef97b29c2e8b738525a2e3326dd60784c46e72",
+    "status": "ahead",
+    "ahead_by": 1,
+    "behind_by": 0,
+    "total_commits": 1,
+    "too_large": null,
+    "base_commit": {
+      "sha": "03521b2f32346a49cccde8ff72e8c7b886b31222",
+      "url": "https://api.github.com/repos/TrillionniumFoundation/Trillionnium-Chain/commits/03521b2f32346a49cccde8ff72e8c7b886b31222",
+      "html_url": "https://github.com/TrillionniumFoundation/Trillionnium-Chain/commit/03521b2f32346a49cccde8ff72e8c7b886b31222"
+    },
+    "merge_base_commit": {
+      "sha": "03521b2f32346a49cccde8ff72e8c7b886b31222",
+      "url": "https://api.github.com/repos/TrillionniumFoundation/Trillionnium-Chain/commits/03521b2f32346a49cccde8ff72e8c7b886b31222",
+      "html_url": "https://github.com/TrillionniumFoundation/Trillionnium-Chain/commit/03521b2f32346a49cccde8ff72e8c7b886b31222"
+    },
+    "files": [
+      {
+        "filename": ".github/workflows/pon-w1-work-security.yml",
+        "status": "modified",
+        "additions": 17,
+        "deletions": 1,
+        "changes": 18,
+        "previous_filename": null
+      },
+      {
+        "filename": "scripts/ci/report_module_evidence.py",
+        "status": "modified",
+        "additions": 21,
+        "deletions": 2,
+        "changes": 23,
+        "previous_filename": null
+      },
+      {
+        "filename": "scripts/ci/test_applicability.py",
+        "status": "modified",
+        "additions": 89,
+        "deletions": 1,
+        "changes": 90,
+        "previous_filename": null
+      }
+    ]
+  },
+  "component_files": [
+    {
+      "path": "scripts/ci/report_module_evidence.py",
+      "local_path": "/workspace/scratch/93bfcfe29fc8/pq_recovery/c3-applicability/candidate/scripts/ci/report_module_evidence.py",
+      "sha256": "d980a9a63c0b5bca3ef7c36b819fda69810742ecba0554d1ec22bc82e7cf3179",
+      "git_blob": "1df0e0369e878ec123511158082d56109562a126",
+      "bytes": 24277,
+      "mode": "100644"
+    },
+    {
+      "path": "scripts/ci/test_applicability.py",
+      "local_path": "/workspace/scratch/93bfcfe29fc8/pq_recovery/c3-applicability/candidate/scripts/ci/test_applicability.py",
+      "sha256": "f32db882d7a8108f86bada2ed88e494a5e38e633e06e90a22c02c4de9914c128",
+      "git_blob": "0afe2d73e0bcc8c71e7e38e733b71d13568b1209",
+      "bytes": 24777,
+      "mode": "100644"
+    },
+    {
+      "path": ".github/workflows/pon-w1-work-security.yml",
+      "local_path": "/workspace/scratch/93bfcfe29fc8/w1/c3-legal-factorial/candidate/.github/workflows/pon-w1-work-security.yml",
+      "sha256": "1559cc1def59718cf1d938ed7c1718dc1c8aa91361bea47493e91306c292f242",
+      "git_blob": "994f491e4aaf28ef4dbebd85c3a2d8260b6c6db6",
+      "bytes": 26698,
+      "mode": "100644"
+    }
+  ],
+  "hosted_observation": {
+    "workflow_runs": [
+      {
+        "id": 42072289016,
+        "name": "PoN fixed Host ROOT F0 diagnostic",
+        "event": "pull_request",
+        "head_sha": "b5ef97b29c2e8b738525a2e3326dd60784c46e72",
+        "status": "queued",
+        "conclusion": null,
+        "html_url": "https://github.com/TrillionniumFoundation/Trillionnium-Chain/actions/runs/42072289016",
+        "created_at": "2026-11-05T17:12:18Z"
+      },
+      {
+        "id": 42072288822,
+        "name": "PoN isolated cloud build inputs",
+        "event": "pull_request",
+        "head_sha": "b5ef97b29c2e8b738525a2e3326dd60784c46e72",
+        "status": "queued",
+        "conclusion": null,
+        "html_url": "https://github.com/TrillionniumFoundation/Trillionnium-Chain/actions/runs/42072288822",
+        "created_at": "2026-11-05T17:12:18Z"
+      },
+      {
+        "id": 42072288608,
+        "name": "PoN PQ network and rollback witness",
+        "event": "pull_request",
+        "head_sha": "b5ef97b29c2e8b738525a2e3326dd60784c46e72",
+        "status": "queued",
+        "conclusion": null,
+        "html_url": "https://github.com/TrillionniumFoundation/Trillionnium-Chain/actions/runs/42072288608",
+        "created_at": "2026-11-05T17:12:18Z"
+      },
+      {
+        "id": 42072288803,
+        "name": "PoN parent-bound model evidence",
+        "event": "pull_request",
+        "head_sha": "b5ef97b29c2e8b738525a2e3326dd60784c46e72",
+        "status": "queued",
+        "conclusion": null,
+        "html_url": "https://github.com/TrillionniumFoundation/Trillionnium-Chain/actions/runs/42072288803",
+        "created_at": "2026-11-05T17:12:18Z"
+      },
+      {
+        "id": 42072288388,
+        "name": "PoN original large-state CPU acceptance",
+        "event": "pull_request",
+        "head_sha": "b5ef97b29c2e8b738525a2e3326dd60784c46e72",
+        "status": "queued",
+        "conclusion": null,
+        "html_url": "https://github.com/TrillionniumFoundation/Trillionnium-Chain/actions/runs/42072288388",
+        "created_at": "2026-11-05T17:12:18Z"
+      },
+      {
+        "id": 42072288682,
+        "name": "PoN owned process cleanup",
+        "event": "pull_request",
+        "head_sha": "b5ef97b29c2e8b738525a2e3326dd60784c46e72",
+        "status": "queued",
+        "conclusion": null,
+        "html_url": "https://github.com/TrillionniumFoundation/Trillionnium-Chain/actions/runs/42072288682",
+        "created_at": "2026-11-05T17:12:18Z"
+      },
+      {
+        "id": 42072288669,
+        "name": "PoN recent batch exact-source acceptance",
+        "event": "pull_request",
+        "head_sha": "b5ef97b29c2e8b738525a2e3326dd60784c46e72",
+        "status": "queued",
+        "conclusion": null,
+        "html_url": "https://github.com/TrillionniumFoundation/Trillionnium-Chain/actions/runs/42072288669",
+        "created_at": "2026-11-05T17:12:18Z"
+      },
+      {
+        "id": 42072288376,
+        "name": "PoN priority acceptance",
+        "event": "pull_request",
+        "head_sha": "b5ef97b29c2e8b738525a2e3326dd60784c46e72",
+        "status": "queued",
+        "conclusion": null,
+        "html_url": "https://github.com/TrillionniumFoundation/Trillionnium-Chain/actions/runs/42072288376",
+        "created_at": "2026-11-05T17:12:18Z"
+      },
+      {
+        "id": 42072289313,
+        "name": "Release finality reference and native baseline",
+        "event": "pull_request",
+        "head_sha": "b5ef97b29c2e8b738525a2e3326dd60784c46e72",
+        "status": "queued",
+        "conclusion": null,
+        "html_url": "https://github.com/TrillionniumFoundation/Trillionnium-Chain/actions/runs/42072289313",
+        "created_at": "2026-11-05T17:12:18Z"
+      },
+      {
+        "id": 42072288664,
+        "name": "PoN branch encoding exact-source acceptance",
+        "event": "pull_request",
+        "head_sha": "b5ef97b29c2e8b738525a2e3326dd60784c46e72",
+        "status": "queued",
+        "conclusion": null,
+        "html_url": "https://github.com/TrillionniumFoundation/Trillionnium-Chain/actions/runs/42072288664",
+        "created_at": "2026-11-05T17:12:18Z"
+      },
+      {
+        "id": 42072288781,
+        "name": "PoN original workspace test-profile CPU acceptance",
+        "event": "pull_request",
+        "head_sha": "b5ef97b29c2e8b738525a2e3326dd60784c46e72",
+        "status": "queued",
+        "conclusion": null,
+        "html_url": "https://github.com/TrillionniumFoundation/Trillionnium-Chain/actions/runs/42072288781",
+        "created_at": "2026-11-05T17:12:18Z"
+      },
+      {
+        "id": 42072288656,
+        "name": "trnm-required-baseline",
+        "event": "pull_request",
+        "head_sha": "b5ef97b29c2e8b738525a2e3326dd60784c46e72",
+        "status": "queued",
+        "conclusion": null,
+        "html_url": "https://github.com/TrillionniumFoundation/Trillionnium-Chain/actions/runs/42072288656",
+        "created_at": "2026-11-05T17:12:18Z"
+      },
+      {
+        "id": 42072289224,
+        "name": "PoN W1 transparent candidate observations",
+        "event": "pull_request",
+        "head_sha": "b5ef97b29c2e8b738525a2e3326dd60784c46e72",
+        "status": "queued",
+        "conclusion": null,
+        "html_url": "https://github.com/TrillionniumFoundation/Trillionnium-Chain/actions/runs/42072289224",
+        "created_at": "2026-11-05T17:12:18Z"
+      },
+      {
+        "id": 42072288991,
+        "name": "PoN W1 work security observations",
+        "event": "pull_request",
+        "head_sha": "b5ef97b29c2e8b738525a2e3326dd60784c46e72",
+        "status": "queued",
+        "conclusion": null,
+        "html_url": "https://github.com/TrillionniumFoundation/Trillionnium-Chain/actions/runs/42072288991",
+        "created_at": "2026-11-05T17:12:18Z"
+      },
+      {
+        "id": 42072288522,
+        "name": "PoN baseline diagnostic readback",
+        "event": "pull_request",
+        "head_sha": "b5ef97b29c2e8b738525a2e3326dd60784c46e72",
+        "status": "queued",
+        "conclusion": null,
+        "html_url": "https://github.com/TrillionniumFoundation/Trillionnium-Chain/actions/runs/42072288522",
+        "created_at": "2026-11-05T17:12:18Z"
+      },
+      {
+        "id": 42072289065,
+        "name": "PoN original native campaign",
+        "event": "pull_request",
+        "head_sha": "b5ef97b29c2e8b738525a2e3326dd60784c46e72",
+        "status": "queued",
+        "conclusion": null,
+        "html_url": "https://github.com/TrillionniumFoundation/Trillionnium-Chain/actions/runs/42072289065",
+        "created_at": "2026-11-05T17:12:18Z"
+      },
+      {
+        "id": 42072288726,
+        "name": "CodeQL exact-source analysis export",
+        "event": "pull_request",
+        "head_sha": "b5ef97b29c2e8b738525a2e3326dd60784c46e72",
+        "status": "queued",
+        "conclusion": null,
+        "html_url": "https://github.com/TrillionniumFoundation/Trillionnium-Chain/actions/runs/42072288726",
+        "created_at": "2026-11-05T17:12:18Z"
+      }
+    ],
+    "dynamic_aggregate": [
+      {
+        "id": 42072280463,
+        "name": "PR #722",
+        "status": "queued",
+        "conclusion": null
+      }
+    ],
+    "execution_credit": false
+  },
+  "qualification_status": "HOLD",
+  "scope": "C3 source registration and current queued run observation; original C3 native gates pending"
+}

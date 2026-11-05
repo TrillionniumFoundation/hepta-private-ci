@@ -1,0 +1,118 @@
+{
+  "scope": "UNQUALIFIED preparation only; no native test credit",
+  "base": "1556a4df6e279055fd8196f81a4ca2fe0f19384a",
+  "prior": "495e36f8cb71fdae7290710dd339e2ee34d4feec",
+  "commit": "6550b582a92cae97dd74ef9098176f2f2e6d6231",
+  "tree": "087181272a6fb776a35610a3d7f37c26d1724727",
+  "tracked": 11836,
+  "files": [
+    {
+      "path": "codex-rs/hepta-agentd/PQ_AUTOMATION_EFFECTS.md",
+      "sha256": "e56935584d9f42b646cd518623504dbd1c0183445d492a943f8f783625f6165c",
+      "bytes": 9524,
+      "mode": "100644"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/automation_effect_host.rs",
+      "sha256": "ccc465e0ac890e1428cc6a0b5b831d2d3d7c39152f320a1b8751419359af6396",
+      "bytes": 105269,
+      "mode": "100644"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/automation_effect_host_identity_tests.rs",
+      "sha256": "e4c9f9f842b02a3b66c2c38601db65d9550f191ecc0fe58c3b0bf0d6f798ea2b",
+      "bytes": 11654,
+      "mode": "100644"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/automation_effect_host_pq.rs",
+      "sha256": "67fcd2ab20e6477b0ba4639f5ef9d446e535c644bc386c6d23baf3c674c86b94",
+      "bytes": 14246,
+      "mode": "100644"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/automation_effect_host_pq_lost_ack.rs",
+      "sha256": "7842e8b98bc6f38b7f36e917ee707e7f23cff593ae7c24f73f1e5cbdb693820d",
+      "bytes": 8187,
+      "mode": "100644"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/automation_effect_host_pq_policy.rs",
+      "sha256": "3ca690f3c202510fccf543fa31c1c3fe2c818b5bf6d8995af9b301bd15a5bdf8",
+      "bytes": 9209,
+      "mode": "100644"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/automation_effect_host_pq_test_support.rs",
+      "sha256": "bcc20cf4ebda4dd5d4b43cc96d3b50a256d71dcf54e7712293608c2bdf7a000d",
+      "bytes": 17397,
+      "mode": "100644"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/automation_effect_host_pq_tests.rs",
+      "sha256": "7645fc19a734b2ffbbc5ecdb7001069e29f41e9aef3249fc0a5f383ed0e99a78",
+      "bytes": 30337,
+      "mode": "100644"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/state_control.rs",
+      "sha256": "742cd0a763063be3085d9efe27c30bbd0d4b4ddc0d56149a21afe48d39f3b856",
+      "bytes": 60031,
+      "mode": "100644"
+    },
+    {
+      "path": "codex-rs/hepta-contracts/src/final_use_control_pq.rs",
+      "sha256": "d8b3a1fffaeaebb986f4e4f4331a3f08dfd4dcf1dacd87498ff0fe58f6208fa1",
+      "bytes": 4943,
+      "mode": "100644"
+    },
+    {
+      "path": "codex-rs/model-provider/src/provider_effect.rs",
+      "sha256": "7751b33d035996c22fc22baeae3e0dd2450266ef2c83e14c5abe116268547356",
+      "bytes": 42063,
+      "mode": "100644"
+    },
+    {
+      "path": "codex-rs/model-provider/src/provider_effect_pq_tests.rs",
+      "sha256": "3117df369ce2339023a57d132fa78a87a3f2cad4480f3250547ed95aac39b548",
+      "bytes": 4104,
+      "mode": "100644"
+    },
+    {
+      "path": "codex-rs/.config/nextest.toml",
+      "sha256": "65f8b298b60f5f4d480cdd45d4de62a37c5b52d13a2cc7b77eecba3062eaa803",
+      "bytes": 7416,
+      "mode": "100644"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/tests/automation_effect_pq_product.rs",
+      "sha256": "36d2f87ec7e59b8fd273c351eb16ffed3d0fdd67b42e6729dc2aab31a8f87999",
+      "bytes": 17206,
+      "mode": "100644"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/tests/support/automation_effect_binary.rs",
+      "sha256": "bc9c66c5135f11ed70c5ad4d635b98d224ed792c881948176c4030345d6efb39",
+      "bytes": 6540,
+      "mode": "100644"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/tests/support/automation_effect_operator.rs",
+      "sha256": "2237bf3bf9f250d4b25fcb352c1e68ad5ce2967cb6299b9ba0a60288b7927e70",
+      "bytes": 21307,
+      "mode": "100644"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/tests/support/automation_effect_provider.rs",
+      "sha256": "2cd0c3e84a6b829b5179beb79602cf17518091db887c691cec58efaf6173e310",
+      "bytes": 8840,
+      "mode": "100644"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/tests/support/fleet.rs",
+      "sha256": "8b886fcd9e7a48eebb9f6727eb720180db054ae904e511fe2cde34f078d6a2a6",
+      "bytes": 17743,
+      "mode": "100644"
+    }
+  ]
+}

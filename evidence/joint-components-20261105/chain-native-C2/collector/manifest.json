@@ -1,0 +1,2790 @@
+{
+  "build_environment": {
+    "CARGO_BUILD_JOBS": "2",
+    "CARGO_INCREMENTAL": "0",
+    "CARGO_TARGET_DIR": "/home/qian-qi/work/chain-joint-20261105-93bfc-w1-target-C2",
+    "CARGO_TERM_COLOR": "never",
+    "PYTHONDONTWRITEBYTECODE": "1",
+    "RUST_TEST_THREADS": "1"
+  },
+  "collector_receipt": {
+    "architecture": "x64",
+    "binary_sha256_after": "39a2d4f3e2cc62b799a8871846d3303537b67badc67f662dd5dadd9601e7b959",
+    "binary_sha256_before": "39a2d4f3e2cc62b799a8871846d3303537b67badc67f662dd5dadd9601e7b959",
+    "error": null,
+    "execution_context": "local-native-preflight",
+    "manifest_sha256": "0d8715ff253a0d2ec80d15ad25d349e9480c554be62a8360433dbdf18b940eaf",
+    "path": "/home/qian-qi/work/chain-joint-20261105-93bfc-w1-native-C2/four-kernel-rejection",
+    "result": "PASS"
+  },
+  "collector_summary": {
+    "clock": "monotonic wall nanoseconds, not CPU or energy accounting",
+    "cohorts": 96,
+    "fastest_adversary_qualified": false,
+    "groups": [
+      {
+        "class": "dense",
+        "complete_balanced_group": true,
+        "fake_exhausted": 0,
+        "fake_ticket_trials": 20,
+        "flows": 12,
+        "honest_acquisition_ns": 59295500,
+        "honest_attempts": 31,
+        "honest_exhausted": 0,
+        "honest_search_wall_ns": 51918397,
+        "honest_winners": 12,
+        "mutation_construction_ns": {
+          "product-last-cell": 88165,
+          "transcript": 117170
+        },
+        "setup_ns": 7377103,
+        "target": "7fffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff",
+        "variants": {
+          "legal/limb-transcript": {
+            "construction_total_ns": 0,
+            "honest_acquisition_to_verification_ratio": {
+              "decimal": 2.824885269034764,
+              "denominator": "2099041",
+              "numerator": "5929550"
+            },
+            "kernel_to_production_total_ratio": {
+              "decimal": 1.0064134952475101,
+              "denominator": "10428323",
+              "numerator": "10495205"
+            },
+            "matched_construction_total_ns": 0,
+            "median_verification_ns": {
+              "decimal": 1698047.5,
+              "denominator": "2",
+              "numerator": "3396095"
+            },
+            "verification_total_ns": 20990410,
+            "verifications": 12
+          },
+          "legal/production-full-limb": {
+            "construction_total_ns": 0,
+            "honest_acquisition_to_verification_ratio": {
+              "decimal": 2.84300265728248,
+              "denominator": "10428323",
+              "numerator": "29647750"
+            },
+            "kernel_to_production_total_ratio": {
+              "decimal": 1.0,
+              "denominator": "1",
+              "numerator": "1"
+            },
+            "matched_construction_total_ns": 0,
+            "median_verification_ns": {
+              "decimal": 1697454.5,
+              "denominator": "2",
+              "numerator": "3394909"
+            },
+            "verification_total_ns": 20856646,
+            "verifications": 12
+          },
+          "legal/retained-transposed": {
+            "construction_total_ns": 0,
+            "honest_acquisition_to_verification_ratio": {
+              "decimal": 2.5400316667033636,
+              "denominator": "11672197",
+              "numerator": "29647750"
+            },
+            "kernel_to_production_total_ratio": {
+              "decimal": 1.119278430482063,
+              "denominator": "10428323",
+              "numerator": "11672197"
+            },
+            "matched_construction_total_ns": 0,
+            "median_verification_ns": {
+              "decimal": 1872123.5,
+              "denominator": "2",
+              "numerator": "3744247"
+            },
+            "verification_total_ns": 23344394,
+            "verifications": 12
+          },
+          "legal/scalar-reference": {
+            "construction_total_ns": 0,
+            "honest_acquisition_to_verification_ratio": {
+              "decimal": 1.315190460352704,
+              "denominator": "9017021",
+              "numerator": "11859100"
+            },
+            "kernel_to_production_total_ratio": {
+              "decimal": 2.161666118320271,
+              "denominator": "20856646",
+              "numerator": "45085105"
+            },
+            "matched_construction_total_ns": 0,
+            "median_verification_ns": {
+              "decimal": 3606955.0,
+              "denominator": "1",
+              "numerator": "3606955"
+            },
+            "verification_total_ns": 45085105,
+            "verifications": 12
+          },
+          "product-last-cell/limb-transcript": {
+            "construction_total_ns": 88165,
+            "first_construction_including_honest_acquisition_ns": 59383665,
+            "kernel_to_production_total_ratio": {
+              "decimal": 1.0070227272629175,
+              "denominator": "20851301",
+              "numerator": "20997734"
+            },
+            "matched_construction_total_ns": 88165,
+            "median_verification_ns": {
+              "decimal": 1707721.5,
+              "denominator": "2",
+              "numerator": "3415443"
+            },
+            "rejection_to_existing_proof_mutation_ratio": {
+              "decimal": 238.16405603130494,
+              "denominator": "88165",
+              "numerator": "20997734"
+            },
+            "rejection_to_first_construction_ratio": {
+              "decimal": 0.3535944438592667,
+              "denominator": "59383665",
+              "numerator": "20997734"
+            },
+            "verification_total_ns": 20997734,
+            "verifications": 12
+          },
+          "product-last-cell/production-full-limb": {
+            "construction_total_ns": 88165,
+            "first_construction_including_honest_acquisition_ns": 59383665,
+            "kernel_to_production_total_ratio": {
+              "decimal": 1.0,
+              "denominator": "1",
+              "numerator": "1"
+            },
+            "matched_construction_total_ns": 88165,
+            "median_verification_ns": {
+              "decimal": 1703446.5,
+              "denominator": "2",
+              "numerator": "3406893"
+            },
+            "rejection_to_existing_proof_mutation_ratio": {
+              "decimal": 236.50315884988373,
+              "denominator": "88165",
+              "numerator": "20851301"
+            },
+            "rejection_to_first_construction_ratio": {
+              "decimal": 0.35112856372202694,
+              "denominator": "59383665",
+              "numerator": "20851301"
+            },
+            "verification_total_ns": 20851301,
+            "verifications": 12
+          },
+          "product-last-cell/retained-transposed": {
+            "construction_total_ns": 88165,
+            "first_construction_including_honest_acquisition_ns": 59383665,
+            "kernel_to_production_total_ratio": {
+              "decimal": 1.1005114261215643,
+              "denominator": "20851301",
+              "numerator": "22947095"
+            },
+            "matched_construction_total_ns": 88165,
+            "median_verification_ns": {
+              "decimal": 1861206.0,
+              "denominator": "1",
+              "numerator": "1861206"
+            },
+            "rejection_to_existing_proof_mutation_ratio": {
+              "decimal": 260.2744286281404,
+              "denominator": "17633",
+              "numerator": "4589419"
+            },
+            "rejection_to_first_construction_ratio": {
+              "decimal": 0.38642099641374444,
+              "denominator": "11876733",
+              "numerator": "4589419"
+            },
+            "verification_total_ns": 22947095,
+            "verifications": 12
+          },
+          "product-last-cell/scalar-reference": {
+            "construction_total_ns": 88165,
+            "first_construction_including_honest_acquisition_ns": 59383665,
+            "kernel_to_production_total_ratio": {
+              "decimal": 2.1365932993821346,
+              "denominator": "20851301",
+              "numerator": "44550750"
+            },
+            "matched_construction_total_ns": 88165,
+            "median_verification_ns": {
+              "decimal": 3629613.0,
+              "denominator": "1",
+              "numerator": "3629613"
+            },
+            "rejection_to_existing_proof_mutation_ratio": {
+              "decimal": 505.3110644813702,
+              "denominator": "17633",
+              "numerator": "8910150"
+            },
+            "rejection_to_first_construction_ratio": {
+              "decimal": 0.7502189364701556,
+              "denominator": "3958911",
+              "numerator": "2970050"
+            },
+            "verification_total_ns": 44550750,
+            "verifications": 12
+          },
+          "transcript/limb-transcript": {
+            "construction_total_ns": 117170,
+            "first_construction_including_honest_acquisition_ns": 59412670,
+            "kernel_to_production_total_ratio": {
+              "decimal": 0.9987381340918913,
+              "denominator": "4681163",
+              "numerator": "4675256"
+            },
+            "matched_construction_total_ns": 117170,
+            "median_verification_ns": {
+              "decimal": 1530970.0,
+              "denominator": "1",
+              "numerator": "1530970"
+            },
+            "rejection_to_existing_proof_mutation_ratio": {
+              "decimal": 159.60590594862165,
+              "denominator": "58585",
+              "numerator": "9350512"
+            },
+            "rejection_to_first_construction_ratio": {
+              "decimal": 0.3147649146217465,
+              "denominator": "29706335",
+              "numerator": "9350512"
+            },
+            "verification_total_ns": 18701024,
+            "verifications": 12
+          },
+          "transcript/production-full-limb": {
+            "construction_total_ns": 117170,
+            "first_construction_including_honest_acquisition_ns": 59412670,
+            "kernel_to_production_total_ratio": {
+              "decimal": 1.0,
+              "denominator": "1",
+              "numerator": "1"
+            },
+            "matched_construction_total_ns": 117170,
+            "median_verification_ns": {
+              "decimal": 1520880.5,
+              "denominator": "2",
+              "numerator": "3041761"
+            },
+            "rejection_to_existing_proof_mutation_ratio": {
+              "decimal": 159.80756166254162,
+              "denominator": "58585",
+              "numerator": "9362326"
+            },
+            "rejection_to_first_construction_ratio": {
+              "decimal": 0.31516260757175196,
+              "denominator": "29706335",
+              "numerator": "9362326"
+            },
+            "verification_total_ns": 18724652,
+            "verifications": 12
+          },
+          "transcript/retained-transposed": {
+            "construction_total_ns": 117170,
+            "first_construction_including_honest_acquisition_ns": 59412670,
+            "kernel_to_production_total_ratio": {
+              "decimal": 1.114993325376621,
+              "denominator": "9362326",
+              "numerator": "10438931"
+            },
+            "matched_construction_total_ns": 117170,
+            "median_verification_ns": {
+              "decimal": 1691959.0,
+              "denominator": "1",
+              "numerator": "1691959"
+            },
+            "rejection_to_existing_proof_mutation_ratio": {
+              "decimal": 178.1843645984467,
+              "denominator": "58585",
+              "numerator": "10438931"
+            },
+            "rejection_to_first_construction_ratio": {
+              "decimal": 0.3514042038507948,
+              "denominator": "29706335",
+              "numerator": "10438931"
+            },
+            "verification_total_ns": 20877862,
+            "verifications": 12
+          },
+          "transcript/scalar-reference": {
+            "construction_total_ns": 117170,
+            "first_construction_including_honest_acquisition_ns": 59412670,
+            "kernel_to_production_total_ratio": {
+              "decimal": 2.021703420709768,
+              "denominator": "18724652",
+              "numerator": "37855693"
+            },
+            "matched_construction_total_ns": 117170,
+            "median_verification_ns": {
+              "decimal": 3063382.0,
+              "denominator": "1",
+              "numerator": "3063382"
+            },
+            "rejection_to_existing_proof_mutation_ratio": {
+              "decimal": 323.0834940684476,
+              "denominator": "117170",
+              "numerator": "37855693"
+            },
+            "rejection_to_first_construction_ratio": {
+              "decimal": 0.6371653218076212,
+              "denominator": "59412670",
+              "numerator": "37855693"
+            },
+            "verification_total_ns": 37855693,
+            "verifications": 12
+          }
+        }
+      },
+      {
+        "class": "dense",
+        "complete_balanced_group": true,
+        "fake_exhausted": 0,
+        "fake_ticket_trials": 525,
+        "flows": 12,
+        "honest_acquisition_ns": 823320001,
+        "honest_attempts": 483,
+        "honest_exhausted": 0,
+        "honest_search_wall_ns": 815762232,
+        "honest_winners": 12,
+        "mutation_construction_ns": {
+          "product-last-cell": 316167,
+          "transcript": 883594
+        },
+        "setup_ns": 7557769,
+        "target": "07ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff",
+        "variants": {
+          "legal/limb-transcript": {
+            "construction_total_ns": 0,
+            "honest_acquisition_to_verification_ratio": {
+              "decimal": 40.40549985340909,
+              "denominator": "20376434",
+              "numerator": "823320001"
+            },
+            "kernel_to_production_total_ratio": {
+              "decimal": 1.0050714680069175,
+              "denominator": "1559509",
+              "numerator": "1567418"
+            },
+            "matched_construction_total_ns": 0,
+            "median_verification_ns": {
+              "decimal": 1684694.0,
+              "denominator": "1",
+              "numerator": "1684694"
+            },
+            "verification_total_ns": 20376434,
+            "verifications": 12
+          },
+          "legal/production-full-limb": {
+            "construction_total_ns": 0,
+            "honest_acquisition_to_verification_ratio": {
+              "decimal": 40.610415053219164,
+              "denominator": "2896231",
+              "numerator": "117617143"
+            },
+            "kernel_to_production_total_ratio": {
+              "decimal": 1.0,
+              "denominator": "1",
+              "numerator": "1"
+            },
+            "matched_construction_total_ns": 0,
+            "median_verification_ns": {
+              "decimal": 1692582.5,
+              "denominator": "2",
+              "numerator": "3385165"
+            },
+            "verification_total_ns": 20273617,
+            "verifications": 12
+          },
+          "legal/retained-transposed": {
+            "construction_total_ns": 0,
+            "honest_acquisition_to_verification_ratio": {
+              "decimal": 32.94047253486282,
+              "denominator": "24994177",
+              "numerator": "823320001"
+            },
+            "kernel_to_production_total_ratio": {
+              "decimal": 1.232842516458706,
+              "denominator": "1559509",
+              "numerator": "1922629"
+            },
+            "matched_construction_total_ns": 0,
+            "median_verification_ns": {
+              "decimal": 1862549.5,
+              "denominator": "2",
+              "numerator": "3725099"
+            },
+            "verification_total_ns": 24994177,
+            "verifications": 12
+          },
+          "legal/scalar-reference": {
+            "construction_total_ns": 0,
+            "honest_acquisition_to_verification_ratio": {
+              "decimal": 18.784573418929707,
+              "denominator": "43829582",
+              "numerator": "823320001"
+            },
+            "kernel_to_production_total_ratio": {
+              "decimal": 2.1619024370441644,
+              "denominator": "20273617",
+              "numerator": "43829582"
+            },
+            "matched_construction_total_ns": 0,
+            "median_verification_ns": {
+              "decimal": 3607892.5,
+              "denominator": "2",
+              "numerator": "7215785"
+            },
+            "verification_total_ns": 43829582,
+            "verifications": 12
+          },
+          "product-last-cell/limb-transcript": {
+            "construction_total_ns": 316167,
+            "first_construction_including_honest_acquisition_ns": 823636168,
+            "kernel_to_production_total_ratio": {
+              "decimal": 1.0088181571756292,
+              "denominator": "10716865",
+              "numerator": "10811368"
+            },
+            "matched_construction_total_ns": 316167,
+            "median_verification_ns": {
+              "decimal": 1690817.5,
+              "denominator": "2",
+              "numerator": "3381635"
+            },
+            "rejection_to_existing_proof_mutation_ratio": {
+              "decimal": 68.39023680523268,
+              "denominator": "316167",
+              "numerator": "21622736"
+            },
+            "rejection_to_first_construction_ratio": {
+              "decimal": 0.02625277621368371,
+              "denominator": "102954521",
+              "numerator": "2702842"
+            },
+            "verification_total_ns": 21622736,
+            "verifications": 12
+          },
+          "product-last-cell/production-full-limb": {
+            "construction_total_ns": 316167,
+            "first_construction_including_honest_acquisition_ns": 823636168,
+            "kernel_to_production_total_ratio": {
+              "decimal": 1.0,
+              "denominator": "1",
+              "numerator": "1"
+            },
+            "matched_construction_total_ns": 316167,
+            "median_verification_ns": {
+              "decimal": 1690953.0,
+              "denominator": "1",
+              "numerator": "1690953"
+            },
+            "rejection_to_existing_proof_mutation_ratio": {
+              "decimal": 67.79243248030313,
+              "denominator": "316167",
+              "numerator": "21433730"
+            },
+            "rejection_to_first_construction_ratio": {
+              "decimal": 0.026023298675732755,
+              "denominator": "411818084",
+              "numerator": "10716865"
+            },
+            "verification_total_ns": 21433730,
+            "verifications": 12
+          },
+          "product-last-cell/retained-transposed": {
+            "construction_total_ns": 316167,
+            "first_construction_including_honest_acquisition_ns": 823636168,
+            "kernel_to_production_total_ratio": {
+              "decimal": 1.030223297578163,
+              "denominator": "10716865",
+              "numerator": "11040764"
+            },
+            "matched_construction_total_ns": 316167,
+            "median_verification_ns": {
+              "decimal": 1848610.0,
+              "denominator": "1",
+              "numerator": "1848610"
+            },
+            "rejection_to_existing_proof_mutation_ratio": {
+              "decimal": 69.84134334070286,
+              "denominator": "316167",
+              "numerator": "22081528"
+            },
+            "rejection_to_first_construction_ratio": {
+              "decimal": 0.02680980857557484,
+              "denominator": "102954521",
+              "numerator": "2760191"
+            },
+            "verification_total_ns": 22081528,
+            "verifications": 12
+          },
+          "product-last-cell/scalar-reference": {
+            "construction_total_ns": 316167,
+            "first_construction_including_honest_acquisition_ns": 823636168,
+            "kernel_to_production_total_ratio": {
+              "decimal": 2.0416680624417682,
+              "denominator": "10716865",
+              "numerator": "21880281"
+            },
+            "matched_construction_total_ns": 316167,
+            "median_verification_ns": {
+              "decimal": 3619035.0,
+              "denominator": "1",
+              "numerator": "3619035"
+            },
+            "rejection_to_existing_proof_mutation_ratio": {
+              "decimal": 138.4096442702749,
+              "denominator": "105389",
+              "numerator": "14586854"
+            },
+            "rejection_to_first_construction_ratio": {
+              "decimal": 0.053130937785626726,
+              "denominator": "411818084",
+              "numerator": "21880281"
+            },
+            "verification_total_ns": 43760562,
+            "verifications": 12
+          },
+          "transcript/limb-transcript": {
+            "construction_total_ns": 883594,
+            "first_construction_including_honest_acquisition_ns": 824203595,
+            "kernel_to_production_total_ratio": {
+              "decimal": 0.9534886479500664,
+              "denominator": "19474192",
+              "numerator": "18568421"
+            },
+            "matched_construction_total_ns": 883594,
+            "median_verification_ns": {
+              "decimal": 1500914.0,
+              "denominator": "1",
+              "numerator": "1500914"
+            },
+            "rejection_to_existing_proof_mutation_ratio": {
+              "decimal": 21.01465265721587,
+              "denominator": "883594",
+              "numerator": "18568421"
+            },
+            "rejection_to_first_construction_ratio": {
+              "decimal": 0.022528925028530117,
+              "denominator": "824203595",
+              "numerator": "18568421"
+            },
+            "verification_total_ns": 18568421,
+            "verifications": 12
+          },
+          "transcript/production-full-limb": {
+            "construction_total_ns": 883594,
+            "first_construction_including_honest_acquisition_ns": 824203595,
+            "kernel_to_production_total_ratio": {
+              "decimal": 1.0,
+              "denominator": "1",
+              "numerator": "1"
+            },
+            "matched_construction_total_ns": 883594,
+            "median_verification_ns": {
+              "decimal": 1505180.0,
+              "denominator": "1",
+              "numerator": "1505180"
+            },
+            "rejection_to_existing_proof_mutation_ratio": {
+              "decimal": 22.0397512884877,
+              "denominator": "441797",
+              "numerator": "9737096"
+            },
+            "rejection_to_first_construction_ratio": {
+              "decimal": 0.023627890145274118,
+              "denominator": "824203595",
+              "numerator": "19474192"
+            },
+            "verification_total_ns": 19474192,
+            "verifications": 12
+          },
+          "transcript/retained-transposed": {
+            "construction_total_ns": 883594,
+            "first_construction_including_honest_acquisition_ns": 824203595,
+            "kernel_to_production_total_ratio": {
+              "decimal": 1.0356572945362765,
+              "denominator": "19474192",
+              "numerator": "20168589"
+            },
+            "matched_construction_total_ns": 883594,
+            "median_verification_ns": {
+              "decimal": 1682691.5,
+              "denominator": "2",
+              "numerator": "3365383"
+            },
+            "rejection_to_existing_proof_mutation_ratio": {
+              "decimal": 22.825629191687586,
+              "denominator": "883594",
+              "numerator": "20168589"
+            },
+            "rejection_to_first_construction_ratio": {
+              "decimal": 0.02447039678345494,
+              "denominator": "824203595",
+              "numerator": "20168589"
+            },
+            "verification_total_ns": 20168589,
+            "verifications": 12
+          },
+          "transcript/scalar-reference": {
+            "construction_total_ns": 883594,
+            "first_construction_including_honest_acquisition_ns": 824203595,
+            "kernel_to_production_total_ratio": {
+              "decimal": 1.8996769159922013,
+              "denominator": "19474192",
+              "numerator": "36994673"
+            },
+            "matched_construction_total_ns": 883594,
+            "median_verification_ns": {
+              "decimal": 3041064.5,
+              "denominator": "2",
+              "numerator": "6082129"
+            },
+            "rejection_to_existing_proof_mutation_ratio": {
+              "decimal": 41.86840675694946,
+              "denominator": "883594",
+              "numerator": "36994673"
+            },
+            "rejection_to_first_construction_ratio": {
+              "decimal": 0.04488535748257686,
+              "denominator": "824203595",
+              "numerator": "36994673"
+            },
+            "verification_total_ns": 36994673,
+            "verifications": 12
+          }
+        }
+      },
+      {
+        "class": "zero",
+        "complete_balanced_group": true,
+        "fake_exhausted": 0,
+        "fake_ticket_trials": 25,
+        "flows": 12,
+        "honest_acquisition_ns": 52898128,
+        "honest_attempts": 28,
+        "honest_exhausted": 0,
+        "honest_search_wall_ns": 45800821,
+        "honest_winners": 12,
+        "mutation_construction_ns": {
+          "product-last-cell": 252343,
+          "transcript": 82014
+        },
+        "setup_ns": 7097307,
+        "target": "7fffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff",
+        "variants": {
+          "legal/limb-transcript": {
+            "construction_total_ns": 0,
+            "honest_acquisition_to_verification_ratio": {
+              "decimal": 2.6123529554980047,
+              "denominator": "20249227",
+              "numerator": "52898128"
+            },
+            "kernel_to_production_total_ratio": {
+              "decimal": 0.9845283605800411,
+              "denominator": "20567439",
+              "numerator": "20249227"
+            },
+            "matched_construction_total_ns": 0,
+            "median_verification_ns": {
+              "decimal": 1681237.5,
+              "denominator": "2",
+              "numerator": "3362475"
+            },
+            "verification_total_ns": 20249227,
+            "verifications": 12
+          },
+          "legal/production-full-limb": {
+            "construction_total_ns": 0,
+            "honest_acquisition_to_verification_ratio": {
+              "decimal": 2.571935572532876,
+              "denominator": "20567439",
+              "numerator": "52898128"
+            },
+            "kernel_to_production_total_ratio": {
+              "decimal": 1.0,
+              "denominator": "1",
+              "numerator": "1"
+            },
+            "matched_construction_total_ns": 0,
+            "median_verification_ns": {
+              "decimal": 1675174.0,
+              "denominator": "1",
+              "numerator": "1675174"
+            },
+            "verification_total_ns": 20567439,
+            "verifications": 12
+          },
+          "legal/retained-transposed": {
+            "construction_total_ns": 0,
+            "honest_acquisition_to_verification_ratio": {
+              "decimal": 2.377089688565965,
+              "denominator": "5563329",
+              "numerator": "13224532"
+            },
+            "kernel_to_production_total_ratio": {
+              "decimal": 1.0819682508843225,
+              "denominator": "6855813",
+              "numerator": "7417772"
+            },
+            "matched_construction_total_ns": 0,
+            "median_verification_ns": {
+              "decimal": 1863068.5,
+              "denominator": "2",
+              "numerator": "3726137"
+            },
+            "verification_total_ns": 22253316,
+            "verifications": 12
+          },
+          "legal/scalar-reference": {
+            "construction_total_ns": 0,
+            "honest_acquisition_to_verification_ratio": {
+              "decimal": 1.254876976782887,
+              "denominator": "42154035",
+              "numerator": "52898128"
+            },
+            "kernel_to_production_total_ratio": {
+              "decimal": 2.049551964150714,
+              "denominator": "6855813",
+              "numerator": "14051345"
+            },
+            "matched_construction_total_ns": 0,
+            "median_verification_ns": {
+              "decimal": 3528919.0,
+              "denominator": "1",
+              "numerator": "3528919"
+            },
+            "verification_total_ns": 42154035,
+            "verifications": 12
+          },
+          "product-last-cell/limb-transcript": {
+            "construction_total_ns": 252343,
+            "first_construction_including_honest_acquisition_ns": 53150471,
+            "kernel_to_production_total_ratio": {
+              "decimal": 1.0215455486632419,
+              "denominator": "20019402",
+              "numerator": "20450731"
+            },
+            "matched_construction_total_ns": 252343,
+            "median_verification_ns": {
+              "decimal": 1707697.0,
+              "denominator": "1",
+              "numerator": "1707697"
+            },
+            "rejection_to_existing_proof_mutation_ratio": {
+              "decimal": 81.0433853921052,
+              "denominator": "36049",
+              "numerator": "2921533"
+            },
+            "rejection_to_first_construction_ratio": {
+              "decimal": 0.3847704566907789,
+              "denominator": "53150471",
+              "numerator": "20450731"
+            },
+            "verification_total_ns": 20450731,
+            "verifications": 12
+          },
+          "product-last-cell/production-full-limb": {
+            "construction_total_ns": 252343,
+            "first_construction_including_honest_acquisition_ns": 53150471,
+            "kernel_to_production_total_ratio": {
+              "decimal": 1.0,
+              "denominator": "1",
+              "numerator": "1"
+            },
+            "matched_construction_total_ns": 252343,
+            "median_verification_ns": {
+              "decimal": 1680256.5,
+              "denominator": "2",
+              "numerator": "3360513"
+            },
+            "rejection_to_existing_proof_mutation_ratio": {
+              "decimal": 79.33408891865437,
+              "denominator": "19411",
+              "numerator": "1539954"
+            },
+            "rejection_to_first_construction_ratio": {
+              "decimal": 0.3766552134599146,
+              "denominator": "53150471",
+              "numerator": "20019402"
+            },
+            "verification_total_ns": 20019402,
+            "verifications": 12
+          },
+          "product-last-cell/retained-transposed": {
+            "construction_total_ns": 252343,
+            "first_construction_including_honest_acquisition_ns": 53150471,
+            "kernel_to_production_total_ratio": {
+              "decimal": 1.1127896327772429,
+              "denominator": "20019402",
+              "numerator": "22277383"
+            },
+            "matched_construction_total_ns": 252343,
+            "median_verification_ns": {
+              "decimal": 1864446.5,
+              "denominator": "2",
+              "numerator": "3728893"
+            },
+            "rejection_to_existing_proof_mutation_ratio": {
+              "decimal": 88.28215167450652,
+              "denominator": "252343",
+              "numerator": "22277383"
+            },
+            "rejection_to_first_construction_ratio": {
+              "decimal": 0.41913801666969236,
+              "denominator": "53150471",
+              "numerator": "22277383"
+            },
+            "verification_total_ns": 22277383,
+            "verifications": 12
+          },
+          "product-last-cell/scalar-reference": {
+            "construction_total_ns": 252343,
+            "first_construction_including_honest_acquisition_ns": 53150471,
+            "kernel_to_production_total_ratio": {
+              "decimal": 2.109155757999165,
+              "denominator": "6673134",
+              "numerator": "14074679"
+            },
+            "matched_construction_total_ns": 252343,
+            "median_verification_ns": {
+              "decimal": 3529250.5,
+              "denominator": "2",
+              "numerator": "7058501"
+            },
+            "rejection_to_existing_proof_mutation_ratio": {
+              "decimal": 167.32795044839762,
+              "denominator": "252343",
+              "numerator": "42224037"
+            },
+            "rejection_to_first_construction_ratio": {
+              "decimal": 0.7944245122493835,
+              "denominator": "53150471",
+              "numerator": "42224037"
+            },
+            "verification_total_ns": 42224037,
+            "verifications": 12
+          },
+          "transcript/limb-transcript": {
+            "construction_total_ns": 82014,
+            "first_construction_including_honest_acquisition_ns": 52980142,
+            "kernel_to_production_total_ratio": {
+              "decimal": 0.9963359863337994,
+              "denominator": "6049377",
+              "numerator": "6027212"
+            },
+            "matched_construction_total_ns": 82014,
+            "median_verification_ns": {
+              "decimal": 1518162.5,
+              "denominator": "2",
+              "numerator": "3036325"
+            },
+            "rejection_to_existing_proof_mutation_ratio": {
+              "decimal": 220.4701148584388,
+              "denominator": "13669",
+              "numerator": "3013606"
+            },
+            "rejection_to_first_construction_ratio": {
+              "decimal": 0.3412908179823301,
+              "denominator": "26490071",
+              "numerator": "9040818"
+            },
+            "verification_total_ns": 18081636,
+            "verifications": 12
+          },
+          "transcript/production-full-limb": {
+            "construction_total_ns": 82014,
+            "first_construction_including_honest_acquisition_ns": 52980142,
+            "kernel_to_production_total_ratio": {
+              "decimal": 1.0,
+              "denominator": "1",
+              "numerator": "1"
+            },
+            "matched_construction_total_ns": 82014,
+            "median_verification_ns": {
+              "decimal": 1509594.5,
+              "denominator": "2",
+              "numerator": "3019189"
+            },
+            "rejection_to_existing_proof_mutation_ratio": {
+              "decimal": 221.28089106737875,
+              "denominator": "27338",
+              "numerator": "6049377"
+            },
+            "rejection_to_first_construction_ratio": {
+              "decimal": 0.3425459108810996,
+              "denominator": "52980142",
+              "numerator": "18148131"
+            },
+            "verification_total_ns": 18148131,
+            "verifications": 12
+          },
+          "transcript/retained-transposed": {
+            "construction_total_ns": 82014,
+            "first_construction_including_honest_acquisition_ns": 52980142,
+            "kernel_to_production_total_ratio": {
+              "decimal": 1.1114781461517993,
+              "denominator": "18148131",
+              "numerator": "20171251"
+            },
+            "matched_construction_total_ns": 82014,
+            "median_verification_ns": {
+              "decimal": 1685422.0,
+              "denominator": "1",
+              "numerator": "1685422"
+            },
+            "rejection_to_existing_proof_mutation_ratio": {
+              "decimal": 245.94887458238838,
+              "denominator": "82014",
+              "numerator": "20171251"
+            },
+            "rejection_to_first_construction_ratio": {
+              "decimal": 0.380732293998004,
+              "denominator": "52980142",
+              "numerator": "20171251"
+            },
+            "verification_total_ns": 20171251,
+            "verifications": 12
+          },
+          "transcript/scalar-reference": {
+            "construction_total_ns": 82014,
+            "first_construction_including_honest_acquisition_ns": 52980142,
+            "kernel_to_production_total_ratio": {
+              "decimal": 2.0193867346450167,
+              "denominator": "18148131",
+              "numerator": "36648095"
+            },
+            "matched_construction_total_ns": 82014,
+            "median_verification_ns": {
+              "decimal": 3050624.0,
+              "denominator": "1",
+              "numerator": "3050624"
+            },
+            "rejection_to_existing_proof_mutation_ratio": {
+              "decimal": 446.85169605189355,
+              "denominator": "82014",
+              "numerator": "36648095"
+            },
+            "rejection_to_first_construction_ratio": {
+              "decimal": 0.6917326684401865,
+              "denominator": "52980142",
+              "numerator": "36648095"
+            },
+            "verification_total_ns": 36648095,
+            "verifications": 12
+          }
+        }
+      },
+      {
+        "class": "zero",
+        "complete_balanced_group": true,
+        "fake_exhausted": 0,
+        "fake_ticket_trials": 321,
+        "flows": 12,
+        "honest_acquisition_ns": 333401789,
+        "honest_attempts": 197,
+        "honest_exhausted": 0,
+        "honest_search_wall_ns": 326154236,
+        "honest_winners": 12,
+        "mutation_construction_ns": {
+          "product-last-cell": 308028,
+          "transcript": 582516
+        },
+        "setup_ns": 7247553,
+        "target": "07ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff",
+        "variants": {
+          "legal/limb-transcript": {
+            "construction_total_ns": 0,
+            "honest_acquisition_to_verification_ratio": {
+              "decimal": 16.404516728679408,
+              "denominator": "20323780",
+              "numerator": "333401789"
+            },
+            "kernel_to_production_total_ratio": {
+              "decimal": 1.0177745400672438,
+              "denominator": "19968843",
+              "numerator": "20323780"
+            },
+            "matched_construction_total_ns": 0,
+            "median_verification_ns": {
+              "decimal": 1691463.0,
+              "denominator": "1",
+              "numerator": "1691463"
+            },
+            "verification_total_ns": 20323780,
+            "verifications": 12
+          },
+          "legal/production-full-limb": {
+            "construction_total_ns": 0,
+            "honest_acquisition_to_verification_ratio": {
+              "decimal": 16.69609946855709,
+              "denominator": "19968843",
+              "numerator": "333401789"
+            },
+            "kernel_to_production_total_ratio": {
+              "decimal": 1.0,
+              "denominator": "1",
+              "numerator": "1"
+            },
+            "matched_construction_total_ns": 0,
+            "median_verification_ns": {
+              "decimal": 1666793.0,
+              "denominator": "1",
+              "numerator": "1666793"
+            },
+            "verification_total_ns": 19968843,
+            "verifications": 12
+          },
+          "legal/retained-transposed": {
+            "construction_total_ns": 0,
+            "honest_acquisition_to_verification_ratio": {
+              "decimal": 13.982919163223661,
+              "denominator": "23843504",
+              "numerator": "333401789"
+            },
+            "kernel_to_production_total_ratio": {
+              "decimal": 1.1940353279356246,
+              "denominator": "19968843",
+              "numerator": "23843504"
+            },
+            "matched_construction_total_ns": 0,
+            "median_verification_ns": {
+              "decimal": 1858250.5,
+              "denominator": "2",
+              "numerator": "3716501"
+            },
+            "verification_total_ns": 23843504,
+            "verifications": 12
+          },
+          "legal/scalar-reference": {
+            "construction_total_ns": 0,
+            "honest_acquisition_to_verification_ratio": {
+              "decimal": 7.72925006553831,
+              "denominator": "43135076",
+              "numerator": "333401789"
+            },
+            "kernel_to_production_total_ratio": {
+              "decimal": 2.160118941292693,
+              "denominator": "19968843",
+              "numerator": "43135076"
+            },
+            "matched_construction_total_ns": 0,
+            "median_verification_ns": {
+              "decimal": 3537668.5,
+              "denominator": "2",
+              "numerator": "7075337"
+            },
+            "verification_total_ns": 43135076,
+            "verifications": 12
+          },
+          "product-last-cell/limb-transcript": {
+            "construction_total_ns": 308028,
+            "first_construction_including_honest_acquisition_ns": 333709817,
+            "kernel_to_production_total_ratio": {
+              "decimal": 1.010091216517054,
+              "denominator": "21078529",
+              "numerator": "21291237"
+            },
+            "matched_construction_total_ns": 308028,
+            "median_verification_ns": {
+              "decimal": 1696767.5,
+              "denominator": "2",
+              "numerator": "3393535"
+            },
+            "rejection_to_existing_proof_mutation_ratio": {
+              "decimal": 69.12110911995013,
+              "denominator": "102676",
+              "numerator": "7097079"
+            },
+            "rejection_to_first_construction_ratio": {
+              "decimal": 0.0638016501624224,
+              "denominator": "333709817",
+              "numerator": "21291237"
+            },
+            "verification_total_ns": 21291237,
+            "verifications": 12
+          },
+          "product-last-cell/production-full-limb": {
+            "construction_total_ns": 308028,
+            "first_construction_including_honest_acquisition_ns": 333709817,
+            "kernel_to_production_total_ratio": {
+              "decimal": 1.0,
+              "denominator": "1",
+              "numerator": "1"
+            },
+            "matched_construction_total_ns": 308028,
+            "median_verification_ns": {
+              "decimal": 1672624.0,
+              "denominator": "1",
+              "numerator": "1672624"
+            },
+            "rejection_to_existing_proof_mutation_ratio": {
+              "decimal": 68.43056150739544,
+              "denominator": "308028",
+              "numerator": "21078529"
+            },
+            "rejection_to_first_construction_ratio": {
+              "decimal": 0.06316424607910172,
+              "denominator": "333709817",
+              "numerator": "21078529"
+            },
+            "verification_total_ns": 21078529,
+            "verifications": 12
+          },
+          "product-last-cell/retained-transposed": {
+            "construction_total_ns": 308028,
+            "first_construction_including_honest_acquisition_ns": 333709817,
+            "kernel_to_production_total_ratio": {
+              "decimal": 1.0583486637041892,
+              "denominator": "21078529",
+              "numerator": "22308433"
+            },
+            "matched_construction_total_ns": 308028,
+            "median_verification_ns": {
+              "decimal": 1863571.5,
+              "denominator": "2",
+              "numerator": "3727143"
+            },
+            "rejection_to_existing_proof_mutation_ratio": {
+              "decimal": 72.42339332787928,
+              "denominator": "44004",
+              "numerator": "3186919"
+            },
+            "rejection_to_first_construction_ratio": {
+              "decimal": 0.06684979543169987,
+              "denominator": "47672831",
+              "numerator": "3186919"
+            },
+            "verification_total_ns": 22308433,
+            "verifications": 12
+          },
+          "product-last-cell/scalar-reference": {
+            "construction_total_ns": 308028,
+            "first_construction_including_honest_acquisition_ns": 333709817,
+            "kernel_to_production_total_ratio": {
+              "decimal": 2.0090550436418027,
+              "denominator": "21078529",
+              "numerator": "42347925"
+            },
+            "matched_construction_total_ns": 308028,
+            "median_verification_ns": {
+              "decimal": 3545989.5,
+              "denominator": "2",
+              "numerator": "7091979"
+            },
+            "rejection_to_existing_proof_mutation_ratio": {
+              "decimal": 137.48076473567338,
+              "denominator": "102676",
+              "numerator": "14115975"
+            },
+            "rejection_to_first_construction_ratio": {
+              "decimal": 0.12690044716305124,
+              "denominator": "333709817",
+              "numerator": "42347925"
+            },
+            "verification_total_ns": 42347925,
+            "verifications": 12
+          },
+          "transcript/limb-transcript": {
+            "construction_total_ns": 582516,
+            "first_construction_including_honest_acquisition_ns": 333984305,
+            "kernel_to_production_total_ratio": {
+              "decimal": 0.981899446785932,
+              "denominator": "18262370",
+              "numerator": "17931811"
+            },
+            "matched_construction_total_ns": 582516,
+            "median_verification_ns": {
+              "decimal": 1499066.0,
+              "denominator": "1",
+              "numerator": "1499066"
+            },
+            "rejection_to_existing_proof_mutation_ratio": {
+              "decimal": 30.783379340653305,
+              "denominator": "582516",
+              "numerator": "17931811"
+            },
+            "rejection_to_first_construction_ratio": {
+              "decimal": 0.053690579861230305,
+              "denominator": "333984305",
+              "numerator": "17931811"
+            },
+            "verification_total_ns": 17931811,
+            "verifications": 12
+          },
+          "transcript/production-full-limb": {
+            "construction_total_ns": 582516,
+            "first_construction_including_honest_acquisition_ns": 333984305,
+            "kernel_to_production_total_ratio": {
+              "decimal": 1.0,
+              "denominator": "1",
+              "numerator": "1"
+            },
+            "matched_construction_total_ns": 582516,
+            "median_verification_ns": {
+              "decimal": 1514685.5,
+              "denominator": "2",
+              "numerator": "3029371"
+            },
+            "rejection_to_existing_proof_mutation_ratio": {
+              "decimal": 31.35084701536095,
+              "denominator": "291258",
+              "numerator": "9131185"
+            },
+            "rejection_to_first_construction_ratio": {
+              "decimal": 0.05468032397510416,
+              "denominator": "66796861",
+              "numerator": "3652474"
+            },
+            "verification_total_ns": 18262370,
+            "verifications": 12
+          },
+          "transcript/retained-transposed": {
+            "construction_total_ns": 582516,
+            "first_construction_including_honest_acquisition_ns": 333984305,
+            "kernel_to_production_total_ratio": {
+              "decimal": 1.088597701174601,
+              "denominator": "9131185",
+              "numerator": "9940187"
+            },
+            "matched_construction_total_ns": 582516,
+            "median_verification_ns": {
+              "decimal": 1666981.0,
+              "denominator": "1",
+              "numerator": "1666981"
+            },
+            "rejection_to_existing_proof_mutation_ratio": {
+              "decimal": 34.12845999079854,
+              "denominator": "291258",
+              "numerator": "9940187"
+            },
+            "rejection_to_first_construction_ratio": {
+              "decimal": 0.05952487497878081,
+              "denominator": "333984305",
+              "numerator": "19880374"
+            },
+            "verification_total_ns": 19880374,
+            "verifications": 12
+          },
+          "transcript/scalar-reference": {
+            "construction_total_ns": 582516,
+            "first_construction_including_honest_acquisition_ns": 333984305,
+            "kernel_to_production_total_ratio": {
+              "decimal": 2.009499533740692,
+              "denominator": "9131185",
+              "numerator": "18349112"
+            },
+            "matched_construction_total_ns": 582516,
+            "median_verification_ns": {
+              "decimal": 3045811.0,
+              "denominator": "1",
+              "numerator": "3045811"
+            },
+            "rejection_to_existing_proof_mutation_ratio": {
+              "decimal": 62.99951245974359,
+              "denominator": "145629",
+              "numerator": "9174556"
+            },
+            "rejection_to_first_construction_ratio": {
+              "decimal": 0.10988008553276178,
+              "denominator": "333984305",
+              "numerator": "36698224"
+            },
+            "verification_total_ns": 36698224,
+            "verifications": 12
+          }
+        }
+      },
+      {
+        "class": "rank-one",
+        "complete_balanced_group": true,
+        "fake_exhausted": 0,
+        "fake_ticket_trials": 29,
+        "flows": 12,
+        "honest_acquisition_ns": 51657232,
+        "honest_attempts": 27,
+        "honest_exhausted": 0,
+        "honest_search_wall_ns": 44361351,
+        "honest_winners": 12,
+        "mutation_construction_ns": {
+          "product-last-cell": 232374,
+          "transcript": 106235
+        },
+        "setup_ns": 7295881,
+        "target": "7fffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff",
+        "variants": {
+          "legal/limb-transcript": {
+            "construction_total_ns": 0,
+            "honest_acquisition_to_verification_ratio": {
+              "decimal": 2.51959494877549,
+              "denominator": "20502197",
+              "numerator": "51657232"
+            },
+            "kernel_to_production_total_ratio": {
+              "decimal": 1.0199522574199047,
+              "denominator": "20101134",
+              "numerator": "20502197"
+            },
+            "matched_construction_total_ns": 0,
+            "median_verification_ns": {
+              "decimal": 1709664.5,
+              "denominator": "2",
+              "numerator": "3419329"
+            },
+            "verification_total_ns": 20502197,
+            "verifications": 12
+          },
+          "legal/production-full-limb": {
+            "construction_total_ns": 0,
+            "honest_acquisition_to_verification_ratio": {
+              "decimal": 2.56986655578735,
+              "denominator": "10050567",
+              "numerator": "25828616"
+            },
+            "kernel_to_production_total_ratio": {
+              "decimal": 1.0,
+              "denominator": "1",
+              "numerator": "1"
+            },
+            "matched_construction_total_ns": 0,
+            "median_verification_ns": {
+              "decimal": 1679445.5,
+              "denominator": "2",
+              "numerator": "3358891"
+            },
+            "verification_total_ns": 20101134,
+            "verifications": 12
+          },
+          "legal/retained-transposed": {
+            "construction_total_ns": 0,
+            "honest_acquisition_to_verification_ratio": {
+              "decimal": 2.292630002326483,
+              "denominator": "11265933",
+              "numerator": "25828616"
+            },
+            "kernel_to_production_total_ratio": {
+              "decimal": 1.1209251179560318,
+              "denominator": "3350189",
+              "numerator": "3755311"
+            },
+            "matched_construction_total_ns": 0,
+            "median_verification_ns": {
+              "decimal": 1878979.5,
+              "denominator": "2",
+              "numerator": "3757959"
+            },
+            "verification_total_ns": 22531866,
+            "verifications": 12
+          },
+          "legal/scalar-reference": {
+            "construction_total_ns": 0,
+            "honest_acquisition_to_verification_ratio": {
+              "decimal": 1.1815166134117052,
+              "denominator": "21860561",
+              "numerator": "25828616"
+            },
+            "kernel_to_production_total_ratio": {
+              "decimal": 2.1750574868064656,
+              "denominator": "10050567",
+              "numerator": "21860561"
+            },
+            "matched_construction_total_ns": 0,
+            "median_verification_ns": {
+              "decimal": 3647123.0,
+              "denominator": "1",
+              "numerator": "3647123"
+            },
+            "verification_total_ns": 43721122,
+            "verifications": 12
+          },
+          "product-last-cell/limb-transcript": {
+            "construction_total_ns": 232374,
+            "first_construction_including_honest_acquisition_ns": 51889606,
+            "kernel_to_production_total_ratio": {
+              "decimal": 0.9980642615902331,
+              "denominator": "20467125",
+              "numerator": "20427506"
+            },
+            "matched_construction_total_ns": 232374,
+            "median_verification_ns": {
+              "decimal": 1709520.5,
+              "denominator": "2",
+              "numerator": "3419041"
+            },
+            "rejection_to_existing_proof_mutation_ratio": {
+              "decimal": 87.90788126038197,
+              "denominator": "116187",
+              "numerator": "10213753"
+            },
+            "rejection_to_first_construction_ratio": {
+              "decimal": 0.39367240522119207,
+              "denominator": "25944803",
+              "numerator": "10213753"
+            },
+            "verification_total_ns": 20427506,
+            "verifications": 12
+          },
+          "product-last-cell/production-full-limb": {
+            "construction_total_ns": 232374,
+            "first_construction_including_honest_acquisition_ns": 51889606,
+            "kernel_to_production_total_ratio": {
+              "decimal": 1.0,
+              "denominator": "1",
+              "numerator": "1"
+            },
+            "matched_construction_total_ns": 232374,
+            "median_verification_ns": {
+              "decimal": 1707709.5,
+              "denominator": "2",
+              "numerator": "3415419"
+            },
+            "rejection_to_existing_proof_mutation_ratio": {
+              "decimal": 88.07837795966847,
+              "denominator": "77458",
+              "numerator": "6822375"
+            },
+            "rejection_to_first_construction_ratio": {
+              "decimal": 0.3944359300010873,
+              "denominator": "51889606",
+              "numerator": "20467125"
+            },
+            "verification_total_ns": 20467125,
+            "verifications": 12
+          },
+          "product-last-cell/retained-transposed": {
+            "construction_total_ns": 232374,
+            "first_construction_including_honest_acquisition_ns": 51889606,
+            "kernel_to_production_total_ratio": {
+              "decimal": 1.1031125280174914,
+              "denominator": "20467125",
+              "numerator": "22577542"
+            },
+            "matched_construction_total_ns": 232374,
+            "median_verification_ns": {
+              "decimal": 1876824.5,
+              "denominator": "2",
+              "numerator": "3753649"
+            },
+            "rejection_to_existing_proof_mutation_ratio": {
+              "decimal": 97.16036217476999,
+              "denominator": "116187",
+              "numerator": "11288771"
+            },
+            "rejection_to_first_construction_ratio": {
+              "decimal": 0.43510721588442974,
+              "denominator": "25944803",
+              "numerator": "11288771"
+            },
+            "verification_total_ns": 22577542,
+            "verifications": 12
+          },
+          "product-last-cell/scalar-reference": {
+            "construction_total_ns": 232374,
+            "first_construction_including_honest_acquisition_ns": 51889606,
+            "kernel_to_production_total_ratio": {
+              "decimal": 2.1302871311920946,
+              "denominator": "20467125",
+              "numerator": "43600853"
+            },
+            "matched_construction_total_ns": 232374,
+            "median_verification_ns": {
+              "decimal": 3630311.0,
+              "denominator": "1",
+              "numerator": "3630311"
+            },
+            "rejection_to_existing_proof_mutation_ratio": {
+              "decimal": 187.63223510375516,
+              "denominator": "232374",
+              "numerator": "43600853"
+            },
+            "rejection_to_first_construction_ratio": {
+              "decimal": 0.8402617857611021,
+              "denominator": "51889606",
+              "numerator": "43600853"
+            },
+            "verification_total_ns": 43600853,
+            "verifications": 12
+          },
+          "transcript/limb-transcript": {
+            "construction_total_ns": 106235,
+            "first_construction_including_honest_acquisition_ns": 51763467,
+            "kernel_to_production_total_ratio": {
+              "decimal": 1.0074441010203143,
+              "denominator": "696256",
+              "numerator": "701439"
+            },
+            "matched_construction_total_ns": 106235,
+            "median_verification_ns": {
+              "decimal": 1518577.0,
+              "denominator": "1",
+              "numerator": "1518577"
+            },
+            "rejection_to_existing_proof_mutation_ratio": {
+              "decimal": 171.67048524497577,
+              "denominator": "106235",
+              "numerator": "18237414"
+            },
+            "rejection_to_first_construction_ratio": {
+              "decimal": 0.35232211165453814,
+              "denominator": "17254489",
+              "numerator": "6079138"
+            },
+            "verification_total_ns": 18237414,
+            "verifications": 12
+          },
+          "transcript/production-full-limb": {
+            "construction_total_ns": 106235,
+            "first_construction_including_honest_acquisition_ns": 51763467,
+            "kernel_to_production_total_ratio": {
+              "decimal": 1.0,
+              "denominator": "1",
+              "numerator": "1"
+            },
+            "matched_construction_total_ns": 106235,
+            "median_verification_ns": {
+              "decimal": 1500383.0,
+              "denominator": "1",
+              "numerator": "1500383"
+            },
+            "rejection_to_existing_proof_mutation_ratio": {
+              "decimal": 170.401995575846,
+              "denominator": "106235",
+              "numerator": "18102656"
+            },
+            "rejection_to_first_construction_ratio": {
+              "decimal": 0.34971876980342137,
+              "denominator": "51763467",
+              "numerator": "18102656"
+            },
+            "verification_total_ns": 18102656,
+            "verifications": 12
+          },
+          "transcript/retained-transposed": {
+            "construction_total_ns": 106235,
+            "first_construction_including_honest_acquisition_ns": 51763467,
+            "kernel_to_production_total_ratio": {
+              "decimal": 1.1176921220841847,
+              "denominator": "4525664",
+              "numerator": "5058299"
+            },
+            "matched_construction_total_ns": 106235,
+            "median_verification_ns": {
+              "decimal": 1682716.5,
+              "denominator": "2",
+              "numerator": "3365433"
+            },
+            "rejection_to_existing_proof_mutation_ratio": {
+              "decimal": 190.45696804254717,
+              "denominator": "106235",
+              "numerator": "20233196"
+            },
+            "rejection_to_first_construction_ratio": {
+              "decimal": 0.3908779139542566,
+              "denominator": "51763467",
+              "numerator": "20233196"
+            },
+            "verification_total_ns": 20233196,
+            "verifications": 12
+          },
+          "transcript/scalar-reference": {
+            "construction_total_ns": 106235,
+            "first_construction_including_honest_acquisition_ns": 51763467,
+            "kernel_to_production_total_ratio": {
+              "decimal": 2.029600076364485,
+              "denominator": "565708",
+              "numerator": "1148161"
+            },
+            "matched_construction_total_ns": 106235,
+            "median_verification_ns": {
+              "decimal": 3057978.0,
+              "denominator": "1",
+              "numerator": "3057978"
+            },
+            "rejection_to_existing_proof_mutation_ratio": {
+              "decimal": 345.84790323339763,
+              "denominator": "106235",
+              "numerator": "36741152"
+            },
+            "rejection_to_first_construction_ratio": {
+              "decimal": 0.7097892418991177,
+              "denominator": "7394781",
+              "numerator": "5248736"
+            },
+            "verification_total_ns": 36741152,
+            "verifications": 12
+          }
+        }
+      },
+      {
+        "class": "rank-one",
+        "complete_balanced_group": true,
+        "fake_exhausted": 0,
+        "fake_ticket_trials": 361,
+        "flows": 12,
+        "honest_acquisition_ns": 486945287,
+        "honest_attempts": 293,
+        "honest_exhausted": 0,
+        "honest_search_wall_ns": 479937019,
+        "honest_winners": 12,
+        "mutation_construction_ns": {
+          "product-last-cell": 354391,
+          "transcript": 646738
+        },
+        "setup_ns": 7008268,
+        "target": "07ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff",
+        "variants": {
+          "legal/limb-transcript": {
+            "construction_total_ns": 0,
+            "honest_acquisition_to_verification_ratio": {
+              "decimal": 23.953286679025066,
+              "denominator": "20328955",
+              "numerator": "486945287"
+            },
+            "kernel_to_production_total_ratio": {
+              "decimal": 1.0165930719796394,
+              "denominator": "19997141",
+              "numerator": "20328955"
+            },
+            "matched_construction_total_ns": 0,
+            "median_verification_ns": {
+              "decimal": 1688613.0,
+              "denominator": "1",
+              "numerator": "1688613"
+            },
+            "verification_total_ns": 20328955,
+            "verifications": 12
+          },
+          "legal/production-full-limb": {
+            "construction_total_ns": 0,
+            "honest_acquisition_to_verification_ratio": {
+              "decimal": 24.350745289039068,
+              "denominator": "19997141",
+              "numerator": "486945287"
+            },
+            "kernel_to_production_total_ratio": {
+              "decimal": 1.0,
+              "denominator": "1",
+              "numerator": "1"
+            },
+            "matched_construction_total_ns": 0,
+            "median_verification_ns": {
+              "decimal": 1668946.5,
+              "denominator": "2",
+              "numerator": "3337893"
+            },
+            "verification_total_ns": 19997141,
+            "verifications": 12
+          },
+          "legal/retained-transposed": {
+            "construction_total_ns": 0,
+            "honest_acquisition_to_verification_ratio": {
+              "decimal": 21.819208976006255,
+              "denominator": "22317275",
+              "numerator": "486945287"
+            },
+            "kernel_to_production_total_ratio": {
+              "decimal": 1.1160232855286663,
+              "denominator": "19997141",
+              "numerator": "22317275"
+            },
+            "matched_construction_total_ns": 0,
+            "median_verification_ns": {
+              "decimal": 1858050.5,
+              "denominator": "2",
+              "numerator": "3716101"
+            },
+            "verification_total_ns": 22317275,
+            "verifications": 12
+          },
+          "legal/scalar-reference": {
+            "construction_total_ns": 0,
+            "honest_acquisition_to_verification_ratio": {
+              "decimal": 11.229930833149933,
+              "denominator": "43361379",
+              "numerator": "486945287"
+            },
+            "kernel_to_production_total_ratio": {
+              "decimal": 2.168378919766581,
+              "denominator": "19997141",
+              "numerator": "43361379"
+            },
+            "matched_construction_total_ns": 0,
+            "median_verification_ns": {
+              "decimal": 3625941.0,
+              "denominator": "1",
+              "numerator": "3625941"
+            },
+            "verification_total_ns": 43361379,
+            "verifications": 12
+          },
+          "product-last-cell/limb-transcript": {
+            "construction_total_ns": 354391,
+            "first_construction_including_honest_acquisition_ns": 487299678,
+            "kernel_to_production_total_ratio": {
+              "decimal": 1.0088365388294718,
+              "denominator": "3345088",
+              "numerator": "3374647"
+            },
+            "matched_construction_total_ns": 354391,
+            "median_verification_ns": {
+              "decimal": 1688082.0,
+              "denominator": "1",
+              "numerator": "1688082"
+            },
+            "rejection_to_existing_proof_mutation_ratio": {
+              "decimal": 57.13430081463694,
+              "denominator": "354391",
+              "numerator": "20247882"
+            },
+            "rejection_to_first_construction_ratio": {
+              "decimal": 0.041551191010637194,
+              "denominator": "81216613",
+              "numerator": "3374647"
+            },
+            "verification_total_ns": 20247882,
+            "verifications": 12
+          },
+          "product-last-cell/production-full-limb": {
+            "construction_total_ns": 354391,
+            "first_construction_including_honest_acquisition_ns": 487299678,
+            "kernel_to_production_total_ratio": {
+              "decimal": 1.0,
+              "denominator": "1",
+              "numerator": "1"
+            },
+            "matched_construction_total_ns": 354391,
+            "median_verification_ns": {
+              "decimal": 1670700.5,
+              "denominator": "2",
+              "numerator": "3341401"
+            },
+            "rejection_to_existing_proof_mutation_ratio": {
+              "decimal": 56.63385356851613,
+              "denominator": "354391",
+              "numerator": "20070528"
+            },
+            "rejection_to_first_construction_ratio": {
+              "decimal": 0.041187238379418754,
+              "denominator": "81216613",
+              "numerator": "3345088"
+            },
+            "verification_total_ns": 20070528,
+            "verifications": 12
+          },
+          "product-last-cell/retained-transposed": {
+            "construction_total_ns": 354391,
+            "first_construction_including_honest_acquisition_ns": 487299678,
+            "kernel_to_production_total_ratio": {
+              "decimal": 1.123921553035376,
+              "denominator": "6690176",
+              "numerator": "7519233"
+            },
+            "matched_construction_total_ns": 354391,
+            "median_verification_ns": {
+              "decimal": 1872908.5,
+              "denominator": "2",
+              "numerator": "3745817"
+            },
+            "rejection_to_existing_proof_mutation_ratio": {
+              "decimal": 63.65200865710472,
+              "denominator": "354391",
+              "numerator": "22557699"
+            },
+            "rejection_to_first_construction_ratio": {
+              "decimal": 0.04629122492463457,
+              "denominator": "162433226",
+              "numerator": "7519233"
+            },
+            "verification_total_ns": 22557699,
+            "verifications": 12
+          },
+          "product-last-cell/scalar-reference": {
+            "construction_total_ns": 354391,
+            "first_construction_including_honest_acquisition_ns": 487299678,
+            "kernel_to_production_total_ratio": {
+              "decimal": 2.1887153143155973,
+              "denominator": "627204",
+              "numerator": "1372771"
+            },
+            "matched_construction_total_ns": 354391,
+            "median_verification_ns": {
+              "decimal": 3655257.5,
+              "denominator": "2",
+              "numerator": "7310515"
+            },
+            "rejection_to_existing_proof_mutation_ratio": {
+              "decimal": 123.9553826141183,
+              "denominator": "354391",
+              "numerator": "43928672"
+            },
+            "rejection_to_first_construction_ratio": {
+              "decimal": 0.09014713939540095,
+              "denominator": "243649839",
+              "numerator": "21964336"
+            },
+            "verification_total_ns": 43928672,
+            "verifications": 12
+          },
+          "transcript/limb-transcript": {
+            "construction_total_ns": 646738,
+            "first_construction_including_honest_acquisition_ns": 487592025,
+            "kernel_to_production_total_ratio": {
+              "decimal": 0.9926945231061437,
+              "denominator": "18271634",
+              "numerator": "18138151"
+            },
+            "matched_construction_total_ns": 646738,
+            "median_verification_ns": {
+              "decimal": 1510322.5,
+              "denominator": "2",
+              "numerator": "3020645"
+            },
+            "rejection_to_existing_proof_mutation_ratio": {
+              "decimal": 28.045593424230525,
+              "denominator": "646738",
+              "numerator": "18138151"
+            },
+            "rejection_to_first_construction_ratio": {
+              "decimal": 0.0371994414797904,
+              "denominator": "487592025",
+              "numerator": "18138151"
+            },
+            "verification_total_ns": 18138151,
+            "verifications": 12
+          },
+          "transcript/production-full-limb": {
+            "construction_total_ns": 646738,
+            "first_construction_including_honest_acquisition_ns": 487592025,
+            "kernel_to_production_total_ratio": {
+              "decimal": 1.0,
+              "denominator": "1",
+              "numerator": "1"
+            },
+            "matched_construction_total_ns": 646738,
+            "median_verification_ns": {
+              "decimal": 1521604.0,
+              "denominator": "1",
+              "numerator": "1521604"
+            },
+            "rejection_to_existing_proof_mutation_ratio": {
+              "decimal": 28.251987667339787,
+              "denominator": "323369",
+              "numerator": "9135817"
+            },
+            "rejection_to_first_construction_ratio": {
+              "decimal": 0.0374732010844517,
+              "denominator": "487592025",
+              "numerator": "18271634"
+            },
+            "verification_total_ns": 18271634,
+            "verifications": 12
+          },
+          "transcript/retained-transposed": {
+            "construction_total_ns": 646738,
+            "first_construction_including_honest_acquisition_ns": 487592025,
+            "kernel_to_production_total_ratio": {
+              "decimal": 1.1110013477721807,
+              "denominator": "9135817",
+              "numerator": "10149905"
+            },
+            "matched_construction_total_ns": 646738,
+            "median_verification_ns": {
+              "decimal": 1699542.0,
+              "denominator": "1",
+              "numerator": "1699542"
+            },
+            "rejection_to_existing_proof_mutation_ratio": {
+              "decimal": 31.38799637565753,
+              "denominator": "323369",
+              "numerator": "10149905"
+            },
+            "rejection_to_first_construction_ratio": {
+              "decimal": 0.04163277691016378,
+              "denominator": "97518405",
+              "numerator": "4059962"
+            },
+            "verification_total_ns": 20299810,
+            "verifications": 12
+          },
+          "transcript/scalar-reference": {
+            "construction_total_ns": 646738,
+            "first_construction_including_honest_acquisition_ns": 487592025,
+            "kernel_to_production_total_ratio": {
+              "decimal": 2.019773984089217,
+              "denominator": "18271634",
+              "numerator": "36904571"
+            },
+            "matched_construction_total_ns": 646738,
+            "median_verification_ns": {
+              "decimal": 3071395.5,
+              "denominator": "2",
+              "numerator": "6142791"
+            },
+            "rejection_to_existing_proof_mutation_ratio": {
+              "decimal": 57.06262968930231,
+              "denominator": "646738",
+              "numerator": "36904571"
+            },
+            "rejection_to_first_construction_ratio": {
+              "decimal": 0.07568739665091938,
+              "denominator": "487592025",
+              "numerator": "36904571"
+            },
+            "verification_total_ns": 36904571,
+            "verifications": 12
+          }
+        }
+      },
+      {
+        "class": "sparse",
+        "complete_balanced_group": true,
+        "fake_exhausted": 0,
+        "fake_ticket_trials": 24,
+        "flows": 12,
+        "honest_acquisition_ns": 58066653,
+        "honest_attempts": 31,
+        "honest_exhausted": 0,
+        "honest_search_wall_ns": 50664129,
+        "honest_winners": 12,
+        "mutation_construction_ns": {
+          "product-last-cell": 292733,
+          "transcript": 81042
+        },
+        "setup_ns": 7402524,
+        "target": "7fffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff",
+        "variants": {
+          "legal/limb-transcript": {
+            "construction_total_ns": 0,
+            "honest_acquisition_to_verification_ratio": {
+              "decimal": 2.8527625835108776,
+              "denominator": "20354534",
+              "numerator": "58066653"
+            },
+            "kernel_to_production_total_ratio": {
+              "decimal": 1.0111397815639687,
+              "denominator": "20130287",
+              "numerator": "20354534"
+            },
+            "matched_construction_total_ns": 0,
+            "median_verification_ns": {
+              "decimal": 1697118.5,
+              "denominator": "2",
+              "numerator": "3394237"
+            },
+            "verification_total_ns": 20354534,
+            "verifications": 12
+          },
+          "legal/production-full-limb": {
+            "construction_total_ns": 0,
+            "honest_acquisition_to_verification_ratio": {
+              "decimal": 2.884541735545052,
+              "denominator": "20130287",
+              "numerator": "58066653"
+            },
+            "kernel_to_production_total_ratio": {
+              "decimal": 1.0,
+              "denominator": "1",
+              "numerator": "1"
+            },
+            "matched_construction_total_ns": 0,
+            "median_verification_ns": {
+              "decimal": 1675182.5,
+              "denominator": "2",
+              "numerator": "3350365"
+            },
+            "verification_total_ns": 20130287,
+            "verifications": 12
+          },
+          "legal/retained-transposed": {
+            "construction_total_ns": 0,
+            "honest_acquisition_to_verification_ratio": {
+              "decimal": 2.5929318684961697,
+              "denominator": "22394207",
+              "numerator": "58066653"
+            },
+            "kernel_to_production_total_ratio": {
+              "decimal": 1.112463374218162,
+              "denominator": "20130287",
+              "numerator": "22394207"
+            },
+            "matched_construction_total_ns": 0,
+            "median_verification_ns": {
+              "decimal": 1861434.0,
+              "denominator": "1",
+              "numerator": "1861434"
+            },
+            "verification_total_ns": 22394207,
+            "verifications": 12
+          },
+          "legal/scalar-reference": {
+            "construction_total_ns": 0,
+            "honest_acquisition_to_verification_ratio": {
+              "decimal": 1.3358568534108333,
+              "denominator": "43467721",
+              "numerator": "58066653"
+            },
+            "kernel_to_production_total_ratio": {
+              "decimal": 2.159319487099215,
+              "denominator": "20130287",
+              "numerator": "43467721"
+            },
+            "matched_construction_total_ns": 0,
+            "median_verification_ns": {
+              "decimal": 3613926.0,
+              "denominator": "1",
+              "numerator": "3613926"
+            },
+            "verification_total_ns": 43467721,
+            "verifications": 12
+          },
+          "product-last-cell/limb-transcript": {
+            "construction_total_ns": 292733,
+            "first_construction_including_honest_acquisition_ns": 58359386,
+            "kernel_to_production_total_ratio": {
+              "decimal": 1.0103041121558896,
+              "denominator": "10085391",
+              "numerator": "10189312"
+            },
+            "matched_construction_total_ns": 292733,
+            "median_verification_ns": {
+              "decimal": 1690739.5,
+              "denominator": "2",
+              "numerator": "3381479"
+            },
+            "rejection_to_existing_proof_mutation_ratio": {
+              "decimal": 69.61505535761256,
+              "denominator": "41819",
+              "numerator": "2911232"
+            },
+            "rejection_to_first_construction_ratio": {
+              "decimal": 0.349191884918049,
+              "denominator": "29179693",
+              "numerator": "10189312"
+            },
+            "verification_total_ns": 20378624,
+            "verifications": 12
+          },
+          "product-last-cell/production-full-limb": {
+            "construction_total_ns": 292733,
+            "first_construction_including_honest_acquisition_ns": 58359386,
+            "kernel_to_production_total_ratio": {
+              "decimal": 1.0,
+              "denominator": "1",
+              "numerator": "1"
+            },
+            "matched_construction_total_ns": 292733,
+            "median_verification_ns": {
+              "decimal": 1678386.5,
+              "denominator": "2",
+              "numerator": "3356773"
+            },
+            "rejection_to_existing_proof_mutation_ratio": {
+              "decimal": 68.90504999436347,
+              "denominator": "292733",
+              "numerator": "20170782"
+            },
+            "rejection_to_first_construction_ratio": {
+              "decimal": 0.34563046979281103,
+              "denominator": "29179693",
+              "numerator": "10085391"
+            },
+            "verification_total_ns": 20170782,
+            "verifications": 12
+          },
+          "product-last-cell/retained-transposed": {
+            "construction_total_ns": 292733,
+            "first_construction_including_honest_acquisition_ns": 58359386,
+            "kernel_to_production_total_ratio": {
+              "decimal": 1.1115785198610544,
+              "denominator": "10085391",
+              "numerator": "11210704"
+            },
+            "matched_construction_total_ns": 292733,
+            "median_verification_ns": {
+              "decimal": 1869746.5,
+              "denominator": "2",
+              "numerator": "3739493"
+            },
+            "rejection_to_existing_proof_mutation_ratio": {
+              "decimal": 76.5933734836865,
+              "denominator": "292733",
+              "numerator": "22421408"
+            },
+            "rejection_to_first_construction_ratio": {
+              "decimal": 0.3841954060311738,
+              "denominator": "29179693",
+              "numerator": "11210704"
+            },
+            "verification_total_ns": 22421408,
+            "verifications": 12
+          },
+          "product-last-cell/scalar-reference": {
+            "construction_total_ns": 292733,
+            "first_construction_including_honest_acquisition_ns": 58359386,
+            "kernel_to_production_total_ratio": {
+              "decimal": 2.1550059883647545,
+              "denominator": "10085391",
+              "numerator": "21734078"
+            },
+            "matched_construction_total_ns": 292733,
+            "median_verification_ns": {
+              "decimal": 3618268.5,
+              "denominator": "2",
+              "numerator": "7236537"
+            },
+            "rejection_to_existing_proof_mutation_ratio": {
+              "decimal": 148.49079536642606,
+              "denominator": "292733",
+              "numerator": "43468156"
+            },
+            "rejection_to_first_construction_ratio": {
+              "decimal": 0.7448357321648312,
+              "denominator": "29179693",
+              "numerator": "21734078"
+            },
+            "verification_total_ns": 43468156,
+            "verifications": 12
+          },
+          "transcript/limb-transcript": {
+            "construction_total_ns": 81042,
+            "first_construction_including_honest_acquisition_ns": 58147695,
+            "kernel_to_production_total_ratio": {
+              "decimal": 0.9985774601754511,
+              "denominator": "18199139",
+              "numerator": "18173250"
+            },
+            "matched_construction_total_ns": 81042,
+            "median_verification_ns": {
+              "decimal": 1515970.0,
+              "denominator": "1",
+              "numerator": "1515970"
+            },
+            "rejection_to_existing_proof_mutation_ratio": {
+              "decimal": 224.24483601095727,
+              "denominator": "13507",
+              "numerator": "3028875"
+            },
+            "rejection_to_first_construction_ratio": {
+              "decimal": 0.3125360343174394,
+              "denominator": "1292171",
+              "numerator": "403850"
+            },
+            "verification_total_ns": 18173250,
+            "verifications": 12
+          },
+          "transcript/production-full-limb": {
+            "construction_total_ns": 81042,
+            "first_construction_including_honest_acquisition_ns": 58147695,
+            "kernel_to_production_total_ratio": {
+              "decimal": 1.0,
+              "denominator": "1",
+              "numerator": "1"
+            },
+            "matched_construction_total_ns": 81042,
+            "median_verification_ns": {
+              "decimal": 1509052.5,
+              "denominator": "2",
+              "numerator": "3018105"
+            },
+            "rejection_to_existing_proof_mutation_ratio": {
+              "decimal": 224.56428765331557,
+              "denominator": "81042",
+              "numerator": "18199139"
+            },
+            "rejection_to_first_construction_ratio": {
+              "decimal": 0.31298126262786513,
+              "denominator": "58147695",
+              "numerator": "18199139"
+            },
+            "verification_total_ns": 18199139,
+            "verifications": 12
+          },
+          "transcript/retained-transposed": {
+            "construction_total_ns": 81042,
+            "first_construction_including_honest_acquisition_ns": 58147695,
+            "kernel_to_production_total_ratio": {
+              "decimal": 1.1039656326598748,
+              "denominator": "587069",
+              "numerator": "648104"
+            },
+            "matched_construction_total_ns": 81042,
+            "median_verification_ns": {
+              "decimal": 1674933.5,
+              "denominator": "2",
+              "numerator": "3349867"
+            },
+            "rejection_to_existing_proof_mutation_ratio": {
+              "decimal": 247.9112558920066,
+              "denominator": "40521",
+              "numerator": "10045612"
+            },
+            "rejection_to_first_construction_ratio": {
+              "decimal": 0.34552055760765754,
+              "denominator": "58147695",
+              "numerator": "20091224"
+            },
+            "verification_total_ns": 20091224,
+            "verifications": 12
+          },
+          "transcript/scalar-reference": {
+            "construction_total_ns": 81042,
+            "first_construction_including_honest_acquisition_ns": 58147695,
+            "kernel_to_production_total_ratio": {
+              "decimal": 2.0109360118629787,
+              "denominator": "18199139",
+              "numerator": "36597304"
+            },
+            "matched_construction_total_ns": 81042,
+            "median_verification_ns": {
+              "decimal": 3040022.5,
+              "denominator": "2",
+              "numerator": "6080045"
+            },
+            "rejection_to_existing_proof_mutation_ratio": {
+              "decimal": 451.58441302040916,
+              "denominator": "40521",
+              "numerator": "18298652"
+            },
+            "rejection_to_first_construction_ratio": {
+              "decimal": 0.6293852920567187,
+              "denominator": "58147695",
+              "numerator": "36597304"
+            },
+            "verification_total_ns": 36597304,
+            "verifications": 12
+          }
+        }
+      },
+      {
+        "class": "sparse",
+        "complete_balanced_group": true,
+        "fake_exhausted": 0,
+        "fake_ticket_trials": 426,
+        "flows": 12,
+        "honest_acquisition_ns": 565579568,
+        "honest_attempts": 344,
+        "honest_exhausted": 0,
+        "honest_search_wall_ns": 558259583,
+        "honest_winners": 12,
+        "mutation_construction_ns": {
+          "product-last-cell": 394407,
+          "transcript": 767111
+        },
+        "setup_ns": 7319985,
+        "target": "07ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff",
+        "variants": {
+          "legal/limb-transcript": {
+            "construction_total_ns": 0,
+            "honest_acquisition_to_verification_ratio": {
+              "decimal": 27.67491390300209,
+              "denominator": "20436543",
+              "numerator": "565579568"
+            },
+            "kernel_to_production_total_ratio": {
+              "decimal": 1.0122200179763834,
+              "denominator": "6729941",
+              "numerator": "6812181"
+            },
+            "matched_construction_total_ns": 0,
+            "median_verification_ns": {
+              "decimal": 1695706.0,
+              "denominator": "1",
+              "numerator": "1695706"
+            },
+            "verification_total_ns": 20436543,
+            "verifications": 12
+          },
+          "legal/production-full-limb": {
+            "construction_total_ns": 0,
+            "honest_acquisition_to_verification_ratio": {
+              "decimal": 28.01310184839164,
+              "denominator": "20189823",
+              "numerator": "565579568"
+            },
+            "kernel_to_production_total_ratio": {
+              "decimal": 1.0,
+              "denominator": "1",
+              "numerator": "1"
+            },
+            "matched_construction_total_ns": 0,
+            "median_verification_ns": {
+              "decimal": 1676778.0,
+              "denominator": "1",
+              "numerator": "1676778"
+            },
+            "verification_total_ns": 20189823,
+            "verifications": 12
+          },
+          "legal/retained-transposed": {
+            "construction_total_ns": 0,
+            "honest_acquisition_to_verification_ratio": {
+              "decimal": 24.84763329824401,
+              "denominator": "22761909",
+              "numerator": "565579568"
+            },
+            "kernel_to_production_total_ratio": {
+              "decimal": 1.1273951733009249,
+              "denominator": "6729941",
+              "numerator": "7587303"
+            },
+            "matched_construction_total_ns": 0,
+            "median_verification_ns": {
+              "decimal": 1857102.5,
+              "denominator": "2",
+              "numerator": "3714205"
+            },
+            "verification_total_ns": 22761909,
+            "verifications": 12
+          },
+          "legal/scalar-reference": {
+            "construction_total_ns": 0,
+            "honest_acquisition_to_verification_ratio": {
+              "decimal": 13.002458647768096,
+              "denominator": "21748947",
+              "numerator": "282789784"
+            },
+            "kernel_to_production_total_ratio": {
+              "decimal": 2.1544465248655227,
+              "denominator": "6729941",
+              "numerator": "14499298"
+            },
+            "matched_construction_total_ns": 0,
+            "median_verification_ns": {
+              "decimal": 3604622.5,
+              "denominator": "2",
+              "numerator": "7209245"
+            },
+            "verification_total_ns": 43497894,
+            "verifications": 12
+          },
+          "product-last-cell/limb-transcript": {
+            "construction_total_ns": 394407,
+            "first_construction_including_honest_acquisition_ns": 565973975,
+            "kernel_to_production_total_ratio": {
+              "decimal": 1.0093948032979603,
+              "denominator": "20211280",
+              "numerator": "20401161"
+            },
+            "matched_construction_total_ns": 394407,
+            "median_verification_ns": {
+              "decimal": 1695448.5,
+              "denominator": "2",
+              "numerator": "3390897"
+            },
+            "rejection_to_existing_proof_mutation_ratio": {
+              "decimal": 51.72616358228936,
+              "denominator": "131469",
+              "numerator": "6800387"
+            },
+            "rejection_to_first_construction_ratio": {
+              "decimal": 0.03604611148418971,
+              "denominator": "565973975",
+              "numerator": "20401161"
+            },
+            "verification_total_ns": 20401161,
+            "verifications": 12
+          },
+          "product-last-cell/production-full-limb": {
+            "construction_total_ns": 394407,
+            "first_construction_including_honest_acquisition_ns": 565973975,
+            "kernel_to_production_total_ratio": {
+              "decimal": 1.0,
+              "denominator": "1",
+              "numerator": "1"
+            },
+            "matched_construction_total_ns": 394407,
+            "median_verification_ns": {
+              "decimal": 1677826.5,
+              "denominator": "2",
+              "numerator": "3355653"
+            },
+            "rejection_to_existing_proof_mutation_ratio": {
+              "decimal": 51.24472942924441,
+              "denominator": "394407",
+              "numerator": "20211280"
+            },
+            "rejection_to_first_construction_ratio": {
+              "decimal": 0.035710617259389,
+              "denominator": "113194795",
+              "numerator": "4042256"
+            },
+            "verification_total_ns": 20211280,
+            "verifications": 12
+          },
+          "product-last-cell/retained-transposed": {
+            "construction_total_ns": 394407,
+            "first_construction_including_honest_acquisition_ns": 565973975,
+            "kernel_to_production_total_ratio": {
+              "decimal": 1.108652890860945,
+              "denominator": "10105640",
+              "numerator": "11203647"
+            },
+            "matched_construction_total_ns": 394407,
+            "median_verification_ns": {
+              "decimal": 1857585.0,
+              "denominator": "1",
+              "numerator": "1857585"
+            },
+            "rejection_to_existing_proof_mutation_ratio": {
+              "decimal": 56.81261742311876,
+              "denominator": "10113",
+              "numerator": "574546"
+            },
+            "rejection_to_first_construction_ratio": {
+              "decimal": 0.03959067905905037,
+              "denominator": "80853425",
+              "numerator": "3201042"
+            },
+            "verification_total_ns": 22407294,
+            "verifications": 12
+          },
+          "product-last-cell/scalar-reference": {
+            "construction_total_ns": 394407,
+            "first_construction_including_honest_acquisition_ns": 565973975,
+            "kernel_to_production_total_ratio": {
+              "decimal": 2.163814216615672,
+              "denominator": "4042256",
+              "numerator": "8746691"
+            },
+            "matched_construction_total_ns": 394407,
+            "median_verification_ns": {
+              "decimal": 3637716.5,
+              "denominator": "2",
+              "numerator": "7275433"
+            },
+            "rejection_to_existing_proof_mutation_ratio": {
+              "decimal": 110.88407406562257,
+              "denominator": "394407",
+              "numerator": "43733455"
+            },
+            "rejection_to_first_construction_ratio": {
+              "decimal": 0.07727114130998691,
+              "denominator": "113194795",
+              "numerator": "8746691"
+            },
+            "verification_total_ns": 43733455,
+            "verifications": 12
+          },
+          "transcript/limb-transcript": {
+            "construction_total_ns": 767111,
+            "first_construction_including_honest_acquisition_ns": 566346679,
+            "kernel_to_production_total_ratio": {
+              "decimal": 1.0038243584307716,
+              "denominator": "18148665",
+              "numerator": "18218072"
+            },
+            "matched_construction_total_ns": 767111,
+            "median_verification_ns": {
+              "decimal": 1512054.5,
+              "denominator": "2",
+              "numerator": "3024109"
+            },
+            "rejection_to_existing_proof_mutation_ratio": {
+              "decimal": 23.74893854996213,
+              "denominator": "767111",
+              "numerator": "18218072"
+            },
+            "rejection_to_first_construction_ratio": {
+              "decimal": 0.0321677034147489,
+              "denominator": "566346679",
+              "numerator": "18218072"
+            },
+            "verification_total_ns": 18218072,
+            "verifications": 12
+          },
+          "transcript/production-full-limb": {
+            "construction_total_ns": 767111,
+            "first_construction_including_honest_acquisition_ns": 566346679,
+            "kernel_to_production_total_ratio": {
+              "decimal": 1.0,
+              "denominator": "1",
+              "numerator": "1"
+            },
+            "matched_construction_total_ns": 767111,
+            "median_verification_ns": {
+              "decimal": 1501586.0,
+              "denominator": "1",
+              "numerator": "1501586"
+            },
+            "rejection_to_existing_proof_mutation_ratio": {
+              "decimal": 23.658460118548685,
+              "denominator": "767111",
+              "numerator": "18148665"
+            },
+            "rejection_to_first_construction_ratio": {
+              "decimal": 0.03204515127032289,
+              "denominator": "566346679",
+              "numerator": "18148665"
+            },
+            "verification_total_ns": 18148665,
+            "verifications": 12
+          },
+          "transcript/retained-transposed": {
+            "construction_total_ns": 767111,
+            "first_construction_including_honest_acquisition_ns": 566346679,
+            "kernel_to_production_total_ratio": {
+              "decimal": 1.1107386135564241,
+              "denominator": "18148665",
+              "numerator": "20158423"
+            },
+            "matched_construction_total_ns": 767111,
+            "median_verification_ns": {
+              "decimal": 1672328.5,
+              "denominator": "2",
+              "numerator": "3344657"
+            },
+            "rejection_to_existing_proof_mutation_ratio": {
+              "decimal": 26.27836519095672,
+              "denominator": "767111",
+              "numerator": "20158423"
+            },
+            "rejection_to_first_construction_ratio": {
+              "decimal": 0.03559378689320433,
+              "denominator": "566346679",
+              "numerator": "20158423"
+            },
+            "verification_total_ns": 20158423,
+            "verifications": 12
+          },
+          "transcript/scalar-reference": {
+            "construction_total_ns": 767111,
+            "first_construction_including_honest_acquisition_ns": 566346679,
+            "kernel_to_production_total_ratio": {
+              "decimal": 2.0181335651961176,
+              "denominator": "1209911",
+              "numerator": "2441762"
+            },
+            "matched_construction_total_ns": 767111,
+            "median_verification_ns": {
+              "decimal": 3048299.0,
+              "denominator": "1",
+              "numerator": "3048299"
+            },
+            "rejection_to_existing_proof_mutation_ratio": {
+              "decimal": 47.745932466096825,
+              "denominator": "767111",
+              "numerator": "36626430"
+            },
+            "rejection_to_first_construction_ratio": {
+              "decimal": 0.06467139538042564,
+              "denominator": "566346679",
+              "numerator": "36626430"
+            },
+            "verification_total_ns": 36626430,
+            "verifications": 12
+          }
+        }
+      }
+    ],
+    "honest_cost_scope": "one actual material/task/prepared setup per flow; all proof/ticket attempts and recording overhead charged in search wall",
+    "independent_scope": "full scalar transcript replay for every honest winner; all failed proof bytes/tickets checked, failed transcripts are not independently replayed",
+    "independent_winning_transcript_replays": 96,
+    "mutation_cost_scope": "clone and mutation of an already acquired complete honest winner; first-construction denominator includes that acquisition",
+    "probe_scope": "all timed arms complete before separate actual-result/progress probes; probes are not timed verification observations",
+    "production_activation": false,
+    "projection_sha256": "e6e6161b6f118aa42fd3495e4ba5d4deb319faa2b13e41c782297f299ce66929",
+    "public_service_measured": false,
+    "ratio_definition": "sum of actual within-class/target costs; kernels are compared on identical complete proof cases; no missing failures or synthetic amortization",
+    "raw_schema": "pon-work-rejection-cost-v2",
+    "repeated_proof_scope": "four kernel timings share each exact proof; same-winner repeated network submission and cross-challenge reuse are not measured",
+    "schema": "pon-work-rejection-summary-v2",
+    "timed_verifications": 1152,
+    "work_hardness_accepted": false,
+    "worst_case_rejection_qualified": false
+  },
+  "commit": "03521b2f32346a49cccde8ff72e8c7b886b31222",
+  "compiler_override_keys": [],
+  "completed_utc": "2026-11-05T16:17:04Z",
+  "coordinator_sha256": "7c3c615a0e84c48cc20384b165586ca70ba71d44ea7716f2ff94609b93de7d96",
+  "execution_context": "local-native-preflight",
+  "failures": [],
+  "fastest_adversary_qualified": false,
+  "observations": [
+    {
+      "command": [
+        "bash",
+        "scripts/project-preflight.sh",
+        "--audit"
+      ],
+      "elapsed_ns": 94592190,
+      "exit_code": 0,
+      "name": "candidate-preflight",
+      "passed": true,
+      "stderr": {
+        "bytes": 0,
+        "path": "candidate-preflight.stderr",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stderr_limit_bytes": 8388608,
+      "stdout": {
+        "bytes": 133,
+        "path": "candidate-preflight.stdout",
+        "sha256": "a47133fd7030ccda88d70f7e8f0c9df1ffb0fc5fd3257ed034439bbe6fc6e2e0"
+      },
+      "stdout_limit_bytes": 8388608,
+      "timed_out": false,
+      "timeout_seconds": 120
+    },
+    {
+      "command": [
+        "python3",
+        "-B",
+        "scripts/ci/verify_ci_source.py",
+        "--kind",
+        "head",
+        "--expected-head",
+        "03521b2f32346a49cccde8ff72e8c7b886b31222",
+        "--output",
+        "/home/qian-qi/work/chain-joint-20261105-93bfc-w1-native-C2/collector/source-before.json"
+      ],
+      "elapsed_ns": 15692509407,
+      "exit_code": 0,
+      "name": "source-before",
+      "passed": true,
+      "stderr": {
+        "bytes": 0,
+        "path": "source-before.stderr",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stderr_limit_bytes": 8388608,
+      "stdout": {
+        "bytes": 422,
+        "path": "source-before.stdout",
+        "sha256": "0dc6b5e3e0cc601ff2cfd61d59e18e28dd649d83f920449bdb64b13962398a18"
+      },
+      "stdout_limit_bytes": 8388608,
+      "timed_out": false,
+      "timeout_seconds": 600
+    },
+    {
+      "command": [
+        "python3",
+        "-B",
+        "scripts/pon_work_rejection_report.py",
+        "--run",
+        "--local",
+        "--out",
+        "/home/qian-qi/work/chain-joint-20261105-93bfc-w1-native-C2/four-kernel-rejection"
+      ],
+      "elapsed_ns": 69982101608,
+      "exit_code": 0,
+      "name": "four-kernel-collector",
+      "passed": true,
+      "stderr": {
+        "bytes": 0,
+        "path": "four-kernel-collector.stderr",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stderr_limit_bytes": 8388608,
+      "stdout": {
+        "bytes": 575,
+        "path": "four-kernel-collector.stdout",
+        "sha256": "8901259f8a4042568bed3e51c4dc4869f1fd540a13bc2ce6ea4f48b8a2f62dc8"
+      },
+      "stdout_limit_bytes": 8388608,
+      "timed_out": false,
+      "timeout_seconds": 1800
+    },
+    {
+      "command": [
+        "python3",
+        "-B",
+        "scripts/pon_work_rejection_report.py",
+        "--verify",
+        "/home/qian-qi/work/chain-joint-20261105-93bfc-w1-native-C2/four-kernel-rejection"
+      ],
+      "elapsed_ns": 19531434002,
+      "exit_code": 0,
+      "name": "four-kernel-reader",
+      "passed": true,
+      "stderr": {
+        "bytes": 0,
+        "path": "four-kernel-reader.stderr",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stderr_limit_bytes": 8388608,
+      "stdout": {
+        "bytes": 875,
+        "path": "four-kernel-reader.stdout",
+        "sha256": "7eb91caa032e5c35422f8307d5dc7a827fc58664539d04cb322f07a1020656a2"
+      },
+      "stdout_limit_bytes": 8388608,
+      "timed_out": false,
+      "timeout_seconds": 1800
+    },
+    {
+      "command": [
+        "python3",
+        "-B",
+        "scripts/ci/verify_ci_source.py",
+        "--kind",
+        "head",
+        "--expected-head",
+        "03521b2f32346a49cccde8ff72e8c7b886b31222",
+        "--output",
+        "/home/qian-qi/work/chain-joint-20261105-93bfc-w1-native-C2/collector/source-after.json"
+      ],
+      "elapsed_ns": 2450265134,
+      "exit_code": 0,
+      "name": "source-after",
+      "passed": true,
+      "stderr": {
+        "bytes": 0,
+        "path": "source-after.stderr",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stderr_limit_bytes": 8388608,
+      "stdout": {
+        "bytes": 422,
+        "path": "source-after.stdout",
+        "sha256": "0dc6b5e3e0cc601ff2cfd61d59e18e28dd649d83f920449bdb64b13962398a18"
+      },
+      "stdout_limit_bytes": 8388608,
+      "timed_out": false,
+      "timeout_seconds": 600
+    }
+  ],
+  "output": "/home/qian-qi/work/chain-joint-20261105-93bfc-w1-native-C2/collector",
+  "passed": true,
+  "phase": "collector",
+  "production_activation": false,
+  "public_service_measured": false,
+  "root": "/home/qian-qi/work/chain-joint-20261105-93bfc-current",
+  "schema": "trnm-c2-local-w1-native-phase-v1",
+  "source_after": {
+    "base": null,
+    "candidate": "03521b2f32346a49cccde8ff72e8c7b886b31222",
+    "kind": "head",
+    "prospective_merge": null,
+    "schema": "trnm-ci-source-v1",
+    "tested_commit": "03521b2f32346a49cccde8ff72e8c7b886b31222",
+    "tested_tree": "e0235248ecae2a67717c8b9ff2e3f25774ba63d7",
+    "tests_executed_by_identity_check": false,
+    "tracked_bytes": 985264447,
+    "tracked_entries": 10357,
+    "tracked_worktree_verified": true
+  },
+  "source_before": {
+    "base": null,
+    "candidate": "03521b2f32346a49cccde8ff72e8c7b886b31222",
+    "kind": "head",
+    "prospective_merge": null,
+    "schema": "trnm-ci-source-v1",
+    "tested_commit": "03521b2f32346a49cccde8ff72e8c7b886b31222",
+    "tested_tree": "e0235248ecae2a67717c8b9ff2e3f25774ba63d7",
+    "tests_executed_by_identity_check": false,
+    "tracked_bytes": 985264447,
+    "tracked_entries": 10357,
+    "tracked_worktree_verified": true
+  },
+  "started_utc": "2026-11-05T16:15:16Z",
+  "tree": "e0235248ecae2a67717c8b9ff2e3f25774ba63d7",
+  "work_hardness_accepted": false
+}

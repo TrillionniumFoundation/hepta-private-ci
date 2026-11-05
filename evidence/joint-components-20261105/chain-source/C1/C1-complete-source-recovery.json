@@ -1,0 +1,1037 @@
+{
+  "batch_size": 32,
+  "batch_timeout_seconds": 240,
+  "commit": "9ecdbebc897d35f07b998d084b015db8474be84b",
+  "complete_source_identity": {
+    "base": null,
+    "candidate": "9ecdbebc897d35f07b998d084b015db8474be84b",
+    "kind": "head",
+    "prospective_merge": null,
+    "schema": "trnm-ci-source-v1",
+    "tested_commit": "9ecdbebc897d35f07b998d084b015db8474be84b",
+    "tested_tree": "94050c5f5f72a27d6c4a5fbf627791c15c2704af",
+    "tests_executed_by_identity_check": false,
+    "tracked_bytes": 985244329,
+    "tracked_entries": 10350,
+    "tracked_worktree_verified": true
+  },
+  "complete_source_restored": true,
+  "completed_utc": "2026-11-05T14:54:39Z",
+  "coordinator_sha256": "862575f010e313f845943ad8af07ddb963f9424529f76391dbfd524d364646cb",
+  "donor": "/home/qian-qi/work/chain-ci-identities-src-20261104",
+  "earlier_failed_jobs": [
+    "1a1abf27d6f-fc05-5161",
+    "1a1ac089f06-fc05-51c2",
+    "1a1ac1eaae0-fc05-525e"
+  ],
+  "failures": [],
+  "hidden_index_flags_after": 0,
+  "missing_after": 0,
+  "missing_before": 417,
+  "original_failed_job": "1a1abde0d2a-fc05-510b",
+  "parent_configs_after": {
+    "/home/qian-qi/work/chain-pon-work-safety-20261103/.git/config": "c7d75bd166e27a759637152a3b5eeeabd017fa45d39152afad0ac058c9456998",
+    "/home/qian-qi/work/chain-pon-work-safety-20261103/.git/config.worktree": null,
+    "/home/qian-qi/work/chain-pon-work-safety-20261103/.git/worktrees/chain-ci-identities-src-20261104/config.worktree": "bfefdfeb2bf56f4a5282c172fe3a69b4075e13fe3bf3cd54f6611bafa461c276"
+  },
+  "parent_configs_before": {
+    "/home/qian-qi/work/chain-pon-work-safety-20261103/.git/config": "c7d75bd166e27a759637152a3b5eeeabd017fa45d39152afad0ac058c9456998",
+    "/home/qian-qi/work/chain-pon-work-safety-20261103/.git/config.worktree": null,
+    "/home/qian-qi/work/chain-pon-work-safety-20261103/.git/worktrees/chain-ci-identities-src-20261104/config.worktree": "bfefdfeb2bf56f4a5282c172fe3a69b4075e13fe3bf3cd54f6611bafa461c276"
+  },
+  "planned_batches": 14,
+  "previous_failed_job": "1a1ac2a792e-fc05-5295",
+  "prior_failure_verification": {
+    "confirmed_transient": true,
+    "elapsed_ns": 53786852622,
+    "exit_code": 128,
+    "input_sha256": "f8c7448fe758e6ded729dca8b07c246af6ee17df7e56cb37a3cccecfafb38bb2",
+    "name": "fetch-batch-025",
+    "stderr_sha256": "bdc1cf630dd968c12647490433a760343828cc1c7d813db662040d761b0a0e32",
+    "timed_out": false
+  },
+  "records": [
+    {
+      "args": [
+        "bash",
+        "scripts/project-preflight.sh",
+        "--audit"
+      ],
+      "cwd": "/home/qian-qi/work/chain-ci-identities-src-20261104",
+      "elapsed_ns": 208612044,
+      "exit_code": 0,
+      "input_bytes": 0,
+      "input_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "name": "donor-preflight",
+      "passed": true,
+      "stderr": {
+        "bytes": 0,
+        "file": "donor-preflight.stderr",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stdout": {
+        "bytes": 169,
+        "file": "donor-preflight.stdout",
+        "sha256": "4019b7a549151fb1295e2c6f96091ad3eecbe5e547ce85781dd7bd25b9866e2d"
+      },
+      "timed_out": false,
+      "timeout_seconds": 120
+    },
+    {
+      "args": [
+        "git",
+        "rev-parse",
+        "HEAD"
+      ],
+      "cwd": "/home/qian-qi/work/chain-ci-identities-src-20261104",
+      "elapsed_ns": 3620328,
+      "exit_code": 0,
+      "input_bytes": 0,
+      "input_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "name": "donor-head",
+      "passed": true,
+      "stderr": {
+        "bytes": 0,
+        "file": "donor-head.stderr",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stdout": {
+        "bytes": 41,
+        "file": "donor-head.stdout",
+        "sha256": "5e58c764334d692482b935283217014d5559a1e0ea626d702839a6ae1fd2ceb9"
+      },
+      "timed_out": false,
+      "timeout_seconds": 120
+    },
+    {
+      "args": [
+        "git",
+        "rev-parse",
+        "--git-common-dir"
+      ],
+      "cwd": "/home/qian-qi/work/chain-ci-identities-src-20261104",
+      "elapsed_ns": 2917250,
+      "exit_code": 0,
+      "input_bytes": 0,
+      "input_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "name": "donor-common-dir",
+      "passed": true,
+      "stderr": {
+        "bytes": 0,
+        "file": "donor-common-dir.stderr",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stdout": {
+        "bytes": 55,
+        "file": "donor-common-dir.stdout",
+        "sha256": "7ac2e214170644093d2248b4cd127cc9deff88d7b3aaf2982e03391d9e94cbe9"
+      },
+      "timed_out": false,
+      "timeout_seconds": 120
+    },
+    {
+      "args": [
+        "git",
+        "fetch",
+        "--no-write-fetch-head",
+        "--no-tags",
+        "--no-auto-gc",
+        "origin",
+        "9ecdbebc897d35f07b998d084b015db8474be84b"
+      ],
+      "cwd": "/home/qian-qi/work/chain-ci-identities-src-20261104",
+      "elapsed_ns": 63708142,
+      "exit_code": 0,
+      "input_bytes": 0,
+      "input_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "name": "fetch-exact-c1",
+      "passed": true,
+      "stderr": {
+        "bytes": 0,
+        "file": "fetch-exact-c1.stderr",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stdout": {
+        "bytes": 0,
+        "file": "fetch-exact-c1.stdout",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "timed_out": false,
+      "timeout_seconds": 300
+    },
+    {
+      "args": [
+        "git",
+        "rev-parse",
+        "9ecdbebc897d35f07b998d084b015db8474be84b^{tree}"
+      ],
+      "cwd": "/home/qian-qi/work/chain-ci-identities-src-20261104",
+      "elapsed_ns": 6392538,
+      "exit_code": 0,
+      "input_bytes": 0,
+      "input_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "name": "c1-tree",
+      "passed": true,
+      "stderr": {
+        "bytes": 0,
+        "file": "c1-tree.stderr",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stdout": {
+        "bytes": 41,
+        "file": "c1-tree.stdout",
+        "sha256": "ce7a3c71a84caca8617246b6c3ffcb4de9e3b610914ecc82c47e7f3b44e0e32c"
+      },
+      "timed_out": false,
+      "timeout_seconds": 120
+    },
+    {
+      "args": [
+        "git",
+        "rev-list",
+        "--objects",
+        "--no-object-names",
+        "--missing=print",
+        "--no-walk",
+        "9ecdbebc897d35f07b998d084b015db8474be84b"
+      ],
+      "cwd": "/home/qian-qi/work/chain-ci-identities-src-20261104",
+      "elapsed_ns": 590337878,
+      "exit_code": 0,
+      "input_bytes": 0,
+      "input_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "name": "missing-before",
+      "passed": true,
+      "stderr": {
+        "bytes": 0,
+        "file": "missing-before.stderr",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stdout": {
+        "bytes": 422758,
+        "file": "missing-before.stdout",
+        "sha256": "8a28cb9a40561ec60f4f96abfaea780de9a5f217a4450e4ad29be450266adf0d"
+      },
+      "timed_out": false,
+      "timeout_seconds": 120
+    },
+    {
+      "args": [
+        "git",
+        "fetch",
+        "--no-write-fetch-head",
+        "--no-tags",
+        "--no-auto-gc",
+        "--recurse-submodules=no",
+        "origin",
+        "--stdin"
+      ],
+      "cwd": "/home/qian-qi/work/chain-ci-identities-src-20261104",
+      "elapsed_ns": 24271704090,
+      "exit_code": 0,
+      "input_bytes": 1312,
+      "input_file": "fetch-batch-000-attempt-1.input",
+      "input_sha256": "f8c7448fe758e6ded729dca8b07c246af6ee17df7e56cb37a3cccecfafb38bb2",
+      "name": "fetch-batch-000-attempt-1",
+      "passed": true,
+      "stderr": {
+        "bytes": 0,
+        "file": "fetch-batch-000-attempt-1.stderr",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stdout": {
+        "bytes": 0,
+        "file": "fetch-batch-000-attempt-1.stdout",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "timed_out": false,
+      "timeout_seconds": 240
+    },
+    {
+      "args": [
+        "git",
+        "fetch",
+        "--no-write-fetch-head",
+        "--no-tags",
+        "--no-auto-gc",
+        "--recurse-submodules=no",
+        "origin",
+        "--stdin"
+      ],
+      "cwd": "/home/qian-qi/work/chain-ci-identities-src-20261104",
+      "elapsed_ns": 8714644568,
+      "exit_code": 0,
+      "input_bytes": 1312,
+      "input_file": "fetch-batch-001-attempt-1.input",
+      "input_sha256": "d6d2d20c650c1d58e78cde0801fb98dba8f88ad10f77a86f18ec96c61b622495",
+      "name": "fetch-batch-001-attempt-1",
+      "passed": true,
+      "stderr": {
+        "bytes": 0,
+        "file": "fetch-batch-001-attempt-1.stderr",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stdout": {
+        "bytes": 0,
+        "file": "fetch-batch-001-attempt-1.stdout",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "timed_out": false,
+      "timeout_seconds": 240
+    },
+    {
+      "args": [
+        "git",
+        "fetch",
+        "--no-write-fetch-head",
+        "--no-tags",
+        "--no-auto-gc",
+        "--recurse-submodules=no",
+        "origin",
+        "--stdin"
+      ],
+      "cwd": "/home/qian-qi/work/chain-ci-identities-src-20261104",
+      "elapsed_ns": 9597319086,
+      "exit_code": 0,
+      "input_bytes": 1312,
+      "input_file": "fetch-batch-002-attempt-1.input",
+      "input_sha256": "cccc446d2399198abe5ce0220fed38251c375c82ac690e03adb5e66ce5c584bb",
+      "name": "fetch-batch-002-attempt-1",
+      "passed": true,
+      "stderr": {
+        "bytes": 0,
+        "file": "fetch-batch-002-attempt-1.stderr",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stdout": {
+        "bytes": 0,
+        "file": "fetch-batch-002-attempt-1.stdout",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "timed_out": false,
+      "timeout_seconds": 240
+    },
+    {
+      "args": [
+        "git",
+        "fetch",
+        "--no-write-fetch-head",
+        "--no-tags",
+        "--no-auto-gc",
+        "--recurse-submodules=no",
+        "origin",
+        "--stdin"
+      ],
+      "cwd": "/home/qian-qi/work/chain-ci-identities-src-20261104",
+      "elapsed_ns": 17408631567,
+      "exit_code": 0,
+      "input_bytes": 1312,
+      "input_file": "fetch-batch-003-attempt-1.input",
+      "input_sha256": "c8ea499d97b33860f345a8661b0d564d6d9c652a167c0e24cd0c8a6e95f4c98c",
+      "name": "fetch-batch-003-attempt-1",
+      "passed": true,
+      "stderr": {
+        "bytes": 0,
+        "file": "fetch-batch-003-attempt-1.stderr",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stdout": {
+        "bytes": 0,
+        "file": "fetch-batch-003-attempt-1.stdout",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "timed_out": false,
+      "timeout_seconds": 240
+    },
+    {
+      "args": [
+        "git",
+        "fetch",
+        "--no-write-fetch-head",
+        "--no-tags",
+        "--no-auto-gc",
+        "--recurse-submodules=no",
+        "origin",
+        "--stdin"
+      ],
+      "cwd": "/home/qian-qi/work/chain-ci-identities-src-20261104",
+      "elapsed_ns": 5209601792,
+      "exit_code": 0,
+      "input_bytes": 1312,
+      "input_file": "fetch-batch-004-attempt-1.input",
+      "input_sha256": "40be173c5dc7fe34554c8acd71cecd5f30e1dbaa3365b55e2c0937a65d32972e",
+      "name": "fetch-batch-004-attempt-1",
+      "passed": true,
+      "stderr": {
+        "bytes": 0,
+        "file": "fetch-batch-004-attempt-1.stderr",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stdout": {
+        "bytes": 0,
+        "file": "fetch-batch-004-attempt-1.stdout",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "timed_out": false,
+      "timeout_seconds": 240
+    },
+    {
+      "args": [
+        "git",
+        "fetch",
+        "--no-write-fetch-head",
+        "--no-tags",
+        "--no-auto-gc",
+        "--recurse-submodules=no",
+        "origin",
+        "--stdin"
+      ],
+      "cwd": "/home/qian-qi/work/chain-ci-identities-src-20261104",
+      "elapsed_ns": 7660332486,
+      "exit_code": 0,
+      "input_bytes": 1312,
+      "input_file": "fetch-batch-005-attempt-1.input",
+      "input_sha256": "211f66c56a16d6974e4d0f977f716fe604dfa3d84d6c55d4fa07344e3fb108d1",
+      "name": "fetch-batch-005-attempt-1",
+      "passed": true,
+      "stderr": {
+        "bytes": 0,
+        "file": "fetch-batch-005-attempt-1.stderr",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stdout": {
+        "bytes": 0,
+        "file": "fetch-batch-005-attempt-1.stdout",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "timed_out": false,
+      "timeout_seconds": 240
+    },
+    {
+      "args": [
+        "git",
+        "fetch",
+        "--no-write-fetch-head",
+        "--no-tags",
+        "--no-auto-gc",
+        "--recurse-submodules=no",
+        "origin",
+        "--stdin"
+      ],
+      "cwd": "/home/qian-qi/work/chain-ci-identities-src-20261104",
+      "elapsed_ns": 16218347657,
+      "exit_code": 0,
+      "input_bytes": 1312,
+      "input_file": "fetch-batch-006-attempt-1.input",
+      "input_sha256": "46bea2dea5458861c5ffcea1e1793a500eb065e3ec1f26381d8ca2687fa4689c",
+      "name": "fetch-batch-006-attempt-1",
+      "passed": true,
+      "stderr": {
+        "bytes": 0,
+        "file": "fetch-batch-006-attempt-1.stderr",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stdout": {
+        "bytes": 0,
+        "file": "fetch-batch-006-attempt-1.stdout",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "timed_out": false,
+      "timeout_seconds": 240
+    },
+    {
+      "args": [
+        "git",
+        "fetch",
+        "--no-write-fetch-head",
+        "--no-tags",
+        "--no-auto-gc",
+        "--recurse-submodules=no",
+        "origin",
+        "--stdin"
+      ],
+      "cwd": "/home/qian-qi/work/chain-ci-identities-src-20261104",
+      "elapsed_ns": 3439244598,
+      "exit_code": 0,
+      "input_bytes": 1312,
+      "input_file": "fetch-batch-007-attempt-1.input",
+      "input_sha256": "72b25c9f15298621e100b3d778efd27c40226e3ecd154e9f4ee478710d367bd6",
+      "name": "fetch-batch-007-attempt-1",
+      "passed": true,
+      "stderr": {
+        "bytes": 0,
+        "file": "fetch-batch-007-attempt-1.stderr",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stdout": {
+        "bytes": 0,
+        "file": "fetch-batch-007-attempt-1.stdout",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "timed_out": false,
+      "timeout_seconds": 240
+    },
+    {
+      "args": [
+        "git",
+        "fetch",
+        "--no-write-fetch-head",
+        "--no-tags",
+        "--no-auto-gc",
+        "--recurse-submodules=no",
+        "origin",
+        "--stdin"
+      ],
+      "cwd": "/home/qian-qi/work/chain-ci-identities-src-20261104",
+      "elapsed_ns": 3605982945,
+      "exit_code": 0,
+      "input_bytes": 1312,
+      "input_file": "fetch-batch-008-attempt-1.input",
+      "input_sha256": "8fcdcdeefc25c230e89f8e3004d7d9d755185508f6564de896702c8b2805cbe6",
+      "name": "fetch-batch-008-attempt-1",
+      "passed": true,
+      "stderr": {
+        "bytes": 0,
+        "file": "fetch-batch-008-attempt-1.stderr",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stdout": {
+        "bytes": 0,
+        "file": "fetch-batch-008-attempt-1.stdout",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "timed_out": false,
+      "timeout_seconds": 240
+    },
+    {
+      "args": [
+        "git",
+        "fetch",
+        "--no-write-fetch-head",
+        "--no-tags",
+        "--no-auto-gc",
+        "--recurse-submodules=no",
+        "origin",
+        "--stdin"
+      ],
+      "cwd": "/home/qian-qi/work/chain-ci-identities-src-20261104",
+      "elapsed_ns": 7476159496,
+      "exit_code": 0,
+      "input_bytes": 1312,
+      "input_file": "fetch-batch-009-attempt-1.input",
+      "input_sha256": "e492d9ae2c075bdeb31ae8bda64d9c00aa6ef079876b25452213f3d399b33d15",
+      "name": "fetch-batch-009-attempt-1",
+      "passed": true,
+      "stderr": {
+        "bytes": 0,
+        "file": "fetch-batch-009-attempt-1.stderr",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stdout": {
+        "bytes": 0,
+        "file": "fetch-batch-009-attempt-1.stdout",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "timed_out": false,
+      "timeout_seconds": 240
+    },
+    {
+      "args": [
+        "git",
+        "fetch",
+        "--no-write-fetch-head",
+        "--no-tags",
+        "--no-auto-gc",
+        "--recurse-submodules=no",
+        "origin",
+        "--stdin"
+      ],
+      "cwd": "/home/qian-qi/work/chain-ci-identities-src-20261104",
+      "elapsed_ns": 4841061112,
+      "exit_code": 0,
+      "input_bytes": 1312,
+      "input_file": "fetch-batch-010-attempt-1.input",
+      "input_sha256": "dc603c460079afeff93314af25114d8cf069b20dde8fff8dc08ab538ad6d2a6d",
+      "name": "fetch-batch-010-attempt-1",
+      "passed": true,
+      "stderr": {
+        "bytes": 0,
+        "file": "fetch-batch-010-attempt-1.stderr",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stdout": {
+        "bytes": 0,
+        "file": "fetch-batch-010-attempt-1.stdout",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "timed_out": false,
+      "timeout_seconds": 240
+    },
+    {
+      "args": [
+        "git",
+        "fetch",
+        "--no-write-fetch-head",
+        "--no-tags",
+        "--no-auto-gc",
+        "--recurse-submodules=no",
+        "origin",
+        "--stdin"
+      ],
+      "cwd": "/home/qian-qi/work/chain-ci-identities-src-20261104",
+      "elapsed_ns": 12667918032,
+      "exit_code": 0,
+      "input_bytes": 1312,
+      "input_file": "fetch-batch-011-attempt-1.input",
+      "input_sha256": "00e62edff031837de6b1db9f9ffdb49f63d227e03f65ab0e8989b29d5d69372f",
+      "name": "fetch-batch-011-attempt-1",
+      "passed": true,
+      "stderr": {
+        "bytes": 0,
+        "file": "fetch-batch-011-attempt-1.stderr",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stdout": {
+        "bytes": 0,
+        "file": "fetch-batch-011-attempt-1.stdout",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "timed_out": false,
+      "timeout_seconds": 240
+    },
+    {
+      "args": [
+        "git",
+        "fetch",
+        "--no-write-fetch-head",
+        "--no-tags",
+        "--no-auto-gc",
+        "--recurse-submodules=no",
+        "origin",
+        "--stdin"
+      ],
+      "cwd": "/home/qian-qi/work/chain-ci-identities-src-20261104",
+      "elapsed_ns": 78290189992,
+      "exit_code": 0,
+      "input_bytes": 1312,
+      "input_file": "fetch-batch-012-attempt-1.input",
+      "input_sha256": "eb522a4ba7e6d955f0f4c1a945ae006d1350a1cb5490356a5cf5c94ba382e615",
+      "name": "fetch-batch-012-attempt-1",
+      "passed": true,
+      "stderr": {
+        "bytes": 0,
+        "file": "fetch-batch-012-attempt-1.stderr",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stdout": {
+        "bytes": 0,
+        "file": "fetch-batch-012-attempt-1.stdout",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "timed_out": false,
+      "timeout_seconds": 240
+    },
+    {
+      "args": [
+        "git",
+        "fetch",
+        "--no-write-fetch-head",
+        "--no-tags",
+        "--no-auto-gc",
+        "--recurse-submodules=no",
+        "origin",
+        "--stdin"
+      ],
+      "cwd": "/home/qian-qi/work/chain-ci-identities-src-20261104",
+      "elapsed_ns": 2189829957,
+      "exit_code": 0,
+      "input_bytes": 41,
+      "input_file": "fetch-batch-013-attempt-1.input",
+      "input_sha256": "112175b957e477ce83de1360dd37e8c70543eaa74af9b70689c0dc3ac42666ba",
+      "name": "fetch-batch-013-attempt-1",
+      "passed": true,
+      "stderr": {
+        "bytes": 0,
+        "file": "fetch-batch-013-attempt-1.stderr",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stdout": {
+        "bytes": 0,
+        "file": "fetch-batch-013-attempt-1.stdout",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "timed_out": false,
+      "timeout_seconds": 240
+    },
+    {
+      "args": [
+        "git",
+        "rev-list",
+        "--objects",
+        "--no-object-names",
+        "--missing=print",
+        "--no-walk",
+        "9ecdbebc897d35f07b998d084b015db8474be84b"
+      ],
+      "cwd": "/home/qian-qi/work/chain-ci-identities-src-20261104",
+      "elapsed_ns": 274103346,
+      "exit_code": 0,
+      "input_bytes": 0,
+      "input_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "name": "missing-after",
+      "passed": true,
+      "stderr": {
+        "bytes": 0,
+        "file": "missing-after.stderr",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stdout": {
+        "bytes": 422341,
+        "file": "missing-after.stdout",
+        "sha256": "82b9ec2f8904ee943886f6508569f7d520a3c72719cd72a40426370886346bdf"
+      },
+      "timed_out": false,
+      "timeout_seconds": 120
+    },
+    {
+      "args": [
+        "git",
+        "rev-parse",
+        "--git-common-dir"
+      ],
+      "cwd": "/home/qian-qi/work/chain-ci-identities-src-20261104",
+      "elapsed_ns": 3881756,
+      "exit_code": 0,
+      "input_bytes": 0,
+      "input_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "name": "shared-common-dir",
+      "passed": true,
+      "stderr": {
+        "bytes": 0,
+        "file": "shared-common-dir.stderr",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stdout": {
+        "bytes": 55,
+        "file": "shared-common-dir.stdout",
+        "sha256": "7ac2e214170644093d2248b4cd127cc9deff88d7b3aaf2982e03391d9e94cbe9"
+      },
+      "timed_out": false,
+      "timeout_seconds": 120
+    },
+    {
+      "args": [
+        "git",
+        "rev-parse",
+        "--git-path",
+        "config.worktree"
+      ],
+      "cwd": "/home/qian-qi/work/chain-ci-identities-src-20261104",
+      "elapsed_ns": 3645495,
+      "exit_code": 0,
+      "input_bytes": 0,
+      "input_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "name": "donor-worktree-config",
+      "passed": true,
+      "stderr": {
+        "bytes": 0,
+        "file": "donor-worktree-config.stderr",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stdout": {
+        "bytes": 114,
+        "file": "donor-worktree-config.stdout",
+        "sha256": "1fbb58d2433e0d800354966b8e1ce83ffe356f97883e989b7c0c1a6003f71bda"
+      },
+      "timed_out": false,
+      "timeout_seconds": 120
+    },
+    {
+      "args": [
+        "git",
+        "worktree",
+        "add",
+        "--detach",
+        "/home/qian-qi/work/chain-joint-20261105-93bfc-current",
+        "9ecdbebc897d35f07b998d084b015db8474be84b"
+      ],
+      "cwd": "/home/qian-qi/work/chain-ci-identities-src-20261104",
+      "elapsed_ns": 1441158619,
+      "exit_code": 0,
+      "input_bytes": 0,
+      "input_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "name": "complete-worktree",
+      "passed": true,
+      "stderr": {
+        "bytes": 796,
+        "file": "complete-worktree.stderr",
+        "sha256": "1f34758f6bdce023e357c091a6771519b5aaab70466ee14c49eb0363483d9716"
+      },
+      "stdout": {
+        "bytes": 105,
+        "file": "complete-worktree.stdout",
+        "sha256": "0d6cfafe51f54ed0cd6dd5d9b10a8d082842ebd151c83a830a40d5f96f55c4e6"
+      },
+      "timed_out": false,
+      "timeout_seconds": 900
+    },
+    {
+      "args": [
+        "git",
+        "config",
+        "--type=bool",
+        "--default=false",
+        "--get",
+        "core.sparseCheckout"
+      ],
+      "cwd": "/home/qian-qi/work/chain-joint-20261105-93bfc-current",
+      "elapsed_ns": 3268866,
+      "exit_code": 0,
+      "input_bytes": 0,
+      "input_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "name": "worktree-sparse-setting",
+      "passed": true,
+      "stderr": {
+        "bytes": 0,
+        "file": "worktree-sparse-setting.stderr",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stdout": {
+        "bytes": 5,
+        "file": "worktree-sparse-setting.stdout",
+        "sha256": "a17fcf0a2f50e2d495e4f90ce263410edc183add6c62699a2facbccf60410f74"
+      },
+      "timed_out": false,
+      "timeout_seconds": 120
+    },
+    {
+      "args": [
+        "git",
+        "ls-files",
+        "-v",
+        "-z"
+      ],
+      "cwd": "/home/qian-qi/work/chain-joint-20261105-93bfc-current",
+      "elapsed_ns": 13365276,
+      "exit_code": 0,
+      "input_bytes": 0,
+      "input_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "name": "worktree-index-before",
+      "passed": true,
+      "stderr": {
+        "bytes": 0,
+        "file": "worktree-index-before.stderr",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stdout": {
+        "bytes": 887825,
+        "file": "worktree-index-before.stdout",
+        "sha256": "ebd208e933c1b840510ee1878bcd445be7d23ff374c59568cd4332c3cd078e0e"
+      },
+      "timed_out": false,
+      "timeout_seconds": 120
+    },
+    {
+      "args": [
+        "git",
+        "config",
+        "--type=bool",
+        "--default=false",
+        "--get",
+        "extensions.worktreeConfig"
+      ],
+      "cwd": "/home/qian-qi/work/chain-joint-20261105-93bfc-current",
+      "elapsed_ns": 2795481,
+      "exit_code": 0,
+      "input_bytes": 0,
+      "input_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "name": "worktree-config-extension",
+      "passed": true,
+      "stderr": {
+        "bytes": 0,
+        "file": "worktree-config-extension.stderr",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stdout": {
+        "bytes": 5,
+        "file": "worktree-config-extension.stdout",
+        "sha256": "a17fcf0a2f50e2d495e4f90ce263410edc183add6c62699a2facbccf60410f74"
+      },
+      "timed_out": false,
+      "timeout_seconds": 120
+    },
+    {
+      "args": [
+        "git",
+        "rev-parse",
+        "--git-path",
+        "config.worktree"
+      ],
+      "cwd": "/home/qian-qi/work/chain-joint-20261105-93bfc-current",
+      "elapsed_ns": 3313161,
+      "exit_code": 0,
+      "input_bytes": 0,
+      "input_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "name": "own-worktree-config",
+      "passed": true,
+      "stderr": {
+        "bytes": 0,
+        "file": "own-worktree-config.stderr",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stdout": {
+        "bytes": 116,
+        "file": "own-worktree-config.stdout",
+        "sha256": "0192806f34fcec77cd11a98563d82d7692f30baa32ead1ddfbb580fd3b8df175"
+      },
+      "timed_out": false,
+      "timeout_seconds": 120
+    },
+    {
+      "args": [
+        "git",
+        "rev-parse",
+        "--absolute-git-dir"
+      ],
+      "cwd": "/home/qian-qi/work/chain-joint-20261105-93bfc-current",
+      "elapsed_ns": 3076603,
+      "exit_code": 0,
+      "input_bytes": 0,
+      "input_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "name": "own-git-dir",
+      "passed": true,
+      "stderr": {
+        "bytes": 0,
+        "file": "own-git-dir.stderr",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stdout": {
+        "bytes": 100,
+        "file": "own-git-dir.stdout",
+        "sha256": "e7d373c9699a344492b0aa07aa0e7626b4250165bc6783ee027bd7cd62dc0e24"
+      },
+      "timed_out": false,
+      "timeout_seconds": 120
+    },
+    {
+      "args": [
+        "git",
+        "sparse-checkout",
+        "disable"
+      ],
+      "cwd": "/home/qian-qi/work/chain-joint-20261105-93bfc-current",
+      "elapsed_ns": 9431446659,
+      "exit_code": 0,
+      "input_bytes": 0,
+      "input_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "name": "materialize-complete-own-worktree",
+      "passed": true,
+      "stderr": {
+        "bytes": 0,
+        "file": "materialize-complete-own-worktree.stderr",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stdout": {
+        "bytes": 0,
+        "file": "materialize-complete-own-worktree.stdout",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "timed_out": false,
+      "timeout_seconds": 900
+    },
+    {
+      "args": [
+        "git",
+        "ls-files",
+        "-v",
+        "-z"
+      ],
+      "cwd": "/home/qian-qi/work/chain-joint-20261105-93bfc-current",
+      "elapsed_ns": 15805443,
+      "exit_code": 0,
+      "input_bytes": 0,
+      "input_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "name": "worktree-index-after",
+      "passed": true,
+      "stderr": {
+        "bytes": 0,
+        "file": "worktree-index-after.stderr",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stdout": {
+        "bytes": 887825,
+        "file": "worktree-index-after.stdout",
+        "sha256": "010258bd4e9d4cca2ca24c05ab151c6f8221a332ba2102bd0a5daaf047eb438d"
+      },
+      "timed_out": false,
+      "timeout_seconds": 120
+    },
+    {
+      "args": [
+        "bash",
+        "scripts/project-preflight.sh",
+        "--audit"
+      ],
+      "cwd": "/home/qian-qi/work/chain-joint-20261105-93bfc-current",
+      "elapsed_ns": 91908052,
+      "exit_code": 0,
+      "input_bytes": 0,
+      "input_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "name": "complete-preflight",
+      "passed": true,
+      "stderr": {
+        "bytes": 0,
+        "file": "complete-preflight.stderr",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stdout": {
+        "bytes": 133,
+        "file": "complete-preflight.stdout",
+        "sha256": "a47133fd7030ccda88d70f7e8f0c9df1ffb0fc5fd3257ed034439bbe6fc6e2e0"
+      },
+      "timed_out": false,
+      "timeout_seconds": 120
+    },
+    {
+      "args": [
+        "python3",
+        "-B",
+        "scripts/ci/verify_ci_source.py",
+        "--kind",
+        "head",
+        "--expected-head",
+        "9ecdbebc897d35f07b998d084b015db8474be84b",
+        "--output",
+        "/home/qian-qi/work/chain-joint-20261105-93bfc-restore-C1-batches-resume-04/complete-source.json"
+      ],
+      "cwd": "/home/qian-qi/work/chain-joint-20261105-93bfc-current",
+      "elapsed_ns": 2826086340,
+      "exit_code": 0,
+      "input_bytes": 0,
+      "input_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "name": "complete-source-identity",
+      "passed": true,
+      "stderr": {
+        "bytes": 0,
+        "file": "complete-source-identity.stderr",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stdout": {
+        "bytes": 422,
+        "file": "complete-source-identity.stdout",
+        "sha256": "d5f7d2eb7d55bd2375a35fca94773a1ebd5244c441b66aacf7a87b95c8ec762f"
+      },
+      "timed_out": false,
+      "timeout_seconds": 600
+    }
+  ],
+  "schema": "trnm-c1-full-source-batch-recovery-v2",
+  "skip_worktree_before": 8356,
+  "source_filter_policy_changed": false,
+  "started_utc": "2026-11-05T14:51:02Z",
+  "transient_retries": [],
+  "transient_retry_limit_per_batch": 1,
+  "tree": "94050c5f5f72a27d6c4a5fbf627791c15c2704af",
+  "unresolved_failures": [],
+  "worktree": "/home/qian-qi/work/chain-joint-20261105-93bfc-current"
+}

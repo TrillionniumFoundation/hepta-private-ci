@@ -1,0 +1,84 @@
+{
+  "base_commit": "03521b2f32346a49cccde8ff72e8c7b886b31222",
+  "base_tree": "e0235248ecae2a67717c8b9ff2e3f25774ba63d7",
+  "cargo_executed": false,
+  "complete_source": {
+    "base": null,
+    "candidate": "03521b2f32346a49cccde8ff72e8c7b886b31222",
+    "kind": "head",
+    "prospective_merge": null,
+    "schema": "trnm-ci-source-v1",
+    "tested_commit": "03521b2f32346a49cccde8ff72e8c7b886b31222",
+    "tested_tree": "e0235248ecae2a67717c8b9ff2e3f25774ba63d7",
+    "tests_executed_by_identity_check": false,
+    "tracked_bytes": 985264447,
+    "tracked_entries": 10357,
+    "tracked_worktree_verified": true
+  },
+  "finished_utc": "2026-11-05T17:05:15Z",
+  "native_samples": 0,
+  "observations": [
+    {
+      "command": [
+        "bash",
+        "scripts/project-preflight.sh",
+        "--audit"
+      ],
+      "cwd": "/home/qian-qi/work/chain-joint-20261105-93bfc-current",
+      "elapsed_ns": 299705594,
+      "exit_code": 0,
+      "name": "project-preflight",
+      "passed": true,
+      "stderr": {
+        "bytes": 0,
+        "path": "project-preflight.stderr",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stdout": {
+        "bytes": 133,
+        "path": "project-preflight.stdout",
+        "sha256": "a47133fd7030ccda88d70f7e8f0c9df1ffb0fc5fd3257ed034439bbe6fc6e2e0"
+      },
+      "timed_out": false,
+      "timeout_seconds": 120
+    },
+    {
+      "command": [
+        "python3",
+        "-B",
+        "scripts/ci/verify_ci_source.py",
+        "--kind",
+        "head",
+        "--expected-head",
+        "03521b2f32346a49cccde8ff72e8c7b886b31222",
+        "--output",
+        "/home/qian-qi/work/chain-joint-20261105-93bfc-c3-precommit-source/complete-source.json"
+      ],
+      "cwd": "/home/qian-qi/work/chain-joint-20261105-93bfc-current",
+      "elapsed_ns": 35545365971,
+      "exit_code": 0,
+      "name": "complete-source",
+      "passed": true,
+      "stderr": {
+        "bytes": 0,
+        "path": "complete-source.stderr",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stdout": {
+        "bytes": 422,
+        "path": "complete-source.stdout",
+        "sha256": "0dc6b5e3e0cc601ff2cfd61d59e18e28dd649d83f920449bdb64b13962398a18"
+      },
+      "timed_out": false,
+      "timeout_seconds": 600
+    }
+  ],
+  "output": "/home/qian-qi/work/chain-joint-20261105-93bfc-c3-precommit-source",
+  "passed": true,
+  "purpose": "actual original preflight and complete base guard before C3 commit; no C3 execution credit",
+  "qualification_status": "HOLD",
+  "root": "/home/qian-qi/work/chain-joint-20261105-93bfc-current",
+  "schema": "trnm-c3-precommit-complete-base-preflight-v1",
+  "source_modified": false,
+  "started_utc": "2026-11-05T17:04:39Z"
+}

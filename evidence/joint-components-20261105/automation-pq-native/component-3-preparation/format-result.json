@@ -1,0 +1,10 @@
+{
+  "content": [
+    {
+      "type": "text",
+      "text": "{\"atomic_snapshot\":false,\"encoding\":\"utf-8\",\"files\":[{\"eof\":true,\"path\":\"/home/qian-qi/work/hepta-pq-effect-v4-20261105-93bfcf/evidence/component-3-preparation/format.log\",\"sha256\":\"61fb107be681a841e020daa2ebabfacc7ecf18873ab5455ebef0aeff536ab40f\",\"size\":753,\"text\":\"==> Rust formatter failed\\n$ rustfmt --edition 2024 --config imports_granularity=Item,skip_children=true -- /home/qian-qi/work/hepta-pq-effect-v4-20261105-93bfcf/source/codex-rs/hepta-agentd/tests/support/automation_effect_binary.rs\\nWarning: can't set `imports_granularity = Item`, unstable features are only available in nightly channel.\\nerror: this file contains an unclosed delimiter\\n  --> /home/qian-qi/work/hepta-pq-effect-v4-20261105-93bfcf/source/codex-rs/hepta-agentd/tests/support/automation_effect_binary.rs:74:3\\n   |\\n15 | pub(super) fn source_identity()->Result<Value> {\\n   |                                                - unclosed delimiter\\n...\\n74 | }\\n   |  ^\\n\\nFormatting failed: Rust\\nerror: recipe `fmt` failed on line 51 with exit code 1\\n\",\"version\":\"2050:59041530:753:1793894911949930091:1793894911949930091\"}],\"snapshot_scope\":\"independent_file\",\"truncated\":false}"
+    }
+  ],
+  "structuredContent": null,
+  "isError": false
+}
