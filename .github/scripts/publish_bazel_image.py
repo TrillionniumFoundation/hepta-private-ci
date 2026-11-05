@@ -14,6 +14,8 @@ from urllib.error import HTTPError, URLError
 from urllib.parse import urlencode
 from urllib.request import HTTPRedirectHandler, Request, build_opener
 
+from bazel_image_identity import IdentityError, verified_local_identity
+
 REPOSITORY = "TrillionniumFoundation/hepta-private-ci"
 PACKAGE = "trillionniumfoundation/hepta-bazel"
 IMAGE = f"ghcr.io/{PACKAGE}"
@@ -90,7 +92,9 @@ class Ghcr:
             raise PublicationError("GHCR returned an invalid image manifest") from None
 
 
-def published_manifest(registry, tag, architecture, expected_config):
+def published_manifest(
+    registry, tag, architecture, expected_config, expected_manifest=None
+):
     tag_digest, manifest = registry.manifest(tag)
     image_digest = tag_digest
     if "manifests" in manifest:
@@ -110,6 +114,10 @@ def published_manifest(registry, tag, architecture, expected_config):
     if manifest.get("config", {}).get("digest") != expected_config:
         raise PublicationError(
             "Published image differs from the locally verified image configuration"
+        )
+    if expected_manifest is not None and image_digest != expected_manifest:
+        raise PublicationError(
+            "Published native manifest differs from the locally verified image"
         )
     return {
         "tag_digest": tag_digest,
@@ -151,12 +159,13 @@ def publish(evidence: Path, environment, *, run=subprocess.run, registry_factory
         raise PublicationError(
             "Image has not completed the expected local verification"
         )
-    inspected = json.loads(
-        (evidence / "image-inspect.json").read_text(encoding="utf-8")
-    )[0]
-    expected_config = inspected["Id"]
-    if not DIGEST.fullmatch(expected_config):
-        raise PublicationError("Invalid locally verified image configuration digest")
+    try:
+        identity = verified_local_identity(evidence)
+    except (IdentityError, OSError, ValueError, KeyError, TypeError, AttributeError):
+        raise PublicationError(
+            "Invalid locally verified image identity evidence"
+        ) from None
+    expected_config = identity["config_digest"]
 
     registry = registry_factory(username, token)
     if registry.manifest(tag, missing_ok=True) is not None:
@@ -200,7 +209,9 @@ def publish(evidence: Path, environment, *, run=subprocess.run, registry_factory
                 )
             # Refresh after the push so a slow transfer cannot expire the readback token.
             registry = registry_factory(username, token)
-            result = published_manifest(registry, tag, arch, expected_config)
+            result = published_manifest(
+                registry, tag, arch, expected_config, identity["image_manifest_digest"]
+            )
         finally:
             run(
                 ["docker", "logout", "ghcr.io"],

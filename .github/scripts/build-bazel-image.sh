@@ -13,6 +13,8 @@ case "$IMAGE_ARCH:$(uname -m)" in
 esac
 
 mkdir -p "$IMAGE_EVIDENCE_DIR/context"
+rm -f -- "$IMAGE_EVIDENCE_DIR/verified-image-tag.txt" \
+  "$IMAGE_EVIDENCE_DIR/verified-image-id.txt" "$IMAGE_EVIDENCE_DIR/local-image-identity.json"
 docker version --format '{{json .}}' > "$IMAGE_EVIDENCE_DIR/docker-version.json"
 docker buildx version > "$IMAGE_EVIDENCE_DIR/buildx-version.txt"
 docker buildx imagetools inspect ubuntu:24.04 --format '{{json .Manifest}}' > "$IMAGE_EVIDENCE_DIR/base-index.json"
@@ -78,8 +80,9 @@ docker buildx build \
   --progress plain "$IMAGE_EVIDENCE_DIR/context"
 
 docker image inspect "$image" > "$IMAGE_EVIDENCE_DIR/image-inspect.json"
-python3 - "$IMAGE_EVIDENCE_DIR/image-inspect.json" "$IMAGE_ARCH" <<'PY'
+verified_image_id="$(python3 - "$IMAGE_EVIDENCE_DIR/image-inspect.json" "$IMAGE_ARCH" <<'PY'
 import json
+import re
 import sys
 
 image = json.load(open(sys.argv[1], encoding="utf-8"))[0]
@@ -87,14 +90,20 @@ if (image["Os"], image["Architecture"], image["Config"]["User"]) != ("linux", sy
     raise SystemExit("Image OS, architecture or default user differs from the RBE contract")
 if image["Config"].get("Entrypoint"):
     raise SystemExit("RBE image must not introduce an entrypoint")
+if not re.fullmatch(r"sha256:[0-9a-f]{64}", image["Id"]):
+    raise SystemExit("Expected an immutable local image ID")
+print(image["Id"])
 PY
-docker run --rm -i --network none --entrypoint /bin/sh "$image" -s \
+)"
+docker run --rm -i --network none --entrypoint /bin/sh "$verified_image_id" -s \
   < .github/scripts/smoke-bazel-openssh.sh 2>&1 | tee "$IMAGE_EVIDENCE_DIR/openssh-smoke.log"
 grep -Fxq \
   'PASS: default UID 1000; signature accepted; altered payload and wrong namespace rejected' \
   "$IMAGE_EVIDENCE_DIR/openssh-smoke.log"
-docker run --rm --network none --entrypoint dpkg-query "$image" \
+docker run --rm --network none --entrypoint dpkg-query "$verified_image_id" \
   -W -f '${Package}\t${Version}\t${Architecture}\n' > "$IMAGE_EVIDENCE_DIR/packages.tsv"
-docker run --rm --network none --entrypoint sha256sum "$image" \
+docker run --rm --network none --entrypoint sha256sum "$verified_image_id" \
   /usr/bin/ssh-keygen /usr/local/bin/dotslash > "$IMAGE_EVIDENCE_DIR/executable-sha256.txt"
+printf '%s\n' "$verified_image_id" > "$IMAGE_EVIDENCE_DIR/verified-image-id.txt"
+python3 .github/scripts/bazel_image_identity.py "$IMAGE_EVIDENCE_DIR"
 printf '%s\n' "$image" > "$IMAGE_EVIDENCE_DIR/verified-image-tag.txt"

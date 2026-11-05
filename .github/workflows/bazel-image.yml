@@ -6,6 +6,7 @@ on:
       - .github/workflows/Dockerfile.bazel
       - .github/workflows/bazel-image.yml
       - .github/scripts/build-bazel-image.sh
+      - .github/scripts/bazel_image_identity.py
       - .github/scripts/smoke-bazel-openssh.sh
       - .github/scripts/publish_bazel_image.py
       - .github/scripts/test_publish_bazel_image.py
