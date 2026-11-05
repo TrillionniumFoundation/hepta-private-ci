@@ -101,3 +101,7 @@ impl AgentRunCoordinator {
         ))
     }
 }
+
+#[cfg(test)]
+#[path = "lane_b_bound_tests.rs"]
+mod tests;

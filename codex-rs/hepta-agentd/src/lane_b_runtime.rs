@@ -754,3 +754,7 @@ fn receipt(record: &RunRecord, idempotent: bool) -> RunReceipt {
 #[cfg(test)]
 #[path = "lane_b_runtime_tests.rs"]
 mod tests;
+
+#[cfg(test)]
+#[path = "lane_b_runtime_fault_tests.rs"]
+mod fault_tests;
