@@ -282,6 +282,33 @@ impl FleetHarness {
         .map_err(Into::into)
     }
 
+    /// The fixture's external custody observes a live owner before failure.
+    /// Callers publish the retained bytes explicitly; restart cannot refresh them.
+    #[allow(dead_code)]
+    pub(crate) async fn retain_live_recovery_frontier(
+        &self,
+        agent: &AgentFixture,
+        expected_provider_invocation_rows: u64,
+    ) -> Result<super::recovery::RetainedRecoveryFrontier> {
+        let generation = self
+            .supervisor
+            .snapshot(&agent.agent_id)
+            .and_then(|snapshot| snapshot.spawn_generation)
+            .ok_or_else(|| anyhow::anyhow!("fixture recovery requires a live Agentd spawn"))?;
+        let control = self.control_client(agent, generation)?;
+        ensure!(control.health().await?.ready, "fixture owner is not ready");
+        let retained = super::recovery::retain_live_invocations(
+            agent.layout.home_root(),
+            &agent.agent_id,
+            &agent.recovery_frontier_file,
+            &agent.recovery_frontier_trust_file,
+            expected_provider_invocation_rows,
+        )
+        .await?;
+        ensure!(control.health().await?.ready, "fixture owner left readiness");
+        Ok(retained)
+    }
+
     pub(crate) async fn wait_ready(
         &mut self,
         agent: &AgentFixture,
