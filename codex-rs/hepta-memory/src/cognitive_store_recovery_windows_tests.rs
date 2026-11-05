@@ -1,5 +1,6 @@
 use super::*;
 use codex_hepta_paths::HeptaFleetRoot;
+use pretty_assertions::assert_eq;
 
 #[tokio::test]
 async fn canonical_windows_root_reads_retained_cold_image_without_mutating_source()
