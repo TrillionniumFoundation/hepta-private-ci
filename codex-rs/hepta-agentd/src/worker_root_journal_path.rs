@@ -40,6 +40,10 @@ impl WorkerJournalDirectory {
         }
         registration.validate()?;
         let parent = open_root_parent(parent_path)?;
+        // Root alone needs a readable descriptor for the parent fsync below.
+        // Reopen the already verified directory itself; Worker traversal keeps
+        // an O_PATH descriptor and does not require read access to Root 0711.
+        let parent = open_child(&parent, Path::new("."))?;
         let name = journal_basename(&registration.registered_agent_id)?;
         rustix::fs::mkdirat(&parent, name.as_str(), Mode::RWXU).map_err(io::Error::from)?;
         let directory = open_child(&parent, Path::new(&name))?;
@@ -114,6 +118,11 @@ fn open_child(parent: &File, name: &Path) -> io::Result<File> {
         .map(File::from).map_err(io::Error::from)
 }
 
+fn open_search_child(parent: &File, name: &Path) -> io::Result<File> {
+    rustix::fs::openat(parent, name, OFlags::PATH | OFlags::DIRECTORY | OFlags::NOFOLLOW | OFlags::CLOEXEC, Mode::empty())
+        .map(File::from).map_err(io::Error::from)
+}
+
 fn check_root_parent(directory: &File) -> io::Result<()> {
     let metadata = directory.metadata()?;
     if !metadata.is_dir() || metadata.uid() != 0 || metadata.mode() & 0o022 != 0
@@ -128,13 +137,13 @@ fn open_root_parent(path: &Path) -> io::Result<File> {
     if !path.is_absolute() || path.to_str().is_none_or(|value| value.len() > 4096) {
         return Err(refused("bounded absolute Root journal parent required"));
     }
-    let mut current: File = rustix::fs::open("/", OFlags::RDONLY | OFlags::DIRECTORY | OFlags::NOFOLLOW | OFlags::CLOEXEC, Mode::empty())
+    let mut current: File = rustix::fs::open("/", OFlags::PATH | OFlags::DIRECTORY | OFlags::NOFOLLOW | OFlags::CLOEXEC, Mode::empty())
         .map_err(io::Error::from)?.into();
     check_root_parent(&current)?;
     for component in path.components() {
         match component {
             Component::RootDir => {}
-            Component::Normal(name) => { current = open_child(&current, Path::new(name))?; check_root_parent(&current)?; }
+            Component::Normal(name) => { current = open_search_child(&current, Path::new(name))?; check_root_parent(&current)?; }
             _ => return Err(refused("journal path traversal, aliases and symlinks are refused")),
         }
     }
