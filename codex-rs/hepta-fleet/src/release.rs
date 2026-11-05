@@ -1,9 +1,7 @@
 use std::collections::BTreeSet;
 use std::fmt;
-use std::fs::File;
 use std::fs::OpenOptions;
 use std::io::ErrorKind;
-use std::io::Read;
 use std::io::Write;
 use std::path::Component;
 use std::path::Path;
@@ -23,6 +21,9 @@ use sha2::Sha256;
 
 use crate::FleetRegistry;
 use crate::FleetRegistryError;
+
+#[path = "release_catalog_io.rs"]
+pub(crate) mod catalog_io;
 
 pub const RELEASE_METADATA_SCHEMA_VERSION: u32 = 2;
 pub const AGENT_RELEASE_STATE_SCHEMA_VERSION: u32 = 1;
@@ -153,14 +154,27 @@ pub struct RegisteredRelease {
     pub matrixd: Option<RegisteredProgram>,
 }
 
+pub(crate) struct CatalogReleaseBinding {
+    pub(crate) catalog_root: PathBuf,
+    pub(crate) manifest_sha256: String,
+    pub(crate) agentd_program_sha256: String,
+    pub(crate) matrixd_program_sha256: Option<String>,
+}
+
+struct CatalogObservation {
+    release: RegisteredRelease,
+    binding: CatalogReleaseBinding,
+}
+
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub struct ReleaseBinding {
     pub release_id: ReleaseId,
     pub manifest_sha256: String,
     pub agentd_program_sha256: String,
     pub matrixd_program_sha256: Option<String>,
-    /// Digest of the complete per-Agent allow/revoke marker set observed at
-    /// this admission boundary. Any later policy mutation changes the digest.
+    /// Binds current publisher permission, anchored per-Agent allow/revoke
+    /// state and the complete local marker set. Typed intent bookkeeping is
+    /// excluded; every actual use still checks the full fresh external frontier.
     pub admission_frontier_sha256: String,
 }
 
@@ -235,6 +249,7 @@ impl FleetRegistry {
         source_matrixd: Option<&Path>,
         matrixd_args: Vec<String>,
     ) -> Result<RegisteredRelease, FleetRegistryError> {
+        self.require_release_authority()?;
         validate_arguments(&agentd_args)?;
         validate_arguments(&matrixd_args)?;
         if source_matrixd.is_none() && !matrixd_args.is_empty() {
@@ -287,6 +302,10 @@ impl FleetRegistry {
                 },
                 matrixd,
             };
+            // Hold the current publication owner through the catalog rename.
+            // The comparison covers the bytes we actually copied and both
+            // exact argument vectors, never only the source path's identity.
+            let publication = self.authorize_release_install(&metadata)?;
             let manifest = staging.join(RELEASE_MANIFEST_FILE);
             write_new_json(&manifest, &metadata)?;
             set_mode(&manifest, /*mode*/ 0o444)?;
@@ -297,6 +316,7 @@ impl FleetRegistry {
             // Children are sealed and synced before the name moves. The name
             // alone grants no authority: catalog admission rejects a writable
             // outer directory, including residue left before sealing below.
+            self.revalidate_release_install(&publication)?;
             std::fs::rename(&staging, &final_root)?;
             set_mode(&final_root, /*mode*/ 0o555)?;
             sync_directory(&final_root)?;
@@ -319,17 +339,22 @@ impl FleetRegistry {
         agent_id: &AgentId,
         release_id: &ReleaseId,
     ) -> Result<(), FleetRegistryError> {
+        self.require_release_authority()?;
         let record = self.load()?.agent(agent_id).cloned().ok_or_else(|| {
             FleetRegistryError::Invalid(format!("unknown fleet agent {agent_id}"))
         })?;
-        let _ = resolve_catalog_release(self.layout().releases_root(), release_id)?;
-        let manifest = release_manifest_path(self.layout().releases_root(), release_id);
+        let observed = observe_catalog_release(self.layout().releases_root(), release_id, None)?;
         let allowance = ReleaseAllowance {
             schema_version: RELEASE_METADATA_SCHEMA_VERSION,
             agent_id: agent_id.clone(),
             release_id: release_id.clone(),
-            manifest_sha256: sha256_file(&manifest)?,
+            manifest_sha256: observed.binding.manifest_sha256,
         };
+        self.authorize_release_allowance(
+            agent_id,
+            release_id,
+            crate::release_authority_set::parse_digest(&allowance.manifest_sha256)?,
+        )?;
         let path = allowance_path(record.layout.releases_root(), release_id);
         if release_entry_exists(&path)? {
             let actual: ReleaseAllowance = read_bounded_json(&path, MAX_RELEASE_MANIFEST_BYTES)?;
@@ -354,6 +379,7 @@ impl FleetRegistry {
         agent_id: &AgentId,
         release_id: &ReleaseId,
     ) -> Result<(), FleetRegistryError> {
+        self.require_release_authority()?;
         let record = self.load()?.agent(agent_id).cloned().ok_or_else(|| {
             FleetRegistryError::Invalid(format!("unknown fleet agent {agent_id}"))
         })?;
@@ -361,12 +387,13 @@ impl FleetRegistry {
         if release_entry_exists(&path)? {
             let actual: ReleaseRevocation = read_bounded_json(&path, MAX_RELEASE_MANIFEST_BYTES)?;
             let manifest = release_manifest_path(self.layout().releases_root(), release_id);
-            let manifest_sha256 = sha256_file(&manifest)?;
+            let manifest_sha256 = catalog_io::sha256(&manifest, MAX_RELEASE_MANIFEST_BYTES)?;
             if actual.schema_version == RELEASE_METADATA_SCHEMA_VERSION
                 && actual.agent_id == *agent_id
                 && actual.release_id == *release_id
                 && actual.manifest_sha256 == manifest_sha256
             {
+                self.authorize_release_revocation(agent_id, release_id)?;
                 return Ok(());
             }
             return Err(FleetRegistryError::Corrupt(format!(
@@ -377,12 +404,22 @@ impl FleetRegistry {
         // Admission is revalidated immediately before the append-only revocation
         // marker is created, including the exact per-Agent allowance and immutable
         // manifest/program digests.
-        let binding = self.resolve_release_binding(agent_id, release_id)?;
+        let manifest_sha256 = if self.is_release_qualification() {
+            self.resolve_release_binding(agent_id, release_id)?
+                .manifest_sha256
+        } else {
+            // Withdrawal/expiry must not prevent a local deny from becoming
+            // durable. The PQ owner requires the existing exact allowance.
+            observe_catalog_release(self.layout().releases_root(), release_id, None)?
+                .binding
+                .manifest_sha256
+        };
+        self.authorize_release_revocation(agent_id, release_id)?;
         let revocation = ReleaseRevocation {
             schema_version: RELEASE_METADATA_SCHEMA_VERSION,
             agent_id: agent_id.clone(),
             release_id: release_id.clone(),
-            manifest_sha256: binding.manifest_sha256,
+            manifest_sha256,
         };
         write_new_json(&path, &revocation)?;
         set_mode(&path, /*mode*/ 0o444)?;
@@ -394,32 +431,71 @@ impl FleetRegistry {
         agent_id: &AgentId,
         release_id: &ReleaseId,
     ) -> Result<ReleaseBinding, FleetRegistryError> {
-        let _ = self.resolve_release(agent_id, release_id)?;
+        let admission = self.admit_release(agent_id, release_id)?;
         let record = self.load()?.agent(agent_id).cloned().ok_or_else(|| {
             FleetRegistryError::Invalid(format!("unknown fleet agent {agent_id}"))
         })?;
-        let admission_frontier_sha256 =
-            release_admission_frontier_sha256(record.layout.releases_root())?;
-        // Re-admit after observing the frontier so a revocation racing the
-        // first lookup cannot be hidden behind a stale successful resolve.
-        let _ = self.resolve_release(agent_id, release_id)?;
-        let manifest = release_manifest_path(self.layout().releases_root(), release_id);
-        let manifest_sha256 = sha256_file(&manifest)?;
-        let metadata: CatalogReleaseMetadata =
-            read_bounded_json(&manifest, MAX_RELEASE_MANIFEST_BYTES)?;
-        let (agentd_program_sha256, matrixd_program_sha256) = match metadata {
-            CatalogReleaseMetadata::V2(metadata) => (
-                metadata.agentd.program_sha256,
-                metadata.matrixd.map(|program| program.program_sha256),
-            ),
-            CatalogReleaseMetadata::V1(metadata) => (metadata.program_sha256, None),
+        let local_frontier = release_admission_frontier_sha256(record.layout.releases_root())?;
+        let admission_frontier_sha256 = match &admission.authority {
+            Some((_, current)) => {
+                // Typed intent bookkeeping advances the complete external
+                // frontier without changing release permission. Its verified
+                // permission projection excludes only those bookkeeping
+                // events; revalidation below still checks the fresh full
+                // frontier, current publication and actual catalog bytes.
+                let permission_sha256 = current.permission_sha256.ok_or_else(|| {
+                    FleetRegistryError::Corrupt(
+                        "admitted PQ release has no agent permission binding".into(),
+                    )
+                })?;
+                let binding = pq_admission_frontier(permission_sha256, &local_frontier)?;
+                admission.revalidate()?;
+                binding
+            }
+            None => {
+                // Legacy fixtures have no publication-owner lock; retain their
+                // original second admission after observing the local frontier.
+                let _ = self.resolve_release(agent_id, release_id)?;
+                local_frontier
+            }
         };
         Ok(ReleaseBinding {
             release_id: release_id.clone(),
-            manifest_sha256,
-            agentd_program_sha256,
-            matrixd_program_sha256,
+            manifest_sha256: admission.catalog.manifest_sha256.clone(),
+            agentd_program_sha256: admission.catalog.agentd_program_sha256.clone(),
+            matrixd_program_sha256: admission.catalog.matrixd_program_sha256.clone(),
             admission_frontier_sha256,
+        })
+    }
+
+    /// Describes exact local release bytes while a recovery-only owner already
+    /// holds its publication lock. The caller supplies the freshly verified
+    /// publisher metadata and permission projection, and must revalidate that
+    /// owner before using the observation. This never grants process use.
+    pub(crate) fn observe_reconciliation_release_binding(
+        &self,
+        agent_id: &AgentId,
+        release_id: &ReleaseId,
+        expected_metadata: &ReleaseMetadata,
+        permission_sha256: [u8; 32],
+    ) -> Result<ReleaseBinding, FleetRegistryError> {
+        let record = self.load()?.agent(agent_id).cloned().ok_or_else(|| {
+            FleetRegistryError::Invalid(format!("unknown fleet agent {agent_id}"))
+        })?;
+        let observed = observe_allowed_release(
+            self.layout().releases_root(),
+            record.layout.releases_root(),
+            agent_id,
+            release_id,
+            Some(expected_metadata),
+        )?;
+        let local_frontier = release_admission_frontier_sha256(record.layout.releases_root())?;
+        Ok(ReleaseBinding {
+            release_id: release_id.clone(),
+            manifest_sha256: observed.binding.manifest_sha256,
+            agentd_program_sha256: observed.binding.agentd_program_sha256,
+            matrixd_program_sha256: observed.binding.matrixd_program_sha256,
+            admission_frontier_sha256: pq_admission_frontier(permission_sha256, &local_frontier)?,
         })
     }
 
@@ -428,45 +504,33 @@ impl FleetRegistry {
         agent_id: &AgentId,
         release_id: &ReleaseId,
     ) -> Result<RegisteredRelease, FleetRegistryError> {
+        Ok(self.admit_release(agent_id, release_id)?.release().clone())
+    }
+
+    /// Checks the current PQ publisher set and anchored local allowance, then
+    /// validates the immutable catalog. The returned guard must span the actual
+    /// process launch or adoption; a cached RegisteredRelease grants no use.
+    pub fn admit_release(
+        &self,
+        agent_id: &AgentId,
+        release_id: &ReleaseId,
+    ) -> Result<crate::CurrentReleaseAdmission, FleetRegistryError> {
+        let current = self.current_release_use(agent_id, release_id)?;
         let record = self.load()?.agent(agent_id).cloned().ok_or_else(|| {
             FleetRegistryError::Invalid(format!("unknown fleet agent {agent_id}"))
         })?;
-        if release_entry_exists(&revocation_path(record.layout.releases_root(), release_id))? {
-            return Err(FleetRegistryError::ReleaseRevoked {
-                agent_id: agent_id.clone(),
-                release_id: release_id.to_string(),
-            });
-        }
-        let allowance_path = allowance_path(record.layout.releases_root(), release_id);
-        let allowance: ReleaseAllowance =
-            match read_bounded_json(&allowance_path, MAX_RELEASE_MANIFEST_BYTES) {
-                Ok(allowance) => allowance,
-                Err(FleetRegistryError::Io(error)) if error.kind() == ErrorKind::NotFound => {
-                    return Err(FleetRegistryError::ReleaseNotAllowed {
-                        agent_id: agent_id.clone(),
-                        release_id: release_id.to_string(),
-                    });
-                }
-                Err(error) => return Err(error),
-            };
-        if !matches!(
-            allowance.schema_version,
-            1 | RELEASE_METADATA_SCHEMA_VERSION
-        ) || allowance.agent_id != *agent_id
-            || allowance.release_id != *release_id
-            || !is_sha256(&allowance.manifest_sha256)
-        {
-            return Err(FleetRegistryError::Corrupt(format!(
-                "invalid release allowance for agent {agent_id} release {release_id}"
-            )));
-        }
-        let manifest = release_manifest_path(self.layout().releases_root(), release_id);
-        if sha256_file(&manifest)? != allowance.manifest_sha256 {
-            return Err(FleetRegistryError::Corrupt(format!(
-                "allowed release manifest changed for agent {agent_id} release {release_id}"
-            )));
-        }
-        resolve_catalog_release(self.layout().releases_root(), release_id)
+        let observed = observe_allowed_release(
+            self.layout().releases_root(),
+            record.layout.releases_root(),
+            agent_id,
+            release_id,
+            current.as_ref().map(|(_, current)| &current.metadata),
+        )?;
+        Ok(crate::CurrentReleaseAdmission {
+            release: observed.release,
+            catalog: observed.binding,
+            authority: current,
+        })
     }
 
     pub fn allowed_releases(
@@ -493,7 +557,10 @@ impl FleetRegistry {
             let release_id = ReleaseId::parse(value)?;
             match self.resolve_release(agent_id, &release_id) {
                 Ok(_) => {}
-                Err(FleetRegistryError::ReleaseRevoked { .. }) => continue,
+                Err(
+                    FleetRegistryError::ReleaseRevoked { .. }
+                    | FleetRegistryError::ReleaseNotAllowed { .. },
+                ) => continue,
                 Err(error) => return Err(error),
             }
             if !releases.insert(release_id) || releases.len() > MAX_ALLOWED_RELEASES {
@@ -597,10 +664,100 @@ pub(crate) fn load_release_state(
         .ok_or_else(|| FleetRegistryError::Corrupt("agent release state is missing".to_string()))
 }
 
+fn pq_admission_frontier(
+    permission_sha256: [u8; 32],
+    local_frontier: &str,
+) -> Result<String, FleetRegistryError> {
+    if permission_sha256 == [0; 32] {
+        return Err(FleetRegistryError::Corrupt(
+            "empty PQ release permission binding".into(),
+        ));
+    }
+    let mut digest = Sha256::new();
+    digest.update(b"hepta.fleet.release-admission.pq.v2\0");
+    digest.update(permission_sha256);
+    digest.update(crate::release_authority_set::parse_digest(local_frontier)?);
+    Ok(format!("{:x}", digest.finalize()))
+}
+
+fn observe_allowed_release(
+    catalog_root: &Path,
+    agent_releases_root: &Path,
+    agent_id: &AgentId,
+    release_id: &ReleaseId,
+    expected_metadata: Option<&ReleaseMetadata>,
+) -> Result<CatalogObservation, FleetRegistryError> {
+    if release_entry_exists(&revocation_path(agent_releases_root, release_id))? {
+        return Err(FleetRegistryError::ReleaseRevoked {
+            agent_id: agent_id.clone(),
+            release_id: release_id.to_string(),
+        });
+    }
+    let allowance_path = allowance_path(agent_releases_root, release_id);
+    let allowance: ReleaseAllowance =
+        match read_bounded_json(&allowance_path, MAX_RELEASE_MANIFEST_BYTES) {
+            Ok(allowance) => allowance,
+            Err(FleetRegistryError::Io(error)) if error.kind() == ErrorKind::NotFound => {
+                return Err(FleetRegistryError::ReleaseNotAllowed {
+                    agent_id: agent_id.clone(),
+                    release_id: release_id.to_string(),
+                });
+            }
+            Err(error) => return Err(error),
+        };
+    if !matches!(
+        allowance.schema_version,
+        1 | RELEASE_METADATA_SCHEMA_VERSION
+    ) || allowance.agent_id != *agent_id
+        || allowance.release_id != *release_id
+        || !is_sha256(&allowance.manifest_sha256)
+    {
+        return Err(FleetRegistryError::Corrupt(format!(
+            "invalid release allowance for agent {agent_id} release {release_id}"
+        )));
+    }
+    if let Some(expected_metadata) = expected_metadata {
+        validate_metadata(expected_metadata, release_id)?;
+        let expected = crate::release_authority_set::manifest_bytes(expected_metadata)?;
+        let actual = crate::release_authority_set::parse_digest(&allowance.manifest_sha256)?;
+        if <[u8; 32]>::from(Sha256::digest(&expected)) != actual {
+            return Err(FleetRegistryError::Invalid(
+                "installed release is not the exact current publisher manifest".to_string(),
+            ));
+        }
+    }
+    observe_catalog_release(catalog_root, release_id, Some(&allowance.manifest_sha256))
+}
+
 fn resolve_catalog_release(
     catalog_root: &Path,
     release_id: &ReleaseId,
 ) -> Result<RegisteredRelease, FleetRegistryError> {
+    Ok(observe_catalog_release(catalog_root, release_id, None)?.release)
+}
+
+pub(crate) fn revalidate_catalog_release(
+    binding: &CatalogReleaseBinding,
+    expected: &RegisteredRelease,
+) -> Result<(), FleetRegistryError> {
+    let observed = observe_catalog_release(
+        &binding.catalog_root,
+        &expected.release_id,
+        Some(&binding.manifest_sha256),
+    )?;
+    if observed.release != *expected {
+        return Err(FleetRegistryError::Corrupt(
+            "admitted release catalog changed".into(),
+        ));
+    }
+    Ok(())
+}
+
+fn observe_catalog_release(
+    catalog_root: &Path,
+    release_id: &ReleaseId,
+    expected_manifest_sha256: Option<&str>,
+) -> Result<CatalogObservation, FleetRegistryError> {
     validate_physical_directory(catalog_root, /*immutable*/ false)?;
     let release_root = catalog_root.join(release_id.as_str());
     let bin_root = release_root.join("bin");
@@ -614,9 +771,20 @@ fn resolve_catalog_release(
         )));
     }
     let manifest_path = release_root.join(RELEASE_MANIFEST_FILE);
-    validate_immutable_regular_file(&manifest_path, /*executable*/ false)?;
-    let metadata: CatalogReleaseMetadata =
-        read_bounded_json(&manifest_path, MAX_RELEASE_MANIFEST_BYTES)?;
+    let manifest_bytes = catalog_io::read(
+        &manifest_path,
+        MAX_RELEASE_MANIFEST_BYTES,
+        catalog_io::FileRule::Immutable,
+    )?;
+    let manifest_sha256 = format!("{:x}", Sha256::digest(&manifest_bytes));
+    if expected_manifest_sha256.is_some_and(|expected| expected != manifest_sha256) {
+        return Err(FleetRegistryError::Corrupt(
+            "allowed release manifest changed".into(),
+        ));
+    }
+    // Decode the exact bytes just hashed, never reopen the manifest path.
+    let metadata: CatalogReleaseMetadata = serde_json::from_slice(&manifest_bytes)
+        .map_err(|error| FleetRegistryError::Corrupt(format!("invalid release JSON: {error}")))?;
     let (release_id_from_manifest, agentd, matrixd) = match metadata {
         CatalogReleaseMetadata::V2(metadata) => {
             validate_metadata(&metadata, release_id)?;
@@ -645,40 +813,47 @@ fn resolve_catalog_release(
             "release {release_id} contains an unexpected closed-world entry"
         )));
     }
-    let program = resolve_program(&release_root, &agentd, release_id)?;
+    let binding = CatalogReleaseBinding {
+        catalog_root: catalog_root.to_owned(),
+        manifest_sha256,
+        agentd_program_sha256: agentd.program_sha256.clone(),
+        matrixd_program_sha256: matrixd
+            .as_ref()
+            .map(|program| program.program_sha256.clone()),
+    };
+    let program = resolve_program(&release_root, &agentd)?;
     let matrixd = match matrixd {
         Some(metadata) => Some(RegisteredProgram {
-            program: resolve_program(&release_root, &metadata, release_id)?,
+            program: resolve_program(&release_root, &metadata)?,
             args: metadata.args,
         }),
         None => None,
     };
-    Ok(RegisteredRelease {
-        release_id: release_id_from_manifest,
-        program,
-        args: agentd.args,
-        matrixd,
+    Ok(CatalogObservation {
+        release: RegisteredRelease {
+            release_id: release_id_from_manifest,
+            program,
+            args: agentd.args,
+            matrixd,
+        },
+        binding,
     })
 }
 
 fn resolve_program(
     release_root: &Path,
     metadata: &ReleaseProgramMetadata,
-    release_id: &ReleaseId,
 ) -> Result<PathBuf, FleetRegistryError> {
     let program = release_root.join(&metadata.program_relative_path);
-    validate_immutable_regular_file(&program, /*executable*/ true)?;
-    if std::fs::metadata(&program)?.len() != metadata.program_size_bytes
-        || sha256_file(&program)? != metadata.program_sha256
-    {
-        return Err(FleetRegistryError::Corrupt(format!(
-            "release {release_id} program differs from immutable metadata"
-        )));
-    }
+    catalog_io::check_program(
+        &program,
+        metadata.program_size_bytes,
+        &metadata.program_sha256,
+    )?;
     Ok(program)
 }
 
-fn validate_metadata(
+pub(crate) fn validate_metadata(
     metadata: &ReleaseMetadata,
     expected: &ReleaseId,
 ) -> Result<(), FleetRegistryError> {
@@ -779,18 +954,12 @@ fn release_admission_frontier_sha256(root: &Path) -> Result<String, FleetRegistr
                 "release admission marker set exceeds its bound".to_string(),
             ));
         }
-        let metadata = std::fs::symlink_metadata(entry.path())?;
-        if !metadata.file_type().is_file() || metadata.file_type().is_symlink() {
-            return Err(FleetRegistryError::Corrupt(
-                "release admission marker must be a regular non-symlink file".to_string(),
-            ));
-        }
-        if metadata.len() > MAX_RELEASE_MANIFEST_BYTES {
-            return Err(FleetRegistryError::Corrupt(
-                "release admission marker exceeds its byte bound".to_string(),
-            ));
-        }
-        markers.push((name, std::fs::read(entry.path())?));
+        let bytes = catalog_io::read(
+            &entry.path(),
+            MAX_RELEASE_MANIFEST_BYTES,
+            catalog_io::FileRule::Regular,
+        )?;
+        markers.push((name, bytes));
     }
     markers.sort_by(|left, right| left.0.cmp(&right.0));
     let mut hasher = Sha256::new();
@@ -919,27 +1088,17 @@ fn read_bounded_json<T: for<'de> Deserialize<'de>>(
     path: &Path,
     max_bytes: u64,
 ) -> Result<T, FleetRegistryError> {
-    let metadata = std::fs::symlink_metadata(path)?;
-    if !metadata.file_type().is_file()
-        || metadata.file_type().is_symlink()
-        || metadata.len() > max_bytes
-    {
-        return Err(FleetRegistryError::Corrupt(format!(
-            "release control path is not a bounded regular file: {}",
-            path.display()
-        )));
-    }
-    serde_json::from_slice(&std::fs::read(path)?)
+    let bytes = catalog_io::read(path, max_bytes, catalog_io::FileRule::Regular)?;
+    serde_json::from_slice(&bytes)
         .map_err(|error| FleetRegistryError::Corrupt(format!("invalid release JSON: {error}")))
 }
 
 fn copy_immutable_program(source: &Path, destination: &Path) -> Result<(), FleetRegistryError> {
-    let mut input = File::open(source)?;
     let mut output = OpenOptions::new()
         .write(true)
         .create_new(true)
         .open(destination)?;
-    std::io::copy(&mut input, &mut output)?;
+    catalog_io::copy(source, &mut output)?;
     set_mode(destination, /*mode*/ 0o555)?;
     // Flush through the writing handle retained across the mode change.
     // Windows cannot FlushFileBuffers on a separately opened read-only handle.
@@ -948,21 +1107,7 @@ fn copy_immutable_program(source: &Path, destination: &Path) -> Result<(), Fleet
 }
 
 fn sha256_file(path: &Path) -> Result<String, FleetRegistryError> {
-    let mut file = File::open(path)?;
-    let mut hasher = Sha256::new();
-    let mut buffer = [0_u8; 64 * 1024];
-    loop {
-        let count = file.read(&mut buffer)?;
-        if count == 0 {
-            break;
-        }
-        hasher.update(&buffer[..count]);
-    }
-    Ok(hasher
-        .finalize()
-        .iter()
-        .map(|byte| format!("{byte:02x}"))
-        .collect())
+    catalog_io::sha256(path, u64::MAX)
 }
 
 fn is_sha256(value: &str) -> bool {
@@ -994,24 +1139,6 @@ fn validate_physical_directory(path: &Path, immutable: bool) -> Result<(), Fleet
     if immutable && is_writable(&metadata) {
         return Err(FleetRegistryError::Corrupt(format!(
             "immutable release directory is writable: {}",
-            path.display()
-        )));
-    }
-    Ok(())
-}
-
-fn validate_immutable_regular_file(
-    path: &Path,
-    executable: bool,
-) -> Result<(), FleetRegistryError> {
-    let metadata = std::fs::symlink_metadata(path)?;
-    if !metadata.file_type().is_file()
-        || metadata.file_type().is_symlink()
-        || is_writable(&metadata)
-        || (executable && !is_executable(&metadata))
-    {
-        return Err(FleetRegistryError::Corrupt(format!(
-            "immutable release file has unsafe type or mode: {}",
             path.display()
         )));
     }
@@ -1067,7 +1194,12 @@ fn make_tree_removable(path: &Path) {
 
 #[cfg(unix)]
 fn sync_directory(path: &Path) -> Result<(), FleetRegistryError> {
-    File::open(path)?.sync_all()?;
+    use std::os::unix::fs::OpenOptionsExt;
+    OpenOptions::new()
+        .read(true)
+        .custom_flags(libc::O_DIRECTORY | libc::O_NOFOLLOW | libc::O_NONBLOCK | libc::O_CLOEXEC)
+        .open(path)?
+        .sync_all()?;
     Ok(())
 }
 
@@ -1105,7 +1237,7 @@ mod tests {
             let temp = tempfile::tempdir()?;
             let root = HeptaFleetRoot::parse(temp.path().join("fleet"))
                 .map_err(|error| FleetRegistryError::Invalid(error.to_string()))?;
-            let registry = FleetRegistry::initialize(root.clone())?;
+            let registry = FleetRegistry::initialize_for_qualification(root.clone())?;
             let first = register(&registry, &root, temp.path(), FIRST_AGENT_ID, "workspace-a")?;
             let second = register(
                 &registry,
@@ -1299,7 +1431,7 @@ mod tests {
             Some(v2.clone()),
             Some(v1),
         )?;
-        let reopened = FleetRegistry::open_existing(fixture.root.clone())?;
+        let reopened = FleetRegistry::open_existing_for_qualification(fixture.root.clone())?;
         assert_eq!(
             reopened
                 .load()?
@@ -1385,7 +1517,7 @@ mod tests {
             .registry
             .revoke_release(&fixture.first, &release_id)?;
         assert_eq!(std::fs::read(&marker)?, original);
-        let reopened = FleetRegistry::open_existing(fixture.root.clone())?;
+        let reopened = FleetRegistry::open_existing_for_qualification(fixture.root.clone())?;
         for registry in [&fixture.registry, &reopened] {
             assert!(matches!(
                 registry.resolve_release(&fixture.first, &release_id),
@@ -1420,7 +1552,7 @@ mod tests {
             .clone();
         let marker = revocation_path(record.layout.releases_root(), &release_id);
         std::fs::create_dir(&marker)?;
-        let reopened = FleetRegistry::open_existing(fixture.root.clone())?;
+        let reopened = FleetRegistry::open_existing_for_qualification(fixture.root.clone())?;
         for registry in [&fixture.registry, &reopened] {
             assert!(matches!(
                 registry.resolve_release(&fixture.first, &release_id),
@@ -1466,7 +1598,7 @@ mod tests {
         // revocation name as absence. It must not restore the existing grant.
         assert!(!marker.exists());
         assert!(release_entry_exists(&marker)?);
-        let reopened = FleetRegistry::open_existing(fixture.root.clone())?;
+        let reopened = FleetRegistry::open_existing_for_qualification(fixture.root.clone())?;
         for registry in [&fixture.registry, &reopened] {
             assert!(matches!(
                 registry.resolve_release(&fixture.first, &release_id),
