@@ -226,8 +226,8 @@ mod windows_impl {
                     )
                 },
             )?;
-            let (pipe_write, mut pipe_read) = transport.into_files();
-            let cancel_writer = spawn_cancel_writer(&pipe_write, cancellation)?;
+            let (pipe_write, mut pipe_read, runner_process) = transport.into_parts();
+            let cancel_writer = spawn_cancel_writer(&pipe_write, cancellation.clone())?;
 
             let mut stdout = Vec::new();
             let mut stderr = Vec::new();
@@ -259,6 +259,14 @@ mod windows_impl {
                     }
                 }
             };
+            let result = result.and_then(|(exit_code, timed_out)| {
+                runner_process.wait_for_exit(exit_code, || {
+                    cancellation
+                        .as_ref()
+                        .is_some_and(|token| token.is_cancelled())
+                })?;
+                Ok((exit_code, timed_out))
+            });
             if let Some((cancel_handle, done)) = cancel_writer {
                 done.store(true, Ordering::SeqCst);
                 cancel_handle.thread().unpark();

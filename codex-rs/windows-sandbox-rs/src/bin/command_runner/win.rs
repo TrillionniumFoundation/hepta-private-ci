@@ -25,6 +25,7 @@ use codex_windows_sandbox::Message;
 use codex_windows_sandbox::OutputPayload;
 use codex_windows_sandbox::OutputStream;
 use codex_windows_sandbox::PipeSpawnHandles;
+use codex_windows_sandbox::RUNNER_TERMINATION_WAIT_MS;
 use codex_windows_sandbox::ResizePayload;
 use codex_windows_sandbox::SpawnReady;
 use codex_windows_sandbox::SpawnRequest;
@@ -77,7 +78,6 @@ use windows_sys::Win32::System::Threading::WaitForSingleObject;
 // a dependency cycle.
 const FS_HELPER_ARG: &str = "--codex-run-as-fs-helper";
 const READ_ACL_MUTEX_NAME: &str = "Local\\CodexSandboxReadAcl";
-const TERMINATION_WAIT_MS: u32 = 5_000;
 const WAIT_TIMEOUT: u32 = 0x0000_0102;
 
 struct IpcSpawnedProcess {
@@ -651,7 +651,8 @@ pub fn main() -> Result<()> {
     let timed_out = wait_res == WAIT_TIMEOUT;
     let child_stopped = if timed_out {
         terminate_job_or_process(&job, pi.hProcess, log_dir);
-        let termination_wait = unsafe { WaitForSingleObject(pi.hProcess, TERMINATION_WAIT_MS) };
+        let termination_wait =
+            unsafe { WaitForSingleObject(pi.hProcess, RUNNER_TERMINATION_WAIT_MS) };
         if termination_wait == WAIT_TIMEOUT {
             log_note(
                 "runner root process did not exit after termination",
