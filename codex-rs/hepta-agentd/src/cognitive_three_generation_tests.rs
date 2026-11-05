@@ -492,6 +492,23 @@ async fn three_actual_fits_installations_future_instances_no_update_and_revocati
         rejected,
         codex_hepta_intelligence_eval::SelfEvolutionSelectionError::EvaluationRejected
     ));
+    let attempted: Value = serde_json::from_slice(
+        &std::fs::read(no_update.join("no-update-evaluation-inputs.json")).unwrap(),
+    )
+    .unwrap();
+    for component in [
+        "released_inputs",
+        "holdout_material",
+        "qualification_evidence",
+    ] {
+        let reference = &attempted["product"][component];
+        let bytes = std::fs::read(reference["path"].as_str().unwrap()).unwrap();
+        assert_eq!(
+            Digest32::of_bytes(&bytes).to_string(),
+            reference["digest"].as_str().unwrap(),
+        );
+    }
+    assert!(!no_update.join("evaluation-materials.json").exists());
     let retained = host
         .actual_choices(&ranker, &no_update, "retained-parent")
         .await;

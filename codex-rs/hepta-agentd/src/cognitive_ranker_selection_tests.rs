@@ -6,6 +6,12 @@ use codex_hepta_intelligence_eval as eval;
 use codex_hepta_learning_ledger as ledger;
 use ed25519_dalek::Signer;
 use ed25519_dalek::SigningKey;
+#[path = "intelligence_qualification_test_support.rs"]
+mod qualification_support;
+
+fn digest(value: &str) -> Digest32 {
+    hash(value)
+}
 
 enum EvidenceLifetime {
     Live,
@@ -140,7 +146,7 @@ fn selected_fixture(lifetime: EvidenceLifetime) -> (Fixture, VerifiedSelfEvoluti
             minimum_improvement: FixedQ32::ZERO,
         },
     }];
-    let plan = eval::freeze_cross_fold_plan_v2(
+    let (runner, temporal) = qualification_support::evaluate(
         eval::CrossFoldPlanV1 {
             plan_id: id("controlled-plan"),
             claim_scope: eval::EvaluationClaimScopeV1::SystemLongitudinal,
@@ -173,45 +179,16 @@ fn selected_fixture(lifetime: EvidenceLifetime) -> (Fixture, VerifiedSelfEvoluti
             final_holdout_digest: hash("controlled-final-holdout"),
         },
         roles.clone(),
-    )
-    .unwrap();
-    let holdout = eval::FinalHoldoutRegistry::new().consume(&plan).unwrap();
-    let bundle = eval::IndependentEvaluationBundleV1 {
-        evaluation_id: id("controlled-evaluation"),
-        candidate_id: fixture.selected.manifest.artifact_id.clone(),
-        baseline_id: parent.artifact_id.clone(),
-        claim_scope: eval::EvaluationClaimScopeV1::SystemLongitudinal,
+        vec![id("snapshot-1"), id("snapshot-2"), id("snapshot-3")],
+        vec![id("w-1"), id("w-2")],
+    );
+    let context = eval::ProductQualificationContextV1 {
         generator: principals[0].clone(),
         evaluator: principals[1].clone(),
-        frozen_plan: plan,
-        holdout_use: holdout,
-        objective_digest: objective,
-        dataset_digest: dataset.snapshot.dataset_digest,
-        estimand_digest: hash("controlled-estimand"),
-        estimate_receipt_digest: hash("controlled-estimate"),
-        support_audit_digest: hash("controlled-support-audit"),
-        confidence_receipt_digest: hash("controlled-confidence"),
         retention_receipt_digests: vec![hash("controlled-retention")],
         unlearning_receipt_digest: hash("controlled-unlearning"),
-        snapshot_ids: vec![id("snapshot-1"), id("snapshot-2"), id("snapshot-3")],
-        future_window_ids: vec![id("w-1"), id("w-2")],
-        family_alpha_ppm: 50_000,
-        simultaneous_comparisons: 1,
-        metrics: vec![eval::MetricGateV1 {
-            metric_id: id("task-utility"),
-            direction: eval::EvaluationDirectionV1::Maximize,
-            candidate: eval::EvaluationIntervalV1 {
-                lower: FixedQ32::from_raw(80),
-                upper: FixedQ32::from_raw(90),
-            },
-            baseline: eval::EvaluationIntervalV1 {
-                lower: FixedQ32::from_raw(50),
-                upper: FixedQ32::from_raw(70),
-            },
-            safety_floor: Some(FixedQ32::from_raw(75)),
-            support_digest: hash("controlled-metric-support"),
-        }],
     };
+    let bundle = runner.qualification_bundle(&temporal, &context).unwrap();
     let mut timing = eval::LongitudinalTimeEvidenceV1 {
         frozen_unix_micros: base + 10,
         windows: (1..=2)
@@ -220,7 +197,7 @@ fn selected_fixture(lifetime: EvidenceLifetime) -> (Fixture, VerifiedSelfEvoluti
                 snapshot_id: id(&format!("snapshot-{}", index + 1)),
                 starts_unix_micros: base + 11 + (index - 1) * 15,
                 ends_unix_micros: base + 25 + (index - 1) * 15,
-                observation_count: 400,
+                observation_count: if index == 2 { 1024 } else { 1 },
                 observed_source_cut: hash(&format!("controlled-cut-{index}")),
             })
             .collect(),
@@ -240,6 +217,20 @@ fn selected_fixture(lifetime: EvidenceLifetime) -> (Fixture, VerifiedSelfEvoluti
             base + 50,
         ),
     };
+    let qualification = runner
+        .qualify_and_persist(
+            &temporal,
+            &context,
+            &evaluation,
+            eval::ProductTimingEvidenceV1::SystemLongitudinal {
+                timing: &timing,
+                minimum_window_micros: 10,
+            },
+            &verifier,
+            now,
+            &mut qualification_support::Sink(hash("controlled-publication")),
+        )
+        .unwrap();
     let prepared = eval::prepare_self_evolution_selection_v1(
         &eval::SelfEvolutionSelectionPolicyV1 {
             no_change_baseline_id: parent.artifact_id.clone(),
@@ -256,6 +247,7 @@ fn selected_fixture(lifetime: EvidenceLifetime) -> (Fixture, VerifiedSelfEvoluti
             candidate_generation: fixture.selected.manifest.generation,
             candidate_artifact_digest: fixture.selected.manifest.content_digest,
         },
+        &qualification,
         bundle,
         roles,
         &evaluation,
@@ -268,7 +260,7 @@ fn selected_fixture(lifetime: EvidenceLifetime) -> (Fixture, VerifiedSelfEvoluti
     .unwrap();
     let selector = sign(
         3,
-        &eval::selection_signing_payload_v1(prepared.receipt()).unwrap(),
+        &eval::selection_signing_payload_v2(prepared.receipt()).unwrap(),
         now,
     );
     let selected =

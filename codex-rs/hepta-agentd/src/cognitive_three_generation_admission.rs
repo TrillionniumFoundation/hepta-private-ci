@@ -344,19 +344,6 @@ pub(super) fn evaluate(
         &eval::product_candidate_binding_payload_v1(&selection_request, &qualification).unwrap(),
         micros(),
     );
-    let compatibility = controls::canonical_controls(
-        root,
-        &qualification,
-        &candidate_binding_evidence,
-        &policy,
-        &selection_request,
-        &bundle,
-        &metric_roles,
-        &evidence,
-        &timing,
-        candidate,
-        roles,
-    );
     use crate::cognitive_process_evaluation::*;
     use crate::cognitive_process_evidence::*;
     use crate::cognitive_process_product_wire::*;
@@ -390,6 +377,21 @@ pub(super) fn evaluate(
         &root.join(format!("{name}-evaluation-inputs.json")),
         &material,
     );
+    // Persist the attempted source materials before either eligible selection or
+    // a legitimate no-update returns from the mandatory qualification controls.
+    let compatibility = controls::canonical_controls(
+        root,
+        &qualification,
+        &candidate_binding_evidence,
+        &policy,
+        &selection_request,
+        &bundle,
+        &metric_roles,
+        &evidence,
+        &timing,
+        candidate,
+        roles,
+    )?;
     let prepared = eval::prepare_self_evolution_product_selection_v1(
         &qualification,
         &candidate_binding_evidence,
@@ -406,7 +408,7 @@ pub(super) fn evaluate(
     )?;
     let selector = roles.evidence(
         /*index*/ 3,
-        &eval::selection_signing_payload_v1(prepared.receipt()).unwrap(),
+        &eval::selection_signing_payload_v2(prepared.receipt()).unwrap(),
         micros(),
     );
     let selected =

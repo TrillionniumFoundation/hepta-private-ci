@@ -141,7 +141,7 @@ pub(super) fn install(
     )?;
     let selector = roles.sign(
         /*index*/ 3,
-        &eval::selection_signing_payload_v1(prepared.receipt())?,
+        &eval::selection_signing_payload_v2(prepared.receipt())?,
     );
     let admitted =
         eval::admit_self_evolution_selection_v1(prepared, &selector, &roles.verifier, now())?;

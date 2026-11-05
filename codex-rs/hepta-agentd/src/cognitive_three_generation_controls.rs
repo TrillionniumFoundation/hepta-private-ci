@@ -19,7 +19,7 @@ pub(super) fn canonical_controls(
     timing: &eval::LongitudinalTimeEvidenceV1,
     candidate: &Fitted,
     roles: &mut Roles,
-) -> VerifiedSelfEvolutionSelectionV1 {
+) -> Result<VerifiedSelfEvolutionSelectionV1, eval::SelfEvolutionSelectionError> {
     let mut seal_denials = Vec::new();
     for label in ["publication", "qualification-evidence"] {
         let mut changed = qualification.clone();
@@ -82,7 +82,7 @@ pub(super) fn canonical_controls(
         .unwrap();
         let selector = roles.evidence(
             /*index*/ 3,
-            &eval::selection_signing_payload_v1(prepared.receipt()).unwrap(),
+            &eval::selection_signing_payload_v2(prepared.receipt()).unwrap(),
             micros(),
         );
         let early = eval::admit_self_evolution_selection_v1(
@@ -108,8 +108,8 @@ pub(super) fn canonical_controls(
     } else {
         json!({"scope":"no-update has no eligible original qualification to prepare"})
     };
-    // A fully signed caller metric can satisfy the compatibility comparator.
-    // The same signed statement must not impersonate the sealed estimator result.
+    // Re-signing caller-substituted metrics must not impersonate the sealed estimator result.
+    // Both selection entry points reject the mismatch before returning a token.
     let mut substituted = bundle.clone();
     substituted.metrics[0].candidate = eval::EvaluationIntervalV1 {
         lower: FixedQ32::from_raw(2_i64 << 32),
@@ -138,6 +138,7 @@ pub(super) fn canonical_controls(
     let raw = eval::prepare_self_evolution_selection_v1(
         policy,
         request.clone(),
+        qualification,
         substituted.clone(),
         metric_roles.to_vec(),
         &changed_evidence,
@@ -147,7 +148,11 @@ pub(super) fn canonical_controls(
         &roles.verifier,
         micros(),
     )
-    .unwrap();
+    .unwrap_err();
+    assert_eq!(
+        raw,
+        eval::SelfEvolutionSelectionError::QualificationRejected
+    );
     let error = eval::prepare_self_evolution_product_selection_v1(
         qualification,
         binding,
@@ -163,26 +168,44 @@ pub(super) fn canonical_controls(
         micros(),
     )
     .unwrap_err();
-    assert_eq!(error, eval::SelfEvolutionSelectionError::BindingMismatch);
-    let selector = roles.evidence(
-        /*index*/ 3,
-        &eval::selection_signing_payload_v1(raw.receipt()).unwrap(),
-        micros(),
-    );
-    let compatibility =
-        eval::admit_self_evolution_selection_v1(raw, &selector, &roles.verifier, micros()).unwrap();
     assert_eq!(
-        compatibility.require_product_qualification(),
-        Err(eval::SelfEvolutionSelectionError::CanonicalQualificationRequired)
+        error,
+        eval::SelfEvolutionSelectionError::QualificationRejected
     );
     save(
         &root.join("canonical-qualification-controls.json"),
         &json!({
         "seal_denials":seal_denials,"byte_binding_denials":byte_denials,"binding_lifetime":lifetime_control,
-        "signed_metric_compatibility_eligible":true,"canonical_metric_substitution_error":error.to_string(),
+        "signed_metric_compatibility_eligible":false,"canonical_metric_substitution_error":error.to_string(),
         "compatibility_cannot_claim_product_qualification":true,
         "qualification_evidence_digest":qualification.evidence_digest.to_string(),
         "qualification_publication_digest":qualification.publication_digest.to_string()}),
     );
-    compatibility
+    // Keep the installation-layer control, using the original sealed evaluation
+    // without candidate-byte binding. No-update still returns EvaluationRejected.
+    let prepared = eval::prepare_self_evolution_selection_v1(
+        policy,
+        request.clone(),
+        qualification,
+        bundle.clone(),
+        metric_roles.to_vec(),
+        evidence,
+        timing,
+        &candidate.dataset,
+        &candidate.snapshot,
+        &roles.verifier,
+        micros(),
+    )?;
+    let selector = roles.evidence(
+        /*index*/ 3,
+        &eval::selection_signing_payload_v2(prepared.receipt())?,
+        micros(),
+    );
+    let compatibility =
+        eval::admit_self_evolution_selection_v1(prepared, &selector, &roles.verifier, micros())?;
+    assert_eq!(
+        compatibility.require_product_qualification(),
+        Err(eval::SelfEvolutionSelectionError::CanonicalQualificationRequired)
+    );
+    Ok(compatibility)
 }
