@@ -16,12 +16,26 @@ sys.path.insert(0, str(Path(__file__).resolve().parent))
 import hepta_smollm_execution_source_v1 as execution
 
 PATHS = (
-    "chain", "hepta", "source-parent", "source-materials", "output",
-    "python", "cell-bin", "just", "hepta-target", "handoff-config", "runtime-snapshot",
+    "chain",
+    "hepta",
+    "source-parent",
+    "source-materials",
+    "output",
+    "python",
+    "cell-bin",
+    "just",
+    "hepta-target",
+    "handoff-config",
+    "runtime-snapshot",
 )
 FLAGS = frozenset("--" + name for name in PATHS) | {
-    "--cache-max-bytes", "--cache-max-chunks", "--cache-max-manifests", "--cache-max-db-bytes",
-    "--consumer-mode", "--handoff-config-sha256", "--runtime-snapshot-sha256",
+    "--cache-max-bytes",
+    "--cache-max-chunks",
+    "--cache-max-manifests",
+    "--cache-max-db-bytes",
+    "--consumer-mode",
+    "--handoff-config-sha256",
+    "--runtime-snapshot-sha256",
 }
 ENTRY = "scripts/run_llm_cell_native_handoff.py"
 
@@ -30,15 +44,20 @@ def delegate(profile, arguments):
     """No new child owner: replace this coordinator with the original entry."""
     execution.require(profile == execution.PROFILE_V12, "explicit V12 handoff required")
     execution.require(
-        type(arguments) is list and len(arguments) == 2 * len(FLAGS)
+        type(arguments) is list
+        and len(arguments) == 2 * len(FLAGS)
         and all(type(item) is str for item in arguments),
         "complete original handoff arguments required",
     )
     values = {}
     for flag, value in zip(arguments[::2], arguments[1::2]):
-        execution.require(flag in FLAGS and flag not in values, "closed unique handoff flags")
+        execution.require(
+            flag in FLAGS and flag not in values, "closed unique handoff flags"
+        )
         values[flag] = value
-    execution.require(set(values) == FLAGS, "complete original handoff arguments required")
+    execution.require(
+        set(values) == FLAGS, "complete original handoff arguments required"
+    )
     execution.require(
         values["--consumer-mode"] == "cell-host-v2",
         "V12 cannot execute the original-v1 unavailable or legacy worker path",
@@ -48,7 +67,10 @@ def delegate(profile, arguments):
         "absolute original handoff paths required",
     )
     for flag in ("--handoff-config-sha256", "--runtime-snapshot-sha256"):
-        execution.require(re.fullmatch(r"[0-9a-f]{64}", values[flag]), "exact original input pin required")
+        execution.require(
+            re.fullmatch(r"[0-9a-f]{64}", values[flag]),
+            "exact original input pin required",
+        )
     execution.require(
         Path(values["--hepta"]) == Path(__file__).resolve().parents[1],
         "handoff must retain this Hepta source checkout",

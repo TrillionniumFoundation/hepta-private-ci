@@ -92,7 +92,9 @@ class CooperativeStopExecutionSourceTests(unittest.TestCase):
                 if path.name != execution.MANIFEST_NAME_V12
             },
         )
-        self.assertEqual(execution.checked_manifest(execution.PROFILE_V11), self.fixture.manifest)
+        self.assertEqual(
+            execution.checked_manifest(execution.PROFILE_V11), self.fixture.manifest
+        )
         with self.assertRaisesRegex(ValueError, "exact integrated Chain commit"):
             execution.verify(self.chain, execution.PROFILE_V11)
 
@@ -102,22 +104,31 @@ class CooperativeStopExecutionSourceTests(unittest.TestCase):
             ("MANIFEST_SHA256_V12", "not been frozen"),
             ("CHAIN_TREE_V12", "exact integrated Chain tree"),
         ):
-            with self.subTest(field=field), patch.object(execution, field, "UNFROZEN"), \
-                 patch.object(execution, "git", side_effect=AssertionError("no checkout")) as git:
+            with (
+                self.subTest(field=field),
+                patch.object(execution, field, "UNFROZEN"),
+                patch.object(
+                    execution, "git", side_effect=AssertionError("no checkout")
+                ) as git,
+            ):
                 with self.assertRaisesRegex(ValueError, message):
                     self.verify()
                 git.assert_not_called()
 
     def test_relabelled_v11_manifest_refuses_even_when_rehashed(self):
         self.repin(dict(self.fixture.manifest, profile=execution.PROFILE_V12))
-        with self.assertRaisesRegex(ValueError, "closed exact execution-source identity"):
+        with self.assertRaisesRegex(
+            ValueError, "closed exact execution-source identity"
+        ):
             self.verify()
 
     def test_new_commit_with_old_worker_pins_refuses(self):
         changed = copy.deepcopy(self.manifest)
         changed["files"] = copy.deepcopy(self.fixture.manifest["files"])
         self.repin(changed)
-        with self.assertRaisesRegex(ValueError, "execution source (size or path|bytes) changed"):
+        with self.assertRaisesRegex(
+            ValueError, "execution source (size or path|bytes) changed"
+        ):
             self.verify()
 
     def test_runtime_admission_and_complete_v11_closure_cannot_be_omitted(self):
@@ -132,21 +143,31 @@ class CooperativeStopExecutionSourceTests(unittest.TestCase):
                 changed = copy.deepcopy(self.manifest)
                 del changed["files"][relative]
                 self.repin(changed)
-                with self.assertRaisesRegex(ValueError, "V12 requires the complete V11 and runtime"):
+                with self.assertRaisesRegex(
+                    ValueError, "V12 requires the complete V11 and runtime"
+                ):
                     self.verify()
 
     def test_profile_cannot_declare_a_runtime_snapshot_bypass(self):
         for key in ("runtime_snapshot_optional", "legacy_worker_allowed"):
             with self.subTest(key=key):
                 self.repin(dict(self.manifest, **{key: True}))
-                with self.assertRaisesRegex(ValueError, "closed exact execution-source identity"):
+                with self.assertRaisesRegex(
+                    ValueError, "closed exact execution-source identity"
+                ):
                     self.verify()
 
-    def test_old_forward_paths_refuse_v12_before_reading_inputs_or_importing_chain(self):
+    def test_old_forward_paths_refuse_v12_before_reading_inputs_or_importing_chain(
+        self,
+    ):
         forward = importlib.import_module("hepta_neural_forward_v1")
         study = importlib.import_module("hepta_neural_study_v1")
-        with patch.object(execution, "verify_selected", side_effect=AssertionError("no Chain import")):
-            with patch.object(forward, "EXECUTION_SOURCE_PROFILE", execution.PROFILE_V12):
+        with patch.object(
+            execution, "verify_selected", side_effect=AssertionError("no Chain import")
+        ):
+            with patch.object(
+                forward, "EXECUTION_SOURCE_PROFILE", execution.PROFILE_V12
+            ):
                 with self.assertRaisesRegex(ValueError, "V12.*legacy worker-v1"):
                     forward.run(SimpleNamespace())
             with patch.object(study, "EXECUTION_SOURCE_PROFILE", execution.PROFILE_V12):
@@ -161,7 +182,9 @@ class CooperativeStopExecutionSourceTests(unittest.TestCase):
                 original = path.read_bytes()
                 path.write_bytes(original + b"different native input\n")
                 try:
-                    with self.assertRaisesRegex(ValueError, "candidate checkout is dirty"):
+                    with self.assertRaisesRegex(
+                        ValueError, "candidate checkout is dirty"
+                    ):
                         self.verify()
                 finally:
                     path.write_bytes(original)
@@ -176,11 +199,15 @@ class CooperativeStopExecutionSourceTests(unittest.TestCase):
                     with self.assertRaisesRegex(ValueError, "hidden index"):
                         self.verify()
                     self.assertEqual(
-                        self.fixture.fixture.git("ls-files", "-v", "--", relative), before
+                        self.fixture.fixture.git("ls-files", "-v", "--", relative),
+                        before,
                     )
                 finally:
                     self.fixture.fixture.git("update-index", "--no-" + flag, relative)
-        for relative in ("scripts/ambient-shadow.py", "trillionnium/.cargo/config.toml"):
+        for relative in (
+            "scripts/ambient-shadow.py",
+            "trillionnium/.cargo/config.toml",
+        ):
             with self.subTest(relative=relative):
                 path = self.chain / relative
                 path.parent.mkdir(parents=True, exist_ok=True)
@@ -196,19 +223,31 @@ class CooperativeStopExecutionSourceTests(unittest.TestCase):
             with self.assertRaisesRegex(ValueError, "V12 requires disabled bytecode"):
                 self.verify()
 
-    def test_ordered_merge_uses_original_candidate_owner_and_rejects_reversed_parents(self):
+    def test_ordered_merge_uses_original_candidate_owner_and_rejects_reversed_parents(
+        self,
+    ):
         git = self.fixture.fixture.git
         base = self.fixture.head
         for parents in ((base, self.head), (self.head, base)):
             merged = git(
-                "-c", "user.name=Controlled source fixture",
-                "-c", "user.email=fixture@example.invalid",
-                "commit-tree", self.tree, "-p", parents[0], "-p", parents[1],
-                "-m", "controlled ordered merge fixture",
+                "-c",
+                "user.name=Controlled source fixture",
+                "-c",
+                "user.email=fixture@example.invalid",
+                "commit-tree",
+                self.tree,
+                "-p",
+                parents[0],
+                "-p",
+                parents[1],
+                "-m",
+                "controlled ordered merge fixture",
             ).strip()
             git("checkout", "--quiet", "--detach", merged)
             if parents[0] == base:
-                result = execution.verify_merged(self.chain, execution.PROFILE_V12, base)
+                result = execution.verify_merged(
+                    self.chain, execution.PROFILE_V12, base
+                )
                 self.assertEqual(
                     (result["tested_commit"], result["base_commit"], result["lane"]),
                     (merged, base, "base-merge"),
@@ -239,48 +278,82 @@ class OriginalHostHandoffTests(unittest.TestCase):
         git("add", handoff.ENTRY)
         self.fixture.fixture.fixture.commit()
         manifest = copy.deepcopy(self.fixture.manifest)
-        manifest.update(chain_commit=git("rev-parse", "HEAD").strip(),
-                        chain_tree=git("rev-parse", "HEAD^{tree}").strip())
+        manifest.update(
+            chain_commit=git("rev-parse", "HEAD").strip(),
+            chain_tree=git("rev-parse", "HEAD^{tree}").strip(),
+        )
         manifest["files"][handoff.ENTRY] = dict(
-            size=entry.stat().st_size, sha256=execution.digest(entry.read_bytes()))
-        self.enterContext(patch.object(execution, "CHAIN_COMMIT_V12", manifest["chain_commit"]))
-        self.enterContext(patch.object(execution, "CHAIN_TREE_V12", manifest["chain_tree"]))
+            size=entry.stat().st_size, sha256=execution.digest(entry.read_bytes())
+        )
+        self.enterContext(
+            patch.object(execution, "CHAIN_COMMIT_V12", manifest["chain_commit"])
+        )
+        self.enterContext(
+            patch.object(execution, "CHAIN_TREE_V12", manifest["chain_tree"])
+        )
         self.fixture.repin(manifest)
-        self.values = {"--" + name: str(self.chain / ("fixture-" + name)) for name in handoff.PATHS}
-        self.values.update({
-            "--chain": str(self.chain), "--hepta": str(Path(handoff.__file__).resolve().parents[1]),
-            "--python": sys.executable, "--consumer-mode": "cell-host-v2",
-            "--handoff-config-sha256": "a" * 64, "--runtime-snapshot-sha256": "b" * 64,
-            "--cache-max-bytes": "272189990", "--cache-max-chunks": "8192",
-            "--cache-max-manifests": "64", "--cache-max-db-bytes": "536870912",
-        })
+        self.values = {
+            "--" + name: str(self.chain / ("fixture-" + name)) for name in handoff.PATHS
+        }
+        self.values.update(
+            {
+                "--chain": str(self.chain),
+                "--hepta": str(Path(handoff.__file__).resolve().parents[1]),
+                "--python": sys.executable,
+                "--consumer-mode": "cell-host-v2",
+                "--handoff-config-sha256": "a" * 64,
+                "--runtime-snapshot-sha256": "b" * 64,
+                "--cache-max-bytes": "272189990",
+                "--cache-max-chunks": "8192",
+                "--cache-max-manifests": "64",
+                "--cache-max-db-bytes": "536870912",
+            }
+        )
 
     def arguments(self, values=None):
         return [item for pair in (values or self.values).items() for item in pair]
 
-    def test_verified_source_execs_original_entry_with_unchanged_owner_snapshot_and_budgets(self):
+    def test_verified_source_execs_original_entry_with_unchanged_owner_snapshot_and_budgets(
+        self,
+    ):
         args = self.arguments()
         with patch.object(handoff.os, "execv", side_effect=SystemExit(19)) as execute:
             with self.assertRaises(SystemExit) as result:
                 handoff.delegate(execution.PROFILE_V12, args)
         self.assertEqual(result.exception.code, 19)
         execute.assert_called_once_with(
-            sys.executable, [sys.executable, "-B", str(self.chain / handoff.ENTRY), *args])
+            sys.executable,
+            [sys.executable, "-B", str(self.chain / handoff.ENTRY), *args],
+        )
 
     def test_cli_requires_separator_and_delegates_the_same_complete_arguments(self):
         arguments = self.arguments()
-        with patch.object(sys, "argv", ["handoff", "--profile", execution.PROFILE_V12, "--", *arguments]), \
-             patch.object(handoff.os, "execv", side_effect=SystemExit(23)) as execute:
+        with (
+            patch.object(
+                sys,
+                "argv",
+                ["handoff", "--profile", execution.PROFILE_V12, "--", *arguments],
+            ),
+            patch.object(handoff.os, "execv", side_effect=SystemExit(23)) as execute,
+        ):
             with self.assertRaises(SystemExit) as result:
                 handoff.main()
         self.assertEqual(result.exception.code, 23)
         execute.assert_called_once_with(
-            sys.executable, [sys.executable, "-B", str(self.chain / handoff.ENTRY), *arguments])
+            sys.executable,
+            [sys.executable, "-B", str(self.chain / handoff.ENTRY), *arguments],
+        )
 
     def test_legacy_source_or_consumer_is_rejected_before_any_delegation(self):
         values = dict(self.values, **{"--consumer-mode": "original-v1"})
-        with patch.object(execution, "verify", side_effect=AssertionError("no source use")) as verify, \
-             patch.object(handoff.os, "execv", side_effect=AssertionError("no delegation")) as execute:
+        with (
+            patch.object(
+                execution, "verify", side_effect=AssertionError("no source use")
+            ) as verify,
+            patch.object(
+                handoff.os, "execv", side_effect=AssertionError("no delegation")
+            ) as execute,
+        ):
             with self.assertRaisesRegex(ValueError, "explicit V12"):
                 handoff.delegate(execution.PROFILE_V11, self.arguments())
             with self.assertRaisesRegex(ValueError, "original-v1"):
@@ -289,12 +362,19 @@ class OriginalHostHandoffTests(unittest.TestCase):
             execute.assert_not_called()
 
     def test_missing_snapshot_owner_pin_or_resource_flag_never_selects_defaults(self):
-        for flag in ("--runtime-snapshot", "--runtime-snapshot-sha256", "--handoff-config",
-                     "--handoff-config-sha256", "--cache-max-db-bytes"):
+        for flag in (
+            "--runtime-snapshot",
+            "--runtime-snapshot-sha256",
+            "--handoff-config",
+            "--handoff-config-sha256",
+            "--cache-max-db-bytes",
+        ):
             with self.subTest(flag=flag), patch.object(handoff.os, "execv") as execute:
                 values = dict(self.values)
                 del values[flag]
-                with self.assertRaisesRegex(ValueError, "complete original handoff arguments"):
+                with self.assertRaisesRegex(
+                    ValueError, "complete original handoff arguments"
+                ):
                     handoff.delegate(execution.PROFILE_V12, self.arguments(values))
                 execute.assert_not_called()
 
@@ -305,9 +385,13 @@ class OriginalHostHandoffTests(unittest.TestCase):
         with patch.object(handoff.os, "execv") as execute:
             with self.assertRaisesRegex(ValueError, "closed unique handoff flags"):
                 handoff.delegate(execution.PROFILE_V12, changed)
-            with self.assertRaisesRegex(ValueError, "complete original handoff arguments"):
-                handoff.delegate(execution.PROFILE_V12,
-                                 self.arguments() + ["--consumer-mode", "original-v1"])
+            with self.assertRaisesRegex(
+                ValueError, "complete original handoff arguments"
+            ):
+                handoff.delegate(
+                    execution.PROFILE_V12,
+                    self.arguments() + ["--consumer-mode", "original-v1"],
+                )
             execute.assert_not_called()
 
     def test_unfrozen_or_dirty_source_refuses_without_an_exec(self):

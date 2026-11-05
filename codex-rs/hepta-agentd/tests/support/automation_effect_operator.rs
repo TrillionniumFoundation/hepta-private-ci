@@ -23,7 +23,7 @@ use codex_hepta_contracts::pq_auth::PqNativeSigningKey;
 use codex_hepta_contracts::pq_auth::ml_dsa_65_key_id_from_spki;
 use codex_model_provider::HttpProviderEffectConfig;
 use codex_model_provider::HttpProviderEffectContractAttestation;
-use reqwest::header::HeaderMap;
+use http::header::HeaderMap;
 use std::collections::BTreeSet;
 use std::io::Read;
 use std::io::Write;
