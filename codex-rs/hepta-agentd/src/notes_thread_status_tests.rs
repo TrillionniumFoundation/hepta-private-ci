@@ -58,6 +58,8 @@ struct History {
     pages: VecDeque<(String, ThreadItemsListResponse)>,
     calls: usize,
     delay: Option<Duration>,
+    ready_turn_delay: Option<Duration>,
+    ready_item_delay: Option<Duration>,
 }
 impl History {
     fn new(turns: &[&str], pages: Vec<(&str, ThreadItemsListResponse)>) -> Self {
@@ -85,6 +87,8 @@ impl History {
                 .collect(),
             calls: 0,
             delay: None,
+            ready_turn_delay: None,
+            ready_item_delay: None,
         }
     }
 }
@@ -97,6 +101,10 @@ impl OriginalStatusHistory for History {
         assert_eq!(params.sort_direction, Some(SortDirection::Desc));
         assert_eq!(params.items_view, Some(TurnItemsView::NotLoaded));
         self.calls += 1;
+        if let Some(delay) = self.ready_turn_delay {
+            // Force the inner future to become Ready after its unpolled timer.
+            std::thread::sleep(delay);
+        }
         if let Some(delay) = self.delay {
             tokio::time::sleep(delay).await;
         }
@@ -110,6 +118,9 @@ impl OriginalStatusHistory for History {
         assert_eq!(params.sort_direction, Some(SortDirection::Asc));
         assert_eq!(params.limit, Some(64));
         self.calls += 1;
+        if let Some(delay) = self.ready_item_delay {
+            std::thread::sleep(delay);
+        }
         let (turn, page) = self.pages.pop_front().unwrap();
         assert_eq!(params.turn_id.as_deref(), Some(turn.as_str()));
         Ok(page)
@@ -291,6 +302,42 @@ async fn slow_core_cannot_restart_the_recorded_lookup_budget() {
     ));
     assert!(!crate::notes_literal_adapter::recorded::lookup_budget_available(end));
     assert_eq!(history.calls, 1);
+}
+
+#[tokio::test]
+async fn ready_turn_result_cannot_outlive_the_original_lookup_budget() {
+    let mut history = History::new(&[], vec![]);
+    history.ready_turn_delay = Some(Duration::from_millis(20));
+    let end = tokio::time::Instant::now() + Duration::from_millis(5);
+    assert!(matches!(
+        discover_latest_original_replace(&route(), &mut history, end)
+            .await
+            .unwrap(),
+        StatusDiscovery::Unknown(StatusUnknownReason::DeadlineElapsed)
+    ));
+    assert!(!crate::notes_literal_adapter::recorded::lookup_budget_available(end));
+    assert_eq!(history.calls, 1);
+}
+
+#[tokio::test]
+async fn ready_item_result_cannot_outlive_the_original_lookup_budget() {
+    let mut history = History::new(
+        &["original"],
+        vec![(
+            "original",
+            page("original", vec![lost_reply("first", REPLACE_TOOL)], None),
+        )],
+    );
+    history.ready_item_delay = Some(Duration::from_millis(20));
+    let end = tokio::time::Instant::now() + Duration::from_millis(5);
+    assert!(matches!(
+        discover_latest_original_replace(&route(), &mut history, end)
+            .await
+            .unwrap(),
+        StatusDiscovery::Unknown(StatusUnknownReason::DeadlineElapsed)
+    ));
+    assert!(!crate::notes_literal_adapter::recorded::lookup_budget_available(end));
+    assert_eq!(history.calls, 2);
 }
 
 #[test]

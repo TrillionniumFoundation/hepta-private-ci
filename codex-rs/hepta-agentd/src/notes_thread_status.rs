@@ -10,6 +10,7 @@ use codex_app_server_protocol::ThreadTurnsListResponse;
 use codex_app_server_protocol::TurnItemsView;
 
 use super::*;
+use crate::notes_literal_adapter::recorded::lookup_budget_available;
 
 #[derive(Deserialize)]
 #[serde(untagged)]
@@ -110,6 +111,13 @@ pub(super) async fn discover_latest_original_replace(
             StatusUnknownReason::DeadlineElapsed,
         ));
     };
+    // A ready Core future can win timeout_at after its original deadline.
+    // Accept its result only while the original absolute budget remains live.
+    if !lookup_budget_available(end) {
+        return Ok(StatusDiscovery::Unknown(
+            StatusUnknownReason::DeadlineElapsed,
+        ));
+    }
     let turns = turns?;
     let mut seen_turns = HashSet::new();
     if turns.data.len() > TURNS
@@ -151,6 +159,12 @@ pub(super) async fn discover_latest_original_replace(
                     StatusUnknownReason::DeadlineElapsed,
                 ));
             };
+            // Pagination consumes the same original budget as the turn lookup.
+            if !lookup_budget_available(end) {
+                return Ok(StatusDiscovery::Unknown(
+                    StatusUnknownReason::DeadlineElapsed,
+                ));
+            }
             let page = page?;
             item_count += page.data.len();
             if page.data.len() > PAGE_ITEMS
